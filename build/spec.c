@@ -65,9 +65,9 @@ struct Source * freeSources(struct Source * s)
 rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 {
     const char *pname;
-    const char *fullName;
+    char *fullName = NULL;
     Package p;
-    
+
     /* "main" package */
     if (name == NULL) {
 	if (pkg)
@@ -76,17 +76,12 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
     }
 
     /* Construct package name */
-  { char *n;
     if (flag == PART_SUBNAME) {
 	(void) headerNVR(spec->packages->header, &pname, NULL, NULL);
-	fullName = n = alloca(strlen(pname) + 1 + strlen(name) + 1);
-	while (*pname != '\0') *n++ = *pname++;
-	*n++ = '-';
+	rasprintf(&fullName, "%s-%s", pname, name);
     } else {
-	fullName = n = alloca(strlen(name)+1);
+	fullName = xstrdup(name);
     }
-    strcpy(n, name);
-  }
 
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
@@ -95,6 +90,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 	    break;
 	}
     }
+    free(fullName);
 
     if (pkg)
 	*pkg = p;
