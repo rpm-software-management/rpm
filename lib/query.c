@@ -40,8 +40,8 @@ static void printFileInfo(const char * name,
     struct tm * tm;
     static time_t now;
     static struct tm nowtm;
-    const char * namefield = name;
     char * perms = rpmPermsString(mode);
+    char *link = NULL;
 
     /* On first call, grab snapshot of now */
     if (now == 0) {
@@ -59,9 +59,7 @@ static void printFileInfo(const char * name,
     /* this knows too much about dev_t */
 
     if (S_ISLNK(mode)) {
-	char *nf = alloca(strlen(name) + sizeof(" -> ") + strlen(linkto));
-	sprintf(nf, "%s -> %s", name, linkto);
-	namefield = nf;
+	rasprintf(&link, "%s -> %s", name, linkto);
     } else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
 	sprintf(sizefield, "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
@@ -95,8 +93,10 @@ static void printFileInfo(const char * name,
     }
 
     rpmlog(RPMLOG_NOTICE, "%s %4d %-8s%-8s %10s %s %s\n", perms,
-	(int)nlink, ownerfield, groupfield, sizefield, timefield, namefield);
-    perms = _free(perms);
+	(int)nlink, ownerfield, groupfield, sizefield, timefield, 
+	link ? link : name);
+    free(perms);
+    free(link);
 }
 
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
