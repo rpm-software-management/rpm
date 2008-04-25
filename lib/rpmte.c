@@ -523,10 +523,9 @@ void rpmteColorDS(rpmte te, rpmTag tag)
 	break;
     }
 
-    nb = Count * sizeof(*colors);
-    colors = memset(alloca(nb), 0, nb);
+    colors = xcalloc(Count, sizeof(*colors));
     nb = Count * sizeof(*refs);
-    refs = memset(alloca(nb), -1, nb);
+    refs = memset(xmalloc(nb), -1, nb);
 
     /* Calculate dependency color and reference count. */
     fi = rpmfiInit(fi, 0);
@@ -559,6 +558,8 @@ assert (ix < Count);
 	    val++;
 	(void) rpmdsSetRefs(ds, val);
     }
+    free(colors);
+    free(refs);
 }
 
 int rpmtsiOc(rpmtsi tsi)
