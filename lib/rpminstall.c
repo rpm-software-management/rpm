@@ -210,7 +210,7 @@ struct rpmEIU {
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
-    struct rpmEIU * eiu = memset(alloca(sizeof(*eiu)), 0, sizeof(*eiu));
+    struct rpmEIU * eiu = xcalloc(1, sizeof(*eiu));
     rpmps ps;
     rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
@@ -605,6 +605,7 @@ exit:
     eiu->pkgState = _free(eiu->pkgState);
     eiu->pkgURL = _free(eiu->pkgURL);
     eiu->argv = _free(eiu->argv);
+    free(eiu);
 
     rpmtsEmpty(ts);
 
