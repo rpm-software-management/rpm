@@ -1086,9 +1086,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	)
 	return rc;
 
-    triggersRun = alloca(sizeof(*triggersRun) * numTriggerIndices);
-    memset(triggersRun, 0, sizeof(*triggersRun) * numTriggerIndices);
-
+    triggersRun = xcalloc(numTriggerIndices, sizeof(*triggersRun));
     {	Header sourceH = NULL;
 	int i;
 
@@ -1110,6 +1108,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
     }
     triggerIndices = hfd(triggerIndices, tit);
     triggerNames = hfd(triggerNames, tnt);
+    free(triggersRun);
     return rc;
 }
 
