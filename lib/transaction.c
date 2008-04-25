@@ -663,10 +663,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
     /* Compute directory refcount, skip directory if now empty. */
     dc = rpmfiDC(fi);
-    drc = alloca(dc * sizeof(*drc));
-    memset(drc, 0, dc * sizeof(*drc));
-    dff = alloca(dc * sizeof(*dff));
-    memset(dff, 0, dc * sizeof(*dff));
+    drc = xcalloc(dc, sizeof(*drc));
+    dff = xcalloc(dc, sizeof(*dff));
 
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)	/* XXX lclint */
@@ -840,6 +838,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     fi->flangs = _free(fi->flangs);
 #endif
     if (languages) argvFree(languages);
+    free(drc);
+    free(dff);
 }
 
 /**
