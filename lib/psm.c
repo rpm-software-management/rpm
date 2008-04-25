@@ -185,7 +185,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     if (num == 0)
 	return RPMRC_OK;
 
-    offsets = alloca(num * sizeof(*offsets));
+    offsets = xmalloc(num * sizeof(*offsets));
     offsets[0] = 0;
     num = prev = 0;
     for (sfi = replaced; sfi->otherPkg; sfi++) {
@@ -227,6 +227,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	}
     }
     mi = rpmdbFreeIterator(mi);
+    free(offsets);
 
     return RPMRC_OK;
 }
