@@ -1196,21 +1196,21 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
     DBC * dbcursor = NULL;
-    DBT * key;
-    DBT * data;
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     dbiIndex dbi;
-    int rc = 0;
+    int rc;
     int xx;
 
     if (db == NULL)
 	return 0;
 
-    key = xcalloc(1, sizeof(*key));
-    data = xcalloc(1, sizeof(*data));
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
     dbi = dbiOpen(db, RPMTAG_NAME, 0);
     if (dbi == NULL)
-	goto exit;
+	return 0;
 
     key->data = (void *) name;
     key->size = strlen(name);
@@ -1245,10 +1245,6 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
 #endif
-
-exit:
-    free(key);
-    free(data);
 
     return rc;
 }
@@ -2392,8 +2388,8 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     DBC * dbcursor = NULL;
-    DBT * key;
-    DBT * data;
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     union _dbswap mi_offset;
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -2405,8 +2401,8 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     if (db == NULL)
 	return 0;
 
-    key = xcalloc(1, sizeof(*key));
-    data = xcalloc(1, sizeof(*data));
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
     {	rpmdbMatchIterator mi;
 	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
@@ -2419,8 +2415,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     if (h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
 	      "rpmdbRemove", hdrNum);
-	ret = 1;
-	goto exit;
+	return 1;
     }
 
     {	
@@ -2662,12 +2657,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     h = headerFree(h);
 
     /* XXX return ret; */
-    ret = 0;
-
-exit:
-    free(key);
-    free(data);
-    return ret;
+    return 0;
 }
 
 /* XXX install.c */
@@ -2676,8 +2666,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     DBC * dbcursor = NULL;
-    DBT * key;
-    DBT * data;
+    DBT * key = alloca(sizeof(*key));
+    DBT * data = alloca(sizeof(*data));
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
@@ -2695,8 +2685,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     if (db == NULL)
 	return 0;
 
-    key = xcalloc(1, sizeof(*key));
-    data = xcalloc(1, sizeof(*data));
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
 #ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
     xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
@@ -3053,8 +3043,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 exit:
     (void) unblockSignals(db, &signalMask);
-    free(key);
-    free(data);
 
     return ret;
 }
