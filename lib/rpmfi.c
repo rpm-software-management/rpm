@@ -676,7 +676,7 @@ assert(p != NULL);
 
     h = headerLink(origH);
 
-    relocations = alloca(sizeof(*relocations) * numRelocations);
+    relocations = xmalloc(sizeof(*relocations) * numRelocations);
 
     /* Build sorted relocation list from raw relocations. */
     for (i = 0; i < numRelocations; i++) {
@@ -802,10 +802,9 @@ assert(p != NULL);
     xx = hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *) &fColors, NULL);
     xx = hge(h, RPMTAG_FILEMODES, NULL, (rpm_data_t *) &fModes, NULL);
 
-    dColors = alloca(dirCount * sizeof(*dColors));
-    memset(dColors, 0, dirCount * sizeof(*dColors));
+    dColors = xcalloc(dirCount, sizeof(*dColors));
 
-    newDirIndexes = alloca(sizeof(*newDirIndexes) * fileCount);
+    newDirIndexes = xmalloc(sizeof(*newDirIndexes) * fileCount);
     memcpy(newDirIndexes, dirIndexes, sizeof(*newDirIndexes) * fileCount);
     dirIndexes = newDirIndexes;
 
@@ -1029,7 +1028,10 @@ dColors[j] |= fColors[i];
 
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
     dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
-    fn = _free(fn);
+    free(fn);
+    free(relocations);
+    free(newDirIndexes);
+    free(dColors);
 
     return h;
 }
