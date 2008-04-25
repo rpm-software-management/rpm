@@ -33,68 +33,72 @@ void addChangelogEntry(Header h, time_t time, const char *name, const char *text
  */
 static int dateToTimet(const char * datestr, time_t * secs)
 {
+    int rc = -1; /* assume failure */
     struct tm time;
     const char * const * idx;
-    char * p, * pe, * q;
+    char *p, *pe, *q, *date;
     
-    char * date = strcpy(alloca(strlen(datestr) + 1), datestr);
-static const char * const days[] =
+    static const char * const days[] =
 	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
-static const char * const months[] =
+    static const char * const months[] =
 	{ "Jan", "Feb", "Mar", "Apr", "May", "Jun",
  	  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", NULL };
-static const char const lengths[] =
+    static const char const lengths[] =
 	{ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
     memset(&time, 0, sizeof(time));
 
+    date = xstrdup(datestr);
     pe = date;
 
     /* day of week */
     p = pe; SKIPSPACE(p);
-    if (*p == '\0') return -1;
+    if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = days; *idx && strcmp(*idx, p); idx++)
 	{};
-    if (*idx == NULL) return -1;
+    if (*idx == NULL) goto exit;
 
     /* month */
     p = pe; SKIPSPACE(p);
-    if (*p == '\0') return -1;
+    if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     for (idx = months; *idx && strcmp(*idx, p); idx++)
 	{};
-    if (*idx == NULL) return -1;
+    if (*idx == NULL) goto exit;
     time.tm_mon = idx - months;
 
     /* day */
     p = pe; SKIPSPACE(p);
-    if (*p == '\0') return -1;
+    if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
 
     /* make this noon so the day is always right (as we make this UTC) */
     time.tm_hour = 12;
 
     time.tm_mday = strtol(p, &q, 10);
-    if (!(q && *q == '\0')) return -1;
-    if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) return -1;
+    if (!(q && *q == '\0')) goto exit;
+    if (time.tm_mday < 0 || time.tm_mday > lengths[time.tm_mon]) goto exit;
 
     /* year */
     p = pe; SKIPSPACE(p);
-    if (*p == '\0') return -1;
+    if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
     time.tm_year = strtol(p, &q, 10);
-    if (!(q && *q == '\0')) return -1;
-    if (time.tm_year < 1990 || time.tm_year >= 3000) return -1;
+    if (!(q && *q == '\0')) goto exit;
+    if (time.tm_year < 1990 || time.tm_year >= 3000) goto exit;
     time.tm_year -= 1900;
 
     *secs = mktime(&time);
-    if (*secs == -1) return -1;
+    if (*secs == -1) goto exit;
 
     /* adjust to GMT */
     *secs += timezone;
+    rc = 0;
 
-    return 0;
+exit:
+    free(date);
+    return rc;
 }
 
 /**
