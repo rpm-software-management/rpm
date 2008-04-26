@@ -239,12 +239,12 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
     if (rpmfiFC(fi) > 0) {
 	int origNumDirs = al->numDirs;
 	int dx;
-	dirInfo dieNeedle =
-		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
+	struct dirInfo_s dieNeedle;
 	dirInfo die;
 	int last;
 	int i;
 
+	memset(&dieNeedle, 0, sizeof(dieNeedle));
 	/* XXX FIXME: We ought to relocate the directory list here */
 
 	if (al->dirs != NULL)
@@ -255,11 +255,11 @@ fprintf(stderr, "*** del %p[%d]\n", al->list, (int) pkgNum);
 	    (void) rpmfiSetDX(fi, dx);
 
 	    /* XXX: reference to within rpmfi, must not be freed  */
-	    dieNeedle->dirName = (char *) rpmfiDN(fi);
-	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
-			? strlen(dieNeedle->dirName) : 0);
-	    die = bsearch(dieNeedle, al->dirs, al->numDirs,
-			       sizeof(*dieNeedle), dieCompare);
+	    dieNeedle.dirName = (char *) rpmfiDN(fi);
+	    dieNeedle.dirNameLen = (dieNeedle.dirName != NULL
+			? strlen(dieNeedle.dirName) : 0);
+	    die = bsearch(&dieNeedle, al->dirs, al->numDirs,
+			       sizeof(dieNeedle), dieCompare);
 	    if (die == NULL)
 		continue;
 
@@ -360,8 +360,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
     fi = rpmfiLink(alp->fi, RPMDBG_M("Files index (rpmalAdd)"));
     fi = rpmfiInit(fi, 0);
     if (rpmfiFC(fi) > 0) {
-	dirInfo dieNeedle =
-		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
+	struct dirInfo_s dieNeedle; 
 	dirInfo die;
 	int dc = rpmfiDC(fi);
 	int dx;
@@ -372,6 +371,7 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 	int first;
 	int i = 0;
 
+	memset(&dieNeedle, 0, sizeof(dieNeedle));
 	/* XXX FIXME: We ought to relocate the directory list here */
 
 	/* XXX enough space for all directories, late realloc to truncate. */
@@ -410,21 +410,21 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 	    {   DN = rpmfiDN(fi);
 
 	        /* XXX: reference to within rpmfi, must not be freed */
-		dieNeedle->dirName = (char *) DN;
+		dieNeedle.dirName = (char *) DN;
 	    }
 
-	    dieNeedle->dirNameLen = (dieNeedle->dirName != NULL
-			? strlen(dieNeedle->dirName) : 0);
-	    die = bsearch(dieNeedle, al->dirs, origNumDirs,
-			       sizeof(*dieNeedle), dieCompare);
+	    dieNeedle.dirNameLen = (dieNeedle.dirName != NULL
+			? strlen(dieNeedle.dirName) : 0);
+	    die = bsearch(&dieNeedle, al->dirs, origNumDirs,
+			       sizeof(dieNeedle), dieCompare);
 	    if (die) {
 		dirMapping[dx] = die - al->dirs;
 	    } else {
 		dirMapping[dx] = al->numDirs;
 		die = al->dirs + al->numDirs;
-		if (dieNeedle->dirName != NULL)
-		    die->dirName = xstrdup(dieNeedle->dirName);
-		die->dirNameLen = dieNeedle->dirNameLen;
+		if (dieNeedle.dirName != NULL)
+		    die->dirName = xstrdup(dieNeedle.dirName);
+		die->dirNameLen = dieNeedle.dirNameLen;
 		die->files = NULL;
 		die->numFiles = 0;
 if (_rpmal_debug)
@@ -583,8 +583,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     int found = 0;
     char * dirName;
     const char * baseName;
-    dirInfo dieNeedle =
-		memset(alloca(sizeof(*dieNeedle)), 0, sizeof(*dieNeedle));
+    struct dirInfo_s dieNeedle; 
     dirInfo die;
     fileIndexEntry fieNeedle =
 		memset(alloca(sizeof(*fieNeedle)), 0, sizeof(*fieNeedle));
@@ -592,6 +591,8 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     availablePackage alp;
     fnpyKey * ret = NULL;
     const char * fileName;
+
+    memset(&dieNeedle, 0, sizeof(dieNeedle));
 
     if (keyp) *keyp = RPMAL_NOMATCH;
 
@@ -610,15 +611,15 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 	}
     }
 
-    dieNeedle->dirName = (char *) dirName;
-    dieNeedle->dirNameLen = strlen(dirName);
-    die = bsearch(dieNeedle, al->dirs, al->numDirs,
-		       sizeof(*dieNeedle), dieCompare);
+    dieNeedle.dirName = (char *) dirName;
+    dieNeedle.dirNameLen = strlen(dirName);
+    die = bsearch(&dieNeedle, al->dirs, al->numDirs,
+		       sizeof(dieNeedle), dieCompare);
     if (die == NULL)
 	goto exit;
 
     /* rewind to the first match */
-    while (die > al->dirs && dieCompare(die-1, dieNeedle) == 0)
+    while (die > al->dirs && dieCompare(die-1, &dieNeedle) == 0)
 	die--;
 
     if ((baseName = strrchr(fileName, '/')) == NULL)
@@ -627,7 +628,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 
     /* FIX: ret is a problem */
     for (found = 0, ret = NULL;
-	 die < al->dirs + al->numDirs && dieCompare(die, dieNeedle) == 0;
+	 die < al->dirs + al->numDirs && dieCompare(die, &dieNeedle) == 0;
 	 die++)
     {
 
