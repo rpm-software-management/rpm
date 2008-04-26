@@ -674,7 +674,7 @@ fnpyKey *
 rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 {
     availableIndex ai;
-    availableIndexEntry needle;
+    struct availableIndexEntry_s needle;
     availableIndexEntry match;
     fnpyKey * ret = NULL;
     int found = 0;
@@ -700,21 +700,21 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     if (ai->index == NULL || ai->size <= 0)
 	return NULL;
 
-    needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
-    needle->entry = KName;
-    needle->entryLen = strlen(needle->entry);
+    memset(&needle, 0, sizeof(needle));
+    needle.entry = KName;
+    needle.entryLen = strlen(needle.entry);
 
-    match = bsearch(needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
+    match = bsearch(&needle, ai->index, ai->size, sizeof(*ai->index), indexcmp);
     if (match == NULL)
 	return NULL;
 
     /* rewind to the first match */
-    while (match > ai->index && indexcmp(match-1, needle) == 0)
+    while (match > ai->index && indexcmp(match-1, &needle) == 0)
 	match--;
 
     if (al->list != NULL)	/* XXX always true */
     for (ret = NULL, found = 0;
-	 match < ai->index + ai->size && indexcmp(match, needle) == 0;
+	 match < ai->index + ai->size && indexcmp(match, &needle) == 0;
 	 match++)
     {
 	alp = al->list + alKey2Num(al, match->pkgKey);
