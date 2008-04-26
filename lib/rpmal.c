@@ -585,14 +585,14 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     const char * baseName;
     struct dirInfo_s dieNeedle; 
     dirInfo die;
-    fileIndexEntry fieNeedle =
-		memset(alloca(sizeof(*fieNeedle)), 0, sizeof(*fieNeedle));
+    struct fileIndexEntry_s fieNeedle;
     fileIndexEntry fie;
     availablePackage alp;
     fnpyKey * ret = NULL;
     const char * fileName;
 
     memset(&dieNeedle, 0, sizeof(dieNeedle));
+    memset(&fieNeedle, 0, sizeof(fieNeedle));
 
     if (keyp) *keyp = RPMAL_NOMATCH;
 
@@ -635,10 +635,10 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 if (_rpmal_debug)
 fprintf(stderr, "==> die %p %s\n", die, (die->dirName ? die->dirName : "(nil)"));
 
-	fieNeedle->baseName = baseName;
-	fieNeedle->baseNameLen = strlen(fieNeedle->baseName);
-	fie = bsearch(fieNeedle, die->files, die->numFiles,
-		       sizeof(*fieNeedle), fieCompare);
+	fieNeedle.baseName = baseName;
+	fieNeedle.baseNameLen = strlen(fieNeedle.baseName);
+	fie = bsearch(&fieNeedle, die->files, die->numFiles,
+		       sizeof(fieNeedle), fieCompare);
 	if (fie == NULL)
 	    continue;	/* XXX shouldn't happen */
 
