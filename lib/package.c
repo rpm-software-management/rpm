@@ -315,8 +315,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     int32_t ildl[2];
     int32_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
-    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
-    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    struct indexEntry_s entry;
+    struct entryInfo_s info;
     void * sig = NULL;
     unsigned const char * b;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
@@ -339,109 +339,112 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 	goto exit;
     }
 
+    memset(&entry, 0, sizeof(entry));
+    memset(&info, 0, sizeof(info));
+
     /* Check (and convert) the 1st tag element. */
-    xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
+    xx = headerVerifyInfo(1, dl, pe, &entry.info, 0);
     if (xx != -1) {
 	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		0, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		0, entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	goto exit;
     }
 
     /* Is there an immutable header region tag? */
-    if (!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
-       && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == REGION_TAG_COUNT))
+    if (!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
+       && entry.info.type == RPM_BIN_TYPE
+       && entry.info.count == REGION_TAG_COUNT))
     {
 	rc = RPMRC_NOTFOUND;
 	goto exit;
     }
 
     /* Is the offset within the data area? */
-    if (entry->info.offset >= dl) {
+    if (entry.info.offset >= dl) {
 	rasprintf(&buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	goto exit;
     }
 
     /* Is there an immutable header region tag trailer? */
-    regionEnd = dataStart + entry->info.offset;
-    (void) memcpy(info, regionEnd, REGION_TAG_COUNT);
+    regionEnd = dataStart + entry.info.offset;
+    (void) memcpy(&info, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
 
-    xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
+    xx = headerVerifyInfo(1, dl, &info, &entry.info, 1);
     if (xx != -1 ||
-	!(entry->info.tag == RPMTAG_HEADERIMMUTABLE
-       && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == REGION_TAG_COUNT))
+	!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
+       && entry.info.type == RPM_BIN_TYPE
+       && entry.info.count == REGION_TAG_COUNT))
     {
 	rasprintf(&buf, 
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	goto exit;
     }
-    memset(info, 0, sizeof(*info));
+    memset(&info, 0, sizeof(info));
 
     /* Is the no. of tags in the region less than the total no. of tags? */
-    ril = entry->info.offset/sizeof(*pe);
-    if ((entry->info.offset % sizeof(*pe)) || ril > il) {
+    ril = entry.info.offset/sizeof(*pe);
+    if ((entry.info.offset % sizeof(*pe)) || ril > il) {
 	rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	goto exit;
     }
 
     /* Find a header-only digest/signature tag. */
     for (i = ril; i < il; i++) {
-	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
+	xx = headerVerifyInfo(1, dl, pe+i, &entry.info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf,
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		i, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		i, entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	    goto exit;
 	}
 
-	switch (entry->info.tag) {
+	switch (entry.info.tag) {
 	case RPMTAG_SHA1HEADER:
 	    if (vsflags & RPMVSF_NOSHA1HEADER)
 		break;
 	    blen = 0;
-	    for (b = dataStart + entry->info.offset; *b != '\0'; b++) {
+	    for (b = dataStart + entry.info.offset; *b != '\0'; b++) {
 		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
 		    break;
 		blen++;
 	    }
-	    if (entry->info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
+	    if (entry.info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
 	    {
 		rasprintf(&buf, _("hdr SHA1: BAD, not hex\n"));
 		goto exit;
 	    }
-	    if (info->tag == 0) {
-		*info = entry->info;	/* structure assignment */
+	    if (info.tag == 0) {
+		info = entry.info;	/* structure assignment */
 		siglen = blen + 1;
 	    }
 	    break;
 	case RPMTAG_RSAHEADER:
 	    if (vsflags & RPMVSF_NORSAHEADER)
 		break;
-	    if (entry->info.type != RPM_BIN_TYPE) {
+	    if (entry.info.type != RPM_BIN_TYPE) {
 		rasprintf(&buf, _("hdr RSA: BAD, not binary\n"));
 		goto exit;
 	    }
-	    *info = entry->info;	/* structure assignment */
-	    siglen = info->count;
+	    info = entry.info;	/* structure assignment */
+	    siglen = info.count;
 	    break;
 	case RPMTAG_DSAHEADER:
 	    if (vsflags & RPMVSF_NODSAHEADER)
 		break;
-	    if (entry->info.type != RPM_BIN_TYPE) {
+	    if (entry.info.type != RPM_BIN_TYPE) {
 		rasprintf(&buf, _("hdr DSA: BAD, not binary\n"));
 		goto exit;
 	    }
-	    *info = entry->info;	/* structure assignment */
-	    siglen = info->count;
+	    info = entry.info;	/* structure assignment */
+	    siglen = info.count;
 	    break;
 	default:
 	    break;
@@ -461,14 +464,14 @@ exit:
     }
 
     /* If no header-only digest/signature, then do simple sanity check. */
-    if (info->tag == 0) {
+    if (info.tag == 0) {
 verifyinfo_exit:
-	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry->info, 0);
+	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf,
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		xx+1, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		xx+1, entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	    rc = RPMRC_FAIL;
 	} else {
 	    rasprintf(&buf, "Header sanity check: OK\n");
@@ -488,13 +491,13 @@ verifyinfo_exit:
 	goto verifyinfo_exit;
     dig->nbytes = 0;
 
-    sig = memcpy(xmalloc(siglen), dataStart + info->offset, siglen);
-    (void) rpmtsSetSig(ts, info->tag, info->type, sig, (size_t) info->count);
+    sig = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
+    (void) rpmtsSetSig(ts, info.tag, info.type, sig, (size_t) info.count);
 
-    switch (info->tag) {
+    switch (info.tag) {
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sig, info.count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -535,7 +538,7 @@ verifyinfo_exit:
 	break;
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, info->count, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sig, info.count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -589,7 +592,7 @@ verifyinfo_exit:
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1)
 	rpmtsCleanDig(ts);
-    if (info->tag == RPMTAG_SHA1HEADER)
+    if (info.tag == RPMTAG_SHA1HEADER)
 	sig = _free(sig);
     hclvl--;
     return rc;
