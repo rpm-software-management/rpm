@@ -371,8 +371,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 {
-    DBT * key = alloca(sizeof(*key));
-    DBT * data = alloca(sizeof(*data));
+    DBT key;
+    DBT data;
     rpmdbMatchIterator mi;
     const char * Name;
     Header h;
@@ -404,18 +404,18 @@ static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
-		memset(key, 0, sizeof(*key));
-		key->data = (void *) DNEVR;
-		key->size = DNEVRlen;
-		memset(data, 0, sizeof(*data));
-		data->data = datap;
-		data->size = datalen;
+		memset(&key, 0, sizeof(key));
+		key.data = (void *) DNEVR;
+		key.size = DNEVRlen;
+		memset(&data, 0, sizeof(data));
+		data.data = datap;
+		data.size = datalen;
 /* FIX: data->data may be NULL */
-		xx = dbiGet(dbi, dbcursor, key, data, DB_SET);
-		DNEVR = key->data;
-		DNEVRlen = key->size;
-		datap = data->data;
-		datalen = data->size;
+		xx = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+		DNEVR = key.data;
+		DNEVRlen = key.size;
+		datap = data.data;
+		datalen = data.size;
 
 		if (xx == 0 && datap && datalen == 4)
 		    memcpy(&rc, datap, datalen);
@@ -529,14 +529,14 @@ exit:
 
 		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
-		memset(key, 0, sizeof(*key));
-		key->data = (void *) DNEVR;
-		key->size = DNEVRlen;
-		memset(data, 0, sizeof(*data));
-		data->data = &rc;
-		data->size = sizeof(rc);
+		memset(&key, 0, sizeof(key));
+		key.data = (void *) DNEVR;
+		key.size = DNEVRlen;
+		memset(&data, 0, sizeof(data));
+		data.data = &rc;
+		data.size = sizeof(rc);
 
-		xx = dbiPut(dbi, dbcursor, key, data, 0);
+		xx = dbiPut(dbi, dbcursor, &key, &data, 0);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    }
 	    if (xx)
