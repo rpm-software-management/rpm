@@ -139,8 +139,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     entryInfo pe;
     size_t nb;
     int32_t ril = 0;
-    indexEntry entry = memset(alloca(sizeof(*entry)), 0, sizeof(*entry));
-    entryInfo info = memset(alloca(sizeof(*info)), 0, sizeof(*info));
+    struct indexEntry_s entry;
+    struct entryInfo_s info;
     unsigned char * dataStart;
     unsigned char * dataEnd = NULL;
     Header sigh = NULL;
@@ -177,6 +177,9 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	goto exit;
     }
 
+    memset(&entry, 0, sizeof(entry));
+    memset(&info, 0, sizeof(info));
+
     nb = (il * sizeof(struct entryInfo_s)) + dl;
     ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
     ei[0] = block[2];
@@ -190,70 +193,70 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     }
     
     /* Check (and convert) the 1st tag element. */
-    xx = headerVerifyInfo(1, dl, pe, &entry->info, 0);
+    xx = headerVerifyInfo(1, dl, pe, &entry.info, 0);
     if (xx != -1) {
 	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		  0, entry->info.tag, entry->info.type,
-		  entry->info.offset, entry->info.count);
+		  0, entry.info.tag, entry.info.type,
+		  entry.info.offset, entry.info.count);
 	goto exit;
     }
 
     /* Is there an immutable header region tag? */
-    if (entry->info.tag == RPMTAG_HEADERSIGNATURES
-       && entry->info.type == RPM_BIN_TYPE
-       && entry->info.count == REGION_TAG_COUNT)
+    if (entry.info.tag == RPMTAG_HEADERSIGNATURES
+       && entry.info.type == RPM_BIN_TYPE
+       && entry.info.count == REGION_TAG_COUNT)
     {
 
-	if (entry->info.offset >= dl) {
+	if (entry.info.offset >= dl) {
 	    rasprintf(&buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	    goto exit;
 	}
 
 	/* Is there an immutable header region tag trailer? */
-	dataEnd = dataStart + entry->info.offset;
-	(void) memcpy(info, dataEnd, REGION_TAG_COUNT);
+	dataEnd = dataStart + entry.info.offset;
+	(void) memcpy(&info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
-	if (info->tag == htonl(RPMTAG_HEADERIMAGE)) {
+	if (info.tag == htonl(RPMTAG_HEADERIMAGE)) {
 	    rpmSigTag stag = htonl(RPMTAG_HEADERSIGNATURES);
-	    info->tag = stag;
+	    info.tag = stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
 	dataEnd += REGION_TAG_COUNT;
 
-	xx = headerVerifyInfo(1, dl, info, &entry->info, 1);
+	xx = headerVerifyInfo(1, dl, &info, &entry.info, 1);
 	if (xx != -1 ||
-	    !((entry->info.tag == RPMTAG_HEADERSIGNATURES || entry->info.tag == RPMTAG_HEADERIMAGE)
-	   && entry->info.type == RPM_BIN_TYPE
-	   && entry->info.count == REGION_TAG_COUNT))
+	    !((entry.info.tag == RPMTAG_HEADERSIGNATURES || entry.info.tag == RPMTAG_HEADERIMAGE)
+	   && entry.info.type == RPM_BIN_TYPE
+	   && entry.info.count == REGION_TAG_COUNT))
 	{
 	    rasprintf(&buf,
 		_("region trailer: BAD, tag %d type %d offset %d count %d\n"),
-		entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	    goto exit;
 	}
-	memset(info, 0, sizeof(*info));
+	memset(&info, 0, sizeof(info));
 
 	/* Is the no. of tags in the region less than the total no. of tags? */
-	ril = entry->info.offset/sizeof(*pe);
-	if ((entry->info.offset % sizeof(*pe)) || ril > il) {
+	ril = entry.info.offset/sizeof(*pe);
+	if ((entry.info.offset % sizeof(*pe)) || ril > il) {
 	    rasprintf(&buf, _("region size: BAD, ril(%d) > il(%d)\n"), ril, il);
 	    goto exit;
 	}
     }
 
     /* Sanity check signature tags */
-    memset(info, 0, sizeof(*info));
+    memset(&info, 0, sizeof(info));
     for (i = 1; i < il; i++) {
-	xx = headerVerifyInfo(1, dl, pe+i, &entry->info, 0);
+	xx = headerVerifyInfo(1, dl, pe+i, &entry.info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf, 
 		_("sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		i, entry->info.tag, entry->info.type,
-		entry->info.offset, entry->info.count);
+		i, entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	    goto exit;
 	}
     }
