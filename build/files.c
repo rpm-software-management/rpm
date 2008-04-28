@@ -846,6 +846,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
     t = buf;
     while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
+    	VFA_t *vfa;
 	t = NULL;
 	if (!strcmp(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
@@ -859,8 +860,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    break;
 	}
 
-    /* Set flags for virtual file attributes */
-    {	VFA_t *vfa;
+    	/* Set flags for virtual file attributes */
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
 	    if (strcmp(s, vfa->attribute))
 		continue;
@@ -873,13 +873,11 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		else
 		    fl->currentFlags |= vfa->flag;
 	    }
-
 	    break;
 	}
 	/* if we got an attribute, continue with next token */
 	if (vfa->attribute != NULL)
 	    continue;
-    }
 
 	if (*fileName) {
 	    /* We already got a file -- error */
