@@ -1123,58 +1123,58 @@ static void genCpioListAndHeader(FileList fl,
 	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
 			       &(flp->cpioPath), 1);
 
-      if (sizeof(flp->fl_size) != sizeof(rpm_off_t)) {
-	rpm_off_t psize = (rpm_off_t)flp->fl_size;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
+	if (sizeof(flp->fl_size) != sizeof(rpm_off_t)) {
+	    rpm_off_t psize = (rpm_off_t)flp->fl_size;
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(psize), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
+	} else {
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(flp->fl_size), 1);
-      }
+	}
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->uname), 1);
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->gname), 1);
-      if (sizeof(flp->fl_mtime) != sizeof(rpm_time_t)) {
-	rpm_time_t mtime = (rpm_time_t)flp->fl_mtime;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
+	if (sizeof(flp->fl_mtime) != sizeof(rpm_time_t)) {
+	    rpm_time_t mtime = (rpm_time_t)flp->fl_mtime;
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(mtime), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
+	} else {
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
 			       &(flp->fl_mtime), 1);
-      }
-      if (sizeof(flp->fl_mode) != sizeof(rpm_mode_t)) {
-	rpm_mode_t pmode = (rpm_mode_t)flp->fl_mode;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
+	}
+	if (sizeof(flp->fl_mode) != sizeof(rpm_mode_t)) {
+	    rpm_mode_t pmode = (rpm_mode_t)flp->fl_mode;
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(pmode), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
+	} else {
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
 			       &(flp->fl_mode), 1);
-      }
-      if (sizeof(flp->fl_rdev) != sizeof(rpm_rdev_t)) {
-	rpm_rdev_t prdev = (rpm_rdev_t)flp->fl_rdev;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
+	}
+	if (sizeof(flp->fl_rdev) != sizeof(rpm_rdev_t)) {
+	    rpm_rdev_t prdev = (rpm_rdev_t)flp->fl_rdev;
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(prdev), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
+	} else {
+	    (void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
 			       &(flp->fl_rdev), 1);
-      }
-      if (sizeof(flp->fl_dev) != sizeof(rpm_dev_t)) {
-	rpm_dev_t pdevice = (rpm_dev_t)flp->fl_dev;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
+	}
+	if (sizeof(flp->fl_dev) != sizeof(rpm_dev_t)) {
+    	    rpm_dev_t pdevice = (rpm_dev_t)flp->fl_dev;
+    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(pdevice), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
+	} else {
+    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
 			       &(flp->fl_dev), 1);
-      }
-      if (sizeof(flp->fl_ino) != sizeof(rpm_ino_t)) {
-	rpm_ino_t ino = (rpm_ino_t)flp->fl_ino;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
+	}
+	if (sizeof(flp->fl_ino) != sizeof(rpm_ino_t)) {
+    	    rpm_ino_t ino = (rpm_ino_t)flp->fl_ino;
+    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 				&(ino), 1);
-      } else {
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
+	} else {
+    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
 				&(flp->fl_ino), 1);
-      }
+	}
 
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
 			       &(flp->langs),  1);
