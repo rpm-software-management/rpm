@@ -596,8 +596,9 @@ exit:
  */
 static rpmRC parseForConfig(const char * buf, FileList fl)
 {
-    char *p, *pe, *q;
+    char *p, *pe, *q = NULL;
     const char *name;
+    rpmRC rc = RPMRC_FAIL;
 
     if ((p = strstr(buf, (name = "%config"))) == NULL)
 	return RPMRC_OK;
@@ -618,12 +619,11 @@ static rpmRC parseForConfig(const char * buf, FileList fl)
 
     if (*pe == '\0') {
 	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
-	fl->processingFailed = 1;
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     /* Localize. Erase parsed string. */
-    q = alloca((pe-p) + 1);
+    q = xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -642,12 +642,18 @@ static rpmRC parseForConfig(const char * buf, FileList fl)
 	    fl->currentFlags |= RPMFILE_NOREPLACE;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
     }
+    rc = RPMRC_OK;
+    
+exit:
+    free(q);
+    if (rc != RPMRC_OK) {
+	fl->processingFailed = 1;
+    }
 
-    return RPMRC_OK;
+    return rc;
 }
 
 /**
