@@ -28,15 +28,12 @@
  */
 static int strntoul(const char *str,char **endptr, int base, size_t num)
 {
-    char * buf, * end;
+    char buf[num+1], * end;
     unsigned long ret;
 
-    buf = alloca(num + 1);
-    strncpy(buf, str, num);
-    buf[num] = '\0';
+    rstrlcpy(buf, str, num+1);
 
     ret = strtoul(buf, &end, base);
-/* LCL: strtoul annotations */
     if (*end != '\0')
 	*endptr = ((char *)str) + (end - buf);	/* XXX discards const */
     else
