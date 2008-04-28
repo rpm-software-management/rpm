@@ -1080,13 +1080,8 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     if (filespec == NULL) return -2;
 
     if ((baseName = strrchr(filespec, '/')) != NULL) {
-    	char * t;
-	size_t len;
-
-    	len = baseName - filespec + 1;
-	t = strncpy(alloca(len + 1), filespec, len);
-	t[len] = '\0';
-	dirName = t;
+	dirName = strncpy(xmalloc(len + 1), filespec, baseName - filespec + 1);
+	dirName[len] = '\0';
 	baseName++;
     } else {
 	dirName = "";
@@ -1097,6 +1092,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 
     fpc = fpCacheCreate(20);
     fp1 = fpLookup(fpc, dirName, baseName, 1);
+    free(dirName);
 
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
