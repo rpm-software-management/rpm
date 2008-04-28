@@ -1366,7 +1366,7 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     *matches = dbiFreeIndexSet(*matches);
 
     /* maybe a name and a release */
-    localarg = alloca(strlen(arg) + 1);
+    localarg = xmalloc(strlen(arg) + 1);
     s = stpcpy(localarg, arg);
 
     c = '\0';
@@ -1386,11 +1386,14 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     }
 
    	/* FIX: *matches may be NULL. */
-    if (s == localarg) return RPMRC_NOTFOUND;
+    if (s == localarg) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
 
     *s = '\0';
     rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
-    if (rc != RPMRC_NOTFOUND) return rc;
+    if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
@@ -1415,11 +1418,17 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	    break;
     }
 
-    if (s == localarg) return RPMRC_NOTFOUND;
+    if (s == localarg) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
 
     *s = '\0';
    	/* FIX: *matches may be NULL. */
-    return dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
+    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
+exit:
+    free(localarg);
+    return rc;
 }
 
 /**
