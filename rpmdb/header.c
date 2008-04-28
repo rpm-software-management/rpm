@@ -2806,69 +2806,70 @@ char * headerSprintf(Header h, const char * fmt,
 		     const struct headerSprintfExtension_s * extensions,
 		     errmsg_t * errmsg)
 {
-    headerSprintfArgs hsa = memset(alloca(sizeof(*hsa)), 0, sizeof(*hsa));
+    struct headerSprintfArgs_s hsa;
     sprintfToken nextfmt;
     sprintfTag tag;
     char * t, * te;
     int isxml;
     size_t need;
  
-    hsa->h = headerLink(h);
-    hsa->fmt = xstrdup(fmt);
-    hsa->exts = (headerSprintfExtension) extensions;
-    hsa->tags = (headerTagTableEntry) tbltags;
-    hsa->errmsg = NULL;
+    memset(&hsa, 0, sizeof(hsa));
+    hsa.h = headerLink(h);
+    hsa.fmt = xstrdup(fmt);
+    hsa.exts = (headerSprintfExtension) extensions;
+    hsa.tags = (headerTagTableEntry) tbltags;
+    hsa.errmsg = NULL;
 
-    if (parseFormat(hsa, hsa->fmt, &hsa->format, &hsa->numTokens, NULL, PARSER_BEGIN))
+    if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-    hsa->ec = rpmecNew(hsa->exts);
-    hsa->val = xstrdup("");
+    hsa.ec = rpmecNew(hsa.exts);
+    hsa.val = xstrdup("");
 
     tag =
-	(hsa->format->type == PTOK_TAG
-	    ? &hsa->format->u.tag :
-	(hsa->format->type == PTOK_ARRAY
-	    ? &hsa->format->u.array.format->u.tag :
+	(hsa.format->type == PTOK_TAG
+	    ? &hsa.format->u.tag :
+	(hsa.format->type == PTOK_ARRAY
+	    ? &hsa.format->u.array.format->u.tag :
 	NULL));
     isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;
-	t = hsaReserve(hsa, need);
+	t = hsaReserve(&hsa, need);
 	te = stpcpy(t, "<rpmHeader>\n");
-	hsa->vallen += (te - t);
+	hsa.vallen += (te - t);
     }
 
-    hsaInit(hsa);
-    while ((nextfmt = hsaNext(hsa)) != NULL) {
-	te = singleSprintf(hsa, nextfmt, 0);
+    hsaInit(&hsa);
+    while ((nextfmt = hsaNext(&hsa)) != NULL) {
+	te = singleSprintf(&hsa, nextfmt, 0);
 	if (te == NULL) {
-	    hsa->val = _free(hsa->val);
+	    hsa.val = _free(hsa.val);
 	    break;
 	}
     }
-    hsaFini(hsa);
+    hsaFini(&hsa);
 
     if (isxml) {
 	need = sizeof("</rpmHeader>\n") - 1;
-	t = hsaReserve(hsa, need);
+	t = hsaReserve(&hsa, need);
 	te = stpcpy(t, "</rpmHeader>\n");
-	hsa->vallen += (te - t);
+	hsa.vallen += (te - t);
     }
 
-    if (hsa->val != NULL && hsa->vallen < hsa->alloced)
-	hsa->val = xrealloc(hsa->val, hsa->vallen+1);	
+    if (hsa.val != NULL && hsa.vallen < hsa.alloced)
+	hsa.val = xrealloc(hsa.val, hsa.vallen+1);	
 
-    hsa->ec = rpmecFree(hsa->exts, hsa->ec);
-    hsa->format = freeFormat(hsa->format, hsa->numTokens);
+    hsa.ec = rpmecFree(hsa.exts, hsa.ec);
+    hsa.format = freeFormat(hsa.format, hsa.numTokens);
 
 exit:
     if (errmsg)
-	*errmsg = hsa->errmsg;
-    hsa->h = headerFree(hsa->h);
-    hsa->fmt = _free(hsa->fmt);
-    return hsa->val;
+	*errmsg = hsa.errmsg;
+    hsa.h = headerFree(hsa.h);
+    hsa.fmt = _free(hsa.fmt);
+    return hsa.val;
 }
 
 /**
