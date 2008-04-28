@@ -501,7 +501,7 @@ static rpmRC parseForAttr(const char * buf, FileList fl)
     if (ret_ar == &(fl->def_ar)) {	/* %defattr */
 	char *r = pe;
 	r++;
-	SKIPSPACE(q);
+	SKIPSPACE(r);
 	if (*r != '\0') {
 	    rpmlog(RPMLOG_ERR,
 		     _("Non-white space follows %s(): %s\n"), name, r);
