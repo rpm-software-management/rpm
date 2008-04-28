@@ -208,36 +208,39 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 
 /**
  */
-static int checkForValidArchitectures(rpmSpec spec)
+static rpmRC checkForValidArchitectures(rpmSpec spec)
 {
     char *arch = rpmExpand("%{_target_cpu}", NULL);
     char *os = rpmExpand("%{_target_os}", NULL);
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUDEARCH) == 1) {
 	rpmlog(RPMLOG_ERR, _("Architecture is excluded: %s\n"), arch);
-	return RPMRC_FAIL;
+	goto exit;
     }
     if (isMemberInEntry(spec->buildRestrictions,
 			arch, RPMTAG_EXCLUSIVEARCH) == 0) {
 	rpmlog(RPMLOG_ERR, _("Architecture is not included: %s\n"), arch);
-	return RPMRC_FAIL;
+	goto exit;
     }
     if (isMemberInEntry(spec->buildRestrictions,
 			os, RPMTAG_EXCLUDEOS) == 1) {
 	rpmlog(RPMLOG_ERR, _("OS is excluded: %s\n"), os);
-	return RPMRC_FAIL;
+	goto exit;
     }
     if (isMemberInEntry(spec->buildRestrictions,
 			os, RPMTAG_EXCLUSIVEOS) == 0) {
 	rpmlog(RPMLOG_ERR, _("OS is not included: %s\n"), os);
-	return RPMRC_FAIL;
+	goto exit;
     }
+    rc = RPMRC_OK;
 
+exit:
     arch = _free(arch);
     os = _free(os);
 
-    return RPMRC_OK;
+    return rc;
 }
 
 /**
