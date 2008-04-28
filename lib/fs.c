@@ -280,6 +280,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
     int lastfs = 0;
     int lastDev = -1;		/* I hope nobody uses -1 for a st_dev */
     struct stat sb;
+    int rc = 1;
 
     if (!fsnames) 
 	if (getFilesystemList())
@@ -295,9 +296,9 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
 	if (maxLen < len) maxLen = len;
     }
     
-    buf = alloca(maxLen + 1);
-    lastDir = alloca(maxLen + 1);
-    dirName = alloca(maxLen + 1);
+    buf = xmalloc(maxLen + 1);
+    lastDir = xmalloc(maxLen + 1);
+    dirName = xmalloc(maxLen + 1);
     *lastDir = '\0';
 
     /* cut off last filename */
@@ -322,9 +323,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
 		if (errno != ENOENT) {
 		    rpmlog(RPMLOG_ERR, _("failed to stat %s: %s\n"), buf,
 				strerror(errno));
-		    sourceDir = _free(sourceDir);
-		    usages = _free(usages);
-		    return 1;
+		    goto exit;
 		}
 
 		/* cut off last directory part, because it was not found. */
@@ -344,9 +343,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
 		if (j == numFilesystems) {
 		    rpmlog(RPMLOG_ERR, 
 				_("file %s is on an unknown device\n"), buf);
-		    sourceDir = _free(sourceDir);
-		    usages = _free(usages);
-		    return 1;
+		    goto exit;
 		}
 
 		lastfs = j;
@@ -357,13 +354,18 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
 	strcpy(lastDir, buf);
 	usages[lastfs] += fssizes[i];
     }
+    rc = 0;
 
-    sourceDir = _free(sourceDir);
+exit:
+    free(sourceDir);
+    free(buf);
+    free(lastDir);
+    free(dirName);
 
     if (usagesPtr)
 	*usagesPtr = usages;
     else
-	usages = _free(usages);
+	free(usages);
 
-    return 0;
+    return rc;
 }
