@@ -222,7 +222,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
 
     if (items != NULL && nitems > 0) {
-	Item needle = memset(alloca(sizeof(*needle)), 0, sizeof(*needle));
+	Item needle = xcalloc(1, sizeof(*needle));
 	Item * found, * fneedle = &needle;
 	
 	needle->this = add;
@@ -244,6 +244,7 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 	    i = found - items;
 	    break;
 	}
+	free(needle);
     }
 
     /*
