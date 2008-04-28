@@ -169,7 +169,7 @@ int argvAppend(ARGV_t * argvp, ARGV_const_t av)
 
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 {
-    char * dest = alloca(strlen(str) + 1);
+    char *dest = xmalloc(strlen(str) + 1);
     ARGV_t argv;
     int argc = 1;
     const char * s;
@@ -195,6 +195,7 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
     }
     argv[c] = NULL;
     *argvp = argv;
+    free(dest);
     return 0;
 }
 
