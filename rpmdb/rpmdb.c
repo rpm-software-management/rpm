@@ -1063,7 +1063,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
-    const char * dirName;
+    char * dirName;
     const char * baseName;
     rpmTagType bnt, dnt;
     fingerPrintCache fpc;
@@ -1080,11 +1080,12 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     if (filespec == NULL) return -2;
 
     if ((baseName = strrchr(filespec, '/')) != NULL) {
-	dirName = strncpy(xmalloc(len + 1), filespec, baseName - filespec + 1);
+	size_t len = baseName - filespec + 1;
+	dirName = strncpy(xmalloc(len + 1), filespec, len);
 	dirName[len] = '\0';
 	baseName++;
     } else {
-	dirName = "";
+	dirName = xstrdup("");
 	baseName = filespec;
     }
     if (baseName == NULL)
