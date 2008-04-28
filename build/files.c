@@ -367,7 +367,7 @@ static rpmRC parseForDev(const char * buf, FileList fl)
 {
     const char * name;
     const char * errstr = NULL;
-    char *p, *pe, *q;
+    char *p, *pe, *q = NULL;
     int rc = RPMRC_FAIL;	/* assume error */
 
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
@@ -392,7 +392,7 @@ static rpmRC parseForDev(const char * buf, FileList fl)
     }
 
     /* Localize. Erase parsed string */
-    q = alloca((pe-p) + 1);
+    q = xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -449,6 +449,7 @@ exit:
 	rpmlog(RPMLOG_ERR, _("Missing %s in %s %s\n"), errstr, name, p);
 	fl->processingFailed = 1;
     }
+    free(q);
     return rc;
 }
 
