@@ -20,8 +20,6 @@
 
 #include "debug.h"
 
-#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
-
 static int _print_pkts = 0;
 
 static const unsigned int nkeyids_max = 256;
