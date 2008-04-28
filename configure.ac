@@ -23,6 +23,11 @@ AC_PROG_MAKE_SET
 AC_PROG_LIBTOOL
 AC_PROG_YACC
 
+AC_PROG_CC_C99
+if test "$ac_cv_prog_cc_c99" = no; then
+    AC_MSG_ERROR([ISO C99 capable compiler required])
+fi
+
 AS=${AS-as}
 AC_SUBST(AS)
 if test "$GCC" = yes; then
