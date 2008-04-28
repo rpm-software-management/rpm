@@ -55,19 +55,20 @@ int mntctl(int command, int size, char *buffer);
 static int getFilesystemList(void)
 {
     int size;
-    void * buf;
+    void * buf = NULL;
     struct vmount * vm;
     struct stat sb;
     int rdonly = 0;
     int num;
     int fsnameLength;
     int i;
+    int rc = 1; /* assume failure */
 
     num = mntctl(MCTL_QUERY, sizeof(size), (char *) &size);
     if (num < 0) {
 	rpmlog(RPMLOG_ERR, _("mntctl() failed to return size: %s\n"), 
 		 strerror(errno));
-	return 1;
+	goto exit;
     }
 
     /*
@@ -77,12 +78,12 @@ static int getFilesystemList(void)
      */
     size *= 2;
 
-    buf = alloca(size);
+    buf = xmalloc(size);
     num = mntctl(MCTL_QUERY, size, buf);
     if ( num <= 0 ) {
         rpmlog(RPMLOG_ERR, _("mntctl() failed to return mount points: %s\n"), 
 		 strerror(errno));
-	return 1;
+	goto exit;
     }
 
     numFilesystems = num;
@@ -110,7 +111,7 @@ static int getFilesystemList(void)
 			strerror(errno));
 
 	    	rpmFreeFilesystems();
-	    	return 1;
+	    	goto exit;
 	    }
 	}
 	
@@ -123,8 +124,12 @@ static int getFilesystemList(void)
 
     filesystems[i].mntPoint = NULL;
     fsnames[i]              = NULL;
+    rc = 0;
 
-    return 0;
+exit:
+    free(buf);
+
+    return rc;
 }
 
 #else	/* HAVE_MNTCTL */
