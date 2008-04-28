@@ -837,10 +837,9 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 			  FileList fl, const char ** fileName)
 {
     char *s, *t;
-    int res, specialDoc = 0;
-    char specialDocBuf[BUFSIZ];
+    int res;
+    char *specialDocBuf = NULL;
 
-    specialDocBuf[0] = '\0';
     *fileName = NULL;
     res = RPMRC_OK;
 
@@ -887,9 +886,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
 	if (*s != '/') {
 	    if (fl->currentFlags & RPMFILE_DOC) {
-		specialDoc = 1;
-		strcat(specialDocBuf, " ");
-		strcat(specialDocBuf, s);
+		rstrscat(&specialDocBuf, " ", s, NULL);
 	    } else
 	    if (fl->currentFlags & (RPMFILE_POLICY|RPMFILE_PUBKEY|RPMFILE_ICON))
 	    {
@@ -904,7 +901,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	}
     }
 
-    if (specialDoc) {
+    if (specialDocBuf) {
 	if (*fileName || (fl->currentFlags & ~(RPMFILE_DOC))) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Can't mix special %%doc with other forms: %s\n"),
@@ -952,6 +949,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    appendStringBuf(pkg->specialDoc, specialDocBuf);
 	    appendLineStringBuf(pkg->specialDoc, " $DOCDIR");
 	}
+	free(specialDocBuf);
     }
 
     if (res != RPMRC_OK) {
