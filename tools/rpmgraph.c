@@ -209,8 +209,6 @@ maybe_manifest:
     {	rpmtsi pi;
 	rpmte p;
 	rpmte q;
-	unsigned char * selected =
-			alloca(sizeof(*selected) * (rpmtsNElements(ts) + 1));
 	int oType = TR_ADDED;
 
 	fprintf(stdout, "digraph XXX {\n");
