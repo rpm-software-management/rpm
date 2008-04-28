@@ -299,7 +299,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	char *target;
 	if ((te = strchr(t, ',')) == NULL)
 	    te = t + strlen(t);
-	target = alloca(te-t+1);
+	target = xmalloc(te-t+1);
 	strncpy(target, t, (te-t));
 	target[te-t] = '\0';
 	if (*te != '\0')
@@ -313,6 +313,7 @@ int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	rpmFreeMacros(NULL);
 	rpmFreeRpmrc();
 	(void) rpmReadConfigFiles(rcfile, target);
+	free(target);
 	rc = buildForTarget(ts, arg, ba);
 	if (rc)
 	    break;
