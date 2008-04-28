@@ -669,10 +669,11 @@ static int langCmp(const void * ap, const void * bp)
  * @param fl		package file tree walk data
  * @return		RPMRC_OK on success
  */
-static int parseForLang(const char * buf, FileList fl)
+static rpmRC parseForLang(const char * buf, FileList fl)
 {
-    char *p, *pe, *q;
+    char *p, *pe, *q = NULL;
     const char *name;
+    rpmRC rc = RPMRC_FAIL;
 
   while ((p = strstr(buf, (name = "%lang"))) != NULL) {
 
@@ -682,8 +683,7 @@ static int parseForLang(const char * buf, FileList fl)
 
     if (*pe != '(') {
 	rpmlog(RPMLOG_ERR, _("Missing '(' in %s %s\n"), name, pe);
-	fl->processingFailed = 1;
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     /* Bracket %lang args */
@@ -693,12 +693,11 @@ static int parseForLang(const char * buf, FileList fl)
 
     if (*pe == '\0') {
 	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
-	fl->processingFailed = 1;
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     /* Localize. Erase parsed string. */
-    q = alloca((pe-p) + 1);
+    q = xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -720,8 +719,7 @@ static int parseForLang(const char * buf, FileList fl)
 	    rpmlog(RPMLOG_ERR,
 		_("Unusual locale length: \"%.*s\" in %%lang(%s)\n"),
 		(int)np, p, q);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	/* Check for duplicate locales */
@@ -731,8 +729,7 @@ static int parseForLang(const char * buf, FileList fl)
 		continue;
 	    rpmlog(RPMLOG_ERR, _("Duplicate locale %.*s in %%lang(%s)\n"),
 		(int)np, p, q);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	/* Add new locale */
@@ -748,8 +745,15 @@ static int parseForLang(const char * buf, FileList fl)
     /* Insure that locales are sorted. */
     if (fl->currentLangs)
 	qsort(fl->currentLangs, fl->nLangs, sizeof(*fl->currentLangs), langCmp);
+    rc = RPMRC_OK;
 
-    return RPMRC_OK;
+exit:
+    free(q);
+    if (rc != RPMRC_OK) {
+	fl->processingFailed = 1;
+    }
+
+    return rc;
 }
 
 /**
