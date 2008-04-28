@@ -1902,11 +1902,9 @@ static headerSprintfArgs hsaInit(headerSprintfArgs hsa)
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
 
-    if (hsa != NULL) {
-	hsa->i = 0;
-	if (tag != NULL && tag->tag == -2)
-	    hsa->hi = headerInitIterator(hsa->h);
-    }
+    hsa->i = 0;
+    if (tag != NULL && tag->tag == -2)
+	hsa->hi = headerInitIterator(hsa->h);
     return hsa;
 }
 
@@ -1925,7 +1923,7 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 	    ? &hsa->format->u.array.format->u.tag :
 	NULL));
 
-    if (hsa != NULL && hsa->i >= 0 && hsa->i < hsa->numTokens) {
+    if (hsa->i >= 0 && hsa->i < hsa->numTokens) {
 	fmt = hsa->format + hsa->i;
 	if (hsa->hi == NULL) {
 	    hsa->i++;
@@ -1950,10 +1948,8 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
  */
 static headerSprintfArgs hsaFini(headerSprintfArgs hsa)
 {
-    if (hsa != NULL) {
-	hsa->hi = headerFreeIterator(hsa->hi);
-	hsa->i = 0;
-    }
+    hsa->hi = headerFreeIterator(hsa->hi);
+    hsa->i = 0;
     return hsa;
 }
 
