@@ -1891,9 +1891,8 @@ typedef struct headerSprintfArgs_s {
 /**
  * Initialize an hsa iteration.
  * @param hsa		headerSprintf args
- * @return		headerSprintf args
  */
-static headerSprintfArgs hsaInit(headerSprintfArgs hsa)
+static void hsaInit(headerSprintfArgs hsa)
 {
     sprintfTag tag =
 	(hsa->format->type == PTOK_TAG
@@ -1905,7 +1904,6 @@ static headerSprintfArgs hsaInit(headerSprintfArgs hsa)
     hsa->i = 0;
     if (tag != NULL && tag->tag == -2)
 	hsa->hi = headerInitIterator(hsa->h);
-    return hsa;
 }
 
 /**
@@ -1944,13 +1942,11 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 /**
  * Finish an hsa iteration.
  * @param hsa		headerSprintf args
- * @return		headerSprintf args
  */
-static headerSprintfArgs hsaFini(headerSprintfArgs hsa)
+static void hsaFini(headerSprintfArgs hsa)
 {
     hsa->hi = headerFreeIterator(hsa->hi);
     hsa->i = 0;
-    return hsa;
 }
 
 /**
@@ -2844,7 +2840,7 @@ char * headerSprintf(Header h, const char * fmt,
 	hsa->vallen += (te - t);
     }
 
-    hsa = hsaInit(hsa);
+    hsaInit(hsa);
     while ((nextfmt = hsaNext(hsa)) != NULL) {
 	te = singleSprintf(hsa, nextfmt, 0);
 	if (te == NULL) {
@@ -2852,7 +2848,7 @@ char * headerSprintf(Header h, const char * fmt,
 	    break;
 	}
     }
-    hsa = hsaFini(hsa);
+    hsaFini(hsa);
 
     if (isxml) {
 	need = sizeof("</rpmHeader>\n") - 1;
