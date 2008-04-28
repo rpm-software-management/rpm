@@ -852,7 +852,6 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	
 	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
 		rpmlog(RPMLOG_ERR, _("Only one arg for %%docdir\n"));
-		fl->processingFailed = 1;
 		res = RPMRC_FAIL;
 	    } else {
 		argvAdd(&(fl->docDirs), s);
@@ -884,9 +883,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
 	if (*fileName) {
 	    /* We already got a file -- error */
-	    rpmlog(RPMLOG_ERR, _("Two files on one line: %s\n"),
-		*fileName);
-	    fl->processingFailed = 1;
+	    rpmlog(RPMLOG_ERR, _("Two files on one line: %s\n"), *fileName);
 	    res = RPMRC_FAIL;
 	}
 
@@ -901,9 +898,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		*fileName = s;
 	    } else {
 		/* not in %doc, does not begin with / -- error */
-		rpmlog(RPMLOG_ERR,
-		    _("File must begin with \"/\": %s\n"), s);
-		fl->processingFailed = 1;
+		rpmlog(RPMLOG_ERR, _("File must begin with \"/\": %s\n"), s);
 		res = RPMRC_FAIL;
 	    }
 	} else {
@@ -916,7 +911,6 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    rpmlog(RPMLOG_ERR,
 		     _("Can't mix special %%doc with other forms: %s\n"),
 		     (*fileName ? *fileName : ""));
-	    fl->processingFailed = 1;
 	    res = RPMRC_FAIL;
 	} else {
 	/* XXX WATCHOUT: buf is an arg */
@@ -934,7 +928,6 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		fmt = headerSprintf(pkg->header, _docdir_fmt, rpmTagTable, rpmHeaderFormats, &errstr);
 		if (!fmt) {
 		    rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
-		    fl->processingFailed = 1;
 		    res = RPMRC_FAIL;
 		}
 		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
@@ -961,6 +954,10 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    appendStringBuf(pkg->specialDoc, specialDocBuf);
 	    appendLineStringBuf(pkg->specialDoc, " $DOCDIR");
 	}
+    }
+
+    if (res != RPMRC_OK) {
+	fl->processingFailed = 1;
     }
 
     return res;
