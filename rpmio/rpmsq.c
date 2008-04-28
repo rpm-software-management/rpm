@@ -491,7 +491,6 @@ rpmsqExecve (const char ** argv)
     pid_t pid = 0;
     pid_t result;
     sigset_t newMask, oldMask;
-    rpmsq sq = memset(alloca(sizeof(*sq)), 0, sizeof(*sq));
 
 #ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
 	INIT_LOCK ();
