@@ -464,14 +464,15 @@ exit:
  * @param fl		package file tree walk data
  * @return		0 on success
  */
-static int parseForAttr(const char * buf, FileList fl)
+static rpmRC parseForAttr(const char * buf, FileList fl)
 {
     const char *name;
-    char *p, *pe, *q;
+    char *p, *pe, *q = NULL;
     int x;
     struct AttrRec_s arbuf;
     AttrRec ar = &arbuf, ret_ar;
     specdFlags * specdFlags;
+    rpmRC rc = RPMRC_FAIL;
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
 	ret_ar = &(fl->cur_ar);
@@ -480,7 +481,7 @@ static int parseForAttr(const char * buf, FileList fl)
 	ret_ar = &(fl->def_ar);
 	specdFlags = &fl->defSpecdFlags;
     } else
-	return 0;
+	return RPMRC_OK;
 
     for (pe = p; (pe-p) < strlen(name); pe++)
 	*pe = ' ';
@@ -489,8 +490,7 @@ static int parseForAttr(const char * buf, FileList fl)
 
     if (*pe != '(') {
 	rpmlog(RPMLOG_ERR, _("Missing '(' in %s %s\n"), name, pe);
-	fl->processingFailed = 1;
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     /* Bracket %*attr args */
@@ -499,19 +499,18 @@ static int parseForAttr(const char * buf, FileList fl)
 	{};
 
     if (ret_ar == &(fl->def_ar)) {	/* %defattr */
-	q = pe;
-	q++;
+	char *r = pe;
+	r++;
 	SKIPSPACE(q);
-	if (*q != '\0') {
+	if (*r != '\0') {
 	    rpmlog(RPMLOG_ERR,
-		     _("Non-white space follows %s(): %s\n"), name, q);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+		     _("Non-white space follows %s(): %s\n"), name, r);
+	    goto exit;
 	}
     }
 
     /* Localize. Erase parsed string */
-    q = alloca((pe-p) + 1);
+    q = xmalloc((pe-p) + 1);
     rstrlcpy(q, p, (pe-p) + 1);
     while (p <= pe)
 	*p++ = ' ';
@@ -542,8 +541,7 @@ static int parseForAttr(const char * buf, FileList fl)
 
     if (!(ar->ar_fmodestr && ar->ar_user && ar->ar_group) || *p != '\0') {
 	rpmlog(RPMLOG_ERR, _("Bad syntax: %s(%s)\n"), name, q);
-	fl->processingFailed = 1;
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     /* Do a quick test on the mode argument and adjust for "-" */
@@ -552,8 +550,7 @@ static int parseForAttr(const char * buf, FileList fl)
 	x = sscanf(ar->ar_fmodestr, "%o", &ui);
 	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
 	    rpmlog(RPMLOG_ERR, _("Bad mode spec: %s(%s)\n"), name, q);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	ar->ar_fmode = ui;
     } else
@@ -564,8 +561,7 @@ static int parseForAttr(const char * buf, FileList fl)
 	x = sscanf(ar->ar_dmodestr, "%o", &ui);
 	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
 	    rpmlog(RPMLOG_ERR, _("Bad dirmode spec: %s(%s)\n"), name, q);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	ar->ar_dmode = ui;
     } else
@@ -581,8 +577,15 @@ static int parseForAttr(const char * buf, FileList fl)
 
     /* XXX fix all this */
     *specdFlags |= SPECD_UID | SPECD_GID | SPECD_FILEMODE | SPECD_DIRMODE;
+    rc = RPMRC_OK;
+
+exit:
+    free(q);
+    if (rc != RPMRC_OK) {
+	fl->processingFailed = 1;
+    }
     
-    return 0;
+    return rc;
 }
 
 /**
