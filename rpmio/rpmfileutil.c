@@ -269,50 +269,41 @@ exit:
 
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
 {
-    char * d, * de;
-    int created = 0;
+    char *d, *de;
     int rc;
 
-    if (path == NULL)
+    if (path == NULL || path[0] != '/')
 	return -1;
-    d = alloca(strlen(path)+2);
-    de = stpcpy(d, path);
-    de[1] = '\0';
-    for (de = d; *de != '\0'; de++) {
+    d = rstrcat(NULL, path);
+    if (d[strlen(d)-1] != '/') {
+	rstrcat(&d,"/");
+    }
+    de = d;
+    for (;(de=strchr(de+1,'/'));) {
 	struct stat st;
-	char savec;
-
-	while (*de && *de != '/') de++;
-	savec = de[1];
-	de[1] = '\0';
-
+	*de = '\0';
 	rc = stat(d, &st);
 	if (rc) {
-	    switch(errno) {
-	    default:
-		return errno;
-		break;
-	    case ENOENT:
-		break;
-	    }
+	    if (errno != ENOENT)
+		goto exit;
 	    rc = mkdir(d, mode);
 	    if (rc)
-		return errno;
-	    created = 1;
+		goto exit;
+	    rpmlog(RPMLOG_DEBUG, "created directory(s) %s mode 0%o\n", path, mode);
 	    if (!(uid == (uid_t) -1 && gid == (gid_t) -1)) {
 		rc = chown(d, uid, gid);
 		if (rc)
-		    return errno;
+		    goto exit;
 	    }
 	} else if (!S_ISDIR(st.st_mode)) {
-	    return ENOTDIR;
+	    rc = ENOTDIR;
+	    goto exit;
 	}
-	de[1] = savec;
+	*de = '/';
     }
     rc = 0;
-    if (created)
-	rpmlog(RPMLOG_DEBUG, "created directory(s) %s mode 0%o\n",
-			path, mode);
+exit:
+    free(d);
     return rc;
 }
 
