@@ -288,10 +288,9 @@ rpmOpenDB(PyObject * self, PyObject * args, PyObject * kwds) {
 
 	Py_DECREF(o);
 	/* PyErr_SetString should take varargs... */
-	errsize = strlen(errmsg) + *root == '\0' ? 15 /* "/var/lib/rpm" */ : strlen(root);
-	errstr = alloca(errsize);
-	snprintf(errstr, errsize, errmsg, *root == '\0' ? "/var/lib/rpm" : root);
+	rasprintf(&errstr, errmsg, *root == '\0' ? "/var/lib/rpm" : root);
 	PyErr_SetString(pyrpmError, errstr);
+	free(errstr);
 	return NULL;
     }
 
