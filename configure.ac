@@ -52,20 +52,6 @@ export CFLAGS
 
 AC_SYS_LARGEFILE
 
-AC_CHECK_HEADER([stdarg.h])
-AC_MSG_CHECKING([for va_copy])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <stdarg.h>
-void foo(int i, ...) {
-  va_list ap, aq;
-  va_start(ap, i);
-  va_copy(aq,ap);
-  va_end(aq);
-}]], [[
-  foo(1,2,3,4);
-]])],[ac_cv_va_copy=yes],[ac_cv_va_copy=no])
-AC_MSG_RESULT([$ac_cv_va_copy])
-
 dnl
 dnl This now uses libtool. Put
 dnl	LDFLAGS_STATIC="-all"
