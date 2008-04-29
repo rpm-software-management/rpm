@@ -1970,7 +1970,7 @@ static const char * myTagName(headerTagTableEntry tbl, int val)
 static int myTagValue(headerTagTableEntry tbl, const char * name)
 {
     for (; tbl->name != NULL; tbl++) {
-	if (!rstrcasecmp(tbl->name, name))
+	if (!rstrcasecmp(tbl->name + sizeof("RPMTAG"), name))
 	    return tbl->val;
     }
     return 0;
@@ -1985,6 +1985,7 @@ static int myTagValue(headerTagTableEntry tbl, const char * name)
  */
 static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 {
+    const char *tagname = name;
     headerSprintfExtension ext;
     sprintfTag stag = (token->type == PTOK_COND
 	? &token->u.cond.tag : &token->u.tag);
@@ -1994,15 +1995,13 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     stag->extNum = 0;
     stag->tag = -1;
 
-    if (!strcmp(name, "*")) {
+    if (!strcmp(tagname, "*")) {
 	stag->tag = -2;
 	goto bingo;
     }
 
-    if (strncmp("RPMTAG_", name, sizeof("RPMTAG_")-1)) {
-	char * t = alloca(strlen(name) + sizeof("RPMTAG_"));
-	(void) stpcpy( stpcpy(t, "RPMTAG_"), name);
-	name = t;
+    if (strncmp("RPMTAG_", tagname, sizeof("RPMTAG_")-1) == 0) {
+	tagname += sizeof("RPMTAG");
     }
 
     /* Search extensions for specific tag override. */
@@ -2011,7 +2010,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
-	if (!rstrcasecmp(ext->name, name)) {
+	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
 	    stag->ext = ext->u.tagFunction;
 	    stag->extNum = ext - hsa->exts;
 	    goto bingo;
@@ -2019,7 +2018,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     }
 
     /* Search tag names. */
-    stag->tag = myTagValue(hsa->tags, name);
+    stag->tag = myTagValue(hsa->tags, tagname);
     if (stag->tag != 0)
 	goto bingo;
 
