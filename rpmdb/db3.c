@@ -1065,24 +1065,16 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    if (rc == 0) {
-		const char * dbfullpath;
+		char * fullpath;
 		const char * dbpath;
-		char * t;
-		int nb;
+		fullpath = rpmGetPath(dbhome, "/", dbfile ? dbfile : "", NULL);
 
-		nb = strlen(dbhome);
-		if (dbfile)	nb += 1 + strlen(dbfile);
-		dbfullpath = t = alloca(nb + 1);
-
-		t = stpcpy(t, dbhome);
-		if (dbfile)
-		    t = stpcpy( stpcpy( t, "/"), dbfile);
 #ifdef	HACK	/* XXX necessary to support dbsubfile */
 		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
-			? dbfullpath : dbfile;
+			? fullpath : dbfile;
 #else
 		dbpath = (!dbi->dbi_temporary)
-			? dbfullpath : dbfile;
+			? fullpath : dbfile;
 #endif
 
 		rc = (db->open)(db, txnid, dbpath, dbsubfile,
@@ -1094,6 +1086,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;
 		}
+		free(fullpath);
 	    }
 
 	    /* XXX return rc == errno without printing */
