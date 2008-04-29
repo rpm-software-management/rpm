@@ -1051,14 +1051,14 @@ int rpmtsOrder(rpmts ts)
     tsortInfo tsi_next;
     rpmalKey * ordering;
     int orderingCount = 0;
-    unsigned char * selected = alloca(sizeof(*selected) * (ts->orderCount + 1));
+    unsigned char *selected = xmalloc(sizeof(*selected) * (ts->orderCount + 1));
     int loopcheck;
     rpmte * newOrder;
     int newOrderCount = 0;
     orderListIndex orderList;
     int numOrderList;
     int npeer = 128;	/* XXX more than deep enough for now. */
-    int * peer = memset(alloca(npeer*sizeof(*peer)), 0, (npeer*sizeof(*peer)));
+    int *peer = xcalloc(npeer, sizeof(*peer));
     int nrescans = 10;
     int _printed = 0;
     char deptypechar;
@@ -1069,6 +1069,7 @@ int rpmtsOrder(rpmts ts)
     int breadth;
     int qlen;
     int i, j;
+    int rc;
 
     /*
      * XXX FIXME: this gets needlesly called twice on normal usage patterns,
@@ -1394,7 +1395,8 @@ rescan:
 	/* Return no. of packages that could not be ordered. */
 	rpmlog(RPMLOG_ERR, _("rpmtsOrder failed, %d elements remain\n"),
 			loopcheck);
-	return loopcheck;
+	rc = loopcheck;
+	goto exit;
     }
 
     /* Clean up tsort remnants (if any). */
@@ -1462,12 +1464,16 @@ assert(newOrderCount == ts->orderCount);
     ts->order = newOrder;
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
+    rc = 0;
 
+exit:
     freeBadDeps();
+    free(selected);
+    free(peer);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
-    return 0;
+    return rc;
 }
 
 int rpmtsCheck(rpmts ts)
