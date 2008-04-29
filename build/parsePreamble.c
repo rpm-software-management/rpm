@@ -71,28 +71,32 @@ static int parseSimplePart(const char *line, char **name, int *flag)
 {
     char *tok;
     char *linebuf = xstrdup(line);
+    int rc;
 
     /* Throw away the first token (the %xxxx) */
     (void)strtok(linebuf, " \t\n");
     *name = NULL;
 
     if (!(tok = strtok(NULL, " \t\n"))) {
-	free(linebuf);
-	return 0;
+	rc = 0;
+	goto exit;
     }
     
     if (!strcmp(tok, "-n")) {
 	if (!(tok = strtok(NULL, " \t\n"))) {
-	    free(linebuf);
-	    return 1;
+	    rc = 1;
+	    goto exit;
 	}
 	*flag = PART_NAME;
     } else {
 	*flag = PART_SUBNAME;
     }
     *name = xstrdup(tok);
+    rc = strtok(NULL, " \t\n") ? 1 : 0;
 
-    return (strtok(NULL, " \t\n")) ? 1 : 0;
+exit:
+    free(linebuf);
+    return rc;
 }
 
 /**
