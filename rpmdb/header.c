@@ -2962,16 +2962,16 @@ static char * dayFormat(rpmTagType type, rpm_constdata_t data,
 static char * shescapeFormat(rpmTagType type, rpm_constdata_t data, 
 		char * formatPrefix, size_t padding,int element)
 {
-    char * result, * dst, * src, * buf;
+    char * result, * dst, * src;
 
     if (type == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
 	sprintf(result, formatPrefix, *((const int32_t *) data));
     } else {
-	buf = alloca(strlen(data) + padding + 2);
+	char *buf = NULL;
 	strcat(formatPrefix, "s");
-	sprintf(buf, formatPrefix, data);
+	rasprintf(&buf, formatPrefix, data);
 
 	result = dst = xmalloc(strlen(buf) * 4 + 3);
 	*dst++ = '\'';
@@ -2987,7 +2987,7 @@ static char * shescapeFormat(rpmTagType type, rpm_constdata_t data,
 	}
 	*dst++ = '\'';
 	*dst = '\0';
-
+	free(buf);
     }
 
     return result;
