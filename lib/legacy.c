@@ -14,8 +14,6 @@
 
 #include "debug.h"
 
-#define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
-
 int _noDirTokens = 0;
 
 static int dncmp(const void * a, const void * b)
