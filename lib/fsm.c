@@ -827,17 +827,18 @@ static int writeFile(FSM_t fsm, int writeData)
     }
 
     if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
-	fsm->path = NULL;
+	char *p = NULL;
 	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
-		rstrcat(&fsm->path, ".");
-	rstrscat(&fsm->path, fsm->dirName, fsm->baseName, NULL);
+		rstrcat(&p, ".");
+	rstrscat(&p, fsm->dirName, fsm->baseName, NULL);
+	fsm->path = p;
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
 	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]));
     }
 
     rc = fsmNext(fsm, FSM_HWRITE);
-    free(fsm->path);
+    _constfree(fsm->path);
     fsm->path = path;
     if (rc) goto exit;
 
@@ -1901,7 +1902,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    (void) fsmNext(fsm, FSM_UNLINK);
 	    else
 		    rc = CPIOERR_UNLINK_FAILED;
-	    free(fsm->path);
+	    _constfree(fsm->path);
 	    fsm->path = fsm->opath;
 	    fsm->opath = NULL;
 	    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
