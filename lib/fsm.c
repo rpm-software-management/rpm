@@ -1890,19 +1890,18 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 	}
 	if (S_ISREG(st->st_mode)) {
-	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
-	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
 	    /*
 	     * XXX HP-UX (and other os'es) don't permit unlink on busy
 	     * XXX files.
 	     */
 	    fsm->opath = fsm->path;
-	    fsm->path = path;
+	    fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
 	    rc = fsmNext(fsm, FSM_RENAME);
 	    if (!rc)
 		    (void) fsmNext(fsm, FSM_UNLINK);
 	    else
 		    rc = CPIOERR_UNLINK_FAILED;
+	    free(fsm->path);
 	    fsm->path = fsm->opath;
 	    fsm->opath = NULL;
 	    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
@@ -1954,16 +1953,17 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_RENAME:
 	rc = rename(fsm->opath, fsm->path);
-#if defined(ETXTBSY)
+#if defined(ETXTBSY) && defined(__HPUX__)
 	if (rc && errno == ETXTBSY) {
-	    char * path = alloca(strlen(fsm->path) + sizeof("-RPMDELETE"));
-	    (void) stpcpy( stpcpy(path, fsm->path), "-RPMDELETE");
+	    char *path = NULL;
+	    rstrscat(&path, fsm->path, "-RPMDELETE", NULL);
 	    /*
 	     * XXX HP-UX (and other os'es) don't permit rename to busy
 	     * XXX files.
 	     */
 	    rc = rename(fsm->path, path);
 	    if (!rc) rc = rename(fsm->opath, fsm->path);
+	    free(path);
 	}
 #endif
 	if (_fsm_debug && (stage & FSM_SYSCALL))
