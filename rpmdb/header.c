@@ -1589,12 +1589,14 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     }
 
     if (!entry) {
-	strArray = alloca(sizeof(*strArray) * (langNum + 1));
+	int rc;
+	strArray = xmalloc(sizeof(*strArray) * (langNum + 1));
 	for (i = 0; i < langNum; i++)
 	    strArray[i] = "";
 	strArray[langNum] = string;
-	return headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, 
-				langNum + 1);
+	rc = headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, langNum + 1);
+	free(strArray);
+	return rc;
     } else if (langNum >= entry->info.count) {
 	ghosts = langNum - entry->info.count;
 	
