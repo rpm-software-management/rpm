@@ -152,7 +152,7 @@ static struct rpmvarValue values[RPMVAR_NUM];
 static int defaultsInitialized = 0;
 
 /* prototypes */
-static rpmRC doReadRC( FD_t fd, const char * urlfn);
+static rpmRC doReadRC(const char * urlfn);
 
 static void rpmSetVarArch(int var, const char * val,
 		const char * arch);
@@ -497,36 +497,20 @@ static void setDefaults(void)
 }
 
 /* FIX: se usage inconsistent, W2DO? */
-static rpmRC doReadRC( FD_t fd, const char * urlfn)
+static rpmRC doReadRC(const char * urlfn)
 {
     char *s;
-    char *se, *next;
+    char *se, *next, *buf = NULL, *fn;
     int linenum = 0;
     struct rpmOption searchOption, * option;
-    int rc;
+    rpmRC rc = RPMRC_FAIL;
 
-    /* XXX really need rc = Slurp(fd, const char * filename, char ** buf) */
-  { off_t size = fdSize(fd);
-    size_t nb = (size >= 0 ? size : (8*BUFSIZ - 2));
-    if (nb == 0) {
-	(void) Fclose(fd);
-	return RPMRC_OK;
+    fn = rpmGetPath(urlfn, NULL);
+    if (rpmioSlurp(fn, (uint8_t **) &buf, NULL)) {
+	goto exit;
     }
-    next = alloca(nb + 2);
-    next[0] = '\0';
-    rc = Fread(next, sizeof(*next), nb, fd);
-    if (Ferror(fd) || (size > 0 && rc != nb)) {	/* XXX Feof(fd) */
-	rpmlog(RPMLOG_ERR, _("Failed to read %s: %s.\n"), urlfn,
-		 Fstrerror(fd));
-	rc = RPMRC_FAIL;
-    } else
-	rc = RPMRC_OK;
-    (void) Fclose(fd);
-    if (rc) return rc;
-    next[nb] = '\n';
-    next[nb + 1] = '\0';
-  }
-
+	
+    next = buf;
     while (*next != '\0') {
 	linenum++;
 
@@ -554,8 +538,8 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 
 	if (*se != ':') {
 	    rpmlog(RPMLOG_ERR, _("missing ':' (found 0x%02x) at %s:%d\n"),
-		     (unsigned)(0xff & *se), urlfn, linenum);
-	    return RPMRC_FAIL;
+		     (unsigned)(0xff & *se), fn, linenum);
+	    goto exit;
 	}
 	*se++ = '\0';	/* terminate keyword or option, point to value */
 	while (*se && risspace(*se)) se++;
@@ -567,19 +551,16 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 
 	if (option) {	/* For configuration variables  ... */
 	    const char *arch, *val;
-	    char *fn;
 
-	    arch = val = fn = NULL;
+	    arch = val = NULL;
 	    if (*se == '\0') {
 		rpmlog(RPMLOG_ERR, _("missing argument for %s at %s:%d\n"),
-		      option->name, urlfn, linenum);
-		return RPMRC_FAIL;
+		      option->name, fn, linenum);
+		goto exit;
 	    }
 
 	    switch (option->var) {
 	    case RPMVAR_INCLUDE:
-	      {	FD_t fdinc;
-
 		s = se;
 		while (*se && !risspace(*se)) se++;
 		if (*se != '\0') *se++ = '\0';
@@ -588,26 +569,14 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 		rpmRebuildTargetVars(NULL, NULL);
 #endif
 
-		fn = rpmGetPath(s, NULL);
-		if (fn == NULL || *fn == '\0') {
-		    rpmlog(RPMLOG_ERR, _("%s expansion failed at %s:%d \"%s\"\n"),
-			option->name, urlfn, linenum, s);
-		    fn = _free(fn);
-		    return RPMRC_FAIL;
-		}
-
-		fdinc = Fopen(fn, "r.fpio");
-		if (fdinc == NULL || Ferror(fdinc)) {
-		    rpmlog(RPMLOG_ERR, _("cannot open %s at %s:%d: %s\n"),
-			fn, urlfn, linenum, Fstrerror(fdinc));
-		    rc = RPMRC_FAIL;
+		if (doReadRC(s)) {
+		    rpmlog(RPMLOG_ERR, _("cannot open %s at %s:%d: %m\n"),
+			s, fn, linenum);
+		    goto exit;
 		} else {
-		    rc = doReadRC(fdinc, fn);
+		    continue;	/* XXX don't save include value as var/macro */
 		}
-		fn = _free(fn);
-		if (rc) return rc;
-		continue;	/* XXX don't save include value as var/macro */
-	      }	break;
+	      	break;
 	    default:
 		break;
 	    }
@@ -618,16 +587,16 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 		if (*se == '\0') {
 		    rpmlog(RPMLOG_ERR,
 				_("missing architecture for %s at %s:%d\n"),
-			  	option->name, urlfn, linenum);
-		    return RPMRC_FAIL;
+			  	option->name, fn, linenum);
+		    goto exit;
 		}
 		*se++ = '\0';
 		while (*se && risspace(*se)) se++;
 		if (*se == '\0') {
 		    rpmlog(RPMLOG_ERR,
 				_("missing argument for %s at %s:%d\n"),
-			  	option->name, urlfn, linenum);
-		    return RPMRC_FAIL;
+			  	option->name, fn, linenum);
+		    goto exit;
 		}
 	    }
 	
@@ -663,34 +632,40 @@ static rpmRC doReadRC( FD_t fd, const char * urlfn)
 		if (*rest == '_') rest++;
 
 		if (!strcmp(rest, "compat")) {
-		    if (machCompatCacheAdd(se, urlfn, linenum,
+		    if (machCompatCacheAdd(se, fn, linenum,
 						&tables[i].cache))
-			return 1;
+			goto exit;
 		    gotit = 1;
 		} else if (tables[i].hasTranslate &&
 			   !strcmp(rest, "translate")) {
 		    if (addDefault(&tables[i].defaults,
 				   &tables[i].defaultsLength,
-				   se, urlfn, linenum))
-			return 1;
+				   se, fn, linenum))
+			goto exit;
 		    gotit = 1;
 		} else if (tables[i].hasCanon &&
 			   !strcmp(rest, "canon")) {
 		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
-				 se, urlfn, linenum))
-			return 1;
+				 se, fn, linenum))
+			goto exit;
 		    gotit = 1;
 		}
 	    }
 
 	    if (!gotit) {
 		rpmlog(RPMLOG_ERR, _("bad option '%s' at %s:%d\n"),
-			    s, urlfn, linenum);
+			    s, fn, linenum);
+		goto exit;
 	    }
 	}
     }
+    rc = RPMRC_OK;
 
-    return RPMRC_OK;
+exit:
+    free(fn);
+    free(buf);
+
+    return rc;
 }
 
 
@@ -1652,20 +1627,15 @@ static rpmRC rpmReadRC(const char * rcfiles)
 
     /* Read each file in rcfiles. */
     for (p = files; *p; p++) {
-	FD_t fd;
-	
-	/* Read another rcfile */
-	fd = Fopen(*p, "r.fpio");
-	if (fd == NULL || Ferror(fd)) {
-	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	    if (rcfiles == defrcfiles && *p != files)
+	/* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
+	if (access(*p, R_OK) != 0) {
+	    if (rcfiles == defrcfiles && p != files)
 		continue;
-	    rpmlog(RPMLOG_ERR, _("Unable to open %s for reading: %s.\n"),
-		 *p, Fstrerror(fd));
+	    rpmlog(RPMLOG_ERR, _("Unable to open %s for reading: %m.\n"), *p);
 	    goto exit;
 	    break;
 	} else {
-	    rc = doReadRC(fd, *p);
+	    rc = doReadRC(*p);
 	}
     }
     rc = RPMRC_OK;
