@@ -14,8 +14,6 @@
 
 #include "debug.h"
 
-#define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
-
 int _noDirTokens = 0;
 
 static int dncmp(const void * a, const void * b)
@@ -32,7 +30,7 @@ void compressFilelist(Header h)
     HRE_t hre = (HRE_t)headerRemoveEntry;
     HFD_t hfd = headerFreeData;
     char ** fileNames;
-    const char ** dirNames;
+    char ** dirNames;
     const char ** baseNames;
     uint32_t * dirIndexes;
     rpmTagType fnt;
@@ -63,7 +61,7 @@ void compressFilelist(Header h)
     if (fileNames[0][0] != '/') {
 	/* HACK. Source RPM, so just do things differently */
 	dirIndex = 0;
-	dirNames[dirIndex] = "";
+	dirNames[dirIndex] = xstrdup("");
 	for (i = 0; i < count; i++) {
 	    dirIndexes[i] = dirIndex;
 	    baseNames[i] = fileNames[i];
@@ -72,7 +70,7 @@ void compressFilelist(Header h)
     }
 
     for (i = 0; i < count; i++) {
-	const char ** needle;
+	char ** needle;
 	char savechar;
 	char * baseName;
 	size_t len;
@@ -86,9 +84,8 @@ void compressFilelist(Header h)
 	*baseName = '\0';
 	if (dirIndex < 0 ||
 	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
-	    char *s = alloca(len + 1);
-	    memcpy(s, fileNames[i], len + 1);
-	    s[len] = '\0';
+	    char *s = xmalloc(len + 1);
+	    rstrlcpy(s, fileNames[i], len + 1);
 	    dirIndexes[i] = ++dirIndex;
 	    dirNames[dirIndex] = s;
 	} else
@@ -108,6 +105,9 @@ exit:
     }
 
     fileNames = hfd(fileNames, fnt);
+    for (i = 0; i <= dirIndex; i++) {
+	free(dirNames[i]);
+    }
     free(dirNames);
     free(baseNames);
     free(dirIndexes);
