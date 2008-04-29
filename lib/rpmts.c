@@ -180,8 +180,9 @@ static int isArch(const char * arch)
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
 {
-    rpmdbMatchIterator mi;
+    rpmdbMatchIterator mi = NULL;
     const char * arch = NULL;
+    char *tmp = NULL;
     int xx;
 
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
@@ -189,14 +190,14 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 
     /* Parse out "N(EVR).A" tokens from a label key. */
     if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
-	const char * s = keyp;
-	const char *se;
+	const char *se, *s = keyp;
+	char *t;
 	size_t slen = strlen(s);
-	char *t = alloca(slen+1);
 	int level = 0;
 	int c;
 
-	keyp = t;
+	tmp = xmalloc(slen+1);
+	keyp = t = tmp;
 	while ((c = *s++) != '\0') {
 	    switch (c) {
 	    default:
@@ -206,7 +207,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		/* XXX Fail if nested parens. */
 		if (level++ != 0) {
 		    rpmlog(RPMLOG_ERR, _("extra '(' in package label: %s\n"), (const char*)keyp);
-		    return NULL;
+		    goto exit;
 		}
 		/* Parse explicit epoch. */
 		for (se = s; *se && risdigit(*se); se++)
@@ -224,7 +225,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 		/* XXX Fail if nested parens. */
 		if (--level != 0) {
 		    rpmlog(RPMLOG_ERR, _("missing '(' in package label: %s\n"), (const char*)keyp);
-		    return NULL;
+		    goto exit;
 		}
 		/* Don't copy trailing ')' */
 		break;
@@ -232,7 +233,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	}
 	if (level) {
 	    rpmlog(RPMLOG_ERR, _("missing ')' in package label: %s\n"), (const char*)keyp);
-	    return NULL;
+	    goto exit;
 	}
 	*t = '\0';
 	t = (char *) keyp;
@@ -253,6 +254,10 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
     /* Select specified arch only. */
     if (arch != NULL)
 	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
+
+exit:
+    free(tmp);
+
     return mi;
 }
 
