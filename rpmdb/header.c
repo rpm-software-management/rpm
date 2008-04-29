@@ -1221,42 +1221,6 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
 {
     const char *fe;
 
-
-#if 0
-  { const char *s, *ll, *CC, *EE, *dd;
-    char *lbuf, *t.
-
-    /* Copy the buffer and parse out components on the fly. */
-    lbuf = alloca(le - l + 1);
-    for (s = l, ll = t = lbuf; *s; s++, t++) {
-	switch (*s) {
-	case '_':
-	    *t = '\0';
-	    CC = t + 1;
-	    break;
-	case '.':
-	    *t = '\0';
-	    EE = t + 1;
-	    break;
-	case '@':
-	    *t = '\0';
-	    dd = t + 1;
-	    break;
-	default:
-	    *t = *s;
-	    break;
-	}
-    }
-
-    if (ll)	/* ISO language should be lower case */
-	for (t = ll; *t; t++)	*t = tolower(*t);
-    if (CC)	/* ISO country code should be upper case */
-	for (t = CC; *t; t++)	*t = toupper(*t);
-
-    /* There are a total of 16 cases to attempt to match. */
-  }
-#endif
-
     /* First try a complete match. */
     if (strlen(td) == (le-l) && !strncmp(td, l, (le - l)))
 	return 1;
