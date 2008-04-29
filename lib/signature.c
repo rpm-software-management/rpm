@@ -73,7 +73,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
     char *pgpbin = rpmGetPath("%{?_pgpbin}", NULL);
 
     if (saved_pgp_version == PGP_UNKNOWN) {
-	char *pgpvbin;
+	char *pgpvbin = NULL;
 	struct stat st;
 
 	if (!(pgpbin && pgpbin[0] != '\0')) {
@@ -81,8 +81,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	    saved_pgp_version = -1;
 	    return NULL;
 	}
-	pgpvbin = (char *)alloca(strlen(pgpbin) + sizeof("v"));
-	(void)stpcpy(stpcpy(pgpvbin, pgpbin), "v");
+	rasprintf(&pgpvbin, "%sv", pgpbin);
 
 	if (stat(pgpvbin, &st) == 0)
 	    saved_pgp_version = PGP_5;
@@ -90,6 +89,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
 	    saved_pgp_version = PGP_2;
 	else
 	    saved_pgp_version = PGP_NOTDETECTED;
+	free(pgpvbin);
     }
 
     if (pgpVer && pgpbin)
