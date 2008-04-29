@@ -629,7 +629,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 {
     Header h = NULL;
     FD_t fd = NULL;
-    uint8_t * pkt;
+    uint8_t * pkt = NULL;
     size_t pktlen;
     char * fn = NULL;
     char * SHA1 = NULL;
@@ -728,9 +728,10 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 exit:
     if (fn) {
 	(void) unlink(fn);
-	fn = _free(fn);
+	free(fn);
     }
-    SHA1 = _free(SHA1);
+    free(pkt);
+    free(SHA1);
     h = headerFree(h);
     if (fd != NULL) (void) Fclose(fd);
     return ret;
@@ -740,7 +741,7 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		const char * passPhrase)
 {
     struct stat st;
-    uint8_t * pkt;
+    uint8_t * pkt = NULL;
     size_t pktlen;
     int ret = -1;	/* assume failure. */
 
@@ -792,6 +793,7 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
     case RPMSIGTAG_PAYLOADSIZE:
 	break;
     }
+    free(pkt);
 
     return ret;
 }
