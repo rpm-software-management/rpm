@@ -234,9 +234,10 @@ void legacyRetrofit(Header h)
      */
     if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *) &prefix, NULL))
     {
-	const char * nprefix = stripTrailingChar(alloca_strdup(prefix), '/');
+	char * nprefix = stripTrailingChar(xstrdup(prefix), '/');
 	(void) headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 		&nprefix, 1); 
+	free(nprefix);
     }
 
     /*
