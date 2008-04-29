@@ -16,16 +16,14 @@
 int rpmvercmp(const char * a, const char * b)
 {
     char oldch1, oldch2;
-    char * str1, * str2;
+    char abuf[strlen(a)+1], bbuf[strlen(b)+1];
+    char *str1 = abuf, *str2 = bbuf;
     char * one, * two;
     int rc;
     int isnum;
 
     /* easy comparison to see if versions are identical */
     if (!strcmp(a, b)) return 0;
-
-    str1 = alloca(strlen(a) + 1);
-    str2 = alloca(strlen(b) + 1);
 
     strcpy(str1, a);
     strcpy(str2, b);
