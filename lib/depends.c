@@ -1089,7 +1089,7 @@ int rpmtsOrder(rpmts ts)
 	if (oType & TR_REMOVED)
 	    numOrderList += ts->numRemovedPackages;
      }
-    ordering = alloca(sizeof(*ordering) * (numOrderList + 1));
+    ordering = xmalloc(sizeof(*ordering) * (numOrderList + 1));
     loopcheck = numOrderList;
     tsbytes = 0;
 
@@ -1470,6 +1470,7 @@ exit:
     freeBadDeps();
     free(selected);
     free(peer);
+    free(ordering);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
