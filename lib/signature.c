@@ -484,7 +484,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 		uint8_t ** pktp, size_t * pktlenp,
 		const char * passPhrase)
 {
-    char * sigfile = alloca(strlen(file)+sizeof(".sig"));
+    char * sigfile = NULL;
     int pid, status;
     int inpipe[2];
     FILE * fpipe;
@@ -493,9 +493,9 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     char *const *av;
     pgpDig dig = NULL;
     pgpDigParams sigp = NULL;
-    int rc;
+    int rc = 1; /* assume failure */
 
-    (void) stpcpy( stpcpy(sigfile, file), ".sig");
+    rasprintf(&sigfile, "%s.sig", file);
 
     addMacro(NULL, "__plaintext_filename", NULL, file, -1);
     addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
@@ -537,14 +537,13 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
-	return 1;
+	goto exit;
     }
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
-	if (sigfile) (void) unlink(sigfile);  /* Just in case */
 	rpmlog(RPMLOG_ERR, _("gpg failed to write signature\n"));
-	return 1;
+	goto exit;
     }
 
     *pktlenp = st.st_size;
@@ -557,13 +556,12 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	fd = Fopen(sigfile, "r.fdio");
 	if (fd != NULL && !Ferror(fd)) {
 	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
-	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
 	if (rc != *pktlenp) {
 	    *pktp = _free(*pktp);
 	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
-	    return 1;
+	    goto exit;
 	}
     }
 
@@ -609,8 +607,13 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     }
 
     dig = pgpFreeDig(dig);
+    rc = 0;
 
-    return 0;
+exit:
+    (void) unlink(sigfile);
+    free(sigfile);
+
+    return rc;
 }
 
 /**
