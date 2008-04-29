@@ -1628,8 +1628,8 @@ void rpmFreeRpmrc(void)
  */
 static rpmRC rpmReadRC(const char * rcfiles)
 {
-    char *myrcfiles, *r, *re;
-    int rc;
+    ARGV_t p, globs = NULL, files = NULL;
+    rpmRC rc = RPMRC_FAIL;
 
     if (!defaultsInitialized) {
 	setDefaults();
@@ -1639,67 +1639,40 @@ static rpmRC rpmReadRC(const char * rcfiles)
     if (rcfiles == NULL)
 	rcfiles = defrcfiles;
 
+    /* Expand any globs in rcfiles. Missing files are ok here. */
+    argvSplit(&globs, rcfiles, ":");
+    for (p = globs; *p; p++) {
+	ARGV_t av = NULL;
+	if (rpmGlob(*p, NULL, &av) == 0) {
+	    argvAppend(&files, av);
+	    argvFree(av);
+	}
+    }
+    argvFree(globs);
+
     /* Read each file in rcfiles. */
-    rc = RPMRC_OK;
-    for (r = myrcfiles = xstrdup(rcfiles); r && *r != '\0'; r = re) {
-	char fn[4096];
+    for (p = files; *p; p++) {
 	FD_t fd;
-
-	/* Get pointer to rest of files */
-	for (re = r; (re = strchr(re, ':')) != NULL; re++) {
-	    if (!(re[1] == '/' && re[2] == '/'))
-		break;
-	}
-	if (re && *re == ':')
-	    *re++ = '\0';
-	else
-	    re = r + strlen(r);
-
-	/* Expand ~/ to $HOME/ */
-	fn[0] = '\0';
-	if (r[0] == '~' && r[1] == '/') {
-	    const char * home = getenv("HOME");
-	    if (home == NULL) {
-	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-		if (rcfiles == defrcfiles && myrcfiles != r)
-		    continue;
-		rpmlog(RPMLOG_ERR, _("Cannot expand %s\n"), r);
-		rc = RPMRC_FAIL;
-		break;
-	    }
-	    if (strlen(home) > (sizeof(fn) - strlen(r))) {
-		rpmlog(RPMLOG_ERR, _("Cannot read %s, HOME is too large.\n"),
-				r);
-		rc = RPMRC_FAIL;
-		break;
-	    }
-	    strcpy(fn, home);
-	    r++;
-	}
-	strncat(fn, r, sizeof(fn) - (strlen(fn) + 1));
-	fn[sizeof(fn)-1] = '\0';
-
+	
 	/* Read another rcfile */
-	fd = Fopen(fn, "r.fpio");
+	fd = Fopen(*p, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
 	    /* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	    if (rcfiles == defrcfiles && myrcfiles != r)
+	    if (rcfiles == defrcfiles && *p != files)
 		continue;
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s for reading: %s.\n"),
-		 fn, Fstrerror(fd));
-	    rc = RPMRC_FAIL;
+		 *p, Fstrerror(fd));
+	    goto exit;
 	    break;
 	} else {
-	    rc = doReadRC(fd, fn);
+	    rc = doReadRC(fd, *p);
 	}
- 	if (rc) break;
     }
-    myrcfiles = _free(myrcfiles);
-    if (rc)
-	return rc;
-
+    rc = RPMRC_OK;
     rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
 
+exit:
+    argvFree(files);
     return rc;
 }
 
