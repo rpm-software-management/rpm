@@ -955,26 +955,19 @@ const char * rpmtsRootDir(rpmts ts)
 void rpmtsSetRootDir(rpmts ts, const char * rootDir)
 {
     if (ts != NULL) {
-	size_t rootLen;
-
 	ts->rootDir = _free(ts->rootDir);
 
 	if (rootDir == NULL) {
 #ifndef	DYING
+	    /* XXX this smells funny, shouldn't it be "/" and not "" ? */
 	    ts->rootDir = xstrdup("");
 #endif
 	    return;
 	}
-	rootLen = strlen(rootDir);
 
-	/* Make sure that rootDir has trailing / */
-	if (!(rootLen && rootDir[rootLen - 1] == '/')) {
-	    char * t = alloca(rootLen + 2);
-	    *t = '\0';
-	    (void) stpcpy( stpcpy(t, rootDir), "/");
-	    rootDir = t;
-	}
-	ts->rootDir = xstrdup(rootDir);
+	/* Ensure clean path with a trailing slash */
+	ts->rootDir = rpmGetPath(rootDir, NULL);
+	rstrcat(&ts->rootDir, "/");
     }
 }
 
