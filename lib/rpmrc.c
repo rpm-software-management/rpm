@@ -34,6 +34,7 @@ const char * macrofiles =
 #ifndef MACROFILES
       RPMCONFIGDIR "/macros"
   ":" RPMCONFIGDIR "/platform/%{_target}/macros"
+  ":" RPMCONFIGDIR "/" RPMCANONVENDOR "/macros"
   ":" SYSCONFDIR "/rpm/macros.*"
   ":" SYSCONFDIR "/rpm/macros"
   ":" SYSCONFDIR "/rpm/%{_target}/macros"
