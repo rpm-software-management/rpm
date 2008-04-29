@@ -19,8 +19,6 @@
 
 #include "debug.h"
 
-#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
-
 #define	_FSM_DEBUG	0
 int _fsm_debug = _FSM_DEBUG;
 
@@ -825,24 +823,21 @@ static int writeFile(FSM_t fsm, int writeData)
 	rc = fsmUNSAFE(fsm, FSM_READLINK);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
-	symbuf = alloca_strdup(fsm->rdbuf);	/* XXX save readlink return. */
+	rstrcat(&symbuf, fsm->rdbuf);	/* XXX save readlink return. */
     }
 
     if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
-	int nb = strlen(fsm->dirName) + strlen(fsm->baseName) + sizeof(".");
-	char * t = alloca(nb);
-	*t = '\0';
-	fsm->path = t;
+	fsm->path = NULL;
 	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
-	    *t++ = '.';
-	t = stpcpy( stpcpy(t, fsm->dirName), fsm->baseName);
+		rstrcat(&fsm->path, ".");
+	rstrscat(&fsm->path, fsm->dirName, fsm->baseName, NULL);
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
-	fsm->path =
-	    (fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]);
+	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]));
     }
 
     rc = fsmNext(fsm, FSM_HWRITE);
+    free(fsm->path);
     fsm->path = path;
     if (rc) goto exit;
 
@@ -920,6 +915,7 @@ exit:
 	(void) fsmNext(fsm, FSM_RCLOSE);
     fsm->opath = opath;
     fsm->path = path;
+    free(symbuf);
     return rc;
 }
 
