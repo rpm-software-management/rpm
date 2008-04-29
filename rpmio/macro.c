@@ -1008,6 +1008,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     if (b) {
 	(void) expandT(mb, b, strlen(b));
     }
+    free(buf);
 }
 
 /**
