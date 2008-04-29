@@ -881,7 +881,9 @@ Header headerLoad(void * uh)
 		goto errxit;
 	    if (off) {
 		size_t nb = REGION_TAG_COUNT;
-		int32_t * stei = memcpy(alloca(nb), dataStart + off, nb);
+		int32_t stei[nb];
+		/* XXX Hmm, why the copy? */
+		memcpy(&stei, dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */
 		ril = rdl/sizeof(*pe);
 		if (hdrchkTags(ril) || hdrchkData(rdl))
