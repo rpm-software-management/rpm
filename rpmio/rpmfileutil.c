@@ -485,17 +485,18 @@ char * rpmGenPath(const char * urlroot, const char * urlmdir,
     }
 
     if (url && nurl > 0) {
-	char *t = strncpy(alloca(nurl+1), url, nurl);
+	char *t = rstrcat(NULL, url);
 	t[nurl] = '\0';
 	url = t;
     } else
-	url = "";
+	url = xstrdup("");
 
     result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
 
     xroot = _free(xroot);
     xmdir = _free(xmdir);
     xfile = _free(xfile);
+    _constfree(url);
     return result;
 }
 
