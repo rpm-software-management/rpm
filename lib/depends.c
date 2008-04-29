@@ -1463,9 +1463,6 @@ assert(newOrderCount == ts->orderCount);
     ts->orderAlloced = ts->orderCount;
     orderList = _free(orderList);
 
-#ifdef	DYING	/* XXX now done at the CLI level just before rpmtsRun(). */
-    rpmtsClean(ts);
-#endif
     freeBadDeps();
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
