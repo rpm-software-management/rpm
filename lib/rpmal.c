@@ -364,8 +364,8 @@ fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 	dirInfo die;
 	int dc = rpmfiDC(fi);
 	int dx;
-	int * dirMapping = alloca(sizeof(*dirMapping) * dc);
-	int * dirUnique = alloca(sizeof(*dirUnique) * dc);
+	int *dirMapping = xmalloc(sizeof(*dirMapping) * dc);
+	int *dirUnique = xmalloc(sizeof(*dirUnique) * dc);
 	const char * DN;
 	int origNumDirs;
 	int first;
@@ -477,6 +477,8 @@ fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie
 	al->dirs = xrealloc(al->dirs, al->numDirs * sizeof(*al->dirs));
 	if (origNumDirs != al->numDirs)
 	    qsort(al->dirs, al->numDirs, sizeof(*al->dirs), dieCompare);
+	free(dirUnique);
+	free(dirMapping);
     }
     fi = rpmfiUnlink(fi, RPMDBG_M("Files index (rpmalAdd)"));
 
