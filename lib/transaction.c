@@ -251,25 +251,27 @@ static int fpsCompare (const void * one, const void * two)
     size_t bdnlen = strlen(b->entry->dirName);
     size_t bsnlen = (b->subDir ? strlen(b->subDir) : 0);
     size_t bbnlen = strlen(b->baseName);
-    char * afn, * bfn, * t;
+    char *afn = NULL, *bfn = NULL;
     int rc = 0;
 
     if (adnlen == 1 && asnlen != 0) adnlen = 0;
     if (bdnlen == 1 && bsnlen != 0) bdnlen = 0;
 
-    afn = t = alloca(adnlen+asnlen+abnlen+2);
-    if (adnlen) t = stpcpy(t, a->entry->dirName);
-    *t++ = '/';
-    if (a->subDir && asnlen) t = stpcpy(t, a->subDir);
-    if (abnlen) t = stpcpy(t, a->baseName);
-    if (afn[0] == '/' && afn[1] == '/') afn++;
+    if (adnlen) rstrcat(&afn, a->entry->dirName);
+    rstrcat(&afn, "/");
+    if (a->subDir && asnlen) rstrcat(&afn, a->subDir);
+    if (abnlen) rstrcat(&afn, a->baseName);
+    if (afn[0] == '/' && afn[1] == '/') {
+	memmove(afn, afn+1, strlen(afn+1)+1);
+    }
 
-    bfn = t = alloca(bdnlen+bsnlen+bbnlen+2);
-    if (bdnlen) t = stpcpy(t, b->entry->dirName);
-    *t++ = '/';
-    if (b->subDir && bsnlen) t = stpcpy(t, b->subDir);
-    if (bbnlen) t = stpcpy(t, b->baseName);
-    if (bfn[0] == '/' && bfn[1] == '/') bfn++;
+    if (bdnlen) rstrcat(&bfn, b->entry->dirName);
+    rstrcat(&bfn, "/");
+    if (b->subDir && bsnlen) rstrcat(&bfn, b->subDir);
+    if (bbnlen) rstrcat(&bfn, b->baseName);
+    if (bfn[0] == '/' && bfn[1] == '/') {
+	memmove(bfn, bfn+1, strlen(bfn+1)+1);
+    }
 
     rc = strcmp(afn, bfn);
 if (_fps_debug)
@@ -282,6 +284,8 @@ ISROOT(b->entry->dirName),
 b->baseName,
 rc
 );
+    free(afn);
+    free(bfn);
 
     return rc;
 }
