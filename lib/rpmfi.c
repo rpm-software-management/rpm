@@ -602,7 +602,24 @@ const char * rpmfiTypeString(rpmfi fi)
     }
 }
 
-#define alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
+static char **duparray(char ** src, int size)
+{
+    char **dest = xmalloc((size+1) * sizeof(*dest));
+    for (int i = 0; i < size; i++) {
+	dest[i] = xstrdup(src[i]);
+    }
+    headerFreeData(src, RPM_STRING_ARRAY_TYPE);
+    return dest;
+}
+
+static void * freearray(char **array, int size)
+{
+    for (int i = 0; i < size; i++) {
+	free(array[i]);
+    }
+    free(array);
+    return NULL;
+}
 
 /**
  * Relocate files in header.
@@ -628,7 +645,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int numRelocations;
     const char ** validRelocations;
     rpmTagType validType;
-    const char ** baseNames;
+    char ** baseNames;
     char ** dirNames;
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
@@ -641,6 +658,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int nrelocated = 0;
     int fileAlloced = 0;
     char * fn = NULL;
+    int haveRelocatedBase = 0;
     int haveRelocatedFile = 0;
     int reldel = 0;
     int len;
@@ -908,9 +926,14 @@ dColors[j] |= fColors[i];
 		fnlen = te - fn;
 	    } else
 		te = fn + strlen(fn);
-	   	/* LCL: te != NULL here. */
-	    if (strcmp(baseNames[i], te)) /* basename changed too? */
-		baseNames[i] = alloca_strdup(te);
+	    if (strcmp(baseNames[i], te)) { /* basename changed too? */
+		if (!haveRelocatedBase) {
+		    baseNames = duparray(baseNames, fileCount);
+		    haveRelocatedBase = 1;
+		}
+		free(baseNames[i]);
+		baseNames[i] = xstrdup(te);
+	    }
 	    *te = '\0';			/* terminate new directory name */
 	}
 
@@ -930,14 +953,8 @@ dColors[j] |= fColors[i];
 
 	/* Creating new paths is a pita */
 	if (!haveRelocatedFile) {
-	    char ** newDirList;
-
+	    dirNames = duparray(dirNames, dirCount);
 	    haveRelocatedFile = 1;
-	    newDirList = xmalloc((dirCount + 1) * sizeof(*newDirList));
-	    for (j = 0; j < dirCount; j++)
-		newDirList[j] = xstrdup(dirNames[j]);
-	    dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
-	    dirNames = newDirList;
 	} else {
 	    dirNames = xrealloc(dirNames, 
 			       sizeof(*dirNames) * (dirCount + 1));
@@ -1007,18 +1024,15 @@ dColors[j] |= fColors[i];
 
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
+   	if (haveRelocatedBase) {
+	    baseNames = freearray(baseNames, fileCount);
+	}
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
 	xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &fi->bnl, &fi->fc);
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
-	/* 
- 	 * If we get here, dirNames has separately allocated strings.
- 	 * Free those now and let hfd() below free the array itself.
- 	 */
-	for (i = 0; i < dirCount; i++) {
-	    free(dirNames[i]);
-	}
+	dirNames = freearray(dirNames, dirCount);
 
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
 	xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &fi->dnl, &fi->dc);
@@ -1028,6 +1042,7 @@ dColors[j] |= fColors[i];
 	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fi->dil, NULL);
     }
 
+    /* If we did relocations, baseNames and dirNames might be NULL by now */
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
     dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
     free(fn);
