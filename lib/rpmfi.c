@@ -969,17 +969,11 @@ dColors[j] |= fColors[i];
 		continue;
 
 	    if (relocations[j].newPath) { /* Relocate the path */
-		const char * s = relocations[j].newPath;
-		char * t = xmalloc(strlen(s) + strlen(dirNames[i]) - len + 1);
-		size_t slen;
-
-		(void) stpcpy( stpcpy(t, s) , dirNames[i] + len);
-
+		char *t = NULL;
+		rstrscat(&t, relocations[j].newPath, (dirNames[i] + len), NULL);
 		/* Unfortunatly rpmCleanPath strips the trailing slash.. */
 		(void) rpmCleanPath(t);
-		slen = strlen(t);
-		t[slen] = '/';
-		t[slen+1] = '\0';
+		rstrcat(&t, "/");
 
 		if (actions)
 		    rpmlog(RPMLOG_DEBUG,
