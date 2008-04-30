@@ -682,7 +682,6 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
-AC_FUNC_ALLOCA
 AC_FUNC_VPRINTF
 dnl XXX don't want to re-enable code that's been unused for years at this
 dnl point, but should offer good performance improvements, check after

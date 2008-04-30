@@ -154,20 +154,6 @@ char *realpath(const char *path, char resolved_path []);
 # endif /* HAVE_NDIR_H */
 #endif /* HAVE_DIRENT_H */
 
-#ifdef __GNUC__
-# undef alloca
-# define alloca __builtin_alloca
-#else
-# ifdef HAVE_ALLOCA_H
-#  include <alloca.h>
-# else
-#  ifndef _AIX
-/* AIX alloca decl has to be the first thing in the file, bletch! */
-char *alloca ();
-#  endif
-# endif
-#endif
-
 #include <ctype.h>
 
 #if HAVE_SYS_MMAN_H

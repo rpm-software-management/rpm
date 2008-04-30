@@ -4,7 +4,7 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 EXTRA_DIST = \
-	alloca.c	basename.c	err.c		err.h \
+	basename.c	err.c		err.h \
 	error.c		error.h \
 	fakefork.c	fnmatch.c	fnmatch.h \
 	getcwd.c	getmntent.c	\
@@ -18,4 +18,4 @@ EXTRA_DIST = \
 noinst_LTLIBRARIES = libmisc.la
 
 libmisc_la_SOURCES =
-libmisc_la_LIBADD = @LTLIBOBJS@ @ALLOCA@
+libmisc_la_LIBADD = @LTLIBOBJS@
