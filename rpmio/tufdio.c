@@ -15,13 +15,11 @@
 extern int _url_debug;
 extern int _rpmio_debug;
 
-#define	alloca_strdup(_s)	strcpy(alloca(strlen(_s)+1), (_s))
-
 const char *tmpdir = "/tmp";
 const char *dio_xxxxxx = "/dio.XXXXXX";
-#define	DIO_XXXXXX	alloca_strdup(dio_xxxxxx)
+#define	DIO_XXXXXX	strdup(dio_xxxxxx)
 const char *fio_xxxxxx = "/fio.XXXXXX";
-#define	FIO_XXXXXX	alloca_strdup(fio_xxxxxx)
+#define	FIO_XXXXXX	strdup(fio_xxxxxx)
 
 static const char * xstrconcat(const char * arg, ...)
 {
