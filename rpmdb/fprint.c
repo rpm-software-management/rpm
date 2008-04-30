@@ -105,7 +105,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
     fp.baseName = NULL;
     if (cleanDirName == NULL) return fp;	/* XXX can't happen */
 
-    buf = strcpy(alloca(cdnl + 1), cleanDirName);
+    buf = xstrdup(cleanDirName);
     end = buf + cdnl;
 
     /* no need to pay attention to that extra little / at the end of dirName */
@@ -149,7 +149,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	    if (!scareMemory && fp.subDir != NULL)
 		fp.subDir = xstrdup(fp.subDir);
 	/* FIX: fp.entry.{dirName,dev,ino} undef @*/
-	    return fp;
+	    goto exit;
 	}
 
         /* stat of '/' just failed! */
@@ -164,9 +164,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	*end = '\0';
     }
 
-
+exit:
+    free(buf);
     /* FIX: fp.entry.{dirName,dev,ino} undef @*/
-    return fp;	/* LCL: can't happen. */
+    return fp;
 }
 
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
