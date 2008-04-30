@@ -629,7 +629,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     const char ** validRelocations;
     rpmTagType validType;
     const char ** baseNames;
-    const char ** dirNames;
+    char ** dirNames;
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
     rpm_count_t fileCount, dirCount, numValid;
@@ -930,12 +930,12 @@ dColors[j] |= fColors[i];
 
 	/* Creating new paths is a pita */
 	if (!haveRelocatedFile) {
-	    const char ** newDirList;
+	    char ** newDirList;
 
 	    haveRelocatedFile = 1;
 	    newDirList = xmalloc((dirCount + 1) * sizeof(*newDirList));
 	    for (j = 0; j < dirCount; j++)
-		newDirList[j] = alloca_strdup(dirNames[j]);
+		newDirList[j] = xstrdup(dirNames[j]);
 	    dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
 	    dirNames = newDirList;
 	} else {
@@ -943,7 +943,7 @@ dColors[j] |= fColors[i];
 			       sizeof(*dirNames) * (dirCount + 1));
 	}
 
-	dirNames[dirCount] = alloca_strdup(fn);
+	dirNames[dirCount] = xstrdup(fn);
 	dirIndexes[i] = dirCount;
 	dirCount++;
     }
@@ -970,7 +970,7 @@ dColors[j] |= fColors[i];
 
 	    if (relocations[j].newPath) { /* Relocate the path */
 		const char * s = relocations[j].newPath;
-		char * t = alloca(strlen(s) + strlen(dirNames[i]) - len + 1);
+		char * t = xmalloc(strlen(s) + strlen(dirNames[i]) - len + 1);
 		size_t slen;
 
 		(void) stpcpy( stpcpy(t, s) , dirNames[i] + len);
@@ -1018,6 +1018,14 @@ dColors[j] |= fColors[i];
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
+	/* 
+ 	 * If we get here, dirNames has separately allocated strings.
+ 	 * Free those now and let hfd() below free the array itself.
+ 	 */
+	for (i = 0; i < dirCount; i++) {
+	    free(dirNames[i]);
+	}
+
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
 	xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &fi->dnl, &fi->dc);
 
