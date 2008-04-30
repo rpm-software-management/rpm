@@ -690,7 +690,7 @@ assert(p != NULL);
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
-	t = alloca_strdup(p->relocs[i].oldPath);
+	t = xstrdup(p->relocs[i].oldPath);
 	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
 	    : stripTrailingChar(t, '/');
@@ -699,7 +699,7 @@ assert(p != NULL);
 	if (p->relocs[i].newPath) {
 	    int del;
 
-	    t = alloca_strdup(p->relocs[i].newPath);
+	    t = xstrdup(p->relocs[i].newPath);
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
 		: stripTrailingChar(t, '/');
@@ -1029,6 +1029,10 @@ dColors[j] |= fColors[i];
     baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
     dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
     free(fn);
+    for (i = 0; i < numRelocations; i++) {
+	free(relocations[i].oldPath);
+	free(relocations[i].newPath);
+    }
     free(relocations);
     free(newDirIndexes);
     free(dColors);
