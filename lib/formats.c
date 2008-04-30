@@ -217,43 +217,6 @@ static char * base64Format(rpmTagType type, rpm_constdata_t data,
 }
 
 /**
- */
-static size_t xmlstrlen(const char * s)
-{
-    size_t len = 0;
-    int c;
-
-    while ((c = *s++) != '\0')
-    {
-	switch (c) {
-	case '<': case '>':	len += 4;	break;
-	case '&':		len += 5;	break;
-	default:		len += 1;	break;
-	}
-    }
-    return len;
-}
-
-/**
- */
-static char * xmlstrcpy(char * t, const char * s)
-{
-    char * te = t;
-    int c;
-
-    while ((c = *s++) != '\0') {
-	switch (c) {
-	case '<':	te = stpcpy(te, "&lt;");	break;
-	case '>':	te = stpcpy(te, "&gt;");	break;
-	case '&':	te = stpcpy(te, "&amp;");	break;
-	default:	*te++ = c;			break;
-	}
-    }
-    *te = '\0';
-    return t;
-}
-
-/**
  * Wrap tag data in simple header xml markup.
  * @param type		tag type
  * @param data		tag value
@@ -266,29 +229,27 @@ static char * xmlFormat(rpmTagType type, rpm_constdata_t data,
 		char * formatPrefix, size_t padding,
 		int element)
 {
-    const char * xtag = NULL;
+    const char *xtag = NULL;
     size_t nb;
-    char * val, * bs = NULL;
-    const char * s = NULL;
-    char * t, * te;
+    char *val;
+    char *s = NULL;
+    char *t = NULL;
     unsigned long anint = 0;
     int xx;
 
     switch (type) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	s = data;
+	s = (char *)data;
 	xtag = "string";
 	break;
     case RPM_BIN_TYPE:
     {	
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	size_t ns = element;
-    	if ((bs = b64encode(data, ns, 0)) == NULL) {
-    		/* XXX proper error handling would be better. */
-    		bs = xcalloc(1, padding + (ns / 3) * 4 + 1);
+    	if ((s = b64encode(data, ns, 0)) == NULL) {
+    		return xstrdup(_("(encoding failed)"));
     	}
-	s = bs;
 	xtag = "base64";
     }	break;
     case RPM_CHAR_TYPE:
@@ -309,36 +270,47 @@ static char * xmlFormat(rpmTagType type, rpm_constdata_t data,
     }
 
     if (s == NULL) {
-	size_t tlen = 32;
-	t = memset(alloca(tlen+1), 0, tlen+1);
-	if (anint != 0)
-	    xx = snprintf(t, tlen, "%lu", anint);
-	s = t;
+	if (anint != 0) {
+	    rasprintf(&s, "%lu", anint);
+	} else {
+	    s = xstrdup("");
+	}
 	xtag = "integer";
     }
 
-    nb = xmlstrlen(s);
-    if (nb == 0) {
-	nb += strlen(xtag) + sizeof("\t</>");
-	te = t = alloca(nb);
-	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), "/>");
+    if (s[0] == '\0') {
+	t = rstrscat(NULL, "\t<", xtag, "/>", NULL);
     } else {
-	nb += 2 * strlen(xtag) + sizeof("\t<></>");
-	te = t = alloca(nb);
-	te = stpcpy( stpcpy( stpcpy(te, "\t<"), xtag), ">");
-	te = xmlstrcpy(te, s);
-	te += strlen(te);
-	te = stpcpy( stpcpy( stpcpy(te, "</"), xtag), ">");
+	char *new_s = NULL;
+	size_t i, s_size = strlen(s);
+	
+	for (i=0; i<s_size; i++) {
+	    switch (s[i]) {
+		case '<':	rstrcat(&new_s, "&lt;");	break;
+		case '>':	rstrcat(&new_s, "&gt;");	break;
+		case '&':	rstrcat(&new_s, "&amp;");	break;
+		default: {
+		    char c[2] = " ";
+		    *c = s[i];
+		    rstrcat(&new_s, c);
+		    break;
+		}
+	    }
+	}
+
+	t = rstrscat(NULL, "\t<", xtag, ">", new_s, "</", xtag, ">", NULL);
+	free(new_s);
     }
 
     /* XXX s was malloc'd */
-    if (!strcmp(xtag, "base64"))
-	free(bs);
+    if (!strcmp(xtag, "base64") || !strcmp(xtag, "integer"))
+	free(s);
 
-    nb += padding;
+    nb += strlen(t)+padding;
     val = xmalloc(nb+1);
     strcat(formatPrefix, "s");
     xx = snprintf(val, nb, formatPrefix, t);
+    free(t);
     val[nb] = '\0';
 
     return val;
