@@ -62,7 +62,8 @@ static fingerPrint doLookup(fingerPrintCache cache,
     char * end;		    /* points to the '\0' at the end of "buf" */
     fingerPrint fp;
     struct stat sb;
-    char * buf;
+    char *buf = NULL;
+    char *cdnbuf = NULL;
     const struct fprintCacheEntry_s * cacheHit;
 
     /* assert(*dirName == '/' || !scareMemory); */
@@ -72,9 +73,10 @@ static fingerPrint doLookup(fingerPrintCache cache,
     cdnl = strlen(cleanDirName);
 
     if (*cleanDirName == '/') {
-	if (!scareMemory)
-	    cleanDirName =
-		rpmCleanPath(strcpy(alloca(cdnl+1), dirName));
+	if (!scareMemory) {
+	    cdnbuf = xstrdup(dirName);
+	    cleanDirName = rpmCleanPath(cdnbuf);
+	}
     } else {
 	scareMemory = 0;	/* XXX causes memory leak */
 
@@ -103,7 +105,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
     fp.entry = NULL;
     fp.subDir = NULL;
     fp.baseName = NULL;
-    if (cleanDirName == NULL) return fp;	/* XXX can't happen */
+    if (cleanDirName == NULL) goto exit; /* XXX can't happen */
 
     buf = xstrdup(cleanDirName);
     end = buf + cdnl;
@@ -166,6 +168,7 @@ static fingerPrint doLookup(fingerPrintCache cache,
 
 exit:
     free(buf);
+    free(cdnbuf);
     /* FIX: fp.entry.{dirName,dev,ino} undef @*/
     return fp;
 }
