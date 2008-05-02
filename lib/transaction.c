@@ -1066,7 +1066,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH) && !tscolor)
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
 	    if (!archOkay(rpmteA(p)))
 		rpmpsAppend(ps, RPMPROB_BADARCH,
 			rpmteNEVRA(p), rpmteKey(p),
