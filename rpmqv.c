@@ -583,6 +583,7 @@ int main(int argc, char *argv[])
 	(void) pipe(p);
 
 	if (!(pipeChild = fork())) {
+	    (void) signal(SIGPIPE, SIG_DFL);
 	    (void) close(p[1]);
 	    (void) dup2(p[0], STDIN_FILENO);
 	    (void) close(p[0]);
