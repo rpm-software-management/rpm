@@ -11,6 +11,7 @@
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/cpio.h"
 #include "lib/fsm.h"
