@@ -126,7 +126,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
 	goto exit;
     }
     
-    fd = rpmMkTemp(rootDir, &scriptName);
+    fd = rpmMkTempFile(rootDir, &scriptName);
     if (fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	rc = RPMRC_FAIL;

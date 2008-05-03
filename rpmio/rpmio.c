@@ -782,7 +782,7 @@ static FD_t urlOpen(const char * url, int flags, mode_t mode)
     char *dest = NULL;
     int rc = 1; /* assume failure */
 
-    fd = rpmMkTemp(NULL, &dest);
+    fd = rpmMkTempFile(NULL, &dest);
     if (fd == NULL) {
 	return NULL;
     }

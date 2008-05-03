@@ -686,7 +686,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);
-	fd = rpmMkTemp(NULL, &fn);
+	fd = rpmMkTempFile(NULL, &fn);
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))
@@ -705,7 +705,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	if (h == NULL)
 	    goto exit;
 	(void) Fclose(fd);
-	fd = rpmMkTemp(NULL, &fn);
+	fd = rpmMkTempFile(NULL, &fn);
 	if (fd == NULL || Ferror(fd))
 	    goto exit;
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))

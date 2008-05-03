@@ -304,7 +304,7 @@ restart:
 	    if (rpmIsVerbose())
 		fprintf(stdout, _("Retrieving %s\n"), fileURL);
 
-	    tfd = rpmMkTemp(rpmtsRootDir(ts), &tfn);
+	    tfd = rpmMkTempFile(rpmtsRootDir(ts), &tfn);
 	    if (tfd && tfn) {
 		Fclose(tfd);
 	    	rc = urlGetFile(fileURL, tfn);

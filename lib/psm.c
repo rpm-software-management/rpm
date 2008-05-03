@@ -761,7 +761,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	const char * rootDir = rpmtsRootDir(ts);
 	FD_t fd;
 
-	fd = rpmMkTemp((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
+	fd = rpmMkTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
 	if (fd == NULL || Ferror(fd)) {
 	    rc = RPMRC_FAIL;
 	    goto exit;

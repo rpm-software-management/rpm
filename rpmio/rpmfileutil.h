@@ -34,6 +34,13 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 		  unsigned char * digest, rpm_off_t * fsizep);
 
 /** \ingroup rpmfileutil
+ * Thin wrapper for mkstemp(3). 
+ * @param template		template for temporary filename
+ * @return 			file handle or NULL on error
+ */
+FD_t rpmMkTemp(char *template);
+
+/** \ingroup rpmfileutil
  * Return file handle for a temporaray file.
  * A unique temporaray file path will be created in
  * [prefix/]%{_tmppath} directory.
@@ -43,7 +50,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
  * @retval fn		temp file name (or NULL)
  * @return fdptr	open file handle or NULL on error
  */
-FD_t rpmMkTemp(const char * prefix, char **fn);
+FD_t rpmMkTempFile(const char * prefix, char **fn);
 
 /** \ingroup rpmfileutil
  * Insure that directories in path exist, creating as needed.

@@ -225,11 +225,27 @@ exit:
     return rc;
 }
 
-FD_t rpmMkTemp(const char * prefix, char **fn)
+FD_t rpmMkTemp(char *template)
+{
+    int sfd;
+    FD_t tfd = NULL;
+
+    sfd = mkstemp(template);
+    if (sfd < 0) {
+	goto exit;
+    }
+
+    tfd = fdDup(sfd);
+    close(sfd);
+
+exit:
+    return tfd;
+}
+
+FD_t rpmMkTempFile(const char * prefix, char **fn)
 {
     const char *tpmacro = "%{_tmppath}"; /* always set from rpmrc */
     char *tempfn;
-    int sfd;
     static int _initialized = 0;
     FD_t tfd = NULL;
 
@@ -245,16 +261,10 @@ FD_t rpmMkTemp(const char * prefix, char **fn)
     }
 
     tempfn = rpmGetPath(prefix, tpmacro, "/rpm-tmp.XXXXXX", NULL);
-    sfd = mkstemp(tempfn);
-    if (sfd < 0) {
-	rpmlog(RPMLOG_ERR, _("error creating temporary file: %m\n"));
-	goto exit;
-    }
+    tfd = rpmMkTemp(tempfn);
 
-    tfd = fdDup(sfd);
-    close(sfd);
     if (tfd == NULL || Ferror(tfd)) {
-	rpmlog(RPMLOG_ERR, _("error opening temporary file %s: %m\n"), tempfn);
+	rpmlog(RPMLOG_ERR, _("error creating temporary file %s: %m\n"), tempfn);
 	goto exit;
     }
 

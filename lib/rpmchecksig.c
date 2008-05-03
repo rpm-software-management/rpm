@@ -197,7 +197,7 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	msg = _free(msg);
 
 	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	ofd = rpmMkTemp(NULL, &sigtarget);
+	ofd = rpmMkTempFile(NULL, &sigtarget);
 	if (ofd == NULL || Ferror(ofd)) {
 	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
 	    goto exit;
@@ -325,7 +325,7 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	if (sigh == NULL)	/* XXX can't happen */
 	    goto exit;
 
-	ofd = rpmMkTemp(NULL, &trpm);
+	ofd = rpmMkTempFile(NULL, &trpm);
 	if (ofd == NULL || Ferror(ofd)) {
 	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
 	    goto exit;
