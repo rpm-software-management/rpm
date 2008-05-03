@@ -135,7 +135,7 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
  * @param ts		transaction set
  * @param qva		mode flags and parameters
  * @param argv		array of package file names (NULL terminated)
- * @return		0 on success
+ * @return		0 on success, -1 on error
  */
 static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
@@ -150,14 +150,14 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     void * uh = NULL;
     rpmTagType uht;
     rpm_count_t uhc;
-    int res = EXIT_FAILURE;
+    int res = -1; /* assume failure */
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
-    rpmRC rc;
     int xx;
     
     if (argv)
     while ((rpm = *argv++) != NULL)
     {
+    	rpmRC rc;
 
 	fprintf(stdout, "%s:\n", rpm);
 
@@ -200,7 +200,6 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	ofd = rpmMkTemp(NULL, &sigtarget);
 	if (ofd == NULL || Ferror(ofd)) {
 	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 	/* Write the header and archive to a temp file */
@@ -329,7 +328,6 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	ofd = rpmMkTemp(NULL, &trpm);
 	if (ofd == NULL || Ferror(ofd)) {
 	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 
