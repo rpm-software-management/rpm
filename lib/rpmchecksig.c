@@ -143,9 +143,8 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     FD_t ofd = NULL;
     rpmlead lead;
     rpmSigTag sigtag;
-    const char *rpm, *trpm;
-    char *sigtarget = NULL;
-    char tmprpm[1024+1];
+    const char *rpm;
+    char *sigtarget = NULL, *trpm = NULL;
     Header sigh = NULL;
     char * msg;
     void * uh = NULL;
@@ -156,7 +155,6 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     rpmRC rc;
     int xx;
     
-    tmprpm[0] = '\0';
     if (argv)
     while ((rpm = *argv++) != NULL)
     {
@@ -328,15 +326,14 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	if (sigh == NULL)	/* XXX can't happen */
 	    goto exit;
 
-	/* Write the lead/signature of the output rpm */
-	strcpy(tmprpm, rpm);
-	strcat(tmprpm, ".XXXXXX");
-	(void) close(mkstemp(tmprpm));
-	trpm = tmprpm;
-
-	if (manageFile(&ofd, trpm, O_WRONLY|O_CREAT|O_TRUNC))
+	ofd = rpmMkTemp(NULL, &trpm);
+	if (ofd == NULL || Ferror(ofd)) {
+	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
+	    rc = RPMRC_FAIL;
 	    goto exit;
+	}
 
+	/* Write the lead/signature of the output rpm */
 	rc = rpmLeadWrite(ofd, lead);
 	lead = rpmLeadFree(lead);
 	if (rc != RPMRC_OK) {
@@ -361,7 +358,7 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	/* Move final target into place. */
 	xx = unlink(rpm);
 	xx = rename(trpm, rpm);
-	tmprpm[0] = '\0';
+	trpm = _free(trpm);
 
 	/* Clean up intermediate target */
 	xx = unlink(sigtarget);
@@ -380,9 +377,9 @@ exit:
 	xx = unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
-    if (tmprpm[0] != '\0') {
-	xx = unlink(tmprpm);
-	tmprpm[0] = '\0';
+    if (trpm) {
+	(void) unlink(trpm);
+	free(trpm);
     }
 
     return res;
