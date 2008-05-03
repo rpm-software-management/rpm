@@ -230,7 +230,7 @@ static char * xmlFormat(rpmTagType type, rpm_constdata_t data,
 		int element)
 {
     const char *xtag = NULL;
-    size_t nb;
+    size_t nb = 0;
     char *val;
     char *s = NULL;
     char *t = NULL;
