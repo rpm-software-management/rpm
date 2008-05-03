@@ -325,7 +325,8 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	if (sigh == NULL)	/* XXX can't happen */
 	    goto exit;
 
-	ofd = rpmMkTempFile(NULL, &trpm);
+	rasprintf(&trpm, "%s.XXXXXX", rpm);
+	ofd = rpmMkTemp(trpm);
 	if (ofd == NULL || Ferror(ofd)) {
 	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
 	    goto exit;
