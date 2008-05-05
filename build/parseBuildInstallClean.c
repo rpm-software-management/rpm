@@ -11,7 +11,7 @@
 
 int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
 {
-    int nextPart, rc;
+    int nextPart, rc, res = PART_ERROR;
     StringBuf *sbp = NULL;
     const char *name = NULL;
 
@@ -32,24 +32,31 @@ int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
     if (*sbp != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
 		spec->lineNum, name);
-	return RPMRC_FAIL;
+	goto exit;
     }
     
     *sbp = newStringBuf();
 
     /* There are no options to %build, %install, %check, or %clean */
-    if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
-	return PART_NONE;
-    if (rc != RPMRC_OK)
-	return rc;
+    if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
+	res = PART_NONE;
+	goto exit;
+    } else if (rc < 0) {
+	goto exit;
+    }
     
     while (! (nextPart = isPart(spec->line))) {
 	appendStringBuf(*sbp, spec->line);
-	if ((rc = readLine(spec, STRIP_NOTHING)) > 0)
-	    return PART_NONE;
-	if (rc)
-	    return rc;
+	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
+	    nextPart = PART_NONE;
+	    break;
+	} else if (rc < 0) {
+	    goto exit;
+	}
     }
+    res = nextPart;
+    
+exit:
 
-    return nextPart;
+    return res;
 }
