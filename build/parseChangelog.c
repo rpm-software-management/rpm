@@ -203,29 +203,34 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 
 int parseChangelog(rpmSpec spec)
 {
-    int nextPart, res, rc;
+    int nextPart, rc, res = PART_ERROR;
     StringBuf sb = newStringBuf();
     
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
-	sb = freeStringBuf(sb);
-	return PART_NONE;
+	res = PART_NONE;
+	goto exit;
+    } else if (rc < 0) {
+	goto exit;
     }
-    if (rc)
-	return rc;
     
     while (! (nextPart = isPart(spec->line))) {
 	appendStringBuf(sb, spec->line);
 	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
+	} else if (rc < 0) {
+	    goto exit;
 	}
-	if (rc)
-	    return rc;
     }
 
-    res = addChangelog(spec->packages->header, sb);
+    if (addChangelog(spec->packages->header, sb)) {
+	goto exit;
+    }
+    res = nextPart;
+
+exit:
     sb = freeStringBuf(sb);
 
-    return (res) ? res : nextPart;
+    return res;
 }
