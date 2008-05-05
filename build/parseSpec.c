@@ -281,16 +281,15 @@ int readLine(rpmSpec spec, int strip)
 
     if (!restoreFirstChar(spec)) {
     retry:
-      if ((rc = readLineFromOFI(spec, ofi)) != 0)
-        return rc;
+	if ((rc = readLineFromOFI(spec, ofi)) != 0)
+	    return rc;
 
-      /* Copy next file line into the spec line buffer */
-
-      if ((rc = copyNextLineFromOFI(spec, ofi)) != 0) {
-	if (rc == RPMRC_FAIL)
-	    goto retry;
-	return rc;
-      }
+	/* Copy next file line into the spec line buffer */
+	if ((rc = copyNextLineFromOFI(spec, ofi)) != 0) {
+	    if (rc == RPMRC_FAIL)
+		goto retry;
+	    return rc;
+	}
     }
 
     copyNextLineFinish(spec, strip);
