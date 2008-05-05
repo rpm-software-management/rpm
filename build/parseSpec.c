@@ -436,14 +436,12 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     spec->fileStack->fileName = xstrdup(spec->specFile);
     if (buildRoot) {
 	if (*buildRoot == '\0') {
-            rpmlog(RPMLOG_ERR,
-                     _("BuildRoot couldn't be empty\n"));
-            return RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("BuildRoot couldn't be empty\n"));
+	    goto errxit;
 	}
 	if (!strcmp(buildRoot, "/")) {
-            rpmlog(RPMLOG_ERR,
-                     _("BuildRoot can not be \"/\"\n"));
-            return RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("BuildRoot can not be \"/\"\n"));
+	    goto errxit;
         }
 	spec->gotBuildRoot = 1;
 	spec->buildRoot = xstrdup(buildRoot);
