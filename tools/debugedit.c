@@ -651,9 +651,12 @@ edit_dwarf2_line (DSO *dso, uint_32 off, char *comp_dir, int phase)
 	  if (--shrank == 0)
 	    error (EXIT_FAILURE, 0,
 		   "canonicalization unexpectedly shrank by one character");
-	  memset (ptr, 'X', shrank);
-	  ptr += shrank;
-	  *ptr++ = '\0';
+	  else
+	    {	    
+	      memset (ptr, 'X', shrank);
+	      ptr += shrank;
+	      *ptr++ = '\0';
+	    }
 	}
 
       if (abs_dir_cnt + abs_file_cnt != 0)
