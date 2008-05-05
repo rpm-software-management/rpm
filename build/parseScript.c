@@ -86,7 +86,7 @@ int parseScript(rpmSpec spec, int parsePart)
     StringBuf sb = NULL;
     int nextPart;
     int index;
-    char reqargs[BUFSIZ];
+    char * reqargs = NULL;
 
     int res = PART_ERROR; /* assume failure */
     int rc, argc;
@@ -94,7 +94,6 @@ int parseScript(rpmSpec spec, int parsePart)
     const char **argv = NULL;
     poptContext optCon = NULL;
     
-    reqargs[0] = '\0';
     name = NULL;
     prog = "/bin/sh";
     file = NULL;
@@ -182,13 +181,13 @@ int parseScript(rpmSpec spec, int parsePart)
 	}
 
 	*p = '\0';
-	strcpy(reqargs, p + 2);
+	reqargs = xstrdup(p + 2);
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %s: %s\n"),
 		 spec->lineNum, partname, poptStrerror(rc));
-	return PART_ERROR;
+	goto exit;
     }
     
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
@@ -345,6 +344,7 @@ int parseScript(rpmSpec spec, int parsePart)
     res = nextPart;
     
 exit:
+    free(reqargs);
     sb = freeStringBuf(sb);
     progArgv = _free(progArgv);
     argv = _free(argv);
