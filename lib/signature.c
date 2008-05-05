@@ -353,6 +353,7 @@ static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
     char * sigfile = NULL;
     int pid, status;
     int inpipe[2];
+    FILE *fpipe;
     struct stat st;
     const char * cmd;
     char *const *av;
@@ -416,11 +417,12 @@ static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
     delMacro(NULL, "__plaintext_filename");
     delMacro(NULL, "__signature_filename");
 
+    fpipe = fdopen(inpipe[1], "w");
     (void) close(inpipe[0]);
-    if (passPhrase)
-	(void) write(inpipe[1], passPhrase, strlen(passPhrase));
-    (void) write(inpipe[1], "\n", 1);
-    (void) close(inpipe[1]);
+    if (fpipe) {
+	fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : ""));
+	(void) fclose(fpipe);
+    }
 
     (void)waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
