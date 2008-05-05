@@ -184,7 +184,7 @@ package or when debugging this package.\
 %endif\
 %{nil}
 
-%_defaultdocdir		%{_usr}/doc
+%_defaultdocdir		%{_datadir}/doc
 
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
@@ -296,11 +296,6 @@ package or when debugging this package.\
 %_javadir      %{_datadir}/java
 %_javadocdir   %{_datadir}/javadoc
 
-#
-#	Deprecated.
-#
-#%_langpatt
-
 #	A colon separated list of paths where files should *not* be installed.
 #	Usually, these are network file system mount points.
 #
@@ -341,19 +336,6 @@ package or when debugging this package.\
 
 #==============================================================================
 # ---- Build configuration macros.
-#
-# Package version macro.
-#	The type of package to produce, for compatibility with legacy
-#	versions of rpm.
-#
-# This is an rpm version, e.g. 30005 means to produce packaging compatible
-# with rpm-3.0.5. At the moment, values < 30005 (i.e. compatibility with
-# version before rpm-3.0.5) are not supported. The only incompatible change
-# in rpm packaging since rpm-3.0.5 has been to replace a 3 with a 4 in the
-# rpmlead, so there's little need to use any value greater than 30005.
-#
-%_package_version	30005
-
 #
 # Script gets packaged file list on input and buildroot as first parameter.
 # Returns list of unpackaged files, i.e. files in $RPM_BUILD_ROOT not packaged.
@@ -460,20 +442,6 @@ print (t)\
 
 %__pkgconfig_provides   @RPMCONFIGDIR@/pkgconfigdeps.sh --provides
 %__pkgconfig_requires   @RPMCONFIGDIR@/pkgconfigdeps.sh --requires
-
-#
-# fixowner, fixgroup, and fixperms are run at the end of hardcoded setup
-# These macros are necessary only for legacy compatibility, and have moved
-# to per-platform macro configuration (i.e. @RPMCONFIGDIR@/<arch>-<os>/macros)
-#
-# Note: These are no longer enabled by default.
-#%__id_u		@__ID_U@
-#%__chown_Rhf		@__CHOWN_RHF@
-#%__chgrp_Rhf		@__CHGRP_RHF@
-#%_fixowner		[ `%{__id_u}` = '0' ] && %{__chown_Rhf} root
-#%_fixgroup		[ `%{__id_u}` = '0' ] && %{__chgrp_Rhf} @ROOT_GROUP@
-#%_fixperms		%{__chmod} -Rf @FIXPERMS@
-#
 
 #==============================================================================
 # ---- Database configuration macros.
@@ -776,7 +744,7 @@ print (t)\
 # but the transaction lock needs to be per-database, not global, for
 # some rpmdb operations.
 #
-# XXX Note: the file name is chosesn as __db.000 to expedite
+# XXX Note: the file name is chosen as __db.000 to expedite
 # support issues, many users are doing "rm -f /var/lib/rpm/__db*"
 # these days.
 %_rpmlock_path	%{_dbpath}/__db.000
@@ -998,15 +966,14 @@ print (t)\
 %_sbindir		%{_exec_prefix}/sbin
 %_libexecdir		%{_exec_prefix}/libexec
 %_datadir		%{_prefix}/share
-%_sysconfdir		%{_prefix}/etc
+%_sysconfdir		/etc
 %_sharedstatedir	%{_prefix}/com
 %_localstatedir		%{_prefix}/var
 %_lib			lib
 %_libdir		%{_exec_prefix}/%{_lib}
 %_includedir		%{_prefix}/include
-%_oldincludedir		/usr/include
-%_infodir		%{_prefix}/info
-%_mandir		%{_prefix}/man
+%_infodir		%{_datadir}/info
+%_mandir		%{_datadir}/man
 
 #==============================================================================
 # ---- config.guess platform macros.
@@ -1055,7 +1022,7 @@ print (t)\
   ./configure --host=%{_host} --build=%{_build} \\\
 	--target=%{_target_platform} \\\
 	--program-prefix=%{?_program_prefix} \\\
- 	--prefix=%{_prefix} \\\
+	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\
 	--bindir=%{_bindir} \\\
 	--sbindir=%{_sbindir} \\\
