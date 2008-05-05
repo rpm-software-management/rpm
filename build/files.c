@@ -758,51 +758,6 @@ exit:
 
 /**
  */
-static int parseForRegexLang(const char * fileName, char ** lang)
-{
-    static int initialized = 0;
-    static int hasRegex = 0;
-    static regex_t compiledPatt;
-    char *buf;
-    int x;
-    regmatch_t matches[2];
-    const char *s;
-
-    if (! initialized) {
-	char *patt = rpmExpand("%{?_langpatt}", NULL);
-	int rc = 0;
-	if (!(patt && *patt != '\0'))
-	    rc = 1;
-	else if (regcomp(&compiledPatt, patt, REG_EXTENDED))
-	    rc = -1;
-	patt = _free(patt);
-	if (rc)
-	    return rc;
-	hasRegex = 1;
-	initialized = 1;
-    }
-    
-    memset(matches, 0, sizeof(matches));
-    if (! hasRegex || regexec(&compiledPatt, fileName, 2, matches, REG_NOTEOL))
-	return 1;
-
-    /* Got match */
-    s = fileName + matches[1].rm_eo - 1;
-    x = matches[1].rm_eo - matches[1].rm_so;
-    buf = xmalloc(x+1);
-    buf[x] = '\0';
-    memcpy(buf, s, x);
-    if (lang)
-	*lang = buf;
-    else {
-	free(buf);
-	return 1;
-    }
-    return 0;
-}
-
-/**
- */
 VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0,	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	0,	RPMFILE_DOC },
@@ -1504,7 +1459,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 			*ncl++ = *ocl;
 		*ncl = '\0';
 	    }
-	} else if (parseForRegexLang(cpioPath, &flp->langs)) {
+	} else {
 	    flp->langs = xstrdup("");
 	}
 
