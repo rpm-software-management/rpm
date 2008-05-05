@@ -49,6 +49,7 @@ typedef enum rpmBuildFlags_e {
  *   */ 
 #define PART_BASE       0 
 typedef enum rpmParseState_e { 
+    PART_ERROR          =  -1, /*!< */ 
     PART_NONE           =  0+PART_BASE, /*!< */ 
     /* leave room for RPMRC_NOTFOUND returns. */ 
     PART_PREAMBLE       = 11+PART_BASE, /*!< */ 

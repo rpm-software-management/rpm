@@ -468,9 +468,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     /* which handles the initial entry into a spec file.         */
     
    	/* LCL: parsePart is modified @*/
-    while (parsePart > PART_NONE) {
+    while (parsePart != PART_NONE) {
 	int goterror = 0;
 	switch (parsePart) {
+	case PART_ERROR: /* fallthrough */
 	default:
 	    goterror = 1;
 	    break;
@@ -519,8 +520,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	}
 
 	if (goterror || parsePart >= PART_LAST) {
-	    spec = freeSpec(spec);
-	    return parsePart;
+	    goto errxit;
 	}
 
 	if (parsePart == PART_BUILDARCHITECTURES) {
@@ -545,8 +545,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
-			spec = freeSpec(spec);
-			return RPMRC_FAIL;
+			goto errxit;
 		}
 		delMacro(NULL, "_target_cpu");
 		index++;
@@ -556,8 +555,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	    if (! index) {
 		rpmlog(RPMLOG_ERR,
 			_("No compatible architectures found for build\n"));
-		spec = freeSpec(spec);
-		return RPMRC_FAIL;
+		goto errxit;
 	    }
 
 	    /*
@@ -592,10 +590,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    const char * name;
 	    (void) headerNVR(pkg->header, &name, NULL, NULL);
-	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
-			name);
-	    spec = freeSpec(spec);
-	    return RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"), name);
+	    goto errxit;
 	}
 
 	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
@@ -617,4 +613,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     (void) rpmtsSetSpec(ts, spec);
 
     return 0;
+
+errxit:
+    spec = freeSpec(spec);
+    return PART_ERROR;
 }
