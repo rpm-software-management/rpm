@@ -580,7 +580,10 @@ int main(int argc, char *argv[])
 #endif	/* IAM_RPMBT || IAM_RPMK */
 
     if (rpmcliPipeOutput) {
-	(void) pipe(p);
+	if (pipe(p) < 0) {
+	    fprintf(stderr, _("creating a pipe for --pipe failed: %m\n"));
+	    goto exit;
+	}
 
 	if (!(pipeChild = fork())) {
 	    (void) signal(SIGPIPE, SIG_DFL);
@@ -827,9 +830,7 @@ int main(int argc, char *argv[])
 	break;
     }
 
-#if defined(IAM_RPMBT) || defined(IAM_RPMK)
 exit:
-#endif	/* IAM_RPMBT || IAM_RPMK */
 
     ts = rpmtsFree(ts);
 
