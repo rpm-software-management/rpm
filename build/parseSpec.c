@@ -226,7 +226,7 @@ retry:
 	    /* XXX Fstrerror */
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s: %s\n"),
 		     ofi->fileName, Fstrerror(ofi->fd));
-	    return RPMRC_FAIL;
+	    return PART_ERROR;
 	}
 	spec->lineNum = ofi->lineNum = 0;
     }
@@ -238,7 +238,7 @@ retry:
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));
-	        return RPMRC_FAIL;
+	        return PART_ERROR;
 	    }
 
 	    /* remove this file from the stack */
@@ -328,7 +328,7 @@ int readLine(rpmSpec spec, int strip)
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: parseExpressionBoolean returns %d\n"),
 			ofi->fileName, ofi->lineNum, match);
-	    return RPMRC_FAIL;
+	    return PART_ERROR;
 	}
     } else if (! strncmp("%else", s, sizeof("%else")-1)) {
 	s += 5;
@@ -337,7 +337,7 @@ int readLine(rpmSpec spec, int strip)
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: Got a %%else with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
-	    return RPMRC_FAIL;
+	    return PART_ERROR;
 	}
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
@@ -349,7 +349,7 @@ int readLine(rpmSpec spec, int strip)
 	    rpmlog(RPMLOG_ERR,
 			_("%s:%d: Got a %%endif with no %%if\n"),
 			ofi->fileName, ofi->lineNum);
-	    return RPMRC_FAIL;
+	    return PART_ERROR;
 	}
 	rl = spec->readStack;
 	spec->readStack = spec->readStack->next;
@@ -362,7 +362,7 @@ int readLine(rpmSpec spec, int strip)
 	fileName = s;
 	if (! risspace(*fileName)) {
 	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
-	    return RPMRC_FAIL;
+	    return PART_ERROR;
 	}
 	SKIPSPACE(fileName);
 	endFileName = fileName;
@@ -371,7 +371,7 @@ int readLine(rpmSpec spec, int strip)
 	SKIPSPACE(p);
 	if (*p != '\0') {
 	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
-	    return RPMRC_FAIL;
+	    return PART_ERROR;
 	}
 	*endFileName = '\0';
 
