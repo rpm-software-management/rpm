@@ -800,7 +800,8 @@ static int findPreambleTag(rpmSpec spec,rpmTag * tag,
 
 int parsePreamble(rpmSpec spec, int initialPackage)
 {
-    int nextPart;
+    int nextPart = PART_ERROR;
+    int res = PART_ERROR; /* assume failure */
     int rc, xx;
     char *name, *linep;
     int flag = 0;
@@ -815,14 +816,13 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	if (parseSimplePart(spec->line, &name, &flag)) {
 	    rpmlog(RPMLOG_ERR, _("Bad package specification: %s\n"),
 			spec->line);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	
 	if (!lookupPackage(spec, name, flag, NULL)) {
-	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"),
-			spec->line);
+	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"), spec->line);
 	    free(name);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	
 	/* Construct the package */
@@ -840,11 +840,9 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
+    } else if (rc < 0) {
+	goto exit;
     } else {
-	if (rc) {
-	    free(NVR);
-	    return rc;
-	}
 	while (! (nextPart = isPart(spec->line))) {
 	    const char * macro;
 	    rpmTag tag;
@@ -856,16 +854,14 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		if (findPreambleTag(spec, &tag, &macro, lang)) {
 		    rpmlog(RPMLOG_ERR, _("line %d: Unknown tag: %s\n"),
 				spec->lineNum, spec->line);
-		    free(NVR);
-		    return RPMRC_FAIL;
+		    goto exit;
 		}
 		if (handlePreambleTag(spec, pkg, tag, macro, lang)) {
-		    free(NVR);
-		    return RPMRC_FAIL;
+		    goto exit;
 		}
 		if (spec->BANames && !spec->recursing) {
-		    free(NVR);
-		    return PART_BUILDARCHITECTURES;
+		    res = PART_BUILDARCHITECTURES;
+		    goto exit;
 		}
 	    }
 	    if ((rc =
@@ -874,32 +870,27 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		break;
 	    }
 	    if (rc) {
-		free(NVR);
-		return rc;
+		goto exit;
 	    }
 	}
     }
 
     /* Do some final processing on the header */
-    
     if (!spec->gotBuildRoot && spec->buildRoot) {
 	rpmlog(RPMLOG_ERR, _("Spec file can't use BuildRoot\n"));
-	free(NVR);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     /* XXX Skip valid arch check if not building binary package */
     if (!spec->anyarch && checkForValidArchitectures(spec)) {
-	free(NVR);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     if (pkg == spec->packages)
 	fillOutMainPackage(pkg->header);
 
     if (checkForDuplicates(pkg->header, NVR)) {
-	free(NVR);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     if (pkg != spec->packages)
@@ -907,9 +898,12 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 			(rpmTag *)copyTagsDuringParse);
 
     if (checkForRequired(pkg->header, NVR)) {
-	free(NVR);
-	return RPMRC_FAIL;
+	goto exit;
     }
+    /* if we get down here nextPart has been set to non-error */
+    res = nextPart;
 
-    return nextPart;
+exit:
+    free(NVR);
+    return res;
 }
