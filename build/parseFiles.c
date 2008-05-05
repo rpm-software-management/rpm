@@ -21,7 +21,7 @@
 
 int parseFiles(rpmSpec spec)
 {
-    int nextPart;
+    int nextPart, res = PART_ERROR;
     Package pkg;
     int rc, argc;
     int arg;
@@ -35,7 +35,6 @@ int parseFiles(rpmSpec spec)
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%files: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -51,7 +50,6 @@ int parseFiles(rpmSpec spec)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 spec->line);
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -62,7 +60,6 @@ int parseFiles(rpmSpec spec)
 	    rpmlog(RPMLOG_ERR, _("line %d: Too many names: %s\n"),
 		     spec->lineNum,
 		     spec->line);
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     }
@@ -70,14 +67,12 @@ int parseFiles(rpmSpec spec)
     if (lookupPackage(spec, name, flag, &pkg)) {
 	rpmlog(RPMLOG_ERR, _("line %d: Package does not exist: %s\n"),
 		 spec->lineNum, spec->line);
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
     if (pkg->fileList != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: Second %%files list\n"),
 		 spec->lineNum);
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -90,24 +85,24 @@ int parseFiles(rpmSpec spec)
     
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
+    } else if (rc < 0) {
+	goto exit;
     } else {
-	if (rc)
-	    goto exit;
 	while (! (nextPart = isPart(spec->line))) {
 	    appendStringBuf(pkg->fileList, spec->line);
 	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;
-	    }
-	    if (rc)
+	    } else if (rc < 0) {
 		goto exit;
+	    }
 	}
     }
-    rc = nextPart;
+    res = nextPart;
 
 exit:
     argv = _free(argv);
     optCon = poptFreeContext(optCon);
 	
-    return rc;
+    return res;
 }
