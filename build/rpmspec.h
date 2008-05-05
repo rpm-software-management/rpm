@@ -21,10 +21,10 @@ typedef struct Package_s * Package;
  */
 struct TriggerFileEntry {
     int index;
-char * fileName;
-char * script;
-char * prog;
-struct TriggerFileEntry * next;
+    char * fileName;
+    char * script;
+    char * prog;
+    struct TriggerFileEntry * next;
 };
 
 #define RPMBUILD_ISSOURCE	(1 << 0)
@@ -37,8 +37,8 @@ struct TriggerFileEntry * next;
 /** \ingroup rpmbuild
  */
 struct Source {
-char * fullSource;
-char * source;     /* Pointer into fullSource */
+    char * fullSource;
+    char * source;     /* Pointer into fullSource */
     int flags;
     int num;
 struct Source * next;
@@ -75,7 +75,7 @@ typedef struct spectag_s {
 /** \ingroup rpmbuild
  */
 typedef struct spectags_s {
-spectag st_t;
+    spectag st_t;
     int st_nalloc;
     int st_ntags;
 } * spectags;
@@ -83,7 +83,7 @@ spectag st_t;
 /** \ingroup rpmbuild
  */
 typedef struct speclines_s {
-char **sl_lines;
+    char **sl_lines;
     int sl_nalloc;
     int sl_nlines;
 } * speclines;
