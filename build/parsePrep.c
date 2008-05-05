@@ -510,7 +510,7 @@ int parsePrep(rpmSpec spec)
 
     if (spec->prep != NULL) {
 	rpmlog(RPMLOG_ERR, _("line %d: second %%prep\n"), spec->lineNum);
-	return RPMRC_FAIL;
+	return PART_ERROR;
     }
 
     spec->prep = newStringBuf();
@@ -518,9 +518,9 @@ int parsePrep(rpmSpec spec)
     /* There are no options to %prep */
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	return PART_NONE;
+    } else if (rc < 0) {
+	return PART_ERROR;
     }
-    if (rc)
-	return rc;
     
     sb = newStringBuf();
     
@@ -531,9 +531,9 @@ int parsePrep(rpmSpec spec)
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
+	} else if (rc < 0) {
+	    goto exit;
 	}
-	if (rc)
-	    return rc;
     }
 
     argvSplit(&saveLines, getStringBuf(sb), "\n");
@@ -547,12 +547,14 @@ int parsePrep(rpmSpec spec)
 	    appendLineStringBuf(spec->prep, *lines);
 	}
 	if (res && !spec->force) {
-	    argvFree(saveLines);
-	    sb = freeStringBuf(sb);
-	    return res;
+	    /* fixup from RPMRC_FAIL do*Macro() codes for now */
+	    res = PART_ERROR; 
+	    goto exit;
 	}
     }
+    res = nextPart;
 
+exit:
     argvFree(saveLines);
     sb = freeStringBuf(sb);
 
