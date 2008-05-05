@@ -469,6 +469,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     while (parsePart != PART_NONE) {
 	int goterror = 0;
 	switch (parsePart) {
+	/* XXX Trap unexpected RPMRC_FAIL returns for now */
+	case RPMRC_FAIL:
+	    rpmlog(RPMLOG_ERR, "FIXME: got RPMRC_FAIL from spec parse\n");
+	    abort();
 	case PART_ERROR: /* fallthrough */
 	default:
 	    goterror = 1;
