@@ -127,6 +127,7 @@ static int restoreFirstChar(rpmSpec spec)
     return 0;
 }
 
+/* Return zero on success, 1 if we need to read more and -1 on errors. */
 static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 {
     char ch;
@@ -169,11 +170,10 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	    }
 	}
 	
-	/* If it doesn't, ask for one more line. We need a better
-	 * error code for this. */
+	/* If it doesn't, ask for one more line. */
 	if (pc || bc || nc ) {
 	    spec->nextline = "";
-	    return RPMRC_FAIL;
+	    return 1;
 	}
 	spec->lbufPtr = spec->lbuf;
 
@@ -182,7 +182,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	    expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
 		rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 			spec->lineNum, spec->lbuf);
-		return RPMRC_FAIL;
+		return -1;
 	}
 	spec->nextline = spec->lbuf;
     }
@@ -285,10 +285,11 @@ int readLine(rpmSpec spec, int strip)
 	    return rc;
 
 	/* Copy next file line into the spec line buffer */
-	if ((rc = copyNextLineFromOFI(spec, ofi)) != 0) {
-	    if (rc == RPMRC_FAIL)
-		goto retry;
-	    return rc;
+	rc = copyNextLineFromOFI(spec, ofi);
+	if (rc > 0) {
+	    goto retry;
+	} else if (rc < 0) {
+	    return PART_ERROR;
 	}
     }
 
