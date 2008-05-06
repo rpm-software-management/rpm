@@ -257,40 +257,45 @@ static int rdToken(ParseState state)
 
   default:
     if (risdigit(*p)) {
-      char temp[EXPRBUFSIZ], *t = temp;
+      char *temp;
+      size_t ts;
 
-      temp[0] = '\0';
-      while (*p && risdigit(*p))
-	*t++ = *p++;
-      *t++ = '\0';
-      p--;
+      for (ts=1; p[ts] && risdigit(p[ts]); ts++);
+      temp = xmalloc(ts+1);
+      memcpy(temp, p, ts);
+      p += ts-1;
+      temp[ts] = '\0';
 
       token = TOK_INTEGER;
       v = valueMakeInteger(atoi(temp));
+      free(temp);
 
     } else if (risalpha(*p)) {
-      char temp[EXPRBUFSIZ], *t = temp;
+      char *temp;
+      size_t ts;
 
-      temp[0] = '\0';
-      while (*p && (risalnum(*p) || *p == '_'))
-	*t++ = *p++;
-      *t++ = '\0';
-      p--;
+      for (ts=1; p[ts] && (risalpha(p[ts]) || p[ts] == '_'); ts++);
+      temp = xmalloc(ts+1);
+      memcpy(temp, p, ts);
+      p += ts-1;
+      temp[ts] = '\0';
 
       token = TOK_IDENTIFIER;
-      v = valueMakeString( xstrdup(temp) );
+      v = valueMakeString(temp);
 
     } else if (*p == '\"') {
-      char temp[EXPRBUFSIZ], *t = temp;
+      char *temp;
+      size_t ts;
 
-      temp[0] = '\0';
-      p++;
-      while (*p && *p != '\"')
-	*t++ = *p++;
-      *t++ = '\0';
+      for (ts=1; p[ts] && p[ts] != '\"'; ts++);
+      temp = xmalloc(ts+1);
+      memcpy(temp, p, ts);
+      p += ts-1;
+      temp[ts] = '\0';
 
       token = TOK_STRING;
       v = valueMakeString( rpmExpand(temp, NULL) );
+      free(temp);
 
     } else {
       rpmlog(RPMLOG_ERR, _("parse error in expression\n"));
