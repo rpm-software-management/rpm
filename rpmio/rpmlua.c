@@ -217,10 +217,19 @@ void rpmluaGetVar(rpmlua _lua, rpmluav var)
 #define FINDKEY_REMOVE 2
 static int findkey(lua_State *L, int oper, const char *key, va_list va)
 {
-    char buf[BUFSIZ];
+    char *buf;
     const char *s, *e;
     int ret = 0;
-    (void) vsnprintf(buf, sizeof(buf), key, va);
+    int blen;
+
+    blen = vsnprintf(NULL, 0, key, va);
+    if (blen <= 0) {
+	return -1;
+    }
+
+    buf = xmalloc(blen + 1);
+    vsnprintf(buf, blen + 1, key, va);
+
     s = e = buf;
     lua_pushvalue(L, LUA_GLOBALSINDEX);
     for (;;) {
@@ -263,6 +272,7 @@ static int findkey(lua_State *L, int oper, const char *key, va_list va)
 	}
 	e++;
     }
+    free(buf);
 
     return ret;
 }
