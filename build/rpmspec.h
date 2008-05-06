@@ -167,6 +167,7 @@ struct Package_s {
     char * verifyFile;	/*!< %verifyscript scriptlet. */
 
     StringBuf specialDoc;
+    char *specialDocDir;
 
     struct TriggerFileEntry * triggerFiles;
 

@@ -131,6 +131,7 @@ Package newPackage(rpmSpec spec)
     p->verifyFile = NULL;
 
     p->specialDoc = NULL;
+    p->specialDocDir = NULL;
 
     if (spec->packages == NULL) {
 	spec->packages = p;
@@ -166,6 +167,7 @@ Package freePackage(Package pkg)
     }
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
+    pkg->specialDocDir = _free(pkg->specialDocDir);
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 

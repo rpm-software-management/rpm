@@ -327,6 +327,31 @@ static void fillOutMainPackage(Header h)
     }
 }
 
+static int getSpecialDocDir(Package pkg)
+{
+    const char *errstr, *docdir_fmt = "%{NAME}-%{VERSION}";
+    char *fmt_macro, *fmt; 
+    int rc = -1;
+
+    fmt_macro = rpmExpand("%{?_docdir_fmt}", NULL);
+    if (fmt_macro && strlen(fmt_macro) > 0) {
+	docdir_fmt = fmt_macro;
+    }
+    fmt = headerSprintf(pkg->header, docdir_fmt, 
+			rpmTagTable, rpmHeaderFormats, &errstr);
+    if (!fmt) {
+	rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
+	goto exit;
+    }
+    pkg->specialDocDir = rpmGetPath("%{_docdir}/", fmt, NULL);
+    rc = 0;
+
+exit:
+    free(fmt);
+    free(fmt_macro);
+    return rc;
+}
+
 /**
  */
 static rpmRC readIcon(Header h, const char * file)
@@ -900,6 +925,11 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     if (checkForRequired(pkg->header, NVR)) {
 	goto exit;
     }
+
+    if (getSpecialDocDir(pkg)) {
+	goto exit;
+    }
+	
     /* if we get down here nextPart has been set to non-error */
     res = nextPart;
 

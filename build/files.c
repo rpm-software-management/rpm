@@ -863,39 +863,16 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		     (*fileName ? *fileName : ""));
 	    res = RPMRC_FAIL;
 	} else {
-	/* XXX WATCHOUT: buf is an arg */
-	   {
-		static const char *_docdir_fmt = NULL;
-		static int oneshot = 0;
-		char *ddir, *fmt;
-	        errmsg_t errstr;
-		if (!oneshot) {
-		    _docdir_fmt = rpmExpand("%{?_docdir_fmt}", NULL);
-		    if (!_docdir_fmt || !*_docdir_fmt)
-			_docdir_fmt = "%{NAME}-%{VERSION}";
-		    oneshot = 1;
-		}
-		fmt = headerSprintf(pkg->header, _docdir_fmt, rpmTagTable, rpmHeaderFormats, &errstr);
-		if (!fmt) {
-		    rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
-		    res = RPMRC_FAIL;
-		}
-		ddir = rpmGetPath("%{_docdir}/", fmt, NULL);
-		strcpy(buf, ddir);
-		ddir = _free(ddir);
-	    }
-
-	/* XXX FIXME: this is easy to do as macro expansion */
-
+	    /* XXX FIXME: this is easy to do as macro expansion */
 	    if (! fl->passedSpecialDoc) {
 		pkg->specialDoc = newStringBuf();
 		appendStringBuf(pkg->specialDoc, "DOCDIR=$RPM_BUILD_ROOT");
-		appendLineStringBuf(pkg->specialDoc, buf);
+		appendLineStringBuf(pkg->specialDoc, pkg->specialDocDir);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, "rm -rf $DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, RPM_MKDIR_P " $DOCDIR");
 
-		*fileName = buf;
+		*fileName = pkg->specialDocDir;
 		fl->passedSpecialDoc = 1;
 		fl->isSpecialDoc = 1;
 	    }
