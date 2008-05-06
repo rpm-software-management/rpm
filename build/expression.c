@@ -128,8 +128,6 @@ typedef struct _parseState {
 #define TOK_LOGICAL_AND 18
 #define TOK_LOGICAL_OR  19
 
-#define	EXPRBUFSIZ	BUFSIZ
-
 #if defined(DEBUG_PARSER)
 typedef struct exprTokTableEntry {
     const char *name;
