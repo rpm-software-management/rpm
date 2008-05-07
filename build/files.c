@@ -1204,7 +1204,6 @@ static void genCpioListAndHeader(FileList fl,
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 
-    fi->actions = xcalloc(sizeof(*fi->actions), fi->fc);
     fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
     fi->astriplen = 0;
     if (fl->buildRoot)
