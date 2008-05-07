@@ -118,7 +118,9 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 		    "%s\n", 
 		    strip, basename(fn), patchcmd);
 		
-    fn = _free(fn);
+    free(fn);
+    free(patchcmd);
+    
     return buf;
 }
 
