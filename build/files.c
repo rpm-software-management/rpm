@@ -1209,8 +1209,10 @@ static void genCpioListAndHeader(FileList fl,
     if (fl->buildRoot)
 	fi->astriplen = strlen(fl->buildRoot);
     fi->striplen = 0;
-    fi->fuser = NULL;
-    fi->fgroup = NULL;
+    /* Make all files in the cpio header owned by root:root. */
+    /* XXX Should we? It's against what LSB states (of RPMv3)... */
+    fi->fuser = _free(fi->fuser);
+    fi->fgroup = _free(fi->fgroup);
 
     /* Make the cpio list */
     if (fi->dil != NULL)	/* XXX can't happen */
