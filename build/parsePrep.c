@@ -69,8 +69,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     char *arg_fuzz = NULL;
     char *args = NULL;
     struct Source *sp;
-    char *patcher;
-    rpmCompressedMagic compressed = COMPRESSED_NOT;
+    char *patchcmd;
 
     for (sp = spec->sources; sp != NULL; sp = sp->next) {
 	if ((sp->flags & RPMBUILD_ISPATCH) && (sp->num == c)) {
@@ -84,8 +83,11 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
-    /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
+    /*
+     * FIXME: On non-build parse's, file cannot be stat'd or read but
+     * %{uncompress} doesn't know that so we get errors on non-existent files.
+     */
+    if (!spec->force && checkOwners(fn)) {
 	fn = _free(fn);
 	return NULL;
     }
@@ -102,35 +104,20 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	rasprintf(&arg_fuzz, " --fuzz=%d", fuzz);
     } else arg_fuzz = xstrdup("");
 
-    rasprintf(&args, "%s%s%s%s", arg_backup, arg_fuzz, reverse ? " -R" : "", removeEmpties ? " -E" : "");
+    rasprintf(&args, "-s -p%d %s%s%s%s", strip, arg_backup, arg_fuzz, 
+		reverse ? " -R" : "", 
+		removeEmpties ? " -E" : "");
+
+    patchcmd = rpmExpand("%{uncompress: ", fn, "} | %{__patch} ", args, NULL);
+
     free(arg_fuzz);
     free(arg_backup);
-
-    patcher = rpmGetPath("%{__patch}", NULL);
-    if (compressed) {
-	char *zipper = rpmGetPath(
-	    (compressed == COMPRESSED_BZIP2 ? "%{__bzip2}" : "%{__gzip}"),
-	    NULL);
-
-	rasprintf(&buf,
-		"echo \"Patch #%d (%s):\"\n"
-		"%s -d < '%s' | %s -p%d %s -s\n"
-		"STATUS=$?\n"
-		"if [ $STATUS -ne 0 ]; then\n"
-		"  exit $STATUS\n"
-		"fi",
-		c, (const char *) basename(fn),
-		zipper, patcher,
-		fn, strip, args);
-	zipper = _free(zipper);
-    } else {
-	rasprintf(&buf,
-		"echo \"Patch #%d (%s):\"\n"
-		"%s -p%d %s -s < '%s'", c, (const char *) basename(fn),
-		patcher, strip, args, fn);
-    }
-
-    patcher = _free(patcher);
+    free(args);
+    
+    rasprintf(&buf, "echo \"Patch #%d (%s):\"\n"
+		    "%s\n", 
+		    strip, basename(fn), patchcmd);
+		
     fn = _free(fn);
     return buf;
 }
