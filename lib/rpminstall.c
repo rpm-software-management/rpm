@@ -605,11 +605,12 @@ exit:
     eiu->pkgState = _free(eiu->pkgState);
     eiu->pkgURL = _free(eiu->pkgURL);
     eiu->argv = _free(eiu->argv);
+    rc = eiu->numFailed;
     free(eiu);
 
     rpmtsEmpty(ts);
 
-    return eiu->numFailed;
+    return rc;
 }
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
