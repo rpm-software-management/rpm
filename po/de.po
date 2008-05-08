@@ -333,9 +333,9 @@ msgid "--sign may only be used during package building"
 msgstr "--sign darf nur während der Paket-Erstellung benutzt werden"
 
 #: rpmqv.c:584
-#, fuzzy, c-format
+#, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "Erstellen des Archivs fehlgeschlagen: %s\n"
+msgstr ""
 
 #: rpmqv.c:594
 #, c-format
@@ -583,9 +583,9 @@ msgid "File not found by glob: %s\n"
 msgstr "Datei von \"glob\" nicht gefunden: %s\n"
 
 #: build/files.c:1709
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %%files file %s: %m\n"
-msgstr "Datei %s aus %%files konnte nicht geöffnet: %s\n"
+msgstr "Datei %s aus %%files konnte nicht geöffnet: %m\n"
 
 #: build/files.c:1717
 #, c-format
@@ -1037,14 +1037,14 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "Zeile %d: Ungültige %%setup-Option %s: %s\n"
 
 #: build/parsePrep.c:455
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: %s\n"
-msgstr "%s: %s\n"
+msgstr "%s: %s: %s\n"
 
 #: build/parsePrep.c:472
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid patch number %s: %s\n"
-msgstr "Ungültige Paket-Nummer: %s\n"
+msgstr "Ungültige Patch-Nummer %s: %s\n"
 
 #: build/parsePrep.c:501
 #, c-format
@@ -1331,14 +1331,14 @@ msgstr ""
 "Generiere Header, die mit veralteten RPM-Paketen (v2/3) kompatibel sind"
 
 #: build/rpmfc.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "Konnte fork %s nicht ausführen: %s\n"
+msgstr ""
 
 #: build/rpmfc.c:122
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't chdir to %s: %s\n"
-msgstr "Konnte %s nicht ausführen: %s\n"
+msgstr ""
 
 #: build/rpmfc.c:133
 #, c-format
@@ -1514,9 +1514,8 @@ msgid "(not a blob)"
 msgstr "(kein Blob)"
 
 #: lib/formats.c:251
-#, fuzzy
 msgid "(encoding failed)"
-msgstr "Ausführung fehlgeschlagen\n"
+msgstr ""
 
 #: lib/formats.c:268
 msgid "(invalid xml type)"
@@ -2524,9 +2523,8 @@ msgid "package payload can be compressed using bzip2."
 msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
 #: lib/rpmds.c:1016
-#, fuzzy
 msgid "package payload can be compressed using lzma."
-msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
+msgstr "Paket-Nutzdaten können mit lzma komprimiert werden."
 
 #: lib/rpmds.c:1019
 msgid "package payload file(s) have \"./\" prefix."
@@ -2784,9 +2782,9 @@ msgid "missing argument for %s at %s:%d\n"
 msgstr "Fehlendes Argument für %s bei %s:%d\n"
 
 #: lib/rpmrc.c:574
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %m\n"
-msgstr "Kann %s bei %s:%d nicht öffnen: %s\n"
+msgstr "Kann %s bei %s:%d nicht öffnen: %m\n"
 
 #: lib/rpmrc.c:590
 #, c-format
@@ -2809,9 +2807,9 @@ msgid "Please contact %s\n"
 msgstr "Bitte (in Englisch) %s kontaktieren\n"
 
 #: lib/rpmrc.c:1635
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "Kann %s nicht zum Lesen öffnen: %s.\n"
+msgstr "Kann %s nicht zum Lesen öffnen: %m.\n"
 
 #: lib/rpmts.c:99
 #, c-format
@@ -2990,9 +2988,9 @@ msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: UNBEKANNT (%d)\n"
 
 #: lib/transaction.c:1191 lib/verify.c:413
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to change root directory: %m\n"
-msgstr "Erzeugen des Verzeichnises %s fehlgeschlagen: %s\n"
+msgstr ""
 
 #: lib/verify.c:251
 #, c-format
