@@ -210,7 +210,7 @@ typedef	char * security_context_t;
 
 #define	security_check_context(_c)	(0)
 
-#define	is_selinux_enabled()	(-1)
+#define	is_selinux_enabled()	(0)
 
 #define matchpathcon_init(_fn)			(-1)
 #define matchpathcon_fini()			(0)
