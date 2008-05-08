@@ -957,16 +957,8 @@ void rpmtsSetRootDir(rpmts ts, const char * rootDir)
     if (ts != NULL) {
 	ts->rootDir = _free(ts->rootDir);
 
-	if (rootDir == NULL) {
-#ifndef	DYING
-	    /* XXX this smells funny, shouldn't it be "/" and not "" ? */
-	    ts->rootDir = xstrdup("");
-#endif
-	    return;
-	}
-
 	/* Ensure clean path with a trailing slash */
-	ts->rootDir = rpmGetPath(rootDir, NULL);
+	ts->rootDir = rootDir ? rpmGetPath(rootDir, NULL) : xstrdup("/");
 	if (strcmp(ts->rootDir, "/") != 0) {
 	    rstrcat(&ts->rootDir, "/");
 	}
