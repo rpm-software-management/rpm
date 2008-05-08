@@ -10,6 +10,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
+#include <rpm/argv.h>
 #include "rpmdb/rpmdb_internal.h"
 #include "debug.h"
 
@@ -434,14 +435,12 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     return dbi;
 }
 
-const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
+char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
-    static char buf[256];
+    ARGV_t flags = NULL;
     struct poptOption *opt;
-    char * oe;
+    char *buf;
 
-    oe = buf;
-    *oe = '\0';
     for (opt = rdbOptions; opt->longName != NULL; opt++) {
 	if (opt->argInfo != POPT_BIT_SET)
 	    continue;
@@ -456,16 +455,18 @@ const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	}
 	if ((dbflags & opt->val) != opt->val)
 	    continue;
-	if (oe != buf)
-	    *oe++ = ':';
-	oe = stpcpy(oe, opt->longName);
+	argvAdd(&flags, opt->longName);
 	dbflags &= ~opt->val;
     }
     if (dbflags) {
-	if (oe != buf)
-	    *oe++ = ':';
-	    sprintf(oe, "0x%x", (unsigned)dbflags);
+	char *df = NULL;
+	rasprintf(&df, "0x%x", (unsigned)dbflags);
+	argvAdd(&flags, df);
+	free(df);
     }
+    buf = argvJoin(flags, ":");
+    argvFree(flags);
+	
     return buf;
 }
 

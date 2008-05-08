@@ -371,9 +371,9 @@ dbiIndex db3Free( dbiIndex dbi);
  * Format db3 open flags for debugging print.
  * @param dbflags		db open flags
  * @param print_dbenv_flags	format db env flags instead?
- * @return			formatted flags (static buffer)
+ * @return			formatted flags (malloced)
  */
-const char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
+char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 
 /** \ingroup dbi
  * Return handle for an index database.

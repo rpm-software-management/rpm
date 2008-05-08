@@ -238,9 +238,12 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
-    if (dbfile)
+    if (dbfile) {
+	char *dbiflags = prDbiOpenFlags(eflags, 1);
 	rpmlog(RPMLOG_DEBUG, "opening  db environment %s/%s %s\n",
-		dbhome, dbfile, prDbiOpenFlags(eflags, 1));
+		dbhome, dbfile, dbiflags);
+	free(dbiflags);
+    }
 
     /* XXX Can't do RPC w/o host. */
     if (dbi->dbi_host == NULL)
@@ -934,9 +937,12 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	}
     }
 
-    rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
+    {	char *dbiflags = prDbiOpenFlags(oflags, 0);
+    	rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
 		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)),
-		prDbiOpenFlags(oflags, 0), dbi->dbi_mode);
+		dbiflags, dbi->dbi_mode);
+	free(dbiflags);
+    }
 
     if (rc == 0) {
 	static int _lockdbfd = 0;
