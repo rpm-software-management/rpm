@@ -416,11 +416,11 @@ const char * rpmtsRootDir(rpmts ts);
 
 /** \ingroup rpmts
  * Set transaction rootDir, i.e. path to chroot(2).
- * @todo		disallow funky http:// etc urls...
  * @param ts		transaction set
  * @param rootDir	new transaction rootDir (or NULL)
+ * @return		0 on success, -1 on error (invalid rootDir)
  */
-void rpmtsSetRootDir(rpmts ts, const char * rootDir);
+int rpmtsSetRootDir(rpmts ts, const char * rootDir);
 
 /** \ingroup rpmts
  * Get transaction currDir, i.e. current directory before chroot(2).

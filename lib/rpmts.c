@@ -952,17 +952,19 @@ const char * rpmtsRootDir(rpmts ts)
     return rootDir;
 }
 
-void rpmtsSetRootDir(rpmts ts, const char * rootDir)
+int rpmtsSetRootDir(rpmts ts, const char * rootDir)
 {
-    if (ts != NULL) {
-	ts->rootDir = _free(ts->rootDir);
-
-	/* Ensure clean path with a trailing slash */
-	ts->rootDir = rootDir ? rpmGetPath(rootDir, NULL) : xstrdup("/");
-	if (strcmp(ts->rootDir, "/") != 0) {
-	    rstrcat(&ts->rootDir, "/");
-	}
+    if (ts == NULL || (rootDir && rootDir[0] != '/')) {
+	return -1;
     }
+
+    ts->rootDir = _free(ts->rootDir);
+    /* Ensure clean path with a trailing slash */
+    ts->rootDir = rootDir ? rpmGetPath(rootDir, NULL) : xstrdup("/");
+    if (strcmp(ts->rootDir, "/") != 0) {
+	rstrcat(&ts->rootDir, "/");
+    }
+    return 0;
 }
 
 const char * rpmtsCurrDir(rpmts ts)
