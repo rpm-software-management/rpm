@@ -885,40 +885,6 @@ AC_CHECK_FUNC(lchown,
 AC_SUBST(__CHOWN_RHF)
 AC_SUBST(__CHGRP_RHF)
 
-dnl
-dnl figure out what root's primary group is
-dnl
-AC_MSG_CHECKING(root's primary group)
-AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-
-int main()
-{
-	struct passwd *root = NULL;
-	struct group *roots_group = NULL;
-	FILE * tempfile = NULL;
-
-	root = getpwuid( (uid_t) 0 );
-	if (root != NULL) {
-		roots_group = getgrgid(root->pw_gid);
-		if (roots_group != NULL) {
-			tempfile = fopen("conftest_rootg", "w");
-			if (tempfile != NULL) {
-				fprintf(tempfile, "%s\n", roots_group->gr_name);
-				fclose(tempfile);
-				exit(0);
-			}
-		}
-	}
-
-	exit(1);
-}]])],[ROOT_GROUP=`cat conftest_rootg`],[ROOT_GROUP="root"],[ROOT_GROUP="root"
-])
-AC_MSG_RESULT($ROOT_GROUP)
-AC_SUBST(ROOT_GROUP)
-
 if echo "$host_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
