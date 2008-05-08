@@ -267,11 +267,10 @@ static const char * const db3_config_default =
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
-    char dbiTagMacro[128];
-    char * dbOpts;
+    char *dbOpts;
 
-    sprintf(dbiTagMacro, "%%{_dbi_config_%s}", rpmTagGetName(rpmtag));
-    dbOpts = rpmExpand(dbiTagMacro, NULL);
+    dbOpts = rpmExpand("%{_dbi_config_", rpmTagGetName(rpmtag), "}", NULL);
+    
     if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
 	dbOpts = _free(dbOpts);
 	dbOpts = rpmExpand("%{_dbi_config}", NULL);
