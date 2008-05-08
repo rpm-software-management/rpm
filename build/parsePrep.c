@@ -363,20 +363,14 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     appendStringBuf(spec->prep, getStringBuf(after));
     after = freeStringBuf(after);
 
-    /* XXX FIXME: owner & group fixes were conditioned on !geteuid() */
-    /* Fix the owner, group, and permissions of the setup build tree */
-    {	static const char * const fixmacs[] =
-		{ "%{_fixowner}", "%{_fixgroup}", "%{_fixperms}", NULL };
-	const char * const * fm;
-
-	for (fm = fixmacs; *fm; fm++) {
-	    char * fix = rpmExpand(*fm, " .", NULL);
-	    if (fix && *fix != '%')
-		appendLineStringBuf(spec->prep, fix);
-	    fix = _free(fix);
+    /* Fix the permissions of the setup build tree */
+    {	char *fix = rpmExpand("%{_fixperms} .", NULL);
+	if (fix && *fix != '%') {
+	    appendLineStringBuf(spec->prep, fix);
 	}
+	free(fix);
     }
-    
+	
     return RPMRC_OK;
 }
 
