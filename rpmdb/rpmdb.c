@@ -652,7 +652,7 @@ int rpmdbCheckSignals(void)
 /**
  * Block all signals, returning previous signal mask.
  */
-static int blockSignals(rpmdb db, sigset_t * oldMask)
+static int blockSignals(sigset_t * oldMask)
 {
     sigset_t newMask;
 
@@ -669,7 +669,7 @@ static int blockSignals(rpmdb db, sigset_t * oldMask)
 /**
  * Restore signal mask.
  */
-static int unblockSignals(rpmdb db, sigset_t * oldMask)
+static int unblockSignals(sigset_t * oldMask)
 {
     (void) rpmdbCheckSignals();
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
@@ -1473,7 +1473,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	}
 
 	if (data->data != NULL && rpmrc != RPMRC_FAIL) {
-	    (void) blockSignals(dbi->dbi_rpmdb, &signalMask);
+	    (void) blockSignals(&signalMask);
 	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
@@ -1481,7 +1481,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 			rc, mi->mi_prevoffset, rpmTagGetName(dbi->dbi_rpmtag));
 	    }
 	    xx = dbiSync(dbi, 0);
-	    (void) unblockSignals(dbi->dbi_rpmdb, &signalMask);
+	    (void) unblockSignals(&signalMask);
 	}
 	data->data = _free(data->data);
 	data->size = 0;
@@ -2430,7 +2430,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	free(nevra);
     }
 
-    (void) blockSignals(db, &signalMask);
+    (void) blockSignals(&signalMask);
 
 	/* FIX: rpmvals heartburn */
     {	int dbix;
@@ -2658,7 +2658,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	rec = _free(rec);
     }
 
-    (void) unblockSignals(db, &signalMask);
+    (void) unblockSignals(&signalMask);
 
     h = headerFree(h);
 
@@ -2711,7 +2711,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
     xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, &count);
 
-    (void) blockSignals(db, &signalMask);
+    (void) blockSignals(&signalMask);
 
     {
 	unsigned int firstkey = 0;
@@ -3048,7 +3048,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     }
 
 exit:
-    (void) unblockSignals(db, &signalMask);
+    (void) unblockSignals(&signalMask);
 
     return ret;
 }
