@@ -11,7 +11,6 @@
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmstring.h>
 
 #include "lib/cpio.h"
 #include "lib/fsm.h"
@@ -32,7 +31,8 @@ static int strntoul(const char *str,char **endptr, int base, size_t num)
     char buf[num+1], * end;
     unsigned long ret;
 
-    rstrlcpy(buf, str, num+1);
+    strncpy(buf, str, num);
+    buf[num] = '\0';
 
     ret = strtoul(buf, &end, base);
     if (*end != '\0')
