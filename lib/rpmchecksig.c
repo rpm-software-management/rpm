@@ -288,12 +288,18 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_2);
 
 	/* Toss and recalculate header+payload size and digests. */
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_SIZE);
-	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SIZE, qva->passPhrase);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_MD5);
-	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_MD5, qva->passPhrase);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_SHA1);
-	xx = rpmAddSignature(sigh, sigtarget, RPMSIGTAG_SHA1, qva->passPhrase);
+	{
+	    enum rpmtagSignature const sigs[] = { RPMSIGTAG_SIZE, 
+						  RPMSIGTAG_MD5,
+						  RPMSIGTAG_SHA1,
+						};
+	    int i, nsigs = sizeof(sigs) / sizeof(enum rpmtagSignature);
+	    for (i = 0; i < nsigs; i++) {
+		(void) headerRemoveEntry(sigh, sigs[i]);
+		if (rpmAddSignature(sigh, sigtarget, sigs[i], qva->passPhrase))
+		    goto exit;
+	    }
+	}
 
 	if (deleting) {	/* Nuke all the signature tags. */
 	    xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
@@ -326,7 +332,9 @@ static int rpmReSign(/*@unused@*/ rpmts ts,
 	    }
 
 	    xx = headerRemoveEntry(sigh, sigtag);
-	    xx = rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase);
+	    if (rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase)) {
+		goto exit;
+	    }
 
 	    /* If package was previously signed, check for same signer. */
 	    memset(newsignid, 0, sizeof(newsignid));
@@ -665,7 +673,9 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    ||   uh == NULL)
 	    {
 		h = headerFree(h);
-		rpmError(RPMERR_FREAD, _("%s: headerGetEntry failed\n"), fn);
+		rpmlog(RPMERR_FREAD, 
+			_("%s: Immutable header region could not be read. "
+			"Corrupted package?\n"), fn);
 		goto exit;
 	    }
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);

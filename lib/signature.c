@@ -732,6 +732,9 @@ static int makeHDRSignature(Header sigh, const char * file, int_32 sigTag,
 	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
 	     ||  uh == NULL)
 	    {
+		rpmlog(RPMERR_FREAD, 
+				_("Immutable header region could not be read. "
+				"Corrupted package?\n"));
 		h = headerFree(h);
 		goto exit;
 	    }
