@@ -3302,7 +3302,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 
 	    if (selinux) {
 		security_context_t scon = NULL;
-		if (matchpathcon(dest, &st, &scon) != -1) {
+		if (matchpathcon(dest, st.st_mode, &scon) != -1) {
 		    (void) setfilecon(dest, scon);
 		    freecon(scon);
 		}
