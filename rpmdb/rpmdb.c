@@ -3256,7 +3256,8 @@ static int rpmdbMoveDatabase(const char * prefix,
     struct stat st;
     int rc = 0;
     int xx;
- 
+    int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
+
     switch (_olddbapi) {
     case 4:
         /* Fall through */
@@ -3279,7 +3280,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 		goto cont;
 
 	    /*
-	     * Restore uid/gid/mode/mtime if possible.
+	     * Restore uid/gid/mode/mtime/security context if possible.
 	     */
 	    if (stat(dest, &st) < 0)
 		if (stat(src, &st) < 0)
@@ -3296,6 +3297,15 @@ static int rpmdbMoveDatabase(const char * prefix,
 		stamp.modtime = st.st_mtime;
 		xx = utime(dest, &stamp);
 	    }
+
+	    if (selinux) {
+		security_context_t scon = NULL;
+		if (matchpathcon(dest, &st, &scon) != -1) {
+		    (void) setfilecon(dest, scon);
+		    freecon(scon);
+		}
+	    }
+		
 cont:
 	    free(src);
 	    free(dest);
@@ -3316,6 +3326,9 @@ cont:
     rc = rpmdbRemoveDatabase(prefix, newdbpath, _newdbapi);
 
 #endif
+    if (selinux) {
+	(void) matchpathcon_fini();
+    }
     return rc;
 }
 
