@@ -3257,7 +3257,9 @@ static int rpmdbMoveDatabase(const char * prefix,
     int rc = 0;
     int xx;
     int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
+    sigset_t sigMask;
 
+    blockSignals(&sigMask);
     switch (_olddbapi) {
     case 4:
         /* Fall through */
@@ -3319,6 +3321,8 @@ cont:
     case 0:
 	break;
     }
+    unblockSignals(&sigMask);
+
 #ifdef	SQLITE_HACK_XXX
     if (rc || _olddbapi == _newdbapi)
 	return rc;
