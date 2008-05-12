@@ -225,50 +225,6 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
 }
 
 /**
- * Return tag name from value.
- * @todo bsearch on sorted value table.
- * @param tbl		tag table
- * @param val		tag value to find
- * @return		tag name, NULL on not found
- */
-static const char * myTagName(headerTagTableEntry tbl, int val)
-{
-    static char name[128];
-    const char * s;
-    char *t;
-
-    for (; tbl->name != NULL; tbl++) {
-	if (tbl->val == val)
-	    break;
-    }
-    if ((s = tbl->name) == NULL)
-	return NULL;
-    s += sizeof("RPMTAG_") - 1;
-    t = name;
-    *t++ = *s++;
-    while (*s != '\0')
-	*t++ = rtolower(*s++);
-    *t = '\0';
-    return name;
-}
-
-/**
- * Return tag value from name.
- * @todo bsearch on sorted name table.
- * @param tbl		tag table
- * @param name		tag name to find
- * @return		tag value, 0 on not found
- */
-static int myTagValue(headerTagTableEntry tbl, const char * name)
-{
-    for (; tbl->name != NULL; tbl++) {
-	if (!rstrcasecmp(tbl->name + sizeof("RPMTAG"), name))
-	    return tbl->val;
-    }
-    return 0;
-}
-
-/**
  * Search extensions and tags for a name.
  * @param hsa		headerSprintf args
  * @param token		parsed fields
@@ -308,8 +264,8 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     }
 
     /* Search tag names. */
-    stag->tag = myTagValue(hsa->tags, tagname);
-    if (stag->tag != 0)
+    stag->tag = rpmTagGetValue(tagname);
+    if (stag->tag != RPMTAG_NOT_FOUND)
 	goto bingo;
 
     return 1;
@@ -972,7 +928,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		!strcmp(spft->u.tag.type, "xml"));
 
 	    if (isxml) {
-		const char * tagN = myTagName(hsa->tags, spft->u.tag.tag);
+		const char * tagN = rpmTagGetName(spft->u.tag.tag);
 
 		need = sizeof("  <rpmTag name=\"\">\n") - 1;
 		if (tagN != NULL)
