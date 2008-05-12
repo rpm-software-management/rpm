@@ -2,7 +2,7 @@
 #define H_RPMDB
 
 /** \ingroup rpmdb dbi db1 db3
- * \file rpmdb/rpmdb.h
+ * \file lib/rpmdb.h
  * Access RPM indices using Berkeley DB interface(s).
  */
 

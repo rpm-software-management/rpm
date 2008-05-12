@@ -1,5 +1,5 @@
 /**
- * \file rpmdb/tagname.c
+ * \file lib/tagname.c
  */
 
 #include "system.h"

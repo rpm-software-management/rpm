@@ -18,7 +18,6 @@ _rpmmodule_la_LDFLAGS = -module -avoid-version
 _rpmmodule_la_LIBADD = \
 	$(top_builddir)/build/librpmbuild.la \
 	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_NSS_LIB@ \
 	@WITH_POPT_LIB@ \

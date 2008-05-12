@@ -1,5 +1,5 @@
 /** \ingroup rpmdb
- * \file rpmdb/dbconfig.c
+ * \file lib/dbconfig.c
  */
 
 #include "system.h"
@@ -11,7 +11,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
 #include <rpm/argv.h>
-#include "rpmdb/rpmdb_internal.h"
+#include "lib/rpmdb_internal.h"
 #include "debug.h"
 
 
@@ -402,7 +402,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;
     dbi->dbi_mode = rpmdb->db_mode;
-    /* FIX: figger rpmdb/dbi refcounts */
+    /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_rpmtag = rpmtag;
     

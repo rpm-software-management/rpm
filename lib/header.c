@@ -1,5 +1,5 @@
 /** \ingroup header
- * \file rpmdb/header.c
+ * \file lib/header.c
  */
 
 /* RPM - Copyright (C) 1995-2002 Red Hat Software */
@@ -13,7 +13,7 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
-#include "rpmdb/header_internal.h"
+#include "lib/header_internal.h"
 
 #include "debug.h"
 

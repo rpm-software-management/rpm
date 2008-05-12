@@ -17,7 +17,6 @@ librpmbuild_la_SOURCES = \
 librpmbuild_la_LDFLAGS = -release 4.6
 librpmbuild_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
-	$(top_builddir)/rpmdb/librpmdb.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
 	@WITH_LIBELF_LIB@ \

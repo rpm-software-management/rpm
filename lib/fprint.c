@@ -1,13 +1,13 @@
 /**
- * \file rpmdb/fprint.c
+ * \file lib/fprint.c
  */
 
 #include "system.h"
 
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
 
-#include "rpmdb/rpmdb_internal.h"
-#include "rpmdb/fprint.h"
+#include "lib/rpmdb_internal.h"
+#include "lib/fprint.h"
 #include "debug.h"
 
 fingerPrintCache fpCacheCreate(int sizeHint)

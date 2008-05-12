@@ -19,16 +19,15 @@ endif
 if WITH_LUAEXT
 SUBDIRS += luaext
 endif
-SUBDIRS += rpmio rpmdb lib build python scripts doc . tests
+SUBDIRS += rpmio lib build python scripts doc . tests
 
-DIST_SUBDIRS = po misc luaext rpmio rpmdb lib build python scripts doc tests
+DIST_SUBDIRS = po misc luaext rpmio lib build python scripts doc tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/build
 AM_CPPFLAGS += -I$(top_srcdir)/lib
-AM_CPPFLAGS += -I$(top_builddir)/rpmdb -I$(top_srcdir)/rpmdb
 AM_CPPFLAGS += -I$(top_srcdir)/rpmio
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
@@ -55,10 +54,8 @@ pkginclude_HEADERS += rpmio/rpmsw.h
 pkginclude_HEADERS += rpmio/rpmfileutil.h
 pkginclude_HEADERS += rpmio/rpmutil.h
 
-pkginclude_HEADERS += rpmdb/header.h
-pkginclude_HEADERS += rpmdb/rpmdb.h
-nodist_pkginclude_HEADERS += rpmdb/rpmints.h
-
+pkginclude_HEADERS += lib/header.h
+pkginclude_HEADERS += lib/rpmdb.h
 pkginclude_HEADERS += lib/rpmcallback.h
 pkginclude_HEADERS += lib/rpmcli.h
 pkginclude_HEADERS += lib/rpmlib.h
@@ -72,6 +69,7 @@ pkginclude_HEADERS += lib/rpmte.h
 pkginclude_HEADERS += lib/rpmts.h
 pkginclude_HEADERS += lib/rpmtypes.h
 pkginclude_HEADERS += lib/rpmvf.h
+nodist_pkginclude_HEADERS += lib/rpmints.h
 
 pkginclude_HEADERS += build/rpmbuild.h
 pkginclude_HEADERS += build/rpmfc.h
@@ -91,36 +89,36 @@ DISTCLEANFILES += find-requires
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
-rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmb_SOURCES =		build.c rpmqv.c build.h debug.h system.h
 rpmb_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMBT
-rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmb_LDADD += 		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmd_SOURCES =		rpmqv.c debug.h system.h
 rpmd_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB
-rpmd_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmd_LDADD =		lib/librpm.la rpmio/librpmio.la
 rpmd_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmi_SOURCES =		rpmqv.c debug.h system.h
 rpmi_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU
-rpmi_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmi_LDADD =		lib/librpm.la rpmio/librpmio.la
 rpmi_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmk_SOURCES =		rpmqv.c debug.h system.h
 rpmk_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMK
-rpmk_LDADD =		lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmk_LDADD =		lib/librpm.la rpmio/librpmio.la
 rpmk_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmq_SOURCES =		rpmqv.c debug.h system.h
 rpmq_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMQV
-rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmq_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
-rpm2cpio_LDADD =	lib/librpm.la rpmdb/librpmdb.la rpmio/librpmio.la
+rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
 rpm2cpio_LDADD +=	@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 

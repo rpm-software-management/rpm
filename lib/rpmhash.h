@@ -2,7 +2,7 @@
 #define H_RPMHASH
 
 /**
- * \file rpmdb/rpmhash.h
+ * \file lib/rpmhash.h
  * Hash table implemenation.
  */
 

@@ -1,5 +1,5 @@
 /** \ingroup rpmdb dbi
- * \file rpmdb/rpmdb.c
+ * \file lib/rpmdb.c
  */
 
 #include "system.h"
@@ -27,9 +27,9 @@
 #include <rpm/rpmdb.h>
 #include <rpm/argv.h>
 
-#include "rpmdb/rpmdb_internal.h"
-#include "rpmdb/fprint.h"
-#include "rpmdb/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
+#include "lib/rpmdb_internal.h"
+#include "lib/fprint.h"
+#include "lib/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
 #include "debug.h"
 
 int _rpmdb_debug = 0;

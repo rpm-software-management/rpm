@@ -1,7 +1,7 @@
 #include "system.h"
 const char *__progname;
 
-#include "rpmdb/header_internal.h"
+#include "lib/header_internal.h"
 #include "debug.h"
 
 int main(int argc, char *argv[])

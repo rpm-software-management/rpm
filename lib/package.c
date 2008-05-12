@@ -16,7 +16,7 @@
 #include "lib/signature.h"
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* fd*Digest(), fd stats */
-#include "rpmdb/header_internal.h"	/* XXX headerCheck */
+#include "lib/header_internal.h"	/* XXX headerCheck */
 
 #include "debug.h"
 

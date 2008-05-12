@@ -19,7 +19,7 @@
 #include "lib/misc.h"	/* XXX for dosetenv() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
-#include "rpmdb/header_internal.h"
+#include "lib/header_internal.h"
 
 #include "debug.h"
 

@@ -35,7 +35,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmdb.h>
 
-#include "rpmdb/rpmdb_internal.h"
+#include "lib/rpmdb_internal.h"
 
 #include "debug.h"
 

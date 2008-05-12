@@ -1,5 +1,5 @@
-include/rpm/rpmints.h: rpmdb/rpmints.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/rpmdb/rpmints.h include/rpm/rpmints.h
+include/rpm/rpmints.h: lib/rpmints.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/rpmints.h include/rpm/rpmints.h
 BUILT_SOURCES += include/rpm/rpmints.h
 CLEANFILES += include/rpm/rpmints.h
 include/rpm/argv.h: rpmio/argv.h include/rpm/$(dirstamp)
@@ -46,12 +46,12 @@ include/rpm/rpmutil.h: rpmio/rpmutil.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmutil.h include/rpm/rpmutil.h
 BUILT_SOURCES += include/rpm/rpmutil.h
 CLEANFILES += include/rpm/rpmutil.h
-include/rpm/header.h: rpmdb/header.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/rpmdb/header.h include/rpm/header.h
+include/rpm/header.h: lib/header.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/header.h include/rpm/header.h
 BUILT_SOURCES += include/rpm/header.h
 CLEANFILES += include/rpm/header.h
-include/rpm/rpmdb.h: rpmdb/rpmdb.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/rpmdb/rpmdb.h include/rpm/rpmdb.h
+include/rpm/rpmdb.h: lib/rpmdb.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/rpmdb.h include/rpm/rpmdb.h
 BUILT_SOURCES += include/rpm/rpmdb.h
 CLEANFILES += include/rpm/rpmdb.h
 include/rpm/rpmcallback.h: lib/rpmcallback.h include/rpm/$(dirstamp)

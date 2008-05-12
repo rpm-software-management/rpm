@@ -13,8 +13,8 @@
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
 
-#include "rpmdb/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
-#include "rpmdb/fprint.h"
+#include "lib/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
+#include "lib/fprint.h"
 #include "lib/psm.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */

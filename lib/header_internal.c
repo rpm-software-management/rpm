@@ -1,11 +1,11 @@
 /** \ingroup header
- * \file rpmdb/header_internal.c
+ * \file lib/header_internal.c
  */
 
 #include "system.h"
 
 #include <rpm/rpmtag.h>
-#include "rpmdb/header_internal.h"
+#include "lib/header_internal.h"
 
 #include "debug.h"
 

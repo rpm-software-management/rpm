@@ -1,5 +1,5 @@
 /** \ingroup rpmcli
- * \file rpmdb/poptDB.c
+ * \file lib/poptDB.c
  *  Popt tables for database modes.
  */
 

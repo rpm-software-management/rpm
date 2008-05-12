@@ -14,7 +14,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 
-#include "rpmdb/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
+#include "lib/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
 #include "lib/rpmte_internal.h"		/* XXX tsortInfo_s */
 #include "lib/rpmts_internal.h"
 
