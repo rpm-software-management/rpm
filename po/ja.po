@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-05-12 12:30+0300\n"
+"POT-Creation-Date: 2008-05-12 18:24+0300\n"
 "PO-Revision-Date: 2005-04-04 22:30+1000\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -570,7 +570,7 @@ msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:1658 lib/rpminstall.c:268
+#: build/files.c:1658 lib/rpminstall.c:266
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
@@ -784,12 +784,12 @@ msgstr "%s への Payload 書き込みに失敗: %s\n"
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:701
+#: build/pack.c:700
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:717
+#: build/pack.c:716
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -894,102 +894,102 @@ msgstr "%s フィールドがパッケージ中に必要です: %s\n"
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "パッケージ中に %s エントリが重複しています: %s\n"
 
-#: build/parsePreamble.c:343
+#: build/parsePreamble.c:342
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:371
+#: build/parsePreamble.c:370
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "アイコン %s をオープンできません: %s\n"
 
-#: build/parsePreamble.c:389
+#: build/parsePreamble.c:388
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "アイコン %s を読むことができません: %s\n"
 
-#: build/parsePreamble.c:402
+#: build/parsePreamble.c:401
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "不明なアイコンタイプ: %s\n"
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:441
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 
-#: build/parsePreamble.c:472
+#: build/parsePreamble.c:471
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s\n"
 
-#: build/parsePreamble.c:480
+#: build/parsePreamble.c:479
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 行目: 空のタグ: %s\n"
 
-#: build/parsePreamble.c:503 build/parsePreamble.c:510
+#: build/parsePreamble.c:502 build/parsePreamble.c:509
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "%d 行目: %s 中に不正な文字 '-' : %s\n"
 
-#: build/parsePreamble.c:563
+#: build/parsePreamble.c:562
 #, c-format
 msgid "BuildRoot can not be \"/\": %s\n"
 msgstr "BuildRoot は \"/\" にすることはできません: %s\n"
 
-#: build/parsePreamble.c:576
+#: build/parsePreamble.c:575
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 行目: Prefix は \"/\" で終わってはいけません: %s\n"
 
-#: build/parsePreamble.c:588
+#: build/parsePreamble.c:587
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 行目: Docdir は '/' で始まらなければなりません: %s\n"
 
-#: build/parsePreamble.c:601
+#: build/parsePreamble.c:600
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be a number: %s\n"
 msgstr "%d 行目: Epoch/Serial フィールドは数字でなければなりません: %s\n"
 
-#: build/parsePreamble.c:642 build/parsePreamble.c:653
+#: build/parsePreamble.c:641 build/parsePreamble.c:652
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な修飾子 %s : %s\n"
 
-#: build/parsePreamble.c:679
+#: build/parsePreamble.c:678
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchtecture フォーマット: %s\n"
 
-#: build/parsePreamble.c:688
+#: build/parsePreamble.c:687
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d\n"
 
-#: build/parsePreamble.c:780
+#: build/parsePreamble.c:779
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "旧来の構文はサポートされません: %s\n"
 
-#: build/parsePreamble.c:842
+#: build/parsePreamble.c:841
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s\n"
 
-#: build/parsePreamble.c:848
+#: build/parsePreamble.c:847
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "パッケージは既に存在しています: %s\n"
 
-#: build/parsePreamble.c:880
+#: build/parsePreamble.c:879
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s\n"
 
-#: build/parsePreamble.c:905
+#: build/parsePreamble.c:904
 msgid "Spec file can't use BuildRoot\n"
 msgstr "spec ファイルは BuildRoot を使用できません。\n"
 
@@ -1477,33 +1477,42 @@ msgstr "ループ:\n"
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder に失敗, 残り %d 個\n"
 
-#: lib/formats.c:37 lib/formats.c:67 lib/formats.c:96 lib/formats.c:444
-#: lib/header.c:2857 lib/header.c:2882 lib/header.c:2901
+#: lib/formats.c:34 lib/formats.c:59 lib/formats.c:78 lib/formats.c:192
+#: lib/formats.c:222 lib/formats.c:251 lib/formats.c:599
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
-#: lib/formats.c:156
+#: lib/formats.c:112
+#, c-format
+msgid "%c"
+msgstr "%c"
+
+#: lib/formats.c:128
+msgid "%a %b %d %Y"
+msgstr "%a %b %d %Y"
+
+#: lib/formats.c:311
 msgid "(not base64)"
 msgstr "(base64 ではありません)"
 
-#: lib/formats.c:167
+#: lib/formats.c:322
 msgid "(invalid type)"
 msgstr "(不正なタイプ)"
 
-#: lib/formats.c:195 lib/formats.c:335
+#: lib/formats.c:350 lib/formats.c:490
 msgid "(not a blob)"
 msgstr "(blob ではありません)"
 
-#: lib/formats.c:251
+#: lib/formats.c:406
 #, fuzzy
 msgid "(encoding failed)"
 msgstr "実行失敗\n"
 
-#: lib/formats.c:268
+#: lib/formats.c:423
 msgid "(invalid xml type)"
 msgstr "(不正な XML タイプ)"
 
-#: lib/formats.c:358
+#: lib/formats.c:513
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
 
@@ -1582,108 +1591,108 @@ msgstr "%%%s を %s に作成できません。\n"
 msgid "cannot write to %%%s %s\n"
 msgstr "%%%s を %s に書き込めません\n"
 
-#: lib/package.c:335
+#: lib/package.c:259
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob サイズ (%d): 異常です。8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:346 lib/package.c:401 lib/package.c:470 lib/signature.c:198
+#: lib/package.c:270 lib/package.c:325 lib/package.c:394 lib/signature.c:198
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:364 lib/signature.c:212
+#: lib/package.c:288 lib/signature.c:212
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:382 lib/signature.c:236
+#: lib/package.c:306 lib/signature.c:236
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "region ヘッダ以降: 異常です。tag %d type %d offset %d count %d\n"
 
-#: lib/package.c:392 lib/signature.c:246
+#: lib/package.c:316 lib/signature.c:246
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
 
-#: lib/package.c:419
+#: lib/package.c:343
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "SHA1 ヘッダ: 異常です。16 進数ではありません。\n"
 
-#: lib/package.c:431
+#: lib/package.c:355
 #, fuzzy
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: lib/package.c:441
+#: lib/package.c:365
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "ヘッダ DSA: 異常です．バイナリではありません。\n"
 
-#: lib/package.c:501 lib/package.c:542
+#: lib/package.c:425 lib/package.c:466
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:620
+#: lib/package.c:544
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "ヘッダサイズ(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:624
+#: lib/package.c:548
 msgid "hdr magic: BAD\n"
 msgstr "ヘッダマジック: 異常です。\n"
 
-#: lib/package.c:629
+#: lib/package.c:553
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "ヘッダタグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
-#: lib/package.c:635
+#: lib/package.c:559
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "ヘッダデータ: 異常です。バイト数(%d)が範囲外です。\n"
 
-#: lib/package.c:645
+#: lib/package.c:569
 #, fuzzy, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "ヘッダ blob(%d): 異常です。読み込み結果は %d です。\n"
 
-#: lib/package.c:657
+#: lib/package.c:581
 msgid "hdr load: BAD\n"
 msgstr "ヘッダロード: 異常です。\n"
 
-#: lib/package.c:717 lib/rpmchecksig.c:185 lib/rpmchecksig.c:602
+#: lib/package.c:641 lib/rpmchecksig.c:185 lib/rpmchecksig.c:602
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature に失敗しました: %s"
 
-#: lib/package.c:724 lib/rpmchecksig.c:192 lib/rpmchecksig.c:610
+#: lib/package.c:648 lib/rpmchecksig.c:192 lib/rpmchecksig.c:610
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: 署名がありません。\n"
 
-#: lib/package.c:789
+#: lib/package.c:713
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead に失敗しました: %s"
 
-#: lib/package.c:824 lib/package.c:850 lib/package.c:881 lib/rpmchecksig.c:699
+#: lib/package.c:748 lib/package.c:774 lib/package.c:805 lib/rpmchecksig.c:699
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:895 lib/rpmchecksig.c:89 lib/rpmchecksig.c:514
+#: lib/package.c:819 lib/rpmchecksig.c:89 lib/rpmchecksig.c:514
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
-#: lib/package.c:984
+#: lib/package.c:908
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s をインストールできません。\n"
 
-#: lib/package.c:988
+#: lib/package.c:912
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -2339,57 +2348,57 @@ msgstr "パッケージはファイル所有者/グループ一覧を持っていません。\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "パッケージはファイル所有者も id リストも持っていません\n"
 
-#: lib/query.c:372
+#: lib/query.c:368
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "グループ %s に属するパッケージは存在しません。\n"
 
-#: lib/query.c:381
+#: lib/query.c:377
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "%s をトリガーするパッケージが存在しません。\n"
 
-#: lib/query.c:394 lib/query.c:415 lib/query.c:435 lib/query.c:469
+#: lib/query.c:390 lib/query.c:411 lib/query.c:431 lib/query.c:465
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "不正な %s 指定: %s\n"
 
-#: lib/query.c:404 lib/query.c:421 lib/query.c:445 lib/query.c:474
+#: lib/query.c:400 lib/query.c:417 lib/query.c:441 lib/query.c:470
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "%s にマッチするパッケージは存在しません: %s\n"
 
-#: lib/query.c:484
+#: lib/query.c:480
 #, c-format
 msgid "no package requires %s\n"
 msgstr "%s を必要とするパッケージは存在しません。\n"
 
-#: lib/query.c:495
+#: lib/query.c:491
 #, c-format
 msgid "no package provides %s\n"
 msgstr "%s を提供するパッケージは存在しません。\n"
 
-#: lib/query.c:527
+#: lib/query.c:523
 #, c-format
 msgid "file %s: %s\n"
 msgstr "ファイル %s: %s\n"
 
-#: lib/query.c:530
+#: lib/query.c:526
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "ファイル %s はどのパッケージにも属していません。\n"
 
-#: lib/query.c:555
+#: lib/query.c:551
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "無効なパッケージ番号: %s\n"
 
-#: lib/query.c:563
+#: lib/query.c:559
 #, fuzzy, c-format
 msgid "record %lu could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:579 lib/rpminstall.c:656
+#: lib/query.c:575 lib/rpminstall.c:654
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2546,8 +2555,8 @@ msgstr ""
 msgid "internal support for lua scripts."
 msgstr "lua スクリプトの内部サポート。"
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:355
-#: lib/rpminstall.c:487 lib/rpmts.c:637 tools/rpmgraph.c:119
+#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:353
+#: lib/rpminstall.c:485 lib/rpmts.c:637 tools/rpmgraph.c:119
 #: tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
@@ -2558,70 +2567,70 @@ msgstr "%s のオープンに失敗: %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明なタグ: \"%s\"\n"
 
-#: lib/rpmgi.c:627 lib/rpminstall.c:530 lib/rpminstall.c:690
+#: lib/rpmgi.c:627 lib/rpminstall.c:528 lib/rpminstall.c:688
 #: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:155
 msgid "Preparing..."
 msgstr "準備中..."
 
-#: lib/rpminstall.c:159
+#: lib/rpminstall.c:157
 msgid "Preparing packages for installation..."
 msgstr "パッケージインストールの準備中..."
 
-#: lib/rpminstall.c:305
+#: lib/rpminstall.c:303
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得中\n"
 
-#: lib/rpminstall.c:317
+#: lib/rpminstall.c:315
 #, c-format
 msgid "skipping %s - transfer failed - %s\n"
 msgstr "%s をスキップします - 転送に失敗 - %s\n"
 
-#: lib/rpminstall.c:374 lib/rpminstall.c:751 tools/rpmgraph.c:139
+#: lib/rpminstall.c:372 lib/rpminstall.c:749 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
 
-#: lib/rpminstall.c:416
+#: lib/rpminstall.c:414
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません。\n"
 
-#: lib/rpminstall.c:463
+#: lib/rpminstall.c:461
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s の読み込みエラー\n"
 
-#: lib/rpminstall.c:469
+#: lib/rpminstall.c:467
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しいバージョンの RPM が必要です。\n"
 
-#: lib/rpminstall.c:501
+#: lib/rpminstall.c:499
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません: %s\n"
 
-#: lib/rpminstall.c:578
+#: lib/rpminstall.c:576
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ファイル %s をオープンできません: %s\n"
 
-#: lib/rpminstall.c:665
+#: lib/rpminstall.c:663
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr "\"%s\" は複数のパッケージを指定しています\n"
 
-#: lib/rpminstall.c:735
+#: lib/rpminstall.c:733
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s をオープンできません: %s\n"
 
-#: lib/rpminstall.c:741
+#: lib/rpminstall.c:739
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
@@ -2999,78 +3008,69 @@ msgstr "%c %s が見つかりません。"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "%s のための依存性を満たしていません: "
 
-#: lib/header.c:2133
+#: lib/headerfmt.c:375
 msgid "missing { after %"
 msgstr "% の後に { がありません。"
 
-#: lib/header.c:2163
+#: lib/headerfmt.c:405
 msgid "missing } after %{"
 msgstr "%{ の後に } がありません。"
 
-#: lib/header.c:2175
+#: lib/headerfmt.c:417
 msgid "empty tag format"
 msgstr "空のタグフォーマット"
 
-#: lib/header.c:2185
+#: lib/headerfmt.c:427
 msgid "empty tag name"
 msgstr "空のタグ名"
 
-#: lib/header.c:2194
+#: lib/headerfmt.c:436
 msgid "unknown tag"
 msgstr "不明なタグ"
 
-#: lib/header.c:2217
+#: lib/headerfmt.c:459
 msgid "] expected at end of array"
 msgstr "配列の後に ] が期待されます。"
 
-#: lib/header.c:2230
+#: lib/headerfmt.c:472
 msgid "unexpected ]"
 msgstr "予期せぬ ]"
 
-#: lib/header.c:2241
+#: lib/headerfmt.c:483
 msgid "unexpected }"
 msgstr "予期せぬ }"
 
-#: lib/header.c:2295
+#: lib/headerfmt.c:537
 msgid "? expected in expression"
 msgstr "式中で ? が期待されます。"
 
-#: lib/header.c:2302
+#: lib/headerfmt.c:544
 msgid "{ expected after ? in expression"
 msgstr "式中で ? の後に { が期待されます。"
 
-#: lib/header.c:2314 lib/header.c:2354
+#: lib/headerfmt.c:556 lib/headerfmt.c:596
 msgid "} expected in expression"
 msgstr "式中に } が期待されます。"
 
-#: lib/header.c:2322
+#: lib/headerfmt.c:564
 msgid ": expected following ? subexpression"
 msgstr "? サブ式の後に : が期待されます。"
 
-#: lib/header.c:2340
+#: lib/headerfmt.c:582
 msgid "{ expected after : in expression"
 msgstr "式中で : の後に { が期待されます。"
 
-#: lib/header.c:2362
+#: lib/headerfmt.c:604
 msgid "| expected at end of expression"
 msgstr "式の終わりに | が期待されます。"
 
-#: lib/header.c:2453
+#: lib/headerfmt.c:695
 msgid "(index out of range)"
 msgstr "(インデックスが範囲外)"
 
-#: lib/header.c:2662
+#: lib/headerfmt.c:904
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
-
-#: lib/header.c:2935
-#, c-format
-msgid "%c"
-msgstr "%c"
-
-#: lib/header.c:2951
-msgid "%a %b %d %Y"
-msgstr "%a %b %d %Y"
 
 #: lib/header_internal.c:162
 #, c-format
