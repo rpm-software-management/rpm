@@ -314,9 +314,9 @@ msgid "--sign may only be used during package building"
 msgstr "--sign může být použit jen při sestavování balíčků"
 
 #: rpmqv.c:584
-#, fuzzy, c-format
+#, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "vytváření archívu selhalo: %s\n"
+msgstr "vytvoření roury pro --pipe selhalo: %s\n"
 
 #: rpmqv.c:594
 #, c-format
@@ -1305,9 +1305,9 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "generovat hlavičky balíčků kompatibilní s RPM verze 2 a 3"
 
 #: build/rpmfc.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "Nemohu provést fork %s: %s\n"
+msgstr "Nemohu vytvořit rouru pro %s: %m\n"
 
 #: build/rpmfc.c:122
 #, c-format
@@ -1488,9 +1488,8 @@ msgid "(not a blob)"
 msgstr "(není blob)"
 
 #: lib/formats.c:251
-#, fuzzy
 msgid "(encoding failed)"
-msgstr "spuštění selhalo\n"
+msgstr "(kódování selhalo)\n"
 
 #: lib/formats.c:268
 msgid "(invalid xml type)"
@@ -2435,7 +2434,7 @@ msgstr "%s: headerRead selhal\n"
 #: lib/rpmchecksig.c:495
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
-msgstr ""
+msgstr "%s: Nezměnitelná oblast hlavičky nemůže být čtena. Poškozený balíček?\n"
 
 #: lib/rpmchecksig.c:782
 msgid "NOT OK"
@@ -2743,9 +2742,9 @@ msgid "missing argument for %s at %s:%d\n"
 msgstr "chybí argument pro %s na %s:%d\n"
 
 #: lib/rpmrc.c:574
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %m\n"
-msgstr "nemohu otevřít %s na %s:%d: %s\n"
+msgstr "nemohu otevřít %s na %s:%d: %m\n"
 
 #: lib/rpmrc.c:590
 #, c-format
@@ -2768,9 +2767,9 @@ msgid "Please contact %s\n"
 msgstr "Prosím kontaktujte %s\n"
 
 #: lib/rpmrc.c:1635
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "Nemohu otevřít %s pro čtení: %s.\n"
+msgstr "Nemohu otevřít %s pro čtení: %m.\n"
 
 #: lib/rpmts.c:99
 #, c-format
@@ -2847,7 +2846,7 @@ msgstr "sigh sigSize(%zd): ŠPATNÁ, fstat(2) selhal\n"
 #: lib/signature.c:373 lib/signature.c:510
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
-msgstr ""
+msgstr "Nemohu vytvořit rouru pro podepsání: %m"
 
 #: lib/signature.c:412 lib/signature.c:530 lib/signature.c:855
 #: lib/signature.c:888
@@ -2878,7 +2877,7 @@ msgstr "gpg selhal při zápisu podpisu\n"
 
 #: lib/signature.c:673
 msgid "Immutable header region could not be read. Corrupted package?\n"
-msgstr ""
+msgstr "Nezměnitelná oblast hlavičky nemůže být čtena. Poškozený balíček?\n"
 
 #: lib/signature.c:893 lib/signature.c:942
 #, c-format
