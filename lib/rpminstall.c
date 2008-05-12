@@ -117,10 +117,9 @@ void * rpmShowProgress(const void * arg,
 	rpmcliHashesCurrent = 0;
 	if (h == NULL || !(flags & INSTALL_LABEL))
 	    break;
-	/* @todo Remove headerSprintf() on a progress callback. */
+	/* @todo Remove headerFormat() on a progress callback. */
 	if (flags & INSTALL_HASH) {
-	    s = headerSprintf(h, "%{NAME}",
-				rpmTagTable, rpmHeaderFormats, NULL);
+	    s = headerFormat(h, "%{NAME}", NULL);
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-23.23s", rpmcliProgressCurrent + 1, s);
 	    else
@@ -128,8 +127,7 @@ void * rpmShowProgress(const void * arg,
 	    (void) fflush(stdout);
 	    s = _free(s);
 	} else {
-	    s = headerSprintf(h, "%{NAME}-%{VERSION}-%{RELEASE}",
-				  rpmTagTable, rpmHeaderFormats, NULL);
+	    s = headerFormat(h, "%{NAME}-%{VERSION}-%{RELEASE}", NULL);
 	    fprintf(stdout, "%s\n", s);
 	    (void) fflush(stdout);
 	    s = _free(s);

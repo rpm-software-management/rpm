@@ -337,8 +337,7 @@ static int getSpecialDocDir(Package pkg)
     if (fmt_macro && strlen(fmt_macro) > 0) {
 	docdir_fmt = fmt_macro;
     }
-    fmt = headerSprintf(pkg->header, docdir_fmt, 
-			rpmTagTable, rpmHeaderFormats, &errstr);
+    fmt = headerFormat(pkg->header, docdir_fmt, &errstr);
     if (!fmt) {
 	rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
 	goto exit;

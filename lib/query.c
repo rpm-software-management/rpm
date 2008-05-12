@@ -108,7 +108,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
     if (qva->qva_queryFormat != NULL) {
 	const char *errstr;
-	char *str = headerSprintf(h, qva->qva_queryFormat, rpmTagTable, rpmHeaderFormats, &errstr);
+	char *str = headerFormat(h, qva->qva_queryFormat, &errstr);
 
 	if ( str != NULL ) {
 	    rpmlog(RPMLOG_NOTICE, "%s", str);

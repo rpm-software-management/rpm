@@ -413,7 +413,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
 /** \ingroup header
  * Return formatted output string from header tags.
  * The returned string must be free()d.
- * @deprecated		Use headerFormat() instead
  *
  * @param h		header
  * @param fmt		format to use

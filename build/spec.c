@@ -607,7 +607,7 @@ printNewSpecfile(rpmSpec spec)
 	rasprintf(&fmt, "%%{%s}", tn);
 	msgstr = _free(msgstr);
 
-	msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+	msgstr = headerFormat(h, fmt, &errstr);
 	if (msgstr == NULL) {
 	    rpmlog(RPMLOG_ERR, _("can't query %s: %s\n"), tn, errstr);
 	    return;

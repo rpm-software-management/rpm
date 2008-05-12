@@ -179,7 +179,7 @@ struct rpmQVKArguments_s {
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
     int qva_verbose;		/*!< (unused) */
-    char * qva_queryFormat;	/*!< Format for headerSprintf(). */
+    char * qva_queryFormat;	/*!< Format for headerFormat(). */
     int sign;			/*!< Is a passphrase needed? */
     const char * passPhrase;	/*!< Pass phrase. */
     const char * qva_prefix;	/*!< Path to top of install tree. */
@@ -381,7 +381,7 @@ extern int rpmcliProgressTotal;
 
 /** \ingroup rpmcli
  * The rpm CLI generic transaction callback handler.
- * @todo Remove headerSprintf() from the progress callback.
+ * @todo Remove headerFormat() from the progress callback.
  * @deprecated Transaction callback arguments need to change, so don't rely on
  * this routine in the rpmcli API.
  *

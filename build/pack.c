@@ -692,8 +692,7 @@ rpmRC packageBinaries(rpmSpec spec)
 	
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;
-	    binRpm = headerSprintf(pkg->header, binFormat, rpmTagTable,
-			       rpmHeaderFormats, &errorString);
+	    binRpm = headerFormat(pkg->header, binFormat, &errorString);
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
 		const char *name;

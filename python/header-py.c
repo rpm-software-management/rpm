@@ -276,7 +276,7 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &fmt))
 	return NULL;
 
-    r = headerSprintf(s->h, fmt, rpmTagTable, rpmHeaderFormats, &err);
+    r = headerFormat(s->h, fmt, &err);
     if (!r) {
 	PyErr_SetString(pyrpmError, err);
 	return NULL;
@@ -391,7 +391,7 @@ static int dressedHeaderGetEntry(Header h, rpmTag tag, rpmTagType *type,
 	(void) stpcpy( stpcpy( stpcpy( fmt, "%{"), rpmTagGetName(tag)), "}\n");
 
 	/* XXX FIXME: memory leak. */
-        msgstr = headerSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, &errstr);
+        msgstr = headerFormat(h, fmt, &errstr);
 	if (msgstr) {
 	    *p = (void *) msgstr;
 	    if (type)	*type = RPM_STRING_TYPE;

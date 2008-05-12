@@ -419,7 +419,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     xx = headerAddOrAppendEntry(h, RPMTAG_PUBKEYS,
 			RPM_STRING_ARRAY_TYPE, &enc, 1);
 
-    d = headerSprintf(h, afmt, rpmTagTable, rpmHeaderFormats, NULL);
+    d = headerFormat(h, afmt, NULL);
     if (d == NULL)
 	goto exit;
 
@@ -619,7 +619,7 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
     qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
     if (qfmt == NULL || *qfmt == '\0')
 	goto exit;
-    str = headerSprintf(bh, qfmt, rpmTagTable, rpmHeaderFormats, &errstr);
+    str = headerFormat(bh, qfmt, &errstr);
     bh = headerFree(bh);
     qfmt = _free(qfmt);
     if (str == NULL) {
