@@ -277,10 +277,6 @@ void rpmDisplayQueryTags(FILE * fp)
     }
 
     while (ext->name != NULL) {
-	if (ext->type == HEADER_EXT_MORE) {
-	    ext = ext->u.more;
-	    continue;
-	}
 	/* XXX don't print query tags twice. */
 	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	    if (t->name == NULL)	/* XXX programmer error. */

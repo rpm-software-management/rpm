@@ -40,7 +40,6 @@ typedef struct headerTagIndices_s * headerTagIndices;
 enum headerSprintfExtensionType {
     HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
     HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
-    HEADER_EXT_MORE,		/*!< Chain to next table. */
     HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
 };
 
@@ -88,14 +87,8 @@ struct headerSprintfExtension_s {
 	void * generic;				/*!< Private extension. */
 	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
 	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
-	struct headerSprintfExtension_s * more;	/*!< Chained table extension. */
     } u;
 };
-
-/** \ingroup header
- * Supported default header tag output formats.
- */
-extern const struct headerSprintfExtension_s headerDefaultFormats[];
 
 /** \ingroup rpmtag
  * Automatically generated table of tag name/value pairs.
@@ -113,7 +106,6 @@ extern headerTagIndices const rpmTags;
 
 /** \ingroup header
  * Table of query format extensions.
- * @note Chains to headerDefaultFormats[].
  */
 extern const struct headerSprintfExtension_s rpmHeaderFormats[];
 

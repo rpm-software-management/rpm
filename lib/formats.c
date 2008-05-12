@@ -1076,17 +1076,6 @@ static int groupTag(Header h, rpmTagType* type,
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
 
-/* FIX: cast? */
-const struct headerSprintfExtension_s headerDefaultFormats[] = {
-    { HEADER_EXT_FORMAT, "octal", { octalFormat } },
-    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
-    { HEADER_EXT_FORMAT, "date", { dateFormat } },
-    { HEADER_EXT_FORMAT, "day", { dayFormat } },
-    { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
-    { HEADER_EXT_LAST, NULL, { NULL } }
-};
-
-/* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
@@ -1109,5 +1098,10 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
     { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
     { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
-    { HEADER_EXT_MORE, NULL,		{ (void *) headerDefaultFormats } }
-} ;
+    { HEADER_EXT_FORMAT, "octal", 		{ octalFormat } },
+    { HEADER_EXT_FORMAT, "hex", 		{ hexFormat } },
+    { HEADER_EXT_FORMAT, "date", 		{ dateFormat } },
+    { HEADER_EXT_FORMAT, "day", 		{ dayFormat } },
+    { HEADER_EXT_FORMAT, "shescape", 		{ shescapeFormat } },
+    { HEADER_EXT_LAST, NULL, 			{ NULL } }
+};

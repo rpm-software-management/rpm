@@ -297,9 +297,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     }
 
     /* Search extensions for specific tag override. */
-    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
-    {
+    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
 	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
 	    continue;
 	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
@@ -319,9 +317,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	    ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
-    {
+    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 	    continue;
 	if (!strcmp(ext->name, stag->type)) {
@@ -1025,9 +1021,7 @@ rpmecNew(const headerSprintfExtension exts)
     rpmec ec;
     int i = 0;
 
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
-    {
+    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
 	i++;
     }
 
@@ -1047,9 +1041,7 @@ rpmecFree(const headerSprintfExtension exts, rpmec ec)
     headerSprintfExtension ext;
     int i = 0;
 
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST;
-	ext = (ext->type == HEADER_EXT_MORE ? ext->u.more : ext+1))
-    {
+    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
 	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
 	i++;
     }
