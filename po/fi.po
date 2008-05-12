@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4.90\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-05-08 09:53+0300\n"
+"POT-Creation-Date: 2008-05-12 12:30+0300\n"
 "PO-Revision-Date: 2008-03-11 11:15+0200\n"
 "Last-Translator: Panu Matilainen <pmatilai@redhat.com>\n"
 "Language-Team: Finnish\n"
@@ -1016,17 +1016,17 @@ msgstr "rivi %d: virheellinen argumentti %%setup:ille: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "rivi %d: virheellinen %%setup valitsin %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:449
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:472
+#: build/parsePrep.c:466
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Virheellinen patch-numero %s: %s\n"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:495
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "rivi %d: toinen %%prep-osio\n"
@@ -1465,7 +1465,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "pakettien järjestäminen epäonnistui, %d elementtiä jäljellä\n"
 
 #: lib/formats.c:37 lib/formats.c:67 lib/formats.c:96 lib/formats.c:444
-#: rpmdb/header.c:2857 rpmdb/header.c:2882 rpmdb/header.c:2901
+#: lib/header.c:2857 lib/header.c:2882 lib/header.c:2901
 msgid "(not a number)"
 msgstr "(ei ole luku)"
 
@@ -2955,301 +2955,301 @@ msgstr ""
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Tyydyttämättömiä riippuvuuksia %s:lle:\n"
 
-#: misc/error.c:107
-msgid "Unknown system error"
-msgstr "Tuntematon järjestelmäverhe"
-
-#: rpmdb/db3.c:150
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr ""
-
-#: rpmdb/db3.c:153
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr ""
-
-#: rpmdb/db3.c:1142
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "en saa %s lukitusta tietokantaan %s/%s\n"
-
-#: rpmdb/db3.c:1144
-msgid "exclusive"
-msgstr "poissulkevaa"
-
-#: rpmdb/db3.c:1144
-msgid "shared"
-msgstr "jaettua"
-
-#: rpmdb/dbconfig.c:328
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr ""
-
-#: rpmdb/dbconfig.c:365
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr ""
-
-#: rpmdb/dbconfig.c:374
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr ""
-
-#: rpmdb/dbconfig.c:383
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
-
-#: rpmdb/header.c:2133
+#: lib/header.c:2133
 msgid "missing { after %"
 msgstr "puuttuva '{' '%':n jälkeen"
 
-#: rpmdb/header.c:2163
+#: lib/header.c:2163
 msgid "missing } after %{"
 msgstr "puuttuva '{' '%{':n jälkeen"
 
-#: rpmdb/header.c:2175
+#: lib/header.c:2175
 msgid "empty tag format"
 msgstr "tyhjä nimiön formaatti"
 
-#: rpmdb/header.c:2185
+#: lib/header.c:2185
 msgid "empty tag name"
 msgstr "tyhjä nimiön nimi"
 
-#: rpmdb/header.c:2194
+#: lib/header.c:2194
 msgid "unknown tag"
 msgstr "tuntematon nimiö"
 
-#: rpmdb/header.c:2217
+#: lib/header.c:2217
 msgid "] expected at end of array"
 msgstr "']' puuttuu taulukkomäärittelyn lopusta"
 
-#: rpmdb/header.c:2230
+#: lib/header.c:2230
 msgid "unexpected ]"
 msgstr "odottamaton ']'"
 
-#: rpmdb/header.c:2241
+#: lib/header.c:2241
 msgid "unexpected }"
 msgstr "odottamaton '}'"
 
-#: rpmdb/header.c:2295
+#: lib/header.c:2295
 msgid "? expected in expression"
 msgstr "odotin '?'-merkkiä ilmauksessa"
 
-#: rpmdb/header.c:2302
+#: lib/header.c:2302
 msgid "{ expected after ? in expression"
 msgstr "odotin '{' '?'-merkin jälkeen lausekkeessa"
 
-#: rpmdb/header.c:2314 rpmdb/header.c:2354
+#: lib/header.c:2314 lib/header.c:2354
 msgid "} expected in expression"
 msgstr "odotin '}'-merkkiä lausekkeessa"
 
-#: rpmdb/header.c:2322
+#: lib/header.c:2322
 msgid ": expected following ? subexpression"
 msgstr "odotin ':' '?'-merkin jälkeen ali-lausekkeessa "
 
-#: rpmdb/header.c:2340
+#: lib/header.c:2340
 msgid "{ expected after : in expression"
 msgstr "odotin '{' ':'-merkin jälkeen lausekkeessa "
 
-#: rpmdb/header.c:2362
+#: lib/header.c:2362
 msgid "| expected at end of expression"
 msgstr "odotin '}'-merkkiä ilmauksen lopussa"
 
-#: rpmdb/header.c:2453
+#: lib/header.c:2453
 msgid "(index out of range)"
 msgstr ""
 
-#: rpmdb/header.c:2662
+#: lib/header.c:2662
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: rpmdb/header.c:2935
+#: lib/header.c:2935
 #, c-format
 msgid "%c"
 msgstr ""
 
-#: rpmdb/header.c:2951
+#: lib/header.c:2951
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: rpmdb/header_internal.c:162
+#: lib/header_internal.c:162
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Tietotyyppi %d ei ole tuettu\n"
 
-#: rpmdb/poptDB.c:18
+#: lib/poptDB.c:18
 msgid "initialize database"
 msgstr "alusta tietokanta"
 
-#: rpmdb/poptDB.c:20
+#: lib/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
 msgstr "rakenna tietokanta uudestaan asennettujen pakettien tiedoista"
 
-#: rpmdb/poptDB.c:23
+#: lib/poptDB.c:23
 msgid "verify database files"
 msgstr "tarkista tietokanta"
 
-#: rpmdb/rpmdb.c:154
+#: lib/rpmdb.c:154
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:226
+#: lib/rpmdb.c:226
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr ""
 
-#: rpmdb/rpmdb.c:236
+#: lib/rpmdb.c:236
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "indeksin %s avaus db%d:llä ei onnistu - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:256
+#: lib/rpmdb.c:256
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "indeksin %s avaus ei onnistu\n"
 
-#: rpmdb/rpmdb.c:880
+#: lib/rpmdb.c:880
 msgid "no dbpath has been set\n"
 msgstr "dbpath ei ole asetettu\n"
 
-#: rpmdb/rpmdb.c:1111 rpmdb/rpmdb.c:1236 rpmdb/rpmdb.c:1286 rpmdb/rpmdb.c:2199
-#: rpmdb/rpmdb.c:2320 rpmdb/rpmdb.c:3009
+#: lib/rpmdb.c:1111 lib/rpmdb.c:1236 lib/rpmdb.c:1286 lib/rpmdb.c:2199
+#: lib/rpmdb.c:2320 lib/rpmdb.c:3009
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "virhe(%d) haettaessa \"%s\" tietueita indeksistä %s\n"
 
-#: rpmdb/rpmdb.c:1470
+#: lib/rpmdb.c:1470
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: ohitetaan"
 
-#: rpmdb/rpmdb.c:1480
+#: lib/rpmdb.c:1480
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "virhe(%d) tallennettaessa tietuetta #%d %s:ään\n"
 
-#: rpmdb/rpmdb.c:1580
+#: lib/rpmdb.c:1580
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec epäonnistui: %s\n"
 
-#: rpmdb/rpmdb.c:1761
+#: lib/rpmdb.c:1761
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp epäonnistui: %s\n"
 
-#: rpmdb/rpmdb.c:2096
+#: lib/rpmdb.c:2096
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: ohitetaan"
 
-#: rpmdb/rpmdb.c:2125
+#: lib/rpmdb.c:2125
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: ohitetaan vioittunut otsikkotietue #%u.\n"
 
-#: rpmdb/rpmdb.c:2422
+#: lib/rpmdb.c:2422
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: otsikkoa ei voida lukea (0x%x)\n"
 
-#: rpmdb/rpmdb.c:2473
+#: lib/rpmdb.c:2473
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "virhe(%d) asetettaessa otsikon #%d tietuetta %s poistettavaksi\n"
 
-#: rpmdb/rpmdb.c:2608
+#: lib/rpmdb.c:2608
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "virhe(%d) asetettaessa \"%s\" tietuetita indeksistä %s\n"
 
-#: rpmdb/rpmdb.c:2627
+#: lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "virhe(%d) tallennettaessa tietuetta %s %s:ään\n"
 
-#: rpmdb/rpmdb.c:2637
+#: lib/rpmdb.c:2637
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "virhe(%d) poistettaessa tietuetta %s %s:stä\n"
 
-#: rpmdb/rpmdb.c:2778
+#: lib/rpmdb.c:2778
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "virhe(%d) varattaessa uutta paketti-instanssia\n"
 
-#: rpmdb/rpmdb.c:2831
+#: lib/rpmdb.c:2831
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: ohitetaan"
 
-#: rpmdb/rpmdb.c:3025
+#: lib/rpmdb.c:3025
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "virhe(%d) tallennettaessa tietuetta %s %s:ään\n"
 
-#: rpmdb/rpmdb.c:3347
+#: lib/rpmdb.c:3364
 msgid "no dbpath has been set"
 msgstr "dbpath ei ole asetettu"
 
-#: rpmdb/rpmdb.c:3372
+#: lib/rpmdb.c:3389
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "väliaikainen tietokanta %s on jo olemassa\n"
 
-#: rpmdb/rpmdb.c:3380
+#: lib/rpmdb.c:3397
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "hakemiston %s luonti epäonnistui: %s\n"
 
-#: rpmdb/rpmdb.c:3427
+#: lib/rpmdb.c:3444
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "tietue numero %u tietokannassa viallinen -- ohitetaan.\n"
 
-#: rpmdb/rpmdb.c:3465
+#: lib/rpmdb.c:3482
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "alkupäisen tietueen %u lisäys ei onnistu\n"
 
-#: rpmdb/rpmdb.c:3479
+#: lib/rpmdb.c:3496
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "tietokannan uudelleenrakennus epäonnistui: alkuperäinen kanta paikallaan\n"
 
-#: rpmdb/rpmdb.c:3487
+#: lib/rpmdb.c:3504
 msgid "failed to replace old database with new database!\n"
 msgstr "vanhan tietokannan korvaus uudella epäonnistui!\n"
 
-#: rpmdb/rpmdb.c:3489
+#: lib/rpmdb.c:3506
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "korvaa tiedostot %s:ssä tiedostoilla %s:stä korjataksesi"
 
-#: rpmdb/rpmdb.c:3501
+#: lib/rpmdb.c:3518
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "hakemiston %s poisto epäonnistui: %s\n"
 
-#: rpmdb/sqlite.c:589
+#: lib/backend/db3.c:150
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr ""
+
+#: lib/backend/db3.c:153
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr ""
+
+#: lib/backend/db3.c:1148
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "en saa %s lukitusta tietokantaan %s/%s\n"
+
+#: lib/backend/db3.c:1150
+msgid "exclusive"
+msgstr "poissulkevaa"
+
+#: lib/backend/db3.c:1150
+msgid "shared"
+msgstr "jaettua"
+
+#: lib/backend/dbconfig.c:328
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored.\n"
+msgstr ""
+
+#: lib/backend/dbconfig.c:365
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr ""
+
+#: lib/backend/dbconfig.c:374
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr ""
+
+#: lib/backend/dbconfig.c:383
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr ""
+
+#: lib/backend/sqlite.c:589
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "En saa lukitusta tietokantaan %s, yritetään uudelleen... (%d)\n"
 
-#: rpmdb/sqlite.c:682
+#: lib/backend/sqlite.c:682
 #, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr "Tietokannan %s alustus ei onnistu (%d)\n"
 
-#: rpmdb/sqlite.c:849
+#: lib/backend/sqlite.c:849
 #, c-format
 msgid "Unable to open database: %s\n"
 msgstr "Tietokantaa ei voi avata: %s\n"
 
-#: rpmdb/sqlite.c:1214
+#: lib/backend/sqlite.c:1214
 msgid "Unable to determine DB endianess.\n"
 msgstr ""
+
+#: misc/error.c:107
+msgid "Unknown system error"
+msgstr "Tuntematon järjestelmäverhe"
 
 #: rpmio/macro.c:183
 #, c-format

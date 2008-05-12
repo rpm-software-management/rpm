@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm.tip.sr\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-05-08 09:53+0300\n"
+"POT-Creation-Date: 2008-05-12 12:30+0300\n"
 "PO-Revision-Date: 2008-03-16 13:52+0100\n"
 "Last-Translator: Marko Mijatovic <jomi86@gmail.com>\n"
 "Language-Team: serbian <en@li.org>\n"
@@ -1026,17 +1026,17 @@ msgstr "red %d: Loš argument za %%setup: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "red %d: Loša %%setup opcija %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:449
 #, fuzzy, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s\n"
 
-#: build/parsePrep.c:472
+#: build/parsePrep.c:466
 #, fuzzy, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "neispravan broj paketa: %s\n"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:495
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "red %d: drugi %%prep\n"
@@ -1480,7 +1480,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder nije uspeo, %d delovi su ostali\n"
 
 #: lib/formats.c:37 lib/formats.c:67 lib/formats.c:96 lib/formats.c:444
-#: rpmdb/header.c:2857 rpmdb/header.c:2882 rpmdb/header.c:2901
+#: lib/header.c:2857 lib/header.c:2882 lib/header.c:2901
 msgid "(not a number)"
 msgstr "(nije broj)"
 
@@ -2986,305 +2986,305 @@ msgstr "nedostaje   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Nezadovoljene zavisnosti za %s:\n"
 
-#: misc/error.c:107
-msgid "Unknown system error"
-msgstr "Nepoznata sistemska greška"
-
-#: rpmdb/db3.c:150
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "baza podataka%d greška(%d) iz %s: %s\n"
-
-#: rpmdb/db3.c:153
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "baza podataka%d graška(%d): %s\n"
-
-#: rpmdb/db3.c:1142
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "ne mogu da dobijem %s katanac na %s/%s\n"
-
-#: rpmdb/db3.c:1144
-msgid "exclusive"
-msgstr "ekskluzivno"
-
-#: rpmdb/db3.c:1144
-msgid "shared"
-msgstr "deljeno"
-
-#: rpmdb/dbconfig.c:328
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "nije prepoznata opcija baze podataka: \"%s\" zanemareno.\n"
-
-#: rpmdb/dbconfig.c:365
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s ima nepravilnu brojčanu vrednost, preskočeno\n"
-
-#: rpmdb/dbconfig.c:374
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s ima preveliku ili premalu long vrednost, preskočeno\n"
-
-#: rpmdb/dbconfig.c:383
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s ima preveliku ili premalu celobrojnu vrednost, preskočeno\n"
-
-#: rpmdb/header.c:2133
+#: lib/header.c:2133
 msgid "missing { after %"
 msgstr "nedostaje { posle %"
 
-#: rpmdb/header.c:2163
+#: lib/header.c:2163
 msgid "missing } after %{"
 msgstr "nedostaje } posle %{"
 
-#: rpmdb/header.c:2175
+#: lib/header.c:2175
 msgid "empty tag format"
 msgstr "prazan oblik oznake"
 
-#: rpmdb/header.c:2185
+#: lib/header.c:2185
 msgid "empty tag name"
 msgstr "prazno ime oznake"
 
-#: rpmdb/header.c:2194
+#: lib/header.c:2194
 msgid "unknown tag"
 msgstr "nepoznata oznaka"
 
-#: rpmdb/header.c:2217
+#: lib/header.c:2217
 msgid "] expected at end of array"
 msgstr "] očekivan na kraju niza"
 
-#: rpmdb/header.c:2230
+#: lib/header.c:2230
 msgid "unexpected ]"
 msgstr "neočekivan ]"
 
-#: rpmdb/header.c:2241
+#: lib/header.c:2241
 msgid "unexpected }"
 msgstr "neočekivan }"
 
-#: rpmdb/header.c:2295
+#: lib/header.c:2295
 msgid "? expected in expression"
 msgstr "? očekivan u izrazu"
 
-#: rpmdb/header.c:2302
+#: lib/header.c:2302
 msgid "{ expected after ? in expression"
 msgstr "{ očekivano posle ? u izrazu"
 
-#: rpmdb/header.c:2314 rpmdb/header.c:2354
+#: lib/header.c:2314 lib/header.c:2354
 msgid "} expected in expression"
 msgstr "} očekivan u izrazu"
 
-#: rpmdb/header.c:2322
+#: lib/header.c:2322
 msgid ": expected following ? subexpression"
 msgstr ": očekivan nakon ? podizraza"
 
-#: rpmdb/header.c:2340
+#: lib/header.c:2340
 msgid "{ expected after : in expression"
 msgstr "{ očekicano posle : u izrazu"
 
-#: rpmdb/header.c:2362
+#: lib/header.c:2362
 msgid "| expected at end of expression"
 msgstr "| očekivan na kraju izraza"
 
-#: rpmdb/header.c:2453
+#: lib/header.c:2453
 msgid "(index out of range)"
 msgstr "(indeks van dometa)"
 
-#: rpmdb/header.c:2662
+#: lib/header.c:2662
 msgid "array iterator used with different sized arrays"
 msgstr "pokazivač niza korišćen sa nizovima različitih veličina"
 
-#: rpmdb/header.c:2935
+#: lib/header.c:2935
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:2951
+#: lib/header.c:2951
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: rpmdb/header_internal.c:162
+#: lib/header_internal.c:162
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Vrsta podatka %d nije podržana\n"
 
-#: rpmdb/poptDB.c:18
+#: lib/poptDB.c:18
 msgid "initialize database"
 msgstr "inicijalizuj bazu podataka"
 
-#: rpmdb/poptDB.c:20
+#: lib/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "ponovo napravi obrnute spiskove baze podataka iz zaglavlja instaliranih "
 "paketa"
 
-#: rpmdb/poptDB.c:23
+#: lib/poptDB.c:23
 msgid "verify database files"
 msgstr "provera datoteka baze podataka"
 
-#: rpmdb/rpmdb.c:154
+#: lib/rpmdb.c:154
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: nije prepoznato ime oznake: \"%s\" zanemareno\n"
 
-#: rpmdb/rpmdb.c:226
+#: lib/rpmdb.c:226
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr "dbiOpen: dbapi %d nije dostupno\n"
 
-#: rpmdb/rpmdb.c:236
+#: lib/rpmdb.c:236
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "ne mogu da otvorim %s indeks koristeći db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:256
+#: lib/rpmdb.c:256
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "ne mogu da otvorim %s indeks\n"
 
-#: rpmdb/rpmdb.c:880
+#: lib/rpmdb.c:880
 msgid "no dbpath has been set\n"
 msgstr "nije postavljen dbpath\n"
 
-#: rpmdb/rpmdb.c:1111 rpmdb/rpmdb.c:1236 rpmdb/rpmdb.c:1286 rpmdb/rpmdb.c:2199
-#: rpmdb/rpmdb.c:2320 rpmdb/rpmdb.c:3009
+#: lib/rpmdb.c:1111 lib/rpmdb.c:1236 lib/rpmdb.c:1286 lib/rpmdb.c:2199
+#: lib/rpmdb.c:2320 lib/rpmdb.c:3009
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "greška(%d) pri dobavljanju \"%s\" slogova iz %s indeksa\n"
 
-#: rpmdb/rpmdb.c:1470
+#: lib/rpmdb.c:1470
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: preskačem"
 
-#: rpmdb/rpmdb.c:1480
+#: lib/rpmdb.c:1480
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "greška(%d) pri zapisivanju sloga #%d u %s\n"
 
-#: rpmdb/rpmdb.c:1580
+#: lib/rpmdb.c:1580
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec nije uspeo: %s\n"
 
-#: rpmdb/rpmdb.c:1761
+#: lib/rpmdb.c:1761
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp nije uspeo: %s\n"
 
-#: rpmdb/rpmdb.c:2096
+#: lib/rpmdb.c:2096
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: preskačem"
 
-#: rpmdb/rpmdb.c:2125
+#: lib/rpmdb.c:2125
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: oštećeno zaglavlje #%u vraćeno -- preskačem.\n"
 
-#: rpmdb/rpmdb.c:2422
+#: lib/rpmdb.c:2422
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ne mogu da pročitam zaglavnje na 0x%x\n"
 
-#: rpmdb/rpmdb.c:2473
+#: lib/rpmdb.c:2473
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "greška(%d) pri postavljanju zaglavlja #%d sloga za %s uklanjanje\n"
 
-#: rpmdb/rpmdb.c:2608
+#: lib/rpmdb.c:2608
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "greška(%d) pri postavljanju \"%s\" slogova iz %s indeksa\n"
 
-#: rpmdb/rpmdb.c:2627
+#: lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "greška(%d) pri skladištenju sloga \"%s\" u %s\n"
 
-#: rpmdb/rpmdb.c:2637
+#: lib/rpmdb.c:2637
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "greška(%d) pri uklanjanju sloga \"%s\" iz %s\n"
 
-#: rpmdb/rpmdb.c:2778
+#: lib/rpmdb.c:2778
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "greška(%d) pri zauzimanju novog primerka paketa\n"
 
-#: rpmdb/rpmdb.c:2831
+#: lib/rpmdb.c:2831
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: preskačem"
 
-#: rpmdb/rpmdb.c:3025
+#: lib/rpmdb.c:3025
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "greška(%d) pri zapisivanju sloga %s u %s\n"
 
-#: rpmdb/rpmdb.c:3347
+#: lib/rpmdb.c:3364
 msgid "no dbpath has been set"
 msgstr "nije postavljen dbpath"
 
-#: rpmdb/rpmdb.c:3372
+#: lib/rpmdb.c:3389
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "privremena baza podataka %s već postoji\n"
 
-#: rpmdb/rpmdb.c:3380
+#: lib/rpmdb.c:3397
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "neuspelo kreiranje direktorijuma %s: %s\n"
 
-#: rpmdb/rpmdb.c:3427
+#: lib/rpmdb.c:3444
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "zaglavlje #%u u bazi podatak je loše -- preskačem.\n"
 
-#: rpmdb/rpmdb.c:3465
+#: lib/rpmdb.c:3482
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "ne mogu da dodam slog prvobitno na %u\n"
 
-#: rpmdb/rpmdb.c:3479
+#: lib/rpmdb.c:3496
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "neuspelo ponovno pravljenje baze podataka: osnovna baza podataka je ostala "
 "na mestu\n"
 
-#: rpmdb/rpmdb.c:3487
+#: lib/rpmdb.c:3504
 msgid "failed to replace old database with new database!\n"
 msgstr "neuspela zamena stare baze podataka sa novom bazom podataka!\n"
 
-#: rpmdb/rpmdb.c:3489
+#: lib/rpmdb.c:3506
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "zameni datoteke u %s sa datotekama iz %s da vratiš u prethodno stanje"
 
-#: rpmdb/rpmdb.c:3501
+#: lib/rpmdb.c:3518
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "neuspelo uklanjanje direktorijuma %s: %s\n"
 
-#: rpmdb/sqlite.c:589
+#: lib/backend/db3.c:150
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr "baza podataka%d greška(%d) iz %s: %s\n"
+
+#: lib/backend/db3.c:153
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr "baza podataka%d graška(%d): %s\n"
+
+#: lib/backend/db3.c:1148
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "ne mogu da dobijem %s katanac na %s/%s\n"
+
+#: lib/backend/db3.c:1150
+msgid "exclusive"
+msgstr "ekskluzivno"
+
+#: lib/backend/db3.c:1150
+msgid "shared"
+msgstr "deljeno"
+
+#: lib/backend/dbconfig.c:328
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored.\n"
+msgstr "nije prepoznata opcija baze podataka: \"%s\" zanemareno.\n"
+
+#: lib/backend/dbconfig.c:365
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "%s ima nepravilnu brojčanu vrednost, preskočeno\n"
+
+#: lib/backend/dbconfig.c:374
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "%s ima preveliku ili premalu long vrednost, preskočeno\n"
+
+#: lib/backend/dbconfig.c:383
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr "%s ima preveliku ili premalu celobrojnu vrednost, preskočeno\n"
+
+#: lib/backend/sqlite.c:589
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 "Nije moguće dobiti bravu na bazi podataka %s, pokušavam ponovo... (%d)\n"
 
-#: rpmdb/sqlite.c:682
+#: lib/backend/sqlite.c:682
 #, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr "Nije moguće izvršiti initDB %s (%d)\n"
 
-#: rpmdb/sqlite.c:849
+#: lib/backend/sqlite.c:849
 #, c-format
 msgid "Unable to open database: %s\n"
 msgstr "Nije moguće otvoriti bazu podataka: %s\n"
 
-#: rpmdb/sqlite.c:1214
+#: lib/backend/sqlite.c:1214
 msgid "Unable to determine DB endianess.\n"
 msgstr "Nije moguće utvrditi DB endianess.\n"
+
+#: misc/error.c:107
+msgid "Unknown system error"
+msgstr "Nepoznata sistemska greška"
 
 #: rpmio/macro.c:183
 #, c-format

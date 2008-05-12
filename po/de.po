@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-05-08 09:53+0300\n"
+"POT-Creation-Date: 2008-05-12 12:30+0300\n"
 "PO-Revision-Date: 2008-04-18 10:45+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
@@ -1036,17 +1036,17 @@ msgstr "Zeile %d: Ungültiges Argument für %%setup: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "Zeile %d: Ungültige %%setup-Option %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:449
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:472
+#: build/parsePrep.c:466
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Ungültige Patch-Nummer %s: %s\n"
 
-#: build/parsePrep.c:501
+#: build/parsePrep.c:495
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "Zeile %d: Zweites %%prep\n"
@@ -1497,7 +1497,7 @@ msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder fehlgeschlagen, %d Elemente verbleiben\n"
 
 #: lib/formats.c:37 lib/formats.c:67 lib/formats.c:96 lib/formats.c:444
-#: rpmdb/header.c:2857 rpmdb/header.c:2882 rpmdb/header.c:2901
+#: lib/header.c:2857 lib/header.c:2882 lib/header.c:2901
 msgid "(not a number)"
 msgstr "(keine Nummer)"
 
@@ -3002,302 +3002,302 @@ msgstr "fehlend   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Unerfüllte Abhängigkeiten für %s:\n"
 
-#: misc/error.c:107
-msgid "Unknown system error"
-msgstr "Unbekannter System-Fehler"
-
-#: rpmdb/db3.c:150
-#, c-format
-msgid "db%d error(%d) from %s: %s\n"
-msgstr "db%d-Fehler (%d) von %s: %s\n"
-
-#: rpmdb/db3.c:153
-#, c-format
-msgid "db%d error(%d): %s\n"
-msgstr "db%d-Fehler (%d): %s\n"
-
-#: rpmdb/db3.c:1142
-#, c-format
-msgid "cannot get %s lock on %s/%s\n"
-msgstr "Keine %s-Sperre auf %s/%s\n"
-
-#: rpmdb/db3.c:1144
-msgid "exclusive"
-msgstr "exklusiv"
-
-#: rpmdb/db3.c:1144
-msgid "shared"
-msgstr "verteilt"
-
-#: rpmdb/dbconfig.c:328
-#, c-format
-msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "Unbekannte Datenbank-Option: \"%s\" ignoriert.\n"
-
-#: rpmdb/dbconfig.c:365
-#, c-format
-msgid "%s has invalid numeric value, skipped\n"
-msgstr "%s hat einen ungültigen numerischen Wert, übersprungen\n"
-
-#: rpmdb/dbconfig.c:374
-#, c-format
-msgid "%s has too large or too small long value, skipped\n"
-msgstr "%s hat einen zu grossen oder zu kleinen Wert, übersprungen\n"
-
-#: rpmdb/dbconfig.c:383
-#, c-format
-msgid "%s has too large or too small integer value, skipped\n"
-msgstr "%s hat einen zu grossen oder zu kleinen Integer-Wert, übersprungen\n"
-
-#: rpmdb/header.c:2133
+#: lib/header.c:2133
 msgid "missing { after %"
 msgstr "Fehlende { nach %"
 
-#: rpmdb/header.c:2163
+#: lib/header.c:2163
 msgid "missing } after %{"
 msgstr "Fehlende } nach %{"
 
-#: rpmdb/header.c:2175
+#: lib/header.c:2175
 msgid "empty tag format"
 msgstr "Leeres Tag-Format"
 
-#: rpmdb/header.c:2185
+#: lib/header.c:2185
 msgid "empty tag name"
 msgstr "Unbekannter Tag"
 
-#: rpmdb/header.c:2194
+#: lib/header.c:2194
 msgid "unknown tag"
 msgstr "Unbekannter Tag"
 
-#: rpmdb/header.c:2217
+#: lib/header.c:2217
 msgid "] expected at end of array"
 msgstr "] erwartet am Ende des Arrays"
 
-#: rpmdb/header.c:2230
+#: lib/header.c:2230
 msgid "unexpected ]"
 msgstr "Unerwartete ]"
 
-#: rpmdb/header.c:2241
+#: lib/header.c:2241
 msgid "unexpected }"
 msgstr "Unerwartete }"
 
-#: rpmdb/header.c:2295
+#: lib/header.c:2295
 msgid "? expected in expression"
 msgstr "? im Ausdruck erwartet"
 
-#: rpmdb/header.c:2302
+#: lib/header.c:2302
 msgid "{ expected after ? in expression"
 msgstr "{ nach dem ? im Ausdruck erwartet"
 
-#: rpmdb/header.c:2314 rpmdb/header.c:2354
+#: lib/header.c:2314 lib/header.c:2354
 msgid "} expected in expression"
 msgstr "} im Ausdruck erwartet"
 
-#: rpmdb/header.c:2322
+#: lib/header.c:2322
 msgid ": expected following ? subexpression"
 msgstr ": erwartet ein ? im Unterausdruck"
 
-#: rpmdb/header.c:2340
+#: lib/header.c:2340
 msgid "{ expected after : in expression"
 msgstr "{ nach dem : im Ausdruck erwartet"
 
-#: rpmdb/header.c:2362
+#: lib/header.c:2362
 msgid "| expected at end of expression"
 msgstr "| am Ende des Ausdrucks erwartet"
 
-#: rpmdb/header.c:2453
+#: lib/header.c:2453
 msgid "(index out of range)"
 msgstr "(Index ausserhalb des Bereichs)"
 
-#: rpmdb/header.c:2662
+#: lib/header.c:2662
 msgid "array iterator used with different sized arrays"
 msgstr "Zählvariable wird mit ungleich grossem Array benutzt"
 
-#: rpmdb/header.c:2935
+#: lib/header.c:2935
 #, c-format
 msgid "%c"
 msgstr "%c"
 
-#: rpmdb/header.c:2951
+#: lib/header.c:2951
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: rpmdb/header_internal.c:162
+#: lib/header_internal.c:162
 #, c-format
 msgid "Data type %d not supported\n"
 msgstr "Daten-Typ %d nicht unterstützt\n"
 
-#: rpmdb/poptDB.c:18
+#: lib/poptDB.c:18
 msgid "initialize database"
 msgstr "Initialisiere Datenbank"
 
-#: rpmdb/poptDB.c:20
+#: lib/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
 "Erstelle invertierte Datenbank-Liste anhand der installierten Paket-Header"
 
-#: rpmdb/poptDB.c:23
+#: lib/poptDB.c:23
 msgid "verify database files"
 msgstr "Überprüfe Datenbank-Dateien"
 
-#: rpmdb/rpmdb.c:154
+#: lib/rpmdb.c:154
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: Unbekannter Tag-Name: \"%s\" ignoriert\n"
 
-#: rpmdb/rpmdb.c:226
+#: lib/rpmdb.c:226
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr "dbiOpen: dbapi %d nicht verfügbar\n"
 
-#: rpmdb/rpmdb.c:236
+#: lib/rpmdb.c:236
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "Kann den %s-Index nicht öffnen, benutze db%d - %s (%d)\n"
 
-#: rpmdb/rpmdb.c:256
+#: lib/rpmdb.c:256
 #, c-format
 msgid "cannot open %s index\n"
 msgstr "Kann den %s-Index nicht öffnen\n"
 
-#: rpmdb/rpmdb.c:880
+#: lib/rpmdb.c:880
 msgid "no dbpath has been set\n"
 msgstr "Kein Datenbank-Pfad wurde gesetzt\n"
 
-#: rpmdb/rpmdb.c:1111 rpmdb/rpmdb.c:1236 rpmdb/rpmdb.c:1286 rpmdb/rpmdb.c:2199
-#: rpmdb/rpmdb.c:2320 rpmdb/rpmdb.c:3009
+#: lib/rpmdb.c:1111 lib/rpmdb.c:1236 lib/rpmdb.c:1286 lib/rpmdb.c:2199
+#: lib/rpmdb.c:2320 lib/rpmdb.c:3009
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "Fehler(%d) beim Lesen \"%s\"-Einträgen des %s-Indexes\n"
 
-#: rpmdb/rpmdb.c:1470
+#: lib/rpmdb.c:1470
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: Überspringe"
 
-#: rpmdb/rpmdb.c:1480
+#: lib/rpmdb.c:1480
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "Fehler(%d) beim Speichern des Eintrags #%d in %s\n"
 
-#: rpmdb/rpmdb.c:1580
+#: lib/rpmdb.c:1580
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec fehlgeschlagen: %s\n"
 
-#: rpmdb/rpmdb.c:1761
+#: lib/rpmdb.c:1761
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp fehlgeschlagen: %s\n"
 
-#: rpmdb/rpmdb.c:2096
+#: lib/rpmdb.c:2096
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: Überspringe"
 
-#: rpmdb/rpmdb.c:2125
+#: lib/rpmdb.c:2125
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: Beschädigten Header #%u erhalten -- überspringe.\n"
 
-#: rpmdb/rpmdb.c:2422
+#: lib/rpmdb.c:2422
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: Kann den Header bei 0x%x nicht lesen\n"
 
-#: rpmdb/rpmdb.c:2473
+#: lib/rpmdb.c:2473
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "Fehler(%d) beim Markieren des Header-Eintrags #%d zur %s Entfernung\n"
 
-#: rpmdb/rpmdb.c:2608
+#: lib/rpmdb.c:2608
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "Fehler(%d) beim Setzen von \"%s\"-Einträgen des %s-Indexes\n"
 
-#: rpmdb/rpmdb.c:2627
+#: lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "Fehler(%d) beim Speichern des Eintrags \"%s\" in %s\n"
 
-#: rpmdb/rpmdb.c:2637
+#: lib/rpmdb.c:2637
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "Fehler(%d) beim Entfernen des Eintrags \"%s\" aus %s\n"
 
-#: rpmdb/rpmdb.c:2778
+#: lib/rpmdb.c:2778
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler(%d) beim Reservieren einer neuen Paket-Instanz\n"
 
-#: rpmdb/rpmdb.c:2831
+#: lib/rpmdb.c:2831
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: Überspringe"
 
-#: rpmdb/rpmdb.c:3025
+#: lib/rpmdb.c:3025
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "Fehler(%d) beim Speichern des Eintrags %s in %s\n"
 
-#: rpmdb/rpmdb.c:3347
+#: lib/rpmdb.c:3364
 msgid "no dbpath has been set"
 msgstr "Kein Datenbank-Pfad wurde gesetzt"
 
-#: rpmdb/rpmdb.c:3372
+#: lib/rpmdb.c:3389
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "Temporäre Datenbank %s existiert bereits\n"
 
-#: rpmdb/rpmdb.c:3380
+#: lib/rpmdb.c:3397
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "Erzeugen des Verzeichnises %s fehlgeschlagen: %s\n"
 
-#: rpmdb/rpmdb.c:3427
+#: lib/rpmdb.c:3444
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "Header #%u in der Datenbank ist ungültig -- überspringe.\n"
 
-#: rpmdb/rpmdb.c:3465
+#: lib/rpmdb.c:3482
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "Kann ursprünglichen Eintrag %u nicht hinzufügen\n"
 
-#: rpmdb/rpmdb.c:3479
+#: lib/rpmdb.c:3496
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Neu bauen der Datenbank fehlgeschlagen: Datenbank verbleibt entsprechend\n"
 
-#: rpmdb/rpmdb.c:3487
+#: lib/rpmdb.c:3504
 msgid "failed to replace old database with new database!\n"
 msgstr "Konnte die alte Datenbank nicht durch die neue ersetzen!\n"
 
-#: rpmdb/rpmdb.c:3489
+#: lib/rpmdb.c:3506
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "Ersetze Dateien in %s mit Dateien aus %s für eine Wiederherstellung"
 
-#: rpmdb/rpmdb.c:3501
+#: lib/rpmdb.c:3518
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"
 
-#: rpmdb/sqlite.c:589
+#: lib/backend/db3.c:150
+#, c-format
+msgid "db%d error(%d) from %s: %s\n"
+msgstr "db%d-Fehler (%d) von %s: %s\n"
+
+#: lib/backend/db3.c:153
+#, c-format
+msgid "db%d error(%d): %s\n"
+msgstr "db%d-Fehler (%d): %s\n"
+
+#: lib/backend/db3.c:1148
+#, c-format
+msgid "cannot get %s lock on %s/%s\n"
+msgstr "Keine %s-Sperre auf %s/%s\n"
+
+#: lib/backend/db3.c:1150
+msgid "exclusive"
+msgstr "exklusiv"
+
+#: lib/backend/db3.c:1150
+msgid "shared"
+msgstr "verteilt"
+
+#: lib/backend/dbconfig.c:328
+#, c-format
+msgid "unrecognized db option: \"%s\" ignored.\n"
+msgstr "Unbekannte Datenbank-Option: \"%s\" ignoriert.\n"
+
+#: lib/backend/dbconfig.c:365
+#, c-format
+msgid "%s has invalid numeric value, skipped\n"
+msgstr "%s hat einen ungültigen numerischen Wert, übersprungen\n"
+
+#: lib/backend/dbconfig.c:374
+#, c-format
+msgid "%s has too large or too small long value, skipped\n"
+msgstr "%s hat einen zu grossen oder zu kleinen Wert, übersprungen\n"
+
+#: lib/backend/dbconfig.c:383
+#, c-format
+msgid "%s has too large or too small integer value, skipped\n"
+msgstr "%s hat einen zu grossen oder zu kleinen Integer-Wert, übersprungen\n"
+
+#: lib/backend/sqlite.c:589
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr "Unable to get lock on db %s, retrying... (%d)\n"
 
-#: rpmdb/sqlite.c:682
+#: lib/backend/sqlite.c:682
 #, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr "initDB %s fehlgeschlagen (%d)\n"
 
-#: rpmdb/sqlite.c:849
+#: lib/backend/sqlite.c:849
 #, c-format
 msgid "Unable to open database: %s\n"
 msgstr "Öffnen von Datenbank fehlgeschlagen: %s\n"
 
-#: rpmdb/sqlite.c:1214
+#: lib/backend/sqlite.c:1214
 msgid "Unable to determine DB endianess.\n"
 msgstr "DB Byte-Reihenfolge kann nicht bestimmt werden.\n"
+
+#: misc/error.c:107
+msgid "Unknown system error"
+msgstr "Unbekannter System-Fehler"
 
 #: rpmio/macro.c:183
 #, c-format
