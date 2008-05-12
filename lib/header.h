@@ -23,7 +23,7 @@ extern "C" {
 /** \ingroup header
  * Associate tag names with numeric values.
  */
-typedef struct headerTagTableEntry_s * headerTagTableEntry;
+typedef const struct headerTagTableEntry_s * headerTagTableEntry;
 struct headerTagTableEntry_s {
     const char * name;		/*!< Tag name. */
     const char * shortname;	/*!< "Human readable" short name. */
@@ -79,7 +79,7 @@ typedef int (*headerTagTagFunction) (Header h,
 /** \ingroup header
  * Define header tag output formats.
  */
-typedef struct headerSprintfExtension_s * headerSprintfExtension;
+typedef const struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
     enum headerSprintfExtensionType type;	/*!< Type of extension. */
     const char * name;				/*!< Name of extension. */

@@ -1050,10 +1050,7 @@ rpmecFree(const headerSprintfExtension exts, rpmec ec)
     return NULL;
 }
 
-static char * intHeaderSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tbltags,
-		     const struct headerSprintfExtension_s * extensions,
-		     errmsg_t * errmsg)
+char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) 
 {
     struct headerSprintfArgs_s hsa;
     sprintfToken nextfmt;
@@ -1065,8 +1062,8 @@ static char * intHeaderSprintf(Header h, const char * fmt,
     memset(&hsa, 0, sizeof(hsa));
     hsa.h = headerLink(h);
     hsa.fmt = xstrdup(fmt);
-    hsa.exts = (headerSprintfExtension) extensions;
-    hsa.tags = (headerTagTableEntry) tbltags;
+    hsa.exts = rpmHeaderFormats;
+    hsa.tags = rpmTagTable;
     hsa.errmsg = NULL;
 
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
@@ -1119,11 +1116,6 @@ exit:
     hsa.h = headerFree(hsa.h);
     hsa.fmt = _free(hsa.fmt);
     return hsa.val;
-}
-
-char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) 
-{
-    return intHeaderSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, errmsg);
 }
 
 char * headerSprintf(Header h, const char * fmt,
