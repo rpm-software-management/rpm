@@ -73,33 +73,6 @@ static const int typeSizes[16] =  {
  */
 static const size_t headerMaxbytes = (32*1024*1024);
 
-/**
- * Sanity check on no. of tags.
- * This check imposes a limit of 65K tags, more than enough.
- */ 
-#define hdrchkTags(_ntags)	((_ntags) & 0xffff0000)
-
-/**
- * Sanity check on type values.
- */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
-
-/**
- * Sanity check on data size and/or offset and/or count.
- * This check imposes a limit of 16Mb, more than enough.
- */ 
-#define hdrchkData(_nbytes)	((_nbytes) & 0xff000000)
-
-/**
- * Sanity check on alignment for data type.
- */
-#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
-
-/**
- * Sanity check on range of data offset.
- */
-#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
-
 Header headerLink(Header h)
 {
     if (h == NULL) return NULL;

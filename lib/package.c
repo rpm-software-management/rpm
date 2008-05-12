@@ -54,33 +54,6 @@ static int const typeAlign[16] =  {
     0
 };
 
-/**
- * Sanity check on no. of tags.
- * This check imposes a limit of 65K tags, more than enough.
- */
-#define hdrchkTags(_ntags)      ((_ntags) & 0xffff0000)
-
-/**
- * Sanity check on type values.
- */
-#define hdrchkType(_type) ((_type) < RPM_MIN_TYPE || (_type) > RPM_MAX_TYPE)
-
-/**
- * Sanity check on data size and/or offset and/or count.
- * This check imposes a limit of 16 MB, more than enough.
- */
-#define hdrchkData(_nbytes) ((_nbytes) & 0xff000000)
-
-/**
- * Sanity check on data alignment for data type.
- */
-#define hdrchkAlign(_type, _off)	((_off) & (typeAlign[_type]-1))
-
-/**
- * Sanity check on range of data offset.
- */
-#define hdrchkRange(_dl, _off)		((_off) < 0 || (_off) > (_dl))
-
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
