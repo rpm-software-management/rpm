@@ -79,7 +79,6 @@ struct sprintfToken_s {
 typedef struct headerSprintfArgs_s {
     Header h;
     char * fmt;
-    headerTagTableEntry tags;
     headerSprintfExtension exts;
     const char * errmsg;
     rpmec ec;
@@ -1019,7 +1018,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     hsa.h = headerLink(h);
     hsa.fmt = xstrdup(fmt);
     hsa.exts = rpmHeaderFormats;
-    hsa.tags = rpmTagTable;
     hsa.errmsg = NULL;
 
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
