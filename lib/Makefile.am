@@ -36,27 +36,3 @@ librpm_la_LIBADD = \
 	@WITH_SELINUX_LIB@ \
 	@LIBINTL@
 
-check_PROGRAMS += tds
-tds_SOURCES = tds.c
-tds_LDADD = librpm.la	
- 
-check_PROGRAMS += tthread
-tthread_SOURCES = tthread.c
-tthread_LDADD = librpm.la @WITH_LIBELF_LIB@
- 
-check_PROGRAMS += tsystem
-tsystem_SOURCES = tsystem.c
-tsystem_LDADD = ../rpmio/librpmio.la @WITH_POPT_LIB@
- 
-check_PROGRAMS += tcpu
-tcpu_SOURCES = tcpu.c
-tcpu_LDADD = librpm.la
- 
-check_PROGRAMS += tplatform
-tplatform_SOURCES = tplatform.c
-tplatform_LDADD = librpm.la
- 
-check_PROGRAMS += tgi
-tgi_SOURCES = tgi.c
-tgi_LDADD = librpm.la
-
