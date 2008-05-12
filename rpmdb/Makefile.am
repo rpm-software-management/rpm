@@ -155,11 +155,3 @@ rpmdb_verify_LDADD = \
 endif
 
 CLEANFILES += $(BUILT_SOURCES)
-
-check_PROGRAMS += tdbi
-tdbi_SOURCES = tdbi.c
-tdbi_LDADD = librpmdb.la
-
-check_PROGRAMS += tjfn
-tjfn_SOURCES = tjfn.c
-tjfn_LDADD = librpmdb.la
