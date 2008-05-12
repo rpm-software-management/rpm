@@ -139,6 +139,33 @@ Header headerNew(void)
     return headerLink(h);
 }
 
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
+{
+    entryInfo pe = (entryInfo) pev;
+    entryInfo info = iv;
+    int i;
+
+    for (i = 0; i < il; i++) {
+	info->tag = ntohl(pe[i].tag);
+	info->type = ntohl(pe[i].type);
+	info->offset = ntohl(pe[i].offset);
+	if (negate)
+	    info->offset = -info->offset;
+	info->count = ntohl(pe[i].count);
+
+	if (hdrchkType(info->type))
+	    return i;
+	if (hdrchkAlign(info->type, info->offset))
+	    return i;
+	if (!negate && hdrchkRange(dl, info->offset))
+	    return i;
+	if (hdrchkData(info->count))
+	    return i;
+
+    }
+    return -1;
+}
+
 /**
  */
 static int indexCmp(const void * avp, const void * bvp)

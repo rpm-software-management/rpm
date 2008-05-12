@@ -201,6 +201,17 @@ void headerUnsort(Header h);
 unsigned int headerSizeof(Header h, enum hMagic magicp);
 
 /** \ingroup header
+ * Perform simple sanity and range checks on header tag(s).
+ * @param il		no. of tags in header
+ * @param dl		no. of bytes in header data.
+ * @param pev		1st element in tag array, big-endian
+ * @param iv		failing (or last) tag element, host-endian
+ * @param negate	negative offset expected?
+ * @return		-1 on success, otherwise failing tag element index
+ */
+int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate);
+
+/** \ingroup header
  * Convert header to on-disk representation.
  * @param h		header (with pointers)
  * @return		on-disk header blob (i.e. with offsets)

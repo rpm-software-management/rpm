@@ -32,28 +32,6 @@ static unsigned char const header_magic[8] = {
         0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
-/**
- * Alignment needs (and sizeof scalars types) for internal rpm data types.
- */
-static int const typeAlign[16] =  {
-    1,	/*!< RPM_NULL_TYPE */
-    1,	/*!< RPM_CHAR_TYPE */
-    1,	/*!< RPM_INT8_TYPE */
-    2,	/*!< RPM_INT16_TYPE */
-    4,	/*!< RPM_INT32_TYPE */
-    8,	/*!< RPM_INT64_TYPE */
-    1,	/*!< RPM_STRING_TYPE */
-    1,	/*!< RPM_BIN_TYPE */
-    1,	/*!< RPM_STRING_ARRAY_TYPE */
-    1,	/*!< RPM_I18NSTRING_TYPE */
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-};
-
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
     HFD_t hfd = (HFD_t) headerFreeData;
@@ -233,33 +211,6 @@ static int rpmtsStashKeyid(rpmts ts)
     nextkeyid %= nkeyids_max;
 
     return 0;
-}
-
-int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
-{
-    entryInfo pe = (entryInfo) pev;
-    entryInfo info = iv;
-    int i;
-
-    for (i = 0; i < il; i++) {
-	info->tag = ntohl(pe[i].tag);
-	info->type = ntohl(pe[i].type);
-	info->offset = ntohl(pe[i].offset);
-	if (negate)
-	    info->offset = -info->offset;
-	info->count = ntohl(pe[i].count);
-
-	if (hdrchkType(info->type))
-	    return i;
-	if (hdrchkAlign(info->type, info->offset))
-	    return i;
-	if (!negate && hdrchkRange(dl, info->offset))
-	    return i;
-	if (hdrchkData(info->count))
-	    return i;
-
-    }
-    return -1;
 }
 
 /**
