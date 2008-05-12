@@ -57,6 +57,7 @@ lib/verify.c
 lib/fprint.c
 lib/hdrNVR.c
 lib/header.c
+lib/headerfmt.c
 lib/header_internal.c
 lib/merge.c
 lib/poptDB.c
