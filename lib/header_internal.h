@@ -62,65 +62,6 @@ struct headerToken_s {
     int nrefs;			/*!< Reference count. */
 };
 
-/** \ingroup header
- */
-typedef struct sprintfTag_s * sprintfTag;
-struct sprintfTag_s {
-    headerTagFormatFunction fmt;
-    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
-    int extNum;
-    rpmTag tag;
-    int justOne;
-    int arrayCount;
-    char * format;
-    char * type;
-    int pad;
-};
-
-/** \ingroup header
- * Extension cache.
- */
-typedef struct rpmec_s * rpmec;
-struct rpmec_s {
-    rpmTagType type;
-    rpm_count_t count;
-    int avail;
-    int freeit;
-    rpm_data_t data;
-};
-
-/** \ingroup header
- */
-typedef struct sprintfToken_s * sprintfToken;
-struct sprintfToken_s {
-    enum {
-	PTOK_NONE = 0,
-	PTOK_TAG,
-	PTOK_ARRAY,
-	PTOK_STRING,
-	PTOK_COND
-    } type;
-    union {
-	struct sprintfTag_s tag;	/*!< PTOK_TAG */
-	struct {
-	    sprintfToken format;
-	    int i;
-	    int numTokens;
-	} array;			/*!< PTOK_ARRAY */
-	struct {
-	    char * string;
-	    int len;
-	} string;			/*!< PTOK_STRING */
-	struct {
-	    sprintfToken ifFormat;
-	    int numIfTokens;
-	    sprintfToken elseFormat;
-	    int numElseTokens;
-	    struct sprintfTag_s tag;
-	} cond;				/*!< PTOK_COND */
-    } u;
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif

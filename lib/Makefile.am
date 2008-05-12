@@ -22,7 +22,7 @@ usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	backend/dbconfig.c backend/db3.c \
-	hdrNVR.c header.c header_internal.c header_internal.h \
+	hdrNVR.c header.c headerfmt.c header_internal.c header_internal.h \
 	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
 	fprint.c fprint.h tagname.c tagtbl.c \
 	cpio.c cpio.h depends.c formats.c fs.c fsm.c fsm.h \
