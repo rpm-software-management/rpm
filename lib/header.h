@@ -14,6 +14,7 @@
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmutil.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -404,15 +405,27 @@ int headerRemoveEntry(Header h, rpmTag tag);
  *
  * @param h		header
  * @param fmt		format to use
- * @param tbltags	array of tag name/value pairs
- * @param extensions	chained table of formatting extensions.
+ * @retval errmsg	error message (if any)
+ * @return		formatted output string (malloc'ed)
+ */
+char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
+
+/** \ingroup header
+ * Return formatted output string from header tags.
+ * The returned string must be free()d.
+ * @deprecated		Use headerFormat() instead
+ *
+ * @param h		header
+ * @param fmt		format to use
+ * @param tbltags	array of tag name/value pairs (unused)
+ * @param extensions	chained table of formatting extensions. (unused)
  * @retval errmsg	error message (if any)
  * @return		formatted output string (malloc'ed)
  */
 char * headerSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
-		     errmsg_t * errmsg);
+		     errmsg_t * errmsg) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Duplicate tag values from one header into another.

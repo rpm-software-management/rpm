@@ -1058,7 +1058,7 @@ rpmecFree(const headerSprintfExtension exts, rpmec ec)
     return NULL;
 }
 
-char * headerSprintf(Header h, const char * fmt,
+static char * intHeaderSprintf(Header h, const char * fmt,
 		     const struct headerTagTableEntry_s * tbltags,
 		     const struct headerSprintfExtension_s * extensions,
 		     errmsg_t * errmsg)
@@ -1127,5 +1127,18 @@ exit:
     hsa.h = headerFree(hsa.h);
     hsa.fmt = _free(hsa.fmt);
     return hsa.val;
+}
+
+char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg) 
+{
+    return intHeaderSprintf(h, fmt, rpmTagTable, rpmHeaderFormats, errmsg);
+}
+
+char * headerSprintf(Header h, const char * fmt,
+		     const struct headerTagTableEntry_s * tbltags,
+		     const struct headerSprintfExtension_s * extensions,
+		     errmsg_t * errmsg)
+{
+    return headerFormat(h, fmt, errmsg);
 }
 
