@@ -16,6 +16,161 @@
 
 #include "debug.h"
 
+/**
+ * octalFormat.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * octalFormat(rpmTagType type, rpm_constdata_t data, 
+		char * formatPrefix, size_t padding,int element)
+{
+    char * val;
+
+    if (type != RPM_INT32_TYPE) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	val = xmalloc(20 + padding);
+	strcat(formatPrefix, "o");
+	sprintf(val, formatPrefix, *((const int32_t *) data));
+    }
+
+    return val;
+}
+
+/**
+ * hexFormat.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * hexFormat(rpmTagType type, rpm_constdata_t data, 
+		char * formatPrefix, size_t padding,int element)
+{
+    char * val;
+
+    if (type != RPM_INT32_TYPE) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	val = xmalloc(20 + padding);
+	strcat(formatPrefix, "x");
+	sprintf(val, formatPrefix, *((const int32_t *) data));
+    }
+
+    return val;
+}
+
+/**
+ */
+static char * realDateFormat(rpmTagType type, rpm_constdata_t data, 
+		char * formatPrefix, size_t padding,int element,
+		const char * strftimeFormat)
+{
+    char * val;
+
+    if (type != RPM_INT32_TYPE) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	struct tm * tstruct;
+	char buf[50];
+
+	val = xmalloc(50 + padding);
+	strcat(formatPrefix, "s");
+
+	/* this is important if sizeof(rpm_time_t) ! sizeof(time_t) */
+	{   time_t dateint = *((const rpm_time_t *) data);
+	    tstruct = localtime(&dateint);
+	}
+	buf[0] = '\0';
+	if (tstruct)
+	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
+	sprintf(val, formatPrefix, buf);
+    }
+
+    return val;
+}
+
+/**
+ * Format a date.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * dateFormat(rpmTagType type, rpm_constdata_t data, 
+		         char * formatPrefix, size_t padding, int element)
+{
+    return realDateFormat(type, data, formatPrefix, padding, element,
+			_("%c"));
+}
+
+/**
+ * Format a day.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * dayFormat(rpmTagType type, rpm_constdata_t data, 
+		         char * formatPrefix, size_t padding, int element)
+{
+    return realDateFormat(type, data, formatPrefix, padding, element, 
+			  _("%a %b %d %Y"));
+}
+
+/**
+ * Return shell escape formatted data.
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @param element	(unused)
+ * @return		formatted string
+ */
+static char * shescapeFormat(rpmTagType type, rpm_constdata_t data, 
+		char * formatPrefix, size_t padding,int element)
+{
+    char * result, * dst, * src;
+
+    if (type == RPM_INT32_TYPE) {
+	result = xmalloc(padding + 20);
+	strcat(formatPrefix, "d");
+	sprintf(result, formatPrefix, *((const int32_t *) data));
+    } else {
+	char *buf = NULL;
+	strcat(formatPrefix, "s");
+	rasprintf(&buf, formatPrefix, data);
+
+	result = dst = xmalloc(strlen(buf) * 4 + 3);
+	*dst++ = '\'';
+	for (src = buf; *src != '\0'; src++) {
+	    if (*src == '\'') {
+		*dst++ = '\'';
+		*dst++ = '\\';
+		*dst++ = '\'';
+		*dst++ = '\'';
+	    } else {
+		*dst++ = *src;
+	    }
+	}
+	*dst++ = '\'';
+	*dst = '\0';
+	free(buf);
+    }
+
+    return result;
+}
+
 
 /**
  * Identify type of trigger.
@@ -920,6 +1075,16 @@ static int groupTag(Header h, rpmTagType* type,
 {
     return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
 }
+
+/* FIX: cast? */
+const struct headerSprintfExtension_s headerDefaultFormats[] = {
+    { HEADER_EXT_FORMAT, "octal", { octalFormat } },
+    { HEADER_EXT_FORMAT, "hex", { hexFormat } },
+    { HEADER_EXT_FORMAT, "date", { dateFormat } },
+    { HEADER_EXT_FORMAT, "day", { dayFormat } },
+    { HEADER_EXT_FORMAT, "shescape", { shescapeFormat } },
+    { HEADER_EXT_LAST, NULL, { NULL } }
+};
 
 /* FIX: cast? */
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
