@@ -117,28 +117,20 @@ static struct tagMacro {
  */
 static int rpmInstallLoadMacros(rpmfi fi, Header h)
 {
-    HGE_t hge = (HGE_t) fi->hge;
     const struct tagMacro * tagm;
-    union {
-void * ptr;
-const char ** argv;
-	const char * str;
-	int32_t * i32p;
-    } body;
-    char *numbuf = NULL;
-    rpmTagType type;
 
     for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	if (!hge(h, tagm->tag, &type, (rpm_data_t *) &body, NULL))
+	struct rpmtd_s td;
+	char *body;
+	if (!headerGet(h, tagm->tag, &td, HEADERGET_DEFAULT))
 	    continue;
-	switch (type) {
-	case RPM_INT32_TYPE:
-	    rasprintf(&numbuf, "%d", *body.i32p);
-	    addMacro(NULL, tagm->macroname, NULL, numbuf, -1);
-	    numbuf = _free(numbuf);
-	    break;
+
+	switch (rpmtdType(&td)) {
+	case RPM_INT32_TYPE: /* fallthrough */
 	case RPM_STRING_TYPE:
-	    addMacro(NULL, tagm->macroname, NULL, body.str, -1);
+	    body = rpmtdToString(&td);
+	    addMacro(NULL, tagm->macroname, NULL, body, -1);
+	    free(body);
 	    break;
 	case RPM_NULL_TYPE:
 	case RPM_CHAR_TYPE:
@@ -150,6 +142,7 @@ const char ** argv;
 	default:
 	    break;
 	}
+	rpmtdFreeData(&td);
     }
     return 0;
 }
