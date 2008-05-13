@@ -45,3 +45,10 @@ rpm_count_t rpmtdCount(rpmtd td)
     assert(td != NULL);
     return td->count;
 }
+
+rpmTag rpmtdTag(rpmtd td)
+{
+    assert(td != NULL);
+    return td->tag;
+}
+

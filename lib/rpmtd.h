@@ -49,4 +49,11 @@ void rpmtdFreeData(rpmtd td);
  */
 rpm_count_t rpmtdCount(rpmtd td);
 
+/** \ingroup rpmtd
+ * Retrieve tag of the container.
+ * @param td		Tag data container
+ * @return		Rpm tag.
+ */
+rpmTag rpmtdTag(rpmtd td);
+
 #endif /* _RPMTD_H */
