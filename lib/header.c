@@ -1859,21 +1859,18 @@ void headerCopyTags(Header headerFrom, Header headerTo,
 		    const rpmTag * tagstocopy)
 {
     const rpmTag * p;
+    struct rpmtd_s td;
 
     if (headerFrom == headerTo)
 	return;
 
     for (p = tagstocopy; *p != 0; p++) {
-	rpm_data_t s;
-	rpmTagType type;
-	rpm_count_t count;
 	if (headerIsEntry(headerTo, *p))
 	    continue;
-	if (!headerGetEntryMinMemory(headerFrom, *p, &type, &s, &count))
+	if (!headerGet(headerFrom, *p, &td, HEADERGET_MINMEM))
 	    continue;
-	(void) headerAddEntry(headerTo, *p, type, s, count);
-	/* XXXX freeing up *any* data from headerGetEntryMinMemory ?! */
-	s = headerFreeData(s, type);
+	(void) headerPut(headerTo, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
     }
 }
 
