@@ -52,6 +52,12 @@ rpmTag rpmtdTag(rpmtd td)
     return td->tag;
 }
 
+rpmTagType rpmtdType(rpmtd td)
+{
+    assert(td != NULL);
+    return td->type;
+}
+
 int rpmtdInit(rpmtd td)
 {
     assert(td != NULL);
@@ -90,4 +96,39 @@ const char * rpmtdGetString(rpmtd td)
 	str = *((const char**) td->data + ix);
     } 
     return str;
+}
+
+int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
+{
+    int count = argvCount(argv);
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+
+    if (type != RPM_STRING_ARRAY_TYPE || count < 1)
+	return 0;
+
+    assert(td != NULL);
+    rpmtdReset(td);
+    td->type = type;
+    td->tag = tag;
+    td->count = count;
+    td->data = argv;
+    return 1;
+}
+
+int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi)
+{
+    int count = argiCount(argi);
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+
+    if (type != RPM_INT32_TYPE || retype != RPM_ARRAY_RETURN_TYPE || count < 1)
+	return 0;
+
+    assert(td != NULL);
+    rpmtdReset(td);
+    td->type = type;
+    td->tag = tag;
+    td->count = count;
+    td->data = argiData(argi);
+    return 1;
 }

@@ -2,6 +2,7 @@
 #define _RPMTD_H
 
 #include <rpm/rpmtypes.h>
+#include <rpm/argv.h>
 
 /** \ingroup rpmtd
  * Container for rpm tag data (from headers or extensions).
@@ -57,6 +58,13 @@ rpm_count_t rpmtdCount(rpmtd td);
 rpmTag rpmtdTag(rpmtd td);
 
 /** \ingroup rpmtd
+ * Retrieve type of the container.
+ * @param td		Tag data container
+ * @return		Rpm tag type.
+ */
+rpmTagType rpmtdType(rpmtd td);
+
+/** \ingroup rpmtd
  * Initialize tag container for iteration
  * @param td		Tag data container
  * @return		0 on success
@@ -79,5 +87,27 @@ int rpmtdNext(rpmtd td);
  * @return		String constant from container, NULL on error
  */
 const char * rpmtdGetString(rpmtd td);
+
+/** \ingroup rpmtd
+ * Construct tag container from ARGV_t array.
+ * Tag type is checked to be of string array type and array is checked
+ * to be non-empty.
+ * @param td		Tag data container
+ * @param tag		Rpm tag to construct
+ * @param argv		ARGV array
+ * @return		1 on success, 0 on error (eg wrong type)
+ */
+int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv);
+
+/** \ingroup rpmtd
+ * Construct tag container from ARGI_t array.
+ * Tag type is checked to be of integer array type and array is checked
+ * to be non-empty.
+ * @param td		Tag data container
+ * @param tag		Rpm tag to construct
+ * @param argi		ARGI array
+ * @return		1 on success, 0 on error (eg wrong type)
+ */
+int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi);
 
 #endif /* _RPMTD_H */
