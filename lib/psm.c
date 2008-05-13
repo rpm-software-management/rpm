@@ -583,8 +583,7 @@ static int ldconfig_done = 0;
 
 static const char * ldconfig_path = "/sbin/ldconfig";
 
-static void doScriptExec(rpmts ts, ARGV_const_t argv, 
-			const char **prefixes, int numPrefixes, 
+static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 			FD_t scriptFd, FD_t out)
 {
     const char * rootDir;
@@ -633,16 +632,17 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv,
 	ipath = _free(ipath);
     }
 
-    if (prefixes != NULL) {
+    if (rpmtdCount(prefixes) > 0) {
 	int i;
 	char *buf = NULL;
 	/* backwards compatibility */
-	rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", prefixes[0]);
+	rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", rpmtdGetString(prefixes));
 	xx = doputenv(buf);
 	buf = _free(buf);
 
-	for (i = 0; i < numPrefixes; i++) {
-	    rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", i, prefixes[i]);
+	while ((i = rpmtdNext(prefixes)) >= 0) {
+	    rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", i, 
+			rpmtdGetString(prefixes));
 	    xx = doputenv(buf);
 	    buf = _free(buf);
 	}
@@ -695,20 +695,13 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 		const char * script, int arg1, int arg2)
 {
     const rpmts ts = psm->ts;
-    rpmfi fi = psm->fi;
-    HGE_t hge = fi->hge;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    const char ** prefixes = NULL;
-    rpm_count_t numPrefixes;
-    rpmTagType ipt;
-    const char * oldPrefix;
     char * fn = NULL;
     int xx;
-    int freePrefixes = 0;
     FD_t scriptFd;
     FD_t out = NULL;
     rpmRC rc = RPMRC_OK;
     char *nevra, *sname = NULL; 
+    struct rpmtd_s prefixes;
 
     assert(argvp != NULL);
     if (*argvp == NULL && script == NULL)
@@ -748,13 +741,10 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 		? 1 : 0);
     }
 
-    if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (rpm_data_t *) &prefixes, &numPrefixes)) {
-	freePrefixes = 1;
-    } else if (hge(h, RPMTAG_INSTALLPREFIX, NULL, (rpm_data_t *) &oldPrefix, NULL)) {
-	prefixes = &oldPrefix;
-	numPrefixes = 1;
-    } else {
-	numPrefixes = 0;
+
+    /* Try new style prefixes first, then old. Otherwise there are none.. */
+    if (!headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, HEADERGET_DEFAULT)) {
+	headerGet(h, RPMTAG_INSTALLPREFIX, &prefixes, HEADERGET_DEFAULT);
     }
 
     if (script) {
@@ -819,7 +809,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     if (psm->sq.child == 0) {
 	rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
 	       psm->stepName, sname, *argvp[0], (unsigned)getpid());
-	doScriptExec(ts, *argvp, prefixes, numPrefixes, scriptFd, out);
+	doScriptExec(ts, *argvp, &prefixes, scriptFd, out);
     }
 
     if (psm->sq.child == (pid_t)-1) {
@@ -852,7 +842,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     }
 
 exit:
-    if (freePrefixes) prefixes = hfd(prefixes, ipt);
+    rpmtdFreeData(&prefixes);
 
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
