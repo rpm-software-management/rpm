@@ -266,6 +266,21 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp);
  */
 int headerIsEntry(Header h, rpmTag tag);
 
+enum headerGetFlags_e {
+    HEADERGET_DEFAULT	= 0,
+    HEADERGET_MINMEM 	= (1 << 0),
+};
+
+/** \ingroup header
+ * Retrieve tag value.
+ * @param h		header
+ * @param tag		tag
+ * @retval td		tag data container
+ * @param flags		retrieval modifier flags
+ * @return		1 on success, 0 on failure
+ */
+int headerGet(Header h, rpmTag tag, rpmtd td, int flags);
+
 /** \ingroup header
  * Free data allocated when retrieved from header.
  * @param h		header

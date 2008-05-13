@@ -1322,40 +1322,36 @@ headerFindI18NString(Header h, indexEntry entry)
  * Retrieve tag data from header.
  * @param h		header
  * @param tag		tag to retrieve
- * @retval type		address of type (or NULL)
- * @retval p		address of data (or NULL)
- * @retval c		address of count (or NULL)
+ * @retval td		tag data container
  * @param minMem	string pointers reference header memory?
  * @return		1 on success, 0 on not found
  */
-static int intGetEntry(Header h, rpmTag tag,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c,
-		int minMem)
+static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, int minMem)
 {
     indexEntry entry;
     int rc;
 
+    assert(td != NULL);
+    /* ensure clean state */
+    rpmtdReset(td);
+    td->tag = tag;
     /* First find the tag */
-   		/* FIX: h modified by sort. */
+    /* FIX: h modified by sort. */
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     if (entry == NULL) {
-	if (type) type = 0;
-	if (p) *p = NULL;
-	if (c) *c = 0;
+	/* Td is zeroed above, just return... */
 	return 0;
     }
 
     switch (entry->info.type) {
     case RPM_I18NSTRING_TYPE:
 	rc = 1;
-	if (type) *type = RPM_STRING_TYPE;
-	if (c) *c = 1;
-	if (p) *p = headerFindI18NString(h, entry);
+	td->type = RPM_STRING_TYPE;
+	td->count = 1;
+	td->data = headerFindI18NString(h, entry);
 	break;
     default:
-	rc = copyEntry(entry, type, p, c, minMem);
+	rc = copyTdEntry(entry, td, minMem);
 	break;
     }
 
@@ -1375,12 +1371,44 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type)
     return NULL;
 }
 
+int headerGet(Header h, rpmTag tag, rpmtd td, int flags)
+{
+    int rc;
+    int minMem = flags & HEADERGET_MINMEM;
+
+    assert(td != NULL);
+
+    rc = intGetTdEntry(h, tag, td, minMem);
+
+    assert(tag == td->tag);
+    return rc;
+}
+
+static int headerGetWrap(Header h, rpmTag tag,
+		rpmTagType * type,
+		rpm_data_t * p,
+		rpm_count_t * c,
+		int minMem)
+{
+    struct rpmtd_s td;
+    int rc;
+
+    rc = headerGet(h, tag, &td, minMem);
+    if (type)
+	*type = td.type;
+    if (p)
+	*p = td.data;
+    if (c)
+	*c = td.count;
+    return rc;
+}
+
 int headerGetEntry(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
 			rpm_count_t * c)
 {
-    return intGetEntry(h, tag, type, p, c, 0);
+    return headerGetWrap(h, tag, type, p, c, 0);
 }
 
 int headerGetEntryMinMemory(Header h, rpmTag tag,
@@ -1388,7 +1416,7 @@ int headerGetEntryMinMemory(Header h, rpmTag tag,
 			rpm_data_t * p,
 			rpm_count_t * c)
 {
-    return intGetEntry(h, tag, type, (rpm_data_t) p, c, 1);
+    return headerGetWrap(h, tag, type, (rpm_data_t) p, c, HEADERGET_MINMEM);
 }
 
 int headerGetRawEntry(Header h, rpmTag tag, rpmTagType * type, rpm_data_t * p,
