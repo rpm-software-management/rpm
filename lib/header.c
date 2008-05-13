@@ -68,6 +68,15 @@ static const int typeSizes[16] =  {
     0
 };
 
+/* dumb macro to avoid 50 copies of this code while converting... */
+#define TDWRAP() \
+    if (type) \
+	*type = td.type; \
+    if (p) \
+	*p = td.data; \
+    if (c) \
+	*c = td.count
+
 /** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
@@ -1212,12 +1221,7 @@ static int copyEntry(const indexEntry entry,
 
     rpmtdReset(&td);
     rc = copyTdEntry(entry, &td, minMem);
-    if (type)
-	*type = td.type;
-    if (p)
-	*p = td.data;
-    if (c)
-	*c = td.count;
+    TDWRAP();
     return rc;
 }
 
@@ -1394,12 +1398,7 @@ static int headerGetWrap(Header h, rpmTag tag,
     int rc;
 
     rc = headerGet(h, tag, &td, minMem);
-    if (type)
-	*type = td.type;
-    if (p)
-	*p = td.data;
-    if (c)
-	*c = td.count;
+    TDWRAP();
     return rc;
 }
 
@@ -1816,12 +1815,7 @@ int headerNextIterator(HeaderIterator hi,
     rc = headerNext(hi, &td);
     if (tag)
 	*tag = td.tag;
-    if (type)
-	*type = td.type;
-    if (p)
-	*p = td.data;
-    if (c)
-	*c = td.count;
+    TDWRAP();
     return rc;
 }
 
