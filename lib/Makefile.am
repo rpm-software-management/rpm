@@ -24,7 +24,7 @@ librpm_la_SOURCES = \
 	backend/dbconfig.c backend/db3.c \
 	hdrNVR.c header.c headerfmt.c header_internal.c header_internal.h \
 	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
-	fprint.c fprint.h tagname.c tagtbl.c \
+	fprint.c fprint.h tagname.c tagtbl.c rpmtd.c \
 	cpio.c cpio.h depends.c formats.c fs.c fsm.c fsm.h \
 	manifest.c manifest.h misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c psm.h query.c \

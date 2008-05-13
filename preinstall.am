@@ -90,6 +90,10 @@ include/rpm/rpmtag.h: lib/rpmtag.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmtag.h include/rpm/rpmtag.h
 BUILT_SOURCES += include/rpm/rpmtag.h
 CLEANFILES += include/rpm/rpmtag.h
+include/rpm/rpmtd.h: lib/rpmtd.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/rpmtd.h include/rpm/rpmtd.h
+BUILT_SOURCES += include/rpm/rpmtd.h
+CLEANFILES += include/rpm/rpmtd.h
 include/rpm/rpmte.h: lib/rpmte.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmte.h include/rpm/rpmte.h
 BUILT_SOURCES += include/rpm/rpmte.h

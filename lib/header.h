@@ -14,6 +14,7 @@
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmtd.h>
 #include <rpm/rpmutil.h>
 
 #ifdef __cplusplus
