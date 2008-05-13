@@ -471,6 +471,14 @@ HeaderIterator headerInitIterator(Header h);
 /** \ingroup header
  * Return next tag from header.
  * @param hi		header tag iterator
+ * @retval td		tag data container
+ * @return		1 on success, 0 on failure
+ */
+int headerNext(HeaderIterator hi, rpmtd td);
+
+/** \ingroup header
+ * Return next tag from header.
+ * @param hi		header tag iterator
  * @retval *tag		tag
  * @retval *type	tag value data type
  * @retval *p		pointer to tag value(s)

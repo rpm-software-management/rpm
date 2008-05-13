@@ -1774,16 +1774,15 @@ HeaderIterator headerInitIterator(Header h)
     return hi;
 }
 
-int headerNextIterator(HeaderIterator hi,
-		rpmTag * tag,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c)
+int headerNext(HeaderIterator hi, rpmtd td)
 {
     Header h = hi->h;
     int slot = hi->next_index;
     indexEntry entry = NULL;
     int rc;
+
+    assert(td != NULL);
+    rpmtdReset(td);
 
     for (slot = hi->next_index; slot < h->indexUsed; slot++) {
 	entry = h->index + slot;
@@ -1797,13 +1796,33 @@ int headerNextIterator(HeaderIterator hi,
    	/* LCL: no clue */
     hi->next_index++;
 
-    if (tag)
-	*tag = entry->info.tag;
+    td->tag = entry->info.tag;
 
-    rc = copyEntry(entry, type, p, c, 0);
+    rc = copyTdEntry(entry, td, 0);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
+}
+
+int headerNextIterator(HeaderIterator hi,
+		rpmTag * tag,
+		rpmTagType * type,
+		rpm_data_t * p,
+		rpm_count_t * c)
+{
+    struct rpmtd_s td;
+    int rc;
+
+    rc = headerNext(hi, &td);
+    if (tag)
+	*tag = td.tag;
+    if (type)
+	*type = td.type;
+    if (p)
+	*p = td.data;
+    if (c)
+	*c = td.count;
+    return rc;
 }
 
 /** \ingroup header
