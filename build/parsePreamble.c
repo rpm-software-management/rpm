@@ -411,7 +411,6 @@ exit:
 
 spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     spectag t = NULL;
 
     if (spec->st) {
@@ -427,9 +426,11 @@ spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang)
 	t->t_lang = xstrdup(lang);
 	t->t_msgid = NULL;
 	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
-	    char *n;
-	    if (hge(h, RPMTAG_NAME, NULL, (rpm_data_t *) &n, NULL)) {
-		rasprintf(&t->t_msgid, "%s(%s)", n, rpmTagGetName(tag));
+	    struct rpmtd_s td;
+	    if (headerGet(h, RPMTAG_NAME, &td, HEADERGET_MINMEM)) {
+		rasprintf(&t->t_msgid, "%s(%s)", 
+			 rpmtdGetString(&td), rpmTagGetName(tag));
+		rpmtdFreeData(&td);
 	    }
 	}
     }
@@ -450,16 +451,10 @@ extern int noLang;
 static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     char * field = spec->line;
     char * end;
-    char ** array;
     int multiToken = 0;
     rpmsenseFlags tagflags;
-    rpmTagType type;
-    size_t len;
-    rpm_count_t num;
     int rc;
     int xx;
     
@@ -565,21 +560,24 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	}
 	free(buildRoot);
       }	break;
-    case RPMTAG_PREFIXES:
+    case RPMTAG_PREFIXES: {
+	struct rpmtd_s td;
 	addOrAppendListEntry(pkg->header, tag, field);
-	xx = hge(pkg->header, tag, &type, (rpm_data_t *)&array, &num);
-	while (num--) {
-	    len = strlen(array[num]);
-	    if (array[num][len - 1] == '/' && len > 1) {
+	xx = headerGet(pkg->header, tag, &td, HEADERGET_MINMEM);
+	while (rpmtdNext(&td) >= 0) {
+	    const char *str = rpmtdGetString(&td);
+	    size_t len = strlen(str);
+	    if (len > 1 && str[len-1] == '/') {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
-		array = hfd(array, type);
+		rpmtdFreeData(&td);
 		return RPMRC_FAIL;
 	    }
 	}
-	array = hfd(array, type);
+	rpmtdFreeData(&td);
 	break;
+    }
     case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
 	if (field[0] != '/') {
