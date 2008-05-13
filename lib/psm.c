@@ -865,43 +865,30 @@ exit:
 static rpmRC runInstScript(rpmpsm psm)
 {
     rpmfi fi = psm->fi;
-    HGE_t hge = fi->hge;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    rpm_data_t * progArgv;
-    rpm_count_t progArgc;
-    ARGV_t argv;
-    rpmTagType ptt, stt;
-    char * script;
     rpmRC rc = RPMRC_OK;
-    int xx;
+    ARGV_t argv;
+    struct rpmtd_s script, prog;
 
     if (fi->h == NULL)	/* XXX can't happen */
 	return RPMRC_FAIL;
-    /*
-     * headerGetEntry() sets the data pointer to NULL if the entry does
-     * not exist.
-     */
-    xx = hge(fi->h, psm->scriptTag, &stt, (rpm_data_t *) &script, NULL);
-    xx = hge(fi->h, psm->progTag, &ptt, (rpm_data_t *) &progArgv, &progArgc);
-    if (progArgv == NULL && script == NULL)
+
+    headerGet(fi->h, psm->scriptTag, &script, HEADERGET_DEFAULT);
+    headerGet(fi->h, psm->progTag, &prog, HEADERGET_DEFAULT);
+    if (rpmtdCount(&script) == 0 && rpmtdCount(&prog) == 0)
 	goto exit;
 
     argv = argvNew();
-    if (progArgv && ptt == RPM_STRING_TYPE) {
-	argvAdd(&argv, (char *)progArgv);
-    } else {
-	int i;
-	for (i = 0; i < progArgc; i++) {
-	    argvAdd(&argv, (char *)progArgv[i]);
-	}
+    while (rpmtdNext(&prog) >= 0) {
+	argvAdd(&argv, rpmtdGetString(&prog));
     }
+
     rc = runScript(psm, fi->h, psm->scriptTag, &argv,
-		   script, psm->scriptArg, -1);
+		   rpmtdGetString(&script), psm->scriptArg, -1);
     argvFree(argv);
 
 exit:
-    progArgv = hfd(progArgv, ptt);
-    script = hfd(script, stt);
+    rpmtdFreeData(&script);
+    rpmtdFreeData(&prog);
     return rc;
 }
 
