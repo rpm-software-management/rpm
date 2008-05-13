@@ -1581,6 +1581,19 @@ int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
 	: headerAddEntry(h, tag, type, p, c));
 }
 
+int headerPut(Header h, rpmtd td, int flags)
+{
+    int rc;
+    
+    assert(td != NULL);
+    if (flags & HEADERPUT_APPEND) {
+	rc = headerAddOrAppendEntry(h, td->tag, td->type, td->data, td->count);
+    } else {
+	rc = headerAddEntry(h, td->tag, td->type, td->data, td->count);
+    }
+    return rc;
+}
+
 int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 {

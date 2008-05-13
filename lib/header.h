@@ -325,6 +325,20 @@ int headerGetEntryMinMemory(Header h, rpmTag tag,
 			rpm_data_t * p, 
 			rpm_count_t * c);
 
+enum headerPutFlags_e {
+    HEADERPUT_DEFAULT	= 0,
+    HEADERPUT_APPEND 	= (1 << 0),
+};
+/** \ingroup header
+ * Add or append tag to header.
+ *
+ * @param h		header
+ * @param td		tag data container
+ * @param flags		flags to control operation
+ * @return		1 on success, 0 on failure
+ */
+int headerPut(Header h, rpmtd td, int flags);
+
 /** \ingroup header
  * Add tag to header.
  * Duplicate tags are okay, but only defined for iteration (with the
