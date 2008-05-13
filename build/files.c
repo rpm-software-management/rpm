@@ -1911,57 +1911,45 @@ exit:
     return fl.processingFailed;
 }
 
+static const rpmTag sourceTags[] = {
+    RPMTAG_NAME,
+    RPMTAG_VERSION,
+    RPMTAG_RELEASE,
+    RPMTAG_EPOCH,
+    RPMTAG_SUMMARY,
+    RPMTAG_DESCRIPTION,
+    RPMTAG_PACKAGER,
+    RPMTAG_DISTRIBUTION,
+    RPMTAG_DISTURL,
+    RPMTAG_VENDOR,
+    RPMTAG_LICENSE,
+    RPMTAG_GROUP,
+    RPMTAG_OS,
+    RPMTAG_ARCH,
+    RPMTAG_CHANGELOGTIME,
+    RPMTAG_CHANGELOGNAME,
+    RPMTAG_CHANGELOGTEXT,
+    RPMTAG_URL,
+    HEADER_I18NTABLE,
+    0
+};
+
 void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
-    rpmTagType type;
-    rpmTag tag;
-    rpm_count_t count;
-    rpm_data_t ptr;
+    struct rpmtd_s td;
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
-    for (hi = headerInitIterator(spec->packages->header);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData(ptr, type))
-    {
-	switch (tag) {
-	case RPMTAG_NAME:
-	case RPMTAG_VERSION:
-	case RPMTAG_RELEASE:
-	case RPMTAG_EPOCH:
-	case RPMTAG_SUMMARY:
-	case RPMTAG_DESCRIPTION:
-	case RPMTAG_PACKAGER:
-	case RPMTAG_DISTRIBUTION:
-	case RPMTAG_DISTURL:
-	case RPMTAG_VENDOR:
-	case RPMTAG_LICENSE:
-	case RPMTAG_GROUP:
-	case RPMTAG_OS:
-	case RPMTAG_ARCH:
-	case RPMTAG_CHANGELOGTIME:
-	case RPMTAG_CHANGELOGNAME:
-	case RPMTAG_CHANGELOGTEXT:
-	case RPMTAG_URL:
-	case HEADER_I18NTABLE:
-	    if (ptr)
-		(void)headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
-	    break;
-	default:
-	    /* do not copy */
-	    break;
-	}
-    }
-    hi = headerFreeIterator(hi);
+    headerCopyTags(spec->packages->header, spec->sourceHeader, sourceTags);
 
     /* Add the build restrictions */
-    for (hi = headerInitIterator(spec->buildRestrictions);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData(ptr, type))
-    {
-	if (ptr)
-	    (void) headerAddEntry(spec->sourceHeader, tag, type, ptr, count);
+    hi = headerInitIterator(spec->buildRestrictions);
+    while (headerNext(hi, &td)) {
+	if (rpmtdCount(&td) > 0) {
+	    (void) headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+	}
+	rpmtdFreeData(&td);
     }
     hi = headerFreeIterator(hi);
 
