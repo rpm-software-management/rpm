@@ -1535,6 +1535,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     int rc = 0;
     int xx;
     int idx;
+    struct rpmtd_s td;
 
     /* Skip packages with no files. */
     if (ac <= 0)
@@ -1646,19 +1647,16 @@ assert(ac == c);
     }
 
     /* Add classes(#classes) */
-    p = (const void **) argvData(fc->cdict);
-    c = argvCount(fc->cdict);
-    if (p != NULL && c > 0)
-	xx = headerAddEntry(pkg->header, RPMTAG_CLASSDICT, RPM_STRING_ARRAY_TYPE,
-			p, c);
+    if (rpmtdFromArgv(&td, RPMTAG_CLASSDICT, fc->cdict)) {
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    }
 
     /* Add per-file classes(#files) */
-    p = (const void **) argiData(fc->fcdictx);
-    c = argiCount(fc->fcdictx);
-assert(ac == c);
-    if (p != NULL && c > 0)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILECLASS, RPM_INT32_TYPE,
-			p, c);
+    if (rpmtdFromArgi(&td, RPMTAG_FILECLASS, fc->fcdictx)) {
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    }
 
     /* Add Provides: */
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
@@ -1729,26 +1727,21 @@ assert(flags != NULL);
     }
 
     /* Add dependency dictionary(#dependencies) */
-    p = (const void **) argiData(fc->ddictx);
-    c = argiCount(fc->ddictx);
-    if (p != NULL)
-	xx = headerAddEntry(pkg->header, RPMTAG_DEPENDSDICT, RPM_INT32_TYPE,
-			p, c);
+    if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    }
 
     /* Add per-file dependency (start,number) pairs (#files) */
-    p = (const void **) argiData(fc->fddictx);
-    c = argiCount(fc->fddictx);
-assert(ac == c);
-    if (p != NULL)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILEDEPENDSX, RPM_INT32_TYPE,
-			p, c);
+    if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    }
 
-    p = (const void **) argiData(fc->fddictn);
-    c = argiCount(fc->fddictn);
-assert(ac == c);
-    if (p != NULL)
-	xx = headerAddEntry(pkg->header, RPMTAG_FILEDEPENDSN, RPM_INT32_TYPE,
-			p, c);
+    if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    }
 
     printDeps(pkg->header);
 
