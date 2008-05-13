@@ -1095,22 +1095,16 @@ int headerIsEntry(Header h, rpmTag tag)
  * Retrieve data from header entry.
  * @todo Permit retrieval of regions other than HEADER_IMUTABLE.
  * @param entry		header entry
- * @retval type		address of type (or NULL)
- * @retval p		address of data (or NULL)
- * @retval c		address of count (or NULL)
+ * @param td		tag data container
  * @param minMem	string pointers refer to header memory?
  * @return		1 on success, otherwise error.
  */
-static int copyEntry(const indexEntry entry,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c,
-		int minMem)
+static int copyTdEntry(const indexEntry entry, rpmtd td, int minMem)
 {
     rpm_count_t count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
 
-    if (p)
+    assert(td != NULL);
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
 	/*
@@ -1136,8 +1130,8 @@ static int copyEntry(const indexEntry entry,
 		rdl += REGION_TAG_COUNT;
 	    }
 
-	    *p = xmalloc(count);
-	    ei = (int32_t *) *p;
+	    td->data = xmalloc(count);
+	    ei = (int32_t *) td->data;
 	    ei[0] = htonl(ril);
 	    ei[1] = htonl(rdl);
 
@@ -1150,14 +1144,14 @@ static int copyEntry(const indexEntry entry,
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
 	    count = entry->length;
-	    *p = (!minMem
+	    td->data = (!minMem
 		? memcpy(xmalloc(count), entry->data, count)
 		: entry->data);
 	}
 	break;
     case RPM_STRING_TYPE:
 	if (count == 1) {
-	    *p = entry->data;
+	    td->data = entry->data;
 	    break;
 	}
     case RPM_STRING_ARRAY_TYPE:
@@ -1168,13 +1162,13 @@ static int copyEntry(const indexEntry entry,
 	int i;
 
 	if (minMem) {
-	    *p = xmalloc(tableSize);
-	    ptrEntry = (const char **) *p;
+	    td->data = xmalloc(tableSize);
+	    ptrEntry = (const char **) td->data;
 	    t = entry->data;
 	} else {
 	    t = xmalloc(tableSize + entry->length);
-	    *p = (void *)t;
-	    ptrEntry = (const char **) *p;
+	    td->data = (void *)t;
+	    ptrEntry = (const char **) td->data;
 	    t += tableSize;
 	    memcpy(t, entry->data, entry->length);
 	}
@@ -1186,11 +1180,44 @@ static int copyEntry(const indexEntry entry,
     }	break;
 
     default:
-	*p = entry->data;
+	td->data = entry->data;
 	break;
     }
-    if (type) *type = entry->info.type;
-    if (c) *c = count;
+    td->type = entry->info.type;
+    td->count = count;
+    td->freeData = (entry->data == td->data) ? 0 : 1;
+
+    return rc;
+}
+
+/** \ingroup header
+ * Retrieve data from header entry.
+ * Just a compat wrapper around copyTdEntry() until everything's converted
+ * to new interface.
+ * @param entry		header entry
+ * @retval type		address of type (or NULL)
+ * @retval p		address of data (or NULL)
+ * @retval c		address of count (or NULL)
+ * @param minMem	string pointers refer to header memory?
+ * @return		1 on success, otherwise error.
+ */
+static int copyEntry(const indexEntry entry,
+		rpmTagType * type,
+		rpm_data_t * p,
+		rpm_count_t * c,
+		int minMem)
+{
+    struct rpmtd_s td;
+    int rc;
+
+    rpmtdReset(&td);
+    rc = copyTdEntry(entry, &td, minMem);
+    if (type)
+	*type = td.type;
+    if (p)
+	*p = td.data;
+    if (c)
+	*c = td.count;
     return rc;
 }
 
