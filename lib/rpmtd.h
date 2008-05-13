@@ -56,4 +56,28 @@ rpm_count_t rpmtdCount(rpmtd td);
  */
 rpmTag rpmtdTag(rpmtd td);
 
+/** \ingroup rpmtd
+ * Initialize tag container for iteration
+ * @param td		Tag data container
+ * @return		0 on success
+ */
+int rpmtdInit(rpmtd td);
+
+/** \ingroup rpmtd
+ * Iterate over tag data container.
+ * @param td		Tag data container
+ * @return		Tag data container iterator index, -1 on termination
+ */
+int rpmtdNext(rpmtd td);
+
+/** \ingroup rpmtd
+ * Return string data from tag container.
+ * For string types, just return the string. On string array types,
+ * return the string from current iteration index. If the tag container
+ * is not for a string type, NULL is returned.
+ * @param td		Tag data container
+ * @return		String constant from container, NULL on error
+ */
+const char * rpmtdGetString(rpmtd td);
+
 #endif /* _RPMTD_H */

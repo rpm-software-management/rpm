@@ -52,3 +52,42 @@ rpmTag rpmtdTag(rpmtd td)
     return td->tag;
 }
 
+int rpmtdInit(rpmtd td)
+{
+    assert(td != NULL);
+
+    /* XXX check that this is an array type? */
+    td->ix = -1;
+    return 0;
+}
+
+int rpmtdNext(rpmtd td)
+{
+    int i = -1;
+
+    assert(td != NULL);
+    if (++td->ix >= 0) {
+	if (td->ix < td->count) {
+	    i = td->ix;
+	} else {
+	    td->ix = i;
+	}
+    }
+    return i;
+}
+
+const char * rpmtdGetString(rpmtd td)
+{
+    const char *str = NULL;
+
+    assert(td != NULL);
+
+    if (td->type == RPM_STRING_TYPE) {
+	str = (const char *) td->data;
+    } else if (td->type == RPM_STRING_ARRAY_TYPE) {
+	/* XXX TODO: check for array bounds */
+	int ix = (td->ix >= 0 ? td->ix : 0);
+	str = *((const char**) td->data + ix);
+    } 
+    return str;
+}
