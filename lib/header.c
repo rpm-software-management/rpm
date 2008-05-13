@@ -1841,16 +1841,14 @@ Header headerCopy(Header h)
 {
     Header nh = headerNew();
     HeaderIterator hi;
-    rpmTagType type;
-    rpmTag tag;
-    rpm_count_t count;
-    rpm_data_t ptr;
+    struct rpmtd_s td;
    
-    for (hi = headerInitIterator(h);
-	headerNextIterator(hi, &tag, &type, &ptr, &count);
-	ptr = headerFreeData(ptr, type))
-    {
-	if (ptr) (void) headerAddEntry(nh, tag, type, ptr, count);
+    hi = headerInitIterator(h);
+    while (headerNext(hi, &td)) {
+	if (rpmtdCount(&td) > 0) {
+	    (void) headerPut(nh, &td, HEADERPUT_DEFAULT);
+	}
+	rpmtdFreeData(&td);
     }
     hi = headerFreeIterator(hi);
 
