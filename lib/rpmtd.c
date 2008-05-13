@@ -82,6 +82,31 @@ int rpmtdNext(rpmtd td)
     return i;
 }
 
+uint16_t * rpmtdGetUint16(rpmtd td)
+{
+    uint16_t *res = NULL;
+
+    assert(td != NULL);
+
+    if (td->type == RPM_INT16_TYPE) {
+	int ix = (td->ix >= 0 ? td->ix : 0);
+	res = (uint16_t *) td->data + ix;
+    } 
+    return res;
+}
+
+uint32_t * rpmtdGetUint32(rpmtd td)
+{
+    uint32_t *res = NULL;
+
+    assert(td != NULL);
+
+    if (td->type == RPM_INT32_TYPE) {
+	int ix = (td->ix >= 0 ? td->ix : 0);
+	res = (uint32_t *) td->data + ix;
+    } 
+    return res;
+}
 const char * rpmtdGetString(rpmtd td)
 {
     const char *str = NULL;
@@ -96,6 +121,42 @@ const char * rpmtdGetString(rpmtd td)
 	str = *((const char**) td->data + ix);
     } 
     return str;
+}
+
+char *rpmtdToString(rpmtd td)
+{
+    char *res = NULL;
+
+    switch (td->type) {
+	case RPM_STRING_TYPE:
+	case RPM_STRING_ARRAY_TYPE: {
+	    const char *s = rpmtdGetString(td);
+	    if (s) {
+		res = xstrdup(s);
+	    }
+	    break;
+	}
+	case RPM_INT16_TYPE: {
+	    uint16_t *num = rpmtdGetUint16(td);
+	    if (num) {
+		rasprintf(&res, "%hd", *num);
+	    }
+	    break;
+	}
+	case RPM_INT32_TYPE: {
+	    uint32_t *num = rpmtdGetUint32(td);
+	    if (num) {
+		rasprintf(&res, "%d", *num);
+	    }
+	    break;
+	}
+	case RPM_BIN_TYPE: {
+	    /* XXX TODO: convert to hex presentation */
+	}
+	default:
+	    break;
+    }
+    return res;
 }
 
 int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)

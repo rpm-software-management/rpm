@@ -79,6 +79,26 @@ int rpmtdInit(rpmtd td);
 int rpmtdNext(rpmtd td);
 
 /** \ingroup rpmtd
+ * Return uint16_t data from tag container.
+ * For scalar return type, just return pointer to the integer. On array
+ * types, return pointer to current iteration index. If the tag container
+ * is not for int16 type, NULL is returned.
+ * @param td		Tag data container
+ * @return		Pointer to uint16_t, NULL on error
+ */
+uint16_t * rpmtdGetUint16(rpmtd td);
+
+/** \ingroup rpmtd
+ * Return uint32_t data from tag container.
+ * For scalar return type, just return pointer to the integer. On array
+ * types, return pointer to current iteration index. If the tag container
+ * is not for int32 type, NULL is returned.
+ * @param td		Tag data container
+ * @return		Pointer to uint32_t, NULL on error
+ */
+uint32_t * rpmtdGetUint32(rpmtd td);
+
+/** \ingroup rpmtd
  * Return string data from tag container.
  * For string types, just return the string. On string array types,
  * return the string from current iteration index. If the tag container
@@ -87,6 +107,17 @@ int rpmtdNext(rpmtd td);
  * @return		String constant from container, NULL on error
  */
 const char * rpmtdGetString(rpmtd td);
+
+/** \ingroup rpmtd
+ * Return data from tag container in string presentation.
+ * Return malloced string presentation of current data in container,
+ * converting from integers etc as necessary. On array types, data from
+ * current iteration index is returned.
+ * @param td		Tag data container
+ * @return		String representation of current data (malloc'ed), 
+ * 			NULL on error
+ */
+char *rpmtdToString(rpmtd td);
 
 /** \ingroup rpmtd
  * Construct tag container from ARGV_t array.
