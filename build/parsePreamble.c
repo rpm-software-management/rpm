@@ -191,22 +191,20 @@ static inline char * findLastChar(char * s)
  */
 static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** names;
-    rpmTagType type;
-    rpm_count_t count;
+    struct rpmtd_s td;
     int found = 0;
 
-    if (!hge(h, tag, &type, (rpm_data_t *)&names, &count))
+    if (!headerGet(h, tag, &td, HEADERGET_MINMEM))
 	return -1;
-    while (count--) {
-	if (!rstrcasecmp(names[count], name)) {
+
+    while (rpmtdNext(&td) >= 0) {
+	if (!rstrcasecmp(rpmtdGetString(&td), name)) {
 	    found = 1;
 	    break;
 	}
     }
-    names = hfd(names, type);
+    rpmtdFreeData(&td);
+
     return found;
 }
 
