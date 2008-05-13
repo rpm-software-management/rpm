@@ -282,16 +282,18 @@ static int checkForDuplicates(Header h, const char * NVR)
     int res = RPMRC_OK;
     rpmTag lastTag, tag;
     HeaderIterator hi;
+    struct rpmtd_s td;
     
     for (hi = headerInitIterator(h), lastTag = 0;
-	headerNextIterator(hi, &tag, NULL, NULL, NULL);
+	headerNext(hi, &td), tag = rpmtdTag(&td);
 	lastTag = tag)
     {
-	if (tag != lastTag)
-	    continue;
-	rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
+	if (tag == lastTag) {
+	    rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
 		     rpmTagGetName(tag), NVR);
-	res = RPMRC_FAIL;
+	    res = RPMRC_FAIL;
+	}
+	rpmtdFreeData(&td);
     }
     hi = headerFreeIterator(hi);
 
