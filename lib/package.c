@@ -109,60 +109,51 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
 {
-    HFD_t hfd = (HFD_t) headerFreeData;
     Header sigh = rpmNewSignature();
     HeaderIterator hi;
-    rpm_count_t count;
-    rpmTag tag, stag;
-    rpmTagType type;
-    rpm_data_t ptr;
-    int xx;
+    struct rpmtd_s td;
 
-    for (hi = headerInitIterator(h);
-        headerNextIterator(hi, &tag, &type, &ptr, &count);
-        ptr = hfd(ptr, type))
-    {
-	switch (tag) {
+    for (hi = headerInitIterator(h); headerNext(hi, &td); rpmtdFreeData(&td)) {
+	switch (td.tag) {
 	/* XXX Translate legacy signature tag values. */
 	case RPMTAG_SIGSIZE:
-	    stag = RPMSIGTAG_SIZE;
+	    td.tag = RPMSIGTAG_SIZE;
 	    break;
 	case RPMTAG_SIGLEMD5_1:
-	    stag = RPMSIGTAG_LEMD5_1;
+	    td.tag = RPMSIGTAG_LEMD5_1;
 	    break;
 	case RPMTAG_SIGPGP:
-	    stag = RPMSIGTAG_PGP;
+	    td.tag = RPMSIGTAG_PGP;
 	    break;
 	case RPMTAG_SIGLEMD5_2:
-	    stag = RPMSIGTAG_LEMD5_2;
+	    td.tag = RPMSIGTAG_LEMD5_2;
 	    break;
 	case RPMTAG_SIGMD5:
-	    stag = RPMSIGTAG_MD5;
+	    td.tag = RPMSIGTAG_MD5;
 	    break;
 	case RPMTAG_SIGGPG:
-	    stag = RPMSIGTAG_GPG;
+	    td.tag = RPMSIGTAG_GPG;
 	    break;
 	case RPMTAG_SIGPGP5:
-	    stag = RPMSIGTAG_PGP5;
+	    td.tag = RPMSIGTAG_PGP5;
 	    break;
 	case RPMTAG_ARCHIVESIZE:
 	    /* XXX rpm-4.1 and later has archive size in signature header. */
 	    if (noArchiveSize)
 		continue;
-	    stag = RPMSIGTAG_PAYLOADSIZE;
+	    td.tag = RPMSIGTAG_PAYLOADSIZE;
 	    break;
 	case RPMTAG_SHA1HEADER:
 	case RPMTAG_DSAHEADER:
 	case RPMTAG_RSAHEADER:
 	default:
-	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
 		continue;
-	    stag = tag;
 	    break;
 	}
-	if (ptr == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(sigh, stag))
-	    xx = headerAddEntry(sigh, stag, type, ptr, count);
+	if (td.data == NULL) continue;	/* XXX can't happen */
+	if (!headerIsEntry(sigh, td.tag))
+	    (void) headerPut(sigh, &td, HEADERPUT_DEFAULT);
     }
     hi = headerFreeIterator(hi);
     return sigh;
