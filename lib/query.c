@@ -255,7 +255,6 @@ void rpmDisplayQueryTags(FILE * fp)
 {
     const struct headerTagTableEntry_s * t;
     int i, ttype;
-    const struct headerSprintfExtension_s * ext = rpmHeaderFormats;
 
     for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
 	if (t->name == NULL)
@@ -274,19 +273,6 @@ void rpmDisplayQueryTags(FILE * fp)
 	}
 	    
 	fprintf(fp, "\n");
-    }
-
-    while (ext->name != NULL) {
-	/* XXX don't print query tags twice. */
-	for (i = 0, t = rpmTagTable; i < rpmTagTableSize; i++, t++) {
-	    if (t->name == NULL)	/* XXX programmer error. */
-		continue;
-	    if (!strcmp(t->name, ext->name))
-	    	break;
-	}
-	if (i >= rpmTagTableSize && ext->type == HEADER_EXT_TAG)
-	    fprintf(fp, "%s\n", ext->name + 7);
-	ext++;
     }
 }
 
