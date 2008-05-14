@@ -34,60 +34,53 @@ static unsigned char const header_magic[8] = {
 
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
-    HFD_t hfd = (HFD_t) headerFreeData;
-    HAE_t hae = (HAE_t) headerAddEntry;
     HeaderIterator hi;
-    rpmTagType type;
-    rpmTag tag;
-    rpm_count_t count;
-    rpm_data_t ptr;
-    int xx;
+    struct rpmtd_s td;
 
-    for (hi = headerInitIterator(sigh);
-        headerNextIterator(hi, &tag, &type, &ptr, &count);
-        ptr = hfd(ptr, type))
+    hi = headerInitIterator(sigh);
+    for (; headerNext(hi, &td); rpmtdFreeData(&td))
     {
-	switch (tag) {
+	switch (td.tag) {
 	/* XXX Translate legacy signature tag values. */
 	case RPMSIGTAG_SIZE:
-	    tag = RPMTAG_SIGSIZE;
+	    td.tag = RPMTAG_SIGSIZE;
 	    break;
 	case RPMSIGTAG_LEMD5_1:
-	    tag = RPMTAG_SIGLEMD5_1;
+	    td.tag = RPMTAG_SIGLEMD5_1;
 	    break;
 	case RPMSIGTAG_PGP:
-	    tag = RPMTAG_SIGPGP;
+	    td.tag = RPMTAG_SIGPGP;
 	    break;
 	case RPMSIGTAG_LEMD5_2:
-	    tag = RPMTAG_SIGLEMD5_2;
+	    td.tag = RPMTAG_SIGLEMD5_2;
 	    break;
 	case RPMSIGTAG_MD5:
-	    tag = RPMTAG_SIGMD5;
+	    td.tag = RPMTAG_SIGMD5;
 	    break;
 	case RPMSIGTAG_GPG:
-	    tag = RPMTAG_SIGGPG;
+	    td.tag = RPMTAG_SIGGPG;
 	    break;
 	case RPMSIGTAG_PGP5:
-	    tag = RPMTAG_SIGPGP5;
+	    td.tag = RPMTAG_SIGPGP5;
 	    break;
 	case RPMSIGTAG_PAYLOADSIZE:
-	    tag = RPMTAG_ARCHIVESIZE;
+	    td.tag = RPMTAG_ARCHIVESIZE;
 	    break;
 	case RPMSIGTAG_SHA1:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_RSA:
 	default:
-	    if (!(tag >= HEADER_SIGBASE && tag < HEADER_TAGBASE))
+	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
 		continue;
 	    break;
 	}
-	if (ptr == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(h, tag)) {
-	    if (hdrchkType(type))
+	if (td.data == NULL) continue;	/* XXX can't happen */
+	if (!headerIsEntry(h, td.tag)) {
+	    if (hdrchkType(td.type))
 		continue;
-	    if (count < 0 || hdrchkData(count))
+	    if (td.count < 0 || hdrchkData(td.count))
 		continue;
-	    switch(type) {
+	    switch(td.type) {
 	    case RPM_NULL_TYPE:
 		continue;
 		break;
@@ -95,12 +88,12 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    case RPM_INT8_TYPE:
 	    case RPM_INT16_TYPE:
 	    case RPM_INT32_TYPE:
-		if (count != 1)
+		if (td.count != 1)
 		    continue;
 		break;
 	    case RPM_STRING_TYPE:
 	    case RPM_BIN_TYPE:
-		if (count >= 16*1024)
+		if (td.count >= 16*1024)
 		    continue;
 		break;
 	    case RPM_STRING_ARRAY_TYPE:
@@ -108,7 +101,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 		continue;
 		break;
 	    }
- 	    xx = hae(h, tag, type, ptr, count);
+	    (void) headerPut(h, &td, HEADERPUT_DEFAULT);
 	}
     }
     hi = headerFreeIterator(hi);
