@@ -177,19 +177,18 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		rpmalKey pkgKey)
 {
     rpmte p = xcalloc(1, sizeof(*p));
-    int32_t * ep;
-    int xx;
+    uint32_t *ep; 
+    struct rpmtd_s size;
 
     p->type = type;
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
 	p->u.addedKey = pkgKey;
-	ep = NULL;
-	xx = headerGetEntry(h, RPMTAG_SIGSIZE, NULL, (rpm_data_t *)&ep, NULL);
-	/* XXX 256 is only an estimate of signature header. */
-	if (ep != NULL)
+	headerGet(h, RPMTAG_SIGSIZE, &size, HEADERGET_DEFAULT);
+	if ((ep = rpmtdGetUint32(&size))) {
 	    p->pkgFileSize += 96 + 256 + *ep;
+	}
 	break;
     case TR_REMOVED:
 	p->u.removed.dependsOnKey = pkgKey;
