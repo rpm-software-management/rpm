@@ -12,6 +12,7 @@ EOF
 ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {
 	tt = "NULL"
 	ta = "ANY"
+	ext = "0"
 	if ($5 == "c") {
 		tt = "CHAR"
 		ta = "SCALAR"
@@ -60,6 +61,9 @@ ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {
 		tt = "BIN"
 		ta = "SCALAR"
 	}
+	if ($6 == "extension") {
+		ext = "1"
+	}
 	if ($2 == "=") {
 		tnarg = $1
 	} else {
@@ -68,14 +72,14 @@ ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {
 	tn = substr(tnarg, index(tnarg, "_") + 1)
 	sn = (substr(tn, 1, 1) tolower(substr(tn, 2)))
 	if ($2 == "=") {
-		printf("    { \"%s\", \"%s\", %s RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", tnarg, sn, $3, tt, ta)
+		printf("    { \"%s\", \"%s\", %s RPM_%s_TYPE + RPM_%s_RETURN_TYPE, %d },\n", tnarg, sn, $3, tt, ta, ext)
 	} else {
-		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE + RPM_%s_RETURN_TYPE  },\n", tnarg, sn, $3, tt, ta)
+		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE + RPM_%s_RETURN_TYPE, %d },\n", tnarg, sn, $3, tt, ta, ext)
 	}
 }' < $1 | sort
 
 cat << EOF
-    { NULL, NULL, 0, 0 }
+    { NULL, NULL, 0, 0, 0 }
 };
 
 const struct headerTagTableEntry_s * const rpmTagTable = rpmTagTbl;

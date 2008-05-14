@@ -30,6 +30,7 @@ struct headerTagTableEntry_s {
     const char * shortname;	/*!< "Human readable" short name. */
     rpmTag val;			/*!< Tag numeric value. */
     rpmTagType type;		/*!< Tag type. */
+    int extension;		/*!< Extension or "real" tag */
 };
 
 /**
