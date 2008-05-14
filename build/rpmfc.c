@@ -1632,18 +1632,15 @@ assert(EVR != NULL);
     xx = rpmfcApply(fc);
 
     /* Add per-file colors(#files) */
-    p = (const void **) argiData(fc->fcolor);
-    c = argiCount(fc->fcolor);
-assert(ac == c);
-    if (p != NULL && c > 0) {
-	rpm_color_t * fcolors = (rpm_color_t *)p;
-	int i;
-
+    if (rpmtdFromArgi(&td, RPMTAG_FILECOLORS, fc->fcolor)) {
+	assert(ac == rpmtdCount(&td));
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
-	for (i = 0; i < c; i++)
-	    fcolors[i] &= 0x0f;
-	xx = headerAddEntry(pkg->header, RPMTAG_FILECOLORS, RPM_INT32_TYPE,
-			p, c);
+	while (rpmtdNext(&td) >= 0) {
+	    rpm_color_t *fcolor = rpmtdGetUint32(&td);
+	    *fcolor &= 0x0f;
+	}
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     /* Add classes(#classes) */
