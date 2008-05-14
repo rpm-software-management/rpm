@@ -78,39 +78,27 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		rpmRelocation * relocs)
 {
     int scareMem = 0;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpmte savep;
-    int32_t * ep = NULL;
-    char *epoch = NULL;
-    const char *name, *version, *release, *arch, *os;
-    int xx;
+    const char *name, *version, *release, *arch;
+    struct rpmtd_s td;
 
-    name = version = release = arch = os = NULL;
-    headerNEVRA(h, &name, &ep, &version, &release, &arch);
+    name = version = release = arch = NULL;
+    headerNEVRA(h, &name, NULL, &version, &release, &arch);
 
-    if (ep) rasprintf(&epoch, "%d", *ep);
 
     p->name = xstrdup(name);
     p->version = xstrdup(version);
     p->release = xstrdup(release);
-    p->epoch = epoch;
 
-    if (arch) {
-	p->arch = xstrdup(arch);
-	p->archScore = rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch);
-    } else {
-	p->arch = NULL;
-	p->archScore = 0;
-    }
+    headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_MINMEM);
+    p->epoch = rpmtdToString(&td);
 
-    xx = hge(h, RPMTAG_OS, NULL, (rpm_data_t *)&os, NULL);
-    if (os != NULL) {
-	p->os = xstrdup(os);
-	p->osScore = rpmMachineScore(RPM_MACHTABLE_INSTOS, os);
-    } else {
-	p->os = NULL;
-	p->osScore = 0;
-    }
+    p->arch = arch ? xstrdup(arch) : NULL;
+    p->archScore = arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch) : 0;
+
+    headerGet(h, RPMTAG_OS, &td, HEADERGET_MINMEM);
+    p->os = rpmtdToString(&td);
+    p->osScore = p->os ? rpmMachineScore(RPM_MACHTABLE_INSTOS, p->os) : 0;
 
     p->isSource = headerIsSource(h);
     
