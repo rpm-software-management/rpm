@@ -269,7 +269,8 @@ int headerIsEntry(Header h, rpmTag tag);
 
 enum headerGetFlags_e {
     HEADERGET_DEFAULT	= 0,
-    HEADERGET_MINMEM 	= (1 << 0),
+    HEADERGET_MINMEM 	= (1 << 0), /* pointers to header instead of copies */
+    HEADERGET_EXT 	= (2 << 0), /* lookup extension types too */
 };
 
 /** \ingroup header

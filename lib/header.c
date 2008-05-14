@@ -1375,14 +1375,54 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type)
     return NULL;
 }
 
+static headerTagTagFunction findExtFunc(rpmTag tag)
+{
+    headerSprintfExtension ext = rpmHeaderFormats;
+    headerTagTagFunction func = NULL;
+    const char *tagname = rpmTagGetName(tag);
+
+    for (; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
+	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	    continue;
+	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
+	    func = ext->u.tagFunction;
+	    break;
+	}
+    }
+    return func;
+}
+	
+/* 
+ * XXX temporary kludgery until tag extensions have been converted to 
+ * take rpmtd as argument
+ */
+static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tagfunc)
+{
+    int rc;
+    rpmtdReset(td);
+    rc = tagfunc(h, &td->type, &td->data, &td->count, &td->freeData);
+    td->tag = tag;
+    /* XXX extension returns are reversed, ugh */
+    return rc ? 0 : 1; 
+}
+
 int headerGet(Header h, rpmTag tag, rpmtd td, int flags)
 {
     int rc;
     int minMem = flags & HEADERGET_MINMEM;
+    headerTagTagFunction tagfunc = NULL;
 
     assert(td != NULL);
 
-    rc = intGetTdEntry(h, tag, td, minMem);
+    if (flags & HEADERGET_EXT) {
+	tagfunc = findExtFunc(tag);
+    }
+	
+    if (tagfunc) {
+	rc = intGetTagExt(h, tag, td, tagfunc);
+    } else {
+	rc = intGetTdEntry(h, tag, td, minMem);
+    }
 
     assert(tag == td->tag);
     return rc;
