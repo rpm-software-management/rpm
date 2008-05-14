@@ -104,19 +104,13 @@ char * headerGetEVR(Header h, const char ** np)
 
 rpm_color_t headerGetColor(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpm_color_t hcolor = 0;
-    rpm_color_t * fcolors;
-    rpm_count_t ncolors;
-    int i;
+    struct rpmtd_s fcolors;
 
-    fcolors = NULL;
-    ncolors = 0;
-    if (hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *)&fcolors, &ncolors)
-     && fcolors != NULL && ncolors > 0)
-    {
-	for (i = 0; i < ncolors; i++)
-	    hcolor |= fcolors[i];
+    headerGet(h, RPMTAG_FILECOLORS, &fcolors, HEADERGET_MINMEM);
+    while (rpmtdNext(&fcolors) >= 0) {
+	rpm_color_t *fcolor = rpmtdGetUint32(&fcolors);
+	hcolor |= *fcolor;
     }
     hcolor &= 0x0f;
 
