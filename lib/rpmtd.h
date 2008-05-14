@@ -6,6 +6,7 @@
 
 /** \ingroup rpmtd
  * Container for rpm tag data (from headers or extensions).
+ * @todo		Make this opaque (at least outside rpm itself)
  */
 struct rpmtd_s {
     rpmTag tag;		/* rpm tag of this data entry*/
@@ -18,7 +19,7 @@ struct rpmtd_s {
 
 /** \ingroup rpmtd
  * Create new tag data container
- * ®return		New, initialized tag data container.
+ * @return		New, initialized tag data container.
  */
 rpmtd rpmtdNew(void);
 
