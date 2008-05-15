@@ -235,8 +235,6 @@ void init_rpm(void)
 {
     PyObject * d, *o, * tag = NULL, * dict;
     int i;
-    const struct headerSprintfExtension_s * extensions = rpmHeaderFormats;
-    const struct headerSprintfExtension_s * ext;
     PyObject * m;
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
@@ -329,18 +327,6 @@ void init_rpm(void)
 	Py_DECREF(tag);
         PyDict_SetItem(dict, tag, o=PyString_FromString(rpmTagTable[i].name + 7));
 	Py_DECREF(o);
-    }
-
-    while (extensions->name) {
-	if (extensions->type == HEADER_EXT_TAG) {
-            ext = extensions;
-	    o = PyCObject_FromVoidPtr((struct headerSprintfExtension_s *) ext, NULL);
-            PyDict_SetItemString(d, (char *) extensions->name, o);
-	    Py_DECREF(o);
-            PyDict_SetItem(dict, tag, o=PyString_FromString(ext->name + 7));
-	    Py_DECREF(o);
-        }
-        extensions++;
     }
 
     PyDict_SetItemString(d, "tagnames", dict);
