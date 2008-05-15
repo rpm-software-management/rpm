@@ -611,7 +611,7 @@ static int getData(headerSprintfArgs hsa, rpmTag tag,
 {
     rpmtd td = NULL;
 
-    if (tag < HEADER_TAGBASE || tag >= RPMTAG_FIRSTFREE_TAG) 
+    if (tag < HEADER_IMAGE || tag >= RPMTAG_FIRSTFREE_TAG) 
 	return 0;
 
     if (hsa->cache[tag]) {
