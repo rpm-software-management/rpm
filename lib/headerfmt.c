@@ -21,25 +21,12 @@ typedef struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
     headerTagFormatFunction fmt;
     headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
-    int extNum;
     rpmTag tag;
     int justOne;
     int arrayCount;
     char * format;
     char * type;
     int pad;
-};
-
-/** \ingroup header
- * Extension cache.
- */
-typedef struct rpmec_s * rpmec;
-struct rpmec_s {
-    rpmTagType type;
-    rpm_count_t count;
-    int avail;
-    int freeit;
-    rpm_data_t data;
 };
 
 /** \ingroup header
@@ -81,7 +68,7 @@ typedef struct headerSprintfArgs_s {
     char * fmt;
     headerSprintfExtension exts;
     const char * errmsg;
-    rpmec ec;
+    rpmtd *cache;
     sprintfToken format;
     HeaderIterator hi;
     char * val;
@@ -224,7 +211,7 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
 }
 
 /**
- * Search extensions and tags for a name.
+ * Search tags for a name.
  * @param hsa		headerSprintf args
  * @param token		parsed fields
  * @param name		name to find
@@ -239,7 +226,6 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 
     stag->fmt = NULL;
     stag->ext = NULL;
-    stag->extNum = 0;
     stag->tag = -1;
 
     if (!strcmp(tagname, "*")) {
@@ -249,17 +235,6 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 
     if (strncmp("RPMTAG_", tagname, sizeof("RPMTAG_")-1) == 0) {
 	tagname += sizeof("RPMTAG");
-    }
-
-    /* Search extensions for specific tag override. */
-    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
-	    continue;
-	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
-	    stag->ext = ext->u.tagFunction;
-	    stag->extNum = ext - hsa->exts;
-	    goto bingo;
-	}
     }
 
     /* Search tag names. */
@@ -621,32 +596,39 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
 }
 
 /**
- * Call a header extension only once, saving results.
+ * Do headerGet() just once for given tag, cache results.
  * @param hsa		headerSprintf args
- * @param fn
+ * @param tag
  * @retval *typeptr
  * @retval *data
  * @retval *countptr
- * @retval ec		extension cache
- * @return		0 on success, 1 on failure
+ * @return		1 on success, 0 on failure
  */
-static int getExtension(headerSprintfArgs hsa, headerTagTagFunction fn,
+static int getData(headerSprintfArgs hsa, rpmTag tag,
 		rpmTagType * typeptr,
 		rpm_data_t * data,
-		rpm_count_t * countptr,
-		rpmec ec)
+		rpm_count_t * countptr)
 {
-    if (!ec->avail) {
-	if (fn(hsa->h, &ec->type, &ec->data, &ec->count, &ec->freeit))
-	    return 1;
-	ec->avail = 1;
+    rpmtd td = NULL;
+
+    if (tag < HEADER_TAGBASE || tag >= RPMTAG_FIRSTFREE_TAG) 
+	return 0;
+
+    if (hsa->cache[tag]) {
+	td = hsa->cache[tag];
+    } else {
+	td = rpmtdNew();
+	if (!headerGet(hsa->h, tag, td, HEADERGET_EXT)) {
+	    rpmtdFree(td);
+	    return 0;
+	}
+	hsa->cache[tag] = td;
     }
 
-    if (typeptr) *typeptr = ec->type;
-    if (data) *data = ec->data;
-    if (countptr) *countptr = ec->count;
-
-    return 0;
+    if (typeptr) *typeptr = td->type;
+    if (data) *data = td->data;
+    if (countptr) *countptr = td->count;
+    return 1;
 }
 
 /**
@@ -671,41 +653,13 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     int countBuf;
 
     memset(buf, 0, sizeof(buf));
-    if (tag->ext) {
-	if (getExtension(hsa, tag->ext, &type, &data, &count, hsa->ec + tag->extNum))
-	{
-	    count = 1;
-	    type = RPM_STRING_TYPE;	
-	    data = "(none)";
-	}
-    } else {
-	if (!headerGetEntry(hsa->h, tag->tag, &type, &data, &count)) {
-	    count = 1;
-	    type = RPM_STRING_TYPE;	
-	    data = "(none)";
-	}
-
-	/* XXX this test is unnecessary, array sizes are checked */
-	switch (type) {
-	default:
-	    if (element >= count) {
-		data = headerFreeData(data, type);
-
-		hsa->errmsg = _("(index out of range)");
-		return NULL;
-	    }
-	    break;
-	case RPM_BIN_TYPE:
-	case RPM_STRING_TYPE:
-	    break;
-	}
-	datafree = 1;
+    if (!getData(hsa, tag->tag, &type, &data, &count)) {
+	count = 1;
+	type = RPM_STRING_TYPE;
+	data = "(none)";
     }
 
     if (tag->arrayCount) {
-	if (datafree)
-	    data = headerFreeData(data, type);
-
 	countBuf = count;
 	data = &countBuf;
 	count = 1;
@@ -882,14 +836,9 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		spft->u.tag.arrayCount ||
 		spft->u.tag.justOne) continue;
 
-	    if (spft->u.tag.ext) {
-		if (getExtension(hsa, spft->u.tag.ext, &type, NULL, &count, 
-				 hsa->ec + spft->u.tag.extNum))
-		     continue;
-	    } else {
-		if (!headerGetEntry(hsa->h, spft->u.tag.tag, &type, NULL, &count))
-		    continue;
-	    } 
+	    if (!getData(hsa, spft->u.tag.tag, &type, NULL, &count)) {
+		continue;
+	    }
 
 	    found = 1;
 
@@ -965,43 +914,29 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 }
 
 /**
- * Create an extension cache.
- * @param exts		headerSprintf extensions
- * @return		new extension cache
+ * Create tag data cache.
+ * This allocates much more space than necessary but playing it
+ * simple and stupid for now.
  */
-static rpmec
-rpmecNew(const headerSprintfExtension exts)
+static rpmtd *cacheCreate(void)
 {
-    headerSprintfExtension ext;
-    rpmec ec;
-    int i = 0;
-
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	i++;
-    }
-
-    ec = xcalloc(i, sizeof(*ec));
-    return ec;
+    rpmtd *cache = xcalloc(RPMTAG_FIRSTFREE_TAG, sizeof(*cache));
+    return cache;
 }
 
 /**
- * Destroy an extension cache.
- * @param exts		headerSprintf extensions
- * @param ec		extension cache
- * @return		NULL always
+ * Free tag data cache contents and destroy cache.
  */
-static rpmec
-rpmecFree(const headerSprintfExtension exts, rpmec ec)
+static void *cacheFree(rpmtd *cache)
 {
-    headerSprintfExtension ext;
-    int i = 0;
-
-    for (ext = exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	if (ec[i].freeit) ec[i].data = _free(ec[i].data);
-	i++;
+    rpmtd *td = cache;
+    for (int i = 0; i < RPMTAG_FIRSTFREE_TAG; i++, td++) {
+	if (*td) {
+	    rpmtdFreeData(*td);
+	    rpmtdFree(*td);
+	}
     }
-
-    ec = _free(ec);
+    free(cache);
     return NULL;
 }
 
@@ -1023,7 +958,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-    hsa.ec = rpmecNew(hsa.exts);
+    hsa.cache = cacheCreate();
     hsa.val = xstrdup("");
 
     tag =
@@ -1061,7 +996,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (hsa.val != NULL && hsa.vallen < hsa.alloced)
 	hsa.val = xrealloc(hsa.val, hsa.vallen+1);	
 
-    hsa.ec = rpmecFree(hsa.exts, hsa.ec);
+    hsa.cache = cacheFree(hsa.cache);
     hsa.format = freeFormat(hsa.format, hsa.numTokens);
 
 exit:
