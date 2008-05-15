@@ -115,9 +115,9 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char * arch;
-    const char * os;
+    struct rpmtd_s td;
+    const char * arch = NULL;
+    const char * os = NULL;
     rpmds oldChk, newChk;
     rpmds obsoletes;
     rpmalKey pkgKey;	/* addedPackages key */
@@ -130,10 +130,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
      * Check for previously added versions with the same name and arch/os.
      * FIXME: only catches previously added, older packages.
      */
-    arch = NULL;
-    xx = hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *)&arch, NULL);
-    os = NULL;
-    xx = hge(h, RPMTAG_OS, NULL, (rpm_data_t *)&os, NULL);
+    if (headerGet(h, RPMTAG_ARCH, &td, HEADERGET_MINMEM))
+	arch = rpmtdGetString(&td);
+    if (headerGet(h, RPMTAG_OS, &td, HEADERGET_MINMEM))
+	os = rpmtdGetString(&td);
     hcolor = headerGetColor(h);
     pkgKey = RPMAL_NOMATCH;
 
