@@ -942,6 +942,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 		    fi->te = p;
 		    p->fi = fi;
 		} else {
+		    p->fi = fi;
 		    p->fi->te = p;
 		}
 	    }
