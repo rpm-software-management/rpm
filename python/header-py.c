@@ -360,7 +360,6 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     PyObject * o, * metao;
     char ** stringArray;
     int forceArray = 0;
-    int freeData = 0;
     struct rpmtd_s td;
 
     tag = tagNumFromPyObject (item);
@@ -391,12 +390,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     type = td.type;
 
     tagtype = rpmTagGetType(tag); 
-#if NOTYET
-    /* this blows up with header extension types */
-    type = tagtype & RPM_MASK_TYPE;
-#endif
     forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
-    freeData = (tagtype & RPM_MASK_TYPE) == RPM_I18NSTRING_TYPE;
 
     switch (type) {
     case RPM_BIN_TYPE:
@@ -455,7 +449,6 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	    PyList_Append(metao, o);
 	    Py_DECREF(o);
 	}
-	free (stringArray);
 	o = metao;
 	break;
 
@@ -473,8 +466,6 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	    o = metao;
 	} else {
 	    o = PyString_FromString(data);
-	    if (freeData)
-		free (data);
 	}
 	break;
 
@@ -482,6 +473,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	PyErr_SetString(PyExc_TypeError, "unsupported type in header");
 	return NULL;
     }
+    rpmtdFreeData(&td);
 
     return o;
 }
