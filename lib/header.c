@@ -1400,7 +1400,7 @@ static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tag
 {
     int rc;
     rpmtdReset(td);
-    rc = tagfunc(h, &td->type, &td->data, &td->count, &td->freeData);
+    rc = tagfunc(h, td);
     td->tag = tag;
     /* XXX extension returns are reversed, ugh */
     return rc ? 0 : 1; 

@@ -46,7 +46,7 @@ enum headerSprintfExtensionType {
 };
 
 /** \ingroup header
- * HEADER_EXT_TAG format function prototype.
+ * HEADER_EXT_FORMAT format function prototype.
  * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
  * help keep things simple.
  *
@@ -62,21 +62,14 @@ typedef char * (*headerTagFormatFunction)(rpmTagType type,
 				size_t padding, rpm_count_t element);
 
 /** \ingroup header
- * HEADER_EXT_FORMAT format function prototype.
+ * HEADER_EXT_TAG format function prototype.
  * This is allowed to fail, which indicates the tag doesn't exist.
  *
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freedata	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-typedef int (*headerTagTagFunction) (Header h,
-		rpmTagType * type,
-		rpm_data_t * data,
-		rpm_count_t * count,
-		int * freeData);
+typedef int (*headerTagTagFunction) (Header h, rpmtd td);
 
 /** \ingroup header
  * Define header tag output formats.

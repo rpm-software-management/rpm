@@ -619,24 +619,19 @@ static char * depflagsFormat(rpmTagType type, rpm_constdata_t data,
 /**
  * Retrieve mounted file system paths.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int fsnamesTag( Header h, int32_t * type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int fsnamesTag(Header h, rpmtd td)
 {
     const char ** list;
 
-    if (rpmGetFilesystemList(&list, count))
+    if (rpmGetFilesystemList(&list, &(td->count)))
 	return 1;
 
-    if (type) *type = RPM_STRING_ARRAY_TYPE;
-    if (data) *((const char ***) data) = list;
-    if (freeData) *freeData = 0;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    td->data = list;
+    td->freeData = 0;
 
     return 0; 
 }
@@ -644,30 +639,22 @@ static int fsnamesTag( Header h, int32_t * type,
 /**
  * Retrieve install prefixes.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int instprefixTag(Header h, rpmTagType* type,
-		rpm_data_t * data,
-		rpm_count_t * count,
-		int * freeData)
+static int instprefixTag(Header h, rpmtd td)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType ipt;
-    char ** array;
+    struct rpmtd_s prefixes;
+    int flags = HEADERGET_MINMEM;
 
-    if (hge(h, RPMTAG_INSTALLPREFIX, type, (rpm_data_t *)data, count)) {
-	if (freeData) *freeData = 0;
+    if (headerGet(h, RPMTAG_INSTALLPREFIX, td, flags)) {
 	return 0;
-    } else if (hge(h, RPMTAG_INSTPREFIXES, &ipt, (rpm_data_t *) &array, count)) {
-	if (type) *type = RPM_STRING_TYPE;
-	if (data) *data = xstrdup(array[0]);
-	if (freeData) *freeData = 1;
-	array = hfd(array, ipt);
+    } else if (headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, flags)) {
+	/* only return the first prefix of the array */
+	td->type = RPM_STRING_TYPE;
+	td->data = rpmtdToString(&prefixes);
+	td->freeData = 1;
+	rpmtdFreeData(&prefixes);
 	return 0;
     }
 
@@ -677,15 +664,10 @@ static int instprefixTag(Header h, rpmTagType* type,
 /**
  * Retrieve mounted file system space.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int fssizesTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int fssizesTag(Header h, rpmtd td)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     const char ** filenames;
@@ -701,15 +683,15 @@ static int fssizesTag(Header h, rpmTagType* type,
 	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &filenames, &numFiles);
     }
 
-    if (rpmGetFilesystemList(NULL, count))
+    if (rpmGetFilesystemList(NULL, &(td->count)))
 	return 1;
 
-    *type = RPM_INT32_TYPE;
-    *freeData = 1;
+    td->type = RPM_INT32_TYPE;
+    td->freeData = 1;
 
     if (filenames == NULL) {
-	usages = xcalloc((*count), sizeof(usages));
-	*data = usages;
+	usages = xcalloc((td->count), sizeof(usages));
+	td->data = usages;
 
 	return 0;
     }
@@ -717,7 +699,7 @@ static int fssizesTag(Header h, rpmTagType* type,
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
 	return 1;
 
-    *data = usages;
+    td->data = usages;
 
     filenames = _free(filenames);
 
@@ -727,15 +709,10 @@ static int fssizesTag(Header h, rpmTagType* type,
 /**
  * Retrieve trigger info.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int triggercondsTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int triggercondsTag(Header h, rpmtd td)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -752,7 +729,7 @@ static int triggercondsTag(Header h, rpmTagType* type,
     char buf[5];
 
     if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (rpm_data_t *) &names, &numNames)) {
-	*freeData = 0;
+	td->freeData = 0;
 	return 0;
     }
 
@@ -762,10 +739,10 @@ static int triggercondsTag(Header h, rpmTagType* type,
     xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (rpm_data_t *) &s, &numScripts);
     s = hfd(s, tst);
 
-    *freeData = 1;
-    *data = conds = xmalloc(sizeof(*conds) * numScripts);
-    *count = numScripts;
-    *type = RPM_STRING_ARRAY_TYPE;
+    td->freeData = 1;
+    td->data = conds = xmalloc(sizeof(*conds) * numScripts);
+    td->count = numScripts;
+    td->type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
 	chptr = xstrdup("");
 
@@ -801,15 +778,10 @@ static int triggercondsTag(Header h, rpmTagType* type,
 /**
  * Retrieve trigger type info.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int triggertypeTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int triggertypeTag(Header h, rpmtd td)
 {
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
@@ -823,7 +795,7 @@ static int triggertypeTag(Header h, rpmTagType* type,
     rpm_flag_t * flags;
 
     if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (rpm_data_t *) &indices, &numNames)) {
-	*freeData = 0;
+	td->freeData = 0;
 	return 1;
     }
 
@@ -831,10 +803,10 @@ static int triggertypeTag(Header h, rpmTagType* type,
     xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (rpm_data_t *) &s, &numScripts);
     s = hfd(s, tst);
 
-    *freeData = 1;
-    *data = conds = xmalloc(sizeof(*conds) * numScripts);
-    *count = numScripts;
-    *type = RPM_STRING_ARRAY_TYPE;
+    td->freeData = 1;
+    td->data = conds = xmalloc(sizeof(*conds) * numScripts);
+    td->count = numScripts;
+    td->type = RPM_STRING_ARRAY_TYPE;
     for (i = 0; i < numScripts; i++) {
 	for (j = 0; j < numNames; j++) {
 	    if (indices[j] != i)
@@ -860,76 +832,59 @@ static int triggertypeTag(Header h, rpmTagType* type,
 /**
  * Retrieve file paths.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int filenamesTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int filenamesTag(Header h, rpmtd td)
 {
-    *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, (const char ***) data, count);
-    *freeData = 1;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, 
+		     (const char ***) &(td->data), &(td->count));
+    td->freeData = 1;
     return 0; 
 }
 
 /**
  * Retrieve file classes.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int fileclassTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int fileclassTag(Header h, rpmtd td)
 {
-    *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFClasses(h, (const char ***) data, count);
-    *freeData = 1;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFClasses(h, (const char ***) &(td->data), &(td->count));
+    td->freeData = 1;
     return 0; 
 }
 
 /**
  * Retrieve file provides.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int fileprovideTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int fileprovideTag(Header h, rpmtd td)
 {
-    *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, (const char ***) data, count);
-    *freeData = 1;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, 
+		    (const char ***) &(td->data), &(td->count));
+    td->freeData = 1;
     return 0; 
 }
 
 /**
  * Retrieve file requires.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int filerequireTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int filerequireTag(Header h, rpmtd td)
 {
-    *type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, (const char ***) data, count);
-    *freeData = 1;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, 
+		    (const char ***) &(td->data), &(td->count));
+    td->freeData = 1;
     return 0; 
 }
 
@@ -946,24 +901,18 @@ static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
  * Retrieve i18n text.
  * @param h		header
  * @param tag		tag
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int i18nTag(Header h, rpmTag tag, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int i18nTag(Header h, rpmTag tag, rpmtd td)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
 
-    *type = RPM_STRING_TYPE;
-    *data = NULL;
-    *count = 0;
-    *freeData = 0;
+    td->type = RPM_STRING_TYPE;
+    td->data = NULL;
+    td->count = 0;
+    td->freeData = 0;
 
     if (dstring && *dstring) {
 	char *domain, *de;
@@ -1001,79 +950,55 @@ static int i18nTag(Header h, rpmTag tag, rpmTagType* type,
 #endif
 
 	if (domain && msgid) {
-	    *data = dgettext(domain, msgid);
-	    *data = xstrdup(*data);	/* XXX xstrdup has side effects. */
-	    *count = 1;
-	    *freeData = 1;
+	    td->data = dgettext(domain, msgid);
+	    td->data = xstrdup(td->data); /* XXX xstrdup has side effects. */
+	    td->count = 1;
+	    td->freeData = 1;
 	}
 	dstring = _free(dstring);
 	free(msgkey);
-	if (*data)
+	if (td->data)
 	    return 0;
     }
 
     dstring = _free(dstring);
 
-    rc = hge(h, tag, type, data, count);
-
-    if (rc && (*data) != NULL) {
-	*data = xstrdup(*data);
-	*freeData = 1;
-	return 0;
-    }
-
-    *freeData = 0;
-    *data = NULL;
-    *count = 0;
-    return 1;
+    rc = headerGet(h, tag, td, HEADERGET_DEFAULT);
+    /* XXX fix the mismatch between headerGet and tag format returns */
+    return rc ? 0 : 1;
 }
 
 /**
  * Retrieve summary text.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int summaryTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int summaryTag(Header h, rpmtd td)
 {
-    return i18nTag(h, RPMTAG_SUMMARY, type, data, count, freeData);
+    return i18nTag(h, RPMTAG_SUMMARY, td);
 }
 
 /**
  * Retrieve description text.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int descriptionTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int descriptionTag(Header h, rpmtd td)
 {
-    return i18nTag(h, RPMTAG_DESCRIPTION, type, data, count, freeData);
+    return i18nTag(h, RPMTAG_DESCRIPTION, td);
 }
 
 /**
  * Retrieve group text.
  * @param h		header
- * @retval *type	tag type
- * @retval *data	tag value
- * @retval *count	no. of data items
- * @retval *freeData	data-was-malloc'ed indicator
+ * @retval td		tag data container
  * @return		0 on success
  */
-static int groupTag(Header h, rpmTagType* type,
-		rpm_data_t * data, rpm_count_t * count,
-		int * freeData)
+static int groupTag(Header h, rpmtd td)
 {
-    return i18nTag(h, RPMTAG_GROUP, type, data, count, freeData);
+    return i18nTag(h, RPMTAG_GROUP, td);
 }
 
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
