@@ -20,7 +20,6 @@
 typedef struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
     headerTagFormatFunction fmt;
-    headerTagTagFunction ext;   /*!< NULL if tag element is invalid */
     rpmTag tag;
     int justOne;
     int arrayCount;
@@ -66,7 +65,6 @@ struct sprintfToken_s {
 typedef struct headerSprintfArgs_s {
     Header h;
     char * fmt;
-    headerSprintfExtension exts;
     const char * errmsg;
     rpmtd *cache;
     sprintfToken format;
@@ -220,12 +218,11 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
 static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 {
     const char *tagname = name;
-    headerSprintfExtension ext;
+    headerSprintfExtension ext = rpmHeaderFormats;
     sprintfTag stag = (token->type == PTOK_COND
 	? &token->u.cond.tag : &token->u.tag);
 
     stag->fmt = NULL;
-    stag->ext = NULL;
     stag->tag = -1;
 
     if (!strcmp(tagname, "*")) {
@@ -247,7 +244,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-    for (ext = hsa->exts; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
+    for (; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
 	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
 	    continue;
 	if (!strcmp(ext->name, stag->type)) {
@@ -595,6 +592,16 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     return 0;
 }
 
+static rpmtd getCached(rpmtd *cache, rpmTag tag)
+{
+    rpmtd td = NULL;
+
+    if (tag >= HEADER_IMAGE && tag < RPMTAG_FIRSTFREE_TAG && cache[tag]) {
+	td = cache[tag];
+    }
+    return td;
+}
+
 /**
  * Do headerGet() just once for given tag, cache results.
  * @param hsa		headerSprintf args
@@ -611,12 +618,7 @@ static int getData(headerSprintfArgs hsa, rpmTag tag,
 {
     rpmtd td = NULL;
 
-    if (tag < HEADER_IMAGE || tag >= RPMTAG_FIRSTFREE_TAG) 
-	return 0;
-
-    if (hsa->cache[tag]) {
-	td = hsa->cache[tag];
-    } else {
+    if (!(td = getCached(hsa->cache, tag))) {
 	td = rpmtdNew();
 	if (!headerGet(hsa->h, tag, td, HEADERGET_EXT)) {
 	    rpmtdFree(td);
@@ -807,7 +809,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_COND:
-	if (token->u.cond.tag.ext || headerIsEntry(hsa->h, token->u.cond.tag.tag)) {
+	if (getCached(hsa->cache, token->u.cond.tag.tag)) {
 	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
 	} else {
@@ -952,7 +954,6 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     memset(&hsa, 0, sizeof(hsa));
     hsa.h = headerLink(h);
     hsa.fmt = xstrdup(fmt);
-    hsa.exts = rpmHeaderFormats;
     hsa.errmsg = NULL;
 
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
