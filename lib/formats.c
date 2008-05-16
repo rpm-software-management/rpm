@@ -1002,35 +1002,35 @@ static int groupTag(Header h, rpmtd td)
 }
 
 const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
-    { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
-    { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
-    { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILECLASS",	{ fileclassTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILENAMES",	{ filenamesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILEPROVIDE",	{ fileprovideTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FILEREQUIRE",	{ filerequireTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FSNAMES",		{ fsnamesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_FSSIZES",		{ fssizesTag } },
-    { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
-    { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
-    { HEADER_EXT_LAST, NULL, 			{ NULL } }
+    { "RPMTAG_GROUP",		{ groupTag } },
+    { "RPMTAG_DESCRIPTION",	{ descriptionTag } },
+    { "RPMTAG_SUMMARY",		{ summaryTag } },
+    { "RPMTAG_FILECLASS",	{ fileclassTag } },
+    { "RPMTAG_FILENAMES",	{ filenamesTag } },
+    { "RPMTAG_FILEPROVIDE",	{ fileprovideTag } },
+    { "RPMTAG_FILEREQUIRE",	{ filerequireTag } },
+    { "RPMTAG_FSNAMES",		{ fsnamesTag } },
+    { "RPMTAG_FSSIZES",		{ fssizesTag } },
+    { "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
+    { "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
+    { "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
+    { NULL, 			{ NULL } }
 };
 
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
-    { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
-    { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
-    { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
-    { HEADER_EXT_FORMAT, "depflags",		{ depflagsFormat } },
-    { HEADER_EXT_FORMAT, "fflags",		{ fflagsFormat } },
-    { HEADER_EXT_FORMAT, "perms",		{ permsFormat } },
-    { HEADER_EXT_FORMAT, "permissions",		{ permsFormat } },
-    { HEADER_EXT_FORMAT, "triggertype",		{ triggertypeFormat } },
-    { HEADER_EXT_FORMAT, "xml",			{ xmlFormat } },
-    { HEADER_EXT_FORMAT, "octal", 		{ octalFormat } },
-    { HEADER_EXT_FORMAT, "hex", 		{ hexFormat } },
-    { HEADER_EXT_FORMAT, "date", 		{ dateFormat } },
-    { HEADER_EXT_FORMAT, "day", 		{ dayFormat } },
-    { HEADER_EXT_FORMAT, "shescape", 		{ shescapeFormat } },
-    { HEADER_EXT_LAST, NULL, 			{ NULL } }
+    { "armor",		{ armorFormat } },
+    { "base64",		{ base64Format } },
+    { "pgpsig",		{ pgpsigFormat } },
+    { "depflags",	{ depflagsFormat } },
+    { "fflags",		{ fflagsFormat } },
+    { "perms",		{ permsFormat } },
+    { "permissions",	{ permsFormat } },
+    { "triggertype",	{ triggertypeFormat } },
+    { "xml",		{ xmlFormat } },
+    { "octal", 		{ octalFormat } },
+    { "hex", 		{ hexFormat } },
+    { "date", 		{ dateFormat } },
+    { "day", 		{ dayFormat } },
+    { "shescape", 	{ shescapeFormat } },
+    { NULL, 		{ NULL } }
 };

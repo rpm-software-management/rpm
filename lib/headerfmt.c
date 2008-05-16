@@ -244,9 +244,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-    for (; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	if (ext->name == NULL)
-	    continue;
+    for (; ext != NULL && ext->name != NULL; ext++) {
 	if (!strcmp(ext->name, stag->type)) {
 	    stag->fmt = ext->u.formatFunction;
 	    break;

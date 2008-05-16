@@ -38,14 +38,6 @@ struct headerTagTableEntry_s {
 typedef struct headerTagIndices_s * headerTagIndices;
 
 /** \ingroup header
- */
-enum headerSprintfExtensionType {
-    HEADER_EXT_LAST = 0,	/*!< End of extension chain. */
-    HEADER_EXT_FORMAT,		/*!< headerTagFormatFunction() extension */
-    HEADER_EXT_TAG		/*!< headerTagTagFunction() extension */
-};
-
-/** \ingroup header
  * HEADER_EXT_FORMAT format function prototype.
  * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
  * help keep things simple.
@@ -76,7 +68,6 @@ typedef int (*headerTagTagFunction) (Header h, rpmtd td);
  */
 typedef const struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
-    enum headerSprintfExtensionType type;	/*!< Type of extension. */
     const char * name;				/*!< Name of extension. */
     union {
 	void * generic;				/*!< Private extension. */

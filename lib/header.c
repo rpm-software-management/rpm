@@ -1381,9 +1381,7 @@ static headerTagTagFunction findExtFunc(rpmTag tag)
     headerTagTagFunction func = NULL;
     const char *tagname = rpmTagGetName(tag);
 
-    for (; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	if (ext->name == NULL)
-	    continue;
+    for (; ext != NULL && ext->name != NULL; ext++) {
 	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
 	    func = ext->u.tagFunction;
 	    break;
