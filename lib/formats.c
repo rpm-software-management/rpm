@@ -19,15 +19,20 @@
 /** \ingroup header
  * Define header tag output formats.
  */
-typedef const struct headerSprintfExtension_s * headerSprintfExtension;
-struct headerSprintfExtension_s {
+
+struct headerFormatFunc_s {
     const char *name;	/*!< Name of extension. */
     void *func;		/*!< Pointer to formatter function. */	
 };
 
+struct headerTagFunc_s {
+    rpmTag tag;		/*!< Tag of extension. */
+    void *func;		/*!< Pointer to formatter function. */	
+};
+
 /* forward declarations */
-static const struct headerSprintfExtension_s rpmHeaderFormats[];
-static const struct headerSprintfExtension_s rpmHeaderTagExtensions[];
+static const struct headerFormatFunc_s rpmHeaderFormats[];
+static const struct headerTagFunc_s rpmHeaderTagExtensions[];
 
 void *rpmHeaderFormatFunc(const char *fmt);
 void *rpmHeaderTagFunc(rpmTag tag);
@@ -1020,12 +1025,11 @@ static int groupTag(Header h, rpmtd td)
 
 void *rpmHeaderTagFunc(rpmTag tag)
 {
-    headerSprintfExtension ext = rpmHeaderTagExtensions;
+    const struct headerTagFunc_s * ext;
     void *func = NULL;
-    const char *tagname = rpmTagGetName(tag);
 
-    for (; ext != NULL && ext->name != NULL; ext++) {
-	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
+    for (ext = rpmHeaderTagExtensions; ext->func != NULL; ext++) {
+	if (ext->tag == tag) {
 	    func = ext->func;
 	    break;
 	}
@@ -1035,10 +1039,10 @@ void *rpmHeaderTagFunc(rpmTag tag)
 
 void *rpmHeaderFormatFunc(const char *fmt)
 {
-    headerSprintfExtension ext = rpmHeaderFormats;
+    const struct headerFormatFunc_s * ext;
     void *func = NULL;
 
-    for (; ext != NULL && ext->name != NULL; ext++) {
+    for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
 	if (!strcmp(ext->name, fmt)) {
 	    func = ext->func;
 	    break;
@@ -1047,23 +1051,23 @@ void *rpmHeaderFormatFunc(const char *fmt)
     return func;
 }
 
-static const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
-    { "RPMTAG_GROUP",		groupTag },
-    { "RPMTAG_DESCRIPTION",	descriptionTag },
-    { "RPMTAG_SUMMARY",		summaryTag },
-    { "RPMTAG_FILECLASS",	fileclassTag },
-    { "RPMTAG_FILENAMES",	filenamesTag },
-    { "RPMTAG_FILEPROVIDE",	fileprovideTag },
-    { "RPMTAG_FILEREQUIRE",	filerequireTag },
-    { "RPMTAG_FSNAMES",		fsnamesTag },
-    { "RPMTAG_FSSIZES",		fssizesTag },
-    { "RPMTAG_INSTALLPREFIX",	instprefixTag },
-    { "RPMTAG_TRIGGERCONDS",	triggercondsTag },
-    { "RPMTAG_TRIGGERTYPE",	triggertypeTag },
-    { NULL, 			NULL }
+static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
+    { RPMTAG_GROUP,		groupTag },
+    { RPMTAG_DESCRIPTION,	descriptionTag },
+    { RPMTAG_SUMMARY,		summaryTag },
+    { RPMTAG_FILECLASS,		fileclassTag },
+    { RPMTAG_FILENAMES,		filenamesTag },
+    { RPMTAG_FILEPROVIDE,	fileprovideTag },
+    { RPMTAG_FILEREQUIRE,	filerequireTag },
+    { RPMTAG_FSNAMES,		fsnamesTag },
+    { RPMTAG_FSSIZES,		fssizesTag },
+    { RPMTAG_INSTALLPREFIX,	instprefixTag },
+    { RPMTAG_TRIGGERCONDS,	triggercondsTag },
+    { RPMTAG_TRIGGERTYPE,	triggertypeTag },
+    { 0, 			NULL }
 };
 
-static const struct headerSprintfExtension_s rpmHeaderFormats[] = {
+static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { "armor",		armorFormat },
     { "base64",		base64Format },
     { "pgpsig",		pgpsigFormat },
