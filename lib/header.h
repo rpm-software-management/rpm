@@ -46,6 +46,10 @@ struct headerSprintfExtension_s {
     void *func;		/*!< Pointer to formatter function. */	
 };
 
+void *rpmHeaderFormatFunc(const char *fmt);
+
+void *rpmHeaderTagFunc(rpmTag tag);
+
 /** \ingroup rpmtag
  * Automatically generated table of tag name/value pairs.
  */

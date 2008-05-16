@@ -234,7 +234,6 @@ static char * hsaReserve(headerSprintfArgs hsa, size_t need)
 static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 {
     const char *tagname = name;
-    headerSprintfExtension ext = rpmHeaderFormats;
     sprintfTag stag = (token->type == PTOK_COND
 	? &token->u.cond.tag : &token->u.tag);
 
@@ -260,12 +259,8 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-    for (; ext != NULL && ext->name != NULL; ext++) {
-	if (!strcmp(ext->name, stag->type)) {
-	    stag->fmt = ext->func;
-	    break;
-	}
-    }
+	stag->fmt = rpmHeaderFormatFunc(stag->type);
+
     return 0;
 }
 

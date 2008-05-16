@@ -1001,6 +1001,35 @@ static int groupTag(Header h, rpmtd td)
     return i18nTag(h, RPMTAG_GROUP, td);
 }
 
+void *rpmHeaderTagFunc(rpmTag tag)
+{
+    headerSprintfExtension ext = rpmHeaderTagExtensions;
+    void *func = NULL;
+    const char *tagname = rpmTagGetName(tag);
+
+    for (; ext != NULL && ext->name != NULL; ext++) {
+	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
+	    func = ext->func;
+	    break;
+	}
+    }
+    return func;
+}
+
+void *rpmHeaderFormatFunc(const char *fmt)
+{
+    headerSprintfExtension ext = rpmHeaderFormats;
+    void *func = NULL;
+
+    for (; ext != NULL && ext->name != NULL; ext++) {
+	if (!strcmp(ext->name, fmt)) {
+	    func = ext->func;
+	    break;
+	}
+    }
+    return func;
+}
+
 const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
     { "RPMTAG_GROUP",		groupTag },
     { "RPMTAG_DESCRIPTION",	descriptionTag },
