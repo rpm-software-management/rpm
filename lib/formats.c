@@ -1002,35 +1002,35 @@ static int groupTag(Header h, rpmtd td)
 }
 
 const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
-    { "RPMTAG_GROUP",		{ groupTag } },
-    { "RPMTAG_DESCRIPTION",	{ descriptionTag } },
-    { "RPMTAG_SUMMARY",		{ summaryTag } },
-    { "RPMTAG_FILECLASS",	{ fileclassTag } },
-    { "RPMTAG_FILENAMES",	{ filenamesTag } },
-    { "RPMTAG_FILEPROVIDE",	{ fileprovideTag } },
-    { "RPMTAG_FILEREQUIRE",	{ filerequireTag } },
-    { "RPMTAG_FSNAMES",		{ fsnamesTag } },
-    { "RPMTAG_FSSIZES",		{ fssizesTag } },
-    { "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
-    { "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
-    { "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
-    { NULL, 			{ NULL } }
+    { "RPMTAG_GROUP",		groupTag },
+    { "RPMTAG_DESCRIPTION",	descriptionTag },
+    { "RPMTAG_SUMMARY",		summaryTag },
+    { "RPMTAG_FILECLASS",	fileclassTag },
+    { "RPMTAG_FILENAMES",	filenamesTag },
+    { "RPMTAG_FILEPROVIDE",	fileprovideTag },
+    { "RPMTAG_FILEREQUIRE",	filerequireTag },
+    { "RPMTAG_FSNAMES",		fsnamesTag },
+    { "RPMTAG_FSSIZES",		fssizesTag },
+    { "RPMTAG_INSTALLPREFIX",	instprefixTag },
+    { "RPMTAG_TRIGGERCONDS",	triggercondsTag },
+    { "RPMTAG_TRIGGERTYPE",	triggertypeTag },
+    { NULL, 			NULL }
 };
 
 const struct headerSprintfExtension_s rpmHeaderFormats[] = {
-    { "armor",		{ armorFormat } },
-    { "base64",		{ base64Format } },
-    { "pgpsig",		{ pgpsigFormat } },
-    { "depflags",	{ depflagsFormat } },
-    { "fflags",		{ fflagsFormat } },
-    { "perms",		{ permsFormat } },
-    { "permissions",	{ permsFormat } },
-    { "triggertype",	{ triggertypeFormat } },
-    { "xml",		{ xmlFormat } },
-    { "octal", 		{ octalFormat } },
-    { "hex", 		{ hexFormat } },
-    { "date", 		{ dateFormat } },
-    { "day", 		{ dayFormat } },
-    { "shescape", 	{ shescapeFormat } },
-    { NULL, 		{ NULL } }
+    { "armor",		armorFormat },
+    { "base64",		base64Format },
+    { "pgpsig",		pgpsigFormat },
+    { "depflags",	depflagsFormat },
+    { "fflags",		fflagsFormat },
+    { "perms",		permsFormat },
+    { "permissions",	permsFormat },
+    { "triggertype",	triggertypeFormat },
+    { "xml",		xmlFormat },
+    { "octal", 		octalFormat },
+    { "hex", 		hexFormat },
+    { "date", 		dateFormat },
+    { "day", 		dayFormat },
+    { "shescape", 	shescapeFormat },
+    { NULL, 		NULL }
 };

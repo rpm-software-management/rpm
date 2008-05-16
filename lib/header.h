@@ -38,42 +38,12 @@ struct headerTagTableEntry_s {
 typedef struct headerTagIndices_s * headerTagIndices;
 
 /** \ingroup header
- * HEADER_EXT_FORMAT format function prototype.
- * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
- * help keep things simple.
- *
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	RPM_BIN_TYPE: no. bytes of data
- * @return		formatted string
- */
-typedef char * (*headerTagFormatFunction)(rpmTagType type,
-				rpm_constdata_t data, char * formatPrefix,
-				size_t padding, rpm_count_t element);
-
-/** \ingroup header
- * HEADER_EXT_TAG format function prototype.
- * This is allowed to fail, which indicates the tag doesn't exist.
- *
- * @param h		header
- * @retval td		tag data container
- * @return		0 on success
- */
-typedef int (*headerTagTagFunction) (Header h, rpmtd td);
-
-/** \ingroup header
  * Define header tag output formats.
  */
 typedef const struct headerSprintfExtension_s * headerSprintfExtension;
 struct headerSprintfExtension_s {
-    const char * name;				/*!< Name of extension. */
-    union {
-	void * generic;				/*!< Private extension. */
-	headerTagFormatFunction formatFunction; /*!< HEADER_EXT_TAG extension. */
-	headerTagTagFunction tagFunction;	/*!< HEADER_EXT_FORMAT extension. */
-    } u;
+    const char *name;	/*!< Name of extension. */
+    void *func;		/*!< Pointer to formatter function. */	
 };
 
 /** \ingroup rpmtag

@@ -82,6 +82,16 @@ static const int typeSizes[16] =  {
  */
 static const size_t headerMaxbytes = (32*1024*1024);
 
+/** \ingroup header
+ * HEADER_EXT_TAG format function prototype.
+ * This is allowed to fail, which indicates the tag doesn't exist.
+ *
+ * @param h		header
+ * @retval td		tag data container
+ * @return		0 on success
+ */
+typedef int (*headerTagTagFunction) (Header h, rpmtd td);
+
 Header headerLink(Header h)
 {
     if (h == NULL) return NULL;
@@ -1383,7 +1393,7 @@ static headerTagTagFunction findExtFunc(rpmTag tag)
 
     for (; ext != NULL && ext->name != NULL; ext++) {
 	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
-	    func = ext->u.tagFunction;
+	    func = ext->func;
 	    break;
 	}
     }

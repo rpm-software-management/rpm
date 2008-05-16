@@ -16,6 +16,22 @@
 #define PARSER_IN_EXPR  2
 
 /** \ingroup header
+ * HEADER_EXT_FORMAT format function prototype.
+ * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
+ * help keep things simple.
+ *
+ * @param type		tag type
+ * @param data		tag value
+ * @param formatPrefix
+ * @param padding
+ * @param element	RPM_BIN_TYPE: no. bytes of data
+ * @return		formatted string
+ */
+typedef char * (*headerTagFormatFunction)(rpmTagType type,
+				rpm_constdata_t data, char * formatPrefix,
+				size_t padding, rpm_count_t element);
+
+/** \ingroup header
  */
 typedef struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
@@ -246,7 +262,7 @@ bingo:
     if (stag->type != NULL)
     for (; ext != NULL && ext->name != NULL; ext++) {
 	if (!strcmp(ext->name, stag->type)) {
-	    stag->fmt = ext->u.formatFunction;
+	    stag->fmt = ext->func;
 	    break;
 	}
     }
