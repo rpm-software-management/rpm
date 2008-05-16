@@ -92,6 +92,8 @@ static const size_t headerMaxbytes = (32*1024*1024);
  */
 typedef int (*headerTagTagFunction) (Header h, rpmtd td);
 
+extern void *rpmHeaderTagFunc(rpmTag tag);
+
 Header headerLink(Header h)
 {
     if (h == NULL) return NULL;

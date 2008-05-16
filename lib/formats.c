@@ -16,6 +16,23 @@
 
 #include "debug.h"
 
+/** \ingroup header
+ * Define header tag output formats.
+ */
+typedef const struct headerSprintfExtension_s * headerSprintfExtension;
+struct headerSprintfExtension_s {
+    const char *name;	/*!< Name of extension. */
+    void *func;		/*!< Pointer to formatter function. */	
+};
+
+/* forward declarations */
+static const struct headerSprintfExtension_s rpmHeaderFormats[];
+static const struct headerSprintfExtension_s rpmHeaderTagExtensions[];
+
+void *rpmHeaderFormatFunc(const char *fmt);
+void *rpmHeaderTagFunc(rpmTag tag);
+
+
 /**
  * octalFormat.
  * @param type		tag type
@@ -1030,7 +1047,7 @@ void *rpmHeaderFormatFunc(const char *fmt)
     return func;
 }
 
-const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
+static const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
     { "RPMTAG_GROUP",		groupTag },
     { "RPMTAG_DESCRIPTION",	descriptionTag },
     { "RPMTAG_SUMMARY",		summaryTag },
@@ -1046,7 +1063,7 @@ const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
     { NULL, 			NULL }
 };
 
-const struct headerSprintfExtension_s rpmHeaderFormats[] = {
+static const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { "armor",		armorFormat },
     { "base64",		base64Format },
     { "pgpsig",		pgpsigFormat },

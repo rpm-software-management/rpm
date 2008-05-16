@@ -31,6 +31,8 @@ typedef char * (*headerTagFormatFunction)(rpmTagType type,
 				rpm_constdata_t data, char * formatPrefix,
 				size_t padding, rpm_count_t element);
 
+extern void *rpmHeaderFormatFunc(const char *fmt);
+
 /** \ingroup header
  */
 typedef struct sprintfTag_s * sprintfTag;
@@ -1019,8 +1021,8 @@ exit:
 }
 
 char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tbltags,
-		     const struct headerSprintfExtension_s * extensions,
+		     void * tbltags,
+		     void * extensions,
 		     errmsg_t * errmsg)
 {
     return headerFormat(h, fmt, errmsg);

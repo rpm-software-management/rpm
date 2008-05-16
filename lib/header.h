@@ -37,19 +37,6 @@ struct headerTagTableEntry_s {
  */
 typedef struct headerTagIndices_s * headerTagIndices;
 
-/** \ingroup header
- * Define header tag output formats.
- */
-typedef const struct headerSprintfExtension_s * headerSprintfExtension;
-struct headerSprintfExtension_s {
-    const char *name;	/*!< Name of extension. */
-    void *func;		/*!< Pointer to formatter function. */	
-};
-
-void *rpmHeaderFormatFunc(const char *fmt);
-
-void *rpmHeaderTagFunc(rpmTag tag);
-
 /** \ingroup rpmtag
  * Automatically generated table of tag name/value pairs.
  */
@@ -63,12 +50,6 @@ extern const int rpmTagTableSize;
 /** \ingroup rpmtag
  */
 extern headerTagIndices const rpmTags;
-
-/** \ingroup header
- * Table of query format extensions.
- */
-extern const struct headerSprintfExtension_s rpmHeaderFormats[];
-extern const struct headerSprintfExtension_s rpmHeaderTagExtensions[];
 
 /** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?
@@ -416,8 +397,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
  * @return		formatted output string (malloc'ed)
  */
 char * headerSprintf(Header h, const char * fmt,
-		     const struct headerTagTableEntry_s * tbltags,
-		     const struct headerSprintfExtension_s * extensions,
+		     void * tbltags, void * extensions,
 		     errmsg_t * errmsg) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
