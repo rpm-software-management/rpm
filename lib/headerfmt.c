@@ -245,7 +245,7 @@ bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
     for (; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	if (ext->name == NULL || ext->type != HEADER_EXT_FORMAT)
+	if (ext->name == NULL)
 	    continue;
 	if (!strcmp(ext->name, stag->type)) {
 	    stag->fmt = ext->u.formatFunction;

@@ -1377,12 +1377,12 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type)
 
 static headerTagTagFunction findExtFunc(rpmTag tag)
 {
-    headerSprintfExtension ext = rpmHeaderFormats;
+    headerSprintfExtension ext = rpmHeaderTagExtensions;
     headerTagTagFunction func = NULL;
     const char *tagname = rpmTagGetName(tag);
 
     for (; ext != NULL && ext->type != HEADER_EXT_LAST; ext++) {
-	if (ext->name == NULL || ext->type != HEADER_EXT_TAG)
+	if (ext->name == NULL)
 	    continue;
 	if (!rstrcasecmp(ext->name + sizeof("RPMTAG"), tagname)) {
 	    func = ext->u.tagFunction;

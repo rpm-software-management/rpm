@@ -103,6 +103,7 @@ extern headerTagIndices const rpmTags;
  * Table of query format extensions.
  */
 extern const struct headerSprintfExtension_s rpmHeaderFormats[];
+extern const struct headerSprintfExtension_s rpmHeaderTagExtensions[];
 
 /** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?

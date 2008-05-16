@@ -1001,7 +1001,7 @@ static int groupTag(Header h, rpmtd td)
     return i18nTag(h, RPMTAG_GROUP, td);
 }
 
-const struct headerSprintfExtension_s rpmHeaderFormats[] = {
+const struct headerSprintfExtension_s rpmHeaderTagExtensions[] = {
     { HEADER_EXT_TAG, "RPMTAG_GROUP",		{ groupTag } },
     { HEADER_EXT_TAG, "RPMTAG_DESCRIPTION",	{ descriptionTag } },
     { HEADER_EXT_TAG, "RPMTAG_SUMMARY",		{ summaryTag } },
@@ -1014,6 +1014,10 @@ const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_TAG, "RPMTAG_INSTALLPREFIX",	{ instprefixTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERCONDS",	{ triggercondsTag } },
     { HEADER_EXT_TAG, "RPMTAG_TRIGGERTYPE",	{ triggertypeTag } },
+    { HEADER_EXT_LAST, NULL, 			{ NULL } }
+};
+
+const struct headerSprintfExtension_s rpmHeaderFormats[] = {
     { HEADER_EXT_FORMAT, "armor",		{ armorFormat } },
     { HEADER_EXT_FORMAT, "base64",		{ base64Format } },
     { HEADER_EXT_FORMAT, "pgpsig",		{ pgpsigFormat } },
