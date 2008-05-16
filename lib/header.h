@@ -59,34 +59,6 @@ enum hMagic {
     HEADER_MAGIC_YES		= 1
 };
 
-/* Return types for header data. Not yet... */
-#if 0
-/**
- */
-typedef union hRET_s {
-    const void * ptr;
-    const char ** argv;
-    const char * str;
-    uint32_t * ui32p;
-    uint16_t * ui16p;
-    int32_t * i32p;
-    int16_t * i16p;
-    int8_t * i8p;
-} * hRET_t;
-
-/**
- */
-typedef struct HE_s {
-    rpmTag tag;
-    rpmTagType * typ;
-    union {
-	hPTR_t * ptr;
-	hRET_t * ret;
-    } u;
-    rpm_count_t * cnt;
-} * HE_t;
-#endif
-
 /** \ingroup header
  * Create new (empty) header instance.
  * @return		header
