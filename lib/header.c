@@ -1288,26 +1288,31 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
  * Return i18n string from header that matches locale.
  * @param h		header
  * @param entry		i18n string data
- * @return		matching i18n string (or 1st string if no match)
+ * @retval td		tag data container
+ * @return		1 always
  */
-static char *
-headerFindI18NString(Header h, indexEntry entry)
+static int copyI18NEntry(Header h, indexEntry entry, rpmtd td)
 {
     const char *lang, *l, *le;
     indexEntry table;
+
+    td->type = RPM_STRING_TYPE;
+    td->count = 1;
+    /* if no match, just return the first string */
+    td->data = entry->data;
 
     /* XXX Drepper sez' this is the order. */
     if ((lang = getenv("LANGUAGE")) == NULL &&
 	(lang = getenv("LC_ALL")) == NULL &&
 	(lang = getenv("LC_MESSAGES")) == NULL &&
 	(lang = getenv("LANG")) == NULL)
-	    return entry->data;
+	    goto exit;
     
     if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
-	return entry->data;
+	goto exit;
 
     for (l = lang; *l != '\0'; l = le) {
-	const char *td;
+	const char *t;
 	char *ed, *ed_weak = NULL;
 	int langNum;
 
@@ -1319,19 +1324,26 @@ headerFindI18NString(Header h, indexEntry entry)
 	    {};
 
 	/* For each entry in the header ... */
-	for (langNum = 0, td = table->data, ed = entry->data;
+	for (langNum = 0, t = table->data, ed = entry->data;
 	     langNum < entry->info.count;
-	     langNum++, td += strlen(td) + 1, ed += strlen(ed) + 1) {
+	     langNum++, t += strlen(t) + 1, ed += strlen(ed) + 1) {
 
-	           int match = headerMatchLocale(td, l, le);
-		   if (match == 1) return ed;
-		   else if (match == 2) ed_weak = ed;
-
+	    int match = headerMatchLocale(t, l, le);
+	    if (match == 1) {
+		td->data = ed;
+		goto exit;
+	    } else if (match == 2) { 
+		ed_weak = ed;
+	    }
 	}
-	if (ed_weak) return ed_weak;
+	if (ed_weak) {
+	    td->data = ed_weak;
+	    goto exit;
+	}
     }
 
-    return entry->data;
+exit:
+    return 1;
 }
 
 /**
@@ -1364,10 +1376,7 @@ static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
     } else {
 	switch (entry->info.type) {
 	case RPM_I18NSTRING_TYPE:
-	    rc = 1;
-	    td->type = RPM_STRING_TYPE;
-	    td->count = 1;
-	    td->data = headerFindI18NString(h, entry);
+	    rc = copyI18NEntry(h, entry, td);
 	    break;
 	default:
 	    rc = copyTdEntry(entry, td, (flags & HEADERGET_MINMEM));
