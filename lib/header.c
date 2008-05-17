@@ -1339,10 +1339,10 @@ headerFindI18NString(Header h, indexEntry entry)
  * @param h		header
  * @param tag		tag to retrieve
  * @retval td		tag data container
- * @param minMem	string pointers reference header memory?
+ * @param flags		flags to control retrieval
  * @return		1 on success, 0 on not found
  */
-static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, int minMem)
+static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 {
     indexEntry entry;
     int rc;
@@ -1367,7 +1367,7 @@ static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, int minMem)
 	td->data = headerFindI18NString(h, entry);
 	break;
     default:
-	rc = copyTdEntry(entry, td, minMem);
+	rc = copyTdEntry(entry, td, (flags & HEADERGET_MINMEM));
 	break;
     }
 
@@ -1404,7 +1404,6 @@ static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tag
 int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 {
     int rc;
-    int minMem = flags & HEADERGET_MINMEM;
     headerTagTagFunction tagfunc = NULL;
 
     assert(td != NULL);
@@ -1416,7 +1415,7 @@ int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
     if (tagfunc) {
 	rc = intGetTagExt(h, tag, td, tagfunc);
     } else {
-	rc = intGetTdEntry(h, tag, td, minMem);
+	rc = intGetTdEntry(h, tag, td, flags);
     }
 
     assert(tag == td->tag);
@@ -1427,12 +1426,12 @@ static int headerGetWrap(Header h, rpmTag tag,
 		rpmTagType * type,
 		rpm_data_t * p,
 		rpm_count_t * c,
-		int minMem)
+		headerGetFlags flags)
 {
     struct rpmtd_s td;
     int rc;
 
-    rc = headerGet(h, tag, &td, minMem);
+    rc = headerGet(h, tag, &td, flags);
     TDWRAP();
     return rc;
 }
@@ -1442,7 +1441,7 @@ int headerGetEntry(Header h, rpmTag tag,
 			rpm_data_t * p,
 			rpm_count_t * c)
 {
-    return headerGetWrap(h, tag, type, p, c, 0);
+    return headerGetWrap(h, tag, type, p, c, HEADERGET_DEFAULT);
 }
 
 int headerGetEntryMinMemory(Header h, rpmTag tag,
