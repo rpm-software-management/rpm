@@ -183,6 +183,7 @@ typedef enum headerGetFlags_e {
     HEADERGET_DEFAULT	= 0,
     HEADERGET_MINMEM 	= (1 << 0), /* string pointers refer to header memory */
     HEADERGET_EXT 	= (1 << 1), /* lookup extension types too */
+    HEADERGET_RAW 	= (1 << 2), /* return raw contents (no i18n lookups) */
 } headerGetFlags;
 
 /** \ingroup header

@@ -1359,16 +1359,20 @@ static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 	return 0;
     }
 
-    switch (entry->info.type) {
-    case RPM_I18NSTRING_TYPE:
-	rc = 1;
-	td->type = RPM_STRING_TYPE;
-	td->count = 1;
-	td->data = headerFindI18NString(h, entry);
-	break;
-    default:
+    if (flags & HEADERGET_RAW) {
 	rc = copyTdEntry(entry, td, (flags & HEADERGET_MINMEM));
-	break;
+    } else {
+	switch (entry->info.type) {
+	case RPM_I18NSTRING_TYPE:
+	    rc = 1;
+	    td->type = RPM_STRING_TYPE;
+	    td->count = 1;
+	    td->data = headerFindI18NString(h, entry);
+	    break;
+	default:
+	    rc = copyTdEntry(entry, td, (flags & HEADERGET_MINMEM));
+	    break;
+	}
     }
 
     /* XXX 1 on success */
