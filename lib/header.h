@@ -179,11 +179,11 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp);
  */
 int headerIsEntry(Header h, rpmTag tag);
 
-enum headerGetFlags_e {
+typedef enum headerGetFlags_e {
     HEADERGET_DEFAULT	= 0,
     HEADERGET_MINMEM 	= (1 << 0), /* pointers to header instead of copies */
     HEADERGET_EXT 	= (2 << 0), /* lookup extension types too */
-};
+} headerGetFlags;
 
 /** \ingroup header
  * Retrieve tag value.
@@ -193,7 +193,7 @@ enum headerGetFlags_e {
  * @param flags		retrieval modifier flags
  * @return		1 on success, 0 on failure
  */
-int headerGet(Header h, rpmTag tag, rpmtd td, int flags);
+int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags);
 
 /** \ingroup header
  * Free data allocated when retrieved from header.
@@ -239,10 +239,11 @@ int headerGetEntryMinMemory(Header h, rpmTag tag,
 			rpm_data_t * p, 
 			rpm_count_t * c);
 
-enum headerPutFlags_e {
+typedef enum headerPutFlags_e {
     HEADERPUT_DEFAULT	= 0,
     HEADERPUT_APPEND 	= (1 << 0),
-};
+} headerPutFlags;
+
 /** \ingroup header
  * Add or append tag to header.
  *
@@ -251,7 +252,7 @@ enum headerPutFlags_e {
  * @param flags		flags to control operation
  * @return		1 on success, 0 on failure
  */
-int headerPut(Header h, rpmtd td, int flags);
+int headerPut(Header h, rpmtd td, headerPutFlags flags);
 
 /** \ingroup header
  * Add tag to header.

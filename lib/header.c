@@ -1401,7 +1401,7 @@ static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tag
     return rc ? 0 : 1; 
 }
 
-int headerGet(Header h, rpmTag tag, rpmtd td, int flags)
+int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 {
     int rc;
     int minMem = flags & HEADERGET_MINMEM;
@@ -1616,7 +1616,7 @@ int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
 	: headerAddEntry(h, tag, type, p, c));
 }
 
-int headerPut(Header h, rpmtd td, int flags)
+int headerPut(Header h, rpmtd td, headerPutFlags flags)
 {
     int rc;
     
