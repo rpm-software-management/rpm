@@ -20,16 +20,13 @@
  * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
  * help keep things simple.
  *
- * @param type		tag type
- * @param data		tag value
+ * @param td		tag data container
  * @param formatPrefix
  * @param padding
- * @param element	RPM_BIN_TYPE: no. bytes of data
  * @return		formatted string
  */
-typedef char * (*headerTagFormatFunction)(rpmTagType type,
-				rpm_constdata_t data, char * formatPrefix,
-				size_t padding, rpm_count_t element);
+typedef char * (*headerTagFormatFunction)
+			(rpmtd td, char * formatPrefix, size_t padding);
 
 extern void *rpmHeaderFormatFunc(const char *fmt);
 
@@ -683,13 +680,13 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_STRING_ARRAY_TYPE:
     /* fallthrough */
     case RPM_STRING_TYPE:
-	str = rpmtdGetString(td);
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, str, buf, tag->pad,  -1);
+	    val = tag->fmt(td, buf, tag->pad);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
+	    str = rpmtdGetString(td);
 	    need = strlen(str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
@@ -719,7 +716,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	}
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, -1);
+	    val = tag->fmt(td, buf, tag->pad);
 
 	if (val) {
 	    need = strlen(val);
@@ -732,9 +729,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	break;
 
     case RPM_BIN_TYPE:
-	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, td->data, buf, tag->pad, td->count);
+	    val = tag->fmt(td, buf, tag->pad);
 
 	if (val) {
 	    need = strlen(val);

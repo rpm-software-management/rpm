@@ -40,24 +40,21 @@ void *rpmHeaderTagFunc(rpmTag tag);
 
 /**
  * octalFormat.
- * @param type		tag type
- * @param data		tag value
+ * @param td		tag data container
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
  * @return		formatted string
  */
-static char * octalFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,int element)
+static char * octalFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
-	sprintf(val, formatPrefix, *((const int32_t *) data));
+	sprintf(val, formatPrefix, *rpmtdGetUint32(td));
     }
 
     return val;
@@ -65,38 +62,38 @@ static char * octalFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * hexFormat.
- * @param type		tag type
- * @param data		tag value
+ * @param td		tag data container
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
  * @return		formatted string
  */
-static char * hexFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,int element)
+static char * hexFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
-	sprintf(val, formatPrefix, *((const int32_t *) data));
+	sprintf(val, formatPrefix, *rpmtdGetUint32(td));
     }
 
     return val;
 }
 
 /**
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @return		formatted string
  */
-static char * realDateFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,int element,
+static char * realDateFormat(rpmtd td, char * formatPrefix, size_t padding,
 		const char * strftimeFormat)
 {
     char * val;
 
-    if (type != RPM_INT32_TYPE) {
+    if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	struct tm * tstruct;
@@ -106,7 +103,8 @@ static char * realDateFormat(rpmTagType type, rpm_constdata_t data,
 	strcat(formatPrefix, "s");
 
 	/* this is important if sizeof(rpm_time_t) ! sizeof(time_t) */
-	{   time_t dateint = *((const rpm_time_t *) data);
+	{   rpm_time_t *rt = rpmtdGetUint32(td);
+	    time_t dateint = *rt;
 	    tstruct = localtime(&dateint);
 	}
 	buf[0] = '\0';
@@ -120,58 +118,47 @@ static char * realDateFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Format a date.
- * @param type		tag type
- * @param data		tag value
+ * @param td		tag data container
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
  * @return		formatted string
  */
-static char * dateFormat(rpmTagType type, rpm_constdata_t data, 
-		         char * formatPrefix, size_t padding, int element)
+static char * dateFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
-    return realDateFormat(type, data, formatPrefix, padding, element,
-			_("%c"));
+    return realDateFormat(td, formatPrefix, padding, _("%c"));
 }
 
 /**
  * Format a day.
- * @param type		tag type
- * @param data		tag value
+ * @param td		tag data container
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
  * @return		formatted string
  */
-static char * dayFormat(rpmTagType type, rpm_constdata_t data, 
-		         char * formatPrefix, size_t padding, int element)
+static char * dayFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
-    return realDateFormat(type, data, formatPrefix, padding, element, 
-			  _("%a %b %d %Y"));
+    return realDateFormat(td, formatPrefix, padding, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
- * @param type		tag type
- * @param data		tag value
+ * @param td		tag data container
  * @param formatPrefix	sprintf format string
  * @param padding	no. additional bytes needed by format string
- * @param element	(unused)
  * @return		formatted string
  */
-static char * shescapeFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,int element)
+static char * shescapeFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * result, * dst, * src;
 
-    if (type == RPM_INT32_TYPE) {
+    if (rpmtdType(td) == RPM_INT32_TYPE) {
 	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
-	sprintf(result, formatPrefix, *((const int32_t *) data));
+	sprintf(result, formatPrefix, *rpmtdGetUint32(td));
     } else {
 	char *buf = NULL;
 	strcat(formatPrefix, "s");
-	rasprintf(&buf, formatPrefix, data);
+	rasprintf(&buf, formatPrefix, rpmtdGetString(td));
 
 	result = dst = xmalloc(strlen(buf) * 4 + 3);
 	*dst++ = '\'';
@@ -196,21 +183,17 @@ static char * shescapeFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Identify type of trigger.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	(unused)
- * @param padding	(unused)
- * @param element	(unused)
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * triggertypeFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,
-		int element)
+static char * triggertypeFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
-    const int32_t * item = data;
+    const uint32_t * item = rpmtdGetUint32(td);
     char * val;
 
-    if (type != RPM_INT32_TYPE)
+    if (rpmtdType(td) != RPM_INT32_TYPE)
 	val = xstrdup(_("(not a number)"));
     else if (*item & RPMSENSE_TRIGGERPREIN)
 	val = xstrdup("prein");
@@ -227,25 +210,22 @@ static char * triggertypeFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Format file permissions for display.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	(unused)
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * permsFormat(rpmTagType type, rpm_constdata_t data,
-		char * formatPrefix, size_t padding, int element)
+static char * permsFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val;
     char * buf;
 
-    if (type != RPM_INT32_TYPE) {
+    if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(*((const int32_t *) data));
+	buf = rpmPermsString(*rpmtdGetUint32(td));
 	sprintf(val, formatPrefix, buf);
 	buf = _free(buf);
     }
@@ -255,23 +235,21 @@ static char * permsFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Format file flags for display.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	(unused)
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * fflagsFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding, int element)
+static char * fflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val;
     char buf[15];
-    rpmfileAttrs anint = *((const rpm_flag_t *) data);
 
-    if (type != RPM_INT32_TYPE) {
+    if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
+	rpm_flag_t *rf = rpmtdGetUint32(td);
+	rpmfileAttrs anint = *rf;
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
@@ -301,16 +279,12 @@ static char * fflagsFormat(rpmTagType type, rpm_constdata_t data,
 /**
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	(unused)
- * @param padding	(unused)
- * @param element	no. bytes of binary data
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * armorFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,
-		int element)
+static char * armorFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     const char * enc;
     const unsigned char * s;
@@ -319,16 +293,16 @@ static char * armorFormat(rpmTagType type, rpm_constdata_t data,
     size_t ns;
     int atype;
 
-    switch (type) {
+    switch (rpmtdType(td)) {
     case RPM_BIN_TYPE:
-	s = data;
+	s = td->data;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	ns = element;
+	ns = td->count;
 	atype = PGPARMOR_SIGNATURE;	/* XXX check pkt for signature */
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	enc = data;
+	enc = rpmtdGetString(td);
 	if (b64decode(enc, (void **)&bs, &ns))
 	    return xstrdup(_("(not base64)"));
 	s = bs;
@@ -356,28 +330,25 @@ static char * armorFormat(rpmTagType type, rpm_constdata_t data,
 /**
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	(unused)
- * @param padding
- * @param element
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * base64Format(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding, int element)
+static char * base64Format(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val;
 
-    if (type != RPM_BIN_TYPE) {
+    if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	char * enc;
 	char * t;
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	size_t ns = element;
+	size_t ns = td->count;
 	size_t nt = 0;
 
-	if ((enc = b64encode(data, ns, -1)) != NULL) {
+	if ((enc = b64encode(td->data, ns, -1)) != NULL) {
 		nt = strlen(enc);
 	}
 
@@ -395,16 +366,12 @@ static char * base64Format(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Wrap tag data in simple header xml markup.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	(unused)
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * xmlFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,
-		int element)
+static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     const char *xtag = NULL;
     size_t nb = 0;
@@ -414,33 +381,36 @@ static char * xmlFormat(rpmTagType type, rpm_constdata_t data,
     unsigned long anint = 0;
     int xx;
 
-    switch (type) {
+    switch (rpmtdType(td)) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
-	s = (char *)data;
+    case RPM_STRING_ARRAY_TYPE:
+	s = rpmtdGetString(td);
 	xtag = "string";
 	break;
     case RPM_BIN_TYPE:
     {	
-	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	size_t ns = element;
-    	if ((s = b64encode(data, ns, 0)) == NULL) {
+	/* XXX HACK ALERT: array count abused as no. bytes of binary data. */
+	size_t ns = td->count;
+    	if ((s = b64encode(td->data, ns, 0)) == NULL) {
     		return xstrdup(_("(encoding failed)"));
     	}
 	xtag = "base64";
     }	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
+#if 0
+	/* XXX unused, remove ? */
 	anint = *((const uint8_t *) data);
+#endif
 	break;
     case RPM_INT16_TYPE:
-	anint = *((const uint16_t *) data);
+	anint = *rpmtdGetUint16(td);
 	break;
     case RPM_INT32_TYPE:
-	anint = *((const uint32_t *) data);
+	anint = *rpmtdGetUint32(td);
 	break;
     case RPM_NULL_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
     default:
 	return xstrdup(_("(invalid xml type)"));
 	break;
@@ -495,23 +465,19 @@ static char * xmlFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Display signature fingerprint and time.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix	(unused)
- * @param padding
- * @param element	(unused)
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * pgpsigFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding,
-		int element)
+static char * pgpsigFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val, * t;
 
-    if (type != RPM_BIN_TYPE) {
+    if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	const uint8_t * pkt = (const uint8_t *) data;
+	const uint8_t * pkt = td->data;
 	size_t pktlen = 0;
 	unsigned int v = *pkt;
 	pgpTag tag = 0;
@@ -603,24 +569,22 @@ static char * pgpsigFormat(rpmTagType type, rpm_constdata_t data,
 
 /**
  * Format dependency flags for display.
- * @param type		tag type
- * @param data		tag value
- * @param formatPrefix
- * @param padding
- * @param element	(unused)
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * depflagsFormat(rpmTagType type, rpm_constdata_t data, 
-		char * formatPrefix, size_t padding, int element)
+static char * depflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
 {
     char * val;
     char buf[10];
     rpmsenseFlags anint;
 
-    if (type != RPM_INT32_TYPE) {
+    if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	anint = *((const rpm_flag_t *) data);
+	rpm_flag_t *rf = rpmtdGetUint32(td);
+	anint = *rf;
 	buf[0] = '\0';
 
 	if (anint & RPMSENSE_LESS) 
@@ -736,6 +700,8 @@ static int fssizesTag(Header h, rpmtd td)
  */
 static int triggercondsTag(Header h, rpmtd td)
 {
+    /* XXX out of service  for now.. */
+#if 0
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     rpmTagType tnt, tvt, tst;
@@ -795,6 +761,8 @@ static int triggercondsTag(Header h, rpmtd td)
     versions = hfd(versions, tvt);
 
     return 0;
+#endif
+    return 1;
 }
 
 /**
