@@ -662,7 +662,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     rpm_data_t data;
     unsigned int intVal;
     const char ** strarray;
-    int datafree = 0;
     int countBuf;
 
     memset(buf, 0, sizeof(buf));
@@ -765,9 +764,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	val = xstrdup("(unknown type)");
 	break;
     }
-
-    if (datafree)
-	data = headerFreeData(data, type);
 
     if (val && need > 0) {
 	t = hsaReserve(hsa, need);
