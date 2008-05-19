@@ -37,6 +37,53 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[];
 void *rpmHeaderFormatFunc(const char *fmt);
 void *rpmHeaderTagFunc(rpmTag tag);
 
+/**
+ * barebones string representation with no extra formatting
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @param padding	no. additional bytes needed by format string
+ * @return		formatted string
+ */
+static char * stringFormat(rpmtd td, char *formatPrefix, size_t padding)
+{
+    const char *str = NULL;
+    char *val = NULL, *buf = NULL;
+    size_t need;
+
+    switch (rpmtdType(td)) {
+	case RPM_INT16_TYPE:
+	    need = 10 + padding + 20; /* we can do better, just for now ... */
+	    val = xmalloc(need);
+	    strcat(formatPrefix, "d");
+	    sprintf(val, formatPrefix, *rpmtdGetUint32(td));
+	    break;
+	case RPM_INT32_TYPE:
+	    need = 10 + padding + 20; /* we can do better, just for now ... */
+	    val = xmalloc(need);
+	    strcat(formatPrefix, "d");
+	    sprintf(val, formatPrefix, *rpmtdGetUint32(td));
+	    break;
+	case RPM_STRING_TYPE:
+	case RPM_STRING_ARRAY_TYPE:
+	case RPM_I18NSTRING_TYPE:
+	    str = rpmtdGetString(td);
+	    val = xmalloc(strlen(str) + padding + 1);
+	    strcat(formatPrefix, "s");
+	    sprintf(val, formatPrefix, str);
+	    break;
+	case RPM_BIN_TYPE:
+	    buf = pgpHexStr(td->data, td->count);
+	    val = xmalloc(strlen(buf) + padding + 1);
+	    strcat(formatPrefix, "s");
+	    sprintf(val, formatPrefix, buf);
+	    free(buf);
+	    break;
+	default:
+	    val = xstrdup("(unknown type)");
+	    break;
+    }
+    return val;
+}
 
 /**
  * octalFormat.
@@ -1036,6 +1083,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
 };
 
 static const struct headerFormatFunc_s rpmHeaderFormats[] = {
+    { "string",		stringFormat },
     { "armor",		armorFormat },
     { "base64",		base64Format },
     { "pgpsig",		pgpsigFormat },

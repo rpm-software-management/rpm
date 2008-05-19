@@ -399,7 +399,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		}
 		token->u.tag.type = chptr;
 	    } else {
-		token->u.tag.type = NULL;
+		token->u.tag.type = "string";
 	    }
 	    
 	    if (!*start) {
@@ -675,76 +675,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
-    if (td->data)
-    switch (td->type) {
-    case RPM_STRING_ARRAY_TYPE:
-    /* fallthrough */
-    case RPM_STRING_TYPE:
-	if (tag->fmt)
-	    val = tag->fmt(td, buf, tag->pad);
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    str = rpmtdGetString(td);
-	    need = strlen(str) + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "s");
-	    sprintf(val, buf, str);
-	}
-	break;
-
-    case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-    case RPM_INT16_TYPE:
-    case RPM_INT32_TYPE:
-	switch (td->type) {
-	case RPM_CHAR_TYPE:	
-	case RPM_INT8_TYPE:
-#if 0
-	    /* XXXX unused, remove ? */
-	    intVal = *(((int8_t *) td->data) + element);
-#endif
-	    break;
-	case RPM_INT16_TYPE:
-	    intVal = *rpmtdGetUint16(td);
-	    break;
-	default:		/* keep -Wall quiet */
-	case RPM_INT32_TYPE:
-	    intVal = *rpmtdGetUint32(td);
-	    break;
-	}
-
-	if (tag->fmt)
-	    val = tag->fmt(td, buf, tag->pad);
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = 10 + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "d");
-	    sprintf(val, buf, intVal);
-	}
-	break;
-
-    case RPM_BIN_TYPE:
-	if (tag->fmt)
-	    val = tag->fmt(td, buf, tag->pad);
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    val = pgpHexStr(td->data, td->count);
-	    need = strlen(val) + tag->pad;
-	}
-	break;
-
-    default:
-	need = sizeof("(unknown type)") - 1;
-	val = xstrdup("(unknown type)");
-	break;
-    }
+    val = tag->fmt(td, buf, tag->pad);
+    need = strlen(val);
 
     if (val && need > 0) {
 	t = hsaReserve(hsa, need);
