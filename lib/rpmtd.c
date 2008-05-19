@@ -115,7 +115,8 @@ const char * rpmtdGetString(rpmtd td)
 
     if (td->type == RPM_STRING_TYPE) {
 	str = (const char *) td->data;
-    } else if (td->type == RPM_STRING_ARRAY_TYPE) {
+    } else if (td->type == RPM_STRING_ARRAY_TYPE ||
+	       td->type == RPM_I18NSTRING_TYPE) {
 	/* XXX TODO: check for array bounds */
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	str = *((const char**) td->data + ix);
@@ -129,6 +130,7 @@ char *rpmtdToString(rpmtd td)
 
     switch (td->type) {
 	case RPM_STRING_TYPE:
+	case RPM_I18NSTRING_TYPE:
 	case RPM_STRING_ARRAY_TYPE: {
 	    const char *s = rpmtdGetString(td);
 	    if (s) {
