@@ -652,7 +652,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * t, * te;
     char buf[20];
     unsigned int intVal;
-    const char ** strarray;
+    const char *str;
     int countBuf;
     struct rpmtd_s tmp;
     rpmtd td;
@@ -662,6 +662,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	tmp.count = 1;
 	tmp.type = RPM_STRING_TYPE;
 	tmp.data = "(none)";
+	element = 0;
 	td = &tmp;	
     }
 
@@ -670,42 +671,29 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	tmp.data = &countBuf;
 	tmp.count = 1;
 	tmp.type = RPM_INT32_TYPE;
+	element = 0;
 	td = &tmp;
     }
+    td->ix = element; /* Ick, use iterators instead */
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
     if (td->data)
     switch (td->type) {
     case RPM_STRING_ARRAY_TYPE:
-	strarray = (const char **)td->data;
-
-	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, 
-			   (rpm_count_t) element);
-
-	if (val) {
-	    need = strlen(val);
-	} else {
-	    need = strlen(strarray[element]) + tag->pad + 20;
-	    val = xmalloc(need+1);
-	    strcat(buf, "s");
-	    sprintf(val, buf, strarray[element]);
-	}
-
-	break;
-
+    /* fallthrough */
     case RPM_STRING_TYPE:
+	str = rpmtdGetString(td);
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, td->data, buf, tag->pad,  0);
+	    val = tag->fmt(RPM_STRING_TYPE, str, buf, tag->pad,  -1);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(td->data) + tag->pad + 20;
+	    need = strlen(str) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
-	    sprintf(val, buf, td->data);
+	    sprintf(val, buf, str);
 	}
 	break;
 
@@ -716,20 +704,22 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	switch (td->type) {
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
+#if 0
+	    /* XXXX unused, remove ? */
 	    intVal = *(((int8_t *) td->data) + element);
+#endif
 	    break;
 	case RPM_INT16_TYPE:
-	    intVal = *(((uint16_t *) td->data) + element);
+	    intVal = *rpmtdGetUint16(td);
 	    break;
 	default:		/* keep -Wall quiet */
 	case RPM_INT32_TYPE:
-	    intVal = *(((int32_t *) td->data) + element);
+	    intVal = *rpmtdGetUint32(td);
 	    break;
 	}
 
 	if (tag->fmt)
-	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, 
-			   (rpm_count_t) element);
+	    val = tag->fmt(RPM_INT32_TYPE, &intVal, buf, tag->pad, -1);
 
 	if (val) {
 	    need = strlen(val);
