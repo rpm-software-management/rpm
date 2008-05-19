@@ -622,10 +622,7 @@ static rpmtd getCached(rpmtd *cache, rpmTag tag)
  * @retval *countptr
  * @return		1 on success, 0 on failure
  */
-static int getData(headerSprintfArgs hsa, rpmTag tag,
-		rpmTagType * typeptr,
-		rpm_data_t * data,
-		rpm_count_t * countptr)
+static rpmtd getData(headerSprintfArgs hsa, rpmTag tag)
 {
     rpmtd td = NULL;
 
@@ -633,15 +630,12 @@ static int getData(headerSprintfArgs hsa, rpmTag tag,
 	td = rpmtdNew();
 	if (!headerGet(hsa->h, tag, td, HEADERGET_EXT)) {
 	    rpmtdFree(td);
-	    return 0;
+	    return NULL;
 	}
 	hsa->cache[tag] = td;
     }
 
-    if (typeptr) *typeptr = td->type;
-    if (data) *data = td->data;
-    if (countptr) *countptr = td->count;
-    return 1;
+    return td;
 }
 
 /**
@@ -657,33 +651,34 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    rpmTagType type;
-    rpm_count_t count;
-    rpm_data_t data;
     unsigned int intVal;
     const char ** strarray;
     int countBuf;
+    struct rpmtd_s tmp;
+    rpmtd td;
 
     memset(buf, 0, sizeof(buf));
-    if (!getData(hsa, tag->tag, &type, &data, &count)) {
-	count = 1;
-	type = RPM_STRING_TYPE;
-	data = "(none)";
+    if (!(td = getData(hsa, tag->tag))) {
+	tmp.count = 1;
+	tmp.type = RPM_STRING_TYPE;
+	tmp.data = "(none)";
+	td = &tmp;	
     }
 
     if (tag->arrayCount) {
-	countBuf = count;
-	data = &countBuf;
-	count = 1;
-	type = RPM_INT32_TYPE;
+	countBuf = td->count;
+	tmp.data = &countBuf;
+	tmp.count = 1;
+	tmp.type = RPM_INT32_TYPE;
+	td = &tmp;
     }
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
-    if (data)
-    switch (type) {
+    if (td->data)
+    switch (td->type) {
     case RPM_STRING_ARRAY_TYPE:
-	strarray = (const char **)data;
+	strarray = (const char **)td->data;
 
 	if (tag->fmt)
 	    val = tag->fmt(RPM_STRING_TYPE, strarray[element], buf, tag->pad, 
@@ -702,15 +697,15 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     case RPM_STRING_TYPE:
 	if (tag->fmt)
-	    val = tag->fmt(RPM_STRING_TYPE, data, buf, tag->pad,  0);
+	    val = tag->fmt(RPM_STRING_TYPE, td->data, buf, tag->pad,  0);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    need = strlen(data) + tag->pad + 20;
+	    need = strlen(td->data) + tag->pad + 20;
 	    val = xmalloc(need+1);
 	    strcat(buf, "s");
-	    sprintf(val, buf, data);
+	    sprintf(val, buf, td->data);
 	}
 	break;
 
@@ -718,17 +713,17 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
-	switch (type) {
+	switch (td->type) {
 	case RPM_CHAR_TYPE:	
 	case RPM_INT8_TYPE:
-	    intVal = *(((int8_t *) data) + element);
+	    intVal = *(((int8_t *) td->data) + element);
 	    break;
 	case RPM_INT16_TYPE:
-	    intVal = *(((uint16_t *) data) + element);
+	    intVal = *(((uint16_t *) td->data) + element);
 	    break;
 	default:		/* keep -Wall quiet */
 	case RPM_INT32_TYPE:
-	    intVal = *(((int32_t *) data) + element);
+	    intVal = *(((int32_t *) td->data) + element);
 	    break;
 	}
 
@@ -749,12 +744,12 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     case RPM_BIN_TYPE:
 	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
 	if (tag->fmt)
-	    val = tag->fmt(RPM_BIN_TYPE, data, buf, tag->pad, (rpm_count_t) count);
+	    val = tag->fmt(RPM_BIN_TYPE, td->data, buf, tag->pad, td->count);
 
 	if (val) {
 	    need = strlen(val);
 	} else {
-	    val = pgpHexStr(data, count);
+	    val = pgpHexStr(td->data, td->count);
 	    need = strlen(val) + tag->pad;
 	}
 	break;
@@ -787,7 +782,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 {
     char * t, * te;
     int i, j, found;
-    rpmTagType type;
     rpm_count_t count, numElements;
     sprintfToken spft;
     int condNumFormats;
@@ -842,21 +836,25 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	spft = token->u.array.format;
 	for (i = 0; i < token->u.array.numTokens; i++, spft++)
 	{
+	    rpmtd td = NULL;
 	    if (spft->type != PTOK_TAG ||
 		spft->u.tag.arrayCount ||
 		spft->u.tag.justOne) continue;
 
-	    if (!getData(hsa, spft->u.tag.tag, &type, NULL, &count)) {
+	    if (!(td = getData(hsa, spft->u.tag.tag))) {
 		continue;
 	    }
 
 	    found = 1;
 
-	    if (type == RPM_BIN_TYPE)
+	    if (td->type == RPM_BIN_TYPE) {
 		count = 1;	/* XXX count abused as no. of bytes. */
+	    } else {
+		count = td->count;
+	    }
 
 	    if (numElements > 1 && count != numElements)
-	    switch (type) {
+	    switch (td->type) {
 	    default:
 		hsa->errmsg =
 			_("array iterator used with different sized arrays");
