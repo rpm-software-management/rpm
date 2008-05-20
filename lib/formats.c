@@ -434,37 +434,24 @@ static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
     char *val;
     char *s = NULL;
     char *t = NULL;
-    unsigned long anint = 0;
+    rpmtdFormats fmt = RPMTD_FORMAT_STRING;
     int xx;
 
     switch (rpmtdType(td)) {
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	s = rpmtdGetString(td);
 	xtag = "string";
 	break;
     case RPM_BIN_TYPE:
-    {	
-	/* XXX HACK ALERT: array count abused as no. bytes of binary data. */
-	size_t ns = td->count;
-    	if ((s = b64encode(td->data, ns, 0)) == NULL) {
-    		return xstrdup(_("(encoding failed)"));
-    	}
+	fmt = RPMTD_FORMAT_BASE64;
 	xtag = "base64";
-    }	break;
+	break;
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-#if 0
-	/* XXX unused, remove ? */
-	anint = *((const uint8_t *) data);
-#endif
-	break;
     case RPM_INT16_TYPE:
-	anint = *rpmtdGetUint16(td);
-	break;
     case RPM_INT32_TYPE:
-	anint = *rpmtdGetUint32(td);
+	xtag = "integer";
 	break;
     case RPM_NULL_TYPE:
     default:
@@ -472,14 +459,8 @@ static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
 	break;
     }
 
-    if (s == NULL) {
-	if (anint != 0) {
-	    rasprintf(&s, "%lu", anint);
-	} else {
-	    s = xstrdup("");
-	}
-	xtag = "integer";
-    }
+    /* XXX TODO: handle errors */
+    s = rpmtdFormat(td, fmt, NULL);
 
     if (s[0] == '\0') {
 	t = rstrscat(NULL, "\t<", xtag, "/>", NULL);
@@ -504,12 +485,9 @@ static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
 	t = rstrscat(NULL, "\t<", xtag, ">", new_s, "</", xtag, ">", NULL);
 	free(new_s);
     }
+    free(s);
 
-    /* XXX s was malloc'd */
-    if (!strcmp(xtag, "base64") || !strcmp(xtag, "integer"))
-	free(s);
-
-    nb += strlen(t)+padding;
+    nb += strlen(t)+padding+1;
     val = xmalloc(nb+1);
     strcat(formatPrefix, "s");
     xx = snprintf(val, nb, formatPrefix, t);
