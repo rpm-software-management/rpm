@@ -119,6 +119,36 @@ uint32_t * rpmtdGetUint32(rpmtd td);
  */
 const char * rpmtdGetString(rpmtd td);
 
+typedef enum rpmtdFormats_e {
+    RPMTD_FORMAT_STRING		= 0,	/* plain string (any type) */
+    RPMTD_FORMAT_ARMOR		= 1,	/* ascii armor format (bin types) */
+    RPMTD_FORMAT_BASE64		= 2,	/* base64 encoding (bin types) */
+    RPMTD_FORMAT_PGPSIG		= 3,	/* pgp/gpg signature (bin types) */
+    RPMTD_FORMAT_DEPFLAGS	= 4,	/* dependency flags (int32 types) */
+    RPMTD_FORMAT_FFLAGS		= 5,	/* file flags (int32 types) */
+    RPMTD_FORMAT_PERMS		= 6,	/* permission string (int32 types) */
+    RPMTD_FORMAT_TRIGGERTYPE	= 7,	/* trigger types */
+    RPMTD_FORMAT_XML		= 8,	/* xml format (any type) */
+    RPMTD_FORMAT_OCTAL		= 9,	/* octal format (int32 types) */
+    RPMTD_FORMAT_HEX		= 10,	/* hex format (int32 types) */
+    RPMTD_FORMAT_DATE		= 11,	/* date format (int32 types) */
+    RPMTD_FORMAT_DAY		= 12,	/* day format (int32 types) */
+    RPMTD_FORMAT_SHESCAPE	= 13,	/* shell escaped (any type) */
+} rpmtdFormats;
+
+/** \ingroup rpmtd
+ * Format data from tag container to string presentation of given format.
+ * Return malloced string presentation of current data in container,
+ * converting from integers etc as necessary. On array types, data from
+ * current iteration index is used for formatting.
+ * @param td		Tag data container
+ * @param fmt		Format to apply
+ * @param errmsg	Error message from conversion (or NULL)
+ * @return		String representation of current data (malloc'ed), 
+ * 			NULL on error
+ */
+char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg);
+
 /** \ingroup rpmtd
  * Return data from tag container in string presentation.
  * Return malloced string presentation of current data in container,

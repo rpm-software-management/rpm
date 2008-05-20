@@ -28,7 +28,7 @@
 typedef char * (*headerTagFormatFunction)
 			(rpmtd td, char * formatPrefix, size_t padding);
 
-extern void *rpmHeaderFormatFunc(const char *fmt);
+extern void *rpmHeaderFormatFuncByName(const char *fmt);
 
 /** \ingroup header
  */
@@ -258,7 +258,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
-	stag->fmt = rpmHeaderFormatFunc(stag->type);
+	stag->fmt = rpmHeaderFormatFuncByName(stag->type);
 
     return 0;
 }

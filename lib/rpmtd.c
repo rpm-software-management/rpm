@@ -2,8 +2,14 @@
 
 #include <rpm/rpmtd.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmpgp.h>
 
 #include "debug.h"
+
+typedef char * (*headerTagFormatFunction)
+			(rpmtd td, char *formatPrefix, size_t padding);
+
+extern void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
 
 rpmtd rpmtdNew(void)
 {
@@ -69,11 +75,14 @@ int rpmtdInit(rpmtd td)
 
 int rpmtdNext(rpmtd td)
 {
-    int i = -1;
-
     assert(td != NULL);
+
+    int i = -1;
+    /* fix up for binary type abusing count as data length */
+    int count = (td->type == RPM_BIN_TYPE) ? 1 : td->count;
+    
     if (++td->ix >= 0) {
-	if (td->ix < td->count) {
+	if (td->ix < count) {
 	    i = td->ix;
 	} else {
 	    td->ix = i;
@@ -133,6 +142,27 @@ const char * rpmtdGetString(rpmtd td)
 	int ix = (td->ix >= 0 ? td->ix : 0);
 	str = *((const char**) td->data + ix);
     } 
+    return str;
+}
+
+char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
+{
+    headerTagFormatFunction func = rpmHeaderFormatFuncByValue(fmt);
+    const char *err = NULL;
+    char *str = NULL;
+
+    if (func) {
+	char fmtbuf[50]; /* yuck, get rid of this */
+	strcpy(fmtbuf, "%");
+	str = func(td, fmtbuf, 0);
+    } else {
+	err = _("Unknown format");
+    }
+    
+    if (err && errmsg) {
+	errmsg = err;
+    }
+
     return str;
 }
 

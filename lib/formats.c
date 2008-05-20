@@ -21,6 +21,7 @@
  */
 
 struct headerFormatFunc_s {
+    rpmtdFormats fmt;	/*!< Value of extension */
     const char *name;	/*!< Name of extension. */
     void *func;		/*!< Pointer to formatter function. */	
 };
@@ -34,7 +35,8 @@ struct headerTagFunc_s {
 static const struct headerFormatFunc_s rpmHeaderFormats[];
 static const struct headerTagFunc_s rpmHeaderTagExtensions[];
 
-void *rpmHeaderFormatFunc(const char *fmt);
+void *rpmHeaderFormatFuncByName(const char *fmt);
+void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
 void *rpmHeaderTagFunc(rpmTag tag);
 
 /**
@@ -1059,7 +1061,7 @@ void *rpmHeaderTagFunc(rpmTag tag)
     return func;
 }
 
-void *rpmHeaderFormatFunc(const char *fmt)
+void *rpmHeaderFormatFuncByName(const char *fmt)
 {
     const struct headerFormatFunc_s * ext;
     void *func = NULL;
@@ -1073,6 +1075,19 @@ void *rpmHeaderFormatFunc(const char *fmt)
     return func;
 }
 
+void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
+{
+    const struct headerFormatFunc_s * ext;
+    void *func = NULL;
+
+    for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
+	if (fmt == ext->fmt) {
+	    func = ext->func;
+	    break;
+	}
+    }
+    return func;
+}
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -1090,20 +1105,20 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
 };
 
 static const struct headerFormatFunc_s rpmHeaderFormats[] = {
-    { "string",		stringFormat },
-    { "armor",		armorFormat },
-    { "base64",		base64Format },
-    { "pgpsig",		pgpsigFormat },
-    { "depflags",	depflagsFormat },
-    { "fflags",		fflagsFormat },
-    { "perms",		permsFormat },
-    { "permissions",	permsFormat },
-    { "triggertype",	triggertypeFormat },
-    { "xml",		xmlFormat },
-    { "octal", 		octalFormat },
-    { "hex", 		hexFormat },
-    { "date", 		dateFormat },
-    { "day", 		dayFormat },
-    { "shescape", 	shescapeFormat },
-    { NULL, 		NULL }
+    { RPMTD_FORMAT_STRING,	"string",	stringFormat },
+    { RPMTD_FORMAT_ARMOR,	"armor",	armorFormat },
+    { RPMTD_FORMAT_BASE64,	"base64",	base64Format },
+    { RPMTD_FORMAT_PGPSIG,	"pgpsig",	pgpsigFormat },
+    { RPMTD_FORMAT_DEPFLAGS,	"depflags",	depflagsFormat },
+    { RPMTD_FORMAT_FFLAGS,	"fflags",	fflagsFormat },
+    { RPMTD_FORMAT_PERMS,	"perms",	permsFormat },
+    { RPMTD_FORMAT_PERMS,	"permissions",	permsFormat },
+    { RPMTD_FORMAT_TRIGGERTYPE,	"triggertype",	triggertypeFormat },
+    { RPMTD_FORMAT_XML,		"xml",		xmlFormat },
+    { RPMTD_FORMAT_OCTAL,	"octal", 	octalFormat },
+    { RPMTD_FORMAT_HEX,		"hex", 		hexFormat },
+    { RPMTD_FORMAT_DATE,	"date", 	dateFormat },
+    { RPMTD_FORMAT_DAY,		"day", 		dayFormat },
+    { RPMTD_FORMAT_SHESCAPE,	"shescape", 	shescapeFormat },
+    { -1,			NULL, 		NULL }
 };
