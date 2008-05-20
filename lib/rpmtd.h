@@ -80,6 +80,16 @@ int rpmtdInit(rpmtd td);
 int rpmtdNext(rpmtd td);
 
 /** \ingroup rpmtd
+ * Return char data from tag container.
+ * For scalar return type, just return pointer to the integer. On array
+ * types, return pointer to current iteration index. If the tag container
+ * is not for char type, NULL is returned.
+ * @param td		Tag data container
+ * @return		Pointer to uint16_t, NULL on error
+ */
+char *rpmtdGetChar(rpmtd td);
+
+/** \ingroup rpmtd
  * Return uint16_t data from tag container.
  * For scalar return type, just return pointer to the integer. On array
  * types, return pointer to current iteration index. If the tag container

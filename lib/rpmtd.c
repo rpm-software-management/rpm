@@ -82,6 +82,18 @@ int rpmtdNext(rpmtd td)
     return i;
 }
 
+char * rpmtdGetChar(rpmtd td)
+{
+    char *res = NULL;
+
+    assert(td != NULL);
+
+    if (td->type == RPM_CHAR_TYPE) {
+	int ix = (td->ix >= 0 ? td->ix : 0);
+	res = (char *) td->data + ix;
+    } 
+    return res;
+}
 uint16_t * rpmtdGetUint16(rpmtd td)
 {
     uint16_t *res = NULL;
