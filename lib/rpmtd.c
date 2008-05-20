@@ -6,8 +6,7 @@
 
 #include "debug.h"
 
-typedef char * (*headerTagFormatFunction)
-			(rpmtd td, char *formatPrefix, size_t padding);
+typedef char * (*headerTagFormatFunction) (rpmtd td, char *formatPrefix);
 
 extern void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
 
@@ -154,7 +153,7 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
     if (func) {
 	char fmtbuf[50]; /* yuck, get rid of this */
 	strcpy(fmtbuf, "%");
-	str = func(td, fmtbuf, 0);
+	str = func(td, fmtbuf);
     } else {
 	err = _("Unknown format");
     }

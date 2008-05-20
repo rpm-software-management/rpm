@@ -22,11 +22,9 @@
  *
  * @param td		tag data container
  * @param formatPrefix
- * @param padding
  * @return		formatted string
  */
-typedef char * (*headerTagFormatFunction)
-			(rpmtd td, char * formatPrefix, size_t padding);
+typedef char * (*headerTagFormatFunction) (rpmtd td, char * formatPrefix);
 
 extern void *rpmHeaderFormatFuncByName(const char *fmt);
 
@@ -40,7 +38,6 @@ struct sprintfTag_s {
     int arrayCount;
     char * format;
     char * type;
-    int pad;
 };
 
 /** \ingroup header
@@ -344,7 +341,6 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    }
 
 	    token->u.tag.format = start;
-	    token->u.tag.pad = 0;
 	    token->u.tag.justOne = 0;
 	    token->u.tag.arrayCount = 0;
 
@@ -359,14 +355,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    *chptr++ = '\0';
 
 	    while (start < chptr) {
-		if (risdigit(*start)) {
-		    i = strtoul(start, &start, 10);
-		    token->u.tag.pad += i;
-		    start = chptr;
-		    break;
-		} else {
-		    start++;
-		}
+		start++;
 	    }
 
 	    if (*start == '=') {
@@ -675,7 +664,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
 
-    val = tag->fmt(td, buf, tag->pad);
+    val = tag->fmt(td, buf);
     need = strlen(val);
 
     if (val && need > 0) {

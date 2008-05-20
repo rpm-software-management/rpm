@@ -43,48 +43,38 @@ void *rpmHeaderTagFunc(rpmTag tag);
  * barebones string representation with no extra formatting
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * stringFormat(rpmtd td, char *formatPrefix, size_t padding)
+static char * stringFormat(rpmtd td, char *formatPrefix)
 {
     const char *str = NULL;
     char *val = NULL, *buf = NULL;
-    size_t need;
 
     switch (rpmtdType(td)) {
 	case RPM_INT8_TYPE:
 	case RPM_CHAR_TYPE:
-	    need = 10 + padding + 20; /* we can do better, just for now ... */
-	    val = xmalloc(need);
 	    strcat(formatPrefix, "hhu");
-	    sprintf(val, formatPrefix, *rpmtdGetChar(td));
+	    rasprintf(&val, formatPrefix, *rpmtdGetChar(td));
 	    break;
 	case RPM_INT16_TYPE:
-	    need = 10 + padding + 20; /* we can do better, just for now ... */
-	    val = xmalloc(need);
 	    strcat(formatPrefix, "hu");
-	    sprintf(val, formatPrefix, *rpmtdGetUint16(td));
+	    rasprintf(&val, formatPrefix, *rpmtdGetUint16(td));
 	    break;
 	case RPM_INT32_TYPE:
-	    need = 10 + padding + 20; /* we can do better, just for now ... */
-	    val = xmalloc(need);
 	    strcat(formatPrefix, "u");
-	    sprintf(val, formatPrefix, *rpmtdGetUint32(td));
+	    rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
 	    break;
 	case RPM_STRING_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
 	case RPM_I18NSTRING_TYPE:
 	    str = rpmtdGetString(td);
-	    val = xmalloc(strlen(str) + padding + 1);
 	    strcat(formatPrefix, "s");
-	    sprintf(val, formatPrefix, str);
+	    rasprintf(&val, formatPrefix, str);
 	    break;
 	case RPM_BIN_TYPE:
 	    buf = pgpHexStr(td->data, td->count);
-	    val = xmalloc(strlen(buf) + padding + 1);
 	    strcat(formatPrefix, "s");
-	    sprintf(val, formatPrefix, buf);
+	    rasprintf(&val, formatPrefix, buf);
 	    free(buf);
 	    break;
 	default:
@@ -98,19 +88,17 @@ static char * stringFormat(rpmtd td, char *formatPrefix, size_t padding)
  * octalFormat.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * octalFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * octalFormat(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char * val = NULL;
 
     if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "o");
-	sprintf(val, formatPrefix, *rpmtdGetUint32(td));
+	rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
     }
 
     return val;
@@ -120,19 +108,17 @@ static char * octalFormat(rpmtd td, char * formatPrefix, size_t padding)
  * hexFormat.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * hexFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * hexFormat(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char * val = NULL;
 
     if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	val = xmalloc(20 + padding);
 	strcat(formatPrefix, "x");
-	sprintf(val, formatPrefix, *rpmtdGetUint32(td));
+	rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
     }
 
     return val;
@@ -141,13 +127,12 @@ static char * hexFormat(rpmtd td, char * formatPrefix, size_t padding)
 /**
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * realDateFormat(rpmtd td, char * formatPrefix, size_t padding,
+static char * realDateFormat(rpmtd td, char * formatPrefix,
 		const char * strftimeFormat)
 {
-    char * val;
+    char * val = NULL;
 
     if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
@@ -155,7 +140,6 @@ static char * realDateFormat(rpmtd td, char * formatPrefix, size_t padding,
 	struct tm * tstruct;
 	char buf[50];
 
-	val = xmalloc(50 + padding);
 	strcat(formatPrefix, "s");
 
 	/* this is important if sizeof(rpm_time_t) ! sizeof(time_t) */
@@ -166,7 +150,7 @@ static char * realDateFormat(rpmtd td, char * formatPrefix, size_t padding,
 	buf[0] = '\0';
 	if (tstruct)
 	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
-	sprintf(val, formatPrefix, buf);
+	rasprintf(&val, formatPrefix, buf);
     }
 
     return val;
@@ -176,41 +160,37 @@ static char * realDateFormat(rpmtd td, char * formatPrefix, size_t padding,
  * Format a date.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * dateFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * dateFormat(rpmtd td, char * formatPrefix)
 {
-    return realDateFormat(td, formatPrefix, padding, _("%c"));
+    return realDateFormat(td, formatPrefix, _("%c"));
 }
 
 /**
  * Format a day.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * dayFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * dayFormat(rpmtd td, char * formatPrefix)
 {
-    return realDateFormat(td, formatPrefix, padding, _("%a %b %d %Y"));
+    return realDateFormat(td, formatPrefix, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * shescapeFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * shescapeFormat(rpmtd td, char * formatPrefix)
 {
-    char * result, * dst, * src;
+    char * result = NULL, * dst, * src;
 
     if (rpmtdType(td) == RPM_INT32_TYPE) {
-	result = xmalloc(padding + 20);
 	strcat(formatPrefix, "d");
-	sprintf(result, formatPrefix, *rpmtdGetUint32(td));
+	rasprintf(&result, formatPrefix, *rpmtdGetUint32(td));
     } else {
 	char *buf = NULL;
 	strcat(formatPrefix, "s");
@@ -241,10 +221,9 @@ static char * shescapeFormat(rpmtd td, char * formatPrefix, size_t padding)
  * Identify type of trigger.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * triggertypeFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * triggertypeFormat(rpmtd td, char * formatPrefix)
 {
     const uint32_t * item = rpmtdGetUint32(td);
     char * val;
@@ -268,21 +247,19 @@ static char * triggertypeFormat(rpmtd td, char * formatPrefix, size_t padding)
  * Format file permissions for display.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * permsFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * permsFormat(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char * val = NULL;
     char * buf;
 
     if (rpmtdType(td) != RPM_INT32_TYPE) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	val = xmalloc(15 + padding);
 	strcat(formatPrefix, "s");
 	buf = rpmPermsString(*rpmtdGetUint32(td));
-	sprintf(val, formatPrefix, buf);
+	rasprintf(&val, formatPrefix, buf);
 	buf = _free(buf);
     }
 
@@ -293,12 +270,11 @@ static char * permsFormat(rpmtd td, char * formatPrefix, size_t padding)
  * Format file flags for display.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * fflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * fflagsFormat(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char * val = NULL;
     char buf[15];
 
     if (rpmtdType(td) != RPM_INT32_TYPE) {
@@ -324,9 +300,8 @@ static char * fflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
 	if (anint & RPMFILE_README)
 	    strcat(buf, "r");
 
-	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
-	sprintf(val, formatPrefix, buf);
+	rasprintf(&val, formatPrefix, buf);
     }
 
     return val;
@@ -337,10 +312,9 @@ static char * fflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
  * @todo Permit selectable display formats (i.e. binary).
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * armorFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * armorFormat(rpmtd td, char * formatPrefix)
 {
     const char * enc;
     const unsigned char * s;
@@ -388,32 +362,20 @@ static char * armorFormat(rpmtd td, char * formatPrefix, size_t padding)
  * @todo Permit selectable display formats (i.e. binary).
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * base64Format(rpmtd td, char * formatPrefix, size_t padding)
+static char * base64Format(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char * val = NULL;
 
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
 	char * enc;
-	char * t;
-	/* XXX HACK ALERT: element field abused as no. bytes of binary data. */
-	size_t ns = td->count;
-	size_t nt = 0;
-
-	if ((enc = b64encode(td->data, ns, -1)) != NULL) {
-		nt = strlen(enc);
-	}
-
-	val = t = xmalloc(nt + padding + 1);
-
-	*t = '\0';
-	if (enc != NULL) {
-	    t = stpcpy(t, enc);
-	    enc = _free(enc);
+	if ((enc = b64encode(td->data, td->count, -1)) != NULL) {
+	    strcat(formatPrefix, "s");
+	    rasprintf(&val, formatPrefix, enc ? enc : "");
+	    free(enc);
 	}
     }
 
@@ -424,18 +386,14 @@ static char * base64Format(rpmtd td, char * formatPrefix, size_t padding)
  * Wrap tag data in simple header xml markup.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * xmlFormat(rpmtd td, char * formatPrefix)
 {
     const char *xtag = NULL;
-    size_t nb = 0;
-    char *val;
+    char *val = NULL;
     char *s = NULL;
-    char *t = NULL;
     rpmtdFormats fmt = RPMTD_FORMAT_STRING;
-    int xx;
 
     switch (rpmtdType(td)) {
     case RPM_I18NSTRING_TYPE:
@@ -463,7 +421,7 @@ static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
     s = rpmtdFormat(td, fmt, NULL);
 
     if (s[0] == '\0') {
-	t = rstrscat(NULL, "\t<", xtag, "/>", NULL);
+	val = rstrscat(NULL, "\t<", xtag, "/>", NULL);
     } else {
 	char *new_s = NULL;
 	size_t i, s_size = strlen(s);
@@ -482,18 +440,12 @@ static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
 	    }
 	}
 
-	t = rstrscat(NULL, "\t<", xtag, ">", new_s, "</", xtag, ">", NULL);
+	val = rstrscat(NULL, "\t<", xtag, ">", new_s, "</", xtag, ">", NULL);
 	free(new_s);
     }
     free(s);
 
-    nb += strlen(t)+padding+1;
-    val = xmalloc(nb+1);
     strcat(formatPrefix, "s");
-    xx = snprintf(val, nb, formatPrefix, t);
-    free(t);
-    val[nb] = '\0';
-
     return val;
 }
 
@@ -501,10 +453,9 @@ static char * xmlFormat(rpmtd td, char * formatPrefix, size_t padding)
  * Display signature fingerprint and time.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * pgpsigFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * pgpsigFormat(rpmtd td, char * formatPrefix)
 {
     char * val, * t;
 
@@ -605,12 +556,11 @@ static char * pgpsigFormat(rpmtd td, char * formatPrefix, size_t padding)
  * Format dependency flags for display.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
- * @param padding	no. additional bytes needed by format string
  * @return		formatted string
  */
-static char * depflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
+static char * depflagsFormat(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char * val = NULL;
     char buf[10];
     rpmsenseFlags anint;
 
@@ -628,9 +578,8 @@ static char * depflagsFormat(rpmtd td, char * formatPrefix, size_t padding)
 	if (anint & RPMSENSE_EQUAL)
 	    strcat(buf, "=");
 
-	val = xmalloc(5 + padding);
 	strcat(formatPrefix, "s");
-	sprintf(val, formatPrefix, buf);
+	rasprintf(&val, formatPrefix, buf);
     }
 
     return val;
