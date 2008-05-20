@@ -74,6 +74,8 @@ static const int typeSizes[16] =  {
 	*type = td.type; \
     if (p) \
 	*p = td.data; \
+    else \
+	rpmtdFreeData(&td); \
     if (c) \
 	*c = td.count
 
