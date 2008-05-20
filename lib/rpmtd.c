@@ -48,7 +48,8 @@ void rpmtdFreeData(rpmtd td)
 rpm_count_t rpmtdCount(rpmtd td)
 {
     assert(td != NULL);
-    return td->count;
+    /* fix up for binary type abusing count as data length */
+    return (td->type == RPM_BIN_TYPE) ? 1 : td->count;
 }
 
 rpmTag rpmtdTag(rpmtd td)
@@ -77,11 +78,9 @@ int rpmtdNext(rpmtd td)
     assert(td != NULL);
 
     int i = -1;
-    /* fix up for binary type abusing count as data length */
-    int count = (td->type == RPM_BIN_TYPE) ? 1 : td->count;
     
     if (++td->ix >= 0) {
-	if (td->ix < count) {
+	if (td->ix < rpmtdCount(td)) {
 	    i = td->ix;
 	} else {
 	    td->ix = i;

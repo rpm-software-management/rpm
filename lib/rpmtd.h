@@ -45,7 +45,7 @@ void rpmtdReset(rpmtd td);
 void rpmtdFreeData(rpmtd td);
 
 /** \ingroup rpmtd
- * Retrieve number of entries in the container.
+ * Retrieve array size of the container. For non-array types this is always 1.
  * @param td		Tag data container
  * @return		Number of entries in contained data.
  */
