@@ -285,11 +285,13 @@ static int rdToken(ParseState state)
       char *temp;
       size_t ts;
 
+      p++;
       for (ts=1; p[ts] && p[ts] != '\"'; ts++);
       temp = xmalloc(ts+1);
       memcpy(temp, p, ts);
       p += ts-1;
       temp[ts] = '\0';
+      p++;
 
       token = TOK_STRING;
       v = valueMakeString( rpmExpand(temp, NULL) );
