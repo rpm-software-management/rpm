@@ -134,6 +134,7 @@ typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_DATE		= 11,	/* date format (int32 types) */
     RPMTD_FORMAT_DAY		= 12,	/* day format (int32 types) */
     RPMTD_FORMAT_SHESCAPE	= 13,	/* shell escaped (any type) */
+    RPMTD_FORMAT_ARRAYSIZE	= 14,	/* size of contained array (any type) */
 } rpmtdFormats;
 
 /** \ingroup rpmtd

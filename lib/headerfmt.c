@@ -35,7 +35,6 @@ struct sprintfTag_s {
     headerTagFormatFunction fmt;
     rpmTag tag;
     int justOne;
-    int arrayCount;
     char * format;
     char * type;
 };
@@ -342,7 +341,6 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 
 	    token->u.tag.format = start;
 	    token->u.tag.justOne = 0;
-	    token->u.tag.arrayCount = 0;
 
 	    chptr = start;
 	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
@@ -363,7 +361,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		start++;
 	    } else if (*start == '#') {
 		token->u.tag.justOne = 1;
-		token->u.tag.arrayCount = 1;
+		token->u.tag.type = "arraysize";
 		start++;
 	    }
 
@@ -387,7 +385,9 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		    return 1;
 		}
 		token->u.tag.type = chptr;
-	    } else {
+	    } 
+	    /* default to string conversion if no formats found by now */
+	    if (!token->u.tag.type) {
 		token->u.tag.type = "string";
 	    }
 	    
@@ -637,7 +637,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    int countBuf;
     struct rpmtd_s tmp;
     rpmtd td;
 
@@ -650,14 +649,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	td = &tmp;	
     }
 
-    if (tag->arrayCount) {
-	countBuf = td->count;
-	tmp.data = &countBuf;
-	tmp.count = 1;
-	tmp.type = RPM_INT32_TYPE;
-	element = 0;
-	td = &tmp;
-    }
     td->ix = element; /* Ick, use iterators instead */
 
     (void) stpcpy( stpcpy(buf, "%"), tag->format);
@@ -743,7 +734,6 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	{
 	    rpmtd td = NULL;
 	    if (spft->type != PTOK_TAG ||
-		spft->u.tag.arrayCount ||
 		spft->u.tag.justOne) continue;
 
 	    if (!(td = getData(hsa, spft->u.tag.tag))) {

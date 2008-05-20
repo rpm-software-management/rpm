@@ -586,6 +586,20 @@ static char * depflagsFormat(rpmtd td, char * formatPrefix)
 }
 
 /**
+ * Return tag container array size.
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @return		formatted string
+ */
+static char * arraysizeFormat(rpmtd td, char * formatPrefix)
+{
+    char *val = NULL;
+    strcat(formatPrefix, "u");
+    rasprintf(&val, formatPrefix, rpmtdCount(td));
+    return val;
+}
+
+/**
  * Retrieve mounted file system paths.
  * @param h		header
  * @retval td		tag data container
@@ -1047,5 +1061,6 @@ static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_DATE,	"date", 	dateFormat },
     { RPMTD_FORMAT_DAY,		"day", 		dayFormat },
     { RPMTD_FORMAT_SHESCAPE,	"shescape", 	shescapeFormat },
+    { RPMTD_FORMAT_ARRAYSIZE,	"arraysize", 	arraysizeFormat },
     { -1,			NULL, 		NULL }
 };
