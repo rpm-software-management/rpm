@@ -128,7 +128,7 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
 	switch (rpmtdType(&td)) {
 	case RPM_INT32_TYPE: /* fallthrough */
 	case RPM_STRING_TYPE:
-	    body = rpmtdToString(&td);
+	    body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
 	    addMacro(NULL, tagm->macroname, NULL, body, -1);
 	    free(body);
 	    break;

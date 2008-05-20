@@ -91,13 +91,13 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->release = xstrdup(release);
 
     headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_MINMEM);
-    p->epoch = rpmtdToString(&td);
+    p->epoch = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
 
     p->arch = arch ? xstrdup(arch) : NULL;
     p->archScore = arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch) : 0;
 
     headerGet(h, RPMTAG_OS, &td, HEADERGET_MINMEM);
-    p->os = rpmtdToString(&td);
+    p->os = xstrdup(rpmtdGetString(&td));
     p->osScore = p->os ? rpmMachineScore(RPM_MACHTABLE_INSTOS, p->os) : 0;
 
     p->isSource = headerIsSource(h);

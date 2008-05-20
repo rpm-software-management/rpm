@@ -621,7 +621,7 @@ static int instprefixTag(Header h, rpmtd td)
     } else if (headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, flags)) {
 	/* only return the first prefix of the array */
 	td->type = RPM_STRING_TYPE;
-	td->data = rpmtdToString(&prefixes);
+	td->data = xstrdup(rpmtdGetString(&prefixes));
 	td->freeData = 1;
 	rpmtdFreeData(&prefixes);
 	return 0;
