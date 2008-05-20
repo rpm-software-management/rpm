@@ -1806,24 +1806,10 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
  */
 static int mireSkip (const rpmdbMatchIterator mi)
 {
-    HGE_t hge = (HGE_t) headerGetEntryMinMemory;
-    HFD_t hfd = (HFD_t) headerFreeData;
-    union {
-	void * ptr;
-	const char ** argv;
-	const char * str;
-	int32_t * i32p;
-	int16_t * i16p;
-	int8_t * i8p;
-    } u;
-    char numbuf[32];
-    rpmTagType t;
-    rpm_count_t c;
     miRE mire;
     static int32_t zero = 0;
     int ntags = 0;
     int nmatches = 0;
-    int i, j;
     int rc;
 
     if (mi->mi_h == NULL)	/* XXX can't happen */
@@ -1834,68 +1820,32 @@ static int mireSkip (const rpmdbMatchIterator mi)
      * single tag, implicitly "&&" between multiple tag patterns.
      */
     if ((mire = mi->mi_re) != NULL)
-    for (i = 0; i < mi->mi_nre; i++, mire++) {
+    for (int i = 0; i < mi->mi_nre; i++, mire++) {
 	int anymatch;
+	struct rpmtd_s td;
 
-	if (!hge(mi->mi_h, mire->tag, &t, (rpm_data_t *)&u, &c)) {
+	if (!headerGet(mi->mi_h, mire->tag, &td, HEADERGET_MINMEM)) {
 	    if (mire->tag != RPMTAG_EPOCH) {
 		ntags++;
 		continue;
 	    }
-	    t = RPM_INT32_TYPE;
-	    u.i32p = &zero;
-	    c = 1;
+	    /* "is package already installed" checks rely on this behavior */
+	    td.count = 1;
+	    td.type = RPM_INT32_TYPE;
+	    td.data = &zero;
 	}
 
 	anymatch = 0;		/* no matches yet */
 	while (1) {
-	    switch (t) {
-	    case RPM_CHAR_TYPE:
-	    case RPM_INT8_TYPE:
-		sprintf(numbuf, "%d", (int) *u.i8p);
-		rc = miregexec(mire, numbuf);
-		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
-		    anymatch++;
-		break;
-	    case RPM_INT16_TYPE:
-		sprintf(numbuf, "%d", (int) *u.i16p);
-		rc = miregexec(mire, numbuf);
-		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
-		    anymatch++;
-		break;
-	    case RPM_INT32_TYPE:
-		sprintf(numbuf, "%d", (int) *u.i32p);
-		rc = miregexec(mire, numbuf);
-		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
-		    anymatch++;
-		break;
-	    case RPM_STRING_TYPE:
-		rc = miregexec(mire, u.str);
-		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
-		    anymatch++;
-		break;
-	    case RPM_I18NSTRING_TYPE:
-	    case RPM_STRING_ARRAY_TYPE:
-		for (j = 0; j < c; j++) {
-		    rc = miregexec(mire, u.argv[j]);
-		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch)) {
+	    rpmtdInit(&td);
+	    while (rpmtdNext(&td) >= 0) {
+	    	char *str = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
+		if (str) {
+		    rc = miregexec(mire, str);
+		    if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
 			anymatch++;
-			break;
-		    }
+		    free(str);
 		}
-		break;
-	    case RPM_BIN_TYPE:
-		{
-		char * str = pgpHexStr((const unsigned char*) u.ptr, c);
-		rc = miregexec(mire, str);
-		if ((!rc && !mire->notmatch) || (rc && mire->notmatch))
-		    anymatch++;
-		_free(str);
-		}
-		break;
-	    case RPM_NULL_TYPE:
-	    default:
-		break;
 	    }
 	    if ((i+1) < mi->mi_nre && mire[0].tag == mire[1].tag) {
 		i++;
@@ -1904,11 +1854,7 @@ static int mireSkip (const rpmdbMatchIterator mi)
 	    }
 	    break;
 	}
-
-	if ((rpmTagGetType(mire->tag) & RPM_MASK_RETURN_TYPE) == 
-	    RPM_ARRAY_RETURN_TYPE) {
-	    u.ptr = hfd(u.ptr, t);
-	}
+	rpmtdFreeData(&td);
 
 	ntags++;
 	if (anymatch)
