@@ -57,19 +57,19 @@ static char * stringFormat(rpmtd td, char *formatPrefix, size_t padding)
 	case RPM_CHAR_TYPE:
 	    need = 10 + padding + 20; /* we can do better, just for now ... */
 	    val = xmalloc(need);
-	    strcat(formatPrefix, "hhd");
+	    strcat(formatPrefix, "hhu");
 	    sprintf(val, formatPrefix, *rpmtdGetChar(td));
 	    break;
 	case RPM_INT16_TYPE:
 	    need = 10 + padding + 20; /* we can do better, just for now ... */
 	    val = xmalloc(need);
-	    strcat(formatPrefix, "hd");
+	    strcat(formatPrefix, "hu");
 	    sprintf(val, formatPrefix, *rpmtdGetUint16(td));
 	    break;
 	case RPM_INT32_TYPE:
 	    need = 10 + padding + 20; /* we can do better, just for now ... */
 	    val = xmalloc(need);
-	    strcat(formatPrefix, "d");
+	    strcat(formatPrefix, "u");
 	    sprintf(val, formatPrefix, *rpmtdGetUint32(td));
 	    break;
 	case RPM_STRING_TYPE:
