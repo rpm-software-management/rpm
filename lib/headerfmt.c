@@ -637,8 +637,6 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    unsigned int intVal;
-    const char *str;
     int countBuf;
     struct rpmtd_s tmp;
     rpmtd td;
