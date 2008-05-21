@@ -22,6 +22,152 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[];
 
 void *rpmHeaderTagFunc(rpmTag tag);
 
+static void rpmfiBuildFClasses(Header h, const char *** fclassp, rpm_count_t * fcp)
+{
+    int scareMem = 0;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    const char * FClass;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    /* Compute size of file class argv array blob. */
+    nb = (ac + 1) * sizeof(*av);
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FClass = rpmfiFClass(fi);
+	if (FClass && *FClass != '\0')
+	    nb += strlen(FClass);
+	nb += 1;
+    }
+
+    /* Create and load file class argv array. */
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	FClass = rpmfiFClass(fi);
+	av[ac++] = t;
+	if (FClass && *FClass != '\0')
+	    t = stpcpy(t, FClass);
+	*t++ = '\0';
+    }
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
+
+exit:
+    fi = rpmfiFree(fi);
+    if (fclassp)
+	*fclassp = av;
+    else
+	av = _free(av);
+    if (fcp) *fcp = ac;
+}
+
+static void rpmfiBuildFDeps(Header h, rpmTag tagN,
+	const char *** fdepsp, rpm_count_t * fcp)
+{
+    int scareMem = 0;
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmds ds = NULL;
+    const char ** av;
+    int ac;
+    size_t nb;
+    char * t;
+    char deptype = 'R';
+    char mydt;
+    const char * DNEVR;
+    const uint32_t * ddict;
+    unsigned ix;
+    int ndx;
+
+    if ((ac = rpmfiFC(fi)) <= 0) {
+	av = NULL;
+	ac = 0;
+	goto exit;
+    }
+
+    if (tagN == RPMTAG_PROVIDENAME)
+	deptype = 'P';
+    else if (tagN == RPMTAG_REQUIRENAME)
+	deptype = 'R';
+
+    ds = rpmdsNew(h, tagN, scareMem);
+
+    /* Compute size of file depends argv array blob. */
+    nb = (ac + 1) * sizeof(*av);
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		continue;
+	    ix &= 0x00ffffff;
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) < 0)
+		continue;
+	    DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL)
+		nb += strlen(DNEVR+2) + 1;
+	}
+	nb += 1;
+    }
+
+    /* Create and load file depends argv array. */
+    av = xmalloc(nb);
+    t = ((char *) av) + ((ac + 1) * sizeof(*av));
+    ac = 0;
+    fi = rpmfiInit(fi, 0);
+    if (fi != NULL)
+    while (rpmfiNext(fi) >= 0) {
+	av[ac++] = t;
+	ddict = NULL;
+	ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL)
+	while (ndx-- > 0) {
+	    ix = *ddict++;
+	    mydt = ((ix >> 24) & 0xff);
+	    if (mydt != deptype)
+		continue;
+	    ix &= 0x00ffffff;
+	    (void) rpmdsSetIx(ds, ix-1);
+	    if (rpmdsNext(ds) < 0)
+		continue;
+	    DNEVR = rpmdsDNEVR(ds);
+	    if (DNEVR != NULL) {
+		t = stpcpy(t, DNEVR+2);
+		*t++ = ' ';
+		*t = '\0';
+	    }
+	}
+	*t++ = '\0';
+    }
+    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
+
+exit:
+    fi = rpmfiFree(fi);
+    ds = rpmdsFree(ds);
+    if (fdepsp)
+	*fdepsp = av;
+    else
+	av = _free(av);
+    if (fcp) *fcp = ac;
+}
+
 /**
  * Retrieve mounted file system paths.
  * @param h		header

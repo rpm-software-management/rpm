@@ -354,32 +354,6 @@ rpmfi rpmfiFree(rpmfi fi);
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem);
 
 /** \ingroup rpmfi
- * Retrieve file classes from header.
- *
- * This function is used to retrieve file classes from the header.
- * 
- * @param h		header
- * @retval *fclassp	array of file classes
- * @retval *fcp		number of files
- */
-void rpmfiBuildFClasses(Header h,
-		const char *** fclassp, rpm_count_t * fcp);
-
-
-/** \ingroup rpmfi
- * Retrieve per-file dependencies from header.
- *
- * This function is used to retrieve per-file dependencies from the header.
- * 
- * @param h		header
- * @param tagN		RPMTAG_PROVIDENAME | RPMTAG_REQUIRENAME
- * @retval *fdepsp	array of file dependencies
- * @retval *fcp		number of files
- */
-void rpmfiBuildFDeps(Header h, rpmTag tagN,
-		const char *** fdepsp, rpm_count_t * fcp);
-
-/** \ingroup rpmfi
  * Retrieve file names from header.
  *
  * The representation of file names in package headers changed in rpm-4.0.
