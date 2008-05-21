@@ -233,9 +233,7 @@ void init_rpm(void);	/* XXX eliminate gcc warning */
  */
 void init_rpm(void)
 {
-    PyObject * d, *o, * tag = NULL, * dict;
-    int i;
-    PyObject * m;
+    PyObject * d, *o, *tag = NULL, *dict, *m;
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
@@ -320,15 +318,18 @@ void init_rpm(void)
 #endif
 
     dict = PyDict_New();
+    {	const char *tname;
+	rpmtd names = rpmTagGetNames(1);
 
-    for (i = 0; i < rpmTagTableSize; i++) {
-	tag = PyInt_FromLong(rpmTagTable[i].val);
-	PyDict_SetItemString(d, (char *) rpmTagTable[i].name, tag);
-	Py_DECREF(tag);
-        PyDict_SetItem(dict, tag, o=PyString_FromString(rpmTagTable[i].name + 7));
-	Py_DECREF(o);
-    }
-
+	while ((tname = rpmtdNextString(names))) {
+	    tag = PyInt_FromLong(rpmTagGetValue(tname));
+	    PyDict_SetItemString(d, tname, tag);
+	    Py_DECREF(tag);
+	    o = PyString_FromString(tname + strlen("RPMTAG_"));
+	    PyDict_SetItem(dict, tag, o);
+	    Py_DECREF(o);
+	}
+    }	
     PyDict_SetItemString(d, "tagnames", dict);
     Py_DECREF(dict);
 
