@@ -698,7 +698,6 @@ static int triggercondsTag(Header h, rpmtd td)
 {
     uint32_t * indices;
     int i, j;
-    rpm_flag_t * flags;
     char ** conds;
     struct rpmtd_s nametd, indextd, flagtd, versiontd, scripttd;
     int hgeflags = HEADERGET_MINMEM;
@@ -718,14 +717,13 @@ static int triggercondsTag(Header h, rpmtd td)
     td->count = rpmtdCount(&scripttd);
 
     indices = indextd.data;
-    flags = flagtd.data;
 
     while ((i = rpmtdNext(&scripttd)) >= 0) {
 	rpm_flag_t *flag;
 	char *flagStr, *item;
 	ARGV_t items = NULL;
 
-	rpmtdInit(&nametd); rpmtdInit(&flagtd);
+	rpmtdInit(&nametd); rpmtdInit(&flagtd); rpmtdInit(&versiontd);
 	while ((j = rpmtdNext(&nametd)) >= 0) {
 	    /* flag and version arrays match name array size always */
 	    rpmtdNext(&flagtd); rpmtdNext(&versiontd);
@@ -734,7 +732,7 @@ static int triggercondsTag(Header h, rpmtd td)
 		continue;
 
 	    flag = rpmtdGetUint32(&flagtd);
-	    if (*flag & RPMSENSE_SENSEMASK) {
+	    if (flag && *flag & RPMSENSE_SENSEMASK) {
 		flagStr = rpmtdFormat(&flagtd, RPMTD_FORMAT_DEPFLAGS, NULL);
 		rasprintf(&item, "%s %s %s", rpmtdGetString(&nametd),
 					     flagStr,
