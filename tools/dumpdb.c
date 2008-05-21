@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	    if (!(dspBlockNum != 0 && dspBlockNum != blockNum))
 		continue;
 
-	    headerDump(h, stdout, HEADER_DUMP_INLINE, rpmTagTable);
+	    headerDump(h, stdout, HEADER_DUMP_INLINE);
 	    fprintf(stdout, "Offset: %d\n", _RECNUM);
     
 	    if (dspBlockNum && blockNum > dspBlockNum)

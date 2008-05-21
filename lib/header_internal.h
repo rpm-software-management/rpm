@@ -133,10 +133,8 @@ static inline int headerUsageCount(Header h)  {
  * @param h		header
  * @param f		file handle
  * @param flags		0 or HEADER_DUMP_INLINE
- * @param tags		array of tag name/value pairs
  */
-void headerDump(Header h, FILE *f, int flags,
-		const struct headerTagTableEntry_s * tags);
+void headerDump(Header h, FILE *f, int flags);
 #define HEADER_DUMP_INLINE   1
 
 #ifdef __cplusplus

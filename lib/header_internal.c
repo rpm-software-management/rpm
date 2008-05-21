@@ -29,13 +29,10 @@ char ** headerGetLangs(Header h)
     return table;	/* LCL: double indirection? */
 }
 
-/* FIX: shrug */
-void headerDump(Header h, FILE *f, int flags,
-	const struct headerTagTableEntry_s * tags)
+void headerDump(Header h, FILE *f, int flags)
 {
     int i;
     indexEntry p;
-    const struct headerTagTableEntry_s * tage;
     const char * tag;
     const char * type;
 
@@ -81,13 +78,7 @@ void headerDump(Header h, FILE *f, int flags,
 	    break;
 	}
 
-	tage = tags;
-	while (tage->name && tage->val != p->info.tag) tage++;
-
-	if (!tage->name)
-	    tag = "(unknown)";
-	else
-	    tag = tage->name;
+	tag = rpmTagGetName(p->info.tag);
 
 	fprintf(f, "Entry      : %3.3d (%d)%-14s %-18s 0x%.8x %.8d\n", i,
 		p->info.tag, tag, type, (unsigned) p->info.offset,
