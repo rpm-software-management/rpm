@@ -371,6 +371,13 @@ rpmTagType rpmTagGetType(rpmTag tag);
  */
 rpmTag rpmTagGetValue(const char * tagstr);
 
+/** \ingroup rpmtag
+ * Return known rpm tag names, sorted by name.
+ * @param fullname	return short or full name
+ * @return		tag container of string array type
+ */
+rpmtd rpmTagGetNames(int fullname);
+
 #ifdef __cplusplus
 }
 #endif

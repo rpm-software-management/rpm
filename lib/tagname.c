@@ -289,3 +289,24 @@ rpmTag rpmTagGetValue(const char * tagstr)
     return ((*rpmTags->tagValue)(tagstr));
 }
 
+rpmtd rpmTagGetNames(int fullname)
+{
+    const char **names;
+    const char *name;
+    rpmtd td = rpmtdNew();
+
+    if (_rpmTags.byName == NULL)
+	tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
+
+    td->count = _rpmTags.byNameSize;
+    td->data = names = xmalloc(td->count * sizeof(*names));
+    td->type = RPM_STRING_ARRAY_TYPE;
+    td->flags = RPMTD_ALLOCED | RPMTD_IMMUTABLE;
+
+    for (int i = 0; i < td->count; i++) {
+	name = fullname ? _rpmTags.byName[i]->name : 
+			  _rpmTags.byName[i]->shortname;
+	names[i] = name;
+    }
+    return td;
+}
