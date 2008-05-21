@@ -6,7 +6,7 @@
 
 #include <popt.h>
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* XXX RPMSIGTAG* & related */
 #include <rpm/rpmmacro.h>	/* XXX for rpmGetPath() */
 #include <rpm/rpmdb.h>

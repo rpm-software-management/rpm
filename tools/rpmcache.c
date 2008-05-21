@@ -7,7 +7,7 @@ const char *__progname;
 
 #include <fnmatch.h>
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>	/* RPM_MACHTABLE, rpmReadPackageFile */
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlog.h>

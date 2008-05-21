@@ -4,7 +4,7 @@
  */
 #include "system.h"
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
 #include <rpm/rpmurl.h>
 #include "rpmio/digest.h"

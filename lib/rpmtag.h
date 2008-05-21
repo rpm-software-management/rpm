@@ -1,6 +1,8 @@
 #ifndef _RPMTAG_H
 #define _RPMTAG_H
 
+#include <rpm/rpmtypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

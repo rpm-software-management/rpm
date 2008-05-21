@@ -9,7 +9,6 @@
  */
 
 #include <rpm/rpmints.h>
-#include <rpm/rpmtag.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -94,5 +93,8 @@ typedef	enum rpmRC_e {
 #ifdef __cplusplus
 }
 #endif
+
+/* XXX included late as rpmtag.h depends on our definitions here... */
+#include <rpm/rpmtag.h>
 
 #endif /* _RPMTYPES_H */

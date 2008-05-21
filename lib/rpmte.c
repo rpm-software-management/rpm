@@ -4,7 +4,7 @@
  */
 #include "system.h"
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE_* */
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>

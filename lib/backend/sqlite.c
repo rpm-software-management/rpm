@@ -28,7 +28,7 @@
 
 #include <sqlite3.h>
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>	/* rpmioMkpath */

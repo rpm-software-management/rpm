@@ -4,7 +4,7 @@
 
 #include "system.h"
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmGetFilesystem*() */
 #include <rpm/rpmmacro.h>	/* XXX for %_i18ndomains */
 #include <rpm/rpmfi.h>

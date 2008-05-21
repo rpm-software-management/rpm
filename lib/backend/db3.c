@@ -10,7 +10,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 #include <sys/ipc.h>
 #endif
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>	/* rpmioMkPath */
 #include <rpm/rpmlog.h>

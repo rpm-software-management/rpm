@@ -3,7 +3,7 @@
  */
 #include "system.h"
 
-#include <rpm/rpmtag.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
 #include <rpm/rpmte.h>		/* XXX rpmElementType */
 #include <rpm/rpmts.h>
