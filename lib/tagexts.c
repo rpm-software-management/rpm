@@ -22,26 +22,18 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[];
 
 void *rpmHeaderTagFunc(rpmTag tag);
 
-static void rpmfiBuildFDeps(Header h, rpmTag tagN,
-	const char *** fdepsp, rpm_count_t * fcp)
+static int filedepTag(Header h, rpmTag tagN, rpmtd td)
 {
     int scareMem = 0;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     rpmds ds = NULL;
-    const char ** av;
-    int ac;
-    size_t nb;
-    char * t;
+    char **fdeps = NULL;
+    int numfiles;
     char deptype = 'R';
-    char mydt;
-    const char * DNEVR;
-    const uint32_t * ddict;
-    unsigned ix;
-    int ndx;
+    int fileix;
 
-    if ((ac = rpmfiFC(fi)) <= 0) {
-	av = NULL;
-	ac = 0;
+    numfiles = rpmfiFC(fi);
+    if (numfiles <= 0) {
 	goto exit;
     }
 
@@ -51,70 +43,41 @@ static void rpmfiBuildFDeps(Header h, rpmTag tagN,
 	deptype = 'R';
 
     ds = rpmdsNew(h, tagN, scareMem);
+    fdeps = xmalloc(numfiles * sizeof(*fdeps));
 
-    /* Compute size of file depends argv array blob. */
-    nb = (ac + 1) * sizeof(*av);
-    fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
-    while (rpmfiNext(fi) >= 0) {
-	ddict = NULL;
-	ndx = rpmfiFDepends(fi, &ddict);
-	if (ddict != NULL)
-	while (ndx-- > 0) {
-	    ix = *ddict++;
-	    mydt = ((ix >> 24) & 0xff);
-	    if (mydt != deptype)
-		continue;
-	    ix &= 0x00ffffff;
-	    (void) rpmdsSetIx(ds, ix-1);
-	    if (rpmdsNext(ds) < 0)
-		continue;
-	    DNEVR = rpmdsDNEVR(ds);
-	    if (DNEVR != NULL)
-		nb += strlen(DNEVR+2) + 1;
-	}
-	nb += 1;
-    }
-
-    /* Create and load file depends argv array. */
-    av = xmalloc(nb);
-    t = ((char *) av) + ((ac + 1) * sizeof(*av));
-    ac = 0;
-    fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
-    while (rpmfiNext(fi) >= 0) {
-	av[ac++] = t;
-	ddict = NULL;
-	ndx = rpmfiFDepends(fi, &ddict);
-	if (ddict != NULL)
-	while (ndx-- > 0) {
-	    ix = *ddict++;
-	    mydt = ((ix >> 24) & 0xff);
-	    if (mydt != deptype)
-		continue;
-	    ix &= 0x00ffffff;
-	    (void) rpmdsSetIx(ds, ix-1);
-	    if (rpmdsNext(ds) < 0)
-		continue;
-	    DNEVR = rpmdsDNEVR(ds);
-	    if (DNEVR != NULL) {
-		t = stpcpy(t, DNEVR+2);
-		*t++ = ' ';
-		*t = '\0';
+    while ((fileix = rpmfiNext(fi)) >= 0) {
+	ARGV_t deps = NULL;
+	const uint32_t * ddict = NULL;
+	int ndx = rpmfiFDepends(fi, &ddict);
+	if (ddict != NULL) {
+	    while (ndx-- > 0) {
+		const char * DNEVR;
+		unsigned dix = *ddict++;
+		char mydt = ((dix >> 24) & 0xff);
+		if (mydt != deptype)
+		    continue;
+		dix &= 0x00ffffff;
+		(void) rpmdsSetIx(ds, dix-1);
+		if (rpmdsNext(ds) < 0)
+		    continue;
+		DNEVR = rpmdsDNEVR(ds);
+		if (DNEVR != NULL) {
+		    argvAdd(&deps, DNEVR);
+		}
 	    }
 	}
-	*t++ = '\0';
+	fdeps[fileix] = deps ? argvJoin(deps, " ") : xstrdup("");
+	argvFree(deps);
     }
-    av[ac] = NULL;	/* XXX tag arrays are not NULL terminated. */
+    td->data = fdeps;
+    td->count = numfiles;
+    td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
 
 exit:
+    td->type = RPM_STRING_ARRAY_TYPE;
     fi = rpmfiFree(fi);
     ds = rpmdsFree(ds);
-    if (fdepsp)
-	*fdepsp = av;
-    else
-	av = _free(av);
-    if (fcp) *fcp = ac;
+    return 0;
 }
 
 /**
@@ -387,11 +350,7 @@ exit:
  */
 static int fileprovideTag(Header h, rpmtd td)
 {
-    td->type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, 
-		    (const char ***) &(td->data), &(td->count));
-    td->flags = RPMTD_ALLOCED;
-    return 0; 
+    return filedepTag(h, RPMTAG_PROVIDENAME, td);
 }
 
 /**
@@ -402,11 +361,7 @@ static int fileprovideTag(Header h, rpmtd td)
  */
 static int filerequireTag(Header h, rpmtd td)
 {
-    td->type = RPM_STRING_ARRAY_TYPE;
-    rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, 
-		    (const char ***) &(td->data), &(td->count));
-    td->flags = RPMTD_ALLOCED;
-    return 0; 
+    return filedepTag(h, RPMTAG_REQUIRENAME, td);
 }
 
 /* I18N look aside diversions */
