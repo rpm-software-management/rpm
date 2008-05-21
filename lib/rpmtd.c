@@ -39,7 +39,14 @@ void rpmtdFreeData(rpmtd td)
 {
     assert(td != NULL);
 
-    if (td->freeData) {
+    if (td->flags & RPMTD_ALLOCED) {
+	assert(td->data != NULL);
+	if (td->flags & RPMTD_PTR_ALLOCED) {
+	    char **data = td->data;
+	    for (int i = 0; i < td->count; i++) {
+		free(data[i]);
+	    }
+	}
 	free(td->data);
     }
     rpmtdReset(td);

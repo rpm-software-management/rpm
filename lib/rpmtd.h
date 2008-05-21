@@ -4,6 +4,13 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
 
+typedef enum rpmtdFlags_e {
+    RPMTD_NONE		= 0,
+    RPMTD_ALLOCED	= (1 << 0),	/* was memory allocated? */
+    RPMTD_PTR_ALLOCED	= (1 << 1),	/* were array pointers allocated? */
+    RPMTD_IMMUTABLE	= (1 << 2),	/* header data or modifiable? */
+} rpmtdFlags;
+
 /** \ingroup rpmtd
  * Container for rpm tag data (from headers or extensions).
  * @todo		Make this opaque (at least outside rpm itself)
@@ -13,7 +20,7 @@ struct rpmtd_s {
     rpmTagType type;	/* data type */
     rpm_count_t count;	/* number of entries */
     rpm_data_t data;	/* pointer to actual data */
-    int freeData;	/* was data malloced */
+    rpmtdFlags flags;	/* flags on memory allocation etc */
     int ix;		/* iteration index */
 };
 

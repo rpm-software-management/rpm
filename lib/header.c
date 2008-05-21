@@ -1208,7 +1208,11 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, int minMem)
     }
     td->type = entry->info.type;
     td->count = count;
-    td->freeData = (entry->data == td->data) ? 0 : 1;
+
+    td->flags = RPMTD_IMMUTABLE;
+    if (entry->data != td->data) {
+	td->flags |= RPMTD_ALLOCED;
+    }
 
     return rc;
 }

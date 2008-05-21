@@ -614,7 +614,6 @@ static int fsnamesTag(Header h, rpmtd td)
 
     td->type = RPM_STRING_ARRAY_TYPE;
     td->data = list;
-    td->freeData = 0;
 
     return 0; 
 }
@@ -636,7 +635,7 @@ static int instprefixTag(Header h, rpmtd td)
 	/* only return the first prefix of the array */
 	td->type = RPM_STRING_TYPE;
 	td->data = xstrdup(rpmtdGetString(&prefixes));
-	td->freeData = 1;
+	td->flags = RPMTD_ALLOCED;
 	rpmtdFreeData(&prefixes);
 	return 0;
     }
@@ -670,7 +669,7 @@ static int fssizesTag(Header h, rpmtd td)
 	return 1;
 
     td->type = RPM_INT32_TYPE;
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED;
 
     if (filenames == NULL) {
 	usages = xcalloc((td->count), sizeof(usages));
@@ -714,7 +713,6 @@ static int triggercondsTag(Header h, rpmtd td)
     char buf[5];
 
     if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (rpm_data_t *) &names, &numNames)) {
-	td->freeData = 0;
 	return 0;
     }
 
@@ -724,7 +722,7 @@ static int triggercondsTag(Header h, rpmtd td)
     xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (rpm_data_t *) &s, &numScripts);
     s = hfd(s, tst);
 
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED;
     td->data = conds = xmalloc(sizeof(*conds) * numScripts);
     td->count = numScripts;
     td->type = RPM_STRING_ARRAY_TYPE;
@@ -782,7 +780,6 @@ static int triggertypeTag(Header h, rpmtd td)
     rpm_flag_t * flags;
 
     if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (rpm_data_t *) &indices, &numNames)) {
-	td->freeData = 0;
 	return 1;
     }
 
@@ -790,7 +787,7 @@ static int triggertypeTag(Header h, rpmtd td)
     xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (rpm_data_t *) &s, &numScripts);
     s = hfd(s, tst);
 
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
     td->data = conds = xmalloc(sizeof(*conds) * numScripts);
     td->count = numScripts;
     td->type = RPM_STRING_ARRAY_TYPE;
@@ -827,7 +824,7 @@ static int filenamesTag(Header h, rpmtd td)
     td->type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, 
 		     (const char ***) &(td->data), &(td->count));
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED;
     return 0; 
 }
 
@@ -841,7 +838,7 @@ static int fileclassTag(Header h, rpmtd td)
 {
     td->type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFClasses(h, (const char ***) &(td->data), &(td->count));
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED;
     return 0; 
 }
 
@@ -856,7 +853,7 @@ static int fileprovideTag(Header h, rpmtd td)
     td->type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFDeps(h, RPMTAG_PROVIDENAME, 
 		    (const char ***) &(td->data), &(td->count));
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED;
     return 0; 
 }
 
@@ -871,7 +868,7 @@ static int filerequireTag(Header h, rpmtd td)
     td->type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFDeps(h, RPMTAG_REQUIRENAME, 
 		    (const char ***) &(td->data), &(td->count));
-    td->freeData = 1;
+    td->flags = RPMTD_ALLOCED;
     return 0; 
 }
 
@@ -899,7 +896,6 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td)
     td->type = RPM_STRING_TYPE;
     td->data = NULL;
     td->count = 0;
-    td->freeData = 0;
 
     if (dstring && *dstring) {
 	char *domain, *de;
@@ -940,7 +936,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td)
 	    td->data = dgettext(domain, msgid);
 	    td->data = xstrdup(td->data); /* XXX xstrdup has side effects. */
 	    td->count = 1;
-	    td->freeData = 1;
+	    td->flags = RPMTD_ALLOCED;
 	}
 	dstring = _free(dstring);
 	free(msgkey);
