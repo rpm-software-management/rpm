@@ -8,6 +8,26 @@
 #include <rpm/rpmstring.h>
 #include "debug.h"
 
+/** \ingroup header
+ * Associate tag names with numeric values.
+ */
+typedef const struct headerTagTableEntry_s * headerTagTableEntry;
+struct headerTagTableEntry_s {
+    const char * name;		/*!< Tag name. */
+    const char * shortname;	/*!< "Human readable" short name. */
+    rpmTag val;			/*!< Tag numeric value. */
+    rpmTagType type;		/*!< Tag type. */
+    int extension;		/*!< Extension or "real" tag */
+};
+
+#include "tagtbl.c"
+
+static const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) - 1;
+
+/**
+ */
+typedef struct headerTagIndices_s * headerTagIndices;
+
 struct headerTagIndices_s {
     int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
                 int (*cmp) (const void * avp, const void * bvp));
@@ -93,7 +113,7 @@ static struct headerTagIndices_s _rpmTags = {
     NULL, 0, tagCmpValue, _tagName, _tagType,
 };
 
-headerTagIndices const rpmTags = &_rpmTags;
+static headerTagIndices const rpmTags = &_rpmTags;
 
 static const char * _tagName(rpmTag tag)
 {

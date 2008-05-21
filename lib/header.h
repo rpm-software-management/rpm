@@ -22,36 +22,6 @@ extern "C" {
 #endif
 
 /** \ingroup header
- * Associate tag names with numeric values.
- */
-typedef const struct headerTagTableEntry_s * headerTagTableEntry;
-struct headerTagTableEntry_s {
-    const char * name;		/*!< Tag name. */
-    const char * shortname;	/*!< "Human readable" short name. */
-    rpmTag val;			/*!< Tag numeric value. */
-    rpmTagType type;		/*!< Tag type. */
-    int extension;		/*!< Extension or "real" tag */
-};
-
-/**
- */
-typedef struct headerTagIndices_s * headerTagIndices;
-
-/** \ingroup rpmtag
- * Automatically generated table of tag name/value pairs.
- */
-extern const struct headerTagTableEntry_s * const rpmTagTable;
-
-/** \ingroup rpmtag
- * Number of entries in rpmTagTable.
- */
-extern const int rpmTagTableSize;
-
-/** \ingroup rpmtag
- */
-extern headerTagIndices const rpmTags;
-
-/** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?
  */
 enum hMagic {

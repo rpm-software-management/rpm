@@ -1,12 +1,7 @@
 #!/bin/sh
 
 cat << EOF
-#include "system.h"
-#include <rpm/header.h>
-#include <rpm/rpmtag.h>
-#include "debug.h"
-
-static const struct headerTagTableEntry_s rpmTagTbl[] = {
+static const struct headerTagTableEntry_s rpmTagTable[] = {
 EOF
 
 ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {
@@ -81,8 +76,5 @@ ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ {
 cat << EOF
     { NULL, NULL, 0, 0, 0 }
 };
-
-const struct headerTagTableEntry_s * const rpmTagTable = rpmTagTbl;
-const int rpmTagTableSize = sizeof(rpmTagTbl) / sizeof(rpmTagTbl[0]) - 1;
 EOF
 
