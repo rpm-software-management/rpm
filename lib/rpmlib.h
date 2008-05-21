@@ -191,7 +191,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 			char ** cookie);
 
 /** \ingroup rpmtrans
- * Segmented string compare for version and/or release.
+ * Segmented string compare for version or release strings.
  *
  * @param a		1st string
  * @param b		2nd string
