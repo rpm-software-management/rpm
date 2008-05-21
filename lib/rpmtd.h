@@ -179,4 +179,14 @@ int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv);
  */
 int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi);
 
+/* \ingroup rpmtd
+ * Perform deep copy of container.
+ * Create a modifiable copy of tag data container (on string arrays each
+ * string is separately allocated)
+ * @todo		Only string arrays types are supported currently
+ * @param td		Container to copy
+ * @return		New container or NULL on error
+ */
+rpmtd rpmtdDup(rpmtd td);
+
 #endif /* _RPMTD_H */

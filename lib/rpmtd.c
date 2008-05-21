@@ -205,3 +205,29 @@ int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi)
     td->data = argiData(argi);
     return 1;
 }
+
+rpmtd rpmtdDup(rpmtd td)
+{
+    rpmtd newtd = NULL;
+    char **data = NULL;
+    int i;
+    
+    assert(td != NULL);
+    /* TODO: permit other types too */
+    if (td->type != RPM_STRING_ARRAY_TYPE && td->type != RPM_I18NSTRING_TYPE) {
+	return NULL;
+    }
+
+    /* deep-copy container and data, drop immutable flag */
+    newtd = rpmtdNew();
+    memcpy(newtd, td, sizeof(*td));
+    newtd->flags &= ~(RPMTD_IMMUTABLE);
+
+    newtd->flags |= (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED);
+    newtd->data = data = xmalloc(td->count * sizeof(*data));
+    while ((i = rpmtdNext(td)) >= 0) {
+	data[i] = xstrdup(rpmtdGetString(td));
+    }
+
+    return newtd;
+}
