@@ -696,68 +696,68 @@ static int fssizesTag(Header h, rpmtd td)
  */
 static int triggercondsTag(Header h, rpmtd td)
 {
-    /* XXX out of service  for now.. */
-#if 0
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType tnt, tvt, tst;
-    int32_t * indices;
-    char ** names, ** versions;
-    rpm_count_t numNames, numScripts;
-    rpm_count_t i, j;
+    uint32_t * indices;
+    int i, j;
     rpm_flag_t * flags;
-    char ** conds, ** s;
-    char * item, * flagsStr;
-    char * chptr;
-    int xx;
-    char buf[5];
+    char ** conds;
+    struct rpmtd_s nametd, indextd, flagtd, versiontd, scripttd;
+    int hgeflags = HEADERGET_MINMEM;
 
-    if (!hge(h, RPMTAG_TRIGGERNAME, &tnt, (rpm_data_t *) &names, &numNames)) {
+    td->type = RPM_STRING_ARRAY_TYPE;
+    if (!headerGet(h, RPMTAG_TRIGGERNAME, &nametd, hgeflags)) {
 	return 0;
     }
 
-    xx = hge(h, RPMTAG_TRIGGERINDEX, NULL, (rpm_data_t *) &indices, NULL);
-    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (rpm_data_t *) &flags, NULL);
-    xx = hge(h, RPMTAG_TRIGGERVERSION, &tvt, (rpm_data_t *) &versions, NULL);
-    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (rpm_data_t *) &s, &numScripts);
-    s = hfd(s, tst);
+    headerGet(h, RPMTAG_TRIGGERINDEX, &indextd, hgeflags);
+    headerGet(h, RPMTAG_TRIGGERFLAGS, &flagtd, hgeflags);
+    headerGet(h, RPMTAG_TRIGGERVERSION, &versiontd, hgeflags);
+    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &scripttd, hgeflags);
 
-    td->flags = RPMTD_ALLOCED;
-    td->data = conds = xmalloc(sizeof(*conds) * numScripts);
-    td->count = numScripts;
-    td->type = RPM_STRING_ARRAY_TYPE;
-    for (i = 0; i < numScripts; i++) {
-	chptr = xstrdup("");
+    td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
+    td->data = conds = xmalloc(sizeof(*conds) * rpmtdCount(&scripttd));
+    td->count = rpmtdCount(&scripttd);
 
-	for (j = 0; j < numNames; j++) {
+    indices = indextd.data;
+    flags = flagtd.data;
+
+    while ((i = rpmtdNext(&scripttd)) >= 0) {
+	rpm_flag_t *flag;
+	char *flagStr, *item;
+	ARGV_t items = NULL;
+
+	rpmtdInit(&nametd); rpmtdInit(&flagtd);
+	while ((j = rpmtdNext(&nametd)) >= 0) {
+	    /* flag and version arrays match name array size always */
+	    rpmtdNext(&flagtd); rpmtdNext(&versiontd);
+
 	    if (indices[j] != i)
 		continue;
 
-	    item = xmalloc(strlen(names[j]) + strlen(versions[j]) + 20);
-	    if (flags[j] & RPMSENSE_SENSEMASK) {
-		buf[0] = '%', buf[1] = '\0';
-		flagsStr = depflagsFormat(RPM_INT32_TYPE, flags, buf, 0, 0);
-		sprintf(item, "%s %s %s", names[j], flagsStr, versions[j]);
-		flagsStr = _free(flagsStr);
+	    flag = rpmtdGetUint32(&flagtd);
+	    if (*flag & RPMSENSE_SENSEMASK) {
+		flagStr = rpmtdFormat(&flagtd, RPMTD_FORMAT_DEPFLAGS, NULL);
+		rasprintf(&item, "%s %s %s", rpmtdGetString(&nametd),
+					     flagStr,
+					     rpmtdGetString(&versiontd));
+		free(flagStr);
 	    } else {
-		strcpy(item, names[j]);
+		item = xstrdup(rpmtdGetString(&nametd));
 	    }
 
-	    chptr = xrealloc(chptr, strlen(chptr) + strlen(item) + 5);
-	    if (*chptr != '\0') strcat(chptr, ", ");
-	    strcat(chptr, item);
-	    item = _free(item);
+	    argvAdd(&items, item);
+	    free(item);
 	}
 
-	conds[i] = chptr;
+	conds[i] = argvJoin(items, ", ");
+	argvFree(items);
     }
 
-    names = hfd(names, tnt);
-    versions = hfd(versions, tvt);
-
+    rpmtdFreeData(&nametd);
+    rpmtdFreeData(&versiontd);
+    rpmtdFreeData(&flagtd);
+    rpmtdFreeData(&indextd);
+    rpmtdFreeData(&scripttd);
     return 0;
-#endif
-    return 1;
 }
 
 /**
