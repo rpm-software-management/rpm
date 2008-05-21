@@ -104,12 +104,11 @@ char * headerGetEVR(Header h, const char ** np)
 
 rpm_color_t headerGetColor(Header h)
 {
-    rpm_color_t hcolor = 0;
+    rpm_color_t hcolor = 0, *fcolor;
     struct rpmtd_s fcolors;
 
     headerGet(h, RPMTAG_FILECOLORS, &fcolors, HEADERGET_MINMEM);
-    while (rpmtdNext(&fcolors) >= 0) {
-	rpm_color_t *fcolor = rpmtdGetUint32(&fcolors);
+    while ((fcolor = rpmtdNextUint32(&fcolors)) != NULL) {
 	hcolor |= *fcolor;
     }
     hcolor &= 0x0f;
