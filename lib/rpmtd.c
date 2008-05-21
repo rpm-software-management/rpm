@@ -40,8 +40,8 @@ void rpmtdFreeData(rpmtd td)
     assert(td != NULL);
 
     if (td->flags & RPMTD_ALLOCED) {
-	assert(td->data != NULL);
 	if (td->flags & RPMTD_PTR_ALLOCED) {
+	    assert(td->data != NULL);
 	    char **data = td->data;
 	    for (int i = 0; i < td->count; i++) {
 		free(data[i]);
