@@ -269,21 +269,11 @@ const char * rpmTagGetName(rpmTag tag)
     return ((*rpmTags->tagName)(tag));
 }
 
-/**
- * Return tag data type from value.
- * @param tag           tag value
- * @return              tag data type, RPM_NULL_TYPE on not found.
- */
 rpmTagType rpmTagGetType(rpmTag tag)
 {
     return ((*rpmTags->tagType)(tag));
 }
 
-/**
- * Return tag value from name.
- * @param tagstr        name of tag
- * @return              tag value, RPMTAG_NOT_FOUND on not found
- */
 rpmTag rpmTagGetValue(const char * tagstr)
 {
     return ((*rpmTags->tagValue)(tagstr));
