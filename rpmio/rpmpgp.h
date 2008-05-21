@@ -12,6 +12,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <rpm/rpmints.h>
 #include <rpm/rpmstring.h>
 
