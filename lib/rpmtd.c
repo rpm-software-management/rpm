@@ -96,6 +96,26 @@ int rpmtdNext(rpmtd td)
     return i;
 }
 
+uint32_t *rpmtdNextUint32(rpmtd td)
+{
+    assert(td != NULL);
+    uint32_t *res = NULL;
+    if (rpmtdNext(td) >= 0) {
+	res = rpmtdGetUint32(td);
+    }
+    return res;
+}
+
+const char *rpmtdNextString(rpmtd td)
+{
+    assert(td != NULL);
+    const char *res = NULL;
+    if (rpmtdNext(td) >= 0) {
+	res = rpmtdGetString(td);
+    }
+    return res;
+}
+
 char * rpmtdGetChar(rpmtd td)
 {
     char *res = NULL;

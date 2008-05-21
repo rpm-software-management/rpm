@@ -87,6 +87,20 @@ int rpmtdInit(rpmtd td);
 int rpmtdNext(rpmtd td);
 
 /** \ingroup rpmtd
+ * Iterate over uint32_t type tag data container.
+ * @param td		Tag data container
+ * @return		Pointer to next value, NULL on termination or error
+ */
+uint32_t *rpmtdNextUint32(rpmtd td);
+
+/** \ingroup rpmtd
+ * Iterate over string / string array type tag data container.
+ * @param td		Tag data container
+ * @return		Pointer to next value, NULL on termination or error
+ */
+const char *rpmtdNextString(rpmtd td);
+
+/** \ingroup rpmtd
  * Return char data from tag container.
  * For scalar return type, just return pointer to the integer. On array
  * types, return pointer to current iteration index. If the tag container
