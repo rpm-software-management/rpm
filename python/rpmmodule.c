@@ -318,14 +318,15 @@ void init_rpm(void)
 #endif
 
     dict = PyDict_New();
-    {	const char *tname;
+    {	const char *tname, *sname;
 	rpmtd names = rpmTagGetNames(1);
 
 	while ((tname = rpmtdNextString(names))) {
-	    tag = PyInt_FromLong(rpmTagGetValue(tname));
+	    sname = tname + strlen("RPMTAG_");
+	    tag = PyInt_FromLong(rpmTagGetValue(sname));
 	    PyDict_SetItemString(d, tname, tag);
 	    Py_DECREF(tag);
-	    o = PyString_FromString(tname + strlen("RPMTAG_"));
+	    o = PyString_FromString(sname);
 	    PyDict_SetItem(dict, tag, o);
 	    Py_DECREF(o);
 	}
