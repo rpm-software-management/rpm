@@ -260,7 +260,6 @@ int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
 
 /** \ingroup header
  * Add or append element to tag array in header.
- * @todo Arg "p" should have const.
  * @param h		header
  * @param tag		tag
  * @param type		tag value data type

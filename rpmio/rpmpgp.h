@@ -1038,7 +1038,6 @@ char * pgpHexStr(const uint8_t *p, size_t plen);
 
 /** \ingroup rpmpgp
  * Return hex formatted representation of a multiprecision integer.
- * @todo Remove static buffer. 
  * @param p		bytes
  * @return		hex formatted string (malloc'ed)
  */

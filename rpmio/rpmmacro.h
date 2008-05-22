@@ -89,7 +89,7 @@ void	delMacro	(rpmMacroContext mc, const char * n);
  * @param mc		macro context (NULL uses global context).
  * @param macro		macro name, options, body
  * @param level		macro recursion level (0 is entry API)
- * @return		@todo Document.
+ * @return		0 on success (always)
  */
 int	rpmDefineMacro	(rpmMacroContext mc, const char * macro,
 				int level);
