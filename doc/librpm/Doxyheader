@@ -36,7 +36,9 @@
  */
 /** \defgroup	header	Header API.
  */
-/** \defgroup	rpmtag	Header Tag API.
+/** \defgroup	rpmtag	RPM Tag API.
+ */
+/** \defgroup	rpmtd	RPM Tag Data Container API.
  */
 /** \defgroup	rpmdb	Database API.
  */
