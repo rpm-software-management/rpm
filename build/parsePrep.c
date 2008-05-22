@@ -116,7 +116,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     
     rasprintf(&buf, "echo \"Patch #%d (%s):\"\n"
 		    "%s\n", 
-		    strip, basename(fn), patchcmd);
+		    c, basename(fn), patchcmd);
 		
     free(fn);
     free(patchcmd);
