@@ -63,6 +63,7 @@ lib/merge.c
 lib/poptDB.c
 lib/rpmdb.c
 lib/rpmhash.c
+lib/tagexts.c
 lib/tagname.c
 lib/backend/db3.c
 lib/backend/dbconfig.c
