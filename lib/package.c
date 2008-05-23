@@ -731,21 +731,19 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
-    {	void * uh = NULL;
-	rpmTagType uht;
-	rpm_count_t uhc;
+    {	struct rpmtd_s utd;
 
-	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
+	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
-	dig->nbytes += uhc;
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, utd.data, utd.count);
+	dig->nbytes += utd.count;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
-	uh = headerFreeData(uh, uht);
+	rpmtdFreeData(&utd);
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
@@ -758,22 +756,20 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    goto exit;
 	}
     case RPMSIGTAG_SHA1:
-    {	void * uh = NULL;
-	rpmTagType uht;
-	rpm_count_t uhc;
+    {	struct rpmtd_s utd;
 
-	if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc))
+	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
 	dig->nbytes += sizeof(header_magic);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
-	dig->nbytes += uhc;
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, utd.data, utd.count);
+	dig->nbytes += utd.count;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 	if (sigtag == RPMSIGTAG_SHA1)
 	    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
-	uh = headerFreeData(uh, uht);
+	rpmtdFreeData(&utd);
     }	break;
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
