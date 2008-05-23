@@ -1290,14 +1290,14 @@ verifyDSASignature(rpmts ts, char ** msg,
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
 	if (sigp->version == 4) {
-	    size_t nb = sigp->hashlen;
-	    uint8_t *trailer = xmalloc(2+sizeof(nb));
+	    /* V4 trailer is six octets long (rfc4880) */
+	    uint8_t trailer[6];
+	    uint32_t nb = sigp->hashlen;
 	    nb = htonl(nb);
 	    trailer[0] = sigp->version;
 	    trailer[1] = 0xff;
-	    memcpy(trailer+2, &nb, sizeof(nb));
+	    memcpy(trailer+2, &nb, 4);
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
-	    free(trailer);
 	}
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
