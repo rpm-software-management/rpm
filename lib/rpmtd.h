@@ -73,6 +73,23 @@ rpmTag rpmtdTag(rpmtd td);
 rpmTagType rpmtdType(rpmtd td);
 
 /** \ingroup rpmtd
+ * Retrieve current iteration index of the container.
+ * @param td		Tag data container
+ * @return		Iteration index (or -1 if not iterating)
+ */
+int rpmtdGetIndex(rpmtd td);
+
+/** \ingroup rpmtd
+ * Set iteration index of the container.
+ * If new index is out of bounds for the container, -1 is returned and
+ * iteration index is left untouched. 
+ * @param td		Tag data container
+ * @param index		New index
+ * @return		New index, or -1 if index out of bounds
+ */
+int rpmtdSetIndex(rpmtd td, int index);
+
+/** \ingroup rpmtd
  * Initialize tag container for iteration
  * @param td		Tag data container
  * @return		0 on success

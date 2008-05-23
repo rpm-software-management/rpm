@@ -71,6 +71,23 @@ rpmTagType rpmtdType(rpmtd td)
     return td->type;
 }
 
+int rpmtdGetIndex(rpmtd td)
+{
+    assert(td != NULL);
+    return td->ix;
+}
+
+int rpmtdSetIndex(rpmtd td, int index)
+{
+    assert(td != NULL);
+
+    if (index < 0 || index >= rpmtdCount(td)) {
+	return -1;
+    }
+    td->ix = index;
+    return td->ix;
+}
+
 int rpmtdInit(rpmtd td)
 {
     assert(td != NULL);
