@@ -591,9 +591,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmlead l = NULL;
     Header sigh = NULL;
     rpmSigTag sigtag;
-    rpmTagType sigtype;
-    rpm_data_t sig;
-    rpm_count_t siglen;
+    struct rpmtd_s sigtd;
     rpmtsOpX opx;
     size_t nb;
     Header h = NULL;
@@ -601,6 +599,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
+    headerGetFlags hgeflags = HEADERGET_DEFAULT;
 
     if (hdrp) *hdrp = NULL;
 
@@ -715,18 +714,16 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
-    sig = NULL;
-    xx = headerGetEntry(sigh, sigtag, &sigtype, &sig, &siglen);
-    if (sig == NULL) {
+    if (!headerGet(sigh, sigtag, &sigtd, hgeflags)) {
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
+    (void) rpmtsSetSig(ts, sigtag, sigtd.type, sigtd.data, sigtd.count);
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
@@ -752,7 +749,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     }	break;
     case RPMSIGTAG_DSA:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"), 
@@ -782,7 +779,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, siglen, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
 
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
