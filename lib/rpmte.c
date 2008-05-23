@@ -79,7 +79,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 {
     int scareMem = 0;
     rpmte savep;
-    const char *name, *version, *release, *arch;
+    const char *name, *version, *release, *arch, *os;
     struct rpmtd_s td;
 
     name = version = release = arch = NULL;
@@ -97,7 +97,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->archScore = arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch) : 0;
 
     headerGet(h, RPMTAG_OS, &td, HEADERGET_MINMEM);
-    p->os = xstrdup(rpmtdGetString(&td));
+    os = rpmtdGetString(&td);
+    p->os = os ? xstrdup(os) : NULL;
     p->osScore = p->os ? rpmMachineScore(RPM_MACHTABLE_INSTOS, p->os) : 0;
 
     p->isSource = headerIsSource(h);
