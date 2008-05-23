@@ -111,22 +111,20 @@ exit:
  */
 static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
 {
-    rpm_data_t pkt = NULL;
-    rpmTagType pkttyp = 0;
-    rpm_count_t pktlen = 0;
+    struct rpmtd_s pkt;
     int rc = 1;
 
-    if (headerGetEntry(sig, sigtag, &pkttyp, &pkt, &pktlen) && pkt != NULL) {
+    if (headerGet(sig, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
 	pgpDig dig = pgpNewDig();
 
-	if (!pgpPrtPkts(pkt, pktlen, dig, 0)) {
+	if (!pgpPrtPkts(pkt.data, pkt.count, dig, 0)) {
 	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
 	    rc = 0;
 	}
      
 	dig = pgpFreeDig(dig);
+	rpmtdFreeData(&pkt);
     }
-    pkt = headerFreeData(pkt, pkttyp);
     return rc;
 }
 
