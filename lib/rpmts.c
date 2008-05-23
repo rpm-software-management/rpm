@@ -300,18 +300,20 @@ fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, p
 	/* Retrieve the pubkey that matches the signature. */
 	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    const char ** pubkeys;
-	    rpmTagType pt;
-	    rpm_count_t pc;
+	    struct rpmtd_s pubkeys;
 
-	    if (!headerGetEntry(h, RPMTAG_PUBKEYS, &pt, (rpm_data_t *)&pubkeys, &pc))
+	    if (!headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
 		continue;
 	    hx = rpmdbGetIteratorOffset(mi);
-	    ix = rpmdbGetIteratorFileNum(mi);
-	    if (ix >= pc
-	     || b64decode(pubkeys[ix], (void **) &ts->pkpkt, &ts->pkpktlen))
-		ix = -1;
-	    pubkeys = headerFreeData(pubkeys, pt);
+	    ix = rpmtdSetIndex(&pubkeys, rpmdbGetIteratorFileNum(mi));
+
+	    if (ix >= 0) {
+		const char *key = rpmtdGetString(&pubkeys);
+	    	if (b64decode(key, (void **) &ts->pkpkt, &ts->pkpktlen)) {
+		    ix = -1;
+		}
+	    }
+	    rpmtdFreeData(&pubkeys);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
