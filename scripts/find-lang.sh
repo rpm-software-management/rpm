@@ -121,6 +121,7 @@ s:%lang(C) ::
 find $TOP_DIR -type d|sed '
 s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/omf/'"$NAME"'$\):%dir \1:
+'"$ALL_NAME$GNOME"'s:\(.*/omf/[a-zA-Z0-9.\_\-]\+$\):%dir \1:
 s:^\([^%].*\)::
 /^$/d' >> $MO_NAME
 
