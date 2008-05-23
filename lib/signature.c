@@ -662,12 +662,10 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    DIGEST_CTX ctx;
-	    void * uh;
-	    rpmTagType uht;
-	    rpm_count_t uhc;
+	    struct rpmtd_s utd;
 	
-	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
-	     ||  uh == NULL)
+	    if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)
+	     	||  utd.data == NULL)
 	    {
 		rpmlog(RPMLOG_ERR, 
 				_("Immutable header region could not be read. "
@@ -677,9 +675,9 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	    }
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(ctx, header_magic, sizeof(header_magic));
-	    (void) rpmDigestUpdate(ctx, uh, uhc);
+	    (void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
-	    uh = headerFreeData(uh, uht);
+	    rpmtdFreeData(&utd);
 	}
 	h = headerFree(h);
 
