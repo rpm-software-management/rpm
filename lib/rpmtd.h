@@ -172,6 +172,16 @@ typedef enum rpmtdFormats_e {
 char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg);
 
 /** \ingroup rpmtd
+ * Set container tag and type.
+ * For empty container, any valid tag can be set. If the container has
+ * data, changing is only permitted to tag of same type. 
+ * @param td		Tag data container
+ * @param tag		New tag
+ * @return		1 on success, 0 on error
+ */
+int rpmtdSetTag(rpmtd td, rpmTag tag);
+
+/** \ingroup rpmtd
  * Construct tag container from ARGV_t array.
  * Tag type is checked to be of string array type and array is checked
  * to be non-empty.

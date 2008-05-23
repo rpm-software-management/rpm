@@ -191,6 +191,34 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
     return str;
 }
 
+int rpmtdSetTag(rpmtd td, rpmTag tag)
+{
+    assert(td != NULL);
+    rpmTagType newtype = rpmTagGetType(tag);
+    int rc = 0;
+
+    /* 
+     * Sanity checks: 
+     * - is the new tag valid at all
+     * - if changing tag of non-empty container, require matching type 
+     */
+    if (newtype == RPM_NULL_TYPE)
+	goto exit;
+
+    if (td->data || td->count > 0) {
+	if (rpmTagGetType(td->tag) != rpmTagGetType(tag)) {
+	    goto exit;
+	}
+    } 
+
+    td->tag = tag;
+    td->type = newtype & RPM_MASK_TYPE;
+    rc = 1;
+    
+exit:
+    return rc;
+}
+
 int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
 {
     int count = argvCount(argv);
