@@ -871,11 +871,13 @@ exit:
  */
 rpmRC headerCheckPayloadFormat(Header h) {
     rpmRC rc = RPMRC_FAIL;
-    int xx;
     const char *payloadfmt = NULL;
+    struct rpmtd_s payload;
 
-    xx = headerGetEntry(h, RPMTAG_PAYLOADFORMAT, NULL, 
-			(rpm_data_t *)&payloadfmt, NULL);
+    if (headerGet(h, RPMTAG_PAYLOADFORMAT, &payload, HEADERGET_DEFAULT)) {
+	payloadfmt = rpmtdGetString(&payload);
+	rpmtdFreeData(&payload);
+    }
     /* 
      * XXX Ugh, rpm 3.x packages don't have payload format tag. Instead
      * of blinly allowing, should check somehow (HDRID existence or... ?)
