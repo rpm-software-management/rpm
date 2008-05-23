@@ -272,7 +272,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     {	size_t sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	ssize_t trc;
-	rpm_off_t * archSize = NULL;
+	struct rpmtd_s sizetag;
 
 	/* Position at beginning of header. */
 	if (pad && (trc = timedRead(fd, (void *)block, pad)) != pad) {
@@ -282,8 +282,10 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	}
 
 	/* Print package component sizes. */
-	if (headerGetEntry(sigh, RPMSIGTAG_SIZE, NULL,(rpm_data_t *)&archSize, NULL)) {
+	if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
+	    rpm_off_t * archSize = rpmtdGetUint32(&sizetag);
 	    rc = printSize(fd, sigSize, pad, *archSize);
+	    rpmtdFreeData(&sizetag);
 	    if (rc != RPMRC_OK) {
 		rasprintf(&buf,
 		       _("sigh sigSize(%zd): BAD, fstat(2) failed\n"), sigSize);
