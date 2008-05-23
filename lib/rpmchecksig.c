@@ -481,13 +481,9 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	dig->nbytes += headerSizeof(h, HEADER_MAGIC_YES);
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	    void * uh;
-	    rpmTagType uht;
-	    rpm_count_t uhc;
+	    struct rpmtd_s utd;
 	
-	    if (!headerGetEntry(h, RPMTAG_HEADERIMMUTABLE, &uht, &uh, &uhc)
-	    ||   uh == NULL)
-	    {
+	    if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)){
 		h = headerFree(h);
 		rpmlog(RPMLOG_ERR, 
 			_("%s: Immutable header region could not be read. "
@@ -496,11 +492,11 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	    }
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, uh, uhc);
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, utd.data, utd.count);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, uh, uhc);
-	    uh = headerFreeData(uh, uht);
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, utd.data, utd.count);
+	    rpmtdFreeData(&utd);
 	}
 	h = headerFree(h);
     }
