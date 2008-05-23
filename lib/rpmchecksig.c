@@ -145,9 +145,6 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     char *sigtarget = NULL, *trpm = NULL;
     Header sigh = NULL;
     char * msg;
-    void * uh = NULL;
-    rpmTagType uht;
-    rpm_count_t uhc;
     int res = -1; /* assume failure */
     int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     int xx;
@@ -156,6 +153,7 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     while ((rpm = *argv++) != NULL)
     {
     	rpmRC rc;
+	struct rpmtd_s utd;
 
 	fprintf(stdout, "%s:\n", rpm);
 
@@ -207,28 +205,26 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	/* ASSERT: fd == NULL && ofd == NULL */
 
 	/* Dump the immutable region (if present). */
-	if (headerGetEntry(sigh, RPMTAG_HEADERSIGNATURES, &uht, &uh, &uhc)) {
+	if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
 	    HeaderIterator hi;
-	    rpmTagType type;
-	    rpmTag tag;
-	    rpm_count_t count;
-	    rpm_data_t ptr;
+	    struct rpmtd_s copytd;
 	    Header oh;
 	    Header nh;
 
 	    nh = headerNew();
 	    if (nh == NULL) {
-		uh = headerFreeData(uh, uht);
+		rpmtdFreeData(&utd);
 		goto exit;
 	    }
 
-	    oh = headerCopyLoad(uh);
+	    oh = headerCopyLoad(utd.data);
+	    hi = headerInitIterator(oh);
 	    for (hi = headerInitIterator(oh);
-		headerNextIterator(hi, &tag, &type, &ptr, &count);
-		ptr = headerFreeData(ptr, type))
+		headerNext(hi, &copytd);
+		rpmtdFreeData(&copytd))
 	    {
-		if (ptr)
-		    xx = headerAddEntry(nh, tag, type, ptr, count);
+		if (copytd.data)
+		    xx = headerPut(nh, &copytd, HEADERPUT_DEFAULT);
 	    }
 	    hi = headerFreeIterator(hi);
 	    oh = headerFree(oh);
