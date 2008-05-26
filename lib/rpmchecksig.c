@@ -553,12 +553,10 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 {
     char *buf = NULL, *b;
     char * missingKeys, *untrustedKeys;
+    struct rpmtd_s sigtd;
     rpmTag sigtag;
-    rpmTagType sigtype;
-    rpm_data_t sig;
     pgpDig dig;
     pgpDigParams sigp;
-    rpm_count_t siglen;
     Header sigh = NULL;
     HeaderIterator hi;
     char * msg;
@@ -629,9 +627,9 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	/* XXX RSA needs the hash_algo, so decode early. */
 	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
-	    xx = headerGetEntry(sigh, sigtag, &sigtype, (rpm_data_t *)&sig, &siglen);
-	    xx = pgpPrtPkts(sig, siglen, dig, 0);
-	    sig = headerFreeData(sig, sigtype);
+	    xx = headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT);
+	    xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
+	    rpmtdFreeData(&sigtd);
 	    /* XXX assume same hash_algo in header-only and header+payload */
 	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
 	      || headerIsEntry(sigh, RPMSIGTAG_PGP5))
@@ -658,21 +656,21 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
 	for (hi = headerInitIterator(sigh);
-	    headerNextIterator(hi, &sigtag, &sigtype, &sig, &siglen) != 0;
-	    (void) rpmtsSetSig(ts, sigtag, sigtype, NULL, siglen))
+	    headerNext(hi, &sigtd) != 0;
+	    (void) rpmtsSetSig(ts, sigtd.tag, sigtd.type, NULL, sigtd.count))
 	{
     	    char *result = NULL;
 	    int havekey = 0;
 
-	    if (sig == NULL) /* XXX can't happen */
+	    if (sigtd.data == NULL) /* XXX can't happen */
 		continue;
 
-	    (void) rpmtsSetSig(ts, sigtag, sigtype, sig, siglen);
+	    (void) rpmtsSetSig(ts, sigtd.tag, sigtd.type, sigtd.data, sigtd.count);
 
 	    /* Clean up parameters from previous sigtag. */
 	    pgpCleanDig(dig);
 
-	    switch (sigtag) {
+	    switch (sigtd.tag) {
 	    case RPMSIGTAG_GPG:
 	    case RPMSIGTAG_PGP5:	/* XXX legacy */
 	    case RPMSIGTAG_PGP:
@@ -681,7 +679,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    case RPMSIGTAG_DSA:
 		if (nosignatures)
 		     continue;
-		xx = pgpPrtPkts(sig, siglen, dig,
+		xx = pgpPrtPkts(sigtd.data, sigtd.count, dig,
 			(_print_pkts & rpmIsDebug()));
 
 		if (sigp->version != 3 && sigp->version != 4) {
@@ -696,7 +694,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		if (nodigests)
 		     continue;
 		/* XXX Don't bother with header sha1 if header dsa. */
-		if (!nosignatures && sigtag == RPMSIGTAG_DSA)
+		if (!nosignatures && sigtd.tag == RPMSIGTAG_DSA)
 		    continue;
 		break;
 	    case RPMSIGTAG_LEMD5_2:
@@ -708,7 +706,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
 		 * than the -- now unsupported -- legacy md5 breakage.
 		 */
-		if (!nosignatures && sigtag == RPMSIGTAG_PGP)
+		if (!nosignatures && sigtd.tag == RPMSIGTAG_PGP)
 		    continue;
 		break;
 	    default:
@@ -733,7 +731,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    } else { 
 		const char *signame;
 		char ** keyprob = NULL;
- 		signame = sigtagname(sigtag, (sigres == RPMRC_OK ? 0 : 1));
+ 		signame = sigtagname(sigtd.tag, (sigres == RPMRC_OK ? 0 : 1));
 
 		/* 
  		 * Check for missing / untrusted keys in result. In theory
