@@ -66,32 +66,32 @@ struct rpmpsm_s {
 
 int rpmVersionCompare(Header first, Header second)
 {
-    const char * one, * two;
-    int32_t * epochOne, * epochTwo;
-    static int32_t zero = 0;
+    struct rpmtd_s one, two;
+    static uint32_t zero = 0;
+    uint32_t *epochOne = &zero, *epochTwo = &zero;
     int rc;
 
-    if (!headerGetEntry(first, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epochOne, NULL))
-	epochOne = &zero;
-    if (!headerGetEntry(second, RPMTAG_EPOCH, NULL, (rpm_data_t *) &epochTwo, NULL))
-	epochTwo = &zero;
+    if (headerGet(first, RPMTAG_EPOCH, &one, HEADERGET_MINMEM))
+	epochOne = rpmtdGetUint32(&one);
+    if (headerGet(second, RPMTAG_EPOCH, &two, HEADERGET_MINMEM))
+	epochTwo = rpmtdGetUint32(&two);
 
-	if (*epochOne < *epochTwo)
-	    return -1;
-	else if (*epochOne > *epochTwo)
-	    return 1;
+    if (*epochOne < *epochTwo)
+	return -1;
+    else if (*epochOne > *epochTwo)
+	return 1;
 
-    rc = headerGetEntry(first, RPMTAG_VERSION, NULL, (rpm_data_t *) &one, NULL);
-    rc = headerGetEntry(second, RPMTAG_VERSION, NULL, (rpm_data_t *) &two, NULL);
+    headerGet(first, RPMTAG_VERSION, &one, HEADERGET_MINMEM);
+    headerGet(second, RPMTAG_VERSION, &two, HEADERGET_MINMEM);
 
-    rc = rpmvercmp(one, two);
+    rc = rpmvercmp(rpmtdGetString(&one), rpmtdGetString(&two));
     if (rc)
 	return rc;
 
-    rc = headerGetEntry(first, RPMTAG_RELEASE, NULL, (rpm_data_t *) &one, NULL);
-    rc = headerGetEntry(second, RPMTAG_RELEASE, NULL, (rpm_data_t *) &two, NULL);
+    headerGet(first, RPMTAG_RELEASE, &one, HEADERGET_MINMEM);
+    headerGet(second, RPMTAG_RELEASE, &two, HEADERGET_MINMEM);
 
-    return rpmvercmp(one, two);
+    return rpmvercmp(rpmtdGetString(&one), rpmtdGetString(&two));
 }
 
 /**
