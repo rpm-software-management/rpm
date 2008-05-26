@@ -233,33 +233,3 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	}
     }
 }
-
-#ifdef	UNUSED
-/**
- * Return finger prints of all file names in header.
- * @warning: scareMemory is assumed!
- * @param cache		pointer to fingerprint cache
- * @param h		package header
- * @retval fpList	pointer to array of finger prints
- */
-static
-void fpLookupHeader(fingerPrintCache cache, Header h, fingerPrint * fpList);
-{
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** baseNames, ** dirNames;
-    rpmTagTypebnt, dnt;
-    uint32_t * dirIndexes;
-    int fileCount;
-    int xx;
-
-    if (!hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, &fileCount))
-	return;
-
-    xx = hge(h, RPMTAG_DIRNAMES, &dnt, (rpm_data_t *) &dirNames, NULL);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
-    fpLookupList(cache, dirNames, baseNames, dirIndexes, fileCount, fpList);
-    dirNames = hfd(dirNames, dnt);
-    baseNames = hfd(baseNames, bnt);
-}
-#endif
