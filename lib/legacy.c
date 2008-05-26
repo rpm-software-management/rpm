@@ -117,24 +117,21 @@ exit:
 
 void expandFilelist(Header h)
 {
-    HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
-    const char ** fileNames = NULL;
-    rpm_count_t count = 0;
-    int xx;
+    struct rpmtd_s filenames;
 
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
-	if (fileNames == NULL || count <= 0)
+	(void) headerGet(h, RPMTAG_FILENAMES, &filenames, HEADERGET_EXT);
+	if (rpmtdCount(&filenames) < 1)
 	    return;
-	xx = hae(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
-	fileNames = _free(fileNames);
+	rpmtdSetTag(&filenames, RPMTAG_OLDFILENAMES);
+	headerPut(h, &filenames, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&filenames);
     }
 
-    xx = hre(h, RPMTAG_DIRNAMES);
-    xx = hre(h, RPMTAG_BASENAMES);
-    xx = hre(h, RPMTAG_DIRINDEXES);
+    (void) hre(h, RPMTAG_DIRNAMES);
+    (void) hre(h, RPMTAG_BASENAMES);
+    (void) hre(h, RPMTAG_DIRINDEXES);
 }
 
 /*
