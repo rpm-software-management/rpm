@@ -247,47 +247,47 @@ static int triggercondsTag(Header h, rpmtd td)
  */
 static int triggertypeTag(Header h, rpmtd td)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    rpmTagType tst;
-    int32_t * indices;
-    const char ** conds;
-    const char ** s;
-    int xx;
-    rpm_count_t numScripts, numNames;
-    rpm_count_t i, j;
-    rpm_flag_t * flags;
+    int i;
+    char ** conds;
+    struct rpmtd_s indices, flags, scripts;
 
-    if (!hge(h, RPMTAG_TRIGGERINDEX, NULL, (rpm_data_t *) &indices, &numNames)) {
+    if (!headerGet(h, RPMTAG_TRIGGERINDEX, &indices, HEADERGET_MINMEM)) {
 	return 1;
     }
 
-    xx = hge(h, RPMTAG_TRIGGERFLAGS, NULL, (rpm_data_t *) &flags, NULL);
-    xx = hge(h, RPMTAG_TRIGGERSCRIPTS, &tst, (rpm_data_t *) &s, &numScripts);
-    s = hfd(s, tst);
+    headerGet(h, RPMTAG_TRIGGERFLAGS, &flags, HEADERGET_MINMEM);
+    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &scripts, HEADERGET_MINMEM);
 
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
-    td->data = conds = xmalloc(sizeof(*conds) * numScripts);
-    td->count = numScripts;
+    td->count = rpmtdCount(&scripts);
+    td->data = conds = xmalloc(sizeof(*conds) * td->count);
     td->type = RPM_STRING_ARRAY_TYPE;
-    for (i = 0; i < numScripts; i++) {
-	for (j = 0; j < numNames; j++) {
-	    if (indices[j] != i)
+
+    while ((i = rpmtdNext(&scripts)) >= 0) {
+	rpm_flag_t *flag;
+	rpmtdInit(&indices); rpmtdInit(&flags);
+
+	while (rpmtdNext(&indices) >= 0 && rpmtdNext(&flags) >= 0) {
+	    if (*rpmtdGetUint32(&indices) != i) 
 		continue;
 
-	    if (flags[j] & RPMSENSE_TRIGGERPREIN)
+	    flag = rpmtdGetUint32(&flags);
+	    if (*flag & RPMSENSE_TRIGGERPREIN)
 		conds[i] = xstrdup("prein");
-	    else if (flags[j] & RPMSENSE_TRIGGERIN)
+	    else if (*flag & RPMSENSE_TRIGGERIN)
 		conds[i] = xstrdup("in");
-	    else if (flags[j] & RPMSENSE_TRIGGERUN)
+	    else if (*flag & RPMSENSE_TRIGGERUN)
 		conds[i] = xstrdup("un");
-	    else if (flags[j] & RPMSENSE_TRIGGERPOSTUN)
+	    else if (*flag & RPMSENSE_TRIGGERPOSTUN)
 		conds[i] = xstrdup("postun");
 	    else
 		conds[i] = xstrdup("");
 	    break;
 	}
     }
+    rpmtdFreeData(&indices);
+    rpmtdFreeData(&flags);
+    rpmtdFreeData(&scripts);
 
     return 0;
 }
