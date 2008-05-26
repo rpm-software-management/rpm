@@ -28,7 +28,6 @@ extern int _rpmds_nopromote;
  */
 typedef	enum rpmsenseFlags_e {
     RPMSENSE_ANY	= 0,
-    RPMSENSE_SERIAL	= (1 << 0),	/*!< @todo Legacy. */
     RPMSENSE_LESS	= (1 << 1),
     RPMSENSE_GREATER	= (1 << 2),
     RPMSENSE_EQUAL	= (1 << 3),
