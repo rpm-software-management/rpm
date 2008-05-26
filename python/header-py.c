@@ -143,16 +143,16 @@ static PyObject * hdrKeyList(hdrObject * s)
 {
     PyObject * list, *o;
     HeaderIterator hi;
-    rpmTag tag;
-    rpmTagType type;
+    rpmtd td = rpmtdNew();
 
     list = PyList_New(0);
 
     hi = headerInitIterator(s->h);
-    while (headerNextIterator(hi, &tag, &type, NULL, NULL)) {
+    while (headerNext(hi, td)) {
+	rpmTag tag = rpmtdTag(td);
         if (tag == HEADER_I18NTABLE) continue;
 
-	switch (type) {
+	switch (rpmtdType(td)) {
 	case RPM_BIN_TYPE:
 	case RPM_INT32_TYPE:
 	case RPM_CHAR_TYPE:
@@ -168,8 +168,10 @@ static PyObject * hdrKeyList(hdrObject * s)
 	default:
 	    break;
 	}
+	rpmtdFreeData(td);
     }
     headerFreeIterator(hi);
+    rpmtdFree(td);
 
     return list;
 }
