@@ -1680,9 +1680,11 @@ assert(psm->mi == NULL);
 
     case PSM_RPMIO_FLAGS:
     {	const char * payload_compressor = NULL;
+	struct rpmtd_s pc;
 
-	if (!hge(fi->h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
-			    (rpm_data_t *) &payload_compressor, NULL))
+	headerGet(fi->h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
+	payload_compressor = rpmtdGetString(&pc);
+	if (!payload_compressor)
 	    payload_compressor = "gzip";
 	if (!strcmp(payload_compressor, "gzip"))
 	    psm->rpmio_flags = "r.gzdio";
@@ -1690,6 +1692,7 @@ assert(psm->mi == NULL);
 	    psm->rpmio_flags = "r.bzdio";
 	if (!strcmp(payload_compressor, "lzma"))
 	    psm->rpmio_flags = "r.lzdio";
+	rpmtdFreeData(&pc);
 
 	rc = RPMRC_OK;
     }	break;
