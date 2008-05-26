@@ -576,7 +576,6 @@ exit:
 	    			md5tag.count == 16 && md5tag.data != NULL) {
 	    *pkgidp = md5tag.data;
 	}
-	rpmtdFreeData(&md5tag);
     }
 
     sig = rpmFreeSignature(sig);
