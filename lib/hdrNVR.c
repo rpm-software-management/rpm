@@ -19,33 +19,27 @@ int headerNEVRA(Header h, const char **np,
 		uint32_t **ep, const char **vp, const char **rp,
 		const char **ap)
 {
-    rpmTagType type;
-    rpm_count_t count;
+    struct rpmtd_s td;
 
     if (np) {
-	if (!(headerGetEntry(h, RPMTAG_NAME, &type, (rpm_data_t *) np, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*np = NULL;
+	headerGet(h, RPMTAG_NAME, &td, HEADERGET_DEFAULT);
+	*np = rpmtdGetString(&td);
     }
     if (vp) {
-	if (!(headerGetEntry(h, RPMTAG_VERSION, &type, (rpm_data_t *) vp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*vp = NULL;
+	headerGet(h, RPMTAG_VERSION, &td, HEADERGET_DEFAULT);
+	*vp = rpmtdGetString(&td);
     }
     if (rp) {
-	if (!(headerGetEntry(h, RPMTAG_RELEASE, &type, (rpm_data_t *) rp, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*rp = NULL;
+	headerGet(h, RPMTAG_RELEASE, &td, HEADERGET_DEFAULT);
+	*rp = rpmtdGetString(&td);
     }
     if (ap) {
-	if (!(headerGetEntry(h, RPMTAG_ARCH, &type, (rpm_data_t *) ap, &count)
-	    && type == RPM_STRING_TYPE && count == 1))
-		*ap = NULL;
+	headerGet(h, RPMTAG_ARCH, &td, HEADERGET_DEFAULT);
+	*ap = rpmtdGetString(&td);
     }
     if (ep) {
-	if (!(headerGetEntry(h, RPMTAG_EPOCH, &type, (rpm_data_t *) ep, &count)
-	    && type == RPM_INT32_TYPE && count == 1))
-		*ep = NULL;
+	headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_DEFAULT);
+	*ep = rpmtdGetUint32(&td);
     }
     return 0;
 }
@@ -67,9 +61,12 @@ char * headerGetNEVRA(Header h, const char ** np)
 {
     const char *n = NULL, *a = NULL;
     char *nevr, *nevra = NULL;
+    struct rpmtd_s arch;
 
     nevr = headerGetNEVR(h, &n);
-    headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &a, NULL);
+    if (headerGet(h, RPMTAG_ARCH, &arch, HEADERGET_DEFAULT)) {
+	a = rpmtdGetString(&arch);
+    }
 
     /* XXX gpg-pubkey packages have no arch, urgh... */
     if (a) {
