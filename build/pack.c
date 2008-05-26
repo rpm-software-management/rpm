@@ -142,12 +142,14 @@ exit:
  */
 static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     StringBuf sb = newStringBuf();
-    char *s;
+    const char *s;
+    struct rpmtd_s td;
 
-    if (hge(h, tag, NULL, (rpm_data_t *)&s, NULL)) {
+    headerGet(h, tag, &td, HEADERGET_MINMEM);
+    if ((s = rpmtdGetString(&td))) {
 	appendLineStringBuf(sb, s);
+    	rpmtdFreeData(&td);
 	(void) headerRemoveEntry(h, tag);
     }
 
