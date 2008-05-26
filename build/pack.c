@@ -570,13 +570,13 @@ exit:
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sig != NULL && pkgidp != NULL) {
-	rpmTagType tagType;
-	unsigned char * MD5 = NULL;
-	rpm_count_t c;
-	int xx;
-	xx = headerGetEntry(sig, RPMSIGTAG_MD5, &tagType, (rpm_data_t *)&MD5, &c);
-	if (tagType == RPM_BIN_TYPE && MD5 != NULL && c == 16)
-	    *pkgidp = MD5;
+	struct rpmtd_s md5tag;
+	headerGet(sig, RPMSIGTAG_MD5, &md5tag, HEADERGET_DEFAULT);
+	if (rpmtdType(&md5tag) == RPM_BIN_TYPE &&
+	    			md5tag.count == 16 && md5tag.data != NULL) {
+	    *pkgidp = md5tag.data;
+	}
+	rpmtdFreeData(&md5tag);
     }
 
     sig = rpmFreeSignature(sig);
