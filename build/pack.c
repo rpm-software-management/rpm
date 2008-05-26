@@ -614,11 +614,11 @@ static const rpmTag copyTags[] = {
 static void addPackageProvides(Header h)
 {
     HAE_t hae = headerAddOrAppendEntry;
-    HGE_t hge = headerGetEntry;
     const char *name = NULL, *arch = NULL;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
     int noarch = 0;
+    struct rpmtd_s archtd;
 
     /* <name> = <evr> provide */
     evr = headerGetEVR(h, &name);
@@ -632,7 +632,8 @@ static void addPackageProvides(Header h)
      * cause reading in the noarch macros :-/ 
      */
     isaprov = rpmExpand(name, "%{?_isa}", NULL);
-    hge(h, RPMTAG_ARCH, NULL, (rpm_data_t *)&arch, NULL);
+    headerGet(h, RPMTAG_ARCH, &archtd, HEADERGET_MINMEM);
+    arch = rpmtdGetString(&archtd);
     noarch = (strcmp(arch, "noarch") == 0);
     if (!noarch && strcmp(name, isaprov)) {
 	hae(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE, &isaprov, 1);
