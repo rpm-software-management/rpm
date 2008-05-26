@@ -67,16 +67,20 @@ int main(int argc, char *argv[])
 
     /* Retrieve type of payload compression. */
     {	const char * payload_compressor = NULL;
+	struct rpmtd_s pc;
 
-	if (!headerGetEntry(h, RPMTAG_PAYLOADCOMPRESSOR, NULL,
-			    (rpm_data_t *) &payload_compressor, NULL))
+	headerGet(h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
+	payload_compressor = rpmtdGetString(&pc);
+	if (!payload_compressor)
 	    payload_compressor = "gzip";
+	
 	if (!strcmp(payload_compressor, "gzip"))
 	    rpmio_flags = "r.gzdio";
 	if (!strcmp(payload_compressor, "bzip2"))
 	    rpmio_flags = "r.bzdio";
 	if (!strcmp(payload_compressor, "lzma"))
 	    rpmio_flags = "r.lzdio";
+	rpmtdFreeData(&pc);
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
