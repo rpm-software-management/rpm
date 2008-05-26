@@ -35,8 +35,6 @@ void compressFilelist(Header h)
     int xx, i;
     int dirIndex = -1;
 
-    printf(">> %s\n", __func__);
-
     /*
      * This assumes the file list is already sorted, and begins with a
      * single '/'. That assumption isn't critical, but it makes things go
