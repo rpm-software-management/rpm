@@ -16,7 +16,7 @@ int headerNVR(Header h, const char **np, const char **vp, const char **rp)
 }
 
 int headerNEVRA(Header h, const char **np,
-		int32_t **ep, const char **vp, const char **rp,
+		uint32_t **ep, const char **vp, const char **rp,
 		const char **ap)
 {
     rpmTagType type;
@@ -89,7 +89,7 @@ char * headerGetEVR(Header h, const char ** np)
 {
     const char *n, *v, *r;
     char *evr = NULL;
-    int32_t *e;
+    uint32_t *e;
 
     (void) headerNEVRA(h, &n, &e, &v, &r, NULL);
     if (e) {
