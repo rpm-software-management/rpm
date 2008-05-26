@@ -1526,7 +1526,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     ARGV_t av;
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
-    const void ** p;
     char *buf = NULL;
     const char * N;
     const char * EVR;
