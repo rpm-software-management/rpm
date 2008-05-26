@@ -25,18 +25,17 @@ static int dncmp(const void * a, const void * b)
 
 void compressFilelist(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HAE_t hae = (HAE_t)headerAddEntry;
     HRE_t hre = (HRE_t)headerRemoveEntry;
-    HFD_t hfd = headerFreeData;
-    char ** fileNames;
+    struct rpmtd_s fileNames;
     char ** dirNames;
     const char ** baseNames;
     uint32_t * dirIndexes;
-    rpmTagType fnt;
-    rpm_count_t count, i;
-    int xx;
+    rpm_count_t count;
+    int xx, i;
     int dirIndex = -1;
+
+    printf(">> %s\n", __func__);
 
     /*
      * This assumes the file list is already sorted, and begins with a
@@ -49,43 +48,45 @@ void compressFilelist(Header h)
 	return;		/* Already converted. */
     }
 
-    if (!hge(h, RPMTAG_OLDFILENAMES, &fnt, (rpm_data_t *) &fileNames, &count))
-	return;		/* no file list */
-    if (fileNames == NULL || count <= 0)
+    if (!headerGet(h, RPMTAG_OLDFILENAMES, &fileNames, HEADERGET_MINMEM)) 
+	return;
+    count = rpmtdCount(&fileNames);
+    if (count < 1) 
 	return;
 
     dirNames = xmalloc(sizeof(*dirNames) * count);	/* worst case */
     baseNames = xmalloc(sizeof(*dirNames) * count);
     dirIndexes = xmalloc(sizeof(*dirIndexes) * count);
 
-    if (fileNames[0][0] != '/') {
+    if (headerIsSource(h)) {
 	/* HACK. Source RPM, so just do things differently */
 	dirIndex = 0;
 	dirNames[dirIndex] = xstrdup("");
-	for (i = 0; i < count; i++) {
+	while ((i = rpmtdNext(&fileNames)) >= 0) {
 	    dirIndexes[i] = dirIndex;
-	    baseNames[i] = fileNames[i];
+	    baseNames[i] = rpmtdGetString(&fileNames);
 	}
 	goto exit;
     }
 
-    for (i = 0; i < count; i++) {
+    while ((i = rpmtdNext(&fileNames)) >= 0) {
 	char ** needle;
 	char savechar;
 	char * baseName;
 	size_t len;
+	const char *filename = rpmtdGetString(&fileNames);
 
-	if (fileNames[i] == NULL)	/* XXX can't happen */
+	if (filename == NULL)	/* XXX can't happen */
 	    continue;
-	baseName = strrchr(fileNames[i], '/') + 1;
-	len = baseName - fileNames[i];
+	baseName = strrchr(filename, '/') + 1;
+	len = baseName - filename;
 	needle = dirNames;
 	savechar = *baseName;
 	*baseName = '\0';
 	if (dirIndex < 0 ||
-	    (needle = bsearch(&fileNames[i], dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
+	    (needle = bsearch(filename, dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
 	    char *s = xmalloc(len + 1);
-	    rstrlcpy(s, fileNames[i], len + 1);
+	    rstrlcpy(s, filename, len + 1);
 	    dirIndexes[i] = ++dirIndex;
 	    dirNames[dirIndex] = s;
 	} else
@@ -104,7 +105,7 @@ exit:
 			dirNames, (rpm_count_t) dirIndex + 1);
     }
 
-    fileNames = hfd(fileNames, fnt);
+    rpmtdFreeData(&fileNames);
     for (i = 0; i <= dirIndex; i++) {
 	free(dirNames[i]);
     }
