@@ -376,6 +376,8 @@ int headerNext(HeaderIterator hi, rpmtd td);
 
 /** \ingroup header
  * Return next tag from header.
+ * @deprecated Use headerNext() instead.
+ *
  * @param hi		header tag iterator
  * @retval *tag		tag
  * @retval *type	tag value data type
@@ -387,7 +389,7 @@ int headerNextIterator(HeaderIterator hi,
 		rpmTag * tag,
 		rpmTagType * type,
 		rpm_data_t * p,
-		rpm_count_t * c);
+		rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
 
 
