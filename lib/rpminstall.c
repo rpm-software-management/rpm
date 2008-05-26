@@ -398,15 +398,12 @@ restart:
 	}
 
 	if (eiu->relocations) {
-	    const char ** paths;
-	    rpmTagType pft;
-	    rpm_count_t c;
+	    struct rpmtd_s prefixes;
 
-	    if (headerGetEntry(eiu->h, RPMTAG_PREFIXES, &pft,
-				       (rpm_data_t *) &paths, &c) && (c == 1))
-	    {
-		eiu->relocations->oldPath = xstrdup(paths[0]);
-		paths = headerFreeData(paths, pft);
+	    headerGet(eiu->h, RPMTAG_PREFIXES, &prefixes, HEADERGET_DEFAULT);
+	    if (rpmtdCount(&prefixes) == 1) {
+		eiu->relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
+		rpmtdFreeData(&prefixes);
 	    } else {
 		const char * name;
 		xx = headerNVR(eiu->h, &name, NULL, NULL);
