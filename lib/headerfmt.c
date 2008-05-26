@@ -179,13 +179,13 @@ static sprintfToken hsaNext(headerSprintfArgs hsa)
 	if (hsa->hi == NULL) {
 	    hsa->i++;
 	} else {
-	    rpmTag tagno;
-	    rpmTagType type;
-	    rpm_count_t count;
+	    struct rpmtd_s td;
 
-	    if (!headerNextIterator(hsa->hi, &tagno, &type, NULL, &count))
+	    /* hmm, cache the data from here too? */
+	    if (!headerNext(hsa->hi, &td))
 		fmt = NULL;
-	    tag->tag = tagno;
+	    tag->tag = td.tag;
+	    rpmtdFreeData(&td);
 	}
     }
 
