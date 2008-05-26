@@ -225,22 +225,21 @@ static char *strtokWithQuotes(char *s, const char *delim)
  */
 static void timeCheck(int tc, Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     rpm_time_t * mtime;
-    const char ** files;
-    rpmTagType fnt;
-    rpm_count_t count, x;
     time_t currentTime = time(NULL);
+    struct rpmtd_s files, mtimes;
 
-    x = hge(h, RPMTAG_OLDFILENAMES, &fnt, (rpm_data_t *) &files, &count);
-    x = hge(h, RPMTAG_FILEMTIMES, NULL, (rpm_data_t *) &mtime, NULL);
+    headerGet(h, RPMTAG_FILENAMES, &files, HEADERGET_EXT);
+    headerGet(h, RPMTAG_FILEMTIMES, &mtimes, HEADERGET_MINMEM);
     
-    for (x = 0; x < count; x++) {
-	if ((currentTime - mtime[x]) > tc)
-	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), files[x]);
+    while ((mtime = rpmtdNextUint32(&mtimes))) {
+	if ((currentTime - (time_t) *mtime) > tc) {
+	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), 
+		    rpmtdGetString(&files));
+	}
     }
-    files = hfd(files, fnt);
+    rpmtdFreeData(&files);
+    rpmtdFreeData(&mtimes);
 }
 
 /**
