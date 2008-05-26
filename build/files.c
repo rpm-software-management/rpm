@@ -1676,7 +1676,6 @@ exit:
 static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 			       int installSpecialDoc, int test)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     struct FileList_s fl;
     char *s, **fp;
     ARGV_t files = NULL;
@@ -1728,10 +1727,12 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
 
-    if (hge(pkg->header, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *)&fl.prefix, NULL))
-	fl.prefix = xstrdup(fl.prefix);
-    else
-	fl.prefix = NULL;
+    {	struct rpmtd_s td;
+	const char *prefix;
+	headerGet(pkg->header, RPMTAG_DEFAULTPREFIX, &td, HEADERGET_MINMEM);
+	prefix = rpmtdGetString(&td);	
+	fl.prefix = prefix ? xstrdup(prefix) : NULL;
+    }
 
     fl.fileCount = 0;
     fl.totalFileSize = 0;
