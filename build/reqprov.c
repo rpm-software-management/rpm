@@ -13,15 +13,10 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		int index)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** names;
-    rpmTagType dnt;
     rpmTag nametag = 0;
     rpmTag versiontag = 0;
     rpmTag flagtag = 0;
     rpmTag indextag = 0;
-    rpm_count_t len;
     rpmsenseFlags extra = RPMSENSE_ANY;
     int xx;
     
@@ -62,39 +57,11 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 	EVR = "";
     
     /* Check for duplicate dependencies. */
-    if (hge(h, nametag, &dnt, (rpm_data_t *) &names, &len)) {
-	const char ** versions = NULL;
-	rpmTagType dvt = RPM_STRING_ARRAY_TYPE;
-	int *flags = NULL;
-	int *indexes = NULL;
-	int duplicate = 0;
-
-	if (flagtag) {
-	    xx = hge(h, versiontag, &dvt, (rpm_data_t *) &versions, NULL);
-	    xx = hge(h, flagtag, NULL, (rpm_data_t *) &flags, NULL);
-	}
-	if (indextag)
-	    xx = hge(h, indextag, NULL, (rpm_data_t *) &indexes, NULL);
-
-	while (len > 0) {
-	    len--;
-	    if (strcmp(names[len], N))
-		continue;
-	    if (flagtag && versions != NULL &&
-		(strcmp(versions[len], EVR) || flags[len] != Flags))
-		continue;
-	    if (indextag && indexes != NULL && indexes[len] != index)
-		continue;
-
-	    /* This is a duplicate dependency. */
-	    duplicate = 1;
-
-	    break;
-	}
-	names = hfd(names, dnt);
-	versions = hfd(versions, dvt);
-	if (duplicate)
-	    return 0;
+    rpmds hds = rpmdsNew(h, nametag, 0);
+    rpmds newds = rpmdsSingle(nametag, N, EVR, Flags);
+    /* already got it, don't bother */
+    if (rpmdsFind(hds, newds) >= 0) {
+	goto exit;
     }
 
     /* Add this dependency. */
@@ -108,6 +75,10 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
     if (indextag)
 	xx = headerAddOrAppendEntry(h, indextag, RPM_INT32_TYPE, &index, 1);
 
+exit:
+    rpmdsFree(hds);
+    rpmdsFree(newds);
+	
     return 0;
 }
 
