@@ -1061,11 +1061,8 @@ int rpmdbVerify(const char * prefix)
 static int rpmdbFindByFile(rpmdb db, const char * filespec,
 		DBT * key, DBT * data, dbiIndexSet * matches)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     char * dirName;
     const char * baseName;
-    rpmTagType bnt, dnt;
     fingerPrintCache fpc;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
@@ -1131,6 +1128,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     i = 0;
     if (allMatches != NULL)
     while (i < allMatches->count) {
+	struct rpmtd_s bn, dn, di;
 	const char ** baseNames, ** dirNames;
 	uint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
@@ -1150,9 +1148,12 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	    continue;
 	}
 
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (rpm_data_t *) &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
+	headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_MINMEM);
+	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_MINMEM);
+	headerGet(h, RPMTAG_DIRINDEXES, &di, HEADERGET_MINMEM);
+	baseNames = bn.data;
+	dirNames = dn.data;
+	dirIndexes = di.data;
 
 	do {
 	    fingerPrint fp2;
@@ -1171,8 +1172,9 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 		offset = dbiIndexRecordOffset(allMatches, i);
 	} while (i < allMatches->count && offset == prevoff);
 
-	baseNames = hfd(baseNames, bnt);
-	dirNames = hfd(dirNames, dnt);
+	rpmtdFreeData(&bn);
+	rpmtdFreeData(&dn);
+	rpmtdFreeData(&di);
 	h = headerFree(h);
     }
 
