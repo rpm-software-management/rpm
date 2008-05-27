@@ -2345,8 +2345,6 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     DBT key;
     DBT data;
     union _dbswap mi_offset;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     Header h;
     sigset_t signalMask;
     int ret = 0;
@@ -2387,13 +2385,9 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	if (dbiTags.tags != NULL)
 	for (dbix = 0; dbix < dbiTags.max; dbix++) {
 	    dbiIndex dbi;
-	    const char *av[1];
-	    const char ** rpmvals = NULL;
-	    rpmTagType rpmtype = 0;
-	    rpm_count_t rpmcnt = 0;
 	    rpmTag rpmtag;
 	    int xx;
-	    rpm_count_t i, j;
+	    struct rpmtd_s tagdata;
 
 	    dbi = NULL;
 	    rpmtag = dbiTags.tags[dbix];
@@ -2428,96 +2422,87 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		continue;
 	    }
 	
-	    if (!hge(h, rpmtag, &rpmtype, (rpm_data_t *) &rpmvals, &rpmcnt))
+	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 		continue;
 
 	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
 	    int printed;
 
-	    if (rpmtype == RPM_STRING_TYPE) {
-		/* XXX force uniform headerGetEntry return */
-		av[0] = (const char *) rpmvals;
-		rpmvals = av;
-		rpmcnt = 1;
-	    }
-
 	    printed = 0;
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-	    for (i = 0; i < rpmcnt; i++) {
+	    rpmtdInit(&tagdata);
+	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
 		int stringvalued;
 		uint8_t bin[32];
-
-		if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
-		    /* Filter out empty MD5 strings. */
-		    if (!(rpmvals[i] && *rpmvals[i] != '\0'))
-			continue;
-		}
+		const char *str = NULL;
 
 		/* Identify value pointer and length. */
 		stringvalued = 0;
-		switch (rpmtype) {
+		switch (rpmtdType(&tagdata)) {
 		case RPM_CHAR_TYPE:
 		case RPM_INT8_TYPE:
-		    key.size = sizeof(RPM_CHAR_TYPE);
-		    key.data = rpmvals + i;
+		    key.size = sizeof(uint8_t);
+		    key.data = rpmtdGetChar(&tagdata);
 		    break;
 		case RPM_INT16_TYPE:
-		    key.size = sizeof(int16_t);
-		    key.data = rpmvals + i;
+		    key.size = sizeof(uint16_t);
+		    key.data = rpmtdGetUint16(&tagdata);
 		    break;
 		case RPM_INT32_TYPE:
-		    key.size = sizeof(int32_t);
-		    key.data = rpmvals + i;
+		    key.size = sizeof(uint32_t);
+		    key.data = rpmtdGetUint32(&tagdata);
 		    break;
 		case RPM_BIN_TYPE:
-		    key.size = rpmcnt;
-		    key.data = rpmvals;
-		    rpmcnt = 1;		/* XXX break out of loop. */
+		    key.size = tagdata.count;
+		    key.data = tagdata.data;
 		    break;
 		case RPM_STRING_TYPE:
 		case RPM_I18NSTRING_TYPE:
-		    rpmcnt = 1;		/* XXX break out of loop. */
 		case RPM_STRING_ARRAY_TYPE:
-		    /* Convert from hex to binary. */
+		    str = rpmtdGetString(&tagdata);
 		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
-			const char * s;
-			uint8_t * t;
+			uint8_t * t = bin;
+		    	/* Filter out empty MD5 strings. */
+			if (!(str && *str != '\0'))
+			    continue;
 
-			s = rpmvals[i];
-			t = bin;
-			for (j = 0; j < 16; j++, t++, s += 2)
-			    *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
+			/* Convert from hex to binary. */
+			for (int j = 0; j < 16; j++, t++, str += 2)
+			    *t = (rnibble(str[0]) << 4) | rnibble(str[1]);
 			key.data = bin;
 			key.size = 16;
 			break;
-		    }
-		    /* Extract the pubkey id from the base64 blob. */
-		    if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
-			int nbin = pgpExtractPubkeyFingerprint(rpmvals[i], bin);
+		    } else if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
+			/* Extract the pubkey id from the base64 blob. */
+			int nbin = pgpExtractPubkeyFingerprint(str, bin);
 			if (nbin <= 0)
 			    continue;
 			key.data = bin;
 			key.size = nbin;
 			break;
+		    } else {
+			/* fallthrough */;
 		    }
 		default:
-		    key.data = (void *) rpmvals[i];
-		    key.size = strlen(rpmvals[i]);
+		    str = rpmtdGetString(&tagdata);
+		    key.data = str;
+		    key.size = strlen(str);
 		    stringvalued = 1;
 		    break;
 		}
 
 		if (!printed) {
-		    if (rpmcnt == 1 && stringvalued) {
+		    rpm_count_t c = rpmtdCount(&tagdata);
+		    if (c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
 				"removing \"%s\" from %s index.\n",
 				(char *)key.data, rpmTagGetName(dbi->dbi_rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				"removing %d entries from %s index.\n",
-				rpmcnt, rpmTagGetName(dbi->dbi_rpmtag));
+				c, rpmTagGetName(dbi->dbi_rpmtag));
 		    }
 		    printed++;
 		}
@@ -2591,10 +2576,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		xx = dbiSync(dbi, 0);
 	  }
 
-	    if (rpmtype != RPM_BIN_TYPE)	/* XXX WTFO? HACK ALERT */
-		rpmvals = hfd(rpmvals, rpmtype);
-	    rpmtype = 0;
-	    rpmcnt = 0;
+	    rpmtdFreeData(&tagdata);
 	}
 
 	rec = _free(rec);
