@@ -2402,8 +2402,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    if (isTemporaryDB(rpmtag)) 
 		continue;
 
-	    switch ((rpm_tag_t) rpmtag) {
-	    case RPMDBI_PACKAGES:
+	    if (rpmtag == RPMDBI_PACKAGES) {
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
@@ -2427,7 +2426,6 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		continue;
-		break;
 	    }
 	
 	    if (!hge(h, rpmtag, &rpmtype, (rpm_data_t *) &rpmvals, &rpmcnt))
@@ -2451,14 +2449,10 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		int stringvalued;
 		uint8_t bin[32];
 
-		switch (dbi->dbi_rpmtag) {
-		case RPMTAG_FILEMD5S:
+		if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
 		    /* Filter out empty MD5 strings. */
 		    if (!(rpmvals[i] && *rpmvals[i] != '\0'))
 			continue;
-		    break;
-		default:
-		    break;
 		}
 
 		/* Identify value pointer and length. */
