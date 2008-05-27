@@ -2386,7 +2386,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	for (dbix = 0; dbix < dbiTags.max; dbix++) {
 	    dbiIndex dbi;
 	    rpmTag rpmtag;
-	    int xx;
+	    int xx, printed = 0;
 	    struct rpmtd_s tagdata;
 
 	    dbi = NULL;
@@ -2425,11 +2425,11 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 		continue;
 
-	  dbi = dbiOpen(db, rpmtag, 0);
-	  if (dbi != NULL) {
-	    int printed;
-
-	    printed = 0;
+	    if (!(dbi = dbiOpen(db, rpmtag, 0))) {
+		rpmtdFreeData(&tagdata);
+		continue;
+	    }
+	
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 	    rpmtdInit(&tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
@@ -2574,7 +2574,6 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
-	  }
 
 	    rpmtdFreeData(&tagdata);
 	}
