@@ -2600,9 +2600,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     HFD_t hfd = headerFreeData;
     sigset_t signalMask;
-    const char ** baseNames;
-    rpmTagType bnt;
-    rpm_count_t count = 0;
     dbiIndex dbi;
     int dbix;
     union _dbswap mi_offset;
@@ -2625,14 +2622,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
 	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
     }
-
-    /*
-     * If old style filename tags is requested, the basenames need to be
-     * retrieved early, and the header needs to be converted before
-     * being written to the package header database.
-     */
-
-    xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &baseNames, &count);
 
     (void) blockSignals(&signalMask);
 
@@ -2767,11 +2756,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		if (!dbi->dbi_no_dbsync)
 		    xx = dbiSync(dbi, 0);
 		continue;
-		break;
-	    case RPMTAG_BASENAMES:	/* XXX preserve legacy behavior */
-		rpmtype = bnt;
-		rpmvals = baseNames;
-		rpmcnt = count;
 		break;
 	    case RPMTAG_REQUIRENAME:
 		xx = hge(h, rpmtag, &rpmtype, (rpm_data_t *)&rpmvals, &rpmcnt);
