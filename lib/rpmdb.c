@@ -2462,7 +2462,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		case RPM_I18NSTRING_TYPE:
 		case RPM_STRING_ARRAY_TYPE:
 		    str = rpmtdGetString(&tagdata);
-		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
+		    if (rpmtag == RPMTAG_FILEMD5S) {
 			uint8_t * t = bin;
 		    	/* Filter out empty MD5 strings. */
 			if (!(str && *str != '\0'))
@@ -2474,7 +2474,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 			key.data = bin;
 			key.size = 16;
 			break;
-		    } else if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
+		    } else if (rpmtag == RPMTAG_PUBKEYS) {
 			/* Extract the pubkey id from the base64 blob. */
 			int nbin = pgpExtractPubkeyFingerprint(str, bin);
 			if (nbin <= 0)
@@ -2498,11 +2498,11 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		    if (c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
 				"removing \"%s\" from %s index.\n",
-				(char *)key.data, rpmTagGetName(dbi->dbi_rpmtag));
+				(char *)key.data, rpmTagGetName(rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				"removing %d entries from %s index.\n",
-				c, rpmTagGetName(dbi->dbi_rpmtag));
+				c, rpmTagGetName(rpmtag));
 		    }
 		    printed++;
 		}
@@ -2786,7 +2786,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		 * included the tagNum only for files.
 		 */
 		i = rec->tagNum = rpmtdGetIndex(&tagdata);
-		switch (dbi->dbi_rpmtag) {
+		switch (rpmtag) {
 		case RPMTAG_REQUIRENAME: {
 		    /* Filter out install prerequisites. */
 		    rpm_flag_t *rflag = rpmtdNextUint32(&reqflags);
@@ -2835,7 +2835,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		case RPM_STRING_ARRAY_TYPE:
 		    str = rpmtdGetString(&tagdata);
 		    /* Convert from hex to binary. */
-		    if (dbi->dbi_rpmtag == RPMTAG_FILEMD5S) {
+		    if (rpmtag == RPMTAG_FILEMD5S) {
 			uint8_t * t = bin;
 			/* Filter out empty MD5 strings. */
 			if (!(str && *str != '\0'))
@@ -2846,7 +2846,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 			key.data = bin;
 			key.size = 16;
 			break;
-		    } else if (dbi->dbi_rpmtag == RPMTAG_PUBKEYS) {
+		    } else if (rpmtag == RPMTAG_PUBKEYS) {
 		    	/* Extract the pubkey id from the base64 blob. */
 			int nbin = pgpExtractPubkeyFingerprint(str, bin);
 			if (nbin <= 0)
@@ -2870,11 +2870,11 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		    if (c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
 				"adding \"%s\" to %s index.\n",
-				(char *)key.data, rpmTagGetName(dbi->dbi_rpmtag));
+				(char *)key.data, rpmTagGetName(rpmtag));
 		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				"adding %d entries to %s index.\n",
-				c, rpmTagGetName(dbi->dbi_rpmtag));
+				c, rpmTagGetName(rpmtag));
 		    }
 		    printed++;
 		}
