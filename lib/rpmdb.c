@@ -2783,8 +2783,10 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		tagdata.count = 1;
 	    }
 
-	  dbi = dbiOpen(db, rpmtag, 0);
-	  if (dbi != NULL) {
+	    if (!(dbi = dbiOpen(db, rpmtag, 0))) {
+		rpmtdFreeData(&tagdata);
+		continue;
+	    }
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 	    logAddRemove(0, &tagdata);
@@ -2874,7 +2876,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	    if (!dbi->dbi_no_dbsync)
 		xx = dbiSync(dbi, 0);
-	  }
 
 	    rpmtdFreeData(&tagdata);
 	}
