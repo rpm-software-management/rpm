@@ -2336,6 +2336,69 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     return mi;
 }
 
+/*
+ * Convert
+ * Return 0 to signal this item should be discarded (ie continue)
+ */
+static int td2key(rpmtd tagdata, DBT *key) 
+{
+    static uint8_t bin[32]; /* yuck, eliminate static */
+    const char *str = NULL;
+
+    switch (rpmtdType(tagdata)) {
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	key->size = sizeof(uint8_t);
+	key->data = rpmtdGetChar(tagdata);
+	break;
+    case RPM_INT16_TYPE:
+	key->size = sizeof(uint16_t);
+	key->data = rpmtdGetUint16(tagdata);
+	break;
+    case RPM_INT32_TYPE:
+	key->size = sizeof(uint32_t);
+	key->data = rpmtdGetUint32(tagdata);
+	break;
+    case RPM_BIN_TYPE:
+	key->size = tagdata->count;
+	key->data = tagdata->data;
+	break;
+    case RPM_STRING_TYPE:
+    case RPM_I18NSTRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+	str = rpmtdGetString(tagdata);
+	if (rpmtdTag(tagdata) == RPMTAG_FILEMD5S) {
+	    uint8_t * t = bin;
+	    /* Filter out empty MD5 strings. */
+	    if (!(str && *str != '\0'))
+		return 0;
+
+	    /* Convert from hex to binary. */
+	    for (int j = 0; j < 16; j++, t++, str += 2)
+		*t = (rnibble(str[0]) << 4) | rnibble(str[1]);
+	    key->data = bin;
+	    key->size = 16;
+	    break;
+	} else if (rpmtdTag(tagdata) == RPMTAG_PUBKEYS) {
+	    /* Extract the pubkey id from the base64 blob. */
+	    int nbin = pgpExtractPubkeyFingerprint(str, bin);
+	    if (nbin <= 0)
+		return 0;
+	    key->data = bin;
+	    key->size = nbin;
+	    break;
+	} else {
+	    /* fallthrough */;
+	}
+    default:
+	str = rpmtdGetString(tagdata);
+	key->data = (char *) str; /* XXX discards const */
+	key->size = strlen(str);
+	break;
+    }
+    return 1;
+}
+
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmts ts,
@@ -2434,66 +2497,13 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    rpmtdInit(&tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
-		int stringvalued;
-		uint8_t bin[32];
-		const char *str = NULL;
 
-		/* Identify value pointer and length. */
-		stringvalued = 0;
-		switch (rpmtdType(&tagdata)) {
-		case RPM_CHAR_TYPE:
-		case RPM_INT8_TYPE:
-		    key.size = sizeof(uint8_t);
-		    key.data = rpmtdGetChar(&tagdata);
-		    break;
-		case RPM_INT16_TYPE:
-		    key.size = sizeof(uint16_t);
-		    key.data = rpmtdGetUint16(&tagdata);
-		    break;
-		case RPM_INT32_TYPE:
-		    key.size = sizeof(uint32_t);
-		    key.data = rpmtdGetUint32(&tagdata);
-		    break;
-		case RPM_BIN_TYPE:
-		    key.size = tagdata.count;
-		    key.data = tagdata.data;
-		    break;
-		case RPM_STRING_TYPE:
-		case RPM_I18NSTRING_TYPE:
-		case RPM_STRING_ARRAY_TYPE:
-		    str = rpmtdGetString(&tagdata);
-		    if (rpmtag == RPMTAG_FILEMD5S) {
-			uint8_t * t = bin;
-		    	/* Filter out empty MD5 strings. */
-			if (!(str && *str != '\0'))
-			    continue;
-
-			/* Convert from hex to binary. */
-			for (int j = 0; j < 16; j++, t++, str += 2)
-			    *t = (rnibble(str[0]) << 4) | rnibble(str[1]);
-			key.data = bin;
-			key.size = 16;
-			break;
-		    } else if (rpmtag == RPMTAG_PUBKEYS) {
-			/* Extract the pubkey id from the base64 blob. */
-			int nbin = pgpExtractPubkeyFingerprint(str, bin);
-			if (nbin <= 0)
-			    continue;
-			key.data = bin;
-			key.size = nbin;
-			break;
-		    } else {
-			/* fallthrough */;
-		    }
-		default:
-		    str = rpmtdGetString(&tagdata);
-		    key.data = str;
-		    key.size = strlen(str);
-		    stringvalued = 1;
-		    break;
+		if (!td2key(&tagdata, &key)) {
+		    continue;
 		}
 
 		if (!printed) {
+		    int stringvalued = (rpmtdType(&tagdata) == RPM_STRING_TYPE);
 		    rpm_count_t c = rpmtdCount(&tagdata);
 		    if (c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
@@ -2777,9 +2787,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
-		int stringvalued, i;
-		uint8_t bin[32];
-		const char *str = NULL;
+		int i;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
@@ -2810,62 +2818,12 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		    break;
 		}
 
-		/* Identify value pointer and length. */
-		stringvalued = 0;
-		switch (rpmtdType(&tagdata)) {
-		case RPM_CHAR_TYPE:
-		case RPM_INT8_TYPE:
-		    key.size = sizeof(uint8_t);
-		    key.data = rpmtdGetChar(&tagdata);
-		    break;
-		case RPM_INT16_TYPE:
-		    key.size = sizeof(uint16_t);
-		    key.data = rpmtdGetUint16(&tagdata);
-		    break;
-		case RPM_INT32_TYPE:
-		    key.size = sizeof(uint32_t);
-		    key.data = rpmtdGetUint32(&tagdata);
-		    break;
-		case RPM_BIN_TYPE:
-		    key.size = tagdata.count;
-		    key.data = tagdata.data;
-		    break;
-		case RPM_STRING_TYPE:
-		case RPM_I18NSTRING_TYPE:
-		case RPM_STRING_ARRAY_TYPE:
-		    str = rpmtdGetString(&tagdata);
-		    /* Convert from hex to binary. */
-		    if (rpmtag == RPMTAG_FILEMD5S) {
-			uint8_t * t = bin;
-			/* Filter out empty MD5 strings. */
-			if (!(str && *str != '\0'))
-			    continue;
-
-			for (j = 0; j < 16; j++, t++, str += 2)
-			    *t = (rnibble(str[0]) << 4) | rnibble(str[1]);
-			key.data = bin;
-			key.size = 16;
-			break;
-		    } else if (rpmtag == RPMTAG_PUBKEYS) {
-		    	/* Extract the pubkey id from the base64 blob. */
-			int nbin = pgpExtractPubkeyFingerprint(str, bin);
-			if (nbin <= 0)
-			    continue;
-			key.data = bin;
-			key.size = nbin;
-			break;
-		    } else {
-			/* fallthrough */;
-		    }
-		default:
-		    str = rpmtdGetString(&tagdata);
-		    key.data = str;
-		    key.size = strlen(str);
-		    stringvalued = 1;
-		    break;
+		if (!td2key(&tagdata, &key)) {
+		    continue;
 		}
 
 		if (!printed) {
+		    int stringvalued = (rpmtdType(&tagdata) == RPM_STRING_TYPE);
 		    rpm_count_t c = rpmtdCount(&tagdata);
 		    if (c == 1 && stringvalued) {
 			rpmlog(RPMLOG_DEBUG,
