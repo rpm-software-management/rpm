@@ -2508,12 +2508,9 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmtdFreeData(&tagdata);
 		continue;
 	    }
-	
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-	    rpmtdInit(&tagdata);
 
 	    logAddRemove(1, &tagdata);
-
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
 
