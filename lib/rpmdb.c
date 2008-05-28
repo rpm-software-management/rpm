@@ -2399,6 +2399,22 @@ static int td2key(rpmtd tagdata, DBT *key)
     return 1;
 }
 
+static void logAddRemove(int removing, rpmtd tagdata)
+{
+    rpm_count_t c = rpmtdCount(tagdata);
+    if (c == 1 && rpmtdType(tagdata) == RPM_STRING_TYPE) {
+	rpmlog(RPMLOG_DEBUG, "%s \"%s\" %s %s index.\n",
+		removing ? "removing" : "adding", rpmtdGetString(tagdata), 
+		removing ? "from" : "to", 
+		rpmTagGetName(rpmtdTag(tagdata)));
+    } else if (c > 0) {
+	rpmlog(RPMLOG_DEBUG, "%s %d entries %s %s index.\n",
+		removing ? "removing" : "adding", c, 
+		removing ? "from" : "to", 
+		rpmTagGetName(rpmtdTag(tagdata)));
+    }
+}
+
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmts ts,
@@ -2449,7 +2465,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	for (dbix = 0; dbix < dbiTags.max; dbix++) {
 	    dbiIndex dbi;
 	    rpmTag rpmtag;
-	    int xx, printed = 0;
+	    int xx = 0;
 	    struct rpmtd_s tagdata;
 
 	    dbi = NULL;
@@ -2495,26 +2511,14 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 	    rpmtdInit(&tagdata);
+
+	    logAddRemove(1, &tagdata);
+
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
 
 		if (!td2key(&tagdata, &key)) {
 		    continue;
-		}
-
-		if (!printed) {
-		    int stringvalued = (rpmtdType(&tagdata) == RPM_STRING_TYPE);
-		    rpm_count_t c = rpmtdCount(&tagdata);
-		    if (c == 1 && stringvalued) {
-			rpmlog(RPMLOG_DEBUG,
-				"removing \"%s\" from %s index.\n",
-				(char *)key.data, rpmTagGetName(rpmtag));
-		    } else {
-			rpmlog(RPMLOG_DEBUG,
-				"removing %d entries from %s index.\n",
-				c, rpmTagGetName(rpmtag));
-		    }
-		    printed++;
 		}
 
 		/* XXX
@@ -2781,10 +2785,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	  dbi = dbiOpen(db, rpmtag, 0);
 	  if (dbi != NULL) {
-	    int printed = 0;
-
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
+	    logAddRemove(0, &tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
 		int i;
@@ -2820,21 +2823,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 		if (!td2key(&tagdata, &key)) {
 		    continue;
-		}
-
-		if (!printed) {
-		    int stringvalued = (rpmtdType(&tagdata) == RPM_STRING_TYPE);
-		    rpm_count_t c = rpmtdCount(&tagdata);
-		    if (c == 1 && stringvalued) {
-			rpmlog(RPMLOG_DEBUG,
-				"adding \"%s\" to %s index.\n",
-				(char *)key.data, rpmTagGetName(rpmtag));
-		    } else {
-			rpmlog(RPMLOG_DEBUG,
-				"adding %d entries to %s index.\n",
-				c, rpmTagGetName(rpmtag));
-		    }
-		    printed++;
 		}
 
 		/* 
