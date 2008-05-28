@@ -2396,6 +2396,12 @@ static int td2key(rpmtd tagdata, DBT *key)
 	key->size = strlen(str);
 	break;
     }
+
+    if (key->size == 0) 
+	key->size = strlen((char *)key->data);
+    if (key->size == 0) 
+	key->size++;	/* XXX "/" fixup. */
+
     return 1;
 }
 
@@ -2531,11 +2537,6 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
  		 * */
 		set = NULL;
 
-		if (key.size == 0) 
-		    key.size = strlen((char *)key.data);
-		if (key.size == 0) 
-		    key.size++;	/* XXX "/" fixup. */
- 
 		rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
 		if (rc == 0) {			/* success */
 		    (void) dbt2set(dbi, &data, &set);
@@ -2830,11 +2831,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
  		 */
 
 		set = NULL;
-
-		if (key.size == 0) 
-		    key.size = strlen((char *)key.data);
-		if (key.size == 0) 
-		    key.size++;	/* XXX "/" fixup. */
 
 		rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
 		if (rc == 0) {			/* success */
