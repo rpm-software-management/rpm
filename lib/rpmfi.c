@@ -471,12 +471,16 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 	if (blink == NULL) return -1;
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
-	const unsigned char * adigest = rpmfiMD5(afi);
-	const unsigned char * bdigest = rpmfiMD5(bfi);
+	size_t adiglen, bdiglen;
+	pgpHashAlgo aalgo, balgo;
+	const unsigned char * adigest = rpmfiDigest(afi, &aalgo, &adiglen);
+	const unsigned char * bdigest = rpmfiDigest(bfi, &balgo, &bdiglen);
 	if (adigest == bdigest) return 0;
 	if (adigest == NULL) return 1;
 	if (bdigest == NULL) return -1;
-	return memcmp(adigest, bdigest, 16);
+	/* can't meaningfully compare different hash types */
+	if (aalgo != balgo || adiglen != bdiglen) return -1;
+	return memcmp(adigest, bdigest, adiglen);
     }
 
     return 0;
