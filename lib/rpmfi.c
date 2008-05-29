@@ -7,7 +7,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include <rpm/rpmfileutil.h>/* XXX domd5 */
+#include <rpm/rpmfileutil.h>	/* XXX rpmDoDigest */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>	/* XXX rpmCleanPath */
 #include <rpm/rpmds.h>
@@ -457,12 +457,12 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 	if (blink == NULL) return -1;
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
-	const unsigned char * amd5 = rpmfiMD5(afi);
-	const unsigned char * bmd5 = rpmfiMD5(bfi);
-	if (amd5 == bmd5) return 0;
-	if (amd5 == NULL) return 1;
-	if (bmd5 == NULL) return -1;
-	return memcmp(amd5, bmd5, 16);
+	const unsigned char * adigest = rpmfiMD5(afi);
+	const unsigned char * bdigest = rpmfiMD5(bfi);
+	if (adigest == bdigest) return 0;
+	if (adigest == NULL) return 1;
+	if (bdigest == NULL) return -1;
+	return memcmp(adigest, bdigest, 16);
     }
 
     return 0;
@@ -517,17 +517,17 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
-	const unsigned char * omd5, * nmd5;
-	omd5 = rpmfiMD5(ofi);
+	const unsigned char * odigest, * ndigest;
+	odigest = rpmfiMD5(ofi);
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(PGPHASHALGO_MD5, fn, 0, 
 		(unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
-	    if (omd5 && !memcmp(omd5, buffer, 16))
+	    if (odigest && !memcmp(odigest, buffer, 16))
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	}
-	nmd5 = rpmfiMD5(nfi);
-	if (omd5 && nmd5 && !memcmp(omd5, nmd5, 16))
+	ndigest = rpmfiMD5(nfi);
+	if (odigest && ndigest && !memcmp(odigest, ndigest, 16))
 	    return FA_SKIP;	/* identical file, don't bother. */
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
@@ -575,11 +575,11 @@ int rpmfiConfigConflict(const rpmfi fi)
     
     memset(buffer, 0, sizeof(buffer));
     if (newWhat == REG) {
-	const unsigned char * nmd5;
+	const unsigned char * ndigest;
 	if (rpmDoDigest(PGPHASHALGO_MD5, fn, 0, (unsigned char *)buffer, NULL))
 	    return 0;	/* assume file has been removed */
-	nmd5 = rpmfiMD5(fi);
-	if (nmd5 && !memcmp(nmd5, buffer, 16))
+	ndigest = rpmfiMD5(fi);
+	if (ndigest && !memcmp(ndigest, buffer, 16))
 	    return 0;	/* unmodified config file */
     } else /* newWhat == LINK */ {
 	const char * nFLink;
@@ -1250,17 +1250,17 @@ if (fi->actions == NULL)
 	t = xmalloc(fi->fc * 16);
 	fi->digests = t;
 	for (i = 0; i < fi->fc; i++) {
-	    const char * fmd5;
+	    const char * fdigest;
 	    int j;
 
-	    fmd5 = fi->fdigests[i];
-	    if (!(fmd5 && *fmd5 != '\0')) {
+	    fdigest = fi->fdigests[i];
+	    if (!(fdigest && *fdigest != '\0')) {
 		memset(t, 0, 16);
 		t += 16;
 		continue;
 	    }
-	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
-		*t = (rnibble(fmd5[0]) << 4) | rnibble(fmd5[1]);
+	    for (j = 0; j < 16; j++, t++, fdigest += 2)
+		*t = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
 	}
 	fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
     }
