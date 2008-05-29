@@ -1178,7 +1178,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     uint32_t * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
-    const char **fdigests;
+    struct rpmtd_s fdigests;
     int len;
     int xx;
     int i;
@@ -1268,27 +1268,23 @@ if (fi->actions == NULL)
 
     /* digest algorithm hardwired to MD5 for now */
     fi->digestalgo = PGPHASHALGO_MD5;
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fdigests, NULL);
-
     fi->digests = NULL;
-    if (fdigests) {
+    /* grab hex digests from header and store in binary format */
+    if (headerGet(h, RPMTAG_FILEMD5S, &fdigests, HEADERGET_MINMEM)) {
+	const char *fdigest;
 	size_t diglen = rpmDigestLength(fi->digestalgo);
-	t = xmalloc(fi->fc * diglen);
-	fi->digests = t;
-	for (i = 0; i < fi->fc; i++) {
-	    const char * fdigest;
-	    int j;
+	fi->digests = t = xmalloc(rpmtdCount(&fdigests) * diglen);
 
-	    fdigest = fdigests[i];
+	while ((fdigest = rpmtdNextString(&fdigests))) {
 	    if (!(fdigest && *fdigest != '\0')) {
 		memset(t, 0, diglen);
 		t += diglen;
 		continue;
 	    }
-	    for (j = 0; j < diglen; j++, t++, fdigest += 2)
+	    for (int j = 0; j < diglen; j++, t++, fdigest += 2)
 		*t = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
 	}
-	fdigests = hfd(fdigests, RPM_FORCEFREE_TYPE);
+	rpmtdFreeData(&fdigests);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
