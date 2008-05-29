@@ -42,7 +42,6 @@ static const rpmTag requiredTags[] = {
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
     RPMTAG_SUMMARY,
-    RPMTAG_GROUP,
     RPMTAG_LICENSE,
     0
 };
