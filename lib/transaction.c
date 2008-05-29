@@ -566,12 +566,16 @@ assert(otherFi != NULL);
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
-	    {	unsigned char md5sum[50];
-		const unsigned char * MD5 = rpmfiMD5(fi);
-		if (!rpmDoDigest(PGPHASHALGO_MD5, fn, 0, md5sum, NULL) &&
-		    memcmp(MD5, md5sum, 16)) {
-		    fi->actions[i] = FA_BACKUP;
-		    break;
+	    {	pgpHashAlgo algo = 0;
+		size_t diglen = 0;
+		const unsigned char *digest;
+		if ((digest = rpmfiDigest(fi, &algo, &diglen))) {
+		    unsigned char fdigest[diglen];
+		    if (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
+			memcmp(digest, fdigest, diglen)) {
+			fi->actions[i] = FA_BACKUP;
+			break;
+		    }
 		}
 	    }
 	    fi->actions[i] = FA_ERASE;
