@@ -535,17 +535,22 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
+	pgpHashAlgo oalgo, nalgo;
+	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
-	odigest = rpmfiMD5(ofi);
+	odigest = rpmfiDigest(ofi, &oalgo, &odiglen);
 	if (diskWhat == REG) {
-	    if (rpmDoDigest(PGPHASHALGO_MD5, fn, 0, 
+	    if (rpmDoDigest(oalgo, fn, 0, 
 		(unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
-	    if (odigest && !memcmp(odigest, buffer, 16))
+	    if (odigest && !memcmp(odigest, buffer, odiglen))
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	}
-	ndigest = rpmfiMD5(nfi);
-	if (odigest && ndigest && !memcmp(odigest, ndigest, 16))
+	ndigest = rpmfiDigest(nfi, &nalgo, &ndiglen);
+	/* XXX can't compare different hash types, what should we do here? */
+	if (oalgo != nalgo || odiglen != ndiglen)
+	    return FA_CREATE;
+	if (odigest && ndigest && !memcmp(odigest, ndigest, odiglen))
 	    return FA_SKIP;	/* identical file, don't bother. */
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
