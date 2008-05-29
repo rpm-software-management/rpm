@@ -499,6 +499,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	fdSetCpioPos(fsm->cfd, 0);
     }
     fsm->iter = mapInitIterator(ts, fi);
+    fsm->digestalgo = fi->digestalgo;
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	void * ptr;
@@ -716,11 +717,12 @@ int fsmMapAttrs(FSM_t fsm)
 	{   rpmts ts = fsmGetTs(fsm);
 
 	    /*
-	     * Set file md5 (if not disabled).
+	     * Set file checksum (if not disabled).
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
+		size_t diglen = rpmDigestLength(fsm->digestalgo);
 		fsm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
-		fsm->digest = (char *)(fi->digests ? (fi->digests + (16 * i)) : NULL);
+		fsm->digest = (char *)(fi->digests ? (fi->digests + (diglen * i)) : NULL);
 	    } else {
 		fsm->fdigest = NULL;
 		fsm->digest = NULL;
@@ -747,7 +749,7 @@ static int expandRegular(FSM_t fsm)
 	goto exit;
 
     if (st->st_size > 0 && (fsm->fdigest != NULL || fsm->digest != NULL))
-	fdInitDigest(fsm->wfd, PGPHASHALGO_MD5, 0);
+	fdInitDigest(fsm->wfd, fsm->digestalgo, 0);
 
     while (left) {
 
@@ -772,7 +774,7 @@ static int expandRegular(FSM_t fsm)
 	int asAscii = (fsm->digest == NULL ? 1 : 0);
 
 	(void) Fflush(fsm->wfd);
-	fdFiniDigest(fsm->wfd, PGPHASHALGO_MD5, &digest, NULL, asAscii);
+	fdFiniDigest(fsm->wfd, fsm->digestalgo, &digest, NULL, asAscii);
 
 	if (digest == NULL) {
 	    rc = CPIOERR_MD5SUM_MISMATCH;
@@ -780,7 +782,8 @@ static int expandRegular(FSM_t fsm)
 	}
 
 	if (fsm->digest != NULL) {
-	    if (memcmp(digest, fsm->digest, 16))
+	    size_t diglen = rpmDigestLength(fsm->digestalgo);
+	    if (memcmp(digest, fsm->digest, diglen))
 		rc = CPIOERR_MD5SUM_MISMATCH;
 	} else {
 	    if (strcmp(digest, fsm->fdigest))
