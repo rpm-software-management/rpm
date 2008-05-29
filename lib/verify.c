@@ -92,19 +92,25 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
 
     if (flags & RPMVERIFY_MD5) {
-	unsigned char md5sum[16];
-	rpm_off_t fsize;
+	const unsigned char *digest; 
+	pgpHashAlgo algo;
+	size_t diglen;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
-	rc = rpmDoDigest(PGPHASHALGO_MD5, fn, 0, md5sum, &fsize);
-	sb.st_size = fsize;
-	if (rc)
-	    *res |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
-	else {
-	    const unsigned char * MD5 = rpmfiMD5(fi);
-	    if (MD5 == NULL || memcmp(md5sum, MD5, sizeof(md5sum)))
+	if ((digest = rpmfiDigest(fi, &algo, &diglen))) {
+	    unsigned char fdigest[diglen];
+	    rpm_off_t fsize;
+
+	    rc = rpmDoDigest(algo, fn, 0, fdigest, &fsize);
+	    sb.st_size = fsize;
+	    if (rc) {
+		*res |= (RPMVERIFY_READFAIL|RPMVERIFY_MD5);
+	    } else if (memcmp(fdigest, digest, diglen)) {
 		*res |= RPMVERIFY_MD5;
-	}
+	    }
+	} else {
+	    *res |= RPMVERIFY_MD5;
+	} 
     } 
 
     if (flags & RPMVERIFY_LINKTO) {
