@@ -593,11 +593,12 @@ int rpmfiConfigConflict(const rpmfi fi)
     
     memset(buffer, 0, sizeof(buffer));
     if (newWhat == REG) {
-	const unsigned char * ndigest;
-	if (rpmDoDigest(PGPHASHALGO_MD5, fn, 0, (unsigned char *)buffer, NULL))
+	pgpHashAlgo algo;
+	size_t diglen;
+	const unsigned char *ndigest = rpmfiDigest(fi, &algo, &diglen);
+	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
 	    return 0;	/* assume file has been removed */
-	ndigest = rpmfiMD5(fi);
-	if (ndigest && !memcmp(ndigest, buffer, 16))
+	if (ndigest && !memcmp(ndigest, buffer, diglen))
 	    return 0;	/* unmodified config file */
     } else /* newWhat == LINK */ {
 	const char * nFLink;
