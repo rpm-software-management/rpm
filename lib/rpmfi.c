@@ -173,13 +173,27 @@ rpmfileState rpmfiFState(rpmfi fi)
 
 const unsigned char * rpmfiMD5(rpmfi fi)
 {
-    unsigned char * MD5 = NULL;
+    const unsigned char *digest;
+    pgpHashAlgo algo = 0;
+
+    digest = rpmfiDigest(fi, &algo, NULL);
+    return (algo == PGPHASHALGO_MD5) ? digest : NULL;
+}
+
+const unsigned char * rpmfiDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
+{
+    const unsigned char *digest = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    	size_t diglen = rpmDigestLength(fi->digestalgo);
 	if (fi->digests != NULL)
-	    MD5 = fi->digests + (16 * fi->i);
+	    digest = fi->digests + (diglen * fi->i);
+	if (len) 
+	    *len = diglen;
+	if (algo) 
+	    *algo = fi->digestalgo;
     }
-    return MD5;
+    return digest;
 }
 
 const char * rpmfiFLink(rpmfi fi)
@@ -1242,6 +1256,8 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (rpm_data_t *) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (rpm_data_t *) &fi->flangs, NULL);
 
+    /* digest algorithm hardwired to MD5 for now */
+    fi->digestalgo = PGPHASHALGO_MD5;
     fi->fdigests = NULL;
     xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fi->fdigests, NULL);
 

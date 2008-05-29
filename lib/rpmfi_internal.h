@@ -96,6 +96,7 @@ struct rpmfi_s {
     const char ** odnl;		/*!< Original dirname(s) (from header) */
     int32_t * odil;		/*!< Original dirindex(s) (from header) */
 
+    pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
     unsigned char * digests;	/*!< File checksums in binary. */
 
     char * pretrans;

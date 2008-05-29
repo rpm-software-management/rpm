@@ -8,6 +8,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmvf.h>
+#include <rpm/rpmpgp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -204,6 +205,15 @@ rpm_mode_t rpmfiFMode(rpmfi fi);
  * @return		current file state, 0 on invalid
  */
 rpmfileState rpmfiFState(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current file (binary) digest of file info set.
+ * @param fi		file info set
+ * @retval algo		digest hash algoritm used (pass NULL to ignore)
+ * @retval diglen	digest hash length (pass NULL to ignore)
+ * @return		current file digest, NULL on invalid
+ */
+const unsigned char * rpmfiDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
 
 /** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set.
