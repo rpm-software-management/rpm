@@ -1263,7 +1263,8 @@ if (fi->actions == NULL)
 
     fi->digests = NULL;
     if (fi->fdigests) {
-	t = xmalloc(fi->fc * 16);
+	size_t diglen = rpmDigestLength(fi->digestalgo);
+	t = xmalloc(fi->fc * diglen);
 	fi->digests = t;
 	for (i = 0; i < fi->fc; i++) {
 	    const char * fdigest;
@@ -1271,11 +1272,11 @@ if (fi->actions == NULL)
 
 	    fdigest = fi->fdigests[i];
 	    if (!(fdigest && *fdigest != '\0')) {
-		memset(t, 0, 16);
-		t += 16;
+		memset(t, 0, diglen);
+		t += diglen;
 		continue;
 	    }
-	    for (j = 0; j < 16; j++, t++, fdigest += 2)
+	    for (j = 0; j < diglen; j++, t++, fdigest += 2)
 		*t = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
 	}
 	fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
