@@ -152,8 +152,8 @@ struct fsm_s {
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
-    const char * fmd5sum;	/*!< Hex MD5 sum (NULL disables). */
-    const char * md5sum;	/*!< Binary MD5 sum (NULL disables). */
+    const char * fdigest;	/*!< Hex checksum (NULL disables). */
+    const char * digest;	/*!< Binary checksum (NULL disables). */
     const char * fcontext;	/*!< File security context (NULL disables). */
     
     unsigned fflags;		/*!< File flags. */

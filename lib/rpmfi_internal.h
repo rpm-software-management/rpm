@@ -35,7 +35,7 @@ struct rpmfi_s {
 /*?null?*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
-    const char ** fmd5s;	/*!< File MD5 sum(s) (from header) */
+    const char ** fdigests;	/*!< File checksum(s) (from header) */
     const char ** flinks;	/*!< File link(s) (from header) */
     const char ** flangs;	/*!< File lang(s) (from header) */
 
@@ -96,7 +96,7 @@ struct rpmfi_s {
     const char ** odnl;		/*!< Original dirname(s) (from header) */
     int32_t * odil;		/*!< Original dirindex(s) (from header) */
 
-    unsigned char * md5s;	/*!< File md5 sums in binary. */
+    unsigned char * digests;	/*!< File checksums in binary. */
 
     char * pretrans;
     char * pretransprog;

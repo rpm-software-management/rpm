@@ -304,7 +304,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     /* XXX FIXME: can't do endian neutral MD5 verification yet. */
-fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
+fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
     fi->fmapflags = _free(fi->fmapflags);

@@ -176,8 +176,8 @@ const unsigned char * rpmfiMD5(rpmfi fi)
     unsigned char * MD5 = NULL;
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	if (fi->md5s != NULL)
-	    MD5 = fi->md5s + (16 * fi->i);
+	if (fi->digests != NULL)
+	    MD5 = fi->digests + (16 * fi->i);
     }
     return MD5;
 }
@@ -1081,8 +1081,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->flinks = hfd(fi->flinks, RPM_FORCEFREE_TYPE);
 	fi->flangs = hfd(fi->flangs, RPM_FORCEFREE_TYPE);
-	fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
-	fi->md5s = _free(fi->md5s);
+	fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
+	fi->digests = _free(fi->digests);
 
 	fi->cdict = hfd(fi->cdict, RPM_FORCEFREE_TYPE);
 
@@ -1242,18 +1242,18 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (rpm_data_t *) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (rpm_data_t *) &fi->flangs, NULL);
 
-    fi->fmd5s = NULL;
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fi->fmd5s, NULL);
+    fi->fdigests = NULL;
+    xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fi->fdigests, NULL);
 
-    fi->md5s = NULL;
-    if (fi->fmd5s) {
+    fi->digests = NULL;
+    if (fi->fdigests) {
 	t = xmalloc(fi->fc * 16);
-	fi->md5s = t;
+	fi->digests = t;
 	for (i = 0; i < fi->fc; i++) {
 	    const char * fmd5;
 	    int j;
 
-	    fmd5 = fi->fmd5s[i];
+	    fmd5 = fi->fdigests[i];
 	    if (!(fmd5 && *fmd5 != '\0')) {
 		memset(t, 0, 16);
 		t += 16;
@@ -1262,7 +1262,7 @@ if (fi->actions == NULL)
 	    for (j = 0; j < 16; j++, t++, fmd5 += 2)
 		*t = (rnibble(fmd5[0]) << 4) | rnibble(fmd5[1]);
 	}
-	fi->fmd5s = hfd(fi->fmd5s, RPM_FORCEFREE_TYPE);
+	fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
@@ -1286,7 +1286,7 @@ if (fi->actions == NULL)
 /* XXX DYING */
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-	/* FIX: fi-md5s undefined */
+	/* FIX: fi-digests undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	fi->h = headerFree(fi->h);
 	fi->h = headerLink(foo);
