@@ -1105,7 +1105,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->flinks = hfd(fi->flinks, RPM_FORCEFREE_TYPE);
 	fi->flangs = hfd(fi->flangs, RPM_FORCEFREE_TYPE);
-	fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
 	fi->digests = _free(fi->digests);
 
 	fi->cdict = hfd(fi->cdict, RPM_FORCEFREE_TYPE);
@@ -1179,6 +1178,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     uint32_t * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
+    const char **fdigests;
     int len;
     int xx;
     int i;
@@ -1268,11 +1268,10 @@ if (fi->actions == NULL)
 
     /* digest algorithm hardwired to MD5 for now */
     fi->digestalgo = PGPHASHALGO_MD5;
-    fi->fdigests = NULL;
-    xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fi->fdigests, NULL);
+    xx = hge(h, RPMTAG_FILEMD5S, NULL, (rpm_data_t *) &fdigests, NULL);
 
     fi->digests = NULL;
-    if (fi->fdigests) {
+    if (fdigests) {
 	size_t diglen = rpmDigestLength(fi->digestalgo);
 	t = xmalloc(fi->fc * diglen);
 	fi->digests = t;
@@ -1280,7 +1279,7 @@ if (fi->actions == NULL)
 	    const char * fdigest;
 	    int j;
 
-	    fdigest = fi->fdigests[i];
+	    fdigest = fdigests[i];
 	    if (!(fdigest && *fdigest != '\0')) {
 		memset(t, 0, diglen);
 		t += diglen;
@@ -1289,7 +1288,7 @@ if (fi->actions == NULL)
 	    for (j = 0; j < diglen; j++, t++, fdigest += 2)
 		*t = (rnibble(fdigest[0]) << 4) | rnibble(fdigest[1]);
 	}
-	fi->fdigests = hfd(fi->fdigests, RPM_FORCEFREE_TYPE);
+	fdigests = hfd(fdigests, RPM_FORCEFREE_TYPE);
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */

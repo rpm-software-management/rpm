@@ -721,10 +721,8 @@ int fsmMapAttrs(FSM_t fsm)
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
 		size_t diglen = rpmDigestLength(fsm->digestalgo);
-		fsm->fdigest = (fi->fdigests ? fi->fdigests[i] : NULL);
 		fsm->digest = (char *)(fi->digests ? (fi->digests + (diglen * i)) : NULL);
 	    } else {
-		fsm->fdigest = NULL;
 		fsm->digest = NULL;
 	    }
 	}
@@ -748,7 +746,7 @@ static int expandRegular(FSM_t fsm)
     if (rc)
 	goto exit;
 
-    if (st->st_size > 0 && (fsm->fdigest != NULL || fsm->digest != NULL))
+    if (st->st_size > 0 && fsm->digest != NULL)
 	fdInitDigest(fsm->wfd, fsm->digestalgo, 0);
 
     while (left) {
@@ -769,7 +767,7 @@ static int expandRegular(FSM_t fsm)
 	    (void) fsmNext(fsm, FSM_NOTIFY);
     }
 
-    if (st->st_size > 0 && (fsm->fdigest || fsm->digest)) {
+    if (st->st_size > 0 && fsm->digest) {
 	void * digest = NULL;
 	int asAscii = (fsm->digest == NULL ? 1 : 0);
 
@@ -786,8 +784,7 @@ static int expandRegular(FSM_t fsm)
 	    if (memcmp(digest, fsm->digest, diglen))
 		rc = CPIOERR_MD5SUM_MISMATCH;
 	} else {
-	    if (strcmp(digest, fsm->fdigest))
-		rc = CPIOERR_MD5SUM_MISMATCH;
+	    rc = CPIOERR_MD5SUM_MISMATCH;
 	}
 	digest = _free(digest);
     }

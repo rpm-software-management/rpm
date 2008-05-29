@@ -35,7 +35,6 @@ struct rpmfi_s {
 /*?null?*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
-    const char ** fdigests;	/*!< File checksum(s) (from header) */
     const char ** flinks;	/*!< File link(s) (from header) */
     const char ** flangs;	/*!< File lang(s) (from header) */
 
