@@ -196,6 +196,17 @@ const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
     return digest;
 }
 
+char * rpmfiFDigestHex(rpmfi fi, pgpHashAlgo *algo)
+{
+    size_t diglen = 0;
+    char *fdigest = NULL;
+    const unsigned char *digest = rpmfiFDigest(fi, algo, &diglen);
+    if (digest) {
+	fdigest = pgpHexStr(digest, diglen);
+    }
+    return fdigest;
+}
+
 const char * rpmfiFLink(rpmfi fi)
 {
     const char * flink = NULL;

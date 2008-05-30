@@ -216,6 +216,17 @@ rpmfileState rpmfiFState(rpmfi fi);
 const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
 
 /** \ingroup rpmfi
+ * Return current file (hex) digest of file info set.
+ * The file info set stores file digests in binary format to conserve
+ * memory, this converts the binary data back to hex presentation used in
+ * headers. 
+ * @param fi		file info set
+ * @retval algo		digest hash algoritm used (pass NULL to ignore)
+ * @return		current file digest (malloc'ed), NULL on invalid
+ */
+char * rpmfiFDigestHex(rpmfi fi, pgpHashAlgo *algo);
+
+/** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set.
  * @deprecated		Use rpmfiFDigest() instead
  * @param fi		file info set
