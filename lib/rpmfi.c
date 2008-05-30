@@ -1189,7 +1189,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     uint32_t * uip;
     int dnlmax, bnlmax;
     unsigned char * t;
-    struct rpmtd_s fdigests;
+    struct rpmtd_s fdigests, digalgo;
     int len;
     int xx;
     int i;
@@ -1277,8 +1277,16 @@ if (fi->actions == NULL)
     xx = hge(h, RPMTAG_FILELINKTOS, NULL, (rpm_data_t *) &fi->flinks, NULL);
     xx = hge(h, RPMTAG_FILELANGS, NULL, (rpm_data_t *) &fi->flangs, NULL);
 
-    /* digest algorithm hardwired to MD5 for now */
+    /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
+    if (headerGet(h, RPMTAG_FILEDIGESTALGO, &digalgo, HEADERGET_MINMEM)) {
+	pgpHashAlgo *algo = rpmtdGetUint32(&digalgo);
+	/* Hmm, what to do with unknown digest algorithms? */
+	if (algo && *algo >= PGPHASHALGO_MD5 && *algo <= PGPHASHALGO_SHA512) {
+	    fi->digestalgo = *algo;
+	}
+    }
+
     fi->digests = NULL;
     /* grab hex digests from header and store in binary format */
     if (headerGet(h, RPMTAG_FILEDIGESTS, &fdigests, HEADERGET_MINMEM)) {
