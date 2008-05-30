@@ -96,12 +96,10 @@ static PyObject *
 rpmfi_Digest(rpmfiObject * s)
 {
     const unsigned char *digest;
-    size_t diglen = 0;
 
-    digest = rpmfiFDigest(s->fi, NULL, &diglen);
+    digest = rpmfiFDigestHex(s->fi, NULL);
     if (digest) {
-	char *dig = pgpHexStr(digest, diglen);
-	return Py_BuildValue("s", dig);
+	return Py_BuildValue("s", digest);
     } else {
 	Py_RETURN_NONE;
     }

@@ -195,12 +195,9 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
 	    char *add, *fdigest;
-	    size_t diglen = 0;
-	    const unsigned char *digest = rpmfiFDigest(fi, NULL, &diglen);
-	    fdigest = pgpHexStr(digest, diglen);
-	
+	    fdigest = rpmfiFDigestHex(fi, NULL);
 	    rasprintf(&add, "%s %d %d %s 0%o ", 
-		      fn, (int)fsize, fmtime, fdigest, fmode);
+		      fn, (int)fsize, fmtime, fdigest ? fdigest : "", fmode);
 	    rstrcat(&buf, add);
 	    free(add);
 	    free(fdigest);
