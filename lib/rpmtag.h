@@ -249,7 +249,7 @@ typedef enum rpmTag_e {
     RPMTAG_SCRIPTSTATES		= 1174, /* i[] scriptlet exit codes */
     RPMTAG_SCRIPTMETRICS	= 1175, /* i[] scriptlet execution times */
     RPMTAG_BUILDCPUCLOCK	= 1176, /* i */
-    RPMTAG_FILEDIGESTALGOS	= 1177, /* i[] */
+    RPMTAG_FILEDIGESTALGO	= 1177, /* i file checksum algorithm */
     RPMTAG_VARIANTS		= 1178, /* s[] */
     RPMTAG_XMAJOR		= 1179, /* i */
     RPMTAG_XMINOR		= 1180, /* i */
