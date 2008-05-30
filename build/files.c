@@ -1122,8 +1122,8 @@ static void genCpioListAndHeader(FileList fl,
 	    (void) rpmDoDigest(PGPHASHALGO_MD5, flp->diskPath, 1, 
 			       (unsigned char *)buf, NULL);
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEMD5S, RPM_STRING_ARRAY_TYPE,
-			       &s, 1);
+	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTS, 
+				      RPM_STRING_ARRAY_TYPE, &s, 1);
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {

@@ -1281,7 +1281,7 @@ if (fi->actions == NULL)
     fi->digestalgo = PGPHASHALGO_MD5;
     fi->digests = NULL;
     /* grab hex digests from header and store in binary format */
-    if (headerGet(h, RPMTAG_FILEMD5S, &fdigests, HEADERGET_MINMEM)) {
+    if (headerGet(h, RPMTAG_FILEDIGESTS, &fdigests, HEADERGET_MINMEM)) {
 	const char *fdigest;
 	size_t diglen = rpmDigestLength(fi->digestalgo);
 	fi->digests = t = xmalloc(rpmtdCount(&fdigests) * diglen);

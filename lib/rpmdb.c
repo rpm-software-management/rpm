@@ -2367,7 +2367,7 @@ static int td2key(rpmtd tagdata, DBT *key)
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	str = rpmtdGetString(tagdata);
-	if (rpmtdTag(tagdata) == RPMTAG_FILEMD5S) {
+	if (rpmtdTag(tagdata) == RPMTAG_FILEDIGESTS) {
 	    uint8_t * t = bin;
 	    /* Filter out empty MD5 strings. */
 	    if (!(str && *str != '\0'))
