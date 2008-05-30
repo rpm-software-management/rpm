@@ -194,13 +194,16 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	}
 
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
-	    char *add, *fmd5;
-	    fmd5 = pgpHexStr(rpmfiMD5(fi), rpmDigestLength(PGPHASHALGO_MD5));
+	    char *add, *fdigest;
+	    size_t diglen = 0;
+	    const unsigned char *digest = rpmfiDigest(fi, NULL, &diglen);
+	    fdigest = pgpHexStr(digest, diglen);
 	
-	    rasprintf(&add, "%s %d %d %s 0%o ", fn, (int)fsize, fmtime, fmd5, fmode);
+	    rasprintf(&add, "%s %d %d %s 0%o ", 
+		      fn, (int)fsize, fmtime, fdigest, fmode);
 	    rstrcat(&buf, add);
 	    free(add);
-	    free(fmd5);
+	    free(fdigest);
 
 	    if (fuser && fgroup) {
 		rasprintf(&add, "%s %s", fuser, fgroup);
