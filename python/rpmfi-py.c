@@ -91,14 +91,14 @@ rpmfi_FState(rpmfiObject * s)
     return Py_BuildValue("i", rpmfiFState(s->fi));
 }
 
-/* XXX rpmfiDigest */
+/* XXX rpmfiFDigest */
 static PyObject *
 rpmfi_Digest(rpmfiObject * s)
 {
     const unsigned char *digest;
     size_t diglen = 0;
 
-    digest = rpmfiDigest(s->fi, NULL, &diglen);
+    digest = rpmfiFDigest(s->fi, NULL, &diglen);
     if (digest) {
 	char *dig = pgpHexStr(digest, diglen);
 	return Py_BuildValue("s", dig);

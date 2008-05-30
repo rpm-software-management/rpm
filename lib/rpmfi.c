@@ -176,11 +176,11 @@ const unsigned char * rpmfiMD5(rpmfi fi)
     const unsigned char *digest;
     pgpHashAlgo algo = 0;
 
-    digest = rpmfiDigest(fi, &algo, NULL);
+    digest = rpmfiFDigest(fi, &algo, NULL);
     return (algo == PGPHASHALGO_MD5) ? digest : NULL;
 }
 
-const unsigned char * rpmfiDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
+const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
 {
     const unsigned char *digest = NULL;
 
@@ -473,8 +473,8 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     } else if (awhat == REG) {
 	size_t adiglen, bdiglen;
 	pgpHashAlgo aalgo, balgo;
-	const unsigned char * adigest = rpmfiDigest(afi, &aalgo, &adiglen);
-	const unsigned char * bdigest = rpmfiDigest(bfi, &balgo, &bdiglen);
+	const unsigned char * adigest = rpmfiFDigest(afi, &aalgo, &adiglen);
+	const unsigned char * bdigest = rpmfiFDigest(bfi, &balgo, &bdiglen);
 	if (adigest == bdigest) return 0;
 	if (adigest == NULL) return 1;
 	if (bdigest == NULL) return -1;
@@ -538,7 +538,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	pgpHashAlgo oalgo, nalgo;
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
-	odigest = rpmfiDigest(ofi, &oalgo, &odiglen);
+	odigest = rpmfiFDigest(ofi, &oalgo, &odiglen);
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(oalgo, fn, 0, 
 		(unsigned char *)buffer, NULL))
@@ -546,7 +546,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	    if (odigest && !memcmp(odigest, buffer, odiglen))
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	}
-	ndigest = rpmfiDigest(nfi, &nalgo, &ndiglen);
+	ndigest = rpmfiFDigest(nfi, &nalgo, &ndiglen);
 	/* XXX can't compare different hash types, what should we do here? */
 	if (oalgo != nalgo || odiglen != ndiglen)
 	    return FA_CREATE;
@@ -600,7 +600,7 @@ int rpmfiConfigConflict(const rpmfi fi)
     if (newWhat == REG) {
 	pgpHashAlgo algo;
 	size_t diglen;
-	const unsigned char *ndigest = rpmfiDigest(fi, &algo, &diglen);
+	const unsigned char *ndigest = rpmfiFDigest(fi, &algo, &diglen);
 	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
 	    return 0;	/* assume file has been removed */
 	if (ndigest && !memcmp(ndigest, buffer, diglen))

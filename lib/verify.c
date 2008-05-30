@@ -97,7 +97,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	size_t diglen;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */
-	if ((digest = rpmfiDigest(fi, &algo, &diglen))) {
+	if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
 	    unsigned char fdigest[diglen];
 	    rpm_off_t fsize;
 

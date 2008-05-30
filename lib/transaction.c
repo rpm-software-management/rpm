@@ -569,7 +569,7 @@ assert(otherFi != NULL);
 	    {	pgpHashAlgo algo = 0;
 		size_t diglen = 0;
 		const unsigned char *digest;
-		if ((digest = rpmfiDigest(fi, &algo, &diglen))) {
+		if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
 		    unsigned char fdigest[diglen];
 		    if (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
 			memcmp(digest, fdigest, diglen)) {

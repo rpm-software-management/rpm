@@ -213,7 +213,7 @@ rpmfileState rpmfiFState(rpmfi fi);
  * @retval diglen	digest hash length (pass NULL to ignore)
  * @return		current file digest, NULL on invalid
  */
-const unsigned char * rpmfiDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
+const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
 
 /** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set.
