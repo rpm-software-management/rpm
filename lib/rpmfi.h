@@ -217,10 +217,11 @@ const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
 
 /** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set.
+ * @deprecated		Use rpmfiFDigest() instead
  * @param fi		file info set
  * @return		current file md5 digest, NULL on invalid
  */
-const unsigned char * rpmfiMD5(rpmfi fi);
+const unsigned char * rpmfiMD5(rpmfi fi) RPM_GNUC_DEPRECATED;
 
 /** \ingroup rpmfi
  * Return current file linkto (i.e. symlink(2) target) from file info set.
