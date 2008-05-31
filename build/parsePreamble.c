@@ -192,12 +192,13 @@ static int isMemberInEntry(Header h, const char *name, rpmTag tag)
 {
     struct rpmtd_s td;
     int found = 0;
+    const char *str;
 
     if (!headerGet(h, tag, &td, HEADERGET_MINMEM))
 	return -1;
 
-    while (rpmtdNext(&td) >= 0) {
-	if (!rstrcasecmp(rpmtdGetString(&td), name)) {
+    while ((str = rpmtdNextString(&td))) {
+	if (!rstrcasecmp(str, name)) {
 	    found = 1;
 	    break;
 	}
@@ -561,10 +562,10 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
       }	break;
     case RPMTAG_PREFIXES: {
 	struct rpmtd_s td;
+	const char *str;
 	addOrAppendListEntry(pkg->header, tag, field);
 	xx = headerGet(pkg->header, tag, &td, HEADERGET_MINMEM);
-	while (rpmtdNext(&td) >= 0) {
-	    const char *str = rpmtdGetString(&td);
+	while ((str = rpmtdNextString(&td))) {
 	    size_t len = strlen(str);
 	    if (len > 1 && str[len-1] == '/') {
 		rpmlog(RPMLOG_ERR,
