@@ -626,16 +626,18 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
     }
 
     if (rpmtdCount(prefixes) > 0) {
-	int i;
+	const char *pfx;
 	char *buf = NULL;
 	/* backwards compatibility */
-	rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", rpmtdGetString(prefixes));
-	xx = doputenv(buf);
-	buf = _free(buf);
+	if ((pfx = rpmtdGetString(prefixes))) {
+	    rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", pfx);
+	    xx = doputenv(buf);
+	    buf = _free(buf);
+	}
 
-	while ((i = rpmtdNext(prefixes)) >= 0) {
-	    rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", i, 
-			rpmtdGetString(prefixes));
+	while ((pfx = rpmtdNextString(prefixes))) {
+	    rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", 
+			rpmtdGetIndex(prefixes), pfx);
 	    xx = doputenv(buf);
 	    buf = _free(buf);
 	}
@@ -861,6 +863,7 @@ static rpmRC runInstScript(rpmpsm psm)
     rpmRC rc = RPMRC_OK;
     ARGV_t argv;
     struct rpmtd_s script, prog;
+    const char *str;
 
     if (fi->h == NULL)	/* XXX can't happen */
 	return RPMRC_FAIL;
@@ -871,8 +874,8 @@ static rpmRC runInstScript(rpmpsm psm)
 	goto exit;
 
     argv = argvNew();
-    while (rpmtdNext(&prog) >= 0) {
-	argvAdd(&argv, rpmtdGetString(&prog));
+    while ((str = rpmtdNextString(&prog))) {
+	argvAdd(&argv, str);
     }
 
     rc = runScript(psm, fi->h, psm->scriptTag, &argv,
