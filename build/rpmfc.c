@@ -1632,11 +1632,11 @@ assert(EVR != NULL);
 
     /* Add per-file colors(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECOLORS, fc->fcolor)) {
+	rpm_color_t *fcolor;
 	assert(ac == rpmtdCount(&td));
 	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
-	while (rpmtdNext(&td) >= 0) {
-	    rpm_color_t *fcolor = rpmtdGetUint32(&td);
+	while ((fcolor = rpmtdNextUint32(&td))) {
 	    *fcolor &= 0x0f;
 	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
