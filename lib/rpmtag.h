@@ -374,10 +374,11 @@ rpmTag rpmTagGetValue(const char * tagstr);
 
 /** \ingroup rpmtag
  * Return known rpm tag names, sorted by name.
+ * @retval tagnames 	tag container of string array type
  * @param fullname	return short or full name
- * @return		tag container of string array type
+ * @return		number of tag names, 0 on error
  */
-rpmtd rpmTagGetNames(int fullname);
+int rpmTagGetNames(rpmtd tagnames, int fullname);
 
 #ifdef __cplusplus
 }

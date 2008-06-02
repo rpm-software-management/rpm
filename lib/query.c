@@ -258,7 +258,8 @@ void rpmDisplayQueryTags(FILE * fp)
 	"string", "blob", "argv", "i18nstring"
     };
     const char *tname, *sname;
-    rpmtd names = rpmTagGetNames(1);
+    rpmtd names = rpmtdNew();
+    (void) rpmTagGetNames(names, 1);
 
     while ((tname = rpmtdNextString(names))) {
 	sname = tname + strlen("RPMTAG_");

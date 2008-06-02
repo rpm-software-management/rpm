@@ -319,7 +319,8 @@ void init_rpm(void)
 
     dict = PyDict_New();
     {	const char *tname, *sname;
-	rpmtd names = rpmTagGetNames(1);
+	rpmtd names = rpmtdNew();
+	rpmTagGetNames(names, 1);
 
 	while ((tname = rpmtdNextString(names))) {
 	    sname = tname + strlen("RPMTAG_");
@@ -330,6 +331,8 @@ void init_rpm(void)
 	    PyDict_SetItem(dict, tag, o);
 	    Py_DECREF(o);
 	}
+	rpmtdFreeData(names);
+	rpmtdFree(names);
     }	
     PyDict_SetItemString(d, "tagnames", dict);
     Py_DECREF(dict);
