@@ -23,7 +23,7 @@ typedef enum rpmCompressedMagic_e {
 
 /** \ingroup rpmfileutil
  * Calculate a file digest and size.
- * @param algo		digest algorithm (ignored for now, md5 used)
+ * @param algo		digest algorithm
  * @param fn		file name
  * @param asAscii	return checksum as ascii string?
  * @retval digest	address of calculated checksum
