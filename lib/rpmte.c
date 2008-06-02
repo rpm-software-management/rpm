@@ -90,8 +90,11 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->version = xstrdup(version);
     p->release = xstrdup(release);
 
-    headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_MINMEM);
-    p->epoch = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
+    if (headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_MINMEM)) {
+	p->epoch = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
+    } else {
+	p->epoch = NULL;
+    }
 
     p->arch = arch ? xstrdup(arch) : NULL;
     p->archScore = arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch) : 0;
