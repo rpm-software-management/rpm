@@ -2337,14 +2337,18 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 }
 
 /*
- * Convert
+ * Convert current tag data to db key
+ * @param tagdata	Tag data container
+ * @retval key		DB key struct
+ * @retval freedata	Should key.data be freed afterwards
  * Return 0 to signal this item should be discarded (ie continue)
  */
-static int td2key(rpmtd tagdata, DBT *key) 
+static int td2key(rpmtd tagdata, DBT *key, int *freedata) 
 {
-    static uint8_t bin[32]; /* yuck, eliminate static */
     const char *str = NULL;
+    uint8_t *bin = NULL;
 
+    *freedata = 0; 
     switch (rpmtdType(tagdata)) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -2368,24 +2372,34 @@ static int td2key(rpmtd tagdata, DBT *key)
     case RPM_STRING_ARRAY_TYPE:
 	str = rpmtdGetString(tagdata);
 	if (rpmtdTag(tagdata) == RPMTAG_FILEDIGESTS) {
-	    uint8_t * t = bin;
+	    size_t binlen;
+	    uint8_t *t;
+	
 	    /* Filter out empty MD5 strings. */
 	    if (!(str && *str != '\0'))
 		return 0;
 
+	    binlen = strlen(str) / 2;
+	    bin = xmalloc(binlen);
 	    /* Convert from hex to binary. */
-	    for (int j = 0; j < 16; j++, t++, str += 2)
+	    t = bin;
+	    for (int j = 0; j < binlen; j++, t++, str += 2) 
 		*t = (rnibble(str[0]) << 4) | rnibble(str[1]);
 	    key->data = bin;
-	    key->size = 16;
+	    key->size = binlen;
+	    *freedata = 1;
 	    break;
 	} else if (rpmtdTag(tagdata) == RPMTAG_PUBKEYS) {
 	    /* Extract the pubkey id from the base64 blob. */
+	    bin = xmalloc(sizeof(pgpKeyID_t));
 	    int nbin = pgpExtractPubkeyFingerprint(str, bin);
-	    if (nbin <= 0)
+	    if (nbin <= 0) {
+		free(bin);
 		return 0;
+	    }
 	    key->data = bin;
 	    key->size = nbin;
+	    *freedata = 1;
 	    break;
 	} else {
 	    /* fallthrough */;
@@ -2519,8 +2533,9 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    logAddRemove(1, &tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
+		int freedata = 0;
 
-		if (!td2key(&tagdata, &key)) {
+		if (!td2key(&tagdata, &key, &freedata)) {
 		    continue;
 		}
 
@@ -2541,13 +2556,13 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		if (rc == 0) {			/* success */
 		    (void) dbt2set(dbi, &data, &set);
 		} else if (rc == DB_NOTFOUND) {	/* not found */
-		    continue;
+		    goto cont;
 		} else {			/* error */
 		    rpmlog(RPMLOG_ERR,
 			_("error(%d) setting \"%s\" records from %s index\n"),
 			rc, (char*)key.data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
-		    continue;
+		    goto cont;
 		}
 
 		rc = dbiPruneSet(set, rec, 1, sizeof(*rec), 1);
@@ -2555,7 +2570,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		/* If nothing was pruned, then don't bother updating. */
 		if (rc) {
 		    set = dbiFreeIndexSet(set);
-		    continue;
+		    goto cont;
 		}
 
 		if (set->count > 0) {
@@ -2579,6 +2594,10 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		    }
 		}
 		set = dbiFreeIndexSet(set);
+cont:
+		if (freedata) {
+		   free(key.data); 
+		}
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
@@ -2790,7 +2809,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	    logAddRemove(0, &tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
 		dbiIndexSet set;
-		int i;
+		int i, freedata = 0;
 
 		/*
 		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
@@ -2821,7 +2840,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		    break;
 		}
 
-		if (!td2key(&tagdata, &key)) {
+		if (!td2key(&tagdata, &key, &freedata)) {
 		    continue;
 		}
 
@@ -2842,7 +2861,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 			_("error(%d) getting \"%s\" records from %s index\n"),
 			rc, (char*)key.data, rpmTagGetName(dbi->dbi_rpmtag));
 		    ret += 1;
-		    continue;
+		    goto cont;
 		}
 
 		if (set == NULL)		/* not found or duplicate */
@@ -2862,6 +2881,10 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		data.data = _free(data.data);
 		data.size = 0;
 		set = dbiFreeIndexSet(set);
+cont:
+		if (freedata) {
+		    free(key.data);
+		}
 	    }
 
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
