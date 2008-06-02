@@ -1319,7 +1319,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx);
 /** \ingroup rpmpgp
  * Obtain digest length in bytes.
  * @param hashalgo	type of digest
- * @return		digest length
+ * @return		digest length, zero on invalid algorithm
  */
 size_t rpmDigestLength(pgpHashAlgo hashalgo);
 
