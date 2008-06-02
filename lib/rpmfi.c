@@ -1282,7 +1282,7 @@ if (fi->actions == NULL)
     if (headerGet(h, RPMTAG_FILEDIGESTALGO, &digalgo, HEADERGET_MINMEM)) {
 	pgpHashAlgo *algo = rpmtdGetUint32(&digalgo);
 	/* Hmm, what to do with unknown digest algorithms? */
-	if (algo && *algo >= PGPHASHALGO_MD5 && *algo <= PGPHASHALGO_SHA512) {
+	if (algo && rpmDigestLength(*algo) != 0) {
 	    fi->digestalgo = *algo;
 	}
     }
