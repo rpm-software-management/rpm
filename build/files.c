@@ -971,6 +971,24 @@ static void genCpioListAndHeader(FileList fl,
     FileListRec flp;
     char buf[BUFSIZ];
     int i;
+    pgpHashAlgo defaultalgo = PGPHASHALGO_MD5, digestalgo;
+
+    /*
+     * See if non-md5 file checksum algorithm is requested. If not
+     * specified, quietly assume md5. Otherwise check if supported type.
+     */
+    digestalgo = rpmExpandNumeric(isSrc ? "%{_source_filedigest_algorithm}" :
+					  "%{_binary_filedigest_algorithm}");
+    if (digestalgo == 0) {
+	digestalgo = defaultalgo;
+    }
+
+    if (rpmDigestLength(digestalgo) == 0) {
+	rpmlog(RPMLOG_WARNING,
+		_("Unknown file digest algorithm %u, falling back to MD5\n"), 
+		digestalgo);
+	digestalgo = defaultalgo;
+    }
     
     /* Sort the big list */
     qsort(fl->fileList, fl->fileListRecsUsed,
@@ -1119,7 +1137,7 @@ static void genCpioListAndHeader(FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
-	    (void) rpmDoDigest(PGPHASHALGO_MD5, flp->diskPath, 1, 
+	    (void) rpmDoDigest(digestalgo, flp->diskPath, 1, 
 			       (unsigned char *)buf, NULL);
 	s = buf;
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTS, 
@@ -1162,6 +1180,12 @@ static void genCpioListAndHeader(FileList fl,
 
     (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
 		   &(fl->totalFileSize), 1);
+
+    if (digestalgo != defaultalgo) {
+	headerAddEntry(h, RPMTAG_FILEDIGESTALGO, RPM_INT32_TYPE,
+			&digestalgo, 1);
+	rpmlibNeedsFeature(h, "FileDigests", "4.4.90-1");
+    }
 
     if (_addDotSlash)
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");

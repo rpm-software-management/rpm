@@ -324,6 +324,20 @@ package or when debugging this package.\
 #%_source_payload	w9.gzdio
 #%_binary_payload	w9.gzdio
 
+#	Algorithm to use for generating file checksum digests on build.
+#	If not specified or 0, MD5 is used.
+#	WARNING: non-MD5 is backwards incompatible, don't enable lightly!
+#	The supported algorithms may depend on NSS version, as of NSS
+#	3.11.99.5 the following are supported:
+#	1	MD5 (default)
+#	2	SHA1
+#	8	SHA256
+#	9	SHA384
+#	10	SHA512
+#
+#%_source_filedigest_algorithm	1
+#%_binary_filedigest_algorithm	1
+
 #	The signature to use and the location of configuration files for
 #	signing packages with PGP.
 #
