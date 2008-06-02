@@ -409,27 +409,31 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
 
     case RPMQV_FILEID:
-    {	unsigned char MD5[16];
-	unsigned char * t;
+    {	unsigned char *digest, *t;
+	size_t diglen;
 
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
-	if (i != 32) {
+	/* XXX dunno the algorithm yet, just check we're in the ballpark */
+	if (i % 32 != 0 || i < 32 || i > 512) {
 	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "fileid", arg);
 	    return 1;
 	}
 
-	MD5[0] = '\0';
-        for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
+	diglen = i / 2;
+	digest = t = xcalloc(diglen, sizeof(*digest));
+        for (i = 0, s = arg; i < diglen; i++, t++, s += 2)
             *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, MD5, sizeof(MD5));
+	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, diglen);
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"fileid", arg);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
+
+	free(digest);
     }	break;
 
     case RPMQV_TID:
