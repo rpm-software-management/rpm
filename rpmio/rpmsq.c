@@ -171,6 +171,11 @@ static struct rpmsig_s {
     { -1,	NULL },
 };
 
+int rpmsqIsCaught(int signum)
+{
+    return sigismember(&rpmsqCaught, signum);
+}
+
 void rpmsqAction(int signum,
 		void * info, void * context)
 {
