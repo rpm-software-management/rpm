@@ -24,7 +24,7 @@
 #include "lib/rpmte_internal.h"	/* XXX te->fd */
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
-#include "lib/misc.h"		/* XXX rpmMkdirPath, doputenv */
+#include "lib/misc.h"		/* XXX rpmMkdirPath */
 
 #include "debug.h"
 
@@ -612,31 +612,28 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 	    xx = Fclose (scriptFd);
     }
 
-    {   char *ipath = rpmExpand("PATH=%{_install_script_path}", NULL);
+    {   char *ipath = rpmExpand("%{_install_script_path}", NULL);
 	const char *path = SCRIPT_PATH;
 
 	if (ipath && ipath[5] != '%')
 	    path = ipath;
 
-	xx = doputenv(path);
+	xx = setenv("PATH", path, 1);
 	ipath = _free(ipath);
     }
 
     if (rpmtdCount(prefixes) > 0) {
 	const char *pfx;
-	char *buf = NULL;
 	/* backwards compatibility */
 	if ((pfx = rpmtdGetString(prefixes))) {
-	    rasprintf(&buf, "RPM_INSTALL_PREFIX=%s", pfx);
-	    xx = doputenv(buf);
-	    buf = _free(buf);
+	    xx = setenv("RPM_INSTALL_PREFIX", pfx, 1);
 	}
 
 	while ((pfx = rpmtdNextString(prefixes))) {
-	    rasprintf(&buf, "RPM_INSTALL_PREFIX%d=%s", 
-			rpmtdGetIndex(prefixes), pfx);
-	    xx = doputenv(buf);
-	    buf = _free(buf);
+	    char *name = NULL;
+	    rasprintf(&name, "RPM_INSTALL_PREFIX%d", rpmtdGetIndex(prefixes));
+	    xx = setenv(name, pfx, 1);
+	    free(name);
 	}
     }
 
