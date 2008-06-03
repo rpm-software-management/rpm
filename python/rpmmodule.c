@@ -72,7 +72,7 @@ static PyObject * signalsCaught(PyObject * self, PyObject * check)
     for (i = 0; i < llen; i++) {
 	o = PyList_GetItem(check, i);
 	signum = PyInt_AsLong(o);
-	if (sigismember(&rpmsqCaught, signum)) {
+	if (rpmsqIsCaught(signum) > 0) {
 	    PyList_Append(caught, o);
 	}
     }

@@ -610,11 +610,11 @@ int rpmdbCheckTerminate(int terminate)
     (void) sigfillset(&newMask);		/* block all signals */
     (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
 
-    if (sigismember(&rpmsqCaught, SIGINT)
-     || sigismember(&rpmsqCaught, SIGQUIT)
-     || sigismember(&rpmsqCaught, SIGHUP)
-     || sigismember(&rpmsqCaught, SIGTERM)
-     || sigismember(&rpmsqCaught, SIGPIPE)
+    if (rpmsqIsCaught(SIGINT) > 0
+     || rpmsqIsCaught(SIGQUIT) > 0
+     || rpmsqIsCaught(SIGHUP) > 0
+     || rpmsqIsCaught(SIGTERM) > 0
+     || rpmsqIsCaught(SIGPIPE) > 0
      || terminate)
 	terminating = 1;
 
@@ -641,9 +641,7 @@ int rpmdbCheckTerminate(int terminate)
 int rpmdbCheckSignals(void)
 {
     if (rpmdbCheckTerminate(0)) {
-	/* sigset_t is abstract type */
-	rpmlog(RPMLOG_DEBUG, "Exiting on signal(0x%lx) ...\n", 
-		*((unsigned long *)&rpmsqCaught));
+	rpmlog(RPMLOG_DEBUG, "Exiting on signal...\n");
 	exit(EXIT_FAILURE);
     }
     return 0;
