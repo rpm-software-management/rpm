@@ -44,15 +44,3 @@ int doputenv(const char *str)
     return putenv(a);
 }
 
-int dosetenv(const char * name, const char * value, int overwrite)
-{
-    char * a;
-
-    if (!overwrite && getenv(name)) return 0;
-
-    /* FIXME: this leaks memory! */
-    a = xmalloc(strlen(name) + strlen(value) + sizeof("="));
-    (void) stpcpy( stpcpy( stpcpy( a, name), "="), value);
-    return putenv(a);
-}
-

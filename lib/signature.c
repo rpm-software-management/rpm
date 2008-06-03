@@ -16,7 +16,6 @@
 #include <rpm/rpmts.h>
 
 #include "rpmio/digest.h"
-#include "lib/misc.h"	/* XXX for dosetenv() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "lib/header_internal.h"
@@ -384,11 +383,11 @@ static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
 	(void) dup2(inpipe[0], 3);
 	(void) close(inpipe[1]);
 
-	(void) dosetenv("PGPPASSFD", "3", 1);
+	(void) setenv("PGPPASSFD", "3", 1);
 	if (pgp_path && *pgp_path != '\0')
-	    (void) dosetenv("PGPPATH", pgp_path, 1);
+	    (void) setenv("PGPPATH", pgp_path, 1);
 
-	/* dosetenv("PGPPASS", passPhrase, 1); */
+	/* setenv("PGPPASS", passPhrase, 1); */
 
 	unsetenv("MALLOC_CHECK_");
 	if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
@@ -520,8 +519,8 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	(void) close(inpipe[1]);
 
 	if (gpg_path && *gpg_path != '\0')
-	    (void) dosetenv("GNUPGHOME", gpg_path, 1);
-	(void) dosetenv("LC_ALL", "C", 1);
+	    (void) setenv("GNUPGHOME", gpg_path, 1);
+	(void) setenv("LC_ALL", "C", 1);
 
 	unsetenv("MALLOC_CHECK_");
 	cmd = rpmExpand("%{?__gpg_sign_cmd}", NULL);
@@ -845,7 +844,7 @@ static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
 	    if (gpg_path && *gpg_path != '\0')
-  		(void) dosetenv("GNUPGHOME", gpg_path, 1);
+  		(void) setenv("GNUPGHOME", gpg_path, 1);
 
 	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
 	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
@@ -862,9 +861,9 @@ static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 	    const char *path;
 	    pgpVersion pgpVer;
 
-	    (void) dosetenv("PGPPASSFD", "3", 1);
+	    (void) setenv("PGPPASSFD", "3", 1);
 	    if (pgp_path && *pgp_path != '\0')
-		xx = dosetenv("PGPPATH", pgp_path, 1);
+		xx = setenv("PGPPATH", pgp_path, 1);
 
 	    if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
 		switch(pgpVer) {

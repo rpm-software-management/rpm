@@ -24,15 +24,6 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname);
 
 /**
  * Like the libc function, but malloc()'s the space needed.
- * @param name		variable name
- * @param value		variable value
- * @param overwrite	should an existing variable be changed?
- * @return		0 on success
- */
-int dosetenv(const char * name, const char * value, int overwrite);
-
-/**
- * Like the libc function, but malloc()'s the space needed.
  * @param str		"name=value" string
  * @return		0 on success
  */
