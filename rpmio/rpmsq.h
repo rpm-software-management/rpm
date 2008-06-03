@@ -51,24 +51,7 @@ struct rpmsqElem {
 };
 #endif /* _RPMSQ_INTERNAL */
 
-extern rpmsq rpmsqQueue;
-
 extern sigset_t rpmsqCaught;
-
-/** \ingroup rpmsq
- * Insert node into from queue.
- * @param elem		node to link
- * @param prev		previous node from queue
- * @return		0 on success
- */
-int rpmsqInsert(void * elem, void * prev);
-
-/** \ingroup rpmsq
- * Remove node from queue.
- * @param elem		node to link
- * @return		0 on success
- */
-int rpmsqRemove(void * elem);
 
 /** \ingroup rpmsq
  * Default signal handler.

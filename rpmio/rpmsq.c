@@ -73,9 +73,15 @@ int _rpmsq_debug = _RPMSQ_DEBUG;
 
 static struct rpmsqElem rpmsqRock;
 
-rpmsq rpmsqQueue = &rpmsqRock;
+static rpmsq rpmsqQueue = &rpmsqRock;
 
-int rpmsqInsert(void * elem, void * prev)
+/** \ingroup rpmsq
+ * Insert node into from queue.
+ * @param elem          node to link
+ * @param prev          previous node from queue
+ * @return              0 on success
+ */
+static int rpmsqInsert(void * elem, void * prev)
 {
     rpmsq sq = (rpmsq) elem;
     int ret = -1;
@@ -102,7 +108,12 @@ fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
     return ret;
 }
 
-int rpmsqRemove(void * elem)
+/** \ingroup rpmsq
+ * Remove node from queue.
+ * @param elem          node to link
+ * @return              0 on success
+ */
+static int rpmsqRemove(void * elem)
 {
     rpmsq sq = (rpmsq) elem;
     int ret = -1;
