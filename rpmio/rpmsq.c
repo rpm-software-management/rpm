@@ -148,7 +148,7 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
     return ret;
 }
 
-sigset_t rpmsqCaught;
+static sigset_t rpmsqCaught;
 
 static struct rpmsig_s {
     int signum;

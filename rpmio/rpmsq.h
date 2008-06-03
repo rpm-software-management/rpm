@@ -51,8 +51,6 @@ struct rpmsqElem {
 };
 #endif /* _RPMSQ_INTERNAL */
 
-extern sigset_t rpmsqCaught;
-
 /** \ingroup rpmsq
  * Test if given signal has been caught (while signals blocked).
  * Similar to sigismember() but operates on internal signal queue.
