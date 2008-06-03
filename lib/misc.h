@@ -22,13 +22,6 @@ extern "C" {
  */
 rpmRC rpmMkdirPath (const char * dpath, const char * dname);
 
-/**
- * Like the libc function, but malloc()'s the space needed.
- * @param str		"name=value" string
- * @return		0 on success
- */
-int doputenv(const char * str);
-
 #ifdef __cplusplus
 }
 #endif

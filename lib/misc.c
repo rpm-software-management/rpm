@@ -34,13 +34,4 @@ rpmRC rpmMkdirPath (const char * dpath, const char * dname)
     return RPMRC_OK;
 }
 
-int doputenv(const char *str)
-{
-    char * a;
-
-    /* FIXME: this leaks memory! */
-    a = xmalloc(strlen(str) + 1);
-    strcpy(a, str);
-    return putenv(a);
-}
 
