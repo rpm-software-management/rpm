@@ -170,20 +170,6 @@ extern "C" {
 #endif
 
 /**
- * Return formatted string representation of file stages.
- * @param a		file stage
- * @return		formatted string
- */
-const char * fileStageString(fileStage a)	;
-
-/**
- * Return formatted string representation of file disposition.
- * @param a		file dispostion
- * @return		formatted string
- */
-const char * fileActionString(rpmFileAction a)	;
-
-/**
  * Create file state machine instance.
  * @return		file state machine
  */
@@ -222,46 +208,12 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 int fsmTeardown(FSM_t fsm);
 
 /**
- * Retrieve transaction set from file state machine iterator.
- * @param fsm		file state machine
- * @return		transaction set
- */
-rpmts fsmGetTs(const FSM_t fsm);
-
-/**
- * Retrieve transaction element file info from file state machine iterator.
- * @param fsm		file state machine
- * @return		transaction element file info
- */
-rpmfi fsmGetFi(const FSM_t fsm);
-
-/**
- * Map next file path and action.
- * @param fsm		file state machine
- */
-int fsmMapPath(FSM_t fsm);
-
-/**
- * Map file stat(2) info.
- * @param fsm		file state machine
- */
-int fsmMapAttrs(FSM_t fsm);
-
-/**
  * File state machine driver.
  * @param fsm		file state machine
  * @param nstage		next stage
  * @return		0 on success
  */
 int fsmNext(FSM_t fsm, fileStage nstage);
-
-/**
- * File state machine driver.
- * @param fsm		file state machine
- * @param stage		next stage
- * @return		0 on success
- */
-int fsmStage(FSM_t fsm, fileStage stage);
 
 #ifdef __cplusplus
 }

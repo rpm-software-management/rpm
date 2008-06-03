@@ -52,12 +52,22 @@ struct fsmIterator_s {
     int i;			/*!< iterator index. */
 };
 
-rpmts fsmGetTs(const FSM_t fsm) {
+/**
+ * Retrieve transaction set from file state machine iterator.
+ * @param fsm		file state machine
+ * @return		transaction set
+ */
+static rpmts fsmGetTs(const FSM_t fsm) {
     const FSMI_t iter = fsm->iter;
     return (iter ? iter->ts : NULL);
 }
 
-rpmfi fsmGetFi(const FSM_t fsm)
+/**
+ * Retrieve transaction element file info from file state machine iterator.
+ * @param fsm		file state machine
+ * @return		transaction element file info
+ */
+static rpmfi fsmGetFi(const FSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
     return (iter ? iter->fi : NULL);
@@ -66,6 +76,14 @@ rpmfi fsmGetFi(const FSM_t fsm)
 #define	SUFFIX_RPMORIG	".rpmorig"
 #define	SUFFIX_RPMSAVE	".rpmsave"
 #define	SUFFIX_RPMNEW	".rpmnew"
+
+/* 
+ * XXX Forward declarations for previously exported functions to avoid moving 
+ * things around needlessly 
+ */ 
+static const char * fileStageString(fileStage a);
+static const char * fileActionString(rpmFileAction a);
+static int fsmStage(FSM_t fsm, fileStage stage);
 
 /** \ingroup payload
  * Build path to file from file info, ornamented with subdir and suffix.
@@ -571,7 +589,11 @@ static int fsmMapFContext(FSM_t fsm)
     return 0;
 }
 
-int fsmMapPath(FSM_t fsm)
+/**
+ * Map next file path and action.
+ * @param fsm		file state machine
+ */
+static int fsmMapPath(FSM_t fsm)
 {
     rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
     int rc = 0;
@@ -669,7 +691,11 @@ assert(rpmteType(fi->te) == TR_ADDED);
     return rc;
 }
 
-int fsmMapAttrs(FSM_t fsm)
+/**
+ * Map file stat(2) info.
+ * @param fsm		file state machine
+ */
+static int fsmMapAttrs(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
     rpmfi fi = fsmGetFi(fsm);
@@ -1259,7 +1285,13 @@ static int fsmStat(FSM_t fsm)
 	((_x)[sizeof("/dev/log")-1] == '\0' || \
 	 (_x)[sizeof("/dev/log")-1] == ';'))
 
-int fsmStage(FSM_t fsm, fileStage stage)
+/**
+ * File state machine driver.
+ * @param fsm		file state machine
+ * @param stage		next stage
+ * @return		0 on success
+ */
+static int fsmStage(FSM_t fsm, fileStage stage)
 {
 #ifdef	UNUSED
     fileStage prevStage = fsm->stage;
@@ -2249,7 +2281,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     return rc;
 }
 
-const char * fileActionString(rpmFileAction a)
+/**
+ * Return formatted string representation of file disposition.
+ * @param a		file dispostion
+ * @return		formatted string
+ */
+static const char * fileActionString(rpmFileAction a)
 {
     switch (a) {
     case FA_UNKNOWN:	return "unknown";
@@ -2268,7 +2305,12 @@ const char * fileActionString(rpmFileAction a)
     }
 }
 
-const char * fileStageString(fileStage a) {
+/**
+ * Return formatted string representation of file stages.
+ * @param a		file stage
+ * @return		formatted string
+ */
+static const char * fileStageString(fileStage a) {
     switch(a) {
     case FSM_UNKNOWN:	return "unknown";
 
