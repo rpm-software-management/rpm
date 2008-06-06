@@ -80,14 +80,17 @@ struct _sql_dbcursor_s {
 };
 
 union _dbswap {
-    unsigned int ui;
-    unsigned char uc[4];
+    uint64_t ul;
+    uint32_t ui[2];
+    uint8_t  uc[8];
 };
 
 #define _DBSWAP(_a) \
   { unsigned char _b, *_c = (_a).uc; \
-    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
-    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+    _b = _c[7]; _c[7] = _c[0]; _c[0] = _b; \
+    _b = _c[6]; _c[6] = _c[1]; _c[1] = _b; \
+    _b = _c[5]; _c[5] = _c[2]; _c[2] = _b; \
+    _b = _c[4]; _c[4] = _c[3]; _c[3] = _b; \
   }
 
 static const unsigned int endian = 0x11223344;
@@ -368,9 +371,10 @@ fprintf(stderr, "\t%d %s %s %d\n", i, cname, vtype, v);
 if (dbiByteSwapped(dbi) == 1)
 {
   union _dbswap dbswap;
-  memcpy(&dbswap.ui, scp->av[scp->ac], sizeof(dbswap.ui));
+  memcpy(dbswap.ui, scp->av[scp->ac], sizeof(dbswap.ui));
+  dbswap.ui[1] = 0;
   _DBSWAP(dbswap);
-  memcpy(scp->av[scp->ac], &dbswap.ui, sizeof(dbswap.ui));
+  memcpy(scp->av[scp->ac], dbswap.ui, sizeof(dbswap.ui));
 }
 			scp->ac++;
 		    }
@@ -448,9 +452,10 @@ assert(key->size == sizeof(int32_t));
 
 if (dbiByteSwapped(dbi) == 1)
 {
-  memcpy(&dbswap.ui, &hnum, sizeof(dbswap.ui));
+  memcpy(dbswap.ui, &hnum, sizeof(dbswap.ui));
+  dbswap.ui[1] = 0;
   _DBSWAP(dbswap);
-  memcpy(&hnum, &dbswap.ui, sizeof(dbswap.ui));
+  memcpy(&hnum, dbswap.ui, sizeof(dbswap.ui));
 }
 	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
 	}   break;
@@ -476,17 +481,30 @@ assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	    }   break;
             case RPM_INT32_TYPE:
-/*          case RPM_INT64_TYPE: */   
 	    default:
-	    {	unsigned int i;
+	    {	uint32_t i;
 assert(key->size == sizeof(int32_t));
 		memcpy(&i, key->data, sizeof(i));
 
 if (dbiByteSwapped(dbi) == 1)
 {
-  memcpy(&dbswap.ui, &i, sizeof(dbswap.ui));
+  memcpy(dbswap.ui, &i, sizeof(dbswap.ui));
+  dbswap.ui[1] = 0;
   _DBSWAP(dbswap);
-  memcpy(&i, &dbswap.ui, sizeof(dbswap.ui));
+  memcpy(&i, dbswap.ui, sizeof(dbswap.ui));
+}
+	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	    }   break;
+            case RPM_INT64_TYPE:
+	    {	uint64_t l;
+assert(key->size == sizeof(int64_t));
+		memcpy(&l, key->data, sizeof(l));
+
+if (dbiByteSwapped(dbi) == 1)
+{
+  memcpy(&dbswap.ul, &l, sizeof(dbswap.ul));
+  _DBSWAP(dbswap);
+  memcpy(&l, &dbswap.ul, sizeof(dbswap.ul));
 }
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	    }   break;
@@ -638,7 +656,7 @@ static int sql_initDB(dbiIndex dbi)
 	    case RPM_INT8_TYPE:
 	    case RPM_INT16_TYPE:
 	    case RPM_INT32_TYPE:
-/*	    case RPM_INT64_TYPE: */
+	    case RPM_INT64_TYPE:
 		keytype = "int UNIQUE";
 		break;
 	    case RPM_STRING_TYPE:
