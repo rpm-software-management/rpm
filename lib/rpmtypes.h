@@ -44,6 +44,7 @@ typedef int32_t		rpm_tid_t;
  * @{
  */
 typedef uint32_t	rpm_off_t;
+typedef uint64_t	rpm_loff_t;
 typedef uint32_t	rpm_time_t;
 typedef uint16_t	rpm_mode_t;
 typedef uint16_t	rpm_rdev_t;
