@@ -111,6 +111,13 @@ int rpmtdNext(rpmtd td);
 uint32_t *rpmtdNextUint32(rpmtd td);
 
 /** \ingroup rpmtd
+ * Iterate over uint64_t type tag data container.
+ * @param td		Tag data container
+ * @return		Pointer to next value, NULL on termination or error
+ */
+uint64_t *rpmtdNextUint64(rpmtd td);
+
+/** \ingroup rpmtd
  * Iterate over string / string array type tag data container.
  * @param td		Tag data container
  * @return		Pointer to next value, NULL on termination or error
@@ -146,6 +153,16 @@ uint16_t * rpmtdGetUint16(rpmtd td);
  * @return		Pointer to uint32_t, NULL on error
  */
 uint32_t * rpmtdGetUint32(rpmtd td);
+
+/** \ingroup rpmtd
+ * Return uint64_t data from tag container.
+ * For scalar return type, just return pointer to the integer. On array
+ * types, return pointer to current iteration index. If the tag container
+ * is not for int64 type, NULL is returned.
+ * @param td		Tag data container
+ * @return		Pointer to uint64_t, NULL on error
+ */
+uint64_t * rpmtdGetUint64(rpmtd td);
 
 /** \ingroup rpmtd
  * Return string data from tag container.

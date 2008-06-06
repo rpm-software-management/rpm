@@ -123,6 +123,16 @@ uint32_t *rpmtdNextUint32(rpmtd td)
     return res;
 }
 
+uint64_t *rpmtdNextUint64(rpmtd td)
+{
+    assert(td != NULL);
+    uint64_t *res = NULL;
+    if (rpmtdNext(td) >= 0) {
+	res = rpmtdGetUint64(td);
+    }
+    return res;
+}
+
 const char *rpmtdNextString(rpmtd td)
 {
     assert(td != NULL);
@@ -170,6 +180,20 @@ uint32_t * rpmtdGetUint32(rpmtd td)
     } 
     return res;
 }
+
+uint64_t * rpmtdGetUint64(rpmtd td)
+{
+    uint64_t *res = NULL;
+
+    assert(td != NULL);
+
+    if (td->type == RPM_INT64_TYPE) {
+	int ix = (td->ix >= 0 ? td->ix : 0);
+	res = (uint64_t *) td->data + ix;
+    } 
+    return res;
+}
+
 const char * rpmtdGetString(rpmtd td)
 {
     const char *str = NULL;
