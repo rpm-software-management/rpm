@@ -506,7 +506,7 @@ if (dbiByteSwapped(dbi) == 1)
   _DBSWAP(dbswap);
   memcpy(&l, &dbswap.ul, sizeof(dbswap.ul));
 }
-	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
+	        rc = sqlite3_bind_int(scp->pStmt, pos, l);
 	    }   break;
             case RPM_STRING_TYPE:
             case RPM_STRING_ARRAY_TYPE:
