@@ -94,6 +94,14 @@ extern "C" {
 #endif
 
 /** \ingroup header
+ * Conver a 64bit value to network byte order.
+ * @param n		a number
+ * @return		number in network byte order
+ */
+uint64_t htonll( uint64_t n );
+
+char ** headerGetLangs(Header h);
+/** \ingroup header
  * Return array of locales found in header.
  * The array is terminated with a NULL sentinel.
  * @param h		header
