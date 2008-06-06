@@ -55,7 +55,7 @@ static const int typeSizes[16] =  {
     1,	/*!< RPM_INT8_TYPE */
     2,	/*!< RPM_INT16_TYPE */
     4,	/*!< RPM_INT32_TYPE */
-    -1,	/*!< RPM_INT64_TYPE */
+    8,	/*!< RPM_INT64_TYPE */
     -1,	/*!< RPM_STRING_TYPE */
     1,	/*!< RPM_BIN_TYPE */
     -1,	/*!< RPM_STRING_ARRAY_TYPE */
@@ -448,6 +448,15 @@ static int regionSwab(indexEntry entry, int il, int dl,
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
+	case RPM_INT64_TYPE:
+	{   uint64_t * it = (uint64_t *)t;
+	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
+		if (dataEnd && ((unsigned char *)it) >= dataEnd)
+		    return -1;
+		*it = htonll(*it);
+	    }
+	    t = (unsigned char *) it;
+	}   break;
 	case RPM_INT32_TYPE:
 	{   int32_t * it = (int32_t *)t;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
@@ -689,6 +698,16 @@ static void * doHeaderUnload(Header h,
 
 	/* copy data w/ endian conversions */
 	switch (entry->info.type) {
+	case RPM_INT64_TYPE:
+	    count = entry->info.count;
+	    src = entry->data;
+	    while (count--) {
+		*((uint64_t *)te) = htonll(*((uint64_t *)src));
+		te += sizeof(uint64_t);
+		src += sizeof(uint64_t);
+	    }
+	    break;
+
 	case RPM_INT32_TYPE:
 	    count = entry->info.count;
 	    src = entry->data;

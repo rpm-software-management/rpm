@@ -71,7 +71,9 @@ void headerDump(Header h, FILE *f, int flags)
 	case RPM_INT32_TYPE:
 	    type = "INT32";
 	    break;
-	/*case RPM_INT64_TYPE:  	type = "INT64"; 	break;*/
+	case RPM_INT64_TYPE:
+	    type = "INT64";
+	    break;
 	case RPM_STRING_TYPE:
 	    type = "STRING";
 	    break;
