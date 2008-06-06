@@ -312,7 +312,7 @@ typedef enum rpmTagType_e {
     RPM_INT8_TYPE		=  2,
     RPM_INT16_TYPE		=  3,
     RPM_INT32_TYPE		=  4,
-/*    RPM_INT64_TYPE	= 5,   ---- These aren't supported (yet) */
+    RPM_INT64_TYPE		=  5,
     RPM_STRING_TYPE		=  6,
     RPM_BIN_TYPE		=  7,
     RPM_STRING_ARRAY_TYPE	=  8,
