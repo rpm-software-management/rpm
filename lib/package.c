@@ -88,6 +88,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    case RPM_INT8_TYPE:
 	    case RPM_INT16_TYPE:
 	    case RPM_INT32_TYPE:
+	    case RPM_INT64_TYPE:
 		if (td.count != 1)
 		    continue;
 		break;
