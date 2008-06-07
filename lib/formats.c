@@ -341,6 +341,7 @@ static char * armorFormat(rpmtd td, char * formatPrefix)
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
     case RPM_I18NSTRING_TYPE:
     default:
 	return xstrdup(_("(invalid type)"));
@@ -407,6 +408,7 @@ static char * xmlFormat(rpmtd td, char * formatPrefix)
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
 	xtag = "integer";
 	break;
     case RPM_NULL_TYPE:
