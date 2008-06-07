@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <inttypes.h>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmtd.h>
 #include <rpm/rpmds.h>
@@ -45,16 +47,20 @@ static char * stringFormat(rpmtd td, char *formatPrefix)
     switch (rpmtdType(td)) {
 	case RPM_INT8_TYPE:
 	case RPM_CHAR_TYPE:
-	    strcat(formatPrefix, "hhu");
+	    strcat(formatPrefix, PRIu8);
 	    rasprintf(&val, formatPrefix, *rpmtdGetChar(td));
 	    break;
 	case RPM_INT16_TYPE:
-	    strcat(formatPrefix, "hu");
+	    strcat(formatPrefix, PRIu16);
 	    rasprintf(&val, formatPrefix, *rpmtdGetUint16(td));
 	    break;
 	case RPM_INT32_TYPE:
-	    strcat(formatPrefix, "u");
+	    strcat(formatPrefix, PRIu32);
 	    rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
+	    break;
+	case RPM_INT64_TYPE:
+	    strcat(formatPrefix, PRIu64);
+	    rasprintf(&val, formatPrefix, *rpmtdGetUint64(td));
 	    break;
 	case RPM_STRING_TYPE:
 	case RPM_STRING_ARRAY_TYPE:
