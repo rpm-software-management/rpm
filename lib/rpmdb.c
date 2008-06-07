@@ -2361,6 +2361,10 @@ static int td2key(rpmtd tagdata, DBT *key, int *freedata)
 	key->size = sizeof(uint32_t);
 	key->data = rpmtdGetUint32(tagdata);
 	break;
+    case RPM_INT64_TYPE:
+	key->size = sizeof(uint64_t);
+	key->data = rpmtdGetUint64(tagdata);
+	break;
     case RPM_BIN_TYPE:
 	key->size = tagdata->count;
 	key->data = tagdata->data;
