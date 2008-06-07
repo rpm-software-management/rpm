@@ -741,12 +741,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	    }
 
 	    found = 1;
-
-	    if (td->type == RPM_BIN_TYPE) {
-		count = 1;	/* XXX count abused as no. of bytes. */
-	    } else {
-		count = td->count;
-	    }
+	    count = rpmtdCount(td);
 
 	    if (numElements > 1 && count != numElements)
 	    switch (td->type) {
