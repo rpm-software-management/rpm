@@ -1182,7 +1182,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 {
     HGE_t hge =
 	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    HFD_t hfd = headerFreeData;
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
