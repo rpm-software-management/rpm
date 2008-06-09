@@ -168,9 +168,7 @@ off_t fdSize(FD_t fd)
 DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
 #endif
     FDSANE(fd);
-    if (fd->contentLength >= 0)
-	rc = fd->contentLength;
-    else switch (fd->urlType) {
+    switch (fd->urlType) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
 	if (fstat(Fileno(fd), &sb) == 0)
@@ -284,7 +282,7 @@ FD_t fdNew(const char * msg)
     fd->fps[0].fdno = -1;
 
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
-    fd->contentLength = fd->bytesRemain = -1;
+    fd->bytesRemain = -1;
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
@@ -828,7 +826,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 
     fdSetIo(fd, ufdio);
     fd->rd_timeoutsecs = timeout;
-    fd->contentLength = fd->bytesRemain = -1;
+    fd->bytesRemain = -1;
     fd->urlType = urlType;
 
     if (Fileno(fd) < 0) {

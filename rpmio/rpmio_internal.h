@@ -51,7 +51,6 @@ struct _FD_s {
 
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
-    ssize_t	contentLength;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
     const void *errcookie;	/* gzdio/bzdio/ufdio: */
@@ -138,15 +137,6 @@ void fdSetFdno(FD_t fd, int fdno)
 {
     FDSANE(fd);
     fd->fps[fd->nfps].fdno = fdno;
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdSetContentLength(FD_t fd, ssize_t contentLength)
-{
-    FDSANE(fd);
-    fd->contentLength = fd->bytesRemain = contentLength;
 }
 
 /** \ingroup rpmio
