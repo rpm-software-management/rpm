@@ -35,8 +35,8 @@ typedef enum rpmCallbackType_e {
 typedef void * (*rpmCallbackFunction)
 		(const void * h, 
 		const rpmCallbackType what, 
-		const rpm_off_t amount, 
-		const rpm_off_t total,
+		const rpm_loff_t amount, 
+		const rpm_loff_t total,
 		fnpyKey key,
 		rpmCallbackData data);
 

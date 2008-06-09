@@ -833,7 +833,7 @@ fprintf(stderr, "*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
  */
 static void *
 rpmtsCallback(const void * hd, const rpmCallbackType what,
-		         const rpm_off_t amount, const rpm_off_t total,
+		         const rpm_loff_t amount, const rpm_loff_t total,
 	                 const void * pkgKey, rpmCallbackData data)
 {
     Header h = (Header) hd;
@@ -896,7 +896,7 @@ fprintf(stderr, "\tFclose(%p)\n", fd);
 	Fclose (fd);
     } else {
 if (_rpmts_debug)
-fprintf(stderr, "\t%d:%d key %p\n", amount, total, pkgKey);
+fprintf(stderr, "\t%llu:%llu key %p\n", (long long) amount, (long long) total, pkgKey);
     }
 
     Py_DECREF(result);

@@ -593,7 +593,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te);
  * @return		callback dependent pointer
  */
 void * rpmtsNotify(rpmts ts, rpmte te,
-                rpmCallbackType what, rpm_off_t amount, rpm_off_t total);
+                rpmCallbackType what, rpm_loff_t amount, rpm_loff_t total);
 
 /** \ingroup rpmts
  * Return number of (ordered) transaction set elements.
