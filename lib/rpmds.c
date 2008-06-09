@@ -90,10 +90,16 @@ static int dsType(rpmTag tag,
 static const char ** str2hge(const char *str)
 {
     const char ** arr;
-    char *t = xmalloc(sizeof(*arr) + strlen(str) + 1);
+    size_t slen = str ? strlen(str) + 1 : 0;
+    char *t = xmalloc(sizeof(*arr) + slen);
     arr = (const char **) t;
-    t += sizeof(*arr);
-    strcpy(t, str);
+
+    if (str) {
+	t += sizeof(*arr);
+	strcpy(t, str);
+    } else {
+	t = NULL;
+    }
     arr[0] = t;
     return arr;
 }
