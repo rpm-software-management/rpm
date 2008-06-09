@@ -66,7 +66,7 @@ struct _FD_s {
 
     unsigned int firstFree;	/* fadio: */
     rpm_off_t	fileSize;	/* fadio: */
-    rpm_off_t	fd_cpioPos;	/* cpio: */
+    rpm_loff_t	fd_cpioPos;	/* cpio: */
 };
 
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
@@ -266,7 +266,7 @@ int fdGetRdTimeoutSecs(FD_t fd)
 /** \ingroup rpmio
  */
 static inline
-long int fdGetCpioPos(FD_t fd)
+rpm_loff_t fdGetCpioPos(FD_t fd)
 {
     FDSANE(fd);
     return fd->fd_cpioPos;
@@ -275,7 +275,7 @@ long int fdGetCpioPos(FD_t fd)
 /** \ingroup rpmio
  */
 static inline
-void fdSetCpioPos(FD_t fd, long int cpioPos)
+void fdSetCpioPos(FD_t fd, rpm_loff_t cpioPos)
 {
     FDSANE(fd);
     fd->fd_cpioPos = cpioPos;
