@@ -95,7 +95,7 @@ typedef struct FileList_s {
     char * prefix;
 
     int fileCount;
-    rpm_off_t totalFileSize;
+    rpm_loff_t totalFileSize;
     int processingFailed;
 
     int passedSpecialDoc;
@@ -1178,8 +1178,12 @@ static void genCpioListAndHeader(FileList fl,
 
     }
 
-    (void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
-		   &(fl->totalFileSize), 1);
+    /* XXX size mismatch, ensure it fits. Need to deal with this properly... */
+    {	assert(fl->totalFileSize < UINT32_MAX);
+	rpm_off_t totalfilesize = fl->totalFileSize;
+	(void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
+				&totalfilesize, 1);
+    }
 
     if (digestalgo != defaultalgo) {
 	headerAddEntry(h, RPMTAG_FILEDIGESTALGO, RPM_INT32_TYPE,
