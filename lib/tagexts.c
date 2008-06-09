@@ -77,33 +77,33 @@ exit:
     td->type = RPM_STRING_ARRAY_TYPE;
     fi = rpmfiFree(fi);
     ds = rpmdsFree(ds);
-    return 0;
+    return 1;
 }
 
 /**
  * Retrieve mounted file system paths.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int fsnamesTag(Header h, rpmtd td)
 {
     const char ** list;
 
     if (rpmGetFilesystemList(&list, &(td->count)))
-	return 1;
+	return 0;
 
     td->type = RPM_STRING_ARRAY_TYPE;
     td->data = list;
 
-    return 0; 
+    return 1; 
 }
 
 /**
  * Retrieve install prefixes.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int instprefixTag(Header h, rpmtd td)
 {
@@ -111,24 +111,24 @@ static int instprefixTag(Header h, rpmtd td)
     int flags = HEADERGET_MINMEM;
 
     if (headerGet(h, RPMTAG_INSTALLPREFIX, td, flags)) {
-	return 0;
+	return 1;
     } else if (headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, flags)) {
 	/* only return the first prefix of the array */
 	td->type = RPM_STRING_TYPE;
 	td->data = xstrdup(rpmtdGetString(&prefixes));
 	td->flags = RPMTD_ALLOCED;
 	rpmtdFreeData(&prefixes);
-	return 0;
+	return 1;
     }
 
-    return 1;
+    return 0;
 }
 
 /**
  * Retrieve mounted file system space.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int fssizesTag(Header h, rpmtd td)
 {
@@ -147,7 +147,7 @@ static int fssizesTag(Header h, rpmtd td)
     }
 
     if (rpmGetFilesystemList(NULL, &(td->count)))
-	return 1;
+	return 0;
 
     td->type = RPM_INT32_TYPE;
     td->flags = RPMTD_ALLOCED;
@@ -156,24 +156,24 @@ static int fssizesTag(Header h, rpmtd td)
 	usages = xcalloc((td->count), sizeof(usages));
 	td->data = usages;
 
-	return 0;
+	return 1;
     }
 
     if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
-	return 1;
+	return 0;
 
     td->data = usages;
 
     filenames = _free(filenames);
 
-    return 0;
+    return 1;
 }
 
 /**
  * Retrieve trigger info.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int triggercondsTag(Header h, rpmtd td)
 {
@@ -185,7 +185,7 @@ static int triggercondsTag(Header h, rpmtd td)
 
     td->type = RPM_STRING_ARRAY_TYPE;
     if (!headerGet(h, RPMTAG_TRIGGERNAME, &nametd, hgeflags)) {
-	return 0;
+	return 1;
     }
 
     headerGet(h, RPMTAG_TRIGGERINDEX, &indextd, hgeflags);
@@ -236,14 +236,14 @@ static int triggercondsTag(Header h, rpmtd td)
     rpmtdFreeData(&flagtd);
     rpmtdFreeData(&indextd);
     rpmtdFreeData(&scripttd);
-    return 0;
+    return 1;
 }
 
 /**
  * Retrieve trigger type info.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int triggertypeTag(Header h, rpmtd td)
 {
@@ -252,7 +252,7 @@ static int triggertypeTag(Header h, rpmtd td)
     struct rpmtd_s indices, flags, scripts;
 
     if (!headerGet(h, RPMTAG_TRIGGERINDEX, &indices, HEADERGET_MINMEM)) {
-	return 1;
+	return 0;
     }
 
     headerGet(h, RPMTAG_TRIGGERFLAGS, &flags, HEADERGET_MINMEM);
@@ -289,14 +289,14 @@ static int triggertypeTag(Header h, rpmtd td)
     rpmtdFreeData(&flags);
     rpmtdFreeData(&scripts);
 
-    return 0;
+    return 1;
 }
 
 /**
  * Retrieve file paths.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int filenamesTag(Header h, rpmtd td)
 {
@@ -304,14 +304,14 @@ static int filenamesTag(Header h, rpmtd td)
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, 
 		     (const char ***) &(td->data), &(td->count));
     td->flags = RPMTD_ALLOCED;
-    return 0; 
+    return 1; 
 }
 
 /**
  * Retrieve file classes.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int fileclassTag(Header h, rpmtd td)
 {
@@ -339,14 +339,14 @@ static int fileclassTag(Header h, rpmtd td)
 exit:
     td->type = RPM_STRING_ARRAY_TYPE;
     fi = rpmfiFree(fi);
-    return 0; 
+    return 1; 
 }
 
 /**
  * Retrieve file provides.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int fileprovideTag(Header h, rpmtd td)
 {
@@ -357,7 +357,7 @@ static int fileprovideTag(Header h, rpmtd td)
  * Retrieve file requires.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int filerequireTag(Header h, rpmtd td)
 {
@@ -378,7 +378,7 @@ static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
  * @param h		header
  * @param tag		tag
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int i18nTag(Header h, rpmTag tag, rpmtd td)
 {
@@ -433,21 +433,20 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td)
 	dstring = _free(dstring);
 	free(msgkey);
 	if (td->data)
-	    return 0;
+	    return 1;
     }
 
     dstring = _free(dstring);
 
     rc = headerGet(h, tag, td, HEADERGET_DEFAULT);
-    /* XXX fix the mismatch between headerGet and tag format returns */
-    return rc ? 0 : 1;
+    return rc;
 }
 
 /**
  * Retrieve summary text.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int summaryTag(Header h, rpmtd td)
 {
@@ -458,7 +457,7 @@ static int summaryTag(Header h, rpmtd td)
  * Retrieve description text.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int descriptionTag(Header h, rpmtd td)
 {
@@ -469,7 +468,7 @@ static int descriptionTag(Header h, rpmtd td)
  * Retrieve group text.
  * @param h		header
  * @retval td		tag data container
- * @return		0 on success
+ * @return		1 on success
  */
 static int groupTag(Header h, rpmtd td)
 {

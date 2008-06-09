@@ -1435,8 +1435,7 @@ static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tag
     rpmtdReset(td);
     rc = tagfunc(h, td);
     td->tag = tag;
-    /* XXX extension returns are reversed, ugh */
-    return rc ? 0 : 1; 
+    return rc; 
 }
 
 int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
