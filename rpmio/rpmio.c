@@ -121,10 +121,6 @@ static const char * fdbg(FD_t fd)
 	sprintf(be, " clen %d", (int)fd->bytesRemain);
 	be += strlen(be);
      }
-    if (fd->wr_chunked) {
-	strcpy(be, " chunked");
-	be += strlen(be);
-     }
     *be++ = '\t';
     for (i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
@@ -289,7 +285,6 @@ FD_t fdNew(const char * msg)
 
     fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->contentLength = fd->bytesRemain = -1;
-    fd->wr_chunked = 0;
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
@@ -297,8 +292,6 @@ FD_t fdNew(const char * msg)
     fd->ndigests = 0;
     memset(fd->digests, 0, sizeof(fd->digests));
 
-    fd->firstFree = 0;
-    fd->fileSize = 0;
     fd->fd_cpioPos = 0;
 
     return fdLink(fd, msg);

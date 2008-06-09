@@ -52,8 +52,6 @@ struct _FD_s {
     int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
     ssize_t	contentLength;	/* ufdio: */
-    int		persist;	/* ufdio: */
-    int		wr_chunked;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
     const void *errcookie;	/* gzdio/bzdio/ufdio: */
@@ -64,8 +62,6 @@ struct _FD_s {
 #define	FDDIGEST_MAX	4
     struct _FDDIGEST_s	digests[FDDIGEST_MAX];
 
-    unsigned int firstFree;	/* fadio: */
-    rpm_off_t	fileSize;	/* fadio: */
     rpm_loff_t	fd_cpioPos;	/* cpio: */
 };
 
