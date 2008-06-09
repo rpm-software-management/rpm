@@ -130,7 +130,7 @@ struct fsm_s {
     int ix;			/*!< Current file iterator index. */
     hardLink_t links;		/*!< Pending hard linked file(s). */
     hardLink_t li;		/*!< Current hard linked file(s). */
-    rpm_off_t * archiveSize;	/*!< Pointer to archive size. */
+    rpm_loff_t * archiveSize;	/*!< Pointer to archive size. */
     char ** failedFile;		/*!< First file name that failed. */
     const char * subdir;	/*!< Current file sub-directory. */
     char subbuf[64];	/* XXX eliminate */
@@ -197,7 +197,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		const rpmts ts,
 		const rpmfi fi,
 		FD_t cfd,
-		rpm_off_t * archiveSize,
+		rpm_loff_t * archiveSize,
 		char ** failedFile);
 
 /**

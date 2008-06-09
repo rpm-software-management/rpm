@@ -467,7 +467,12 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	SHA1 = _free(SHA1);
     }
 
-    {	rpm_off_t payloadSize = csa->cpioArchiveSize;
+    {	/* 
+	 * XXX size mismatch here, payloadsize is 32bit while archive
+	 * is 64bit. Just assert for now, deal with this properly later...
+	 */
+	assert(csa->cpioArchiveSize < UINT32_MAX);
+	rpm_off_t payloadSize = csa->cpioArchiveSize;
 	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
 			&payloadSize, 1);
     }

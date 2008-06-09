@@ -108,8 +108,8 @@ struct rpmfi_s {
 
     size_t astriplen;
     size_t striplen;
-    rpm_off_t archivePos;
-    rpm_off_t archiveSize;
+    rpm_loff_t archivePos;
+    rpm_loff_t archiveSize;
     mode_t dperms;		/*!< Directory perms (0755) if not mapped. */
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
     const char ** apath;
