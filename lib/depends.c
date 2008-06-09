@@ -1062,7 +1062,7 @@ int rpmtsOrder(rpmts ts)
     int nrescans = 10;
     int _printed = 0;
     char deptypechar;
-    size_t tsbytes;
+    rpm_loff_t tsbytes;
     int oType = 0;
     int treex;
     int depth;
@@ -1281,8 +1281,8 @@ rescan:
 	if (!_printed && loopcheck == qlen && rpmteTSI(q)->tsi_suc != NULL) {
 	    _printed++;
 	    (void) rpmtsUnorderedSuccessors(ts, orderingCount);
-	    rpmlog(RPMLOG_DEBUG,
-		"========== successors only (%d bytes)\n", (int)tsbytes);
+	    rpmlog(RPMLOG_DEBUG, "========== successors only (%llu bytes)\n",
+		   (long long)tsbytes);
 
 	    /* Relink the queue in presentation order. */
 	    tsi = rpmteTSI(q);

@@ -165,7 +165,7 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance);
  * @param te		transaction element
  * @return		size in bytes of package file.
  */
-rpm_off_t rpmtePkgFileSize(rpmte te);
+rpm_loff_t rpmtePkgFileSize(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve dependency tree depth of transaction element.

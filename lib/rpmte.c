@@ -274,7 +274,7 @@ rpm_color_t rpmteSetColor(rpmte te, rpm_color_t color)
     return ocolor;
 }
 
-rpm_off_t rpmtePkgFileSize(rpmte te)
+rpm_loff_t rpmtePkgFileSize(rpmte te)
 {
     return (te != NULL ? te->pkgFileSize : 0);
 }
