@@ -105,7 +105,7 @@ const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
  * @param datalen		length of header+payload
  * @return 			rpmRC return code
  */
-static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_off_t datalen)
+static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t datalen)
 {
     struct stat st;
     int fdno = Fileno(fd);
@@ -114,11 +114,11 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_off_t data
 	return RPMRC_FAIL;
 
     rpmlog(RPMLOG_DEBUG,
-	"Expected size: %12zd = lead(%d)+sigs(%zd)+pad(%zd)+data(%d)\n",
+	"Expected size: %12zd = lead(%d)+sigs(%zd)+pad(%zd)+data(%llu)\n",
 		RPMLEAD_SIZE+siglen+pad+datalen,
-		RPMLEAD_SIZE, siglen, pad, datalen);
+		RPMLEAD_SIZE, siglen, pad, (long long) datalen);
     rpmlog(RPMLOG_DEBUG,
-	"  Actual size: %12d\n", (int)st.st_size);
+	"  Actual size: %12llu\n", (long long)st.st_size);
 
     return RPMRC_OK;
 }
