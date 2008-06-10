@@ -1232,7 +1232,7 @@ expandMacro(MacroBuf mb)
 		    rc = 1;
 		printbuf = rpmluaGetPrintBuffer(lua);
 		if (printbuf) {
-		    int len = strlen(printbuf);
+		    size_t len = strlen(printbuf);
 		    if (len > mb->nb)
 			len = mb->nb;
 		    memcpy(mb->t, printbuf, len);
