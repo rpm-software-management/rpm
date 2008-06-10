@@ -320,7 +320,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
-	rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
+	struct rpmtd_s bnames;
+	headerGet(fi->h, RPMTAG_FILENAMES, &bnames, HEADERGET_EXT);
+	fi->apath = bnames.data; /* XXX Ick */
 
 	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
 	    for (i = 0; i < fi->fc; i++)
@@ -1305,10 +1307,14 @@ assert(psm->mi == NULL);
 	    fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
 	
-	    if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES))
-		rpmfiBuildFNames(fi->h, RPMTAG_ORIGBASENAMES, &fi->apath, NULL);
-	    else
-		rpmfiBuildFNames(fi->h, RPMTAG_BASENAMES, &fi->apath, NULL);
+	    {	struct rpmtd_s filenames;
+		rpmTag ftag = RPMTAG_FILENAMES;
+		if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES)) {
+		    ftag = RPMTAG_ORIGFILENAMES;
+		}
+		headerGet(fi->h, ftag, &filenames, HEADERGET_EXT);
+		fi->apath = filenames.data; /* Ick.. */
+	    }
 	
 	    if (fi->fuser == NULL)
 		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
