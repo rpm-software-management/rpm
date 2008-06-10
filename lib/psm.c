@@ -234,7 +234,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     char * _sourcedir = NULL;
     char * _specdir = NULL;
     char * specFile = NULL;
-    HGE_t hge;
     HFD_t hfd;
     Header h = NULL;
     struct rpmpsm_s psmbuf;
@@ -290,7 +289,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
-    hge = fi->hge;
     hfd = fi->hfd;
 
 (void) rpmInstallLoadMacros(fi, fi->h);
@@ -299,9 +297,12 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     psm->te = fi->te;
 
     if (cookie) {
+	struct rpmtd_s ctd;
 	*cookie = NULL;
-	if (hge(fi->h, RPMTAG_COOKIE, NULL, (rpm_data_t *) cookie, NULL))
-	    *cookie = xstrdup(*cookie);
+	if (headerGet(fi->h, RPMTAG_COOKIE, &ctd, HEADERGET_MINMEM)) {
+	    *cookie = xstrdup(rpmtdGetString(&ctd));
+	    rpmtdFreeData(&ctd);
+	}
     }
 
     /* XXX FIXME: don't do per-file mapping, force global flags. */
