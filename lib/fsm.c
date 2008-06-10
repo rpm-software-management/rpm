@@ -35,8 +35,8 @@ struct hardLink_s {
     const char ** nsuffix;
     int * filex;
     struct stat sb;
-    int nlink;
-    int linksLeft;
+    nlink_t nlink;
+    nlink_t linksLeft;
     int linkIndex;
     int createdPath;
 };
@@ -833,7 +833,7 @@ static int writeFile(FSM_t fsm, int writeData)
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
-    int left;
+    size_t left;
     int rc;
 
     st->st_size = (writeData ? ost->st_size : 0);
@@ -1056,7 +1056,7 @@ static int fsmCommitLinks(FSM_t fsm)
     int iterIndex = fsm->ix;
     struct stat * st = &fsm->sb;
     int rc = 0;
-    int i;
+    nlink_t i;
 
     fsm->path = NULL;
     fsm->nsuffix = NULL;
@@ -1304,7 +1304,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     int saveerrno = errno;
     int rc = fsm->rc;
     size_t left;
-    int i;
 
 #define	_fafilter(_a)	\
     (!((_a) == FA_CREATE || (_a) == FA_ERASE || (_a) == FA_COPYIN || (_a) == FA_COPYOUT) \
@@ -1420,7 +1419,8 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
 	/* Flush partial sets of hard linked files. */
 	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) {
-	    int nlink, j;
+	    nlink_t i, nlink;
+	    int j;
 	    while ((fsm->li = fsm->links) != NULL) {
 		fsm->links = fsm->li->next;
 		fsm->li->next = NULL;
@@ -1886,7 +1886,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->goal == FSM_PKGINSTALL &&
 			fsm->commit && fsm->li->linksLeft)
 	    {
-		for (i = 0 ; i < fsm->li->linksLeft; i++) {
+		for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
 		    if (fsm->li->filex[i] < 0)
 			continue;
 		    rc = CPIOERR_MISSING_HARDLINK;
