@@ -330,9 +330,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (i == fi->fc) {
 	/* Find the spec file by name. */
 	for (i = 0; i < fi->fc; i++) {
-	    const char * t = fi->apath[i];
-	    t += strlen(fi->apath[i]) - 5;
-	    if (!strcmp(t, ".spec")) break;
+	    if (rpmFileHasSuffix(fi->apath[i], ".spec"))
+		break;
 	}
     }
 
