@@ -22,6 +22,77 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[];
 
 void *rpmHeaderTagFunc(rpmTag tag);
 
+/** \ingroup rpmfi
+ * Retrieve file names from header.
+ *
+ * The representation of file names in package headers changed in rpm-4.0.
+ * Originally, file names were stored as an array of absolute paths.
+ * In rpm-4.0, file names are stored as separate arrays of dirname's and
+ * basename's, * with a dirname index to associate the correct dirname
+ * with each basname.
+ *
+ * This function is used to retrieve file names independent of how the
+ * file names are represented in the package header.
+ * 
+ * @param h		header
+ * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
+ * @retval *fnp		array of file names
+ * @retval *fcp		number of files
+ */
+static void rpmfiBuildFNames(Header h, rpmTag tagN,
+	const char *** fnp, rpm_count_t * fcp)
+{
+    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
+    HFD_t hfd = headerFreeData;
+    const char ** baseNames;
+    const char ** dirNames;
+    uint32_t * dirIndexes;
+    rpm_count_t count;
+    const char ** fileNames;
+    int size;
+    rpmTag dirNameTag = 0;
+    rpmTag dirIndexesTag = 0;
+    rpmTagType bnt, dnt;
+    char * t;
+    int i, xx;
+
+    if (tagN == RPMTAG_BASENAMES) {
+	dirNameTag = RPMTAG_DIRNAMES;
+	dirIndexesTag = RPMTAG_DIRINDEXES;
+    } else if (tagN == RPMTAG_ORIGBASENAMES) {
+	dirNameTag = RPMTAG_ORIGDIRNAMES;
+	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
+    }
+
+    if (!hge(h, tagN, &bnt, (rpm_data_t *) &baseNames, &count)) {
+	if (fnp) *fnp = NULL;
+	if (fcp) *fcp = 0;
+	return;		/* no file list */
+    }
+
+    xx = hge(h, dirNameTag, &dnt, (rpm_data_t *) &dirNames, NULL);
+    xx = hge(h, dirIndexesTag, NULL, (rpm_data_t *) &dirIndexes, &count);
+
+    size = sizeof(*fileNames) * count;
+    for (i = 0; i < count; i++)
+	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
+
+    fileNames = xmalloc(size);
+    t = ((char *) fileNames) + (sizeof(*fileNames) * count);
+    for (i = 0; i < count; i++) {
+	fileNames[i] = t;
+	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
+	*t++ = '\0';
+    }
+    baseNames = hfd(baseNames, bnt);
+    dirNames = hfd(dirNames, dnt);
+
+    if (fnp)
+	*fnp = fileNames;
+    else
+	fileNames = _free(fileNames);
+    if (fcp) *fcp = count;
+}
 static int filedepTag(Header h, rpmTag tagN, rpmtd td)
 {
     int scareMem = 0;
