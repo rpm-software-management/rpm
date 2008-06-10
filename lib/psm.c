@@ -156,7 +156,6 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    HGE_t hge = (HGE_t)fi->hge;
     sharedFileInfo replaced = fi->replaced;
     sharedFileInfo sfi;
     rpmdbMatchIterator mi;
@@ -194,21 +193,22 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 
     sfi = replaced;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	char * secStates;
 	int modified;
-	rpm_count_t count;
-
+	struct rpmtd_s secStates;
 	modified = 0;
 
-	if (!hge(h, RPMTAG_FILESTATES, NULL, (rpm_data_t *)&secStates, &count))
+	if (!headerGet(h, RPMTAG_FILESTATES, &secStates, HEADERGET_MINMEM))
 	    continue;
 	
 	prev = rpmdbGetIteratorOffset(mi);
 	num = 0;
 	while (sfi->otherPkg && sfi->otherPkg == prev) {
-	    assert(sfi->otherFileNum < count);
-	    if (secStates[sfi->otherFileNum] != RPMFILE_STATE_REPLACED) {
-		secStates[sfi->otherFileNum] = RPMFILE_STATE_REPLACED;
+	    int ix = rpmtdSetIndex(&secStates, sfi->otherFileNum);
+	    assert(ix != -1);
+
+	    char *state = rpmtdGetChar(&secStates);
+	    if (state && *state != RPMFILE_STATE_REPLACED) {
+		*state = RPMFILE_STATE_REPLACED;
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
@@ -218,6 +218,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	    }
 	    sfi++;
 	}
+	rpmtdFreeData(&secStates);
     }
     mi = rpmdbFreeIterator(mi);
     free(offsets);
