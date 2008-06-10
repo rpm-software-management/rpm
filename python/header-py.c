@@ -235,24 +235,19 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
  */
 static void mungeFilelist(Header h)
 {
-    const char ** fileNames = NULL;
-    rpm_count_t count = 0;
+    rpmtd fileNames = rpmtdNew();
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
 	compressFilelist(h);
 
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, &fileNames, &count);
-
-    if (fileNames == NULL || count <= 0)
-	return;
-
-    /* XXX Legacy tag needs to go away. */
-    headerAddEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			fileNames, count);
-
-    fileNames = _free(fileNames);
+    if (headerGet(h, RPMTAG_FILENAMES, fileNames, HEADERGET_EXT)) {
+	rpmtdSetTag(fileNames, RPMTAG_OLDFILENAMES);
+	headerPut(h, fileNames, HEADERPUT_DEFAULT);
+	rpmtdFreeData(fileNames);
+    }
+    rpmtdFree(fileNames);
 }
 
 /** \ingroup py_c
