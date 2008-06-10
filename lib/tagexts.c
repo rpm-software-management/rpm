@@ -65,8 +65,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     }
 
     if (!hge(h, tagN, &bnt, (rpm_data_t *) &baseNames, &count)) {
-	if (fnp) *fnp = NULL;
-	if (fcp) *fcp = 0;
+	*fnp = NULL;
+	*fcp = 0;
 	return;		/* no file list */
     }
 
@@ -87,11 +87,8 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     baseNames = hfd(baseNames, bnt);
     dirNames = hfd(dirNames, dnt);
 
-    if (fnp)
-	*fnp = fileNames;
-    else
-	fileNames = _free(fileNames);
-    if (fcp) *fcp = count;
+    *fnp = fileNames;
+    *fcp = count;
 }
 static int filedepTag(Header h, rpmTag tagN, rpmtd td)
 {
