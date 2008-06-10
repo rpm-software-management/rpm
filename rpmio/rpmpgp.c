@@ -224,7 +224,7 @@ void pgpPrtVal(const char * pre, pgpValTbl vs, uint8_t val)
 /**
  * @return		0 on success
  */
-static int pgpMpiSet(const char * pre, int lbits,
+static int pgpMpiSet(const char * pre, unsigned int lbits,
 		void *dest, const uint8_t * p, const uint8_t * pend)
 {
     unsigned int mbits = pgpMpiBits(p);
