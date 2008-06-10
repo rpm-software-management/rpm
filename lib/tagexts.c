@@ -308,6 +308,20 @@ static int filenamesTag(Header h, rpmtd td)
 }
 
 /**
+ * Retrieve original file paths (wrt relocation).
+ * @param h		header
+ * @retval td		tag data container
+ * @return		1 on success
+ */
+static int origfilenamesTag(Header h, rpmtd td)
+{
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rpmfiBuildFNames(h, RPMTAG_ORIGBASENAMES, 
+		     (const char ***) &(td->data), &(td->count));
+    td->flags = RPMTD_ALLOCED;
+    return 1; 
+}
+/**
  * Retrieve file classes.
  * @param h		header
  * @retval td		tag data container
@@ -495,6 +509,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_SUMMARY,		summaryTag },
     { RPMTAG_FILECLASS,		fileclassTag },
     { RPMTAG_FILENAMES,		filenamesTag },
+    { RPMTAG_ORIGFILENAMES,	origfilenamesTag },
     { RPMTAG_FILEPROVIDE,	fileprovideTag },
     { RPMTAG_FILEREQUIRE,	filerequireTag },
     { RPMTAG_FSNAMES,		fsnamesTag },

@@ -275,6 +275,7 @@ typedef enum rpmTag_e {
     RPMTAG_FSSIZES		= 5004, /* i[] extension */
     RPMTAG_TRIGGERCONDS		= 5005, /* s[] extension */
     RPMTAG_TRIGGERTYPE		= 5006, /* s[] extension */
+    RPMTAG_ORIGFILENAMES	= 5007, /* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
