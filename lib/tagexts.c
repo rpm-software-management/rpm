@@ -42,19 +42,15 @@ void *rpmHeaderTagFunc(rpmTag tag);
 static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	const char *** fnp, rpm_count_t * fcp)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
-    const char ** baseNames;
-    const char ** dirNames;
-    uint32_t * dirIndexes;
+    const char **baseNames, **dirNames, **fileNames;
+    uint32_t *dirIndexes;
     rpm_count_t count;
-    const char ** fileNames;
-    int size;
+    size_t size;
     rpmTag dirNameTag = 0;
     rpmTag dirIndexesTag = 0;
-    rpmTagType bnt, dnt;
     char * t;
-    int i, xx;
+    int i;
+    struct rpmtd_s bnames, dnames, dixs;
 
     if (tagN == RPMTAG_BASENAMES) {
 	dirNameTag = RPMTAG_DIRNAMES;
@@ -64,15 +60,24 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
     }
 
-    if (!hge(h, tagN, &bnt, (rpm_data_t *) &baseNames, &count)) {
+    if (!headerGet(h, tagN, &bnames, HEADERGET_MINMEM)) {
 	*fnp = NULL;
 	*fcp = 0;
 	return;		/* no file list */
     }
+    (void) headerGet(h, dirNameTag, &dnames, HEADERGET_MINMEM);
+    (void) headerGet(h, dirIndexesTag, &dixs, HEADERGET_MINMEM);
 
-    xx = hge(h, dirNameTag, &dnt, (rpm_data_t *) &dirNames, NULL);
-    xx = hge(h, dirIndexesTag, NULL, (rpm_data_t *) &dirIndexes, &count);
+    count = rpmtdCount(&bnames);
+    baseNames = bnames.data;
+    dirNames = dnames.data;
+    dirIndexes = dixs.data;
 
+    /*
+     * fsm, psm and rpmfi assume the data is stored in a single allocation
+     * block, until those assumptions are removed we need to jump through
+     * a few hoops here and precalculate sizes etc
+     */
     size = sizeof(*fileNames) * count;
     for (i = 0; i < count; i++)
 	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
@@ -84,12 +89,14 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
 	*t++ = '\0';
     }
-    baseNames = hfd(baseNames, bnt);
-    dirNames = hfd(dirNames, dnt);
+    rpmtdFreeData(&bnames);
+    rpmtdFreeData(&dnames);
+    rpmtdFreeData(&dixs);
 
     *fnp = fileNames;
     *fcp = count;
 }
+
 static int filedepTag(Header h, rpmTag tagN, rpmtd td)
 {
     int scareMem = 0;
