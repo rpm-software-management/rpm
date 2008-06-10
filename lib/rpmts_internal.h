@@ -13,12 +13,12 @@ typedef	struct diskspaceInfo_s * rpmDiskSpaceInfo;
 /** \ingroup rpmts
  */
 struct diskspaceInfo_s {
-    dev_t dev;			/*!< File system device number. */
-    signed long bneeded;	/*!< No. of blocks needed. */
-    signed long ineeded;	/*!< No. of inodes needed. */
-    int bsize;			/*!< File system block size. */
-    signed long long bavail;	/*!< No. of blocks available. */
-    signed long long iavail;	/*!< No. of inodes available. */
+    dev_t dev;		/*!< File system device number. */
+    int64_t bneeded;	/*!< No. of blocks needed. */
+    int64_t ineeded;	/*!< No. of inodes needed. */
+    int64_t bsize;	/*!< File system block size. */
+    int64_t bavail;	/*!< No. of blocks available. */
+    int64_t iavail;	/*!< No. of inodes available. */
 };
 
 /** \ingroup rpmts
