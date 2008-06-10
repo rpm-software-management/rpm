@@ -1334,7 +1334,8 @@ static int lzflush(LZFILE *lzfile)
 static int lzclose(LZFILE *lzfile)
 {
     lzma_ret ret;
-    int n, rc;
+    size_t n;
+    int rc;
 
     if (!lzfile)
 	return -1;
@@ -1393,7 +1394,7 @@ static ssize_t lzread(LZFILE *lzfile, void *buf, size_t len)
 static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 {
     lzma_ret ret;
-    int n;
+    size_t n;
     if (!lzfile || !lzfile->encoding)
 	return -1;
     if (!len)
