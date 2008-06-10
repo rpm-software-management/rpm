@@ -1199,20 +1199,20 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX assigning negative value to unsigned type */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-	rpmlog(RPMLOG_DEBUG, "%5d 0x%08x %8u %12ld %12ld %s\n",
-		i, (unsigned) dsi->dev, (unsigned) dsi->bsize,
-		(signed long) dsi->bavail, (signed long) dsi->iavail,
+	rpmlog(RPMLOG_DEBUG, "%5d 0x%08x %8lld %12lld %12lld %s\n",
+		i, (unsigned) dsi->dev, dsi->bsize,
+		dsi->bavail, dsi->iavail,
 		ts->filesystems[i]);
     }
     return rc;
 }
 
 void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		rpm_off_t fileSize, rpm_off_t prevSize, rpm_off_t fixupSize,
+		rpm_loff_t fileSize, rpm_loff_t prevSize, rpm_loff_t fixupSize,
 		rpmFileAction action)
 {
     rpmDiskSpaceInfo dsi;
-    uint32_t bneeded;
+    int64_t bneeded;
 
     dsi = ts->dsi;
     if (dsi) {
