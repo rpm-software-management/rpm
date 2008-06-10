@@ -1080,6 +1080,11 @@ static void genCpioListAndHeader(FileList fl,
 	    (void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
 			       &(flp->fl_size), 1);
 	}
+	{
+	    rpm_loff_t psize = (rpm_loff_t)flp->fl_size;
+	    (void) headerAddOrAppendEntry(h, RPMTAG_LONGFILESIZES, RPM_INT64_TYPE,
+			       &(psize), 1);
+	}
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
 			       &(flp->uname), 1);
 	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
