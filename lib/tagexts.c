@@ -564,6 +564,48 @@ static int groupTag(Header h, rpmtd td)
     return i18nTag(h, RPMTAG_GROUP, td);
 }
 
+/**
+ * Retrieve file sizes as 64bit regardless of how they're stored.
+ * @param h		header
+ * @retval td		tag data container
+ * @return		1 on success
+ */
+static int longfilesizesTag(Header h, rpmtd td)
+{
+    int rc;
+    struct rpmtd_s filesizes;
+    rpm_loff_t *longsize;
+
+    if (headerIsEntry(h, RPMTAG_LONGFILESIZES)) {
+	rc = headerGet(h, RPMTAG_LONGFILESIZES, &filesizes, HEADERGET_DEFAULT);
+    } else {
+	rc = headerGet(h, RPMTAG_FILESIZES, &filesizes, HEADERGET_MINMEM);
+    }
+
+    /*
+     * Convert old 32bit file sizes to 64bit. Make a new copy of the
+     * data even for 64bit tags to have consistent behavior for rpmfi needs.
+     */
+    td->type = RPM_INT64_TYPE;
+    td->count = filesizes.count;
+    td->flags = RPMTD_ALLOCED;
+    td->data = xmalloc(sizeof(*longsize) * rpmtdCount(&filesizes));
+
+    if (rpmtdType(&filesizes) == RPM_INT32_TYPE) {
+	rpm_off_t *oldsize;
+	longsize = td->data;
+	while ((oldsize = rpmtdNextUint32(&filesizes))) {
+	    *longsize++ = *oldsize;
+	}
+    } else { 
+	assert(rpmtdType(&filesizes) == RPM_INT64_TYPE);
+	memcpy(td->data, filesizes.data, sizeof(*longsize) * td->count);
+    }
+    rpmtdFreeData(&filesizes);
+
+    return rc;
+}
+
 void *rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
@@ -592,6 +634,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_INSTALLPREFIX,	instprefixTag },
     { RPMTAG_TRIGGERCONDS,	triggercondsTag },
     { RPMTAG_TRIGGERTYPE,	triggertypeTag },
+    { RPMTAG_LONGFILESIZES,	longfilesizesTag },
     { 0, 			NULL }
 };
 
