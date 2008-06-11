@@ -25,7 +25,7 @@
 
 #include "debug.h"
 
-static int open_dso(const char * path, pid_t * pidp, rpm_off_t *fsizep)
+static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
 {
     static const char * cmd = NULL;
     static int initted = 0;
@@ -124,7 +124,7 @@ exit:
 }
 
 int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
-                unsigned char * digest, rpm_off_t * fsizep)
+                unsigned char * digest, rpm_loff_t * fsizep)
 {
     const char * path;
     urltype ut = urlPath(fn, &path);
@@ -132,7 +132,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
     size_t diglen;
     unsigned char buf[32*BUFSIZ];
     FD_t fd;
-    rpm_off_t fsize = 0;
+    rpm_loff_t fsize = 0;
     pid_t pid = 0;
     int rc = 0;
     int fdno;
