@@ -27,13 +27,13 @@
 /**
  */
 static void printFileInfo(const char * name,
-			  rpm_off_t size, unsigned short mode,
+			  rpm_loff_t size, unsigned short mode,
 			  unsigned int mtime,
 			  unsigned short rdev, unsigned int nlink,
 			  const char * owner, const char * group,
 			  const char * linkto)
 {
-    char sizefield[15];
+    char sizefield[21];
     char ownerfield[8+1], groupfield[8+1];
     char timefield[100];
     time_t when = mtime;  /* important if sizeof(int32_t) ! sizeof(time_t) */
@@ -54,7 +54,7 @@ static void printFileInfo(const char * name,
     rstrlcpy(groupfield, group, sizeof(groupfield));
 
     /* this is normally right */
-    sprintf(sizefield, "%12u", size);
+    snprintf(sizefield, sizeof(sizefield), "%20lu", size);
 
     /* this knows too much about dev_t */
 
@@ -62,11 +62,11 @@ static void printFileInfo(const char * name,
 	rasprintf(&link, "%s -> %s", name, linkto);
     } else if (S_ISCHR(mode)) {
 	perms[0] = 'c';
-	sprintf(sizefield, "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
+	snprintf(sizefield, sizeof(sizefield), "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
 			((unsigned)rdev & 0xff));
     } else if (S_ISBLK(mode)) {
 	perms[0] = 'b';
-	sprintf(sizefield, "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
+	snprintf(sizefield, sizeof(sizefield), "%3u, %3u", ((unsigned)(rdev >> 8) & 0xff),
 			((unsigned)rdev & 0xff));
     }
 
