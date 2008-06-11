@@ -18,7 +18,7 @@ struct rpmProblem_s {
     rpmProblemType type;
     int ignoreProblem;
     char * str1;
-    unsigned long ulong1;
+    uint64_t num1;
 };
 
 /**
@@ -153,12 +153,12 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key,
 		const char * dn, const char * bn,
-		const char * altNEVR, unsigned long ulong1)
+		const char * altNEVR, uint64_t number)
 {
     rpmProblem p = NULL;
     if (ps == NULL) return;
 
-    p = rpmProblemCreate(type, pkgNEVR, key, dn, bn, altNEVR, ulong1);
+    p = rpmProblemCreate(type, pkgNEVR, key, dn, bn, altNEVR, number);
     rpmpsAppendProblem(ps, p);
 }
 
@@ -213,14 +213,14 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
                             fnpyKey key,
                             const char * dn, const char * bn,
                             const char * altNEVR,
-                            unsigned long ulong1)
+                            uint64_t number)
 {
     rpmProblem p = xcalloc(1, sizeof(*p));
     char *t;
 
     p->type = type;
     p->key = key;
-    p->ulong1 = ulong1;
+    p->num1 = number;
     p->ignoreProblem = 0;
 
     p->pkgNEVR = (pkgNEVR ? xstrdup(pkgNEVR) : NULL);
@@ -271,9 +271,9 @@ const char * rpmProblemGetStr(const rpmProblem p)
     return (p->str1);
 }
 
-unsigned long rpmProblemGetLong(const rpmProblem p)
+rpm_loff_t rpmProblemGetDiskNeed(const rpmProblem p)
 {
-    return (p->ulong1);
+    return (p->num1);
 }
 
 char * rpmProblemString(const rpmProblem prob)
@@ -321,26 +321,26 @@ char * rpmProblemString(const rpmProblem prob)
 	rc = rasprintf(&buf,
 	    _("installing package %s needs %ld%cB on the %s filesystem"),
 		pkgNEVR,
-		prob->ulong1 > (1024*1024)
-		    ? (prob->ulong1 + 1024 * 1024 - 1) / (1024 * 1024)
-		    : (prob->ulong1 + 1023) / 1024,
-		prob->ulong1 > (1024*1024) ? 'M' : 'K',
+		prob->num1 > (1024*1024)
+		    ? (prob->num1 + 1024 * 1024 - 1) / (1024 * 1024)
+		    : (prob->num1 + 1023) / 1024,
+		prob->num1 > (1024*1024) ? 'M' : 'K',
 		str1);
 	break;
     case RPMPROB_DISKNODES:
 	rc = rasprintf(&buf,
-	    _("installing package %s needs %ld inodes on the %s filesystem"),
-		pkgNEVR, (long)prob->ulong1, str1);
+	    _("installing package %s needs %llu inodes on the %s filesystem"),
+		pkgNEVR, (long long)prob->num1, str1);
 	break;
     case RPMPROB_REQUIRES:
 	rc = rasprintf(&buf, _("%s is needed by %s%s"),
 		altNEVR+2,
-		(prob->ulong1 ? "" : _("(installed) ")), pkgNEVR);
+		(prob->num1 ? "" : _("(installed) ")), pkgNEVR);
 	break;
     case RPMPROB_CONFLICT:
 	rc = rasprintf(&buf, _("%s conflicts with %s%s"),
 		altNEVR+2,
-		(prob->ulong1 ? "" : _("(installed) ")), pkgNEVR);
+		(prob->num1 ? "" : _("(installed) ")), pkgNEVR);
 	break;
     default:
 	rc = rasprintf(&buf,
@@ -366,7 +366,7 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 	if (bp->str1 && strcmp(ap->str1, bp->str1))
 	    return 1;
 
-    if (ap->ulong1 != bp->ulong1)
+    if (ap->num1 != bp->num1)
 	return 1;
 
     return 0;

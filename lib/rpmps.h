@@ -68,7 +68,7 @@ typedef enum rpmProblemType_e {
  * @param dn		directory name
  * @param bn		file base name
  * @param altNEVR	related (e.g. through a dependency) package name
- * @param ulong1	generic pointer/long attribute
+ * @param number	generic number attribute
  * @return		rpmProblem
  */
 rpmProblem rpmProblemCreate(rpmProblemType type,
@@ -76,7 +76,7 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
                             fnpyKey key,
                             const char * dn, const char * bn,
                             const char * altNEVR,
-                            unsigned long ulong1);
+                            uint64_t number);
 
 /** \ingroup rpmps
  * Destroy a problem item.
@@ -120,13 +120,15 @@ fnpyKey rpmProblemGetKey(const rpmProblem prob);
  * @todo		needs a better name
  */
 const char * rpmProblemGetStr(const rpmProblem prob);
+
 /** \ingroup rpmps
- * Return generic pointer/long attribute from a problem
+ * Return disk requirement (needed disk space / number of inodes)
+ * depending on problem type. On problem types other than RPMPROB_DISKSPACE
+ * and RPMPROB_DISKNODES return value is undefined.
  * @param prob		rpm problem
- * @return		a generic pointer/long attribute
- * @todo		needs a better name
+ * @return		disk requirement
  */
-unsigned long rpmProblemGetLong(const rpmProblem prob);
+rpm_loff_t rpmProblemGetDiskNeed(const rpmProblem prob);
 
 /** \ingroup rpmps
  * Return formatted string representation of a problem.
@@ -223,14 +225,14 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob);
  * @param dn		directory name
  * @param bn		file base name
  * @param altNEVR	related (e.g. through a dependency) package name
- * @param ulong1	generic pointer/long attribute
+ * @param number	generic number attribute
  */
 void rpmpsAppend(rpmps ps, rpmProblemType type,
 		const char * pkgNEVR,
 		fnpyKey key,
 		const char * dn, const char * bn,
 		const char * altNEVR,
-		unsigned long ulong1);
+		uint64_t number);
 
 /** \ingroup rpmps
  * Filter a problem set.

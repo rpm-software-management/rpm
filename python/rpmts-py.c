@@ -1020,7 +1020,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 	PyObject * prob = Py_BuildValue("s(isN)", ps,
 			     rpmProblemGetType(p),
 			     rpmProblemGetStr(p),
-			     PyLong_FromLongLong(rpmProblemGetLong(p)));
+			     PyLong_FromLongLong(rpmProblemGetDiskNeed(p)));
 	PyList_Append(list, prob);
 	free(ps);
 	Py_DECREF(prob);
