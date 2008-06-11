@@ -1135,16 +1135,25 @@ int headerIsEntry(Header h, rpmTag tag)
 
 /** \ingroup header
  * Retrieve data from header entry.
+ * Relevant flags (others are ignored), if neither is set allocation
+ * behavior depends on data type(!) 
+ *     HEADERGET_MINMEM: return pointers to header memory
+ *     HEADERGET_ALLOC: always return malloced memory, overrides MINMEM
+ * 
  * @todo Permit retrieval of regions other than HEADER_IMUTABLE.
  * @param entry		header entry
  * @param td		tag data container
  * @param minMem	string pointers refer to header memory?
+ * @param flags		flags to control memory allocation
  * @return		1 on success, otherwise error.
  */
-static int copyTdEntry(const indexEntry entry, rpmtd td, int minMem)
+static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 {
     rpm_count_t count = entry->info.count;
     int rc = 1;		/* XXX 1 on success. */
+    /* ALLOC overrides MINMEM */
+    int allocMem = flags & HEADERGET_ALLOC;
+    int minMem = allocMem ? 0 : flags & HEADERGET_MINMEM;
 
     assert(td != NULL);
     switch (entry->info.type) {
@@ -1193,7 +1202,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, int minMem)
 	break;
     case RPM_STRING_TYPE:
 	if (count == 1) {
-	    td->data = entry->data;
+	    td->data = allocMem ? xstrdup(entry->data) : entry->data;
 	    break;
 	}
     case RPM_STRING_ARRAY_TYPE:
@@ -1220,16 +1229,30 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, int minMem)
 	    t++;
 	}
     }	break;
-
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+    case RPM_INT16_TYPE:
+    case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
+	if (allocMem) {
+	    size_t dlen = entry->length * typeSizes[entry->info.type];
+	    td->data = xmalloc(dlen);
+	    memcpy(td->data, entry->data, dlen);
+	} else {
+	    td->data = entry->data;
+	}
+	break;
     default:
-	td->data = entry->data;
+	/* WTH? Don't mess with unknown data types... */
+	rc = 0;
+	td->data = NULL;
 	break;
     }
     td->type = entry->info.type;
     td->count = count;
 
     td->flags = RPMTD_IMMUTABLE;
-    if (entry->data != td->data) {
+    if (td->data && entry->data != td->data) {
 	td->flags |= RPMTD_ALLOCED;
     }
 
@@ -1257,7 +1280,7 @@ static int copyEntry(const indexEntry entry,
     int rc;
 
     rpmtdReset(&td);
-    rc = copyTdEntry(entry, &td, minMem);
+    rc = copyTdEntry(entry, &td, minMem ? HEADERGET_MINMEM : HEADERGET_DEFAULT);
     TDWRAP();
     return rc;
 }
@@ -1314,9 +1337,11 @@ static int headerMatchLocale(const char *td, const char *l, const char *le)
  * @param h		header
  * @param entry		i18n string data
  * @retval td		tag data container
+ * @param flags		flags to control allocation
  * @return		1 always
  */
-static int copyI18NEntry(Header h, indexEntry entry, rpmtd td)
+static int copyI18NEntry(Header h, indexEntry entry, rpmtd td, 
+						headerGetFlags flags)
 {
     const char *lang, *l, *le;
     indexEntry table;
@@ -1368,6 +1393,10 @@ static int copyI18NEntry(Header h, indexEntry entry, rpmtd td)
     }
 
 exit:
+    if (flags & HEADERGET_ALLOC) {
+	td->data = xstrdup(td->data);
+    }
+
     return 1;
 }
 
@@ -1397,14 +1426,14 @@ static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
     }
 
     if (flags & HEADERGET_RAW) {
-	rc = copyTdEntry(entry, td, (flags & HEADERGET_MINMEM));
+	rc = copyTdEntry(entry, td, flags);
     } else {
 	switch (entry->info.type) {
 	case RPM_I18NSTRING_TYPE:
-	    rc = copyI18NEntry(h, entry, td);
+	    rc = copyI18NEntry(h, entry, td, flags);
 	    break;
 	default:
-	    rc = copyTdEntry(entry, td, (flags & HEADERGET_MINMEM));
+	    rc = copyTdEntry(entry, td, flags);
 	    break;
 	}
     }
@@ -1881,7 +1910,7 @@ int headerNext(HeaderIterator hi, rpmtd td)
 
     td->tag = entry->info.tag;
 
-    rc = copyTdEntry(entry, td, 0);
+    rc = copyTdEntry(entry, td, HEADERGET_MINMEM);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
