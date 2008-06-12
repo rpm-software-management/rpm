@@ -564,6 +564,41 @@ static int groupTag(Header h, rpmtd td)
     return i18nTag(h, RPMTAG_GROUP, td);
 }
 
+/*
+ * Helper to convert 32bit tag to 64bit version.
+ * If header has new 64bit tag then just return the data,
+ * otherwise convert 32bit old tag data to 64bit values.
+ * For consistency, always return malloced data.
+ */
+static int get64(Header h, rpmtd td, rpmTag newtag, rpmTag oldtag)
+{
+    int rc;
+
+    if (headerIsEntry(h, newtag)) {
+	rc = headerGet(h, newtag, td, HEADERGET_ALLOC);
+    } else {
+	struct rpmtd_s olddata;
+	uint32_t *d32 = NULL;
+	uint64_t *d64 = NULL;
+
+	headerGet(h, oldtag, &olddata, HEADERGET_MINMEM);
+	if (rpmtdType(&olddata) == RPM_INT32_TYPE) {
+	    td->type = RPM_INT64_TYPE;
+	    td->count = olddata.count;
+	    td->flags = RPMTD_ALLOCED;
+	    td->data = xmalloc(sizeof(*d64) * td->count);
+	    d64 = td->data;
+	    while ((d32 = rpmtdNextUint32(&olddata))) {
+		*d64++ = *d32;
+	    }
+	} 
+	rpmtdFreeData(&olddata);
+	rc = d64 ? 1 : 0;
+    }
+
+    return rc;
+}
+
 /**
  * Retrieve file sizes as 64bit regardless of how they're stored.
  * @param h		header
@@ -572,33 +607,7 @@ static int groupTag(Header h, rpmtd td)
  */
 static int longfilesizesTag(Header h, rpmtd td)
 {
-    int rc;
-
-    /*
-     * If header has LONGFILESIZES then we've nothing special to do,
-     * otherwise convert 32bit FILESIZES to 64bit values.
-     * For consistency, always return malloced data.
-     */
-    if (headerIsEntry(h, RPMTAG_LONGFILESIZES)) {
-	rc = headerGet(h, RPMTAG_LONGFILESIZES, td, HEADERGET_ALLOC);
-    } else {
-	struct rpmtd_s filesizes;
-	rpm_off_t *oldsize;
-	rpm_loff_t *longsize;
-
-	rc = headerGet(h, RPMTAG_FILESIZES, &filesizes, HEADERGET_MINMEM);
-	td->type = RPM_INT64_TYPE;
-	td->count = filesizes.count;
-	td->flags = RPMTD_ALLOCED;
-	td->data = xmalloc(sizeof(*longsize) * rpmtdCount(&filesizes));
-	longsize = td->data;
-	while ((oldsize = rpmtdNextUint32(&filesizes))) {
-	    *longsize++ = *oldsize;
-	}
-	rpmtdFreeData(&filesizes);
-    }
-
-    return rc;
+    return get64(h, td, RPMTAG_LONGFILESIZES, RPMTAG_FILESIZES);
 }
 
 void *rpmHeaderTagFunc(rpmTag tag)
