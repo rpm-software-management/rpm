@@ -114,7 +114,7 @@ rpmfi_FLink(rpmfiObject * s)
 static PyObject *
 rpmfi_FSize(rpmfiObject * s)
 {
-    return Py_BuildValue("i", rpmfiFSize(s->fi));
+    return Py_BuildValue("L", rpmfiFSize(s->fi));
 }
 
 static PyObject *
@@ -180,7 +180,7 @@ rpmfi_iternext(rpmfiObject * s)
     /* If more to do, return the file tuple. */
     if (rpmfiNext(s->fi) >= 0) {
 	const char * FN = rpmfiFN(s->fi);
-	int FSize = rpmfiFSize(s->fi);
+	rpm_loff_t FSize = rpmfiFSize(s->fi);
 	int FMode = rpmfiFMode(s->fi);
 	int FMtime = rpmfiFMtime(s->fi);
 	int FFlags = rpmfiFFlags(s->fi);
@@ -198,7 +198,7 @@ rpmfi_iternext(rpmfiObject * s)
 	    PyTuple_SET_ITEM(result, 0, Py_None);
 	} else
 	    PyTuple_SET_ITEM(result,  0, Py_BuildValue("s", FN));
-	PyTuple_SET_ITEM(result,  1, PyInt_FromLong(FSize));
+	PyTuple_SET_ITEM(result,  1, PyLong_FromLongLong(FSize));
 	PyTuple_SET_ITEM(result,  2, PyInt_FromLong(FMode));
 	PyTuple_SET_ITEM(result,  3, PyInt_FromLong(FMtime));
 	PyTuple_SET_ITEM(result,  4, PyInt_FromLong(FFlags));

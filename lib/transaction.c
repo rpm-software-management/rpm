@@ -184,7 +184,8 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	    fi->actions[fileNum] = action;
 	}
-	fi->replacedSizes[fileNum] = rpmfiFSize(otherFi);
+	/* XXX watch out, replacedSizes is not rpm_loff_t (yet) */
+	fi->replacedSizes[fileNum] = (rpm_off_t) rpmfiFSize(otherFi);
     }
     ps = rpmpsFree(ps);
 
@@ -373,7 +374,7 @@ bingoFps->baseName);
 static void handleOverlappedFiles(const rpmts ts,
 		const rpmte p, rpmfi fi)
 {
-    uint32_t fixupSize = 0;
+    rpm_loff_t fixupSize = 0;
     rpmps ps;
     const char * fn;
     int i, j;
