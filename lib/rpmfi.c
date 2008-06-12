@@ -1168,15 +1168,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     return NULL;
 }
 
-#define	_fdupe(_fi, _data)	\
-    if ((_fi)->_data != NULL)	\
-	(_fi)->_data = memcpy(xmalloc((_fi)->fc * sizeof(*(_fi)->_data)), \
-			(_fi)->_data, (_fi)->fc * sizeof(*(_fi)->_data))
-
-/* XXX Ick, not SEF. */
-#define _fdupestring(_h, _tag, _data) \
-    if (hge((_h), (_tag), NULL, (rpm_data_t *) &(_data), NULL)) \
-	_data = xstrdup(_data)
+#define _hgfi(_h, _tag, _td, _flags, _data) \
+    if (headerGet((_h), (_tag), (_td), (_flags))) \
+	_data = (td.data)
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 {
@@ -1189,6 +1183,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     int dnlmax, bnlmax;
     unsigned char * t;
     struct rpmtd_s fdigests, digalgo;
+    struct rpmtd_s td;
+    headerGetFlags scareFlags = scareMem ? HEADERGET_MINMEM : HEADERGET_ALLOC;
+    headerGetFlags defFlags = HEADERGET_ALLOC;
     int len;
     int xx;
     int i;
@@ -1226,40 +1223,42 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     fi->archiveSize = (xx ? *uip : 0);
 
     /* Extract pre- and post-transaction script and interpreter strings. */
-    _fdupestring(h, RPMTAG_PRETRANS, fi->pretrans);
-    _fdupestring(h, RPMTAG_PRETRANSPROG, fi->pretransprog);
-    _fdupestring(h, RPMTAG_POSTTRANS, fi->posttrans);
-    _fdupestring(h, RPMTAG_POSTTRANSPROG, fi->posttransprog);
+    _hgfi(h, RPMTAG_PRETRANS, &td, defFlags, fi->pretrans);
+    _hgfi(h, RPMTAG_PRETRANSPROG, &td, defFlags, fi->pretransprog);
+    _hgfi(h, RPMTAG_POSTTRANS, &td, defFlags, fi->posttrans);
+    _hgfi(h, RPMTAG_POSTTRANSPROG, &td, defFlags, fi->posttransprog);
 
-    if (!hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &fi->bnl, &fi->fc)) {
-	fi->fc = 0;
-	fi->dc = 0;
+    _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
+    fi->fc = rpmtdCount(&td);
+    if (fi->fc == 0) {
 	goto exit;
     }
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &fi->dnl, &fi->dc);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fi->dil, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (rpm_data_t *) &fi->fmodes, NULL);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (rpm_data_t *) &fi->fflags, NULL);
-    xx = hge(h, RPMTAG_FILEVERIFYFLAGS, NULL, (rpm_data_t *) &fi->vflags, NULL);
-    xx = hge(h, RPMTAG_FILESIZES, NULL, (rpm_data_t *) &fi->fsizes, NULL);
 
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *) &fi->fcolors, NULL);
+    _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
+    fi->dc = rpmtdCount(&td);
+    _hgfi(h, RPMTAG_DIRINDEXES, &td, scareFlags, fi->dil);
+    _hgfi(h, RPMTAG_FILEMODES, &td, scareFlags, fi->fmodes);
+    _hgfi(h, RPMTAG_FILEFLAGS, &td, scareFlags, fi->fflags);
+    _hgfi(h, RPMTAG_FILEVERIFYFLAGS, &td, scareFlags, fi->vflags);
+    _hgfi(h, RPMTAG_FILESIZES, &td, scareFlags, fi->fsizes);
+
+    _hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
     fi->color = 0;
     if (fi->fcolors != NULL)
     for (i = 0; i < fi->fc; i++)
 	fi->color |= fi->fcolors[i];
-    xx = hge(h, RPMTAG_CLASSDICT, NULL, (rpm_data_t *) &fi->cdict, &fi->ncdict);
-    xx = hge(h, RPMTAG_FILECLASS, NULL, (rpm_data_t *) &fi->fcdictx, NULL);
 
-    xx = hge(h, RPMTAG_DEPENDSDICT, NULL, (rpm_data_t *) &fi->ddict, &fi->nddict);
-    xx = hge(h, RPMTAG_FILEDEPENDSX, NULL, (rpm_data_t *) &fi->fddictx, NULL);
-    xx = hge(h, RPMTAG_FILEDEPENDSN, NULL, (rpm_data_t *) &fi->fddictn, NULL);
+    _hgfi(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
+    fi->ncdict = rpmtdCount(&td);
+    _hgfi(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
+    _hgfi(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
+    fi->nddict = rpmtdCount(&td);
+    _hgfi(h, RPMTAG_FILEDEPENDSX, &td, scareFlags, fi->fddictx);
+    _hgfi(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (rpm_data_t *) &fi->fstates, NULL);
-    if (xx == 0 || fi->fstates == NULL)
+    _hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
+    if (fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
-    else
-	_fdupe(fi, fstates);
 
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
@@ -1273,8 +1272,8 @@ if (fi->actions == NULL)
     fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
-    xx = hge(h, RPMTAG_FILELINKTOS, NULL, (rpm_data_t *) &fi->flinks, NULL);
-    xx = hge(h, RPMTAG_FILELANGS, NULL, (rpm_data_t *) &fi->flangs, NULL);
+    _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
+    _hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
@@ -1305,15 +1304,15 @@ if (fi->actions == NULL)
 	rpmtdFreeData(&fdigests);
     }
 
-    /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes, or fcontexts */
-    xx = hge(h, RPMTAG_FILEMTIMES, NULL, (rpm_data_t *) &fi->fmtimes, NULL);
-    xx = hge(h, RPMTAG_FILERDEVS, NULL, (rpm_data_t *) &fi->frdevs, NULL);
-    xx = hge(h, RPMTAG_FILEINODES, NULL, (rpm_data_t *) &fi->finodes, NULL);
+    /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes */
+    _hgfi(h, RPMTAG_FILEMTIMES, &td, scareFlags, fi->fmtimes);
+    _hgfi(h, RPMTAG_FILERDEVS, &td, scareFlags, fi->frdevs);
+    _hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    xx = hge(h, RPMTAG_FILEUSERNAME, NULL, (rpm_data_t *) &fi->fuser, NULL);
-    xx = hge(h, RPMTAG_FILEGROUPNAME, NULL, (rpm_data_t *) &fi->fgroup, NULL);
+    _hgfi(h, RPMTAG_FILEUSERNAME, &td, defFlags, fi->fuser);
+    _hgfi(h, RPMTAG_FILEGROUPNAME, &td, defFlags, fi->fgroup);
 
     if (ts != NULL)
     if (fi != NULL)
@@ -1334,25 +1333,6 @@ if (fi->actions == NULL)
     }
 
     if (!scareMem) {
-	_fdupe(fi, fmtimes);
-	_fdupe(fi, frdevs);
-	_fdupe(fi, finodes);
-	_fdupe(fi, fsizes);
-	_fdupe(fi, fflags);
-	_fdupe(fi, vflags);
-	_fdupe(fi, fmodes);
-	_fdupe(fi, dil);
-
-	_fdupe(fi, fcolors);
-	_fdupe(fi, fcdictx);
-
-	if (fi->ddict != NULL)
-	    fi->ddict = memcpy(xmalloc(fi->nddict * sizeof(*fi->ddict)),
-			fi->ddict, fi->nddict * sizeof(*fi->ddict));
-
-	_fdupe(fi, fddictx);
-	_fdupe(fi, fddictn);
-
 	fi->h = headerFree(fi->h);
     }
 
