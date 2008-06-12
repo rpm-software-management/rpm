@@ -207,24 +207,23 @@ static int instprefixTag(Header h, rpmtd td)
  */
 static int fssizesTag(Header h, rpmtd td)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    const char ** filenames;
-    rpm_off_t * filesizes;
-    rpm_off_t * usages;
-    rpm_count_t numFiles;
+    struct rpmtd_s fsizes, fnames;
+    const char ** filenames = NULL;
+    rpm_loff_t * filesizes = NULL;
+    rpm_loff_t * usages = NULL;
+    rpm_count_t numFiles = 0;
 
-    if (!hge(h, RPMTAG_FILESIZES, NULL, (rpm_data_t *) &filesizes, &numFiles)) {
-	filesizes = NULL;
-	numFiles = 0;
-	filenames = NULL;
-    } else {
-	rpmfiBuildFNames(h, RPMTAG_BASENAMES, &filenames, &numFiles);
+    if (headerGet(h, RPMTAG_LONGFILESIZES, &fsizes, HEADERGET_EXT)) {
+	filesizes = fsizes.data;
+	headerGet(h, RPMTAG_FILENAMES, &fnames, HEADERGET_EXT);
+	filenames = fnames.data;
+	numFiles = rpmtdCount(&fnames);
     }
-
+	
     if (rpmGetFilesystemList(NULL, &(td->count)))
 	return 0;
 
-    td->type = RPM_INT32_TYPE;
+    td->type = RPM_INT64_TYPE;
     td->flags = RPMTD_ALLOCED;
 
     if (filenames == NULL) {
@@ -239,7 +238,8 @@ static int fssizesTag(Header h, rpmtd td)
 
     td->data = usages;
 
-    filenames = _free(filenames);
+    rpmtdFreeData(&fnames);
+    rpmtdFreeData(&fsizes);
 
     return 1;
 }
