@@ -573,35 +573,30 @@ static int groupTag(Header h, rpmtd td)
 static int longfilesizesTag(Header h, rpmtd td)
 {
     int rc;
-    struct rpmtd_s filesizes;
-    rpm_loff_t *longsize;
-
-    if (headerIsEntry(h, RPMTAG_LONGFILESIZES)) {
-	rc = headerGet(h, RPMTAG_LONGFILESIZES, &filesizes, HEADERGET_DEFAULT);
-    } else {
-	rc = headerGet(h, RPMTAG_FILESIZES, &filesizes, HEADERGET_MINMEM);
-    }
 
     /*
-     * Convert old 32bit file sizes to 64bit. Make a new copy of the
-     * data even for 64bit tags to have consistent behavior for rpmfi needs.
+     * If header has LONGFILESIZES then we've nothing special to do,
+     * otherwise convert 32bit FILESIZES to 64bit values.
+     * For consistency, always return malloced data.
      */
-    td->type = RPM_INT64_TYPE;
-    td->count = filesizes.count;
-    td->flags = RPMTD_ALLOCED;
-    td->data = xmalloc(sizeof(*longsize) * rpmtdCount(&filesizes));
-
-    if (rpmtdType(&filesizes) == RPM_INT32_TYPE) {
+    if (headerIsEntry(h, RPMTAG_LONGFILESIZES)) {
+	rc = headerGet(h, RPMTAG_LONGFILESIZES, td, HEADERGET_ALLOC);
+    } else {
+	struct rpmtd_s filesizes;
 	rpm_off_t *oldsize;
+	rpm_loff_t *longsize;
+
+	rc = headerGet(h, RPMTAG_FILESIZES, &filesizes, HEADERGET_MINMEM);
+	td->type = RPM_INT64_TYPE;
+	td->count = filesizes.count;
+	td->flags = RPMTD_ALLOCED;
+	td->data = xmalloc(sizeof(*longsize) * rpmtdCount(&filesizes));
 	longsize = td->data;
 	while ((oldsize = rpmtdNextUint32(&filesizes))) {
 	    *longsize++ = *oldsize;
 	}
-    } else { 
-	assert(rpmtdType(&filesizes) == RPM_INT64_TYPE);
-	memcpy(td->data, filesizes.data, sizeof(*longsize) * td->count);
+	rpmtdFreeData(&filesizes);
     }
-    rpmtdFreeData(&filesizes);
 
     return rc;
 }
