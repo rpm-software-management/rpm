@@ -1174,8 +1174,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 {
-    HGE_t hge =
-	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
@@ -1205,7 +1203,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     fi->i = -1;
     fi->tagN = tagN;
 
-    fi->hge = hge;
+    fi->hge = (HGE_t) (scareMem ? headerGetEntryMinMemory : headerGetEntry);
     fi->hae = (HAE_t) headerAddEntry;
     fi->hme = (HME_t) headerModifyEntry;
     fi->hre = (HRE_t) headerRemoveEntry;
