@@ -222,8 +222,8 @@ int rpmGetFilesystemList( const char *** listptr,
  * @param flags			(unused)
  * @return			0 on success, 1 on error
  */
-int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes,
-		unsigned int numFiles, uint32_t ** usagesPtr,
+int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
+		unsigned int numFiles, rpm_loff_t ** usagesPtr,
 		int flags);
 
 /* ==================================================================== */

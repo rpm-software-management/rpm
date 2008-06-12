@@ -266,11 +266,11 @@ int rpmGetFilesystemList(const char *** listptr, unsigned int * num)
     return 0;
 }
 
-int rpmGetFilesystemUsage(const char ** fileList, rpm_off_t * fssizes, 
+int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes, 
 			  unsigned int numFiles,
-			  uint32_t ** usagesPtr, int flags)
+			  rpm_loff_t ** usagesPtr, int flags)
 {
-    uint32_t * usages;
+    rpm_loff_t * usages;
     int i, len, j;
     char * buf, * dirName;
     char * chptr;
