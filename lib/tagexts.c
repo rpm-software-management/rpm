@@ -610,6 +610,21 @@ static int longfilesizesTag(Header h, rpmtd td)
     return get64(h, td, RPMTAG_LONGFILESIZES, RPMTAG_FILESIZES);
 }
 
+static int longarchivesizeTag(Header h, rpmtd td)
+{
+    return get64(h, td, RPMTAG_LONGARCHIVESIZE, RPMTAG_ARCHIVESIZE);
+}
+
+static int longsizeTag(Header h, rpmtd td)
+{
+    return get64(h, td, RPMTAG_LONGSIZE, RPMTAG_SIZE);
+}
+
+static int longsigsizeTag(Header h, rpmtd td)
+{
+    return get64(h, td, RPMTAG_LONGSIGSIZE, RPMTAG_SIGSIZE);
+}
+
 void *rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
@@ -639,6 +654,9 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_TRIGGERCONDS,	triggercondsTag },
     { RPMTAG_TRIGGERTYPE,	triggertypeTag },
     { RPMTAG_LONGFILESIZES,	longfilesizesTag },
+    { RPMTAG_LONGARCHIVESIZE,	longarchivesizeTag },
+    { RPMTAG_LONGSIZE,		longsizeTag },
+    { RPMTAG_LONGSIGSIZE,	longsigsizeTag },
     { 0, 			NULL }
 };
 
