@@ -1179,7 +1179,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     rpmte p;
     rpmfi fi = NULL;
     const char * Type;
-    uint32_t * uip;
+    rpm_loff_t *asize = NULL;
     int dnlmax, bnlmax;
     unsigned char * t;
     struct rpmtd_s fdigests, digalgo;
@@ -1187,7 +1187,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     headerGetFlags scareFlags = scareMem ? HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
     int len;
-    int xx;
     int i;
 
     if (tagN == RPMTAG_BASENAMES) {
@@ -1217,10 +1216,13 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
 
+    if (headerGet(h, RPMTAG_LONGARCHIVESIZE, &td, HEADERGET_EXT)) {
+	asize = rpmtdGetUint64(&td);
+    }
     /* 0 means unknown */
-    xx = hge(h, RPMTAG_ARCHIVESIZE, NULL, (rpm_data_t *) &uip, NULL);
     fi->archivePos = 0;
-    fi->archiveSize = (xx ? *uip : 0);
+    fi->archiveSize = asize ? *asize : 0;
+    rpmtdFreeData(&td);
 
     /* Extract pre- and post-transaction script and interpreter strings. */
     _hgfi(h, RPMTAG_PRETRANS, &td, defFlags, fi->pretrans);
