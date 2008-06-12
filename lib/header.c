@@ -1235,9 +1235,8 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     case RPM_INT32_TYPE:
     case RPM_INT64_TYPE:
 	if (allocMem) {
-	    size_t dlen = entry->length * typeSizes[entry->info.type];
-	    td->data = xmalloc(dlen);
-	    memcpy(td->data, entry->data, dlen);
+	    td->data = xmalloc(entry->length);
+	    memcpy(td->data, entry->data, entry->length);
 	} else {
 	    td->data = entry->data;
 	}
