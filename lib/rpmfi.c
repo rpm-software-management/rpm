@@ -1038,24 +1038,22 @@ dColors[j] |= fColors[i];
 
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
-	rpm_count_t c;
-	void * d;
-	rpmTagType t;
+	struct rpmtd_s td;
 
-	d = NULL;
-	xx = hge(h, RPMTAG_BASENAMES, &t, &d, &c);
-	xx = hae(h, RPMTAG_ORIGBASENAMES, t, d, c);
-	d = hfd(d, t);
+	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
 
-	d = NULL;
-	xx = hge(h, RPMTAG_DIRNAMES, &t, &d, &c);
-	xx = hae(h, RPMTAG_ORIGDIRNAMES, t, d, c);
-	d = hfd(d, t);
+	headerGet(h, RPMTAG_DIRNAMES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGDIRNAMES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
 
-	d = NULL;
-	xx = hge(h, RPMTAG_DIRINDEXES, &t, &d, &c);
-	xx = hae(h, RPMTAG_ORIGDIRINDEXES, t, d, c);
-	d = hfd(d, t);
+	headerGet(h, RPMTAG_DIRINDEXES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
 
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
