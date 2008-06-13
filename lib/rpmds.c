@@ -161,25 +161,18 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
     int scareMem = (flags & 0x1);
-    HGE_t hge =
-	(scareMem ? (HGE_t) headerGetEntryMinMemory : (HGE_t) headerGetEntry);
-    rpmTag tagBT = RPMTAG_BUILDTIME;
-    rpmTagType BTt;
-    rpm_time_t * BTp;
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
-    const char ** N;
-    rpmTagType Nt;
-    rpm_count_t Count;
+    struct rpmtd_s names;
+    headerGetFlags hgflags = scareMem ? HEADERGET_MINMEM : HEADERGET_ALLOC;
 
     if (dsType(tagN, &Type, &tagEVR, &tagF))
 	goto exit;
 
-    if (hge(h, tagN, &Nt, (rpm_data_t *) &N, &Count)
-     && N != NULL && Count > 0)
-    {
-	int xx;
+    if (headerGet(h, tagN, &names, hgflags) && rpmtdCount(&names) > 0) {
+	struct rpmtd_s evr, flags, buildtime; 
+	rpm_time_t * BTp;
 
 	ds = xcalloc(1, sizeof(*ds));
 	ds->Type = Type;
@@ -187,20 +180,24 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->i = -1;
 	ds->DNEVR = NULL;
 	ds->tagN = tagN;
-	ds->N = N;
-	ds->Nt = Nt;
-	ds->Count = Count;
+	ds->N = names.data;
+	ds->Nt = rpmtdType(&names);;
+	ds->Count = rpmtdCount(&names);
 	ds->nopromote = _rpmds_nopromote;
 
-	xx = hge(h, tagEVR, &ds->EVRt, (rpm_data_t *) &ds->EVR, NULL);
-	xx = hge(h, tagF, &ds->Ft, (rpm_data_t *) &ds->Flags, NULL);
-	if (!scareMem && ds->Flags != NULL)
-	    ds->Flags = memcpy(xmalloc(ds->Count * sizeof(*ds->Flags)),
-                                ds->Flags, ds->Count * sizeof(*ds->Flags));
-	xx = hge(h, tagBT, &BTt, (rpm_data_t *) &BTp, NULL);
-	ds->BT = (xx && BTp != NULL && BTt == RPM_INT32_TYPE ? *BTp : 0);
-	ds->Color = xcalloc(Count, sizeof(*ds->Color));
-	ds->Refs = xcalloc(Count, sizeof(*ds->Refs));
+	headerGet(h, tagEVR, &evr, hgflags);
+	ds->EVR = evr.data;
+	ds->EVRt = rpmtdType(&evr);
+	headerGet(h, tagF, &flags, hgflags);
+	ds->Flags = flags.data;
+	ds->Ft = rpmtdType(&flags);
+
+	headerGet(h, RPMTAG_BUILDTIME, &buildtime, HEADERGET_MINMEM);
+	BTp = rpmtdGetUint32(&buildtime);
+	ds->BT = BTp ? *BTp : 0;
+	rpmtdFreeData(&buildtime);
+	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
+	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
 
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
