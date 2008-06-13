@@ -1033,34 +1033,29 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    HGE_t hge = fi->hge;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
-    const char ** triggerNames;
-    rpm_count_t numTriggers, numTriggerIndices;
-    rpm_count_t * triggerIndices;
-    rpmTagType tnt, tit;
     unsigned char * triggersRun;
     rpmRC rc = RPMRC_OK;
+    struct rpmtd_s tnames, tindexes;
 
     if (fi->h == NULL)	return rc;	/* XXX can't happen */
 
-    if (!(	hge(fi->h, RPMTAG_TRIGGERNAME, &tnt,
-			(rpm_data_t *) &triggerNames, &numTriggers) &&
-		hge(fi->h, RPMTAG_TRIGGERINDEX, &tit,
-			(rpm_data_t *) &triggerIndices, &numTriggerIndices))
-	)
+    if (!(headerGet(fi->h, RPMTAG_TRIGGERNAME, &tnames, HEADERGET_MINMEM) &&
+	  headerGet(fi->h, RPMTAG_TRIGGERINDEX, &tindexes, HEADERGET_MINMEM))) {
 	return rc;
+    }
 
-    triggersRun = xcalloc(numTriggerIndices, sizeof(*triggersRun));
+    triggersRun = xcalloc(rpmtdCount(&tindexes), sizeof(*triggersRun));
     {	Header sourceH = NULL;
-	int i;
+	const char *trigName;
+    	rpm_count_t *triggerIndices = tindexes.data;
 
-	for (i = 0; i < numTriggers; i++) {
+	while ((trigName = rpmtdNextString(&tnames))) {
 	    rpmdbMatchIterator mi;
+	    int i = rpmtdGetIndex(&tnames);
 
 	    if (triggersRun[triggerIndices[i]] != 0) continue;
 	
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, triggerNames[i], 0);
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, trigName, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		rc |= handleOneTrigger(psm, sourceH, fi->h,
@@ -1071,8 +1066,8 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	    mi = rpmdbFreeIterator(mi);
 	}
     }
-    triggerIndices = hfd(triggerIndices, tit);
-    triggerNames = hfd(triggerNames, tnt);
+    rpmtdFreeData(&tnames);
+    rpmtdFreeData(&tindexes);
     free(triggersRun);
     return rc;
 }
