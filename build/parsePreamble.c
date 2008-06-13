@@ -614,7 +614,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	break;
     case RPMTAG_SOURCE:
     case RPMTAG_PATCH:
-	SINGLE_TOKEN_ONLY;
 	macro = NULL;
 	if ((rc = addSource(spec, pkg, field, tag)))
 	    return rc;
