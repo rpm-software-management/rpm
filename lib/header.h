@@ -181,6 +181,7 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type);
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
  * entry is present).
+ * @deprecated		Use headerGet() instead
  *
  * @param h		header
  * @param tag		tag
@@ -192,12 +193,13 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type);
 int headerGetEntry(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
-			rpm_count_t * c);
+			rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Retrieve tag value using header internal array.
  * Get an entry using as little extra RAM as possible to return the tag value.
  * This is only an issue for RPM_STRING_ARRAY_TYPE.
+ * @deprecated		Use headerGet() instead
  *
  * @param h		header
  * @param tag		tag
@@ -209,7 +211,7 @@ int headerGetEntry(Header h, rpmTag tag,
 int headerGetEntryMinMemory(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p, 
-			rpm_count_t * c);
+			rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
 typedef enum headerPutFlags_e {
     HEADERPUT_DEFAULT	= 0,
