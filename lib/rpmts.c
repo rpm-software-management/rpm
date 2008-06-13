@@ -580,28 +580,31 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
     bhtime = 0;
     bh = NULL;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	const char * hname;
+	struct rpmtd_s name, btime;
 	size_t hnamelen;
 	time_t htime;
-	int32_t * ip;
 
 	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
 	    continue;
 
 	/* XXX Prefer the shortest name if given alternatives. */
-	hname = NULL;
 	hnamelen = 0;
-	if (headerGetEntry(h, RPMTAG_NAME, NULL, (rpm_data_t *)&hname, NULL)) {
+	if (headerGet(h, RPMTAG_NAME, &name, HEADERGET_MINMEM)) {
+	    const char * hname = rpmtdGetString(&name);
 	    if (hname)
 		hnamelen = strlen(hname);
+	    rpmtdFreeData(&name);
 	}
 	if (bhnamelen > 0 && hnamelen > bhnamelen)
 	    continue;
 
 	/* XXX Prefer the newest build if given alternatives. */
 	htime = 0;
-	if (headerGetEntry(h, RPMTAG_BUILDTIME, NULL, (rpm_data_t *)&ip, NULL))
-	    htime = (time_t)*ip;
+	if (headerGet(h, RPMTAG_BUILDTIME, &btime, HEADERGET_MINMEM)) {
+	    rpm_time_t *bt = rpmtdGetUint32(&btime);
+	    htime = bt ? (time_t)*bt : 0;
+	    rpmtdFreeData(&btime);
+	}
 
 	if (htime <= bhtime)
 	    continue;
