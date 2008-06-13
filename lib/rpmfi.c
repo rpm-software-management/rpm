@@ -647,15 +647,6 @@ static char **duparray(char ** src, int size)
     return dest;
 }
 
-static void * freearray(char **array, int size)
-{
-    for (int i = 0; i < size; i++) {
-	free(array[i]);
-    }
-    free(array);
-    return NULL;
-}
-
 /**
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
@@ -670,7 +661,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, rpmFileAction * actions)
 {
     rpmte p = rpmtsRelocateElement(ts);
-    HGE_t hge = fi->hge;
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
     HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
@@ -691,11 +681,11 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int fileAlloced = 0;
     char * fn = NULL;
     int haveRelocatedBase = 0;
-    int haveRelocatedFile = 0;
     int reldel = 0;
     int len;
     int i, j, xx;
     struct rpmtd_s validRelocs;
+    struct rpmtd_s bnames, dnames, dindexes, fcolors, fmodes;
 
     
     if (headerGet(origH, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
@@ -854,11 +844,21 @@ assert(p != NULL);
 	rpmtdFreeData(&validRelocs);
     }
 
-    xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &baseNames, &fileCount);
-    xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
-    xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &dirNames, &dirCount);
-    xx = hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *) &fColors, NULL);
-    xx = hge(h, RPMTAG_FILEMODES, NULL, (rpm_data_t *) &fModes, NULL);
+    headerGet(h, RPMTAG_BASENAMES, &bnames, fi->scareFlags);
+    headerGet(h, RPMTAG_DIRINDEXES, &dindexes, fi->scareFlags);
+    headerGet(h, RPMTAG_DIRNAMES, &dnames, fi->scareFlags);
+    headerGet(h, RPMTAG_FILECOLORS, &fcolors, fi->scareFlags);
+    headerGet(h, RPMTAG_FILEMODES, &fmodes, fi->scareFlags);
+    /* TODO XXX ugh.. use rpmtd iterators & friends instead */
+    baseNames = bnames.data;
+    dirIndexes = dindexes.data;
+    fColors = fcolors.data;
+    fModes = fmodes.data;
+    fileCount = rpmtdCount(&bnames);
+    dirCount = rpmtdCount(&dnames);
+    /* XXX TODO: use rpmtdDup() instead */
+    dirNames = dnames.data = duparray(dnames.data, dirCount);
+    dnames.flags |= RPMTD_PTR_ALLOCED;
 
     dColors = xcalloc(dirCount, sizeof(*dColors));
 
@@ -968,7 +968,9 @@ dColors[j] |= fColors[i];
 		te = fn + strlen(fn);
 	    if (strcmp(baseNames[i], te)) { /* basename changed too? */
 		if (!haveRelocatedBase) {
-		    baseNames = duparray(baseNames, fileCount);
+		    /* XXX TODO: use rpmtdDup() instead */
+		    bnames.data = baseNames = duparray(baseNames, fileCount);
+		    bnames.flags |= RPMTD_PTR_ALLOCED;
 		    haveRelocatedBase = 1;
 		}
 		free(baseNames[i]);
@@ -992,17 +994,14 @@ dColors[j] |= fColors[i];
 	}
 
 	/* Creating new paths is a pita */
-	if (!haveRelocatedFile) {
-	    dirNames = duparray(dirNames, dirCount);
-	    haveRelocatedFile = 1;
-	} else {
-	    dirNames = xrealloc(dirNames, 
+	dirNames = dnames.data = xrealloc(dnames.data, 
 			       sizeof(*dirNames) * (dirCount + 1));
-	}
 
+	free(dirNames[dirCount]);
 	dirNames[dirCount] = xstrdup(fn);
 	dirIndexes[i] = dirCount;
 	dirCount++;
+	dnames.count++;
     }
 
     /* Finish off by relocating directories. */
@@ -1035,6 +1034,7 @@ dColors[j] |= fColors[i];
 		if (actions)
 		    rpmlog(RPMLOG_DEBUG,
 			"relocating directory %s to %s\n", dirNames[i], t);
+		free(dirNames[i]);
 		dirNames[i] = t;
 		nrelocated++;
 	    }
@@ -1062,9 +1062,6 @@ dColors[j] |= fColors[i];
 
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
-   	if (haveRelocatedBase) {
-	    baseNames = freearray(baseNames, fileCount);
-	}
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
 	headerGet(h, RPMTAG_BASENAMES, &td, fi->scareFlags);
 	fi->fc = rpmtdCount(&td);
@@ -1072,7 +1069,6 @@ dColors[j] |= fColors[i];
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
-	dirNames = freearray(dirNames, dirCount);
 
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
 	headerGet(h, RPMTAG_DIRNAMES, &td, fi->scareFlags);
@@ -1088,9 +1084,11 @@ dColors[j] |= fColors[i];
 	fi->dil = td.data;
     }
 
-    /* If we did relocations, baseNames and dirNames might be NULL by now */
-    baseNames = hfd(baseNames, RPM_STRING_ARRAY_TYPE);
-    dirNames = hfd(dirNames, RPM_STRING_ARRAY_TYPE);
+    rpmtdFreeData(&bnames);
+    rpmtdFreeData(&dnames);
+    rpmtdFreeData(&dindexes);
+    rpmtdFreeData(&fcolors);
+    rpmtdFreeData(&fmodes);
     free(fn);
     for (i = 0; i < numRelocations; i++) {
 	free(relocations[i].oldPath);
