@@ -1061,18 +1061,26 @@ dColors[j] |= fColors[i];
 	    baseNames = freearray(baseNames, fileCount);
 	}
 	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &fi->bnl, &fi->fc);
+	headerGet(h, RPMTAG_BASENAMES, &td, fi->scareFlags);
+	fi->fc = rpmtdCount(&td);
+	fi->bnl = td.data;
 
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 	dirNames = freearray(dirNames, dirCount);
 
 	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
-	xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &fi->dnl, &fi->dc);
+	headerGet(h, RPMTAG_DIRNAMES, &td, fi->scareFlags);
+	fi->dc = rpmtdCount(&td);
+	fi->dnl = td.data;
 
 	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
 			  dirIndexes, fileCount);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fi->dil, NULL);
+	headerGet(h, RPMTAG_DIRINDEXES, &td, fi->scareFlags);
+	/* Ugh, nasty games with how dil is alloced depending on scareMem */
+	if (fi->scareFlags & HEADERGET_ALLOC)
+	    free(fi->dil);
+	fi->dil = td.data;
     }
 
     /* If we did relocations, baseNames and dirNames might be NULL by now */
@@ -1206,6 +1214,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     fi->hme = (HME_t) headerModifyEntry;
     fi->hre = (HRE_t) headerRemoveEntry;
     fi->hfd = headerFreeData;
+    fi->scareFlags = scareFlags;
 
     fi->h = (scareMem ? headerLink(h) : NULL);
 
