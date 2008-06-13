@@ -683,7 +683,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
     rpm_count_t fileCount, dirCount, numValid = 0;
-    rpm_flag_t * fFlags = NULL;
     rpm_color_t * fColors = NULL;
     rpm_color_t * dColors = NULL;
     rpm_mode_t * fModes = NULL;
@@ -858,7 +857,6 @@ assert(p != NULL);
     xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &baseNames, &fileCount);
     xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &dirIndexes, NULL);
     xx = hge(h, RPMTAG_DIRNAMES, NULL, (rpm_data_t *) &dirNames, &dirCount);
-    xx = hge(h, RPMTAG_FILEFLAGS, NULL, (rpm_data_t *) &fFlags, NULL);
     xx = hge(h, RPMTAG_FILECOLORS, NULL, (rpm_data_t *) &fColors, NULL);
     xx = hge(h, RPMTAG_FILEMODES, NULL, (rpm_data_t *) &fModes, NULL);
 
