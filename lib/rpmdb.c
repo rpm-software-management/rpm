@@ -2938,8 +2938,6 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 {
     DBT * key;
     DBT * data;
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     rpmdbMatchIterator mi;
     fingerPrintCache fpc;
     Header h;
@@ -2983,10 +2981,11 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     /* For all installed headers with matching basename's ... */
     if (mi != NULL)
     while ((h = rpmdbNextIterator(mi)) != NULL) {
+	headerGetFlags hgflags = HEADERGET_MINMEM;
+	struct rpmtd_s bnames, dnames, dindexes;
 	const char ** dirNames;
 	const char ** baseNames;
 	const char ** fullBaseNames;
-	rpmTagType bnt, dnt;
 	uint32_t * dirIndexes;
 	uint32_t * fullDirIndexes;
 	fingerPrint * fps;
@@ -3006,9 +3005,12 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	num = end - start;
 
 	/* Compute fingerprints for this installed header's matches */
-	xx = hge(h, RPMTAG_BASENAMES, &bnt, (rpm_data_t *) &fullBaseNames, NULL);
-	xx = hge(h, RPMTAG_DIRNAMES, &dnt, (rpm_data_t *) &dirNames, NULL);
-	xx = hge(h, RPMTAG_DIRINDEXES, NULL, (rpm_data_t *) &fullDirIndexes, NULL);
+	headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);
+	headerGet(h, RPMTAG_DIRNAMES, &dnames, hgflags);
+	headerGet(h, RPMTAG_DIRINDEXES, &dindexes, hgflags);
+	fullBaseNames = bnames.data;
+	dirNames = dnames.data;
+	fullDirIndexes = dindexes.data;
 
 	baseNames = xcalloc(num, sizeof(*baseNames));
 	dirIndexes = xcalloc(num, sizeof(*dirIndexes));
@@ -3029,8 +3031,9 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	}
 
 	fps = _free(fps);
-	dirNames = hfd(dirNames, dnt);
-	fullBaseNames = hfd(fullBaseNames, bnt);
+	rpmtdFreeData(&bnames);
+	rpmtdFreeData(&dnames);
+	rpmtdFreeData(&dindexes);
 	baseNames = _free(baseNames);
 	dirIndexes = _free(dirIndexes);
 
