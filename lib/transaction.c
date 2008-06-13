@@ -205,10 +205,9 @@ static int handleInstInstalledFiles(const rpmts ts,
 static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 		sharedFileInfo shared, int sharedCount)
 {
-    HGE_t hge = fi->hge;
     Header h;
+    struct rpmtd_s ostates;
     const char * otherStates;
-    int i, xx;
 
     rpmdbMatchIterator mi;
 
@@ -220,9 +219,10 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	return 1;
     }
 
-    xx = hge(h, RPMTAG_FILESTATES, NULL, (rpm_data_t *) &otherStates, NULL);
+    (void) headerGet(h, RPMTAG_FILESTATES, &ostates, HEADERGET_MINMEM);
+    otherStates = ostates.data;
 
-    for (i = 0; i < sharedCount; i++, shared++) {
+    for (int i = 0; i < sharedCount; i++, shared++) {
 	int otherFileNum, fileNum;
 	otherFileNum = shared->otherFileNum;
 	fileNum = shared->pkgFileNum;
@@ -233,6 +233,7 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	fi->actions[fileNum] = FA_SKIP;
     }
 
+    rpmtdFreeData(&ostates);
     mi = rpmdbFreeIterator(mi);
 
     return 0;
