@@ -663,7 +663,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     rpmte p = rpmtsRelocateElement(ts);
     HAE_t hae = fi->hae;
     HME_t hme = fi->hme;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * relocations = NULL;
@@ -1062,7 +1061,7 @@ dColors[j] |= fColors[i];
 
 	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
 			  baseNames, fileCount);
-	fi->bnl = hfd(fi->bnl, RPM_STRING_ARRAY_TYPE);
+	free(fi->bnl);
 	headerGet(h, RPMTAG_BASENAMES, &td, fi->scareFlags);
 	fi->fc = rpmtdCount(&td);
 	fi->bnl = td.data;
@@ -1070,7 +1069,7 @@ dColors[j] |= fColors[i];
 	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
 			  dirNames, dirCount);
 
-	fi->dnl = hfd(fi->dnl, RPM_STRING_ARRAY_TYPE);
+	free(fi->dnl);
 	headerGet(h, RPMTAG_DIRNAMES, &td, fi->scareFlags);
 	fi->dc = rpmtdCount(&td);
 	fi->dnl = td.data;
@@ -1103,8 +1102,6 @@ dColors[j] |= fColors[i];
 
 rpmfi rpmfiFree(rpmfi fi)
 {
-    HFD_t hfd = headerFreeData;
-
     if (fi == NULL) return NULL;
 
     if (fi->nrefs > 1)
@@ -1120,17 +1117,17 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->posttransprog = _free(fi->posttransprog);
 
     if (fi->fc > 0) {
-	fi->bnl = hfd(fi->bnl, RPM_FORCEFREE_TYPE);
-	fi->dnl = hfd(fi->dnl, RPM_FORCEFREE_TYPE);
+	fi->bnl = _free(fi->bnl);
+	fi->dnl = _free(fi->dnl);
 
-	fi->flinks = hfd(fi->flinks, RPM_FORCEFREE_TYPE);
-	fi->flangs = hfd(fi->flangs, RPM_FORCEFREE_TYPE);
+	fi->flinks = _free(fi->flinks);
+	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
 
-	fi->cdict = hfd(fi->cdict, RPM_FORCEFREE_TYPE);
+	fi->cdict = _free(fi->cdict);
 
-	fi->fuser = hfd(fi->fuser, RPM_FORCEFREE_TYPE);
-	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
+	fi->fuser = _free(fi->fuser);
+	fi->fgroup = _free(fi->fgroup);
 
 	fi->fstates = _free(fi->fstates);
 
@@ -1159,10 +1156,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->apath = _free(fi->apath);
     fi->fmapflags = _free(fi->fmapflags);
 
-    fi->obnl = hfd(fi->obnl, RPM_FORCEFREE_TYPE);
-    fi->odnl = hfd(fi->odnl, RPM_FORCEFREE_TYPE);
-
-    fi->fcontexts = hfd(fi->fcontexts, RPM_FORCEFREE_TYPE);
+    fi->obnl = _free(fi->obnl);
+    fi->odnl = _free(fi->odnl);
 
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
@@ -1212,11 +1207,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     fi->i = -1;
     fi->tagN = tagN;
 
-    fi->hge = (HGE_t) (scareMem ? headerGetEntryMinMemory : headerGetEntry);
     fi->hae = (HAE_t) headerAddEntry;
     fi->hme = (HME_t) headerModifyEntry;
     fi->hre = (HRE_t) headerRemoveEntry;
-    fi->hfd = headerFreeData;
     fi->scareFlags = scareFlags;
 
     fi->h = (scareMem ? headerLink(h) : NULL);
