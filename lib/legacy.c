@@ -210,7 +210,7 @@ exit:
 
 void legacyRetrofit(Header h)
 {
-    const char * prefix;
+    struct rpmtd_s dprefix;
 
     /*
      * We don't use these entries (and rpm >= 2 never has) and they are
@@ -228,12 +228,13 @@ void legacyRetrofit(Header h)
      * careful. This fixup makes queries give the new values though,
      * which is quite handy.
      */
-    if (headerGetEntry(h, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *) &prefix, NULL))
-    {
+    if (headerGet(h, RPMTAG_DEFAULTPREFIX, &dprefix, HEADERGET_MINMEM)) {
+	const char *prefix = rpmtdGetString(&dprefix);
 	char * nprefix = stripTrailingChar(xstrdup(prefix), '/');
 	(void) headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
 		&nprefix, 1); 
 	free(nprefix);
+	rpmtdFreeData(&dprefix);
     }
 
     /*
