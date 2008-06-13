@@ -139,18 +139,12 @@ void expandFilelist(Header h)
  */
 static void providePackageNVR(Header h)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
-    HFD_t hfd = headerFreeData;
     const char *name;
     char *pEVR;
     rpmsenseFlags pFlags = RPMSENSE_EQUAL;
-    const char ** provides = NULL;
-    const char ** providesEVR = NULL;
-    rpmTagType pnt, pvt;
-    rpmsenseFlags * provideFlags = NULL;
-    rpm_count_t providesCount, i;
-    int xx;
     int bingo = 1;
+    struct rpmtd_s pnames;
+    rpmds hds, nvrds;
 
     /* Generate provides for this package name-version-release. */
     pEVR = headerGetEVR(h, &name);
@@ -161,50 +155,45 @@ static void providePackageNVR(Header h)
      * Rpm prior to 3.0.3 does not have versioned provides.
      * If no provides at all are available, we can just add.
      */
-    if (!hge(h, RPMTAG_PROVIDENAME, &pnt, (rpm_data_t *) &provides, &providesCount))
+    if (!headerGet(h, RPMTAG_PROVIDENAME, &pnames, HEADERGET_MINMEM)) {
 	goto exit;
+    }
 
     /*
      * Otherwise, fill in entries on legacy packages.
      */
-    if (!hge(h, RPMTAG_PROVIDEVERSION, &pvt, (rpm_data_t *) &providesEVR, NULL)) {
-	for (i = 0; i < providesCount; i++) {
+    if (!headerIsEntry(h, RPMTAG_PROVIDEVERSION)) {
+	while (rpmtdNext(&pnames) >= 0) {
 	    const char * vdummy = "";
 	    rpmsenseFlags fdummy = RPMSENSE_ANY;
-	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 			&vdummy, 1);
-	    xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 			&fdummy, 1);
 	}
 	goto exit;
     }
 
-    xx = hge(h, RPMTAG_PROVIDEFLAGS, NULL, (rpm_data_t *) &provideFlags, NULL);
-
-   	/* LCL: providesEVR is not NULL */
-    if (provides && providesEVR && provideFlags)
-    for (i = 0; i < providesCount; i++) {
-        if (!(provides[i] && providesEVR[i]))
-            continue;
-	if (!(provideFlags[i] == RPMSENSE_EQUAL &&
-	    !strcmp(name, provides[i]) && !strcmp(pEVR, providesEVR[i])))
-	    continue;
+    /* see if we already have this provide */
+    hds = rpmdsNew(h, RPMTAG_PROVIDENAME, 1);
+    nvrds = rpmdsSingle(RPMTAG_PROVIDENAME, name, pEVR, pFlags);
+    if (rpmdsFind(hds, nvrds) >= 0) {
 	bingo = 0;
-	break;
     }
+    rpmdsFree(hds);
+    rpmdsFree(nvrds);
+    
 
 exit:
-    provides = hfd(provides, pnt);
-    providesEVR = hfd(providesEVR, pvt);
-
     if (bingo) {
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
+	headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
 		&name, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
+	headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
 		&pFlags, 1);
-	xx = headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
+	headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
 		&pEVR, 1);
     }
+    rpmtdFreeData(&pnames);
     free(pEVR);
 }
 
