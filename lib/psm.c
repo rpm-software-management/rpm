@@ -20,7 +20,7 @@
 #include "lib/cpio.h"
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/psm.h"
-#include "lib/rpmfi_internal.h" /* XXX replaced/states, fi->hge, fi->te... */
+#include "lib/rpmfi_internal.h" /* XXX replaced/states, fi->te... */
 #include "lib/rpmte_internal.h"	/* XXX te->fd */
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
@@ -1222,8 +1222,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
-    HGE_t hge = fi->hge;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
+    headerGetFlags hgflags = fi->h ? HEADERGET_MINMEM : HEADERGET_ALLOC;
     rpmRC rc = psm->rc;
     int saveerrno;
     int xx;
@@ -1290,9 +1289,13 @@ assert(psm->mi == NULL);
 	     * prefix stripped to form the cpio list, while all other packages
 	     * need the leading / stripped.
 	     */
-	    {   const char * p;
-		xx = hge(fi->h, RPMTAG_DEFAULTPREFIX, NULL, (rpm_data_t *) &p, NULL);
-		fi->striplen = (xx ? strlen(p) + 1 : 1);
+	    {   const char * p = NULL;
+		struct rpmtd_s dprefix;
+		if (headerGet(fi->h, RPMTAG_DEFAULTPREFIX, &dprefix, 
+							HEADERGET_MINMEM)) {
+		    p = rpmtdGetString(&dprefix);
+		}
+		fi->striplen = p ? strlen(p) + 1 : 1;
 	    }
 	    fi->mapflags =
 		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
@@ -1306,12 +1309,17 @@ assert(psm->mi == NULL);
 		fi->apath = filenames.data; /* Ick.. */
 	    }
 	
-	    if (fi->fuser == NULL)
-		xx = hge(fi->h, RPMTAG_FILEUSERNAME, NULL,
-				(rpm_data_t *) &fi->fuser, NULL);
-	    if (fi->fgroup == NULL)
-		xx = hge(fi->h, RPMTAG_FILEGROUPNAME, NULL,
-				(rpm_data_t *) &fi->fgroup, NULL);
+	    /* XXX AFAICT these are "can't happen" cases... */
+	    if (fi->fuser == NULL) {
+		struct rpmtd_s fuser;
+		headerGet(fi->h, RPMTAG_FILEUSERNAME, &fuser, hgflags);
+		fi->fuser = fuser.data;
+	    }
+	    if (fi->fgroup == NULL) {
+		struct rpmtd_s fgroup;
+		headerGet(fi->h, RPMTAG_FILEGROUPNAME, &fgroup, hgflags);
+		fi->fgroup = fgroup.data;
+	    }
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE) {
@@ -1595,8 +1603,8 @@ assert(psm->mi == NULL);
  	}
 	psm->failedFile = _free(psm->failedFile);
 
-	fi->fgroup = hfd(fi->fgroup, RPM_FORCEFREE_TYPE);
-	fi->fuser = hfd(fi->fuser, RPM_FORCEFREE_TYPE);
+	fi->fgroup = _free(fi->fgroup);
+	fi->fuser = _free(fi->fuser);
 	fi->apath = _free(fi->apath);
 	fi->fstates = _free(fi->fstates);
 	break;
