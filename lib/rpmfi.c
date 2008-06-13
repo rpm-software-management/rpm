@@ -678,13 +678,11 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * relocations = NULL;
     int numRelocations;
-    const char ** validRelocations;
-    rpmTagType validType;
     char ** baseNames;
     char ** dirNames;
     uint32_t * dirIndexes;
     uint32_t * newDirIndexes;
-    rpm_count_t fileCount, dirCount, numValid;
+    rpm_count_t fileCount, dirCount, numValid = 0;
     rpm_flag_t * fFlags = NULL;
     rpm_color_t * fColors = NULL;
     rpm_color_t * dColors = NULL;
@@ -698,10 +696,11 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int reldel = 0;
     int len;
     int i, j, xx;
+    struct rpmtd_s validRelocs;
 
-    if (!hge(origH, RPMTAG_PREFIXES, &validType,
-			(rpm_data_t *) &validRelocations, &numValid))
-	numValid = 0;
+    
+    if (headerGet(origH, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
+	numValid = rpmtdCount(&validRelocs);
 
 assert(p != NULL);
     numRelocations = 0;
@@ -718,10 +717,11 @@ assert(p != NULL);
      */
     if (p->relocs == NULL || numRelocations == 0) {
 	if (numValid) {
-	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES))
-		xx = hae(origH, RPMTAG_INSTPREFIXES,
-			validType, validRelocations, numValid);
-	    validRelocations = hfd(validRelocations, validType);
+	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES)) {
+		rpmtdSetTag(&validRelocs, RPMTAG_INSTPREFIXES);
+		headerPut(origH, &validRelocs, HEADERPUT_DEFAULT);
+	    }
+	    rpmtdFreeData(&validRelocs);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
 	return headerLink(origH);
@@ -751,6 +751,8 @@ assert(p != NULL);
 	/* An old path w/o a new path is valid, and indicates exclusion */
 	if (p->relocs[i].newPath) {
 	    int del;
+	    int valid = 0;
+	    const char *validprefix;
 
 	    t = xstrdup(p->relocs[i].newPath);
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
@@ -759,13 +761,16 @@ assert(p != NULL);
 
 	   	/* FIX:  relocations[i].oldPath == NULL */
 	    /* Verify that the relocation's old path is in the header. */
-	    for (j = 0; j < numValid; j++) {
-		if (!strcmp(validRelocations[j], relocations[i].oldPath))
+	    rpmtdInit(&validRelocs);
+	    while ((validprefix = rpmtdNextString(&validRelocs))) {
+		if (strcmp(validprefix, relocations[i].oldPath) == 0) {
+		    valid = 1;
 		    break;
+		}
 	    }
 
 	    /* XXX actions check prevents problem from being appended twice. */
-	    if (j == numValid && !allowBadRelocate && actions) {
+	    if (!valid && !allowBadRelocate && actions) {
 		rpmps ps = rpmtsProblems(ts);
 		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
 			rpmteNEVRA(p), rpmteKey(p),
@@ -817,15 +822,17 @@ assert(p != NULL);
 
     /* Add relocation values to the header */
     if (numValid) {
+	const char *validprefix;
 	const char ** actualRelocations;
 	rpm_count_t numActual;
 
 	actualRelocations = xmalloc(numValid * sizeof(*actualRelocations));
 	numActual = 0;
-	for (i = 0; i < numValid; i++) {
+	rpmtdInit(&validRelocs);
+	while ((validprefix = rpmtdNextString(&validRelocs))) {
 	    for (j = 0; j < numRelocations; j++) {
 		if (relocations[j].oldPath == NULL || /* XXX can't happen */
-		    strcmp(validRelocations[i], relocations[j].oldPath))
+		    strcmp(validprefix, relocations[j].oldPath))
 		    continue;
 		/* On install, a relocate to NULL means skip the path. */
 		if (relocations[j].newPath) {
@@ -835,7 +842,7 @@ assert(p != NULL);
 		break;
 	    }
 	    if (j == numRelocations) {
-		actualRelocations[numActual] = validRelocations[i];
+		actualRelocations[numActual] = validprefix;
 		numActual++;
 	    }
 	}
@@ -845,7 +852,7 @@ assert(p != NULL);
 		       (rpm_data_t *) actualRelocations, numActual);
 
 	actualRelocations = _free(actualRelocations);
-	validRelocations = hfd(validRelocations, validType);
+	rpmtdFreeData(&validRelocs);
     }
 
     xx = hge(h, RPMTAG_BASENAMES, NULL, (rpm_data_t *) &baseNames, &fileCount);
