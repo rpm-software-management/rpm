@@ -889,25 +889,19 @@ exit:
  * Execute triggers.
  * @todo Trigger on any provides, not just package NVR.
  * @param psm		package state machine data
- * @param sourceH
- * @param triggeredH
+ * @param sourceH	header of trigger source
+ * @param trigH		header of triggered package
  * @param arg2
  * @param triggersAlreadyRun
  * @return
  */
 static rpmRC handleOneTrigger(const rpmpsm psm,
-			Header sourceH, Header triggeredH,
+			Header sourceH, Header trigH,
 			int arg2, unsigned char * triggersAlreadyRun)
 {
     int scareMem = 1;
     const rpmts ts = psm->ts;
-    rpmfi fi = psm->fi;
-    HGE_t hge = fi->hge;
-    HFD_t hfd = (fi->hfd ? fi->hfd : headerFreeData);
     rpmds trigger = NULL;
-    const char ** triggerScripts;
-    const char ** triggerProgs;
-    int32_t * triggerIndices;
     const char * sourceName;
     const char * triggerName;
     rpmRC rc = RPMRC_OK;
@@ -915,18 +909,19 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     int i;
 
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
-    xx = headerNVR(triggeredH, &triggerName, NULL, NULL);
+    xx = headerNVR(trigH, &triggerName, NULL, NULL);
 
-    trigger = rpmdsInit(rpmdsNew(triggeredH, RPMTAG_TRIGGERNAME, scareMem));
+    trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, scareMem));
     if (trigger == NULL)
 	return rc;
 
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	rpmTagType tit, tst, tpt;
 	const char * Name;
 	rpmsenseFlags Flags = rpmdsFlags(trigger);
+	struct rpmtd_s tscripts, tprogs, tindexes;
+	headerGetFlags hgflags = HEADERGET_MINMEM;
 
 	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */
@@ -942,17 +937,17 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
 
-	if (!(	hge(triggeredH, RPMTAG_TRIGGERINDEX, &tit,
-		       (rpm_data_t *) &triggerIndices, NULL) &&
-		hge(triggeredH, RPMTAG_TRIGGERSCRIPTS, &tst,
-		       (rpm_data_t *) &triggerScripts, NULL) &&
-		hge(triggeredH, RPMTAG_TRIGGERSCRIPTPROG, &tpt,
-		       (rpm_data_t *) &triggerProgs, NULL))
-	    )
+	if (!(headerGet(trigH, RPMTAG_TRIGGERINDEX, &tindexes, hgflags) &&
+	      headerGet(trigH, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags) &&
+	      headerGet(trigH, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags))) {
 	    continue;
+	}
 
 	{   int arg1;
 	    int index;
+	    const char ** triggerScripts = tscripts.data;
+	    const char ** triggerProgs = tprogs.data;
+	    uint32_t * triggerIndices = tindexes.data;
 
 	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 	    if (arg1 < 0) {
@@ -966,7 +961,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		{
 		    ARGV_t argv = argvNew();
 		    argvAdd(&argv, *(triggerProgs + index));
-		    rc = runScript(psm, triggeredH, triggertag(psm->sense), 
+		    rc = runScript(psm, trigH, triggertag(psm->sense), 
 			    &argv, triggerScripts[index],
 			    arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
@@ -976,9 +971,9 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    }
 	}
 
-	triggerIndices = hfd(triggerIndices, tit);
-	triggerScripts = hfd(triggerScripts, tst);
-	triggerProgs = hfd(triggerProgs, tpt);
+	rpmtdFreeData(&tindexes);
+	rpmtdFreeData(&tscripts);
+	rpmtdFreeData(&tprogs);
 
 	/*
 	 * Each target/source header pair can only result in a single
