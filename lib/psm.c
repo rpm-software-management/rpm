@@ -234,7 +234,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     char * _sourcedir = NULL;
     char * _specdir = NULL;
     char * specFile = NULL;
-    HFD_t hfd;
     Header h = NULL;
     struct rpmpsm_s psmbuf;
     rpmpsm psm = &psmbuf;
@@ -289,7 +288,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
-    hfd = fi->hfd;
 
 (void) rpmInstallLoadMacros(fi, fi->h);
 
@@ -357,7 +355,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	size_t sourcelen = strlen(_sourcedir) + 2;
 	char * t;
 
-	fi->dnl = hfd(fi->dnl, RPM_FORCEFREE_TYPE);
+	fi->dnl = _free(fi->dnl);
 
 	fi->dc = 2;
 	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl)
