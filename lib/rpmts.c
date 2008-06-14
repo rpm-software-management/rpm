@@ -265,7 +265,6 @@ exit:
 
 rpmRC rpmtsFindPubkey(rpmts ts)
 {
-    const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     pgpDigParams pubp = rpmtsPubkey(ts);
@@ -273,7 +272,7 @@ rpmRC rpmtsFindPubkey(rpmts ts)
     char * pubkeysource = NULL;
     int xx;
 
-    if (sig == NULL || dig == NULL || sigp == NULL || pubp == NULL)
+    if (dig == NULL || sigp == NULL || pubp == NULL)
 	goto exit;
 
 #if 0
@@ -757,7 +756,6 @@ void rpmtsCleanProblems(rpmts ts)
 
 void rpmtsCleanDig(rpmts ts)
 {
-    ts->sig = headerFreeData(ts->sig, ts->sigtype);
     ts->dig = pgpFreeDig(ts->dig);
 }
 
@@ -1040,52 +1038,6 @@ rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid)
 	ts->tid = tid;
     }
     return otid;
-}
-
-rpmSigTag rpmtsSigtag(const rpmts ts)
-{
-    rpmSigTag sigtag = 0;
-    if (ts != NULL)
-	sigtag = ts->sigtag;
-    return sigtag;
-}
-
-rpmTagType rpmtsSigtype(const rpmts ts)
-{
-    rpmTagType sigtype = 0;
-    if (ts != NULL)
-	sigtype = ts->sigtype;
-    return sigtype;
-}
-
-rpm_constdata_t rpmtsSig(const rpmts ts)
-{
-    rpm_constdata_t sig = NULL;
-    if (ts != NULL)
-	sig = ts->sig;
-    return sig;
-}
-
-size_t rpmtsSiglen(const rpmts ts)
-{
-    size_t siglen = 0;
-    if (ts != NULL)
-	siglen = ts->siglen;
-    return siglen;
-}
-
-int rpmtsSetSig(rpmts ts, rpmSigTag sigtag, rpmTagType sigtype, 
-		rpm_data_t sig, size_t siglen)
-{
-    if (ts != NULL) {
-	if (ts->sig && ts->sigtype)
-	    ts->sig = headerFreeData(ts->sig, ts->sigtype);
-	ts->sigtag = sigtag;
-	ts->sigtype = (sig ? sigtype : 0);
-	ts->sig = sig;
-	ts->siglen = siglen;
-    }
-    return 0;
 }
 
 pgpDig rpmtsDig(rpmts ts)
@@ -1485,7 +1437,6 @@ rpmts rpmtsCreate(void)
 
     ts->probs = NULL;
 
-    ts->sig = NULL;
     ts->pkpkt = NULL;
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));

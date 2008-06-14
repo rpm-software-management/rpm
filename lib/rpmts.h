@@ -488,47 +488,6 @@ rpm_tid_t rpmtsGetTid(rpmts ts);
 rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid);
 
 /** \ingroup rpmts
- * Get signature tag.
- * @param ts		transaction set
- * @return		signature tag
- */
-rpmSigTag rpmtsSigtag(const rpmts ts);
-
-/** \ingroup rpmts
- * Get signature tag type.
- * @param ts		transaction set
- * @return		signature tag type
- */
-rpmTagType rpmtsSigtype(const rpmts ts);
-
-/** \ingroup rpmts
- * Get signature tag data, i.e. from header.
- * @param ts		transaction set
- * @return		signature tag data
- */
-rpm_constdata_t rpmtsSig(const rpmts ts);
-
-/** \ingroup rpmts
- * Get signature tag data length, i.e. no. of bytes of data.
- * @param ts		transaction set
- * @return		signature tag data length
- */
-size_t rpmtsSiglen(const rpmts ts);
-
-/** \ingroup rpmts
- * Set signature tag info, i.e. from header.
- * @param ts		transaction set
- * @param sigtag	signature tag
- * @param sigtype	signature tag type
- * @param sig		signature tag data
- * @param siglen	signature tag data length
- * @return		0 always
- */
-int rpmtsSetSig(rpmts ts,
-		rpmSigTag sigtag, rpmTagType sigtype,
-		rpm_data_t sig, size_t siglen);
-
-/** \ingroup rpmts
  * Get OpenPGP packet parameters, i.e. signature/pubkey constants.
  * @param ts		transaction set
  * @return		signature/pubkey constants.

@@ -167,13 +167,12 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
  */
 static int rpmtsStashKeyid(rpmts ts)
 {
-    const void * sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     unsigned int keyid;
     int i;
 
-    if (sig == NULL || dig == NULL || sigp == NULL)
+    if (dig == NULL || sigp == NULL)
 	return 0;
 
     keyid = pgpGrab(sigp->signid+4, 4);
@@ -224,7 +223,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     unsigned char * dataStart = (unsigned char *) (pe + il);
     struct indexEntry_s entry;
     struct entryInfo_s info;
-    void * sig = NULL;
     unsigned const char * b;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
     size_t siglen = 0;
@@ -235,6 +233,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
     int i;
+    struct rpmtd_s sigtd;
     static int hclvl;
 
     hclvl++;
@@ -398,13 +397,16 @@ verifyinfo_exit:
 	goto verifyinfo_exit;
     dig->nbytes = 0;
 
-    sig = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
-    (void) rpmtsSetSig(ts, info.tag, info.type, sig, (size_t) info.count);
+    sigtd.tag = info.tag;
+    sigtd.type = info.type;
+    sigtd.count = info.count;
+    sigtd.data = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
+    sigtd.flags = RPMTD_ALLOCED;
 
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, info.count, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -445,7 +447,7 @@ verifyinfo_exit:
 	break;
     case RPMTAG_DSAHEADER:
 	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sig, info.count, dig, (_print_pkts & rpmIsDebug()));
+	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
 	if (dig->signature.version != 3 && dig->signature.version != 4) {
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
@@ -485,11 +487,11 @@ verifyinfo_exit:
 
 	break;
     default:
-	sig = _free(sig);
+	sigtd.data = _free(sigtd.data); /* Hmm...? */
 	break;
     }
 
-    rc = rpmVerifySignature(ts, &buf);
+    rc = rpmVerifySignature(ts, &sigtd, &buf);
 
     if (msg) 
 	*msg = buf;
@@ -497,10 +499,10 @@ verifyinfo_exit:
 	free(buf);
 
     /* XXX headerCheck can recurse, free info only at top level. */
-    if (hclvl == 1)
+    if (hclvl == 1) {
+	rpmtdFreeData(&sigtd);
 	rpmtsCleanDig(ts);
-    if (info.tag == RPMTAG_SHA1HEADER)
-	sig = _free(sig);
+    }
     hclvl--;
     return rc;
 }
@@ -719,7 +721,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    (void) rpmtsSetSig(ts, sigtag, sigtd.type, sigtd.data, sigtd.count);
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:
@@ -816,7 +817,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 /** @todo Implement disable/enable/warn/error/anal policy. */
 
-    rc = rpmVerifySignature(ts, &msg);
+    rc = rpmVerifySignature(ts, &sigtd, &msg);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);

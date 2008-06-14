@@ -1359,49 +1359,42 @@ exit:
 }
 
 rpmRC
-rpmVerifySignature(const rpmts ts, char ** result)
+rpmVerifySignature(const rpmts ts, rpmtd sigtd, char ** result)
 {
-    struct rpmtd_s sigtd;
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     
-    rpmtdReset(&sigtd);
-    sigtd.tag = rpmtsSigtag(ts);
-    sigtd.type = rpmtsSigtype(ts);
-    sigtd.data = (void *) rpmtsSig(ts);
-    sigtd.count = rpmtsSiglen(ts);
-
     assert(result != NULL);
 
-    if (sigtd.data == NULL || sigtd.count <= 0 || dig == NULL) {
+    if (sigtd->data == NULL || sigtd->count <= 0 || dig == NULL) {
 	rasprintf(result, _("Verify signature: BAD PARAMETERS\n"));
 	return RPMRC_NOTFOUND;
     }
 
-    switch (sigtd.tag) {
+    switch (sigtd->tag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(ts, &sigtd, result);
+	res = verifySizeSignature(ts, sigtd, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(ts, &sigtd, result, dig->md5ctx);
+	res = verifyMD5Signature(ts, sigtd, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(ts, &sigtd, result, dig->hdrsha1ctx);
+	res = verifySHA1Signature(ts, sigtd, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(ts, &sigtd, result, dig->hdrmd5ctx);
+	res = verifyRSASignature(ts, sigtd, result, dig->hdrmd5ctx);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(ts, &sigtd, result,
+	res = verifyRSASignature(ts, sigtd, result,
 		((dig->signature.hash_algo == PGPHASHALGO_MD5)
 			? dig->md5ctx : dig->sha1ctx));
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(ts, &sigtd, result, dig->hdrsha1ctx);
+	res = verifyDSASignature(ts, sigtd, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(ts, &sigtd, result, dig->sha1ctx);
+	res = verifyDSASignature(ts, sigtd, result, dig->sha1ctx);
 	break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
@@ -1409,7 +1402,7 @@ rpmVerifySignature(const rpmts ts, char ** result)
 	res = RPMRC_NOTFOUND;
 	break;
     default:
-	rasprintf(result, _("Signature: UNKNOWN (%d)\n"), sigtd.tag);
+	rasprintf(result, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
 	res = RPMRC_NOTFOUND;
 	break;
     }

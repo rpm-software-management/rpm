@@ -94,10 +94,6 @@ struct rpmts_s {
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
     const char * fn;		/*!< Current package fn. */
-    rpmSigTag  sigtag;		/*!< Current package signature tag. */
-    rpmTagType  sigtype;	/*!< Current package signature data type. */
-    rpm_data_t sig;		/*!< Current package signature. */
-    size_t siglen;		/*!< Current package signature length. */
 
     uint8_t * pkpkt;/*!< Current pubkey packet. */
     size_t pkpktlen;		/*!< Current pubkey packet length. */

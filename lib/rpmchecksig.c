@@ -657,17 +657,13 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	untrustedKeys = NULL;
 	rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
-	for (hi = headerInitIterator(sigh);
-	    headerNext(hi, &sigtd) != 0;
-	    (void) rpmtsSetSig(ts, sigtd.tag, sigtd.type, NULL, sigtd.count))
-	{
+	hi = headerInitIterator(sigh);
+	for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
     	    char *result = NULL;
 	    int havekey = 0;
 
 	    if (sigtd.data == NULL) /* XXX can't happen */
 		continue;
-
-	    (void) rpmtsSetSig(ts, sigtd.tag, sigtd.type, sigtd.data, sigtd.count);
 
 	    /* Clean up parameters from previous sigtag. */
 	    pgpCleanDig(dig);
@@ -716,7 +712,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		break;
 	    }
 
-	    sigres = rpmVerifySignature(ts, &result);
+	    sigres = rpmVerifySignature(ts, &sigtd, &result);
 	    if (sigres != RPMRC_OK) {
 		failed = 1;
 	    }

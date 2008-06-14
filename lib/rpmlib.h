@@ -233,17 +233,15 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
  * Verify a signature from a package.
  *
  * This needs the following variables from the transaction set:
- *	- ts->sigtag	type of signature
- *	- ts->sig	signature itself (from signature header)
- *	- ts->siglen	no. of bytes in signature
  *	- ts->dig	signature/pubkey parameters (malloc'd workspace)
  *
  * @param ts		transaction set
+ * @param sigtd		signature tag data container
  * @retval result	detailed text result of signature verification
  * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(const rpmts ts, char ** result);
+rpmRC rpmVerifySignature(const rpmts ts, rpmtd sigtd, char ** result);
 
 /** \ingroup signature
  * Destroy signature header from package.
