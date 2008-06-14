@@ -36,7 +36,6 @@ struct rpmds_s {
     int32_t * Refs;		/*!< No. of file refs. */
     time_t BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
-    rpmTagType Nt, EVRt, Ft;	/*!< Tag data types. */
     int32_t Count;		/*!< No. of elements */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
@@ -84,8 +83,8 @@ static int dsType(rpmTag tag,
 
 /*
  * Dupe a string into string array (of size 1) + contents stored in a single 
- * allocation block similarly to how headerGetEntry returns data so it will 
- * be freed by headerFreeData(). 
+ * allocation block similarly to how header data is returned so it will 
+ * be freed by single free(). 
  */
 static const char ** str2hge(const char *str)
 {
@@ -126,7 +125,6 @@ fprintf(stderr, "--> ds %p ++ %d %s\n", ds, ds->nrefs, msg);
 
 rpmds rpmdsFree(rpmds ds)
 {
-    HFD_t hfd = headerFreeData;
     rpmTag tagEVR, tagF;
 
     if (ds == NULL)
@@ -142,9 +140,9 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 	return NULL;
 
     if (ds->Count > 0) {
-	ds->N = hfd(ds->N, ds->Nt);
-	ds->EVR = hfd(ds->EVR, ds->EVRt);
-	ds->Flags = (ds->h != NULL ? hfd(ds->Flags, ds->Ft) : _free(ds->Flags));
+	ds->N = _free(ds->N);
+	ds->EVR = _free(ds->EVR);
+	ds->Flags = (ds->h != NULL ? NULL : _free(ds->Flags));
 	ds->h = headerFree(ds->h);
     }
 
@@ -181,16 +179,13 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->DNEVR = NULL;
 	ds->tagN = tagN;
 	ds->N = names.data;
-	ds->Nt = rpmtdType(&names);;
 	ds->Count = rpmtdCount(&names);
 	ds->nopromote = _rpmds_nopromote;
 
 	headerGet(h, tagEVR, &evr, hgflags);
 	ds->EVR = evr.data;
-	ds->EVRt = rpmtdType(&evr);
 	headerGet(h, tagF, &flags, hgflags);
 	ds->Flags = flags.data;
-	ds->Ft = rpmtdType(&flags);
 
 	headerGet(h, RPMTAG_BUILDTIME, &buildtime, HEADERGET_MINMEM);
 	BTp = rpmtdGetUint32(&buildtime);
@@ -273,9 +268,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     ds->tagN = tagN;
     ds->Count = 1;
     ds->N = str2hge(n);
-    ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     ds->EVR = str2hge(evr);
-    ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     free(evr);
 
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
@@ -310,9 +303,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
     ds->Count = 1;
 
     ds->N = str2hge(N);
-    ds->Nt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
     ds->EVR = str2hge(EVR);
-    ds->EVRt = RPM_FORCEFREE_TYPE;	/* XXX to insure that hfd will free */
 
     ds->Flags = xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
@@ -574,7 +565,6 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->N = (ds->h != NULL
 	? memcpy(xmalloc(nb), ods->N, nb)
 	: rpmdsDupArgv(ods->N, ods->Count) );
-    ds->Nt = ods->Nt;
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 assert(ods->EVR != NULL);
@@ -584,13 +574,11 @@ assert(ods->Flags != NULL);
     ds->EVR = (ds->h != NULL
 	? memcpy(xmalloc(nb), ods->EVR, nb)
 	: rpmdsDupArgv(ods->EVR, ods->Count) );
-    ds->EVRt = ods->EVRt;
 
     nb = (ds->Count * sizeof(*ds->Flags));
     ds->Flags = (ds->h != NULL
 	? ods->Flags
 	: memcpy(xmalloc(nb), ods->Flags, nb) );
-    ds->Ft = ods->Ft;
 
 /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
