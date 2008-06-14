@@ -1003,7 +1003,6 @@ static const char * rpmSigString(rpmRC res)
 static rpmRC
 verifySizeSignature(const rpmts ts, rpmtd sigtd, char ** msg)
 {
-    rpm_constdata_t sig = rpmtsSig(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     size_t size = 0x7fffffff;
@@ -1012,13 +1011,13 @@ verifySizeSignature(const rpmts ts, rpmtd sigtd, char ** msg)
     assert(msg != NULL);
     *msg = NULL;
 
-    if (sig == NULL || dig == NULL || dig->nbytes == 0) {
+    if (sigtd->data == NULL || dig == NULL || dig->nbytes == 0) {
 	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
 
-    memcpy(&size, sig, sizeof(size));
+    memcpy(&size, sigtd->data, sizeof(size));
 
     if (size != dig->nbytes) {
 	res = RPMRC_FAIL;
@@ -1037,8 +1036,6 @@ static rpmRC
 verifyMD5Signature(const rpmts ts, rpmtd sigtd, char ** msg,
 		DIGEST_CTX md5ctx)
 {
-    rpm_constdata_t sig = rpmtsSig(ts);
-    size_t siglen = rpmtsSiglen(ts);
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     uint8_t * md5sum = NULL;
@@ -1049,7 +1046,7 @@ verifyMD5Signature(const rpmts ts, rpmtd sigtd, char ** msg,
     assert(msg != NULL);
     *msg = NULL;
 
-    if (md5ctx == NULL || sig == NULL || dig == NULL) {
+    if (md5ctx == NULL || sigtd->data == NULL || dig == NULL) {
 	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
@@ -1062,9 +1059,9 @@ verifyMD5Signature(const rpmts ts, rpmtd sigtd, char ** msg,
     rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
     md5 = pgpHexStr(md5sum, md5len);
-    if (md5len != siglen || memcmp(md5sum, sig, md5len)) {
+    if (md5len != sigtd->count || memcmp(md5sum, sigtd->data, md5len)) {
 	res = RPMRC_FAIL;
-	char *hex = pgpHexStr(sig, siglen);
+	char *hex = rpmtdFormat(sigtd, RPMTD_FORMAT_STRING, NULL);
 	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
 		  rpmSigString(res), hex, md5);
 	free(hex);
@@ -1090,19 +1087,16 @@ static rpmRC
 verifySHA1Signature(const rpmts ts, rpmtd sigtd, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
-    const char *sig = rpmtsSig(ts);
-#ifdef	NOTYET
-    size_t siglen = rpmtsSiglen(ts);
-#endif
     pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     char * SHA1 = NULL;
     const char *title = _("Header SHA1 digest:");
+    const char *sig = sigtd->data;
 
     assert(msg != NULL);
     *msg = NULL;
 
-    if (sha1ctx == NULL || sig == NULL || dig == NULL) {
+    if (sha1ctx == NULL || sigtd->data == NULL || dig == NULL) {
 	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
@@ -1138,11 +1132,6 @@ static rpmRC
 verifyRSASignature(rpmts ts, rpmtd sigtd, char ** msg,
 		DIGEST_CTX md5ctx)
 {
-    rpm_constdata_t sig = rpmtsSig(ts);
-#ifdef	NOTYET
-    size_t siglen = rpmtsSiglen(ts);
-#endif
-    rpmSigTag sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     SECOidTag sigalg;
@@ -1150,6 +1139,7 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, char ** msg,
     int xx;
     SECItem digest;
     const char *hdr, *signame = _("Unknown");;
+    const char *sig = sigtd->data;
     int sigver;
 
     assert(msg != NULL);
@@ -1167,7 +1157,7 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, char ** msg,
     /* Verify the desired signature match. */
     switch (sigp->pubkey_algo) {
     case PGPPUBKEYALGO_RSA:
-	if (sigtag == RPMSIGTAG_PGP || sigtag == RPMSIGTAG_PGP5 || sigtag == RPMSIGTAG_RSA)
+	if (sigtd->tag == RPMSIGTAG_PGP || sigtd->tag == RPMSIGTAG_PGP5 || sigtd->tag == RPMSIGTAG_RSA)
 	    break;
     default:
 	res = RPMRC_NOKEY;
@@ -1283,11 +1273,6 @@ static rpmRC
 verifyDSASignature(rpmts ts, rpmtd sigtd, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
-    rpm_constdata_t sig = rpmtsSig(ts);
-#ifdef	NOTYET
-    size_t siglen = rpmtsSiglen(ts);
-#endif
-    rpmSigTag sigtag = rpmtsSigtag(ts);
     pgpDig dig = rpmtsDig(ts);
     pgpDigParams sigp = rpmtsSignature(ts);
     rpmRC res;
@@ -1295,6 +1280,7 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, char ** msg,
     SECItem digest;
     const char *hdr;
     int sigver;
+    const char *sig = sigtd->data;
 
     assert(msg != NULL);
     *msg = NULL;
@@ -1308,7 +1294,7 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, char ** msg,
     }
 
     /* XXX sanity check on sigtag and signature agreement. */
-    if (!((sigtag == RPMSIGTAG_GPG || sigtag == RPMSIGTAG_DSA)
+    if (!((sigtd->tag == RPMSIGTAG_GPG || sigtd->tag == RPMSIGTAG_DSA)
     	&& sigp->pubkey_algo == PGPPUBKEYALGO_DSA
     	&& sigp->hash_algo == PGPHASHALGO_SHA1))
     {
