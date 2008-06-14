@@ -1909,7 +1909,7 @@ int headerNext(HeaderIterator hi, rpmtd td)
 
     td->tag = entry->info.tag;
 
-    rc = copyTdEntry(entry, td, HEADERGET_MINMEM);
+    rc = copyTdEntry(entry, td, HEADERGET_DEFAULT);
 
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
