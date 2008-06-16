@@ -567,7 +567,7 @@ int rpmtsInitDSI(const rpmts ts);
  * Update disk space info for a file.
  * @param ts		transaction set
  * @param dev		mount point device
- * @param fileLSize	long (64bit) file size
+ * @param fileSize	long (64bit) file size
  * @param prevSize	previous long file size (if upgrading)
  * @param fixupSize	long size difference
  * @param action	file disposition
