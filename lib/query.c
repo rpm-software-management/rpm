@@ -9,8 +9,9 @@
 # define PATH_MAX 255
 #endif
 
-#include <rpm/rpmcli.h>
+#include <inttypes.h>
 
+#include <rpm/rpmcli.h>
 #include <rpm/header.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfi.h>
@@ -54,7 +55,7 @@ static void printFileInfo(const char * name,
     rstrlcpy(groupfield, group, sizeof(groupfield));
 
     /* this is normally right */
-    snprintf(sizefield, sizeof(sizefield), "%20lu", size);
+    snprintf(sizefield, sizeof(sizefield), "%20" PRIu64, size);
 
     /* this knows too much about dev_t */
 
@@ -196,8 +197,8 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	if (qva->qva_flags & QUERY_FOR_DUMPFILES) {
 	    char *add, *fdigest;
 	    fdigest = rpmfiFDigestHex(fi, NULL);
-	    rasprintf(&add, "%s %d %d %s 0%o ", 
-		      fn, (int)fsize, fmtime, fdigest ? fdigest : "", fmode);
+	    rasprintf(&add, "%s %" PRIu64 " %d %s 0%o ", 
+		      fn, fsize, fmtime, fdigest ? fdigest : "", fmode);
 	    rstrcat(&buf, add);
 	    free(add);
 	    free(fdigest);
