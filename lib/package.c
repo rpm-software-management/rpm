@@ -162,10 +162,10 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 
 /**
  * Remember current key id.
- * @param ts		transaction set
+ * @param dig		OpenPGP packet containter
  * @return		0 if new keyid, otherwise 1
  */
-static int rpmtsStashKeyid(rpmts ts, pgpDig dig)
+static int stashKeyid(pgpDig dig)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     unsigned int keyid;
@@ -815,7 +815,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (rpmtsStashKeyid(ts, dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+    {	int lvl = (stashKeyid(dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s", fn, msg);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
