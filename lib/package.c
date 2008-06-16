@@ -233,9 +233,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     int xx;
     int i;
     struct rpmtd_s sigtd;
-    static int hclvl;
-
-    hclvl++;
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
@@ -364,7 +361,6 @@ exit:
 	    *msg = buf;
 	else
 	    free(buf);
-	hclvl--;
 	return rc;
     }
 
@@ -386,7 +382,6 @@ verifyinfo_exit:
 	    *msg = buf;
 	else
 	    free(buf);
-	hclvl--;
 	return rc;
     }
 
@@ -497,12 +492,8 @@ verifyinfo_exit:
     else
 	free(buf);
 
-    /* XXX headerCheck can recurse, free info only at top level. */
-    if (hclvl == 1) {
-	rpmtdFreeData(&sigtd);
-	pgpFreeDig(dig);
-    }
-    hclvl--;
+    rpmtdFreeData(&sigtd);
+    pgpFreeDig(dig);
     return rc;
 }
 
