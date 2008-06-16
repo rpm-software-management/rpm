@@ -76,10 +76,6 @@ typedef enum pgpTag_e {
 } pgpTag;
 
 /** \ingroup rpmpgp
- */
-extern struct pgpValTbl_s const pgpTagTbl[];
-
-/** \ingroup rpmpgp
  * 5.1. Public-Key Encrypted Session Key Packets (Tag 1)
  *
  * A Public-Key Encrypted Session Key packet holds the session key used
@@ -147,10 +143,6 @@ typedef enum pgpSigType_e {
 } pgpSigType;
 
 /** \ingroup rpmpgp
- */
-extern struct pgpValTbl_s const pgpSigTypeTbl[];
-
-/** \ingroup rpmpgp
  * 9.1. Public Key Algorithms
  *
 \verbatim
@@ -184,10 +176,6 @@ typedef enum pgpPubkeyAlgo_e {
     PGPPUBKEYALGO_ELGAMAL	= 20,	/*!< Elgamal */
     PGPPUBKEYALGO_DH		= 21	/*!< Diffie-Hellman (X9.42) */
 } pgpPubkeyAlgo;
-
-/** \ingroup rpmpgp
- */
-extern struct pgpValTbl_s const pgpPubkeyTbl[];
 
 /** \ingroup rpmpgp
  * 9.2. Symmetric Key Algorithms
@@ -229,11 +217,6 @@ typedef enum pgpSymkeyAlgo_e {
 } pgpSymkeyAlgo;
 
 /** \ingroup rpmpgp
- * Symmetric key (string, value) pairs.
- */
-extern struct pgpValTbl_s const pgpSymkeyTbl[];
-
-/** \ingroup rpmpgp
  * 9.3. Compression Algorithms
  *
 \verbatim
@@ -254,11 +237,6 @@ typedef enum pgpCompressAlgo_e {
     PGPCOMPRESSALGO_ZLIB	=  2,	/*!< ZLIB */
     PGPCOMPRESSALGO_BZIP2	=  3	/*!< BZIP2 */
 } pgpCompressAlgo;
-
-/** \ingroup rpmpgp
- * Compression (string, value) pairs.
- */
-extern struct pgpValTbl_s const pgpCompressionTbl[];
 
 /** \ingroup rpmpgp
  * 9.4. Hash Algorithms
@@ -292,11 +270,6 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
     PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
 } pgpHashAlgo;
-
-/** \ingroup rpmpgp
- * Hash (string, value) pairs.
- */
-extern struct pgpValTbl_s const pgpHashTbl[];
 
 /** \ingroup rpmpgp
  * 5.2.2. Version 3 Signature Packet Format
@@ -465,11 +438,6 @@ typedef enum pgpSubType_e {
 
     PGPSUBTYPE_CRITICAL		= 128  /*!< critical subpacket marker */
 } pgpSubType;
-
-/** \ingroup rpmpgp
- * Subtype (string, value) pairs.
- */
-extern struct pgpValTbl_s const pgpSubTypeTbl[];
 
 /** \ingroup rpmpgp
  * 5.2. Signature Packet (Tag 2)
@@ -942,11 +910,6 @@ typedef enum pgpArmor_e {
 } pgpArmor;
 
 /** \ingroup rpmpgp
- * Armor (string, value) pairs.
- */
-extern struct pgpValTbl_s const pgpArmorTbl[];
-
-/** \ingroup rpmpgp
  */
 typedef enum pgpArmorKey_e {
     PGPARMORKEY_VERSION		= 1, /*!< Version: */
@@ -955,11 +918,6 @@ typedef enum pgpArmorKey_e {
     PGPARMORKEY_HASH		= 4, /*!< Hash: */
     PGPARMORKEY_CHARSET		= 5  /*!< Charset: */
 } pgpArmorKey;
-
-/** \ingroup rpmpgp
- * Armor key (string, value) pairs.
- */
-extern struct pgpValTbl_s const pgpArmorKeyTbl[];
 
 /** \ingroup rpmpgp
  * Bit(s) to control digest operation.
