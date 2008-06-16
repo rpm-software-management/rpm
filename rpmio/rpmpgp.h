@@ -1007,136 +1007,12 @@ size_t pgpLen(const uint8_t *s, size_t * lenp)
 }
 
 /** \ingroup rpmpgp
- * Return no. of bits in a multiprecision integer.
- * @param p		pointer to multiprecision integer
- * @return		no. of bits
- */
-static inline
-unsigned int pgpMpiBits(const uint8_t *p)
-{
-    return ((p[0] << 8) | p[1]);
-}
-
-/** \ingroup rpmpgp
- * Return no. of bytes in a multiprecision integer.
- * @param p		pointer to multiprecision integer
- * @return		no. of bytes
- */
-static inline
-size_t pgpMpiLen(const uint8_t *p)
-{
-    return (2 + ((pgpMpiBits(p)+7)>>3));
-}
-	
-/** \ingroup rpmpgp
  * Return hex formatted representation of bytes.
  * @param p		bytes
  * @param plen		no. of bytes
  * @return		hex formatted string (malloc'ed)
  */
 char * pgpHexStr(const uint8_t *p, size_t plen);
-
-/** \ingroup rpmpgp
- * Return hex formatted representation of a multiprecision integer.
- * @param p		bytes
- * @return		hex formatted string (malloc'ed)
- */
-static inline
-char * pgpMpiStr(const uint8_t *p)
-{
-    char *str = NULL;
-    char *hex = pgpHexStr(p+2, pgpMpiLen(p)-2);
-    rasprintf(&str, "[%4u]: %s", pgpGrab(p, (size_t) 2), hex);
-    free(hex);
-    return str;
-}
-
-/** \ingroup rpmpgp
- * Return string representation of am OpenPGP value.
- * @param vs		table of (string,value) pairs
- * @param val		byte value to lookup
- * @return		string value of byte
- */
-static inline
-const char * pgpValStr(pgpValTbl vs, uint8_t val)
-{
-    do {
-	if (vs->val == val)
-	    break;
-    } while ((++vs)->val != -1);
-    return vs->str;
-}
-
-/** \ingroup rpmpgp
- * Return value of an OpenPGP string.
- * @param vs		table of (string,value) pairs
- * @param s		string token to lookup
- * @param se		end-of-string address
- * @return		byte value
- */
-static inline
-int pgpValTok(pgpValTbl vs, const char * s, const char * se)
-{
-    do {
-	size_t vlen = strlen(vs->str);
-	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
-	    break;
-    } while ((++vs)->val != -1);
-    return vs->val;
-}
-
-/** \ingroup rpmpgp
- * Print an OpenPGP value.
- * @param pre		output prefix
- * @param vs		table of (string,value) pairs
- * @param val		byte value to print
- */
-void pgpPrtVal(const char * pre, pgpValTbl vs, uint8_t val);
-
-/** \ingroup rpmpgp
- * Print/parse an OpenPGP subtype packet.
- * @param h		packet
- * @param hlen		packet length (no. of bytes)
- * @param sigtype	signature type
- * @return		0 on success
- */
-int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype);
-
-/** \ingroup rpmpgp
- * Print/parse an OpenPGP signature packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
- * @return		0 on success
- */
-int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen);
-
-/** \ingroup rpmpgp
- * Print/parse an OpenPGP key packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
- * @return		0 on success
- */
-int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen);
-
-/** \ingroup rpmpgp
- * Print/parse an OpenPGP userid packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
- * @return		0 on success
- */
-int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen);
-
-/** \ingroup rpmpgp
- * Print/parse an OpenPGP comment packet.
- * @param tag		packet tag
- * @param h		packet contents
- * @param hlen		packet length (no. of bytes)
- * @return		0 on success
- */
-int pgpPrtComment(pgpTag tag, const uint8_t *h, size_t hlen);
 
 /** \ingroup rpmpgp
  * Calculate OpenPGP public key fingerprint.
@@ -1157,15 +1033,6 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 * @return             	8 (no. of bytes) on success, < 0 on error
 */
 int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid);
-
-
-/** \ingroup rpmpgp
- * Print/parse next OpenPGP packet.
- * @param pkt		OpenPGP packet
- * @param pleft		no. bytes remaining
- * @return		-1 on error, otherwise this packet length
- */
-int pgpPrtPkt(const uint8_t *pkt, size_t pleft);
 
 /** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).
@@ -1213,87 +1080,6 @@ void pgpCleanDig(pgpDig dig);
  * @return		NULL always
  */
 pgpDig pgpFreeDig(pgpDig dig);
-
-/** \ingroup rpmpgp
- * Is buffer at beginning of an OpenPGP packet?
- * @param p		buffer
- * @return		1 if an OpenPGP packet, 0 otherwise
- */
-static inline
-int pgpIsPkt(const uint8_t * p)
-{
-    unsigned int val = *p++;
-    pgpTag tag;
-    int rc;
-
-    /* XXX can't deal with these. */
-    if (!(val & 0x80))
-	return 0;
-
-    if (val & 0x40)
-	tag = (pgpTag)(val & 0x3f);
-    else
-	tag = (pgpTag)((val >> 2) & 0xf);
-
-    switch (tag) {
-    case PGPTAG_MARKER:
-    case PGPTAG_SYMMETRIC_SESSION_KEY:
-    case PGPTAG_ONEPASS_SIGNATURE:
-    case PGPTAG_PUBLIC_KEY:
-    case PGPTAG_SECRET_KEY:
-    case PGPTAG_PUBLIC_SESSION_KEY:
-    case PGPTAG_SIGNATURE:
-    case PGPTAG_COMMENT:
-    case PGPTAG_COMMENT_OLD:
-    case PGPTAG_LITERAL_DATA:
-    case PGPTAG_COMPRESSED_DATA:
-    case PGPTAG_SYMMETRIC_DATA:
-	rc = 1;
-	break;
-    case PGPTAG_PUBLIC_SUBKEY:
-    case PGPTAG_SECRET_SUBKEY:
-    case PGPTAG_USER_ID:
-    case PGPTAG_RESERVED:
-    case PGPTAG_TRUST:
-    case PGPTAG_PHOTOID:
-    case PGPTAG_ENCRYPTED_MDC:
-    case PGPTAG_MDC:
-    case PGPTAG_PRIVATE_60:
-    case PGPTAG_PRIVATE_62:
-    case PGPTAG_CONTROL:
-    default:
-	rc = 0;
-	break;
-    }
-
-    return rc;
-}
-
-#define CRC24_INIT	0xb704ce
-#define CRC24_POLY	0x1864cfb
-
-/** \ingroup rpmpgp
- * Return CRC of a buffer.
- * @param octets	bytes
- * @param len		no. of bytes
- * @return		crc of buffer
- */
-static inline
-unsigned int pgpCRC(const uint8_t *octets, size_t len)
-{
-    unsigned int crc = CRC24_INIT;
-    size_t i;
-
-    while (len--) {
-	crc ^= (*octets++) << 16;
-	for (i = 0; i < 8; i++) {
-	    crc <<= 1;
-	    if (crc & 0x1000000)
-		crc ^= CRC24_POLY;
-	}
-    }
-    return crc & 0xffffff;
-}
 
 /** \ingroup rpmpgp
  * Perform cryptography initialization.
