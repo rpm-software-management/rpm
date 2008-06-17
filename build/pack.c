@@ -169,7 +169,7 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
 static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTag tag)
 {
     StringBuf sb = newStringBuf();
-    char *s;
+    const char *s;
     struct rpmtd_s td;
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
@@ -243,13 +243,16 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
 	struct rpmtd_s td;
+	const char *sptr;
 	
-	if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTPROG, &(p->prog), 1))
+	sptr = p->prog;
+	if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTPROG, &sptr, 1))
 	    headerPut(pkg->header, &td, HEADERPUT_APPEND);	    
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
 	if (p->script) {
-	    if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTS, &(p->script), 1))
+	    sptr = p->script;
+	    if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTS, &sptr, 1))
 		headerPut(pkg->header, &td, HEADERPUT_APPEND);
 	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 	} else if (p->fileName) {
@@ -648,7 +651,7 @@ static const rpmTag copyTags[] = {
  */
 static void addPackageProvides(Header h)
 {
-    const char *name = NULL, *arch = NULL;
+    const char *name = NULL, *arch = NULL, *sptr;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
     int noarch = 0;
@@ -659,10 +662,13 @@ static void addPackageProvides(Header h)
     if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &name, 1))
 	headerPut(h, &td, HEADERPUT_APPEND);
     assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
     if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
 	headerPut(h, &td, HEADERPUT_APPEND);
     assert(rpmtdType(&td) == RPM_INT32_TYPE);
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &evr, 1))
+
+    sptr = evr;
+    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &sptr, 1))
 	headerPut(h, &td, HEADERPUT_APPEND);
     assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
@@ -676,13 +682,17 @@ static void addPackageProvides(Header h)
     arch = rpmtdGetString(&archtd);
     noarch = (strcmp(arch, "noarch") == 0);
     if (!noarch && strcmp(name, isaprov)) {
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &isaprov, 1))
+	sptr = isaprov;
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &sptr, 1))
 	    headerPut(h, &td, HEADERPUT_APPEND);
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
 	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
 	    headerPut(h, &td, HEADERPUT_APPEND);
 	assert(rpmtdType(&td) == RPM_INT32_TYPE);
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &evr, 1))
+
+	sptr = evr;
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &sptr, 1))
 	    headerPut(h, &td, HEADERPUT_APPEND);
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
     }
