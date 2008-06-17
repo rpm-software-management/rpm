@@ -40,7 +40,7 @@ struct Source {
     char * fullSource;
     char * source;     /* Pointer into fullSource */
     int flags;
-    int num;
+    unsigned int num;
 struct Source * next;
 };
 
