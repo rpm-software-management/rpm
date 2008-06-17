@@ -1107,9 +1107,9 @@ static void genCpioListAndHeader(FileList fl,
 	}
 
 	{   rpm_mode_t rmode = (rpm_mode_t) flp->fl_mode;
-	    if (rpmtdFromUint32(&td, RPMTAG_FILEMODES, &rmode, 1))
+	    if (rpmtdFromUint16(&td, RPMTAG_FILEMODES, &rmode, 1))
 		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	    assert(rpmtdType(&td) == RPM_INT16_TYPE);
 	}
 
 	{   rpm_rdev_t rrdev = (rpm_rdev_t) flp->fl_rdev;
