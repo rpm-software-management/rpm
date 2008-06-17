@@ -53,11 +53,12 @@ static void addOrAppendListEntry(Header h, rpmTag tag, const char * line)
     int xx;
     int argc;
     const char **argv;
+    struct rpmtd_s td;
 
     xx = poptParseArgvString(line, &argc, &argv);
-    if (argc)
-	xx = headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, 
-				    argv, (rpm_count_t) argc);
+    if (argc && rpmtdFromStringArray(&td, tag, argv, argc))
+	headerPut(h, &td, HEADERPUT_APPEND);
+    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
     argv = _free(argv);
 }
 
@@ -320,8 +321,11 @@ static void fillOutMainPackage(Header h)
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
 	    char *val = rpmExpand(ot->ot_mac, NULL);
-	    if (val && *val != '%')
-		(void) headerAddEntry(h, ot->ot_tag, RPM_STRING_TYPE, val, 1);
+	    struct rpmtd_s td;
+	    if (val && *val != '%' && rpmtdFromString(&td, ot->ot_tag, val)) {
+		headerPut(h, &td, HEADERPUT_DEFAULT);
+		assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	    }
 	    val = _free(val);
 	}
     }
@@ -457,6 +461,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     rpmsenseFlags tagflags;
     int rc;
     int xx;
+    struct rpmtd_s td;
     
     if (field == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
@@ -507,7 +512,9 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	    }
 	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
-	(void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
+	if (rpmtdFromString(&td, tag, field))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
@@ -516,9 +523,11 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
-	if (!*lang)
-	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, field, 1);
-	else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
+	if (!*lang) {
+	    if (rpmtdFromString(&td, tag, field))
+	    	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	    assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
     case RPMTAG_BUILDROOT:
@@ -599,7 +608,9 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
-	xx = headerAddEntry(pkg->header, tag, RPM_INT32_TYPE, &epoch, 1);
+	if (rpmtdFromUint32(&td, tag, &epoch, 1))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	break;
     }
     case RPMTAG_AUTOREQPROV:
@@ -833,6 +844,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     pkg = newPackage(spec);
 	
     if (! initialPackage) {
+	struct rpmtd_s td;
 	/* There is one option to %package: <pkg> or -n <pkg> */
 	if (parseSimplePart(spec->line, &name, &flag)) {
 	    rpmlog(RPMLOG_ERR, _("Bad package specification: %s\n"),
@@ -854,7 +866,9 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	} else
 	    NVR = xstrdup(name);
 	free(name);
-	xx = headerAddEntry(pkg->header, RPMTAG_NAME, RPM_STRING_TYPE, NVR, 1);
+	if (rpmtdFromString(&td, RPMTAG_NAME, NVR))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
     } else {
 	NVR = xstrdup("(main package)");
     }
