@@ -330,7 +330,7 @@ Package  freePackage(Package pkg);
  */
 int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
-		int index);
+		uint32_t index);
 
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
