@@ -156,7 +156,9 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
     
-    (void) headerAddEntry(h, tag, RPM_STRING_TYPE, getStringBuf(sb), 1);
+    if (rpmtdFromString(&td, tag, getStringBuf(sb))) 
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+    assert(rpmtdType(&td) == RPM_STRING_TYPE);
 
     sb = freeStringBuf(sb);
     return 0;
@@ -168,12 +170,15 @@ static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTag ta
 {
     StringBuf sb = newStringBuf();
     char *s;
+    struct rpmtd_s td;
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
 
     s = getStringBuf(sb);
-    (void) headerAddOrAppendEntry(h, tag, RPM_STRING_ARRAY_TYPE, &s, 1);
+    if (rpmtdFromStringArray(&td, tag, &s, 1)) 
+	headerPut(h, &td, HEADERPUT_APPEND);
+    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
     sb = freeStringBuf(sb);
     return 0;
@@ -237,11 +242,16 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     }
 
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
-	(void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTPROG,
-			       RPM_STRING_ARRAY_TYPE, &(p->prog), 1);
+	struct rpmtd_s td;
+	
+	if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTPROG, &(p->prog), 1))
+	    headerPut(pkg->header, &td, HEADERPUT_APPEND);	    
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
 	if (p->script) {
-	    (void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
-				   RPM_STRING_ARRAY_TYPE, &(p->script), 1);
+	    if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTS, &(p->script), 1))
+		headerPut(pkg->header, &td, HEADERPUT_APPEND);
+	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 	} else if (p->fileName) {
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
 				  RPMTAG_TRIGGERSCRIPTS)) {
@@ -254,8 +264,9 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	    /* This is dumb.  When the header supports NULL string */
 	    /* this will go away.                                  */
 	    const char *bull = "";
-	    (void) headerAddOrAppendEntry(pkg->header, RPMTAG_TRIGGERSCRIPTS,
-				   RPM_STRING_ARRAY_TYPE, &bull, 1);
+	    if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTS, &bull, 1))
+		headerPut(pkg->header, &td, HEADERPUT_APPEND);
+	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 	}
     }
 
@@ -353,6 +364,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     Header sig = NULL;
     int xx;
     rpmRC rc = RPMRC_OK;
+    struct rpmtd_s td;
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
@@ -374,7 +386,10 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     s = strchr(rpmio_flags, '.');
     if (s) {
 	const char *compr = NULL;
-	(void) headerAddEntry(h, RPMTAG_PAYLOADFORMAT, RPM_STRING_TYPE, "cpio", 1);
+	if (rpmtdFromString(&td, RPMTAG_PAYLOADFORMAT, "cpio"))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+
 	if (strcmp(s+1, "gzdio") == 0) {
 	    compr = "gzip";
 	} else if (strcmp(s+1, "bzdio") == 0) {
@@ -391,18 +406,23 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    goto exit;
 	}
 
-	(void) headerAddEntry(h, RPMTAG_PAYLOADCOMPRESSOR, RPM_STRING_TYPE,
-		compr, 1);
+	if (rpmtdFromString(&td, RPMTAG_PAYLOADCOMPRESSOR, compr))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
 	buf = xstrdup(rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
-	(void) headerAddEntry(h, RPMTAG_PAYLOADFLAGS, RPM_STRING_TYPE, buf+1, 1);
+	if (rpmtdFromString(&td, RPMTAG_PAYLOADFLAGS, buf+1))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
 	free(buf);
     }
 
     /* Create and add the cookie */
     if (cookie) {
 	rasprintf(cookie, "%s %d", buildHost(), (int) (*getBuildTime()));
-	(void) headerAddEntry(h, RPMTAG_COOKIE, RPM_STRING_TYPE, *cookie, 1);
+	if (rpmtdFromString(&td, RPMTAG_COOKIE, *cookie))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
     }
     
     /* Reallocate the header into one contiguous region. */
@@ -463,6 +483,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     }
     
     if (SHA1) {
+	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
 	(void) headerAddEntry(sig, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1);
 	SHA1 = _free(SHA1);
     }
@@ -473,6 +494,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	 */
 	assert(csa->cpioArchiveSize < UINT32_MAX);
 	rpm_off_t payloadSize = csa->cpioArchiveSize;
+	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
 	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
 			&payloadSize, 1);
     }
@@ -617,18 +639,23 @@ static const rpmTag copyTags[] = {
  */
 static void addPackageProvides(Header h)
 {
-    HAE_t hae = headerAddOrAppendEntry;
     const char *name = NULL, *arch = NULL;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
     int noarch = 0;
-    struct rpmtd_s archtd;
+    struct rpmtd_s archtd, td;
 
     /* <name> = <evr> provide */
     evr = headerGetEVR(h, &name);
-    hae(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE, &name, 1);
-    hae(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE, &pflags, 1);
-    hae(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE, &evr, 1);
+    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &name, 1))
+	headerPut(h, &td, HEADERPUT_APPEND);
+    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
+	headerPut(h, &td, HEADERPUT_APPEND);
+    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &evr, 1))
+	headerPut(h, &td, HEADERPUT_APPEND);
+    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
     /*
      * <name>(<isa>) = <evr> provide
@@ -640,9 +667,15 @@ static void addPackageProvides(Header h)
     arch = rpmtdGetString(&archtd);
     noarch = (strcmp(arch, "noarch") == 0);
     if (!noarch && strcmp(name, isaprov)) {
-	hae(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE, &isaprov, 1);
-	hae(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE, &pflags, 1);
-	hae(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE, &evr, 1);
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &isaprov, 1))
+	    headerPut(h, &td, HEADERPUT_APPEND);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
+	    headerPut(h, &td, HEADERPUT_APPEND);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &evr, 1))
+	    headerPut(h, &td, HEADERPUT_APPEND);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
     }
     free(isaprov);
 
@@ -659,6 +692,7 @@ rpmRC packageBinaries(rpmSpec spec)
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *fn;
+	struct rpmtd_s td;
 
 	if (pkg->fileList == NULL)
 	    continue;
@@ -667,31 +701,37 @@ rpmRC packageBinaries(rpmSpec spec)
 	    return rc;
 	
 	if (spec->cookie) {
-	    (void) headerAddEntry(pkg->header, RPMTAG_COOKIE,
-			   RPM_STRING_TYPE, spec->cookie, 1);
+	    if (rpmtdFromString(&td, RPMTAG_COOKIE, spec->cookie))
+	 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	    assert(rpmtdType(&td) == RPM_STRING_TYPE);
 	}
 
 	/* Copy changelog from src rpm */
 	headerCopyTags(spec->packages->header, pkg->header, copyTags);
 	
-	(void) headerAddEntry(pkg->header, RPMTAG_RPMVERSION,
-		       RPM_STRING_TYPE, VERSION, 1);
-	(void) headerAddEntry(pkg->header, RPMTAG_BUILDHOST,
-		       RPM_STRING_TYPE, buildHost(), 1);
-	(void) headerAddEntry(pkg->header, RPMTAG_BUILDTIME,
-		       RPM_INT32_TYPE, getBuildTime(), 1);
+	if (rpmtdFromString(&td, RPMTAG_RPMVERSION, VERSION))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	if (rpmtdFromString(&td, RPMTAG_BUILDHOST, buildHost()))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	if (rpmtdFromUint32(&td, RPMTAG_BUILDTIME, getBuildTime(), 1))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 
 	addPackageProvides(pkg->header);
 
     {	char * optflags = rpmExpand("%{optflags}", NULL);
-	(void) headerAddEntry(pkg->header, RPMTAG_OPTFLAGS, RPM_STRING_TYPE,
-			optflags, 1);
+	if (rpmtdFromString(&td, RPMTAG_OPTFLAGS, optflags)) 
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
 	optflags = _free(optflags);
     }
 
 	(void) genSourceRpmName(spec);
-	(void) headerAddEntry(pkg->header, RPMTAG_SOURCERPM, RPM_STRING_TYPE,
-		       spec->sourceRpmName, 1);
+	if (rpmtdFromString(&td, RPMTAG_SOURCERPM, spec->sourceRpmName))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
 	if (spec->sourcePkgId != NULL) {
 	(void) headerAddEntry(pkg->header, RPMTAG_SOURCEPKGID, RPM_BIN_TYPE,
 		       spec->sourcePkgId, 16);
@@ -754,15 +794,18 @@ rpmRC packageSources(rpmSpec spec)
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     rpmRC rc;
+    struct rpmtd_s td;
 
     /* Add some cruft */
-    (void) headerAddEntry(spec->sourceHeader, RPMTAG_RPMVERSION,
-		   RPM_STRING_TYPE, VERSION, 1);
-    (void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDHOST,
-		   RPM_STRING_TYPE, buildHost(), 1);
-    (void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDTIME,
-		   RPM_INT32_TYPE, getBuildTime(), 1);
-
+    if (rpmtdFromString(&td, RPMTAG_RPMVERSION, VERSION))
+	headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+    assert(rpmtdType(&td) == RPM_STRING_TYPE);
+    if (rpmtdFromString(&td, RPMTAG_BUILDHOST, buildHost()))
+	headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+    assert(rpmtdType(&td) == RPM_STRING_TYPE);
+    if (rpmtdFromUint32(&td, RPMTAG_BUILDTIME, getBuildTime(), 1))
+	headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+    assert(rpmtdType(&td) == RPM_INT32_TYPE);
     (void) genSourceRpmName(spec);
 
     spec->cookie = _free(spec->cookie);
