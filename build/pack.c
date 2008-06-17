@@ -484,7 +484,12 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     
     if (SHA1) {
 	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
-	(void) headerAddEntry(sig, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1);
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_SHA1;
+	td.type = RPM_STRING_TYPE;
+	td.data = SHA1;
+	td.count = 1;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
 	SHA1 = _free(SHA1);
     }
 
@@ -495,8 +500,12 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	assert(csa->cpioArchiveSize < UINT32_MAX);
 	rpm_off_t payloadSize = csa->cpioArchiveSize;
 	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
-	(void) headerAddEntry(sig, RPMSIGTAG_PAYLOADSIZE, RPM_INT32_TYPE,
-			&payloadSize, 1);
+	rpmtdReset(&td);
+	td.tag = RPMSIGTAG_PAYLOADSIZE;
+	td.type = RPM_INT32_TYPE;
+	td.data = &payloadSize;
+	td.count = 1;
+	headerPut(sig, &td, HEADERPUT_DEFAULT);
     }
 
     /* Reallocate the signature into one contiguous region. */
