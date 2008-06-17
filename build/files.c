@@ -1075,20 +1075,6 @@ static void genCpioListAndHeader(FileList fl,
 	    headerPut(h, &td, hpflags);
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
-	if (sizeof(flp->fl_size) != sizeof(rpm_off_t)) {
-	    rpm_off_t psize = (rpm_off_t)flp->fl_size;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
-			       &(psize), 1);
-	} else {
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILESIZES, RPM_INT32_TYPE,
-			       &(flp->fl_size), 1);
-	}
-	{
-	    rpm_loff_t psize = (rpm_loff_t)flp->fl_size;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_LONGFILESIZES, RPM_INT64_TYPE,
-			       &(psize), 1);
-	}
-
 	if (rpmtdFromStringArray(&td, RPMTAG_FILEUSERNAME, &(flp->uname), 1))
 	    headerPut(h, &td, hpflags);
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
@@ -1097,47 +1083,53 @@ static void genCpioListAndHeader(FileList fl,
 	    headerPut(h, &td, hpflags);
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
-	if (sizeof(flp->fl_mtime) != sizeof(rpm_time_t)) {
-	    rpm_time_t mtime = (rpm_time_t)flp->fl_mtime;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
-			       &(mtime), 1);
-	} else {
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
-			       &(flp->fl_mtime), 1);
-	}
-	if (sizeof(flp->fl_mode) != sizeof(rpm_mode_t)) {
-	    rpm_mode_t pmode = (rpm_mode_t)flp->fl_mode;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
-			       &(pmode), 1);
-	} else {
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMODES, RPM_INT16_TYPE,
-			       &(flp->fl_mode), 1);
-	}
-	if (sizeof(flp->fl_rdev) != sizeof(rpm_rdev_t)) {
-	    rpm_rdev_t prdev = (rpm_rdev_t)flp->fl_rdev;
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
-			       &(prdev), 1);
-	} else {
-	    (void) headerAddOrAppendEntry(h, RPMTAG_FILERDEVS, RPM_INT16_TYPE,
-			       &(flp->fl_rdev), 1);
-	}
-	if (sizeof(flp->fl_dev) != sizeof(rpm_dev_t)) {
-    	    rpm_dev_t pdevice = (rpm_dev_t)flp->fl_dev;
-    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
-			       &(pdevice), 1);
-	} else {
-    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEDEVICES, RPM_INT32_TYPE,
-			       &(flp->fl_dev), 1);
-	}
-	if (sizeof(flp->fl_ino) != sizeof(rpm_ino_t)) {
-    	    rpm_ino_t ino = (rpm_ino_t)flp->fl_ino;
-    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-				&(ino), 1);
-	} else {
-    	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEINODES, RPM_INT32_TYPE,
-				&(flp->fl_ino), 1);
+	/*
+ 	 * For items whose size varies between systems, always explicitly 
+ 	 * cast to the header type before inserting.
+ 	 * TODO: check and warn if header type overflows for each case.
+ 	 */
+	{   rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
+	    if (rpmtdFromUint32(&td, RPMTAG_FILESIZES, &rsize32, 1))
+		headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	}
 
+	{   rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
+	    if (rpmtdFromUint64(&td, RPMTAG_LONGFILESIZES, &rsize64, 1))
+		headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT64_TYPE);
+	}
+	
+	{   rpm_time_t rtime = (rpm_time_t) flp->fl_mtime;
+	    if (rpmtdFromUint32(&td, RPMTAG_FILEMTIMES, &rtime, 1))
+	    	headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	}
+
+	{   rpm_mode_t rmode = (rpm_mode_t) flp->fl_mode;
+	    if (rpmtdFromUint32(&td, RPMTAG_FILEMODES, &rmode, 1))
+		headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	}
+
+	{   rpm_rdev_t rrdev = (rpm_rdev_t) flp->fl_rdev;
+	    if (rpmtdFromUint16(&td, RPMTAG_FILERDEVS, &rrdev, 1))
+		headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT16_TYPE);
+	}
+	
+	{   rpm_dev_t rdev = (rpm_dev_t) flp->fl_dev;
+	    if (rpmtdFromUint32(&td, RPMTAG_FILEDEVICES, &rdev, 1))
+		headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	}
+
+	{   rpm_ino_t rino = (rpm_ino_t) flp->fl_ino;
+	    if (rpmtdFromUint32(&td, RPMTAG_FILEINODES, &rino, 1))
+		headerPut(h, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	}
+	
 	if (rpmtdFromStringArray(&td, RPMTAG_FILELANGS, &(flp->langs), 1))
 	    headerPut(h, &td, hpflags);
 	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
