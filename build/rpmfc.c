@@ -1667,22 +1667,21 @@ assert(EVR != NULL);
 	    flags[i] = rpmdsFlags(pi);
 	}
 	 
-assert(names != NULL);
-	xx = headerAddEntry(pkg->header, 
-			    RPMTAG_PROVIDENAME, 
-			    RPM_STRING_ARRAY_TYPE,
-			    names, c);
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-assert(evrs != NULL);
-	xx = headerAddEntry(pkg->header, 
-			    RPMTAG_PROVIDEVERSION, 
-			    RPM_STRING_ARRAY_TYPE,
-		    	    evrs, c);
-assert(flags != NULL);
-	xx = headerAddEntry(pkg->header, 
-			     RPMTAG_PROVIDEFLAGS, 
-			     RPM_INT32_TYPE,
-			     flags, c);
+	assert(names != NULL);
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, names, c))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
+	assert(evrs != NULL);
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, evrs, c))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	
+	assert(flags != NULL);
+	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, flags, c))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+
 	free(names);
 	free(evrs);
 	free(flags);
@@ -1701,22 +1700,21 @@ assert(flags != NULL);
 	    flags[i] = rpmdsFlags(ri);
 	}
 	 
-assert(names != NULL);
-	xx = headerAddEntry(pkg->header, 
-			    RPMTAG_REQUIRENAME, 
-			    RPM_STRING_ARRAY_TYPE,
-			    names, c);
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-assert(evrs != NULL);
-	xx = headerAddEntry(pkg->header, 
-			    RPMTAG_REQUIREVERSION, 
-			    RPM_STRING_ARRAY_TYPE,
-		    	    evrs, c);
-assert(flags != NULL);
-	xx = headerAddEntry(pkg->header, 
-			     RPMTAG_REQUIREFLAGS, 
-			     RPM_INT32_TYPE,
-			     flags, c);
+	assert(names != NULL);
+	if (rpmtdFromStringArray(&td, RPMTAG_REQUIRENAME, names, c))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
+	assert(evrs != NULL);
+	if (rpmtdFromStringArray(&td, RPMTAG_REQUIREVERSION, evrs, c))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	
+	assert(flags != NULL);
+	if (rpmtdFromUint32(&td, RPMTAG_REQUIREFLAGS, flags, c))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+
 	free(names);
 	free(evrs);
 	free(flags);
