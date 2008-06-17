@@ -2645,8 +2645,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
 
-#ifdef	NOTYET	/* XXX headerRemoveEntry() broken on dribbles. */
-    xx = headerRemoveEntry(h, RPMTAG_REMOVETID);
+#ifdef	NOTYET	/* XXX headerDel() broken on dribbles. */
+    xx = headerDel(h, RPMTAG_REMOVETID);
 #endif
     if (iid != 0 && iid != -1) {
 	rpm_tid_t tid = iid;

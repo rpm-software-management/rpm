@@ -1582,9 +1582,9 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, flags);
 	xx = rpmdsMerge(&fc->provides, ds);
 	ds = rpmdsFree(ds);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDENAME);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEVERSION);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_PROVIDEFLAGS);
+	xx = headerDel(pkg->header, RPMTAG_PROVIDENAME);
+	xx = headerDel(pkg->header, RPMTAG_PROVIDEVERSION);
+	xx = headerDel(pkg->header, RPMTAG_PROVIDEFLAGS);
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
@@ -1605,9 +1605,9 @@ assert(EVR != NULL);
 	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, flags);
 	xx = rpmdsMerge(&fc->requires, ds);
 	ds = rpmdsFree(ds);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIRENAME);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREVERSION);
-	xx = headerRemoveEntry(pkg->header, RPMTAG_REQUIREFLAGS);
+	xx = headerDel(pkg->header, RPMTAG_REQUIRENAME);
+	xx = headerDel(pkg->header, RPMTAG_REQUIREVERSION);
+	xx = headerDel(pkg->header, RPMTAG_REQUIREFLAGS);
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {

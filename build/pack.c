@@ -150,7 +150,7 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
     if ((s = rpmtdGetString(&td))) {
 	appendLineStringBuf(sb, s);
     	rpmtdFreeData(&td);
-	(void) headerRemoveEntry(h, tag);
+	(void) headerDel(h, tag);
     }
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)

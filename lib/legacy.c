@@ -26,7 +26,6 @@ static int dncmp(const void * a, const void * b)
 void compressFilelist(Header h)
 {
     HAE_t hae = (HAE_t)headerAddEntry;
-    HRE_t hre = (HRE_t)headerRemoveEntry;
     struct rpmtd_s fileNames;
     char ** dirNames;
     const char ** baseNames;
@@ -42,7 +41,7 @@ void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	xx = hre(h, RPMTAG_OLDFILENAMES);
+	xx = headerDel(h, RPMTAG_OLDFILENAMES);
 	return;		/* Already converted. */
     }
 
@@ -111,12 +110,11 @@ exit:
     free(baseNames);
     free(dirIndexes);
 
-    xx = hre(h, RPMTAG_OLDFILENAMES);
+    xx = headerDel(h, RPMTAG_OLDFILENAMES);
 }
 
 void expandFilelist(Header h)
 {
-    HRE_t hre = (HRE_t)headerRemoveEntry;
     struct rpmtd_s filenames;
 
     if (!headerIsEntry(h, RPMTAG_OLDFILENAMES)) {
@@ -128,9 +126,9 @@ void expandFilelist(Header h)
 	rpmtdFreeData(&filenames);
     }
 
-    (void) hre(h, RPMTAG_DIRNAMES);
-    (void) hre(h, RPMTAG_BASENAMES);
-    (void) hre(h, RPMTAG_DIRINDEXES);
+    (void) headerDel(h, RPMTAG_DIRNAMES);
+    (void) headerDel(h, RPMTAG_BASENAMES);
+    (void) headerDel(h, RPMTAG_DIRINDEXES);
 }
 
 /*
@@ -207,9 +205,9 @@ void legacyRetrofit(Header h)
      * anyone.
      */
     if (headerIsEntry(h, RPMTAG_FILEUSERNAME))
-	(void) headerRemoveEntry(h, RPMTAG_FILEUIDS);
+	(void) headerDel(h, RPMTAG_FILEUIDS);
     if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
-	(void) headerRemoveEntry(h, RPMTAG_FILEGIDS);
+	(void) headerDel(h, RPMTAG_FILEGIDS);
 
     /*
      * We switched the way we do relocatable packages. We fix some of

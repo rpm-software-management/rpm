@@ -720,7 +720,7 @@ int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 	for (hi = headerInitIterator(h); headerNext(hi, td); rpmtdFreeData(td))
 	{
 	    /* could be dupes */
-	    headerRemoveEntry(hdr->h, rpmtdTag(td));
+	    headerDel(hdr->h, rpmtdTag(td));
 	    headerPut(hdr->h, td, HEADERPUT_DEFAULT);
 	}
 

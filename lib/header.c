@@ -963,9 +963,9 @@ Header headerLoad(void * uh)
 	    /* Dribble entries replace duplicate region entries. */
 	    h->indexUsed -= ne;
 	    for (j = 0; j < ne; j++, newEntry++) {
-		(void) headerRemoveEntry(h, newEntry->info.tag);
+		(void) headerDel(h, newEntry->info.tag);
 		if (newEntry->info.tag == HEADER_BASENAMES)
-		    (void) headerRemoveEntry(h, HEADER_OLDFILENAMES);
+		    (void) headerDel(h, HEADER_OLDFILENAMES);
 	    }
 
 	    /* If any duplicate entries were replaced, move new entries down. */

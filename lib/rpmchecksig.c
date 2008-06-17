@@ -235,10 +235,10 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	}
 
 	/* Eliminate broken digest values. */
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_1);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_LEMD5_2);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_1);
-	xx = headerRemoveEntry(sigh, RPMSIGTAG_BADSHA1_2);
+	xx = headerDel(sigh, RPMSIGTAG_LEMD5_1);
+	xx = headerDel(sigh, RPMSIGTAG_LEMD5_2);
+	xx = headerDel(sigh, RPMSIGTAG_BADSHA1_1);
+	xx = headerDel(sigh, RPMSIGTAG_BADSHA1_2);
 
 	/* Toss and recalculate header+payload size and digests. */
 	{
@@ -248,18 +248,18 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 				     };
 	    int nsigs = sizeof(sigs) / sizeof(rpmSigTag);
 	    for (int i = 0; i < nsigs; i++) {
-		(void) headerRemoveEntry(sigh, sigs[i]);
+		(void) headerDel(sigh, sigs[i]);
 		if (rpmAddSignature(sigh, sigtarget, sigs[i], qva->passPhrase))
 		    goto exit;
 	    }
 	}
 
 	if (deleting) {	/* Nuke all the signature tags. */
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP5);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
-	    xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
+	    xx = headerDel(sigh, RPMSIGTAG_GPG);
+	    xx = headerDel(sigh, RPMSIGTAG_DSA);
+	    xx = headerDel(sigh, RPMSIGTAG_PGP5);
+	    xx = headerDel(sigh, RPMSIGTAG_PGP);
+	    xx = headerDel(sigh, RPMSIGTAG_RSA);
 	} else		/* If gpg/pgp is configured, replace the signature. */
 	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
 	    pgpKeyID_t oldsignid, newsignid;
@@ -270,16 +270,16 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 
 	    switch (sigtag) {
 	    case RPMSIGTAG_DSA:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_GPG);
+		xx = headerDel(sigh, RPMSIGTAG_GPG);
 		break;
 	    case RPMSIGTAG_RSA:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_PGP);
+		xx = headerDel(sigh, RPMSIGTAG_PGP);
 		break;
 	    case RPMSIGTAG_GPG:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_DSA);
+		xx = headerDel(sigh, RPMSIGTAG_DSA);
 	    case RPMSIGTAG_PGP5:
 	    case RPMSIGTAG_PGP:
-		xx = headerRemoveEntry(sigh, RPMSIGTAG_RSA);
+		xx = headerDel(sigh, RPMSIGTAG_RSA);
 		break;
 	    /* shut up gcc */
 	    case RPMSIGTAG_SHA1:
@@ -293,7 +293,7 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 		break;
 	    }
 
-	    xx = headerRemoveEntry(sigh, sigtag);
+	    xx = headerDel(sigh, sigtag);
 	    if (rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase)) {
 		goto exit;
 	    }

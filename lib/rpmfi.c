@@ -1209,7 +1209,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 
     fi->hae = (HAE_t) headerAddEntry;
     fi->hme = (HME_t) headerModifyEntry;
-    fi->hre = (HRE_t) headerRemoveEntry;
     fi->scareFlags = scareFlags;
 
     fi->h = (scareMem ? headerLink(h) : NULL);
