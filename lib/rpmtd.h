@@ -271,7 +271,7 @@ int rpmtdFromString(rpmtd td, rpmTag tag, const char *data);
  * @param count		Number of entries
  * @return		1 on success, 0 on error (eg wrong type)
  */
-int rpmtdFromStringArray(rpmtd td, rpmTag tag, char **data, rpm_count_t count);
+int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t count);
 
 /** \ingroup rpmtd
  * Construct tag container from ARGV_t array.

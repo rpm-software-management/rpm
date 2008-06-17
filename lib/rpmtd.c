@@ -326,7 +326,7 @@ int rpmtdFromString(rpmtd td, rpmTag tag, const char *data)
     return rc;
 }
 
-int rpmtdFromStringArray(rpmtd td, rpmTag tag, char **data, rpm_count_t count)
+int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     if (type != RPM_STRING_ARRAY_TYPE || count < 1)
