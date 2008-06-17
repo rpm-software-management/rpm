@@ -806,7 +806,7 @@ indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
     return NULL;
 }
 
-int headerRemoveEntry(Header h, rpmTag tag)
+int headerDel(Header h, rpmTag tag)
 {
     indexEntry last = h->index + h->indexUsed;
     indexEntry entry, first;
@@ -841,6 +841,11 @@ int headerRemoveEntry(Header h, rpmTag tag)
     }
 
     return 0;
+}
+
+int headerRemoveEntry(Header h, rpmTag tag)
+{
+    return headerDel(h, tag);
 }
 
 Header headerLoad(void * uh)

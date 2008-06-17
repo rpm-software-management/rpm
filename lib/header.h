@@ -318,7 +318,19 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-int headerRemoveEntry(Header h, rpmTag tag);
+int headerDel(Header h, rpmTag tag);
+
+/** \ingroup header
+ * Delete tag in header.
+ * Removes all entries of type tag from the header, returns 1 if none were
+ * found.
+ * @deprecated		Use headerDel() instead
+ *
+ * @param h		header
+ * @param tag		tag
+ * @return		0 on success, 1 on failure (INCONSISTENT)
+ */
+int headerRemoveEntry(Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Return formatted output string from header tags.
