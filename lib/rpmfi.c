@@ -643,7 +643,7 @@ static char **duparray(char ** src, int size)
     for (int i = 0; i < size; i++) {
 	dest[i] = xstrdup(src[i]);
     }
-    headerFreeData(src, RPM_STRING_ARRAY_TYPE);
+    free(src);
     return dest;
 }
 
