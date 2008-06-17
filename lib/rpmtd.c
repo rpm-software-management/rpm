@@ -276,11 +276,35 @@ static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
     return 1;
 }
 
+int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, rpm_count_t count)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    if (type != RPM_INT16_TYPE || count < 1) 
+	return 0;
+    if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
+	return 0;
+    
+    return rpmtdSet(td, tag, type, data, count);
+}
+
 int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
     if (type != RPM_INT32_TYPE || count < 1) 
+	return 0;
+    if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
+	return 0;
+    
+    return rpmtdSet(td, tag, type, data, count);
+}
+
+int rpmtdFromUint64(rpmtd td, rpmTag tag, uint64_t *data, rpm_count_t count)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    if (type != RPM_INT64_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
 	return 0;
