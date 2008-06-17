@@ -589,6 +589,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     char *os = rpmExpand("%{_target_os}", NULL);
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	struct rpmtd_s td;
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    const char * name;
 	    (void) headerNVR(pkg->header, &name, NULL, NULL);
@@ -596,11 +597,17 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	    goto errxit;
 	}
 
-	(void) headerAddEntry(pkg->header, RPMTAG_OS, RPM_STRING_TYPE, os, 1);
-	(void) headerAddEntry(pkg->header, RPMTAG_ARCH,
-		RPM_STRING_TYPE, arch, 1);
-	(void) headerAddEntry(pkg->header, RPMTAG_PLATFORM,
-		RPM_STRING_TYPE, platform, 1);
+	if (rpmtdFromString(&td, RPMTAG_OS, os))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+
+	if (rpmtdFromString(&td, RPMTAG_ARCH, arch))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+
+	if (rpmtdFromString(&td, RPMTAG_PLATFORM, platform))
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_STRING_TYPE);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 
