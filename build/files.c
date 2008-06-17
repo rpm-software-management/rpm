@@ -971,6 +971,7 @@ static void genCpioListAndHeader(FileList fl,
     FileListRec flp;
     char buf[BUFSIZ];
     int i;
+    struct rpmtd_s td;
     pgpHashAlgo defaultalgo = PGPHASHALGO_MD5, digestalgo;
 
     /*
@@ -1003,6 +1004,7 @@ static void genCpioListAndHeader(FileList fl,
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
 	const char *s;
+	headerPutFlags hpflags = HEADERPUT_APPEND;
 
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
@@ -1069,8 +1071,9 @@ static void genCpioListAndHeader(FileList fl,
 	 * compressed file list write before we write the actual package to
 	 * disk.
 	 */
-	(void) headerAddOrAppendEntry(h, RPMTAG_OLDFILENAMES, RPM_STRING_ARRAY_TYPE,
-			       &(flp->cpioPath), 1);
+	if (rpmtdFromStringArray(&td, RPMTAG_OLDFILENAMES, &(flp->cpioPath),1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
 	if (sizeof(flp->fl_size) != sizeof(rpm_off_t)) {
 	    rpm_off_t psize = (rpm_off_t)flp->fl_size;
@@ -1085,10 +1088,15 @@ static void genCpioListAndHeader(FileList fl,
 	    (void) headerAddOrAppendEntry(h, RPMTAG_LONGFILESIZES, RPM_INT64_TYPE,
 			       &(psize), 1);
 	}
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEUSERNAME, RPM_STRING_ARRAY_TYPE,
-			       &(flp->uname), 1);
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEGROUPNAME, RPM_STRING_ARRAY_TYPE,
-			       &(flp->gname), 1);
+
+	if (rpmtdFromStringArray(&td, RPMTAG_FILEUSERNAME, &(flp->uname), 1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
+	if (rpmtdFromStringArray(&td, RPMTAG_FILEGROUPNAME, &(flp->gname), 1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
 	if (sizeof(flp->fl_mtime) != sizeof(rpm_time_t)) {
 	    rpm_time_t mtime = (rpm_time_t)flp->fl_mtime;
 	    (void) headerAddOrAppendEntry(h, RPMTAG_FILEMTIMES, RPM_INT32_TYPE,
@@ -1130,23 +1138,18 @@ static void genCpioListAndHeader(FileList fl,
 				&(flp->fl_ino), 1);
 	}
 
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILELANGS, RPM_STRING_ARRAY_TYPE,
-			       &(flp->langs),  1);
-	
-	/* We used to add these, but they should not be needed */
-	/* (void) headerAddOrAppendEntry(h, RPMTAG_FILEUIDS,
-	 *		   RPM_INT32_TYPE, &(flp->fl_uid), 1);
-	 * (void) headerAddOrAppendEntry(h, RPMTAG_FILEGIDS,
-	 *		   RPM_INT32_TYPE, &(flp->fl_gid), 1);
-	 */
+	if (rpmtdFromStringArray(&td, RPMTAG_FILELANGS, &(flp->langs), 1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
 	    (void) rpmDoDigest(digestalgo, flp->diskPath, 1, 
 			       (unsigned char *)buf, NULL);
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEDIGESTS, 
-				      RPM_STRING_ARRAY_TYPE, &s, 1);
+	if (rpmtdFromStringArray(&td, RPMTAG_FILEDIGESTS, &s, 1)) 
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
@@ -1162,15 +1165,17 @@ static void genCpioListAndHeader(FileList fl,
 	    }
 	}
 	s = buf;
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILELINKTOS, RPM_STRING_ARRAY_TYPE,
-			       &s, 1);
+	if (rpmtdFromStringArray(&td, RPMTAG_FILELINKTOS, &s, 1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 	
 	if (flp->flags & RPMFILE_GHOST) {
 	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEVERIFYFLAGS, RPM_INT32_TYPE,
-			       &(flp->verifyFlags), 1);
+	if (rpmtdFromUint32(&td, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	
 	if (!isSrc && isDoc(fl, flp->cpioPath))
 	    flp->flags |= RPMFILE_DOC;
@@ -1178,21 +1183,23 @@ static void genCpioListAndHeader(FileList fl,
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
 
-	(void) headerAddOrAppendEntry(h, RPMTAG_FILEFLAGS, RPM_INT32_TYPE,
-			       &(flp->flags), 1);
-
+	if (rpmtdFromUint32(&td, RPMTAG_FILEFLAGS, &(flp->flags),1))
+	    headerPut(h, &td, hpflags);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
     }
 
     /* XXX size mismatch, ensure it fits. Need to deal with this properly... */
     {	assert(fl->totalFileSize < UINT32_MAX);
 	rpm_off_t totalfilesize = fl->totalFileSize;
-	(void) headerAddEntry(h, RPMTAG_SIZE, RPM_INT32_TYPE,
-				&totalfilesize, 1);
+	if (rpmtdFromUint32(&td, RPMTAG_SIZE, &totalfilesize, 1))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
     }
 
     if (digestalgo != defaultalgo) {
-	headerAddEntry(h, RPMTAG_FILEDIGESTALGO, RPM_INT32_TYPE,
-			&digestalgo, 1);
+	if (rpmtdFromUint32(&td, RPMTAG_FILEDIGESTALGO, &digestalgo, 1))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	rpmlibNeedsFeature(h, "FileDigests", "4.4.90-1");
     }
 
@@ -1579,6 +1586,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
     int absolute = 0;
     int rc = RPMRC_FAIL;
     int xx;
+    struct rpmtd_s td;
 
     if (*fileName == '/') {
 	fn = rpmGenPath(fl->buildRoot, NULL, fileName);
@@ -1617,8 +1625,9 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	break;
     }
 
-    xx = headerAddOrAppendEntry(pkg->header, tag,
-		RPM_STRING_ARRAY_TYPE, &apkt, 1);
+    if (rpmtdFromStringArray(&td, tag, &apkt, 1))
+	headerPut(pkg->header, &td, HEADERPUT_APPEND);
+    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
 
     rc = RPMRC_OK;
     if (absolute)
@@ -1987,9 +1996,9 @@ void initSourceHeader(rpmSpec spec)
     hi = headerFreeIterator(hi);
 
     if (spec->BANames && spec->BACount > 0) {
-	(void) headerAddEntry(spec->sourceHeader, RPMTAG_BUILDARCHS,
-		       RPM_STRING_ARRAY_TYPE,
-		       spec->BANames, (rpm_count_t) spec->BACount);
+	if (rpmtdFromStringArray(&td, RPMTAG_BUILDARCHS, 
+				 spec->BANames, spec->BACount))
+	    headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
     }
 }
 
@@ -2024,20 +2033,28 @@ int processSourceFiles(rpmSpec spec)
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
+	struct rpmtd_s td;
+	headerPutFlags hpflags = HEADERPUT_APPEND;
 	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_SOURCE,
-				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
+	    if (rpmtdFromStringArray(&td, RPMTAG_SOURCE, &srcPtr->source, 1))
+		headerPut(spec->sourceHeader, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOSOURCE,
-				       RPM_INT32_TYPE, &srcPtr->num, 1);
+		if (rpmtdFromUint32(&td, RPMTAG_NOSOURCE, &srcPtr->num, 1))
+		    headerPut(spec->sourceHeader, &td, hpflags);
+	    	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	    }
 	}
 	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    (void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_PATCH,
-				   RPM_STRING_ARRAY_TYPE, &srcPtr->source, 1);
+	    if (rpmtdFromStringArray(&td, RPMTAG_PATCH, &srcPtr->source, 1))
+		headerPut(spec->sourceHeader, &td, hpflags);
+	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		(void) headerAddOrAppendEntry(spec->sourceHeader, RPMTAG_NOPATCH,
-				       RPM_INT32_TYPE, &srcPtr->num, 1);
+		if (rpmtdFromUint32(&td, RPMTAG_NOPATCH, &srcPtr->num, 1))
+		    headerPut(spec->sourceHeader, &td, hpflags);
+	    	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	    }
 	}
 
