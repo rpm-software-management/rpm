@@ -260,6 +260,59 @@ exit:
     return rc;
 }
 
+static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type, 
+			    rpm_constdata_t data, rpm_count_t count)
+{
+    rpmtdReset(td);
+    td->tag = tag;
+    td->type = type;
+    td->count = count;
+    /* 
+     * Discards const, but we won't touch the data (even rpmtdFreeData()
+     * wont free it as allocation flags aren't set) so it's "ok". 
+     * XXX: Should there be a separate RPMTD_FOO flag for "user data"?
+     */
+    td->data = (void *) data;
+    return 1;
+}
+
+int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    if (type != RPM_INT32_TYPE || count < 1) 
+	return 0;
+    if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
+	return 0;
+    
+    return rpmtdSet(td, tag, type, data, count);
+}
+
+int rpmtdFromString(rpmtd td, rpmTag tag, const char *data)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    int rc = 0;
+
+    if (type == RPM_STRING_TYPE) {
+	rc = rpmtdSet(td, tag, type, data, 1);
+    } else if (type == RPM_STRING_ARRAY_TYPE) {
+	rc = rpmtdSet(td, tag, type, &data, 1);
+    }
+
+    return rc;
+}
+
+int rpmtdFromStringArray(rpmtd td, rpmTag tag, char **data, rpm_count_t count)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    if (type != RPM_STRING_ARRAY_TYPE || count < 1)
+	return 0;
+    if (type == RPM_STRING_TYPE && count != 1)
+	return 0;
+
+    return rpmtdSet(td, tag, type, data, count);
+}
+
 int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
 {
     int count = argvCount(argv);
@@ -268,13 +321,7 @@ int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
     if (type != RPM_STRING_ARRAY_TYPE || count < 1)
 	return 0;
 
-    assert(td != NULL);
-    rpmtdReset(td);
-    td->type = type;
-    td->tag = tag;
-    td->count = count;
-    td->data = argv;
-    return 1;
+    return rpmtdSet(td, tag, type, argv, count);
 }
 
 int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi)
@@ -286,13 +333,7 @@ int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi)
     if (type != RPM_INT32_TYPE || retype != RPM_ARRAY_RETURN_TYPE || count < 1)
 	return 0;
 
-    assert(td != NULL);
-    rpmtdReset(td);
-    td->type = type;
-    td->tag = tag;
-    td->count = count;
-    td->data = argiData(argi);
-    return 1;
+    return rpmtdSet(td, tag, type, argiData(argi), count);
 }
 
 rpmtd rpmtdDup(rpmtd td)

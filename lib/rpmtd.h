@@ -216,6 +216,40 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg);
 int rpmtdSetTag(rpmtd td, rpmTag tag);
 
 /** \ingroup rpmtd
+ * Construct tag container from uint32_t pointer.
+ * Tag type is checked to be of INT32 type. For non-array types count
+ * must be exactly 1.
+ * @param td		Tag data container
+ * @param tag		Rpm tag to construct
+ * @param data		Pointer to uint32_t (value or array)
+ * @param count		Number of entries
+ * @return		1 on success, 0 on error (eg wrong type)
+ */
+int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count);
+
+/** \ingroup rpmtd
+ * Construct tag container from a string.
+ * Tag type is checked to be of string type. 
+ * @param td		Tag data container
+ * @param tag		Rpm tag to construct
+ * @param data		String to use
+ * @return		1 on success, 0 on error (eg wrong type)
+ */
+int rpmtdFromString(rpmtd td, rpmTag tag, const char *data);
+
+/** \ingroup rpmtd
+ * Construct tag container from a string array.
+ * Tag type is checked to be of string or string array type. For non-array
+ * types count must be exactly 1.
+ * @param td		Tag data container
+ * @param tag		Rpm tag to construct
+ * @param data		Pointer to string array
+ * @param count		Number of entries
+ * @return		1 on success, 0 on error (eg wrong type)
+ */
+int rpmtdFromStringArray(rpmtd td, rpmTag tag, char **data, rpm_count_t count);
+
+/** \ingroup rpmtd
  * Construct tag container from ARGV_t array.
  * Tag type is checked to be of string array type and array is checked
  * to be non-empty.
