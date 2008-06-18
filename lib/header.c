@@ -68,17 +68,6 @@ static const int typeSizes[16] =  {
     0
 };
 
-/* dumb macro to avoid 50 copies of this code while converting... */
-#define TDWRAP() \
-    if (type) \
-	*type = td.type; \
-    if (p) \
-	*p = td.data; \
-    else \
-	rpmtdFreeData(&td); \
-    if (c) \
-	*c = td.count
-
 /** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
@@ -843,11 +832,6 @@ int headerDel(Header h, rpmTag tag)
     return 0;
 }
 
-int headerRemoveEntry(Header h, rpmTag tag)
-{
-    return headerDel(h, tag);
-}
-
 Header headerLoad(void * uh)
 {
     int32_t * ei = (int32_t *) uh;
@@ -1420,18 +1404,6 @@ static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
     return ((rc == 1) ? 1 : 0);
 }
 
-void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type)
-{
-    if (data) {
-	if (type == RPM_FORCEFREE_TYPE ||
-	    type == RPM_STRING_ARRAY_TYPE ||
-	    type == RPM_I18NSTRING_TYPE ||
-	    type == RPM_BIN_TYPE)
-		data = _free(data);
-    }
-    return NULL;
-}
-
 /* 
  * XXX temporary kludgery until tag extensions have been converted to 
  * take rpmtd as argument
@@ -1464,45 +1436,6 @@ int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 
     assert(tag == td->tag);
     return rc;
-}
-
-static int headerGetWrap(Header h, rpmTag tag,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c,
-		headerGetFlags flags)
-{
-    struct rpmtd_s td;
-    int rc;
-
-    rc = headerGet(h, tag, &td, flags);
-    TDWRAP();
-    return rc;
-}
-
-int headerGetEntry(Header h, rpmTag tag,
-			rpmTagType * type,
-			rpm_data_t * p,
-			rpm_count_t * c)
-{
-    return headerGetWrap(h, tag, type, p, c, HEADERGET_DEFAULT);
-}
-
-int headerGetEntryMinMemory(Header h, rpmTag tag,
-			rpmTagType * type,
-			rpm_data_t * p,
-			rpm_count_t * c)
-{
-    return headerGetWrap(h, tag, type, (rpm_data_t) p, c, HEADERGET_MINMEM);
-}
-
-int headerGetRawEntry(Header h, rpmTag tag, rpmTagType * type, rpm_data_t * p,
-		rpm_count_t * c)
-{
-    if (p == NULL) 
-	return headerIsEntry(h, tag);
-
-    return headerGetWrap(h, tag, type, p, c, HEADERGET_RAW);
 }
 
 /**
@@ -1885,22 +1818,6 @@ int headerNext(HeaderIterator hi, rpmtd td)
     return ((rc == 1) ? 1 : 0);
 }
 
-int headerNextIterator(HeaderIterator hi,
-		rpmTag * tag,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c)
-{
-    struct rpmtd_s td;
-    int rc;
-
-    rc = headerNext(hi, &td);
-    if (tag)
-	*tag = td.tag;
-    TDWRAP();
-    return rc;
-}
-
 /** \ingroup header
  * Duplicate a header.
  * @param h		header
@@ -1943,14 +1860,3 @@ void headerCopyTags(Header headerFrom, Header headerTo,
     }
 }
 
-void * headerFreeData(rpm_data_t data, rpmTagType type)
-{
-    if (data) {
-	if (type == RPM_FORCEFREE_TYPE ||
-	    type == RPM_STRING_ARRAY_TYPE ||
-	    type == RPM_I18NSTRING_TYPE ||
-	    type == RPM_BIN_TYPE)
-		free(data); /* XXX _free() */
-    }
-    return NULL;
-}
