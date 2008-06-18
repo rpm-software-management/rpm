@@ -661,8 +661,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
 		Header origH, rpmFileAction * actions)
 {
     rpmte p = rpmtsRelocateElement(ts);
-    HAE_t hae = fi->hae;
-    HME_t hme = fi->hme;
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * relocations = NULL;
@@ -682,7 +680,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int haveRelocatedBase = 0;
     int reldel = 0;
     int len;
-    int i, j, xx;
+    int i, j;
     struct rpmtd_s validRelocs;
     struct rpmtd_s bnames, dnames, dindexes, fcolors, fmodes;
 
@@ -835,9 +833,13 @@ assert(p != NULL);
 	    }
 	}
 
-	if (numActual)
-	    xx = hae(h, RPMTAG_INSTPREFIXES, RPM_STRING_ARRAY_TYPE,
-		       (rpm_data_t *) actualRelocations, numActual);
+	if (numActual) {
+	    struct rpmtd_s pfx;
+	    if (rpmtdFromStringArray(&pfx, RPMTAG_INSTPREFIXES, 
+				     actualRelocations, numActual)) {
+		headerPut(h, &pfx, HEADERPUT_DEFAULT);
+	    }
+	}
 
 	actualRelocations = _free(actualRelocations);
 	rpmtdFreeData(&validRelocs);
@@ -1059,23 +1061,25 @@ dColors[j] |= fColors[i];
 	headerPut(h, &td, HEADERPUT_DEFAULT);
 	rpmtdFreeData(&td);
 
-	xx = hme(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
-			  baseNames, fileCount);
+	if (rpmtdFromStringArray(&td, RPMTAG_BASENAMES, (const char**) baseNames, fileCount)) {
+	    headerMod(h, &td);
+	}
 	free(fi->bnl);
 	headerGet(h, RPMTAG_BASENAMES, &td, fi->scareFlags);
 	fi->fc = rpmtdCount(&td);
 	fi->bnl = td.data;
 
-	xx = hme(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			  dirNames, dirCount);
-
+	if (rpmtdFromStringArray(&td, RPMTAG_DIRNAMES, (const char**) dirNames, dirCount)) {
+	    headerMod(h, &td);
+	}
 	free(fi->dnl);
 	headerGet(h, RPMTAG_DIRNAMES, &td, fi->scareFlags);
 	fi->dc = rpmtdCount(&td);
 	fi->dnl = td.data;
 
-	xx = hme(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE,
-			  dirIndexes, fileCount);
+	if (rpmtdFromUint32(&td, RPMTAG_DIRINDEXES, dirIndexes, fileCount)) {
+	    headerMod(h, &td);
+	}
 	headerGet(h, RPMTAG_DIRINDEXES, &td, fi->scareFlags);
 	/* Ugh, nasty games with how dil is alloced depending on scareMem */
 	if (fi->scareFlags & HEADERGET_ALLOC)
