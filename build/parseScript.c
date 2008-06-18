@@ -310,13 +310,14 @@ int parseScript(rpmSpec spec, int parsePart)
  	 */
 	rpmtdReset(&td);
 	td.tag = progtag;
-	td.data = progArgv;
 	td.count = progArgc;
-	if (progArgc == 1) 
+	if (progArgc == 1) {
+	    td.data = (void *) *progArgv;
 	    td.type = RPM_STRING_TYPE;
-	else {
+	} else {
 	    (void) rpmlibNeedsFeature(pkg->header,
 			"ScriptletInterpreterArgs", "4.0.3-1");
+	    td.data = progArgv;
 	    td.type = RPM_STRING_ARRAY_TYPE;
 	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
