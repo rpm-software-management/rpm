@@ -106,10 +106,8 @@ static int ftsCachePrint(rpmts ts, FILE * fp)
 
 static int ftsCacheUpdate(rpmts ts)
 {
-    HGE_t hge = (HGE_t)headerGetEntryMinMemory;
     rpm_tid_t tid = rpmtsGetTid(ts);
     rpmdbMatchIterator mi;
-    unsigned char * md5;
     int rc = 0;
     int i;
 
@@ -121,6 +119,8 @@ static int ftsCacheUpdate(rpmts ts)
 
     for (i = 0; i < nitems; i++) {
 	Item ip;
+	struct rpmtd_s md5, ctd;
+	const char *path;
 
 	ip = items[i];
 	if (ip == NULL) {
@@ -129,33 +129,33 @@ static int ftsCacheUpdate(rpmts ts)
 	}
 
 	/* --- Check that identical package is not already cached. */
- 	if (!hge(ip->h, RPMTAG_SIGMD5, NULL, (rpm_data_t *) &md5, NULL)
-	 || md5 == NULL)
-	{
+	if (!headerGet(ip->h, RPMTAG_SIGMD5, &md5, HEADERGET_MINMEM)) {
 	    rc = 1;
 	    break;
 	}
-        mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5, 16);
+        mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, md5.data, md5.count);
 	rc = rpmdbGetIteratorCount(mi);
         mi = rpmdbFreeIterator(mi);
+	rpmtdFreeData(&md5);
+
 	if (rc) {
 	    rc = 0;
 	    continue;
 	}
 
 	/* --- Add cache tags to new cache header. */
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHECTIME,
-		RPM_INT32_TYPE, &tid, 1);
-	if (rc != 1) break;
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGPATH,
-		RPM_STRING_ARRAY_TYPE, &ip->path, 1);
-	if (rc != 1) break;
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGSIZE,
-		RPM_INT32_TYPE, &ip->size, 1);
-	if (rc != 1) break;
-	rc = headerAddOrAppendEntry(ip->h, RPMTAG_CACHEPKGMTIME,
-		RPM_INT32_TYPE, &ip->mtime, 1);
-	if (rc != 1) break;
+	if (!(rpmtdFromUint32(&ctd, RPMTAG_CACHECTIME, &tid, 1) &&
+	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	    break;
+	if (!(rpmtdFromStringArray(&ctd, RPMTAG_CACHEPKGPATH, &path, 1) &&
+	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	    break;
+	if (!(rpmtdFromUint32(&ctd, RPMTAG_CACHEPKGSIZE, &ip->size, 1) &&
+	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	    break;
+	if (!(rpmtdFromUint32(&ctd, RPMTAG_CACHEPKGMTIME, &ip->mtime, 1) &&
+	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	    break;
 
 	/* --- Add new cache header to database. */
 	rc = rpmdbAdd(rpmtsGetRdb(ts), tid, ip->h, NULL, NULL);
@@ -185,8 +185,8 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 {
     Header h = NULL;
     rpmds add = NULL;
-    const char * arch;
-    const char * os;
+    const char *arch, *os;
+    struct rpmtd_s archtd, ostd;
     struct stat sb, * st;
     int ec = -1;	/* assume not found */
     int i = 0;
@@ -209,15 +209,18 @@ static int ftsStashLatest(FTSENT * fts, rpmts ts)
 	    goto exit;
     }
 
-    if (!headerGetEntry(h, RPMTAG_ARCH, NULL, (rpm_data_t *) &arch, NULL)
-     || !headerGetEntry(h, RPMTAG_OS, NULL, (rpm_data_t *) &os, NULL))
-	goto exit;
+    headerGet(h, RPMTAG_ARCH, &archtd, HEADERGET_DEFAULT);
+    headerGet(h, RPMTAG_OS, &ostd, HEADERGET_DEFAULT);
+    arch = rpmtdGetString(&archtd);
+    os = rpmtdGetString(&ostd);
 
     /* Make sure arch and os match this platform. */
-    if (!archOkay(arch) || !osOkay(os)) {
+    if (arch == NULL || os == NULL || !archOkay(arch) || !osOkay(os)) {
 	ec = 0;
 	goto exit;
     }
+    rpmtdFreeData(&archtd);
+    rpmtdFreeData(&ostd);
 
     add = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_LESS));
 
