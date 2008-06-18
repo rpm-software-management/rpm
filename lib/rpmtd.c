@@ -276,6 +276,33 @@ static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
     return 1;
 }
 
+int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    
+    if (count < 1)
+	return 0;
+
+    /*
+     * BIN type is really just an uint8_t array internally, it's just
+     * treated specially otherwise.
+     */
+    switch (type) {
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+	if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
+	    return 0;
+	/* fallthrough */
+    case RPM_BIN_TYPE:
+	break;
+    default:
+	return 0;
+    }
+    
+    return rpmtdSet(td, tag, type, data, count);
+}
+
 int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, rpm_count_t count)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;

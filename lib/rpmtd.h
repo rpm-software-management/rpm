@@ -216,6 +216,19 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg);
 int rpmtdSetTag(rpmtd td, rpmTag tag);
 
 /** \ingroup rpmtd
+ * Construct tag container from uint8_t pointer.
+ * Tag type is checked to be of compatible type (CHAR, INT8 or BIN). 
+ * For non-array types (BIN is a special case of INT8 array) 
+ * count must be exactly 1.
+ * @param td		Tag data container
+ * @param tag		Rpm tag to construct
+ * @param data		Pointer to uint8_t (value or array)
+ * @param count		Number of entries
+ * @return		1 on success, 0 on error (eg wrong type)
+ */
+int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count);
+
+/** \ingroup rpmtd
  * Construct tag container from uint16_t pointer.
  * Tag type is checked to be of INT16 type. For non-array types count
  * must be exactly 1.
