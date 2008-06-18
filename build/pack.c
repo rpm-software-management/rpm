@@ -751,9 +751,10 @@ rpmRC packageBinaries(rpmSpec spec)
 	if (rpmtdFromString(&td, RPMTAG_SOURCERPM, spec->sourceRpmName))
 	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
 	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+
 	if (spec->sourcePkgId != NULL) {
-	(void) headerAddEntry(pkg->header, RPMTAG_SOURCEPKGID, RPM_BIN_TYPE,
-		       spec->sourcePkgId, 16);
+	    if (rpmtdFromUint8(&td, RPMTAG_SOURCEPKGID, spec->sourcePkgId, 16))
+		headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
 	}
 	
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);

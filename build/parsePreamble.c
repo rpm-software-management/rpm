@@ -360,11 +360,12 @@ exit:
 static rpmRC readIcon(Header h, const char * file)
 {
     char *fn = NULL;
-    char *icon;
+    uint8_t *icon;
     FD_t fd;
     rpmRC rc = RPMRC_OK;
     off_t size;
     size_t nb, iconsize;
+    struct rpmtd_s td;
 
     /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
@@ -397,10 +398,12 @@ static rpmRC readIcon(Header h, const char * file)
     if (rc != RPMRC_OK)
 	goto exit;
 
-    if (! strncmp(icon, "GIF", sizeof("GIF")-1)) {
-	(void) headerAddEntry(h, RPMTAG_GIF, RPM_BIN_TYPE, icon, iconsize);
-    } else if (! strncmp(icon, "/* XPM", sizeof("/* XPM")-1)) {
-	(void) headerAddEntry(h, RPMTAG_XPM, RPM_BIN_TYPE, icon, iconsize);
+    if (! strncmp((char*)icon, "GIF", sizeof("GIF")-1)) {
+	if (rpmtdFromUint8(&td, RPMTAG_GIF, icon, iconsize))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+    } else if (! strncmp((char*)icon, "/* XPM", sizeof("/* XPM")-1)) {
+	if (rpmtdFromUint8(&td, RPMTAG_XPM, icon, iconsize))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), file);
 	rc = RPMRC_FAIL;
