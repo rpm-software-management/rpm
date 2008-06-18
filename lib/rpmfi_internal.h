@@ -79,8 +79,6 @@ struct rpmfi_s {
 /*=============================*/
     rpmte te;
 
-    HAE_t hae;			/*!< Vector to headerAddEntry() */
-    HME_t hme;			/*!< Vector to headerModifyEntry() */
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 /*-----------------------------*/
     uid_t uid;			/*!< File uid (default). */
