@@ -274,3 +274,32 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
     return headerMod(h, &td);
 }
 
+static int headerPutWrap(Header h, rpmTag tag, rpmTagType type,
+		rpm_constdata_t p, rpm_count_t c, headerPutFlags flags)
+{
+    struct rpmtd_s td = {
+	.tag = tag,
+	.type = type,
+	.data = (void *) p,
+	.count = c,
+    };
+    return headerPut(h, &td, flags);
+}
+
+int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
+		rpm_constdata_t p, rpm_count_t c)
+{
+    return headerPutWrap(h, tag, type, p, c, HEADERPUT_APPEND);
+}
+
+int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
+		rpm_constdata_t p, rpm_count_t c)
+{
+    return headerPutWrap(h, tag, type, p, c, HEADERPUT_APPEND);
+}
+
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type,
+		rpm_constdata_t p, rpm_count_t c)
+{
+    return headerPutWrap(h, tag, type, p, c, HEADERPUT_DEFAULT);
+}

@@ -1490,24 +1490,23 @@ grabData(rpmTagType type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
     return data;
 }
 
-int headerAddEntry(Header h, rpmTag tag, rpmTagType type, 
-			rpm_constdata_t p, rpm_count_t c)
+static int intAddEntry(Header h, rpmtd td)
 {
     indexEntry entry;
     rpm_data_t data;
     int length;
 
     /* Count must always be >= 1 for headerAddEntry. */
-    if (c <= 0)
+    if (td->count <= 0)
 	return 0;
 
-    if (hdrchkType(type))
+    if (hdrchkType(td->type))
 	return 0;
-    if (hdrchkData(c))
+    if (hdrchkData(td->count))
 	return 0;
 
     length = 0;
-    data = grabData(type, p, c, &length);
+    data = grabData(td->type, td->data, td->count, &length);
     if (data == NULL || length <= 0)
 	return 0;
 
@@ -1519,37 +1518,36 @@ int headerAddEntry(Header h, rpmTag tag, rpmTagType type,
 
     /* Fill in the index */
     entry = h->index + h->indexUsed;
-    entry->info.tag = tag;
-    entry->info.type = type;
-    entry->info.count = c;
+    entry->info.tag = td->tag;
+    entry->info.type = td->type;
+    entry->info.count = td->count;
     entry->info.offset = 0;
     entry->data = data;
     entry->length = length;
 
-    if (h->indexUsed > 0 && tag < h->index[h->indexUsed-1].info.tag)
+    if (h->indexUsed > 0 && td->tag < h->index[h->indexUsed-1].info.tag)
 	h->flags &= ~HEADERFLAG_SORTED;
     h->indexUsed++;
 
     return 1;
 }
 
-int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
-		rpm_constdata_t p, rpm_count_t c)
+static int intAppendEntry(Header h, rpmtd td)
 {
     indexEntry entry;
     int length;
 
-    if (type == RPM_STRING_TYPE || type == RPM_I18NSTRING_TYPE) {
+    if (td->type == RPM_STRING_TYPE || td->type == RPM_I18NSTRING_TYPE) {
 	/* we can't do this */
 	return 0;
     }
 
     /* Find the tag entry in the header. */
-    entry = findEntry(h, tag, type);
+    entry = findEntry(h, td->tag, td->type);
     if (!entry)
 	return 0;
 
-    length = dataLength(type, p, c, 0, NULL);
+    length = dataLength(td->type, td->data, td->count, 0, NULL);
     if (length < 0)
 	return 0;
 
@@ -1561,21 +1559,14 @@ int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
     } else
 	entry->data = xrealloc(entry->data, entry->length + length);
 
-    copyData(type, ((char *) entry->data) + entry->length, p, c, length);
+    copyData(td->type, ((char *) entry->data) + entry->length, 
+	     td->data, td->count, length);
 
     entry->length += length;
 
-    entry->info.count += c;
+    entry->info.count += td->count;
 
     return 1;
-}
-
-int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
-		rpm_constdata_t p, rpm_count_t c)
-{
-    return (findEntry(h, tag, type)
-	? headerAppendEntry(h, tag, type, p, c)
-	: headerAddEntry(h, tag, type, p, c));
 }
 
 int headerPut(Header h, rpmtd td, headerPutFlags flags)
@@ -1584,9 +1575,11 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags)
     
     assert(td != NULL);
     if (flags & HEADERPUT_APPEND) {
-	rc = headerAddOrAppendEntry(h, td->tag, td->type, td->data, td->count);
+	rc = findEntry(h, td->tag, td->type) ?
+		intAppendEntry(h, td) :
+		intAddEntry(h, td);
     } else {
-	rc = headerAddEntry(h, td->tag, td->type, td->data, td->count);
+	rc = intAddEntry(h, td);
     }
     return rc;
 }

@@ -242,7 +242,8 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags);
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, rpmTag tag, rpmTagType type, rpm_constdata_t p, rpm_count_t c);
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type, 
+		   rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Append element to tag array in header.
@@ -259,7 +260,7 @@ int headerAddEntry(Header h, rpmTag tag, rpmTagType type, rpm_constdata_t p, rpm
  * @return		1 on success, 0 on failure
  */
 int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
-		rpm_constdata_t p, rpm_count_t c);
+		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Add or append element to tag array in header.
@@ -271,7 +272,7 @@ int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
  * @return		1 on success, 0 on failure
  */
 int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
-		rpm_constdata_t p, rpm_count_t c);
+		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Add locale specific tag to header.
