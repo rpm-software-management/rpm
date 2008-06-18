@@ -1716,8 +1716,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     return 0;
 }
 
-int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c)
+int headerMod(Header h, rpmtd td)
 {
     indexEntry entry;
     rpm_data_t oldData;
@@ -1725,25 +1724,25 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
     int length;
 
     /* First find the tag */
-    entry = findEntry(h, tag, type);
+    entry = findEntry(h, td->tag, td->type);
     if (!entry)
 	return 0;
 
     length = 0;
-    data = grabData(type, p, c, &length);
+    data = grabData(td->type, td->data, td->count, &length);
     if (data == NULL || length <= 0)
 	return 0;
 
     /* make sure entry points to the first occurence of this tag */
-    while (entry > h->index && (entry - 1)->info.tag == tag)  
+    while (entry > h->index && (entry - 1)->info.tag == td->tag)  
 	entry--;
 
     /* free after we've grabbed the new data in case the two are intertwined;
        that's a bad idea but at least we won't break */
     oldData = entry->data;
 
-    entry->info.count = c;
-    entry->info.type = type;
+    entry->info.count = td->count;
+    entry->info.type = td->type;
     entry->data = data;
     entry->length = length;
 
@@ -1753,11 +1752,6 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 	oldData = _free(oldData);
 
     return 1;
-}
-
-int headerMod(Header h, rpmtd td)
-{
-    return headerModifyEntry(h, td->tag, td->type, td->data, td->count);
 }
 
 /**

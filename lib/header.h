@@ -318,7 +318,7 @@ int headerMod(Header h, rpmtd td);
  * @return		1 on success, 0 on failure
  */
 int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c);
+			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Delete tag in header.

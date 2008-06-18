@@ -262,3 +262,15 @@ int headerNextIterator(HeaderIterator hi,
     return rc;
 }
 
+int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
+			rpm_constdata_t p, rpm_count_t c)
+{
+    struct rpmtd_s td = {
+	.tag = tag,
+	.type = type,
+	.data = (void *) p,
+	.count = c,
+    };
+    return headerMod(h, &td);
+}
+
