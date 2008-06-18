@@ -300,6 +300,17 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
  * Modify tag in header.
  * If there are multiple entries with this tag, the first one gets replaced.
  * @param h		header
+ * @param td		tag data container
+ * @return		1 on success, 0 on failure
+ */
+int headerMod(Header h, rpmtd td);
+
+/** \ingroup header
+ * Modify tag in header.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ * @deprecated		Use headerMod() instead
+ *
+ * @param h		header
  * @param tag		tag
  * @param type		tag value data type
  * @param p		pointer to tag value(s)

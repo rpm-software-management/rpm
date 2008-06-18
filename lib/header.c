@@ -1862,6 +1862,11 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
     return 1;
 }
 
+int headerMod(Header h, rpmtd td)
+{
+    return headerModifyEntry(h, td->tag, td->type, td->data, td->count);
+}
+
 /**
  * Header tag iterator data structure.
  */
