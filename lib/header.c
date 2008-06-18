@@ -1603,14 +1603,20 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     if (!table && !entry) {
 	const char * charArray[2];
 	rpm_count_t count = 0;
+	struct rpmtd_s td;
 	if (!lang || (lang[0] == 'C' && lang[1] == '\0')) {
 	    charArray[count++] = "C";
 	} else {
 	    charArray[count++] = "C";
 	    charArray[count++] = lang;
 	}
-	if (!headerAddEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE, 
-			&charArray, count))
+	
+	rpmtdReset(&td);
+	td.tag = HEADER_I18NTABLE;
+	td.type = RPM_STRING_ARRAY_TYPE;
+	td.data = (void *) charArray;
+	td.count = count;
+	if (!headerPut(h, &td, HEADERPUT_DEFAULT))
 	    return 0;
 	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
     }
@@ -1642,11 +1648,18 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 
     if (!entry) {
 	int rc;
+	struct rpmtd_s td;
 	strArray = xmalloc(sizeof(*strArray) * (langNum + 1));
 	for (i = 0; i < langNum; i++)
 	    strArray[i] = "";
 	strArray[langNum] = string;
-	rc = headerAddEntry(h, tag, RPM_I18NSTRING_TYPE, strArray, langNum + 1);
+
+	rpmtdReset(&td);
+	td.tag = tag;
+	td.type = RPM_I18NSTRING_TYPE;
+	td.data = strArray;
+	td.count = langNum + 1;
+	rc = headerPut(h, &td, HEADERPUT_DEFAULT);
 	free(strArray);
 	return rc;
     } else if (langNum >= entry->info.count) {
