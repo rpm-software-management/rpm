@@ -167,51 +167,6 @@ typedef enum headerGetFlags_e {
  */
 int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags);
 
-/** \ingroup header
- * Free data allocated when retrieved from header.
- * @param h		header
- * @param data		pointer to tag value(s)
- * @param type		type of data (or -1 to force free)
- * @return		NULL always
- */
-void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type);
-
-/** \ingroup header
- * Retrieve tag value.
- * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
- * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
- * entry is present).
- * @deprecated		Use headerGet() instead
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		pointer to tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-int headerGetEntry(Header h, rpmTag tag,
-			rpmTagType * type,
-			rpm_data_t * p,
-			rpm_count_t * c) RPM_GNUC_DEPRECATED;
-
-/** \ingroup header
- * Retrieve tag value using header internal array.
- * Get an entry using as little extra RAM as possible to return the tag value.
- * This is only an issue for RPM_STRING_ARRAY_TYPE.
- * @deprecated		Use headerGet() instead
- *
- * @param h		header
- * @param tag		tag
- * @retval *type	tag value data type (or NULL)
- * @retval *p		pointer to tag value(s) (or NULL)
- * @retval *c		number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-int headerGetEntryMinMemory(Header h, rpmTag tag,
-			rpmTagType * type,
-			rpm_data_t * p, 
-			rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
 typedef enum headerPutFlags_e {
     HEADERPUT_DEFAULT	= 0,
@@ -229,52 +184,6 @@ typedef enum headerPutFlags_e {
 int headerPut(Header h, rpmtd td, headerPutFlags flags);
 
 /** \ingroup header
- * Add tag to header.
- * Duplicate tags are okay, but only defined for iteration (with the
- * exceptions noted below). While you are allowed to add i18n string
- * arrays through this function, you probably don't mean to. See
- * headerAddI18NString() instead.
- *
- * @param h		header
- * @param tag		tag
- * @param type		tag value data type
- * @param p		pointer to tag value(s)
- * @param c		number of values
- * @return		1 on success, 0 on failure
- */
-int headerAddEntry(Header h, rpmTag tag, rpmTagType type, 
-		   rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
-
-/** \ingroup header
- * Append element to tag array in header.
- * Appends item p to entry w/ tag and type as passed. Won't work on
- * RPM_STRING_TYPE. Any pointers into header memory returned from
- * headerGetEntryMinMemory() for this entry are invalid after this
- * call has been made!
- *
- * @param h		header
- * @param tag		tag
- * @param type		tag value data type
- * @param p		pointer to tag value(s)
- * @param c		number of values
- * @return		1 on success, 0 on failure
- */
-int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
-		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
-
-/** \ingroup header
- * Add or append element to tag array in header.
- * @param h		header
- * @param tag		tag
- * @param type		tag value data type
- * @param p		pointer to tag value(s)
- * @param c		number of values
- * @return		1 on success, 0 on failure
- */
-int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
-		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
-
-/** \ingroup header
  * Add locale specific tag to header.
  * A NULL lang is interpreted as the C locale. Here are the rules:
  * \verbatim
@@ -283,10 +192,10 @@ int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
  *	- If the tag occurs multiple times in entry, which tag is affected
  *	   by the operation is undefined.
  *	- If the tag is in the header w/ this language, the entry is
- *	   *replaced* (like headerModifyEntry()).
+ *	   *replaced* (like headerMod()).
  * \endverbatim
  * This function is intended to just "do the right thing". If you need
- * more fine grained control use headerAddEntry() and headerModifyEntry().
+ * more fine grained control use headerPut() and headerMod().
  *
  * @param h		header
  * @param tag		tag
@@ -307,21 +216,6 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 int headerMod(Header h, rpmtd td);
 
 /** \ingroup header
- * Modify tag in header.
- * If there are multiple entries with this tag, the first one gets replaced.
- * @deprecated		Use headerMod() instead
- *
- * @param h		header
- * @param tag		tag
- * @param type		tag value data type
- * @param p		pointer to tag value(s)
- * @param c		number of values
- * @return		1 on success, 0 on failure
- */
-int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
-
-/** \ingroup header
  * Delete tag in header.
  * Removes all entries of type tag from the header, returns 1 if none were
  * found.
@@ -333,18 +227,6 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
 int headerDel(Header h, rpmTag tag);
 
 /** \ingroup header
- * Delete tag in header.
- * Removes all entries of type tag from the header, returns 1 if none were
- * found.
- * @deprecated		Use headerDel() instead
- *
- * @param h		header
- * @param tag		tag
- * @return		0 on success, 1 on failure (INCONSISTENT)
- */
-int headerRemoveEntry(Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
-
-/** \ingroup header
  * Return formatted output string from header tags.
  * The returned string must be free()d.
  *
@@ -354,21 +236,6 @@ int headerRemoveEntry(Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
  * @return		formatted output string (malloc'ed)
  */
 char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
-
-/** \ingroup header
- * Return formatted output string from header tags.
- * The returned string must be free()d.
- *
- * @param h		header
- * @param fmt		format to use
- * @param tbltags	array of tag name/value pairs (unused)
- * @param extensions	chained table of formatting extensions. (unused)
- * @retval errmsg	error message (if any)
- * @return		formatted output string (malloc'ed)
- */
-char * headerSprintf(Header h, const char * fmt,
-		     void * tbltags, void * extensions,
-		     errmsg_t * errmsg) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header
  * Duplicate tag values from one header into another.
@@ -400,36 +267,6 @@ HeaderIterator headerInitIterator(Header h);
  * @return		1 on success, 0 on failure
  */
 int headerNext(HeaderIterator hi, rpmtd td);
-
-/** \ingroup header
- * Return next tag from header.
- * @deprecated Use headerNext() instead.
- *
- * @param hi		header tag iterator
- * @retval *tag		tag
- * @retval *type	tag value data type
- * @retval *p		pointer to tag value(s)
- * @retval *c		number of values
- * @return		1 on success, 0 on failure
- */
-int headerNextIterator(HeaderIterator hi,
-		rpmTag * tag,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c) RPM_GNUC_DEPRECATED;
-
-
-
-/** \ingroup header
- * Free data allocated when retrieved from header.
- * @deprecated Use headerFreeTag() instead.
- * @todo Remove from API.
- *
- * @param data		address of data (or NULL)
- * @param type		type of data (or RPM_FORCEFREE_TYPE to force free)
- * @return		NULL always
- */
-void * headerFreeData(rpm_data_t data, rpmTagType type);
 
 /** \ingroup header
  * Return name, version, release strings from header.
@@ -499,58 +336,54 @@ rpm_color_t headerGetColor(Header h);
  */
 int headerIsSource(Header h);
 
-/* ==================================================================== */
-/** \name RPMTS */
-/**
- * Prototype for headerFreeData() vector.
- *
- * @param data		address of data (or NULL)
- * @param type		type of data (or  to force free)
- * @return		NULL always
- */
-typedef
-    void * (*HFD_t) (rpm_data_t data, rpmTagType type);
 
-/**
- * Prototype for headerGetEntry() vector.
- *
+/* ==================================================================== */
+/*            LEGACY INTERFACES, DO NOT USE IN NEW CODE!                */
+/* ==================================================================== */
+
+/** \ingroup header_legacy
+ * Retrieve tag value.
  * Will never return RPM_I18NSTRING_TYPE! RPM_STRING_TYPE elements with
  * RPM_I18NSTRING_TYPE equivalent entries are translated (if HEADER_I18NTABLE
  * entry is present).
+ * @deprecated		Use headerGet() instead
  *
  * @param h		header
  * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-typedef int (*HGE_t) (Header h, rpmTag tag,
+int headerGetEntry(Header h, rpmTag tag,
 			rpmTagType * type,
 			rpm_data_t * p,
-			rpm_count_t * c);
+			rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
-/**
- * Prototype for headerAddEntry() vector.
+/** \ingroup header_legacy
+ * Retrieve tag value using header internal array.
+ * Get an entry using as little extra RAM as possible to return the tag value.
+ * This is only an issue for RPM_STRING_ARRAY_TYPE.
+ * @deprecated		Use headerGet() instead
  *
+ * @param h		header
+ * @param tag		tag
+ * @retval *type	tag value data type (or NULL)
+ * @retval *p		pointer to tag value(s) (or NULL)
+ * @retval *c		number of values (or NULL)
+ * @return		1 on success, 0 on failure
+ */
+int headerGetEntryMinMemory(Header h, rpmTag tag,
+			rpmTagType * type,
+			rpm_data_t * p, 
+			rpm_count_t * c) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Add tag to header.
  * Duplicate tags are okay, but only defined for iteration (with the
  * exceptions noted below). While you are allowed to add i18n string
  * arrays through this function, you probably don't mean to. See
  * headerAddI18NString() instead.
- *
- * @param h             header
- * @param tag           tag
- * @param type          tag value data type
- * @param p             pointer to tag value(s)
- * @param c             number of values
- * @return              1 on success, 0 on failure
- */
-typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c);
-
-/**
- * Prototype for headerModifyEntry() vector.
- * If there are multiple entries with this tag, the first one gets replaced.
  *
  * @param h		header
  * @param tag		tag
@@ -559,20 +392,131 @@ typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c);
+int headerAddEntry(Header h, rpmTag tag, rpmTagType type, 
+		   rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
-/**
- * Prototype for headerRemoveEntry() vector.
+/** \ingroup header_legacy
+ * Append element to tag array in header.
+ * Appends item p to entry w/ tag and type as passed. Won't work on
+ * RPM_STRING_TYPE. Any pointers into header memory returned from
+ * headerGetEntryMinMemory() for this entry are invalid after this
+ * call has been made!
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
+		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Add or append element to tag array in header.
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
+		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Modify tag in header.
+ * If there are multiple entries with this tag, the first one gets replaced.
+ * @deprecated		Use headerMod() instead
+ *
+ * @param h		header
+ * @param tag		tag
+ * @param type		tag value data type
+ * @param p		pointer to tag value(s)
+ * @param c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
+			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
  * Delete tag in header.
  * Removes all entries of type tag from the header, returns 1 if none were
  * found.
+ * @deprecated		Use headerDel() instead
  *
  * @param h		header
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
+int headerRemoveEntry(Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Return formatted output string from header tags.
+ * The returned string must be free()d.
+ *
+ * @param h		header
+ * @param fmt		format to use
+ * @param tbltags	array of tag name/value pairs (unused)
+ * @param extensions	chained table of formatting extensions. (unused)
+ * @retval errmsg	error message (if any)
+ * @return		formatted output string (malloc'ed)
+ */
+char * headerSprintf(Header h, const char * fmt,
+		     void * tbltags, void * extensions,
+		     errmsg_t * errmsg) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Return next tag from header.
+ * @deprecated Use headerNext() instead.
+ *
+ * @param hi		header tag iterator
+ * @retval *tag		tag
+ * @retval *type	tag value data type
+ * @retval *p		pointer to tag value(s)
+ * @retval *c		number of values
+ * @return		1 on success, 0 on failure
+ */
+int headerNextIterator(HeaderIterator hi,
+		rpmTag * tag,
+		rpmTagType * type,
+		rpm_data_t * p,
+		rpm_count_t * c) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Free data allocated when retrieved from header.
+ * @deprecated		Use rpmtdFreeData() instead
+ *
+ * @param h		header
+ * @param data		pointer to tag value(s)
+ * @param type		type of data (or -1 to force free)
+ * @return		NULL always
+ */
+void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Free data allocated when retrieved from header.
+ * @deprecated Use rpmtdFreeData() instead.
+ *
+ * @param data		address of data (or NULL)
+ * @param type		type of data (or RPM_FORCEFREE_TYPE to force free)
+ * @return		NULL always
+ */
+void * headerFreeData(rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
+
+/** \ingroup header_legacy
+ * Prototypes for headerGetEntry(), headerFreeData() etc vectors.
+ * @{
+ */
+typedef void * (*HFD_t) (rpm_data_t data, rpmTagType type);
+typedef int (*HGE_t) (Header h, rpmTag tag, rpmTagType * type,
+			rpm_data_t * p, rpm_count_t * c);
+typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
+			rpm_constdata_t p, rpm_count_t c);
+typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
+			rpm_constdata_t p, rpm_count_t c);
 typedef int (*HRE_t) (Header h, rpmTag tag);
+/** @} */
 
 #ifdef __cplusplus
 }
