@@ -1263,32 +1263,6 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     return rc;
 }
 
-/** \ingroup header
- * Retrieve data from header entry.
- * Just a compat wrapper around copyTdEntry() until everything's converted
- * to new interface.
- * @param entry		header entry
- * @retval type		address of type (or NULL)
- * @retval p		address of data (or NULL)
- * @retval c		address of count (or NULL)
- * @param minMem	string pointers refer to header memory?
- * @return		1 on success, otherwise error.
- */
-static int copyEntry(const indexEntry entry,
-		rpmTagType * type,
-		rpm_data_t * p,
-		rpm_count_t * c,
-		int minMem)
-{
-    struct rpmtd_s td;
-    int rc;
-
-    rpmtdReset(&td);
-    rc = copyTdEntry(entry, &td, minMem ? HEADERGET_MINMEM : HEADERGET_DEFAULT);
-    TDWRAP();
-    return rc;
-}
-
 /**
  * Does locale match entry in header i18n table?
  * 
@@ -1525,24 +1499,10 @@ int headerGetEntryMinMemory(Header h, rpmTag tag,
 int headerGetRawEntry(Header h, rpmTag tag, rpmTagType * type, rpm_data_t * p,
 		rpm_count_t * c)
 {
-    indexEntry entry;
-    int rc;
+    if (p == NULL) 
+	return headerIsEntry(h, tag);
 
-    if (p == NULL) return headerIsEntry(h, tag);
-
-    /* First find the tag */
-   		/* FIX: h modified by sort. */
-    entry = findEntry(h, tag, RPM_NULL_TYPE);
-    if (!entry) {
-	if (p) *p = NULL;
-	if (c) *c = 0;
-	return 0;
-    }
-
-    rc = copyEntry(entry, type, p, c, 0);
-
-    /* XXX 1 on success */
-    return ((rc == 1) ? 1 : 0);
+    return headerGetWrap(h, tag, type, p, c, HEADERGET_RAW);
 }
 
 /**
