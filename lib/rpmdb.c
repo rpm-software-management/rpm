@@ -2650,8 +2650,10 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 #endif
     if (iid != 0 && iid != -1) {
 	rpm_tid_t tid = iid;
-	if (!headerIsEntry(h, RPMTAG_INSTALLTID))
-	   xx = headerAddEntry(h, RPMTAG_INSTALLTID, RPM_INT32_TYPE, &tid, 1);
+	struct rpmtd_s td;
+	if (!headerIsEntry(h, RPMTAG_INSTALLTID)) 
+	    if (rpmtdFromUint32(&td, RPMTAG_INSTALLTID, &tid, 1))
+		headerPut(h, &td, HEADERPUT_DEFAULT);
     }
 
     (void) blockSignals(&signalMask);
