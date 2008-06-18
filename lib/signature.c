@@ -26,6 +26,18 @@
 char ** environ = NULL;
 #endif
 
+static int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
+                     rpm_data_t p, rpm_count_t c)
+{
+    struct rpmtd_s sigtd;
+    rpmtdReset(&sigtd);
+    sigtd.tag = tag;
+    sigtd.type = type;
+    sigtd.data = p;
+    sigtd.count = c;
+    return headerPut(h, &sigtd, HEADERPUT_DEFAULT);
+}
+
 int rpmLookupSignatureType(int action)
 {
     static int disabled = 0;
@@ -684,7 +696,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 
 	if (SHA1 == NULL)
 	    goto exit;
-	if (!headerAddEntry(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1))
+	if (!sighdrPut(sigh, RPMSIGTAG_SHA1, RPM_STRING_TYPE, SHA1, 1))
 	    goto exit;
 	ret = 0;
 	break;
@@ -703,7 +715,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
 	break;
@@ -722,7 +734,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
 	if (makePGPSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
 	break;
@@ -760,7 +772,7 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	if (stat(file, &st) != 0)
 	    break;
 	pktlen = st.st_size;
-	if (!headerAddEntry(sigh, sigTag, RPM_INT32_TYPE, &pktlen, 1))
+	if (!sighdrPut(sigh, sigTag, RPM_INT32_TYPE, &pktlen, 1))
 	    break;
 	ret = 0;
 	break;
@@ -768,14 +780,14 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	pktlen = 16;
 	pkt = xcalloc(pktlen, sizeof(*pkt));
 	if (rpmDoDigest(PGPHASHALGO_MD5, file, 0, pkt, NULL)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	ret = 0;
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	if (makePGPSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 #ifdef	NOTYET	/* XXX needs hdrmd5ctx, like hdrsha1ctx. */
 	/* XXX Piggyback a header-only RSA signature as well. */
@@ -785,7 +797,7 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	break;
     case RPMSIGTAG_GPG:
 	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !headerAddEntry(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	/* XXX Piggyback a header-only DSA signature as well. */
 	ret = makeHDRSignature(sigh, file, RPMSIGTAG_DSA, passPhrase);
