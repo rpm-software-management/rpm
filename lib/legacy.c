@@ -25,7 +25,6 @@ static int dncmp(const void * a, const void * b)
 
 void compressFilelist(Header h)
 {
-    HAE_t hae = (HAE_t)headerAddEntry;
     struct rpmtd_s fileNames;
     char ** dirNames;
     const char ** baseNames;
@@ -95,11 +94,14 @@ void compressFilelist(Header h)
 
 exit:
     if (count > 0) {
-	xx = hae(h, RPMTAG_DIRINDEXES, RPM_INT32_TYPE, dirIndexes, count);
-	xx = hae(h, RPMTAG_BASENAMES, RPM_STRING_ARRAY_TYPE,
-			baseNames, count);
-	xx = hae(h, RPMTAG_DIRNAMES, RPM_STRING_ARRAY_TYPE,
-			dirNames, (rpm_count_t) dirIndex + 1);
+	struct rpmtd_s td;
+	if (rpmtdFromUint32(&td, RPMTAG_DIRINDEXES, dirIndexes, count))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	if (rpmtdFromStringArray(&td, RPMTAG_BASENAMES, baseNames, count))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	if (rpmtdFromStringArray(&td, RPMTAG_DIRNAMES, 
+				 (const char **) dirNames, dirIndex + 1))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
     }
 
     rpmtdFreeData(&fileNames);
@@ -164,10 +166,12 @@ static void providePackageNVR(Header h)
 	while (rpmtdNext(&pnames) >= 0) {
 	    const char * vdummy = "";
 	    rpmsenseFlags fdummy = RPMSENSE_ANY;
-	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
-			&vdummy, 1);
-	    headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
-			&fdummy, 1);
+	    struct rpmtd_s td;
+
+	    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &vdummy, 1))
+		headerPut(h, &td, HEADERPUT_APPEND);
+	    if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &fdummy, 1))
+		headerPut(h, &td, HEADERPUT_APPEND);
 	}
 	goto exit;
     }
@@ -184,12 +188,14 @@ static void providePackageNVR(Header h)
 
 exit:
     if (bingo) {
-	headerAddOrAppendEntry(h, RPMTAG_PROVIDENAME, RPM_STRING_ARRAY_TYPE,
-		&name, 1);
-	headerAddOrAppendEntry(h, RPMTAG_PROVIDEFLAGS, RPM_INT32_TYPE,
-		&pFlags, 1);
-	headerAddOrAppendEntry(h, RPMTAG_PROVIDEVERSION, RPM_STRING_ARRAY_TYPE,
-		&pEVR, 1);
+	struct rpmtd_s td;
+	const char *evr = pEVR;
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &name, 1))
+	    headerPut(h, &td, HEADERPUT_APPEND);
+	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pFlags, 1))
+	    headerPut(h, &td, HEADERPUT_APPEND);
+	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &evr, 1))
+	    headerPut(h, &td, HEADERPUT_APPEND);
     }
     rpmtdFreeData(&pnames);
     free(pEVR);
@@ -218,8 +224,11 @@ void legacyRetrofit(Header h)
     if (headerGet(h, RPMTAG_DEFAULTPREFIX, &dprefix, HEADERGET_MINMEM)) {
 	const char *prefix = rpmtdGetString(&dprefix);
 	char * nprefix = stripTrailingChar(xstrdup(prefix), '/');
-	(void) headerAddEntry(h, RPMTAG_PREFIXES, RPM_STRING_ARRAY_TYPE,
-		&nprefix, 1); 
+	struct rpmtd_s td;
+	
+	if (rpmtdFromStringArray(&td, RPMTAG_PREFIXES, 
+					(const char **) &nprefix, 1))
+	    headerPut(h, &td, HEADERPUT_DEFAULT);
 	free(nprefix);
 	rpmtdFreeData(&dprefix);
     }
@@ -234,10 +243,12 @@ void legacyRetrofit(Header h)
 
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsSource(h)) {
-	int32_t one = 1;
+	uint32_t one = 1;
+	struct rpmtd_s td;
+
 	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
-	    (void) headerAddEntry(h, RPMTAG_SOURCEPACKAGE, RPM_INT32_TYPE,
-				&one, 1);
+	    if (rpmtdFromUint32(&td, RPMTAG_SOURCEPACKAGE, &one, 1))
+		headerPut(h, &td, HEADERPUT_DEFAULT);
     } else {
 	/* Retrofit "Provide: name = EVR" for binary packages. */
 	providePackageNVR(h);
