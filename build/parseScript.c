@@ -302,18 +302,29 @@ int parseScript(rpmSpec spec, int parsePart)
 	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))
 	    goto exit;
     } else {
-	if (progArgc == 1)
-	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_TYPE,
-			*progArgv, (rpm_count_t) progArgc);
+	struct rpmtd_s td;
+
+	/*
+ 	 * XXX Ancient rpm uses STRING, not STRING_ARRAY type here. Construct
+ 	 * the td manually and preserve legacy compat for now...
+ 	 */
+	rpmtdReset(&td);
+	td.tag = progtag;
+	td.data = progArgv;
+	td.count = progArgc;
+	if (progArgc == 1) 
+	    td.type = RPM_STRING_TYPE;
 	else {
 	    (void) rpmlibNeedsFeature(pkg->header,
 			"ScriptletInterpreterArgs", "4.0.3-1");
-	    (void) headerAddEntry(pkg->header, progtag, RPM_STRING_ARRAY_TYPE,
-			progArgv, (rpm_count_t) progArgc);
+	    td.type = RPM_STRING_ARRAY_TYPE;
 	}
+	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
 
-	if (*p != '\0')
-	    (void) headerAddEntry(pkg->header, tag, RPM_STRING_TYPE, p, 1);
+	if (*p != '\0') {
+	    if (rpmtdFromString(&td, tag, p))
+		headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	}
 
 	if (file) {
 	    switch (parsePart) {
