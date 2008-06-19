@@ -387,7 +387,6 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     int xx;
-    struct rpmtd_s td;
 
     if (pkt == NULL || pktlen == 0)
 	return RPMRC_FAIL;
@@ -419,58 +418,36 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     /* Build pubkey header. */
     h = headerNew();
 
-    if (rpmtdFromStringArray(&td, RPMTAG_PUBKEYS, (const char **) &enc, 1)) 
-	headerPut(h, &td, HEADERPUT_APPEND);
+    headerPutString(h, RPMTAG_PUBKEYS, enc);
 
     d = headerFormat(h, afmt, NULL);
     if (d == NULL)
 	goto exit;
 
-    if (rpmtdFromString(&td, RPMTAG_NAME, "gpg-pubkey"))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    if (rpmtdFromString(&td, RPMTAG_VERSION, v+8))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    if (rpmtdFromString(&td, RPMTAG_RELEASE, r))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    if (rpmtdFromString(&td, RPMTAG_DESCRIPTION, d))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    if (rpmtdFromString(&td, RPMTAG_GROUP, group))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    if (rpmtdFromString(&td, RPMTAG_LICENSE, license))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    if (rpmtdFromString(&td, RPMTAG_SUMMARY, u))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
+    headerPutString(h, RPMTAG_NAME, "gpg-pubkey");
+    headerPutString(h, RPMTAG_VERSION, v+8);
+    headerPutString(h, RPMTAG_RELEASE, r);
+    headerPutString(h, RPMTAG_DESCRIPTION, d);
+    headerPutString(h, RPMTAG_GROUP, group);
+    headerPutString(h, RPMTAG_LICENSE, license);
+    headerPutString(h, RPMTAG_SUMMARY, u);
 
-    if (rpmtdFromUint32(&td, RPMTAG_SIZE, &zero, 1))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
+    headerPutUint32(h, RPMTAG_SIZE, &zero, 1);
 
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, (const char **) &u, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, (const char **) &evr, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
+    headerPutString(h, RPMTAG_PROVIDENAME, u);
+    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
 	
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, (const char **) &n, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, (const char **) &evr, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
+    headerPutString(h, RPMTAG_PROVIDENAME, n);
+    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
 
-    if (rpmtdFromString(&td, RPMTAG_RPMVERSION, RPMVERSION))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	
-    /* XXX W2DO: tag value inheirited from parent? */
-    if (rpmtdFromString(&td, RPMTAG_BUILDHOST, buildhost))
-	headerPut(h, &td, HEADERPUT_DEFAULT);
+    headerPutString(h, RPMTAG_RPMVERSION, RPMVERSION);
+    headerPutString(h, RPMTAG_BUILDHOST, buildhost);
 
     {   rpm_tid_t tid = rpmtsGetTid(ts);
-	if (rpmtdFromUint32(&td, RPMTAG_INSTALLTIME, &tid, 1)) {
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	    rpmtdSetTag(&td, RPMTAG_BUILDTIME);
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	}
+	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
+	headerPutUint32(h, RPMTAG_BUILDTIME, &tid, 1);
     }
 
     /* Add header to database. */
