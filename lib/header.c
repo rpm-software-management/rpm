@@ -1597,7 +1597,8 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
     int valid = 1;
 
     /* Basic sanity checks: type must match and there must be data to put */
-    if (td.type != reqtype || size < 1 || data == NULL || h == NULL) {
+    if ((type & RPM_MASK_TYPE) != reqtype 
+	|| size < 1 || data == NULL || h == NULL) {
 	valid = 0;
     }
 
