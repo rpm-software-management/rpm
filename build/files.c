@@ -971,7 +971,6 @@ static void genCpioListAndHeader(FileList fl,
     FileListRec flp;
     char buf[BUFSIZ];
     int i;
-    struct rpmtd_s td;
     pgpHashAlgo defaultalgo = PGPHASHALGO_MD5, digestalgo;
 
     /*
@@ -1003,9 +1002,6 @@ static void genCpioListAndHeader(FileList fl,
     }
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
-	const char *sptr;
-	headerPutFlags hpflags = HEADERPUT_APPEND;
-
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
 	    !strcmp(flp->cpioPath, flp[1].cpioPath)) {
@@ -1071,18 +1067,9 @@ static void genCpioListAndHeader(FileList fl,
 	 * compressed file list write before we write the actual package to
 	 * disk.
 	 */
-	sptr = flp->cpioPath;
-	if (rpmtdFromStringArray(&td, RPMTAG_OLDFILENAMES, &sptr,1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
-	if (rpmtdFromStringArray(&td, RPMTAG_FILEUSERNAME, &(flp->uname), 1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
-	if (rpmtdFromStringArray(&td, RPMTAG_FILEGROUPNAME, &(flp->gname), 1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutString(h, RPMTAG_OLDFILENAMES, flp->cpioPath);
+	headerPutString(h, RPMTAG_FILEUSERNAME, flp->uname);
+	headerPutString(h, RPMTAG_FILEGROUPNAME, flp->gname);
 
 	/*
  	 * For items whose size varies between systems, always explicitly 
@@ -1090,60 +1077,40 @@ static void genCpioListAndHeader(FileList fl,
  	 * TODO: check and warn if header type overflows for each case.
  	 */
 	{   rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
-	    if (rpmtdFromUint32(&td, RPMTAG_FILESIZES, &rsize32, 1))
-		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
 	}
 
 	{   rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
-	    if (rpmtdFromUint64(&td, RPMTAG_LONGFILESIZES, &rsize64, 1))
-		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT64_TYPE);
+	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
 	}
 	
 	{   rpm_time_t rtime = (rpm_time_t) flp->fl_mtime;
-	    if (rpmtdFromUint32(&td, RPMTAG_FILEMTIMES, &rtime, 1))
-	    	headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	    headerPutUint32(h, RPMTAG_FILEMTIMES, &rtime, 1);
 	}
 
 	{   rpm_mode_t rmode = (rpm_mode_t) flp->fl_mode;
-	    if (rpmtdFromUint16(&td, RPMTAG_FILEMODES, &rmode, 1))
-		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT16_TYPE);
+	    headerPutUint16(h, RPMTAG_FILEMODES, &rmode, 1);
 	}
 
 	{   rpm_rdev_t rrdev = (rpm_rdev_t) flp->fl_rdev;
-	    if (rpmtdFromUint16(&td, RPMTAG_FILERDEVS, &rrdev, 1))
-		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT16_TYPE);
+	    headerPutUint16(h, RPMTAG_FILERDEVS, &rrdev, 1);
 	}
 	
 	{   rpm_dev_t rdev = (rpm_dev_t) flp->fl_dev;
-	    if (rpmtdFromUint32(&td, RPMTAG_FILEDEVICES, &rdev, 1))
-		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	    headerPutUint32(h, RPMTAG_FILEDEVICES, &rdev, 1);
 	}
 
 	{   rpm_ino_t rino = (rpm_ino_t) flp->fl_ino;
-	    if (rpmtdFromUint32(&td, RPMTAG_FILEINODES, &rino, 1))
-		headerPut(h, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	    headerPutUint32(h, RPMTAG_FILEINODES, &rino, 1);
 	}
 	
-	sptr = flp->langs;
-	if (rpmtdFromStringArray(&td, RPMTAG_FILELANGS, &sptr, 1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutString(h, RPMTAG_FILELANGS, flp->langs);
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
 	    (void) rpmDoDigest(digestalgo, flp->diskPath, 1, 
 			       (unsigned char *)buf, NULL);
-	sptr = buf;
-	if (rpmtdFromStringArray(&td, RPMTAG_FILEDIGESTS, &sptr, 1)) 
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutString(h, RPMTAG_FILEDIGESTS, buf);
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
@@ -1158,18 +1125,13 @@ static void genCpioListAndHeader(FileList fl,
 		}
 	    }
 	}
-	sptr = buf;
-	if (rpmtdFromStringArray(&td, RPMTAG_FILELINKTOS, &sptr, 1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutString(h, RPMTAG_FILELINKTOS, buf);
 	
 	if (flp->flags & RPMFILE_GHOST) {
 	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
-	if (rpmtdFromUint32(&td, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(h, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1);
 	
 	if (!isSrc && isDoc(fl, flp->cpioPath))
 	    flp->flags |= RPMFILE_DOC;
@@ -1177,23 +1139,17 @@ static void genCpioListAndHeader(FileList fl,
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
 
-	if (rpmtdFromUint32(&td, RPMTAG_FILEFLAGS, &(flp->flags),1))
-	    headerPut(h, &td, hpflags);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(h, RPMTAG_FILEFLAGS, &(flp->flags) ,1);
     }
 
     /* XXX size mismatch, ensure it fits. Need to deal with this properly... */
     {	assert(fl->totalFileSize < UINT32_MAX);
 	rpm_off_t totalfilesize = fl->totalFileSize;
-	if (rpmtdFromUint32(&td, RPMTAG_SIZE, &totalfilesize, 1))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(h, RPMTAG_SIZE, &totalfilesize, 1);
     }
 
     if (digestalgo != defaultalgo) {
-	if (rpmtdFromUint32(&td, RPMTAG_FILEDIGESTALGO, &digestalgo, 1))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
 	rpmlibNeedsFeature(h, "FileDigests", "4.4.90-1");
     }
 
@@ -1575,13 +1531,11 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
     const char * buildDir = "%{_builddir}/%{?buildsubdir}/";
     char * fn = NULL;
     char * apkt = NULL;
-    const char *sptr;
     uint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
     int rc = RPMRC_FAIL;
     int xx;
-    struct rpmtd_s td;
 
     if (*fileName == '/') {
 	fn = rpmGenPath(fl->buildRoot, NULL, fileName);
@@ -1620,10 +1574,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	break;
     }
 
-    sptr = apkt;
-    if (rpmtdFromStringArray(&td, tag, &sptr, 1))
-	headerPut(pkg->header, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    headerPutString(pkg->header, tag, apkt);
 
     rc = RPMRC_OK;
     if (absolute)
@@ -1992,9 +1943,8 @@ void initSourceHeader(rpmSpec spec)
     hi = headerFreeIterator(hi);
 
     if (spec->BANames && spec->BACount > 0) {
-	if (rpmtdFromStringArray(&td, RPMTAG_BUILDARCHS, 
-				 spec->BANames, spec->BACount))
-	    headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+	headerPutStringArray(spec->sourceHeader, RPMTAG_BUILDARCHS,
+		  spec->BANames, spec->BACount);
     }
 }
 
@@ -2029,32 +1979,18 @@ int processSourceFiles(rpmSpec spec)
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
-	const char *sptr;
-	struct rpmtd_s td;
-	headerPutFlags hpflags = HEADERPUT_APPEND;
-
 	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    sptr = srcPtr->source;
-	    if (rpmtdFromStringArray(&td, RPMTAG_SOURCE, &sptr, 1))
-		headerPut(spec->sourceHeader, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
+	    headerPutString(spec->sourceHeader, RPMTAG_SOURCE, srcPtr->source);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		if (rpmtdFromUint32(&td, RPMTAG_NOSOURCE, &srcPtr->num, 1))
-		    headerPut(spec->sourceHeader, &td, hpflags);
-	    	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
+				&srcPtr->num, 1);
 	    }
 	}
 	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    sptr = srcPtr->source;
-	    if (rpmtdFromStringArray(&td, RPMTAG_PATCH, &sptr, 1))
-		headerPut(spec->sourceHeader, &td, hpflags);
-	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
+	    headerPutString(spec->sourceHeader, RPMTAG_PATCH, srcPtr->source);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		if (rpmtdFromUint32(&td, RPMTAG_NOPATCH, &srcPtr->num, 1))
-		    headerPut(spec->sourceHeader, &td, hpflags);
-	    	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
+				&srcPtr->num, 1);
 	    }
 	}
 
