@@ -53,12 +53,10 @@ static void addOrAppendListEntry(Header h, rpmTag tag, const char * line)
     int xx;
     int argc;
     const char **argv;
-    struct rpmtd_s td;
 
     xx = poptParseArgvString(line, &argc, &argv);
-    if (argc && rpmtdFromStringArray(&td, tag, argv, argc))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    if (argc) 
+	headerPutStringArray(h, tag, argv, argc);
     argv = _free(argv);
 }
 
@@ -321,10 +319,8 @@ static void fillOutMainPackage(Header h)
     for (ot = optionalTags; ot->ot_mac != NULL; ot++) {
 	if (!headerIsEntry(h, ot->ot_tag)) {
 	    char *val = rpmExpand(ot->ot_mac, NULL);
-	    struct rpmtd_s td;
-	    if (val && *val != '%' && rpmtdFromString(&td, ot->ot_tag, val)) {
-		headerPut(h, &td, HEADERPUT_DEFAULT);
-		assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	    if (val && *val != '%') {
+		headerPutString(h, ot->ot_tag, val);
 	    }
 	    val = _free(val);
 	}
@@ -365,7 +361,6 @@ static rpmRC readIcon(Header h, const char * file)
     rpmRC rc = RPMRC_OK;
     off_t size;
     size_t nb, iconsize;
-    struct rpmtd_s td;
 
     /* XXX use rpmGenPath(rootdir, "%{_sourcedir}/", file) for icon path. */
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
@@ -399,11 +394,9 @@ static rpmRC readIcon(Header h, const char * file)
 	goto exit;
 
     if (! strncmp((char*)icon, "GIF", sizeof("GIF")-1)) {
-	if (rpmtdFromUint8(&td, RPMTAG_GIF, icon, iconsize))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	headerPutBin(h, RPMTAG_GIF, icon, iconsize);
     } else if (! strncmp((char*)icon, "/* XPM", sizeof("/* XPM")-1)) {
-	if (rpmtdFromUint8(&td, RPMTAG_XPM, icon, iconsize))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	headerPutBin(h, RPMTAG_XPM, icon, iconsize);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), file);
 	rc = RPMRC_FAIL;
@@ -464,7 +457,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     rpmsenseFlags tagflags;
     int rc;
     int xx;
-    struct rpmtd_s td;
     
     if (field == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
@@ -515,9 +507,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	    }
 	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
 	}
-	if (rpmtdFromString(&td, tag, field))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
@@ -527,9 +517,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
 	if (!*lang) {
-	    if (rpmtdFromString(&td, tag, field))
-	    	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	    assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	    headerPutString(pkg->header, tag, field);
 	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
@@ -611,9 +599,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
-	if (rpmtdFromUint32(&td, tag, &epoch, 1))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(pkg->header, tag, &epoch, 1);
 	break;
     }
     case RPMTAG_AUTOREQPROV:
@@ -847,7 +833,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     pkg = newPackage(spec);
 	
     if (! initialPackage) {
-	struct rpmtd_s td;
 	/* There is one option to %package: <pkg> or -n <pkg> */
 	if (parseSimplePart(spec->line, &name, &flag)) {
 	    rpmlog(RPMLOG_ERR, _("Bad package specification: %s\n"),
@@ -869,9 +854,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	} else
 	    NVR = xstrdup(name);
 	free(name);
-	if (rpmtdFromString(&td, RPMTAG_NAME, NVR))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(pkg->header, RPMTAG_NAME, NVR);
     } else {
 	NVR = xstrdup("(main package)");
     }
