@@ -94,14 +94,10 @@ void compressFilelist(Header h)
 
 exit:
     if (count > 0) {
-	struct rpmtd_s td;
-	if (rpmtdFromUint32(&td, RPMTAG_DIRINDEXES, dirIndexes, count))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	if (rpmtdFromStringArray(&td, RPMTAG_BASENAMES, baseNames, count))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	if (rpmtdFromStringArray(&td, RPMTAG_DIRNAMES, 
-				 (const char **) dirNames, dirIndex + 1))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	headerPutUint32(h, RPMTAG_DIRINDEXES, dirIndexes, count);
+	headerPutStringArray(h, RPMTAG_BASENAMES, baseNames, count);
+	headerPutStringArray(h, RPMTAG_DIRNAMES, 
+			     (const char **) dirNames, dirIndex + 1);
     }
 
     rpmtdFreeData(&fileNames);
@@ -164,14 +160,10 @@ static void providePackageNVR(Header h)
      */
     if (!headerIsEntry(h, RPMTAG_PROVIDEVERSION)) {
 	while (rpmtdNext(&pnames) >= 0) {
-	    const char * vdummy = "";
 	    rpmsenseFlags fdummy = RPMSENSE_ANY;
-	    struct rpmtd_s td;
 
-	    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &vdummy, 1))
-		headerPut(h, &td, HEADERPUT_APPEND);
-	    if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &fdummy, 1))
-		headerPut(h, &td, HEADERPUT_APPEND);
+	    headerPutString(h, RPMTAG_PROVIDEVERSION, "");
+	    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &fdummy, 1);
 	}
 	goto exit;
     }
@@ -188,14 +180,10 @@ static void providePackageNVR(Header h)
 
 exit:
     if (bingo) {
-	struct rpmtd_s td;
 	const char *evr = pEVR;
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &name, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pFlags, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &evr, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
+	headerPutString(h, RPMTAG_PROVIDENAME, name);
+	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pFlags, 1);
     }
     rpmtdFreeData(&pnames);
     free(pEVR);
@@ -224,11 +212,8 @@ void legacyRetrofit(Header h)
     if (headerGet(h, RPMTAG_DEFAULTPREFIX, &dprefix, HEADERGET_MINMEM)) {
 	const char *prefix = rpmtdGetString(&dprefix);
 	char * nprefix = stripTrailingChar(xstrdup(prefix), '/');
-	struct rpmtd_s td;
 	
-	if (rpmtdFromStringArray(&td, RPMTAG_PREFIXES, 
-					(const char **) &nprefix, 1))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
+	headerPutString(h, RPMTAG_PREFIXES, nprefix);
 	free(nprefix);
 	rpmtdFreeData(&dprefix);
     }
@@ -244,11 +229,9 @@ void legacyRetrofit(Header h)
     /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
     if (headerIsSource(h)) {
 	uint32_t one = 1;
-	struct rpmtd_s td;
 
 	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
-	    if (rpmtdFromUint32(&td, RPMTAG_SOURCEPACKAGE, &one, 1))
-		headerPut(h, &td, HEADERPUT_DEFAULT);
+	    headerPutUint32(h, RPMTAG_SOURCEPACKAGE, &one, 1);
     } else {
 	/* Retrofit "Provide: name = EVR" for binary packages. */
 	providePackageNVR(h);
