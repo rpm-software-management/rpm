@@ -834,11 +834,8 @@ assert(p != NULL);
 	}
 
 	if (numActual) {
-	    struct rpmtd_s pfx;
-	    if (rpmtdFromStringArray(&pfx, RPMTAG_INSTPREFIXES, 
-				     actualRelocations, numActual)) {
-		headerPut(h, &pfx, HEADERPUT_DEFAULT);
-	    }
+	    headerPutStringArray(h, RPMTAG_INSTPREFIXES,
+				     actualRelocations, numActual);
 	}
 
 	actualRelocations = _free(actualRelocations);
