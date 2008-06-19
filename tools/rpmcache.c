@@ -119,7 +119,7 @@ static int ftsCacheUpdate(rpmts ts)
 
     for (i = 0; i < nitems; i++) {
 	Item ip;
-	struct rpmtd_s md5, ctd;
+	struct rpmtd_s md5;
 	const char *path;
 
 	ip = items[i];
@@ -144,17 +144,13 @@ static int ftsCacheUpdate(rpmts ts)
 	}
 
 	/* --- Add cache tags to new cache header. */
-	if (!(rpmtdFromUint32(&ctd, RPMTAG_CACHECTIME, &tid, 1) &&
-	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	if (!(headerPutUint32(ip->h, RPMTAG_CACHECTIME, &tid, 1)))
 	    break;
-	if (!(rpmtdFromStringArray(&ctd, RPMTAG_CACHEPKGPATH, &path, 1) &&
-	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	if (!(headerPutStringArray(ip->h, RPMTAG_CACHEPKGPATH, &path, 1)))
 	    break;
-	if (!(rpmtdFromUint32(&ctd, RPMTAG_CACHEPKGSIZE, &ip->size, 1) &&
-	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	if (!(headerPutUint32(ip->h, RPMTAG_CACHEPKGSIZE, &ip->size, 1)))
 	    break;
-	if (!(rpmtdFromUint32(&ctd, RPMTAG_CACHEPKGMTIME, &ip->mtime, 1) &&
-	      headerPut(ip->h, &ctd, HEADERPUT_DEFAULT)))
+	if (!(headerPutUint32(ip->h, RPMTAG_CACHEPKGMTIME, &ip->mtime, 1)))
 	    break;
 
 	/* --- Add new cache header to database. */
