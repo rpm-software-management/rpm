@@ -323,8 +323,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
 
 	if (*p != '\0') {
-	    if (rpmtdFromString(&td, tag, p))
-		headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	    headerPutString(pkg->header, tag, p);
 	}
 
 	if (file) {
