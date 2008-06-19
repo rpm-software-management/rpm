@@ -1497,20 +1497,16 @@ assert(psm->mi == NULL);
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
-	    struct rpmtd_s td;
 	    rpm_time_t installTime = (rpm_time_t) time(NULL);
 	    rpm_count_t fc = rpmfiFC(fi);
 
 	    if (fi->h == NULL) break;	/* XXX can't happen */
 	    if (fi->fstates != NULL && fc > 0) {
-		if (rpmtdFromUint8(&td, RPMTAG_FILESTATES, fi->fstates, fc))
-		    headerPut(fi->h, &td, HEADERPUT_DEFAULT);
+		headerPutChar(fi->h, RPMTAG_FILESTATES, fi->fstates, fc);
 	    }
 
-	    if (rpmtdFromUint32(&td, RPMTAG_INSTALLTIME, &installTime, 1))
-		headerPut(fi->h, &td, HEADERPUT_DEFAULT);
-	    if (rpmtdFromUint32(&td, RPMTAG_INSTALLCOLOR, &tscolor, 1))
-		headerPut(fi->h, &td, HEADERPUT_DEFAULT);
+	    headerPutUint32(fi->h, RPMTAG_INSTALLTIME, &installTime, 1);
+	    headerPutUint32(fi->h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
 
 	    /*
 	     * If this package has already been installed, remove it from
