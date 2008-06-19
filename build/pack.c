@@ -156,9 +156,7 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
     
-    if (rpmtdFromString(&td, tag, getStringBuf(sb))) 
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-    assert(rpmtdType(&td) == RPM_STRING_TYPE);
+    headerPutString(h, tag, getStringBuf(sb));
 
     sb = freeStringBuf(sb);
     return 0;
@@ -170,15 +168,12 @@ static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTag ta
 {
     StringBuf sb = newStringBuf();
     const char *s;
-    struct rpmtd_s td;
 
     if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
 	return 1;
 
     s = getStringBuf(sb);
-    if (rpmtdFromStringArray(&td, tag, &s, 1)) 
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    headerPutString(h, tag, s);
 
     sb = freeStringBuf(sb);
     return 0;
@@ -242,19 +237,10 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     }
 
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
-	struct rpmtd_s td;
-	const char *sptr;
-	
-	sptr = p->prog;
-	if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTPROG, &sptr, 1))
-	    headerPut(pkg->header, &td, HEADERPUT_APPEND);	    
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTPROG, p->prog);
 
 	if (p->script) {
-	    sptr = p->script;
-	    if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTS, &sptr, 1))
-		headerPut(pkg->header, &td, HEADERPUT_APPEND);
-	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	    headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTS, p->script);
 	} else if (p->fileName) {
 	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
 				  RPMTAG_TRIGGERSCRIPTS)) {
@@ -266,10 +252,7 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	} else {
 	    /* This is dumb.  When the header supports NULL string */
 	    /* this will go away.                                  */
-	    const char *bull = "";
-	    if (rpmtdFromStringArray(&td, RPMTAG_TRIGGERSCRIPTS, &bull, 1))
-		headerPut(pkg->header, &td, HEADERPUT_APPEND);
-	    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	    headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTS, "");
 	}
     }
 
@@ -389,9 +372,7 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     s = strchr(rpmio_flags, '.');
     if (s) {
 	const char *compr = NULL;
-	if (rpmtdFromString(&td, RPMTAG_PAYLOADFORMAT, "cpio"))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(h, RPMTAG_PAYLOADFORMAT, "cpio");
 
 	if (strcmp(s+1, "gzdio") == 0) {
 	    compr = "gzip";
@@ -409,23 +390,17 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	    goto exit;
 	}
 
-	if (rpmtdFromString(&td, RPMTAG_PAYLOADCOMPRESSOR, compr))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(h, RPMTAG_PAYLOADCOMPRESSOR, compr);
 	buf = xstrdup(rpmio_flags);
 	buf[s - rpmio_flags] = '\0';
-	if (rpmtdFromString(&td, RPMTAG_PAYLOADFLAGS, buf+1))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(h, RPMTAG_PAYLOADFLAGS, buf+1);
 	free(buf);
     }
 
     /* Create and add the cookie */
     if (cookie) {
 	rasprintf(cookie, "%s %d", buildHost(), (int) (*getBuildTime()));
-	if (rpmtdFromString(&td, RPMTAG_COOKIE, *cookie))
-	    headerPut(h, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(h, RPMTAG_COOKIE, *cookie);
     }
     
     /* Reallocate the header into one contiguous region. */
@@ -651,26 +626,17 @@ static const rpmTag copyTags[] = {
  */
 static void addPackageProvides(Header h)
 {
-    const char *name = NULL, *arch = NULL, *sptr;
+    const char *name = NULL, *arch = NULL;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
     int noarch = 0;
-    struct rpmtd_s archtd, td;
+    struct rpmtd_s archtd;
 
     /* <name> = <evr> provide */
     evr = headerGetEVR(h, &name);
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &name, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
-    if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_INT32_TYPE);
-
-    sptr = evr;
-    if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &sptr, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    headerPutString(h, RPMTAG_PROVIDENAME, name);
+    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
 
     /*
      * <name>(<isa>) = <evr> provide
@@ -682,19 +648,9 @@ static void addPackageProvides(Header h)
     arch = rpmtdGetString(&archtd);
     noarch = (strcmp(arch, "noarch") == 0);
     if (!noarch && strcmp(name, isaprov)) {
-	sptr = isaprov;
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, &sptr, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
-	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, &pflags, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
-
-	sptr = evr;
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, &sptr, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutString(h, RPMTAG_PROVIDENAME, isaprov);
+	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
     }
     free(isaprov);
 
@@ -711,7 +667,6 @@ rpmRC packageBinaries(rpmSpec spec)
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *fn;
-	struct rpmtd_s td;
 
 	if (pkg->fileList == NULL)
 	    continue;
@@ -720,41 +675,28 @@ rpmRC packageBinaries(rpmSpec spec)
 	    return rc;
 	
 	if (spec->cookie) {
-	    if (rpmtdFromString(&td, RPMTAG_COOKIE, spec->cookie))
-	 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	    assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	    headerPutString(pkg->header, RPMTAG_COOKIE, spec->cookie);
 	}
 
 	/* Copy changelog from src rpm */
 	headerCopyTags(spec->packages->header, pkg->header, copyTags);
 	
-	if (rpmtdFromString(&td, RPMTAG_RPMVERSION, VERSION))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
-	if (rpmtdFromString(&td, RPMTAG_BUILDHOST, buildHost()))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
-	if (rpmtdFromUint32(&td, RPMTAG_BUILDTIME, getBuildTime(), 1))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutString(pkg->header, RPMTAG_RPMVERSION, VERSION);
+	headerPutString(pkg->header, RPMTAG_BUILDHOST, buildHost());
+	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
 	addPackageProvides(pkg->header);
 
     {	char * optflags = rpmExpand("%{optflags}", NULL);
-	if (rpmtdFromString(&td, RPMTAG_OPTFLAGS, optflags)) 
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
 	optflags = _free(optflags);
     }
 
 	(void) genSourceRpmName(spec);
-	if (rpmtdFromString(&td, RPMTAG_SOURCERPM, spec->sourceRpmName))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_TYPE);
+	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
 	if (spec->sourcePkgId != NULL) {
-	    if (rpmtdFromUint8(&td, RPMTAG_SOURCEPKGID, spec->sourcePkgId, 16))
-		headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
 	
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
@@ -814,18 +756,11 @@ rpmRC packageSources(rpmSpec spec)
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     rpmRC rc;
-    struct rpmtd_s td;
 
     /* Add some cruft */
-    if (rpmtdFromString(&td, RPMTAG_RPMVERSION, VERSION))
-	headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
-    assert(rpmtdType(&td) == RPM_STRING_TYPE);
-    if (rpmtdFromString(&td, RPMTAG_BUILDHOST, buildHost()))
-	headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
-    assert(rpmtdType(&td) == RPM_STRING_TYPE);
-    if (rpmtdFromUint32(&td, RPMTAG_BUILDTIME, getBuildTime(), 1))
-	headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
-    assert(rpmtdType(&td) == RPM_INT32_TYPE);
+    headerPutString(spec->sourceHeader, RPMTAG_RPMVERSION, VERSION);
+    headerPutString(spec->sourceHeader, RPMTAG_BUILDHOST, buildHost());
+    headerPutUint32(spec->sourceHeader, RPMTAG_BUILDTIME, getBuildTime(), 1);
     (void) genSourceRpmName(spec);
 
     spec->cookie = _free(spec->cookie);
