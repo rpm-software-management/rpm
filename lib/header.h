@@ -183,6 +183,39 @@ typedef enum headerPutFlags_e {
  */
 int headerPut(Header h, rpmtd td, headerPutFlags flags);
 
+/** \ingroup header 
+ * @{
+ * Type-safe methods for inserting tag data to header.
+ * Tag data type is validated to match the function type, ie things like
+ * headerPutUint32(h, RPMTAG_NAME, ...) will return failure. For non-array
+ * types size must equal 1, and data is checked to be non-NULL. For array
+ * types, add-or-append mode is always used.
+ *
+ * headerPutString() can be used on both RPM_STRING_TYPE and 
+ * RPM_STRING_ARRAY_TYPE (to add a single string into the array) tags,
+ * for others the type must match exactly.
+ *
+ * These are intended to "do the right thing" in the common case, if you 
+ * need more fine grained control use headerPut() & friends instead.
+ * @todo		Make doxygen group these meaningfully.
+ *
+ * @param h		header
+ * @param tag		tag to insert
+ * @param val		pointer to value(s)
+ * @param size		number of items in array (1 or larger)
+ * @return		1 on success, 0 on failure
+ * 
+ */
+int headerPutString(Header h, rpmTag tag, const char *str);
+int headerPutStringArray(Header h, rpmTag tag, const char **val, rpm_count_t size);
+int headerPutBin(Header h, rpmTag tag, uint8_t *val, rpm_count_t size);
+int headerPutChar(Header h, rpmTag tag, char *val, rpm_count_t size);
+int headerPutUint8(Header h, rpmTag tag, uint8_t *val, rpm_count_t size);
+int headerPutUint16(Header h, rpmTag tag, uint16_t *val, rpm_count_t size);
+int headerPutUint32(Header h, rpmTag tag, uint32_t *val, rpm_count_t size);
+int headerPutUint64(Header h, rpmTag tag, uint64_t *val, rpm_count_t size);
+/** @} */
+
 /** \ingroup header
  * Add locale specific tag to header.
  * A NULL lang is interpreted as the C locale. Here are the rules:

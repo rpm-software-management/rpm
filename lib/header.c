@@ -1584,6 +1584,99 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags)
     return rc;
 }
 
+/*
+ * Sanity check data types against tag table before putting. Assume
+ * append on all array-types.
+ */
+static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
+			rpm_constdata_t data, rpm_count_t size)
+{
+    struct rpmtd_s td;
+    rpmTagType type = rpmTagGetType(tag);
+    headerPutFlags flags = HEADERPUT_APPEND; 
+    int valid = 1;
+
+    /* Basic sanity checks: type must match and there must be data to put */
+    if (td.type != reqtype || size < 1 || data == NULL || h == NULL) {
+	valid = 0;
+    }
+
+    /*
+     * Non-array types can't be appended to. Binary types use size
+     * for data length, for other non-array types size must be 1.
+     */
+    if ((type & RPM_MASK_RETURN_TYPE) != RPM_ARRAY_RETURN_TYPE) {
+	flags = HEADERPUT_DEFAULT;
+	if ((type & RPM_MASK_TYPE) != RPM_BIN_TYPE && size != 1) {
+	    valid = 0;
+	}
+    }
+
+    if (valid) {
+	rpmtdReset(&td);
+	td.tag = tag;
+	td.type = type & RPM_MASK_TYPE;
+	td.data = (void *) data;
+	td.count = size;
+
+	valid = headerPut(h, &td, flags);
+    }
+
+    return valid;
+}
+	
+int headerPutString(Header h, rpmTag tag, const char *str)
+{
+    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    const void *sptr = NULL;
+
+    /* string arrays expect char **, arrange that */
+    if (type == RPM_STRING_ARRAY_TYPE) {
+	sptr = &str;
+    } else if (type == RPM_STRING_TYPE) {
+	sptr = str;
+    } else {
+	return 0;
+    }
+
+    return headerPutType(h, tag, type, sptr, 1);
+}
+
+int headerPutStringArray(Header h, rpmTag tag, const char **array, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_STRING_ARRAY_TYPE, array, size);
+}
+
+int headerPutChar(Header h, rpmTag tag, char *val, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_CHAR_TYPE, val, size);
+}
+
+int headerPutUint8(Header h, rpmTag tag, uint8_t *val, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_INT8_TYPE, val, size);
+}
+
+int headerPutUint16(Header h, rpmTag tag, uint16_t *val, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_INT16_TYPE, val, size);
+}
+
+int headerPutUint32(Header h, rpmTag tag, uint32_t *val, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_INT32_TYPE, val, size);
+}
+
+int headerPutUint64(Header h, rpmTag tag, uint64_t *val, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_INT64_TYPE, val, size);
+}
+
+int headerPutBin(Header h, rpmTag tag, uint8_t *val, rpm_count_t size)
+{
+    return headerPutType(h, tag, RPM_BIN_TYPE, val, size);
+}
+
 int headerAddI18NString(Header h, rpmTag tag, const char * string,
 		const char * lang)
 {
