@@ -1668,19 +1668,13 @@ assert(EVR != NULL);
 	}
 	 
 	assert(names != NULL);
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDENAME, names, c))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutStringArray(pkg->header, RPMTAG_PROVIDENAME, names, c);
 
 	assert(evrs != NULL);
-	if (rpmtdFromStringArray(&td, RPMTAG_PROVIDEVERSION, evrs, c))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutStringArray(pkg->header, RPMTAG_PROVIDEVERSION, evrs, c);
 	
 	assert(flags != NULL);
-	if (rpmtdFromUint32(&td, RPMTAG_PROVIDEFLAGS, flags, c))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, flags, c);
 
 	free(names);
 	free(evrs);
@@ -1701,19 +1695,13 @@ assert(EVR != NULL);
 	}
 	 
 	assert(names != NULL);
-	if (rpmtdFromStringArray(&td, RPMTAG_REQUIRENAME, names, c))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutStringArray(pkg->header, RPMTAG_REQUIRENAME, names, c);
 
 	assert(evrs != NULL);
-	if (rpmtdFromStringArray(&td, RPMTAG_REQUIREVERSION, evrs, c))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	headerPutStringArray(pkg->header, RPMTAG_REQUIREVERSION, evrs, c);
 	
 	assert(flags != NULL);
-	if (rpmtdFromUint32(&td, RPMTAG_REQUIREFLAGS, flags, c))
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, flags, c);
 
 	free(names);
 	free(evrs);
