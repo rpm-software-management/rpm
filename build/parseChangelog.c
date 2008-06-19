@@ -16,19 +16,10 @@
 void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     rpm_time_t mytime = time;	/* XXX convert to header representation */
-    struct rpmtd_s td;
 				
-    if (rpmtdFromUint32(&td, RPMTAG_CHANGELOGTIME, &mytime, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_INT32_TYPE);
-
-    if (rpmtdFromStringArray(&td, RPMTAG_CHANGELOGNAME, &name, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-
-    if (rpmtdFromStringArray(&td, RPMTAG_CHANGELOGTEXT, &text, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    headerPutUint32(h, RPMTAG_CHANGELOGTIME, &mytime, 1);
+    headerPutString(h, RPMTAG_CHANGELOGNAME, name);
+    headerPutString(h, RPMTAG_CHANGELOGTEXT, text);
 }
 
 /**
