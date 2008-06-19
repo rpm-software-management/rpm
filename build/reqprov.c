@@ -18,7 +18,6 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
     rpmTag flagtag = 0;
     rpmTag indextag = 0;
     rpmsenseFlags extra = RPMSENSE_ANY;
-    struct rpmtd_s td;
     
     if (Flags & RPMSENSE_PROVIDES) {
 	nametag = RPMTAG_PROVIDENAME;
@@ -65,21 +64,13 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
     }
 
     /* Add this dependency. */
-    if (rpmtdFromStringArray(&td, nametag, &N, 1))
-	headerPut(h, &td, HEADERPUT_APPEND);
-    assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+    headerPutString(h, nametag, N);
     if (flagtag) {
-	if (rpmtdFromStringArray(&td, versiontag, &EVR, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
-	if (rpmtdFromUint32(&td, flagtag, &Flags, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutString(h, versiontag, EVR);
+	headerPutUint32(h, flagtag, &Flags, 1);
     }
     if (indextag) {
-	if (rpmtdFromUint32(&td, indextag, &index, 1))
-	    headerPut(h, &td, HEADERPUT_APPEND);
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	headerPutUint32(h, indextag, &index, 1);
     }
 
 exit:
