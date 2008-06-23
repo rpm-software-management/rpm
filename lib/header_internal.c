@@ -190,7 +190,7 @@ int headerRemoveEntry(Header h, rpmTag tag)
     return headerDel(h, tag);
 }
 
-void * headerFreeData(rpm_data_t data, rpmTagType type)
+static void *_headerFreeData(rpm_data_t data, rpmTagType type)
 {
     if (data) {
 	if (type == RPM_FORCEFREE_TYPE ||
@@ -202,9 +202,14 @@ void * headerFreeData(rpm_data_t data, rpmTagType type)
     return NULL;
 }
 
+void * headerFreeData(rpm_data_t data, rpmTagType type)
+{
+    return _headerFreeData(data, type);
+}
+
 void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type)
 {
-    return headerFreeData(data, type);
+    return _headerFreeData(data, type);
 }
 
 static int headerGetWrap(Header h, rpmTag tag,
