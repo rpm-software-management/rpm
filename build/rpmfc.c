@@ -1656,56 +1656,30 @@ assert(EVR != NULL);
 
     /* Add Provides: */
     if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
-	const char **names = xcalloc(c, sizeof(char *));	
-	const char **evrs = xcalloc(c, sizeof(char *));	
-	rpmsenseFlags *flags = xcalloc(c, sizeof(rpmsenseFlags *));	
-	int i;
 	rpmds pi = rpmdsInit(fc->provides);
-	while ((i = rpmdsNext(pi)) >= 0) {
-	    names[i] = rpmdsN(pi);
-	    evrs[i] = rpmdsEVR(pi);
-	    flags[i] = rpmdsFlags(pi);
-	}
-	 
-	assert(names != NULL);
-	headerPutStringArray(pkg->header, RPMTAG_PROVIDENAME, names, c);
-
-	assert(evrs != NULL);
-	headerPutStringArray(pkg->header, RPMTAG_PROVIDEVERSION, evrs, c);
+	while (rpmdsNext(pi) >= 0) {
+	    const char *name = rpmdsN(pi);
+	    const char *evr = rpmdsEVR(pi);
+	    rpmsenseFlags flags = rpmdsFlags(pi);
 	
-	assert(flags != NULL);
-	headerPutUint32(pkg->header, RPMTAG_PROVIDEFLAGS, flags, c);
-
-	free(names);
-	free(evrs);
-	free(flags);
+	    headerPutString(pkg->header, RPMTAG_PROVIDENAME, name);
+	    headerPutString(pkg->header, RPMTAG_PROVIDEVERSION, evr);
+	    headerPutUint32(pkg->header, RPMTAG_PROVIDEFLAGS, &flags, 1);
+	}
     }
 
     /* Add Requires: */
     if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
-	const char **names = xcalloc(c, sizeof(char *));	
-	const char **evrs = xcalloc(c, sizeof(char *));	
-	rpmsenseFlags *flags = xcalloc(c, sizeof(rpmsenseFlags *));	
-	int i;
-	rpmds ri = rpmdsInit(fc->requires);
-	while ((i = rpmdsNext(ri)) >= 0) {
-	    names[i] = rpmdsN(ri);
-	    evrs[i] = rpmdsEVR(ri);
-	    flags[i] = rpmdsFlags(ri);
-	}
-	 
-	assert(names != NULL);
-	headerPutStringArray(pkg->header, RPMTAG_REQUIRENAME, names, c);
-
-	assert(evrs != NULL);
-	headerPutStringArray(pkg->header, RPMTAG_REQUIREVERSION, evrs, c);
+	rpmds pi = rpmdsInit(fc->requires);
+	while (rpmdsNext(pi) >= 0) {
+	    const char *name = rpmdsN(pi);
+	    const char *evr = rpmdsEVR(pi);
+	    rpmsenseFlags flags = rpmdsFlags(pi);
 	
-	assert(flags != NULL);
-	headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, flags, c);
-
-	free(names);
-	free(evrs);
-	free(flags);
+	    headerPutString(pkg->header, RPMTAG_REQUIRENAME, name);
+	    headerPutString(pkg->header, RPMTAG_REQUIREVERSION, evr);
+	    headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, &flags, 1);
+	}
     }
 
     /* Add dependency dictionary(#dependencies) */
