@@ -1059,7 +1059,6 @@ int rpmtsOrder(rpmts ts)
     int numOrderList;
     int npeer = 128;	/* XXX more than deep enough for now. */
     int *peer = xcalloc(npeer, sizeof(*peer));
-    int nrescans = 10;
     int _printed = 0;
     char deptypechar;
     rpm_loff_t tsbytes;
@@ -1387,7 +1386,7 @@ rescan:
 
 	/* If a relation was eliminated, then continue sorting. */
 	/* XXX TODO: add control bit. */
-	if (nzaps && nrescans-- > 0) {
+	if (nzaps) {
 	    rpmlog(RPMLOG_DEBUG, "========== continuing tsort ...\n");
 	    goto rescan;
 	}
