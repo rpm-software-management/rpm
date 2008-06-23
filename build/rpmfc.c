@@ -1674,7 +1674,7 @@ assert(EVR != NULL);
 	headerPutStringArray(pkg->header, RPMTAG_PROVIDEVERSION, evrs, c);
 	
 	assert(flags != NULL);
-	headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, flags, c);
+	headerPutUint32(pkg->header, RPMTAG_PROVIDEFLAGS, flags, c);
 
 	free(names);
 	free(evrs);
