@@ -80,9 +80,9 @@ pkginclude_HEADERS += build/rpmspec.h
 rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio
+bin_PROGRAMS =		rpm2cpio rpmbuild
 
-rpmlibexec_PROGRAMS =	rpmb rpmd rpmi rpmk rpmq
+rpmlibexec_PROGRAMS =	rpmd rpmi rpmk rpmq
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
 DISTCLEANFILES = find-provides
@@ -93,10 +93,10 @@ rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
 rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
-rpmb_SOURCES =		build.c rpmqv.c build.h debug.h system.h
-rpmb_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMBT
-rpmb_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpmb_LDADD += 		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmbuild_SOURCES =	build.c rpmqv.c build.h debug.h system.h
+rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMBT
+rpmbuild_LDADD =	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
+rpmbuild_LDADD += 	@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmd_SOURCES =		rpmqv.c debug.h system.h
 rpmd_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB
@@ -219,16 +219,12 @@ rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
 install-exec-hook:
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmt
-	@@LN_S@ rpmb $(DESTDIR)$(rpmlibexecdir)/rpmt
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
 	@@LN_S@ rpmi $(DESTDIR)$(rpmlibexecdir)/rpme
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmu
 	@@LN_S@ rpmi $(DESTDIR)$(rpmlibexecdir)/rpmu
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmv
 	@@LN_S@ rpmq $(DESTDIR)$(rpmlibexecdir)/rpmv
-	rm -f $(DESTDIR)$(bindir)/rpmbuild
-	@LN_S@ ../lib/rpm/rpmb $(DESTDIR)$(bindir)/rpmbuild
 	rm -f $(DESTDIR)$(bindir)/rpmquery
 	@LN_S@ ../lib/rpm/rpmq $(DESTDIR)$(bindir)/rpmquery
 	rm -f $(DESTDIR)$(bindir)/rpmverify
@@ -254,10 +250,8 @@ uninstall-local:
 	@rm -rf $(DESTDIR)/$(rpmconfigdir)/platform
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmu
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmt
 	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmv
 	@rm -f $(DESTDIR)$(bindir)/rpmquery
-	@rm -f $(DESTDIR)$(bindir)/rpmbuild
 	@rm -f $(DESTDIR)$(bindir)/rpmu
 	@rm -f $(DESTDIR)$(bindir)/rpmsign
 	@rm -f $(DESTDIR)$(bindir)/rpme

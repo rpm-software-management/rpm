@@ -211,9 +211,7 @@ int main(int argc, char *argv[])
 
     /* Set the major mode based on argv[0] */
 #ifdef	IAM_RPMBT
-    if (!strcmp(__progname, "rpmb"))	bigMode = MODE_BUILD;
-    if (!strcmp(__progname, "lt-rpmb"))	bigMode = MODE_BUILD;
-    if (!strcmp(__progname, "rpmt"))	bigMode = MODE_TARBUILD;
+    if (!strcmp(__progname, "lt-rpmbuild"))	bigMode = MODE_BUILD;
     if (!strcmp(__progname, "rpmbuild"))	bigMode = MODE_BUILD;
 #endif
 #ifdef	IAM_RPMQV
