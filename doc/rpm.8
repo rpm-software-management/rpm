@@ -871,43 +871,10 @@ the macro \fB%_httpport\fR.
 .SH "LEGACY ISSUES"
 .SS "Executing rpmbuild"
 .PP
-The build modes of rpm are now resident in the
-\fI/usr/bin/rpmbuild\fR
-executable. Although legacy compatibility provided by the popt aliases
-below has been adequate, the compatibility is not perfect; hence build
-mode compatibility through popt aliases is being removed from rpm.
+The build modes of rpm are now resident in the \fI/usr/bin/rpmbuild\fR 
+executable. 
 Install the package containing \fBrpmbuild\fR (usually \fBrpm-build\fR) and see
-\fBrpmbuild\fR(8) for documentation of all the
-\fBrpm\fR build modes previously documented here in
-\fBrpm\fR(8).
-.PP
-Add the following lines to \fI/etc/popt\fR
-if you wish to continue invoking \fBrpmbuild\fR from
-the \fBrpm\fR command line:
-.PP
-.nf
-rpm     exec --bp               rpmb -bp
-rpm     exec --bc               rpmb -bc
-rpm     exec --bi               rpmb -bi
-rpm     exec --bl               rpmb -bl
-rpm     exec --ba               rpmb -ba
-rpm     exec --bb               rpmb -bb
-rpm     exec --bs               rpmb -bs 
-rpm     exec --tp               rpmb -tp 
-rpm     exec --tc               rpmb -tc 
-rpm     exec --ti               rpmb -ti 
-rpm     exec --tl               rpmb -tl 
-rpm     exec --ta               rpmb -ta
-rpm     exec --tb               rpmb -tb
-rpm     exec --ts               rpmb -ts 
-rpm     exec --rebuild          rpmb --rebuild
-rpm     exec --recompile        rpmb --recompile
-rpm     exec --clean            rpmb --clean
-rpm     exec --rmsource         rpmb --rmsource
-rpm     exec --rmspec           rpmb --rmspec
-rpm     exec --target           rpmb --target
-rpm     exec --short-circuit    rpmb --short-circuit
-.fi
+\fBrpmbuild\fR(8) for documentation of all the \fBrpm\fR build modes.
 .SH "FILES"
 .SS "rpmrc Configuration"
 .PP
