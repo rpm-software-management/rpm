@@ -150,9 +150,6 @@ rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
 
-# set the time check to <secs>
-rpm	alias --timecheck	--define '_timecheck !#:+'
-
 #==============================================================================
 # Popt glue to preserve legacy CLI behavior.
 #
@@ -183,12 +180,6 @@ rpm	exec --verify		rpmv --verify
 #rpm	exec -e			rpmi -e
 #rpm	exec --erase		rpmi --erase
 
-rpm	alias --with		--define "_with_!#:+       --with-!#:+" \
-	--POPTdesc=$"enable configure <option> for build" \
-	--POPTargs=$"<option>"
-rpm	alias --without		--define "_without_!#:+    --without-!#:+" \
-	--POPTdesc=$"disable configure <option> for build" \
-	--POPTargs=$"<option>"
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \
