@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
 
     int arg;
 
-    const char * optArg;
+    const char *optArg, *poptCtx;
     pid_t pipeChild = 0;
     poptContext optCon;
     int ec = 0;
@@ -250,10 +250,17 @@ int main(int argc, char *argv[])
 
     rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
 
+    /* Only build has it's own set of aliases, everything else uses rpm */
+#ifdef	IAM_RPMBT
+    poptCtx = "rpmbuild";
+#else
+    poptCtx = "rpm";
+#endif
+
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
     /* XXX popt argv definition should be fixed instead of casting... */
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+    optCon = poptGetContext(poptCtx, argc, (const char **)argv, optionsTable, 0);
     (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
 #if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
