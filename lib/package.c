@@ -165,10 +165,9 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
  * @param ts		transaction set
  * @return		0 if new keyid, otherwise 1
  */
-static int rpmtsStashKeyid(rpmts ts)
+static int rpmtsStashKeyid(rpmts ts, pgpDig dig)
 {
-    pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp = rpmtsSignature(ts);
+    pgpDigParams sigp = dig ? &dig->signature : NULL;
     unsigned int keyid;
     int i;
 
@@ -212,7 +211,7 @@ static int rpmtsStashKeyid(rpmts ts)
  */
 rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
 {
-    pgpDig dig;
+    pgpDig dig = NULL;
     char *buf = NULL;
     int32_t * ei = (int32_t *) uh;
     int32_t il = ntohl(ei[0]);
@@ -392,7 +391,7 @@ verifyinfo_exit:
     }
 
     /* Verify header-only digest/signature. */
-    dig = rpmtsDig(ts);
+    dig = pgpNewDig();
     if (dig == NULL)
 	goto verifyinfo_exit;
     dig->nbytes = 0;
@@ -411,7 +410,7 @@ verifyinfo_exit:
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    rpmtsCleanDig(ts);
+	    pgpFreeDig(dig);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -452,7 +451,7 @@ verifyinfo_exit:
 	    rpmlog(RPMLOG_ERR,
 		_("skipping header with unverifiable V%u signature\n"),
 		dig->signature.version);
-	    rpmtsCleanDig(ts);
+	    pgpFreeDig(dig);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -491,7 +490,7 @@ verifyinfo_exit:
 	break;
     }
 
-    rc = rpmVerifySignature(ts, &sigtd, &buf);
+    rc = rpmVerifySignature(ts, &sigtd, dig, &buf);
 
     if (msg) 
 	*msg = buf;
@@ -501,7 +500,7 @@ verifyinfo_exit:
     /* XXX headerCheck can recurse, free info only at top level. */
     if (hclvl == 1) {
 	rpmtdFreeData(&sigtd);
-	rpmtsCleanDig(ts);
+	pgpFreeDig(dig);
     }
     hclvl--;
     return rc;
@@ -588,7 +587,7 @@ exit:
 
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
-    pgpDig dig;
+    pgpDig dig = NULL;
     char buf[8*BUFSIZ];
     ssize_t count;
     rpmlead l = NULL;
@@ -709,7 +708,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	goto exit;
     }
 
-    dig = rpmtsDig(ts);
+    dig = pgpNewDig();
     if (dig == NULL) {
 	rc = RPMRC_FAIL;
 	goto exit;
@@ -817,7 +816,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 /** @todo Implement disable/enable/warn/error/anal policy. */
 
-    rc = rpmVerifySignature(ts, &sigtd, &msg);
+    rc = rpmVerifySignature(ts, &sigtd, dig, &msg);
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
 	rpmlog(RPMLOG_DEBUG, "%s: %s", fn, msg);
@@ -825,7 +824,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (rpmtsStashKeyid(ts) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+    {	int lvl = (rpmtsStashKeyid(ts, dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s", fn, msg);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
@@ -856,7 +855,7 @@ exit:
 	*hdrp = headerLink(h);
     }
     h = headerFree(h);
-    rpmtsCleanDig(ts);
+    pgpFreeDig(dig);
     sigh = rpmFreeSignature(sigh);
     return rc;
 }

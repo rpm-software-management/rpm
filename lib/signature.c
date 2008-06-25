@@ -1234,7 +1234,7 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     /* Retrieve the matching public key. */
-    res = rpmtsFindPubkey(ts);
+    res = rpmtsFindPubkey(ts, dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -1328,7 +1328,7 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     /* Retrieve the matching public key. */
-    res = rpmtsFindPubkey(ts);
+    res = rpmtsFindPubkey(ts, dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -1354,9 +1354,8 @@ exit:
 }
 
 rpmRC
-rpmVerifySignature(const rpmts ts, rpmtd sigtd, char ** result)
+rpmVerifySignature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** result)
 {
-    pgpDig dig = rpmtsDig(ts);
     rpmRC res;
     
     assert(result != NULL);

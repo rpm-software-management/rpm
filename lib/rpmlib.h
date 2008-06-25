@@ -14,6 +14,7 @@
 #include <rpm/header.h>
 #include <rpm/rpmtag.h>
 #include <rpm/rpmds.h>	/* XXX move rpmlib provides to rpmds instead */
+#include <rpm/rpmpgp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -232,16 +233,14 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
 /** \ingroup signature
  * Verify a signature from a package.
  *
- * This needs the following variables from the transaction set:
- *	- ts->dig	signature/pubkey parameters (malloc'd workspace)
- *
  * @param ts		transaction set
  * @param sigtd		signature tag data container
+ * @param dig		signature/pubkey parameters
  * @retval result	detailed text result of signature verification
  * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(const rpmts ts, rpmtd sigtd, char ** result);
+rpmRC rpmVerifySignature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** result);
 
 /** \ingroup signature
  * Destroy signature header from package.

@@ -263,11 +263,10 @@ exit:
     return mi;
 }
 
-rpmRC rpmtsFindPubkey(rpmts ts)
+rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
 {
-    pgpDig dig = rpmtsDig(ts);
-    pgpDigParams sigp = rpmtsSignature(ts);
-    pgpDigParams pubp = rpmtsPubkey(ts);
+    pgpDigParams sigp = dig ? &dig->signature : NULL;
+    pgpDigParams pubp = dig ? &dig->pubkey : NULL;
     rpmRC res = RPMRC_NOKEY;
     char * pubkeysource = NULL;
     int xx;
@@ -754,11 +753,6 @@ void rpmtsCleanProblems(rpmts ts)
     }
 }
 
-void rpmtsCleanDig(rpmts ts)
-{
-    ts->dig = pgpFreeDig(ts->dig);
-}
-
 void rpmtsClean(rpmts ts)
 {
     rpmtsi pi; rpmte p;
@@ -785,8 +779,6 @@ void rpmtsClean(rpmts ts)
     ts->nsuggests = 0;
 
     rpmtsCleanProblems(ts);
-
-    rpmtsCleanDig(ts);
 }
 
 void rpmtsEmpty(rpmts ts)
@@ -1038,30 +1030,6 @@ rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid)
 	ts->tid = tid;
     }
     return otid;
-}
-
-pgpDig rpmtsDig(rpmts ts)
-{
-/* FIX: hide lazy malloc for now */
-    if (ts->dig == NULL)
-	ts->dig = pgpNewDig();
-    if (ts->dig == NULL)
-	return NULL;
-    return ts->dig;
-}
-
-pgpDigParams rpmtsSignature(const rpmts ts)
-{
-    pgpDig dig = rpmtsDig(ts);
-    if (dig == NULL) return NULL;
-    return &dig->signature;
-}
-
-pgpDigParams rpmtsPubkey(const rpmts ts)
-{
-    pgpDig dig = rpmtsDig(ts);
-    if (dig == NULL) return NULL;
-    return &dig->pubkey;
 }
 
 rpmdb rpmtsGetRdb(rpmts ts)
@@ -1440,7 +1408,6 @@ rpmts rpmtsCreate(void)
     ts->pkpkt = NULL;
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
-    ts->dig = NULL;
 
     ts->nrefs = 0;
 

@@ -557,7 +557,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char * missingKeys, *untrustedKeys;
     struct rpmtd_s sigtd;
     rpmTag sigtag;
-    pgpDig dig;
+    pgpDig dig = NULL;
     pgpDigParams sigp;
     Header sigh = NULL;
     HeaderIterator hi;
@@ -624,8 +624,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
 	}
 
-	dig = rpmtsDig(ts);
-	sigp = rpmtsSignature(ts);
+	dig = pgpNewDig();
+	sigp = &dig->signature;
 
 	/* XXX RSA needs the hash_algo, so decode early. */
 	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
@@ -712,7 +712,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		break;
 	    }
 
-	    sigres = rpmVerifySignature(ts, &sigtd, &result);
+	    sigres = rpmVerifySignature(ts, &sigtd, dig, &result);
 	    if (sigres != RPMRC_OK) {
 		failed = 1;
 	    }
@@ -781,7 +781,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 exit:
     sigh = rpmFreeSignature(sigh);
-    rpmtsCleanDig(ts);
+    pgpFreeDig(dig);
     return res;
 }
 

@@ -101,8 +101,6 @@ struct rpmts_s {
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
-    pgpDig dig;			/*!< Current signature/pubkey parameters. */
-
     rpmSpec spec;		/*!< Spec file control structure. */
 
     int nrefs;			/*!< Reference count. */

@@ -279,9 +279,10 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 /** \ingroup rpmts
  * Retrieve pubkey from rpm database.
  * @param ts		rpm transaction
+ * @param dig		OpenPGP packet container
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
-rpmRC rpmtsFindPubkey(rpmts ts);
+rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig);
 
 /** \ingroup rpmts
  * Import public key packet(s).
@@ -358,12 +359,6 @@ rpmps rpmtsProblems(rpmts ts);
  * @param ts		transaction set
  */
 void rpmtsCleanProblems(rpmts ts);
-
-/** \ingroup rpmts
- * Free signature verification data.
- * @param ts		transaction set
- */
-void rpmtsCleanDig(rpmts ts);
 
 /** \ingroup rpmts
  * Free memory needed only for dependency checks and ordering.
@@ -486,27 +481,6 @@ rpm_tid_t rpmtsGetTid(rpmts ts);
  * @return		previous transaction id
  */
 rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid);
-
-/** \ingroup rpmts
- * Get OpenPGP packet parameters, i.e. signature/pubkey constants.
- * @param ts		transaction set
- * @return		signature/pubkey constants.
- */
-pgpDig rpmtsDig(rpmts ts);
-
-/** \ingroup rpmts
- * Get OpenPGP signature constants.
- * @param ts		transaction set
- * @return		signature constants.
- */
-pgpDigParams rpmtsSignature(const rpmts ts);
-
-/** \ingroup rpmts
- * Get OpenPGP pubkey constants.
- * @param ts		transaction set
- * @return		pubkey constants.
- */
-pgpDigParams rpmtsPubkey(const rpmts ts);
 
 /** \ingroup rpmts
  * Get transaction set database handle.
