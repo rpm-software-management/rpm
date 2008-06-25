@@ -913,7 +913,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	}
 	
     	/* If no pre/post-transaction script, then don't bother. */
-	if (script == NULL)
+	if (script == NULL && scriptprog == NULL)
  	    continue;
 
     	p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
