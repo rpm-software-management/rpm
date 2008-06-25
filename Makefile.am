@@ -82,7 +82,7 @@ rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio rpmbuild
 
-rpmlibexec_PROGRAMS =	rpmd rpmi rpmk rpmq
+rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
 			config.guess config.sub
 DISTCLEANFILES = find-provides
@@ -97,26 +97,6 @@ rpmbuild_SOURCES =	build.c rpmqv.c build.h debug.h system.h
 rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMBT
 rpmbuild_LDADD =	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmbuild_LDADD += 	@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpmd_SOURCES =		rpmqv.c debug.h system.h
-rpmd_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB
-rpmd_LDADD =		lib/librpm.la rpmio/librpmio.la
-rpmd_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpmi_SOURCES =		rpmqv.c debug.h system.h
-rpmi_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU
-rpmi_LDADD =		lib/librpm.la rpmio/librpmio.la
-rpmi_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpmk_SOURCES =		rpmqv.c debug.h system.h
-rpmk_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMK
-rpmk_LDADD =		lib/librpm.la rpmio/librpmio.la
-rpmk_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpmq_SOURCES =		rpmqv.c debug.h system.h
-rpmq_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMQV
-rpmq_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpmq_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
@@ -219,24 +199,14 @@ rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
 install-exec-hook:
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
-	@@LN_S@ rpmi $(DESTDIR)$(rpmlibexecdir)/rpme
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmu
-	@@LN_S@ rpmi $(DESTDIR)$(rpmlibexecdir)/rpmu
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmv
-	@@LN_S@ rpmq $(DESTDIR)$(rpmlibexecdir)/rpmv
 	rm -f $(DESTDIR)$(bindir)/rpmquery
-	@LN_S@ ../lib/rpm/rpmq $(DESTDIR)$(bindir)/rpmquery
+	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmquery
 	rm -f $(DESTDIR)$(bindir)/rpmverify
-	@LN_S@ ../lib/rpm/rpmv $(DESTDIR)$(bindir)/rpmverify
+	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
 	rm -f $(DESTDIR)$(bindir)/rpmsign
-	@LN_S@ ../lib/rpm/rpmk $(DESTDIR)$(bindir)/rpmsign
-	rm -f $(DESTDIR)$(bindir)/rpmdb ; \
-	@LN_S@ ../lib/rpm/rpmd $(DESTDIR)$(bindir)/rpmdb ; \
-	for bf in e i u ; do \
-	    rm -f $(DESTDIR)$(bindir)/rpm$$bf ; \
-	    @LN_S@ ../lib/rpm/rpm$$bf $(DESTDIR)$(bindir)/rpm$$bf ; \
-	done
+	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmsign
+	rm -f $(DESTDIR)$(bindir)/rpmdb
+	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmdb
 
 install-data-local:
 	@case "@host_os@" in \
@@ -247,17 +217,10 @@ install-data-local:
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
-	@rm -rf $(DESTDIR)/$(rpmconfigdir)/platform
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmu
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpme
-	@rm -f $(DESTDIR)$(rpmlibexecdir)/rpmv
 	@rm -f $(DESTDIR)$(bindir)/rpmquery
-	@rm -f $(DESTDIR)$(bindir)/rpmu
 	@rm -f $(DESTDIR)$(bindir)/rpmsign
-	@rm -f $(DESTDIR)$(bindir)/rpme
 	@rm -f $(DESTDIR)$(bindir)/rpmverify
 	@rm -f $(DESTDIR)$(bindir)/rpmdb
-	@rm -f $(DESTDIR)$(bindir)/rpmi
 
 MAINTAINERCLEANFILES = ChangeLog
 
