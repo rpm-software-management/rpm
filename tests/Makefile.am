@@ -89,25 +89,25 @@ rpmpopt.in:	$(top_srcdir)/rpmpopt.in Makefile
 CLEANFILES += rpmpopt.in
 
 
-# Hack: Abusing testing$(rpmlibexecdir)/rpmb as stamp file
-testing$(rpmlibexecdir)/rpmb: ../rpmb
+# Hack: Abusing testing$(bindir)/rpmbuild as stamp file
+testing$(bindir)/rpmbuild: ../rpmbuild
 	rm -rf testing
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 
-testing$(rpmconfigdir)/rpmrc: rpmrc testing$(rpmlibexecdir)/rpmb
+testing$(rpmconfigdir)/rpmrc: rpmrc testing$(bindir)/rpmbuild
 	$(INSTALL_DATA) rpmrc testing$(rpmconfigdir)/rpmrc
 
-testing$(rpmconfigdir)/macros: macros.in testing$(rpmlibexecdir)/rpmb
+testing$(rpmconfigdir)/macros: macros.in testing$(bindir)/rpmbuild
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(rpmconfigdir)/macros:${subdir}/macros.in)
 
-testing$(rpmconfigdir)/rpmpopt-@VERSION@: rpmpopt.in testing$(rpmlibexecdir)/rpmb
+testing$(rpmconfigdir)/rpmpopt-@VERSION@: rpmpopt.in testing$(bindir)/rpmbuild
 	(cd ${top_builddir} && \
 	  ./config.status --file=${subdir}/testing$(rpmconfigdir)/rpmpopt-@VERSION@:${subdir}/rpmpopt.in)
 
 check_DATA = atconfig atlocal $(TESTSUITE)
-check_DATA += testing$(rpmlibexecdir)/rpmb
+check_DATA += testing$(bindir)/rpmbuild
 check_DATA += testing$(rpmconfigdir)/rpmrc
 check_DATA += testing$(rpmconfigdir)/macros
 check_DATA += testing$(rpmconfigdir)/rpmpopt-@VERSION@

@@ -1,4 +1,4 @@
-#    rpmi.at: test rpmi
+#    rpmi.at: test rpm install
 #
 #    Copyright (C) 2007  Ralf Corsépius <corsepiu@fedoraproject.org>
 #
@@ -17,15 +17,15 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 # ------------------------------
-# Check if rpmi -U *.src.rpm works
-AT_SETUP([rpmi -U *.src.rpm])
+# Check if rpm -U *.src.rpm works
+AT_SETUP([rpm -U *.src.rpm])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
 AS_MKDIR_P([${TOPDIR}])
 
-rpmi \
+rpm \
   --rcfile="${RPMRC}" \
   --define "_topdir ${TOPDIR}" \
   -U "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
@@ -36,15 +36,15 @@ rpmi \
 AT_CLEANUP
 
 # ------------------------------
-# Check if rpmi -i *.src.rpm works
-AT_SETUP([rpmi -i *.src.rpm])
+# Check if rpm -i *.src.rpm works
+AT_SETUP([rpm -i *.src.rpm])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
 AS_MKDIR_P([${TOPDIR}])
 
-rpmi \
+rpm \
   --rcfile="${RPMRC}" \
   --define "_topdir ${TOPDIR}" \
   -i "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm

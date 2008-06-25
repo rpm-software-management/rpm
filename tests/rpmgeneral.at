@@ -33,16 +33,16 @@ AT_CLEANUP
 
 
 # ------------------------------
-AT_SETUP([rpmquery --version])
-AT_CHECK([rpmquery --version],[0],
+AT_SETUP([rpm --version])
+AT_CHECK([rpm --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
 AT_CLEANUP
 
 
 # ------------------------------
-AT_SETUP([rpmi --version])
-AT_CHECK([rpmi --version],[0],
+AT_SETUP([rpm --version])
+AT_CHECK([rpm --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
 AT_CLEANUP
@@ -58,8 +58,8 @@ AT_CLEANUP
 # ------------------------------
 # Check rpm --querytags
 # * Some versions of rpm append extraneous whitespaces
-AT_SETUP([rpmquery --querytags])
-AT_CHECK([rpmquery --querytags],[0],
+AT_SETUP([rpm --querytags])
+AT_CHECK([rpm --querytags],[0],
 [ARCH
 ARCHIVESIZE
 BASENAMES
