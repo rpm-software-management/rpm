@@ -1149,10 +1149,12 @@ static void genCpioListAndHeader(FileList fl,
 	headerPutUint32(h, RPMTAG_FILEFLAGS, &(flp->flags) ,1);
     }
 
-    /* XXX size mismatch, ensure it fits. Need to deal with this properly... */
-    {	assert(fl->totalFileSize < UINT32_MAX);
+    if (fl->totalFileSize < UINT32_MAX) {
 	rpm_off_t totalfilesize = fl->totalFileSize;
 	headerPutUint32(h, RPMTAG_SIZE, &totalfilesize, 1);
+    } else {
+	rpm_loff_t totalfilesize = fl->totalFileSize;
+	headerPutUint64(h, RPMTAG_LONGSIZE, &totalfilesize, 1);
     }
 
     if (digestalgo != defaultalgo) {

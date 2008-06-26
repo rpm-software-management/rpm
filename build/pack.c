@@ -352,6 +352,8 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     int xx;
     rpmRC rc = RPMRC_OK;
     struct rpmtd_s td;
+    rpmSigTag sizetag;
+    rpmTag payloadtag;
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
@@ -453,7 +455,23 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
     /* Generate the signature */
     (void) fflush(stdout);
     sig = rpmNewSignature();
-    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_SIZE, passPhrase);
+
+    /*
+     * There should be rpmlib() dependency on this, but that doesn't
+     * really do much good as these are signature tags that get read
+     * way before dependency checking has a chance to figure out anything.
+     * On the positive side, not inserting the 32bit tag at all means
+     * older rpm will just bail out with error message on attempt to read
+     * such a package.
+     */
+    if (csa->cpioArchiveSize < UINT32_MAX) {
+	sizetag = RPMSIGTAG_SIZE;
+	payloadtag = RPMSIGTAG_PAYLOADSIZE;
+    } else {
+	sizetag = RPMSIGTAG_LONGSIZE;
+	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
+    }
+    (void) rpmAddSignature(sig, sigtarget, sizetag, passPhrase);
     (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
 
     if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
@@ -472,18 +490,18 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	SHA1 = _free(SHA1);
     }
 
-    {	/* 
-	 * XXX size mismatch here, payloadsize is 32bit while archive
-	 * is 64bit. Just assert for now, deal with this properly later...
-	 */
-	assert(csa->cpioArchiveSize < UINT32_MAX);
-	rpm_off_t payloadSize = csa->cpioArchiveSize;
-	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
+    {	
+	/* XXX can't use headerPutType() on legacy RPMSIGTAG_* items */
 	rpmtdReset(&td);
-	td.tag = RPMSIGTAG_PAYLOADSIZE;
-	td.type = RPM_INT32_TYPE;
-	td.data = &payloadSize;
+	td.tag = payloadtag;
 	td.count = 1;
+	if (payloadtag == RPMSIGTAG_PAYLOADSIZE) {
+	    td.type = RPM_INT32_TYPE;
+	    td.data = (rpm_off_t *) &csa->cpioArchiveSize;
+	} else {
+	    td.type = RPM_INT64_TYPE;
+	    td.data = (rpm_loff_t *) &csa->cpioArchiveSize;
+	}
 	headerPut(sig, &td, HEADERPUT_DEFAULT);
     }
 
