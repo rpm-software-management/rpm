@@ -289,7 +289,9 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	    case RPMSIGTAG_BADSHA1_1:
 	    case RPMSIGTAG_BADSHA1_2:
 	    case RPMSIGTAG_PAYLOADSIZE:
+	    case RPMSIGTAG_LONGARCHIVESIZE:
 	    case RPMSIGTAG_SIZE:
+	    case RPMSIGTAG_LONGSIZE:
 		break;
 	    }
 

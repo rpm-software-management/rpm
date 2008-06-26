@@ -284,6 +284,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	size_t pad = (8 - (sigSize % 8)) % 8; /* 8-byte pad */
 	ssize_t trc;
 	struct rpmtd_s sizetag;
+	rpm_loff_t archSize = 0;
 
 	/* Position at beginning of header. */
 	if (pad && (trc = timedRead(fd, (void *)block, pad)) != pad) {
@@ -293,15 +294,19 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	}
 
 	/* Print package component sizes. */
-	if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
-	    rpm_off_t * archSize = rpmtdGetUint32(&sizetag);
-	    rc = printSize(fd, sigSize, pad, *archSize);
-	    rpmtdFreeData(&sizetag);
-	    if (rc != RPMRC_OK) {
-		rasprintf(&buf,
-		       _("sigh sigSize(%zd): BAD, fstat(2) failed\n"), sigSize);
-		goto exit;
-	    }
+	if (headerGet(sigh, RPMSIGTAG_LONGSIZE, &sizetag, HEADERGET_DEFAULT)) {
+	    rpm_loff_t *tsize = rpmtdGetUint64(&sizetag);
+	    archSize = (tsize) ? *tsize : 0;
+	} else if (headerGet(sigh, RPMSIGTAG_SIZE, &sizetag, HEADERGET_DEFAULT)) {
+	    rpm_off_t *tsize = rpmtdGetUint32(&sizetag);
+	    archSize = (tsize) ? *tsize : 0;
+	}
+	rpmtdFreeData(&sizetag);
+	rc = printSize(fd, sigSize, pad, archSize);
+	if (rc != RPMRC_OK) {
+	    rasprintf(&buf,
+		   _("sigh sigSize(%zd): BAD, fstat(2) failed\n"), sigSize);
+	    goto exit;
 	}
     }
 
@@ -596,6 +601,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 
     switch (*sigTagp) {
     case RPMSIGTAG_SIZE:
+    case RPMSIGTAG_LONGSIZE:
     case RPMSIGTAG_MD5:
     case RPMSIGTAG_SHA1:
 	break;
@@ -624,6 +630,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     case RPMSIGTAG_BADSHA1_1:
     case RPMSIGTAG_BADSHA1_2:
     case RPMSIGTAG_PAYLOADSIZE:
+    case RPMSIGTAG_LONGARCHIVESIZE:
 	break;
     }
 
@@ -658,6 +665,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 
     switch (sigTag) {
     case RPMSIGTAG_SIZE:
+    case RPMSIGTAG_LONGSIZE:
     case RPMSIGTAG_MD5:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
@@ -744,6 +752,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
     case RPMSIGTAG_BADSHA1_1:
     case RPMSIGTAG_BADSHA1_2:
     case RPMSIGTAG_PAYLOADSIZE:
+    case RPMSIGTAG_LONGARCHIVESIZE:
 	break;
     }
 
@@ -768,14 +777,24 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
     int ret = -1;	/* assume failure. */
 
     switch (sigTag) {
-    case RPMSIGTAG_SIZE:
+    case RPMSIGTAG_SIZE: {
+	rpm_off_t size;
 	if (stat(file, &st) != 0)
 	    break;
-	pktlen = st.st_size;
-	if (!sighdrPut(sigh, sigTag, RPM_INT32_TYPE, &pktlen, 1))
+	size = st.st_size;
+	if (!sighdrPut(sigh, sigTag, RPM_INT32_TYPE, &size, 1))
 	    break;
 	ret = 0;
-	break;
+	} break;
+    case RPMSIGTAG_LONGSIZE: {
+	rpm_loff_t size;
+	if (stat(file, &st) != 0)
+	    break;
+	size = st.st_size;
+	if (!sighdrPut(sigh, sigTag, RPM_INT64_TYPE, &size, 1))
+	    break;
+	ret = 0;
+	} break;
     case RPMSIGTAG_MD5:
 	pktlen = 16;
 	pkt = xcalloc(pktlen, sizeof(*pkt));
@@ -813,6 +832,7 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
     case RPMSIGTAG_BADSHA1_1:
     case RPMSIGTAG_BADSHA1_2:
     case RPMSIGTAG_PAYLOADSIZE:
+    case RPMSIGTAG_LONGARCHIVESIZE:
 	break;
     }
     free(pkt);
