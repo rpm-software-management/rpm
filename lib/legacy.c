@@ -54,15 +54,17 @@ void compressFilelist(Header h)
     baseNames = xmalloc(sizeof(*dirNames) * count);
     dirIndexes = xmalloc(sizeof(*dirIndexes) * count);
 
-    if (headerIsSource(h)) {
-	/* HACK. Source RPM, so just do things differently */
-	dirIndex = 0;
-	dirNames[dirIndex] = xstrdup("");
-	while ((i = rpmtdNext(&fileNames)) >= 0) {
-	    dirIndexes[i] = dirIndex;
-	    baseNames[i] = rpmtdGetString(&fileNames);
+    /* HACK. Source RPM, so just do things differently */
+    {	const char *fn = rpmtdGetString(&fileNames);
+	if (fn && *fn != '/') {
+	    dirIndex = 0;
+	    dirNames[dirIndex] = xstrdup("");
+	    while ((i = rpmtdNext(&fileNames)) >= 0) {
+		dirIndexes[i] = dirIndex;
+		baseNames[i] = rpmtdGetString(&fileNames);
+	    }
+	    goto exit;
 	}
-	goto exit;
     }
 
     while ((i = rpmtdNext(&fileNames)) >= 0) {
@@ -80,7 +82,7 @@ void compressFilelist(Header h)
 	savechar = *baseName;
 	*baseName = '\0';
 	if (dirIndex < 0 ||
-	    (needle = bsearch(filename, dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
+	    (needle = bsearch(&filename, dirNames, dirIndex + 1, sizeof(dirNames[0]), dncmp)) == NULL) {
 	    char *s = xmalloc(len + 1);
 	    rstrlcpy(s, filename, len + 1);
 	    dirIndexes[i] = ++dirIndex;
