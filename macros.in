@@ -217,6 +217,9 @@ package or when debugging this package.\
 #	The directory where newly built source packages will be written.
 %_srcrpmdir		%{_topdir}/SRPMS
 
+#	The directory where buildroots will be created.
+%buildrootdir		%{_topdir}/BUILDROOT
+
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
 
@@ -234,7 +237,7 @@ package or when debugging this package.\
 #	Configurable build root path, same as BuildRoot: in a specfile.
 #	(Note: the configured macro value will override the spec file value).
 #
-#%buildroot
+%buildroot		%{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
 
 #	The sub-directory (relative to %{_builddir}) where sources are compiled.
 #	This macro is set after processing %setup, either explicitly from the
