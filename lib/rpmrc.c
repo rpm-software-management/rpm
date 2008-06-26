@@ -490,6 +490,7 @@ static void setDefaults(void)
 		"/bin/sh",		NULL);
 
     setPathDefault("_builddir",	"BUILD");
+    setPathDefault("_buildrootdir",	"BUILDROOT");
     setPathDefault("_rpmdir",	"RPMS");
     setPathDefault("_srcrpmdir",	"SRPMS");
     setPathDefault("_sourcedir",	"SOURCES");
