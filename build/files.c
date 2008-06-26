@@ -1411,6 +1411,12 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
+	if ((rpm_loff_t) flp->fl_size >= CPIO_FILESIZE_MAX) {
+	    rpmlog(RPMLOG_ERR, _("File %s too large for payload\n"),
+		   flp->diskPath);
+	    return RPMRC_FAIL;
+	}
+
 	if (fl->currentLangs && fl->nLangs > 0) {
 	    char * ncl;
 	    size_t nl = 0;
@@ -1459,7 +1465,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     fl->fileListRecsUsed++;
     fl->fileCount++;
 
-    return 0;
+    return RPMRC_OK;
 }
 
 /**

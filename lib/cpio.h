@@ -55,6 +55,13 @@ enum cpioErrorReturns {
 	CPIOERR_ENOTEMPTY	= (31			)
 };
 
+/*
+ * Size limit for individual files in "new ascii format" cpio archives.
+ * The max size of the entire archive is unlimited from cpio POV,
+ * but subject to filesystem limitations.
+ */
+#define CPIO_FILESIZE_MAX UINT32_MAX
+
 #define CPIO_NEWC_MAGIC	"070701"
 #define CPIO_CRC_MAGIC	"070702"
 #define CPIO_TRAILER	"TRAILER!!!"
