@@ -122,6 +122,7 @@ typedef struct FileList_s {
     FileListRec fileList;
     int fileListRecsAlloced;
     int fileListRecsUsed;
+    int largeFiles;
 } * FileList;
 
 /**
@@ -1072,18 +1073,24 @@ static void genCpioListAndHeader(FileList fl,
 	headerPutString(h, RPMTAG_FILEGROUPNAME, flp->gname);
 
 	/*
+ 	 * Only use 64bit filesizes if file sizes require it. 
+ 	 * This is basically no-op for now as we error out in addFile() if 
+ 	 * any individual file size exceeds the cpio limit.
+ 	 */
+	if (fl->largeFiles) {
+	    rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
+	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
+	    /* XXX TODO: add rpmlib() dependency for large files */
+	} else {
+	    rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
+	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
+	}
+	
+	/*
  	 * For items whose size varies between systems, always explicitly 
  	 * cast to the header type before inserting.
  	 * TODO: check and warn if header type overflows for each case.
  	 */
-	{   rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
-	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
-	}
-
-	{   rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
-	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
-	}
-	
 	{   rpm_time_t rtime = (rpm_time_t) flp->fl_mtime;
 	    headerPutUint32(h, RPMTAG_FILEMTIMES, &rtime, 1);
 	}
@@ -1411,7 +1418,12 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
+	/*
+ 	 * XXX Simple and stupid check for now, this needs to be per-payload
+ 	 * format check once we have other payloads than good 'ole cpio.
+ 	 */
 	if ((rpm_loff_t) flp->fl_size >= CPIO_FILESIZE_MAX) {
+	    fl->largeFiles = 1;
 	    rpmlog(RPMLOG_ERR, _("File %s too large for payload\n"),
 		   flp->diskPath);
 	    return RPMRC_FAIL;
@@ -1756,6 +1768,8 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
     fl.currentSpecdFlags = 0;
     fl.defSpecdFlags = 0;
+
+    fl.largeFiles = 0;
 
     fl.docDirs = NULL;
     {	char *docs = rpmGetPath("%{?__docdir_path}", NULL);
