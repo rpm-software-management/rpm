@@ -66,6 +66,8 @@ typedef enum rpmTag_e {
     RPMTAG_RSAHEADER		= RPMTAG_SIG_BASE+12,	/* x */
     RPMTAG_SHA1HEADER		= RPMTAG_SIG_BASE+13,	/* s */
 #define	RPMTAG_HDRID	RPMTAG_SHA1HEADER	/* s */
+    RPMTAG_LONGSIGSIZE		= RPMTAG_SIG_BASE+14,	/* l */
+    RPMTAG_LONGARCHIVESIZE	= RPMTAG_SIG_BASE+15,	/* l */
 
     RPMTAG_NAME  		= 1000,	/* s */
 #define	RPMTAG_N	RPMTAG_NAME	/* s */
@@ -277,9 +279,7 @@ typedef enum rpmTag_e {
     RPMTAG_TRIGGERTYPE		= 5006, /* s[] extension */
     RPMTAG_ORIGFILENAMES	= 5007, /* s[] extension */
     RPMTAG_LONGFILESIZES	= 5008,	/* l[] */
-    RPMTAG_LONGARCHIVESIZE	= 5009,	/* l */
-    RPMTAG_LONGSIZE		= 5010, /* l */
-    RPMTAG_LONGSIGSIZE		= 5011, /* l */
+    RPMTAG_LONGSIZE		= 5009, /* l */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
@@ -291,19 +291,21 @@ typedef enum rpmTag_e {
  * Tags found in signature header from package.
  */
 typedef enum rpmSigTag_e {
-    RPMSIGTAG_SIZE	= 1000,	/*!< internal Header+Payload size in bytes. */
+    RPMSIGTAG_SIZE	= 1000,	/*!< internal Header+Payload size (32bit) in bytes. */
     RPMSIGTAG_LEMD5_1	= 1001,	/*!< internal Broken MD5, take 1 @deprecated legacy. */
     RPMSIGTAG_PGP	= 1002,	/*!< internal PGP 2.6.3 signature. */
     RPMSIGTAG_LEMD5_2	= 1003,	/*!< internal Broken MD5, take 2 @deprecated legacy. */
     RPMSIGTAG_MD5	= 1004,	/*!< internal MD5 signature. */
     RPMSIGTAG_GPG	= 1005, /*!< internal GnuPG signature. */
     RPMSIGTAG_PGP5	= 1006,	/*!< internal PGP5 signature @deprecated legacy. */
-    RPMSIGTAG_PAYLOADSIZE = 1007,/*!< internal uncompressed payload size in bytes. */
+    RPMSIGTAG_PAYLOADSIZE = 1007,/*!< internal uncompressed payload size (32bit) in bytes. */
     RPMSIGTAG_BADSHA1_1	= RPMTAG_BADSHA1_1,	/*!< internal Broken SHA1, take 1. */
     RPMSIGTAG_BADSHA1_2	= RPMTAG_BADSHA1_2,	/*!< internal Broken SHA1, take 2. */
     RPMSIGTAG_SHA1	= RPMTAG_SHA1HEADER,	/*!< internal sha1 header digest. */
     RPMSIGTAG_DSA	= RPMTAG_DSAHEADER,	/*!< internal DSA header signature. */
-    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER	/*!< internal RSA header signature. */
+    RPMSIGTAG_RSA	= RPMTAG_RSAHEADER,	/*!< internal RSA header signature. */
+    RPMSIGTAG_LONGSIZE	= RPMTAG_LONGSIGSIZE,	/*!< internal Header+Payload size (64bit) in bytes. */
+    RPMSIGTAG_LONGARCHIVESIZE = RPMTAG_LONGARCHIVESIZE, /*!< internal uncompressed payload size (64bit) in bytes. */
 } rpmSigTag;
 
 
