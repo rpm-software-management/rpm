@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <inttypes.h>
 #include <popt.h>
 
 #include <rpm/rpmtypes.h>
@@ -126,11 +127,12 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t dat
 	return RPMRC_FAIL;
 
     rpmlog(RPMLOG_DEBUG,
-	"Expected size: %12zd = lead(%d)+sigs(%zd)+pad(%zd)+data(%llu)\n",
+		"Expected size: %12" PRIu64 \
+		" = lead(%d)+sigs(%zd)+pad(%zd)+data(%" PRIu64 ")\n",
 		RPMLEAD_SIZE+siglen+pad+datalen,
-		RPMLEAD_SIZE, siglen, pad, (long long) datalen);
+		RPMLEAD_SIZE, siglen, pad, datalen);
     rpmlog(RPMLOG_DEBUG,
-	"  Actual size: %12llu\n", (long long)st.st_size);
+		"  Actual size: %12" PRIu64 "\n", (rpm_loff_t) st.st_size);
 
     return RPMRC_OK;
 }
