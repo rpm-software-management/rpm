@@ -4,6 +4,8 @@
  */
 #include "system.h"
 
+#include <inttypes.h>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
 #include <rpm/rpmurl.h>
@@ -1188,7 +1190,8 @@ int rpmtsInitDSI(const rpmts ts)
 	/* XXX assigning negative value to unsigned type */
 	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
 				? sfb.f_ffree : -1;
-	rpmlog(RPMLOG_DEBUG, "%5d 0x%08x %8lld %12lld %12lld %s\n",
+	rpmlog(RPMLOG_DEBUG, 
+		"%5d 0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
 		i, (unsigned) dsi->dev, dsi->bsize,
 		dsi->bavail, dsi->iavail,
 		ts->filesystems[i]);
