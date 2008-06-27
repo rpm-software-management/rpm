@@ -892,6 +892,34 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	  break;
 	}
     }
+
+  /* Ensure the CU current directory will exist even if only empty.  Source
+     filenames possibly located in its parent directories refer relatively to
+     it and the debugger (GDB) cannot safely optimize out the missing
+     CU current dir subdirectories.  */
+  if (comp_dir && list_file_fd != -1)
+    {
+      char *p;
+      size_t size;
+
+      if (base_dir && has_prefix (comp_dir, base_dir))
+	p = comp_dir + strlen (base_dir);
+      else if (dest_dir && has_prefix (comp_dir, dest_dir))
+	p = comp_dir + strlen (dest_dir);
+      else
+	p = comp_dir;
+
+      size = strlen (p) + 1;
+      while (size > 0)
+	{
+	  ssize_t ret = write (list_file_fd, p, size);
+	  if (ret == -1)
+	    break;
+	  size -= ret;
+	  p += ret;
+	}
+    }
+
   if (found_list_offs && comp_dir)
     edit_dwarf2_line (dso, list_offs, comp_dir, phase);
 
