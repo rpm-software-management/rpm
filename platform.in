@@ -33,7 +33,9 @@
 %_oldincludedir		@oldincludedir@
 %_infodir		@infodir@
 %_mandir		@mandir@
-%_initrddir		%{_sysconfdir}/rc.d/init.d
+%_initddir		%{_sysconfdir}/rc.d/init.d
+# Deprecated misspelling, present for backwards compatibility.
+%_initrddir		%{_initddir}
 
 %_defaultdocdir		@DEFAULTDOCDIR@
 
