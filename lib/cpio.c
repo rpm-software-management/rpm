@@ -26,7 +26,7 @@
  * @param num		max no. of bytes to read
  * @return		converted integer
  */
-static int strntoul(const char *str,char **endptr, int base, size_t num)
+static unsigned long strntoul(const char *str,char **endptr, int base, size_t num)
 {
     char buf[num+1], * end;
     unsigned long ret;
