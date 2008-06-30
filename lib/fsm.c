@@ -833,7 +833,7 @@ static int writeFile(FSM_t fsm, int writeData)
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
-    size_t left;
+    rpm_loff_t left;
     int rc;
 
     st->st_size = (writeData ? ost->st_size : 0);
@@ -1303,7 +1303,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     struct stat * ost = &fsm->osb;
     int saveerrno = errno;
     int rc = fsm->rc;
-    size_t left;
+    rpm_loff_t left;
 
 #define	_fafilter(_a)	\
     (!((_a) == FA_CREATE || (_a) == FA_ERASE || (_a) == FA_COPYIN || (_a) == FA_COPYOUT) \
