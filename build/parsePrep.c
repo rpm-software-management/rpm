@@ -60,7 +60,7 @@ static rpmRC checkOwners(const char * urlfn)
  * @return		expanded %patch macro (NULL on error)
  */
 
-static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
+static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz)
 {
     char *fn;
@@ -77,7 +77,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
 	}
     }
     if (sp == NULL) {
-	rpmlog(RPMLOG_ERR, _("No patch number %d\n"), c);
+	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
 	return NULL;
     }
 
@@ -114,7 +114,7 @@ static char *doPatch(rpmSpec spec, int c, int strip, const char *db,
     free(arg_backup);
     free(args);
     
-    rasprintf(&buf, "echo \"Patch #%d (%s):\"\n"
+    rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
 		    "%s\n", 
 		    c, basename(fn), patchcmd);
 		
