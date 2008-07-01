@@ -592,10 +592,10 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	break;
     case RPMTAG_EPOCH: {
 	SINGLE_TOKEN_ONLY;
-	int epoch;
-	if (parseNum(field, &epoch)) {
+	uint32_t epoch;
+	if (parseUnsignedNum(field, &epoch)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Epoch field must be a number: %s\n"),
+		     _("line %d: Epoch field must be an unsigned number: %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
