@@ -263,6 +263,25 @@ exit:
     return mi;
 }
 
+rpmKeyring rpmtsGetKeyring(rpmts ts)
+{
+    return (ts ? ts->keyring : NULL);
+}
+
+int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
+{
+    /*
+     * Should we permit switching keyring on the fly? For now, require
+     * rpmdb isn't open yet (fairly arbitrary limitation)...
+     */
+    if (ts == NULL || rpmtsGetRdb(ts) != NULL)
+	return -1;
+
+    rpmKeyringFree(ts->keyring);
+    ts->keyring = keyring;
+    return 0;
+}
+
 #ifdef USE_SEPARATE_KEYRING
 static void loadKeyring(rpmts ts)
 {

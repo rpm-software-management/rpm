@@ -294,6 +294,10 @@ rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig);
  */
 rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 
+rpmKeyring rpmtsGetKeyring(rpmts ts);
+
+int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring);
+
 /** \ingroup rpmts
  * Close the database used by the transaction to solve dependencies.
  * @param ts		transaction set
