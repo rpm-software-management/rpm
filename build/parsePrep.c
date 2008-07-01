@@ -460,9 +460,9 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 
     /* Convert to number, generate patch command and append to %prep script */
     for (patch = patchnums; *patch; patch++) {
-	int pnum;
+	uint32_t pnum;
 	char *s;
-	if (parseNum(*patch, &pnum)) {
+	if (parseUnsignedNum(*patch, &pnum)) {
 	    rpmlog(RPMLOG_ERR, _("Invalid patch number %s: %s\n"),
 		     *patch, line);
 	    goto exit;
