@@ -2,7 +2,7 @@ To build RPM you will need several other packages:
 --------------------------------------------------
 
 The zlib library for compression support. You might also need/want
-the zip executable for java jar dependency analysis. All available from
+the unzip executable for java jar dependency analysis. All available from
     http://www.gzip.org/zlib/
 
 The libmagic (aka file) library for file type detection (used by rpmbuild). 
@@ -72,12 +72,13 @@ to configure and libselinux development environment installed. SELinux
 is available from
     http://www.nsa.gov/selinux/
 
-It may be desired to install bzip2 and gzip so that RPM can use these
-formats.  Gzip, is necessary to build packages that contain compressed
+It may be desired to install bzip2, gzip, and lzma so that RPM can use these
+formats.  Gzip is necessary to build packages that contain compressed
 tar balls, these are quite common on the Internet.
 These are availible from
     http://www.gzip.org
     http://www.bzip.org
+    http://tukaani.org/lzma/
 
 If you want to build the Python bindings to RPM library, it can be enabled
 with --enable-python option to configure. You'll need to have Python (>= 2.3)
