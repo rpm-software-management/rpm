@@ -298,6 +298,7 @@ static void loadKeyring(rpmts ts)
     /* XXX TODO: deal with chroot path issues */
     char *pkpath = rpmGetPath(ts->rootDir, "%{_keyringpath}/*.key", NULL);
 
+    rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
     ts->keyring = rpmKeyringNew();
     if (rpmGlob(pkpath, NULL, &files)) {
 	rpmlog(RPMLOG_DEBUG, "couldn't find any keys in %s\n", pkpath);
@@ -318,6 +319,42 @@ exit:
     free(pkpath);
     argvFree(files);
 }
+#else
+static void loadKeyring(rpmts ts)
+{
+    ts->keyring = rpmKeyringNew();
+    Header h;
+    rpmdbMatchIterator mi;
+
+    rpmlog(RPMLOG_DEBUG, "loading keyring from rpmdb\n");
+    mi = rpmtsInitIterator(ts, RPMTAG_NAME, "gpg-pubkey", 0);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	struct rpmtd_s pubkeys;
+	const char *key;
+
+	if (!headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
+	   continue;
+
+	while ((key = rpmtdNextString(&pubkeys))) {
+	    uint8_t *pkt;
+	    size_t pktlen;
+
+	    if (b64decode(key, (void **) &pkt, &pktlen) == 0) {
+		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
+		if (rpmKeyringAddKey(ts->keyring, key)) {
+		    char *nvr = headerGetNEVR(h, NULL);
+		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
+		    free(nvr);
+		}
+		free(pkt);
+	    }
+	}
+	rpmtdFreeData(&pubkeys);
+    }
+    rpmdbFreeIterator(mi);
+
+}
+#endif
 
 rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
 {
@@ -335,7 +372,7 @@ exit:
     return res;
 }
 
-#else
+#if 0
 rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
 {
 
