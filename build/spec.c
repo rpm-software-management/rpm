@@ -203,7 +203,8 @@ int parseNoSource(rpmSpec spec, const char * field, rpmTag tag)
 {
     const char *f, *fe;
     const char *name;
-    int num, flag;
+    int flag;
+    uint32_t num;
 
     if (tag == RPMTAG_NOSOURCE) {
 	flag = RPMBUILD_ISSOURCE;
@@ -224,14 +225,14 @@ int parseNoSource(rpmSpec spec, const char * field, rpmTag tag)
 	SKIPNONWHITE(fe);
 	if (*fe != '\0') fe++;
 
-	if (parseNum(f, &num)) {
+	if (parseUnsignedNum(f, &num)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad number: %s\n"),
 		     spec->lineNum, f);
 	    return RPMRC_FAIL;
 	}
 
 	if (! (p = findSource(spec, num, flag))) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Bad no%s number: %d\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad no%s number: %u\n"),
 		     spec->lineNum, name, num);
 	    return RPMRC_FAIL;
 	}
@@ -251,7 +252,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
     char *nump;
     char *fieldp = NULL;
     char *buf = NULL;
-    int num = 0;
+    uint32_t num = 0;
 
     switch ((rpm_tag_t) tag) {
       case RPMTAG_SOURCE:
@@ -290,7 +291,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
 	if (nump == NULL || *nump == '\0') {
 	    num = 0;
 	} else {
-	    if (parseNum(fieldp_backup, &num)) {
+	    if (parseUnsignedNum(fieldp_backup, &num)) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
 			 spec->lineNum, name, spec->line);
 		*fieldp = ch;
