@@ -174,12 +174,12 @@ void handleComments(char * s);
 rpmParseState isPart(const char * line)	;
 
 /** \ingroup rpmbuild
- * Parse a number.
+ * Parse an unsigned number.
  * @param		line from spec file
- * @retval res		pointer to int
+ * @retval res		pointer to uint32_t
  * @return		0 on success, 1 on failure
  */
-int parseNum(const char * line,int * res);
+uint32_t parseUnsignedNum(char * line, uint32_t * res);
 
 /** \ingroup rpmbuild
  * Add changelog entry to header.

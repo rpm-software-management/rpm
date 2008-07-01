@@ -6,13 +6,24 @@
 #include <rpm/rpmbuild.h>
 #include "debug.h"
 
-int parseNum(const char * line, int * res)
+uint32_t parseUnsignedNum(char * line, uint32_t * res)
 {
     char * s1 = NULL;
     unsigned long rc;
+    uint32_t result;
 
     if (line == NULL) return 1;
+
+    while (isspace(*line)) line++;
+    if (!isdigit(*line)) return 1;
+
     rc = strtoul(line, &s1, 10);
-    if (res) *res = rc;
-    return (((*s1) || (s1 == line) || (rc == ULONG_MAX)) ? 1 : 0);
+
+    if (*s1 || s1 == line || rc == ULONG_MAX || rc > UINT_MAX)
+        return 1;
+
+    result = (uint32_t)rc;
+    if (res) *res = result;
+
+    return 0;
 }
