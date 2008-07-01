@@ -263,8 +263,55 @@ exit:
     return mi;
 }
 
+#ifdef USE_SEPARATE_KEYRING
+static void loadKeyring(rpmts ts)
+{
+    ARGV_t files = NULL;
+    /* XXX TODO: deal with chroot path issues */
+    char *pkpath = rpmGetPath(ts->rootDir, "%{_keyringpath}/*.key", NULL);
+
+    ts->keyring = rpmKeyringNew();
+    if (rpmGlob(pkpath, NULL, &files)) {
+	rpmlog(RPMLOG_DEBUG, "couldn't find any keys in %s\n", pkpath);
+	goto exit;
+    }
+
+    for (char **f = files; *f; f++) {
+	rpmPubkey key = rpmPubkeyRead(*f);
+	if (!key) {
+	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
+	    continue;
+	}
+	if (rpmKeyringAddKey(ts->keyring, key)) {
+	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
+	}
+    }
+exit:
+    free(pkpath);
+    argvFree(files);
+}
+
 rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
 {
+    rpmRC res = RPMRC_NOKEY;
+
+    if (dig == NULL)
+	goto exit;
+
+    if (ts->keyring == NULL) {
+	loadKeyring(ts);
+    }
+    res = rpmKeyringLookup(ts->keyring, dig);
+
+exit:
+    return res;
+}
+
+#else
+rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
+{
+
+
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     pgpDigParams pubp = dig ? &dig->pubkey : NULL;
     rpmRC res = RPMRC_NOKEY;
@@ -364,6 +411,7 @@ exit:
     }
     return res;
 }
+#endif
 
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
@@ -871,6 +919,7 @@ rpmts rpmtsFree(rpmts ts)
 	ts->pkpkt = _free(ts->pkpkt);
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));
+    ts->keyring = rpmKeyringFree(ts->keyring);
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
@@ -1405,6 +1454,7 @@ rpmts rpmtsCreate(void)
 
     ts->probs = NULL;
 
+    ts->keyring = NULL;
     ts->pkpkt = NULL;
     ts->pkpktlen = 0;
     memset(ts->pksignid, 0, sizeof(ts->pksignid));

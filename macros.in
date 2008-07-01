@@ -156,6 +156,8 @@
 #	The location of the rpm database file(s) after "rpm --rebuilddb".
 %_dbpath_rebuild	%{_dbpath}
 
+%_keyringpath		%{_dbpath}/pubkeys/
+
 #
 #	Path to script that creates debug symbols in a /usr/lib/debug
 #	shadow tree.
