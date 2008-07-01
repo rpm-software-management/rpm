@@ -246,7 +246,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     int arg;
     const char * optArg;
     int rc;
-    int num;
+    uint32_t num;
 
     leaveDirs = skipDefaultAction = 0;
     createDir = quietly = 0;
@@ -267,7 +267,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
 	/* We only parse -a and -b here */
 
-	if (parseNum(optArg, &num)) {
+	if (parseUnsignedNum(optArg, &num)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
 	    before = freeStringBuf(before);
