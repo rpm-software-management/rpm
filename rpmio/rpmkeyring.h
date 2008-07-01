@@ -4,9 +4,6 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmpgp.h>
 
-typedef struct rpmPubkey_s * rpmPubkey;
-typedef struct rpmKeyring_s * rpmKeyring;
-
 rpmKeyring rpmKeyringNew(void);
 rpmKeyring rpmKeyringFree(rpmKeyring keyring);
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);

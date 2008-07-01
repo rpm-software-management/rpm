@@ -68,6 +68,9 @@ typedef const void * fnpyKey;
 typedef void * rpmCallbackData;
 /** @} */
 
+typedef struct rpmPubkey_s * rpmPubkey;
+typedef struct rpmKeyring_s * rpmKeyring;
+
 typedef struct rpmgi_s * rpmgi;
 
 typedef struct rpmSpec_s * rpmSpec;
