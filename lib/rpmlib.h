@@ -240,7 +240,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
  * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** result);
+rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result);
 
 /** \ingroup signature
  * Destroy signature header from package.

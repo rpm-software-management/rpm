@@ -17,6 +17,7 @@
 #include <rpm/rpmts.h>
 
 #include "rpmio/digest.h"
+#include "rpmio/rpmkeyring.h"
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "lib/header_internal.h"
@@ -1001,7 +1002,7 @@ static const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySizeSignature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg)
+verifySizeSignature(rpmtd sigtd, pgpDig dig, char ** msg)
 {
     rpmRC res;
     size_t size = 0x7fffffff;
@@ -1032,8 +1033,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
-		DIGEST_CTX md5ctx)
+verifyMD5Signature(rpmtd sigtd, pgpDig dig, char ** msg, DIGEST_CTX md5ctx)
 {
     rpmRC res;
     uint8_t * md5sum = NULL;
@@ -1073,14 +1073,12 @@ exit:
 
 /**
  * Verify header immutable region SHA1 digest.
- * @param ts		transaction set
  * @retval msg		verbose success/failure text
  * @param sha1ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
-		DIGEST_CTX sha1ctx)
+verifySHA1Signature(rpmtd sigtd, pgpDig dig, char ** msg, DIGEST_CTX sha1ctx)
 {
     rpmRC res;
     char * SHA1 = NULL;
@@ -1115,13 +1113,13 @@ exit:
 
 /**
  * Verify RSA signature.
- * @param ts		transaction set
+ * @param keyring	pubkey keyring
  * @retval msg		rbose success/failure text
  * @param md5ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
+verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 		DIGEST_CTX md5ctx)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
@@ -1226,7 +1224,7 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     /* Retrieve the matching public key. */
-    res = rpmtsFindPubkey(ts, dig);
+    res = rpmKeyringLookup(keyring, dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -1250,13 +1248,13 @@ exit:
 
 /**
  * Verify DSA signature.
- * @param ts		transaction set
+ * @param keyring	pubkey keyring
  * @retval t		verbose success/failure text
  * @param sha1ctx
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
+verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
@@ -1315,7 +1313,7 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     /* Retrieve the matching public key. */
-    res = rpmtsFindPubkey(ts, dig);
+    res = rpmKeyringLookup(keyring, dig);
     if (res != RPMRC_OK)
 	goto exit;
 
@@ -1339,7 +1337,7 @@ exit:
 }
 
 rpmRC
-rpmVerifySignature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** result)
+rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
 {
     rpmRC res;
     
@@ -1352,28 +1350,28 @@ rpmVerifySignature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** result)
 
     switch (sigtd->tag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(ts, sigtd, dig, result);
+	res = verifySizeSignature(sigtd, dig, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(ts, sigtd, dig, result, dig->md5ctx);
+	res = verifyMD5Signature(sigtd, dig, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(ts, sigtd, dig, result, dig->hdrsha1ctx);
+	res = verifySHA1Signature(sigtd, dig, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(ts, sigtd, dig, result, dig->hdrmd5ctx);
+	res = verifyRSASignature(keyring, sigtd, dig, result, dig->hdrmd5ctx);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(ts, sigtd, dig, result,
+	res = verifyRSASignature(keyring, sigtd, dig, result,
 		((dig->signature.hash_algo == PGPHASHALGO_MD5)
 			? dig->md5ctx : dig->sha1ctx));
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(ts, sigtd, dig, result, dig->hdrsha1ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(ts, sigtd, dig, result, dig->sha1ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, result, dig->sha1ctx);
 	break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:

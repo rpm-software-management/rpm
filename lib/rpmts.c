@@ -45,6 +45,8 @@
 
 #include "debug.h"
 
+static void loadKeyring(rpmts ts);
+
 int _rpmts_debug = 0;
 
 int _rpmts_stats = 0;
@@ -187,6 +189,9 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
     char *tmp = NULL;
     int xx;
 
+    if (ts->keyring == NULL)
+	loadKeyring(ts);
+
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
 
@@ -278,11 +283,15 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
 	return -1;
 
     rpmKeyringFree(ts->keyring);
-    ts->keyring = keyring;
+    if (keyring != NULL) {
+	ts->keyring = keyring;
+    } else {
+	loadKeyring(ts);
+    }
     return 0;
 }
 
-#ifdef USE_SEPARATE_KEYRING
+#ifndef USE_SEPARATE_KEYRING
 static void loadKeyring(rpmts ts)
 {
     ARGV_t files = NULL;
