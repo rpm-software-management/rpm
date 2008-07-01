@@ -1050,11 +1050,8 @@ verifyMD5Signature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     (void) rpmDigestFinal(rpmDigestDup(md5ctx),
 		(void **)&md5sum, &md5len, 0);
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
     md5 = pgpHexStr(md5sum, md5len);
     if (md5len != sigtd->count || memcmp(md5sum, sigtd->data, md5len)) {
@@ -1099,10 +1096,8 @@ verifySHA1Signature(const rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     (void) rpmDigestFinal(rpmDigestDup(sha1ctx),
 		(void **)&SHA1, NULL, 1);
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
 	res = RPMRC_FAIL;
@@ -1201,7 +1196,6 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 
 	if (sigp->hash != NULL)
@@ -1220,8 +1214,6 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
 #endif
 
 	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
 	/* Compare leading 16 bits of digest for quick check. */
 	if (memcmp(dig->md5, sigp->signhash16, 2)) {
@@ -1238,12 +1230,10 @@ verifyRSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
     if (res != RPMRC_OK)
 	goto exit;
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
     if (VFY_VerifyDigest(&digest, dig->rsa, dig->rsasig, sigalg, NULL) == SECSuccess)
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 
 exit:
     if (sigp != NULL) {
@@ -1297,7 +1287,6 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
 	goto exit;
     }
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
 
 	if (sigp->hash != NULL)
@@ -1314,8 +1303,6 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
 	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), sigp->hashlen);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 
 	/* Compare leading 16 bits of digest for quick check. */
 	if (memcmp(dig->sha1, sigp->signhash16, 2)) {
@@ -1332,13 +1319,11 @@ verifyDSASignature(rpmts ts, rpmtd sigtd, pgpDig dig, char ** msg,
     if (res != RPMRC_OK)
 	goto exit;
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
     if (VFY_VerifyDigest(&digest, dig->dsa, dig->dsasig,
     		SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST, NULL) == SECSuccess)
 	res = RPMRC_OK;
     else
 	res = RPMRC_FAIL;
-    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_SIGNATURE), 0);
 
 exit:
     if (sigp != NULL) {
