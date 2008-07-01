@@ -1484,7 +1484,7 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     free(enc);
 
     rasprintf(&val, "-----BEGIN PGP %s-----\nVersion: rpm-" VERSION " (NSS-3)\n\n"
-		    "%s-----END PGP %s-----\n",
+		    "%s\n-----END PGP %s-----\n",
 		    valstr, buf != NULL ? buf : "", valstr);
 
     free(buf);
