@@ -131,7 +131,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
  * @param quietly	should -vv be omitted from tar?
  * @return		expanded %setup macro (NULL on error)
  */
-static char *doUntar(rpmSpec spec, int c, int quietly)
+static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 {
     char *fn;
     char *buf = NULL;
@@ -145,7 +145,7 @@ static char *doUntar(rpmSpec spec, int c, int quietly)
 	}
     }
     if (sp == NULL) {
-	rpmlog(RPMLOG_ERR, _("No source number %d\n"), c);
+	rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
 	return NULL;
     }
 
