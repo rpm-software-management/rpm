@@ -97,9 +97,6 @@ struct rpmts_s {
     const char * fn;		/*!< Current package fn. */
 
     rpmKeyring keyring;		/*!< Keyring in use. */
-    uint8_t * pkpkt;/*!< Current pubkey packet. */
-    size_t pkpktlen;		/*!< Current pubkey packet length. */
-    pgpKeyID_t pksignid;	/*!< Current pubkey fingerprint. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 

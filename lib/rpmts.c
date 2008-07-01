@@ -372,112 +372,6 @@ exit:
     return res;
 }
 
-#if 0
-rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
-{
-
-
-    pgpDigParams sigp = dig ? &dig->signature : NULL;
-    pgpDigParams pubp = dig ? &dig->pubkey : NULL;
-    rpmRC res = RPMRC_NOKEY;
-    char * pubkeysource = NULL;
-    int xx;
-
-    if (dig == NULL || sigp == NULL || pubp == NULL)
-	goto exit;
-
-#if 0
-fprintf(stderr, "==> find sig id %08x %08x ts pubkey id %08x %08x\n",
-pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
-pgpGrab(ts->pksignid, 4), pgpGrab(ts->pksignid+4, 4));
-#endif
-
-    /* Lazy free of previous pubkey if pubkey does not match this signature. */
-    if (memcmp(sigp->signid, ts->pksignid, sizeof(ts->pksignid))) {
-#if 0
-fprintf(stderr, "*** free pkt %p[%d] id %08x %08x\n", ts->pkpkt, ts->pkpktlen, pgpGrab(ts->pksignid, 4), pgpGrab(ts->pksignid+4, 4));
-#endif
-	ts->pkpkt = _free(ts->pkpkt);
-	ts->pkpktlen = 0;
-	memset(ts->pksignid, 0, sizeof(ts->pksignid));
-    }
-
-    /* Try rpmdb keyring lookup. */
-    if (ts->pkpkt == NULL) {
-	int hx = -1;
-	int ix = -1;
-	rpmdbMatchIterator mi;
-	Header h;
-
-	/* Retrieve the pubkey that matches the signature. */
-	mi = rpmtsInitIterator(ts, RPMTAG_PUBKEYS, sigp->signid, sizeof(sigp->signid));
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    struct rpmtd_s pubkeys;
-
-	    if (!headerGet(h, RPMTAG_PUBKEYS, &pubkeys, HEADERGET_MINMEM))
-		continue;
-	    hx = rpmdbGetIteratorOffset(mi);
-	    ix = rpmtdSetIndex(&pubkeys, rpmdbGetIteratorFileNum(mi));
-
-	    if (ix >= 0) {
-		const char *key = rpmtdGetString(&pubkeys);
-	    	if (b64decode(key, (void **) &ts->pkpkt, &ts->pkpktlen)) {
-		    ix = -1;
-		}
-	    }
-	    rpmtdFreeData(&pubkeys);
-	    break;
-	}
-	mi = rpmdbFreeIterator(mi);
-
-	if (ix >= 0) {
-	    rasprintf(&pubkeysource, "h#%d", hx);
-	} else {
-	    ts->pkpkt = _free(ts->pkpkt);
-	    ts->pkpktlen = 0;
-	}
-    }
-
-    /* Was a matching pubkey found? */
-    if (ts->pkpkt == NULL || ts->pkpktlen == 0)
-	goto exit;
-
-    /* Retrieve parameters from pubkey packet(s). */
-    xx = pgpPrtPkts(ts->pkpkt, ts->pkpktlen, dig, 0);
-
-    /* Do the parameters match the signature? */
-    if (sigp->pubkey_algo == pubp->pubkey_algo
-#ifdef	NOTYET
-     && sigp->hash_algo == pubp->hash_algo
-#endif
-     &&	!memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) )
-    {
-
-	/* XXX Verify any pubkey signatures. */
-
-	/* Pubkey packet looks good, save the signer id. */
-	memcpy(ts->pksignid, pubp->signid, sizeof(ts->pksignid));
-
-	if (pubkeysource)
-	    rpmlog(RPMLOG_DEBUG, "========== %s pubkey id %08x %08x (%s)\n",
-		(sigp->pubkey_algo == PGPPUBKEYALGO_DSA ? "DSA" :
-		(sigp->pubkey_algo == PGPPUBKEYALGO_RSA ? "RSA" : "???")),
-		pgpGrab(sigp->signid, 4), pgpGrab(sigp->signid+4, 4),
-		pubkeysource);
-
-	res = RPMRC_OK;
-    }
-
-exit:
-    pubkeysource = _free(pubkeysource);
-    if (res != RPMRC_OK) {
-	ts->pkpkt = _free(ts->pkpkt);
-	ts->pkpktlen = 0;
-    }
-    return res;
-}
-#endif
-
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     static unsigned char zeros[] =
@@ -980,10 +874,6 @@ rpmts rpmtsFree(rpmts ts)
     ts->order = _free(ts->order);
     ts->orderAlloced = 0;
 
-    if (ts->pkpkt != NULL)
-	ts->pkpkt = _free(ts->pkpkt);
-    ts->pkpktlen = 0;
-    memset(ts->pksignid, 0, sizeof(ts->pksignid));
     ts->keyring = rpmKeyringFree(ts->keyring);
 
     if (_rpmts_stats)
@@ -1520,9 +1410,6 @@ rpmts rpmtsCreate(void)
     ts->probs = NULL;
 
     ts->keyring = NULL;
-    ts->pkpkt = NULL;
-    ts->pkpktlen = 0;
-    memset(ts->pksignid, 0, sizeof(ts->pksignid));
 
     ts->nrefs = 0;
 
