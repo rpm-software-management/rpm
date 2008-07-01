@@ -189,7 +189,7 @@ Package freePackages(Package packages)
 
 /**
  */
-static inline struct Source *findSource(rpmSpec spec, int num, int flag)
+static inline struct Source *findSource(rpmSpec spec, uint32_t num, int flag)
 {
     struct Source *p;
 
