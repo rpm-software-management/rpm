@@ -291,15 +291,14 @@ int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
     return 0;
 }
 
-#ifndef USE_SEPARATE_KEYRING
-static void loadKeyring(rpmts ts)
+static int loadKeyringFromFiles(rpmts ts)
 {
     ARGV_t files = NULL;
     /* XXX TODO: deal with chroot path issues */
     char *pkpath = rpmGetPath(ts->rootDir, "%{_keyringpath}/*.key", NULL);
+    int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from pubkeys in %s\n", pkpath);
-    ts->keyring = rpmKeyringNew();
     if (rpmGlob(pkpath, NULL, &files)) {
 	rpmlog(RPMLOG_DEBUG, "couldn't find any keys in %s\n", pkpath);
 	goto exit;
@@ -311,20 +310,22 @@ static void loadKeyring(rpmts ts)
 	    rpmlog(RPMLOG_ERR, _("%s: reading of public key failed.\n"), *f);
 	    continue;
 	}
-	if (rpmKeyringAddKey(ts->keyring, key)) {
+	if (rpmKeyringAddKey(ts->keyring, key) == 0) {
+	    nkeys++;
 	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
 	}
     }
 exit:
     free(pkpath);
     argvFree(files);
+    return nkeys;
 }
-#else
-static void loadKeyring(rpmts ts)
+
+static int loadKeyringFromDB(rpmts ts)
 {
-    ts->keyring = rpmKeyringNew();
     Header h;
     rpmdbMatchIterator mi;
+    int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from rpmdb\n");
     mi = rpmtsInitIterator(ts, RPMTAG_NAME, "gpg-pubkey", 0);
@@ -341,10 +342,11 @@ static void loadKeyring(rpmts ts)
 
 	    if (b64decode(key, (void **) &pkt, &pktlen) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
-		if (rpmKeyringAddKey(ts->keyring, key)) {
+		if (rpmKeyringAddKey(ts->keyring, key) == 0) {
 		    char *nvr = headerGetNEVR(h, NULL);
 		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
 		    free(nvr);
+		    nkeys++;
 		}
 		free(pkt);
 	    }
@@ -353,8 +355,18 @@ static void loadKeyring(rpmts ts)
     }
     rpmdbFreeIterator(mi);
 
+    return nkeys;
 }
-#endif
+
+static void loadKeyring(rpmts ts)
+{
+    ts->keyring = rpmKeyringNew();
+    loadKeyringFromFiles(ts);
+    if (loadKeyringFromDB(ts) > 0) {
+	/* XXX make this a warning someday... */
+	rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
+    }
+}
 
 rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
 {
