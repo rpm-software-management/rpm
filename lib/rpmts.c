@@ -317,6 +317,8 @@ static int loadKeyringFromFiles(rpmts ts)
 	if (rpmKeyringAddKey(ts->keyring, key) == 0) {
 	    nkeys++;
 	    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", *f);
+	} else {
+	    rpmPubkeyFree(key);
 	}
     }
 exit:
@@ -351,6 +353,8 @@ static int loadKeyringFromDB(rpmts ts)
 		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
 		    free(nvr);
 		    nkeys++;
+		} else {
+		    rpmPubkeyFree(key);
 		}
 		free(pkt);
 	    }
