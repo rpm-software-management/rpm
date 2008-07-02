@@ -596,6 +596,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     if (hdrp) *hdrp = NULL;
 
+    rpmtdReset(&sigtd);
     l = rpmLeadNew();
 
     if ((rc = rpmLeadRead(fd, l)) == RPMRC_OK) {
@@ -845,6 +846,7 @@ exit:
 	/* Bump reference count for return. */
 	*hdrp = headerLink(h);
     }
+    rpmtdFreeData(&sigtd);
     h = headerFree(h);
     pgpFreeDig(dig);
     sigh = rpmFreeSignature(sigh);
