@@ -9,10 +9,10 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
 #include <rpm/rpmurl.h>
-#include "rpmio/digest.h"
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>		/* rpmtsOpenDB() needs rpmGetPath */
 #include <rpm/rpmstring.h>
+#include <rpm/rpmkeyring.h>
 
 #include <rpm/rpmdb.h>
 #include <rpm/rpmal.h>
@@ -21,6 +21,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmte.h>
 
+#include "rpmio/digest.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmts_internal.h"
 

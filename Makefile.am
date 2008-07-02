@@ -53,6 +53,7 @@ pkginclude_HEADERS += rpmio/rpmstring.h
 pkginclude_HEADERS += rpmio/rpmsw.h
 pkginclude_HEADERS += rpmio/rpmfileutil.h
 pkginclude_HEADERS += rpmio/rpmutil.h
+pkginclude_HEADERS += rpmio/rpmkeyring.h
 
 pkginclude_HEADERS += lib/header.h
 pkginclude_HEADERS += lib/rpmdb.h

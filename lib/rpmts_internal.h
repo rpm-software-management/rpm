@@ -4,7 +4,6 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmal.h>	/* XXX availablePackage/relocateFileList ,*/
 
-#include "rpmio/rpmkeyring.h"
 #include "lib/rpmhash.h"	/* XXX hashTable */
 
 /** \ingroup rpmts

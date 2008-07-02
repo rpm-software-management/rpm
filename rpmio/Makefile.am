@@ -17,7 +17,7 @@ librpmio_la_SOURCES = \
 	rpmpgp.c rpmsq.c rpmsw.c url.c ugid.c \
 	rpmio_internal.h rpmlua.h rpmhook.h ugid.h fts.h \
 	rpmstring.c rpmfileutil.c \
-	rpmkeyring.h rpmkeyring.c
+	rpmkeyring.c
 
 librpmio_la_LDFLAGS = -release 4.6
 librpmio_la_LIBADD = \

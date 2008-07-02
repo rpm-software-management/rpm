@@ -4,8 +4,8 @@
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmkeyring.h>
 
-#include "rpmio/rpmkeyring.h"
 #include "rpmio/base64.h"
 #include "rpmio/digest.h"
 

@@ -46,6 +46,10 @@ include/rpm/rpmutil.h: rpmio/rpmutil.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmutil.h include/rpm/rpmutil.h
 BUILT_SOURCES += include/rpm/rpmutil.h
 CLEANFILES += include/rpm/rpmutil.h
+include/rpm/rpmkeyring.h: rpmio/rpmkeyring.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmkeyring.h include/rpm/rpmkeyring.h
+BUILT_SOURCES += include/rpm/rpmkeyring.h
+CLEANFILES += include/rpm/rpmkeyring.h
 include/rpm/header.h: lib/header.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/header.h include/rpm/header.h
 BUILT_SOURCES += include/rpm/header.h
