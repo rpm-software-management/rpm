@@ -297,17 +297,17 @@ rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 /** \ingroup rpmts
  * Retrieve handle for keyring used for this transaction set
  * @param ts            transaction set
+ * @param autoload	load default keyring if keyring is not set
  * @return              keyring handle (or NULL)
  */
-rpmKeyring rpmtsGetKeyring(rpmts ts);
+rpmKeyring rpmtsGetKeyring(rpmts ts, int autoload);
 
 /** \ingroup rpmts
- * Set keyring to use for this transaction set. To force loading of
- * default keyring, use NULL as keyring.
+ * Set keyring to use for this transaction set.
  * Keyring can be only changed while the underlying rpm database is not
  * yet open.
  * @param ts            transaction set
- * @param keyring	keyring handle, or NULL to use default
+ * @param keyring	keyring handle (NULL to free current keyring)
  * @return              0 on success, -1 on error
  */
 int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring);

@@ -485,10 +485,7 @@ verifyinfo_exit:
 	break;
     }
 
-    {	
-	rpmKeyring keyring = rpmtsGetKeyring(ts);
-	rc = rpmVerifySignature(keyring, &sigtd, dig, &buf);
-    }
+    rc = rpmVerifySignature(rpmtsGetKeyring(ts, 1), &sigtd, dig, &buf);
 
     if (msg) 
 	*msg = buf;
@@ -808,12 +805,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	break;
     }
 
-/** @todo Implement disable/enable/warn/error/anal policy. */
-
-    {	
-	rpmKeyring keyring = rpmtsGetKeyring(ts);
-	rc = rpmVerifySignature(keyring, &sigtd, dig, &msg);
-    }
+    /** @todo Implement disable/enable/warn/error/anal policy. */
+    rc = rpmVerifySignature(rpmtsGetKeyring(ts, 1), &sigtd, dig, &msg);
 	
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */

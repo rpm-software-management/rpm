@@ -568,7 +568,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int failed;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
-    rpmKeyring keyring = rpmtsGetKeyring(ts);
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
 
     {
 	rpmlead lead = rpmLeadNew();
@@ -793,9 +793,6 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     int xx;
 
     if (argv == NULL) return res;
-
-    /* load default keyring */
-    rpmtsSetKeyring(ts, NULL);
 
     switch (qva->qva_mode) {
     case RPMSIGN_CHK_SIGNATURE:
