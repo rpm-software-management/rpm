@@ -22,6 +22,14 @@ struct rpmKeyring_s {
     size_t numkeys;
 };
 
+static int keyidcmp(const void *k1, const void *k2)
+{
+    const struct rpmPubkey_s *key1 = *(const struct rpmPubkey_s **) k1;
+    const struct rpmPubkey_s *key2 = *(const struct rpmPubkey_s **) k2;
+    
+    return memcmp(key1->keyid, key2->keyid, sizeof(key1->keyid));
+}
+
 rpmKeyring rpmKeyringNew(void)
 {
     rpmKeyring keyring = xcalloc(1, sizeof(*keyring));
@@ -42,17 +50,29 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     return NULL;
 }
 
+static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
+{
+    rpmPubkey *found = NULL;
+    found = bsearch(&key, keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
+    return found ? *found : NULL;
+}
+
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 {
     if (keyring == NULL || key == NULL)
-	return 0;
+	return -1;
+
+    /* check if we already have this key */
+    if (rpmKeyringFindKeyid(keyring, key)) {
+	return 1;
+    }
     
-    /* XXX TODO: check if we already have this key */
     keyring->keys = xrealloc(keyring->keys, (keyring->numkeys + 1) * sizeof(rpmPubkey));
     keyring->keys[keyring->numkeys] = key;
     keyring->numkeys++;
+    qsort(keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
 
-    return 1;
+    return 0;
 }
 
 rpmPubkey rpmPubkeyRead(const char *filename)
@@ -100,21 +120,26 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
 
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 {
-    pgpDigParams sigp = sig ? &sig->signature : NULL;
     rpmRC res = RPMRC_NOKEY;
-    
-    if (keyring == NULL || sig == NULL)
-	goto exit;
 
-    for (int i = 0; i < keyring->numkeys; i++) {
-    	const struct rpmPubkey_s *key = keyring->keys[i];
-	if (memcmp(key->keyid, sigp->signid, sizeof(key->keyid)) == 0) {
-	    if (pgpPrtPkts(key->pkt, key->pktlen, sig, 0) == 0) {
+    if (keyring && sig) {
+	pgpDigParams sigp = &sig->signature;
+	pgpDigParams pubp = &sig->pubkey;
+	struct rpmPubkey_s needle, *key;
+	needle.pkt = NULL;
+	needle.pktlen = 0;
+	memcpy(needle.keyid, sigp->signid, sizeof(needle.keyid));
+
+	if ((key = rpmKeyringFindKeyid(keyring, &needle))) {
+	    /* Retrieve parameters from pubkey packet(s) */
+	    (void) pgpPrtPkts(key->pkt, key->pktlen, sig, 0);
+	    /* Do the parameters match the signature? */
+	    if (sigp->pubkey_algo == pubp->pubkey_algo &&
+		memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) == 0) {
 		res = RPMRC_OK;
 	    }
 	}
     }
 
-exit:
     return res;
 }
