@@ -282,7 +282,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
  * @param dig		OpenPGP packet container
  * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
  */
-rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig);
+rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig) RPM_GNUC_DEPRECATED;
 
 /** \ingroup rpmts
  * Import public key packet(s).
@@ -294,8 +294,22 @@ rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig);
  */
 rpmRC rpmtsImportPubkey(rpmts ts, const unsigned char * pkt, size_t pktlen);
 
+/** \ingroup rpmts
+ * Retrieve handle for keyring used for this transaction set
+ * @param ts            transaction set
+ * @return              keyring handle (or NULL)
+ */
 rpmKeyring rpmtsGetKeyring(rpmts ts);
 
+/** \ingroup rpmts
+ * Set keyring to use for this transaction set. To force loading of
+ * default keyring, use NULL as keyring.
+ * Keyring can be only changed while the underlying rpm database is not
+ * yet open.
+ * @param ts            transaction set
+ * @param keyring	keyring handle, or NULL to use default
+ * @return              0 on success, -1 on error
+ */
 int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring);
 
 /** \ingroup rpmts
