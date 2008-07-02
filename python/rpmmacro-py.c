@@ -52,11 +52,15 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject * 
 rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
-    char * macro;
+    char *macro, *str;
+    PyObject *res;
 
     if (!PyArg_ParseTuple(args, "s", &macro))
         return NULL;
 
-    return Py_BuildValue("s", rpmExpand(macro, NULL));
+    str = rpmExpand(macro, NULL);
+    res = Py_BuildValue("s", str);
+    free(str);
+    return res;
 }
 
