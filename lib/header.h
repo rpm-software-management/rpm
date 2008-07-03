@@ -206,7 +206,7 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags);
  * @return		1 on success, 0 on failure
  * 
  */
-int headerPutString(Header h, rpmTag tag, const char *str);
+int headerPutString(Header h, rpmTag tag, const char *val);
 int headerPutStringArray(Header h, rpmTag tag, const char **val, rpm_count_t size);
 int headerPutBin(Header h, rpmTag tag, uint8_t *val, rpm_count_t size);
 int headerPutChar(Header h, rpmTag tag, char *val, rpm_count_t size);

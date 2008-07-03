@@ -1626,16 +1626,16 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
     return valid;
 }
 	
-int headerPutString(Header h, rpmTag tag, const char *str)
+int headerPutString(Header h, rpmTag tag, const char *val)
 {
     rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
     const void *sptr = NULL;
 
     /* string arrays expect char **, arrange that */
     if (type == RPM_STRING_ARRAY_TYPE) {
-	sptr = &str;
+	sptr = &val;
     } else if (type == RPM_STRING_TYPE) {
-	sptr = str;
+	sptr = val;
     } else {
 	return 0;
     }
