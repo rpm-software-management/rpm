@@ -811,18 +811,14 @@ void rpmtsClean(rpmts ts)
 
 void rpmtsEmpty(rpmts ts)
 {
-    rpmtsi pi; rpmte p;
-    int oc;
-
     if (ts == NULL)
 	return;
 
     rpmtsClean(ts);
 
-    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+    for (int oc = 0; oc < ts->orderCount; oc++) {
 	ts->order[oc] = rpmteFree(ts->order[oc]);
     }
-    pi = rpmtsiFree(pi);
 
     ts->orderCount = 0;
     ts->ntrees = 0;
