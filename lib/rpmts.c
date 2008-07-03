@@ -369,10 +369,11 @@ static int loadKeyringFromDB(rpmts ts)
 static void loadKeyring(rpmts ts)
 {
     ts->keyring = rpmKeyringNew();
-    loadKeyringFromFiles(ts);
-    if (loadKeyringFromDB(ts) > 0) {
-	/* XXX make this a warning someday... */
-	rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
+    if (loadKeyringFromFiles(ts) == 0) {
+	if (loadKeyringFromDB(ts) > 0) {
+	    /* XXX make this a warning someday... */
+	    rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
+	}
     }
 }
 
