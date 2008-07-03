@@ -1217,11 +1217,13 @@ static int fsmMkdirs(FSM_t fsm)
 			rpmlog(RPMLOG_DEBUG,
 			    "%s directory created with perms %04o, no context.\n",
 			    fsm->path, (unsigned)(st->st_mode & 07777));
-		    else
+		    else {
 			rpmlog(RPMLOG_DEBUG,
 			    "%s directory created with perms %04o, context %s.\n",
 			    fsm->path, (unsigned)(st->st_mode & 07777),
 			    fsm->fcontext);
+			freecon(fsm->fcontext);
+		    }
 		    fsm->fcontext = NULL;
 		}
 		*te = '/';
@@ -1845,8 +1847,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	     */
 	    if (!rc && !getuid()) {
 		rc = fsmMapFContext(fsm);
-		if (!rc)
+		if (!rc) {
 		    rc = fsmNext(fsm, FSM_LSETFCON);
+		    freecon(fsm->fcontext);	
+		}
 		fsm->fcontext = NULL;
 	    }
 	    if (S_ISLNK(st->st_mode)) {

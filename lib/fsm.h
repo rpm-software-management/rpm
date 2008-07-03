@@ -153,7 +153,7 @@ struct fsm_s {
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
     const char * digest;	/*!< Binary checksum (NULL disables). */
-    const char * fcontext;	/*!< File security context (NULL disables). */
+    security_context_t fcontext;/*!< File security context (NULL disables). */
     pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
     
     unsigned fflags;		/*!< File flags. */
