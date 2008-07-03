@@ -233,7 +233,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
 /** \ingroup signature
  * Verify a signature from a package.
  *
- * @param ts		transaction set
+ * @param keyring	keyring handle
  * @param sigtd		signature tag data container
  * @param dig		signature/pubkey parameters
  * @retval result	detailed text result of signature verification
