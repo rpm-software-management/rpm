@@ -916,8 +916,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	if (script == NULL && scriptprog == NULL)
  	    continue;
 
-    	p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-		    rpmteKey(p), ts->notifyData);
+    	p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
     	p->h = NULL;
     	if (rpmteFd(p) != NULL) {
 	    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
@@ -930,8 +929,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	    switch (rpmrc) {
 	    default:
 	        /* FIX: notify annotations */
-	        p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-			    0, 0, rpmteKey(p), ts->notifyData);
+	        p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 	        p->fd = NULL;
 	        break;
 	    case RPMRC_NOTTRUSTED:
@@ -957,8 +955,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm);
 
-	    (void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-			  rpmteKey(p), ts->notifyData);
+	    (void) rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 	    p->fd = NULL;
 	    p->h = headerFree(p->h);
 	}
@@ -966,8 +963,6 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     pi = rpmtsiFree(pi);
     return 0;
 }
-
-#define	NOTIFY(_ts, _al) if ((_ts)->notify) (void) (_ts)->notify _al
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
@@ -1232,8 +1227,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
     pi = rpmtsiFree(pi);
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount,
-	NULL, ts->notifyData));
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.
@@ -1252,8 +1246,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
-	NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
-			ts->orderCount, NULL, ts->notifyData));
+	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
+		    ts->orderCount);
 
 	if (fc == 0) continue;
 
@@ -1385,8 +1379,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    xx = chdir(currDir);
     }
 
-    NOTIFY(ts, (NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount,
-	NULL, ts->notifyData));
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
     /* ===============================================
      * Free unused memory as soon as possible.
@@ -1446,9 +1439,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    p->h = NULL;
 	    /* FIX: rpmte not opaque */
 	    {
-		/* FIX: notify annotations */
-		p->fd = ts->notify(p->h, RPMCALLBACK_INST_OPEN_FILE, 0, 0,
-				rpmteKey(p), ts->notifyData);
+		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
 		if (rpmteFd(p) != NULL) {
 		    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
 		    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
@@ -1462,9 +1453,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		    switch (rpmrc) {
 		    default:
 			/* FIX: notify annotations */
-			p->fd = ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE,
-					0, 0,
-					rpmteKey(p), ts->notifyData);
+			p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
+					    0, 0);
 			p->fd = NULL;
 			ourrc++;
 			break;
@@ -1541,8 +1531,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 	    if (gotfd) {
 		/* FIX: check rc */
-		(void) ts->notify(p->h, RPMCALLBACK_INST_CLOSE_FILE, 0, 0,
-			rpmteKey(p), ts->notifyData);
+		(void) rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 		p->fd = NULL;
 	    }
 

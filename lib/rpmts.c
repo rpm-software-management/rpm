@@ -1235,14 +1235,18 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 		rpmCallbackType what, rpm_loff_t amount, rpm_loff_t total)
 {
     void * ptr = NULL;
-    if (ts && ts->notify && te) {
-	Header h = rpmteHeader(te);
-assert(!(rpmteType(te) == TR_ADDED && h == NULL));
-	/* FIX: cast? */
-	/* FIX: check rc */
-	ptr = ts->notify(h, what, amount, total,
-			rpmteKey(te), ts->notifyData);
-	headerUnlink(h); /* undo rpmteHeader() ref */
+    if (ts && ts->notify) {
+	Header h = NULL;
+	fnpyKey cbkey = NULL;
+	if (te) {
+	    h = rpmteHeader(te);
+	    cbkey = rpmteKey(te);
+	}
+	ptr = ts->notify(h, what, amount, total, cbkey, ts->notifyData);
+
+	if (h) {
+	    headerUnlink(h); /* undo rpmteHeader() ref */
+	}
     }
     return ptr;
 }
