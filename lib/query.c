@@ -141,7 +141,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	const char * fuser;
 	const char * fgroup;
 	const char * flink;
-	int32_t fnlink;
+	uint32_t fnlink;
 	char *buf = NULL;
 
 	fflags = rpmfiFFlags(fi);
