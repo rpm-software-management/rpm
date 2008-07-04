@@ -83,6 +83,5 @@ rpmio/rpmsq.c
 rpmio/rpmsw.c
 rpmio/ugid.c
 rpmio/url.c
-tools/rpmcache.c
 tools/rpmdeps.c
 tools/rpmgraph.c
