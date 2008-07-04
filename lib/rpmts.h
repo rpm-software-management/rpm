@@ -313,30 +313,6 @@ rpmKeyring rpmtsGetKeyring(rpmts ts, int autoload);
 int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring);
 
 /** \ingroup rpmts
- * Close the database used by the transaction to solve dependencies.
- * @param ts		transaction set
- * @return		0 on success
- */
-int rpmtsCloseSDB(rpmts ts);
-
-/** \ingroup rpmts
- * Open the database used by the transaction to solve dependencies.
- * @param ts		transaction set
- * @param dbmode	O_RDONLY or O_RDWR
- * @return		0 on success
- */
-int rpmtsOpenSDB(rpmts ts, int dbmode);
-
-/** \ingroup rpmts
- * Attempt to solve a needed dependency using the solve database.
- * @param ts		transaction set
- * @param ds		dependency set
- * @param data		opaque data associated with callback
- * @return		-1 retry, 0 ignore, 1 not found
- */
-int rpmtsSolve(rpmts ts, rpmds ds, const void * data);
-
-/** \ingroup rpmts
  * Set dependency solver callback.
  * @param ts		transaction set
  * @param (*solve)	dependency solver callback
@@ -346,15 +322,6 @@ int rpmtsSolve(rpmts ts, rpmds ds, const void * data);
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds ds, const void * data),
 		const void * solveData);
-
-/** \ingroup rpmts
- * Print possible suggestions for current transaction set, assuming
- * solvedb exists etc.
- * @todo		The whole suggests handling needs rework, this
- * 			is just a temporary measure...
- * @param ts		transaction set
- */
-void rpmtsPrintSuggests(rpmts ts);
 
 /** \ingroup rpmts
  * Return current transaction set problems.

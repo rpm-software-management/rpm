@@ -347,9 +347,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);
 
-    if (cbInfo.cb)
-	xx = rpmtsSetSolveCallback(s->ts, rpmtsSolve, NULL);
-
     PyEval_RestoreThread(cbInfo._save);
 
     if (ps != NULL) {

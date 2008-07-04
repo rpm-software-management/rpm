@@ -627,11 +627,6 @@ enditer:
 	    rpmlog(RPMLOG_INFO, _("Failed dependencies:\n"));
 	    if (rpmIsVerbose())
 		rpmpsPrint(NULL, ps);
-
-
-            if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST))
-                rpmtsPrintSuggests(ts);
-
 	}
 	ps = rpmpsFree(ps);
 	rpmtsCleanProblems(ts);

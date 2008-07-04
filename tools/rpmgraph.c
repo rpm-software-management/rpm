@@ -194,10 +194,6 @@ maybe_manifest:
 	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPkgs;
-
-            if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST))
-                rpmtsPrintSuggests(ts);
-
 	}
 	ps = rpmpsFree(ps);
     }

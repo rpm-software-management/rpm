@@ -499,216 +499,6 @@ exit:
     return rc;
 }
 
-int rpmtsCloseSDB(rpmts ts)
-{
-    int rc = 0;
-
-    if (ts->sdb != NULL) {
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBGET), 
-			rpmdbOp(ts->sdb, RPMDB_OP_DBGET));
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBPUT),
-			rpmdbOp(ts->sdb, RPMDB_OP_DBPUT));
-	(void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DBDEL),
-			rpmdbOp(ts->sdb, RPMDB_OP_DBDEL));
-	rc = rpmdbClose(ts->sdb);
-	ts->sdb = NULL;
-    }
-    return rc;
-}
-
-int rpmtsOpenSDB(rpmts ts, int dbmode)
-{
-    static int has_sdbpath = -1;
-    int rc = 0;
-
-    if (ts->sdb != NULL && ts->sdbmode == dbmode)
-	return 0;
-
-    if (has_sdbpath < 0)
-	has_sdbpath = rpmExpandNumeric("%{?_solve_dbpath:1}");
-
-    /* If not configured, don't try to open. */
-    if (has_sdbpath <= 0)
-	return 1;
-
-    addMacro(NULL, "_dbpath", NULL, "%{_solve_dbpath}", RMIL_DEFAULT);
-
-    rc = rpmdbOpen(ts->rootDir, &ts->sdb, ts->sdbmode, 0644);
-    if (rc) {
-	char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmlog(RPMLOG_WARNING,
-			_("cannot open Solve database in %s\n"), dn);
-	dn = _free(dn);
-    }
-    delMacro(NULL, "_dbpath");
-
-    return rc;
-}
-
-/**
- * Compare suggested package resolutions (qsort/bsearch).
- * @param a		1st instance address
- * @param b		2nd instance address
- * @return		result of comparison
- */
-static int sugcmp(const void * a, const void * b)
-{
-    const char * astr = *(const char **)a;
-    const char * bstr = *(const char **)b;
-    return strcmp(astr, bstr);
-}
-
-int rpmtsSolve(rpmts ts, rpmds ds, const void * data)
-{
-    const char * errstr;
-    char * str;
-    char * qfmt;
-    rpmdbMatchIterator mi;
-    Header bh;
-    Header h;
-    size_t bhnamelen;
-    time_t bhtime;
-    rpmTag rpmtag;
-    const char * keyp;
-    size_t keylen;
-    int rc = 1;	/* assume not found */
-    int xx;
-
-    if (rpmdsTagN(ds) != RPMTAG_REQUIRENAME)
-	return rc;
-
-    keyp = rpmdsN(ds);
-    if (keyp == NULL)
-	return rc;
-
-    if (ts->sdb == NULL) {
-	xx = rpmtsOpenSDB(ts, ts->sdbmode);
-	if (xx) return rc;
-    }
-
-    /* Look for a matching Provides: in suggested universe. */
-    rpmtag = (*keyp == '/' ? RPMTAG_BASENAMES : RPMTAG_PROVIDENAME);
-    keylen = 0;
-    mi = rpmdbInitIterator(ts->sdb, rpmtag, keyp, keylen);
-    bhnamelen = 0;
-    bhtime = 0;
-    bh = NULL;
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
-	struct rpmtd_s name, btime;
-	size_t hnamelen;
-	time_t htime;
-
-	if (rpmtag == RPMTAG_PROVIDENAME && !rpmdsAnyMatchesDep(h, ds, 1))
-	    continue;
-
-	/* XXX Prefer the shortest name if given alternatives. */
-	hnamelen = 0;
-	if (headerGet(h, RPMTAG_NAME, &name, HEADERGET_MINMEM)) {
-	    const char * hname = rpmtdGetString(&name);
-	    if (hname)
-		hnamelen = strlen(hname);
-	    rpmtdFreeData(&name);
-	}
-	if (bhnamelen > 0 && hnamelen > bhnamelen)
-	    continue;
-
-	/* XXX Prefer the newest build if given alternatives. */
-	htime = 0;
-	if (headerGet(h, RPMTAG_BUILDTIME, &btime, HEADERGET_MINMEM)) {
-	    rpm_time_t *bt = rpmtdGetUint32(&btime);
-	    htime = bt ? (time_t)*bt : 0;
-	    rpmtdFreeData(&btime);
-	}
-
-	if (htime <= bhtime)
-	    continue;
-
-	bh = headerFree(bh);
-	bh = headerLink(h);
-	bhtime = htime;
-	bhnamelen = hnamelen;
-    }
-    mi = rpmdbFreeIterator(mi);
-
-    /* Is there a suggested resolution? */
-    if (bh == NULL)
-	goto exit;
-
-    /* Format the suggestion. */
-    qfmt = rpmExpand("%{?_solve_name_fmt}", NULL);
-    if (qfmt == NULL || *qfmt == '\0')
-	goto exit;
-    str = headerFormat(bh, qfmt, &errstr);
-    bh = headerFree(bh);
-    qfmt = _free(qfmt);
-    if (str == NULL) {
-	rpmlog(RPMLOG_ERR, _("incorrect format: %s\n"), errstr);
-	goto exit;
-    }
-
-    if (ts->transFlags & RPMTRANS_FLAG_ADDINDEPS) {
-	FD_t fd;
-	rpmRC rpmrc;
-
-	h = headerFree(h);
-	fd = Fopen(str, "r.ufdio");
-	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), str,
-			Fstrerror(fd));
-            if (fd != NULL) {
-                xx = Fclose(fd);
-                fd = NULL;
-            }
-	    str = _free(str);
-	    goto exit;
-	}
-	rpmrc = rpmReadPackageFile(ts, fd, str, &h);
-	xx = Fclose(fd);
-	switch (rpmrc) {
-	default:
-	    str = _free(str);
-	    break;
-	case RPMRC_NOTTRUSTED:
-	case RPMRC_NOKEY:
-	case RPMRC_OK:
-	    if (h != NULL &&
-	        !rpmtsAddInstallElement(ts, h, (fnpyKey)str, 1, NULL))
-	    {
-		rpmlog(RPMLOG_DEBUG, "Adding: %s\n", str);
-		rc = -1;
-		/* XXX str memory leak */
-		break;
-	    }
-	    str = _free(str);
-	    break;
-	}
-	h = headerFree(h);
-	goto exit;
-    }
-
-    rpmlog(RPMLOG_DEBUG, "Suggesting: %s\n", str);
-    /* If suggestion is already present, don't bother. */
-    if (ts->suggests != NULL && ts->nsuggests > 0) {
-	if (bsearch(&str, ts->suggests, ts->nsuggests,
-			sizeof(*ts->suggests), sugcmp))
-	    goto exit;
-    }
-
-    /* Add a new (unique) suggestion. */
-    ts->suggests = xrealloc(ts->suggests,
-			sizeof(*ts->suggests) * (ts->nsuggests + 2));
-    ts->suggests[ts->nsuggests] = str;
-    ts->nsuggests++;
-    ts->suggests[ts->nsuggests] = NULL;
-
-    if (ts->nsuggests > 1)
-	qsort(ts->suggests, ts->nsuggests, sizeof(*ts->suggests), sugcmp);
-
-exit:
-/* FIX: ts->suggests[] may be NULL */
-    return rc;
-}
-
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds key, const void * data),
 		const void * solveData)
@@ -721,23 +511,6 @@ int rpmtsSetSolveCallback(rpmts ts,
     }
     return rc;
 }
-
-void rpmtsPrintSuggests(rpmts ts)
-{
-    if (ts->suggests != NULL && ts->nsuggests > 0) {
-	int i;
-	rpmlog(RPMLOG_NOTICE, _("    Suggested resolutions:\n"));
-	for (i = 0; i < ts->nsuggests; i++) {
-	    const char * str = ts->suggests[i];
-
-	    if (str == NULL)
-		break;
-
-	    rpmlog(RPMLOG_NOTICE, "\t%s\n", str);
-	}
-    }
-}
-
 
 rpmps rpmtsProblems(rpmts ts)
 {
@@ -759,7 +532,6 @@ void rpmtsCleanProblems(rpmts ts)
 void rpmtsClean(rpmts ts)
 {
     rpmtsi pi; rpmte p;
-    int i;
 
     if (ts == NULL)
 	return;
@@ -772,14 +544,6 @@ void rpmtsClean(rpmts ts)
 
     ts->addedPackages = rpmalFree(ts->addedPackages);
     ts->numAddedPackages = 0;
-
-    for (i = 0; i < ts->nsuggests; i++) {
-	const char * str = ts->suggests[i];
-	ts->suggests[i] = NULL;
-	_constfree(str);
-    }
-    ts->suggests = _free(ts->suggests);
-    ts->nsuggests = 0;
 
     rpmtsCleanProblems(ts);
 }
@@ -846,8 +610,6 @@ rpmts rpmtsFree(rpmts ts)
     rpmtsEmpty(ts);
 
     (void) rpmtsCloseDB(ts);
-
-    (void) rpmtsCloseSDB(ts);
 
     ts->removedPackages = _free(ts->removedPackages);
 
@@ -1360,12 +1122,8 @@ rpmts rpmtsCreate(void)
     ts->filesystems = NULL;
     ts->dsi = NULL;
 
-    ts->solve = rpmtsSolve;
+    ts->solve = NULL;
     ts->solveData = NULL;
-    ts->nsuggests = 0;
-    ts->suggests = NULL;
-    ts->sdb = NULL;
-    ts->sdbmode = O_RDONLY;
 
     ts->rdb = NULL;
     ts->dbmode = O_RDONLY;

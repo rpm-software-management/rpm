@@ -688,22 +688,6 @@ print (t)\
 #		2	Elf64 permitted
 %_transaction_color	@RPMCANONCOLOR@
 
-#	The path to the dependency universe database. The default value
-#	is the rpmdb-redhat location. The macro is usually defined in
-#	/etc/rpm/macros.solve, installed with the rpmdb-redhat package.
-#%_solve_dbpath	/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat
-
-#	The path to the dependency universe packages. This should
-#	be a path to the packages contained in the solve database.
-#%_solve_pkgsdir	/mnt/redhat/test/latest-i386/RedHat/RPMS/
-
-#	The output binary package file name template used when suggesting
-#	binary packages that solve a dependency. The macro is usually defined
-#	in /etc/rpm/macros.solve, installed with the rpmdb-redhat package.
-#
-# XXX	Note: escaped %% for use in headerSprintf()
-#%_solve_name_fmt	%{?_solve_pkgsdir}%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
-
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
 #	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)
@@ -767,23 +751,6 @@ print (t)\
 # support issues, many users are doing "rm -f /var/lib/rpm/__db*"
 # these days.
 %_rpmlock_path	%{_dbpath}/__db.000
-
-#==============================================================================
-# ---- Cache configuration macros.
-#	Macro(s) used to configure the universe of headers used to
-#	solve dependencies using rpmcache(8).
-#
-#	Note: These values are specific to my machine, and most certainly
-#	are incorrect for any non-redhat.com machine. The macros are
-#	included here only to document the macro names and usage.
-%_bhpath        file://localhost/mnt/dist
-%_bhcoll        @(7.3|7.2|7.1|7.1sbe|7.1k|7.0|7.01j|7.0j|7.0sbe|7.0tc|6.2|6.2ha|6.2ee|6.1|6.0|5.2|5.1|5.0)
-%_bhN           @(SRPMS|i386|alpha|sparc|s390|ia64)
-%_bhVR          RedHat
-%_bhA           RPMS
-
-#	The cache database directory.
-%_cache_dbpath		/var/spool/up2date/cache
 
 #==============================================================================
 # ---- per-platform macros.

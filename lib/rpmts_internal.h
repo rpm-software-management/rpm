@@ -36,13 +36,9 @@ struct diskspaceInfo_s {
 struct rpmts_s {
     rpmtransFlags transFlags;	/*!< Bit(s) to control operation. */
 
-    rpmdb sdb;			/*!< Solve database handle. */
-    int sdbmode;		/*!< Solve database open mode. */
     int (*solve) (rpmts ts, rpmds key, const void * data);
                                 /*!< Search for NEVRA key. */
     const void * solveData;	/*!< Solve callback data */
-    int nsuggests;		/*!< No. of depCheck suggestions. */
-    const void ** suggests;	/*!< Possible depCheck suggestions. */
 
     rpmCallbackFunction notify;	/*!< Callback function. */
     rpmCallbackData notifyData;	/*!< Callback private data. */

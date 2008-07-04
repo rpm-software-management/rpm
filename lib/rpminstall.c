@@ -526,10 +526,6 @@ maybe_manifest:
 	    rpmpsPrint(NULL, ps);
 	    eiu->numFailed = eiu->numPkgs;
 	    stopInstall = 1;
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST))
-		rpmtsPrintSuggests(ts);
-
 	}
 	ps = rpmpsFree(ps);
     }

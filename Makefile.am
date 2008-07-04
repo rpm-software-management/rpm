@@ -119,10 +119,6 @@ rpmlibexec_PROGRAMS +=	javadeps
 javadeps_SOURCES =	tools/javadeps.c
 javadeps_LDADD =
 
-rpmlibexec_PROGRAMS +=	rpmcache
-rpmcache_SOURCES =	tools/rpmcache.c
-rpmcache_LDADD =	lib/librpm.la
-
 rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	tools/rpmdeps.c
 rpmdeps_LDADD =		build/librpmbuild.la
