@@ -15,7 +15,7 @@
 #include "lib/fsm.h"
 #define	fsmUNSAFE	fsmStage
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath, fi->action... */
-#include "rpmio/ugid.h"		/* XXX unameToUid() and gnameToGid() */
+#include "lib/misc.h"		/* XXX unameToUid() and gnameToGid() */
 
 #include "debug.h"
 

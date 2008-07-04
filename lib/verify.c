@@ -14,7 +14,7 @@
 #include <rpm/rpmfileutil.h>
 
 #include "lib/psm.h"
-#include "rpmio/ugid.h" 	/* uidToUname(), gnameToGid */
+#include "lib/misc.h" 	/* uidToUname(), gnameToGid */
 
 #include "debug.h"
 
