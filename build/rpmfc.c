@@ -353,8 +353,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     rpmds * depsp, ds;
     const char * N;
     const char * EVR;
-    rpmsenseFlags Flags;
-    int32_t dsContext, tagN;
+    rpmsenseFlags Flags, dsContext;
+    rpmTag tagN;
     ARGV_t pav;
     const char * s;
     int pac;
@@ -823,7 +823,7 @@ static int rpmfcELF(rpmfc fc)
     char * soname = NULL;
     rpmds * depsp, ds;
     rpmTag tagN;
-    int32_t dsContext;
+    rpmsenseFlags dsContext;
     int xx;
     int isElf64;
     int isDSO;
