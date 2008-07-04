@@ -424,15 +424,14 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
     poptContext optCon;
 
     opt_p = opt_R = opt_E = 0;
-    opt_P = -1;		/* no explicit -P <N> was found */
-    opt_F = -1;		/* fuzz<0 indicates no explicit -F x was set */
+    opt_F = 0;		/* apply patches with fuzz==0 by default */
     opt_b = NULL;
 
     /* Convert %patchN to %patch -PN to simplify further processing */
     if (! strchr(" \t\n", line[6])) {
 	rasprintf(&buf, "%%patch -P %s", line + 6);
     } else {
-	buf = xstrdup(line);
+	rasprintf(&buf, "%%patch -P %lu %s", INT_MAX, line + 6); /* INT_MAX denotes not numbered %patch */
     }
     poptParseArgvString(buf, &argc, &argv);
     free(buf);
