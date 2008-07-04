@@ -32,10 +32,6 @@
 #define	URLMAGIC	0xd00b1ed0
 #define	URLSANE(u)	assert(u && u->magic == URLMAGIC)
 
-/**
- */
-int _url_debug = 0;
-
 urlinfo urlNew()
 {
     urlinfo u;
