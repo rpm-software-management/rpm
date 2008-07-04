@@ -1807,7 +1807,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 static int mireSkip (const rpmdbMatchIterator mi)
 {
     miRE mire;
-    static int32_t zero = 0;
+    uint32_t zero = 0;
     int ntags = 0;
     int nmatches = 0;
     int rc;
