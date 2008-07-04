@@ -81,7 +81,6 @@ rpmio/rpmpgp.c
 rpmio/rpmstring.c
 rpmio/rpmsq.c
 rpmio/rpmsw.c
-rpmio/ugid.c
 rpmio/url.c
 tools/rpmdeps.c
 tools/rpmgraph.c
