@@ -592,19 +592,6 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     return rc;
 }
 
-int ufdGetFile(FD_t sfd, FD_t tfd)
-{
-    int rc;
-
-    FDSANE(sfd);
-    FDSANE(tfd);
-    rc = ufdCopy(sfd, tfd);
-    (void) Fclose(sfd);
-    if (rc > 0)		/* XXX ufdCopy now returns no. bytes copied */
-	rc = 0;
-    return rc;
-}
-
 /* =============================================================== */
 static ssize_t ufdRead(void * cookie, char * buf, size_t count)
 {
