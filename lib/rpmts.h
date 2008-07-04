@@ -336,15 +336,6 @@ int rpmtsOpenSDB(rpmts ts, int dbmode);
  */
 int rpmtsSolve(rpmts ts, rpmds ds, const void * data);
 
-/**
- * Attempt to solve a needed dependency using memory resident tables.
- * @deprecated This function will move from rpmlib to the python bindings.
- * @param ts		transaction set
- * @param ds		dependency set
- * @return		0 if resolved (and added to ts), 1 not found
- */
-int rpmtsAvailable(rpmts ts, const rpmds ds);
-
 /** \ingroup rpmts
  * Set dependency solver callback.
  * @param ts		transaction set

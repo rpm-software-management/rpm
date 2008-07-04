@@ -57,10 +57,7 @@ extern int _rpmts_debug;
  * @param data	user data that will be passed to the transaction callback
  *		during transaction execution
  * @param mode 	optional argument that specifies if this package should
- *		be installed ('i'), upgraded ('u'), or if it is just
- *		available to the transaction when computing
- *		dependencies but no action should be performed with it
- *		('a').
+ *		be installed ('i'), upgraded ('u').
  *
  * - addErase(name) Add an erase element to a transaction set.
  * @param name	the package name to be erased
@@ -171,32 +168,6 @@ fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
     return Py_None;
 }
 
-#if 0
-/** \ingroup py_c
- * Add package to universe of possible packages to install in transaction set.
- * @param ts		transaction set
- * @param h		header
- * @param key		package private data
- */
-static void rpmtsAddAvailableElement(rpmts ts, Header h,
-		fnpyKey key)
-{
-    int scareMem = 0;
-    rpmds provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
-
-    /* XXX FIXME: return code RPMAL_NOMATCH is error */
-    (void) rpmalAdd(&ts->availablePackages, RPMAL_NOMATCH, key,
-		provides, fi, rpmtsColor(ts));
-    fi = rpmfiFree(fi);
-    provides = rpmdsFree(provides);
-
-if (_rpmts_debug < 0)
-fprintf(stderr, "\tAddAvailable(%p) list %p\n", ts, ts->availablePackages);
-
-}
-#endif
-
 /** \ingroup py_c
  */
 static PyObject *
@@ -220,29 +191,16 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	}
     }
 
-if (_rpmts_debug < 0 || (_rpmts_debug > 0 && *how != 'a'))
+if (_rpmts_debug < 0 || (_rpmts_debug > 0))
 fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
 
     if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
-	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\", \"a\", or \"i\"");
+	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\" or \"i\"");
 	return NULL;
     } else if (how && !strcmp(how, "u"))
     	isUpgrade = 1;
 
-    /*
-     * XXX resurrect when better available mechanism is, well, available.
-     * OTOH nothing appears to use it these days...
-     * Raise exception to catch out any callers while broken.
-     */
-    if (how && !strcmp(how, "a")) {
-#ifdef DYING
-	rpmtsAddAvailableElement(s->ts, hdrGetHeader(h), key); 
-#else
-	PyErr_SetString(pyrpmError, "available package mechanism currently broken");
-	return NULL;
-#endif
-    } else
-	rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+    rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
     if (rc) {
 	PyErr_SetString(pyrpmError, "adding package to transaction failed");
 	return NULL;
@@ -385,11 +343,6 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
     cbInfo.tso = s;
     cbInfo.pythonError = 0;
     cbInfo._save = PyEval_SaveThread();
-
-#ifdef DYING
-    /* XXX resurrect availablePackages one more time ... */
-    rpmalMakeIndex(s->ts->availablePackages);
-#endif
 
     xx = rpmtsCheck(s->ts);
     ps = rpmtsProblems(s->ts);

@@ -588,16 +588,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	case 0:		/* requirements are satisfied. */
 	    break;
 	case 1:		/* requirements are not satisfied. */
-	{   fnpyKey * suggestedKeys = NULL;
-
-	    if (ts->availablePackages != NULL) {
-		suggestedKeys = rpmalAllSatisfiesDepend(ts->availablePackages,
-				requires, NULL);
-	    }
-
-	    rpmdsProblem(ts->probs, pkgNEVRA, requires, suggestedKeys, adding);
-
-	}
+	    rpmdsProblem(ts->probs, pkgNEVRA, requires, NULL, adding);
 	    break;
 	case 2:		/* something went wrong! */
 	default:

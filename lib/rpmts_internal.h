@@ -66,11 +66,6 @@ struct rpmts_s {
     rpmal addedPackages;	/*!< Set of packages being installed. */
     int numAddedPackages;	/*!< No. added package instances. */
 
-#ifndef	DYING
-    rpmal availablePackages;	/*!< Universe of available packages. */
-    int numAvailablePackages;	/*!< No. available package instances. */
-#endif
-
     rpmte relocateElement;	/*!< Element to use when relocating packages. */
 
     rpmte * order;		/*!< Packages sorted by dependencies. */

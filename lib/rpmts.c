@@ -709,31 +709,6 @@ exit:
     return rc;
 }
 
-int rpmtsAvailable(rpmts ts, const rpmds ds)
-{
-    fnpyKey * sugkey;
-    int rc = 1;	/* assume not found */
-
-    if (ts->availablePackages == NULL)
-	return rc;
-    sugkey = rpmalAllSatisfiesDepend(ts->availablePackages, ds, NULL);
-    if (sugkey == NULL)
-	return rc;
-
-    /* XXX no alternatives yet */
-    if (sugkey[0] != NULL) {
-	ts->suggests = xrealloc(ts->suggests,
-			sizeof(*ts->suggests) * (ts->nsuggests + 2));
-	ts->suggests[ts->nsuggests] = sugkey[0];
-	sugkey[0] = NULL;
-	ts->nsuggests++;
-	ts->suggests[ts->nsuggests] = NULL;
-    }
-    sugkey = _free(sugkey);
-/* FIX: ts->suggests[] may be NULL */
-    return rc;
-}
-
 int rpmtsSetSolveCallback(rpmts ts,
 		int (*solve) (rpmts ts, rpmds key, const void * data),
 		const void * solveData)
@@ -875,9 +850,6 @@ rpmts rpmtsFree(rpmts ts)
     (void) rpmtsCloseSDB(ts);
 
     ts->removedPackages = _free(ts->removedPackages);
-
-    ts->availablePackages = rpmalFree(ts->availablePackages);
-    ts->numAvailablePackages = 0;
 
     ts->dsi = _free(ts->dsi);
 
@@ -1418,9 +1390,6 @@ rpmts rpmtsCreate(void)
 
     ts->numAddedPackages = 0;
     ts->addedPackages = NULL;
-
-    ts->numAvailablePackages = 0;
-    ts->availablePackages = NULL;
 
     ts->orderAlloced = 0;
     ts->orderCount = 0;
