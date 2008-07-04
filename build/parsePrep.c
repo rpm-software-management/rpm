@@ -77,7 +77,11 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	}
     }
     if (sp == NULL) {
-	rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
+	if (c != INT_MAX) {
+	    rpmlog(RPMLOG_ERR, _("No patch number %u\n"), c);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("%%patch without corresponding \"Patch:\" tag\n"));
+	}
 	return NULL;
     }
 
@@ -113,11 +117,16 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     free(arg_fuzz);
     free(arg_backup);
     free(args);
-    
-    rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
-		    "%s\n", 
-		    c, basename(fn), patchcmd);
-		
+
+    if (c != INT_MAX) {
+	rasprintf(&buf, "echo \"Patch #%u (%s):\"\n"
+			"%s\n", 
+			c, basename(fn), patchcmd);
+    } else {
+	rasprintf(&buf, "echo \"Patch (%s):\"\n"
+			"%s\n", 
+			basename(fn), patchcmd);
+    }
     free(fn);
     free(patchcmd);
     
@@ -145,7 +154,11 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
     }
     if (sp == NULL) {
-	rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
+	if (c != INT_MAX) {
+	    rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("No \"Source:\" tag in the spec file\n"), c);
+	}
 	return NULL;
     }
 
@@ -336,7 +349,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
-	char *chptr = doUntar(spec, 0, quietly);
+	char *chptr = doUntar(spec, INT_MAX, quietly);
 	if (!chptr)
 	    return RPMRC_FAIL;
 	appendLineStringBuf(spec->prep, chptr);
@@ -377,7 +390,6 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 /**
  * Parse %patch line.
  * This supports too many crazy syntaxes:
- * - %patch is equal to %patch0
  * - %patchN is equal to %patch -P<N>
  * - -P<N> -P<N+1>... can be used to apply several patch on a single line
  * - Any trailing arguments are treated as patch numbers
@@ -451,10 +463,6 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	goto exit;
     }
 
-    /* %patch without -P<N> is treated as %patch0, urgh */
-    if (opt_P < 0) {
-	argvAdd(&patchnums, "0");
-    }
     /* Any trailing arguments are treated as patch numbers */
     argvAppend(&patchnums, (ARGV_const_t) poptGetArgs(optCon));
 

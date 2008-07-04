@@ -289,7 +289,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
 	nump = fieldp_backup;
 	SKIPSPACE(nump);
 	if (nump == NULL || *nump == '\0') {
-	    num = 0;
+	    num = INT_MAX;
 	} else {
 	    if (parseUnsignedNum(fieldp_backup, &num)) {
 		rpmlog(RPMLOG_ERR, _("line %d: Bad %s number: %s\n"),
