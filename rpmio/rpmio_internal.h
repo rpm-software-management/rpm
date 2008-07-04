@@ -81,10 +81,6 @@ extern "C" {
 
 /** \ingroup rpmio
  */
-int ufdClose( void * cookie);
-
-/** \ingroup rpmio
- */
 static inline
 FDIO_t fdGetIo(FD_t fd)
 {

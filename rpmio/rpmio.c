@@ -737,7 +737,7 @@ static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
     return fdSeek(cookie, pos, whence);
 }
 
-int ufdClose( void * cookie)
+static int ufdClose( void * cookie)
 {
     FD_t fd = c2f(cookie);
 
