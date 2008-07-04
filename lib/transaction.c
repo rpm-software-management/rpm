@@ -514,12 +514,6 @@ assert(otherFi != NULL);
 			    otherFi->actions[otherFileNum] = FA_CREATE;
 			fi->actions[i] = FA_SKIPCOLOR;
 			rConflicts = 0;
-		    } else
-		    if (FColor == 0 && oFColor == 0) {
-			/* ... otherwise, do both, last in wins. */
-			otherFi->actions[otherFileNum] = FA_CREATE;
-			fi->actions[i] = FA_CREATE;
-			rConflicts = 0;
 		    }
 		    done = 1;
 		}
