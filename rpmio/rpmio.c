@@ -1846,6 +1846,10 @@ int Fflush(FD_t fd)
     if (vh && fdGetIo(fd) == bzdio)
 	return bzdFlush(vh);
 #endif
+#if HAVE_LZMA_H
+    if (vh && fdGetIo(fd) == lzdio)
+	return lzdFlush(vh);
+#endif
 /* FIXME: If we get here, something went wrong above */
     return 0;
 }
