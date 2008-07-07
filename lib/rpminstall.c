@@ -312,8 +312,7 @@ restart:
 
 	    if (rc != 0) {
 		rpmlog(RPMLOG_ERR,
-			_("skipping %s - transfer failed - %s\n"),
-			fileURL, ftpStrerror(rc));
+			_("skipping %s - transfer failed\n"), fileURL);
 		eiu->numFailed++;
 		eiu->pkgURL[eiu->pkgx] = NULL;
 		tfn = _free(tfn);

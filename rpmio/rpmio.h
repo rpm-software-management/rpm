@@ -138,38 +138,6 @@ int fdWritable(FD_t fd, int secs);
 int fdReadable(FD_t fd, int secs);
 
 /**
- * FTP and HTTP error codes.
- */
-typedef enum ftperrCode_e {
-    FTPERR_NE_ERROR		= -1,	/*!< Generic error. */
-    FTPERR_NE_LOOKUP		= -2,	/*!< Hostname lookup failed. */
-    FTPERR_NE_AUTH		= -3,	/*!< Server authentication failed. */
-    FTPERR_NE_PROXYAUTH		= -4,	/*!< Proxy authentication failed. */
-    FTPERR_NE_CONNECT		= -5,	/*!< Could not connect to server. */
-    FTPERR_NE_TIMEOUT		= -6,	/*!< Connection timed out. */
-    FTPERR_NE_FAILED		= -7,	/*!< The precondition failed. */
-    FTPERR_NE_RETRY		= -8,	/*!< Retry request. */
-    FTPERR_NE_REDIRECT		= -9,	/*!< Redirect received. */
-
-    FTPERR_BAD_SERVER_RESPONSE	= -81,	/*!< Bad server response */
-    FTPERR_SERVER_IO_ERROR	= -82,	/*!< Server I/O error */
-    FTPERR_SERVER_TIMEOUT	= -83,	/*!< Server timeout */
-    FTPERR_BAD_HOST_ADDR	= -84,	/*!< Unable to lookup server host address */
-    FTPERR_BAD_HOSTNAME		= -85,	/*!< Unable to lookup server host name */
-    FTPERR_FAILED_CONNECT	= -86,	/*!< Failed to connect to server */
-    FTPERR_FILE_IO_ERROR	= -87,	/*!< Failed to establish data connection to server */
-    FTPERR_PASSIVE_ERROR	= -88,	/*!< I/O error to local file */
-    FTPERR_FAILED_DATA_CONNECT	= -89,	/*!< Error setting remote server to passive mode */
-    FTPERR_FILE_NOT_FOUND	= -90,	/*!< File not found on server */
-    FTPERR_NIC_ABORT_IN_PROGRESS= -91,	/*!< Abort in progress */
-    FTPERR_UNKNOWN		= -100	/*!< Unknown or unexpected error */
-} ftperrCode;
-
-/**
- */
-const char * ftpStrerror(int errorNumber);
-
-/**
  */
 int ufdCopy(FD_t sfd, FD_t tfd);
 

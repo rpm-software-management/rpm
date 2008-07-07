@@ -500,64 +500,6 @@ int fdReadable(FD_t fd, int secs)
     } while (1);
 }
 
-/* =============================================================== */
-/* Support for FTP/HTTP I/O.
- */
-const char * ftpStrerror(int errorNumber)
-{
-    switch (errorNumber) {
-    case 0:
-	return _("Success");
-
-    /* HACK error impediance match, coalesce and rename. */
-    case FTPERR_NE_ERROR:
-	return ("NE_ERROR: Generic error.");
-    case FTPERR_NE_LOOKUP:
-	return ("NE_LOOKUP: Hostname lookup failed.");
-    case FTPERR_NE_AUTH:
-	return ("NE_AUTH: Server authentication failed.");
-    case FTPERR_NE_PROXYAUTH:
-	return ("NE_PROXYAUTH: Proxy authentication failed.");
-    case FTPERR_NE_CONNECT:
-	return ("NE_CONNECT: Could not connect to server.");
-    case FTPERR_NE_TIMEOUT:
-	return ("NE_TIMEOUT: Connection timed out.");
-    case FTPERR_NE_FAILED:
-	return ("NE_FAILED: The precondition failed.");
-    case FTPERR_NE_RETRY:
-	return ("NE_RETRY: Retry request.");
-    case FTPERR_NE_REDIRECT:
-	return ("NE_REDIRECT: Redirect received.");
-
-    case FTPERR_BAD_SERVER_RESPONSE:
-	return _("Bad server response");
-    case FTPERR_SERVER_IO_ERROR:
-	return _("Server I/O error");
-    case FTPERR_SERVER_TIMEOUT:
-	return _("Server timeout");
-    case FTPERR_BAD_HOST_ADDR:
-	return _("Unable to lookup server host address");
-    case FTPERR_BAD_HOSTNAME:
-	return _("Unable to lookup server host name");
-    case FTPERR_FAILED_CONNECT:
-	return _("Failed to connect to server");
-    case FTPERR_FAILED_DATA_CONNECT:
-	return _("Failed to establish data connection to server");
-    case FTPERR_FILE_IO_ERROR:
-	return _("I/O error to local file");
-    case FTPERR_PASSIVE_ERROR:
-	return _("Error setting remote server to passive mode");
-    case FTPERR_FILE_NOT_FOUND:
-	return _("File not found on server");
-    case FTPERR_NIC_ABORT_IN_PROGRESS:
-	return _("Abort in progress");
-
-    case FTPERR_UNKNOWN:
-    default:
-	return _("Unknown or unexpected error");
-    }
-}
-
 int ufdCopy(FD_t sfd, FD_t tfd)
 {
     char buf[BUFSIZ];
@@ -578,15 +520,14 @@ int ufdCopy(FD_t sfd, FD_t tfd)
 	if (rc < 0)
 	    break;
  	if (rc != itemsRead) {
-	    rc = FTPERR_FILE_IO_ERROR;
+	    rc = -1;
 	    break;
 	}
 
 	itemsCopied += itemsRead;
     }
 
-    DBGIO(sfd, (stderr, "++ copied %d bytes: %s\n", itemsCopied,
-	ftpStrerror(rc)));
+    DBGIO(sfd, (stderr, "++ copied %d bytes\n", itemsCopied));
 
     return rc;
 }
@@ -749,7 +690,7 @@ static int ufdClose( void * cookie)
  * Deal with remote url's by fetching them with a helper application
  * and treat as local file afterwards.
  * TODO:
- * - better error checking + reporting
+ * - better error checking + reporting 
  * - curl & friends don't know about hkp://, transform to http?
  */
 

@@ -180,7 +180,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    if ((rc = urlGetFile(sp->fullSource, fn)) != 0) {
 		rpmlog(RPMLOG_ERR,
 			_("Couldn't download nosource %s: %s\n"),
-			sp->fullSource, ftpStrerror(rc));
+			sp->fullSource);
 		return NULL;
 	    }
 	}
