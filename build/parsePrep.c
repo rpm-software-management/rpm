@@ -154,7 +154,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	}
     }
     if (sp == NULL) {
-	if (c != INT_MAX) {
+	if (c) {
 	    rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
 	} else {
 	    rpmlog(RPMLOG_ERR, _("No \"Source:\" tag in the spec file\n"));
@@ -349,7 +349,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* do the default action */
    if (!createDir && !skipDefaultAction) {
-	char *chptr = doUntar(spec, INT_MAX, quietly);
+	char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
 	    return RPMRC_FAIL;
 	appendLineStringBuf(spec->prep, chptr);
