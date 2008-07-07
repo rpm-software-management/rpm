@@ -157,7 +157,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	if (c != INT_MAX) {
 	    rpmlog(RPMLOG_ERR, _("No source number %u\n"), c);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("No \"Source:\" tag in the spec file\n"), c);
+	    rpmlog(RPMLOG_ERR, _("No \"Source:\" tag in the spec file\n"));
 	}
 	return NULL;
     }
