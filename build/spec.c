@@ -17,8 +17,6 @@
 
 #include "debug.h"
 
-extern int specedit;
-
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
@@ -355,20 +353,6 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
 
 /**
  */
-static inline speclines newSl(void)
-{
-    speclines sl = NULL;
-    if (specedit) {
-	sl = xmalloc(sizeof(*sl));
-	sl->sl_lines = NULL;
-	sl->sl_nalloc = 0;
-	sl->sl_nlines = 0;
-    }
-    return sl;
-}
-
-/**
- */
 static inline speclines freeSl(speclines sl)
 {
     int i;
@@ -377,20 +361,6 @@ static inline speclines freeSl(speclines sl)
 	sl->sl_lines[i] = _free(sl->sl_lines[i]);
     sl->sl_lines = _free(sl->sl_lines);
     return _free(sl);
-}
-
-/**
- */
-static inline spectags newSt(void)
-{
-    spectags st = NULL;
-    if (specedit) {
-	st = xmalloc(sizeof(*st));
-	st->st_t = NULL;
-	st->st_nalloc = 0;
-	st->st_ntags = 0;
-    }
-    return st;
 }
 
 /**
@@ -414,8 +384,8 @@ rpmSpec newSpec(void)
     
     spec->specFile = NULL;
 
-    spec->sl = newSl();
-    spec->st = newSt();
+    spec->sl = NULL;
+    spec->st = NULL;
 
     spec->fileStack = NULL;
     spec->lbuf[0] = '\0';
@@ -682,11 +652,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     }
 
     res = 0;
-    if (specedit) {
-	printNewSpecfile(spec);
-	goto exit;
-    }
-
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
 	xx = qva->qva_showPackage(qva, ts, pkg->header);
 

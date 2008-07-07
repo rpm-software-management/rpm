@@ -12,8 +12,6 @@
 
 struct rpmQVKArguments_s rpmQVKArgs;
 
-int specedit = 0;
-
 #define POPT_QUERYFORMAT	-1000
 #define POPT_WHATREQUIRES	-1001
 #define POPT_WHATPROVIDES	-1002
@@ -257,8 +255,6 @@ struct poptOption rpmQueryPoptTable[] = {
 	POPT_QUERYFORMAT, NULL, NULL },
  { "queryformat", '\0', POPT_ARG_STRING, 0, POPT_QUERYFORMAT,
 	N_("use the following query format"), "QUERYFORMAT" },
- { "specedit", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &specedit, -1,
-	N_("substitute i18n sections into spec file"), NULL },
  { "state", 's', 0, 0, 's',
 	N_("display the states of the listed files"), NULL },
    POPT_TABLEEND

@@ -206,10 +206,6 @@ extern struct poptOption rpmQVSourcePoptTable[];
 
 /** \ingroup rpmcli
  */
-extern int specedit;
-
-/** \ingroup rpmcli
- */
 extern struct poptOption rpmQueryPoptTable[];
 
 /** \ingroup rpmcli
