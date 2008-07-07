@@ -253,7 +253,7 @@ typedef const struct VFA {
 
 /**
  */
-VFA_t const verifyAttrs[] = {
+static VFA_t const verifyAttrs[] = {
     { "md5",	0,	RPMVERIFY_MD5 },
     { "size",	0,	RPMVERIFY_FILESIZE },
     { "link",	0,	RPMVERIFY_LINKTO },
@@ -758,7 +758,7 @@ exit:
 
 /**
  */
-VFA_t virtualFileAttributes[] = {
+static VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0,	0 },	/* XXX why not RPMFILE_DIR? */
 	{ "%doc",	0,	RPMFILE_DOC },
 	{ "%ghost",	0,	RPMFILE_GHOST },
