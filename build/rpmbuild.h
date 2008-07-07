@@ -179,7 +179,7 @@ rpmParseState isPart(const char * line)	;
  * @retval res		pointer to uint32_t
  * @return		0 on success, 1 on failure
  */
-uint32_t parseUnsignedNum(char * line, uint32_t * res);
+uint32_t parseUnsignedNum(const char * line, uint32_t * res);
 
 /** \ingroup rpmbuild
  * Add changelog entry to header.

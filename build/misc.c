@@ -6,7 +6,7 @@
 #include <rpm/rpmbuild.h>
 #include "debug.h"
 
-uint32_t parseUnsignedNum(char * line, uint32_t * res)
+uint32_t parseUnsignedNum(const char * line, uint32_t * res)
 {
     char * s1 = NULL;
     unsigned long rc;
