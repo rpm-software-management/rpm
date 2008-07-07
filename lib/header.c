@@ -1083,7 +1083,6 @@ exit:
 	h->flags |= HEADERFLAG_ALLOCATED;
     } else if (ei)
 	ei = _free(ei);
-   	/* FIX: timedRead macro obscures annotation */
     return h;
 }
 

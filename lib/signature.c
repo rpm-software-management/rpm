@@ -465,9 +465,9 @@ static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
     {	FD_t fd;
 
 	rc = 0;
-	fd = Fopen(sigfile, "r.fdio");
+	fd = Fopen(sigfile, "r.ufdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
+	    rc = Fread(*pktp, sizeof(**pktp), *pktlenp, fd);
 	    if (sigfile) (void) unlink(sigfile);
 	    (void) Fclose(fd);
 	}
@@ -582,9 +582,9 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     {	FD_t fd;
 
 	rc = 0;
-	fd = Fopen(sigfile, "r.fdio");
+	fd = Fopen(sigfile, "r.ufdio");
 	if (fd != NULL && !Ferror(fd)) {
-	    rc = timedRead(fd, (void *)*pktp, *pktlenp);
+	    rc = Fread(*pktp, sizeof(**pktp), *pktlenp, fd);
 	    (void) Fclose(fd);
 	}
 	if (rc != *pktlenp) {
