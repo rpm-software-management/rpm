@@ -28,6 +28,7 @@ typedef const void *	hPTR_t RPM_GNUC_DEPRECATED;
 typedef rpm_count_t *	hCNT_t RPM_GNUC_DEPRECATED;
 
 typedef rpmSpec		Spec RPM_GNUC_DEPRECATED;
+typedef rpmalKey	alKey RPM_GNUC_DEPRECATED;
 
 /* legacy header interfaces */
 
@@ -207,6 +208,19 @@ typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
 			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 typedef int (*HRE_t) (Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
 /** @} */
+
+/* other misc renamed / namespaced functions */
+/* TODO: arrange deprecation warnings on these too... */
+#define isCompressed	rpmFileIsCompressed
+#define makeTempFile	rpmMkTempFile
+#define whatis		rpmfiWhatis
+#define freeFilesystems	rpmFreeFilesystems
+#define	tagName		rpmTagGetName
+#define tagType		rpmTagGetType
+#define tagValue	rpmTagGetValue
+
+#define rpmMessage	rpmlog
+#define rpmError	rpmlog
 
 #endif /* _RPM_4_4_COMPAT */
 
