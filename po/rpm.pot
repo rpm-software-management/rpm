@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-07-04 14:31+0300\n"
+"POT-Creation-Date: 2008-07-08 12:59+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -985,47 +985,56 @@ msgstr ""
 msgid "Bad source: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:80
+#: build/parsePrep.c:81
 #, c-format
 msgid "No patch number %u\n"
 msgstr ""
 
-#: build/parsePrep.c:148
+#: build/parsePrep.c:83
+#, c-format
+msgid "%%patch without corresponding \"Patch:\" tag\n"
+msgstr ""
+
+#: build/parsePrep.c:158
 #, c-format
 msgid "No source number %u\n"
 msgstr ""
 
-#: build/parsePrep.c:169
+#: build/parsePrep.c:160
+msgid "No \"Source:\" tag in the spec file\n"
+msgstr ""
+
+#: build/parsePrep.c:182
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:256
+#: build/parsePrep.c:269
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:271
+#: build/parsePrep.c:284
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:290
+#: build/parsePrep.c:303
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:449
+#: build/parsePrep.c:460
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:466
+#: build/parsePrep.c:473
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1248,18 +1257,18 @@ msgstr ""
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:317
-#: lib/poptQV.c:355
+#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:313
+#: lib/poptQV.c:351
 msgid "don't verify package digest(s)"
 msgstr ""
 
-#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:319
-#: lib/poptQV.c:358
+#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:315
+#: lib/poptQV.c:354
 msgid "don't verify database header(s) when retrieved"
 msgstr ""
 
-#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:321
-#: lib/poptQV.c:360
+#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:317
+#: lib/poptQV.c:356
 msgid "don't verify package signature(s)"
 msgstr ""
 
@@ -1350,27 +1359,22 @@ msgstr ""
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/spec.c:229
+#: build/spec.c:227
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr ""
 
-#: build/spec.c:235
+#: build/spec.c:233
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
 msgstr ""
 
-#: build/spec.c:295
+#: build/spec.c:293
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr ""
 
-#: build/spec.c:613
-#, c-format
-msgid "can't query %s: %s\n"
-msgstr ""
-
-#: build/spec.c:680
+#: build/spec.c:554
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
@@ -1791,11 +1795,7 @@ msgstr ""
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:295
-msgid "debug URL cache handling"
-msgstr ""
-
-#: lib/poptALL.c:357
+#: lib/poptALL.c:355
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -1914,7 +1914,7 @@ msgstr ""
 msgid "do not verify package dependencies"
 msgstr ""
 
-#: lib/poptI.c:204 lib/poptQV.c:280
+#: lib/poptI.c:204 lib/poptQV.c:276
 msgid "don't verify MD5 digest of files"
 msgstr ""
 
@@ -2016,204 +2016,200 @@ msgstr ""
 msgid "upgrade package(s)"
 msgstr ""
 
-#: lib/poptQV.c:96
+#: lib/poptQV.c:94
 msgid "query/verify all packages"
 msgstr ""
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:96
 msgid "rpm checksig mode"
 msgstr ""
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:98
 msgid "query/verify package(s) owning file"
 msgstr ""
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:100
 msgid "query/verify package(s) in group"
 msgstr ""
 
-#: lib/poptQV.c:104
+#: lib/poptQV.c:102
 msgid "query/verify a package file"
 msgstr ""
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:105
 msgid "query/verify package(s) from TOP file tree walk"
 msgstr ""
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:107
 msgid "query/verify package(s) from system HDLIST"
 msgstr ""
 
-#: lib/poptQV.c:112
+#: lib/poptQV.c:110
 msgid "query/verify package(s) with package identifier"
 msgstr ""
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:112
 msgid "query/verify package(s) with header identifier"
 msgstr ""
 
-#: lib/poptQV.c:116
+#: lib/poptQV.c:114
 msgid "query/verify package(s) with file identifier"
 msgstr ""
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:117
 msgid "rpm query mode"
 msgstr ""
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:119
 msgid "query/verify a header instance"
 msgstr ""
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:121
 msgid "query a spec file"
 msgstr ""
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:121
 msgid "<spec>"
 msgstr ""
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:123
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:125
 msgid "query the package(s) triggered by the package"
 msgstr ""
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:127
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/poptQV.c:131
+#: lib/poptQV.c:129
 msgid "query/verify the package(s) which require a dependency"
 msgstr ""
 
-#: lib/poptQV.c:133
+#: lib/poptQV.c:131
 msgid "query/verify the package(s) which provide a dependency"
 msgstr ""
 
-#: lib/poptQV.c:136
+#: lib/poptQV.c:134
 msgid "create transaction set"
 msgstr ""
 
-#: lib/poptQV.c:138
+#: lib/poptQV.c:136
 msgid "do not order transaction set"
 msgstr ""
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:138
 msgid "do not glob arguments"
 msgstr ""
 
-#: lib/poptQV.c:142
+#: lib/poptQV.c:140
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:144
+#: lib/poptQV.c:142
 msgid "do not read headers"
 msgstr ""
 
-#: lib/poptQV.c:241
+#: lib/poptQV.c:239
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:243
+#: lib/poptQV.c:241
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:245
+#: lib/poptQV.c:243
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:249
+#: lib/poptQV.c:247
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:254
+#: lib/poptQV.c:252
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:259
+#: lib/poptQV.c:257
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:261
-msgid "substitute i18n sections into spec file"
-msgstr ""
-
-#: lib/poptQV.c:263
+#: lib/poptQV.c:259
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:283
+#: lib/poptQV.c:279
 msgid "don't verify size of files"
 msgstr ""
 
-#: lib/poptQV.c:286
+#: lib/poptQV.c:282
 msgid "don't verify symlink path of files"
 msgstr ""
 
-#: lib/poptQV.c:289
+#: lib/poptQV.c:285
 msgid "don't verify owner of files"
 msgstr ""
 
-#: lib/poptQV.c:292
+#: lib/poptQV.c:288
 msgid "don't verify group of files"
 msgstr ""
 
-#: lib/poptQV.c:295
+#: lib/poptQV.c:291
 msgid "don't verify modification time of files"
 msgstr ""
 
-#: lib/poptQV.c:298 lib/poptQV.c:301
+#: lib/poptQV.c:294 lib/poptQV.c:297
 msgid "don't verify mode of files"
 msgstr ""
 
-#: lib/poptQV.c:304
+#: lib/poptQV.c:300
 msgid "don't verify file security contexts"
 msgstr ""
 
-#: lib/poptQV.c:306
+#: lib/poptQV.c:302
 msgid "don't verify files in package"
 msgstr ""
 
-#: lib/poptQV.c:308 tools/rpmgraph.c:245
+#: lib/poptQV.c:304 tools/rpmgraph.c:245
 msgid "don't verify package dependencies"
 msgstr ""
 
-#: lib/poptQV.c:311 lib/poptQV.c:314
+#: lib/poptQV.c:307 lib/poptQV.c:310
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/poptQV.c:326
+#: lib/poptQV.c:322
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:329
+#: lib/poptQV.c:325
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:342
+#: lib/poptQV.c:338
 msgid "sign package(s) (identical to --resign)"
 msgstr ""
 
-#: lib/poptQV.c:344
+#: lib/poptQV.c:340
 msgid "verify package signature(s)"
 msgstr ""
 
-#: lib/poptQV.c:346
+#: lib/poptQV.c:342
 msgid "delete package signatures"
 msgstr ""
 
-#: lib/poptQV.c:348
+#: lib/poptQV.c:344
 msgid "import an armored public key"
 msgstr ""
 
-#: lib/poptQV.c:350
+#: lib/poptQV.c:346
 msgid "sign package(s) (identical to --addsign)"
 msgstr ""
 
-#: lib/poptQV.c:352
+#: lib/poptQV.c:348
 msgid "generate signature"
 msgstr ""
 
@@ -2360,7 +2356,7 @@ msgstr ""
 msgid "record %lu could not be read\n"
 msgstr ""
 
-#: lib/query.c:568 lib/rpminstall.c:647
+#: lib/query.c:568 lib/rpminstall.c:646
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2514,8 +2510,8 @@ msgstr ""
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:353
-#: lib/rpminstall.c:482 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:352
+#: lib/rpminstall.c:481 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2525,7 +2521,7 @@ msgstr ""
 msgid "unknown tag: \"%s\"\n"
 msgstr ""
 
-#: lib/rpmgi.c:627 lib/rpminstall.c:525 lib/rpminstall.c:681
+#: lib/rpmgi.c:627 lib/rpminstall.c:524 lib/rpminstall.c:680
 #: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr ""
@@ -2545,50 +2541,50 @@ msgstr ""
 
 #: lib/rpminstall.c:315
 #, c-format
-msgid "skipping %s - transfer failed - %s\n"
+msgid "skipping %s - transfer failed\n"
 msgstr ""
 
-#: lib/rpminstall.c:372 lib/rpminstall.c:742 tools/rpmgraph.c:139
+#: lib/rpminstall.c:371 lib/rpminstall.c:741 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:411
+#: lib/rpminstall.c:410
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr ""
 
-#: lib/rpminstall.c:458
+#: lib/rpminstall.c:457
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:463
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr ""
 
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:495
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:568
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:655
 #, c-format
 msgid "\"%s\" specifies multiple packages\n"
 msgstr ""
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:725
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:731
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -3336,58 +3332,6 @@ msgstr ""
 msgid "lua hook failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmio.c:511
-msgid "Success"
-msgstr ""
-
-#: rpmio/rpmio.c:534
-msgid "Bad server response"
-msgstr ""
-
-#: rpmio/rpmio.c:536
-msgid "Server I/O error"
-msgstr ""
-
-#: rpmio/rpmio.c:538
-msgid "Server timeout"
-msgstr ""
-
-#: rpmio/rpmio.c:540
-msgid "Unable to lookup server host address"
-msgstr ""
-
-#: rpmio/rpmio.c:542
-msgid "Unable to lookup server host name"
-msgstr ""
-
-#: rpmio/rpmio.c:544
-msgid "Failed to connect to server"
-msgstr ""
-
-#: rpmio/rpmio.c:546
-msgid "Failed to establish data connection to server"
-msgstr ""
-
-#: rpmio/rpmio.c:548
-msgid "I/O error to local file"
-msgstr ""
-
-#: rpmio/rpmio.c:550
-msgid "Error setting remote server to passive mode"
-msgstr ""
-
-#: rpmio/rpmio.c:552
-msgid "File not found on server"
-msgstr ""
-
-#: rpmio/rpmio.c:554
-msgid "Abort in progress"
-msgstr ""
-
-#: rpmio/rpmio.c:558
-msgid "Unknown or unexpected error"
-msgstr ""
-
 #: rpmio/rpmlog.c:36
 msgid "(no error)"
 msgstr ""
@@ -3409,7 +3353,7 @@ msgstr ""
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
 
-#: rpmio/url.c:217
+#: rpmio/url.c:213
 msgid "url port must be a number\n"
 msgstr ""
 
