@@ -4,6 +4,10 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum rpmtdFlags_e {
     RPMTD_NONE		= 0,
     RPMTD_ALLOCED	= (1 << 0),	/* was memory allocated? */
@@ -317,5 +321,9 @@ int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi);
  * @return		New container or NULL on error
  */
 rpmtd rpmtdDup(rpmtd td);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMTD_H */
