@@ -198,14 +198,14 @@ void * headerFreeData(rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
  * Prototypes for headerGetEntry(), headerFreeData() etc vectors.
  * @{
  */
-typedef void * (*HFD_t) (rpm_data_t data, rpmTagType type);
+typedef void * (*HFD_t) (rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
 typedef int (*HGE_t) (Header h, rpmTag tag, rpmTagType * type,
-			rpm_data_t * p, rpm_count_t * c);
+			rpm_data_t * p, rpm_count_t * c) RPM_GNUC_DEPRECATED;
 typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c);
+			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
-			rpm_constdata_t p, rpm_count_t c);
-typedef int (*HRE_t) (Header h, rpmTag tag);
+			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
+typedef int (*HRE_t) (Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
 /** @} */
 
 #endif /* _RPM_4_4_COMPAT */
