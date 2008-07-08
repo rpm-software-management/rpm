@@ -219,6 +219,18 @@ typedef int (*HRE_t) (Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
 #define tagType		rpmTagGetType
 #define tagValue	rpmTagGetValue
 
+#define xislower	rislower
+#define xisupper	risupper
+#define xisalpha	risalpha
+#define xisdigit	risdigit
+#define xisalnum	risalnum
+#define xisblank	risblank
+#define xisspace	risspace
+#define xtolower	rtolower
+#define xtoupper	rtoupper
+#define xstrcasecmp	rstrcasecmp
+#define xstrncasecmp	rstrncasecmp
+
 #define rpmMessage	rpmlog
 #define rpmError	rpmlog
 
