@@ -353,6 +353,9 @@ package or when debugging this package.\
 #
 #%vendor
 
+#	Default fuzz level for %patch in spec file.
+%_default_patch_fuzz	0
+
 #==============================================================================
 # ---- Build configuration macros.
 #
