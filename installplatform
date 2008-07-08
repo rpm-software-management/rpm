@@ -112,6 +112,10 @@ for SUBST in $SUBSTS ; do
 	ISANAME=x86
 	ISABITS=64
 	;;
+    ia64)
+	ISANAME=ia
+	ISABITS=64
+	;;
   esac
 
   if [ -n "$MULTILIBNO" ]; then
