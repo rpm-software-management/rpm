@@ -27,6 +27,7 @@ typedef rpmTagType *	hTYP_t;
 typedef const void *	hPTR_t;
 typedef rpm_count_t *	hCNT_t;
 
+typedef rpmSpec		Spec;
 
 /* legacy header interfaces */
 
