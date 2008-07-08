@@ -904,11 +904,3 @@ exit:
     return hsa.val;
 }
 
-char * headerSprintf(Header h, const char * fmt,
-		     void * tbltags,
-		     void * extensions,
-		     errmsg_t * errmsg)
-{
-    return headerFormat(h, fmt, errmsg);
-}
-

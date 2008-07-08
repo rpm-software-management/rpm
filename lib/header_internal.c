@@ -5,6 +5,9 @@
 #include "system.h"
 
 #include <rpm/rpmtypes.h>
+#define _RPM_4_4_COMPAT
+#include <rpm/rpmlegacy.h>
+#undef _RPM_4_4_COMPAT
 #include "lib/header_internal.h"
 
 #include "debug.h"
