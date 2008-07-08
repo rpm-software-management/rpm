@@ -22,6 +22,12 @@ typedef uint32_t	uint_32;
 typedef uint16_t	uint_16;
 typedef uint8_t		uint_8;
 
+typedef rpmTag *	hTAG_t;
+typedef rpmTagType *	hTYP_t;
+typedef const void *	hPTR_t;
+typedef rpm_count_t *	hCNT_t;
+
+
 /* legacy header interfaces */
 
 /** \ingroup header_legacy
