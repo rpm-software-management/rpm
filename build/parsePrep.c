@@ -421,7 +421,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	{ NULL, 'F', POPT_ARG_INT, &opt_F, 'F', NULL, NULL },
 	{ NULL, 0, 0, NULL, 0, NULL, NULL }
     };
-    poptContext optCon;
+    poptContext optCon = NULL;
 
     opt_p = opt_R = opt_E = 0;
     opt_F = rpmExpandNumeric("%{_default_patch_fuzz}");		/* get default fuzz factor for %patch */
