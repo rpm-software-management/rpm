@@ -5,9 +5,6 @@
 #include "system.h"
 
 #include <rpm/rpmtypes.h>
-#define _RPM_4_4_COMPAT
-#include <rpm/rpmlegacy.h>
-#undef _RPM_4_4_COMPAT
 #include "lib/header_internal.h"
 
 #include "debug.h"
@@ -176,6 +173,8 @@ void headerDump(Header h, FILE *f, int flags)
  * Backwards compatibility wrappers for legacy interfaces.
  * Remove these some day...
  */
+#define _RPM_4_4_COMPAT
+#include <rpm/rpmlegacy.h>
 
 /* dumb macro to avoid 50 copies of this code while converting... */
 #define TDWRAP() \
@@ -311,3 +310,4 @@ int headerAddEntry(Header h, rpmTag tag, rpmTagType type,
 {
     return headerPutWrap(h, tag, type, p, c, HEADERPUT_DEFAULT);
 }
+#undef _RPM_4_4_COMPAT
