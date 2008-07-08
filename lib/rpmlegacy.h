@@ -15,19 +15,19 @@ extern "C" {
 #ifdef _RPM_4_4_COMPAT
 
 /* mappings for legacy types */
-typedef int32_t		int_32;
-typedef int16_t		int_16;
-typedef int8_t		int_8;
-typedef uint32_t	uint_32;
-typedef uint16_t	uint_16;
-typedef uint8_t		uint_8;
+typedef int32_t		int_32 RPM_GNUC_DEPRECATED;
+typedef int16_t		int_16 RPM_GNUC_DEPRECATED;
+typedef int8_t		int_8 RPM_GNUC_DEPRECATED;
+typedef uint32_t	uint_32 RPM_GNUC_DEPRECATED;
+typedef uint16_t	uint_16 RPM_GNUC_DEPRECATED;
+typedef uint8_t		uint_8 RPM_GNUC_DEPRECATED;
 
-typedef rpmTag *	hTAG_t;
-typedef rpmTagType *	hTYP_t;
-typedef const void *	hPTR_t;
-typedef rpm_count_t *	hCNT_t;
+typedef rpmTag *	hTAG_t RPM_GNUC_DEPRECATED;
+typedef rpmTagType *	hTYP_t RPM_GNUC_DEPRECATED;
+typedef const void *	hPTR_t RPM_GNUC_DEPRECATED;
+typedef rpm_count_t *	hCNT_t RPM_GNUC_DEPRECATED;
 
-typedef rpmSpec		Spec;
+typedef rpmSpec		Spec RPM_GNUC_DEPRECATED;
 
 /* legacy header interfaces */
 
