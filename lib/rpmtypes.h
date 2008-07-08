@@ -8,7 +8,7 @@
  * @todo The grouping needs love to look sane...
  */
 
-#include <rpm/rpmints.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

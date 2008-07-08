@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <rpm/rpmints.h>
+#include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 
 #ifdef __cplusplus

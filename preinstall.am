@@ -1,7 +1,3 @@
-include/rpm/rpmints.h: lib/rpmints.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/lib/rpmints.h include/rpm/rpmints.h
-BUILT_SOURCES += include/rpm/rpmints.h
-CLEANFILES += include/rpm/rpmints.h
 include/rpm/argv.h: rpmio/argv.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/argv.h include/rpm/argv.h
 BUILT_SOURCES += include/rpm/argv.h
@@ -86,6 +82,10 @@ include/rpm/rpmgi.h: lib/rpmgi.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmgi.h include/rpm/rpmgi.h
 BUILT_SOURCES += include/rpm/rpmgi.h
 CLEANFILES += include/rpm/rpmgi.h
+include/rpm/rpmlegacy.h: lib/rpmlegacy.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/lib/rpmlegacy.h include/rpm/rpmlegacy.h
+BUILT_SOURCES += include/rpm/rpmlegacy.h
+CLEANFILES += include/rpm/rpmlegacy.h
 include/rpm/rpmps.h: lib/rpmps.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmps.h include/rpm/rpmps.h
 BUILT_SOURCES += include/rpm/rpmps.h

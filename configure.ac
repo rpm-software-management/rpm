@@ -1028,8 +1028,6 @@ AC_DEFINE([__RPM_USES_STDINT_H__],[1],[if rpm uses stdint.h])
 
 AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
 
-AC_CONFIG_HEADERS([lib/rpmints.h])
-
 AC_CONFIG_FILES([Makefile
 	rpmio/Makefile lib/Makefile build/Makefile
 	po/Makefile.in scripts/Makefile 

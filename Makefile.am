@@ -64,6 +64,7 @@ pkginclude_HEADERS += lib/rpmal.h
 pkginclude_HEADERS += lib/rpmds.h
 pkginclude_HEADERS += lib/rpmfi.h
 pkginclude_HEADERS += lib/rpmgi.h
+pkginclude_HEADERS += lib/rpmlegacy.h
 pkginclude_HEADERS += lib/rpmps.h
 pkginclude_HEADERS += lib/rpmtag.h
 pkginclude_HEADERS += lib/rpmtd.h
@@ -71,7 +72,6 @@ pkginclude_HEADERS += lib/rpmte.h
 pkginclude_HEADERS += lib/rpmts.h
 pkginclude_HEADERS += lib/rpmtypes.h
 pkginclude_HEADERS += lib/rpmvf.h
-nodist_pkginclude_HEADERS += lib/rpmints.h
 
 pkginclude_HEADERS += build/rpmbuild.h
 pkginclude_HEADERS += build/rpmfc.h
