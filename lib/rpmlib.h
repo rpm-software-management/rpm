@@ -15,7 +15,9 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmds.h>	/* XXX move rpmlib provides to rpmds instead */
 #include <rpm/rpmpgp.h>
+#ifdef _RPM_4_4_COMPAT
 #include <rpm/rpmlegacy.h> /* legacy compat definitions if enabled */
+#endif
 
 #ifdef __cplusplus
 extern "C" {
