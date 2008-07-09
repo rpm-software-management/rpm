@@ -7,6 +7,7 @@
 
 #include <popt.h>
 
+#include <rpm/rpmlib.h>
 #include <rpm/rpmurl.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmcallback.h>
