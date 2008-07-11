@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2008-07-08 12:59+0300\n"
-"PO-Revision-Date: 2008-04-27 14:47+0200\n"
+"PO-Revision-Date: 2008-07-10 22:14+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -324,9 +324,9 @@ msgid "--sign may only be used during package building"
 msgstr "--sign można użyć tylko podczas budowania pakietów"
 
 #: rpmqv.c:579
-#, fuzzy, c-format
+#, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "utworzenie archiwum nie powiodło się: %s\n"
+msgstr "utworzenie potoku dla --pipe nie powiodło się: %m\n"
 
 #: rpmqv.c:589
 #, c-format
@@ -521,7 +521,7 @@ msgstr "Nie można mieszać specjalnego %%doc z innymi formami: %s\n"
 #: build/files.c:989
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
+msgstr "Nieznany algorytm skrótu pliku %u, używanie w zamian MD5\n"
 
 #: build/files.c:1017
 #, c-format
@@ -546,7 +546,7 @@ msgstr "Nie znaleziono pliku: %s\n"
 #: build/files.c:1429
 #, c-format
 msgid "File %s too large for payload\n"
-msgstr ""
+msgstr "Plik %s jest za duży dla danych\n"
 
 #: build/files.c:1568
 #, c-format
@@ -958,9 +958,9 @@ msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "wiersz %d: Docdir musi zaczynać się od \"/\": %s\n"
 
 #: build/parsePreamble.c:598
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
-msgstr "wiersz %d: pole Epoch musi być liczbą: %s\n"
+msgstr "wiersz %d: pole Epoch musi być niepodpisaną liczbą: %s\n"
 
 #: build/parsePreamble.c:638 build/parsePreamble.c:649
 #, c-format
@@ -1007,24 +1007,23 @@ msgid "Bad source: %s: %s\n"
 msgstr "Błędne źródło: %s: %s\n"
 
 #: build/parsePrep.c:81
-#, fuzzy, c-format
+#, c-format
 msgid "No patch number %u\n"
-msgstr "Brak łaty numer %d\n"
+msgstr "Brak łaty numer %u\n"
 
 #: build/parsePrep.c:83
 #, c-format
 msgid "%%patch without corresponding \"Patch:\" tag\n"
-msgstr ""
+msgstr "%%patch bez odpowiadającego mu znacznika \"Patch:\"\n"
 
 #: build/parsePrep.c:158
-#, fuzzy, c-format
+#, c-format
 msgid "No source number %u\n"
-msgstr "Brak źródła numer %d\n"
+msgstr "Brak źródła numer %u\n"
 
 #: build/parsePrep.c:160
-#, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
-msgstr "pakiet źródłowy nie zawiera pliku .spec\n"
+msgstr "Brak znacznika \"Source:\" w pliku spec\n"
 
 #: build/parsePrep.c:182
 #, c-format
@@ -1330,9 +1329,9 @@ msgid "generate headers compatible with (legacy) rpm[23] packaging"
 msgstr "utwórz nagłówki zgodne z (przestarzałymi) pakietami rpm[23]"
 
 #: build/rpmfc.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "Nie można rozdzielić %s: %s\n"
+msgstr "Nie można utworzyć potoku dla %s: %m\n"
 
 #: build/rpmfc.c:122
 #, c-format
@@ -1390,9 +1389,9 @@ msgid "line %d: Bad number: %s\n"
 msgstr "wiersz %d: błędny numer: %s\n"
 
 #: build/spec.c:233
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad no%s number: %u\n"
-msgstr "wiersz %d: błędny numer no%s: %d\n"
+msgstr "wiersz %d: błędny numer no%s: %u\n"
 
 #: build/spec.c:293
 #, c-format
@@ -2453,6 +2452,8 @@ msgstr "%s: headerRead nie powiodło się\n"
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
+"%s: nie można odczytać niezmiennego regionu nagłówka. Pakiet jest "
+"uszkodzony?\n"
 
 #: lib/rpmchecksig.c:769
 msgid "NOT OK"
@@ -2544,6 +2545,8 @@ msgstr "wewnętrzna obsługa skryptów lua."
 #: lib/rpmds.c:1033
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
+"algorytm sumy kontrolnej skrótu pliku jest konfigurowalny dla każdego "
+"pakietu osobno"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:352
 #: lib/rpminstall.c:481 tools/rpmgraph.c:119 tools/rpmgraph.c:156
@@ -2575,9 +2578,9 @@ msgid "Retrieving %s\n"
 msgstr "Pobieranie %s\n"
 
 #: lib/rpminstall.c:315
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s - transfer failed\n"
-msgstr "pomijanie %s - przesłanie nie powiodło się - %s\n"
+msgstr "pomijanie %s - przesłanie nie powiodło się\n"
 
 #: lib/rpminstall.c:371 lib/rpminstall.c:741 tools/rpmgraph.c:139
 #, c-format
@@ -2696,9 +2699,9 @@ msgid "installing package %s needs %ld%cB on the %s filesystem"
 msgstr "instalowanie pakietu %s wymaga %ld%cB w systemie plików %s"
 
 #: lib/rpmps.c:332
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %llu inodes on the %s filesystem"
-msgstr "instalowanie pakietu %s wymaga %ld i-węzłów w systemie plików %s"
+msgstr "instalowanie pakietu %s wymaga %llu i-węzłów w systemie plików %s"
 
 #: lib/rpmps.c:336
 #, c-format
@@ -2765,9 +2768,9 @@ msgid "missing argument for %s at %s:%d\n"
 msgstr "brak argumentu dla %s w %s:%d\n"
 
 #: lib/rpmrc.c:575
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %m\n"
-msgstr "nie można otworzyć %s w %s:%d: %s\n"
+msgstr "nie można otworzyć %s w %s:%d: %m\n"
 
 #: lib/rpmrc.c:591
 #, c-format
@@ -2790,9 +2793,9 @@ msgid "Please contact %s\n"
 msgstr "Skontaktuj się z %s\n"
 
 #: lib/rpmrc.c:1636
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "Nie można otworzyć %s do odczytania: %s.\n"
+msgstr "Nie można otworzyć %s do odczytania: %m.\n"
 
 #: lib/rpmts.c:104
 #, c-format
@@ -2815,7 +2818,7 @@ msgid "missing ')' in package label: %s\n"
 msgstr "brak \")\" w etykiecie pakietu: %s\n"
 
 #: lib/rpmts.c:314
-#, fuzzy, c-format
+#, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: odczytanie klucza publicznego nie powiodło się.\n"
 
@@ -2865,7 +2868,7 @@ msgstr "sigh rozmiar podpisu(%zd): BŁĘDNY, fstat(2) nie powiodło się\n"
 #: lib/signature.c:394 lib/signature.c:531
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
-msgstr ""
+msgstr "Nie można utworzyć potoku do podpisania: %m"
 
 #: lib/signature.c:433 lib/signature.c:551 lib/signature.c:889
 #: lib/signature.c:922
@@ -2897,6 +2900,7 @@ msgstr "zapisanie podpisu przez gpg nie powiodło się\n"
 #: lib/signature.c:695
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
+"Nie można odczytać niezmiennego regionu nagłówka. Pakiet jest uszkodzony?\n"
 
 #: lib/signature.c:927 lib/signature.c:976
 #, c-format
@@ -3403,93 +3407,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "nie sprawdzaj podpisu nagłówka+danych"
-
-#~ msgid "can't query %s: %s\n"
-#~ msgstr "nie można odpytać %s: %s\n"
-
-#, fuzzy
-#~ msgid "(encoding failed)"
-#~ msgstr "wykonanie nie powiodło się\n"
-
-#~ msgid "debug URL cache handling"
-#~ msgstr "debuguj obsługę pamięci podręcznej URL-i"
-
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "zamień sekcje i18n w plik spec"
-
-#~ msgid "cannot open Solve database in %s\n"
-#~ msgstr "nie można otworzyć bazy danych Solve w %s\n"
-
-#~ msgid "    Suggested resolutions:\n"
-#~ msgstr "    Sugerowane sposoby spełnienia:\n"
-
-#~ msgid "(index out of range)"
-#~ msgstr "(indeks poza zakresem)"
-
-#~ msgid "Success"
-#~ msgstr "Sukces"
-
-#~ msgid "Bad server response"
-#~ msgstr "Błędna odpowiedź serwera"
-
-#~ msgid "Server I/O error"
-#~ msgstr "Błąd wejścia/wyjścia serwera"
-
-#~ msgid "Server timeout"
-#~ msgstr "Przekroczono limit czasu oczekiwania serwera"
-
-#~ msgid "Unable to lookup server host address"
-#~ msgstr "Nie można znaleźć adresu hosta serwera"
-
-#~ msgid "Unable to lookup server host name"
-#~ msgstr "Nie można znaleźć nazwy hosta serwera"
-
-#~ msgid "Failed to connect to server"
-#~ msgstr "Połączenie z serwerem nie powiodło się"
-
-#~ msgid "Failed to establish data connection to server"
-#~ msgstr "Ustanowienie połączenia danych do serwera nie powiodło się"
-
-#~ msgid "I/O error to local file"
-#~ msgstr "Błąd wejścia/wyjścia na lokalnym pliku"
-
-#~ msgid "Error setting remote server to passive mode"
-#~ msgstr "Błąd: ustawienie zdalnego serwera w tryb pasywny nie powiodło się"
-
-#~ msgid "File not found on server"
-#~ msgstr "Nie znaleziono pliku na serwerze"
-
-#~ msgid "Abort in progress"
-#~ msgstr "Przerywanie"
-
-#~ msgid "Unknown or unexpected error"
-#~ msgstr "Nieznany lub nieoczekiwany błąd"
-
-#~ msgid "don't update cache database, only print package paths"
-#~ msgstr ""
-#~ "nie aktualizuj pamięci podręcznej bazy danych, tylko wyświetl ścieżki "
-#~ "pakietu"
-
-#~ msgid "File tree walk options:"
-#~ msgstr "Opcje przejścia tree plików:"
-
-#~ msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-#~ msgstr "%s: makro %%{_cache_dbpath} jest błędnie skonfigurowane.\n"
-
-#~ msgid "%s: cache operation failed: ec %d.\n"
-#~ msgstr "%s: operacja w pamięci podręcznej nie powiodła się: ec %d.\n"
-
-#~ msgid "%s: headerGetEntry failed\n"
-#~ msgstr "%s: headerGetEntry nie powiodło się\n"
-
-#~ msgid "Failed to read %s: %s.\n"
-#~ msgstr "Odczytanie %s nie powiodło się: %s.\n"
-
-#~ msgid "%s expansion failed at %s:%d \"%s\"\n"
-#~ msgstr "rozwinięcie %s nie powiodło się w %s:%d \"%s\"\n"
-
-#~ msgid "Cannot expand %s\n"
-#~ msgstr "Nie można rozwinąć %s\n"
-
-#~ msgid "Cannot read %s, HOME is too large.\n"
-#~ msgstr "Nie można odczytać %s, HOME jest za duże.\n"
