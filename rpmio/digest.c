@@ -123,7 +123,7 @@ int
 rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
 {
     unsigned char * digest;
-    size_t digestlen;
+    unsigned int digestlen;
 
     if (ctx == NULL)
 	return -1;
