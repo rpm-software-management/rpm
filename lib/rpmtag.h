@@ -208,10 +208,10 @@ typedef enum rpmTag_e {
     RPMTAG_PATCHESNAME		= 1133, /* s[] deprecated placeholder (SuSE) */
     RPMTAG_PATCHESFLAGS		= 1134, /* i[] deprecated placeholder (SuSE) */
     RPMTAG_PATCHESVERSION	= 1135, /* s[] deprecated placeholder (SuSE) */
-    RPMTAG_CACHECTIME		= 1136,	/* i */
-    RPMTAG_CACHEPKGPATH		= 1137,	/* s */
-    RPMTAG_CACHEPKGSIZE		= 1138,	/* i */
-    RPMTAG_CACHEPKGMTIME	= 1139,	/* i */
+    RPMTAG_CACHECTIME		= 1136,	/* i internal - obsolete */
+    RPMTAG_CACHEPKGPATH		= 1137,	/* s internal - obsolete */
+    RPMTAG_CACHEPKGSIZE		= 1138,	/* i internal - obsolete */
+    RPMTAG_CACHEPKGMTIME	= 1139,	/* i internal - obsolete */
     RPMTAG_FILECOLORS		= 1140,	/* i[] */
     RPMTAG_FILECLASS		= 1141,	/* i[] */
     RPMTAG_CLASSDICT		= 1142,	/* s[] */
@@ -228,38 +228,38 @@ typedef enum rpmTag_e {
     RPMTAG_PRETRANSPROG		= 1153,	/* s */
     RPMTAG_POSTTRANSPROG	= 1154,	/* s */
     RPMTAG_DISTTAG		= 1155,	/* s */
-    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension */
-#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] */
-    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension */
-    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension */
-    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder */
-#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] */
-    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder */
-    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder */
-    RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder */
-    RPMTAG_CVSID		= 1163, /* s */
-#define	RPMTAG_SVNID	RPMTAG_CVSID	/* s */
-    RPMTAG_BLINKPKGID		= 1164, /* s[] */
-    RPMTAG_BLINKHDRID		= 1165, /* s[] */
-    RPMTAG_BLINKNEVRA		= 1166, /* s[] */
-    RPMTAG_FLINKPKGID		= 1167, /* s[] */
-    RPMTAG_FLINKHDRID		= 1168, /* s[] */
-    RPMTAG_FLINKNEVRA		= 1169, /* s[] */
-    RPMTAG_PACKAGEORIGIN	= 1170, /* s */
-    RPMTAG_TRIGGERPREIN		= 1171, /* internal */
-    RPMTAG_BUILDSUGGESTS	= 1172, /* internal */
-    RPMTAG_BUILDENHANCES	= 1173, /* internal */
-    RPMTAG_SCRIPTSTATES		= 1174, /* i[] scriptlet exit codes */
-    RPMTAG_SCRIPTMETRICS	= 1175, /* i[] scriptlet execution times */
-    RPMTAG_BUILDCPUCLOCK	= 1176, /* i */
+    RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension (unimplemented) */
+#define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] (unimplemented) */
+    RPMTAG_SUGGESTSVERSION	= 1157,	/* s[] extension (unimplemented) */
+    RPMTAG_SUGGESTSFLAGS	= 1158,	/* i[] extension (unimplemented) */
+    RPMTAG_ENHANCESNAME		= 1159,	/* s[] extension placeholder (unimplemented) */
+#define	RPMTAG_ENHANCES RPMTAG_ENHANCESNAME	/* s[] (unimplemented) */
+    RPMTAG_ENHANCESVERSION	= 1160,	/* s[] extension placeholder (unimplemented) */
+    RPMTAG_ENHANCESFLAGS	= 1161,	/* i[] extension placeholder (unimplemented) */
+    RPMTAG_PRIORITY		= 1162, /* i[] extension placeholder (unimplemented) */
+    RPMTAG_CVSID		= 1163, /* s (unimplemented) */
+#define	RPMTAG_SVNID	RPMTAG_CVSID	/* s (unimplemented) */
+    RPMTAG_BLINKPKGID		= 1164, /* s[] (unimplemented) */
+    RPMTAG_BLINKHDRID		= 1165, /* s[] (unimplemented) */
+    RPMTAG_BLINKNEVRA		= 1166, /* s[] (unimplemented) */
+    RPMTAG_FLINKPKGID		= 1167, /* s[] (unimplemented) */
+    RPMTAG_FLINKHDRID		= 1168, /* s[] (unimplemented) */
+    RPMTAG_FLINKNEVRA		= 1169, /* s[] (unimplemented) */
+    RPMTAG_PACKAGEORIGIN	= 1170, /* s (unimplemented) */
+    RPMTAG_TRIGGERPREIN		= 1171, /* internal (unimplemented) */
+    RPMTAG_BUILDSUGGESTS	= 1172, /* internal (unimplemented) */
+    RPMTAG_BUILDENHANCES	= 1173, /* internal (unimplemented) */
+    RPMTAG_SCRIPTSTATES		= 1174, /* i[] scriptlet exit codes (unimplemented) */
+    RPMTAG_SCRIPTMETRICS	= 1175, /* i[] scriptlet execution times (unimplemented) */
+    RPMTAG_BUILDCPUCLOCK	= 1176, /* i (unimplemented) */
     RPMTAG_FILEDIGESTALGO	= 1177, /* i file checksum algorithm */
-    RPMTAG_VARIANTS		= 1178, /* s[] */
-    RPMTAG_XMAJOR		= 1179, /* i */
-    RPMTAG_XMINOR		= 1180, /* i */
-    RPMTAG_REPOTAG		= 1181,	/* s */
-    RPMTAG_KEYWORDS		= 1182,	/* s[] */
-    RPMTAG_BUILDPLATFORMS	= 1183,	/* s[] */
-    RPMTAG_PACKAGECOLOR		= 1184, /* i */
+    RPMTAG_VARIANTS		= 1178, /* s[] (unimplemented) */
+    RPMTAG_XMAJOR		= 1179, /* i (unimplemented) */
+    RPMTAG_XMINOR		= 1180, /* i (unimplemented) */
+    RPMTAG_REPOTAG		= 1181,	/* s (unimplemented) */
+    RPMTAG_KEYWORDS		= 1182,	/* s[] (unimplemented) */
+    RPMTAG_BUILDPLATFORMS	= 1183,	/* s[] (unimplemented) */
+    RPMTAG_PACKAGECOLOR		= 1184, /* i (unimplemented) */
     RPMTAG_PACKAGEPREFCOLOR	= 1185, /* i (unimplemented) */
     RPMTAG_XATTRSDICT		= 1186, /* s[] (unimplemented) */
     RPMTAG_FILEXATTRSX		= 1187, /* i[] (unimplemented) */
