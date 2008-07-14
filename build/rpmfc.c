@@ -490,7 +490,7 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
 
   /* XXX .NET executables and libraries.  file(1) cannot differ from win32 
    * executables unfortunately :( */
-  { "PE executable",            RPMFC_MONO|RPMFC_INCLUDE },
+  { "Mono/.Net assembly",       RPMFC_MONO|RPMFC_INCLUDE },
 
   { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
