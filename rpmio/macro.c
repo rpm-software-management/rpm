@@ -797,8 +797,10 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     {	ARGV_t av = NULL;
 	char *s = xcalloc((lastc-se)+1, sizeof(*s));
 
-	memmove(s, se, (lastc-se));
-	ret = se + strlen(s) + 1;
+	/* XXX expandMacro() expects next \0 which can be beyond lastc */
+	ret = strchr(se, '\0');
+	memcpy(s, se, (lastc-se));
+
 	argvSplit(&av, s, " ");
 	argvAppend(&argv, av);
 
