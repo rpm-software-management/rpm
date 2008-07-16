@@ -1574,7 +1574,7 @@ rpmExpand(const char *arg, ...)
 {
     size_t blen = MACROBUFSIZ;
     char *buf = NULL;
-    char *p, *pe, *res;
+    char *p, *pe;
     const char *s;
     va_list ap;
 
@@ -1595,8 +1595,7 @@ rpmExpand(const char *arg, ...)
     (void) expandMacros(NULL, NULL, buf, blen);
 
 exit:
-    res = buf;
-    return res;
+    return buf;
 }
 
 int
