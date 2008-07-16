@@ -1574,7 +1574,7 @@ rpmExpand(const char *arg, ...)
 {
     size_t blen = MACROBUFSIZ;
     char *buf = NULL;
-    char *p, *pe;
+    char *pe;
     const char *s;
     va_list ap;
 
@@ -1585,11 +1585,9 @@ rpmExpand(const char *arg, ...)
 
     buf = xmalloc(blen);
     buf[0] = '\0';
-    p = buf;
-    pe = stpcpy(p, arg);
 
     va_start(ap, arg);
-    while ((s = va_arg(ap, const char *)) != NULL)
+    for (pe = buf, s = arg; s != NULL; s = va_arg(ap, const char *))
 	pe = stpcpy(pe, s);
     va_end(ap);
     (void) expandMacros(NULL, NULL, buf, blen);
