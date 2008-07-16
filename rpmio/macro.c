@@ -1583,14 +1583,25 @@ rpmExpand(const char *arg, ...)
 	goto exit;
     }
 
-    buf = xmalloc(blen);
+    /* precalculate unexpanded size on top of MACROBUFSIZ */
+    va_start(ap, arg);
+    for (s = arg; s != NULL; s = va_arg(ap, const char *))
+	blen += strlen(s);
+    va_end(ap);
+
+    buf = xmalloc(blen + 1);
     buf[0] = '\0';
 
     va_start(ap, arg);
     for (pe = buf, s = arg; s != NULL; s = va_arg(ap, const char *))
 	pe = stpcpy(pe, s);
     va_end(ap);
+
     (void) expandMacros(NULL, NULL, buf, blen);
+
+    /* expanded output is usually much less than alloced buffer, downsize */
+    blen = strlen(buf);
+    buf = xrealloc(buf, blen + 1);
 
 exit:
     return buf;
