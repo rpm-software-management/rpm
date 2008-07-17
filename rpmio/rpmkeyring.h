@@ -37,6 +37,20 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
 
 /** \ingroup rpmkeyring
+ * Reference a keyring.
+ * @param keyring	keyring handle
+ * @return		new keyring reference
+ */
+rpmKeyring rpmKeyringLink(rpmKeyring keyring);
+
+/** \ingroup rpmkeyring
+ * Unreference a keyring.
+ * @param keyring	keyring handle
+ * @return		NULL always
+ */
+rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
+
+/** \ingroup rpmkeyring
  * Create a new rpmPubkey from OpenPGP packet
  * @param pkt		OpenPGP packet data
  * @param pktlen	Data length
@@ -57,5 +71,19 @@ rpmPubkey rpmPubkeyRead(const char *filename);
  * @return		NULL always
  */
 rpmPubkey rpmPubkeyFree(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Reference a pubkey.
+ * @param key		Pubkey
+ * @return		new pubkey reference
+ */
+rpmPubkey rpmPubkeyLink(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Unreference a pubkey.
+ * @param key		Pubkey
+ * @return		NULL always
+ */
+rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
 
 #endif /* _RPMKEYDB_H */
