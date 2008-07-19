@@ -403,16 +403,16 @@ static int doSetupMacro(rpmSpec spec, const char *line)
  */
 static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 {
-    char *opt_b;
+    char *opt_b, *opt_P;
     char *buf = NULL;
-    int opt_P, opt_p, opt_R, opt_E, opt_F;
+    int opt_p, opt_R, opt_E, opt_F;
     int argc, c;
     const char **argv = NULL;
     ARGV_t patch, patchnums = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     
     struct poptOption const patchOpts[] = {
-	{ NULL, 'P', POPT_ARG_INT, &opt_P, 'P', NULL, NULL },
+	{ NULL, 'P', POPT_ARG_STRING, &opt_P, 'P', NULL, NULL },
 	{ NULL, 'p', POPT_ARG_INT, &opt_p, 'p', NULL, NULL },
 	{ NULL, 'R', POPT_ARG_NONE, &opt_R, 'R', NULL, NULL },
 	{ NULL, 'E', POPT_ARG_NONE, &opt_E, 'E', NULL, NULL },
