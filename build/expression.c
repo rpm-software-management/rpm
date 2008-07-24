@@ -286,7 +286,7 @@ static int rdToken(ParseState state)
       size_t ts;
 
       p++;
-      for (ts=1; p[ts] && p[ts] != '\"'; ts++);
+      for (ts=0; p[ts] && p[ts] != '\"'; ts++);
       temp = xmalloc(ts+1);
       memcpy(temp, p, ts);
       p += ts-1;
