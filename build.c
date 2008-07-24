@@ -195,11 +195,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	/* Make the directory of the tarball %_sourcedir for this run */
 	/* dirname() may modify contents so extra hoops needed. */
 	if (*arg != '/') {
-	    srcdir = dir = rpmGetCwd();
+	    dir = rpmGetCwd();
+	    rstrscat(&dir, "/", arg, NULL);
 	} else {
 	    dir = xstrdup(arg);
-	    srcdir = dirname(dir);
 	}
+	srcdir = dirname(dir);
 	addMacro(NULL, "_sourcedir", NULL, srcdir, RMIL_TARBALL);
 	free(dir);
     } else {
