@@ -280,7 +280,6 @@ static int rdToken(ParseState state)
 
       token = TOK_IDENTIFIER;
       v = valueMakeString(temp);
-      free(temp);
 
     } else if (*p == '\"') {
       char *temp;
