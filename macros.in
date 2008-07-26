@@ -220,7 +220,7 @@ package or when debugging this package.\
 %_srcrpmdir		%{_topdir}/SRPMS
 
 #	The directory where buildroots will be created.
-%buildrootdir		%{_topdir}/BUILDROOT
+%_buildrootdir		%{_topdir}/BUILDROOT
 
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
