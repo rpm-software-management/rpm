@@ -98,7 +98,7 @@ static char *doPatch(Spec spec, int c, int strip, const char *db,
 #endif
 	t = stpcpy( stpcpy(t, "--suffix "), db);
     }
-    if (fuzz) {
+    if (fuzz >= 0) {
 	t = stpcpy(t, " -F");
 	sprintf(t, "%d", fuzz);
 	t += strlen(t);
@@ -463,7 +463,8 @@ static int doPatchMacro(Spec spec, char *line)
     int patch_index, x;
 
     memset(patch_nums, 0, sizeof(patch_nums));
-    opt_P = opt_p = opt_R = opt_E = opt_F = 0;
+    opt_P = opt_p = opt_R = opt_E = 0;
+    opt_F = -1;
     opt_b = NULL;
     patch_index = 0;
 
@@ -514,8 +515,9 @@ static int doPatchMacro(Spec spec, char *line)
 	    } else {
 		fnum = strtok(NULL, " \t\n");
 	    }
+	    errno = 0;
 	    opt_F = (fnum ? strtol(fnum, &end, 10) : 0);
-	    if (! opt_F || *end) {
+	    if (opt_F < 0 || errno || *end) {
 		rpmError(RPMERR_BADSPEC,
 			_("line %d: Bad arg to %%patch -F: %s\n"),
 			spec->lineNum, spec->line);
