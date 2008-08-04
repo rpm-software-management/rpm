@@ -10,6 +10,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmkeyring.h>
 
 #include "lib/legacy.h"	/* XXX legacyRetrofit() */
 #include "lib/rpmlead.h"
@@ -485,7 +486,10 @@ verifyinfo_exit:
 	break;
     }
 
-    rc = rpmVerifySignature(rpmtsGetKeyring(ts, 1), &sigtd, dig, &buf);
+    {	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    	rc = rpmVerifySignature(keyring, &sigtd, dig, &buf);
+	rpmKeyringFree(keyring);
+    }
 
     if (msg) 
 	*msg = buf;
@@ -807,7 +811,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     }
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
-    rc = rpmVerifySignature(rpmtsGetKeyring(ts, 1), &sigtd, dig, &msg);
+    {	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    	rc = rpmVerifySignature(keyring, &sigtd, dig, &msg);
+	rpmKeyringFree(keyring);
+    }
 	
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */

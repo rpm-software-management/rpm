@@ -782,6 +782,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 exit:
     sigh = rpmFreeSignature(sigh);
+    rpmKeyringFree(keyring);
     pgpFreeDig(dig);
     return res;
 }
