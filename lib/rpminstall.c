@@ -264,6 +264,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 	fn = _free(fn);
 	if (rc || ac == 0) {
 	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
+	    eiu->numFailed++;
 	    continue;
 	}
 
