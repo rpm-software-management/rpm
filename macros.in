@@ -222,6 +222,9 @@ package or when debugging this package.\
 #	The directory where buildroots will be created.
 %_buildrootdir		%{_topdir}/BUILDROOT
 
+#	Build root path, where %install installs the package during build.
+%buildroot		%{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
+
 #	Directory where temporaray files can be created.
 %_tmppath		%{_var}/tmp
 
@@ -236,11 +239,6 @@ package or when debugging this package.\
 #	Macros that are initialized as a side effect of rpmrc and/or spec
 #	file parsing.
 #
-#	Configurable build root path, same as BuildRoot: in a specfile.
-#	(Note: the configured macro value will override the spec file value).
-#
-%buildroot		%{_buildrootdir}/%{name}-%{version}-%{release}.%{_arch}
-
 #	The sub-directory (relative to %{_builddir}) where sources are compiled.
 #	This macro is set after processing %setup, either explicitly from the
 #	value given to -n or the default name-version.
