@@ -414,7 +414,6 @@ rpmSpec newSpec(void)
     spec->sourceHeader = NULL;
     spec->sourceCpioList = NULL;
     
-    spec->gotBuildRoot = 0;
     spec->buildRoot = NULL;
     spec->buildSubdir = NULL;
 

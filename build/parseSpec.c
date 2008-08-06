@@ -424,28 +424,23 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     /* Set up a new Spec structure with no packages. */
     spec = newSpec();
 
-    /*
-     * Note: rpmGetPath should guarantee a "canonical" path. That means
-     * that the following pathologies should be weeded out:
-     *          //bin//sh
-     *          //usr//bin/
-     *          /.././../usr/../bin//./sh (XXX FIXME: dots not handled yet)
-     */
     spec->specFile = rpmGetPath(specFile, NULL);
     spec->fileStack = newOpenFileInfo();
     spec->fileStack->fileName = xstrdup(spec->specFile);
+    /* If buildRoot not specified, use default %{buildroot} */
     if (buildRoot) {
-	if (*buildRoot == '\0') {
-	    rpmlog(RPMLOG_ERR, _("BuildRoot couldn't be empty\n"));
-	    goto errxit;
-	}
-	if (!strcmp(buildRoot, "/")) {
-	    rpmlog(RPMLOG_ERR, _("BuildRoot can not be \"/\"\n"));
-	    goto errxit;
-        }
-	spec->gotBuildRoot = 1;
 	spec->buildRoot = xstrdup(buildRoot);
-	addMacro(spec->macros, "buildroot", NULL, buildRoot, RMIL_SPEC);
+    } else {
+	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
+    }
+    addMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
+    if (*spec->buildRoot == '\0') {
+	rpmlog(RPMLOG_ERR, _("BuildRoot couldn't be empty\n"));
+	goto errxit;
+    }
+    if (!strcmp(spec->buildRoot, "/")) {
+	rpmlog(RPMLOG_ERR, _("BuildRoot can not be \"/\"\n"));
+	goto errxit;
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->recursing = recursing;

@@ -522,44 +522,9 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
     case RPMTAG_BUILDROOT:
-	SINGLE_TOKEN_ONLY;
-      {	char * buildRoot = NULL;
-
-	/*
-	 * Note: rpmGenPath should guarantee a "canonical" path. That means
-	 * that the following pathologies should be weeded out:
-	 *          //bin//sh
-	 *          //usr//bin/
-	 *          /.././../usr/../bin//./sh
-	 */
-	if (spec->buildRoot == NULL) {
-	    buildRoot = rpmGenPath(NULL, "%{?buildroot:%{buildroot}}", NULL);
-	    if (strcmp(buildRoot, "/")) {
-		spec->buildRoot = buildRoot;
-		macro = NULL;
-	    } else {
-		const char * specPath = field;
-
-		buildRoot = _free(buildRoot);
-		if (*field == '\0') field = "/";
-		buildRoot = rpmGenPath(spec->rootDir, specPath, NULL);
-		spec->buildRoot = buildRoot;
-		field = (char *) buildRoot;
-	    }
-	    spec->gotBuildRoot = 1;
-	} else {
-	    macro = NULL;
-	}
-	buildRoot = rpmGenPath(NULL, spec->buildRoot, NULL);
-	if (*buildRoot == '\0') buildRoot = "/";
-	if (!strcmp(buildRoot, "/")) {
-	    rpmlog(RPMLOG_ERR,
-		     _("BuildRoot can not be \"/\": %s\n"), spec->buildRoot);
-	    free(buildRoot);
-	    return RPMRC_FAIL;
-	}
-	free(buildRoot);
-      }	break;
+	/* just silently ignore BuildRoot */
+	macro = NULL;
+	break;
     case RPMTAG_PREFIXES: {
 	struct rpmtd_s td;
 	const char *str;
@@ -894,12 +859,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		goto exit;
 	    }
 	}
-    }
-
-    /* Do some final processing on the header */
-    if (!spec->gotBuildRoot && spec->buildRoot) {
-	rpmlog(RPMLOG_ERR, _("Spec file can't use BuildRoot\n"));
-	goto exit;
     }
 
     /* XXX Skip valid arch check if not building binary package */

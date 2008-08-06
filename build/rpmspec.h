@@ -119,8 +119,6 @@ struct rpmSpec_s {
     int force;
     int anyarch;
 
-    int gotBuildRoot;
-
     char * passPhrase;
     int timeCheck;
     char * cookie;
