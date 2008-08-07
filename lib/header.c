@@ -1631,7 +1631,7 @@ int headerPutString(Header h, rpmTag tag, const char *val)
     const void *sptr = NULL;
 
     /* string arrays expect char **, arrange that */
-    if (type == RPM_STRING_ARRAY_TYPE) {
+    if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE) {
 	sptr = &val;
     } else if (type == RPM_STRING_TYPE) {
 	sptr = val;
