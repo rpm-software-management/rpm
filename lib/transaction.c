@@ -898,7 +898,6 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	    script = fi->posttrans;
 	    scriptprog = fi->posttransprog;
 	    progtag = RPMTAG_POSTTRANSPROG;
-	    p->fi = rpmfiFree(p->fi);
 	    break;
 	default:
 	    /* programmer error, blow up */
@@ -934,6 +933,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
         }
 
     	if (rpmteFd(p) != NULL) {
+	    p->fi = rpmfiFree(p->fi);
  	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
 	    if (fi != NULL) {	/* XXX can't happen */
 		if (stag == RPMTAG_PRETRANS) {
