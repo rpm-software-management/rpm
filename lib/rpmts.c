@@ -475,8 +475,11 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     Header h = headerNew();
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     rpmPubkey pubkey = NULL;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
+	goto exit;
+    if (rpmKeyringAddKey(keyring, pubkey) != 0)
 	goto exit;
     if (makePubkeyHeader(ts, pubkey, h) != 0) 
 	goto exit;
@@ -492,6 +495,7 @@ exit:
     /* Clean up. */
     headerFree(h);
     rpmPubkeyFree(pubkey);
+    rpmKeyringFree(keyring);
     return rc;
 }
 
