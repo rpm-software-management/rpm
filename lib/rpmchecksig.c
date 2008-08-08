@@ -13,6 +13,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmkeyring.h>
 
 #include "rpmio/digest.h"
 #include "lib/rpmlead.h"
