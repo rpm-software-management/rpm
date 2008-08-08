@@ -1003,12 +1003,12 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
         rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
     }
 
-    if (!rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
 	char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
 	if (matchpathcon_init(fn) == -1) {
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
 	}
-	_free(fn);
+	free(fn);
     }
 
     ts->probs = rpmpsFree(ts->probs);
