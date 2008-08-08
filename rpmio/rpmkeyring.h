@@ -86,4 +86,18 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key);
  */
 rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
 
+/** \ingroup rpmkeyring
+ * Parse OpenPGP pubkey parameters.
+ * @param key           Pubkey
+ * @return              parsed output of pubkey packet parameters
+ */
+pgpDig rpmPubkeyDig(rpmPubkey key);
+
+/** \ingroup rpmkeyring
+ * Return base64 encoding of pubkey
+ * @param key           Pubkey
+ * @return              base64 encoded pubkey (malloced), NULL on error
+ */
+char * rpmPubkeyBase64(rpmPubkey key);
+
 #endif /* _RPMKEYDB_H */

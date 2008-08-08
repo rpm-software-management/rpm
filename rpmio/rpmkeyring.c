@@ -165,6 +165,36 @@ rpmPubkey rpmPubkeyUnlink(rpmPubkey key)
     return NULL;
 }
 
+pgpDig rpmPubkeyDig(rpmPubkey key)
+{
+    pgpDig dig = NULL;
+    static unsigned char zeros[] = 
+	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    if (key == NULL)
+	return NULL;
+
+    dig = pgpNewDig();
+    if (pgpPrtPkts(key->pkt, key->pktlen, dig, 0) == 0) {
+	pgpDigParams pubp = &dig->pubkey;
+	if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
+		!memcmp(pubp->time, zeros, sizeof(pubp->time)) ||
+		pubp->userid == NULL) {
+	    dig = pgpFreeDig(dig);
+	}
+    }
+    return dig;
+}
+
+char * rpmPubkeyBase64(rpmPubkey key)
+{
+    char *enc = NULL;
+
+    if (key) {
+	enc = b64encode(key->pkt, key->pktlen, -1);
+    }
+    return enc;
+}
+
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 {
     rpmRC res = RPMRC_NOKEY;
