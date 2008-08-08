@@ -391,7 +391,8 @@ exit:
     return res;
 }
 
-rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
+/* Build pubkey header. */
+static int makePubkeyHeader(rpmts ts, const unsigned char * pkt, size_t pktlen, Header h)
 {
     static unsigned char zeros[] =
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -410,28 +411,23 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     char * v = NULL;
     char * r = NULL;
     char * evr = NULL;
-    Header h = NULL;
-    rpmRC rc = RPMRC_FAIL;		/* assume failure */
-    int xx;
+    int rc = -1;
 
     if (pkt == NULL || pktlen == 0)
-	return RPMRC_FAIL;
-    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-	return RPMRC_FAIL;
-
+	return rc;
     if ((enc = b64encode(pkt, pktlen, -1)) == NULL)
 	goto exit;
-
+    
     dig = pgpNewDig();
+    if (pgpPrtPkts(pkt, pktlen, dig, 0) != 0)
+	goto exit;
 
     /* Build header elements. */
-    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
     pubp = &dig->pubkey;
-
     if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
-     || !memcmp(pubp->time, zeros, sizeof(pubp->time))
-     || pubp->userid == NULL)
-	goto exit;
+	|| !memcmp(pubp->time, zeros, sizeof(pubp->time))
+	|| pubp->userid == NULL)
+       goto exit;
 
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
     r = pgpHexStr(pubp->time, sizeof(pubp->time));
@@ -439,15 +435,10 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     rasprintf(&n, "gpg(%s)", v+8);
     rasprintf(&u, "gpg(%s)", pubp->userid ? pubp->userid : "none");
     rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
-    /* Check for pre-existing header. */
-
-    /* Build pubkey header. */
-    h = headerNew();
 
     headerPutString(h, RPMTAG_PUBKEYS, enc);
 
-    d = headerFormat(h, afmt, NULL);
-    if (d == NULL)
+    if ((d = headerFormat(h, afmt, NULL)) == NULL)
 	goto exit;
 
     headerPutString(h, RPMTAG_NAME, "gpg-pubkey");
@@ -475,25 +466,39 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
 	headerPutUint32(h, RPMTAG_BUILDTIME, &tid, 1);
     }
+    rc = 0;
+
+exit:
+    pgpFreeDig(dig);
+    free(n);
+    free(u);
+    free(v);
+    free(r);
+    free(evr);
+    free(enc);
+    free(d);
+
+    return rc;
+}
+
+rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
+{
+    Header h = headerNew();
+    rpmRC rc = RPMRC_FAIL;		/* assume failure */
+
+    if (makePubkeyHeader(ts, pkt, pktlen, h) != 0) 
+	goto exit;
 
     /* Add header to database. */
-    xx = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL);
-    if (xx != 0)
+    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+	goto exit;
+    if (rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL) != 0)
 	goto exit;
     rc = RPMRC_OK;
 
 exit:
     /* Clean up. */
-    h = headerFree(h);
-    dig = pgpFreeDig(dig);
-    n = _free(n);
-    u = _free(u);
-    v = _free(v);
-    r = _free(r);
-    evr = _free(evr);
-    enc = _free(enc);
-    d = _free(d);
-    
+    headerFree(h);
     return rc;
 }
 
