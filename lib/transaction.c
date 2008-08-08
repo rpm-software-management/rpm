@@ -1573,6 +1573,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runTransScripts(ts, RPMTAG_POSTTRANS);
     }
 
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+	matchpathcon_fini();
+    }
+
     rpmtsFreeLock(lock);
 
     /* FIX: ts->flList may be NULL */
