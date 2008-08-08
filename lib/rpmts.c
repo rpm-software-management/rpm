@@ -392,10 +392,8 @@ exit:
 }
 
 /* Build pubkey header. */
-static int makePubkeyHeader(rpmts ts, const unsigned char * pkt, size_t pktlen, Header h)
+static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
 {
-    static unsigned char zeros[] =
-	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     const char * afmt = "%{pubkeys:armor}";
     const char * group = "Public Keys";
     const char * license = "pubkey";
@@ -413,22 +411,13 @@ static int makePubkeyHeader(rpmts ts, const unsigned char * pkt, size_t pktlen, 
     char * evr = NULL;
     int rc = -1;
 
-    if (pkt == NULL || pktlen == 0)
-	return rc;
-    if ((enc = b64encode(pkt, pktlen, -1)) == NULL)
+    if ((enc = rpmPubkeyBase64(key)) == NULL)
 	goto exit;
-    
-    dig = pgpNewDig();
-    if (pgpPrtPkts(pkt, pktlen, dig, 0) != 0)
+    if ((dig = rpmPubkeyDig(key)) == NULL)
 	goto exit;
 
     /* Build header elements. */
     pubp = &dig->pubkey;
-    if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid))
-	|| !memcmp(pubp->time, zeros, sizeof(pubp->time))
-	|| pubp->userid == NULL)
-       goto exit;
-
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
     r = pgpHexStr(pubp->time, sizeof(pubp->time));
 
@@ -485,8 +474,11 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 {
     Header h = headerNew();
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
+    rpmPubkey pubkey = NULL;
 
-    if (makePubkeyHeader(ts, pkt, pktlen, h) != 0) 
+    if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
+	goto exit;
+    if (makePubkeyHeader(ts, pubkey, h) != 0) 
 	goto exit;
 
     /* Add header to database. */
@@ -499,6 +491,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 exit:
     /* Clean up. */
     headerFree(h);
+    rpmPubkeyFree(pubkey);
     return rc;
 }
 
