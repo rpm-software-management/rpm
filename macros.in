@@ -1002,11 +1002,12 @@ print (t)\
 #
 #------------------------------------------------------------------------------
 # This is an improved version of %configure (from PLD team).
+%_configure ./configure
 %configure \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
   CXXFLAGS="${CXXFLAGS:-%optflags}" ; export CXXFLAGS ; \
   FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
-  ./configure --host=%{_host} --build=%{_build} \\\
+  %{_configure} --host=%{_host} --build=%{_build} \\\
 	--target=%{_target_platform} \\\
 	--program-prefix=%{?_program_prefix} \\\
 	--prefix=%{_prefix} \\\
