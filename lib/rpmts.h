@@ -21,7 +21,6 @@ extern "C" {
 
 extern int _rpmts_debug;
 extern int _rpmts_stats;
-extern int _fps_debug;
 
 /** \ingroup rpmts
  * Bit(s) to control rpmtsRun() operation.

@@ -26,8 +26,6 @@ static int _debug = 0;
 
 extern int _rpmds_nopromote;
 
-extern int _fps_debug;
-
 extern int _fsm_debug;
 
 extern int _fsm_threads;
@@ -253,8 +251,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "promoteepoch", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_nopromote, 0,
 	NULL, NULL},
 
- { "fpsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fps_debug, -1,
-	NULL, NULL},
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
 	N_("debug payload file state machine"), NULL},
  { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
