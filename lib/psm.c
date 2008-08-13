@@ -806,6 +806,7 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	int pipes[2];
 	int flag;
 	int fdno;
+	int open_max;
 
 	pipes[0] = pipes[1] = 0;
 	/* make stdin inaccessible */
@@ -814,8 +815,12 @@ static rpmRC runScript(rpmpsm psm, Header h, const char * sln,
 	xx = dup2(pipes[0], STDIN_FILENO);
 	xx = close(pipes[0]);
 
-	/* XXX Force FD_CLOEXEC on 1st 100 inherited fdno's. */
-	for (fdno = 3; fdno < 100; fdno++) {
+	/* XXX Force FD_CLOEXEC on all inherited fdno's. */
+	open_max = sysconf(_SC_OPEN_MAX);
+	if (open_max == -1) {
+	    open_max = 1024;
+	}
+	for (fdno = 3; fdno < open_max; fdno++) {
 	    flag = fcntl(fdno, F_GETFD);
 	    if (flag == -1 || (flag & FD_CLOEXEC))
 		continue;
