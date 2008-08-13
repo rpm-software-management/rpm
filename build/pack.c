@@ -496,13 +496,16 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	td.tag = payloadtag;
 	td.count = 1;
 	if (payloadtag == RPMSIGTAG_PAYLOADSIZE) {
+	    rpm_off_t asize = csa->cpioArchiveSize;
 	    td.type = RPM_INT32_TYPE;
-	    td.data = (rpm_off_t *) &csa->cpioArchiveSize;
+	    td.data = &asize;
+	    headerPut(sig, &td, HEADERPUT_DEFAULT);
 	} else {
+	    rpm_loff_t asize = csa->cpioArchiveSize;
 	    td.type = RPM_INT64_TYPE;
-	    td.data = (rpm_loff_t *) &csa->cpioArchiveSize;
+	    td.data = &asize;
+	    headerPut(sig, &td, HEADERPUT_DEFAULT);
 	}
-	headerPut(sig, &td, HEADERPUT_DEFAULT);
     }
 
     /* Reallocate the signature into one contiguous region. */
