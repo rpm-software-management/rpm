@@ -1307,6 +1307,13 @@ error_out:
   return NULL;
 }
 
+static void process (hashFunctionContext *ctx, const void *data, size_t size)
+{
+  memchunk chunk = { .data = (void *) data, .size = size };
+  hashFunctionContextUpdateMC (ctx, &chunk);
+}
+
+
 /* Compute a fresh build ID bit-string from the editted file contents.  */
 static void
 handle_build_id (DSO *dso, Elf_Data *build_id,
@@ -1349,13 +1356,6 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
      or Elf64 object, only that we are consistent in what bits feed the
      hash so it comes out the same for the same file contents.  */
   {
-    inline void process (const void *data, size_t size);
-    inline void process (const void *data, size_t size)
-    {
-      memchunk chunk = { .data = (void *) data, .size = size };
-      hashFunctionContextUpdateMC (&ctx, &chunk);
-    }
-
     union
     {
       GElf_Ehdr ehdr;
@@ -1384,7 +1384,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 	  goto bad;
 	if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
 	  goto bad;
-	process (x.d_buf, x.d_size);
+	process (&ctx, x.d_buf, x.d_size);
       }
 
     x.d_type = ELF_T_SHDR;
@@ -1396,14 +1396,14 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
 	  u.shdr.sh_offset = 0;
 	  if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
 	    goto bad;
-	  process (x.d_buf, x.d_size);
+	  process (&ctx, x.d_buf, x.d_size);
 
 	  if (u.shdr.sh_type != SHT_NOBITS)
 	    {
 	      Elf_Data *d = elf_rawdata (dso->scn[i], NULL);
 	      if (d == NULL)
 		goto bad;
-	      process (d->d_buf, d->d_size);
+	      process (&ctx, d->d_buf, d->d_size);
 	    }
 	}
   }
