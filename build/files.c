@@ -1585,7 +1585,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	break;
     }
     case RPMTAG_POLICIES:
-	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0) {
+	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0 || pkt == NULL) {
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: *.te policy read failed.\n"), fn);
 	    goto exit;
