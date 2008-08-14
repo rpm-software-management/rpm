@@ -508,7 +508,7 @@ static rpmRC doReadRC(const char * urlfn)
     rpmRC rc = RPMRC_FAIL;
 
     fn = rpmGetPath(urlfn, NULL);
-    if (rpmioSlurp(fn, (uint8_t **) &buf, NULL)) {
+    if (rpmioSlurp(fn, (uint8_t **) &buf, NULL) || buf == NULL) {
 	goto exit;
     }
 	
