@@ -1420,17 +1420,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->uname = fileUname;
 	flp->gname = fileGname;
 
-	/*
- 	 * XXX Simple and stupid check for now, this needs to be per-payload
- 	 * format check once we have other payloads than good 'ole cpio.
- 	 */
-	if ((rpm_loff_t) flp->fl_size >= CPIO_FILESIZE_MAX) {
-	    fl->largeFiles = 1;
-	    rpmlog(RPMLOG_ERR, _("File %s too large for payload\n"),
-		   flp->diskPath);
-	    return RPMRC_FAIL;
-	}
-
 	if (fl->currentLangs && fl->nLangs > 0) {
 	    char * ncl;
 	    size_t nl = 0;
@@ -1472,8 +1461,20 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	} else
 	    i = fl->fileListRecsUsed;
 
-	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) 
+	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) {
+	    /*
+	     * XXX Simple and stupid check for now, this needs to be per-payload
+	     * format check once we have other payloads than good 'ole cpio.
+	     */
+	    if ((rpm_loff_t) flp->fl_size >= CPIO_FILESIZE_MAX) {
+		fl->largeFiles = 1;
+		rpmlog(RPMLOG_ERR, _("File %s too large for payload\n"),
+		       flp->diskPath);
+		return RPMRC_FAIL;
+	    }
+
 	    fl->totalFileSize += flp->fl_size;
+	}
     }
 
     fl->fileListRecsUsed++;
