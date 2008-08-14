@@ -272,7 +272,7 @@ static int rdToken(ParseState state)
       char *temp;
       size_t ts;
 
-      for (ts=1; p[ts] && (risalpha(p[ts]) || p[ts] == '_'); ts++);
+      for (ts=1; p[ts] && (risalnum(p[ts]) || p[ts] == '_'); ts++);
       temp = xmalloc(ts+1);
       memcpy(temp, p, ts);
       p += ts-1;
