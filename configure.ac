@@ -342,29 +342,19 @@ AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 
 #=================
 # Check for NSS library.
+# We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS 
+# have a header named nss.h... so make extra check for NSS's sechash.h 
+# which we use too and hopefully is slightly more unique to NSS.
 WITH_NSS_INCLUDE=
 WITH_NSS_LIB=
-check=`pkg-config --version 2>/dev/null`
-if test -n "$check"; then
-  addlib=$(pkg-config --libs nss | sed 's/-lsmime3//;s/-lssl3//')
-  addcppflags=$(pkg-config --cflags nss)
-else
-# Without pkg-config, we'll kludge in some defaults
-  addlib="-lnss3 -lplds4 -lplc4 -lnspr4 -lpthread -ldl"
-  addcppflags="-I/usr/include/nss3 -I/usr/include/nspr4"
-fi
-save_CPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$save_CPPFLAGS $addcppflags"
-AC_CHECK_HEADER([nss3/nss.h], [
-  AC_CHECK_LIB(nss3, NSS_NoDB_Init, [
-    AC_DEFINE(HAVE_LIBNSS, 1, [Define to 1 if you have the 'NSS' library (-lnss3).])
-    WITH_NSS_INCLUDE="$addcppflags"
-    WITH_NSS_LIB="$addlib"
-  ])
-],[
-  AC_MSG_ERROR([missing required header nss3/nss.h])
+AC_CHECK_HEADERS([nspr.h nss.h sechash.h], [], [
+  AC_MSG_ERROR([missing required NSPR / NSS header])
 ])
-CPPFLAGS="$save_CPPFLAGS"
+AC_CHECK_LIB(nss3, NSS_NoDB_Init, [
+  WITH_NSS_LIB=-lnss3
+], [
+  AC_MSG_ERROR([missing required NSS library 'nss3'])
+])
 AC_SUBST(WITH_NSS_INCLUDE)
 AC_SUBST(WITH_NSS_LIB)
 
