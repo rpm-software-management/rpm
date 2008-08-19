@@ -9,8 +9,16 @@ The libmagic (aka file) library for file type detection (used by rpmbuild).
 The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
-The NSS library for encryption. This is available from 
+The NSS library for encryption, and NSPR library which NSS uses. 
+Both NSPR and NSS libraries and headers need to be installed during RPM
+compilation. As NSPR and NSS typically install their headers outside
+the regular include search path, you need to tell configure about this,
+eg something like:
+    ./configure <......> CPPFLAGS="-I/usr/include/nspr -I/usr/include/nss"
+
+The NSPR and NSS libraries are available from 
     http://www.mozilla.org/projects/security/pki/nss/
+    http://www.mozilla.org/projects/nspr/
 
 The Berkeley DB >= 4.3.x (4.5.x or newer recommended) is required for the
 default database backend. BDB can be downloaded from
