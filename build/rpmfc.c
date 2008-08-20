@@ -314,12 +314,14 @@ static char * rpmfcFileDep(int ix, rpmds ds)
 
     assert(tagN == RPMTAG_PROVIDENAME || tagN == RPMTAG_REQUIRENAME);
 
-    switch ((rpm_tag_t) tagN) {
+    switch (tagN) {
     case RPMTAG_PROVIDENAME:
 	deptype = 'P';
 	break;
     case RPMTAG_REQUIRENAME:
 	deptype = 'R';
+	break;
+    default: /* can't happen */
 	break;
     }
 

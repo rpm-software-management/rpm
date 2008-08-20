@@ -252,7 +252,7 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
     char *buf = NULL;
     uint32_t num = 0;
 
-    switch ((rpm_tag_t) tag) {
+    switch (tag) {
       case RPMTAG_SOURCE:
 	flag = RPMBUILD_ISSOURCE;
 	name = "source";
@@ -266,6 +266,9 @@ int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
       case RPMTAG_ICON:
 	flag = RPMBUILD_ISICON;
 	fieldp = NULL;
+	break;
+      default:
+	return -1;
 	break;
     }
 
