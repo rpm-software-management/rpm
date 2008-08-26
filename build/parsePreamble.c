@@ -632,19 +632,32 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_EXCLUSIVEOS:
 	addOrAppendListEntry(spec->buildRestrictions, tag, field);
 	break;
-    case RPMTAG_BUILDARCHS:
-	if ((rc = poptParseArgvString(field,
-				      &(spec->BACount),
-				      &(spec->BANames)))) {
+    case RPMTAG_BUILDARCHS: {
+	int BACount;
+	const char **BANames = NULL;
+	if ((rc = poptParseArgvString(field, &BACount, &BANames))) {
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad BuildArchitecture format: %s\n"),
 		     spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
-	if (!spec->BACount)
+	if (spec->packages == pkg) {
+	    spec->BACount = BACount;
+	    spec->BANames = BANames;
+	} else {
+	    if (BACount != 1 || strcmp(BANames[0], "noarch")) {
+		rpmlog(RPMLOG_ERR,
+			 _("line %d: Only noarch subpackages are supported: %s\n"),
+			spec->lineNum, spec->line);
+		BANames = _free(BANames);
+		return RPMRC_FAIL;
+	    }
+	    headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, "noarch", 1);
+	}
+	if (!BACount)
 	    spec->BANames = _free(spec->BANames);
 	break;
-
+    }
     default:
 	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
 	return RPMRC_FAIL;
