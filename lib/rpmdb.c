@@ -2934,12 +2934,11 @@ static int skipDir(const char * dn)
 
 /* XXX transaction.c */
 int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList, 
-		    int numItems)
+		    int numItems, fingerPrintCache fpc)
 {
     DBT * key;
     DBT * data;
     rpmdbMatchIterator mi;
-    fingerPrintCache fpc;
     Header h;
     int i, xx;
 
@@ -2973,7 +2972,6 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
 	mi = rpmdbFreeIterator(mi);
 	return 0;
     }
-    fpc = fpCacheCreate(i);
 
     rpmdbSortIterator(mi);
     /* iterator is now sorted by (recnum, filenum) */
@@ -3041,8 +3039,6 @@ int rpmdbFindFpList(rpmdb db, fingerPrint * fpList, dbiIndexSet * matchList,
     }
 
     mi = rpmdbFreeIterator(mi);
-
-    fpc = fpCacheFree(fpc);
 
     return 0;
 

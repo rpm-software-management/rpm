@@ -1063,7 +1063,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     ts->ht = rpmFpHashCreate(totalFileCount * 2, fpHashFunction, fpEqual,
 			     NULL, NULL);
-    fpc = fpCacheCreate(totalFileCount);
+    fpc = fpCacheCreate(totalFileCount * 2);
 
     /* ===============================================
      * Add fingerprint for each file not skipped.
@@ -1148,7 +1148,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* Extract file info for all files in this package from the database. */
 	matches = xcalloc(fc, sizeof(*matches));
-	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc)) {
+	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc, fpc)) {
 	    ps = rpmpsFree(ps);
 	    rpmtsFreeLock(lock);
 	    return 1;	/* XXX WTFO? */

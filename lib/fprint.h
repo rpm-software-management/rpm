@@ -100,7 +100,8 @@ extern "C" {
  */
 RPM_GNUC_INTERNAL
 int rpmdbFindFpList(rpmdb db, fingerPrint  * fpList,
-		dbiIndexSet * matchList, int numItems);
+		    dbiIndexSet * matchList, int numItems,
+		    fingerPrintCache fpc);
 
 /* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
 
