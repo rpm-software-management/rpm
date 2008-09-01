@@ -16,6 +16,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
+#include <lib/misc.h>
 
 #include "build.h"
 #include "debug.h"
@@ -251,6 +252,28 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Check build prerequisites */
     if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
 	goto exit;
+    }
+
+    /* Be sure all required directories exist, attempt to create them if not */
+    {
+	char *_topdir = rpmGenPath(rpmtsRootDir(ts), "%{_topdir}", ""),
+	     *_builddir = rpmGenPath(rpmtsRootDir(ts), "%{_builddir}", ""),
+	     *_buildrootdir = rpmGenPath(rpmtsRootDir(ts), "%{_buildrootdir}", ""),
+	     *_sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", ""),
+	     *_rpmdir = rpmGenPath(rpmtsRootDir(ts), "%{_rpmdir}", ""),
+	     *_specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", ""),
+	     *_srcrpmdir = rpmGenPath(rpmtsRootDir(ts), "%{_srcrpmdir}", "");
+
+	if ( rpmMkdirPath(_topdir, "_topdir") ||
+	     rpmMkdirPath(_builddir, "_builddir") ||
+	     rpmMkdirPath(_buildrootdir, "_buildrootdir") ||
+	     rpmMkdirPath(_sourcedir, "_sourcedir") ||
+	     rpmMkdirPath(_rpmdir, "_rpmdir") ||
+	     rpmMkdirPath(_specdir, "_specdir") ||
+	     rpmMkdirPath(_srcrpmdir, "_srcrpmdir")
+	) {
+	    goto exit;
+	}
     }
 
     if (buildSpec(ts, spec, buildAmount, ba->noBuild)) {
