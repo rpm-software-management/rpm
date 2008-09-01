@@ -231,6 +231,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 {
     int scareMem = 1;
     rpmfi fi = NULL;
+    char * _topdir = NULL;
     char * _sourcedir = NULL;
     char * _specdir = NULL;
     char * specFile = NULL;
@@ -333,6 +334,13 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	    if (rpmFileHasSuffix(fi->apath[i], ".spec"))
 		break;
 	}
+    }
+
+    _topdir = rpmGenPath(rpmtsRootDir(ts), "%{_topdir}", "");
+    rpmrc = rpmMkdirPath(_topdir, "_topdir");
+    if (rpmrc) {
+	rpmrc = RPMRC_FAIL;
+	goto exit;
     }
 
     _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
