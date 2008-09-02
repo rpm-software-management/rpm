@@ -31,7 +31,7 @@ rpm \- Gestionnaire de Paquetages Red Hat
 \fBrpm\fR {\fB-F|--freshen\fR} [\fBoptions-installation\fR] \fB\fIFICHIER_PAQUETAGE\fB\fR\fI ...\fR
 
 \fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR]
-[\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR]
+[\fB--noscripts\fR] [\fB--notriggers\fR]
 [\fB--test\fR] \fB\fINOM_PAQUETAGE\fB\fR\fI ...\fR
 .SS "CONSTRUIRE DES PAQUETAGES\ :"
 .PP
@@ -76,7 +76,7 @@ rpm \- Gestionnaire de Paquetages Red Hat
 [--ignoreos] [--includedocs] [--justdb] [--nodeps] [--noorder]
 [--noscripts] [--notriggers] [--oldpackage] [--percent]
 [--prefix \fINOUVEAU_CHEMIN\fB] [--relocate\ \fIANCIEN_CHEMIN\fB=\fINOUVEAU_CHEMIN\fB]
-[--repackage] [--replacefiles] [--replacepkgs] [--test]\fR
+[--replacefiles] [--replacepkgs] [--test]\fR
 .SS "OPTIONS DE CONSTRUCTION"
 .PP
 
@@ -300,12 +300,6 @@ fichiers présents dans les indications de relogement du paquetage et
 débutant par \fIANCIEN_CHEMIN\fR par \fINOUVEAU_CHEMIN\fR. Cette option
 peut être utilisée de façon répétitive si plusieurs \fIANCIEN_CHEMIN\fR du
 paquetage doivent être relogés.
-.TP
-\fB--repackage\fR
-Ré-empaqueter les fichiers avant de les supprimer. Le paquetage
-précédemment installé sera nommé conformément à la macro
-\fB%_repackage_name_fmt\fR et sera créé dans le répertoire nommé par la
-macro \fB%_repackage_dir\fR (la valeur par défaut est \fI/var/tmp\fR).
 .TP
 \fB--replacefiles\fR
 Installer les paquetages même s'ils remplacent des fichiers d'autres
@@ -552,7 +546,7 @@ la section sur les SIGNATURES PGP pour les détails.
 .PP
 La forme générale d'une commande de désinstalltion rpm est
 .PP
-\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--repackage\fR] [\fB--test\fR] \fB\fINOM_PAQUETAGE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fINOM_PAQUETAGE\fB\fR\fI ...\fR
 .PP
 Les options suivantes peuvent également être utilisées\ :
 .TP
@@ -596,12 +590,6 @@ et désactive l'exécution du ou des scriptlets
 \fB%triggerun\fR et
 \fB%triggerpostun\fR
 correspondants.
-.TP
-\fB--repackage\fR
-Ré-empaqueter les fichiers avant de les supprimer. Le paquetage
-précédemment installé sera nommé conformément à la macro
-\fB%_repackage_name_fmt\fR et sera créé dans le répertoire nommé par la
-macro \fB%_repackage_dir\fR (la valeur par défaut est \fI/var/tmp\fR).
 .TP
 \fB--test\fR
 Ne pas réellement désinstaller quoi que ce soit, simplement effectuer un
