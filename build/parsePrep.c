@@ -538,7 +538,7 @@ int parsePrep(rpmSpec spec)
 	}
 	if (res && !spec->force) {
 	    /* fixup from RPMRC_FAIL do*Macro() codes for now */
-	    res = PART_ERROR; 
+	    nextPart = PART_ERROR; 
 	    goto exit;
 	}
     }
