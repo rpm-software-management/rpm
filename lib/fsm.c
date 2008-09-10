@@ -1573,7 +1573,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	fsm->postpone = XFA_SKIPPING(fsm->action);
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	    /* FIX: saveHardLink can modify fsm */
-	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1)
+	    if (S_ISREG(st->st_mode) && st->st_nlink > 1)
 		fsm->postpone = saveHardLink(fsm);
 	}
 	break;
@@ -1599,7 +1599,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->goal == FSM_PKGBUILD) {
 	    if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
 		break;
-	    if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
+	    if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 		hardLink_t li, prev;
 
 if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
@@ -1699,7 +1699,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (!IS_DEV_LOG(fsm->path))
 		rc = CPIOERR_UNKNOWN_FILETYPE;
 	}
-	if (!S_ISDIR(st->st_mode) && st->st_nlink > 1) {
+	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
 	    fsm->li->createdPath = fsm->li->linkIndex;
 	    rc = fsmMakeLinks(fsm);
 	}
@@ -1743,7 +1743,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_FINI:
 	if (!fsm->postpone && fsm->commit) {
 	    if (fsm->goal == FSM_PKGINSTALL)
-		rc = ((!S_ISDIR(st->st_mode) && st->st_nlink > 1)
+		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
 			? fsmCommitLinks(fsm) : fsmNext(fsm, FSM_COMMIT));
 	    if (fsm->goal == FSM_PKGCOMMIT)
 		rc = fsmNext(fsm, FSM_COMMIT);
