@@ -780,7 +780,7 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
-    const char *opts, *o, *ret;
+    const char *opts, *o;
     char *args = NULL;
     ARGV_t argv = NULL;
     int argc = 0;
@@ -792,13 +792,10 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     
     /* 
      * Make a copy of se up to lastc string that we can pass to argvSplit().
-     * Append the results to main argv, save return value. 
+     * Append the results to main argv. 
      */
     {	ARGV_t av = NULL;
 	char *s = xcalloc((lastc-se)+1, sizeof(*s));
-
-	/* XXX expandMacro() expects next \0 which can be beyond lastc */
-	ret = strchr(se, '\0');
 	memcpy(s, se, (lastc-se));
 
 	argvSplit(&av, s, " ");
@@ -884,7 +881,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
 exit:
     argvFree(argv);
-    return ret;
+    return *lastc ? lastc + 1 : lastc; 
 }
 
 /**
