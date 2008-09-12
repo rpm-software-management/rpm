@@ -890,6 +890,11 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	headerCopyTags(spec->packages->header, pkg->header,
 			(rpmTag *)copyTagsDuringParse);
 
+    /* Many things expect group to always exist, put something in there... */
+    if (!headerIsEntry(pkg->header, RPMTAG_GROUP)) {
+	headerPutString(pkg->header, RPMTAG_GROUP, "Unspecified");
+    }
+
     if (checkForRequired(pkg->header, NVR)) {
 	goto exit;
     }
