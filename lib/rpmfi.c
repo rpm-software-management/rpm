@@ -567,10 +567,10 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLink(ofi);
 	if (diskWhat == LINK) {
-	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
-	    return FA_CREATE;	/* assume file has been removed */
-	if (oFLink && !strcmp(oFLink, buffer))
-	    return FA_CREATE;	/* unmodified config file, replace. */
+	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+		return FA_CREATE;	/* assume file has been removed */
+	    if (oFLink && !strcmp(oFLink, buffer))
+		return FA_CREATE;	/* unmodified config file, replace. */
 	}
 	nFLink = rpmfiFLink(nfi);
 	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
