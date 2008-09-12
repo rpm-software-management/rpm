@@ -652,7 +652,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		BANames = _free(BANames);
 		return RPMRC_FAIL;
 	    }
-	    headerAddEntry(pkg->header, RPMTAG_ARCH, RPM_STRING_TYPE, "noarch", 1);
+	    headerPutString(pkg->header, RPMTAG_ARCH, "noarch");
 	}
 	if (!BACount)
 	    spec->BANames = _free(spec->BANames);
