@@ -1217,7 +1217,7 @@ assert(dix >= 0);
 	    fc->fddictn->vals[ix]++;
     }
 
-    return 0;
+    return RPMRC_OK;
 }
 
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
@@ -1338,7 +1338,7 @@ assert(se != NULL);
     if (ms != NULL)
 	magic_close(ms);
 
-    return 0;
+    return RPMRC_OK;
 }
 
 /**
@@ -1450,7 +1450,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
     StringBuf sb_stdout;
     DepMsg_t dm;
     int failnonzero = 0;
-    int rc = 0;
+    int rc = RPMRC_OK;
 
     /*
      * Create file manifest buffer to deliver to dependency finder.
@@ -1533,7 +1533,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     const char * EVR;
     int genConfigDeps;
     rpm_count_t c;
-    int rc = 0;
+    int rc = RPMRC_OK;
     int xx;
     int idx;
     struct rpmtd_s td;
