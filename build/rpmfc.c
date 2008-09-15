@@ -1169,7 +1169,11 @@ rpmRC rpmfcApply(rpmfc fc)
 
 	/* Parse out (file#,deptype,N,EVR,Flags) */
 	ix = strtol(s, &se, 10);
-assert(se != NULL);
+	if ( se == NULL ) {
+		rpmlog(RPMLOG_ERR, _("Conversion of %s to long integer failed.\n"), s);
+		return RPMRC_FAIL;
+	}
+	
 	deptype = *se++;
 	se++;
 	N = se;
@@ -1248,13 +1252,14 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     if (ms == NULL) {
 	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
-assert(ms != NULL);	/* XXX figger a proper return path. */
+	return RPMRC_FAIL;
     }
 
     xx = magic_load(ms, NULL);
     if (xx == -1) {
 	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(ms));
-assert(xx != -1);	/* XXX figger a proper return path. */
+	magic_close(ms);
+	return RPMRC_FAIL;
     }
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
@@ -1262,7 +1267,6 @@ assert(xx != -1);	/* XXX figger a proper return path. */
 	rpm_mode_t mode = (fmode ? fmode[fc->ix] : 0);
 
 	s = argv[fc->ix];
-assert(s != NULL);
 	slen = strlen(s);
 
 	switch (mode & S_IFMT) {
@@ -1294,9 +1298,10 @@ assert(s != NULL);
 
 	    if (ftype == NULL) {
 		rpmlog(RPMLOG_ERR, 
-		       _("magic_file(ms, \"%s\") failed: mode %06o %s\n"),
+		       _("Recognition of file \"%s\") failed: mode %06o %s\n"),
 		       s, mode, magic_error(ms));
-assert(ftype != NULL);	/* XXX figger a proper return path. */
+		magic_close(ms);
+		return RPMRC_FAIL;
 	    }
 	}
 
@@ -1321,7 +1326,6 @@ assert(ftype != NULL);	/* XXX figger a proper return path. */
     fc->fknown = 0;
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	se = fcav[fc->ix];
-assert(se != NULL);
 
 	dav = argvSearch(fc->cdict, se, NULL);
 	if (dav) {
@@ -1591,9 +1595,17 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
 	    N = rpmdsN(pkg->ds);
-assert(N != NULL);
+	    if (N == NULL) {
+		rc = RPMRC_FAIL;
+		rpmlog(rc, _("Unable to get current dependency name.\n"));
+		goto exit;
+	    }
 	    EVR = rpmdsEVR(pkg->ds);
-assert(EVR != NULL);
+	    if (EVR == NULL) {
+		rc = RPMRC_FAIL;
+		rpmlog(rc, _("Unable to get current dependency epoch-version-release.\n"));
+		goto exit;
+	    }
 	    rasprintf(&buf, "config(%s)", N);
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR,
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
@@ -1614,9 +1626,17 @@ assert(EVR != NULL);
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {
 	    N = rpmdsN(pkg->ds);
-assert(N != NULL);
+	    if (N == NULL) {
+		rc = RPMRC_FAIL;
+		rpmlog(rc, _("Unable to get current dependency name.\n"));
+		goto exit;
+	    }
 	    EVR = rpmdsEVR(pkg->ds);
-assert(EVR != NULL);
+	    if (EVR == NULL) {
+		rc = RPMRC_FAIL;
+		rpmlog(rc, _("Unable to get current dependency epoch-version-release.\n"));
+		goto exit;
+	    }
 	    rasprintf(&buf, "config(%s)", N);
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR,
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
@@ -1627,16 +1647,28 @@ assert(EVR != NULL);
     }
 
     /* Build file class dictionary. */
-    xx = rpmfcClassify(fc, av, fmode);
+    rc = rpmfcClassify(fc, av, fmode);
+    if ( rc != RPMRC_OK )
+	goto exit;
 
     /* Build file/package dependency dictionary. */
-    xx = rpmfcApply(fc);
+    rc = rpmfcApply(fc);
+    if ( rc != RPMRC_OK )
+	goto exit;
 
     /* Add per-file colors(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECOLORS, fc->fcolor)) {
 	rpm_color_t *fcolor;
-	assert(ac == rpmtdCount(&td));
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	if (ac != rpmtdCount(&td)) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("File count from file info doesn't match file in container.\n"));
+	    goto exit;
+	}
+	if (rpmtdType(&td) != RPM_INT32_TYPE) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("Container not of 32bit data type.\n"));
+	    goto exit;
+	}
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
 	while ((fcolor = rpmtdNextUint32(&td))) {
 	    *fcolor &= 0x0f;
@@ -1646,13 +1678,21 @@ assert(EVR != NULL);
 
     /* Add classes(#classes) */
     if (rpmtdFromArgv(&td, RPMTAG_CLASSDICT, fc->cdict)) {
-	assert(rpmtdType(&td) == RPM_STRING_ARRAY_TYPE);
+	if (rpmtdType(&td) != RPM_STRING_ARRAY_TYPE) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("Container not of string array data type.\n"));
+	    goto exit;
+	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     /* Add per-file classes(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECLASS, fc->fcdictx)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	if (rpmtdType(&td) != RPM_INT32_TYPE) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("Container not of 32bit data type.\n"));
+	    goto exit;
+	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
@@ -1686,18 +1726,30 @@ assert(EVR != NULL);
 
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	if (rpmtdType(&td) != RPM_INT32_TYPE) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("Container not of 32bit data type.\n"));
+	    goto exit;
+	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     /* Add per-file dependency (start,number) pairs (#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	if (rpmtdType(&td) != RPM_INT32_TYPE) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("Container not of 32bit data type.\n"));
+	    goto exit;
+	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
+	if (rpmtdType(&td) != RPM_INT32_TYPE) {
+	    rc = RPMRC_FAIL;
+	    rpmlog(rc, _("Container not of 32bit data type.\n"));
+	    goto exit;
+	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
@@ -1709,7 +1761,7 @@ rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCou
 rpmfcPrint(msg, fc, NULL);
 free(msg);
 }
-
+exit:
     /* Clean up. */
     fmode = _free(fmode);
     fc = rpmfcFree(fc);
