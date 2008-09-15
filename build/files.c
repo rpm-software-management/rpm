@@ -1920,7 +1920,7 @@ exit:
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     argvFree(fl.docDirs);
-    return fl.processingFailed;
+    return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
 static const rpmTag sourceTags[] = {
@@ -2177,13 +2177,12 @@ exit:
 int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 {
     Package pkg;
-    int res = 0;
+    int rc = RPMRC_OK;
     
     check_fileList = newStringBuf();
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	const char *n, *v, *r;
-	int rc;
 
 	if (pkg->fileList == NULL)
 	    continue;
@@ -2191,11 +2190,9 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	(void) headerNVR(pkg->header, &n, &v, &r);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s-%s-%s\n"), n, v, r);
 		   
-	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)))
-	    res = rc;
-
-	if ((rc = rpmfcGenerateDepends(spec, pkg)))
-	    res = rc;
+	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)) != RPMRC_OK ||
+	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
+	    goto exit;
     }
 
     /* Now we have in fileList list of files from all packages.
@@ -2205,11 +2202,10 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
     
     
     if (checkFiles(check_fileList) > 0) {
-	if (res == 0)
-	    res = 1;
+	rc = RPMRC_FAIL;
     }
-    
+exit:
     check_fileList = freeStringBuf(check_fileList);
     
-    return res;
+    return rc;
 }
