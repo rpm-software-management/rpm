@@ -1358,14 +1358,8 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
     if (_addDotSlash)
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 
-    /* Choose how filenames are represented. */
-    if (_noDirTokens)
-	expandFilelist(h);
-    else {
-	compressFilelist(h);
-	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
-    }
+    /* rpmfi only groks compressed filelists */
+    compressFilelist(h);
 
   { int scareMem = 0;
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
@@ -1467,6 +1461,14 @@ static void genCpioListAndHeader(/*@partial@*/ FileList fl,
 	fi = rpmfiFree(fi);
     /*@=branchstate =compdef@*/
   }
+
+    /* Convert back to expanded filelist if legacy format requested */
+    if (_noDirTokens)
+	expandFilelist(h);
+    else {
+	/* Binary packages with dirNames cannot be installed by legacy rpm. */
+	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
+    }
 }
 /*@=bounds@*/
 
