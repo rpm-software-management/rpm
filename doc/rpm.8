@@ -448,8 +448,10 @@ the tag with \fB:\fItypetag\fB\fR.
 Currently, the following types are supported:
 .TP
 \fB:armor\fR
-   
 Wrap a public key in ASCII armor.
+.TP
+\fB:arraysize\fR
+Display number of elements in array tags.
 .TP
 \fB:base64\fR
 Encode binary data using base64.
@@ -475,11 +477,17 @@ Format in octal.
 \fB:perms\fR
 Format file permissions.
 .TP
+\fB:pgpsig\fR
+Display signature fingerprint and time.
+.TP
 \fB:shescape\fR
 Escape single quotes for use in a script.
 .TP
 \fB:triggertype\fR
 Display trigger suffix.
+.TP
+\fB:xml\fR
+Wrap data in simple xml markup.
 .PP
 For example, to print only the names of the packages queried,
 you could use \fB%{NAME}\fR as the format string.
