@@ -124,7 +124,7 @@ typedef struct FileList_s {
     const char * prefix;
 
     int fileCount;
-    int totalFileSize;
+    off_t totalFileSize;
     int processingFailed;
 
     int passedSpecialDoc;
@@ -1695,6 +1695,11 @@ static int addFile(FileList fl, const char * diskURL,
 
 	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) 
 	    fl->totalFileSize += flp->fl_size;
+	    /* dumb guard against oversized files + packages */
+	    if (fl->totalFileSize > INT32_MAX) {
+		rpmlog(RPMLOG_ERR, _("Package too large (> %d bytes)\n"), INT32_MAX);
+		return RPMERR_BADSPEC;
+	    }
     }
 
     fl->fileListRecsUsed++;
