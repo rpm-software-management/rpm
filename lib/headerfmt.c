@@ -256,7 +256,7 @@ bingo:
     if (stag->type != NULL)
 	stag->fmt = rpmHeaderFormatFuncByName(stag->type);
 
-    return 0;
+    return stag->fmt ? 0 : 1;
 }
 
 /* forward ref */
