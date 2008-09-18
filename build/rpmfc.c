@@ -302,40 +302,22 @@ static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
     return rc;
 }
 
-static char * rpmfcFileDep(int ix, rpmds ds)
+static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds)
 {
     rpmTag tagN = rpmdsTagN(ds);
-    char *buf = NULL;
-    char deptype = '?';
+    char *key = NULL;
 
     if (ds == NULL) {
-	return xstrdup("");
+	return;
     }
 
     assert(tagN == RPMTAG_PROVIDENAME || tagN == RPMTAG_REQUIRENAME);
 
-    switch (tagN) {
-    case RPMTAG_PROVIDENAME:
-	deptype = 'P';
-	break;
-    case RPMTAG_REQUIRENAME:
-	deptype = 'R';
-	break;
-    default: /* can't happen */
-	break;
-    }
-
-    rasprintf(&buf, "%08d%c %s %s 0x%08x", ix, deptype,
+    rasprintf(&key, "%08d%c %s %s 0x%08x", ix, tagN == RPMTAG_PROVIDENAME ? 'P' : 'R',
 		rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
 
-    return buf;
-}
-
-static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds)
-{
-	char *key = rpmfcFileDep(ix, ds);
-	rpmfcSaveArg(argvp, key);
-	free(key);
+    rpmfcSaveArg(argvp, key);
+    free(key);
 }
 
 /**
