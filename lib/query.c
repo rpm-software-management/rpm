@@ -131,30 +131,18 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
-	rpmfileAttrs fflags;
-	rpm_mode_t fmode;
- 	unsigned short frdev;
-	rpm_time_t fmtime;
-	rpmfileState fstate;
-	rpm_loff_t fsize;
-	const char * fn;
-	const char * fuser;
-	const char * fgroup;
-	const char * flink;
-	uint32_t fnlink;
+	rpmfileAttrs fflags = rpmfiFFlags(fi);
+	rpm_mode_t fmode = rpmfiFMode(fi);
+	rpm_rdev_t frdev = rpmfiFRdev(fi);
+	rpm_time_t fmtime = rpmfiFMtime(fi);
+	rpmfileState fstate = rpmfiFState(fi);
+	rpm_loff_t fsize = rpmfiFSize(fi);
+	const char *fn = rpmfiFN(fi);
+	const char *fuser = rpmfiFUser(fi);
+	const char *fgroup = rpmfiFGroup(fi);
+	const char *flink = rpmfiFLink(fi);
+	uint32_t fnlink = rpmfiFNlink(fi);
 	char *buf = NULL;
-
-	fflags = rpmfiFFlags(fi);
-	fmode = rpmfiFMode(fi);
-	frdev = rpmfiFRdev(fi);
-	fmtime = rpmfiFMtime(fi);
-	fstate = rpmfiFState(fi);
-	fsize = rpmfiFSize(fi);
-	fn = rpmfiFN(fi);
-	fuser = rpmfiFUser(fi);
-	fgroup = rpmfiFGroup(fi);
-	flink = rpmfiFLink(fi);
-	fnlink = rpmfiFNlink(fi);
 
 	/* If querying only docs, skip non-doc files. */
 	if ((qva->qva_flags & QUERY_FOR_DOCS) && !(fflags & RPMFILE_DOC))
