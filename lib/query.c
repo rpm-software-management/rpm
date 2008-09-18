@@ -129,7 +129,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     }
 
     fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
 	rpmfileAttrs fflags = rpmfiFFlags(fi);
 	rpm_mode_t fmode = rpmfiFMode(fi);
