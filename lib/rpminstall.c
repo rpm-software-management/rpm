@@ -606,7 +606,6 @@ exit:
 
 int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 {
-    int count;
     char * const * arg;
     int numFailed = 0;
     int stopUninstall = 0;
@@ -640,19 +639,25 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
     for (arg = argv; *arg; arg++) {
 	rpmdbMatchIterator mi;
+	int matches = 0;
 
-	/* XXX HACK to get rpmdbFindByLabel out of the API */
+	/* Iterator count isn't reliable with labels, count manually... */
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
-	if (mi == NULL) {
+	while (rpmdbNextIterator(mi) != NULL) {
+	    matches++;
+	}
+	rpmdbFreeIterator(mi);
+
+	if (! matches) {
 	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), *arg);
 	    numFailed++;
 	} else {
 	    Header h;	/* XXX iterator owns the reference */
-	    count = 0;
+	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
 
-		if (!(count++ == 0 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES))) {
+		if (matches > 1 || (ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES)) {
 		    rpmlog(RPMLOG_ERR, _("\"%s\" specifies multiple packages\n"),
 			*arg);
 		    numFailed++;
@@ -663,8 +668,8 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 		    numPackages++;
 		}
 	    }
+	    mi = rpmdbFreeIterator(mi);
 	}
-	mi = rpmdbFreeIterator(mi);
     }
 
     if (numFailed) goto exit;
