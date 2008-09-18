@@ -1718,30 +1718,18 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
-	if (rpmtdType(&td) != RPM_INT32_TYPE) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Container not of 32bit data type.\n"));
-	    goto exit;
-	}
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     /* Add per-file dependency (start,number) pairs (#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
-	if (rpmtdType(&td) != RPM_INT32_TYPE) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Container not of 32bit data type.\n"));
-	    goto exit;
-	}
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
-	if (rpmtdType(&td) != RPM_INT32_TYPE) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Container not of 32bit data type.\n"));
-	    goto exit;
-	}
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
