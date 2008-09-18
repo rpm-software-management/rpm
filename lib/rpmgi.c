@@ -188,6 +188,8 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 	rpmrc = rpmgiLoadManifest(gi, fn);
 	if (rpmrc != RPMRC_OK) {
 	    gi->argv[gi->i] = fn;	/* Manifest failed, restore fn */
+	    rpmlog(RPMLOG_NOTICE, 
+		   _("%s: not an rpm package (or package manifest)\n"), fn);
 	    break;
 	}
 	fn = _free(fn);
