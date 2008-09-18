@@ -560,6 +560,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     h = headerLoad(ei);
     if (h == NULL) {
 	rasprintf(&buf, _("hdr load: BAD\n"));
+	rc = RPMRC_FAIL;
         goto exit;
     }
     h->flags |= HEADERFLAG_ALLOCATED;
