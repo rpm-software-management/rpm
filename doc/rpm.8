@@ -208,7 +208,8 @@ new package is installed.
 
 .PP
 This will upgrade packages, but only if an earlier version
-currently exists. The \fIPACKAGE_FILE\fR
+currently exists. The \fIPACKAGE_FILE\fR can be either \fBrpm\fR binary
+file or ASCII package manifest (see \fBPACKAGE SELECTION OPTIONS\fR), and
 may be specified as an
 \fBftp\fR or
 \fBhttp\fR URL,
@@ -270,6 +271,9 @@ Update only the database, not the filesystem.
 .TP
 \fB--nodigest\fR
 Don't verify package or header digests when reading.
+.TP
+\fB--nomanifest\fR
+Don't process non-package files as manifests.
 .TP
 \fB--nosignature\fR
 Don't verify package or header signatures when reading.
@@ -532,9 +536,10 @@ See \fBFTP/HTTP OPTIONS\fR for information on
 \fBhttp\fR
 client support. The \fIPACKAGE_FILE\fR argument(s),
 if not a binary package, will be interpreted as an ASCII package
-manifest.  Comments are permitted, starting with a '#', and each
+manifest unless \fB--nomanifest\fI option is used.  
+In manifests, comments are permitted, starting with a '#', and each
 line of a package manifest file may include white space separated
-glob expressions, including URL's with remote glob expressions,
+glob expressions, including URL's,
 that will be expanded to paths that are substituted in place of
 the package manifest as additional \fIPACKAGE_FILE\fR
 arguments to the query.
