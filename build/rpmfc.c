@@ -1504,7 +1504,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 
 	if (sb_stdout == NULL) {
 	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Failed to find %s:\n"), dm->msg);
+	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}
 
@@ -1513,7 +1513,7 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	sb_stdout = freeStringBuf(sb_stdout);
 
 	if (rc) {
-	    rpmlog(rc, _("Failed to find %s:\n"), dm->msg);
+	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
 	    break;
 	}
     }
@@ -1597,13 +1597,13 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	    N = rpmdsN(pkg->ds);
 	    if (N == NULL) {
 		rc = RPMRC_FAIL;
-		rpmlog(rc, _("Unable to get current dependency name.\n"));
+		rpmlog(RPMLOG_ERR, _("Unable to get current dependency name.\n"));
 		goto exit;
 	    }
 	    EVR = rpmdsEVR(pkg->ds);
 	    if (EVR == NULL) {
 		rc = RPMRC_FAIL;
-		rpmlog(rc, _("Unable to get current dependency epoch-version-release.\n"));
+		rpmlog(RPMLOG_ERR, _("Unable to get current dependency epoch-version-release.\n"));
 		goto exit;
 	    }
 	    rasprintf(&buf, "config(%s)", N);
@@ -1628,13 +1628,13 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	    N = rpmdsN(pkg->ds);
 	    if (N == NULL) {
 		rc = RPMRC_FAIL;
-		rpmlog(rc, _("Unable to get current dependency name.\n"));
+		rpmlog(RPMLOG_ERR, _("Unable to get current dependency name.\n"));
 		goto exit;
 	    }
 	    EVR = rpmdsEVR(pkg->ds);
 	    if (EVR == NULL) {
 		rc = RPMRC_FAIL;
-		rpmlog(rc, _("Unable to get current dependency epoch-version-release.\n"));
+		rpmlog(RPMLOG_ERR, _("Unable to get current dependency epoch-version-release.\n"));
 		goto exit;
 	    }
 	    rasprintf(&buf, "config(%s)", N);
@@ -1661,14 +1661,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	rpm_color_t *fcolor;
 	if (ac != rpmtdCount(&td)) {
 	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("File count from file info doesn't match file in container.\n"));
+	    rpmlog(RPMLOG_ERR, _("File count from file info doesn't match file in container.\n"));
 	    goto exit;
 	}
-	if (rpmtdType(&td) != RPM_INT32_TYPE) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Container not of 32bit data type.\n"));
-	    goto exit;
-	}
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
 	while ((fcolor = rpmtdNextUint32(&td))) {
 	    *fcolor &= 0x0f;
@@ -1680,7 +1676,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     if (rpmtdFromArgv(&td, RPMTAG_CLASSDICT, fc->cdict)) {
 	if (rpmtdType(&td) != RPM_STRING_ARRAY_TYPE) {
 	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Container not of string array data type.\n"));
+	    rpmlog(RPMLOG_ERR, _("Container not of string array data type.\n"));
 	    goto exit;
 	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
@@ -1688,11 +1684,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Add per-file classes(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECLASS, fc->fcdictx)) {
-	if (rpmtdType(&td) != RPM_INT32_TYPE) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(rc, _("Container not of 32bit data type.\n"));
-	    goto exit;
-	}
+	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
