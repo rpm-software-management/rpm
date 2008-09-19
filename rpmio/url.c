@@ -236,7 +236,15 @@ static void urlFind(/*@null@*/ /*@in@*/ /*@out@*/ urlinfo * uret, int mustAsk)
 	    continue;
 	if (urlStrcmp(u->portstr, ou->portstr))
 	    continue;
-	break;	/* Found item in cache */
+	/* 
+ 	 * Found item in cache.
+	 * Now ensure the url actually points to the requested path.
+	 */
+	if (urlStrcmp(u->url, ou->url) != 0) {
+	    _free(ou->url);
+	    ou->url = xstrdup(u->url);
+	}
+	break;
     }
 
     if (i == _url_count) {
