@@ -202,7 +202,7 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     if (pkg->preTransFile) {
 	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PreIn file: %s\n"), pkg->preTransFile);
+		     _("Could not open PreTrans file: %s\n"), pkg->preTransFile);
 	    return RPMRC_FAIL;
 	}
     }
@@ -223,7 +223,7 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     if (pkg->postTransFile) {
 	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PostUn file: %s\n"), pkg->postTransFile);
+		     _("Could not open PostTrans file: %s\n"), pkg->postTransFile);
 	    return RPMRC_FAIL;
 	}
     }
