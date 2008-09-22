@@ -1168,29 +1168,24 @@ static void genCpioListAndHeader(FileList fl,
     /* rpmfi only groks compressed filelists */
     compressFilelist(h);
 
-  { int scareMem = 0;
+  {
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, 0);
     char * a, * d;
-
-    if (fi == NULL) return;		/* XXX can't happen */
 
     fi->te = xcalloc(1, sizeof(*fi->te));
     fi->te->type = TR_ADDED;
 
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
-    if (!scareMem) fi->dil = _free(fi->dil);
+    fi->dil = _free(fi->dil);
 
     fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen + 1);
     d = (char *)(fi->dnl + fi->fc);
     *d = '\0';
 
     fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
-/* FIX: artifact of spoofing headerGetEntry */
-    fi->dil = (!scareMem)
-	? xcalloc(sizeof(*fi->dil), fi->fc)
-	: (int *)(fi->bnl + fi->fc);
+    fi->dil = xcalloc(sizeof(*fi->dil), fi->fc);
 
     fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen + 1);
     a = (char *)(fi->apath + fi->fc);
@@ -1207,7 +1202,6 @@ static void genCpioListAndHeader(FileList fl,
     fi->fgroup = _free(fi->fgroup);
 
     /* Make the cpio list */
-    if (fi->dil != NULL)	/* XXX can't happen */
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
 	char * b;
 
