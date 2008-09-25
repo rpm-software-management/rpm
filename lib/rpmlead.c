@@ -41,7 +41,7 @@ struct rpmlead_s {
 rpmlead rpmLeadNew(void)
 {
     int archnum, osnum;
-    rpmlead l = calloc(1, sizeof(*l));
+    rpmlead l = xcalloc(1, sizeof(*l));
 
     rpmGetArchInfo(NULL, &archnum);
     rpmGetOsInfo(NULL, &osnum);
