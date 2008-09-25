@@ -1280,7 +1280,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
 	    if (ftype == NULL) {
 		rpmlog(RPMLOG_ERR, 
-		       _("Recognition of file \"%s\") failed: mode %06o %s\n"),
+		       _("Recognition of file \"%s\" failed: mode %06o %s\n"),
 		       s, mode, magic_error(ms));
 		magic_close(ms);
 		return RPMRC_FAIL;
