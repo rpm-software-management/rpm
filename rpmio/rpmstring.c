@@ -227,7 +227,7 @@ char *rstrscat(char **dest, const char *arg, ...)
     va_end(ap);
 
     dst_size = dst ? strlen(dst) : 0;
-    dst = realloc(dst, dst_size+arg_size+1);    /* include '\0' */
+    dst = xrealloc(dst, dst_size+arg_size+1);    /* include '\0' */
     p = &dst[dst_size];
 
     va_start(ap, arg);
