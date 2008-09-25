@@ -377,7 +377,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	    p = rpmpsGetProblem(psi);
 
-	    byName = strdup(rpmProblemGetPkgNEVR(p));
+	    byName = xstrdup(rpmProblemGetPkgNEVR(p));
 	    if ((byArch= strrchr(byName, '.')) != NULL)
 		*byArch++ = '\0';
 	    if ((byRelease = strrchr(byName, '-')) != NULL)

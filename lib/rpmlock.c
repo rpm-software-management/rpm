@@ -35,7 +35,7 @@ static rpmlock rpmlock_new(const char *rootdir)
     if (rpmlock_path == NULL) {
 	char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
 	if (t == NULL || *t == '\0' || *t == '%')
-	    t = strdup(RPMLOCK_PATH);
+	    t = xstrdup(RPMLOCK_PATH);
 	rpmlock_path = xstrdup(t);
 	t = _free(t);
     }

@@ -132,7 +132,7 @@ static void rpmhookTableAddItem(rpmhookTable *table, const char *name,
     rpmhookBucket bucket = &(*table)->bucket[n];
     rpmhookItem *item = &bucket->item;
     if (!bucket->name) {
-	bucket->name = strdup(name);
+	bucket->name = xstrdup(name);
 	(*table)->used++;
     }
     while (*item) item = &(*item)->next;

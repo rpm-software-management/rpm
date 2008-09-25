@@ -434,7 +434,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	if (strstr(line+6, " -P") == NULL)
 	    rasprintf(&buf, "%%patch -P %d %s", INT_MAX, line + 6); /* INT_MAX denotes not numbered %patch */
 	else
-	    buf = strdup(line); /* it is not numberless patch because -P is present */
+	    buf = xstrdup(line); /* it is not numberless patch because -P is present */
     }
     poptParseArgvString(buf, &argc, &argv);
     free(buf);
