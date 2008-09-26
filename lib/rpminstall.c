@@ -363,7 +363,6 @@ int rpmInstall(rpmts ts,
 	fn = _free(fn);
 	if (rc || ac == 0) {
 	    rpmError(RPMERR_OPEN, _("File not found by glob: %s\n"), *eiu->fnp);
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), *eiu->fnp);
 	    eiu->numFailed++;
 	    continue;
 	}
