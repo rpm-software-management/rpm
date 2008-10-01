@@ -100,15 +100,7 @@ static void buildArgCallback( poptContext con,
 	rba->buildRootOverride = xstrdup(arg);
 	break;
     case POPT_TARGETPLATFORM:
-	if (rba->targets) {
-	    size_t len = strlen(rba->targets) + 1 + strlen(arg) + 1;
-	    rba->targets = xrealloc(rba->targets, len);
-	    strcat(rba->targets, ",");
-	} else {
-	    rba->targets = xmalloc(strlen(arg) + 1);
-	    rba->targets[0] = '\0';
-	}
-	strcat(rba->targets, arg);
+	rstrscat(&rba->targets, rba->targets ? "," : "", arg, NULL);
 	break;
 
     case RPMCLI_POPT_NODIGEST:
