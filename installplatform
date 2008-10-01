@@ -80,13 +80,13 @@ for SUBST in $SUBSTS ; do
   ISANAME=
   ISABITS=
   case "${ARCH}" in
-    sparc|sparcv8|sparcv9*) 
-	ISANAME=sparc
-	ISABITS=32
-	;;
-    sparc64|sparc64v) 
+    sparc64*) 
 	ISANAME=sparc
 	ISABITS=64
+	;;
+    sparc*) 
+	ISANAME=sparc
+	ISABITS=32
 	;;
     s390)
 	ISANAME=s390
@@ -96,13 +96,13 @@ for SUBST in $SUBSTS ; do
 	ISANAME=s390
 	ISABITS=64
 	;;
-    ppc)
-	ISANAME=ppc
-	ISABITS=32
-	;;
-    ppc64)
+    ppc64*)
 	ISANAME=ppc
 	ISABITS=64
+	;;
+    ppc*)
+	ISANAME=ppc
+	ISABITS=32
 	;;
     i?86|pentium?|athlon|geode)
 	ISANAME=x86
