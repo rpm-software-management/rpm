@@ -12,7 +12,6 @@
 
 struct rpmBuildArguments_s         rpmBTArgs;
 
-#define	POPT_USECATALOG		-1011
 #define	POPT_NOLANG		-1012
 #define	POPT_RMSOURCE		-1013
 #define	POPT_RMBUILD		-1014
@@ -47,8 +46,6 @@ int noLang = 0;
 static int noBuild = 0;
 
 static int signIt = 0;
-
-static int useCatalog = 0;
 
 /**
  */
@@ -88,7 +85,6 @@ static void buildArgCallback( poptContext con,
     case POPT_NOLANG: rba->noLang = 1; break;
     case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
     case POPT_SIGN: rba->sign = 1; break;
-    case POPT_USECATALOG: rba->useCatalog = 1; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
@@ -221,7 +217,5 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("generate PGP/GPG signature"), NULL },
  { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
 	N_("override target platform"), "CPU-VENDOR-OS" },
- { "usecatalog", '\0', POPT_ARGFLAG_DOC_HIDDEN, &useCatalog, POPT_USECATALOG,
-	N_("lookup i18N strings in specfile catalog"), NULL},
    POPT_TABLEEND
 };
