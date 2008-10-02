@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the RPM package.
 # Karl Eichwalder <ke@suse.de>, 1997,1998.
 # Robert Scheck <rpm@robert-scheck.de>, 2004,2005.
-# Fabian Affolter <fab@fedoraproject.org>,2008.
+# Fabian Affolter <fab@fedoraproject.org>, 2008.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-09-02 15:24+0300\n"
-"PO-Revision-Date: 2008-09-01 16:25+0100\n"
+"POT-Creation-Date: 2008-10-02 12:41+0300\n"
+"PO-Revision-Date: 2008-10-02 11:31+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -543,82 +543,82 @@ msgstr "Datei doppelt aufgelistet: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolischer Link zeigt auf den BuildRoot: %s -> %s\n"
 
-#: build/files.c:1334
+#: build/files.c:1330
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Datei stimmt nicht mit dem Präfix überein (%s): %s\n"
 
-#: build/files.c:1358
+#: build/files.c:1354
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Datei nicht gefunden: %s\n"
 
-#: build/files.c:1471
+#: build/files.c:1467
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "Datei %s zu gross für Nutzlast\n"
 
-#: build/files.c:1569
+#: build/files.c:1565
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: Kann den unbekannten Tag (%d) nicht laden.\n"
 
-#: build/files.c:1576
+#: build/files.c:1572
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Lesen des öffentlichen Schlüssels fehlgeschlagen.\n"
 
-#: build/files.c:1581 lib/rpmchecksig.c:438
+#: build/files.c:1577 lib/rpmchecksig.c:438
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: Ist kein gepanzerter öffentlicher Schlüssel.\n"
 
-#: build/files.c:1590
+#: build/files.c:1586
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: Lesen der *.te-Richtline fehlgeschlagen.\n"
 
-#: build/files.c:1633
+#: build/files.c:1629
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datei benötigt führenden \"/\": %s\n"
 
-#: build/files.c:1655
+#: build/files.c:1651
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "\"Glob\" hat keine Berechtigung für: %s\n"
 
-#: build/files.c:1667 lib/rpminstall.c:266
+#: build/files.c:1663 lib/rpminstall.c:266
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei von \"glob\" nicht gefunden: %s\n"
 
-#: build/files.c:1717
+#: build/files.c:1713
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Datei %s aus %%files konnte nicht geöffnet: %m\n"
 
-#: build/files.c:1725
+#: build/files.c:1721
 #, c-format
 msgid "line: %s\n"
 msgstr "Zeile: %s\n"
 
-#: build/files.c:2087
+#: build/files.c:2083
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ungültige Datei: %s: %s\n"
 
-#: build/files.c:2111 build/parsePrep.c:44
+#: build/files.c:2107 build/parsePrep.c:44
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ungültiger Eigentümer/Gruppe: %s\n"
 
-#: build/files.c:2152
+#: build/files.c:2148
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Prüfe auf nicht gepackte Datei(en): %s\n"
 
-#: build/files.c:2167
+#: build/files.c:2163
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -627,7 +627,7 @@ msgstr ""
 "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
-#: build/files.c:2192
+#: build/files.c:2187
 #, c-format
 msgid "Processing files: %s-%s-%s\n"
 msgstr "Verarbeite Paket: %s-%s-%s\n"
@@ -686,7 +686,7 @@ msgstr "cpio_copy lesen fehlgeschlagen: %s\n"
 msgid "%s: line: %s\n"
 msgstr "%s: Zeile: %s\n"
 
-#: build/pack.c:191 build/pack.c:205
+#: build/pack.c:191
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Konnte PreIn-Datei nicht öffnen: %s\n"
@@ -696,15 +696,25 @@ msgstr "Konnte PreIn-Datei nicht öffnen: %s\n"
 msgid "Could not open PreUn file: %s\n"
 msgstr "Konnte PreUn-Datei nicht öffnen: %s\n"
 
+#: build/pack.c:205
+#, c-format
+msgid "Could not open PreTrans file: %s\n"
+msgstr "Konnte PreTrans-Datei nicht öffnen: %s\n"
+
 #: build/pack.c:212
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Konnte PostIn-Datei nicht öffnen: %s\n"
 
-#: build/pack.c:219 build/pack.c:226
+#: build/pack.c:219
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Konnte PostUn-Datei nicht öffnen: %s\n"
+
+#: build/pack.c:226
+#, c-format
+msgid "Could not open PostTrans file: %s\n"
+msgstr "Konnte PostTrans-Datei nicht öffnen: %s\n"
 
 #: build/pack.c:234
 #, c-format
@@ -1052,17 +1062,17 @@ msgstr "Zeile %d: Ungültiges Argument für %%setup: %s\n"
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "Zeile %d: Ungültige %%setup-Option %s: %s\n"
 
-#: build/parsePrep.c:460
+#: build/parsePrep.c:463
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:473
+#: build/parsePrep.c:476
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Ungültige Patch-Nummer %s: %s\n"
 
-#: build/parsePrep.c:502
+#: build/parsePrep.c:505
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "Zeile %d: Zweites %%prep\n"
@@ -1167,184 +1177,175 @@ msgstr "Keine für das Bauen kompatible Architektur gefunden\n"
 msgid "Package has no %%description: %s\n"
 msgstr "Paket hat keine %%description: %s\n"
 
-#: build/poptBT.c:97
+#: build/poptBT.c:93
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "BuildRoot wurde bereits angegeben, ignoriere %s\n"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:133
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "%prep (Quellen entpacken, Patches übernehmen) der <Spec-Datei> durchlaufen"
 
-#: build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152 build/poptBT.c:155
-#: build/poptBT.c:158 build/poptBT.c:161 build/poptBT.c:164
+#: build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140 build/poptBT.c:143
+#: build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
 msgid "<specfile>"
 msgstr "<Spec-Datei>"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:136
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 "%build (%prep, anschliessendes Kompilieren) der <Spec-Datei> durchlaufen"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:139
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "%install (%prep, %build, anschliessendes Installieren) der <Spec-Datei> "
 "durchlaufen"
 
-#: build/poptBT.c:154
+#: build/poptBT.c:142
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "Überprüfe %files-Abschnitt der <Spec-Datei>"
 
-#: build/poptBT.c:157
+#: build/poptBT.c:145
 msgid "build source and binary packages from <specfile>"
 msgstr "Baue Source- und Binär-Paket von <Spec-Datei>"
 
-#: build/poptBT.c:160
+#: build/poptBT.c:148
 msgid "build binary package only from <specfile>"
 msgstr "Baue nur ein Binär-Paket von <Spec-Datei>"
 
-#: build/poptBT.c:163
+#: build/poptBT.c:151
 msgid "build source package only from <specfile>"
 msgstr "Baue nur ein Source-Paket von <Spec-Datei>"
 
-#: build/poptBT.c:167
+#: build/poptBT.c:155
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "%prep (Quellen entpacken, Patches übernehmen) des <Tar-Archivs> durchlaufen"
 
-#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174 build/poptBT.c:177
-#: build/poptBT.c:180 build/poptBT.c:183 build/poptBT.c:186
+#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
+#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
 msgid "<tarball>"
 msgstr "<Tar-Archiv>"
 
-#: build/poptBT.c:170
+#: build/poptBT.c:158
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 "%build (%prep, anschliessendes Kompilieren) des <Tar-Archivs> durchlaufen"
 
-#: build/poptBT.c:173
+#: build/poptBT.c:161
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "%install (%prep, %build, anschliessendes Installieren) des <Tar-Archivs> "
 "durchlaufen"
 
-#: build/poptBT.c:176
+#: build/poptBT.c:164
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "Überprüfe %files-Abschnitt des <Tar-Archivs>"
 
-#: build/poptBT.c:179
+#: build/poptBT.c:167
 msgid "build source and binary packages from <tarball>"
 msgstr "Baue Source- und Binär-Paket vom <Tar-Archiv>"
 
-#: build/poptBT.c:182
+#: build/poptBT.c:170
 msgid "build binary package only from <tarball>"
 msgstr "Baue nur ein Binär-Paket vom <Tar-Archiv>"
 
-#: build/poptBT.c:185
+#: build/poptBT.c:173
 msgid "build source package only from <tarball>"
 msgstr "Baue nur ein Source-Paket vom <Tar-Archiv>"
 
-#: build/poptBT.c:189
+#: build/poptBT.c:177
 msgid "build binary package from <source package>"
 msgstr "Baue ein Binär-Paket vom <Source-Paket>"
 
-#: build/poptBT.c:190 build/poptBT.c:193
+#: build/poptBT.c:178 build/poptBT.c:181
 msgid "<source package>"
 msgstr "<Source-Paket>"
 
-#: build/poptBT.c:192
+#: build/poptBT.c:180
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "%install (%prep, %build, anschliessendes Installieren) des <Source-Pakets> "
 "durchlaufen"
 
-#: build/poptBT.c:196
+#: build/poptBT.c:184
 msgid "override build root"
 msgstr "Überschreibe BuildRoot"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:186
 msgid "remove build tree when done"
 msgstr "Erstellungsdateibaum nach Beendigung löschen"
 
-#: build/poptBT.c:200 build/poptBT.c:238
+#: build/poptBT.c:188
 msgid "generate headers compatible with rpm4 packaging"
 msgstr "Generiere mit RPM4-Paketen kompatible Header"
 
-#: build/poptBT.c:202
+#: build/poptBT.c:190
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "ExcludeArch ignorieren: Anweisungen der Spec-Datei"
 
-#: build/poptBT.c:204
+#: build/poptBT.c:192
 msgid "debug file state machine"
 msgstr "Debugge Datei-Status"
 
-#: build/poptBT.c:206
+#: build/poptBT.c:194
 msgid "do not execute any stages of the build"
 msgstr "Keine der Phasen des Erstellungsvorganges ausführen"
 
-#: build/poptBT.c:208
+#: build/poptBT.c:196
 msgid "do not verify build dependencies"
 msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
-#: build/poptBT.c:210
+#: build/poptBT.c:198
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "Generiere Paket-Header, die mit veralteten RPM-Paketen (v2/3) kompatibel sind"
 
-#: build/poptBT.c:214 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:313
+#: build/poptBT.c:202 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:313
 #: lib/poptQV.c:351
 msgid "don't verify package digest(s)"
 msgstr "Paket-Kurzfassung nicht überprüfen"
 
-#: build/poptBT.c:216 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:315
+#: build/poptBT.c:204 lib/poptALL.c:222 lib/poptI.c:236 lib/poptQV.c:315
 #: lib/poptQV.c:354
 msgid "don't verify database header(s) when retrieved"
 msgstr "Datenbank-Header beim Abrufen nicht überprüfen"
 
-#: build/poptBT.c:218 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:317
+#: build/poptBT.c:206 lib/poptALL.c:224 lib/poptI.c:238 lib/poptQV.c:317
 #: lib/poptQV.c:356
 msgid "don't verify package signature(s)"
 msgstr "Paket-Signatur(en) nicht überprüfen"
 
-#: build/poptBT.c:221
+#: build/poptBT.c:209
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "Keine i18n-Übersetzungen der Spec-Datei zulassen"
 
-#: build/poptBT.c:223
+#: build/poptBT.c:211
 msgid "remove sources when done"
 msgstr "Quelldateien nach Beendigung löschen"
 
-#: build/poptBT.c:225
+#: build/poptBT.c:213
 msgid "remove specfile when done"
 msgstr "Spec-Datei nach Beendigung löschen"
 
-#: build/poptBT.c:227
+#: build/poptBT.c:215
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "Springe direkt zur angegeben Phase (nur für c, i)"
 
-#: build/poptBT.c:229
+#: build/poptBT.c:217
 msgid "generate PGP/GPG signature"
 msgstr "Erstelle PGP-/GPG-Signatur"
 
-#: build/poptBT.c:231
+#: build/poptBT.c:219
 msgid "override target platform"
 msgstr "Überschreibe Zielplattform"
-
-#: build/poptBT.c:233
-msgid "lookup i18N strings in specfile catalog"
-msgstr "i18n-Übersetzungen im Spec-Datei-Katalog nachschlagen"
-
-#: build/poptBT.c:235
-msgid "generate headers compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"Generiere Header, die mit veralteten RPM-Paketen (v2/3) kompatibel sind"
 
 #: build/rpmfc.c:107
 #, c-format
@@ -1376,30 +1377,54 @@ msgstr "%s fehlgeschlagen\n"
 msgid "failed to write all data to %s\n"
 msgstr "Konnte nicht all Daten nach %s schreiben\n"
 
-#: build/rpmfc.c:1249
+#: build/rpmfc.c:1155
+#, c-format
+msgid "Conversion of %s to long integer failed.\n"
+msgstr "Umwandlung von %s in einen langen Integer fehlgeschlagen.\n"
+
+#: build/rpmfc.c:1235
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:1256
+#: build/rpmfc.c:1242
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:1297
+#: build/rpmfc.c:1283
 #, c-format
-msgid "magic_file(ms, \"%s\") failed: mode %06o %s\n"
-msgstr "magic_file(ms, \"%s\") fehlgeschlagen: mode %06o %s\n"
+msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
+msgstr "Erkennung der Datei \"%s\" fehlgeschlagen: Modus %06o %s\n"
 
-#: build/rpmfc.c:1497
+#: build/rpmfc.c:1483
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Finde %s: %s\n"
 
-#: build/rpmfc.c:1503 build/rpmfc.c:1512
+#: build/rpmfc.c:1489 build/rpmfc.c:1498
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Fehlgeschlagenes zu finden %s:\n"
+
+#: build/rpmfc.c:1582 build/rpmfc.c:1613
+msgid "Unable to get current dependency name.\n"
+msgstr "Beziehen des aktuellen Abhängikeitsnamen nicht möglich.\n"
+
+#: build/rpmfc.c:1588 build/rpmfc.c:1619
+msgid "Unable to get current dependency epoch-version-release.\n"
+msgstr ""
+"Beziehen des aktuellen Abhängikeit epoch-verion-release nicht möglich.\n"
+
+#: build/rpmfc.c:1646
+msgid "File count from file info doesn't match file in container.\n"
+msgstr ""
+"Datei-Zählung von Datei-Info stimmt nicht mit der Datei im Container "
+"überein.\n"
+
+#: build/rpmfc.c:1661
+msgid "Container not of string array data type.\n"
+msgstr "Container besteht nicht aus einen String-Array-Datentypen.\n"
 
 #: build/spec.c:227
 #, c-format
@@ -1691,37 +1716,37 @@ msgstr "hdr Blob(%zd): UNGÜLTIG, lesen lieferte %d zurück\n"
 msgid "hdr load: BAD\n"
 msgstr "hdr Load: UNGÜLTIG\n"
 
-#: lib/package.c:622 lib/rpmchecksig.c:182 lib/rpmchecksig.c:594
+#: lib/package.c:623 lib/rpmchecksig.c:182 lib/rpmchecksig.c:594
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fehlgeschlagen: %s"
 
-#: lib/package.c:629 lib/rpmchecksig.c:189 lib/rpmchecksig.c:602
+#: lib/package.c:630 lib/rpmchecksig.c:189 lib/rpmchecksig.c:602
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/package.c:694
+#: lib/package.c:695
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead fehlgeschlagen: %s"
 
-#: lib/package.c:726 lib/package.c:750 lib/package.c:779 lib/rpmchecksig.c:687
+#: lib/package.c:727 lib/package.c:751 lib/package.c:780 lib/rpmchecksig.c:687
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "überspringe Paket %s nicht überprüfbaren V%u Signatur\n"
 
-#: lib/package.c:793 lib/rpmchecksig.c:90 lib/rpmchecksig.c:507
+#: lib/package.c:794 lib/rpmchecksig.c:90 lib/rpmchecksig.c:507
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread fehlgeschlagen: %s\n"
 
-#: lib/package.c:890
+#: lib/package.c:891
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s ist ein Delta RPM und kann nicht direkt installiert werden\n"
 
-#: lib/package.c:894
+#: lib/package.c:895
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nicht unterstütze Nutzlast (%s) in Paket %s\n"
@@ -2325,94 +2350,94 @@ msgstr "Ungültiges Format: %s\n"
 msgid "(contains no files)\n"
 msgstr "(enthält keine Dateien)\n"
 
-#: lib/query.c:174
+#: lib/query.c:161
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:177
+#: lib/query.c:164
 msgid "replaced      "
 msgstr "ersetzt       "
 
-#: lib/query.c:180
+#: lib/query.c:167
 msgid "not installed "
 msgstr "nicht installiert"
 
-#: lib/query.c:183
+#: lib/query.c:170
 msgid "net shared    "
 msgstr "geshared      "
 
-#: lib/query.c:186
+#: lib/query.c:173
 msgid "wrong color   "
 msgstr "falsche Farbe "
 
-#: lib/query.c:189
+#: lib/query.c:176
 msgid "(no state)    "
 msgstr "(kein status) "
 
-#: lib/query.c:192
+#: lib/query.c:179
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(unbekannt %3d)"
 
-#: lib/query.c:212
+#: lib/query.c:199
 msgid "package has not file owner/group lists\n"
 msgstr "Paket hat keine Eigentümer-/Gruppen-Liste\n"
 
-#: lib/query.c:242
+#: lib/query.c:229
 msgid "package has neither file owner or id lists\n"
 msgstr "Paket weder Eigentümer- noch ID-Liste\n"
 
-#: lib/query.c:357
+#: lib/query.c:344
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "Gruppe %s enthält keine Pakete\n"
 
-#: lib/query.c:366
+#: lib/query.c:353
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "Keine Paket-Trigger %s\n"
 
-#: lib/query.c:379 lib/query.c:400 lib/query.c:421 lib/query.c:458
+#: lib/query.c:366 lib/query.c:387 lib/query.c:408 lib/query.c:445
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "Missgebildet: %s: %s\n"
 
-#: lib/query.c:389 lib/query.c:406 lib/query.c:432 lib/query.c:463
+#: lib/query.c:376 lib/query.c:393 lib/query.c:419 lib/query.c:450
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "Kein Paket stimmt mit %s überein: %s\n"
 
-#: lib/query.c:473
+#: lib/query.c:460
 #, c-format
 msgid "no package requires %s\n"
 msgstr "Kein Paket benötigt %s\n"
 
-#: lib/query.c:484
+#: lib/query.c:471
 #, c-format
 msgid "no package provides %s\n"
 msgstr "Kein Paket bietet %s\n"
 
-#: lib/query.c:516
+#: lib/query.c:503
 #, c-format
 msgid "file %s: %s\n"
 msgstr "Datei %s: %s\n"
 
-#: lib/query.c:519
+#: lib/query.c:506
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "Die Datei %s gehört zu keinem Paket\n"
 
-#: lib/query.c:544
+#: lib/query.c:531
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "Ungültige Paket-Nummer: %s\n"
 
-#: lib/query.c:552
+#: lib/query.c:539
 #, c-format
 msgid "record %lu could not be read\n"
 msgstr "Eintrag %lu konnte nicht gelesen werden\n"
 
-#: lib/query.c:568 lib/rpminstall.c:647
+#: lib/query.c:555 lib/rpminstall.c:655
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "Das Paket %s ist nicht installiert\n"
@@ -2583,12 +2608,17 @@ msgstr "Datei-Prüfsummen-Übersichtsalgoritmus ist pro Paket konfigurierbar"
 msgid "open of %s failed: %s\n"
 msgstr "Öffnen von %s fehlgeschlagen: %s\n"
 
-#: lib/rpmgi.c:356
+#: lib/rpmgi.c:192
+#, c-format
+msgid "%s: not an rpm package (or package manifest)\n"
+msgstr "%s: Kein RPM-Paket (oder Paket-Liste)\n"
+
+#: lib/rpmgi.c:358
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "Unbekannter Tag: \"%s\"\n"
 
-#: lib/rpmgi.c:627 lib/rpminstall.c:525 lib/rpminstall.c:681
+#: lib/rpmgi.c:629 lib/rpminstall.c:525 lib/rpminstall.c:696
 #: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "Fehlgeschlagende Abhängigkeiten:\n"
@@ -2611,7 +2641,7 @@ msgstr "Empfange %s\n"
 msgid "skipping %s - transfer failed\n"
 msgstr "überspringe %s - Übertragung fehlgeschlagen\n"
 
-#: lib/rpminstall.c:372 lib/rpminstall.c:742 tools/rpmgraph.c:139
+#: lib/rpminstall.c:372 lib/rpminstall.c:757 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s kann nicht installiert werden\n"
@@ -2641,17 +2671,17 @@ msgstr "%s: Kein RPM-Paket (oder Paket-Liste): %s\n"
 msgid "cannot open file %s: %s\n"
 msgstr "Kann Datei %s nicht öffnen: %s\n"
 
-#: lib/rpminstall.c:656
+#: lib/rpminstall.c:662
 #, c-format
-msgid "\"%s\" specifies multiple packages\n"
-msgstr "\"%s\" bezeichnet mehrere Pakete\n"
+msgid "\"%s\" specifies multiple packages:\n"
+msgstr "\"%s\" bezeichnet mehrere Pakete:\n"
 
-#: lib/rpminstall.c:726
+#: lib/rpminstall.c:741
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "Kann %s nicht öffnen: %s\n"
 
-#: lib/rpminstall.c:732
+#: lib/rpminstall.c:747
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installiere %s\n"
@@ -3350,32 +3380,32 @@ msgstr "Makro %%%s hat einen ungültigen Namen (%%undefine)\n"
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr "Makro %%%s (%s) wurde nicht unter Level %d benutzt\n"
 
-#: rpmio/macro.c:841
+#: rpmio/macro.c:838
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Unbekannte Option %c in %s (%s)\n"
 
-#: rpmio/macro.c:1040
+#: rpmio/macro.c:1037
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionstiefe (%d) ist grösser als Maximum (%d)\n"
 
-#: rpmio/macro.c:1109 rpmio/macro.c:1126
+#: rpmio/macro.c:1106 rpmio/macro.c:1123
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Nicht terminiertes %c: %s\n"
 
-#: rpmio/macro.c:1167
+#: rpmio/macro.c:1164
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ein %% ist gefolgt von einem nicht parsbaren Makro\n"
 
-#: rpmio/macro.c:1323
+#: rpmio/macro.c:1320
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Makro %%%.*s nicht gefunden, überspringe\n"
 
-#: rpmio/macro.c:1394
+#: rpmio/macro.c:1391
 msgid "Target buffer overflow\n"
 msgstr "Überlauf des Zielpuffers\n"
 
@@ -3437,6 +3467,13 @@ msgstr "%s: Lesen der Paket-Liste fehlgeschlagen: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "Keine Überprüfung der Header- und Nutzdaten-Signatur"
+
+#~ msgid "lookup i18N strings in specfile catalog"
+#~ msgstr "i18n-Übersetzungen im Spec-Datei-Katalog nachschlagen"
+
+#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
+#~ msgstr ""
+#~ "Generiere Header, die mit veralteten RPM-Paketen (v2/3) kompatibel sind"
 
 #~ msgid "BuildRoot can not be \"/\": %s\n"
 #~ msgstr "Der BuildRoot kann nicht \"/\" sein: %s\n"
