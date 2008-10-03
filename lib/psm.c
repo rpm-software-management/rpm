@@ -502,11 +502,11 @@ static pid_t psmWait(rpmpsm psm)
 static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 		   const char *script, int arg1, int arg2)
 {
+    rpmRC rc = RPMRC_FAIL;
 #ifdef WITH_LUA
     const rpmts ts = psm->ts;
     char *nevra, *sname = NULL;
     int rootFd = -1;
-    rpmRC rc = RPMRC_OK;
     int xx;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
@@ -550,10 +550,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
     var = rpmluavFree(var);
     rpmluaPop(lua);
 
-    if (rpmluaRunScript(lua, script, sname) == -1) {
-	void * ptr;
-	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, 1);
-	rc = RPMRC_FAIL;
+    if (rpmluaRunScript(lua, script, sname) == 0) {
+	rc = RPMRC_OK;
     }
 
     rpmluaDelVar(lua, "arg");
@@ -567,11 +565,14 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 	xx = rpmtsSetChrootDone(ts, 0);
     }
     free(sname);
-
-    return rc;
 #else
-    return RPMRC_FAIL;
+    rpmlog(RPMLOG_ERR, _("<lua> scriptlet support not built in\n"));
 #endif
+
+    if (rc != RPMRC_OK) {
+	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
+    }
+    return rc;
 }
 
 /**
