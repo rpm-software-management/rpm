@@ -703,6 +703,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     FD_t scriptFd;
     FD_t out = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
+    int warn_only = 0;
     char *nevra, *sname = NULL; 
     struct rpmtd_s prefixes;
 
@@ -832,7 +833,12 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
                    sname, WTERMSIG(psm->sq.status));
 	} else {
-	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
+	    /* filter out "regular" error exits from non-pre scriptlets */
+	    if ((stag != RPMTAG_PREIN && stag != RPMTAG_PREUN)) {
+		warn_only = 1;
+	    }
+	    rpmlog(warn_only ? RPMLOG_WARNING : RPMLOG_ERR, 
+		   _("%s scriptlet failed, exit status %d\n"),
 		   sname, WEXITSTATUS(psm->sq.status));
 	}
     } else {
@@ -843,7 +849,11 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 exit:
     rpmtdFreeData(&prefixes);
 
+    /* notify callback for all errors, "total" abused for warning/error */
     if (rc != RPMRC_OK) {
+	if (warn_only) {
+	    rc = RPMRC_OK;
+	}
 	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
     }
 
