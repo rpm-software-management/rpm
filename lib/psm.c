@@ -756,6 +756,8 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
 	fd = rpmMkTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
 	if (fd == NULL || Ferror(fd)) {
+	    rpmlog(RPMLOG_ERR, _("Couldn't create temporary file for %s: %s\n"),
+		   sname, strerror(errno));
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -803,7 +805,9 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     } else {
 	out = fdDup(STDOUT_FILENO);
     }
-    if (out == NULL) { /* XXX can't happen */
+    if (out == NULL) { 
+	rpmlog(RPMLOG_ERR, _("Couldn't duplicate file descriptor: %s: %s\n"),
+	       sname, strerror(errno));
 	rc = RPMRC_FAIL;	
 	goto exit;
     }
