@@ -825,19 +825,13 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     (void) psmWait(psm);
 
     if (psm->sq.reaped < 0) {
-	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
-				 stag, WTERMSIG(psm->sq.child));
 	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
     } else if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       	if (WIFSIGNALED(psm->sq.status)) {
-	    (void)rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
-				stag, WTERMSIG(psm->sq.status));
 	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
                    sname, WTERMSIG(psm->sq.status));
 	} else {
-	    (void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
-				 stag, WEXITSTATUS(psm->sq.status));
 	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
 		   sname, WEXITSTATUS(psm->sq.status));
 	}
@@ -848,6 +842,10 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
 exit:
     rpmtdFreeData(&prefixes);
+
+    if (rc != RPMRC_OK) {
+	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
+    }
 
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
