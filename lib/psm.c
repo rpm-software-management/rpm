@@ -550,12 +550,10 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
     var = rpmluavFree(var);
     rpmluaPop(lua);
 
-    {
-	if (rpmluaRunScript(lua, script, sname) == -1) {
-	    void * ptr;
-	    ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, 1);
-	    rc = RPMRC_FAIL;
-	}
+    if (rpmluaRunScript(lua, script, sname) == -1) {
+	void * ptr;
+	ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, 1);
+	rc = RPMRC_FAIL;
     }
 
     rpmluaDelVar(lua, "arg");
