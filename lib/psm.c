@@ -503,6 +503,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 		   const char *script, int arg1, int arg2)
 {
     rpmRC rc = RPMRC_FAIL;
+    int warn_only = 0;
 #ifdef WITH_LUA
     const rpmts ts = psm->ts;
     char *nevra, *sname = NULL;
@@ -552,6 +553,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 
     if (rpmluaRunScript(lua, script, sname) == 0) {
 	rc = RPMRC_OK;
+    } else if ((stag != RPMTAG_PREIN && stag != RPMTAG_PREUN)) {
+	warn_only = 1;
     }
 
     rpmluaDelVar(lua, "arg");
@@ -570,6 +573,9 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 #endif
 
     if (rc != RPMRC_OK) {
+	if (warn_only) {
+	    rc = RPMRC_OK;
+	}
 	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
     }
     return rc;
