@@ -702,13 +702,13 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     int xx;
     FD_t scriptFd;
     FD_t out = NULL;
-    rpmRC rc = RPMRC_OK;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     char *nevra, *sname = NULL; 
     struct rpmtd_s prefixes;
 
     assert(argvp != NULL);
     if (*argvp == NULL && script == NULL)
-	return rc;
+	return RPMRC_OK;
 
     if (*argvp && strcmp(*argvp[0], "<lua>") == 0) {
 	return runLuaScript(psm, h, stag, *argvp, script, arg1, arg2);
@@ -729,7 +729,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	    rpmlog(RPMLOG_DEBUG, "%s: %s skipping redundant \"%s\".\n",
 		   psm->stepName, sname, *argvp[0]);
 	    free(sname);
-	    return rc;
+	    return RPMRC_OK;
 	}
     }
 
@@ -758,7 +758,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Couldn't create temporary file for %s: %s\n"),
 		   sname, strerror(errno));
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 
@@ -808,7 +807,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     if (out == NULL) { 
 	rpmlog(RPMLOG_ERR, _("Couldn't duplicate file descriptor: %s: %s\n"),
 	       sname, strerror(errno));
-	rc = RPMRC_FAIL;	
 	goto exit;
     }
 
@@ -821,7 +819,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
     if (psm->sq.child == (pid_t)-1) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sname, strerror(errno));
-	rc = RPMRC_FAIL;
 	goto exit;
     }
 
@@ -832,7 +829,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 				 stag, WTERMSIG(psm->sq.child));
 	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
-	rc = RPMRC_FAIL;
     } else if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       	if (WIFSIGNALED(psm->sq.status)) {
 	    (void)rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR,
@@ -845,7 +841,9 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, exit status %d\n"),
 		   sname, WEXITSTATUS(psm->sq.status));
 	}
-	rc = RPMRC_FAIL;
+    } else {
+	/* if we get this far we're clear */
+	rc = RPMRC_OK;
     }
 
 exit:
