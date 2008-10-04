@@ -359,9 +359,14 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	/* Both fd and ofd are now closed. */
 	/* ASSERT: fd == NULL && ofd == NULL */
 
-	/* Move final target into place. */
-	xx = unlink(rpm);
-	xx = rename(trpm, rpm);
+	/* Move final target into place, restore file permissions. */
+	{
+	    struct stat st;
+	    xx = stat(rpm, &st);
+	    xx = unlink(rpm);
+	    xx = rename(trpm, rpm);
+	    xx = chmod(rpm, st.st_mode);
+	}
 	trpm = _free(trpm);
 
 	/* Clean up intermediate target */
