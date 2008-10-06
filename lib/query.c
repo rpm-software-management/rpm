@@ -363,7 +363,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
 	if (i != 32) {
-	    rpmlog(RPMLOG_NOTICE, _("malformed %s: %s\n"), "pkgid", arg);
+	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "pkgid", arg);
 	    return 1;
 	}
 
@@ -384,7 +384,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
 	    {};
 	if (i != 40) {
-	    rpmlog(RPMLOG_NOTICE, _("malformed %s: %s\n"), "hdrid", arg);
+	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "hdrid", arg);
 	    return 1;
 	}
 
@@ -528,14 +528,14 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	}
 	recOffset = strtoul(myarg, &end, mybase);
 	if ((*end) || (end == arg) || (recOffset == ULONG_MAX)) {
-	    rpmlog(RPMLOG_NOTICE, _("invalid package number: %s\n"), arg);
+	    rpmlog(RPMLOG_ERR, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
 	rpmlog(RPMLOG_DEBUG, "package record number: %lu\n", recOffset);
 	/* RPMDBI_PACKAGES */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
-	    rpmlog(RPMLOG_NOTICE,
+	    rpmlog(RPMLOG_ERR,
 		_("record %lu could not be read\n"), recOffset);
 	    res = 1;
 	} else
