@@ -493,7 +493,7 @@ maybe_manifest:
 /* FIX: *eiu->argv can be NULL */
 	rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
 	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_NOTICE, _("%s: not an rpm package (or package manifest): %s\n"),
+	    rpmlog(RPMLOG_ERR, _("%s: not an rpm package (or package manifest): %s\n"),
 			*eiu->fnp, Fstrerror(eiu->fd));
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;
