@@ -688,7 +688,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 			(_print_pkts & rpmIsDebug()));
 
 		if (sigp->version != 3 && sigp->version != 4) {
-		    rpmlog(RPMLOG_NOTICE,
+		    rpmlog(RPMLOG_ERR,
 		_("skipping package %s with unverifiable V%u signature\n"),
 			fn, sigp->version);
 		    res++;
