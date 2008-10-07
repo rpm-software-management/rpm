@@ -133,15 +133,31 @@ s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
 
-find $TOP_DIR -type d|sed '
+KDE3_HTML=`kde-config --expandvars --install html 2>/dev/null`
+if [ x"$KDE3_HTML" != x -a -d "$TOP_DIR$KDE3_HTML" ]; then
+find $TOP_DIR$KDE3_HTML -type d|sed '
 s:'"$TOP_DIR"'::
-'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
-'"$NO_ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
-'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
-'"$ALL_NAME$KDE"'s:\(.*/doc/kde/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
+fi
+
+KDE4_HTML=`kde4-config --expandvars --install html 2>/dev/null`
+if [ x"$KDE4_HTML" != x -a -d "$TOP_DIR$KDE4_HTML" ]; then
+find $TOP_DIR$KDE4_HTML -type d|sed '
+s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'/\)::
+'"$NO_ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/'"$NAME"'\)$:%lang(\2) \1\2\3:
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+/\)::
+'"$ALL_NAME$KDE"'s:\(.*/HTML/\)\([^/_]\+\)\(.*/[a-zA-Z0-9.\_\-]\+$\):%lang(\2) \1\2\3:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+fi
 
 find $TOP_DIR -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
