@@ -355,7 +355,7 @@ fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
 	    *ae++ = '\0';
 	    tag = rpmTagGetValue(a);
 	    if (tag == RPMTAG_NOT_FOUND) {
-		rpmlog(RPMLOG_NOTICE, _("unknown tag: \"%s\"\n"), a);
+		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
 		res = 1;
 	    }
 	    pat = ae;
