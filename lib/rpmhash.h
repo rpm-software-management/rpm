@@ -1,6 +1,7 @@
 #ifndef H_RPMHASH
 #define H_RPMHASH
 
+#include <rpm/rpmutil.h>
 /**
  * \file lib/rpmhash.h
  * Hash table implemenation.
@@ -27,6 +28,7 @@ typedef int (*hashEqualityType) (const void * key1, const void * key2);
  * @param string	string on which to calculate hash value
  * @return		hash value
  */
+RPM_GNUC_INTERNAL
 unsigned int hashFunctionString(const void * string);
 
 /**
@@ -35,6 +37,7 @@ unsigned int hashFunctionString(const void * string);
  * @param key2          entry 2
  * @return		0 if entries are equal
  */
+RPM_GNUC_INTERNAL
 int hashEqualityString(const void * key1, const void * key2);
 
 /**
@@ -48,6 +51,7 @@ int hashEqualityString(const void * key1, const void * key2);
  * @param eq            function to compare hash keys for equality
  * @return		pointer to initialized hash table
  */
+RPM_GNUC_INTERNAL
 hashTable htCreate(int numBuckets, size_t keySize, int freeData,
 		hashFunctionType fn, hashEqualityType eq); 
 
@@ -56,6 +60,7 @@ hashTable htCreate(int numBuckets, size_t keySize, int freeData,
  * @param ht            pointer to hash table
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 hashTable htFree( hashTable ht);
 
 /**
@@ -64,6 +69,7 @@ hashTable htFree( hashTable ht);
  * @param key           pointer to key
  * @param data          pointer to data value
  */
+RPM_GNUC_INTERNAL
 void htAddEntry(hashTable ht, const void * key,
 		const void * data);
 
@@ -76,6 +82,7 @@ void htAddEntry(hashTable ht, const void * key,
  * @retval tableKey     address to store key value from bucket (may be NULL)
  * @return		0 on success, 1 if the item is not found.
  */
+RPM_GNUC_INTERNAL
 int htGetEntry(hashTable ht, const void * key,
 		const void *** data,
 		int * dataCount,
@@ -87,6 +94,7 @@ int htGetEntry(hashTable ht, const void * key,
  * @param key           pointer to key value
  * @return		1 if the key is present, 0 otherwise
  */
+RPM_GNUC_INTERNAL
 int htHasEntry(hashTable ht, const void * key);
 
 #ifdef __cplusplus
