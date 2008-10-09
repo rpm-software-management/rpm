@@ -73,6 +73,7 @@ extern "C" {
  * @param numItems	number of fingerprint items
  * @return		0 always
  */
+RPM_GNUC_INTERNAL
 int rpmdbFindFpList(rpmdb db, fingerPrint  * fpList,
 		dbiIndexSet * matchList, int numItems);
 
@@ -83,6 +84,7 @@ int rpmdbFindFpList(rpmdb db, fingerPrint  * fpList,
  * @param sizeHint	number of elements expected
  * @return pointer to initialized fingerprint cache
  */
+RPM_GNUC_INTERNAL
 fingerPrintCache fpCacheCreate(int sizeHint);
 
 /**
@@ -90,6 +92,7 @@ fingerPrintCache fpCacheCreate(int sizeHint);
  * @param cache		pointer to fingerprint cache
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 fingerPrintCache fpCacheFree(fingerPrintCache cache);
 
 /**
@@ -100,6 +103,7 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache);
  * @param scareMemory
  * @return pointer to the finger print associated with a file path.
  */
+RPM_GNUC_INTERNAL
 fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
 			const char * baseName, int scareMemory);
 
@@ -109,6 +113,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
  * @param key		pointer to finger print entry
  * @return hash value
  */
+RPM_GNUC_INTERNAL
 unsigned int fpHashFunction(const void * key);
 
 /**
@@ -118,6 +123,7 @@ unsigned int fpHashFunction(const void * key);
  * @param key2		finger print 2
  * @return result of comparing key1 and key2
  */
+RPM_GNUC_INTERNAL
 int fpEqual(const void * key1, const void * key2);
 
 /**
@@ -130,6 +136,7 @@ int fpEqual(const void * key1, const void * key2);
  * @param fileCount	number of file entries
  * @retval fpList	pointer to array of finger prints
  */
+RPM_GNUC_INTERNAL
 void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
 		  const char ** baseNames, const uint32_t * dirIndexes, 
 		  int fileCount, fingerPrint * fpList);
