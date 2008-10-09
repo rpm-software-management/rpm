@@ -106,11 +106,13 @@ static inline unsigned char rnibble(char c)
 /** \ingroup rpmstring
  * Locale insensitive strcasecmp(3).
  */
+RPM_GNUC_PURE
 int rstrcasecmp(const char * s1, const char * s2)		;
 
 /** \ingroup rpmstring
  * Locale insensitive strncasecmp(3).
  */
+RPM_GNUC_PURE
 int rstrncasecmp(const char *s1, const char * s2, size_t n)	;
 
 /** \ingroup rpmstring
