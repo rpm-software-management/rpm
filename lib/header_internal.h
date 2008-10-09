@@ -101,7 +101,6 @@ extern "C" {
 RPM_GNUC_INTERNAL
 uint64_t htonll( uint64_t n );
 
-char ** headerGetLangs(Header h);
 /** \ingroup header
  * Return array of locales found in header.
  * The array is terminated with a NULL sentinel.
