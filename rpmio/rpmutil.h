@@ -83,6 +83,13 @@
 #define RPM_GNUC_WARN_UNUSED_RESULT
 #endif /* __GNUC__ */
 
+#if    __GNUC__ >= 4 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
+#  define RPM_GNUC_INTERNAL __attribute__((visibility("hidden")))
+#else
+#  define RPM_GNUC_INTERNAL
+#endif
+
+
 /* Guard C code in headers, while including them from C++ */
 #ifdef  __cplusplus
 # define RPM_BEGIN_DECLS  extern "C" {
