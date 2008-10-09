@@ -6,6 +6,7 @@
 
 #include <rpm/rpmsw.h>
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmutil.h>
 
 /**
  */
@@ -358,6 +359,7 @@ extern "C" {
  * @param rpmtag	rpm tag
  * @return		index database handle
  */
+RPM_GNUC_INTERNAL
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag);
 
 /** \ingroup db3
@@ -365,6 +367,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag);
  * @param dbi		index database handle
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 dbiIndex db3Free( dbiIndex dbi);
 
 /** \ingroup db3
@@ -373,6 +376,7 @@ dbiIndex db3Free( dbiIndex dbi);
  * @param print_dbenv_flags	format db env flags instead?
  * @return			formatted flags (malloced)
  */
+RPM_GNUC_INTERNAL
 char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 
 /** \ingroup dbi
@@ -382,6 +386,7 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
  * @param flags		(unused)
  * @return		index database handle
  */
+RPM_GNUC_INTERNAL
 dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag,
 		unsigned int flags);
 
@@ -627,6 +632,7 @@ int dbiStat(dbiIndex dbi, unsigned int flags)
  * @param set	set of index database items
  * @return	NULL always
  */
+RPM_GNUC_INTERNAL
 dbiIndexSet dbiFreeIndexSet(dbiIndexSet set);
 
 /** \ingroup dbi
@@ -634,6 +640,7 @@ dbiIndexSet dbiFreeIndexSet(dbiIndexSet set);
  * @param set	set of index database items
  * @return	number of items
  */
+RPM_GNUC_INTERNAL
 unsigned int dbiIndexSetCount(dbiIndexSet set);
 
 /** \ingroup dbi
@@ -642,6 +649,7 @@ unsigned int dbiIndexSetCount(dbiIndexSet set);
  * @param recno	index of item in set
  * @return	record offset of header
  */
+RPM_GNUC_INTERNAL
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
 
 /** \ingroup dbi
@@ -650,12 +658,14 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
  * @param recno	index of item in set
  * @return	file index
  */
+RPM_GNUC_INTERNAL
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
 #ifndef __APPLE__
 /**
  *  * Mergesort, same arguments as qsort(2).
  *   */
+RPM_GNUC_INTERNAL
 int mergesort(void *base, size_t nmemb, size_t size,
                 int (*cmp) (const void *, const void *));
 #else
