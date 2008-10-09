@@ -17,6 +17,7 @@ extern "C" {
 /** \ingroup rpmstring
  * Locale insensitive islower(3) 
  */
+RPM_GNUC_CONST
 static inline int rislower(int c)  {
     return (c >= 'a' && c <= 'z');
 }
@@ -24,6 +25,7 @@ static inline int rislower(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive isupper(3)
  */
+RPM_GNUC_CONST
 static inline int risupper(int c)  {
     return (c >= 'A' && c <= 'Z');
 }
@@ -31,6 +33,7 @@ static inline int risupper(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive isalpha(3)
  */
+RPM_GNUC_CONST
 static inline int risalpha(int c)  {
     return (rislower(c) || risupper(c));
 }
@@ -38,6 +41,7 @@ static inline int risalpha(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive isdigit(3)
  */
+RPM_GNUC_CONST
 static inline int risdigit(int c)  {
     return (c >= '0' && c <= '9');
 }
@@ -45,6 +49,7 @@ static inline int risdigit(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive isalnum(3)
  */
+RPM_GNUC_CONST
 static inline int risalnum(int c)  {
     return (risalpha(c) || risdigit(c));
 }
@@ -52,6 +57,7 @@ static inline int risalnum(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive isblank(3)
  */
+RPM_GNUC_CONST
 static inline int risblank(int c)  {
     return (c == ' ' || c == '\t');
 }
@@ -59,6 +65,7 @@ static inline int risblank(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive isspace(3)
  */
+RPM_GNUC_CONST
 static inline int risspace(int c)  {
     return (risblank(c) || c == '\n' || c == '\r' || c == '\f' || c == '\v');
 }
@@ -66,6 +73,7 @@ static inline int risspace(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive tolower(3)
  */
+RPM_GNUC_CONST
 static inline int rtolower(int c)  {
     return ((risupper(c)) ? (c | ('a' - 'A')) : c);
 }
@@ -73,6 +81,7 @@ static inline int rtolower(int c)  {
 /** \ingroup rpmstring
  * Locale insensitive toupper(3)
  */
+RPM_GNUC_CONST
 static inline int rtoupper(int c)  {
     return ((rislower(c)) ? (c & ~('a' - 'A')) : c);
 }
@@ -82,6 +91,7 @@ static inline int rtoupper(int c)  {
  * @param c            hex character
  * @return             binary nibble
  */
+RPM_GNUC_CONST
 static inline unsigned char rnibble(char c)
 {
     if (c >= '0' && c <= '9')
