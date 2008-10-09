@@ -69,6 +69,7 @@ extern "C" {
  * @param msg
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 rpmpsm rpmpsmUnlink (rpmpsm psm,
 		const char * msg);
 
@@ -78,6 +79,7 @@ rpmpsm rpmpsmUnlink (rpmpsm psm,
  * @param msg
  * @return		new package state machine reference
  */
+RPM_GNUC_INTERNAL
 rpmpsm rpmpsmLink (rpmpsm psm, const char * msg);
 
 /**
@@ -85,6 +87,7 @@ rpmpsm rpmpsmLink (rpmpsm psm, const char * msg);
  * @param psm		package state machine
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 rpmpsm rpmpsmFree(rpmpsm psm);
 
 /**
@@ -94,6 +97,7 @@ rpmpsm rpmpsmFree(rpmpsm psm);
  * @param fi		file info set
  * @return		new package state machine
  */
+RPM_GNUC_INTERNAL
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi);
 
 /**
@@ -102,6 +106,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi);
  * @param stage		next stage
  * @return		0 on success
  */
+RPM_GNUC_INTERNAL
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
 
@@ -112,6 +117,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
  * @param progTag	scriptlet prog tag to execute
  * @return 		0 on success
  */
+RPM_GNUC_INTERNAL
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
 
 /**
@@ -119,14 +125,17 @@ rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
  * @param fi		new file info pointer (or NULL to dealloc)
  * @return		newly set rpmfi pointer
  */
+RPM_GNUC_INTERNAL
 rpmfi rpmpsmSetFI(rpmpsm psm, rpmfi fi);
 
 /**
  * @param psm		package state machine data
  * @return 		psm transaction set pointer
  */
+RPM_GNUC_INTERNAL
 rpmts rpmpsmGetTs(rpmpsm psm);
 
+RPM_GNUC_INTERNAL
 void rpmpsmSetAsync(rpmpsm psm, int async);
 
 #ifdef __cplusplus
