@@ -173,6 +173,7 @@ extern "C" {
  * Create file state machine instance.
  * @return		file state machine
  */
+RPM_GNUC_INTERNAL
 FSM_t newFSM(void);
 
 /**
@@ -180,6 +181,7 @@ FSM_t newFSM(void);
  * @param fsm		file state machine
  * @return		always NULL
  */
+RPM_GNUC_INTERNAL
 FSM_t freeFSM(FSM_t fsm);
 
 /**
@@ -213,6 +215,7 @@ int fsmTeardown(FSM_t fsm);
  * @param nstage		next stage
  * @return		0 on success
  */
+RPM_GNUC_INTERNAL
 int fsmNext(FSM_t fsm, fileStage nstage);
 
 #ifdef __cplusplus
