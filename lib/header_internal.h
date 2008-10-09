@@ -98,6 +98,7 @@ extern "C" {
  * @param n		a number
  * @return		number in network byte order
  */
+RPM_GNUC_INTERNAL
 uint64_t htonll( uint64_t n );
 
 char ** headerGetLangs(Header h);
