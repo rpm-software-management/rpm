@@ -1176,6 +1176,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 /** \ingroup db3
  */
+RPM_GNUC_INTERNAL
 const struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
     db3open, db3close, db3sync, db3associate, db3join,

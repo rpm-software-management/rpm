@@ -1383,6 +1383,7 @@ leaveChroot(dbi);
 /* cursor_open, cursor_close, cursor_dup, cursor_delete, cursor_get, */
 /* cursor_pget?, cursor_put, cursor_count */
 /* db_bytewapped, stat */
+RPM_GNUC_INTERNAL
 const struct _dbiVec sqlitevec = {
     0, 0, 0, 
     sql_open, 
