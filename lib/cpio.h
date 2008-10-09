@@ -97,6 +97,7 @@ extern "C" {
  * @retval fsm		file path and stat info
  * @return		0 on success
  */
+RPM_GNUC_INTERNAL
 int cpioTrailerWrite(FSM_t fsm);
 
 /**
@@ -105,6 +106,7 @@ int cpioTrailerWrite(FSM_t fsm);
  * @param st
  * @return		0 on success
  */
+RPM_GNUC_INTERNAL
 int cpioHeaderWrite(FSM_t fsm, struct stat * st);
 
 /**
@@ -113,6 +115,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st);
  * @retval st
  * @return		0 on success
  */
+RPM_GNUC_INTERNAL
 int cpioHeaderRead(FSM_t fsm, struct stat * st);
 
 /** \ingroup payload
@@ -120,6 +123,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st);
  * @param rc		error code
  * @return		formatted error string
  */
+/* XXX should be RPM_GNUC_INTERNAL too but build/pack.c uses */
 const char * cpioStrerror(int rc);
 
 #ifdef __cplusplus
