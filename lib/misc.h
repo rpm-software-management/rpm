@@ -13,16 +13,6 @@
 extern "C" {
 #endif
 
-/**
- * Create directory if it does not exist, and make sure path is writable.
- * @note This will only create last component of directory path.
- * @param dpath		directory path
- * @param dname		directory use string
- * @return		rpmRC return code
- */
-/* XXX This should be RPM_GNUC_INTERNAL too but toplevel build.c uses ATM */
-rpmRC rpmMkdirPath (const char * dpath, const char * dname);
-
 /*
  * These may be called w/ a NULL argument to flush the cache -- they return
  * -1 if the user can't be found.

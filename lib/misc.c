@@ -13,27 +13,6 @@ const char * const RPMVERSION = VERSION;
 
 #include "debug.h"
 
-rpmRC rpmMkdirPath (const char * dpath, const char * dname)
-{
-    struct stat st;
-    int rc;
-
-    if ((rc = stat(dpath, &st)) < 0) {
-	if (errno == ENOENT) {
-	    rc = mkdir(dpath, 0755);
-	}
-	if (rc < 0) {
-	    rpmlog(RPMLOG_ERR, _("cannot create %%%s %s\n"), dname, dpath);
-	    return RPMRC_FAIL;
-	}
-    }
-    if ((rc = access(dpath, W_OK))) {
-	rpmlog(RPMLOG_ERR, _("cannot write to %%%s %s\n"), dname, dpath);
-	return RPMRC_FAIL;
-    }
-    return RPMRC_OK;
-}
-
 /* unameToUid(), uidTouname() and the group variants are really poorly
    implemented. They really ought to use hash tables. I just made the
    guess that most files would be owned by root or the same person/group
