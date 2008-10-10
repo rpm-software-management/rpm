@@ -9,8 +9,6 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>	/* XXX rpmtsCreate/rpmtsFree */
 
-#include "lib/legacy.h"	/* XXX expand/compressFilelist(), legacyRetrofit() */
-
 #include "header-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
@@ -214,7 +212,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
  */
 static PyObject * hdrExpandFilelist(hdrObject * s)
 {
-    expandFilelist (s->h);
+    headerConvert(s->h, HEADERCONV_EXPANDFILELIST);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -224,7 +222,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
  */
 static PyObject * hdrCompressFilelist(hdrObject * s)
 {
-    compressFilelist (s->h);
+    headerConvert(s->h, HEADERCONV_COMPRESSFILELIST);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -240,7 +238,7 @@ static void mungeFilelist(Header h)
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
-	compressFilelist(h);
+	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 
     if (headerGet(h, RPMTAG_FILENAMES, fileNames, HEADERGET_EXT)) {
 	rpmtdSetTag(fileNames, RPMTAG_OLDFILENAMES);
@@ -585,7 +583,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 	}
 	return NULL;
     }
-    legacyRetrofit(h);
+    headerConvert(h, HEADERCONV_RETROFIT_V3);
 
     hdr = hdr_Wrap(h);
     h = headerFree(h);	/* XXX ref held by hdr */
@@ -612,7 +610,7 @@ PyObject * rpmReadHeaders (FD_t fd)
     Py_END_ALLOW_THREADS
 
     while (h) {
-	legacyRetrofit(h);
+	headerConvert(h, HEADERCONV_RETROFIT_V3);
 	hdr = hdr_Wrap(h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_DECREF(list);

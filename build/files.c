@@ -22,7 +22,6 @@
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX pretty much all rpmfi internals... */
 #include "lib/rpmte_internal.h"	/* XXX rpmte init */
-#include "lib/legacy.h"		/* XXX expandFileList, compressFileList */
 #include "build/buildio.h"
 
 #include "debug.h"
@@ -1166,7 +1165,7 @@ static void genCpioListAndHeader(FileList fl,
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 
     /* rpmfi only groks compressed filelists */
-    compressFilelist(h);
+    headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 
   {
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
@@ -1258,7 +1257,7 @@ static void genCpioListAndHeader(FileList fl,
 
     /* Convert back to expanded filelist if legacy format requested */
     if (_noDirTokens)
-	expandFilelist(h);
+	headerConvert(h, HEADERCONV_EXPANDFILELIST);
     else {
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");

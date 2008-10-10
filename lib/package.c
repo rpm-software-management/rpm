@@ -12,7 +12,6 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmkeyring.h>
 
-#include "lib/legacy.h"	/* XXX legacyRetrofit() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "rpmio/digest.h"
@@ -845,7 +844,7 @@ exit:
          * Source rpms are retrofitted for the silly RPMTAG_SOURCEPACKAGE tag.
          */
 	if (!headerIsEntry(h, RPMTAG_DIRNAMES) || headerIsSource(h)) {
-	    legacyRetrofit(h);
+	    headerConvert(h, HEADERCONV_RETROFIT_V3);
 	}
 	
 	/* Append (and remap) signature tags to the metadata. */
