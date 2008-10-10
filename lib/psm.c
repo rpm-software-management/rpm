@@ -231,9 +231,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 {
     int scareMem = 1;
     rpmfi fi = NULL;
-    char * _topdir = NULL;
-    char * _sourcedir = NULL;
-    char * _specdir = NULL;
     char * specFile = NULL;
     Header h = NULL;
     struct rpmpsm_s psmbuf;
@@ -336,29 +333,14 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    _topdir = rpmGenPath(rpmtsRootDir(ts), "%{_topdir}", "");
-    rpmrc = rpmMkdirPath(_topdir, "_topdir");
-    if (rpmrc) {
+    if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
-
-    _sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-    rpmrc = rpmMkdirPath(_sourcedir, "_sourcedir");
-    if (rpmrc) {
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
-
-    _specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-    rpmrc = rpmMkdirPath(_specdir, "_specdir");
-    if (rpmrc) {
-	rpmrc = RPMRC_FAIL;
-	goto exit;
-    }
-
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < fi->fc) {
+	char *_sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
+	char *_specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
 	size_t speclen = strlen(_specdir) + 2;
 	size_t sourcelen = strlen(_sourcedir) + 2;
 	char * t;
@@ -379,6 +361,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	t = xmalloc(speclen + strlen(fi->bnl[i]) + 1);
 	(void) stpcpy( stpcpy( stpcpy(t, _specdir), "/"), fi->bnl[i]);
 	specFile = t;
+
+	free(_specdir);
+	free(_sourcedir);
     } else {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	rpmrc = RPMRC_FAIL;
@@ -399,9 +384,6 @@ exit:
 	*specFilePtr = specFile;
     else
 	specFile = _free(specFile);
-
-    _specdir = _free(_specdir);
-    _sourcedir = _free(_sourcedir);
 
     psm->fi = rpmfiFree(psm->fi);
     psm->te = NULL;
