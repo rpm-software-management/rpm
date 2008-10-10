@@ -12,9 +12,10 @@
 
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
-#include "lib/legacy.h"
 
 #include "debug.h"
+
+int _noDirTokens = 0;
 
 static unsigned char const lead_magic[] = {
     RPMLEAD_MAGIC0, RPMLEAD_MAGIC1, RPMLEAD_MAGIC2, RPMLEAD_MAGIC3

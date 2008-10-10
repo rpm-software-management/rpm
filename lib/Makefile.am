@@ -34,7 +34,7 @@ librpm_la_SOURCES = \
 	rpmte.c rpmte_internal.h rpmts.c \
 	rpmvercmp.c signature.c signature.h transaction.c \
 	verify.c rpmlock.c rpmlock.h misc.h \
-	legacy.c legacy.h merge.c
+	legacy.c merge.c
 if SQLITE3
 librpm_la_SOURCES += backend/sqlite.c
 endif

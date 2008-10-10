@@ -10,11 +10,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmds.h>
 
-#include "lib/legacy.h"
-
 #include "debug.h"
-
-int _noDirTokens = 0;
 
 static int dncmp(const void * a, const void * b)
 {
@@ -23,7 +19,7 @@ static int dncmp(const void * a, const void * b)
     return strcmp(*first, *second);
 }
 
-void compressFilelist(Header h)
+static void compressFilelist(Header h)
 {
     struct rpmtd_s fileNames;
     char ** dirNames;
@@ -113,7 +109,7 @@ exit:
     xx = headerDel(h, RPMTAG_OLDFILENAMES);
 }
 
-void expandFilelist(Header h)
+static void expandFilelist(Header h)
 {
     struct rpmtd_s filenames;
 
@@ -191,7 +187,7 @@ exit:
     free(pEVR);
 }
 
-void legacyRetrofit(Header h)
+static void legacyRetrofit(Header h)
 {
     struct rpmtd_s dprefix;
 
