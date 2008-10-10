@@ -704,3 +704,26 @@ char * rpmGetCwd(void)
     return currDir;
 }
 
+int rpmMkdirs(const char *root, const char *pathstr)
+{
+    ARGV_t dirs = NULL;
+    int rc = 0;
+    argvSplit(&dirs, pathstr, ":");
+    
+    for (char **d = dirs; *d; d++) {
+	char *path = rpmGetPath(root ? root : "", "/", *d, NULL);
+	if ((rc = rpmioMkpath(path, 0755, -1, -1)) != 0) {
+	    const char *msg = _("failed to create directory");
+	    /* try to be more informative if the failing part was a macro */
+	    if (**d == '%') {
+	    	rpmlog(RPMLOG_ERR, "%s %s: %s: %m\n", msg, *d, path);
+	    } else {
+	    	rpmlog(RPMLOG_ERR, "%s %s: %m\n", msg, path);
+	    }
+	}
+	free(path);
+	if (rc) break;
+    }
+    argvFree(dirs);
+    return rc;
+}

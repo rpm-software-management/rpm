@@ -63,6 +63,16 @@ FD_t rpmMkTempFile(const char * prefix, char **fn);
 int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid);
 
 /** \ingroup rpmfileutil
+ * Create several directories (including parents if needed) in one go.
+ * Macros in pathstr will be expanded in the process.
+ * @param root		leading root directory (or NULL for none)
+ * @param pathstr	list of directories separated with :
+ * @return		0 if all directories were successfully created
+ * 			(or already existed), non-zero otherwise
+ */
+int rpmMkdirs(const char *root, const char *pathstr);
+
+/** \ingroup rpmfileutil
  * Canonicalize file path.
  * @param path		path to canonicalize (in-place)
  * @return		pointer to path
