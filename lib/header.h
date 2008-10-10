@@ -369,6 +369,19 @@ rpm_color_t headerGetColor(Header h);
  */
 int headerIsSource(Header h);
 
+typedef enum headerConvOps_e {
+    HEADERCONV_EXPANDFILELIST	= 0,
+    HEADERCONV_COMPRESSFILELIST = 1,
+    HEADERCONV_RETROFIT_V3	= 2,
+} headerConvOps;
+
+/** \ingroup header
+ * Convert header to/from (legacy) data presentation
+ * @param h		header
+ * @param op		operation
+ * @return		1 on success, 0 on failure
+ */
+int headerConvert(Header h, headerConvOps op);
 
 #ifdef __cplusplus
 }

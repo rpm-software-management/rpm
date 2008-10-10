@@ -239,3 +239,27 @@ void legacyRetrofit(Header h)
 	providePackageNVR(h);
     }
 }
+
+int headerConvert(Header h, headerConvOps op)
+{
+    int rc = 1;
+
+    if (h == NULL)
+	return 0;
+
+    switch (op) {
+    case HEADERCONV_EXPANDFILELIST:
+	expandFilelist(h);
+	break;
+    case HEADERCONV_COMPRESSFILELIST:
+	compressFilelist(h);
+	break;
+    case HEADERCONV_RETROFIT_V3:
+	legacyRetrofit(h);
+	break;
+    default:
+	rc = 0;
+	break;
+    }
+    return rc;
+};
