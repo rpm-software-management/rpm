@@ -476,6 +476,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, int_32 Flags)
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
+    ds->nopromote = _rpmds_nopromote;
     ds->N = N;
     ds->Nt = -1;	/* XXX to insure that hfd will free */
     ds->EVR = EVR;
@@ -528,6 +529,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, int_32 Flags)
 	ds->BT = now;
     }
     ds->Count = 1;
+    ds->nopromote = _rpmds_nopromote;
     /*@-assignexpose@*/
 /*@-boundswrite@*/
     ds->N = xmalloc(sizeof(*ds->N));		ds->N[0] = N;
@@ -825,6 +827,7 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->i = ods->i;
     ds->l = ods->l;
     ds->u = ods->u;
+    ds->nopromote = ods->nopromote;
 
     nb = (ds->Count+1) * sizeof(*ds->N);
     ds->N = (ds->h != NULL
