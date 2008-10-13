@@ -3079,6 +3079,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
     char *path;
     int xx;
 
+    dbiTagsInit();
     switch (_dbapi) {
     case 4:
     case 3:
@@ -3097,6 +3098,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
     case 0:
 	break;
     }
+    dbiTagsFree();
 
     path = rpmGetPath(prefix, "/", dbpath, NULL);
     xx = rmdir(path);
@@ -3116,6 +3118,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
     sigset_t sigMask;
 
+    dbiTagsInit();
     blockSignals(&sigMask);
     switch (_olddbapi) {
     case 4:
@@ -3190,6 +3193,7 @@ cont:
     if (selinux) {
 	(void) matchpathcon_fini();
     }
+    dbiTagsFree();
     return rc;
 }
 
