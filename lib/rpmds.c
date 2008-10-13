@@ -267,6 +267,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
+    ds->nopromote = _rpmds_nopromote;
     ds->N = str2hge(n);
     ds->EVR = str2hge(evr);
     free(evr);
@@ -301,6 +302,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
 	ds->BT = now;
     }
     ds->Count = 1;
+    ds->nopromote = _rpmds_nopromote;
 
     ds->N = str2hge(N);
     ds->EVR = str2hge(EVR);
@@ -560,6 +562,7 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->i = ods->i;
     ds->l = ods->l;
     ds->u = ods->u;
+    ds->nopromote = ods->nopromote;
 
     nb = (ds->Count+1) * sizeof(*ds->N);
     ds->N = (ds->h != NULL
