@@ -48,6 +48,7 @@ lib/rpmlead.c
 lib/rpmlock.c
 lib/rpmps.c
 lib/rpmrc.c
+lib/rpmtd.c
 lib/rpmte.c
 lib/rpmts.c
 lib/rpmvercmp.c
@@ -69,10 +70,12 @@ lib/backend/db3.c
 lib/backend/dbconfig.c
 lib/backend/sqlite.c
 misc/error.c
+python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c
 rpmio/fts.c
 rpmio/macro.c
+rpmio/rpmfileutil.c
 rpmio/rpmlua.c
 rpmio/rpmio.c
 rpmio/rpmlog.c
