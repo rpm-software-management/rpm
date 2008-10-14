@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm.tip.sr\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-10-14 09:44+0300\n"
+"POT-Creation-Date: 2008-10-14 12:25+0300\n"
 "PO-Revision-Date: 2008-03-16 13:52+0100\n"
 "Last-Translator: Marko Mijatovic <jomi86@gmail.com>\n"
 "Language-Team: serbian <en@li.org>\n"
@@ -2694,70 +2694,71 @@ msgstr "не могу да направим браву за трансакциј
 msgid "waiting for transaction lock on %s\n"
 msgstr "чекам за браву трансакције %s\n"
 
-#: lib/rpmps.c:283
+#: lib/rpmps.c:285
 msgid "different"
 msgstr "различито"
 
-#: lib/rpmps.c:289
+#: lib/rpmps.c:291
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "пакет %s је намењен за %s архитектуру"
 
-#: lib/rpmps.c:294
+#: lib/rpmps.c:296
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "пакет %s је намењен за %s оперативни систем"
 
-#: lib/rpmps.c:298
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s је већ инсталиран"
 
-#: lib/rpmps.c:302
+#: lib/rpmps.c:304
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "путања %s у пакету %s се не може премештати"
 
-#: lib/rpmps.c:307
+#: lib/rpmps.c:309
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "датотека %s је у сукобу између покушаних инсталација %s и %s"
 
-#: lib/rpmps.c:312
+#: lib/rpmps.c:314
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "датотека %s из %s инсталације је у сукобу са датотеком из пакета %s"
 
-#: lib/rpmps.c:317
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (који је новији од %s) је већ инсталиран"
 
-#: lib/rpmps.c:322
+#: lib/rpmps.c:324
 #, fuzzy, c-format
-msgid "installing package %s needs %llu%cB on the %s filesystem"
-msgstr "пакет %s који се инсталира тражи %ld%cB на %s систему датотека"
+msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
+msgstr "пакет %s који се инсталира тражи %<PRIu64>%cB на %s систему датотека"
 
-#: lib/rpmps.c:332
+#: lib/rpmps.c:334
 #, fuzzy, c-format
-msgid "installing package %s needs %llu inodes on the %s filesystem"
-msgstr "пакет %s који се инсталира тражи %ld и-чворове на %s систему датотека"
+msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
+msgstr ""
+"пакет %s који се инсталира тражи %<PRIu64> и-чворове на %s систему датотека"
 
-#: lib/rpmps.c:336
+#: lib/rpmps.c:338
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s је потребан за %s%s"
 
-#: lib/rpmps.c:338 lib/rpmps.c:343
+#: lib/rpmps.c:340 lib/rpmps.c:345
 msgid "(installed) "
 msgstr "(инсталирано) "
 
-#: lib/rpmps.c:341
+#: lib/rpmps.c:343
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s је у сукобу са %s%s"
 
-#: lib/rpmps.c:347
+#: lib/rpmps.c:349
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "непозната грешка %d се десила у току руковања пакетом %s"
@@ -3295,23 +3296,23 @@ msgstr "%s има превелику или премалу long вредност
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s има превелику или премалу целобројну вредност, прескочено\n"
 
-#: lib/backend/sqlite.c:607
+#: lib/backend/sqlite.c:609
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 "Није могуће добити браву на бази података %s, покушавам поново... (%d)\n"
 
-#: lib/backend/sqlite.c:700
+#: lib/backend/sqlite.c:705
 #, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr "Није могуће извршити initDB %s (%d)\n"
 
-#: lib/backend/sqlite.c:867
+#: lib/backend/sqlite.c:872
 #, c-format
 msgid "Unable to open database: %s\n"
 msgstr "Није могуће отворити базу података: %s\n"
 
-#: lib/backend/sqlite.c:1232
+#: lib/backend/sqlite.c:1237
 msgid "Unable to determine DB endianess.\n"
 msgstr "Није могуће утврдити DB endianess.\n"
 

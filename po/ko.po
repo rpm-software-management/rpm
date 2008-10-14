@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-10-14 09:44+0300\n"
+"POT-Creation-Date: 2008-10-14 12:25+0300\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -2731,75 +2731,75 @@ msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: lib/rpmps.c:283
+#: lib/rpmps.c:285
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:289
+#: lib/rpmps.c:291
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "%s(은)는 다른 아키텍쳐를 위한 패키지입니다"
 
-#: lib/rpmps.c:294
+#: lib/rpmps.c:296
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "%s(은)는 다른 운영체제를 위한 패키지입니다"
 
-#: lib/rpmps.c:298
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "%s 패키지는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:302
+#: lib/rpmps.c:304
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "%2$s 패키지 안의 %1$s 경로는 재배치할 수 없습니다"
 
-#: lib/rpmps.c:307
+#: lib/rpmps.c:309
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "%2$s(와)과 %3$s의 설치 과정에서 %1$s 파일이 서로 충돌합니다"
 
-#: lib/rpmps.c:312
+#: lib/rpmps.c:314
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "%2$s에서 설치되는 %1$s 파일은 %3$s 패키지의 파일과 충돌합니다"
 
-#: lib/rpmps.c:317
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "%s 패키지 (%s 보다 최신의 패키지)는 이미 설치되어 있습니다"
 
-#: lib/rpmps.c:322
+#: lib/rpmps.c:324
 #, fuzzy, c-format
-msgid "installing package %s needs %llu%cB on the %s filesystem"
+msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr ""
 "%4$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld%3$cb(이)가 필요합"
 "니다"
 
-#: lib/rpmps.c:332
+#: lib/rpmps.c:334
 #, fuzzy, c-format
-msgid "installing package %s needs %llu inodes on the %s filesystem"
+msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr ""
 "%3$s 파일시스템 상에서 %1$s 패키지를 설치할 경우에는 %2$ld의 아이노드(inode)"
 "가 필요합니다"
 
-#: lib/rpmps.c:336
+#: lib/rpmps.c:338
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " (은)는 %s-%s-%s 에서 필요로 합니다\n"
 
-#: lib/rpmps.c:338 lib/rpmps.c:343
+#: lib/rpmps.c:340 lib/rpmps.c:345
 #, fuzzy
 msgid "(installed) "
 msgstr "설치되어 있지 않음  "
 
-#: lib/rpmps.c:341
+#: lib/rpmps.c:343
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " %s-%s-%s (와)과 충돌합니다\n"
 
-#: lib/rpmps.c:347
+#: lib/rpmps.c:349
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -3343,22 +3343,22 @@ msgstr "%s(은)는 너무 크거나 너무 적은 정수(long) 값입니다, 생략합니다\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s(은)는 너무 크거나 너무 적은 정수(int) 값입니다, 생략합니다\n"
 
-#: lib/backend/sqlite.c:607
+#: lib/backend/sqlite.c:609
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: lib/backend/sqlite.c:700
+#: lib/backend/sqlite.c:705
 #, fuzzy, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/backend/sqlite.c:867
+#: lib/backend/sqlite.c:872
 #, fuzzy, c-format
 msgid "Unable to open database: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: lib/backend/sqlite.c:1232
+#: lib/backend/sqlite.c:1237
 #, fuzzy
 msgid "Unable to determine DB endianess.\n"
 msgstr "임시 파일을 열 수 없습니다.\n"

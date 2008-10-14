@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-10-14 09:44+0300\n"
+"POT-Creation-Date: 2008-10-14 12:25+0300\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -2755,72 +2755,72 @@ msgstr "kan ikke opnå %s lås på %s/%s\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: lib/rpmps.c:283
+#: lib/rpmps.c:285
 msgid "different"
 msgstr ""
 
-#: lib/rpmps.c:289
+#: lib/rpmps.c:291
 #, fuzzy, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "pakken %s hører til en anden arkitektur"
 
-#: lib/rpmps.c:294
+#: lib/rpmps.c:296
 #, fuzzy, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "pakken %s hører til et andet operativsystem"
 
-#: lib/rpmps.c:298
+#: lib/rpmps.c:300
 #, c-format
 msgid "package %s is already installed"
 msgstr "pakken %s er allerede installeret"
 
-#: lib/rpmps.c:302
+#: lib/rpmps.c:304
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "sti %s i pakke %s kan ikke omrokeres"
 
-#: lib/rpmps.c:307
+#: lib/rpmps.c:309
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "filen %s skaber konflikt mellem den forsøgte installation af %s og %s"
 
-#: lib/rpmps.c:312
+#: lib/rpmps.c:314
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "filen %s fra installationen af %s skaber konflikt med fil fra pakken %s"
 
-#: lib/rpmps.c:317
+#: lib/rpmps.c:319
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakke %s (som er nyere end %s) er allerede installeret"
 
-#: lib/rpmps.c:322
+#: lib/rpmps.c:324
 #, fuzzy, c-format
-msgid "installing package %s needs %llu%cB on the %s filesystem"
-msgstr "installation af pakke %s kræver %ld%cb på %s-filsystemet"
+msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
+msgstr "installation af pakke %s kræver %<PRIu64>%cb på %s-filsystemet"
 
-#: lib/rpmps.c:332
+#: lib/rpmps.c:334
 #, fuzzy, c-format
-msgid "installing package %s needs %llu inodes on the %s filesystem"
-msgstr "installation af pakken %s kræver %ld inode'r på %s-filsystemet"
+msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
+msgstr "installation af pakken %s kræver %<PRIu64> inode'r på %s-filsystemet"
 
-#: lib/rpmps.c:336
+#: lib/rpmps.c:338
 #, fuzzy, c-format
 msgid "%s is needed by %s%s"
 msgstr " kræves af %s-%s-%s\n"
 
-#: lib/rpmps.c:338 lib/rpmps.c:343
+#: lib/rpmps.c:340 lib/rpmps.c:345
 #, fuzzy
 msgid "(installed) "
 msgstr "ej installeret"
 
-#: lib/rpmps.c:341
+#: lib/rpmps.c:343
 #, fuzzy, c-format
 msgid "%s conflicts with %s%s"
 msgstr " skaber konflikt med %s-%s-%s\n"
 
-#: lib/rpmps.c:347
+#: lib/rpmps.c:349
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "ukendt fejl %d under arbejdet med pakken %s"
@@ -3357,26 +3357,26 @@ msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"
 
-#: lib/backend/sqlite.c:607
+#: lib/backend/sqlite.c:609
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
 
-#: lib/backend/sqlite.c:700
+#: lib/backend/sqlite.c:705
 #, fuzzy, c-format
 msgid "Unable to initDB %s (%d)\n"
 msgstr ""
 "Kunne ikke åbne %s: %s\n"
 "\n"
 
-#: lib/backend/sqlite.c:867
+#: lib/backend/sqlite.c:872
 #, fuzzy, c-format
 msgid "Unable to open database: %s\n"
 msgstr ""
 "Kunne ikke åbne %s: %s\n"
 "\n"
 
-#: lib/backend/sqlite.c:1232
+#: lib/backend/sqlite.c:1237
 #, fuzzy
 msgid "Unable to determine DB endianess.\n"
 msgstr "Kunne ikke åbne midlertidig fil.\n"
