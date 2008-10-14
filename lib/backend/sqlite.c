@@ -460,7 +460,7 @@ if (dbiByteSwapped(dbi) == 1)
 	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
 	}   break;
 	default:
-	    switch (rpmTagGetType(dbi->dbi_rpmtag)) {
+	    switch (rpmTagGetType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
 	    case RPM_NULL_TYPE:   
 	    case RPM_BIN_TYPE:
 	        rc = sqlite3_bind_blob(scp->pStmt, pos, key->data, key->size, SQLITE_STATIC);
@@ -648,7 +648,7 @@ static int sql_initDB(dbiIndex dbi)
 	    valtype = "blob";
 	    break;
 	default:
-	    switch (rpmTagGetType(dbi->dbi_rpmtag)) {
+	    switch (rpmTagGetType(dbi->dbi_rpmtag) & RPM_MASK_TYPE) {
 	    case RPM_NULL_TYPE:
 	    case RPM_BIN_TYPE:
 		keytype = "blob UNIQUE";
