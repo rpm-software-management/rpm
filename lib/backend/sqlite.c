@@ -455,7 +455,7 @@ if (dbiByteSwapped(dbi) == 1)
   memcpy(dbswap.ui, &hnum, sizeof(dbswap.ui));
   dbswap.ui[1] = 0;
   _DBSWAP(dbswap);
-  memcpy(&hnum, dbswap.ui, sizeof(dbswap.ui));
+  memcpy(&hnum, dbswap.ui, sizeof(hnum));
 }
 	    rc = sqlite3_bind_int(scp->pStmt, pos, hnum);
 	}   break;
@@ -490,7 +490,7 @@ if (dbiByteSwapped(dbi) == 1)
   memcpy(dbswap.ui, &i, sizeof(dbswap.ui));
   dbswap.ui[1] = 0;
   _DBSWAP(dbswap);
-  memcpy(&i, dbswap.ui, sizeof(dbswap.ui));
+  memcpy(&i, dbswap.ui, sizeof(i));
 }
 	        rc = sqlite3_bind_int(scp->pStmt, pos, i);
 	    }   break;
