@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <inttypes.h>
+
 #include <rpm/rpmstring.h>
 #include <rpm/rpmps.h>
 
@@ -319,7 +321,7 @@ char * rpmProblemString(const rpmProblem prob)
 	break;
     case RPMPROB_DISKSPACE:
 	rc = rasprintf(&buf,
-	    _("installing package %s needs %llu%cB on the %s filesystem"),
+	    _("installing package %s needs %" PRIu64 "%cB on the %s filesystem"),
 		pkgNEVR,
 		prob->num1 > (1024*1024)
 		    ? (prob->num1 + 1024 * 1024 - 1) / (1024 * 1024)
@@ -329,8 +331,8 @@ char * rpmProblemString(const rpmProblem prob)
 	break;
     case RPMPROB_DISKNODES:
 	rc = rasprintf(&buf,
-	    _("installing package %s needs %llu inodes on the %s filesystem"),
-		pkgNEVR, (long long)prob->num1, str1);
+	    _("installing package %s needs %" PRIu64 " inodes on the %s filesystem"),
+		pkgNEVR, prob->num1, str1);
 	break;
     case RPMPROB_REQUIRES:
 	rc = rasprintf(&buf, _("%s is needed by %s%s"),
