@@ -33,6 +33,7 @@ librpmio_la_LIBADD = \
 	-lpthread
 
 if WITH_LUAEXT
+AM_CPPFLAGS += -I$(top_builddir)/luaext/
 librpmio_la_LIBADD += $(top_builddir)/luaext/libluaext.la
 endif
 
