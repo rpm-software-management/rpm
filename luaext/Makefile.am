@@ -9,7 +9,7 @@ AM_CPPFLAGS = -I$(top_builddir)
 AM_CPPFLAGS += -I$(srcdir)/include -I.
 
 libluaext_la_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_POSIX
-libluaext_la_LIBADD = -llua -lm
+libluaext_la_LIBADD = @WITH_LUA_LIB@
 libluaext_la_SOURCES = \
 		lposix.h \
 		lposix.c \
