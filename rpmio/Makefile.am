@@ -32,5 +32,9 @@ librpmio_la_LIBADD = \
 	@WITH_LZMA_LIB@ \
 	-lpthread
 
+if WITH_LUAEXT
+librpmio_la_LIBADD += $(top_builddir)/luaext/libluaext.la
+endif
+
 check_PROGRAMS =
 

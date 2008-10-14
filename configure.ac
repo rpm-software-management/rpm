@@ -759,7 +759,7 @@ AS_IF([test "$with_lua" = yes],[
 AS_IF([test "$with_lua" = yes],[
   AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
   WITH_LUA_INCLUDE="-I\${top_srcdir}/luaext"
-  WITH_LUA_LIB="-llua -lm \$(top_builddir)/luaext/libluaext.la"
+  WITH_LUA_LIB="-llua -lm" 
 ])
 AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_INCLUDE)
