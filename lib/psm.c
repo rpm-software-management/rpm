@@ -486,8 +486,8 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 {
     rpmRC rc = RPMRC_FAIL;
     int warn_only = 0;
-#ifdef WITH_LUA
     const rpmts ts = psm->ts;
+#ifdef WITH_LUA
     char *nevra, *sname = NULL;
     int rootFd = -1;
     int xx;
