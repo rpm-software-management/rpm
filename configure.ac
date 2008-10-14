@@ -53,51 +53,6 @@ export CFLAGS
 AC_SYS_LARGEFILE
 
 dnl
-dnl This now uses libtool. Put
-dnl	LDFLAGS_STATIC="-all"
-dnl to attempt static executables using libtool. Otherwise
-dnl	LDFLAGS_STATIC=""
-dnl
-AC_MSG_CHECKING(flag used by libtool to link rpm)
-if test X"$GCC" = Xyes ; then
-	case "$host" in
-		*-*-linux*)	LDFLAGS_STATIC="-all-static" ;;
-		*-*-solaris*)	LDFLAGS_STATIC="-static";;
-		*-*-hpux*)	LDFLAGS_STATIC="-static";;
-		*-*-darwin*)	LDFLAGS_STATIC="";; # Mac OS X does not do static binaries.
-		*-*-sysv5uw*)   LDFLAGS_STATUS="-static";; # Unixware has no shared libthread.
-		*-*-*)		LDFLAGS_STATIC="";;
-	esac
-elif test X"$CC" = Xcc ; then
-	case "$host" in
-		*-*-linux*)	LDFLAGS_STATIC="-all-static";;
-		*-*-freebsd*)	LDFLAGS_STATIC="-all-static";;
-		*-*-osf*)	LDFLAGS_STATIC="";; # OSF5 has no shared pthreads libs
-		*-*-aix*)	LDFLAGS_STATIC="-static";;  # -Wl,-bnso doesn't seem to work...
-		*-*-hpux*)	LDFLAGS_STATIC="-static";;
-		*-*-solaris*)	LDFLAGS_STATIC="-static";;
-		*-*-irix*)	LDFLAGS_STATIC="-static";;  #should be -non_shared, but can't
-											# link because of crt1.o then.
-		*-*-ultrix*)	LDFLAGS_STATIC="-all-static";;  #ultrix doesn't have shared libs.
-		*-*-*)		LDFLAGS_STATIC=""
-AC_MSG_WARN([
-
-Unable to guess what option to pass to $CC to generate a static
-executable.  You will need to set the LDFLAGS_STATIC macro in Makefile.inc to
-the appropriate argument(s) if you want to build a static rpm executable.
-
-])
-		;;
-	esac
-else
-	# just link it dynamically
-	LDFLAGS_STATIC=""
-fi
-LDFLAGS_STATIC="${LDFLAGS} ${LDFLAGS_STATIC}"	# libtool format
-AC_MSG_RESULT($LDFLAGS_STATIC)
-AC_SUBST(LDFLAGS_STATIC)
-
-dnl
 dnl look for POSIX chmod attributes
 dnl
 AC_MSG_CHECKING(POSIX chmod)
