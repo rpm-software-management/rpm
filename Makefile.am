@@ -133,10 +133,6 @@ check_PROGRAMS = 	dumpdb
 dumpdb_SOURCES = 	tools/dumpdb.c
 dumpdb_LDADD =		lib/librpm.la
 
-check_PROGRAMS +=	convertdb1
-convertdb1_SOURCES =	tools/convertdb1.c
-convertdb1_LDADD =	lib/librpm.la
-
 check_PROGRAMS +=	rpminject
 rpminject_SOURCES =	tools/rpminject.c
 rpminject_LDADD =	build/librpmbuild.la
