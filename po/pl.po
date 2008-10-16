@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2008-10-14 12:25+0300\n"
-"PO-Revision-Date: 2008-07-10 22:14+0200\n"
+"PO-Revision-Date: 2008-10-15 00:41+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -687,9 +687,9 @@ msgid "Could not open PreUn file: %s\n"
 msgstr "Nie można otworzyć pliku PreUn: %s\n"
 
 #: build/pack.c:205
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PreTrans file: %s\n"
-msgstr "Nie można otworzyć pliku PreIn: %s\n"
+msgstr "Nie można otworzyć pliku PreTrans: %s\n"
 
 #: build/pack.c:212
 #, c-format
@@ -702,9 +702,9 @@ msgid "Could not open PostUn file: %s\n"
 msgstr "Nie można otworzyć pliku PostUn: %s\n"
 
 #: build/pack.c:226
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PostTrans file: %s\n"
-msgstr "Nie można otworzyć pliku PostIn: %s\n"
+msgstr "Nie można otworzyć pliku PostTrans: %s\n"
 
 #: build/pack.c:234
 #, c-format
@@ -980,7 +980,7 @@ msgstr "wiersz %d: błędny format BuildArchitecture: %s\n"
 #: build/parsePreamble.c:650
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
-msgstr ""
+msgstr "wiersz %d: obsługiwane są tylko podpakiety noarch: %s\n"
 
 #: build/parsePreamble.c:662
 #, c-format
@@ -1359,7 +1359,7 @@ msgstr "zapisanie wszystkich danych do %s nie powiodło się\n"
 #: build/rpmfc.c:1155
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
-msgstr ""
+msgstr "Konwersja %s na długą liczbę całkowitą nie powiodła się.\n"
 
 #: build/rpmfc.c:1235
 #, c-format
@@ -1372,9 +1372,9 @@ msgid "magic_load failed: %s\n"
 msgstr "magic_load nie powiodło się: %s\n"
 
 #: build/rpmfc.c:1283
-#, fuzzy, c-format
+#, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
-msgstr "magic_file(ms, \"%s\") nie powiodło się: tryb %06o %s\n"
+msgstr "Rozpoznanie pliku \"%s\" nie powiodło się: tryb %06o %s\n"
 
 #: build/rpmfc.c:1483
 #, c-format
@@ -1387,21 +1387,21 @@ msgid "Failed to find %s:\n"
 msgstr "Wyszukanie %s nie powiodło się:\n"
 
 #: build/rpmfc.c:1582 build/rpmfc.c:1613
-#, fuzzy
 msgid "Unable to get current dependency name.\n"
-msgstr "Nie można zmienić katalogu roota: %m\n"
+msgstr "Nie można uzyskać bieżącej nazwy zależności.\n"
 
 #: build/rpmfc.c:1588 build/rpmfc.c:1619
 msgid "Unable to get current dependency epoch-version-release.\n"
-msgstr ""
+msgstr "Nie można uzyskać bieżącej zależności epoka-wersja-wydanie.\n"
 
 #: build/rpmfc.c:1646
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
+"Licznik pliku z informacji o pliku nie zgadza się z plikiem w kontenerze.\n"
 
 #: build/rpmfc.c:1661
 msgid "Container not of string array data type.\n"
-msgstr ""
+msgstr "Kontener nie jest typem danych tablicy łańcuchów.\n"
 
 #: build/spec.c:227
 #, c-format
@@ -1419,9 +1419,9 @@ msgid "line %d: Bad %s number: %s\n"
 msgstr "wiersz %d: błędny numer %s: %s\n"
 
 #: build/spec.c:310
-#, fuzzy, c-format
+#, c-format
 msgid "%s %d defined multiple times\n"
-msgstr "\"%s\" określa wiele pakietów\n"
+msgstr "%s %d zostało określone wiele razy\n"
 
 #: build/spec.c:566
 #, c-format
@@ -2268,17 +2268,17 @@ msgstr "pakiet źródłowy nie zawiera pliku .spec\n"
 
 #: lib/psm.c:554
 msgid "<lua> scriptlet support not built in\n"
-msgstr ""
+msgstr "<lua> obsługa skryptów nie jest wbudowana\n"
 
 #: lib/psm.c:747
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
-msgstr "Nie można utworzyć potoku dla %s: %m\n"
+msgstr "Nie można utworzyć pliku tymczasowego dla %s: %s\n"
 
 #: lib/psm.c:796
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr "Nie można utworzyć potoku dla %s: %m\n"
+msgstr "Nie można utworzyć kopii deskryptora pliku: %s: %s\n"
 
 #: lib/psm.c:816
 #, c-format
@@ -2584,9 +2584,9 @@ msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s nie powiodło się: %s\n"
 
 #: lib/rpmgi.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
-msgstr "%s: nie jest pakietem RPM (ani manifestem pakietu): %s\n"
+msgstr "%s: nie jest pakietem RPM (ani manifestem pakietu)\n"
 
 #: lib/rpmgi.c:358
 #, c-format
@@ -2647,9 +2647,9 @@ msgid "cannot open file %s: %s\n"
 msgstr "nie można otworzyć pliku %s: %s\n"
 
 #: lib/rpminstall.c:662
-#, fuzzy, c-format
+#, c-format
 msgid "\"%s\" specifies multiple packages:\n"
-msgstr "\"%s\" określa wiele pakietów\n"
+msgstr "\"%s\" określa wiele pakietów:\n"
 
 #: lib/rpminstall.c:741
 #, c-format
@@ -2728,12 +2728,12 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "pakiet %s (nowszy niż %s) jest już zainstalowany"
 
 #: lib/rpmps.c:324
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr "instalowanie pakietu %s wymaga %<PRIu64>%cB w systemie plików %s"
 
 #: lib/rpmps.c:334
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr "instalowanie pakietu %s wymaga %<PRIu64> i-węzłów w systemie plików %s"
 
@@ -2832,9 +2832,8 @@ msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nie można otworzyć %s do odczytania: %m.\n"
 
 #: lib/rpmtd.c:225
-#, fuzzy
 msgid "Unknown format"
-msgstr "Nieznany"
+msgstr "Nieznany format"
 
 #: lib/rpmts.c:104
 #, c-format
@@ -3312,7 +3311,7 @@ msgstr "Nieznany błąd systemu"
 #: python/rpmts-py.c:181
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
-msgstr ""
+msgstr "błąd: wywołanie Pythona %s nie powiodło się, przerywanie!\n"
 
 #: rpmio/macro.c:183
 #, c-format
@@ -3394,24 +3393,23 @@ msgid "Target buffer overflow\n"
 msgstr "Przepełnienie bufora docelowego\n"
 
 #: rpmio/rpmfileutil.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr "błąd podczas odczytywania z pliku %s\n"
+msgstr "błąd podczas tworzenia pliku tymczasowego %s: %m\n"
 
 #: rpmio/rpmfileutil.c:332 rpmio/rpmfileutil.c:338
-#, fuzzy, c-format
+#, c-format
 msgid "File %s: %s\n"
-msgstr "plik %s: %s\n"
+msgstr "Plik %s: %s\n"
 
 #: rpmio/rpmfileutil.c:341
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr ""
+msgstr "Plik %s jest mniejszy niż %u bajtów\n"
 
 #: rpmio/rpmfileutil.c:716
-#, fuzzy
 msgid "failed to create directory"
-msgstr "utworzenie katalogu %s nie powiodło się: %s\n"
+msgstr "utworzenie katalogu nie powiodło się"
 
 #: rpmio/rpmlua.c:450
 #, c-format
@@ -3471,21 +3469,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "nie sprawdzaj podpisu nagłówka+danych"
-
-#~ msgid "BuildRoot can not be \"/\": %s\n"
-#~ msgstr "BuildRoot nie może być \"/\": %s\n"
-
-#~ msgid "Spec file can't use BuildRoot\n"
-#~ msgstr "Plik spec nie może używać BuildRoot\n"
-
-#~ msgid "lookup i18N strings in specfile catalog"
-#~ msgstr "wyszukaj łańcuchy i18n w katalogu pliku spec"
-
-#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
-#~ msgstr "utwórz nagłówki zgodne z (przestarzałymi) pakietami rpm[23]"
-
-#~ msgid "cannot create %%%s %s\n"
-#~ msgstr "nie można utworzyć %%%s %s\n"
-
-#~ msgid "cannot write to %%%s %s\n"
-#~ msgstr "nie można zapisać do %%%s %s\n"
