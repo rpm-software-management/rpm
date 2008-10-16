@@ -183,16 +183,13 @@ unsigned int fpHashFunction(const void * key)
 {
     const fingerPrint * fp = key;
     unsigned int hash = 0;
-    char ch;
-    const char * chptr;
+    int j;
 
-    ch = 0;
-    chptr = fp->baseName;
-    while (*chptr != '\0') ch ^= *chptr++;
+    hash = hashFunctionString(fp->baseName);
+    if (fp->subDir) hash ^= hashFunctionString(fp->subDir);
 
-    hash |= ((unsigned)ch) << 24;
-    hash |= (((((unsigned)fp->entry->dev) >> 8) ^ fp->entry->dev) & 0xFF) << 16;
-    hash |= fp->entry->ino & 0xFFFF;
+    hash ^= ((unsigned)fp->entry->dev);
+    for (j=0; j<4; j++) hash ^= ((fp->entry->ino >> (8*j)) & 0xFF) << ((3-j)*8);
     
     return hash;
 }
