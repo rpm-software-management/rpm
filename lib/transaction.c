@@ -1061,9 +1061,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetChrootDone(ts, 1);
     }
 
-    ts->ht = rpmFpHashCreate(totalFileCount * 2, fpHashFunction, fpEqual,
+    ts->ht = rpmFpHashCreate(totalFileCount * 2 + 1, fpHashFunction, fpEqual,
 			     NULL, NULL);
-    fpc = fpCacheCreate(totalFileCount * 2);
+    fpc = fpCacheCreate(totalFileCount * 2 + 10001);
 
     /* ===============================================
      * Add fingerprint for each file not skipped.
