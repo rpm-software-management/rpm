@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2008-10-14 12:25+0300\n"
-"PO-Revision-Date: 2008-10-02 11:31+0100\n"
+"PO-Revision-Date: 2008-10-16 12:18+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -2294,17 +2294,17 @@ msgstr "Source-Paket enthält keine Spec-Datei\n"
 
 #: lib/psm.c:554
 msgid "<lua> scriptlet support not built in\n"
-msgstr ""
+msgstr "<lua>-Scriptlet-Unterstützung nicht eingebaut\n"
 
 #: lib/psm.c:747
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
-msgstr "Konnte keine Pipe für %s erzeugen: %m\n"
+msgstr "Konnte keine temporäre Datei erzeugen für %s: %s\n"
 
 #: lib/psm.c:796
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr "Konnte keine Pipe für %s erzeugen: %m\n"
+msgstr "Konnte Datei-Beschreiber nicht duplizieren: %s: %s\n"
 
 #: lib/psm.c:816
 #, c-format
@@ -2760,16 +2760,16 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "Paket %s (welches neuer als %s ist) ist bereits installiert"
 
 #: lib/rpmps.c:324
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr ""
-"Installation des Pakets %s benötigt %<PRIu64>%cB auf dem %s Dateisystem"
+"Installation des Pakets %s benötigt %<PRIu64>%cB auf dem %s-Dateisystem"
 
 #: lib/rpmps.c:334
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr ""
-"Installation des Pakets %s benötigt %<PRIu64> Inodes auf dem %s Dateisystem"
+"Installation des Pakets %s benötigt %<PRIu64>-Inodes auf dem %s-Dateisystem"
 
 #: lib/rpmps.c:338
 #, c-format
@@ -2866,9 +2866,8 @@ msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kann %s nicht zum Lesen öffnen: %m.\n"
 
 #: lib/rpmtd.c:225
-#, fuzzy
 msgid "Unknown format"
-msgstr "Unbekannt"
+msgstr "Unbekanntes Format"
 
 #: lib/rpmts.c:104
 #, c-format
@@ -3344,7 +3343,7 @@ msgstr "Unbekannter System-Fehler"
 #: python/rpmts-py.c:181
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
-msgstr ""
+msgstr "Fehler: Python-Callback %s fehlgeschlagen, abbrechen!\n"
 
 #: rpmio/macro.c:183
 #, c-format
@@ -3426,9 +3425,9 @@ msgid "Target buffer overflow\n"
 msgstr "Überlauf des Zielpuffers\n"
 
 #: rpmio/rpmfileutil.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr "Fehler beim erstellen der temporären Datei %s\n"
+msgstr "Fehler beim Erstellen der temporären Datei %s: %m\n"
 
 #: rpmio/rpmfileutil.c:332 rpmio/rpmfileutil.c:338
 #, c-format
@@ -3441,9 +3440,8 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr "Datei %s ist kleiner als %u Byte\n"
 
 #: rpmio/rpmfileutil.c:716
-#, fuzzy
 msgid "failed to create directory"
-msgstr "Erzeugen des Verzeichnises %s fehlgeschlagen: %s\n"
+msgstr "Erzeugen des Verzeichnises fehlgeschlagen"
 
 #: rpmio/rpmlua.c:450
 #, c-format
