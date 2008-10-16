@@ -5,19 +5,20 @@
 
 #include "lib/rpmhash.h"
 
-unsigned int hashFunctionString(const char * string)
-{
-    char xorValue = 0;
-    char sum = 0;
-    short len;
-    int i;
-    const char * chp = string;
 
-    len = strlen(string);
-    for (i = 0; i < len; i++, chp++) {
-	xorValue ^= *chp;
-	sum += *chp;
+unsigned int hashFunctionString(const char * string) {
+    /* Jenkins One-at-a-time hash */
+
+    unsigned int hash = 0xe4721b68;
+
+    while (*string != '\0') {
+      hash += *string;
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
+      string++;
     }
-
-    return ((((unsigned)len) << 16) + (((unsigned)sum) << 8) + xorValue);
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
+    return hash;
 }
