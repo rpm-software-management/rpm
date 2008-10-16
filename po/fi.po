@@ -2715,7 +2715,8 @@ msgstr ""
 #: lib/rpmps.c:334
 #, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
-msgstr "paketin %s asennus tarvitsee %<PRIu64> inodea tiedostojärjestelmällä %s"
+msgstr ""
+"paketin %s asennus tarvitsee %<PRIu64> inodea tiedostojärjestelmällä %s"
 
 #: lib/rpmps.c:338
 #, c-format
@@ -2812,7 +2813,6 @@ msgid "Unable to open %s for reading: %m.\n"
 msgstr "En voi avata %s luettavaksi: %m.\n"
 
 #: lib/rpmtd.c:225
-#,
 msgid "Unknown format"
 msgstr "Tuntematon formaatti"
 
@@ -3386,7 +3386,6 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr ""
 
 #: rpmio/rpmfileutil.c:716
-#, 
 msgid "failed to create directory"
 msgstr "hakemiston luonti epäonnistui"
 
