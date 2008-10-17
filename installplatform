@@ -8,12 +8,6 @@ RPMRC="${1:-rpmrc}"
 MACROS="${2:-macros}"
 PLATFORM="${3:-platform}"
 
-if grep /share/ $PLATFORM > /dev/null 2>&1 ; then
-    DEFAULTDOCDIR='%{_usr}/share/doc'
-else
-    DEFAULTDOCDIR='%{_usr}/doc'
-fi
-
 TEMPRC="/tmp/rpmrc.$$"
 cat << E_O_F > $TEMPRC
 include:	$RPMRC
@@ -167,7 +161,6 @@ for SUBST in $SUBSTS ; do
 	-e "s,@RPMRC_GNU@,$RPMRC_GNU," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
-	-e "s,@DEFAULTDOCDIR@,$DEFAULTDOCDIR," \
 	-e '/\${\w*:-/!s,\${,%{_,' \
 	-e "s,@ISANAME@,$ISANAME," \
 	-e "s,@ISABITS@,$ISABITS," \
