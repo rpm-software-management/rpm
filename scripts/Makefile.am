@@ -24,7 +24,7 @@ EXTRA_DIST = \
 rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
 	brp-strip brp-strip-comment-note \
-	brp-strip-shared brp-strip-static-archive brp-sparc64-linux \
+	brp-strip-shared brp-strip-static-archive \
 	check-files check-prereqs \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-lang.sh \
