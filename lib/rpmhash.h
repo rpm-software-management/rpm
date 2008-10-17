@@ -1,7 +1,8 @@
 #ifndef H_RPMHASH
 #define H_RPMHASH
 
-#include <rpm/rpmutil.h>
+#include "rpm/rpmutil.h"
+
 /**
  * \file lib/rpmhash.h
  * Hash table implemenation.
@@ -11,91 +12,8 @@
 extern "C" {
 #endif
 
-/**
- */
-typedef struct hashTable_s * hashTable;
-
-/**
- */
-typedef unsigned int (*hashFunctionType) (const void * string);
-
-/**
- */
-typedef int (*hashEqualityType) (const void * key1, const void * key2);
-
-/**
- * Return hash value of a string
- * @param string	string on which to calculate hash value
- * @return		hash value
- */
 RPM_GNUC_INTERNAL
-unsigned int hashFunctionString(const void * string);
-
-/**
- * Compare two hash table entries for equality.
- * @param key1          entry 1
- * @param key2          entry 2
- * @return		0 if entries are equal
- */
-RPM_GNUC_INTERNAL
-int hashEqualityString(const void * key1, const void * key2);
-
-/**
- * Create hash table.
- * If keySize > 0, the key is duplicated within the table (which costs
- * memory, but may be useful anyway.
- * @param numBuckets    number of hash buckets
- * @param keySize       size of key (0 if unknown)
- * @param freeData      Should data be freed when table is destroyed?
- * @param fn            function to generate hash value for key
- * @param eq            function to compare hash keys for equality
- * @return		pointer to initialized hash table
- */
-RPM_GNUC_INTERNAL
-hashTable htCreate(int numBuckets, size_t keySize, int freeData,
-		hashFunctionType fn, hashEqualityType eq); 
-
-/**
- * Destroy hash table.
- * @param ht            pointer to hash table
- * @return		NULL always
- */
-RPM_GNUC_INTERNAL
-hashTable htFree( hashTable ht);
-
-/**
- * Add item to hash table.
- * @param ht            pointer to hash table
- * @param key           pointer to key
- * @param data          pointer to data value
- */
-RPM_GNUC_INTERNAL
-void htAddEntry(hashTable ht, const void * key,
-		const void * data);
-
-/**
- * Retrieve item from hash table.
- * @param ht            pointer to hash table
- * @param key           pointer to key value
- * @retval data         address to store data value from bucket
- * @retval dataCount    address to store data value size from bucket
- * @retval tableKey     address to store key value from bucket (may be NULL)
- * @return		0 on success, 1 if the item is not found.
- */
-RPM_GNUC_INTERNAL
-int htGetEntry(hashTable ht, const void * key,
-		const void *** data,
-		int * dataCount,
-		const void ** tableKey);
-
-/**
- * Check for key in hash table.
- * @param ht            pointer to hash table
- * @param key           pointer to key value
- * @return		1 if the key is present, 0 otherwise
- */
-RPM_GNUC_INTERNAL
-int htHasEntry(hashTable ht, const void * key);
+unsigned int hashFunctionString(const char * string);
 
 #ifdef __cplusplus
 }

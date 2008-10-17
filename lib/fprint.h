@@ -8,6 +8,8 @@
 
 #include <rpm/header.h>
 #include "lib/rpmhash.h"
+#include "lib/rpmdb_internal.h"
+#include "lib/rpmts_internal.h"
 
 /**
  */
