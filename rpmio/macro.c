@@ -798,7 +798,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	char *s = xcalloc((lastc-se)+1, sizeof(*s));
 	memcpy(s, se, (lastc-se));
 
-	argvSplit(&av, s, " ");
+	argvSplit(&av, s, " \t");
 	argvAppend(&argv, av);
 
 	argvFree(av);
