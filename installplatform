@@ -39,7 +39,6 @@ for SUBST in $SUBSTS ; do
   ARCH=`echo $arch | sed -e $SUBST`
   TARGET_PLATFORM=`echo $target_platform | sed -e $SUBST`
   TARGET=`echo $target | sed -e $SUBST`
-  LIB=lib
 
   PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
 
@@ -53,20 +52,12 @@ for SUBST in $SUBSTS ; do
   esac
 
   ARCH_INSTALL_POST='%{nil}'
-  MULTILIBNO=
   case "${ARCH}-${OS}" in
-    sparc-linux) MULTILIBNO=1 ;;
-    sparcv8-linux) MULTILIBNO=1 ;;
-    sparcv9-linux) MULTILIBNO=1 ;;
-    sparcv9v-linux) MULTILIBNO=1 ;;
-    sparc64-linux) LIB=lib64; MULTILIBNO=2 ;;
-    sparc64v-linux) LIB=lib64; MULTILIBNO=2 ;;
-    s390-linux) MULTILIBNO=1 ;;
-    s390x-linux) LIB=lib64; MULTILIBNO=2 ;;
-    ppc-linux) MULTILIBNO=1 ;;
-    ppc64-linux) LIB=lib64; MULTILIBNO=2 ;;
-    i?86-linux|pentium?-linux|athlon-linux|geode-linux) MULTILIBNO=1 ;;
-    x86_64-linux|amd64-linux|ia32e-linux) LIB=lib64; MULTILIBNO=2 ;;
+    sparc64*-linux) LIB=lib64 ;;
+    s390x-linux) LIB=lib64 ;;
+    ppc64-linux|powerpc64-linux) LIB=lib64 ;;
+    x86_64-linux|amd64-linux|ia32e-linux) LIB=lib64 ;;
+    *) LIB=lib;;
   esac
 
   # XXX FIXME: incomplete and quite likely wrong too in places,
@@ -112,12 +103,6 @@ for SUBST in $SUBSTS ; do
 	;;
   esac
 
-  if [ -n "$MULTILIBNO" ]; then
-    MULTILIBSED='-e /^@MULTILIB/d -e s,@MULTILIBNO@,'$MULTILIBNO,
-  else
-    MULTILIBSED='-e /^@MULTILIBSTART@/,/^@MULTILIBEND@/d'
-  fi
-
   case $VENDOR in
   yellowdog)
     VENDORSED='-e s,^@yellowdog@,,'
@@ -152,7 +137,6 @@ for SUBST in $SUBSTS ; do
 	-e '/\${\w*:-/!s,\${,%{_,' \
 	-e "s,@ISANAME@,$ISANAME," \
 	-e "s,@ISABITS@,$ISABITS," \
-	$MULTILIBSED \
 	$VENDORSED \
   | grep -v '^@' \
   > ${PPD}/macros

@@ -43,13 +43,6 @@
 	&& RPM_BUILD_NCPUS="`/usr/bin/getconf _NPROCESSORS_ONLN`"; \\\
 	[ "$RPM_BUILD_NCPUS" -gt 1 ] && echo "-j$RPM_BUILD_NCPUS")
 
-@MULTILIBSTART@
-#---------------------------------------------------------------------
-#	Multilibs
-%_multilibno		@MULTILIBNO@
-%_multilibpatt		(/%{_lib}|/usr/%{_lib}(|/gconv)|/usr/local/%{_lib}|/usr/X11R6/%{_lib}|/opt/%{_lib})/[^/]*\\.([oa]|la|so[0-9.]*)$
-@MULTILIBEND@
-
 #==============================================================================
 # ---- Build policy macros.
 #
