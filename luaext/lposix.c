@@ -366,7 +366,6 @@ static int Pputenv(lua_State *L)		/** putenv(string) */
 }
 
 
-#ifdef linux
 static int Psetenv(lua_State *L)		/** setenv(name,value,[over]) */
 {
 	const char *name=luaL_checkstring(L, 1);
@@ -382,8 +381,6 @@ static int Punsetenv(lua_State *L)		/** unsetenv(name) */
 	unsetenv(name);
 	return 0;
 }
-#endif
-
 
 static int Pgetenv(lua_State *L)		/** getenv([name]) */
 {
@@ -833,11 +830,8 @@ static const luaL_reg R[] =
 	{"unlink",		Punlink},
 	{"utime",		Putime},
 	{"wait",		Pwait},
-
-#ifdef linux
 	{"setenv",		Psetenv},
 	{"unsetenv",		Punsetenv},
-#endif
 	{NULL,			NULL}
 };
 
