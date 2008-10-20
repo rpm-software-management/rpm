@@ -761,6 +761,37 @@ static int Psysconf(lua_State *L)		/** sysconf([selector]) */
 	return doselection(L, 1, Ssysconf, Fsysconf, NULL);
 }
 
+static int Pmkstemp(lua_State *L)
+{
+	const char *path;
+	char *dynpath;
+	int fd;
+	FILE **f;
+
+	path = luaL_checkstring(L, 1);
+	if (path == NULL)
+		return 0;
+	dynpath = strdup(path);
+	fd = mkstemp(dynpath);
+	f = (FILE**)lua_newuserdata(L, sizeof(FILE*));
+	if (f == NULL) {
+		close(fd);
+		free(dynpath);
+		return 0;
+	}
+	*f = fdopen(fd, "a+");
+	lua_pushstring(L, dynpath);
+	free(dynpath);
+	luaL_getmetatable(L, "FILE*");
+	if (lua_isnil(L, -1)) {
+		lua_pop(L, 1);
+		luaL_error(L, "FILE* metatable not available "
+			      "(io not loaded?)");
+	} else {
+		lua_setmetatable(L, -3);
+	}
+	return 2;
+}
 
 static const luaL_reg R[] =
 {
@@ -784,6 +815,7 @@ static const luaL_reg R[] =
 	{"link",		Plink},
 	{"mkdir",		Pmkdir},
 	{"mkfifo",		Pmkfifo},
+	{"mkstemp",		Pmkstemp},
 	{"pathconf",		Ppathconf},
 	{"putenv",		Pputenv},
 	{"readlink",		Preadlink},
