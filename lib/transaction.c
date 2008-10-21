@@ -392,7 +392,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	rpmfi otherFi;
 	rpmfileAttrs FFlags;
 	rpm_mode_t FMode;
-	const rpmfi * recs;
+	struct rpmffi_s * recs;
 	int numRecs;
 
 	if (XFA_SKIPPING(fi->actions[i]))
@@ -413,8 +413,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	(void) htGetEntry(ts->ht, fiFps,
-			(const void ***) &recs, &numRecs, NULL);
+	(void) rpmFpHashGetEntry(ts->ht, fiFps, &recs, &numRecs, NULL);
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -438,17 +437,19 @@ static void handleOverlappedFiles(const rpmts ts,
 	 */
 
 	/* Locate this overlapped file in the set of added/removed packages. */
-	for (j = 0; j < numRecs && recs[j] != fi; j++)
+	for (j = 0; j < numRecs && recs[j].fi != fi; j++)
 	    {};
 
 	/* Find what the previous disposition of this file was. */
 	otherFileNum = -1;			/* keep gcc quiet */
 	otherFi = NULL;
+
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    struct fingerPrint_s * otherFps;
 	    int otherFc;
 
-	    otherFi = recs[otherPkgNum];
+	    otherFi = recs[otherPkgNum].fi;
+	    otherFileNum = recs[otherPkgNum].fileno;
 
 	    /* Added packages need only look at other added packages. */
 	    if (rpmteType(p) == TR_ADDED && rpmteType(otherFi->te) != TR_ADDED)
@@ -457,7 +458,6 @@ static void handleOverlappedFiles(const rpmts ts,
 	    otherFps = otherFi->fps;
 	    otherFc = rpmfiFC(otherFi);
 
-	    otherFileNum = findFps(fiFps, otherFps, otherFc);
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
 	    /* XXX Happens iff fingerprint for incomplete package install. */
@@ -517,7 +517,6 @@ assert(otherFi != NULL);
 		    }
 		    done = 1;
 		}
-
 		if (rConflicts) {
 		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
 			rpmteNEVRA(p), rpmteKey(p),
@@ -1191,7 +1190,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetChrootDone(ts, 1);
     }
 
-    ts->ht = htCreate(totalFileCount * 2, 0, 0, fpHashFunction, fpEqual);
+    ts->ht = rpmFpHashCreate(totalFileCount * 2, fpHashFunction, fpEqual,
+			     NULL, NULL);
     fpc = fpCacheCreate(totalFileCount);
 
     /* ===============================================
@@ -1212,14 +1212,20 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
  	fi = rpmfiInit(fi, 0);
  	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
+	    struct rpmffi_s ffi;
+	    ffi.fi = fi;
+	    ffi.fileno = i;
 	    if (XFA_SKIPPING(fi->actions[i]))
 		continue;
-	    htAddEntry(ts->ht, fi->fps + i, (void *) fi);
+	    rpmFpHashAddEntry(ts->ht, fi->fps + i, ffi);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 
     }
     pi = rpmtsiFree(pi);
+
+    rpmFpHashFree(ts->ht);
+    ts->ht = newht;
 
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
@@ -1389,7 +1395,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     pi = rpmtsiFree(pi);
 
     fpc = fpCacheFree(fpc);
-    ts->ht = htFree(ts->ht);
+    ts->ht = rpmFpHashFree(ts->ht);
 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.

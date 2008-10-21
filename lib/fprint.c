@@ -7,22 +7,36 @@
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
 
 #include "lib/rpmdb_internal.h"
+#include "lib/rpmfi_internal.h"
 #include "lib/fprint.h"
 #include "debug.h"
+#include <libgen.h>
+
+/* Create new hash table type rpmFpEntryHash */
+#include "lib/rpmhash.C"
+
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE rpmFpEntryHash
+#define HTKEYTYPE const char *
+#define HTDATATYPE const struct fprintCacheEntry_s *
+#include "lib/rpmhash.C"
 
 fingerPrintCache fpCacheCreate(int sizeHint)
 {
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
-    fpc->ht = htCreate(sizeHint * 2, 0, 1, hashFunctionString,
-		       hashEqualityString);
+    fpc->ht = rpmFpEntryHashCreate(sizeHint * 2, hashFunctionString, strcmp,
+				   (rpmFpEntryHashFreeKey)free,
+				   (rpmFpEntryHashFreeData)free);
     return fpc;
 }
 
 fingerPrintCache fpCacheFree(fingerPrintCache cache)
 {
-    cache->ht = htFree(cache->ht);
+    cache->ht = rpmFpEntryHashFree(cache->ht);
     free(cache);
     return NULL;
 }
@@ -37,9 +51,9 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
 			    const char * dirName)
 {
-    const void ** data;
+    const struct fprintCacheEntry_s ** data;
 
-    if (htGetEntry(cache->ht, dirName, &data, NULL, NULL))
+    if (rpmFpEntryHashGetEntry(cache->ht, dirName, &data, NULL, NULL))
 	return NULL;
     return data[0];
 }
@@ -124,19 +138,14 @@ static fingerPrint doLookup(fingerPrintCache cache,
 	if (cacheHit != NULL) {
 	    fp.entry = cacheHit;
 	} else if (!stat((*buf != '\0' ? buf : "/"), &sb)) {
-	    size_t nb = sizeof(*fp.entry) + (*buf != '\0' ? (end-buf) : 1) + 1;
-	    char * dn = xmalloc(nb);
-	    struct fprintCacheEntry_s * newEntry = (void *)dn;
+	    struct fprintCacheEntry_s * newEntry = xmalloc(sizeof(* newEntry));
 
-	   	/* LCL: contiguous malloc confusion */
-	    dn += sizeof(*newEntry);
-	    strcpy(dn, (*buf != '\0' ? buf : "/"));
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
-	    newEntry->dirName = dn;
+	    newEntry->dirName = xstrdup((*buf != '\0' ? buf : "/"));
 	    fp.entry = newEntry;
 
-	    htAddEntry(cache->ht, dn, fp.entry);
+	    rpmFpEntryHashAddEntry(cache->ht, newEntry->dirName, fp.entry);
 	}
 
         if (fp.entry) {
@@ -179,9 +188,8 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
     return doLookup(cache, dirName, baseName, scareMemory);
 }
 
-unsigned int fpHashFunction(const void * key)
+unsigned int fpHashFunction(const fingerPrint * fp)
 {
-    const fingerPrint * fp = key;
     unsigned int hash = 0;
     char ch;
     const char * chptr;
@@ -197,11 +205,8 @@ unsigned int fpHashFunction(const void * key)
     return hash;
 }
 
-int fpEqual(const void * key1, const void * key2)
+int fpEqual(const fingerPrint * k1, const fingerPrint * k2)
 {
-    const fingerPrint *k1 = key1;
-    const fingerPrint *k2 = key2;
-
     /* If the addresses are the same, so are the values. */
     if (k1 == k2)
 	return 0;

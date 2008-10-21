@@ -7,9 +7,7 @@
  */
 
 #include <rpm/header.h>
-#include "lib/rpmhash.h"
 #include "lib/rpmdb_internal.h"
-#include "lib/rpmts_internal.h"
 
 /**
  */
@@ -19,6 +17,24 @@ typedef struct fprintCache_s * fingerPrintCache;
  * @todo Convert to pointer and make abstract.
  */
 typedef struct fingerPrint_s fingerPrint;
+
+/**
+ * Associates a trailing sub-directory and final base name with an existing
+ * directory finger print.
+ */
+struct fingerPrint_s {
+/*! directory finger print entry (the directory path is stat(2)-able */
+    const struct fprintCacheEntry_s * entry;
+/*! trailing sub-directory path (directories that are not stat(2)-able */
+const char * subDir;
+const char * baseName;	/*!< file base name */
+};
+
+/* Create new hash table data type */
+#define HASHTYPE rpmFpEntryHash
+#define HTKEYTYPE const char *
+#define HTDATATYPE const struct fprintCacheEntry_s *
+#include "lib/rpmhash.H"
 
 /**
  * Finger print cache entry.
@@ -36,20 +52,27 @@ struct fprintCacheEntry_s {
  * Finger print cache.
  */
 struct fprintCache_s {
-    hashTable ht;			/*!< hashed by dirName */
+    rpmFpEntryHash ht;			/*!< hashed by dirName */
 };
 
-/**
- * Associates a trailing sub-directory and final base name with an existing
- * directory finger print.
- */
-struct fingerPrint_s {
-/*! directory finger print entry (the directory path is stat(2)-able */
-    const struct fprintCacheEntry_s * entry;
-/*! trailing sub-directory path (directories that are not stat(2)-able */
-const char * subDir;
-const char * baseName;	/*!< file base name */
+/* Create new hash table data type */
+
+struct rpmffi_s {
+  rpmfi fi;
+  int   fileno;
 };
+
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
+#define HASHTYPE rpmFpHash
+#define HTKEYTYPE const fingerPrint *
+#define HTDATATYPE struct rpmffi_s
+#include "lib/rpmhash.H"
+
+/* avoid include cycle problem by including after rpmFpHash definition */
+#include "lib/rpmts_internal.h"
 
 /** */
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
@@ -116,7 +139,7 @@ fingerPrint fpLookup(fingerPrintCache cache, const char * dirName,
  * @return hash value
  */
 RPM_GNUC_INTERNAL
-unsigned int fpHashFunction(const void * key);
+unsigned int fpHashFunction(const fingerPrint * key);
 
 /**
  * Compare two finger print entries.
@@ -126,7 +149,7 @@ unsigned int fpHashFunction(const void * key);
  * @return result of comparing key1 and key2
  */
 RPM_GNUC_INTERNAL
-int fpEqual(const void * key1, const void * key2);
+int fpEqual(const fingerPrint * key1, const fingerPrint * key2);
 
 /**
  * Return finger prints of an array of file paths.

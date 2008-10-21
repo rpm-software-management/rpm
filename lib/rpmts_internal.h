@@ -5,6 +5,7 @@
 #include <rpm/rpmal.h>	/* XXX availablePackage/relocateFileList ,*/
 
 #include "lib/rpmhash.h"	/* XXX hashTable */
+#include "lib/fprint.h"
 
 /** \ingroup rpmts
  */
@@ -30,6 +31,7 @@ struct diskspaceInfo_s {
    probably right :-( */
 #define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
 
+
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
@@ -53,7 +55,7 @@ struct rpmts_s {
 
     rpmdb rdb;			/*!< Install database handle. */
     int dbmode;			/*!< Install database open mode. */
-    hashTable ht;		/*!< Fingerprint hash table. */
+    rpmFpHash ht;		/*!< Fingerprint hash table. */
 
     int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;	/*!< No. removed package instances. */
