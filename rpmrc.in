@@ -78,8 +78,8 @@ optflags: s390 -O2 -g
 optflags: s390x -O2 -g
 
 optflags: sh3 -O2 -g
-optflags: sh4 -O2 -g
-optflags: sh4a -O2 -g
+optflags: sh4 -O2 -g -mieee
+optflags: sh4a -O2 -g -mieee
 
 #############################################################
 # Canonical arch names and numbers
