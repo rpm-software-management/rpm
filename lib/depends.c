@@ -118,7 +118,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     struct rpmtd_s td;
     const char * arch = NULL;
     const char * os = NULL;
-    rpmds oldChk, newChk;
+    rpmds oldChk = NULL, newChk = NULL;
     rpmds obsoletes;
     rpmalKey pkgKey;	/* addedPackages key */
     int xx;
@@ -216,8 +216,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	}
     }
     pi = rpmtsiFree(pi);
-    oldChk = rpmdsFree(oldChk);
-    newChk = rpmdsFree(newChk);
 
     /* If newer NEVR was already added, exit now. */
     if (ec)
@@ -353,6 +351,8 @@ addheader:
     ec = 0;
 
 exit:
+    oldChk = rpmdsFree(oldChk);
+    newChk = rpmdsFree(newChk);
     pi = rpmtsiFree(pi);
     return ec;
 }
