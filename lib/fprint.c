@@ -244,3 +244,133 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	}
     }
 }
+
+void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi fi, int filenr)
+{
+    struct fingerPrint_s current_fp;
+    char *end, *endbasename, *currentsubdir;
+    size_t lensubDir;
+
+    fingerPrint tmp_fp;
+    struct rpmffi_s * recs;
+    int numRecs;
+    int i, fiFX;
+    fingerPrint *fp = fi->fps + filenr;
+    int symlinkcount = 0;
+    struct rpmffi_s ffi = { fi, filenr};
+
+    if (fp->subDir == NULL) {
+	 rpmFpHashAddEntry(newht, fp, ffi);
+	 return;
+    }
+
+    lensubDir = strlen(fp->subDir);
+    current_fp = *fp;
+    current_fp.subDir = xstrdup(fp->subDir);
+    end = (char*) current_fp.subDir + lensubDir;
+    currentsubdir = (char *) current_fp.subDir;
+    current_fp.baseName = current_fp.subDir;
+
+    current_fp.subDir = NULL;
+    endbasename = end = currentsubdir;
+
+    while (*endbasename != '/' && endbasename < currentsubdir + lensubDir - 1)
+	 endbasename++;
+    *endbasename = '\0';
+
+    while (endbasename < currentsubdir + lensubDir - 1) {
+	 char found;
+	 found = 0;
+
+	 rpmFpHashGetEntry(ht, &current_fp,
+		    &recs, &numRecs, &tmp_fp);
+
+	 for (i=0; i<numRecs; i++) {
+	      rpmfi foundfi;
+	      int filenr;
+	      char const *linktarget;
+	      char *link;
+
+	      foundfi =  recs[i].fi;
+	      fiFX = rpmfiFX(foundfi);
+
+	      filenr = recs[i].fileno;
+	      rpmfiSetFX(foundfi, filenr);
+	      linktarget = rpmfiFLink(foundfi);
+
+	      if (linktarget && *linktarget != '\0') {
+		   /* this "directory" is a symlink */
+		   link = NULL;
+		   if (*linktarget != '/') {
+			rstrscat(&link, current_fp.entry->dirName,
+				 current_fp.subDir ? "/" : "",
+				 current_fp.subDir ? current_fp.subDir : "",
+				 "/", NULL);
+		   }
+		   rstrscat(&link, linktarget, "/", NULL);
+		   if (strlen(endbasename+1)) {
+			rstrscat(&link, endbasename+1, "/", NULL);
+		   }
+
+		   *fp = doLookup(fpc, link, fp->baseName, 0);
+
+		   free(link);
+		   free((char *) current_fp.subDir);
+		   symlinkcount++;
+
+		   /* setup current_fp for the new path */
+		   found = 1;
+		   current_fp = *fp;
+		   if (!fp->subDir) {
+		     lensubDir = 0;
+		     currentsubdir = end = NULL;
+		     break;
+		   }
+		   lensubDir = strlen(fp->subDir);
+		   current_fp.subDir = xstrdup(fp->subDir);
+		   currentsubdir = (char *) current_fp.subDir;
+		   end = (char*) current_fp.subDir + lensubDir;
+		   current_fp.subDir = NULL;
+
+		   current_fp.baseName = currentsubdir;
+
+		   endbasename = end = currentsubdir;
+
+		   while (*endbasename != '/' &&
+			  endbasename < currentsubdir + lensubDir - 1)
+			endbasename++;
+		   *endbasename = '\0';
+		   break;
+
+	      }
+	      rpmfiSetFX(foundfi, fiFX);
+	 }
+	 if (symlinkcount>50) {
+	      // found too many symlinks in the path
+	      // most likley a symlink cicle
+	      // giving up
+	      // TODO warning/error
+	      break;
+	 }
+	 if (found) {
+	      continue; // restart loop after symlink
+	 }
+
+	 if (current_fp.subDir == NULL) {
+	      current_fp.subDir = currentsubdir;
+	 } else {
+	      *end = '/';
+	 }
+	 end = endbasename;
+
+	 endbasename++;
+	 while (*endbasename != '\0' && *endbasename != '/')
+	      endbasename++;
+	 *endbasename = '\0';
+	 current_fp.baseName = end+1;
+
+    }
+    free((char*) current_fp.subDir);
+    rpmFpHashAddEntry(newht, fp, ffi);
+
+}

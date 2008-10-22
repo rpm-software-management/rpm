@@ -166,6 +166,18 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 		  const char ** baseNames, const uint32_t * dirIndexes, 
 		  int fileCount, fingerPrint * fpList);
 
+/**
+ * Check file for to be installed symlinks in their path,
+ *  correct their fingerprint and add it to newht.
+ * @param ht            hash table containing all files fingerprints
+ * @param newht         hash table to add the corrected fingerprints
+ * @param fpc           fingerprint cache
+ * @param fi            file iterator of the package
+ * @param filenr        the number of the file we are dealing with
+ */
+void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi fi, int filenr);
+
+
 #ifdef __cplusplus
 }
 #endif
