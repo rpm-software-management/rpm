@@ -1095,6 +1095,29 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
     pi = rpmtsiFree(pi);
 
+    /* ===============================================
+     * Check fingerprints if they contain symlinks
+     */
+    rpmFpHash newht = rpmFpHashCreate(totalFileCount * 2, fpHashFunction, fpEqual, NULL, NULL);
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+
+	(void) rpmdbCheckSignals();
+
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+	fi = rpmfiInit(fi, 0);
+	if (fi != NULL)		/* XXX lclint */
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    if (XFA_SKIPPING(fi->actions[i]))
+		continue;
+	    fpLookupSubdir(ts->ht, newht, fpc, fi, i);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+    }
+    pi = rpmtsiFree(pi);
+
     rpmFpHashFree(ts->ht);
     ts->ht = newht;
 
