@@ -89,7 +89,13 @@ static fingerPrint doLookup(fingerPrintCache cache,
     if (*cleanDirName == '/') {
 	if (!scareMemory) {
 	    cdnbuf = xstrdup(dirName);
-	    cleanDirName = rpmCleanPath(cdnbuf);
+	    char trailingslash = (cdnbuf[strlen(cdnbuf)-1] == '/');
+	    cdnbuf = rpmCleanPath(cdnbuf);
+	    if (trailingslash) {
+		cdnbuf = rstrcat(&cdnbuf, "/");
+	    }
+	    cleanDirName = cdnbuf;
+	    cdnl = strlen(cleanDirName);
 	}
     } else {
 	scareMemory = 0;	/* XXX causes memory leak */
