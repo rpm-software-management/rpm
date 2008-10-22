@@ -101,6 +101,10 @@ for SUBST in $SUBSTS ; do
 	ISANAME=ia
 	ISABITS=64
 	;;
+    sh*)
+	ISANAME=sh
+	ISABITS=32
+	;;
   esac
 
   case $VENDOR in
