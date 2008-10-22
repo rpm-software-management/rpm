@@ -118,7 +118,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     struct rpmtd_s td;
     const char * arch = NULL;
     const char * os = NULL;
-    rpmds oldChk = NULL, newChk = NULL;
+    rpmds oldChk = NULL, newChk = NULL, sameChk = NULL;
     rpmds obsoletes;
     rpmalKey pkgKey;	/* addedPackages key */
     int xx;
@@ -151,10 +151,13 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL|RPMSENSE_GREATER));
+    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
+    sameChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
+	const char *pkgNEVR, *addNEVR;
+	int skip = 0;
 
 	/* XXX Only added packages need be checked for dupes. */
 	if (rpmteType(p) == TR_REMOVED)
@@ -181,13 +184,20 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    continue;	/* XXX can't happen */
 
 	/* 
+	 * Always skip identical NEVR. 
  	 * On upgrade, if newer NEVR was previously added, 
  	 * then skip adding older. 
  	 */
-	rc = rpmdsCompare(newChk, this);
-	if (upgrade && rc != 0) {
-	    const char * pkgNEVR = rpmdsDNEVR(this);
-	    const char * addNEVR = rpmdsDNEVR(oldChk);
+	if (rpmdsCompare(sameChk, this)) {
+	    skip = 1;
+	    addNEVR = rpmdsDNEVR(sameChk);
+	} else if (upgrade && rpmdsCompare(newChk, this)) {
+	    skip = 1;
+	    addNEVR = rpmdsDNEVR(newChk);
+	}
+
+	if (skip) {
+	    pkgNEVR = rpmdsDNEVR(this);
 	    if (rpmIsVerbose())
 		rpmlog(RPMLOG_WARNING,
 		    _("package %s was already added, skipping %s\n"),
@@ -203,8 +213,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  	 */
 	rc = rpmdsCompare(oldChk, this);
 	if (upgrade && rc != 0) {
-	    const char * pkgNEVR = rpmdsDNEVR(this);
-	    const char * addNEVR = rpmdsDNEVR(newChk);
+	    pkgNEVR = rpmdsDNEVR(this);
+	    addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
 		rpmlog(RPMLOG_WARNING,
 		    _("package %s was already added, replacing with %s\n"),
@@ -353,6 +363,7 @@ addheader:
 exit:
     oldChk = rpmdsFree(oldChk);
     newChk = rpmdsFree(newChk);
+    sameChk = rpmdsFree(sameChk);
     pi = rpmtsiFree(pi);
     return ec;
 }
