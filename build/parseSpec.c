@@ -592,7 +592,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	}
 
 	headerPutString(pkg->header, RPMTAG_OS, os);
-	headerPutString(pkg->header, RPMTAG_ARCH, arch);
+	/* noarch subpackages already have arch set here, leave it alone */
+	if (!headerIsEntry(pkg->header, RPMTAG_ARCH)) {
+	    headerPutString(pkg->header, RPMTAG_ARCH, arch);
+	}
 	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
