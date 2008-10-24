@@ -616,10 +616,6 @@ if test $HAS_S_ISSOCK = yes; then
 	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
 fi
 
-AC_MSG_CHECKING(if timezone is defined)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <time.h>]], [[printf("%ld", timezone)]])],[HAS_TIMEZONE=yes],[HAS_TIMEZONE=no])
-AC_MSG_RESULT($HAS_TIMEZONE)
-
 dnl Check for missing typedefs
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T

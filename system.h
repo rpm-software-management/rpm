@@ -43,10 +43,6 @@ extern char ** environ;
 # endif
 #endif
 
-#if NEED_TIMEZONE
-extern time_t timezone;
-#endif
-
 /* Since major is a function on SVR4, we can't use `ifndef major'.  */
 #if MAJOR_IN_MKDEV
 #include <sys/mkdev.h>
