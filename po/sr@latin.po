@@ -1,24 +1,22 @@
-# translation of rpm.tip.sr.po to serbian
 # Serbian(Latin) translations for rpm
 # Copyright (C) 2006 Red Hat, Inc. and others
 # This file is distributed under the same license as the rpm package.
-#
 # Miloš Komarčević <kmilos@gmail.com>, 2006.
 # Marko Mijatovic <jomi86@gmail.com>, 2008.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm.tip.sr\n"
+"Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2008-10-14 12:25+0300\n"
-"PO-Revision-Date: 2008-03-16 13:52+0100\n"
-"Last-Translator: Marko Mijatovic <jomi86@gmail.com>\n"
-"Language-Team: serbian <en@li.org>\n"
+"PO-Revision-Date: 2008-10-23 22:39-0000\n"
+"Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
+"Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
-"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%"
+"10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
 #: build.c:41
 msgid "Failed build dependencies:\n"
@@ -521,7 +519,7 @@ msgstr "Ne može se mešati specijalni %%doc sa drugim oblicima: %s\n"
 #: build/files.c:988
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
+msgstr "Nepoznat algoritam %u za sažimanje datoteka, vraćam se na MD5\n"
 
 #: build/files.c:1016
 #, c-format
@@ -546,7 +544,7 @@ msgstr "Datoteka nije pronađena: %s\n"
 #: build/files.c:1466
 #, c-format
 msgid "File %s too large for payload\n"
-msgstr ""
+msgstr "Datoteka %s je prevelika za koristan teret\n"
 
 #: build/files.c:1564
 #, c-format
@@ -606,7 +604,7 @@ msgstr "Loš vlasnik/grupa: %s\n"
 #: build/files.c:2147
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
-msgstr "Proveram za nezapakovane datoteke: %s\n"
+msgstr "Proveravam za nezapakovane datoteke: %s\n"
 
 #: build/files.c:2162
 #, c-format
@@ -687,14 +685,14 @@ msgid "Could not open PreUn file: %s\n"
 msgstr "Ne mogu da otvorim PreUn datoteku: %s\n"
 
 #: build/pack.c:205
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PreTrans file: %s\n"
-msgstr "Ne mogu da otvorim PreIn datoteku: %s\n"
+msgstr "Ne mogu da otvorim PreTrans datoteku: %s\n"
 
 #: build/pack.c:212
 #, c-format
 msgid "Could not open PostIn file: %s\n"
-msgstr "Ne mogu da otvorim PostIn datotoeku: %s\n"
+msgstr "Ne mogu da otvorim PostIn datoteku: %s\n"
 
 #: build/pack.c:219
 #, c-format
@@ -702,9 +700,9 @@ msgid "Could not open PostUn file: %s\n"
 msgstr "Ne mogu da otvorim PostUn datoteku: %s\n"
 
 #: build/pack.c:226
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PostTrans file: %s\n"
-msgstr "Ne mogu da otvorim PostIn datotoeku: %s\n"
+msgstr "Ne mogu da otvorim PostTrans datoteku: %s\n"
 
 #: build/pack.c:234
 #, c-format
@@ -980,7 +978,7 @@ msgstr "red %d: Loš oblik za BuildArchitecture: %s\n"
 #: build/parsePreamble.c:650
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
-msgstr ""
+msgstr "red %d: Samo noarch podpaketi su podržani: %s\n"
 
 #: build/parsePreamble.c:662
 #, c-format
@@ -1020,7 +1018,7 @@ msgstr "Nema zakrpe broj %d\n"
 #: build/parsePrep.c:83
 #, c-format
 msgid "%%patch without corresponding \"Patch:\" tag\n"
-msgstr ""
+msgstr "%%patch bez odgovarajuće „Patch:“ oznake\n"
 
 #: build/parsePrep.c:158
 #, fuzzy, c-format
@@ -1364,7 +1362,7 @@ msgstr "ne mogu da upišem sve podatke u %s\n"
 #: build/rpmfc.c:1155
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
-msgstr ""
+msgstr "Prebacivanje %s u dugi ceo broj nije uspelo.\n"
 
 #: build/rpmfc.c:1235
 #, c-format
@@ -1392,21 +1390,22 @@ msgid "Failed to find %s:\n"
 msgstr "Neuspelo traženje %s:\n"
 
 #: build/rpmfc.c:1582 build/rpmfc.c:1613
-#, fuzzy
 msgid "Unable to get current dependency name.\n"
-msgstr "neuspelo kreiranje direktorijuma %s: %s\n"
+msgstr "Ne mogu da pribavim naziv tekuće zavisnosti.\n"
 
 #: build/rpmfc.c:1588 build/rpmfc.c:1619
 msgid "Unable to get current dependency epoch-version-release.\n"
-msgstr ""
+msgstr "Ne mogu da pribavim epohu-verziju-izdanje tekuće zavisnosti.\n"
 
 #: build/rpmfc.c:1646
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
+"Broj datoteka iz informacija o datoteci se ne poklapa sa datotekom u "
+"držaču.\n"
 
 #: build/rpmfc.c:1661
 msgid "Container not of string array data type.\n"
-msgstr ""
+msgstr "Držač nije tipa niza niski.\n"
 
 #: build/spec.c:227
 #, c-format
@@ -1658,7 +1657,7 @@ msgstr "hdr DSA: LOŠE, nije binarno\n"
 #: lib/package.c:406 lib/package.c:447
 #, c-format
 msgid "skipping header with unverifiable V%u signature\n"
-msgstr "preskačem zaglavlja sa nepotvđenim V%u potpisom\n"
+msgstr "preskačem zaglavlja sa nepotvrđenim V%u potpisom\n"
 
 #: lib/package.c:524
 #, c-format
@@ -1932,7 +1931,7 @@ msgstr "<packagefile>+"
 
 #: lib/poptI.c:175
 msgid "print hash marks as package installs (good with -v)"
-msgstr "isipisuj znak tarabe dok se paket instalira (dobro uz -v)"
+msgstr "ispisuj znak tarabe dok se paket instalira (dobro uz -v)"
 
 #: lib/poptI.c:178
 msgid "don't verify package architecture"
@@ -2217,7 +2216,7 @@ msgstr "nemoj proveravati režim pristupa datoteka"
 
 #: lib/poptQV.c:300
 msgid "don't verify file security contexts"
-msgstr "nemoj proveravati bezbednosne kontkeste datoteka"
+msgstr "nemoj proveravati bezbednosne kontekste datoteka"
 
 #: lib/poptQV.c:302
 msgid "don't verify files in package"
@@ -2273,7 +2272,7 @@ msgstr "izvorni paket ne sadrži .spec datoteku\n"
 
 #: lib/psm.c:554
 msgid "<lua> scriptlet support not built in\n"
-msgstr ""
+msgstr "nije ugrađena podrška <lua> skriptica\n"
 
 #: lib/psm.c:747
 #, fuzzy, c-format
@@ -2365,11 +2364,11 @@ msgstr "(nepoznat %3d) "
 
 #: lib/query.c:199
 msgid "package has not file owner/group lists\n"
-msgstr "paket nema spisakove vlasnika/grupe datoteka\n"
+msgstr "paket nema spiskove vlasnika/grupe datoteka\n"
 
 #: lib/query.c:229
 msgid "package has neither file owner or id lists\n"
-msgstr "paket nema spisakove niti vlasnika ni id datoteka\n"
+msgstr "paket nema spiskove niti vlasnika ni id datoteka\n"
 
 #: lib/query.c:344
 #, c-format
@@ -2488,6 +2487,7 @@ msgstr "%s: headerRead nije uspeo\n"
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
+"%s: Nepromenjiva regija zaglavlja se ne može iščitati. Oštećen paket?\n"
 
 #: lib/rpmchecksig.c:775
 msgid "NOT OK"
@@ -2736,15 +2736,15 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "paket %s (koji je noviji od %s) je već instaliran"
 
 #: lib/rpmps.c:324
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
-msgstr "paket %s koji se instalira traži %<PRIu64>%cB na %s sistemu datoteka"
+msgstr "paket %s koji se instalira zahteva %<PRIu64>%cB na %s sistemu datoteka"
 
 #: lib/rpmps.c:334
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr ""
-"paket %s koji se instalira traži %<PRIu64> i-čvorove na %s sistemu datoteka"
+"paket %s koji se instalira zahteva %<PRIu64> i-čvorova na %s sistemu datoteka"
 
 #: lib/rpmps.c:338
 #, c-format
@@ -2916,7 +2916,7 @@ msgstr "sigh sigSize(%zd): LOŠE, fstat(2) nije uspeo\n"
 #: lib/signature.c:394 lib/signature.c:531
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
-msgstr ""
+msgstr "Ne mogu da napravim cev za potpisivanje: %m"
 
 #: lib/signature.c:433 lib/signature.c:551 lib/signature.c:889
 #: lib/signature.c:922
@@ -2930,7 +2930,7 @@ msgstr "pgp nije uspeo\n"
 
 #: lib/signature.c:457
 msgid "pgp failed to write signature\n"
-msgstr "pgp nije uspeo da zapiše poptis\n"
+msgstr "pgp nije uspeo da zapiše potpis\n"
 
 #: lib/signature.c:476 lib/signature.c:592
 msgid "unable to read the signature\n"
@@ -2947,7 +2947,7 @@ msgstr "gpg nije uspeo da zapiše potpis\n"
 
 #: lib/signature.c:695
 msgid "Immutable header region could not be read. Corrupted package?\n"
-msgstr ""
+msgstr "Nepromenjiva regija zaglavlja se ne može iščitati. Oštećen paket?\n"
 
 #: lib/signature.c:927 lib/signature.c:976
 #, c-format
@@ -2991,7 +2991,7 @@ msgstr "Zaglavlje "
 #: lib/signature.c:1239
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
-msgstr ""
+msgstr "%sV%d %s potpis: %s, ID ključa %s\n"
 
 #: lib/signature.c:1243
 #, fuzzy, c-format
@@ -3086,7 +3086,7 @@ msgstr ": očekivan nakon ? podizraza"
 
 #: lib/headerfmt.c:550
 msgid "{ expected after : in expression"
-msgstr "{ očekicano posle : u izrazu"
+msgstr "{ očekivano posle : u izrazu"
 
 #: lib/headerfmt.c:572
 msgid "| expected at end of expression"
@@ -3176,7 +3176,7 @@ msgstr "rpmdb: oštećeno zaglavlje #%u vraćeno -- preskačem.\n"
 #: lib/rpmdb.c:2469
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
-msgstr "%s: ne mogu da pročitam zaglavnje na 0x%x\n"
+msgstr "%s: ne mogu da pročitam zaglavlje na 0x%x\n"
 
 #: lib/rpmdb.c:2515
 #, c-format
@@ -3408,9 +3408,9 @@ msgid "Target buffer overflow\n"
 msgstr "Ciljani bafer je preopterećen\n"
 
 #: rpmio/rpmfileutil.c:267
-#, fuzzy, c-format
+#, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr "greška pri čitanju iz datoteke %s\n"
+msgstr "greška pri pravljenju privremene datoteke %s: %m\n"
 
 #: rpmio/rpmfileutil.c:332 rpmio/rpmfileutil.c:338
 #, fuzzy, c-format
@@ -3485,239 +3485,3 @@ msgstr "%s: neuspelo čitanje manifesta: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "nemoj proveravati potpis zaglavlja+tovara"
-
-#~ msgid "BuildRoot can not be \"/\": %s\n"
-#~ msgstr "BuildRoot ne može biti \"/\": %s\n"
-
-#~ msgid "Spec file can't use BuildRoot\n"
-#~ msgstr "Datoteka specifikacije ne može koristiti BuildRoot\n"
-
-#~ msgid "lookup i18N strings in specfile catalog"
-#~ msgstr "potraži i18N stringove u katalogu datoteci specifikacije"
-
-#~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
-#~ msgstr "generiši zaglavlja kompatibilna sa (zastarelim) rpm[23] pakovanjem"
-
-#~ msgid "cannot create %%%s %s\n"
-#~ msgstr "ne mogu da napravim %%%s %s\n"
-
-#~ msgid "cannot write to %%%s %s\n"
-#~ msgstr "ne mogu da upisujem u %%%s %s\n"
-
-#~ msgid "can't query %s: %s\n"
-#~ msgstr "ne mogu da ispitam %s: %s\n"
-
-#, fuzzy
-#~ msgid "(encoding failed)"
-#~ msgstr "neuspelo izvršavanje\n"
-
-#~ msgid "debug URL cache handling"
-#~ msgstr "otkloni greške pri rukovanju URL keša"
-
-#~ msgid "substitute i18n sections into spec file"
-#~ msgstr "zameni i18n odeljke u datoteci specifikacije"
-
-#~ msgid "cannot open Solve database in %s\n"
-#~ msgstr "ne mogu da otvorim Solve bazu podtaka u %s\n"
-
-#~ msgid "    Suggested resolutions:\n"
-#~ msgstr "    Predložena rešenja:\n"
-
-#~ msgid "(index out of range)"
-#~ msgstr "(indeks van dometa)"
-
-#~ msgid "Success"
-#~ msgstr "Uspeh"
-
-#~ msgid "Bad server response"
-#~ msgstr "Loš odgovor servera"
-
-#~ msgid "Server I/O error"
-#~ msgstr "U/I greška servera"
-
-#~ msgid "Server timeout"
-#~ msgstr "Isteklo vreme servera"
-
-#~ msgid "Unable to lookup server host address"
-#~ msgstr "Ne mogu da pronađem adresu domaćina servera"
-
-#~ msgid "Unable to lookup server host name"
-#~ msgstr "Ne mogu da pronađem ime domaćina servera"
-
-#~ msgid "Failed to connect to server"
-#~ msgstr "Neuspelo povezivanje sa serverom"
-
-#~ msgid "Failed to establish data connection to server"
-#~ msgstr "Neuspelo uspostavljanje veze sa serverom"
-
-#~ msgid "I/O error to local file"
-#~ msgstr "U/I greška ka lokalnoj datoteci"
-
-#~ msgid "Error setting remote server to passive mode"
-#~ msgstr "Greška pri postavljanju udaljenog servera u pasivni režim"
-
-#~ msgid "File not found on server"
-#~ msgstr "Datoteka nije pronađena na serveru"
-
-#~ msgid "Abort in progress"
-#~ msgstr "Odustajanje u toku"
-
-#~ msgid "Unknown or unexpected error"
-#~ msgstr "Nepoznata ili neočekivana greška"
-
-#~ msgid "don't update cache database, only print package paths"
-#~ msgstr "nemoj osvežavati bazu keša, samo ispiši putanje paketa"
-
-#~ msgid "File tree walk options:"
-#~ msgstr "Opcije kretanja kroz stablo direktorijuma:"
-
-#~ msgid "%s: %%{_cache_dbpath} macro is mis-configured.\n"
-#~ msgstr "%s: %%{_cache_dbpath} makro je pogrešno podešen.\n"
-
-#~ msgid "%s: cache operation failed: ec %d.\n"
-#~ msgstr "%s: neuspela radnja keširanja: bg %d.\n"
-
-#~ msgid "getcwd failed: %m\n"
-#~ msgstr "getcwd nije uspelo: %m\n"
-
-#~ msgid "Hit limit for %%docdir\n"
-#~ msgstr "Dostignuta granica za %%docdir\n"
-
-#~ msgid "line %d: Need arg to %%patch -b: %s\n"
-#~ msgstr "red %d: Potreban argument za %%patch -b: %s\n"
-
-#~ msgid "line %d: Need arg to %%patch -z: %s\n"
-#~ msgstr "red %d: Potreban argument za %%patch -z: %s\n"
-
-#~ msgid "line %d: Bad arg to %%patch -F: %s\n"
-#~ msgstr "red %d: Loš argument za %%patch -p: %s\n"
-
-#~ msgid "line %d: Need arg to %%patch -p: %s\n"
-#~ msgstr "red %d: Potreban argument za %%patch -p: %s\n"
-
-#~ msgid "line %d: Bad arg to %%patch -p: %s\n"
-#~ msgstr "red %d: Loš argument za %%patch -p: %s\n"
-
-#~ msgid "Too many patches!\n"
-#~ msgstr "Previše zakrpa!\n"
-
-#~ msgid "line %d: Bad arg to %%patch: %s\n"
-#~ msgstr "red %d: Loš argument za %%patch: %s\n"
-
-#~ msgid "debug option/argument processing"
-#~ msgstr "otkloni greške u obradi opcije/argumenta"
-
-#~ msgid "rollback takes a time/date stamp argument"
-#~ msgstr "vraćanje u prethodno stanje zahteva argument pečata vreme/datum"
-
-#~ msgid "malformed rollback time/date stamp argument"
-#~ msgstr ""
-#~ "loše oblikovan argument pečata vreme/datum za vraćanje u prethodno stanje"
-
-#~ msgid "save erased package files by renaming into sub-directory"
-#~ msgstr ""
-#~ "sačuvaj izbrisane datoteke paketa menjanjem naziva u pod-direktorijum"
-
-#~ msgid "save erased package files by repackaging"
-#~ msgstr "sačuvaj izbrisane datoteke paketa ponovnim pakovanjem"
-
-#~ msgid "deinstall new, reinstall old, package(s), back to <date>"
-#~ msgstr "izbriši novo, ponovo instaliraj staro, paket(i), nazad na <date>"
-
-#~ msgid "<date>"
-#~ msgstr "<date>"
-
-#~ msgid "skip %%license files"
-#~ msgstr "preskoči %%license datoteke"
-
-#~ msgid "skip %%readme files"
-#~ msgstr "preskoči %%readme datoteke"
-
-#~ msgid "Unable to reload signature header\n"
-#~ msgstr "Ne mogu da ponovo učitam zaglavlje potpisa\n"
-
-#~ msgid "%s: headerGetEntry failed\n"
-#~ msgstr "%s: headerGetEntry nije uspeo\n"
-
-#~ msgid "Repackaging..."
-#~ msgstr "Raspakivanje..."
-
-#~ msgid "Repackaging erased files..."
-#~ msgstr "Raspakivanje izbrisanih datoteka..."
-
-#~ msgid "Upgrading..."
-#~ msgstr "Nadgradnja..."
-
-#~ msgid "Upgrading packages..."
-#~ msgstr "Nadgrađujem pakete..."
-
-#~ msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
-#~ msgstr ""
-#~ "Vraćanje paketa u prethodno stanje (+%d/-%d) na %-24.24s (0x%08x):\n"
-
-#~ msgid "Cleaning up repackaged packages:\n"
-#~ msgstr "Čistim raspakovane pakete:\n"
-
-#~ msgid "\tRemoving %s:\n"
-#~ msgstr "\tUklanjam %s:\n"
-
-#~ msgid "Failed to read %s: %s.\n"
-#~ msgstr "Neuspelo čitanje %s: %s.\n"
-
-#~ msgid "%s expansion failed at %s:%d \"%s\"\n"
-#~ msgstr "%s proširenje nije uspelo na %s:%d „%s“\n"
-
-#~ msgid "Cannot expand %s\n"
-#~ msgstr "Ne mogu da proširim %s\n"
-
-#~ msgid "Cannot read %s, HOME is too large.\n"
-#~ msgstr "Ne mogu da pročitam %s, POČETAK je preveliki.\n"
-
-#~ msgid "Transaction failed...rolling back\n"
-#~ msgstr "Prenos nije uspeo...vraćam na prethodno stanje\n"
-
-#~ msgid "Could not order auto-rollback transaction!\n"
-#~ msgstr ""
-#~ "Ne mogi da naručim prenos sa automatskim vraćanjem u prethodno stanje!\n"
-
-#~ msgid "Could not get install element database instance!\n"
-#~ msgstr "Ne mogu da dobijem instancu baze podataka instalacionog elementa!\n"
-
-#~ msgid "Could not get header for auto-rollback transaction!\n"
-#~ msgstr ""
-#~ "Ne mogu da dobijem zaglavlje za prenos sa automatskim vraćanjem u "
-#~ "prethodno stanje!\n"
-
-#~ msgid "\tAdded from install element %s.\n"
-#~ msgstr "\tDodat iz instalacionog elementa %s.\n"
-
-#~ msgid "Could not get repackaged header for auto-rollback transaction!\n"
-#~ msgstr ""
-#~ "Ne mogu da dobijem raspakovano zaglavlje za prenos sa automatskim "
-#~ "vraćanjem u prethodno stanje!\n"
-
-#~ msgid "Could not add erase element to auto-rollback transaction.\n"
-#~ msgstr ""
-#~ "Ne mogu da dodam izbrisani element u prenos sa automatskim vraćanjem u "
-#~ "prethodno stanje.\n"
-
-#~ msgid "Failure reading repackaged package!\n"
-#~ msgstr "Neuspelo čitanje ponovo zapakovanog paketa!\n"
-
-#~ msgid "Add failed.  Could not read package header.\n"
-#~ msgstr "Dodavanje nije uspelo.  Ne mogu da pročitam zaglavlje paketa.\n"
-
-#~ msgid "Add failed in rpmpsmStage().\n"
-#~ msgstr "Dodavanje nije uspelo u rpmpsmStage().\n"
-
-#~ msgid "Add failed.  Could not get file list.\n"
-#~ msgstr "Dodavanje nije uspelo.  Ne mogu da dobijem spisak datoteka.\n"
-
-#~ msgid "Erase failed failed in rpmpsmStage().\n"
-#~ msgstr "Brisanje nije uspelo u rpmpsmStage().\n"
-
-#~ msgid "URL helper failed: %s (%d)\n"
-#~ msgstr "URL pomoćnik nije uspeo: %s (%d)\n"
-
-#~ msgid "failed to create %s: %s\n"
-#~ msgstr "neuspelo pravljenje %s: %s\n"
