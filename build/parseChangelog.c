@@ -89,8 +89,6 @@ static int dateToTimet(const char * datestr, time_t * secs)
     *secs = mktime(&time);
     if (*secs == -1) goto exit;
 
-    /* adjust to GMT */
-    *secs += timezone;
     rc = 0;
 
 exit:
