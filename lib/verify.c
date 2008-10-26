@@ -152,6 +152,20 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
 	if (metamode != filemode)
 	    *res |= RPMVERIFY_MODE;
+
+#if WITH_ACL
+	/*
+	 * For now, any non-default acl's on a file is a difference as rpm
+	 * cannot have set them.
+	 */
+	acl_t facl = acl_get_file(fn, ACL_TYPE_ACCESS);
+	if (facl) {
+	    if (acl_equiv_mode(facl, NULL) == 1) {
+		*res |= RPMVERIFY_MODE;
+	    }
+	    acl_free(facl);
+	}
+#endif 
     }
 
     if (flags & RPMVERIFY_RDEV) {

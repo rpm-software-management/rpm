@@ -764,6 +764,32 @@ AS_IF([test "$with_cap" = yes],[
 AC_SUBST(WITH_CAP_LIB)
 AM_CONDITIONAL(CAP,[test "$with_cap" = yes])
 
+WITH_ACL_LIB=
+AC_ARG_WITH(acl, [  --with-acl              build with acl support ],
+[case "$with_acl" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --with-acl])
+  ;;
+esac],
+[with_acl=no])
+
+AS_IF([test "$with_acl" = yes],[
+  dnl verification uses non-portable acl_equiv_mode() 
+  AC_CHECK_HEADER([acl/libacl.h],[
+    AC_CHECK_LIB(acl,[acl_equiv_mode],[with_acl=yes],[
+      AC_MSG_ERROR([--with-acl given, but libacl not found or not suitable])])
+  ],[
+    AC_MSG_ERROR([--with-acl given, but acl/libacl.h not found])
+  ])
+])
+
+AS_IF([test "$with_acl" = yes],[
+  AC_DEFINE(WITH_ACL, 1, [Build with acl support?])
+  WITH_ACL_LIB="-lacl"
+])
+AC_SUBST(WITH_ACL_LIB)
+AM_CONDITIONAL(ACL,[test "$with_acl" = yes])
+
 WITH_LUA_LIB=
 WITH_LUA_INCLUDE=
 AC_ARG_WITH(lua, [  --with-lua              build with lua support ],,[with_lua=yes])
