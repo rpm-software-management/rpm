@@ -167,6 +167,20 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	} 
     }
 
+#if WITH_CAP
+    if (flags & RPMVERIFY_CAPS) {
+	/*
+	 * For now, any capabilities on a file is a difference as rpm
+	 * cannot have set them.
+	 */
+	cap_t fcap = cap_get_file(fn);
+	if (fcap != NULL) {
+	    *res |= RPMVERIFY_CAPS;
+	    cap_free(fcap);
+	}
+    }
+#endif
+
     if (flags & RPMVERIFY_MTIME) {
 	if (sb.st_mtime != rpmfiFMtime(fi))
 	    *res |= RPMVERIFY_MTIME;
@@ -273,7 +287,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    }
 	} else if (verifyResult || rpmIsVerbose()) {
 	    const char * size, * MD5, * link, * mtime, * mode;
-	    const char * group, * user, * rdev;
+	    const char * group, * user, * rdev, *caps;
 	    static const char *const aok = ".";
 	    static const char *const unknown = "?";
 
@@ -296,13 +310,14 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    user = _verify(RPMVERIFY_USER, "U");
 	    group = _verify(RPMVERIFY_GROUP, "G");
 	    mode = _verify(RPMVERIFY_MODE, "M");
+	    caps = _verify(RPMVERIFY_CAPS, "P");
 
 #undef _verifyfile
 #undef _verifylink
 #undef _verify
 
-	    rasprintf(&buf, "%s%s%s%s%s%s%s%s  %c %s",
-			size, mode, MD5, rdev, link, user, group, mtime,
+	    rasprintf(&buf, "%s%s%s%s%s%s%s%s%s  %c %s",
+			size, mode, MD5, rdev, link, user, group, mtime, caps,
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :

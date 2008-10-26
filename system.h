@@ -227,6 +227,10 @@ void * _free(void * p)
     return NULL;
 }
 
+#if WITH_CAP
+#include <sys/capability.h>
+#endif
+
 /**
  * Wrapper to free(3), permit NULL, return NULL. 
  * For documenting cases where const is used to protect long-lived 

@@ -738,6 +738,32 @@ AS_IF([test "$with_selinux" = yes],[
 AC_SUBST(WITH_SELINUX_LIB)
 AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
 
+# libcap
+WITH_CAP_LIB=
+AC_ARG_WITH(cap, [  --with-cap              build with capability support ],
+[case "$with_cap" in
+yes|no) ;;
+*) AC_MSG_ERROR([invalid argument to --with-cap])
+  ;;
+esac],
+[with_cap=no])
+
+AS_IF([test "$with_cap" = yes],[
+  AC_CHECK_HEADER([sys/capability.h],[
+    AC_CHECK_LIB(cap,[cap_get_file],[with_cap=yes],[
+      AC_MSG_ERROR([--with-cap given, but libcap not found])])
+  ],[
+    AC_MSG_ERROR([--with-cap given, but sys/capability.h not found])
+  ])
+])
+
+AS_IF([test "$with_cap" = yes],[
+  AC_DEFINE(WITH_CAP, 1, [Build with capability support?])
+  WITH_CAP_LIB="-lcap"
+])
+AC_SUBST(WITH_CAP_LIB)
+AM_CONDITIONAL(CAP,[test "$with_cap" = yes])
+
 WITH_LUA_LIB=
 WITH_LUA_INCLUDE=
 AC_ARG_WITH(lua, [  --with-lua              build with lua support ],,[with_lua=yes])

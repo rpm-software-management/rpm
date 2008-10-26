@@ -261,6 +261,7 @@ static VFA_t const verifyAttrs[] = {
     { "mtime",	0,	RPMVERIFY_MTIME },
     { "mode",	0,	RPMVERIFY_MODE },
     { "rdev",	0,	RPMVERIFY_RDEV },
+    { "caps",	0,	RPMVERIFY_CAPS },
     { NULL, 0,	0 }
 };
 

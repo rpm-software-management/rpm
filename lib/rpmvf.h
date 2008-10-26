@@ -24,7 +24,8 @@ typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_MTIME	= (1 << 5),	/*!< from %verify(mtime) */
     RPMVERIFY_MODE	= (1 << 6),	/*!< from %verify(mode) */
     RPMVERIFY_RDEV	= (1 << 7),	/*!< from %verify(rdev) */
-	/* bits 8-14 unused, reserved for rpmVerifyAttrs */
+    RPMVERIFY_CAPS	= (1 << 8),	/*!< from %verify(caps) */
+	/* bits 9-14 unused, reserved for rpmVerifyAttrs */
     RPMVERIFY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
 	/* bits 16-22 used in rpmVerifyFlags */
 	/* bits 23-27 used in rpmQueryFlags */
@@ -50,7 +51,8 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_MTIME	= (1 << 5),	/*!< from --nomtime */
     VERIFY_MODE		= (1 << 6),	/*!< from --nomode */
     VERIFY_RDEV		= (1 << 7),	/*!< from --nodev */
-	/* bits 8-14 unused, reserved for rpmVerifyAttrs */
+    VERIFY_CAPS		= (1 << 8),	/*!< from --nocaps */
+	/* bits 9-14 unused, reserved for rpmVerifyAttrs */
     VERIFY_CONTEXTS	= (1 << 15),	/*!< verify: from --nocontexts */
     VERIFY_FILES	= (1 << 16),	/*!< verify: from --nofiles */
     VERIFY_DEPS		= (1 << 17),	/*!< verify: from --nodeps */
@@ -69,7 +71,7 @@ typedef enum rpmVerifyFlags_e {
 
 #define	VERIFY_ATTRS	\
   ( VERIFY_MD5 | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
-    VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_CONTEXTS )
+    VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_CONTEXTS | VERIFY_CAPS )
 #define	VERIFY_ALL	\
   ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
     VERIFY_SIGNATURE | VERIFY_HDRCHK )

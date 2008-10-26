@@ -295,6 +295,9 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "nordev", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_RDEV,
         N_("don't verify mode of files"), NULL },
+ { "nocaps", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmQVKArgs.qva_flags, VERIFY_CAPS,
+	N_("don't verify capabilities of files"), NULL },
 
  { "nocontexts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't verify file security contexts"), NULL },
