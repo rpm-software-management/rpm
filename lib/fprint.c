@@ -248,7 +248,6 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
     char *end, *endbasename, *currentsubdir;
     size_t lensubDir;
 
-    fingerPrint tmp_fp;
     struct rpmffi_s * recs;
     int numRecs;
     int i, fiFX;
@@ -280,7 +279,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 	 found = 0;
 
 	 rpmFpHashGetEntry(ht, &current_fp,
-		    &recs, &numRecs, &tmp_fp);
+		    &recs, &numRecs, NULL);
 
 	 for (i=0; i<numRecs; i++) {
 	      rpmfi foundfi;
