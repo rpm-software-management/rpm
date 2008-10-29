@@ -68,6 +68,7 @@ typedef struct FileListRec_s {
     specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
     rpmVerifyFlags verifyFlags;
     char *langs;		/* XXX locales separated with | */
+    char *caps;
 } * FileListRec;
 
 /**
@@ -116,6 +117,8 @@ typedef struct FileList_s {
     rpmVerifyFlags defVerifyFlags;
     int nLangs;
     char ** currentLangs;
+    int haveCaps;
+    char *currentCaps;
     ARGV_t docDirs;
     
     FileListRec fileList;
@@ -757,6 +760,74 @@ exit:
 }
 
 /**
+ * Parse %caps from file manifest.
+ * @param buf		current spec file line
+ * @param fl		package file tree walk data
+ * @return		RPMRC_OK on success
+ */
+static rpmRC parseForCaps(const char * buf, FileList fl)
+{
+    char *p, *pe, *q = NULL;
+    const char *name;
+    rpmRC rc = RPMRC_FAIL;
+
+    if ((p = strstr(buf, (name = "%caps"))) == NULL)
+	return RPMRC_OK;
+
+    /* Erase "%caps" token. */
+    for (pe = p; (pe-p) < strlen(name); pe++)
+	*pe = ' ';
+    SKIPSPACE(pe);
+    if (*pe != '(')
+	return RPMRC_OK;
+
+    /* Bracket %caps args */
+    *pe++ = ' ';
+    for (p = pe; *pe && *pe != ')'; pe++)
+	{};
+
+    if (*pe == '\0') {
+	rpmlog(RPMLOG_ERR, _("Missing ')' in %s(%s\n"), name, p);
+	goto exit;
+    }
+
+    /* Localize. Erase parsed string. */
+    q = xmalloc((pe-p) + 1);
+    rstrlcpy(q, p, (pe-p) + 1);
+    while (p <= pe)
+	*p++ = ' ';
+
+#if WITH_CAP
+    {
+	char *captxt = NULL;
+	cap_t fcaps = cap_from_text(q);
+	if (fcaps == NULL) {
+	    rpmlog(RPMLOG_ERR, _("Invalid capability: %s\n"), q);
+	    goto exit;
+	}
+	/* run our string through cap_to_text() to get libcap presentation */
+	captxt = cap_to_text(fcaps, NULL);
+	fl->currentCaps = xstrdup(captxt);
+	fl->haveCaps = 1;
+	cap_free(captxt);
+	cap_free(fcaps);
+    }
+#else
+	rpmlog(RPMLOG_ERR, _("File capability support not built in\n"));
+	goto exit;
+#endif
+
+    rc = RPMRC_OK;
+    
+exit:
+    free(q);
+    if (rc != RPMRC_OK) {
+	fl->processingFailed = 1;
+    }
+
+    return rc;
+}
+/**
  */
 static VFA_t virtualFileAttributes[] = {
 	{ "%dir",	0,	0 },	/* XXX why not RPMFILE_DIR? */
@@ -1112,6 +1183,10 @@ static void genCpioListAndHeader(FileList fl,
 	}
 	
 	headerPutString(h, RPMTAG_FILELANGS, flp->langs);
+
+	if (fl->haveCaps) {
+	    headerPutString(h, RPMTAG_FILECAPS, flp->caps);
+	}
 	
 	buf[0] = '\0';
 	if (S_ISREG(flp->fl_mode))
@@ -1160,6 +1235,10 @@ static void genCpioListAndHeader(FileList fl,
     if (digestalgo != defaultalgo) {
 	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
 	rpmlibNeedsFeature(h, "FileDigests", "4.4.90-1");
+    }
+
+    if (fl->haveCaps) {
+	rpmlibNeedsFeature(h, "FileCaps", "4.6.1-1");
     }
 
     if (_addDotSlash)
@@ -1274,6 +1353,7 @@ static FileListRec freeFileList(FileListRec fileList,
 	fileList[count].diskPath = _free(fileList[count].diskPath);
 	fileList[count].cpioPath = _free(fileList[count].cpioPath);
 	fileList[count].langs = _free(fileList[count].langs);
+	fileList[count].caps = _free(fileList[count].caps);
     }
     fileList = _free(fileList);
     return NULL;
@@ -1433,6 +1513,12 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    }
 	} else {
 	    flp->langs = xstrdup("");
+	}
+
+	if (fl->currentCaps) {
+	    flp->caps = fl->currentCaps;
+	} else {
+	    flp->caps = xstrdup("");
 	}
 
 	flp->flags = fl->currentFlags;
@@ -1764,6 +1850,8 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     fl.defVerifyFlags = RPMVERIFY_ALL;
     fl.nLangs = 0;
     fl.currentLangs = NULL;
+    fl.haveCaps = 0;
+    fl.currentCaps = NULL;
 
     fl.currentSpecdFlags = 0;
     fl.defSpecdFlags = 0;
@@ -1813,6 +1901,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	    fl.currentLangs = _free(fl.currentLangs);
 	}
   	fl.nLangs = 0;
+	fl.currentCaps = NULL;
 
 	dupAttrRec(&fl.def_ar, &fl.cur_ar);
 
@@ -1825,6 +1914,8 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	if (parseForConfig(buf, &fl))
 	    continue;
 	if (parseForLang(buf, &fl))
+	    continue;
+	if (parseForCaps(buf, &fl))
 	    continue;
 	if (parseForSimple(spec, pkg, buf, &fl, &fileName))
 	    continue;
