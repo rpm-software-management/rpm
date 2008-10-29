@@ -96,10 +96,9 @@ struct rpmfi_s {
     pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
     unsigned char * digests;	/*!< File checksums in binary. */
 
-    char * pretrans;
-    char * pretransprog;
-    char * posttrans;
-    char * posttransprog;
+#define RPMFI_HAVE_PRETRANS	(1 << 0)
+#define RPMFI_HAVE_POSTTRANS	(1 << 1)
+    int transscripts;		/*!< pre/posttrans script existence */
 
     char * fn;			/*!< File name buffer. */
     size_t fnlen;		/*!< FIle name buffer length. */

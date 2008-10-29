@@ -751,21 +751,19 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-    	const char * script = NULL, * scriptprog = NULL;
     	rpmTag progtag = RPMTAG_NOT_FOUND;
+	int havescript = 0;
 
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
 	switch (stag) {
 	case RPMTAG_PRETRANS:
-	    script = fi->pretrans;
-	    scriptprog = fi->pretransprog;
+	    havescript = fi->transscripts & RPMFI_HAVE_PRETRANS;
 	    progtag = RPMTAG_PRETRANSPROG;
 	    break;
 	case RPMTAG_POSTTRANS:
-	    script = fi->posttrans;
-	    scriptprog = fi->posttransprog;
+	    havescript = fi->transscripts & RPMFI_HAVE_POSTTRANS;
 	    progtag = RPMTAG_POSTTRANSPROG;
 	    break;
 	default:
@@ -775,7 +773,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	}
 	
     	/* If no pre/post-transaction script, then don't bother. */
-	if (script == NULL && scriptprog == NULL)
+	if (!havescript)
  	    continue;
 
     	p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);

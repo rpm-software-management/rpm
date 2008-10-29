@@ -1120,12 +1120,6 @@ rpmfi rpmfiFree(rpmfi fi)
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
-    /* Free pre- and post-transaction script and interpreter strings. */
-    fi->pretrans = _free(fi->pretrans);
-    fi->pretransprog = _free(fi->pretransprog);
-    fi->posttrans = _free(fi->posttrans);
-    fi->posttransprog = _free(fi->posttransprog);
-
     if (fi->fc > 0) {
 	fi->bnl = _free(fi->bnl);
 	fi->dnl = _free(fi->dnl);
@@ -1235,11 +1229,13 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->archiveSize = asize ? *asize : 0;
     rpmtdFreeData(&td);
 
-    /* Extract pre- and post-transaction script and interpreter strings. */
-    _hgfi(h, RPMTAG_PRETRANS, &td, defFlags, fi->pretrans);
-    _hgfi(h, RPMTAG_PRETRANSPROG, &td, defFlags, fi->pretransprog);
-    _hgfi(h, RPMTAG_POSTTRANS, &td, defFlags, fi->posttrans);
-    _hgfi(h, RPMTAG_POSTTRANSPROG, &td, defFlags, fi->posttransprog);
+    /* See if we have pre/posttrans scripts. */
+    fi->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
+			 headerIsEntry(h, RPMTAG_PRETRANSPROG)) ?
+			RPMFI_HAVE_PRETRANS : 0;
+    fi->transscripts |= (headerIsEntry(h, RPMTAG_POSTTRANS) &&
+			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
+			RPMFI_HAVE_POSTTRANS : 0;
 
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
     fi->fc = rpmtdCount(&td);
