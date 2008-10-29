@@ -33,7 +33,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
     int rc = -1; /* assume failure */
     struct tm time;
     const char * const * idx;
-    char *p, *pe, *q, *date;
+    char *p, *pe, *q, *date, *tz;
     
     static const char * const days[] =
 	{ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", NULL };
@@ -86,7 +86,16 @@ static int dateToTimet(const char * datestr, time_t * secs)
     if (time.tm_year < 1990 || time.tm_year >= 3000) goto exit;
     time.tm_year -= 1900;
 
+    /* chnagelog date is always in UTC */
+    tz = getenv("TZ");
+    if (tz) tz = xstrdup(tz);
+    setenv("TZ", "UTC", 1);
     *secs = mktime(&time);
+    unsetenv("TZ");
+    if (tz) {
+	setenv("TZ", tz, 1);
+	free(tz);
+    }
     if (*secs == -1) goto exit;
 
     rc = 0;
