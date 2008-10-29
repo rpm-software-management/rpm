@@ -116,6 +116,9 @@ rpm	alias --fileprovide --qf '[%{FILENAMES}\t%{FILEPROVIDE}\n]' \
 rpm	alias --filerequire --qf '[%{FILENAMES}\t%{FILEREQUIRE}\n]' \
 	--POPTdesc=$"list file names with requires"
 
+rpm	alias --filecaps --qf '[%{FILENAMES}\t%|FILECAPS?{%{FILECAPS}}|\n]' \
+	--POPTdesc=$"list file names with POSIX1.e capabilities"
+
 # colon separated i18n domains to use as PO catalogue lookaside for
 # retrieving header group/description/summary.
 rpm alias --i18ndomains --define '_i18ndomains !#:+'
