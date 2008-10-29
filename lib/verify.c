@@ -184,14 +184,25 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 #if WITH_CAP
     if (flags & RPMVERIFY_CAPS) {
 	/*
-	 * For now, any capabilities on a file is a difference as rpm
-	 * cannot have set them.
-	 */
-	cap_t fcap = cap_get_file(fn);
-	if (fcap != NULL) {
-	    *res |= RPMVERIFY_CAPS;
-	    cap_free(fcap);
+ 	 * Empty capability set ("=") is not exactly the same as no
+ 	 * capabilities at all but suffices for now... 
+ 	 */
+	cap_t cap, fcap;
+	cap = cap_from_text(rpmfiFCaps(fi));
+	if (!cap) {
+	    cap = cap_from_text("=");
 	}
+	fcap = cap_get_file(fn);
+	if (!fcap) {
+	    fcap = cap_from_text("=");
+	}
+
+	/* TODO: use cap_compare() if available */
+	if (memcmp(cap, fcap, cap_size(cap)) != 0) 
+	    *res |= RPMVERIFY_CAPS;
+	
+	cap_free(fcap);
+	cap_free(cap);
     }
 #endif
 
