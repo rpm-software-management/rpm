@@ -114,7 +114,6 @@ struct rpmfi_s {
     int * fmapflags;
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
-    rpm_color_t color;		/*!< Color bit(s) from file color union. */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     unsigned int record;	/*!< (TR_REMOVED) */

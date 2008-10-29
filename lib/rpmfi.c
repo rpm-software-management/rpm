@@ -255,9 +255,12 @@ rpm_color_t rpmfiColor(rpmfi fi)
 {
     rpm_color_t color = 0;
 
-    if (fi != NULL)
+    if (fi != NULL && fi->fcolors != NULL) {
+	for (int i = 0; i < fi->fc; i++)
+	    color |= fi->fcolors[i];
 	/* XXX ignore all but lsnibble for now. */
-	color = fi->color & 0xf;
+	color &= 0xf;
+    }
     return color;
 }
 
@@ -1252,10 +1255,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     _hgfi(h, RPMTAG_FILESIZES, &td, scareFlags, fi->fsizes);
 
     _hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
-    fi->color = 0;
-    if (fi->fcolors != NULL)
-    for (i = 0; i < fi->fc; i++)
-	fi->color |= fi->fcolors[i];
 
     _hgfi(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
     fi->ncdict = rpmtdCount(&td);
