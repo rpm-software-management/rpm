@@ -229,7 +229,6 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		char ** specFilePtr, char ** cookie)
 {
-    int scareMem = 1;
     rpmfi fi = NULL;
     char * specFile = NULL;
     Header h = NULL;
@@ -270,7 +269,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */

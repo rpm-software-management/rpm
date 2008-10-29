@@ -102,7 +102,6 @@ static void printFileInfo(const char * name,
 
 int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 {
-    int scareMem = 0;
     rpmfi fi = NULL;
     int rc = 0;		/* XXX FIXME: need real return code */
     int i;
@@ -122,7 +121,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     if (!(qva->qva_flags & QUERY_FOR_LIST))
 	goto exit;
 
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
     if (rpmfiFC(fi) <= 0) {
 	rpmlog(RPMLOG_NOTICE, _("(contains no files)\n"));
 	goto exit;

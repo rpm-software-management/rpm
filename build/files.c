@@ -1249,7 +1249,7 @@ static void genCpioListAndHeader(FileList fl,
 
   {
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, 0);
+    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
     char * a, * d;
 
     fi->te = xcalloc(1, sizeof(*fi->te));

@@ -83,13 +83,12 @@ static int handleInstInstalledFiles(const rpmts ts,
 
     {	rpmdbMatchIterator mi;
 	Header h;
-	int scareMem = 0;
 
 	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 			&shared->otherPkg, sizeof(shared->otherPkg));
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    altNEVR = headerGetNEVRA(h, NULL);
-	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
 	    break;
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -804,7 +803,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 
     	if (rpmteFd(p) != NULL) {
 	    p->fi = rpmfiFree(p->fi);
- 	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+ 	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 	    if (fi != NULL) {	/* XXX can't happen */
 		if (stag == RPMTAG_PRETRANS) {
 		    fi->te = p;
@@ -1394,7 +1393,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		    fi = rpmfiFree(fi);
 
 		    savep = rpmtsSetRelocateElement(ts, p);
-		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, 1);
+		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 		    (void) rpmtsSetRelocateElement(ts, savep);
 
 		    if (fi != NULL) {	/* XXX can't happen */

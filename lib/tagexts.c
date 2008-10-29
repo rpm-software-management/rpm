@@ -99,8 +99,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
 
 static int filedepTag(Header h, rpmTag tagN, rpmtd td)
 {
-    int scareMem = 0;
-    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
     rpmds ds = NULL;
     char **fdeps = NULL;
     int numfiles;
@@ -117,7 +116,7 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td)
     else if (tagN == RPMTAG_REQUIRENAME)
 	deptype = 'R';
 
-    ds = rpmdsNew(h, tagN, scareMem);
+    ds = rpmdsNew(h, tagN, 0);
     fdeps = xmalloc(numfiles * sizeof(*fdeps));
 
     while ((fileix = rpmfiNext(fi)) >= 0) {
@@ -404,8 +403,7 @@ static int origfilenamesTag(Header h, rpmtd td)
  */
 static int fileclassTag(Header h, rpmtd td)
 {
-    int scareMem = 0;
-    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
     char **fclasses;
     int ix, numfiles;
 

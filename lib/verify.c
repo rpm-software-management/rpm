@@ -406,12 +406,12 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
-    int scareMem = 1;	/* XXX only rpmVerifyScript needs now */
     rpmfi fi;
     int ec = 0;
     int rc;
 
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, scareMem);
+    /* XXX only rpmVerifyScript needs KEEPHEADER */
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     if (fi != NULL) {
 
 	if (qva->qva_flags & VERIFY_DEPS) {
