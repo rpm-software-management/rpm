@@ -73,7 +73,6 @@ static int handleInstInstalledFiles(const rpmts ts,
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
-    rpm_color_t otecolor, tecolor;
     rpm_color_t oFColor, FColor;
     char * altNEVR = NULL;
     rpmfi otherFi = NULL;
@@ -93,18 +92,6 @@ static int handleInstInstalledFiles(const rpmts ts,
 	}
 	mi = rpmdbFreeIterator(mi);
     }
-
-    /* Compute package color. */
-    tecolor = rpmteColor(p);
-    tecolor &= tscolor;
-
-    /* Compute other pkg color. */
-    otecolor = 0;
-    otherFi = rpmfiInit(otherFi, 0);
-    if (otherFi != NULL)
-    while (rpmfiNext(otherFi) >= 0)
-	otecolor |= rpmfiFColor(otherFi);
-    otecolor &= tscolor;
 
     if (otherFi == NULL)
 	return 1;
