@@ -373,16 +373,21 @@ rpmfi rpmfiInitD(rpmfi fi, int dx);
  */
 rpmfi rpmfiFree(rpmfi fi);
 
+typedef enum rpmfiFlags_e {
+    RPMFI_NOHEADER	= 0,
+    RPMFI_KEEPHEADER	= (1 << 0),
+} rpmfiFlags;
+
 /** \ingroup rpmfi
  * Create and load a file info set.
  * @deprecated Only scareMem = 0 will be permitted.
  * @param ts		transaction set (NULL skips path relocation)
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
- * @param scareMem	Use pointers to refcounted header memory?
+ * @param flags		Flags to control what information is loaded.
  * @return		new file info set
  */
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem);
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfi
  * Return file type from mode_t.

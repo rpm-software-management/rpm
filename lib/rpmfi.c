@@ -1187,7 +1187,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
 
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 {
     rpmte p;
     rpmfi fi = NULL;
@@ -1197,7 +1197,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     unsigned char * t;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
-    headerGetFlags scareFlags = scareMem ? HEADERGET_MINMEM : HEADERGET_ALLOC;
+    headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
+				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
     int len;
     int i;
@@ -1220,7 +1221,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 
     fi->scareFlags = scareFlags;
 
-    fi->h = (scareMem ? headerLink(h) : NULL);
+    fi->keep_header = (flags & RPMFI_KEEPHEADER);
+    fi->h = fi->keep_header ? headerLink(h) : NULL;
 
     if (fi->fsm == NULL)
 	fi->fsm = newFSM();
@@ -1278,8 +1280,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
 
 if (fi->actions == NULL)
 	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-
-    fi->keep_header = (scareMem ? 1 : 0);
 
     /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
     fi->mapflags =
@@ -1345,7 +1345,7 @@ if (fi->actions == NULL)
 	foo = headerFree(foo);
     }
 
-    if (!scareMem) {
+    if (!fi->keep_header) {
 	fi->h = headerFree(fi->h);
     }
 
