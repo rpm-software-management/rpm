@@ -61,6 +61,8 @@ struct rpmfi_s {
 
     const char ** fcontexts;	/*! FIle security contexts. */
 
+    const char ** fcaps;	/*! File capabilities (header) */
+
     const char ** cdict;	/*!< File class dictionary (header) */
     rpm_count_t ncdict;		/*!< No. of class entries. */
     const uint32_t * fcdictx;	/*!< File class dictionary index (header) */

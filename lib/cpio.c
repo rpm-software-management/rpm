@@ -209,6 +209,7 @@ const char * cpioStrerror(int rc)
     case CPIOERR_READ_FAILED:	s = "read";	break;
     case CPIOERR_COPY_FAILED:	s = "copy";	break;
     case CPIOERR_LSETFCON_FAILED: s = "lsetfilecon";	break;
+    case CPIOERR_SETCAP_FAILED: s = "cap_set_file";	break;
 
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;

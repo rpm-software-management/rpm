@@ -589,6 +589,22 @@ static int fsmMapFContext(FSM_t fsm)
     return 0;
 }
 
+#if WITH_CAP
+static int fsmMapFCaps(FSM_t fsm)
+{
+    rpmts ts = fsmGetTs(fsm);
+    rpmfi fi = fsmGetFi(fsm);
+    fsm->fcaps = NULL;
+    if (ts != NULL && fi->fcaps && *fi->fcaps[fsm->ix] != '\0') {
+	cap_t fcaps = cap_from_text(fi->fcaps[fsm->ix]);
+	if (fcaps) {
+	   fsm->fcaps = fcaps;
+	}
+    } 
+    return 0;
+}
+#endif
+
 /**
  * Map next file path and action.
  * @param fsm		file state machine
@@ -1869,6 +1885,16 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    rc = fsmNext(fsm, FSM_UTIME);
 		    st->st_mtime = mtime;
 		}
+#if WITH_CAP
+		if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
+		    rc = fsmMapFCaps(fsm);
+		    if (!rc && fsm->fcaps) {
+			rc = fsmNext(fsm, FSM_SETCAP);
+			cap_free(fsm->fcaps);
+		    }
+		    fsm->fcaps = NULL;
+		}
+#endif /* WITH_CAP */
 	    }
 	}
 
@@ -2077,6 +2103,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
 	}
 	break;
+#if WITH_CAP
+    case FSM_SETCAP:
+	rc = cap_set_file(fsm->path, fsm->fcaps);
+	if (rc < 0) {
+	    rc = CPIOERR_SETCAP_FAILED;
+	}
+	break;
+#endif /* WITH_CAP */
     case FSM_SYMLINK:
 	rc = symlink(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
@@ -2357,6 +2391,7 @@ static const char * fileStageString(fileStage a) {
     case FSM_STAT:	return "stat";
     case FSM_READLINK:	return "readlink";
     case FSM_CHROOT:	return "chroot";
+    case FSM_SETCAP:	return "setcap";
 
     case FSM_NEXT:	return "next";
     case FSM_EAT:	return "eat";

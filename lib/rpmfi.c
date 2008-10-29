@@ -371,6 +371,15 @@ const char * rpmfiFGroup(rpmfi fi)
     return fgroup;
 }
 
+const char * rpmfiFCaps(rpmfi fi)
+{
+    const char *fcaps = NULL;
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	fcaps = fi->fcaps ? fi->fcaps[fi->i] : "";
+    }
+    return fcaps;
+}
+
 int rpmfiNext(rpmfi fi)
 {
     int i = -1;
@@ -1124,6 +1133,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
+	fi->fcaps = _free(fi->fcaps);
 
 	fi->cdict = _free(fi->cdict);
 
@@ -1260,6 +1270,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, int scareMem)
     _hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
     if (fi->fstates == NULL)
 	fi->fstates = xcalloc(fi->fc, sizeof(*fi->fstates));
+
+    _hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
     fi->action = FA_UNKNOWN;
     fi->flags = 0;

@@ -328,6 +328,15 @@ const char * rpmfiFUser(rpmfi fi);
 const char * rpmfiFGroup(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Return textual representation of current file capabilities 
+ * from file info set. See cap_from_text(3) for details.
+ * @param fi		file info set
+ * @return		file capability description, "" for no capabilities
+ * 			and NULL on invalid
+ */
+const char * rpmfiFCaps(rpmfi fi);
+
+/** \ingroup rpmfi
  * Return next file iterator index.
  * @param fi		file info set
  * @return		file iterator index, -1 on termination

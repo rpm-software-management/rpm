@@ -64,6 +64,7 @@ typedef enum fileStage_e {
     FSM_STAT	=  _fs(49),
     FSM_READLINK=  _fs(50),
     FSM_CHROOT	=  _fs(51),
+    FSM_SETCAP	=  _fs(52),
 
     FSM_NEXT	=  _fd(65),
     FSM_EAT	=  _fd(66),
@@ -154,6 +155,7 @@ struct fsm_s {
     const char * baseName;	/*!< File base name. */
     const char * digest;	/*!< Binary checksum (NULL disables). */
     security_context_t fcontext;/*!< File security context (NULL disables). */
+    cap_t fcaps;		/*!< File capabilities */
     pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
     
     unsigned fflags;		/*!< File flags. */

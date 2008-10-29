@@ -229,6 +229,8 @@ void * _free(void * p)
 
 #if WITH_CAP
 #include <sys/capability.h>
+#else
+typedef void * cap_t;
 #endif
 
 #if WITH_ACL
