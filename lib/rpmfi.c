@@ -1256,13 +1256,17 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 
     _hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
 
-    _hgfi(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
-    fi->ncdict = rpmtdCount(&td);
-    _hgfi(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
-    _hgfi(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
-    fi->nddict = rpmtdCount(&td);
-    _hgfi(h, RPMTAG_FILEDEPENDSX, &td, scareFlags, fi->fddictx);
-    _hgfi(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
+    if (!(flags & RPMFI_NOFILECLASS)) {
+	_hgfi(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
+	fi->ncdict = rpmtdCount(&td);
+	_hgfi(h, RPMTAG_FILECLASS, &td, scareFlags, fi->fcdictx);
+    }
+    if (!(flags & RPMFI_NOFILEDEPS)) {
+	_hgfi(h, RPMTAG_DEPENDSDICT, &td, scareFlags, fi->ddict);
+	fi->nddict = rpmtdCount(&td);
+	_hgfi(h, RPMTAG_FILEDEPENDSX, &td, scareFlags, fi->fddictx);
+	_hgfi(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
+    }
 
     _hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
     if (fi->fstates == NULL)

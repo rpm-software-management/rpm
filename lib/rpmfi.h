@@ -376,6 +376,8 @@ rpmfi rpmfiFree(rpmfi fi);
 typedef enum rpmfiFlags_e {
     RPMFI_NOHEADER	= 0,
     RPMFI_KEEPHEADER	= (1 << 0),
+    RPMFI_NOFILECLASS	= (1 << 1),
+    RPMFI_NOFILEDEPS	= (1 << 2),
 } rpmfiFlags;
 
 /** \ingroup rpmfi
