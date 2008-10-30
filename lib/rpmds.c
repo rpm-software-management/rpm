@@ -907,7 +907,6 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
 
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
-    int scareMem = 0;
     rpmds provides = NULL;
     int result = 0;
 
@@ -919,7 +918,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 	return 1;
 
     /* Get provides information from header */
-    provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem));
+    provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, 0));
     if (provides == NULL)
 	goto exit;	/* XXX should never happen */
     if (nopromote)

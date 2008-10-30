@@ -77,7 +77,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		fnpyKey key,
 		rpmRelocation * relocs)
 {
-    int scareMem = 0;
     rpmte savep;
     const char *name, *version, *release, *arch, *os;
     struct rpmtd_s td;
@@ -137,10 +136,10 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->pkgFileSize = 0;
 
     p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, scareMem);
-    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
-    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
-    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
+    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
+    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
+    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
+    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER|RPMFI_NOFILECLASS);

@@ -1390,7 +1390,6 @@ static void printDeps(Header h)
 {
     DepMsg_t dm;
     rpmds ds = NULL;
-    int flags = 0;	/* XXX !scareMem */
     const char * DNEVR;
     rpmsenseFlags Flags;
     int bingo = 0;
@@ -1398,7 +1397,7 @@ static void printDeps(Header h)
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
 	if (dm->ntag != -1) {
 	    ds = rpmdsFree(ds);
-	    ds = rpmdsNew(h, dm->ntag, flags);
+	    ds = rpmdsNew(h, dm->ntag, 0);
 	}
 	if (dm->ftag == 0)
 	    continue;
@@ -1510,7 +1509,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     rpmfi fi = pkg->cpioList;
     rpmfc fc = NULL;
     rpmds ds;
-    int flags = 0;	/* XXX !scareMem */
     ARGV_t av;
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
@@ -1567,7 +1565,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {
-	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, flags);
+	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, 0);
 	xx = rpmdsMerge(&fc->provides, ds);
 	ds = rpmdsFree(ds);
 	xx = headerDel(pkg->header, RPMTAG_PROVIDENAME);
@@ -1598,7 +1596,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     if (!fc->skipReq) {
-	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, flags);
+	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, 0);
 	xx = rpmdsMerge(&fc->requires, ds);
 	ds = rpmdsFree(ds);
 	xx = headerDel(pkg->header, RPMTAG_REQUIRENAME);
