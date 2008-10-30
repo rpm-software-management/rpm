@@ -143,7 +143,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, scareMem);
 
     savep = rpmtsSetRelocateElement(ts, p);
-    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
+    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER|RPMFI_NOFILECLASS);
     (void) rpmtsSetRelocateElement(ts, savep);
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
