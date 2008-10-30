@@ -656,7 +656,6 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 static int checkPackageSet(rpmts ts, const char * dep,
 		rpmdbMatchIterator mi, int adding)
 {
-    int scareMem = 1;
     Header h;
     int ec = 0;
 
@@ -668,9 +667,9 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	int rc;
 
 	pkgNEVRA = headerGetNEVRA(h, NULL);
-	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, scareMem);
+	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
-	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, scareMem);
+	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
 	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);

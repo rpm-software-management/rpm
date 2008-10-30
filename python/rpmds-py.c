@@ -503,7 +503,7 @@ fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
 	    return -1;
 	}
     }
-    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, flags);
+    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
     s->active = 0;
 
     return 0;
@@ -667,7 +667,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 	    return NULL;
 	}
     }
-    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, flags) );
+    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, 0) );
 }
 
 rpmdsObject *

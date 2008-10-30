@@ -906,7 +906,6 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 			Header sourceH, Header trigH,
 			int arg2, unsigned char * triggersAlreadyRun)
 {
-    int scareMem = 1;
     const rpmts ts = psm->ts;
     rpmds trigger = NULL;
     const char * sourceName;
@@ -918,7 +917,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     xx = headerNVR(sourceH, &sourceName, NULL, NULL);
     xx = headerNVR(trigH, &triggerName, NULL, NULL);
 
-    trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, scareMem));
+    trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     if (trigger == NULL)
 	return rc;
 

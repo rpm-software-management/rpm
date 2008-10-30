@@ -167,7 +167,7 @@ static void providePackageNVR(Header h)
     }
 
     /* see if we already have this provide */
-    hds = rpmdsNew(h, RPMTAG_PROVIDENAME, 1);
+    hds = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
     nvrds = rpmdsSingle(RPMTAG_PROVIDENAME, name, pEVR, pFlags);
     if (rpmdsFind(hds, nvrds) >= 0) {
 	bingo = 0;
