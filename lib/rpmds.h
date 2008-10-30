@@ -114,10 +114,9 @@ rpmds rpmdsLink (rpmds ds, const char * msg);
 rpmds rpmdsFree(rpmds ds);
 /** \ingroup rpmds
  * Create and load a dependency set.
- * @deprecated Only scareMem = 0 will be permitted.
  * @param h		header
  * @param tagN		type of dependency
- * @param flags		scareMem(0x1)
+ * @param flags		unused
  * @return		new dependency set
  */
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags);

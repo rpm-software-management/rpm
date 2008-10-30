@@ -28,7 +28,6 @@ int _rpmds_unspecified_epoch_noise = 0;
 struct rpmds_s {
     const char * Type;		/*!< Tag name. */
     char * DNEVR;		/*!< Formatted dependency string. */
-    Header h;			/*!< Header for dependency set (or NULL) */
     const char ** N;		/*!< Name. */
     const char ** EVR;		/*!< Epoch-Version-Release. */
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
@@ -142,8 +141,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     if (ds->Count > 0) {
 	ds->N = _free(ds->N);
 	ds->EVR = _free(ds->EVR);
-	ds->Flags = (ds->h != NULL ? NULL : _free(ds->Flags));
-	ds->h = headerFree(ds->h);
+	ds->Flags = _free(ds->Flags);
     }
 
     ds->DNEVR = _free(ds->DNEVR);
@@ -158,12 +156,11 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
 
 rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 {
-    int scareMem = (flags & 0x1);
     rpmTag tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
     struct rpmtd_s names;
-    headerGetFlags hgflags = scareMem ? HEADERGET_MINMEM : HEADERGET_ALLOC;
+    headerGetFlags hgflags = HEADERGET_ALLOC;
 
     if (dsType(tagN, &Type, &tagEVR, &tagF))
 	goto exit;
@@ -174,7 +171,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 
 	ds = xcalloc(1, sizeof(*ds));
 	ds->Type = Type;
-	ds->h = (scareMem ? headerLink(h) : NULL);
 	ds->i = -1;
 	ds->DNEVR = NULL;
 	ds->tagN = tagN;
@@ -263,7 +259,6 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     evr = headerGetEVR(h, &n);
 
     ds = xcalloc(1, sizeof(*ds));
-    ds->h = NULL;
     ds->Type = Type;
     ds->tagN = tagN;
     ds->Count = 1;
@@ -295,7 +290,6 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
 	goto exit;
 
     ds = xcalloc(1, sizeof(*ds));
-    ds->h = NULL;
     ds->Type = Type;
     ds->tagN = tagN;
     {	time_t now = time(NULL);
@@ -555,7 +549,6 @@ static rpmds rpmdsDup(const rpmds ods)
     rpmds ds = xcalloc(1, sizeof(*ds));
     size_t nb;
 
-    ds->h = (ods->h != NULL ? headerLink(ods->h) : NULL);
     ds->Type = ods->Type;
     ds->tagN = ods->tagN;
     ds->Count = ods->Count;
@@ -565,23 +558,17 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->nopromote = ods->nopromote;
 
     nb = (ds->Count+1) * sizeof(*ds->N);
-    ds->N = (ds->h != NULL
-	? memcpy(xmalloc(nb), ods->N, nb)
-	: rpmdsDupArgv(ods->N, ods->Count) );
+    ds->N = rpmdsDupArgv(ods->N, ods->Count);
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 assert(ods->EVR != NULL);
 assert(ods->Flags != NULL);
 
     nb = (ds->Count+1) * sizeof(*ds->EVR);
-    ds->EVR = (ds->h != NULL
-	? memcpy(xmalloc(nb), ods->EVR, nb)
-	: rpmdsDupArgv(ods->EVR, ods->Count) );
+    ds->EVR = rpmdsDupArgv(ods->EVR, ods->Count);
 
     nb = (ds->Count * sizeof(*ds->Flags));
-    ds->Flags = (ds->h != NULL
-	? ods->Flags
-	: memcpy(xmalloc(nb), ods->Flags, nb) );
+    ds->Flags = memcpy(xmalloc(nb), ods->Flags, nb);
 
 /* FIX: ds->Flags is kept, not only */
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
