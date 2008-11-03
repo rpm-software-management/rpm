@@ -181,6 +181,16 @@ char *realpath(const char *path, char resolved_path []);
 #include <limits.h>
 #endif
 
+#ifndef PATH_MAX
+#ifdef _POSIX_PATH_MAX
+#define PATH_MAX _POSIX_PATH_MAX
+#elif defined MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
+#else
+#define PATH_MAX 256
+#endif
+#endif
+
 #if HAVE_ERR_H
 #include <err.h>
 #endif

@@ -19,18 +19,6 @@
 extern int errno;
 #endif
 
-#ifndef PATH_MAX
-#ifdef _POSIX_VERSION
-#define PATH_MAX _POSIX_PATH_MAX
-#else
-#ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
-#else
-#define PATH_MAX 1024
-#endif
-#endif
-#endif
-
 #define MAX_READLINKS 32
 
 #ifdef __STDC__
