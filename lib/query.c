@@ -5,10 +5,6 @@
 
 #include "system.h"
 
-#ifndef PATH_MAX
-# define PATH_MAX 255
-#endif
-
 #include <inttypes.h>
 
 #include <rpm/rpmcli.h>
