@@ -152,7 +152,7 @@ static sigset_t rpmsqCaught;
 
 static struct rpmsig_s {
     int signum;
-    void (*handler) (int signum, void * info, void * context);
+    rpmsqAction_t handler;
     int active;
     struct sigaction oact;
 } rpmsigTbl[] = {
@@ -254,7 +254,11 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 		    continue;
 
 		(void) sigemptyset (&sa.sa_mask);
+#ifdef SA_SIGINFO
 		sa.sa_flags = SA_SIGINFO;
+#else
+		sa.sa_flags = 0;
+#endif
 		sa.sa_sigaction = (void*)(handler != NULL ? handler : tbl->handler);
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    SUB_REF(tbl);

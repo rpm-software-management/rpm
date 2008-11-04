@@ -7,6 +7,7 @@
  */
 
 #include <rpm/rpmsw.h>
+#include <signal.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +27,11 @@ typedef struct rpmsqElem * rpmsq;
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
+#ifdef SA_SIGINFO
 typedef void (*rpmsqAction_t) (int signum, void * info, void * context);
+#else
+typedef void (*rpmsqAction_t) (int signum);
+#endif
 
 extern int _rpmsq_debug;
 
