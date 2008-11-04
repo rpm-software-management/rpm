@@ -67,7 +67,7 @@
 #
 %__ar			@AR@
 %__as			@AS@
-%__cc			@CC@
+%__cc			@__CC@
 %__cpp			@CPP@
 %__cxx			@CXX@
 %__ld			@__LD@
