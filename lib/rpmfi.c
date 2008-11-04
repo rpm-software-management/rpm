@@ -1007,7 +1007,6 @@ dColors[j] |= fColors[i];
 	dirNames = dnames.data = xrealloc(dnames.data, 
 			       sizeof(*dirNames) * (dirCount + 1));
 
-	free(dirNames[dirCount]);
 	dirNames[dirCount] = xstrdup(fn);
 	dirIndexes[i] = dirCount;
 	dirCount++;
