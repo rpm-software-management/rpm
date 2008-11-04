@@ -1315,17 +1315,6 @@ assert(psm->mi == NULL);
 		fi->apath = filenames.data; /* Ick.. */
 	    }
 	
-	    /* XXX AFAICT these are "can't happen" cases... */
-	    if (fi->fuser == NULL) {
-		struct rpmtd_s fuser;
-		headerGet(fi->h, RPMTAG_FILEUSERNAME, &fuser, hgflags);
-		fi->fuser = fuser.data;
-	    }
-	    if (fi->fgroup == NULL) {
-		struct rpmtd_s fgroup;
-		headerGet(fi->h, RPMTAG_FILEGROUPNAME, &fgroup, hgflags);
-		fi->fgroup = fgroup.data;
-	    }
 	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PSM_PKGERASE) {
@@ -1606,8 +1595,6 @@ assert(psm->mi == NULL);
  	}
 	psm->failedFile = _free(psm->failedFile);
 
-	fi->fgroup = _free(fi->fgroup);
-	fi->fuser = _free(fi->fuser);
 	fi->apath = _free(fi->apath);
 	fi->fstates = _free(fi->fstates);
 	break;
