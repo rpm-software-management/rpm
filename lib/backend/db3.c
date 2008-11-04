@@ -824,7 +824,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	oflags &= ~DB_RDONLY;
 	dbi->dbi_oflags &= ~DB_RDONLY;
     } else {
-	if (!(dbi->dbi_mode & (O_RDWR|O_WRONLY))) oflags |= DB_RDONLY;
+	if ((dbi->dbi_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
 	if (dbi->dbi_mode & O_CREAT) {
 	    oflags |= DB_CREATE;
 	    dbi->dbi_oeflags |= DB_CREATE;
@@ -1133,8 +1133,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    l.l_whence = 0;
 		    l.l_start = 0;
 		    l.l_len = 0;
-		    l.l_type = (dbi->dbi_mode & (O_RDWR|O_WRONLY))
-				? F_WRLCK : F_RDLCK;
+		    l.l_type = (dbi->dbi_mode & O_ACCMODE) == O_RDONLY
+				? F_RDLCK : F_WRLCK;
 		    l.l_pid = 0;
 
 		    rc = fcntl(fdno, F_SETLK, (void *) &l);
@@ -1146,8 +1146,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			    ? 0 : 1);
 			rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
 				_("cannot get %s lock on %s/%s\n"),
-				((dbi->dbi_mode & (O_RDWR|O_WRONLY))
-					? _("exclusive") : _("shared")),
+				((dbi->dbi_mode & O_ACCMODE) == O_RDONLY)
+					? _("shared") : _("exclusive"),
 				dbhome, (dbfile ? dbfile : ""));
 		    } else if (dbfile) {
 			rpmlog(RPMLOG_DEBUG,

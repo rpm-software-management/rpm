@@ -738,8 +738,12 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	urlType = URL_IS_UNKNOWN;
 	break;
     case URL_IS_DASH:
-	assert(!(flags & O_RDWR));
-	fd = fdDup( ((flags & O_WRONLY) ? STDOUT_FILENO : STDIN_FILENO) );
+	if ((flags & O_ACCMODE) == O_RDWR) {
+	    fd = NULL;
+	} else {
+	    fd = fdDup((flags & O_ACCMODE) == O_WRONLY ?
+			STDOUT_FILENO : STDIN_FILENO);
+	}
 	timeout = 600; /* XXX W2DO? 10 mins? */
 	break;
     case URL_IS_PATH:

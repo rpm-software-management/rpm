@@ -45,7 +45,7 @@ static int manageFile(FD_t *fdp, const char *fn, int flags)
 
     /* open a file and set *fdp */
     if (*fdp == NULL && fn != NULL) {
-	fd = Fopen(fn, ((flags & O_WRONLY) ? "w.ufdio" : "r.ufdio"));
+	fd = Fopen(fn, (flags & O_ACCMODE) == O_WRONLY ? "w.ufdio" : "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), fn,
 		Fstrerror(fd));

@@ -910,7 +910,7 @@ static int openDatabase(const char * prefix,
 
     if (dbp)
 	*dbp = NULL;
-    if (mode & O_WRONLY) 
+    if ((mode & O_ACCMODE) == O_WRONLY) 
 	return 1;
 
     db = newRpmdb(prefix, dbpath, mode, perms, flags);
