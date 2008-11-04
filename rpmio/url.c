@@ -268,7 +268,7 @@ int urlGetFile(const char * url, const char * dest)
         ARGV_t argv = NULL;
         argvSplit(&argv, cmd, " ");
         execvp(argv[0], argv);
-        exit(-1); /* error out if exec fails */
+        exit(127); /* exit with 127 for compatibility with bash(1) */
     }
     wait = waitpid(pid, &rc, 0);
     cmd = _free(cmd);

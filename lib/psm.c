@@ -658,7 +658,7 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 	    xx = execv(argv[0], argv);
 	}
     }
-    _exit(-1);
+    _exit(127); /* exit 127 for compatibility with bash(1) */
 }
 
 /**

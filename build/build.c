@@ -187,7 +187,7 @@ fprintf(stderr, "*** rootDir %s buildDir %s\n", rootDir, buildDir);
 	rpmlog(RPMLOG_ERR, _("Exec of %s failed (%s): %s\n"),
 		scriptName, name, strerror(errno));
 
-	_exit(-1);
+	_exit(127); /* exit 127 for compatibility with bash(1) */
     }
 
     pid = waitpid(child, &status, 0);
