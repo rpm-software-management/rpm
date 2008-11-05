@@ -1359,9 +1359,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->fnlen = dnlmax + bnlmax + 1;
     fi->fn = NULL;
 
-    fi->dperms = 0755;
-    fi->fperms = 0644;
-
 exit:
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));

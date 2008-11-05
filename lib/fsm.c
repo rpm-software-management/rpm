@@ -77,6 +77,10 @@ static rpmfi fsmGetFi(const FSM_t fsm)
 #define	SUFFIX_RPMSAVE	".rpmsave"
 #define	SUFFIX_RPMNEW	".rpmnew"
 
+/* Default directory and file permissions if not mapped */
+#define _dirPerms 0755
+#define _filePerms 0644
+
 /* 
  * XXX Forward declarations for previously exported functions to avoid moving 
  * things around needlessly 
@@ -718,7 +722,7 @@ static int fsmMapAttrs(FSM_t fsm)
     int i = fsm->ix;
 
     if (fi && i >= 0 && i < fi->fc) {
-	mode_t perms = (S_ISDIR(st->st_mode) ? fi->dperms : fi->fperms);
+	mode_t perms = (S_ISDIR(st->st_mode) ? _dirPerms : _filePerms);
 	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
 	rpm_time_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
@@ -1214,9 +1218,8 @@ static int fsmMkdirs(FSM_t fsm)
 		/* Move pre-existing path marker forward. */
 		fsm->dnlx[dc] = (te - dn);
 	    } else if (rc == CPIOERR_ENOENT) {
-		rpmfi fi = fsmGetFi(fsm);
 		*te = '\0';
-		st->st_mode = S_IFDIR | (fi->dperms & 07777);
+		st->st_mode = S_IFDIR | (_dirPerms & 07777);
 		rc = fsmNext(fsm, FSM_MKDIR);
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
