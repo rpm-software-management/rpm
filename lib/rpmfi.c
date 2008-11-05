@@ -117,8 +117,18 @@ const char * rpmfiFN(rpmfi fi)
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	char * t;
-	if (fi->fn == NULL)
-	    fi->fn = xmalloc(fi->fnlen);
+	if (fi->fn == NULL) {
+	    size_t dnlmax = 0, bnlmax = 0, len;
+	    for (int i = 0; i < fi->dc; i++) {
+		if ((len = strlen(fi->dnl[i])) > dnlmax)
+		    dnlmax = len;
+	    }
+	    for (int i = 0; i < fi->fc; i++) {
+		if ((len = strlen(fi->bnl[i])) > bnlmax)
+		    bnlmax = len;
+	    }
+	    fi->fn = xmalloc(dnlmax + bnlmax + 1);
+	}
 	FN = t = fi->fn;
 	*t = '\0';
 	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
@@ -1185,15 +1195,12 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     rpmfi fi = NULL;
     const char * Type;
     rpm_loff_t *asize = NULL;
-    int dnlmax, bnlmax;
     unsigned char * t;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
-    int len;
-    int i;
 
     if (tagN == RPMTAG_BASENAMES) {
 	Type = "Files";
@@ -1343,17 +1350,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	fi->h = headerFree(fi->h);
     }
 
-    dnlmax = -1;
-    for (i = 0; i < fi->dc; i++) {
-	if ((len = strlen(fi->dnl[i])) > dnlmax)
-	    dnlmax = len;
-    }
-    bnlmax = -1;
-    for (i = 0; i < fi->fc; i++) {
-	if ((len = strlen(fi->bnl[i])) > bnlmax)
-	    bnlmax = len;
-    }
-    fi->fnlen = dnlmax + bnlmax + 1;
+    /* lazily alloced from rpmfiFN() */
     fi->fn = NULL;
 
 exit:

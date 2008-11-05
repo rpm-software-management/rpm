@@ -96,7 +96,6 @@ struct rpmfi_s {
     int transscripts;		/*!< pre/posttrans script existence */
 
     char * fn;			/*!< File name buffer. */
-    size_t fnlen;		/*!< FIle name buffer length. */
 
     size_t astriplen;
     size_t striplen;

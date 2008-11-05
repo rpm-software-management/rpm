@@ -1039,7 +1039,6 @@ static void genCpioListAndHeader(FileList fl,
     size_t apathlen = 0;
     size_t dpathlen = 0;
     size_t skipLen = 0;
-    size_t fnlen;
     FileListRec flp;
     char buf[BUFSIZ];
     int i;
@@ -1297,9 +1296,6 @@ static void genCpioListAndHeader(FileList fl,
 	    i--;
 	    continue;
 	}
-
-	if ((fnlen = strlen(flp->diskPath) + 1) > fi->fnlen)
-	    fi->fnlen = fnlen;
 
 	/* Create disk directory and base name. */
 	fi->dil[i] = i;
