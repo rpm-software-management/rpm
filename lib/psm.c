@@ -1276,12 +1276,6 @@ assert(psm->mi == NULL);
 	    psm->mi = rpmdbFreeIterator(psm->mi);
 	    rc = RPMRC_OK;
 
-	    /* XXX lazy alloc here may need to be done elsewhere. */
-	    if (fi->fstates == NULL && fc > 0) {
-		fi->fstates = xmalloc(sizeof(*fi->fstates) * fc);
-		memset(fi->fstates, RPMFILE_STATE_NORMAL, fc);
-	    }
-
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (fc <= 0)				break;
 	
@@ -1591,7 +1585,6 @@ assert(psm->mi == NULL);
 	psm->failedFile = _free(psm->failedFile);
 
 	fi->apath = _free(fi->apath);
-	fi->fstates = _free(fi->fstates);
 	break;
 
     case PSM_PKGINSTALL:
