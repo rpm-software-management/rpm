@@ -1162,9 +1162,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
 
-    fi->obnl = _free(fi->obnl);
-    fi->odnl = _free(fi->odnl);
-
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);

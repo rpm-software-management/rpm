@@ -87,9 +87,6 @@ struct rpmfi_s {
     rpmFileAction action;	/*!< File disposition (default). */
     rpmFileAction * actions;	/*!< File disposition(s). */
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
-    const char ** obnl;		/*!< Original basename(s) (from header) */
-    const char ** odnl;		/*!< Original dirname(s) (from header) */
-    int32_t * odil;		/*!< Original dirindex(s) (from header) */
 
     pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
     unsigned char * digests;	/*!< File checksums in binary. */
