@@ -694,9 +694,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     }
 
     if (netsharedPaths) argvFree(netsharedPaths);
-#ifdef	DYING	/* XXX freeFi will deal with this later. */
-    fi->flangs = _free(fi->flangs);
-#endif
     if (languages) argvFree(languages);
     free(drc);
     free(dff);
@@ -1443,11 +1440,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 /* FIX: psm->fi may be NULL */
 	psm = rpmpsmFree(psm);
-
-#ifdef	DYING
-/* FIX: p is almost opaque */
-	p->fi = rpmfiFree(p->fi);
-#endif
 
     }
     pi = rpmtsiFree(pi);
