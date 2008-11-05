@@ -13,6 +13,10 @@
 extern "C" {
 #endif
 
+/* known arch? */
+RPM_GNUC_INTERNAL
+int rpmIsKnownArch(const char *name);
+
 /*
  * These may be called w/ a NULL argument to flush the cache -- they return
  * -1 if the user can't be found.

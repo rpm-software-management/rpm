@@ -24,6 +24,7 @@
 #include "rpmio/digest.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmts_internal.h"
+#include "lib/misc.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
 /* portability fiddles */
@@ -153,34 +154,6 @@ int rpmtsVerifyDB(rpmts ts)
     return rpmdbVerify(ts->rootDir);
 }
 
-static int isArch(const char * arch)
-{
-    const char * const * av;
-    static const char * const arches[] = {
-	"i386", "i486", "i586", "i686", "athlon", "pentium3", "pentium4", "x86_64", "amd64", "ia32e", "geode",
-	"alpha", "alphaev5", "alphaev56", "alphapca56", "alphaev6", "alphaev67",
-	"sparc", "sun4", "sun4m", "sun4c", "sun4d", "sparcv8", "sparcv9", "sparcv9v",
-	"sparc64", "sparc64v", "sun4u",
-	"mips", "mipsel", "IP",
-	"ppc", "ppciseries", "ppcpseries",
-	"ppc64", "ppc64iseries", "ppc64pseries",
-	"m68k",
-	"rs6000",
-	"ia64",
-	"armv3l", "armv4b", "armv4l", "armv4tl", "armv5tel", "armv5tejl", "armv6l",
-	"s390", "i370", "s390x",
-	"sh", "xtensa",
-	"noarch",
-	NULL,
-    };
-
-    for (av = arches; *av != NULL; av++) {
-	if (!strcmp(arch, *av))
-	    return 1;
-    }
-    return 0;
-}
-
 /* keyp might no be defined. */
 rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen)
@@ -247,7 +220,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 	t = (char *) keyp;
 	t = strrchr(t, '.');
 	/* Is this a valid ".arch" suffix? */
-	if (t != NULL && isArch(t+1)) {
+	if (t != NULL && rpmIsKnownArch(t+1)) {
 	   *t++ = '\0';
 	   arch = t;
 	}

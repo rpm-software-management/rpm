@@ -21,6 +21,7 @@
 
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
+#include "lib/misc.h"
 
 #include "debug.h"
 
@@ -1325,6 +1326,14 @@ int rpmMachineScore(int type, const char * name)
 {
     machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
     return (info != NULL ? info->score : 0);
+}
+
+int rpmIsKnownArch(const char *name)
+{
+    canonEntry canon = lookupInCanonTable(name,
+			tables[RPM_MACHTABLE_INSTARCH].canons,
+			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+    return (canon != NULL || strcmp(name, "noarch") == 0);
 }
 
 /** \ingroup rpmrc
