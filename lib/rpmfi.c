@@ -1332,9 +1332,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     {
 	Header foo;
 
-/* XXX DYING */
-if (fi->actions == NULL)
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 	/* FIX: fi-digests undefined */
 	foo = relocateFileList(ts, fi, h, fi->actions);
 	fi->h = headerFree(fi->h);
