@@ -627,7 +627,7 @@ static int fsmMapPath(FSM_t fsm)
 	fsm->astriplen = fi->astriplen;
 	fsm->action = (fi->actions ? fi->actions[i] : fi->action);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : fi->flags);
-	fsm->mapFlags = (fi->fmapflags ? fi->fmapflags[i] : fi->mapflags);
+	fsm->mapFlags = fi->mapflags;
 
 	/* src rpms have simple base name in payload. */
 	fsm->dirName = fi->dnl[fi->dil[i]];

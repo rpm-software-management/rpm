@@ -300,8 +300,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    /* XXX FIXME: don't do per-file mapping, force global flags. */
-    fi->fmapflags = _free(fi->fmapflags);
     fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
     fi->astriplen = 0;

@@ -1161,7 +1161,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
-    fi->fmapflags = _free(fi->fmapflags);
 
     fi->obnl = _free(fi->obnl);
     fi->odnl = _free(fi->odnl);

@@ -109,7 +109,6 @@ struct rpmfi_s {
     mode_t fperms;		/*!< File perms (0644) if not mapped. */
     const char ** apath;
     int mapflags;
-    int * fmapflags;
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */

@@ -1270,7 +1270,6 @@ static void genCpioListAndHeader(FileList fl,
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 
-    fi->fmapflags = xcalloc(sizeof(*fi->fmapflags), fi->fc);
     fi->astriplen = 0;
     if (fl->buildRoot)
 	fi->astriplen = strlen(fl->buildRoot);
@@ -1279,6 +1278,11 @@ static void genCpioListAndHeader(FileList fl,
     /* XXX Should we? It's against what LSB states (of RPMv3)... */
     fi->fuser = _free(fi->fuser);
     fi->fgroup = _free(fi->fgroup);
+
+    fi->mapflags = CPIO_MAP_PATH |
+	    CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+    if (isSrc)
+	fi->mapflags |= CPIO_FOLLOW_SYMLINKS;
 
     /* Make the cpio list */
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
@@ -1323,11 +1327,6 @@ static void genCpioListAndHeader(FileList fl,
 	    continue;
 	}
 	fi->actions[i] = FA_COPYOUT;
-	fi->fmapflags[i] = CPIO_MAP_PATH |
-		CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-	if (isSrc)
-	    fi->fmapflags[i] |= CPIO_FOLLOW_SYMLINKS;
-
     }
     if (fip)
 	*fip = fi;
