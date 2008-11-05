@@ -15,8 +15,10 @@ typedef	struct  Bucket_s * Bucket;
  */
 struct  Bucket_s {
     HTKEYTYPE key;      /*!< hash key */
+#ifdef HTDATATYPE
     HTDATATYPE * data;	/*!< pointer to hashed data */
     int dataCount;	/*!< length of data (0 if unknown) */
+#endif
     Bucket next;	/*!< pointer to next item in bucket */
 };
 
@@ -28,7 +30,9 @@ struct HASHSTRUCT {
     hashFunctionType fn;		/*!< generate hash value for key */
     hashEqualityType eq;		/*!< compare hash keys for equality */
     hashFreeKey freeKey;
+#ifdef HTDATATYPE
     hashFreeData freeData;
+#endif
 };
 
 /**
@@ -54,7 +58,11 @@ Bucket HASHPREFIX(findEntry)(HASHTYPE ht, HTKEYTYPE key)
 
 HASHTYPE HASHPREFIX(Create)(int numBuckets,
 			    hashFunctionType fn, hashEqualityType eq,
-			    hashFreeKey freeKey, hashFreeData freeData)
+			    hashFreeKey freeKey
+#ifdef HTDATATYPE
+, hashFreeData freeData
+#endif
+)
 {
     HASHTYPE ht;
 
@@ -62,13 +70,19 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
     ht->numBuckets = numBuckets;
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
     ht->freeKey = freeKey;
+#ifdef HTDATATYPE
     ht->freeData = freeData;
+#endif
     ht->fn = fn;
     ht->eq = eq;
     return ht;
 }
 
-void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE data)
+void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
+#ifdef HTDATATYPE
+, HTDATATYPE data
+#endif
+)
 {
     unsigned int hash;
     Bucket b;
@@ -82,20 +96,24 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE data)
     if (b == NULL) {
 	b = xmalloc(sizeof(*b));
 	b->key = key;
+#ifdef HTDATATYPE
 	b->dataCount = 0;
-	b->next = ht->buckets[hash];
 	b->data = NULL;
+#endif
+	b->next = ht->buckets[hash];
 	ht->buckets[hash] = b;
     }
 
+#ifdef HTDATATYPE
     b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
     b->data[b->dataCount++] = data;
+#endif
 }
 
 HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
 {
     Bucket b, n;
-    int i, j;
+    int i;
 
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
@@ -107,14 +125,17 @@ HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
 
 	do {
 	    n = b->next;
+#ifdef HTDATATYPE
 	    if (b->data) {
 		if (ht->freeData) {
+		  int j;
 		  for (j=0; j < b->dataCount; j++ ) {
 		    b->data[j] = ht->freeData(b->data[j]);
 		  }
 		}
 		b->data = _free(b->data);
 	    }
+#endif
 	    b = _free(b);
 	} while ((b = n) != NULL);
     }
@@ -131,6 +152,8 @@ int HASHPREFIX(HasEntry)(HASHTYPE ht, HTKEYTYPE key)
 
     if (!(b = HASHPREFIX(findEntry)(ht, key))) return 0; else return 1;
 }
+
+#ifdef HTDATATYPE
 
 int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
 	       int * dataCount, HTKEYTYPE* tableKey)
@@ -159,7 +182,9 @@ void HASHPREFIX(PrintStats)(HASHTYPE ht) {
         int buckets = 0;
         for (bucket=ht->buckets[i]; bucket; bucket=bucket->next){
 	    buckets++;
+#ifdef HTDATATYPE
 	    datacnt += bucket->dataCount;
+#endif
 	}
 	if (maxbuckets < buckets) maxbuckets = buckets;
 	if (buckets) hashcnt++;
@@ -171,3 +196,5 @@ void HASHPREFIX(PrintStats)(HASHTYPE ht) {
     fprintf(stderr, "Values: %i\n", datacnt);
     fprintf(stderr, "Max Keys/Bucket: %i\n", maxbuckets);
 }
+
+#endif

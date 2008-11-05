@@ -17,12 +17,15 @@ typedef struct HASHSTRUCT * HASHTYPE;
 #define hashFunctionType JOIN(HASHTYPE,HashFunctionType)
 #define hashEqualityType JOIN(HASHTYPE,HashEqualityType)
 #define hashFreeKey JOIN(HASHTYPE,FreeKey)
-#define hashFreeData JOIN(HASHTYPE,FreeData)
 
 typedef unsigned int (*hashFunctionType) (HTKEYTYPE string);
 typedef int (*hashEqualityType) (HTKEYTYPE key1, HTKEYTYPE key2);
 typedef HTKEYTYPE (*hashFreeKey) (HTKEYTYPE);
+
+#ifdef HTDATATYPE
+#define hashFreeData JOIN(HASHTYPE,FreeData)
 typedef HTDATATYPE (*hashFreeData) (HTDATATYPE);
+#endif
 
 /**
  * Create hash table.
@@ -38,7 +41,11 @@ typedef HTDATATYPE (*hashFreeData) (HTDATATYPE);
 RPM_GNUC_INTERNAL
 HASHTYPE  HASHPREFIX(Create)(int numBuckets,
 			     hashFunctionType fn, hashEqualityType eq,
-			     hashFreeKey freeKey, hashFreeData freeData);
+			     hashFreeKey freeKey
+#ifdef HTDATATYPE
+, hashFreeData freeData
+#endif
+);
 
 /**
  * Destroy hash table.
@@ -55,7 +62,13 @@ HASHTYPE  HASHPREFIX(Free)( HASHTYPE ht);
  * @param data          data value
  */
 RPM_GNUC_INTERNAL
-void  HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE data);
+void  HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
+#ifdef HTDATATYPE
+, HTDATATYPE data
+#endif
+);
+
+#ifdef HTDATATYPE
 
 /**
  * Retrieve item from hash table.
@@ -71,6 +84,7 @@ int  HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key,
 		HTDATATYPE** data,
 		int * dataCount,
 		HTKEYTYPE* tableKey);
+#endif
 
 /**
  * Check for key in hash table.
