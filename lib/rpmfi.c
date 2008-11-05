@@ -1276,8 +1276,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
 
-if (fi->actions == NULL)
-	fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
     /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
     fi->mapflags =
