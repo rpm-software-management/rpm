@@ -722,8 +722,8 @@ static int fsmMapAttrs(FSM_t fsm)
 	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
 	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
 	rpm_time_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
-	uid_t uid = fi->uid;
-	gid_t gid = fi->gid;
+	uid_t uid = 0;
+	gid_t gid = 0;
 
 	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)

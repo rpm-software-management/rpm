@@ -83,8 +83,6 @@ struct rpmfi_s {
 
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 /*-----------------------------*/
-    uid_t uid;			/*!< File uid (default). */
-    gid_t gid;			/*!< File gid (default). */
     rpmfileAttrs flags;		/*!< File flags (default). */
     rpmFileAction action;	/*!< File disposition (default). */
     rpmFileAction * actions;	/*!< File disposition(s). */
