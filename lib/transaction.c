@@ -1352,7 +1352,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		    char * fstates = fi->fstates;
 		    rpmFileAction * actions = fi->actions;
 		    sharedFileInfo replaced = fi->replaced;
-		    int mapflags = fi->mapflags;
+		    cpioMapFlags mapflags = fi->mapflags;
 		    rpmte savep;
 		    int numShared = 0;
 
