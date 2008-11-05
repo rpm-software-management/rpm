@@ -1226,7 +1226,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
-    headerGetFlags hgflags = fi->h ? HEADERGET_MINMEM : HEADERGET_ALLOC;
     rpmRC rc = psm->rc;
     int saveerrno;
     int xx;
