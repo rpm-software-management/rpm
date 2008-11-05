@@ -67,7 +67,7 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @return pointer to the finger print associated with a file path.
  */
 /* LCL: segfault */
-static fingerPrint doLookup(fingerPrintCache cache,
+fingerPrint fpLookup(fingerPrintCache cache,
 		const char * dirName, const char * baseName, int scareMemory)
 {
     char dir[PATH_MAX];
@@ -188,12 +188,6 @@ exit:
     return fp;
 }
 
-fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
-			const char * baseName, int scareMemory)
-{
-    return doLookup(cache, dirName, baseName, scareMemory);
-}
-
 unsigned int fpHashFunction(const fingerPrint * fp)
 {
     unsigned int hash = 0;
@@ -236,7 +230,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	    fpList[i].subDir = fpList[i - 1].subDir;
 	    fpList[i].baseName = baseNames[i];
 	} else {
-	    fpList[i] = doLookup(cache, dirNames[dirIndexes[i]], baseNames[i],
+	    fpList[i] = fpLookup(cache, dirNames[dirIndexes[i]], baseNames[i],
 				 1);
 	}
     }
@@ -306,7 +300,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 			rstrscat(&link, endbasename+1, "/", NULL);
 		   }
 
-		   *fp = doLookup(fpc, link, fp->baseName, 0);
+		   *fp = fpLookup(fpc, link, fp->baseName, 0);
 
 		   free(link);
 		   free(currentsubdir);
