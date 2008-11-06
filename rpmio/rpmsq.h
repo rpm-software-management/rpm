@@ -70,7 +70,11 @@ int rpmsqIsCaught(int signum);
  * @param info		(siginfo_t) signal info
  * @param context	signal context
  */
+#ifdef SA_SIGINFO
 void rpmsqAction(int signum, void * info, void * context);
+#else
+void rpmsqAction(int signum);
+#endif
 
 /** \ingroup rpmsq
  * Enable or disable a signal handler.

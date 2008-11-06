@@ -176,8 +176,12 @@ int rpmsqIsCaught(int signum)
     return sigismember(&rpmsqCaught, signum);
 }
 
+#ifdef SA_SIGINFO
 void rpmsqAction(int signum,
 		void * info, void * context)
+#else
+void rpmsqAction(int signum)
+#endif
 {
     int save = errno;
     rpmsig tbl;
