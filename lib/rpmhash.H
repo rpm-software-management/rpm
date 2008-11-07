@@ -64,7 +64,7 @@ void  HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE data);
  * @retval data         address to store data value from bucket
  * @retval dataCount    address to store data value size from bucket
  * @retval tableKey     address to store key value from bucket (may be NULL)
- * @return		0 on success, 1 if the item is not found.
+ * @return		1 on success, 0 if the item is not found.
  */
 RPM_GNUC_INTERNAL
 int  HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key,

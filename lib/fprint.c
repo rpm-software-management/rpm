@@ -54,8 +54,8 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     const struct fprintCacheEntry_s ** data;
 
     if (rpmFpEntryHashGetEntry(cache->ht, dirName, &data, NULL, NULL))
-	return NULL;
-    return data[0];
+	return data[0];
+    return NULL;
 }
 
 /**

@@ -138,7 +138,7 @@ int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
     Bucket b;
 
     if ((b = HASHPREFIX(findEntry)(ht, key)) == NULL)
-	return 1;
+	return 0;
 
     if (data)
 	*data = b->data;
@@ -147,7 +147,7 @@ int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
     if (tableKey)
 	*tableKey = b->key;
 
-    return 0;
+    return 1;
 }
 
 void HASHPREFIX(PrintStats)(HASHTYPE ht) {
