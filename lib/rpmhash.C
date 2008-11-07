@@ -136,18 +136,16 @@ int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
 	       int * dataCount, HTKEYTYPE* tableKey)
 {
     Bucket b;
-
-    if ((b = HASHPREFIX(findEntry)(ht, key)) == NULL)
-	return 0;
+    int rc = ((b = HASHPREFIX(findEntry)(ht, key)) != NULL);
 
     if (data)
-	*data = b->data;
+	*data = rc ? b->data : NULL;
     if (dataCount)
-	*dataCount = b->dataCount;
+	*dataCount = rc ? b->dataCount : 0;
     if (tableKey)
-	*tableKey = b->key;
+	*tableKey = rc ? b->key : NULL;
 
-    return 1;
+    return rc;
 }
 
 void HASHPREFIX(PrintStats)(HASHTYPE ht) {
