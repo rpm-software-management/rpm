@@ -245,7 +245,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi fi, int filenr)
 {
     struct fingerPrint_s current_fp;
-    char *end, *endbasename, *currentsubdir;
+    char *endsubdir, *endbasename, *currentsubdir;
     size_t lensubDir;
 
     struct rpmffi_s * recs;
@@ -262,17 +262,15 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 
     lensubDir = strlen(fp->subDir);
     current_fp = *fp;
-    current_fp.subDir = xstrdup(fp->subDir);
-    end = (char*) current_fp.subDir + lensubDir;
-    currentsubdir = (char *) current_fp.subDir;
-    current_fp.baseName = current_fp.subDir;
+    currentsubdir = xstrdup(fp->subDir);
 
-    current_fp.subDir = NULL;
-    endbasename = end = currentsubdir;
-
+    /* Set baseName to the upper most dir */
+    current_fp.baseName = endbasename = currentsubdir;
     while (*endbasename != '/' && endbasename < currentsubdir + lensubDir - 1)
 	 endbasename++;
     *endbasename = '\0';
+
+    current_fp.subDir = endsubdir = NULL; // no subDir for now
 
     while (endbasename < currentsubdir + lensubDir - 1) {
 	 char found;
@@ -311,7 +309,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 		   *fp = doLookup(fpc, link, fp->baseName, 0);
 
 		   free(link);
-		   free((char *) current_fp.subDir);
+		   free(currentsubdir);
 		   symlinkcount++;
 
 		   /* setup current_fp for the new path */
@@ -319,19 +317,16 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 		   current_fp = *fp;
 		   if (!fp->subDir) {
 		     lensubDir = 0;
-		     currentsubdir = end = NULL;
+		     currentsubdir = endsubdir = NULL;
 		     break;
 		   }
 		   lensubDir = strlen(fp->subDir);
-		   current_fp.subDir = xstrdup(fp->subDir);
-		   currentsubdir = (char *) current_fp.subDir;
-		   end = (char*) current_fp.subDir + lensubDir;
-		   current_fp.subDir = NULL;
+		   currentsubdir = xstrdup(fp->subDir);
+		   current_fp.subDir = endsubdir = NULL; // no subDir for now
 
+		   /* Set baseName to the upper most dir */
 		   current_fp.baseName = currentsubdir;
-
-		   endbasename = end = currentsubdir;
-
+		   endbasename = currentsubdir;
 		   while (*endbasename != '/' &&
 			  endbasename < currentsubdir + lensubDir - 1)
 			endbasename++;
@@ -353,20 +348,22 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 	 }
 
 	 if (current_fp.subDir == NULL) {
+              /* after first round set former baseName as subDir */
 	      current_fp.subDir = currentsubdir;
 	 } else {
-	      *end = '/';
+	      *endsubdir = '/'; // rejoin the former baseName with subDir
 	 }
-	 end = endbasename;
+	 endsubdir = endbasename;
 
+	 /* set baseName to the next lower dir */
 	 endbasename++;
 	 while (*endbasename != '\0' && *endbasename != '/')
 	      endbasename++;
 	 *endbasename = '\0';
-	 current_fp.baseName = end+1;
+	 current_fp.baseName = endsubdir+1;
 
     }
-    free((char*) current_fp.subDir);
+    free(currentsubdir);
     rpmFpHashAddEntry(newht, fp, ffi);
 
 }
