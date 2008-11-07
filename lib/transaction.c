@@ -66,155 +66,92 @@ static int sharedCmp(const void * one, const void * two)
  * @param reportConflicts
  */
 /* XXX only ts->{probs,rpmdb} modified */
-static int handleInstInstalledFiles(const rpmts ts,
-		rpmte p, rpmfi fi,
-		sharedFileInfo shared,
-		int sharedCount, int reportConflicts)
+static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
+				   Header otherHeader, rpmfi otherFi,
+				   int beingRemoved)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpm_color_t oFColor, FColor;
     char * altNEVR = NULL;
-    rpmfi otherFi = NULL;
-    int numReplaced = 0;
     rpmps ps;
-    int i;
 
-    {	rpmdbMatchIterator mi;
-	Header h;
-
-	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
-			&shared->otherPkg, sizeof(shared->otherPkg));
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    altNEVR = headerGetNEVRA(h, NULL);
-	    otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
-	    break;
-	}
-	mi = rpmdbFreeIterator(mi);
-    }
-
-    if (otherFi == NULL)
-	return 1;
-
-    fi->replaced = xcalloc(sharedCount, sizeof(*fi->replaced));
+    altNEVR = headerGetNEVRA(otherHeader, NULL);
 
     ps = rpmtsProblems(ts);
-    for (i = 0; i < sharedCount; i++, shared++) {
-	int otherFileNum, fileNum;
-	int isCfgFile;
+    int isCfgFile;
 
-	otherFileNum = shared->otherFileNum;
-	(void) rpmfiSetFX(otherFi, otherFileNum);
-	oFColor = rpmfiFColor(otherFi);
-	oFColor &= tscolor;
+    oFColor = rpmfiFColor(otherFi);
+    oFColor &= tscolor;
 
-	fileNum = shared->pkgFileNum;
-	(void) rpmfiSetFX(fi, fileNum);
-	FColor = rpmfiFColor(fi);
-	FColor &= tscolor;
+    FColor = rpmfiFColor(fi);
+    FColor &= tscolor;
 
-	isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
+    isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
 #ifdef	DYING
-	/* XXX another tedious segfault, assume file state normal. */
-	if (otherStates && otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
-	    continue;
+    /* XXX another tedious segfault, assume file state normal. */
+    if (otherStates && otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
+	return 0;
 #endif
 
-	if (XFA_SKIPPING(rpmfiFAction(fi)))
-	    continue;
+    if (XFA_SKIPPING(rpmfiFAction(fi)))
+	return 0;
 
-	if (rpmfiCompare(otherFi, fi)) {
-	    int rConflicts;
+    if (rpmfiCompare(otherFi, fi)) {
+	int rConflicts;
 
-	    rConflicts = reportConflicts;
-	    /* Resolve file conflicts to prefer Elf64 (if not forced). */
-	    if (tscolor != 0 && FColor != 0 && FColor != oFColor)
-	    {
-		if (oFColor & prefcolor) {
-		    rpmfiSetFAction(fi, FA_SKIPCOLOR);
-		    rConflicts = 0;
-		} else
-		if (FColor & prefcolor) {
-		    rpmfiSetFAction(fi, FA_CREATE);
-		    rConflicts = 0;
-		}
+	rConflicts = !(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES));
+	/* Resolve file conflicts to prefer Elf64 (if not forced). */
+	if (tscolor != 0 && FColor != 0 && FColor != oFColor) {
+	    if (oFColor & prefcolor) {
+		rpmfiSetFAction(fi, FA_SKIPCOLOR);
+		rConflicts = 0;
+	    } else if (FColor & prefcolor) {
+		rpmfiSetFAction(fi, FA_CREATE);
+		rConflicts = 0;
 	    }
+	}
 
-	    if (rConflicts) {
-		rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
+	if (rConflicts) {
+	    rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVRA(p), rpmteKey(p),
 			rpmfiDN(fi), rpmfiBN(fi),
 			altNEVR,
 			0);
-	    }
-	    /* Save file identifier to mark as state REPLACED. */
-	    if ( !(isCfgFile || XFA_SKIPPING(rpmfiFAction(fi))) ) {
-		/* FIX: p->replaced, not fi */
-		if (!shared->isRemoved)
-		    fi->replaced[numReplaced++] = *shared;
-	    }
 	}
 
-	/* Determine config file dispostion, skipping missing files (if any). */
-	if (isCfgFile) {
-	    int skipMissing =
-		((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
-	    rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
-	    rpmfiSetFAction(fi, action);
+	/* Save file identifier to mark as state REPLACED. */
+	if ( !(isCfgFile || XFA_SKIPPING(rpmfiFAction(fi))) ) {
+	    if (!beingRemoved)
+		rpmfiAddReplaced(fi, rpmfiFX(fi),
+				 headerGetInstance(otherHeader),
+				 rpmfiFX(otherFi));
 	}
-	rpmfiSetFReplacedSize(fi, rpmfiFSize(otherFi));
     }
+
+    /* Determine config file dispostion, skipping missing files (if any). */
+    if (isCfgFile) {
+	int skipMissing =
+	    ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
+	rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
+	rpmfiSetFAction(fi, action);
+    }
+    rpmfiSetFReplacedSize(fi, rpmfiFSize(otherFi));
+
     ps = rpmpsFree(ps);
-
     altNEVR = _free(altNEVR);
-    otherFi = rpmfiFree(otherFi);
-
-    fi->replaced = xrealloc(fi->replaced,	/* XXX memory leak */
-			   sizeof(*fi->replaced) * (numReplaced + 1));
-    fi->replaced[numReplaced].otherPkg = 0;
-
     return 0;
 }
 
 /**
  */
 /* XXX only ts->rpmdb modified */
-static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
-		sharedFileInfo shared, int sharedCount)
+static int handleRmvdInstalledFile(const rpmts ts, rpmfi fi,
+				   const char * otherStates, int otherFileNum)
 {
-    Header h;
-    struct rpmtd_s ostates;
-    const char * otherStates;
-
-    rpmdbMatchIterator mi;
-
-    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
-			&shared->otherPkg, sizeof(shared->otherPkg));
-    h = rpmdbNextIterator(mi);
-    if (h == NULL) {
-	mi = rpmdbFreeIterator(mi);
-	return 1;
-    }
-
-    (void) headerGet(h, RPMTAG_FILESTATES, &ostates, HEADERGET_MINMEM);
-    otherStates = ostates.data;
-
-    for (int i = 0; i < sharedCount; i++, shared++) {
-	int otherFileNum, fileNum;
-	otherFileNum = shared->otherFileNum;
-	fileNum = shared->pkgFileNum;
-
-	if (otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
-	    continue;
-
-	rpmfiSetFX(fi, fileNum);
+    if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL)
 	rpmfiSetFAction(fi, FA_SKIP);
-    }
-
-    rpmtdFreeData(&ostates);
-    mi = rpmdbFreeIterator(mi);
-
     return 0;
 }
 
@@ -715,6 +652,203 @@ rpmfi rpmtsiFi(const rpmtsi tsi)
     return fi;
 }
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
+#define HASHTYPE rpmStringSet
+#define HTKEYTYPE const char *
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+
+/* Get a rpmdbMatchIterator containing all files in
+ * the rpmdb that share the basename with one from
+ * the transaction.
+ * @param ts		transaction set
+ * @return		rpmdbMatchIterator sorted
+			by (package, fileNum)
+ */
+static
+rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
+{
+    rpmtsi pi;  rpmte p;
+    rpmfi fi;
+    int fc=0;
+    rpmdbMatchIterator mi;
+    int i, xx;
+    const char * baseName;
+
+    /* get number of files in transaction */
+    // XXX move to ts
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;   /* XXX can't happen */
+	fc += rpmfiFC(fi);
+    }
+    pi = rpmtsiFree(pi);
+
+    rpmStringSet baseNames = rpmStringSetCreate(fc, hashFunctionString, strcmp, NULL);
+
+    mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_BASENAMES, NULL, 0);
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	(void) rpmdbCheckSignals();
+
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;   /* XXX can't happen */
+	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
+		    ts->orderCount);
+
+	/* Gather all installed headers with matching basename's. */
+	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    size_t keylen;
+	    baseName = rpmfiBN(fi);
+	    if (rpmStringSetHasEntry(baseNames, baseName))
+		continue;
+
+	    keylen = strlen(baseName);
+	    if (keylen == 0)
+		keylen++;	/* XXX "/" fixup. */
+	    xx = rpmdbExtendIterator(mi, baseName, keylen);
+	    rpmStringSetAddEntry(baseNames, baseName);
+	 }
+    }
+    pi = rpmtsiFree(pi);
+    rpmStringSetFree(baseNames);
+
+    rpmdbSortIterator(mi);
+    /* iterator is now sorted by (recnum, filenum) */
+    return mi;
+}
+
+/* Check files in the transactions against the rpmdb
+ * Lookup all files with the same basename in the rpmdb
+ * and then check for matching finger prints
+ * @param ts		transaction set
+ * @param fpc		global finger print cache
+ */
+static
+void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
+{
+    rpmps ps;
+    rpmte p;
+    rpmfi otherFi=NULL;
+    int j;
+    int xx;
+    unsigned int fileNum;
+    const char * oldDir;
+
+    rpmdbMatchIterator mi;
+    Header h, newheader;
+
+    int beingRemoved;
+
+    rpmlog(RPMLOG_DEBUG, "computing file dispositions\n");
+
+    mi = rpmFindBaseNamesInDB(ts);
+
+    /* For all installed headers with matching basename's ... */
+    if (mi == NULL)
+	 return;
+
+    if (rpmdbGetIteratorCount(mi) == 0) {
+	mi = rpmdbFreeIterator(mi);
+	return;
+    }
+
+    ps = rpmtsProblems(ts);
+
+    /* Loop over all packages from the rpmdb */
+    h = newheader = rpmdbNextIterator(mi);
+    while (h != NULL) {
+	headerGetFlags hgflags = HEADERGET_MINMEM;
+	struct rpmtd_s bnames, dnames, dindexes, ostates;
+	const char ** dirNames;
+	const char ** fullBaseNames;
+	uint32_t * fullDirIndexes;
+	fingerPrint fp;
+	unsigned int installedPkg;
+
+	/* Is this package being removed? */
+	installedPkg = rpmdbGetIteratorOffset(mi);
+	beingRemoved = 0;
+	if (ts->removedPackages != NULL)
+	for (j = 0; j < ts->numRemovedPackages; j++) {
+	    if (ts->removedPackages[j] != installedPkg)
+	        continue;
+	    beingRemoved = 1;
+	    break;
+	}
+
+	h = headerLink(h);
+	headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);
+	headerGet(h, RPMTAG_DIRNAMES, &dnames, hgflags);
+	headerGet(h, RPMTAG_DIRINDEXES, &dindexes, hgflags);
+	headerGet(h, RPMTAG_FILESTATES, &ostates, hgflags);
+	fullBaseNames = bnames.data;
+	dirNames = dnames.data;
+	fullDirIndexes = dindexes.data;
+
+	oldDir = NULL;
+	/* loop over all intersting files in that package */
+	do {
+	    int gotRecs;
+	    struct rpmffi_s * recs;
+	    int numRecs;
+	    fileNum = rpmdbGetIteratorFileNum(mi);
+	    /* lookup finger print for this file */
+	    if ( dirNames[fullDirIndexes[fileNum]] == oldDir) {
+	        /* directory is the same as last round */
+	        fp.baseName = fullBaseNames[fileNum];
+	    } else {
+	        fp = fpLookup(fpc, dirNames[fullDirIndexes[fileNum]], fullBaseNames[fileNum], 1);
+		oldDir = dirNames[fullDirIndexes[fileNum]];
+	    }
+	    /* search for files in the transaction with same finger print */
+	    gotRecs = rpmFpHashGetEntry(ts->ht, &fp, &recs, &numRecs, NULL);
+
+	    for (j=0; (j<numRecs)&&gotRecs; j++) {
+	        p = recs[j].fi->te;
+
+		/* Determine the fate of each file. */
+		switch (rpmteType(p)) {
+		case TR_ADDED:
+		    if (!otherFi) {
+		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, 1);
+		    }
+		    rpmfiSetFX(recs[j].fi, recs[j].fileno);
+		    rpmfiSetFX(otherFi, fileNum);
+		    xx = handleInstInstalledFile(ts, p, recs[j].fi, h, otherFi, beingRemoved);
+		    break;
+		case TR_REMOVED:
+		    if (!beingRemoved) {
+		        rpmfiSetFX(recs[j].fi, recs[j].fileno);
+		        xx = handleRmvdInstalledFile(ts, recs[j].fi,
+						     ostates.data, fileNum);
+		    }
+		    break;
+		}
+	    }
+
+	    newheader = rpmdbNextIterator(mi);
+
+	} while (newheader==h);
+
+	otherFi = rpmfiFree(otherFi);
+	rpmtdFreeData(&ostates);
+	rpmtdFreeData(&bnames);
+	rpmtdFreeData(&dnames);
+	rpmtdFreeData(&dindexes);
+	headerFree(h);
+	h = newheader;
+    }
+
+    mi = rpmdbFreeIterator(mi);
+}
+
 /*
  * Run pre/post transaction scripts for transaction set
  * param ts	Transaction set
@@ -782,19 +916,15 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
-    int i, j;
+    int i;
     int ourrc = 0;
     int totalFileCount = 0;
     rpmfi fi;
-    sharedFileInfo shared, sharedList;
-    int numShared;
-    int nexti;
     rpmalKey lastFailKey;
     fingerPrintCache fpc;
     rpmps ps;
     rpmpsm psm;
     rpmtsi pi;	rpmte p;
-    rpmtsi qi;	rpmte q;
     int numAdded;
     int numRemoved;
     void * lock = NULL;
@@ -1070,133 +1200,32 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmFpHashFree(ts->ht);
     ts->ht = newht;
 
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
-
     /* ===============================================
      * Compute file disposition for each package in transaction set.
      */
-    rpmlog(RPMLOG_DEBUG, "computing file dispositions\n");
-    ps = rpmtsProblems(ts);
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+
+    /* check against files in the rpmdb */
+    checkInstalledFiles(ts, fpc);
+
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	dbiIndexSet * matches;
-	int knownBad;
-	int fc;
-
-	(void) rpmdbCheckSignals();
 
 	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
-
-	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
-		    ts->orderCount);
-
-	if (fc == 0) continue;
+	    continue;   /* XXX can't happen */
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	/* Extract file info for all files in this package from the database. */
-	matches = xcalloc(fc, sizeof(*matches));
-	if (rpmdbFindFpList(rpmtsGetRdb(ts), fi->fps, matches, fc, fpc)) {
-	    ps = rpmpsFree(ps);
-	    rpmtsFreeLock(lock);
-	    return 1;	/* XXX WTFO? */
-	}
-
-	numShared = 0;
- 	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0)
-	    numShared += dbiIndexSetCount(matches[i]);
-
-	/* Build sorted file info list for this package. */
-	shared = sharedList = xcalloc((numShared + 1), sizeof(*sharedList));
-
- 	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    /*
-	     * Take care not to mark files as replaced in packages that will
-	     * have been removed before we will get here.
-	     */
-	    for (j = 0; j < dbiIndexSetCount(matches[i]); j++) {
-		int ro;
-		ro = dbiIndexRecordOffset(matches[i], j);
-		knownBad = 0;
-		qi = rpmtsiInit(ts);
-		while ((q = rpmtsiNext(qi, TR_REMOVED)) != NULL) {
-		    if (ro == knownBad)
-			break;
-		    if (rpmteDBOffset(q) == ro)
-			knownBad = ro;
-		}
-		qi = rpmtsiFree(qi);
-
-		shared->pkgFileNum = i;
-		shared->otherPkg = dbiIndexRecordOffset(matches[i], j);
-		shared->otherFileNum = dbiIndexRecordFileNumber(matches[i], j);
-		shared->isRemoved = (knownBad == ro);
-		shared++;
-	    }
-	    matches[i] = dbiFreeIndexSet(matches[i]);
-	}
-	numShared = shared - sharedList;
-	shared->otherPkg = -1;
-	matches = _free(matches);
-
-	/* Sort file info by other package index (otherPkg) */
-	qsort(sharedList, numShared, sizeof(*shared), sharedCmp);
-
-	/* For all files from this package that are in the database ... */
-	for (i = 0; i < numShared; i = nexti) {
-	    int beingRemoved;
-
-	    shared = sharedList + i;
-
-	    /* Find the end of the files in the other package. */
-	    for (nexti = i + 1; nexti < numShared; nexti++) {
-		if (sharedList[nexti].otherPkg != shared->otherPkg)
-		    break;
-	    }
-
-	    /* Is this file from a package being removed? */
-	    beingRemoved = 0;
-	    if (ts->removedPackages != NULL)
-	    for (j = 0; j < ts->numRemovedPackages; j++) {
-		if (ts->removedPackages[j] != shared->otherPkg)
-		    continue;
-		beingRemoved = 1;
-		break;
-	    }
-
-	    /* Determine the fate of each file. */
-	    switch (rpmteType(p)) {
-	    case TR_ADDED:
-		xx = handleInstInstalledFiles(ts, p, fi, shared, nexti - i,
-	!(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES)));
-		break;
-	    case TR_REMOVED:
-		if (!beingRemoved)
-		    xx = handleRmvdInstalledFiles(ts, fi, shared, nexti - i);
-		break;
-	    }
-	}
-
-	free(sharedList);
-
-	/* Update disk space needs on each partition for this package. */
+	/* check files in ts against each other and update disk space
+	   needs on each partition for this package. */
 	handleOverlappedFiles(ts, p, fi);
 
 	/* Check added package has sufficient space on each partition used. */
-	switch (rpmteType(p)) {
-	case TR_ADDED:
+	if (rpmteType(p) == TR_ADDED) {
 	    rpmtsCheckDSIProblems(ts, p);
-	    break;
-	case TR_REMOVED:
-	    break;
 	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
     }
     pi = rpmtsiFree(pi);
-    ps = rpmpsFree(ps);
 
     if (rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
