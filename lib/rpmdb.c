@@ -2335,6 +2335,21 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     return mi;
 }
 
+/** \ingroup rpmdb
+ * Return database iterator.
+ * @param mi		rpm database iterator
+ * @param keyp		key data (NULL for sequential access)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		0 on success
+ */
+int rpmdbExtendIterator(rpmdbMatchIterator mi,
+			const void * keyp, size_t keylen)
+{
+    mi->mi_key.data = (void *) keyp;
+    mi->mi_key.size = keylen ? keylen : strlen(keyp);
+    return rpmdbGrowIterator(mi, 0);
+}
+
 /*
  * Convert current tag data to db key
  * @param tagdata	Tag data container

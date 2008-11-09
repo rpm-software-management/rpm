@@ -661,6 +661,16 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
 RPM_GNUC_INTERNAL
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 
+/** \ingroup rpmdb
+ * Return database iterator.
+ * @param mi		rpm database iterator
+ * @param keyp		key data (NULL for sequential access)
+ * @param keylen	key data length (0 will use strlen(keyp))
+ * @return		0 on success
+ */
+int rpmdbExtendIterator(rpmdbMatchIterator mi,
+			const void * keyp, size_t keylen);
+
 #ifndef __APPLE__
 /**
  *  * Mergesort, same arguments as qsort(2).
