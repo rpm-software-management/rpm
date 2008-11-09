@@ -2090,7 +2090,12 @@ top:
     return mi->mi_h;
 }
 
-static void rpmdbSortIterator(rpmdbMatchIterator mi)
+/** \ingroup rpmdb
+ * sort the iterator by (recnum, filenum)
+ * Return database iterator.
+ * @param mi		rpm database iterator
+ */
+void rpmdbSortIterator(rpmdbMatchIterator mi)
 {
     if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
     /*

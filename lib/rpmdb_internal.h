@@ -671,6 +671,13 @@ unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const void * keyp, size_t keylen);
 
+/** \ingroup rpmdb
+ * sort the iterator by (recnum, filenum)
+ * Return database iterator.
+ * @param mi		rpm database iterator
+ */
+void rpmdbSortIterator(rpmdbMatchIterator mi);
+
 #ifndef __APPLE__
 /**
  *  * Mergesort, same arguments as qsort(2).
