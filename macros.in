@@ -376,6 +376,30 @@ package or when debugging this package.\
 %_missing_doc_files_terminate_build	1
 
 #
+# Program to call for each successfully built and written binary package.
+# The package name is passed to the program as a command-line argument.
+#
+#%_build_pkgcheck	%{_bindir}/rpmlint
+
+#
+# Program to call for the whole binary package set after build.
+# The package set is passed to the program via command-line arguments.
+#
+#%_build_pkgcheck_set	%{_bindir}/rpmlint
+
+#
+# Program to call for successfully built and written SRPM.
+# The package name is passed to the program as a command-line argument.
+#
+#%_build_pkgcheck_srpm	%{_bindir}/rpmlint
+
+#
+# Should the build of packages fail if package checker (if defined) returns
+# non-zero exit status?
+#
+#%_nonzero_exit_pkgcheck_terminate_build	1
+
+#
 # Should an ELF file processed by find-debuginfo.sh having no build ID
 # terminate a build?  This is left undefined to disable it and defined to
 # enable.
