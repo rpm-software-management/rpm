@@ -679,6 +679,25 @@ static void addPackageProvides(Header h)
     free(evr);
 }
 
+rpmRC checkPackages(char *pkgcheck)
+{
+    int fail = rpmExpandNumeric("%{?_nonzero_exit_pkgcheck_terminate_build}");
+    int xx;
+    
+    rpmlog(RPMLOG_NOTICE, _("Executing \"%s\":\n"), pkgcheck);
+    xx = system(pkgcheck);
+    if (WEXITSTATUS(xx) == -1 || WEXITSTATUS(xx) == 127) {
+	rpmlog(RPMLOG_ERR, _("Execution of \"%s\" failed.\n"), pkgcheck);
+	if (fail) return 127;
+    }
+    if (WEXITSTATUS(xx) != 0) {
+	rpmlog(RPMLOG_ERR, _("Package check \"%s\" failed.\n"), pkgcheck);
+	if (fail) return RPMRC_FAIL;
+    }
+    
+    return RPMRC_OK;
+}
+
 rpmRC packageBinaries(rpmSpec spec)
 {
     struct cpioSourceArchive_s csabuf;
@@ -686,6 +705,7 @@ rpmRC packageBinaries(rpmSpec spec)
     rpmRC rc;
     const char *errorString;
     Package pkg;
+    char *pkglist = NULL;
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *fn;
@@ -761,13 +781,34 @@ rpmRC packageBinaries(rpmSpec spec)
 	csa->cpioList = rpmfiLink(pkg->cpioList, RPMDBG_M("packageBinaries"));
 
 	rc = writeRPM(&pkg->header, NULL, fn, csa, spec->passPhrase, NULL);
-
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
 			       RPMDBG_M("init (packageBinaries)"));
+	if (rc == RPMRC_OK) {
+	    /* Do check each written package if enabled */
+	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", fn, NULL);
+	    if (pkgcheck[0] != ' ') {
+		rc = checkPackages(pkgcheck);
+	    }
+	    pkgcheck = _free(pkgcheck);
+	    rstrcat(&pkglist, fn);
+	    rstrcat(&pkglist, " ");
+	}
 	fn = _free(fn);
-	if (rc != RPMRC_OK)
+	if (rc != RPMRC_OK) {
+	    pkglist = _free(pkglist);
 	    return rc;
+	}
+    }
+
+    /* Now check the package set if enabled */
+    if (pkglist != NULL) {
+	char *pkgcheck_set = rpmExpand("%{?_build_pkgcheck_set} ", pkglist,  NULL);
+	if (pkgcheck_set[0] != ' ') {	/* run only if _build_pkgcheck_set is defined */
+	    checkPackages(pkgcheck_set);
+	}
+	pkgcheck_set = _free(pkgcheck_set);
+	pkglist = _free(pkglist);
     }
     
     return RPMRC_OK;
@@ -789,6 +830,7 @@ rpmRC packageSources(rpmSpec spec)
     
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
+	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
@@ -801,9 +843,15 @@ rpmRC packageSources(rpmSpec spec)
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, 
 		csa, spec->passPhrase, &(spec->cookie));
 
+	/* Do check SRPM package if enabled */
+	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {
+	    rc = checkPackages(pkgcheck);
+	}
+
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
 			       RPMDBG_M("init (packageSources)"));
+	pkgcheck = _free(pkgcheck);
 	fn = _free(fn);
     }
     return rc;

@@ -395,6 +395,13 @@ int parseSpec(rpmts ts, const char * specFile,
 rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test);
 
 /** \ingroup rpmbuild
+ * Check package(s).
+ * @param pkgcheck	program to run
+ * @return		RPMRC_OK on success
+ */
+rpmRC checkPackages(char *pkgcheck);
+
+/** \ingroup rpmbuild
  * Generate binary package(s).
  * @param spec		spec file control structure
  * @return		RPMRC_OK on success
