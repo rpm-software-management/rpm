@@ -1285,7 +1285,18 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->action = FA_UNKNOWN;
     fi->flags = 0;
 
+    /* For build and src.rpm's the file actions are known at this point */
     fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
+    if (isBuild) {
+	for (int i = 0; i < fi->fc; i++) {
+	    int ghost = fi->fflags[i] & RPMFILE_GHOST;
+	    fi->actions[i] = ghost ? FA_SKIP : FA_COPYOUT;
+	}
+    } else if (isSource) {
+	for (int i = 0; i < fi->fc; i++) {
+	    fi->actions[i] = FA_CREATE;
+	}
+    }
 
     /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
 

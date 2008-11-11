@@ -1313,12 +1313,6 @@ static void genCpioListAndHeader(FileList fl,
 	    a = stpcpy(a, "./");
 	a = stpcpy(a, (flp->cpioPath + skipLen));
 	a++;		/* skip apath NUL */
-
-	if (flp->flags & RPMFILE_GHOST) {
-	    fi->actions[i] = FA_SKIP;
-	    continue;
-	}
-	fi->actions[i] = FA_COPYOUT;
     }
     if (fip)
 	*fip = fi;
