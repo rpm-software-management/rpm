@@ -1258,6 +1258,7 @@ static void genCpioListAndHeader(FileList fl,
     fi->bnl = _free(fi->bnl);
     fi->dil = _free(fi->dil);
 
+    fi->dc = fi->fc;
     fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen + 1);
     d = (char *)(fi->dnl + fi->fc);
     *d = '\0';
