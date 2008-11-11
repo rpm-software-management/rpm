@@ -482,7 +482,6 @@ static int ensureOlder(rpmts ts,
  * @param ts		transaction set
  * @param fi		file info set
  */
-/* FIX: fi->actions is modified. */
 static void skipFiles(const rpmts ts, rpmfi fi)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
@@ -540,7 +539,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	drc[ix]++;
 
 	/* Don't bother with skipped files */
-	if (XFA_SKIPPING(fi->actions[i])) {
+	if (XFA_SKIPPING(rpmfiFAction(fi))) {
 	    drc[ix]--; dff[ix] = 1;
 	    continue;
 	}
@@ -549,7 +548,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	FColor = rpmfiFColor(fi);
 	if (tscolor && FColor && !(tscolor & FColor)) {
 	    drc[ix]--;	dff[ix] = 1;
-	    fi->actions[i] = FA_SKIPCOLOR;
+	    rpmfiSetFAction(fi, FA_SKIPCOLOR);
 	    continue;
 	}
 
@@ -589,7 +588,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 	if (nsp && *nsp) {
 	    drc[ix]--;	dff[ix] = 1;
-	    fi->actions[i] = FA_SKIPNETSHARED;
+	    rpmfiSetFAction(fi, FA_SKIPNETSHARED);
 	    continue;
 	}
 
@@ -614,7 +613,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    }
 	    if (*lang == NULL) {
 		drc[ix]--;	dff[ix] = 1;
-		fi->actions[i] = FA_SKIPNSTATE;
+		rpmfiSetFAction(fi, FA_SKIPNSTATE);
 		continue;
 	    }
 	}
@@ -624,7 +623,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 */
 	if (noConfigs && (rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
 	    drc[ix]--;	dff[ix] = 1;
-	    fi->actions[i] = FA_SKIPNSTATE;
+	    rpmfiSetFAction(fi, FA_SKIPNSTATE);
 	    continue;
 	}
 
@@ -633,7 +632,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 */
 	if (noDocs && (rpmfiFFlags(fi) & RPMFILE_DOC)) {
 	    drc[ix]--;	dff[ix] = 1;
-	    fi->actions[i] = FA_SKIPNSTATE;
+	    rpmfiSetFAction(fi, FA_SKIPNSTATE);
 	    continue;
 	}
     }
@@ -667,7 +666,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    const char * fdn, * fbn;
 	    rpm_mode_t fFMode;
 
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		continue;
 
 	    fFMode = rpmfiFMode(fi);
@@ -685,7 +684,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    if (strncmp(fbn, bn, bnlen))
 		continue;
 	    rpmlog(RPMLOG_DEBUG, "excluding directory %s\n", dn);
-	    fi->actions[i] = FA_SKIPNSTATE;
+	    rpmfiSetFAction(fi, FA_SKIPNSTATE);
 	    break;
 	}
     }
