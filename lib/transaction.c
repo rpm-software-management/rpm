@@ -1063,7 +1063,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    struct rpmffi_s ffi;
 	    ffi.fi = fi;
 	    ffi.fileno = i;
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		continue;
 	    rpmFpHashAddEntry(ts->ht, fi->fps + i, ffi);
 	}
@@ -1087,7 +1087,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	fi = rpmfiInit(fi, 0);
 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		continue;
 	    fpLookupSubdir(ts->ht, newht, fpc, fi, i);
 	}
