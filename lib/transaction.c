@@ -121,7 +121,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    continue;
 #endif
 
-	if (XFA_SKIPPING(fi->actions[fileNum]))
+	if (XFA_SKIPPING(rpmfiFAction(fi)))
 	    continue;
 
 	if (rpmfiCompare(otherFi, fi)) {
@@ -132,11 +132,11 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    if (tscolor != 0 && FColor != 0 && FColor != oFColor)
 	    {
 		if (oFColor & prefcolor) {
-		    fi->actions[fileNum] = FA_SKIPCOLOR;
+		    rpmfiSetFAction(fi, FA_SKIPCOLOR);
 		    rConflicts = 0;
 		} else
 		if (FColor & prefcolor) {
-		    fi->actions[fileNum] = FA_CREATE;
+		    rpmfiSetFAction(fi, FA_CREATE);
 		    rConflicts = 0;
 		}
 	    }
@@ -149,7 +149,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 			0);
 	    }
 	    /* Save file identifier to mark as state REPLACED. */
-	    if ( !(isCfgFile || XFA_SKIPPING(fi->actions[fileNum])) ) {
+	    if ( !(isCfgFile || XFA_SKIPPING(rpmfiFAction(fi))) ) {
 		/* FIX: p->replaced, not fi */
 		if (!shared->isRemoved)
 		    fi->replaced[numReplaced++] = *shared;
@@ -161,7 +161,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    int skipMissing =
 		((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
 	    rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
-	    fi->actions[fileNum] = action;
+	    rpmfiSetFAction(fi, action);
 	}
 	/* XXX watch out, replacedSizes is not rpm_loff_t (yet) */
 	fi->replacedSizes[fileNum] = (rpm_off_t) rpmfiFSize(otherFi);
