@@ -300,9 +300,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    fi->astriplen = 0;
-    fi->striplen = 0;
-
     i = fi->fc;
 
     if (fi->h != NULL) {	/* XXX can't happen */
