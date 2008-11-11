@@ -246,7 +246,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	struct rpmffi_s * recs;
 	int numRecs;
 
-	if (XFA_SKIPPING(fi->actions[i]))
+	if (XFA_SKIPPING(rpmfiFAction(fi)))
 	    continue;
 
 	fn = rpmfiFN(fi);
@@ -312,7 +312,7 @@ static void handleOverlappedFiles(const rpmts ts,
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
 	    /* XXX Happens iff fingerprint for incomplete package install. */
-	    if (otherFi->actions[otherFileNum] != FA_UNKNOWN)
+	    if (rpmfiFAction(otherFi) != FA_UNKNOWN);
 		break;
 	}
 
@@ -328,15 +328,17 @@ static void handleOverlappedFiles(const rpmts ts,
 
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
-		if (fi->actions[i] != FA_UNKNOWN)
+		rpmFileAction action;
+		if (rpmfiFAction(fi) != FA_UNKNOWN)
 		    break;
 		if (rpmfiConfigConflict(fi)) {
 		    /* Here is a non-overlapped pre-existing config file. */
-		    fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
-			? FA_ALTNAME : FA_BACKUP;
+		    action = (FFlags & RPMFILE_NOREPLACE) ?
+			      FA_ALTNAME : FA_BACKUP;
 		} else {
-		    fi->actions[i] = FA_CREATE;
+		    action = FA_CREATE;
 		}
+		rpmfiSetFAction(fi, action);
 		break;
 	    }
 
@@ -350,20 +352,20 @@ assert(otherFi != NULL);
 		if (tscolor != 0) {
 		    if (FColor & prefcolor) {
 			/* ... last file of preferred colour is installed ... */
-			if (!XFA_SKIPPING(fi->actions[i])) {
+			if (!XFA_SKIPPING(rpmfiFAction(fi))) {
 			    /* XXX static helpers are order dependent. Ick. */
 			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
 			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
-				otherFi->actions[otherFileNum] = FA_SKIPCOLOR;
+				rpmfiSetFAction(otherFi, FA_SKIPCOLOR);
 			}
-			fi->actions[i] = FA_CREATE;
+			rpmfiSetFAction(fi, FA_CREATE);
 			rConflicts = 0;
 		    } else
 		    if (oFColor & prefcolor) {
 			/* ... first file of preferred colour is installed ... */
-			if (XFA_SKIPPING(fi->actions[i]))
-			    otherFi->actions[otherFileNum] = FA_CREATE;
-			fi->actions[i] = FA_SKIPCOLOR;
+			if (XFA_SKIPPING(rpmfiFAction(fi)))
+			    rpmfiSetFAction(otherFi, FA_CREATE);
+			rpmfiSetFAction(fi, FA_SKIPCOLOR);
 			rConflicts = 0;
 		    }
 		    done = 1;
@@ -382,11 +384,12 @@ assert(otherFi != NULL);
 
 	    if (rpmfiConfigConflict(fi)) {
 		/* Here is an overlapped  pre-existing config file. */
-		fi->actions[i] = (FFlags & RPMFILE_NOREPLACE)
-			? FA_ALTNAME : FA_SKIP;
+		rpmFileAction action;
+		action = (FFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SKIP;
+		rpmfiSetFAction(fi, action);
 	    } else {
 		if (!done)
-		    fi->actions[i] = FA_CREATE;
+		    rpmfiSetFAction(fi, FA_CREATE);
 	    }
 	  } break;
 
@@ -394,20 +397,20 @@ assert(otherFi != NULL);
 	    if (otherPkgNum >= 0) {
 assert(otherFi != NULL);
 		/* Here is an overlapped added file we don't want to nuke. */
-		if (otherFi->actions[otherFileNum] != FA_ERASE) {
+		if (rpmfiFAction(otherFi) != FA_ERASE) {
 		    /* On updates, don't remove files. */
-		    fi->actions[i] = FA_SKIP;
+		    rpmfiSetFAction(fi, FA_SKIP);
 		    break;
 		}
 		/* Here is an overlapped removed file: skip in previous. */
-		otherFi->actions[otherFileNum] = FA_SKIP;
+		rpmfiSetFAction(otherFi, FA_SKIP);
 	    }
-	    if (XFA_SKIPPING(fi->actions[i]))
+	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		break;
 	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
 		break;
 	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG))) {
-		fi->actions[i] = FA_ERASE;
+		rpmfiSetFAction(fi, FA_ERASE);
 		break;
 	    }
 		
@@ -419,18 +422,18 @@ assert(otherFi != NULL);
 		    unsigned char fdigest[diglen];
 		    if (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
 			memcmp(digest, fdigest, diglen)) {
-			fi->actions[i] = FA_BACKUP;
+			rpmfiSetFAction(fi, FA_BACKUP);
 			break;
 		    }
 		}
 	    }
-	    fi->actions[i] = FA_ERASE;
+	    rpmfiSetFAction(fi, FA_ERASE);
 	    break;
 	}
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
-		fi->replacedSizes[i], fixupSize, fi->actions[i]);
+		fi->replacedSizes[i], fixupSize, rpmfiFAction(fi));
 
     }
     ps = rpmpsFree(ps);
