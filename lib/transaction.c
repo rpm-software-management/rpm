@@ -209,7 +209,8 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
 	if (otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
 	    continue;
 
-	fi->actions[fileNum] = FA_SKIP;
+	rpmfiSetFX(fi, fileNum);
+	rpmfiSetFAction(fi, FA_SKIP);
     }
 
     rpmtdFreeData(&ostates);
