@@ -393,6 +393,24 @@ const char * rpmfiFCaps(rpmfi fi)
     return fcaps;
 }
 
+rpmFileAction rpmfiFAction(rpmfi fi)
+{
+    rpmFileAction action;
+    if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	action = fi->actions[fi->i];
+    } else {
+	action = fi ? fi->action : FA_UNKNOWN;
+    }
+    return action;
+}
+
+void rpmfiSetFAction(rpmfi fi, rpmFileAction action)
+{
+    if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	fi->actions[fi->i] = action;
+    }	
+}
+
 int rpmfiNext(rpmfi fi)
 {
     int i = -1;
