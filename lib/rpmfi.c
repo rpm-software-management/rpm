@@ -1230,7 +1230,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	asize = rpmtdGetUint64(&td);
     }
     /* 0 means unknown */
-    fi->archivePos = 0;
     fi->archiveSize = asize ? *asize : 0;
     rpmtdFreeData(&td);
 

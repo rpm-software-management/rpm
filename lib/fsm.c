@@ -525,9 +525,9 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	void * ptr;
-	fi->archivePos = 0;
+	fsm->archivePos = 0;
 	ptr = rpmtsNotify(ts, fi->te,
-		RPMCALLBACK_INST_START, fi->archivePos, fi->archiveSize);
+		RPMCALLBACK_INST_START, fsm->archivePos, fi->archiveSize);
     }
 
     fsm->archiveSize = archiveSize;
@@ -1734,10 +1734,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
 	    rpm_loff_t archivePos = fdGetCpioPos(fsm->cfd);
-	    if (archivePos > fi->archivePos) {
-		fi->archivePos = archivePos;
+	    if (archivePos > fsm->archivePos) {
+		fsm->archivePos = archivePos;
 		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
-			fi->archivePos, fi->archiveSize);
+			fsm->archivePos, fi->archiveSize);
 	    }
 	}
 	break;

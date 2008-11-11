@@ -99,7 +99,6 @@ struct rpmfi_s {
 
     size_t astriplen;
     size_t striplen;
-    rpm_loff_t archivePos;
     rpm_loff_t archiveSize;
     const char ** apath;
     cpioMapFlags mapflags;
