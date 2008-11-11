@@ -124,13 +124,6 @@ static int handleInstInstalledFiles(const rpmts ts,
 	if (XFA_SKIPPING(fi->actions[fileNum]))
 	    continue;
 
-	if (!(fi->mapflags & CPIO_SBIT_CHECK)) {
-	    rpm_mode_t omode = rpmfiFMode(otherFi);
-	    if (S_ISREG(omode) && (omode & 06000) != 0) {
-		fi->mapflags |= CPIO_SBIT_CHECK;
-	    }
-	}
-
 	if (rpmfiCompare(otherFi, fi)) {
 	    int rConflicts;
 
@@ -1225,20 +1218,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	case TR_REMOVED:
 	    break;
 	}
-	/* check for s-bit files to be removed */
-	if (rpmteType(p) == TR_REMOVED) {
-	    fi = rpmfiInit(fi, 0);
-	    while ((i = rpmfiNext(fi)) >= 0) {
-		rpm_mode_t mode;
-		if (XFA_SKIPPING(fi->actions[i]))
-		    continue;
-		(void) rpmfiSetFX(fi, i);
-		mode = rpmfiFMode(fi);
-		if (S_ISREG(mode) && (mode & 06000) != 0) {
-		    fi->mapflags |= CPIO_SBIT_CHECK;
-		}
-	    }
-	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
     }
     pi = rpmtsiFree(pi);
@@ -1352,7 +1331,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		    char * fstates = fi->fstates;
 		    rpmFileAction * actions = fi->actions;
 		    sharedFileInfo replaced = fi->replaced;
-		    cpioMapFlags mapflags = fi->mapflags;
 		    rpmte savep;
 		    int numShared = 0;
 
@@ -1386,8 +1364,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 			fi->actions = actions;
                         if (replaced != NULL)
                             fi->replaced = replaced;
-			if (mapflags & CPIO_SBIT_CHECK)
-			    fi->mapflags |= CPIO_SBIT_CHECK;
 			p->fi = fi;
 		    }
 		}

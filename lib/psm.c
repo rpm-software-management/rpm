@@ -300,8 +300,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-
     fi->astriplen = 0;
     fi->striplen = 0;
 
@@ -1292,8 +1290,6 @@ assert(psm->mi == NULL);
 		}
 		fi->striplen = p ? strlen(p) + 1 : 1;
 	    }
-	    fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID | (fi->mapflags & CPIO_SBIT_CHECK);
 	
 	    {	struct rpmtd_s filenames;
 		rpmTag ftag = RPMTAG_FILENAMES;

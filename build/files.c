@@ -1279,11 +1279,6 @@ static void genCpioListAndHeader(FileList fl,
     fi->fuser = _free(fi->fuser);
     fi->fgroup = _free(fi->fgroup);
 
-    fi->mapflags = CPIO_MAP_PATH |
-	    CPIO_MAP_TYPE | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-    if (isSrc)
-	fi->mapflags |= CPIO_FOLLOW_SYMLINKS;
-
     /* Make the cpio list */
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
 	char * b;

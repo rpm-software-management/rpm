@@ -1285,8 +1285,20 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
 
     /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
-    fi->mapflags =
-		CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+
+    /* Figure out mapflags: 
+     * - path, mode, uid and gid are used by everything
+     * - all binary packages get SBIT_CHECK set
+     * - if archive size is not known, we're only building this package,
+     *   different rules apply 
+     */
+    fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+    if (asize) {
+	if (!headerIsSource(h)) fi->mapflags |= CPIO_SBIT_CHECK;
+    } else {
+	fi->mapflags |= CPIO_MAP_TYPE;
+	if (headerIsSource(h)) fi->mapflags |= CPIO_FOLLOW_SYMLINKS;
+    }
 
     _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
     _hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
