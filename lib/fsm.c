@@ -485,9 +485,10 @@ static void * freeHardLink(hardLink_t li)
     return _free(li);
 }
 
-FSM_t newFSM(void)
+FSM_t newFSM(cpioMapFlags mapflags)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
+    fsm->mapFlags = mapflags;
     return fsm;
 }
 
@@ -623,7 +624,6 @@ static int fsmMapPath(FSM_t fsm)
     fsm->nsuffix = NULL;
     fsm->astriplen = 0;
     fsm->action = FA_UNKNOWN;
-    fsm->mapFlags = 0;
 
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
@@ -631,7 +631,6 @@ static int fsmMapPath(FSM_t fsm)
 	fsm->astriplen = fi->astriplen;
 	fsm->action = (fi->actions ? fi->actions[i] : fi->action);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : fi->flags);
-	fsm->mapFlags = fi->mapflags;
 
 	/* src rpms have simple base name in payload. */
 	fsm->dirName = fi->dnl[fi->dil[i]];

@@ -101,7 +101,6 @@ struct rpmfi_s {
     size_t striplen;
     rpm_loff_t archiveSize;
     const char ** apath;
-    cpioMapFlags mapflags;
     FSM_t fsm;			/*!< File state machine data. */
     int keep_header;		/*!< Keep header? */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */

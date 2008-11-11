@@ -1196,6 +1196,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     const char * Type;
     rpm_loff_t *asize = NULL;
     unsigned char * t;
+    cpioMapFlags mapflags;
+    int isBuild, isSource;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
@@ -1223,15 +1225,16 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->keep_header = (flags & RPMFI_KEEPHEADER);
     fi->h = fi->keep_header ? headerLink(h) : NULL;
 
-    if (fi->fsm == NULL)
-	fi->fsm = newFSM();
-
     if (headerGet(h, RPMTAG_LONGARCHIVESIZE, &td, HEADERGET_EXT)) {
 	asize = rpmtdGetUint64(&td);
     }
     /* 0 means unknown */
     fi->archiveSize = asize ? *asize : 0;
     rpmtdFreeData(&td);
+    
+    /* Archive size is not set when this gets called from build */
+    isBuild = (asize == NULL);
+    isSource = headerIsSource(h);
 
     /* See if we have pre/posttrans scripts. */
     fi->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
@@ -1292,13 +1295,14 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
      * - if archive size is not known, we're only building this package,
      *   different rules apply 
      */
-    fi->mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-    if (asize) {
-	if (!headerIsSource(h)) fi->mapflags |= CPIO_SBIT_CHECK;
+    mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+    if (isBuild) {
+	mapflags |= CPIO_MAP_TYPE;
+	if (isSource) mapflags |= CPIO_FOLLOW_SYMLINKS;
     } else {
-	fi->mapflags |= CPIO_MAP_TYPE;
-	if (headerIsSource(h)) fi->mapflags |= CPIO_FOLLOW_SYMLINKS;
+	if (!isSource) mapflags |= CPIO_SBIT_CHECK;
     }
+    fi->fsm = newFSM(mapflags);
 
     _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
     _hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);

@@ -174,10 +174,11 @@ extern "C" {
 
 /**
  * Create file state machine instance.
+ * @param mapflags	CPIO map flags to use
  * @return		file state machine
  */
 RPM_GNUC_INTERNAL
-FSM_t newFSM(void);
+FSM_t newFSM(cpioMapFlags mapflags);
 
 /**
  * Destroy file state machine instance.
