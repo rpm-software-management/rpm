@@ -61,14 +61,13 @@ static int intcmp(const void * a, const void * b)
  * Add removed package instance to ordered transaction set.
  * @param ts		transaction set
  * @param h		header
- * @param dboffset	rpm database instance
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(rpmts ts, Header h, int dboffset,
-		rpmalKey depends)
+static int removePackage(rpmts ts, Header h, rpmalKey depends)
 {
     rpmte p;
+    unsigned int dboffset = headerGetInstance(h);
 
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
@@ -295,7 +294,7 @@ addheader:
 	if (rpmVersionCompare(h, oh) == 0)
 	    continue;
 
-	xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+	xx = removePackage(ts, oh, pkgKey);
     }
     mi = rpmdbFreeIterator(mi);
 
@@ -348,7 +347,7 @@ addheader:
 #ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
 		if (rpmVersionCompare(h, oh))
 #endif
-		    xx = removePackage(ts, oh, rpmdbGetIteratorOffset(mi), pkgKey);
+		    xx = removePackage(ts, oh, pkgKey);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		ohNEVRA = _free(ohNEVRA);
@@ -370,7 +369,7 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
-    return removePackage(ts, h, dboffset, RPMAL_NOMATCH);
+    return removePackage(ts, h, RPMAL_NOMATCH);
 }
 
 /**
