@@ -642,7 +642,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * Add package to be erased to transaction set.
  * @param ts		transaction set
  * @param h		header
- * @param dboffset	rpm database instance
+ * @param dboffset	ununsed
  * @return		0 on success
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);

@@ -260,9 +260,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else { /* XXX: Note that we automatically choose to remove all matches */
 	    Header h;
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		unsigned int recOffset = rpmdbGetIteratorOffset(mi);
-		if (recOffset)
-		    rpmtsAddEraseElement(s->ts, h, recOffset);
+		rpmtsAddEraseElement(s->ts, h, -1);
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -278,9 +276,7 @@ fprintf(stderr, "*** rpmts_AddErase(%p) ts %p\n", s, s->ts);
 	} else {
 	    Header h;
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		uint32_t recOffset = rpmdbGetIteratorOffset(mi);
-		if (recOffset)
-		    rpmtsAddEraseElement(s->ts, h, recOffset);
+		rpmtsAddEraseElement(s->ts, h, -1);
 		break;
 	    }
 	}

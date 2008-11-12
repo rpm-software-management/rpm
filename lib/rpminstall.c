@@ -667,9 +667,8 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
 	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		unsigned int recOffset;
-		if (erasing && (recOffset = rpmdbGetIteratorOffset(mi))) {
-		    (void) rpmtsAddEraseElement(ts, h, recOffset);
+		if (erasing) {
+		    (void) rpmtsAddEraseElement(ts, h, -1);
 		    numPackages++;
 		} else {
 		    char *nevra = headerFormat(h, qfmt, NULL);
