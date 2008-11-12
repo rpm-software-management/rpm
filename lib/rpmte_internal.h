@@ -44,7 +44,7 @@ struct rpmte_s {
     int tree;			/*!< Tree index. */
     int depth;			/*!< Depth in dependency tree. */
     int breadth;		/*!< Breadth in dependency tree. */
-    unsigned int db_instance;   /*!< Database Instance after add */
+    unsigned int db_instance;	/*!< Database instance (of removed pkgs) */
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
     rpmds this;			/*!< This package's provided NEVR. */
@@ -62,14 +62,7 @@ struct rpmte_s {
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
-    union {
-	rpmalKey addedKey;
-	struct {
-	    rpmalKey dependsOnKey;
-	    int dboffset;
-	} removed;
-    } u;
-
+    rpmalKey pkgKey;
 };
 
 /**

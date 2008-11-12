@@ -126,10 +126,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	p->relocs[i].newPath = NULL;
     }
 
-    /* Set db_instance to 0 as it has not been installed
-     * necessarily yet.
-     */
-    p->db_instance = 0;
+    p->db_instance = headerGetInstance(h);
     p->key = key;
     p->fd = NULL;
 
@@ -172,30 +169,27 @@ rpmte rpmteNew(const rpmts ts, Header h,
     struct rpmtd_s size;
 
     p->type = type;
+    p->pkgKey = pkgKey;
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
-	p->u.addedKey = pkgKey;
 	headerGet(h, RPMTAG_SIGSIZE, &size, HEADERGET_DEFAULT);
 	if ((ep = rpmtdGetUint32(&size))) {
 	    p->pkgFileSize += 96 + 256 + *ep;
 	}
 	break;
     case TR_REMOVED:
-	p->u.removed.dependsOnKey = pkgKey;
-	p->u.removed.dboffset = dboffset;
+	/* nothing to do */
 	break;
     }
     return p;
 }
 
-/* Get the DB Instance value */
 unsigned int rpmteDBInstance(rpmte te) 
 {
     return (te != NULL ? te->db_instance : 0);
 }
 
-/* Set the DB Instance value */
 void rpmteSetDBInstance(rpmte te, unsigned int instance) 
 {
     if (te != NULL) 
@@ -400,15 +394,15 @@ void rpmteNewTSI(rpmte te)
 
 rpmalKey rpmteAddedKey(rpmte te)
 {
-    return (te != NULL ? te->u.addedKey : RPMAL_NOMATCH);
+    return (te != NULL && te->type == TR_ADDED ? te->pkgKey : RPMAL_NOMATCH);
 }
 
 rpmalKey rpmteSetAddedKey(rpmte te, rpmalKey npkgKey)
 {
     rpmalKey opkgKey = RPMAL_NOMATCH;
-    if (te != NULL) {
-	opkgKey = te->u.addedKey;
-	te->u.addedKey = npkgKey;
+    if (te != NULL && te->type == TR_ADDED) {
+	opkgKey = te->pkgKey;
+	te->pkgKey = npkgKey;
     }
     return opkgKey;
 }
@@ -416,12 +410,12 @@ rpmalKey rpmteSetAddedKey(rpmte te, rpmalKey npkgKey)
 
 rpmalKey rpmteDependsOnKey(rpmte te)
 {
-    return (te != NULL ? te->u.removed.dependsOnKey : RPMAL_NOMATCH);
+    return (te != NULL && te->type == TR_REMOVED ? te->pkgKey : RPMAL_NOMATCH);
 }
 
 int rpmteDBOffset(rpmte te)
 {
-    return (te != NULL ? te->u.removed.dboffset : 0);
+    return rpmteDBInstance(te);
 }
 
 const char * rpmteEVR(rpmte te)

@@ -48,7 +48,7 @@ rpmte rpmteFree(rpmte te);
  * @param type		TR_ADDED/TR_REMOVED
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
- * @param dboffset	(TR_REMOVED) rpmdb instance
+ * @param dboffset	unused
  * @param pkgKey	associated added package (if any)
  * @return		new transaction element
  */
