@@ -1237,6 +1237,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->Type = Type;
     fi->i = -1;
     fi->tagN = tagN;
+    fi->record = headerGetInstance(h);
 
     fi->scareFlags = scareFlags;
 

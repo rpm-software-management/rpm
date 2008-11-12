@@ -1009,14 +1009,12 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	    numAdded++;
-	    fi->record = 0;
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    if (fc > 0)
 		skipFiles(ts, fi);
 	    break;
 	case TR_REMOVED:
 	    numRemoved++;
-	    fi->record = rpmteDBOffset(p);
 	    break;
 	}
 
