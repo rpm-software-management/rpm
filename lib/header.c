@@ -141,6 +141,7 @@ Header headerNew(void)
     h->blob = NULL;
     h->indexAlloced = INDEX_MALLOC_SIZE;
     h->indexUsed = 0;
+    h->instance = 0;
     h->flags |= HEADERFLAG_SORTED;
 
     h->index = (h->indexAlloced
@@ -861,6 +862,7 @@ Header headerLoad(void * uh)
     h->blob = uh;
     h->indexAlloced = il + 1;
     h->indexUsed = il;
+    h->instance = 0;
     h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
     h->flags |= HEADERFLAG_SORTED;
     h->nrefs = 0;
@@ -1953,3 +1955,7 @@ void headerCopyTags(Header headerFrom, Header headerTo,
     }
 }
 
+unsigned int headerGetInstance(Header h)
+{
+    return h ? h->instance : 0;
+}

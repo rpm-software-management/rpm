@@ -54,6 +54,7 @@ struct headerToken_s {
     indexEntry index;		/*!< Array of tags. */
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
+    unsigned int instance;	/*!< Rpmdb instance (offset) */
     int flags;
 #define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
 #define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */

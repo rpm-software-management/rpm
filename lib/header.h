@@ -369,6 +369,13 @@ rpm_color_t headerGetColor(Header h);
  */
 int headerIsSource(Header h);
 
+/** \ingroup header
+ * Return header instance, ie is the header from rpmdb.
+ * @param h		header
+ * @return		rpmdb record number or 0
+ */
+unsigned int headerGetInstance(Header h);
+
 typedef enum headerConvOps_e {
     HEADERCONV_EXPANDFILELIST	= 0,
     HEADERCONV_COMPRESSFILELIST = 1,
