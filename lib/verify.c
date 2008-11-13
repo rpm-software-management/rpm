@@ -206,9 +206,12 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 #endif
 
-    if (flags & RPMVERIFY_MTIME) {
-	if (sb.st_mtime != rpmfiFMtime(fi))
+    if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfiFMtime(fi))) {
+	/* Filter out timestamp differences of shared files */
+	rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
+	if (rpmdbGetIteratorCount(mi) < 2) 
 	    *res |= RPMVERIFY_MTIME;
+	rpmdbFreeIterator(mi);
     }
 
     if (flags & RPMVERIFY_USER) {
