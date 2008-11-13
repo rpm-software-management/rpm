@@ -223,20 +223,19 @@ static int handleRmvdInstalledFiles(const rpmts ts, rpmfi fi,
  * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
-static void handleOverlappedFiles(const rpmts ts,
-		const rpmte p, rpmfi fi)
+static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 {
     rpm_loff_t fixupSize = 0;
     rpmps ps;
     const char * fn;
     int i, j;
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpm_color_t prefcolor = rpmtsPrefColor(ts);
 
     ps = rpmtsProblems(ts);
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
-	rpm_color_t tscolor = rpmtsColor(ts);
-	rpm_color_t prefcolor = rpmtsPrefColor(ts);
 	rpm_color_t oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
