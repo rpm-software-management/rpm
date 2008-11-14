@@ -1248,7 +1248,8 @@ static void genCpioListAndHeader(FileList fl,
 
   {
     rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
+    rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEOWNER;
+    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, flags);
     char * a, * d;
 
     fi->te = xcalloc(1, sizeof(*fi->te));
@@ -1274,10 +1275,6 @@ static void genCpioListAndHeader(FileList fl,
     if (fl->buildRoot)
 	fi->astriplen = strlen(fl->buildRoot);
     fi->striplen = 0;
-    /* Make all files in the cpio header owned by root:root. */
-    /* XXX Should we? It's against what LSB states (of RPMv3)... */
-    fi->fuser = _free(fi->fuser);
-    fi->fgroup = _free(fi->fgroup);
 
     /* Make the cpio list */
     for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
