@@ -68,6 +68,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     char *arg_backup = NULL;
     char *arg_fuzz = NULL;
     char *args = NULL;
+    char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
     struct Source *sp;
     char *patchcmd;
 
@@ -108,12 +109,13 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	rasprintf(&arg_fuzz, " --fuzz=%d", fuzz);
     } else arg_fuzz = xstrdup("");
 
-    rasprintf(&args, "-s -p%d %s%s%s%s", strip, arg_backup, arg_fuzz, 
+    rasprintf(&args, "%s -p%d %s%s%s%s", arg_patch_flags, strip, arg_backup, arg_fuzz, 
 		reverse ? " -R" : "", 
 		removeEmpties ? " -E" : "");
 
     patchcmd = rpmExpand("%{uncompress: ", fn, "} | %{__patch} ", args, NULL);
 
+    free(arg_patch_flags);
     free(arg_fuzz);
     free(arg_backup);
     free(args);
