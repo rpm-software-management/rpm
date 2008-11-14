@@ -1405,3 +1405,46 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
 }
+
+rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
+{
+    char * fstates = fi->fstates;
+    rpmFileAction * actions = fi->actions;
+    sharedFileInfo replaced = fi->replaced;
+    rpmte savep;
+    int numShared = 0;
+
+    if (replaced != NULL) {
+	for (; replaced->otherPkg; replaced++) {
+	    numShared++;
+	}
+	if (numShared > 0) {
+	    replaced = xcalloc(numShared + 1, sizeof(*fi->replaced));
+	    memcpy(replaced, fi->replaced, 
+		   sizeof(*fi->replaced) * (numShared + 1));
+	}
+    }
+
+    fi->fstates = NULL;
+    fi->actions = NULL;
+    fi->replaced = NULL;
+    /* FIX: fi->actions is NULL */
+    fi = rpmfiFree(fi);
+
+    savep = rpmtsSetRelocateElement(ts, p);
+    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
+    (void) rpmtsSetRelocateElement(ts, savep);
+
+    if (fi != NULL) {	/* XXX can't happen */
+	fi->te = p;
+	free(fi->fstates);
+	fi->fstates = fstates;
+	free(fi->actions);
+	fi->actions = actions;
+	if (replaced != NULL)
+	    fi->replaced = replaced;
+	p->fi = fi;
+    }
+    return fi;
+}
+

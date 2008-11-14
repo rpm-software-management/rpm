@@ -1270,46 +1270,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		 * XXX around a recreated file info set.
 		 */
 		rpmpsmSetFI(psm, NULL);
-		{
-		    char * fstates = fi->fstates;
-		    rpmFileAction * actions = fi->actions;
-		    sharedFileInfo replaced = fi->replaced;
-		    rpmte savep;
-		    int numShared = 0;
-
-		    if (replaced != NULL) {
-                        for (; replaced->otherPkg; replaced++) {
-                            numShared++;
-                        }
-                        if (numShared > 0) {
-                            replaced = xcalloc(numShared + 1, 
-                                               sizeof(*fi->replaced));
-                            memcpy(replaced, fi->replaced, 
-                                   sizeof(*fi->replaced) * (numShared + 1));
-                        }
-                    }
-
-		    fi->fstates = NULL;
-		    fi->actions = NULL;
-		    fi->replaced = NULL;
-/* FIX: fi->actions is NULL */
-		    fi = rpmfiFree(fi);
-
-		    savep = rpmtsSetRelocateElement(ts, p);
-		    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
-		    (void) rpmtsSetRelocateElement(ts, savep);
-
-		    if (fi != NULL) {	/* XXX can't happen */
-			fi->te = p;
-			fi->fstates = _free(fi->fstates);
-			fi->fstates = fstates;
-			fi->actions = _free(fi->actions);
-			fi->actions = actions;
-                        if (replaced != NULL)
-                            fi->replaced = replaced;
-			p->fi = fi;
-		    }
-		}
+		fi = rpmfiUpdateState(fi, ts, p);
 		rpmpsmSetFI(psm, p->fi);
 
 /* FIX: psm->fi may be NULL */

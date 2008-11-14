@@ -113,5 +113,8 @@ struct rpmfi_s {
 int nrefs;		/*!< Reference count. */
 };
 
+RPM_GNUC_INTERNAL
+rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p);
+
 #endif	/* _RPMFI_INTERNAL_H */
 
