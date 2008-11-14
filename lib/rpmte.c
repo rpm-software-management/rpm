@@ -606,3 +606,46 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
     }
     return te;
 }
+
+int rpmteOpen(rpmte te, rpmts ts)
+{
+    int rc = 0;
+    if (te == NULL || ts == NULL)
+	goto exit;
+
+    te->h = NULL;
+    te->fd = rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+    if (te->fd != NULL) {
+	rpmVSFlags ovsflags;
+	rpmRC pkgrc;
+
+	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
+	pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVRA(te), &te->h);
+	rpmtsSetVSFlags(ts, ovsflags);
+	switch (pkgrc) {
+	default:
+	    rpmteClose(te, ts);
+	    break;
+	case RPMRC_NOTTRUSTED:
+	case RPMRC_NOKEY:
+	case RPMRC_OK:
+	    rc = 1;
+	    break;
+	}
+    }
+
+exit:
+    return rc;
+}
+
+int rpmteClose(rpmte te, rpmts ts)
+{
+    int rc = 0;
+    if (te != NULL && ts != NULL) {
+	rpmtsNotify(ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	te->fd = NULL;
+	te->h = headerFree(te->h);
+	rc = 1;
+    }
+    return rc;
+}

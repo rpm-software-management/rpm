@@ -755,30 +755,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	if (!havescript)
  	    continue;
 
-    	p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-    	p->h = NULL;
-    	if (rpmteFd(p) != NULL) {
-	    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-    	    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-	    rpmRC rpmrc;
-	    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-	    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-		    rpmteNEVR(p), &p->h);
-	    vsflags = rpmtsSetVSFlags(ts, ovsflags);
-	    switch (rpmrc) {
-	    default:
-	        /* FIX: notify annotations */
-	        p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-	        p->fd = NULL;
-	        break;
-	    case RPMRC_NOTTRUSTED:
-	    case RPMRC_NOKEY:
-	    case RPMRC_OK:
-	        break;
-	    }
-        }
-
-    	if (rpmteFd(p) != NULL) {
+    	if (rpmteOpen(p, ts)) {
 	    p->fi = rpmfiFree(p->fi);
  	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 	    if (fi != NULL) {	/* XXX can't happen */
@@ -791,13 +768,10 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 		}
 	    }
 	    psm = rpmpsmNew(ts, p, p->fi);
-	    assert(psm != NULL);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm);
 
-	    (void) rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-	    p->fd = NULL;
-	    p->h = headerFree(p->h);
+	    rpmteClose(p, ts);
 	}
     }
     pi = rpmtsiFree(pi);
@@ -1271,9 +1245,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* FIX: fi reload needs work */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmalKey pkgKey;
-	int gotfd, async;
+	int async;
 
-	gotfd = 0;
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
@@ -1290,38 +1263,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	    p->h = NULL;
-	    /* FIX: rpmte not opaque */
-	    {
-		p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-		if (rpmteFd(p) != NULL) {
-		    rpmVSFlags ovsflags = rpmtsVSFlags(ts);
-		    rpmVSFlags vsflags = ovsflags | RPMVSF_NEEDPAYLOAD;
-		    rpmRC rpmrc;
-
-		    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-		    rpmrc = rpmReadPackageFile(ts, rpmteFd(p),
-				rpmteNEVR(p), &p->h);
-		    vsflags = rpmtsSetVSFlags(ts, ovsflags);
-
-		    switch (rpmrc) {
-		    default:
-			/* FIX: notify annotations */
-			p->fd = rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE,
-					    0, 0);
-			p->fd = NULL;
-			ourrc++;
-			break;
-		    case RPMRC_NOTTRUSTED:
-		    case RPMRC_NOKEY:
-		    case RPMRC_OK:
-			break;
-		    }
-		    if (rpmteFd(p) != NULL) gotfd = 1;
-		}
-	    }
-
-	    if (rpmteFd(p) != NULL) {
+	    
+	    if (rpmteOpen(p, ts)) {
 		/*
 		 * XXX Sludge necessary to tranfer existing fstates/actions
 		 * XXX around a recreated file info set.
@@ -1374,20 +1317,12 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		    ourrc++;
 		    lastFailKey = pkgKey;
 		}
+		rpmteClose(p, ts);
 		
 	    } else {
 		ourrc++;
 		lastFailKey = pkgKey;
 	    }
-
-	    if (gotfd) {
-		/* FIX: check rc */
-		(void) rpmtsNotify(ts, p, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
-		p->fd = NULL;
-	    }
-
-	    p->h = headerFree(p->h);
-
 	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 
 	    break;
