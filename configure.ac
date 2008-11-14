@@ -751,7 +751,14 @@ esac],
 
 AS_IF([test "$with_cap" = yes],[
   AC_CHECK_HEADER([sys/capability.h],[
-    AC_CHECK_LIB(cap,[cap_get_file],[with_cap=yes],[
+    AC_CHECK_LIB(cap,[cap_get_file], [
+      with_cap=yes
+      save_LIBS="$LIBS"
+      AC_CHECK_LIB(cap,[cap_compare], [
+        AC_DEFINE(HAVE_CAP_COMPARE, 1, [Have cap_compare function?])
+      ])
+      LIBS="$save_LIBS"
+    ],[
       AC_MSG_ERROR([--with-cap given, but libcap not found])])
   ],[
     AC_MSG_ERROR([--with-cap given, but sys/capability.h not found])

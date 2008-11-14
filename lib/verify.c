@@ -22,6 +22,29 @@
 
 extern int _rpmds_unspecified_epoch_noise;
 
+/* If cap_compare() (Linux extension) not available, do it the hard way */
+#if WITH_CAP && !defined(HAVE_CAP_COMPARE)
+static int cap_compare(cap_t acap, cap_t bcap)
+{
+    int rc = 0;
+    size_t asize = cap_size(acap);
+    size_t bsize = cap_size(bcap);
+
+    if (asize != bsize) {
+	rc = 1;
+    } else {
+	char *abuf = xcalloc(asize, sizeof(*abuf));
+	char *bbuf = xcalloc(bsize, sizeof(*bbuf));
+	cap_copy_ext(abuf, acap, asize);
+	cap_copy_ext(bbuf, bcap, bsize);
+	rc = memcmp(abuf, bbuf, asize);
+	free(abuf);
+	free(bbuf);
+    }
+    return rc;
+}
+#endif
+	
 int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 		rpmVerifyAttrs * res, rpmVerifyAttrs omitMask)
 {
@@ -196,11 +219,10 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	if (!fcap) {
 	    fcap = cap_from_text("=");
 	}
-
-	/* TODO: use cap_compare() if available */
-	if (memcmp(cap, fcap, cap_size(cap)) != 0) 
-	    *res |= RPMVERIFY_CAPS;
 	
+	if (cap_compare(cap, fcap) != 0)
+	    *res |= RPMVERIFY_CAPS;
+
 	cap_free(fcap);
 	cap_free(cap);
     }
