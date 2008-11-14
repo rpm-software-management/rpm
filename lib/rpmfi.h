@@ -392,6 +392,8 @@ typedef enum rpmfiFlags_e {
     RPMFI_KEEPHEADER	= (1 << 0),
     RPMFI_NOFILECLASS	= (1 << 1),
     RPMFI_NOFILEDEPS	= (1 << 2),
+    RPMFI_NOFILELANGS	= (1 << 3),
+    RPMFI_NOFILEOWNER	= (1 << 4),
 } rpmfiFlags;
 
 /** \ingroup rpmfi

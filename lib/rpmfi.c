@@ -1335,7 +1335,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->fsm = newFSM(mapflags);
 
     _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
-    _hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
+    if (!(flags & RPMFI_NOFILELANGS)) {
+	_hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
+    }
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
@@ -1373,8 +1375,10 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    _hgfi(h, RPMTAG_FILEUSERNAME, &td, defFlags, fi->fuser);
-    _hgfi(h, RPMTAG_FILEGROUPNAME, &td, defFlags, fi->fgroup);
+    if (!(flags & RPMFI_NOFILEOWNER)) {
+	_hgfi(h, RPMTAG_FILEUSERNAME, &td, defFlags, fi->fuser);
+	_hgfi(h, RPMTAG_FILEGROUPNAME, &td, defFlags, fi->fgroup);
+    }
 
     if (ts != NULL)
     if (fi != NULL)
