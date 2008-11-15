@@ -1266,9 +1266,6 @@ static void genCpioListAndHeader(FileList fl,
     a = (char *)(fi->apath + fi->fc);
     *a = '\0';
 
-    fi->astriplen = 0;
-    if (fl->buildRoot)
-	fi->astriplen = strlen(fl->buildRoot);
     fi->striplen = 0;
 
     /* Make the cpio list */

@@ -97,7 +97,6 @@ struct rpmfi_s {
 
     char * fn;			/*!< File name buffer. */
 
-    size_t astriplen;
     size_t striplen;
     rpm_loff_t archiveSize;
     const char ** apath;

@@ -622,13 +622,10 @@ static int fsmMapPath(FSM_t fsm)
 
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
-    fsm->astriplen = 0;
     fsm->action = FA_UNKNOWN;
 
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
-
-	fsm->astriplen = fi->astriplen;
 	fsm->action = (fi->actions ? fi->actions[i] : fi->action);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : fi->flags);
 
@@ -1346,7 +1343,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		cur,
 		(unsigned)st->st_mode, (int)st->st_nlink,
 		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
-		(fsm->path ? fsm->path + fsm->astriplen : ""),
+		(fsm->path ? fsm->path : ""),
 		_fafilter(fsm->action));
     }
 #undef	_fafilter
