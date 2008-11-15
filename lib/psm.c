@@ -231,14 +231,10 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmfi fi = NULL;
     char * specFile = NULL;
     Header h = NULL;
-    struct rpmpsm_s psmbuf;
-    rpmpsm psm = &psmbuf;
+    rpmpsm psm = NULL;
     int isSource;
     rpmRC rpmrc;
     int i;
-
-    memset(psm, 0, sizeof(*psm));
-    psm->ts = rpmtsLink(ts, RPMDBG_M("InstallSourcePackage"));
 
     rpmrc = rpmReadPackageFile(ts, fd, RPMDBG_M("InstallSourcePackage"), &h);
     switch (rpmrc) {
@@ -284,11 +280,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
-
-(void) rpmInstallLoadMacros(fi, fi->h);
-
-    psm->fi = rpmfiLink(fi, RPMDBG_M("rpmInstallLoadMacros"));
-    psm->te = fi->te;
+    (void) rpmInstallLoadMacros(fi, fi->h);
 
     if (cookie) {
 	struct rpmtd_s ctd;
@@ -356,6 +348,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
+    psm = rpmpsmNew(ts, fi->te, fi);
     psm->goal = PSM_PKGINSTALL;
 
    	/* FIX: psm->fi->dnl should be owned. */
@@ -371,9 +364,6 @@ exit:
     else
 	specFile = _free(specFile);
 
-    psm->fi = rpmfiFree(psm->fi);
-    psm->te = NULL;
-
     if (h != NULL) h = headerFree(h);
 
     if (fi != NULL) {
@@ -388,7 +378,7 @@ exit:
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
 
-    psm->ts = rpmtsFree(psm->ts);
+    psm = rpmpsmFree(psm);
 
     return rpmrc;
 }
