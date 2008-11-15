@@ -1247,9 +1247,8 @@ static void genCpioListAndHeader(FileList fl,
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 
   {
-    rpmts ts = NULL;	/* XXX FIXME drill rpmts ts all the way down here */
     rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEOWNER;
-    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, flags);
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
     char * a, * d;
 
     fi->te = xcalloc(1, sizeof(*fi->te));
@@ -1311,10 +1310,7 @@ static void genCpioListAndHeader(FileList fl,
 	a = stpcpy(a, (flp->cpioPath + skipLen));
 	a++;		/* skip apath NUL */
     }
-    if (fip)
-	*fip = fi;
-    else
-	fi = rpmfiFree(fi);
+    *fip = fi;
   }
 
     /* Convert back to expanded filelist if legacy format requested */
