@@ -1133,11 +1133,12 @@ static void genCpioListAndHeader(FileList fl,
 	dpathlen += (strlen(flp->diskPath) + 2);
 
 	/*
-	 * Make the header, the OLDFILENAMES will get converted to a 
-	 * compressed file list write before we write the actual package to
-	 * disk.
+	 * Make the header. Store the on-disk path to OLDFILENAMES for
+	 * cpio list generation purposes for now, final path temporarily
+	 * to ORIGFILENAMES, to be swapped later into OLDFILENAMES.
 	 */
-	headerPutString(h, RPMTAG_OLDFILENAMES, flp->cpioPath);
+	headerPutString(h, RPMTAG_OLDFILENAMES, flp->diskPath);
+	headerPutString(h, RPMTAG_ORIGFILENAMES, flp->cpioPath);
 	headerPutString(h, RPMTAG_FILEUSERNAME, flp->uname);
 	headerPutString(h, RPMTAG_FILEGROUPNAME, flp->gname);
 
@@ -1242,74 +1243,51 @@ static void genCpioListAndHeader(FileList fl,
     if (_addDotSlash)
 	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
 
-    /* rpmfi only groks compressed filelists */
-    headerConvert(h, HEADERCONV_COMPRESSFILELIST);
-
   {
+    struct rpmtd_s filenames;
     rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEOWNER;
-    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
-    char * a, * d;
+    rpmfi fi;
+    int fc;
+    const char *fn, **apath;
+    char *a;
 
-    fi->dnl = _free(fi->dnl);
-    fi->bnl = _free(fi->bnl);
-    fi->dil = _free(fi->dil);
+    /* rpmfiNew() only groks compressed filelists */
+    headerConvert(h, HEADERCONV_COMPRESSFILELIST);
+    fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
 
-    fi->dc = fi->fc;
-    fi->dnl = xmalloc(fi->fc * sizeof(*fi->dnl) + dpathlen + 1);
-    d = (char *)(fi->dnl + fi->fc);
-    *d = '\0';
+    /* 
+     * Grab the real filenames from ORIGFILENAMES and put into OLDFILENAMES,
+     * remove temporary cruft and side-effects from filelist compression 
+     * for rpmfiNew().
+     */
+    headerGet(h, RPMTAG_ORIGFILENAMES, &filenames, HEADERGET_ALLOC);
+    headerDel(h, RPMTAG_ORIGFILENAMES);
+    headerDel(h, RPMTAG_BASENAMES);
+    headerDel(h, RPMTAG_DIRNAMES);
+    headerDel(h, RPMTAG_DIRINDEXES);
+    rpmtdSetTag(&filenames, RPMTAG_OLDFILENAMES);
+    headerPut(h, &filenames, HEADERPUT_DEFAULT);
 
-    fi->bnl = xmalloc(fi->fc * (sizeof(*fi->bnl) + sizeof(*fi->dil)));
-    fi->dil = xcalloc(sizeof(*fi->dil), fi->fc);
-
-    fi->apath = xmalloc(fi->fc * sizeof(*fi->apath) + apathlen + 1);
-    a = (char *)(fi->apath + fi->fc);
+    /* Create hge-style archive path array, normally adding "./" */
+    fc = rpmtdCount(&filenames);
+    apath = xmalloc(fc * sizeof(*apath) + apathlen + 1);
+    a = (char *)(apath + fc);
     *a = '\0';
-
-    fi->striplen = 0;
-
-    /* Make the cpio list */
-    for (i = 0, flp = fl->fileList; i < fi->fc; i++, flp++) {
-	char * b;
-
-	/* Skip (possible) duplicate file entries, use last entry info. */
-	while (((flp - fl->fileList) < (fl->fileListRecsUsed - 1)) &&
-		!strcmp(flp->cpioPath, flp[1].cpioPath))
-	    flp++;
-
-	if (flp->flags & RPMFILE_EXCLUDE) {
-	    i--;
-	    continue;
-	}
-
-	/* Create disk directory and base name. */
-	fi->dil[i] = i;
-/* FIX: artifact of spoofing headerGetEntry */
-	fi->dnl[fi->dil[i]] = d;
-	d = stpcpy(d, flp->diskPath);
-
-	/* Make room for the dirName NUL, find start of baseName. */
-	for (b = d; b > fi->dnl[fi->dil[i]] && *b != '/'; b--)
-	    b[1] = b[0];
-	b++;		/* dirname's end in '/' */
-	*b++ = '\0';	/* terminate dirname, b points to basename */
-	fi->bnl[i] = b;
-	d += 2;		/* skip both dirname and basename NUL's */
-
-	/* Create archive path, normally adding "./" */
-	fi->apath[i] = a;
+    rpmtdInit(&filenames);
+    for (int i = 0; (fn = rpmtdNextString(&filenames)); i++) {
+	apath[i] = a;
 	if (_addDotSlash)
 	    a = stpcpy(a, "./");
-	a = stpcpy(a, (flp->cpioPath + skipLen));
+	a = stpcpy(a, (fn + skipLen));
 	a++;		/* skip apath NUL */
     }
+    fi->apath = apath;
     *fip = fi;
   }
 
-    /* Convert back to expanded filelist if legacy format requested */
-    if (_noDirTokens)
-	headerConvert(h, HEADERCONV_EXPANDFILELIST);
-    else {
+    /* Compress filelist unless legacy format requested */
+    if (!_noDirTokens) {
+	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
     }
