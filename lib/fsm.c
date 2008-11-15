@@ -217,7 +217,7 @@ static int mapFind(FSMI_t iter, const char * fsmPath)
     if (iter) {
 	const rpmfi fi = iter->fi;
 	if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
-	    const char ** p = NULL;
+	    char ** p = NULL;
 
 	    if (fi->apath != NULL)
 		p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),

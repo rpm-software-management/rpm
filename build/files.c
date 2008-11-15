@@ -1248,8 +1248,8 @@ static void genCpioListAndHeader(FileList fl,
     rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEOWNER;
     rpmfi fi;
     int fc;
-    const char *fn, **apath;
-    char *a;
+    const char *fn;
+    char *a, **apath;
 
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
