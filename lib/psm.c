@@ -41,7 +41,6 @@ struct rpmpsm_s {
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
     FD_t cfd;			/*!< Payload file handle. */
-    rpmdbMatchIterator mi;
     const char * stepName;
     const char * rpmio_flags;
     char * failedFile;
@@ -1240,32 +1239,32 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	if (psm->goal == PSM_PKGINSTALL) {
+	    rpmdbMatchIterator mi;
 	    Header oh;
 	    int fc = rpmfiFC(fi);
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
-assert(psm->mi == NULL);
-	    psm->mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 			rpmteE(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 			rpmteV(psm->te));
-	    xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
+	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 			rpmteR(psm->te));
 	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
 			rpmteA(psm->te));
-		xx = rpmdbSetIteratorRE(psm->mi, RPMTAG_OS, RPMMIRE_STRCMP,
+		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
 			rpmteO(psm->te));
 	    }
 
-	    while ((oh = rpmdbNextIterator(psm->mi)) != NULL) {
-		fi->record = rpmdbGetIteratorOffset(psm->mi);
+	    while ((oh = rpmdbNextIterator(mi)) != NULL) {
+		fi->record = rpmdbGetIteratorOffset(mi);
 		oh = NULL;
 		break;
 	    }
-	    psm->mi = rpmdbFreeIterator(psm->mi);
+	    mi = rpmdbFreeIterator(mi);
 	    rc = RPMRC_OK;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
@@ -1668,17 +1667,19 @@ assert(psm->mi == NULL);
     }	break;
 
     case PSM_RPMDB_LOAD:
-assert(psm->mi == NULL);
-	psm->mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
+    {
+	rpmdbMatchIterator mi;
+	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
 				&fi->record, sizeof(fi->record));
 
-	fi->h = rpmdbNextIterator(psm->mi);
+	fi->h = rpmdbNextIterator(mi);
 	if (fi->h != NULL)
 	    fi->h = headerLink(fi->h);
 
-	psm->mi = rpmdbFreeIterator(psm->mi);
+	mi = rpmdbFreeIterator(mi);
 	rc = (fi->h != NULL ? RPMRC_OK : RPMRC_FAIL);
 	break;
+    }
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
