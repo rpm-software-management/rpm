@@ -21,7 +21,6 @@
 #include "rpmio/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX pretty much all rpmfi internals... */
-#include "lib/rpmte_internal.h"	/* XXX rpmte init */
 #include "build/buildio.h"
 
 #include "debug.h"
@@ -1250,9 +1249,6 @@ static void genCpioListAndHeader(FileList fl,
     rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEOWNER;
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
     char * a, * d;
-
-    fi->te = xcalloc(1, sizeof(*fi->te));
-    fi->te->type = TR_ADDED;
 
     fi->dnl = _free(fi->dnl);
     fi->bnl = _free(fi->bnl);
