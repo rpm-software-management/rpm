@@ -232,7 +232,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     char * specFile = NULL;
     Header h = NULL;
     rpmpsm psm = NULL;
-    int isSource;
     rpmRC rpmrc;
     int i;
 
@@ -251,9 +250,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmrc = RPMRC_FAIL; /* assume failure */
 
-    isSource = headerIsSource(h);
-
-    if (!isSource) {
+    if (!headerIsSource(h)) {
 	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
 	goto exit;
     }
