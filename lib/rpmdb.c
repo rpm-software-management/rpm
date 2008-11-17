@@ -2254,12 +2254,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	} else {
 	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
 
-	key->data = (void *) keyp;
-	key->size = keylen;
-	if (key->data && key->size == 0) 
-	    key->size = strlen((char *)key->data);
-	if (key->data && key->size == 0) 
-	    key->size++;	/* XXX "/" fixup. */
+	    key->data = (void *) keyp;
+	    key->size = keylen;
+	    if (key->data && key->size == 0)
+	        key->size = strlen((char *)key->data);
+	    if (key->data && key->size == 0)
+	        key->size++;	/* XXX "/" fixup. */
 
 	    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
 	    if (rc > 0) {
