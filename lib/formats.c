@@ -112,19 +112,16 @@ static char * realDateFormat(rpmtd td, char * formatPrefix,
 {
     char * val = NULL;
 
-    if (rpmtdType(td) != RPM_INT32_TYPE) {
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	struct tm * tstruct;
 	char buf[50];
+	time_t dateint = rpmtdGetNumber(td);
+	tstruct = localtime(&dateint);
 
 	strcat(formatPrefix, "s");
 
-	/* this is important if sizeof(rpm_time_t) ! sizeof(time_t) */
-	{   rpm_time_t *rt = rpmtdGetUint32(td);
-	    time_t dateint = *rt;
-	    tstruct = localtime(&dateint);
-	}
 	buf[0] = '\0';
 	if (tstruct)
 	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
