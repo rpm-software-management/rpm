@@ -231,11 +231,11 @@ static char * permsFormat(rpmtd td, char * formatPrefix)
     char * val = NULL;
     char * buf;
 
-    if (rpmtdType(td) != RPM_INT32_TYPE) {
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(*rpmtdGetUint32(td));
+	buf = rpmPermsString(rpmtdGetNumber(td));
 	rasprintf(&val, formatPrefix, buf);
 	buf = _free(buf);
     }
