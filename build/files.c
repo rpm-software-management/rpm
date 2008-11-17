@@ -94,7 +94,6 @@ typedef struct FileList_s {
     char * prefix;
 
     int fileCount;
-    rpm_loff_t totalFileSize;
     int processingFailed;
 
     int passedSpecialDoc;
@@ -972,6 +971,7 @@ static void genCpioListAndHeader(FileList fl,
     char buf[BUFSIZ];
     int i;
     pgpHashAlgo defaultalgo = PGPHASHALGO_MD5, digestalgo;
+    rpm_loff_t totalFileSize = 0;
 
     /*
      * See if non-md5 file checksum algorithm is requested. If not
@@ -1084,6 +1084,9 @@ static void genCpioListAndHeader(FileList fl,
 	    rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
 	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
 	}
+	/* Excludes and dupes have been filtered out by now */
+	if (S_ISREG(flp->fl_mode))
+	    totalFileSize += flp->fl_size;
 	
 	/*
  	 * For items whose size varies between systems, always explicitly 
@@ -1148,12 +1151,12 @@ static void genCpioListAndHeader(FileList fl,
 	headerPutUint32(h, RPMTAG_FILEFLAGS, &(flp->flags) ,1);
     }
 
-    if (fl->totalFileSize < UINT32_MAX) {
-	rpm_off_t totalfilesize = fl->totalFileSize;
-	headerPutUint32(h, RPMTAG_SIZE, &totalfilesize, 1);
+    if (totalFileSize < UINT32_MAX) {
+	rpm_off_t totalsize = totalFileSize;
+	headerPutUint32(h, RPMTAG_SIZE, &totalsize, 1);
     } else {
-	rpm_loff_t totalfilesize = fl->totalFileSize;
-	headerPutUint64(h, RPMTAG_LONGSIZE, &totalfilesize, 1);
+	rpm_loff_t totalsize = totalFileSize;
+	headerPutUint64(h, RPMTAG_LONGSIZE, &totalsize, 1);
     }
 
     if (digestalgo != defaultalgo) {
@@ -1467,8 +1470,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		       flp->diskPath);
 		return RPMRC_FAIL;
 	    }
-
-	    fl->totalFileSize += flp->fl_size;
 	}
     }
 
@@ -1740,7 +1741,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     }
 
     fl.fileCount = 0;
-    fl.totalFileSize = 0;
     fl.processingFailed = 0;
 
     fl.passedSpecialDoc = 0;
@@ -2044,7 +2044,6 @@ int processSourceFiles(rpmSpec spec)
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
-    fl.totalFileSize = 0;
     fl.prefix = NULL;
     fl.buildRoot = NULL;
 
@@ -2099,8 +2098,6 @@ int processSourceFiles(rpmSpec spec)
 	    flp->gname = getGname(flp->fl_gid);
 	}
 	flp->langs = xstrdup("");
-	
-	fl.totalFileSize += flp->fl_size;
 	
 	if (! (flp->uname && flp->gname)) {
 	    rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), diskPath);
