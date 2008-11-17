@@ -294,6 +294,33 @@ rpmTagType rpmTagGetType(rpmTag tag)
     return ((*rpmTags->tagType)(tag));
 }
 
+rpmTagClass rpmTagGetClass(rpmTag tag)
+{
+    rpmTagClass class;
+    switch (rpmTagGetType(tag) & RPM_MASK_TYPE) {
+    case RPM_CHAR_TYPE:
+    case RPM_INT8_TYPE:
+    case RPM_INT16_TYPE:
+    case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
+	class = RPM_NUMERIC_CLASS;
+	break;
+    case RPM_STRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE:
+    case RPM_I18NSTRING_TYPE:
+	class = RPM_STRING_CLASS;
+	break;
+    case RPM_BIN_TYPE:
+	class = RPM_BINARY_CLASS;
+	break;
+    case RPM_NULL_TYPE:
+    default:
+	class = RPM_NULL_CLASS;
+	break;
+    }
+    return class;
+}
+
 rpmTag rpmTagGetValue(const char * tagstr)
 {
     return ((*rpmTags->tagValue)(tagstr));

@@ -330,6 +330,16 @@ typedef enum rpmTagType_e {
 #define RPM_MASK_TYPE		0x0000ffff
 } rpmTagType;
 
+/** \ingroup rpmtag
+ * The classes of data in tags from headers.
+ */
+typedef enum rpmTagClass_e {
+    RPM_NULL_CLASS	= 0,
+    RPM_NUMERIC_CLASS	= 1,
+    RPM_STRING_CLASS	= 2,
+    RPM_BINARY_CLASS	= 3,
+} rpmTagClass;
+
 /** \ingroup header
  * New rpm data types under consideration/development.
  * These data types may (or may not) be added to rpm at some point. In order
@@ -372,6 +382,13 @@ const char * rpmTagGetName(rpmTag tag);
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
 rpmTagType rpmTagGetType(rpmTag tag);
+
+/** \ingroup rpmtag
+ * Return tag data class from value.
+ * @param tag		tag value
+ * @return		tag data class, RPM_NULL_CLASS on not found.
+ */
+rpmTagClass rpmTagGetClass(rpmTag tag);
 
 /** \ingroup rpmtag
  * Return tag value from name.
