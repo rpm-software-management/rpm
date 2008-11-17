@@ -372,21 +372,15 @@ static char * xmlFormat(rpmtd td, char * formatPrefix)
     char *s = NULL;
     rpmtdFormats fmt = RPMTD_FORMAT_STRING;
 
-    switch (rpmtdType(td)) {
-    case RPM_I18NSTRING_TYPE:
-    case RPM_STRING_TYPE:
-    case RPM_STRING_ARRAY_TYPE:
+    switch (rpmtdClass(td)) {
+    case RPM_STRING_CLASS:
 	xtag = "string";
 	break;
-    case RPM_BIN_TYPE:
+    case RPM_BINARY_CLASS:
 	fmt = RPMTD_FORMAT_BASE64;
 	xtag = "base64";
 	break;
-    case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-    case RPM_INT16_TYPE:
-    case RPM_INT32_TYPE:
-    case RPM_INT64_TYPE:
+    case RPM_NUMERIC_CLASS:
 	xtag = "integer";
 	break;
     case RPM_NULL_TYPE:
