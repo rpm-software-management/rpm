@@ -200,21 +200,23 @@ static char * shescapeFormat(rpmtd td, char * formatPrefix)
  */
 static char * triggertypeFormat(rpmtd td, char * formatPrefix)
 {
-    const uint32_t * item = rpmtdGetUint32(td);
     char * val;
 
-    if (rpmtdType(td) != RPM_INT32_TYPE)
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
-    else if (*item & RPMSENSE_TRIGGERPREIN)
-	val = xstrdup("prein");
-    else if (*item & RPMSENSE_TRIGGERIN)
-	val = xstrdup("in");
-    else if (*item & RPMSENSE_TRIGGERUN)
-	val = xstrdup("un");
-    else if (*item & RPMSENSE_TRIGGERPOSTUN)
-	val = xstrdup("postun");
-    else
-	val = xstrdup("");
+    } else {
+	uint64_t item = rpmtdGetNumber(td);
+	if (item & RPMSENSE_TRIGGERPREIN)
+	    val = xstrdup("prein");
+	else if (item & RPMSENSE_TRIGGERIN)
+	    val = xstrdup("in");
+	else if (item & RPMSENSE_TRIGGERUN)
+	    val = xstrdup("un");
+	else if (item & RPMSENSE_TRIGGERPOSTUN)
+	    val = xstrdup("postun");
+	else
+	    val = xstrdup("");
+    }
     return val;
 }
 
