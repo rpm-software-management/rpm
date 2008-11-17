@@ -217,6 +217,32 @@ const char * rpmtdGetString(rpmtd td)
     return str;
 }
 
+uint64_t rpmtdGetNumber(rpmtd td)
+{
+    assert(td != NULL);
+    uint64_t val = 0;
+    int ix = (td->ix >= 0 ? td->ix : 0);
+
+    switch (td->type) {
+    case RPM_INT64_TYPE:
+	val = *((uint64_t *) td->data + ix);
+	break;
+    case RPM_INT32_TYPE:
+	val = *((uint32_t *) td->data + ix);
+	break;
+    case RPM_INT16_TYPE:
+	val = *((uint16_t *) td->data + ix);
+	break;
+    case RPM_INT8_TYPE:
+    case RPM_CHAR_TYPE:
+	val = *((uint8_t *) td->data + ix);
+	break;
+    default:
+	break;
+    }
+    return val;
+}
+
 char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
 {
     headerTagFormatFunction func = rpmHeaderFormatFuncByValue(fmt);

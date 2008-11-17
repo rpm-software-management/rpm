@@ -185,6 +185,17 @@ uint64_t * rpmtdGetUint64(rpmtd td);
  */
 const char * rpmtdGetString(rpmtd td);
 
+/** \ingroup rpmtd
+ * Return numeric value from tag container.
+ * Returns the value of numeric container (RPM_NUMERIC_CLASS) from
+ * current iteration index as uint64_t regardless of its internal 
+ * presentation (8/16/32/64-bit integer).
+ * @param td		Tag data container
+ * @return		Value of current iteration item as uint64_t,
+ * 			0 for non-numeric types (error)
+ */
+uint64_t rpmtdGetNumber(rpmtd td);
+
 typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_STRING		= 0,	/* plain string (any type) */
     RPMTD_FORMAT_ARMOR		= 1,	/* ascii armor format (bin types) */
