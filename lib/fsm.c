@@ -643,22 +643,23 @@ static int fsmMapPath(FSM_t fsm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-assert(rpmteType(fi->te) == TR_ADDED);
+	    if (rpmteType(fi->te) == TR_ADDED)
+		rpmfiSetFState(fi, i, RPMFILE_STATE_NORMAL);
 	    break;
 
 	case FA_SKIPNSTATE:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NOTINSTALLED;
+	    if (rpmteType(fi->te) == TR_ADDED)
+		rpmfiSetFState(fi, i, RPMFILE_STATE_NOTINSTALLED);
 	    break;
 
 	case FA_SKIPNETSHARED:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_NETSHARED;
+	    if (rpmteType(fi->te) == TR_ADDED)
+		rpmfiSetFState(fi, i, RPMFILE_STATE_NETSHARED);
 	    break;
 
 	case FA_SKIPCOLOR:
-	    if (fi->fstates && rpmteType(fi->te) == TR_ADDED)
-		fi->fstates[i] = RPMFILE_STATE_WRONGCOLOR;
+	    if (rpmteType(fi->te) == TR_ADDED)
+		rpmfiSetFState(fi, i, RPMFILE_STATE_WRONGCOLOR);
 	    break;
 
 	case FA_BACKUP:

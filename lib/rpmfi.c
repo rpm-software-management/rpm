@@ -1291,13 +1291,12 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
     }
 
-    /* XXX States not needed by TR_REMOVED */
+    /*
+     * For installed packages, get the states here. For to-be-installed
+     * packages fi->fstates is lazily created through rpmfiSetFState().
+     * XXX file states not needed at all by TR_REMOVED.
+     */
     _hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
-    if (fi->fstates == NULL) {
-	fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
-	/* XXX means we show state "normal" when package not even installed */
-	memset(fi->fstates, RPMFILE_STATE_NORMAL, fi->fc);
-    }
 
     _hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
@@ -1452,3 +1451,13 @@ rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
     return fi;
 }
 
+void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state)
+{
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+	if (fi->fstates == NULL) {
+	    fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
+	    memset(fi->fstates, RPMFILE_STATE_MISSING, fi->fc);
+	}
+	fi->fstates[ix] = state;
+    }
+}

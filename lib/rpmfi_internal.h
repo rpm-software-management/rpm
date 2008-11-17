@@ -115,5 +115,8 @@ int nrefs;		/*!< Reference count. */
 RPM_GNUC_INTERNAL
 rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p);
 
+RPM_GNUC_INTERNAL
+void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state);
+
 #endif	/* _RPMFI_INTERNAL_H */
 
