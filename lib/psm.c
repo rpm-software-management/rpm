@@ -110,11 +110,10 @@ static struct tagMacro {
 
 /**
  * Define per-header macros.
- * @param fi		transaction element file info
  * @param h		header
  * @return		0 always
  */
-static int rpmInstallLoadMacros(rpmfi fi, Header h)
+static void rpmInstallLoadMacros(Header h)
 {
     const struct tagMacro * tagm;
 
@@ -125,25 +124,16 @@ static int rpmInstallLoadMacros(rpmfi fi, Header h)
 	    continue;
 
 	switch (rpmtdType(&td)) {
-	case RPM_INT32_TYPE: /* fallthrough */
-	case RPM_STRING_TYPE:
+	default:
 	    body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
 	    addMacro(NULL, tagm->macroname, NULL, body, -1);
 	    free(body);
 	    break;
 	case RPM_NULL_TYPE:
-	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
-	case RPM_INT16_TYPE:
-	case RPM_BIN_TYPE:
-	case RPM_STRING_ARRAY_TYPE:
-	case RPM_I18NSTRING_TYPE:
-	default:
 	    break;
 	}
 	rpmtdFreeData(&td);
     }
-    return 0;
 }
 
 /**
@@ -306,6 +296,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
+    rpmInstallLoadMacros(h);
+
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     h = headerFree(h);
 
@@ -321,7 +313,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
-    (void) rpmInstallLoadMacros(fi, fi->h);
 
     if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
 	goto exit;
