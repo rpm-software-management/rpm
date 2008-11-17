@@ -44,32 +44,17 @@ static char * stringFormat(rpmtd td, char *formatPrefix)
     const char *str = NULL;
     char *val = NULL, *buf = NULL;
 
-    switch (rpmtdType(td)) {
-	case RPM_INT8_TYPE:
-	case RPM_CHAR_TYPE:
-	    strcat(formatPrefix, PRIu8);
-	    rasprintf(&val, formatPrefix, *rpmtdGetChar(td));
-	    break;
-	case RPM_INT16_TYPE:
-	    strcat(formatPrefix, PRIu16);
-	    rasprintf(&val, formatPrefix, *rpmtdGetUint16(td));
-	    break;
-	case RPM_INT32_TYPE:
-	    strcat(formatPrefix, PRIu32);
-	    rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
-	    break;
-	case RPM_INT64_TYPE:
+    switch (rpmtdClass(td)) {
+	case RPM_NUMERIC_CLASS:
 	    strcat(formatPrefix, PRIu64);
-	    rasprintf(&val, formatPrefix, *rpmtdGetUint64(td));
+	    rasprintf(&val, formatPrefix, rpmtdGetNumber(td));
 	    break;
-	case RPM_STRING_TYPE:
-	case RPM_STRING_ARRAY_TYPE:
-	case RPM_I18NSTRING_TYPE:
+	case RPM_STRING_CLASS:
 	    str = rpmtdGetString(td);
 	    strcat(formatPrefix, "s");
 	    rasprintf(&val, formatPrefix, str);
 	    break;
-	case RPM_BIN_TYPE:
+	case RPM_BINARY_CLASS:
 	    buf = pgpHexStr(td->data, td->count);
 	    strcat(formatPrefix, "s");
 	    rasprintf(&val, formatPrefix, buf);
