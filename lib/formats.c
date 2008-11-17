@@ -163,9 +163,9 @@ static char * shescapeFormat(rpmtd td, char * formatPrefix)
 {
     char * result = NULL, * dst, * src;
 
-    if (rpmtdType(td) == RPM_INT32_TYPE) {
-	strcat(formatPrefix, "d");
-	rasprintf(&result, formatPrefix, *rpmtdGetUint32(td));
+    if (rpmtdClass(td) == RPM_NUMERIC_CLASS) {
+	strcat(formatPrefix, PRIu64);
+	rasprintf(&result, formatPrefix, rpmtdGetNumber(td));
     } else {
 	char *buf = NULL;
 	strcat(formatPrefix, "s");
