@@ -67,6 +67,19 @@ static char * stringFormat(rpmtd td, char *formatPrefix)
     return val;
 }
 
+static char * numFormat(rpmtd td, char * formatPrefix, char *format)
+{
+    char * val = NULL;
+
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	strcat(formatPrefix, format);
+	rasprintf(&val, formatPrefix, rpmtdGetNumber(td));
+    }
+
+    return val;
+}
 /**
  * octalFormat.
  * @param td		tag data container
@@ -75,16 +88,7 @@ static char * stringFormat(rpmtd td, char *formatPrefix)
  */
 static char * octalFormat(rpmtd td, char * formatPrefix)
 {
-    char * val = NULL;
-
-    if (rpmtdType(td) != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	strcat(formatPrefix, "o");
-	rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
-    }
-
-    return val;
+    return numFormat(td, formatPrefix, "o");
 }
 
 /**
@@ -95,16 +99,7 @@ static char * octalFormat(rpmtd td, char * formatPrefix)
  */
 static char * hexFormat(rpmtd td, char * formatPrefix)
 {
-    char * val = NULL;
-
-    if (rpmtdType(td) != RPM_INT32_TYPE) {
-	val = xstrdup(_("(not a number)"));
-    } else {
-	strcat(formatPrefix, "x");
-	rasprintf(&val, formatPrefix, *rpmtdGetUint32(td));
-    }
-
-    return val;
+    return numFormat(td, formatPrefix, "x");
 }
 
 /**
