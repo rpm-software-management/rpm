@@ -233,8 +233,10 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     Header h = NULL;
     rpmpsm psm = NULL;
     rpmRC rpmrc;
-    int i;
+    int specix = -1;
+    struct rpmtd_s filenames;
 
+    rpmtdReset(&filenames);
     rpmrc = rpmReadPackageFile(ts, fd, RPMDBG_M("InstallSourcePackage"), &h);
     switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
@@ -255,6 +257,51 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
+    if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_ALLOC)) {
+	struct rpmtd_s td;
+	const char *str, *_cookie = NULL;
+
+	if (headerGet(h, RPMTAG_COOKIE, &td, HEADERGET_MINMEM)) {
+	    _cookie = rpmtdGetString(&td);
+	    if (cookie) *cookie = xstrdup(_cookie);
+	}
+	/* Try to find spec by file flags */
+	if (_cookie && headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
+	    rpmfileAttrs *flags;
+	    while (specix < 0 && (flags = rpmtdNextUint32(&td))) {
+		if (*flags & RPMFILE_SPECFILE)
+		    specix = rpmtdGetIndex(&td);
+	    }
+	}
+	/* Still no spec? Look by filename. */
+	while (specix < 0 && (str = rpmtdNextString(&filenames))) {
+	    if (rpmFileHasSuffix(str, ".spec")) 
+		specix = rpmtdGetIndex(&filenames);
+	}
+    }
+
+    if (specix >= 0) {
+	const char *bn;
+
+	headerDel(h, RPMTAG_BASENAMES);
+	headerDel(h, RPMTAG_DIRNAMES);
+	headerDel(h, RPMTAG_DIRINDEXES);
+
+	rpmtdInit(&filenames);
+	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
+	    int spec = (i == specix);
+	    char *fn = rpmGenPath(rpmtsRootDir(ts),
+				  spec ? "%{_specdir}" : "%{_sourcedir}", bn);
+	    headerPutString(h, RPMTAG_OLDFILENAMES, fn);
+	    if (spec) specFile = xstrdup(fn);
+	    free(fn);
+	}
+	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
+    } else {
+	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
+	goto exit;
+    };
+
     if (rpmtsAddInstallElement(ts, h, NULL, 0, NULL)) {
 	goto exit;
     }
@@ -270,72 +317,13 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (fi->te == NULL) {	/* XXX can't happen */
 	goto exit;
     }
+    fi->apath = filenames.data; /* Ick */
 
     rpmteSetHeader(fi->te, fi->h);
     fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
     (void) rpmInstallLoadMacros(fi, fi->h);
 
-    if (cookie) {
-	struct rpmtd_s ctd;
-	*cookie = NULL;
-	if (headerGet(fi->h, RPMTAG_COOKIE, &ctd, HEADERGET_MINMEM)) {
-	    *cookie = xstrdup(rpmtdGetString(&ctd));
-	    rpmtdFreeData(&ctd);
-	}
-    }
-
-    i = fi->fc;
-
-    if (fi->h != NULL) {	/* XXX can't happen */
-	struct rpmtd_s bnames;
-	headerGet(fi->h, RPMTAG_FILENAMES, &bnames, HEADERGET_EXT);
-	fi->apath = bnames.data; /* XXX Ick */
-
-	if (headerIsEntry(fi->h, RPMTAG_COOKIE))
-	    for (i = 0; i < fi->fc; i++)
-		if (fi->fflags[i] & RPMFILE_SPECFILE) break;
-    }
-
-    if (i == fi->fc) {
-	/* Find the spec file by name. */
-	for (i = 0; i < fi->fc; i++) {
-	    if (rpmFileHasSuffix(fi->apath[i], ".spec"))
-		break;
-	}
-    }
-
     if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
-	goto exit;
-    }
-    /* Build dnl/dil with {_sourcedir, _specdir} as values. */
-    if (i < fi->fc) {
-	char *_sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-	char *_specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
-	size_t speclen = strlen(_specdir) + 2;
-	size_t sourcelen = strlen(_sourcedir) + 2;
-	char * t;
-
-	fi->dnl = _free(fi->dnl);
-
-	fi->dc = 2;
-	fi->dnl = xmalloc(fi->dc * sizeof(*fi->dnl)
-			+ fi->fc * sizeof(*fi->dil)
-			+ speclen + sourcelen);
-	fi->dil = (unsigned int *)(fi->dnl + fi->dc);
-	memset(fi->dil, 0, fi->fc * sizeof(*fi->dil));
-	fi->dil[i] = 1;
-	fi->dnl[0] = t = (char *)(fi->dil + fi->fc);
-	fi->dnl[1] = t = stpcpy( stpcpy(t, _sourcedir), "/") + 1;
-	(void) stpcpy( stpcpy(t, _specdir), "/");
-
-	t = xmalloc(speclen + strlen(fi->bnl[i]) + 1);
-	(void) stpcpy( stpcpy( stpcpy(t, _specdir), "/"), fi->bnl[i]);
-	specFile = t;
-
-	free(_specdir);
-	free(_sourcedir);
-    } else {
-	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	goto exit;
     }
 
@@ -347,6 +335,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	rpmrc = RPMRC_OK;
 
     (void) rpmpsmStage(psm, PSM_FINI);
+    psm = rpmpsmFree(psm);
 
 exit:
     if (specFilePtr && specFile && rpmrc == RPMRC_OK)
@@ -367,8 +356,6 @@ exit:
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
-
-    psm = rpmpsmFree(psm);
 
     return rpmrc;
 }
