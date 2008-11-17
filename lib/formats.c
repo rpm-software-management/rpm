@@ -533,14 +533,12 @@ static char * pgpsigFormat(rpmtd td, char * formatPrefix)
 static char * depflagsFormat(rpmtd td, char * formatPrefix)
 {
     char * val = NULL;
-    char buf[10];
-    rpmsenseFlags anint;
 
-    if (rpmtdType(td) != RPM_INT32_TYPE) {
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	rpm_flag_t *rf = rpmtdGetUint32(td);
-	anint = *rf;
+	uint64_t anint = rpmtdGetNumber(td);
+	char buf[10];
 	buf[0] = '\0';
 
 	if (anint & RPMSENSE_LESS) 
