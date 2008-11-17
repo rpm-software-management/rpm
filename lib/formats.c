@@ -254,11 +254,10 @@ static char * fflagsFormat(rpmtd td, char * formatPrefix)
     char * val = NULL;
     char buf[15];
 
-    if (rpmtdType(td) != RPM_INT32_TYPE) {
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	rpm_flag_t *rf = rpmtdGetUint32(td);
-	rpmfileAttrs anint = *rf;
+	uint64_t anint = rpmtdGetNumber(td);
 	buf[0] = '\0';
 	if (anint & RPMFILE_DOC)
 	    strcat(buf, "d");
