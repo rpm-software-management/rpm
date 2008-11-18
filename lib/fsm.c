@@ -14,7 +14,7 @@
 #include "lib/cpio.h"
 #include "lib/fsm.h"
 #define	fsmUNSAFE	fsmStage
-#include "lib/rpmfi_internal.h"	/* XXX fi->apath, fi->action... */
+#include "lib/rpmfi_internal.h"	/* XXX fi->apath, ... */
 #include "lib/misc.h"		/* XXX unameToUid() and gnameToGid() */
 
 #include "debug.h"
@@ -152,7 +152,7 @@ mapInitIterator(rpmts ts, rpmfi fi)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts, RPMDBG_M("mapIterator"));
     iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
-    iter->reverse = (rpmteType(fi->te) == TR_REMOVED && fi->action != FA_COPYOUT);
+    iter->reverse = (rpmteType(fi->te) == TR_REMOVED);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -626,8 +626,9 @@ static int fsmMapPath(FSM_t fsm)
 
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
-	fsm->action = (fi->actions ? fi->actions[i] : fi->action);
-	fsm->fflags = (fi->fflags ? fi->fflags[i] : fi->flags);
+	/* XXX these should use rpmfiFFlags() etc */
+	fsm->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
+	fsm->fflags = (fi->fflags ? fi->fflags[i] : RPMFILE_NONE);
 
 	/* src rpms have simple base name in payload. */
 	fsm->dirName = fi->dnl[fi->dil[i]];

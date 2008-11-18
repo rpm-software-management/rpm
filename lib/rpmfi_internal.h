@@ -81,8 +81,6 @@ struct rpmfi_s {
     rpmfiFlags fiflags;		/*!< file info set control flags */
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 /*-----------------------------*/
-    rpmfileAttrs flags;		/*!< File flags (default). */
-    rpmFileAction action;	/*!< File disposition (default). */
     rpmFileAction * actions;	/*!< File disposition(s). */
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 

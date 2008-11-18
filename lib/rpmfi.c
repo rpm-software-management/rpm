@@ -388,7 +388,7 @@ rpmFileAction rpmfiFAction(rpmfi fi)
     if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	action = fi->actions[fi->i];
     } else {
-	action = fi ? fi->action : FA_UNKNOWN;
+	action = FA_UNKNOWN;
     }
     return action;
 }
@@ -1289,9 +1289,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     _hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
 
     _hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
-
-    fi->action = FA_UNKNOWN;
-    fi->flags = 0;
 
     /* For build and src.rpm's the file actions are known at this point */
     fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
