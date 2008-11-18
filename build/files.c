@@ -1982,6 +1982,17 @@ static const rpmTag sourceTags[] = {
     0
 };
 
+static void genSourceRpmName(rpmSpec spec)
+{
+    if (spec->sourceRpmName == NULL) {
+	const char *name, *version, *release;
+
+	(void) headerNVR(spec->packages->header, &name, &version, &release);
+	rasprintf(&spec->sourceRpmName, "%s-%s-%s.%ssrc.rpm", name, version, release,
+	    spec->noSource ? "no" : "");
+    }
+}
+
 void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
@@ -2034,6 +2045,7 @@ int processSourceFiles(rpmSpec spec)
     if (spec->sourceHeader == NULL)
 	initSourceHeader(spec);
 
+    genSourceRpmName(spec);
     /* Construct the file list and source entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
     if (spec->sourceHeader != NULL)
@@ -2213,9 +2225,11 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
     int rc = RPMRC_OK;
     
     check_fileList = newStringBuf();
+    genSourceRpmName(spec);
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	const char *n, *v, *r;
+	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
 	if (pkg->fileList == NULL)
 	    continue;

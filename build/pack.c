@@ -22,21 +22,6 @@
 #include "debug.h"
 
 /**
- */
-static inline int genSourceRpmName(rpmSpec spec)
-{
-    if (spec->sourceRpmName == NULL) {
-	const char *name, *version, *release;
-
-	(void) headerNVR(spec->packages->header, &name, &version, &release);
-	rasprintf(&spec->sourceRpmName, "%s-%s-%s.%ssrc.rpm", name, version, release,
-	    spec->noSource ? "no" : "");
-    }
-
-    return 0;
-}
-
-/**
  * @todo Create transaction set *much* earlier.
  */
 static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
@@ -734,9 +719,6 @@ rpmRC packageBinaries(rpmSpec spec)
 	optflags = _free(optflags);
     }
 
-	(void) genSourceRpmName(spec);
-	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
-
 	if (spec->sourcePkgId != NULL) {
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
@@ -824,7 +806,6 @@ rpmRC packageSources(rpmSpec spec)
     headerPutString(spec->sourceHeader, RPMTAG_RPMVERSION, VERSION);
     headerPutString(spec->sourceHeader, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(spec->sourceHeader, RPMTAG_BUILDTIME, getBuildTime(), 1);
-    (void) genSourceRpmName(spec);
 
     spec->cookie = _free(spec->cookie);
     
