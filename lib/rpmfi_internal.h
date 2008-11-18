@@ -102,7 +102,6 @@ struct rpmfi_s {
     rpm_loff_t archiveSize;
     char ** apath;
     FSM_t fsm;			/*!< File state machine data. */
-    int keep_header;		/*!< Keep header? */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     unsigned int record;	/*!< (TR_REMOVED) */

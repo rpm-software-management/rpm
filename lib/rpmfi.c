@@ -1166,7 +1166,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
 	fi->fstates = _free(fi->fstates);
 
-	if (!fi->keep_header && fi->h == NULL) {
+	if (!(fi->fiflags & RPMFI_KEEPHEADER) && fi->h == NULL) {
 	    fi->fmtimes = _constfree(fi->fmtimes);
 	    fi->fmodes = _free(fi->fmodes);
 	    fi->fflags = _constfree(fi->fflags);
@@ -1242,8 +1242,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->fiflags = flags;
     fi->scareFlags = scareFlags;
 
-    fi->keep_header = (flags & RPMFI_KEEPHEADER);
-    fi->h = fi->keep_header ? headerLink(h) : NULL;
+    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
 
     if (headerGet(h, RPMTAG_LONGARCHIVESIZE, &td, HEADERGET_EXT)) {
 	asize = rpmtdGetUint64(&td);
@@ -1397,7 +1396,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	foo = headerFree(foo);
     }
 
-    if (!fi->keep_header) {
+    if (!(fi->fiflags & RPMFI_KEEPHEADER)) {
 	fi->h = headerFree(fi->h);
     }
 
