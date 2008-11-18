@@ -1214,7 +1214,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     const char * Type;
     rpm_loff_t *asize = NULL;
     unsigned char * t;
-    cpioMapFlags mapflags;
     int isBuild, isSource;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
@@ -1317,23 +1316,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	    fi->actions[i] = FA_CREATE;
 	}
     }
-
-    /* XXX TR_REMOVED needs CPIO_MAP_{ABSOLUTE,ADDDOT} CPIO_ALL_HARDLINKS */
-
-    /* Figure out mapflags: 
-     * - path, mode, uid and gid are used by everything
-     * - all binary packages get SBIT_CHECK set
-     * - if archive size is not known, we're only building this package,
-     *   different rules apply 
-     */
-    mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-    if (isBuild) {
-	mapflags |= CPIO_MAP_TYPE;
-	if (isSource) mapflags |= CPIO_FOLLOW_SYMLINKS;
-    } else {
-	if (!isSource) mapflags |= CPIO_SBIT_CHECK;
-    }
-    fi->fsm = newFSM(mapflags);
 
     _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
     if (!(flags & RPMFI_NOFILELANGS)) {
@@ -1462,4 +1444,26 @@ void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state)
 	}
 	fi->fstates[ix] = state;
     }
+}
+
+FSM_t rpmfiFSM(rpmfi fi)
+{
+    if (fi != NULL && fi->fsm == NULL) {
+    	cpioMapFlags mapflags;
+	/* Figure out mapflags: 
+	 * - path, mode, uid and gid are used by everything
+	 * - all binary packages get SBIT_CHECK set
+	 * - if archive size is not known, we're only building this package,
+	 *   different rules apply 
+	 */
+	mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+	if (fi->fiflags & RPMFI_ISBUILD) {
+	    mapflags |= CPIO_MAP_TYPE;
+	    if (fi->fiflags & RPMFI_ISSOURCE) mapflags |= CPIO_FOLLOW_SYMLINKS;
+	} else {
+	    if (!(fi->fiflags & RPMFI_ISSOURCE)) mapflags |= CPIO_SBIT_CHECK;
+	}
+	fi->fsm = newFSM(mapflags);
+    }
+    return (fi != NULL) ? fi->fsm : NULL;
 }

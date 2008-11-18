@@ -44,12 +44,12 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    xx = fsmSetup(fi->fsm, FSM_PKGBUILD, ts, fi, cfd,
+    xx = fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
     if (xx)
 	rc = RPMRC_FAIL;
     (void) Fclose(cfd);
-    xx = fsmTeardown(fi->fsm);
+    xx = fsmTeardown(rpmfiFSM(fi));
     if (rc == RPMRC_OK && xx) rc = RPMRC_FAIL;
 
     if (rc) {

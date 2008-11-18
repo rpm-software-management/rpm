@@ -1357,13 +1357,13 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGINSTALL, ts, fi,
+	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGINSTALL, ts, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdOp(psm->cfd, FDSTAT_READ));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
 			fdOp(psm->cfd, FDSTAT_DIGEST));
-	    xx = fsmTeardown(fi->fsm);
+	    xx = fsmTeardown(rpmfiFSM(fi));
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    xx = Fclose(psm->cfd);
@@ -1415,9 +1415,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->total = fc;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    rc = fsmSetup(fi->fsm, FSM_PKGERASE, ts, fi,
+	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGERASE, ts, fi,
 			NULL, NULL, &psm->failedFile);
-	    xx = fsmTeardown(fi->fsm);
+	    xx = fsmTeardown(rpmfiFSM(fi));
 
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
@@ -1562,9 +1562,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
-	rc = fsmSetup(fi->fsm, FSM_PKGCOMMIT, ts, fi,
+	rc = fsmSetup(rpmfiFSM(fi), FSM_PKGCOMMIT, ts, fi,
 			NULL, NULL, &psm->failedFile);
-	xx = fsmTeardown(fi->fsm);
+	xx = fsmTeardown(rpmfiFSM(fi));
 	break;
 
     case PSM_CHROOT_IN:

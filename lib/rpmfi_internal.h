@@ -118,5 +118,7 @@ rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p);
 RPM_GNUC_INTERNAL
 void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state);
 
+/* XXX can't be internal as build code needs this */
+FSM_t rpmfiFSM(rpmfi fi);
 #endif	/* _RPMFI_INTERNAL_H */
 
