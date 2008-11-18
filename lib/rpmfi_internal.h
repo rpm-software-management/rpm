@@ -112,6 +112,12 @@ rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p);
 RPM_GNUC_INTERNAL
 void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state);
 
+RPM_GNUC_INTERNAL
+void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
+
+RPM_GNUC_INTERNAL
+rpm_loff_t rpmfiFReplacedSize(rpmfi fi);
+
 /* XXX can't be internal as build code needs this */
 FSM_t rpmfiFSM(rpmfi fi);
 #endif	/* _RPMFI_INTERNAL_H */

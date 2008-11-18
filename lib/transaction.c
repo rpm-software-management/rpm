@@ -163,8 +163,7 @@ static int handleInstInstalledFiles(const rpmts ts,
 	    rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	    rpmfiSetFAction(fi, action);
 	}
-	/* XXX watch out, replacedSizes is not rpm_loff_t (yet) */
-	fi->replacedSizes[fileNum] = (rpm_off_t) rpmfiFSize(otherFi);
+	rpmfiSetFReplacedSize(fi, rpmfiFSize(otherFi));
     }
     ps = rpmpsFree(ps);
 
@@ -432,7 +431,7 @@ assert(otherFi != NULL);
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
-		fi->replacedSizes[i], fixupSize, rpmfiFAction(fi));
+		rpmfiFReplacedSize(fi), fixupSize, rpmfiFAction(fi));
 
     }
     ps = rpmpsFree(ps);

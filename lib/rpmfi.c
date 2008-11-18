@@ -1443,6 +1443,28 @@ void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state)
     }
 }
 
+void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)
+{
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->replacedSizes == NULL) {
+	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+	}
+	/* XXX watch out, replacedSizes is not rpm_loff_t (yet) */
+	fi->replacedSizes[fi->i] = (rpm_off_t) newsize;
+    }
+}
+
+rpm_loff_t rpmfiFReplacedSize(rpmfi fi)
+{
+    rpm_loff_t rsize = 0;
+    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	if (fi->replacedSizes) {
+	    rsize = fi->replacedSizes[fi->i];
+	}
+    }
+    return rsize;
+}
+
 FSM_t rpmfiFSM(rpmfi fi)
 {
     if (fi != NULL && fi->fsm == NULL) {
