@@ -1239,6 +1239,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->tagN = tagN;
     fi->record = headerGetInstance(h);
 
+    fi->fiflags = flags;
     fi->scareFlags = scareFlags;
 
     fi->keep_header = (flags & RPMFI_KEEPHEADER);
@@ -1254,6 +1255,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     /* Archive size is not set when this gets called from build */
     isBuild = (asize == NULL);
     isSource = headerIsSource(h);
+    if (isBuild) fi->fiflags |= RPMFI_ISBUILD;
+    if (isSource) fi->fiflags |= RPMFI_ISSOURCE;
 
     /* See if we have pre/posttrans scripts. */
     fi->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&

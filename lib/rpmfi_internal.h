@@ -81,6 +81,7 @@ struct rpmfi_s {
 /*=============================*/
     rpmte te;
 
+    rpmfiFlags fiflags;		/*!< file info set control flags */
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 /*-----------------------------*/
     rpmfileAttrs flags;		/*!< File flags (default). */
