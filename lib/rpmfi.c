@@ -299,17 +299,6 @@ const char * rpmfiFClass(rpmfi fi)
     return fclass;
 }
 
-const char * rpmfiFContext(rpmfi fi)
-{
-    const char * fcontext = NULL;
-
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	if (fi->fcontexts != NULL)
-	    fcontext = fi->fcontexts[fi->i];
-    }
-    return fcontext;
-}
-
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 {
     int fddictx = -1;

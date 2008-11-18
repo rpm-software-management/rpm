@@ -284,13 +284,6 @@ rpm_color_t rpmfiFColor(rpmfi fi);
 const char * rpmfiFClass(rpmfi fi);
 
 /** \ingroup rpmfi
- * Return current file security context from file info set.
- * @param fi		file info set
- * @return		current file context, 0 on invalid
- */
-const char * rpmfiFContext(rpmfi fi);
-
-/** \ingroup rpmfi
  * Return current file depends dictionary from file info set.
  * @param fi		file info set
  * @retval *fddictp	file depends dictionary array (or NULL)

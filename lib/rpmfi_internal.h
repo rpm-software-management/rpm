@@ -58,9 +58,6 @@ struct rpmfi_s {
     char * fstates;		/*!< File state(s) (from header) */
 
     const rpm_color_t * fcolors;/*!< File color bits (header) */
-
-    const char ** fcontexts;	/*! FIle security contexts. */
-
     const char ** fcaps;	/*! File capabilities (header) */
 
     const char ** cdict;	/*!< File class dictionary (header) */
