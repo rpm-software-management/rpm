@@ -80,6 +80,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     rpmte savep;
     const char *name, *version, *release, *arch, *os;
     struct rpmtd_s td;
+    rpmfiFlags fiflags;
 
     name = version = release = arch = NULL;
     headerNEVRA(h, &name, NULL, &version, &release, &arch);
@@ -138,6 +139,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
+    fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
+				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_NOHEADER|RPMFI_NOFILECLASS);
     (void) rpmtsSetRelocateElement(ts, savep);
