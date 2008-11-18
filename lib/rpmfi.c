@@ -1318,7 +1318,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     }
 
     _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
-    if (!(flags & RPMFI_NOFILELANGS)) {
+    /* FILELANGS are only interesting when installing */
+    if ((fi->record == 0) && !(flags & RPMFI_NOFILELANGS)) {
 	_hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
     }
 
