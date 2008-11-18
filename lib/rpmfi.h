@@ -381,14 +381,27 @@ rpmfi rpmfiInitD(rpmfi fi, int dx);
 rpmfi rpmfiFree(rpmfi fi);
 
 typedef enum rpmfiFlags_e {
-    RPMFI_NOHEADER	= 0,
-    RPMFI_KEEPHEADER	= (1 << 0),
-    RPMFI_NOFILECLASS	= (1 << 1),
-    RPMFI_NOFILEDEPS	= (1 << 2),
-    RPMFI_NOFILELANGS	= (1 << 3),
-    RPMFI_NOFILEOWNER	= (1 << 4),
-    RPMFI_ISBUILD	= (1 << 30), 	/* internal */
-    RPMFI_ISSOURCE	= (1 << 31), 	/* internal */
+    RPMFI_NOHEADER		= 0,
+    RPMFI_KEEPHEADER		= (1 << 0),
+    RPMFI_NOFILECLASS		= (1 << 1),
+    RPMFI_NOFILEDEPS		= (1 << 2),
+    RPMFI_NOFILELANGS		= (1 << 3),
+    RPMFI_NOFILEUSER		= (1 << 4),
+    RPMFI_NOFILEGROUP		= (1 << 5),
+    RPMFI_NOFILEMODES		= (1 << 6),
+    RPMFI_NOFILESIZES		= (1 << 7),
+    RPMFI_NOFILECAPS		= (1 << 8),
+    RPMFI_NOFILELINKTOS		= (1 << 9),
+    RPMFI_NOFILEDIGESTS		= (1 << 10),
+    RPMFI_NOFILEMTIMES		= (1 << 11),
+    RPMFI_NOFILERDEVS		= (1 << 12),
+    RPMFI_NOFILEINODES		= (1 << 13),
+    RPMFI_NOFILESTATES		= (1 << 14),
+    RPMFI_NOFILECOLORS		= (1 << 15),
+    RPMFI_NOFILEVERIFYFLAGS	= (1 << 16),
+    RPMFI_NOFILEFLAGS		= (1 << 17),
+    RPMFI_ISBUILD		= (1 << 30), 	/* internal */
+    RPMFI_ISSOURCE		= (1 << 31), 	/* internal */
 } rpmfiFlags;
 
 /** \ingroup rpmfi

@@ -1262,12 +1262,17 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
     fi->dc = rpmtdCount(&td);
     _hgfi(h, RPMTAG_DIRINDEXES, &td, scareFlags, fi->dil);
-    _hgfi(h, RPMTAG_FILEMODES, &td, scareFlags, fi->fmodes);
-    _hgfi(h, RPMTAG_FILEFLAGS, &td, scareFlags, fi->fflags);
-    _hgfi(h, RPMTAG_FILEVERIFYFLAGS, &td, scareFlags, fi->vflags);
-    _hgfi(h, RPMTAG_FILESIZES, &td, scareFlags, fi->fsizes);
+    if (!(flags & RPMFI_NOFILEMODES))
+	_hgfi(h, RPMTAG_FILEMODES, &td, scareFlags, fi->fmodes);
+    if (!(flags & RPMFI_NOFILEFLAGS))
+	_hgfi(h, RPMTAG_FILEFLAGS, &td, scareFlags, fi->fflags);
+    if (!(flags & RPMFI_NOFILEVERIFYFLAGS))
+	_hgfi(h, RPMTAG_FILEVERIFYFLAGS, &td, scareFlags, fi->vflags);
+    if (!(flags & RPMFI_NOFILESIZES))
+	_hgfi(h, RPMTAG_FILESIZES, &td, scareFlags, fi->fsizes);
 
-    _hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
+    if (!(flags & RPMFI_NOFILECOLORS))
+	_hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
 
     if (!(flags & RPMFI_NOFILECLASS)) {
 	_hgfi(h, RPMTAG_CLASSDICT, &td, scareFlags, fi->cdict);
@@ -1286,9 +1291,11 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
      * packages fi->fstates is lazily created through rpmfiSetFState().
      * XXX file states not needed at all by TR_REMOVED.
      */
-    _hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
+    if (!(flags & RPMFI_NOFILESTATES))
+	_hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
 
-    _hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
+    if (!(flags & RPMFI_NOFILECAPS))
+	_hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
     /* For build and src.rpm's the file actions are known at this point */
     fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
@@ -1303,11 +1310,11 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	}
     }
 
-    _hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
+    if (!(flags & RPMFI_NOFILELINKTOS))
+	_hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
     /* FILELANGS are only interesting when installing */
-    if ((fi->record == 0) && !(flags & RPMFI_NOFILELANGS)) {
+    if ((fi->record == 0) && !(flags & RPMFI_NOFILELANGS))
 	_hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
-    }
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
@@ -1321,7 +1328,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 
     fi->digests = NULL;
     /* grab hex digests from header and store in binary format */
-    if (headerGet(h, RPMTAG_FILEDIGESTS, &fdigests, HEADERGET_MINMEM)) {
+    if (!(flags & RPMFI_NOFILEDIGESTS) &&
+	headerGet(h, RPMTAG_FILEDIGESTS, &fdigests, HEADERGET_MINMEM)) {
 	const char *fdigest;
 	size_t diglen = rpmDigestLength(fi->digestalgo);
 	fi->digests = t = xmalloc(rpmtdCount(&fdigests) * diglen);
@@ -1339,16 +1347,19 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     }
 
     /* XXX TR_REMOVED doesn;t need fmtimes, frdevs, finodes */
-    _hgfi(h, RPMTAG_FILEMTIMES, &td, scareFlags, fi->fmtimes);
-    _hgfi(h, RPMTAG_FILERDEVS, &td, scareFlags, fi->frdevs);
-    _hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
+    if (!(flags & RPMFI_NOFILEMTIMES))
+	_hgfi(h, RPMTAG_FILEMTIMES, &td, scareFlags, fi->fmtimes);
+    if (!(flags & RPMFI_NOFILERDEVS))
+	_hgfi(h, RPMTAG_FILERDEVS, &td, scareFlags, fi->frdevs);
+    if (!(flags & RPMFI_NOFILEINODES))
+	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
     fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 
-    if (!(flags & RPMFI_NOFILEOWNER)) {
+    if (!(flags & RPMFI_NOFILEUSER))
 	_hgfi(h, RPMTAG_FILEUSERNAME, &td, defFlags, fi->fuser);
+    if (!(flags & RPMFI_NOFILEGROUP))
 	_hgfi(h, RPMTAG_FILEGROUPNAME, &td, defFlags, fi->fgroup);
-    }
 
     if (ts != NULL)
     if (fi != NULL)

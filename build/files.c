@@ -1248,7 +1248,7 @@ static void genCpioListAndHeader(FileList fl,
 
   {
     struct rpmtd_s filenames;
-    rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEOWNER;
+    rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEUSER|RPMFI_NOFILEGROUP;
     rpmfi fi;
     int fc;
     const char *fn;
