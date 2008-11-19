@@ -145,7 +145,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 {
     const rpmts ts = psm->ts;
     rpmfi fi = psm->fi;
-    sharedFileInfo replaced = fi->replaced;
+    sharedFileInfo replaced = rpmfiGetReplaced(fi);
     sharedFileInfo sfi;
     rpmdbMatchIterator mi;
     Header h;
@@ -153,11 +153,11 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     unsigned int prev;
     int num, xx;
 
-    if (!(rpmfiFC(fi) > 0 && fi->replaced))
+    if (!(rpmfiFC(fi) > 0 && replaced))
 	return RPMRC_OK;
 
     num = prev = 0;
-    for (sfi = replaced; sfi->otherPkg; sfi++) {
+    for (sfi = replaced; sfi; sfi=rpmfiNextReplaced(fi, sfi)) {
 	if (prev && prev == sfi->otherPkg)
 	    continue;
 	prev = sfi->otherPkg;
@@ -169,7 +169,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     offsets = xmalloc(num * sizeof(*offsets));
     offsets[0] = 0;
     num = prev = 0;
-    for (sfi = replaced; sfi->otherPkg; sfi++) {
+    for (sfi = replaced; sfi; sfi=rpmfiNextReplaced(fi, sfi)) {
 	if (prev && prev == sfi->otherPkg)
 	    continue;
 	prev = sfi->otherPkg;
@@ -191,7 +191,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	
 	prev = rpmdbGetIteratorOffset(mi);
 	num = 0;
-	while (sfi->otherPkg && sfi->otherPkg == prev) {
+	while (sfi && sfi->otherPkg == prev) {
 	    int ix = rpmtdSetIndex(&secStates, sfi->otherFileNum);
 	    assert(ix != -1);
 
@@ -205,7 +205,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 		}
 		num++;
 	    }
-	    sfi++;
+	    sfi=rpmfiNextReplaced(fi, sfi);
 	}
 	rpmtdFreeData(&secStates);
     }
