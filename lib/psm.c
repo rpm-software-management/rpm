@@ -523,6 +523,7 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
     int xx;
     int open_max;
 
+    (void) signal(SIGPIPE, SIG_DFL);
     pipes[0] = pipes[1] = 0;
     /* make stdin inaccessible */
     xx = pipe(pipes);
