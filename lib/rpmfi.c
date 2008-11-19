@@ -1257,6 +1257,8 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replaced = _free(fi->replaced);
+    fi->numReplaced = 0;
+    fi->allocatedReplaced = 0;
 
     fi->h = headerFree(fi->h);
 
@@ -1312,6 +1314,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi = xcalloc(1, sizeof(*fi));
     if (fi == NULL)	/* XXX can't happen */
 	goto exit;
+
+    fi->replaced = NULL;
+    fi->numReplaced = fi->allocatedReplaced = 0;
 
     fi->magic = RPMFIMAGIC;
     fi->Type = Type;
@@ -1555,6 +1560,41 @@ rpm_loff_t rpmfiFReplacedSize(rpmfi fi)
 	}
     }
     return rsize;
+}
+
+void rpmfiAddReplaced(rpmfi fi, int pkgFileNum, int otherPkg, int otherFileNum)
+{
+    if (!fi->replaced) {
+	fi->replaced = xcalloc(3, sizeof(*fi->replaced));
+	fi->allocatedReplaced = 3;
+    }
+    if (fi->numReplaced>=fi->allocatedReplaced) {
+	fi->allocatedReplaced += (fi->allocatedReplaced>>1) + 2;
+	fi->replaced = xrealloc(fi->replaced, fi->allocatedReplaced*sizeof(*fi->replaced));
+    }
+    fi->replaced[fi->numReplaced].pkgFileNum = pkgFileNum;
+    fi->replaced[fi->numReplaced].otherPkg = otherPkg;
+    fi->replaced[fi->numReplaced].otherFileNum = otherFileNum;
+
+    fi->numReplaced++;
+}
+
+sharedFileInfo rpmfiGetReplaced(rpmfi fi)
+{
+    if (fi && fi->numReplaced)
+        return fi->replaced;
+    else
+        return NULL;
+}
+
+sharedFileInfo rpmfiNextReplaced(rpmfi fi , sharedFileInfo replaced)
+{
+    if (fi && replaced) {
+        replaced++;
+	if (replaced - fi->replaced < fi->numReplaced)
+	    return replaced;
+    }
+    return NULL;
 }
 
 FSM_t rpmfiFSM(rpmfi fi)

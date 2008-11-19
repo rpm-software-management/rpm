@@ -13,9 +13,8 @@ typedef struct sharedFileInfo_s *		sharedFileInfo;
  */
 struct sharedFileInfo_s {
     int pkgFileNum;
-    int otherFileNum;
     int otherPkg;
-    int isRemoved;
+    int otherFileNum;
 };
 
 /* 
@@ -106,6 +105,8 @@ struct rpmfi_s {
     char ** apath;
     FSM_t fsm;			/*!< File state machine data. */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
+    int numReplaced;
+    int allocatedReplaced;
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
 #define	RPMFIMAGIC	0x09697923
@@ -125,6 +126,15 @@ void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL
 rpm_loff_t rpmfiFReplacedSize(rpmfi fi);
+
+RPM_GNUC_INTERNAL
+void rpmfiAddReplaced(rpmfi fi, int pkgFileNum, int otherPkg, int otherFileNum);
+
+RPM_GNUC_INTERNAL
+sharedFileInfo rpmfiGetReplaced(rpmfi fi);
+
+RPM_GNUC_INTERNAL
+sharedFileInfo rpmfiNextReplaced(rpmfi fi , sharedFileInfo replaced);
 
 /* XXX can't be internal as build code needs this */
 FSM_t rpmfiFSM(rpmfi fi);
