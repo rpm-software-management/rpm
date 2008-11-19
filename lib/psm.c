@@ -222,6 +222,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     char * specFile = NULL;
     Header h = NULL;
     rpmpsm psm = NULL;
+    rpmte te = NULL;
     rpmRC rpmrc;
     int specix = -1;
     struct rpmtd_s filenames;
@@ -298,27 +299,26 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     rpmInstallLoadMacros(h);
 
+    te = rpmtsElement(ts, 0);
+    if (te == NULL) {	/* XXX can't happen */
+	goto exit;
+    }
+    te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
+
+    rpmteSetHeader(te, h);
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     h = headerFree(h);
 
     if (fi == NULL) {	/* XXX can't happen */
 	goto exit;
     }
-
-    fi->te = rpmtsElement(ts, 0);
-    if (fi->te == NULL) {	/* XXX can't happen */
-	goto exit;
-    }
     fi->apath = filenames.data; /* Ick */
-
-    rpmteSetHeader(fi->te, fi->h);
-    fi->te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
 
     if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
 	goto exit;
     }
 
-    psm = rpmpsmNew(ts, fi->te, fi);
+    psm = rpmpsmNew(ts, te, fi);
     psm->goal = PSM_PKGINSTALL;
 
    	/* FIX: psm->fi->dnl should be owned. */
@@ -337,11 +337,11 @@ exit:
     if (h != NULL) h = headerFree(h);
 
     if (fi != NULL) {
-	rpmteSetHeader(fi->te, NULL);
-	if (fi->te->fd != NULL)
-	    (void) Fclose(fi->te->fd);
-	fi->te->fd = NULL;
-	fi->te = NULL;
+	rpmteSetHeader(te, NULL);
+	if (te->fd != NULL)
+	    (void) Fclose(te->fd);
+	te->fd = NULL;
+	te = NULL;
 	fi = rpmfiFree(fi);
     }
 
