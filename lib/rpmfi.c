@@ -1353,8 +1353,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILEINODES))
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
-    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
-
     if (!(flags & RPMFI_NOFILEUSER))
 	_hgfi(h, RPMTAG_FILEUSERNAME, &td, defFlags, fi->fuser);
     if (!(flags & RPMFI_NOFILEGROUP))
