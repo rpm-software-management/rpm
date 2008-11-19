@@ -765,7 +765,7 @@ static int fsmMapAttrs(FSM_t fsm)
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
 		size_t diglen = rpmDigestLength(fsm->digestalgo);
-		fsm->digest = (char *)(fi->digests ? (fi->digests + (diglen * i)) : NULL);
+		fsm->digest = (fi->digests ? (fi->digests + (diglen * i)) : NULL);
 	    } else {
 		fsm->digest = NULL;
 	    }
