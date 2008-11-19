@@ -717,29 +717,28 @@ static int fsmMapAttrs(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
     rpmfi fi = fsmGetFi(fsm);
-    int i = fsm->ix;
+    int savefx = rpmfiFX(fi);
 
-    if (fi && i >= 0 && i < fi->fc) {
-	mode_t perms = (S_ISDIR(st->st_mode) ? _dirPerms : _filePerms);
-	mode_t finalMode = (fi->fmodes ? fi->fmodes[i] : perms);
-	dev_t finalRdev = (fi->frdevs ? fi->frdevs[i] : 0);
-	rpm_time_t finalMtime = (fi->fmtimes ? fi->fmtimes[i] : 0);
+    if (rpmfiSetFX(fi, fsm->ix) != -1) {
+	mode_t finalMode = rpmfiFMode(fi);
+	dev_t finalRdev = rpmfiFRdev(fi);
+	time_t finalMtime = rpmfiFMtime(fi);
+	const char *user = rpmfiFUser(fi);
+	const char *group = rpmfiFGroup(fi);
 	uid_t uid = 0;
 	gid_t gid = 0;
 
-	if (fi->fuser && unameToUid(fi->fuser[i], &uid)) {
+	if (user && unameToUid(user, &uid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
-		    _("user %s does not exist - using root\n"), fi->fuser[i]);
-	    uid = 0;
+		    _("user %s does not exist - using root\n"), user);
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
 	}
 
-	if (fi->fgroup && gnameToGid(fi->fgroup[i], &gid)) {
+	if (group && gnameToGid(group, &gid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
-		    _("group %s does not exist - using root\n"), fi->fgroup[i]);
-	    gid = 0;
+		    _("group %s does not exist - using root\n"), group);
 	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
 	}
 
@@ -764,13 +763,13 @@ static int fsmMapAttrs(FSM_t fsm)
 	     * Set file checksum (if not disabled).
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
-		size_t diglen = rpmDigestLength(fsm->digestalgo);
-		fsm->digest = (fi->digests ? (fi->digests + (diglen * i)) : NULL);
+		fsm->digest = rpmfiFDigest(fi, NULL, NULL);
 	    } else {
 		fsm->digest = NULL;
 	    }
 	}
-
+	/* restore iterator index if we changed it */
+	rpmfiSetFX(fi, savefx);
     }
     return 0;
 }
