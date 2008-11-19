@@ -1338,21 +1338,21 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    /* XXX Synthesize callbacks for packages with no files. */
 	    if (rpmfiFC(fi) <= 0) {
 		void * ptr;
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_START, 0, 100);
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
+		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_START, 0, 100);
+		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
 		break;
 	    }
 
 	    /* Retrieve type of payload compression. */
 	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
 
-	    if (rpmteFd(fi->te) == NULL) {	/* XXX can't happen */
+	    if (rpmteFd(psm->te) == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
 
 	   	/* LCL: fi->fd != NULL here. */
-	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd(fi->te))), psm->rpmio_flags);
+	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd(psm->te))), psm->rpmio_flags);
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
@@ -1406,8 +1406,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    /* XXX Synthesize callbacks for packages with no files. */
 	    if (rpmfiFC(fi) <= 0) {
 		void * ptr;
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_UNINST_START, 0, 100);
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_UNINST_STOP, 0, 100);
+		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_START, 0, 100);
+		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_STOP, 0, 100);
 		break;
 	    }
 
