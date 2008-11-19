@@ -18,6 +18,12 @@ struct sharedFileInfo_s {
     int isRemoved;
 };
 
+/* 
+ * This limits maximum unique user + group names from packages to 65535,
+ * should be plenty but easy to bump if ever needed.
+ */
+typedef uint16_t ugidx_t;
+
 /**
  * A package filename set.
  */
@@ -52,8 +58,8 @@ struct rpmfi_s {
 /*?null?*/
     const rpm_ino_t * finodes;	/*!< File inodes(s) (from header) */
 
-    const char ** fuser;	/*!< File owner(s) (from header) */
-    const char ** fgroup;	/*!< File group(s) (from header) */
+    ugidx_t *fuser;		/*!< Index to file owner(s) cache */
+    ugidx_t *fgroup;		/*!< Index to file group(s) cache */
 
     char * fstates;		/*!< File state(s) (from header) */
 

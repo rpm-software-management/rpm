@@ -19,7 +19,50 @@
 
 #include "debug.h"
 
+/*
+ * Simple and stupid user + groupname "cache."
+ * Store each unique user and group name string just once, retrieve
+ * by index value. As the number of unique names is typically very low,
+ * the dumb linear lookup appears to be fast enough and hash table seems
+ * like an overkill.
+ */
+struct ugcache_s {
+    char **uniq;
+    ugidx_t num;
+} ugcache = { NULL, 0 };
 
+static ugidx_t ugcachePut(const char *str)
+{
+    int found = 0;
+    ugidx_t ret;
+
+    for (ugidx_t i = 0; i < ugcache.num; i++) {
+	if (strcmp(str, ugcache.uniq[i]) == 0) {
+	    ret = i;
+	    found = 1;
+	    break;
+	}
+    }
+    if (!found) {
+	/* blow up on index wraparound */
+	assert((ugidx_t)(ugcache.num + 1) > ugcache.num);
+	ugcache.uniq = xrealloc(ugcache.uniq, 
+				sizeof(ugcache.uniq) * (ugcache.num+1));
+	ugcache.uniq[ugcache.num] = xstrdup(str);
+	ret = ugcache.num;
+	ugcache.num++;
+    }
+    return ret;
+}
+
+static const char *ugcacheGet(ugidx_t idx)
+{
+    const char *name = NULL;
+    if (idx >= 0 && idx < ugcache.num && ugcache.uniq != NULL)
+	name = ugcache.uniq[idx];
+    return name;
+}
+    
 int _rpmfi_debug = 0;
 
 rpmfi rpmfiUnlink(rpmfi fi, const char * msg)
@@ -353,10 +396,9 @@ const char * rpmfiFUser(rpmfi fi)
 {
     const char * fuser = NULL;
 
-    /* XXX add support for ancient RPMTAG_FILEUIDS? */
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fuser != NULL)
-	    fuser = fi->fuser[fi->i];
+	    fuser = ugcacheGet(fi->fuser[fi->i]);
     }
     return fuser;
 }
@@ -365,10 +407,9 @@ const char * rpmfiFGroup(rpmfi fi)
 {
     const char * fgroup = NULL;
 
-    /* XXX add support for ancient RPMTAG_FILEGIDS? */
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fgroup != NULL)
-	    fgroup = fi->fgroup[fi->i];
+	    fgroup = ugcacheGet(fi->fgroup[fi->i]);
     }
     return fgroup;
 }
@@ -1192,6 +1233,23 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     return NULL;
 }
 
+/* Helper to convert user+group names into indexes to name cache */
+static ugidx_t *cacheNames(Header h, rpmTag tag)
+{
+    ugidx_t *idx = NULL;
+    struct rpmtd_s td;
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
+       idx = xmalloc(sizeof(*idx) * rpmtdCount(&td));
+       int i = 0;
+       const char *str;
+       while ((str = rpmtdNextString(&td))) {
+	   idx[i++] = ugcachePut(str);
+       }
+       rpmtdFreeData(&td);
+    }
+    return idx;
+}
+
 #define _hgfi(_h, _tag, _td, _flags, _data) \
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
@@ -1353,10 +1411,10 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILEINODES))
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
-    if (!(flags & RPMFI_NOFILEUSER))
-	_hgfi(h, RPMTAG_FILEUSERNAME, &td, defFlags, fi->fuser);
-    if (!(flags & RPMFI_NOFILEGROUP))
-	_hgfi(h, RPMTAG_FILEGROUPNAME, &td, defFlags, fi->fgroup);
+    if (!(flags & RPMFI_NOFILEUSER)) 
+	fi->fuser = cacheNames(h, RPMTAG_FILEUSERNAME);
+    if (!(flags & RPMFI_NOFILEGROUP)) 
+	fi->fgroup = cacheNames(h, RPMTAG_FILEGROUPNAME);
 
     if (ts != NULL)
     if (fi != NULL)
