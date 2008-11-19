@@ -1219,7 +1219,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    while ((oh = rpmdbNextIterator(mi)) != NULL) {
-		fi->record = rpmdbGetIteratorOffset(mi);
+		rpmteSetDBInstance(psm->te, rpmdbGetIteratorOffset(mi));
 		oh = NULL;
 		break;
 	    }
@@ -1446,7 +1446,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	     * If this package has already been installed, remove it from
 	     * the database before adding the new one.
 	     */
-	    if (fi->record && !(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
+	    if (rpmteDBInstance(psm->te) && 
+			!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
 		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
@@ -1628,8 +1629,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_RPMDB_LOAD:
     {
 	rpmdbMatchIterator mi;
-	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES,
-				&fi->record, sizeof(fi->record));
+	unsigned int rec = rpmteDBInstance(psm->te);
+	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &rec, sizeof(rec));
 
 	fi->h = rpmdbNextIterator(mi);
 	if (fi->h != NULL)
@@ -1655,8 +1656,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->record,
-				NULL, NULL);
+	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts),
+				rpmteDBInstance(psm->te), NULL, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	break;
 

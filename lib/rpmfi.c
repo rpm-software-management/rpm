@@ -1225,7 +1225,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->Type = Type;
     fi->i = -1;
     fi->tagN = tagN;
-    fi->record = headerGetInstance(h);
 
     fi->fiflags = flags;
     fi->scareFlags = scareFlags;
@@ -1313,7 +1312,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILELINKTOS))
 	_hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
     /* FILELANGS are only interesting when installing */
-    if ((fi->record == 0) && !(flags & RPMFI_NOFILELANGS))
+    if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
 	_hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
 
     /* See if the package has non-md5 file digests */

@@ -99,7 +99,6 @@ struct rpmfi_s {
     FSM_t fsm;			/*!< File state machine data. */
     sharedFileInfo replaced;	/*!< (TR_ADDED) */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
-    unsigned int record;	/*!< (TR_REMOVED) */
     int magic;
 #define	RPMFIMAGIC	0x09697923
 /*=============================*/
