@@ -290,7 +290,7 @@ const char * rpmfiFLink(rpmfi fi)
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->flinks != NULL)
-	    flink = fi->flinks[fi->i];
+	    flink = strcacheGet(fi->flinkcache, fi->flinks[fi->i]);
     }
     return flink;
 }
@@ -1217,6 +1217,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->bnl = _free(fi->bnl);
 	fi->dnl = _free(fi->dnl);
 
+	fi->flinkcache = strcacheFree(fi->flinkcache);
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
@@ -1400,8 +1401,10 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	}
     }
 
-    if (!(flags & RPMFI_NOFILELINKTOS))
-	_hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
+    if (!(flags & RPMFI_NOFILELINKTOS)) {
+	fi->flinkcache = strcacheNew();
+	fi->flinks = cacheTag(fi->flinkcache, h, RPMTAG_FILELINKTOS);
+    }
     /* FILELANGS are only interesting when installing */
     if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
 	fi->flangs = cacheTag(langcache, h, RPMTAG_FILELANGS);
