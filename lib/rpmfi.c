@@ -34,6 +34,8 @@ struct strcache_s {
 
 static struct strcache_s _ugcache = { NULL, 0 };
 static strcache ugcache = &_ugcache;
+static struct strcache_s _langcache = { NULL, 0 };
+static strcache langcache = &_langcache;
 
 static scidx_t strcachePut(strcache cache, const char *str)
 {
@@ -431,7 +433,7 @@ const char * rpmfiFLangs(rpmfi fi)
 {
     const char *flangs = NULL;
     if (fi != NULL && fi->flangs != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	flangs = fi->flangs[fi->i];
+	flangs = strcacheGet(langcache, fi->flangs[fi->i]);
     }
     return flangs;
 }
@@ -1384,7 +1386,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILELINKTOS, &td, defFlags, fi->flinks);
     /* FILELANGS are only interesting when installing */
     if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
-	_hgfi(h, RPMTAG_FILELANGS, &td, defFlags, fi->flangs);
+	fi->flangs = cacheTag(langcache, h, RPMTAG_FILELANGS);
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;

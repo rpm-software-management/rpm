@@ -42,7 +42,7 @@ struct rpmfi_s {
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
     const char ** flinks;	/*!< File link(s) (from header) */
-    const char ** flangs;	/*!< File lang(s) (from header) */
+    scidx_t * flangs;		/*!< Index to file lang(s) cache */
 
           uint32_t * dil;	/*!< Directory indice(s) (from header) */
 /*?null?*/
