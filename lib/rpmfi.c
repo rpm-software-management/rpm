@@ -427,6 +427,15 @@ const char * rpmfiFCaps(rpmfi fi)
     return fcaps;
 }
 
+const char * rpmfiFLangs(rpmfi fi)
+{
+    const char *flangs = NULL;
+    if (fi != NULL && fi->flangs != NULL && fi->i >= 0 && fi->i < fi->fc) {
+	flangs = fi->flangs[fi->i];
+    }
+    return flangs;
+}
+
 rpmFileAction rpmfiFAction(rpmfi fi)
 {
     rpmFileAction action;

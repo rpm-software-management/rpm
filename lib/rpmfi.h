@@ -330,6 +330,13 @@ const char * rpmfiFGroup(rpmfi fi);
 const char * rpmfiFCaps(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Return current file language(s) from file info set.
+ * @param fi		file info set
+ * @return		current file language(s), NULL on invalid
+ */
+const char * rpmfiFLangs(rpmfi fi);
+
+/** \ingroup rpmfi
  * Return current file action from file info set.
  * @param fi		file info set
  * @return		current file action
