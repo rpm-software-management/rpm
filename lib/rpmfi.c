@@ -26,7 +26,6 @@
  * the dumb linear lookup appears to be fast enough and hash table seems
  * like an overkill.
  */
-typedef struct strcache_s *strcache;
 struct strcache_s {
     char **uniq;
     scidx_t num;
@@ -69,6 +68,25 @@ static const char *strcacheGet(strcache cache, scidx_t idx)
     return name;
 }
     
+static strcache strcacheNew(void)
+{
+    strcache cache = xcalloc(1, sizeof(*cache));
+    return cache;
+}
+
+static strcache strcacheFree(strcache cache)
+{
+    if (cache != NULL) {
+	for (scidx_t i = 0; i < cache->num; i++) {
+	    free(cache->uniq[i]);
+	}
+	cache->uniq = _free(cache->uniq);
+	free(cache);
+    }
+    return NULL;
+} 
+
+
 int _rpmfi_debug = 0;
 
 rpmfi rpmfiUnlink(rpmfi fi, const char * msg)

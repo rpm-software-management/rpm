@@ -23,6 +23,7 @@ struct sharedFileInfo_s {
  * 65535, should be plenty but easy to bump if ever needed.
  */
 typedef uint16_t scidx_t;
+typedef struct strcache_s *strcache;
 
 /**
  * A package filename set.
