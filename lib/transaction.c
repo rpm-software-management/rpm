@@ -525,6 +525,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     while ((i = rpmfiNext(fi)) >= 0)
     {
 	char ** nsp;
+	const char *flangs;
 
 	bn = rpmfiBN(fi);
 	bnlen = strlen(bn);
@@ -593,13 +594,14 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*
 	 * Skip i18n language specific files.
 	 */
-	if (languages != NULL && fi->flangs != NULL && *fi->flangs[i]) {
+	flangs = rpmfiFLangs(fi);
+	if (languages != NULL && flangs != NULL) {
 	    const char *l, *le;
 	    char **lang;
 	    for (lang = languages; *lang != NULL; lang++) {
 		if (!strcmp(*lang, "all"))
 		    break;
-		for (l = fi->flangs[i]; *l != '\0'; l = le) {
+		for (l = flangs; *l != '\0'; l = le) {
 		    for (le = l; *le != '\0' && *le != '|'; le++)
 			{};
 		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
