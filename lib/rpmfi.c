@@ -20,24 +20,28 @@
 #include "debug.h"
 
 /*
- * Simple and stupid user + groupname "cache."
- * Store each unique user and group name string just once, retrieve
- * by index value. As the number of unique names is typically very low,
+ * Simple and stupid string "cache."
+ * Store each unique string just once, retrieve by index value. 
+ * For data where number of unique names is typically very low,
  * the dumb linear lookup appears to be fast enough and hash table seems
  * like an overkill.
  */
-struct ugcache_s {
+typedef struct strcache_s *strcache;
+struct strcache_s {
     char **uniq;
-    ugidx_t num;
-} ugcache = { NULL, 0 };
+    scidx_t num;
+};
 
-static ugidx_t ugcachePut(const char *str)
+static struct strcache_s _ugcache = { NULL, 0 };
+static strcache ugcache = &_ugcache;
+
+static scidx_t strcachePut(strcache cache, const char *str)
 {
     int found = 0;
-    ugidx_t ret;
+    scidx_t ret;
 
-    for (ugidx_t i = 0; i < ugcache.num; i++) {
-	if (strcmp(str, ugcache.uniq[i]) == 0) {
+    for (scidx_t i = 0; i < cache->num; i++) {
+	if (strcmp(str, cache->uniq[i]) == 0) {
 	    ret = i;
 	    found = 1;
 	    break;
@@ -45,21 +49,21 @@ static ugidx_t ugcachePut(const char *str)
     }
     if (!found) {
 	/* blow up on index wraparound */
-	assert((ugidx_t)(ugcache.num + 1) > ugcache.num);
-	ugcache.uniq = xrealloc(ugcache.uniq, 
-				sizeof(ugcache.uniq) * (ugcache.num+1));
-	ugcache.uniq[ugcache.num] = xstrdup(str);
-	ret = ugcache.num;
-	ugcache.num++;
+	assert((scidx_t)(cache->num + 1) > cache->num);
+	cache->uniq = xrealloc(cache->uniq, 
+				sizeof(cache->uniq) * (cache->num+1));
+	cache->uniq[cache->num] = xstrdup(str);
+	ret = cache->num;
+	cache->num++;
     }
     return ret;
 }
 
-static const char *ugcacheGet(ugidx_t idx)
+static const char *strcacheGet(strcache cache, scidx_t idx)
 {
     const char *name = NULL;
-    if (idx >= 0 && idx < ugcache.num && ugcache.uniq != NULL)
-	name = ugcache.uniq[idx];
+    if (idx >= 0 && idx < cache->num && cache->uniq != NULL)
+	name = cache->uniq[idx];
     return name;
 }
     
@@ -398,7 +402,7 @@ const char * rpmfiFUser(rpmfi fi)
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fuser != NULL)
-	    fuser = ugcacheGet(fi->fuser[fi->i]);
+	    fuser = strcacheGet(ugcache, fi->fuser[fi->i]);
     }
     return fuser;
 }
@@ -409,7 +413,7 @@ const char * rpmfiFGroup(rpmfi fi)
 
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
 	if (fi->fgroup != NULL)
-	    fgroup = ugcacheGet(fi->fgroup[fi->i]);
+	    fgroup = strcacheGet(ugcache, fi->fgroup[fi->i]);
     }
     return fgroup;
 }
@@ -1233,17 +1237,17 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     return NULL;
 }
 
-/* Helper to convert user+group names into indexes to name cache */
-static ugidx_t *cacheNames(Header h, rpmTag tag)
+/* Helper to push header tag data into a string cache */
+static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
 {
-    ugidx_t *idx = NULL;
+    scidx_t *idx = NULL;
     struct rpmtd_s td;
     if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
        idx = xmalloc(sizeof(*idx) * rpmtdCount(&td));
        int i = 0;
        const char *str;
        while ((str = rpmtdNextString(&td))) {
-	   idx[i++] = ugcachePut(str);
+	   idx[i++] = strcachePut(cache, str);
        }
        rpmtdFreeData(&td);
     }
@@ -1412,9 +1416,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
     if (!(flags & RPMFI_NOFILEUSER)) 
-	fi->fuser = cacheNames(h, RPMTAG_FILEUSERNAME);
+	fi->fuser = cacheTag(ugcache, h, RPMTAG_FILEUSERNAME);
     if (!(flags & RPMFI_NOFILEGROUP)) 
-	fi->fgroup = cacheNames(h, RPMTAG_FILEGROUPNAME);
+	fi->fgroup = cacheTag(ugcache, h, RPMTAG_FILEGROUPNAME);
 
     if (ts != NULL)
     if (fi != NULL)
