@@ -1,0 +1,76 @@
+#    rpmvercmp.at: rpm version comparison tests
+
+# ------------------------------
+# (Build and) install conflicting package (should fail)
+AT_SETUP([rpm -U to package with file conflict])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+for p in "one" "two"; do
+    run rpmbuild --quiet -bb \
+        --define "pkg $p" \
+	--define "filedata $p" \
+          ${RPMDATA}/SPECS/conflicttest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+],
+[1],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Install conflicting packages in same transaction (should fail)
+AT_SETUP([rpm -U two packages with a conflicting file])
+AT_CHECK([
+RPMDB_CLEAR
+
+runroot rpm -U \
+  "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+],
+[2],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# (Build and) install package with shareable file
+AT_SETUP([rpm -U package with shareable file])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+for p in "one" "two"; do
+    run rpmbuild --quiet -bb \
+        --define "pkg $p" \
+	--define "filedata same_stuff" \
+          ${RPMDATA}/SPECS/conflicttest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Install packages with shareable file in same transaction
+AT_SETUP([rpm -U two packages with shareable file])
+AT_CHECK([
+RPMDB_CLEAR
+
+runroot rpm -U \
+  "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
