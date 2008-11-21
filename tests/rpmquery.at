@@ -80,7 +80,6 @@ AT_CLEANUP
 # Try to check "scripts"
 # * Gets rpmpopt-$(VERSION) involved
 AT_SETUP([rpm -q --scripts -p *.i386.rpm])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 rpm \
   --rcfile="${RPMRC}" \

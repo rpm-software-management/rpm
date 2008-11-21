@@ -19,7 +19,6 @@
 # ------------------------------
 # Check if rpmbuild -ba *.spec works
 AT_SETUP([rpmbuild -ba *.spec])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
@@ -65,7 +64,6 @@ AT_CLEANUP
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
 AT_SETUP([rpmbuild --rebuild])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
