@@ -17,17 +17,13 @@ RPM_XFAIL=${RPM_XFAIL-1}
 
 function run()
 {
-    cmd="$1"
-    shift
-    "${cmd}" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}" $@
+    "$@" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}"
 }
 
 function runroot()
 {
-    cmd="$1"
-    shift
     (cd ${RPMTEST} && \
      mkdir -p etc && touch etc/mtab &&
-     FAKECHROOT_BASE="${RPMTEST}" fakechroot "${cmd}" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}" $@
+     FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}"
     )
 }
