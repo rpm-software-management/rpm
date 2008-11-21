@@ -282,7 +282,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     char *d, *de;
     int rc;
 
-    if (path == NULL || path[0] != '/')
+    if (path == NULL)
 	return -1;
     d = rstrcat(NULL, path);
     if (d[strlen(d)-1] != '/') {
@@ -711,7 +711,7 @@ int rpmMkdirs(const char *root, const char *pathstr)
     argvSplit(&dirs, pathstr, ":");
     
     for (char **d = dirs; *d; d++) {
-	char *path = rpmGetPath(root ? root : "", "/", *d, NULL);
+	char *path = rpmGetPath(root ? root : "", *d, NULL);
 	if ((rc = rpmioMkpath(path, 0755, -1, -1)) != 0) {
 	    const char *msg = _("failed to create directory");
 	    /* try to be more informative if the failing part was a macro */
