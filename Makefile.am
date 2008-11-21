@@ -150,11 +150,8 @@ EXTRA_DIST += rpmrc.in
 
 rpmconfig_DATA += macros
 macros: $(top_srcdir)/macros.in
-	@$(SED) \
-	  -e "s,[@]varprefix[@],$(localstatedir),g" \
-	  < $(top_srcdir)/macros.in > macros.tmp \
-	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/macros:${subdir}/macros.tmp )
-CLEANFILES += macros.tmp macros
+	  ( cd $(top_builddir) && ./config.status --file=${subdir}/macros:${subdir}/macros.in )
+CLEANFILES += macros
 EXTRA_DIST += macros.in
 
 noinst_DATA = platform

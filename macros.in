@@ -26,7 +26,7 @@
 #
 %_usr			@prefix@
 %_usrsrc		%{_usr}/src
-%_var			@varprefix@
+%_var			@localstatedir@
 
 #==============================================================================
 # ---- Generally useful path macros.
