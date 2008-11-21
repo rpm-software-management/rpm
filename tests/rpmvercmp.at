@@ -1,0 +1,96 @@
+#    rpmvercmp.at: rpm version comparison tests
+
+# ------------------------------
+# Test normal upgrade
+AT_SETUP([rpm -U upgrade to newer])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    run rpmbuild --quiet -bb \
+        --define "ver $v" \
+          ${RPMDATA}/SPECS/versiontest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# Test upgrading to older package (should fail)
+AT_SETUP([rpm -U upgrade to older])
+AT_CHECK([
+RPMDB_CLEAR
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+],
+[2],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# Test downgrading to older package with --oldpackage
+AT_SETUP([rpm -U --oldpackage downgrade])
+AT_CHECK([
+RPMDB_CLEAR
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# Test upgrade of different versions in same transaction
+# XXX test that only 2.0-1 was installed
+AT_SETUP([rpm -U two versions of same package])
+AT_CHECK([
+RPMDB_CLEAR
+
+runroot rpm -U \
+  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# Test install of two different versions in same transaction
+# TODO: test that both got installed
+AT_SETUP([rpm -i two versions of same package])
+AT_CHECK([
+RPMDB_CLEAR
+
+runroot rpm -i \
+  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# Test install of two different versions in same transaction
+# TODO: test only one was installed
+AT_SETUP([rpm -i identical versions of same package])
+AT_CHECK([
+RPMDB_CLEAR
+
+# TODO test just one was installed, this only emits warnings
+runroot rpm -ivh \
+  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# TODO: the same with epoch vs no epoch
