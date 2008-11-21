@@ -220,6 +220,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 {
     rpmfi fi = NULL;
     char * specFile = NULL;
+    const char *rootdir = rpmtsRootDir(ts);
     Header h = NULL;
     rpmpsm psm = NULL;
     rpmte te = NULL;
@@ -270,6 +271,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		specix = rpmtdGetIndex(&filenames);
 	}
     }
+
+    if (strcmp(rootdir, "/") == 0)
+	rootdir = NULL;
 
     if (specix >= 0) {
 	const char *bn;
