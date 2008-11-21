@@ -22,9 +22,7 @@ AT_SETUP([rpm -U *.src.rpm])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-rpm \
-  --rcfile="${RPMRC}" \
-  --define "_topdir ${TOPDIR}" \
+run rpm \
   -U "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
@@ -38,9 +36,7 @@ AT_SETUP([rpm -i *.src.rpm])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-rpm \
-  --rcfile="${RPMRC}" \
-  --define "_topdir ${TOPDIR}" \
+run rpm \
   -i "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],

@@ -11,3 +11,10 @@ RPMRC="${abs_builddir}/testing@RPMCONFIGDIR@/rpmrc"
 TOPDIR="${abs_builddir}/testing/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
+
+function run()
+{
+    cmd="$1"
+    shift
+    "${cmd}" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}" $*
+}

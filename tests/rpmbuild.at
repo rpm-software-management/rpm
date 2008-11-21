@@ -25,9 +25,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
 
-rpmbuild \
-  --rcfile="${RPMRC}" \
-  --define "_topdir ${TOPDIR}" \
+run rpmbuild \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
 ],
 [0],
@@ -46,9 +44,7 @@ AS_MKDIR_P(${TOPDIR}/SOURCES)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
 
-rpmbuild \
-  --rcfile="${RPMRC}" \
-  --define "_topdir build" \
+run rpmbuild \
   --root="${abs_builddir}"/testing \
   -ba "${abs_srcdir}"/data/SPECS/hello.spec
 ],
@@ -63,9 +59,7 @@ AT_SETUP([rpmbuild --rebuild])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-rpmbuild \
-  --rcfile="${RPMRC}" \
-  --define "_topdir ${TOPDIR}" \
+run rpmbuild \
   --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
@@ -81,9 +75,7 @@ AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-rpmbuild \
-  --rcfile="${RPMRC}" \
-  --define "_topdir build" \
+run rpmbuild \
   --root="${abs_builddir}"/testing \
   --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],

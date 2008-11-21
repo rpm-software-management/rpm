@@ -35,8 +35,7 @@ AT_SETUP([rpm -qa])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
-rpm \
-  --rcfile="${RPMRC}" \
+run rpm \
   --root="${abs_builddir}"/testing \
   -qa
 ],
@@ -53,8 +52,7 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-rpm -i \
-  --rcfile="${RPMRC}" \
+run rpm -i \
   --root="${abs_builddir}"/testing \
   "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
 ],
@@ -72,8 +70,7 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-rpm -i \
-  --rcfile="${RPMRC}" \
+run rpm -i \
   --root="${abs_builddir}"/testing \
   --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
@@ -92,8 +89,7 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-rpm -i \
-  --rcfile="${RPMRC}" \
+run rpm -i \
   --root="${abs_builddir}"/testing \
   --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm

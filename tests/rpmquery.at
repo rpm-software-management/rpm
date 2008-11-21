@@ -17,11 +17,10 @@
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 
 # ------------------------------
-AT_SETUP([rpmquery --qf -p *.i386.rpm])
+AT_SETUP([rpm --qf -p *.i386.rpm])
 AT_CHECK([
-rpmquery \
-  --rcfile="${RPMRC}" \
-  --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
+run rpm \
+  -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
   -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0],
@@ -31,11 +30,10 @@ rpmquery \
 AT_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpmquery --qf -p *.src.rpm])
+AT_SETUP([rpm --qf -p *.src.rpm])
 AT_CHECK([
-rpmquery \
-  --rcfile="${RPMRC}" \
-  --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
+run rpm \
+  -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
   -p "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
@@ -45,10 +43,9 @@ rpmquery \
 AT_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpmquery -ql -p *.src.rpm])
+AT_SETUP([rpm -ql -p *.src.rpm])
 AT_CHECK([
-rpmquery \
-  --rcfile="${RPMRC}" \
+run rpm \
   -ql \
   -p "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
@@ -60,10 +57,9 @@ hello.spec
 AT_CLEANUP
 
 # ------------------------------
-AT_SETUP([rpmquery -ql -p *.i386.rpm])
+AT_SETUP([rpm -ql -p *.i386.rpm])
 AT_CHECK([
-rpmquery \
-  --rcfile="${RPMRC}" \
+rpm \
   -ql \
   -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
@@ -81,8 +77,7 @@ AT_CLEANUP
 # * Gets rpmpopt-$(VERSION) involved
 AT_SETUP([rpm -q --scripts -p *.i386.rpm])
 AT_CHECK([
-rpm \
-  --rcfile="${RPMRC}" \
+run rpm \
   -q --scripts \
   -p "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
 ],
@@ -106,15 +101,14 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-rpm --rcfile="${RPMRC}" \
-  --root="${abs_builddir}"/testing \
+run rpm \
   --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
   -i "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0])
 
 AT_CHECK([
-rpm --rcfile="${RPMRC}" \
+run rpm \
   --root="${abs_builddir}"/testing \
   -q hello
 ],
@@ -130,7 +124,7 @@ ${abs_builddir}/testing/check/share/doc/hello-1.0/FAQ
 _ATEOF
 
 AT_CHECK([
-rpm --rcfile="${RPMRC}" \
+rpm \
   --root="${abs_builddir}"/testing \
   -ql hello
 ],
