@@ -1,0 +1,93 @@
+#    rpmvercmp.at: rpm config file behavior tests
+
+# ------------------------------
+# (Build and) upgrade package with config file, no backup here
+AT_SETUP([rpm -U to package with unchanged config file])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -rf "${RPMTEST}/etc/my.conf"
+
+for v in "1.0" "2.0"; do
+    run rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+          ${RPMDATA}/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+],
+[0],
+)
+AT_CLEANUP
+#
+# ------------------------------
+# Upgrade package with locally modified config file, unchanged in pkg
+AT_SETUP([rpm -U to package with locally modified config file])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -rf "${RPMTEST}/etc/my.conf"
+
+for v in "1.0" "2.0"; do
+    run rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+          ${RPMDATA}/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+echo "otherstuff" > "${RPMTEST}"/etc/my.conf
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+],
+[0],
+)
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with unmodified config file, changed in pkg
+AT_SETUP([rpm -U to package with unchanged config file])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -rf "${RPMTEST}/etc/my.conf"
+
+for v in "1.0" "2.0"; do
+    run rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+          ${RPMDATA}/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+],
+[0],
+)
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with locally modified config file, changed in pkg
+AT_SETUP([rpm -U to package with modified config file])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -rf "${RPMTEST}/etc/my.conf"
+
+for v in "1.0" "2.0"; do
+    run rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+          ${RPMDATA}/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+echo "otherstuff" > "${RPMTEST}"/etc/my.conf
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+],
+[0],
+[ignore],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP

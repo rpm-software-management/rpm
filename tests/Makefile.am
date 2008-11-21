@@ -21,6 +21,7 @@ TESTSUITE_AT += rpmbuild.at
 TESTSUITE_AT += rpmi.at
 TESTSUITE_AT += rpmvercmp.at
 TESTSUITE_AT += rpmconflict.at
+TESTSUITE_AT += rpmconfig.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
@@ -28,6 +29,7 @@ EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SPECS/foo.spec
 EXTRA_DIST += data/SPECS/versiontest.spec
 EXTRA_DIST += data/SPECS/conflicttest.spec
+EXTRA_DIST += data/SPECS/configtest.spec
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/RPMS/foo-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
