@@ -1,4 +1,4 @@
-#    rpmi.at: test rpm install
+#    rpmi.at: test source rpm install
 #
 #    Copyright (C) 2007  Ralf Corsépius <corsepiu@fedoraproject.org>
 #
@@ -23,7 +23,6 @@ AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
-AS_MKDIR_P([${TOPDIR}])
 
 rpm \
   --rcfile="${RPMRC}" \
@@ -42,7 +41,6 @@ AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
-AS_MKDIR_P([${TOPDIR}])
 
 rpm \
   --rcfile="${RPMRC}" \

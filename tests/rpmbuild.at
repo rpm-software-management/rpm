@@ -25,10 +25,6 @@ TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
-AS_MKDIR_P(${TOPDIR}/BUILD)
-AS_MKDIR_P(${TOPDIR}/SPECS)
-AS_MKDIR_P(${TOPDIR}/RPMS)
-AS_MKDIR_P(${TOPDIR}/SRPMS)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
 
@@ -52,11 +48,6 @@ TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
 AS_MKDIR_P(${TOPDIR}/SOURCES)
-AS_MKDIR_P(${TOPDIR}/BUILD)
-AS_MKDIR_P(${TOPDIR}/BUILDROOT)
-AS_MKDIR_P(${TOPDIR}/SPECS)
-AS_MKDIR_P(${TOPDIR}/RPMS)
-AS_MKDIR_P(${TOPDIR}/SRPMS)
 
 cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
 
@@ -79,11 +70,6 @@ AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-AS_MKDIR_P(${TOPDIR}/BUILD)
-AS_MKDIR_P(${TOPDIR}/SPECS)
-AS_MKDIR_P(${TOPDIR}/RPMS)
-AS_MKDIR_P(${TOPDIR}/SRPMS)
 
 rpmbuild \
   --rcfile="${RPMRC}" \
@@ -104,11 +90,6 @@ AT_CHECK([
 TOPDIR="${abs_builddir}"/testing/build
 
 rm -rf ${TOPDIR}
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-AS_MKDIR_P(${TOPDIR}/BUILD)
-AS_MKDIR_P(${TOPDIR}/SPECS)
-AS_MKDIR_P(${TOPDIR}/RPMS)
-AS_MKDIR_P(${TOPDIR}/SRPMS)
 
 rpmbuild \
   --rcfile="${RPMRC}" \
