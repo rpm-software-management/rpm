@@ -35,8 +35,7 @@ AT_SETUP([rpm -qa])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
-run rpm \
-  --root="${abs_builddir}"/testing \
+runroot rpm \
   -qa
 ],
 [0])
@@ -52,9 +51,11 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-run rpm -i \
-  --root="${abs_builddir}"/testing \
-  "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+tpkg="foo-1.0-1.noarch.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -i \
+  "${tpkg}"
 ],
 [0])
 
@@ -70,10 +71,12 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-run rpm -i \
-  --root="${abs_builddir}"/testing \
-  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
-  "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+tpkg="hello-1.0-1.i386.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -i \
+  --noscripts --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
+  "${tpkg}"
 ],
 [0])
 
@@ -89,10 +92,12 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-run rpm -i \
-  --root="${abs_builddir}"/testing \
-  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
-  "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
+tpkg="hello-1.0-1.ppc64.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -i \
+  --noscripts --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
+  "${tpkg}"
 ],
 [0],
 [ignore],

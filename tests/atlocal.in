@@ -3,12 +3,15 @@ export LD_LIBRARY_PATH
 PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:$PATH"
 export PATH
 
+RPMTEST="${abs_builddir}/testing"
+RPMDATA="${abs_srcdir}/data/"
+
 # Popt looks into $HOME
-HOME="${abs_builddir}/testing"
+HOME="${RPMTEST}"
 export HOME
 
-RPMRC="${abs_builddir}/testing@RPMCONFIGDIR@/rpmrc"
-TOPDIR="${abs_builddir}/testing/build"
+RPMRC="${RPMTEST}@RPMCONFIGDIR@/rpmrc"
+TOPDIR="${RPMTEST}/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
 
@@ -16,5 +19,15 @@ function run()
 {
     cmd="$1"
     shift
-    "${cmd}" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}" $*
+    "${cmd}" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}" $@
+}
+
+function runroot()
+{
+    cmd="$1"
+    shift
+    (cd ${RPMTEST} && \
+     mkdir -p etc && touch etc/mtab &&
+     FAKECHROOT_BASE="${RPMTEST}" fakechroot "${cmd}" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}" $@
+    )
 }

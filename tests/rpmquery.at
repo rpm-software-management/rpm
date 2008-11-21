@@ -101,15 +101,17 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-run rpm \
-  --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
-  -i "${abs_srcdir}"/data/RPMS/hello-1.0-1.ppc64.rpm
+tpkg="hello-1.0-1.ppc64.rpm"
+cp "${RPMDATA}/RPMS/$tpkg" "${RPMTEST}"
+
+runroot rpm \
+  --noscripts --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
+  -i "${tpkg}"
 ],
 [0])
 
 AT_CHECK([
-run rpm \
-  --root="${abs_builddir}"/testing \
+runroot rpm \
   -q hello
 ],
 [0],
@@ -124,8 +126,7 @@ ${abs_builddir}/testing/check/share/doc/hello-1.0/FAQ
 _ATEOF
 
 AT_CHECK([
-rpm \
-  --root="${abs_builddir}"/testing \
+runroot rpm \
   -ql hello
 ],
 [0],
