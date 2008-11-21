@@ -232,6 +232,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     int scareMem = 1;
     rpmfi fi = NULL;
     char * specFile = NULL;
+    const char *rootdir = rpmtsRootDir(ts);
     Header h = NULL;
     struct rpmpsm_s psmbuf;
     rpmpsm psm = &psmbuf;
@@ -333,14 +334,17 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
+    if (strcmp(rootdir, "/") == 0)
+	rootdir = NULL;
+
+    if (rpmMkdirs(rootdir, "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
 	rpmrc = RPMRC_FAIL;
 	goto exit;
     }
     /* Build dnl/dil with {_sourcedir, _specdir} as values. */
     if (i < fi->fc) {
-	char *_sourcedir = rpmGenPath(rpmtsRootDir(ts), "%{_sourcedir}", "");
-	char *_specdir = rpmGenPath(rpmtsRootDir(ts), "%{_specdir}", "");
+	char *_sourcedir = rpmGenPath(rootdir, "%{_sourcedir}", "");
+	char *_specdir = rpmGenPath(rootdir, "%{_specdir}", "");
 	size_t speclen = strlen(_specdir) + 2;
 	size_t sourcelen = strlen(_sourcedir) + 2;
 	char * t;
