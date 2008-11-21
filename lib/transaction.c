@@ -42,21 +42,6 @@ static int osOkay(const char * pkgOs)
 }
 
 /**
- */
-static int sharedCmp(const void * one, const void * two)
-{
-    sharedFileInfo a = (sharedFileInfo) one;
-    sharedFileInfo b = (sharedFileInfo) two;
-
-    if (a->otherPkg < b->otherPkg)
-	return -1;
-    else if (a->otherPkg > b->otherPkg)
-	return 1;
-
-    return 0;
-}
-
-/**
  * handleInstInstalledFiles.
  * @param ts		transaction set
  * @param p		current transaction element
