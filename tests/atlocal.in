@@ -8,5 +8,6 @@ HOME="${abs_builddir}/testing"
 export HOME
 
 RPMRC="${abs_builddir}/testing@RPMCONFIGDIR@/rpmrc"
+TOPDIR="${abs_builddir}/testing/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}

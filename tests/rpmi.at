@@ -20,8 +20,6 @@
 # Check if rpm -U *.src.rpm works
 AT_SETUP([rpm -U *.src.rpm])
 AT_CHECK([
-TOPDIR="${abs_builddir}"/testing/build
-
 rm -rf ${TOPDIR}
 
 rpm \
@@ -38,8 +36,6 @@ AT_CLEANUP
 # Check if rpm -i *.src.rpm works
 AT_SETUP([rpm -i *.src.rpm])
 AT_CHECK([
-TOPDIR="${abs_builddir}"/testing/build
-
 rm -rf ${TOPDIR}
 
 rpm \
