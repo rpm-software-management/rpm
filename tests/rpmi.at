@@ -1,4 +1,4 @@
-#    rpmi.at: test source rpm install
+#    rpmi.at: test various aspects of rpm install
 #
 #    Copyright (C) 2007  Ralf Corsépius <corsepiu@fedoraproject.org>
 #
@@ -40,6 +40,52 @@ run rpm \
   -i "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# ------------------------------
+# Various error behavior tests
+#
+AT_SETUP([rpm -i <nonexistent file>])
+AT_CHECK([
+run rpm \
+  -i no_such_file
+],
+[1],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+# XXX hmm, --nomanifest seems broken atm...
+AT_SETUP([rpm -i --nomanifest <garbage text file>])
+AT_CHECK([
+junk="${RPMTEST}/textfile"
+cat << EOF > "${junk}"
+no_such.file
+not_an.rpm
+EOF
+
+run rpm \
+  -Uvv --nomanifest "${junk}"
+],
+[1],
+[ignore],
+[ignore])
+AT_CLEANUP
+
+AT_SETUP([rpm -i <garbage text file])
+AT_CHECK([
+junk="${RPMTEST}/not_an.rpm"
+cat << EOF > "${junk}"
+no_such.file
+not_an.rpm
+EOF
+
+run rpm \
+  -Uvv "${junk}"
+],
+[2],
 [ignore],
 [ignore])
 AT_CLEANUP
