@@ -25,24 +25,8 @@
 
 #include "debug.h"
 
-static const char * const defrcfiles = 
-      RPMCONFIGDIR "/rpmrc" 
-  ":" RPMCONFIGDIR "/" RPMCANONVENDOR "/rpmrc"
-  ":" SYSCONFDIR "/rpmrc"
-  ":~/.rpmrc"; 
-
-const char * macrofiles =
-#ifndef MACROFILES
-      RPMCONFIGDIR "/macros"
-  ":" RPMCONFIGDIR "/platform/%{_target}/macros"
-  ":" RPMCONFIGDIR "/" RPMCANONVENDOR "/macros"
-  ":" SYSCONFDIR "/rpm/macros.*"
-  ":" SYSCONFDIR "/rpm/macros"
-  ":" SYSCONFDIR "/rpm/%{_target}/macros"
-  ":~/.rpmmacros";
-#else
-  MACROFILES;
-#endif
+static const char * defrcfiles = NULL;
+const char * macrofiles = NULL;
 
 static const char * const platform = SYSCONFDIR "/rpm/platform";
 static char ** platpat = NULL;
@@ -465,6 +449,23 @@ export RPM_BUILD_ROOT\n}\
 
 static void setDefaults(void)
 {
+    const char *confdir = rpmConfigDir();
+    defrcfiles = rstrscat(NULL, confdir, "/rpmrc", ":",
+				confdir, "/" RPMCANONVENDOR "/rpmrc", ":",
+				SYSCONFDIR "/rpmrc", ":",
+			  	"~/.rpmrc", NULL);
+
+#ifndef MACROFILES
+    macrofiles = rstrscat(NULL, confdir, "/macros", ":",
+				confdir, "/platform/%{_target}/macros", ":",
+  				confdir, "/" RPMCANONVENDOR "/macros", ":",
+				SYSCONFDIR "/rpm/macros.*", ":",
+				SYSCONFDIR "/rpm/macros", ":",
+				SYSCONFDIR "/rpm/%{_target}/macros", ":",
+				"~/.rpmmacros", NULL);
+#else
+    macrofiles = MACROFILES;
+#endif
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, LOCALSTATEDIR, RMIL_DEFAULT);
