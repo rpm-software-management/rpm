@@ -36,24 +36,21 @@ rpmconfig_SCRIPTS = \
 
 rpmconfig_SCRIPTS += macros.perl
 macros.perl: $(srcdir)/macros.perl.in
-	@sed \
-	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	@cat \
 	  < $(srcdir)/macros.perl.in > macros.perl
 CLEANFILES += macros.perl
 EXTRA_DIST += macros.perl.in
 
 rpmconfig_SCRIPTS += macros.php
 macros.php: $(srcdir)/macros.php.in
-	@sed \
-	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	@cat \
 	  < $(srcdir)/macros.php.in > macros.php
 CLEANFILES += macros.php
 EXTRA_DIST += macros.php.in
 
 rpmconfig_SCRIPTS += macros.python
 macros.python: $(srcdir)/macros.python.in
-	@sed \
-	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	@cat \
 	  < $(srcdir)/macros.python.in > macros.python
 CLEANFILES += macros.python
 EXTRA_DIST += macros.python.in
