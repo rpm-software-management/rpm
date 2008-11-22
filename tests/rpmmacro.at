@@ -29,6 +29,67 @@ run rpm --define "this that" --eval '%{?that}'
 ])
 AT_CLEANUP
 
+AT_SETUP([uncompress macro])
+AT_CHECK([
+(cd ${RPMDATA}/SOURCES/ &&
+  run rpm \
+    --define "__gzip /my/bin/gzip" \
+    --eval "%{uncompress:hello-2.0.tar.gz}"
+)
+],
+[0],
+[/my/bin/gzip -dc hello-2.0.tar.gz
+])
+AT_CLEANUP
+
+AT_SETUP([basename macro])
+AT_CHECK([
+(cd ${RPMDATA}/SOURCES/ &&
+  run rpm \
+    --eval "%{basename:${RPMDATA}/SOURCES/hello-2.0.tar.gz}"
+)
+],
+[0],
+[hello-2.0.tar.gz
+])
+AT_CLEANUP
+
+AT_SETUP([suffix macro])
+AT_CHECK([
+(cd ${RPMDATA}/SOURCES/ &&
+  run rpm \
+    --eval "%{suffix:${RPMDATA}/SOURCES/hello-2.0.tar.gz}"
+)
+],
+[0],
+[gz
+])
+AT_CLEANUP
+
+AT_SETUP([url2path macro])
+AT_CHECK([
+(cd ${RPMDATA}/SOURCES/ &&
+  run rpm \
+    --eval "%{url2path:http://hello.org/releases/hello-2.0.tar.gz}"
+)
+],
+[0],
+[/releases/hello-2.0.tar.gz
+])
+AT_CLEANUP
+
+AT_SETUP([shell expansion])
+AT_CHECK([
+(cd ${RPMDATA}/SOURCES/ &&
+  run rpm \
+    --eval "%(echo foo)"
+)
+],
+[0],
+[foo
+])
+AT_CLEANUP
+
 AT_SETUP([simple lua --eval])
 AT_CHECK([
 run rpm --eval '%{lua:print(5*5)}'
