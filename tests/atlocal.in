@@ -13,20 +13,19 @@ export RPM_CONFIGDIR
 HOME="${RPMTEST}"
 export HOME
 
-RPMRC="${RPMTEST}@RPMCONFIGDIR@/rpmrc"
 TOPDIR="${RPMTEST}/build"
 
 RPM_XFAIL=${RPM_XFAIL-1}
 
 function run()
 {
-    "$@" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}"
+    "$@" --define "_topdir ${TOPDIR}"
 }
 
 function runroot()
 {
     (cd ${RPMTEST} && \
      mkdir -p etc && touch etc/mtab &&
-     FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --rcfile="${RPMRC}" --define "_topdir ${TOPDIR}"
+     FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir ${TOPDIR}"
     )
 }
