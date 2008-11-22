@@ -83,3 +83,33 @@ run rpmbuild \
 [ignore],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# Check if tar unpacking works
+AT_SETUP([rpmbuild -tb <tar with bad spec>])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+run rpmbuild \
+  -tb "${RPMDATA}/SOURCES/hello-1.0.tar.gz"
+],
+[1],
+[ignore],
+[error: line 5: Unknown tag: Serial:	1
+])
+AT_CLEANUP
+
+# ------------------------------
+# Check if tar build works
+# TODO: test that the rpms are actually created...
+AT_SETUP([rpmbuild -tb])
+AT_CHECK([
+rm -rf ${TOPDIR}
+
+run rpmbuild \
+  -ta "${RPMDATA}/SOURCES/hello-2.0.tar.gz"
+],
+[0],
+[ignore],
+[ignore])
+AT_CLEANUP
