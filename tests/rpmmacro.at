@@ -1,0 +1,39 @@
+#    rpmmacro.at: test rpm macros
+#
+
+# ------------------------------
+AT_SETUP([simple rpm --eval])
+AT_CHECK([
+run rpm --define "this that" --eval '%{this}'
+],
+[0],
+[that
+])
+AT_CLEANUP
+
+AT_SETUP([simple true conditional rpm --eval])
+AT_CHECK([
+run rpm --define "this that" --eval '%{?this}'
+],
+[0],
+[that
+])
+AT_CLEANUP
+
+AT_SETUP([simple false conditional rpm --eval])
+AT_CHECK([
+run rpm --define "this that" --eval '%{?that}'
+],
+[0],
+[
+])
+AT_CLEANUP
+
+AT_SETUP([simple lua --eval])
+AT_CHECK([
+run rpm --eval '%{lua:print(5*5)}'
+],
+[0],
+[25
+])
+AT_CLEANUP

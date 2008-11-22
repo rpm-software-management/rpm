@@ -22,6 +22,7 @@ TESTSUITE_AT += rpmi.at
 TESTSUITE_AT += rpmvercmp.at
 TESTSUITE_AT += rpmconflict.at
 TESTSUITE_AT += rpmconfig.at
+TESTSUITE_AT += rpmmacro.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
