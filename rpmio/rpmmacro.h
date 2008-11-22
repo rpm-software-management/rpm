@@ -137,6 +137,17 @@ char * rpmExpand	(const char * arg, ...) RPM_GNUC_NULL_TERMINATED;
  */
 int	rpmExpandNumeric (const char * arg);
 
+/** \ingroup rpmmacro
+ * Return rpm configuration base directory.
+ * If RPM_CONFIGDIR environment variable is set, it's value will be used.
+ * Otherwise the configuration directory is the one set at build time,
+ * typically /usr/lib/rpm. The value of rpmConfigDir() is determined
+ * on first call to this function and is guaranteed to remain the same
+ * on subsequent calls.
+ * @return		rpm configuration directory name
+ */
+const char *rpmConfigDir(void);
+
 #ifdef __cplusplus
 }
 #endif

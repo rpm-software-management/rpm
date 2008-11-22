@@ -1630,4 +1630,3 @@ rpmExpandNumeric(const char *arg)
 
     return rc;
 }
-

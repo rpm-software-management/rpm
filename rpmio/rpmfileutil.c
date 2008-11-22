@@ -25,6 +25,8 @@
 
 #include "debug.h"
 
+static const char *rpm_config_dir = NULL;
+
 static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
 {
     static const char * cmd = NULL;
@@ -726,4 +728,13 @@ int rpmMkdirs(const char *root, const char *pathstr)
     }
     argvFree(dirs);
     return rc;
+}
+
+const char *rpmConfigDir(void)
+{
+    if (rpm_config_dir == NULL) {
+	char *rpmenv = getenv("RPM_CONFIGDIR");
+	rpm_config_dir = rpmenv ? xstrdup(rpmenv) : RPMCONFIGDIR;
+    }
+    return rpm_config_dir;
 }
