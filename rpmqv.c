@@ -15,6 +15,7 @@ const char *__progname;
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmfileutil.h>
 
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
@@ -261,11 +262,15 @@ int main(int argc, char *argv[])
     /* We need to handle that before dealing with the rest of the arguments. */
     /* XXX popt argv definition should be fixed instead of casting... */
     optCon = poptGetContext(poptCtx, argc, (const char **)argv, optionsTable, 0);
-    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    {
+	char *poptfile = rpmGenPath(rpmConfigDir(), LIBRPMALIAS_FILENAME, NULL);
+	(void) poptReadConfigFile(optCon, poptfile);
+	free(poptfile);
+    }
 #if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
 #endif
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
+    poptSetExecPath(optCon, rpmConfigDir(), 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
 	optArg = poptGetOptArg(optCon);

@@ -11,6 +11,7 @@ const char *__progname;
 #include <rpm/rpmgi.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmfileutil.h>
 
 #include "debug.h"
 
@@ -337,11 +338,15 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 
     optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
-    (void) poptReadConfigFile(optCon, LIBRPMALIAS_FILENAME);
+    {
+	char *poptfile = rpmGenPath(rpmConfigDir(), LIBRPMALIAS_FILENAME, NULL);
+	(void) poptReadConfigFile(optCon, poptfile);
+	free(poptfile);
+    }
 #if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
 #endif
-    poptSetExecPath(optCon, RPMCONFIGDIR, 1);
+    poptSetExecPath(optCon, rpmConfigDir(), 1);
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {

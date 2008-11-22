@@ -6,6 +6,9 @@ export PATH
 RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
 
+RPM_CONFIGDIR="${RPMTEST}/@RPMCONFIGDIR@"
+export RPM_CONFIGDIR
+
 # Popt looks into $HOME
 HOME="${RPMTEST}"
 export HOME
