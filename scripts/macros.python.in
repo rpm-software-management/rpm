@@ -1,6 +1,6 @@
 # Python specific macro definitions.
 # To make use of these macros insert the following line into your spec file:
-# %include @RPMCONFIGDIR@/macros.python
+# %include %{_rpmconfigdir}/macros.python
 
 # python main version
 %define py_ver         %(echo `python -c "import sys; print sys.version[:3]"`)

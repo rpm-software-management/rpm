@@ -164,7 +164,7 @@ rpmbuild alias --without	--define "_without_!#:+  --without-!#:+" \
 	--POPTdesc=$"disable configure <option> for build" \
 	--POPTargs=$"<option>"
 # Build policies enabled from command line. Last policy applies.
-rpmbuild alias --buildpolicy --define '__os_install_post @RPMCONFIGDIR@/brp-!#:+' \
+rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#:+' \
 	--POPTdesc=$"set buildroot <policy> (e.g. compress man pages)" \
 	--POPTargs=$"<policy>"
 

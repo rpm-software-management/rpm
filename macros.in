@@ -166,7 +166,7 @@
 #	the script.  See the script for details.
 #
 %__debug_install_post   \
-   @RPMCONFIGDIR@/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
+   %{_rpmconfigdir}/find-debuginfo.sh %{?_missing_build_ids_terminate_build:--strict-build-id} %{?_find_debuginfo_opts} "%{_builddir}/%{?buildsubdir}"\
 %{nil}
 
 #	Template for debug information sub-package.
@@ -364,7 +364,7 @@ package or when debugging this package.\
 # Returns list of unpackaged files, i.e. files in $RPM_BUILD_ROOT not packaged.
 #
 # Note: Disable (by commenting out) for legacy compatibility.
-%__check_files         @RPMCONFIGDIR@/check-files %{buildroot}
+%__check_files         %{_rpmconfigdir}/check-files %{buildroot}
 
 #
 # Should unpackaged files in a build root terminate a build?
@@ -461,10 +461,10 @@ print (t)\
 # Path to scripts to autogenerate package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is zero.
-#%__find_provides	@RPMCONFIGDIR@/rpmdeps --provides
-#%__find_requires	@RPMCONFIGDIR@/rpmdeps --requires
-%__find_provides	@RPMCONFIGDIR@/find-provides
-%__find_requires	@RPMCONFIGDIR@/find-requires
+#%__find_provides	%{_rpmconfigdir}/rpmdeps --provides
+#%__find_requires	%{_rpmconfigdir}/rpmdeps --requires
+%__find_provides	%{_rpmconfigdir}/find-provides
+%__find_requires	%{_rpmconfigdir}/find-requires
 #%__find_conflicts	???
 #%__find_obsoletes	???
 
@@ -472,23 +472,23 @@ print (t)\
 # Path to scripts to autogenerate per-interpreter package dependencies,
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
-# helpers are also used by @RPMCONFIGDIR@/rpmdeps {--provides|--requires}.
-#%__perl_provides	@RPMCONFIGDIR@/perldeps.pl --provides
-#%__perl_requires	@RPMCONFIGDIR@/perldeps.pl --requires
-%__perl_provides	@RPMCONFIGDIR@/perl.prov
-%__perl_requires	@RPMCONFIGDIR@/perl.req
+# helpers are also used by %{_rpmconfigdir}/rpmdeps {--provides|--requires}.
+#%__perl_provides	%{_rpmconfigdir}/perldeps.pl --provides
+#%__perl_requires	%{_rpmconfigdir}/perldeps.pl --requires
+%__perl_provides	%{_rpmconfigdir}/perl.prov
+%__perl_requires	%{_rpmconfigdir}/perl.req
 
-%__python_provides	@RPMCONFIGDIR@/pythondeps.sh --provides
-%__python_requires	@RPMCONFIGDIR@/pythondeps.sh --requires
+%__python_provides	%{_rpmconfigdir}/pythondeps.sh --provides
+%__python_requires	%{_rpmconfigdir}/pythondeps.sh --requires
 
-%__mono_provides        @RPMCONFIGDIR@/mono-find-provides %{_builddir}/%{?buildsubdir} %{buildroot} %{_libdir}
-%__mono_requires        @RPMCONFIGDIR@/mono-find-requires %{_builddir}/%{?buildsubdir} %{buildroot} %{_libdir}
+%__mono_provides        %{_rpmconfigdir}/mono-find-provides %{_builddir}/%{?buildsubdir} %{buildroot} %{_libdir}
+%__mono_requires        %{_rpmconfigdir}/mono-find-requires %{_builddir}/%{?buildsubdir} %{buildroot} %{_libdir}
 
-%__libtool_provides	@RPMCONFIGDIR@/libtooldeps.sh --provides %{buildroot} %{name}
-%__libtool_requires     @RPMCONFIGDIR@/libtooldeps.sh --requires %{buildroot} %{name}
+%__libtool_provides	%{_rpmconfigdir}/libtooldeps.sh --provides %{buildroot} %{name}
+%__libtool_requires     %{_rpmconfigdir}/libtooldeps.sh --requires %{buildroot} %{name}
 
-%__pkgconfig_provides   @RPMCONFIGDIR@/pkgconfigdeps.sh --provides
-%__pkgconfig_requires   @RPMCONFIGDIR@/pkgconfigdeps.sh --requires
+%__pkgconfig_provides   %{_rpmconfigdir}/pkgconfigdeps.sh --provides
+%__pkgconfig_requires   %{_rpmconfigdir}/pkgconfigdeps.sh --requires
 
 #==============================================================================
 # ---- Database configuration macros.
@@ -1188,7 +1188,7 @@ done \
 # ...
 # %files -f %{name}.lang
 #
-%find_lang	@RPMCONFIGDIR@/find-lang.sh %{buildroot}
+%find_lang	%{_rpmconfigdir}/find-lang.sh %{buildroot}
 
 # Commands + opts to use for retrieving remote files
 %__urlhelpercmd         @__CURL@
