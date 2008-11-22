@@ -99,3 +99,22 @@ run rpm --eval '%{lua:print(5*5)}'
 [25
 ])
 AT_CLEANUP
+
+AT_SETUP([lua rpm extensions])
+AT_CHECK([
+run rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
+],
+[0],
+[bar
+])
+AT_CLEANUP
+
+AT_SETUP([lua posix extensions])
+AT_CHECK([
+run rpm \
+  --eval '%{lua: posix.putenv("LUATEST=ok") print(posix.getenv("LUATEST"))}'
+],
+[0],
+[ok
+])
+AT_CLEANUP
