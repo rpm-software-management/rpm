@@ -5,6 +5,7 @@ AT_BANNER([RPM config file behavior])
 # ------------------------------
 # (Build and) upgrade package with config file, no backup here
 AT_SETUP([rpm -U to package with unchanged config file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 rm -rf "${TOPDIR}"
@@ -27,6 +28,7 @@ AT_CLEANUP
 # ------------------------------
 # Upgrade package with locally modified config file, unchanged in pkg
 AT_SETUP([rpm -U to package with locally modified config file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 rm -rf "${TOPDIR}"
@@ -50,6 +52,7 @@ AT_CLEANUP
 # ------------------------------
 # Upgrade package with unmodified config file, changed in pkg
 AT_SETUP([rpm -U to package with unchanged config file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 rm -rf "${TOPDIR}"
@@ -72,6 +75,7 @@ AT_CLEANUP
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg
 AT_SETUP([rpm -U to package with modified config file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 rm -rf "${TOPDIR}"

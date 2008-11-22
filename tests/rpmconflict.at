@@ -5,6 +5,7 @@ AT_BANNER([RPM file conflicts])
 # ------------------------------
 # (Build and) install conflicting package (should fail)
 AT_SETUP([rpm -U to package with file conflict])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 rm -rf "${TOPDIR}"
@@ -27,6 +28,7 @@ AT_CLEANUP
 # ------------------------------
 # Install conflicting packages in same transaction (should fail)
 AT_SETUP([rpm -U two packages with a conflicting file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 
@@ -42,6 +44,7 @@ AT_CLEANUP
 # ------------------------------
 # (Build and) install package with shareable file
 AT_SETUP([rpm -U package with shareable file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 rm -rf "${TOPDIR}"
@@ -64,6 +67,7 @@ AT_CLEANUP
 # ------------------------------
 # Install packages with shareable file in same transaction
 AT_SETUP([rpm -U two packages with shareable file])
+AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 

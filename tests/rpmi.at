@@ -21,6 +21,7 @@ AT_BANNER([RPM install tests])
 # ------------------------------
 # Check if rpm -U *.src.rpm works
 AT_SETUP([rpm -U *.src.rpm])
+AT_KEYWORDS([install])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
@@ -35,6 +36,7 @@ AT_CLEANUP
 # ------------------------------
 # Check if rpm -i *.src.rpm works
 AT_SETUP([rpm -i *.src.rpm])
+AT_KEYWORDS([install])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
@@ -50,6 +52,7 @@ AT_CLEANUP
 # Various error behavior tests
 #
 AT_SETUP([rpm -i <nonexistent file>])
+AT_KEYWORDS([install])
 AT_CHECK([
 run rpm \
   -i no_such_file
@@ -61,6 +64,7 @@ AT_CLEANUP
 
 # XXX hmm, --nomanifest seems broken atm...
 AT_SETUP([rpm -i --nomanifest <garbage text file>])
+AT_KEYWORDS([install])
 AT_CHECK([
 junk="${RPMTEST}/textfile"
 cat << EOF > "${junk}"
@@ -77,6 +81,7 @@ run rpm \
 AT_CLEANUP
 
 AT_SETUP([rpm -i <garbage text file])
+AT_KEYWORDS([install])
 AT_CHECK([
 junk="${RPMTEST}/not_an.rpm"
 cat << EOF > "${junk}"

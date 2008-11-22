@@ -20,6 +20,7 @@ AT_BANNER([RPM queries])
 
 # ------------------------------
 AT_SETUP([rpm --qf -p *.i386.rpm])
+AT_KEYWORDS([query])
 AT_CHECK([
 run rpm \
   -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
@@ -33,6 +34,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm --qf -p *.src.rpm])
+AT_KEYWORDS([query])
 AT_CHECK([
 run rpm \
   -q --qf "%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n" \
@@ -46,6 +48,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm -ql -p *.src.rpm])
+AT_KEYWORDS([query])
 AT_CHECK([
 run rpm \
   -ql \
@@ -60,6 +63,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm -ql -p *.i386.rpm])
+AT_KEYWORDS([query])
 AT_CHECK([
 rpm \
   -ql \
@@ -78,6 +82,7 @@ AT_CLEANUP
 # Try to check "scripts"
 # * Gets rpmpopt-$(VERSION) involved
 AT_SETUP([rpm -q --scripts -p *.i386.rpm])
+AT_KEYWORDS([query])
 AT_CHECK([
 run rpm \
   -q --scripts \
@@ -98,6 +103,7 @@ AT_CLEANUP
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -qil hello])
+AT_KEYWORDS([rpmdb install query])
 
 AT_CHECK([
 RPMDB_CLEAR

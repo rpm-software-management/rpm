@@ -21,6 +21,7 @@ AT_BANNER([RPM database access])
 # ------------------------------
 # Attempt to initialize a rpmdb
 AT_SETUP([rpm --initdb])
+AT_KEYWORDS([rpmdb])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -33,6 +34,7 @@ AT_CLEANUP
 # ------------------------------
 # Run rpm -qa on an empty rpmdb
 AT_SETUP([rpm -qa])
+AT_KEYWORDS([rpmdb query])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -47,6 +49,7 @@ AT_CLEANUP
 # install a noarch package into a local rpmdb without --relocate and --nodeps
 # * Should always succeed
 AT_SETUP([rpm -i *.noarch.rpm])
+AT_KEYWORDS([rpmdb install])
 
 AT_CHECK([
 RPMDB_CLEAR
@@ -68,6 +71,7 @@ AT_CLEANUP
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.i386.rpm])
+AT_KEYWORDS([rpmdb install])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -89,6 +93,7 @@ AT_CLEANUP
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
 AT_SETUP([rpm -i --relocate=.. *.ppc64.rpm])
+AT_KEYWORDS([rpmdb install])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT

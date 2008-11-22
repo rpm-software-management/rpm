@@ -4,6 +4,7 @@ AT_BANNER([RPM macros])
 
 # ------------------------------
 AT_SETUP([simple rpm --eval])
+AT_KEYWORDS([macros])
 AT_CHECK([
 run rpm --define "this that" --eval '%{this}'
 ],
@@ -13,6 +14,7 @@ run rpm --define "this that" --eval '%{this}'
 AT_CLEANUP
 
 AT_SETUP([simple true conditional rpm --eval])
+AT_KEYWORDS([macros])
 AT_CHECK([
 run rpm --define "this that" --eval '%{?this}'
 ],
@@ -22,6 +24,7 @@ run rpm --define "this that" --eval '%{?this}'
 AT_CLEANUP
 
 AT_SETUP([simple false conditional rpm --eval])
+AT_KEYWORDS([macros])
 AT_CHECK([
 run rpm --define "this that" --eval '%{?that}'
 ],
@@ -31,6 +34,7 @@ run rpm --define "this that" --eval '%{?that}'
 AT_CLEANUP
 
 AT_SETUP([uncompress macro])
+AT_KEYWORDS([macros])
 AT_CHECK([
 (cd ${RPMDATA}/SOURCES/ &&
   run rpm \
@@ -44,6 +48,7 @@ AT_CHECK([
 AT_CLEANUP
 
 AT_SETUP([basename macro])
+AT_KEYWORDS([macros])
 AT_CHECK([
 (cd ${RPMDATA}/SOURCES/ &&
   run rpm \
@@ -56,6 +61,7 @@ AT_CHECK([
 AT_CLEANUP
 
 AT_SETUP([suffix macro])
+AT_KEYWORDS([macros])
 AT_CHECK([
 (cd ${RPMDATA}/SOURCES/ &&
   run rpm \
@@ -68,6 +74,7 @@ AT_CHECK([
 AT_CLEANUP
 
 AT_SETUP([url2path macro])
+AT_KEYWORDS([macros])
 AT_CHECK([
 (cd ${RPMDATA}/SOURCES/ &&
   run rpm \
@@ -80,6 +87,7 @@ AT_CHECK([
 AT_CLEANUP
 
 AT_SETUP([shell expansion])
+AT_KEYWORDS([macros])
 AT_CHECK([
 (cd ${RPMDATA}/SOURCES/ &&
   run rpm \
@@ -92,6 +100,7 @@ AT_CHECK([
 AT_CLEANUP
 
 AT_SETUP([simple lua --eval])
+AT_KEYWORDS([macros lua])
 AT_CHECK([
 run rpm --eval '%{lua:print(5*5)}'
 ],
@@ -101,6 +110,7 @@ run rpm --eval '%{lua:print(5*5)}'
 AT_CLEANUP
 
 AT_SETUP([lua rpm extensions])
+AT_KEYWORDS([macros lua])
 AT_CHECK([
 run rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
 ],
@@ -110,6 +120,7 @@ run rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
 AT_CLEANUP
 
 AT_SETUP([lua posix extensions])
+AT_KEYWORDS([macros lua])
 AT_CHECK([
 run rpm \
   --eval '%{lua: posix.putenv("LUATEST=ok") print(posix.getenv("LUATEST"))}'

@@ -20,6 +20,7 @@ AT_BANNER([Basic tests])
 
 # ------------------------------
 AT_SETUP([rpm --version])
+AT_KEYWORDS([basic])
 AT_CHECK([run rpm --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
@@ -28,6 +29,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpmbuild --version])
+AT_KEYWORDS([basic])
 AT_CHECK([run rpmbuild --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
@@ -36,6 +38,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm --version])
+AT_KEYWORDS([basic])
 AT_CHECK([run rpm --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
@@ -44,6 +47,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm --version])
+AT_KEYWORDS([basic])
 AT_CHECK([run rpm --version],[0],
 [RPM version AT_PACKAGE_VERSION
 ])
@@ -52,6 +56,7 @@ AT_CLEANUP
 
 # ------------------------------
 AT_SETUP([rpm --showrc])
+AT_KEYWORDS([basic])
 AT_CHECK([run rpm --showrc],[0],
 [ignore])
 AT_CLEANUP
@@ -61,6 +66,7 @@ AT_CLEANUP
 # Check rpm --querytags
 # * Some versions of rpm append extraneous whitespaces
 AT_SETUP([rpm --querytags])
+AT_KEYWORDS([basic])
 AT_CHECK([run rpm --querytags],[0],
 [ARCH
 ARCHIVESIZE
