@@ -51,7 +51,7 @@ static void mysaveline (lua_State *L, const char *s) {
 static int luapath(lua_State *L)
 {
 	lua_pushstring(L, "LUA_PATH");
-	lua_pushstring(L, RPMCONFIGDIR "/lua/?.lua;?.lua");
+	lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua;?.lua");
 	lua_rawset(L, LUA_GLOBALSINDEX);
 	return 0;
 }

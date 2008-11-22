@@ -14,6 +14,7 @@
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmurl.h>
+#include <rpm/rpmfileutil.h>
 #include "rpmio/rpmhook.h"
 
 #define _RPMLUA_INTERNAL
@@ -39,6 +40,7 @@ rpmlua rpmluaNew()
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));
     struct stat st;
     const luaL_reg *lib;
+    char *initlua = rpmGenPath(rpmConfigDir(), "init.lua", NULL);
    
     static const luaL_reg extlibs[] = {
 	{"posix", luaopen_posix},
@@ -58,14 +60,15 @@ rpmlua rpmluaNew()
 	lua_settop(L, 0);
     }
     lua_pushliteral(L, "LUA_PATH");
-    lua_pushstring(L, RPMCONFIGDIR "/lua/?.lua");
+    lua_pushfstring(L, "%s/%s", rpmConfigDir(), "/lua/?.lua");
     lua_rawset(L, LUA_GLOBALSINDEX);
     lua_pushliteral(L, "print");
     lua_pushcfunction(L, rpm_print);
     lua_rawset(L, LUA_GLOBALSINDEX);
     rpmluaSetData(lua, "lua", lua);
-    if (stat(RPMCONFIGDIR "/init.lua", &st) != -1)
-	(void)rpmluaRunScriptFile(lua, RPMCONFIGDIR "/init.lua");
+    if (stat(initlua, &st) != -1)
+	(void)rpmluaRunScriptFile(lua, initlua);
+    free(initlua);
     return lua;
 }
 
