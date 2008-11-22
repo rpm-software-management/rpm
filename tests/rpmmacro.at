@@ -1,5 +1,6 @@
 #    rpmmacro.at: test rpm macros
 #
+AT_BANNER([RPM macros])
 
 # ------------------------------
 AT_SETUP([simple rpm --eval])

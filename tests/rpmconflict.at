@@ -1,4 +1,6 @@
-#    rpmvercmp.at: rpm version comparison tests
+#    rpmconflict.at: rpm file conflict tests
+
+AT_BANNER([RPM file conflicts])
 
 # ------------------------------
 # (Build and) install conflicting package (should fail)

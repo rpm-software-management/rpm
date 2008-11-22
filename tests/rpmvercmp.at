@@ -1,5 +1,7 @@
 #    rpmvercmp.at: rpm version comparison tests
 
+AT_BANNER([RPM version comparison])
+
 # ------------------------------
 # Test normal upgrade
 AT_SETUP([rpm -U upgrade to newer])

@@ -1,5 +1,7 @@
 #    rpmvercmp.at: rpm config file behavior tests
 
+AT_BANNER([RPM config file behavior])
+
 # ------------------------------
 # (Build and) upgrade package with config file, no backup here
 AT_SETUP([rpm -U to package with unchanged config file])
