@@ -466,6 +466,7 @@ static void setDefaults(void)
 #else
     macrofiles = MACROFILES;
 #endif
+    addMacro(NULL, "_rpmconfigdir", NULL, confdir, RMIL_DEFAULT);
 
     addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
     addMacro(NULL, "_var", NULL, LOCALSTATEDIR, RMIL_DEFAULT);
