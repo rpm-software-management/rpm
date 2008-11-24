@@ -1181,7 +1181,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-
 	(void) rpmdbCheckSignals();
 
 	if ((fi = rpmtsiFi(pi)) == NULL)
@@ -1191,9 +1190,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		continue;
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	    fpLookupSubdir(ts->ht, newht, fpc, fi, i);
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
 	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
     pi = rpmtsiFree(pi);
 
