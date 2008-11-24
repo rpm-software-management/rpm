@@ -145,6 +145,14 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
     (void) rpmtsSetRelocateElement(ts, savep);
 
+    /* See if we have pre/posttrans scripts. */
+    p->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
+			 headerIsEntry(h, RPMTAG_PRETRANSPROG)) ?
+			RPMTE_HAVE_PRETRANS : 0;
+    p->transscripts |= (headerIsEntry(h, RPMTAG_POSTTRANS) &&
+			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
+			RPMTE_HAVE_POSTTRANS : 0;
+
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
     return;

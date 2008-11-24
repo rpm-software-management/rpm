@@ -1341,14 +1341,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     if (isBuild) fi->fiflags |= RPMFI_ISBUILD;
     if (isSource) fi->fiflags |= RPMFI_ISSOURCE;
 
-    /* See if we have pre/posttrans scripts. */
-    fi->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
-			 headerIsEntry(h, RPMTAG_PRETRANSPROG)) ?
-			RPMFI_HAVE_PRETRANS : 0;
-    fi->transscripts |= (headerIsEntry(h, RPMTAG_POSTTRANS) &&
-			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
-			RPMFI_HAVE_POSTTRANS : 0;
-
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
     fi->fc = rpmtdCount(&td);
     if (fi->fc == 0) {

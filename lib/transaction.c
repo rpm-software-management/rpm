@@ -847,16 +847,13 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     	rpmTag progtag = RPMTAG_NOT_FOUND;
 	int havescript = 0;
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-	
 	switch (stag) {
 	case RPMTAG_PRETRANS:
-	    havescript = fi->transscripts & RPMFI_HAVE_PRETRANS;
+	    havescript = p->transscripts & RPMTE_HAVE_PRETRANS;
 	    progtag = RPMTAG_PRETRANSPROG;
 	    break;
 	case RPMTAG_POSTTRANS:
-	    havescript = fi->transscripts & RPMFI_HAVE_POSTTRANS;
+	    havescript = p->transscripts & RPMTE_HAVE_POSTTRANS;
 	    progtag = RPMTAG_POSTTRANSPROG;
 	    break;
 	default:
@@ -869,6 +866,9 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	if (!havescript)
  	    continue;
 
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+	
     	if (rpmteOpen(p, ts)) {
 	    p->fi = rpmfiFree(p->fi);
  	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);

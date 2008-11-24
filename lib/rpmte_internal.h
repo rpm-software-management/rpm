@@ -62,6 +62,10 @@ struct rpmte_s {
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
+#define RPMTE_HAVE_PRETRANS	(1 << 0)
+#define RPMTE_HAVE_POSTTRANS	(1 << 1)
+    int transscripts;		/*!< pre/posttrans script existence */
+
     rpmalKey pkgKey;
 };
 
