@@ -80,3 +80,50 @@ runroot rpm -U \
 [ignore])
 AT_CLEANUP
 
+
+# ------------------------------
+# Replace directory with symlink, this is expected to fail
+AT_SETUP([rpm -U replacing directory with symlink])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
+
+run rpmbuild --quiet -bb \
+    --define "rel 1" --without symlink ${RPMDATA}/SPECS/symlinktest.spec
+run rpmbuild --quiet -bb \
+    --define "rel 2" --with symlink ${RPMDATA}/SPECS/symlinktest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
+],
+[1],
+[],
+[error: unpacking of archive failed on file /usr/share/symlinktest: cpio: rename failed - Is a directory
+])
+AT_CLEANUP
+
+# ------------------------------
+# Replace symlink with a directory - the upgrade succeeds but leaves an
+# orphan directory that the symlink now points to. Should verify the
+# result more carefully...
+AT_SETUP([rpm -U replacing symlink with directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
+
+run rpmbuild --quiet -bb \
+    --define "rel 1" --with symlink ${RPMDATA}/SPECS/symlinktest.spec
+run rpmbuild --quiet -bb \
+    --define "rel 2" --without symlink ${RPMDATA}/SPECS/symlinktest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
