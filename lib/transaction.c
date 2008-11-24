@@ -74,12 +74,6 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
     isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
-#ifdef	DYING
-    /* XXX another tedious segfault, assume file state normal. */
-    if (otherStates && otherStates[otherFileNum] != RPMFILE_STATE_NORMAL)
-	return 0;
-#endif
-
     if (XFA_SKIPPING(rpmfiFAction(fi)))
 	return 0;
 
