@@ -907,6 +907,8 @@ static int rpmtsProcess(rpmts ts)
 	rpmpsm psm;
 	rpmfi fi;
 	int async;
+	rpmElementType tetype = rpmteType(p);
+	rpmtsOpX op = (tetype == TR_ADDED) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
@@ -918,10 +920,9 @@ static int rpmtsProcess(rpmts ts)
 	async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
 	rpmpsmSetAsync(psm, async);
 
-	switch (rpmteType(p)) {
+	(void) rpmswEnter(rpmtsOp(ts, op), 0);
+	switch (tetype) {
 	case TR_ADDED:
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-
 	    pkgKey = rpmteAddedKey(p);
 	    if (rpmteOpen(p, ts)) {
 		/*
@@ -942,12 +943,8 @@ static int rpmtsProcess(rpmts ts)
 		rc++;
 		lastFailKey = pkgKey;
 	    }
-	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-
 	    break;
-
 	case TR_REMOVED:
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
 	    /*
 	     * XXX This has always been a hack, now mostly broken.
 	     * If install failed, then we shouldn't erase.
@@ -957,11 +954,9 @@ static int rpmtsProcess(rpmts ts)
 		    rc++;
 		}
 	    }
-
-	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-
 	    break;
 	}
+	(void) rpmswExit(rpmtsOp(ts, op), 0);
 	(void) rpmdbSync(rpmtsGetRdb(ts));
 
 /* FIX: psm->fi may be NULL */
