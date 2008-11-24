@@ -892,17 +892,101 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     return 0;
 }
 
+/*
+ * Transaction main loop: install and remove packages
+ */
+static int rpmtsProcess(rpmts ts)
+{
+    rpmalKey lastFailKey = (rpmalKey)-2;	/* erased packages have -1 */
+    rpmtsi pi;	rpmte p;
+    int rc = 0;
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	rpmalKey pkgKey;
+	rpmpsm psm;
+	rpmfi fi;
+	int async;
+
+	if ((fi = rpmtsiFi(pi)) == NULL)
+	    continue;	/* XXX can't happen */
+	
+	psm = rpmpsmNew(ts, p, fi);
+	async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
+	rpmpsmSetAsync(psm, async);
+
+	switch (rpmteType(p)) {
+	case TR_ADDED:
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
+
+	    pkgKey = rpmteAddedKey(p);
+
+	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
+	    
+	    if (rpmteOpen(p, ts)) {
+		/*
+		 * XXX Sludge necessary to tranfer existing fstates/actions
+		 * XXX around a recreated file info set.
+		 */
+		rpmpsmSetFI(psm, NULL);
+		fi = rpmfiUpdateState(fi, ts, p);
+		rpmpsmSetFI(psm, p->fi);
+
+		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
+		    rc++;
+		    lastFailKey = pkgKey;
+		}
+		rpmteClose(p, ts);
+		
+	    } else {
+		rc++;
+		lastFailKey = pkgKey;
+	    }
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
+
+	    break;
+
+	case TR_REMOVED:
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
+
+	    rpmlog(RPMLOG_DEBUG, "========== --- %s %s-%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
+	    /*
+	     * XXX This has always been a hack, now mostly broken.
+	     * If install failed, then we shouldn't erase.
+	     */
+	    if (rpmteDependsOnKey(p) != lastFailKey) {
+		if (rpmpsmStage(psm, PSM_PKGERASE)) {
+		    rc++;
+		}
+	    }
+
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
+
+	    break;
+	}
+	(void) rpmdbSync(rpmtsGetRdb(ts));
+
+/* FIX: psm->fi may be NULL */
+	psm = rpmpsmFree(psm);
+
+    }
+    pi = rpmtsiFree(pi);
+    return rc;
+}
+
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     int i;
-    int ourrc = 0;
+    int rc = 0;
     int totalFileCount = 0;
     rpmfi fi;
-    rpmalKey lastFailKey;
     fingerPrintCache fpc;
     rpmps ps;
-    rpmpsm psm;
     rpmtsi pi;	rpmte p;
     int numAdded;
     int numRemoved;
@@ -1246,84 +1330,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	return ts->orderCount;
     }
 
-    /* ===============================================
-     * Install and remove packages.
-     */
-    lastFailKey = (rpmalKey)-2;	/* erased packages have -1 */
-    pi = rpmtsiInit(ts);
-    /* FIX: fi reload needs work */
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmalKey pkgKey;
-	int async;
-
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-	
-	psm = rpmpsmNew(ts, p, fi);
-	async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
-	rpmpsmSetAsync(psm, async);
-
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-
-	    pkgKey = rpmteAddedKey(p);
-
-	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
-		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-	    
-	    if (rpmteOpen(p, ts)) {
-		/*
-		 * XXX Sludge necessary to tranfer existing fstates/actions
-		 * XXX around a recreated file info set.
-		 */
-		rpmpsmSetFI(psm, NULL);
-		fi = rpmfiUpdateState(fi, ts, p);
-		rpmpsmSetFI(psm, p->fi);
-
-/* FIX: psm->fi may be NULL */
-		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
-		    ourrc++;
-		    lastFailKey = pkgKey;
-		}
-		rpmteClose(p, ts);
-		
-	    } else {
-		ourrc++;
-		lastFailKey = pkgKey;
-	    }
-	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
-
-	    break;
-
-	case TR_REMOVED:
-	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-
-	    rpmlog(RPMLOG_DEBUG, "========== --- %s %s-%s 0x%x\n",
-		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-	    /*
-	     * XXX This has always been a hack, now mostly broken.
-	     * If install failed, then we shouldn't erase.
-	     */
-	    if (rpmteDependsOnKey(p) != lastFailKey) {
-		if (rpmpsmStage(psm, PSM_PKGERASE)) {
-		    ourrc++;
-		}
-	    }
-
-	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-
-	    break;
-	}
-	xx = rpmdbSync(rpmtsGetRdb(ts));
-
-/* FIX: psm->fi may be NULL */
-	psm = rpmpsmFree(psm);
-
-    }
-    pi = rpmtsiFree(pi);
+    /* Actually install and remove packages */
+    rc = rpmtsProcess(ts);
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
@@ -1337,7 +1345,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmtsFreeLock(lock);
 
     /* FIX: ts->flList may be NULL */
-    if (ourrc)
+    if (rc)
     	return -1;
     else
 	return 0;
