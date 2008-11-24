@@ -908,6 +908,9 @@ static int rpmtsProcess(rpmts ts)
 	rpmfi fi;
 	int async;
 
+	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
+		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
+
 	if ((fi = rpmtsiFi(pi)) == NULL)
 	    continue;	/* XXX can't happen */
 	
@@ -920,11 +923,6 @@ static int rpmtsProcess(rpmts ts)
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_INSTALL), 0);
 
 	    pkgKey = rpmteAddedKey(p);
-
-	    rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
-		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-	    
 	    if (rpmteOpen(p, ts)) {
 		/*
 		 * XXX Sludge necessary to tranfer existing fstates/actions
@@ -950,10 +948,6 @@ static int rpmtsProcess(rpmts ts)
 
 	case TR_REMOVED:
 	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ERASE), 0);
-
-	    rpmlog(RPMLOG_DEBUG, "========== --- %s %s-%s 0x%x\n",
-		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
 	    /*
 	     * XXX This has always been a hack, now mostly broken.
 	     * If install failed, then we shouldn't erase.
