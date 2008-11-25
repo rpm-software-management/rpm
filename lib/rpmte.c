@@ -659,3 +659,26 @@ int rpmteClose(rpmte te, rpmts ts)
     }
     return rc;
 }
+
+int rpmteMarkFailed(rpmte te, rpmts ts)
+{
+    rpmtsi pi = rpmtsiInit(ts);
+    int rc = 0;
+    rpmte p;
+    rpmalKey key = rpmteAddedKey(te);
+
+    te->failed = 1;
+    /* XXX we can do a much better here than this... */
+    while ((p = rpmtsiNext(pi, TR_REMOVED))) {
+	if (rpmteDependsOnKey(p) == key) {
+	    p->failed = 1;
+	}
+    }
+    rpmtsiFree(pi);
+    return rc;
+}
+
+int rpmteFailed(rpmte te)
+{
+    return (te != NULL) ? te->failed : -1;
+}

@@ -65,6 +65,7 @@ struct rpmte_s {
 #define RPMTE_HAVE_PRETRANS	(1 << 0)
 #define RPMTE_HAVE_POSTTRANS	(1 << 1)
     int transscripts;		/*!< pre/posttrans script existence */
+    int failed;			/*!< (parent) install/erase failed */
 
     rpmalKey pkgKey;
 };
@@ -85,5 +86,7 @@ int rpmteOpen(rpmte te, rpmts ts);
 RPM_GNUC_INTERNAL
 int rpmteClose(rpmte te, rpmts ts);
 
+RPM_GNUC_INTERNAL
+int rpmteMarkFailed(rpmte te, rpmts ts);
 #endif	/* _RPMTE_INTERNAL_H */
 

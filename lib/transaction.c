@@ -893,24 +893,28 @@ static int runTransScripts(rpmts ts, rpmTag stag)
  */
 static int rpmtsProcess(rpmts ts)
 {
-    rpmalKey lastFailKey = (rpmalKey)-2;	/* erased packages have -1 */
     rpmtsi pi;	rpmte p;
     int rc = 0;
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmalKey pkgKey;
 	rpmpsm psm;
 	rpmfi fi;
 	int async;
+	int failed = 0;
 	rpmElementType tetype = rpmteType(p);
 	rpmtsOpX op = (tetype == TR_ADDED) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
+	if (rpmteFailed(p) || (fi = rpmtsiFi(pi)) == NULL) {
+	    /* XXX this should be a warning, need a better message though */
+	    rpmlog(RPMLOG_DEBUG, "element %s marked as failed, skipping\n",
+					rpmteNEVRA(p));
+	    rc++;
+	    continue;
+	}
 	
 	psm = rpmpsmNew(ts, p, fi);
 	async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
@@ -919,7 +923,6 @@ static int rpmtsProcess(rpmts ts)
 	(void) rpmswEnter(rpmtsOp(ts, op), 0);
 	switch (tetype) {
 	case TR_ADDED:
-	    pkgKey = rpmteAddedKey(p);
 	    if (rpmteOpen(p, ts)) {
 		/*
 		 * XXX Sludge necessary to tranfer existing fstates/actions
@@ -930,14 +933,12 @@ static int rpmtsProcess(rpmts ts)
 		rpmpsmSetFI(psm, p->fi);
 
 		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
-		    rc++;
-		    lastFailKey = pkgKey;
+		    failed = 1;
 		}
 		rpmteClose(p, ts);
 		
 	    } else {
-		rc++;
-		lastFailKey = pkgKey;
+		failed = 1;
 	    }
 	    break;
 	case TR_REMOVED:
@@ -945,13 +946,16 @@ static int rpmtsProcess(rpmts ts)
 	     * XXX This has always been a hack, now mostly broken.
 	     * If install failed, then we shouldn't erase.
 	     */
-	    if (rpmteDependsOnKey(p) != lastFailKey) {
-		if (rpmpsmStage(psm, PSM_PKGERASE)) {
-		    rc++;
-		}
+	    if (rpmpsmStage(psm, PSM_PKGERASE)) {
+		failed = 1;
 	    }
 	    break;
 	}
+	if (failed) {
+	    rpmteMarkFailed(p, ts);
+	    rc++;
+	}
+	
 	(void) rpmswExit(rpmtsOp(ts, op), 0);
 	(void) rpmdbSync(rpmtsGetRdb(ts));
 

@@ -348,6 +348,13 @@ FD_t rpmteFd(rpmte te);
 fnpyKey rpmteKey(rpmte te);
 
 /** \ingroup rpmte
+ * Return failed status of transaction element.
+ * @param te		transaction element
+ * @return		1 if transaction element (or its parents) failed
+ */
+int rpmteFailed(rpmte te);
+
+/** \ingroup rpmte
  * Retrieve dependency tag set from transaction element.
  * @param te		transaction element
  * @param tag		dependency tag
