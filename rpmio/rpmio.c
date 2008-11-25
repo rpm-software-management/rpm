@@ -1200,11 +1200,12 @@ typedef struct lzfile {
 
 static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 {
-    int level = 5;
+    int level = 7;	/* Use XZ's default compression level if unspecified */
     int encoding = 0;
     FILE *fp;
     LZFILE *lzfile;
     lzma_ret ret;
+    lzma_stream init_strm = LZMA_STREAM_INIT;
 
     for (; *mode; mode++) {
 	if (*mode == 'w')
@@ -1225,17 +1226,17 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 	fclose(fp);
 	return 0;
     }
+    
+    lzma_init();
+    
     lzfile->file = fp;
     lzfile->encoding = encoding;
     lzfile->eof = 0;
-    lzfile->strm = LZMA_STREAM_INIT_VAR;
+    lzfile->strm = init_strm;
     if (encoding) {
-	lzma_options_alone alone;
-	alone.uncompressed_size = LZMA_VLI_VALUE_UNKNOWN;
-	memcpy(&alone.lzma, &lzma_preset_lzma[level - 1], sizeof(alone.lzma));
-	ret = lzma_alone_encoder(&lzfile->strm, &alone);
-    } else {
-	ret = lzma_auto_decoder(&lzfile->strm, 0, 0);
+	ret = lzma_easy_encoder(&lzfile->strm, level);
+    } else {	/* 9MiB should be fine for -7 decompression, use 10MiB to be sure */
+	ret = lzma_auto_decoder(&lzfile->strm, 10<<20, 0); 
     }
     if (ret != LZMA_OK) {
 	fclose(fp);
