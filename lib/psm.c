@@ -1260,11 +1260,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
-	
-	    /* Retrieve installed header. */
-	    rc = rpmpsmNext(psm, PSM_RPMDB_LOAD);
-	    if (rc == RPMRC_OK && psm->te)
-		rpmteSetHeader(psm->te, fi->h);
+	    /* XXX preserve RPMDB_LOAD behavior for now */
+	    fi->h = rpmteHeader(psm->te);
 	}
 	break;
     case PSM_PRE:

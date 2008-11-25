@@ -898,17 +898,14 @@ static int rpmtsProcess(rpmts ts)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmpsm psm;
-	rpmfi fi;
-	int async;
-	int failed = 0;
+	int failed = 1;
 	rpmElementType tetype = rpmteType(p);
 	rpmtsOpX op = (tetype == TR_ADDED) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	if (rpmteFailed(p) || (fi = rpmtsiFi(pi)) == NULL) {
+	if (rpmteFailed(p)) {
 	    /* XXX this should be a warning, need a better message though */
 	    rpmlog(RPMLOG_DEBUG, "element %s marked as failed, skipping\n",
 					rpmteNEVRA(p));
@@ -916,52 +913,37 @@ static int rpmtsProcess(rpmts ts)
 	    continue;
 	}
 	
-	psm = rpmpsmNew(ts, p, fi);
-	async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1) ? 1 : 0);
-	rpmpsmSetAsync(psm, async);
+	if (rpmteOpen(p, ts)) {
+	    rpmpsm psm = NULL;
+	    rpmfi fi = NULL;
+	    pkgStage stage = PSM_UNKNOWN;
+	    int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
+			1 : 0;
 
-	(void) rpmswEnter(rpmtsOp(ts, op), 0);
-	switch (tetype) {
-	case TR_ADDED:
-	    if (rpmteOpen(p, ts)) {
-		/*
-		 * XXX Sludge necessary to tranfer existing fstates/actions
-		 * XXX around a recreated file info set.
-		 */
-		rpmpsmSetFI(psm, NULL);
-		fi = rpmfiUpdateState(fi, ts, p);
-		rpmpsmSetFI(psm, p->fi);
+	    switch (tetype) {
+	    case TR_ADDED:
+		stage = PSM_PKGINSTALL;
+		fi = rpmfiUpdateState(rpmtsiFi(pi), ts, p);
+		break;
+	    case TR_REMOVED:
+		stage = PSM_PKGERASE;
+		fi = rpmtsiFi(pi);
+		break;
+	    }
+	    psm = rpmpsmNew(ts, p, fi);
+	    rpmpsmSetAsync(psm, async);
 
-		if (rpmpsmStage(psm, PSM_PKGINSTALL)) {
-		    failed = 1;
-		}
-		rpmteClose(p, ts);
-		
-	    } else {
-		failed = 1;
-	    }
-	    break;
-	case TR_REMOVED:
-	    /*
-	     * XXX This has always been a hack, now mostly broken.
-	     * If install failed, then we shouldn't erase.
-	     */
-	    if (rpmpsmStage(psm, PSM_PKGERASE)) {
-		failed = 1;
-	    }
-	    break;
+	    (void) rpmswEnter(rpmtsOp(ts, op), 0);
+	    failed = rpmpsmStage(psm, stage);
+	    (void) rpmswExit(rpmtsOp(ts, op), 0);
+	    psm = rpmpsmFree(psm);
+	    rpmteClose(p, ts);
 	}
 	if (failed) {
 	    rpmteMarkFailed(p, ts);
 	    rc++;
 	}
-	
-	(void) rpmswExit(rpmtsOp(ts, op), 0);
 	(void) rpmdbSync(rpmtsGetRdb(ts));
-
-/* FIX: psm->fi may be NULL */
-	psm = rpmpsmFree(psm);
-
     }
     pi = rpmtsiFree(pi);
     return rc;
