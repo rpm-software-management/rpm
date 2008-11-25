@@ -9,6 +9,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
+#include <rpm/rpmdb.h>
 
 #include "lib/rpmte_internal.h"
 
@@ -619,45 +620,71 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 
 int rpmteOpen(rpmte te, rpmts ts)
 {
-    int rc = 0;
+    Header h = NULL;
     if (te == NULL || ts == NULL)
 	goto exit;
 
-    te->h = NULL;
-    te->fd = rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
-    if (te->fd != NULL) {
-	rpmVSFlags ovsflags;
-	rpmRC pkgrc;
+    rpmteSetHeader(te, NULL);
+    switch (te->type) {
+    case TR_ADDED:
+	te->h = NULL;
+	te->fd = rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+	if (te->fd != NULL) {
+	    rpmVSFlags ovsflags;
+	    rpmRC pkgrc;
 
-	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
-	pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVRA(te), &te->h);
-	rpmtsSetVSFlags(ts, ovsflags);
-	switch (pkgrc) {
-	default:
-	    rpmteClose(te, ts);
-	    break;
-	case RPMRC_NOTTRUSTED:
-	case RPMRC_NOKEY:
-	case RPMRC_OK:
-	    rc = 1;
-	    break;
+	    ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
+	    pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVRA(te), &h);
+	    rpmtsSetVSFlags(ts, ovsflags);
+	    switch (pkgrc) {
+	    default:
+		rpmteClose(te, ts);
+		break;
+	    case RPMRC_NOTTRUSTED:
+	    case RPMRC_NOKEY:
+	    case RPMRC_OK:
+		break;
+	    }
 	}
+	break;
+    case TR_REMOVED: {
+	unsigned int rec = rpmteDBInstance(te);
+	rpmdbMatchIterator mi;
+
+	/* eventually we'll want notifications for erase open too */
+	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &rec, sizeof(rec));
+	/* iterator returns weak refs, grab hold of header */
+	if ((h = rpmdbNextIterator(mi)))
+	    h = headerLink(h);
+	mi = rpmdbFreeIterator(mi);
+	}
+    	break;
+    }
+    if (h != NULL) {
+	rpmteSetHeader(te, h);
+	headerFree(h);
     }
 
 exit:
-    return rc;
+    return (h != NULL);
 }
 
 int rpmteClose(rpmte te, rpmts ts)
 {
-    int rc = 0;
-    if (te != NULL && ts != NULL) {
+    if (te == NULL || ts == NULL)
+	return 0;
+
+    switch (te->type) {
+    case TR_ADDED:
 	rpmtsNotify(ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 	te->fd = NULL;
-	te->h = headerFree(te->h);
-	rc = 1;
+	break;
+    case TR_REMOVED:
+	/* eventually we'll want notifications for erase open too */
+	break;
     }
-    return rc;
+    rpmteSetHeader(te, NULL);
+    return 1;
 }
 
 int rpmteMarkFailed(rpmte te, rpmts ts)
