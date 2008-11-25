@@ -49,7 +49,6 @@ typedef enum pkgStage_e {
     PSM_IMMED_TRIGGERS	= 55,
     PSM_RPMIO_FLAGS	= 56,
 
-    PSM_RPMDB_LOAD	= 97,
     PSM_RPMDB_ADD	= 98,
     PSM_RPMDB_REMOVE	= 99
 
@@ -119,14 +118,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
  */
 RPM_GNUC_INTERNAL
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
-
-/**
- * @param psm		package state machine data
- * @param fi		new file info pointer (or NULL to dealloc)
- * @return		newly set rpmfi pointer
- */
-RPM_GNUC_INTERNAL
-rpmfi rpmpsmSetFI(rpmpsm psm, rpmfi fi);
 
 /**
  * @param psm		package state machine data

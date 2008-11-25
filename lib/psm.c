@@ -1057,7 +1057,6 @@ static const char * pkgStageString(pkgStage a)
 
     case PSM_RPMIO_FLAGS:	return "rpmioflags";
 
-    case PSM_RPMDB_LOAD:	return "rpmdbload";
     case PSM_RPMDB_ADD:		return "rpmdbadd";
     case PSM_RPMDB_REMOVE:	return "rpmdbremove";
 
@@ -1124,18 +1123,6 @@ rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
 	psm->stepName = "verify";
     }
     return rpmpsmStage(psm, PSM_SCRIPT);
-}
-
-rpmfi rpmpsmSetFI(rpmpsm psm, rpmfi fi)
-{
-    assert(psm != NULL);
-    if (psm->fi != NULL) {
-	psm->fi = rpmfiFree(psm->fi);
-    }
-    if (fi != NULL) {
-	psm->fi = rpmfiLink(fi, RPMDBG_M("rpmpsmSetFI"));
-    }
-    return psm->fi;
 }
 
 rpmts rpmpsmGetTs(rpmpsm psm)
@@ -1627,20 +1614,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	rc = RPMRC_OK;
     }	break;
 
-    case PSM_RPMDB_LOAD:
-    {
-	rpmdbMatchIterator mi;
-	unsigned int rec = rpmteDBInstance(psm->te);
-	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &rec, sizeof(rec));
-
-	fi->h = rpmdbNextIterator(mi);
-	if (fi->h != NULL)
-	    fi->h = headerLink(fi->h);
-
-	mi = rpmdbFreeIterator(mi);
-	rc = (fi->h != NULL ? RPMRC_OK : RPMRC_FAIL);
-	break;
-    }
     case PSM_RPMDB_ADD:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	if (fi->h == NULL)	break;	/* XXX can't happen */
