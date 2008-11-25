@@ -124,17 +124,6 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 }
 
 /**
- */
-/* XXX only ts->rpmdb modified */
-static int handleRmvdInstalledFile(const rpmts ts, rpmfi fi,
-				   const char * otherStates, int otherFileNum)
-{
-    if (otherStates[otherFileNum] == RPMFILE_STATE_NORMAL)
-	rpmfiSetFAction(fi, FA_SKIP);
-    return 0;
-}
-
-/**
  * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
@@ -745,9 +734,6 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
     while (h != NULL) {
 	headerGetFlags hgflags = HEADERGET_MINMEM;
 	struct rpmtd_s bnames, dnames, dindexes, ostates;
-	const char ** dirNames;
-	const char ** fullBaseNames;
-	uint32_t * fullDirIndexes;
 	fingerPrint fp;
 	unsigned int installedPkg;
 
@@ -767,9 +753,6 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 	headerGet(h, RPMTAG_DIRNAMES, &dnames, hgflags);
 	headerGet(h, RPMTAG_DIRINDEXES, &dindexes, hgflags);
 	headerGet(h, RPMTAG_FILESTATES, &ostates, hgflags);
-	fullBaseNames = bnames.data;
-	dirNames = dnames.data;
-	fullDirIndexes = dindexes.data;
 
 	oldDir = NULL;
 	/* loop over all intersting files in that package */
@@ -777,14 +760,25 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 	    int gotRecs;
 	    struct rpmffi_s * recs;
 	    int numRecs;
+	    const char * dirName;
+	    const char * baseName;
+
 	    fileNum = rpmdbGetIteratorFileNum(mi);
+	    rpmtdSetIndex(&bnames, fileNum);
+	    rpmtdSetIndex(&dindexes, fileNum);
+	    rpmtdSetIndex(&dnames, *rpmtdGetUint32(&dindexes));
+	    rpmtdSetIndex(&ostates, fileNum);
+
+	    dirName = rpmtdGetString(&dnames);
+	    baseName = rpmtdGetString(&bnames);
+
 	    /* lookup finger print for this file */
-	    if ( dirNames[fullDirIndexes[fileNum]] == oldDir) {
+	    if ( dirName == oldDir) {
 	        /* directory is the same as last round */
-	        fp.baseName = fullBaseNames[fileNum];
+	        fp.baseName = baseName;
 	    } else {
-	        fp = fpLookup(fpc, dirNames[fullDirIndexes[fileNum]], fullBaseNames[fileNum], 1);
-		oldDir = dirNames[fullDirIndexes[fileNum]];
+	        fp = fpLookup(fpc, dirName, baseName, 1);
+		oldDir = dirName;
 	    }
 	    /* search for files in the transaction with same finger print */
 	    gotRecs = rpmFpHashGetEntry(ts->ht, &fp, &recs, &numRecs, NULL);
@@ -805,8 +799,8 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 		case TR_REMOVED:
 		    if (!beingRemoved) {
 		        rpmfiSetFX(recs[j].fi, recs[j].fileno);
-		        xx = handleRmvdInstalledFile(ts, recs[j].fi,
-						     ostates.data, fileNum);
+			if (*rpmtdGetChar(&ostates) == RPMFILE_STATE_NORMAL)
+			    rpmfiSetFAction(recs[j].fi, FA_SKIP);
 		    }
 		    break;
 		}
