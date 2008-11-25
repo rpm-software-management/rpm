@@ -15,6 +15,7 @@
 
 #include "lib/psm.h"
 #include "lib/misc.h" 	/* uidToUname(), gnameToGid */
+#include "lib/rpmte_internal.h"	/* rpmteOpen(), rpmteClose() */
 
 #include "debug.h"
 
@@ -258,29 +259,36 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  * @todo malloc/free/refcount handling is fishy here.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
- * @param fi		file info set
+ * @param h		header
  * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-static int rpmVerifyScript(QVA_t qva, rpmts ts,
-		rpmfi fi, FD_t scriptFd)
+static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
 {
-    rpmpsm psm = rpmpsmNew(ts, NULL, fi);
+    rpmpsm psm = NULL;
+    rpmte te = NULL;
     int rc = 0;
 
-    if (psm == NULL)	/* XXX can't happen */
-	return rc;
-
+    /* fake up a erasure transaction element */
+    rc = rpmtsAddEraseElement(ts, h, -1);
+    te = rpmtsElement(ts, 0);
+    rpmteOpen(te, ts);
+    
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(rpmpsmGetTs(psm), scriptFd);
+	rpmtsSetScriptFd(ts, scriptFd);
 
-    rc = rpmpsmScriptStage(psm, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG);
+    /* create psm to run the script */
+    psm = rpmpsmNew(ts, te, NULL);
+    rpmpsmScriptStage(psm, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG);
     rc = rpmpsmStage(psm, PSM_SCRIPT);
+    psm = rpmpsmFree(psm);
 
     if (scriptFd != NULL)
-	rpmtsSetScriptFd(rpmpsmGetTs(psm), NULL);
+	rpmtsSetScriptFd(ts, NULL);
 
-    psm = rpmpsmFree(psm);
+    /* clean up our fake transaction bits */
+    rpmteClose(te, ts);
+    rpmtsEmpty(ts);
 
     return rc;
 }
@@ -435,8 +443,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     int ec = 0;
     int rc;
 
-    /* XXX only rpmVerifyScript needs KEEPHEADER */
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
+    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
     if (fi != NULL) {
 
 	if (qva->qva_flags & VERIFY_DEPS) {
@@ -455,7 +462,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	 && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
 	{
 	    FD_t fdo = fdDup(STDOUT_FILENO);
-	    if ((rc = rpmVerifyScript(qva, ts, fi, fdo)) != 0)
+	    if ((rc = rpmVerifyScript(qva, ts, h, fdo)) != 0)
 		ec = rc;
 	    if (fdo != NULL)
 		rc = Fclose(fdo);
