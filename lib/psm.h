@@ -119,13 +119,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 RPM_GNUC_INTERNAL
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
 
-/**
- * @param psm		package state machine data
- * @return 		psm transaction set pointer
- */
-RPM_GNUC_INTERNAL
-rpmts rpmpsmGetTs(rpmpsm psm);
-
 RPM_GNUC_INTERNAL
 void rpmpsmSetAsync(rpmpsm psm, int async);
 

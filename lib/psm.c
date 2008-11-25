@@ -1127,11 +1127,6 @@ rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
     return rpmpsmStage(psm, PSM_SCRIPT);
 }
 
-rpmts rpmpsmGetTs(rpmpsm psm)
-{
-    return (psm ? psm->ts : NULL);
-}
-
 rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
