@@ -14,7 +14,7 @@ AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
 
 check_PROGRAMS =
 CLEANFILES =
-EXTRA_DIST = gentagtbl.sh tagtbl.c
+EXTRA_DIST = gentagtbl.sh tagtbl.c rpmhash.C rpmhash.H
 EXTRA_PROGRAMS =
 
 usrlibdir = $(libdir)
