@@ -1161,7 +1161,6 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
     return rpmpsmStage(psm, psm->nstage);
 }
 
-/* FIX: testing null annotation for fi->h */
 rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
@@ -1250,8 +1249,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
-	    /* XXX preserve RPMDB_LOAD behavior for now */
-	    fi->h = rpmteHeader(psm->te);
 	}
 	break;
     case PSM_PRE:
@@ -1520,8 +1517,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PSM_PKGERASE) {
 	    if (psm->te != NULL) 
 		rpmteSetHeader(psm->te, NULL);
-	    if (fi->h != NULL)
-		fi->h = headerFree(fi->h);
  	}
 	psm->failedFile = _free(psm->failedFile);
 
@@ -1648,6 +1643,5 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
    }
 
-   	/* FIX: psm->oh and psm->fi->h may be NULL. */
     return rc;
 }
