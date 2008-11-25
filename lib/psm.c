@@ -1228,21 +1228,22 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	     * need the leading / stripped.
 	     */
 	    {   const char * p = NULL;
-		struct rpmtd_s dprefix;
-		if (headerGet(fi->h, RPMTAG_DEFAULTPREFIX, &dprefix, 
+		struct rpmtd_s dprefix, filenames;
+		rpmTag ftag = RPMTAG_FILENAMES;
+		Header h = rpmteHeader(psm->te);
+
+		if (headerGet(h, RPMTAG_DEFAULTPREFIX, &dprefix, 
 							HEADERGET_MINMEM)) {
 		    p = rpmtdGetString(&dprefix);
 		}
 		fi->striplen = p ? strlen(p) + 1 : 1;
-	    }
 	
-	    {	struct rpmtd_s filenames;
-		rpmTag ftag = RPMTAG_FILENAMES;
-		if (headerIsEntry(fi->h, RPMTAG_ORIGBASENAMES)) {
+		if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 		    ftag = RPMTAG_ORIGFILENAMES;
 		}
-		headerGet(fi->h, ftag, &filenames, HEADERGET_EXT);
+		headerGet(h, ftag, &filenames, HEADERGET_EXT);
 		fi->apath = filenames.data; /* Ick.. */
+		headerFree(h);
 	    }
 	
 	    rc = RPMRC_OK;
@@ -1423,14 +1424,15 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PSM_PKGINSTALL) {
 	    rpm_time_t installTime = (rpm_time_t) time(NULL);
 	    rpm_count_t fc = rpmfiFC(fi);
+	    Header h = rpmteHeader(psm->te);
 
-	    if (fi->h == NULL) break;	/* XXX can't happen */
 	    if (fi->fstates != NULL && fc > 0) {
-		headerPutChar(fi->h, RPMTAG_FILESTATES, fi->fstates, fc);
+		headerPutChar(h, RPMTAG_FILESTATES, fi->fstates, fc);
 	    }
 
-	    headerPutUint32(fi->h, RPMTAG_INSTALLTIME, &installTime, 1);
-	    headerPutUint32(fi->h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
+	    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);
+	    headerPutUint32(h, RPMTAG_INSTALLCOLOR, &tscolor, 1);
+	    headerFree(h);
 
 	    /*
 	     * If this package has already been installed, remove it from
