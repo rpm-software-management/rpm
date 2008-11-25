@@ -834,7 +834,6 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 {
     rpmtsi pi; 
     rpmte p;
-    rpmfi fi;
     rpmpsm psm;
     int xx;
 
@@ -862,25 +861,10 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	if (!havescript)
  	    continue;
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
-	    continue;	/* XXX can't happen */
-	
     	if (rpmteOpen(p, ts)) {
-	    p->fi = rpmfiFree(p->fi);
- 	    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
-	    if (fi != NULL) {	/* XXX can't happen */
-		if (stag == RPMTAG_PRETRANS) {
-		    fi->te = p;
-		    p->fi = fi;
-		} else {
-		    p->fi = fi;
-		    p->fi->te = p;
-		}
-	    }
-	    psm = rpmpsmNew(ts, p, p->fi);
+	    psm = rpmpsmNew(ts, p, NULL);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm);
-
 	    rpmteClose(p, ts);
 	}
     }
