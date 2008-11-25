@@ -1600,8 +1600,9 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_RPMIO_FLAGS:
     {	const char * payload_compressor = NULL;
 	struct rpmtd_s pc;
+	Header h = rpmteHeader(psm->te);
 
-	headerGet(fi->h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
+	headerGet(h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
 	payload_compressor = rpmtdGetString(&pc);
 	if (!payload_compressor)
 	    payload_compressor = "gzip";
@@ -1612,23 +1613,27 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (!strcmp(payload_compressor, "lzma"))
 	    psm->rpmio_flags = "r.lzdio";
 	rpmtdFreeData(&pc);
+	headerFree(h);
 
 	rc = RPMRC_OK;
     }	break;
 
-    case PSM_RPMDB_ADD:
+    case PSM_RPMDB_ADD: {
+	Header h;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	if (fi->h == NULL)	break;	/* XXX can't happen */
+	h = rpmteHeader(psm->te);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
+	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h,
 				ts, headerCheck);
 	else
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), fi->h,
+	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h,
 				NULL, NULL);
 
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
-	break;
+	headerFree(h);
+    }   break;
+
     case PSM_RPMDB_REMOVE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
