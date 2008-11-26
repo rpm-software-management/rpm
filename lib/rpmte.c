@@ -162,7 +162,6 @@ rpmte rpmteFree(rpmte te)
 {
     if (te != NULL) {
 	delTE(te);
-	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
 	te = _free(te);
     }
     return NULL;
