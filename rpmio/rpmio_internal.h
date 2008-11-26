@@ -53,7 +53,7 @@ struct _FD_s {
     ssize_t	bytesRemain;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
-    const void *errcookie;	/* gzdio/bzdio/ufdio: */
+    const void *errcookie;	/* gzdio/bzdio/ufdio/lzdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
 

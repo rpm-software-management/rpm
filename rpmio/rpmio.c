@@ -1227,7 +1227,11 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 	return 0;
     }
     
-    lzma_init();
+    if ( encoding ) {
+	lzma_init_encoder();
+    } else {
+	lzma_init_decoder();
+    }
     
     lzfile->file = fp;
     lzfile->encoding = encoding;
