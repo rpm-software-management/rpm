@@ -74,6 +74,12 @@ static rpmfi fsmGetFi(const FSM_t fsm)
     return (iter ? iter->fi : NULL);
 }
 
+static rpmte fsmGetTe(const FSM_t fsm)
+{
+    const FSMI_t iter = fsm->iter;
+    return (iter ? iter->te : NULL);
+}
+
 #define	SUFFIX_RPMORIG	".rpmorig"
 #define	SUFFIX_RPMSAVE	".rpmsave"
 #define	SUFFIX_RPMNEW	".rpmnew"
@@ -155,7 +161,7 @@ mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
     iter->ts = rpmtsLink(ts, RPMDBG_M("mapIterator"));
     iter->te = te; /* XXX rpmte is not refcounted yet */
     iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
-    iter->reverse = (rpmteType(fi->te) == TR_REMOVED);
+    iter->reverse = (rpmteType(te) == TR_REMOVED);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -530,7 +536,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	void * ptr;
 	fsm->archivePos = 0;
-	ptr = rpmtsNotify(ts, fi->te,
+	ptr = rpmtsNotify(ts, te,
 		RPMCALLBACK_INST_START, fsm->archivePos, fi->archiveSize);
     }
 
@@ -629,6 +635,7 @@ static int fsmMapPath(FSM_t fsm)
 
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
+	rpmte te = fsmGetTe(fsm);
 	/* XXX these should use rpmfiFFlags() etc */
 	fsm->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : RPMFILE_NONE);
@@ -647,28 +654,28 @@ static int fsmMapPath(FSM_t fsm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-	    if (rpmteType(fi->te) == TR_ADDED)
+	    if (rpmteType(te) == TR_ADDED)
 		rpmfiSetFState(fi, i, RPMFILE_STATE_NORMAL);
 	    break;
 
 	case FA_SKIPNSTATE:
-	    if (rpmteType(fi->te) == TR_ADDED)
+	    if (rpmteType(te) == TR_ADDED)
 		rpmfiSetFState(fi, i, RPMFILE_STATE_NOTINSTALLED);
 	    break;
 
 	case FA_SKIPNETSHARED:
-	    if (rpmteType(fi->te) == TR_ADDED)
+	    if (rpmteType(te) == TR_ADDED)
 		rpmfiSetFState(fi, i, RPMFILE_STATE_NETSHARED);
 	    break;
 
 	case FA_SKIPCOLOR:
-	    if (rpmteType(fi->te) == TR_ADDED)
+	    if (rpmteType(te) == TR_ADDED)
 		rpmfiSetFState(fi, i, RPMFILE_STATE_WRONGCOLOR);
 	    break;
 
 	case FA_BACKUP:
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (rpmteType(fi->te)) {
+	    switch (rpmteType(te)) {
 	    case TR_ADDED:
 		fsm->osuffix = SUFFIX_RPMORIG;
 		break;
@@ -679,19 +686,19 @@ static int fsmMapPath(FSM_t fsm)
 	    break;
 
 	case FA_ALTNAME:
-assert(rpmteType(fi->te) == TR_ADDED);
+	    assert(rpmteType(te) == TR_ADDED);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->nsuffix = SUFFIX_RPMNEW;
 	    break;
 
 	case FA_SAVE:
-assert(rpmteType(fi->te) == TR_ADDED);
+	    assert(rpmteType(te) == TR_ADDED);
 	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
 		fsm->osuffix = SUFFIX_RPMSAVE;
 	    break;
 	case FA_ERASE:
 #if 0	/* XXX is this a genhdlist fix? */
-	    assert(rpmteType(fi->te) == TR_REMOVED);
+	    assert(rpmteType(>te) == TR_REMOVED);
 #endif
 	    /*
 	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
@@ -1731,12 +1738,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
 	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	    rpmts ts = fsmGetTs(fsm);
+	    rpmte te = fsmGetTe(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
 	    rpm_loff_t archivePos = fdGetCpioPos(fsm->cfd);
 	    if (archivePos > fsm->archivePos) {
 		fsm->archivePos = archivePos;
-		ptr = rpmtsNotify(ts, fi->te, RPMCALLBACK_INST_PROGRESS,
+		ptr = rpmtsNotify(ts, te, RPMCALLBACK_INST_PROGRESS,
 			fsm->archivePos, fi->archiveSize);
 	    }
 	}
