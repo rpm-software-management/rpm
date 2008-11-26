@@ -199,6 +199,7 @@ FSM_t freeFSM(FSM_t fsm);
  */
 int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts,
+		rpmte te,
 		rpmfi fi,
 		FD_t cfd,
 		rpm_loff_t * archiveSize,

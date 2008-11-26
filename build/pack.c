@@ -29,6 +29,7 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
 {
     rpmts ts = rpmtsCreate();
     rpmfi fi = csa->cpioList;
+    rpmte te = NULL;
     char *failedFile = NULL;
     FD_t cfd;
     rpmRC rc = RPMRC_OK;
@@ -44,7 +45,11 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    xx = fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, fi, cfd,
+    /* make up a transaction element for passing to fsm */
+    rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
+    te = rpmtsElement(ts, 0);
+
+    xx = fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, te, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
     if (xx)
 	rc = RPMRC_FAIL;
@@ -61,6 +66,7 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
 		cpioStrerror(rc));
       rc = RPMRC_FAIL;
     }
+    rpmtsEmpty(ts);
 
     failedFile = _free(failedFile);
     ts = rpmtsFree(ts);

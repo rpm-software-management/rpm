@@ -1335,7 +1335,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 
-	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGINSTALL, ts, fi,
+	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGINSTALL, ts, psm->te, fi,
 			psm->cfd, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
 			fdOp(psm->cfd, FDSTAT_READ));
@@ -1393,7 +1393,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->total = fc;
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 
-	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGERASE, ts, fi,
+	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGERASE, ts, psm->te, fi,
 			NULL, NULL, &psm->failedFile);
 	    xx = fsmTeardown(rpmfiFSM(fi));
 
@@ -1540,7 +1540,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
 
-	rc = fsmSetup(rpmfiFSM(fi), FSM_PKGCOMMIT, ts, fi,
+	rc = fsmSetup(rpmfiFSM(fi), FSM_PKGCOMMIT, ts, psm->te, fi,
 			NULL, NULL, &psm->failedFile);
 	xx = fsmTeardown(rpmfiFSM(fi));
 	break;

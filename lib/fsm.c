@@ -46,6 +46,7 @@ struct hardLink_s {
  */
 struct fsmIterator_s {
     rpmts ts;			/*!< transaction set. */
+    rpmte te;			/*!< transaction element. */
     rpmfi fi;			/*!< transaction element file info. */
     int reverse;		/*!< reversed traversal? */
     int isave;			/*!< last returned iterator index. */
@@ -133,6 +134,7 @@ static void * mapFreeIterator(void * p)
     if (iter) {
 /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
+	iter->te = NULL; /* XXX rpmte is not refcounted yet */
 	iter->fi = rpmfiUnlink(iter->fi, RPMDBG_M("mapFreeIterator"));
     }
     return _free(p);
@@ -145,12 +147,13 @@ static void * mapFreeIterator(void * p)
  * @return		file info iterator
  */
 static void *
-mapInitIterator(rpmts ts, rpmfi fi)
+mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
 {
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts, RPMDBG_M("mapIterator"));
+    iter->te = te; /* XXX rpmte is not refcounted yet */
     iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
     iter->reverse = (rpmteType(fi->te) == TR_REMOVED);
     iter->i = (iter->reverse ? (fi->fc - 1) : 0);
@@ -509,7 +512,7 @@ FSM_t freeFSM(FSM_t fsm)
 }
 
 int fsmSetup(FSM_t fsm, fileStage goal,
-		rpmts ts, rpmfi fi, FD_t cfd,
+		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
     rpm_loff_t pos = 0;
@@ -521,7 +524,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	pos = fdGetCpioPos(fsm->cfd);
 	fdSetCpioPos(fsm->cfd, 0);
     }
-    fsm->iter = mapInitIterator(ts, fi);
+    fsm->iter = mapInitIterator(ts, te, fi);
     fsm->digestalgo = fi->digestalgo;
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
