@@ -436,15 +436,13 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
     int warn_only = 0;
     const rpmts ts = psm->ts;
 #ifdef WITH_LUA
-    char *nevra, *sname = NULL;
+    char *sname = NULL;
     int rootFd = -1;
     int xx;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
 
-    nevra = headerGetNEVRA(h, NULL);
-    rasprintf(&sname, "%s(%s)", tag2sln(stag), nevra);
-    free(nevra);
+    rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
 
     rpmlog(RPMLOG_DEBUG, "%s: %s running <lua> scriptlet.\n",
 	   psm->stepName, sname);
@@ -640,7 +638,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     FD_t out = NULL;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     int warn_only = 0;
-    char *nevra, *sname = NULL; 
+    char *sname = NULL; 
     struct rpmtd_s prefixes;
 
     assert(argvp != NULL);
@@ -650,11 +648,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     if (*argvp && strcmp(*argvp[0], "<lua>") == 0) {
 	return runLuaScript(psm, h, stag, *argvp, script, arg1, arg2);
     }
-
-    /* XXX FIXME: except for %verifyscript, rpmteNEVR could be used. */
-    nevra = headerGetNEVRA(h, NULL);
-    rasprintf(&sname, "%s(%s)", tag2sln(stag), nevra);
-    free(nevra);
+    rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
 
     psm->sq.reaper = 1;
 
