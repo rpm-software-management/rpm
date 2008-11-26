@@ -1239,8 +1239,8 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
     lzfile->strm = init_strm;
     if (encoding) {
 	ret = lzma_easy_encoder(&lzfile->strm, level);
-    } else {	/* 9MiB should be fine for -7 decompression, use 10MiB to be sure */
-	ret = lzma_auto_decoder(&lzfile->strm, 10<<20, 0); 
+    } else {	/* 33MiB is the minimum for -9 lzma compression, otherwise it won't get expanded */
+	ret = lzma_auto_decoder(&lzfile->strm, 33<<20, 0);
     }
     if (ret != LZMA_OK) {
 	fclose(fp);
