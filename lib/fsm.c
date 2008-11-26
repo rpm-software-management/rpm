@@ -509,7 +509,7 @@ FSM_t freeFSM(FSM_t fsm)
 }
 
 int fsmSetup(FSM_t fsm, fileStage goal,
-		const rpmts ts, const rpmfi fi, FD_t cfd,
+		rpmts ts, rpmfi fi, FD_t cfd,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
     rpm_loff_t pos = 0;
