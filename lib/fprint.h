@@ -7,6 +7,7 @@
  */
 
 #include <rpm/header.h>
+#include <rpm/rpmte.h>
 #include "lib/rpmdb_internal.h"
 
 /**

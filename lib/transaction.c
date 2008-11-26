@@ -1209,7 +1209,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		continue;
-	    fpLookupSubdir(ts->ht, newht, fpc, fi, i);
+	    fpLookupSubdir(ts->ht, newht, fpc, p, i);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
