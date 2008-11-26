@@ -191,7 +191,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	 */
 
 	/* Locate this overlapped file in the set of added/removed packages. */
-	for (j = 0; j < numRecs && recs[j].fi != fi; j++)
+	for (j = 0; j < numRecs && recs[j].p != p; j++)
 	    {};
 
 	/* Find what the previous disposition of this file was. */
@@ -202,7 +202,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    struct fingerPrint_s * otherFps;
 	    int otherFc;
 
-	    otherFi = recs[otherPkgNum].fi;
+	    otherFi = rpmteFI(recs[otherPkgNum].p, RPMTAG_BASENAMES);
 	    otherFileNum = recs[otherPkgNum].fileno;
 
 	    /* Added packages need only look at other added packages. */
@@ -703,6 +703,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 {
     rpmps ps;
     rpmte p;
+    rpmfi fi;
     rpmfi otherFi=NULL;
     int j;
     int xx;
@@ -784,7 +785,8 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 	    gotRecs = rpmFpHashGetEntry(ts->ht, &fp, &recs, &numRecs, NULL);
 
 	    for (j=0; (j<numRecs)&&gotRecs; j++) {
-	        p = recs[j].fi->te;
+	        p = recs[j].p;
+		fi = rpmteFI(p, RPMTAG_BASENAMES);
 
 		/* Determine the fate of each file. */
 		switch (rpmteType(p)) {
@@ -792,15 +794,15 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 		    if (!otherFi) {
 		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, 1);
 		    }
-		    rpmfiSetFX(recs[j].fi, recs[j].fileno);
+		    rpmfiSetFX(fi, recs[j].fileno);
 		    rpmfiSetFX(otherFi, fileNum);
-		    xx = handleInstInstalledFile(ts, p, recs[j].fi, h, otherFi, beingRemoved);
+		    xx = handleInstInstalledFile(ts, p, fi, h, otherFi, beingRemoved);
 		    break;
 		case TR_REMOVED:
 		    if (!beingRemoved) {
-		        rpmfiSetFX(recs[j].fi, recs[j].fileno);
+		        rpmfiSetFX(fi, recs[j].fileno);
 			if (*rpmtdGetChar(&ostates) == RPMFILE_STATE_NORMAL)
-			    rpmfiSetFAction(recs[j].fi, FA_SKIP);
+			    rpmfiSetFAction(fi, FA_SKIP);
 		    }
 		    break;
 		}
@@ -1209,7 +1211,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
  	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    struct rpmffi_s ffi;
-	    ffi.fi = fi;
+	    ffi.p = p;
 	    ffi.fileno = i;
 	    if (XFA_SKIPPING(rpmfiFAction(fi)))
 		continue;

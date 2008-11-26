@@ -236,8 +236,9 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
     }
 }
 
-void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi fi, int filenr)
+void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p, int filenr)
 {
+    rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
     struct fingerPrint_s current_fp;
     char *endsubdir, *endbasename, *currentsubdir;
     size_t lensubDir;
@@ -247,7 +248,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
     int i, fiFX;
     fingerPrint *fp = fi->fps + filenr;
     int symlinkcount = 0;
-    struct rpmffi_s ffi = { fi, filenr};
+    struct rpmffi_s ffi = { p, filenr};
 
     if (fp->subDir == NULL) {
 	 rpmFpHashAddEntry(newht, fp, ffi);
@@ -279,7 +280,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmfi f
 	      char const *linktarget;
 	      char *link;
 
-	      foundfi =  recs[i].fi;
+	      foundfi =  rpmteFI(recs[i].p, RPMTAG_BASENAMES);
 	      fiFX = rpmfiFX(foundfi);
 
 	      filenr = recs[i].fileno;
