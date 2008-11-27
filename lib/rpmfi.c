@@ -731,15 +731,6 @@ int rpmfiConfigConflict(const rpmfi fi)
     return 1;
 }
 
-const char * rpmfiTypeString(rpmfi fi)
-{
-    switch(rpmteType(fi->te)) {
-    case TR_ADDED:	return " install";
-    case TR_REMOVED:	return "   erase";
-    default:		return "???";
-    }
-}
-
 static char **duparray(char ** src, int size)
 {
     char **dest = xmalloc((size+1) * sizeof(*dest));

@@ -1307,6 +1307,15 @@ static int fsmStat(FSM_t fsm)
 }
 #endif
 
+static const char * rpmteTypeString(rpmte te)
+{
+    switch(rpmteType(te)) {
+    case TR_ADDED:	return " install";
+    case TR_REMOVED:	return "   erase";
+    default:		return "???";
+    }
+}
+
 #define	IS_DEV_LOG(_x)	\
 	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
 	!strncmp((_x), "/dev/log", sizeof("/dev/log")-1) && \
@@ -1806,7 +1815,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* Remove erased files. */
 	if (fsm->goal == FSM_PKGERASE) {
 	    if (fsm->action == FA_ERASE) {
-		rpmfi fi = fsmGetFi(fsm);
+		rpmte te = fsmGetTe(fsm);
 		if (S_ISDIR(st->st_mode)) {
 		    rc = fsmNext(fsm, FSM_RMDIR);
 		    if (!rc) break;
@@ -1821,13 +1830,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			rpmlog(
 			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 			    _("%s rmdir of %s failed: Directory not empty\n"), 
-				rpmfiTypeString(fi), fsm->path);
+				rpmteTypeString(te), fsm->path);
 			break;
 		    default:
 			rpmlog(
 			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_("%s rmdir of %s failed: %s\n"),
-				rpmfiTypeString(fi), fsm->path, strerror(errno));
+				rpmteTypeString(te), fsm->path, strerror(errno));
 			break;
 		    }
 		} else {
@@ -1841,7 +1850,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			rpmlog(
 			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
 				_("%s unlink of %s failed: %s\n"),
-				rpmfiTypeString(fi), fsm->path, strerror(errno));
+				rpmteTypeString(te), fsm->path, strerror(errno));
 			break;
 		    }
 		}

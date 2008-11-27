@@ -469,13 +469,6 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
  */
 int rpmfiConfigConflict(const rpmfi fi);
 
-/** \ingroup rpmfi
- * Return formatted string representation of package disposition.
- * @param fi		file info set
- * @return		formatted string
- */
-const char * rpmfiTypeString(rpmfi fi);
-
 #ifdef __cplusplus
 }
 #endif
