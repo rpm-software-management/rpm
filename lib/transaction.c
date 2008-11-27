@@ -144,6 +144,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
+	rpmte otherTe;
 	rpmfileAttrs FFlags;
 	rpm_mode_t FMode;
 	struct rpmffi_s * recs;
@@ -197,16 +198,18 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	/* Find what the previous disposition of this file was. */
 	otherFileNum = -1;			/* keep gcc quiet */
 	otherFi = NULL;
+	otherTe = NULL;
 
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    struct fingerPrint_s * otherFps;
 	    int otherFc;
 
-	    otherFi = rpmteFI(recs[otherPkgNum].p);
+	    otherTe = recs[otherPkgNum].p;
+	    otherFi = rpmteFI(otherTe);
 	    otherFileNum = recs[otherPkgNum].fileno;
 
 	    /* Added packages need only look at other added packages. */
-	    if (rpmteType(p) == TR_ADDED && rpmteType(otherFi->te) != TR_ADDED)
+	    if (rpmteType(p) == TR_ADDED && rpmteType(otherTe) != TR_ADDED)
 		continue;
 
 	    otherFps = otherFi->fps;
@@ -277,7 +280,7 @@ assert(otherFi != NULL);
 		    rpmpsAppend(ps, RPMPROB_NEW_FILE_CONFLICT,
 			rpmteNEVRA(p), rpmteKey(p),
 			fn, NULL,
-			rpmteNEVRA(otherFi->te),
+			rpmteNEVRA(otherTe),
 			0);
 		}
 	    }
