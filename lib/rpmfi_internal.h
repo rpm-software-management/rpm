@@ -83,8 +83,6 @@ struct rpmfi_s {
     rpm_count_t fc;		/*!< No. of files. */
 
 /*=============================*/
-    rpmte te;
-
     rpmfiFlags fiflags;		/*!< file info set control flags */
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 /*-----------------------------*/

@@ -20,7 +20,7 @@
 #include "lib/cpio.h"
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/psm.h"
-#include "lib/rpmfi_internal.h" /* XXX replaced/states, fi->te... */
+#include "lib/rpmfi_internal.h" /* XXX replaced/states... */
 #include "lib/rpmte_internal.h"	/* XXX te->fd */
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
