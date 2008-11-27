@@ -20,7 +20,7 @@
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 #include "rpmio/fts.h"
 #include "lib/cpio.h"
-#include "lib/rpmfi_internal.h"	/* XXX pretty much all rpmfi internals... */
+#include "lib/rpmfi_internal.h"	/* XXX fi->apath */
 #include "build/buildio.h"
 
 #include "debug.h"
