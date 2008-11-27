@@ -706,3 +706,14 @@ int rpmteFailed(rpmte te)
 {
     return (te != NULL) ? te->failed : -1;
 }
+
+int rpmteHaveTransScript(rpmte te, rpmTag tag)
+{
+    int rc = 0;
+    if (tag == RPMTAG_PRETRANS) {
+	rc = (te->transscripts & RPMTE_HAVE_PRETRANS);
+    } else if (tag == RPMTAG_POSTTRANS) {
+	rc = (te->transscripts & RPMTE_HAVE_POSTTRANS);
+    }
+    return rc;
+}

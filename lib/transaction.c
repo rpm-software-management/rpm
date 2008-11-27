@@ -18,7 +18,7 @@
 #include "lib/psm.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */
-#include "lib/rpmte_internal.h"	/* XXX te->h, te->fd, te->h */
+#include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"
 #include "lib/cpio.h"
 
@@ -823,27 +823,23 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
     	rpmTag progtag = RPMTAG_NOT_FOUND;
-	int havescript = 0;
+
+    	/* If no pre/post-transaction script, then don't bother. */
+	if (!rpmteHaveTransScript(p, stag))
+	    continue;
 
 	switch (stag) {
 	case RPMTAG_PRETRANS:
-	    havescript = p->transscripts & RPMTE_HAVE_PRETRANS;
 	    progtag = RPMTAG_PRETRANSPROG;
 	    break;
 	case RPMTAG_POSTTRANS:
-	    havescript = p->transscripts & RPMTE_HAVE_POSTTRANS;
 	    progtag = RPMTAG_POSTTRANSPROG;
 	    break;
 	default:
-	    /* programmer error, blow up */
 	    assert(progtag != RPMTAG_NOT_FOUND);
 	    break;
 	}
 	
-    	/* If no pre/post-transaction script, then don't bother. */
-	if (!havescript)
- 	    continue;
-
     	if (rpmteOpen(p, ts)) {
 	    psm = rpmpsmNew(ts, p, NULL);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);

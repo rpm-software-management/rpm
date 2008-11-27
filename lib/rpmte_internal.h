@@ -88,5 +88,8 @@ int rpmteClose(rpmte te, rpmts ts);
 
 RPM_GNUC_INTERNAL
 int rpmteMarkFailed(rpmte te, rpmts ts);
+
+RPM_GNUC_INTERNAL
+int rpmteHaveTransScript(rpmte te, rpmTag tag);
 #endif	/* _RPMTE_INTERNAL_H */
 
