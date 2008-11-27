@@ -163,7 +163,7 @@ mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
     iter->te = te; /* XXX rpmte is not refcounted yet */
     iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
     iter->reverse = (rpmteType(te) == TR_REMOVED);
-    iter->i = (iter->reverse ? (fi->fc - 1) : 0);
+    iter->i = (iter->reverse ? (rpmfiFC(fi) - 1) : 0);
     iter->isave = iter->i;
     return iter;
 }
@@ -183,7 +183,7 @@ static int mapNextIterator(void * a)
 	if (iter->reverse) {
 	    if (iter->i >= 0)	i = iter->i--;
 	} else {
-    	    if (iter->i < fi->fc)	i = iter->i++;
+    	    if (iter->i < rpmfiFC(fi))	i = iter->i++;
 	}
 	iter->isave = i;
     }
@@ -270,7 +270,7 @@ static void * dnlFreeIterator(void * a)
  */
 static inline int dnlCount(const DNLI_t dnli)
 {
-    return (dnli ? dnli->fi->dc : 0);
+    return (dnli ? rpmfiDC(dnli->fi) : 0);
 }
 
 /** \ingroup payload
@@ -295,16 +295,18 @@ void * dnlInitIterator(const FSM_t fsm,
     rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
     DNLI_t dnli;
     int i, j;
+    int dc;
 
     if (fi == NULL)
 	return NULL;
+    dc = rpmfiDC(fi);
     dnli = xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->reverse = reverse;
-    dnli->i = (reverse ? fi->dc : 0);
+    dnli->i = (reverse ? dc : 0);
 
-    if (fi->dc) {
-	dnli->active = xcalloc(fi->dc, sizeof(*dnli->active));
+    if (dc) {
+	dnli->active = xcalloc(dc, sizeof(*dnli->active));
 
 	/* Identify parent directories not skipped. */
 	for (i = 0; i < fi->fc; i++)
@@ -322,7 +324,7 @@ void * dnlInitIterator(const FSM_t fsm,
 	    dnlen = strlen(fi->dnl[dil]);
 	    bnlen = strlen(fi->bnl[i]);
 
-	    for (j = 0; j < fi->dc; j++) {
+	    for (j = 0; j < dc; j++) {
 		const char * dnl;
 		size_t jlen;
 
@@ -347,7 +349,7 @@ void * dnlInitIterator(const FSM_t fsm,
 	/* Print only once per package. */
 	if (!reverse) {
 	    j = 0;
-	    for (i = 0; i < fi->dc; i++) {
+	    for (i = 0; i < dc; i++) {
 		if (!dnli->active[i]) continue;
 		if (j == 0) {
 		    j = 1;
@@ -375,14 +377,15 @@ const char * dnlNextIterator(DNLI_t dnli)
 
     if (dnli) {
 	rpmfi fi = dnli->fi;
+	int dc = rpmfiDC(fi);
 	int i = -1;
 
 	if (dnli->active)
 	do {
 	    i = (!dnli->reverse ? dnli->i++ : --dnli->i);
-	} while (i >= 0 && i < fi->dc && !dnli->active[i]);
+	} while (i >= 0 && i < dc && !dnli->active[i]);
 
-	if (i >= 0 && i < fi->dc)
+	if (i >= 0 && i < dc)
 	    dn = fi->dnl[i];
 	else
 	    i = -1;
