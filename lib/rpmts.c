@@ -910,7 +910,7 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     dsi = ts->dsi;
     if (dsi == NULL)
 	return;
-    fc = rpmfiFC( rpmteFI(te, RPMTAG_BASENAMES) );
+    fc = rpmfiFC(rpmteFI(te));
     if (fc <= 0)
 	return;
 

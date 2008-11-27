@@ -250,7 +250,7 @@ addheader:
     
     pkgKey = rpmalAdd(&ts->addedPackages, pkgKey, rpmteKey(p),
 			rpmteDS(p, RPMTAG_PROVIDENAME),
-			rpmteFI(p, RPMTAG_BASENAMES), tscolor);
+			rpmteFI(p), tscolor);
     if (pkgKey == RPMAL_NOMATCH) {
 	ts->order[oc] = rpmteFree(ts->order[oc]);
 	ec = 1;
@@ -1571,7 +1571,7 @@ int rpmtsCheck(rpmts ts)
 	    goto exit;
 
 	rc = 0;
-	fi = rpmteFI(p, RPMTAG_BASENAMES);
+	fi = rpmteFI(p);
 	fi = rpmfiInit(fi, 0);
 	while (rpmfiNext(fi) >= 0) {
 	    const char * fn = rpmfiFN(fi);

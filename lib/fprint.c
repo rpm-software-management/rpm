@@ -238,7 +238,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 
 void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p, int filenr)
 {
-    rpmfi fi = rpmteFI(p, RPMTAG_BASENAMES);
+    rpmfi fi = rpmteFI(p);
     struct fingerPrint_s current_fp;
     char *endsubdir, *endbasename, *currentsubdir;
     size_t lensubDir;
@@ -280,7 +280,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p
 	      char const *linktarget;
 	      char *link;
 
-	      foundfi =  rpmteFI(recs[i].p, RPMTAG_BASENAMES);
+	      foundfi =  rpmteFI(recs[i].p);
 	      fiFX = rpmfiFX(foundfi);
 
 	      filenr = recs[i].fileno;

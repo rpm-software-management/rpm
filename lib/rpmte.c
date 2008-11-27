@@ -477,20 +477,17 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 	return NULL;
 }
 
-rpmfi rpmteFI(rpmte te, rpmTag tag)
+rpmfi rpmteFI(rpmte te)
 {
     if (te == NULL)
 	return NULL;
 
-    if (tag == RPMTAG_BASENAMES)
-	return te->fi;
-    else
-	return NULL;
+    return te->fi; /* XXX take fi reference here? */
 }
 
 void rpmteColorDS(rpmte te, rpmTag tag)
 {
-    rpmfi fi = rpmteFI(te, RPMTAG_BASENAMES);
+    rpmfi fi = rpmteFI(te);
     rpmds ds = rpmteDS(te, tag);
     char deptype = 'R';
     char mydt;

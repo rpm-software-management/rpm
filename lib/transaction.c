@@ -202,7 +202,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    struct fingerPrint_s * otherFps;
 	    int otherFc;
 
-	    otherFi = rpmteFI(recs[otherPkgNum].p, RPMTAG_BASENAMES);
+	    otherFi = rpmteFI(recs[otherPkgNum].p);
 	    otherFileNum = recs[otherPkgNum].fileno;
 
 	    /* Added packages need only look at other added packages. */
@@ -786,7 +786,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 
 	    for (j=0; (j<numRecs)&&gotRecs; j++) {
 	        p = recs[j].p;
-		fi = rpmteFI(p, RPMTAG_BASENAMES);
+		fi = rpmteFI(p);
 
 		/* Determine the fate of each file. */
 		switch (rpmteType(p)) {

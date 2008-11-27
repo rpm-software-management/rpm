@@ -365,10 +365,9 @@ rpmds rpmteDS(rpmte te, rpmTag tag);
 /** \ingroup rpmte
  * Retrieve file info tag set from transaction element.
  * @param te		transaction element
- * @param tag		file info tag (RPMTAG_BASENAMES)
  * @return		file info tag set
  */
-rpmfi rpmteFI(rpmte te, rpmTag tag);
+rpmfi rpmteFI(rpmte te);
 
 /** \ingroup rpmte
  * Calculate transaction element dependency colors/refs from file info.

@@ -214,29 +214,12 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * TagN = NULL;
     rpmfi fi;
-    rpmTag tag;
-    char * kwlist[] = {"tag", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:FI", kwlist, &TagN))
-	return NULL;
-
-    tag = tagNumFromPyObject(TagN);
-    if (tag == -1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
-	return NULL;
-    }
-
-    fi = rpmteFI(s->te, tag);
+    fi = rpmteFI(s->te);
     if (fi == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid fi tag");
-	return NULL;
-#else
 	Py_INCREF(Py_None);
 	return Py_None;
-#endif
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
 }
