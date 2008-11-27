@@ -603,26 +603,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     free(dff);
 }
 
-/**
- * Return transaction element's file info.
- * @todo Take a rpmfi refcount here.
- * @param tsi		transaction element iterator
- * @return		transaction element file info
- */
-static
-rpmfi rpmtsiFi(const rpmtsi tsi)
-{
-    rpmfi fi = NULL;
-
-    if (tsi != NULL && tsi->ocsave != -1) {
-	/* FIX: rpmte not opaque */
-	rpmte te = rpmtsElement(tsi->ts, tsi->ocsave);
-	if (te != NULL && (fi = te->fi) != NULL)
-	    fi->te = te;
-    }
-    return fi;
-}
-
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
@@ -653,7 +633,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
     // XXX move to ts
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;   /* XXX can't happen */
 	fc += rpmfiFC(fi);
     }
@@ -667,7 +647,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;   /* XXX can't happen */
 	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
 		    ts->orderCount);
@@ -910,11 +890,11 @@ static int rpmtsProcess(rpmts ts)
 	    switch (tetype) {
 	    case TR_ADDED:
 		stage = PSM_PKGINSTALL;
-		fi = rpmfiUpdateState(rpmtsiFi(pi), ts, p);
+		fi = rpmfiUpdateState(rpmteFI(p), ts, p);
 		break;
 	    case TR_REMOVED:
 		stage = PSM_PKGERASE;
-		fi = rpmtsiFi(pi);
+		fi = rpmteFI(p);
 		break;
 	    }
 	    psm = rpmpsmNew(ts, p, fi);
@@ -1030,7 +1010,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	rpmdbMatchIterator mi;
 	int fc;
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
@@ -1093,7 +1073,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	int fc;
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
@@ -1127,7 +1107,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
@@ -1174,7 +1154,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 	(void) rpmdbCheckSignals();
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 	fc = rpmfiFC(fi);
 
@@ -1204,7 +1184,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 	fi = rpmfiInit(fi, 0);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
@@ -1232,7 +1212,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;   /* XXX can't happen */
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
@@ -1265,7 +1245,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmtsiFi(pi)) == NULL)
+	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 	if (rpmfiFC(fi) == 0)
 	    continue;

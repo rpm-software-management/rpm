@@ -1489,7 +1489,6 @@ rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
     fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     (void) rpmtsSetRelocateElement(ts, savep);
 
-    fi->te = p;
     free(fi->fstates);
     fi->fstates = fstates;
     free(fi->actions);
