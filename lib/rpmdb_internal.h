@@ -30,7 +30,6 @@ typedef struct _dbiIndex * dbiIndex;
 struct _dbiIndexItem {
     unsigned int hdrNum;		/*!< header instance in db */
     unsigned int tagNum;		/*!< tag index in header */
-    unsigned int fpNum;			/*!< finger print index */
 };
 
 /** \ingroup dbi

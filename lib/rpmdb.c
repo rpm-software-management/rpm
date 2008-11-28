@@ -376,7 +376,6 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	    }
 	    set->recs[i].hdrNum = hdrNum.ui;
 	    set->recs[i].tagNum = tagNum.ui;
-	    set->recs[i].fpNum = 0;
 	}
 	break;
     case 1*sizeof(int32_t):
@@ -390,7 +389,6 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	    }
 	    set->recs[i].hdrNum = hdrNum.ui;
 	    set->recs[i].tagNum = 0;
-	    set->recs[i].fpNum = 0;
 	}
 	break;
     }
@@ -2114,7 +2112,7 @@ void rpmdbSortIterator(rpmdbMatchIterator mi)
 }
 
 /* LCL: segfault */
-static int rpmdbGrowIterator(rpmdbMatchIterator mi, int fpNum)
+static int rpmdbGrowIterator(rpmdbMatchIterator mi)
 {
     DBC * dbcursor;
     DBT * key;
@@ -2123,7 +2121,6 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi, int fpNum)
     dbiIndexSet set;
     int rc;
     int xx;
-    int i;
 
     if (mi == NULL)
 	return 1;
@@ -2159,8 +2156,6 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi, int fpNum)
 
     set = NULL;
     (void) dbt2set(dbi, data, &set);
-    for (i = 0; i < set->count; i++)
-	set->recs[i].fpNum = fpNum;
 
 #ifdef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
@@ -2352,7 +2347,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 {
     mi->mi_key.data = (void *) keyp;
     mi->mi_key.size = keylen ? keylen : strlen(keyp);
-    return rpmdbGrowIterator(mi, 0);
+    return rpmdbGrowIterator(mi);
 }
 
 /*
