@@ -91,21 +91,6 @@ struct rpmffi_s {
 extern "C" {
 #endif
 
-/** \ingroup rpmdb
- * Find fingerprint matches in database.
- * @param db		rpm database
- * @param fpList	fingerprint array
- * @retval matchList	returned fingerprint matches
- * @param numItems	number of fingerprint items
- * @return		0 always
- */
-RPM_GNUC_INTERNAL
-int rpmdbFindFpList(rpmdb db, fingerPrint  * fpList,
-		    dbiIndexSet * matchList, int numItems,
-		    fingerPrintCache fpc);
-
-/* Be carefull with the memory... assert(*fullName == '/' || !scareMemory) */
-
 /**
  * Create finger print cache.
  * @param sizeHint	number of elements expected
