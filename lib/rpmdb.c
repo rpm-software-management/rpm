@@ -334,6 +334,25 @@ union _dbswap {
 \
   }
 
+/* 
+ * Ensure sufficient memory for nrecs of new records in dbiIndexSet.
+ * Allocate in power of two sizes to avoid memory fragmentation, so
+ * realloc is not always needed.
+ */
+static inline void dbiGrowSet(dbiIndexSet set, unsigned int nrecs)
+{
+    size_t need = (set->count + nrecs) * sizeof(*(set->recs));
+    size_t alloced = set->alloced ? set->alloced : 1 << 4;
+
+    while (alloced < need)
+	alloced <<= 1;
+
+    if (alloced != set->alloced) {
+	set->recs = xrealloc(set->recs, alloced);
+	set->alloced = alloced;
+    }
+}
+
 /**
  * Convert retrieved data to index set.
  * @param dbi		index database handle
@@ -356,9 +375,9 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	return 0;
     }
 
-    set = xmalloc(sizeof(*set));
+    set = xcalloc(1, sizeof(*set));
+    dbiGrowSet(set, data->size / dbi->dbi_jlen);
     set->count = data->size / dbi->dbi_jlen;
-    set->recs = xmalloc(set->count * sizeof(*(set->recs)));
 
     switch (dbi->dbi_jlen) {
     default:
@@ -483,9 +502,7 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
 	return 1;
 
-    set->recs = xrealloc(set->recs,
-			(set->count + nrecs) * sizeof(*(set->recs)));
-
+    dbiGrowSet(set, nrecs);
     memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
 
     while (nrecs-- > 0) {
@@ -2165,11 +2182,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi)
     if (mi->mi_set == NULL) {
 	mi->mi_set = set;
     } else {
-#if 0
-fprintf(stderr, "+++ %d = %d + %d\t\"%s\"\n", (mi->mi_set->count + set->count), mi->mi_set->count, set->count, ((char *)key->data));
-#endif
-	mi->mi_set->recs = xrealloc(mi->mi_set->recs,
-		(mi->mi_set->count + set->count) * sizeof(*(mi->mi_set->recs)));
+	dbiGrowSet(mi->mi_set, set->count);
 	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
 		set->count * sizeof(*(mi->mi_set->recs)));
 	mi->mi_set->count += set->count;
