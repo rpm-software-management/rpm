@@ -39,6 +39,7 @@ struct _dbiIndexItem {
 struct _dbiIndexSet {
     struct _dbiIndexItem * recs;	/*!< array of records */
     unsigned int count;			/*!< number of records */
+    size_t alloced;			/*!< alloced size */
 };
 
 /** \ingroup dbi
