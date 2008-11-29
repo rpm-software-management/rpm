@@ -343,9 +343,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	(void) poptReadConfigFile(optCon, poptfile);
 	free(poptfile);
     }
-#if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
-#endif
     poptSetExecPath(optCon, rpmConfigDir(), 1);
 
     /* Process all options, whine if unknown. */

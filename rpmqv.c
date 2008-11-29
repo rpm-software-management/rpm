@@ -267,9 +267,7 @@ int main(int argc, char *argv[])
 	(void) poptReadConfigFile(optCon, poptfile);
 	free(poptfile);
     }
-#if RPM_USES_POPTREADDEFAULTCONFIG
     (void) poptReadDefaultConfig(optCon, 1);
-#endif
     poptSetExecPath(optCon, rpmConfigDir(), 1);
 
     while ((arg = poptGetNextOpt(optCon)) > 0) {
