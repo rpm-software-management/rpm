@@ -346,7 +346,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
     int _dbbyteswapped = dbiByteSwapped(dbi);
     const char * sdbir;
     dbiIndexSet set;
-    int i;
+    unsigned int i;
 
     if (dbi == NULL || data == NULL || setp == NULL)
 	return -1;
@@ -409,7 +409,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 {
     int _dbbyteswapped = dbiByteSwapped(dbi);
     char * tdbir;
-    int i;
+    unsigned int i;
 
     if (dbi == NULL || data == NULL || set == NULL)
 	return -1;
@@ -462,7 +462,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 /* XXX assumes hdrNum is first int in dbiIndexItem */
 static int hdrNumCmp(const void * one, const void * two)
 {
-    const int * a = one, * b = two;
+    const unsigned int * a = one, * b = two;
     return (*a - *b);
 }
 
@@ -514,10 +514,10 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
 static int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
 		size_t recsize, int sorted)
 {
-    int from;
-    int to = 0;
-    int num = set->count;
-    int numCopied = 0;
+    unsigned int from;
+    unsigned int to = 0;
+    unsigned int num = set->count;
+    unsigned int numCopied = 0;
 
     assert(set->count > 0);
     if (nrecs > 1 && !sorted)
@@ -1067,7 +1067,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     DBC * dbcursor;
     dbiIndexSet allMatches = NULL;
     dbiIndexItem rec = NULL;
-    int i;
+    unsigned int i;
     int rc;
     int xx;
 
@@ -1265,9 +1265,9 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 		const char * release,
 		dbiIndexSet * matches)
 {
-    int gotMatches = 0;
+    unsigned int gotMatches = 0;
     int rc;
-    int i;
+    unsigned int i;
 
     key->data = (void *) name;
     key->size = strlen(name);

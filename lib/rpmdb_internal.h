@@ -37,8 +37,8 @@ struct _dbiIndexItem {
  * Items retrieved from the index database.
  */
 struct _dbiIndexSet {
-struct _dbiIndexItem * recs; /*!< array of records */
-    int count;				/*!< number of records */
+    struct _dbiIndexItem * recs;	/*!< array of records */
+    unsigned int count;			/*!< number of records */
 };
 
 /** \ingroup dbi
