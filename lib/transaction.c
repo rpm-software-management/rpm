@@ -394,7 +394,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     rpm_color_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
-    ARGV_t netsharedPaths = NULL;
     ARGV_t languages = NULL;
     const char * dn, * bn;
     size_t dnlen, bnlen;
@@ -406,13 +405,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
-
-    {	char *tmpPath = rpmExpand("%{_netsharedpath}", NULL);
-	if (tmpPath && *tmpPath != '%') {
-	    argvSplit(&netsharedPaths, tmpPath, ":");
-	}
-	tmpPath = _free(tmpPath);
-    }
 
     s = rpmExpand("%{_install_langs}", NULL);
     if (!(s && *s != '%'))
@@ -464,7 +456,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 * Net shared paths are not relative to the current root (though
 	 * they do need to take package relocations into account).
 	 */
-	for (nsp = netsharedPaths; nsp && *nsp; nsp++) {
+	for (nsp = ts->netsharedPaths; nsp && *nsp; nsp++) {
 	    size_t len;
 
 	    len = strlen(*nsp);
@@ -597,7 +589,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	}
     }
 
-    if (netsharedPaths) argvFree(netsharedPaths);
     if (languages) argvFree(languages);
     free(drc);
     free(dff);

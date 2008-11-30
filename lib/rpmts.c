@@ -599,6 +599,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->orderAlloced = 0;
 
     ts->keyring = rpmKeyringFree(ts->keyring);
+    ts->netsharedPaths = argvFree(ts->netsharedPaths);
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
@@ -1107,6 +1108,14 @@ rpmts rpmtsCreate(void)
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
     ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}")?:2;
+
+    ts->netsharedPaths = NULL;
+    {	char *tmp = rpmExpand("%{_netsharedpath}", NULL);
+	if (tmp && *tmp != '%') {
+	    argvSplit(&ts->netsharedPaths, tmp, ":");
+	}
+	free(tmp);
+    }
 
     ts->numRemovedPackages = 0;
     ts->allocedRemovedPackages = ts->delta;

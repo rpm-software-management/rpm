@@ -88,6 +88,8 @@ struct rpmts_s {
 
     rpmKeyring keyring;		/*!< Keyring in use. */
 
+    ARGV_t netsharedPaths;	/*!< From %{_netsharedpath} */
+
     struct rpmop_s ops[RPMTS_OP_MAX];
 
     rpmSpec spec;		/*!< Spec file control structure. */
