@@ -86,8 +86,6 @@ struct rpmts_s {
 
     rpmVSFlags vsflags;		/*!< Signature/digest verification flags. */
 
-    const char * fn;		/*!< Current package fn. */
-
     rpmKeyring keyring;		/*!< Keyring in use. */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
