@@ -2928,6 +2928,10 @@ cont:
 	}
 
 	rec = _free(rec);
+	/* If everthing ok, mark header as installed now */
+	if (ret == 0) {
+	    headerSetInstance(h, hdrNum);
+	}
     }
 
 exit:
