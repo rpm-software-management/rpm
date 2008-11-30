@@ -1615,8 +1615,10 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	else
 	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h,
 				NULL, NULL);
-
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
+
+	if (rc == RPMRC_OK)
+	    rpmteSetDBInstance(psm->te, headerGetInstance(h));
 	headerFree(h);
     }   break;
 
@@ -1626,6 +1628,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmtsGetTid(ts),
 				rpmteDBInstance(psm->te), NULL, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
+	if (rc == RPMRC_OK)
+	    rpmteSetDBInstance(psm->te, 0);
 	break;
 
     default:
