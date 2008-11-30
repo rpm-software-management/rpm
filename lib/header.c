@@ -1959,3 +1959,8 @@ unsigned int headerGetInstance(Header h)
 {
     return h ? h->instance : 0;
 }
+
+void headerSetInstance(Header h, unsigned int instance)
+{
+    h->instance = instance;
+}    

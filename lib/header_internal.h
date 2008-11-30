@@ -103,6 +103,14 @@ RPM_GNUC_INTERNAL
 uint64_t htonll( uint64_t n );
 
 /** \ingroup header
+ * Set header instance (rpmdb record number)
+ * @param h		header
+ * @param instance	record number
+ */
+RPM_GNUC_INTERNAL
+void headerSetInstance(Header h, unsigned int instance);
+
+/** \ingroup header
  * Return array of locales found in header.
  * The array is terminated with a NULL sentinel.
  * @param h		header

@@ -2097,7 +2097,7 @@ top:
 	    goto top;
 	return NULL;
     }
-    mi->mi_h->instance = mi->mi_offset;
+    headerSetInstance(mi->mi_h, mi->mi_offset);
 
     mi->mi_prevoffset = mi->mi_offset;
     mi->mi_modified = 0;
