@@ -89,6 +89,7 @@ struct rpmts_s {
     rpmKeyring keyring;		/*!< Keyring in use. */
 
     ARGV_t netsharedPaths;	/*!< From %{_netsharedpath} */
+    ARGV_t installLangs;	/*!< From %{_install_langs} */
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 

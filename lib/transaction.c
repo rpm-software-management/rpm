@@ -394,7 +394,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     rpm_color_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
-    ARGV_t languages = NULL;
     const char * dn, * bn;
     size_t dnlen, bnlen;
     char * s;
@@ -405,15 +404,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
-
-    s = rpmExpand("%{_install_langs}", NULL);
-    if (!(s && *s != '%'))
-	s = _free(s);
-    if (s) {
-	argvSplit(&languages, s, ":");	
-	s = _free(s);
-    } else
-	languages = NULL;
 
     /* Compute directory refcount, skip directory if now empty. */
     dc = rpmfiDC(fi);
@@ -494,13 +484,10 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	/*
 	 * Skip i18n language specific files.
 	 */
-	flangs = rpmfiFLangs(fi);
-	if (languages != NULL && flangs != NULL) {
+	if (ts->installLangs != NULL && (flangs = rpmfiFLangs(fi)) != NULL) {
 	    const char *l, *le;
 	    char **lang;
-	    for (lang = languages; *lang != NULL; lang++) {
-		if (!strcmp(*lang, "all"))
-		    break;
+	    for (lang = ts->installLangs; *lang != NULL; lang++) {
 		for (l = flangs; *l != '\0'; l = le) {
 		    for (le = l; *le != '\0' && *le != '|'; le++)
 			{};
@@ -589,7 +576,6 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	}
     }
 
-    if (languages) argvFree(languages);
     free(drc);
     free(dff);
 }

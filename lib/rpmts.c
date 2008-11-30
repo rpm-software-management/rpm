@@ -600,6 +600,7 @@ rpmts rpmtsFree(rpmts ts)
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
+    ts->installLangs = argvFree(ts->installLangs);
 
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
@@ -1110,9 +1111,25 @@ rpmts rpmtsCreate(void)
     ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}")?:2;
 
     ts->netsharedPaths = NULL;
+    ts->installLangs = NULL;
     {	char *tmp = rpmExpand("%{_netsharedpath}", NULL);
 	if (tmp && *tmp != '%') {
 	    argvSplit(&ts->netsharedPaths, tmp, ":");
+	}
+	free(tmp);
+
+	tmp = rpmExpand("%{_install_langs}", NULL);
+	if (tmp && *tmp != '%') {
+	    ARGV_t langs = NULL;
+	    argvSplit(&langs, tmp, ":");	
+	    /* If we'll be installing all languages anyway, don't bother */
+	    for (ARGV_t l = langs; *l; l++) {
+		if (strcmp(*l, "all") == 0) {
+		    langs = argvFree(langs);
+		    break;
+		}
+	    }
+	    ts->installLangs = langs;
 	}
 	free(tmp);
     }
