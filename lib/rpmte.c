@@ -60,6 +60,8 @@ static void delTE(rpmte p)
     p->NEVRA = _free(p->NEVRA);
 
     p->h = headerFree(p->h);
+    p->fs = rpmfsFree(p->fs);
+
 
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
     /* FIX: p->{NEVR,name} annotations */
@@ -142,6 +144,17 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
 				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
+
+    {
+	// get number of files by hand as rpmfiNew needs p->fs
+	struct rpmtd_s bnames;
+	headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
+
+	p->fs = rpmfsNew(rpmtdCount(&bnames));
+
+	rpmtdFreeData(&bnames);
+    }
+
     savep = rpmtsSetRelocateElement(ts, p);
     p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
     (void) rpmtsSetRelocateElement(ts, savep);
@@ -193,6 +206,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
 	/* nothing to do */
 	break;
     }
+
     return p;
 }
 
@@ -731,4 +745,58 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag)
 	rc = (te->transscripts & RPMTE_HAVE_POSTTRANS);
     }
     return rc;
+}
+
+rpmfs rpmteGetFileStates(rpmte te) {
+    return te->fs;
+}
+
+rpmfs rpmfsNew(unsigned int fc) {
+    rpmfs fs = xmalloc(sizeof(*fs));
+    fs->fc = fc;
+    fs->replaced = NULL;
+    fs->numReplaced = fs->allocatedReplaced = 0;
+    return fs;
+}
+
+rpmfs rpmfsFree(rpmfs fs) {
+    fs->replaced = _free(fs->replaced);
+
+    fs = _free(fs);
+    return fs;
+}
+
+void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
+{
+    if (!fs->replaced) {
+	fs->replaced = xcalloc(3, sizeof(*fs->replaced));
+	fs->allocatedReplaced = 3;
+    }
+    if (fs->numReplaced>=fs->allocatedReplaced) {
+	fs->allocatedReplaced += (fs->allocatedReplaced>>1) + 2;
+	fs->replaced = xrealloc(fs->replaced, fs->allocatedReplaced*sizeof(*fs->replaced));
+    }
+    fs->replaced[fs->numReplaced].pkgFileNum = pkgFileNum;
+    fs->replaced[fs->numReplaced].otherPkg = otherPkg;
+    fs->replaced[fs->numReplaced].otherFileNum = otherFileNum;
+
+    fs->numReplaced++;
+}
+
+sharedFileInfo rpmfsGetReplaced(rpmfs fs)
+{
+    if (fs && fs->numReplaced)
+        return fs->replaced;
+    else
+        return NULL;
+}
+
+sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced)
+{
+    if (fs && replaced) {
+        replaced++;
+	if (replaced - fs->replaced < fs->numReplaced)
+	    return replaced;
+    }
+    return NULL;
 }

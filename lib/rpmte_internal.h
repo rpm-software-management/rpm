@@ -19,6 +19,23 @@ struct tsortInfo_s {
     int		tsi_qcnt;
 };
 
+/**
+ */
+typedef struct sharedFileInfo_s *		sharedFileInfo;
+
+/** \ingroup rpmte
+ * Transaction element file states.
+ */
+typedef struct rpmfs_s *		rpmfs;
+
+/**
+ */
+struct sharedFileInfo_s {
+    int pkgFileNum;
+    int otherPkg;
+    int otherFileNum;
+};
+
 /** \ingroup rpmte
  * A single package instance to be installed/removed atomically.
  */
@@ -68,6 +85,17 @@ struct rpmte_s {
     int failed;			/*!< (parent) install/erase failed */
 
     rpmalKey pkgKey;
+
+    rpmfs fs;
+};
+
+struct rpmfs_s {
+    unsigned int fc;
+
+    sharedFileInfo replaced;	/*!< (TR_ADDED) to be replaced files in the rpmdb */
+    int numReplaced;
+    int allocatedReplaced;
+
 };
 
 /**
@@ -91,5 +119,24 @@ int rpmteMarkFailed(rpmte te, rpmts ts);
 
 RPM_GNUC_INTERNAL
 int rpmteHaveTransScript(rpmte te, rpmTag tag);
+
+RPM_GNUC_INTERNAL
+rpmfs rpmteGetFileStates(rpmte te);
+
+RPM_GNUC_INTERNAL
+rpmfs rpmfsNew(unsigned int fc);
+
+RPM_GNUC_INTERNAL
+rpmfs rpmfsFree(rpmfs fs);
+
+RPM_GNUC_INTERNAL
+void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum);
+
+RPM_GNUC_INTERNAL
+sharedFileInfo rpmfsGetReplaced(rpmfs fs);
+
+RPM_GNUC_INTERNAL
+sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced);
+
 #endif	/* _RPMTE_INTERNAL_H */
 

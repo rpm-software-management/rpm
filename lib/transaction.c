@@ -103,7 +103,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	/* Save file identifier to mark as state REPLACED. */
 	if ( !(isCfgFile || XFA_SKIPPING(rpmfiFAction(fi))) ) {
 	    if (!beingRemoved)
-		rpmfiAddReplaced(fi, rpmfiFX(fi),
+		rpmfsAddReplaced(rpmteGetFileStates(p), rpmfiFX(fi),
 				 headerGetInstance(otherHeader),
 				 rpmfiFX(otherFi));
 	}
