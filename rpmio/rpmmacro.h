@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include <rpm/rpmutil.h>
+#include <rpm/rpmfileutil.h>
 
 #ifdef __cplusplus
 extern "C" {
