@@ -15,6 +15,7 @@
 #include "lib/fsm.h"
 #define	fsmUNSAFE	fsmStage
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath, ... */
+#include "lib/rpmte_internal.h"	/* XXX rpmfs */
 #include "lib/misc.h"		/* XXX unameToUid() and gnameToGid() */
 
 #include "debug.h"
@@ -636,6 +637,7 @@ static int fsmMapPath(FSM_t fsm)
     i = fsm->ix;
     if (fi && i >= 0 && i < fi->fc) {
 	rpmte te = fsmGetTe(fsm);
+	rpmfs fs = rpmteGetFileStates(te);
 	/* XXX these should use rpmfiFFlags() etc */
 	fsm->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : RPMFILE_NONE);
@@ -655,22 +657,22 @@ static int fsmMapPath(FSM_t fsm)
 	case FA_COPYIN:
 	case FA_CREATE:
 	    if (rpmteType(te) == TR_ADDED)
-		rpmfiSetFState(fi, i, RPMFILE_STATE_NORMAL);
+		rpmfsSetState(fs, i, RPMFILE_STATE_NORMAL);
 	    break;
 
 	case FA_SKIPNSTATE:
 	    if (rpmteType(te) == TR_ADDED)
-		rpmfiSetFState(fi, i, RPMFILE_STATE_NOTINSTALLED);
+		rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
 	    break;
 
 	case FA_SKIPNETSHARED:
 	    if (rpmteType(te) == TR_ADDED)
-		rpmfiSetFState(fi, i, RPMFILE_STATE_NETSHARED);
+		rpmfsSetState(fs, i, RPMFILE_STATE_NETSHARED);
 	    break;
 
 	case FA_SKIPCOLOR:
 	    if (rpmteType(te) == TR_ADDED)
-		rpmfiSetFState(fi, i, RPMFILE_STATE_WRONGCOLOR);
+		rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
 	    break;
 
 	case FA_BACKUP:

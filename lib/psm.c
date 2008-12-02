@@ -1401,11 +1401,13 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    rpm_time_t installTime = (rpm_time_t) time(NULL);
-	    rpm_count_t fc = rpmfiFC(fi);
+	    rpmfs fs = rpmteGetFileStates(psm->te);
+	    rpm_count_t fc = rpmfsFC(fs);
+	    char * fileStates = rpmfsGetStates(fs);
 	    Header h = rpmteHeader(psm->te);
 
-	    if (fi->fstates != NULL && fc > 0) {
-		headerPutChar(h, RPMTAG_FILESTATES, fi->fstates, fc);
+	    if (fileStates != NULL && fc > 0) {
+		headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
 	    }
 
 	    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);

@@ -92,10 +92,11 @@ struct rpmte_s {
 struct rpmfs_s {
     unsigned int fc;
 
+    rpmfileState * states;
+
     sharedFileInfo replaced;	/*!< (TR_ADDED) to be replaced files in the rpmdb */
     int numReplaced;
     int allocatedReplaced;
-
 };
 
 /**
@@ -130,6 +131,9 @@ RPM_GNUC_INTERNAL
 rpmfs rpmfsFree(rpmfs fs);
 
 RPM_GNUC_INTERNAL
+rpm_count_t rpmfsFC(rpmfs fs);
+
+RPM_GNUC_INTERNAL
 void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum);
 
 RPM_GNUC_INTERNAL
@@ -137,6 +141,18 @@ sharedFileInfo rpmfsGetReplaced(rpmfs fs);
 
 RPM_GNUC_INTERNAL
 sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced);
+
+RPM_GNUC_INTERNAL
+void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state);
+
+RPM_GNUC_INTERNAL
+rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix);
+
+/*
+ * May return NULL
+ */
+RPM_GNUC_INTERNAL
+rpmfileState * rpmfsGetStates(rpmfs fs);
 
 #endif	/* _RPMTE_INTERNAL_H */
 

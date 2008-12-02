@@ -755,15 +755,20 @@ rpmfs rpmfsNew(unsigned int fc) {
     rpmfs fs = xmalloc(sizeof(*fs));
     fs->fc = fc;
     fs->replaced = NULL;
+    fs->states = NULL;
     fs->numReplaced = fs->allocatedReplaced = 0;
     return fs;
 }
 
 rpmfs rpmfsFree(rpmfs fs) {
     fs->replaced = _free(fs->replaced);
-
+    fs->states = _free(fs->states);
     fs = _free(fs);
     return fs;
+}
+
+rpm_count_t rpmfsFC(rpmfs fs) {
+    return fs->fc;
 }
 
 void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
@@ -799,4 +804,26 @@ sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced)
 	    return replaced;
     }
     return NULL;
+}
+
+void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state)
+{
+    assert(ix < fs->fc);
+    if (fs->states == NULL) {
+	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
+	memset(fs->states, RPMFILE_STATE_MISSING, fs->fc);
+    }
+    fs->states[ix] = state;
+}
+
+rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix)
+{
+    assert(ix < fs->fc);
+    if (fs->states) return fs->states[ix];
+    return RPMFILE_STATE_MISSING;
+}
+
+rpmfileState * rpmfsGetStates(rpmfs fs)
+{
+    return fs->states;
 }

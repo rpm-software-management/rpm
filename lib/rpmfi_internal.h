@@ -99,9 +99,6 @@ RPM_GNUC_INTERNAL
 rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p);
 
 RPM_GNUC_INTERNAL
-void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state);
-
-RPM_GNUC_INTERNAL
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL

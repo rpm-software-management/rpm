@@ -1359,11 +1359,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEDEPENDSN, &td, scareFlags, fi->fddictn);
     }
 
-    /*
-     * For installed packages, get the states here. For to-be-installed
-     * packages fi->fstates is lazily created through rpmfiSetFState().
-     * XXX file states not needed at all by TR_REMOVED.
-     */
     if (!(flags & RPMFI_NOFILESTATES))
 	_hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
 
@@ -1466,11 +1461,9 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 
 rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
 {
-    char * fstates = fi->fstates;
     rpmFileAction * actions = fi->actions;
     rpmte savep;
 
-    fi->fstates = NULL;
     fi->actions = NULL;
     /* FIX: fi->actions is NULL */
     fi = rpmfiFree(fi);
@@ -1479,23 +1472,10 @@ rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
     fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     (void) rpmtsSetRelocateElement(ts, savep);
 
-    free(fi->fstates);
-    fi->fstates = fstates;
     free(fi->actions);
     fi->actions = actions;
     p->fi = fi;
     return fi;
-}
-
-void rpmfiSetFState(rpmfi fi, int ix, rpmfileState state)
-{
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	if (fi->fstates == NULL) {
-	    fi->fstates = xmalloc(sizeof(*fi->fstates) * fi->fc);
-	    memset(fi->fstates, RPMFILE_STATE_MISSING, fi->fc);
-	}
-	fi->fstates[ix] = state;
-    }
 }
 
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)
