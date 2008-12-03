@@ -869,15 +869,18 @@ static int rpmtsProcess(rpmts ts)
 	    pkgStage stage = PSM_UNKNOWN;
 	    int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
 			1 : 0;
+	    rpmte savep;
+
+	    savep = rpmtsSetRelocateElement(ts, p);
+	    fi = p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
+	    (void) rpmtsSetRelocateElement(ts, savep);
 
 	    switch (tetype) {
 	    case TR_ADDED:
 		stage = PSM_PKGINSTALL;
-		fi = rpmfiUpdateState(rpmteFI(p), ts, p);
 		break;
 	    case TR_REMOVED:
 		stage = PSM_PKGERASE;
-		fi = rpmteFI(p);
 		break;
 	    }
 	    psm = rpmpsmNew(ts, p, fi);
@@ -888,6 +891,7 @@ static int rpmtsProcess(rpmts ts)
 	    (void) rpmswExit(rpmtsOp(ts, op), 0);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts);
+	    p->fi = rpmfiFree(p->fi);
 	}
 	if (failed) {
 	    rpmteMarkFailed(p, ts);
@@ -1233,6 +1237,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	if (rpmfiFC(fi) == 0)
 	    continue;
 	fi->fps = _free(fi->fps);
+	p->fi = rpmfiFree(fi);
     }
     pi = rpmtsiFree(pi);
 

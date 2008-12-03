@@ -95,9 +95,6 @@ int nrefs;		/*!< Reference count. */
 };
 
 RPM_GNUC_INTERNAL
-rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p);
-
-RPM_GNUC_INTERNAL
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL

@@ -1421,20 +1421,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
 }
 
-rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
-{
-    rpmte savep;
-
-    fi = rpmfiFree(fi);
-
-    savep = rpmtsSetRelocateElement(ts, p);
-    fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
-    (void) rpmtsSetRelocateElement(ts, savep);
-
-    p->fi = fi;
-    return fi;
-}
-
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)
 {
     if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
