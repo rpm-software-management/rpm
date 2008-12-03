@@ -132,3 +132,48 @@ runroot rpm -qls conflictstatus
 ],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Install and verify files exist on disk
+AT_SETUP([rpm -U and verify files on disk])
+AT_KEYWORDS([install rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -f "${RPMTEST}"/usr/share/my.version
+
+run rpmbuild --quiet -bb \
+        --define "pkg status" \
+	--define "filedata same_stuff" \
+          ${RPMDATA}/SPECS/conflicttest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
+test -f "${RPMTEST}"/usr/share/my.version
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Install, erase and verify files removed from disk
+AT_SETUP([rpm -e and verify files removed])
+AT_KEYWORDS([install rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+rm -f "${RPMTEST}"/usr/share/my.version
+
+run rpmbuild --quiet -bb \
+        --define "pkg status" \
+	--define "filedata same_stuff" \
+          ${RPMDATA}/SPECS/conflicttest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
+runroot rpm -e conflictstatus
+test -f "${RPMTEST}"/usr/share/my.version
+],
+[1],
+[],
+[])
+AT_CLEANUP
