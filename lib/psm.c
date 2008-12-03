@@ -339,15 +339,7 @@ exit:
 	specFile = _free(specFile);
 
     if (h != NULL) h = headerFree(h);
-
-    if (fi != NULL) {
-	rpmteSetHeader(te, NULL);
-	if (te->fd != NULL)
-	    (void) Fclose(te->fd);
-	te->fd = NULL;
-	te = NULL;
-	fi = rpmfiFree(fi);
-    }
+    if (fi != NULL) fi = rpmfiFree(fi);
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
