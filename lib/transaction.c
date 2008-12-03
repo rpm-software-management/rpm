@@ -60,6 +60,8 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
     rpm_color_t oFColor, FColor;
     char * altNEVR = NULL;
     rpmps ps;
+    unsigned int fx = rpmfiFX(fi);
+    rpmfs fs = rpmteGetFileStates(p);
 
     altNEVR = headerGetNEVRA(otherHeader, NULL);
 
@@ -74,7 +76,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
     isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
-    if (XFA_SKIPPING(rpmfiFAction(fi)))
+    if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
 	return 0;
 
     if (rpmfiCompare(otherFi, fi)) {
@@ -84,10 +86,10 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	/* Resolve file conflicts to prefer Elf64 (if not forced). */
 	if (tscolor != 0 && FColor != 0 && FColor != oFColor) {
 	    if (oFColor & prefcolor) {
-		rpmfiSetFAction(fi, FA_SKIPCOLOR);
+		rpmfsSetAction(fs, fx, FA_SKIPCOLOR);
 		rConflicts = 0;
 	    } else if (FColor & prefcolor) {
-		rpmfiSetFAction(fi, FA_CREATE);
+		rpmfsSetAction(fs, fx, FA_CREATE);
 		rConflicts = 0;
 	    }
 	}
@@ -101,7 +103,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	}
 
 	/* Save file identifier to mark as state REPLACED. */
-	if ( !(isCfgFile || XFA_SKIPPING(rpmfiFAction(fi))) ) {
+	if ( !(isCfgFile || XFA_SKIPPING(rpmfsGetAction(fs, fx))) ) {
 	    if (!beingRemoved)
 		rpmfsAddReplaced(rpmteGetFileStates(p), rpmfiFX(fi),
 				 headerGetInstance(otherHeader),
@@ -114,7 +116,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	int skipMissing =
 	    ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
 	rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
-	rpmfiSetFAction(fi, action);
+	rpmfsSetAction(fs, fx, action);
     }
     rpmfiSetFReplacedSize(fi, rpmfiFSize(otherFi));
 
@@ -135,6 +137,8 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
     int i, j;
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
+    rpmfs fs = rpmteGetFileStates(p);
+    rpmfs otherFs;
 
     ps = rpmtsProblems(ts);
     fi = rpmfiInit(fi, 0);
@@ -150,7 +154,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	struct rpmffi_s * recs;
 	int numRecs;
 
-	if (XFA_SKIPPING(rpmfiFAction(fi)))
+	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 	    continue;
 
 	fn = rpmfiFN(fi);
@@ -199,6 +203,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	otherFileNum = -1;			/* keep gcc quiet */
 	otherFi = NULL;
 	otherTe = NULL;
+	otherFs = NULL;
 
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    struct fingerPrint_s * otherFps;
@@ -207,6 +212,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    otherTe = recs[otherPkgNum].p;
 	    otherFi = rpmteFI(otherTe);
 	    otherFileNum = recs[otherPkgNum].fileno;
+	    otherFs = rpmteGetFileStates(otherTe);
 
 	    /* Added packages need only look at other added packages. */
 	    if (rpmteType(p) == TR_ADDED && rpmteType(otherTe) != TR_ADDED)
@@ -218,7 +224,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
 	    /* XXX Happens iff fingerprint for incomplete package install. */
-	    if (rpmfiFAction(otherFi) != FA_UNKNOWN);
+	    if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN);
 		break;
 	}
 
@@ -235,7 +241,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
 		rpmFileAction action;
-		if (rpmfiFAction(fi) != FA_UNKNOWN)
+		if (rpmfsGetAction(fs, i) != FA_UNKNOWN)
 		    break;
 		if (rpmfiConfigConflict(fi)) {
 		    /* Here is a non-overlapped pre-existing config file. */
@@ -244,7 +250,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 		} else {
 		    action = FA_CREATE;
 		}
-		rpmfiSetFAction(fi, action);
+		rpmfsSetAction(fs, i, action);
 		break;
 	    }
 
@@ -258,20 +264,20 @@ assert(otherFi != NULL);
 		if (tscolor != 0) {
 		    if (FColor & prefcolor) {
 			/* ... last file of preferred colour is installed ... */
-			if (!XFA_SKIPPING(rpmfiFAction(fi))) {
+			if (!XFA_SKIPPING(rpmfsGetAction(fs, i))) {
 			    /* XXX static helpers are order dependent. Ick. */
 			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
 			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
-				rpmfiSetFAction(otherFi, FA_SKIPCOLOR);
+				rpmfsSetAction(otherFs, otherFileNum, FA_SKIPCOLOR);
 			}
-			rpmfiSetFAction(fi, FA_CREATE);
+			rpmfsSetAction(fs, i, FA_CREATE);
 			rConflicts = 0;
 		    } else
 		    if (oFColor & prefcolor) {
 			/* ... first file of preferred colour is installed ... */
-			if (XFA_SKIPPING(rpmfiFAction(fi)))
-			    rpmfiSetFAction(otherFi, FA_CREATE);
-			rpmfiSetFAction(fi, FA_SKIPCOLOR);
+			if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+			    rpmfsSetAction(otherFs, otherFileNum, FA_CREATE);
+			rpmfsSetAction(fs, i, FA_SKIPCOLOR);
 			rConflicts = 0;
 		    }
 		    done = 1;
@@ -292,31 +298,31 @@ assert(otherFi != NULL);
 		/* Here is an overlapped  pre-existing config file. */
 		rpmFileAction action;
 		action = (FFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SKIP;
-		rpmfiSetFAction(fi, action);
+		rpmfsSetAction(fs, i, action);
 	    } else {
 		if (!done)
-		    rpmfiSetFAction(fi, FA_CREATE);
+		    rpmfsSetAction(fs, i, FA_CREATE);
 	    }
 	  } break;
 
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
-assert(otherFi != NULL);
-		/* Here is an overlapped added file we don't want to nuke. */
-		if (rpmfiFAction(otherFi) != FA_ERASE) {
+		assert(otherFi != NULL);
+                /* Here is an overlapped added file we don't want to nuke. */
+		if (rpmfsGetAction(otherFs, otherFileNum) != FA_ERASE) {
 		    /* On updates, don't remove files. */
-		    rpmfiSetFAction(fi, FA_SKIP);
+		    rpmfsSetAction(fs, i, FA_SKIP);
 		    break;
 		}
 		/* Here is an overlapped removed file: skip in previous. */
-		rpmfiSetFAction(otherFi, FA_SKIP);
+		rpmfsSetAction(otherFs, otherFileNum, FA_SKIP);
 	    }
-	    if (XFA_SKIPPING(rpmfiFAction(fi)))
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
 	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
 		break;
 	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG))) {
-		rpmfiSetFAction(fi, FA_ERASE);
+		rpmfsSetAction(fs, i, FA_ERASE);
 		break;
 	    }
 		
@@ -328,18 +334,18 @@ assert(otherFi != NULL);
 		    unsigned char fdigest[diglen];
 		    if (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
 			memcmp(digest, fdigest, diglen)) {
-			rpmfiSetFAction(fi, FA_BACKUP);
+			rpmfsSetAction(fs, i, FA_BACKUP);
 			break;
 		    }
 		}
 	    }
-	    rpmfiSetFAction(fi, FA_ERASE);
+	    rpmfsSetAction(fs, i, FA_ERASE);
 	    break;
 	}
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
-		rpmfiFReplacedSize(fi), fixupSize, rpmfiFAction(fi));
+		       rpmfiFReplacedSize(fi), fixupSize, rpmfsGetAction(fs, i));
 
     }
     ps = rpmpsFree(ps);
@@ -388,7 +394,7 @@ static int ensureOlder(rpmts ts,
  * @param ts		transaction set
  * @param fi		file info set
  */
-static void skipFiles(const rpmts ts, rpmfi fi)
+static void skipFiles(const rpmts ts, rpmte p)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t FColor;
@@ -401,6 +407,8 @@ static void skipFiles(const rpmts ts, rpmfi fi)
     char * dff;
     int dc;
     int i, j, ix;
+    rpmfi fi = rpmteFI(p);
+    rpmfs fs = rpmteGetFileStates(p);
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -428,7 +436,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	drc[ix]++;
 
 	/* Don't bother with skipped files */
-	if (XFA_SKIPPING(rpmfiFAction(fi))) {
+	if (XFA_SKIPPING(rpmfsGetAction(fs, i))) {
 	    drc[ix]--; dff[ix] = 1;
 	    continue;
 	}
@@ -437,7 +445,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	FColor = rpmfiFColor(fi);
 	if (tscolor && FColor && !(tscolor & FColor)) {
 	    drc[ix]--;	dff[ix] = 1;
-	    rpmfiSetFAction(fi, FA_SKIPCOLOR);
+	    rpmfsSetAction(fs, i, FA_SKIPCOLOR);
 	    continue;
 	}
 
@@ -477,7 +485,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 
 	if (nsp && *nsp) {
 	    drc[ix]--;	dff[ix] = 1;
-	    rpmfiSetFAction(fi, FA_SKIPNETSHARED);
+	    rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
 	    continue;
 	}
 
@@ -500,7 +508,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    }
 	    if (*lang == NULL) {
 		drc[ix]--;	dff[ix] = 1;
-		rpmfiSetFAction(fi, FA_SKIPNSTATE);
+		rpmfsSetAction(fs, i, FA_SKIPNSTATE);
 		continue;
 	    }
 	}
@@ -510,7 +518,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 */
 	if (noConfigs && (rpmfiFFlags(fi) & RPMFILE_CONFIG)) {
 	    drc[ix]--;	dff[ix] = 1;
-	    rpmfiSetFAction(fi, FA_SKIPNSTATE);
+	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
 	    continue;
 	}
 
@@ -519,7 +527,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	 */
 	if (noDocs && (rpmfiFFlags(fi) & RPMFILE_DOC)) {
 	    drc[ix]--;	dff[ix] = 1;
-	    rpmfiSetFAction(fi, FA_SKIPNSTATE);
+	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
 	    continue;
 	}
     }
@@ -553,7 +561,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    const char * fdn, * fbn;
 	    rpm_mode_t fFMode;
 
-	    if (XFA_SKIPPING(rpmfiFAction(fi)))
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
 
 	    fFMode = rpmfiFMode(fi);
@@ -571,7 +579,7 @@ static void skipFiles(const rpmts ts, rpmfi fi)
 	    if (strncmp(fbn, bn, bnlen))
 		continue;
 	    rpmlog(RPMLOG_DEBUG, "excluding directory %s\n", dn);
-	    rpmfiSetFAction(fi, FA_SKIPNSTATE);
+	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
 	    break;
 	}
     }
@@ -664,6 +672,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
     rpmps ps;
     rpmte p;
     rpmfi fi;
+    rpmfs fs;
     rpmfi otherFi=NULL;
     int j;
     int xx;
@@ -716,7 +725,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 	headerGet(h, RPMTAG_FILESTATES, &ostates, hgflags);
 
 	oldDir = NULL;
-	/* loop over all intersting files in that package */
+	/* loop over all interesting files in that package */
 	do {
 	    int gotRecs;
 	    struct rpmffi_s * recs;
@@ -747,6 +756,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 	    for (j=0; (j<numRecs)&&gotRecs; j++) {
 	        p = recs[j].p;
 		fi = rpmteFI(p);
+		fs = rpmteGetFileStates(p);
 
 		/* Determine the fate of each file. */
 		switch (rpmteType(p)) {
@@ -762,7 +772,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 		    if (!beingRemoved) {
 		        rpmfiSetFX(fi, recs[j].fileno);
 			if (*rpmtdGetChar(&ostates) == RPMFILE_STATE_NORMAL)
-			    rpmfiSetFAction(fi, FA_SKIP);
+			    rpmfsSetAction(fs, recs[j].fileno, FA_SKIP);
 		    }
 		    break;
 		}
@@ -1089,7 +1099,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    numAdded++;
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    if (fc > 0)
-		skipFiles(ts, fi);
+		skipFiles(ts, p);
 	    break;
 	case TR_REMOVED:
 	    numRemoved++;
@@ -1139,7 +1149,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    struct rpmffi_s ffi;
 	    ffi.p = p;
 	    ffi.fileno = i;
-	    if (XFA_SKIPPING(rpmfiFAction(fi)))
+	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
 		continue;
 	    rpmFpHashAddEntry(ts->ht, fi->fps + i, ffi);
 	}
@@ -1163,7 +1173,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
-	    if (XFA_SKIPPING(rpmfiFAction(fi)))
+	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
 		continue;
 	    fpLookupSubdir(ts->ht, newht, fpc, p, i);
 	}

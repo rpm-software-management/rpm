@@ -93,6 +93,7 @@ struct rpmfs_s {
     unsigned int fc;
 
     rpmfileState * states;
+    rpmFileAction * actions;	/*!< File disposition(s). */
 
     sharedFileInfo replaced;	/*!< (TR_ADDED) to be replaced files in the rpmdb */
     int numReplaced;
@@ -121,7 +122,7 @@ int rpmteMarkFailed(rpmte te, rpmts ts);
 RPM_GNUC_INTERNAL
 int rpmteHaveTransScript(rpmte te, rpmTag tag);
 
-RPM_GNUC_INTERNAL
+//RPM_GNUC_INTERNAL
 rpmfs rpmteGetFileStates(rpmte te);
 
 RPM_GNUC_INTERNAL
@@ -153,6 +154,13 @@ rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix);
  */
 RPM_GNUC_INTERNAL
 rpmfileState * rpmfsGetStates(rpmfs fs);
+
+RPM_GNUC_INTERNAL
+rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
+
+//RPM_GNUC_INTERNAL
+void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
+
 
 #endif	/* _RPMTE_INTERNAL_H */
 

@@ -292,6 +292,7 @@ void * dnlInitIterator(const FSM_t fsm,
 	
 {
     rpmfi fi = fsmGetFi(fsm);
+    rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
     DNLI_t dnli;
     int i, j;
 
@@ -307,7 +308,7 @@ void * dnlInitIterator(const FSM_t fsm,
 
 	/* Identify parent directories not skipped. */
 	for (i = 0; i < fi->fc; i++)
-            if (!XFA_SKIPPING(fi->actions[i])) dnli->active[fi->dil[i]] = 1;
+            if (!XFA_SKIPPING(rpmfsGetAction(fs, i))) dnli->active[fi->dil[i]] = 1;
 
 	/* Exclude parent directories that are explicitly included. */
 	for (i = 0; i < fi->fc; i++) {
@@ -459,11 +460,11 @@ static int saveHardLink(FSM_t fsm)
 	return 1;
 
     /* Here come the bits, time to choose a non-skipped file name. */
-    {	rpmfi fi = fsmGetFi(fsm);
+    {	rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
 
 	for (j = fsm->li->linksLeft - 1; j >= 0; j--) {
 	    ix = fsm->li->filex[j];
-	    if (ix < 0 || XFA_SKIPPING(fi->actions[ix]))
+	    if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
 		continue;
 	    break;
 	}
@@ -639,7 +640,7 @@ static int fsmMapPath(FSM_t fsm)
 	rpmte te = fsmGetTe(fsm);
 	rpmfs fs = rpmteGetFileStates(te);
 	/* XXX these should use rpmfiFFlags() etc */
-	fsm->action = (fi->actions ? fi->actions[i] : FA_UNKNOWN);
+	fsm->action = rpmfsGetAction(fs, i);
 	fsm->fflags = (fi->fflags ? fi->fflags[i] : RPMFILE_NONE);
 
 	/* src rpms have simple base name in payload. */

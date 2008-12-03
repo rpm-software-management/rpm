@@ -322,6 +322,14 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
 
+    {
+	/* set all files to be installed */
+	rpmfs fs = rpmteGetFileStates(te);
+	int i;
+	unsigned int fc = rpmfiFC(fi);
+	for (i=0; i<fc; i++) rpmfsSetAction(fs, i, FA_CREATE);
+    }
+
     psm = rpmpsmNew(ts, te, fi);
     psm->goal = PSM_PKGINSTALL;
 
@@ -1403,11 +1411,11 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpm_time_t installTime = (rpm_time_t) time(NULL);
 	    rpmfs fs = rpmteGetFileStates(psm->te);
 	    rpm_count_t fc = rpmfsFC(fs);
-	    char * fileStates = rpmfsGetStates(fs);
+	    rpmfileState * fileStates = rpmfsGetStates(fs);
 	    Header h = rpmteHeader(psm->te);
 
 	    if (fileStates != NULL && fc > 0) {
-		headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
+		headerPutChar(h, RPMTAG_FILESTATES, (char *) fileStates, fc);
 	    }
 
 	    headerPutUint32(h, RPMTAG_INSTALLTIME, &installTime, 1);

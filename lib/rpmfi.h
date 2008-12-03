@@ -337,20 +337,6 @@ const char * rpmfiFCaps(rpmfi fi);
 const char * rpmfiFLangs(rpmfi fi);
 
 /** \ingroup rpmfi
- * Return current file action from file info set.
- * @param fi		file info set
- * @return		current file action
- */
-rpmFileAction rpmfiFAction(rpmfi fi);
-
-/** \ingroup rpmfi
- * Set current file action on file info set.
- * @param fi		file info set
- * @param action	file action
- */
-void rpmfiSetFAction(rpmfi fi, rpmFileAction action);
-
-/** \ingroup rpmfi
  * Return next file iterator index.
  * @param fi		file info set
  * @return		file iterator index, -1 on termination

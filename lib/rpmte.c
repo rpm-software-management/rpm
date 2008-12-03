@@ -756,6 +756,8 @@ rpmfs rpmfsNew(unsigned int fc) {
     fs->fc = fc;
     fs->replaced = NULL;
     fs->states = NULL;
+    fs->actions = xmalloc(fc * sizeof(*fs->actions));
+    memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
     fs->numReplaced = fs->allocatedReplaced = 0;
     return fs;
 }
@@ -763,6 +765,8 @@ rpmfs rpmfsNew(unsigned int fc) {
 rpmfs rpmfsFree(rpmfs fs) {
     fs->replaced = _free(fs->replaced);
     fs->states = _free(fs->states);
+    fs->actions = _free(fs->actions);
+
     fs = _free(fs);
     return fs;
 }
@@ -826,4 +830,22 @@ rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix)
 rpmfileState * rpmfsGetStates(rpmfs fs)
 {
     return fs->states;
+}
+
+rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix)
+{
+    rpmFileAction action;
+    if (fs->actions != NULL && ix < fs->fc) {
+	action = fs->actions[ix];
+    } else {
+	action = FA_UNKNOWN;
+    }
+    return action;
+}
+
+void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action)
+{
+    if (fs->actions != NULL && ix < fs->fc) {
+	fs->actions[ix] = action;
+    }
 }

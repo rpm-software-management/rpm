@@ -75,7 +75,6 @@ struct rpmfi_s {
     rpmfiFlags fiflags;		/*!< file info set control flags */
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 /*-----------------------------*/
-    rpmFileAction * actions;	/*!< File disposition(s). */
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
     pgpHashAlgo digestalgo;	/*!< File checksum algorithm */

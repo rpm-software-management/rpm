@@ -456,24 +456,6 @@ const char * rpmfiFLangs(rpmfi fi)
     return flangs;
 }
 
-rpmFileAction rpmfiFAction(rpmfi fi)
-{
-    rpmFileAction action;
-    if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	action = fi->actions[fi->i];
-    } else {
-	action = FA_UNKNOWN;
-    }
-    return action;
-}
-
-void rpmfiSetFAction(rpmfi fi, rpmFileAction action)
-{
-    if (fi != NULL && fi->actions != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	fi->actions[fi->i] = action;
-    }	
-}
-
 int rpmfiNext(rpmfi fi)
 {
     int i = -1;
@@ -747,12 +729,11 @@ static char **duparray(char ** src, int size)
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param origH		package header
- * @param actions	file dispositions
  * @return		header with relocated files
  */
 static
 Header relocateFileList(const rpmts ts, rpmfi fi,
-		Header origH, rpmFileAction * actions)
+		Header origH)
 {
     rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
@@ -849,8 +830,7 @@ assert(p != NULL);
 		}
 	    }
 
-	    /* XXX actions check prevents problem from being appended twice. */
-	    if (!valid && !allowBadRelocate && actions) {
+	    if (!valid && !allowBadRelocate) {
 		rpmps ps = rpmtsProblems(ts);
 		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
 			rpmteNEVRA(p), rpmteKey(p),
@@ -1035,20 +1015,17 @@ dColors[j] |= fColors[i];
 		    break;
 		}
 	    }
-	    if (actions) {
-		actions[i] = FA_SKIPNSTATE;
-		rpmlog(RPMLOG_DEBUG, "excluding %s %s\n",
-			ftstring(ft), fn);
-	    }
+	    rpmfsSetAction(rpmteGetFileStates(p), i, FA_SKIPNSTATE);
+	    rpmlog(RPMLOG_DEBUG, "excluding %s %s\n",
+		   ftstring(ft), fn);
 	    continue;
 	}
 
 	/* Relocation on full paths only, please. */
 	if (fnlen != len) continue;
 
-	if (actions)
-	    rpmlog(RPMLOG_DEBUG, "relocating %s to %s\n",
-		    fn, relocations[j].newPath);
+	rpmlog(RPMLOG_DEBUG, "relocating %s to %s\n",
+	       fn, relocations[j].newPath);
 	nrelocated++;
 
 	strcpy(fn, relocations[j].newPath);
@@ -1122,9 +1099,8 @@ dColors[j] |= fColors[i];
 		(void) rpmCleanPath(t);
 		rstrcat(&t, "/");
 
-		if (actions)
-		    rpmlog(RPMLOG_DEBUG,
-			"relocating directory %s to %s\n", dirNames[i], t);
+		rpmlog(RPMLOG_DEBUG,
+		       "relocating directory %s to %s\n", dirNames[i], t);
 		free(dirNames[i]);
 		dirNames[i] = t;
 		nrelocated++;
@@ -1245,7 +1221,6 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
 
-    fi->actions = _free(fi->actions);
     fi->replacedSizes = _free(fi->replacedSizes);
 
     fi->h = headerFree(fi->h);
@@ -1365,19 +1340,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILECAPS))
 	_hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
-    /* For build and src.rpm's the file actions are known at this point */
-    fi->actions = xcalloc(fi->fc, sizeof(*fi->actions));
-    if (isBuild) {
-	for (int i = 0; i < fi->fc; i++) {
-	    int ghost = fi->fflags[i] & RPMFILE_GHOST;
-	    fi->actions[i] = ghost ? FA_SKIP : FA_COPYOUT;
-	}
-    } else if (isSource) {
-	for (int i = 0; i < fi->fc; i++) {
-	    fi->actions[i] = FA_CREATE;
-	}
-    }
-
     if (!(flags & RPMFI_NOFILELINKTOS)) {
 	fi->flinkcache = strcacheNew();
 	fi->flinks = cacheTag(fi->flinkcache, h, RPMTAG_FILELINKTOS);
@@ -1438,7 +1400,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	Header foo;
 
 	/* FIX: fi-digests undefined */
-	foo = relocateFileList(ts, fi, h, fi->actions);
+	foo = relocateFileList(ts, fi, h);
 	fi->h = headerFree(fi->h);
 	fi->h = headerLink(foo);
 	foo = headerFree(foo);
@@ -1461,19 +1423,14 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
 
 rpmfi rpmfiUpdateState(rpmfi fi, rpmts ts, rpmte p)
 {
-    rpmFileAction * actions = fi->actions;
     rpmte savep;
 
-    fi->actions = NULL;
-    /* FIX: fi->actions is NULL */
     fi = rpmfiFree(fi);
 
     savep = rpmtsSetRelocateElement(ts, p);
     fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     (void) rpmtsSetRelocateElement(ts, savep);
 
-    free(fi->actions);
-    fi->actions = actions;
     p->fi = fi;
     return fi;
 }

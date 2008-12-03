@@ -15,6 +15,7 @@
 #include "lib/cpio.h"
 #include "lib/fsm.h"
 #include "lib/rpmfi_internal.h"		/* rpmfiFSM() */
+#include "lib/rpmte_internal.h"		/* rpmfs */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "build/buildio.h"
@@ -30,10 +31,11 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
     rpmts ts = rpmtsCreate();
     rpmfi fi = csa->cpioList;
     rpmte te = NULL;
+    rpmfs fs = NULL;
     char *failedFile = NULL;
     FD_t cfd;
     rpmRC rc = RPMRC_OK;
-    int xx;
+    int xx, i;
 
     {	char *fmode = rpmExpand(fmodeMacro, NULL);
 	if (!(fmode && fmode[0] == 'w'))
@@ -48,6 +50,15 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
     /* make up a transaction element for passing to fsm */
     rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
     te = rpmtsElement(ts, 0);
+    fs = rpmteGetFileStates(te);
+
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0) {
+	if (rpmfiFFlags(fi) & RPMFILE_GHOST)
+	    rpmfsSetAction(fs, i, FA_SKIP);
+	else
+	    rpmfsSetAction(fs, i, FA_COPYOUT);
+    }
 
     xx = fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, te, fi, cfd,
 		&csa->cpioArchiveSize, &failedFile);
