@@ -110,3 +110,25 @@ runroot rpm -i \
 [ignore])
 
 AT_CLEANUP
+
+# ------------------------------
+# Install and verify status
+AT_SETUP([rpm -U and verify status])
+AT_KEYWORDS([install rpmdb query])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+        --define "pkg status" \
+	--define "filedata same_stuff" \
+          ${RPMDATA}/SPECS/conflicttest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
+runroot rpm -qls conflictstatus
+],
+[0],
+[normal        /usr/share/my.version
+],
+[])
+AT_CLEANUP
