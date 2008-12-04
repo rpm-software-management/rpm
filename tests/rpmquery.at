@@ -142,3 +142,200 @@ runroot rpm \
 [ignore])
 
 AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([integer array query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%{filemodes}\n]]" \
+  -qp "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[33257
+16877
+33188
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([formatted filesbypkg query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%-10{=NAME} %{FILENAMES}\n]]" \
+  -qp "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[hello      /usr/local/bin/hello
+hello      /usr/share/doc/hello-1.0
+hello      /usr/share/doc/hello-1.0/FAQ
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([hex formatted integer array extension query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%5{longfilesizes:hex}\n]]" \
+  -qp "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[  b40
+ 1000
+   24
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([base64 extension query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%{pkgid:base64}" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[qt8W635v5FKy1pILrW+0uw==
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([integer array perms format query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%{filemodes:perms}\n]]" \
+  -qp "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[-rwxr-x--x
+drwxr-xr-x
+-rw-r--r--
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([string array query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%{basenames} ]]" \
+  -qp "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[hello hello-1.0 FAQ ],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([empty string array extension array query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%{filenames}]]" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([empty string array extension query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%{filenames}" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[(none)],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([different sizes arrays query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%{basenames} %{changelogname}]]" \
+  -qp "${abs_srcdir}"/data/RPMS/hello-1.0-1.i386.rpm
+],
+[0],
+[],
+[error: incorrect format: array iterator used with different sized arrays
+])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([non-existent string tag])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%{vendor}" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[(none)],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([non-existent integer tag query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%{installcolor}" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[(none)],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([conditional queryformat])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%|name?{%{name}}:{no}| %|installtime?{%{installtime}}:{(not installed)}|" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[foo (not installed)],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([invalid tag query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%{notag}" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[],
+[error: incorrect format: unknown tag
+])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([invalid data for format query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="%{name:depflags}" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[(not a number)],
+[])
+AT_CLEANUP
