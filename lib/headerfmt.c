@@ -637,23 +637,18 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     size_t need = 0;
     char * t, * te;
     char buf[20];
-    struct rpmtd_s tmp;
     rpmtd td;
 
     memset(buf, 0, sizeof(buf));
-    if (!(td = getData(hsa, tag->tag))) {
-	tmp.count = 1;
-	tmp.type = RPM_STRING_TYPE;
-	tmp.data = "(none)";
-	element = 0;
-	td = &tmp;	
+    if ((td = getData(hsa, tag->tag))) {
+	td->ix = element; /* Ick, use iterators instead */
+	stpcpy(stpcpy(buf, "%"), tag->format);
+	val = tag->fmt(td, buf);
+    } else {
+	stpcpy(buf, "%s");
+	val = xstrdup("(none)");
     }
 
-    td->ix = element; /* Ick, use iterators instead */
-
-    (void) stpcpy( stpcpy(buf, "%"), tag->format);
-
-    val = tag->fmt(td, buf);
     need = strlen(val);
 
     if (val && need > 0) {
