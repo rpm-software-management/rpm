@@ -106,6 +106,7 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td)
     int numfiles;
     char deptype = 'R';
     int fileix;
+    int rc = 0;
 
     numfiles = rpmfiFC(fi);
     if (numfiles <= 0) {
@@ -147,12 +148,13 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td)
     td->data = fdeps;
     td->count = numfiles;
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rc = 1;
 
 exit:
-    td->type = RPM_STRING_ARRAY_TYPE;
     fi = rpmfiFree(fi);
     ds = rpmdsFree(ds);
-    return 1;
+    return rc;
 }
 
 /**
@@ -375,11 +377,13 @@ static int triggertypeTag(Header h, rpmtd td)
  */
 static int filenamesTag(Header h, rpmtd td)
 {
-    td->type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, 
 		     (const char ***) &(td->data), &(td->count));
-    td->flags = RPMTD_ALLOCED;
-    return 1; 
+    if (td->data) {
+	td->type = RPM_STRING_ARRAY_TYPE;
+	td->flags = RPMTD_ALLOCED;
+    }
+    return (td->data != NULL); 
 }
 
 /**
@@ -390,11 +394,13 @@ static int filenamesTag(Header h, rpmtd td)
  */
 static int origfilenamesTag(Header h, rpmtd td)
 {
-    td->type = RPM_STRING_ARRAY_TYPE;
     rpmfiBuildFNames(h, RPMTAG_ORIGBASENAMES, 
 		     (const char ***) &(td->data), &(td->count));
-    td->flags = RPMTD_ALLOCED;
-    return 1; 
+    if (td->data) {
+	td->type = RPM_STRING_ARRAY_TYPE;
+	td->flags = RPMTD_ALLOCED;
+    }
+    return (td->data != NULL); 
 }
 /**
  * Retrieve file classes.
@@ -408,6 +414,7 @@ static int fileclassTag(Header h, rpmtd td)
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, scareMem);
     char **fclasses;
     int ix, numfiles;
+    int rc = 0;
 
     numfiles = rpmfiFC(fi);
     if (numfiles <= 0) {
@@ -424,11 +431,12 @@ static int fileclassTag(Header h, rpmtd td)
     td->data = fclasses;
     td->count = numfiles;
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    rc = 1;
 
 exit:
-    td->type = RPM_STRING_ARRAY_TYPE;
     fi = rpmfiFree(fi);
-    return 1; 
+    return rc; 
 }
 
 /**
