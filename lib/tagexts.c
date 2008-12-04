@@ -258,9 +258,8 @@ static int triggercondsTag(Header h, rpmtd td)
     struct rpmtd_s nametd, indextd, flagtd, versiontd, scripttd;
     int hgeflags = HEADERGET_MINMEM;
 
-    td->type = RPM_STRING_ARRAY_TYPE;
     if (!headerGet(h, RPMTAG_TRIGGERNAME, &nametd, hgeflags)) {
-	return 1;
+	return 0;
     }
 
     headerGet(h, RPMTAG_TRIGGERINDEX, &indextd, hgeflags);
@@ -268,6 +267,7 @@ static int triggercondsTag(Header h, rpmtd td)
     headerGet(h, RPMTAG_TRIGGERVERSION, &versiontd, hgeflags);
     headerGet(h, RPMTAG_TRIGGERSCRIPTS, &scripttd, hgeflags);
 
+    td->type = RPM_STRING_ARRAY_TYPE;
     td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
     td->data = conds = xmalloc(sizeof(*conds) * rpmtdCount(&scripttd));
     td->count = rpmtdCount(&scripttd);
