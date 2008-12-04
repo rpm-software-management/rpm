@@ -39,23 +39,23 @@ AT_CLEANUP
 # ------------------------------
 # Check if rpmbuild -ba *.spec 
 # honours a relative topdir with --root
-AT_SETUP([rpmbuild --root=... -ba *.spec])
-AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
-AT_CHECK([
-rm -rf ${TOPDIR}
-AS_MKDIR_P(${TOPDIR}/SOURCES)
-
-cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
-
-run rpmbuild \
-  --root="${abs_builddir}"/testing \
-  -ba "${abs_srcdir}"/data/SPECS/hello.spec
-],
-[0],
-[ignore],
-[ignore])
-AT_CLEANUP
+#AT_SETUP([rpmbuild --root=... -ba *.spec])
+#AT_KEYWORDS([build])
+#AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+#AT_CHECK([
+#rm -rf ${TOPDIR}
+#AS_MKDIR_P(${TOPDIR}/SOURCES)
+#
+#cp "${abs_srcdir}"/data/SOURCES/hello-1.0.tar.gz ${TOPDIR}/SOURCES
+#
+#run rpmbuild \
+#  --root="${abs_builddir}"/testing \
+#  -ba "${abs_srcdir}"/data/SPECS/hello.spec
+#],
+#[0],
+#[ignore],
+#[ignore])
+#AT_CLEANUP
 
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm works
@@ -75,20 +75,20 @@ AT_CLEANUP
 # ------------------------------
 # Check if rpmbuild --rebuild *.src.rpm
 # honours a relative topdir with --root
-AT_SETUP([rpmbuild --root=... --rebuild])
-AT_KEYWORDS([build])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
-AT_CHECK([
-rm -rf ${TOPDIR}
-
-run rpmbuild \
-  --root="${abs_builddir}"/testing \
-  --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
-],
-[0],
-[ignore],
-[ignore])
-AT_CLEANUP
+#AT_SETUP([rpmbuild --root=... --rebuild])
+#AT_KEYWORDS([build])
+#AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+#AT_CHECK([
+#rm -rf ${TOPDIR}
+#
+#run rpmbuild \
+#  --root="${abs_builddir}"/testing \
+#  --rebuild "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+#],
+#[0],
+#[ignore],
+#[ignore])
+#AT_CLEANUP
 
 # ------------------------------
 # Check if tar unpacking works
