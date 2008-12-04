@@ -363,29 +363,23 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	return NULL;
     }
 
+    tagtype = rpmTagGetType(tag); 
+    forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
+
     /* Retrieve data from extension or header. */
     if (!headerGet(s->h, tag, &td, HEADERGET_EXT)) {
-	switch (tag) {
-	case RPMTAG_EPOCH:
-	case RPMTAG_NAME:
-	case RPMTAG_VERSION:
-	case RPMTAG_RELEASE:
-	case RPMTAG_ARCH:
-	case RPMTAG_OS:
-	    Py_INCREF(Py_None);
-	    return Py_None;
-	    break;
-	default:
-	    return PyList_New(0);
-	    break;
+	if (forceArray) {
+	    o = PyList_New(0);
+	} else {
+	    o = Py_None;
+	    Py_INCREF(o);
 	}
+	return o;
     }
+
     count = td.count;
     data = td.data;
     type = td.type;
-
-    tagtype = rpmTagGetType(tag); 
-    forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
 
     switch (type) {
     case RPM_BIN_TYPE:
