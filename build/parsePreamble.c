@@ -874,6 +874,27 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	}
     }
 
+    /* 
+     * Expand buildroot one more time to get %{version} and the like
+     * from the main package, validate sanity. The spec->buildRoot could
+     * still contain unexpanded macros but it cannot be empty or '/', and it
+     * can't be messed with by anything spec does beyond this point.
+     */
+    if (initialPackage) {
+	char *buildRoot = rpmGetPath(spec->buildRoot, NULL);
+	if (*buildRoot == '\0') {
+	    rpmlog(RPMLOG_ERR, _("%%{buildroot} couldn't be empty\n"));
+	    goto exit;
+	}
+	if (!strcmp(buildRoot, "/")) {
+	    rpmlog(RPMLOG_ERR, _("%%{buildroot} can not be \"/\"\n"));
+	    goto exit;
+	}
+	free(spec->buildRoot);
+	spec->buildRoot = buildRoot;
+	addMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
+    }
+
     /* XXX Skip valid arch check if not building binary package */
     if (!spec->anyarch && checkForValidArchitectures(spec)) {
 	goto exit;

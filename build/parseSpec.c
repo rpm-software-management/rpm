@@ -433,15 +433,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     } else {
 	spec->buildRoot = rpmGetPath("%{?buildroot:%{buildroot}}", NULL);
     }
-    addMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
-    if (*spec->buildRoot == '\0') {
-	rpmlog(RPMLOG_ERR, _("BuildRoot couldn't be empty\n"));
-	goto errxit;
-    }
-    if (!strcmp(spec->buildRoot, "/")) {
-	rpmlog(RPMLOG_ERR, _("BuildRoot can not be \"/\"\n"));
-	goto errxit;
-    }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->recursing = recursing;
     spec->anyarch = anyarch;
