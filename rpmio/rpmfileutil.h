@@ -35,10 +35,10 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 
 /** \ingroup rpmfileutil
  * Thin wrapper for mkstemp(3). 
- * @param template		template for temporary filename
+ * @param templ			template for temporary filename
  * @return 			file handle or NULL on error
  */
-FD_t rpmMkTemp(char *template);
+FD_t rpmMkTemp(char *templ);
 
 /** \ingroup rpmfileutil
  * Return file handle for a temporaray file.

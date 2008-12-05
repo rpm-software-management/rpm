@@ -225,12 +225,12 @@ exit:
     return rc;
 }
 
-FD_t rpmMkTemp(char *template)
+FD_t rpmMkTemp(char *templ)
 {
     int sfd;
     FD_t tfd = NULL;
 
-    sfd = mkstemp(template);
+    sfd = mkstemp(templ);
     if (sfd < 0) {
 	goto exit;
     }
