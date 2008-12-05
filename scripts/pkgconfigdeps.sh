@@ -17,6 +17,8 @@ case $1 in
     case "${filename}" in
     *.pc)
 	# Query the dependencies of the package.
+	DIR="`dirname ${filename}`"
+	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-provides "$filename" 2> /dev/null | while read n r v ; do
 	    # We have a dependency.  Make a note that we need the pkgconfig
 	    # tool for this package.
