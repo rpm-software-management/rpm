@@ -596,6 +596,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int xx;
+    int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
 
     if (hdrp) *hdrp = NULL;
@@ -608,6 +609,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if ((rc = rpmLeadCheck(l, &err)) == RPMRC_FAIL) {
 	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, err);
 	}
+	leadtype = rpmLeadType(l);
     }
     l = rpmLeadFree(l);
 
@@ -838,6 +840,14 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
+	/*
+ 	 * Some binary packages in the wild don't have RPMTAG_SOURCERPM,
+ 	 * confusing us greatly. Ensure RPMTAG_SOURCERPM is always set
+ 	 * on binary packages.
+ 	 */
+	if (leadtype == RPMLEAD_BINARY && headerIsSource(h)) {
+	    headerPutString(h, RPMTAG_SOURCERPM, "");
+	}
 	/* 
          * Convert legacy headers on the fly. Not having "new" style compressed
          * filenames is close enough estimate for legacy indication... 
