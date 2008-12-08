@@ -68,6 +68,13 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead lead);
  */
 rpmRC rpmLeadCheck(rpmlead lead, const char **msg);
 
+/** \ingroup lead
+ * Returen type (source vs binary) of lead
+ * @param lead		Pointer to lead handle
+ * @return		RPMLEAD_BINARY or RPMLEAD_SOURCE, -1 on invalid
+ */
+int rpmLeadType(rpmlead lead);
+
 #ifdef __cplusplus
 }
 #endif
