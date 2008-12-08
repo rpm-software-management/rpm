@@ -762,7 +762,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 		switch (rpmteType(p)) {
 		case TR_ADDED:
 		    if (!otherFi) {
-		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, 1);
+		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 		    }
 		    rpmfiSetFX(fi, recs[j].fileno);
 		    rpmfiSetFX(otherFi, fileNum);
