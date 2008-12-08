@@ -133,3 +133,8 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead lead)
 
     return RPMRC_OK;
 }
+
+int rpmLeadType(rpmlead lead)
+{
+    return lead ? lead->type : -1;
+}
