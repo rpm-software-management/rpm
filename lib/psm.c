@@ -703,7 +703,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     if (*argvp == NULL && script == NULL)
 	return RPMRC_OK;
 
-    if (*argvp && strcmp(*argvp[0], "<lua>") == 0) {
+    if (*argvp && *argvp[0] && strcmp(*argvp[0], "<lua>") == 0) {
 	return runLuaScript(psm, h, stag, *argvp, script, arg1, arg2);
     }
 
