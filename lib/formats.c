@@ -221,6 +221,43 @@ static char * triggertypeFormat(rpmtd td, char * formatPrefix)
 }
 
 /**
+ * Identify type of dependency.
+ * @param td		tag data container
+ * @param formatPrefix	sprintf format string
+ * @return		formatted string
+ */
+static char * deptypeFormat(rpmtd td, char * formatPrefix)
+{
+    char * val;
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	uint64_t item = rpmtdGetNumber(td);
+
+	if (item & RPMSENSE_SCRIPT_PRE)
+	    val = xstrdup("pre");
+	else if (item & RPMSENSE_SCRIPT_POST)
+	    val = xstrdup("post");
+	else if (item & RPMSENSE_SCRIPT_PREUN)
+	    val = xstrdup("preun");
+	else if (item & RPMSENSE_SCRIPT_POSTUN)
+	    val = xstrdup("postun");
+	else if (item & RPMSENSE_SCRIPT_VERIFY)
+	    val = xstrdup("verify");
+	else if (item & RPMSENSE_RPMLIB)
+	    val = xstrdup("rpmlib");
+	else if (item & RPMSENSE_INTERP)
+	    val = xstrdup("interp");
+	else if ((item & RPMSENSE_FIND_REQUIRES) || 
+		 (item & RPMSENSE_FIND_PROVIDES))
+	    val = xstrdup("auto");
+	else
+	    val = xstrdup("manual");
+    }
+    return val;
+}
+
+/**
  * Format file permissions for display.
  * @param td		tag data container
  * @param formatPrefix	sprintf format string
@@ -603,6 +640,7 @@ static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_BASE64,	"base64",	base64Format },
     { RPMTD_FORMAT_PGPSIG,	"pgpsig",	pgpsigFormat },
     { RPMTD_FORMAT_DEPFLAGS,	"depflags",	depflagsFormat },
+    { RPMTD_FORMAT_DEPTYPE,	"deptype",	deptypeFormat },
     { RPMTD_FORMAT_FFLAGS,	"fflags",	fflagsFormat },
     { RPMTD_FORMAT_PERMS,	"perms",	permsFormat },
     { RPMTD_FORMAT_PERMS,	"permissions",	permsFormat },
