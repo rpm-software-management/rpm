@@ -19,15 +19,6 @@ const char *__progname;
 
 #include "debug.h"
 
-static int _depends_debug;
-
-static int noAvailable = 1;
-#ifdef DYING
-static const char * avdbpath =
-	"/usr/lib/rpmdb/%{_arch}-%{_vendor}-%{_os}/redhat";
-#endif
-static int noDeps = 0;
-
 static inline const char * identifyDepend(rpmsenseFlags f)
 {
     if (isLegacyPreReq(f))
@@ -49,7 +40,7 @@ static inline const char * identifyDepend(rpmsenseFlags f)
 }
 
 static int
-do_tsort(const char *fileArgv[])
+do_tsort(const char *fileArgv[], int noDeps)
 {
     rpmts ts = NULL;
     const char ** pkgURL = NULL;
@@ -79,31 +70,6 @@ do_tsort(const char *fileArgv[])
 	rc = -1;
 	goto exit;
     }
-
-#ifdef	DYING
-    /* Load all the available packages. */
-    if (!(noDeps || noAvailable)) {
-	rpmdbMatchIterator mi = NULL;
-	struct rpmdb_s * avdb = NULL;
-	const char * rootdir = "/";
-
-	addMacro(NULL, "_dbpath", NULL, avdbpath, RMIL_CMDLINE);
-	rc = rpmdbOpen(rootdir, &avdb, O_RDONLY, 0644);
-	delMacro(NULL, "_dbpath");
-	if (rc) {
-	    rpmlog(RPMLOG_ERR, _("cannot open Available database\n"));
-	    goto endavail;
-	}
-        mi = rpmdbInitIterator(avdb, RPMDBI_PACKAGES, NULL, 0);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    rpmtsAvailablePackage(ts, h, NULL);
-	}
-
-endavail:
-	if (mi) rpmdbFreeIterator(mi);
-	if (avdb) rpmdbClose(avdb);
-    }
-#endif
 
     /* Build fully globbed list of arguments in argv[argc]. */
     for (fnp = fileArgv; *fnp; fnp++) {
@@ -272,13 +238,6 @@ exit:
     return rc;
 }
 
-static struct poptOption optionsTable[] = {
- { "noavailable", '\0', 0, &noAvailable, 0,	NULL, NULL},
- { "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
- { "verbose", 'v', 0, 0, 'v',			NULL, NULL},
- { NULL,	0, 0, 0, 0,			NULL, NULL}
-};
-
 int
 main(int argc, char *argv[])
 {
@@ -286,6 +245,13 @@ main(int argc, char *argv[])
     const char * optArg;
     int arg;
     int ec = 0;
+    int noDeps = 0;
+    struct poptOption optionsTable[] = {
+	{ "nodeps", '\0', 0, &noDeps, 0,		NULL, NULL},
+	{ "verbose", 'v', 0, 0, 'v',			NULL, NULL},
+	{ NULL,	0, 0, 0, 0,			NULL, NULL}
+    };
+
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
@@ -297,8 +263,6 @@ main(int argc, char *argv[])
     (void)bindtextdomain(PACKAGE, LOCALEDIR);
     (void)textdomain(PACKAGE);
 #endif
-
-    _depends_debug = 1;
 
     optCon = poptGetContext("rpmsort", argc, (const char **) argv, optionsTable, 0);
 #if RPM_USES_POPTREADDEFAULTCONFIG
@@ -320,7 +284,7 @@ main(int argc, char *argv[])
 
     rpmReadConfigFiles(NULL, NULL);
 
-    ec = do_tsort(poptGetArgs(optCon));
+    ec = do_tsort(poptGetArgs(optCon), noDeps);
 
     optCon = poptFreeContext(optCon);
 
