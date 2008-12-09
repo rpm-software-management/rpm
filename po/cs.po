@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-11-29 15:07+0200\n"
+"POT-Creation-Date: 2008-12-09 15:01+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Jindrich Novy <jnovy@users.sourceforge.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -997,6 +997,16 @@ msgstr "Balíček již existuje: %s\n"
 msgid "line %d: Unknown tag: %s\n"
 msgstr "řádek %d: Neznámá značka: %s\n"
 
+#: build/parsePreamble.c:886
+#, fuzzy, c-format
+msgid "%%{buildroot} couldn't be empty\n"
+msgstr "BuildRoot nemůže být prázdný\n"
+
+#: build/parsePreamble.c:890
+#, fuzzy, c-format
+msgid "%%{buildroot} can not be \"/\"\n"
+msgstr "BuildRoot nemůže být \"/\"\n"
+
 #: build/parsePrep.c:39
 #, c-format
 msgid "Bad source: %s: %s\n"
@@ -1141,19 +1151,11 @@ msgstr "%s:%d: %%endif bez počátečního %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "poškozený příkaz %%include\n"
 
-#: build/parseSpec.c:438
-msgid "BuildRoot couldn't be empty\n"
-msgstr "BuildRoot nemůže být prázdný\n"
-
-#: build/parseSpec.c:442
-msgid "BuildRoot can not be \"/\"\n"
-msgstr "BuildRoot nemůže být \"/\"\n"
-
-#: build/parseSpec.c:554
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr "Nenalezeny žádné kompatibilní architektury pro sestavení\n"
 
-#: build/parseSpec.c:590
+#: build/parseSpec.c:581
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balíček nemá žádné %%description: %s\n"
@@ -1679,37 +1681,37 @@ msgstr "hdr blob(%zd): ŠPATNÝ, čtení vrátilo %d\n"
 msgid "hdr load: BAD\n"
 msgstr "nahrátí hdr: ŠPATNÉ\n"
 
-#: lib/package.c:622 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature selhalo: %s"
 
-#: lib/package.c:629 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Žádný podpis k dispozici\n"
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead selhal: %s"
 
-#: lib/package.c:726 lib/package.c:750 lib/package.c:779 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "přeskakuji balíček %s s neověřitelným V%u podpisem\n"
 
-#: lib/package.c:793 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
+#: lib/package.c:795 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/package.c:890
+#: lib/package.c:900
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s is a Delta RPM a nemůže být přímo instalován\n"
 
-#: lib/package.c:894
+#: lib/package.c:904
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodporovaný payload (%s) in balíčku %s\n"
@@ -3069,7 +3071,7 @@ msgstr "ve výrazu je po : očekávána {"
 msgid "| expected at end of expression"
 msgstr "na konci výrazu je očekáváno |"
 
-#: lib/headerfmt.c:750
+#: lib/headerfmt.c:745
 msgid "array iterator used with different sized arrays"
 msgstr "iterátor pole použitý s poli jiné délky"
 

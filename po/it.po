@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-11-29 15:07+0200\n"
+"POT-Creation-Date: 2008-12-09 15:01+0200\n"
 "PO-Revision-Date: 2008-06-30 07:20+0200\n"
 "Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
 "Language-Team: Italian <fedora-trans-it@redhat.com>\n"
@@ -1029,6 +1029,16 @@ msgstr "Il pacchetto è già esistente: %s\n"
 msgid "line %d: Unknown tag: %s\n"
 msgstr "riga %d: Etichetta sconosciuta: %s\n"
 
+#: build/parsePreamble.c:886
+#, fuzzy, c-format
+msgid "%%{buildroot} couldn't be empty\n"
+msgstr "La BuildRoot non può essere vuota\n"
+
+#: build/parsePreamble.c:890
+#, fuzzy, c-format
+msgid "%%{buildroot} can not be \"/\"\n"
+msgstr "La BuildRoot non può essere \"/\"\n"
+
 #: build/parsePrep.c:39
 #, c-format
 msgid "Bad source: %s: %s\n"
@@ -1172,20 +1182,12 @@ msgstr "%s:%d: Possiede un %%endif con nessun %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "istruzione %%include malformata\n"
 
-#: build/parseSpec.c:438
-msgid "BuildRoot couldn't be empty\n"
-msgstr "La BuildRoot non può essere vuota\n"
-
-#: build/parseSpec.c:442
-msgid "BuildRoot can not be \"/\"\n"
-msgstr "La BuildRoot non può essere \"/\"\n"
-
-#: build/parseSpec.c:554
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr ""
 "Non è stata trovata alcuna architettura compatibile per la compilazione\n"
 
-#: build/parseSpec.c:590
+#: build/parseSpec.c:581
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Il pacchetto non possiede alcuna %%description: %s\n"
@@ -1715,37 +1717,37 @@ msgstr "hdr blob(%zd): BAD, la lettura restituisce %d\n"
 msgid "hdr load: BAD\n"
 msgstr "hdr load: BAD\n"
 
-#: lib/package.c:622 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fallita: %s"
 
-#: lib/package.c:629 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nessuna firma disponibile\n"
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead fallita: %s"
 
-#: lib/package.c:726 lib/package.c:750 lib/package.c:779 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "salto il pacchetto %s con firma V%u non verificabile\n"
 
-#: lib/package.c:793 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
+#: lib/package.c:795 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread fallito: %s\n"
 
-#: lib/package.c:890
+#: lib/package.c:900
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s è un Delta RPM e non può essere installato direttamente\n"
 
-#: lib/package.c:894
+#: lib/package.c:904
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Payload non supportato (%s) nel pacchetto %s\n"
@@ -3136,7 +3138,7 @@ msgstr "{ previsti dopo : come espressione"
 msgid "| expected at end of expression"
 msgstr "| previsto alla fine dell'espressione"
 
-#: lib/headerfmt.c:750
+#: lib/headerfmt.c:745
 msgid "array iterator used with different sized arrays"
 msgstr "Iteratore di array usato con array di dimensioni differenti"
 

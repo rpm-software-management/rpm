@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-11-29 15:07+0200\n"
+"POT-Creation-Date: 2008-12-09 15:01+0200\n"
 "PO-Revision-Date: 2008-10-23 22:39-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -1005,6 +1005,16 @@ msgstr "Paket već postoji: %s\n"
 msgid "line %d: Unknown tag: %s\n"
 msgstr "red %d: Nepoznata oznaka: %s\n"
 
+#: build/parsePreamble.c:886
+#, fuzzy, c-format
+msgid "%%{buildroot} couldn't be empty\n"
+msgstr "BuildRoot ne može biti \"/\": %s\n"
+
+#: build/parsePreamble.c:890
+#, fuzzy, c-format
+msgid "%%{buildroot} can not be \"/\"\n"
+msgstr "BuildRoot ne može biti \"/\": %s\n"
+
 #: build/parsePrep.c:39
 #, c-format
 msgid "Bad source: %s: %s\n"
@@ -1147,21 +1157,11 @@ msgstr "%s:%d: Dobio %%endif bez %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "loše oblikovana %%include naredba\n"
 
-#: build/parseSpec.c:438
-#, fuzzy
-msgid "BuildRoot couldn't be empty\n"
-msgstr "BuildRoot ne može biti \"/\": %s\n"
-
-#: build/parseSpec.c:442
-#, fuzzy
-msgid "BuildRoot can not be \"/\"\n"
-msgstr "BuildRoot ne može biti \"/\": %s\n"
-
-#: build/parseSpec.c:554
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr "Nisu pronađene usaglašene arhitekture za pravljenje\n"
 
-#: build/parseSpec.c:590
+#: build/parseSpec.c:581
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paket nema %%description: %s\n"
@@ -1687,37 +1687,37 @@ msgstr "hdr blob(%zd): LOŠE, čitam vraćeno %d\n"
 msgid "hdr load: BAD\n"
 msgstr "hdr load: LOŠE\n"
 
-#: lib/package.c:622 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature nije uspelo: %s"
 
-#: lib/package.c:629 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nema potpisa na raspolaganju\n"
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead nije uspelo: %s"
 
-#: lib/package.c:726 lib/package.c:750 lib/package.c:779 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "preskačem paket %s sa nepotvrđenim V%u potpisom\n"
 
-#: lib/package.c:793 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
+#: lib/package.c:795 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nije uspelo: %s\n"
 
-#: lib/package.c:890
+#: lib/package.c:900
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s je Delta RPM i ne može se direktno instalirati\n"
 
-#: lib/package.c:894
+#: lib/package.c:904
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodržan teret (%s) u paketu %s\n"
@@ -3092,7 +3092,7 @@ msgstr "{ očekivano posle : u izrazu"
 msgid "| expected at end of expression"
 msgstr "| očekivan na kraju izraza"
 
-#: lib/headerfmt.c:750
+#: lib/headerfmt.c:745
 msgid "array iterator used with different sized arrays"
 msgstr "pokazivač niza korišćen sa nizovima različitih veličina"
 

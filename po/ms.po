@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2008-11-29 15:07+0200\n"
+"POT-Creation-Date: 2008-12-09 15:01+0200\n"
 "PO-Revision-Date: 2008-06-14 00:38+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
@@ -1003,6 +1003,16 @@ msgstr "Fail telah wujud.  Tulisganti fail '%s'?"
 msgid "line %d: Unknown tag: %s\n"
 msgstr "&Sembunyi nombor baris"
 
+#: build/parsePreamble.c:886
+#, fuzzy, c-format
+msgid "%%{buildroot} couldn't be empty\n"
+msgstr "Clip Art tidak boleh dimuatkan"
+
+#: build/parsePreamble.c:890
+#, fuzzy, c-format
+msgid "%%{buildroot} can not be \"/\"\n"
+msgstr "Clip Art tidak boleh dimuatkan"
+
 #: build/parsePrep.c:39
 #, fuzzy, c-format
 msgid "Bad source: %s: %s\n"
@@ -1143,21 +1153,11 @@ msgstr ""
 msgid "malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:438
-#, fuzzy
-msgid "BuildRoot couldn't be empty\n"
-msgstr "Clip Art tidak boleh dimuatkan"
-
-#: build/parseSpec.c:442
-#, fuzzy
-msgid "BuildRoot can not be \"/\"\n"
-msgstr "Clip Art tidak boleh dimuatkan"
-
-#: build/parseSpec.c:554
+#: build/parseSpec.c:545
 msgid "No compatible architectures found for build\n"
 msgstr ""
 
-#: build/parseSpec.c:590
+#: build/parseSpec.c:581
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr ""
@@ -1697,37 +1697,37 @@ msgstr ""
 msgid "hdr load: BAD\n"
 msgstr "Mengabaikan rpm buruk: %s"
 
-#: lib/package.c:622 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "Sambungan Gagal"
 
-#: lib/package.c:629 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
 #, fuzzy, c-format
 msgid "%s: No signature available\n"
 msgstr "Lekang Tandatangan OpenPGP"
 
-#: lib/package.c:694
+#: lib/package.c:696
 #, fuzzy, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "Sambungan Gagal"
 
-#: lib/package.c:726 lib/package.c:750 lib/package.c:779 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/package.c:793 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
+#: lib/package.c:795 lib/rpmchecksig.c:90 lib/rpmchecksig.c:512
 #, fuzzy, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "Sambungan Gagal"
 
-#: lib/package.c:890
+#: lib/package.c:900
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr ""
 
-#: lib/package.c:894
+#: lib/package.c:904
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -3123,7 +3123,7 @@ msgstr ""
 msgid "| expected at end of expression"
 msgstr "| dijangka pada penghujung ungkapan"
 
-#: lib/headerfmt.c:750
+#: lib/headerfmt.c:745
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
