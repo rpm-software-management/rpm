@@ -48,17 +48,6 @@ static int addTriggerIndex(Package pkg, const char *file,
     return index;
 }
 
-/* these have to be global because of stupid compilers */
-    static const char *name = NULL;
-    static const char *prog = NULL;
-    static const char *file = NULL;
-    static struct poptOption optionsTable[] = {
-	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
-	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
-	{ 0, 0, 0, 0, 0,	NULL, NULL}
-    };
-
 /* %trigger is a strange combination of %pre and Requires: behavior */
 /* We can handle it by parsing the args before "--" in parseScript. */
 /* We then pass the remaining arguments to parseRCPOT, along with   */
@@ -93,11 +82,16 @@ int parseScript(rpmSpec spec, int parsePart)
     int arg;
     const char **argv = NULL;
     poptContext optCon = NULL;
-    
-    name = NULL;
-    prog = "/bin/sh";
-    file = NULL;
-    
+    const char *name = NULL;
+    const char *prog = "/bin/sh";
+    const char *file = NULL;
+    struct poptOption optionsTable[] = {
+	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
+	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
+	{ 0, 0, 0, 0, 0,	NULL, NULL}
+    };
+
     switch (parsePart) {
       case PART_PRE:
 	tag = RPMTAG_PREIN;

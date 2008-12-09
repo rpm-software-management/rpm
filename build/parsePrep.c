@@ -11,21 +11,6 @@
 #include <rpm/rpmfileutil.h>
 #include "debug.h"
 
-/* These have to be global to make up for stupid compilers */
-    static int leaveDirs, skipDefaultAction;
-    static int createDir, quietly;
-static const char * dirName = NULL;
-static struct poptOption optionsTable[] = {
-	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
-	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
-	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
-	    { NULL, 'D', 0, &leaveDirs, 0,		NULL, NULL},
-	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0,	NULL, NULL},
-	    { NULL, 'T', 0, &skipDefaultAction, 0,	NULL, NULL},
-	    { NULL, 'q', 0, &quietly, 0,		NULL, NULL},
-	    { 0, 0, 0, 0, 0,	NULL, NULL}
-    };
-
 /**
  * Check that file owner and group are known.
  * @param urlfn		file url
@@ -262,10 +247,19 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     const char * optArg;
     int rc;
     uint32_t num;
-
-    leaveDirs = skipDefaultAction = 0;
-    createDir = quietly = 0;
-    dirName = NULL;
+    int leaveDirs = 0, skipDefaultAction = 0;
+    int createDir = 0, quietly = 0;
+    const char * dirName = NULL;
+    struct poptOption optionsTable[] = {
+	    { NULL, 'a', POPT_ARG_STRING, NULL, 'a',	NULL, NULL},
+	    { NULL, 'b', POPT_ARG_STRING, NULL, 'b',	NULL, NULL},
+	    { NULL, 'c', 0, &createDir, 0,		NULL, NULL},
+	    { NULL, 'D', 0, &leaveDirs, 0,		NULL, NULL},
+	    { NULL, 'n', POPT_ARG_STRING, &dirName, 0,	NULL, NULL},
+	    { NULL, 'T', 0, &skipDefaultAction, 0,	NULL, NULL},
+	    { NULL, 'q', 0, &quietly, 0,		NULL, NULL},
+	    { 0, 0, 0, 0, 0,	NULL, NULL}
+    };
 
     if ((rc = poptParseArgvString(line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"),

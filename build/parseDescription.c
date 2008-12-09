@@ -12,16 +12,6 @@
 
 extern int noLang;
 
-/* These have to be global scope to make up for *stupid* compilers */
-    static const char *name = NULL;
-    static const char *lang = NULL;
-
-    static struct poptOption optionsTable[] = {
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
-	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l',	NULL, NULL},
-	{ 0, 0, 0, 0, 0,	NULL, NULL}
-    };
-
 int parseDescription(rpmSpec spec)
 {
     int nextPart = PART_ERROR;	/* assume error */
@@ -31,11 +21,15 @@ int parseDescription(rpmSpec spec)
     int rc, argc;
     int arg;
     const char **argv = NULL;
+    const char *name = NULL;
+    const char *lang = RPMBUILD_DEFAULT_LANG;
     poptContext optCon = NULL;
     spectag t = NULL;
-
-    name = NULL;
-    lang = RPMBUILD_DEFAULT_LANG;
+    struct poptOption optionsTable[] = {
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n', NULL, NULL},
+	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l', NULL, NULL},
+	{ 0, 0, 0, 0, 0, NULL, NULL}
+    };
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%description: %s\n"),

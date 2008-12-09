@@ -10,15 +10,6 @@
 #include <rpm/rpmfileutil.h>
 #include "debug.h"
 
-/* These have to be global scope to make up for *stupid* compilers */
-    static const char *name = NULL;
-    static const char *file = NULL;
-    static struct poptOption optionsTable[] = {
-	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
-	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
-	{ 0, 0, 0, 0, 0,	NULL, NULL}
-    };
-
 int parseFiles(rpmSpec spec)
 {
     int nextPart, res = PART_ERROR;
@@ -26,11 +17,15 @@ int parseFiles(rpmSpec spec)
     int rc, argc;
     int arg;
     const char ** argv = NULL;
+    const char *name = NULL;
+    const char *file = NULL;
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
-
-    name = NULL;
-    file = NULL;
+    struct poptOption optionsTable[] = {
+	{ NULL, 'n', POPT_ARG_STRING, &name, 'n', NULL, NULL},
+	{ NULL, 'f', POPT_ARG_STRING, &file, 'f', NULL, NULL},
+	{ 0, 0, 0, 0, 0, NULL, NULL}
+    };
 
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%files: %s\n"),
