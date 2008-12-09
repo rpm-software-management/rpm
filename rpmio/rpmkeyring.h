@@ -8,6 +8,10 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmpgp.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmkeyring
  * Create a new, empty keyring
  * @return	new keyring handle
@@ -100,4 +104,7 @@ pgpDig rpmPubkeyDig(rpmPubkey key);
  */
 char * rpmPubkeyBase64(rpmPubkey key);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* _RPMKEYDB_H */

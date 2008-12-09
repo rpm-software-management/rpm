@@ -11,6 +11,10 @@
 #include <rpm/rpmpgp.h>
 #include <rpm/argv.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmfileutil
  */
 typedef enum rpmCompressedMagic_e {
@@ -138,4 +142,7 @@ int rpmFileHasSuffix(const char *path, const char *suffix);
  */
 char * rpmGetCwd(void);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* _RPMFILEUTIL_H */
