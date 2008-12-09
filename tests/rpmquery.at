@@ -235,7 +235,20 @@ run rpm \
 AT_CLEANUP
 
 # ------------------------------
-AT_SETUP([empty string array extension array query])
+AT_SETUP([empty string array query])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  --queryformat="[[%{basenames}]]" \
+  -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([empty string array extension array format])
 AT_KEYWORDS([query])
 AT_CHECK([
 run rpm \
@@ -243,7 +256,7 @@ run rpm \
   -qp "${abs_srcdir}"/data/RPMS/foo-1.0-1.noarch.rpm
 ],
 [0],
-[(none)],
+[],
 [])
 AT_CLEANUP
 
