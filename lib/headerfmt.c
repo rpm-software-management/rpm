@@ -753,12 +753,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 		numElements = count;
 	}
 
-	if (! found) {
-	    need = sizeof("(none)") - 1;
-	    t = hsaReserve(hsa, need);
-	    te = stpcpy(t, "(none)");
-	    hsa->vallen += (te - t);
-	} else {
+	if (found) {
 	    int isxml;
 
 	    need = numElements * token->u.array.numTokens * 10;
