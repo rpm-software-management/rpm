@@ -539,7 +539,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 	fdSetCpioPos(fsm->cfd, 0);
     }
     fsm->iter = mapInitIterator(ts, te, fi);
-    fsm->digestalgo = fi->digestalgo;
+    fsm->digestalgo = rpmfiDigestAlgo(fi);
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
 	void * ptr;

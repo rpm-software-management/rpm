@@ -207,6 +207,13 @@ rpm_mode_t rpmfiFMode(rpmfi fi);
 rpmfileState rpmfiFState(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Return digest algorithm of a file info set.
+ * @param fi		file info set
+ * @return		digest algorithm of file info set, 0 on invalid
+ */
+pgpHashAlgo rpmfiDigestAlgo(rpmfi fi);
+
+/** \ingroup rpmfi
  * Return current file (binary) digest of file info set.
  * @param fi		file info set
  * @retval algo		digest hash algoritm used (pass NULL to ignore)

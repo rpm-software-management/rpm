@@ -267,6 +267,11 @@ const unsigned char * rpmfiMD5(rpmfi fi)
     return (algo == PGPHASHALGO_MD5) ? digest : NULL;
 }
 
+pgpHashAlgo rpmfiDigestAlgo(rpmfi fi)
+{
+    return fi ? fi->digestalgo : 0;
+}
+
 const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, pgpHashAlgo *algo, size_t *len)
 {
     const unsigned char *digest = NULL;
