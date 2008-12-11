@@ -156,6 +156,16 @@ int rpmfiSetDX(rpmfi fi, int dx)
     return j;
 }
 
+int rpmfiDIIndex(rpmfi fi, int dx)
+{
+    int j = -1;
+    if (fi != NULL && dx >= 0 && dx < fi->fc) {
+	if (fi->dil != NULL)
+	    j = fi->dil[dx];
+    }
+    return j;
+}
+
 const char * rpmfiBNIndex(rpmfi fi, int ix)
 {
     const char * BN = NULL;
