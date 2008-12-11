@@ -95,6 +95,69 @@ int nrefs;		/*!< Reference count. */
 };
 
 RPM_GNUC_INTERNAL
+const char * rpmfiBNIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiDNIndex(rpmfi fi, int jx);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFNIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpmVerifyAttrs rpmfiVFlagsIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpmfileState rpmfiFStateIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFLinkIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpm_loff_t rpmfiFSizeIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpm_color_t rpmfiFColorIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFClassIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp);
+
+RPM_GNUC_INTERNAL
+uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFLangsIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpm_mode_t rpmfiFModeIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, pgpHashAlgo *algo, size_t *len);
+
+RPM_GNUC_INTERNAL
+rpm_rdev_t rpmfiFRdevIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpm_ino_t rpmfiFInodeIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpm_time_t rpmfiFMtimeIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFUserIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFGroupIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfiFCapsIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL

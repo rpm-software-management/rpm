@@ -156,33 +156,33 @@ int rpmfiSetDX(rpmfi fi, int dx)
     return j;
 }
 
-const char * rpmfiBN(rpmfi fi)
+const char * rpmfiBNIndex(rpmfi fi, int ix)
 {
     const char * BN = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->bnl != NULL)
-	    BN = fi->bnl[fi->i];
+	    BN = fi->bnl[ix];
     }
     return BN;
 }
 
-const char * rpmfiDN(rpmfi fi)
+const char * rpmfiDNIndex(rpmfi fi, int jx)
 {
     const char * DN = NULL;
 
-    if (fi != NULL && fi->j >= 0 && fi->j < fi->dc) {
+    if (fi != NULL && jx >= 0 && jx < fi->dc) {
 	if (fi->dnl != NULL)
-	    DN = fi->dnl[fi->j];
+	    DN = fi->dnl[jx];
     }
     return DN;
 }
 
-const char * rpmfiFN(rpmfi fi)
+const char * rpmfiFNIndex(rpmfi fi, int ix)
 {
     const char * FN = "";
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	char * t;
 	if (fi->fn == NULL) {
 	    size_t dnlmax = 0, bnlmax = 0, len;
@@ -198,52 +198,52 @@ const char * rpmfiFN(rpmfi fi)
 	}
 	FN = t = fi->fn;
 	*t = '\0';
-	t = stpcpy(t, fi->dnl[fi->dil[fi->i]]);
-	t = stpcpy(t, fi->bnl[fi->i]);
+	t = stpcpy(t, fi->dnl[fi->dil[ix]]);
+	t = stpcpy(t, fi->bnl[ix]);
     }
     return FN;
 }
 
-rpmfileAttrs rpmfiFFlags(rpmfi fi)
+rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix)
 {
     rpmfileAttrs FFlags = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fflags != NULL)
-	    FFlags = fi->fflags[fi->i];
+	    FFlags = fi->fflags[ix];
     }
     return FFlags;
 }
 
-rpmVerifyAttrs rpmfiVFlags(rpmfi fi)
+rpmVerifyAttrs rpmfiVFlagsIndex(rpmfi fi, int ix)
 {
     rpmVerifyAttrs VFlags = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->vflags != NULL)
-	    VFlags = fi->vflags[fi->i];
+	    VFlags = fi->vflags[ix];
     }
     return VFlags;
 }
 
-rpm_mode_t rpmfiFMode(rpmfi fi)
+rpm_mode_t rpmfiFModeIndex(rpmfi fi, int ix)
 {
     rpm_mode_t fmode = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fmodes != NULL)
-	    fmode = fi->fmodes[fi->i];
+	    fmode = fi->fmodes[ix];
     }
     return fmode;
 }
 
-rpmfileState rpmfiFState(rpmfi fi)
+rpmfileState rpmfiFStateIndex(rpmfi fi, int ix)
 {
     rpmfileState fstate = RPMFILE_STATE_MISSING;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fstates != NULL)
-	    fstate = fi->fstates[fi->i];
+	    fstate = fi->fstates[ix];
     }
     return fstate;
 }
@@ -257,14 +257,14 @@ const unsigned char * rpmfiMD5(rpmfi fi)
     return (algo == PGPHASHALGO_MD5) ? digest : NULL;
 }
 
-const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
+const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, pgpHashAlgo *algo, size_t *len)
 {
     const unsigned char *digest = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
     	size_t diglen = rpmDigestLength(fi->digestalgo);
 	if (fi->digests != NULL)
-	    digest = fi->digests + (diglen * fi->i);
+	    digest = fi->digests + (diglen * ix);
 	if (len) 
 	    *len = diglen;
 	if (algo) 
@@ -284,46 +284,46 @@ char * rpmfiFDigestHex(rpmfi fi, pgpHashAlgo *algo)
     return fdigest;
 }
 
-const char * rpmfiFLink(rpmfi fi)
+const char * rpmfiFLinkIndex(rpmfi fi, int ix)
 {
     const char * flink = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->flinks != NULL)
-	    flink = strcacheGet(fi->flinkcache, fi->flinks[fi->i]);
+	    flink = strcacheGet(fi->flinkcache, fi->flinks[ix]);
     }
     return flink;
 }
 
-rpm_loff_t rpmfiFSize(rpmfi fi)
+rpm_loff_t rpmfiFSizeIndex(rpmfi fi, int ix)
 {
     rpm_loff_t fsize = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fsizes != NULL)
-	    fsize = fi->fsizes[fi->i];
+	    fsize = fi->fsizes[ix];
     }
     return fsize;
 }
 
-rpm_rdev_t rpmfiFRdev(rpmfi fi)
+rpm_rdev_t rpmfiFRdevIndex(rpmfi fi, int ix)
 {
     rpm_rdev_t frdev = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->frdevs != NULL)
-	    frdev = fi->frdevs[fi->i];
+	    frdev = fi->frdevs[ix];
     }
     return frdev;
 }
 
-rpm_ino_t rpmfiFInode(rpmfi fi)
+rpm_ino_t rpmfiFInodeIndex(rpmfi fi, int ix)
 {
     rpm_ino_t finode = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->finodes != NULL)
-	    finode = fi->finodes[fi->i];
+	    finode = fi->finodes[ix];
     }
     return finode;
 }
@@ -341,42 +341,42 @@ rpm_color_t rpmfiColor(rpmfi fi)
     return color;
 }
 
-rpm_color_t rpmfiFColor(rpmfi fi)
+rpm_color_t rpmfiFColorIndex(rpmfi fi, int ix)
 {
     rpm_color_t fcolor = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fcolors != NULL)
 	    /* XXX ignore all but lsnibble for now. */
-	    fcolor = (fi->fcolors[fi->i] & 0x0f);
+	    fcolor = (fi->fcolors[ix] & 0x0f);
     }
     return fcolor;
 }
 
-const char * rpmfiFClass(rpmfi fi)
+const char * rpmfiFClassIndex(rpmfi fi, int ix)
 {
     const char * fclass = NULL;
     int cdictx;
 
-    if (fi != NULL && fi->fcdictx != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	cdictx = fi->fcdictx[fi->i];
+    if (fi != NULL && fi->fcdictx != NULL && ix >= 0 && ix < fi->fc) {
+	cdictx = fi->fcdictx[ix];
 	if (fi->cdict != NULL && cdictx >= 0 && cdictx < fi->ncdict)
 	    fclass = fi->cdict[cdictx];
     }
     return fclass;
 }
 
-uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
+uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp)
 {
     int fddictx = -1;
     int fddictn = 0;
     const uint32_t * fddict = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fddictn != NULL)
-	    fddictn = fi->fddictn[fi->i];
+	    fddictn = fi->fddictn[ix];
 	if (fddictn > 0 && fi->fddictx != NULL)
-	    fddictx = fi->fddictx[fi->i];
+	    fddictx = fi->fddictx[ix];
 	if (fi->ddict != NULL && fddictx >= 0 && (fddictx+fddictn) <= fi->nddict)
 	    fddict = fi->ddict + fddictx;
     }
@@ -385,15 +385,15 @@ uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
     return fddictn;
 }
 
-uint32_t rpmfiFNlink(rpmfi fi)
+uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix)
 {
     uint32_t nlink = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
 	if (fi->finodes && fi->frdevs) {
-	    rpm_ino_t finode = fi->finodes[fi->i];
-	    rpm_rdev_t frdev = fi->frdevs[fi->i];
+	    rpm_ino_t finode = fi->finodes[ix];
+	    rpm_rdev_t frdev = fi->frdevs[ix];
 	    int j;
 
 	    for (j = 0; j < fi->fc; j++) {
@@ -405,53 +405,53 @@ uint32_t rpmfiFNlink(rpmfi fi)
     return nlink;
 }
 
-rpm_time_t rpmfiFMtime(rpmfi fi)
+rpm_time_t rpmfiFMtimeIndex(rpmfi fi, int ix)
 {
     rpm_time_t fmtime = 0;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fmtimes != NULL)
-	    fmtime = fi->fmtimes[fi->i];
+	    fmtime = fi->fmtimes[ix];
     }
     return fmtime;
 }
 
-const char * rpmfiFUser(rpmfi fi)
+const char * rpmfiFUserIndex(rpmfi fi, int ix)
 {
     const char * fuser = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fuser != NULL)
-	    fuser = strcacheGet(ugcache, fi->fuser[fi->i]);
+	    fuser = strcacheGet(ugcache, fi->fuser[ix]);
     }
     return fuser;
 }
 
-const char * rpmfiFGroup(rpmfi fi)
+const char * rpmfiFGroupIndex(rpmfi fi, int ix)
 {
     const char * fgroup = NULL;
 
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fgroup != NULL)
-	    fgroup = strcacheGet(ugcache, fi->fgroup[fi->i]);
+	    fgroup = strcacheGet(ugcache, fi->fgroup[ix]);
     }
     return fgroup;
 }
 
-const char * rpmfiFCaps(rpmfi fi)
+const char * rpmfiFCapsIndex(rpmfi fi, int ix)
 {
     const char *fcaps = NULL;
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	fcaps = fi->fcaps ? fi->fcaps[fi->i] : "";
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+	fcaps = fi->fcaps ? fi->fcaps[ix] : "";
     }
     return fcaps;
 }
 
-const char * rpmfiFLangs(rpmfi fi)
+const char * rpmfiFLangsIndex(rpmfi fi, int ix)
 {
     const char *flangs = NULL;
-    if (fi != NULL && fi->flangs != NULL && fi->i >= 0 && fi->i < fi->fc) {
-	flangs = strcacheGet(langcache, fi->flangs[fi->i]);
+    if (fi != NULL && fi->flangs != NULL && ix >= 0 && ix < fi->fc) {
+	flangs = strcacheGet(langcache, fi->flangs[ix]);
     }
     return flangs;
 }
@@ -1464,4 +1464,41 @@ FSM_t rpmfiFSM(rpmfi fi)
 	fi->fsm = newFSM(mapflags);
     }
     return (fi != NULL) ? fi->fsm : NULL;
+}
+
+/* 
+ * Generate iterator accessors function wrappers, these do nothing but
+ * call the corresponding rpmfiFooIndex(fi, fi->[ij])
+ */
+
+#define RPMFI_ITERFUNC(TYPE, NAME, IXV) \
+    TYPE rpmfi ## NAME(rpmfi fi) { return rpmfi ## NAME ## Index(fi, fi ? fi->IXV : -1); }
+
+RPMFI_ITERFUNC(const char *, BN, i)
+RPMFI_ITERFUNC(const char *, DN, j)
+RPMFI_ITERFUNC(const char *, FN, i)
+RPMFI_ITERFUNC(const char *, FLink, i)
+RPMFI_ITERFUNC(const char *, FUser, i)
+RPMFI_ITERFUNC(const char *, FGroup, i)
+RPMFI_ITERFUNC(const char *, FCaps, i)
+RPMFI_ITERFUNC(const char *, FLangs, i)
+RPMFI_ITERFUNC(const char *, FClass, i)
+RPMFI_ITERFUNC(rpmfileState, FState, i)
+RPMFI_ITERFUNC(rpmfileAttrs, FFlags, i)
+RPMFI_ITERFUNC(rpmVerifyAttrs, VFlags, i)
+RPMFI_ITERFUNC(rpm_mode_t, FMode, i)
+RPMFI_ITERFUNC(rpm_rdev_t, FRdev, i)
+RPMFI_ITERFUNC(rpm_time_t, FMtime, i)
+RPMFI_ITERFUNC(rpm_loff_t, FSize, i)
+RPMFI_ITERFUNC(rpm_color_t, FColor, i)
+RPMFI_ITERFUNC(uint32_t, FNlink, i)
+
+const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
+{
+    return rpmfiFDigestIndex(fi, fi ? fi->i : -1, algo, len);
+}
+
+uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
+{
+    return rpmfiFDependsIndex(fi,  fi ? fi->i : -1, fddictp);
 }
