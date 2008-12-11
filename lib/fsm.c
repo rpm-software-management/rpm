@@ -312,7 +312,8 @@ void * dnlInitIterator(const FSM_t fsm,
 
 	/* Identify parent directories not skipped. */
 	for (i = 0; i < fc; i++)
-            if (!XFA_SKIPPING(rpmfsGetAction(fs, i))) dnli->active[fi->dil[i]] = 1;
+            if (!XFA_SKIPPING(rpmfsGetAction(fs, i)))
+		dnli->active[rpmfiDIIndex(fi, i)] = 1;
 
 	/* Exclude parent directories that are explicitly included. */
 	for (i = 0; i < fc; i++) {
@@ -322,7 +323,7 @@ void * dnlInitIterator(const FSM_t fsm,
 	    if (!S_ISDIR(rpmfiFModeIndex(fi, i)))
 		continue;
 
-	    dil = fi->dil[i];
+	    dil = rpmfiDIIndex(fi, i);
 	    dnlen = strlen(rpmfiDNIndex(fi, dil));
 	    bnlen = strlen(rpmfiBNIndex(fi, i));
 
@@ -649,7 +650,7 @@ static int fsmMapPath(FSM_t fsm)
 	fsm->fflags = rpmfiFFlagsIndex(fi, i);
 
 	/* src rpms have simple base name in payload. */
-	fsm->dirName = rpmfiDNIndex(fi, fi->dil[i]);
+	fsm->dirName = rpmfiDNIndex(fi, rpmfiDIIndex(fi, i));
 	fsm->baseName = rpmfiBNIndex(fi, i);
 
 	switch (fsm->action) {
