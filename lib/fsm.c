@@ -226,11 +226,12 @@ static int mapFind(FSMI_t iter, const char * fsmPath)
 
     if (iter) {
 	const rpmfi fi = iter->fi;
-	if (fi && fi->fc > 0 && fi->apath && fsmPath && *fsmPath) {
+	int fc = rpmfiFC(fi);
+	if (fi && fc > 0 && fi->apath && fsmPath && *fsmPath) {
 	    char ** p = NULL;
 
 	    if (fi->apath != NULL)
-		p = bsearch(&fsmPath, fi->apath, fi->fc, sizeof(fsmPath),
+		p = bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
 			cpioStrCmp);
 	    if (p) {
 		iter->i = p - fi->apath;
@@ -387,7 +388,7 @@ const char * dnlNextIterator(DNLI_t dnli)
 	} while (i >= 0 && i < dc && !dnli->active[i]);
 
 	if (i >= 0 && i < dc)
-	    dn = fi->dnl[i];
+	    dn = rpmfiDNIndex(fi, i);
 	else
 	    i = -1;
 	dnli->isave = i;
@@ -893,7 +894,8 @@ static int writeFile(FSM_t fsm, int writeData)
 	fsm->path = p;
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
-	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + fi->striplen : fi->bnl[fsm->ix]));
+	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + fi->striplen : 
+					 rpmfiBNIndex(fi, fsm->ix)));
     }
 
     rc = fsmNext(fsm, FSM_HWRITE);
