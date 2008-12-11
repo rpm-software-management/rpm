@@ -730,14 +730,15 @@ static int fsmMapAttrs(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
     rpmfi fi = fsmGetFi(fsm);
-    int savefx = rpmfiFX(fi);
+    int i = fsm->ix;
 
-    if (rpmfiSetFX(fi, fsm->ix) != -1) {
-	mode_t finalMode = rpmfiFMode(fi);
-	dev_t finalRdev = rpmfiFRdev(fi);
-	time_t finalMtime = rpmfiFMtime(fi);
-	const char *user = rpmfiFUser(fi);
-	const char *group = rpmfiFGroup(fi);
+    /* this check is pretty moot,  rpmfi accessors check array bounds etc */
+    if (fi && i >= 0 && i < rpmfiFC(fi)) {
+	mode_t finalMode = rpmfiFModeIndex(fi, i);
+	dev_t finalRdev = rpmfiFRdevIndex(fi, i);
+	time_t finalMtime = rpmfiFMtimeIndex(fi, i);
+	const char *user = rpmfiFUserIndex(fi, i);
+	const char *group = rpmfiFGroupIndex(fi, i);
 	uid_t uid = 0;
 	gid_t gid = 0;
 
@@ -776,13 +777,11 @@ static int fsmMapAttrs(FSM_t fsm)
 	     * Set file checksum (if not disabled).
 	     */
 	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
-		fsm->digest = rpmfiFDigest(fi, NULL, NULL);
+		fsm->digest = rpmfiFDigestIndex(fi, i, NULL, NULL);
 	    } else {
 		fsm->digest = NULL;
 	    }
 	}
-	/* restore iterator index if we changed it */
-	rpmfiSetFX(fi, savefx);
     }
     return 0;
 }
