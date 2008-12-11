@@ -611,11 +611,11 @@ static int fsmMapFContext(FSM_t fsm)
 #if WITH_CAP
 static int fsmMapFCaps(FSM_t fsm)
 {
-    rpmts ts = fsmGetTs(fsm);
     rpmfi fi = fsmGetFi(fsm);
+    const char *captxt = rpmfiFCapsIndex(fi, fsm->ix);
     fsm->fcaps = NULL;
-    if (ts != NULL && fi->fcaps && *fi->fcaps[fsm->ix] != '\0') {
-	cap_t fcaps = cap_from_text(fi->fcaps[fsm->ix]);
+    if (captxt && *captxt != '\0') {
+	cap_t fcaps = cap_from_text(captxt);
 	if (fcaps) {
 	   fsm->fcaps = fcaps;
 	}
