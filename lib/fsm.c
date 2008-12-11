@@ -307,22 +307,23 @@ void * dnlInitIterator(const FSM_t fsm,
 
     if (dc) {
 	dnli->active = xcalloc(dc, sizeof(*dnli->active));
+	int fc = rpmfiFC(fi);
 
 	/* Identify parent directories not skipped. */
-	for (i = 0; i < fi->fc; i++)
+	for (i = 0; i < fc; i++)
             if (!XFA_SKIPPING(rpmfsGetAction(fs, i))) dnli->active[fi->dil[i]] = 1;
 
 	/* Exclude parent directories that are explicitly included. */
-	for (i = 0; i < fi->fc; i++) {
+	for (i = 0; i < fc; i++) {
 	    int dil;
 	    size_t dnlen, bnlen;
 
-	    if (!S_ISDIR(fi->fmodes[i]))
+	    if (!S_ISDIR(rpmfiFModeIndex(fi, i)))
 		continue;
 
 	    dil = fi->dil[i];
-	    dnlen = strlen(fi->dnl[dil]);
-	    bnlen = strlen(fi->bnl[i]);
+	    dnlen = strlen(rpmfiDNIndex(fi, dil));
+	    bnlen = strlen(rpmfiBNIndex(fi, i));
 
 	    for (j = 0; j < dc; j++) {
 		const char * dnl;
@@ -330,13 +331,13 @@ void * dnlInitIterator(const FSM_t fsm,
 
 		if (!dnli->active[j] || j == dil)
 		    continue;
-		dnl = fi->dnl[j];
+		dnl = rpmfiDNIndex(fi, j);
 		jlen = strlen(dnl);
 		if (jlen != (dnlen+bnlen+1))
 		    continue;
-		if (strncmp(dnl, fi->dnl[dil], dnlen))
+		if (strncmp(dnl, rpmfiDNIndex(fi, dil), dnlen))
 		    continue;
-		if (strncmp(dnl+dnlen, fi->bnl[i], bnlen))
+		if (strncmp(dnl+dnlen, rpmfiBNIndex(fi, i), bnlen))
 		    continue;
 		if (dnl[dnlen+bnlen] != '/' || dnl[dnlen+bnlen+1] != '\0')
 		    continue;
@@ -356,7 +357,7 @@ void * dnlInitIterator(const FSM_t fsm,
 		    rpmlog(RPMLOG_DEBUG,
 	"========== Directories not explicitly included in package:\n");
 		}
-		rpmlog(RPMLOG_DEBUG, "%10d %s\n", i, fi->dnl[i]);
+		rpmlog(RPMLOG_DEBUG, "%10d %s\n", i, rpmfiDNIndex(fi, i));
 	    }
 	    if (j)
 		rpmlog(RPMLOG_DEBUG, "==========\n");
