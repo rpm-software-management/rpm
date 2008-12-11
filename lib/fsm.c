@@ -639,16 +639,16 @@ static int fsmMapPath(FSM_t fsm)
     fsm->action = FA_UNKNOWN;
 
     i = fsm->ix;
-    if (fi && i >= 0 && i < fi->fc) {
+    if (fi && i >= 0 && i < rpmfiFC(fi)) {
 	rpmte te = fsmGetTe(fsm);
 	rpmfs fs = rpmteGetFileStates(te);
 	/* XXX these should use rpmfiFFlags() etc */
 	fsm->action = rpmfsGetAction(fs, i);
-	fsm->fflags = (fi->fflags ? fi->fflags[i] : RPMFILE_NONE);
+	fsm->fflags = rpmfiFFlagsIndex(fi, i);
 
 	/* src rpms have simple base name in payload. */
-	fsm->dirName = fi->dnl[fi->dil[i]];
-	fsm->baseName = fi->bnl[i];
+	fsm->dirName = rpmfiDNIndex(fi, fi->dil[i]);
+	fsm->baseName = rpmfiBNIndex(fi, i);
 
 	switch (fsm->action) {
 	case FA_SKIP:
@@ -1571,7 +1571,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	/* On non-install, mode must be known so that dirs don't get suffix. */
 	if (fsm->goal != FSM_PKGINSTALL) {
 	    rpmfi fi = fsmGetFi(fsm);
-	    st->st_mode = fi->fmodes[fsm->ix];
+	    st->st_mode = rpmfiFModeIndex(fi, fsm->ix);
 	}
 
 	/* Generate file path. */
@@ -1905,8 +1905,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
 		    rpmfi fi = fsmGetFi(fsm);
-		    if (fi->fmtimes)
-			st->st_mtime = fi->fmtimes[fsm->ix];
+		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
 		    rc = fsmNext(fsm, FSM_UTIME);
 		    st->st_mtime = mtime;
 		}
