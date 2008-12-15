@@ -274,6 +274,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	Header h;
 	int rc;
 
+	rpmdbCheckSignals();
 	h = rpmgiHeader(gi);
 	if (h == NULL)		/* XXX perhaps stricter break instead? */
 	    continue;
@@ -292,6 +293,7 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
 
     while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
 	int rc;
+	rpmdbCheckSignals();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
 	if (qva->qva_source == RPMQV_DBOFFSET)
