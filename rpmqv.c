@@ -455,12 +455,12 @@ int main(int argc, char *argv[])
 	argerror(_("--justdb may only be specified during package "
 		   "installation and erasure"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_ERASE &&
+    if (bigMode != MODE_INSTALL && bigMode != MODE_ERASE && bigMode != MODE_VERIFY &&
 	(ia->transFlags & (RPMTRANS_FLAG_NOSCRIPTS | _noTransScripts | _noTransTriggers)))
 	argerror(_("script disabling options may only be specified during "
 		   "package installation and erasure"));
 
-    if (bigMode != MODE_INSTALL && bigMode != MODE_ERASE &&
+    if (bigMode != MODE_INSTALL && bigMode != MODE_ERASE && bigMode != MODE_VERIFY &&
 	(ia->transFlags & (RPMTRANS_FLAG_NOTRIGGERS | _noTransTriggers)))
 	argerror(_("trigger disabling options may only be specified during "
 		   "package installation and erasure"));
