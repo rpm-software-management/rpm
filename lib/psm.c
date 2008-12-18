@@ -1256,6 +1256,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	/* Change root directory if requested and not already done. */
 	rc = rpmpsmNext(psm, PSM_CHROOT_IN);
+	if (rc) break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
@@ -1555,7 +1556,10 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	{
 	    xx = chdir("/");
 	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-		rc = chroot(rootDir);
+	        if (chroot(rootDir) == -1) {
+		    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
+		    return -1;
+		}
 	    psm->chrootDone = 1;
 	    (void) rpmtsSetChrootDone(ts, 1);
 	}
