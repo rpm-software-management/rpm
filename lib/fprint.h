@@ -162,7 +162,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
  * @param fi            file iterator of the package
  * @param filenr        the number of the file we are dealing with
  */
-void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p, int filenr);
+void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, rpmte p, int filenr);
 
 
 #ifdef __cplusplus

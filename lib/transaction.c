@@ -1130,6 +1130,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     ts->ht = rpmFpHashCreate(totalFileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
+    rpmFpHash symlinks = rpmFpHashCreate(totalFileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
     fpc = fpCacheCreate(totalFileCount + 10001);
 
     /* ===============================================
@@ -1147,15 +1148,20 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
+	/* collect symbolic links */
  	fi = rpmfiInit(fi, 0);
  	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    struct rpmffi_s ffi;
-	    ffi.p = p;
-	    ffi.fileno = i;
+	    char const *linktarget;
+	    linktarget = rpmfiFLink(fi);
+	    if (!(linktarget && *linktarget != '\0'))
+		continue;
 	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
 		continue;
-	    rpmFpHashAddEntry(ts->ht, fi->fps + i, ffi);
+	    ffi.p = p;
+	    ffi.fileno = i;
+	    rpmFpHashAddEntry(symlinks, fi->fps + i, ffi);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 
@@ -1164,8 +1170,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* ===============================================
      * Check fingerprints if they contain symlinks
+     * and add them to the ts->ht hash table
      */
-    rpmFpHash newht = rpmFpHashCreate(totalFileCount/2+1, fpHashFunction, fpEqual, NULL, NULL);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1179,14 +1185,13 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
 		continue;
-	    fpLookupSubdir(ts->ht, newht, fpc, p, i);
+	    fpLookupSubdir(symlinks, ts->ht, fpc, p, i);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
     pi = rpmtsiFree(pi);
 
-    rpmFpHashFree(ts->ht);
-    ts->ht = newht;
+    rpmFpHashFree(symlinks);
 
     /* ===============================================
      * Compute file disposition for each package in transaction set.

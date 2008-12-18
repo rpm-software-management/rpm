@@ -236,7 +236,7 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
     }
 }
 
-void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p, int filenr)
+void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, rpmte p, int filenr)
 {
     rpmfi fi = rpmteFI(p);
     struct fingerPrint_s current_fp;
@@ -251,7 +251,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p
     struct rpmffi_s ffi = { p, filenr};
 
     if (fp->subDir == NULL) {
-	 rpmFpHashAddEntry(newht, fp, ffi);
+	 rpmFpHashAddEntry(fphash, fp, ffi);
 	 return;
     }
 
@@ -271,7 +271,7 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p
 	 char found;
 	 found = 0;
 
-	 rpmFpHashGetEntry(ht, &current_fp,
+	 rpmFpHashGetEntry(symlinks, &current_fp,
 		    &recs, &numRecs, NULL);
 
 	 for (i=0; i<numRecs; i++) {
@@ -359,6 +359,6 @@ void fpLookupSubdir(rpmFpHash ht, rpmFpHash newht, fingerPrintCache fpc, rpmte p
 
     }
     free(currentsubdir);
-    rpmFpHashAddEntry(newht, fp, ffi);
+    rpmFpHashAddEntry(fphash, fp, ffi);
 
 }
