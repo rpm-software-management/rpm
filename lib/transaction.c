@@ -1131,7 +1131,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     ts->ht = rpmFpHashCreate(totalFileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
     rpmFpHash symlinks = rpmFpHashCreate(totalFileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
-    fpc = fpCacheCreate(totalFileCount + 10001);
+    fpc = fpCacheCreate(totalFileCount/2 + 10001);
 
     /* ===============================================
      * Add fingerprint for each file not skipped.

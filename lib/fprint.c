@@ -28,7 +28,7 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
-    fpc->ht = rpmFpEntryHashCreate(sizeHint * 2, hashFunctionString, strcmp,
+    fpc->ht = rpmFpEntryHashCreate(sizeHint, hashFunctionString, strcmp,
 				   (rpmFpEntryHashFreeKey)free,
 				   (rpmFpEntryHashFreeData)free);
     return fpc;
