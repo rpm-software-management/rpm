@@ -1128,7 +1128,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetChrootDone(ts, 1);
     }
 
-    ts->ht = rpmFpHashCreate(totalFileCount * 2 + 1, fpHashFunction, fpEqual,
+    ts->ht = rpmFpHashCreate(totalFileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
     fpc = fpCacheCreate(totalFileCount + 10001);
 
@@ -1165,7 +1165,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* ===============================================
      * Check fingerprints if they contain symlinks
      */
-    rpmFpHash newht = rpmFpHashCreate(totalFileCount * 2, fpHashFunction, fpEqual, NULL, NULL);
+    rpmFpHash newht = rpmFpHashCreate(totalFileCount/2+1, fpHashFunction, fpEqual, NULL, NULL);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
