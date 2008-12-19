@@ -111,6 +111,9 @@ struct rpmtsi_s {
 };
 
 RPM_GNUC_INTERNAL
+rpmfi rpmteSetFI(rpmte te, rpmfi fi);
+
+RPM_GNUC_INTERNAL
 int rpmteOpen(rpmte te, rpmts ts);
 
 RPM_GNUC_INTERNAL

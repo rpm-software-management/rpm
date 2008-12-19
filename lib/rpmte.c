@@ -491,6 +491,16 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 	return NULL;
 }
 
+rpmfi rpmteSetFI(rpmte te, rpmfi fi)
+{
+    if (te != NULL)  {
+	te->fi = rpmfiFree(te->fi);
+	if (fi != NULL)
+	    te->fi = rpmfiLink(fi, __FUNCTION__);
+    }
+    return NULL;
+}
+
 rpmfi rpmteFI(rpmte te)
 {
     if (te == NULL)
