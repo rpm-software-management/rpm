@@ -1237,11 +1237,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-	if (rpmfiFC(fi) == 0)
-	    continue;
-	p->fi = rpmfiFree(fi);
+	rpmteSetFI(p, NULL);
     }
     pi = rpmtsiFree(pi);
 
