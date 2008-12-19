@@ -17,7 +17,7 @@
 #include "lib/fprint.h"
 #include "lib/psm.h"
 #include "lib/rpmlock.h"
-#include "lib/rpmfi_internal.h"	/* fi->replaced, fi->actions... */
+#include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"
 #include "lib/cpio.h"
@@ -546,7 +546,7 @@ static void skipFiles(const rpmts ts, rpmte p)
 	if (!dff[j]) continue;	/* dir was not emptied here. */
 	
 	/* Find parent directory and basename. */
-	dn = fi->dnl[j];	dnlen = strlen(dn) - 1;
+	dn = rpmfiDNIndex(fi, j); dnlen = strlen(dn) - 1;
 	bn = dn + dnlen;	bnlen = 0;
 	while (bn > dn && bn[-1] != '/') {
 		bnlen++;
