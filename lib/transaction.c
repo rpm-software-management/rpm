@@ -158,7 +158,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    continue;
 
 	fn = rpmfiFN(fi);
-	fiFps = fi->fps + i;
+	fiFps = rpmfiFpsIndex(fi, i);
 	FFlags = rpmfiFFlags(fi);
 	FMode = rpmfiFMode(fi);
 	FColor = rpmfiFColor(fi);
@@ -1102,8 +1102,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    numRemoved++;
 	    break;
 	}
-
-	fi->fps = (fc > 0 ? xmalloc(fc * sizeof(*fi->fps)) : NULL);
     }
     pi = rpmtsiFree(pi);
 
@@ -1140,7 +1138,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	fc = rpmfiFC(fi);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fc, fi->fps);
+	rpmfiFpLookup(fi, fpc);
 	/* collect symbolic links */
  	fi = rpmfiInit(fi, 0);
  	if (fi != NULL)		/* XXX lclint */
@@ -1154,7 +1152,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 		continue;
 	    ffi.p = p;
 	    ffi.fileno = i;
-	    rpmFpHashAddEntry(symlinks, fi->fps + i, ffi);
+	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 

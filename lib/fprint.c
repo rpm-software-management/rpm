@@ -246,7 +246,7 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
     struct rpmffi_s * recs;
     int numRecs;
     int i, fiFX;
-    fingerPrint *fp = fi->fps + filenr;
+    fingerPrint *fp = rpmfiFpsIndex(fi, filenr);
     int symlinkcount = 0;
     struct rpmffi_s ffi = { p, filenr};
 

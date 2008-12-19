@@ -4,7 +4,7 @@
 #include <rpm/header.h>
 #include <rpm/rpmfi.h>
 #include "lib/fsm.h"		/* for FSM_t */
-
+#include "lib/fprint.h"
 
 /* 
  * This limits maximum unique strings (user + group names) from packages to 
@@ -161,10 +161,16 @@ RPM_GNUC_INTERNAL
 const char * rpmfiFCapsIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
+struct fingerPrint_s *rpmfiFpsIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL
 rpm_loff_t rpmfiFReplacedSize(rpmfi fi);
+
+RPM_GNUC_INTERNAL
+void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
 
 /* XXX can't be internal as build code needs this */
 FSM_t rpmfiFSM(rpmfi fi);

@@ -471,6 +471,15 @@ const char * rpmfiFLangsIndex(rpmfi fi, int ix)
     return flangs;
 }
 
+struct fingerPrint_s *rpmfiFpsIndex(rpmfi fi, int ix)
+{
+    struct fingerPrint_s * fps = NULL;
+    if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < fi->fc) {
+	fps = fi->fps + ix;
+    }
+    return fps;
+}
+
 int rpmfiNext(rpmfi fi)
 {
     int i = -1;
@@ -1459,6 +1468,13 @@ rpm_loff_t rpmfiFReplacedSize(rpmfi fi)
     return rsize;
 }
 
+void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
+{
+    if (fi->fc > 0 && fi->fps == NULL) {
+	fi->fps = xcalloc(fi->fc, sizeof(*fi->fps));
+    }
+    fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
+}
 
 FSM_t rpmfiFSM(rpmfi fi)
 {
