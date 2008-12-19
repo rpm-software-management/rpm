@@ -781,6 +781,27 @@ static void addPrefixes(Header h, rpmtd validRelocs,
     actualRelocations = _free(actualRelocations);
 }
 
+/* stupid bubble sort, but it's probably faster here */
+static void sortRelocs(rpmRelocation *relocations, int numRelocations)
+{
+    for (int i = 0; i < numRelocations; i++) {
+	int madeSwap = 0;
+	for (int j = 1; j < numRelocations; j++) {
+	    rpmRelocation tmpReloc;
+	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
+		relocations[j    ].oldPath == NULL || /* XXX can't happen */
+		strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
+		continue;
+	    /* LCL: ??? */
+	    tmpReloc = relocations[j - 1];
+	    relocations[j - 1] = relocations[j];
+	    relocations[j] = tmpReloc;
+	    madeSwap = 1;
+	}
+	if (!madeSwap) break;
+    }
+}
+
 /**
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
@@ -888,24 +909,7 @@ void rpmRelocateFileList(rpmts ts, rpmte p,
 	}
     }
 
-    /* stupid bubble sort, but it's probably faster here */
-    for (i = 0; i < numRelocations; i++) {
-	int madeSwap;
-	madeSwap = 0;
-	for (j = 1; j < numRelocations; j++) {
-	    rpmRelocation tmpReloc;
-	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
-		relocations[j    ].oldPath == NULL || /* XXX can't happen */
-	strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
-		continue;
-	    /* LCL: ??? */
-	    tmpReloc = relocations[j - 1];
-	    relocations[j - 1] = relocations[j];
-	    relocations[j] = tmpReloc;
-	    madeSwap = 1;
-	}
-	if (!madeSwap) break;
-    }
+    sortRelocs(relocations, numRelocations);
 
     if (!_printed) {
 	_printed = 1;
