@@ -827,7 +827,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	    break;
 	}
 	
-    	if (rpmteOpen(p, ts)) {
+    	if (rpmteOpen(p, ts, 0)) {
 	    psm = rpmpsmNew(ts, p, NULL);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm);
@@ -863,17 +863,12 @@ static int rpmtsProcess(rpmts ts)
 	    continue;
 	}
 	
-	if (rpmteOpen(p, ts)) {
+	if (rpmteOpen(p, ts, 1)) {
 	    rpmpsm psm = NULL;
-	    rpmfi fi = NULL;
+	    rpmfi fi = rpmteFI(p);
 	    pkgStage stage = PSM_UNKNOWN;
 	    int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
 			1 : 0;
-	    rpmte savep;
-
-	    savep = rpmtsSetRelocateElement(ts, p);
-	    fi = p->fi = rpmfiNew(ts, p->h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
-	    (void) rpmtsSetRelocateElement(ts, savep);
 
 	    switch (tetype) {
 	    case TR_ADDED:
@@ -891,7 +886,6 @@ static int rpmtsProcess(rpmts ts)
 	    (void) rpmswExit(rpmtsOp(ts, op), 0);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts);
-	    p->fi = rpmfiFree(p->fi);
 	}
 	if (failed) {
 	    rpmteMarkFailed(p, ts);

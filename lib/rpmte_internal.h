@@ -114,7 +114,7 @@ RPM_GNUC_INTERNAL
 rpmfi rpmteSetFI(rpmte te, rpmfi fi);
 
 RPM_GNUC_INTERNAL
-int rpmteOpen(rpmte te, rpmts ts);
+int rpmteOpen(rpmte te, rpmts ts, int reload_fi);
 
 RPM_GNUC_INTERNAL
 int rpmteClose(rpmte te, rpmts ts);

@@ -272,7 +272,7 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
     /* fake up a erasure transaction element */
     rc = rpmtsAddEraseElement(ts, h, -1);
     te = rpmtsElement(ts, 0);
-    rpmteOpen(te, ts);
+    rpmteOpen(te, ts, 0);
     
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(ts, scriptFd);

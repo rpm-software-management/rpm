@@ -676,7 +676,7 @@ static Header rpmteFDHeader(rpmts ts, rpmte te)
     return h;
 }
 
-int rpmteOpen(rpmte te, rpmts ts)
+int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 {
     Header h = NULL;
     unsigned int instance;
@@ -695,6 +695,14 @@ int rpmteOpen(rpmte te, rpmts ts)
     	break;
     }
     if (h != NULL) {
+	if (reload_fi) {
+	    rpmte savep = rpmtsSetRelocateElement(ts, te);
+	    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
+	    (void) rpmtsSetRelocateElement(ts, savep);
+	    rpmteSetFI(te, fi);
+	    rpmfiFree(fi);
+	}
+	
 	rpmteSetHeader(te, h);
 	headerFree(h);
     }
@@ -720,6 +728,7 @@ int rpmteClose(rpmte te, rpmts ts)
 	break;
     }
     rpmteSetHeader(te, NULL);
+    rpmteSetFI(te, NULL);
     return 1;
 }
 
