@@ -206,9 +206,6 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	otherFs = NULL;
 
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
-	    struct fingerPrint_s * otherFps;
-	    int otherFc;
-
 	    otherTe = recs[otherPkgNum].p;
 	    otherFi = rpmteFI(otherTe);
 	    otherFileNum = recs[otherPkgNum].fileno;
@@ -217,9 +214,6 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	    /* Added packages need only look at other added packages. */
 	    if (rpmteType(p) == TR_ADDED && rpmteType(otherTe) != TR_ADDED)
 		continue;
-
-	    otherFps = otherFi->fps;
-	    otherFc = rpmfiFC(otherFi);
 
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
