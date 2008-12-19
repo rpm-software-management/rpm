@@ -767,7 +767,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     char ** baseNames;
     char ** dirNames;
     uint32_t * dirIndexes;
-    uint32_t * newDirIndexes;
     rpm_count_t fileCount, dirCount, numValid = 0;
     rpm_color_t * fColors = NULL;
     rpm_color_t * dColors = NULL;
@@ -941,7 +940,7 @@ assert(p != NULL);
     }
 
     headerGet(h, RPMTAG_BASENAMES, &bnames, fi->scareFlags);
-    headerGet(h, RPMTAG_DIRINDEXES, &dindexes, fi->scareFlags);
+    headerGet(h, RPMTAG_DIRINDEXES, &dindexes, HEADERGET_ALLOC);
     headerGet(h, RPMTAG_DIRNAMES, &dnames, fi->scareFlags);
     headerGet(h, RPMTAG_FILECOLORS, &fcolors, fi->scareFlags);
     headerGet(h, RPMTAG_FILEMODES, &fmodes, fi->scareFlags);
@@ -957,10 +956,6 @@ assert(p != NULL);
     dnames.flags |= RPMTD_PTR_ALLOCED;
 
     dColors = xcalloc(dirCount, sizeof(*dColors));
-
-    newDirIndexes = xmalloc(sizeof(*newDirIndexes) * fileCount);
-    memcpy(newDirIndexes, dirIndexes, sizeof(*newDirIndexes) * fileCount);
-    dirIndexes = newDirIndexes;
 
     /*
      * For all relocations, we go through sorted file/relocation lists 
@@ -1188,7 +1183,6 @@ dColors[j] |= fColors[i];
 	free(relocations[i].newPath);
     }
     free(relocations);
-    free(newDirIndexes);
     free(dColors);
 
     return h;
