@@ -768,8 +768,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     char ** dirNames;
     uint32_t * dirIndexes;
     rpm_count_t fileCount, dirCount, numValid = 0;
-    rpm_color_t * fColors = NULL;
-    rpm_color_t * dColors = NULL;
     rpm_mode_t * fModes = NULL;
     Header h;
     int nrelocated = 0;
@@ -780,7 +778,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     int len;
     int i, j;
     struct rpmtd_s validRelocs;
-    struct rpmtd_s bnames, dnames, dindexes, fcolors, fmodes;
+    struct rpmtd_s bnames, dnames, dindexes, fmodes;
 
     
     if (headerGet(origH, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
@@ -942,20 +940,16 @@ assert(p != NULL);
     headerGet(h, RPMTAG_BASENAMES, &bnames, fi->scareFlags);
     headerGet(h, RPMTAG_DIRINDEXES, &dindexes, HEADERGET_ALLOC);
     headerGet(h, RPMTAG_DIRNAMES, &dnames, fi->scareFlags);
-    headerGet(h, RPMTAG_FILECOLORS, &fcolors, fi->scareFlags);
     headerGet(h, RPMTAG_FILEMODES, &fmodes, fi->scareFlags);
     /* TODO XXX ugh.. use rpmtd iterators & friends instead */
     baseNames = bnames.data;
     dirIndexes = dindexes.data;
-    fColors = fcolors.data;
     fModes = fmodes.data;
     fileCount = rpmtdCount(&bnames);
     dirCount = rpmtdCount(&dnames);
     /* XXX TODO: use rpmtdDup() instead */
     dirNames = dnames.data = duparray(dnames.data, dirCount);
     dnames.flags |= RPMTD_PTR_ALLOCED;
-
-    dColors = xcalloc(dirCount, sizeof(*dColors));
 
     /*
      * For all relocations, we go through sorted file/relocation lists 
@@ -979,14 +973,6 @@ assert(p != NULL);
 assert(fn != NULL);		/* XXX can't happen */
 	*fn = '\0';
 	fnlen = stpcpy( stpcpy(fn, dirNames[dirIndexes[i]]), baseNames[i]) - fn;
-
-if (fColors != NULL) {
-/* XXX pkgs may not have unique dirNames, so color all dirNames that match. */
-for (j = 0; j < dirCount; j++) {
-if (strcmp(dirNames[dirIndexes[i]], dirNames[j])) continue;
-dColors[j] |= fColors[i];
-}
-}
 
 	/*
 	 * See if this file path needs relocating.
@@ -1175,7 +1161,6 @@ dColors[j] |= fColors[i];
     rpmtdFreeData(&bnames);
     rpmtdFreeData(&dnames);
     rpmtdFreeData(&dindexes);
-    rpmtdFreeData(&fcolors);
     rpmtdFreeData(&fmodes);
     free(fn);
     for (i = 0; i < numRelocations; i++) {
@@ -1183,7 +1168,6 @@ dColors[j] |= fColors[i];
 	free(relocations[i].newPath);
     }
     free(relocations);
-    free(dColors);
 
     return h;
 }
