@@ -751,10 +751,9 @@ static char **duparray(char ** src, int size)
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
  * @param ts		transaction set
- * @param fi		transaction element file info
  * @param h		package header to relocate
  */
-static void relocateFileList(const rpmts ts, rpmfi fi, Header h)
+static void relocateFileList(const rpmts ts, Header h)
 {
     rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
@@ -1127,27 +1126,14 @@ assert(fn != NULL);		/* XXX can't happen */
 	if (rpmtdFromStringArray(&td, RPMTAG_BASENAMES, (const char**) baseNames, fileCount)) {
 	    headerMod(h, &td);
 	}
-	free(fi->bnl);
-	headerGet(h, RPMTAG_BASENAMES, &td, fi->scareFlags);
-	fi->fc = rpmtdCount(&td);
-	fi->bnl = td.data;
 
 	if (rpmtdFromStringArray(&td, RPMTAG_DIRNAMES, (const char**) dirNames, dirCount)) {
 	    headerMod(h, &td);
 	}
-	free(fi->dnl);
-	headerGet(h, RPMTAG_DIRNAMES, &td, fi->scareFlags);
-	fi->dc = rpmtdCount(&td);
-	fi->dnl = td.data;
 
 	if (rpmtdFromUint32(&td, RPMTAG_DIRINDEXES, dirIndexes, fileCount)) {
 	    headerMod(h, &td);
 	}
-	headerGet(h, RPMTAG_DIRINDEXES, &td, fi->scareFlags);
-	/* Ugh, nasty games with how dil is alloced depending on scareMem */
-	if (fi->scareFlags & HEADERGET_ALLOC)
-	    free(fi->dil);
-	fi->dil = td.data;
     }
 
     rpmtdFreeData(&bnames);
@@ -1248,7 +1234,6 @@ static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 {
-    rpmte p;
     rpmfi fi = NULL;
     const char * Type;
     rpm_loff_t *asize = NULL;
@@ -1291,6 +1276,14 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     isSource = headerIsSource(h);
     if (isBuild) fi->fiflags |= RPMFI_ISBUILD;
     if (isSource) fi->fiflags |= RPMFI_ISSOURCE;
+
+    /* relocate stuff in header if necessary */
+    if (ts && !headerIsSource(h) && !headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
+    	rpmte p = rpmtsRelocateElement(ts);
+	if (rpmteType(p) == TR_ADDED) {
+	    relocateFileList(ts, h);
+	}
+    }
 
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
     fi->fc = rpmtdCount(&td);
@@ -1381,15 +1374,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 	fi->fuser = cacheTag(ugcache, h, RPMTAG_FILEUSERNAME);
     if (!(flags & RPMFI_NOFILEGROUP)) 
 	fi->fgroup = cacheTag(ugcache, h, RPMTAG_FILEGROUPNAME);
-
-    if (ts != NULL)
-    if (fi != NULL)
-    if ((p = rpmtsRelocateElement(ts)) != NULL && rpmteType(p) == TR_ADDED
-     && !headerIsSource(h)
-     && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
-    {
-	relocateFileList(ts, fi, h);
-    }
 
     /* lazily alloced from rpmfiFN() */
     fi->fn = NULL;
