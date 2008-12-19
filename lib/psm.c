@@ -317,6 +317,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
     fi->apath = filenames.data; /* Ick */
+    rpmteSetFI(te, fi);
+    fi = rpmfiFree(fi);
 
     if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
 	goto exit;
@@ -330,7 +332,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	for (i=0; i<fc; i++) rpmfsSetAction(fs, i, FA_CREATE);
     }
 
-    psm = rpmpsmNew(ts, te, fi);
+    psm = rpmpsmNew(ts, te);
     psm->goal = PSM_PKGINSTALL;
 
    	/* FIX: psm->fi->dnl should be owned. */
@@ -1121,17 +1123,19 @@ rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
     return rpmpsmStage(psm, PSM_SCRIPT);
 }
 
-rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi)
+rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
 
     if (ts)	psm->ts = rpmtsLink(ts, RPMDBG_M("rpmpsmNew"));
+    if (te) {
 #ifdef	NOTYET
-    if (te)	psm->te = rpmteLink(te, RPMDBG_M("rpmpsmNew"));
+	psm->te = rpmteLink(te, RPMDBG_M("rpmpsmNew")); 
 #else
-    if (te)	psm->te = te;
+	psm->te = te;
 #endif
-    if (fi)	psm->fi = rpmfiLink(fi, RPMDBG_M("rpmpsmNew"));
+    	psm->fi = rpmfiLink(rpmteFI(te), RPMDBG_M("rpmpsmNew"));
+    }
 
     return rpmpsmLink(psm, RPMDBG_M("rpmpsmNew"));
 }

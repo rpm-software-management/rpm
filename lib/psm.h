@@ -93,11 +93,10 @@ rpmpsm rpmpsmFree(rpmpsm psm);
  * Create and load a package state machine.
  * @param ts		transaction set
  * @param te		transaction set element
- * @param fi		file info set
  * @return		new package state machine
  */
 RPM_GNUC_INTERNAL
-rpmpsm rpmpsmNew(rpmts ts, rpmte te, rpmfi fi);
+rpmpsm rpmpsmNew(rpmts ts, rpmte te);
 
 /**
  * Package state machine driver.

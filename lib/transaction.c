@@ -828,7 +828,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	}
 	
     	if (rpmteOpen(p, ts, 0)) {
-	    psm = rpmpsmNew(ts, p, NULL);
+	    psm = rpmpsmNew(ts, p);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts);
@@ -865,7 +865,6 @@ static int rpmtsProcess(rpmts ts)
 	
 	if (rpmteOpen(p, ts, 1)) {
 	    rpmpsm psm = NULL;
-	    rpmfi fi = rpmteFI(p);
 	    pkgStage stage = PSM_UNKNOWN;
 	    int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
 			1 : 0;
@@ -878,7 +877,7 @@ static int rpmtsProcess(rpmts ts)
 		stage = PSM_PKGERASE;
 		break;
 	    }
-	    psm = rpmpsmNew(ts, p, fi);
+	    psm = rpmpsmNew(ts, p);
 	    rpmpsmSetAsync(psm, async);
 
 	    (void) rpmswEnter(rpmtsOp(ts, op), 0);
