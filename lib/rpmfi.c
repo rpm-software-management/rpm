@@ -768,7 +768,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     char ** dirNames;
     uint32_t * dirIndexes;
     rpm_count_t fileCount, dirCount, numValid = 0;
-    rpm_mode_t * fModes = NULL;
     Header h;
     int nrelocated = 0;
     int fileAlloced = 0;
@@ -940,11 +939,10 @@ assert(p != NULL);
     headerGet(h, RPMTAG_BASENAMES, &bnames, fi->scareFlags);
     headerGet(h, RPMTAG_DIRINDEXES, &dindexes, HEADERGET_ALLOC);
     headerGet(h, RPMTAG_DIRNAMES, &dnames, fi->scareFlags);
-    headerGet(h, RPMTAG_FILEMODES, &fmodes, fi->scareFlags);
+    headerGet(h, RPMTAG_FILEMODES, &fmodes, HEADERGET_MINMEM);
     /* TODO XXX ugh.. use rpmtd iterators & friends instead */
     baseNames = bnames.data;
     dirIndexes = dindexes.data;
-    fModes = fmodes.data;
     fileCount = rpmtdCount(&bnames);
     dirCount = rpmtdCount(&dnames);
     /* XXX TODO: use rpmtdDup() instead */
@@ -1003,8 +1001,8 @@ assert(fn != NULL);		/* XXX can't happen */
 	}
 	if (j < 0) continue;
 
-/* FIX: fModes may be NULL */
-	ft = rpmfiWhatis(fModes[i]);
+	rpmtdSetIndex(&fmodes, i);
+	ft = rpmfiWhatis(rpmtdGetNumber(&fmodes));
 
 	/* On install, a relocate to NULL means skip the path. */
 	if (relocations[j].newPath == NULL) {
