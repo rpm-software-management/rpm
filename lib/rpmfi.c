@@ -747,6 +747,40 @@ static char **duparray(char ** src, int size)
     return dest;
 }
 
+static void addPrefixes(Header h, rpmtd validRelocs,
+			rpmRelocation *relocations, int numRelocations)
+{
+    const char *validprefix;
+    const char ** actualRelocations;
+    int numActual;
+
+    actualRelocations = xmalloc(rpmtdCount(validRelocs) * sizeof(*actualRelocations));
+    rpmtdInit(validRelocs);
+    while ((validprefix = rpmtdNextString(validRelocs))) {
+	int j;
+	for (j = 0; j < numRelocations; j++) {
+	    if (relocations[j].oldPath == NULL || /* XXX can't happen */
+		strcmp(validprefix, relocations[j].oldPath))
+		continue;
+	    /* On install, a relocate to NULL means skip the path. */
+	    if (relocations[j].newPath) {
+		actualRelocations[numActual] = relocations[j].newPath;
+		numActual++;
+	    }
+	    break;
+	}
+	if (j == numRelocations) {
+	    actualRelocations[numActual] = validprefix;
+	    numActual++;
+	}
+    }
+
+    if (numActual) {
+	headerPutStringArray(h, RPMTAG_INSTPREFIXES, actualRelocations, numActual);
+    }
+    actualRelocations = _free(actualRelocations);
+}
+
 /**
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
@@ -889,39 +923,9 @@ void rpmRelocateFileList(rpmts ts, rpmte p,
 
     /* Add relocation values to the header */
     if (numValid) {
-	const char *validprefix;
-	const char ** actualRelocations;
-	rpm_count_t numActual;
-
-	actualRelocations = xmalloc(numValid * sizeof(*actualRelocations));
-	numActual = 0;
-	rpmtdInit(&validRelocs);
-	while ((validprefix = rpmtdNextString(&validRelocs))) {
-	    for (j = 0; j < numRelocations; j++) {
-		if (relocations[j].oldPath == NULL || /* XXX can't happen */
-		    strcmp(validprefix, relocations[j].oldPath))
-		    continue;
-		/* On install, a relocate to NULL means skip the path. */
-		if (relocations[j].newPath) {
-		    actualRelocations[numActual] = relocations[j].newPath;
-		    numActual++;
-		}
-		break;
-	    }
-	    if (j == numRelocations) {
-		actualRelocations[numActual] = validprefix;
-		numActual++;
-	    }
-	}
-
-	if (numActual) {
-	    headerPutStringArray(h, RPMTAG_INSTPREFIXES,
-				     actualRelocations, numActual);
-	}
-
-	actualRelocations = _free(actualRelocations);
-	rpmtdFreeData(&validRelocs);
+	addPrefixes(h, &validRelocs, relocations, numRelocations);
     }
+    rpmtdFreeData(&validRelocs);
 
     headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
     headerGet(h, RPMTAG_DIRINDEXES, &dindexes, HEADERGET_ALLOC);
