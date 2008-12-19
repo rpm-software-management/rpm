@@ -752,12 +752,9 @@ static char **duparray(char ** src, int size)
  * @todo multilib file dispositions need to be checked.
  * @param ts		transaction set
  * @param fi		transaction element file info
- * @param origH		package header
- * @return		header with relocated files
+ * @param h		package header to relocate
  */
-static
-Header relocateFileList(const rpmts ts, rpmfi fi,
-		Header origH)
+static void relocateFileList(const rpmts ts, rpmfi fi, Header h)
 {
     rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
@@ -768,7 +765,6 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     char ** dirNames;
     uint32_t * dirIndexes;
     rpm_count_t fileCount, dirCount, numValid = 0;
-    Header h;
     int nrelocated = 0;
     int fileAlloced = 0;
     char * fn = NULL;
@@ -780,7 +776,7 @@ Header relocateFileList(const rpmts ts, rpmfi fi,
     struct rpmtd_s bnames, dnames, dindexes, fmodes;
 
     
-    if (headerGet(origH, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
+    if (headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
 	numValid = rpmtdCount(&validRelocs);
 
 assert(p != NULL);
@@ -798,17 +794,15 @@ assert(p != NULL);
      */
     if (p->relocs == NULL || numRelocations == 0) {
 	if (numValid) {
-	    if (!headerIsEntry(origH, RPMTAG_INSTPREFIXES)) {
+	    if (!headerIsEntry(h, RPMTAG_INSTPREFIXES)) {
 		rpmtdSetTag(&validRelocs, RPMTAG_INSTPREFIXES);
-		headerPut(origH, &validRelocs, HEADERPUT_DEFAULT);
+		headerPut(h, &validRelocs, HEADERPUT_DEFAULT);
 	    }
 	    rpmtdFreeData(&validRelocs);
 	}
 	/* XXX FIXME multilib file actions need to be checked. */
-	return headerLink(origH);
+	return;
     }
-
-    h = headerLink(origH);
 
     relocations = xmalloc(sizeof(*relocations) * numRelocations);
 
@@ -1166,8 +1160,6 @@ assert(fn != NULL);		/* XXX can't happen */
 	free(relocations[i].newPath);
     }
     free(relocations);
-
-    return h;
 }
 
 rpmfi rpmfiFree(rpmfi fi)
@@ -1287,8 +1279,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->fiflags = flags;
     fi->scareFlags = scareFlags;
 
-    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
-
     if (headerGet(h, RPMTAG_LONGARCHIVESIZE, &td, HEADERGET_EXT)) {
 	asize = rpmtdGetUint64(&td);
     }
@@ -1398,17 +1388,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
      && !headerIsSource(h)
      && !headerIsEntry(h, RPMTAG_ORIGBASENAMES))
     {
-	Header foo;
-
-	/* FIX: fi-digests undefined */
-	foo = relocateFileList(ts, fi, h);
-	fi->h = headerFree(fi->h);
-	fi->h = headerLink(foo);
-	foo = headerFree(foo);
-    }
-
-    if (!(fi->fiflags & RPMFI_KEEPHEADER)) {
-	fi->h = headerFree(fi->h);
+	relocateFileList(ts, fi, h);
     }
 
     /* lazily alloced from rpmfiFN() */
@@ -1417,6 +1397,10 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 exit:
 if (_rpmfi_debug < 0)
 fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
+
+    if (fi != NULL) {
+	fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
+    }
 
     /* FIX: rpmfi null annotations */
     return rpmfiLink(fi, (fi ? fi->Type : NULL));
