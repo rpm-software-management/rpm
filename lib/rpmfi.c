@@ -936,9 +936,9 @@ assert(p != NULL);
 	rpmtdFreeData(&validRelocs);
     }
 
-    headerGet(h, RPMTAG_BASENAMES, &bnames, fi->scareFlags);
+    headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
     headerGet(h, RPMTAG_DIRINDEXES, &dindexes, HEADERGET_ALLOC);
-    headerGet(h, RPMTAG_DIRNAMES, &dnames, fi->scareFlags);
+    headerGet(h, RPMTAG_DIRNAMES, &dnames, HEADERGET_MINMEM);
     headerGet(h, RPMTAG_FILEMODES, &fmodes, HEADERGET_MINMEM);
     /* TODO XXX ugh.. use rpmtd iterators & friends instead */
     baseNames = bnames.data;
