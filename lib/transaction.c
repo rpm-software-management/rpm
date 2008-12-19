@@ -1241,7 +1241,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    continue;	/* XXX can't happen */
 	if (rpmfiFC(fi) == 0)
 	    continue;
-	fi->fps = _free(fi->fps);
 	p->fi = rpmfiFree(fi);
     }
     pi = rpmtsiFree(pi);

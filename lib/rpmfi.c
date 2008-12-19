@@ -1211,6 +1211,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 	fi->fgroup = _free(fi->fgroup);
 
 	fi->fstates = _free(fi->fstates);
+	fi->fps = _free(fi->fps);
 
 	if (!(fi->fiflags & RPMFI_KEEPHEADER) && fi->h == NULL) {
 	    fi->fmtimes = _constfree(fi->fmtimes);
