@@ -802,6 +802,29 @@ static void sortRelocs(rpmRelocation *relocations, int numRelocations)
     }
 }
 
+static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
+{
+	struct rpmtd_s td;
+	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
+
+	headerGet(h, RPMTAG_DIRNAMES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGDIRNAMES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
+
+	headerGet(h, RPMTAG_DIRINDEXES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
+
+	headerMod(h, bnames);
+	headerMod(h, dnames);
+	headerMod(h, dindexes);
+}
+
 /**
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
@@ -1108,34 +1131,7 @@ assert(fn != NULL);		/* XXX can't happen */
 
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
-	struct rpmtd_s td;
-
-	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerGet(h, RPMTAG_DIRNAMES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGDIRNAMES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerGet(h, RPMTAG_DIRINDEXES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	if (rpmtdFromStringArray(&td, RPMTAG_BASENAMES, (const char**) baseNames, fileCount)) {
-	    headerMod(h, &td);
-	}
-
-	if (rpmtdFromStringArray(&td, RPMTAG_DIRNAMES, (const char**) dirNames, dirCount)) {
-	    headerMod(h, &td);
-	}
-
-	if (rpmtdFromUint32(&td, RPMTAG_DIRINDEXES, dirIndexes, fileCount)) {
-	    headerMod(h, &td);
-	}
+	saveRelocs(h, &bnames, &dnames, &dindexes);
     }
 
     rpmtdFreeData(&bnames);
