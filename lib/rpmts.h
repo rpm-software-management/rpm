@@ -556,21 +556,6 @@ rpmSpec rpmtsSpec(rpmts ts);
 rpmSpec rpmtsSetSpec(rpmts ts, rpmSpec spec);
 
 /** \ingroup rpmts
- * Get current relocate transaction element.
- * @param ts		transaction set
- * @return		current relocate transaction element
- */
-rpmte rpmtsRelocateElement(rpmts ts);
-
-/** \ingroup rpmts
- * Set current relocate transaction element.
- * @param ts		transaction set
- * @param relocateElement new relocate transaction element
- * @return		previous relocate transaction element
- */
-rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement);
-
-/** \ingroup rpmts
  * Retrieve color bits of transaction set.
  * @param ts		transaction set
  * @return		color bits

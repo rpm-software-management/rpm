@@ -2,7 +2,7 @@
 #define _RPMTS_INTERNAL_H
 
 #include <rpm/rpmts.h>
-#include <rpm/rpmal.h>	/* XXX availablePackage/relocateFileList ,*/
+#include <rpm/rpmal.h>	/* XXX availablePackage */
 
 #include "lib/rpmhash.h"	/* XXX hashTable */
 #include "lib/fprint.h"
@@ -63,8 +63,6 @@ struct rpmts_s {
 
     rpmal addedPackages;	/*!< Set of packages being installed. */
     int numAddedPackages;	/*!< No. added package instances. */
-
-    rpmte relocateElement;	/*!< Element to use when relocating packages. */
 
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */

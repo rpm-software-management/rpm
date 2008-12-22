@@ -1007,18 +1007,6 @@ rpmSpec rpmtsSetSpec(rpmts ts, rpmSpec spec)
     return ospec;
 }
 
-rpmte rpmtsRelocateElement(rpmts ts)
-{
-    return ts->relocateElement;
-}
-
-rpmte rpmtsSetRelocateElement(rpmts ts, rpmte relocateElement)
-{
-    rpmte orelocateElement = ts->relocateElement;
-    ts->relocateElement = relocateElement;
-    return orelocateElement;
-}
-
 rpm_color_t rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);
