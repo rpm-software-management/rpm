@@ -422,8 +422,7 @@ typedef enum rpmfiFlags_e {
 
 /** \ingroup rpmfi
  * Create and load a file info set.
- * @deprecated Only scareMem = 0 will be permitted.
- * @param ts		transaction set (NULL skips path relocation)
+ * @param ts		unused
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES
  * @param flags		Flags to control what information is loaded.

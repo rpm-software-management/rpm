@@ -751,15 +751,16 @@ static char **duparray(char ** src, int size)
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
  * @param ts		transaction set
+ * @param p		transaction element
+ * @param relocs	relocations
  * @param h		package header to relocate
  */
-static void relocateFileList(const rpmts ts, Header h)
+void rpmRelocateFileList(rpmts ts, rpmte p, 
+			 rpmRelocation *relocs, int numRelocations, Header h)
 {
-    rpmte p = rpmtsRelocateElement(ts);
     static int _printed = 0;
     int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     rpmRelocation * relocations = NULL;
-    int numRelocations;
     char ** baseNames;
     char ** dirNames;
     uint32_t * dirIndexes;
@@ -778,20 +779,13 @@ static void relocateFileList(const rpmts ts, Header h)
     if (headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
 	numValid = rpmtdCount(&validRelocs);
 
-assert(p != NULL);
-    numRelocations = 0;
-    if (p->relocs)
-	while (p->relocs[numRelocations].newPath ||
-	       p->relocs[numRelocations].oldPath)
-	    numRelocations++;
-
     /*
      * If no relocations are specified (usually the case), then return the
      * original header. If there are prefixes, however, then INSTPREFIXES
      * should be added, but, since relocateFileList() can be called more
      * than once for the same header, don't bother if already present.
      */
-    if (p->relocs == NULL || numRelocations == 0) {
+    if (relocs == NULL || numRelocations == 0) {
 	if (numValid) {
 	    if (!headerIsEntry(h, RPMTAG_INSTPREFIXES)) {
 		rpmtdSetTag(&validRelocs, RPMTAG_INSTPREFIXES);
@@ -813,22 +807,22 @@ assert(p != NULL);
 	 * Default relocations (oldPath == NULL) are handled in the UI,
 	 * not rpmlib.
 	 */
-	if (p->relocs[i].oldPath == NULL) continue; /* XXX can't happen */
+	if (relocs[i].oldPath == NULL) continue; /* XXX can't happen */
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
-	t = xstrdup(p->relocs[i].oldPath);
+	t = xstrdup(relocs[i].oldPath);
 	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
 	    : stripTrailingChar(t, '/');
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
-	if (p->relocs[i].newPath) {
+	if (relocs[i].newPath) {
 	    int del;
 	    int valid = 0;
 	    const char *validprefix;
 
-	    t = xstrdup(p->relocs[i].newPath);
+	    t = xstrdup(relocs[i].newPath);
 	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
 		: stripTrailingChar(t, '/');
@@ -1276,14 +1270,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     isSource = headerIsSource(h);
     if (isBuild) fi->fiflags |= RPMFI_ISBUILD;
     if (isSource) fi->fiflags |= RPMFI_ISSOURCE;
-
-    /* relocate stuff in header if necessary */
-    if (ts && !headerIsSource(h) && !headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
-    	rpmte p = rpmtsRelocateElement(ts);
-	if (rpmteType(p) == TR_ADDED) {
-	    relocateFileList(ts, h);
-	}
-    }
 
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
     fi->fc = rpmtdCount(&td);

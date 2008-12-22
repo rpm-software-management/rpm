@@ -68,6 +68,21 @@ static void delTE(rpmte p)
     return;
 }
 
+static rpmfi getFI(rpmte p, rpmts ts, Header h)
+{
+    rpmfiFlags fiflags;
+    fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
+				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
+
+    /* relocate stuff in header if necessary */
+    if (rpmteType(p) == TR_ADDED && p->relocs) {
+	if (!headerIsSource(h) && !headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
+	    rpmRelocateFileList(ts, p, p->relocs, p->nrelocs, h);
+	}
+    }
+    return rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
+}
+
 /**
  * Initialize transaction element data from header.
  * @param ts		transaction set
@@ -80,10 +95,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		fnpyKey key,
 		rpmRelocation * relocs)
 {
-    rpmte savep;
     const char *name, *version, *release, *arch, *os;
     struct rpmtd_s td;
-    rpmfiFlags fiflags;
 
     name = version = release = arch = NULL;
     headerNEVRA(h, &name, NULL, &version, &release, &arch);
@@ -142,9 +155,6 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
-    fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
-				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
-
     {
 	// get number of files by hand as rpmfiNew needs p->fs
 	struct rpmtd_s bnames;
@@ -154,10 +164,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
 	rpmtdFreeData(&bnames);
     }
-
-    savep = rpmtsSetRelocateElement(ts, p);
-    p->fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
-    (void) rpmtsSetRelocateElement(ts, savep);
+    p->fi = getFI(p, ts, h);
 
     /* See if we have pre/posttrans scripts. */
     p->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
@@ -696,11 +703,7 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
     }
     if (h != NULL) {
 	if (reload_fi) {
-	    rpmte savep = rpmtsSetRelocateElement(ts, te);
-	    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
-	    (void) rpmtsSetRelocateElement(ts, savep);
-	    rpmteSetFI(te, fi);
-	    rpmfiFree(fi);
+	    te->fi = getFI(te, ts, h);
 	}
 	
 	rpmteSetHeader(te, h);
