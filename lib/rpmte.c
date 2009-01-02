@@ -465,6 +465,17 @@ const char * rpmteNEVRA(rpmte te)
     return (te != NULL ? te->NEVRA : NULL);
 }
 
+FD_t rpmteSetFd(rpmte te, FD_t fd)
+{
+    if (te != NULL)  {
+	if (te->fd != NULL)
+	    te->fd = fdFree(te->fd, RPMDBG_M("rpmteSetFd"));
+	if (fd != NULL)
+	    te->fd = fdLink(fd, RPMDBG_M("rpmteSetFd"));
+    }
+    return NULL;
+}
+
 FD_t rpmteFd(rpmte te)
 {
     return (te != NULL ? te->fd : NULL);
