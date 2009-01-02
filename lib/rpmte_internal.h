@@ -36,59 +36,6 @@ struct sharedFileInfo_s {
     int otherFileNum;
 };
 
-/** \ingroup rpmte
- * A single package instance to be installed/removed atomically.
- */
-struct rpmte_s {
-    rpmElementType type;	/*!< Package disposition (installed/removed). */
-
-    Header h;			/*!< Package header. */
-    char * NEVR;		/*!< Package name-version-release. */
-    char * NEVRA;		/*!< Package name-version-release.arch. */
-    char * name;		/*!< Name: */
-    char * epoch;
-    char * version;		/*!< Version: */
-    char * release;		/*!< Release: */
-    char * arch;		/*!< Architecture hint. */
-    char * os;			/*!< Operating system hint. */
-    int archScore;		/*!< (TR_ADDED) Arch score. */
-    int osScore;		/*!< (TR_ADDED) Os score. */
-    int isSource;		/*!< (TR_ADDED) source rpm? */
-
-    rpmte parent;		/*!< Parent transaction element. */
-    int degree;			/*!< No. of immediate children. */
-    int npreds;			/*!< No. of predecessors. */
-    int tree;			/*!< Tree index. */
-    int depth;			/*!< Depth in dependency tree. */
-    int breadth;		/*!< Breadth in dependency tree. */
-    unsigned int db_instance;	/*!< Database instance (of removed pkgs) */
-    tsortInfo tsi;		/*!< Dependency ordering chains. */
-
-    rpmds this;			/*!< This package's provided NEVR. */
-    rpmds provides;		/*!< Provides: dependencies. */
-    rpmds requires;		/*!< Requires: dependencies. */
-    rpmds conflicts;		/*!< Conflicts: dependencies. */
-    rpmds obsoletes;		/*!< Obsoletes: dependencies. */
-    rpmfi fi;			/*!< File information. */
-
-    rpm_color_t color;		/*!< Color bit(s) from package dependencies. */
-    rpm_loff_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
-
-    fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
-    rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
-    int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
-    FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
-
-#define RPMTE_HAVE_PRETRANS	(1 << 0)
-#define RPMTE_HAVE_POSTTRANS	(1 << 1)
-    int transscripts;		/*!< pre/posttrans script existence */
-    int failed;			/*!< (parent) install/erase failed */
-
-    rpmalKey pkgKey;
-
-    rpmfs fs;
-};
-
 struct rpmfs_s {
     unsigned int fc;
 
