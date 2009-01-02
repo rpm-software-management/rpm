@@ -21,7 +21,7 @@
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/psm.h"
 #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
-#include "lib/rpmte_internal.h"	/* XXX te->fd */
+#include "lib/rpmte_internal.h"	/* XXX internal apis */
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
 #include "lib/misc.h"		/* XXX rpmMkdirPath */
@@ -307,7 +307,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (te == NULL) {	/* XXX can't happen */
 	goto exit;
     }
-    te->fd = fdLink(fd, RPMDBG_M("installSourcePackage"));
+    rpmteSetFd(te, fd);
 
     rpmteSetHeader(te, h);
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
