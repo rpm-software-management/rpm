@@ -817,6 +817,11 @@ static inline int RPMClass(void)
 	
 	sigaction(SIGILL, &oldsa, NULL);
 
+#define USER686 ((1<<4) | (1<<8) | (1<<15))
+	/* Transmeta Crusoe CPUs say that their CPU family is "5" but they have enough features for i686. */
+	if(cpu == 5 && (cap & USER686) == USER686)
+		return 6;
+
 	if (cpu < 6)
 		return cpu;
 		
