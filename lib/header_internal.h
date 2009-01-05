@@ -40,6 +40,13 @@ struct indexEntry_s {
     int rdlen;			/*!< No. bytes of data in region. */
 };
 
+typedef enum headerFlags_e {
+    HEADERFLAG_SORTED    = (1 << 0), /*!< Are header entries sorted? */
+    HEADERFLAG_ALLOCATED = (1 << 1), /*!< Is 1st header region allocated? */
+    HEADERFLAG_LEGACY    = (1 << 2), /*!< Header came from legacy source? */
+    HEADERFLAG_DEBUG     = (1 << 3), /*!< Debug this header? */
+} headerFlags;
+
 /** \ingroup header
  * The Header data structure.
  */
@@ -49,11 +56,7 @@ struct headerToken_s {
     int indexUsed;		/*!< Current size of tag array. */
     int indexAlloced;		/*!< Allocated size of tag array. */
     unsigned int instance;	/*!< Rpmdb instance (offset) */
-    int flags;
-#define	HEADERFLAG_SORTED	(1 << 0) /*!< Are header entries sorted? */
-#define	HEADERFLAG_ALLOCATED	(1 << 1) /*!< Is 1st header region allocated? */
-#define	HEADERFLAG_LEGACY	(1 << 2) /*!< Header came from legacy source? */
-#define HEADERFLAG_DEBUG	(1 << 3) /*!< Debug this header? */
+    headerFlags flags;
     int nrefs;			/*!< Reference count. */
 };
 
