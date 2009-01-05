@@ -11,12 +11,6 @@
 
 #define	INDEX_MALLOC_SIZE	8
 
-/*
- * Teach header.c about legacy tags.
- */
-#define	HEADER_OLDFILENAMES	1027
-#define	HEADER_BASENAMES	1117
-
 /** \ingroup header
  * Description of tag data.
  */

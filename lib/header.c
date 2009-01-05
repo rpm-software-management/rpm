@@ -950,8 +950,8 @@ Header headerLoad(void * uh)
 	    h->indexUsed -= ne;
 	    for (j = 0; j < ne; j++, newEntry++) {
 		(void) headerDel(h, newEntry->info.tag);
-		if (newEntry->info.tag == HEADER_BASENAMES)
-		    (void) headerDel(h, HEADER_OLDFILENAMES);
+		if (newEntry->info.tag == RPMTAG_BASENAMES)
+		    (void) headerDel(h, RPMTAG_OLDFILENAMES);
 	    }
 
 	    /* If any duplicate entries were replaced, move new entries down. */
