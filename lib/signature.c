@@ -138,11 +138,6 @@ static inline rpmRC printSize(FD_t fd, size_t siglen, size_t pad, rpm_loff_t dat
     return RPMRC_OK;
 }
 
-/* XXX sigh yet another duplicate.. */
-static unsigned char const header_magic[8] = {
-    0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-
 rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 {
     char *buf = NULL;
@@ -174,7 +169,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 		  (int)sizeof(block), xx);
 	goto exit;
     }
-    if (memcmp(block, header_magic, sizeof(header_magic))) {
+    if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
 	rasprintf(&buf, _("sigh magic: BAD\n"));
 	goto exit;
     }
@@ -698,7 +693,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		goto exit;
 	    }
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	    (void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
 	    rpmtdFreeData(&utd);

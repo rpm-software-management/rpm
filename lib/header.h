@@ -21,6 +21,11 @@
 extern "C" {
 #endif
 
+/** \ingroup header 
+ * Header magic value
+ */ 
+extern const unsigned char rpm_header_magic[8];
+
 /** \ingroup header
  * Include calculation for 8 bytes of (magic, 0)?
  */

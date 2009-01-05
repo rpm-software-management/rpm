@@ -27,11 +27,6 @@ static unsigned int nkeyids = 0;
 static unsigned int nextkeyid  = 0;
 static unsigned int * keyids;
 
-/* XXX FIXME: these are doubled here and header.c and .. */
-static unsigned char const header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-
 void headerMergeLegacySigs(Header h, const Header sigh)
 {
     HeaderIterator hi;
@@ -417,8 +412,8 @@ verifyinfo_exit:
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 
-	b = (unsigned char *) header_magic;
-	nb = sizeof(header_magic);
+	b = (unsigned char *) rpm_header_magic;
+	nb = sizeof(rpm_header_magic);
         (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
         dig->nbytes += nb;
 
@@ -458,8 +453,8 @@ verifyinfo_exit:
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
-	b = (unsigned char *) header_magic;
-	nb = sizeof(header_magic);
+	b = (unsigned char *) rpm_header_magic;
+	nb = sizeof(rpm_header_magic);
         (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
         dig->nbytes += nb;
 
@@ -524,7 +519,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 		_("hdr size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
     }
-    if (memcmp(block, header_magic, sizeof(header_magic))) {
+    if (memcmp(block, rpm_header_magic, sizeof(rpm_header_magic))) {
 	rasprintf(&buf, _("hdr magic: BAD\n"));
 	goto exit;
     }
@@ -736,8 +731,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
-	dig->nbytes += sizeof(header_magic);
+	(void) rpmDigestUpdate(dig->hdrmd5ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	dig->nbytes += sizeof(rpm_header_magic);
 	(void) rpmDigestUpdate(dig->hdrmd5ctx, utd.data, utd.count);
 	dig->nbytes += utd.count;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
@@ -761,8 +756,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
-	dig->nbytes += sizeof(header_magic);
+	(void) rpmDigestUpdate(dig->hdrsha1ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	dig->nbytes += sizeof(rpm_header_magic);
 	(void) rpmDigestUpdate(dig->hdrsha1ctx, utd.data, utd.count);
 	dig->nbytes += utd.count;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);

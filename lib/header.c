@@ -20,7 +20,7 @@ int _hdr_debug = 0;
 
 /** \ingroup header
  */
-static unsigned char const header_magic[8] = {
+const unsigned char rpm_header_magic[8] = {
 	0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
 };
 
@@ -235,7 +235,7 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
 
     switch (magicp) {
     case HEADER_MAGIC_YES:
-	size += sizeof(header_magic);
+	size += sizeof(rpm_header_magic);
 	break;
     case HEADER_MAGIC_NO:
 	break;
@@ -1053,7 +1053,7 @@ Header headerRead(FD_t fd, enum hMagic magicp)
 
     if (magicp == HEADER_MAGIC_YES) {
 	magic = block[i++];
-	if (memcmp(&magic, header_magic, sizeof(magic)))
+	if (memcmp(&magic, rpm_header_magic, sizeof(magic)))
 	    goto exit;
 	reserved = block[i++];
     }
@@ -1101,8 +1101,8 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
 	return 1;
     switch (magicp) {
     case HEADER_MAGIC_YES:
-	nb = Fwrite(header_magic, sizeof(char), sizeof(header_magic), fd);
-	if (nb != sizeof(header_magic))
+	nb = Fwrite(rpm_header_magic, sizeof(uint8_t), sizeof(rpm_header_magic), fd);
+	if (nb != sizeof(rpm_header_magic))
 	    goto exit;
 	break;
     case HEADER_MAGIC_NO:

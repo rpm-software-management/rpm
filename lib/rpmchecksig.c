@@ -460,10 +460,6 @@ rpmtsClean(ts);
     return res;
 }
 
-static unsigned char const header_magic[8] = {
-        0x8e, 0xad, 0xe8, 0x01, 0x00, 0x00, 0x00, 0x00
-};
-
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
@@ -495,10 +491,10 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 		goto exit;
 	    }
 	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrsha1ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	    (void) rpmDigestUpdate(dig->hdrsha1ctx, utd.data, utd.count);
 	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, header_magic, sizeof(header_magic));
+	    (void) rpmDigestUpdate(dig->hdrmd5ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	    (void) rpmDigestUpdate(dig->hdrmd5ctx, utd.data, utd.count);
 	    rpmtdFreeData(&utd);
 	}
