@@ -747,16 +747,35 @@ static char **duparray(char ** src, int size)
     return dest;
 }
 
-static void addPrefixes(Header h, rpmtd validRelocs,
-			rpmRelocation *relocations, int numRelocations)
+static int addPrefixes(Header h, rpmRelocation *relocations, int numRelocations)
 {
+    struct rpmtd_s validRelocs;
     const char *validprefix;
     const char ** actualRelocations;
-    int numActual;
+    int numActual = 0;
 
-    actualRelocations = xmalloc(rpmtdCount(validRelocs) * sizeof(*actualRelocations));
-    rpmtdInit(validRelocs);
-    while ((validprefix = rpmtdNextString(validRelocs))) {
+    headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM);
+    /*
+     * If no relocations are specified (usually the case), then return the
+     * original header. If there are prefixes, however, then INSTPREFIXES
+     * should be added for RPM_INSTALL_PREFIX environ variables in scriptlets, 
+     * but, since relocateFileList() can be called more than once for 
+     * the same header, don't bother if already present.
+     */
+    if (relocations == NULL || numRelocations == 0) {
+	if (rpmtdCount(&validRelocs) > 0) {
+	    if (!headerIsEntry(h, RPMTAG_INSTPREFIXES)) {
+		rpmtdSetTag(&validRelocs, RPMTAG_INSTPREFIXES);
+		headerPut(h, &validRelocs, HEADERPUT_DEFAULT);
+	    }
+	    rpmtdFreeData(&validRelocs);
+	}
+	return 0;
+    }
+
+    actualRelocations = xmalloc(rpmtdCount(&validRelocs) * sizeof(*actualRelocations));
+    rpmtdInit(&validRelocs);
+    while ((validprefix = rpmtdNextString(&validRelocs))) {
 	int j;
 	for (j = 0; j < numRelocations; j++) {
 	    if (relocations[j].oldPath == NULL || /* XXX can't happen */
@@ -774,32 +793,13 @@ static void addPrefixes(Header h, rpmtd validRelocs,
 	    numActual++;
 	}
     }
+    rpmtdFreeData(&validRelocs);
 
     if (numActual) {
 	headerPutStringArray(h, RPMTAG_INSTPREFIXES, actualRelocations, numActual);
     }
     actualRelocations = _free(actualRelocations);
-}
-
-/* stupid bubble sort, but it's probably faster here */
-static void sortRelocs(rpmRelocation *relocations, int numRelocations)
-{
-    for (int i = 0; i < numRelocations; i++) {
-	int madeSwap = 0;
-	for (int j = 1; j < numRelocations; j++) {
-	    rpmRelocation tmpReloc;
-	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
-		relocations[j    ].oldPath == NULL || /* XXX can't happen */
-		strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
-		continue;
-	    /* LCL: ??? */
-	    tmpReloc = relocations[j - 1];
-	    relocations[j - 1] = relocations[j];
-	    relocations[j] = tmpReloc;
-	    madeSwap = 1;
-	}
-	if (!madeSwap) break;
-    }
+    return numActual;
 }
 
 static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
@@ -828,111 +828,28 @@ static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
 /**
  * Relocate files in header.
  * @todo multilib file dispositions need to be checked.
- * @param ts		transaction set
  * @param p		transaction element
  * @param relocs	relocations
  * @param h		package header to relocate
  */
-void rpmRelocateFileList(rpmts ts, rpmte p, 
-			 rpmRelocation *relocs, int numRelocations, Header h)
+void rpmRelocateFileList(rpmte p, 
+			 rpmRelocation *relocations, int numRelocations, Header h)
 {
     static int _printed = 0;
-    int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
-    rpmRelocation * relocations = NULL;
     char ** baseNames;
     char ** dirNames;
     uint32_t * dirIndexes;
-    rpm_count_t fileCount, dirCount, numValid = 0;
+    rpm_count_t fileCount, dirCount;
     int nrelocated = 0;
     int fileAlloced = 0;
     char * fn = NULL;
     int haveRelocatedBase = 0;
-    int reldel = 0;
-    int len;
+    size_t maxlen = 0;
     int i, j;
-    struct rpmtd_s validRelocs;
     struct rpmtd_s bnames, dnames, dindexes, fmodes;
 
-    
-    if (headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM)) 
-	numValid = rpmtdCount(&validRelocs);
-
-    /*
-     * If no relocations are specified (usually the case), then return the
-     * original header. If there are prefixes, however, then INSTPREFIXES
-     * should be added, but, since relocateFileList() can be called more
-     * than once for the same header, don't bother if already present.
-     */
-    if (relocs == NULL || numRelocations == 0) {
-	if (numValid) {
-	    if (!headerIsEntry(h, RPMTAG_INSTPREFIXES)) {
-		rpmtdSetTag(&validRelocs, RPMTAG_INSTPREFIXES);
-		headerPut(h, &validRelocs, HEADERPUT_DEFAULT);
-	    }
-	    rpmtdFreeData(&validRelocs);
-	}
-	/* XXX FIXME multilib file actions need to be checked. */
+    if (addPrefixes(h, relocations, numRelocations) == 0)
 	return;
-    }
-
-    relocations = xmalloc(sizeof(*relocations) * numRelocations);
-
-    /* Build sorted relocation list from raw relocations. */
-    for (i = 0; i < numRelocations; i++) {
-	char * t;
-
-	/*
-	 * Default relocations (oldPath == NULL) are handled in the UI,
-	 * not rpmlib.
-	 */
-	if (relocs[i].oldPath == NULL) continue; /* XXX can't happen */
-
-	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
-	   too, but those are more trouble to fix up. :-( */
-	t = xstrdup(relocs[i].oldPath);
-	relocations[i].oldPath = (t[0] == '/' && t[1] == '\0')
-	    ? t
-	    : stripTrailingChar(t, '/');
-
-	/* An old path w/o a new path is valid, and indicates exclusion */
-	if (relocs[i].newPath) {
-	    int del;
-	    int valid = 0;
-	    const char *validprefix;
-
-	    t = xstrdup(relocs[i].newPath);
-	    relocations[i].newPath = (t[0] == '/' && t[1] == '\0')
-		? t
-		: stripTrailingChar(t, '/');
-
-	   	/* FIX:  relocations[i].oldPath == NULL */
-	    /* Verify that the relocation's old path is in the header. */
-	    rpmtdInit(&validRelocs);
-	    while ((validprefix = rpmtdNextString(&validRelocs))) {
-		if (strcmp(validprefix, relocations[i].oldPath) == 0) {
-		    valid = 1;
-		    break;
-		}
-	    }
-
-	    if (!valid && !allowBadRelocate) {
-		rpmps ps = rpmtsProblems(ts);
-		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
-			rpmteNEVRA(p), rpmteKey(p),
-			relocations[i].oldPath, NULL, NULL, 0);
-		ps = rpmpsFree(ps);
-	    }
-	    del =
-		strlen(relocations[i].newPath) - strlen(relocations[i].oldPath);
-
-	    if (del > reldel)
-		reldel = del;
-	} else {
-	    relocations[i].newPath = NULL;
-	}
-    }
-
-    sortRelocs(relocations, numRelocations);
 
     if (!_printed) {
 	_printed = 1;
@@ -948,11 +865,11 @@ void rpmRelocateFileList(rpmts ts, rpmte p,
 	}
     }
 
-    /* Add relocation values to the header */
-    if (numValid) {
-	addPrefixes(h, &validRelocs, relocations, numRelocations);
+    for (i = 0; i < numRelocations; i++) {
+	if (relocations[i].newPath == NULL) continue;
+	size_t len = strlen(relocations[i].newPath);
+	if (len > maxlen) maxlen = len;
     }
-    rpmtdFreeData(&validRelocs);
 
     headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
     headerGet(h, RPMTAG_DIRINDEXES, &dindexes, HEADERGET_ALLOC);
@@ -979,7 +896,7 @@ void rpmRelocateFileList(rpmts ts, rpmte p,
 	rpmFileTypes ft;
 	int fnlen;
 
-	len = reldel +
+	size_t len = maxlen +
 		strlen(dirNames[dirIndexes[i]]) + strlen(baseNames[i]) + 1;
 	if (len >= fileAlloced) {
 	    fileAlloced = len * 2;
@@ -1099,7 +1016,7 @@ assert(fn != NULL);		/* XXX can't happen */
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		continue;
-	    len = strcmp(relocations[j].oldPath, "/")
+	    size_t len = strcmp(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
@@ -1139,11 +1056,6 @@ assert(fn != NULL);		/* XXX can't happen */
     rpmtdFreeData(&dindexes);
     rpmtdFreeData(&fmodes);
     free(fn);
-    for (i = 0; i < numRelocations; i++) {
-	free(relocations[i].oldPath);
-	free(relocations[i].newPath);
-    }
-    free(relocations);
 }
 
 rpmfi rpmfiFree(rpmfi fi)

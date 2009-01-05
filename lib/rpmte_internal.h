@@ -116,7 +116,7 @@ void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 
 RPM_GNUC_INTERNAL
 /* XXX here for now... */
-void rpmRelocateFileList(rpmts ts, rpmte p, rpmRelocation *relocs, int numRelocations, Header h);
+void rpmRelocateFileList(rpmte p, rpmRelocation *relocs, int numRelocations, Header h);
 
 #endif	/* _RPMTE_INTERNAL_H */
 

@@ -86,14 +86,12 @@ void rpmteCleanDS(rpmte te)
  */
 static void delTE(rpmte p)
 {
-    rpmRelocation * r;
-
     if (p->relocs) {
-	for (r = p->relocs; (r->oldPath || r->newPath); r++) {
-	    r->oldPath = _free(r->oldPath);
-	    r->newPath = _free(r->newPath);
+	for (int i = 0; i < p->nrelocs; i++) {
+	    free(p->relocs[i].oldPath);
+	    free(p->relocs[i].newPath);
 	}
-	p->relocs = _free(p->relocs);
+	free(p->relocs);
     }
 
     rpmteCleanDS(p);
@@ -130,10 +128,98 @@ static rpmfi getFI(rpmte p, rpmts ts, Header h)
     /* relocate stuff in header if necessary */
     if (rpmteType(p) == TR_ADDED) {
 	if (!headerIsSource(h) && !headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
-	    rpmRelocateFileList(ts, p, p->relocs, p->nrelocs, h);
+	    rpmRelocateFileList(p, p->relocs, p->nrelocs, h);
 	}
     }
     return rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
+}
+
+/* stupid bubble sort, but it's probably faster here */
+static void sortRelocs(rpmRelocation *relocations, int numRelocations)
+{
+    for (int i = 0; i < numRelocations; i++) {
+	int madeSwap = 0;
+	for (int j = 1; j < numRelocations; j++) {
+	    rpmRelocation tmpReloc;
+	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
+		relocations[j    ].oldPath == NULL || /* XXX can't happen */
+		strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
+		continue;
+	    /* LCL: ??? */
+	    tmpReloc = relocations[j - 1];
+	    relocations[j - 1] = relocations[j];
+	    relocations[j] = tmpReloc;
+	    madeSwap = 1;
+	}
+	if (!madeSwap) break;
+    }
+}
+
+static void buildRelocs(rpmts ts, rpmte p, Header h, rpmRelocation *relocs)
+{
+    int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
+    int i;
+    struct rpmtd_s validRelocs;
+
+    for (rpmRelocation *r = relocs; r->oldPath || r->newPath; r++)
+	p->nrelocs++;
+
+    headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM);
+    p->relocs = xmalloc(sizeof(*p->relocs) * (p->nrelocs+1));
+
+    /* Build sorted relocation list from raw relocations. */
+    for (i = 0; i < p->nrelocs; i++) {
+	char * t;
+
+	/*
+	 * Default relocations (oldPath == NULL) are handled in the UI,
+	 * not rpmlib.
+	 */
+	if (relocs[i].oldPath == NULL) continue; /* XXX can't happen */
+
+	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
+	   too, but those are more trouble to fix up. :-( */
+	t = xstrdup(relocs[i].oldPath);
+	p->relocs[i].oldPath = (t[0] == '/' && t[1] == '\0')
+	    ? t
+	    : stripTrailingChar(t, '/');
+
+	/* An old path w/o a new path is valid, and indicates exclusion */
+	if (relocs[i].newPath) {
+	    int valid = 0;
+	    const char *validprefix;
+
+	    t = xstrdup(relocs[i].newPath);
+	    p->relocs[i].newPath = (t[0] == '/' && t[1] == '\0')
+		? t
+		: stripTrailingChar(t, '/');
+
+	   	/* FIX:  relocations[i].oldPath == NULL */
+	    /* Verify that the relocation's old path is in the header. */
+	    rpmtdInit(&validRelocs);
+	    while ((validprefix = rpmtdNextString(&validRelocs))) {
+		if (strcmp(validprefix, p->relocs[i].oldPath) == 0) {
+		    valid = 1;
+		    break;
+		}
+	    }
+
+	    if (!valid && !allowBadRelocate) {
+		rpmps ps = rpmtsProblems(ts);
+		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
+			rpmteNEVRA(p), rpmteKey(p),
+			p->relocs[i].oldPath, NULL, NULL, 0);
+		ps = rpmpsFree(ps);
+	    }
+	} else {
+	    p->relocs[i].newPath = NULL;
+	}
+    }
+    p->relocs[i].oldPath = NULL;
+    p->relocs[i].newPath = NULL;
+    sortRelocs(p->relocs, p->nrelocs);
+    
+    rpmtdFreeData(&validRelocs);
 }
 
 /**
@@ -180,21 +266,8 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
     p->nrelocs = 0;
     p->relocs = NULL;
-    if (relocs != NULL) {
-	rpmRelocation * r;
-	int i;
-
-	for (r = relocs; r->oldPath || r->newPath; r++)
-	    p->nrelocs++;
-	p->relocs = xmalloc((p->nrelocs + 1) * sizeof(*p->relocs));
-
-	for (i = 0, r = relocs; r->oldPath || r->newPath; i++, r++) {
-	    p->relocs[i].oldPath = r->oldPath ? xstrdup(r->oldPath) : NULL;
-	    p->relocs[i].newPath = r->newPath ? xstrdup(r->newPath) : NULL;
-	}
-	p->relocs[i].oldPath = NULL;
-	p->relocs[i].newPath = NULL;
-    }
+    if (relocs != NULL)
+	buildRelocs(ts, p, h, relocs);
 
     p->db_instance = headerGetInstance(h);
     p->key = key;
