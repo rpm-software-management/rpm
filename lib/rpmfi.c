@@ -825,15 +825,8 @@ static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
 	headerMod(h, dindexes);
 }
 
-/**
- * Relocate files in header.
- * @todo multilib file dispositions need to be checked.
- * @param p		transaction element
- * @param relocs	relocations
- * @param h		package header to relocate
- */
-void rpmRelocateFileList(rpmte p, 
-			 rpmRelocation *relocations, int numRelocations, Header h)
+void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations, 
+			 rpmfs fs, Header h)
 {
     static int _printed = 0;
     char ** baseNames;
@@ -953,7 +946,7 @@ assert(fn != NULL);		/* XXX can't happen */
 		    break;
 		}
 	    }
-	    rpmfsSetAction(rpmteGetFileStates(p), i, FA_SKIPNSTATE);
+	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
 	    rpmlog(RPMLOG_DEBUG, "excluding %s %s\n",
 		   ftstring(ft), fn);
 	    continue;

@@ -114,9 +114,17 @@ rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
 //RPM_GNUC_INTERNAL
 void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 
-RPM_GNUC_INTERNAL
 /* XXX here for now... */
-void rpmRelocateFileList(rpmte p, rpmRelocation *relocs, int numRelocations, Header h);
+/**
+ * Relocate files in header.
+ * @todo multilib file dispositions need to be checked.
+ * @param relocations		relocations
+ * @param numRelocations	number of relocations
+ * @param fs			file state set
+ * @param h			package header to relocate
+ */
+RPM_GNUC_INTERNAL
+void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, Header h);
 
 #endif	/* _RPMTE_INTERNAL_H */
 
