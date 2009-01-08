@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2008-12-09 15:01+0200\n"
-"PO-Revision-Date: 2008-10-15 00:41+0200\n"
+"PO-Revision-Date: 2008-12-12 21:18+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -69,7 +69,7 @@ msgstr "Budowanie dla %s\n"
 #: rpm2cpio.c:58
 #, c-format
 msgid "argument is not an RPM package\n"
-msgstr "argument nie jest pakietem RPM\n"
+msgstr "parametr nie jest pakietem RPM\n"
 
 #: rpm2cpio.c:63
 #, c-format
@@ -115,7 +115,7 @@ msgstr "Opcje instalowania/aktualizowania/usuwania:"
 
 #: rpmqv.c:118 tools/rpmdeps.c:32 tools/rpmgraph.c:249
 msgid "Common options for all rpm modes and executables:"
-msgstr "Wspólne opcje dla wszystkich trybów i binariów rpm:"
+msgstr "Wspólne opcje dla wszystkich trybów i plików binarnych RPM:"
 
 #: rpmqv.c:133 lib/poptI.c:31
 #, c-format
@@ -143,7 +143,7 @@ msgstr ""
 #: rpmqv.c:273
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
-msgstr "Wewnętrzny błąd w przetwarzaniu argumentu (%d) :-(\n"
+msgstr "Wewnętrzny błąd w przetwarzaniu parametru (%d) :-(\n"
 
 #: rpmqv.c:311 rpmqv.c:317 rpmqv.c:323 rpmqv.c:360
 msgid "only one major mode may be specified"
@@ -192,7 +192,7 @@ msgstr "--prefix można użyć tylko podczas instalowania nowych pakietów"
 
 #: rpmqv.c:406
 msgid "arguments to --prefix must begin with a /"
-msgstr "argumenty dla --prefix muszą zaczynać się od /"
+msgstr "parametry dla --prefix muszą zaczynać się od /"
 
 #: rpmqv.c:409
 msgid "--hash (-h) may only be specified during package installation"
@@ -283,7 +283,7 @@ msgstr ""
 
 #: rpmqv.c:490
 msgid "arguments to --root (-r) must begin with a /"
-msgstr "argumenty dla --root (-r) muszą zaczynać się od /"
+msgstr "parametry dla --root (-r) muszą zaczynać się od /"
 
 #: rpmqv.c:516
 #, c-format
@@ -355,15 +355,15 @@ msgstr "nie podano pakietów do zainstalowania"
 
 #: rpmqv.c:759
 msgid "no arguments given for query"
-msgstr "nie podano argumentów dla zapytania"
+msgstr "nie podano parametrów dla zapytania"
 
 #: rpmqv.c:774
 msgid "no arguments given for verify"
-msgstr "nie podano argumentów dla sprawdzenia"
+msgstr "nie podano parametrów dla sprawdzenia"
 
 #: rpmqv.c:789
 msgid "no arguments given"
-msgstr "nie podano argumentów"
+msgstr "nie podano parametrów"
 
 #: build/build.c:131 build/pack.c:426
 msgid "Unable to open temp file.\n"
@@ -392,7 +392,7 @@ msgid ""
 msgstr ""
 "\n"
 "\n"
-"Błędy budowania RPM-a:\n"
+"Błędy budowania pakietu RPM:\n"
 
 #: build/expression.c:212
 msgid "syntax error while parsing ==\n"
@@ -501,7 +501,7 @@ msgstr "Powtórzona lokalizacja %.*s w %%lang(%s)\n"
 #: build/files.c:807
 #, c-format
 msgid "Only one arg for %%docdir\n"
-msgstr "Tylko jeden argument dla %%docdir\n"
+msgstr "Tylko jeden parametr dla %%docdir\n"
 
 #: build/files.c:836
 #, c-format
@@ -1008,14 +1008,14 @@ msgid "line %d: Unknown tag: %s\n"
 msgstr "wiersz %d: nieznany znacznik: %s\n"
 
 #: build/parsePreamble.c:886
-#, fuzzy, c-format
+#, c-format
 msgid "%%{buildroot} couldn't be empty\n"
-msgstr "BuildRoot nie może być pusty\n"
+msgstr "%%{buildroot} nie może być puste\n"
 
 #: build/parsePreamble.c:890
-#, fuzzy, c-format
+#, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
-msgstr "BuildRoot nie może być \"/\"\n"
+msgstr "%%{buildroot} nie może być \"/\"\n"
 
 #: build/parsePrep.c:39
 #, c-format
@@ -1054,7 +1054,7 @@ msgstr "Błąd podczas analizowania %%setup: %s\n"
 #: build/parsePrep.c:284
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
-msgstr "wiersz %d: błędny argument dla %%setup: %s\n"
+msgstr "wiersz %d: błędny parametr dla %%setup: %s\n"
 
 #: build/parsePrep.c:303
 #, c-format
@@ -1267,7 +1267,7 @@ msgstr "usuń drzewo budowania po zakończeniu"
 
 #: build/poptBT.c:188
 msgid "generate headers compatible with rpm4 packaging"
-msgstr "utwórz nagłówki zgodne z pakietami rpm4"
+msgstr "utwórz nagłówki zgodne z pakietami RPM4"
 
 #: build/poptBT.c:190
 msgid "ignore ExcludeArch: directives from spec file"
@@ -1287,7 +1287,7 @@ msgstr "nie sprawdzaj zależności budowania"
 
 #: build/poptBT.c:198
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr "utwórz nagłówki pakietu zgodne z (przestarzałymi) pakietami rpm[23]"
+msgstr "utwórz nagłówki pakietu zgodne z (przestarzałymi) pakietami RPM[23]"
 
 #: build/poptBT.c:202 lib/poptALL.c:220 lib/poptI.c:234 lib/poptQV.c:313
 #: lib/poptQV.c:351
@@ -1713,7 +1713,8 @@ msgstr "%s: Fread nie powiodło się: %s\n"
 #: lib/package.c:900
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
-msgstr "%s jest RPM-em Delta i nie może zostać bezpośrednio zainstalowany\n"
+msgstr ""
+"%s jest pakietem RPM Delta i nie może zostać bezpośrednio zainstalowany\n"
 
 #: lib/package.c:904
 #, c-format
@@ -1814,7 +1815,7 @@ msgstr "używaj bardziej szczegółowego wyjścia"
 
 #: lib/poptALL.c:251
 msgid "print the version of rpm being used"
-msgstr "wyświetl wersję używanego RPM-a"
+msgstr "wyświetl wersję używanego pakietu RPM"
 
 #: lib/poptALL.c:259
 msgid "debug payload file state machine"
@@ -1873,7 +1874,7 @@ msgid ""
 "<package> specified multiple packages)"
 msgstr ""
 "usuń wszystkie pakiety, które zgadzają się z <pakietem> (zwykle tworzony "
-"jest błąd, jeśli <pakiet> określa wiele pakietów)"
+"jest błąd, jeśli <pakiet> podaje wiele pakietów)"
 
 #: lib/poptI.c:141 lib/poptI.c:218
 msgid "do not execute package scriptlet(s)"
@@ -2069,7 +2070,7 @@ msgstr "odpytaj/sprawdź wszystkie pakiety"
 
 #: lib/poptQV.c:96
 msgid "rpm checksig mode"
-msgstr "tryb sprawdzania podpisów RPM-ów"
+msgstr "tryb sprawdzania podpisów pakietów RPM"
 
 #: lib/poptQV.c:98
 msgid "query/verify package(s) owning file"
@@ -2105,7 +2106,7 @@ msgstr "odpytaj/sprawdź pakiety z identyfikatorem pliku"
 
 #: lib/poptQV.c:117
 msgid "rpm query mode"
-msgstr "tryb odpytywania RPM-ów"
+msgstr "tryb odpytywania pakietów RPM"
 
 #: lib/poptQV.c:119
 msgid "query/verify a header instance"
@@ -2129,7 +2130,7 @@ msgstr "odpytaj pakiety aktywowane przez pakiet"
 
 #: lib/poptQV.c:127
 msgid "rpm verify mode"
-msgstr "tryb sprawdzania RPM-ów"
+msgstr "tryb sprawdzania pakietów RPM"
 
 #: lib/poptQV.c:129
 msgid "query/verify the package(s) which require a dependency"
@@ -2149,7 +2150,7 @@ msgstr "nie porządkuj zestawu transakcji"
 
 #: lib/poptQV.c:138
 msgid "do not glob arguments"
-msgstr "nie używaj wyrażeń regularnych w argumentach"
+msgstr "nie używaj wyrażeń regularnych w parametrach"
 
 #: lib/poptQV.c:140
 msgid "do not process non-package files as manifests"
@@ -2550,7 +2551,7 @@ msgstr "pliki danych pakietu posiadają przedrostek \"./\"."
 
 #: lib/rpmds.c:1016
 msgid "package name-version-release is not implicitly provided."
-msgstr "pakiet name-version-release nie jest domyślnie dostarczany."
+msgstr "pakiet nazwa-wersja-wydanie nie jest domyślnie dostarczany."
 
 #: lib/rpmds.c:1019
 msgid "header tags are always sorted after being loaded."
@@ -2558,7 +2559,7 @@ msgstr "znaczniki nagłówka są zawsze porządkowane po wczytaniu."
 
 #: lib/rpmds.c:1022
 msgid "the scriptlet interpreter can use arguments from header."
-msgstr "interpreter skryptów może używać argumentów z nagłówka."
+msgstr "interpreter skryptów może używać parametrów z nagłówka."
 
 #: lib/rpmds.c:1025
 msgid "a hardlink file set may be installed without being complete."
@@ -2567,7 +2568,7 @@ msgstr "plik twardego dowiązania może zostać zainstalowany bez zakończenia."
 #: lib/rpmds.c:1028
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
-"skrypty pakietu mogą odwoływać się do bazy danych RPM-a podczas instalowania."
+"skrypty pakietu mogą odwoływać się do bazy danych RPM podczas instalowania."
 
 #: lib/rpmds.c:1032
 msgid "internal support for lua scripts."
@@ -2636,7 +2637,7 @@ msgstr "błąd podczas odczytywania z pliku %s\n"
 #: lib/rpminstall.c:464
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
-msgstr "plik %s wymaga nowszej wersji RPM-a\n"
+msgstr "plik %s wymaga nowszej wersji RPM\n"
 
 #: lib/rpminstall.c:496
 #, c-format
@@ -2651,7 +2652,7 @@ msgstr "nie można otworzyć pliku %s: %s\n"
 #: lib/rpminstall.c:662
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
-msgstr "\"%s\" określa wiele pakietów:\n"
+msgstr "\"%s\" podaje wiele pakietów:\n"
 
 #: lib/rpminstall.c:741
 #, c-format
@@ -2776,7 +2777,7 @@ msgstr "Niekompletny wiersz danych w %s:%d\n"
 #: lib/rpmrc.c:349
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
-msgstr "Za dużo argumentów w wierszu danych w %s:%d\n"
+msgstr "Za dużo parametrów w wierszu danych w %s:%d\n"
 
 #: lib/rpmrc.c:357
 #, c-format
@@ -2791,7 +2792,7 @@ msgstr "Niekompletny domyślny wiersz w %s:%d\n"
 #: lib/rpmrc.c:393
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
-msgstr "Za dużo argumentów w domyślnym wierszu w %s:%d\n"
+msgstr "Za dużo parametrów w domyślnym wierszu w %s:%d\n"
 
 #: lib/rpmrc.c:542
 #, c-format
@@ -2801,7 +2802,7 @@ msgstr "brak \":\" (znaleziono 0x%02x) w %s:%d\n"
 #: lib/rpmrc.c:559 lib/rpmrc.c:599
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
-msgstr "brak argumentu dla %s w %s:%d\n"
+msgstr "brak parametru dla %s w %s:%d\n"
 
 #: lib/rpmrc.c:575
 #, c-format
@@ -3461,7 +3462,7 @@ msgstr "przydzielenie pamięci (%u bajtów) zwróciło NULL.\n"
 
 #: rpmio/url.c:213
 msgid "url port must be a number\n"
-msgstr "port URL-a musi być liczbą\n"
+msgstr "port adresu URL musi być liczbą\n"
 
 #: tools/rpmgraph.c:169
 #, c-format
