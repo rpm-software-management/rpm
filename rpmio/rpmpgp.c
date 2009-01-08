@@ -1116,9 +1116,11 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 	(void) rpmDigestUpdate(ctx, pkt, (se-pkt));
 	(void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
 
-	memmove(keyid, (d + (dlen-8)), 8);
-	if (d) free(d);
-	rc = 0;
+	if (d) {
+	    memmove(keyid, (d + (dlen-8)), 8);
+	    free(d);
+	    rc = 0;
+	}
 
       }	break;
     }
