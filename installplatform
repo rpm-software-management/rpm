@@ -120,6 +120,10 @@ for SUBST in $SUBSTS ; do
 	ISANAME=sh
 	ISABITS=32
 	;;
+    arm*)
+	ISANAME=`echo ${ARCH} | sed "s/^\([^-]*\)-.*/\1/"`
+	ISABITS=32
+	;;
   esac
 
   if [ -n "$MULTILIBNO" ]; then
