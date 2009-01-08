@@ -17,14 +17,14 @@ int main(int argc, char *argv[])
     }
 
     if (Ferror(fdi)) {
-	fprintf(stderr, _("cannot open %s: %s\n"),
+	fprintf(stderr, "cannot open %s: %s\n",
 		(argc == 1 ? "<stdin>" : argv[1]), Fstrerror(fdi));
 	exit(EXIT_FAILURE);
     }
 
     h = headerRead(fdi, HEADER_MAGIC_YES);
     if (!h) {
-	fprintf(stderr, _("headerRead error: %s\n"), Fstrerror(fdi));
+	fprintf(stderr, "headerRead error: %s\n", Fstrerror(fdi));
 	exit(EXIT_FAILURE);
     }
     Fclose(fdi);
