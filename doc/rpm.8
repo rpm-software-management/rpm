@@ -805,12 +805,12 @@ using the executable \fI/usr/bin/gpg\fR you would include
 %_signature gpg
 %_gpg_path /etc/rpm/.gpg
 %_gpg_name John Doe <jdoe@foo.com>
-%_gpgbin /usr/bin/gpg
+%__gpg /usr/bin/gpg
 .fi
 .PP
 in a macro configuration file. Use \fI/etc/rpm/macros\fR
 for per-system configuration and \fI~/.rpmmacros\fR
-for per-user configuration. 
+for per-user configuration. Typically it's sufficient to set just %_gpg_name.
 .SS "REBUILD DATABASE OPTIONS"
 .PP
 The general form of an rpm rebuild database command is 
