@@ -1348,8 +1348,6 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
   void *digest = NULL;
   size_t len;
 
-  rpmInitCrypto();
-
   while (i-- > 0)
     {
       algorithm = algorithms[i];

@@ -1665,10 +1665,6 @@ int rpmReadConfigFiles(const char * file, const char * target)
     /* Reset umask to its default umask(2) value. */
     mode = umask(mode);
 
-    /* Initialize crypto engine as early as possible */
-    if (rpmInitCrypto() < 0) {
-	return -1;
-    }	
     /* Force preloading of name service libraries in case we go chrooting */
     (void) gethostbyname("localhost");
 

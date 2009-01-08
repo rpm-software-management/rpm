@@ -75,8 +75,12 @@ DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 {
     HASH_HashType type;
-    DIGEST_CTX ctx = xcalloc(1, sizeof(*ctx));
+    DIGEST_CTX ctx;
 
+    if (rpmInitCrypto() < 0)
+	return NULL;
+
+    ctx = xcalloc(1, sizeof(*ctx));
     ctx->flags = flags;
 
     type = getHashType(hashalgo);
