@@ -557,7 +557,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
     if (fsm->goal == FSM_PKGINSTALL) {
-	if (ts && rpmtsGetTid(ts) != -1)
+	if (ts && rpmtsGetTid(ts) != (rpm_tid_t)-1)
 	    sprintf(fsm->sufbuf, ";%08x", (unsigned)rpmtsGetTid(ts));
     }
 
