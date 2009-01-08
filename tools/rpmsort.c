@@ -75,7 +75,7 @@ do_tsort(const char *fileArgv[])
 
     rc = rpmtsOpenDB(ts, O_RDONLY);
     if (rc) {
-	rpmlog(RPMLOG_ERR, _("cannot open Packages database\n"));
+	rpmlog(RPMLOG_ERR, "cannot open Packages database\n");
 	rc = -1;
 	goto exit;
     }
@@ -160,7 +160,7 @@ restart:
 	/* Try to read the header from a package file. */
 	fd = Fopen(*fnp, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *fnp,
+	    rpmlog(RPMLOG_ERR, "open of %s failed: %s\n", *fnp,
 			Fstrerror(fd));
 	    if (fd) Fclose(fd);
 	    numFailed++; *fnp = NULL;
@@ -177,7 +177,7 @@ restart:
 	}
 
 	if (rc != RPMRC_NOTFOUND) {
-	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *fnp);
+	    rpmlog(RPMLOG_ERR, "%s cannot be installed\n", *fnp);
 	    numFailed++; *fnp = NULL;
 	    break;
 	}
@@ -185,7 +185,7 @@ restart:
 	/* Try to read a package manifest. */
 	fd = Fopen(*fnp, "r.fpio");
 	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *fnp,
+	    rpmlog(RPMLOG_ERR, "open of %s failed: %s\n", *fnp,
 			Fstrerror(fd));
 	    if (fd) Fclose(fd);
 	    numFailed++; *fnp = NULL;
@@ -195,7 +195,7 @@ restart:
 	/* Read list of packages from manifest. */
 	rc = rpmReadPackageManifest(fd, &argc, &argv);
 	if (rc)
-	    rpmlog(RPMLOG_NOTICE, _("%s: read manifest failed: %s\n"),
+	    rpmlog(RPMLOG_NOTICE, "%s: read manifest failed: %s\n",
 			fileURL, Fstrerror(fd));
 	Fclose(fd);
 
@@ -218,7 +218,7 @@ restart:
 
 	ps = rpmtsProblems(ts);
 	if (ps) {
-	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
+	    rpmlog(RPMLOG_ERR, "Failed dependencies:\n");
 	    rpmpsPrint(NULL, ps);
 	    ps = rpmpsFree(ps);
 	    rc = -1;
@@ -312,7 +312,7 @@ main(int argc, char *argv[])
 	    rpmIncreaseVerbosity();
 	    break;
 	default:
-	    fprintf(stderr, _("unknown popt return (%d)"), arg);
+	    fprintf(stderr, "unknown popt return (%d)", arg);
 	    exit(EXIT_FAILURE);
 	    break;
 	}

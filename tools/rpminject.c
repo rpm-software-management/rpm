@@ -314,19 +314,19 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 	switch(c->injmode) {
 	case INJ_ADD:
 	    if (!(rc && c->done > 0)) {
-		warnx(_("failed to add tag %s"), rpmTagGetName(c->tagval));
+		warnx("failed to add tag %s", rpmTagGetName(c->tagval));
 		ec = 1;
 	    }
 	    break;
 	case INJ_DELETE:
 	    if (!(!rc && c->done > 0)) {
-		warnx(_("failed to delete tag %s"), rpmTagGetName(c->tagval));
+		warnx("failed to delete tag %s", rpmTagGetName(c->tagval));
 		ec = 1;
 	    }
 	    break;
 	case INJ_MODIFY:
 	    if (!(rc && c->done > 0)) {
-		warnx(_("failed to modify tag %s"), rpmTagGetName(c->tagval));
+		warnx("failed to modify tag %s", rpmTagGetName(c->tagval));
 		ec = 1;
 	    }
 	    break;
@@ -424,14 +424,14 @@ do_inject(cmd_t *cmds[], int ncmds, const char *argv[])
 	strcat(fni, "-SAVE");
 	unlink(fni);
 	if (link(fno, fni)) {
-	    warn(_("can't link temp input file %s"), fni);
+	    warn("can't link temp input file %s", fni);
 	    ec++;
 	    continue;
 	}
 	if (rewriteRPM(fni, fno, cmds, ncmds)) {
 	    unlink(fno);
 	    if (rename(fni, fno))
-		warn(_("can't rename %s to %s"), fni, fno);
+		warn("can't rename %s to %s", fni, fno);
 	    ec++;
 	}
 	if (fni) free(fni);
@@ -491,25 +491,25 @@ main(int argc, char *argv[])
 	    break;
 	case 't':
 	    if (ncmds == 0 || c == NULL)
-		errx(EXIT_FAILURE, _("missing inject mode before \"--tag %s\""), optArg);
+		errx(EXIT_FAILURE, "missing inject mode before \"--tag %s\"", optArg);
 	    if (c->tag) {
 		if (c->injmode != INJ_DELETE &&
 		  (c->nvals <= 0 || c->vals == NULL))
-		    errx(EXIT_FAILURE, _("add/modify inject mode with \"--tag %s\" needs a value"), c->tag);
+		    errx(EXIT_FAILURE, "add/modify inject mode with \"--tag %s\" needs a value", c->tag);
 		cmds[ncmds] = c = xcalloc(1, sizeof(cmd_t));
 		cmds[ncmds]->injmode = cmds[ncmds-1]->injmode;
 		ncmds++;
 	    }
 	    c->tagval = rpmTagGetValue(optArg);
 	    if (c->tagval == RPMTAG_NOT_FOUND)	
-		errx(EXIT_FAILURE, _("unknown rpm tag \"--tag %s\""), optArg);
+		errx(EXIT_FAILURE, "unknown rpm tag \"--tag %s\"", optArg);
 	    c->tag = xstrdup(optArg);
 	    break;
 	case 'v':
 	    if (ncmds == 0 || c == NULL)
-		errx(EXIT_FAILURE, _("missing inject mode before \"--value %s\""), optArg);
+		errx(EXIT_FAILURE, "missing inject mode before \"--value %s\"", optArg);
 	    if (c->tag == NULL)
-		errx(EXIT_FAILURE, _("missing tag name before \"--value %s\""), optArg);
+		errx(EXIT_FAILURE, "missing tag name before \"--value %s\"", optArg);
 	    if (c->nvals == 0 || c->vals == NULL) {
 		c->vals = xcalloc(2, sizeof(char *));
 	    } else {
@@ -524,7 +524,7 @@ main(int argc, char *argv[])
 	    exit(EXIT_SUCCESS);
 	    break;
 	default:
-	    errx(EXIT_FAILURE, _("unknown popt return (%d)"), arg);
+	    errx(EXIT_FAILURE, "unknown popt return (%d)", arg);
 	    break;
 	}
 

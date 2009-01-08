@@ -20,12 +20,12 @@ int main(int argc, char *argv[])
     if (argc == 2) {
 	dspBlockNum = atoi(argv[1]);
     } else if (argc != 1) {
-	fprintf(stderr, _("dumpdb <block num>\n"));
+	fprintf(stderr, "dumpdb <block num>\n");
 	exit(1);
     }
 
     if (rpmdbOpen("", &db, O_RDONLY, 0644)) {
-	fprintf(stderr, _("cannot open Packages\n"));
+	fprintf(stderr, "cannot open Packages\n");
 	exit(1);
     }
 
