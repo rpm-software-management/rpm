@@ -1496,12 +1496,13 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 int rpmInitCrypto(void) {
     int rc = 0;
 
-    if (!_crypto_initialized && NSS_NoDB_Init(NULL) != SECSuccess) {
-	rc = -1;
-    } else {
-    	_crypto_initialized = 1;
+    if (!_crypto_initialized) {
+	if (NSS_NoDB_Init(NULL) != SECSuccess) {
+	    rc = -1;
+	} else {
+	    _crypto_initialized = 1;
+	}
     }
-
     return rc;
 }
 
