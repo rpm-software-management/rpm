@@ -282,7 +282,7 @@ int rpmioMkpath(const char * path, mode_t mode, uid_t uid, gid_t gid)
     char *d, *de;
     int rc;
 
-    if (path == NULL)
+    if (path == NULL || *path == '\0')
 	return -1;
     d = rstrcat(NULL, path);
     if (d[strlen(d)-1] != '/') {
