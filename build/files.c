@@ -1826,7 +1826,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	if (*s == '\0')
 	    continue;
 	fileName = NULL;
-	strcpy(buf, s);
+	rstrlcpy(buf, s, sizeof(buf));
 	
 	/* Reset for a new line in %files */
 	fl.isDir = 0;
