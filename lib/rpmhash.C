@@ -14,19 +14,19 @@ typedef	struct  Bucket_s * Bucket;
 /**
  */
 struct  Bucket_s {
+    Bucket next;	/*!< pointer to next item in bucket */
     HTKEYTYPE key;      /*!< hash key */
 #ifdef HTDATATYPE
-    HTDATATYPE * data;	/*!< pointer to hashed data */
-    int dataCount;	/*!< length of data (0 if unknown) */
+    int dataCount;	/*!< data entries */
+    HTDATATYPE data[1];	/*!< data - grows by resizing whole bucket */
 #endif
-    Bucket next;	/*!< pointer to next item in bucket */
 };
 
 /**
  */
 struct HASHSTRUCT {
     int numBuckets;			/*!< number of hash buckets */
-    Bucket * buckets;		/*!< hash bucket array */
+    Bucket * buckets;			/*!< hash bucket array */
     hashFunctionType fn;		/*!< generate hash value for key */
     hashEqualityType eq;		/*!< compare hash keys for equality */
     hashFreeKey freeKey;
@@ -86,27 +86,36 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
 {
     unsigned int hash;
     Bucket b;
+    Bucket * b_addr;
 
     hash = ht->fn(key) % ht->numBuckets;
     b = ht->buckets[hash];
+    b_addr = ht->buckets + hash;
 
-    while (b && b->key && ht->eq(b->key, key))
+    while (b && b->key && ht->eq(b->key, key)) {
+	b_addr = &(b->next);
 	b = b->next;
+    }
 
     if (b == NULL) {
 	b = xmalloc(sizeof(*b));
 	b->key = key;
 #ifdef HTDATATYPE
-	b->dataCount = 0;
-	b->data = NULL;
+	b->dataCount = 1;
+	b->data[0] = data;
 #endif
 	b->next = ht->buckets[hash];
 	ht->buckets[hash] = b;
     }
-
 #ifdef HTDATATYPE
-    b->data = xrealloc(b->data, sizeof(*b->data) * (b->dataCount + 1));
-    b->data[b->dataCount++] = data;
+    else {
+	// resizing bucket TODO: increase exponentially
+	// Bucket_s already contains space for one dataset
+	b = *b_addr = xrealloc(
+	    b, sizeof(*b) + sizeof(b->data[0]) * (b->dataCount));
+	// though increasing dataCount after the resize
+	b->data[b->dataCount++] = data;
+    }
 #endif
 }
 
@@ -126,14 +135,11 @@ HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
 	do {
 	    n = b->next;
 #ifdef HTDATATYPE
-	    if (b->data) {
-		if (ht->freeData) {
-		  int j;
-		  for (j=0; j < b->dataCount; j++ ) {
+	    if (ht->freeData) {
+		int j;
+		for (j=0; j < b->dataCount; j++ ) {
 		    b->data[j] = ht->freeData(b->data[j]);
-		  }
 		}
-		b->data = _free(b->data);
 	    }
 #endif
 	    b = _free(b);
