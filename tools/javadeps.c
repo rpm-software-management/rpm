@@ -339,7 +339,7 @@ void die(const char *format, ...) {
 	 stdout, stderr, or syslog
   */
 
-  fprintf(stderr, newmsg);
+  fprintf(stderr, "%s", newmsg);
   
   free(newformat);
   free(newmsg);
