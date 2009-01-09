@@ -402,17 +402,9 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
  * @param flags		(unused)
  * @return		0 on success
  */
-static inline
+RPM_GNUC_INTERNAL
 int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc;
-    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
-    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
-    return rc;
-}
+	   unsigned int flags);
 
 /** \ingroup dbi
  * Store (key,data) pair in index database.
@@ -423,17 +415,9 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
  * @param flags		(unused)
  * @return		0 on success
  */
-static inline
+RPM_GNUC_INTERNAL
 int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc;
-    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
-    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
-    return rc;
-}
+	   unsigned int flags);
 
 /** \ingroup dbi
  * Retrieve count of (possible) duplicate items.

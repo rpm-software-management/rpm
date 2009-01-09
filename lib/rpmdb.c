@@ -307,6 +307,30 @@ exit:
     return dbi;
 }
 
+/* Retrieve (key,data) pair from index database. */
+int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
+{
+    int rc;
+    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
+    return rc;
+}
+
+/* Store (key,data) pair in index database. */
+int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+		unsigned int flags)
+{
+    int rc;
+    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
+    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
+    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
+    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
+    return rc;
+}
+
 /**
  * Create and initialize item for index database set.
  * @param hdrNum	header instance in db
