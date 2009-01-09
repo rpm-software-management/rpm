@@ -1252,73 +1252,6 @@ leaveChroot(dbi);
  **************************************************/
 
 /**
- * Associate secondary database with primary.
- * @param dbi           index database handle
- * @param dbisecondary  secondary index database handle
- * @param callback      create secondary key from primary (NULL if DB_RDONLY)
- * @param flags         DB_CREATE or 0
- * @return              0 on success
- */
-static int sql_associate (dbiIndex dbi, dbiIndex dbisecondary,
-		int (*callback) (DB *, const DBT *, const DBT *, DBT *),
-		unsigned int flags)
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
-/**
- * Return join cursor for list of cursors.
- * @param dbi           index database handle
- * @param curslist      NULL terminated list of database cursors
- * @retval dbcp         address of join database cursor
- * @param flags         DB_JOIN_NOSORT or 0
- * @return              0 on success
- */
-static int sql_join (dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
-		unsigned int flags)
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
-/**
- * Duplicate a database cursor.   
- * @param dbi           index database handle
- * @param dbcursor      database cursor
- * @retval dbcp         address of new database cursor
- * @param flags         DB_POSITION for same position, 0 for uninitialized
- * @return              0 on success
- */
-static int sql_cdup (dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
-		unsigned int flags)
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
-/**
- * Retrieve (key,data) pair using dbcursor->c_pget.
- * @param dbi           index database handle
- * @param dbcursor      database cursor
- * @param key           secondary retrieve key value/length/flags
- * @param pkey          primary retrieve key value/length/flags
- * @param data          primary retrieve data value/length/flags 
- * @param flags         DB_NEXT, DB_SET, or 0
- * @return              0 on success
- */
-static int sql_cpget (dbiIndex dbi, DBC * dbcursor,
-		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
-{
-if (_debug)
-fprintf(stderr, "*** %s:\n", __FUNCTION__);
-    return EINVAL;
-}
-
-/**
  * Retrieve count of (possible) duplicate items using dbcursor->c_count.
  * @param dbi           index database handle
  * @param dbcursor      database cursor
@@ -1394,14 +1327,10 @@ const struct _dbiVec sqlitevec = {
     sql_open, 
     sql_close,
     sql_sync,  
-    sql_associate,  
-    sql_join,
     sql_copen,
     sql_cclose,
-    sql_cdup, 
     sql_cdel,
     sql_cget,
-    sql_cpget,
     sql_cput,
     sql_ccount,
     sql_byteswapped,

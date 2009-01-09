@@ -74,29 +74,6 @@ struct _dbiVec {
     int (*sync) (dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
- * Associate secondary database with primary.
- * @param dbi		index database handle
- * @param dbisecondary	secondary index database handle
- * @param callback	create secondary key from primary (NULL if DB_RDONLY)
- * @param flags		DB_CREATE or 0
- * @return		0 on success
- */
-    int (*associate) (dbiIndex dbi, dbiIndex dbisecondary,
-                int (*callback) (DB *, const DBT *, const DBT *, DBT *),
-                unsigned int flags);
-
-/** \ingroup dbi
- * Return join cursor for list of cursors.
- * @param dbi		index database handle
- * @param curslist	NULL terminated list of database cursors
- * @retval dbcp		address of join database cursor
- * @param flags		DB_JOIN_NOSORT or 0
- * @return		0 on success
- */
-    int (*join) (dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
-                unsigned int flags);
-
-/** \ingroup dbi
  * Open database cursor.
  * @param dbi		index database handle
  * @param txnid		database transaction handle
@@ -115,17 +92,6 @@ struct _dbiVec {
  * @return		0 on success
  */
     int (*cclose) (dbiIndex dbi, DBC * dbcursor, unsigned int flags);
-
-/** \ingroup dbi
- * Duplicate a database cursor.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @retval dbcp		address of new database cursor
- * @param flags		DB_POSITION for same position, 0 for uninitialized
- * @return		0 on success
- */
-    int (*cdup) (dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
-		unsigned int flags);
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
@@ -150,19 +116,6 @@ struct _dbiVec {
  */
     int (*cget) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 			unsigned int flags);
-
-/** \ingroup dbi
- * Retrieve (key,data) pair using dbcursor->c_pget.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @param key		secondary retrieve key value/length/flags
- * @param pkey		primary retrieve key value/length/flags
- * @param data		primary retrieve data value/length/flags
- * @param flags		DB_NEXT, DB_SET, or 0
- * @return		0 on success
- */
-    int (*cpget) (dbiIndex dbi, DBC * dbcursor,
-		DBT * key, DBT * pkey, DBT * data, unsigned int flags);
 
 /** \ingroup dbi
  * Store (key,data) pair using db->put or dbcursor->c_put.
@@ -420,21 +373,6 @@ int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
 }
 
 /** \ingroup dbi
- * Duplicate a database cursor.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @retval dbcp		address of new database cursor
- * @param flags		DB_POSITION for same position, 0 for uninitialized
- * @return		0 on success
- */
-static inline
-int dbiCdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
-		unsigned int flags)
-{
-    return (*dbi->dbi_vec->cdup) (dbi, dbcursor, dbcp, flags);
-}
-
-/** \ingroup dbi
  * Delete (key,data) pair(s) from index database.
  * @param dbi		index database handle
  * @param dbcursor	database cursor (NULL will use db->del)
@@ -473,28 +411,6 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
     rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
     (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
-    return rc;
-}
-
-/** \ingroup dbi
- * Retrieve (key,data) pair using dbcursor->c_pget.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->get)
- * @param key		secondary retrieve key value/length/flags
- * @param pkey		primary retrieve key value/length/flags
- * @param data		primary retrieve data value/length/flags
- * @param flags		DB_NEXT, DB_SET, or 0
- * @return		0 on success
- */
-static inline
-int dbiPget(dbiIndex dbi, DBC * dbcursor,
-		DBT * key, DBT * pkey, DBT * data, unsigned int flags)
-{
-    int rc;
-    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
-    rc = (dbi->dbi_vec->cpget) (dbi, dbcursor, key, pkey, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, (ssize_t) data->size);
     return rc;
 }
 
@@ -569,37 +485,6 @@ static inline
 int dbiSync (dbiIndex dbi, unsigned int flags)
 {
     return (*dbi->dbi_vec->sync) (dbi, flags);
-}
-
-/** \ingroup dbi
- * Associate secondary database with primary.
- * @param dbi		index database handle
- * @param dbisecondary	secondary index database handle
- * @param callback	create secondary key from primary (NULL if DB_RDONLY)
- * @param flags		DB_CREATE or 0
- * @return		0 on success
- */
-static inline
-int dbiAssociate(dbiIndex dbi, dbiIndex dbisecondary,
-                int (*callback) (DB *, const DBT *, const DBT *, DBT *),
-                unsigned int flags)
-{
-    return (*dbi->dbi_vec->associate) (dbi, dbisecondary, callback, flags);
-}
-
-/** \ingroup dbi
- * Return join cursor for list of cursors.
- * @param dbi		index database handle
- * @param curslist	NULL terminated list of database cursors
- * @retval dbcp		address of join database cursor
- * @param flags		DB_JOIN_NOSORT or 0
- * @return		0 on success
- */
-static inline
-int dbiJoin(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
-                unsigned int flags)
-{
-    return (*dbi->dbi_vec->join) (dbi, curslist, dbcp, flags);
 }
 
 /** \ingroup dbi

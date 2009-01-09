@@ -405,18 +405,6 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-static int db3cdup(dbiIndex dbi, DBC * dbcursor, DBC ** dbcp,
-		unsigned int flags)
-{
-    int rc;
-
-    if (dbcp) *dbcp = NULL;
-    rc = dbcursor->c_dup(dbcursor, dbcp, flags);
-    rc = cvtdberr(dbi, "dbcursor->c_dup", rc, _debug);
-    /* FIX: *dbcp can be NULL */
-    return rc;
-}
-
 static int db3cclose(dbiIndex dbi, DBC * dbcursor,
 		unsigned int flags)
 {
@@ -529,25 +517,6 @@ static int db3cget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     return rc;
 }
 
-static int db3cpget(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * pkey,
-		DBT * data, unsigned int flags)
-{
-    DB * db = dbi->dbi_db;
-    int _printit;
-    int rc;
-
-    assert(db != NULL);
-    assert(dbcursor != NULL);
-
-    /* XXX db3 does DB_FIRST on uninitialized cursor */
-    rc = dbcursor->c_pget(dbcursor, key, pkey, data, flags);
-    /* XXX DB_NOTFOUND can be returned */
-    _printit = (rc == DB_NOTFOUND ? 0 : _debug);
-    rc = cvtdberr(dbi, "dbcursor->c_pget", rc, _printit);
-
-    return rc;
-}
-
 static int db3ccount(dbiIndex dbi, DBC * dbcursor,
 		unsigned int * countp,
 		unsigned int flags)
@@ -601,34 +570,6 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
     rc = db->stat(db, &dbi->dbi_stats, flags);
 #endif
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
-    return rc;
-}
-
-static int db3associate(dbiIndex dbi, dbiIndex dbisecondary,
-		int (*callback)(DB *, const DBT *, const DBT *, DBT *),
-		unsigned int flags)
-{
-    DB * db = dbi->dbi_db;
-    DB * secondary = dbisecondary->dbi_db;
-    int rc;
-
-    DB_TXN * txnid = NULL;
-
-assert(db != NULL);
-    rc = db->associate(db, txnid, secondary, callback, flags);
-    rc = cvtdberr(dbi, "db->associate", rc, _debug);
-    return rc;
-}
-
-static int db3join(dbiIndex dbi, DBC ** curslist, DBC ** dbcp,
-		unsigned int flags)
-{
-    DB * db = dbi->dbi_db;
-    int rc;
-
-assert(db != NULL);
-    rc = db->join(db, curslist, dbcp, flags);
-    rc = cvtdberr(dbi, "db->join", rc, _debug);
     return rc;
 }
 
@@ -1179,7 +1120,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 RPM_GNUC_INTERNAL
 const struct _dbiVec db3vec = {
     DB_VERSION_MAJOR, DB_VERSION_MINOR, DB_VERSION_PATCH,
-    db3open, db3close, db3sync, db3associate, db3join,
-    db3copen, db3cclose, db3cdup, db3cdel, db3cget, db3cpget, db3cput, db3ccount,
-    db3byteswapped, db3stat
+    db3open, db3close, db3sync, db3copen, db3cclose, db3cdel,
+    db3cget, db3cput, db3ccount, db3byteswapped, db3stat
 };
