@@ -2088,11 +2088,9 @@ int processSourceFiles(rpmSpec spec)
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr) {
-	char *a = xmalloc(strlen(_srcdefattr) + 9 + 1);
-	strcpy(a, "%defattr ");
-	strcpy(a + 9, _srcdefattr);
+	char *a = rstrscat(NULL, "%defattr ", _srcdefattr, NULL);
 	parseForAttr(a, &fl);
-	a = _free(a);
+	free(a);
     }
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
     fl.processingFailed = 0;
