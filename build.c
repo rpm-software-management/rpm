@@ -259,6 +259,13 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
+    if ( ba->buildAmount&RPMBUILD_RMSOURCE && !(ba->buildAmount&~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) ) {
+	rc = doRmSource(spec);
+	if ( rc == RPMRC_OK && ba->buildAmount&RPMBUILD_RMSPEC )
+	    rc = unlink(specFile);
+	goto exit;
+    }
+
     /* Assemble source header from parsed components */
     initSourceHeader(spec);
 

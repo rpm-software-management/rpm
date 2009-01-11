@@ -15,17 +15,18 @@ static int _build_debug = 0;
 
 /**
  */
-static void doRmSource(rpmSpec spec)
+rpmRC doRmSource(rpmSpec spec)
 {
     struct Source *p;
     Package pkg;
-    int rc;
+    int rc = 0;
     
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	    rc = unlink(fn);
 	    fn = _free(fn);
+	    if (rc) goto exit;
 	}
     }
 
@@ -35,9 +36,12 @@ static void doRmSource(rpmSpec spec)
 		char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 		rc = unlink(fn);
 		fn = _free(fn);
+	        if (rc) goto exit;
 	    }
 	}
     }
+exit:
+    return !rc ? RPMRC_OK : RPMRC_FAIL;
 }
 
 /*

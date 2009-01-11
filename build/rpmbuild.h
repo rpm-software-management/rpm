@@ -273,6 +273,13 @@ int parseExpressionBoolean(rpmSpec spec, const char * expr);
 char * parseExpressionString(rpmSpec spec, const char * expr);
 
 /** \ingroup rpmbuild
+ * Remove all sources assigned to spec file.
+ *
+ * @param spec		spec file control structure
+ * @return		RPMRC_OK on success
+ */
+rpmRC doRmSource(rpmSpec spec);
+/** \ingroup rpmbuild
  * Run a build script, assembled from spec file scriptlet section.
  *
  * @param spec		spec file control structure
