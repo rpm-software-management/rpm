@@ -240,6 +240,12 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
     
+    /* Don't parse spec if only its removal is requested */
+    if (ba->buildAmount == RPMBUILD_RMSPEC) {
+	rc = unlink(specFile);
+	goto exit;
+    }
+
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)

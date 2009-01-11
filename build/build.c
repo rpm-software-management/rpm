@@ -21,10 +21,6 @@ static void doRmSource(rpmSpec spec)
     Package pkg;
     int rc;
     
-#if 0
-    rc = unlink(spec->specFile);
-#endif
-
     for (p = spec->sources; p != NULL; p = p->next) {
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
