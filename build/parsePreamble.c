@@ -859,8 +859,14 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		    goto exit;
 		}
 		if (spec->BANames && !spec->recursing) {
-		    res = PART_BUILDARCHITECTURES;
-		    goto exit;
+		    /* Ignore BuildArch tags for anyarch actions */
+		    if (spec->anyarch) {
+			spec->BANames = _free(spec->BANames);
+			spec->BACount = 0;
+		    } else {
+			res = PART_BUILDARCHITECTURES;
+			goto exit;
+		    }
 		}
 	    }
 	    if ((rc =
