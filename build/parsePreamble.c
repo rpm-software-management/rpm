@@ -926,8 +926,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	if (!headerIsEntry(pkg->header, RPMTAG_GROUP)) {
 	    struct rpmtd_s td;
 
-	    headerGet(spec->packages->header, RPMTAG_GROUP, &td, HEADERGET_RAW);
-	    headerPutString(pkg->header, RPMTAG_GROUP, rpmtdGetString(&td));
+	    headerGet(spec->packages->header, RPMTAG_GROUP, &td, HEADERGET_DEFAULT);
+	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
 	    rpmtdFreeData(&td);
 	}
     }
