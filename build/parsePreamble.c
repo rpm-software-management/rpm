@@ -906,20 +906,30 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	goto exit;
     }
 
-    if (pkg == spec->packages)
+    /* It is the main package */
+    if (pkg == spec->packages) {
 	fillOutMainPackage(pkg->header);
+	/* Define group tag to something when group is undefined in main package*/
+	if (!headerIsEntry(pkg->header, RPMTAG_GROUP)) {
+	    headerPutString(pkg->header, RPMTAG_GROUP, "Unspecified");
+	}
+    }
 
     if (checkForDuplicates(pkg->header, NVR)) {
 	goto exit;
     }
 
-    if (pkg != spec->packages)
+    if (pkg != spec->packages) {
 	headerCopyTags(spec->packages->header, pkg->header,
 			(rpmTag *)copyTagsDuringParse);
+	/* inherit group tag from the main package if unspecified */
+	if (!headerIsEntry(pkg->header, RPMTAG_GROUP)) {
+	    struct rpmtd_s td;
 
-    /* Many things expect group to always exist, put something in there... */
-    if (!headerIsEntry(pkg->header, RPMTAG_GROUP)) {
-	headerPutString(pkg->header, RPMTAG_GROUP, "Unspecified");
+	    headerGet(spec->packages->header, RPMTAG_GROUP, &td, HEADERGET_RAW);
+	    headerPutString(pkg->header, RPMTAG_GROUP, rpmtdGetString(&td));
+	    rpmtdFreeData(&td);
+	}
     }
 
     if (checkForRequired(pkg->header, NVR)) {
