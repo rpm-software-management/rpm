@@ -901,8 +901,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	addMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
     }
 
-    /* XXX Skip valid arch check if not building binary package */
-    if (!spec->anyarch && checkForValidArchitectures(spec)) {
+    /* This check is harmless as BuildArch tags are ignored in case of anyarch != 0 */
+    if (checkForValidArchitectures(spec)) {
 	goto exit;
     }
 
