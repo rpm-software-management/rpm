@@ -376,6 +376,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
 #if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
     /* stale lock removal */
     rc = dbenv->failchk(dbenv, 0);
+    rc = cvtdberr(dbi, "dbenv->failchk", rc, _debug);
+    if (rc)
+	goto errxit;
 #endif
 
     *dbenvp = dbenv;
