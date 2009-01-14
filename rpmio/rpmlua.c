@@ -35,6 +35,12 @@ static rpmlua globalLuaState = NULL;
 static int luaopen_rpm(lua_State *L);
 static int rpm_print(lua_State *L);
 
+rpmlua rpmluaGetGlobalState(void)
+{
+    INITSTATE(NULL, lua);
+    return lua;
+}
+
 rpmlua rpmluaNew()
 {
     rpmlua lua = (rpmlua) xcalloc(1, sizeof(*lua));

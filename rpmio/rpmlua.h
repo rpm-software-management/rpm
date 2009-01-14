@@ -44,6 +44,7 @@ typedef struct rpmluav_s * rpmluav;
 
 rpmlua rpmluaNew(void);
 void *rpmluaFree(rpmlua lua);
+rpmlua rpmluaGetGlobalState(void);
 
 int rpmluaCheckScript(rpmlua lua, const char *script,
 		      const char *name);
