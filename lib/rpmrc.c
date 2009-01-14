@@ -22,6 +22,7 @@
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include "lib/misc.h"
+#include "lib/rpmliblua.h"
 
 #include "debug.h"
 
@@ -1692,9 +1693,9 @@ int rpmReadConfigFiles(const char * file, const char * target)
 	os = _free(os);
     }
 
-    /* Force Lua state initialization */
 #ifdef WITH_LUA
-    (void) rpmluaGetGlobalState();
+    /* Force Lua state initialization */
+    rpmLuaInit();
 #endif
 
     return 0;
