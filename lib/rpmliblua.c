@@ -35,4 +35,10 @@ void rpmLuaInit(void)
     return;
 }
 
+void rpmLuaFree(void)
+{
+    rpmlua lua = rpmluaGetGlobalState();
+    rpmluaFree(lua);
+}
+
 #endif /* WITH_LUA */

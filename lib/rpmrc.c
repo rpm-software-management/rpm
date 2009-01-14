@@ -1606,6 +1606,9 @@ void rpmFreeRpmrc(void)
 
     /* XXX doesn't really belong here but... */
     rpmFreeCrypto();
+#ifdef WITH_LUA
+    rpmLuaFree();
+#endif
 
     return;
 }
