@@ -84,6 +84,7 @@ void *rpmluaFree(rpmlua lua)
 	if (lua->L) lua_close(lua->L);
 	free(lua->printbuf);
 	free(lua);
+	if (lua == globalLuaState) globalLuaState = NULL;
     }
     return NULL;
 }
