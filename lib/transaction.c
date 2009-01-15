@@ -21,6 +21,7 @@
 #include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"
 #include "lib/cpio.h"
+#include "rpmio/rpmhook.h"
 
 #include "debug.h"
 
@@ -825,7 +826,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	    psm = rpmpsmNew(ts, p);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
 	    psm = rpmpsmFree(psm);
-	    rpmteClose(p, ts);
+	    rpmteClose(p, ts, 0);
 	}
     }
     pi = rpmtsiFree(pi);
@@ -878,7 +879,7 @@ static int rpmtsProcess(rpmts ts)
 	    failed = rpmpsmStage(psm, stage);
 	    (void) rpmswExit(rpmtsOp(ts, op), 0);
 	    psm = rpmpsmFree(psm);
-	    rpmteClose(p, ts);
+	    rpmteClose(p, ts, 1);
 	}
 	if (failed) {
 	    rpmteMarkFailed(p, ts);

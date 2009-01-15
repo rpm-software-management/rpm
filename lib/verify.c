@@ -287,7 +287,7 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
 	rpmtsSetScriptFd(ts, NULL);
 
     /* clean up our fake transaction bits */
-    rpmteClose(te, ts);
+    rpmteClose(te, ts, 0);
     rpmtsEmpty(ts);
 
     return rc;

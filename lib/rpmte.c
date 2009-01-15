@@ -809,7 +809,7 @@ static Header rpmteFDHeader(rpmts ts, rpmte te)
 	rpmtsSetVSFlags(ts, ovsflags);
 	switch (pkgrc) {
 	default:
-	    rpmteClose(te, ts);
+	    rpmteClose(te, ts, 1);
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -851,7 +851,7 @@ exit:
     return (h != NULL);
 }
 
-int rpmteClose(rpmte te, rpmts ts)
+int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 {
     if (te == NULL || ts == NULL)
 	return 0;
@@ -868,7 +868,9 @@ int rpmteClose(rpmte te, rpmts ts)
 	break;
     }
     rpmteSetHeader(te, NULL);
-    rpmteSetFI(te, NULL);
+    if (reset_fi) {
+	rpmteSetFI(te, NULL);
+    }
     return 1;
 }
 
