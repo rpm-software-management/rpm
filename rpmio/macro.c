@@ -983,6 +983,8 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
             break;
 	}
 	b = be;
+    } else if (STREQ("getenv", f, fn)) {
+	b = getenv(buf);
     } else if (STREQ("S", f, fn)) {
 	for (b = buf; (c = *b) && risdigit(c);)
 	    b++;
@@ -1253,6 +1255,7 @@ expandMacro(MacroBuf mb)
 	    STREQ("uncompress", f, fn) ||
 	    STREQ("url2path", f, fn) ||
 	    STREQ("u2p", f, fn) ||
+	    STREQ("getenv", f, fn) ||
 	    STREQ("S", f, fn) ||
 	    STREQ("P", f, fn) ||
 	    STREQ("F", f, fn)) {
