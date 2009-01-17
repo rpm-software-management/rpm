@@ -1058,8 +1058,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 
     /* Run pre-transaction scripts, but only if there are no known
-     * problems up to this point. */
-    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST))
+     * problems up to this point and not disabled otherwise. */
+    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPRE))
      	  || (rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs))))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
@@ -1245,7 +1245,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Actually install and remove packages */
     rc = rpmtsProcess(ts);
 
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPOST))) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
 	runTransScripts(ts, RPMTAG_POSTTRANS);
     }
