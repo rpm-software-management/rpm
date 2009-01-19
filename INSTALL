@@ -109,8 +109,10 @@ autoconf, automake, gettext, libtool, makeinfo, perl, GNU m4, GNU tar
 available from 
     http://www.gnu.org/
 
-If you want to build RPM API documentation, use --enable-apidocs configure
-option. Doxygen is needed for this, it's available at
+RPM distribution tarballs come with doxygen generated HTML documentation
+for the public RPM API, but if you want to generate documentation for
+the entire source including internal API's, use --enable-hackingdocs
+configure option. Doxygen is needed for this, it's available at
     http://www.stack.nl/~dimitri/doxygen/
 
 If you plan on using cryptographic signatures you will need a version
