@@ -1628,7 +1628,7 @@ static rpmRC rpmReadRC(const char * rcfiles)
     argvFree(globs);
 
     /* Read each file in rcfiles. */
-    for (p = files; *p; p++) {
+    for (p = files; p && *p; p++) {
 	/* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
 	if (access(*p, R_OK) != 0) {
 	    if (rcfiles == defrcfiles && p != files)
