@@ -1358,6 +1358,7 @@ static int copyI18NEntry(Header h, indexEntry entry, rpmtd td,
 exit:
     if (flags & HEADERGET_ALLOC) {
 	td->data = xstrdup(td->data);
+	td->flags |= RPMTD_ALLOCED;
     }
 
     return 1;
