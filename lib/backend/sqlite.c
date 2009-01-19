@@ -673,14 +673,16 @@ static int sql_initDB(dbiIndex dbi)
 	}
 if (_debug)
 fprintf(stderr, "\t%s(%d) type(%d) keytype %s\n", rpmTagGetName(dbi->dbi_rpmtag), dbi->dbi_rpmtag, rpmTagGetType(dbi->dbi_rpmtag), keytype);
-	rasprintf(&cmd, "CREATE TABLE '%s' (key %s, value %s)",
+	rasprintf(&cmd, "CREATE %sTABLE '%s' (key %s, value %s)",
+		        dbi->dbi_rpmtag == RPMDBI_DEPENDS ? "TEMPORARY " : " ",
 			dbi->dbi_subfile, keytype, valtype);
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
 	cmd = _free(cmd);
 	if (rc)
 	    goto exit;
 
-	rasprintf(&cmd, "CREATE TABLE 'db_info' (endian TEXT)");
+	rasprintf(&cmd, "CREATE %sTABLE 'db_info' (endian TEXT)",
+		        dbi->dbi_rpmtag == RPMDBI_DEPENDS ? "TEMPORARY " : " ");
 	rc = sqlite3_exec(sqldb->db, cmd, NULL, NULL, (char **)&scp->pzErrmsg);
 	cmd = _free(cmd);
 	if (rc)
