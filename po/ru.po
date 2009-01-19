@@ -1477,7 +1477,7 @@ msgstr "Файл архива не найден в заголовке пакета"
 
 #: lib/cpio.c:229
 msgid " failed - "
-msgstr "не удалось - "
+msgstr " не удалось - "
 
 #: lib/depends.c:193
 #, fuzzy, c-format
