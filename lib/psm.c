@@ -334,7 +334,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    if (strcmp(rootdir, "/") == 0)
+    if (rootdir && strcmp(rootdir, "/") == 0)
 	rootdir = NULL;
 
     if (rpmMkdirs(rootdir, "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
