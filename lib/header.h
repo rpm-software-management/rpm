@@ -154,9 +154,18 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp);
  */
 int headerIsEntry(Header h, rpmTag tag);
 
+/** \ingroup header
+ * Modifier flags for headerGet() operation.
+ * For consistent behavior you'll probably want to use ALLOC to ensure
+ * the caller owns the data, but MINMEM is useful for avoiding extra
+ * copy of data when you are sure the header wont go away.
+ * Most of the time you'll probably want EXT too, but note that extensions 
+ * tags don't generally honor the other flags, MINMEM, RAW, ALLOC and ARGV 
+ * are only relevant for non-extension data.
+ */
 typedef enum headerGetFlags_e {
-    HEADERGET_DEFAULT	= 0,
-    HEADERGET_MINMEM 	= (1 << 0), /* string pointers refer to header memory */
+    HEADERGET_DEFAULT	= 0,	    /* legacy headerGetEntry() behavior */
+    HEADERGET_MINMEM 	= (1 << 0), /* pointers can refer to header memory */
     HEADERGET_EXT 	= (1 << 1), /* lookup extension types too */
     HEADERGET_RAW 	= (1 << 2), /* return raw contents (no i18n lookups) */
     HEADERGET_ALLOC	= (1 << 3), /* always allocate memory for all data */
