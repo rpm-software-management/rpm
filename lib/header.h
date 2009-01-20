@@ -160,6 +160,7 @@ typedef enum headerGetFlags_e {
     HEADERGET_EXT 	= (1 << 1), /* lookup extension types too */
     HEADERGET_RAW 	= (1 << 2), /* return raw contents (no i18n lookups) */
     HEADERGET_ALLOC	= (1 << 3), /* always allocate memory for all data */
+    HEADERGET_ARGV	= (1 << 4), /* return string arrays NULL-terminated */
 } headerGetFlags;
 
 /** \ingroup header

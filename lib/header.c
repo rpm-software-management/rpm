@@ -1144,8 +1144,10 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     /* ALLOC overrides MINMEM */
     int allocMem = flags & HEADERGET_ALLOC;
     int minMem = allocMem ? 0 : flags & HEADERGET_MINMEM;
+    int argvArray = (flags & HEADERGET_ARGV) ? 1 : 0;
 
     assert(td != NULL);
+    td->flags = RPMTD_IMMUTABLE;
     switch (entry->info.type) {
     case RPM_BIN_TYPE:
 	/*
@@ -1198,7 +1200,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
     {	const char ** ptrEntry;
-	int tableSize = count * sizeof(char *);
+	int tableSize = (count + argvArray) * sizeof(char *);
 	char * t;
 	int i;
 
@@ -1217,6 +1219,10 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	    *ptrEntry++ = t;
 	    t = strchr(t, 0);
 	    t++;
+	}
+	if (argvArray) {
+	    *ptrEntry = NULL;
+	    td->flags |= RPMTD_ARGV;
 	}
     }	break;
     case RPM_CHAR_TYPE:
@@ -1240,7 +1246,6 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
     td->type = entry->info.type;
     td->count = count;
 
-    td->flags = RPMTD_IMMUTABLE;
     if (td->data && entry->data != td->data) {
 	td->flags |= RPMTD_ALLOCED;
     }
