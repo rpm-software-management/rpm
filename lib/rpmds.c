@@ -140,7 +140,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
     rpmds ds = NULL;
     const char * Type;
     struct rpmtd_s names;
-    headerGetFlags hgflags = HEADERGET_ALLOC;
+    headerGetFlags hgflags = HEADERGET_ALLOC|HEADERGET_ARGV;
 
     if (dsType(tagN, &Type, &tagEVR, &tagF))
 	goto exit;
