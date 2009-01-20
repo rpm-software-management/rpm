@@ -44,6 +44,8 @@ struct rpmds_s {
     int nrefs;			/*!< Reference count. */
 };
 
+static const char ** rpmdsDupArgv(const char ** argv, int argc);
+
 static int dsType(rpmTag tag, 
 		  const char ** Type, rpmTag * tagEVR, rpmTag * tagF)
 {
@@ -80,28 +82,6 @@ static int dsType(rpmTag tag,
     if (tagF) *tagF = f;
     return rc;
 }    
-
-/*
- * Dupe a string into string array (of size 1) + contents stored in a single 
- * allocation block similarly to how header data is returned so it will 
- * be freed by single free(). 
- */
-static const char ** str2hge(const char *str)
-{
-    const char ** arr;
-    size_t slen = str ? strlen(str) + 1 : 0;
-    char *t = xmalloc(sizeof(*arr) + slen);
-    arr = (const char **) t;
-
-    if (str) {
-	t += sizeof(*arr);
-	strcpy(t, str);
-    } else {
-	t = NULL;
-    }
-    arr[0] = t;
-    return arr;
-}
 
 rpmds rpmdsUnlink(rpmds ds, const char * msg)
 {
@@ -268,8 +248,8 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     ds->tagN = tagN;
     ds->Count = 1;
     ds->nopromote = _rpmds_nopromote;
-    ds->N = str2hge(n);
-    ds->EVR = str2hge(evr);
+    ds->N = rpmdsDupArgv(&n, 1);
+    ds->EVR = rpmdsDupArgv((const char **)&evr, 1);
     free(evr);
 
     ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
@@ -304,8 +284,8 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
     ds->Count = 1;
     ds->nopromote = _rpmds_nopromote;
 
-    ds->N = str2hge(N);
-    ds->EVR = str2hge(EVR);
+    ds->N = rpmdsDupArgv(&N, 1);
+    ds->EVR = rpmdsDupArgv(&EVR, 1);
 
     ds->Flags = xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
