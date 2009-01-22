@@ -105,7 +105,7 @@ rpmProblem rpmpsGetProblem(rpmpsi psi)
     if (psi != NULL && psi->ix >= 0 && psi->ix < rpmpsNumProblems(psi->ps)) {
 	p = psi->ps->probs + psi->ix;
     } 
-    return *p;
+    return p ? *p : NULL;
 }
 
 rpmps rpmpsCreate(void)
