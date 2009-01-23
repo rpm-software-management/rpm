@@ -1173,7 +1173,7 @@ done \
 
 #------------------------------------------------------------------------------
 # arch macro for all supported ARM processors
-%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l
+%arm	armv3l armv4b armv4l armv4tl armv5tel armv5tejl armv6l armv7l
 
 #------------------------------------------------------------------------------
 # arch macro for all supported Sparc processors
