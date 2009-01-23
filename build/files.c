@@ -2226,18 +2226,28 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
     genSourceRpmName(spec);
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	const char *n, *v, *r;
+	const char *n, *v, *r, *a;
 	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
 	if (pkg->fileList == NULL)
 	    continue;
 
-	(void) headerNVR(pkg->header, &n, &v, &r);
-	rpmlog(RPMLOG_NOTICE, _("Processing files: %s-%s-%s\n"), n, v, r);
+	(void) headerNEVRA(pkg->header, &n, NULL, &v, &r, &a);
+	rpmlog(RPMLOG_NOTICE, _("Processing files: %s-%s-%s.%s\n"), n, v, r, a);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)) != RPMRC_OK ||
 	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
+
+	if (strcmp(a, "noarch") == 0 && headerGetColor(pkg->header) != 0) {
+	    int terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
+	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
+		   _("Arch dependent binaries in noarch package\n"));
+	    if (terminate) {
+		rc = RPMRC_FAIL;
+		goto exit;
+	    }
+	}
     }
 
     /* Now we have in fileList list of files from all packages.

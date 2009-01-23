@@ -379,6 +379,10 @@ package or when debugging this package.\
 %_missing_doc_files_terminate_build	1
 
 #
+# Should binaries in noarch packages terminate a build?
+%_binaries_in_noarch_packages_terminate_build	1
+
+#
 # Program to call for each successfully built and written binary package.
 # The package name is passed to the program as a command-line argument.
 #
