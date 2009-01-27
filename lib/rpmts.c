@@ -423,6 +423,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
 
     headerPutString(h, RPMTAG_RPMVERSION, RPMVERSION);
     headerPutString(h, RPMTAG_BUILDHOST, buildhost);
+    headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 
     {   rpm_tid_t tid = rpmtsGetTid(ts);
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
