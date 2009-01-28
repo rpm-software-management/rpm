@@ -398,6 +398,13 @@ rpmTagClass rpmTagGetClass(rpmTag tag);
 rpmTag rpmTagGetValue(const char * tagstr);
 
 /** \ingroup rpmtag
+ * Return data class of type
+ * @param tag		tag type
+ * @return		data class, RPM_NULL_CLASS on unknown.
+ */
+rpmTagClass rpmTagTypeGetClass(rpmTagType type);
+
+/** \ingroup rpmtag
  * Return known rpm tag names, sorted by name.
  * @retval tagnames 	tag container of string array type
  * @param fullname	return short or full name

@@ -294,10 +294,10 @@ rpmTagType rpmTagGetType(rpmTag tag)
     return ((*rpmTags->tagType)(tag));
 }
 
-rpmTagClass rpmTagGetClass(rpmTag tag)
+rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 {
     rpmTagClass class;
-    switch (rpmTagGetType(tag) & RPM_MASK_TYPE) {
+    switch (type & RPM_MASK_TYPE) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
@@ -319,6 +319,11 @@ rpmTagClass rpmTagGetClass(rpmTag tag)
 	break;
     }
     return class;
+}
+
+rpmTagClass rpmTagGetClass(rpmTag tag)
+{
+    return rpmTagTypeGetClass(rpmTagGetType(tag));
 }
 
 rpmTag rpmTagGetValue(const char * tagstr)
