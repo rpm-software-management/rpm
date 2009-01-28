@@ -74,7 +74,7 @@ rpmTagType rpmtdType(rpmtd td)
 rpmTagClass rpmtdClass(rpmtd td)
 {
     assert(td != NULL);
-    return rpmTagGetClass(td->tag);
+    return rpmTagTypeGetClass(td->type);
 }
 
 int rpmtdGetIndex(rpmtd td)
