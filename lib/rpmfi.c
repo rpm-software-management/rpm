@@ -558,9 +558,9 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	}
 	ndigest = rpmfiFDigest(nfi, &nalgo, &ndiglen);
-	/* XXX can't compare different hash types, what should we do here? */
+	/* Can't compare different hash types, backup to avoid data loss */
 	if (oalgo != nalgo || odiglen != ndiglen)
-	    return FA_CREATE;
+	    return save;
 	if (odigest && ndigest && !memcmp(odigest, ndigest, odiglen))
 	    return FA_SKIP;	/* identical file, don't bother. */
     } else /* dbWhat == LINK */ {
