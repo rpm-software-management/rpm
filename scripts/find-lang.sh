@@ -161,8 +161,11 @@ fi
 
 find $TOP_DIR -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
-'"$NO_ALL_NAME$QT"'s:\(.*/'"$NAME"'_\([^/.]\+\)\.qm$\):%lang(\2) \1:
-'"$ALL_NAME$QT"'s:\(.*[/_]\([^/_]\+\)\.qm$\):%lang(\2) \1:
+'"$NO_ALL_NAME$QT"'s:\(.*/'"$NAME"'_\([a-zA-Z]\{2\}\(_[a-zA-Z]\{2\}\)\?\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:\(.*/[^/_]\+_\([a-zA-Z]\{2\}_[a-zA-Z]\{2\}\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:\(.*/[^/_]\+_\([a-zA-Z]\{2\}\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:^\([^%].*/[^/]\+_\([a-zA-Z]\{2\}_[a-zA-Z]\{2\}\)\.qm$\):%lang(\2) \1:
+'"$ALL_NAME$QT"'s:^\([^%].*/[^/]\+_\([a-zA-Z]\{2\}\)\.qm$\):%lang(\2) \1:
 s:^[^%].*::
 s:%lang(C) ::
 /^$/d' >> $MO_NAME
