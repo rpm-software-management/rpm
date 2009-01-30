@@ -224,14 +224,8 @@ static void legacyRetrofit(Header h)
      */
      compressFilelist(h);
 
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (headerIsSource(h)) {
-	uint32_t one = 1;
-
-	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE))
-	    headerPutUint32(h, RPMTAG_SOURCEPACKAGE, &one, 1);
-    } else {
-	/* Retrofit "Provide: name = EVR" for binary packages. */
+    /* Retrofit "Provide: name = EVR" for binary packages. */
+    if (!headerIsSource(h)) {
 	providePackageNVR(h);
     }
 }

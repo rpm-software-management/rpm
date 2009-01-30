@@ -835,20 +835,25 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 exit:
     if (rc != RPMRC_FAIL && h != NULL && hdrp != NULL) {
+	/* Retrofit RPMTAG_SOURCEPACKAGE to srpms for compatibility */
+	if (leadtype == RPMLEAD_SOURCE && headerIsSource(h)) {
+	    if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE)) {
+		uint32_t one = 1;
+		headerPutUint32(h, RPMTAG_SOURCEPACKAGE, &one, 1);
+	    }
+	}
 	/*
- 	 * Some binary packages in the wild don't have RPMTAG_SOURCERPM,
- 	 * confusing us greatly. Ensure RPMTAG_SOURCERPM is always set
- 	 * on binary packages.
+ 	 * Try to make sure binary rpms have RPMTAG_SOURCERPM set as that's
+ 	 * what we use for differentiating binary vs source elsewhere.
  	 */
-	if (leadtype == RPMLEAD_BINARY && headerIsSource(h)) {
-	    headerPutString(h, RPMTAG_SOURCERPM, "");
+	if (!headerIsEntry(h, RPMTAG_SOURCEPACKAGE) && headerIsSource(h)) {
+	    headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 	}
 	/* 
          * Convert legacy headers on the fly. Not having "new" style compressed
          * filenames is close enough estimate for legacy indication... 
-         * Source rpms are retrofitted for the silly RPMTAG_SOURCEPACKAGE tag.
          */
-	if (!headerIsEntry(h, RPMTAG_DIRNAMES) || headerIsSource(h)) {
+	if (!headerIsEntry(h, RPMTAG_DIRNAMES)) {
 	    headerConvert(h, HEADERCONV_RETROFIT_V3);
 	}
 	
