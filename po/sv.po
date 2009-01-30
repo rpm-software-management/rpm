@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-30 09:22+0200\n"
+"POT-Creation-Date: 2009-01-30 11:31+0200\n"
 "PO-Revision-Date: 2009-01-17 17:20+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -1710,12 +1710,12 @@ msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/package.c:900
+#: lib/package.c:905
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s är en delta-RPM och kan inte installeras direkt\n"
 
-#: lib/package.c:904
+#: lib/package.c:909
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Ej stödd last (%s) i paket %s\n"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-19 15:09+0200\n"
+"POT-Creation-Date: 2009-01-30 11:31+0200\n"
 "PO-Revision-Date: 2008-10-23 22:39-0000\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -1712,12 +1712,12 @@ msgstr "preskačem paket %s sa nepotvrđenim V%u potpisom\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nije uspelo: %s\n"
 
-#: lib/package.c:900
+#: lib/package.c:905
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s je Delta RPM i ne može se direktno instalirati\n"
 
-#: lib/package.c:904
+#: lib/package.c:909
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodržan teret (%s) u paketu %s\n"
@@ -2518,15 +2518,15 @@ msgstr " (NEPOUZDANI KLJUČEVI:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "NO "
 msgstr "NE "
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "YES"
 msgstr "DA"
 
-#: lib/rpmds.c:842
+#: lib/rpmds.c:822
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2536,54 +2536,54 @@ msgstr ""
 "\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:979
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "Neophodne:, Obezbeđene:, i Zastarele: verzije podrške zavisnosti."
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:982
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ime(na) datoteke sačuvano kao (nazivDirektorijuma,osnovnoIme,"
 "indeksDirektorijuma) par, ne kao putanja."
 
-#: lib/rpmds.c:1006
+#: lib/rpmds.c:986
 msgid "package payload can be compressed using bzip2."
 msgstr "tovar paketa može biti komprimovan pomoću bzip2-a."
 
-#: lib/rpmds.c:1010
+#: lib/rpmds.c:990
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "tovar paketa može biti komprimovan pomoću bzip2-a."
 
-#: lib/rpmds.c:1013
+#: lib/rpmds.c:993
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "datoteka(e) tovara paketa ima \"./\" prefiks."
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:996
 msgid "package name-version-release is not implicitly provided."
 msgstr "naziv paketa-verzija-izdanje nije implicitno navedeno."
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:999
 msgid "header tags are always sorted after being loaded."
 msgstr "oznake zaglavlja se uvek sortiraju nakon učitavanja."
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1002
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "prevodilac skriptice može koristiti argumente zaglavlja."
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1005
 msgid "a hardlink file set may be installed without being complete."
 msgstr "datoteka čvrste veze može biti instalirana iako nije potpuna."
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1008
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skriptica paketa može pristupiti rpm bazi podataka tokom instalacije."
 
-#: lib/rpmds.c:1032
+#: lib/rpmds.c:1012
 msgid "internal support for lua scripts."
 msgstr "unutrašnja podrška za skripte lua."
 
-#: lib/rpmds.c:1036
+#: lib/rpmds.c:1016
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 

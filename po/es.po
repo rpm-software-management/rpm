@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-19 15:09+0200\n"
+"POT-Creation-Date: 2009-01-30 11:31+0200\n"
 "PO-Revision-Date: 2006-04-28 09:52+1000\n"
 "Last-Translator: Manuel Ospina <mospina@redhat.com>\n"
 "Language-Team: Spanish <en@li.org>\n"
@@ -1739,12 +1739,12 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread falló: %s\n"
 
-#: lib/package.c:900
+#: lib/package.c:905
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s no puede ser instalado\n"
 
-#: lib/package.c:904
+#: lib/package.c:909
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -2565,15 +2565,15 @@ msgstr " (LLAVES NO CONFIABLES:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "YES"
 msgstr "SI"
 
-#: lib/rpmds.c:842
+#: lib/rpmds.c:822
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2583,60 +2583,60 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:979
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, y Obsoletes: dependencias soportan versiones."
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:982
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "nombres de archivos almacenados como (dirName,baseName,dirIndex) \"tuple\", "
 "no como ruta."
 
-#: lib/rpmds.c:1006
+#: lib/rpmds.c:986
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "la carga del paquete está comprimida usando bzip2."
 
-#: lib/rpmds.c:1010
+#: lib/rpmds.c:990
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "la carga del paquete está comprimida usando bzip2."
 
-#: lib/rpmds.c:1013
+#: lib/rpmds.c:993
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "los archivos de carga del paquete tienen el prefijo  \"./\"."
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:996
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 "nombre-versión-lanzamiento del paquete no se proporciona implícitamente."
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:999
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 "las etiquetas de cabecera son siempre ordenadas después de ser cargadas."
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1002
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "el intérprete de scriptlet puede utilizar argumentos de la cabecera."
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1005
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "un grupo de archivos de enlaces duros puede ser instalado aunque no se haya "
 "completado."
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1008
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1032
+#: lib/rpmds.c:1012
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- no está soportado en cadenas\n"
 
-#: lib/rpmds.c:1036
+#: lib/rpmds.c:1016
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 

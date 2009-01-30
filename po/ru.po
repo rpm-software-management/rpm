@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-19 15:09+0200\n"
+"POT-Creation-Date: 2009-01-30 11:31+0200\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -1719,12 +1719,12 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: ошибка Fread: %s\n"
 
-#: lib/package.c:900
+#: lib/package.c:905
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s не может быть установлен\n"
 
-#: lib/package.c:904
+#: lib/package.c:909
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -2540,15 +2540,15 @@ msgstr " (НЕТ ДОВЕРИЯ К КЛЮЧАМ:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "NO "
 msgstr "НЕT"
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "YES"
 msgstr "ДА"
 
-#: lib/rpmds.c:842
+#: lib/rpmds.c:822
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2558,54 +2558,54 @@ msgstr ""
 "\"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:979
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, и Obsoletes: зависимости поддерживают версии."
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:982
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "имена файла(ов) хранятся в формате (dirName,baseName,dirIndex)."
 
-#: lib/rpmds.c:1006
+#: lib/rpmds.c:986
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "для упаковки содержимого пакета используется bzip2"
 
-#: lib/rpmds.c:1010
+#: lib/rpmds.c:990
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "для упаковки содержимого пакета используется bzip2"
 
-#: lib/rpmds.c:1013
+#: lib/rpmds.c:993
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "префикс \"./\" используется для фала(ов) содержимого пакета."
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:996
 msgid "package name-version-release is not implicitly provided."
 msgstr "имя-версия-выпуск пакета не предоставляется автоматически."
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:999
 msgid "header tags are always sorted after being loaded."
 msgstr "ярлыки заголовков всегда сортируются после загрузки."
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1002
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "интерпретатор сценариев может использовать аргументы из заголовка."
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1005
 msgid "a hardlink file set may be installed without being complete."
 msgstr "поддерживается частичная установка набора жестких ссылок пакета."
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1008
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1032
+#: lib/rpmds.c:1012
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- не поддерживается для строк\n"
 
-#: lib/rpmds.c:1036
+#: lib/rpmds.c:1016
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 

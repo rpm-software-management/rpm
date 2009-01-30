@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-19 15:09+0200\n"
+"POT-Creation-Date: 2009-01-30 11:31+0200\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1734,12 +1734,12 @@ msgstr ""
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread baþarýsýz: %s\n"
 
-#: lib/package.c:900
+#: lib/package.c:905
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s yüklenemedi\n"
 
-#: lib/package.c:904
+#: lib/package.c:909
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -2574,15 +2574,15 @@ msgstr " (GÜVENCESÝZ ANAHTARLAR:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "NO "
 msgstr "HAYIR "
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "YES"
 msgstr "EVET"
 
-#: lib/rpmds.c:842
+#: lib/rpmds.c:822
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2591,52 +2591,52 @@ msgstr ""
 "\"B\" baðýmlýlýðý bir dönemsellik gerektirir (tabii ki \"A\" da)\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:979
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:982
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:1006
+#: lib/rpmds.c:986
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:1010
+#: lib/rpmds.c:990
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:1013
+#: lib/rpmds.c:993
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:996
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:999
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1002
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1005
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1008
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1032
+#: lib/rpmds.c:1012
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- dizgelerde desteklenmez\n"
 
-#: lib/rpmds.c:1036
+#: lib/rpmds.c:1016
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 

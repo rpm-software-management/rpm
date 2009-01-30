@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-19 15:09+0200\n"
+"POT-Creation-Date: 2009-01-30 11:31+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Jindrich Novy <jnovy@users.sourceforge.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1706,12 +1706,12 @@ msgstr "přeskakuji balíček %s s neověřitelným V%u podpisem\n"
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
 
-#: lib/package.c:900
+#: lib/package.c:905
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s is a Delta RPM a nemůže být přímo instalován\n"
 
-#: lib/package.c:904
+#: lib/package.c:909
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodporovaný payload (%s) in balíčku %s\n"
@@ -2509,15 +2509,15 @@ msgstr "(NEDŮVĚRYHODNÉ KLÍČE:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "NO "
 msgstr "NE "
 
-#: lib/rpmds.c:492
+#: lib/rpmds.c:472
 msgid "YES"
 msgstr "ANO"
 
-#: lib/rpmds.c:842
+#: lib/rpmds.c:822
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2526,51 +2526,51 @@ msgstr ""
 "Závislost \"B\" potřebuje epochu (předpokládáno stejné jako \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:979
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, a Obsoletes: verze pro podporu závislostí."
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:982
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "jména souborů uložená jako diName,baseName,dirIndex, ne jako cesta."
 
-#: lib/rpmds.c:1006
+#: lib/rpmds.c:986
 msgid "package payload can be compressed using bzip2."
 msgstr "payload balíčku může být komprimován pomocí bzip2."
 
-#: lib/rpmds.c:1010
+#: lib/rpmds.c:990
 msgid "package payload can be compressed using lzma."
 msgstr "payload balíčku může být komprimován pomocí lzma."
 
-#: lib/rpmds.c:1013
+#: lib/rpmds.c:993
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "soubory payloadu balíčku mají předponu \"./\"."
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:996
 msgid "package name-version-release is not implicitly provided."
 msgstr "NVR balíčku není implicitně zprostředkována."
 
-#: lib/rpmds.c:1019
+#: lib/rpmds.c:999
 msgid "header tags are always sorted after being loaded."
 msgstr "značky hlavičky jsou vždy setřízeny po nahrátí."
 
-#: lib/rpmds.c:1022
+#: lib/rpmds.c:1002
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpret skriptletů může použít argumenty z hlavičky."
 
-#: lib/rpmds.c:1025
+#: lib/rpmds.c:1005
 msgid "a hardlink file set may be installed without being complete."
 msgstr "hardlinkovaný soubor může být instalován bez toho, aby byl kompletní."
 
-#: lib/rpmds.c:1028
+#: lib/rpmds.c:1008
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skriptlety balíčku mohou přistupovat k rpm databázi při instalaci."
 
-#: lib/rpmds.c:1032
+#: lib/rpmds.c:1012
 msgid "internal support for lua scripts."
 msgstr "interní podpora pro lua skripty."
 
-#: lib/rpmds.c:1036
+#: lib/rpmds.c:1016
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 
