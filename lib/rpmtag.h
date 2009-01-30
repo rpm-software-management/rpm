@@ -252,7 +252,7 @@ typedef enum rpmTag_e {
     RPMTAG_SCRIPTSTATES		= 1174, /* i[] scriptlet exit codes (unimplemented) */
     RPMTAG_SCRIPTMETRICS	= 1175, /* i[] scriptlet execution times (unimplemented) */
     RPMTAG_BUILDCPUCLOCK	= 1176, /* i (unimplemented) */
-    RPMTAG_FILEDIGESTALGO	= 1177, /* i file checksum algorithm */
+    RPMTAG_FILEDIGESTALGOS	= 1177, /* i[] (unimplemented) */
     RPMTAG_VARIANTS		= 1178, /* s[] (unimplemented) */
     RPMTAG_XMAJOR		= 1179, /* i (unimplemented) */
     RPMTAG_XMINOR		= 1180, /* i (unimplemented) */
@@ -280,6 +280,7 @@ typedef enum rpmTag_e {
     RPMTAG_ORIGFILENAMES	= 5007, /* s[] extension */
     RPMTAG_LONGFILESIZES	= 5008,	/* l[] */
     RPMTAG_LONGSIZE		= 5009, /* l */
+    RPMTAG_FILEDIGESTALGO	= 5011, /* i file checksum algorithm */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
