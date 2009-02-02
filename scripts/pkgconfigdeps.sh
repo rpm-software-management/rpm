@@ -34,6 +34,8 @@ case $1 in
     *.pc)
 	i="`expr $i + 1`"
 	[ $i -eq 1 ] && echo "$pkgconfig"
+	DIR="`dirname ${filename}`"
+	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
 	    echo "pkgconfig($n)" "$r" "$v"
 	done
