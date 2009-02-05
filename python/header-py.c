@@ -85,7 +85,7 @@
  * \code
  * 	import os, rpm
  *
- *	ts = rpm.TranssactionSet()
+ *	ts = rpm.TransactionSet()
  * 	fdno = os.open("/tmp/foo-1.0-1.i386.rpm", os.O_RDONLY)
  * 	hdr = ts.hdrFromFdno(fdno)
  *	os.close(fdno)
