@@ -20,7 +20,7 @@ if [ -z "$depth" -o "$depth" -le "1" ]; then
 fi
 
 # Generate normal (.pyc) byte-compiled files.
-$python    -c 'import compileall; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1)' > /dev/null
+$python    -c 'import compileall, re; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/"'"))' > /dev/null
 
 # Generate optimized (.pyo) byte-compiled files.
-$python -O -c 'import compileall; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1)' > /dev/null
+$python -O -c 'import compileall, re; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/"'"))' > /dev/null
