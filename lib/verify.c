@@ -297,10 +297,10 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
  * Check file info from header against what's actually installed.
  * @param qva		parsed query/verify options
  * @param ts		transaction set
- * @param fi		file info set
+ * @param h		header to verify
  * @return		0 no problems, 1 problems found
  */
-static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
+static int verifyHeader(QVA_t qva, const rpmts ts, Header h)
 {
     rpmVerifyAttrs verifyResult = 0;
     /* FIX: union? */
@@ -309,9 +309,8 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
     char *buf = NULL;
     int i;
 
-    fi = rpmfiLink(fi, RPMDBG_M("verifyHeader"));
-    fi = rpmfiInit(fi, 0);
-    if (fi != NULL)	/* XXX lclint */
+    rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
+    rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
 	rpmfileAttrs fileAttrs;
 	int rc;
@@ -390,7 +389,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, rpmfi fi)
 	    buf = _free(buf);
 	}
     }
-    fi = rpmfiUnlink(fi, RPMDBG_M("verifyHeader"));
+    rpmfiFree(fi);
 	
     return ec;
 }
@@ -439,36 +438,29 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
-    rpmfi fi;
     int ec = 0;
     int rc;
 
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
-    if (fi != NULL) {
-
-	if (qva->qva_flags & VERIFY_DEPS) {
-	    int save_noise = _rpmds_unspecified_epoch_noise;
-	    if (rpmIsVerbose())
-		_rpmds_unspecified_epoch_noise = 1;
-	    if ((rc = verifyDependencies(qva, ts, h)) != 0)
-		ec = rc;
-	    _rpmds_unspecified_epoch_noise = save_noise;
-	}
-	if (qva->qva_flags & VERIFY_FILES) {
-	    if ((rc = verifyHeader(qva, ts, fi)) != 0)
-		ec = rc;
-	}
-	if ((qva->qva_flags & VERIFY_SCRIPT)
-	 && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
-	{
-	    FD_t fdo = fdDup(STDOUT_FILENO);
-	    if ((rc = rpmVerifyScript(qva, ts, h, fdo)) != 0)
-		ec = rc;
-	    if (fdo != NULL)
-		rc = Fclose(fdo);
-	}
-
-	fi = rpmfiFree(fi);
+    if (qva->qva_flags & VERIFY_DEPS) {
+	int save_noise = _rpmds_unspecified_epoch_noise;
+	if (rpmIsVerbose())
+	    _rpmds_unspecified_epoch_noise = 1;
+	if ((rc = verifyDependencies(qva, ts, h)) != 0)
+	    ec = rc;
+	_rpmds_unspecified_epoch_noise = save_noise;
+    }
+    if (qva->qva_flags & VERIFY_FILES) {
+	if ((rc = verifyHeader(qva, ts, h)) != 0)
+	    ec = rc;
+    }
+    if ((qva->qva_flags & VERIFY_SCRIPT)
+     && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
+    {
+	FD_t fdo = fdDup(STDOUT_FILENO);
+	if ((rc = rpmVerifyScript(qva, ts, h, fdo)) != 0)
+	    ec = rc;
+	if (fdo != NULL)
+	    rc = Fclose(fdo);
     }
 
     return ec;
