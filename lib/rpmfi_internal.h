@@ -54,7 +54,8 @@ struct rpmfi_s {
     char * fstates;		/*!< File state(s) (from header) */
 
     const rpm_color_t * fcolors;/*!< File color bits (header) */
-    const char ** fcaps;	/*! File capabilities (header) */
+    strcache fcapcache;		/*!< File capabilities cache */
+    scidx_t * fcaps;		/*!< Index to file cap(s) cache */
 
     const char ** cdict;	/*!< File class dictionary (header) */
     rpm_count_t ncdict;		/*!< No. of class entries. */
