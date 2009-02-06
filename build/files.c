@@ -1161,7 +1161,7 @@ static void genCpioListAndHeader(FileList fl,
 
     if (digestalgo != defaultalgo) {
 	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
-	rpmlibNeedsFeature(h, "FileDigests", "4.4.90-1");
+	rpmlibNeedsFeature(h, "FileDigests", "4.6.0-1");
     }
 
     if (_addDotSlash)

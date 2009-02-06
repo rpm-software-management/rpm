@@ -1011,7 +1011,7 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 	(                RPMSENSE_EQUAL),
     N_("internal support for lua scripts.") },
 #endif
-    { "rpmlib(FileDigests)", 		"4.4.90-1",
+    { "rpmlib(FileDigests)", 		"4.6.0-1",
 	(		 RPMSENSE_EQUAL),
     N_("file checksum digest algorithm is per package configurable") },
     { NULL,				NULL, 0,	NULL }
