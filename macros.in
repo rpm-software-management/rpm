@@ -309,6 +309,12 @@ package or when debugging this package.\
 #
 #%disturl
 
+#	Configurable distribution tag, same as DistTag: tag in a specfile.
+#	The tag will be used to supply reliable information to tools like
+#	rpmfind.
+#
+#%disttag
+
 #	Configurable bug URL, same as BugURL: tag in a specfile.
 #	The URL will be used to supply reliable information to where
 #	to file bugs.

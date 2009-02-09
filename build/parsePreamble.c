@@ -521,6 +521,7 @@ static struct optionalTag {
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
+    { RPMTAG_DISTTAG,		"%{disttag}" },
     { RPMTAG_BUGURL,		"%{bugurl}" },
     { -1, NULL }
 };
