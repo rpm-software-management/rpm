@@ -12,14 +12,15 @@
 static int rpm_vercmp(lua_State *L)
 {
     const char *v1, *v2;
-    int rc;
+    int rc = 0;
 
     v1 = luaL_checkstring(L, 1);
     v2 = luaL_checkstring(L, 2);
-
-    rc = rpmvercmp(v1, v2);
-    lua_pushinteger(L, rc);
-    return 1;
+    if (v1 && v2) {
+	lua_pushinteger(L, rpmvercmp(v1, v2));
+	rc = 1;
+    }
+    return rc;
 }
 
 static const luaL_reg luarpmlib_f[] = {
