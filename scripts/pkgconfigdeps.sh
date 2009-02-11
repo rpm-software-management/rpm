@@ -23,7 +23,7 @@ case $1 in
 	    [ -n "$n" ] || continue
 	    # We have a dependency.  Make a note that we need the pkgconfig
 	    # tool for this package.
-	    echo -n "pkgconfig($n)"
+	    echo -n "pkgconfig($n) "
 	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
 	    echo
 	done
@@ -41,7 +41,7 @@ case $1 in
 	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
 	    [ -n "$n" ] || continue
-	    echo -n "pkgconfig($n)"
+	    echo -n "pkgconfig($n) "
 	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
 	    echo
 	done
