@@ -20,9 +20,12 @@ case $1 in
 	DIR="`dirname ${filename}`"
 	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-provides "$filename" 2> /dev/null | while read n r v ; do
+	    [ -n "$n" ] || continue
 	    # We have a dependency.  Make a note that we need the pkgconfig
 	    # tool for this package.
-	    echo "pkgconfig($n)" "$r" "$v"
+	    echo -n "pkgconfig($n)"
+	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
+	    echo
 	done
 	;;
     esac
@@ -37,7 +40,10 @@ case $1 in
 	DIR="`dirname ${filename}`"
 	export PKG_CONFIG_PATH="$DIR:$DIR/../../share/pkgconfig"
 	$pkgconfig --print-requires "$filename" 2> /dev/null | while read n r v ; do
-	    echo "pkgconfig($n)" "$r" "$v"
+	    [ -n "$n" ] || continue
+	    echo -n "pkgconfig($n)"
+	    [ -n "$r" ] && [ -n "$v" ] && echo -n "$r" "$v"
+	    echo
 	done
     esac
     done
