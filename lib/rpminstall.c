@@ -268,7 +268,6 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     struct rpmEIU * eiu = xcalloc(1, sizeof(*eiu));
     rpmRelocation * relocations;
     char * fileURL = NULL;
-    int stopInstall = 0;
     rpmVSFlags vsflags, ovsflags, tvsflags;
     int rc;
     int xx;
@@ -575,38 +574,27 @@ maybe_manifest:
             eiu->numFailed += rc;
     }
 
-    if ((eiu->numSRPMS && !stopInstall) && eiu->sourceURL != NULL) {
+    if (eiu->numSRPMS && (eiu->sourceURL != NULL)) {
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    rpmdbCheckSignals();
-	    if (eiu->sourceURL[i] == NULL) continue;
-	    eiu->fd = Fopen(eiu->sourceURL[i], "r.ufdio");
-	    if (eiu->fd == NULL || Ferror(eiu->fd)) {
-		rpmlog(RPMLOG_ERR, _("cannot open file %s: %s\n"),
-			   eiu->sourceURL[i], Fstrerror(eiu->fd));
-		if (eiu->fd != NULL) {
-		    xx = Fclose(eiu->fd);
-		    eiu->fd = NULL;
-		}
-		continue;
+	    if (eiu->sourceURL[i] != NULL) {
+	        rc = RPMRC_OK;
+		if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST))
+		    rc = rpmInstallSource(ts, eiu->sourceURL[i], NULL, NULL);
+		if (rc != 0)
+		    eiu->numFailed++;
 	    }
-
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-		eiu->rpmrc = rpmInstallSourcePackage(ts, eiu->fd, NULL, NULL);
-		if (eiu->rpmrc != RPMRC_OK) eiu->numFailed++;
-	    }
-
-	    xx = Fclose(eiu->fd);
-	    eiu->fd = NULL;
 	}
     }
 
 exit:
-    if (eiu->pkgURL != NULL)
-    for (i = 0; i < eiu->numPkgs; i++) {
-	if (eiu->pkgURL[i] == NULL) continue;
-	if (eiu->pkgState[i] == 1)
-	    (void) unlink(eiu->pkgURL[i]);
-	eiu->pkgURL[i] = _free(eiu->pkgURL[i]);
+    if (eiu->pkgURL != NULL) {
+        for (i = 0; i < eiu->numPkgs; i++) {
+	    if (eiu->pkgURL[i] == NULL) continue;
+	    if (eiu->pkgState[i] == 1)
+	        (void) unlink(eiu->pkgURL[i]);
+	    eiu->pkgURL[i] = _free(eiu->pkgURL[i]);
+	}
     }
     eiu->pkgState = _free(eiu->pkgState);
     eiu->pkgURL = _free(eiu->pkgURL);
@@ -716,12 +704,12 @@ int rpmInstallSource(rpmts ts, const char * arg,
 	return 1;
     }
 
-    if (rpmIsVerbose())
+    if (rpmIsVerbose() && specFilePtr != NULL)
 	fprintf(stdout, _("Installing %s\n"), arg);
 
     {
 	rpmVSFlags ovsflags =
-		rpmtsSetVSFlags(ts, (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD));
+		rpmtsSetVSFlags(ts, (specFilePtr) ? (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD) : rpmtsVSFlags(ts));
 	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
 	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
