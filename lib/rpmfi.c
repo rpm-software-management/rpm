@@ -1217,7 +1217,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILESTATES))
 	_hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
 
-    if (!(flags & RPMFI_NOFILECAPS)) {
+    if (!(flags & RPMFI_NOFILECAPS) && headerIsEntry(h, RPMTAG_FILECAPS)) {
 	fi->fcapcache = strcacheNew();
 	fi->fcaps = cacheTag(fi->fcapcache, h, RPMTAG_FILECAPS);
     }
