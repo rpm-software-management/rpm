@@ -204,6 +204,16 @@ void * rpmShowProgress(const void * arg,
     return rc;
 }	
 
+static void setNotifyFlag(struct rpmInstallArguments_s * ia,
+			  rpmts ts)
+{
+    int notifyFlags, xx;
+
+    notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+    xx = rpmtsSetNotifyCallback(ts,
+				rpmShowProgress, (void *) ((long)notifyFlags));
+}
+
 struct rpmEIU {
     Header h;
     FD_t fd;
@@ -303,11 +313,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     vsflags = setvsFlags(ia);
     ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
 
-    {	int notifyFlags;
-	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags));
-    }
+    setNotifyFlag(ia, ts); 
 
     if ((eiu->relocations = relocations) != NULL) {
 	while (eiu->relocations->oldPath)
@@ -636,11 +642,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
-    {	int notifyFlags, xx;
-	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-	xx = rpmtsSetNotifyCallback(ts,
-			rpmShowProgress, (void *) ((long)notifyFlags));
-    }
+    setNotifyFlag(ia, ts);
 #endif
 
     qfmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
