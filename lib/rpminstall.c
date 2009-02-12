@@ -290,6 +290,37 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
     return rc;
 }
 
+static int tryReadManifest(struct rpmEIU * eiu)
+{
+    int rc, xx;
+
+    /* Try to read a package manifest. */
+    eiu->fd = Fopen(*eiu->fnp, "r.fpio");
+    if (eiu->fd == NULL || Ferror(eiu->fd)) {
+        rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
+	       Fstrerror(eiu->fd));
+	if (eiu->fd != NULL) {
+	    xx = Fclose(eiu->fd);
+	    eiu->fd = NULL;
+	}
+	eiu->numFailed++; *eiu->fnp = NULL;
+	return RPMRC_FAIL;
+    }
+
+    /* Read list of packages from manifest. */
+    rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
+    if (rc != RPMRC_OK)
+        rpmlog(RPMLOG_ERR, _("%s: not an rpm package (or package manifest): %s\n"),
+	       *eiu->fnp, Fstrerror(eiu->fd));
+    xx = Fclose(eiu->fd);
+    eiu->fd = NULL;
+
+    if (rc != RPMRC_OK)
+        eiu->numFailed++; *eiu->fnp = NULL;
+
+    return rc;
+}
+
 
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
@@ -443,7 +474,11 @@ restart:
 	    continue;
 	    break;
 	case RPMRC_NOTFOUND:
-	    goto maybe_manifest;
+	    rc = tryReadManifest(eiu);
+	    if (rc == RPMRC_OK) {
+	        eiu->prevx++;
+		goto restart;
+	    }
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -542,39 +577,6 @@ restart:
 	}
 
 	eiu->numRPMS++;
-	continue;
-
-maybe_manifest:
-	/* Try to read a package manifest. */
-	eiu->fd = Fopen(*eiu->fnp, "r.fpio");
-	if (eiu->fd == NULL || Ferror(eiu->fd)) {
-	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
-			Fstrerror(eiu->fd));
-	    if (eiu->fd != NULL) {
-		xx = Fclose(eiu->fd);
-		eiu->fd = NULL;
-	    }
-	    eiu->numFailed++; *eiu->fnp = NULL;
-	    break;
-	}
-
-	/* Read list of packages from manifest. */
-/* FIX: *eiu->argv can be NULL */
-	rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
-	if (rc != RPMRC_OK)
-	    rpmlog(RPMLOG_ERR, _("%s: not an rpm package (or package manifest): %s\n"),
-			*eiu->fnp, Fstrerror(eiu->fd));
-	xx = Fclose(eiu->fd);
-	eiu->fd = NULL;
-
-	/* If successful, restart the query loop. */
-	if (rc == RPMRC_OK) {
-	    eiu->prevx++;
-	    goto restart;
-	}
-
-	eiu->numFailed++; *eiu->fnp = NULL;
-	break;
     }
 
     rpmlog(RPMLOG_DEBUG, "found %d source and %d binary packages\n",
