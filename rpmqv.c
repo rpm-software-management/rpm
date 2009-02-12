@@ -447,7 +447,7 @@ int main(int argc, char *argv[])
 	argerror(_("--ignoresize may only be specified during package "
 		   "installation"));
 
-    if ((ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES) && bigMode != MODE_ERASE)
+    if ((ia->installInterfaceFlags & UNINSTALL_ALLMATCHES) && bigMode != MODE_ERASE)
 	argerror(_("--allmatches may only be specified during package "
 		   "erasure"));
 
@@ -711,7 +711,7 @@ int main(int argc, char *argv[])
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
-	if (ia->noDeps) ia->eraseInterfaceFlags |= UNINSTALL_NODEPS;
+	if (ia->noDeps) ia->installInterfaceFlags |= UNINSTALL_NODEPS;
 
 	if (!poptPeekArg(optCon)) {
 	    argerror(_("no packages given for erase"));

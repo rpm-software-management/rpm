@@ -13,7 +13,6 @@ struct rpmInstallArguments_s rpmIArgs = {
     0,			/* transFlags */
     0,			/* probFilter */
     0,			/* installInterfaceFlags */
-    0,			/* eraseInterfaceFlags */
     0,			/* qva_flags */
     0,			/* numRelocations */
     0,			/* noDeps */
@@ -131,7 +130,7 @@ struct poptOption rpmInstallPoptTable[] = {
   N_("install all files, even configurations which might otherwise be skipped"),
 	NULL},
  { "allmatches", '\0', POPT_BIT_SET,
-	&rpmIArgs.eraseInterfaceFlags, UNINSTALL_ALLMATCHES,
+	&rpmIArgs.installInterfaceFlags, UNINSTALL_ALLMATCHES,
 	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
 	NULL},
 

@@ -205,12 +205,67 @@ struct rpmEIU {
     rpmRC rpmrc;
 };
 
+static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
+		      int numPackages)
+{
+    rpmps ps;
+
+    int rc = 0;
+    int stop = 0;
+
+    int eflags = ia->installInterfaceFlags & INSTALL_ERASE;
+
+    if (!(ia->installInterfaceFlags & INSTALL_NODEPS)) {
+
+	if (rpmtsCheck(ts)) {
+	    rc = numPackages;
+	    stop = 1;
+	}
+
+	ps = rpmtsProblems(ts);
+	if (!stop && rpmpsNumProblems(ps) > 0) {
+	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
+	    rpmpsPrint(NULL, ps);
+	    rc = numPackages;
+	    stop = 1;
+	}
+	ps = rpmpsFree(ps);
+    }
+
+    if ((eflags? 1 : (!stop)) && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
+	if (rpmtsOrder(ts)) {
+	    rc = numPackages;
+	    stop = 1;
+	}
+    }
+
+    if (numPackages && !stop) {
+
+	if (eflags) {
+	    rpmlog(RPMLOG_DEBUG, "erasing packages\n");
+	    rpmtsClean(ts);
+	    rc = rpmtsRun(ts, NULL, ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES));
+	} else {
+	    rpmlog(RPMLOG_DEBUG, "installing binary packages\n");
+	    rpmtsClean(ts);
+	    rc = rpmtsRun(ts, NULL, ia->probFilter);
+	}
+
+	ps = rpmtsProblems(ts);
+
+	if ((rpmpsNumProblems(ps) > 0) && (eflags? 1 : (rc > 0)))
+	    rpmpsPrint((eflags? NULL : stderr), ps);
+	ps = rpmpsFree(ps);
+    }
+
+    return rc;
+}
+
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
     struct rpmEIU * eiu = xcalloc(1, sizeof(*eiu));
-    rpmps ps;
-    rpmprobFilterFlags probFilter;
     rpmRelocation * relocations;
     char * fileURL = NULL;
     int stopInstall = 0;
@@ -225,7 +280,6 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
-    probFilter = ia->probFilter;
     relocations = ia->relocations;
 
     if (ia->installInterfaceFlags & INSTALL_UPGRADE)
@@ -513,54 +567,15 @@ maybe_manifest:
 
     if (eiu->numFailed) goto exit;
 
-    if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NODEPS)) {
-
-	if (rpmtsCheck(ts)) {
-	    eiu->numFailed = eiu->numPkgs;
-	    stopInstall = 1;
-	}
-
-	ps = rpmtsProblems(ts);
-	if (!stopInstall && rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
-	    rpmpsPrint(NULL, ps);
-	    eiu->numFailed = eiu->numPkgs;
-	    stopInstall = 1;
-	}
-	ps = rpmpsFree(ps);
+    if (eiu->numRPMS) {
+        int rc = rpmcliTransaction(ts, ia, eiu->numPkgs);
+        if (rc < 0)
+            eiu->numFailed += eiu->numRPMS;
+	else if (rc > 0)
+            eiu->numFailed += rc;
     }
 
-    if (eiu->numRPMS && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
-	if (rpmtsOrder(ts)) {
-	    eiu->numFailed = eiu->numPkgs;
-	    stopInstall = 1;
-	}
-    }
-
-    if (eiu->numRPMS && !stopInstall) {
-
-	rpmcliPackagesTotal += eiu->numSRPMS;
-
-	rpmlog(RPMLOG_DEBUG, "installing binary packages\n");
-
-	/* Drop added/available package indices and dependency sets. */
-	rpmtsClean(ts);
-
-	rc = rpmtsRun(ts, NULL, probFilter);
-	ps = rpmtsProblems(ts);
-
-	if (rc < 0) {
-	    eiu->numFailed += eiu->numRPMS;
-	} else if (rc > 0) {
-	    eiu->numFailed += rc;
-	    if (rpmpsNumProblems(ps) > 0)
-		rpmpsPrint(stderr, ps);
-	}
-	ps = rpmpsFree(ps);
-    }
-
-    if (eiu->numSRPMS && !stopInstall) {
-	if (eiu->sourceURL != NULL)
+    if ((eiu->numSRPMS && !stopInstall) && eiu->sourceURL != NULL) {
 	for (i = 0; i < eiu->numSRPMS; i++) {
 	    rpmdbCheckSignals();
 	    if (eiu->sourceURL[i] == NULL) continue;
@@ -609,10 +624,8 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
     char * const * arg;
     char *qfmt = NULL;
     int numFailed = 0;
-    int stopUninstall = 0;
     int numPackages = 0;
     rpmVSFlags vsflags, ovsflags;
-    rpmps ps;
 
     if (argv == NULL) return 0;
 
@@ -632,7 +645,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
     {	int notifyFlags, xx;
-	notifyFlags = ia->eraseInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
+	notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
 	xx = rpmtsSetNotifyCallback(ts,
 			rpmShowProgress, (void *) ((long)notifyFlags));
     }
@@ -658,7 +671,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 	    Header h;	/* XXX iterator owns the reference */
 
 	    if (matches > 1 && 
-		!(ia->eraseInterfaceFlags & UNINSTALL_ALLMATCHES)) {
+		!(ia->installInterfaceFlags & UNINSTALL_ALLMATCHES)) {
 		rpmlog(RPMLOG_ERR, _("\"%s\" specifies multiple packages:\n"),
 			*arg);
 		numFailed++;
@@ -682,46 +695,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
     free(qfmt);
 
     if (numFailed) goto exit;
-
-    if (!(ia->eraseInterfaceFlags & UNINSTALL_NODEPS)) {
-
-	if (rpmtsCheck(ts)) {
-	    numFailed = numPackages;
-	    stopUninstall = 1;
-	}
-
-	ps = rpmtsProblems(ts);
-	if (!stopUninstall && rpmpsNumProblems(ps) > 0) {
-	    rpmlog(RPMLOG_ERR, _("Failed dependencies:\n"));
-	    rpmpsPrint(NULL, ps);
-	    numFailed += numPackages;
-	    stopUninstall = 1;
-	}
-	ps = rpmpsFree(ps);
-    }
-
-    if (!stopUninstall && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
-	if (rpmtsOrder(ts)) {
-	    numFailed += numPackages;
-	    stopUninstall = 1;
-	}
-    }
-
-    if (numPackages && !stopUninstall) {
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_REVERSE));
-
-	/* Drop added/available package indices and dependency sets. */
-	rpmtsClean(ts);
-
-	numPackages = rpmtsRun(ts, NULL, ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES));
-	ps = rpmtsProblems(ts);
-	if (rpmpsNumProblems(ps) > 0)
-	    rpmpsPrint(NULL, ps);
-	numFailed += numPackages;
-	stopUninstall = 1;
-	ps = rpmpsFree(ps);
-    }
-
+    numFailed = rpmcliTransaction(ts, ia, numPackages);
 exit:
     rpmtsEmpty(ts);
 
