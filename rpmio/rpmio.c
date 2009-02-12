@@ -723,7 +723,7 @@ typedef struct lzfile {
 
 static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 {
-    int level = 7;	/* Use XZ's default compression level if unspecified */
+    int level = LZMA_PRESET_DEFAULT;
     int encoding = 0;
     FILE *fp;
     LZFILE *lzfile;
