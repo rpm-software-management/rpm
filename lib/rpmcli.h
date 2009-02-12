@@ -347,7 +347,7 @@ extern struct poptOption		rpmBuildPoptTable[];
 /** \ingroup rpmcli
  * Bit(s) to control rpmInstall() operation.
  */
-typedef enum rpmInstallInterfaceFlags_e {
+typedef enum rpmInstallFlags_e {
     INSTALL_NONE	= 0,
     INSTALL_PERCENT	= (1 << 0),	/*!< from --percent */
     INSTALL_HASH	= (1 << 1),	/*!< from --hash */
@@ -357,17 +357,16 @@ typedef enum rpmInstallInterfaceFlags_e {
     INSTALL_UPGRADE	= (1 << 5),	/*!< from --upgrade */
     INSTALL_FRESHEN	= (1 << 6),	/*!< from --freshen */
     INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
-    INSTALL_ERASE	= (1 << 8)	/*!< from --erase */
-} rpmInstallInterfaceFlags;
+    INSTALL_ERASE	= (1 << 8),	/*!< from --erase */
+    INSTALL_ALLMATCHES	= (1 << 9)	/*!< from --allmatches */
+} rpmInstallFlags;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmErase() operation.
  */
-typedef enum rpmEraseInterfaceFlags_e {
-    UNINSTALL_NONE	= 0,
-    UNINSTALL_NODEPS	= (1 << 0),	/*!< from --nodeps */
-    UNINSTALL_ALLMATCHES= (1 << 1)	/*!< from --allmatches */
-} rpmEraseInterfaceFlags;
+#define UNINSTALL_NONE INSTALL_NONE
+#define UNINSTALL_NODEPS INSTALL_NODEPS
+#define UNINSTALL_ALLMATCHES INSTALL_ALLMATCHES
 
 extern int rpmcliPackagesTotal;
 extern int rpmcliHashesCurrent;
@@ -415,8 +414,8 @@ int rpmInstallSource(rpmts ts, const char * arg,
 struct rpmInstallArguments_s {
     rpmtransFlags transFlags;
     rpmprobFilterFlags probFilter;
-    rpmInstallInterfaceFlags installInterfaceFlags;
-    rpmEraseInterfaceFlags eraseInterfaceFlags;
+    rpmInstallFlags installInterfaceFlags;
+    rpmInstallFlags eraseInterfaceFlags;
     rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
     int numRelocations;
     int noDeps;
