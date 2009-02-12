@@ -71,6 +71,25 @@ static void printHash(const rpm_loff_t amount, const rpm_loff_t total)
     }
 }
 
+static rpmVSFlags setvsFlags(struct rpmInstallArguments_s * ia)
+{
+    rpmVSFlags vsflags;
+
+    if (ia->installInterfaceFlags & (INSTALL_UPGRADE | INSTALL_ERASE))
+	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
+    else
+	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
+
+    if (ia->qva_flags & VERIFY_DIGEST)
+	vsflags |= _RPMVSF_NODIGESTS;
+    if (ia->qva_flags & VERIFY_SIGNATURE)
+	vsflags |= _RPMVSF_NOSIGNATURES;
+    if (ia->qva_flags & VERIFY_HDRCHK)
+	vsflags |= RPMVSF_NOHDRCHK;
+
+    return vsflags;
+}
+
 void * rpmShowProgress(const void * arg,
 			const rpmCallbackType what,
 			const rpm_loff_t amount,
@@ -281,16 +300,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 
     relocations = ia->relocations;
 
-    if (ia->installInterfaceFlags & INSTALL_UPGRADE)
-	vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
-    else
-	vsflags = rpmExpandNumeric("%{?_vsflags_install}");
-    if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags = setvsFlags(ia);
     ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
 
     {	int notifyFlags;
@@ -617,13 +627,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
     if (argv == NULL) return 0;
 
-    vsflags = rpmExpandNumeric("%{?_vsflags_erase}");
-    if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (ia->qva_flags & VERIFY_HDRCHK)
-	vsflags |= RPMVSF_NOHDRCHK;
+    vsflags = setvsFlags(ia);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
     /* XXX suggest mechanism only meaningful when installing */
