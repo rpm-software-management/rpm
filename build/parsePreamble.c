@@ -859,14 +859,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 		    goto exit;
 		}
 		if (spec->BANames && !spec->recursing) {
-		    /* Ignore BuildArch tags for anyarch actions */
-		    if (spec->anyarch) {
-			spec->BANames = _free(spec->BANames);
-			spec->BACount = 0;
-		    } else {
-			res = PART_BUILDARCHITECTURES;
-			goto exit;
-		    }
+		    res = PART_BUILDARCHITECTURES;
+		    goto exit;
 		}
 	    }
 	    if ((rc =
@@ -901,8 +895,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	addMacro(spec->macros, "buildroot", NULL, spec->buildRoot, RMIL_SPEC);
     }
 
-    /* This check is harmless as BuildArch tags are ignored in case of anyarch != 0 */
-    if (checkForValidArchitectures(spec)) {
+    /* XXX Skip valid arch check if not building binary package */
+    if (!spec->anyarch && checkForValidArchitectures(spec)) {
 	goto exit;
     }
 
