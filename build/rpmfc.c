@@ -1094,11 +1094,9 @@ typedef const struct rpmfcApplyTbl_s {
  */
 static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PERL) },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PYTHON) },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_PKGCONFIG) },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_LIBTOOL) },
-    { rpmfcSCRIPT,      RPMFC_MONO },
+    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_BOURNE|
+			 RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|
+			 RPMFC_PKGCONFIG|RPMFC_LIBTOOL) },
     { NULL, 0 }
 };
 
