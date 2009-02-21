@@ -100,8 +100,11 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 
 	Flags = (tagflags & ~RPMSENSE_SENSEMASK);
 
-	/* Tokens must begin with alphanumeric, _, or / */
-	if (!(risalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
+	/* 
+	 * Tokens must begin with alphanumeric, _, or /, but we don't know
+	 * the spec's encoding so we only check what we can: plain ascii.
+	 */
+	if (isascii(r[0]) && !(risalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);
