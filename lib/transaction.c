@@ -970,6 +970,7 @@ static int rpmtsPrepare(rpmts ts)
     int xx, rc = 0;
     uint64_t fileCount = countFiles(ts);
     const char * rootDir = rpmtsRootDir(ts);
+    int dochroot = (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/');
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
@@ -991,7 +992,7 @@ static int rpmtsPrepare(rpmts ts)
     /* Enter chroot for fingerprinting if necessary */
     if (!rpmtsChrootDone(ts)) {
 	xx = chdir("/");
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
+	if (dochroot) {
 	    /* opening db before chroot not optimal, see rhbz#103852 c#3 */
 	    xx = rpmdbOpenAll(ts->rdb);
 	    if (chroot(rootDir) == -1) {
@@ -1030,7 +1031,7 @@ static int rpmtsPrepare(rpmts ts)
     /* return from chroot if done earlier */
     if (rpmtsChrootDone(ts)) {
 	const char * currDir = rpmtsCurrDir(ts);
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	if (dochroot)
 	    xx = chroot(".");
 	(void) rpmtsSetChrootDone(ts, 0);
 	if (currDir != NULL)
