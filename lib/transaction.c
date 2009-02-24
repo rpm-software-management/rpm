@@ -897,14 +897,87 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     return 0;
 }
 
-static void rpmtsPrepare(rpmts ts, fingerPrintCache fpc)
+/* Add fingerprint for each file not skipped. */
+static void addFingerprints(rpmts ts, fingerPrintCache fpc)
+{
+    rpmtsi pi;
+    rpmte p;
+    rpmfi fi;
+    int i;
+
+    rpmFpHash symlinks = rpmFpHashCreate(ts->fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	int fc;
+
+	(void) rpmdbCheckSignals();
+
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;	/* XXX can't happen */
+	fc = rpmfiFC(fi);
+
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	rpmfiFpLookup(fi, fpc);
+	/* collect symbolic links */
+ 	fi = rpmfiInit(fi, 0);
+ 	if (fi != NULL)		/* XXX lclint */
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    struct rpmffi_s ffi;
+	    char const *linktarget;
+	    linktarget = rpmfiFLink(fi);
+	    if (!(linktarget && *linktarget != '\0'))
+		continue;
+	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
+		continue;
+	    ffi.p = p;
+	    ffi.fileno = i;
+	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
+
+    }
+    pi = rpmtsiFree(pi);
+
+    /* ===============================================
+     * Check fingerprints if they contain symlinks
+     * and add them to the ts->ht hash table
+     */
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	(void) rpmdbCheckSignals();
+
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;	/* XXX can't happen */
+	fi = rpmfiInit(fi, 0);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	if (fi != NULL)		/* XXX lclint */
+	while ((i = rpmfiNext(fi)) >= 0) {
+	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
+		continue;
+	    fpLookupSubdir(symlinks, ts->ht, fpc, p, i);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+    }
+    pi = rpmtsiFree(pi);
+
+    rpmFpHashFree(symlinks);
+}
+
+static void rpmtsPrepare(rpmts ts)
 {
     rpmtsi pi;
     rpmte p;
     rpmfi fi;
 
+    fingerPrintCache fpc = fpCacheCreate(ts->fileCount/2 + 10001);
+    ts->ht = rpmFpHashCreate(ts->fileCount/2+1, fpHashFunction, fpEqual,
+			     NULL, NULL);
+
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
+    addFingerprints(ts, fpc);
     /* check against files in the rpmdb */
     checkInstalledFiles(ts, fpc);
 
@@ -924,8 +997,11 @@ static void rpmtsPrepare(rpmts ts, fingerPrintCache fpc)
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
-    pi = rpmtsiFree(pi);
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
+
+    pi = rpmtsiFree(pi);
+    ts->ht = rpmFpHashFree(ts->ht);
+    fpc = fpCacheFree(fpc);
 }
 
 /*
@@ -988,10 +1064,8 @@ static int rpmtsProcess(rpmts ts)
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    int i;
     int rc = 0;
     rpmfi fi;
-    fingerPrintCache fpc;
     rpmtsi pi;	rpmte p;
     void * lock = NULL;
     int xx;
@@ -1103,75 +1177,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	}
 	(void) rpmtsSetChrootDone(ts, 1);
     }
-
-    ts->ht = rpmFpHashCreate(ts->fileCount/2+1, fpHashFunction, fpEqual,
-			     NULL, NULL);
-    rpmFpHash symlinks = rpmFpHashCreate(ts->fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
-    fpc = fpCacheCreate(ts->fileCount/2 + 10001);
-
-    /* ===============================================
-     * Add fingerprint for each file not skipped.
-     */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int fc;
-
-	(void) rpmdbCheckSignals();
-
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
-
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	rpmfiFpLookup(fi, fpc);
-	/* collect symbolic links */
- 	fi = rpmfiInit(fi, 0);
- 	if (fi != NULL)		/* XXX lclint */
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    struct rpmffi_s ffi;
-	    char const *linktarget;
-	    linktarget = rpmfiFLink(fi);
-	    if (!(linktarget && *linktarget != '\0'))
-		continue;
-	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
-		continue;
-	    ffi.p = p;
-	    ffi.fileno = i;
-	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
-
-    }
-    pi = rpmtsiFree(pi);
-
-    /* ===============================================
-     * Check fingerprints if they contain symlinks
-     * and add them to the ts->ht hash table
-     */
-
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	(void) rpmdbCheckSignals();
-
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-	fi = rpmfiInit(fi, 0);
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	if (fi != NULL)		/* XXX lclint */
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
-		continue;
-	    fpLookupSubdir(symlinks, ts->ht, fpc, p, i);
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-    }
-    pi = rpmtsiFree(pi);
-
-    rpmFpHashFree(symlinks);
-
     
     /* Compute file disposition for each package in transaction set. */
-    rpmtsPrepare(ts, fpc);
+    rpmtsPrepare(ts);
 
     if (rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
@@ -1193,8 +1201,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     }
     pi = rpmtsiFree(pi);
 
-    fpc = fpCacheFree(fpc);
-    ts->ht = rpmFpHashFree(ts->ht);
 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
