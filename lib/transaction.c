@@ -962,8 +962,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpmfi fi;
     fingerPrintCache fpc;
     rpmtsi pi;	rpmte p;
-    int numAdded;
-    int numRemoved;
     void * lock = NULL;
     int xx;
 
@@ -1050,7 +1048,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     ts->fileCount = countFiles(ts);
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", ts->fileCount);
 
-    numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int fc;
@@ -1061,13 +1058,11 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	    numAdded++;
 	    /* Skip netshared paths, not our i18n files, and excluded docs */
 	    if (fc > 0)
 		skipFiles(ts, p);
 	    break;
 	case TR_REMOVED:
-	    numRemoved++;
 	    break;
 	}
     }
