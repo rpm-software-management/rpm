@@ -909,13 +909,10 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int fc;
-
 	(void) rpmdbCheckSignals();
 
 	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfiFpLookup(fi, fpc);
@@ -934,7 +931,7 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 	    ffi.fileno = i;
 	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
 	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
 
     }
     pi = rpmtsiFree(pi);
