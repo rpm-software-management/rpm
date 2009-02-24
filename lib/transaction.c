@@ -965,12 +965,14 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
     rpmFpHashFree(symlinks);
 }
 
-static void rpmtsPrepare(rpmts ts)
+static int rpmtsPrepare(rpmts ts)
 {
     rpmtsi pi;
     rpmte p;
     rpmfi fi;
+    int xx, rc = 0;
     uint64_t fileCount = countFiles(ts);
+    const char * rootDir = rpmtsRootDir(ts);
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
@@ -989,9 +991,22 @@ static void rpmtsPrepare(rpmts ts)
     }
     pi = rpmtsiFree(pi);
 
+    /* Enter chroot for fingerprinting if necessary */
+    if (!rpmtsChrootDone(ts)) {
+	xx = chdir("/");
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
+	    /* opening db before chroot not optimal, see rhbz#103852 c#3 */
+	    xx = rpmdbOpenAll(ts->rdb);
+	    if (chroot(rootDir) == -1) {
+		rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
+		rc = -1;
+		goto exit;
+	    }
+	}
+	(void) rpmtsSetChrootDone(ts, 1);
+    }
+    
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
-
-
     addFingerprints(ts, fileCount, ht, fpc);
     /* check against files in the rpmdb */
     checkInstalledFiles(ts, fileCount, ht, fpc);
@@ -1015,14 +1030,27 @@ static void rpmtsPrepare(rpmts ts)
     pi = rpmtsiFree(pi);
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
+    /* return from chroot if done earlier */
+    if (rpmtsChrootDone(ts)) {
+	const char * currDir = rpmtsCurrDir(ts);
+	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	    xx = chroot(".");
+	(void) rpmtsSetChrootDone(ts, 0);
+	if (currDir != NULL)
+	    xx = chdir(currDir);
+    }
+
     /* File info sets, fp caches etc not needed beyond here, free 'em up. */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmteSetFI(p, NULL);
     }
     pi = rpmtsiFree(pi);
+
+exit:
     ht = rpmFpHashFree(ht);
     fpc = fpCacheFree(fpc);
+    return rc;
 }
 
 /*
@@ -1160,31 +1188,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runTransScripts(ts, RPMTAG_PRETRANS);
     }
 
-    if (!rpmtsChrootDone(ts)) {
-	const char * rootDir = rpmtsRootDir(ts);
-	xx = chdir("/");
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/') {
-	    /* opening db before chroot not optimal, see rhbz#103852 c#3 */
-	    xx = rpmdbOpenAll(ts->rdb);
-	    if (chroot(rootDir) == -1) {
-		rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
-		return -1;
-	    }
-	}
-	(void) rpmtsSetChrootDone(ts, 1);
-    }
-    
     /* Compute file disposition for each package in transaction set. */
-    rpmtsPrepare(ts);
-
-    if (rpmtsChrootDone(ts)) {
-	const char * rootDir = rpmtsRootDir(ts);
-	const char * currDir = rpmtsCurrDir(ts);
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
-	    xx = chroot(".");
-	(void) rpmtsSetChrootDone(ts, 0);
-	if (currDir != NULL)
-	    xx = chdir(currDir);
+    if (rpmtsPrepare(ts)) {
+	return -1;
     }
 
     /* ===============================================
