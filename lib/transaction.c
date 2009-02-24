@@ -1191,14 +1191,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	return -1;
     }
 
-    /* ===============================================
-     * If unfiltered problems exist, free memory and return.
-     */
-    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS)
-     || (rpmpsNumProblems(ts->probs) &&
-		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))
-       )
-    {
+     /* If unfiltered problems exist, free memory and return. */
+    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) ||
+		(rpmpsNumProblems(ts->probs) &&
+		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))) {
 	rpmtsFreeLock(lock);
 	return ts->orderCount;
     }
