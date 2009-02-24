@@ -1048,23 +1048,14 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     ts->fileCount = countFiles(ts);
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", ts->fileCount);
 
+    /* Skip netshared paths, not our i18n files, and excluded docs */
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int fc;
-
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
 
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	    /* Skip netshared paths, not our i18n files, and excluded docs */
-	    if (fc > 0)
-		skipFiles(ts, p);
-	    break;
-	case TR_REMOVED:
-	    break;
-	}
+	if (rpmfiFC(fi) > 0) 
+	    skipFiles(ts, p);
     }
     pi = rpmtsiFree(pi);
 
