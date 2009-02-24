@@ -962,6 +962,62 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
     rpmFpHashFree(symlinks);
 }
 
+static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
+{
+    rpm_tid_t tid = (rpm_tid_t) time(NULL);
+    int dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST) ?  O_RDONLY : (O_RDWR|O_CREAT);
+
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
+
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+
+    /* if SELinux isn't enabled or init fails, don't bother... */
+    if (!rpmtsSELinuxEnabled(ts)) {
+        rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+    }
+
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+	char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
+	if (matchpathcon_init(fn) == -1) {
+	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+	}
+	free(fn);
+    }
+
+    /* XXX Make sure the database is open RDWR for package install/erase. */
+    if (rpmtsOpenDB(ts, dbmode)) {
+	return -1;	/* XXX W2DO? */
+    }
+
+    ts->ignoreSet = ignoreSet;
+    ts->probs = rpmpsFree(ts->probs);
+
+    {	char * currDir = rpmGetCwd();
+	rpmtsSetCurrDir(ts, currDir);
+	currDir = _free(currDir);
+    }
+
+    (void) rpmtsSetChrootDone(ts, 0);
+    (void) rpmtsSetTid(ts, tid);
+
+    /* Get available space on mounted file systems. */
+    (void) rpmtsInitDSI(ts);
+
+    return 0;
+}
+
+static int rpmtsFinish(rpmts ts)
+{
+    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+	matchpathcon_fini();
+    }
+    return 0;
+}
+
 static int rpmtsPrepare(rpmts ts)
 {
     rpmtsi pi;
@@ -1113,7 +1169,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = 0;
     void * lock = NULL;
-    int xx;
 
     /* XXX programmer error segfault avoidance. */
     if (rpmtsNElements(ts) <= 0)
@@ -1126,55 +1181,13 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    return -1;	/* XXX W2DO? */
     }
 
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOSCRIPTS)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
-
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
-
-    /* if SELinux isn't enabled or init fails, don't bother... */
-    if (!rpmtsSELinuxEnabled(ts)) {
-        rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
+    /* Setup flags and such, open the DB */
+    if (rpmtsSetup(ts, ignoreSet)) {
+	rpmtsFreeLock(lock);
+	return -1;
     }
-
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-	if (matchpathcon_init(fn) == -1) {
-	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
-	}
-	free(fn);
-    }
-
-    /* XXX Make sure the database is open RDWR for package install/erase. */
-    {	int dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
-		? O_RDONLY : (O_RDWR|O_CREAT);
-
-	/* Open database RDWR for installing packages. */
-	if (rpmtsOpenDB(ts, dbmode)) {
-	    rpmtsFreeLock(lock);
-	    return -1;	/* XXX W2DO? */
-	}
-    }
-
-    ts->ignoreSet = ignoreSet;
-    {	char * currDir = rpmGetCwd();
-	rpmtsSetCurrDir(ts, currDir);
-	currDir = _free(currDir);
-    }
-
-    (void) rpmtsSetChrootDone(ts, 0);
-
-    {	rpm_tid_t tid = (rpm_tid_t) time(NULL);
-	(void) rpmtsSetTid(ts, tid);
-    }
-
-    /* Get available space on mounted file systems. */
-    xx = rpmtsInitDSI(ts);
 
     /* Check package set for problems */
-    ts->probs = rpmpsFree(ts->probs);
     ts->probs = checkProblems(ts);
 
     /* Run pre-transaction scripts, but only if there are no known
@@ -1207,9 +1220,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runTransScripts(ts, RPMTAG_POSTTRANS);
     }
 
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	matchpathcon_fini();
-    }
+    /* Finish up... */
+    (void) rpmtsFinish(ts);
 
     rpmtsFreeLock(lock);
 
