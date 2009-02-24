@@ -1167,24 +1167,24 @@ static int rpmtsProcess(rpmts ts)
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    int rc = 0;
+    int rc = -1; /* assume failure */
     void * lock = NULL;
 
     /* XXX programmer error segfault avoidance. */
-    if (rpmtsNElements(ts) <= 0)
-	return -1;
+    if (rpmtsNElements(ts) <= 0) {
+	goto exit;
+    }
 
     /* If we are in test mode, then there's no need for transaction lock. */
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	lock = rpmtsAcquireLock(ts);
-	if (lock == NULL)
-	    return -1;	/* XXX W2DO? */
+	if (!(lock = rpmtsAcquireLock(ts))) {
+	    goto exit;
+	}
     }
 
     /* Setup flags and such, open the DB */
     if (rpmtsSetup(ts, ignoreSet)) {
-	rpmtsFreeLock(lock);
-	return -1;
+	goto exit;
     }
 
     /* Check package set for problems */
@@ -1201,20 +1201,21 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Compute file disposition for each package in transaction set. */
     if (rpmtsPrepare(ts)) {
-	return -1;
+	goto exit;
     }
 
      /* If unfiltered problems exist, free memory and return. */
     if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) ||
 		(rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))) {
-	rpmtsFreeLock(lock);
-	return ts->orderCount;
+	rc = ts->orderCount;
+	goto exit;
     }
 
-    /* Actually install and remove packages */
-    rc = rpmtsProcess(ts);
+    /* Actually install and remove packages, get final exit code */
+    rc = rpmtsProcess(ts) ? -1 : 0;
 
+    /* Run post-transaction scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPOST))) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
 	runTransScripts(ts, RPMTAG_POSTTRANS);
@@ -1223,11 +1224,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Finish up... */
     (void) rpmtsFinish(ts);
 
+exit:
     rpmtsFreeLock(lock);
-
-    /* FIX: ts->flList may be NULL */
-    if (rc)
-    	return -1;
-    else
-	return 0;
+    return rc;
 }
