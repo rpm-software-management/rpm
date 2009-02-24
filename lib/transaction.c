@@ -42,6 +42,22 @@ static int osOkay(const char * pkgOs)
     return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
 }
 
+/* Calculate total number of files involved in transaction */
+static uint64_t countFiles(rpmts ts)
+{
+    uint64_t fc = 0;
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+    rpmfi fi;
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;   /* XXX can't happen */
+	fc += rpmfiFC(fi);
+    }
+    pi = rpmtsiFree(pi);
+    return fc;
+}
+
 /**
  * handleInstInstalledFiles.
  * @param ts		transaction set
@@ -604,22 +620,12 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
 {
     rpmtsi pi;  rpmte p;
     rpmfi fi;
-    int fc=0;
     rpmdbMatchIterator mi;
     int i, xx;
     const char * baseName;
 
-    /* get number of files in transaction */
-    // XXX move to ts
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;   /* XXX can't happen */
-	fc += rpmfiFC(fi);
-    }
-    pi = rpmtsiFree(pi);
-
-    rpmStringSet baseNames = rpmStringSetCreate(fc, hashFunctionString, strcmp, NULL);
+    rpmStringSet baseNames = rpmStringSetCreate(ts->fileCount, 
+					hashFunctionString, strcmp, NULL);
 
     mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_BASENAMES, NULL, 0);
 
@@ -896,7 +902,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rpm_color_t tscolor = rpmtsColor(ts);
     int i;
     int rc = 0;
-    int totalFileCount = 0;
     rpmfi fi;
     fingerPrintCache fpc;
     rpmps ps;
@@ -971,11 +976,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * For packages being installed:
      * - verify package arch/os.
      * - verify package epoch:version-release is newer.
-     * - count files.
-     * For packages being removed:
-     * - count files.
      */
-
     rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
     ps = rpmtsProblems(ts);
     /* The ordering doesn't matter here */
@@ -983,11 +984,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* XXX Only added packages need be checked. */
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
-	int fc;
-
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
 	    if (!archOkay(rpmteA(p)))
@@ -1035,26 +1031,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}
-
-	/* Count no. of files (if any). */
-	totalFileCount += fc;
-
     }
     pi = rpmtsiFree(pi);
     ps = rpmpsFree(ps);
-
-    /* The ordering doesn't matter here */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
-	int fc;
-
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-	fc = rpmfiFC(fi);
-
-	totalFileCount += fc;
-    }
-    pi = rpmtsiFree(pi);
 
 
     /* Run pre-transaction scripts, but only if there are no known
@@ -1075,7 +1054,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      * calling fpLookupList only once. I'm not sure that the speedup is
      * worth the trouble though.
      */
-    rpmlog(RPMLOG_DEBUG, "computing %d file fingerprints\n", totalFileCount);
+    ts->fileCount = countFiles(ts);
+    rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", ts->fileCount);
 
     numAdded = numRemoved = 0;
     pi = rpmtsiInit(ts);
@@ -1114,10 +1094,10 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetChrootDone(ts, 1);
     }
 
-    ts->ht = rpmFpHashCreate(totalFileCount/2+1, fpHashFunction, fpEqual,
+    ts->ht = rpmFpHashCreate(ts->fileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
-    rpmFpHash symlinks = rpmFpHashCreate(totalFileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
-    fpc = fpCacheCreate(totalFileCount/2 + 10001);
+    rpmFpHash symlinks = rpmFpHashCreate(ts->fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
+    fpc = fpCacheCreate(ts->fileCount/2 + 10001);
 
     /* ===============================================
      * Add fingerprint for each file not skipped.
