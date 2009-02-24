@@ -670,7 +670,6 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
 static
 void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 {
-    rpmps ps;
     rpmte p;
     rpmfi fi;
     rpmfs fs;
@@ -697,8 +696,6 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 	mi = rpmdbFreeIterator(mi);
 	return;
     }
-
-    ps = rpmtsProblems(ts);
 
     /* Loop over all packages from the rpmdb */
     h = newheader = rpmdbNextIterator(mi);
