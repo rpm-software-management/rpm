@@ -364,13 +364,12 @@ assert(otherFi != NULL);
 
 /**
  * Ensure that current package is newer than installed package.
- * @param ts		transaction set
  * @param p		current transaction element
  * @param h		installed header
+ * @param ps		problem set
  * @return		0 if not newer, 1 if okay
  */
-static int ensureOlder(rpmts ts,
-		const rpmte p, const Header h)
+static int ensureOlder(const rpmte p, const Header h, rpmps ps)
 {
     rpmsenseFlags reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     rpmds req;
@@ -384,7 +383,6 @@ static int ensureOlder(rpmts ts,
     req = rpmdsFree(req);
 
     if (rc == 0) {
-	rpmps ps = rpmtsProblems(ts);
 	char * altNEVR = headerGetNEVRA(h, NULL);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVRA(p), rpmteKey(p),
@@ -392,7 +390,6 @@ static int ensureOlder(rpmts ts,
 		altNEVR,
 		0);
 	altNEVR = _free(altNEVR);
-	ps = rpmpsFree(ps);
 	rc = 1;
     } else
 	rc = 0;
@@ -793,6 +790,70 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 }
 
 /*
+ * For packages being installed:
+ * - verify package arch/os.
+ * - verify package epoch:version-release is newer.
+ */
+static rpmps checkProblems(rpmts ts)
+{
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpmps ps = rpmpsCreate();
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+
+    /* The ordering doesn't matter here */
+    /* XXX Only added packages need be checked. */
+    rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	rpmdbMatchIterator mi;
+
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
+	    if (!archOkay(rpmteA(p)))
+		rpmpsAppend(ps, RPMPROB_BADARCH,
+			rpmteNEVRA(p), rpmteKey(p),
+			rpmteA(p), NULL,
+			NULL, 0);
+
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREOS))
+	    if (!osOkay(rpmteO(p)))
+		rpmpsAppend(ps, RPMPROB_BADOS,
+			rpmteNEVRA(p), rpmteKey(p),
+			rpmteO(p), NULL,
+			NULL, 0);
+
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
+	    Header h;
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+	    while ((h = rpmdbNextIterator(mi)) != NULL)
+		ensureOlder(p, h, ps);
+	    mi = rpmdbFreeIterator(mi);
+	}
+
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
+	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
+	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
+	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));
+	    if (tscolor) {
+		rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(p));
+		rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(p));
+	    }
+
+	    while (rpmdbNextIterator(mi) != NULL) {
+		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
+			rpmteNEVRA(p), rpmteKey(p),
+			NULL, NULL,
+			NULL, 0);
+		break;
+	    }
+	    mi = rpmdbFreeIterator(mi);
+	}
+    }
+    pi = rpmtsiFree(pi);
+    return ps;
+}
+
+/*
  * Run pre/post transaction scripts for transaction set
  * param ts	Transaction set
  * param stag	RPMTAG_PRETRANS or RPMTAG_POSTTRANS
@@ -896,12 +957,10 @@ static int rpmtsProcess(rpmts ts)
 
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
-    rpm_color_t tscolor = rpmtsColor(ts);
     int i;
     int rc = 0;
     rpmfi fi;
     fingerPrintCache fpc;
-    rpmps ps;
     rpmtsi pi;	rpmte p;
     int numAdded;
     int numRemoved;
@@ -940,9 +999,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	free(fn);
     }
 
-    ts->probs = rpmpsFree(ts->probs);
-    ts->probs = rpmpsCreate();
-
     /* XXX Make sure the database is open RDWR for package install/erase. */
     {	int dbmode = (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
 		? O_RDONLY : (O_RDWR|O_CREAT);
@@ -969,69 +1025,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Get available space on mounted file systems. */
     xx = rpmtsInitDSI(ts);
 
-    /* ===============================================
-     * For packages being installed:
-     * - verify package arch/os.
-     * - verify package epoch:version-release is newer.
-     */
-    rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
-    ps = rpmtsProblems(ts);
-    /* The ordering doesn't matter here */
-    pi = rpmtsiInit(ts);
-    /* XXX Only added packages need be checked. */
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmdbMatchIterator mi;
-
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
-	    if (!archOkay(rpmteA(p)))
-		rpmpsAppend(ps, RPMPROB_BADARCH,
-			rpmteNEVRA(p), rpmteKey(p),
-			rpmteA(p), NULL,
-			NULL, 0);
-
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREOS))
-	    if (!osOkay(rpmteO(p)))
-		rpmpsAppend(ps, RPMPROB_BADOS,
-			rpmteNEVRA(p), rpmteKey(p),
-			rpmteO(p), NULL,
-			NULL, 0);
-
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
-	    Header h;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-	    while ((h = rpmdbNextIterator(mi)) != NULL)
-		xx = ensureOlder(ts, p, h);
-	    mi = rpmdbFreeIterator(mi);
-	}
-
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
-				rpmteE(p));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
-				rpmteV(p));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
-				rpmteR(p));
-	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
-				rpmteA(p));
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
-				rpmteO(p));
-	    }
-
-	    while (rpmdbNextIterator(mi) != NULL) {
-		rpmpsAppend(ps, RPMPROB_PKG_INSTALLED,
-			rpmteNEVRA(p), rpmteKey(p),
-			NULL, NULL,
-			NULL, 0);
-		break;
-	    }
-	    mi = rpmdbFreeIterator(mi);
-	}
-    }
-    pi = rpmtsiFree(pi);
-    ps = rpmpsFree(ps);
-
+    /* Check package set for problems */
+    ts->probs = rpmpsFree(ts->probs);
+    ts->probs = checkProblems(ts);
 
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point and not disabled otherwise. */
