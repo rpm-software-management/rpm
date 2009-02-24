@@ -864,28 +864,23 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     rpmtsi pi; 
     rpmte p;
     rpmpsm psm;
+    rpmTag progtag = RPMTAG_NOT_FOUND;
     int xx;
+
+    if (stag == RPMTAG_PRETRANS) {
+	progtag = RPMTAG_PRETRANSPROG;
+    } else if (stag == RPMTAG_POSTTRANS) {
+	progtag = RPMTAG_POSTTRANSPROG;
+    } else {
+	return -1;
+    }
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-    	rpmTag progtag = RPMTAG_NOT_FOUND;
-
     	/* If no pre/post-transaction script, then don't bother. */
 	if (!rpmteHaveTransScript(p, stag))
 	    continue;
 
-	switch (stag) {
-	case RPMTAG_PRETRANS:
-	    progtag = RPMTAG_PRETRANSPROG;
-	    break;
-	case RPMTAG_POSTTRANS:
-	    progtag = RPMTAG_POSTTRANSPROG;
-	    break;
-	default:
-	    assert(progtag != RPMTAG_NOT_FOUND);
-	    break;
-	}
-	
     	if (rpmteOpen(p, ts, 0)) {
 	    psm = rpmpsmNew(ts, p);
 	    xx = rpmpsmScriptStage(psm, stag, progtag);
