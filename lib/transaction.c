@@ -897,6 +897,37 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     return 0;
 }
 
+static void rpmtsPrepare(rpmts ts, fingerPrintCache fpc)
+{
+    rpmtsi pi;
+    rpmte p;
+    rpmfi fi;
+
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+
+    /* check against files in the rpmdb */
+    checkInstalledFiles(ts, fpc);
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;   /* XXX can't happen */
+
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	/* check files in ts against each other and update disk space
+	   needs on each partition for this package. */
+	handleOverlappedFiles(ts, p, fi);
+
+	/* Check added package has sufficient space on each partition used. */
+	if (rpmteType(p) == TR_ADDED) {
+	    rpmtsCheckDSIProblems(ts, p);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+    }
+    pi = rpmtsiFree(pi);
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
+}
+
 /*
  * Transaction main loop: install and remove packages
  */
@@ -1138,32 +1169,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     rpmFpHashFree(symlinks);
 
-    /* ===============================================
-     * Compute file disposition for each package in transaction set.
-     */
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
-
-    /* check against files in the rpmdb */
-    checkInstalledFiles(ts, fpc);
-
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;   /* XXX can't happen */
-
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	/* check files in ts against each other and update disk space
-	   needs on each partition for this package. */
-	handleOverlappedFiles(ts, p, fi);
-
-	/* Check added package has sufficient space on each partition used. */
-	if (rpmteType(p) == TR_ADDED) {
-	    rpmtsCheckDSIProblems(ts, p);
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-    }
-    pi = rpmtsiFree(pi);
+    
+    /* Compute file disposition for each package in transaction set. */
+    rpmtsPrepare(ts, fpc);
 
     if (rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
@@ -1175,7 +1183,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	    xx = chdir(currDir);
     }
 
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
     /* ===============================================
      * Free unused memory as soon as possible.
