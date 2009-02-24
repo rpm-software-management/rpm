@@ -56,7 +56,6 @@ struct rpmts_s {
 
     rpmdb rdb;			/*!< Install database handle. */
     int dbmode;			/*!< Install database open mode. */
-    rpmFpHash ht;		/*!< Fingerprint hash table. */
 
     int * removedPackages;	/*!< Set of packages being removed. */
     int numRemovedPackages;	/*!< No. removed package instances. */

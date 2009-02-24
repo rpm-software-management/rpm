@@ -146,7 +146,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
  * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
-static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
+static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 {
     rpm_loff_t fixupSize = 0;
     rpmps ps;
@@ -189,7 +189,7 @@ static void handleOverlappedFiles(const rpmts ts, const rpmte p, rpmfi fi)
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	(void) rpmFpHashGetEntry(ts->ht, fiFps, &recs, &numRecs, NULL);
+	(void) rpmFpHashGetEntry(ht, fiFps, &recs, &numRecs, NULL);
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -665,7 +665,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
  * @param fpc		global finger print cache
  */
 static
-void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
+void checkInstalledFiles(rpmts ts, rpmFpHash ht, fingerPrintCache fpc)
 {
     rpmte p;
     rpmfi fi;
@@ -746,7 +746,7 @@ void checkInstalledFiles(rpmts ts, fingerPrintCache fpc)
 		oldDir = dirName;
 	    }
 	    /* search for files in the transaction with same finger print */
-	    gotRecs = rpmFpHashGetEntry(ts->ht, &fp, &recs, &numRecs, NULL);
+	    gotRecs = rpmFpHashGetEntry(ht, &fp, &recs, &numRecs, NULL);
 
 	    for (j=0; (j<numRecs)&&gotRecs; j++) {
 	        p = recs[j].p;
@@ -898,7 +898,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 }
 
 /* Add fingerprint for each file not skipped. */
-static void addFingerprints(rpmts ts, fingerPrintCache fpc)
+static void addFingerprints(rpmts ts, rpmFpHash ht, fingerPrintCache fpc)
 {
     rpmtsi pi;
     rpmte p;
@@ -941,7 +941,7 @@ static void addFingerprints(rpmts ts, fingerPrintCache fpc)
 
     /* ===============================================
      * Check fingerprints if they contain symlinks
-     * and add them to the ts->ht hash table
+     * and add them to the hash table
      */
 
     pi = rpmtsiInit(ts);
@@ -956,7 +956,7 @@ static void addFingerprints(rpmts ts, fingerPrintCache fpc)
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
 		continue;
-	    fpLookupSubdir(symlinks, ts->ht, fpc, p, i);
+	    fpLookupSubdir(symlinks, ht, fpc, p, i);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
@@ -972,14 +972,14 @@ static void rpmtsPrepare(rpmts ts)
     rpmfi fi;
 
     fingerPrintCache fpc = fpCacheCreate(ts->fileCount/2 + 10001);
-    ts->ht = rpmFpHashCreate(ts->fileCount/2+1, fpHashFunction, fpEqual,
+    rpmFpHash ht = rpmFpHashCreate(ts->fileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
 
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
-    addFingerprints(ts, fpc);
+    addFingerprints(ts, ht, fpc);
     /* check against files in the rpmdb */
-    checkInstalledFiles(ts, fpc);
+    checkInstalledFiles(ts, ht, fpc);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -989,7 +989,7 @@ static void rpmtsPrepare(rpmts ts)
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* check files in ts against each other and update disk space
 	   needs on each partition for this package. */
-	handleOverlappedFiles(ts, p, fi);
+	handleOverlappedFiles(ts, ht, p, fi);
 
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {
@@ -1000,7 +1000,7 @@ static void rpmtsPrepare(rpmts ts)
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
     pi = rpmtsiFree(pi);
-    ts->ht = rpmFpHashFree(ts->ht);
+    ht = rpmFpHashFree(ht);
     fpc = fpCacheFree(fpc);
 }
 
