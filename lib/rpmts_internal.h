@@ -52,7 +52,6 @@ struct rpmts_s {
     unsigned int filesystemCount;	/*!< No. of mounted filesystems. */
     const char ** filesystems;	/*!< Mounted filesystem names. */
     rpmDiskSpaceInfo dsi;	/*!< Per filesystem disk/inode usage. */
-    uint64_t fileCount;		/*!< Total number of files in transaction */
 
     rpmdb rdb;			/*!< Install database handle. */
     int dbmode;			/*!< Install database open mode. */

@@ -613,7 +613,7 @@ static void skipFiles(const rpmts ts, rpmte p)
 			by (package, fileNum)
  */
 static
-rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
+rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 {
     rpmtsi pi;  rpmte p;
     rpmfi fi;
@@ -621,7 +621,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
     int i, xx;
     const char * baseName;
 
-    rpmStringSet baseNames = rpmStringSetCreate(ts->fileCount, 
+    rpmStringSet baseNames = rpmStringSetCreate(fileCount, 
 					hashFunctionString, strcmp, NULL);
 
     mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_BASENAMES, NULL, 0);
@@ -665,7 +665,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts)
  * @param fpc		global finger print cache
  */
 static
-void checkInstalledFiles(rpmts ts, rpmFpHash ht, fingerPrintCache fpc)
+void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrintCache fpc)
 {
     rpmte p;
     rpmfi fi;
@@ -683,7 +683,7 @@ void checkInstalledFiles(rpmts ts, rpmFpHash ht, fingerPrintCache fpc)
 
     rpmlog(RPMLOG_DEBUG, "computing file dispositions\n");
 
-    mi = rpmFindBaseNamesInDB(ts);
+    mi = rpmFindBaseNamesInDB(ts, fileCount);
 
     /* For all installed headers with matching basename's ... */
     if (mi == NULL)
@@ -898,14 +898,14 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 }
 
 /* Add fingerprint for each file not skipped. */
-static void addFingerprints(rpmts ts, rpmFpHash ht, fingerPrintCache fpc)
+static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrintCache fpc)
 {
     rpmtsi pi;
     rpmte p;
     rpmfi fi;
     int i;
 
-    rpmFpHash symlinks = rpmFpHashCreate(ts->fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
+    rpmFpHash symlinks = rpmFpHashCreate(fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -970,16 +970,31 @@ static void rpmtsPrepare(rpmts ts)
     rpmtsi pi;
     rpmte p;
     rpmfi fi;
+    uint64_t fileCount = countFiles(ts);
 
-    fingerPrintCache fpc = fpCacheCreate(ts->fileCount/2 + 10001);
-    rpmFpHash ht = rpmFpHashCreate(ts->fileCount/2+1, fpHashFunction, fpEqual,
+    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
+    rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
+
+    rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
+
+    /* Skip netshared paths, not our i18n files, and excluded docs */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	if (rpmfiFC(fi) > 0) 
+	    skipFiles(ts, p);
+    }
+    pi = rpmtsiFree(pi);
 
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
 
-    addFingerprints(ts, ht, fpc);
+
+    addFingerprints(ts, fileCount, ht, fpc);
     /* check against files in the rpmdb */
-    checkInstalledFiles(ts, ht, fpc);
+    checkInstalledFiles(ts, fileCount, ht, fpc);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -997,8 +1012,14 @@ static void rpmtsPrepare(rpmts ts)
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
+    pi = rpmtsiFree(pi);
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
 
+    /* File info sets, fp caches etc not needed beyond here, free 'em up. */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	rpmteSetFI(p, NULL);
+    }
     pi = rpmtsiFree(pi);
     ht = rpmFpHashFree(ht);
     fpc = fpCacheFree(fpc);
@@ -1065,8 +1086,6 @@ static int rpmtsProcess(rpmts ts)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = 0;
-    rpmfi fi;
-    rpmtsi pi;	rpmte p;
     void * lock = NULL;
     int xx;
 
@@ -1141,29 +1160,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runTransScripts(ts, RPMTAG_PRETRANS);
     }
 
-    /* ===============================================
-     * Initialize transaction element file info for package:
-     */
-
-    /*
-     * FIXME?: we'd be better off assembling one very large file list and
-     * calling fpLookupList only once. I'm not sure that the speedup is
-     * worth the trouble though.
-     */
-    ts->fileCount = countFiles(ts);
-    rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", ts->fileCount);
-
-    /* Skip netshared paths, not our i18n files, and excluded docs */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-
-	if (rpmfiFC(fi) > 0) 
-	    skipFiles(ts, p);
-    }
-    pi = rpmtsiFree(pi);
-
     if (!rpmtsChrootDone(ts)) {
 	const char * rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
@@ -1190,17 +1186,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	if (currDir != NULL)
 	    xx = chdir(currDir);
     }
-
-
-    /* ===============================================
-     * Free unused memory as soon as possible.
-     */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmteSetFI(p, NULL);
-    }
-    pi = rpmtsiFree(pi);
-
 
     /* ===============================================
      * If unfiltered problems exist, free memory and return.
