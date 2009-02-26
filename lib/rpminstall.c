@@ -12,6 +12,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+#include <rpm/rpmgi.h>
 
 #include "lib/manifest.h"
 #include "debug.h"
@@ -366,6 +367,10 @@ restart:
 	tvsflags = rpmtsSetVSFlags(ts, tvsflags);
 	xx = Fclose(eiu->fd);
 	eiu->fd = NULL;
+
+	/* Honor --nomanifest */
+	if (eiu->rpmrc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
+	    eiu->rpmrc = RPMRC_FAIL;
 
 	switch (eiu->rpmrc) {
 	case RPMRC_FAIL:
