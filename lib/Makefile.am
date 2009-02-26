@@ -39,7 +39,7 @@ if SQLITE3
 librpm_la_SOURCES += backend/sqlite.c
 endif
 
-librpm_la_LDFLAGS = -release 4.6
+librpm_la_LDFLAGS = -version-info 0:0:0
 
 librpm_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
