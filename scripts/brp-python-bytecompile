@@ -23,7 +23,8 @@ fi
 $python    -c 'import compileall, re, sys; sys.exit (not compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/"'"), quiet=1))'
 if [ $? != 0 ]; then
 	# One or more of the files had a syntax error
-	exit 1
+	# XXX TODO: parametrize the exit code, only warn for now
+	exit 0
 fi
 
 # Generate optimized (.pyo) byte-compiled files.
