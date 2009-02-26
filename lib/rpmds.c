@@ -508,15 +508,14 @@ const char ** rpmdsDupArgv(const char ** argv, int argc)
 
     if (argv == NULL)
 	return NULL;
-    for (ac = 0; ac < argc; ac++) {
-assert(argv[ac] != NULL);
+    for (ac = 0; ac < argc && argv[ac]; ac++) {
 	nb += strlen(argv[ac]) + 1;
     }
     nb += (ac + 1) * sizeof(*av);
 
     av = xmalloc(nb);
     t = (char *) (av + ac + 1);
-    for (ac = 0; ac < argc; ac++) {
+    for (ac = 0; ac < argc && argv[ac]; ac++) {
 	av[ac] = t;
 	t = stpcpy(t, argv[ac]) + 1;
     }
