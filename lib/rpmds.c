@@ -998,7 +998,7 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 #endif
     { "rpmlib(FileDigests)", 		"4.6.0-1",
 	(		 RPMSENSE_EQUAL),
-    N_("file checksum digest algorithm is per package configurable") },
+    N_("file digest algorithm is per package configurable") },
 #ifdef WITH_CAP
     { "rpmlib(FileCaps)", 		"4.6.1-1",
 	(		 RPMSENSE_EQUAL),

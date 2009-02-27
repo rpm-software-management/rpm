@@ -784,7 +784,7 @@ int main(int argc, char *argv[])
 #ifdef IAM_RPMK
     case MODE_CHECKSIG:
     {	rpmVerifyFlags verifyFlags =
-		(VERIFY_MD5|VERIFY_DIGEST|VERIFY_SIGNATURE);
+		(VERIFY_FILEDIGEST|VERIFY_DIGEST|VERIFY_SIGNATURE);
 
 	verifyFlags &= ~ka->qva_flags;
 	ka->qva_flags = (rpmQueryFlags) verifyFlags;

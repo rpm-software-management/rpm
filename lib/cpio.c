@@ -102,7 +102,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     dev = minor(st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
 
     len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
-    memcpy(hdr->checksum, "00000000", 8);
+    memcpy(hdr->digest, "00000000", 8);
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
 
     /* XXX DWRITE uses rdnb for I/O length. */
@@ -214,7 +214,7 @@ const char * cpioStrerror(int rc)
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
     case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link(s)"); break;
-    case CPIOERR_MD5SUM_MISMATCH: s = _("MD5 sum mismatch");	break;
+    case CPIOERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
     case CPIOERR_ENOENT:	s = strerror(ENOENT); break;
