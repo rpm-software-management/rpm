@@ -16,7 +16,7 @@ extern "C" {
  */
 typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_NONE	= 0,		/*!< */
-    RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) */
+    RPMVERIFY_FILEDIGEST= (1 << 0),	/*!< from %verify(md5) or %verify(filedigest) */
     RPMVERIFY_FILESIZE	= (1 << 1),	/*!< from %verify(size) */
     RPMVERIFY_LINKTO	= (1 << 2),	/*!< from %verify(link) */
     RPMVERIFY_USER	= (1 << 3),	/*!< from %verify(user) */
@@ -43,7 +43,7 @@ typedef enum rpmVerifyAttrs_e {
  */
 typedef enum rpmVerifyFlags_e {
     VERIFY_DEFAULT	= 0,		/*!< */
-    VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 */
+    VERIFY_FILEDIGEST	= (1 << 0),	/*!< from --nomd5 or --nofiledigest */
     VERIFY_SIZE		= (1 << 1),	/*!< from --nosize */
     VERIFY_LINKTO	= (1 << 2),	/*!< from --nolinkto */
     VERIFY_USER		= (1 << 3),	/*!< from --nouser */
@@ -70,14 +70,14 @@ typedef enum rpmVerifyFlags_e {
 } rpmVerifyFlags;
 
 #define	VERIFY_ATTRS	\
-  ( VERIFY_MD5 | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
+  ( VERIFY_FILEDIGEST | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \
     VERIFY_MTIME | VERIFY_MODE | VERIFY_RDEV | VERIFY_CONTEXTS | VERIFY_CAPS )
 #define	VERIFY_ALL	\
   ( VERIFY_ATTRS | VERIFY_FILES | VERIFY_DEPS | VERIFY_SCRIPT | VERIFY_DIGEST |\
     VERIFY_SIGNATURE | VERIFY_HDRCHK )
 
 /** \ingroup rpmvf
- * Verify file attributes (including MD5 sum).
+ * Verify file attributes (including digest).
  * @todo gnorpm and python bindings prevent this from being static.
  * @param ts		transaction set
  * @param fi		file info (with linked header and current file index)

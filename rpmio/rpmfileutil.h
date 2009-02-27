@@ -29,8 +29,8 @@ typedef enum rpmCompressedMagic_e {
  * Calculate a file digest and size.
  * @param algo		digest algorithm
  * @param fn		file name
- * @param asAscii	return checksum as ascii string?
- * @retval digest	address of calculated checksum
+ * @param asAscii	return digest as ascii string?
+ * @retval digest	address of calculated digest
  * @retval *fsizep	file size pointer (or NULL)
  * @return		0 on success, 1 on error
  */

@@ -70,6 +70,7 @@ rpmcliFini(poptContext optCon);
 #define	RPMCLI_POPT_NODEPS		-1025
 #define	RPMCLI_POPT_FORCE		-1026
 #define	RPMCLI_POPT_NOMD5		-1027
+#define	RPMCLI_POPT_NOFILEDIGEST	-1027	/* same as obsolete RPMCLI_POPT_NOMD5 */
 #define	RPMCLI_POPT_NOSCRIPTS		-1028
 #define	RPMCLI_POPT_NOSIGNATURE		-1029
 #define	RPMCLI_POPT_NODIGEST		-1030
@@ -109,6 +110,7 @@ typedef enum rpmQVSources_e {
 typedef enum rpmQueryFlags_e {
     QUERY_FOR_DEFAULT	= 0,		/*!< */
     QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
+    QUERY_FILEDIGEST	= (1 << 0),	/*!< from --nofiledigest, same as --nomd5 */
     QUERY_SIZE		= (1 << 1),	/*!< from --nosize */
     QUERY_LINKTO	= (1 << 2),	/*!< from --nolink */
     QUERY_USER		= (1 << 3),	/*!< from --nouser) */

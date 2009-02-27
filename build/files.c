@@ -254,15 +254,16 @@ typedef const struct VFA {
 /**
  */
 static VFA_t const verifyAttrs[] = {
-    { "md5",	0,	RPMVERIFY_MD5 },
-    { "size",	0,	RPMVERIFY_FILESIZE },
-    { "link",	0,	RPMVERIFY_LINKTO },
-    { "user",	0,	RPMVERIFY_USER },
-    { "group",	0,	RPMVERIFY_GROUP },
-    { "mtime",	0,	RPMVERIFY_MTIME },
-    { "mode",	0,	RPMVERIFY_MODE },
-    { "rdev",	0,	RPMVERIFY_RDEV },
-    { "caps",	0,	RPMVERIFY_CAPS },
+    { "md5",		0,	RPMVERIFY_FILEDIGEST },
+    { "filedigest",	0,	RPMVERIFY_FILEDIGEST },
+    { "size",		0,	RPMVERIFY_FILESIZE },
+    { "link",		0,	RPMVERIFY_LINKTO },
+    { "user",		0,	RPMVERIFY_USER },
+    { "group",		0,	RPMVERIFY_GROUP },
+    { "mtime",		0,	RPMVERIFY_MTIME },
+    { "mode",		0,	RPMVERIFY_MODE },
+    { "rdev",		0,	RPMVERIFY_RDEV },
+    { "caps",		0,	RPMVERIFY_CAPS },
     { NULL, 0,	0 }
 };
 
@@ -1044,7 +1045,7 @@ static void genCpioListAndHeader(FileList fl,
     rpm_loff_t totalFileSize = 0;
 
     /*
-     * See if non-md5 file checksum algorithm is requested. If not
+     * See if non-md5 file digest algorithm is requested. If not
      * specified, quietly assume md5. Otherwise check if supported type.
      */
     digestalgo = rpmExpandNumeric(isSrc ? "%{_source_filedigest_algorithm}" :
@@ -1212,7 +1213,7 @@ static void genCpioListAndHeader(FileList fl,
 	headerPutString(h, RPMTAG_FILELINKTOS, buf);
 	
 	if (flp->flags & RPMFILE_GHOST) {
-	    flp->verifyFlags &= ~(RPMVERIFY_MD5 | RPMVERIFY_FILESIZE |
+	    flp->verifyFlags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE |
 				RPMVERIFY_LINKTO | RPMVERIFY_MTIME);
 	}
 	headerPutUint32(h, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1);

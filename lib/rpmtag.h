@@ -281,7 +281,7 @@ typedef enum rpmTag_e {
     RPMTAG_LONGFILESIZES	= 5008,	/* l[] */
     RPMTAG_LONGSIZE		= 5009, /* l */
     RPMTAG_FILECAPS		= 5010, /* s[] */
-    RPMTAG_FILEDIGESTALGO	= 5011, /* i file checksum algorithm */
+    RPMTAG_FILEDIGESTALGO	= 5011, /* i file digest algorithm */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

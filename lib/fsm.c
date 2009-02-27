@@ -780,9 +780,9 @@ static int fsmMapAttrs(FSM_t fsm)
 	{   rpmts ts = fsmGetTs(fsm);
 
 	    /*
-	     * Set file checksum (if not disabled).
+	     * Set file digest (if not disabled).
 	     */
-	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOMD5)) {
+	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST)) {
 		fsm->digest = rpmfiFDigestIndex(fi, i, NULL, NULL);
 	    } else {
 		fsm->digest = NULL;
@@ -836,16 +836,16 @@ static int expandRegular(FSM_t fsm)
 	fdFiniDigest(fsm->wfd, fsm->digestalgo, &digest, NULL, asAscii);
 
 	if (digest == NULL) {
-	    rc = CPIOERR_MD5SUM_MISMATCH;
+	    rc = CPIOERR_DIGEST_MISMATCH;
 	    goto exit;
 	}
 
 	if (fsm->digest != NULL) {
 	    size_t diglen = rpmDigestLength(fsm->digestalgo);
 	    if (memcmp(digest, fsm->digest, diglen))
-		rc = CPIOERR_MD5SUM_MISMATCH;
+		rc = CPIOERR_DIGEST_MISMATCH;
 	} else {
-	    rc = CPIOERR_MD5SUM_MISMATCH;
+	    rc = CPIOERR_DIGEST_MISMATCH;
 	}
 	digest = _free(digest);
     }

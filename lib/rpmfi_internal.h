@@ -78,8 +78,8 @@ struct rpmfi_s {
 /*-----------------------------*/
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
-    pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
-    unsigned char * digests;	/*!< File checksums in binary. */
+    pgpHashAlgo digestalgo;	/*!< File digest algorithm */
+    unsigned char * digests;	/*!< File digests in binary. */
 
     char * fn;			/*!< File name buffer. */
 

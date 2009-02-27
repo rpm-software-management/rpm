@@ -152,10 +152,10 @@ struct fsm_s {
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
-    const unsigned char * digest;	/*!< Binary checksum (NULL disables). */
+    const unsigned char * digest;	/*!< Binary digest (NULL disables). */
     security_context_t fcontext;/*!< File security context (NULL disables). */
     cap_t fcaps;		/*!< File capabilities */
-    pgpHashAlgo digestalgo;	/*!< File checksum algorithm */
+    pgpHashAlgo digestalgo;	/*!< File digest algorithm */
     
     unsigned fflags;		/*!< File flags. */
     rpmFileAction action;	/*!< File disposition. */
