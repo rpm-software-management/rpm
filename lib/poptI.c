@@ -199,10 +199,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NODOCS,
 	N_("do not install documentation"), NULL},
 
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
-	N_("don't verify digest of files"), NULL },
  { "nofiledigest", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
 	N_("don't verify digest of files"), NULL },
+ { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
+	N_("don't verify digest of files (obsolete)"), NULL },
  { "nocontexts", '\0',0,  NULL, RPMCLI_POPT_NOCONTEXTS,
 	N_("don't install file security contexts"), NULL},
 

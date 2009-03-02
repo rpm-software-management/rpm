@@ -16,7 +16,8 @@ extern "C" {
  */
 typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_NONE	= 0,		/*!< */
-    RPMVERIFY_FILEDIGEST= (1 << 0),	/*!< from %verify(md5) or %verify(filedigest) */
+    RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) - obsolete */
+    RPMVERIFY_FILEDIGEST= (1 << 0),	/*!< from %verify(filedigest) */
     RPMVERIFY_FILESIZE	= (1 << 1),	/*!< from %verify(size) */
     RPMVERIFY_LINKTO	= (1 << 2),	/*!< from %verify(link) */
     RPMVERIFY_USER	= (1 << 3),	/*!< from %verify(user) */
@@ -43,7 +44,8 @@ typedef enum rpmVerifyAttrs_e {
  */
 typedef enum rpmVerifyFlags_e {
     VERIFY_DEFAULT	= 0,		/*!< */
-    VERIFY_FILEDIGEST	= (1 << 0),	/*!< from --nomd5 or --nofiledigest */
+    VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 - obsolete */
+    VERIFY_FILEDIGEST	= (1 << 0),	/*!< from --nofiledigest */
     VERIFY_SIZE		= (1 << 1),	/*!< from --nosize */
     VERIFY_LINKTO	= (1 << 2),	/*!< from --nolinkto */
     VERIFY_USER		= (1 << 3),	/*!< from --nouser */
