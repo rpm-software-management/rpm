@@ -191,6 +191,22 @@ static int stashKeyid(pgpDig dig)
     return 0;
 }
 
+/* Parse the parameters from the OpenPGP packets that will be needed. */
+static rpmRC parsePGP(rpmtd sigtd, const char *type, pgpDig dig)
+{
+    rpmRC rc = RPMRC_FAIL;
+    int debug = (_print_pkts & rpmIsDebug());
+    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0) &&
+	 (dig->signature.version == 3 || dig->signature.version == 4)) {
+	rc = RPMRC_OK;
+    } else {
+	rpmlog(RPMLOG_ERR,
+	    _("skipping %s with unverifiable V%u signature\n"), type,
+	    dig->signature.version);
+    }
+    return rc;
+}
+
 /**
  * Check header consistency, performing headerGetEntry() the hard way.
  *
@@ -394,14 +410,8 @@ verifyinfo_exit:
 
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping header with unverifiable V%u signature\n"),
-		dig->signature.version);
+	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
 	    pgpFreeDig(dig);
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
 
@@ -435,14 +445,8 @@ verifyinfo_exit:
 
 	break;
     case RPMTAG_DSAHEADER:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping header with unverifiable V%u signature\n"),
-		dig->signature.version);
+	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
 	    pgpFreeDig(dig);
-	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
     case RPMTAG_SHA1HEADER:
@@ -590,7 +594,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     char * msg;
     rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    int xx;
     int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
 
@@ -716,13 +719,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"),
-		fn, dig->signature.version);
-	    rc = RPMRC_FAIL;
+	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
     {	struct rpmtd_s utd;
@@ -740,13 +737,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	rpmtdFreeData(&utd);
     }	break;
     case RPMSIGTAG_DSA:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"), 
-		fn, dig->signature.version);
-	    rc = RPMRC_FAIL;
+	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
     case RPMSIGTAG_SHA1:
@@ -768,14 +759,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	/* Parse the parameters from the OpenPGP packets that will be needed. */
-	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, (_print_pkts & rpmIsDebug()));
-
-	if (dig->signature.version != 3 && dig->signature.version != 4) {
-	    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"),
-		fn, dig->signature.version);
-	    rc = RPMRC_FAIL;
+	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
     case RPMSIGTAG_MD5:
