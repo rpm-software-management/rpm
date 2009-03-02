@@ -105,7 +105,7 @@ The virtual file attribute token %verify tells `-V/--verify' to ignore
 certain features on files which may be modified by (say) a postinstall
 script so that false problems are not displayed during package verification.
 \verbatim
-	%verify(not size md5 mtime) %{prefix}/bin/javaswarm
+	%verify(not size filedigest mtime) %{prefix}/bin/javaswarm
 \endverbatim
 
 \section specfile_globbing Shell Globbing of %files Section
