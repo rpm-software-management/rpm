@@ -997,7 +997,7 @@ static const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySizeSignature(rpmtd sigtd, pgpDig dig, char ** msg)
+verifySizeSignature(rpmtd sigtd, size_t nbytes, char ** msg)
 {
     rpmRC res;
     size_t size = 0x7fffffff;
@@ -1006,7 +1006,7 @@ verifySizeSignature(rpmtd sigtd, pgpDig dig, char ** msg)
     assert(msg != NULL);
     *msg = NULL;
 
-    if (sigtd->data == NULL || dig == NULL || dig->nbytes == 0) {
+    if (sigtd->data == NULL || nbytes == 0) {
 	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
@@ -1014,13 +1014,13 @@ verifySizeSignature(rpmtd sigtd, pgpDig dig, char ** msg)
 
     memcpy(&size, sigtd->data, sizeof(size));
 
-    if (size != dig->nbytes) {
+    if (size != nbytes) {
 	res = RPMRC_FAIL;
 	rasprintf(msg, "%s %s Expected(%zd) != (%zd)\n", title,
-		  rpmSigString(res), size, dig->nbytes);
+		  rpmSigString(res), size, nbytes);
     } else {
 	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%zd)\n", title, rpmSigString(res), dig->nbytes);
+	rasprintf(msg, "%s %s (%zd)\n", title, rpmSigString(res), nbytes);
     }
 
 exit:
@@ -1345,7 +1345,7 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
 
     switch (sigtd->tag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(sigtd, dig, result);
+	res = verifySizeSignature(sigtd, dig->nbytes, result);
 	break;
     case RPMSIGTAG_MD5:
 	res = verifyMD5Signature(sigtd, dig, result, dig->md5ctx);
