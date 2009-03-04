@@ -1243,9 +1243,6 @@ void pgpCleanDig(pgpDig dig)
 	memset(&dig->signature, 0, sizeof(dig->signature));
 	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
 
-	dig->md5 = _free(dig->md5);
-	dig->sha1 = _free(dig->sha1);
-
 	if (dig->dsa != NULL) {
 	    SECKEY_DestroyPublicKey(dig->dsa);
 	    dig->dsa = NULL;

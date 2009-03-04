@@ -46,13 +46,9 @@ struct pgpDig_s {
 
     DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
     DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
-    void * sha1;		/*!< (dsa) V3 signature hash. */
-    size_t sha1len;		/*!< (dsa) V3 signature hash length. */
 
     DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
     DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
-    void * md5;			/*!< (rsa) V3 signature hash. */
-    size_t md5len;		/*!< (rsa) V3 signature hash length. */
 
     /* DSA parameters */
     SECKEYPublicKey *dsa;

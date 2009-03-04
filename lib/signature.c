@@ -1106,6 +1106,15 @@ exit:
     return res;
 }
 
+/* Wrapper to hide type differences between rpm and NSS */
+static rpmRC vfyDigest(uint8_t *hash, size_t hashlen,
+			SECKEYPublicKey *key, SECItem *sig, SECOidTag sigalg)
+{
+    SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
+    return (VFY_VerifyDigest(&digest, key, sig, sigalg, NULL) == SECSuccess) ?
+		RPMRC_OK : RPMRC_FAIL;
+}
+
 /**
  * Verify RSA signature.
  * @param keyring	pubkey keyring
@@ -1121,7 +1130,6 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     SECOidTag sigalg;
     rpmRC res = RPMRC_OK;
     int xx;
-    SECItem digest;
     const char *hdr, *signame = _("Unknown");;
     const char *sig = sigtd->data;
     int sigver;
@@ -1190,6 +1198,8 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
+	uint8_t *digest = NULL;
+	size_t diglen = 0;
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -1206,27 +1216,22 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 	}
 #endif
 
-	xx = rpmDigestFinal(ctx, (void **)&dig->md5, &dig->md5len, 0);
+	xx = rpmDigestFinal(ctx, (void **)&digest, &diglen, 0);
 
 	/* Compare leading 16 bits of digest for quick check. */
-	if (memcmp(dig->md5, sigp->signhash16, 2)) {
+	if (memcmp(digest, sigp->signhash16, 2)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
-	digest.type = siBuffer;
-	digest.data = dig->md5;
-	digest.len = dig->md5len;
+
+	/* Retrieve the matching public key. */
+	res = rpmKeyringLookup(keyring, dig);
+	if (res != RPMRC_OK)
+	    goto exit;
+
+	res = vfyDigest(digest, diglen, dig->rsa, dig->rsasig, sigalg);
+	free(digest);
     }
-
-    /* Retrieve the matching public key. */
-    res = rpmKeyringLookup(keyring, dig);
-    if (res != RPMRC_OK)
-	goto exit;
-
-    if (VFY_VerifyDigest(&digest, dig->rsa, dig->rsasig, sigalg, NULL) == SECSuccess)
-	res = RPMRC_OK;
-    else
-	res = RPMRC_FAIL;
 
 exit:
     if (sigp != NULL) {
@@ -1255,7 +1260,6 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res;
     int xx;
-    SECItem digest;
     const char *hdr;
     int sigver;
     const char *sig = sigtd->data;
@@ -1281,6 +1285,8 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
+	uint8_t *digest = NULL;
+	size_t diglen = 0;
 
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
@@ -1295,28 +1301,22 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 	    memcpy(trailer+2, &nb, 4);
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
-	xx = rpmDigestFinal(ctx, (void **)&dig->sha1, &dig->sha1len, 0);
+	xx = rpmDigestFinal(ctx, (void **)&digest, &diglen, 0);
 
 	/* Compare leading 16 bits of digest for quick check. */
-	if (memcmp(dig->sha1, sigp->signhash16, 2)) {
+	if (memcmp(digest, sigp->signhash16, 2)) {
 	    res = RPMRC_FAIL;
 	    goto exit;
 	}
-	digest.type = siBuffer;
-	digest.data = dig->sha1;
-	digest.len = dig->sha1len;
+
+	/* Retrieve the matching public key. */
+	res = rpmKeyringLookup(keyring, dig);
+	if (res == RPMRC_OK) {
+	    SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
+	    res = vfyDigest(digest, diglen, dig->dsa, dig->dsasig, sigalg);
+	}
+	free(digest);
     }
-
-    /* Retrieve the matching public key. */
-    res = rpmKeyringLookup(keyring, dig);
-    if (res != RPMRC_OK)
-	goto exit;
-
-    if (VFY_VerifyDigest(&digest, dig->dsa, dig->dsasig,
-    		SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST, NULL) == SECSuccess)
-	res = RPMRC_OK;
-    else
-	res = RPMRC_FAIL;
 
 exit:
     if (sigp != NULL) {
