@@ -598,11 +598,6 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     sigp = &dig->signature;
 
     switch (*sigTagp) {
-    case RPMSIGTAG_SIZE:
-    case RPMSIGTAG_LONGSIZE:
-    case RPMSIGTAG_MD5:
-    case RPMSIGTAG_SHA1:
-	break;
     case RPMSIGTAG_GPG:
 	/* XXX check MD5 hash too? */
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA)
@@ -622,13 +617,7 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	if (sigp->pubkey_algo == PGPPUBKEYALGO_DSA)
 	    *sigTagp = RPMSIGTAG_DSA;
 	break;
-    /* shut up gcc */
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-    case RPMSIGTAG_BADSHA1_1:
-    case RPMSIGTAG_BADSHA1_2:
-    case RPMSIGTAG_PAYLOADSIZE:
-    case RPMSIGTAG_LONGARCHIVESIZE:
+    default:
 	break;
     }
 
@@ -662,14 +651,6 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
     int ret = -1;	/* assume failure. */
 
     switch (sigTag) {
-    case RPMSIGTAG_SIZE:
-    case RPMSIGTAG_LONGSIZE:
-    case RPMSIGTAG_MD5:
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_GPG:
-	goto exit;
-	break;
     case RPMSIGTAG_SHA1:
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
@@ -744,13 +725,8 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	    goto exit;
 	ret = 0;
 	break;
-    /* shut up gcc */
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-    case RPMSIGTAG_BADSHA1_1:
-    case RPMSIGTAG_BADSHA1_2:
-    case RPMSIGTAG_PAYLOADSIZE:
-    case RPMSIGTAG_LONGARCHIVESIZE:
+    default:
+	goto exit;
 	break;
     }
 
@@ -824,13 +800,7 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
     case RPMSIGTAG_SHA1:
 	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
 	break;
-    /* shut up gcc */
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-    case RPMSIGTAG_BADSHA1_1:
-    case RPMSIGTAG_BADSHA1_2:
-    case RPMSIGTAG_PAYLOADSIZE:
-    case RPMSIGTAG_LONGARCHIVESIZE:
+    default:
 	break;
     }
     free(pkt);

@@ -282,17 +282,7 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	    case RPMSIGTAG_PGP:
 		xx = headerDel(sigh, RPMSIGTAG_RSA);
 		break;
-	    /* shut up gcc */
-	    case RPMSIGTAG_SHA1:
-	    case RPMSIGTAG_MD5:
-	    case RPMSIGTAG_LEMD5_1:
-	    case RPMSIGTAG_LEMD5_2:
-	    case RPMSIGTAG_BADSHA1_1:
-	    case RPMSIGTAG_BADSHA1_2:
-	    case RPMSIGTAG_PAYLOADSIZE:
-	    case RPMSIGTAG_LONGARCHIVESIZE:
-	    case RPMSIGTAG_SIZE:
-	    case RPMSIGTAG_LONGSIZE:
+	    default:
 		break;
 	    }
 

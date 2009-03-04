@@ -779,15 +779,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 	fdStealDigest(fd, dig);
 	break;
-    /* shut up gcc */
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-    case RPMSIGTAG_BADSHA1_1:
-    case RPMSIGTAG_BADSHA1_2:
-    case RPMSIGTAG_SIZE:
-    case RPMSIGTAG_LONGSIZE:
-    case RPMSIGTAG_PAYLOADSIZE:
-    case RPMSIGTAG_LONGARCHIVESIZE:
+    default:
 	break;
     }
 
