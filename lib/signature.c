@@ -1073,7 +1073,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(rpmtd sigtd, pgpDig dig, char ** msg, DIGEST_CTX sha1ctx)
+verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
 {
     rpmRC res;
     char * SHA1 = NULL;
@@ -1083,7 +1083,7 @@ verifySHA1Signature(rpmtd sigtd, pgpDig dig, char ** msg, DIGEST_CTX sha1ctx)
     assert(msg != NULL);
     *msg = NULL;
 
-    if (sha1ctx == NULL || sigtd->data == NULL || dig == NULL) {
+    if (sha1ctx == NULL || sigtd->data == NULL) {
 	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
@@ -1351,7 +1351,7 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
 	res = verifyMD5Signature(sigtd, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(sigtd, dig, result, dig->hdrsha1ctx);
+	res = verifySHA1Signature(sigtd, result, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
 	res = verifyRSASignature(keyring, sigtd, dig, result, dig->hdrmd5ctx);
