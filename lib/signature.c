@@ -1204,17 +1204,16 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 	if (sigp->hash != NULL)
 	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
 
-#ifdef	NOTYET	/* XXX not for binary/text signatures as in packages. */
-	if (!(sigp->sigtype == PGPSIGTYPE_BINARY || sigp->sigtype == PGP_SIGTYPE_TEXT)) {
-	    size_t nb = dig->nbytes + sigp->hashlen;
+	if (sigp->version == 4) {
+	    /* V4 trailer is six octets long (rfc4880) */
 	    uint8_t trailer[6];
+	    uint32_t nb = sigp->hashlen;
 	    nb = htonl(nb);
-	    trailer[0] = 0x4;
+	    trailer[0] = sigp->version;
 	    trailer[1] = 0xff;
-	    memcpy(trailer+2, &nb, sizeof(nb));
+	    memcpy(trailer+2, &nb, 4);
 	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
 	}
-#endif
 
 	xx = rpmDigestFinal(ctx, (void **)&digest, &diglen, 0);
 
