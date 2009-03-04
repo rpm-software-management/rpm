@@ -1285,11 +1285,9 @@ pgpDig pgpFreeDig(pgpDig dig)
 	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
 	dig->sha1ctx = NULL;
 
-#ifdef	NOTYET
 	if (dig->hdrmd5ctx != NULL)
 	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
 	dig->hdrmd5ctx = NULL;
-#endif
 
 	if (dig->md5ctx != NULL)
 	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
