@@ -1028,7 +1028,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(rpmtd sigtd, pgpDig dig, char ** msg, DIGEST_CTX md5ctx)
+verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
 {
     rpmRC res;
     uint8_t * md5sum = NULL;
@@ -1039,7 +1039,7 @@ verifyMD5Signature(rpmtd sigtd, pgpDig dig, char ** msg, DIGEST_CTX md5ctx)
     assert(msg != NULL);
     *msg = NULL;
 
-    if (md5ctx == NULL || sigtd->data == NULL || dig == NULL) {
+    if (md5ctx == NULL || sigtd->data == NULL || md5ctx == NULL) {
 	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
@@ -1348,7 +1348,7 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
 	res = verifySizeSignature(sigtd, dig->nbytes, result);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(sigtd, dig, result, dig->md5ctx);
+	res = verifyMD5Signature(sigtd, result, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
 	res = verifySHA1Signature(sigtd, dig, result, dig->hdrsha1ctx);
