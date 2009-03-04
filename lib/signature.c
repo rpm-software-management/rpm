@@ -1106,13 +1106,49 @@ exit:
     return res;
 }
 
-/* Wrapper to hide type differences between rpm and NSS */
-static rpmRC vfyDigest(uint8_t *hash, size_t hashlen,
-			SECKEYPublicKey *key, SECItem *sig, SECOidTag sigalg)
-{
-    SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
-    return (VFY_VerifyDigest(&digest, key, sig, sigalg, NULL) == SECSuccess) ?
-		RPMRC_OK : RPMRC_FAIL;
+/* lower level verification bits for RSA+DSA signatures */
+static rpmRC verifyPGPSig(pgpDigParams sigp,
+			SECKEYPublicKey *key, SECItem *sig, SECOidTag sigalg,
+			DIGEST_CTX hashctx)
+{	
+    DIGEST_CTX ctx = rpmDigestDup(hashctx);
+    uint8_t *hash = NULL;
+    size_t hashlen = 0;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
+    int xx;
+
+    if (sigp == NULL || ctx == NULL)
+	goto exit;
+
+    if (sigp->hash != NULL)
+	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+    if (sigp->version == 4) {
+	/* V4 trailer is six octets long (rfc4880) */
+	uint8_t trailer[6];
+	uint32_t nb = sigp->hashlen;
+	nb = htonl(nb);
+	trailer[0] = sigp->version;
+	trailer[1] = 0xff;
+	memcpy(trailer+2, &nb, 4);
+	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+    }
+
+    xx = rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+    if (memcmp(hash, sigp->signhash16, 2) == 0) {
+	SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
+	if (VFY_VerifyDigest(&digest, key, sig, sigalg, NULL) == SECSuccess) {
+	    res = RPMRC_OK;
+	} else {
+	    res = RPMRC_FAIL;
+	}
+    }
+
+exit:
+    free(hash);
+    return res;
 }
 
 /**
@@ -1129,7 +1165,6 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     SECOidTag sigalg;
     rpmRC res = RPMRC_OK;
-    int xx;
     const char *hdr, *signame = _("Unknown");;
     const char *sig = sigtd->data;
     int sigver;
@@ -1196,40 +1231,10 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     if (res != RPMRC_OK) {
 	goto exit;
     }
-
-    {	DIGEST_CTX ctx = rpmDigestDup(md5ctx);
-	uint8_t *digest = NULL;
-	size_t diglen = 0;
-
-	if (sigp->hash != NULL)
-	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-
-	if (sigp->version == 4) {
-	    /* V4 trailer is six octets long (rfc4880) */
-	    uint8_t trailer[6];
-	    uint32_t nb = sigp->hashlen;
-	    nb = htonl(nb);
-	    trailer[0] = sigp->version;
-	    trailer[1] = 0xff;
-	    memcpy(trailer+2, &nb, 4);
-	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
-	}
-
-	xx = rpmDigestFinal(ctx, (void **)&digest, &diglen, 0);
-
-	/* Compare leading 16 bits of digest for quick check. */
-	if (memcmp(digest, sigp->signhash16, 2)) {
-	    res = RPMRC_FAIL;
-	    goto exit;
-	}
-
-	/* Retrieve the matching public key. */
-	res = rpmKeyringLookup(keyring, dig);
-	if (res != RPMRC_OK)
-	    goto exit;
-
-	res = vfyDigest(digest, diglen, dig->rsa, dig->rsasig, sigalg);
-	free(digest);
+    /* Retrieve the matching public key and verify. */
+    res = rpmKeyringLookup(keyring, dig);
+    if (res == RPMRC_OK) {
+	res = verifyPGPSig(sigp, dig->rsa, dig->rsasig, sigalg, md5ctx);
     }
 
 exit:
@@ -1258,11 +1263,9 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res;
-    int xx;
     const char *hdr;
     int sigver;
     const char *sig = sigtd->data;
-
     assert(msg != NULL);
     *msg = NULL;
 
@@ -1283,38 +1286,12 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 	goto exit;
     }
 
-    {	DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
-	uint8_t *digest = NULL;
-	size_t diglen = 0;
-
-	if (sigp->hash != NULL)
-	    xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-
-	if (sigp->version == 4) {
-	    /* V4 trailer is six octets long (rfc4880) */
-	    uint8_t trailer[6];
-	    uint32_t nb = sigp->hashlen;
-	    nb = htonl(nb);
-	    trailer[0] = sigp->version;
-	    trailer[1] = 0xff;
-	    memcpy(trailer+2, &nb, 4);
-	    xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
-	}
-	xx = rpmDigestFinal(ctx, (void **)&digest, &diglen, 0);
-
-	/* Compare leading 16 bits of digest for quick check. */
-	if (memcmp(digest, sigp->signhash16, 2)) {
-	    res = RPMRC_FAIL;
-	    goto exit;
-	}
-
-	/* Retrieve the matching public key. */
-	res = rpmKeyringLookup(keyring, dig);
-	if (res == RPMRC_OK) {
-	    SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-	    res = vfyDigest(digest, diglen, dig->dsa, dig->dsasig, sigalg);
-	}
-	free(digest);
+    /* Retrieve the matching public key and verify. */
+    res = rpmKeyringLookup(keyring, dig);
+    if (res == RPMRC_OK) {
+	/* XXX TODO: handle other algorithm types too */
+	SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
+	res = verifyPGPSig(sigp, dig->dsa, dig->dsasig, sigalg, sha1ctx);
     }
 
 exit:
