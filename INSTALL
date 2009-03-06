@@ -80,18 +80,26 @@ to configure and libselinux development environment installed. SELinux
 is available from
     http://www.nsa.gov/selinux/
 
-It may be desired to install bzip2, gzip, and lzma so that RPM can use these
+It may be desired to install bzip2, gzip, and xz/lzma so that RPM can use these
 formats.  Gzip is necessary to build packages that contain compressed
 tar balls, these are quite common on the Internet.
 These are availible from
     http://www.gzip.org
     http://www.bzip.org
-    http://tukaani.org/lzma/
+    http://tukaani.org/xz/
 
 If you want to build the Python bindings to RPM library, it can be enabled
 with --enable-python option to configure. You'll need to have Python (>= 2.3)
 runtime and C API development environment installed, this is available from 
     http://www.python.org/
+
+To enable POSIX.1e draft 15 file capabilities support, configure with
+--with-cap. You'll also need recent libcap, available from:
+    http://ftp.kernel.org/pub/linux/libs/security/linux-privs/libcap2/
+
+To enable POSIX 1003.1e draft 17 ACL verification support, configure with
+--with-acl. You'll also need the ACL library, available from:
+    ftp://oss.sgi.com/projects/xfs/cmd_tars/
 
 For best results you should compile with GCC and GNU Make.  Users have
 reported difficulty with other build tools (any patches to lift these
