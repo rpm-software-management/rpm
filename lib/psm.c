@@ -275,6 +275,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (rootdir && strcmp(rootdir, "/") == 0)
 	rootdir = NULL;
 
+    /* Macros need to be added before trying to create directories */
+    rpmInstallLoadMacros(h);
+
     if (specix >= 0) {
 	const char *bn;
 
@@ -300,8 +303,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (rpmtsAddInstallElement(ts, h, NULL, 0, NULL)) {
 	goto exit;
     }
-
-    rpmInstallLoadMacros(h);
 
     te = rpmtsElement(ts, 0);
     if (te == NULL) {	/* XXX can't happen */
