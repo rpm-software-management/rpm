@@ -74,9 +74,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 {
     unsigned int fx = rpmfiFX(fi);
     rpmfs fs = rpmteGetFileStates(p);
-    int isCfgFile;
-
-    isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
+    int isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
 	return 0;
@@ -123,8 +121,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
     /* Determine config file dispostion, skipping missing files (if any). */
     if (isCfgFile) {
-	int skipMissing =
-	    ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
+	int skipMissing = ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
 	rpmFileAction action = rpmfiDecideFate(otherFi, fi, skipMissing);
 	rpmfsSetAction(fs, fx, action);
     }
