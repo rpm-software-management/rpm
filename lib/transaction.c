@@ -75,12 +75,9 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpm_color_t oFColor, FColor;
-    char * altNEVR = NULL;
     rpmps ps;
     unsigned int fx = rpmfiFX(fi);
     rpmfs fs = rpmteGetFileStates(p);
-
-    altNEVR = headerGetNEVRA(otherHeader, NULL);
 
     ps = rpmtsProblems(ts);
     int isCfgFile;
@@ -112,11 +109,13 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	}
 
 	if (rConflicts) {
+	    char *altNEVR = headerGetNEVRA(otherHeader, NULL);
 	    rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVRA(p), rpmteKey(p),
 			rpmfiDN(fi), rpmfiBN(fi),
 			altNEVR,
 			0);
+	    free(altNEVR);
 	}
 
 	/* Save file identifier to mark as state REPLACED. */
@@ -138,7 +137,6 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
     rpmfiSetFReplacedSize(fi, rpmfiFSize(otherFi));
 
     ps = rpmpsFree(ps);
-    altNEVR = _free(altNEVR);
     return 0;
 }
 
