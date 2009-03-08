@@ -72,19 +72,9 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 				   Header otherHeader, rpmfi otherFi,
 				   int beingRemoved)
 {
-    rpm_color_t tscolor = rpmtsColor(ts);
-    rpm_color_t prefcolor = rpmtsPrefColor(ts);
-    rpm_color_t oFColor, FColor;
     unsigned int fx = rpmfiFX(fi);
     rpmfs fs = rpmteGetFileStates(p);
-
     int isCfgFile;
-
-    oFColor = rpmfiFColor(otherFi);
-    oFColor &= tscolor;
-
-    FColor = rpmfiFColor(fi);
-    FColor &= tscolor;
 
     isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
@@ -92,6 +82,10 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	return 0;
 
     if (rpmfiCompare(otherFi, fi)) {
+	rpm_color_t tscolor = rpmtsColor(ts);
+	rpm_color_t prefcolor = rpmtsPrefColor(ts);
+	rpm_color_t FColor = rpmfiFColor(fi) & tscolor;
+	rpm_color_t oFColor = rpmfiFColor(otherFi) & tscolor;
 	int rConflicts;
 
 	rConflicts = !(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES));
