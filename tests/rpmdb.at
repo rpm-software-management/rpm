@@ -134,6 +134,30 @@ runroot rpm -qls conflictstatus
 AT_CLEANUP
 
 # ------------------------------
+# Install and verify status
+AT_SETUP([rpm -U with _install_lang and verify status])
+AT_KEYWORDS([install rpmdb query])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+          ${RPMDATA}/SPECS/flangtest.spec
+
+runroot rpm -U --define "_install_langs de:fi" "${TOPDIR}"/RPMS/noarch/flangtest-1.0-1.noarch.rpm
+runroot rpm -qls flangtest
+],
+[0],
+[normal        /usr/share/flangtest/de.txt
+not installed /usr/share/flangtest/en.txt
+normal        /usr/share/flangtest/fi.txt
+normal        /usr/share/flangtest/none.txt
+not installed /usr/share/flangtest/pl.txt
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
 # Install and verify files exist on disk
 AT_SETUP([rpm -U and verify files on disk])
 AT_KEYWORDS([install rpmdb])
