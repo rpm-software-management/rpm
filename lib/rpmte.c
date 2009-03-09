@@ -988,7 +988,7 @@ rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix)
     return RPMFILE_STATE_MISSING;
 }
 
-rpmfileState * rpmfsGetStates(rpmfs fs)
+rpm_fstate_t * rpmfsGetStates(rpmfs fs)
 {
     return fs->states;
 }
