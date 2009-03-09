@@ -1227,20 +1227,14 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd)
 	return 0;
     }
     
-    if ( encoding ) {
-	lzma_init_encoder();
-    } else {
-	lzma_init_decoder();
-    }
-    
     lzfile->file = fp;
     lzfile->encoding = encoding;
     lzfile->eof = 0;
     lzfile->strm = init_strm;
     if (encoding) {
-	ret = lzma_easy_encoder(&lzfile->strm, level);
-    } else {	/* 65MiB will be soon minimum for -9 xz compression, otherwise it won't get expanded */
-	ret = lzma_auto_decoder(&lzfile->strm, 65<<20, 0);
+	ret = lzma_easy_encoder(&lzfile->strm, level, LZMA_CHECK_SHA256);
+    } else {	/* lzma_easy_decoder_memusage(level) is not ready yet, use hardcoded limit for now */
+	ret = lzma_auto_decoder(&lzfile->strm, 100<<20, 0);
     }
     if (ret != LZMA_OK) {
 	fclose(fp);
