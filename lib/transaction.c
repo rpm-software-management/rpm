@@ -488,7 +488,8 @@ static void skipFiles(const rpmts ts, rpmte p)
 	/*
 	 * Skip i18n language specific files.
 	 */
-	if (ts->installLangs != NULL && (flangs = rpmfiFLangs(fi)) != NULL) {
+	flangs = (ts->installLangs != NULL) ? rpmfiFLangs(fi) : NULL;
+	if (flangs != NULL && *flangs != '\0') {
 	    const char *l, *le;
 	    char **lang;
 	    for (lang = ts->installLangs; *lang != NULL; lang++) {
