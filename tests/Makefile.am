@@ -31,6 +31,7 @@ EXTRA_DIST += data/SPECS/foo.spec
 EXTRA_DIST += data/SPECS/versiontest.spec
 EXTRA_DIST += data/SPECS/conflicttest.spec
 EXTRA_DIST += data/SPECS/configtest.spec
+EXTRA_DIST += data/SPECS/flangtest.spec
 EXTRA_DIST += data/SPECS/symlinktest.spec
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
