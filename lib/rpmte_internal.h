@@ -36,10 +36,12 @@ struct sharedFileInfo_s {
     int otherFileNum;
 };
 
+typedef char rpm_fstate_t;
+
 struct rpmfs_s {
     unsigned int fc;
 
-    rpmfileState * states;
+    rpm_fstate_t * states;
     rpmFileAction * actions;	/*!< File disposition(s). */
 
     sharedFileInfo replaced;	/*!< (TR_ADDED) to be replaced files in the rpmdb */
@@ -106,7 +108,7 @@ rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix);
  * May return NULL
  */
 RPM_GNUC_INTERNAL
-rpmfileState * rpmfsGetStates(rpmfs fs);
+rpm_fstate_t * rpmfsGetStates(rpmfs fs);
 
 RPM_GNUC_INTERNAL
 rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
