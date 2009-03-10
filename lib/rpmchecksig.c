@@ -522,6 +522,33 @@ static rpmRC parsePGP(rpmtd sigtd, const char *fn, pgpDig dig)
     }
     return rc;
 }
+
+/* 
+ * Figure best available signature. 
+ * XXX TODO: Similar detection in rpmReadPackageFile(), unify these.
+ */
+static rpmSigTag bestSig(Header sigh, int nosignatures, int nodigests)
+{
+    rpmSigTag sigtag = 0;
+    if (sigtag == 0 && !nosignatures) {
+	if (headerIsEntry(sigh, RPMSIGTAG_DSA))
+	    sigtag = RPMSIGTAG_DSA;
+	else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
+	    sigtag = RPMSIGTAG_RSA;
+	else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
+	    sigtag = RPMSIGTAG_GPG;
+	else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
+	    sigtag = RPMSIGTAG_PGP;
+    }
+    if (sigtag == 0 && !nodigests) {
+	if (headerIsEntry(sigh, RPMSIGTAG_MD5))
+	    sigtag = RPMSIGTAG_MD5;
+	else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
+	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
+    }
+    return sigtag;
+}
+
 static const char *sigtagname(rpmSigTag sigtag, int upper)
 {
     const char *n = NULL;
@@ -646,23 +673,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     msg = _free(msg);
 
     /* Grab a hint of what needs doing to avoid duplication. */
-    sigtag = 0;
-    if (sigtag == 0 && !nosignatures) {
-	if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-	    sigtag = RPMSIGTAG_DSA;
-	else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-	    sigtag = RPMSIGTAG_RSA;
-	else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-	    sigtag = RPMSIGTAG_GPG;
-	else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
-	    sigtag = RPMSIGTAG_PGP;
-    }
-    if (sigtag == 0 && !nodigests) {
-	if (headerIsEntry(sigh, RPMSIGTAG_MD5))
-	    sigtag = RPMSIGTAG_MD5;
-	else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
-    }
+    sigtag = bestSig(sigh, nosignatures, nodigests);
 
     dig = pgpNewDig();
     sigp = &dig->signature;
