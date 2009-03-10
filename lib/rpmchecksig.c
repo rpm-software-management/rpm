@@ -542,22 +542,59 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
     return n;
 }
 
+/* 
+ * Format sigcheck result for output, appending the message spew to buf and
+ * bad/missing keyids to keyprob.
+ *
+ * In verbose mode, just dump it all. Otherwise ok signatures
+ * are dumped lowercase, bad sigs uppercase and for PGP/GPG
+ * if misssing/untrusted key it's uppercase in parenthesis
+ * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
+ */
+static void formatResult(rpmSigTag sigtag, rpmRC sigres, const char *result,
+			 int havekey, char **keyprob, char **buf)
+{
+    char *msg = NULL;
+    if (rpmIsVerbose()) {
+	rasprintf(&msg, "    %s", result);
+    } else { 
+	/* Check for missing / untrusted keys in result. */
+	const char *signame = sigtagname(sigtag, (sigres != RPMRC_OK));
+	
+	if (havekey && (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
+	    char *keyid = NULL;
+	    char *idprob = NULL;
+	    const char *tempKey = strstr(result, "ey ID");
+	    if (tempKey) 
+		keyid = strndup(tempKey + 6, 8);
+	    rasprintf(&idprob, " %s#%s", signame, keyid);
+	    rstrcat(keyprob, idprob);
+	    free(keyid);
+	    free(idprob);
+	}
+	rasprintf(&msg, (*keyprob ? "(%s) " : "%s "), signame);
+    }
+    rstrcat(buf, msg);
+    free(msg);
+}
+
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
     char *buf = NULL;
-    char * missingKeys, *untrustedKeys;
+    char *missingKeys = NULL; 
+    char *untrustedKeys = NULL;
     struct rpmtd_s sigtd;
     rpmTag sigtag;
     pgpDig dig = NULL;
     pgpDigParams sigp;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
-    char * msg;
+    char * msg = NULL;
     int res = 1; /* assume failure */
     int xx;
     rpmRC rc, sigres;
-    int failed;
+    int failed = 0;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
@@ -575,7 +612,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	goto exit;
     }
 
-    msg = NULL;
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
     switch (rc) {
     default:
@@ -639,9 +675,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	goto exit;
     }
 
-    failed = 0;
-    missingKeys = NULL;
-    untrustedKeys = NULL;
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
     hi = headerInitIterator(sigh);
@@ -669,7 +702,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 	    if (sigp->version != 3 && sigp->version != 4) {
 		rpmlog(RPMLOG_ERR,
-	    _("skipping package %s with unverifiable V%u signature\n"),
+		    _("skipping package %s with unverifiable V%u signature\n"),
 		    fn, sigp->version);
 		goto exit;
 	    }
@@ -699,48 +732,15 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	}
 
 	sigres = rpmVerifySignature(keyring, &sigtd, dig, &result);
+	formatResult(sigtd.tag, sigres, result, havekey, 
+		     (sigres == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
+		     &buf);
+	free(result);
+
 	if (sigres != RPMRC_OK) {
 	    failed = 1;
 	}
 
-	/* 
-	 * In verbose mode, just dump it all. Otherwise ok signatures
-	 * are dumped lowercase, bad sigs uppercase and for PGP/GPG
-	 * if misssing/untrusted key it's uppercase in parenthesis
-	 * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
-	 */
-	msg = NULL;
-	if (rpmIsVerbose()) {
-	    rasprintf(&msg, "    %s", result);
-	} else { 
-	    const char *signame;
-	    char ** keyprob = NULL;
-	    signame = sigtagname(sigtd.tag, (sigres == RPMRC_OK ? 0 : 1));
-
-	    /* 
-	     * Check for missing / untrusted keys in result. In theory
-	     * there could be several missing keys of which only
-	     * last is shown, in practise not.
-	     */
-	     if (havekey && 
-		 (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
-		 const char *tempKey = NULL;
-		 char *keyid = NULL;
-		 keyprob = (sigres == RPMRC_NOKEY ? 
-			    &missingKeys : &untrustedKeys);
-		 if (*keyprob) free(*keyprob);
-		 tempKey = strstr(result, "ey ID");
-		 if (tempKey) 
-		    keyid = strndup(tempKey + 6, 8);
-		 rasprintf(keyprob, "%s#%s", signame, keyid);
-		 free(keyid);
-	     }
-	     rasprintf(&msg, (keyprob ? "(%s) " : "%s "), signame);
-	}
-	free(result);
-
-	rstrcat(&buf, msg);
-	free(msg);
     }
     res = failed;
 
