@@ -593,7 +593,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     char * msg = NULL;
     int res = 1; /* assume failure */
     int xx;
-    rpmRC rc, sigres;
+    rpmRC rc;
     int failed = 0;
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
@@ -731,13 +731,13 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    break;
 	}
 
-	sigres = rpmVerifySignature(keyring, &sigtd, dig, &result);
-	formatResult(sigtd.tag, sigres, result, havekey, 
-		     (sigres == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
+	rc = rpmVerifySignature(keyring, &sigtd, dig, &result);
+	formatResult(sigtd.tag, rc, result, havekey, 
+		     (rc == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
 		     &buf);
 	free(result);
 
-	if (sigres != RPMRC_OK) {
+	if (rc != RPMRC_OK) {
 	    failed = 1;
 	}
 
