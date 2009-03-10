@@ -562,15 +562,15 @@ static void formatResult(rpmSigTag sigtag, rpmRC sigres, const char *result,
 	const char *signame = sigtagname(sigtag, (sigres != RPMRC_OK));
 	
 	if (havekey && (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
-	    char *keyid = NULL;
-	    char *idprob = NULL;
 	    const char *tempKey = strstr(result, "ey ID");
-	    if (tempKey) 
-		keyid = strndup(tempKey + 6, 8);
-	    rasprintf(&idprob, " %s#%s", signame, keyid);
-	    rstrcat(keyprob, idprob);
-	    free(keyid);
-	    free(idprob);
+	    if (tempKey) {
+		char *keyid = strndup(tempKey + 6, 8);
+	    	char *idprob = NULL;
+		rasprintf(&idprob, " %s#%s", signame, keyid);
+		rstrcat(keyprob, idprob);
+		free(keyid);
+		free(idprob);
+	    }
 	}
 	rasprintf(&msg, (*keyprob ? "(%s) " : "%s "), signame);
     }
