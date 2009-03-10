@@ -506,6 +506,22 @@ exit:
     return rc;
 }
 
+/* Parse the parameters from the OpenPGP packets that will be needed. */
+/* XXX TODO: unify with similar parsePGP() in package.c */
+static rpmRC parsePGP(rpmtd sigtd, const char *fn, pgpDig dig)
+{
+    rpmRC rc = RPMRC_FAIL;
+    int debug = (_print_pkts & rpmIsDebug());
+    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0) &&
+	 (dig->signature.version == 3 || dig->signature.version == 4)) {
+	rc = RPMRC_OK;
+    } else {
+	rpmlog(RPMLOG_ERR,
+	    _("skipping package %s with unverifiable V%u signature\n"), fn,
+	    dig->signature.version);
+    }
+    return rc;
+}
 static const char *sigtagname(rpmSigTag sigtag, int upper)
 {
     const char *n = NULL;
@@ -697,13 +713,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	case RPMSIGTAG_DSA:
 	    if (nosignatures)
 		 continue;
-	    xx = pgpPrtPkts(sigtd.data, sigtd.count, dig,
-		    (_print_pkts & rpmIsDebug()));
-
-	    if (sigp->version != 3 && sigp->version != 4) {
-		rpmlog(RPMLOG_ERR,
-		    _("skipping package %s with unverifiable V%u signature\n"),
-		    fn, sigp->version);
+	    if (parsePGP(&sigtd, fn, dig) != RPMRC_OK) {
 		goto exit;
 	    }
 	    break;
