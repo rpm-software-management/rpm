@@ -554,7 +554,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     Header sigh = NULL;
     HeaderIterator hi = NULL;
     char * msg;
-    int res = 0;
+    int res = 1; /* assume failure */
     int xx;
     rpmRC rc, sigres;
     int failed;
@@ -572,7 +572,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     lead = rpmLeadFree(lead);
 
     if (rc != RPMRC_OK) {
-	res++;
 	goto exit;
     }
 
@@ -583,13 +582,11 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
 		    (msg && *msg ? msg : "\n"));
 	msg = _free(msg);
-	res++;
 	goto exit;
 	break;
     case RPMRC_OK:
 	if (sigh == NULL) {
 	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
-	    res++;
 	    goto exit;
 	}
 	break;
@@ -639,7 +636,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
     /* Read the file, generating digest(s) on the fly. */
     if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
-	res++;
 	goto exit;
     }
 
@@ -675,7 +671,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		rpmlog(RPMLOG_ERR,
 	    _("skipping package %s with unverifiable V%u signature\n"),
 		    fn, sigp->version);
-		res++;
 		goto exit;
 	    }
 	    break;
@@ -747,8 +742,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	rstrcat(&buf, msg);
 	free(msg);
     }
-
-    res += failed;
+    res = failed;
 
     if (rpmIsVerbose()) {
 	rpmlog(RPMLOG_NOTICE, "%s", buf);
