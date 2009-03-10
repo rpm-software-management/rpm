@@ -552,7 +552,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     pgpDig dig = NULL;
     pgpDigParams sigp;
     Header sigh = NULL;
-    HeaderIterator hi;
+    HeaderIterator hi = NULL;
     char * msg;
     int res = 0;
     int xx;
@@ -749,7 +749,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	free(msg);
 	buf = b;
     }
-    hi = headerFreeIterator(hi);
 
     res += failed;
 
@@ -765,12 +764,13 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	       untrustedKeys ? untrustedKeys : "",
 	       untrustedKeys ? _(")") : "");
     }
-    free(buf);
     free(missingKeys);
     free(untrustedKeys);
 
 exit:
+    free(buf);
     sigh = rpmFreeSignature(sigh);
+    hi = headerFreeIterator(hi);
     rpmKeyringFree(keyring);
     pgpFreeDig(dig);
     return res;
