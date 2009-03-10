@@ -572,215 +572,212 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
 
-    {
-	rpmlead lead = rpmLeadNew();
-    	if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
-	    const char *lmsg = NULL;
-	    rc = rpmLeadCheck(lead, &lmsg);
-	    if (rc != RPMRC_OK) 
-		rpmlog(RPMLOG_ERR, "%s: %s\n", fn, lmsg);
-    	}
-    	lead = rpmLeadFree(lead);
+    rpmlead lead = rpmLeadNew();
+    if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
+	const char *lmsg = NULL;
+	rc = rpmLeadCheck(lead, &lmsg);
+	if (rc != RPMRC_OK) 
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, lmsg);
+    }
+    lead = rpmLeadFree(lead);
 
-    	if (rc != RPMRC_OK) {
+    if (rc != RPMRC_OK) {
+	res++;
+	goto exit;
+    }
+
+    msg = NULL;
+    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
+    switch (rc) {
+    default:
+	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
+		    (msg && *msg ? msg : "\n"));
+	msg = _free(msg);
+	res++;
+	goto exit;
+	break;
+    case RPMRC_OK:
+	if (sigh == NULL) {
+	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
 	    res++;
 	    goto exit;
 	}
+	break;
+    }
+    msg = _free(msg);
 
+    /* Grab a hint of what needs doing to avoid duplication. */
+    sigtag = 0;
+    if (sigtag == 0 && !nosignatures) {
+	if (headerIsEntry(sigh, RPMSIGTAG_DSA))
+	    sigtag = RPMSIGTAG_DSA;
+	else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
+	    sigtag = RPMSIGTAG_RSA;
+	else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
+	    sigtag = RPMSIGTAG_GPG;
+	else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
+	    sigtag = RPMSIGTAG_PGP;
+    }
+    if (sigtag == 0 && !nodigests) {
+	if (headerIsEntry(sigh, RPMSIGTAG_MD5))
+	    sigtag = RPMSIGTAG_MD5;
+	else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
+	    sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
+    }
 
-	msg = NULL;
-	rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
-	switch (rc) {
-	default:
-	    rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), fn,
-			(msg && *msg ? msg : "\n"));
-	    msg = _free(msg);
-	    res++;
-	    goto exit;
-	    break;
-	case RPMRC_OK:
-	    if (sigh == NULL) {
-		rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), fn);
+    dig = pgpNewDig();
+    sigp = &dig->signature;
+
+    /* XXX RSA needs the hash_algo, so decode early. */
+    if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
+	xx = headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT);
+	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
+	rpmtdFreeData(&sigtd);
+	/* XXX assume same hash_algo in header-only and header+payload */
+	if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
+	  || headerIsEntry(sigh, RPMSIGTAG_PGP5))
+	 && dig->signature.hash_algo != PGPHASHALGO_MD5)
+	    fdInitDigest(fd, dig->signature.hash_algo, 0);
+    }
+
+    if (headerIsEntry(sigh, RPMSIGTAG_PGP)
+    ||  headerIsEntry(sigh, RPMSIGTAG_PGP5)
+    ||  headerIsEntry(sigh, RPMSIGTAG_MD5))
+	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
+    if (headerIsEntry(sigh, RPMSIGTAG_GPG))
+	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+
+    /* Read the file, generating digest(s) on the fly. */
+    if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
+	res++;
+	goto exit;
+    }
+
+    failed = 0;
+    missingKeys = NULL;
+    untrustedKeys = NULL;
+    rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
+
+    hi = headerInitIterator(sigh);
+    for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
+	char *result = NULL;
+	int havekey = 0;
+
+	if (sigtd.data == NULL) /* XXX can't happen */
+	    continue;
+
+	/* Clean up parameters from previous sigtag. */
+	pgpCleanDig(dig);
+
+	switch (sigtd.tag) {
+	case RPMSIGTAG_GPG:
+	case RPMSIGTAG_PGP5:	/* XXX legacy */
+	case RPMSIGTAG_PGP:
+	    havekey = 1;
+	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_DSA:
+	    if (nosignatures)
+		 continue;
+	    xx = pgpPrtPkts(sigtd.data, sigtd.count, dig,
+		    (_print_pkts & rpmIsDebug()));
+
+	    if (sigp->version != 3 && sigp->version != 4) {
+		rpmlog(RPMLOG_ERR,
+	    _("skipping package %s with unverifiable V%u signature\n"),
+		    fn, sigp->version);
 		res++;
 		goto exit;
 	    }
 	    break;
-	}
-	msg = _free(msg);
-
-	/* Grab a hint of what needs doing to avoid duplication. */
-	sigtag = 0;
-	if (sigtag == 0 && !nosignatures) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_DSA))
-		sigtag = RPMSIGTAG_DSA;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_RSA))
-		sigtag = RPMSIGTAG_RSA;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-		sigtag = RPMSIGTAG_GPG;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_PGP))
-		sigtag = RPMSIGTAG_PGP;
-	}
-	if (sigtag == 0 && !nodigests) {
-	    if (headerIsEntry(sigh, RPMSIGTAG_MD5))
-		sigtag = RPMSIGTAG_MD5;
-	    else if (headerIsEntry(sigh, RPMSIGTAG_SHA1))
-		sigtag = RPMSIGTAG_SHA1;	/* XXX never happens */
-	}
-
-	dig = pgpNewDig();
-	sigp = &dig->signature;
-
-	/* XXX RSA needs the hash_algo, so decode early. */
-	if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
-	    xx = headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT);
-	    xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
-	    rpmtdFreeData(&sigtd);
-	    /* XXX assume same hash_algo in header-only and header+payload */
-	    if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
-	      || headerIsEntry(sigh, RPMSIGTAG_PGP5))
-	     && dig->signature.hash_algo != PGPHASHALGO_MD5)
-		fdInitDigest(fd, dig->signature.hash_algo, 0);
-	}
-
-	if (headerIsEntry(sigh, RPMSIGTAG_PGP)
-	||  headerIsEntry(sigh, RPMSIGTAG_PGP5)
-	||  headerIsEntry(sigh, RPMSIGTAG_MD5))
-	    fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-	    fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-
-	/* Read the file, generating digest(s) on the fly. */
-	if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
-	    res++;
-	    goto exit;
-	}
-
-	failed = 0;
-	missingKeys = NULL;
-	untrustedKeys = NULL;
-	rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
-
-	hi = headerInitIterator(sigh);
-	for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
-    	    char *result = NULL;
-	    int havekey = 0;
-
-	    if (sigtd.data == NULL) /* XXX can't happen */
+	case RPMSIGTAG_SHA1:
+	    if (nodigests)
+		 continue;
+	    /* XXX Don't bother with header sha1 if header dsa. */
+	    if (!nosignatures && sigtd.tag == RPMSIGTAG_DSA)
 		continue;
-
-	    /* Clean up parameters from previous sigtag. */
-	    pgpCleanDig(dig);
-
-	    switch (sigtd.tag) {
-	    case RPMSIGTAG_GPG:
-	    case RPMSIGTAG_PGP5:	/* XXX legacy */
-	    case RPMSIGTAG_PGP:
-		havekey = 1;
-	    case RPMSIGTAG_RSA:
-	    case RPMSIGTAG_DSA:
-		if (nosignatures)
-		     continue;
-		xx = pgpPrtPkts(sigtd.data, sigtd.count, dig,
-			(_print_pkts & rpmIsDebug()));
-
-		if (sigp->version != 3 && sigp->version != 4) {
-		    rpmlog(RPMLOG_ERR,
-		_("skipping package %s with unverifiable V%u signature\n"),
-			fn, sigp->version);
-		    res++;
-		    goto exit;
-		}
-		break;
-	    case RPMSIGTAG_SHA1:
-		if (nodigests)
-		     continue;
-		/* XXX Don't bother with header sha1 if header dsa. */
-		if (!nosignatures && sigtd.tag == RPMSIGTAG_DSA)
-		    continue;
-		break;
-	    case RPMSIGTAG_LEMD5_2:
-	    case RPMSIGTAG_LEMD5_1:
-	    case RPMSIGTAG_MD5:
-		if (nodigests)
-		     continue;
-		/*
-		 * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
-		 * than the -- now unsupported -- legacy md5 breakage.
-		 */
-		if (!nosignatures && sigtd.tag == RPMSIGTAG_PGP)
-		    continue;
-		break;
-	    default:
+	    break;
+	case RPMSIGTAG_LEMD5_2:
+	case RPMSIGTAG_LEMD5_1:
+	case RPMSIGTAG_MD5:
+	    if (nodigests)
+		 continue;
+	    /*
+	     * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
+	     * than the -- now unsupported -- legacy md5 breakage.
+	     */
+	    if (!nosignatures && sigtd.tag == RPMSIGTAG_PGP)
 		continue;
-		break;
-	    }
+	    break;
+	default:
+	    continue;
+	    break;
+	}
 
-	    sigres = rpmVerifySignature(keyring, &sigtd, dig, &result);
-	    if (sigres != RPMRC_OK) {
-		failed = 1;
-	    }
+	sigres = rpmVerifySignature(keyring, &sigtd, dig, &result);
+	if (sigres != RPMRC_OK) {
+	    failed = 1;
+	}
+
+	/* 
+	 * In verbose mode, just dump it all. Otherwise ok signatures
+	 * are dumped lowercase, bad sigs uppercase and for PGP/GPG
+	 * if misssing/untrusted key it's uppercase in parenthesis
+	 * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
+	 */
+	msg = NULL;
+	if (rpmIsVerbose()) {
+	    rasprintf(&msg, "    %s", result);
+	} else { 
+	    const char *signame;
+	    char ** keyprob = NULL;
+	    signame = sigtagname(sigtd.tag, (sigres == RPMRC_OK ? 0 : 1));
 
 	    /* 
- 	     * In verbose mode, just dump it all. Otherwise ok signatures
- 	     * are dumped lowercase, bad sigs uppercase and for PGP/GPG
- 	     * if misssing/untrusted key it's uppercase in parenthesis
- 	     * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
- 	     */
-	    msg = NULL;
-	    if (rpmIsVerbose()) {
-		rasprintf(&msg, "    %s", result);
-	    } else { 
-		const char *signame;
-		char ** keyprob = NULL;
- 		signame = sigtagname(sigtd.tag, (sigres == RPMRC_OK ? 0 : 1));
-
-		/* 
- 		 * Check for missing / untrusted keys in result. In theory
- 		 * there could be several missing keys of which only
- 		 * last is shown, in practise not.
- 		 */
-		 if (havekey && 
-		     (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
-		     const char *tempKey = NULL;
-		     char *keyid = NULL;
-		     keyprob = (sigres == RPMRC_NOKEY ? 
-				&missingKeys : &untrustedKeys);
-		     if (*keyprob) free(*keyprob);
-		     tempKey = strstr(result, "ey ID");
-		     if (tempKey) 
-			keyid = strndup(tempKey + 6, 8);
-		     rasprintf(keyprob, "%s#%s", signame, keyid);
-		     free(keyid);
-		 }
-		 rasprintf(&msg, (keyprob ? "(%s) " : "%s "), signame);
-	    }
-	    free(result);
-
-	    rasprintf(&b, "%s%s", buf, msg);
-	    free(buf);
-	    free(msg);
-	    buf = b;
+	     * Check for missing / untrusted keys in result. In theory
+	     * there could be several missing keys of which only
+	     * last is shown, in practise not.
+	     */
+	     if (havekey && 
+		 (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
+		 const char *tempKey = NULL;
+		 char *keyid = NULL;
+		 keyprob = (sigres == RPMRC_NOKEY ? 
+			    &missingKeys : &untrustedKeys);
+		 if (*keyprob) free(*keyprob);
+		 tempKey = strstr(result, "ey ID");
+		 if (tempKey) 
+		    keyid = strndup(tempKey + 6, 8);
+		 rasprintf(keyprob, "%s#%s", signame, keyid);
+		 free(keyid);
+	     }
+	     rasprintf(&msg, (keyprob ? "(%s) " : "%s "), signame);
 	}
-	hi = headerFreeIterator(hi);
+	free(result);
 
-	res += failed;
-
-	if (rpmIsVerbose()) {
-	    rpmlog(RPMLOG_NOTICE, "%s", buf);
-	} else {
-	    const char *ok = (failed ? _("NOT OK") : _("OK"));
-	    rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf, ok,
-		   missingKeys ? _(" (MISSING KEYS:") : "",
-		   missingKeys ? missingKeys : "",
-		   missingKeys ? _(") ") : "",
-		   untrustedKeys ? _(" (UNTRUSTED KEYS:") : "",
-		   untrustedKeys ? untrustedKeys : "",
-		   untrustedKeys ? _(")") : "");
-	}
-        free(buf);
-        free(missingKeys);
-        free(untrustedKeys);
+	rasprintf(&b, "%s%s", buf, msg);
+	free(buf);
+	free(msg);
+	buf = b;
     }
+    hi = headerFreeIterator(hi);
+
+    res += failed;
+
+    if (rpmIsVerbose()) {
+	rpmlog(RPMLOG_NOTICE, "%s", buf);
+    } else {
+	const char *ok = (failed ? _("NOT OK") : _("OK"));
+	rpmlog(RPMLOG_NOTICE, "%s%s%s%s%s%s%s%s\n", buf, ok,
+	       missingKeys ? _(" (MISSING KEYS:") : "",
+	       missingKeys ? missingKeys : "",
+	       missingKeys ? _(") ") : "",
+	       untrustedKeys ? _(" (UNTRUSTED KEYS:") : "",
+	       untrustedKeys ? untrustedKeys : "",
+	       untrustedKeys ? _(")") : "");
+    }
+    free(buf);
+    free(missingKeys);
+    free(untrustedKeys);
 
 exit:
     sigh = rpmFreeSignature(sigh);
