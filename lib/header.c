@@ -1179,6 +1179,10 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	    dataStart = (unsigned char *) memcpy(pe + ril, dataStart, rdl);
 
 	    rc = regionSwab(NULL, ril, 0, pe, dataStart, dataStart + rdl, 0);
+	    /* don't return data on failure */
+	    if (rc < 0) {
+		td->data = _free(td->data);
+	    }
 	    /* XXX 1 on success. */
 	    rc = (rc < 0) ? 0 : 1;
 	} else {
