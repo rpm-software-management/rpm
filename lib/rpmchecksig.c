@@ -545,7 +545,7 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
 int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 		const char * fn)
 {
-    char *buf = NULL, *b;
+    char *buf = NULL;
     char * missingKeys, *untrustedKeys;
     struct rpmtd_s sigtd;
     rpmTag sigtag;
@@ -744,10 +744,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	}
 	free(result);
 
-	rasprintf(&b, "%s%s", buf, msg);
-	free(buf);
+	rstrcat(&buf, msg);
 	free(msg);
-	buf = b;
     }
 
     res += failed;
