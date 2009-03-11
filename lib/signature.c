@@ -1142,7 +1142,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     assert(msg != NULL);
     *msg = NULL;
 
-    hdr = (dig != NULL && dig->hdrmd5ctx == md5ctx) ? _("Header ") : "";
+    hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
     sigver = sigp !=NULL ? sigp->version : 0;
 
     if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
@@ -1239,7 +1239,7 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     assert(msg != NULL);
     *msg = NULL;
 
-    hdr = (dig != NULL && dig->hdrsha1ctx == sha1ctx) ? _("Header ") : "";
+    hdr = (sigtd->tag == RPMSIGTAG_DSA) ? _("Header ") : "";
     sigver = sigp !=NULL ? sigp->version : 0;
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
