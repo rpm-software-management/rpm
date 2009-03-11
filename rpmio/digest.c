@@ -37,12 +37,15 @@ rpmDigestDup(DIGEST_CTX octx)
     return nctx;
 }
 
-static HASH_HashType
-getHashType(pgpHashAlgo hashalgo)
+RPM_GNUC_PURE
+static HASH_HashType getHashType(pgpHashAlgo hashalgo)
 {
     switch (hashalgo) {
     case PGPHASHALGO_MD5:
 	return HASH_AlgMD5;
+	break;
+    case PGPHASHALGO_MD2:
+	return HASH_AlgMD2;
 	break;
     case PGPHASHALGO_SHA1:
 	return HASH_AlgSHA1;
@@ -57,7 +60,6 @@ getHashType(pgpHashAlgo hashalgo)
 	return HASH_AlgSHA512;
 	break;
     case PGPHASHALGO_RIPEMD160:
-    case PGPHASHALGO_MD2:
     case PGPHASHALGO_TIGER192:
     case PGPHASHALGO_HAVAL_5_160:
     default:
