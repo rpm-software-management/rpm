@@ -1000,7 +1000,7 @@ exit:
 static rpmRC
 verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
 {
-    rpmRC res;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
     uint8_t * md5sum = NULL;
     size_t md5len = 0;
     char *md5;
@@ -1010,7 +1010,6 @@ verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
     *msg = NULL;
 
     if (md5ctx == NULL || sigtd->data == NULL || md5ctx == NULL) {
-	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
@@ -1020,7 +1019,6 @@ verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
 
     md5 = pgpHexStr(md5sum, md5len);
     if (md5len != sigtd->count || memcmp(md5sum, sigtd->data, md5len)) {
-	res = RPMRC_FAIL;
 	char *hex = rpmtdFormat(sigtd, RPMTD_FORMAT_STRING, NULL);
 	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
 		  rpmSigString(res), hex, md5);
@@ -1045,7 +1043,7 @@ exit:
 static rpmRC
 verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
 {
-    rpmRC res;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
     char * SHA1 = NULL;
     const char *title = _("Header SHA1 digest:");
     const char *sig = sigtd->data;
@@ -1054,7 +1052,6 @@ verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
     *msg = NULL;
 
     if (sha1ctx == NULL || sigtd->data == NULL) {
-	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
@@ -1063,7 +1060,6 @@ verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
 		(void **)&SHA1, NULL, 1);
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
-	res = RPMRC_FAIL;
 	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
 		  rpmSigString(res), sig, SHA1 ? SHA1 : "(nil)");
     } else {
