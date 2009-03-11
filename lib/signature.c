@@ -1226,7 +1226,7 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
-    rpmRC res;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
     const char *hdr;
     int sigver;
     const char *sig = sigtd->data;
@@ -1237,7 +1237,6 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     sigver = sigp !=NULL ? sigp->version : 0;
 
     if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
-	res = RPMRC_NOKEY;
 	goto exit;
     }
 
@@ -1246,7 +1245,6 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     	&& sigp->pubkey_algo == PGPPUBKEYALGO_DSA
     	&& sigp->hash_algo == PGPHASHALGO_SHA1))
     {
-	res = RPMRC_NOKEY;
 	goto exit;
     }
 
