@@ -972,8 +972,6 @@ verifySizeSignature(rpmtd sigtd, size_t nbytes, char ** msg)
     rpmRC res;
     size_t size = 0x7fffffff;
     const char * title = _("Header+Payload size:");
-
-    assert(msg != NULL);
     *msg = NULL;
 
     if (sigtd->data == NULL || nbytes == 0) {
@@ -1005,8 +1003,6 @@ verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
     size_t md5len = 0;
     char *md5;
     const char *title = _("MD5 digest:");
-
-    assert(msg != NULL);
     *msg = NULL;
 
     if (md5ctx == NULL || sigtd->data == NULL || md5ctx == NULL) {
@@ -1047,8 +1043,6 @@ verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
     char * SHA1 = NULL;
     const char *title = _("Header SHA1 digest:");
     const char *sig = sigtd->data;
-
-    assert(msg != NULL);
     *msg = NULL;
 
     if (sha1ctx == NULL || sigtd->data == NULL) {
@@ -1132,8 +1126,6 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     const char *hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
     const char *signame = _("Unknown");;
     int sigver = 0;
-
-    assert(msg != NULL);
     *msg = NULL;
 
     if (md5ctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
@@ -1218,7 +1210,6 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     const char *hdr = (sigtd->tag == RPMSIGTAG_DSA) ? _("Header ") : "";
     int sigver = 0;
-    assert(msg != NULL);
     *msg = NULL;
 
     if (sha1ctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
@@ -1258,49 +1249,53 @@ exit:
 rpmRC
 rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
 {
-    rpmRC res;
-    
-    assert(result != NULL);
+    rpmRC res = RPMRC_NOTFOUND;
+    char *msg = NULL;
 
     if (sigtd->data == NULL || sigtd->count <= 0 || dig == NULL) {
-	rasprintf(result, _("Verify signature: BAD PARAMETERS\n"));
-	return RPMRC_NOTFOUND;
+	rasprintf(&msg, _("Verify signature: BAD PARAMETERS\n"));
+	goto exit;
     }
 
     switch (sigtd->tag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(sigtd, dig->nbytes, result);
+	res = verifySizeSignature(sigtd, dig->nbytes, &msg);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(sigtd, result, dig->md5ctx);
+	res = verifyMD5Signature(sigtd, &msg, dig->md5ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(sigtd, result, dig->hdrsha1ctx);
+	res = verifySHA1Signature(sigtd, &msg, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(keyring, sigtd, dig, result, dig->hdrmd5ctx);
+	res = verifyRSASignature(keyring, sigtd, dig, &msg, dig->hdrmd5ctx);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(keyring, sigtd, dig, result,
+	res = verifyRSASignature(keyring, sigtd, dig, &msg,
 		((dig->signature.hash_algo == PGPHASHALGO_MD5)
 			? dig->md5ctx : dig->sha1ctx));
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(keyring, sigtd, dig, result, dig->hdrsha1ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, &msg, dig->hdrsha1ctx);
 	break;
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(keyring, sigtd, dig, result, dig->sha1ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, &msg, dig->sha1ctx);
 	break;
     case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_LEMD5_2:
-	rasprintf(result, _("Broken MD5 digest: UNSUPPORTED\n"));
-	res = RPMRC_NOTFOUND;
+	rasprintf(&msg, _("Broken MD5 digest: UNSUPPORTED\n"));
 	break;
     default:
-	rasprintf(result, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
-	res = RPMRC_NOTFOUND;
+	rasprintf(&msg, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
 	break;
+    }
+
+exit:
+    if (result) {
+	*result = msg;
+    } else {
+	free(msg);
     }
     return res;
 }
