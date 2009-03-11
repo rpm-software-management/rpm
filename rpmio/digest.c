@@ -74,30 +74,27 @@ rpmDigestLength(pgpHashAlgo hashalgo)
 DIGEST_CTX
 rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
 {
-    HASH_HashType type;
-    DIGEST_CTX ctx;
+    HASH_HashType type = getHashType(hashalgo);
+    HASHContext *hashctx = NULL;
+    DIGEST_CTX ctx = NULL;
 
     if (rpmInitCrypto() < 0)
-	return NULL;
-
-    ctx = xcalloc(1, sizeof(*ctx));
-    ctx->flags = flags;
+	goto exit;
 
     type = getHashType(hashalgo);
     if (type == HASH_AlgNULL) {
-	free(ctx);
-	return NULL;
+	goto exit;
     }
 
-    ctx->hashctx = HASH_Create(type);
-    if (ctx->hashctx == NULL) {
-    	free(ctx);
-    	return NULL;
+    if ((hashctx = HASH_Create(type)) != NULL) {
+	ctx = xcalloc(1, sizeof(*ctx));
+	ctx->flags = flags;
+	ctx->hashctx = hashctx;
+    	HASH_Begin(ctx->hashctx);
     }
-
-    HASH_Begin(ctx->hashctx);
     
 DPRINTF((stderr, "*** Init(%x) ctx %p hashctx %p\n", flags, ctx, ctx->hashctx));
+exit:
     return ctx;
 }
 
