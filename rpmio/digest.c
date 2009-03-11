@@ -163,12 +163,10 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, l
 
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 {
-    FDDIGEST_t fddig = fd->digests + fd->ndigests;
-    if (fddig != (fd->digests + FDDIGEST_MAX)) {
+    if (fd->ndigests < FDDIGEST_MAX) {
+	fd->digests[fd->ndigests] = rpmDigestInit(hashalgo, flags);
 	fd->ndigests++;
-	fddig->hashalgo = hashalgo;
 	fdstat_enter(fd, FDSTAT_DIGEST);
-	fddig->hashctx = rpmDigestInit(hashalgo, flags);
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
     }
 }
@@ -179,11 +177,11 @@ void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
 
     if (buf != NULL && buflen > 0)
     for (i = fd->ndigests - 1; i >= 0; i--) {
-	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx == NULL)
+	DIGEST_CTX ctx = fd->digests[i];
+	if (ctx == NULL)
 	    continue;
 	fdstat_enter(fd, FDSTAT_DIGEST);
-	(void) rpmDigestUpdate(fddig->hashctx, buf, buflen);
+	(void) rpmDigestUpdate(ctx, buf, buflen);
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) buflen);
     }
 }
@@ -197,16 +195,16 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
     int i;
 
     for (i = fd->ndigests - 1; i >= 0; i--) {
-	FDDIGEST_t fddig = fd->digests + i;
-	if (fddig->hashctx == NULL)
+	DIGEST_CTX ctx = fd->digests[i];
+	if (ctx == NULL)
 	    continue;
 	if (i > imax) imax = i;
-	if (fddig->hashalgo != hashalgo)
+	if (ctx->algo != hashalgo)
 	    continue;
 	fdstat_enter(fd, FDSTAT_DIGEST);
-	(void) rpmDigestFinal(fddig->hashctx, datap, lenp, asAscii);
+	(void) rpmDigestFinal(ctx, datap, lenp, asAscii);
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
-	fddig->hashctx = NULL;
+	fd->digests[i] = NULL;
 	break;
     }
     if (i < 0) {
@@ -224,21 +222,22 @@ void fdStealDigest(FD_t fd, pgpDig dig)
 {
     int i;
     for (i = fd->ndigests - 1; i >= 0; i--) {
-        FDDIGEST_t fddig = fd->digests + i;
-        if (fddig->hashctx != NULL)
-        switch (fddig->hashalgo) {
+	DIGEST_CTX ctx = fd->digests[i];
+        if (ctx == NULL)
+	    continue;
+        switch (ctx->algo) {
         case PGPHASHALGO_MD5:
 assert(dig->md5ctx == NULL);
-            dig->md5ctx = fddig->hashctx;
-            fddig->hashctx = NULL;
+            dig->md5ctx = ctx;
+	    fd->digests[i] = NULL;
             break;
         case PGPHASHALGO_SHA1:
         case PGPHASHALGO_SHA256:
         case PGPHASHALGO_SHA384:
         case PGPHASHALGO_SHA512:
 assert(dig->sha1ctx == NULL);
-            dig->sha1ctx = fddig->hashctx;
-            fddig->hashctx = NULL;
+            dig->sha1ctx = ctx;
+	    fd->digests[i] = NULL;
             break;
         default:
             break;

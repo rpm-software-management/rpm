@@ -29,13 +29,6 @@ typedef	struct {
 } * FDSTAT_t;
 
 /** \ingroup rpmio
- */
-typedef struct _FDDIGEST_s {
-    pgpHashAlgo		hashalgo;
-    DIGEST_CTX		hashctx;
-} * FDDIGEST_t;
-
-/** \ingroup rpmio
  * The FD_t File Handle data structure.
  */
 struct _FD_s {
@@ -59,7 +52,7 @@ struct _FD_s {
 
     int		ndigests;
 #define	FDDIGEST_MAX	4
-    struct _FDDIGEST_s	digests[FDDIGEST_MAX];
+    DIGEST_CTX	digests[FDDIGEST_MAX];
 
     rpm_loff_t	fd_cpioPos;	/* cpio: */
 };

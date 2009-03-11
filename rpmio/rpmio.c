@@ -249,11 +249,11 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s %s\n", fd, fd->nrefs, msg, fdbg(fd)));
 	    return fd;
 	fd->stats = _free(fd->stats);
 	for (i = fd->ndigests - 1; i >= 0; i--) {
-	    FDDIGEST_t fddig = fd->digests + i;
-	    if (fddig->hashctx == NULL)
+	    DIGEST_CTX *ctxp = fd->digests + i;
+	    if (*ctxp == NULL)
 		continue;
-	    (void) rpmDigestFinal(fddig->hashctx, NULL, NULL, 0);
-	    fddig->hashctx = NULL;
+	    (void) rpmDigestFinal(*ctxp, NULL, NULL, 0);
+	    *ctxp = NULL;
 	}
 	fd->ndigests = 0;
 	free(fd);
