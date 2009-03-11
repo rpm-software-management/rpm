@@ -634,7 +634,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     }
     msg = _free(msg);
 
-#define	_chk(_mask)	(sigtag == 0 && !(vsflags & (_mask)))
+#define	_chk(_mask, _tag) \
+	(sigtag == 0 && !(vsflags & (_mask)) && headerIsEntry(sigh, (_tag)))
 
     /*
      * Figger the most effective available signature.
@@ -645,32 +646,21 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     sigtag = 0;
     opx = 0;
     vsflags = rpmtsVSFlags(ts);
-    if (_chk(RPMVSF_NODSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_DSA)) {
+    if (_chk(RPMVSF_NODSAHEADER, RPMSIGTAG_DSA)) {
 	sigtag = RPMSIGTAG_DSA;
-    } else
-    if (_chk(RPMVSF_NORSAHEADER) && headerIsEntry(sigh, RPMSIGTAG_RSA)) {
+    } else if (_chk(RPMVSF_NORSAHEADER, RPMSIGTAG_RSA)) {
 	sigtag = RPMSIGTAG_RSA;
-    } else
-    if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD) &&
-	headerIsEntry(sigh, RPMSIGTAG_GPG))
-    {
+    } else if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_GPG)) {
 	sigtag = RPMSIGTAG_GPG;
 	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
 	opx = RPMTS_OP_SIGNATURE;
-    } else
-    if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD) &&
-	headerIsEntry(sigh, RPMSIGTAG_PGP))
-    {
+    } else if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_PGP)) {
 	sigtag = RPMSIGTAG_PGP;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	opx = RPMTS_OP_SIGNATURE;
-    } else
-    if (_chk(RPMVSF_NOSHA1HEADER) && headerIsEntry(sigh, RPMSIGTAG_SHA1)) {
+    } else if (_chk(RPMVSF_NOSHA1HEADER, RPMSIGTAG_SHA1)) {
 	sigtag = RPMSIGTAG_SHA1;
-    } else
-    if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD) &&
-	headerIsEntry(sigh, RPMSIGTAG_MD5))
-    {
+    } else if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_MD5)) {
 	sigtag = RPMSIGTAG_MD5;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
 	opx = RPMTS_OP_DIGEST;
