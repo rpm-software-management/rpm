@@ -1127,8 +1127,8 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 		DIGEST_CTX md5ctx)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
-    SECOidTag sigalg;
-    rpmRC res = RPMRC_OK;
+    SECOidTag sigalg = SEC_OID_UNKNOWN;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
     const char *hdr, *signame = _("Unknown");;
     const char *sig = sigtd->data;
     int sigver;
@@ -1140,19 +1140,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     sigver = sigp !=NULL ? sigp->version : 0;
 
     if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
-	res = RPMRC_NOKEY;
-    }
-    if (sigp == NULL)
 	goto exit;
-
-    /* Verify the desired signature match. */
-    switch (sigp->pubkey_algo) {
-    case PGPPUBKEYALGO_RSA:
-	if (sigtd->tag == RPMSIGTAG_PGP || sigtd->tag == RPMSIGTAG_PGP5 || sigtd->tag == RPMSIGTAG_RSA)
-	    break;
-    default:
-	res = RPMRC_NOKEY;
-	break;
     }
 
     /* Verify the desired hash match. */
@@ -1187,14 +1175,17 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     case PGPHASHALGO_HAVAL_5_160:
     case PGPHASHALGO_RIPEMD160:
     default:
-	res = RPMRC_NOKEY;
-	sigalg = SEC_OID_UNKNOWN;
 	break;
     }
 
-    if (res != RPMRC_OK) {
+    /* Verify the desired signature match. */
+    if (sigp->pubkey_algo != PGPPUBKEYALGO_RSA || sigalg == SEC_OID_UNKNOWN ||
+			(!(sigtd->tag == RPMSIGTAG_RSA || 
+			   sigtd->tag == RPMSIGTAG_PGP || 
+			   sigtd->tag == RPMSIGTAG_PGP5))) {
 	goto exit;
     }
+
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
     if (res == RPMRC_OK) {
