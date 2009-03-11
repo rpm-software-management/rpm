@@ -1287,6 +1287,7 @@ static void genCpioListAndHeader(FileList fl,
     }
     fi->apath = apath;
     *fip = fi;
+    rpmtdFreeData(&filenames);
   }
 
     /* Compress filelist unless legacy format requested */
