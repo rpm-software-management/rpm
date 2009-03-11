@@ -1107,8 +1107,6 @@ static rpmRC verifyPGPSig(pgpDigParams sigp,
 	SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
 	if (VFY_VerifyDigest(&digest, key, sig, sigalg, NULL) == SECSuccess) {
 	    res = RPMRC_OK;
-	} else {
-	    res = RPMRC_FAIL;
 	}
     }
 
