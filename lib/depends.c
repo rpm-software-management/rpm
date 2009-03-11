@@ -907,15 +907,17 @@ zapRelation(rpmte q, rpmte p,
  * @return		0 always
  */
 static inline int addRelation(rpmts ts,
-		rpmte p,
-		unsigned char * selected,
-		rpmds requires)
+			      rpmal al,
+			      rpmte p,
+			      unsigned char * selected,
+			      rpmds requires)
 {
     rpmtsi qi; rpmte q;
     tsortInfo tsi;
     const char * Name;
     fnpyKey key;
     rpmalKey pkgKey;
+    int teType = rpmteType(p);
     int i = 0;
 
     if ((Name = rpmdsN(requires)) == NULL)
@@ -930,23 +932,23 @@ static inline int addRelation(rpmts ts,
 	return 0;
 
     pkgKey = RPMAL_NOMATCH;
-    key = rpmalSatisfiesDepend(ts->addedPackages, requires, &pkgKey);
+    key = rpmalSatisfiesDepend(al, requires, &pkgKey);
 
-    /* Ordering depends only on added package relations. */
+    /* Ordering depends only on added/erased package relations. */
     if (pkgKey == RPMAL_NOMATCH)
 	return 0;
 
-/* XXX Set q to the added package that has pkgKey == q->u.addedKey */
+    /* XXX Set q to the added/removed package that was found. */
+    /* XXX pretend erasedPackages are just appended to addedPackages. */
+    if (teType == TR_REMOVED)
+        pkgKey = (rpmalKey)(((long)pkgKey) + ts->numAddedPackages);
+
 /* XXX FIXME: bsearch is possible/needed here */
     for (qi = rpmtsiInit(ts), i = 0; (q = rpmtsiNext(qi, 0)) != NULL; i++) {
-
-	/* XXX Only added packages need be checked for matches. */
-	if (rpmteType(q) == TR_REMOVED)
-	    continue;
-
 	if (pkgKey == rpmteAddedKey(q))
 	    break;
     }
+
     qi = rpmtsiFree(qi);
     if (q == NULL || i == ts->orderCount)
 	return 0;
@@ -960,6 +962,13 @@ static inline int addRelation(rpmts ts,
     if (selected[i] != 0)
 	return 0;
     selected[i] = 1;
+
+    /* Erasures are reversed installs. */
+    if (teType == TR_REMOVED) {
+        rpmte r = p;
+        p = q;
+        q = r;
+    }
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
     rpmteTSI(p)->tsi_count++;			/* bump p predecessor count */
@@ -1071,6 +1080,9 @@ int rpmtsOrder(rpmts ts)
     int qlen;
     int i, j;
     int rc;
+    rpmal erasedPackages = rpmalCreate(5);
+
+    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     /*
      * XXX FIXME: this gets needlesly called twice on normal usage patterns,
@@ -1078,7 +1090,24 @@ int rpmtsOrder(rpmts ts)
      */
     rpmalMakeIndex(ts->addedPackages);
 
-    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
+    /* Create erased package index. */
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
+        rpmalKey pkgKey;
+        fnpyKey key;
+        rpm_color_t tscolor = rpmtsColor(ts);
+        pkgKey = RPMAL_NOMATCH;
+        key = (fnpyKey) p;
+        pkgKey = rpmalAdd(&erasedPackages, pkgKey, key,
+			  rpmteDS(p, RPMTAG_PROVIDENAME),
+			  rpmteFI(p), tscolor);
+        /* XXX pretend erasedPackages are just appended to addedPackages. */
+        pkgKey = (rpmalKey)(((long)pkgKey) + ts->numAddedPackages);
+        (void) rpmteSetAddedKey(p, pkgKey);
+    }
+    pi = rpmtsiFree(pi);
+    rpmalMakeIndex(erasedPackages);
+
 
     /* T1. Initialize. */
     if (oType == 0)
@@ -1091,7 +1120,6 @@ int rpmtsOrder(rpmts ts)
 	    numOrderList += ts->numRemovedPackages;
      }
     ordering = xmalloc(sizeof(*ordering) * (numOrderList + 1));
-    loopcheck = numOrderList;
     tsbytes = 0;
 
     pi = rpmtsiInit(ts);
@@ -1126,17 +1154,18 @@ int rpmtsOrder(rpmts ts)
 		/* Skip if not %preun/%postun requires or legacy prereq. */
 		if (!( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    continue;
+		/* T3. Record next "q <- p" relation (i.e. "p" requires "q") but reversed. */
+		(void) addRelation(ts, erasedPackages, p, selected, requires);
+
 		break;
 	    case TR_ADDED:
 		/* Skip if not %pre/%post requires or legacy prereq. */
 		if (!( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    continue;
+		/* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+		(void) addRelation(ts, ts->addedPackages, p, selected, requires);
 		break;
 	    }
-
-	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, requires);
-
 	}
 
 	/* Then do co-requisites. */
@@ -1152,18 +1181,18 @@ int rpmtsOrder(rpmts ts)
 		if (isInstallPreReq(Flags)
 		 ||  ( isErasePreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    continue;
+		/* T3. Record next "q <- p" relation (i.e. "p" requires "q") but reversed. */
+		(void) addRelation(ts, erasedPackages, p, selected, requires);
 		break;
 	    case TR_ADDED:
 		/* Skip if %pre/%post requires or legacy prereq. */
 		if (isErasePreReq(Flags)
 		 ||  ( isInstallPreReq(Flags) || isLegacyPreReq(Flags) ) )
 		    continue;
+		/* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
+		(void) addRelation(ts, ts->addedPackages, p, selected, requires);
 		break;
 	    }
-
-	    /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
-	    (void) addRelation(ts, p, selected, requires);
-
 	}
     }
     pi = rpmtsiFree(pi);
@@ -1193,6 +1222,10 @@ int rpmtsOrder(rpmts ts)
 
     /* T4. Scan for zeroes. */
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n");
+
+    /* Put installs first */
+    oType = TR_ADDED;
+    loopcheck = ts->numAddedPackages;
 
 rescan:
     if (pi != NULL) pi = rpmtsiFree(pi);
@@ -1246,14 +1279,7 @@ rescan:
 	(void) rpmteSetDegree(q, 0);
 	tsbytes += rpmtePkgFileSize(q);
 
-	switch (rpmteType(q)) {
-	case TR_ADDED:
-            ordering[orderingCount] = rpmteAddedKey(q);
-            break;
-	case TR_REMOVED:
-            ordering[orderingCount] = RPMAL_NOMATCH;
-            break;
-        }
+	ordering[orderingCount] = rpmteAddedKey(q);
 	orderingCount++;
 	qlen--;
 	loopcheck--;
@@ -1400,6 +1426,13 @@ rescan:
 	goto exit;
     }
 
+    if (oType == TR_ADDED) {
+	/* done with ordering installs, now rerun for erases */
+	oType = TR_REMOVED;
+	loopcheck = ts->numRemovedPackages;
+	goto rescan;
+    }
+
     /* Clean up tsort remnants (if any). */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL)
@@ -1415,16 +1448,9 @@ rescan:
     orderList = xcalloc(numOrderList, sizeof(*orderList));
     j = 0;
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, oType)) != NULL) {
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	/* Prepare added package ordering permutation. */
-	switch (rpmteType(p)) {
-	case TR_ADDED:
-	    orderList[j].pkgKey = rpmteAddedKey(p);
-	    break;
-	case TR_REMOVED:
-	    orderList[j].pkgKey = RPMAL_NOMATCH;
-	    break;
-	}
+	orderList[j].pkgKey = rpmteAddedKey(p);
 	orderList[j].orIndex = rpmtsiOc(pi);
 	j++;
     }
@@ -1442,23 +1468,13 @@ rescan:
 	needle = bsearch(&key, orderList, numOrderList,
 				sizeof(key), orderListIndexCmp);
 	/* bsearch should never, ever fail */
-	if (needle == NULL)
-	    continue;
-
+	assert(needle != NULL);
 	j = needle->orIndex;
-	if ((q = ts->order[j]) == NULL || needle->pkgKey == RPMAL_NOMATCH)
-	    continue;
 
-	newOrder[newOrderCount++] = q;
+	newOrder[newOrderCount++] = ts->order[j];
 	ts->order[j] = NULL;
     }
 
-    for (j = 0; j < ts->orderCount; j++) {
-	if ((p = ts->order[j]) == NULL)
-	    continue;
-	newOrder[newOrderCount++] = p;
-	ts->order[j] = NULL;
-    }
 assert(newOrderCount == ts->orderCount);
 
     ts->order = _free(ts->order);
@@ -1472,6 +1488,7 @@ exit:
     free(selected);
     free(peer);
     free(ordering);
+    rpmalFree(erasedPackages);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 

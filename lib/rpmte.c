@@ -553,13 +553,13 @@ void rpmteNewTSI(rpmte te)
 
 rpmalKey rpmteAddedKey(rpmte te)
 {
-    return (te != NULL && te->type == TR_ADDED ? te->pkgKey : RPMAL_NOMATCH);
+    return (te != NULL ? te->pkgKey : RPMAL_NOMATCH);
 }
 
 rpmalKey rpmteSetAddedKey(rpmte te, rpmalKey npkgKey)
 {
     rpmalKey opkgKey = RPMAL_NOMATCH;
-    if (te != NULL && te->type == TR_ADDED) {
+    if (te != NULL) {
 	opkgKey = te->pkgKey;
 	te->pkgKey = npkgKey;
     }
