@@ -21,6 +21,7 @@
 struct DIGEST_CTX_s {
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */
     HASHContext *hashctx;	/*!< Internal NSS hash context. */
+    pgpHashAlgo algo;		/*!< Used hash algorithm */
 };
 
 DIGEST_CTX
@@ -89,6 +90,7 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     if ((hashctx = HASH_Create(type)) != NULL) {
 	ctx = xcalloc(1, sizeof(*ctx));
 	ctx->flags = flags;
+	ctx->algo = hashalgo;
 	ctx->hashctx = hashctx;
     	HASH_Begin(ctx->hashctx);
     }
