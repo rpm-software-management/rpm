@@ -1129,19 +1129,17 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     SECOidTag sigalg = SEC_OID_UNKNOWN;
     rpmRC res = RPMRC_FAIL; /* assume failure */
-    const char *hdr, *signame = _("Unknown");;
-    const char *sig = sigtd->data;
-    int sigver;
+    const char *hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
+    const char *signame = _("Unknown");;
+    int sigver = 0;
 
     assert(msg != NULL);
     *msg = NULL;
 
-    hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
-    sigver = sigp !=NULL ? sigp->version : 0;
-
-    if (md5ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
+    if (md5ctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
 	goto exit;
     }
+    sigver = sigp->version;
 
     /* Verify the desired hash match. */
     /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
@@ -1216,20 +1214,17 @@ static rpmRC
 verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 		DIGEST_CTX sha1ctx)
 {
-    pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res = RPMRC_FAIL; /* assume failure */
-    const char *hdr;
-    int sigver;
-    const char *sig = sigtd->data;
+    pgpDigParams sigp = dig ? &dig->signature : NULL;
+    const char *hdr = (sigtd->tag == RPMSIGTAG_DSA) ? _("Header ") : "";
+    int sigver = 0;
     assert(msg != NULL);
     *msg = NULL;
 
-    hdr = (sigtd->tag == RPMSIGTAG_DSA) ? _("Header ") : "";
-    sigver = sigp !=NULL ? sigp->version : 0;
-
-    if (sha1ctx == NULL || sig == NULL || dig == NULL || sigp == NULL) {
+    if (sha1ctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
 	goto exit;
     }
+    sigver = sigp->version;
 
     /* XXX sanity check on sigtag and signature agreement. */
     if (!((sigtd->tag == RPMSIGTAG_GPG || sigtd->tag == RPMSIGTAG_DSA)
