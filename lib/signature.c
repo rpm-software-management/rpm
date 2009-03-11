@@ -969,13 +969,12 @@ static const char * rpmSigString(rpmRC res)
 static rpmRC
 verifySizeSignature(rpmtd sigtd, size_t nbytes, char ** msg)
 {
-    rpmRC res;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
     size_t size = 0x7fffffff;
     const char * title = _("Header+Payload size:");
     *msg = NULL;
 
     if (sigtd->data == NULL || nbytes == 0) {
-	res = RPMRC_NOKEY;
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
@@ -983,7 +982,6 @@ verifySizeSignature(rpmtd sigtd, size_t nbytes, char ** msg)
     memcpy(&size, sigtd->data, sizeof(size));
 
     if (size != nbytes) {
-	res = RPMRC_FAIL;
 	rasprintf(msg, "%s %s Expected(%zd) != (%zd)\n", title,
 		  rpmSigString(res), size, nbytes);
     } else {
