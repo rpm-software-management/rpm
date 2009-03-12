@@ -193,49 +193,45 @@ static enum cvtaction convertExistingAMD(rpmTag tag, rpmTagType type,
 static
 Header headerCopyWithConvert(Header h, cmd_t *cmds[], int ncmds)
 {
-    rpmTag tag;
-    rpmTagType type;
-    rpm_count_t count;
-    rpm_data_t vals;
     HeaderIterator headerIter;
     Header res = headerNew();
+    struct rpmtd_s td;
    
     headerIter = headerInitIterator(h);
 
-    while (headerNextIterator(headerIter, &tag, &type, &vals, &count)) {
+    while (headerNext(headerIter, &td)) {
 	enum cvtaction ca;
-	void *nvals;
-	rpm_count_t ncount;
+	struct rpmtd_s ntd = { .type = td.type, .tag = td.tag, 
+			       .count = 0, .data = NULL
+	};
 
-	nvals = NULL;
-	ncount = 0;
-	ca = convertExistingAMD(tag, type, &vals, &count, &nvals, &ncount, cmds, ncmds);
+	ca = convertExistingAMD(td.tag, td.type, &td.data, &td.count, 
+				&ntd.data, &ntd.count, cmds, ncmds);
 	switch (ca) {
 	case CA_ERR:
 	case CA_OLD:		/* copy old tag and values to header */	
 	default:
 	    /* Don't copy the old changelog, we'll do that later. */
-	    switch (tag) {
+	    switch (td.tag) {
 	    case RPMTAG_CHANGELOGTIME:
 	    case RPMTAG_CHANGELOGNAME:
 	    case RPMTAG_CHANGELOGTEXT:
 		break;
 	    default:
-		headerAddEntry(res, tag, type, vals, count);
+		headerPut(res, &td, HEADERPUT_DEFAULT);
 		break;
 	    }
 	    break;
 	case CA_NEW:		/* copy new tag and values to header */	
-	    headerAddEntry(res, tag, type, nvals, ncount);
+	    headerPut(res, &ntd, HEADERPUT_DEFAULT);
 	    break;
 	case CA_OMIT:		/* delete old tag and values from header */
 	    break;
 	}
 
-	if (type == RPM_STRING_ARRAY_TYPE || type == RPM_I18NSTRING_TYPE)
-	    _free(vals);
-	if (nvals)
-	    _free(nvals);
+	rpmtdFreeData(&td);
+	if (ntd.data)
+	    free(ntd.data);
     }
 
     headerFreeIterator(headerIter);
@@ -299,15 +295,14 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
 
 	rc = headerIsEntry(h, c->tagval);
 	if (!rc && !c->done && c->injmode != INJ_DELETE) {
-	    rpmTagType type;
-	    rpm_count_t ncount;
-	    void *nvals;
+	    struct rpmtd_s td;
 	    enum cvtaction ca;
 
-	    type = (c->nvals > 0) ? RPM_STRING_ARRAY_TYPE : RPM_STRING_TYPE;
-	    ca = convertAMD(CA_NEW, type, &nvals, &ncount, c);
+	    td.type = (c->nvals > 0) ? RPM_STRING_ARRAY_TYPE : RPM_STRING_TYPE;
+	    td.tag = c->tagval;
+	    ca = convertAMD(CA_NEW, td.type, &td.data, &td.count, c);
 	    if (ca == CA_NEW)
-		headerAddEntry(h, c->tagval, type, nvals, ncount);
+		headerPut(h, &td, HEADERPUT_DEFAULT);
 	    rc = headerIsEntry(h, c->tagval);
 	}
 
@@ -342,7 +337,7 @@ headerInject(Header *hdrp, cmd_t *cmds[], int ncmds)
     if (ec == 0 && *hdrp) {
 	static char name[512] = "";
 	static const char *text = NULL;
-	static int cltags[] = {
+	static rpmTag cltags[] = {
 	    RPMTAG_CHANGELOGTIME,
 	    RPMTAG_CHANGELOGNAME,
 	    RPMTAG_CHANGELOGTEXT,

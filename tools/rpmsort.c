@@ -43,17 +43,17 @@ static int
 do_tsort(const char *fileArgv[], int noDeps)
 {
     rpmts ts = NULL;
-    const char ** pkgURL = NULL;
+    char ** pkgURL = NULL;
     char * pkgState = NULL;
     const char ** fnp;
-    const char * fileURL = NULL;
+    char * fileURL = NULL;
     int numPkgs = 0;
     int numFailed = 0;
     int prevx;
     int pkgx;
-    const char ** argv = NULL;
+    char ** argv = NULL;
     int argc = 0;
-    const char ** av = NULL;
+    ARGV_t av = NULL;
     int ac = 0;
     Header h;
     int rc = 0;
@@ -117,7 +117,7 @@ restart:
     fileURL = _free(fileURL);
 
     /* Continue processing file arguments, building transaction set. */
-    for (fnp = pkgURL+prevx; *fnp; fnp++, prevx++) {
+    for (fnp = (const char**) pkgURL+prevx; *fnp; fnp++, prevx++) {
 	const char * fileName;
 	FD_t fd;
 
