@@ -725,9 +725,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    }
 	    break;
 	case RPMSIGTAG_SHA1:
-	    if (nodigests)
-		 continue;
-	    break;
 	case RPMSIGTAG_MD5:
 	    if (nodigests)
 		 continue;
