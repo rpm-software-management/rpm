@@ -731,21 +731,12 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	case RPMSIGTAG_SHA1:
 	    if (nodigests)
 		 continue;
-	    /* XXX Don't bother with header sha1 if header dsa. */
-	    if (!nosignatures && sigtd.tag == RPMSIGTAG_DSA)
-		continue;
 	    break;
 	case RPMSIGTAG_LEMD5_2:
 	case RPMSIGTAG_LEMD5_1:
 	case RPMSIGTAG_MD5:
 	    if (nodigests)
 		 continue;
-	    /*
-	     * Don't bother with md5 if pgp, as RSA/MD5 is more reliable
-	     * than the -- now unsupported -- legacy md5 breakage.
-	     */
-	    if (!nosignatures && sigtd.tag == RPMSIGTAG_PGP)
-		continue;
 	    break;
 	default:
 	    continue;
