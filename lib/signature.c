@@ -1280,10 +1280,6 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
     case RPMSIGTAG_GPG:
 	res = verifyDSASignature(keyring, sigtd, dig, &msg, dig->sha1ctx);
 	break;
-    case RPMSIGTAG_LEMD5_1:
-    case RPMSIGTAG_LEMD5_2:
-	rasprintf(&msg, _("Broken MD5 digest: UNSUPPORTED\n"));
-	break;
     default:
 	rasprintf(&msg, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
 	break;

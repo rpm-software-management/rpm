@@ -40,14 +40,8 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	case RPMSIGTAG_SIZE:
 	    td.tag = RPMTAG_SIGSIZE;
 	    break;
-	case RPMSIGTAG_LEMD5_1:
-	    td.tag = RPMTAG_SIGLEMD5_1;
-	    break;
 	case RPMSIGTAG_PGP:
 	    td.tag = RPMTAG_SIGPGP;
-	    break;
-	case RPMSIGTAG_LEMD5_2:
-	    td.tag = RPMTAG_SIGLEMD5_2;
 	    break;
 	case RPMSIGTAG_MD5:
 	    td.tag = RPMTAG_SIGMD5;
@@ -115,14 +109,8 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	case RPMTAG_SIGSIZE:
 	    td.tag = RPMSIGTAG_SIZE;
 	    break;
-	case RPMTAG_SIGLEMD5_1:
-	    td.tag = RPMSIGTAG_LEMD5_1;
-	    break;
 	case RPMTAG_SIGPGP:
 	    td.tag = RPMSIGTAG_PGP;
-	    break;
-	case RPMTAG_SIGLEMD5_2:
-	    td.tag = RPMSIGTAG_LEMD5_2;
 	    break;
 	case RPMTAG_SIGMD5:
 	    td.tag = RPMSIGTAG_MD5;

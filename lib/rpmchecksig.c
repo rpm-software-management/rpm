@@ -236,8 +236,6 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	}
 
 	/* Eliminate broken digest values. */
-	xx = headerDel(sigh, RPMSIGTAG_LEMD5_1);
-	xx = headerDel(sigh, RPMSIGTAG_LEMD5_2);
 	xx = headerDel(sigh, RPMSIGTAG_BADSHA1_1);
 	xx = headerDel(sigh, RPMSIGTAG_BADSHA1_2);
 
@@ -560,8 +558,6 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
     case RPMSIGTAG_SHA1:
 	n = (upper ? "SHA1" : "sha1");
 	break;
-    case RPMSIGTAG_LEMD5_2:
-    case RPMSIGTAG_LEMD5_1:
     case RPMSIGTAG_MD5:
 	n = (upper ? "MD5" : "md5");
 	break;
@@ -732,8 +728,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    if (nodigests)
 		 continue;
 	    break;
-	case RPMSIGTAG_LEMD5_2:
-	case RPMSIGTAG_LEMD5_1:
 	case RPMSIGTAG_MD5:
 	    if (nodigests)
 		 continue;
