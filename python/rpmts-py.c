@@ -1100,7 +1100,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
     }
 
     if (Key) {
-	if (PyString_Check(Key) || PyUnicode_Check(Key)) {
+	if (PyString_Check(Key)) {
 	    key = PyString_AsString(Key);
 	    len = PyString_Size(Key);
 	} else if (PyInt_Check(Key)) {
