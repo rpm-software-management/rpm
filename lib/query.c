@@ -318,17 +318,8 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
     switch (qva->qva_source) {
     case RPMQV_RPM:
-	res = rpmgiShowMatches(qva, ts);
-	break;
-
     case RPMQV_ALL:
-	res = rpmgiShowMatches(qva, ts);
-	break;
-
     case RPMQV_HDLIST:
-	res = rpmgiShowMatches(qva, ts);
-	break;
-
     case RPMQV_FTSWALK:
 	res = rpmgiShowMatches(qva, ts);
 	break;
