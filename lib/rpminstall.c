@@ -322,6 +322,41 @@ static int tryReadManifest(struct rpmEIU * eiu)
     return rc;
 }
 
+static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
+{
+   rpmVSFlags tvsflags;
+
+   /* Try to read the header from a package file. */
+   eiu->fd = Fopen(*eiu->fnp, "r.ufdio");
+   if (eiu->fd == NULL || Ferror(eiu->fd)) {
+       rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
+	      Fstrerror(eiu->fd));
+       if (eiu->fd != NULL) {
+           Fclose(eiu->fd);
+	   eiu->fd = NULL;
+       }
+       eiu->numFailed++; *eiu->fnp = NULL;
+       return RPMRC_FAIL;
+   }
+
+   /* Read the header, verifying signatures (if present). */
+   tvsflags = rpmtsSetVSFlags(ts, vsflags);
+   eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
+   tvsflags = rpmtsSetVSFlags(ts, tvsflags);
+   Fclose(eiu->fd);
+   eiu->fd = NULL;
+   
+   /* Honor --nomanifest */
+   if (eiu->rpmrc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
+       eiu->rpmrc = RPMRC_FAIL;
+
+   if(eiu->rpmrc == RPMRC_FAIL) {
+       rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
+       eiu->numFailed++; *eiu->fnp = NULL;
+   }
+
+   return RPMRC_OK;
+}
 
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
@@ -329,7 +364,7 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     struct rpmEIU * eiu = xcalloc(1, sizeof(*eiu));
     rpmRelocation * relocations;
     char * fileURL = NULL;
-    rpmVSFlags vsflags, ovsflags, tvsflags;
+    rpmVSFlags vsflags, ovsflags;
     int rc;
     int xx;
     int i;
@@ -448,48 +483,15 @@ restart:
 	rpmlog(RPMLOG_DEBUG, "============== %s\n", *eiu->fnp);
 	(void) urlPath(*eiu->fnp, &fileName);
 
-	/* Try to read the header from a package file. */
-	eiu->fd = Fopen(*eiu->fnp, "r.ufdio");
-	if (eiu->fd == NULL || Ferror(eiu->fd)) {
-	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
-			Fstrerror(eiu->fd));
-	    if (eiu->fd != NULL) {
-		xx = Fclose(eiu->fd);
-		eiu->fd = NULL;
-	    }
-	    eiu->numFailed++; *eiu->fnp = NULL;
+	if (tryReadHeader(ts, eiu, vsflags) == RPMRC_FAIL)
 	    continue;
-	}
 
-	/* Read the header, verifying signatures (if present). */
-	tvsflags = rpmtsSetVSFlags(ts, vsflags);
-	eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
-	tvsflags = rpmtsSetVSFlags(ts, tvsflags);
-	xx = Fclose(eiu->fd);
-	eiu->fd = NULL;
-
-	/* Honor --nomanifest */
-	if (eiu->rpmrc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
-	    eiu->rpmrc = RPMRC_FAIL;
-
-	switch (eiu->rpmrc) {
-	case RPMRC_FAIL:
-	    rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), *eiu->fnp);
-	    eiu->numFailed++; *eiu->fnp = NULL;
-	    continue;
-	    break;
-	case RPMRC_NOTFOUND:
+	if (eiu->rpmrc == RPMRC_NOTFOUND) {
 	    rc = tryReadManifest(eiu);
 	    if (rc == RPMRC_OK) {
 	        eiu->prevx++;
-		goto restart;
+	        goto restart;
 	    }
-	    break;
-	case RPMRC_NOTTRUSTED:
-	case RPMRC_NOKEY:
-	case RPMRC_OK:
-	default:
-	    break;
 	}
 
 	eiu->isSource = headerIsSource(eiu->h);

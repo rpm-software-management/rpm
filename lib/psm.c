@@ -24,7 +24,6 @@
 #include "lib/rpmte_internal.h"	/* XXX internal apis */
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
-#include "lib/misc.h"		/* XXX rpmMkdirPath */
 
 #include "debug.h"
 
