@@ -371,7 +371,6 @@ fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (long) (av -
 	if (res == 0)
 	    continue;
 
-	gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX odd side effect? */
 	rpmrc = RPMRC_FAIL;
 	break;
     }
@@ -489,11 +488,8 @@ rpmRC rpmgiNext(rpmgi gi)
     case RPMDBI_PACKAGES:
 	if (!gi->active) {
 	    rpmrc = rpmgiInitFilter(gi);
-	    if (rpmrc != RPMRC_OK) {
-		gi->mi = rpmdbFreeIterator(gi->mi);	/* XXX unnecessary */
-		goto enditer;
-	    }
-	    rpmrc = RPMRC_NOTFOUND;	/* XXX hack */
+	    if (rpmrc != RPMRC_OK)
+	        goto enditer;
 	    gi->active = 1;
 	}
 	if (gi->mi != NULL) {	/* XXX unnecessary */
@@ -505,10 +501,10 @@ rpmRC rpmgiNext(rpmgi gi)
 		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
-	    }
+	    } else
+	        rpmrc = RPMRC_NOTFOUND;
 	}
 	if (rpmrc != RPMRC_OK) {
-	    gi->mi = rpmdbFreeIterator(gi->mi);
 	    goto enditer;
 	}
 	break;
@@ -612,6 +608,7 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
     return rpmrc;
 
 enditer:
+    gi->mi = rpmdbFreeIterator(gi->mi);
     if (gi->flags & RPMGI_TSORDER) {
 	rpmts ts = gi->ts;
 	rpmps ps;
