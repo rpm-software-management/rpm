@@ -129,11 +129,11 @@ HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
 	if (b == NULL)
 	    continue;
 	ht->buckets[i] = NULL;
-	if (ht->freeKey)
-	    b->key = ht->freeKey(b->key);
 
 	do {
 	    n = b->next;
+	    if (ht->freeKey)
+		b->key = ht->freeKey(b->key);
 #ifdef HTDATATYPE
 	    if (ht->freeData) {
 		int j;
