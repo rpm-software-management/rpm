@@ -558,69 +558,46 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     return res;
 }
 
-int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
+static int rpmcliArgIterHelper(rpmts ts, QVA_t qva, rpmTag tag, ARGV_const_t argv, rpmgiFlags gFlgs)
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
     int ec = 0;
 
+    qva->qva_gi = rpmgiNew(ts, tag, NULL, 0);
+    qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, gFlgs);
+    
+    if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
+        while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
+	    {};
+    if (rpmrc != RPMRC_NOTFOUND) {
+        qva->qva_gi = rpmgiFree(qva->qva_gi);
+	return 1;	/* XXX should be no. of failures. */
+    }
+    /* FIX: argv can be NULL, cast to pass argv array */
+    ec = rpmQueryVerify(qva, ts, (tag == RPMDBI_PACKAGES)? (const char *) argv : NULL);
+    rpmtsEmpty(ts);
+    qva->qva_gi = rpmgiFree(qva->qva_gi);
+    return ec;
+}
+
+int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
+{
+    int ec = 0;
+
     switch (qva->qva_source) {
     case RPMQV_ALL:
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_PACKAGES, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, RPMGI_NONE);
-
-	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
-	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
-	    {};
-	if (rpmrc != RPMRC_NOTFOUND)
-	    return 1;	/* XXX should be no. of failures. */
-	
-	/* FIX: argv can be NULL, cast to pass argv array */
-	ec = rpmQueryVerify(qva, ts, (const char *) argv);
-	rpmtsEmpty(ts);
+	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_PACKAGES, argv, RPMGI_NONE);
 	break;
     case RPMQV_RPM:
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
-
-	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
-	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
-	    {};
-	if (rpmrc != RPMRC_NOTFOUND)
-	    return 1;	/* XXX should be no. of failures. */
-	
-	/* FIX: argv can be NULL, cast to pass argv array */
-	ec = rpmQueryVerify(qva, ts, NULL);
-	rpmtsEmpty(ts);
+	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_ARGLIST, argv, giFlags);
 	break;
     case RPMQV_HDLIST:
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_HDLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
-
-	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
-	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
-	    {};
-	if (rpmrc != RPMRC_NOTFOUND)
-	    return 1;	/* XXX should be no. of failures. */
-	
-	/* FIX: argv can be NULL, cast to pass argv array */
-	ec = rpmQueryVerify(qva, ts, NULL);
-	rpmtsEmpty(ts);
+	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_HDLIST, argv, giFlags);
 	break;
     case RPMQV_FTSWALK:
 	if (ftsOpts == 0)
 	    ftsOpts = (RPMGI_COMFOLLOW | RPMGI_LOGICAL | RPMGI_NOSTAT);
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_FTSWALK, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, giFlags);
-
-	if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
-	while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
-	    {};
-	if (rpmrc != RPMRC_NOTFOUND)
-	    return 1;	/* XXX should be no. of failures. */
-	
-	/* FIX: argv can be NULL, cast to pass argv array */
-	ec = rpmQueryVerify(qva, ts, NULL);
-	rpmtsEmpty(ts);
+	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_FTSWALK, argv, giFlags);
 	break;
     default:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
@@ -630,10 +607,9 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
 	    rpmtsEmpty(ts);
 	}
+	qva->qva_gi = rpmgiFree(qva->qva_gi);
 	break;
     }
-
-    qva->qva_gi = rpmgiFree(qva->qva_gi);
 
     return ec;
 }
