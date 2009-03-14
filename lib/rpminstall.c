@@ -358,6 +358,36 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
    return RPMRC_OK;
 }
 
+
+/* On --freshen, verify package is installed and newer */
+static int checkFreshenStatus(rpmts ts, struct rpmEIU * eiu)
+{
+    rpmdbMatchIterator mi = NULL;
+    const char * name = NULL;
+    Header oldH;
+    int count;
+
+    headerNVR(eiu->h, &name, NULL, NULL);
+    if (name != NULL)
+        mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
+    count = rpmdbGetIteratorCount(mi);
+    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+        if (rpmVersionCompare(oldH, eiu->h) < 0)
+	    continue;
+	/* same or newer package already installed */
+	count = 0;
+	break;
+    }
+    mi = rpmdbFreeIterator(mi);
+    if (count == 0) {
+        eiu->h = headerFree(eiu->h);
+	return -1;
+    }
+    /* Package is newer than those currently installed. */
+
+   return 1;
+}
+
 /** @todo Generalize --freshen policies. */
 int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
 {
@@ -525,30 +555,9 @@ restart:
 	    }
 	}
 
-	/* On --freshen, verify package is installed and newer */
-	if (ia->installInterfaceFlags & INSTALL_FRESHEN) {
-	    rpmdbMatchIterator mi;
-	    const char * name;
-	    Header oldH;
-	    int count;
-
-	    xx = headerNVR(eiu->h, &name, NULL, NULL);
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
-	    count = rpmdbGetIteratorCount(mi);
-	    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
-		if (rpmVersionCompare(oldH, eiu->h) < 0)
-		    continue;
-		/* same or newer package already installed */
-		count = 0;
-		break;
-	    }
-	    mi = rpmdbFreeIterator(mi);
-	    if (count == 0) {
-		eiu->h = headerFree(eiu->h);
-		continue;
-	    }
-	    /* Package is newer than those currently installed. */
-	}
+	if (ia->installInterfaceFlags & INSTALL_FRESHEN)
+	    if (checkFreshenStatus(ts, eiu) != 1)
+	        continue;
 
 	rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
