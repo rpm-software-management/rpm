@@ -1002,14 +1002,14 @@ verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
     char *md5;
     const char *title = _("MD5 digest:");
     *msg = NULL;
+    DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 
-    if (md5ctx == NULL || sigtd->data == NULL || md5ctx == NULL) {
+    if (ctx == NULL || sigtd->data == NULL) {
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
 
-    (void) rpmDigestFinal(rpmDigestDup(md5ctx),
-		(void **)&md5sum, &md5len, 0);
+    (void) rpmDigestFinal(ctx, (void **)&md5sum, &md5len, 0);
 
     md5 = pgpHexStr(md5sum, md5len);
     if (md5len != sigtd->count || memcmp(md5sum, sigtd->data, md5len)) {
@@ -1042,14 +1042,14 @@ verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
     const char *title = _("Header SHA1 digest:");
     const char *sig = sigtd->data;
     *msg = NULL;
+    DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
 
-    if (sha1ctx == NULL || sigtd->data == NULL) {
+    if (ctx == NULL || sigtd->data == NULL) {
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
 
-    (void) rpmDigestFinal(rpmDigestDup(sha1ctx),
-		(void **)&SHA1, NULL, 1);
+    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
 
     if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
 	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
