@@ -50,13 +50,9 @@ struct pgpDig_s {
     DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
     DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
 
-    /* DSA parameters */
-    SECKEYPublicKey *dsa;
-    SECItem *dsasig;
-
-    /* RSA parameters */
-    SECKEYPublicKey *rsa;
-    SECItem *rsasig;
+    /* DSA/RSA parameters */
+    SECKEYPublicKey *keydata;
+    SECItem *sigdata;
 };
 
 #endif /* _RPMDIGEST_H */

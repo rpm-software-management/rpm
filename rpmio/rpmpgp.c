@@ -591,8 +591,8 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	    {
 		switch (i) {
 		case 0:		/* m**d */
-		    _dig->rsasig = pgpMpiItem(NULL, _dig->rsasig, p);
-		    if (_dig->rsasig == NULL)
+		    _dig->sigdata = pgpMpiItem(NULL, _dig->sigdata, p);
+		    if (_dig->sigdata == NULL)
 			return 1;
 		    break;
 		default:
@@ -615,13 +615,13 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		    break;
 		case 1:		/* s */
 		    xx = pgpMpiSet(pgpSigDSA[i], DSA_SUBPRIME_LEN*8, dsaraw.data + DSA_SUBPRIME_LEN, p, pend);
-		    if (_dig->dsasig != NULL)
-		    	SECITEM_FreeItem(_dig->dsasig, PR_FALSE);
-		    else if ((_dig->dsasig=SECITEM_AllocItem(NULL, NULL, 0)) == NULL) {
+		    if (_dig->sigdata != NULL)
+		    	SECITEM_FreeItem(_dig->sigdata, PR_FALSE);
+		    else if ((_dig->sigdata=SECITEM_AllocItem(NULL, NULL, 0)) == NULL) {
 		        xx = 1;
 		        break;
 		    }
-		    if (DSAU_EncodeDerSig(_dig->dsasig, &dsaraw) != SECSuccess)
+		    if (DSAU_EncodeDerSig(_dig->sigdata, &dsaraw) != SECSuccess)
 		    	xx = 1;
 		    break;
 		default:
@@ -821,17 +821,17 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
 	    if (_dig) {
-		if (_dig->rsa == NULL) {
-		    _dig->rsa = pgpNewRSAKey();
-		    if (_dig->rsa == NULL)
+		if (_dig->keydata == NULL) {
+		    _dig->keydata = pgpNewRSAKey();
+		    if (_dig->keydata == NULL)
 			break; /* error abort? */
 		}
 		switch (i) {
 		case 0:		/* n */
-		    pgpMpiItem(_dig->rsa->arena, &_dig->rsa->u.rsa.modulus, p);
+		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.rsa.modulus, p);
 		    break;
 		case 1:		/* e */
-		    pgpMpiItem(_dig->rsa->arena, &_dig->rsa->u.rsa.publicExponent, p);
+		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.rsa.publicExponent, p);
 		    break;
 		default:
 		    break;
@@ -841,23 +841,23 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
 	    if (i >= 4) break;
 	    if (_dig) {
-		if (_dig->dsa == NULL) {
-		    _dig->dsa = pgpNewDSAKey();
-		    if (_dig->dsa == NULL)
+		if (_dig->keydata == NULL) {
+		    _dig->keydata = pgpNewDSAKey();
+		    if (_dig->keydata == NULL)
 			break; /* error abort? */
 		}
 		switch (i) {
 		case 0:		/* p */
-		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.params.prime, p);
+		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.params.prime, p);
 		    break;
 		case 1:		/* q */
-		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.params.subPrime, p);
+		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.params.subPrime, p);
 		    break;
 		case 2:		/* g */
-		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.params.base, p);
+		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.params.base, p);
 		    break;
 		case 3:		/* y */
-		    pgpMpiItem(_dig->dsa->arena, &_dig->dsa->u.dsa.publicValue, p);
+		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.publicValue, p);
 		    break;
 		default:
 		    break;
@@ -1243,26 +1243,15 @@ void pgpCleanDig(pgpDig dig)
 	memset(&dig->signature, 0, sizeof(dig->signature));
 	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
 
-	if (dig->dsa != NULL) {
-	    SECKEY_DestroyPublicKey(dig->dsa);
-	    dig->dsa = NULL;
+	if (dig->keydata != NULL) {
+	    SECKEY_DestroyPublicKey(dig->keydata);
+	    dig->keydata = NULL;
 	}
 
-	if (dig->dsasig != NULL) {
-	    SECITEM_ZfreeItem(dig->dsasig, PR_TRUE);
-	    dig->dsasig = NULL;
+	if (dig->sigdata != NULL) {
+	    SECITEM_ZfreeItem(dig->sigdata, PR_TRUE);
+	    dig->sigdata = NULL;
 	}
-
-	if (dig->rsa != NULL) {
-	    SECKEY_DestroyPublicKey(dig->rsa);
-	    dig->rsa = NULL;
-	}
-
-	if (dig->rsasig != NULL) {
-	    SECITEM_ZfreeItem(dig->rsasig, PR_TRUE);
-	    dig->rsasig = NULL;
-	}
-
     }
     return;
 }

@@ -1177,7 +1177,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
     if (res == RPMRC_OK) {
-	res = verifyPGPSig(sigp, dig->rsa, dig->rsasig, sigalg, md5ctx);
+	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, md5ctx);
     }
 
 exit:
@@ -1228,7 +1228,7 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     if (res == RPMRC_OK) {
 	/* XXX TODO: handle other algorithm types too */
 	SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-	res = verifyPGPSig(sigp, dig->dsa, dig->dsasig, sigalg, sha1ctx);
+	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, sha1ctx);
     }
 
 exit:
