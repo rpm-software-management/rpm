@@ -27,12 +27,13 @@ struct DIGEST_CTX_s {
 DIGEST_CTX
 rpmDigestDup(DIGEST_CTX octx)
 {
-    DIGEST_CTX nctx;
-    nctx = memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
-    nctx->hashctx = HASH_Clone(octx->hashctx);
-    if (nctx->hashctx == NULL) {
-    	fprintf(stderr, "HASH_Clone failed\n");
-    	exit(EXIT_FAILURE);  /* FIX: callers do not bother checking error return */
+    DIGEST_CTX nctx = NULL;
+    if (octx) {
+	HASHContext *hctx = HASH_Clone(octx->hashctx);
+	if (hctx) {
+	    nctx = memcpy(xcalloc(1, sizeof(*nctx)), octx, sizeof(*nctx));
+	    nctx->hashctx = hctx;
+	}
     }
     return nctx;
 }
