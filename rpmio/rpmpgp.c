@@ -371,16 +371,6 @@ static SECKEYPublicKey *pgpNewPublicKey(KeyType type)
     return key;
 }
 
-static SECKEYPublicKey *pgpNewRSAKey(void)
-{
-    return pgpNewPublicKey(rsaKey);
-}
-
-static SECKEYPublicKey *pgpNewDSAKey(void)
-{
-    return pgpNewPublicKey(dsaKey);
-}
-
 /** \ingroup rpmpgp
  * Is buffer at beginning of an OpenPGP packet?
  * @param p		buffer
@@ -822,7 +812,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	    if (i >= 2) break;
 	    if (_dig) {
 		if (_dig->keydata == NULL) {
-		    _dig->keydata = pgpNewRSAKey();
+		    _dig->keydata = pgpNewPublicKey(rsaKey);
 		    if (_dig->keydata == NULL)
 			break; /* error abort? */
 		}
@@ -842,7 +832,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	    if (i >= 4) break;
 	    if (_dig) {
 		if (_dig->keydata == NULL) {
-		    _dig->keydata = pgpNewDSAKey();
+		    _dig->keydata = pgpNewPublicKey(dsaKey);
 		    if (_dig->keydata == NULL)
 			break; /* error abort? */
 		}
