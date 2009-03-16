@@ -149,18 +149,13 @@ rpmte_Tree(rpmteObject * s)
 {
     return Py_BuildValue("i", rpmteTree(s->te));
 }
-
-static PyObject *
-rpmte_AddedKey(rpmteObject * s)
-{
-    return Py_BuildValue("i", rpmteAddedKey(s->te));
-}
-
+/*
 static PyObject *
 rpmte_DependsOnKey(rpmteObject * s)
 {
     return Py_BuildValue("i", rpmteDependsOnKey(s->te));
 }
+*/
 
 static PyObject *
 rpmte_DBOffset(rpmteObject * s)
@@ -267,10 +262,8 @@ static struct PyMethodDef rpmte_methods[] = {
 	NULL},
     {"Tree",	(PyCFunction)rpmte_Tree,	METH_NOARGS,
 	NULL},
-    {"AddedKey",(PyCFunction)rpmte_AddedKey,	METH_NOARGS,
-	NULL},
-    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
-	NULL},
+/*    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
+      NULL}, */
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
 	NULL},
     {"Key",	(PyCFunction)rpmte_Key,		METH_NOARGS,

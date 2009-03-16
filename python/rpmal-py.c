@@ -25,53 +25,31 @@ rpmal_Debug(rpmalObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
 {
-    rpmdsObject * dso;
-    rpmfiObject * fio;
-    PyObject * key;
-    rpmalKey pkgKey;
-    char * kwlist[] = {"packageKey", "key", "dso", "fileInfo", NULL};
+    rpmte p;
+    char * kwlist[] = {"package", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "iOO!O!:Add", kwlist,
-	    &pkgKey, &key, &rpmds_Type, &dso, &rpmfi_Type, &fio))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Add", kwlist,
+	    &p))
 	return NULL;
 
     /* XXX errors */
     /* XXX transaction colors */
-    pkgKey = rpmalAdd(&s->al, pkgKey, key, dso->ds, fio->fi, 0);
-
-    return Py_BuildValue("i", pkgKey);
-}
-
-static PyObject *
-rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
-{
-    rpmalKey pkgKey;
-    char * kwlist[] = {"key", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Del", kwlist, &pkgKey))
-	return NULL;
-
-    rpmalDel(s->al, pkgKey);
+    rpmalAdd(&s->al, p, 0);
 
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 static PyObject *
-rpmal_AddProvides(rpmalObject * s, PyObject * args, PyObject * kwds)
+rpmal_Del(rpmalObject * s, PyObject * args, PyObject * kwds)
 {
-    rpmdsObject * dso;
-    rpmalKey pkgKey;
-    char * kwlist[] = {"index", "packageIndex", "dso", NULL};
+    rpmte p;
+    char * kwlist[] = {"key", NULL};
 
-    /* XXX: why is there an argument listed in the format string that
-     *      isn't handled?  Is that for transaction color? */
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "iOO!O!:AddProvides", kwlist,
-	    &pkgKey, &rpmds_Type, &dso))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Del", kwlist, &p))
 	return NULL;
 
-    /* XXX transaction colors */
-    rpmalAddProvides(s->al, pkgKey, dso->ds, 0);
+    rpmalDel(s->al, p);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -92,8 +70,6 @@ static struct PyMethodDef rpmal_methods[] = {
  {"add",	(PyCFunction)rpmal_Add,		METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"delete",	(PyCFunction)rpmal_Del,		METH_VARARGS|METH_KEYWORDS,
-	NULL},
- {"addProvides",(PyCFunction)rpmal_AddProvides,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"makeIndex",(PyCFunction)rpmal_MakeIndex,	METH_NOARGS,
 	NULL},

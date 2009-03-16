@@ -6,7 +6,7 @@
  * Structures used for an "rpmte" transaction element.
  */
 
-#include <rpm/rpmal.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,14 +49,12 @@ rpmte rpmteFree(rpmte te);
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
  * @param dboffset	unused
- * @param pkgKey	associated added package (if any)
  * @return		new transaction element
  */
 rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 		fnpyKey key,
 		rpmRelocation * relocs,
-		int dboffset,
-		rpmalKey pkgKey);
+		int dboffset);
 
 /** \ingroup rpmte
  * Retrieve header from transaction element.
@@ -281,22 +279,6 @@ void rpmteNewTSI(rpmte te);
  * @param te		transaction element
  */
 void rpmteCleanDS(rpmte te);
-
-/** \ingroup rpmte
- * Retrieve pkgKey of TR_ADDED transaction element.
- * @param te		transaction element
- * @return		pkgKey
- */
-rpmalKey rpmteAddedKey(rpmte te);
-
-/** \ingroup rpmte
- * Set pkgKey of TR_ADDED transaction element.
- * @param te		transaction element
- * @param npkgKey	new pkgKey
- * @return		previous pkgKey
- */
-rpmalKey rpmteSetAddedKey(rpmte te,
-		rpmalKey npkgKey);
 
 /** \ingroup rpmte
  * Set dependent element of TR_REMOVED transaction element.

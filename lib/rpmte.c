@@ -66,8 +66,6 @@ struct rpmte_s {
     int transscripts;		/*!< pre/posttrans script existence */
     int failed;			/*!< (parent) install/erase failed */
 
-    rpmalKey pkgKey;
-
     rpmfs fs;
 };
 
@@ -319,15 +317,13 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		rpmElementType type,
 		fnpyKey key,
 		rpmRelocation * relocs,
-		int dboffset,
-		rpmalKey pkgKey)
+		int dboffset)
 {
     rpmte p = xcalloc(1, sizeof(*p));
     uint32_t *ep; 
     struct rpmtd_s size;
 
     p->type = type;
-    p->pkgKey = pkgKey;
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
@@ -549,21 +545,6 @@ void rpmteNewTSI(rpmte te)
 	rpmteFreeTSI(te);
 	te->tsi = xcalloc(1, sizeof(*te->tsi));
     }
-}
-
-rpmalKey rpmteAddedKey(rpmte te)
-{
-    return (te != NULL ? te->pkgKey : RPMAL_NOMATCH);
-}
-
-rpmalKey rpmteSetAddedKey(rpmte te, rpmalKey npkgKey)
-{
-    rpmalKey opkgKey = RPMAL_NOMATCH;
-    if (te != NULL) {
-	opkgKey = te->pkgKey;
-	te->pkgKey = npkgKey;
-    }
-    return opkgKey;
 }
 
 void rpmteSetDependsOn(rpmte te, rpmte depends) {

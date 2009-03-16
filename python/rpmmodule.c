@@ -491,7 +491,5 @@ void init_rpm(void)
     REGISTER_ENUM(TR_REMOVED);
 
     REGISTER_ENUM(RPMDBI_PACKAGES);
-
-    REGISTER_ENUM((intptr_t)RPMAL_NOMATCH);
 }
 

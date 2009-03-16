@@ -7,11 +7,13 @@
 
 #include <rpm/rpmal.h>
 #include <rpm/rpmds.h>
+#include <rpm/rpmte.h>
 #include <rpm/rpmfi.h>
 
 #include "debug.h"
 
 typedef struct availablePackage_s * availablePackage;
+typedef int rpmalNum;
 
 int _rpmal_debug = 0;
 
@@ -20,9 +22,9 @@ int _rpmal_debug = 0;
  * Info about a single package to be installed.
  */
 struct availablePackage_s {
+    rpmte p;                    /*!< transaction member */
     rpmds provides;		/*!< Provides: dependencies. */
     rpmfi fi;			/*!< File info set. */
-
     rpm_color_t tscolor;	/*!< Transaction color bits. */
 
     fnpyKey key;		/*!< Associated file name/python object */
@@ -35,7 +37,7 @@ typedef struct availableIndexEntry_s *	availableIndexEntry;
  * A single available item (e.g. a Provides: dependency).
  */
 struct availableIndexEntry_s {
-    rpmalKey pkgKey;		/*!< Containing package. */
+    rpmalNum pkgNum;	        /*!< Containing package index. */
     const char * entry;		/*!< Dependency name. */
     unsigned short entryLen;	/*!< No. of bytes in name. */
     unsigned short entryIx;	/*!< Dependency index. */
@@ -104,18 +106,6 @@ static void rpmalFreeIndex(rpmal al)
 	ai->index = _free(ai->index);
 	ai->size = 0;
     }
-}
-
-static inline rpmalNum alKey2Num(const rpmal al,
-		rpmalKey pkgKey)
-{
-    return ((rpmalNum)pkgKey);
-}
-
-static inline rpmalKey alNum2Key(const rpmal al,
-		rpmalNum pkgNum)
-{
-    return ((rpmalKey)pkgNum);
 }
 
 rpmal rpmalCreate(int delta)
@@ -220,14 +210,22 @@ fprintf(stderr, "\n");
     return strcmp(a->baseName, b->baseName);
 }
 
-void rpmalDel(rpmal al, rpmalKey pkgKey)
+void rpmalDel(rpmal al, rpmte p)
 {
-    rpmalNum pkgNum = alKey2Num(al, pkgKey);
     availablePackage alp;
     rpmfi fi;
+    rpmalNum pkgNum;
 
     if (al == NULL || al->list == NULL)
 	return;		/* XXX can't happen */
+
+    // XXX use a search for self provide
+    for (pkgNum=0; pkgNum<al->size; pkgNum++) {
+	if (al->list[pkgNum].p == p) {
+	    break;
+	}
+    }
+    if (pkgNum == al->size ) return; // Not found!
 
     alp = al->list + pkgNum;
 
@@ -317,45 +315,39 @@ fprintf(stderr, "    die[%5d] memset(%p,0,0x%lx)\n", al->numDirs, al->dirs + al-
     alp->fi = rpmfiFree(alp->fi);
 
     memset(alp, 0, sizeof(*alp));	/* XXX trash and burn */
+    // XXX leaves empty entry that is not recovered
     return;
 }
 
-rpmalKey rpmalAdd(rpmal * alistp, rpmalKey pkgKey, fnpyKey key,
-		rpmds provides, rpmfi fi, rpm_color_t tscolor)
+void rpmalAdd(rpmal * alistp, rpmte p, rpm_color_t tscolor)
 {
     rpmalNum pkgNum;
     rpmal al;
     availablePackage alp;
+    rpmfi fi;
 
     /* If list doesn't exist yet, create. */
     if (*alistp == NULL)
 	*alistp = rpmalCreate(5);
     al = *alistp;
-    pkgNum = alKey2Num(al, pkgKey);
 
-    if (pkgNum >= 0 && pkgNum < al->size) {
-	rpmalDel(al, pkgKey);
-    } else {
-	if (al->size == al->alloced) {
-	    al->alloced += al->delta;
-	    al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
-	}
-	pkgNum = al->size++;
+    if (al->size == al->alloced) {
+	al->alloced += al->delta;
+	al->list = xrealloc(al->list, sizeof(*al->list) * al->alloced);
     }
-
-    if (al->list == NULL)
-	return RPMAL_NOMATCH;		/* XXX can't happen */
+    pkgNum = al->size++;
 
     alp = al->list + pkgNum;
 
-    alp->key = key;
+    alp->p = p;
     alp->tscolor = tscolor;
 
 if (_rpmal_debug)
 fprintf(stderr, "*** add %p[%d] 0x%x\n", al->list, (int) pkgNum, tscolor);
 
-    alp->provides = rpmdsLink(provides, RPMDBG_M("Provides (rpmalAdd)"));
-    alp->fi = rpmfiLink(fi, RPMDBG_M("Files (rpmalAdd)"));
+    alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME),
+			      RPMDBG_M("Provides (rpmalAdd)"));
+    alp->fi = rpmfiLink(rpmteFI(p), RPMDBG_M("Files (rpmalAdd)"));
 
     fi = rpmfiLink(alp->fi, RPMDBG_M("Files index (rpmalAdd)"));
     fi = rpmfiInit(fi, 0);
@@ -485,7 +477,6 @@ fprintf(stderr, "\t%p[%3d] %p:%p[%2d] %s\n", die->files, die->numFiles, fie, fie
     rpmalFreeIndex(al);
 
 assert(((rpmalNum)(alp - al->list)) == pkgNum);
-    return ((rpmalKey)(alp - al->list));
 }
 
 /**
@@ -507,17 +498,14 @@ static int indexcmp(const void * one, const void * two)
     return strcmp(a->entry, b->entry);
 }
 
-void rpmalAddProvides(rpmal al, rpmalKey pkgKey, rpmds provides, rpm_color_t tscolor)
+static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides, rpm_color_t tscolor)
 {
     rpm_color_t dscolor;
     const char * Name;
-    rpmalNum pkgNum = alKey2Num(al, pkgKey);
     availableIndex ai = &al->index;
     availableIndexEntry aie;
     int ix;
 
-    if (provides == NULL || pkgNum < 0 || pkgNum >= al->size)
-	return;
     if (ai->index == NULL || ai->k < 0 || ai->k >= ai->size)
 	return;
 
@@ -535,7 +523,7 @@ void rpmalAddProvides(rpmal al, rpmalKey pkgKey, rpmds provides, rpm_color_t tsc
 	aie = ai->index + ai->k;
 	ai->k++;
 
-	aie->pkgKey = pkgKey;
+	aie->pkgNum = pkgNum;
 	aie->entry = Name;
 	aie->entryLen = strlen(Name);
 	ix = rpmdsIx(provides);
@@ -569,7 +557,7 @@ void rpmalMakeIndex(rpmal al)
     ai->k = 0;
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	rpmalAddProvides(al, (rpmalKey)i, alp->provides, alp->tscolor);
+	rpmalAddProvides(al, i, alp->provides, alp->tscolor);
     }
 
     /* Reset size to the no. of provides added. */
@@ -577,8 +565,8 @@ void rpmalMakeIndex(rpmal al)
     qsort(ai->index, ai->size, sizeof(*ai->index), indexcmp);
 }
 
-fnpyKey *
-rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
+rpmte *
+rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     rpm_color_t tscolor;
     rpm_color_t ficolor;
@@ -590,13 +578,11 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     struct fileIndexEntry_s fieNeedle;
     fileIndexEntry fie;
     availablePackage alp;
-    fnpyKey * ret = NULL;
+    rpmte * ret = NULL;
     const char * fileName;
 
     memset(&dieNeedle, 0, sizeof(dieNeedle));
     memset(&fieNeedle, 0, sizeof(fieNeedle));
-
-    if (keyp) *keyp = RPMAL_NOMATCH;
 
     if (al == NULL || (fileName = rpmdsN(ds)) == NULL || *fileName != '/')
 	return NULL;
@@ -659,9 +645,7 @@ fprintf(stderr, "==> fie %p %s\n", fie, (fie->baseName ? fie->baseName : "(nil)"
 
 	ret = xrealloc(ret, (found+2) * sizeof(*ret));
 	if (ret)	/* can't happen */
-	    ret[found] = alp->key;
-	if (keyp)
-	    *keyp = alNum2Key(al, fie->pkgNum);
+	    ret[found] = alp->p;
 	found++;
     }
 
@@ -672,26 +656,24 @@ exit:
     return ret;
 }
 
-fnpyKey *
-rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
+rpmte *
+rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     availableIndex ai;
     struct availableIndexEntry_s needle;
     availableIndexEntry match;
-    fnpyKey * ret = NULL;
+    rpmte * ret = NULL;
     int found = 0;
     const char * KName;
     availablePackage alp;
     int rc;
-
-    if (keyp) *keyp = RPMAL_NOMATCH;
 
     if (al == NULL || ds == NULL || (KName = rpmdsN(ds)) == NULL)
 	return ret;
 
     if (*KName == '/') {
 	/* First, look for files "contained" in package ... */
-	ret = rpmalAllFileSatisfiesDepend(al, ds, keyp);
+	ret = rpmalAllFileSatisfiesDepend(al, ds);
 	if (ret != NULL && *ret != NULL)
 	    return ret;
 	/* ... then, look for files "provided" by package. */
@@ -719,7 +701,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 	 match < ai->index + ai->size && indexcmp(match, &needle) == 0;
 	 match++)
     {
-	alp = al->list + alKey2Num(al, match->pkgKey);
+	alp = al->list + match->pkgNum;
 
 	rc = 0;
 	if (alp->provides != NULL)	/* XXX can't happen */
@@ -739,9 +721,7 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
 	if (rc) {
 	    ret = xrealloc(ret, (found + 2) * sizeof(*ret));
 	    if (ret)	/* can't happen */
-		ret[found] = alp->key;
-	    if (keyp)
-		*keyp = match->pkgKey;
+		ret[found] = alp->p;
 	    found++;
 	}
     }
@@ -753,13 +733,13 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
     return ret;
 }
 
-fnpyKey
-rpmalSatisfiesDepend(const rpmal al, const rpmds ds, rpmalKey * keyp)
+rpmte
+rpmalSatisfiesDepend(const rpmal al, const rpmds ds)
 {
-    fnpyKey * tmp = rpmalAllSatisfiesDepend(al, ds, keyp);
+    rpmte * tmp = rpmalAllSatisfiesDepend(al, ds);
 
     if (tmp) {
-	fnpyKey ret = tmp[0];
+	rpmte ret = tmp[0];
 	free(tmp);
 	return ret;
     }
