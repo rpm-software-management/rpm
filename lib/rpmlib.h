@@ -230,28 +230,6 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
 		unsigned int numFiles, rpm_loff_t ** usagesPtr,
 		int flags);
 
-/* ==================================================================== */
-/** \name RPMK */
-
-/** \ingroup signature
- * Verify a signature from a package.
- *
- * @param keyring	keyring handle
- * @param sigtd		signature tag data container
- * @param dig		signature/pubkey parameters
- * @retval result	detailed text result of signature verification
- * 			(malloc'd)
- * @return		result of signature verification
- */
-rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result);
-
-/** \ingroup signature
- * Destroy signature header from package.
- * @param h		signature header
- * @return		NULL always
- */
-Header rpmFreeSignature(Header h);
-
 #ifdef __cplusplus
 }
 #endif
