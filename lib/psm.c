@@ -1609,6 +1609,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->rpmio_flags = "r.bzdio";
 	if (!strcmp(payload_compressor, "xz"))
 	    psm->rpmio_flags = "r.xzdio";
+	if (!strcmp(payload_compressor, "lzma"))
+	    psm->rpmio_flags = "r.lzdio";
 	rpmtdFreeData(&pc);
 	headerFree(h);
 
