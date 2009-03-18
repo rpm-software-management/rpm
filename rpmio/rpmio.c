@@ -36,7 +36,7 @@ extern int h_errno;
 #define	FDONLY(fd)	assert(fdGetIo(fd) == fdio)
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
 #define	BZDONLY(fd)	assert(fdGetIo(fd) == bzdio)
-#define	LZDONLY(fd)	assert(fdGetIo(fd) == lzdio)
+#define	LZDONLY(fd)	assert(fdGetIo(fd) == xzdio)
 
 #define	UFDONLY(fd)	/* assert(fdGetIo(fd) == ufdio) */
 
@@ -91,7 +91,7 @@ static const FDIO_t fpio;
 static const FDIO_t ufdio;
 static const FDIO_t gzdio;
 static const FDIO_t bzdio;
-static const FDIO_t lzdio;
+static const FDIO_t xzdio;
 
 /**
  */
@@ -140,8 +140,8 @@ static const char * fdbg(FD_t fd)
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
 #endif
 #if HAVE_LZMA_H
-	} else if (fps->io == lzdio) {
-	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
+	} else if (fps->io == xzdio) {
+	    sprintf(be, "XZD %p fdno %d", fps->fp, fps->fdno);
 #endif
 	} else if (fps->io == fpio) {
 	    sprintf(be, "%s %p(%d) fdno %d",
@@ -1162,7 +1162,7 @@ static const char * getFdErrstr (FD_t fd)
     } else
 #endif	/* HAVE_BZLIB_H */
 #ifdef	HAVE_LZMA_H
-    if (fdGetIo(fd) == lzdio) {
+    if (fdGetIo(fd) == xzdio) {
 	errstr = fd->errcookie;
     } else
 #endif	/* HAVE_LZMA_H */
@@ -1355,7 +1355,7 @@ static inline void * lzdFileno(FD_t fd)
     FDSANE(fd);
     for (i = fd->nfps; i >= 0; i--) {
 	    FDSTACK_t * fps = &fd->fps[i];
-	    if (fps->io != lzdio)
+	    if (fps->io != xzdio)
 		continue;
 	    rc = fps->fp;
 	break;
@@ -1371,7 +1371,7 @@ static FD_t lzdOpen(const char * path, const char * mode)
     if ((lzfile = lzopen(path, mode)) == NULL)
 	return NULL;
     fd = fdNew("open (lzdOpen)");
-    fdPop(fd); fdPush(fd, lzdio, lzfile, -1);
+    fdPop(fd); fdPush(fd, xzdio, lzfile, -1);
     return fdLink(fd, "lzdOpen");
 }
 
@@ -1387,7 +1387,7 @@ static FD_t lzdFdopen(void * cookie, const char * fmode)
     if (fdno < 0) return NULL;
     lzfile = lzdopen(fdno, fmode);
     if (lzfile == NULL) return NULL;
-    fdPush(fd, lzdio, lzfile, fdno);
+    fdPush(fd, xzdio, lzfile, fdno);
     return fdLink(fd, "lzdFdopen");
 }
 
@@ -1471,18 +1471,18 @@ static int lzdClose(void * cookie)
 
 DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
 
-    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "LZDIO", stderr);
+    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
     if (rc == 0)
 	fd = fdFree(fd, "open (lzdClose)");
     return rc;
 }
 
-static struct FDIO_s lzdio_s = {
+static struct FDIO_s xzdio_s = {
   lzdRead, lzdWrite, lzdSeek, lzdClose, NULL, NULL, NULL, fdFileno,
   NULL, lzdOpen, lzdFileno, lzdFlush
 };
 
-static const FDIO_t lzdio = &lzdio_s;
+static const FDIO_t xzdio = &xzdio_s;
 
 #endif	/* HAVE_LZMA_H */
 
@@ -1719,8 +1719,8 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    fd = bzdFdopen(fd, zstdio);
 #endif
 #if HAVE_LZMA_H
-	} else if (!strcmp(end, "lzdio")) {
-	    iof = lzdio;
+	} else if (!strcmp(end, "xzdio")) {
+	    iof = xzdio;
 	    fd = lzdFdopen(fd, zstdio);
 #endif
 	} else if (!strcmp(end, "ufdio")) {
@@ -1850,7 +1850,7 @@ int Fflush(FD_t fd)
 	return bzdFlush(vh);
 #endif
 #if HAVE_LZMA_H
-    if (vh && fdGetIo(fd) == lzdio)
+    if (vh && fdGetIo(fd) == xzdio)
 	return lzdFlush(vh);
 #endif
 /* FIXME: If we get here, something went wrong above */
@@ -1879,9 +1879,9 @@ int Ferror(FD_t fd)
 	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
 #endif
 #if HAVE_LZMA_H
-	} else if (fps->io == lzdio) {
+	} else if (fps->io == xzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
-	    i--;	/* XXX fdio under lzdio always has fdno == -1 */
+	    i--;	/* XXX fdio under xzdio always has fdno == -1 */
 #endif
 	} else {
 	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
