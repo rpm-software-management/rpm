@@ -73,11 +73,8 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
-    /*
-     * FIXME: On non-build parse's, file cannot be stat'd or read but
-     * %{uncompress} doesn't know that so we get errors on non-existent files.
-     */
-    if (!spec->force && checkOwners(fn)) {
+    /* On non-build parse's, file cannot be stat'd or read. */
+    if (spec->force || checkOwners(fn)) {
 	fn = _free(fn);
 	return NULL;
     }
