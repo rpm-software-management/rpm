@@ -47,6 +47,7 @@
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
 %__lzma			@__LZMA@
+%__xz			@__XZ@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
 %__mkdir_p		@MKDIR_P@
@@ -322,7 +323,7 @@ package or when debugging this package.\
 #	Compression type and level for source/binary package payloads.
 #		"w9.gzdio"	gzip level 9 (default).
 #		"w9.bzdio"	bzip2 level 9.
-#		"w7.lzdio"	lzma level 7, lzma's default.
+#		"w7.xzdio"	xz level 7, xz's default.
 #
 #%_source_payload	w9.gzdio
 #%_binary_payload	w9.gzdio
