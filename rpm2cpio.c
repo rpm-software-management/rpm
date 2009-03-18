@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
 	    rpmio_flags = "r.bzdio";
 	if (!strcmp(payload_compressor, "xz"))
 	    rpmio_flags = "r.xzdio";
+	if (!strcmp(payload_compressor, "lzma"))
+	    rpmio_flags = "r.lzdio";
 	rpmtdFreeData(&pc);
     }
 
