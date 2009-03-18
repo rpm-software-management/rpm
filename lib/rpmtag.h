@@ -400,7 +400,7 @@ rpmTag rpmTagGetValue(const char * tagstr);
 
 /** \ingroup rpmtag
  * Return data class of type
- * @param tag		tag type
+ * @param type		tag type
  * @return		data class, RPM_NULL_CLASS on unknown.
  */
 rpmTagClass rpmTagTypeGetClass(rpmTagType type);
