@@ -1396,7 +1396,7 @@ handle_build_id (DSO *dso, Elf_Data *build_id,
     if (elf64_xlatetom (&x, &x, dso->ehdr.e_ident[EI_DATA]) == NULL)
       {
       bad:
-	fprintf (stderr, "Failed to compute header digest: %s\n",
+	fprintf (stderr, "Failed to compute header checksum: %s\n",
 		 elf_errmsg (elf_errno ()));
 	exit (1);
       }
