@@ -24,7 +24,6 @@ librpmio_la_LIBADD = \
 	../misc/libmisc.la \
 	@WITH_NSS_LIB@ \
 	@WITH_LUA_LIB@ \
-	@WITH_MAGIC_LIB@ \
 	@WITH_BZ2_LIB@ \
 	@WITH_ZLIB_LIB@ \
 	@WITH_LIBELF_LIB@ \
