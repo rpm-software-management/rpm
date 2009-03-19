@@ -83,7 +83,7 @@ struct cpioCrcPhysicalHeader {
     char rdevMajor[8];
     char rdevMinor[8];
     char namesize[8];
-    char digest[8];			/* ignored !! */
+    char checksum[8];			/* ignored !! */
 };
 
 #define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */

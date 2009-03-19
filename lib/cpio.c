@@ -102,7 +102,7 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     dev = minor(st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
 
     len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
-    memcpy(hdr->digest, "00000000", 8);
+    memcpy(hdr->checksum, "00000000", 8);
     memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
 
     /* XXX DWRITE uses rdnb for I/O length. */
