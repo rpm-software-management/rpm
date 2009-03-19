@@ -233,8 +233,6 @@ struct poptOption rpmQueryPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
-	NULL, NULL },
  { "configfiles", 'c', 0, 0, 'c',
 	N_("list all configuration files"), NULL },
  { "docfiles", 'd', 0, 0, 'd',
@@ -267,8 +265,6 @@ struct poptOption rpmVerifyPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
-	NULL, NULL },
 
  /* Duplicate file verify flags from packages into command line options. */
 /** @todo Add --nomd5 alias to rpmpopt, eliminate. */
