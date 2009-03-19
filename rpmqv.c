@@ -73,17 +73,15 @@ static int quiet;
 static struct poptOption optionsTable[] = {
 
 #ifdef	IAM_RPMQV
+ { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
+        N_("Query/Verify package selection options:"),
+        NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQueryPoptTable, 0,
 	N_("Query options (with -q or --query):"),
 	NULL },
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmVerifyPoptTable, 0,
 	N_("Verify options (with -V or --verify):"),
 	NULL },
-#ifdef	NOTYET
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliQVSourcePoptTable, 0,
-        N_("Source options (with --query or --verify):"),
-        NULL },
-#endif
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
         N_("File tree walk options (with --ftswalk):"),
         NULL },
