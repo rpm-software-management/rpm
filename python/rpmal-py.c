@@ -32,9 +32,7 @@ rpmal_Add(rpmalObject * s, PyObject * args, PyObject * kwds)
 	    &p))
 	return NULL;
 
-    /* XXX errors */
-    /* XXX transaction colors */
-    rpmalAdd(&s->al, p, 0);
+    rpmalAdd(s->al, p);
 
     Py_INCREF(Py_None);
     return Py_None;

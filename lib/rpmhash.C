@@ -50,7 +50,7 @@ Bucket HASHPREFIX(findEntry)(HASHTYPE ht, HTKEYTYPE key)
     hash = ht->fn(key) % ht->numBuckets;
     b = ht->buckets[hash];
 
-    while (b && b->key && ht->eq(b->key, key))
+    while (b && ht->eq(b->key, key))
 	b = b->next;
 
     return b;
@@ -92,7 +92,7 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
     b = ht->buckets[hash];
     b_addr = ht->buckets + hash;
 
-    while (b && b->key && ht->eq(b->key, key)) {
+    while (b && ht->eq(b->key, key)) {
 	b_addr = &(b->next);
 	b = b->next;
     }
@@ -123,7 +123,8 @@ HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
 {
     Bucket b, n;
     int i;
-
+    if (ht==NULL)
+	return ht;
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
 	if (b == NULL)
@@ -171,8 +172,8 @@ int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
 	*data = rc ? b->data : NULL;
     if (dataCount)
 	*dataCount = rc ? b->dataCount : 0;
-    if (tableKey)
-	*tableKey = rc ? b->key : NULL;
+    if (tableKey && rc)
+	*tableKey = b->key;
 
     return rc;
 }

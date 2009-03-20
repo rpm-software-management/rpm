@@ -17,9 +17,10 @@ extern int _rpmal_debug;
 /**
  * Initialize available packckages, items, and directory list.
  * @param delta		no. of entries to add on each realloc
+ * @param tscolor	transaction color bits
  * @return al		new available list
  */
-rpmal rpmalCreate(int delta);
+rpmal rpmalCreate(int delta, rpm_color_t tscolor);
 
 /**
  * Free available packages, items, and directory members.
@@ -37,14 +38,12 @@ void rpmalDel(rpmal al, rpmte p);
 
 /**
  * Add package to available list.
- * @param alistp	address of available list
+ * @param al	        available list
  * @param p             package
- * @param tscolor	transaction color bits
  * @return		available package index
  */
-void rpmalAdd(rpmal * alistp,
-	      rpmte p,
-	      rpm_color_t tscolor);
+void rpmalAdd(rpmal al,
+	      rpmte p);
 
 /**
  * Generate index for available list.

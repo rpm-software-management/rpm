@@ -209,7 +209,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
 	    duplicate = 1;
-	    rpmalDel(&ts->addedPackages, p);
+	    rpmalDel(ts->addedPackages, p);
 	    break;
 	}
     }
@@ -237,7 +237,7 @@ addheader:
 	rpmcliPackagesTotal++;
     }
     
-    rpmalAdd(&ts->addedPackages, p, tscolor);
+    rpmalAdd(ts->addedPackages, p);
 
     if (!duplicate) {
 	ts->numAddedPackages++;
@@ -893,7 +893,6 @@ static inline int addRelation(rpmts ts,
     tsortInfo tsi;
     const char * Name;
     int teType = rpmteType(p);
-    int i = 0;
 
     if ((Name = rpmdsN(requires)) == NULL)
 	return 0;
@@ -1019,7 +1018,7 @@ int rpmtsOrder(rpmts ts)
     int breadth;
     int qlen;
     int rc;
-    rpmal erasedPackages = rpmalCreate(5);
+    rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -1031,9 +1030,8 @@ int rpmtsOrder(rpmts ts)
 
     /* Create erased package index. */
     pi = rpmtsiInit(ts);
-    rpm_color_t tscolor = rpmtsColor(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
-        rpmalAdd(&erasedPackages, p, tscolor);
+        rpmalAdd(erasedPackages, p);
     }
     pi = rpmtsiFree(pi);
     rpmalMakeIndex(erasedPackages);
