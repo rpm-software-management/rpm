@@ -1248,15 +1248,11 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
 	res = verifySHA1Signature(sigtd, &msg, ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(keyring, sigtd, dig, &msg, ctx);
-	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
 	res = verifyRSASignature(keyring, sigtd, dig, &msg, ctx);
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(keyring, sigtd, dig, &msg, ctx);
-	break;
     case RPMSIGTAG_GPG:
 	res = verifyDSASignature(keyring, sigtd, dig, &msg, ctx);
 	break;
