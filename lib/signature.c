@@ -976,7 +976,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(rpmtd sigtd, char ** msg, DIGEST_CTX md5ctx)
+verifyMD5Signature(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     uint8_t * md5sum = NULL;
@@ -1017,7 +1017,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(rpmtd sigtd, char ** msg, DIGEST_CTX sha1ctx)
+verifySHA1Signature(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char * SHA1 = NULL;
@@ -1054,8 +1054,8 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
-		DIGEST_CTX hashctx)
+verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig,
+		DIGEST_CTX hashctx, char **msg)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res = RPMRC_FAIL; /* assume failure */
@@ -1088,8 +1088,8 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
-		DIGEST_CTX hashctx)
+verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig,
+		DIGEST_CTX hashctx, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     pgpDigParams sigp = dig ? &dig->signature : NULL;
@@ -1130,19 +1130,19 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
 	res = verifySizeSignature(sigtd, dig->nbytes, &msg);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(sigtd, &msg, ctx);
+	res = verifyMD5Signature(sigtd, ctx, &msg);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(sigtd, &msg, ctx);
+	res = verifySHA1Signature(sigtd, ctx, &msg);
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(keyring, sigtd, dig, &msg, ctx);
+	res = verifyRSASignature(keyring, sigtd, dig, ctx, &msg);
 	break;
     case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(keyring, sigtd, dig, &msg, ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, ctx, &msg);
 	break;
     default:
 	rasprintf(&msg, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
