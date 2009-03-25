@@ -1283,6 +1283,82 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     return 0;
 }
 
+static SECOidTag getSigAlg(pgpDigParams sigp)
+{
+    SECOidTag sigalg = SEC_OID_UNKNOWN;
+    if (sigp->pubkey_algo == PGPPUBKEYALGO_DSA) {
+	/* assume SHA1 for now, NSS doesn't have SECOID's for other types */
+	sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
+    } else if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA) {
+	switch (sigp->hash_algo) {
+	case PGPHASHALGO_MD5:
+	    sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
+	    break;
+	case PGPHASHALGO_MD2:
+	    sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
+	    break;
+	case PGPHASHALGO_SHA1:
+	    sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
+	    break;
+	case PGPHASHALGO_SHA256:
+	    sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
+	    break;
+	case PGPHASHALGO_SHA384:
+	     sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
+	    break;
+	case PGPHASHALGO_SHA512:
+	    sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
+	    break;
+	default:
+	    break;
+	}
+    }
+    return sigalg;
+}
+
+rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
+{
+    DIGEST_CTX ctx = rpmDigestDup(hashctx);
+    uint8_t *hash = NULL;
+    size_t hashlen = 0;
+    rpmRC res = RPMRC_FAIL; /* assume failure */
+    pgpDigParams sigp = dig ? &dig->signature : NULL;
+
+    if (sigp == NULL || ctx == NULL)
+	goto exit;
+
+    if (sigp->hash != NULL)
+	rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+
+    if (sigp->version == 4) {
+	/* V4 trailer is six octets long (rfc4880) */
+	uint8_t trailer[6];
+	uint32_t nb = sigp->hashlen;
+	nb = htonl(nb);
+	trailer[0] = sigp->version;
+	trailer[1] = 0xff;
+	memcpy(trailer+2, &nb, 4);
+	rpmDigestUpdate(ctx, trailer, sizeof(trailer));
+    }
+
+    rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
+
+    /* Compare leading 16 bits of digest for quick check. */
+    if (hash && memcmp(hash, sigp->signhash16, 2) == 0) {
+	SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
+	/* XXX VFY_VerifyDigest() is deprecated in NSS 3.12 */ 
+	if (VFY_VerifyDigest(&digest, dig->keydata, dig->sigdata, 
+			     getSigAlg(sigp), NULL) == SECSuccess) {
+	    res = RPMRC_OK;
+	}
+    }
+
+exit:
+    free(hash);
+    return res;
+
+}
+
 pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 {
     uint8_t * b = NULL;

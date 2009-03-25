@@ -1041,6 +1041,14 @@ void pgpCleanDig(pgpDig dig);
 pgpDig pgpFreeDig(pgpDig dig);
 
 /** \ingroup rpmpgp
+ * Verify a PGP signature.
+ * @param dig		container
+ * @param hashctx	digest context
+ * @return 		RPMRC_OK on success 
+ */
+rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx);
+
+/** \ingroup rpmpgp
  * Perform cryptography initialization.
  * It must be called before any cryptography can be used within rpm.
  * It's not normally necessary to call it directly as it's called in

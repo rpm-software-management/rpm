@@ -43,7 +43,6 @@ librpm_la_LDFLAGS = -version-info 0:0:0
 
 librpm_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_NSS_LIB@ \
 	@WITH_POPT_LIB@ \
 	@WITH_SELINUX_LIB@ \
 	@WITH_SQLITE3_LIB@ \

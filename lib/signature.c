@@ -1046,49 +1046,6 @@ exit:
     return res;
 }
 
-/* lower level verification bits for RSA+DSA signatures */
-static rpmRC verifyPGPSig(pgpDigParams sigp,
-			SECKEYPublicKey *key, SECItem *sig, SECOidTag sigalg,
-			DIGEST_CTX hashctx)
-{	
-    DIGEST_CTX ctx = rpmDigestDup(hashctx);
-    uint8_t *hash = NULL;
-    size_t hashlen = 0;
-    rpmRC res = RPMRC_FAIL; /* assume failure */
-    int xx;
-
-    if (sigp == NULL || ctx == NULL)
-	goto exit;
-
-    if (sigp->hash != NULL)
-	xx = rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
-
-    if (sigp->version == 4) {
-	/* V4 trailer is six octets long (rfc4880) */
-	uint8_t trailer[6];
-	uint32_t nb = sigp->hashlen;
-	nb = htonl(nb);
-	trailer[0] = sigp->version;
-	trailer[1] = 0xff;
-	memcpy(trailer+2, &nb, 4);
-	xx = rpmDigestUpdate(ctx, trailer, sizeof(trailer));
-    }
-
-    xx = rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
-
-    /* Compare leading 16 bits of digest for quick check. */
-    if (memcmp(hash, sigp->signhash16, 2) == 0) {
-	SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
-	if (VFY_VerifyDigest(&digest, key, sig, sigalg, NULL) == SECSuccess) {
-	    res = RPMRC_OK;
-	}
-    }
-
-exit:
-    free(hash);
-    return res;
-}
-
 /**
  * Verify RSA signature.
  * @param keyring	pubkey keyring
@@ -1101,7 +1058,6 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 		DIGEST_CTX hashctx)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
-    SECOidTag sigalg = SEC_OID_UNKNOWN;
     rpmRC res = RPMRC_FAIL; /* assume failure */
     const char *hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
     const char *signame = _("Unknown");;
@@ -1118,27 +1074,21 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     switch (sigp->hash_algo) {
     case PGPHASHALGO_MD5:
 	signame = "RSA/MD5";
-	sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA1:
 	signame = "RSA/SHA1";
-	sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_MD2:
 	signame = "RSA/MD2";
-	sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA256:
 	signame = "RSA/SHA256";
-	sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA384:
 	signame = "RSA/SHA384";
-	sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
 	break;
     case PGPHASHALGO_SHA512:
 	signame = "RSA/SHA512";
-	sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
 	break;
     /* fallthrough for unsupported / unknown types */
     case PGPHASHALGO_TIGER192:
@@ -1149,7 +1099,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
     /* Verify the desired signature match. */
-    if (sigp->pubkey_algo != PGPPUBKEYALGO_RSA || sigalg == SEC_OID_UNKNOWN ||
+    if (sigp->pubkey_algo != PGPPUBKEYALGO_RSA ||
 			(!(sigtd->tag == RPMSIGTAG_RSA || 
 			   sigtd->tag == RPMSIGTAG_PGP || 
 			   sigtd->tag == RPMSIGTAG_PGP5))) {
@@ -1159,7 +1109,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
     if (res == RPMRC_OK) {
-	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, hashctx);
+	res = pgpVerifySig(dig, hashctx);
     }
 
 exit:
@@ -1208,9 +1158,7 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
     if (res == RPMRC_OK) {
-	/* XXX TODO: handle other algorithm types too */
-	SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, hashctx);
+	res = pgpVerifySig(dig, hashctx);
     }
 
 exit:
