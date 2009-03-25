@@ -254,6 +254,13 @@ void fdSetCpioPos(FD_t fd, rpm_loff_t cpioPos)
     fd->fd_cpioPos = cpioPos;
 }
 
+static inline
+void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
+{
+    FDSANE(fd);
+    fd->digests = bundle;
+}
+
 /** \ingroup rpmio
  */
 static inline
@@ -280,10 +287,6 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		void ** datap,
 		size_t * lenp,
 		int asAscii);
-
-
-/* XXX Steal the digest-in-progress from the file handle. */
-void fdStealDigest(FD_t fd, pgpDig dig);
 
 /**
  * Read an entire file into a buffer.

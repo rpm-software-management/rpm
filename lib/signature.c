@@ -1245,7 +1245,7 @@ exit:
 }
 
 rpmRC
-rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
+rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, char ** result)
 {
     rpmRC res = RPMRC_NOTFOUND;
     char *msg = NULL;
@@ -1260,25 +1260,23 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result)
 	res = verifySizeSignature(sigtd, dig->nbytes, &msg);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(sigtd, &msg, dig->md5ctx);
+	res = verifyMD5Signature(sigtd, &msg, ctx);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(sigtd, &msg, dig->hdrsha1ctx);
+	res = verifySHA1Signature(sigtd, &msg, ctx);
 	break;
     case RPMSIGTAG_RSA:
-	res = verifyRSASignature(keyring, sigtd, dig, &msg, dig->hdrmd5ctx);
+	res = verifyRSASignature(keyring, sigtd, dig, &msg, ctx);
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(keyring, sigtd, dig, &msg,
-		((dig->signature.hash_algo == PGPHASHALGO_MD5)
-			? dig->md5ctx : dig->sha1ctx));
+	res = verifyRSASignature(keyring, sigtd, dig, &msg, ctx);
 	break;
     case RPMSIGTAG_DSA:
-	res = verifyDSASignature(keyring, sigtd, dig, &msg, dig->hdrsha1ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, &msg, ctx);
 	break;
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(keyring, sigtd, dig, &msg, dig->sha1ctx);
+	res = verifyDSASignature(keyring, sigtd, dig, &msg, ctx);
 	break;
     default:
 	rasprintf(&msg, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);

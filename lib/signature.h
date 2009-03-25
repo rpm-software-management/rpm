@@ -76,7 +76,7 @@ int rpmAddSignature(Header sigh, const char * file,
  * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** result);
+rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, char ** result);
 
 /** \ingroup signature
  * Destroy signature header from package.

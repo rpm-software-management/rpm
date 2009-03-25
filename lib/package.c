@@ -232,6 +232,7 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     int xx;
     int i;
     struct rpmtd_s sigtd;
+    DIGEST_CTX ctx = NULL;
 
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
@@ -408,26 +409,26 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
 
 	b = (unsigned char *) rpm_header_magic;
 	nb = sizeof(rpm_header_magic);
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 
 	b = (unsigned char *) ildl;
 	nb = sizeof(ildl);
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
 	nb = (htonl(ildl[0]) * sizeof(*pe));
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
 	nb = htonl(ildl[1]);
-        (void) rpmDigestUpdate(dig->hdrmd5ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
@@ -443,26 +444,26 @@ verifyinfo_exit:
 	ildl[1] = htonl(ildl[1]);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
 	b = (unsigned char *) rpm_header_magic;
 	nb = sizeof(rpm_header_magic);
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 
 	b = (unsigned char *) ildl;
 	nb = sizeof(ildl);
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
 	nb = (htonl(ildl[0]) * sizeof(*pe));
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
 	nb = htonl(ildl[1]);
-        (void) rpmDigestUpdate(dig->hdrsha1ctx, b, nb);
+        (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
@@ -473,7 +474,7 @@ verifyinfo_exit:
     }
 
     {	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    	rc = rpmVerifySignature(keyring, &sigtd, dig, &buf);
+    	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &buf);
 	rpmKeyringFree(keyring);
     }
 
@@ -484,6 +485,7 @@ verifyinfo_exit:
 
     rpmtdFreeData(&sigtd);
     pgpFreeDig(dig);
+    rpmDigestFinal(ctx, NULL, NULL, 0);
     return rc;
 }
 
@@ -584,6 +586,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
+    DIGEST_CTX ctx = NULL;
 
     if (hdrp) *hdrp = NULL;
 
@@ -705,10 +708,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	dig->nbytes += sizeof(rpm_header_magic);
-	(void) rpmDigestUpdate(dig->hdrmd5ctx, utd.data, utd.count);
+	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	dig->nbytes += utd.count;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
@@ -724,10 +727,10 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	dig->nbytes += sizeof(rpm_header_magic);
-	(void) rpmDigestUpdate(dig->hdrsha1ctx, utd.data, utd.count);
+	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	dig->nbytes += utd.count;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 	if (sigtag == RPMSIGTAG_SHA1)
@@ -755,7 +758,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	    goto exit;
 	}
 
-	fdStealDigest(fd, dig);
+	ctx = rpmDigestBundleDupCtx(fd->digests, (sigtag == RPMSIGTAG_MD5) ?
+				    PGPHASHALGO_MD5 : dig->signature.hash_algo);
 	break;
     default:
 	break;
@@ -763,7 +767,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
     {	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    	rc = rpmVerifySignature(keyring, &sigtd, dig, &msg);
+    	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &msg);
 	rpmKeyringFree(keyring);
     }
 	
@@ -818,6 +822,7 @@ exit:
 	*hdrp = headerLink(h);
     }
     rpmtdFreeData(&sigtd);
+    rpmDigestFinal(ctx, NULL, NULL, 0);
     h = headerFree(h);
     pgpFreeDig(dig);
     sigh = rpmFreeSignature(sigh);

@@ -44,12 +44,6 @@ struct pgpDig_s {
 
     size_t nbytes;		/*!< No. bytes of plain text. */
 
-    DIGEST_CTX sha1ctx;		/*!< (dsa) sha1 hash context. */
-    DIGEST_CTX hdrsha1ctx;	/*!< (dsa) header sha1 hash context. */
-
-    DIGEST_CTX md5ctx;		/*!< (rsa) md5 hash context. */
-    DIGEST_CTX hdrmd5ctx;	/*!< (rsa) header md5 hash context. */
-
     /* DSA/RSA parameters */
     SECKEYPublicKey *keydata;
     SECItem *sigdata;

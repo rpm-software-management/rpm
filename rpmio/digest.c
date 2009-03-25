@@ -279,32 +279,3 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
     }
 }
-
-void fdStealDigest(FD_t fd, pgpDig dig)
-{
-    if (fd && fd->digests) {
-	rpmDigestBundle bundle = fd->digests;
-	for (int i = bundle->index_max; i >= bundle->index_min; i--) {
-	    DIGEST_CTX ctx = bundle->digests[i];
-	    if (ctx == NULL)
-		continue;
-	    switch (ctx->algo) {
-	    case PGPHASHALGO_MD5:
-    		assert(dig->md5ctx == NULL);
-		dig->md5ctx = ctx;
-		bundle->digests[i] = NULL;
-		break;
-	    case PGPHASHALGO_SHA1:
-	    case PGPHASHALGO_SHA256:
-	    case PGPHASHALGO_SHA384:
-	    case PGPHASHALGO_SHA512:
-    		assert(dig->sha1ctx == NULL);
-		dig->sha1ctx = ctx;
-		bundle->digests[i] = NULL;
-		break;
-	    default:
-		break;
-	    }
-	}
-    }
-}

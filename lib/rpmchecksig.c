@@ -451,7 +451,8 @@ rpmtsClean(ts);
 /**
  * @todo If the GPG key was known available, the md5 digest could be skipped.
  */
-static int readFile(FD_t fd, const char * fn, pgpDig dig)
+static int readFile(FD_t fd, const char * fn, pgpDig dig,
+		    rpmDigestBundle plbundle, rpmDigestBundle hdrbundle)
 {
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
@@ -478,12 +479,8 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 			"Corrupted package?\n"), fn);
 		goto exit;
 	    }
-	    dig->hdrsha1ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	    (void) rpmDigestUpdate(dig->hdrsha1ctx, utd.data, utd.count);
-	    dig->hdrmd5ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	    (void) rpmDigestUpdate(dig->hdrmd5ctx, utd.data, utd.count);
+	    rpmDigestBundleUpdate(hdrbundle, rpm_header_magic, sizeof(rpm_header_magic));
+	    rpmDigestBundleUpdate(hdrbundle, utd.data, utd.count);
 	    rpmtdFreeData(&utd);
 	}
 	h = headerFree(h);
@@ -496,7 +493,6 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig)
 	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
     }
-    fdStealDigest(fd, dig);
 
     rc = 0;
 
@@ -637,6 +633,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
     int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmDigestBundle plbundle = rpmDigestBundleNew();
+    rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
     rpmlead lead = rpmLeadNew();
     if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
@@ -675,28 +673,34 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     sigp = &dig->signature;
 
     /* XXX RSA needs the hash_algo, so decode early. */
-    if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP) {
+    if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP ||
+		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
 	xx = headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT);
 	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
 	rpmtdFreeData(&sigtd);
 	/* XXX assume same hash_algo in header-only and header+payload */
-	if ((headerIsEntry(sigh, RPMSIGTAG_PGP)
-	  || headerIsEntry(sigh, RPMSIGTAG_PGP5))
-	 && dig->signature.hash_algo != PGPHASHALGO_MD5)
-	    fdInitDigest(fd, dig->signature.hash_algo, 0);
+	rpmDigestBundleAdd(plbundle, sigp->hash_algo, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(hdrbundle, sigp->hash_algo, RPMDIGEST_NONE);
     }
 
-    if (headerIsEntry(sigh, RPMSIGTAG_PGP)
-    ||  headerIsEntry(sigh, RPMSIGTAG_PGP5)
-    ||  headerIsEntry(sigh, RPMSIGTAG_MD5))
-	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-    if (headerIsEntry(sigh, RPMSIGTAG_GPG))
-	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
+    if (headerIsEntry(sigh, RPMSIGTAG_PGP) ||
+		      headerIsEntry(sigh, RPMSIGTAG_PGP5) ||
+		      headerIsEntry(sigh, RPMSIGTAG_MD5)) {
+	rpmDigestBundleAdd(plbundle, PGPHASHALGO_MD5, RPMDIGEST_NONE);
+    }
+    if (headerIsEntry(sigh, RPMSIGTAG_GPG)) {
+	rpmDigestBundleAdd(plbundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+    }
+
+    /* always do sha1 hash of header */
+    rpmDigestBundleAdd(hdrbundle, PGPHASHALGO_SHA1, RPMDIGEST_NONE);
 
     /* Read the file, generating digest(s) on the fly. */
-    if (dig == NULL || sigp == NULL || readFile(fd, fn, dig)) {
+    fdSetBundle(fd, plbundle);
+    if (readFile(fd, fn, dig, plbundle, hdrbundle)) {
 	goto exit;
     }
+    fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
 
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
@@ -704,7 +708,7 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     for (; headerNext(hi, &sigtd) != 0; rpmtdFreeData(&sigtd)) {
 	char *result = NULL;
 	int havekey = 0;
-
+	DIGEST_CTX ctx = NULL;
 	if (sigtd.data == NULL) /* XXX can't happen */
 	    continue;
 
@@ -723,18 +727,27 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 	    if (parsePGP(&sigtd, fn, dig) != RPMRC_OK) {
 		goto exit;
 	    }
+	    ctx = rpmDigestBundleDupCtx(havekey ? plbundle : hdrbundle,
+					dig->signature.hash_algo);
 	    break;
 	case RPMSIGTAG_SHA1:
+	    if (nodigests)
+		 continue;
+	    ctx = rpmDigestBundleDupCtx(hdrbundle, PGPHASHALGO_SHA1);
+	    break;
 	case RPMSIGTAG_MD5:
 	    if (nodigests)
 		 continue;
+	    ctx = rpmDigestBundleDupCtx(plbundle, PGPHASHALGO_MD5);
 	    break;
 	default:
 	    continue;
 	    break;
 	}
 
-	rc = rpmVerifySignature(keyring, &sigtd, dig, &result);
+	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &result);
+	rpmDigestFinal(ctx, NULL, NULL, 0);
+
 	formatResult(sigtd.tag, rc, result, havekey, 
 		     (rc == RPMRC_NOKEY ? &missingKeys : &untrustedKeys),
 		     &buf);
@@ -764,6 +777,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
 
 exit:
     free(buf);
+    rpmDigestBundleFree(hdrbundle);
+    rpmDigestBundleFree(plbundle);
     sigh = rpmFreeSignature(sigh);
     hi = headerFreeIterator(hi);
     rpmKeyringFree(keyring);

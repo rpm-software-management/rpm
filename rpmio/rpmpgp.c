@@ -1252,23 +1252,6 @@ pgpDig pgpFreeDig(pgpDig dig)
 
 	/* DUmp the signature/pubkey data. */
 	pgpCleanDig(dig);
-
-	if (dig->hdrsha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->hdrsha1ctx, NULL, NULL, 0);
-	dig->hdrsha1ctx = NULL;
-
-	if (dig->sha1ctx != NULL)
-	    (void) rpmDigestFinal(dig->sha1ctx, NULL, NULL, 0);
-	dig->sha1ctx = NULL;
-
-	if (dig->hdrmd5ctx != NULL)
-	    (void) rpmDigestFinal(dig->hdrmd5ctx, NULL, NULL, 0);
-	dig->hdrmd5ctx = NULL;
-
-	if (dig->md5ctx != NULL)
-	    (void) rpmDigestFinal(dig->md5ctx, NULL, NULL, 0);
-	dig->md5ctx = NULL;
-
 	dig = _free(dig);
     }
     return dig;
