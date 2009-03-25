@@ -669,34 +669,20 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
     switch (sigtag) {
     case RPMSIGTAG_RSA:
-	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
-	    goto exit;
-	}
-    {	struct rpmtd_s utd;
-
-	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
-	    break;
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	dig->nbytes += sizeof(rpm_header_magic);
-	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
-	dig->nbytes += utd.count;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
-	rpmtdFreeData(&utd);
-    }	break;
     case RPMSIGTAG_DSA:
 	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
+	/* fallthrough */
     case RPMSIGTAG_SHA1:
     {	struct rpmtd_s utd;
+	pgpHashAlgo hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
+			    PGPHASHALGO_SHA1 : dig->signature.hash_algo;
 
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
 	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	dig->nbytes += sizeof(rpm_header_magic);
 	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
@@ -712,6 +698,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
+	/* fallthrough */
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
