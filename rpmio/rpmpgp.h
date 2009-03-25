@@ -23,6 +23,7 @@ extern "C" {
 /** \ingroup rpmpgp
  */
 typedef struct DIGEST_CTX_s * DIGEST_CTX;
+typedef struct rpmDigestBundle_s * rpmDigestBundle;
 
 /** \ingroup rpmpgp
  */
@@ -1099,6 +1100,59 @@ int rpmDigestUpdate(DIGEST_CTX ctx, const void * data, size_t len);
 int rpmDigestFinal(DIGEST_CTX ctx,
 	void ** datap,
 	size_t * lenp, int asAscii);
+
+/** \ingroup rpmpgp
+ * Create a new digest bundle.
+ * @return		New digest bundle
+ */
+rpmDigestBundle rpmDigestBundleNew(void);
+
+/** \ingroup rpmpgp
+ * Free a digest bundle and all contained digest contexts.
+ * @param bundle	digest bundle
+ * @return		NULL always
+ */
+rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
+
+/** \ingroup rpmpgp
+ * Add a new type of digest to a bundle.
+ * @param bundle	digest bundle
+ * @param algo		type of digest
+ * @param flags		bit(s) to control digest operation
+ * @return		0 on success
+ */
+int rpmDigestBundleAdd(rpmDigestBundle bundle, pgpHashAlgo algo,
+			rpmDigestFlags flags);
+
+/** \ingroup rpmpgp
+ * Update contexts within bundle with next plain text buffer.
+ * @param bundle	digest bundle
+ * @param data		next data buffer
+ * @param len		no. bytes of data
+ * @return		0 on success
+ */
+int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
+
+/** \ingroup rpmpgp
+ * Return digest from a bundle and destroy context, see rpmDigestFinal().
+ *
+ * @param bundle	digest bundle
+ * @param algo		type of digest to return
+ * @retval datap	address of returned digest
+ * @retval lenp		address of digest length
+ * @param asAscii	return digest as ascii string?
+ * @return		0 on success
+ */
+int rpmDigestBundleFinal(rpmDigestBundle bundle,
+	 pgpHashAlgo algo, void ** datap, size_t * lenp, int asAscii);
+
+/** \ingroup rpmpgp
+ * Duplicate a digest context from a bundle.
+ * @param bundle	digest bundle
+ * @param algo		type of digest to dup
+ * @return		duplicated digest context
+ */
+DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, pgpHashAlgo algo);
 
 #ifdef __cplusplus
 }
