@@ -697,7 +697,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     if (readFile(fd, fn, dig, plbundle, hdrbundle)) {
 	goto exit;
     }
-    fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
 
     rasprintf(&buf, "%s:%c", fn, (rpmIsVerbose() ? '\n' : ' ') );
 
@@ -776,6 +775,7 @@ exit:
     free(buf);
     rpmDigestBundleFree(hdrbundle);
     rpmDigestBundleFree(plbundle);
+    fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = rpmFreeSignature(sigh);
     hi = headerFreeIterator(hi);
     rpmKeyringFree(keyring);
