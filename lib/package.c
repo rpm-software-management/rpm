@@ -399,52 +399,21 @@ verifyinfo_exit:
 
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
-	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
-	    pgpFreeDig(dig);
-	    goto exit;
-	}
-
-	ildl[0] = htonl(ril);
-	ildl[1] = (regionEnd - dataStart);
-	ildl[1] = htonl(ildl[1]);
-
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	ctx = rpmDigestInit(dig->signature.hash_algo, RPMDIGEST_NONE);
-
-	b = (unsigned char *) rpm_header_magic;
-	nb = sizeof(rpm_header_magic);
-        (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
-
-	b = (unsigned char *) ildl;
-	nb = sizeof(ildl);
-        (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
-
-	b = (unsigned char *) pe;
-	nb = (htonl(ildl[0]) * sizeof(*pe));
-        (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
-
-	b = (unsigned char *) dataStart;
-	nb = htonl(ildl[1]);
-        (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-
-	break;
     case RPMTAG_DSAHEADER:
 	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
 	    pgpFreeDig(dig);
 	    goto exit;
 	}
-    case RPMTAG_SHA1HEADER:
+	/* fallthrough */
+    case RPMTAG_SHA1HEADER: {
+	pgpHashAlgo hashalgo = (info.tag == RPMTAG_SHA1HEADER) ?
+				PGPHASHALGO_SHA1 : dig->signature.hash_algo;
 	ildl[0] = htonl(ril);
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
 
 	b = (unsigned char *) rpm_header_magic;
 	nb = sizeof(rpm_header_magic);
@@ -467,7 +436,7 @@ verifyinfo_exit:
         dig->nbytes += nb;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
 
-	break;
+	} break;
     default:
 	sigtd.data = _free(sigtd.data); /* Hmm...? */
 	break;
