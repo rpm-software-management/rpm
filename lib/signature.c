@@ -949,7 +949,7 @@ static const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySizeSignature(rpmtd sigtd, size_t nbytes, char ** msg)
+verifySize(rpmtd sigtd, size_t nbytes, char ** msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     size_t size = 0x7fffffff;
@@ -976,7 +976,7 @@ exit:
 }
 
 static rpmRC
-verifyMD5Signature(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
+verifyMD5Digest(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     uint8_t * md5sum = NULL;
@@ -1017,7 +1017,7 @@ exit:
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySHA1Signature(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
+verifySHA1Digest(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char * SHA1 = NULL;
@@ -1127,13 +1127,13 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
 
     switch (sigtd->tag) {
     case RPMSIGTAG_SIZE:
-	res = verifySizeSignature(sigtd, dig->nbytes, &msg);
+	res = verifySize(sigtd, dig->nbytes, &msg);
 	break;
     case RPMSIGTAG_MD5:
-	res = verifyMD5Signature(sigtd, ctx, &msg);
+	res = verifyMD5Digest(sigtd, ctx, &msg);
 	break;
     case RPMSIGTAG_SHA1:
-	res = verifySHA1Signature(sigtd, ctx, &msg);
+	res = verifySHA1Digest(sigtd, ctx, &msg);
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
