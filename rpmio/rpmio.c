@@ -241,8 +241,6 @@ DBGREFS(fd, (stderr, "--> fd  %p ++ %d %s  %s\n", fd, fd->nrefs, msg, fdbg(fd)))
  */
 FD_t fdFree( FD_t fd, const char *msg)
 {
-	int i;
-
 if (fd == NULL)
 DBGREFS(0, (stderr, "--> fd  %p -- %d %s\n", fd, FDNREFS(fd), msg));
     FDSANE(fd);
@@ -251,14 +249,9 @@ DBGREFS(fd, (stderr, "--> fd  %p -- %d %s %s\n", fd, fd->nrefs, msg, fdbg(fd)));
 	if (--fd->nrefs > 0)
 	    return fd;
 	fd->stats = _free(fd->stats);
-	for (i = fd->ndigests - 1; i >= 0; i--) {
-	    DIGEST_CTX *ctxp = fd->digests + i;
-	    if (*ctxp == NULL)
-		continue;
-	    (void) rpmDigestFinal(*ctxp, NULL, NULL, 0);
-	    *ctxp = NULL;
+	if (fd->digests) {
+	    fd->digests = rpmDigestBundleFree(fd->digests);
 	}
-	fd->ndigests = 0;
 	free(fd);
     }
     return NULL;
@@ -288,9 +281,7 @@ FD_t fdNew(const char * msg)
     fd->syserrno = 0;
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
-
-    fd->ndigests = 0;
-    memset(fd->digests, 0, sizeof(fd->digests));
+    fd->digests = NULL;
 
     fd->fd_cpioPos = 0;
 
@@ -310,7 +301,7 @@ static ssize_t fdRead(void * cookie, char * buf, size_t count)
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
     fdstat_exit(fd, FDSTAT_READ, rc);
 
-    if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+    if (fd->digests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
 
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -327,7 +318,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->digests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     if (count == 0) return 0;
 
@@ -870,7 +861,7 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	}
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->digests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
     }
     return rc;
 }
@@ -883,7 +874,7 @@ static ssize_t gzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->digests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -1071,7 +1062,7 @@ static ssize_t bzdRead(void * cookie, char * buf, size_t count)
 	    fd->errcookie = bzerror(bzfile, &zerror);
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->digests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
     }
     return rc;
 }
@@ -1084,7 +1075,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->digests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_WRITE);
@@ -1460,7 +1451,7 @@ static ssize_t lzdRead(void * cookie, char * buf, size_t count)
 	fd->errcookie = "Lzma: decoding error";
     } else if (rc >= 0) {
 	fdstat_exit(fd, FDSTAT_READ, rc);
-	if (fd->ndigests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
+	if (fd->digests && rc > 0) fdUpdateDigests(fd, (void *)buf, rc);
     }
     return rc;
 }
@@ -1473,7 +1464,7 @@ static ssize_t lzdWrite(void * cookie, const char * buf, size_t count)
 
     if (fd == NULL || fd->bytesRemain == 0) return 0;   /* XXX simulate EOF */
 
-    if (fd->ndigests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
+    if (fd->digests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
     lzfile = lzdFileno(fd);
 

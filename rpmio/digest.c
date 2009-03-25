@@ -251,25 +251,19 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, l
 
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
 {
-    if (fd->ndigests < FDDIGEST_MAX) {
-	fd->digests[fd->ndigests] = rpmDigestInit(hashalgo, flags);
-	fd->ndigests++;
-	fdstat_enter(fd, FDSTAT_DIGEST);
-	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
+    if (fd->digests == NULL) {
+	fd->digests = rpmDigestBundleNew();
     }
+    fdstat_enter(fd, FDSTAT_DIGEST);
+    rpmDigestBundleAdd(fd->digests, hashalgo, flags);
+    fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
 }
 
 void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
 {
-    int i;
-
-    if (buf != NULL && buflen > 0)
-    for (i = fd->ndigests - 1; i >= 0; i--) {
-	DIGEST_CTX ctx = fd->digests[i];
-	if (ctx == NULL)
-	    continue;
+    if (fd && fd->digests) {
 	fdstat_enter(fd, FDSTAT_DIGEST);
-	(void) rpmDigestUpdate(ctx, buf, buflen);
+	rpmDigestBundleUpdate(fd->digests, buf, buflen);
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) buflen);
     }
 }
@@ -279,56 +273,38 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		size_t * lenp,
 		int asAscii)
 {
-    int imax = -1;
-    int i;
-
-    for (i = fd->ndigests - 1; i >= 0; i--) {
-	DIGEST_CTX ctx = fd->digests[i];
-	if (ctx == NULL)
-	    continue;
-	if (i > imax) imax = i;
-	if (ctx->algo != hashalgo)
-	    continue;
+    if (fd && fd->digests) {
 	fdstat_enter(fd, FDSTAT_DIGEST);
-	(void) rpmDigestFinal(ctx, datap, lenp, asAscii);
+	rpmDigestBundleFinal(fd->digests, hashalgo, datap, lenp, asAscii);
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
-	fd->digests[i] = NULL;
-	break;
     }
-    if (i < 0) {
-	if (datap) *datap = NULL;
-	if (lenp) *lenp = 0;
-    }
-
-    fd->ndigests = imax;
-    if (i < imax)
-	fd->ndigests++;		/* convert index to count */
 }
-
 
 void fdStealDigest(FD_t fd, pgpDig dig)
 {
-    int i;
-    for (i = fd->ndigests - 1; i >= 0; i--) {
-	DIGEST_CTX ctx = fd->digests[i];
-        if (ctx == NULL)
-	    continue;
-        switch (ctx->algo) {
-        case PGPHASHALGO_MD5:
-assert(dig->md5ctx == NULL);
-            dig->md5ctx = ctx;
-	    fd->digests[i] = NULL;
-            break;
-        case PGPHASHALGO_SHA1:
-        case PGPHASHALGO_SHA256:
-        case PGPHASHALGO_SHA384:
-        case PGPHASHALGO_SHA512:
-assert(dig->sha1ctx == NULL);
-            dig->sha1ctx = ctx;
-	    fd->digests[i] = NULL;
-            break;
-        default:
-            break;
-        }
+    if (fd && fd->digests) {
+	rpmDigestBundle bundle = fd->digests;
+	for (int i = bundle->index_max; i >= bundle->index_min; i--) {
+	    DIGEST_CTX ctx = bundle->digests[i];
+	    if (ctx == NULL)
+		continue;
+	    switch (ctx->algo) {
+	    case PGPHASHALGO_MD5:
+    		assert(dig->md5ctx == NULL);
+		dig->md5ctx = ctx;
+		bundle->digests[i] = NULL;
+		break;
+	    case PGPHASHALGO_SHA1:
+	    case PGPHASHALGO_SHA256:
+	    case PGPHASHALGO_SHA384:
+	    case PGPHASHALGO_SHA512:
+    		assert(dig->sha1ctx == NULL);
+		dig->sha1ctx = ctx;
+		bundle->digests[i] = NULL;
+		break;
+	    default:
+		break;
+	    }
+	}
     }
 }

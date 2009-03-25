@@ -50,9 +50,7 @@ struct _FD_s {
 
     FDSTAT_t	stats;		/* I/O statistics */
 
-    int		ndigests;
-#define	FDDIGEST_MAX	4
-    DIGEST_CTX	digests[FDDIGEST_MAX];
+    rpmDigestBundle digests;
 
     rpm_loff_t	fd_cpioPos;	/* cpio: */
 };
