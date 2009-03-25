@@ -299,11 +299,18 @@ rpmalKey rpmteSetAddedKey(rpmte te,
 		rpmalKey npkgKey);
 
 /** \ingroup rpmte
- * Retrieve dependent pkgKey of TR_REMOVED transaction element.
+ * Set dependent element of TR_REMOVED transaction element.
  * @param te		transaction element
- * @return		dependent pkgKey
+ * @param depends       dependent transaction element
  */
-rpmalKey rpmteDependsOnKey(rpmte te);
+void rpmteSetDependsOn(rpmte te, rpmte depends);
+
+/** \ingroup rpmte
+ * Retrieve dependent element of TR_REMOVED transaction element.
+ * @param te		transaction element
+ * @return		dependent transaction element
+ */
+rpmte rpmteDependsOn(rpmte te);
 
 /** \ingroup rpmte
  * Retrieve rpmdb instance of TR_REMOVED transaction element.

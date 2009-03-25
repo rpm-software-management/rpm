@@ -95,7 +95,9 @@ static int removePackage(rpmts ts, Header h, rpmalKey depends)
 	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
     }
 
-    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, -1, depends);
+    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, -1, RPMAL_NOMATCH);
+    rpmteSetDependsOn(p, depends);
+
     ts->order[ts->orderCount] = p;
     ts->orderCount++;
 

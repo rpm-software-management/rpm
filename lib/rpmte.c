@@ -36,6 +36,7 @@ struct rpmte_s {
     int osScore;		/*!< (TR_ADDED) Os score. */
     int isSource;		/*!< (TR_ADDED) source rpm? */
 
+    rpmte depends;              /*!< Package updated by this package (ERASE te) */
     rpmte parent;		/*!< Parent transaction element. */
     int degree;			/*!< No. of immediate children. */
     int npreds;			/*!< No. of predecessors. */
@@ -565,10 +566,13 @@ rpmalKey rpmteSetAddedKey(rpmte te, rpmalKey npkgKey)
     return opkgKey;
 }
 
+void rpmteSetDependsOn(rpmte te, rpmte depends) {
+    te->depends = depends;
+}
 
-rpmalKey rpmteDependsOnKey(rpmte te)
+rpmte rpmteDependsOn(rpmte te)
 {
-    return (te != NULL && te->type == TR_REMOVED ? te->pkgKey : RPMAL_NOMATCH);
+    return te->depends;
 }
 
 int rpmteDBOffset(rpmte te)
@@ -879,12 +883,11 @@ int rpmteMarkFailed(rpmte te, rpmts ts)
     rpmtsi pi = rpmtsiInit(ts);
     int rc = 0;
     rpmte p;
-    rpmalKey key = rpmteAddedKey(te);
 
     te->failed = 1;
     /* XXX we can do a much better here than this... */
     while ((p = rpmtsiNext(pi, TR_REMOVED))) {
-	if (rpmteDependsOnKey(p) == key) {
+	if (rpmteDependsOn(p) == te) {
 	    p->failed = 1;
 	}
     }
