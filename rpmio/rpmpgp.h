@@ -1049,6 +1049,13 @@ pgpDig pgpFreeDig(pgpDig dig);
 rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx);
 
 /** \ingroup rpmpgp
+ * Return a string identification of a PGP signature/pubkey.
+ * @param digp		signature/pubkey container
+ * @return		string describing the item and parameters
+ */
+char *pgpIdentItem(pgpDigParams digp);
+
+/** \ingroup rpmpgp
  * Perform cryptography initialization.
  * It must be called before any cryptography can be used within rpm.
  * It's not normally necessary to call it directly as it's called in

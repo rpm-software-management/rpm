@@ -1060,42 +1060,11 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res = RPMRC_FAIL; /* assume failure */
     const char *hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
-    const char *signame = _("Unknown");;
-    int sigver = 0;
+    char *sigid = NULL;
     *msg = NULL;
 
     if (hashctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
 	goto exit;
-    }
-    sigver = sigp->version;
-
-    /* Verify the desired hash match. */
-    /* XXX Values from PKCS#1 v2.1 (aka RFC-3447) */
-    switch (sigp->hash_algo) {
-    case PGPHASHALGO_MD5:
-	signame = "RSA/MD5";
-	break;
-    case PGPHASHALGO_SHA1:
-	signame = "RSA/SHA1";
-	break;
-    case PGPHASHALGO_MD2:
-	signame = "RSA/MD2";
-	break;
-    case PGPHASHALGO_SHA256:
-	signame = "RSA/SHA256";
-	break;
-    case PGPHASHALGO_SHA384:
-	signame = "RSA/SHA384";
-	break;
-    case PGPHASHALGO_SHA512:
-	signame = "RSA/SHA512";
-	break;
-    /* fallthrough for unsupported / unknown types */
-    case PGPHASHALGO_TIGER192:
-    case PGPHASHALGO_HAVAL_5_160:
-    case PGPHASHALGO_RIPEMD160:
-    default:
-	break;
     }
 
     /* Retrieve the matching public key and verify. */
@@ -1105,15 +1074,9 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
 exit:
-    if (sigp != NULL) {
-	char *signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
-	rasprintf(msg, _("%sV%d %s signature: %s, key ID %s\n"),
-		  hdr, sigver, signame, rpmSigString(res), signid);
-	free(signid);
-    } else {
-	rasprintf(msg, _("%sV%d %s signature: %s\n"),
-		  hdr, sigver, signame, rpmSigString(res));
-    }
+    sigid = pgpIdentItem(sigp);
+    rasprintf(msg, "%s%s: %s\n", hdr, sigid, rpmSigString(res));
+    free(sigid);
     return res;
 }
 
@@ -1131,13 +1094,12 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     rpmRC res = RPMRC_FAIL; /* assume failure */
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     const char *hdr = (sigtd->tag == RPMSIGTAG_DSA) ? _("Header ") : "";
-    int sigver = 0;
     *msg = NULL;
+    char *sigid = NULL;
 
     if (hashctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
 	goto exit;
     }
-    sigver = sigp->version;
 
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
@@ -1146,15 +1108,9 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     }
 
 exit:
-    if (sigp != NULL) {
-	char *signid = pgpHexStr(sigp->signid+4, sizeof(sigp->signid)-4);
-	rasprintf(msg, _("%sV%d DSA signature: %s, key ID %s\n"),
-		  hdr, sigver, rpmSigString(res), signid);
-	free(signid);
-    } else {
-	rasprintf(msg, _("%sV%d DSA signature: %s\n"),
-		  hdr, sigver, rpmSigString(res));
-    }
+    sigid = pgpIdentItem(sigp);
+    rasprintf(msg, "%s%s: %s\n", hdr, sigid, rpmSigString(res));
+    free(sigid);
     return res;
 }
 
