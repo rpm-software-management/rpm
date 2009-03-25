@@ -688,24 +688,6 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	ret = 0;
 	break;
     case RPMSIGTAG_DSA:
-	fd = Fopen(file, "r.fdio");
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	if (h == NULL)
-	    goto exit;
-	(void) Fclose(fd);
-	fd = rpmMkTempFile(NULL, &fn);
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	if (headerWrite(fd, h, HEADER_MAGIC_YES))
-	    goto exit;
-	(void) Fclose(fd);	fd = NULL;
-	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    goto exit;
-	ret = 0;
-	break;
     case RPMSIGTAG_RSA:
 	fd = Fopen(file, "r.fdio");
 	if (fd == NULL || Ferror(fd))
@@ -720,7 +702,7 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	if (headerWrite(fd, h, HEADER_MAGIC_YES))
 	    goto exit;
 	(void) Fclose(fd);	fd = NULL;
-	if (makePGPSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
+	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
 	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    goto exit;
 	ret = 0;
