@@ -1047,23 +1047,24 @@ exit:
 }
 
 /**
- * Verify RSA signature.
+ * Verify DSA/RSA signature.
  * @param keyring	pubkey keyring
- * @retval msg		rbose success/failure text
- * @param md5ctx
+ * @param dig		OpenPGP container
+ * @param hashctx	digest context
+ * @param isHdr		header-only signature?
+ * @retval msg		verbose success/failure text
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig,
-		DIGEST_CTX hashctx, char **msg)
+verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr, 
+		char **msg)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res = RPMRC_FAIL; /* assume failure */
-    const char *hdr = (sigtd->tag == RPMSIGTAG_RSA) ? _("Header ") : "";
     char *sigid = NULL;
     *msg = NULL;
 
-    if (hashctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
+    if (hashctx == NULL) {
 	goto exit;
     }
 
@@ -1075,41 +1076,8 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig,
 
 exit:
     sigid = pgpIdentItem(sigp);
-    rasprintf(msg, "%s%s: %s\n", hdr, sigid, rpmSigString(res));
-    free(sigid);
-    return res;
-}
-
-/**
- * Verify DSA signature.
- * @param keyring	pubkey keyring
- * @retval t		verbose success/failure text
- * @param sha1ctx
- * @return 		RPMRC_OK on success
- */
-static rpmRC
-verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig,
-		DIGEST_CTX hashctx, char **msg)
-{
-    rpmRC res = RPMRC_FAIL; /* assume failure */
-    pgpDigParams sigp = dig ? &dig->signature : NULL;
-    const char *hdr = (sigtd->tag == RPMSIGTAG_DSA) ? _("Header ") : "";
-    *msg = NULL;
-    char *sigid = NULL;
-
-    if (hashctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
-	goto exit;
-    }
-
-    /* Retrieve the matching public key and verify. */
-    res = rpmKeyringLookup(keyring, dig);
-    if (res == RPMRC_OK) {
-	res = pgpVerifySig(dig, hashctx);
-    }
-
-exit:
-    sigid = pgpIdentItem(sigp);
-    rasprintf(msg, "%s%s: %s\n", hdr, sigid, rpmSigString(res));
+    rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
+		rpmSigString(res));
     free(sigid);
     return res;
 }
@@ -1136,13 +1104,13 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
 	res = verifySHA1Digest(sigtd, ctx, &msg);
 	break;
     case RPMSIGTAG_RSA:
+    case RPMSIGTAG_DSA:
+	res = verifySignature(keyring, dig, ctx, 1, &msg);
+	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	res = verifyRSASignature(keyring, sigtd, dig, ctx, &msg);
-	break;
-    case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
-	res = verifyDSASignature(keyring, sigtd, dig, ctx, &msg);
+	res = verifySignature(keyring, dig, ctx, 0, &msg);
 	break;
     default:
 	rasprintf(&msg, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
