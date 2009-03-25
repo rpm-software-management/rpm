@@ -457,33 +457,29 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig,
     unsigned char buf[4*BUFSIZ];
     ssize_t count;
     int rc = 1;
+    Header h = NULL;
 
     dig->nbytes = 0;
-
     /* Read the header from the package. */
-    {	Header h = headerRead(fd, HEADER_MAGIC_YES);
-	if (h == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: headerRead failed\n"), fn);
+    if ((h = headerRead(fd, HEADER_MAGIC_YES)) == NULL) {
+	rpmlog(RPMLOG_ERR, _("%s: headerRead failed\n"), fn);
+	goto exit;
+    }
+
+    dig->nbytes += headerSizeof(h, HEADER_MAGIC_YES);
+
+    if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
+	struct rpmtd_s utd;
+    
+	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)){
+	    rpmlog(RPMLOG_ERR, 
+		    _("%s: Immutable header region could not be read. "
+		    "Corrupted package?\n"), fn);
 	    goto exit;
 	}
-
-	dig->nbytes += headerSizeof(h, HEADER_MAGIC_YES);
-
-	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
-	    struct rpmtd_s utd;
-	
-	    if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, HEADERGET_DEFAULT)){
-		h = headerFree(h);
-		rpmlog(RPMLOG_ERR, 
-			_("%s: Immutable header region could not be read. "
-			"Corrupted package?\n"), fn);
-		goto exit;
-	    }
-	    rpmDigestBundleUpdate(hdrbundle, rpm_header_magic, sizeof(rpm_header_magic));
-	    rpmDigestBundleUpdate(hdrbundle, utd.data, utd.count);
-	    rpmtdFreeData(&utd);
-	}
-	h = headerFree(h);
+	rpmDigestBundleUpdate(hdrbundle, rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestBundleUpdate(hdrbundle, utd.data, utd.count);
+	rpmtdFreeData(&utd);
     }
 
     /* Read the payload from the package. */
@@ -497,6 +493,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig,
     rc = 0;
 
 exit:
+    headerFree(h);
     return rc;
 }
 
