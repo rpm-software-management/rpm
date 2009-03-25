@@ -1098,7 +1098,7 @@ exit:
  */
 static rpmRC
 verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
-		DIGEST_CTX md5ctx)
+		DIGEST_CTX hashctx)
 {
     pgpDigParams sigp = dig ? &dig->signature : NULL;
     SECOidTag sigalg = SEC_OID_UNKNOWN;
@@ -1108,7 +1108,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     int sigver = 0;
     *msg = NULL;
 
-    if (md5ctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
+    if (hashctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
 	goto exit;
     }
     sigver = sigp->version;
@@ -1159,7 +1159,7 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
     if (res == RPMRC_OK) {
-	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, md5ctx);
+	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, hashctx);
     }
 
 exit:
@@ -1184,7 +1184,7 @@ exit:
  */
 static rpmRC
 verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
-		DIGEST_CTX sha1ctx)
+		DIGEST_CTX hashctx)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
     pgpDigParams sigp = dig ? &dig->signature : NULL;
@@ -1192,7 +1192,7 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     int sigver = 0;
     *msg = NULL;
 
-    if (sha1ctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
+    if (hashctx == NULL || sigtd->data == NULL || dig == NULL || sigp == NULL) {
 	goto exit;
     }
     sigver = sigp->version;
@@ -1210,7 +1210,7 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     if (res == RPMRC_OK) {
 	/* XXX TODO: handle other algorithm types too */
 	SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
-	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, sha1ctx);
+	res = verifyPGPSig(sigp, dig->keydata, dig->sigdata, sigalg, hashctx);
     }
 
 exit:
