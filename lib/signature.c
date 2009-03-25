@@ -1098,14 +1098,6 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 	break;
     }
 
-    /* Verify the desired signature match. */
-    if (sigp->pubkey_algo != PGPPUBKEYALGO_RSA ||
-			(!(sigtd->tag == RPMSIGTAG_RSA || 
-			   sigtd->tag == RPMSIGTAG_PGP || 
-			   sigtd->tag == RPMSIGTAG_PGP5))) {
-	goto exit;
-    }
-
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
     if (res == RPMRC_OK) {
@@ -1146,14 +1138,6 @@ verifyDSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
 	goto exit;
     }
     sigver = sigp->version;
-
-    /* XXX sanity check on sigtag and signature agreement. */
-    if (!((sigtd->tag == RPMSIGTAG_GPG || sigtd->tag == RPMSIGTAG_DSA)
-    	&& sigp->pubkey_algo == PGPPUBKEYALGO_DSA
-    	&& sigp->hash_algo == PGPHASHALGO_SHA1))
-    {
-	goto exit;
-    }
 
     /* Retrieve the matching public key and verify. */
     res = rpmKeyringLookup(keyring, dig);
