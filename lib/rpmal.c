@@ -180,7 +180,7 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi){
     fi = rpmfiInit(fi, 0);
     while ((i = rpmfiNext(fi)) >= 0) {
 	/* Ignore colored provides not in our rainbow. */
-        ficolor = rpmfiColor(fi);
+        ficolor = rpmfiFColor(fi);
         if (al->tscolor && ficolor && !(al->tscolor & ficolor))
             continue;
 
