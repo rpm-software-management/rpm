@@ -774,8 +774,8 @@ void parseEVR(char * evr,
 
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
-    char *aDepend = (A->DNEVR != NULL ? xstrdup(A->DNEVR+2) : "");
-    char *bDepend = (B->DNEVR != NULL ? xstrdup(B->DNEVR+2) : "");
+    const char *aDepend = (A->DNEVR != NULL ? A->DNEVR+2 : "");
+    const char *bDepend = (B->DNEVR != NULL ? B->DNEVR+2 : "");
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;
@@ -851,8 +851,6 @@ exit:
     if (_noisy_range_comparison_debug_message)
     rpmlog(RPMLOG_DEBUG, "  %s    A %s\tB %s\n",
 	(result ? "YES" : "NO "), aDepend, bDepend);
-    aDepend = _free(aDepend);
-    bDepend = _free(bDepend);
     return result;
 }
 
