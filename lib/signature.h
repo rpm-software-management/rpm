@@ -15,17 +15,6 @@ typedef	enum sigType_e {
     RPMSIGTYPE_HEADERSIG= 5	/*!< Header style signature */
 } sigType;
 
-/** \ingroup signature
- * Identify PGP versions.
- * @note Greater than 0 is a valid PGP version.
- */
-typedef enum pgpVersion_e {
-    PGP_NOTDETECTED	= -1,
-    PGP_UNKNOWN		= 0,
-    PGP_2		= 2,
-    PGP_5		= 5
-} pgpVersion;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -108,14 +97,6 @@ int rpmLookupSignatureType(int action);
  * @return		pass phrase
  */
 char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag);
-
-/** \ingroup signature
- * Return path to pgp executable of given type, or NULL when not found.
- * @retval pgpVer	pgp version
- * @return		path to pgp executable
- */
-const char * rpmDetectPGPVersion(
-			pgpVersion * pgpVer);
 
 #ifdef __cplusplus
 }

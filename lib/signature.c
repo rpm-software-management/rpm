@@ -73,43 +73,6 @@ int rpmLookupSignatureType(int action)
     return rc;
 }
 
-/* rpmDetectPGPVersion() returns the absolute path to the "pgp"  */
-/* executable of the requested version, or NULL when none found. */
-
-const char * rpmDetectPGPVersion(pgpVersion * pgpVer)
-{
-    /* Actually this should support having more then one pgp version. */
-    /* At the moment only one version is possible since we only       */
-    /* have one %_pgpbin and one %_pgp_path.                          */
-
-    static pgpVersion saved_pgp_version = PGP_UNKNOWN;
-    char *pgpbin = rpmGetPath("%{?_pgpbin}", NULL);
-
-    if (saved_pgp_version == PGP_UNKNOWN) {
-	char *pgpvbin = NULL;
-	struct stat st;
-
-	if (!(pgpbin && pgpbin[0] != '\0')) {
-	    pgpbin = _free(pgpbin);
-	    saved_pgp_version = -1;
-	    return NULL;
-	}
-	rasprintf(&pgpvbin, "%sv", pgpbin);
-
-	if (stat(pgpvbin, &st) == 0)
-	    saved_pgp_version = PGP_5;
-	else if (stat(pgpbin, &st) == 0)
-	    saved_pgp_version = PGP_2;
-	else
-	    saved_pgp_version = PGP_NOTDETECTED;
-	free(pgpvbin);
-    }
-
-    if (pgpVer && pgpbin)
-	*pgpVer = saved_pgp_version;
-    return pgpbin;
-}
-
 /**
  * Print package size.
  * @todo rpmio: use fdSize rather than fstat(2) to get file size.
@@ -351,145 +314,6 @@ Header rpmNewSignature(void)
 Header rpmFreeSignature(Header sigh)
 {
     return headerFree(sigh);
-}
-
-/**
- * Generate PGP signature(s) for a header+payload file.
- * @param file		header+payload file name
- * @retval *sigTagp	signature tag
- * @retval *pktp	signature packet(s)
- * @retval *pktlenp	signature packet(s) length
- * @param passPhrase	private key pass phrase
- * @return		0 on success, 1 on failure
- */
-static int makePGPSignature(const char * file, rpmSigTag * sigTagp,
-		uint8_t ** pktp, size_t * pktlenp,
-		const char * passPhrase)
-{
-    char * sigfile = NULL;
-    int pid, status;
-    int inpipe[2];
-    FILE *fpipe;
-    struct stat st;
-    const char * cmd;
-    char *const *av;
-#ifdef NOTYET
-    pgpDig dig = NULL;
-    pgpDigParams sigp = NULL;
-#endif
-    int rc = 1; /* assume failure */
-
-    rasprintf(&sigfile, "%s.sig", file);
-
-    addMacro(NULL, "__plaintext_filename", NULL, file, -1);
-    addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
-
-    inpipe[0] = inpipe[1] = 0;
-    if (pipe(inpipe) < 0) {
-	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for signing: %m"));
-	goto exit;
-    }
-
-    if (!(pid = fork())) {
-	const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
-	const char *path;
-	pgpVersion pgpVer;
-
-	(void) dup2(inpipe[0], 3);
-	(void) close(inpipe[1]);
-
-	(void) setenv("PGPPASSFD", "3", 1);
-	if (pgp_path && *pgp_path != '\0')
-	    (void) setenv("PGPPATH", pgp_path, 1);
-
-	/* setenv("PGPPASS", passPhrase, 1); */
-
-	unsetenv("MALLOC_CHECK_");
-	if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
-	    switch(pgpVer) {
-	    case PGP_2:
-		cmd = rpmExpand("%{?__pgp_sign_cmd}", NULL);
-		rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-		if (!rc)
-		    rc = execve(av[0], av+1, environ);
-		break;
-	    case PGP_5:
-		cmd = rpmExpand("%{?__pgp5_sign_cmd}", NULL);
-		rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-		if (!rc)
-		    rc = execve(av[0], av+1, environ);
-		break;
-	    case PGP_UNKNOWN:
-	    case PGP_NOTDETECTED:
-		errno = ENOENT;
-		break;
-	    }
-	}
-	rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
-			strerror(errno));
-	_exit(EXIT_FAILURE);
-    }
-
-    delMacro(NULL, "__plaintext_filename");
-    delMacro(NULL, "__signature_filename");
-
-    fpipe = fdopen(inpipe[1], "w");
-    (void) close(inpipe[0]);
-    if (fpipe) {
-	fprintf(fpipe, "%s\n", (passPhrase ? passPhrase : ""));
-	(void) fclose(fpipe);
-    }
-
-    (void)waitpid(pid, &status, 0);
-    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	rpmlog(RPMLOG_ERR, _("pgp failed\n"));
-	goto exit;
-    }
-
-    if (stat(sigfile, &st)) {
-	/* PGP failed to write signature */
-	if (sigfile) (void) unlink(sigfile);  /* Just in case */
-	rpmlog(RPMLOG_ERR, _("pgp failed to write signature\n"));
-	goto exit;
-    }
-
-    *pktlenp = st.st_size;
-    rpmlog(RPMLOG_DEBUG, "PGP sig size: %zd\n", *pktlenp);
-    *pktp = xmalloc(*pktlenp);
-
-    {	FD_t fd;
-
-	rc = 0;
-	fd = Fopen(sigfile, "r.ufdio");
-	if (fd != NULL && !Ferror(fd)) {
-	    rc = Fread(*pktp, sizeof(**pktp), *pktlenp, fd);
-	    if (sigfile) (void) unlink(sigfile);
-	    (void) Fclose(fd);
-	}
-	if (rc != *pktlenp) {
-	    *pktp = _free(*pktp);
-	    rpmlog(RPMLOG_ERR, _("unable to read the signature\n"));
-	    goto exit;
-	}
-    }
-
-    rpmlog(RPMLOG_DEBUG, "Got %zd bytes of PGP sig\n", *pktlenp);
-    rc = 0;
-
-#ifdef	NOTYET
-    /* Parse the signature, change signature tag as appropriate. */
-    dig = pgpNewDig();
-
-    (void) pgpPrtPkts(*pktp, *pktlenp, dig, 0);
-    sigp = &dig->signature;
-
-    dig = pgpFreeDig(dig);
-#endif
-
-exit:
-    free(sigfile);
-
-    return rc;
 }
 
 /**
@@ -761,22 +585,15 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	break;
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	if (makePGPSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    break;
-#ifdef	NOTYET	/* XXX needs hdrmd5ctx, like hdrsha1ctx. */
-	/* XXX Piggyback a header-only RSA signature as well. */
-	ret = makeHDRSignature(sigh, file, RPMSIGTAG_RSA, passPhrase);
-#endif
-	ret = 0;
-	break;
-    case RPMSIGTAG_GPG:
+    case RPMSIGTAG_GPG: {
+	rpmSigTag hdrtag = (sigTag == RPMSIGTAG_GPG) ?
+			    RPMSIGTAG_DSA : RPMSIGTAG_RSA;
 	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
 	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
-	/* XXX Piggyback a header-only DSA signature as well. */
-	ret = makeHDRSignature(sigh, file, RPMSIGTAG_DSA, passPhrase);
-	break;
+	/* XXX Piggyback a header-only DSA/RSA signature as well. */
+	ret = makeHDRSignature(sigh, file, hdrtag, passPhrase);
+	} break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
     case RPMSIGTAG_SHA1:
@@ -821,6 +638,9 @@ static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 
 	unsetenv("MALLOC_CHECK_");
 	switch (sigTag) {
+	case RPMSIGTAG_RSA:
+	case RPMSIGTAG_PGP5:	/* XXX legacy */
+	case RPMSIGTAG_PGP:
 	case RPMSIGTAG_DSA:
 	case RPMSIGTAG_GPG:
 	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
@@ -835,40 +655,6 @@ static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 
 	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
-	}   break;
-	case RPMSIGTAG_RSA:
-	case RPMSIGTAG_PGP5:	/* XXX legacy */
-	case RPMSIGTAG_PGP:
-	{   const char *pgp_path = rpmExpand("%{?_pgp_path}", NULL);
-	    const char *path;
-	    pgpVersion pgpVer;
-
-	    (void) setenv("PGPPASSFD", "3", 1);
-	    if (pgp_path && *pgp_path != '\0')
-		xx = setenv("PGPPATH", pgp_path, 1);
-
-	    if ((path = rpmDetectPGPVersion(&pgpVer)) != NULL) {
-		switch(pgpVer) {
-		case PGP_2:
-		    cmd = rpmExpand("%{?__pgp_check_password_cmd}", NULL);
-		    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-		    if (!rc)
-			rc = execve(av[0], av+1, environ);
-		    break;
-		case PGP_5:	/* XXX legacy */
-		    cmd = rpmExpand("%{?__pgp5_check_password_cmd}", NULL);
-		    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-		    if (!rc)
-			rc = execve(av[0], av+1, environ);
-		    break;
-		case PGP_UNKNOWN:
-		case PGP_NOTDETECTED:
-		    break;
-		}
-	    }
-	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "pgp",
-			strerror(errno));
-	    _exit(EXIT_FAILURE);
 	}   break;
 	default: /* This case should have been screened out long ago. */
 	    rpmlog(RPMLOG_ERR, _("Invalid %%_signature spec in macro file\n"));
@@ -893,6 +679,9 @@ char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag)
     int aok = 0;
 
     switch (sigTag) {
+    case RPMSIGTAG_RSA:
+    case RPMSIGTAG_PGP5: 	/* XXX legacy */
+    case RPMSIGTAG_PGP:
     case RPMSIGTAG_DSA:
     case RPMSIGTAG_GPG:
       { char *name = rpmExpand("%{?_gpg_name}", NULL);
@@ -903,18 +692,6 @@ char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag)
 	    break;
 	rpmlog(RPMLOG_ERR,
 		_("You must set \"%%_gpg_name\" in your macro file\n"));
-	break;
-    case RPMSIGTAG_RSA:
-    case RPMSIGTAG_PGP5: 	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-      { char *name = rpmExpand("%{?_pgp_name}", NULL);
-	aok = (name && *name != '\0');
-	name = _free(name);
-      }
-	if (aok)
-	    break;
-	rpmlog(RPMLOG_ERR,
-		_("You must set \"%%_pgp_name\" in your macro file\n"));
 	break;
     default:
 	/* Currently the calling function (rpm.c:main) is checking this and

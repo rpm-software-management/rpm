@@ -54,7 +54,6 @@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__perl			@__PERL@
-%__pgp			@__PGP@
 %__python		@__PYTHON@
 %__rm			@__RM@
 %__rsh			@__RSH@
@@ -195,9 +194,6 @@ package or when debugging this package.\
 #	The number of changelog entries kept when installing (legacy, unused in
 #	rpm-4.0.1 and later).
 %_instchangelog		5
-
-#	The path to the pgp executable (legacy, use %{__pgp} instead).
-%_pgpbin		%{__pgp}
 
 #	The directory where newly built binary packages will be written.
 %_rpmdir		%{_topdir}/RPMS
@@ -342,12 +338,6 @@ package or when debugging this package.\
 #
 #%_source_filedigest_algorithm	1
 #%_binary_filedigest_algorithm	1
-
-#	The signature to use and the location of configuration files for
-#	signing packages with PGP.
-#
-#%_pgp_name
-#%_pgp_path
 
 #	Configurable vendor information, same as Vendor: in a specfile.
 #
@@ -661,33 +651,15 @@ print (t)\
 #
 %__gpg_check_password_cmd	%{__gpg} \
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
-%__pgp_check_password_cmd	%{__pgp} \
-	pgp +batchmode=on +verbose=0 "%{_pgp_name}" -sf
-%__pgp5_check_password_cmd	%{__pgp} \
-	pgps +batchmode=on +verbose=0 +armor=off "%{_pgp_name}" -f
 
 %__gpg_sign_cmd			%{__gpg} \
 	gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning \
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
-%__pgp_sign_cmd			%{__pgp} \
-	pgp +batchmode=on +verbose=0 +armor=off \
-	"+myname=%{_pgp_name}" -sb %{__plaintext_filename} %{__signature_filename}
-%__pgp5_sign_cmd		%{__pgp} \
-	pgps +batchmode=on +verbose=0 +armor=off \
-	"+myname=%{_pgp_name}" -b %{__plaintext_filename} -o %{__signature_filename}
 
 # XXX rpm >= 4.1 verifies signatures internally
 #%__gpg_verify_cmd		%{__gpg} \
 #	gpg --batch --no-verbose --verify --no-secmem-warning \
 #	%{__signature_filename} %{__plaintext_filename}
-#%__pgp_verify_cmd		%{__pgp} \
-#	pgp +batchmode=on +verbose=0 \
-#	%{__signature_filename} %{__plaintext_filename}
-#%__pgp5_verify_cmd		%{__pgp} \
-#	pgpv +batchmode=on +verbose=0 \
-#	+OutputInformationFD=1 +OutputWarningFD=1 \
-#	-o %{__signature_filename} %{__plaintext_filename}
-
 #
 # XXX rpm-4.1 verifies prelinked libraries using a prelink undo helper.
 #	Normally this macro is defined in /etc/rpm/macros.prelink, installed

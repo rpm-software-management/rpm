@@ -538,14 +538,6 @@ int main(int argc, char *argv[])
 		  case 0:
 		    break;
 		  case RPMSIGTAG_PGP:
-#ifdef	DYING	/* XXX gpg can now be used for RSA signatures. */
-		    if ((sigTag == RPMSIGTAG_PGP || sigTag == RPMSIGTAG_PGP5) &&
-		        !rpmDetectPGPVersion(NULL)) {
-		        fprintf(stderr, _("pgp not found: "));
-			ec = EXIT_FAILURE;
-			goto exit;
-		    }
-#endif
 		  case RPMSIGTAG_GPG:
 		  case RPMSIGTAG_DSA:
 		  case RPMSIGTAG_RSA:
