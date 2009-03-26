@@ -11,7 +11,6 @@
 #include <rpm/rpmlog.h>
 
 #include "header-py.h"
-#include "rpmal-py.h"
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
@@ -237,7 +236,6 @@ void init_rpm(void)
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
-    if (PyType_Ready(&rpmal_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfd_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
@@ -278,9 +276,6 @@ void init_rpm(void)
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
 
-    Py_INCREF(&rpmal_Type);
-    PyModule_AddObject(m, "al", (PyObject *) &rpmal_Type);
-
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
 
@@ -306,7 +301,6 @@ void init_rpm(void)
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
 #else
     hdr_Type.ob_type = &PyType_Type;
-    rpmal_Type.ob_type = &PyType_Type;
     rpmds_Type.ob_type = &PyType_Type;
     rpmfd_Type.ob_type = &PyType_Type;
     rpmfi_Type.ob_type = &PyType_Type;

@@ -20,7 +20,6 @@ _rpmmodule_la_LIBADD = \
 
 _rpmmodule_la_SOURCES = rpmmodule.c system.h \
 	header-py.c header-py.h \
-	rpmal-py.c rpmal-py.h \
 	rpmds-py.c rpmds-py.h \
 	rpmdb-py.c rpmdb-py.h \
 	rpmfd-py.c rpmfd-py.h \

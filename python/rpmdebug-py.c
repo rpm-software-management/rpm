@@ -4,7 +4,6 @@ extern PyTypeObject PyDictIter_Type;
 extern PyTypeObject PyFrame_Type;
 
 #include "header-py.h"	/* XXX debug only */
-#include "rpmal-py.h"	/* XXX debug only */
 #include "rpmds-py.h"	/* XXX debug only */
 #include "rpmfd-py.h"	/* XXX debug only */
 #include "rpmfi-py.h"	/* XXX debug only */
@@ -64,7 +63,6 @@ static const char * lbl(void * s)
     if (o->ob_type == &PyUnicode_Type)	return "Unicode";
 
     if (o->ob_type == &hdr_Type)	return "hdr";
-    if (o->ob_type == &rpmal_Type)	return "rpmal";
     if (o->ob_type == &rpmds_Type)	return "rpmds";
     if (o->ob_type == &rpmfd_Type)	return "rpmfd";
     if (o->ob_type == &rpmfi_Type)	return "rpmfi";
