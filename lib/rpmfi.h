@@ -424,7 +424,7 @@ typedef enum rpmfiFlags_e {
  * Create and load a file info set.
  * @param ts		unused
  * @param h		header
- * @param tagN		RPMTAG_BASENAMES
+ * @param tagN		unused
  * @param flags		Flags to control what information is loaded.
  * @return		new file info set
  */

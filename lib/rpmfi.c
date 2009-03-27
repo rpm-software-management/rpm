@@ -493,7 +493,7 @@ int rpmfiNext(rpmfi fi)
 	    fi->i = -1;
 
 if (_rpmfi_debug  < 0 && i != -1)
-fprintf(stderr, "*** fi %p\t%s[%d] %s%s\n", fi, (fi->Type ? fi->Type : "?Type?"), i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
+fprintf(stderr, "*** fi %p\t[%d] %s%s\n", fi, i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
 
     }
 
@@ -523,7 +523,7 @@ int rpmfiNextD(rpmfi fi)
 	    fi->j = -1;
 
 if (_rpmfi_debug  < 0 && j != -1)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, (fi->Type ? fi->Type : "?Type?"), j);
+fprintf(stderr, "*** fi %p\t[%d]\n", fi, j);
 
     }
 
@@ -1056,10 +1056,10 @@ rpmfi rpmfiFree(rpmfi fi)
     if (fi == NULL) return NULL;
 
     if (fi->nrefs > 1)
-	return rpmfiUnlink(fi, fi->Type);
+	return rpmfiUnlink(fi, __FUNCTION__);
 
 if (_rpmfi_debug < 0)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
+fprintf(stderr, "*** fi %p\t[%d]\n", fi, fi->fc);
 
     if (fi->fc > 0) {
 	fi->bnl = _free(fi->bnl);
@@ -1108,7 +1108,7 @@ fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, fi->Type, fi->fc);
 
     fi->h = headerFree(fi->h);
 
-    (void) rpmfiUnlink(fi, fi->Type);
+    (void) rpmfiUnlink(fi, __FUNCTION__);
     memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
     fi = _free(fi);
 
@@ -1139,7 +1139,6 @@ static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 {
     rpmfi fi = NULL;
-    const char * Type;
     rpm_loff_t *asize = NULL;
     unsigned char * t;
     int isBuild, isSource;
@@ -1149,21 +1148,12 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
 
-    if (tagN == RPMTAG_BASENAMES) {
-	Type = "Files";
-    } else {
-	Type = "?Type?";
-	goto exit;
-    }
-
     fi = xcalloc(1, sizeof(*fi));
     if (fi == NULL)	/* XXX can't happen */
 	goto exit;
 
     fi->magic = RPMFIMAGIC;
-    fi->Type = Type;
     fi->i = -1;
-    fi->tagN = tagN;
 
     fi->fiflags = flags;
     fi->scareFlags = scareFlags;
@@ -1278,14 +1268,14 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
 
 exit:
 if (_rpmfi_debug < 0)
-fprintf(stderr, "*** fi %p\t%s[%d]\n", fi, Type, (fi ? fi->fc : 0));
+fprintf(stderr, "*** fi %p\t[%d]\n", fi, (fi ? fi->fc : 0));
 
     if (fi != NULL) {
 	fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
     }
 
     /* FIX: rpmfi null annotations */
-    return rpmfiLink(fi, (fi ? fi->Type : NULL));
+    return rpmfiLink(fi, __FUNCTION__);
 }
 
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)

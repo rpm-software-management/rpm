@@ -20,9 +20,6 @@ struct rpmfi_s {
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
 
-    const char * Type;		/*!< Tag name. */
-
-    rpmTag tagN;		/*!< Header tag. */
     Header h;			/*!< Header for file info set (or NULL) */
 
 /*?null?*/
