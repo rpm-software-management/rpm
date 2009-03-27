@@ -219,6 +219,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	char *cwd = rpmGetCwd();
 	char *s = NULL;
 	rasprintf(&s, "%s/%s", cwd, arg);
+	free(cwd);
 	free(specFile);
 	specFile = s;
     }
