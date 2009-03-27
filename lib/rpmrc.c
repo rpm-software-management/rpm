@@ -413,41 +413,6 @@ const char * lookupInDefaultTable(const char * name,
     return name;
 }
 
-static void addMacroDefault(const char * macroname, const char * val,
-		const char * body)
-{
-    if (body == NULL)
-	body = val;
-    addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
-}
-
-static void setPathDefault(const char * macroname, const char * subdir)
-{
-
-    if (macroname != NULL) {
-	char *body = rpmGetPath("%{_topdir}/", subdir, NULL);
-	addMacro(NULL, macroname, NULL, body, RMIL_DEFAULT);
-	free(body);
-    }
-}
-
-static const char * const prescriptenviron = "\n\
-RPM_SOURCE_DIR=\"%{_sourcedir}\"\n\
-RPM_BUILD_DIR=\"%{_builddir}\"\n\
-RPM_OPT_FLAGS=\"%{optflags}\"\n\
-RPM_ARCH=\"%{_arch}\"\n\
-RPM_OS=\"%{_os}\"\n\
-export RPM_SOURCE_DIR RPM_BUILD_DIR RPM_OPT_FLAGS RPM_ARCH RPM_OS\n\
-RPM_DOC_DIR=\"%{_docdir}\"\n\
-export RPM_DOC_DIR\n\
-RPM_PACKAGE_NAME=\"%{name}\"\n\
-RPM_PACKAGE_VERSION=\"%{version}\"\n\
-RPM_PACKAGE_RELEASE=\"%{release}\"\n\
-export RPM_PACKAGE_NAME RPM_PACKAGE_VERSION RPM_PACKAGE_RELEASE\n\
-%{?buildroot:RPM_BUILD_ROOT=\"%{buildroot}\"\n\
-export RPM_BUILD_ROOT\n}\
-";
-
 static void setDefaults(void)
 {
     const char *confdir = rpmConfigDir();
@@ -471,39 +436,6 @@ static void setDefaults(void)
 #else
     macrofiles = MACROFILES;
 #endif
-    addMacro(NULL, "_rpmconfigdir", NULL, confdir, RMIL_DEFAULT);
-
-    addMacro(NULL, "_usr", NULL, "/usr", RMIL_DEFAULT);
-    addMacro(NULL, "_var", NULL, LOCALSTATEDIR, RMIL_DEFAULT);
-
-    addMacro(NULL, "_preScriptEnvironment",NULL, prescriptenviron,RMIL_DEFAULT);
-
-    addMacroDefault("_topdir",
-		"/usr/src/packages",		"%{getenv:HOME}/rpmbuild");
-    addMacroDefault("_tmppath",
-		LOCALSTATEDIR "/tmp",		"%{_var}/tmp");
-    addMacroDefault("_dbpath",
-		LOCALSTATEDIR "/lib/rpm",		"%{_var}/lib/rpm");
-    addMacroDefault("_defaultdocdir",
-		"/usr/doc",		"%{_usr}/doc");
-
-    addMacroDefault("_rpmfilename",
-	"%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm",NULL);
-
-    addMacroDefault("optflags",
-		"-O2",			NULL);
-    addMacroDefault("sigtype",
-		"none",			NULL);
-    addMacroDefault("_buildshell",
-		"/bin/sh",		NULL);
-
-    setPathDefault("_builddir",	"BUILD");
-    setPathDefault("_buildrootdir",	"BUILDROOT");
-    setPathDefault("_rpmdir",	"RPMS");
-    setPathDefault("_srcrpmdir",	"SRPMS");
-    setPathDefault("_sourcedir",	"SOURCES");
-    setPathDefault("_specdir",	"SPECS");
-
 }
 
 /* FIX: se usage inconsistent, W2DO? */
