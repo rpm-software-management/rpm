@@ -451,19 +451,23 @@ export RPM_BUILD_ROOT\n}\
 static void setDefaults(void)
 {
     const char *confdir = rpmConfigDir();
-    defrcfiles = rstrscat(NULL, confdir, "/rpmrc", ":",
+    if (!defrcfiles) {
+	defrcfiles = rstrscat(NULL, confdir, "/rpmrc", ":",
 				confdir, "/" RPMCANONVENDOR "/rpmrc", ":",
 				SYSCONFDIR "/rpmrc", ":",
 			  	"~/.rpmrc", NULL);
+    }
 
 #ifndef MACROFILES
-    macrofiles = rstrscat(NULL, confdir, "/macros", ":",
+    if (!macrofiles) {
+	macrofiles = rstrscat(NULL, confdir, "/macros", ":",
 				confdir, "/platform/%{_target}/macros", ":",
   				confdir, "/" RPMCANONVENDOR "/macros", ":",
 				SYSCONFDIR "/rpm/macros.*", ":",
 				SYSCONFDIR "/rpm/macros", ":",
 				SYSCONFDIR "/rpm/%{_target}/macros", ":",
 				"~/.rpmmacros", NULL);
+    }
 #else
     macrofiles = MACROFILES;
 #endif
