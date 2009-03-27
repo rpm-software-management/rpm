@@ -13,6 +13,8 @@
 typedef uint16_t scidx_t;
 typedef struct strcache_s *strcache;
 
+#define	RPMFIMAGIC	0x09697923
+
 /**
  * A package filename set.
  */
@@ -22,27 +24,19 @@ struct rpmfi_s {
 
     Header h;			/*!< Header for file info set (or NULL) */
 
-/*?null?*/
     const char ** bnl;		/*!< Base name(s) (from header) */
-/*?null?*/
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
     strcache flinkcache;	/*!< File link cache */
     scidx_t * flinks;		/*!< Index to file link(s) cache */
     scidx_t * flangs;		/*!< Index to file lang(s) cache */
 
-          uint32_t * dil;	/*!< Directory indice(s) (from header) */
-/*?null?*/
+    uint32_t * dil;		/*!< Directory indice(s) (from header) */
     const rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
-/*?null?*/
     const rpm_off_t * fsizes;	/*!< File size(s) (from header) */
-/*?null?*/
     const rpm_time_t * fmtimes;	/*!< File modification time(s) (from header) */
-/*?null?*/
-          rpm_mode_t * fmodes;	/*!< File mode(s) (from header) */
-/*?null?*/
+    rpm_mode_t * fmodes;	/*!< File mode(s) (from header) */
     const rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */
-/*?null?*/
     const rpm_ino_t * finodes;	/*!< File inodes(s) (from header) */
 
     scidx_t *fuser;		/*!< Index to file owner(s) cache */
@@ -62,17 +56,14 @@ struct rpmfi_s {
     rpm_count_t nddict;		/*!< No. of depends entries. */
     const uint32_t * fddictx;	/*!< File depends dictionary start (header) */
     const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
-
-/*?null?*/
     const rpm_flag_t * vflags;	/*!< File verify flag(s) (from header) */
 
     rpm_count_t dc;		/*!< No. of directories. */
     rpm_count_t fc;		/*!< No. of files. */
 
-/*=============================*/
     rpmfiFlags fiflags;		/*!< file info set control flags */
     headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
-/*-----------------------------*/
+
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
     pgpHashAlgo digestalgo;	/*!< File digest algorithm */
@@ -86,10 +77,7 @@ struct rpmfi_s {
     FSM_t fsm;			/*!< File state machine data. */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
-#define	RPMFIMAGIC	0x09697923
-/*=============================*/
-
-int nrefs;		/*!< Reference count. */
+    int nrefs;		/*!< Reference count. */
 };
 
 RPM_GNUC_INTERNAL
