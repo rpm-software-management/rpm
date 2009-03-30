@@ -1301,7 +1301,12 @@ rescan:
 		}
 
 		/* Find (and destroy if co-requisite) "q <- p" relation. */
-		requires = rpmteDS(p, RPMTAG_REQUIRENAME);
+		if (oType==TR_ADDED) {
+		    requires = rpmteDS(p, RPMTAG_REQUIRENAME);
+		} else {
+		    // ERASE relations are reversed, use requires of target
+		    requires = rpmteDS(q, RPMTAG_REQUIRENAME);
+		}
 		requires = rpmdsInit(requires);
 		if (requires == NULL)
 		    continue;	/* XXX can't happen */
