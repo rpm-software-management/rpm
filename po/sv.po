@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-30 08:18+0200\n"
+"POT-Creation-Date: 2009-03-31 13:06+0300\n"
 "PO-Revision-Date: 2009-01-17 17:20+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -41,27 +41,27 @@ msgstr "Kunde inte läsa specfil från %s\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Kunde inte byta namn på %s till %s: %m\n"
 
-#: build.c:228
+#: build.c:229
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "kunde inte ta status på %s: %m\n"
 
-#: build.c:232
+#: build.c:233
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Filen %s är inte en vanlig fil.\n"
 
-#: build.c:239
+#: build.c:240
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Filen %s tycks inte vara en specfil.\n"
 
-#: build.c:317
+#: build.c:318
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformar: %s\n"
 
-#: build.c:332
+#: build.c:333
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger för målet %s\n"
@@ -76,169 +76,170 @@ msgstr "argumentet är inte ett RPM-paket\n"
 msgid "error reading header from package\n"
 msgstr "fel vid läsning av pakethuvud\n"
 
-#: rpm2cpio.c:88
+#: rpm2cpio.c:90
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "kan inte återöppna lasten: %s\n"
 
 #: rpmqv.c:77
+#, fuzzy
+msgid "Query/Verify package selection options:"
+msgstr "fråga/verifiera paket i grupp"
+
+#: rpmqv.c:80
 msgid "Query options (with -q or --query):"
 msgstr "Frågeflaggor (med -q eller --query):"
 
-#: rpmqv.c:80
+#: rpmqv.c:83
 msgid "Verify options (with -V or --verify):"
 msgstr "Verifieringsflaggor (med -V eller --verify):"
 
-#: rpmqv.c:84
-msgid "Source options (with --query or --verify):"
-msgstr "Källflaggor (med --query eller --verify):"
-
-#: rpmqv.c:88
+#: rpmqv.c:86
 msgid "File tree walk options (with --ftswalk):"
 msgstr "Flaggor för traversering av filträd (med --ftswalk):"
 
-#: rpmqv.c:94
+#: rpmqv.c:92
 msgid "Signature options:"
 msgstr "Signaturflaggor:"
 
-#: rpmqv.c:100
+#: rpmqv.c:98
 msgid "Database options:"
 msgstr "Databasflaggor:"
 
-#: rpmqv.c:106
+#: rpmqv.c:104
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "Byggflaggor med [ <specfil> | <tar-arkiv> | <källpaket> ]:"
 
-#: rpmqv.c:112
+#: rpmqv.c:110
 msgid "Install/Upgrade/Erase options:"
 msgstr "Installations-/Uppdaterings-/Raderingsflaggor"
 
-#: rpmqv.c:119 tools/rpmdeps.c:32 tools/rpmgraph.c:249
+#: rpmqv.c:117 tools/rpmdeps.c:32 tools/rpmgraph.c:249
 msgid "Common options for all rpm modes and executables:"
 msgstr "Gemensamma flaggor för alla rpm-lägen och binärer:"
 
-#: rpmqv.c:134 lib/poptI.c:31
+#: rpmqv.c:132 lib/poptI.c:30
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:140 lib/poptALL.c:82
+#: rpmqv.c:138 lib/poptALL.c:82
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
 
-#: rpmqv.c:145
+#: rpmqv.c:143
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "Copyright © 1998-2002 - Red Hat, Inc.\n"
 
-#: rpmqv.c:146
+#: rpmqv.c:144
 #, c-format
 msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Detta program kan distribueras fritt enligt villkoren i GNU GPL\n"
 
-#: rpmqv.c:278
+#: rpmqv.c:276
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Internt fel i argumenthantering (%d) :-(\n"
 
-#: rpmqv.c:316 rpmqv.c:322 rpmqv.c:328 rpmqv.c:365
+#: rpmqv.c:314 rpmqv.c:320 rpmqv.c:326 rpmqv.c:363
 msgid "only one major mode may be specified"
 msgstr "enbart ett huvudläge kan anges"
 
-#: rpmqv.c:344
+#: rpmqv.c:342
 msgid "one type of query/verify may be performed at a time"
 msgstr "endast en typ av fråga/verifiering kan utföras åt gången"
 
-#: rpmqv.c:348
+#: rpmqv.c:346
 msgid "unexpected query flags"
 msgstr "oväntade frågeflaggor"
 
-#: rpmqv.c:351
+#: rpmqv.c:349
 msgid "unexpected query format"
 msgstr "oväntat frågeformat"
 
-#: rpmqv.c:354
+#: rpmqv.c:352
 msgid "unexpected query source"
 msgstr "oväntad frågekälla"
 
-#: rpmqv.c:397
+#: rpmqv.c:395
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "enbart installation, uppgradering, rmsource och rmspec kan tvingas fram"
 
-#: rpmqv.c:399
+#: rpmqv.c:397
 msgid "files may only be relocated during package installation"
 msgstr "filer kan relokeras endast under paketinstallation"
 
-#: rpmqv.c:402
+#: rpmqv.c:400
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "kan inte använda --prefix med --relocate eller --excludepath"
 
-#: rpmqv.c:405
+#: rpmqv.c:403
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate och --excludepath kan endast användas när nya paket installeras"
 
-#: rpmqv.c:408
+#: rpmqv.c:406
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan endast användas när nya paket installeras"
 
-#: rpmqv.c:411
+#: rpmqv.c:409
 msgid "arguments to --prefix must begin with a /"
 msgstr "argument till --prefix måste börja med /"
 
-#: rpmqv.c:414
+#: rpmqv.c:412
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:418
+#: rpmqv.c:416
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:422
+#: rpmqv.c:420
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:426
+#: rpmqv.c:424
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:430
+#: rpmqv.c:428
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:434
+#: rpmqv.c:432
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "enbart en av --excludedocs och --includedocs kan användas"
 
-#: rpmqv.c:438
+#: rpmqv.c:436
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:442
+#: rpmqv.c:440
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:447
+#: rpmqv.c:445
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:451
+#: rpmqv.c:449
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches kan enbart användas när paket raderas"
 
-#: rpmqv.c:455
+#: rpmqv.c:453
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles kan enbart användas vid paketinstallation"
 
-#: rpmqv.c:460
+#: rpmqv.c:458
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb kan enbart användas när paket installeras eller raderas"
 
-#: rpmqv.c:465
+#: rpmqv.c:463
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -246,7 +247,7 @@ msgstr ""
 "skriptinaktiveringsflaggor kan enbart användas när paket installeras eller "
 "raderas"
 
-#: rpmqv.c:470
+#: rpmqv.c:468
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -254,7 +255,7 @@ msgstr ""
 "utlösarinaktiveringsflaggor kan enbart användas när paket installeras eller "
 "raderas"
 
-#: rpmqv.c:474
+#: rpmqv.c:472
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -262,13 +263,13 @@ msgstr ""
 "--nodeps kan enbart användas när paket byggs, byggs om, kompileras om, "
 "installeras, raderas eller verifieras"
 
-#: rpmqv.c:479
+#: rpmqv.c:477
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test kan enbart användas när paket installeras, raderas eller byggs"
 
-#: rpmqv.c:484
+#: rpmqv.c:482
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -276,91 +277,86 @@ msgstr ""
 "--root (-r) kan enbart användas när paket installeras, raderas, frågas eller "
 "databasen byggs om"
 
-#: rpmqv.c:495
+#: rpmqv.c:493
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argument till --root (-r) måste börja med /"
 
-#: rpmqv.c:521
+#: rpmqv.c:519
 #, c-format
 msgid "no files to sign\n"
 msgstr "inga filer att signera\n"
 
-#: rpmqv.c:526
+#: rpmqv.c:524
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "kan inte komma åt filen %s\n"
 
-#: rpmqv.c:546
-#, c-format
-msgid "pgp not found: "
-msgstr "pgp hittades inte: "
-
-#: rpmqv.c:554
+#: rpmqv.c:544
 msgid "Enter pass phrase: "
 msgstr "Ange lösenfras: "
 
-#: rpmqv.c:556
+#: rpmqv.c:546
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Kontrollen av lösenfrasen misslyckades\n"
 
-#: rpmqv.c:560
+#: rpmqv.c:550
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Lösenfrasen är ok.\n"
 
-#: rpmqv.c:565
+#: rpmqv.c:555
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Felaktig %%_signature-spec i makrofil.\n"
 
-#: rpmqv.c:572
+#: rpmqv.c:562
 msgid "--sign may only be used during package building"
 msgstr "--sign kan enbart användas vid paketbyggnation"
 
-#: rpmqv.c:582
+#: rpmqv.c:572
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr "misslyckades att skapa rör för --pipe: %m\n"
 
-#: rpmqv.c:592
+#: rpmqv.c:582
 #, c-format
 msgid "exec failed\n"
 msgstr "exec misslyckades\n"
 
-#: rpmqv.c:628
+#: rpmqv.c:618
 msgid "no packages files given for rebuild"
 msgstr "inga paketfiler angivna för ombyggnation"
 
-#: rpmqv.c:694
+#: rpmqv.c:684
 msgid "no spec files given for build"
 msgstr "inga specfiler angivna för byggnation"
 
-#: rpmqv.c:696
+#: rpmqv.c:686
 msgid "no tar files given for build"
 msgstr "inga tar-filer angivna för byggnation"
 
-#: rpmqv.c:717
+#: rpmqv.c:707
 msgid "no packages given for erase"
 msgstr "inga paket angivna att radera"
 
-#: rpmqv.c:751
+#: rpmqv.c:741
 msgid "no packages given for install"
 msgstr "inga paket angivna för installation"
 
-#: rpmqv.c:764
+#: rpmqv.c:754
 msgid "no arguments given for query"
 msgstr "inga parametrar angivna för fråga"
 
-#: rpmqv.c:779
+#: rpmqv.c:769
 msgid "no arguments given for verify"
 msgstr "inga parametrar angivna för verifiering"
 
-#: rpmqv.c:794
+#: rpmqv.c:784
 msgid "no arguments given"
 msgstr "inga argument angivna"
 
-#: build/build.c:131 build/pack.c:428
+#: build/build.c:131 build/pack.c:431
 msgid "Unable to open temp file.\n"
 msgstr "Kan inte öppna temporär fil.\n"
 
@@ -443,176 +439,176 @@ msgstr "syntaxfel i uttryck\n"
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK-fel: %s\n"
 
-#: build/files.c:300 build/files.c:493 build/files.c:686
+#: build/files.c:301 build/files.c:494 build/files.c:687
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "\"(\" saknas i %s %s\n"
 
-#: build/files.c:310 build/files.c:622 build/files.c:696 build/files.c:788
+#: build/files.c:311 build/files.c:623 build/files.c:697 build/files.c:789
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "\")\" saknas i %s(%s\n"
 
-#: build/files.c:346 build/files.c:645
+#: build/files.c:347 build/files.c:646
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ogiltigt %s-element: %s\n"
 
-#: build/files.c:455
+#: build/files.c:456
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s saknas i %s %s\n"
 
-#: build/files.c:508
+#: build/files.c:509
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Annat än blanktecken följer på %s(): %s\n"
 
-#: build/files.c:544
+#: build/files.c:545
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Felaktig syntax: %s(%s)\n"
 
-#: build/files.c:553
+#: build/files.c:554
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Felaktig rättighetsspecifikation: %s(%s)\n"
 
-#: build/files.c:564
+#: build/files.c:565
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Felaktig specifikation av katalogrättigheter: %s(%s)\n"
 
-#: build/files.c:721
+#: build/files.c:722
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Ovanlig lokallängd: \"%.*s\" i %%lang(%s)\n"
 
-#: build/files.c:731
+#: build/files.c:732
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Duplicerad lokal %.*s i %%lang(%s)\n"
 
-#: build/files.c:803
+#: build/files.c:804
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Ogiltig förmåga (capability): %s\n"
 
-#: build/files.c:814
+#: build/files.c:815
 msgid "File capability support not built in\n"
 msgstr "Stöd för filförmågor (capability) är inte inbyggt\n"
 
-#: build/files.c:878
+#: build/files.c:879
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Endast ett argument till %%docdir\n"
 
-#: build/files.c:907
+#: build/files.c:908
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Två filer på en rad: %s\n"
 
-#: build/files.c:920
+#: build/files.c:921
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filnamn måste börja med \"/\": %s\n"
 
-#: build/files.c:931
+#: build/files.c:932
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan inte blanda special %%doc med andra former: %s\n"
 
-#: build/files.c:1058
+#: build/files.c:1059
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Okänd filkontrollsummealgoritm %u, faller tillbaka på MD5\n"
 
-#: build/files.c:1086
+#: build/files.c:1087
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Filen uppräknad två gånger: %s\n"
 
-#: build/files.c:1206
+#: build/files.c:1207
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolisk länk pekar på BuildRoot: %s -> %s\n"
 
-#: build/files.c:1362
+#: build/files.c:1364
 #, c-format
 msgid "File doesn't match prefix (%s): %s\n"
 msgstr "Filen matchar inte prefixet (%s): %s\n"
 
-#: build/files.c:1386
+#: build/files.c:1388
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Filen hittades inte: %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1507
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "Filen %s är för stor som last\n"
 
-#: build/files.c:1601
+#: build/files.c:1603
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: kan inte läsa okänd tagg (%d).\n"
 
-#: build/files.c:1608
+#: build/files.c:1610
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: läsning av publik nyckel misslyckades.\n"
 
-#: build/files.c:1613 lib/rpmchecksig.c:443
+#: build/files.c:1615 lib/rpmchecksig.c:431
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: inte en publik nyckel med skal.\n"
 
-#: build/files.c:1622
+#: build/files.c:1624
 #, c-format
 msgid "%s: *.te policy read failed.\n"
 msgstr "%s: *.te policyläsning misslyckades.\n"
 
-#: build/files.c:1665
+#: build/files.c:1667
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Filen behöver inledande \"/\": %s\n"
 
-#: build/files.c:1687
+#: build/files.c:1689
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Matchning inte tillåtet: %s\n"
 
-#: build/files.c:1699 lib/rpminstall.c:266
+#: build/files.c:1701 lib/rpminstall.c:367
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Hittade ingen fil vid matchningen: %s\n"
 
-#: build/files.c:1749
+#: build/files.c:1751
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Kunde inte öppna %%files-fil %s: %m\n"
 
-#: build/files.c:1757
+#: build/files.c:1759
 #, c-format
 msgid "line: %s\n"
 msgstr "rad: %s\n"
 
-#: build/files.c:2132
+#: build/files.c:2134
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Felaktig fil: %s: %s\n"
 
-#: build/files.c:2154 build/parsePrep.c:29
+#: build/files.c:2156 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Felaktig ägare/grupp: %s\n"
 
-#: build/files.c:2195
+#: build/files.c:2197
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Letar efter opackade fil(er): %s\n"
 
-#: build/files.c:2210
+#: build/files.c:2212
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -621,12 +617,12 @@ msgstr ""
 "Installerade (men opaketerade) filer funna:\n"
 "%s"
 
-#: build/files.c:2236
+#: build/files.c:2238
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
 
-#: build/files.c:2245
+#: build/files.c:2247
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -744,93 +740,93 @@ msgstr "readRPM: %s är inte ett RPM-paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: läser huvud från %s\n"
 
-#: build/pack.c:392
+#: build/pack.c:395
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Okänd lastkomprimering: %s\n"
 
-#: build/pack.c:415
+#: build/pack.c:418
 msgid "Unable to create immutable header region.\n"
 msgstr "Kan inte skapa oföränderlig huvudregion.\n"
 
-#: build/pack.c:435
+#: build/pack.c:438
 msgid "Unable to write temp header\n"
 msgstr "Kan inte skriva temporärhuvud\n"
 
-#: build/pack.c:445
+#: build/pack.c:448
 msgid "Bad CSA data\n"
 msgstr "Felaktig CSA-data\n"
 
-#: build/pack.c:480
+#: build/pack.c:483
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
-#: build/pack.c:517
+#: build/pack.c:520
 msgid "Unable to reload signature header.\n"
 msgstr "Kan inte läsa om signaturhuvud.\n"
 
-#: build/pack.c:525
+#: build/pack.c:528
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:537
+#: build/pack.c:540
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
 
-#: build/pack.c:553
+#: build/pack.c:556
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kan inte läsa signaturen %s: %s\n"
 
-#: build/pack.c:564
+#: build/pack.c:567
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kan inte läsa huvud från %s: %s\n"
 
-#: build/pack.c:578
+#: build/pack.c:581
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kan inte skriva huvud till %s: %s\n"
 
-#: build/pack.c:590
+#: build/pack.c:593
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kan inte läsa last från %s: %s\n"
 
-#: build/pack.c:597
+#: build/pack.c:600
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:634
+#: build/pack.c:637
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:689
+#: build/pack.c:692
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Kör \"%s\":\n"
 
-#: build/pack.c:692
+#: build/pack.c:695
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Körning av \"%s\" misslyckades.\n"
 
-#: build/pack.c:696
+#: build/pack.c:699
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Paketkontroll \"%s\" misslyckades.\n"
 
-#: build/pack.c:750
+#: build/pack.c:753
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:766
+#: build/pack.c:769
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -1030,12 +1026,12 @@ msgstr "Paketet existerar redan: %s\n"
 msgid "line %d: Unknown tag: %s\n"
 msgstr "rad %d: Okänd tagg: %s\n"
 
-#: build/parsePreamble.c:892
+#: build/parsePreamble.c:886
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} fick inte vara tom\n"
 
-#: build/parsePreamble.c:896
+#: build/parsePreamble.c:890
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} kan inte vara \"/\"\n"
@@ -1055,16 +1051,16 @@ msgstr "Inget patch-nummer %u\n"
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr "%%patch utan motsvarande \"Patch:\"-tagg\n"
 
-#: build/parsePrep.c:145
+#: build/parsePrep.c:142
 #, c-format
 msgid "No source number %u\n"
 msgstr "Inget källkodsnummer %u\n"
 
-#: build/parsePrep.c:147
+#: build/parsePrep.c:144
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "Ingen \"Source:\"-tagg i spec-filen\n"
 
-#: build/parsePrep.c:169
+#: build/parsePrep.c:166
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Kunde inte hämta nosource %s: %s\n"
@@ -1099,19 +1095,19 @@ msgstr "Felaktigt patch-nummer %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
 
-#: build/parseReqs.c:106
+#: build/parseReqs.c:109
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
-#: build/parseReqs.c:133
+#: build/parseReqs.c:136
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "rad %d: Filnamn med version inte tillåtet: %s\n"
 
-#: build/parseReqs.c:163
+#: build/parseReqs.c:166
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "rad %d: Version krävs: %s\n"
@@ -1316,18 +1312,18 @@ msgstr "verifiera inte byggberoenden"
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr "generera pakethuvuden kompatibla med (äldre) rpm[23]-paketering"
 
-#: build/poptBT.c:202 lib/poptALL.c:219 lib/poptI.c:234 lib/poptQV.c:316
-#: lib/poptQV.c:354
+#: build/poptBT.c:202 lib/poptALL.c:219 lib/poptI.c:235 lib/poptQV.c:314
+#: lib/poptQV.c:352
 msgid "don't verify package digest(s)"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: build/poptBT.c:204 lib/poptALL.c:221 lib/poptI.c:236 lib/poptQV.c:318
-#: lib/poptQV.c:357
+#: build/poptBT.c:204 lib/poptALL.c:221 lib/poptI.c:237 lib/poptQV.c:316
+#: lib/poptQV.c:355
 msgid "don't verify database header(s) when retrieved"
 msgstr "verifiera inte databashuvuden när de hämtas"
 
-#: build/poptBT.c:206 lib/poptALL.c:223 lib/poptI.c:238 lib/poptQV.c:320
-#: lib/poptQV.c:359
+#: build/poptBT.c:206 lib/poptALL.c:223 lib/poptI.c:239 lib/poptQV.c:318
+#: lib/poptQV.c:357
 msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
 
@@ -1370,7 +1366,7 @@ msgstr "Kunde inte ändra katalog till %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: build/rpmfc.c:138 lib/psm.c:754
+#: build/rpmfc.c:138 lib/psm.c:755
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunde inte grena (fork) %s: %s\n"
@@ -1385,49 +1381,49 @@ msgstr "%s misslyckades\n"
 msgid "failed to write all data to %s\n"
 msgstr "misslyckades att skriva all data till %s\n"
 
-#: build/rpmfc.c:1155
+#: build/rpmfc.c:1153
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konvertering av %s till långt heltal misslyckades.\n"
 
-#: build/rpmfc.c:1235
+#: build/rpmfc.c:1233
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) misslyckades: %s\n"
 
-#: build/rpmfc.c:1242
+#: build/rpmfc.c:1240
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load misslyckades: %s\n"
 
-#: build/rpmfc.c:1283
+#: build/rpmfc.c:1281
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Igenkänning av filen \"%s\" misslyckades: läge %06o %s\n"
 
-#: build/rpmfc.c:1482
+#: build/rpmfc.c:1480
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Letar efter %s: %s\n"
 
-#: build/rpmfc.c:1488 build/rpmfc.c:1497
+#: build/rpmfc.c:1486 build/rpmfc.c:1495
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Misslyckades med att hitta %s:\n"
 
-#: build/rpmfc.c:1580 build/rpmfc.c:1611
+#: build/rpmfc.c:1578 build/rpmfc.c:1609
 msgid "Unable to get current dependency name.\n"
 msgstr "Kunde inte ta reda på aktuellt beroendenamn.\n"
 
-#: build/rpmfc.c:1586 build/rpmfc.c:1617
+#: build/rpmfc.c:1584 build/rpmfc.c:1615
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr "Kunde inte få aktuell beroende-epok-version-utgåva.\n"
 
-#: build/rpmfc.c:1644
+#: build/rpmfc.c:1642
 msgid "File count from file info doesn't match file in container.\n"
 msgstr "Filantal från filinformation stämmer inte med filbehållare.\n"
 
-#: build/rpmfc.c:1659
+#: build/rpmfc.c:1657
 msgid "Container not of string array data type.\n"
 msgstr "Behållare inte av datatypen strängvektor.\n"
 
@@ -1482,7 +1478,8 @@ msgid "Missing hard link(s)"
 msgstr "Saknade hårda länkar"
 
 #: lib/cpio.c:217
-msgid "MD5 sum mismatch"
+#, fuzzy
+msgid "Digest mismatch"
 msgstr "MD5-summan stämmer inte"
 
 #: lib/cpio.c:218
@@ -1497,47 +1494,47 @@ msgstr "Ingen arkivfilen i huvud"
 msgid " failed - "
 msgstr " misslyckades - "
 
-#: lib/depends.c:202
+#: lib/depends.c:195
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s var redan tillagt, hoppar över %s\n"
 
-#: lib/depends.c:219
+#: lib/depends.c:212
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s är redan tillagt, ersätter med %s\n"
 
-#: lib/depends.c:436
+#: lib/depends.c:421
 msgid "(cached)"
 msgstr "(cachad)"
 
-#: lib/depends.c:456
+#: lib/depends.c:441
 msgid "(rpmlib provides)"
 msgstr "(rpmlib tillhandahåller)"
 
-#: lib/depends.c:484
+#: lib/depends.c:469
 msgid "(db files)"
 msgstr "(db-filer)"
 
-#: lib/depends.c:496
+#: lib/depends.c:481
 msgid "(db provides)"
 msgstr "(db tillhandahåller)"
 
-#: lib/depends.c:778
+#: lib/depends.c:763
 #, c-format
 msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "ignorera paketnamnsrelation(er) [%d]\t%s -> %s\n"
 
-#: lib/depends.c:881
+#: lib/depends.c:866
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
 msgstr "tar bort %s \"%s\" från tsort-relationer.\n"
 
-#: lib/depends.c:1357
+#: lib/depends.c:1303
 msgid "LOOP:\n"
 msgstr "LOOP:\n"
 
-#: lib/depends.c:1395
+#: lib/depends.c:1346
 #, c-format
 msgid "rpmtsOrder failed, %d elements remain\n"
 msgstr "rpmtsOrder misslyckades, %d element återstår\n"
@@ -1643,107 +1640,102 @@ msgstr "%s unlink av %s misslyckades: %s\n"
 msgid "%s created as %s\n"
 msgstr "%s skapades som %s\n"
 
-#: lib/package.c:234
+#: lib/package.c:192
+#, fuzzy, c-format
+msgid "skipping %s with unverifiable V%u signature\n"
+msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
+
+#: lib/package.c:239
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "klickstorlek(%d): FEL, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:245 lib/package.c:300 lib/package.c:368 lib/signature.c:207
+#: lib/package.c:250 lib/package.c:305 lib/package.c:373 lib/signature.c:170
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "tagg[%d]: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/package.c:263 lib/signature.c:221
+#: lib/package.c:268 lib/signature.c:184
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "regionposition: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/package.c:281 lib/signature.c:245
+#: lib/package.c:286 lib/signature.c:208
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "regionavslutning: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/package.c:291 lib/signature.c:255
+#: lib/package.c:296 lib/signature.c:218
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "regionstorlek: FEL, ril(%d) > il(%d)\n"
 
-#: lib/package.c:318
+#: lib/package.c:323
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hvd SHA1: FEL, ej hex\n"
 
-#: lib/package.c:330
+#: lib/package.c:335
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "hvd RSA: FEL, ej binär\n"
 
-#: lib/package.c:340
+#: lib/package.c:345
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hvd DSA: FEL, ej binär\n"
 
-#: lib/package.c:401 lib/package.c:442
-#, c-format
-msgid "skipping header with unverifiable V%u signature\n"
-msgstr "hoppar över huvud med overifierbar V%u-signatur\n"
-
-#: lib/package.c:519
+#: lib/package.c:482
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hvdstorlek(%d): FEL, läsning returnerade %d\n"
 
-#: lib/package.c:523
+#: lib/package.c:486
 msgid "hdr magic: BAD\n"
 msgstr "hvdmagi: FEL\n"
 
-#: lib/package.c:528
+#: lib/package.c:491
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hvdtaggar: FEL, antal taggar(%d) utanför intervall\n"
 
-#: lib/package.c:534
+#: lib/package.c:497
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hvddata: FEL, antal byte(%d) utanför intervall\n"
 
-#: lib/package.c:544
+#: lib/package.c:507
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "hvdklick(%zd): FEL, läsning returnerade %d\n"
 
-#: lib/package.c:556
+#: lib/package.c:519
 msgid "hdr load: BAD\n"
 msgstr "hvdlast: FEL\n"
 
-#: lib/package.c:619 lib/rpmchecksig.c:182 lib/rpmchecksig.c:595
+#: lib/package.c:582 lib/rpmchecksig.c:182 lib/rpmchecksig.c:652
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature misslyckades: %s"
 
-#: lib/package.c:626 lib/rpmchecksig.c:189 lib/rpmchecksig.c:603
+#: lib/package.c:589 lib/rpmchecksig.c:189 lib/rpmchecksig.c:659
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Ingen signatur tillgänglig\n"
 
-#: lib/package.c:691
+#: lib/package.c:644
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead misslyckades: %s"
 
-#: lib/package.c:723 lib/package.c:747 lib/package.c:776 lib/rpmchecksig.c:688
-#, c-format
-msgid "skipping package %s with unverifiable V%u signature\n"
-msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
-
-#: lib/package.c:790 lib/rpmchecksig.c:90 lib/rpmchecksig.c:508
+#: lib/package.c:711 lib/rpmchecksig.c:90 lib/rpmchecksig.c:489
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread misslyckades: %s\n"
 
-#: lib/package.c:895
+#: lib/package.c:815
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s är en delta-RPM och kan inte installeras direkt\n"
 
-#: lib/package.c:899
+#: lib/package.c:819
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Ej stödd last (%s) i paket %s\n"
@@ -1869,32 +1861,32 @@ msgstr "felsök rpmio I/O"
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: flaggtabell felkonfigurerad (%d)\n"
 
-#: lib/poptI.c:54
+#: lib/poptI.c:53
 msgid "exclude paths must begin with a /"
 msgstr "uteslutna sökvägar måste börja med /"
 
-#: lib/poptI.c:66
+#: lib/poptI.c:65
 msgid "relocations must begin with a /"
 msgstr "omflyttningar måste börja med /"
 
-#: lib/poptI.c:69
+#: lib/poptI.c:68
 msgid "relocations must contain a ="
 msgstr "omflyttningar måste innehålla ett ="
 
-#: lib/poptI.c:72
+#: lib/poptI.c:71
 msgid "relocations must have a / following the ="
 msgstr "omflyttningar måste ha ett / efter ="
 
-#: lib/poptI.c:127
+#: lib/poptI.c:126
 msgid "add suggested packages to transaction"
 msgstr "lägg till föreslagna paket till transaktion"
 
-#: lib/poptI.c:131
+#: lib/poptI.c:130
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr ""
 "installera alla filer, även konfigurationer som annars kunde hoppats över"
 
-#: lib/poptI.c:135
+#: lib/poptI.c:134
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1902,152 +1894,158 @@ msgstr ""
 "ta bort alla paket som matchar <paket> (normalt ger det ett fel om <paket> "
 "anger flera paket)"
 
-#: lib/poptI.c:141 lib/poptI.c:218
+#: lib/poptI.c:140 lib/poptI.c:219
 msgid "do not execute package scriptlet(s)"
 msgstr "kör inte paketskript"
 
-#: lib/poptI.c:145
+#: lib/poptI.c:144
 msgid "relocate files in non-relocatable package"
 msgstr "relokera filer i ej relokerbart paket"
 
-#: lib/poptI.c:149
+#: lib/poptI.c:148
 msgid "print dependency loops as warning"
 msgstr "skriv beroendecykler som varningar"
 
-#: lib/poptI.c:153
+#: lib/poptI.c:152
 msgid "erase (uninstall) package"
 msgstr "radera (avinstallera) paket"
 
-#: lib/poptI.c:153
+#: lib/poptI.c:152
 msgid "<package>+"
 msgstr "<paket>+"
 
-#: lib/poptI.c:156 lib/poptI.c:196
+#: lib/poptI.c:155 lib/poptI.c:195
 msgid "do not install configuration files"
 msgstr "installera inte konfigurationsfiler"
 
-#: lib/poptI.c:159 lib/poptI.c:201
+#: lib/poptI.c:158 lib/poptI.c:200
 msgid "do not install documentation"
 msgstr "installera inte dokumentation"
 
-#: lib/poptI.c:161
+#: lib/poptI.c:160
 msgid "skip files with leading component <path> "
 msgstr "hoppa över filer med inledande <sökväg>"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:161
 msgid "<path>"
 msgstr "<sökväg>"
 
-#: lib/poptI.c:166
+#: lib/poptI.c:165
 msgid "detect file conflicts between packages"
 msgstr "upptäck filkonflikter mellan paket"
 
-#: lib/poptI.c:168
+#: lib/poptI.c:167
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "kortform för --replacepkgs --replacefiles"
 
-#: lib/poptI.c:172
+#: lib/poptI.c:171
 msgid "upgrade package(s) if already installed"
 msgstr "uppgradera paket om redan installerade"
 
-#: lib/poptI.c:173 lib/poptI.c:189 lib/poptI.c:279
+#: lib/poptI.c:172 lib/poptI.c:188 lib/poptI.c:280
 msgid "<packagefile>+"
 msgstr "<paketfil>+"
 
-#: lib/poptI.c:175
+#: lib/poptI.c:174
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "skriv ut brädgårdar allteftersom paketet installeras (bra tillsammans med -v)"
 
-#: lib/poptI.c:178
+#: lib/poptI.c:177
 msgid "don't verify package architecture"
 msgstr "verifiera inte paketarkitektur"
 
-#: lib/poptI.c:181
+#: lib/poptI.c:180
 msgid "don't verify package operating system"
 msgstr "verifiera inte paketets operativsystem"
 
-#: lib/poptI.c:184
+#: lib/poptI.c:183
 msgid "don't check disk space before installing"
 msgstr "kontrollera inte diskutrymme före installation"
 
-#: lib/poptI.c:186
+#: lib/poptI.c:185
 msgid "install documentation"
 msgstr "installera dokumentation"
 
-#: lib/poptI.c:189
+#: lib/poptI.c:188
 msgid "install package(s)"
 msgstr "installera paket"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:191
 msgid "update the database, but do not modify the filesystem"
 msgstr "uppdatera databasen, men ändra inte filsystemet"
 
-#: lib/poptI.c:198
+#: lib/poptI.c:197
 msgid "do not verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
-#: lib/poptI.c:204 lib/poptQV.c:276
-msgid "don't verify MD5 digest of files"
+#: lib/poptI.c:203 lib/poptQV.c:272
+#, fuzzy
+msgid "don't verify digest of files"
 msgstr "verifiera inte MD5-summor för filer"
 
-#: lib/poptI.c:206
+#: lib/poptI.c:205 lib/poptQV.c:274
+#, fuzzy
+msgid "don't verify digest of files (obsolete)"
+msgstr "verifiera inte MD5-summor för filer"
+
+#: lib/poptI.c:207
 msgid "don't install file security contexts"
 msgstr "installera inte filsäkerhetskontexter"
 
-#: lib/poptI.c:210
+#: lib/poptI.c:211
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "flytta inte om paketinstallationen för att tillfredsställa beroenden"
 
-#: lib/poptI.c:215
+#: lib/poptI.c:216
 msgid "do not suggest missing dependency resolution(s)"
 msgstr "föreslå inte lösning(ar) på saknade beroenden"
 
-#: lib/poptI.c:222
+#: lib/poptI.c:223
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%pre-skript"
 
-#: lib/poptI.c:225
+#: lib/poptI.c:226
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%post-skript"
 
-#: lib/poptI.c:228
+#: lib/poptI.c:229
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%preun-skript"
 
-#: lib/poptI.c:231
+#: lib/poptI.c:232
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "utför inte (eventuellt) %%postun-skript"
 
-#: lib/poptI.c:241
+#: lib/poptI.c:242
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "kör inte skript utlösta av detta paket"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:245
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "kör inte %%triggerprein-skript"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:248
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "kör inte %%triggerin-skript"
 
-#: lib/poptI.c:250
+#: lib/poptI.c:251
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "kör inte %%triggerun-skript"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:254
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "kör inte %%triggerpostun-skript"
 
-#: lib/poptI.c:257
+#: lib/poptI.c:258
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2055,39 +2053,39 @@ msgstr ""
 "uppgradera till en gammal version av paketet (--force vid uppgraderingar gör "
 "detta automatiskt)"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:262
 msgid "print percentages as package installs"
 msgstr "skriv procent allt eftersom paketet installeras"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:264
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "flytta paketet till <katalog>, om flyttbart"
 
-#: lib/poptI.c:264
+#: lib/poptI.c:265
 msgid "<dir>"
 msgstr "<kat>"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:267
 msgid "relocate files from path <old> to <new>"
 msgstr "relokera filer från <gammal> till <ny>"
 
-#: lib/poptI.c:267
+#: lib/poptI.c:268
 msgid "<old>=<new>"
 msgstr "<gammal>=<ny>"
 
-#: lib/poptI.c:270
+#: lib/poptI.c:271
 msgid "ignore file conflicts between packages"
 msgstr "ingorera filkonflikter mellan paket"
 
-#: lib/poptI.c:273
+#: lib/poptI.c:274
 msgid "reinstall if the package is already present"
 msgstr "ominstallera när paketet redan är installerat"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:276
 msgid "don't install, but tell if it would work or not"
 msgstr "installera inte, men tala om ifall det skulle fungera eller inte"
 
-#: lib/poptI.c:278
+#: lib/poptI.c:279
 msgid "upgrade package(s)"
 msgstr "uppgradera paket"
 
@@ -2187,108 +2185,108 @@ msgstr "behandla inte icke-paket-filer som förteckningar"
 msgid "do not read headers"
 msgstr "läs inte huvuden"
 
-#: lib/poptQV.c:239
+#: lib/poptQV.c:237
 msgid "list all configuration files"
 msgstr "lista alla konfigurationsfiler"
 
-#: lib/poptQV.c:241
+#: lib/poptQV.c:239
 msgid "list all documentation files"
 msgstr "lista alla dokumentationsfiler"
 
-#: lib/poptQV.c:243
+#: lib/poptQV.c:241
 msgid "dump basic file information"
 msgstr "visa filinformation"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:245
 msgid "list files in package"
 msgstr "lista filer i paketet"
 
-#: lib/poptQV.c:252
+#: lib/poptQV.c:250
 #, c-format
 msgid "skip %%ghost files"
 msgstr "hoppa över %%ghost-filer"
 
-#: lib/poptQV.c:257
+#: lib/poptQV.c:255
 msgid "use the following query format"
 msgstr "använd följande frågeformat"
 
-#: lib/poptQV.c:259
+#: lib/poptQV.c:257
 msgid "display the states of the listed files"
 msgstr "visa tillstånd för de listade filerna"
 
-#: lib/poptQV.c:279
+#: lib/poptQV.c:277
 msgid "don't verify size of files"
 msgstr "verifiera inte storlekar på filer"
 
-#: lib/poptQV.c:282
+#: lib/poptQV.c:280
 msgid "don't verify symlink path of files"
 msgstr "verifiera inte sökvägen i symboliska länkar"
 
-#: lib/poptQV.c:285
+#: lib/poptQV.c:283
 msgid "don't verify owner of files"
 msgstr "verifiera inte ägare till filer"
 
-#: lib/poptQV.c:288
+#: lib/poptQV.c:286
 msgid "don't verify group of files"
 msgstr "verifiera inte grupper till filer"
 
-#: lib/poptQV.c:291
+#: lib/poptQV.c:289
 msgid "don't verify modification time of files"
 msgstr "verifiera inte modifikationstiden för filer"
 
-#: lib/poptQV.c:294 lib/poptQV.c:297
+#: lib/poptQV.c:292 lib/poptQV.c:295
 msgid "don't verify mode of files"
 msgstr "verifiera inte rättigheter för filer"
 
-#: lib/poptQV.c:300
+#: lib/poptQV.c:298
 msgid "don't verify capabilities of files"
 msgstr "verifiera inte förmågor (capabilities) på filer"
 
-#: lib/poptQV.c:303
+#: lib/poptQV.c:301
 msgid "don't verify file security contexts"
 msgstr "verifiera inte filsäkerhetskontexter"
 
-#: lib/poptQV.c:305
+#: lib/poptQV.c:303
 msgid "don't verify files in package"
 msgstr "verifiera inte filerna i paketet"
 
-#: lib/poptQV.c:307 tools/rpmgraph.c:245
+#: lib/poptQV.c:305 tools/rpmgraph.c:245
 msgid "don't verify package dependencies"
 msgstr "verifiera inte paketberoenden"
 
-#: lib/poptQV.c:310 lib/poptQV.c:313
+#: lib/poptQV.c:308 lib/poptQV.c:311
 msgid "don't execute verify script(s)"
 msgstr "utför inte verifieringsskript"
 
-#: lib/poptQV.c:325
+#: lib/poptQV.c:323
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "verifiera inte GPG V3 DSA-signatur(er)"
 
-#: lib/poptQV.c:328
+#: lib/poptQV.c:326
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "verifiera inte PGP V3 RSA/MD5-signatur(er)"
 
-#: lib/poptQV.c:341
+#: lib/poptQV.c:339
 msgid "sign package(s) (identical to --resign)"
 msgstr "signera paket (detsamma som --resign)"
 
-#: lib/poptQV.c:343
+#: lib/poptQV.c:341
 msgid "verify package signature(s)"
 msgstr "verifiera paketsignatur(er)"
 
-#: lib/poptQV.c:345
+#: lib/poptQV.c:343
 msgid "delete package signatures"
 msgstr "tag bort paketsignaturer"
 
-#: lib/poptQV.c:347
+#: lib/poptQV.c:345
 msgid "import an armored public key"
 msgstr "importera en publik nyckel med skal"
 
-#: lib/poptQV.c:349
+#: lib/poptQV.c:347
 msgid "sign package(s) (identical to --addsign)"
 msgstr "signera paket (detsamma som --addsign)"
 
-#: lib/poptQV.c:351
+#: lib/poptQV.c:349
 msgid "generate signature"
 msgstr "generera signatur"
 
@@ -2296,64 +2294,64 @@ msgstr "generera signatur"
 msgid "source package expected, binary found\n"
 msgstr "källpaket förväntades, fann binärpaket\n"
 
-#: lib/psm.c:296
+#: lib/psm.c:299
 msgid "source package contains no .spec file\n"
 msgstr "källpaket innehåller ingen .spec-fil\n"
 
-#: lib/psm.c:502
+#: lib/psm.c:503
 msgid "<lua> scriptlet support not built in\n"
 msgstr "<lua>-skriptstöd är inte inbyggt\n"
 
-#: lib/psm.c:692
+#: lib/psm.c:693
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
 msgstr "Kunde inte skapa temporärfil för %s: %s\n"
 
-#: lib/psm.c:741
+#: lib/psm.c:742
 #, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr "Kunde inte duplicera filbeskrivare: %s: %s\n"
 
-#: lib/psm.c:761
+#: lib/psm.c:762
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s-skript misslyckades, waitpid(%d) rk %d: %s\n"
 
-#: lib/psm.c:765
+#: lib/psm.c:766
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
 msgstr "%s-skript misslyckades, signal %d\n"
 
-#: lib/psm.c:773
+#: lib/psm.c:774
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr "%s-skript misslyckades, slutstatus %d\n"
 
-#: lib/psm.c:1285
+#: lib/psm.c:1286
 #, c-format
 msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 msgstr "%s: %s-skript misslyckades (%d), hoppar över %s\n"
 
-#: lib/psm.c:1367
+#: lib/psm.c:1368
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "uppackning av arkiv misslyckades%s%s: %s\n"
 
-#: lib/psm.c:1368
+#: lib/psm.c:1369
 msgid " on file "
 msgstr " vid fil "
 
-#: lib/psm.c:1500
+#: lib/psm.c:1501
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s misslyckades på fil %s: %s\n"
 
-#: lib/psm.c:1503
+#: lib/psm.c:1504
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s misslyckades: %s\n"
 
-#: lib/psm.c:1564 lib/transaction.c:1110 lib/verify.c:491
+#: lib/psm.c:1565 lib/transaction.c:1039 lib/verify.c:483
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Kunde inte ändra rotkatalog: %m\n"
@@ -2404,70 +2402,70 @@ msgstr "paketet har inte filägare-/-grupplistor\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "paketet har varken filägare eller id-listor\n"
 
-#: lib/query.c:345
+#: lib/query.c:336
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "grupp %s innehåller inga paket\n"
 
-#: lib/query.c:354
+#: lib/query.c:345
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "inga paketutlösare %s\n"
 
-#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:446
+#: lib/query.c:358 lib/query.c:379 lib/query.c:400 lib/query.c:437
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "felformaterad %s: %s\n"
 
-#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:451
+#: lib/query.c:368 lib/query.c:385 lib/query.c:411 lib/query.c:442
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "inga paket matchar %s: %s\n"
 
-#: lib/query.c:461
+#: lib/query.c:452
 #, c-format
 msgid "no package requires %s\n"
 msgstr "inget paket behöver %s\n"
 
-#: lib/query.c:472
+#: lib/query.c:463
 #, c-format
 msgid "no package provides %s\n"
 msgstr "inget paket tillhandahåller %s\n"
 
-#: lib/query.c:504
+#: lib/query.c:495
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:507
+#: lib/query.c:498
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tillhör inget paket\n"
 
-#: lib/query.c:532
+#: lib/query.c:523
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "felaktigt paketnummer: %s\n"
 
-#: lib/query.c:540
+#: lib/query.c:531
 #, c-format
 msgid "record %lu could not be read\n"
 msgstr "post %lu kunde inte läsas\n"
 
-#: lib/query.c:556 lib/rpminstall.c:655
+#: lib/query.c:547 lib/rpminstall.c:669
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s är inte installerat\n"
 
-#: lib/rpmal.c:658
+#: lib/rpmal.c:314
 msgid "(added files)"
 msgstr "(lade till filer)"
 
-#: lib/rpmal.c:734
+#: lib/rpmal.c:368
 msgid "(added provide)"
 msgstr "(lade till tillhandahållande)"
 
-#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:822
+#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:816
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: open misslyckades: %s\n"
@@ -2482,66 +2480,71 @@ msgstr "%s: Fwrite misslyckades: %s\n"
 msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:199 lib/rpmchecksig.c:336
+#: lib/rpmchecksig.c:199 lib/rpmchecksig.c:324
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp misslyckades\n"
 
-#: lib/rpmchecksig.c:316
+#: lib/rpmchecksig.c:304
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
 msgstr "%s: var redan signerad av nyckel-ID %s, hoppar över\n"
 
-#: lib/rpmchecksig.c:344
+#: lib/rpmchecksig.c:332
 #, c-format
 msgid "%s: writeLead failed: %s\n"
 msgstr "%s: writeLead misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:350
+#: lib/rpmchecksig.c:338
 #, c-format
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature misslyckades: %s\n"
 
-#: lib/rpmchecksig.c:438
+#: lib/rpmchecksig.c:426
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: importläsning misslyckades(%d).\n"
 
-#: lib/rpmchecksig.c:450
+#: lib/rpmchecksig.c:438
 #, c-format
 msgid "%s: import failed.\n"
 msgstr "%s: import misslyckades.\n"
 
-#: lib/rpmchecksig.c:477
+#: lib/rpmchecksig.c:465
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: headerRead misslyckades\n"
 
-#: lib/rpmchecksig.c:489
+#: lib/rpmchecksig.c:476
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr "%s: Oföränderlig huvudregion kunde inte läsas.  Trasigt paket?\n"
 
-#: lib/rpmchecksig.c:771
+#: lib/rpmchecksig.c:511
+#, c-format
+msgid "skipping package %s with unverifiable V%u signature\n"
+msgstr "hoppar över paket %s med overifierbar V%u-signatur\n"
+
+#: lib/rpmchecksig.c:762
 msgid "NOT OK"
 msgstr "EJ OK"
 
-#: lib/rpmchecksig.c:771
+#: lib/rpmchecksig.c:762
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmchecksig.c:773
+#: lib/rpmchecksig.c:764
 msgid " (MISSING KEYS:"
 msgstr " (SAKNADE NYCKLAR:"
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:766
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:776
+#: lib/rpmchecksig.c:767
 msgid " (UNTRUSTED KEYS:"
 msgstr " (EJ BETRODDA NYCKLAR:"
 
-#: lib/rpmchecksig.c:778
+#: lib/rpmchecksig.c:769
 msgid ")"
 msgstr ")"
 
@@ -2553,7 +2556,7 @@ msgstr "NEJ "
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:809
+#: lib/rpmds.c:808
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2562,60 +2565,66 @@ msgstr ""
 "\"B\"-beroendet behöver en epok (antar samma epok som \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:965
+#: lib/rpmds.c:962
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes:-beroenden stödjer versioner."
 
-#: lib/rpmds.c:968
+#: lib/rpmds.c:965
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "filnamn lagrade som (katNamn,basNam,katIndex)-tupel, inte som sökväg."
 
-#: lib/rpmds.c:972
+#: lib/rpmds.c:969
 msgid "package payload can be compressed using bzip2."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:976
+#: lib/rpmds.c:974
+#, fuzzy
+msgid "package payload can be compressed using xz."
+msgstr "paketlasten kan komprimeras med lzma."
+
+#: lib/rpmds.c:977
 msgid "package payload can be compressed using lzma."
 msgstr "paketlasten kan komprimeras med lzma."
 
-#: lib/rpmds.c:979
+#: lib/rpmds.c:981
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "paketlastfiler har \"./\"-prefix."
 
-#: lib/rpmds.c:982
+#: lib/rpmds.c:984
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketets namn-version-utgåva tillhandahålls inte implicit."
 
-#: lib/rpmds.c:985
+#: lib/rpmds.c:987
 msgid "header tags are always sorted after being loaded."
 msgstr "huvudtaggar sorteras alltid efter att ha lästs in."
 
-#: lib/rpmds.c:988
+#: lib/rpmds.c:990
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptinterpretatorn kan använda argument från huvudet."
 
-#: lib/rpmds.c:991
+#: lib/rpmds.c:993
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
-#: lib/rpmds.c:994
+#: lib/rpmds.c:996
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
 
-#: lib/rpmds.c:998
+#: lib/rpmds.c:1000
 msgid "internal support for lua scripts."
 msgstr "internt stöd för lua-skript."
 
-#: lib/rpmds.c:1002
-msgid "file checksum digest algorithm is per package configurable"
+#: lib/rpmds.c:1004
+#, fuzzy
+msgid "file digest algorithm is per package configurable"
 msgstr "filkontrollsummealgoritm är konfigurerbar per paket"
 
-#: lib/rpmds.c:1006
+#: lib/rpmds.c:1008
 msgid "support for POSIX.1e file capabilities"
 msgstr "stöd för filförmågor (capabilities) enligt POSIX.1e"
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:353
-#: lib/rpminstall.c:482 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmgi.c:95 lib/rpminstall.c:116 lib/rpminstall.c:301
+#: lib/rpminstall.c:454 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "misslyckades med att öppna %s: %s\n"
@@ -2630,70 +2639,64 @@ msgstr "%s: inte ett rpm-paket (eller paketspecifikation)\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "okänd tagg: \"%s\"\n"
 
-#: lib/rpmgi.c:629 lib/rpminstall.c:525 lib/rpminstall.c:695
-#: tools/rpmgraph.c:194
+#: lib/rpmgi.c:629 lib/rpminstall.c:257 tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "Ouppfyllda beroenden:\n"
 
-#: lib/rpminstall.c:155
+#: lib/rpminstall.c:175
 msgid "Preparing..."
 msgstr "Förbereder..."
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:177
 msgid "Preparing packages for installation..."
 msgstr "Förbereder paket för installation ..."
 
-#: lib/rpminstall.c:304
-#, c-format
-msgid "Retrieving %s\n"
-msgstr "Hämtar %s\n"
-
-#: lib/rpminstall.c:316
-#, c-format
-msgid "skipping %s - transfer failed\n"
-msgstr "hoppar över %s - överföring misslyckades\n"
-
-#: lib/rpminstall.c:372 lib/rpminstall.c:756 tools/rpmgraph.c:139
-#, c-format
-msgid "%s cannot be installed\n"
-msgstr "%s kan inte installeras\n"
-
-#: lib/rpminstall.c:411
-#, c-format
-msgid "package %s is not relocatable\n"
-msgstr "paket %s är inte relokerbart\n"
-
-#: lib/rpminstall.c:458
-#, c-format
-msgid "error reading from file %s\n"
-msgstr "fel vid läsning från fil %s\n"
-
-#: lib/rpminstall.c:464
-#, c-format
-msgid "file %s requires a newer version of RPM\n"
-msgstr "filen %s behöver en nyare version av RPM\n"
-
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:314
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: inte ett rpm-paket (eller paketspecifikation): %s\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:405
 #, c-format
-msgid "cannot open file %s: %s\n"
-msgstr "kan inte öppna filen %s: %s\n"
+msgid "Retrieving %s\n"
+msgstr "Hämtar %s\n"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:417
+#, c-format
+msgid "skipping %s - transfer failed\n"
+msgstr "hoppar över %s - överföring misslyckades\n"
+
+#: lib/rpminstall.c:477 lib/rpminstall.c:731 tools/rpmgraph.c:139
+#, c-format
+msgid "%s cannot be installed\n"
+msgstr "%s kan inte installeras\n"
+
+#: lib/rpminstall.c:520
+#, c-format
+msgid "package %s is not relocatable\n"
+msgstr "paket %s är inte relokerbart\n"
+
+#: lib/rpminstall.c:567
+#, c-format
+msgid "error reading from file %s\n"
+msgstr "fel vid läsning från fil %s\n"
+
+#: lib/rpminstall.c:573
+#, c-format
+msgid "file %s requires a newer version of RPM\n"
+msgstr "filen %s behöver en nyare version av RPM\n"
+
+#: lib/rpminstall.c:676
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" anger flera paket:\n"
 
-#: lib/rpminstall.c:740
+#: lib/rpminstall.c:715
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "kan inte öppna %s: %s\n"
 
-#: lib/rpminstall.c:746
+#: lib/rpminstall.c:721
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installerar %s\n"
@@ -2828,42 +2831,42 @@ msgstr "Ofullständig standardvärdesrad vid %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "För många argument i standardvärdesrad vid %s:%d\n"
 
-#: lib/rpmrc.c:546
+#: lib/rpmrc.c:482
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "\":\" saknas (hittade 0x%02x) vid %s:%d\n"
 
-#: lib/rpmrc.c:563 lib/rpmrc.c:603
+#: lib/rpmrc.c:499 lib/rpmrc.c:539
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argument till %s saknas vid %s:%d\n"
 
-#: lib/rpmrc.c:579
+#: lib/rpmrc.c:515
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "kan inte öppna %s vid %s:%d: %m\n"
 
-#: lib/rpmrc.c:595
+#: lib/rpmrc.c:531
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "arkitektur saknas för %s vid %s:%d\n"
 
-#: lib/rpmrc.c:662
+#: lib/rpmrc.c:598
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "okänd flagga \"%s\" vid %s:%d\n"
 
-#: lib/rpmrc.c:1430
+#: lib/rpmrc.c:1366
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Okänt system: %s\n"
 
-#: lib/rpmrc.c:1431
+#: lib/rpmrc.c:1367
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Var god kontakta %s\n"
 
-#: lib/rpmrc.c:1651
+#: lib/rpmrc.c:1587
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kan inte öppna %s för läsning: %m.\n"
@@ -2897,159 +2900,117 @@ msgstr "\")\" saknas i paketetikett: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: misslyckades att läsa publik nyckel.\n"
 
-#: lib/signature.c:168
+#: lib/signature.c:131
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "sighstorlek(%d): FEL, läsning returnerade %d\n"
 
-#: lib/signature.c:173
+#: lib/signature.c:136
 msgid "sigh magic: BAD\n"
 msgstr "sighmagi: FEL\n"
 
-#: lib/signature.c:179
+#: lib/signature.c:142
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr "sightaggar: FEL, antal taggar(%d) utanför intervall\n"
 
-#: lib/signature.c:185
+#: lib/signature.c:148
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr "sighdata: FEL, antal byte(%d) itanför intevall\n"
 
-#: lib/signature.c:200
+#: lib/signature.c:163
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sighklick(%d): FEL, läsning returnerade %d\n"
 
-#: lib/signature.c:266
+#: lib/signature.c:229
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sightagg[%d]: FEL, tagg %d typ %d position %d antal %d\n"
 
-#: lib/signature.c:276
+#: lib/signature.c:239
 msgid "sigh load: BAD\n"
 msgstr "sighlast: FEL\n"
 
-#: lib/signature.c:290
+#: lib/signature.c:253
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "sighutfyllnad(%zd): FEL, läste %zd byte\n"
 
-#: lib/signature.c:306
+#: lib/signature.c:269
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%zd): FEL, fstat(2) misslyckades\n"
 
-#: lib/signature.c:389 lib/signature.c:526
+#: lib/signature.c:350
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
 msgstr "Det gick inte att skapa ett rör för signering: %m"
 
-#: lib/signature.c:428 lib/signature.c:546 lib/signature.c:884
-#: lib/signature.c:917
+#: lib/signature.c:370 lib/signature.c:656
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: lib/signature.c:445
-msgid "pgp failed\n"
-msgstr "pgp misslyckades\n"
-
-#: lib/signature.c:452
-msgid "pgp failed to write signature\n"
-msgstr "pgp misslyckades att skriva en signatur\n"
-
-#: lib/signature.c:471 lib/signature.c:587
-msgid "unable to read the signature\n"
-msgstr "kan inte läsa signaturen\n"
-
-#: lib/signature.c:563
+#: lib/signature.c:387
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "gpg exec misslyckades (%d)\n"
 
-#: lib/signature.c:569
+#: lib/signature.c:393
 msgid "gpg failed to write signature\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: lib/signature.c:690
+#: lib/signature.c:411
+msgid "unable to read the signature\n"
+msgstr "kan inte läsa signaturen\n"
+
+#: lib/signature.c:495
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Oföränderlig huvudregion kunde inte läsas.  Trasigt paket?\n"
 
-#: lib/signature.c:922 lib/signature.c:971
+#: lib/signature.c:660 lib/signature.c:700
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Felaktig %%_signature-spec i makrofil\n"
 
-#: lib/signature.c:953
+#: lib/signature.c:694
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Du måste sätta \"%%_gpg_name\" i din makrofil\n"
 
-#: lib/signature.c:965
-#, c-format
-msgid "You must set \"%%_pgp_name\" in your macro file\n"
-msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
-
-#: lib/signature.c:1004
+#: lib/signature.c:733
 msgid "Header+Payload size:"
 msgstr "Huvud+laststorlek:"
 
-#: lib/signature.c:1037
+#: lib/signature.c:762
 msgid "MD5 digest:"
 msgstr "MD5-summa:"
 
-#: lib/signature.c:1080
+#: lib/signature.c:801
 msgid "Header SHA1 digest:"
 msgstr "Huvudets SHA1-summa:"
 
-#: lib/signature.c:1125
-msgid "Unknown"
-msgstr "Okänd"
-
-#: lib/signature.c:1132 lib/signature.c:1266
+#: lib/signature.c:856
 msgid "Header "
 msgstr "Huvud "
 
-#: lib/signature.c:1234
-#, c-format
-msgid "%sV%d %s signature: %s, key ID %s\n"
-msgstr "%sV%d %s-signatur: %s, nyckel-id %s\n"
-
-#: lib/signature.c:1238
-#, c-format
-msgid "%sV%d %s signature: %s\n"
-msgstr "%sV%d %s-signatur: %s\n"
-
-#: lib/signature.c:1324
-#, c-format
-msgid "%sV%d DSA signature: %s, key ID %s\n"
-msgstr "%sV%d DSA-signatur: %s, nyckel-id %s\n"
-
-#: lib/signature.c:1328
-#, c-format
-msgid "%sV%d DSA signature: %s\n"
-msgstr "%sV%d DSA-signatur: %s\n"
-
-#: lib/signature.c:1342
+#: lib/signature.c:869
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: lib/signature.c:1373
-msgid "Broken MD5 digest: UNSUPPORTED\n"
-msgstr "Trasig MD5-summa: STÖDS EJ\n"
-
-#: lib/signature.c:1377
+#: lib/signature.c:893
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"
 
-#: lib/verify.c:329
+#: lib/verify.c:328
 #, c-format
 msgid "missing   %c %s"
 msgstr "saknas    %c %s"
 
-#: lib/verify.c:422
+#: lib/verify.c:421
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s:\n"
@@ -3396,27 +3357,27 @@ msgstr "Makro %%%s (%s) användes inte under nivå %d\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Okänd flagga %c i %s(%s)\n"
 
-#: rpmio/macro.c:1039
+#: rpmio/macro.c:1045
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
 msgstr "Rekursionsdjup(%d) större än max(%d)\n"
 
-#: rpmio/macro.c:1108 rpmio/macro.c:1125
+#: rpmio/macro.c:1114 rpmio/macro.c:1131
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "Oavslutad %c: %s\n"
 
-#: rpmio/macro.c:1166
+#: rpmio/macro.c:1172
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Ett %% följs av ett makro som inte kan tolkas\n"
 
-#: rpmio/macro.c:1323
+#: rpmio/macro.c:1330
 #, c-format
 msgid "Macro %%%.*s not found, skipping\n"
 msgstr "Inget makro %%%.*s hittat, hoppar över\n"
 
-#: rpmio/macro.c:1394
+#: rpmio/macro.c:1401
 msgid "Target buffer overflow\n"
 msgstr "Målbuffert översvämmad\n"
 
@@ -3435,7 +3396,7 @@ msgstr "Fil %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Filen %s är mindre än %u byte\n"
 
-#: rpmio/rpmfileutil.c:718
+#: rpmio/rpmfileutil.c:726
 msgid "failed to create directory"
 msgstr "misslyckades att skapa katalog"
 
@@ -3485,6 +3446,16 @@ msgstr "varning: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "minnesallokering (%u byte) returnerade NULL.\n"
 
+#: rpmio/rpmpgp.c:1325
+#, fuzzy, c-format
+msgid "V%d %s/%s %s, key ID %s"
+msgstr "%sV%d %s-signatur: %s, nyckel-id %s\n"
+
+#: rpmio/rpmpgp.c:1333
+#, fuzzy
+msgid "(none)"
+msgstr "(inget fel)"
+
 #: rpmio/url.c:213
 msgid "url port must be a number\n"
 msgstr "url-port måste vara ett tal\n"
@@ -3497,3 +3468,39 @@ msgstr "%s: läsning av paketlista misslyckades: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "verifiera inte huvud+lastsignatur"
+
+#~ msgid "Source options (with --query or --verify):"
+#~ msgstr "Källflaggor (med --query eller --verify):"
+
+#~ msgid "pgp not found: "
+#~ msgstr "pgp hittades inte: "
+
+#~ msgid "skipping header with unverifiable V%u signature\n"
+#~ msgstr "hoppar över huvud med overifierbar V%u-signatur\n"
+
+#~ msgid "cannot open file %s: %s\n"
+#~ msgstr "kan inte öppna filen %s: %s\n"
+
+#~ msgid "pgp failed\n"
+#~ msgstr "pgp misslyckades\n"
+
+#~ msgid "pgp failed to write signature\n"
+#~ msgstr "pgp misslyckades att skriva en signatur\n"
+
+#~ msgid "You must set \"%%_pgp_name\" in your macro file\n"
+#~ msgstr "Du måste sätta \"%%_pgp_name\" i din makrofil\n"
+
+#~ msgid "Unknown"
+#~ msgstr "Okänd"
+
+#~ msgid "%sV%d %s signature: %s\n"
+#~ msgstr "%sV%d %s-signatur: %s\n"
+
+#~ msgid "%sV%d DSA signature: %s, key ID %s\n"
+#~ msgstr "%sV%d DSA-signatur: %s, nyckel-id %s\n"
+
+#~ msgid "%sV%d DSA signature: %s\n"
+#~ msgstr "%sV%d DSA-signatur: %s\n"
+
+#~ msgid "Broken MD5 digest: UNSUPPORTED\n"
+#~ msgstr "Trasig MD5-summa: STÖDS EJ\n"
