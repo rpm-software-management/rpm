@@ -1135,7 +1135,7 @@ rpmts rpmtsCreate(void)
     ts->selinuxEnabled = is_selinux_enabled();
 
     ts->numAddedPackages = 0;
-    ts->addedPackages = rpmalCreate(5, ts->color);
+    ts->addedPackages = NULL;
 
     ts->orderAlloced = 0;
     ts->orderCount = 0;

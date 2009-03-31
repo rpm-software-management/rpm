@@ -131,6 +131,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto exit;
     }
 
+    if (ts->addedPackages == NULL) {
+	ts->addedPackages = rpmalCreate(5, tscolor);
+    }
+
     /* XXX Always add source headers. */
     isSource = headerIsSource(h);
     if (isSource) {
