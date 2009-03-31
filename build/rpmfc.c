@@ -452,7 +452,6 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
 
   { " script",			RPMFC_SCRIPT },
-  { " text",			RPMFC_TEXT },
   { " document",		RPMFC_DOCUMENT },
 
   { " compressed",		RPMFC_COMPRESSED },
@@ -509,6 +508,7 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "symbolic link to",		RPMFC_SYMLINK },
   { "socket",			RPMFC_DEVICE },
   { "special",			RPMFC_DEVICE },
+  { " text",			RPMFC_TEXT },
 
   { "ASCII",			RPMFC_WHITE },
   { "ISO-8859",			RPMFC_WHITE },
