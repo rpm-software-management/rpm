@@ -12,7 +12,7 @@
 # "fat" binary with both archs, for Darwin
 optflags: fat -O2 -g -arch i386 -arch ppc
 
-optflags: i386 -O2 -g -march=i386 -mcpu=i686
+optflags: i386 -O2 -g -march=i386 -mtune=i686
 optflags: i486 -O2 -g -march=i486
 optflags: i586 -O2 -g -march=i586
 optflags: i686 -O2 -g -march=i686
@@ -26,18 +26,18 @@ optflags: amd64 -O2 -g
 optflags: ia32e -O2 -g
 
 optflags: alpha -O2 -g -mieee
-optflags: alphaev5 -O2 -g -mieee -mcpu=ev5
-optflags: alphaev56 -O2 -g -mieee -mcpu=ev56
-optflags: alphapca56 -O2 -g -mieee -mcpu=pca56
-optflags: alphaev6 -O2 -g -mieee -mcpu=ev6
-optflags: alphaev67 -O2 -g -mieee -mcpu=ev67
+optflags: alphaev5 -O2 -g -mieee -mtune=ev5
+optflags: alphaev56 -O2 -g -mieee -mtune=ev56
+optflags: alphapca56 -O2 -g -mieee -mtune=pca56
+optflags: alphaev6 -O2 -g -mieee -mtune=ev6
+optflags: alphaev67 -O2 -g -mieee -mtune=ev67
 
 optflags: sparc -O2 -g -m32 -mtune=ultrasparc
 optflags: sparcv8 -O2 -g -m32 -mtune=ultrasparc -mv8
-optflags: sparcv9 -O2 -g -m32 -mcpu=ultrasparc
-optflags: sparcv9v -O2 -g -m32 -mcpu=niagara
-optflags: sparc64 -O2 -g -m64 -mcpu=ultrasparc
-optflags: sparc64v -O2 -g -m64 -mcpu=niagara
+optflags: sparcv9 -O2 -g -m32 -mtune=ultrasparc
+optflags: sparcv9v -O2 -g -m32 -mtune=niagara
+optflags: sparc64 -O2 -g -m64 -mtune=ultrasparc
+optflags: sparc64v -O2 -g -m64 -mtune=niagara
 
 optflags: m68k -O2 -g -fomit-frame-pointer
 
