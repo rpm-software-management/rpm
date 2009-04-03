@@ -286,7 +286,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 	struct rpmtd_s bnames;
 	headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
 
-	p->fs = rpmfsNew(rpmtdCount(&bnames));
+	p->fs = rpmfsNew(rpmtdCount(&bnames), p->type);
 
 	rpmtdFreeData(&bnames);
     }
@@ -912,11 +912,15 @@ rpmfs rpmteGetFileStates(rpmte te) {
     return te->fs;
 }
 
-rpmfs rpmfsNew(unsigned int fc) {
+rpmfs rpmfsNew(unsigned int fc, rpmElementType type) {
     rpmfs fs = xmalloc(sizeof(*fs));
     fs->fc = fc;
     fs->replaced = NULL;
     fs->states = NULL;
+    if (type == TR_ADDED) {
+	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
+	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
+    }
     fs->actions = xmalloc(fc * sizeof(*fs->actions));
     memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
     fs->numReplaced = fs->allocatedReplaced = 0;
@@ -974,10 +978,6 @@ sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced)
 void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state)
 {
     assert(ix < fs->fc);
-    if (fs->states == NULL) {
-	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
-	memset(fs->states, RPMFILE_STATE_MISSING, fs->fc);
-    }
     fs->states[ix] = state;
 }
 
