@@ -3016,17 +3016,17 @@ msgstr "Nagłówek "
 #: lib/signature.c:1234
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
-msgstr "Podpis %sV%d %s, identyfikator klucza %s\n"
+msgstr "Podpis %sV%d %s: %s, identyfikator klucza %s\n"
 
 #: lib/signature.c:1238
 #, c-format
 msgid "%sV%d %s signature: %s\n"
-msgstr "podpis %s %sV%d: %s\n"
+msgstr "podpis %sV%d %s: %s\n"
 
 #: lib/signature.c:1324
 #, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
-msgstr "podpis DSA %sV%d, identyfikator klucza %s\n"
+msgstr "podpis DSA %sV%d, %s, identyfikator klucza %s\n"
 
 #: lib/signature.c:1328
 #, c-format
