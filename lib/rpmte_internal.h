@@ -81,7 +81,7 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag);
 rpmfs rpmteGetFileStates(rpmte te);
 
 RPM_GNUC_INTERNAL
-rpmfs rpmfsNew(unsigned int fc);
+rpmfs rpmfsNew(unsigned int fc, rpmElementType type);
 
 RPM_GNUC_INTERNAL
 rpmfs rpmfsFree(rpmfs fs);

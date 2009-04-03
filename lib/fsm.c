@@ -663,8 +663,6 @@ static int fsmMapPath(FSM_t fsm)
 	    break;
 	case FA_COPYIN:
 	case FA_CREATE:
-	    if (rpmteType(te) == TR_ADDED)
-		rpmfsSetState(fs, i, RPMFILE_STATE_NORMAL);
 	    break;
 
 	case FA_SKIPNSTATE:
