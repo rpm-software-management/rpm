@@ -14,12 +14,16 @@ extern "C" {
 
 extern int _rpmal_debug;
 
+typedef struct rpmal_s * rpmal;
+typedef void * rpmalKey;
+
 /**
  * Initialize available packckages, items, and directory list.
  * @param delta		no. of entries to add on each realloc
  * @param tscolor	transaction color bits
  * @return al		new available list
  */
+RPM_GNUC_INTERNAL
 rpmal rpmalCreate(int delta, rpm_color_t tscolor);
 
 /**
@@ -27,6 +31,7 @@ rpmal rpmalCreate(int delta, rpm_color_t tscolor);
  * @param al		available list
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 rpmal rpmalFree(rpmal al);
 
 /**
@@ -34,6 +39,7 @@ rpmal rpmalFree(rpmal al);
  * @param al		available list
  * @param p	        package
  */
+RPM_GNUC_INTERNAL
 void rpmalDel(rpmal al, rpmte p);
 
 /**
@@ -42,6 +48,7 @@ void rpmalDel(rpmal al, rpmte p);
  * @param p             package
  * @return		available package index
  */
+RPM_GNUC_INTERNAL
 void rpmalAdd(rpmal al,
 	      rpmte p);
 
@@ -49,6 +56,7 @@ void rpmalAdd(rpmal al,
  * Generate index for available list.
  * @param al		available list
  */
+RPM_GNUC_INTERNAL
 void rpmalMakeIndex(rpmal al);
 
 /**
@@ -57,6 +65,7 @@ void rpmalMakeIndex(rpmal al);
  * @param ds		dependency set
  * @return		associated package(s), NULL if none
  */
+RPM_GNUC_INTERNAL
 rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds);
 
 /**
@@ -66,6 +75,7 @@ rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds);
  * @retval keyp		added package key pointer (or NULL)
  * @return		associated package(s), NULL if none
  */
+RPM_GNUC_INTERNAL
 rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
 
 /**
@@ -75,6 +85,7 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
  * @param ds		dependency set
  * @return		associated package key, NULL if none
  */
+RPM_GNUC_INTERNAL
 rpmte rpmalSatisfiesDepend(const rpmal al, const rpmds ds);
 
 #ifdef __cplusplus

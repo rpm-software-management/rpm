@@ -15,13 +15,13 @@
 #include <rpm/rpmkeyring.h>
 
 #include <rpm/rpmdb.h>
-#include <rpm/rpmal.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmte.h>
 
 #include "rpmio/digest.h"
+#include "lib/rpmal.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmts_internal.h"
 #include "lib/misc.h"

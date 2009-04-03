@@ -2,8 +2,8 @@
 #define _RPMTS_INTERNAL_H
 
 #include <rpm/rpmts.h>
-#include <rpm/rpmal.h>	/* XXX availablePackage */
 
+#include "lib/rpmal.h"		/* XXX availablePackage */
 #include "lib/rpmhash.h"	/* XXX hashTable */
 #include "lib/fprint.h"
 

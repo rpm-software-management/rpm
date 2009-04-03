@@ -66,10 +66,6 @@ include/rpm/rpmlib.h: lib/rpmlib.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmlib.h include/rpm/rpmlib.h
 BUILT_SOURCES += include/rpm/rpmlib.h
 CLEANFILES += include/rpm/rpmlib.h
-include/rpm/rpmal.h: lib/rpmal.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/lib/rpmal.h include/rpm/rpmal.h
-BUILT_SOURCES += include/rpm/rpmal.h
-CLEANFILES += include/rpm/rpmal.h
 include/rpm/rpmds.h: lib/rpmds.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmds.h include/rpm/rpmds.h
 BUILT_SOURCES += include/rpm/rpmds.h

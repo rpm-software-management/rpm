@@ -28,7 +28,6 @@ typedef const void *	hPTR_t RPM_GNUC_DEPRECATED;
 typedef rpm_count_t *	hCNT_t RPM_GNUC_DEPRECATED;
 
 typedef rpmSpec		Spec RPM_GNUC_DEPRECATED;
-typedef rpmalKey	alKey RPM_GNUC_DEPRECATED;
 
 /* legacy header interfaces */
 

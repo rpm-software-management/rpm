@@ -5,11 +5,12 @@
 #include "system.h"
 
 
-#include <rpm/rpmal.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmte.h>
 #include <rpm/rpmfi.h>
-#include "rpmhash.h"
+
+#include "lib/rpmal.h"
+#include "lib/rpmhash.h"
 
 #include "debug.h"
 
