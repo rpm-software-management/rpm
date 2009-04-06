@@ -185,31 +185,7 @@ will be run after a chroot(2) to
 \fIDIRECTORY\fR.
 .SS "INSTALL AND UPGRADE OPTIONS"
 .PP
-The general form of an rpm install command is 
-.PP
-
-\fBrpm\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
-.PP
-This installs a new package.
-.PP
-The general form of an rpm upgrade command is 
-.PP
-
-\fBrpm\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
-.PP
-This upgrades or installs the package currently installed
-to a newer version.  This is the same as install, except
-all other version(s) of the package are removed after the
-new package is installed.
-.PP
-
-\fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
-
-.PP
-This will upgrade packages, but only if an earlier version
-currently exists. The \fIPACKAGE_FILE\fR can be either \fBrpm\fR binary
+In these options, \fIPACKAGE_FILE\fR can be either \fBrpm\fR binary
 file or ASCII package manifest (see \fBPACKAGE SELECTION OPTIONS\fR), and
 may be specified as an
 \fBftp\fR or
@@ -219,7 +195,27 @@ installed. See \fBFTP/HTTP OPTIONS\fR
 for information on \fBrpm\fR's internal
 \fBftp\fR and
 \fBhttp\fR
-client support. 
+client support.
+.PP
+The general form of an rpm install command is 
+.PP
+\fBrpm\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+.PP
+This installs a new package.
+.PP
+The general form of an rpm upgrade command is 
+.PP
+\fBrpm\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+.PP
+This upgrades or installs the package currently installed
+to a newer version.  This is the same as install, except
+all other version(s) of the package are removed after the
+new package is installed.
+.PP
+\fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+.PP
+This will upgrade packages, but only ones for which an earlier version is
+installed.
 .PP
 .TP
 \fB--aid\fR
@@ -537,7 +533,7 @@ See \fBFTP/HTTP OPTIONS\fR for information on
 \fBhttp\fR
 client support. The \fIPACKAGE_FILE\fR argument(s),
 if not a binary package, will be interpreted as an ASCII package
-manifest unless \fB--nomanifest\fI option is used.  
+manifest unless \fB--nomanifest\fR option is used.  
 In manifests, comments are permitted, starting with a '#', and each
 line of a package manifest file may include white space separated
 glob expressions, including URL's,
