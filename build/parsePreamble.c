@@ -452,7 +452,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 {
     char * field = spec->line;
-    char * end;
+    char * end, *ch;
     int multiToken = 0;
     rpmsenseFlags tagflags;
     int rc;
@@ -488,6 +488,17 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_NAME:
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
+	SINGLE_TOKEN_ONLY;
+	if ((ch=strchr(field, '/')) != NULL || (ch=strchr(field, '~')) != NULL) {
+	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '%c' in: %s\n"),
+	    spec->lineNum, *ch, spec->line);
+	    return RPMRC_FAIL;
+	}
+	if (strstr(field, "..") != NULL) {
+	    rpmlog(RPMLOG_ERR, _("line %d: Illegal sequence \"..\" in: %s\n"),
+	    spec->lineNum, spec->line);
+	    return RPMRC_FAIL;
+	}
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
 	SINGLE_TOKEN_ONLY;
