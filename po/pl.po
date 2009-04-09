@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2009-04-09 14:26+0300\n"
-"PO-Revision-Date: 2009-04-01 00:11+0200\n"
+"PO-Revision-Date: 2009-04-09 14:57+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -82,9 +82,8 @@ msgid "cannot re-open payload: %s\n"
 msgstr "nie można ponownie otworzyć danych: %s\n"
 
 #: rpmqv.c:77
-#, fuzzy
 msgid "Query/Verify package selection options:"
-msgstr "odpytaj/sprawdź pakiety w grupie"
+msgstr "Odpytaj/sprawdź opcje wyboru pakietów:"
 
 #: rpmqv.c:80
 msgid "Query options (with -q or --query):"
@@ -977,14 +976,14 @@ msgid "line %d: Empty tag: %s\n"
 msgstr "wiersz %d: pusty znacznik: %s\n"
 
 #: build/parsePreamble.c:493
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolony znak \"%c\" w: %s\n"
 
 #: build/parsePreamble.c:498
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolona sekwencja \"..\" w: %s\n"
 
 #: build/parsePreamble.c:508 build/parsePreamble.c:515
 #, c-format
@@ -1495,9 +1494,8 @@ msgid "Missing hard link(s)"
 msgstr "Brak twardych dowiązań"
 
 #: lib/cpio.c:217
-#, fuzzy
 msgid "Digest mismatch"
-msgstr "Suma MD5 nie zgadza się"
+msgstr "Suma nie zgadza się"
 
 #: lib/cpio.c:218
 msgid "Internal error"
@@ -2001,14 +1999,12 @@ msgid "do not verify package dependencies"
 msgstr "nie sprawdzaj zależności pakietu"
 
 #: lib/poptI.c:203 lib/poptQV.c:272
-#, fuzzy
 msgid "don't verify digest of files"
-msgstr "nie sprawdzaj skrótów MD5 plików"
+msgstr "nie sprawdzaj skrótów plików"
 
 #: lib/poptI.c:205 lib/poptQV.c:274
-#, fuzzy
 msgid "don't verify digest of files (obsolete)"
-msgstr "nie sprawdzaj skrótów MD5 plików"
+msgstr "nie sprawdzaj skrótów plików (przestarzałe)"
 
 #: lib/poptI.c:207
 msgid "don't install file security contexts"
@@ -2597,9 +2593,8 @@ msgid "package payload can be compressed using bzip2."
 msgstr "dane pakietu mogą zostać skompresowane używając bzip2."
 
 #: lib/rpmds.c:974
-#, fuzzy
 msgid "package payload can be compressed using xz."
-msgstr "dane pakietu mogą zostać skompresowane używając lzma."
+msgstr "dane pakietu mogą zostać skompresowane używając xz."
 
 #: lib/rpmds.c:977
 msgid "package payload can be compressed using lzma."
@@ -2635,11 +2630,8 @@ msgid "internal support for lua scripts."
 msgstr "wewnętrzna obsługa skryptów lua."
 
 #: lib/rpmds.c:1004
-#, fuzzy
 msgid "file digest algorithm is per package configurable"
-msgstr ""
-"algorytm skrótu sumy kontrolnej pliku jest konfigurowalny dla każdego "
-"pakietu osobno"
+msgstr "algorytm skrótu pliku jest konfigurowalny dla każdego pakietu osobno"
 
 #: lib/rpmds.c:1008
 msgid "support for POSIX.1e file capabilities"
@@ -3045,17 +3037,17 @@ msgstr "Podpis %sV%d %s: %s, identyfikator klucza %s\n"
 #: lib/signature.c:1237
 #, c-format
 msgid "%sV%d %s signature: %s\n"
-msgstr "podpis %sV%d %s: %s\n"
+msgstr "Podpis %sV%d %s: %s\n"
 
 #: lib/signature.c:1323
 #, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
-msgstr "podpis DSA %sV%d, %s, identyfikator klucza %s\n"
+msgstr "Podpis DSA %sV%d: %s, identyfikator klucza %s\n"
 
 #: lib/signature.c:1327
 #, c-format
 msgid "%sV%d DSA signature: %s\n"
-msgstr "podpis DSA %sV%d: %s\n"
+msgstr "Podpis DSA %sV%d: %s\n"
 
 #: lib/signature.c:1341
 msgid "Verify signature: BAD PARAMETERS\n"
@@ -3526,6 +3518,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "nie sprawdzaj podpisu nagłówka+danych"
-
-#~ msgid "Source options (with --query or --verify):"
-#~ msgstr "Opcje źródła (z --query lub --verify):"
