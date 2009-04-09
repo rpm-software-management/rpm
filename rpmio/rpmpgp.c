@@ -1087,6 +1087,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
     case 4:
       {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
 	uint8_t * d = NULL;
+	uint8_t in[3];
 	size_t dlen;
 	int i;
 
@@ -1103,7 +1104,12 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 	}
 
 	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	(void) rpmDigestUpdate(ctx, pkt, (se-pkt));
+	i = se - h;
+	in[0] = 0x99;
+	in[1] = i >> 8;
+	in[2] = i;
+	(void) rpmDigestUpdate(ctx, in, 3);
+	(void) rpmDigestUpdate(ctx, h, i);
 	(void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
 
 	if (d) {
