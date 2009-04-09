@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2009-02-26 17:17+0200\n"
-"PO-Revision-Date: 2008-10-23 22:39-0000\n"
+"PO-Revision-Date: 2009-04-06 22:38+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
 "MIME-Version: 1.0\n"
@@ -112,7 +112,7 @@ msgstr "Опције прављења уз [ <specfile> | <tarball> | <source pa
 
 #: rpmqv.c:112
 msgid "Install/Upgrade/Erase options:"
-msgstr "Опције Инсталације/Надоградње/Брисања:"
+msgstr "Опције инсталације/надградње/брисања:"
 
 #: rpmqv.c:119 tools/rpmdeps.c:32 tools/rpmgraph.c:249
 msgid "Common options for all rpm modes and executables:"
@@ -166,7 +166,7 @@ msgstr "неочекивани извор упита"
 
 #: rpmqv.c:397
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr "само инсталација, надоградња, rmsource и rmspec могу бити приморани"
+msgstr "само инсталација, надградња, rmsource и rmspec могу бити приморани"
 
 #: rpmqv.c:399
 msgid "files may only be relocated during package installation"
@@ -321,9 +321,9 @@ msgid "--sign may only be used during package building"
 msgstr "--sign може бити наведена само током прављења пакета"
 
 #: rpmqv.c:582
-#, fuzzy, c-format
+#, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "неуспело прављење архиве: %s\n"
+msgstr "неуспело прављење цеви за --pipe: %m\n"
 
 #: rpmqv.c:592
 #, c-format
@@ -488,7 +488,7 @@ msgstr "Лоша спецификација режима директорију�
 #: build/files.c:721
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
-msgstr "Необична дужина локалитета: \"%.*s\" у %%lang(%s)\n"
+msgstr "Необична дужина локалитета: „%.*s“ у %%lang(%s)\n"
 
 #: build/files.c:731
 #, c-format
@@ -496,14 +496,13 @@ msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Удвојен локалитет %.*s у %%lang(%s)\n"
 
 #: build/files.c:803
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid capability: %s\n"
-msgstr "Неисправан %s знак: %s\n"
+msgstr "Неисправна могућност: %s\n"
 
 #: build/files.c:814
-#, fuzzy
 msgid "File capability support not built in\n"
-msgstr "није уграђена подршка <lua> скриптица\n"
+msgstr "Није уграђена подршка за могућност датотеке\n"
 
 #: build/files.c:878
 #, c-format
@@ -518,7 +517,7 @@ msgstr "Две датотеке у једном реду: %s\n"
 #: build/files.c:920
 #, c-format
 msgid "File must begin with \"/\": %s\n"
-msgstr "Датотека мора почети са \"/\": %s\n"
+msgstr "Датотека мора почети са „/“: %s\n"
 
 #: build/files.c:931
 #, c-format
@@ -578,7 +577,7 @@ msgstr "%s: неуспело читање *.te полисе.\n"
 #: build/files.c:1665
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr "Испред датотеке је потребно да стоји \"/\": %s\n"
+msgstr "Испред датотеке је потребно да стоји „/“: %s\n"
 
 #: build/files.c:1687
 #, c-format
@@ -591,9 +590,9 @@ msgid "File not found by glob: %s\n"
 msgstr "Датотека није пронађена поклапањем: %s\n"
 
 #: build/files.c:1749
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %%files file %s: %m\n"
-msgstr "Не могу да отворим %%files датотеку %s: %s\n"
+msgstr "Не могу да отворим %%files датотеку %s: %m\n"
 
 #: build/files.c:1757
 #, c-format
@@ -625,17 +624,17 @@ msgstr ""
 "%s"
 
 #: build/files.c:2236
-#, fuzzy, c-format
+#, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
-msgstr "Обрађујем датотеке: %s-%s-%s\n"
+msgstr "Обрађујем датотеке: %s-%s-%s.%s\n"
 
 #: build/files.c:2245
 msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
+msgstr "Бинарне датотеке зависне од архитектуре у noarch пакету\n"
 
 #: build/names.c:47
 msgid "getUname: too many uid's\n"
-msgstr "getUname: превише uid-а \n"
+msgstr "getUname: превише uid-а\n"
 
 #: build/names.c:69
 msgid "getUnameS: too many uid's\n"
@@ -683,9 +682,9 @@ msgid "cpio_copy read failed: %s\n"
 msgstr "неуспело cpio_copy читање: %s\n"
 
 #: build/pack.c:129
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line: %s\n"
-msgstr "ред: %s\n"
+msgstr "%s: ред: %s\n"
 
 #: build/pack.c:193
 #, c-format
@@ -748,9 +747,9 @@ msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читање заглавља из %s\n"
 
 #: build/pack.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown payload compression: %s\n"
-msgstr "Непозната врста иконе: %s\n"
+msgstr "Непозната компресија товара: %s\n"
 
 #: build/pack.c:415
 msgid "Unable to create immutable header region.\n"
@@ -814,19 +813,19 @@ msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
 
 #: build/pack.c:689
-#, fuzzy, c-format
+#, c-format
 msgid "Executing \"%s\":\n"
-msgstr "Извршавам(%s): %s\n"
+msgstr "Извршавам „%s“:\n"
 
 #: build/pack.c:692
-#, fuzzy, c-format
+#, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr "Извршавање %s није успело (%s): %s\n"
+msgstr "Извршавање „%s“ није успело.\n"
 
 #: build/pack.c:696
-#, fuzzy, c-format
+#, c-format
 msgid "Package check \"%s\" failed.\n"
-msgstr "Неуспела провера лозинке\n"
+msgstr "Неуспела провера пакета „%s“.\n"
 
 #: build/pack.c:750
 #, c-format
@@ -976,22 +975,22 @@ msgstr "ред %d: Празна ознака: %s\n"
 #: build/parsePreamble.c:497 build/parsePreamble.c:504
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
-msgstr "ред %d: Недозвољени знак '-' у %s: %s\n"
+msgstr "ред %d: Недозвољени знак „-“ у %s: %s\n"
 
 #: build/parsePreamble.c:537
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
-msgstr "ред %d: Префикси се не смеју завршавати са \"/\": %s\n"
+msgstr "ред %d: Префикси се не смеју завршавати са „/“: %s\n"
 
 #: build/parsePreamble.c:550
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
-msgstr "ред %d: Docdir мора почети са '/': %s\n"
+msgstr "ред %d: Docdir мора почети са „/“: %s\n"
 
 #: build/parsePreamble.c:563
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
-msgstr "ред %d: Поље епохе/серије мора бити број: %s\n"
+msgstr "ред %d: Поље епохе мора бити број без предзнака: %s\n"
 
 #: build/parsePreamble.c:603 build/parsePreamble.c:614
 #, c-format
@@ -1034,14 +1033,14 @@ msgid "line %d: Unknown tag: %s\n"
 msgstr "ред %d: Непозната ознака: %s\n"
 
 #: build/parsePreamble.c:886
-#, fuzzy, c-format
+#, c-format
 msgid "%%{buildroot} couldn't be empty\n"
-msgstr "BuildRoot не може бити \"/\": %s\n"
+msgstr "%%{buildroot} не може бити празно\n"
 
 #: build/parsePreamble.c:890
-#, fuzzy, c-format
+#, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
-msgstr "BuildRoot не може бити \"/\": %s\n"
+msgstr "%%{buildroot} не може бити „/“\n"
 
 #: build/parsePrep.c:24
 #, c-format
@@ -1049,9 +1048,9 @@ msgid "Bad source: %s: %s\n"
 msgstr "Лош извор: %s: %s\n"
 
 #: build/parsePrep.c:67
-#, fuzzy, c-format
+#, c-format
 msgid "No patch number %u\n"
-msgstr "Нема закрпе број %d\n"
+msgstr "Нема закрпе број %u\n"
 
 #: build/parsePrep.c:69
 #, c-format
@@ -1059,14 +1058,13 @@ msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr "%%patch без одговарајуће „Patch:“ ознаке\n"
 
 #: build/parsePrep.c:145
-#, fuzzy, c-format
+#, c-format
 msgid "No source number %u\n"
-msgstr "Нема извора број %d\n"
+msgstr "Нема извора број %u\n"
 
 #: build/parsePrep.c:147
-#, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
-msgstr "изворни пакет не садржи .spec датотеку\n"
+msgstr "Нема ознаке „Source:“ у датотеци спецификације\n"
 
 #: build/parsePrep.c:169
 #, c-format
@@ -1089,14 +1087,14 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ред %d: Лоша %%setup опција %s: %s\n"
 
 #: build/parsePrep.c:459
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: %s\n"
-msgstr "%s: %s\n"
+msgstr "%s: %s: %s\n"
 
 #: build/parsePrep.c:472
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid patch number %s: %s\n"
-msgstr "неисправан број пакета: %s\n"
+msgstr "Неисправан број закрпе %s: %s\n"
 
 #: build/parsePrep.c:501
 #, c-format
@@ -1108,7 +1106,7 @@ msgstr "ред %d: други %%prep\n"
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"ред %d: Жетони зависности морају почињати бројем, словом, '_' или '/': %s\n"
+"ред %d: Жетони зависности морају почињати бројем, словом, „_“ или „/“: %s\n"
 
 #: build/parseReqs.c:136
 #, c-format
@@ -1133,12 +1131,12 @@ msgstr "ред %d: Грешка при тумачењу %s: %s\n"
 #: build/parseScript.c:194
 #, c-format
 msgid "line %d: internal script must end with '>': %s\n"
-msgstr "ред %d: интерна скрипта се мора завршити са '>': %s\n"
+msgstr "ред %d: интерна скрипта се мора завршити са „>“: %s\n"
 
 #: build/parseScript.c:200
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
-msgstr "ред %d: скрипта програма мора почети са '/': %s\n"
+msgstr "ред %d: скрипта програма мора почети са „/“: %s\n"
 
 #: build/parseScript.c:238
 #, c-format
@@ -1212,7 +1210,7 @@ msgstr "<specfile>"
 
 #: build/poptBT.c:136
 msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "направи кроз %build (%prep, онда компајлирај) из <specfile>"
+msgstr "направи кроз %build (%prep, онда компилирај) из <specfile>"
 
 #: build/poptBT.c:139
 msgid "build through %install (%prep, %build, then install) from <specfile>"
@@ -1248,7 +1246,7 @@ msgstr "<tarball>"
 
 #: build/poptBT.c:158
 msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "направи кроз %build (%prep, онда компајлирај) из <tarball>"
+msgstr "направи кроз %build (%prep, онда компилирај) из <tarball>"
 
 #: build/poptBT.c:161
 msgid "build through %install (%prep, %build, then install) from <tarball>"
@@ -1335,7 +1333,7 @@ msgstr "немој проверавати потпис(е) пакета"
 
 #: build/poptBT.c:209
 msgid "do not accept i18N msgstr's from specfile"
-msgstr "не прихватај i18N msgstr's из датотеке спецификације"
+msgstr "не прихватај i18N msgstr ниске из датотеке спецификације"
 
 #: build/poptBT.c:211
 msgid "remove sources when done"
@@ -1358,14 +1356,14 @@ msgid "override target platform"
 msgstr "премости циљну платформу"
 
 #: build/rpmfc.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "Не могу да одвојим %s: %s\n"
+msgstr "Не могу да направим цев за %s: %m\n"
 
 #: build/rpmfc.c:122
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't chdir to %s: %s\n"
-msgstr "Не могу да извршим %s: %s\n"
+msgstr "Не могу да променим директоријум на %s: %s\n"
 
 #: build/rpmfc.c:133
 #, c-format
@@ -1403,9 +1401,9 @@ msgid "magic_load failed: %s\n"
 msgstr "magic_load није успело: %s\n"
 
 #: build/rpmfc.c:1281
-#, fuzzy, c-format
+#, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
-msgstr "magic_file(ms, \"%s\") није успело: режим %06o %s\n"
+msgstr "Препознавање датотеке „%s“ није успело: режим %06o %s\n"
 
 #: build/rpmfc.c:1480
 #, c-format
@@ -1441,9 +1439,9 @@ msgid "line %d: Bad number: %s\n"
 msgstr "ред %d: Лош број: %s\n"
 
 #: build/spec.c:233
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad no%s number: %u\n"
-msgstr "ред %d: Лош no%s број: %d\n"
+msgstr "ред %d: Лош no%s број: %u\n"
 
 #: build/spec.c:296
 #, c-format
@@ -1451,9 +1449,9 @@ msgid "line %d: Bad %s number: %s\n"
 msgstr "ред %d: Лош %s број: %s\n"
 
 #: build/spec.c:310
-#, fuzzy, c-format
+#, c-format
 msgid "%s %d defined multiple times\n"
-msgstr "\"%s\" одређује више пакета\n"
+msgstr "%s %d дефинисано више пута\n"
 
 #: build/spec.c:566
 #, c-format
@@ -1535,7 +1533,7 @@ msgstr "занемари однос(е) назива пакета [%d]\t%s -> %s
 #: lib/depends.c:881
 #, c-format
 msgid "removing %s \"%s\" from tsort relations.\n"
-msgstr "уклањам %s \"%s\" из tsort релација.\n"
+msgstr "уклањам %s „%s“ из tsort релација.\n"
 
 #: lib/depends.c:1357
 msgid "LOOP:\n"
@@ -1672,7 +1670,7 @@ msgstr "величина региона: ЛОШЕ, ril(%d) > il(%d)\n"
 
 #: lib/package.c:318
 msgid "hdr SHA1: BAD, not hex\n"
-msgstr "hdr SHA1: ЛОШЕ, није хексадецимално\n"
+msgstr "hdr SHA1: ЛОШЕ, није хексадекадно\n"
 
 #: lib/package.c:330
 msgid "hdr RSA: BAD, not binary\n"
@@ -1788,7 +1786,7 @@ msgstr "унапред дефинисани MACRO са вредношћу EXPR"
 
 #: lib/poptALL.c:207 lib/poptALL.c:210
 msgid "'MACRO EXPR'"
-msgstr "'MACRO EXPR'"
+msgstr "„MACRO EXPR“"
 
 #: lib/poptALL.c:209
 msgid "define MACRO with value EXPR"
@@ -1800,7 +1798,7 @@ msgstr "испиши макро проширење за EXPR"
 
 #: lib/poptALL.c:213
 msgid "'EXPR'"
-msgstr "'EXPR'"
+msgstr "„EXPR“"
 
 #: lib/poptALL.c:215 lib/poptALL.c:230 lib/poptALL.c:234
 msgid "read <FILE:...> instead of default file(s)"
@@ -1942,7 +1940,7 @@ msgstr "<path>"
 
 #: lib/poptI.c:165
 msgid "detect file conflicts between packages"
-msgstr "отркиј сукобе датотека између пакета"
+msgstr "откриј сукобе датотека између пакета"
 
 #: lib/poptI.c:167
 msgid "short hand for --replacepkgs --replacefiles"
@@ -1950,7 +1948,7 @@ msgstr "скраћеница за --replacepkgs --replacefiles"
 
 #: lib/poptI.c:171
 msgid "upgrade package(s) if already installed"
-msgstr "надогради пакете ако су већ инсталирани"
+msgstr "надгради пакете ако су већ инсталирани"
 
 #: lib/poptI.c:172 lib/poptI.c:188 lib/poptI.c:278
 msgid "<packagefile>+"
@@ -2242,9 +2240,8 @@ msgid "don't verify mode of files"
 msgstr "немој проверавати режим приступа датотека"
 
 #: lib/poptQV.c:300
-#, fuzzy
 msgid "don't verify capabilities of files"
-msgstr "немој проверавати величину датотека"
+msgstr "немој проверавати могућности датотека"
 
 #: lib/poptQV.c:303
 msgid "don't verify file security contexts"
@@ -2307,29 +2304,29 @@ msgid "<lua> scriptlet support not built in\n"
 msgstr "није уграђена подршка <lua> скриптица\n"
 
 #: lib/psm.c:692
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
-msgstr "Не могу да одвојим %s: %s\n"
+msgstr "Не могу да направим привремену датотеку за %s: %s\n"
 
 #: lib/psm.c:741
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr "Не могу да одвојим %s: %s\n"
+msgstr "Не могу да удвојим описника датотеке: %s: %s\n"
 
 #: lib/psm.c:761
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr "%s(%s-%s-%s.%s) скриптица није успела, waitpid(%d) rc %d: %s\n"
+msgstr "%s скриптица није успела, waitpid(%d) rc %d: %s\n"
 
 #: lib/psm.c:765
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, signal %d\n"
-msgstr "%s(%s-%s-%s.%s) скриптица није успела, сигнал %d\n"
+msgstr "%s скриптица није успела, сигнал %d\n"
 
 #: lib/psm.c:773
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, exit status %d\n"
-msgstr "%s(%s-%s-%s.%s) скриптица није успела, излазни статус %d\n"
+msgstr "%s скриптица није успела, излазни статус %d\n"
 
 #: lib/psm.c:1285
 #, c-format
@@ -2356,9 +2353,9 @@ msgid "%s failed: %s\n"
 msgstr "%s није успело: %s\n"
 
 #: lib/psm.c:1564 lib/transaction.c:1050 lib/verify.c:483
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to change root directory: %m\n"
-msgstr "неуспело креирање директоријума %s: %s\n"
+msgstr "Не могу да променим коренски директоријум: %m\n"
 
 #: lib/query.c:114
 #, c-format
@@ -2366,9 +2363,8 @@ msgid "incorrect format: %s\n"
 msgstr "неисправан облик: %s\n"
 
 #: lib/query.c:126
-#, fuzzy
 msgid "(contains no files)\n"
-msgstr "(не садржи датотеке)"
+msgstr "(не садржи датотеке)\n"
 
 #: lib/query.c:160
 msgid "normal        "
@@ -2486,14 +2482,13 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush није успело: %s\n"
 
 #: lib/rpmchecksig.c:199 lib/rpmchecksig.c:336
-#, fuzzy
 msgid "rpmMkTemp failed\n"
-msgstr "rpmMkTempFile није успело\n"
+msgstr "rpmMkTemp није успело\n"
 
 #: lib/rpmchecksig.c:316
 #, c-format
 msgid "%s: was already signed by key ID %s, skipping\n"
-msgstr "%s: је већ потписан од идентификатора кључа %s, прескачем\n"
+msgstr "%s: је већ потписан кључем са ID-ом %s, прескачем\n"
 
 #: lib/rpmchecksig.c:344
 #, c-format
@@ -2563,9 +2558,8 @@ msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 msgstr ""
-"Зависности \"B\" је потребна епоха (претпостављамо да је епоха исто што и \"A"
-"\")\n"
-"\tA = \"%s\"\tB = \"%s\"\n"
+"Зависности „Б“ је потребна епоха (претпостављамо исту епоху као код „А“)\n"
+"\tА = „%s“\tБ = „%s“\n"
 
 #: lib/rpmds.c:964
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
@@ -2579,16 +2573,15 @@ msgstr ""
 
 #: lib/rpmds.c:971
 msgid "package payload can be compressed using bzip2."
-msgstr "товар пакета може бити компримован помоћу bzip2-а."
+msgstr "товар пакета може бити компримован користећи bzip2."
 
 #: lib/rpmds.c:975
-#, fuzzy
 msgid "package payload can be compressed using lzma."
-msgstr "товар пакета може бити компримован помоћу bzip2-а."
+msgstr "товар пакета може бити компримован користећи lzma."
 
 #: lib/rpmds.c:978
 msgid "package payload file(s) have \"./\" prefix."
-msgstr "датотека(е) товара пакета има \"./\" префикс."
+msgstr "датотека(е) товара пакета има префикс „./“."
 
 #: lib/rpmds.c:981
 msgid "package name-version-release is not implicitly provided."
@@ -2617,10 +2610,11 @@ msgstr "унутрашња подршка за скрипте lua."
 #: lib/rpmds.c:1001
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
+"алгоритам за сажимање контролне суме датотеке се може подешавати по пакету"
 
 #: lib/rpmds.c:1005
 msgid "support for POSIX.1e file capabilities"
-msgstr ""
+msgstr "подршка за POSIX.1e могућности датотека"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:116 lib/rpminstall.c:301
 #: lib/rpminstall.c:454 tools/rpmgraph.c:119 tools/rpmgraph.c:156
@@ -2629,14 +2623,14 @@ msgid "open of %s failed: %s\n"
 msgstr "отварање %s није успело: %s\n"
 
 #: lib/rpmgi.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
-msgstr "%s: није rpm пакет (или манифест пакета): %s\n"
+msgstr "%s: није rpm пакет (или манифест пакета)\n"
 
 #: lib/rpmgi.c:358
 #, c-format
 msgid "unknown tag: \"%s\"\n"
-msgstr "непозната ознака: \"%s\"\n"
+msgstr "непозната ознака: „%s“\n"
 
 #: lib/rpmgi.c:629 lib/rpminstall.c:257 tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
@@ -2661,9 +2655,9 @@ msgid "Retrieving %s\n"
 msgstr "Прибављам %s\n"
 
 #: lib/rpminstall.c:417
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s - transfer failed\n"
-msgstr "прескачем %s - неуспео пренос - %s\n"
+msgstr "прескачем %s - неуспео пренос\n"
 
 #: lib/rpminstall.c:477 lib/rpminstall.c:731 tools/rpmgraph.c:139
 #, c-format
@@ -2686,9 +2680,9 @@ msgid "file %s requires a newer version of RPM\n"
 msgstr "датотека %s захтева новију верзију RPM-а\n"
 
 #: lib/rpminstall.c:676
-#, fuzzy, c-format
+#, c-format
 msgid "\"%s\" specifies multiple packages:\n"
-msgstr "\"%s\" одређује више пакета\n"
+msgstr "„%s“ одређује више пакета:\n"
 
 #: lib/rpminstall.c:715
 #, c-format
@@ -2701,19 +2695,16 @@ msgid "Installing %s\n"
 msgstr "Инсталирам %s\n"
 
 #: lib/rpmlead.c:102
-#, fuzzy
 msgid "not an rpm package"
-msgstr "%s: није rpm пакет\n"
+msgstr "није rpm пакет"
 
 #: lib/rpmlead.c:106
-#, fuzzy
 msgid "illegal signature type"
-msgstr "%s: неправилан тип потписа\n"
+msgstr "неправилан тип потписа"
 
 #: lib/rpmlead.c:110
-#, fuzzy
 msgid "unsupported RPM package version"
-msgstr "%s: неподржан RPM пакет (верзија %d)\n"
+msgstr "неподржана верзија RPM пакета"
 
 #: lib/rpmlead.c:123
 #, c-format
@@ -2721,9 +2712,9 @@ msgid "read failed: %s (%d)\n"
 msgstr "неуспело читање: %s (%d)\n"
 
 #: lib/rpmlock.c:120 lib/rpmlock.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "can't create transaction lock on %s (%s)\n"
-msgstr "не могу да направим браву за трансакцију %s\n"
+msgstr "не могу да направим браву за трансакцију на %s (%s)\n"
 
 #: lib/rpmlock.c:125
 #, c-format
@@ -2802,7 +2793,7 @@ msgstr "непозната грешка %d се десила у току рук�
 #: lib/rpmrc.c:182
 #, c-format
 msgid "missing second ':' at %s:%d\n"
-msgstr "недостаје друго ':' код %s:%d\n"
+msgstr "недостаје друго „:“ код %s:%d\n"
 
 #: lib/rpmrc.c:185
 #, c-format
@@ -2837,7 +2828,7 @@ msgstr "Премало аргумената у подразумеваном ре
 #: lib/rpmrc.c:546
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
-msgstr "недостаје ':' (пронађено 0x%02x) код %s:%d\n"
+msgstr "недостаје „:“ (пронађено 0x%02x) код %s:%d\n"
 
 #: lib/rpmrc.c:563 lib/rpmrc.c:603
 #, c-format
@@ -2845,9 +2836,9 @@ msgid "missing argument for %s at %s:%d\n"
 msgstr "недостаје аргумент за %s на %s:%d\n"
 
 #: lib/rpmrc.c:579
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %m\n"
-msgstr "не могу да отворим %s на %s:%d: %s\n"
+msgstr "не могу да отворим %s на %s:%d: %m\n"
 
 #: lib/rpmrc.c:595
 #, c-format
@@ -2857,7 +2848,7 @@ msgstr "недостаје архитектура за %s на %s:%d\n"
 #: lib/rpmrc.c:662
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
-msgstr "лоша опција '%s' код %s:%d\n"
+msgstr "лоша опција „%s“ код %s:%d\n"
 
 #: lib/rpmrc.c:1430
 #, c-format
@@ -2870,14 +2861,13 @@ msgid "Please contact %s\n"
 msgstr "Молим вас контактирајте %s\n"
 
 #: lib/rpmrc.c:1651
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "Не могу да отворим %s за читање: %s.\n"
+msgstr "Не могу да отворим %s за читање: %m.\n"
 
 #: lib/rpmtd.c:257
-#, fuzzy
 msgid "Unknown format"
-msgstr "непозната ознака"
+msgstr "Непознат облик"
 
 #: lib/rpmts.c:105
 #, c-format
@@ -2887,20 +2877,20 @@ msgstr "не могу да отворим Packages базу података у 
 #: lib/rpmts.c:190
 #, c-format
 msgid "extra '(' in package label: %s\n"
-msgstr "сувишна '(' у ознаци пакета: %s\n"
+msgstr "сувишна „(“ у ознаци пакета: %s\n"
 
 #: lib/rpmts.c:208
 #, c-format
 msgid "missing '(' in package label: %s\n"
-msgstr "недостаје '(' у ознаци пакета: %s\n"
+msgstr "недостаје „(“ у ознаци пакета: %s\n"
 
 #: lib/rpmts.c:216
 #, c-format
 msgid "missing ')' in package label: %s\n"
-msgstr "недостаје ')' у ознаци пакета: %s\n"
+msgstr "недостаје „)“ у ознаци пакета: %s\n"
 
 #: lib/rpmts.c:287
-#, fuzzy, c-format
+#, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: неуспело читање јавног кључа.\n"
 
@@ -2991,32 +2981,28 @@ msgstr "Неисправна спецификација %%_потписа у д�
 #: lib/signature.c:953
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
-msgstr "Морате поставити \"%%_gpg_name\" у Вашој макро датотеци\n"
+msgstr "Морате поставити „%%_gpg_name“ у макро датотеци\n"
 
 #: lib/signature.c:965
 #, c-format
 msgid "You must set \"%%_pgp_name\" in your macro file\n"
-msgstr "Морате поставити \"%%_pgp_name\" у Вашој макро датотеци\n"
+msgstr "Морате поставити „%%_pgp_name“ у макро датотеци\n"
 
 #: lib/signature.c:1004
-#, fuzzy
 msgid "Header+Payload size:"
-msgstr "Заглавље+Величина товара: "
+msgstr "Величина заглавља+товара:"
 
 #: lib/signature.c:1037
-#, fuzzy
 msgid "MD5 digest:"
-msgstr "MD5 приказ: "
+msgstr "MD5 сажетак:"
 
 #: lib/signature.c:1080
-#, fuzzy
 msgid "Header SHA1 digest:"
-msgstr "SHA1 приказ заглавља: "
+msgstr "SHA1 сажетак заглавља:"
 
 #: lib/signature.c:1125
-#, fuzzy
 msgid "Unknown"
-msgstr "непозната ознака"
+msgstr "Непознат"
 
 #: lib/signature.c:1132 lib/signature.c:1266
 msgid "Header "
@@ -3028,19 +3014,19 @@ msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr "%sV%d %s потпис: %s, ID кључа %s\n"
 
 #: lib/signature.c:1238
-#, fuzzy, c-format
+#, c-format
 msgid "%sV%d %s signature: %s\n"
-msgstr " потпис: "
+msgstr "%sV%d %s потпис: %s\n"
 
 #: lib/signature.c:1324
-#, fuzzy, c-format
+#, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
-msgstr " DSA потпис: "
+msgstr "%sV%d DSA потпис: %s, ID кључа %s\n"
 
 #: lib/signature.c:1328
-#, fuzzy, c-format
+#, c-format
 msgid "%sV%d DSA signature: %s\n"
-msgstr " DSA потпис: "
+msgstr "%sV%d DSA потпис: %s\n"
 
 #: lib/signature.c:1342
 msgid "Verify signature: BAD PARAMETERS\n"
@@ -3048,7 +3034,7 @@ msgstr "Потврди потпис: ЛОШИ ПАРАМЕТРИ\n"
 
 #: lib/signature.c:1373
 msgid "Broken MD5 digest: UNSUPPORTED\n"
-msgstr "Прекинут MD5 приказ: НИЈЕ ПОДРЖАНО\n"
+msgstr "Покварен MD5 сажетак: НЕПОДРЖАНО\n"
 
 #: lib/signature.c:1377
 #, c-format
@@ -3146,7 +3132,7 @@ msgstr "провера датотека базе података"
 #: lib/rpmdb.c:154
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-msgstr "dbiTagsInit: није препознато име ознаке: \"%s\" занемарено\n"
+msgstr "dbiTagsInit: није препознато име ознаке: „%s“ занемарено\n"
 
 #: lib/rpmdb.c:226
 #, c-format
@@ -3171,7 +3157,7 @@ msgstr "није постављен dbpath\n"
 #: lib/rpmdb.c:2304 lib/rpmdb.c:2916
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
-msgstr "грешка(%d) при добављању \"%s\" слогова из %s индекса\n"
+msgstr "грешка(%d) при добављању „%s“ слогова из %s индекса\n"
 
 #: lib/rpmdb.c:1509
 msgid "miFreeHeader: skipping"
@@ -3214,17 +3200,17 @@ msgstr "грешка(%d) при постављању заглавља #%d сло
 #: lib/rpmdb.c:2617
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
-msgstr "грешка(%d) при постављању \"%s\" слогова из %s индекса\n"
+msgstr "грешка(%d) при постављању „%s“ слогова из %s индекса\n"
 
 #: lib/rpmdb.c:2636
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr "грешка(%d) при складиштењу слога \"%s\" у %s\n"
+msgstr "грешка(%d) при складиштењу слога „%s“ у %s\n"
 
 #: lib/rpmdb.c:2646
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr "грешка(%d) при уклањању слога \"%s\" из %s\n"
+msgstr "грешка(%d) при уклањању слога „%s“ из %s\n"
 
 #: lib/rpmdb.c:2774
 #, c-format
@@ -3310,7 +3296,7 @@ msgstr "ексклузивно"
 #: lib/backend/dbconfig.c:329
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr "није препозната опција базе података: \"%s\" занемарено.\n"
+msgstr "није препозната опција базе података: „%s“ занемарено.\n"
 
 #: lib/backend/dbconfig.c:366
 #, c-format
@@ -3354,7 +3340,7 @@ msgstr "Непозната системска грешка"
 #: python/rpmts-py.c:181
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
-msgstr ""
+msgstr "грешка: python повратни позив %s није успео, одустајем!\n"
 
 #: rpmio/macro.c:183
 #, c-format
@@ -3441,19 +3427,18 @@ msgid "error creating temporary file %s: %m\n"
 msgstr "грешка при прављењу привремене датотеке %s: %m\n"
 
 #: rpmio/rpmfileutil.c:334 rpmio/rpmfileutil.c:340
-#, fuzzy, c-format
+#, c-format
 msgid "File %s: %s\n"
-msgstr "датотека %s: %s\n"
+msgstr "Датотека %s: %s\n"
 
 #: rpmio/rpmfileutil.c:343
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr ""
+msgstr "Датотека %s је мања од %u бајтова\n"
 
 #: rpmio/rpmfileutil.c:718
-#, fuzzy
 msgid "failed to create directory"
-msgstr "неуспело креирање директоријума %s: %s\n"
+msgstr "неуспело креирање директоријума"
 
 #: rpmio/rpmlua.c:460
 #, c-format
@@ -3513,6 +3498,3 @@ msgstr "%s: неуспело читање манифеста: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "немој проверавати потпис заглавља+товара"
-
-#~ msgid "cannot open file %s: %s\n"
-#~ msgstr "не могу да отворим датотеку %s: %s\n"
