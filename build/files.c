@@ -837,15 +837,6 @@ static VFA_t virtualFileAttributes[] = {
 	{ "%license",	0,	RPMFILE_LICENSE },
 	{ "%pubkey",	0,	RPMFILE_PUBKEY },
 	{ "%policy",	0,	RPMFILE_POLICY },
-
-#if WHY_NOT
-	{ "%icon",	0,	RPMFILE_ICON },
-	{ "%spec",	0,	RPMFILE_SPEC },
-	{ "%config",	0,	RPMFILE_CONFIG },
-	{ "%missingok",	0,	RPMFILE_CONFIG|RPMFILE_MISSINGOK },
-	{ "%noreplace",	0,	RPMFILE_CONFIG|RPMFILE_NOREPLACE },
-#endif
-
 	{ NULL, 0, 0 }
 };
 
@@ -913,7 +904,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    if (fl->currentFlags & RPMFILE_DOC) {
 		rstrscat(&specialDocBuf, " ", s, NULL);
 	    } else
-	    if (fl->currentFlags & (RPMFILE_POLICY|RPMFILE_PUBKEY|RPMFILE_ICON))
+	    if (fl->currentFlags & (RPMFILE_POLICY|RPMFILE_PUBKEY))
 	    {
 		*fileName = s;
 	    } else {
