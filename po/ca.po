@@ -22,9 +22,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-03-31 13:06+0300\n"
-"PO-Revision-Date: 2007-10-13 14:46+0200\n"
-"Last-Translator: Catalan <fedora@softcatala.net>\n"
+"POT-Creation-Date: 2009-04-09 13:53+0300\n"
+"PO-Revision-Date: 2009-04-25 17:36+0100\n"
+"Last-Translator: Agustí Grau <fedora@softcatala.org>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -92,7 +92,7 @@ msgstr "s'ha produït un error en llegir la capçalera del paquet\n"
 #: rpm2cpio.c:90
 #, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr "no s'ha pogut tornar a obrir la càrrega de dades: %s\n"
+msgstr "no s'ha pogut tornar a obrir les dades de càrrega: %s\n"
 
 #: rpmqv.c:77
 #, fuzzy
@@ -184,8 +184,7 @@ msgstr "font inesperada de la consulta"
 #: rpmqv.c:395
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
-"només es poden imposar la instal·lació, l'actualització, l'rmsource i "
-"l'rmspec"
+"només es poden forçar la instal·lació, l'actualització, l'rmsource i l'rmspec"
 
 #: rpmqv.c:397
 msgid "files may only be relocated during package installation"
@@ -359,9 +358,9 @@ msgid "--sign may only be used during package building"
 msgstr "només es pot utilitzar l'opció --sign durant el muntatge d'un paquet"
 
 #: rpmqv.c:572
-#, fuzzy, c-format
+#, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "ha fallat la creació d'un arxiu: %s\n"
+msgstr "Ha fallat la creació d'una canonada per a --pipe: %m\n"
 
 #: rpmqv.c:582
 #, c-format
@@ -516,12 +515,12 @@ msgstr "Sintaxi incorrecta: %s(%s)\n"
 #: build/files.c:554
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
-msgstr ""
+msgstr "Especificació de mode incorrecta: %s(%s)\n"
 
 #: build/files.c:565
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
-msgstr ""
+msgstr "Especificació de dirmode incorrecta: %s(%s)\n"
 
 #: build/files.c:722
 #, c-format
@@ -534,13 +533,13 @@ msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Locale %.*s duplicat a %%lang(%s)\n"
 
 #: build/files.c:804
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid capability: %s\n"
-msgstr "L'element %s no és vàlid: %s\n"
+msgstr "Capacitat invàlida: %s\n"
 
 #: build/files.c:815
 msgid "File capability support not built in\n"
-msgstr ""
+msgstr "No s'ha muntat amb disponibilitat de fitxers\n"
 
 #: build/files.c:879
 #, c-format
@@ -565,7 +564,7 @@ msgstr "No es pot mesclar el %%doc especial amb altres formularis: %s\n"
 #: build/files.c:1059
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
+msgstr "L'algorisme %u de resum del fitxer és desconegut, s'està usant MD5\n"
 
 #: build/files.c:1087
 #, c-format
@@ -590,7 +589,7 @@ msgstr "No s'ha trobat el fitxer: %s\n"
 #: build/files.c:1507
 #, c-format
 msgid "File %s too large for payload\n"
-msgstr ""
+msgstr "El fitxer %s és massa gran per a les dades\n"
 
 #: build/files.c:1603
 #, c-format
@@ -605,7 +604,7 @@ msgstr "%s: ha fallat la clau pública.\n"
 #: build/files.c:1615 lib/rpmchecksig.c:431
 #, c-format
 msgid "%s: not an armored public key.\n"
-msgstr ""
+msgstr "%s: no és una clau pública armada.\n"
 
 #: build/files.c:1624
 #, c-format
@@ -628,9 +627,9 @@ msgid "File not found by glob: %s\n"
 msgstr "El glob no ha trobat el fitxer: %s\n"
 
 #: build/files.c:1751
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %%files file %s: %m\n"
-msgstr "No s'ha pogut obrir el fitxer %%files %s: %s\n"
+msgstr ""
 
 #: build/files.c:1759
 #, c-format
@@ -662,13 +661,13 @@ msgstr ""
 "%s"
 
 #: build/files.c:2238
-#, fuzzy, c-format
+#, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
-msgstr "S'està processant els fitxers: %s-%s-%s\n"
+msgstr "S'està processant els fitxers: %s-%s-%s.%s\n"
 
 #: build/files.c:2247
 msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
+msgstr "Els binaris dependents de l'arquitectura estan en el paquet noarch\n"
 
 #: build/names.c:47
 msgid "getUname: too many uid's\n"
@@ -720,9 +719,9 @@ msgid "cpio_copy read failed: %s\n"
 msgstr "ha fallat la lectura de cpio_copy: %s\n"
 
 #: build/pack.c:129
-#, fuzzy, c-format
+#, c-format
 msgid "%s: line: %s\n"
-msgstr "línia: %s\n"
+msgstr "%s: línia: %s\n"
 
 #: build/pack.c:193
 #, c-format
@@ -735,9 +734,9 @@ msgid "Could not open PreUn file: %s\n"
 msgstr "No s'ha pogut obrir el fitxer a PreUn: %s\n"
 
 #: build/pack.c:207
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PreTrans file: %s\n"
-msgstr "No s'ha pogut obrir el fitxer a PreIn: %s\n"
+msgstr "No s'ha pogut obrir el fitxer PreTrans: %s\n"
 
 #: build/pack.c:214
 #, c-format
@@ -750,9 +749,9 @@ msgid "Could not open PostUn file: %s\n"
 msgstr "No s'ha pogut obrir el fitxer PostUn: %s\n"
 
 #: build/pack.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PostTrans file: %s\n"
-msgstr "No s'ha pogut obrir el fitxer PostIn: %s\n"
+msgstr "No s'ha pogut obrir el fitxer PostTrans: %s\n"
 
 #: build/pack.c:236
 #, c-format
@@ -785,9 +784,9 @@ msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: s'està llegint la capçalera de %s\n"
 
 #: build/pack.c:395
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown payload compression: %s\n"
-msgstr "El tipus d'icona és desconegut: %s\n"
+msgstr "Compressió de dades desconeguda: %s\n"
 
 #: build/pack.c:418
 msgid "Unable to create immutable header region.\n"
@@ -823,7 +822,7 @@ msgstr "No es pot escriure el paquet: %s\n"
 #: build/pack.c:556
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
-msgstr ""
+msgstr "No s'ha pogut obrir el sigtarget %s: %s\n"
 
 #: build/pack.c:567
 #, c-format
@@ -838,12 +837,12 @@ msgstr "No es pot escriure la capçalera a %s: %s\n"
 #: build/pack.c:593
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
-msgstr "No s'ha pogut llegir la càrrega de %s: %s\n"
+msgstr "No s'ha pogut llegir les dades de %s: %s\n"
 
 #: build/pack.c:600
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
-msgstr "No s'ha pogut escriure la càrrega de %s: %s\n"
+msgstr "No s'ha pogut escriure les dades de %s: %s\n"
 
 #: build/pack.c:637
 #, c-format
@@ -851,19 +850,19 @@ msgid "Wrote: %s\n"
 msgstr "S'ha escrit: %s\n"
 
 #: build/pack.c:692
-#, fuzzy, c-format
+#, c-format
 msgid "Executing \"%s\":\n"
-msgstr "Executant(%s): %s\n"
+msgstr "S'està executant: \"%s\":\n"
 
 #: build/pack.c:695
-#, fuzzy, c-format
+#, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr "Ha fallat l'execució de %s (%s): %s\n"
+msgstr "Ha fallat l'execució de \"%s\" .\n"
 
 #: build/pack.c:699
-#, fuzzy, c-format
+#, c-format
 msgid "Package check \"%s\" failed.\n"
-msgstr "La verificació de la contrasenya ha fallat\n"
+msgstr "Ha fallat la verificació del paquet \"%s\".\n"
 
 #: build/pack.c:753
 #, c-format
@@ -1010,75 +1009,85 @@ msgstr "línia %d: l'etiqueta és malament formada: %s\n"
 msgid "line %d: Empty tag: %s\n"
 msgstr "línia %d: l'etiqueta és buida: %s\n"
 
-#: build/parsePreamble.c:497 build/parsePreamble.c:504
+#: build/parsePreamble.c:493
+#, fuzzy, c-format
+msgid "line %d: Illegal char '%c' in: %s\n"
+msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
+
+#: build/parsePreamble.c:498
+#, fuzzy, c-format
+msgid "line %d: Illegal sequence \"..\" in: %s\n"
+msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
+
+#: build/parsePreamble.c:508 build/parsePreamble.c:515
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
 
-#: build/parsePreamble.c:537
+#: build/parsePreamble.c:548
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "línia %d: els prefixos no poden acabar en «/»: %s \n"
 
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:561
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "línia %d: «Docdir» ha de començar per «/»: %s\n"
 
-#: build/parsePreamble.c:563
-#, fuzzy, c-format
+#: build/parsePreamble.c:574
+#, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
-msgstr "línia %d: el camp Epoch/Serial ha d'ésser un nombre: %s\n"
+msgstr "línia %d: el camp Epoch ha d'ésser un nombre sense signe: %s\n"
 
-#: build/parsePreamble.c:603 build/parsePreamble.c:614
+#: build/parsePreamble.c:614 build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "línia %d: %s és incorrecte: qualificadors: %s\n"
 
-#: build/parsePreamble.c:640
+#: build/parsePreamble.c:651
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "línia %d: el format de «BuildArchitecture» és incorrecte: %s\n"
 
-#: build/parsePreamble.c:650
+#: build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
-msgstr ""
+msgstr "linia %d: Només els subpaquets noarch estan suportats: %s\n"
 
-#: build/parsePreamble.c:662
+#: build/parsePreamble.c:673
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "S'ha produït un error intern: l'etiqueta %d és incorrecta\n"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:765
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "La sintaxi antiga no és disponible: %s\n"
 
-#: build/parsePreamble.c:816
+#: build/parsePreamble.c:827
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "L'especificació del paquet és incorrecta: %s\n"
 
-#: build/parsePreamble.c:822
+#: build/parsePreamble.c:833
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "El paquet ja existeix: %s\n"
 
-#: build/parsePreamble.c:854
+#: build/parsePreamble.c:865
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "línia %d: l'etiqueta és desconeguda: %s\n"
 
-#: build/parsePreamble.c:886
-#, fuzzy, c-format
+#: build/parsePreamble.c:897
+#, c-format
 msgid "%%{buildroot} couldn't be empty\n"
-msgstr "«BuildRoot» no pot ser <«/»: %s\n"
+msgstr "%%{buildroot} no pot estar buit\n"
 
-#: build/parsePreamble.c:890
-#, fuzzy, c-format
+#: build/parsePreamble.c:901
+#, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
-msgstr "«BuildRoot» no pot ser <«/»: %s\n"
+msgstr "%%{buildroot} no pot ésser \"/\"\n"
 
 #: build/parsePrep.c:24
 #, c-format
@@ -1086,24 +1095,23 @@ msgid "Bad source: %s: %s\n"
 msgstr "La font és incorrecta: %s: %s\n"
 
 #: build/parsePrep.c:67
-#, fuzzy, c-format
+#, c-format
 msgid "No patch number %u\n"
-msgstr "Ni hi ha cap número de pedaç %d\n"
+msgstr "No existeix el pedaç número %u\n"
 
 #: build/parsePrep.c:69
 #, c-format
 msgid "%%patch without corresponding \"Patch:\" tag\n"
-msgstr ""
+msgstr "%%patch sense l'etiqueta \"Patch:\" corresponent\n"
 
 #: build/parsePrep.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "No source number %u\n"
-msgstr "No hi ha cap número de font %d\n"
+msgstr "No existeix la font número %u\n"
 
 #: build/parsePrep.c:144
-#, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
-msgstr "el paquet font no conté un fitxer .spec\n"
+msgstr "Falta l'etiqueta \"Source:\" en el fitxer d'especificacions\n"
 
 #: build/parsePrep.c:166
 #, c-format
@@ -1126,14 +1134,14 @@ msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "línia %d: l'opció de %%setup %s és incorrecta: %s\n"
 
 #: build/parsePrep.c:459
-#, fuzzy, c-format
+#, c-format
 msgid "%s: %s: %s\n"
-msgstr "%s: %s\n"
+msgstr "%s: %s: %s\n"
 
 #: build/parsePrep.c:472
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid patch number %s: %s\n"
-msgstr "número de paquet invàlid: %s\n"
+msgstr "El número de pedaç %s no és vàlid: %s\n"
 
 #: build/parsePrep.c:501
 #, c-format
@@ -1329,7 +1337,7 @@ msgstr "munta amb %install (%prep, %build i instal·la) des del <paquet font>"
 
 #: build/poptBT.c:184
 msgid "override build root"
-msgstr ""
+msgstr "omet l'arrel de compilació"
 
 #: build/poptBT.c:186
 msgid "remove build tree when done"
@@ -1364,7 +1372,7 @@ msgstr ""
 #: build/poptBT.c:202 lib/poptALL.c:219 lib/poptI.c:235 lib/poptQV.c:314
 #: lib/poptQV.c:352
 msgid "don't verify package digest(s)"
-msgstr ""
+msgstr "no verifiquis els resums dels fitxers"
 
 #: build/poptBT.c:204 lib/poptALL.c:221 lib/poptI.c:237 lib/poptQV.c:316
 #: lib/poptQV.c:355
@@ -1398,22 +1406,22 @@ msgstr "genera la signatura PGP/GPG"
 
 #: build/poptBT.c:219
 msgid "override target platform"
-msgstr ""
+msgstr "omet plataforma objectiu"
 
 #: build/rpmfc.c:107
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create pipe for %s: %m\n"
-msgstr "No s'ha pogut crear el procés fill de «%s»: %s\n"
+msgstr "No s'ha pogut crear la canonada per a %s: %m\n"
 
 #: build/rpmfc.c:122
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't chdir to %s: %s\n"
-msgstr "No es pot executar %s: %s\n"
+msgstr "No s'ha pogut canviar al directori %s: %s\n"
 
 #: build/rpmfc.c:133
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't exec %s: %s\n"
-msgstr "No es pot executar %s: %s\n"
+msgstr "No s'ha pogut executar %s: %s\n"
 
 #: build/rpmfc.c:138 lib/psm.c:755
 #, c-format
@@ -1421,61 +1429,62 @@ msgid "Couldn't fork %s: %s\n"
 msgstr "No s'ha pogut crear el procés fill de «%s»: %s\n"
 
 #: build/rpmfc.c:224
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed\n"
-msgstr "ha fallat %s: %s\n"
+msgstr "%s ha fallat\n"
 
 #: build/rpmfc.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write all data to %s\n"
-msgstr "No s'ha pogut escriure la càrrega de %s: %s\n"
+msgstr "ha fallat en escriure totes les dades a %s\n"
 
 #: build/rpmfc.c:1153
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
-msgstr ""
+msgstr "Ha fallat la conversió de %s a enter gran.\n"
 
 #: build/rpmfc.c:1233
-#, fuzzy, c-format
+#, c-format
 msgid "magic_open(0x%x) failed: %s\n"
-msgstr "ha fallat l'apertura de %s: %s\n"
+msgstr "Ha fallat magic_open(0x%x): %s\n"
 
 #: build/rpmfc.c:1240
-#, fuzzy, c-format
+#, c-format
 msgid "magic_load failed: %s\n"
-msgstr "ha fallat la lectura de cpio_copy: %s\n"
+msgstr "Ha fallat magic_load: %s\n"
 
 #: build/rpmfc.c:1281
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
-msgstr ""
+msgstr "Ha fallat el reconeixement del fitxer \"%s\": mode %06o %s\n"
 
 #: build/rpmfc.c:1480
-#, fuzzy, c-format
+#, c-format
 msgid "Finding  %s: %s\n"
-msgstr "Fitxer %s: %s\n"
+msgstr "S'està cercant %s: %s\n"
 
 #: build/rpmfc.c:1486 build/rpmfc.c:1495
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find %s:\n"
-msgstr "No es pot llegir %s: %s.\n"
+msgstr "Ha fallat la cerca de %s:\n"
 
 #: build/rpmfc.c:1578 build/rpmfc.c:1609
-#, fuzzy
 msgid "Unable to get current dependency name.\n"
-msgstr "no s'ha pogut suprimir el directori %s: %s\n"
+msgstr "No s'ha pogut obtenir el nom de dependència actual.\n"
 
 #: build/rpmfc.c:1584 build/rpmfc.c:1615
 msgid "Unable to get current dependency epoch-version-release.\n"
-msgstr ""
+msgstr "No s'ha pogut aconseguir la dependència actual epoc-version-release.\n"
 
 #: build/rpmfc.c:1642
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
+"El compte de fitxers des de la informació del fitxer no coincideix amb el "
+"fitxer en el contenidor.\n"
 
 #: build/rpmfc.c:1657
 msgid "Container not of string array data type.\n"
-msgstr ""
+msgstr "El contenidor no és del tipus vector de cadenes.\n"
 
 #: build/spec.c:227
 #, c-format
@@ -1483,9 +1492,9 @@ msgid "line %d: Bad number: %s\n"
 msgstr "línia %d: número incorrecte: %s\n"
 
 #: build/spec.c:233
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad no%s number: %u\n"
-msgstr "línia %d: número %s incorrecte: %s\n"
+msgstr "línia %d: Numero dolent%s número: %u\n"
 
 #: build/spec.c:296
 #, c-format
@@ -1493,9 +1502,9 @@ msgid "line %d: Bad %s number: %s\n"
 msgstr "línia %d: número %s incorrecte: %s\n"
 
 #: build/spec.c:310
-#, fuzzy, c-format
+#, c-format
 msgid "%s %d defined multiple times\n"
-msgstr "«%s» especifica paquets múltiples\n"
+msgstr "%s %d definit múltiples vegades\n"
 
 #: build/spec.c:566
 #, c-format
@@ -1529,9 +1538,8 @@ msgid "Missing hard link(s)"
 msgstr "Manquen els enllaços durs"
 
 #: lib/cpio.c:217
-#, fuzzy
 msgid "Digest mismatch"
-msgstr "La suma MD5 no coincideix"
+msgstr "No hi ha coincidència de resums"
 
 #: lib/cpio.c:218
 msgid "Internal error"
@@ -1561,15 +1569,15 @@ msgstr "(a la memòria cau)"
 
 #: lib/depends.c:441
 msgid "(rpmlib provides)"
-msgstr ""
+msgstr "(rpmlib proporciona)"
 
 #: lib/depends.c:469
 msgid "(db files)"
-msgstr ""
+msgstr "(fitxers db)"
 
 #: lib/depends.c:481
 msgid "(db provides)"
-msgstr ""
+msgstr "(db proporciona)"
 
 #: lib/depends.c:763
 #, c-format
@@ -1602,7 +1610,7 @@ msgstr "%c"
 
 #: lib/formats.c:153
 msgid "%a %b %d %Y"
-msgstr ""
+msgstr "%a %b %d %Y"
 
 #: lib/formats.c:350
 msgid "(not base64)"
@@ -1649,51 +1657,51 @@ msgstr "no s'ha pogut obrir %s: %s\n"
 msgid "file %s is on an unknown device\n"
 msgstr "el fitxer %s és en un dispositiu desconegut\n"
 
-#: lib/fsm.c:754
+#: lib/fsm.c:752
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "l'usuari %s no existeix - usant el root\n"
 
-#: lib/fsm.c:761
+#: lib/fsm.c:759
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "el grup %s no existeix - s'està usant el root\n"
 
-#: lib/fsm.c:1563
+#: lib/fsm.c:1561
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "no s'ha trobat el fitxer d'arxiu %s a la llista de fitxers de capçalera\n"
 
-#: lib/fsm.c:1685 lib/fsm.c:1814
+#: lib/fsm.c:1683 lib/fsm.c:1812
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s desat com a %s\n"
 
-#: lib/fsm.c:1841
+#: lib/fsm.c:1839
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s ha fallat la supressió del directori %s:  el directori no és buit\n"
 
-#: lib/fsm.c:1847
+#: lib/fsm.c:1845
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s ha fallat la supressió del directori %s: %s\n"
 
-#: lib/fsm.c:1861
+#: lib/fsm.c:1859
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s la supressió de %s ha fallat: %s \n"
 
-#: lib/fsm.c:1883
+#: lib/fsm.c:1881
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s creat com a %s\n"
 
 #: lib/package.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable V%u signature\n"
-msgstr "s'està ignorant el paquet %s amb signatura no verificable V%u\n"
+msgstr "s'està ometent %s amb una firma V%u no verificable\n"
 
 #: lib/package.c:239
 #, c-format
@@ -1757,9 +1765,9 @@ msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "capçalera de dades: dolenta, número de bytes(%d) fora de rang\n"
 
 #: lib/package.c:507
-#, fuzzy, c-format
+#, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
-msgstr "capçalera blob(%d): dolenta, la lectura ha retornat %d\n"
+msgstr "capçalera blob(%zd): dolenta, la lectura ha retornat %d\n"
 
 #: lib/package.c:519
 msgid "hdr load: BAD\n"
@@ -1793,7 +1801,7 @@ msgstr "%s és un Delta RPM i no es pot instal·lar directament\n"
 #: lib/package.c:819
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
-msgstr "La càrrega de dades (%s) no és disponible al paquet %s\n"
+msgstr "Les dades (%s) no estan disponibles al paquet %s\n"
 
 #: lib/poptALL.c:179
 msgid "follow command line symlinks"
@@ -1893,7 +1901,7 @@ msgstr "escriu la versió d'RPM que s'està usant"
 
 #: lib/poptALL.c:256
 msgid "debug payload file state machine"
-msgstr "depura la màquina d'estats del fitxer de càrrega de dades"
+msgstr "depura la màquina d'estats del fitxer de dades"
 
 #: lib/poptALL.c:258
 msgid "use threads for file state machine"
@@ -2035,14 +2043,12 @@ msgid "do not verify package dependencies"
 msgstr "no verifiquis les dependències dels paquets"
 
 #: lib/poptI.c:203 lib/poptQV.c:272
-#, fuzzy
 msgid "don't verify digest of files"
-msgstr "no verifiquis l'MD5 dels fitxers"
+msgstr "no verificar els resums dels fitxers"
 
 #: lib/poptI.c:205 lib/poptQV.c:274
-#, fuzzy
 msgid "don't verify digest of files (obsolete)"
-msgstr "no verifiquis l'MD5 dels fitxers"
+msgstr "no verificar els resums dels fitxers (obsolet)"
 
 #: lib/poptI.c:207
 msgid "don't install file security contexts"
@@ -2296,9 +2302,8 @@ msgid "don't verify mode of files"
 msgstr "no comprovis el mode dels fitxers"
 
 #: lib/poptQV.c:298
-#, fuzzy
 msgid "don't verify capabilities of files"
-msgstr "no comprovis la mida dels fitxers"
+msgstr "no verifiquis les capacitats dels fitxers"
 
 #: lib/poptQV.c:301
 msgid "don't verify file security contexts"
@@ -2338,7 +2343,7 @@ msgstr "suprimeix les signatures dels paquets"
 
 #: lib/poptQV.c:345
 msgid "import an armored public key"
-msgstr ""
+msgstr "importa una clau pública armada"
 
 #: lib/poptQV.c:347
 msgid "sign package(s) (identical to --addsign)"
@@ -2358,32 +2363,32 @@ msgstr "el paquet font no conté un fitxer .spec\n"
 
 #: lib/psm.c:503
 msgid "<lua> scriptlet support not built in\n"
-msgstr ""
+msgstr "no s'ha muntat la disponibilitat per a emprar scriptlets <lua>\n"
 
 #: lib/psm.c:693
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
-msgstr "No s'ha pogut crear el procés fill de «%s»: %s\n"
+msgstr "No s'ha pogut crear el fitxer temporal per a %s: %s\n"
 
 #: lib/psm.c:742
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr "No s'ha pogut crear el procés fill de «%s»: %s\n"
+msgstr "S'ha produït un error en duplicar el descriptor de fitxer: %s: %s\n"
 
 #: lib/psm.c:762
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr "Ha fallat l'scriptlet %s(%s-%s-%s.%s), waitpid(%d) rc %d: %s\n"
+msgstr "Ha fallat l'scriptlet %s, waitpid(%d) rc %d: %s\n"
 
 #: lib/psm.c:766
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, signal %d\n"
-msgstr "Ha fallat l'scriptlet %s(%s-%s-%s.%s), el senyal és %d\n"
+msgstr "%s ha fallat l'scriplet, senyal %d\n"
 
 #: lib/psm.c:774
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, exit status %d\n"
-msgstr "Ha fallat l'scriptlet %s(%s-%s-%s.%s), l'estat de sortida és %d\n"
+msgstr "Ha fallat l'scriptlet %s,  estat de sortida %d\n"
 
 #: lib/psm.c:1286
 #, c-format
@@ -2410,9 +2415,9 @@ msgid "%s failed: %s\n"
 msgstr "ha fallat %s: %s\n"
 
 #: lib/psm.c:1565 lib/transaction.c:1039 lib/verify.c:483
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to change root directory: %m\n"
-msgstr "no s'ha pogut suprimir el directori %s: %s\n"
+msgstr "No s'ha pogut canviar el directori root: %m\n"
 
 #: lib/query.c:114
 #, c-format
@@ -2420,9 +2425,8 @@ msgid "incorrect format: %s\n"
 msgstr "format incorrecte: %s\n"
 
 #: lib/query.c:126
-#, fuzzy
 msgid "(contains no files)\n"
-msgstr "(no conté fitxers)"
+msgstr "(no conté fitxers)\n"
 
 #: lib/query.c:160
 msgid "normal        "
@@ -2438,7 +2442,7 @@ msgstr "no instal·lat "
 
 #: lib/query.c:169
 msgid "net shared    "
-msgstr ""
+msgstr "xarxa compartida"
 
 #: lib/query.c:172
 msgid "wrong color   "
@@ -2507,22 +2511,22 @@ msgid "invalid package number: %s\n"
 msgstr "número de paquet invàlid: %s\n"
 
 #: lib/query.c:531
-#, fuzzy, c-format
+#, c-format
 msgid "record %lu could not be read\n"
-msgstr "el registre %u no es pot llegir\n"
+msgstr "el registre %lu no es pot llegir\n"
 
 #: lib/query.c:547 lib/rpminstall.c:669
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "no s'ha instal·lat el paquet %s\n"
 
-#: lib/rpmal.c:314
+#: lib/rpmal.c:315
 msgid "(added files)"
 msgstr "(fitxers afegits)"
 
-#: lib/rpmal.c:368
+#: lib/rpmal.c:369
 msgid "(added provide)"
-msgstr ""
+msgstr "(l'afegit proporciona)"
 
 #: lib/rpmchecksig.c:50 lib/rpmchecksig.c:816
 #, c-format
@@ -2540,9 +2544,8 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: ha fallat l'Fflush: %s\n"
 
 #: lib/rpmchecksig.c:199 lib/rpmchecksig.c:324
-#, fuzzy
 msgid "rpmMkTemp failed\n"
-msgstr "ha fallat makeTempFile\n"
+msgstr "Ha fallat rpmMkTemp\n"
 
 #: lib/rpmchecksig.c:304
 #, c-format
@@ -2578,6 +2581,8 @@ msgstr "%s: ha fallat headerRead\n"
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
+"%s: la regió de capçalera inmutable no s'ha pogut llegir. El paquet és "
+"corrupte?\n"
 
 #: lib/rpmchecksig.c:511
 #, c-format
@@ -2642,14 +2647,12 @@ msgid "package payload can be compressed using bzip2."
 msgstr "les dades del paquet es poden comprimir amb el bzip2."
 
 #: lib/rpmds.c:974
-#, fuzzy
 msgid "package payload can be compressed using xz."
-msgstr "les dades del paquet es poden comprimir amb el bzip2."
+msgstr "Les dades del paquet es poden comprimir amb xz."
 
 #: lib/rpmds.c:977
-#, fuzzy
 msgid "package payload can be compressed using lzma."
-msgstr "les dades del paquet es poden comprimir amb el bzip2."
+msgstr "Les dades del paquet es poden comprimir amb bzip2."
 
 #: lib/rpmds.c:981
 msgid "package payload file(s) have \"./\" prefix."
@@ -2686,11 +2689,11 @@ msgstr "es poden emprar scripts en lua."
 
 #: lib/rpmds.c:1004
 msgid "file digest algorithm is per package configurable"
-msgstr ""
+msgstr "l'algorisme de resum de fitxer és configurable per paquet"
 
 #: lib/rpmds.c:1008
 msgid "support for POSIX.1e file capabilities"
-msgstr ""
+msgstr "suport per a capacitats de fitxer POSIX.1e"
 
 #: lib/rpmgi.c:95 lib/rpminstall.c:116 lib/rpminstall.c:301
 #: lib/rpminstall.c:454 tools/rpmgraph.c:119 tools/rpmgraph.c:156
@@ -2699,9 +2702,9 @@ msgid "open of %s failed: %s\n"
 msgstr "ha fallat l'apertura de %s: %s\n"
 
 #: lib/rpmgi.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
-msgstr "%s: no és un paquet rpm (o un manifest de paquet): %s\n"
+msgstr "%s: no és un paquet rpm (o un manifest de paquet)\n"
 
 #: lib/rpmgi.c:358
 #, c-format
@@ -2731,9 +2734,9 @@ msgid "Retrieving %s\n"
 msgstr "S'està obtenint %s\n"
 
 #: lib/rpminstall.c:417
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s - transfer failed\n"
-msgstr "s'està ignorant %s - ha fallat la transferència - %s\n"
+msgstr "S'està ometent %s - ha fallat la transferència\n"
 
 #: lib/rpminstall.c:477 lib/rpminstall.c:731 tools/rpmgraph.c:139
 #, c-format
@@ -2756,9 +2759,9 @@ msgid "file %s requires a newer version of RPM\n"
 msgstr "el fitxer %s necessita una nova versió d'RPM\n"
 
 #: lib/rpminstall.c:676
-#, fuzzy, c-format
+#, c-format
 msgid "\"%s\" specifies multiple packages:\n"
-msgstr "«%s» especifica paquets múltiples\n"
+msgstr "\"%s\" especifica múltiples paquets:\n"
 
 #: lib/rpminstall.c:715
 #, c-format
@@ -2771,19 +2774,16 @@ msgid "Installing %s\n"
 msgstr "S'està instal·lant %s\n"
 
 #: lib/rpmlead.c:102
-#, fuzzy
 msgid "not an rpm package"
-msgstr "%s: no és un paquet rpm\n"
+msgstr "no és un paquet rpm"
 
 #: lib/rpmlead.c:106
-#, fuzzy
 msgid "illegal signature type"
-msgstr "%s: No hi ha signatura disponible\n"
+msgstr "tipus de signatura invàlida"
 
 #: lib/rpmlead.c:110
-#, fuzzy
 msgid "unsupported RPM package version"
-msgstr "La càrrega de dades (%s) no és disponible al paquet %s\n"
+msgstr "versió d'empaquetat RPM no suportada"
 
 #: lib/rpmlead.c:123
 #, c-format
@@ -2791,14 +2791,14 @@ msgid "read failed: %s (%d)\n"
 msgstr "ha fallat la lectura: %s (%d)\n"
 
 #: lib/rpmlock.c:120 lib/rpmlock.c:128
-#, fuzzy, c-format
+#, c-format
 msgid "can't create transaction lock on %s (%s)\n"
-msgstr "crea un conjunt de transaccions"
+msgstr "No s'ha pogut crear un bloqueig de transacció a %s (%s)\n"
 
 #: lib/rpmlock.c:125
 #, c-format
 msgid "waiting for transaction lock on %s\n"
-msgstr ""
+msgstr "s'està esperant per un bloqueig de transacció a %s\n"
 
 #: lib/rpmps.c:285
 msgid "different"
@@ -2842,13 +2842,13 @@ msgid "package %s (which is newer than %s) is already installed"
 msgstr "ja s'ha instal·lat el paquet %s, que és més nou que %s"
 
 #: lib/rpmps.c:324
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr ""
 "el paquet a instal·lar %s necessita %<PRIu64>%cB al sistema de fitxers %s"
 
 #: lib/rpmps.c:334
-#, fuzzy, c-format
+#, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr ""
 "el paquet a instal·lar %s necessita %<PRIu64> nodes-i al sistema de fitxers %"
@@ -2919,9 +2919,9 @@ msgid "missing argument for %s at %s:%d\n"
 msgstr "manca un argument per a %s a %s:%d\n"
 
 #: lib/rpmrc.c:515
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %m\n"
-msgstr "no puc obrir %s a %s:%d: %s\n"
+msgstr "no s'ha pogut obrir %s a %s:%d: %m\n"
 
 #: lib/rpmrc.c:531
 #, c-format
@@ -2941,17 +2941,16 @@ msgstr "Sistema desconegut: %s\n"
 #: lib/rpmrc.c:1367
 #, c-format
 msgid "Please contact %s\n"
-msgstr ""
+msgstr "contacteu amb %s\n"
 
 #: lib/rpmrc.c:1587
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "No es pot obrir %s per a llegir-lo: %s.\n"
+msgstr "No s'ha pogut obrir %s per a lectura: %m.\n"
 
 #: lib/rpmtd.c:257
-#, fuzzy
 msgid "Unknown format"
-msgstr "etiqueta desconeguda"
+msgstr "Format desconegut"
 
 #: lib/rpmts.c:105
 #, c-format
@@ -2974,57 +2973,58 @@ msgid "missing ')' in package label: %s\n"
 msgstr "falta ')' a l'etiqueta del paquet: %s\n"
 
 #: lib/rpmts.c:287
-#, fuzzy, c-format
+#, c-format
 msgid "%s: reading of public key failed.\n"
-msgstr "%s: ha fallat la clau pública.\n"
+msgstr "%s: ha fallat la lectura de la clau pública.\n"
 
 #: lib/signature.c:131
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
-msgstr ""
+msgstr "mida sigh(%d): dolenta, la lectura ha retornat %d\n"
 
 #: lib/signature.c:136
 msgid "sigh magic: BAD\n"
-msgstr ""
+msgstr "magic sigh: dolent\n"
 
 #: lib/signature.c:142
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
-msgstr ""
+msgstr "etiquetes sigh: dolentes, número d'etiquetes(%d) fora de rang\n"
 
 #: lib/signature.c:148
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
-msgstr ""
+msgstr "dades sigh: dolentes, número de bytes(%d) fora de rang\n"
 
 #: lib/signature.c:163
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
-msgstr ""
+msgstr "blob sigh(%d): dolent, lectura ha retornat %d\n"
 
 #: lib/signature.c:229
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
+"etiqueta sigh[%d]: dolenta, etiqueta %d tipus %d desplaçament %d compte %d\n"
 
 #: lib/signature.c:239
 msgid "sigh load: BAD\n"
-msgstr ""
+msgstr "càrrega sigh: dolenta\n"
 
 #: lib/signature.c:253
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
-msgstr ""
+msgstr "emplenat sigh(%zd): dolent, s'han llegit %zd bytes\n"
 
 #: lib/signature.c:269
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
-msgstr ""
+msgstr "sigSize sigh(%zd): dolent, ha fallat fstat(2)\n"
 
 #: lib/signature.c:350
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
-msgstr ""
+msgstr "No s'ha pogut crear una canonada per a la signatura: %m"
 
 #: lib/signature.c:370 lib/signature.c:656
 #, c-format
@@ -3047,6 +3047,8 @@ msgstr "no es pot llegir la signatura\n"
 #: lib/signature.c:495
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
+"La regió inmutable de la capçalera no s'ha pogut llegir. És possible que el "
+"paquet sigui corrupte\n"
 
 #: lib/signature.c:660 lib/signature.c:700
 #, c-format
@@ -3059,19 +3061,16 @@ msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Heu d'establir «%%_gpg_name» al vostre fitxer de macros\n"
 
 #: lib/signature.c:733
-#, fuzzy
 msgid "Header+Payload size:"
-msgstr "Mida de la capçalera i la càrrega: "
+msgstr "Mida de capçalera més dades:"
 
 #: lib/signature.c:762
-#, fuzzy
 msgid "MD5 digest:"
-msgstr "Suma MD5: "
+msgstr "Resum MD5:"
 
 #: lib/signature.c:801
-#, fuzzy
 msgid "Header SHA1 digest:"
-msgstr "Suma SHA1 de la capçalera: "
+msgstr "Capçalera de resum SHA1:"
 
 #: lib/signature.c:856
 msgid "Header "
@@ -3092,9 +3091,9 @@ msgid "missing   %c %s"
 msgstr "manca   %c %s"
 
 #: lib/verify.c:421
-#, fuzzy, c-format
+#, c-format
 msgid "Unsatisfied dependencies for %s:\n"
-msgstr "Dependències no satisfetes per a %s: "
+msgstr "Dependències insatisfetes per a %s:\n"
 
 #: lib/headerfmt.c:348
 msgid "missing { after %"
@@ -3183,7 +3182,7 @@ msgstr "dbiTagsInit: nom d'etiqueta no reconegut: s'ignorarà «%s»\n"
 #: lib/rpmdb.c:226
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
-msgstr ""
+msgstr "dbiOpen: dbapi %d no disponible\n"
 
 #: lib/rpmdb.c:236
 #, c-format
@@ -3215,14 +3214,14 @@ msgid "error(%d) storing record #%d into %s\n"
 msgstr "s'ha produït un error (%d) en emmagatzemar el registre #%d a %s\n"
 
 #: lib/rpmdb.c:1619
-#, fuzzy, c-format
+#, c-format
 msgid "%s: regexec failed: %s\n"
-msgstr "%s: ha fallat l'fseek: %s\n"
+msgstr "%s: ha fallat regexec: %s\n"
 
 #: lib/rpmdb.c:1800
-#, fuzzy, c-format
+#, c-format
 msgid "%s: regcomp failed: %s\n"
-msgstr "%s: ha fallat l'apertura: %s\n"
+msgstr "%s: ha fallat regcomp: %s\n"
 
 #: lib/rpmdb.c:2081
 msgid "rpmdbNextIterator: skipping"
@@ -3284,9 +3283,9 @@ msgid "temporary database %s already exists\n"
 msgstr "ja existeix la base de dades temporal %s\n"
 
 #: lib/rpmdb.c:3174
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create directory %s: %s\n"
-msgstr "no s'ha pogut suprimir el directori %s: %s\n"
+msgstr "ha fallat en crear el directori %s: %s\n"
 
 #: lib/rpmdb.c:3221
 #, c-format
@@ -3365,31 +3364,33 @@ msgstr "%s té un valor de tipus «enter» massa llarg o massa petit, s'ignorar�
 #, c-format
 msgid "Unable to get lock on db %s, retrying... (%d)\n"
 msgstr ""
+"No s'ha pogut obtenir un bloqueig en la base de dades %s, reintentant... (%"
+"d)\n"
 
 #: lib/backend/sqlite.c:707
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to initDB %s (%d)\n"
-msgstr "No es pot obrir %s: %s\n"
+msgstr "Ha fallat l'initDB de %s(%d)\n"
 
 #: lib/backend/sqlite.c:874
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open database: %s\n"
-msgstr "No es pot obrir %s: %s\n"
+msgstr "No s'ha pogut obrir la base de dades: %s\n"
 
 #: lib/backend/sqlite.c:1239
-#, fuzzy
 msgid "Unable to determine DB endianess.\n"
-msgstr "No s'ha pogut obrir el fitxer temporal.\n"
+msgstr "No s'ha pogut determinar l'«endianess» de la BD.\n"
 
 #: misc/error.c:107
-#, fuzzy
 msgid "Unknown system error"
-msgstr "Sistema desconegut: %s\n"
+msgstr "S'ha produït un error de sistema desconegut"
 
 #: python/rpmts-py.c:181
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
 msgstr ""
+"S'ha produït un error: ha fallat la crida de retorn del python %s, s'està "
+"avortant\n"
 
 #: rpmio/macro.c:183
 #, c-format
@@ -3468,12 +3469,12 @@ msgstr "No s'ha trobat la macro %%%.*s, s'ignorarà\n"
 
 #: rpmio/macro.c:1401
 msgid "Target buffer overflow\n"
-msgstr ""
+msgstr "Sobreiximent del búfer objectiu\n"
 
 #: rpmio/rpmfileutil.c:269
-#, fuzzy, c-format
+#, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr "s'ha produït un error en crear el fitxer temporal %s\n"
+msgstr "S'ha produït un error en crear el fitxer temporal %s: %m\n"
 
 #: rpmio/rpmfileutil.c:334 rpmio/rpmfileutil.c:340
 #, c-format
@@ -3486,34 +3487,33 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr "El fitxer %s fa menys de %u bytes\n"
 
 #: rpmio/rpmfileutil.c:726
-#, fuzzy
 msgid "failed to create directory"
-msgstr "no s'ha pogut suprimir el directori %s: %s\n"
+msgstr "no s'ha pogut crear el directori"
 
 #: rpmio/rpmlua.c:460
-#, fuzzy, c-format
+#, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr "La sintaxi antiga no és disponible: %s\n"
+msgstr "sintaxi invàlida en l'scriptlet lua: %s\n"
 
 #: rpmio/rpmlua.c:476
-#, fuzzy, c-format
+#, c-format
 msgid "invalid syntax in lua script: %s\n"
-msgstr "es poden emprar scripts en lua."
+msgstr "sintaxi invàlida en l'script lua: %s\n"
 
 #: rpmio/rpmlua.c:481 rpmio/rpmlua.c:500
-#, fuzzy, c-format
+#, c-format
 msgid "lua script failed: %s\n"
-msgstr "%s: ha fallat l'Fwrite: %s\n"
+msgstr "ha fallat l'script lua: %s\n"
 
 #: rpmio/rpmlua.c:495
-#, fuzzy, c-format
+#, c-format
 msgid "invalid syntax in lua file: %s\n"
-msgstr "número de paquet invàlid: %s\n"
+msgstr "sintaxi invàlida en el ftixer lua: %s\n"
 
 #: rpmio/rpmlua.c:630
-#, fuzzy, c-format
+#, c-format
 msgid "lua hook failed: %s\n"
-msgstr "%s: ha fallat l'Fflush: %s\n"
+msgstr "Ha fallat el hook lua: %s\n"
 
 #: rpmio/rpmlog.c:36
 msgid "(no error)"
@@ -3536,12 +3536,12 @@ msgstr "avís: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "l'assignació de memòria (%u bytes) ha retornat NULL.\n"
 
-#: rpmio/rpmpgp.c:1325
+#: rpmio/rpmpgp.c:1331
 #, fuzzy, c-format
 msgid "V%d %s/%s %s, key ID %s"
-msgstr " Signatura DSA: "
+msgstr "%sV%d %s firma: %s, ID de la clau %s\n"
 
-#: rpmio/rpmpgp.c:1333
+#: rpmio/rpmpgp.c:1339
 #, fuzzy
 msgid "(none)"
 msgstr "(cap error)"
@@ -3557,19 +3557,13 @@ msgstr "%s: ha fallat la lectura del manifest: %s\n"
 
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
-msgstr "no verifiquis la signatura de la capçalera i la càrrega"
+msgstr "no verifiquis la signatura de la capçalera i les dades"
 
 #~ msgid "Source options (with --query or --verify):"
 #~ msgstr "Opcions d'origen (amb --query o --verify):"
 
 #~ msgid "pgp not found: "
 #~ msgstr "no s'ha trobat pgp:"
-
-#~ msgid "skipping header with unverifiable V%u signature\n"
-#~ msgstr "s'està evitant la capçalera amb signatura no verificable V%u \n"
-
-#~ msgid "cannot open file %s: %s\n"
-#~ msgstr "no es pot obrir el fitxer %s: %s\n"
 
 #~ msgid "pgp failed\n"
 #~ msgstr "ha fallat el pgp\n"
@@ -3580,17 +3574,23 @@ msgstr "no verifiquis la signatura de la capçalera i la càrrega"
 #~ msgid "You must set \"%%_pgp_name\" in your macro file\n"
 #~ msgstr "Heu d'establir «%%_pgp_name» al vostre fitxer de macros\n"
 
-#, fuzzy
 #~ msgid "Unknown"
-#~ msgstr "etiqueta desconeguda"
+#~ msgstr "Desconegut"
 
-#, fuzzy
 #~ msgid "%sV%d %s signature: %s\n"
-#~ msgstr " signatura: "
+#~ msgstr "%sV%d %s firma: %s\n"
 
-#, fuzzy
+#~ msgid "%sV%d DSA signature: %s, key ID %s\n"
+#~ msgstr "%sV%d Firma DSA: %s, clau ID %s\n"
+
 #~ msgid "%sV%d DSA signature: %s\n"
-#~ msgstr " Signatura DSA: "
+#~ msgstr "%sV%d firma DSA: %s\n"
+
+#~ msgid "skipping header with unverifiable V%u signature\n"
+#~ msgstr "s'està evitant la capçalera amb signatura no verificable V%u \n"
+
+#~ msgid "cannot open file %s: %s\n"
+#~ msgstr "no es pot obrir el fitxer %s: %s\n"
 
 #~ msgid "Broken MD5 digest: UNSUPPORTED\n"
 #~ msgstr "Suma MD5 incorrecta: no està disponible\n"
