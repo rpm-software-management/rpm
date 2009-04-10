@@ -1375,7 +1375,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    statp->st_atime = now;
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
-	} else if (lstat(diskPath, statp)) {
+	} else if (!(fl->currentFlags & RPMFILE_GHOST) && lstat(diskPath, statp)) {
 	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskPath);
 	    fl->processingFailed = 1;
 	    return RPMRC_FAIL;
