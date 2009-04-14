@@ -828,6 +828,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	}
 
 	if (fd != NULL) xx = Fclose(fd);
+	rpmdbCheckSignals();
     }
 
     return res;
