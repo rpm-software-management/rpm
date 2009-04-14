@@ -524,19 +524,21 @@ tsortInfo rpmteTSI(rpmte te)
 
 void rpmteFreeTSI(rpmte te)
 {
-    if (te != NULL && rpmteTSI(te) != NULL) {
-	tsortInfo tsi;
+    relation rel;
+    if (te == NULL || rpmteTSI(te) == NULL) return;
 
-	/* Clean up tsort remnants (if any). */
-	while ((tsi = rpmteTSI(te)->tsi_next) != NULL) {
-	    rpmteTSI(te)->tsi_next = tsi->tsi_next;
-	    tsi->tsi_next = NULL;
-	    tsi = _free(tsi);
-	}
-	te->tsi = _free(te->tsi);
+    while (te->tsi->tsi_relations != NULL) {
+	rel = te->tsi->tsi_relations;
+	te->tsi->tsi_relations = te->tsi->tsi_relations->rel_next;
+	rel = _free(rel);
     }
-    /* FIX: te->tsi is NULL */
-    return;
+    while (te->tsi->tsi_forward_relations != NULL) {
+	rel = te->tsi->tsi_forward_relations;
+	te->tsi->tsi_forward_relations = \
+	    te->tsi->tsi_forward_relations->rel_next;
+	rel = _free(rel);
+    }
+    te->tsi = _free(te->tsi);
 }
 
 void rpmteNewTSI(rpmte te)
@@ -544,6 +546,7 @@ void rpmteNewTSI(rpmte te)
     if (te != NULL) {
 	rpmteFreeTSI(te);
 	te->tsi = xcalloc(1, sizeof(*te->tsi));
+	memset(te->tsi, 0, sizeof(*te->tsi));
     }
 }
 

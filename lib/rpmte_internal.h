@@ -6,17 +6,25 @@
 /** \ingroup rpmte
  * Dependncy ordering information.
  */
+
+struct relation_s {
+    rpmte   rel_suc;  // pkg requiring this package
+    int rel_flags; // accumulated flags of the requirements
+    struct relation_s * rel_next;
+};
+
+typedef struct relation_s * relation;
+
 struct tsortInfo_s {
-    union {
-	int	count;
-	rpmte	suc;
-    } tsi_u;
-#define	tsi_count	tsi_u.count
-#define	tsi_suc		tsi_u.suc
-    struct tsortInfo_s * tsi_next;
-    rpmte tsi_chain;
-    int		tsi_reqx;
-    int		tsi_qcnt;
+    int	     tsi_count;     // #pkgs this pkg requires
+    int	     tsi_qcnt;      // #pkgs requiring this package
+    int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
+    struct relation_s * tsi_relations;
+    struct relation_s * tsi_forward_relations;
+    rpmte    tsi_suc;        // used for queuing (addQ)
+    int      tsi_SccIdx;     // # of the SCC the node belongs to
+                             // (1 for trivial SCCs)
+    int      tsi_SccLowlink; // used for SCC detection
 };
 
 /**
