@@ -918,19 +918,19 @@ static inline int addRelation(rpmts ts,
     if (ignoreDep(ts, p, q))
 	return 0;
 
-    /* Avoid redundant relations. */
-    /* as we add all relations for p at once
-       only the latest added relation
-       can be from p already */
-    if (p==q || rpmteTSI(q)->tsi_suc == p)
-	return 0;
-
     /* Erasures are reversed installs. */
     if (teType == TR_REMOVED) {
         rpmte r = p;
         p = q;
         q = r;
     }
+
+    /* Avoid redundant relations. */
+    /* as we add all relations for p at once
+       only the latest added relation
+       can be from p already */
+    if (p==q || rpmteTSI(q)->tsi_suc == p)
+	return 0;
 
     /* T3. Record next "q <- p" relation (i.e. "p" requires "q"). */
     rpmteTSI(p)->tsi_count++;			/* bump p predecessor count */
