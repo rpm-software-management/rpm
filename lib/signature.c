@@ -1227,10 +1227,29 @@ verifyRSASignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, char ** msg,
     if (res != RPMRC_OK)
 	goto exit;
 
-    if (VFY_VerifyDigest(&digest, dig->rsa, dig->rsasig, sigalg, NULL) == SECSuccess)
-	res = RPMRC_OK;
-    else
-	res = RPMRC_FAIL;
+    {	SECItem *sig = dig->rsasig;
+	size_t siglen = SECKEY_SignatureLen(dig->rsa);
+
+	/* Zero-pad signature data up to expected size if necessary */
+	if (siglen > sig->len) {
+	    size_t pad = siglen - sig->len;
+	    if ((sig = SECITEM_AllocItem(NULL, NULL, siglen)) == NULL) {
+		res = RPMRC_FAIL;
+		goto exit;
+	    }
+	    memset(sig->data, 0, pad);
+	    memcpy(sig->data+pad, dig->rsasig->data, dig->rsasig->len);
+	}
+	    
+	if (VFY_VerifyDigest(&digest, dig->rsa, sig, sigalg, NULL) == SECSuccess)
+	    res = RPMRC_OK;
+	else
+	    res = RPMRC_FAIL;
+
+	if (sig != dig->rsasig) {
+	    SECITEM_ZfreeItem(sig, 1);
+	}
+    }
 
 exit:
     if (sigp != NULL) {
