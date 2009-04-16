@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-04-09 14:26+0300\n"
+"POT-Creation-Date: 2009-04-16 11:16+0300\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -355,7 +355,7 @@ msgstr "ingen parametre angivet ved verifikation"
 msgid "no arguments given"
 msgstr "ingen parametre angivet ved forespørgsel"
 
-#: build/build.c:131 build/pack.c:431
+#: build/build.c:131 build/pack.c:435
 msgid "Unable to open temp file.\n"
 msgstr "Kunne ikke åbne midlertidig fil.\n"
 
@@ -739,96 +739,96 @@ msgstr "readRPM: %s er ikke nogen RPM-pakke\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: læser hoved fra %s\n"
 
-#: build/pack.c:395
+#: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Ukendt ikontype: %s\n"
 
-#: build/pack.c:418
+#: build/pack.c:422
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:438
+#: build/pack.c:442
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:448
+#: build/pack.c:452
 msgid "Bad CSA data\n"
 msgstr "Ugyldige CSA-data\n"
 
-#: build/pack.c:483
+#: build/pack.c:487
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererer signatur: %d\n"
 
-#: build/pack.c:520
+#: build/pack.c:524
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:528
+#: build/pack.c:532
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunne ikke åbne %s: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:544
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunne ikke skrive pakke: %s\n"
 
-#: build/pack.c:556
+#: build/pack.c:560
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kunne ikke åbne sigtarget %s: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:571
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kunne ikke læse hoved fra %s: %s\n"
 
-#: build/pack.c:581
+#: build/pack.c:585
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kunne ikke skrive hoved til %s: %s\n"
 
-#: build/pack.c:593
+#: build/pack.c:597
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kunne ikke læse pakkeindhold fra %s: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:604
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kunne ikke skrive pakkeindhold til %s: %s\n"
 
-#: build/pack.c:637
+#: build/pack.c:641
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:696
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Udfører(%s): %s\n"
 
-#: build/pack.c:695
+#: build/pack.c:699
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Udførelse af %s mislykkedes (%s): %s\n"
 
-#: build/pack.c:699
+#: build/pack.c:703
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Adgangskode ikke godkendt\n"
 
-#: build/pack.c:753
+#: build/pack.c:757
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunne ikke generere filnavn til oprettelse af pakke %s: %s\n"
 
-#: build/pack.c:769
+#: build/pack.c:773
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan ikke oprette %s: %s\n"
@@ -3101,39 +3101,39 @@ msgstr "verificér ikke filerne i pakke"
 msgid "Unknown"
 msgstr "ukendt mærke"
 
-#: lib/signature.c:1132 lib/signature.c:1265
+#: lib/signature.c:1132 lib/signature.c:1284
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1233
+#: lib/signature.c:1252
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1237
+#: lib/signature.c:1256
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:1323
+#: lib/signature.c:1342
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:1327
+#: lib/signature.c:1346
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "Ingen signatur\n"
 
-#: lib/signature.c:1341
+#: lib/signature.c:1360
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1372
+#: lib/signature.c:1391
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1376
+#: lib/signature.c:1395
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signaturfyld : %d\n"

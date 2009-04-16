@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-04-09 14:26+0300\n"
+"POT-Creation-Date: 2009-04-16 11:16+0300\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -354,7 +354,7 @@ msgstr "검증에 필요한 인수가 지정되지 않았습니다"
 msgid "no arguments given"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: build/build.c:131 build/pack.c:431
+#: build/build.c:131 build/pack.c:435
 msgid "Unable to open temp file.\n"
 msgstr "임시 파일을 열 수 없습니다.\n"
 
@@ -736,93 +736,93 @@ msgstr "RPM 읽기(readRPM): %s(은)는 RPM 패키지가 아닙니다\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "RPM 읽기(readRPM): %s에서 헤더를 읽고 있습니다\n"
 
-#: build/pack.c:395
+#: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "알 수 없는 아이콘 유형: %s\n"
 
-#: build/pack.c:418
+#: build/pack.c:422
 msgid "Unable to create immutable header region.\n"
 msgstr "고정 헤더 영역(immutable header region)을 생성할 수 없습니다.\n"
 
-#: build/pack.c:438
+#: build/pack.c:442
 msgid "Unable to write temp header\n"
 msgstr "임시(temp) 헤더를 작성할 수 없습니다\n"
 
-#: build/pack.c:448
+#: build/pack.c:452
 msgid "Bad CSA data\n"
 msgstr "잘못된 CSA 데이터\n"
 
-#: build/pack.c:483
+#: build/pack.c:487
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "서명 생성 중: %d\n"
 
-#: build/pack.c:520
+#: build/pack.c:524
 msgid "Unable to reload signature header.\n"
 msgstr "서명(signature) 헤더를 다시 읽어올 수 없습니다.\n"
 
-#: build/pack.c:528
+#: build/pack.c:532
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:544
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "패키지를 작성할 수 없음: %s\n"
 
-#: build/pack.c:556
+#: build/pack.c:560
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "서명할 대상 %s(을)를 열 수 없음: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:571
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s의 헤더를 읽을 수 없음: %s\n"
 
-#: build/pack.c:581
+#: build/pack.c:585
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s에 헤더를 작성할 수 없음: %s\n"
 
-#: build/pack.c:593
+#: build/pack.c:597
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s의 payload를 읽을 수 없음: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:604
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s에 payload를 작성할 수 없음: %s\n"
 
-#: build/pack.c:637
+#: build/pack.c:641
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "작성: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:696
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "실행 중(%s): %s\n"
 
-#: build/pack.c:695
+#: build/pack.c:699
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "%s의 실행에 실패함 (%s): %s\n"
 
-#: build/pack.c:699
+#: build/pack.c:703
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "패스 구문(pass phrase)이 올바르지 않습니다\n"
 
-#: build/pack.c:753
+#: build/pack.c:757
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "%s 패키지의 출력 파일명을 생성할 수 없음: %s\n"
 
-#: build/pack.c:769
+#: build/pack.c:773
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s(을)를 생성할 수 없음: %s\n"
@@ -3080,39 +3080,39 @@ msgstr "SHA1 축약(digest) 헤더를 검사하지 않습니다"
 msgid "Unknown"
 msgstr "알 수 없는 태그 입니다"
 
-#: lib/signature.c:1132 lib/signature.c:1265
+#: lib/signature.c:1132 lib/signature.c:1284
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1233
+#: lib/signature.c:1252
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1237
+#: lib/signature.c:1256
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1323
+#: lib/signature.c:1342
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1327
+#: lib/signature.c:1346
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "서명이 없습니다\n"
 
-#: lib/signature.c:1341
+#: lib/signature.c:1360
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1372
+#: lib/signature.c:1391
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "손상된 MD5 축약(digest): 지원하지 않음\n"
 
-#: lib/signature.c:1376
+#: lib/signature.c:1395
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "서명: size(%d)+pad(%d)\n"

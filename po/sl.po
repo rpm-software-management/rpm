@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-04-09 14:26+0300\n"
+"POT-Creation-Date: 2009-04-16 11:16+0300\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -361,7 +361,7 @@ msgstr "argumenti za preverjanje niso podani"
 msgid "no arguments given"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: build/build.c:131 build/pack.c:431
+#: build/build.c:131 build/pack.c:435
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "Zaèasne datoteke ni mo¾no odpreti"
@@ -753,97 +753,97 @@ msgstr "readRPM: %s ni paket tipa RPM\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: branje glave %s\n"
 
-#: build/pack.c:395
+#: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Neznan tip ikone: %s"
 
-#: build/pack.c:418
+#: build/pack.c:422
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/pack.c:438
+#: build/pack.c:442
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:448
+#: build/pack.c:452
 #, fuzzy
 msgid "Bad CSA data\n"
 msgstr "Po¹kodovani podatki CSA"
 
-#: build/pack.c:483
+#: build/pack.c:487
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Izdelujemo podpis: %d\n"
 
-#: build/pack.c:520
+#: build/pack.c:524
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/pack.c:528
+#: build/pack.c:532
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Ni mo¾no odpreti %s: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:544
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Ni mo¾no zapisati paketa: %s"
 
-#: build/pack.c:556
+#: build/pack.c:560
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Ciljnega podpisa %s ni mo¾no odpreti: %s"
 
-#: build/pack.c:567
+#: build/pack.c:571
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/pack.c:581
+#: build/pack.c:585
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:593
+#: build/pack.c:597
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Ikone %s ni mo¾no prebrati: %s"
 
-#: build/pack.c:600
+#: build/pack.c:604
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Ni mo¾no zapisati paketa %s: %s"
 
-#: build/pack.c:637
+#: build/pack.c:641
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapisano: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:696
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Izvajanje(%s): %s\n"
 
-#: build/pack.c:695
+#: build/pack.c:699
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Izvajanje %s je bilo neuspe¹no (%s): %s"
 
-#: build/pack.c:699
+#: build/pack.c:703
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Preverjanje pristopnega gesla neuspe¹no\n"
 
-#: build/pack.c:753
+#: build/pack.c:757
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Neuspe¹no ustvarjanje izhodne datoteke za paket %s: %s\n"
 
-#: build/pack.c:769
+#: build/pack.c:773
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"
@@ -3140,39 +3140,39 @@ msgstr "brez preverjanja datotek v paketu"
 msgid "Unknown"
 msgstr "neznana znaèka"
 
-#: lib/signature.c:1132 lib/signature.c:1265
+#: lib/signature.c:1132 lib/signature.c:1284
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1233
+#: lib/signature.c:1252
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1237
+#: lib/signature.c:1256
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:1323
+#: lib/signature.c:1342
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:1327
+#: lib/signature.c:1346
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:1341
+#: lib/signature.c:1360
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1372
+#: lib/signature.c:1391
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1376
+#: lib/signature.c:1395
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Dol¾. polnila : %d\n"

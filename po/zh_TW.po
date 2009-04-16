@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-04-09 14:26+0300\n"
+"POT-Creation-Date: 2009-04-16 11:16+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -351,7 +351,7 @@ msgstr "沒有指定校驗引數"
 msgid "no arguments given"
 msgstr "沒有指定引數"
 
-#: build/build.c:131 build/pack.c:431
+#: build/build.c:131 build/pack.c:435
 msgid "Unable to open temp file.\n"
 msgstr "無法開啟暫時檔案。\n"
 
@@ -735,93 +735,93 @@ msgstr "readRPM：%s 不是一個 RPM 套件。\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM：正在讀取 %s 的檔案表頭\n"
 
-#: build/pack.c:395
+#: build/pack.c:399
 #, fuzzy, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "不明的圖示類型：%s\n"
 
-#: build/pack.c:418
+#: build/pack.c:422
 msgid "Unable to create immutable header region.\n"
 msgstr "無法建立不可變的表頭區域。\n"
 
-#: build/pack.c:438
+#: build/pack.c:442
 msgid "Unable to write temp header\n"
 msgstr "無法寫入臨時表頭\n"
 
-#: build/pack.c:448
+#: build/pack.c:452
 msgid "Bad CSA data\n"
 msgstr "損壞的 CSA 資料\n"
 
-#: build/pack.c:483
+#: build/pack.c:487
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "產生簽名：%d\n"
 
-#: build/pack.c:520
+#: build/pack.c:524
 msgid "Unable to reload signature header.\n"
 msgstr "無法重載簽名表頭。\n"
 
-#: build/pack.c:528
+#: build/pack.c:532
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/pack.c:540
+#: build/pack.c:544
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "無法寫入套件：%s\n"
 
-#: build/pack.c:556
+#: build/pack.c:560
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "無法開啟簽名目標 %s：%s\n"
 
-#: build/pack.c:567
+#: build/pack.c:571
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "無法讀取 %s 的表頭：%s\n"
 
-#: build/pack.c:581
+#: build/pack.c:585
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "無法寫入 %s 的表頭：%s\n"
 
-#: build/pack.c:593
+#: build/pack.c:597
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "無法從 %s 讀取酬載: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:604
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/pack.c:637
+#: build/pack.c:641
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "已寫入：%s\n"
 
-#: build/pack.c:692
+#: build/pack.c:696
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "正在執行 (%s)：%s\n"
 
-#: build/pack.c:695
+#: build/pack.c:699
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "執行 %s 失敗 (%s)：%s\n"
 
-#: build/pack.c:699
+#: build/pack.c:703
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "密文偵測失敗\n"
 
-#: build/pack.c:753
+#: build/pack.c:757
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "無法產生套件 %s 的檔案名稱輸出：%s\n"
 
-#: build/pack.c:769
+#: build/pack.c:773
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "無法建立 %s：%s\n"
@@ -3013,39 +3013,39 @@ msgstr "表頭 SHA1 摘要："
 msgid "Unknown"
 msgstr "不明的標記"
 
-#: lib/signature.c:1132 lib/signature.c:1265
+#: lib/signature.c:1132 lib/signature.c:1284
 msgid "Header "
 msgstr "表頭 "
 
-#: lib/signature.c:1233
+#: lib/signature.c:1252
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1237
+#: lib/signature.c:1256
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr " 簽名："
 
-#: lib/signature.c:1323
+#: lib/signature.c:1342
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr " DSA 簽名："
 
-#: lib/signature.c:1327
+#: lib/signature.c:1346
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr " DSA 簽名："
 
-#: lib/signature.c:1341
+#: lib/signature.c:1360
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "驗證簽名：不當的參數\n"
 
-#: lib/signature.c:1372
+#: lib/signature.c:1391
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "不完整的 MD 5 摘要：不支援\n"
 
-#: lib/signature.c:1376
+#: lib/signature.c:1395
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "簽名：不明 (%d)\n"

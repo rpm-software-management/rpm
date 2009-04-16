@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-04-09 14:26+0300\n"
+"POT-Creation-Date: 2009-04-16 11:16+0300\n"
 "PO-Revision-Date: 2009-01-11 01:27+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
@@ -376,7 +376,7 @@ msgstr "Es wurden keine Argumente für die Überprüfung angegeben"
 msgid "no arguments given"
 msgstr "Es wurden keine Argumente angegeben"
 
-#: build/build.c:131 build/pack.c:431
+#: build/build.c:131 build/pack.c:435
 msgid "Unable to open temp file.\n"
 msgstr "Kann temporäre Datei nicht öffnen.\n"
 
@@ -761,93 +761,93 @@ msgstr "readRPM: %s ist kein RPM-Paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: Lese Header von %s\n"
 
-#: build/pack.c:395
+#: build/pack.c:399
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Unbekannte Nutzdaten.Kompression: %s\n"
 
-#: build/pack.c:418
+#: build/pack.c:422
 msgid "Unable to create immutable header region.\n"
 msgstr "Konnte keine unveränderliche Header-Region erstellen.\n"
 
-#: build/pack.c:438
+#: build/pack.c:442
 msgid "Unable to write temp header\n"
 msgstr "Kann den temporären Header nicht schreiben\n"
 
-#: build/pack.c:448
+#: build/pack.c:452
 msgid "Bad CSA data\n"
 msgstr "Ungültige CSA-Daten\n"
 
-#: build/pack.c:483
+#: build/pack.c:487
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Erzeuge Signatur: %d\n"
 
-#: build/pack.c:520
+#: build/pack.c:524
 msgid "Unable to reload signature header.\n"
 msgstr "Kann den Header der Signatur nicht erneut laden.\n"
 
-#: build/pack.c:528
+#: build/pack.c:532
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Konnte %s nicht öffnen: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:544
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kann das Paket nicht schreiben: %s\n"
 
-#: build/pack.c:556
+#: build/pack.c:560
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Konnte Signatur-Ziel %s nicht öffnen: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:571
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Konnte Header von %s nicht lesen: %s\n"
 
-#: build/pack.c:581
+#: build/pack.c:585
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Konnte Header nicht nach %s schreiben: %s\n"
 
-#: build/pack.c:593
+#: build/pack.c:597
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Konnte Nutzdaten von %s nicht lesen: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:604
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Konnte Nutzdaten nicht nach %s schreiben: %s\n"
 
-#: build/pack.c:637
+#: build/pack.c:641
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Erstellt: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:696
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Ausschluss \"%s\":\n"
 
-#: build/pack.c:695
+#: build/pack.c:699
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Ausschluss von \"%s\" fehlgeschlagen.\n"
 
-#: build/pack.c:699
+#: build/pack.c:703
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Paket-Prüfung \"%s\" fehlgeschlagen.\n"
 
-#: build/pack.c:753
+#: build/pack.c:757
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Konnte den Dateinamen für das Paket %s nicht generieren: %s\n"
 
-#: build/pack.c:769
+#: build/pack.c:773
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Kann Datei %s nicht erstellen: %s\n"
@@ -3067,39 +3067,39 @@ msgstr "SHA1-Kurzfassung des Headers: "
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: lib/signature.c:1132 lib/signature.c:1265
+#: lib/signature.c:1132 lib/signature.c:1284
 msgid "Header "
 msgstr "Header "
 
-#: lib/signature.c:1233
+#: lib/signature.c:1252
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr "%sV%d %s Signatur: %s, Schlüssel-ID %s\n"
 
-#: lib/signature.c:1237
+#: lib/signature.c:1256
 #, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "%sV%d %s Signatur: %s\n"
 
-#: lib/signature.c:1323
+#: lib/signature.c:1342
 #, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "%sV%d DSA-Signatur: %s, Schlüssel-ID %s\n"
 
-#: lib/signature.c:1327
+#: lib/signature.c:1346
 #, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "%sV%d DSA-Signatur: %s\n"
 
-#: lib/signature.c:1341
+#: lib/signature.c:1360
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Überprüfe Signatur: UNGÜLTIGE PARAMETER\n"
 
-#: lib/signature.c:1372
+#: lib/signature.c:1391
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Fehlerhafte MD5-Kurzfassung: NICHT UNTERSTÜTZT\n"
 
-#: lib/signature.c:1376
+#: lib/signature.c:1395
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: UNBEKANNT (%d)\n"

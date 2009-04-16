@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-04-09 14:26+0300\n"
+"POT-Creation-Date: 2009-04-16 11:16+0300\n"
 "PO-Revision-Date: 2009-01-17 17:20+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -361,7 +361,7 @@ msgstr "inga parametrar angivna för verifiering"
 msgid "no arguments given"
 msgstr "inga argument angivna"
 
-#: build/build.c:131 build/pack.c:431
+#: build/build.c:131 build/pack.c:435
 msgid "Unable to open temp file.\n"
 msgstr "Kan inte öppna temporär fil.\n"
 
@@ -745,93 +745,93 @@ msgstr "readRPM: %s är inte ett RPM-paket\n"
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: läser huvud från %s\n"
 
-#: build/pack.c:395
+#: build/pack.c:399
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Okänd lastkomprimering: %s\n"
 
-#: build/pack.c:418
+#: build/pack.c:422
 msgid "Unable to create immutable header region.\n"
 msgstr "Kan inte skapa oföränderlig huvudregion.\n"
 
-#: build/pack.c:438
+#: build/pack.c:442
 msgid "Unable to write temp header\n"
 msgstr "Kan inte skriva temporärhuvud\n"
 
-#: build/pack.c:448
+#: build/pack.c:452
 msgid "Bad CSA data\n"
 msgstr "Felaktig CSA-data\n"
 
-#: build/pack.c:483
+#: build/pack.c:487
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Genererar signatur: %d\n"
 
-#: build/pack.c:520
+#: build/pack.c:524
 msgid "Unable to reload signature header.\n"
 msgstr "Kan inte läsa om signaturhuvud.\n"
 
-#: build/pack.c:528
+#: build/pack.c:532
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:540
+#: build/pack.c:544
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
 
-#: build/pack.c:556
+#: build/pack.c:560
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kan inte läsa signaturen %s: %s\n"
 
-#: build/pack.c:567
+#: build/pack.c:571
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kan inte läsa huvud från %s: %s\n"
 
-#: build/pack.c:581
+#: build/pack.c:585
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kan inte skriva huvud till %s: %s\n"
 
-#: build/pack.c:593
+#: build/pack.c:597
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kan inte läsa last från %s: %s\n"
 
-#: build/pack.c:600
+#: build/pack.c:604
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:637
+#: build/pack.c:641
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:692
+#: build/pack.c:696
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Kör \"%s\":\n"
 
-#: build/pack.c:695
+#: build/pack.c:699
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Körning av \"%s\" misslyckades.\n"
 
-#: build/pack.c:699
+#: build/pack.c:703
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Paketkontroll \"%s\" misslyckades.\n"
 
-#: build/pack.c:753
+#: build/pack.c:757
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:769
+#: build/pack.c:773
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -3025,39 +3025,39 @@ msgstr "Huvudets SHA1-summa:"
 msgid "Unknown"
 msgstr "Okänd"
 
-#: lib/signature.c:1132 lib/signature.c:1265
+#: lib/signature.c:1132 lib/signature.c:1284
 msgid "Header "
 msgstr "Huvud "
 
-#: lib/signature.c:1233
+#: lib/signature.c:1252
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr "%sV%d %s-signatur: %s, nyckel-id %s\n"
 
-#: lib/signature.c:1237
+#: lib/signature.c:1256
 #, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "%sV%d %s-signatur: %s\n"
 
-#: lib/signature.c:1323
+#: lib/signature.c:1342
 #, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "%sV%d DSA-signatur: %s, nyckel-id %s\n"
 
-#: lib/signature.c:1327
+#: lib/signature.c:1346
 #, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "%sV%d DSA-signatur: %s\n"
 
-#: lib/signature.c:1341
+#: lib/signature.c:1360
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 
-#: lib/signature.c:1372
+#: lib/signature.c:1391
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Trasig MD5-summa: STÖDS EJ\n"
 
-#: lib/signature.c:1376
+#: lib/signature.c:1395
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"
