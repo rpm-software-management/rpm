@@ -117,6 +117,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
     int i;
     time_t time;
     time_t lastTime = 0;
+    time_t trimtime = rpmExpandNumeric("%{?_changelog_trimtime}");
     char *date, *name, *text, *next;
 
     s = getStringBuf(sb);
@@ -198,7 +199,10 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 	    *s-- = '\0';
 	}
 	
-	addChangelogEntry(h, time, name, text);
+	if ( !trimtime || time >= trimtime ) {
+	    addChangelogEntry(h, time, name, text);
+	} else break;
+	
 	s = next;
     }
 
