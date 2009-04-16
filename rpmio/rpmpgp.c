@@ -1371,10 +1371,29 @@ rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
     /* Compare leading 16 bits of digest for quick check. */
     if (hash && memcmp(hash, sigp->signhash16, 2) == 0) {
 	SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
+	SECItem *sig = dig->sigdata;
+
+	/* Zero-pad RSA signature to expected size if necessary */
+	if (sigp->pubkey_algo == PGPPUBKEYALGO_RSA) {
+	    size_t siglen = SECKEY_SignatureLen(dig->keydata);
+	    if (siglen > sig->len) {
+		size_t pad = siglen - sig->len;
+		if ((sig = SECITEM_AllocItem(NULL, NULL, siglen)) == NULL) {
+		    goto exit;
+		}
+		memset(sig->data, 0, pad);
+		memcpy(sig->data+pad, dig->sigdata->data, dig->sigdata->len);
+	    }
+	}
+
 	/* XXX VFY_VerifyDigest() is deprecated in NSS 3.12 */ 
-	if (VFY_VerifyDigest(&digest, dig->keydata, dig->sigdata, 
+	if (VFY_VerifyDigest(&digest, dig->keydata, sig,
 			     getSigAlg(sigp), NULL) == SECSuccess) {
 	    res = RPMRC_OK;
+	}
+
+	if (sig != dig->sigdata) {
+	    SECITEM_ZfreeItem(sig, 1);
 	}
     }
 
