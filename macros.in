@@ -194,9 +194,9 @@ package or when debugging this package.\
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
 
-#	The number of changelog entries kept when installing (legacy, unused in
-#	rpm-4.0.1 and later).
-%_instchangelog		5
+#	The Unix time of the latest kept changelog entry in binary packages.
+#	Any older entry is not packaged in binary packages.
+%_changelog_trimtime	0
 
 #	The directory where newly built binary packages will be written.
 %_rpmdir		%{_topdir}/RPMS
