@@ -30,11 +30,13 @@ rpmconfig_SCRIPTS = \
 	find-lang.sh \
 	perl.prov perl.req perldeps.pl pythondeps.sh osgideps.pl \
 	mono-find-requires mono-find-provides \
-	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
-	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	tcl.req tgpg 
+	pkgconfigdeps.sh libtooldeps.sh \
+	rpmdb_loadcvt rpmdiff rpm2cpio.sh tcl.req tgpg 
 
-rpmconfig_SCRIPTS += macros.perl
+rpmconfig_DATA = \
+	rpmdiff.cgi rpm.daily rpm.log rpm.xinetd
+
+rpmconfig_DATA += macros.perl
 macros.perl: $(srcdir)/macros.perl.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
@@ -42,7 +44,7 @@ macros.perl: $(srcdir)/macros.perl.in
 CLEANFILES += macros.perl
 EXTRA_DIST += macros.perl.in
 
-rpmconfig_SCRIPTS += macros.php
+rpmconfig_DATA += macros.php
 macros.php: $(srcdir)/macros.php.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
@@ -50,13 +52,10 @@ macros.php: $(srcdir)/macros.php.in
 CLEANFILES += macros.php
 EXTRA_DIST += macros.php.in
 
-rpmconfig_SCRIPTS += macros.python
+rpmconfig_DATA += macros.python
 macros.python: $(srcdir)/macros.python.in
 	@sed \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
 	  < $(srcdir)/macros.python.in > macros.python
 CLEANFILES += macros.python
 EXTRA_DIST += macros.python.in
-
-rpmconfig_SCRIPTS += pkgconfigdeps.sh
-rpmconfig_SCRIPTS += libtooldeps.sh

@@ -12,7 +12,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
 
 pkgpyexec_LTLIBRARIES = _rpmmodule.la
-pkgpyexec_SCRIPTS = rpm/__init__.py
+pkgpyexec_DATA = rpm/__init__.py
 
 _rpmmodule_la_LDFLAGS = -module -avoid-version
 _rpmmodule_la_LIBADD = \
