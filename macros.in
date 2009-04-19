@@ -874,6 +874,7 @@ print (t)\
   FFLAGS="${FFLAGS:-%optflags}" ; export FFLAGS ; \
   %{_configure} --host=%{_host} --build=%{_build} \\\
 	--program-prefix=%{?_program_prefix} \\\
+	--disable-dependency-tracking \\\
 	--prefix=%{_prefix} \\\
 	--exec-prefix=%{_exec_prefix} \\\
 	--bindir=%{_bindir} \\\
