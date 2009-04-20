@@ -1360,11 +1360,10 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     if (statp == NULL) {
+	time_t now = time(NULL);
 	statp = &statbuf;
 	memset(statp, 0, sizeof(*statp));
 	if (fl->devtype) {
-	    time_t now = time(NULL);
-
 	    /* XXX hack up a stat structure for a %dev(...) directive. */
 	    statp->st_nlink = 1;
 	    statp->st_rdev =
@@ -1375,10 +1374,33 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    statp->st_atime = now;
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
-	} else if (!(fl->currentFlags & RPMFILE_GHOST) && lstat(diskPath, statp)) {
-	    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskPath);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
+	} else {
+	    int is_ghost = fl->currentFlags & RPMFILE_GHOST;
+	
+	    if (lstat(diskPath, statp)) {
+		if (is_ghost) {	/* the file is %ghost missing from build root, assume regular file */
+		    if (fl->cur_ar.ar_fmodestr != NULL) {
+			statp->st_mode = S_IFREG | (fl->cur_ar.ar_fmode & 0777);
+		    } else {
+			rpmlog(RPMLOG_ERR, _("Explicit file attributes required in spec for: %s\n"), diskPath);
+		    	fl->processingFailed = 1;
+		    	return RPMRC_FAIL;
+		    }
+		    statp->st_atime = now;
+		    statp->st_mtime = now;
+		    statp->st_ctime = now;
+		} else {	
+		    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskPath);
+		    fl->processingFailed = 1;
+		    return RPMRC_FAIL;
+		}
+	    } else {
+		if (is_ghost && !S_ISREG(statp->st_mode)) {
+		    rpmlog(RPMLOG_ERR, _("Only regular file can be %%ghost: %s\n"), diskPath);
+		    fl->processingFailed = 1;
+		    return RPMRC_FAIL;
+		}
+	    }
 	}
     }
 
