@@ -249,9 +249,9 @@ rpmKeyring rpmtsGetKeyring(rpmts ts, int autoload)
 	if (ts->keyring == NULL && autoload) {
 	    loadKeyring(ts);
 	}
-	keyring = ts->keyring;
+	keyring = rpmKeyringLink(ts->keyring);
     }
-    return rpmKeyringLink(keyring);
+    return keyring;
 }
 
 int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
