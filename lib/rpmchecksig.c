@@ -610,9 +610,10 @@ static void formatResult(rpmSigTag sigtag, rpmRC sigres, const char *result,
     free(msg);
 }
 
-int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
-		const char * fn)
+static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
+			   FD_t fd, const char *fn)
 {
+
     char *buf = NULL;
     char *missingKeys = NULL; 
     char *untrustedKeys = NULL;
@@ -627,9 +628,8 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd,
     int xx;
     rpmRC rc;
     int failed = 0;
-    int nodigests = !(qva->qva_flags & VERIFY_DIGEST);
-    int nosignatures = !(qva->qva_flags & VERIFY_SIGNATURE);
-    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    int nodigests = !(flags & VERIFY_DIGEST);
+    int nosignatures = !(flags & VERIFY_SIGNATURE);
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
@@ -778,9 +778,20 @@ exit:
     fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = rpmFreeSignature(sigh);
     hi = headerFreeIterator(hi);
-    rpmKeyringFree(keyring);
     pgpFreeDig(dig);
     return res;
+}
+
+/* Wrapper around rpmkVerifySigs to preserve API */
+int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
+{
+    int rc = 1; /* assume failure */
+    if (ts && qva && fd && fn) {
+	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+	rc = rpmpkgVerifySigs(keyring, qva->qva_flags, fd, fn);
+    	rpmKeyringFree(keyring);
+    }
+    return rc;
 }
 
 int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
@@ -788,6 +799,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     const char * arg;
     int res = 0;
     int xx;
+    rpmKeyring keyring = NULL;
 
     if (argv == NULL) return res;
 
@@ -808,6 +820,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	break;
     }
 
+    keyring = rpmtsGetKeyring(ts, 1);
     while ((arg = *argv++) != NULL) {
 	FD_t fd;
 
@@ -816,13 +829,14 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
 	    res++;
-	} else if (rpmVerifySignatures(qva, ts, fd, arg)) {
+	} else if (rpmpkgVerifySigs(keyring, qva->qva_flags, fd, arg)) {
 	    res++;
 	}
 
 	if (fd != NULL) xx = Fclose(fd);
 	rpmdbCheckSignals();
     }
+    rpmKeyringFree(keyring);
 
     return res;
 }
