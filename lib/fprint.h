@@ -72,9 +72,6 @@ struct rpmffi_s {
 #define HTDATATYPE struct rpmffi_s
 #include "lib/rpmhash.H"
 
-/* avoid include cycle problem by including after rpmFpHash definition */
-#include "lib/rpmts_internal.h"
-
 /** */
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
 

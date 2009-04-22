@@ -9,6 +9,7 @@
 #include "lib/rpmdb_internal.h"
 #include "lib/rpmfi_internal.h"
 #include "lib/fprint.h"
+#include "lib/rpmhash.h"
 #include "debug.h"
 #include <libgen.h>
 
