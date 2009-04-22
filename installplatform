@@ -8,20 +8,13 @@ RPMRC="${1:-rpmrc}"
 MACROS="${2:-macros}"
 PLATFORM="${3:-platform}"
 
-TEMPRC="/tmp/rpmrc.$$"
-cat << E_O_F > $TEMPRC
-include:	$RPMRC
-E_O_F
-
-RPM="./rpm --rcfile=$TEMPRC --macros=$MACROS"
+RPM="./rpm --rcfile=$RPMRC --macros=$MACROS"
 
 canonarch_sed='s_i.86_i386_;s_pentium[34]_i386_;s_athlon_i386_;s_sparc[^-]*_sparc_;s_alpha[^-]*_alpha_;s_arm[^-]*_arm_;s_\(powerpc\|ppc\)[^-]*_ppc_;s,\(ia32e\|amd64\),x86_64,;s_sh4a_sh4_'
 arch="`$RPM --eval '%{_arch}'|sed -e "$canonarch_sed"`"
 VENDOR="`$RPM --eval '%{_vendor}'`"
 OS="`$RPM --eval '%{_os}'`"
 RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
-target_platform="`$RPM --eval '%{?_gnu:%undefine _gnu}%{_target_platform}'|sed -e "$canonarch_sed"`"
-target="`$RPM --eval '%{_target}'|sed -e "$canonarch_sed"`"
 
 case "$arch" in
   i[3456]86|pentium[34]|athlon|geode) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_ s_i386_pentium3_ s_i386_pentium4_ s_i386_athlon_ s_i386_geode_' ;;
@@ -160,5 +153,3 @@ done
   mkdir -p noarch-${OS}
   sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' | grep -v "^%__isa" > noarch-${OS}/macros
 }
-
-rm $TEMPRC
