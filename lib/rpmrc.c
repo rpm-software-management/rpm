@@ -1605,8 +1605,9 @@ int rpmReadConfigFiles(const char * file, const char * target)
     /* Reset umask to its default umask(2) value. */
     mode = umask(mode);
 
-    /* Force preloading of name service libraries in case we go chrooting */
+    /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     (void) gethostbyname("localhost");
+    (void) rpmInitCrypto();
 
     /* Preset target macros */
    	/* FIX: target can be NULL */
