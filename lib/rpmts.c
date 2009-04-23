@@ -1149,9 +1149,6 @@ rpmts rpmtsCreate(void)
 
     ts->nrefs = 0;
 
-    /* make sure crypto gets initialized before we might go chrooting */
-    rpmInitCrypto();
-
     return rpmtsLink(ts, RPMDBG_M("tsCreate"));
 }
 

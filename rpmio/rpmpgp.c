@@ -5,7 +5,10 @@
 
 #include "system.h"
 
+#include <pthread.h>
+
 #include <rpm/rpmstring.h>
+#include <rpm/rpmlog.h>
 
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
@@ -18,6 +21,7 @@ static int _debug = 0;
 static int _print = 0;
 
 static int _crypto_initialized = 0;
+static int _new_process = 1;
 
 static struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { PGPSIGTYPE_BINARY,	"Binary document signature" },
@@ -1570,15 +1574,38 @@ char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
     return val;
 }
 
+/*
+ * Only flag for re-initialization here, in the common case the child
+ * exec()'s something else shutting down NSS here would be waste of time.
+ */
+static void at_forkchild(void)
+{
+    _new_process = 1;
+}
+
 int rpmInitCrypto(void) {
     int rc = 0;
 
+    /* Lazy NSS shutdown for re-initialization after fork() */
+    if (_new_process && _crypto_initialized) {
+	rpmFreeCrypto();
+    }
+
+    /* Initialize NSS if not already done */
     if (!_crypto_initialized) {
 	if (NSS_NoDB_Init(NULL) != SECSuccess) {
 	    rc = -1;
 	} else {
 	    _crypto_initialized = 1;
 	}
+    }
+
+    /* Register one post-fork handler per process */
+    if (_new_process) {
+	if (pthread_atfork(NULL, NULL, at_forkchild) != 0) {
+	    rpmlog(RPMLOG_WARNING, _("Failed to register fork handler: %m\n"));
+	}
+	_new_process = 0;
     }
     return rc;
 }
