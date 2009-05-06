@@ -228,37 +228,14 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 
 rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
 {
-    rpmds ds = NULL;
-    const char * Type;
+    rpmds ds;
     const char * n;
     char *evr;
 
-    if (dsType(tagN, &Type, NULL, NULL))
-	goto exit;
-
     evr = headerGetEVR(h, &n);
-
-    ds = xcalloc(1, sizeof(*ds));
-    ds->Type = Type;
-    ds->tagN = tagN;
-    ds->Count = 1;
-    ds->nopromote = _rpmds_nopromote;
-    ds->N = rpmdsDupArgv(&n, 1);
-    ds->EVR = rpmdsDupArgv((const char **)&evr, 1);
+    ds = rpmdsSingle(tagN, n, evr, Flags);
     free(evr);
-
-    ds->Flags = xmalloc(sizeof(*ds->Flags));	ds->Flags[0] = Flags;
-    ds->i = 0;
-    {	char pre[2];
-	pre[0] = ds->Type[0];
-	pre[1] = '\0';
-	/* LCL: ds->Type may be NULL ??? */
-	ds->DNEVR = rpmdsNewDNEVR(pre, ds);
-    }
-
-   
-exit:
-    return rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
+    return ds;
 }
 
 rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
