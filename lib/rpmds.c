@@ -456,6 +456,8 @@ int32_t rpmdsSetRefs(const rpmds ds, int32_t refs)
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
+    if (!rpmIsDebug())
+	return;
     if (!(ds != NULL && ds->i >= 0 && ds->i < ds->Count))
 	return;
     if (!(ds->Type != NULL && ds->DNEVR != NULL))
