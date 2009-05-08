@@ -638,13 +638,13 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     return 0;
 }
 
-static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen, pgpDig _dig)
+static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
+		     pgpDig _dig, pgpDigParams _digp)
 {
     uint8_t version = h[0];
     uint8_t * p;
     size_t plen;
     int rc;
-    pgpDigParams _digp = _dig ? &_dig->signature : NULL;
 
     switch (version) {
     case 3:
@@ -1170,7 +1170,7 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
     h = pkt + 1 + plen;
     switch (tag) {
     case PGPTAG_SIGNATURE:
-	rc = pgpPrtSig(tag, h, hlen, _dig);
+	rc = pgpPrtSig(tag, h, hlen, _dig, _digp);
 	break;
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
