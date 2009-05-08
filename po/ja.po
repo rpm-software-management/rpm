@@ -1619,7 +1619,7 @@ msgstr "アーカイブファイル %s がヘッダファイルリストにありません。\n"
 #: lib/fsm.c:1685 lib/fsm.c:1814
 #, c-format
 msgid "%s saved as %s\n"
-msgstr "%s は %s として保存されした。\n"
+msgstr "%s は %s として保存されました。\n"
 
 #: lib/fsm.c:1841
 #, c-format
