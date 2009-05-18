@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-30 11:31+0200\n"
+"POT-Creation-Date: 2009-05-18 12:27+0300\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -40,27 +40,27 @@ msgstr "Neuspe¹no branje datoteke s specifikacijami iz %s"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Preimenovanje %s v %s je bilo neuspe¹no: %m"
 
-#: build.c:228
+#: build.c:229
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "status %s ni na voljo: %s"
 
-#: build.c:232
+#: build.c:233
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Datoteka ni obièajna datoteka: %s\n"
 
-#: build.c:239
+#: build.c:240
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Ne ka¾e, da je %s datoteka s specifikacijami."
 
-#: build.c:304
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 
-#: build.c:319
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Izgradnja za ciljni sistem %s\n"
@@ -583,7 +583,7 @@ msgstr "Datoteki manjka uvodni \"/\": %s"
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1663 lib/rpminstall.c:266
+#: build/files.c:1663 lib/rpminstall.c:267
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
@@ -954,72 +954,82 @@ msgstr "vrstica %d: Deformirana znaèka: %s"
 msgid "line %d: Empty tag: %s\n"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:497 build/parsePreamble.c:504
+#: build/parsePreamble.c:493
+#, fuzzy, c-format
+msgid "line %d: Illegal char '%c' in: %s\n"
+msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
+
+#: build/parsePreamble.c:498
+#, fuzzy, c-format
+msgid "line %d: Illegal sequence \"..\" in: %s\n"
+msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
+
+#: build/parsePreamble.c:508 build/parsePreamble.c:515
 #, fuzzy, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:537
+#: build/parsePreamble.c:548
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:561
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:563
+#: build/parsePreamble.c:574
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 
-#: build/parsePreamble.c:603 build/parsePreamble.c:614
+#: build/parsePreamble.c:614 build/parsePreamble.c:625
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: build/parsePreamble.c:640
+#: build/parsePreamble.c:651
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "vrstica %d: Napaèna oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:650
+#: build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:662
+#: build/parsePreamble.c:673
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Notranja napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:765
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:816
+#: build/parsePreamble.c:827
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Nepravilno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:822
+#: build/parsePreamble.c:833
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:854
+#: build/parsePreamble.c:865
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:886
+#: build/parsePreamble.c:897
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:890
+#: build/parsePreamble.c:901
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
@@ -1039,52 +1049,52 @@ msgstr "Popravek ¹t. %d manjka"
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr ""
 
-#: build/parsePrep.c:158
+#: build/parsePrep.c:155
 #, fuzzy, c-format
 msgid "No source number %u\n"
 msgstr "Izvorna koda ¹t. %d manjka"
 
-#: build/parsePrep.c:160
+#: build/parsePrep.c:157
 #, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "izvorni paket ne vsebuje datoteke .spec"
 
-#: build/parsePrep.c:182
+#: build/parsePrep.c:179
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Ni mo¾no prenesti nosource %s: %s"
 
-#: build/parsePrep.c:269
+#: build/parsePrep.c:266
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Napaka pri razèlembi %%setup: %s"
 
-#: build/parsePrep.c:284
+#: build/parsePrep.c:281
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "vrstica %d: Nepravilen argument za %%setup %c: %s"
 
-#: build/parsePrep.c:303
+#: build/parsePrep.c:300
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "vrstica %d: Nepravilna izbira %%setup %s: %s"
 
-#: build/parsePrep.c:463
+#: build/parsePrep.c:460
 #, fuzzy, c-format
 msgid "%s: %s: %s\n"
 msgstr "datoteka %s: %s\n"
 
-#: build/parsePrep.c:476
+#: build/parsePrep.c:473
 #, fuzzy, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "neveljavna ¹tevilka paketa: %s\n"
 
-#: build/parsePrep.c:505
+#: build/parsePrep.c:502
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "vrstica %d: drugi %%prep"
 
-#: build/parseReqs.c:106
+#: build/parseReqs.c:109
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1092,12 +1102,12 @@ msgstr ""
 "vrstica %d: Oznake odvisnosti se morajo zaèeti z alfanum. znakom, ,_` ali\n"
 "'/`: %s"
 
-#: build/parseReqs.c:133
+#: build/parseReqs.c:136
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "vrstica %d: Ime datoteke z razlièico ni dovoljeno: %s"
 
-#: build/parseReqs.c:163
+#: build/parseReqs.c:166
 #, fuzzy, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "vrstica %d: Zahtevana razlièica: %s"
@@ -1385,50 +1395,50 @@ msgstr "%s neuspe¹en"
 msgid "failed to write all data to %s\n"
 msgstr "pisanje podatkov v %s je bilo neuspe¹no"
 
-#: build/rpmfc.c:1155
+#: build/rpmfc.c:1153
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1235
+#: build/rpmfc.c:1233
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: build/rpmfc.c:1242
+#: build/rpmfc.c:1240
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "odstranitev %s je bila neuspe¹na: %s"
 
-#: build/rpmfc.c:1283
+#: build/rpmfc.c:1281
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1483
+#: build/rpmfc.c:1481
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: build/rpmfc.c:1489 build/rpmfc.c:1498
+#: build/rpmfc.c:1487 build/rpmfc.c:1496
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/rpmfc.c:1582 build/rpmfc.c:1613
+#: build/rpmfc.c:1580 build/rpmfc.c:1611
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
-#: build/rpmfc.c:1588 build/rpmfc.c:1619
+#: build/rpmfc.c:1586 build/rpmfc.c:1617
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1646
+#: build/rpmfc.c:1644
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1661
+#: build/rpmfc.c:1659
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1719,12 +1729,12 @@ msgstr ""
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:597
 #, fuzzy, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature je bil neuspe¹en\n"
 
-#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:605
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Podpis ni na voljo\n"
@@ -1734,7 +1744,7 @@ msgstr "%s: Podpis ni na voljo\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:690
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -2519,7 +2529,7 @@ msgstr "neveljavna ¹tevilka paketa: %s\n"
 msgid "record %lu could not be read\n"
 msgstr "zapisa %d ni mo¾no prebrati\n"
 
-#: lib/query.c:553 lib/rpminstall.c:655
+#: lib/query.c:553 lib/rpminstall.c:660
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s ni name¹èen\n"
@@ -2534,7 +2544,7 @@ msgstr "po¹kodovana zbirka podatkov %s"
 msgid "(added provide)"
 msgstr "%s: %-45s DA (dodane ponudbe)\n"
 
-#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:826
+#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:823
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: odpiranje je bilo neuspe¹no: %s\n"
@@ -2589,40 +2599,40 @@ msgstr "%s: readLead je bil neuspe¹en\n"
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:772
 msgid "NOT OK"
 msgstr "NI DOBRO"
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:772
 msgid "OK"
 msgstr "V REDU"
 
-#: lib/rpmchecksig.c:777
+#: lib/rpmchecksig.c:774
 msgid " (MISSING KEYS:"
 msgstr " (MANJKAJOÈI KLJUÈI:"
 
-#: lib/rpmchecksig.c:779
+#: lib/rpmchecksig.c:776
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:780
+#: lib/rpmchecksig.c:777
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEPREVERJENI KLJUÈI:"
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:779
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:472
+#: lib/rpmds.c:474
 #, fuzzy
 msgid "NO "
 msgstr "NI DOBRO"
 
-#: lib/rpmds.c:472
+#: lib/rpmds.c:474
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:822
+#: lib/rpmds.c:823
 #, fuzzy, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2631,57 +2641,57 @@ msgstr ""
 "odvisnost \"B\" potrebuje \"epoch\" (privzeto enak kot \"A\")\n"
 "\tA %s\tB %s\n"
 
-#: lib/rpmds.c:979
+#: lib/rpmds.c:978
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:982
+#: lib/rpmds.c:981
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:986
+#: lib/rpmds.c:985
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:990
+#: lib/rpmds.c:989
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:993
+#: lib/rpmds.c:992
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:996
+#: lib/rpmds.c:995
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:998
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:1001
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:1005
+#: lib/rpmds.c:1004
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:1008
+#: lib/rpmds.c:1007
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:1012
+#: lib/rpmds.c:1011
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- ni podprt za nize"
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:1015
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:353
-#: lib/rpminstall.c:482 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:354
+#: lib/rpminstall.c:487 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
@@ -2696,72 +2706,72 @@ msgstr "noben paket ne pro¾i %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "neznana znaèka"
 
-#: lib/rpmgi.c:629 lib/rpminstall.c:525 lib/rpminstall.c:696
+#: lib/rpmgi.c:629 lib/rpminstall.c:530 lib/rpminstall.c:701
 #: tools/rpmgraph.c:194
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "neuspe¹ne soodvisnosti:\n"
 
-#: lib/rpminstall.c:155
+#: lib/rpminstall.c:156
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:158
 #, fuzzy
 msgid "Preparing packages for installation..."
 msgstr "paketi za namestitev niso navedeni"
 
-#: lib/rpminstall.c:304
+#: lib/rpminstall.c:305
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prena¹anje %s\n"
 
-#: lib/rpminstall.c:316
+#: lib/rpminstall.c:317
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "preskoèeno - %s - prenos neuspe¹en - %s\n"
 
-#: lib/rpminstall.c:372 lib/rpminstall.c:757 tools/rpmgraph.c:139
+#: lib/rpminstall.c:377 lib/rpminstall.c:762 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ni mo¾no namestiti\n"
 
-#: lib/rpminstall.c:411
+#: lib/rpminstall.c:416
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketa %s ni mo¾no premakniti\n"
 
-#: lib/rpminstall.c:458
+#: lib/rpminstall.c:463
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "napaka pri branju iz datoteke %s\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:469
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva novej¹o razlièico RPM\n"
 
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:501
 #, fuzzy, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "noben paket ne pro¾i %s\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:574
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ni mo¾no odpreti datoteke %s: %s\n"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:667
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" doloèa veè paketov\n"
 
-#: lib/rpminstall.c:741
+#: lib/rpminstall.c:746
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ni mo¾no odpreti %s: %s\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:752
 #, c-format
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
@@ -3088,39 +3098,39 @@ msgstr "brez preverjanja datotek v paketu"
 msgid "Unknown"
 msgstr "neznana znaèka"
 
-#: lib/signature.c:1137 lib/signature.c:1271
+#: lib/signature.c:1137 lib/signature.c:1289
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:1239
+#: lib/signature.c:1257
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1243
+#: lib/signature.c:1261
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:1329
+#: lib/signature.c:1347
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:1333
+#: lib/signature.c:1351
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "Podpis manjka\n"
 
-#: lib/signature.c:1347
+#: lib/signature.c:1365
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr ""
 
-#: lib/signature.c:1378
+#: lib/signature.c:1396
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr ""
 
-#: lib/signature.c:1382
+#: lib/signature.c:1400
 #, fuzzy, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Dol¾. polnila : %d\n"
@@ -3527,7 +3537,7 @@ msgstr "Datoteka %s: %s"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Datoteka %s je kraj¹a od %d bajtov"
 
-#: rpmio/rpmfileutil.c:716
+#: rpmio/rpmfileutil.c:724
 #, fuzzy
 msgid "failed to create directory"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"

@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-30 11:31+0200\n"
+"POT-Creation-Date: 2009-05-18 12:27+0300\n"
 "PO-Revision-Date: 2007-10-13 14:46+0200\n"
 "Last-Translator: Catalan <fedora@softcatala.net>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -54,27 +54,27 @@ msgstr "No s'ha pogut llegir el fitxer d'especificacions des de %s\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "No s'ha pogut canviar el nom de %s per %s: %m\n"
 
-#: build.c:228
+#: build.c:229
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "No s'ha pogut obtenir l'estat de %s: %m\n"
 
-#: build.c:232
+#: build.c:233
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "El fitxer %s no és un fitxer regular.\n"
 
-#: build.c:239
+#: build.c:240
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "El fitxer %s no sembla un fitxer d'especificacions.\n"
 
-#: build.c:304
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "S'estan muntant les plataformes destí: %s\n"
 
-#: build.c:319
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr "S'està muntant per al destí %s\n"
@@ -617,7 +617,7 @@ msgstr "El fitxer ha de començar amb \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "No es permet el glob: %s\n"
 
-#: build/files.c:1663 lib/rpminstall.c:266
+#: build/files.c:1663 lib/rpminstall.c:267
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "El glob no ha trobat el fitxer: %s\n"
@@ -986,72 +986,82 @@ msgstr "línia %d: l'etiqueta és malament formada: %s\n"
 msgid "line %d: Empty tag: %s\n"
 msgstr "línia %d: l'etiqueta és buida: %s\n"
 
-#: build/parsePreamble.c:497 build/parsePreamble.c:504
+#: build/parsePreamble.c:493
+#, fuzzy, c-format
+msgid "line %d: Illegal char '%c' in: %s\n"
+msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
+
+#: build/parsePreamble.c:498
+#, fuzzy, c-format
+msgid "line %d: Illegal sequence \"..\" in: %s\n"
+msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
+
+#: build/parsePreamble.c:508 build/parsePreamble.c:515
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
 
-#: build/parsePreamble.c:537
+#: build/parsePreamble.c:548
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "línia %d: els prefixos no poden acabar en «/»: %s \n"
 
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:561
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "línia %d: «Docdir» ha de començar per «/»: %s\n"
 
-#: build/parsePreamble.c:563
+#: build/parsePreamble.c:574
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "línia %d: el camp Epoch/Serial ha d'ésser un nombre: %s\n"
 
-#: build/parsePreamble.c:603 build/parsePreamble.c:614
+#: build/parsePreamble.c:614 build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "línia %d: %s és incorrecte: qualificadors: %s\n"
 
-#: build/parsePreamble.c:640
+#: build/parsePreamble.c:651
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "línia %d: el format de «BuildArchitecture» és incorrecte: %s\n"
 
-#: build/parsePreamble.c:650
+#: build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:662
+#: build/parsePreamble.c:673
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "S'ha produït un error intern: l'etiqueta %d és incorrecta\n"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:765
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr "La sintaxi antiga no és disponible: %s\n"
 
-#: build/parsePreamble.c:816
+#: build/parsePreamble.c:827
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "L'especificació del paquet és incorrecta: %s\n"
 
-#: build/parsePreamble.c:822
+#: build/parsePreamble.c:833
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "El paquet ja existeix: %s\n"
 
-#: build/parsePreamble.c:854
+#: build/parsePreamble.c:865
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "línia %d: l'etiqueta és desconeguda: %s\n"
 
-#: build/parsePreamble.c:886
+#: build/parsePreamble.c:897
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "«BuildRoot» no pot ser <«/»: %s\n"
 
-#: build/parsePreamble.c:890
+#: build/parsePreamble.c:901
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "«BuildRoot» no pot ser <«/»: %s\n"
@@ -1071,52 +1081,52 @@ msgstr "Ni hi ha cap número de pedaç %d\n"
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr ""
 
-#: build/parsePrep.c:158
+#: build/parsePrep.c:155
 #, fuzzy, c-format
 msgid "No source number %u\n"
 msgstr "No hi ha cap número de font %d\n"
 
-#: build/parsePrep.c:160
+#: build/parsePrep.c:157
 #, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "el paquet font no conté un fitxer .spec\n"
 
-#: build/parsePrep.c:182
+#: build/parsePrep.c:179
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "No s'ha pogut baixar «nosource» %s: %s\n"
 
-#: build/parsePrep.c:269
+#: build/parsePrep.c:266
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Hi ha hagut un error en analitzar %%setup: %s\n"
 
-#: build/parsePrep.c:284
+#: build/parsePrep.c:281
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "línia %d: l'argument a %%setup és incorrecte: %s\n"
 
-#: build/parsePrep.c:303
+#: build/parsePrep.c:300
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "línia %d: l'opció de %%setup %s és incorrecta: %s\n"
 
-#: build/parsePrep.c:463
+#: build/parsePrep.c:460
 #, fuzzy, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s\n"
 
-#: build/parsePrep.c:476
+#: build/parsePrep.c:473
 #, fuzzy, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "número de paquet invàlid: %s\n"
 
-#: build/parsePrep.c:505
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "línia %d: segon %%prep\n"
 
-#: build/parseReqs.c:106
+#: build/parseReqs.c:109
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1124,12 +1134,12 @@ msgstr ""
 "línia %d: els símbols de dependència han de començar per un caràcter "
 "alfanumèric, «_» o «/»: %s\n"
 
-#: build/parseReqs.c:133
+#: build/parseReqs.c:136
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "línia %d: no es permeten els noms de fitxer versionalts: %s\n"
 
-#: build/parseReqs.c:163
+#: build/parseReqs.c:166
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "línia %d: es requereix la versió: %s\n"
@@ -1406,50 +1416,50 @@ msgstr "ha fallat %s: %s\n"
 msgid "failed to write all data to %s\n"
 msgstr "No s'ha pogut escriure la càrrega de %s: %s\n"
 
-#: build/rpmfc.c:1155
+#: build/rpmfc.c:1153
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1235
+#: build/rpmfc.c:1233
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "ha fallat l'apertura de %s: %s\n"
 
-#: build/rpmfc.c:1242
+#: build/rpmfc.c:1240
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "ha fallat la lectura de cpio_copy: %s\n"
 
-#: build/rpmfc.c:1283
+#: build/rpmfc.c:1281
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1483
+#: build/rpmfc.c:1481
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Fitxer %s: %s\n"
 
-#: build/rpmfc.c:1489 build/rpmfc.c:1498
+#: build/rpmfc.c:1487 build/rpmfc.c:1496
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "No es pot llegir %s: %s.\n"
 
-#: build/rpmfc.c:1582 build/rpmfc.c:1613
+#: build/rpmfc.c:1580 build/rpmfc.c:1611
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "no s'ha pogut suprimir el directori %s: %s\n"
 
-#: build/rpmfc.c:1588 build/rpmfc.c:1619
+#: build/rpmfc.c:1586 build/rpmfc.c:1617
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1646
+#: build/rpmfc.c:1644
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1661
+#: build/rpmfc.c:1659
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1740,12 +1750,12 @@ msgstr "capçalera blob(%d): dolenta, la lectura ha retornat %d\n"
 msgid "hdr load: BAD\n"
 msgstr "càrrega de la capçalera: dolenta\n"
 
-#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:597
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: El rpmReadSignature ha fallat: %s"
 
-#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:605
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: No hi ha signatura disponible\n"
@@ -1755,7 +1765,7 @@ msgstr "%s: No hi ha signatura disponible\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: El headerRead ha fallat: %s"
 
-#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:690
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "s'està ignorant el paquet %s amb signatura no verificable V%u\n"
@@ -2480,7 +2490,7 @@ msgstr "número de paquet invàlid: %s\n"
 msgid "record %lu could not be read\n"
 msgstr "el registre %u no es pot llegir\n"
 
-#: lib/query.c:553 lib/rpminstall.c:655
+#: lib/query.c:553 lib/rpminstall.c:660
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "no s'ha instal·lat el paquet %s\n"
@@ -2493,7 +2503,7 @@ msgstr "(fitxers afegits)"
 msgid "(added provide)"
 msgstr ""
 
-#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:826
+#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:823
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: ha fallat l'apertura: %s\n"
@@ -2548,39 +2558,39 @@ msgstr "%s: ha fallat headerRead\n"
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:772
 msgid "NOT OK"
 msgstr "NO ÉS CORRECTE"
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:772
 msgid "OK"
 msgstr "D'ACORD"
 
-#: lib/rpmchecksig.c:777
+#: lib/rpmchecksig.c:774
 msgid " (MISSING KEYS:"
 msgstr " (CLAUS NO TROBADES:"
 
-#: lib/rpmchecksig.c:779
+#: lib/rpmchecksig.c:776
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:780
+#: lib/rpmchecksig.c:777
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CLAUS NO FIABLES:"
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:779
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:472
+#: lib/rpmds.c:474
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:472
+#: lib/rpmds.c:474
 msgid "YES"
 msgstr "SÍ"
 
-#: lib/rpmds.c:822
+#: lib/rpmds.c:823
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2590,65 +2600,65 @@ msgstr ""
 "\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:979
+#: lib/rpmds.c:978
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Les dependències PreReq:, Provides:, i Obsoletes: disposen de versionatge."
 
-#: lib/rpmds.c:982
+#: lib/rpmds.c:981
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "els noms de fitxer s'han emmagatzemat com una tupla (dirName,baseName,"
 "dirIndex), no com a camí"
 
-#: lib/rpmds.c:986
+#: lib/rpmds.c:985
 msgid "package payload can be compressed using bzip2."
 msgstr "les dades del paquet es poden comprimir amb el bzip2."
 
-#: lib/rpmds.c:990
+#: lib/rpmds.c:989
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "les dades del paquet es poden comprimir amb el bzip2."
 
-#: lib/rpmds.c:993
+#: lib/rpmds.c:992
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "els fitxer de les dades del paquet tenen el prefix «./»."
 
-#: lib/rpmds.c:996
+#: lib/rpmds.c:995
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 "no s'ha proporcionat implícitament el nom-versió-alliberament del paquet."
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:998
 msgid "header tags are always sorted after being loaded."
 msgstr "les etiquetes de la capçalera sempre s'ordenen després de carregar-se."
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:1001
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "l'íntèrpret de l'scriptlet pot emprar arguments de la capçalera."
 
-#: lib/rpmds.c:1005
+#: lib/rpmds.c:1004
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "es pot instal·lar un conjunt d'enllaços durs a fitxer sense que estiguin "
 "complets."
 
-#: lib/rpmds.c:1008
+#: lib/rpmds.c:1007
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "els scriptlets del paquet poden accedir la base de dades rpm durant la "
 "instal·lació"
 
-#: lib/rpmds.c:1012
+#: lib/rpmds.c:1011
 msgid "internal support for lua scripts."
 msgstr "es poden emprar scripts en lua."
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:1015
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:353
-#: lib/rpminstall.c:482 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:354
+#: lib/rpminstall.c:487 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "ha fallat l'apertura de %s: %s\n"
@@ -2663,70 +2673,70 @@ msgstr "%s: no és un paquet rpm (o un manifest de paquet): %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "etiqueta desconeguda: «%s»\n"
 
-#: lib/rpmgi.c:629 lib/rpminstall.c:525 lib/rpminstall.c:696
+#: lib/rpmgi.c:629 lib/rpminstall.c:530 lib/rpminstall.c:701
 #: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "Dependències fallides:\n"
 
-#: lib/rpminstall.c:155
+#: lib/rpminstall.c:156
 msgid "Preparing..."
 msgstr "S'està preparant..."
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:158
 msgid "Preparing packages for installation..."
 msgstr "S'està preparant els paquets per a la instal·lació..."
 
-#: lib/rpminstall.c:304
+#: lib/rpminstall.c:305
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "S'està obtenint %s\n"
 
-#: lib/rpminstall.c:316
+#: lib/rpminstall.c:317
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "s'està ignorant %s - ha fallat la transferència - %s\n"
 
-#: lib/rpminstall.c:372 lib/rpminstall.c:757 tools/rpmgraph.c:139
+#: lib/rpminstall.c:377 lib/rpminstall.c:762 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "no es pot instal·lar %s\n"
 
-#: lib/rpminstall.c:411
+#: lib/rpminstall.c:416
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "el paquet %s no és reubicable\n"
 
-#: lib/rpminstall.c:458
+#: lib/rpminstall.c:463
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "s'ha produït un error en llegir del fitxer %s\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:469
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "el fitxer %s necessita una nova versió d'RPM\n"
 
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:501
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: no és un paquet rpm (o un manifest de paquet): %s\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:574
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "no es pot obrir el fitxer %s: %s\n"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:667
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "«%s» especifica paquets múltiples\n"
 
-#: lib/rpminstall.c:741
+#: lib/rpminstall.c:746
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "no es pot obrir %s: %s\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:752
 #, c-format
 msgid "Installing %s\n"
 msgstr "S'està instal·lant %s\n"
@@ -3053,39 +3063,39 @@ msgstr "Suma SHA1 de la capçalera: "
 msgid "Unknown"
 msgstr "etiqueta desconeguda"
 
-#: lib/signature.c:1137 lib/signature.c:1271
+#: lib/signature.c:1137 lib/signature.c:1289
 msgid "Header "
 msgstr "Capçalera "
 
-#: lib/signature.c:1239
+#: lib/signature.c:1257
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1243
+#: lib/signature.c:1261
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr " signatura: "
 
-#: lib/signature.c:1329
+#: lib/signature.c:1347
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr " Signatura DSA: "
 
-#: lib/signature.c:1333
+#: lib/signature.c:1351
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr " Signatura DSA: "
 
-#: lib/signature.c:1347
+#: lib/signature.c:1365
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiqueu la signatura: paràmetres dolents\n"
 
-#: lib/signature.c:1378
+#: lib/signature.c:1396
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Suma MD5 incorrecta: no està disponible\n"
 
-#: lib/signature.c:1382
+#: lib/signature.c:1400
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatura: desconeguda (%d)\n"
@@ -3489,7 +3499,7 @@ msgstr "Fitxer %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "El fitxer %s fa menys de %u bytes\n"
 
-#: rpmio/rpmfileutil.c:716
+#: rpmio/rpmfileutil.c:724
 #, fuzzy
 msgid "failed to create directory"
 msgstr "no s'ha pogut suprimir el directori %s: %s\n"

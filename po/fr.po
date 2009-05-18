@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-01-30 11:31+0200\n"
+"POT-Creation-Date: 2009-05-18 12:27+0300\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -43,27 +43,27 @@ msgstr "Impossible de lire le fichier spec à %s\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Impossible de renommer %s en %s: %m\n"
 
-#: build.c:228
+#: build.c:229
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "échec de stat sur %s: %m\n"
 
-#: build.c:232
+#: build.c:233
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Fichier %s non régulier.\n"
 
-#: build.c:239
+#: build.c:240
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Le fichier %s ne semble pas être un fichier spec.\n"
 
-#: build.c:304
+#: build.c:305
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Construction pour plate-formes cibles: %s\n"
 
-#: build.c:319
+#: build.c:320
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Construction pour cible %s\n"
@@ -586,7 +586,7 @@ msgstr "Le fichier non précédé d'un \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Substitution non permise: %s\n"
 
-#: build/files.c:1663 lib/rpminstall.c:266
+#: build/files.c:1663 lib/rpminstall.c:267
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fichier non trouvé par la substitution: %s\n"
@@ -955,72 +955,82 @@ msgstr "ligne %d: tag malformé: %s\n"
 msgid "line %d: Empty tag: %s\n"
 msgstr "ligne %d: tag vide: %s\n"
 
-#: build/parsePreamble.c:497 build/parsePreamble.c:504
+#: build/parsePreamble.c:493
+#, fuzzy, c-format
+msgid "line %d: Illegal char '%c' in: %s\n"
+msgstr "ligne %d: caractère '-' illégal dans %s: %s\n"
+
+#: build/parsePreamble.c:498
+#, fuzzy, c-format
+msgid "line %d: Illegal sequence \"..\" in: %s\n"
+msgstr "ligne %d: caractère '-' illégal dans %s: %s\n"
+
+#: build/parsePreamble.c:508 build/parsePreamble.c:515
 #, c-format
 msgid "line %d: Illegal char '-' in %s: %s\n"
 msgstr "ligne %d: caractère '-' illégal dans %s: %s\n"
 
-#: build/parsePreamble.c:537
+#: build/parsePreamble.c:548
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "ligne %d: les prefixes ne doivent pas finir par un \"/\": %s\n"
 
-#: build/parsePreamble.c:550
+#: build/parsePreamble.c:561
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "ligne %d: le docdir doit commencer par un '/': %s\n"
 
-#: build/parsePreamble.c:563
+#: build/parsePreamble.c:574
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "ligne %d: le champ Epoch/Serial doit être un nombre: %s\n"
 
-#: build/parsePreamble.c:603 build/parsePreamble.c:614
+#: build/parsePreamble.c:614 build/parsePreamble.c:625
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "ligne %d: Mauvais %s: qualifiers: %s\n"
 
-#: build/parsePreamble.c:640
+#: build/parsePreamble.c:651
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "ligne %d: mauvais format pour BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:650
+#: build/parsePreamble.c:661
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:662
+#: build/parsePreamble.c:673
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Erreur interne: tag bidon %d\n"
 
-#: build/parsePreamble.c:754
+#: build/parsePreamble.c:765
 #, c-format
 msgid "Legacy syntax is unsupported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:816
+#: build/parsePreamble.c:827
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Mauvaise specification de paquetage: %s\n"
 
-#: build/parsePreamble.c:822
+#: build/parsePreamble.c:833
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paquetage déjà existant: %s\n"
 
-#: build/parsePreamble.c:854
+#: build/parsePreamble.c:865
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "ligne %d: tag inconnu: %s\n"
 
-#: build/parsePreamble.c:886
+#: build/parsePreamble.c:897
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot ne peut pas être \"/\": %s\n"
 
-#: build/parsePreamble.c:890
+#: build/parsePreamble.c:901
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot ne peut pas être \"/\": %s\n"
@@ -1040,52 +1050,52 @@ msgstr "Pas de numéro de patch %d\n"
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr ""
 
-#: build/parsePrep.c:158
+#: build/parsePrep.c:155
 #, fuzzy, c-format
 msgid "No source number %u\n"
 msgstr "Pas de numéro de source %d\n"
 
-#: build/parsePrep.c:160
+#: build/parsePrep.c:157
 #, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "le paquetage source ne contient pas de fichier .spec\n"
 
-#: build/parsePrep.c:182
+#: build/parsePrep.c:179
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Impossible de télécharger la non-source %s: %s\n"
 
-#: build/parsePrep.c:269
+#: build/parsePrep.c:266
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Erreur d'analyse syntaxique du %%setup: %s\n"
 
-#: build/parsePrep.c:284
+#: build/parsePrep.c:281
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ligne %d: mauvais argument à %%setup: %s\n"
 
-#: build/parsePrep.c:303
+#: build/parsePrep.c:300
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d: mauvaise option à %%setup %s: %s\n"
 
-#: build/parsePrep.c:463
+#: build/parsePrep.c:460
 #, fuzzy, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s\n"
 
-#: build/parsePrep.c:476
+#: build/parsePrep.c:473
 #, fuzzy, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "numéro de paquetage invalide: %s\n"
 
-#: build/parsePrep.c:505
+#: build/parsePrep.c:502
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d: deuxième %%prep\n"
 
-#: build/parseReqs.c:106
+#: build/parseReqs.c:109
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1093,12 +1103,12 @@ msgstr ""
 "ligne %d: le lexème de dépendance doit commencer par un alphanumérique, '_' "
 "ou '/': %s\n"
 
-#: build/parseReqs.c:133
+#: build/parseReqs.c:136
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "ligne %d: version interdite dans le nom de fichier: %s\n"
 
-#: build/parseReqs.c:163
+#: build/parseReqs.c:166
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "ligne %d: Version requise: %s\n"
@@ -1381,50 +1391,50 @@ msgstr "échec %s: %s\n"
 msgid "failed to write all data to %s\n"
 msgstr "Impossible d'écrire la charge utile dans %s: %s\n"
 
-#: build/rpmfc.c:1155
+#: build/rpmfc.c:1153
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1235
+#: build/rpmfc.c:1233
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "échec de l'ouverture de %s: %s\n"
 
-#: build/rpmfc.c:1242
+#: build/rpmfc.c:1240
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s échec du rmdir sur %s: %s\n"
 
-#: build/rpmfc.c:1283
+#: build/rpmfc.c:1281
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "%s échec du rmdir sur %s: %s\n"
 
-#: build/rpmfc.c:1483
+#: build/rpmfc.c:1481
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Fichier %s: %s\n"
 
-#: build/rpmfc.c:1489 build/rpmfc.c:1498
+#: build/rpmfc.c:1487 build/rpmfc.c:1496
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Impossible de lire %s: %s.\n"
 
-#: build/rpmfc.c:1582 build/rpmfc.c:1613
+#: build/rpmfc.c:1580 build/rpmfc.c:1611
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "Ne peut détruire le répertoire %s: %s\n"
 
-#: build/rpmfc.c:1588 build/rpmfc.c:1619
+#: build/rpmfc.c:1586 build/rpmfc.c:1617
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1646
+#: build/rpmfc.c:1644
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1661
+#: build/rpmfc.c:1659
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1712,12 +1722,12 @@ msgstr "hdr blob(%d): PASBON, la lecture renvoie %d\n"
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:599
+#: lib/package.c:624 lib/rpmchecksig.c:182 lib/rpmchecksig.c:597
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: échec de rpmReadSignature: %s"
 
-#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:607
+#: lib/package.c:631 lib/rpmchecksig.c:189 lib/rpmchecksig.c:605
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: aucune signature disponible\n"
@@ -1727,7 +1737,7 @@ msgstr "%s: aucune signature disponible\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead a échoué: %s"
 
-#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:692
+#: lib/package.c:728 lib/package.c:752 lib/package.c:781 lib/rpmchecksig.c:690
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
@@ -2483,7 +2493,7 @@ msgstr "numéro de paquetage invalide: %s\n"
 msgid "record %lu could not be read\n"
 msgstr "impossible de lire l'article %u\n"
 
-#: lib/query.c:553 lib/rpminstall.c:655
+#: lib/query.c:553 lib/rpminstall.c:660
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "le paquetage %s n'est pas installé\n"
@@ -2496,7 +2506,7 @@ msgstr "(fichiers ajoutés)"
 msgid "(added provide)"
 msgstr "(fourniture ajoutée)"
 
-#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:826
+#: lib/rpmchecksig.c:50 lib/rpmchecksig.c:823
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: échec de l'ouverture: %s\n"
@@ -2551,39 +2561,39 @@ msgstr "%s: échec de headerRead\n"
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:772
 msgid "NOT OK"
 msgstr "PAS OK"
 
-#: lib/rpmchecksig.c:775
+#: lib/rpmchecksig.c:772
 msgid "OK"
 msgstr "OK"
 
-#: lib/rpmchecksig.c:777
+#: lib/rpmchecksig.c:774
 msgid " (MISSING KEYS:"
 msgstr " (CLES MANQUANTES:"
 
-#: lib/rpmchecksig.c:779
+#: lib/rpmchecksig.c:776
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:780
+#: lib/rpmchecksig.c:777
 msgid " (UNTRUSTED KEYS:"
 msgstr " (CLES NONCREDIBLE:"
 
-#: lib/rpmchecksig.c:782
+#: lib/rpmchecksig.c:779
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:472
+#: lib/rpmds.c:474
 msgid "NO "
 msgstr "NON"
 
-#: lib/rpmds.c:472
+#: lib/rpmds.c:474
 msgid "YES"
 msgstr "OUI"
 
-#: lib/rpmds.c:822
+#: lib/rpmds.c:823
 #, c-format
 msgid ""
 "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
@@ -2593,67 +2603,67 @@ msgstr ""
 "pour \"A\")\n"
 "\tA = \"%s\"\tB = \"%s\"\n"
 
-#: lib/rpmds.c:979
+#: lib/rpmds.c:978
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "Les dépendances de type PreReq:, Provides: et Obsoletes: supportent les "
 "versions."
 
-#: lib/rpmds.c:982
+#: lib/rpmds.c:981
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Le(s) nom(s) de fichier sont stockés en tant que triplets (NomRep,NomFich,"
 "IndexRep), pas en tant que chemin."
 
-#: lib/rpmds.c:986
+#: lib/rpmds.c:985
 #, fuzzy
 msgid "package payload can be compressed using bzip2."
 msgstr "La charge utile du paquetage est compressée avec bzip2."
 
-#: lib/rpmds.c:990
+#: lib/rpmds.c:989
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "La charge utile du paquetage est compressée avec bzip2."
 
-#: lib/rpmds.c:993
+#: lib/rpmds.c:992
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 "le(s) fichier(s) de la charge utile du paquetage ont \"./\" comme préfixe."
 
-#: lib/rpmds.c:996
+#: lib/rpmds.c:995
 msgid "package name-version-release is not implicitly provided."
 msgstr "le nom-version-révision du paquetage n'est pas implicitement fourni."
 
-#: lib/rpmds.c:999
+#: lib/rpmds.c:998
 msgid "header tags are always sorted after being loaded."
 msgstr "les tags d'entête sont toujours triés après avoir été chargés."
 
-#: lib/rpmds.c:1002
+#: lib/rpmds.c:1001
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "l'interprète du scriptlet peut utiliser des arguments à partir des entêtes."
 
-#: lib/rpmds.c:1005
+#: lib/rpmds.c:1004
 msgid "a hardlink file set may be installed without being complete."
 msgstr "un lien en dur pourrait être installé sans être complet."
 
-#: lib/rpmds.c:1008
+#: lib/rpmds.c:1007
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "les scriptlets du paquetage pourrait accéder à la base de données rpm "
 "pendant l'installation."
 
-#: lib/rpmds.c:1012
+#: lib/rpmds.c:1011
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- non supporté sur des chaînes de caractères\n"
 
-#: lib/rpmds.c:1016
+#: lib/rpmds.c:1015
 msgid "file checksum digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmgi.c:95 lib/rpminstall.c:96 lib/rpminstall.c:353
-#: lib/rpminstall.c:482 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmgi.c:95 lib/rpminstall.c:97 lib/rpminstall.c:354
+#: lib/rpminstall.c:487 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "échec de l'ouverture de %s: %s\n"
@@ -2668,70 +2678,70 @@ msgstr "%s: n'est pas un paquetage rpm (ni une list de paquetages): %s\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "tag inconnu: \"%s\"\n"
 
-#: lib/rpmgi.c:629 lib/rpminstall.c:525 lib/rpminstall.c:696
+#: lib/rpmgi.c:629 lib/rpminstall.c:530 lib/rpminstall.c:701
 #: tools/rpmgraph.c:194
 msgid "Failed dependencies:\n"
 msgstr "Dépendances requises:\n"
 
-#: lib/rpminstall.c:155
+#: lib/rpminstall.c:156
 msgid "Preparing..."
 msgstr "Préparation...              "
 
-#: lib/rpminstall.c:157
+#: lib/rpminstall.c:158
 msgid "Preparing packages for installation..."
 msgstr "Préparation des paquetages pour l'installation..."
 
-#: lib/rpminstall.c:304
+#: lib/rpminstall.c:305
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Récupération de %s\n"
 
-#: lib/rpminstall.c:316
+#: lib/rpminstall.c:317
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "%s ignoré - échec du téléchargement - %s\n"
 
-#: lib/rpminstall.c:372 lib/rpminstall.c:757 tools/rpmgraph.c:139
+#: lib/rpminstall.c:377 lib/rpminstall.c:762 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ne peut être installé\n"
 
-#: lib/rpminstall.c:411
+#: lib/rpminstall.c:416
 #, fuzzy, c-format
 msgid "package %s is not relocatable\n"
 msgstr "le paquetage %s n'est pas relogeable\n"
 
-#: lib/rpminstall.c:458
+#: lib/rpminstall.c:463
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "erreur en lisant %s\n"
 
-#: lib/rpminstall.c:464
+#: lib/rpminstall.c:469
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "le fichier %s demande une version plus récente de RPM\n"
 
-#: lib/rpminstall.c:496
+#: lib/rpminstall.c:501
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: n'est pas un paquetage rpm (ni une list de paquetages): %s\n"
 
-#: lib/rpminstall.c:569
+#: lib/rpminstall.c:574
 #, c-format
 msgid "cannot open file %s: %s\n"
 msgstr "ne peut ouvrir le fichier %s: %s\n"
 
-#: lib/rpminstall.c:662
+#: lib/rpminstall.c:667
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" spécifie plusieurs paquetages\n"
 
-#: lib/rpminstall.c:741
+#: lib/rpminstall.c:746
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "impossible d'ouvrir %s: %s\n"
 
-#: lib/rpminstall.c:747
+#: lib/rpminstall.c:752
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installation de %s\n"
@@ -3063,39 +3073,39 @@ msgstr "Hachage de l'entête SHA1: "
 msgid "Unknown"
 msgstr "tag inconnu"
 
-#: lib/signature.c:1137 lib/signature.c:1271
+#: lib/signature.c:1137 lib/signature.c:1289
 msgid "Header "
 msgstr "Entête "
 
-#: lib/signature.c:1239
+#: lib/signature.c:1257
 #, c-format
 msgid "%sV%d %s signature: %s, key ID %s\n"
 msgstr ""
 
-#: lib/signature.c:1243
+#: lib/signature.c:1261
 #, fuzzy, c-format
 msgid "%sV%d %s signature: %s\n"
 msgstr "signature V3 DSA: "
 
-#: lib/signature.c:1329
+#: lib/signature.c:1347
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s, key ID %s\n"
 msgstr "signature V3 DSA: "
 
-#: lib/signature.c:1333
+#: lib/signature.c:1351
 #, fuzzy, c-format
 msgid "%sV%d DSA signature: %s\n"
 msgstr "signature V3 DSA: "
 
-#: lib/signature.c:1347
+#: lib/signature.c:1365
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verification de signature: MAUVAIS PARAMETRES\n"
 
-#: lib/signature.c:1378
+#: lib/signature.c:1396
 msgid "Broken MD5 digest: UNSUPPORTED\n"
 msgstr "Somme MD5 erronée: NONSUPPORTE\n"
 
-#: lib/signature.c:1382
+#: lib/signature.c:1400
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signature: INCONNUE (%d)\n"
@@ -3500,7 +3510,7 @@ msgstr "Fichier %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmfileutil.c:716
+#: rpmio/rpmfileutil.c:724
 #, fuzzy
 msgid "failed to create directory"
 msgstr "Ne peut détruire le répertoire %s: %s\n"
