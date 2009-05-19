@@ -369,7 +369,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
 	while ((i = rpmpsNextIterator(psi)) >= 0) {
-	    const char * needsName;
+	    char * altNEVR, * needsName;
 	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsOP, * needsVersion;
 	    rpmsenseFlags needsFlags, sense;
@@ -387,7 +387,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 
 	    key = rpmProblemGetKey(p);
 
-	    needsName = rpmProblemGetAltNEVR(p);
+	    altNEVR = needsName = xstrdup(rpmProblemGetAltNEVR(p));
 	    if (needsName[1] == ' ') {
 		sense = (needsName[0] == 'C')
 			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
@@ -413,6 +413,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	    PyList_Append(list, (PyObject *) cf);
 	    Py_DECREF(cf);
 	    free(byName);
+	    free(altNEVR);
 	}
 
 	psi = rpmpsFreeIterator(psi);
