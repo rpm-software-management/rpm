@@ -726,33 +726,6 @@ static const char * rpmSigString(rpmRC res)
 }
 
 static rpmRC
-verifySize(rpmtd sigtd, size_t nbytes, char ** msg)
-{
-    rpmRC res = RPMRC_FAIL; /* assume failure */
-    size_t size = 0x7fffffff;
-    const char * title = _("Header+Payload size:");
-    *msg = NULL;
-
-    if (sigtd->data == NULL || nbytes == 0) {
-	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
-	goto exit;
-    }
-
-    memcpy(&size, sigtd->data, sizeof(size));
-
-    if (size != nbytes) {
-	rasprintf(msg, "%s %s Expected(%zd) != (%zd)\n", title,
-		  rpmSigString(res), size, nbytes);
-    } else {
-	res = RPMRC_OK;
-	rasprintf(msg, "%s %s (%zd)\n", title, rpmSigString(res), nbytes);
-    }
-
-exit:
-    return res;
-}
-
-static rpmRC
 verifyMD5Digest(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
 {
     rpmRC res = RPMRC_FAIL; /* assume failure */
@@ -871,9 +844,6 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
     }
 
     switch (sigtd->tag) {
-    case RPMSIGTAG_SIZE:
-	res = verifySize(sigtd, dig->nbytes, &msg);
-	break;
     case RPMSIGTAG_MD5:
 	res = verifyMD5Digest(sigtd, ctx, &msg);
 	break;
