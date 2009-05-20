@@ -195,20 +195,8 @@ static rpmRC parsePGP(rpmtd sigtd, const char *type, pgpDig dig)
     return rc;
 }
 
-/**
- * Check header consistency, performing headerGetEntry() the hard way.
- *
- * Sanity checks on the header are performed while looking for a
- * header-only digest or signature to verify the blob. If found,
- * the digest or signature is verified.
- *
- * @param ts		transaction set
- * @param uh		unloaded header blob
- * @param uc		no. of bytes in blob (or 0 to disable)
- * @retval *msg		signature verification msg
- * @return		RPMRC_OK/RPMRC_NOTFOUND/RPMRC_FAIL
- */
-rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
+static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
+			  const void * uh, size_t uc, char ** msg)
 {
     pgpDig dig = NULL;
     char *buf = NULL;
@@ -222,7 +210,6 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     struct indexEntry_s entry;
     struct entryInfo_s info;
     unsigned const char * b;
-    rpmVSFlags vsflags = rpmtsVSFlags(ts);
     size_t siglen = 0;
     size_t blen;
     size_t nb;
@@ -412,7 +399,6 @@ verifyinfo_exit:
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
 
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
 
 	b = (unsigned char *) rpm_header_magic;
@@ -434,18 +420,13 @@ verifyinfo_exit:
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(ctx, b, nb);
         dig->nbytes += nb;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-
 	} break;
     default:
 	sigtd.data = _free(sigtd.data); /* Hmm...? */
 	break;
     }
 
-    {	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &buf);
-	rpmKeyringFree(keyring);
-    }
+    rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &buf);
 
     if (msg) 
 	*msg = buf;
@@ -455,6 +436,20 @@ verifyinfo_exit:
     rpmtdFreeData(&sigtd);
     pgpFreeDig(dig);
     rpmDigestFinal(ctx, NULL, NULL, 0);
+    return rc;
+}
+
+rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
+{
+    rpmRC rc;
+    rpmVSFlags vsflags = rpmtsVSFlags(ts);
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+
+    rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
+    rc = headerVerify(keyring, vsflags, uh, uc, msg);
+    rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), uc);
+    rpmKeyringFree(keyring);
+
     return rc;
 }
 
