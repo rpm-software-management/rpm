@@ -453,7 +453,8 @@ rpmRC headerCheck(rpmts ts, const void * uh, size_t uc, char ** msg)
     return rc;
 }
 
-rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
+static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags, 
+		       FD_t fd, Header *hdrp, char ** msg)
 {
     char *buf = NULL;
     int32_t block[4];
@@ -504,7 +505,7 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     }
 
     /* Sanity check header tags */
-    rc = headerCheck(ts, ei, uc, msg);
+    rc = headerVerify(keyring, vsflags, ei, uc, msg);
     if (rc != RPMRC_OK)
 	goto exit;
 
@@ -530,6 +531,18 @@ exit:
 	free(buf);
     }
 
+    return rc;
+}
+
+rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
+{
+    rpmRC rc;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmVSFlags vsflags = rpmtsVSFlags(ts);
+
+    rc = rpmpkgReadHeader(keyring, vsflags, fd, hdrp, msg);
+
+    rpmKeyringFree(keyring);
     return rc;
 }
 
