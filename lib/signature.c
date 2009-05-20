@@ -8,16 +8,13 @@
 #include <popt.h>
 
 #include <rpm/rpmtypes.h>
-#include <rpm/rpmlib.h>		/* XXX RPMSIGTAG* & related */
-#include <rpm/rpmmacro.h>	/* XXX for rpmGetPath() */
-#include <rpm/rpmdb.h>
+#include <rpm/rpmmacro.h>	/* XXX for rpmExpand() */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmts.h>
+#include <rpm/rpmkeyring.h>
 
 #include "rpmio/digest.h"
-#include "rpmio/rpmkeyring.h"
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "lib/header_internal.h"
