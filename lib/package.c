@@ -546,7 +546,8 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
     return rc;
 }
 
-rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
+static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
+			FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig = NULL;
     char buf[8*BUFSIZ];
@@ -555,11 +556,9 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     Header sigh = NULL;
     rpmSigTag sigtag;
     struct rpmtd_s sigtd;
-    rpmtsOpX opx;
     size_t nb;
     Header h = NULL;
     char * msg;
-    rpmVSFlags vsflags;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
@@ -612,8 +611,6 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
      * Note that NEEDPAYLOAD prevents header+payload signatures and digests.
      */
     sigtag = 0;
-    opx = 0;
-    vsflags = rpmtsVSFlags(ts);
     if (_chk(RPMVSF_NODSAHEADER, RPMSIGTAG_DSA)) {
 	sigtag = RPMSIGTAG_DSA;
     } else if (_chk(RPMVSF_NORSAHEADER, RPMSIGTAG_RSA)) {
@@ -621,32 +618,23 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     } else if (_chk(RPMVSF_NODSA|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_GPG)) {
 	sigtag = RPMSIGTAG_GPG;
 	fdInitDigest(fd, PGPHASHALGO_SHA1, 0);
-	opx = RPMTS_OP_SIGNATURE;
     } else if (_chk(RPMVSF_NORSA|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_PGP)) {
 	sigtag = RPMSIGTAG_PGP;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	opx = RPMTS_OP_SIGNATURE;
     } else if (_chk(RPMVSF_NOSHA1HEADER, RPMSIGTAG_SHA1)) {
 	sigtag = RPMSIGTAG_SHA1;
     } else if (_chk(RPMVSF_NOMD5|RPMVSF_NEEDPAYLOAD, RPMSIGTAG_MD5)) {
 	sigtag = RPMSIGTAG_MD5;
 	fdInitDigest(fd, PGPHASHALGO_MD5, 0);
-	opx = RPMTS_OP_DIGEST;
     }
 
     /* Read the metadata, computing digest(s) on the fly. */
     h = NULL;
     msg = NULL;
 
-    /* XXX stats will include header i/o and setup overhead. */
-    /* XXX repackaged packages have appended tags, legacy dig/sig check fails */
-    if (opx > 0)
-	(void) rpmswEnter(rpmtsOp(ts, opx), 0);
     nb = -fd->stats->ops[FDSTAT_READ].bytes;
-    rc = rpmReadHeader(ts, fd, &h, &msg);
+    rc = rpmpkgReadHeader(keyring, vsflags, fd, &h, &msg);
     nb += fd->stats->ops[FDSTAT_READ].bytes;
-    if (opx > 0)
-	(void) rpmswExit(rpmtsOp(ts, opx), nb);
 
     if (rc != RPMRC_OK || h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s"), fn,
@@ -689,15 +677,11 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
 	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
 	dig->nbytes += sizeof(rpm_header_magic);
 	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	dig->nbytes += utd.count;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-	if (sigtag == RPMSIGTAG_SHA1)
-	    rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 	rpmtdFreeData(&utd);
     }	break;
     case RPMSIGTAG_GPG:
@@ -709,11 +693,8 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 	/* fallthrough */
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DIGEST), 0);
 	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    dig->nbytes += count;
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DIGEST), dig->nbytes);
-	rpmtsOp(ts, RPMTS_OP_DIGEST)->count--;	/* XXX one too many */
 	dig->nbytes += nb;	/* XXX include size of header blob. */
 	if (count < 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"),
@@ -730,10 +711,7 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     }
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
-    {	rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
-    	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &msg);
-	rpmKeyringFree(keyring);
-    }
+    rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &msg);
 	
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
@@ -790,6 +768,18 @@ exit:
     h = headerFree(h);
     pgpFreeDig(dig);
     sigh = rpmFreeSignature(sigh);
+    return rc;
+}
+
+rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
+{
+    rpmRC rc;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmVSFlags vsflags = rpmtsVSFlags(ts);
+
+    rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp);
+
+    rpmKeyringFree(keyring);
     return rc;
 }
 
