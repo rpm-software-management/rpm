@@ -42,8 +42,6 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 
-    size_t nbytes;		/*!< No. bytes of plain text. */
-
     /* DSA/RSA parameters */
     SECKEYPublicKey *keydata;
     SECItem *sigdata;

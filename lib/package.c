@@ -376,7 +376,6 @@ verifyinfo_exit:
     dig = pgpNewDig();
     if (dig == NULL)
 	goto verifyinfo_exit;
-    dig->nbytes = 0;
 
     sigtd.tag = info.tag;
     sigtd.type = info.type;
@@ -404,22 +403,18 @@ verifyinfo_exit:
 	b = (unsigned char *) rpm_header_magic;
 	nb = sizeof(rpm_header_magic);
         (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
 
 	b = (unsigned char *) ildl;
 	nb = sizeof(ildl);
         (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
 
 	b = (unsigned char *) pe;
 	nb = (htonl(ildl[0]) * sizeof(*pe));
         (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
 
 	b = (unsigned char *) dataStart;
 	nb = htonl(ildl[1]);
         (void) rpmDigestUpdate(ctx, b, nb);
-        dig->nbytes += nb;
 	} break;
     default:
 	sigtd.data = _free(sigtd.data); /* Hmm...? */
@@ -556,7 +551,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     Header sigh = NULL;
     rpmSigTag sigtag;
     struct rpmtd_s sigtd;
-    size_t nb;
     Header h = NULL;
     char * msg;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
@@ -632,9 +626,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     h = NULL;
     msg = NULL;
 
-    nb = -fd->stats->ops[FDSTAT_READ].bytes;
     rc = rpmpkgReadHeader(keyring, vsflags, fd, &h, &msg);
-    nb += fd->stats->ops[FDSTAT_READ].bytes;
 
     if (rc != RPMRC_OK || h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s"), fn,
@@ -655,7 +647,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	rc = RPMRC_FAIL;
 	goto exit;
     }
-    dig->nbytes = 0;
 
     /* Retrieve the tag parameters from the signature header. */
     if (!headerGet(sigh, sigtag, &sigtd, hgeflags)) {
@@ -679,9 +670,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	    break;
 	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
 	(void) rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	dig->nbytes += sizeof(rpm_header_magic);
 	(void) rpmDigestUpdate(ctx, utd.data, utd.count);
-	dig->nbytes += utd.count;
 	rpmtdFreeData(&utd);
     }	break;
     case RPMSIGTAG_GPG:
@@ -693,9 +682,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	/* fallthrough */
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
-	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
-	    dig->nbytes += count;
-	dig->nbytes += nb;	/* XXX include size of header blob. */
+	while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
 	if (count < 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"),
 					fn, Fstrerror(fd));

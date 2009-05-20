@@ -459,14 +459,11 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig,
     int rc = 1;
     Header h = NULL;
 
-    dig->nbytes = 0;
     /* Read the header from the package. */
     if ((h = headerRead(fd, HEADER_MAGIC_YES)) == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: headerRead failed\n"), fn);
 	goto exit;
     }
-
-    dig->nbytes += headerSizeof(h, HEADER_MAGIC_YES);
 
     if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	struct rpmtd_s utd;
@@ -483,8 +480,7 @@ static int readFile(FD_t fd, const char * fn, pgpDig dig,
     }
 
     /* Read the payload from the package. */
-    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
-	dig->nbytes += count;
+    while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0) {}
     if (count < 0) {
 	rpmlog(RPMLOG_ERR, _("%s: Fread failed: %s\n"), fn, Fstrerror(fd));
 	goto exit;
