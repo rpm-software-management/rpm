@@ -1022,7 +1022,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns);
 
 /** \ingroup rpmpgp
- * Create a container for parsed OpenPGP packates.
+ * Create a container for parsed OpenPGP packet(s).
  * @return		container
  */
 pgpDig pgpNewDig(void);
@@ -1034,7 +1034,7 @@ pgpDig pgpNewDig(void);
 void pgpCleanDig(pgpDig dig);
 
 /** \ingroup rpmpgp
- * Destroy a container for parsed OpenPGP packates.
+ * Destroy a container for parsed OpenPGP packet(s).
  * @param dig		container
  * @return		NULL always
  */
