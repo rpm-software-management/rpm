@@ -207,6 +207,7 @@ uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/rpmsign
 	@rm -f $(DESTDIR)$(bindir)/rpmverify
 	@rm -f $(DESTDIR)$(bindir)/rpmdb
+	@rm -rf $(DESTDIR)$(rpmconfigdir)/platform/
 
 MAINTAINERCLEANFILES = ChangeLog
 
