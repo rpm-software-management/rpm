@@ -223,29 +223,13 @@ rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
 	((fts->fts_info == FTS_D || fts->fts_info == FTS_DP) ? "/" : ""));
 
     switch (fts->fts_info) {
-    case FTS_D:		/* preorder directory */
-	break;
-    case FTS_DP:	/* postorder directory */
-	break;
-    case FTS_F:		/* regular file */
+    case FTS_F:
 	/* Ignore all but *.rpm files. */
 	s = fts->fts_name + fts->fts_namelen + 1 - sizeof(".rpm");
 	if (strcmp(s, ".rpm"))
 	    break;
 	rpmrc = RPMRC_OK;
 	break;
-    case FTS_NS:	/* stat(2) failed */
-    case FTS_DNR:	/* unreadable directory */
-    case FTS_ERR:	/* error; errno is set */
-	break;
-    case FTS_DC:	/* directory that causes cycles */
-    case FTS_DEFAULT:	/* none of the above */
-    case FTS_DOT:	/* dot or dot-dot */
-    case FTS_INIT:	/* initialized only */
-    case FTS_NSOK:	/* no stat(2) requested */
-    case FTS_SL:	/* symbolic link */
-    case FTS_SLNONE:	/* symbolic link without target */
-    case FTS_W:		/* whiteout object */
     default:
 	break;
     }
