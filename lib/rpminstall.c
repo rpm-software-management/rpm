@@ -217,7 +217,6 @@ static void setNotifyFlag(struct rpmInstallArguments_s * ia,
 
 struct rpmEIU {
     Header h;
-    FD_t fd;
     int numFailed;
     int numPkgs;
     char ** pkgURL;
@@ -296,25 +295,25 @@ static int tryReadManifest(struct rpmEIU * eiu)
     int rc, xx;
 
     /* Try to read a package manifest. */
-    eiu->fd = Fopen(*eiu->fnp, "r.fpio");
-    if (eiu->fd == NULL || Ferror(eiu->fd)) {
+    FD_t fd = Fopen(*eiu->fnp, "r.fpio");
+    if (fd == NULL || Ferror(fd)) {
         rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
-	       Fstrerror(eiu->fd));
-	if (eiu->fd != NULL) {
-	    xx = Fclose(eiu->fd);
-	    eiu->fd = NULL;
+	       Fstrerror(fd));
+	if (fd != NULL) {
+	    xx = Fclose(fd);
+	    fd = NULL;
 	}
 	eiu->numFailed++; *eiu->fnp = NULL;
 	return RPMRC_FAIL;
     }
 
     /* Read list of packages from manifest. */
-    rc = rpmReadPackageManifest(eiu->fd, &eiu->argc, &eiu->argv);
+    rc = rpmReadPackageManifest(fd, &eiu->argc, &eiu->argv);
     if (rc != RPMRC_OK)
         rpmlog(RPMLOG_ERR, _("%s: not an rpm package (or package manifest): %s\n"),
-	       *eiu->fnp, Fstrerror(eiu->fd));
-    xx = Fclose(eiu->fd);
-    eiu->fd = NULL;
+	       *eiu->fnp, Fstrerror(fd));
+    xx = Fclose(fd);
+    fd = NULL;
 
     if (rc != RPMRC_OK)
         eiu->numFailed++; *eiu->fnp = NULL;
@@ -327,13 +326,13 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
    rpmVSFlags tvsflags;
 
    /* Try to read the header from a package file. */
-   eiu->fd = Fopen(*eiu->fnp, "r.ufdio");
-   if (eiu->fd == NULL || Ferror(eiu->fd)) {
+   FD_t fd = Fopen(*eiu->fnp, "r.ufdio");
+   if (fd == NULL || Ferror(fd)) {
        rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
-	      Fstrerror(eiu->fd));
-       if (eiu->fd != NULL) {
-           Fclose(eiu->fd);
-	   eiu->fd = NULL;
+	      Fstrerror(fd));
+       if (fd != NULL) {
+           Fclose(fd);
+	   fd = NULL;
        }
        eiu->numFailed++; *eiu->fnp = NULL;
        return RPMRC_FAIL;
@@ -341,10 +340,10 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
 
    /* Read the header, verifying signatures (if present). */
    tvsflags = rpmtsSetVSFlags(ts, vsflags);
-   eiu->rpmrc = rpmReadPackageFile(ts, eiu->fd, *eiu->fnp, &eiu->h);
+   eiu->rpmrc = rpmReadPackageFile(ts, fd, *eiu->fnp, &eiu->h);
    tvsflags = rpmtsSetVSFlags(ts, tvsflags);
-   Fclose(eiu->fd);
-   eiu->fd = NULL;
+   Fclose(fd);
+   fd = NULL;
    
    /* Honor --nomanifest */
    if (eiu->rpmrc == RPMRC_NOTFOUND && (giFlags & RPMGI_NOMANIFEST))
