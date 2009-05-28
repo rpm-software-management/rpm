@@ -104,7 +104,6 @@ void * rpmShowProgress(const void * arg,
     void * rc = NULL;
     const char * filename = (const char *)key;
     static FD_t fd = NULL;
-    int xx;
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
@@ -116,7 +115,7 @@ void * rpmShowProgress(const void * arg,
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), filename,
 			Fstrerror(fd));
 	    if (fd != NULL) {
-		xx = Fclose(fd);
+		Fclose(fd);
 		fd = NULL;
 	    }
 	} else
@@ -128,7 +127,7 @@ void * rpmShowProgress(const void * arg,
 	/* FIX: still necessary? */
 	fd = fdFree(fd, RPMDBG_M("persist (showProgress)"));
 	if (fd != NULL) {
-	    xx = Fclose(fd);
+	    Fclose(fd);
 	    fd = NULL;
 	}
 	break;
@@ -208,11 +207,10 @@ void * rpmShowProgress(const void * arg,
 static void setNotifyFlag(struct rpmInstallArguments_s * ia,
 			  rpmts ts)
 {
-    int notifyFlags, xx;
+    int notifyFlags;
 
     notifyFlags = ia->installInterfaceFlags | (rpmIsVerbose() ? INSTALL_LABEL : 0 );
-    xx = rpmtsSetNotifyCallback(ts,
-				rpmShowProgress, (void *) ((long)notifyFlags));
+    rpmtsSetNotifyCallback(ts, rpmShowProgress, (void *) ((long)notifyFlags));
 }
 
 struct rpmEIU {
@@ -292,7 +290,7 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
 
 static int tryReadManifest(struct rpmEIU * eiu)
 {
-    int rc, xx;
+    int rc;
 
     /* Try to read a package manifest. */
     FD_t fd = Fopen(*eiu->fnp, "r.fpio");
@@ -300,7 +298,7 @@ static int tryReadManifest(struct rpmEIU * eiu)
         rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
 	       Fstrerror(fd));
 	if (fd != NULL) {
-	    xx = Fclose(fd);
+	    Fclose(fd);
 	    fd = NULL;
 	}
 	eiu->numFailed++; *eiu->fnp = NULL;
@@ -312,7 +310,7 @@ static int tryReadManifest(struct rpmEIU * eiu)
     if (rc != RPMRC_OK)
         rpmlog(RPMLOG_ERR, _("%s: not an rpm package (or package manifest): %s\n"),
 	       *eiu->fnp, Fstrerror(fd));
-    xx = Fclose(fd);
+    Fclose(fd);
     fd = NULL;
 
     if (rc != RPMRC_OK)
@@ -395,7 +393,6 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     char * fileURL = NULL;
     rpmVSFlags vsflags, ovsflags;
     int rc;
-    int xx;
     int i;
 
     if (fileArgv == NULL) goto exit;
@@ -546,7 +543,7 @@ restart:
 		rpmtdFreeData(&prefixes);
 	    } else {
 		const char * name;
-		xx = headerNVR(eiu->h, &name, NULL, NULL);
+		headerNVR(eiu->h, &name, NULL, NULL);
 		rpmlog(RPMLOG_ERR,
 			       _("package %s is not relocatable\n"), name);
 		eiu->numFailed++;
