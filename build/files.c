@@ -990,6 +990,14 @@ static int isDoc(FileList fl, const char * fileName)
     return 0;
 }
 
+static int isHardLink(FileListRec flp, FileListRec tlp)
+{
+    return ((S_ISREG(flp->fl_mode) && S_ISREG(tlp->fl_mode)) &&
+	    ((flp->fl_nlink > 1) && (flp->fl_nlink == tlp->fl_nlink)) &&
+	    (flp->fl_ino == tlp->fl_ino) && 
+	    (flp->fl_dev == tlp->fl_dev));
+}
+
 /**
  * Verify that file attributes scope over hardlinks correctly.
  * If partial hardlink sets are possible, then add tracking dependency.
@@ -1008,14 +1016,18 @@ static int checkHardLinks(FileList fl)
 
 	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
 	    jlp = fl->fileList + j;
-	    if (!S_ISREG(jlp->fl_mode))
-		continue;
-	    if (ilp->fl_nlink != jlp->fl_nlink)
-		continue;
-	    if (ilp->fl_ino != jlp->fl_ino)
-		continue;
-	    if (ilp->fl_dev != jlp->fl_dev)
-		continue;
+	    if (isHardLink(ilp, jlp)) {
+		return 1;
+	    }
+	}
+    }
+    return 0;
+}
+
+static int seenHardLink(FileList fl, FileListRec flp)
+{
+    for (FileListRec ilp = fl->fileList; ilp < flp; ilp++) {
+	if (isHardLink(flp, ilp)) {
 	    return 1;
 	}
     }
@@ -1156,9 +1168,12 @@ static void genCpioListAndHeader(FileList fl,
 	    rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
 	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);
 	}
-	/* Excludes and dupes have been filtered out by now */
-	if (S_ISREG(flp->fl_mode))
-	    totalFileSize += flp->fl_size;
+	/* Excludes and dupes have been filtered out by now. */
+	if (S_ISREG(flp->fl_mode)) {
+	    if (flp->fl_nlink == 1 || !seenHardLink(fl, flp)) {
+		totalFileSize += flp->fl_size;
+	    }
+	}
 	
 	/*
  	 * For items whose size varies between systems, always explicitly 
@@ -1479,25 +1494,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->specdFlags = fl->currentSpecdFlags;
 	flp->verifyFlags = fl->currentVerifyFlags;
 
-	/* Hard links need be counted only once. */
-	if (S_ISREG(flp->fl_mode) && flp->fl_nlink > 1) {
-	    FileListRec ilp;
-	    for (i = 0;  i < fl->fileListRecsUsed; i++) {
-		ilp = fl->fileList + i;
-		if (!S_ISREG(ilp->fl_mode))
-		    continue;
-		if (flp->fl_nlink != ilp->fl_nlink)
-		    continue;
-		if (flp->fl_ino != ilp->fl_ino)
-		    continue;
-		if (flp->fl_dev != ilp->fl_dev)
-		    continue;
-		break;
-	    }
-	} else
-	    i = fl->fileListRecsUsed;
-
-	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode) && i >= fl->fileListRecsUsed) {
+	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode)) {
 	    /*
 	     * XXX Simple and stupid check for now, this needs to be per-payload
 	     * format check once we have other payloads than good 'ole cpio.
