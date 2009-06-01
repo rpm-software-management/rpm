@@ -689,7 +689,7 @@ typedef struct PreambleRec_s {
     rpmTag tag;
     size_t len;
     int multiLang;
-    int obsolete;
+    int deprecated;
     const char * token;
 } * PreambleRec;
 
@@ -761,10 +761,9 @@ static int findPreambleTag(rpmSpec spec,rpmTag * tag,
     for (p = preambleList; p->token != NULL; p++) {
 	if (!(p->token && !rstrncasecmp(spec->line, p->token, p->len)))
 	    continue;
-	if (p->obsolete) {
-	    rpmlog(RPMLOG_ERR, _("Legacy syntax is unsupported: %s\n"),
-			p->token);
-	    p = NULL;
+	if (p->deprecated) {
+	    rpmlog(RPMLOG_WARNING, _("line %d: %s is deprecated: %s\n"),
+			spec->lineNum, p->token, spec->line);
 	}
 	break;
     }
