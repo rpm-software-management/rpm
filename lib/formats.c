@@ -228,31 +228,40 @@ static char * triggertypeFormat(rpmtd td, char * formatPrefix)
  */
 static char * deptypeFormat(rpmtd td, char * formatPrefix)
 {
-    char * val;
+    char *val = NULL;
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
+	ARGV_t sdeps = NULL;
 	uint64_t item = rpmtdGetNumber(td);
 
 	if (item & RPMSENSE_SCRIPT_PRE)
-	    val = xstrdup("pre");
-	else if (item & RPMSENSE_SCRIPT_POST)
-	    val = xstrdup("post");
-	else if (item & RPMSENSE_SCRIPT_PREUN)
-	    val = xstrdup("preun");
-	else if (item & RPMSENSE_SCRIPT_POSTUN)
-	    val = xstrdup("postun");
-	else if (item & RPMSENSE_SCRIPT_VERIFY)
-	    val = xstrdup("verify");
-	else if (item & RPMSENSE_RPMLIB)
-	    val = xstrdup("rpmlib");
-	else if (item & RPMSENSE_INTERP)
-	    val = xstrdup("interp");
-	else if ((item & RPMSENSE_FIND_REQUIRES) || 
-		 (item & RPMSENSE_FIND_PROVIDES))
-	    val = xstrdup("auto");
-	else
-	    val = xstrdup("manual");
+	    argvAdd(&sdeps, "pre");
+	if (item & RPMSENSE_SCRIPT_POST)
+	    argvAdd(&sdeps, "post");
+	if (item & RPMSENSE_SCRIPT_PREUN)
+	    argvAdd(&sdeps, "preun");
+	if (item & RPMSENSE_SCRIPT_POSTUN)
+	    argvAdd(&sdeps, "postun");
+	if (item & RPMSENSE_SCRIPT_VERIFY)
+	    argvAdd(&sdeps, "verify");
+
+	if (sdeps) {
+	    val = argvJoin(sdeps, ",");
+	    argvFree(sdeps);
+	} else {
+	    if (item & RPMSENSE_RPMLIB)
+		val = xstrdup("rpmlib");
+	    else if (item & RPMSENSE_INTERP)
+		val = xstrdup("interp");
+	    else if ((item & RPMSENSE_FIND_REQUIRES) || 
+		     (item & RPMSENSE_FIND_PROVIDES))
+		val = xstrdup("auto");
+	    else if (item & RPMSENSE_PREREQ)
+		val = xstrdup("prereq");
+	    else
+		val = xstrdup("manual");
+	}
     }
     return val;
 }
