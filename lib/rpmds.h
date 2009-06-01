@@ -33,14 +33,13 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_EQUAL	= (1 << 3),
     RPMSENSE_PROVIDES	= (1 << 4), /* only used internally by builds */
     RPMSENSE_CONFLICTS	= (1 << 5), /* only used internally by builds */
-	/* bit 6 used to be RPMSENSE_PREREQ */
-#define	RPMSENSE_PREREQ	RPMSENSE_ANY
+    RPMSENSE_PREREQ	= (1 << 6), /* legacy prereq dependency */
     RPMSENSE_OBSOLETES	= (1 << 7), /* only used internally by builds */
     RPMSENSE_INTERP	= (1 << 8),	/*!< Interpreter used by scriptlet. */
-    RPMSENSE_SCRIPT_PRE	= ((1 << 9)|RPMSENSE_PREREQ), /*!< %pre dependency. */
-    RPMSENSE_SCRIPT_POST = ((1 << 10)|RPMSENSE_PREREQ), /*!< %post dependency. */
-    RPMSENSE_SCRIPT_PREUN = ((1 << 11)|RPMSENSE_PREREQ), /*!< %preun dependency. */
-    RPMSENSE_SCRIPT_POSTUN = ((1 << 12)|RPMSENSE_PREREQ), /*!< %postun dependency. */
+    RPMSENSE_SCRIPT_PRE	= (1 << 9),	/*!< %pre dependency. */
+    RPMSENSE_SCRIPT_POST = (1 << 10),	/*!< %post dependency. */
+    RPMSENSE_SCRIPT_PREUN = (1 << 11),	/*!< %preun dependency. */
+    RPMSENSE_SCRIPT_POSTUN = (1 << 12), /*!< %postun dependency. */
     RPMSENSE_SCRIPT_VERIFY = (1 << 13),	/*!< %verify dependency. */
     RPMSENSE_FIND_REQUIRES = (1 << 14), /*!< find-requires generated dependency. */
     RPMSENSE_FIND_PROVIDES = (1 << 15), /*!< find-provides generated dependency. */
@@ -53,7 +52,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_BUILD = (1 << 21),	/*!< %build build dependency. */
     RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
     RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
-    RPMSENSE_RPMLIB = ((1 << 24) | RPMSENSE_PREREQ), /*!< rpmlib(feature) dependency. */
+    RPMSENSE_RPMLIB = (1 << 24),	/*!< rpmlib(feature) dependency. */
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
     RPMSENSE_PATCHES	= (1 << 27),
