@@ -17,51 +17,41 @@
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
 
-/* XXX FIXME: strlen for these is calculated at runtime, preventing const */
-static struct PartRec {
+#define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
+
+static const struct PartRec {
     int part;
     size_t len;
     const char * token;
-} partList[] = {
-    { PART_PREAMBLE,      0, "%package"},
-    { PART_PREP,          0, "%prep"},
-    { PART_BUILD,         0, "%build"},
-    { PART_INSTALL,       0, "%install"},
-    { PART_CHECK,         0, "%check"},
-    { PART_CLEAN,         0, "%clean"},
-    { PART_PREUN,         0, "%preun"},
-    { PART_POSTUN,        0, "%postun"},
-    { PART_PRETRANS,      0, "%pretrans"},
-    { PART_POSTTRANS,     0, "%posttrans"},
-    { PART_PRE,           0, "%pre"},
-    { PART_POST,          0, "%post"},
-    { PART_FILES,         0, "%files"},
-    { PART_CHANGELOG,     0, "%changelog"},
-    { PART_DESCRIPTION,   0, "%description"},
-    { PART_TRIGGERPOSTUN, 0, "%triggerpostun"},
-    { PART_TRIGGERPREIN,  0, "%triggerprein"},
-    { PART_TRIGGERUN,     0, "%triggerun"},
-    { PART_TRIGGERIN,     0, "%triggerin"},
-    { PART_TRIGGERIN,     0, "%trigger"},
-    { PART_VERIFYSCRIPT,  0, "%verifyscript"},
+} const partList[] = {
+    { PART_PREAMBLE,      LEN_AND_STR("%package")},
+    { PART_PREP,          LEN_AND_STR("%prep")},
+    { PART_BUILD,         LEN_AND_STR("%build")},
+    { PART_INSTALL,       LEN_AND_STR("%install")},
+    { PART_CHECK,         LEN_AND_STR("%check")},
+    { PART_CLEAN,         LEN_AND_STR("%clean")},
+    { PART_PREUN,         LEN_AND_STR("%preun")},
+    { PART_POSTUN,        LEN_AND_STR("%postun")},
+    { PART_PRETRANS,      LEN_AND_STR("%pretrans")},
+    { PART_POSTTRANS,     LEN_AND_STR("%posttrans")},
+    { PART_PRE,           LEN_AND_STR("%pre")},
+    { PART_POST,          LEN_AND_STR("%post")},
+    { PART_FILES,         LEN_AND_STR("%files")},
+    { PART_CHANGELOG,     LEN_AND_STR("%changelog")},
+    { PART_DESCRIPTION,   LEN_AND_STR("%description")},
+    { PART_TRIGGERPOSTUN, LEN_AND_STR("%triggerpostun")},
+    { PART_TRIGGERPREIN,  LEN_AND_STR("%triggerprein")},
+    { PART_TRIGGERUN,     LEN_AND_STR("%triggerun")},
+    { PART_TRIGGERIN,     LEN_AND_STR("%triggerin")},
+    { PART_TRIGGERIN,     LEN_AND_STR("%trigger")},
+    { PART_VERIFYSCRIPT,  LEN_AND_STR("%verifyscript")},
     {0, 0, 0}
 };
 
-/**
- */
-static inline void initParts(struct PartRec *p)
-{
-    for (; p->token != NULL; p++)
-	p->len = strlen(p->token);
-}
-
 rpmParseState isPart(const char *line)
 {
-    struct PartRec *p;
+    const struct PartRec *p;
 
-    if (partList[0].len == 0)
-	initParts(partList);
-    
     for (p = partList; p->token != NULL; p++) {
 	char c;
 	if (rstrncasecmp(line, p->token, p->len))
