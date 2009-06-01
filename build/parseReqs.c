@@ -59,7 +59,8 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_PREREQ:
-	tagflags |= RPMSENSE_PREREQ;
+	/* XXX map legacy PreReq into Requires(pre,preun) */
+	tagflags |= (RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_PREUN);
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPREIN:
