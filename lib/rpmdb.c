@@ -2875,7 +2875,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		case RPMTAG_REQUIRENAME: {
 		    /* Filter out install prerequisites. */
 		    rpm_flag_t *rflag = rpmtdNextUint32(&reqflags);
-		    if (rflag && isInstallPreReq(*rflag))
+		    if (rflag && isInstallPreReq(*rflag) &&
+				 !isErasePreReq(*rflag))
 			continue;
 		    break;
 		    }
