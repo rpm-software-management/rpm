@@ -2,6 +2,7 @@
 #define _RPMTE_INTERNAL_H
 
 #include <rpm/rpmte.h>
+#include <rpm/rpmds.h>
 
 /** \ingroup rpmte
  * Dependncy ordering information.
@@ -9,7 +10,7 @@
 
 struct relation_s {
     rpmte   rel_suc;  // pkg requiring this package
-    int rel_flags; // accumulated flags of the requirements
+    rpmsenseFlags rel_flags; // accumulated flags of the requirements
     struct relation_s * rel_next;
 };
 
