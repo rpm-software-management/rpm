@@ -827,7 +827,7 @@ static inline int addRelation(rpmts ts,
     relation rel;
     const char * Name;
     rpmElementType teType = rpmteType(p);
-    rpmsenseFlags flags;
+    rpmsenseFlags flags, dsflags;
 
     if ((Name = rpmdsN(requires)) == NULL)
 	return 0;
@@ -849,14 +849,21 @@ static inline int addRelation(rpmts ts,
     if (ignoreDep(ts, p, q))
 	return 0;
 
+    dsflags = rpmdsFlags(requires);
     /* Erasures are reversed installs. */
     if (teType == TR_REMOVED) {
         rpmte r = p;
         p = q;
         q = r;
-	flags = isErasePreReq(rpmdsFlags(requires));
+	flags = isErasePreReq(dsflags);
     } else {
-	flags = isInstallPreReq(rpmdsFlags(requires));
+	flags = isInstallPreReq(dsflags);
+    }
+
+    /* map legacy prereq to pre/preun as needed */
+    if (isLegacyPreReq(dsflags)) {
+	flags |= (teType == TR_ADDED) ?
+		 RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
 
     tsi_p = rpmteTSI(p);
