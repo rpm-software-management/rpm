@@ -78,7 +78,8 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_INSTALL | \
     RPMSENSE_SCRIPT_CLEAN | \
     RPMSENSE_RPMLIB | \
-    RPMSENSE_KEYRING )
+    RPMSENSE_KEYRING | \
+    RPMSENSE_PREREQ)
 
 #define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
 #define	_INSTALL_ONLY_MASK \
