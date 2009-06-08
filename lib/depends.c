@@ -1435,9 +1435,7 @@ int rpmtsCheck(rpmts ts)
 	    goto exit;
 
 	rc = 0;
-	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
-	provides = rpmdsInit(provides);
-	if (provides != NULL)
+	provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
 	while (rpmdsNext(provides) >= 0) {
 	    const char * Name;
 
@@ -1460,7 +1458,7 @@ int rpmtsCheck(rpmts ts)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
-	rpmds provides;
+	rpmds provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
 	rpmfi fi;
 
 	/* FIX: rpmts{A,O} can return null. */
@@ -1468,9 +1466,6 @@ int rpmtsCheck(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	rc = 0;
-	provides = rpmteDS(p, RPMTAG_PROVIDENAME);
-	provides = rpmdsInit(provides);
-	if (provides != NULL)
 	while (rpmdsNext(provides) >= 0) {
 	    const char * Name;
 
