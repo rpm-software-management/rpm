@@ -840,7 +840,8 @@ static inline int addRelation(rpmts ts,
 
     q = rpmalSatisfiesDepend(al, requires);
 
-    if (q == NULL)
+    /* Avoid deps outside this transaction and self dependencies */
+    if (q == NULL || q == p)
 	return 0;
 
     /* Avoid certain dependency relations. */
