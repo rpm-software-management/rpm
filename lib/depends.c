@@ -1261,7 +1261,6 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 
 int rpmtsOrder(rpmts ts)
 {
-    rpmds requires;
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     rpmte q;
@@ -1298,24 +1297,13 @@ int rpmtsOrder(rpmts ts)
     rpmlog(RPMLOG_DEBUG, "========== recording tsort relations\n");
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	rpmal al = (rpmteType(p) == TR_REMOVED) ? 
+		   erasedPackages : ts->addedPackages;
+	rpmds requires = rpmdsInit(rpmteDS(p, RPMTAG_REQUIRENAME));
 
-	if ((requires = rpmteDS(p, RPMTAG_REQUIRENAME)) == NULL)
-	    continue;
-
-	requires = rpmdsInit(requires);
-	if (requires != NULL)
 	while (rpmdsNext(requires) >= 0) {
-	    switch (rpmteType(p)) {
-	    case TR_REMOVED:
-		/* Record next "q <- p" relation (i.e. "p" requires "q")
-		   but reversed. */
-		(void) addRelation(ts, erasedPackages, p, requires);
-		break;
-	    case TR_ADDED:
-		/* Record next "q <- p" relation (i.e. "p" requires "q"). */
-		(void) addRelation(ts, ts->addedPackages, p, requires);
-		break;
-	    }
+	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
+	    (void) addRelation(ts, al, p, requires);
 	}
     }
     pi = rpmtsiFree(pi);
