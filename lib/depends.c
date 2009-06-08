@@ -832,12 +832,10 @@ static inline int addRelation(rpmts ts,
     if ((Name = rpmdsN(requires)) == NULL)
 	return 0;
 
-    /* Avoid rpmlib feature dependencies. */
-    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1))
-	return 0;
+    dsflags = rpmdsFlags(requires);
 
-    /* Avoid package config dependencies. */
-    if (!strncmp(Name, "config(", sizeof("config(")-1))
+    /* Avoid rpmlib feature and package config dependencies */
+    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG))
 	return 0;
 
     q = rpmalSatisfiesDepend(al, requires);
@@ -849,7 +847,6 @@ static inline int addRelation(rpmts ts,
     if (ignoreDep(ts, p, q))
 	return 0;
 
-    dsflags = rpmdsFlags(requires);
     /* Erasures are reversed installs. */
     if (teType == TR_REMOVED) {
         rpmte r = p;
