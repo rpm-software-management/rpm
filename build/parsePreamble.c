@@ -453,6 +453,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 {
     char * field = spec->line;
     char * end, *ch;
+    char whitelist[] = ".-_+";
     int multiToken = 0;
     rpmsenseFlags tagflags;
     int rc;
@@ -489,7 +490,9 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if ((ch=strchr(field, '/')) != NULL || (ch=strchr(field, '~')) != NULL) {
+	/* Check whether all characters are sane */
+	for (ch=field; *ch; ch++) {
+	    if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
 	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '%c' in: %s\n"),
 	    spec->lineNum, *ch, spec->line);
 	    return RPMRC_FAIL;
