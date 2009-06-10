@@ -446,6 +446,31 @@ if (multiToken) { \
 
 extern int noLang;
 
+/* Check whether all characters are sane */
+static int charCheck(rpmSpec spec, char *field, const char *whitelist)
+{
+    char *ch;
+
+    for (ch=field; *ch; ch++) {
+	if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
+	if (isprint(*ch)) {
+	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '%c' in: %s\n"),
+		spec->lineNum, *ch, spec->line);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char in: %s\n"),
+		spec->lineNum, spec->line);
+	}
+	return RPMRC_FAIL;
+    }
+    if (strstr(field, "..") != NULL) {
+	rpmlog(RPMLOG_ERR, _("line %d: Illegal sequence \"..\" in: %s\n"),
+	    spec->lineNum, spec->line);
+	return RPMRC_FAIL;
+    }
+    
+    return RPMRC_OK;
+}
+
 /**
  */
 static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
@@ -453,7 +478,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 {
     char * field = spec->line;
     char * end, *ch;
-    char whitelist[] = ".-_+";
     int multiToken = 0;
     rpmsenseFlags tagflags;
     int rc;
@@ -487,26 +511,16 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 
     switch (tag) {
     case RPMTAG_NAME:
+	SINGLE_TOKEN_ONLY;
+	if (charCheck(spec, field, ".-_+") != RPMRC_OK) return RPMRC_FAIL;
+	headerPutString(pkg->header, tag, field);
+	break;
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	/* Check whether all characters are sane */
-	for (ch=field; *ch; ch++) {
-	    if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
-	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '%c' in: %s\n"),
-	    spec->lineNum, *ch, spec->line);
-	    return RPMRC_FAIL;
-	}
-	if (strstr(field, "..") != NULL) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Illegal sequence \"..\" in: %s\n"),
-	    spec->lineNum, spec->line);
-	    return RPMRC_FAIL;
-	}
-	if (tag != RPMTAG_NAME && strchr(field, '-')) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
-		spec->lineNum, "version", spec->line);
-	    return RPMRC_FAIL;
-	}
+	if (charCheck(spec, field, "._") != RPMRC_OK) return RPMRC_FAIL;
+	headerPutString(pkg->header, tag, field);
+	break;
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
 	SINGLE_TOKEN_ONLY;
