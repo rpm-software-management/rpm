@@ -32,6 +32,7 @@ lib/fsm.c
 lib/legacy.c
 lib/manifest.c
 lib/misc.c
+lib/order.c
 lib/package.c
 lib/poptALL.c
 lib/poptI.c

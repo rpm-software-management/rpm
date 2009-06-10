@@ -24,7 +24,7 @@ librpm_la_SOURCES = \
 	hdrNVR.c header.c headerfmt.c header_internal.c header_internal.h \
 	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
 	fprint.c fprint.h tagname.c rpmtd.c \
-	cpio.c cpio.h depends.c formats.c tagexts.c fs.c fsm.c fsm.h \
+	cpio.c cpio.h depends.c order.c formats.c tagexts.c fs.c fsm.c fsm.h \
 	manifest.c manifest.h misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c psm.h query.c \
 	rpmal.c rpmal.h rpmchecksig.c rpmds.c rpmfi.c rpmfi_internal.h rpmgi.c \
