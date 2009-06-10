@@ -502,25 +502,14 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	    spec->lineNum, spec->line);
 	    return RPMRC_FAIL;
 	}
+	if (tag != RPMTAG_NAME && strchr(field, '-')) {
+	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
+		spec->lineNum, "version", spec->line);
+	    return RPMRC_FAIL;
+	}
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
 	SINGLE_TOKEN_ONLY;
-	/* These macros are for backward compatibility */
-	if (tag == RPMTAG_VERSION) {
-	    if (strchr(field, '-') != NULL) {
-		rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
-		    spec->lineNum, "version", spec->line);
-		return RPMRC_FAIL;
-	    }
-	    addMacro(spec->macros, "PACKAGE_VERSION", NULL, field, RMIL_OLDSPEC);
-	} else if (tag == RPMTAG_RELEASE) {
-	    if (strchr(field, '-') != NULL) {
-		rpmlog(RPMLOG_ERR, _("line %d: Illegal char '-' in %s: %s\n"),
-		    spec->lineNum, "release", spec->line);
-		return RPMRC_FAIL;
-	    }
-	    addMacro(spec->macros, "PACKAGE_RELEASE", NULL, field, RMIL_OLDSPEC-1);
-	}
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_GROUP:
