@@ -381,12 +381,29 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 rpmte
 rpmalSatisfiesDepend(const rpmal al, const rpmds ds)
 {
-    rpmte * tmp = rpmalAllSatisfiesDepend(al, ds);
+    rpmte *providers = rpmalAllSatisfiesDepend(al, ds);
+    rpmte best = NULL;
 
-    if (tmp) {
-	rpmte ret = tmp[0];
-	free(tmp);
-	return ret;
+    if (providers) {
+	if (al->tscolor) {
+	    /*
+	     * For colored dependencies, try to find a matching provider.
+	     * Otherwise prefer provider of ts preferred color.
+	     */
+	    rpm_color_t dscolor = rpmdsColor(ds);
+	    for (rpmte *p = providers; *p; p++) {
+		rpm_color_t tecolor = rpmteColor(*p);
+		if (dscolor) {
+		    if (dscolor == tecolor) best = *p;
+		} else if (al->prefcolor) {
+		    if (al->prefcolor == tecolor) best = *p;
+		}
+		if (best) break;
+	    }
+	}
+	/* if not decided by now, just pick first match */
+	if (!best) best = providers[0];
+	free(providers);
     }
-    return NULL;
+    return best;
 }
