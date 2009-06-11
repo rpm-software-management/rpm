@@ -584,7 +584,7 @@ int rpmtsOrder(rpmts ts)
     int newOrderCount = 0;
     int treex;
     int rc;
-    rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts));
+    rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts), prefcolor);
     scc SCCs;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);

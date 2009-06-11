@@ -21,10 +21,11 @@ typedef void * rpmalKey;
  * Initialize available packckages, items, and directory list.
  * @param delta		no. of entries to add on each realloc
  * @param tscolor	transaction color bits
+ * @param prefcolor	preferred color
  * @return al		new available list
  */
 RPM_GNUC_INTERNAL
-rpmal rpmalCreate(int delta, rpm_color_t tscolor);
+rpmal rpmalCreate(int delta, rpm_color_t tscolor, rpm_color_t prefcolor);
 
 /**
  * Free available packages, items, and directory members.
