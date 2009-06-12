@@ -1,7 +1,7 @@
 include Makefile
 
 snapshot: ChangeLog
-	@$(MAKE) dist VERSION=$(VERSION).git`git-log --pretty=oneline|wc -l`
+	@$(MAKE) dist VERSION=$(VERSION).git`git log --pretty=oneline|wc -l`
 
 ChangeLog: .git
-	@git-log --no-merges > ChangeLog
+	@git log --no-merges > ChangeLog
