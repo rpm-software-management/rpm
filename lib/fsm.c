@@ -1238,7 +1238,7 @@ static int fsmMkdirs(FSM_t fsm)
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (! rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
+		    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
 			if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 &&
 			    scon != NULL) {
             		    fsm->fcontext = scon;
