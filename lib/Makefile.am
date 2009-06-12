@@ -57,8 +57,10 @@ else
 librpm_la_LIBADD += @WITH_DB_LIB@
 endif
 
-tagtbl.c: Makefile.am $(top_srcdir)/lib/rpmtag.h gentagtbl.sh
-	@AWK=${AWK} ${SHELL} gentagtbl.sh $(top_srcdir)/lib/rpmtag.h > $@
+tagtbl.c: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
+	@AWK=${AWK} ${SHELL} $(srcdir)/gentagtbl.sh \
+		    	     $(srcdir)/rpmtag.h > $@.new && \
+	 mv -f $@.new $@
 BUILT_SOURCES = tagtbl.c
 
 if WITH_INTERNAL_DB
