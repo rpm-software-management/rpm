@@ -263,12 +263,8 @@ assert(otherFi != NULL);
 		if (tscolor != 0) {
 		    if (FColor & prefcolor) {
 			/* ... last file of preferred colour is installed ... */
-			if (!XFA_SKIPPING(rpmfsGetAction(fs, i))) {
-			    /* XXX static helpers are order dependent. Ick. */
-			    if (strcmp(fn, "/usr/sbin/libgcc_post_upgrade")
-			     && strcmp(fn, "/usr/sbin/glibc_post_upgrade"))
-				rpmfsSetAction(otherFs, otherFileNum, FA_SKIPCOLOR);
-			}
+			if (!XFA_SKIPPING(rpmfsGetAction(fs, i)))
+			    rpmfsSetAction(otherFs, otherFileNum, FA_SKIPCOLOR);
 			rpmfsSetAction(fs, i, FA_CREATE);
 			rConflicts = 0;
 		    } else
