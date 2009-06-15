@@ -446,12 +446,19 @@ if (multiToken) { \
 
 extern int noLang;
 
-/* Check whether all characters are sane */
-static int charCheck(rpmSpec spec, char *field, const char *whitelist)
+/**
+ * Check for inappropriate characters. All alphanums are considered sane.
+ * @param spec		spec
+ * @param field		string to check
+ * @param fsize		size of string to check
+ * @param whitelist	string of permitted characters
+ * @return		RPMRC_OK if OK
+ */
+rpmRC charCheck(rpmSpec spec, char *field, size_t fsize, const char *whitelist)
 {
-    char *ch;
+    char *ch, *stop = &field[fsize];
 
-    for (ch=field; *ch; ch++) {
+    for (ch=field; *ch && ch < stop; ch++) {
 	if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
 	if (isprint(*ch)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Illegal char '%c' in: %s\n"),
@@ -512,13 +519,13 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (charCheck(spec, field, ".-_+") != RPMRC_OK) return RPMRC_FAIL;
+	if (charCheck(spec, field, strlen(field), ".-_+") != RPMRC_OK) return RPMRC_FAIL;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (charCheck(spec, field, "._") != RPMRC_OK) return RPMRC_FAIL;
+	if (charCheck(spec, field, strlen(field), "._+") != RPMRC_OK) return RPMRC_FAIL;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_URL:

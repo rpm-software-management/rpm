@@ -114,6 +114,11 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	N = xmalloc((re-r) + 1);
 	rstrlcpy(N, r, (re-r) + 1);
 
+	/* Check for weird characters in Requires/Provides, etc.*/
+	if (r[0] != '/') {
+	    if (charCheck(spec, N, re-r, ".-_+()")) return RPMRC_FAIL;
+	}
+
 	/* Parse EVR */
 	v = re;
 	SKIPWHITE(v);
@@ -167,6 +172,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    rstrlcpy(EVR, v, (ve-v) + 1);
+	    if (charCheck(spec, N, ve-v, ".-_+")) return RPMRC_FAIL;
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
