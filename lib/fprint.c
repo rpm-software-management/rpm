@@ -310,10 +310,10 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 		   /* setup current_fp for the new path */
 		   found = 1;
 		   current_fp = *fp;
-		   if (!fp->subDir) {
-		     lensubDir = 0;
-		     currentsubdir = endsubdir = NULL;
-		     break;
+		   if (fp->subDir == NULL) {
+		     /* directory exists - no need to look for symlinks */
+		     rpmFpHashAddEntry(fphash, fp, ffi);
+		     return;
 		   }
 		   lensubDir = strlen(fp->subDir);
 		   currentsubdir = xstrdup(fp->subDir);
