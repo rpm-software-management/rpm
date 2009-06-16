@@ -454,7 +454,7 @@ extern int noLang;
  * @param whitelist	string of permitted characters
  * @return		RPMRC_OK if OK
  */
-rpmRC charCheck(rpmSpec spec, char *field, size_t fsize, const char *whitelist)
+rpmRC rpmCharCheck(rpmSpec spec, char *field, size_t fsize, const char *whitelist)
 {
     char *ch, *stop = &field[fsize];
 
@@ -484,7 +484,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 		const char *macro, const char *lang)
 {
     char * field = spec->line;
-    char * end, *ch;
+    char * end;
     int multiToken = 0;
     rpmsenseFlags tagflags;
     int rc;
@@ -519,13 +519,13 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (charCheck(spec, field, strlen(field), ".-_+") != RPMRC_OK) return RPMRC_FAIL;
+	if (rpmCharCheck(spec, field, strlen(field), ".-_+") != RPMRC_OK) return RPMRC_FAIL;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (charCheck(spec, field, strlen(field), "._+") != RPMRC_OK) return RPMRC_FAIL;
+	if (rpmCharCheck(spec, field, strlen(field), "._+") != RPMRC_OK) return RPMRC_FAIL;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_URL:
