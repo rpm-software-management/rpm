@@ -361,10 +361,9 @@ rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	alp = al->list + result[i].pkgNum;
 	if (alp->p == NULL) // deleted
 	    continue;
-	/* XXX single step on rpmdsNext to regenerate DNEVR string */
-	(void) rpmdsSetIx(alp->provides, result[i].entryIx - 1);
+	(void) rpmdsSetIx(alp->provides, result[i].entryIx);
 	rc = 0;
-	if (rpmdsNext(alp->provides) >= 0)
+	if (rpmdsIx(alp->provides) >= 0)
 	    rc = rpmdsCompare(alp->provides, ds);
 
 	if (rc) {
