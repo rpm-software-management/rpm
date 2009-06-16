@@ -430,7 +430,7 @@ retry:
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-    if (!strncmp(Name, "rpmlib(", sizeof("rpmlib(")-1)) {
+    if (rpmdsFlags(dep) & RPMSENSE_RPMLIB) {
 	static int oneshot = -1;
 	if (oneshot) 
 	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
