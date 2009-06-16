@@ -254,11 +254,6 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
     ds->Flags = xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
     ds->i = 0;
-    {	char t[2];
-	t[0] = ds->Type[0];
-	t[1] = '\0';
-	ds->DNEVR = rpmdsNewDNEVR(t, ds);
-    }
 
 exit:
     return rpmdsLink(ds, (ds ? ds->Type : NULL));
@@ -281,6 +276,7 @@ int rpmdsSetIx(rpmds ds, int ix)
     if (ds != NULL) {
 	i = ds->i;
 	ds->i = ix;
+	ds->DNEVR = _free(ds->DNEVR);
     }
     return i;
 }
@@ -290,8 +286,11 @@ const char * rpmdsDNEVR(const rpmds ds)
     const char * DNEVR = NULL;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->DNEVR != NULL)
-	    DNEVR = ds->DNEVR;
+	if (ds->DNEVR == NULL) {
+	    char t[2] = { ds->Type[0], '\0' };
+	    ds->DNEVR = rpmdsNewDNEVR(t, ds);
+	}
+	DNEVR = ds->DNEVR;
     }
     return DNEVR;
 }
@@ -426,15 +425,17 @@ int32_t rpmdsSetRefs(const rpmds ds, int32_t refs)
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
 {
+    const char *DNEVR;
+
     if (!rpmIsDebug())
 	return;
     if (!(ds != NULL && ds->i >= 0 && ds->i < ds->Count))
 	return;
-    if (!(ds->Type != NULL && ds->DNEVR != NULL))
+    if (!(ds->Type != NULL && (DNEVR = rpmdsDNEVR(ds)) != NULL))
 	return;
 
     rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
-		(!strcmp(ds->DNEVR, "cached") ? ds->DNEVR : ds->DNEVR+2),
+		(!strcmp(DNEVR, "cached") ? DNEVR : DNEVR+2),
 		(rc ? _("NO ") : _("YES")),
 		(where != NULL ? where : ""));
 }
@@ -445,13 +446,8 @@ int rpmdsNext(rpmds ds)
 
     if (ds != NULL && ++ds->i >= 0) {
 	if (ds->i < ds->Count) {
-	    char t[2];
 	    i = ds->i;
 	    ds->DNEVR = _free(ds->DNEVR);
-	    t[0] = ((ds->Type != NULL) ? ds->Type[0] : '\0');
-	    t[1] = '\0';
-	    ds->DNEVR = rpmdsNewDNEVR(t, ds);
-
 	} else
 	    ds->i = -1;
 
@@ -465,8 +461,10 @@ fprintf(stderr, "*** ds %p\t%s[%d]: %s\n", ds, (ds->Type ? ds->Type : "?Type?"),
 
 rpmds rpmdsInit(rpmds ds)
 {
-    if (ds != NULL)
+    if (ds != NULL) {
 	ds->i = -1;
+	ds->DNEVR = _free(ds->DNEVR);
+    }
     return ds;
 }
 
