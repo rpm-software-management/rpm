@@ -214,6 +214,31 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     return RPMRC_OK;
 }
 
+static int rpmlibDeps(Header h)
+{
+    rpmds req = rpmdsInit(rpmdsNew(h, RPMTAG_REQUIRENAME, 0));
+    rpmds rpmlib = NULL;
+    rpmdsRpmlib(&rpmlib, NULL);
+    int rc = 1;
+    char *nvr = NULL;
+    while (rpmdsNext(req) >= 0) {
+	if (!(rpmdsFlags(req) & RPMSENSE_RPMLIB))
+	    continue;
+	if (rpmdsSearch(rpmlib, req) < 0) {
+	    if (!nvr) {
+		nvr = headerGetNEVRA(h, NULL);
+		rpmlog(RPMLOG_ERR, _("Missing rpmlib features for %s:\n"), nvr);
+	    }
+	    rpmlog(RPMLOG_ERR, "\t%s\n", rpmdsDNEVR(req)+2);
+	    rc = 0;
+	}
+    }
+    rpmdsFree(req);
+    rpmdsFree(rpmlib);
+    free(nvr);
+    return rc;
+}
+
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		char ** specFilePtr, char ** cookie)
 {
@@ -247,6 +272,10 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
 	goto exit;
     }
+
+    /* src.rpm install can require specific rpmlib features, check them */
+    if (!rpmlibDeps(h))
+	goto exit;
 
     if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_ALLOC)) {
 	struct rpmtd_s td;
