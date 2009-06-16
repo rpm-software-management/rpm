@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2005, 2007 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -88,6 +88,7 @@ static uint32_t (*do_read_32) (unsigned char *ptr);
 static void (*write_32) (unsigned char *ptr, GElf_Addr val);
 
 static int ptr_size;
+static int cu_version;
 
 static inline uint16_t
 buf_read_ule16 (unsigned char *data)
@@ -213,16 +214,18 @@ static struct
 #define DEBUG_LINE	2
 #define DEBUG_ARANGES	3
 #define DEBUG_PUBNAMES	4
-#define DEBUG_MACINFO	5
-#define DEBUG_LOC	6
-#define DEBUG_STR	7
-#define DEBUG_FRAME	8
-#define DEBUG_RANGES	9
+#define DEBUG_PUBTYPES	5
+#define DEBUG_MACINFO	6
+#define DEBUG_LOC	7
+#define DEBUG_STR	8
+#define DEBUG_FRAME	9
+#define DEBUG_RANGES	10
     { ".debug_info", NULL, NULL, 0, 0, 0 },
     { ".debug_abbrev", NULL, NULL, 0, 0, 0 },
     { ".debug_line", NULL, NULL, 0, 0, 0 },
     { ".debug_aranges", NULL, NULL, 0, 0, 0 },
     { ".debug_pubnames", NULL, NULL, 0, 0, 0 },
+    { ".debug_pubtypes", NULL, NULL, 0, 0, 0 },
     { ".debug_macinfo", NULL, NULL, 0, 0, 0 },
     { ".debug_loc", NULL, NULL, 0, 0, 0 },
     { ".debug_str", NULL, NULL, 0, 0, 0 },
@@ -302,7 +305,7 @@ no_memory:
         }
       if (*slot != NULL)
 	{
-	  error (0, 0, "%s: Duplicate DWARF-2 abbreviation %d", dso->filename,
+	  error (0, 0, "%s: Duplicate DWARF abbreviation %d", dso->filename,
 		 t->entry);
 	  free (t);
 	  htab_delete (h);
@@ -322,7 +325,7 @@ no_memory:
 	  form = read_uleb128 (ptr);
 	  if (form == 2 || form > DW_FORM_indirect)
 	    {
-	      error (0, 0, "%s: Unknown DWARF-2 DW_FORM_%d", dso->filename, form);
+	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, form);
 	      htab_delete (h);
 	      return NULL;
 	    }
@@ -332,7 +335,7 @@ no_memory:
         }
       if (read_uleb128 (ptr) != 0)
         {
-	  error (0, 0, "%s: DWARF-2 abbreviation does not end with 2 zeros",
+	  error (0, 0, "%s: DWARF abbreviation does not end with 2 zeros",
 		 dso->filename);
 	  htab_delete (h);
 	  return NULL;
@@ -484,7 +487,7 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
     }
 
   value = read_16 (ptr);
-  if (value != 2)
+  if (value != 2 && value != 3)
     {
       error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
 	     value);
@@ -829,7 +832,12 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 
 	  switch (form)
 	    {
-	    case DW_FORM_ref_addr: /* ptr_size in DWARF 2, offset in DWARF 3 */
+	    case DW_FORM_ref_addr:
+	      if (cu_version == 2)
+		ptr += ptr_size;
+	      else
+		ptr += 4;
+	      break;
 	    case DW_FORM_addr:
 	      ptr += ptr_size;
 	      break;
@@ -881,7 +889,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      assert (len < UINT_MAX);
 	      break;
 	    default:
-	      error (0, 0, "%s: Unknown DWARF-2 DW_FORM_%d", dso->filename,
+	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename,
 		     form);
 	      return NULL;
 	    }
@@ -1178,11 +1186,11 @@ edit_dwarf2 (DSO *dso)
 		  return 1;
 		}
 	      
-	      value = read_16 (ptr);
-	      if (value != 2)
+	      cu_version = read_16 (ptr);
+	      if (cu_version != 2 && cu_version != 3)
 		{
 		  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
-			 value);
+			 cu_version);
 		  return 1;
 		}
 	      
@@ -1192,7 +1200,7 @@ edit_dwarf2 (DSO *dso)
 		  if (debug_sections[DEBUG_ABBREV].data == NULL)
 		    error (0, 0, "%s: .debug_abbrev not present", dso->filename);
 		  else
-		    error (0, 0, "%s: DWARF-2 CU abbrev offset too large",
+		    error (0, 0, "%s: DWARF CU abbrev offset too large",
 			   dso->filename);
 		  return 1;
 		}
@@ -1202,14 +1210,14 @@ edit_dwarf2 (DSO *dso)
 		  ptr_size = read_1 (ptr);
 		  if (ptr_size != 4 && ptr_size != 8)
 		    {
-		      error (0, 0, "%s: Invalid DWARF-2 pointer size %d",
+		      error (0, 0, "%s: Invalid DWARF pointer size %d",
 			     dso->filename, ptr_size);
 		      return 1;
 		    }
 		}
 	      else if (read_1 (ptr) != ptr_size)
 		{
-		  error (0, 0, "%s: DWARF-2 pointer size differs between CUs",
+		  error (0, 0, "%s: DWARF pointer size differs between CUs",
 			 dso->filename);
 		  return 1;
 		}
@@ -1227,7 +1235,7 @@ edit_dwarf2 (DSO *dso)
 		  t = htab_find_with_hash (abbrev, &tag, tag.entry);
 		  if (t == NULL)
 		    {
-		      error (0, 0, "%s: Could not find DWARF-2 abbreviation %d",
+		      error (0, 0, "%s: Could not find DWARF abbreviation %d",
 			     dso->filename, tag.entry);
 		      htab_delete (abbrev);
 		      return 1;
