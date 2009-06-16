@@ -11,16 +11,9 @@
 
 #include "debug.h"
 
-/**
- * Enable noisy range comparison debugging message?
- */
-static int _noisy_range_comparison_debug_message = 0;
-
 int _rpmds_debug = 0;
 
 int _rpmds_nopromote = 1;
-
-int _rpmds_unspecified_epoch_noise = 0;
 
 /**
  * A package dependency set.
@@ -740,8 +733,6 @@ void parseEVR(char * evr,
 
 int rpmdsCompare(const rpmds A, const rpmds B)
 {
-    const char *aDepend = (A->DNEVR != NULL ? A->DNEVR+2 : "");
-    const char *bDepend = (B->DNEVR != NULL ? B->DNEVR+2 : "");
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
     int result;
@@ -783,9 +774,6 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
 	if (!B->nopromote) {
-	    int lvl = (_rpmds_unspecified_epoch_noise  ? RPMLOG_WARNING : RPMLOG_DEBUG);
-	    rpmlog(lvl, _("The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n\tA = \"%s\"\tB = \"%s\"\n"),
-		aDepend, bDepend);
 	    sense = 0;
 	} else
 	    sense = 1;
@@ -814,9 +802,6 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     }
 
 exit:
-    if (_noisy_range_comparison_debug_message)
-    rpmlog(RPMLOG_DEBUG, "  %s    A %s\tB %s\n",
-	(result ? "YES" : "NO "), aDepend, bDepend);
     return result;
 }
 
