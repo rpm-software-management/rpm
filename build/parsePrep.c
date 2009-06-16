@@ -40,18 +40,20 @@ static rpmRC checkOwners(const char * urlfn)
  * @param strip		patch level (i.e. patch -p argument)
  * @param db		saved file suffix (i.e. patch --suffix argument)
  * @param reverse	include -R?
- * @param fuzz		fuzz factor, fuzz<0 means no fuzz set
  * @param removeEmpties	include -E?
+ * @param fuzz		fuzz factor, fuzz<0 means no fuzz set
+ * @param dir		dir to change to (i.e. patch -d argument)
  * @return		expanded %patch macro (NULL on error)
  */
 
 static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
-		     int reverse, int removeEmpties, int fuzz)
+		     int reverse, int removeEmpties, int fuzz, const char *dir)
 {
     char *fn;
     char *buf = NULL;
     char *arg_backup = NULL;
     char *arg_fuzz = NULL;
+    char *arg_dir = NULL;
     char *args = NULL;
     char *arg_patch_flags = rpmExpand("%{?_default_patch_flags}", NULL);
     struct Source *sp;
@@ -87,11 +89,15 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		  "--suffix %s", db);
     } else arg_backup = xstrdup("");
 
+    if (dir) {
+	rasprintf(&arg_dir, " -d %s", dir);
+    } else arg_dir = xstrdup("");
+
     if (fuzz >= 0) {
 	rasprintf(&arg_fuzz, " --fuzz=%d", fuzz);
     } else arg_fuzz = xstrdup("");
 
-    rasprintf(&args, "%s -p%d %s%s%s%s", arg_patch_flags, strip, arg_backup, arg_fuzz, 
+    rasprintf(&args, "%s -p%d %s%s%s%s%s", arg_patch_flags, strip, arg_backup, arg_fuzz, arg_dir,
 		reverse ? " -R" : "", 
 		removeEmpties ? " -E" : "");
 
@@ -99,6 +105,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 
     free(arg_patch_flags);
     free(arg_fuzz);
+    free(arg_dir);
     free(arg_backup);
     free(args);
 
@@ -399,7 +406,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
  */
 static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 {
-    char *opt_b, *opt_P;
+    char *opt_b, *opt_P, *opt_d;
     char *buf = NULL;
     int opt_p, opt_R, opt_E, opt_F;
     int argc, c;
@@ -415,13 +422,14 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 	{ NULL, 'b', POPT_ARG_STRING, &opt_b, 'b', NULL, NULL },
 	{ NULL, 'z', POPT_ARG_STRING, &opt_b, 'z', NULL, NULL },
 	{ NULL, 'F', POPT_ARG_INT, &opt_F, 'F', NULL, NULL },
+	{ NULL, 'd', POPT_ARG_STRING, &opt_d, 'd', NULL, NULL },
 	{ NULL, 0, 0, NULL, 0, NULL, NULL }
     };
     poptContext optCon = NULL;
 
     opt_p = opt_R = opt_E = 0;
     opt_F = rpmExpandNumeric("%{_default_patch_fuzz}");		/* get default fuzz factor for %patch */
-    opt_b = NULL;
+    opt_b = opt_d = NULL;
 
     /* Convert %patchN to %patch -PN to simplify further processing */
     if (! strchr(" \t\n", line[6])) {
@@ -473,7 +481,7 @@ static rpmRC doPatchMacro(rpmSpec spec, const char *line)
 		     *patch, line);
 	    goto exit;
 	}
-	s = doPatch(spec, pnum, opt_p, opt_b, opt_R, opt_E, opt_F);
+	s = doPatch(spec, pnum, opt_p, opt_b, opt_R, opt_E, opt_F, opt_d);
 	if (s == NULL) {
 	    goto exit;
 	}
