@@ -1125,9 +1125,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     if (baseName == NULL)
 	goto exit;
 
-    fpc = fpCacheCreate(20);
-    fp1 = fpLookup(fpc, dirName, baseName, 1);
-
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
 	dbcursor = NULL;
@@ -1153,12 +1150,14 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     } else
 	rc = -2;
 
-    if (rc) goto exit;
+    if (rc || allMatches == NULL) goto exit;
 
     *matches = xcalloc(1, sizeof(**matches));
     rec = dbiIndexNewItem(0, 0);
+    fpc = fpCacheCreate(allMatches->count);
+    fp1 = fpLookup(fpc, dirName, baseName, 1);
+
     i = 0;
-    if (allMatches != NULL)
     while (i < allMatches->count) {
 	struct rpmtd_s bn, dn, di;
 	const char ** baseNames, ** dirNames;
@@ -1211,6 +1210,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     }
 
     rec = _free(rec);
+    fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
 	*matches = dbiFreeIndexSet(*matches);
@@ -1221,7 +1221,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 
 exit:
     dbiFreeIndexSet(allMatches);
-    fpCacheFree(fpc);
     free(dirName);
     return rc;
 }
