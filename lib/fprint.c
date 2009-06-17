@@ -37,8 +37,10 @@ fingerPrintCache fpCacheCreate(int sizeHint)
 
 fingerPrintCache fpCacheFree(fingerPrintCache cache)
 {
-    cache->ht = rpmFpEntryHashFree(cache->ht);
-    free(cache);
+    if (cache) {
+	cache->ht = rpmFpEntryHashFree(cache->ht);
+	free(cache);
+    }
     return NULL;
 }
 
