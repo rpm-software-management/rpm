@@ -1098,20 +1098,20 @@ int rpmdbVerify(const char * prefix)
 static int rpmdbFindByFile(rpmdb db, const char * filespec,
 		DBT * key, DBT * data, dbiIndexSet * matches)
 {
-    char * dirName;
+    char * dirName = NULL;
     const char * baseName;
-    fingerPrintCache fpc;
+    fingerPrintCache fpc = NULL;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
     DBC * dbcursor;
     dbiIndexSet allMatches = NULL;
     dbiIndexItem rec = NULL;
     unsigned int i;
-    int rc;
+    int rc = -2; /* assume error */
     int xx;
 
     *matches = NULL;
-    if (filespec == NULL) return -2;
+    if (filespec == NULL) return rc; /* nothing alloced yet */
 
     if ((baseName = strrchr(filespec, '/')) != NULL) {
 	size_t len = baseName - filespec + 1;
@@ -1123,11 +1123,10 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	baseName = filespec;
     }
     if (baseName == NULL)
-	return -2;
+	goto exit;
 
     fpc = fpCacheCreate(20);
     fp1 = fpLookup(fpc, dirName, baseName, 1);
-    free(dirName);
 
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
@@ -1154,11 +1153,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     } else
 	rc = -2;
 
-    if (rc) {
-	allMatches = dbiFreeIndexSet(allMatches);
-	fpc = fpCacheFree(fpc);
-	return rc;
-    }
+    if (rc) goto exit;
 
     *matches = xcalloc(1, sizeof(**matches));
     rec = dbiIndexNewItem(0, 0);
@@ -1216,16 +1211,19 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     }
 
     rec = _free(rec);
-    allMatches = dbiFreeIndexSet(allMatches);
-
-    fpc = fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
 	*matches = dbiFreeIndexSet(*matches);
-	return 1;
+	rc = 1;
+    } else {
+	rc = 0;
     }
 
-    return 0;
+exit:
+    dbiFreeIndexSet(allMatches);
+    fpCacheFree(fpc);
+    free(dirName);
+    return rc;
 }
 
 /* XXX python/upgrade.c, install.c, uninstall.c */
