@@ -993,7 +993,7 @@ msgstr "Zeile %d: Ungültiges Zeichen in: %s\n"
 #: build/parsePreamble.c:466
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "Zeile %d: Ungültiges Zeichen \"..\" in %s: %s\n"
+msgstr "Zeile %d: Ungültiges Zeichen \"..\" in: %s\n"
 
 #: build/parsePreamble.c:491
 #, c-format
