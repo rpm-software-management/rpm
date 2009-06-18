@@ -23,8 +23,13 @@ int main(int argc, char *argv[])
     setprogname(argv[0]);	/* Retrofit glibc __progname */
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);
-    else
+    else {
+	if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+	    fprintf(stderr, "Usage: rpm2cpio file.rpm\n");
+	    exit(EXIT_FAILURE);
+	}
 	fdi = Fopen(argv[1], "r.ufdio");
+    }
 
     if (Ferror(fdi)) {
 	fprintf(stderr, "%s: %s: %s\n", argv[0],
