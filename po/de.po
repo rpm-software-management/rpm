@@ -84,9 +84,8 @@ msgid "cannot re-open payload: %s\n"
 msgstr "Kann Nutzdaten nicht erneut öffnen: %s\n"
 
 #: rpmqv.c:77
-#, fuzzy
 msgid "Query/Verify package selection options:"
-msgstr "Abfragen/überprüfen eines Pakets einer Gruppe"
+msgstr "Abfragen/überprüfen der Paketauswahl:"
 
 #: rpmqv.c:80
 msgid "Query options (with -q or --query):"
@@ -510,7 +509,6 @@ msgid "Invalid capability: %s\n"
 msgstr "Ungültige Fähigkeit: %s\n"
 
 #: build/files.c:815
-#, fuzzy
 msgid "File capability support not built in\n"
 msgstr "Dateifähigkeits-Unterstützung nicht eingebaut\n"
 
@@ -557,7 +555,7 @@ msgstr "Datei stimmt nicht mit dem Präfix überein (%s): %s\n"
 #: build/files.c:1400
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
-msgstr ""
+msgstr "Spezifikation fordert ausdrückliche Dateiattribute für: %s\n"
 
 #: build/files.c:1408
 #, c-format
@@ -565,9 +563,9 @@ msgid "File not found: %s\n"
 msgstr "Datei nicht gefunden: %s\n"
 
 #: build/files.c:1414
-#, c-format
+#, fuzzy, c-format
 msgid "Only regular file can be %%ghost: %s\n"
-msgstr ""
+msgstr "Nur reguläre Datein kann %%Geist sein: %s\n"
 
 #: build/files.c:1517
 #, c-format
@@ -644,13 +642,13 @@ msgstr ""
 "%s"
 
 #: build/files.c:2248
-#, fuzzy, c-format
+#, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
-msgstr "Verarbeite Paket: %s-%s-%s\n"
+msgstr "Verarbeite Pakete: %s-%s-%s.%s\n"
 
 #: build/files.c:2257
 msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
+msgstr "Architekturabhängige Binärdateien in noarch-Paket\n"
 
 #: build/names.c:47
 msgid "getUname: too many uid's\n"
@@ -983,19 +981,19 @@ msgid "line %d: Tag takes single token only: %s\n"
 msgstr "Zeile %d: Tag benötigt nur ein Zeichen: %s\n"
 
 #: build/parsePreamble.c:457
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr "Zeile %d: Ungültiges Zeichen '-' in %s: %s\n"
+msgstr "Zeile %d: Ungültiges Zeichen '%c' in: %s\n"
 
 #: build/parsePreamble.c:460
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char in: %s\n"
-msgstr "Zeile %d: Ungültiges Zeichen '-' in %s: %s\n"
+msgstr "Zeile %d: Ungültiges Zeichen in: %s\n"
 
 #: build/parsePreamble.c:466
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "Zeile %d: Ungültiges Zeichen '-' in %s: %s\n"
+msgstr "Zeile %d: Ungültiges Zeichen \"..\" in %s: %s\n"
 
 #: build/parsePreamble.c:491
 #, c-format
@@ -1044,9 +1042,9 @@ msgid "Internal error: Bogus tag %d\n"
 msgstr "Interner Fehler: Falscher Tag %d\n"
 
 #: build/parsePreamble.c:759
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s is deprecated: %s\n"
-msgstr "Zeile %d: Version benötigt: %s\n"
+msgstr "Zeile %d: %s ist veraltet: %s\n"
 
 #: build/parsePreamble.c:820
 #, c-format
@@ -1524,9 +1522,8 @@ msgid "Missing hard link(s)"
 msgstr "Fehlende harte Verlinkung(en)"
 
 #: lib/cpio.c:217
-#, fuzzy
 msgid "Digest mismatch"
-msgstr "MD5-Prüfsumme stimmt nicht"
+msgstr "Prüfsumme stimmt nicht überein"
 
 #: lib/cpio.c:218
 msgid "Internal error"
@@ -1671,9 +1668,9 @@ msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr "Ignoriere Paketnamensrelation(en) [%d]\t%s -> %s\n"
 
 #: lib/package.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable V%u signature\n"
-msgstr "überspringe Paket %s nicht überprüfbaren V%u Signatur\n"
+msgstr "überspringe Paket %s mit nicht überprüfbarer V%u Signatur\n"
 
 #: lib/package.c:226
 #, c-format
@@ -2010,14 +2007,12 @@ msgid "do not verify package dependencies"
 msgstr "Keine Überprüfung der Paket-Abhängigkeiten"
 
 #: lib/poptI.c:203 lib/poptQV.c:272
-#, fuzzy
 msgid "don't verify digest of files"
-msgstr "Keine Überprüfung der MD5-Kurzfassung der Dateien"
+msgstr "Keine Überprüfung der Prüfsumme der Dateien"
 
 #: lib/poptI.c:205 lib/poptQV.c:274
-#, fuzzy
 msgid "don't verify digest of files (obsolete)"
-msgstr "Keine Überprüfung der MD5-Kurzfassung der Dateien"
+msgstr "Keine Überprüfung der Prüfsumme der Dateien (veraltet)"
 
 #: lib/poptI.c:207
 msgid "don't install file security contexts"
@@ -2272,7 +2267,6 @@ msgid "don't verify mode of files"
 msgstr "Keine Überprüfung der Berechtigungen der Dateien"
 
 #: lib/poptQV.c:298
-#, fuzzy
 msgid "don't verify capabilities of files"
 msgstr "Keine Fähigkeitsprüfung der Dateien"
 
@@ -2616,9 +2610,8 @@ msgid "package payload can be compressed using bzip2."
 msgstr "Paket-Nutzdaten können mit bzip2 komprimiert werden."
 
 #: lib/rpmds.c:953
-#, fuzzy
 msgid "package payload can be compressed using xz."
-msgstr "Paket-Nutzdaten können mit lzma komprimiert werden."
+msgstr "Paket-Nutzdaten können mit xz komprimiert werden."
 
 #: lib/rpmds.c:956
 msgid "package payload can be compressed using lzma."
@@ -2658,9 +2651,8 @@ msgstr "Interne Unterstützung für LUA-Scripte"
 
 # Gefällt mir nicht...bessere Vorschläge? Fabian
 #: lib/rpmds.c:983
-#, fuzzy
 msgid "file digest algorithm is per package configurable"
-msgstr "Datei-Prüfsummen-Übersichtsalgorithmus ist pro Paket konfigurierbar"
+msgstr "Datei-Prüfsummen-Algorithmus ist pro Paket konfigurierbar"
 
 #: lib/rpmds.c:987
 msgid "support for POSIX.1e file capabilities"
@@ -3493,19 +3485,19 @@ msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "Speicherbelegung (%u Byte) lieferte NULL zurück.\n"
 
 #: rpmio/rpmpgp.c:1335
-#, fuzzy, c-format
+#, c-format
 msgid "V%d %s/%s %s, key ID %s"
-msgstr "%sV%d %s Signatur: %s, Schlüssel-ID %s\n"
+msgstr "V%d %s/%s %s, Schlüssel-ID %s"
 
 #: rpmio/rpmpgp.c:1343
 #, fuzzy
 msgid "(none)"
-msgstr "(kein Fehler)"
+msgstr "(keine)"
 
 #: rpmio/rpmpgp.c:1606
 #, fuzzy, c-format
 msgid "Failed to register fork handler: %m\n"
-msgstr "Konnte Spec-Datei von %s nicht lesen\n"
+msgstr "Konnte Zweig-Handler nicht registrieren: %m\n"
 
 #: rpmio/url.c:213
 msgid "url port must be a number\n"
