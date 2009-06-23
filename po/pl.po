@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2009-05-18 12:27+0300\n"
-"PO-Revision-Date: 2008-12-12 21:18+0100\n"
+"PO-Revision-Date: 2009-06-18 22:10+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -948,14 +948,14 @@ msgid "line %d: Empty tag: %s\n"
 msgstr "wiersz %d: pusty znacznik: %s\n"
 
 #: build/parsePreamble.c:493
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolony znak \"%c\" w: %s\n"
 
 #: build/parsePreamble.c:498
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolona sekwencja \"..\" w: %s\n"
 
 #: build/parsePreamble.c:508 build/parsePreamble.c:515
 #, c-format
