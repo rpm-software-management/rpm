@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2009-06-10 17:21+0300\n"
-"PO-Revision-Date: 2009-04-01 00:10+0200\n"
+"PO-Revision-Date: 2009-06-18 22:14+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -545,7 +545,7 @@ msgstr "Plik nie zgadza się z przedrostkiem (%s): %s\n"
 #: build/files.c:1400
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
-msgstr ""
+msgstr "Wymagane są bezpośrednie atrybuty plików w spec dla: %s\n"
 
 #: build/files.c:1408
 #, c-format
@@ -555,7 +555,7 @@ msgstr "Nie znaleziono pliku: %s\n"
 #: build/files.c:1414
 #, c-format
 msgid "Only regular file can be %%ghost: %s\n"
-msgstr ""
+msgstr "Tylko zwykłe pliki mogą być %%ghost: %s\n"
 
 #: build/files.c:1517
 #, c-format
@@ -971,19 +971,19 @@ msgid "line %d: Tag takes single token only: %s\n"
 msgstr "wiersz %d: znacznik przyjmuje tylko jedno oznaczenie: %s\n"
 
 #: build/parsePreamble.c:457
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolony znak \"%c\" w: %s\n"
 
 #: build/parsePreamble.c:460
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolony znak w: %s\n"
 
 #: build/parsePreamble.c:466
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "wiersz %d: niedozwolony znak \"-\" w %s: %s\n"
+msgstr "wiersz %d: niedozwolona sekwencja \"..\" w: %s\n"
 
 #: build/parsePreamble.c:491
 #, c-format
@@ -1031,9 +1031,9 @@ msgid "Internal error: Bogus tag %d\n"
 msgstr "Wewnętrzny błąd: fałszywy znacznik %d\n"
 
 #: build/parsePreamble.c:759
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s is deprecated: %s\n"
-msgstr "wiersz %d: wersja jest wymagana: %s\n"
+msgstr "wiersz %d: %s jest przestarzałe: %s\n"
 
 #: build/parsePreamble.c:820
 #, c-format
@@ -3461,9 +3461,9 @@ msgid "(none)"
 msgstr "(brak)"
 
 #: rpmio/rpmpgp.c:1606
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to register fork handler: %m\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Zarejestrowanie obsługi rozdzielenia nie powiodło się: %m\n"
 
 #: rpmio/url.c:213
 msgid "url port must be a number\n"
@@ -3477,18 +3477,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:247
 msgid "don't verify header+payload signature"
 msgstr "nie sprawdzaj podpisu nagłówka+danych"
-
-#~ msgid "Legacy syntax is unsupported: %s\n"
-#~ msgstr "Przestarzała składnia nie jest obsługiwana: %s\n"
-
-#~ msgid "removing %s \"%s\" from tsort relations.\n"
-#~ msgstr "usuwanie %s \"%s\" z relacji tsort.\n"
-
-#~ msgid "LOOP:\n"
-#~ msgstr "PĘTLA:\n"
-
-#~ msgid "rpmtsOrder failed, %d elements remain\n"
-#~ msgstr "rpmtsOrder nie powiodło się, zostało %d elementów\n"
-
-#~ msgid "Header+Payload size:"
-#~ msgstr "Rozmiar nagłówka+danych:"
