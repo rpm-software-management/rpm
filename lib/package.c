@@ -511,7 +511,6 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 	rc = RPMRC_FAIL;
         goto exit;
     }
-    h->flags |= HEADERFLAG_ALLOCATED;
     ei = NULL;	/* XXX will be freed with header */
     
 exit:

@@ -29,7 +29,7 @@
 
 #include "lib/rpmdb_internal.h"
 #include "lib/fprint.h"
-#include "lib/header_internal.h"	/* XXX for HEADERFLAG_ALLOCATED */
+#include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "debug.h"
 
 int _rpmdb_debug = 0;
@@ -2097,8 +2097,6 @@ top:
     /* Did the header blob load correctly? */
 #if !defined(_USE_COPY_LOAD)
     mi->mi_h = headerLoad(uh);
-    if (mi->mi_h)
-	mi->mi_h->flags |= HEADERFLAG_ALLOCATED;
 #else
     mi->mi_h = headerCopyLoad(uh);
 #endif

@@ -966,6 +966,7 @@ Header headerLoad(void * uh)
 
     h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
+    h->flags |= HEADERFLAG_ALLOCATED;
 
     return h;
 
@@ -991,9 +992,6 @@ Header headerReload(Header h, rpmTag tag)
 	uh = _free(uh);
 	return NULL;
     }
-    if (nh->flags & HEADERFLAG_ALLOCATED)
-	uh = _free(uh);
-    nh->flags |= HEADERFLAG_ALLOCATED;
     if (ENTRY_IS_REGION(nh->index)) {
 	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE)
 	    nh->index[0].info.tag = tag;
@@ -1014,11 +1012,9 @@ Header headerCopyLoad(const void * uh)
     /* Sanity checks on header intro. */
     if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
 	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
-	if ((h = headerLoad(nuh)) != NULL)
-	    h->flags |= HEADERFLAG_ALLOCATED;
+	if ((h = headerLoad(nuh)) == NULL)
+	    nuh = _free(nuh);
     }
-    if (h == NULL)
-	nuh = _free(nuh);
     return h;
 }
 
@@ -1079,12 +1075,9 @@ Header headerRead(FD_t fd, enum hMagic magicp)
     h = headerLoad(ei);
 
 exit:
-    if (h) {
-	if (h->flags & HEADERFLAG_ALLOCATED)
-	    ei = _free(ei);
-	h->flags |= HEADERFLAG_ALLOCATED;
-    } else if (ei)
-	ei = _free(ei);
+    if (h == NULL && ei != NULL) {
+	free(ei);
+    }
     return h;
 }
 
