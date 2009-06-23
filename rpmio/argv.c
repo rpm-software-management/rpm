@@ -204,7 +204,7 @@ char *argvJoin(ARGV_const_t argv, const char *sep)
     char *dest = NULL;
     char * const *arg;
 
-    for (arg = argv; *arg; arg++) {
+    for (arg = argv; arg && *arg; arg++) {
 	rstrscat(&dest, *arg, *(arg+1) ? sep : "", NULL);
     } 
     return dest;
