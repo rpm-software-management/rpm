@@ -203,7 +203,7 @@ usage (void)
 	 "<stdin> will be read instead of reading from a file.  The\n"
 	 "contents of <stdin> should be the contents of a class file and \n"
 	 "not a list of class files to read.  It is assumed that when run \n"
-	 "with '-', this program is in a pipeline preceeded by the \n"
+	 "with '-', this program is in a pipeline preceded by the \n"
 	 "command 'unzip -p filename.jar' so that <stdin> may contain\n"
 	 "the contents of several classfiles concatenated together.\n");
   printf("\n\n");
@@ -224,7 +224,7 @@ usage (void)
 	 "                  if you use branches. This keyword\n"
 	 "                  only effects the output of --provides and only\n"
 	 "                  when RPM_Version is not defined.\n\n"
-	 "'RPM_Version: '   This is an alternative method of specifing the\n"
+	 "'RPM_Version: '   This is an alternative method of specifying the\n"
 	 "                  version number of the class.  It will override\n"
 	 "                  $Revision if set.   This keyword only effects\n"
 	 "                  the output of --provides \n\n"
@@ -234,7 +234,7 @@ usage (void)
 	 "                  This keyword only effects the output of\n "
 	 "                  --provides and only when $Revision number is\n"
 	 "                  used.\n\n"
-	 "'RPM_Provides: '  This string lists additional capabilites\n"
+	 "'RPM_Provides: '  This string lists additional capabilities\n"
 	 "                  provided by the java class.  The string should\n"
 	 "                  be  a white space ([\\t\\v\\n\\r\\f\\ ])\n"
 	 "                  separated list of dependency strings.  Each\n"
