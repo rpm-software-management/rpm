@@ -1744,35 +1744,33 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
     if (pkg->fileFile) {
 	char *ffn;
+	ARGV_t filelists;
 	FILE *fd;
 
-	/* XXX W2DO? urlPath might be useful here. */
-	if (*pkg->fileFile == '/') {
-	    ffn = rpmGetPath(pkg->fileFile, NULL);
-	} else {
-	    /* XXX FIXME: add %{buildsubdir} */
+	argvSplit(&filelists, getStringBuf(pkg->fileFile), "\n");
+	for (fp = filelists; *fp != NULL; fp++) {
 	    ffn = rpmGetPath("%{_builddir}/",
 		(spec->buildSubdir ? spec->buildSubdir : "") ,
-		"/", pkg->fileFile, NULL);
-	}
-	fd = fopen(ffn, "r");
+		"/", *fp, NULL);
+	    fd = fopen(ffn, "r");
 
-	if (fd == NULL || ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), ffn);
-	    return RPMRC_FAIL;
-	}
-	ffn = _free(ffn);
-
-	while (fgets(buf, sizeof(buf), fd)) {
-	    handleComments(buf);
-	    if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-		rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
-		fclose(fd);
+	    if (fd == NULL || ferror(fd)) {
+		rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), ffn);
 		return RPMRC_FAIL;
 	    }
-	    appendStringBuf(pkg->fileList, buf);
+	    ffn = _free(ffn);
+
+	    while (fgets(buf, sizeof(buf), fd)) {
+		handleComments(buf);
+		if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
+		    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+		    fclose(fd);
+		    return RPMRC_FAIL;
+		}
+		appendStringBuf(pkg->fileList, buf);
+	    }
+	    (void) fclose(fd);
 	}
-	(void) fclose(fd);
     }
     
     /* Init the file list structure */

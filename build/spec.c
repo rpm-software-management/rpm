@@ -157,7 +157,7 @@ Package freePackage(Package pkg)
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
     pkg->fileList = freeStringBuf(pkg->fileList);
-    pkg->fileFile = _free(pkg->fileFile);
+    pkg->fileFile = freeStringBuf(pkg->fileFile);
     if (pkg->cpioList) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;

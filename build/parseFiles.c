@@ -65,15 +65,13 @@ int parseFiles(rpmSpec spec)
 	goto exit;
     }
 
-    if (pkg->fileList != NULL) {
-	rpmlog(RPMLOG_ERR, _("line %d: Second %%files list\n"),
-		 spec->lineNum);
-	goto exit;
-    }
-
-    if (file)  {
-    /* XXX not necessary as readline has expanded already, but won't hurt.  */
-	pkg->fileFile = rpmGetPath(file, NULL);
+    for (arg=1; arg<argc; arg++) {
+	if (!strcmp(argv[arg], "-f") && argv[arg+1]) {
+	    file = rpmGetPath(argv[arg+1], NULL);
+	    if (!pkg->fileFile) pkg->fileFile = newStringBuf();
+	    appendLineStringBuf(pkg->fileFile, file);
+	    free(file);
+	}
     }
 
     pkg->fileList = newStringBuf();

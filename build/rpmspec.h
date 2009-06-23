@@ -169,7 +169,7 @@ struct Package_s {
 
     struct TriggerFileEntry * triggerFiles;
 
-    char * fileFile;
+    StringBuf fileFile;
     StringBuf fileList;		/* If NULL, package will not be written */
 
     Package next;
