@@ -164,85 +164,66 @@ const char * rpmlogLevelPrefix(rpmlogLvl pri)
 
 /* FIX: rpmlogMsgPrefix[] dependent, not unqualified */
 /* FIX: rpmlogMsgPrefix[] may be NULL */
-static void vrpmlog (unsigned code, const char *fmt, va_list ap)
+static void dolog (struct rpmlogRec_s *rec)
 {
-    unsigned pri = RPMLOG_PRI(code);
-    unsigned mask = RPMLOG_MASK(pri);
-#ifdef NOTYET
-    unsigned fac = RPMLOG_FAC(code);
-#endif
-    char *msgbuf, *msg;
-    int msgnb = BUFSIZ, nb;
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
 
-    struct rpmlogRec_s rec;
-
-    if ((mask & rpmlogMask) == 0)
-	return;
-
-    msgbuf = xmalloc(msgnb);
-    *msgbuf = '\0';
-
-    /* Allocate a sufficently large buffer for output. */
-    while (1) {
-	va_list apc;
-	va_copy(apc, ap);
-	nb = vsnprintf(msgbuf, msgnb, fmt, apc);
-	if (nb > -1 && nb < msgnb)
-	    break;
-	if (nb > -1)		/* glibc 2.1 (and later) */
-	    msgnb = nb+1;
-	else			/* glibc 2.0 */
-	    msgnb *= 2;
-	msgbuf = xrealloc(msgbuf, msgnb);
-	va_end(apc);
-    }
-    msgbuf[msgnb - 1] = '\0';
-    msg = msgbuf;
-
-    rec.code = code;
-    rec.message = msg;
-    rec.pri = pri;
-
     /* Save copy of all messages at warning (or below == "more important"). */
-    if (pri <= RPMLOG_WARNING) {
-
-	if (recs == NULL)
-	    recs = xmalloc((nrecs+2) * sizeof(*recs));
-	else
-	    recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
-	recs[nrecs].code = rec.code;
-	recs[nrecs].pri = rec.pri;
-	recs[nrecs].message = msg = xrealloc(msgbuf, strlen(msgbuf)+1);
-	msgbuf = NULL;		/* XXX don't free at exit. */
+    if (rec->pri <= RPMLOG_WARNING) {
+	recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
+	recs[nrecs].code = rec->code;
+	recs[nrecs].pri = rec->pri;
+	recs[nrecs].message = xstrdup(rec->message);
 	recs[nrecs+1].code = 0;
 	recs[nrecs+1].message = NULL;
 	++nrecs;
     }
 
     if (_rpmlogCallback) {
-	cbrc = _rpmlogCallback(&rec, _rpmlogCallbackData);
+	cbrc = _rpmlogCallback(rec, _rpmlogCallbackData);
 	needexit += cbrc & RPMLOG_EXIT;
     }
 
     if (cbrc & RPMLOG_DEFAULT) {
-	cbrc = rpmlogDefault(&rec);
+	cbrc = rpmlogDefault(rec);
 	needexit += cbrc & RPMLOG_EXIT;
     }
     
-    msgbuf = _free(msgbuf);
     if (needexit)
 	exit(EXIT_FAILURE);
 }
 
 void rpmlog (int code, const char *fmt, ...)
 {
+    unsigned pri = RPMLOG_PRI(code);
+    unsigned mask = RPMLOG_MASK(pri);
     va_list ap;
+    int n;
+
+    if ((mask & rpmlogMask) == 0)
+	return;
 
     va_start(ap, fmt);
-    /* FIX: shrug */
-    vrpmlog(code, fmt, ap);
+    n = vsnprintf(NULL, 0, fmt, ap);
     va_end(ap);
+
+    if (n >= -1) {
+	struct rpmlogRec_s rec;
+	size_t nb = n + 1;
+	char *msg = xmalloc(nb);
+
+	va_start(ap, fmt);
+	n = vsnprintf(msg, nb, fmt, ap);
+	va_end(ap);
+
+	rec.code = code;
+	rec.pri = pri;
+	rec.message = msg;
+
+	dolog(&rec);
+
+	free(msg);
+    }
 }
 
