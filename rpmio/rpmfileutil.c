@@ -480,7 +480,7 @@ char * rpmGenPath(const char * urlroot, const char * urlmdir,
     char * xfile = rpmGetPath(urlfile, NULL);
     const char * file = xfile;
     char * result;
-    const char * url = NULL;
+    char * url = NULL;
     int nurl = 0;
     int ut;
 
@@ -516,7 +516,7 @@ char * rpmGenPath(const char * urlroot, const char * urlmdir,
     xroot = _free(xroot);
     xmdir = _free(xmdir);
     xfile = _free(xfile);
-    _constfree(url);
+    free(url);
     return result;
 }
 
