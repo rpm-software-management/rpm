@@ -694,7 +694,7 @@ static int rpm_unregister(lua_State *L)
 {
     if (!lua_isstring(L, 1)) {
 	(void) luaL_argerror(L, 1, "hook name expected");
-    } else if (!lua_islightuserdata(L, 2)) {
+    } else if (!lua_isuserdata(L, 2)) {
 	(void) luaL_argerror(L, 2, "hook information expected");
     } else {
 	rpmluaHookData hookdata = (rpmluaHookData)lua_touserdata(L, 2);
