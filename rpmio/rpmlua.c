@@ -16,6 +16,7 @@
 #include <rpm/rpmurl.h>
 #include <rpm/rpmfileutil.h>
 #include "rpmio/rpmhook.h"
+#include "rpmio/base64.h"
 
 #define _RPMLUA_INTERNAL
 #include "rpmio/rpmlua.h"
@@ -568,6 +569,37 @@ void rpmluaInteractive(rpmlua _lua)
 /* ------------------------------------------------------------------ */
 /* Lua API */
 
+static int rpm_b64encode(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    size_t len = lua_strlen(L, 1);
+    int linelen = -1;
+    if (lua_gettop(L) == 2)
+	linelen = luaL_checkinteger(L, 2);
+    if (str && len) {
+	char *data = b64encode(str, len, linelen);
+	lua_pushstring(L, data);
+	free(data);
+    }
+    return 1;
+}
+
+static int rpm_b64decode(lua_State *L)
+{
+    const char *str = luaL_checkstring(L, 1);
+    if (str) {
+	void *data = NULL;
+	size_t len = 0;
+	if (b64decode(str, &data, &len) == 0) {
+	    lua_pushlstring(L, data, len);
+	} else {
+	    lua_pushnil(L);
+	}
+	free(data);
+    }
+    return 1;
+}
+
 static int rpm_expand(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
@@ -768,6 +800,8 @@ static int rpm_print (lua_State *L)
 }
 
 static const luaL_reg rpmlib[] = {
+    {"b64encode", rpm_b64encode},
+    {"b64decode", rpm_b64decode},
     {"expand", rpm_expand},
     {"define", rpm_define},
     {"register", rpm_register},
