@@ -18,6 +18,7 @@
 #include <rpm/rpmlog.h>
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
+#include "rpmio/base64.h"
 #include "rpmio/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
@@ -1603,12 +1604,10 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	break;
     case RPMTAG_PUBKEYS: {
 	if ((xx = pgpReadPkts(fn, &pkt, (size_t *)&pktlen)) <= 0) {
-	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: public key read failed.\n"), fn);
 	    goto exit;
 	}
 	if (xx != PGPARMOR_PUBKEY) {
-	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("%s: not an armored public key.\n"), fn);
 	    goto exit;
 	}
@@ -1617,18 +1616,21 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
     }
     case RPMTAG_POLICIES:
 	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0 || pkt == NULL) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("%s: *.te policy read failed.\n"), fn);
+	    rpmlog(RPMLOG_ERR, _("%s: policy file read failed.\n"), fn);
 	    goto exit;
 	}
-	apkt = (char *) pkt;	/* XXX unsigned char */
-	pkt = NULL;
+	apkt = b64encode(pkt, pktlen, -1);
 	break;
     }
 
-    headerPutString(pkg->header, tag, apkt);
+    if (!apkt) {
+	rpmlog(RPMLOG_ERR, _("%s: failed to encode\n"), fn);
+	goto exit;
+    }
 
+    headerPutString(pkg->header, tag, apkt);
     rc = RPMRC_OK;
+
     if (absolute)
 	rc = addFile(fl, fn, NULL);
 
