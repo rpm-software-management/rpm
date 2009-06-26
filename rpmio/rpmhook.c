@@ -205,10 +205,12 @@ static void rpmhookTableCallArgs(rpmhookTable *table, const char *name,
 {
     int n = rpmhookTableFindBucket(table, name);
     rpmhookItem item = (*table)->bucket[n].item;
+    rpmhookItem next;
     while (item) {
+	next = item->next;
 	if (item->func(args, item->data) != 0)
 	    break;
-	item = item->next;
+	item = next;
     }
 }
 
