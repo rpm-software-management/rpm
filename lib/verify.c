@@ -22,6 +22,7 @@
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
 extern int _rpmds_unspecified_epoch_noise;
+extern int _cacheDependsRC;
 
 /* If cap_compare() (Linux extension) not available, do it the hard way */
 #if WITH_CAP && !defined(HAVE_CAP_COMPARE)
@@ -471,6 +472,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     rpmVSFlags vsflags, ovsflags;
     int ec = 0, xx;
     const char * rootDir = rpmtsRootDir(ts);
+    int cachingDeps = _cacheDependsRC;
 
     /* 
      * Open the DB + indices explicitly before possible chroot,
@@ -485,6 +487,8 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 	    goto exit;
 	} else {
 	    rpmtsSetChrootDone(ts, 1);
+	    /* XXX temporary db path is wrong when chrooted, disable caching */
+	    _cacheDependsRC = 0;
 	}
     }
 
@@ -517,6 +521,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     }
 
 exit:
+    _cacheDependsRC = cachingDeps;
 
     return ec;
 }
