@@ -19,7 +19,7 @@
 #include "debug.h"
 
 
-static int _cacheDependsRC = 1;
+RPM_GNUC_INTERNAL int _cacheDependsRC = 1;
 
 const char * const rpmNAME = PACKAGE;
 
