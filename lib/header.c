@@ -1327,23 +1327,18 @@ exit:
 /**
  * Retrieve tag data from header.
  * @param h		header
- * @param tag		tag to retrieve
  * @retval td		tag data container
  * @param flags		flags to control retrieval
  * @return		1 on success, 0 on not found
  */
-static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
+static int intGetTdEntry(Header h, rpmtd td, headerGetFlags flags)
 {
     indexEntry entry;
     int rc;
 
-    assert(td != NULL);
-    /* ensure clean state */
-    rpmtdReset(td);
-    td->tag = tag;
     /* First find the tag */
     /* FIX: h modified by sort. */
-    entry = findEntry(h, tag, RPM_NULL_TYPE);
+    entry = findEntry(h, td->tag, RPM_NULL_TYPE);
     if (entry == NULL) {
 	/* Td is zeroed above, just return... */
 	return 0;
@@ -1366,35 +1361,21 @@ static int intGetTdEntry(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
     return ((rc == 1) ? 1 : 0);
 }
 
-/* 
- * XXX temporary kludgery until tag extensions have been converted to 
- * take rpmtd as argument
- */
-static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tagfunc)
-{
-    int rc;
-    rpmtdReset(td);
-    rc = tagfunc(h, td, HEADERGET_DEFAULT);
-    td->tag = tag;
-    return rc; 
-}
-
 int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
 {
     int rc;
-    headerTagTagFunction tagfunc = NULL;
+    headerTagTagFunction tagfunc = intGetTdEntry;
 
-    assert(td != NULL);
+    if (td == NULL) return 0;
+
+    rpmtdReset(td);
+    td->tag = tag;
 
     if (flags & HEADERGET_EXT) {
-	tagfunc = rpmHeaderTagFunc(tag);
+	headerTagTagFunction extfunc = rpmHeaderTagFunc(tag);
+	if (extfunc) tagfunc = extfunc;
     }
-	
-    if (tagfunc) {
-	rc = intGetTagExt(h, tag, td, tagfunc);
-    } else {
-	rc = intGetTdEntry(h, tag, td, flags);
-    }
+    rc = tagfunc(h, td, flags);
 
     assert(tag == td->tag);
     return rc;
