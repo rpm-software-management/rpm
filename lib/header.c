@@ -342,19 +342,8 @@ static int dataLength(rpmTagType type, rpm_constdata_t p, rpm_count_t count,
 /** \ingroup header
  * Swap int32_t and int16_t arrays within header region.
  *
- * This code is way more twisty than I would like.
- *
- * A bug with RPM_I18NSTRING_TYPE in rpm-2.5.x (fixed in August 1998)
- * causes the offset and length of elements in a header region to disagree
- * regarding the total length of the region data.
- *
- * The "fix" is to compute the size using both offset and length and
- * return the larger of the two numbers as the size of the region.
- * Kinda like computing left and right Riemann sums of the data elements
- * to determine the size of a data structure, go figger :-).
- *
- * There's one other twist if a header region tag is in the set to be swabbed,
- * as the data for a header region is located after all other tag data.
+ * If a header region tag is in the set to be swabbed, as the data for a
+ * a header region is located after all other tag data.
  *
  * @param entry		header entry
  * @param il		no. of entries
@@ -371,16 +360,13 @@ static int regionSwab(indexEntry entry, int il, int dl,
 		const unsigned char * dataEnd,
 		int regionid)
 {
-    unsigned char * tprev = NULL;
-    unsigned char * t = NULL;
-    int tdel = 0;
-    int tl = dl;
     struct indexEntry_s ieprev;
 
     memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 	rpmTagType type;
+	unsigned char * t = NULL;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -423,18 +409,6 @@ static int regionSwab(indexEntry entry, int il, int dl,
 		    ieprev.length += diff;
 	    }
 	}
-	tdel = (tprev ? (t - tprev) : 0);
-	if (ieprev.info.type == RPM_I18NSTRING_TYPE)
-	    tdel = ieprev.length;
-
-	if (ie.info.tag >= HEADER_I18NTABLE) {
-	    tprev = t;
-	} else {
-	    tprev = dataStart;
-	    /* XXX HEADER_IMAGE tags don't include region sub-tag. */
-	    if (ie.info.tag == HEADER_IMAGE)
-		tprev -= REGION_TAG_COUNT;
-	}
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
@@ -465,26 +439,11 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	    }
 	    t = (unsigned char *) it;
 	}   break;
-	default:
-	    t += ie.length;
-	    break;
 	}
 
 	dl += ie.length;
-	tl += tdel;
 	ieprev = ie;	/* structure assignment */
-
     }
-    tdel = (tprev ? (t - tprev) : 0);
-    tl += tdel;
-
-    /* XXX
-     * There are two hacks here:
-     *	1) tl is 16b (i.e. REGION_TAG_COUNT) short while doing headerReload().
-     *	2) the 8/98 rpm bug with inserting i18n tags needs to use tl, not dl.
-     */
-    if (tl+REGION_TAG_COUNT == dl)
-	tl += REGION_TAG_COUNT;
 
     return dl;
 }
