@@ -97,7 +97,7 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     *fcp = count;
 }
 
-static int filedepTag(Header h, rpmTag tagN, rpmtd td)
+static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
 {
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
     rpmds ds = NULL;
@@ -162,7 +162,7 @@ exit:
  * @retval td		tag data container
  * @return		1 on success
  */
-static int fsnamesTag(Header h, rpmtd td)
+static int fsnamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     const char ** list;
 
@@ -181,7 +181,7 @@ static int fsnamesTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int instprefixTag(Header h, rpmtd td)
+static int instprefixTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     struct rpmtd_s prefixes;
     int flags = HEADERGET_MINMEM;
@@ -206,7 +206,7 @@ static int instprefixTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int fssizesTag(Header h, rpmtd td)
+static int fssizesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     struct rpmtd_s fsizes, fnames;
     const char ** filenames = NULL;
@@ -251,7 +251,7 @@ static int fssizesTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int triggercondsTag(Header h, rpmtd td)
+static int triggercondsTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     uint32_t * indices;
     int i, j;
@@ -321,7 +321,7 @@ static int triggercondsTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int triggertypeTag(Header h, rpmtd td)
+static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     int i;
     char ** conds;
@@ -374,7 +374,7 @@ static int triggertypeTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int filenamesTag(Header h, rpmtd td)
+static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     rpmfiBuildFNames(h, RPMTAG_BASENAMES, 
 		     (const char ***) &(td->data), &(td->count));
@@ -391,7 +391,7 @@ static int filenamesTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int origfilenamesTag(Header h, rpmtd td)
+static int origfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     rpmfiBuildFNames(h, RPMTAG_ORIGBASENAMES, 
 		     (const char ***) &(td->data), &(td->count));
@@ -407,7 +407,7 @@ static int origfilenamesTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int fileclassTag(Header h, rpmtd td)
+static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
     char **fclasses;
@@ -443,9 +443,9 @@ exit:
  * @retval td		tag data container
  * @return		1 on success
  */
-static int fileprovideTag(Header h, rpmtd td)
+static int fileprovideTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return filedepTag(h, RPMTAG_PROVIDENAME, td);
+    return filedepTag(h, RPMTAG_PROVIDENAME, td, hgflags);
 }
 
 /**
@@ -454,9 +454,9 @@ static int fileprovideTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int filerequireTag(Header h, rpmtd td)
+static int filerequireTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return filedepTag(h, RPMTAG_REQUIRENAME, td);
+    return filedepTag(h, RPMTAG_REQUIRENAME, td, hgflags);
 }
 
 /* I18N look aside diversions */
@@ -475,7 +475,7 @@ static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
  * @retval td		tag data container
  * @return		1 on success
  */
-static int i18nTag(Header h, rpmTag tag, rpmtd td)
+static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 {
     char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
@@ -543,9 +543,9 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int summaryTag(Header h, rpmtd td)
+static int summaryTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return i18nTag(h, RPMTAG_SUMMARY, td);
+    return i18nTag(h, RPMTAG_SUMMARY, td, hgflags);
 }
 
 /**
@@ -554,9 +554,9 @@ static int summaryTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int descriptionTag(Header h, rpmtd td)
+static int descriptionTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return i18nTag(h, RPMTAG_DESCRIPTION, td);
+    return i18nTag(h, RPMTAG_DESCRIPTION, td, hgflags);
 }
 
 /**
@@ -565,9 +565,9 @@ static int descriptionTag(Header h, rpmtd td)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int groupTag(Header h, rpmtd td)
+static int groupTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    return i18nTag(h, RPMTAG_GROUP, td);
+    return i18nTag(h, RPMTAG_GROUP, td, hgflags);
 }
 
 /*
@@ -611,22 +611,22 @@ static int get64(Header h, rpmtd td, rpmTag newtag, rpmTag oldtag)
  * @retval td		tag data container
  * @return		1 on success
  */
-static int longfilesizesTag(Header h, rpmtd td)
+static int longfilesizesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return get64(h, td, RPMTAG_LONGFILESIZES, RPMTAG_FILESIZES);
 }
 
-static int longarchivesizeTag(Header h, rpmtd td)
+static int longarchivesizeTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return get64(h, td, RPMTAG_LONGARCHIVESIZE, RPMTAG_ARCHIVESIZE);
 }
 
-static int longsizeTag(Header h, rpmtd td)
+static int longsizeTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return get64(h, td, RPMTAG_LONGSIZE, RPMTAG_SIZE);
 }
 
-static int longsigsizeTag(Header h, rpmtd td)
+static int longsigsizeTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     return get64(h, td, RPMTAG_LONGSIGSIZE, RPMTAG_SIGSIZE);
 }

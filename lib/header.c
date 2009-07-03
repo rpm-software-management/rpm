@@ -79,9 +79,10 @@ static const size_t headerMaxbytes = (32*1024*1024);
  *
  * @param h		header
  * @retval td		tag data container
+ * @param flags		modifier flags
  * @return		0 on success
  */
-typedef int (*headerTagTagFunction) (Header h, rpmtd td);
+typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags);
 
 extern void *rpmHeaderTagFunc(rpmTag tag);
 
@@ -1373,7 +1374,7 @@ static int intGetTagExt(Header h, rpmTag tag, rpmtd td, headerTagTagFunction tag
 {
     int rc;
     rpmtdReset(td);
-    rc = tagfunc(h, td);
+    rc = tagfunc(h, td, HEADERGET_DEFAULT);
     td->tag = tag;
     return rc; 
 }
