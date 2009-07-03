@@ -880,10 +880,8 @@ Header headerLoad(void * uh)
 	entry->data = pe;
 	entry->length = pvlen - sizeof(il) - sizeof(dl);
 	rdlen = regionSwab(entry+1, il, 0, pe, dataStart, dataEnd, entry->info.offset);
-#if 0	/* XXX don't check, the 8/98 i18n bug fails here. */
 	if (rdlen != dl)
 	    goto errxit;
-#endif
 	entry->rdlen = rdlen;
 	entry++;
 	h->indexUsed++;
