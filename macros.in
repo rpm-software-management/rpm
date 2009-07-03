@@ -632,7 +632,7 @@ print (t)\
 %{nil}
 
 # The list of tags for which indices will be built.
-%_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys
+%_dbi_tags	Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Obsoletename:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys
 
 # "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
 %_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
