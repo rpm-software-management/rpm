@@ -111,7 +111,7 @@ static int dbiTagToDbix(rpmTag rpmtag)
 static void dbiTagsInit(void)
 {
     static const char * const _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys";
+	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:ObsoleteName:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys";
     char * dbiTagStr = NULL;
     char * o, * oe;
     rpmTag rpmtag;
