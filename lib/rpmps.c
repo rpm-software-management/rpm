@@ -21,6 +21,7 @@ struct rpmProblem_s {
     int ignoreProblem;
     char * str1;
     uint64_t num1;
+    int nrefs;
 };
 
 /**
@@ -149,7 +150,7 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 
     p = ps->probs + ps->numProblems;
     ps->numProblems++;
-    *p = prob;
+    *p = rpmProblemLink(prob);
 }
 
 void rpmpsAppend(rpmps ps, rpmProblemType type,
@@ -162,6 +163,7 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
 
     p = rpmProblemCreate(type, pkgNEVR, key, dn, bn, altNEVR, number);
     rpmpsAppendProblem(ps, p);
+    rpmProblemFree(p);
 }
 
 #define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
@@ -236,15 +238,36 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
         if (dn != NULL) t = stpcpy(t, dn);
         if (bn != NULL) t = stpcpy(t, bn);
     }
-    return p;
+    return rpmProblemLink(p);
 }
 
 rpmProblem rpmProblemFree(rpmProblem prob)
 {
+    if (prob == NULL) return NULL;
+
+    if (prob->nrefs > 1) {
+	return rpmProblemUnlink(prob);
+    }
     prob->pkgNEVR = _free(prob->pkgNEVR);
     prob->altNEVR = _free(prob->altNEVR);
     prob->str1 = _free(prob->str1);
-    prob = _free(prob);
+    free(prob);
+    return NULL;
+}
+
+rpmProblem rpmProblemLink(rpmProblem prob)
+{
+    if (prob) {
+	prob->nrefs++;
+    }
+    return prob;
+}
+
+rpmProblem rpmProblemUnlink(rpmProblem prob)
+{
+    if (prob) {
+	prob->nrefs--;
+    }
     return NULL;
 }
 

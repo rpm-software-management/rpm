@@ -86,6 +86,20 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
 rpmProblem rpmProblemFree(rpmProblem prob);
 
 /** \ingroup rpmps
+ * Reference an rpmProblem instance
+ * @param prob		rpm problem
+ * @return		rpm problem
+ */
+rpmProblem rpmProblemLink(rpmProblem prob);
+
+/** \ingroup rpmps
+ * Unreference an rpmProblem instance
+ * @param prob		rpm problem
+ * @return		rpm problem
+ */
+rpmProblem rpmProblemUnlink(rpmProblem prob);
+
+/** \ingroup rpmps
  * Return package NEVR
  * @param prob		rpm problem
  * @return		package NEVR
