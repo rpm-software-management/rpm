@@ -18,12 +18,11 @@ int parseFiles(rpmSpec spec)
     int arg;
     const char ** argv = NULL;
     const char *name = NULL;
-    const char *file = NULL;
     int flag = PART_SUBNAME;
     poptContext optCon = NULL;
     struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n', NULL, NULL},
-	{ NULL, 'f', POPT_ARG_STRING, &file, 'f', NULL, NULL},
+	{ NULL, 'f', POPT_ARG_STRING, NULL, 'f', NULL, NULL},
 	{ 0, 0, 0, 0, 0, NULL, NULL}
     };
 
@@ -67,7 +66,7 @@ int parseFiles(rpmSpec spec)
 
     for (arg=1; arg<argc; arg++) {
 	if (!strcmp(argv[arg], "-f") && argv[arg+1]) {
-	    file = rpmGetPath(argv[arg+1], NULL);
+	    char *file = rpmGetPath(argv[arg+1], NULL);
 	    if (!pkg->fileFile) pkg->fileFile = newStringBuf();
 	    appendLineStringBuf(pkg->fileFile, file);
 	    free(file);
