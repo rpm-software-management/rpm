@@ -791,6 +791,7 @@ static rpmps checkProblems(rpmts ts)
     rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmdbMatchIterator mi;
+	rpmpsi psi;
 
 	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
 	    if (!archOkay(rpmteA(p)))
@@ -832,6 +833,15 @@ static rpmps checkProblems(rpmts ts)
 		break;
 	    }
 	    mi = rpmdbFreeIterator(mi);
+	}
+
+	/* XXX rpmte problems can only be relocation problems atm */
+	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE)) {
+	    psi = rpmpsInitIterator(rpmteProblems(p));
+	    while (rpmpsNextIterator(psi) >= 0) {
+		rpmpsAppendProblem(ps, rpmpsGetProblem(psi));
+	    }
+	    rpmpsFreeIterator(psi);
 	}
     }
     pi = rpmtsiFree(pi);

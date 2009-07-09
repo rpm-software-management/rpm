@@ -86,6 +86,9 @@ int rpmteMarkFailed(rpmte te, rpmts ts);
 RPM_GNUC_INTERNAL
 int rpmteHaveTransScript(rpmte te, rpmTag tag);
 
+RPM_GNUC_INTERNAL
+rpmps rpmteProblems(rpmte te);
+
 //RPM_GNUC_INTERNAL
 rpmfs rpmteGetFileStates(rpmte te);
 

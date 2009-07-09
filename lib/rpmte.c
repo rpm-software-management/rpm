@@ -52,6 +52,7 @@ struct rpmte_s {
     rpmds conflicts;		/*!< Conflicts: dependencies. */
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmfi fi;			/*!< File information. */
+    rpmps probs;		/*!< Problems (relocations) */
 
     rpm_color_t color;		/*!< Color bit(s) from package dependencies. */
     rpm_loff_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
@@ -111,7 +112,7 @@ static void delTE(rpmte p)
 
     p->h = headerFree(p->h);
     p->fs = rpmfsFree(p->fs);
-
+    p->probs = rpmpsFree(p->probs);
 
     memset(p, 0, sizeof(*p));	/* XXX trash and burn */
     /* FIX: p->{NEVR,name} annotations */
@@ -156,7 +157,6 @@ static void sortRelocs(rpmRelocation *relocations, int numRelocations)
 
 static void buildRelocs(rpmts ts, rpmte p, Header h, rpmRelocation *relocs)
 {
-    int allowBadRelocate = (rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE);
     int i;
     struct rpmtd_s validRelocs;
 
@@ -203,12 +203,13 @@ static void buildRelocs(rpmts ts, rpmte p, Header h, rpmRelocation *relocs)
 		}
 	    }
 
-	    if (!valid && !allowBadRelocate) {
-		rpmps ps = rpmtsProblems(ts);
-		rpmpsAppend(ps, RPMPROB_BADRELOCATE,
+	    if (!valid) {
+		if (p->probs == NULL) {
+		    p->probs = rpmpsCreate();
+		}
+		rpmpsAppend(p->probs, RPMPROB_BADRELOCATE,
 			rpmteNEVRA(p), rpmteKey(p),
 			p->relocs[i].oldPath, NULL, NULL, 0);
-		ps = rpmpsFree(ps);
 	    }
 	} else {
 	    p->relocs[i].newPath = NULL;
@@ -893,6 +894,11 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag)
 	rc = (te->transscripts & RPMTE_HAVE_POSTTRANS);
     }
     return rc;
+}
+
+rpmps rpmteProblems(rpmte te)
+{
+    return te ? te->probs : NULL;
 }
 
 rpmfs rpmteGetFileStates(rpmte te) {
