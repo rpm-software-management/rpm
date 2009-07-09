@@ -37,6 +37,7 @@ static rpmlock rpmlock_new(const char *rootdir)
 	if (t == NULL || *t == '\0' || *t == '%')
 	    t = xstrdup(RPMLOCK_PATH);
 	rpmlock_path = xstrdup(t);
+	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
 	t = _free(t);
     }
     if (lock != NULL) {
