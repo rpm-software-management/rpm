@@ -841,8 +841,7 @@ void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations,
     int i, j;
     struct rpmtd_s bnames, dnames, dindexes, fmodes;
 
-    if (addPrefixes(h, relocations, numRelocations) == 0)
-	return;
+    addPrefixes(h, relocations, numRelocations);
 
     if (!_printed) {
 	_printed = 1;
