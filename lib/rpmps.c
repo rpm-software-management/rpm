@@ -43,17 +43,17 @@ int _rpmps_debug = 0;
 
 rpmps rpmpsUnlink(rpmps ps, const char * msg)
 {
-if (_rpmps_debug > 0 && msg != NULL)
-fprintf(stderr, "--> ps %p -- %d %s\n", ps, ps->nrefs, msg);
-    ps->nrefs--;
-    return ps;
+    if (ps) {
+	ps->nrefs--;
+    }
+    return NULL;
 }
 
 rpmps rpmpsLink(rpmps ps, const char * msg)
 {
-    ps->nrefs++;
-if (_rpmps_debug > 0 && msg != NULL)
-fprintf(stderr, "--> ps %p ++ %d %s\n", ps, ps->nrefs, msg);
+    if (ps) {
+	ps->nrefs++;
+    }
     return ps;
 }
 
@@ -118,9 +118,9 @@ rpmps rpmpsCreate(void)
 rpmps rpmpsFree(rpmps ps)
 {
     if (ps == NULL) return NULL;
-    ps = rpmpsUnlink(ps, RPMDBG_M("rpmpsFree"));
-    if (ps->nrefs > 0)
-	return NULL;
+    if (ps->nrefs > 1) {
+	return rpmpsUnlink(ps, RPMDBG_M("rpmpsFree"));
+    }
 	
     if (ps->probs) {
 	rpmpsi psi = rpmpsInitIterator(ps);
