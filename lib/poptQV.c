@@ -266,12 +266,10 @@ struct poptOption rpmVerifyPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE, 
 	queryArgCallback, 0, NULL, NULL },
 
- /* Duplicate file verify flags from packages into command line options. */
-/** @todo Add --nomd5 alias to rpmpopt, eliminate. */
- { "nofiledigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILEDIGEST,
+ { "nofiledigest", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
 	N_("don't verify digest of files"), NULL },
- { "nomd5", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_FILEDIGEST,
-	N_("don't verify digest of files (obsolete)"), NULL },
+ { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
+	N_("don't verify digest of files"), NULL },
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIZE,
         N_("don't verify size of files"), NULL },
