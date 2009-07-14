@@ -72,7 +72,6 @@ static struct urlstring {
     { "hkp://",		URL_IS_HKP },
     { "http://",	URL_IS_HTTP },
     { "https://",	URL_IS_HTTPS },
-    { "-",		URL_IS_DASH },
     { NULL,		URL_IS_UNKNOWN }
 };
 
@@ -86,6 +85,8 @@ urltype urlIsURL(const char * url)
 		continue;
 	    return us->ret;
 	}
+	if (strcmp(url, "-") == 0) 
+	    return URL_IS_DASH;
     }
 
     return URL_IS_UNKNOWN;
