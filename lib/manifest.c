@@ -94,8 +94,8 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 	    s++;
 	if (*s == '\0') continue;
 
-	/* Insure that file contains only ASCII */
-	if (*s < 32) {
+	/* Sanity checks: skip obviously binary lines and dash (for stdin) */
+	if (*s < 32 || strcmp(s, "-") == 0) {
 	    rpmrc = RPMRC_NOTFOUND;
 	    goto exit;
 	}
