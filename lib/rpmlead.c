@@ -123,8 +123,10 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead lead)
 	    rpmlog(RPMLOG_ERR, _("read failed: %s (%d)\n"),
 			Fstrerror(fd), errno);
 	    return RPMRC_FAIL;
+	} else {
+	    rpmlog(RPMLOG_ERR, _("not an rpm package\n"));
+	    return RPMRC_NOTFOUND;
 	}
-	return RPMRC_NOTFOUND;
     }
     lead->type = ntohs(lead->type);
     lead->archnum = ntohs(lead->archnum);
