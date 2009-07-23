@@ -337,7 +337,6 @@ static rpmRC addCanon(canonEntry * table, int * tableLen, char * line,
 	return RPMRC_FAIL;
     }
 
-   	/* LCL: s != NULL here. */
     tnum = strtoul(s, &s1, 10);
     if ((*s1) || (s1 == s) || (tnum == ULONG_MAX)) {
 	rpmlog(RPMLOG_ERR, _("Bad arch/os number: %s (%s:%d)\n"), s,

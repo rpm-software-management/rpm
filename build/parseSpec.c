@@ -441,7 +441,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */
     
-   	/* LCL: parsePart is modified @*/
     while (parsePart != PART_NONE) {
 	int goterror = 0;
 	switch (parsePart) {
@@ -507,7 +506,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 
 	    closeSpec(spec);
 
-	    /* LCL: sizeof(spec->BASpecs[0]) -nullderef whine here */
 	    spec->BASpecs = xcalloc(spec->BACount, sizeof(*spec->BASpecs));
 	    index = 0;
 	    if (spec->BANames != NULL)
@@ -556,7 +554,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	    return 0;
 	}
     }
-   	/* LCL: parsePart is modified @*/
 
     /* Check for description in each package and add arch and os */
   {

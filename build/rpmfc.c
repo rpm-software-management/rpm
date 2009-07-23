@@ -1056,7 +1056,6 @@ assert(s != NULL);
 	else
 	    s = fn;
 
-/* LCL: s is not null. */
 	rasprintf(&buf, "%s%s", s,
 #if !defined(__alpha__)
 				isElf64 ? "()(64bit)" : "");

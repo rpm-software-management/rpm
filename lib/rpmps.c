@@ -190,7 +190,6 @@ int rpmpsTrim(rpmps ps, rpmps filter)
 	    continue;
 	}
 	while ((t - ps->probs) < ps->numProblems) {
-	   	/* LCL: looks good to me <shrug> */
 	    if ((*f)->type == (*t)->type && (*t)->key == (*f)->key &&
 		     XSTRCMP((*f)->str1, (*t)->str1))
 		break;

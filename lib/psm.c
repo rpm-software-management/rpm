@@ -1362,7 +1362,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 
-	   	/* LCL: fi->fd != NULL here. */
 	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd(psm->te))), psm->rpmio_flags);
 	    if (psm->cfd == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;

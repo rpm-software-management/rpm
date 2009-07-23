@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
         vsflags |= RPMVSF_NOHDRCHK;
 	(void) rpmtsSetVSFlags(ts, vsflags);
 
-	     /* LCL: segfault */
 	rc = rpmReadPackageFile(ts, fdi, "rpm2cpio", &h);
 
 	ts = rpmtsFree(ts);

@@ -34,7 +34,7 @@ char ** headerGetLangs(Header h)
 	table[i] = e;
     table[count] = NULL;
 
-    return table;	/* LCL: double indirection? */
+    return table;
 }
 
 void headerDump(Header h, FILE *f, int flags)

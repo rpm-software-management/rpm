@@ -69,7 +69,6 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
  * @param scareMemory
  * @return pointer to the finger print associated with a file path.
  */
-/* LCL: segfault */
 fingerPrint fpLookup(fingerPrintCache cache,
 		const char * dirName, const char * baseName, int scareMemory)
 {
@@ -212,7 +211,6 @@ int fpEqual(const fingerPrint * k1, const fingerPrint * k2)
 	return 0;
 
     /* Otherwise, compare fingerprints by value. */
-   	/* LCL: whines about (*k2).subdir */
     if (FP_EQUAL(*k1, *k2))
 	return 0;
     return 1;

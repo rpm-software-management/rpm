@@ -145,7 +145,6 @@ static void sortRelocs(rpmRelocation *relocations, int numRelocations)
 		relocations[j    ].oldPath == NULL || /* XXX can't happen */
 		strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
 		continue;
-	    /* LCL: ??? */
 	    tmpReloc = relocations[j - 1];
 	    relocations[j - 1] = relocations[j];
 	    relocations[j] = tmpReloc;

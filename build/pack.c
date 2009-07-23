@@ -298,7 +298,6 @@ rpmRC readRPM(const char *fileName, rpmSpec *specp,
     {	rpmts ts = rpmtsCreate();
 
 	/* XXX W2DO? pass fileName? */
-	     /* LCL: segfault */
 	rc = rpmReadPackageFile(ts, fdi, "readRPM",
 			 &spec->packages->header);
 
@@ -782,7 +781,6 @@ rpmRC packageBinaries(rpmSpec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	/* LCL: function typedefs */
 	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageBinaries)"));
 	csa->cpioList = rpmfiLink(pkg->cpioList, RPMDBG_M("packageBinaries"));
 
@@ -839,7 +837,6 @@ rpmRC packageSources(rpmSpec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	/* LCL: function typedefs */
 	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageSources)"));
 	csa->cpioList = rpmfiLink(spec->sourceCpioList, 
 				  RPMDBG_M("packageSources"));

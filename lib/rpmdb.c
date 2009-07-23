@@ -1562,7 +1562,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	mire->pattern = _free(mire->pattern);
 	if (mire->preg != NULL) {
 	    regfree(mire->preg);
-	    /* LCL: regfree has bogus only */
 	    mire->preg = _free(mire->preg);
 	}
     }
@@ -1810,7 +1809,6 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
 	allpat = _free(allpat);
 	if (preg) {
 	    regfree(preg);
-	    /* LCL: regfree has bogus only */
 	    preg = _free(preg);
 	}
 	return rc;
@@ -2147,7 +2145,6 @@ void rpmdbSortIterator(rpmdbMatchIterator mi)
     }
 }
 
-/* LCL: segfault */
 static int rpmdbGrowIterator(rpmdbMatchIterator mi)
 {
     DBC * dbcursor;

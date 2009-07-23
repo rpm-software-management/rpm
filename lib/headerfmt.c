@@ -302,7 +302,6 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
     format = xcalloc(numTokens, sizeof(*format));
     if (endPtr) *endPtr = NULL;
 
-    /* LCL: can't detect done termination */
     dst = start = str;
     numTokens = 0;
     token = NULL;

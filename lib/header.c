@@ -1844,7 +1844,6 @@ int headerNext(HeaderIterator hi, rpmtd td)
     if (entry == NULL || slot >= h->indexUsed)
 	return 0;
 
-   	/* LCL: no clue */
     hi->next_index++;
 
     td->tag = entry->info.tag;

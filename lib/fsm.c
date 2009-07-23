@@ -1146,7 +1146,6 @@ static int fsmRmdirs(FSM_t fsm)
 	fsm->path = dn;
 
 	/* Remove generated directories. */
-	/* LCL: te used after release? */
 	do {
 	    if (*te == '/') {
 		*te = '\0';

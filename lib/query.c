@@ -303,7 +303,6 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
     return ec;
 }
 
-/* LCL: segfault (realpath annotation?) */
 int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     int res = 0;

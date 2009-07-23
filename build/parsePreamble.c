@@ -251,7 +251,6 @@ exit:
  * @return		RPMRC_OK if OK
  */
 static int checkForRequired(Header h, const char * NVR)
-	/* LCL: parse error here with modifies */
 {
     int res = RPMRC_OK;
     const rpmTag * p;

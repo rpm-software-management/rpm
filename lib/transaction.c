@@ -411,7 +411,6 @@ static void skipFiles(const rpmts ts, rpmte p)
     dff = xcalloc(dc, sizeof(*dff));
 
     fi = rpmfiInit(fi, 0);
-    if (fi != NULL)	/* XXX lclint */
     while ((i = rpmfiNext(fi)) >= 0)
     {
 	char ** nsp;
@@ -549,7 +548,6 @@ static void skipFiles(const rpmts ts, rpmte p)
 
 	/* If explicitly included in the package, skip the directory. */
 	fi = rpmfiInit(fi, 0);
-	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    const char * fdn, * fbn;
 	    rpm_mode_t fFMode;
@@ -908,7 +906,6 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 	rpmfiFpLookup(fi, fpc);
 	/* collect symbolic links */
  	fi = rpmfiInit(fi, 0);
- 	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    struct rpmffi_s ffi;
 	    char const *linktarget;
@@ -939,7 +936,6 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 	    continue;	/* XXX can't happen */
 	fi = rpmfiInit(fi, 0);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	if (fi != NULL)		/* XXX lclint */
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
 		continue;
