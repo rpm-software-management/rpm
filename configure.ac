@@ -154,7 +154,6 @@ AC_MSG_CHECKING(checking whether id supports -u)
 AC_SUBST(__ID_U)
 
 AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
-AC_PATH_PROG(__LZMA, lzma, /usr/bin/lzma, $MYPATH)
 AC_PATH_PROG(__XZ, xz, /usr/bin/xz, $MYPATH)
 AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)

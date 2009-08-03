@@ -46,7 +46,8 @@
 %__id			@__ID@
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
-%__lzma			@__LZMA@
+# Deprecated, use %__xz instead.
+%__lzma			%__xz --format=lzma
 %__xz			@__XZ@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
