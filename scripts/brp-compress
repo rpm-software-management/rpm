@@ -23,9 +23,9 @@ do
 	[ "`basename $f`" = "dir" ] && continue
 
 	case "$f" in
-	 *.Z) gunzip $f; b=`echo $f | sed -e 's/\.Z$//'`;;
-	 *.gz) gunzip $f; b=`echo $f | sed -e 's/\.gz$//'`;;
-	 *.bz2) bunzip2 $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
+	 *.gz|*.Z)    gunzip  $f; b=`echo $f | sed -e 's/\.\(gz\|Z\)$//'`;;
+	 *.bz2)       bunzip2 $f; b=`echo $f | sed -e 's/\.bz2$//'`;;
+	 *.xz|*.lzma) unxz    $f; b=`echo $f | sed -e 's/\.\(xz\|lzma\)$//'`;;
 	 *) b=$f;;
 	esac
 
@@ -48,9 +48,9 @@ do
 
     for f in `find $d -type l`
     do
-	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	l=`ls -l $f | sed -e 's/.* -> //' -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//'`
 	rm -f $f
-	b=`echo $f | sed -e 's/\.gz$//' -e 's/\.bz2$//' -e 's/\.Z$//'`
+	b=`echo $f | sed -e 's/\.\(gz\|Z\|bz2\|xz\|lzma\)$//'`
 	ln -sf $l$COMPRESS_EXT $b$COMPRESS_EXT
     done
 done
