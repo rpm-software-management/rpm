@@ -979,8 +979,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    sprintf(be, "%%__unzip %s", b);
 	    break;
         case COMPRESSED_LZMA:
-            sprintf(be, "%%__lzma -dc %s", b);
-            break;
         case COMPRESSED_XZ:
             sprintf(be, "%%__xz -dc %s", b);
             break;

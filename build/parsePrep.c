@@ -203,8 +203,6 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	    needtar = 0;
 	    break;
 	case COMPRESSED_LZMA:
-	    t = "%{__lzma} -dc";
-	    break;
 	case COMPRESSED_XZ:
 	    t = "%{__xz} -dc";
 	    break;
