@@ -556,8 +556,10 @@ static rpmRC parseForAttr(const char * buf, FileList fl)
 	    goto exit;
 	}
 	ar->ar_fmode = ui;
-    } else
-	ar->ar_fmodestr = NULL;
+    } else {
+	ar->ar_fmodestr = fl->def_ar.ar_fmodestr;
+	ar->ar_fmode = fl->def_ar.ar_fmode;
+    }
 
     if (ar->ar_dmodestr && !isAttrDefault(ar->ar_dmodestr)) {
 	unsigned int ui;
@@ -567,14 +569,16 @@ static rpmRC parseForAttr(const char * buf, FileList fl)
 	    goto exit;
 	}
 	ar->ar_dmode = ui;
-    } else
-	ar->ar_dmodestr = NULL;
+    } else {
+	ar->ar_dmodestr = fl->def_ar.ar_dmodestr;
+	ar->ar_dmode = fl->def_ar.ar_dmode;
+    }
 
     if (!(ar->ar_user && !isAttrDefault(ar->ar_user)))
-	ar->ar_user = NULL;
+	ar->ar_user = fl->def_ar.ar_user;
 
     if (!(ar->ar_group && !isAttrDefault(ar->ar_group)))
-	ar->ar_group = NULL;
+	ar->ar_group = fl->def_ar.ar_group;
 
     dupAttrRec(ar, ret_ar);
 
