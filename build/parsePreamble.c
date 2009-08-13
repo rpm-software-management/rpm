@@ -32,6 +32,7 @@ static const rpmTag copyTagsDuringParse[] = {
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_PREFIXES,
     RPMTAG_DISTTAG,
+    RPMTAG_BUGURL,
     0
 };
 
@@ -306,6 +307,7 @@ static struct optionalTag {
     { RPMTAG_PACKAGER,		"%{packager}" },
     { RPMTAG_DISTRIBUTION,	"%{distribution}" },
     { RPMTAG_DISTURL,		"%{disturl}" },
+    { RPMTAG_BUGURL,		"%{bugurl}" },
     { -1, NULL }
 };
 
@@ -529,6 +531,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	break;
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
+    case RPMTAG_BUGURL:
 	SINGLE_TOKEN_ONLY;
 	headerPutString(pkg->header, tag, field);
 	break;
@@ -747,6 +750,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_AUTOPROV,		0, 0, LEN_AND_STR("autoprov")},
     {RPMTAG_DOCDIR,		0, 0, LEN_AND_STR("docdir")},
     {RPMTAG_DISTTAG,		0, 0, LEN_AND_STR("disttag")},
+    {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
     {0, 0, 0, 0}
 };
 
