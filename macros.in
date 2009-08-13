@@ -995,21 +995,13 @@ print (t)\
 #	Macro(s) here can be used reliably for reproducible builds.
 #	(Note: Above is the goal, below are the macros under development)
 #
-# The configure macro does the following:
-#	optionally change to a subdirectory (not implemented).
-#	attempt to update config.guess and config.sub.
-#	run configure with correct prefix, platform, and CFLAGS.
-#	optionally restore current directory (not implemented).
+# The configure macro runs autoconf configure script with platform specific
+# directory structure (--prefix, --libdir etc) and compiler flags
+# such as CFLAGS.
+#
 # The configure macro should be invoked as %configure (rather than %{configure})
 # because the rest of the arguments will be expanded using %*.
 #
-# This is the version of %configure used through rpm-3.0.4.
-#%configure	\
-#  %{?__libtoolize:[ -f configure.in ] && %{__libtoolize} --copy --force} \
-#  CFLAGS="%{optflags}" ./configure %{_target_platform} --prefix=%{_prefix}
-#
-#------------------------------------------------------------------------------
-# This is an improved version of %configure (from PLD team).
 %_configure ./configure
 %configure \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS ; \
