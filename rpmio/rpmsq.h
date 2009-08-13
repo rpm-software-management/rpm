@@ -8,6 +8,9 @@
 
 #include <rpm/rpmsw.h>
 #include <signal.h>
+#if defined(_RPMSQ_INTERNAL)
+#include <pthread.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
