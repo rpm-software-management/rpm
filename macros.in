@@ -260,6 +260,12 @@ package or when debugging this package.\
 #
 #%disturl
 
+#	Configurable bug URL, same as BugURL: tag in a specfile.
+#	The URL will be used to supply reliable information to where
+#	to file bugs.
+#
+#%bugurl
+
 #	Boolean (i.e. 1 == "yes", 0 == "no") that controls whether files
 #	marked as %doc should be installed.
 #%_excludedocs
