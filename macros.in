@@ -1033,7 +1033,12 @@ print (t)\
 	--infodir=%{_infodir}
 
 #------------------------------------------------------------------------------
-# The make install analogue of %configure:
+# The make install analogue of %configure for modern autotools:
+%make_install make install DESTDIR=%{?buildroot}
+
+#------------------------------------------------------------------------------
+# Former make install analogue, kept for compatibility and for old/broken
+#  packages that don't support DESTDIR properly.
 %makeinstall \
   make \\\
 	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
