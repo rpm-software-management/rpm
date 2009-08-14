@@ -283,6 +283,11 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
+static PyObject *hdrIsSource(hdrObject *s)
+{
+    return PyBool_FromLong(headerIsSource(s->h));
+}
+
 /**
  */
 static int hdr_compare(hdrObject * a, hdrObject * b)
@@ -309,6 +314,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
 	NULL },
 
     {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
