@@ -555,6 +555,13 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	}
     }
 
+    if (spec->clean == NULL) {
+	char *body = rpmExpand("%{?buildroot: %{__rm} -rf %{buildroot}}", NULL);
+	spec->clean = newStringBuf();
+	appendLineStringBuf(spec->clean, body);
+	free(body);
+    }
+
     /* Check for description in each package and add arch and os */
   {
     char *platform = rpmExpand("%{_target_platform}", NULL);
