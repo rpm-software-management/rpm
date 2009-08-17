@@ -107,24 +107,6 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
     return 0;
 }
 
-static inline const char * identifyDepend(rpmsenseFlags f)
-{
-    f = _notpre(f);
-    if (f & RPMSENSE_SCRIPT_PRE)
-	return "Requires(pre):";
-    if (f & RPMSENSE_SCRIPT_POST)
-	return "Requires(post):";
-    if (f & RPMSENSE_SCRIPT_PREUN)
-	return "Requires(preun):";
-    if (f & RPMSENSE_SCRIPT_POSTUN)
-	return "Requires(postun):";
-    if (f & RPMSENSE_SCRIPT_VERIFY)
-	return "Requires(verify):";
-    if (f & RPMSENSE_FIND_REQUIRES)
-	return "Requires(auto):";
-    return "Requires:";
-}
-
 /**
  * Record next "q <- p" relation (i.e. "p" requires "q").
  * @param ts		transaction set
