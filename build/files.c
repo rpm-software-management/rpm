@@ -1994,6 +1994,7 @@ static const rpmTag sourceTags[] = {
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
     RPMTAG_URL,
+    RPMTAG_BUGURL,
     HEADER_I18NTABLE,
     0
 };
