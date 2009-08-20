@@ -90,10 +90,8 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
     /* Avoid adding duplicate dependencies. */
     if (isNewDep(h, nametag, N, EVR, Flags, indextag, index)) {
 	headerPutString(h, nametag, N);
-	if (flagtag) {
-	    headerPutString(h, versiontag, EVR);
-	    headerPutUint32(h, flagtag, &Flags, 1);
-	}
+	headerPutString(h, versiontag, EVR);
+	headerPutUint32(h, flagtag, &Flags, 1);
 	if (indextag) {
 	    headerPutUint32(h, indextag, &index, 1);
 	}
