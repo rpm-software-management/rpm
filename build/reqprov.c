@@ -9,6 +9,38 @@
 #include <rpm/rpmbuild.h>
 #include "debug.h"
 
+static int isNewDep(Header h, rpmTag nametag,
+		  const char *N, const char *EVR, rpmsenseFlags Flags,
+		  rpmTag indextag, uint32_t index)
+{
+    int new = 1;
+    struct rpmtd_s idx;
+    rpmds ads = rpmdsNew(h, nametag, 0);
+    rpmds bds = rpmdsSingle(nametag, N, EVR, Flags);
+
+    if (indextag) {
+	headerGet(h, indextag, &idx, HEADERGET_MINMEM);
+    }
+
+    /* XXX there's no guarantee the ds is sorted here so rpmdsFind() wont do */
+    rpmdsInit(ads);
+    while (new && rpmdsNext(ads) >= 0) {
+	if (strcmp(rpmdsN(ads), rpmdsN(bds))) continue;
+	if (strcmp(rpmdsEVR(ads), rpmdsEVR(bds))) continue;
+	if (rpmdsFlags(ads) != rpmdsFlags(bds)) continue;
+	if (indextag && rpmtdSetIndex(&idx, rpmdsIx(ads)) >= 0 &&
+			rpmtdGetNumber(&idx) != index) continue;
+	new = 0;
+    }
+    
+    if (indextag) {
+	rpmtdFreeData(&idx);
+    }
+    rpmdsFree(ads);
+    rpmdsFree(bds);
+    return new;
+}
+
 int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
@@ -55,28 +87,18 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
     if (EVR == NULL)
 	EVR = "";
     
-    /* Check for duplicate dependencies. */
-    rpmds hds = rpmdsNew(h, nametag, 0);
-    rpmds newds = rpmdsSingle(nametag, N, EVR, Flags);
-    /* already got it, don't bother */
-    if (rpmdsFind(hds, newds) >= 0) {
-	goto exit;
+    /* Avoid adding duplicate dependencies. */
+    if (isNewDep(h, nametag, N, EVR, Flags, indextag, index)) {
+	headerPutString(h, nametag, N);
+	if (flagtag) {
+	    headerPutString(h, versiontag, EVR);
+	    headerPutUint32(h, flagtag, &Flags, 1);
+	}
+	if (indextag) {
+	    headerPutUint32(h, indextag, &index, 1);
+	}
     }
 
-    /* Add this dependency. */
-    headerPutString(h, nametag, N);
-    if (flagtag) {
-	headerPutString(h, versiontag, EVR);
-	headerPutUint32(h, flagtag, &Flags, 1);
-    }
-    if (indextag) {
-	headerPutUint32(h, indextag, &index, 1);
-    }
-
-exit:
-    rpmdsFree(hds);
-    rpmdsFree(newds);
-	
     return 0;
 }
 
