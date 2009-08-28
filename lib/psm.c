@@ -53,7 +53,6 @@ struct rpmpsm_s {
     rpmCallbackType what;	/*!< Callback type. */
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
-    rpmRC rc;
     pkgStage goal;
     pkgStage stage;		/*!< Current psm stage. */
     pkgStage nstage;		/*!< Next psm stage. */
@@ -1187,7 +1186,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     const rpmts ts = psm->ts;
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
-    rpmRC rc = psm->rc;
+    rpmRC rc = RPMRC_OK;
     int saveerrno;
     int xx;
 
@@ -1549,7 +1548,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_PKGINSTALL:
     case PSM_PKGERASE:
 	psm->goal = stage;
-	psm->rc = RPMRC_OK;
 	psm->stepName = pkgStageString(stage);
 
 	rc = rpmpsmNext(psm, PSM_INIT);
