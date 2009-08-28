@@ -162,16 +162,13 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	rpmtdFreeData(&buildtime);
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
+	ds = rpmdsLink(ds, ds->Type);
 
 if (_rpmds_debug < 0)
 fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
-
     }
 
 exit:
-    /* FIX: ds->Flags may be NULL */
-    ds = rpmdsLink(ds, (ds ? ds->Type : RPMDBG()));
-
     return ds;
 }
 
