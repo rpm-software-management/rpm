@@ -39,7 +39,6 @@ struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
-    FD_t cfd;			/*!< Payload file handle. */
     const char * stepName;
     const char * rpmio_flags;
     char * failedFile;
@@ -1343,6 +1342,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
 	if (psm->goal == PSM_PKGINSTALL) {
+	    FD_t payload = NULL;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 
@@ -1362,23 +1362,22 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 
-	    psm->cfd = Fdopen(fdDup(Fileno(rpmteFd(psm->te))), psm->rpmio_flags);
-	    if (psm->cfd == NULL) {	/* XXX can't happen */
+	    payload = Fdopen(fdDup(Fileno(rpmteFd(psm->te))), psm->rpmio_flags);
+	    if (payload == NULL) {	/* XXX can't happen */
 		rc = RPMRC_FAIL;
 		break;
 	    }
 
 	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGINSTALL, ts, psm->te, fi,
-			psm->cfd, NULL, &psm->failedFile);
+			payload, NULL, &psm->failedFile);
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
-			fdOp(psm->cfd, FDSTAT_READ));
+			fdOp(payload, FDSTAT_READ));
 	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
-			fdOp(psm->cfd, FDSTAT_DIGEST));
+			fdOp(payload, FDSTAT_DIGEST));
 	    xx = fsmTeardown(rpmfiFSM(fi));
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    xx = Fclose(psm->cfd);
-	    psm->cfd = NULL;
+	    xx = Fclose(payload);
 	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 
 	    if (!rc)
