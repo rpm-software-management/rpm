@@ -696,8 +696,7 @@ int rpmFileHasSuffix(const char *path, const char *suffix)
 {
     size_t plen = strlen(path);
     size_t slen = strlen(suffix);
-    return (plen >= slen && 
-	    strcmp(path+plen-slen, suffix) == 0);
+    return (plen >= slen && rstreq(path+plen-slen, suffix));
 }
 
 char * rpmGetCwd(void)

@@ -10,7 +10,7 @@
 #endif
 #define	iseol(_c)	((_c) == '\n' || (_c) == '\r')
 
-#define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && !strncmp((_t), (_f), (_fn)))
+#define	STREQ(_t, _f, _fn)	((_fn) == (sizeof(_t)-1) && rstreqn((_t), (_f), (_fn)))
 
 #define MACROBUFSIZ (BUFSIZ * 2)
 

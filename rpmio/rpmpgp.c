@@ -286,7 +286,7 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 {
     do {
 	size_t vlen = strlen(vs->str);
-	if (vlen <= (se-s) && !strncmp(s, vs->str, vlen))
+	if (vlen <= (se-s) && rstreqn(s, vs->str, vlen))
 	    break;
     } while ((++vs)->val != -1);
     return vs->val;
@@ -1436,7 +1436,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 	goto exit;
     }
 
-#define	TOKEQ(_s, _tok)	(!strncmp((_s), (_tok), sizeof(_tok)-1))
+#define	TOKEQ(_s, _tok)	(rstreqn((_s), (_tok), sizeof(_tok)-1))
 
     for (t = (char *)b; t && *t; t = te) {
 	if ((te = strchr(t, '\n')) == NULL)
@@ -1498,8 +1498,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 
 	    if (armortype == NULL) /* XXX can't happen */
 		continue;
-	    rc = strncmp(t, armortype, strlen(armortype));
-	    if (rc)
+	    if (!rstreqn(t, armortype, strlen(armortype))
 		continue;
 
 	    t += strlen(armortype);

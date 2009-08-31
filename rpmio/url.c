@@ -81,11 +81,11 @@ urltype urlIsURL(const char * url)
 
     if (url && *url) {
 	for (us = urlstrings; us->leadin != NULL; us++) {
-	    if (strncmp(url, us->leadin, strlen(us->leadin)))
+	    if (!rstreqn(url, us->leadin, strlen(us->leadin)))
 		continue;
 	    return us->ret;
 	}
-	if (strcmp(url, "-") == 0) 
+	if (rstreq(url, "-")) 
 	    return URL_IS_DASH;
     }
 

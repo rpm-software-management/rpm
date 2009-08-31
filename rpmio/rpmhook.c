@@ -97,7 +97,7 @@ static int rpmhookTableFindBucket(rpmhookTable *table, const char *name)
     ret = hash % (*table)->size;
     bucket = &(*table)->bucket[ret];
     while (bucket->name &&
-	    (bucket->hash != hash || strcmp(bucket->name, name) != 0)) {
+	    (bucket->hash != hash || !rstreq(bucket->name, name))) {
 	/* Collision resolution based on Python's perturb scheme. */
 	ret = ((ret << 2) + ret + perturb + 1) % (*table)->size;
 	perturb >>= 5;
