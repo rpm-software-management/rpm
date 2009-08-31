@@ -1750,29 +1750,29 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	return fd;
 
     if (end && *end) {
-	if (!strcmp(end, "fdio")) {
+	if (rstreq(end, "fdio")) {
 	    iof = fdio;
 #if HAVE_ZLIB_H
-	} else if (!strcmp(end, "gzdio")) {
+	} else if (rstreq(end, "gzdio")) {
 	    iof = gzdio;
 	    fd = gzdFdopen(fd, zstdio);
 #endif
 #if HAVE_BZLIB_H
-	} else if (!strcmp(end, "bzdio")) {
+	} else if (rstreq(end, "bzdio")) {
 	    iof = bzdio;
 	    fd = bzdFdopen(fd, zstdio);
 #endif
 #if HAVE_LZMA_H
-	} else if (!strcmp(end, "xzdio")) {
+	} else if (rstreq(end, "xzdio")) {
 	    iof = xzdio;
 	    fd = xzdFdopen(fd, zstdio);
-	} else if (!strcmp(end, "lzdio")) {
+	} else if (rstreq(end, "lzdio")) {
 	    iof = lzdio;
 	    fd = lzdFdopen(fd, zstdio);
 #endif
-	} else if (!strcmp(end, "ufdio")) {
+	} else if (rstreq(end, "ufdio")) {
 	    iof = ufdio;
-	} else if (!strcmp(end, "fpio")) {
+	} else if (rstreq(end, "fpio")) {
 	    iof = fpio;
 	    if (noLibio) {
 		int fdno = Fileno(fd);
@@ -1841,7 +1841,7 @@ FD_t Fopen(const char *path, const char *fmode)
     if (stdio[0] == '\0')
 	return NULL;
 
-    if (end == NULL || !strcmp(end, "fdio")) {
+    if (end == NULL || rstreq(end, "fdio")) {
 if (_rpmio_debug)
 fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	fd = fdOpen(path, flags, perms);
