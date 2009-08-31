@@ -103,6 +103,29 @@ static inline unsigned char rnibble(char c)
     return 0;
 }
 
+/**
+ * Test for string equality
+ * @param s1		string 1
+ * @param s2		string 2
+ * @return		0 if strings differ, 1 if equal
+ */
+static inline int rstreq(const char *s1, const char *s2)
+{
+    return (strcmp(s1, s2) == 0);
+}
+
+/**
+ * Test for string equality
+ * @param s1		string 1
+ * @param s2		string 2
+ * @param n		compare at most n characters
+ * @return		0 if strings differ, 1 if equal
+ */
+static inline int rstrneq(const char *s1, const char *s2, size_t n)
+{
+    return (strncmp(s1, s2, n) == 0);
+}
+
 /** \ingroup rpmstring
  * Locale insensitive strcasecmp(3).
  */
