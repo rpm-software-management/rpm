@@ -8,6 +8,7 @@
 const char * const RPMVERSION = VERSION;
 
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/misc.h"
 
@@ -32,14 +33,14 @@ static char * lastUname = NULL;
     if (!thisUname) {
 	lastUnameLen = 0;
 	return -1;
-    } else if (strcmp(thisUname, "root") == 0) {
+    } else if (rstreq(thisUname, "root")) {
 	*uid = 0;
 	return 0;
     }
 
     thisUnameLen = strlen(thisUname);
     if (lastUname == NULL || thisUnameLen != lastUnameLen ||
-	strcmp(thisUname, lastUname) != 0)
+	!rstreq(thisUname, lastUname))
     {
 	if (lastUnameAlloced < thisUnameLen + 1) {
 	    lastUnameAlloced = thisUnameLen + 10;
@@ -75,14 +76,14 @@ static char * lastGname = NULL;
     if (thisGname == NULL) {
 	lastGnameLen = 0;
 	return -1;
-    } else if (strcmp(thisGname, "root") == 0) {
+    } else if (rstreq(thisGname, "root")) {
 	*gid = 0;
 	return 0;
     }
 
     thisGnameLen = strlen(thisGname);
     if (lastGname == NULL || thisGnameLen != lastGnameLen ||
-	strcmp(thisGname, lastGname) != 0)
+	!rstreq(thisGname, lastGname))
     {
 	if (lastGnameAlloced < thisGnameLen + 1) {
 	    lastGnameAlloced = thisGnameLen + 10;
@@ -97,11 +98,11 @@ static char * lastGname = NULL;
 	    grent = getgrnam(thisGname);
 	    if (grent == NULL) {
 		/* XXX The filesystem package needs group/lock w/o getgrnam. */
-		if (strcmp(thisGname, "lock") == 0) {
+		if (rstreq(thisGname, "lock")) {
 		    *gid = lastGid = 54;
 		    return 0;
 		} else
-		if (strcmp(thisGname, "mail") == 0) {
+		if (rstreq(thisGname, "mail")) {
 		    *gid = lastGid = 12;
 		    return 0;
 		} else

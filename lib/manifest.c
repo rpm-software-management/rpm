@@ -95,7 +95,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 	if (*s == '\0') continue;
 
 	/* Sanity checks: skip obviously binary lines and dash (for stdin) */
-	if (*s < 32 || strcmp(s, "-") == 0) {
+	if (*s < 32 || rstreq(s, "-")) {
 	    rpmrc = RPMRC_NOTFOUND;
 	    goto exit;
 	}

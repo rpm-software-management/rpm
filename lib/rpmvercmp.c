@@ -23,7 +23,7 @@ int rpmvercmp(const char * a, const char * b)
     int isnum;
 
     /* easy comparison to see if versions are identical */
-    if (!strcmp(a, b)) return 0;
+    if (rstreq(a, b)) return 0;
 
     strcpy(str1, a);
     strcpy(str2, b);

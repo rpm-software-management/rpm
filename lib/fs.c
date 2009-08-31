@@ -316,7 +316,7 @@ int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
 	    strcpy(buf,  sourceDir);
 	}
 
-	if (strcmp(lastDir, buf)) {
+	if (!rstreq(lastDir, buf)) {
 	    strcpy(dirName, buf);
 	    chptr = dirName + strlen(dirName) - 1;
 	    while (stat(dirName, &sb)) {
