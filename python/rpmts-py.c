@@ -210,10 +210,10 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
 if (_rpmts_debug < 0 || (_rpmts_debug > 0))
 fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->ts);
 
-    if (how && strcmp(how, "a") && strcmp(how, "u") && strcmp(how, "i")) {
+    if (how && !rstreq(how, "u") && !rstreq(how, "i")) {
 	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\" or \"i\"");
 	return NULL;
-    } else if (how && !strcmp(how, "u"))
+    } else if (how && rstreq(how, "u"))
     	isUpgrade = 1;
 
     rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
@@ -1249,7 +1249,7 @@ static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
     char * name = PyString_AsString(n);
     int fdno;
 
-    if (!strcmp(name, "scriptFd")) {
+    if (rstreq(name, "scriptFd")) {
 	if (!PyArg_Parse(v, "i", &fdno)) return 0;
 	if (fdno < 0) {
 	    PyErr_SetString(PyExc_TypeError, "bad file descriptor");
