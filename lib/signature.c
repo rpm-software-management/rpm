@@ -781,7 +781,7 @@ verifySHA1Digest(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
 
     (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
 
-    if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || strcmp(SHA1, sig)) {
+    if (SHA1 == NULL || strlen(SHA1) != strlen(sig) || !rstreq(SHA1, sig)) {
 	rasprintf(msg, "%s %s Expected(%s) != (%s)\n", title,
 		  rpmSigString(res), sig, SHA1 ? SHA1 : "(nil)");
     } else {

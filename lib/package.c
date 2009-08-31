@@ -790,11 +790,11 @@ rpmRC headerCheckPayloadFormat(Header h) {
     if (!payloadfmt)
 	return RPMRC_OK;
 
-    if (payloadfmt && strncmp(payloadfmt, "cpio", strlen("cpio")) == 0) {
+    if (payloadfmt && rstreq(payloadfmt, "cpio")) {
 	rc = RPMRC_OK;
     } else {
         char *nevra = headerGetNEVRA(h, NULL);
-        if (payloadfmt && strncmp(payloadfmt, "drpm", strlen("drpm")) == 0) {
+        if (payloadfmt && rstreq(payloadfmt, "drpm")) {
             rpmlog(RPMLOG_ERR,
                      _("%s is a Delta RPM and cannot be directly installed\n"),
                      nevra);

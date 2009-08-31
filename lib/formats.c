@@ -621,7 +621,7 @@ void *rpmHeaderFormatFuncByName(const char *fmt)
     void *func = NULL;
 
     for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
-	if (!strcmp(ext->name, fmt)) {
+	if (rstreq(ext->name, fmt)) {
 	    func = ext->func;
 	    break;
 	}

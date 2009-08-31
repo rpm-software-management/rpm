@@ -235,12 +235,12 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     stag->fmt = NULL;
     stag->tag = -1;
 
-    if (!strcmp(tagname, "*")) {
+    if (rstreq(tagname, "*")) {
 	stag->tag = -2;
 	goto bingo;
     }
 
-    if (strncmp("RPMTAG_", tagname, sizeof("RPMTAG_")-1) == 0) {
+    if (rstreqn("RPMTAG_", tagname, sizeof("RPMTAG_")-1)) {
 	tagname += sizeof("RPMTAG");
     }
 
@@ -760,7 +760,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 
 	    spft = token->u.array.format;
 	    isxml = (spft->type == PTOK_TAG && spft->u.tag.type != NULL &&
-		!strcmp(spft->u.tag.type, "xml"));
+		    rstreq(spft->u.tag.type, "xml"));
 
 	    if (isxml) {
 		const char * tagN = rpmTagGetName(spft->u.tag.tag);
@@ -853,7 +853,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
 	(hsa.format->type == PTOK_ARRAY
 	    ? &hsa.format->u.array.format->u.tag :
 	NULL));
-    isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && !strcmp(tag->type, "xml"));
+    isxml = (tag != NULL && tag->tag == -2 && tag->type != NULL && rstreq(tag->type, "xml"));
 
     if (isxml) {
 	need = sizeof("<rpmHeader>\n") - 1;
