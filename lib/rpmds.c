@@ -432,7 +432,7 @@ void rpmdsNotify(rpmds ds, const char * where, int rc)
 	return;
 
     rpmlog(RPMLOG_DEBUG, "%9s: %-45s %-s %s\n", ds->Type,
-		(!strcmp(DNEVR, "cached") ? DNEVR : DNEVR+2),
+		(rstreq(DNEVR, "cached") ? DNEVR : DNEVR+2),
 		(rc ? _("NO ") : _("YES")),
 		(where != NULL ? where : ""));
 }
@@ -650,15 +650,15 @@ int rpmdsSearch(rpmds ds, rpmds ods)
 	    l = i + 1;
 	else {
 	    /* Set l to 1st member of set that contains N. */
-	    if (strcmp(ods->N[ods->i], ds->N[l]))
+	    if (!rstreq(ods->N[ods->i], ds->N[l]))
 		l = i;
-	    while (l > 0 && !strcmp(ods->N[ods->i], ds->N[l-1]))
+	    while (l > 0 && rstreq(ods->N[ods->i], ds->N[l-1]))
 		l--;
 	    /* Set u to 1st member of set that does not contain N. */
-	    if (u >= ds->Count || strcmp(ods->N[ods->i], ds->N[u]))
+	    if (u >= ds->Count || !rstreq(ods->N[ods->i], ds->N[u]))
 		u = i;
 	    while (++u < ds->Count) {
-		if (strcmp(ods->N[ods->i], ds->N[u]))
+		if (!rstreq(ods->N[ods->i], ds->N[u]))
 		    /*@innerbreak@*/ break;
 	    }
 	    break;
@@ -734,7 +734,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int sense;
 
     /* Different names don't overlap. */
-    if (strcmp(A->N[A->i], B->N[B->i])) {
+    if (!rstreq(A->N[A->i], B->N[B->i])) {
 	result = 0;
 	goto exit;
     }
@@ -862,7 +862,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     while (rpmdsNext(provides) >= 0) {
 
 	/* Filter out provides that came along for the ride. */
-	if (strcmp(provides->N[provides->i], req->N[req->i]))
+	if (!rstreq(provides->N[provides->i], req->N[req->i]))
 	    continue;
 
 	result = rpmdsCompare(provides, req);

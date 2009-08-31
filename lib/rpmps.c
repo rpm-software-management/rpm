@@ -166,7 +166,7 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
     rpmProblemFree(p);
 }
 
-#define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && !strcmp((a), (b))))
+#define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && rstreq((a), (b))))
 
 /* XXX TODO: implement with iterators */
 int rpmpsTrim(rpmps ps, rpmps filter)
@@ -381,13 +381,13 @@ static int sameProblem(const rpmProblem ap, const rpmProblem bp)
     if (ap->type != bp->type)
 	return 0;
     if (ap->pkgNEVR)
-	if (bp->pkgNEVR && strcmp(ap->pkgNEVR, bp->pkgNEVR))
+	if (bp->pkgNEVR && !rstreq(ap->pkgNEVR, bp->pkgNEVR))
 	    return 0;
     if (ap->altNEVR)
-	if (bp->altNEVR && strcmp(ap->altNEVR, bp->altNEVR))
+	if (bp->altNEVR && !rstreq(ap->altNEVR, bp->altNEVR))
 	    return 0;
     if (ap->str1)
-	if (bp->str1 && strcmp(ap->str1, bp->str1))
+	if (bp->str1 && !rstreq(ap->str1, bp->str1))
 	    return 0;
 
     if (ap->num1 != bp->num1)

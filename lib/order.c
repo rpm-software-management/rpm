@@ -101,7 +101,7 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 
     if (badDeps != NULL)
     for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
-	if (!strcmp(rpmteN(p), bdp->pname) && !strcmp(rpmteN(q), bdp->qname))
+	if (rstreq(rpmteN(p), bdp->pname) && rstreq(rpmteN(q), bdp->qname))
 	    return 1;
     }
     return 0;

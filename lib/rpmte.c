@@ -196,7 +196,7 @@ static void buildRelocs(rpmts ts, rpmte p, Header h, rpmRelocation *relocs)
 	    /* Verify that the relocation's old path is in the header. */
 	    rpmtdInit(&validRelocs);
 	    while ((validprefix = rpmtdNextString(&validRelocs))) {
-		if (strcmp(validprefix, p->relocs[i].oldPath) == 0) {
+		if (rstreq(validprefix, p->relocs[i].oldPath)) {
 		    valid = 1;
 		    break;
 		}

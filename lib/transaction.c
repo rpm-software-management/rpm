@@ -450,7 +450,7 @@ static void skipFiles(const rpmts ts, rpmte p)
 
 	    len = strlen(*nsp);
 	    if (dnlen >= len) {
-		if (strncmp(dn, *nsp, len))
+		if (!rstreqn(dn, *nsp, len))
 		    continue;
 		/* Only directories or complete file paths can be net shared */
 		if (!(dn[len] == '/' || dn[len] == '\0'))
@@ -458,12 +458,12 @@ static void skipFiles(const rpmts ts, rpmte p)
 	    } else {
 		if (len < (dnlen + bnlen))
 		    continue;
-		if (strncmp(dn, *nsp, dnlen))
+		if (!rstreqn(dn, *nsp, dnlen))
 		    continue;
 		/* Insure that only the netsharedpath basename is compared. */
 		if ((s = strchr((*nsp) + dnlen, '/')) != NULL && s[1] != '\0')
 		    continue;
-		if (strncmp(bn, (*nsp) + dnlen, bnlen))
+		if (!rstreqn(bn, (*nsp) + dnlen, bnlen))
 		    continue;
 		len = dnlen + bnlen;
 		/* Only directories or complete file paths can be net shared */
@@ -491,7 +491,7 @@ static void skipFiles(const rpmts ts, rpmte p)
 		for (l = flangs; *l != '\0'; l = le) {
 		    for (le = l; *le != '\0' && *le != '|'; le++)
 			{};
-		    if ((le-l) > 0 && !strncmp(*lang, l, (le-l)))
+		    if ((le-l) > 0 && rstreqn(*lang, l, (le-l)))
 			break;
 		    if (*le == '|') le++;	/* skip over | */
 		}
@@ -562,12 +562,12 @@ static void skipFiles(const rpmts ts, rpmte p)
 	    fdn = rpmfiDN(fi);
 	    if (strlen(fdn) != dnlen)
 		continue;
-	    if (strncmp(fdn, dn, dnlen))
+	    if (!rstreqn(fdn, dn, dnlen))
 		continue;
 	    fbn = rpmfiBN(fi);
 	    if (strlen(fbn) != bnlen)
 		continue;
-	    if (strncmp(fbn, bn, bnlen))
+	    if (!rstreqn(fbn, bn, bnlen))
 		continue;
 	    rpmlog(RPMLOG_DEBUG, "excluding directory %s\n", dn);
 	    rpmfsSetAction(fs, i, FA_SKIPNSTATE);
@@ -1012,7 +1012,7 @@ static int rpmtsPrepare(rpmts ts)
     int xx, rc = 0;
     uint64_t fileCount = countFiles(ts);
     const char * rootDir = rpmtsRootDir(ts);
-    int dochroot = (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/');
+    int dochroot = (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/');
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,

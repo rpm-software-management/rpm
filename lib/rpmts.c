@@ -675,7 +675,7 @@ int rpmtsSetRootDir(rpmts ts, const char * rootDir)
     ts->rootDir = _free(ts->rootDir);
     /* Ensure clean path with a trailing slash */
     ts->rootDir = rootDir ? rpmGetPath(rootDir, NULL) : xstrdup("/");
-    if (strcmp(ts->rootDir, "/") != 0) {
+    if (!rstreq(ts->rootDir, "/")) {
 	rstrcat(&ts->rootDir, "/");
     }
     return 0;
@@ -1113,7 +1113,7 @@ rpmts rpmtsCreate(void)
 	    argvSplit(&langs, tmp, ":");	
 	    /* If we'll be installing all languages anyway, don't bother */
 	    for (ARGV_t l = langs; *l; l++) {
-		if (strcmp(*l, "all") == 0) {
+		if (rstreq(*l, "all")) {
 		    langs = argvFree(langs);
 		    break;
 		}

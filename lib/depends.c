@@ -165,7 +165,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		continue;
 	    if (os == NULL || (pos = rpmteO(p)) == NULL)
 		continue;
-	    if (strcmp(arch, parch) || strcmp(os, pos))
+	    if (!rstreq(arch, parch) || !rstreq(os, pos))
 		continue;
 	}
 
@@ -301,7 +301,7 @@ addheader:
 	    continue;
 
 	/* XXX avoid self-obsoleting packages. */
-	if (!strcmp(rpmteN(p), Name))
+	if (rstreq(rpmteN(p), Name))
 	    continue;
 
 	if (Name[0] == '/')
@@ -567,7 +567,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    continue;	/* XXX can't happen */
 
 	/* Filter out requires that came along for the ride. */
-	if (depName != NULL && strcmp(depName, Name))
+	if (depName != NULL && !rstreq(depName, Name))
 	    continue;
 
 	/* Ignore colored requires not in our rainbow. */
@@ -598,7 +598,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	    continue;	/* XXX can't happen */
 
 	/* Filter out conflicts that came along for the ride. */
-	if (depName != NULL && strcmp(depName, Name))
+	if (depName != NULL && !rstreq(depName, Name))
 	    continue;
 
 	/* Ignore colored conflicts not in our rainbow. */

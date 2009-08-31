@@ -42,7 +42,7 @@ static scidx_t strcachePut(strcache cache, const char *str)
     scidx_t ret;
 
     for (scidx_t i = 0; i < cache->num; i++) {
-	if (strcmp(str, cache->uniq[i]) == 0) {
+	if (rstreq(str, cache->uniq[i])) {
 	    ret = i;
 	    found = 1;
 	    break;
@@ -678,11 +678,11 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	if (diskWhat == LINK) {
 	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 		return FA_CREATE;	/* assume file has been removed */
-	    if (oFLink && !strcmp(oFLink, buffer))
+	    if (oFLink && rstreq(oFLink, buffer))
 		return FA_CREATE;	/* unmodified config file, replace. */
 	}
 	nFLink = rpmfiFLink(nfi);
-	if (oFLink && nFLink && !strcmp(oFLink, nFLink))
+	if (oFLink && nFLink && rstreq(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
     }
 
@@ -730,7 +730,7 @@ int rpmfiConfigConflict(const rpmfi fi)
 	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
 	    return 0;	/* assume file has been removed */
 	nFLink = rpmfiFLink(fi);
-	if (nFLink && !strcmp(nFLink, buffer))
+	if (nFLink && rstreq(nFLink, buffer))
 	    return 0;	/* unmodified config file */
     }
 
@@ -779,7 +779,7 @@ static int addPrefixes(Header h, rpmRelocation *relocations, int numRelocations)
 	int j;
 	for (j = 0; j < numRelocations; j++) {
 	    if (relocations[j].oldPath == NULL || /* XXX can't happen */
-		strcmp(validprefix, relocations[j].oldPath))
+		!rstreq(validprefix, relocations[j].oldPath))
 		continue;
 	    /* On install, a relocate to NULL means skip the path. */
 	    if (relocations[j].newPath) {
@@ -909,7 +909,7 @@ assert(fn != NULL);		/* XXX can't happen */
 	for (j = numRelocations - 1; j >= 0; j--) {
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		continue;
-	    len = strcmp(relocations[j].oldPath, "/")
+	    len = !rstreq(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
@@ -922,7 +922,7 @@ assert(fn != NULL);		/* XXX can't happen */
 	    if (!(fn[len] == '/' || fnlen == len))
 		continue;
 
-	    if (strncmp(relocations[j].oldPath, fn, len))
+	    if (!rstreqn(relocations[j].oldPath, fn, len))
 		continue;
 	    break;
 	}
@@ -940,7 +940,7 @@ assert(fn != NULL);		/* XXX can't happen */
 		    while (len > 0 && dirNames[j][len-1] == '/') len--;
 		    if (fnlen != len)
 			continue;
-		    if (strncmp(fn, dirNames[j], fnlen))
+		    if (!rstreqn(fn, dirNames[j], fnlen))
 			continue;
 		    break;
 		}
@@ -965,7 +965,7 @@ assert(fn != NULL);		/* XXX can't happen */
 		fnlen = te - fn;
 	    } else
 		te = fn + strlen(fn);
-	    if (strcmp(baseNames[i], te)) { /* basename changed too? */
+	    if (!rstreq(baseNames[i], te)) { /* basename changed too? */
 		if (!haveRelocatedBase) {
 		    /* XXX TODO: use rpmtdDup() instead */
 		    bnames.data = baseNames = duparray(baseNames, fileCount);
@@ -982,7 +982,7 @@ assert(fn != NULL);		/* XXX can't happen */
 	for (j = 0; j < dirCount; j++) {
 	    if (fnlen != strlen(dirNames[j]))
 		continue;
-	    if (strncmp(fn, dirNames[j], fnlen))
+	    if (!rstreqn(fn, dirNames[j], fnlen))
 		continue;
 	    break;
 	}
@@ -1008,11 +1008,11 @@ assert(fn != NULL);		/* XXX can't happen */
 
 	    if (relocations[j].oldPath == NULL) /* XXX can't happen */
 		continue;
-	    size_t len = strcmp(relocations[j].oldPath, "/")
+	    size_t len = !rstreq(relocations[j].oldPath, "/")
 		? strlen(relocations[j].oldPath)
 		: 0;
 
-	    if (len && strncmp(relocations[j].oldPath, dirNames[i], len))
+	    if (len && !rstreqn(relocations[j].oldPath, dirNames[i], len))
 		continue;
 
 	    /*

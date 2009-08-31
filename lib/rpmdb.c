@@ -1602,8 +1602,7 @@ static int miregexec(miRE mire, const char * val)
 
     switch (mire->mode) {
     case RPMMIRE_STRCMP:
-	rc = strcmp(mire->pattern, val);
-	if (rc) rc = 1;
+	rc = (!rstreq(mire->pattern, val));
 	break;
     case RPMMIRE_DEFAULT:
     case RPMMIRE_REGEX:
@@ -1754,13 +1753,13 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
     if (defmode == (rpmMireMode)-1) {
 	char *t = rpmExpand("%{?_query_selector_match}", NULL);
 
-	if (*t == '\0' || !strcmp(t, "default"))
+	if (*t == '\0' || rstreq(t, "default"))
 	    defmode = RPMMIRE_DEFAULT;
-	else if (!strcmp(t, "strcmp"))
+	else if (rstreq(t, "strcmp"))
 	    defmode = RPMMIRE_STRCMP;
-	else if (!strcmp(t, "regex"))
+	else if (rstreq(t, "regex"))
 	    defmode = RPMMIRE_REGEX;
-	else if (!strcmp(t, "glob"))
+	else if (rstreq(t, "glob"))
 	    defmode = RPMMIRE_GLOB;
 	else
 	    defmode = RPMMIRE_DEFAULT;
@@ -2877,7 +2876,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 			const char **tnames = tagdata.data;
 			const char *str = rpmtdGetString(&tagdata);
 			for (j = 0; j < i; j++) {
-			    if (!strcmp(str, tnames[j]))
+			    if (rstreq(str, tnames[j]))
 				break;
 			}
 			if (j < i)
@@ -3141,7 +3140,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     tfn = _free(tfn);
 
     tfn = rpmGetPath("%{?_dbpath_rebuild}", NULL);
-    if (!(tfn && tfn[0] != '\0' && strcmp(tfn, dbpath)))
+    if (!(tfn && tfn[0] != '\0' && !rstreq(tfn, dbpath)))
     {
 	tfn = _free(tfn);
 	rasprintf(&tfn, "%srebuilddb.%d", dbpath, (int) getpid());

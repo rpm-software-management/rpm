@@ -147,7 +147,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	else {
 	    const char * flink = rpmfiFLink(fi);
 	    linkto[size] = '\0';
-	    if (flink == NULL || strcmp(linkto, flink))
+	    if (flink == NULL || !rstreq(linkto, flink))
 		*res |= RPMVERIFY_LINKTO;
 	}
     } 
@@ -241,14 +241,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     if (flags & RPMVERIFY_USER) {
 	const char * name = uidToUname(sb.st_uid);
 	const char * fuser = rpmfiFUser(fi);
-	if (name == NULL || fuser == NULL || strcmp(name, fuser))
+	if (name == NULL || fuser == NULL || !rstreq(name, fuser))
 	    *res |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
 	const char * name = gidToGname(sb.st_gid);
 	const char * fgroup = rpmfiFGroup(fi);
-	if (name == NULL || fgroup == NULL || strcmp(name, fgroup))
+	if (name == NULL || fgroup == NULL || !rstreq(name, fgroup))
 	    *res |= RPMVERIFY_GROUP;
     }
 
@@ -476,7 +476,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
      */
     rpmtsOpenDB(ts, O_RDONLY);
     rpmdbOpenAll(rpmtsGetRdb(ts));
-    if (rootDir && strcmp(rootDir, "/") != 0) {
+    if (rootDir && !rstreq(rootDir, "/")) {
 	if (chroot(rootDir) == -1) {
 	    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
 	    ec = 1;
