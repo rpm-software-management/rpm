@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);
     else {
-	if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0) {
+	if (rstreq(argv[1], "-h") || rstreq(argv[1], "--help")) {
 	    fprintf(stderr, "Usage: rpm2cpio file.rpm\n");
 	    exit(EXIT_FAILURE);
 	}

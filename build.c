@@ -189,7 +189,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Create build tree if necessary */
     const char * buildtree = "%{_topdir}:%{_specdir}:%{_sourcedir}:%{_builddir}:%{_rpmdir}:%{_srcrpmdir}:%{_buildrootdir}";
     const char * rootdir = rpmtsRootDir(ts);
-    if (rpmMkdirs(strcmp(rootdir, "/") ? rootdir : NULL , buildtree)) {
+    if (rpmMkdirs(!rstreq(rootdir, "/") ? rootdir : NULL , buildtree)) {
 	goto exit;
     }
 
