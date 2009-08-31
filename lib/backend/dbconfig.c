@@ -320,7 +320,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 
 	    /* Find key in option table. */
 	    for (opt = rdbOptions; opt->longName != NULL; opt++) {
-		if (strcmp(tok, opt->longName))
+		if (!rstreq(tok, opt->longName))
 		    continue;
 		break;
 	    }

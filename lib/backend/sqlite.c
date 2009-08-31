@@ -336,7 +336,7 @@ fprintf(stderr, "sqlite3_step: DONE scp %p [%d:%d] av %p avlen %p\n", scp, scp->
 		vtype = sqlite3_column_decltype(scp->pStmt, i);
 		nb = 0;
 
-		if (!strcmp(vtype, "blob")) {
+		if (rstreq(vtype, "blob")) {
 		    const void * v = sqlite3_column_blob(scp->pStmt, i);
 		    nb = sqlite3_column_bytes(scp->pStmt, i);
 if (_debug)
@@ -348,7 +348,7 @@ fprintf(stderr, "\t%d %s %s %p[%zd]\n", i, cname, vtype, v, nb);
 			scp->ac++;
 		    }
 		} else
-		if (!strcmp(vtype, "double")) {
+		if (rstreq(vtype, "double")) {
 		    double v = sqlite3_column_double(scp->pStmt, i);
 		    nb = sizeof(v);
 if (_debug)
@@ -360,7 +360,7 @@ assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 			scp->ac++;
 		    }
 		} else
-		if (!strcmp(vtype, "int")) {
+		if (rstreq(vtype, "int")) {
 		    int32_t v = sqlite3_column_int(scp->pStmt, i);
 		    nb = sizeof(v);
 if (_debug)
@@ -379,7 +379,7 @@ if (dbiByteSwapped(dbi) == 1)
 			scp->ac++;
 		    }
 		} else
-		if (!strcmp(vtype, "int64")) {
+		if (rstreq(vtype, "int64")) {
 		    int64_t v = sqlite3_column_int64(scp->pStmt, i);
 		    nb = sizeof(v);
 if (_debug)
@@ -391,7 +391,7 @@ assert(dbiByteSwapped(dbi) == 0); /* Byte swap?! */
 			scp->ac++;
 		    }
 		} else
-		if (!strcmp(vtype, "text")) {
+		if (rstreq(vtype, "text")) {
 		    const char * v = (const char *) sqlite3_column_text(scp->pStmt, i);
 		    nb = strlen(v) + 1;
 if (_debug)
