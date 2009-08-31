@@ -379,21 +379,21 @@ char * rpmProblemString(const rpmProblem prob)
 static int sameProblem(const rpmProblem ap, const rpmProblem bp)
 {
     if (ap->type != bp->type)
-	return 1;
+	return 0;
     if (ap->pkgNEVR)
 	if (bp->pkgNEVR && strcmp(ap->pkgNEVR, bp->pkgNEVR))
-	    return 1;
+	    return 0;
     if (ap->altNEVR)
 	if (bp->altNEVR && strcmp(ap->altNEVR, bp->altNEVR))
-	    return 1;
+	    return 0;
     if (ap->str1)
 	if (bp->str1 && strcmp(ap->str1, bp->str1))
-	    return 1;
+	    return 0;
 
     if (ap->num1 != bp->num1)
-	return 1;
+	return 0;
 
-    return 0;
+    return 1;
 }
 
 void rpmpsPrint(FILE *fp, rpmps ps)
@@ -419,7 +419,7 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 	rpmpsi psif = rpmpsInitIterator(ps);
 	/* Filter already displayed problems. */
     	while ((j = rpmpsNextIterator(psif)) < i) {
-	    if (!sameProblem(p, rpmpsGetProblem(psif)))
+	    if (sameProblem(p, rpmpsGetProblem(psif)))
 		break;
 	}
 	rpmpsFreeIterator(psif);
