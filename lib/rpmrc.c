@@ -160,7 +160,7 @@ machCacheFindEntry(const machCache cache, const char * key)
     int i;
 
     for (i = 0; i < cache->size; i++)
-	if (!strcmp(cache->cache[i].name, key)) return cache->cache + i;
+	if (rstreq(cache->cache[i].name, key)) return cache->cache + i;
 
     return NULL;
 }
@@ -391,7 +391,7 @@ static canonEntry lookupInCanonTable(const char * name,
 {
     while (tableLen) {
 	tableLen--;
-	if (strcmp(name, table[tableLen].name))
+	if (!rstreq(name, table[tableLen].name))
 	    continue;
 	return &(table[tableLen]);
     }
@@ -405,7 +405,7 @@ const char * lookupInDefaultTable(const char * name,
 {
     while (tableLen) {
 	tableLen--;
-	if (table[tableLen].name && !strcmp(name, table[tableLen].name))
+	if (table[tableLen].name && rstreq(name, table[tableLen].name))
 	    return table[tableLen].defName;
     }
 
@@ -545,7 +545,7 @@ static rpmRC doReadRC(const char * urlfn)
 
 	    /* Only add macros if appropriate for this arch */
 	    if (option->macroize &&
-	      (arch == NULL || !strcmp(arch, current[ARCH]))) {
+	      (arch == NULL || rstreq(arch, current[ARCH]))) {
 		char *n, *name;
 		n = name = xmalloc(strlen(option->name)+2);
 		if (option->localize)
@@ -564,7 +564,7 @@ static rpmRC doReadRC(const char * urlfn)
 	    gotit = 0;
 
 	    for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
-		if (!strncmp(tables[i].key, s, strlen(tables[i].key)))
+		if (rstreqn(tables[i].key, s, strlen(tables[i].key)))
 		    break;
 	    }
 
@@ -572,20 +572,20 @@ static rpmRC doReadRC(const char * urlfn)
 		const char *rest = s + strlen(tables[i].key);
 		if (*rest == '_') rest++;
 
-		if (!strcmp(rest, "compat")) {
+		if (rstreq(rest, "compat")) {
 		    if (machCompatCacheAdd(se, fn, linenum,
 						&tables[i].cache))
 			goto exit;
 		    gotit = 1;
 		} else if (tables[i].hasTranslate &&
-			   !strcmp(rest, "translate")) {
+			   rstreq(rest, "translate")) {
 		    if (addDefault(&tables[i].defaults,
 				   &tables[i].defaultsLength,
 				   se, fn, linenum))
 			goto exit;
 		    gotit = 1;
 		} else if (tables[i].hasCanon &&
-			   !strcmp(rest, "canon")) {
+			   rstreq(rest, "canon")) {
 		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
 				 se, fn, linenum))
 			goto exit;
@@ -818,7 +818,7 @@ static int is_athlon(void)
  	for (i=0; i<4; i++)
  		vendor[8+i] = (unsigned char) (ecx >>(8*i));
  		
- 	if (strncmp(vendor, "AuthenticAMD", 12) != 0)  
+ 	if (!rstreqn(vendor, "AuthenticAMD", 12))  
  		return 0;
 
 	return 1;
@@ -833,7 +833,7 @@ static int is_pentium3()
     *((unsigned int *)&vendor[0]) = ebx;
     *((unsigned int *)&vendor[4]) = edx;
     *((unsigned int *)&vendor[8]) = ecx;
-    if (strncmp(vendor, "GenuineIntel", 12) != 0)
+    if (!rstreqn(vendor, "GenuineIntel", 12))
 	return 0;
     cpuid(1, &eax, &ebx, &ecx, &edx);
     family = (eax >> 8) & 0x0f;
@@ -872,7 +872,7 @@ static int is_pentium4()
     *((unsigned int *)&vendor[0]) = ebx;
     *((unsigned int *)&vendor[4]) = edx;
     *((unsigned int *)&vendor[8]) = ecx;
-    if (strncmp(vendor, "GenuineIntel", 12) != 0)
+    if (!rstreqn(vendor, "GenuineIntel", 12))
 	return 0;
     cpuid(1, &eax, &ebx, &ecx, &edx);
     family = (eax >> 8) & 0x0f;
@@ -904,7 +904,7 @@ static int is_geode()
     *((unsigned int *)&vendor[0]) = ebx;
     *((unsigned int *)&vendor[4]) = edx;
     *((unsigned int *)&vendor[8]) = ecx;
-    if (strncmp(vendor, "AuthenticAMD", 12) != 0)  
+    if (!rstreqn(vendor, "AuthenticAMD", 12))
         return 0;
     cpuid(1, &eax, &ebx, &ecx, &edx);
     family = (eax >> 8) & 0x0f;
@@ -965,19 +965,19 @@ static void defaultMachine(const char ** arch,
 	 */
 	strncpy(un.sysname, "SINIX", sizeof(un.sysname));
 #endif
-	if (!strcmp(un.sysname, "AIX")) {
+	if (rstreq(un.sysname, "AIX")) {
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
 	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
 	}
-	else if(!strcmp(un.sysname, "Darwin")) { 
+	else if(rstreq(un.sysname, "Darwin")) { 
 #ifdef __ppc__
 	    strcpy(un.machine, "ppc");
 #else ifdef __i386__
 	    strcpy(un.machine, "i386");
 #endif 
 	}
-	else if (!strcmp(un.sysname, "SunOS")) {
-	    if (!strncmp(un.release,"4", 1)) /* SunOS 4.x */ {
+	else if (rstreq(un.sysname, "SunOS")) {
+	    if (rstreqn(un.release,"4", 1)) /* SunOS 4.x */ {
 		int fd;
 		for (fd = 0;
 		    (un.release[fd] != 0 && (fd < sizeof(un.release)));
@@ -997,25 +997,25 @@ static void defaultMachine(const char ** arch,
 	    /* Solaris on Intel hardware reports i86pc instead of i386
 	     * (at least on 2.6 and 2.8)
 	     */
-	    if (!strcmp(un.machine, "i86pc"))
+	    if (rstreq(un.machine, "i86pc"))
 		sprintf(un.machine, "i386");
 	}
-	else if (!strcmp(un.sysname, "HP-UX"))
+	else if (rstreq(un.sysname, "HP-UX"))
 	    /*make un.sysname look like hpux9.05 for example*/
 	    sprintf(un.sysname, "hpux%s", strpbrk(un.release, "123456789"));
-	else if (!strcmp(un.sysname, "OSF1"))
+	else if (rstreq(un.sysname, "OSF1"))
 	    /*make un.sysname look like osf3.2 for example*/
 	    sprintf(un.sysname, "osf%s", strpbrk(un.release, "123456789"));
-	else if (!strncmp(un.sysname, "IP", 2))
+	else if (rstreqn(un.sysname, "IP", 2))
 	    un.sysname[2] = '\0';
-	else if (!strncmp(un.sysname, "SINIX", 5)) {
+	else if (rstreqn(un.sysname, "SINIX", 5)) {
 	    sprintf(un.sysname, "sinix%s",un.release);
-	    if (!strncmp(un.machine, "RM", 2))
+	    if (rstreqn(un.machine, "RM", 2))
 		sprintf(un.machine, "mips");
 	}
-	else if ((!strncmp(un.machine, "34", 2) ||
-		!strncmp(un.machine, "33", 2)) && \
-		!strncmp(un.release, "4.0", 3))
+	else if ((rstreqn(un.machine, "34", 2) ||
+		rstreqn(un.machine, "33", 2)) && \
+		rstreqn(un.release, "4.0", 3))
 	{
 	    /* we are on ncr-sysv4 */
 	    char * prelid = NULL;
@@ -1098,7 +1098,7 @@ static void defaultMachine(const char ** arch,
 #	endif	/* hpux */
 
 #	if defined(__linux__) && defined(__sparc__)
-	if (!strcmp(un.machine, "sparc")) {
+	if (rstreq(un.machine, "sparc")) {
 	    #define PERS_LINUX		0x00000000
 	    #define PERS_LINUX_32BIT	0x00800000
 	    #define PERS_LINUX32	0x00000008
@@ -1110,7 +1110,7 @@ static void defaultMachine(const char ** arch,
 	    if (oldpers != -1) {
 		if (personality(PERS_LINUX) != -1) {
 		    uname(&un);
-		    if (! strcmp(un.machine, "sparc64")) {
+		    if (rstreq(un.machine, "sparc64")) {
 			strcpy(un.machine, "sparcv9");
 			oldpers = PERS_LINUX32;
 		    }
@@ -1193,7 +1193,7 @@ const char * rpmGetVarArch(int var, const char * arch)
     if (arch) {
 	next = &values[var];
 	while (next) {
-	    if (next->arch && !strcmp(next->arch, arch)) return next->value;
+	    if (next->arch && rstreq(next->arch, arch)) return next->value;
 	    next = next->next;
 	}
     }
@@ -1216,7 +1216,7 @@ static void rpmSetVarArch(int var, const char * val, const char * arch)
     if (next->value) {
 	if (arch) {
 	    while (next->next) {
-		if (next->arch && !strcmp(next->arch, arch)) break;
+		if (next->arch && rstreq(next->arch, arch)) break;
 		next = next->next;
 	    }
 	} else {
@@ -1226,7 +1226,7 @@ static void rpmSetVarArch(int var, const char * val, const char * arch)
 	    }
 	}
 
-	if (next->arch && arch && !strcmp(next->arch, arch)) {
+	if (next->arch && arch && rstreq(next->arch, arch)) {
 	    next->value = _free(next->value);
 	    next->arch = _free(next->arch);
 	} else if (next->arch || arch) {
@@ -1271,7 +1271,7 @@ int rpmIsKnownArch(const char *name)
     canonEntry canon = lookupInCanonTable(name,
 			tables[RPM_MACHTABLE_INSTARCH].canons,
 			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
-    return (canon != NULL || strcmp(name, "noarch") == 0);
+    return (canon != NULL || rstreq(name, "noarch"));
 }
 
 /** \ingroup rpmrc
@@ -1309,13 +1309,13 @@ static void rpmSetMachine(const char * arch, const char * os)
     }
     if (os == NULL) return;	/* XXX can't happen */
 
-    if (!current[ARCH] || strcmp(arch, current[ARCH])) {
+    if (!current[ARCH] || !rstreq(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
 	current[ARCH] = xstrdup(arch);
 	rebuildCompatTables(ARCH, host_cpu);
     }
 
-    if (!current[OS] || strcmp(os, current[OS])) {
+    if (!current[OS] || !rstreq(os, current[OS])) {
 	char * t = xstrdup(os);
 	current[OS] = _free(current[OS]);
 	/*
@@ -1326,7 +1326,7 @@ static void rpmSetMachine(const char * arch, const char * os)
 	 * XXX used by rpmInstallPackage->{os,arch}Okay->rpmMachineScore->
 	 * XXX to verify correct arch/os from headers.
 	 */
-	if (!strcmp(t, "linux"))
+	if (rstreq(t, "linux"))
 	    *t = 'L';
 	current[OS] = t;
 	
