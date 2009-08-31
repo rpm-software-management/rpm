@@ -65,7 +65,7 @@ int parseFiles(rpmSpec spec)
     }
 
     for (arg=1; arg<argc; arg++) {
-	if (!strcmp(argv[arg], "-f") && argv[arg+1]) {
+	if (rstreq(argv[arg], "-f") && argv[arg+1]) {
 	    char *file = rpmGetPath(argv[arg+1], NULL);
 	    if (!pkg->fileFile) pkg->fileFile = newStringBuf();
 	    appendLineStringBuf(pkg->fileFile, file);

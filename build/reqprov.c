@@ -25,8 +25,8 @@ static int isNewDep(Header h, rpmTag nametag,
     /* XXX there's no guarantee the ds is sorted here so rpmdsFind() wont do */
     rpmdsInit(ads);
     while (new && rpmdsNext(ads) >= 0) {
-	if (strcmp(rpmdsN(ads), rpmdsN(bds))) continue;
-	if (strcmp(rpmdsEVR(ads), rpmdsEVR(bds))) continue;
+	if (!rstreq(rpmdsN(ads), rpmdsN(bds))) continue;
+	if (!rstreq(rpmdsEVR(ads), rpmdsEVR(bds))) continue;
 	if (rpmdsFlags(ads) != rpmdsFlags(bds)) continue;
 	if (indextag && rpmtdSetIndex(&idx, rpmdsIx(ads)) >= 0 &&
 			rpmtdGetNumber(&idx) != index) continue;

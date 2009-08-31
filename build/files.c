@@ -333,7 +333,7 @@ static rpmRC parseForVerify(const char * buf, FileList fl)
 
 	{   VFA_t *vfa;
 	    for (vfa = verifyAttrs; vfa->attribute != NULL; vfa++) {
-		if (strcmp(p, vfa->attribute))
+		if (!rstreq(p, vfa->attribute))
 		    continue;
 		verifyFlags |= vfa->flag;
 		break;
@@ -342,7 +342,7 @@ static rpmRC parseForVerify(const char * buf, FileList fl)
 		continue;
 	}
 
-	if (!strcmp(p, "not")) {
+	if (rstreq(p, "not")) {
 	    negated ^= 1;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
@@ -643,9 +643,9 @@ static rpmRC parseForConfig(const char * buf, FileList fl)
 	SKIPNONWHITE(pe);
 	if (*pe != '\0')
 	    *pe++ = '\0';
-	if (!strcmp(p, "missingok")) {
+	if (rstreq(p, "missingok")) {
 	    fl->currentFlags |= RPMFILE_MISSINGOK;
-	} else if (!strcmp(p, "noreplace")) {
+	} else if (rstreq(p, "noreplace")) {
 	    fl->currentFlags |= RPMFILE_NOREPLACE;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
@@ -732,7 +732,7 @@ static rpmRC parseForLang(const char * buf, FileList fl)
 	/* Check for duplicate locales */
 	if (fl->currentLangs != NULL)
 	for (i = 0; i < fl->nLangs; i++) {
-	    if (strncmp(fl->currentLangs[i], p, np))
+	    if (!rstreqn(fl->currentLangs[i], p, np))
 		continue;
 	    rpmlog(RPMLOG_ERR, _("Duplicate locale %.*s in %%lang(%s)\n"),
 		(int)np, p, q);
@@ -868,7 +868,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
     while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
     	VFA_t *vfa;
 	t = NULL;
-	if (!strcmp(s, "%docdir")) {
+	if (rstreq(s, "%docdir")) {
 	    s = strtokWithQuotes(NULL, " \t\n");
 	
 	    if (s == NULL || strtokWithQuotes(NULL, " \t\n")) {
@@ -882,10 +882,10 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
     	/* Set flags for virtual file attributes */
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
-	    if (strcmp(s, vfa->attribute))
+	    if (!rstreq(s, vfa->attribute))
 		continue;
 	    if (!vfa->flag) {
-		if (!strcmp(s, "%dir"))
+		if (rstreq(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
 	    } else {
 		if (vfa->not)
@@ -980,7 +980,7 @@ static int isDoc(FileList fl, const char * fileName)
     k = strlen(fileName);
     for (dd = fl->docDirs; *dd; dd++) {
 	l = strlen(*dd);
-	if (l < k && strncmp(fileName, *dd, l) == 0 && fileName[l] == '/')
+	if (l < k && rstreqn(fileName, *dd, l) && fileName[l] == '/')
 	    return 1;
     }
     return 0;
@@ -1083,7 +1083,7 @@ static void genCpioListAndHeader(FileList fl,
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
-	    !strcmp(flp->cpioPath, flp[1].cpioPath)) {
+	    rstreq(flp->cpioPath, flp[1].cpioPath)) {
 
 	    /* Two entries for the same file found, merge the entries. */
 	    /* Note that an %exclude is a duplication of a file reference */
@@ -1212,8 +1212,8 @@ static void genCpioListAndHeader(FileList fl,
 	if (S_ISLNK(flp->fl_mode)) {
 	    buf[readlink(flp->diskPath, buf, BUFSIZ)] = '\0';
 	    if (fl->buildRoot) {
-		if (buf[0] == '/' && strcmp(fl->buildRoot, "/") &&
-		    !strncmp(buf, fl->buildRoot, strlen(fl->buildRoot))) {
+		if (buf[0] == '/' && !rstreq(fl->buildRoot, "/") &&
+		    rstreqn(buf, fl->buildRoot, strlen(fl->buildRoot))) {
 		     rpmlog(RPMLOG_ERR,
 				_("Symlink points to BuildRoot: %s -> %s\n"),
 				flp->cpioPath, buf);
@@ -1356,7 +1356,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
      *  myftw			path			stat
      *
      */
-    if (fl->buildRoot && strcmp(fl->buildRoot, "/"))
+    if (fl->buildRoot && !rstreq(fl->buildRoot, "/"))
     	cpioPath += strlen(fl->buildRoot);
 
     /* XXX make sure '/' can be packaged also */
@@ -2256,7 +2256,7 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
 
-	if (strcmp(a, "noarch") == 0 && headerGetColor(pkg->header) != 0) {
+	if (rstreq(a, "noarch") && headerGetColor(pkg->header) != 0) {
 	    int terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
 	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
 		   _("Arch dependent binaries in noarch package\n"));

@@ -105,7 +105,7 @@ int parseDescription(rpmSpec spec)
     }
     
     stripTrailingBlanksStringBuf(sb);
-    if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG))) {
+    if (!(noLang && !rstreq(lang, RPMBUILD_DEFAULT_LANG))) {
 	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
 			getStringBuf(sb), lang);
     }

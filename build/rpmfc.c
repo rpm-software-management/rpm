@@ -733,9 +733,9 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	/* Set color based on interpreter name. */
 	bn = basename(s);
-	if (!strcmp(bn, "perl"))
+	if (rstreq(bn, "perl"))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
-	else if (!strncmp(bn, "python", sizeof("python")-1))
+	else if (rstreqn(bn, "python", sizeof("python")-1))
 	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
 
 	break;
@@ -883,7 +883,7 @@ static int rpmfcELF(rpmfc fc)
 			} else
 			if (soname != NULL
 			 && !(filter_GLIBC_PRIVATE != 0
-				&& !strcmp(s, "GLIBC_PRIVATE")))
+				&& rstreq(s, "GLIBC_PRIVATE")))
 			{
 			    rasprintf(&buf, "%s(%s)%s", soname, s,
 #if !defined(__alpha__)
@@ -940,7 +940,7 @@ static int rpmfcELF(rpmfc fc)
 			/* Filter dependencies that contain GLIBC_PRIVATE */
 			if (soname != NULL
 			 && !(filter_GLIBC_PRIVATE != 0
-				&& !strcmp(s, "GLIBC_PRIVATE")))
+				&& rstreq(s, "GLIBC_PRIVATE")))
 			{
 			    rasprintf(&buf, "%s(%s)%s", soname, s,
 #if !defined(__alpha__)
@@ -1127,7 +1127,7 @@ rpmRC rpmfcApply(rpmfc fc)
 		fn += sizeof("/usr/lib")-1;
 		if (fn[0] == '6' && fn[1] == '4')
 		    fn += 2;
-		if (!strncmp(fn, "/python", sizeof("/python")-1))
+		if (rstreqn(fn, "/python", sizeof("/python")-1))
 		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
 	    }
 	}
@@ -1270,7 +1270,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		ftype = "pkgconfig file";
 
 	    /* XXX skip all files in /dev/ which are (or should be) %dev dummies. */
-	    else if (slen >= fc->brlen+sizeof("/dev/") && !strncmp(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
+	    else if (slen >= fc->brlen+sizeof("/dev/") && rstreqn(s+fc->brlen, "/dev/", sizeof("/dev/")-1))
 		ftype = "";
 	    else
 		ftype = magic_file(ms, s);

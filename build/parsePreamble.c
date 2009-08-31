@@ -81,7 +81,7 @@ static int parseSimplePart(const char *line, char **name, int *flag)
 	goto exit;
     }
     
-    if (!strcmp(tok, "-n")) {
+    if (rstreq(tok, "-n")) {
 	if (!(tok = strtok(NULL, " \t\n"))) {
 	    rc = 1;
 	    goto exit;
@@ -155,7 +155,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
 		break;
 	    for (tb = tokbits; tb->name; tb++) {
 		if (tb->name != NULL &&
-		    strlen(tb->name) == (se-s) && !strncmp(tb->name, s, (se-s)))
+		    strlen(tb->name) == (se-s) && rstreqn(tb->name, s, (se-s)))
 		    break;
 	    }
 	    if (tb->name == NULL)
@@ -394,9 +394,9 @@ static rpmRC readIcon(Header h, const char * file)
     if (rc != RPMRC_OK)
 	goto exit;
 
-    if (! strncmp((char*)icon, "GIF", sizeof("GIF")-1)) {
+    if (rstreqn((char*)icon, "GIF", sizeof("GIF")-1)) {
 	headerPutBin(h, RPMTAG_GIF, icon, iconsize);
-    } else if (! strncmp((char*)icon, "/* XPM", sizeof("/* XPM")-1)) {
+    } else if (rstreqn((char*)icon, "/* XPM", sizeof("/* XPM")-1)) {
 	headerPutBin(h, RPMTAG_XPM, icon, iconsize);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), file);
@@ -426,7 +426,7 @@ spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang)
 	t->t_nlines = 1;
 	t->t_lang = xstrdup(lang);
 	t->t_msgid = NULL;
-	if (!(t->t_lang && strcmp(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
+	if (!(t->t_lang && !rstreq(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
 	    struct rpmtd_s td;
 	    if (headerGet(h, RPMTAG_NAME, &td, HEADERGET_MINMEM)) {
 		rasprintf(&t->t_msgid, "%s(%s)", 
@@ -544,7 +544,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_PACKAGER:
 	if (!*lang) {
 	    headerPutString(pkg->header, tag, field);
-	} else if (!(noLang && strcmp(lang, RPMBUILD_DEFAULT_LANG)))
+	} else if (!(noLang && !rstreq(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
     case RPMTAG_BUILDROOT:
@@ -671,7 +671,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	    spec->BACount = BACount;
 	    spec->BANames = BANames;
 	} else {
-	    if (BACount != 1 || strcmp(BANames[0], "noarch")) {
+	    if (BACount != 1 || !rstreq(BANames[0], "noarch")) {
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Only noarch subpackages are supported: %s\n"),
 			spec->lineNum, spec->line);
@@ -900,7 +900,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	    rpmlog(RPMLOG_ERR, _("%%{buildroot} couldn't be empty\n"));
 	    goto exit;
 	}
-	if (!strcmp(buildRoot, "/")) {
+	if (rstreq(buildRoot, "/")) {
 	    rpmlog(RPMLOG_ERR, _("%%{buildroot} can not be \"/\"\n"));
 	    goto exit;
 	}

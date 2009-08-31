@@ -378,19 +378,19 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	const char *compr = NULL;
 	headerPutString(h, RPMTAG_PAYLOADFORMAT, "cpio");
 
-	if (strcmp(s+1, "gzdio") == 0) {
+	if (rstreq(s+1, "gzdio")) {
 	    compr = "gzip";
 #if HAVE_BZLIB_H
-	} else if (strcmp(s+1, "bzdio") == 0) {
+	} else if (rstreq(s+1, "bzdio")) {
 	    compr = "bzip2";
 	    /* Add prereq on rpm version that understands bzip2 payloads */
 	    (void) rpmlibNeedsFeature(h, "PayloadIsBzip2", "3.0.5-1");
 #endif
 #if HAVE_LZMA_H
-	} else if (strcmp(s+1, "xzdio") == 0) {
+	} else if (rstreq(s+1, "xzdio")) {
 	    compr = "xz";
 	    (void) rpmlibNeedsFeature(h, "PayloadIsXz", "5.2-1");
-	} else if (strcmp(s+1, "lzdio") == 0) {
+	} else if (rstreq(s+1, "lzdio")) {
 	    compr = "lzma";
 	    (void) rpmlibNeedsFeature(h, "PayloadIsLzma", "4.4.6-1");
 #endif
@@ -659,7 +659,6 @@ static void addPackageProvides(Header h)
     const char *name = NULL, *arch = NULL;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
-    int noarch = 0;
     struct rpmtd_s archtd;
 
     /* <name> = <evr> provide */
@@ -676,8 +675,7 @@ static void addPackageProvides(Header h)
     isaprov = rpmExpand(name, "%{?_isa}", NULL);
     headerGet(h, RPMTAG_ARCH, &archtd, HEADERGET_MINMEM);
     arch = rpmtdGetString(&archtd);
-    noarch = (strcmp(arch, "noarch") == 0);
-    if (!noarch && strcmp(name, isaprov)) {
+    if (!rstreq(arch, "noarch") && !rstreq(name, isaprov)) {
 	headerPutString(h, RPMTAG_PROVIDENAME, isaprov);
 	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
 	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);

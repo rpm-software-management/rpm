@@ -60,7 +60,7 @@ const char *getUnameS(const char *uname)
 
     for (x = 0; x < uid_used; x++) {
 	if (unames[x] == NULL) continue;
-	if (!strcmp(unames[x],uname))
+	if (rstreq(unames[x],uname))
 	    return unames[x];
     }
 
@@ -85,7 +85,7 @@ uid_t getUidS(const char *uname)
 
     for (x = 0; x < uid_used; x++) {
 	if (unames[x] == NULL) continue;
-	if (!strcmp(unames[x],uname))
+	if (rstreq(unames[x],uname))
 	    return uids[x];
     }
 
@@ -132,7 +132,7 @@ const char *getGnameS(const char *gname)
 
     for (x = 0; x < gid_used; x++) {
 	if (gnames[x] == NULL) continue;
-	if (!strcmp(gnames[x], gname))
+	if (rstreq(gnames[x], gname))
 	    return gnames[x];
     }
 
@@ -157,7 +157,7 @@ gid_t getGidS(const char *gname)
 
     for (x = 0; x < gid_used; x++) {
 	if (gnames[x] == NULL) continue;
-	if (!strcmp(gnames[x], gname))
+	if (rstreq(gnames[x], gname))
 	    return gids[x];
     }
 

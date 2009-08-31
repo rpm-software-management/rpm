@@ -52,7 +52,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
     p = pe; SKIPSPACE(p);
     if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
-    for (idx = days; *idx && strcmp(*idx, p); idx++)
+    for (idx = days; *idx && !rstreq(*idx, p); idx++)
 	{};
     if (*idx == NULL) goto exit;
 
@@ -60,7 +60,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
     p = pe; SKIPSPACE(p);
     if (*p == '\0') goto exit;
     pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
-    for (idx = months; *idx && strcmp(*idx, p); idx++)
+    for (idx = months; *idx && !rstreq(*idx, p); idx++)
 	{};
     if (*idx == NULL) goto exit;
     time.tm_mon = idx - months;

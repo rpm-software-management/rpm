@@ -126,7 +126,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	if (ve > v) {
 	  const struct ReqComp *rc;
 	  for (rc = ReqComparisons; rc->token != NULL; rc++) {
-	    if ((ve-v) != strlen(rc->token) || strncmp(v, rc->token, (ve-v)))
+	    if ((ve-v) != strlen(rc->token) || !rstreqn(v, rc->token, (ve-v)))
 		continue;
 
 	    if (r[0] == '/') {

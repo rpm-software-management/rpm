@@ -536,9 +536,9 @@ int parsePrep(rpmSpec spec)
     argvSplit(&saveLines, getStringBuf(sb), "\n");
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
-	if (! strncmp(*lines, "%setup", sizeof("%setup")-1)) {
+	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
-	} else if (! strncmp(*lines, "%patch", sizeof("%patch")-1)) {
+	} else if (rstreqn(*lines, "%patch", sizeof("%patch")-1)) {
 	    res = doPatchMacro(spec, *lines);
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);

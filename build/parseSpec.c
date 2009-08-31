@@ -289,29 +289,29 @@ int readLine(rpmSpec spec, int strip)
     SKIPSPACE(s);
 
     match = -1;
-    if (!spec->readStack->reading && !strncmp("%if", s, sizeof("%if")-1)) {
+    if (!spec->readStack->reading && rstreqn("%if", s, sizeof("%if")-1)) {
 	match = 0;
-    } else if (! strncmp("%ifarch", s, sizeof("%ifarch")-1)) {
+    } else if (rstreqn("%ifarch", s, sizeof("%ifarch")-1)) {
 	char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 7;
 	match = matchTok(arch, s);
 	arch = _free(arch);
-    } else if (! strncmp("%ifnarch", s, sizeof("%ifnarch")-1)) {
+    } else if (rstreqn("%ifnarch", s, sizeof("%ifnarch")-1)) {
 	char *arch = rpmExpand("%{_target_cpu}", NULL);
 	s += 8;
 	match = !matchTok(arch, s);
 	arch = _free(arch);
-    } else if (! strncmp("%ifos", s, sizeof("%ifos")-1)) {
+    } else if (rstreqn("%ifos", s, sizeof("%ifos")-1)) {
 	char *os = rpmExpand("%{_target_os}", NULL);
 	s += 5;
 	match = matchTok(os, s);
 	os = _free(os);
-    } else if (! strncmp("%ifnos", s, sizeof("%ifnos")-1)) {
+    } else if (rstreqn("%ifnos", s, sizeof("%ifnos")-1)) {
 	char *os = rpmExpand("%{_target_os}", NULL);
 	s += 6;
 	match = !matchTok(os, s);
 	os = _free(os);
-    } else if (! strncmp("%if", s, sizeof("%if")-1)) {
+    } else if (rstreqn("%if", s, sizeof("%if")-1)) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
@@ -320,7 +320,7 @@ int readLine(rpmSpec spec, int strip)
 			ofi->fileName, ofi->lineNum, match);
 	    return PART_ERROR;
 	}
-    } else if (! strncmp("%else", s, sizeof("%else")-1)) {
+    } else if (rstreqn("%else", s, sizeof("%else")-1)) {
 	s += 5;
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
@@ -332,7 +332,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
 	spec->line[0] = '\0';
-    } else if (! strncmp("%endif", s, sizeof("%endif")-1)) {
+    } else if (rstreqn("%endif", s, sizeof("%endif")-1)) {
 	s += 6;
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
@@ -345,7 +345,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (! strncmp("%include", s, sizeof("%include")-1)) {
+    } else if (rstreqn("%include", s, sizeof("%include")-1)) {
 	char *fileName, *endFileName, *p;
 
 	s += 8;

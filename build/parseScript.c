@@ -267,7 +267,7 @@ int parseScript(rpmSpec spec, int parsePart)
     p = getStringBuf(sb);
 
 #ifdef WITH_LUA
-    if (!strcmp(progArgv[0], "<lua>")) {
+    if (rstreq(progArgv[0], "<lua>")) {
 	rpmlua lua = NULL; /* Global state. */
 	if (rpmluaCheckScript(lua, p, partname) != RPMRC_OK) {
 	    goto exit;
