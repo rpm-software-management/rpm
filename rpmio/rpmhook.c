@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdarg.h>
 
+#include <rpm/rpmstring.h>
 #include "rpmio/rpmhook.h"
 
 #include "debug.h"

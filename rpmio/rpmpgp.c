@@ -1498,7 +1498,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 
 	    if (armortype == NULL) /* XXX can't happen */
 		continue;
-	    if (!rstreqn(t, armortype, strlen(armortype))
+	    if (!rstreqn(t, armortype, strlen(armortype)))
 		continue;
 
 	    t += strlen(armortype);
