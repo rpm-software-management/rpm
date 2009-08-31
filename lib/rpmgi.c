@@ -212,7 +212,6 @@ static rpmRC rpmgiWalkPathFilter(rpmgi gi)
 {
     FTSENT * fts = gi->fts;
     rpmRC rpmrc = RPMRC_NOTFOUND;
-    const char * s;
     static const int indent = 2;
 
 
@@ -225,8 +224,7 @@ rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
     switch (fts->fts_info) {
     case FTS_F:
 	/* Ignore all but *.rpm files. */
-	s = fts->fts_name + fts->fts_namelen + 1 - sizeof(".rpm");
-	if (strcmp(s, ".rpm"))
+	if (!rpmFileHasSuffix(fts->fts_name, ".rpm"))
 	    break;
 	rpmrc = RPMRC_OK;
 	break;
