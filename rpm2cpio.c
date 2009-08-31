@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
     FD_t fdi, fdo;
     Header h;
-    char * rpmio_flags;
+    char * rpmio_flags = NULL;
     rpmRC rc;
     FD_t gzdi;
     
@@ -70,26 +70,18 @@ int main(int argc, char *argv[])
     }
 
     /* Retrieve type of payload compression. */
-    {	const char * payload_compressor = NULL;
+    {	const char *compr = NULL;
 	struct rpmtd_s pc;
 
 	headerGet(h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
-	payload_compressor = rpmtdGetString(&pc);
-	if (!payload_compressor)
-	    payload_compressor = "gzip";
-	
-	if (!strcmp(payload_compressor, "gzip"))
-	    rpmio_flags = "r.gzdio";
-	if (!strcmp(payload_compressor, "bzip2"))
-	    rpmio_flags = "r.bzdio";
-	if (!strcmp(payload_compressor, "xz"))
-	    rpmio_flags = "r.xzdio";
-	if (!strcmp(payload_compressor, "lzma"))
-	    rpmio_flags = "r.lzdio";
+	compr = rpmtdGetString(&pc);
+	rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
 	rpmtdFreeData(&pc);
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
+    free(rpmio_flags);
+
     if (gzdi == NULL) {
 	fprintf(stderr, _("cannot re-open payload: %s\n"), Fstrerror(gzdi));
 	exit(EXIT_FAILURE);

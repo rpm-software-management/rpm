@@ -40,7 +40,7 @@ struct rpmpsm_s {
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
     const char * stepName;
-    const char * rpmio_flags;
+    char * rpmio_flags;
     char * failedFile;
     int scriptTag;		/*!< Scriptlet data tag. */
     int progTag;		/*!< Scriptlet interpreter tag. */
@@ -1127,6 +1127,7 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 
     (void) rpmpsmUnlink(psm, RPMDBG_M("rpmpsmFree"));
 
+    free(psm->rpmio_flags);
     memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
     psm = _free(psm);
 
@@ -1619,22 +1620,13 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
 
     case PSM_RPMIO_FLAGS:
-    {	const char * payload_compressor = NULL;
+    {	const char *compr = NULL;
 	struct rpmtd_s pc;
 	Header h = rpmteHeader(psm->te);
 
 	headerGet(h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
-	payload_compressor = rpmtdGetString(&pc);
-	if (!payload_compressor)
-	    payload_compressor = "gzip";
-	if (!strcmp(payload_compressor, "gzip"))
-	    psm->rpmio_flags = "r.gzdio";
-	if (!strcmp(payload_compressor, "bzip2"))
-	    psm->rpmio_flags = "r.bzdio";
-	if (!strcmp(payload_compressor, "xz"))
-	    psm->rpmio_flags = "r.xzdio";
-	if (!strcmp(payload_compressor, "lzma"))
-	    psm->rpmio_flags = "r.lzdio";
+	compr = rpmtdGetString(&pc);
+	psm->rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
 	rpmtdFreeData(&pc);
 	headerFree(h);
 
