@@ -1753,20 +1753,20 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	if (rstreq(end, "fdio")) {
 	    iof = fdio;
 #if HAVE_ZLIB_H
-	} else if (rstreq(end, "gzdio")) {
+	} else if (rstreq(end, "gzdio") || rstreq(end, "gzip")) {
 	    iof = gzdio;
 	    fd = gzdFdopen(fd, zstdio);
 #endif
 #if HAVE_BZLIB_H
-	} else if (rstreq(end, "bzdio")) {
+	} else if (rstreq(end, "bzdio") || rstreq(end, "bzip2")) {
 	    iof = bzdio;
 	    fd = bzdFdopen(fd, zstdio);
 #endif
 #if HAVE_LZMA_H
-	} else if (rstreq(end, "xzdio")) {
+	} else if (rstreq(end, "xzdio") || rstreq(end, "xz")) {
 	    iof = xzdio;
 	    fd = xzdFdopen(fd, zstdio);
-	} else if (rstreq(end, "lzdio")) {
+	} else if (rstreq(end, "lzdio") || rstreq(end, "lzma")) {
 	    iof = lzdio;
 	    fd = lzdFdopen(fd, zstdio);
 #endif
