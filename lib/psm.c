@@ -298,7 +298,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    if (rootdir && strcmp(rootdir, "/") == 0)
+    if (rootdir && rstreq(rootdir, "/"))
 	rootdir = NULL;
 
     /* Macros need to be added before trying to create directories */
@@ -480,7 +480,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 	xx = chdir("/");
 	rootFd = open(".", O_RDONLY, 0);
 	if (rootFd >= 0) {
-	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
 		xx = chroot(rootDir);
 	    xx = rpmtsSetChrootDone(ts, 1);
 	}
@@ -520,7 +520,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 	const char *rootDir = rpmtsRootDir(ts);
 	xx = fchdir(rootFd);
 	xx = close(rootFd);
-	if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
 	    xx = chroot(".");
 	xx = rpmtsSetChrootDone(ts, 0);
     }
@@ -674,7 +674,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     if (*argvp == NULL && script == NULL)
 	return RPMRC_OK;
 
-    if (*argvp && *argvp[0] && strcmp(*argvp[0], "<lua>") == 0) {
+    if (*argvp && *argvp[0] && rstreq(*argvp[0], "<lua>")) {
 	return runLuaScript(psm, h, stag, *argvp, script, arg1, arg2);
     }
     rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
@@ -685,7 +685,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
      * If a successor node, and ldconfig was just run, don't bother.
      */
     if (ldconfig_path && *argvp != NULL && psm->unorderedSuccessor) {
- 	if (ldconfig_done && !strcmp(*argvp[0], ldconfig_path)) {
+ 	if (ldconfig_done && rstreq(*argvp[0], ldconfig_path)) {
 	    rpmlog(RPMLOG_DEBUG, "%s: %s skipping redundant \"%s\".\n",
 		   psm->stepName, sname, *argvp[0]);
 	    free(sname);
@@ -700,7 +700,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	argvAdd(argvp, "/bin/sh");
 	ldconfig_done = 0;
     } else {
-	ldconfig_done = (ldconfig_path && !strcmp(*argvp[0], ldconfig_path)
+	ldconfig_done = (ldconfig_path && rstreq(*argvp[0], ldconfig_path)
 		? 1 : 0);
     }
 
@@ -722,7 +722,7 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	}
 
 	if (rpmIsDebug() &&
-	    (!strcmp(*argvp[0], "/bin/sh") || !strcmp(*argvp[0], "/bin/bash")))
+	    (rstreq(*argvp[0], "/bin/sh") || rstreq(*argvp[0], "/bin/bash")))
 	{
 	    static const char set_x[] = "set -x\n";
 	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
@@ -906,7 +906,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	if ((Name = rpmdsN(trigger)) == NULL)
 	    continue;   /* XXX can't happen */
 
-	if (strcmp(Name, sourceName))
+	if (!rstreq(Name, sourceName))
 	    continue;
 	if (!(Flags & psm->sense))
 	    continue;
@@ -1585,7 +1585,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
 	{
 	    xx = chdir("/");
-	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
 	        if (chroot(rootDir) == -1) {
 		    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
 		    return -1;
@@ -1599,7 +1599,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->chrootDone) {
 	    const char * rootDir = rpmtsRootDir(ts);
 	    const char * currDir = rpmtsCurrDir(ts);
-	    if (rootDir != NULL && strcmp(rootDir, "/") && *rootDir == '/')
+	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
 		rc = chroot(".");
 	    psm->chrootDone = 0;
 	    (void) rpmtsSetChrootDone(ts, 0);

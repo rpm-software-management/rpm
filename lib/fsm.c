@@ -337,9 +337,9 @@ void * dnlInitIterator(const FSM_t fsm,
 		jlen = strlen(dnl);
 		if (jlen != (dnlen+bnlen+1))
 		    continue;
-		if (strncmp(dnl, rpmfiDNIndex(fi, dil), dnlen))
+		if (!rstreqn(dnl, rpmfiDNIndex(fi, dil), dnlen))
 		    continue;
-		if (strncmp(dnl+dnlen, rpmfiBNIndex(fi, i), bnlen))
+		if (!rstreqn(dnl+dnlen, rpmfiBNIndex(fi, i), bnlen))
 		    continue;
 		if (dnl[dnlen+bnlen] != '/' || dnl[dnlen+bnlen+1] != '\0')
 		    continue;
@@ -1197,7 +1197,7 @@ static int fsmMkdirs(FSM_t fsm)
 	if (dnlen <= 1)
 	    continue;
 
-	if (dnlen <= fsm->ldnlen && !strcmp(fsm->path, fsm->ldn))
+	if (dnlen <= fsm->ldnlen && rstreq(fsm->path, fsm->ldn))
 	    continue;
 
 	/* Copy to avoid const on fsm->path. */
@@ -1214,7 +1214,7 @@ static int fsmMkdirs(FSM_t fsm)
 	    /* Already validated? */
 	    if (i < fsm->ldnlen &&
 		(fsm->ldn[i] == '/' || fsm->ldn[i] == '\0') &&
-		!strncmp(fsm->path, fsm->ldn, i))
+		rstreqn(fsm->path, fsm->ldn, i))
 	    {
 		*te = '/';
 		/* Move pre-existing path marker forward. */
@@ -1324,7 +1324,7 @@ static const char * rpmteTypeString(rpmte te)
 
 #define	IS_DEV_LOG(_x)	\
 	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
-	!strncmp((_x), "/dev/log", sizeof("/dev/log")-1) && \
+	rstreqn((_x), "/dev/log", sizeof("/dev/log")-1) && \
 	((_x)[sizeof("/dev/log")-1] == '\0' || \
 	 (_x)[sizeof("/dev/log")-1] == ';'))
 
@@ -2009,7 +2009,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmUNSAFE(fsm, FSM_READLINK);
 		errno = saveerrno;
 		if (rc) break;
-		if (!strcmp(fsm->opath, fsm->rdbuf))	return 0;
+		if (rstreq(fsm->opath, fsm->rdbuf))	return 0;
 	    }
 	} else if (S_ISFIFO(st->st_mode)) {
 	    if (S_ISFIFO(ost->st_mode))		return 0;
@@ -2081,7 +2081,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_LSETFCON:
 	if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
-	 || !strcmp(fsm->fcontext, "<<none>>"))
+	 || rstreq(fsm->fcontext, "<<none>>"))
 	    break;
 	rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
@@ -2207,7 +2207,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_NEXT:
 	rc = fsmUNSAFE(fsm, FSM_HREAD);
 	if (rc) break;
-	if (!strcmp(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
+	if (rstreq(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
 	    fsm->path = _constfree(fsm->path);
 	    rc = CPIOERR_HDR_TRAILER;
 	}
