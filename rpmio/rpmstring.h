@@ -121,7 +121,7 @@ static inline int rstreq(const char *s1, const char *s2)
  * @param n		compare at most n characters
  * @return		0 if strings differ, 1 if equal
  */
-static inline int rstrneq(const char *s1, const char *s2, size_t n)
+static inline int rstreqn(const char *s1, const char *s2, size_t n)
 {
     return (strncmp(s1, s2, n) == 0);
 }
