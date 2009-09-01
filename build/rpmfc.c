@@ -484,6 +484,7 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "RPM v4",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
 
   { " image",			RPMFC_IMAGE|RPMFC_INCLUDE },
+  { " font metrics",		RPMFC_WHITE|RPMFC_INCLUDE },
   { " font",			RPMFC_FONT|RPMFC_INCLUDE },
   { " Font",			RPMFC_FONT|RPMFC_INCLUDE },
 
@@ -496,19 +497,14 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "SGML",			RPMFC_WHITE|RPMFC_INCLUDE },
   { "XML",			RPMFC_WHITE|RPMFC_INCLUDE },
 
-  { " program text",		RPMFC_WHITE|RPMFC_INCLUDE },
   { " source",			RPMFC_WHITE|RPMFC_INCLUDE },
   { "GLS_BINARY_LSB_FIRST",	RPMFC_WHITE|RPMFC_INCLUDE },
   { " DB ",			RPMFC_WHITE|RPMFC_INCLUDE },
 
-  { "ASCII English text",	RPMFC_WHITE|RPMFC_INCLUDE },
-  { "ASCII text",		RPMFC_WHITE|RPMFC_INCLUDE },
-  { "ISO-8859 text",		RPMFC_WHITE|RPMFC_INCLUDE },
-
   { "symbolic link to",		RPMFC_SYMLINK },
   { "socket",			RPMFC_DEVICE },
   { "special",			RPMFC_DEVICE },
-  { " text",			RPMFC_TEXT },
+  { " text",			RPMFC_TEXT|RPMFC_INCLUDE },
 
   { "ASCII",			RPMFC_WHITE },
   { "ISO-8859",			RPMFC_WHITE },
@@ -1211,7 +1207,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     size_t slen;
     int fcolor;
     int xx;
-    int msflags = MAGIC_CHECK | MAGIC_COMPRESS;
+    int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
     magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
