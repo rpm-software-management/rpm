@@ -1211,7 +1211,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     size_t slen;
     int fcolor;
     int xx;
-    int msflags = MAGIC_CHECK;	/* XXX MAGIC_COMPRESS flag? */
+    int msflags = MAGIC_CHECK | MAGIC_COMPRESS;
     magic_t ms = NULL;
 
     if (fc == NULL || argv == NULL)
