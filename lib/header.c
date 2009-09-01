@@ -1905,3 +1905,28 @@ void headerSetInstance(Header h, unsigned int instance)
 {
     h->instance = instance;
 }    
+
+char * headerGetAsString(Header h, rpmTag tag)
+{
+    char *res = NULL;
+    struct rpmtd_s td;
+
+    if (headerGet(h, tag, &td, HEADERGET_EXT) && rpmtdCount(&td) == 1) {
+	res = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
+	rpmtdFreeData(&td);
+    }
+    return res;
+}
+
+const char * headerGetString(Header h, rpmTag tag)
+{
+    const char *res = NULL;
+    struct rpmtd_s td;
+
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM) && rpmtdCount(&td) == 1) {
+	res = rpmtdGetString(&td);
+	rpmtdFreeData(&td);
+    }
+    return res;
+}
+

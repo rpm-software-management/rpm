@@ -371,6 +371,22 @@ char * headerGetNEVRA(Header h, const char ** np );
 char * headerGetEVR(Header h, const char **np);
 
 /** \ingroup header
+ * Return any non-array tag from header, converted to string
+ * @param h		header
+ * @param tag		tag to retrieve
+ * @return 		string pointer (malloced) or NULL on failure
+ */
+char * headerGetAsString(Header h, rpmTag tag);
+
+/** \ingroup header
+ * Return a simple string tag from header
+ * @param h		header
+ * @param tag		tag to retrieve
+ * @return		string pointer (to header memory) or NULL on failure
+ */
+const char * headerGetString(Header h, rpmTag tag);
+
+/** \ingroup header
  * Return header color.
  * @param h		header
  * @return		header color
