@@ -33,6 +33,7 @@ static const rpmTag copyTagsDuringParse[] = {
     RPMTAG_PREFIXES,
     RPMTAG_DISTTAG,
     RPMTAG_BUGURL,
+    RPMTAG_GROUP,
     0
 };
 
@@ -930,14 +931,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     if (pkg != spec->packages) {
 	headerCopyTags(spec->packages->header, pkg->header,
 			(rpmTag *)copyTagsDuringParse);
-	/* inherit group tag from the main package if unspecified */
-	if (!headerIsEntry(pkg->header, RPMTAG_GROUP)) {
-	    struct rpmtd_s td;
-
-	    headerGet(spec->packages->header, RPMTAG_GROUP, &td, HEADERGET_DEFAULT);
-	    headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-	    rpmtdFreeData(&td);
-	}
     }
 
     if (checkForRequired(pkg->header, NVR)) {
