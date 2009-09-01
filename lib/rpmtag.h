@@ -246,7 +246,7 @@ typedef enum rpmTag_e {
     RPMTAG_FLINKHDRID		= 1168, /* s[] (unimplemented) */
     RPMTAG_FLINKNEVRA		= 1169, /* s[] (unimplemented) */
     RPMTAG_PACKAGEORIGIN	= 1170, /* s (unimplemented) */
-    RPMTAG_TRIGGERPREIN		= 1171, /* internal (unimplemented) */
+    RPMTAG_TRIGGERPREIN		= 1171, /* internal */
     RPMTAG_BUILDSUGGESTS	= 1172, /* internal (unimplemented) */
     RPMTAG_BUILDENHANCES	= 1173, /* internal (unimplemented) */
     RPMTAG_SCRIPTSTATES		= 1174, /* i[] scriptlet exit codes (unimplemented) */
