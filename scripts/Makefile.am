@@ -19,7 +19,8 @@ EXTRA_DIST = \
 	find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
 	mono-find-requires mono-find-provides \
-	pkgconfigdeps.sh libtooldeps.sh
+	pkgconfigdeps.sh libtooldeps.sh \
+	fontconfig.prov desktop-file.prov
 
 rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
@@ -31,6 +32,7 @@ rpmconfig_SCRIPTS = \
 	perl.prov perl.req perldeps.pl pythondeps.sh osgideps.pl \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \
+	fontconfig.prov desktop-file.prov \
 	rpmdb_loadcvt rpmdiff rpm2cpio.sh tcl.req tgpg 
 
 rpmconfig_DATA = \

@@ -495,6 +495,9 @@ print (t)\
 %__pkgconfig_provides   %{_rpmconfigdir}/pkgconfigdeps.sh --provides
 %__pkgconfig_requires   %{_rpmconfigdir}/pkgconfigdeps.sh --requires
 
+%__fontconfig_provides	%{_rpmconfigdir}/fontconfig.prov
+%__desktop_provides	%{_rpmconfigdir}/desktop-file.prov
+
 #==============================================================================
 # ---- Database configuration macros.
 #	Macros used to configure Berkley db parameters.

@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Transform desktop mimetype info into RPM mimehandler(type) provides
+#
+# Author: Richard Hughes <richard@hughsie.com>
+# Based on other provides scripts from RPM
+
+OLD_IFS="$IFS"
+while read instfile ; do
+	case "$instfile" in
+	*.desktop)
+		mime=`cat $instfile | grep MimeType= | cut -d'=' -f2`
+                IFS=';'
+		for type in $mime ; do
+		        echo 'mimehandler('$type')'
+	        done
+		;;
+	esac
+done
+IFS=$OLD_IFS
+

@@ -1,0 +1,21 @@
+#!/bin/bash
+#
+# Script to install in:
+# /usr/lib/rpm/redhat/find-provides.d
+#
+# Transform font files into RPM provides
+# Requires fontconfig >= 2.6.90
+#
+# Author: Behdad Esfahbod <behdad@redhat.com>
+# Based on other provides scripts from RPM
+#
+
+fcquery=/usr/bin/fc-query
+
+[ -x $fcquery ] || exit 0
+
+# filter out anything outside main fontconfig path
+grep /usr/share/fonts/ |
+while read fn; do
+    $fcquery --format '%{=pkgkit}' "${fn}" 2> /dev/null
+done

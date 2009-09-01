@@ -1080,6 +1080,31 @@ exit:
 #endif
 }
 
+static int rpmfcMISC(rpmfc fc)
+{
+    struct stat st;
+    int rc = -1;
+    const char *what = NULL;
+    const char * fn = fc->fn[fc->ix];
+    /* this part is enumerated, compare equality not bit flags */
+    int ftype = fc->fcolor->vals[fc->ix] & 0x000F0000;
+
+    if (ftype == RPMFC_FONT) {
+	what = "fontconfig";
+    } else if (ftype == RPMFC_TEXT && rpmFileHasSuffix(fn, ".desktop")) {
+	what = "desktop";
+    }
+
+    if (what == NULL || stat(fn, &st) < 0 || !S_ISREG(st.st_mode)) {
+	goto exit;
+    }
+
+    (void) rpmfcHelper(fc, 'P', what);
+    rc = 0;
+
+exit:
+    return rc;
+}
 typedef const struct rpmfcApplyTbl_s {
     int (*func) (rpmfc fc);
     int colormask;
@@ -1092,6 +1117,7 @@ static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_BOURNE|
 			 RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|
 			 RPMFC_PKGCONFIG|RPMFC_LIBTOOL) },
+    { rpmfcMISC,	RPMFC_FONT|RPMFC_TEXT },
     { NULL, 0 }
 };
 
