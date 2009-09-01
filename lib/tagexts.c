@@ -631,6 +631,18 @@ static int longsigsizeTag(Header h, rpmtd td, headerGetFlags hgflags)
     return get64(h, td, RPMTAG_LONGSIGSIZE, RPMTAG_SIGSIZE);
 }
 
+static int dbinstanceTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    uint32_t *recno = xmalloc(sizeof(*recno));
+
+    recno[0] = headerGetInstance(h);
+    td->type = RPM_INT32_TYPE;
+    td->count = 1;
+    td->data = recno;
+    td->flags = RPMTD_ALLOCED;
+    return 1; /* this cannot fail */
+}
+
 void *rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
@@ -663,6 +675,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_LONGARCHIVESIZE,	longarchivesizeTag },
     { RPMTAG_LONGSIZE,		longsizeTag },
     { RPMTAG_LONGSIGSIZE,	longsigsizeTag },
+    { RPMTAG_DBINSTANCE,	dbinstanceTag },
     { 0, 			NULL }
 };
 

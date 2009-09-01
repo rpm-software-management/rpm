@@ -270,6 +270,7 @@ typedef enum rpmTag_e {
     RPMTAG_REQUIREATTRSX	= 1192, /* i[] (unimplemented) */
     RPMTAG_BUILDPROVIDES	= 1193, /* internal */
     RPMTAG_BUILDOBSOLETES	= 1194, /* internal */
+    RPMTAG_DBINSTANCE		= 1195, /* i extension */
     RPMTAG_FILENAMES		= 5000, /* s[] extension */
     RPMTAG_FILEPROVIDE		= 5001, /* s[] extension */
     RPMTAG_FILEREQUIRE		= 5002, /* s[] extension */
