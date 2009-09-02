@@ -61,16 +61,7 @@ char * headerGetEVR(Header h, const char ** np)
 
 rpm_color_t headerGetColor(Header h)
 {
-    rpm_color_t hcolor = 0, *fcolor;
-    struct rpmtd_s fcolors;
-
-    headerGet(h, RPMTAG_FILECOLORS, &fcolors, HEADERGET_MINMEM);
-    while ((fcolor = rpmtdNextUint32(&fcolors)) != NULL) {
-	hcolor |= *fcolor;
-    }
-    hcolor &= 0x0f;
-
-    return hcolor;
+    return headerGetNumber(h, RPMTAG_HEADERCOLOR);
 }
 
 int headerIsSource(Header h)

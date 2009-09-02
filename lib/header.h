@@ -404,6 +404,7 @@ uint64_t headerGetNumber(Header h, rpmTag tag);
  * @param h		header
  * @return		header color
  */
+RPM_GNUC_DEPRECATED
 rpm_color_t headerGetColor(Header h);
 
 /** \ingroup header
