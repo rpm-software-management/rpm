@@ -324,6 +324,7 @@ int headerNext(HeaderIterator hi, rpmtd td);
  * @retval *rp		release pointer (or NULL)
  * @return		0 always
  */
+RPM_GNUC_DEPRECATED
 int headerNVR(Header h,
 		const char ** np,
 		const char ** vp,
@@ -339,6 +340,7 @@ int headerNVR(Header h,
  * @retval *ap		arch pointer (or NULL)
  * @return		0 always
  */
+RPM_GNUC_DEPRECATED
 int headerNEVRA(Header h,
 		const char ** np,
 		uint32_t ** ep,
@@ -352,6 +354,7 @@ int headerNEVRA(Header h,
  * @retval np		name tag value
  * @return		name-version-release string
  */
+RPM_GNUC_DEPRECATED
 char * headerGetNEVR(Header h, const char ** np );
 
 /** \ingroup header
@@ -360,6 +363,7 @@ char * headerGetNEVR(Header h, const char ** np );
  * @retval np		name tag value
  * @return		name-version-release string
  */
+RPM_GNUC_DEPRECATED
 char * headerGetNEVRA(Header h, const char ** np );
 
 /* \ingroup header
@@ -368,6 +372,7 @@ char * headerGetNEVRA(Header h, const char ** np );
  * @retval np		name tag value (or NULL)
  * @return             (epoch:)version-release string
  */
+RPM_GNUC_DEPRECATED
 char * headerGetEVR(Header h, const char **np);
 
 /** \ingroup header
