@@ -428,12 +428,8 @@ spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang)
 	t->t_lang = xstrdup(lang);
 	t->t_msgid = NULL;
 	if (!(t->t_lang && !rstreq(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
-	    struct rpmtd_s td;
-	    if (headerGet(h, RPMTAG_NAME, &td, HEADERGET_MINMEM)) {
-		rasprintf(&t->t_msgid, "%s(%s)", 
-			 rpmtdGetString(&td), rpmTagGetName(tag));
-		rpmtdFreeData(&td);
-	    }
+	    rasprintf(&t->t_msgid, "%s(%s)", 
+		      headerGetString(h, RPMTAG_NAME), rpmTagGetName(tag));
 	}
     }
     return t;
