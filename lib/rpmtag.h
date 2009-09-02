@@ -289,6 +289,7 @@ typedef enum rpmTag_e {
     RPMTAG_NVR			= 5014, /* s extension */
     RPMTAG_NEVR			= 5015, /* s extension */
     RPMTAG_NEVRA		= 5016, /* s extension */
+    RPMTAG_HEADERCOLOR		= 5017, /* i extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

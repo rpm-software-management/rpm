@@ -629,16 +629,36 @@ static int longsigsizeTag(Header h, rpmtd td, headerGetFlags hgflags)
     return get64(h, td, RPMTAG_LONGSIGSIZE, RPMTAG_SIGSIZE);
 }
 
-static int dbinstanceTag(Header h, rpmtd td, headerGetFlags hgflags)
+static int numberTag(rpmtd td, uint32_t val)
 {
-    uint32_t *recno = xmalloc(sizeof(*recno));
+    uint32_t *tval = xmalloc(sizeof(*tval));
 
-    recno[0] = headerGetInstance(h);
+    tval[0] = val;
     td->type = RPM_INT32_TYPE;
     td->count = 1;
-    td->data = recno;
+    td->data = tval;
     td->flags = RPMTD_ALLOCED;
     return 1; /* this cannot fail */
+}
+
+static int dbinstanceTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return numberTag(td, headerGetInstance(h));
+}
+
+static int headercolorTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    rpm_color_t *fcolor, hcolor = 0;
+    struct rpmtd_s fcolors;
+
+    headerGet(h, RPMTAG_FILECOLORS, &fcolors, HEADERGET_MINMEM);
+    while ((fcolor = rpmtdNextUint32(&fcolors)) != NULL) {
+	hcolor |= *fcolor;
+    }
+    rpmtdFreeData(&fcolors);
+    hcolor &= 0x0f;
+
+    return numberTag(td, hcolor);
 }
 
 typedef enum nevraFlags_e {
@@ -748,6 +768,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_NEVR,		nevrTag },
     { RPMTAG_NVRA,		nvraTag },
     { RPMTAG_NEVRA,		nevraTag },
+    { RPMTAG_HEADERCOLOR,	headercolorTag },
     { 0, 			NULL }
 };
 
