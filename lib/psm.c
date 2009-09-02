@@ -77,17 +77,13 @@ int rpmVersionCompare(Header first, Header second)
     else if (*epochOne > *epochTwo)
 	return 1;
 
-    headerGet(first, RPMTAG_VERSION, &one, HEADERGET_MINMEM);
-    headerGet(second, RPMTAG_VERSION, &two, HEADERGET_MINMEM);
-
-    rc = rpmvercmp(rpmtdGetString(&one), rpmtdGetString(&two));
+    rc = rpmvercmp(headerGetString(first, RPMTAG_VERSION),
+		   headerGetString(second, RPMTAG_VERSION));
     if (rc)
 	return rc;
 
-    headerGet(first, RPMTAG_RELEASE, &one, HEADERGET_MINMEM);
-    headerGet(second, RPMTAG_RELEASE, &two, HEADERGET_MINMEM);
-
-    return rpmvercmp(rpmtdGetString(&one), rpmtdGetString(&two));
+    return rpmvercmp(headerGetString(first, RPMTAG_RELEASE),
+		     headerGetString(second, RPMTAG_RELEASE));
 }
 
 /**
