@@ -70,13 +70,8 @@ int main(int argc, char *argv[])
     }
 
     /* Retrieve type of payload compression. */
-    {	const char *compr = NULL;
-	struct rpmtd_s pc;
-
-	headerGet(h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
-	compr = rpmtdGetString(&pc);
+    {	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
 	rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
-	rpmtdFreeData(&pc);
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
