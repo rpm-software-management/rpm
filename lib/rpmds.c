@@ -139,8 +139,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	goto exit;
 
     if (headerGet(h, tagN, &names, hgflags) && rpmtdCount(&names) > 0) {
-	struct rpmtd_s evr, flags, buildtime; 
-	rpm_time_t * BTp;
+	struct rpmtd_s evr, flags; 
 
 	ds = xcalloc(1, sizeof(*ds));
 	ds->Type = Type;
@@ -156,10 +155,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	headerGet(h, tagF, &flags, hgflags);
 	ds->Flags = flags.data;
 
-	headerGet(h, RPMTAG_BUILDTIME, &buildtime, HEADERGET_MINMEM);
-	BTp = rpmtdGetUint32(&buildtime);
-	ds->BT = BTp ? *BTp : 0;
-	rpmtdFreeData(&buildtime);
+	ds->BT = headerGetNumber(h, RPMTAG_BUILDTIME);
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
 	ds = rpmdsLink(ds, ds->Type);
