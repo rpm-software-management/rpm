@@ -273,12 +273,10 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_ALLOC)) {
 	struct rpmtd_s td;
-	const char *str, *_cookie = NULL;
-
-	if (headerGet(h, RPMTAG_COOKIE, &td, HEADERGET_MINMEM)) {
-	    _cookie = rpmtdGetString(&td);
-	    if (cookie) *cookie = xstrdup(_cookie);
-	}
+	const char *str;
+	const char *_cookie = headerGetString(h, RPMTAG_COOKIE);
+	if (cookie && _cookie) *cookie = xstrdup(_cookie);
+	
 	/* Try to find spec by file flags */
 	if (_cookie && headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
 	    rpmfileAttrs *flags;
@@ -1239,15 +1237,11 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	     * prefix stripped to form the cpio list, while all other packages
 	     * need the leading / stripped.
 	     */
-	    {   const char * p = NULL;
-		struct rpmtd_s dprefix, filenames;
+	    {   struct rpmtd_s filenames;
 		rpmTag ftag = RPMTAG_FILENAMES;
 		Header h = rpmteHeader(psm->te);
+		const char *p = headerGetString(h, RPMTAG_DEFAULTPREFIX);
 
-		if (headerGet(h, RPMTAG_DEFAULTPREFIX, &dprefix, 
-							HEADERGET_MINMEM)) {
-		    p = rpmtdGetString(&dprefix);
-		}
 		fi->striplen = p ? strlen(p) + 1 : 1;
 	
 		if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
@@ -1612,16 +1606,10 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
 
     case PSM_RPMIO_FLAGS:
-    {	const char *compr = NULL;
-	struct rpmtd_s pc;
-	Header h = rpmteHeader(psm->te);
-
-	headerGet(h, RPMTAG_PAYLOADCOMPRESSOR, &pc, HEADERGET_DEFAULT);
-	compr = rpmtdGetString(&pc);
+    {   Header h = rpmteHeader(psm->te);
+	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
 	psm->rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
-	rpmtdFreeData(&pc);
 	headerFree(h);
-
 	rc = RPMRC_OK;
     }	break;
 
