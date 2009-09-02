@@ -256,12 +256,12 @@ addheader:
     }
 
     /* On upgrade, erase older packages of same color (if any). */
-    hcolor = headerGetColor(h);
+    hcolor = headerGetNumber(h, RPMTAG_HEADERCOLOR);
     mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 
 	/* Ignore colored packages not in our rainbow. */
-	ohcolor = headerGetColor(oh);
+	ohcolor = headerGetNumber(oh, RPMTAG_HEADERCOLOR);
 	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
 	    continue;
 
@@ -296,7 +296,7 @@ addheader:
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
-	    ohcolor = headerGetColor(oh);
+	    ohcolor = headerGetNumber(oh, RPMTAG_HEADERCOLOR);
 	    /* XXX provides *are* colored, effectively limiting Obsoletes:
 		to matching only colored Provides: based on pkg coloring. */
 	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))

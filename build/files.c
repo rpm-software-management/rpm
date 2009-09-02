@@ -2253,7 +2253,7 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	    goto exit;
 
 	a = headerGetString(spec->packages->header, RPMTAG_ARCH);
-	if (rstreq(a, "noarch") && headerGetColor(pkg->header) != 0) {
+	if (rstreq(a, "noarch") && headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR) != 0) {
 	    int terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
 	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
 		   _("Arch dependent binaries in noarch package\n"));
