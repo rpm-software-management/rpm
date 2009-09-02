@@ -1785,12 +1785,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
 
-    {	struct rpmtd_s td;
-	const char *prefix;
-	headerGet(pkg->header, RPMTAG_DEFAULTPREFIX, &td, HEADERGET_MINMEM);
-	prefix = rpmtdGetString(&td);	
-	fl.prefix = prefix ? xstrdup(prefix) : NULL;
-    }
+    fl.prefix = headerGetAsString(pkg->header, RPMTAG_DEFAULTPREFIX);
 
     fl.fileCount = 0;
     fl.processingFailed = 0;
