@@ -2516,7 +2516,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     }
 
     {	
-	char *nevra = headerGetNEVRA(h, NULL);
+	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, nevra);
 	free(nevra);
     }
@@ -3217,10 +3217,10 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
 	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
 	    if (_db_filter_dups || newdb->db_filter_dups) {
-		const char * name, * version, * release;
+		const char *name = headerGetString(h, RPMTAG_NAME);
+		const char *version = headerGetString(h, RPMTAG_VERSION);
+		const char *release = headerGetString(h, RPMTAG_RELEASE);
 		int skip = 0;
-
-		(void) headerNVR(h, &name, &version, &release);
 
 		{   rpmdbMatchIterator mi;
 		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);

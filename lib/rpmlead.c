@@ -62,7 +62,7 @@ rpmlead rpmLeadFromHeader(Header h)
     rpmlead l = rpmLeadNew();
 
     l->type = (headerIsSource(h) ? 1 : 0);
-    nevr = headerGetNEVR(h, NULL);
+    nevr = headerGetAsString(h, RPMTAG_NEVR);
     rstrlcpy(l->name, nevr, sizeof(l->name));
     free(nevr);
 

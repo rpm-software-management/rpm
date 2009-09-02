@@ -360,11 +360,10 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
 static int checkFreshenStatus(rpmts ts, struct rpmEIU * eiu)
 {
     rpmdbMatchIterator mi = NULL;
-    const char * name = NULL;
+    const char * name = headerGetString(eiu->h, RPMTAG_NAME);
     Header oldH;
     int count;
 
-    headerNVR(eiu->h, &name, NULL, NULL);
     if (name != NULL)
         mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
     count = rpmdbGetIteratorCount(mi);
@@ -542,10 +541,8 @@ restart:
 		eiu->relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
 		rpmtdFreeData(&prefixes);
 	    } else {
-		const char * name;
-		headerNVR(eiu->h, &name, NULL, NULL);
-		rpmlog(RPMLOG_ERR,
-			       _("package %s is not relocatable\n"), name);
+		rpmlog(RPMLOG_ERR, _("package %s is not relocatable\n"),
+		       headerGetString(eiu->h, RPMTAG_NAME));
 		eiu->numFailed++;
 		goto exit;
 	    }

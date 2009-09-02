@@ -224,7 +224,7 @@ static int rpmlibDeps(Header h)
 	    continue;
 	if (rpmdsSearch(rpmlib, req) < 0) {
 	    if (!nvr) {
-		nvr = headerGetNEVRA(h, NULL);
+		nvr = headerGetAsString(h, RPMTAG_NEVRA);
 		rpmlog(RPMLOG_ERR, _("Missing rpmlib features for %s:\n"), nvr);
 	    }
 	    rpmlog(RPMLOG_ERR, "\t%s\n", rpmdsDNEVR(req)+2);
@@ -882,14 +882,10 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 {
     const rpmts ts = psm->ts;
     rpmds trigger = NULL;
-    const char * sourceName;
-    const char * triggerName;
+    const char * sourceName = headerGetString(sourceH, RPMTAG_NAME);
+    const char * triggerName = headerGetString(trigH, RPMTAG_NAME);
     rpmRC rc = RPMRC_OK;
-    int xx;
     int i;
-
-    xx = headerNVR(sourceH, &sourceName, NULL, NULL);
-    xx = headerNVR(trigH, &triggerName, NULL, NULL);
 
     trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     if (trigger == NULL)

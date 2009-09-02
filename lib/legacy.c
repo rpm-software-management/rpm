@@ -133,15 +133,14 @@ static void expandFilelist(Header h)
  */
 static void providePackageNVR(Header h)
 {
-    const char *name;
-    char *pEVR;
+    const char *name = headerGetString(h, RPMTAG_NAME);
+    char *pEVR = headerGetAsString(h, RPMTAG_EVR);
     rpmsenseFlags pFlags = RPMSENSE_EQUAL;
     int bingo = 1;
     struct rpmtd_s pnames;
     rpmds hds, nvrds;
 
     /* Generate provides for this package name-version-release. */
-    pEVR = headerGetEVR(h, &name);
     if (!(name && pEVR))
 	return;
 
@@ -178,9 +177,8 @@ static void providePackageNVR(Header h)
 
 exit:
     if (bingo) {
-	const char *evr = pEVR;
 	headerPutString(h, RPMTAG_PROVIDENAME, name);
-	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+	headerPutString(h, RPMTAG_PROVIDEVERSION, pEVR);
 	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pFlags, 1);
     }
     rpmtdFreeData(&pnames);

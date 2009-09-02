@@ -808,9 +808,7 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
     /* Synthesize a python object for callback (if necessary). */
     if (pkgObj == NULL) {
 	if (h) {
-	    const char * n = NULL;
-	    (void) headerNVR(h, &n, NULL, NULL);
-	    pkgObj = Py_BuildValue("s", n);
+	    pkgObj = Py_BuildValue("s", headerGetString(h, RPMTAG_NAME));
 	} else {
 	    pkgObj = Py_None;
 	    Py_INCREF(pkgObj);

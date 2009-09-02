@@ -233,35 +233,22 @@ static void addTE(rpmts ts, rpmte p, Header h,
 		fnpyKey key,
 		rpmRelocation * relocs)
 {
-    const char *name, *version, *release, *arch, *os;
-    struct rpmtd_s td;
+    p->name = headerGetAsString(h, RPMTAG_NAME);
+    p->version = headerGetAsString(h, RPMTAG_VERSION);
+    p->release = headerGetAsString(h, RPMTAG_RELEASE);
 
-    name = version = release = arch = NULL;
-    headerNEVRA(h, &name, NULL, &version, &release, &arch);
+    p->epoch = headerGetAsString(h, RPMTAG_EPOCH);
 
+    p->arch = headerGetAsString(h, RPMTAG_ARCH);
+    p->archScore = p->arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, p->arch) : 0;
 
-    p->name = xstrdup(name);
-    p->version = xstrdup(version);
-    p->release = xstrdup(release);
-
-    if (headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_MINMEM)) {
-	p->epoch = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
-    } else {
-	p->epoch = NULL;
-    }
-
-    p->arch = arch ? xstrdup(arch) : NULL;
-    p->archScore = arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, arch) : 0;
-
-    headerGet(h, RPMTAG_OS, &td, HEADERGET_MINMEM);
-    os = rpmtdGetString(&td);
-    p->os = os ? xstrdup(os) : NULL;
+    p->os = headerGetAsString(h, RPMTAG_OS);
     p->osScore = p->os ? rpmMachineScore(RPM_MACHTABLE_INSTOS, p->os) : 0;
 
     p->isSource = headerIsSource(h);
     
-    p->NEVR = headerGetNEVR(h, NULL);
-    p->NEVRA = headerGetNEVRA(h, NULL);
+    p->NEVR = headerGetAsString(h, RPMTAG_NEVR);
+    p->NEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 
     p->nrelocs = 0;
     p->relocs = NULL;

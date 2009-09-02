@@ -99,7 +99,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	}
 
 	if (rConflicts) {
-	    char *altNEVR = headerGetNEVRA(otherHeader, NULL);
+	    char *altNEVR = headerGetAsString(otherHeader, RPMTAG_NEVRA);
 	    rpmps ps = rpmtsProblems(ts);
 	    rpmpsAppend(ps, RPMPROB_FILE_CONFLICT,
 			rpmteNEVRA(p), rpmteKey(p),
@@ -367,7 +367,7 @@ static int ensureOlder(const rpmte p, const Header h, rpmps ps)
     req = rpmdsFree(req);
 
     if (rc == 0) {
-	char * altNEVR = headerGetNEVRA(h, NULL);
+	char * altNEVR = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
 		rpmteNEVRA(p), rpmteKey(p),
 		NULL, NULL,

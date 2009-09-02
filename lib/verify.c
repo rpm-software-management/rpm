@@ -418,7 +418,7 @@ static int verifyDependencies(QVA_t qva, rpmts ts,
 
     psi = rpmpsInitIterator(ps);
     if (rpmpsNumProblems(ps) > 0) {
-	char *nevra = headerGetNEVRA(h, NULL);
+	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmlog(RPMLOG_NOTICE, _("Unsatisfied dependencies for %s:\n"), nevra);
 	free(nevra);
 	while (rpmpsNextIterator(psi) >= 0) {

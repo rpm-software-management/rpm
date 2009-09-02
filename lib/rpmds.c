@@ -218,12 +218,8 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 
 rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
 {
-    rpmds ds;
-    const char * n;
-    char *evr;
-
-    evr = headerGetEVR(h, &n);
-    ds = rpmdsSingle(tagN, n, evr, Flags);
+    char *evr = headerGetAsString(h, RPMTAG_EVR);
+    rpmds ds = rpmdsSingle(tagN, headerGetString(h, RPMTAG_NAME), evr, Flags);
     free(evr);
     return ds;
 }
@@ -894,7 +890,8 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	return rc;
 
     /* Get package information from header */
-    pkgEVR = headerGetEVR(h, &pkgN);
+    pkgN = headerGetString(h, RPMTAG_NAME);
+    pkgEVR = headerGetAsString(h, RPMTAG_EVR);
     if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
 	if (nopromote)
 	    (void) rpmdsSetNoPromote(pkg, nopromote);

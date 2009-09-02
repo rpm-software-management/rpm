@@ -321,7 +321,7 @@ static int loadKeyringFromDB(rpmts ts)
 	    if (b64decode(key, (void **) &pkt, &pktlen) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
 		if (rpmKeyringAddKey(ts->keyring, key) == 0) {
-		    char *nvr = headerGetNEVR(h, NULL);
+		    char *nvr = headerGetAsString(h, RPMTAG_NVR);
 		    rpmlog(RPMLOG_DEBUG, "added key %s to keyring\n", nvr);
 		    free(nvr);
 		    nkeys++;

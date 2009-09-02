@@ -489,11 +489,9 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 	const char * langval;
 	char * msgkey;
 	const char * msgid;
-	const char * n;
-	int xx;
 
-	xx = headerNVR(h, &n, NULL, NULL);
-	rasprintf(&msgkey, "%s(%s)", n, rpmTagGetName(tag));
+	rasprintf(&msgkey, "%s(%s)", headerGetString(h, RPMTAG_NAME), 
+		  rpmTagGetName(tag));
 
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
