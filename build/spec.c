@@ -83,7 +83,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
-	pname = headerGetString(spec->packages->header, RPMTAG_NAME);
+	pname = headerGetString(p->header, RPMTAG_NAME);
 	if (pname && (rstreq(fullName, pname))) {
 	    break;
 	}
