@@ -626,7 +626,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
 	char * fmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
 	if (fmt == NULL || strlen(fmt) <= 1) {
 	    fmt = _free(fmt);
-	    fmt = xstrdup("%{name}-%{version}-%{release}.%{arch}\n");
+	    fmt = xstrdup("%{nvra}\n");
 	}
 	qva->qva_queryFormat = fmt;
     }

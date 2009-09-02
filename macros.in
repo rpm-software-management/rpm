@@ -753,10 +753,10 @@ print (t)\
 	%{nil}
 
 #
-# Default headerSprintf() output format string for rpm -qa
+# Default output format string for rpm -qa
 #
-# XXX	Note: escaped %% for use in headerSprintf()
-%_query_all_fmt		%%{name}-%%{version}-%%{release}%%|arch?{.%%{arch}}:{}|
+# XXX	Note: escaped %% for use in headerFormat()
+%_query_all_fmt		%%{nvra}
 
 #
 # Default path to the file used for transaction fcmtl lock.
