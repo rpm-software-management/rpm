@@ -145,13 +145,10 @@ exit:
 static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
 {
     StringBuf sb = newStringBuf();
-    const char *s;
-    struct rpmtd_s td;
+    const char *s = headerGetString(h, tag);
 
-    headerGet(h, tag, &td, HEADERGET_MINMEM);
-    if ((s = rpmtdGetString(&td))) {
+    if (s) {
 	appendLineStringBuf(sb, s);
-    	rpmtdFreeData(&td);
 	(void) headerDel(h, tag);
     }
 
