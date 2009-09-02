@@ -95,7 +95,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
-    rpm_color_t dscolor;
     rpm_color_t hcolor;
     rpm_color_t ohcolor;
     rpmdbMatchIterator mi;
@@ -103,25 +102,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int isSource;
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
-    struct rpmtd_s td;
-    const char * arch = NULL;
-    const char * os = NULL;
     rpmds oldChk = NULL, newChk = NULL, sameChk = NULL;
     rpmds obsoletes;
     int xx;
     int ec = 0;
     int rc;
     int oc;
-
-    /*
-     * Check for previously added versions with the same name and arch/os.
-     * FIXME: only catches previously added, older packages.
-     */
-    if (headerGet(h, RPMTAG_ARCH, &td, HEADERGET_MINMEM))
-	arch = rpmtdGetString(&td);
-    if (headerGet(h, RPMTAG_OS, &td, HEADERGET_MINMEM))
-	os = rpmtdGetString(&td);
-    hcolor = headerGetColor(h);
 
     /* Check for supported payload format if it's a package */
     if (key && headerCheckPayloadFormat(h) != RPMRC_OK) {
@@ -140,6 +126,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto addheader;
     }
 
+    /*
+     * Check for previously added versions with the same name and arch/os.
+     * FIXME: only catches previously added, older packages.
+     */
     oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
     newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
     sameChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
@@ -158,12 +148,14 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    continue;
 
 	if (tscolor) {
-	    const char * parch;
-	    const char * pos;
+	    const char * arch = headerGetString(h, RPMTAG_ARCH);
+	    const char * os = headerGetString(h, RPMTAG_OS);
+	    const char * parch = rpmteA(p);
+	    const char * pos = rpmteO(p);
 
-	    if (arch == NULL || (parch = rpmteA(p)) == NULL)
+	    if (arch == NULL || parch == NULL)
 		continue;
-	    if (os == NULL || (pos = rpmteO(p)) == NULL)
+	    if (os == NULL || pos == NULL)
 		continue;
 	    if (!rstreq(arch, parch) || !rstreq(os, pos))
 		continue;
@@ -264,7 +256,7 @@ addheader:
     }
 
     /* On upgrade, erase older packages of same color (if any). */
-
+    hcolor = headerGetColor(h);
     mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 
@@ -289,16 +281,6 @@ addheader:
 
 	if ((Name = rpmdsN(obsoletes)) == NULL)
 	    continue;	/* XXX can't happen */
-
-	/* Ignore colored obsoletes not in our rainbow. */
-#if 0
-	dscolor = rpmdsColor(obsoletes);
-#else
-	dscolor = hcolor;
-#endif
-	/* XXX obsoletes are never colored, so this is for future devel. */
-	if (tscolor && dscolor && !(tscolor & dscolor))
-	    continue;
 
 	/* XXX avoid self-obsoleting packages. */
 	if (rstreq(rpmteN(p), Name))
