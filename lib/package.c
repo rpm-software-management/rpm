@@ -775,24 +775,15 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
  * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
  */
 rpmRC headerCheckPayloadFormat(Header h) {
-    rpmRC rc = RPMRC_FAIL;
-    const char *payloadfmt = NULL;
-    struct rpmtd_s payload;
-
-    if (headerGet(h, RPMTAG_PAYLOADFORMAT, &payload, HEADERGET_DEFAULT)) {
-	payloadfmt = rpmtdGetString(&payload);
-	rpmtdFreeData(&payload);
-    }
+    rpmRC rc = RPMRC_OK;
+    const char *payloadfmt = headerGetString(h, RPMTAG_PAYLOADFORMAT);
     /* 
      * XXX Ugh, rpm 3.x packages don't have payload format tag. Instead
      * of blinly allowing, should check somehow (HDRID existence or... ?)
      */
-    if (!payloadfmt)
-	return RPMRC_OK;
+    if (!payloadfmt) return rc;
 
-    if (payloadfmt && rstreq(payloadfmt, "cpio")) {
-	rc = RPMRC_OK;
-    } else {
+    if (!rstreq(payloadfmt, "cpio")) {
         char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
         if (payloadfmt && rstreq(payloadfmt, "drpm")) {
             rpmlog(RPMLOG_ERR,
@@ -804,6 +795,7 @@ rpmRC headerCheckPayloadFormat(Header h) {
                      payloadfmt ? payloadfmt : "none", nevra);
         } 
         nevra = _free(nevra);
+	rc = RPMRC_FAIL;
     }
     return rc;
 }
