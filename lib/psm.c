@@ -62,19 +62,14 @@ struct rpmpsm_s {
 
 int rpmVersionCompare(Header first, Header second)
 {
-    struct rpmtd_s one, two;
-    static uint32_t zero = 0;
-    uint32_t *epochOne = &zero, *epochTwo = &zero;
+    /* Missing epoch becomes zero here, which is what we want */
+    uint32_t epochOne = headerGetNumber(first, RPMTAG_EPOCH);
+    uint32_t epochTwo = headerGetNumber(second, RPMTAG_EPOCH);
     int rc;
 
-    if (headerGet(first, RPMTAG_EPOCH, &one, HEADERGET_MINMEM))
-	epochOne = rpmtdGetUint32(&one);
-    if (headerGet(second, RPMTAG_EPOCH, &two, HEADERGET_MINMEM))
-	epochTwo = rpmtdGetUint32(&two);
-
-    if (*epochOne < *epochTwo)
+    if (epochOne < epochTwo)
 	return -1;
-    else if (*epochOne > *epochTwo)
+    else if (epochOne > epochTwo)
 	return 1;
 
     rc = rpmvercmp(headerGetString(first, RPMTAG_VERSION),
