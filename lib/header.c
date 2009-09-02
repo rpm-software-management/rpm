@@ -1934,3 +1934,15 @@ const char * headerGetString(Header h, rpmTag tag)
     return res;
 }
 
+uint64_t headerGetNumber(Header h, rpmTag tag)
+{
+    uint64_t res = 0;
+    struct rpmtd_s td;
+
+    if (headerGet(h, tag, &td, HEADERGET_EXT)) {
+	if (rpmtdCount(&td) == 1) {
+	    res = rpmtdGetNumber(&td);
+	}
+    }
+    return res;
+}

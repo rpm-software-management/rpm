@@ -391,6 +391,14 @@ char * headerGetAsString(Header h, rpmTag tag);
  */
 const char * headerGetString(Header h, rpmTag tag);
 
+/* \ingroup header
+ * Return a simple number tag (or extension) from header
+ * @param h		header
+ * @param tag		tag to retrieve
+ * @return		numeric tag value or 0 on failure
+ */
+uint64_t headerGetNumber(Header h, rpmTag tag);
+
 /** \ingroup header
  * Return header color.
  * @param h		header
