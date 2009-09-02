@@ -570,9 +570,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	    const char * name;
-	    (void) headerNVR(pkg->header, &name, NULL, NULL);
-	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"), name);
+	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
+		   headerGetString(pkg->header, RPMTAG_NAME));
 	    goto errxit;
 	}
 

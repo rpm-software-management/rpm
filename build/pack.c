@@ -656,13 +656,14 @@ static const rpmTag copyTags[] = {
  */
 static void addPackageProvides(Header h)
 {
-    const char *name = NULL, *arch = NULL;
+    const char *arch, *name;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
-    struct rpmtd_s archtd;
 
     /* <name> = <evr> provide */
-    evr = headerGetEVR(h, &name);
+    name = headerGetString(h, RPMTAG_NAME);
+    arch = headerGetString(h, RPMTAG_ARCH);
+    evr = headerGetAsString(h, RPMTAG_EVR);
     headerPutString(h, RPMTAG_PROVIDENAME, name);
     headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
     headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
@@ -673,15 +674,12 @@ static void addPackageProvides(Header h)
      * cause reading in the noarch macros :-/ 
      */
     isaprov = rpmExpand(name, "%{?_isa}", NULL);
-    headerGet(h, RPMTAG_ARCH, &archtd, HEADERGET_MINMEM);
-    arch = rpmtdGetString(&archtd);
     if (!rstreq(arch, "noarch") && !rstreq(name, isaprov)) {
 	headerPutString(h, RPMTAG_PROVIDENAME, isaprov);
 	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
 	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
     }
     free(isaprov);
-
     free(evr);
 }
 
@@ -749,10 +747,9 @@ rpmRC packageBinaries(rpmSpec spec)
 	    binRpm = headerFormat(pkg->header, binFormat, &errorString);
 	    binFormat = _free(binFormat);
 	    if (binRpm == NULL) {
-		const char *name;
-		(void) headerNVR(pkg->header, &name, NULL, NULL);
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
-		     "filename for package %s: %s\n"), name, errorString);
+		     "filename for package %s: %s\n"), 
+		     headerGetString(pkg->header, RPMTAG_NAME), errorString);
 		return RPMRC_FAIL;
 	    }
 	    fn = rpmGetPath("%{_rpmdir}/", binRpm, NULL);

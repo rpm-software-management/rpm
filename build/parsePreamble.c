@@ -816,7 +816,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 {
     int nextPart = PART_ERROR;
     int res = PART_ERROR; /* assume failure */
-    int rc, xx;
+    int rc;
     char *name, *linep;
     int flag = 0;
     Package pkg;
@@ -841,9 +841,8 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	
 	/* Construct the package */
 	if (flag == PART_SUBNAME) {
-	    const char * mainName;
-	    xx = headerNVR(spec->packages->header, &mainName, NULL, NULL);
-	    rasprintf(&NVR, "%s-%s", mainName, name);
+	    rasprintf(&NVR, "%s-%s", 
+		    headerGetString(spec->packages->header, RPMTAG_NAME), name);
 	} else
 	    NVR = xstrdup(name);
 	free(name);

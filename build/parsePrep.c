@@ -317,9 +317,9 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     if (dirName) {
 	spec->buildSubdir = xstrdup(dirName);
     } else {
-	const char *name, *version;
-	(void) headerNVR(spec->packages->header, &name, &version, NULL);
-	rasprintf(&spec->buildSubdir, "%s-%s", name, version);
+	rasprintf(&spec->buildSubdir, "%s-%s", 
+		  headerGetString(spec->packages->header, RPMTAG_NAME),
+		  headerGetString(spec->packages->header, RPMTAG_VERSION));
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     

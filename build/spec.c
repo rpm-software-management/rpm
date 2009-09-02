@@ -75,7 +75,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
     /* Construct package name */
     if (flag == PART_SUBNAME) {
-	(void) headerNVR(spec->packages->header, &pname, NULL, NULL);
+	pname = headerGetString(spec->packages->header, RPMTAG_NAME);
 	rasprintf(&fullName, "%s-%s", pname, name);
     } else {
 	fullName = xstrdup(name);
@@ -83,7 +83,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
     /* Locate package with fullName */
     for (p = spec->packages; p != NULL; p = p->next) {
-	(void) headerNVR(p->header, &pname, NULL, NULL);
+	pname = headerGetString(spec->packages->header, RPMTAG_NAME);
 	if (pname && (rstreq(fullName, pname))) {
 	    break;
 	}

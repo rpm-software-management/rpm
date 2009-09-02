@@ -2002,11 +2002,10 @@ static const rpmTag sourceTags[] = {
 static void genSourceRpmName(rpmSpec spec)
 {
     if (spec->sourceRpmName == NULL) {
-	const char *name, *version, *release;
-
-	(void) headerNVR(spec->packages->header, &name, &version, &release);
-	rasprintf(&spec->sourceRpmName, "%s-%s-%s.%ssrc.rpm", name, version, release,
-	    spec->noSource ? "no" : "");
+	char *nvr = headerGetAsString(spec->packages->header, RPMTAG_NVR);
+	rasprintf(&spec->sourceRpmName, "%s.%ssrc.rpm", nvr,
+	    	  spec->noSource ? "no" : "");
+	free(nvr);
     }
 }
 
@@ -2243,19 +2242,22 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
     genSourceRpmName(spec);
     
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
-	const char *n, *v, *r, *a;
+	char *nvr;
+	const char *a;
 	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
 	if (pkg->fileList == NULL)
 	    continue;
 
-	(void) headerNEVRA(pkg->header, &n, NULL, &v, &r, &a);
-	rpmlog(RPMLOG_NOTICE, _("Processing files: %s-%s-%s.%s\n"), n, v, r, a);
+	nvr = headerGetAsString(spec->packages->header, RPMTAG_NVRA);
+	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
+	free(nvr);
 		   
 	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)) != RPMRC_OK ||
 	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
 
+	a = headerGetString(spec->packages->header, RPMTAG_ARCH);
 	if (rstreq(a, "noarch") && headerGetColor(pkg->header) != 0) {
 	    int terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
 	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
