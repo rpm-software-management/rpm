@@ -271,6 +271,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDPROVIDES	= 1193, /* internal */
     RPMTAG_BUILDOBSOLETES	= 1194, /* internal */
     RPMTAG_DBINSTANCE		= 1195, /* i extension */
+    RPMTAG_NVRA			= 1196, /* s extension */
     RPMTAG_FILENAMES		= 5000, /* s[] extension */
     RPMTAG_FILEPROVIDE		= 5001, /* s[] extension */
     RPMTAG_FILEREQUIRE		= 5002, /* s[] extension */
@@ -284,6 +285,10 @@ typedef enum rpmTag_e {
     RPMTAG_FILECAPS		= 5010, /* s[] */
     RPMTAG_FILEDIGESTALGO	= 5011, /* i file digest algorithm */
     RPMTAG_BUGURL		= 5012, /* s */
+    RPMTAG_EVR			= 5013, /* s extension */
+    RPMTAG_NVR			= 5014, /* s extension */
+    RPMTAG_NEVR			= 5015, /* s extension */
+    RPMTAG_NEVRA		= 5016, /* s extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

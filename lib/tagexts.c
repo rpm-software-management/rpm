@@ -643,6 +643,75 @@ static int dbinstanceTag(Header h, rpmtd td, headerGetFlags hgflags)
     return 1; /* this cannot fail */
 }
 
+typedef enum nevraFlags_e {
+    NEVRA_NAME		= (1 << 0),
+    NEVRA_EPOCH		= (1 << 1),
+    NEVRA_VERSION	= (1 << 2),
+    NEVRA_RELEASE	= (1 << 3),
+    NEVRA_ARCH		= (1 << 4)
+} nevraFlags;
+
+static int getNEVRA(Header h, rpmtd td, nevraFlags flags)
+{
+    const char *val = NULL;
+    char *res = NULL;
+
+    if ((flags & NEVRA_NAME)) {
+	val = headerGetString(h, RPMTAG_NAME);
+	if (val) rstrscat(&res, val, "-", NULL);
+    }
+    if ((flags & NEVRA_EPOCH)) {
+	char *e = headerGetAsString(h, RPMTAG_EPOCH);
+	if (e) rstrscat(&res, e, ":", NULL);
+	free(e);
+    }
+    if ((flags & NEVRA_VERSION)) {
+	val = headerGetString(h, RPMTAG_VERSION);
+	if (val) rstrscat(&res, val, "-", NULL);
+    }
+    if ((flags & NEVRA_RELEASE)) {
+	val = headerGetString(h, RPMTAG_RELEASE);
+	if (val) rstrscat(&res, val, NULL);
+    }
+    if ((flags & NEVRA_ARCH)) {
+	val = headerGetString(h, RPMTAG_ARCH);
+	if (headerIsSource(h) && val == NULL) val = "src";
+	if (val) rstrscat(&res, ".", val, NULL);
+    }
+
+    td->type = RPM_STRING_TYPE;
+    td->data = res;
+    td->count = 1;
+    td->flags = RPMTD_ALLOCED;
+
+    return 1;
+}
+
+static int evrTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE);
+}
+
+static int nvrTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_NAME|NEVRA_VERSION|NEVRA_RELEASE);
+}
+
+static int nvraTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_NAME|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_ARCH);
+}
+
+static int nevrTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_NAME|NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE);
+}
+
+static int nevraTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return getNEVRA(h, td, NEVRA_NAME|NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_ARCH);
+}
+
 void *rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
@@ -676,6 +745,11 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_LONGSIZE,		longsizeTag },
     { RPMTAG_LONGSIGSIZE,	longsigsizeTag },
     { RPMTAG_DBINSTANCE,	dbinstanceTag },
+    { RPMTAG_EVR,		evrTag },
+    { RPMTAG_NVR,		nvrTag },
+    { RPMTAG_NEVR,		nevrTag },
+    { RPMTAG_NVRA,		nvraTag },
+    { RPMTAG_NEVRA,		nevraTag },
     { 0, 			NULL }
 };
 
