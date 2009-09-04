@@ -1943,6 +1943,7 @@ uint64_t headerGetNumber(Header h, rpmTag tag)
 	if (rpmtdCount(&td) == 1) {
 	    res = rpmtdGetNumber(&td);
 	}
+	rpmtdFreeData(&td);
     }
     return res;
 }
