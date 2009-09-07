@@ -795,7 +795,6 @@ exit:
 void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
 	const fnpyKey * suggestedKeys, int adding)
 {
-    const char * Name =  rpmdsN(ds);
     const char * DNEVR = rpmdsDNEVR(ds);
     const char * EVR = rpmdsEVR(ds);
     rpmProblemType type;
@@ -803,7 +802,6 @@ void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
 
     if (ps == NULL) return;
 
-    if (Name == NULL) Name = "?N?";
     if (EVR == NULL) EVR = "?EVR?";
     if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
 
