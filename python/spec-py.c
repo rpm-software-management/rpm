@@ -67,56 +67,44 @@ static PyObject *
 spec_get_prep(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
+    PyObject *res = NULL;
     if (spec != NULL && spec->prep) {
-        StringBuf sb = newStringBuf();
-        sb=spec->prep;
-        return Py_BuildValue("s",getStringBuf(sb));
+        res = Py_BuildValue("s",getStringBuf(spec->prep));
     }
-     else {
-         return NULL;
-     }
+    return res;
 }
 
 static PyObject * 
 spec_get_build(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
+    PyObject *res = NULL;
     if (spec != NULL && spec->build) {
-        StringBuf sb = newStringBuf();
-        sb=spec->build;
-        return Py_BuildValue("s",getStringBuf(sb));
+        res = Py_BuildValue("s",getStringBuf(spec->build));
     }
-     else {
-         return NULL;
-     }
+    return res;
 }
 
 static PyObject * 
 spec_get_install(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
+    PyObject *res = NULL;
     if (spec != NULL && spec->install) {
-        StringBuf sb = newStringBuf();
-        sb=spec->install;
-        return Py_BuildValue("s",getStringBuf(sb));
+        res = Py_BuildValue("s",getStringBuf(spec->install));
     }
-     else {
-         return NULL;
-     }
+    return res;
 }
 
 static PyObject * 
 spec_get_clean(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
+    PyObject *res = NULL;
     if (spec != NULL && spec->clean) {
-        StringBuf sb = newStringBuf();
-        sb=spec->clean;
-        return Py_BuildValue("s",getStringBuf(sb));
+        res = Py_BuildValue("s",getStringBuf(spec->clean));
     }
-     else {
-         return NULL;
-     }
+    return res;
 }
 
 static PyObject *
