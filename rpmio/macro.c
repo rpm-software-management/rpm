@@ -780,7 +780,7 @@ static const char *
 grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 		const char * lastc)
 {
-    const char *opts, *o;
+    const char *opts;
     char *args = NULL;
     ARGV_t argv = NULL;
     int argc = 0;
@@ -834,7 +834,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     while((c = getopt(argc, argv, opts)) != -1)
     {
 	char *name = NULL, *body = NULL;
-	if (c == '?' || (o = strchr(opts, c)) == NULL) {
+	if (c == '?' || strchr(opts, c) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
 			(char)c, me->name, opts);
 	    goto exit;
