@@ -289,7 +289,6 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
     sprintfToken format;
     sprintfToken token;
     int numTokens;
-    int i;
     int done = 0;
 
     /* upper limit on number of individual formats */
@@ -396,7 +395,6 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		return 1;
 	    }
 
-	    i = 0;
 	    token->type = PTOK_TAG;
 
 	    if (findTag(hsa, token, start)) {
@@ -478,7 +476,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
     if (dst != NULL)
         *dst = '\0';
 
-    for (i = 0; i < numTokens; i++) {
+    for (int i = 0; i < numTokens; i++) {
 	token = format + i;
 	if (token->type == PTOK_STRING)
 	    token->u.string.len = strlen(token->u.string.string);
