@@ -127,6 +127,7 @@ static struct poptOption optionsTable[] = {
 long _stksize = 64 * 1024L;
 #endif
 
+RPM_GNUC_NORETURN
 static void argerror(const char * desc)
 {
     fprintf(stderr, _("%s: %s\n"), __progname, desc);

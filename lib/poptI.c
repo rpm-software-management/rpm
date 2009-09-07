@@ -25,6 +25,7 @@ struct rpmInstallArguments_s rpmIArgs = {
 #define	POPT_RELOCATE		-1021
 #define	POPT_EXCLUDEPATH	-1022
 
+RPM_GNUC_NORETURN
 static void argerror(const char * desc)
 {
     fprintf(stderr, _("%s: %s\n"), __progname, desc);
