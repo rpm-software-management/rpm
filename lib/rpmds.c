@@ -495,14 +495,12 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->u = ods->u;
     ds->nopromote = ods->nopromote;
 
-    nb = (ds->Count+1) * sizeof(*ds->N);
     ds->N = rpmdsDupArgv(ods->N, ods->Count);
 
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 assert(ods->EVR != NULL);
 assert(ods->Flags != NULL);
 
-    nb = (ds->Count+1) * sizeof(*ds->EVR);
     ds->EVR = rpmdsDupArgv(ods->EVR, ods->Count);
 
     nb = (ds->Count * sizeof(*ds->Flags));
