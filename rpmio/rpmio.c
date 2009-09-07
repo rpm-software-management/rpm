@@ -1633,7 +1633,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
 	    }
 	} else {
 	    fdio_close_function_t _close = FDIOVEC(fd, close);
-	    rc = _close(fd);
+	    rc = _close ? _close(fd) : -2;
 	}
 	if (fd->nfps == 0)
 	    break;
