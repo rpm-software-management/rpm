@@ -1466,14 +1466,9 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
-	rpmTag tag;
+	rpmTag tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 	rpmsenseFlags tagflags;
-	char * s;
-	int xx;
-
-	tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
-	tagflags = 0;
-	s = NULL;
+	char * s = NULL;
 
 	switch(tag) {
 	case RPMTAG_PROVIDEFLAGS:
@@ -1493,14 +1488,12 @@ static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 	    break;
 	}
 
-	xx = rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero);
-	if (xx == -1)
+	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero) == -1)
 	    continue;
 
 	s = rpmExpand(dm->argv[0], NULL);
-	rpmlog(RPMLOG_NOTICE, _("Finding  %s: %s\n"), dm->msg,
-		(s ? s : ""));
-	s = _free(s);
+	rpmlog(RPMLOG_NOTICE, _("Finding  %s: %s\n"), dm->msg, (s ? s : ""));
+	free(s);
 
 	if (sb_stdout == NULL) {
 	    rc = RPMRC_FAIL;
