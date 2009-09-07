@@ -183,7 +183,7 @@ static int aux_files(lua_State *L)
 {
 	DIR *d = lua_touserdata(L, lua_upvalueindex(1));
 	struct dirent *entry;
-	if (d == NULL) luaL_error(L, "attempt to use closed dir");
+	if (d == NULL) return luaL_error(L, "attempt to use closed dir");
 	entry = readdir(d);
 	if (entry == NULL)
 	{
@@ -319,7 +319,7 @@ static int Pexec(lua_State *L)			/** exec(path,[args]) */
 	const char *path = luaL_checkstring(L, 1);
 	int i,n=lua_gettop(L);
 	char **argv = malloc((n+1)*sizeof(char*));
-	if (argv==NULL) luaL_error(L,"not enough memory");
+	if (argv==NULL) return luaL_error(L,"not enough memory");
 	argv[0] = (char*)path;
 	for (i=1; i<n; i++) argv[i] = (char*)luaL_checkstring(L, i+1);
 	argv[i] = NULL;
@@ -782,7 +782,7 @@ static int Pmkstemp(lua_State *L)
 	luaL_getmetatable(L, "FILE*");
 	if (lua_isnil(L, -1)) {
 		lua_pop(L, 1);
-		luaL_error(L, "FILE* metatable not available "
+		return luaL_error(L, "FILE* metatable not available "
 			      "(io not loaded?)");
 	} else {
 		lua_setmetatable(L, -3);
