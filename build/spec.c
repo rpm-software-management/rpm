@@ -460,7 +460,6 @@ rpmSpec newSpec(void)
 
 rpmSpec freeSpec(rpmSpec spec)
 {
-    struct ReadLevelEntry *rl;
 
     if (spec == NULL) return NULL;
 
@@ -481,10 +480,10 @@ rpmSpec freeSpec(rpmSpec spec)
     closeSpec(spec);
 
     while (spec->readStack) {
-	rl = spec->readStack;
+	struct ReadLevelEntry *rl = spec->readStack;
 	spec->readStack = rl->next;
 	rl->next = NULL;
-	rl = _free(rl);
+	free(rl);
     }
     
     spec->sourceRpmName = _free(spec->sourceRpmName);
