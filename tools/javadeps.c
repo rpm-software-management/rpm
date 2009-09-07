@@ -65,6 +65,7 @@ marc@redhat.com and ewt@redhat.com.
 */
 
 #include <stdarg.h>
+#include <rpm/rpmutil.h>
 #include "debug.h"
 
 /*---------typedefs---------*/
@@ -281,7 +282,7 @@ usage (void)
   exit(-1);
 }
 
-
+RPM_GNUC_NORETURN
 void outofmemory(void) {
 
   /* Its doubtful we could do a printf if there is really a memory
@@ -291,7 +292,7 @@ void outofmemory(void) {
   exit(-1);
 }
 
-
+RPM_GNUC_NORETURN
 void die(const char *format, ...) {
   /* Most errors are fatal.
      This function throws a fatal error and 
