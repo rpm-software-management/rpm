@@ -569,7 +569,6 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
      */
     save = ods->i;
     ods = rpmdsInit(ods);
-    if (ods != NULL)
     while (rpmdsNext(ods) >= 0) {
 	/*
 	 * If this entry is already present, don't bother.
