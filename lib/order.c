@@ -122,12 +122,8 @@ static inline int addRelation(rpmts ts,
     rpmte q;
     struct tsortInfo_s * tsi_p, * tsi_q;
     relation rel;
-    const char * Name;
     rpmElementType teType = rpmteType(p);
     rpmsenseFlags flags, dsflags;
-
-    if ((Name = rpmdsN(requires)) == NULL)
-	return 0;
 
     dsflags = rpmdsFlags(requires);
 
