@@ -471,7 +471,6 @@ static void * doHeaderUnload(Header h,
     int i;
     int drlen, ndribbles;
     int driplen, ndrips;
-    int legacy = 0;
 
     /* Sort entries by (offset,tag). */
     headerUnsort(h);
@@ -581,7 +580,6 @@ static void * doHeaderUnload(Header h,
 	    if (i == 0 && (h->flags & HEADERFLAG_LEGACY)) {
 		int32_t stei[4];
 
-		legacy = 1;
 		memcpy(pe+1, src, rdl);
 		memcpy(te, src + rdl, rdlen);
 		te += rdlen;
