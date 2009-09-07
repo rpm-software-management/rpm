@@ -167,13 +167,8 @@ rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
     HASHContext *hashctx = NULL;
     DIGEST_CTX ctx = NULL;
 
-    if (rpmInitCrypto() < 0)
+    if (type == HASH_AlgNULL || rpmInitCrypto() < 0)
 	goto exit;
-
-    type = getHashType(hashalgo);
-    if (type == HASH_AlgNULL) {
-	goto exit;
-    }
 
     if ((hashctx = HASH_Create(type)) != NULL) {
 	ctx = xcalloc(1, sizeof(*ctx));
