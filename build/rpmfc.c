@@ -1535,7 +1535,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     const char * N;
     const char * EVR;
     int genConfigDeps;
-    rpm_count_t c;
     int rc = RPMRC_OK;
     int xx;
     int idx;
@@ -1688,7 +1687,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add Provides: */
-    if (fc->provides != NULL && (c = rpmdsCount(fc->provides)) > 0 && !fc->skipProv) {
+    if (fc->provides != NULL && rpmdsCount(fc->provides) > 0 && !fc->skipProv) {
 	rpmds pi = rpmdsInit(fc->provides);
 	while (rpmdsNext(pi) >= 0) {
 	    const char *name = rpmdsN(pi);
@@ -1702,7 +1701,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add Requires: */
-    if (fc->requires != NULL && (c = rpmdsCount(fc->requires)) > 0 && !fc->skipReq) {
+    if (fc->requires != NULL && rpmdsCount(fc->requires) > 0 && !fc->skipReq) {
 	rpmds pi = rpmdsInit(fc->requires);
 	while (rpmdsNext(pi) >= 0) {
 	    const char *name = rpmdsN(pi);
