@@ -167,6 +167,7 @@ fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
     return Py_None;
 }
 
+RPM_GNUC_NORETURN
 static void die(PyObject *cb)
 {
     char *pyfn = NULL;
