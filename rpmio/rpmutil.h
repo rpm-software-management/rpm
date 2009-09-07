@@ -71,9 +71,12 @@
 #endif /* __GNUC__ */
 
 #if     __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 3)
-#  define RPM_GNUC_MAY_ALIAS __attribute__((may_alias))
+#define RPM_GNUC_MAY_ALIAS __attribute__((may_alias))
+#define RPM_GNUC_NONNULL( ... )	\
+  __attribute__((__nonnull__ (__VA_ARGS__)))
 #else
-#  define RPM_GNUC_MAY_ALIAS
+#define RPM_GNUC_MAY_ALIAS
+#define RPM_GNUC_NONNULL( ... )
 #endif
 
 #if    __GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4)
