@@ -331,7 +331,6 @@ rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmProblem p;
     PyObject * list, * cf;
     struct rpmtsCallbackType_s cbInfo;
-    int i;
     int xx;
     char * kwlist[] = {"callback", NULL};
 
@@ -364,7 +363,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	rpmpsi psi = rpmpsInitIterator(ps);
 
 	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
-	while ((i = rpmpsNextIterator(psi)) >= 0) {
+	while (rpmpsNextIterator(psi) >= 0) {
 	    char * altNEVR, * needsName;
 	    char * byName, * byVersion, * byRelease, *byArch;
 	    char * needsOP, * needsVersion;

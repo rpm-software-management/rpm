@@ -101,7 +101,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     rpmfi fi = NULL;
     rpmfiFlags fiflags =  (RPMFI_NOHEADER | RPMFI_FLAGS_QUERY);
     int rc = 0;		/* XXX FIXME: need real return code */
-    int i;
 
     if (qva->qva_queryFormat != NULL) {
 	const char *errstr;
@@ -128,7 +127,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     }
 
     fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
+    while (rpmfiNext(fi) >= 0) {
 	rpmfileAttrs fflags = rpmfiFFlags(fi);
 	rpm_mode_t fmode = rpmfiFMode(fi);
 	rpm_rdev_t frdev = rpmfiFRdev(fi);

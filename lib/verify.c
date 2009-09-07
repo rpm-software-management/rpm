@@ -308,11 +308,10 @@ static int verifyHeader(QVA_t qva, const rpmts ts, Header h)
     rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int ec = 0;		/* assume no problems */
     char *buf = NULL;
-    int i;
 
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
     rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
+    while (rpmfiNext(fi) >= 0) {
 	rpmfileAttrs fileAttrs;
 	int rc;
 
