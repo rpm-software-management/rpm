@@ -49,7 +49,7 @@ static rpmRC checkOwners(const char * urlfn)
 static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 		     int reverse, int removeEmpties, int fuzz, const char *dir)
 {
-    char *fn;
+    char *fn = NULL;
     char *buf = NULL;
     char *arg_backup = NULL;
     char *arg_fuzz = NULL;
@@ -70,16 +70,13 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 	} else {
 	    rpmlog(RPMLOG_ERR, _("%%patch without corresponding \"Patch:\" tag\n"));
 	}
-	return NULL;
+	goto exit;
     }
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* On non-build parse's, file cannot be stat'd or read. */
-    if (spec->force || checkOwners(fn)) {
-	fn = _free(fn);
-	return NULL;
-    }
+    if (spec->force || checkOwners(fn)) goto exit;
 
     if (db) {
 	rasprintf(&arg_backup,
@@ -118,9 +115,10 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 			"%s\n", 
 			basename(fn), patchcmd);
     }
-    free(fn);
     free(patchcmd);
-    
+
+exit:
+    free(fn);
     return buf;
 }
 
