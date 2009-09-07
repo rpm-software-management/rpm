@@ -223,7 +223,7 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	    (void) rpmfiSetFX(otherFi, otherFileNum);
 
 	    /* XXX Happens iff fingerprint for incomplete package install. */
-	    if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN);
+	    if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN)
 		break;
 	}
 
