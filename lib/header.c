@@ -1828,7 +1828,7 @@ HeaderIterator headerInitIterator(Header h)
 int headerNext(HeaderIterator hi, rpmtd td)
 {
     Header h = hi->h;
-    int slot = hi->next_index;
+    int slot;
     indexEntry entry = NULL;
     int rc;
 
