@@ -27,6 +27,8 @@ int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
     } else if (parsePart == PART_CLEAN) {
 	sbp = &(spec->clean);
 	name = "%clean";
+    } else {
+	goto exit; /* programmer error */
     }
     
     if (*sbp != NULL) {
