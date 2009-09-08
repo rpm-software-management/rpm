@@ -245,7 +245,6 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
     size += 2 * sizeof(int32_t);	/* count of index entries */
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
-	unsigned diff;
 	rpmTagType type;
 
 	/* Regions go in as is ... */
@@ -264,7 +263,7 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
 	/* Alignment */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
-	    diff = typeSizes[type] - (size % typeSizes[type]);
+	    unsigned diff = typeSizes[type] - (size % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		size += diff;
 		pad += diff;
