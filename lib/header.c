@@ -530,8 +530,7 @@ static void * doHeaderUnload(Header h,
 		driplen += diff;
 		pad += diff;
 		dl += diff;
-	    } else
-		diff = 0;
+	    }
 	}
 
 	ndrips++;
