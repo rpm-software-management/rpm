@@ -328,10 +328,8 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		char * newEnd;
 
 		start++;
-		if (parseExpression(hsa, token, start, &newEnd))
-		{
-		    format = freeFormat(format, numTokens);
-		    return 1;
+		if (parseExpression(hsa, token, start, &newEnd)) {
+		    goto errxit;
 		}
 		start = newEnd;
 		break;
@@ -344,8 +342,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
 	    if (!*chptr || *chptr == '%') {
 		hsa->errmsg = _("missing { after %");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 
 	    *chptr++ = '\0';
@@ -367,8 +364,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    while (*next && *next != '}') next++;
 	    if (!*next) {
 		hsa->errmsg = _("missing } after %{");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 	    *next++ = '\0';
 
@@ -379,8 +375,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 		*chptr++ = '\0';
 		if (!*chptr) {
 		    hsa->errmsg = _("empty tag format");
-		    format = freeFormat(format, numTokens);
-		    return 1;
+		    goto errxit;
 		}
 		token->u.tag.type = chptr;
 	    } 
@@ -391,16 +386,14 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    
 	    if (!*start) {
 		hsa->errmsg = _("empty tag name");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 
 	    token->type = PTOK_TAG;
 
 	    if (findTag(hsa, token, start)) {
 		hsa->errmsg = _("unknown tag");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 
 	    start = next;
@@ -414,16 +407,13 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    if (parseFormat(hsa, start,
 			    &token->u.array.format,
 			    &token->u.array.numTokens,
-			    &start, PARSER_IN_ARRAY))
-	    {
-		format = freeFormat(format, numTokens);
-		return 1;
+			    &start, PARSER_IN_ARRAY)) {
+		goto errxit;
 	    }
 
 	    if (!start) {
 		hsa->errmsg = _("] expected at end of array");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 
 	    dst = start;
@@ -435,8 +425,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	case ']':
 	    if (state != PARSER_IN_ARRAY) {
 		hsa->errmsg = _("unexpected ]");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 	    *start++ = '\0';
 	    if (endPtr) *endPtr = start;
@@ -446,8 +435,7 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	case '}':
 	    if (state != PARSER_IN_EXPR) {
 		hsa->errmsg = _("unexpected }");
-		format = freeFormat(format, numTokens);
-		return 1;
+		goto errxit;
 	    }
 	    *start++ = '\0';
 	    if (endPtr) *endPtr = start;
@@ -484,8 +472,11 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 
     *numTokensPtr = numTokens;
     *formatPtr = format;
-
     return 0;
+
+errxit:
+    freeFormat(format, numTokens);
+    return 1;
 }
 
 static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
