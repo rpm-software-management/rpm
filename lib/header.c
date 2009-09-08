@@ -401,8 +401,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	/* Alignment */
 	type = ie.info.type;
 	if (typeSizes[type] > 1) {
-	    unsigned diff;
-	    diff = typeSizes[type] - (dl % typeSizes[type]);
+	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		dl += diff;
 		if (ieprev.info.type == RPM_I18NSTRING_TYPE)
@@ -497,8 +496,7 @@ static void * doHeaderUnload(Header h,
 		/* Alignment */
 		type = entry->info.type;
 		if (typeSizes[type] > 1) {
-		    unsigned diff;
-		    diff = typeSizes[type] - (dl % typeSizes[type]);
+		    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 		    if (diff != typeSizes[type]) {
 			drlen += diff;
 			pad += diff;
@@ -523,8 +521,7 @@ static void * doHeaderUnload(Header h,
 	/* Alignment */
 	type = entry->info.type;
 	if (typeSizes[type] > 1) {
-	    unsigned diff;
-	    diff = typeSizes[type] - (dl % typeSizes[type]);
+	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		driplen += diff;
 		pad += diff;
