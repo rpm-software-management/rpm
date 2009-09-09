@@ -812,7 +812,6 @@ Header headerLoad(void * uh)
 	if (rdlen != dl)
 	    goto errxit;
 	entry->rdlen = rdlen;
-	entry++;
 	h->indexUsed++;
     } else {
 	int32_t rdl;
