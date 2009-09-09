@@ -366,7 +366,6 @@ static int regionSwab(indexEntry entry, int il, int dl,
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 	rpmTagType type;
-	unsigned char * t = NULL;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -382,8 +381,8 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	if (hdrchkAlign(ie.info.type, ie.info.offset))
 	    return -1;
 
-	ie.data = t = dataStart + ie.info.offset;
-	if (dataEnd && t >= dataEnd)
+	ie.data = dataStart + ie.info.offset;
+	if (dataEnd && (unsigned char *)ie.data >= dataEnd)
 	    return -1;
 
 	ie.length = dataLength(ie.info.type, ie.data, ie.info.count, 1, dataEnd);
@@ -412,31 +411,28 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
 	case RPM_INT64_TYPE:
-	{   uint64_t * it = (uint64_t *)t;
+	{   uint64_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
 		*it = htonll(*it);
 	    }
-	    t = (unsigned char *) it;
 	}   break;
 	case RPM_INT32_TYPE:
-	{   int32_t * it = (int32_t *)t;
+	{   int32_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
 		*it = htonl(*it);
 	    }
-	    t = (unsigned char *) it;
 	}   break;
 	case RPM_INT16_TYPE:
-	{   int16_t * it = (int16_t *) t;
+	{   int16_t * it = ie.data;
 	    for (; ie.info.count > 0; ie.info.count--, it += 1) {
 		if (dataEnd && ((unsigned char *)it) >= dataEnd)
 		    return -1;
 		*it = htons(*it);
 	    }
-	    t = (unsigned char *) it;
 	}   break;
 	}
 
