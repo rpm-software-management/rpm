@@ -93,6 +93,7 @@ strip_to_debug()
   application/x-sharedlib*) g=-g ;;
   esac
   eu-strip --remove-comment $g -f "$1" "$2" || exit
+  chmod 444 "$1" || exit
 }
 
 # Make a relative symlink to $1 called $3$2
