@@ -790,7 +790,6 @@ Header headerLoad(void * uh)
     unsigned char * dataEnd;
     indexEntry entry; 
     int rdlen;
-    int i;
 
     /* Sanity checks on header intro. */
     if (hdrchkTags(il) || hdrchkData(dl))
@@ -812,7 +811,6 @@ Header headerLoad(void * uh)
     h = headerLink(h);
 
     entry = h->index;
-    i = 0;
     if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
 	h->flags |= HEADERFLAG_LEGACY;
 	entry->info.type = REGION_TAG_TYPE;
