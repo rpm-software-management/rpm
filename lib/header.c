@@ -695,7 +695,7 @@ void * headerUnload(Header h)
 static
 indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
 {
-    indexEntry entry, entry2, last;
+    indexEntry entry;
     struct indexEntry_s key;
 
     if (h == NULL) return NULL;
@@ -703,8 +703,7 @@ indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
 
     key.info.tag = tag;
 
-    entry2 = entry = 
-	bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
+    entry = bsearch(&key, h->index, h->indexUsed, sizeof(*h->index), indexCmp);
     if (entry == NULL)
 	return NULL;
 
@@ -714,14 +713,6 @@ indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
     /* look backwards */
     while (entry->info.tag == tag && entry->info.type != type &&
 	   entry > h->index) entry--;
-
-    if (entry->info.tag == tag && entry->info.type == type)
-	return entry;
-
-    last = h->index + h->indexUsed;
-    /* FIX: entry2 = entry. Code looks bogus as well. */
-    while (entry2->info.tag == tag && entry2->info.type != type &&
-	   entry2 < last) entry2++;
 
     if (entry->info.tag == tag && entry->info.type == type)
 	return entry;
