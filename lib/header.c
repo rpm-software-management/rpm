@@ -456,6 +456,8 @@ static void * doHeaderUnload(Header h,
     int i;
     int drlen, ndribbles;
 
+    if (h == NULL) return NULL;
+
     /* Sort entries by (offset,tag). */
     headerUnsort(h);
 
@@ -1013,8 +1015,6 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp)
     size_t length;
     void * uh;
 
-    if (h == NULL)
-	return 1;
     uh = doHeaderUnload(h, &length);
     if (uh == NULL)
 	return 1;
