@@ -455,13 +455,12 @@ static void * doHeaderUnload(Header h,
     rpmTagType type;
     int i;
     int drlen, ndribbles;
-    int driplen, ndrips;
 
     /* Sort entries by (offset,tag). */
     headerUnsort(h);
 
     /* Compute (il,dl) for all tags, including those deleted in region. */
-    drlen = ndribbles = driplen = ndrips = 0;
+    drlen = ndribbles = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
 	    int32_t rdl = -entry->info.offset;	/* negative offset */
@@ -508,14 +507,11 @@ static void * doHeaderUnload(Header h,
 	if (typeSizes[type] > 1) {
 	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
-		driplen += diff;
 		dl += diff;
 	    }
 	}
 
-	ndrips++;
 	il++;
-	driplen += entry->length;
 	dl += entry->length;
     }
 
