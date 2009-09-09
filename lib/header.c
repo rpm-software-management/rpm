@@ -360,9 +360,6 @@ static int regionSwab(indexEntry entry, int il, int dl,
 		const unsigned char * dataEnd,
 		int regionid)
 {
-    struct indexEntry_s ieprev;
-
-    memset(&ieprev, 0, sizeof(ieprev));
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 	rpmTagType type;
@@ -403,8 +400,6 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		dl += diff;
-		if (ieprev.info.type == RPM_I18NSTRING_TYPE)
-		    ieprev.length += diff;
 	    }
 	}
 
@@ -437,7 +432,6 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	}
 
 	dl += ie.length;
-	ieprev = ie;	/* structure assignment */
     }
 
     return dl;
