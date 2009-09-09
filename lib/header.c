@@ -226,7 +226,6 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
 {
     indexEntry entry;
     unsigned int size = 0;
-    unsigned int pad = 0;
     int i;
 
     if (h == NULL)
@@ -266,7 +265,6 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
 	    unsigned diff = typeSizes[type] - (size % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		size += diff;
-		pad += diff;
 	    }
 	}
 
@@ -450,7 +448,6 @@ static void * doHeaderUnload(Header h,
     entryInfo pe;
     char * dataStart;
     char * te;
-    unsigned pad;
     unsigned len;
     int32_t il = 0;
     int32_t dl = 0;
@@ -464,7 +461,6 @@ static void * doHeaderUnload(Header h,
     headerUnsort(h);
 
     /* Compute (il,dl) for all tags, including those deleted in region. */
-    pad = 0;
     drlen = ndribbles = driplen = ndrips = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	if (ENTRY_IS_REGION(entry)) {
@@ -489,7 +485,6 @@ static void * doHeaderUnload(Header h,
 		    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 		    if (diff != typeSizes[type]) {
 			drlen += diff;
-			pad += diff;
 			dl += diff;
 		    }
 		}
@@ -514,7 +509,6 @@ static void * doHeaderUnload(Header h,
 	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
 	    if (diff != typeSizes[type]) {
 		driplen += diff;
-		pad += diff;
 		dl += diff;
 	    }
 	}
@@ -538,7 +532,6 @@ static void * doHeaderUnload(Header h,
     pe = (entryInfo) &ei[2];
     dataStart = te = (char *) (pe + il);
 
-    pad = 0;
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
 	const char * src;
 	unsigned char *t;
@@ -623,7 +616,6 @@ static void * doHeaderUnload(Header h,
 	    if (diff != typeSizes[type]) {
 		memset(te, 0, diff);
 		te += diff;
-		pad += diff;
 	    }
 	}
 
