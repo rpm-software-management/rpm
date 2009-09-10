@@ -124,15 +124,6 @@ int headerGetRawEntry(Header h, rpmTag tag,
 			rpm_data_t * p, 
 			rpm_count_t * c);
 
-/** \ingroup header
- * Dump a header in human readable format (for debugging).
- * @param h		header
- * @param f		file handle
- * @param flags		0 or HEADER_DUMP_INLINE
- */
-void headerDump(Header h, FILE *f, int flags);
-#define HEADER_DUMP_INLINE   1
-
 #ifdef __cplusplus
 }   
 #endif
