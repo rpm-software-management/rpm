@@ -527,12 +527,6 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
     return rc;
 }
 
-/**
- */
-static int ldconfig_done = 0;
-
-static const char * ldconfig_path = "/sbin/ldconfig";
-
 static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 			FD_t scriptFd, FD_t out)
 {
@@ -670,27 +664,11 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
     psm->sq.reaper = 1;
 
-    /*
-     * If a successor node, and ldconfig was just run, don't bother.
-     */
-    if (ldconfig_path && *argvp != NULL && psm->unorderedSuccessor) {
- 	if (ldconfig_done && rstreq(*argvp[0], ldconfig_path)) {
-	    rpmlog(RPMLOG_DEBUG, "%s: %s skipping redundant \"%s\".\n",
-		   psm->stepName, sname, *argvp[0]);
-	    free(sname);
-	    return RPMRC_OK;
-	}
-    }
-
     rpmlog(RPMLOG_DEBUG, "%s: %s %ssynchronous scriptlet start\n",
 	   psm->stepName, sname, (psm->unorderedSuccessor ? "a" : ""));
 
     if (argvCount(*argvp) == 0) {
 	argvAdd(argvp, "/bin/sh");
-	ldconfig_done = 0;
-    } else {
-	ldconfig_done = (ldconfig_path && rstreq(*argvp[0], ldconfig_path)
-		? 1 : 0);
     }
 
 
@@ -716,9 +694,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 	    static const char set_x[] = "set -x\n";
 	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
 	}
-
-	if (ldconfig_path && strstr(script, ldconfig_path) != NULL)
-	    ldconfig_done = 1;
 
 	xx = Fwrite(script, sizeof(script[0]), strlen(script), fd);
 	xx = Fclose(fd);
