@@ -133,16 +133,6 @@ int headerGetRawEntry(Header h, rpmTag tag,
 			rpm_count_t * c);
 
 /** \ingroup header
- * Return header reference count.
- * @param h		header
- * @return		no. of references
- */
-/* FIX: cast? */
-static inline int headerUsageCount(Header h)  {
-    return h->nrefs;
-}
-
-/** \ingroup header
  * Dump a header in human readable format (for debugging).
  * @param h		header
  * @param f		file handle
