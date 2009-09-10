@@ -2244,7 +2244,7 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	if (pkg->fileList == NULL)
 	    continue;
 
-	nvr = headerGetAsString(spec->packages->header, RPMTAG_NVRA);
+	nvr = headerGetAsString(pkg->header, RPMTAG_NVRA);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
 	free(nvr);
 		   
@@ -2252,7 +2252,7 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
 
-	a = headerGetString(spec->packages->header, RPMTAG_ARCH);
+	a = headerGetString(pkg->header, RPMTAG_ARCH);
 	if (rstreq(a, "noarch") && headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR) != 0) {
 	    int terminate = rpmExpandNumeric("%{?_binaries_in_noarch_packages_terminate_build}");
 	    rpmlog(terminate ? RPMLOG_ERR : RPMLOG_WARNING, 
