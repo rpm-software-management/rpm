@@ -108,14 +108,6 @@ RPM_GNUC_INTERNAL
 void headerSetInstance(Header h, unsigned int instance);
 
 /** \ingroup header
- * Return array of locales found in header.
- * The array is terminated with a NULL sentinel.
- * @param h		header
- * @return		array of locales (or NULL on error)
- */
-char ** headerGetLangs(Header h);
-
-/** \ingroup header
  * Retrieve tag value with type match.
  * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
  * match.

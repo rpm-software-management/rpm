@@ -17,26 +17,6 @@ uint64_t htonll( uint64_t n ) {
     return n;
 }
 
-char ** headerGetLangs(Header h)
-{
-    char **s, *e, **table;
-    rpmTagType type;
-    rpm_count_t i, count;
-
-    if (!headerGetRawEntry(h, HEADER_I18NTABLE, &type, (rpm_data_t)&s, &count))
-	return NULL;
-
-    /* XXX xcalloc never returns NULL. */
-    if ((table = (char **)xcalloc((count+1), sizeof(char *))) == NULL)
-	return NULL;
-
-    for (i = 0, e = *s; i < count; i++, e += strlen(e)+1)
-	table[i] = e;
-    table[count] = NULL;
-
-    return table;
-}
-
 void headerDump(Header h, FILE *f, int flags)
 {
     int i;
