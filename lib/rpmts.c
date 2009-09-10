@@ -631,17 +631,6 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
     return ovsflags;
 }
 
-int rpmtsUnorderedSuccessors(rpmts ts, int first)
-{
-    int unorderedSuccessors = 0;
-    if (ts != NULL) {
-	unorderedSuccessors = ts->unorderedSuccessors;
-	if (first >= 0)
-	    ts->unorderedSuccessors = first;
-    }
-    return unorderedSuccessors;
-}
-
 const char * rpmtsRootDir(rpmts ts)
 {
     const char * rootDir = NULL;

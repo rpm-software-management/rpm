@@ -371,14 +371,6 @@ rpmVSFlags rpmtsVSFlags(rpmts ts);
 rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags);
 
 /** \ingroup rpmts
- * Set index of 1st element of successors.
- * @param ts		transaction set
- * @param first		new index of 1st element of successors
- * @return		previous value
- */
-int rpmtsUnorderedSuccessors(rpmts ts, int first);
-
-/** \ingroup rpmts
  * Get transaction rootDir, i.e. path to chroot(2).
  * @param ts		transaction set
  * @return		transaction rootDir

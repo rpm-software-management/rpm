@@ -66,7 +66,6 @@ struct rpmts_s {
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
-    int unorderedSuccessors;	/*!< Index of 1st element of successors. */
     int ntrees;			/*!< No. of dependency trees. */
     int maxDepth;		/*!< Maximum depth of dependency tree(s). */
 

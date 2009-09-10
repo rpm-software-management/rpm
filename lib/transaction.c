@@ -1121,8 +1121,6 @@ static int rpmtsProcess(rpmts ts)
 	if (rpmteOpen(p, ts, 1)) {
 	    rpmpsm psm = NULL;
 	    pkgStage stage = PSM_UNKNOWN;
-	    int async = (rpmtsiOc(pi) >= rpmtsUnorderedSuccessors(ts, -1)) ? 
-			1 : 0;
 
 	    switch (tetype) {
 	    case TR_ADDED:
@@ -1133,8 +1131,6 @@ static int rpmtsProcess(rpmts ts)
 		break;
 	    }
 	    psm = rpmpsmNew(ts, p);
-	    rpmpsmSetAsync(psm, async);
-
 	    (void) rpmswEnter(rpmtsOp(ts, op), 0);
 	    failed = rpmpsmStage(psm, stage);
 	    (void) rpmswExit(rpmtsOp(ts, op), 0);

@@ -49,7 +49,6 @@ struct rpmpsm_s {
     rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
     int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
-    int unorderedSuccessor;	/*!< Can the PSM be run asynchronously? */
     rpmCallbackType what;	/*!< Callback type. */
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
@@ -664,13 +663,11 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
     psm->sq.reaper = 1;
 
-    rpmlog(RPMLOG_DEBUG, "%s: %s %ssynchronous scriptlet start\n",
-	   psm->stepName, sname, (psm->unorderedSuccessor ? "a" : ""));
+    rpmlog(RPMLOG_DEBUG, "%s: %s scriptlet start\n", psm->stepName, sname);
 
     if (argvCount(*argvp) == 0) {
 	argvAdd(argvp, "/bin/sh");
     }
-
 
     /* Try new style prefixes first, then old. Otherwise there are none.. */
     if (!headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, HEADERGET_DEFAULT)) {
@@ -1092,12 +1089,6 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     psm = _free(psm);
 
     return NULL;
-}
-
-void rpmpsmSetAsync(rpmpsm psm, int async)
-{
-    assert(psm != NULL);
-    psm->unorderedSuccessor = async;
 }
 
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)

@@ -118,9 +118,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 RPM_GNUC_INTERNAL
 rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
 
-RPM_GNUC_INTERNAL
-void rpmpsmSetAsync(rpmpsm psm, int async);
-
 #ifdef __cplusplus
 }
 #endif
