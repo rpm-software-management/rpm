@@ -243,14 +243,15 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 static int doSetupMacro(rpmSpec spec, const char *line)
 {
     char *buf = NULL;
-    StringBuf before;
-    StringBuf after;
-    poptContext optCon;
+    StringBuf before = newStringBuf();
+    StringBuf after = newStringBuf();
+    poptContext optCon = NULL;
     int argc;
-    const char ** argv;
+    const char ** argv = NULL;
     int arg;
     const char * optArg;
-    int rc;
+    int xx;
+    rpmRC rc = RPMRC_FAIL;
     uint32_t num;
     int leaveDirs = 0, skipDefaultAction = 0;
     int createDir = 0, quietly = 0;
@@ -266,14 +267,10 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	    { 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
-    if ((rc = poptParseArgvString(line, &argc, &argv))) {
-	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"),
-			poptStrerror(rc));
-	return RPMRC_FAIL;
+    if ((xx = poptParseArgvString(line, &argc, &argv))) {
+	rpmlog(RPMLOG_ERR, _("Error parsing %%setup: %s\n"), poptStrerror(xx));
+	goto exit;
     }
-
-    before = newStringBuf();
-    after = newStringBuf();
 
     optCon = poptGetContext(NULL, argc, argv, optionsTable, 0);
     while ((arg = poptGetNextOpt(optCon)) > 0) {
@@ -284,16 +281,12 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	if (parseUnsignedNum(optArg, &num)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad arg to %%setup: %s\n"),
 		     spec->lineNum, (optArg ? optArg : "???"));
-	    before = freeStringBuf(before);
-	    after = freeStringBuf(after);
-	    optCon = poptFreeContext(optCon);
-	    argv = _free(argv);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	{   char *chptr = doUntar(spec, num, quietly);
 	    if (chptr == NULL)
-		return RPMRC_FAIL;
+		goto exit;
 
 	    appendLineStringBuf((arg == 'a' ? after : before), chptr);
 	    free(chptr);
@@ -305,11 +298,7 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 		 spec->lineNum,
 		 poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
 		 poptStrerror(arg));
-	before = freeStringBuf(before);
-	after = freeStringBuf(after);
-	optCon = poptFreeContext(optCon);
-	argv = _free(argv);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     if (dirName) {
@@ -321,9 +310,6 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     }
     addMacro(spec->macros, "buildsubdir", NULL, spec->buildSubdir, RMIL_SPEC);
     
-    optCon = poptFreeContext(optCon);
-    argv = _free(argv);
-
     /* cd to the build dir */
     {	char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
 
@@ -352,13 +338,12 @@ static int doSetupMacro(rpmSpec spec, const char *line)
    if (!createDir && !skipDefaultAction) {
 	char *chptr = doUntar(spec, 0, quietly);
 	if (!chptr)
-	    return RPMRC_FAIL;
+	    goto exit;
 	appendLineStringBuf(spec->prep, chptr);
 	free(chptr);
     }
 
     appendStringBuf(spec->prep, getStringBuf(before));
-    before = freeStringBuf(before);
 
     if (!createDir) {
 	rasprintf(&buf, "cd '%s'", spec->buildSubdir);
@@ -369,13 +354,12 @@ static int doSetupMacro(rpmSpec spec, const char *line)
     if (createDir && !skipDefaultAction) {
 	char *chptr = doUntar(spec, 0, quietly);
 	if (chptr == NULL)
-	    return RPMRC_FAIL;
+	    goto exit;
 	appendLineStringBuf(spec->prep, chptr);
 	free(chptr);
     }
     
     appendStringBuf(spec->prep, getStringBuf(after));
-    after = freeStringBuf(after);
 
     /* Fix the permissions of the setup build tree */
     {	char *fix = rpmExpand("%{_fixperms} .", NULL);
@@ -384,8 +368,15 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 	}
 	free(fix);
     }
-	
-    return RPMRC_OK;
+    rc = RPMRC_OK;
+
+exit:
+    freeStringBuf(before);
+    freeStringBuf(after);
+    poptFreeContext(optCon);
+    free(argv);
+
+    return rc;
 }
 
 /**
