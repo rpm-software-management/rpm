@@ -277,52 +277,46 @@ void rpmalMakeIndex(rpmal al)
 rpmte *
 rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 {
-    struct fileNameEntry_s fileNameEntry;
-    const char * fileName;
-    char * t;
-
-    fileIndex result;
-    int resultCnt;
-    int i, found;
-    availablePackage alp;
+    const char *fileName = rpmdsN(ds);
+    const char *slash; 
     rpmte * ret = NULL;
-    /* FIX: ret is a problem */
 
-
-    if (al == NULL || (fileName = rpmdsN(ds)) == NULL || *fileName != '/')
+    if (al == NULL || fileName == NULL || *fileName != '/')
 	return NULL;
 
-    fileNameEntry.dirName = t = xstrdup(fileName);
-    if ((t = strrchr(t, '/')) != NULL) {
-	t++;		/* leave the trailing '/' */
-	*t = '\0';
+    /* Split path into dirname and basename components for lookup */
+    if ((slash = strrchr(fileName, '/')) != NULL) {
+	fileIndex result;
+	int resultCnt = 0;
+	size_t bnStart = (slash - fileName) + 1;
+	char dirName[bnStart + 1];
+	struct fileNameEntry_s fne = {
+	    .baseName = fileName + bnStart,
+	    .dirName = dirName,
+	};
+	strncpy(dirName, fileName, bnStart);
+	dirName[bnStart] = '\0';
+
+	rpmalFileHashGetEntry(al->fileHash, fne, &result, &resultCnt, NULL);
+
+	if (resultCnt > 0) {
+	    int i, found;
+	    ret = xmalloc((resultCnt+1) * sizeof(*ret));
+
+	    for (found = i = 0; i < resultCnt; i++) {
+		availablePackage alp = al->list + result[i].pkgNum;
+		if (alp->p == NULL) // deleted
+		    continue;
+
+		rpmdsNotify(ds, _("(added files)"), 0);
+
+		ret[found] = alp->p;
+		found++;
+	    }
+	    ret[found] = NULL;
+	}
     }
-    if ((fileNameEntry.baseName = strrchr(fileName, '/')) == NULL)
-	goto exit;
-    fileNameEntry.baseName++;
 
-    rpmalFileHashGetEntry(al->fileHash, fileNameEntry, &result,
-			  &resultCnt, NULL);
-
-    if (resultCnt==0)
-	goto exit;
-
-    ret = xmalloc((resultCnt+1) * sizeof(*ret));
-
-    for (found=i=0; i<resultCnt; i++) {
-	alp = al->list + result[i].pkgNum;
-	if (alp->p == NULL) // deleted
-	    continue;
-
-	rpmdsNotify(ds, _("(added files)"), 0);
-
-	ret[found] = alp->p;
-	found++;
-    }
-    ret[found] = NULL;
-
-exit:
-    fileNameEntry.dirName = _constfree(fileNameEntry.dirName);
     return ret;
 }
 
