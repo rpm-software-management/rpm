@@ -382,11 +382,81 @@ static int ensureOlder(const rpmte p, const Header h, rpmps ps)
 }
 
 /**
+ * Check if the curent file in the file iterator is in the
+ * netshardpath and though should be excluded.
+ * @param ts            transaction set
+ * @param fi            file info set
+ * @returns pointer to matching path or NULL
+ */
+static char ** matchNetsharedpath(const rpmts ts, rpmfi fi)
+{
+    char ** nsp;
+    const char * dn, * bn;
+    size_t dnlen, bnlen;
+    char * s;
+    bn = rpmfiBN(fi);
+    bnlen = strlen(bn);
+    dn = rpmfiDN(fi);
+    dnlen = strlen(dn);
+    for (nsp = ts->netsharedPaths; nsp && *nsp; nsp++) {
+	size_t len;
+
+	len = strlen(*nsp);
+	if (dnlen >= len) {
+	    if (!rstreqn(dn, *nsp, len))
+		continue;
+	    /* Only directories or complete file paths can be net shared */
+	    if (!(dn[len] == '/' || dn[len] == '\0'))
+		continue;
+	} else {
+	    if (len < (dnlen + bnlen))
+		continue;
+	    if (!rstreqn(dn, *nsp, dnlen))
+		continue;
+	    /* Insure that only the netsharedpath basename is compared. */
+	    if ((s = strchr((*nsp) + dnlen, '/')) != NULL && s[1] != '\0')
+		continue;
+	    if (!rstreqn(bn, (*nsp) + dnlen, bnlen))
+		continue;
+	    len = dnlen + bnlen;
+	    /* Only directories or complete file paths can be net shared */
+	    if (!((*nsp)[len] == '/' || (*nsp)[len] == '\0'))
+		continue;
+	}
+
+	break;
+    }
+    return nsp;
+}
+
+static void skipEraseFiles(const rpmts ts, rpmte p)
+{
+    rpmfi fi = rpmteFI(p);
+    rpmfs fs = rpmteGetFileStates(p);
+    int i;
+    char ** nsp;
+    /*
+     * Skip net shared paths.
+     * Net shared paths are not relative to the current root (though
+     * they do need to take package relocations into account).
+     */
+    fi = rpmfiInit(fi, 0);
+    while ((i = rpmfiNext(fi)) >= 0)
+    {
+	nsp = matchNetsharedpath(ts, fi);
+	if (nsp && *nsp) {
+	    rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
+	}
+    }
+}
+
+
+/**
  * Skip any files that do not match install policies.
  * @param ts		transaction set
  * @param fi		file info set
  */
-static void skipFiles(const rpmts ts, rpmte p)
+static void skipInstallFiles(const rpmts ts, rpmte p)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t FColor;
@@ -445,35 +515,7 @@ static void skipFiles(const rpmts ts, rpmte p)
 	 * Net shared paths are not relative to the current root (though
 	 * they do need to take package relocations into account).
 	 */
-	for (nsp = ts->netsharedPaths; nsp && *nsp; nsp++) {
-	    size_t len;
-
-	    len = strlen(*nsp);
-	    if (dnlen >= len) {
-		if (!rstreqn(dn, *nsp, len))
-		    continue;
-		/* Only directories or complete file paths can be net shared */
-		if (!(dn[len] == '/' || dn[len] == '\0'))
-		    continue;
-	    } else {
-		if (len < (dnlen + bnlen))
-		    continue;
-		if (!rstreqn(dn, *nsp, dnlen))
-		    continue;
-		/* Insure that only the netsharedpath basename is compared. */
-		if ((s = strchr((*nsp) + dnlen, '/')) != NULL && s[1] != '\0')
-		    continue;
-		if (!rstreqn(bn, (*nsp) + dnlen, bnlen))
-		    continue;
-		len = dnlen + bnlen;
-		/* Only directories or complete file paths can be net shared */
-		if (!((*nsp)[len] == '/' || (*nsp)[len] == '\0'))
-		    continue;
-	    }
-
-	    break;
-	}
-
+	nsp = matchNetsharedpath(ts, fi);
 	if (nsp && *nsp) {
 	    drc[ix]--;	dff[ix] = 1;
 	    rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
@@ -1022,12 +1064,17 @@ static int rpmtsPrepare(rpmts ts)
 
     /* Skip netshared paths, not our i18n files, and excluded docs */
     pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	if ((fi = rpmteFI(p)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	if (rpmfiFC(fi) > 0) 
-	    skipFiles(ts, p);
+	if (rpmfiFC(fi) == 0)
+	    continue;
+	if (rpmteType(p) == TR_ADDED) {
+	    skipInstallFiles(ts, p);
+	} else {
+	    skipEraseFiles(ts, p);
+	}
     }
     pi = rpmtsiFree(pi);
 
