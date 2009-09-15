@@ -282,7 +282,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	if (qva->qva_source == RPMQV_DBOFFSET)
 	    break;
     }
-    return rpmgiNumErrors(gi);
+    return ec + rpmgiNumErrors(gi);
 }
 
 int rpmcliShowMatches(QVA_t qva, rpmts ts)
