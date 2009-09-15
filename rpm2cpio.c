@@ -21,6 +21,7 @@ int main(int argc, char *argv[])
     FD_t gzdi;
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */
+    rpmReadConfigFiles(NULL, NULL);
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);
     else {
@@ -37,7 +38,6 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
     fdo = fdDup(STDOUT_FILENO);
-    rpmReadConfigFiles(NULL, NULL);
 
     {	rpmts ts = rpmtsCreate();
 	rpmVSFlags vsflags = 0;
