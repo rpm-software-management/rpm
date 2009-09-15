@@ -1755,9 +1755,13 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
 	argvSplit(&filelists, getStringBuf(pkg->fileFile), "\n");
 	for (fp = filelists; *fp != NULL; fp++) {
-	    ffn = rpmGetPath("%{_builddir}/",
-		(spec->buildSubdir ? spec->buildSubdir : "") ,
-		"/", *fp, NULL);
+	    if (**fp == '/') {
+		ffn = rpmGetPath(*fp, NULL);
+	    } else {
+		ffn = rpmGetPath("%{_builddir}/",
+		    (spec->buildSubdir ? spec->buildSubdir : "") ,
+		    "/", *fp, NULL);
+	    }
 	    fd = fopen(ffn, "r");
 
 	    if (fd == NULL || ferror(fd)) {
