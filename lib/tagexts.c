@@ -137,7 +137,7 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
 		    continue;
 		DNEVR = rpmdsDNEVR(ds);
 		if (DNEVR != NULL) {
-		    argvAdd(&deps, DNEVR);
+		    argvAdd(&deps, DNEVR + 2);
 		}
 	    }
 	}
