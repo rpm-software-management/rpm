@@ -772,6 +772,7 @@ enterChroot(dbi);
 
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi->dbi_file = _free(dbi->dbi_file);
+	dbi->dbi_subfile = _free(dbi->dbi_subfile);
 	dbi->dbi_db = _free(dbi->dbi_db);
 
 leaveChroot(dbi);
@@ -801,7 +802,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     const char * sql_errcode;
     dbiIndex dbi;
     SQL_DB * sqldb;
-    size_t len;
     int rc = 0;
     int xx;
     
@@ -831,15 +831,8 @@ enterChroot(dbi);
      * Make a copy of the tagName result..
      * use this for the filename and table name
      */
-    {	
-      char * t;
-      len = strlen(dbfile);
-      t = xcalloc(len + 1, sizeof(*t));
-      (void) stpcpy( t, dbfile );
-      dbi->dbi_file = t;
-/* WRONG */
-      dbi->dbi_subfile = t;
-    }
+    dbi->dbi_file = xstrdup(dbfile);
+    dbi->dbi_subfile = xstrdup(dbfile);
 
     dbi->dbi_mode=O_RDWR;
        
