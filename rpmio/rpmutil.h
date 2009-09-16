@@ -1,6 +1,8 @@
 #ifndef _RPMUTIL_H
 #define _RPMUTIL_H
 
+#include <unistd.h>
+
 /*
  * Miscellanous utility macros:
  * - portability wrappers for various gcc extensions like __attribute__()
@@ -30,6 +32,14 @@
 #else
 #define RPM_GNUC_PURE
 #define RPM_GNUC_MALLOC
+#endif
+
+#if     (__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)
+#define RPM_GNUC_ALLOC_SIZE(x) __attribute__((__alloc_size__(x)))
+#define RPM_GNUC_ALLOC_SIZE2(x,y) __attribute__((__alloc_size__(x,y)))
+#else
+#define RPM_GNUC_ALLOC_SIZE(x)
+#define RPM_GNUC_ALLOC_SIZE2(x,y)
 #endif
 
 #if     __GNUC__ >= 4
@@ -101,5 +111,20 @@
 # define RPM_BEGIN_DECLS
 # define RPM_END_DECLS
 #endif
+
+/* Rpm specific allocators which never return NULL but terminate on failure */
+RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE(1)
+void * rmalloc(size_t size);
+
+RPM_GNUC_MALLOC RPM_GNUC_ALLOC_SIZE2(1,2)
+void * rcalloc(size_t nmemb, size_t size);
+
+RPM_GNUC_ALLOC_SIZE(2)
+void * rrealloc(void *ptr, size_t size);
+
+char * rstrdup(const char *str);
+
+/* Rpm specific free() which returns NULL */
+void * rfree(void *ptr);
 
 #endif /* _RPMUTIL_H */

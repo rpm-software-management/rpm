@@ -225,18 +225,6 @@ typedef	char * security_context_t;
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
-/**
- * Wrapper to free(3), permit NULL, return NULL.
- * @param p             memory to free
- * @return              NULL always
- */
-static inline
-void * _free(void * p)
-{
-    if (p != NULL)      free(p);
-    return NULL;
-}
-
 #if WITH_CAP
 #include <sys/capability.h>
 #else
@@ -247,53 +235,18 @@ typedef void * cap_t;
 #include <acl/libacl.h>
 #endif
 
-/**
- * Wrapper to free(3), permit NULL, return NULL. 
- * For documenting cases where const is used to protect long-lived 
- * non-const data that's supposed to be freed.
- * @param p             memory to free
- * @return              NULL always
- */
-static inline
-void * _constfree(const void * p)
-{
-    if (p != NULL)      free((void *)p);
-    return NULL;
-}
-
-/* FIX: these are macros */
-/**
- */
-void * xmalloc (size_t size);
-
-/**
- */
-void * xcalloc (size_t nmemb, size_t size);
-
-/**
- * @todo Annotate ptr with returned/out.
- */
-void * xrealloc (void * ptr,
-					size_t size);
-
-/**
- */
-char * xstrdup (const char *str);
-
-/**
- */
-void * vmefail(size_t size);
-
 #if HAVE_MCHECK_H
 #include <mcheck.h>
-/* Memory allocation via macro defs to get meaningful locations from mtrace() */
-#if defined(__GNUC__)
-#define	xmalloc(_size) 		(malloc(_size) ? : vmefail(_size))
-#define	xcalloc(_nmemb, _size)	(calloc((_nmemb), (_size)) ? : vmefail(_size))
-#define	xrealloc(_ptr, _size)	(realloc((_ptr), (_size)) ? : vmefail(_size))
-#define	xstrdup(_str)	(strcpy((malloc(strlen(_str)+1) ? : vmefail(strlen(_str)+1)), (_str)))
-#endif	/* defined(__GNUC__) */
 #endif	/* HAVE_MCHECK_H */
+
+#include "rpmio/rpmutil.h"
+/* compatibility macros to avoid a mass-renaming all over the codebase */
+#define xmalloc(_size) rmalloc((_size))
+#define xcalloc(_nmemb, _size) rcalloc((_nmemb), (_size))
+#define xrealloc(_ptr, _size) rrealloc((_ptr), (_size))
+#define xstrdup(_str) rstrdup((_str))
+#define _free(_ptr) rfree((_ptr))
+#define _constfree(_ptr) rfree((void *)(_ptr))
 
 /* Retrofit glibc __progname */
 #if defined __GLIBC__ && __GLIBC__ >= 2
