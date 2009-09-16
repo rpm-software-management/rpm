@@ -907,19 +907,14 @@ rpmdb newRpmdb(const char * root,
     if (perms >= 0)	db->db_perms = perms;
     if (flags >= 0)	db->db_flags = flags;
 
-    if (root && *root) {
-	db->db_root = rpmGetPath(root, NULL);
-    } else
-	db->db_root = rpmGetPath(_DB_ROOT, NULL);
-
     db->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
     if (!(db->db_home && db->db_home[0] != '%')) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
-	db->db_root = _free(db->db_root);
 	db->db_home = _free(db->db_home);
 	db = _free(db);
 	return NULL;
     }
+    db->db_root = rpmGetPath((root && *root) ? root : _DB_ROOT, NULL);
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     db->db_remove_env = 0;
     db->db_filter_dups = _db_filter_dups;
