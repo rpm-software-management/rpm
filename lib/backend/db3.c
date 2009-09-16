@@ -195,7 +195,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	    char * tmpdir;
 
 	    root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
-	    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
+	    if (rstreq(root, "/") || rpmdb->db_chrootDone)
 		root = NULL;
 	    tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	    xx = dbenv->set_tmp_dir(dbenv, tmpdir);
@@ -464,7 +464,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
      * Get the prefix/root component and directory path.
      */
     root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
-    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
+    if (rstreq(root, "/") || rpmdb->db_chrootDone)
 	root = NULL;
     home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
 
@@ -596,7 +596,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Get the prefix/root component and directory path.
      */
     root = (dbi->dbi_root ? dbi->dbi_root : rpmdb->db_root);
-    if ((root[0] == '/' && root[1] == '\0') || rpmdb->db_chrootDone)
+    if (rstreq(root, "/") || rpmdb->db_chrootDone)
 	root = NULL;
     home = (dbi->dbi_home ? dbi->dbi_home : rpmdb->db_home);
 

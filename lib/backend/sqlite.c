@@ -102,7 +102,7 @@ static void enterChroot(dbiIndex dbi)
 {
     int xx;
 
-    if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
+    if (rstreq(dbi->dbi_root, "/") || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
        /* Nothing to do, was not already in chroot */
        return;
 
@@ -120,7 +120,7 @@ static void leaveChroot(dbiIndex dbi)
 {
     int xx;
 
-    if ((dbi->dbi_root[0] == '/' && dbi->dbi_root[1] == '\0') || dbi->dbi_rpmdb->db_chrootDone || !sqlInRoot)
+    if (rstreq(dbi->dbi_root, "/") || dbi->dbi_rpmdb->db_chrootDone || !sqlInRoot)
        /* Nothing to do, not in chroot */
        return;
 
