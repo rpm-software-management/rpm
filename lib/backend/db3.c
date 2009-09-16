@@ -59,7 +59,8 @@ static int db_fini(dbiIndex dbi, const char * dbhome)
 	xx = db_env_create(&dbenv, 0);
 	xx = cvtdberr(dbi, "db_env_create", xx, _debug);
 	xx = dbenv->remove(dbenv, dbhome, 0);
-	xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
+	/* filter out EBUSY as it just means somebody else gets to clean it */
+	xx = cvtdberr(dbi, "dbenv->remove", xx, (xx == EBUSY ? 0 : _debug));
 
 	rpmlog(RPMLOG_DEBUG, "removed  db environment %s\n", dbhome);
 
