@@ -464,7 +464,6 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
     const char * dn, * bn;
     size_t dnlen, bnlen;
-    char * s;
     int * drc;
     char * dff;
     int dc;
