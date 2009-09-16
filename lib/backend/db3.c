@@ -572,7 +572,6 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     const char * home;
     char * dbhome;
     const char * dbfile;
-    const char * dbsubfile;
     DB * db = dbi->dbi_db;
     int _printit;
     int rc = 0, xx;
@@ -590,15 +589,8 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     dbhome = rpmGenPath(root, home, NULL);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
-	dbsubfile = NULL;
     } else {
-#ifdef	HACK	/* XXX necessary to support dbsubfile */
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
-	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : rpmTagGetName(dbi->dbi_rpmtag));
-#else
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : rpmTagGetName(dbi->dbi_rpmtag));
-	dbsubfile = NULL;
-#endif
     }
 
     if (db) {
@@ -698,7 +690,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     const char * home;
     char * dbhome;
     const char * dbfile;
-    const char * dbsubfile;
     dbiIndex dbi = NULL;
     int rc = 0;
     int xx;
@@ -730,15 +721,8 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     dbhome = rpmGenPath(root, home, NULL);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
-	dbsubfile = NULL;
     } else {
-#ifdef	HACK	/* XXX necessary to support dbsubfile */
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : db3basename);
-	dbsubfile = (dbi->dbi_subfile ? dbi->dbi_subfile : rpmTagGetName(dbi->dbi_rpmtag));
-#else
 	dbfile = (dbi->dbi_file ? dbi->dbi_file : rpmTagGetName(dbi->dbi_rpmtag));
-	dbsubfile = NULL;
-#endif
     }
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
@@ -1008,15 +992,9 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		const char * dbpath;
 		fullpath = rpmGetPath(dbhome, "/", dbfile ? dbfile : "", NULL);
 
-#ifdef	HACK	/* XXX necessary to support dbsubfile */
-		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
-			? fullpath : dbfile;
-#else
-		dbpath = (!dbi->dbi_temporary)
-			? fullpath : dbfile;
-#endif
+		dbpath = (!dbi->dbi_temporary) ? fullpath : dbfile;
 
-		rc = (db->open)(db, txnid, dbpath, dbsubfile,
+		rc = (db->open)(db, txnid, dbpath, NULL,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
