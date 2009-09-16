@@ -157,9 +157,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     return rc;
 }
 
-static int db_fini(dbiIndex dbi, const char * dbhome,
-		const char * dbfile,
-		const char * dbsubfile)
+static int db_fini(dbiIndex dbi, const char * dbhome)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = rpmdb->db_dbenv;
@@ -171,9 +169,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
     rc = dbenv->close(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
 
-    if (dbfile)
-	rpmlog(RPMLOG_DEBUG, "closed   db environment %s/%s\n",
-			dbhome, dbfile);
+    rpmlog(RPMLOG_DEBUG, "closed   db environment %s\n", dbhome);
 
     if (rpmdb->db_remove_env) {
 	int xx;
@@ -183,9 +179,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome,
 	xx = dbenv->remove(dbenv, dbhome, 0);
 	xx = cvtdberr(dbi, "dbenv->remove", xx, _debug);
 
-	if (dbfile)
-	    rpmlog(RPMLOG_DEBUG, "removed  db environment %s/%s\n",
-			dbhome, dbfile);
+	rpmlog(RPMLOG_DEBUG, "removed  db environment %s\n", dbhome);
 
     }
     return rc;
@@ -218,10 +212,7 @@ static int db3isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flag
 }
 #endif
 
-static int db_init(dbiIndex dbi, const char * dbhome,
-		const char * dbfile,
-		const char * dbsubfile,
-		DB_ENV ** dbenvp)
+static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
@@ -238,11 +229,9 @@ static int db_init(dbiIndex dbi, const char * dbhome,
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
-    if (dbfile) {
-	char *dbiflags = prDbiOpenFlags(eflags, 1);
-	rpmlog(RPMLOG_DEBUG, "opening  db environment %s/%s %s\n",
-		dbhome, dbfile, dbiflags);
-	free(dbiflags);
+    {	char *fstr = prDbiOpenFlags(eflags, 1);
+	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
+	free(fstr);
     }
 
     /* XXX Can't do RPC w/o host. */
@@ -626,7 +615,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 
     if (rpmdb->db_dbenv != NULL && dbi->dbi_use_dbenv) {
 	if (rpmdb->db_opens == 1) {
-	    xx = db_fini(dbi, (dbhome ? dbhome : ""), dbfile, dbsubfile);
+	    xx = db_fini(dbi, (dbhome ? dbhome : ""));
 	    rpmdb->db_dbenv = NULL;
 	}
 	rpmdb->db_opens--;
@@ -870,7 +859,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     if (dbi->dbi_use_dbenv) {
 	if (rpmdb->db_dbenv == NULL) {
-	    rc = db_init(dbi, dbhome, dbfile, dbsubfile, &dbenv);
+	    rc = db_init(dbi, dbhome, &dbenv);
 	    if (rc == 0) {
 		rpmdb->db_dbenv = dbenv;
 		rpmdb->db_opens = 1;
