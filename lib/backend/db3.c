@@ -25,18 +25,15 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 {
-    int rc = error;
-
-    if (printit && rc) {
+    if (printit && error) {
 	if (msg)
 	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
-		dbi->dbi_api, rc, msg, db_strerror(error));
+		dbi->dbi_api, error, msg, db_strerror(error));
 	else
 	    rpmlog(RPMLOG_ERR, _("db%d error(%d): %s\n"),
-		dbi->dbi_api, rc, db_strerror(error));
+		dbi->dbi_api, error, db_strerror(error));
     }
-
-    return rc;
+    return error;
 }
 
 static int db_fini(dbiIndex dbi, const char * dbhome)
