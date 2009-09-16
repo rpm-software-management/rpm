@@ -759,16 +759,8 @@ print (t)\
 %_query_all_fmt		%%{nvra}
 
 #
-# Default path to the file used for transaction fcmtl lock.
-#
-# The previous, FHS clompliant, name was /var/lock/run/transaction,
-# but the transaction lock needs to be per-database, not global, for
-# some rpmdb operations.
-#
-# XXX Note: the file name is chosen as __db.000 to expedite
-# support issues, many users are doing "rm -f /var/lib/rpm/__db*"
-# these days.
-%_rpmlock_path	%{_dbpath}/__db.000
+# Default path to the file used for transaction fcntl lock.
+%_rpmlock_path	%{_dbpath}/.rpm.lock
 
 #==============================================================================
 # ---- per-platform macros.
