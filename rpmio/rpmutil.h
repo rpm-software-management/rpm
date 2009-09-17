@@ -127,4 +127,25 @@ char * rstrdup(const char *str);
 /* Rpm specific free() which returns NULL */
 void * rfree(void *ptr);
 
+/** \ingroup rpmutil
+ * Memory allocation failure callback prototype. When registered through
+ * rpmSetMemFail(), this gets called if memory allocation through rmalloc()
+ * and friends fails. If the application can somehow recover memory here,
+ * it can return a newly allocated memory block of requested size, otherwise
+ * it must return NULL after performing it's own shutdown deeds or 
+ * terminate itself.
+ * @param size		Size of allocation request in bytes
+ * @param data		User data (or NULL)
+ * @return		Allocated memory block of requested size or NULL
+ */
+typedef void * (*rpmMemFailFunc) (size_t size, void *data);
+
+/** \ingroup rpmutil
+ * Set memory allocation failure callback.
+ * @param func		Allocation failure callback function
+ * @param data		User data (or NULL)
+ * @return		Previous callback function
+ */
+void * rpmSetMemFail(rpmMemFailFunc func, void *data);
+
 #endif /* _RPMUTIL_H */

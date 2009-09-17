@@ -9,11 +9,31 @@
 #define	EXIT_FAILURE	1
 #endif
 
+static rpmMemFailFunc failfunc = NULL;
+static void *failfunc_data = NULL;
+
+/*
+ * Give memfail callback a chance to try to give us memory or perform
+ * it's own cleanup. If we dont get memory we die anyway as rpm doesn't 
+ * check for NULL returns from allocations.
+ */
 static void *vmefail(size_t size)
 {
-    fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"), (unsigned)size);
-    exit(EXIT_FAILURE);
-    return NULL;
+    void *val = failfunc ? (*failfunc)(size, failfunc_data) : NULL;
+    if (val == NULL) {
+	fprintf(stderr, _("memory alloc (%u bytes) returned NULL.\n"),
+		(unsigned)size);
+	exit(EXIT_FAILURE);
+    }
+    return val;	
+}
+
+void * rpmSetMemFail(rpmMemFailFunc func, void *data)
+{
+    void *ofunc = failfunc;
+    failfunc = func;
+    failfunc_data = data;
+    return ofunc;
 }
 
 void * rmalloc (size_t size)
