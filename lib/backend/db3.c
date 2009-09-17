@@ -865,13 +865,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    if (rc == 0) {
-		char * fullpath;
-		const char * dbpath;
-		fullpath = rpmGetPath(dbhome, "/", dbfile ? dbfile : "", NULL);
-
-		dbpath = (!dbi->dbi_temporary) ? fullpath : dbfile;
-
-		rc = (db->open)(db, txnid, dbpath, NULL,
+		rc = (db->open)(db, txnid, dbfile, NULL,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
@@ -880,7 +874,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;
 		}
-		free(fullpath);
 	    }
 
 	    /* XXX return rc == errno without printing */
