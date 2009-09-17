@@ -41,7 +41,7 @@ void * rmalloc (size_t size)
     register void *value;
     if (size == 0) size++;
     value = malloc (size);
-    if (value == 0)
+    if (value == NULL)
 	value = vmefail(size);
     return value;
 }
@@ -52,7 +52,7 @@ void * rcalloc (size_t nmemb, size_t size)
     if (size == 0) size++;
     if (nmemb == 0) nmemb++;
     value = calloc (nmemb, size);
-    if (value == 0)
+    if (value == NULL)
 	value = vmefail(size);
     return value;
 }
@@ -62,7 +62,7 @@ void * rrealloc (void *ptr, size_t size)
     register void *value;
     if (size == 0) size++;
     value = realloc (ptr, size);
-    if (value == 0)
+    if (value == NULL)
 	value = vmefail(size);
     return value;
 }
@@ -71,7 +71,7 @@ char * rstrdup (const char *str)
 {
     size_t size = strlen(str) + 1;
     char *newstr = (char *) malloc (size);
-    if (newstr == 0)
+    if (newstr == NULL)
 	newstr = (char *) vmefail(size);
     strcpy (newstr, str);
     return newstr;
