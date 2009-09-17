@@ -5,10 +5,6 @@
 #include "system.h"
 #include "debug.h"
 
-#if !defined(EXIT_FAILURE)
-#define	EXIT_FAILURE	1
-#endif
-
 static rpmMemFailFunc failfunc = NULL;
 static void *failfunc_data = NULL;
 
