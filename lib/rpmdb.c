@@ -920,6 +920,9 @@ rpmdb newRpmdb(const char * root,
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTags.max;
+    db->db_malloc = rmalloc;
+    db->db_realloc = rrealloc;
+    db->db_free = NULL; /* XXX rfree() prototype differs from free() */
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     db->nrefs = 0;
     return rpmdbLink(db, RPMDBG_M("rpmdbCreate"));
