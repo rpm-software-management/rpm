@@ -106,10 +106,6 @@ struct poptOption rdbOptions[] = {
  { "unknown",	0,POPT_ARG_VAL,		&db3dbi.dbi_type, DB_UNKNOWN,
 	NULL, NULL },
 
- { "root",	0,POPT_ARG_STRING,	&db3dbi.dbi_root, 0,
-	NULL, NULL },
- { "home",	0,POPT_ARG_STRING,	&db3dbi.dbi_home, 0,
-	NULL, NULL },
  { "file",	0,POPT_ARG_STRING,	&db3dbi.dbi_file, 0,
 	NULL, NULL },
  { "subfile",	0,POPT_ARG_STRING,	&db3dbi.dbi_subfile, 0,
@@ -248,8 +244,6 @@ struct poptOption rdbOptions[] = {
 dbiIndex db3Free(dbiIndex dbi)
 {
     if (dbi) {
-	dbi->dbi_root = _free(dbi->dbi_root);
-	dbi->dbi_home = _free(dbi->dbi_home);
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_subfile = _free(dbi->dbi_subfile);
 	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);

@@ -161,8 +161,6 @@ struct _dbiVec {
  * Describes an index database (implemented on Berkeley db3 functionality).
  */
 struct _dbiIndex {
-    char * dbi_root;		/*!< chroot(2) component of path */
-    char * dbi_home;		/*!< directory component of path */
     char * dbi_file;		/*!< file component of path */
     char * dbi_subfile;
     char * dbi_tmpdir;		/*!< temporary directory */

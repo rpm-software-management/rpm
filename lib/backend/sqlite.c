@@ -101,17 +101,18 @@ static int sqlInRoot = 0;
 static void enterChroot(dbiIndex dbi)
 {
     int xx;
+    rpmdb db = dbi->dbi_rpmdb;
 
-    if (rstreq(dbi->dbi_root, "/") || dbi->dbi_rpmdb->db_chrootDone || sqlInRoot)
+    if (rstreq(db->db_root, "/") || db->db_chrootDone || sqlInRoot)
        /* Nothing to do, was not already in chroot */
        return;
 
 if (_debug)
-fprintf(stderr, "sql:chroot(%s)\n", dbi->dbi_root);
+fprintf(stderr, "sql:chroot(%s)\n", db->db_root);
 
     sqlCwd = rpmGetCwd();
     xx = chdir("/");
-    xx = chroot(dbi->dbi_root);
+    xx = chroot(db->db_root);
 assert(xx == 0);
     sqlInRoot=1;
 }
@@ -119,8 +120,9 @@ assert(xx == 0);
 static void leaveChroot(dbiIndex dbi)
 {
     int xx;
+    rpmdb db = dbi->dbi_rpmdb;
 
-    if (rstreq(dbi->dbi_root, "/") || dbi->dbi_rpmdb->db_chrootDone || !sqlInRoot)
+    if (rstreq(db->db_root, "/") || db->db_chrootDone || !sqlInRoot)
        /* Nothing to do, not in chroot */
        return;
 
@@ -820,9 +822,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     root = rpmdb->db_root;
     home = rpmdb->db_home;
     
-    dbi->dbi_root = root;
-    dbi->dbi_home = home;
-      
     dbfile = rpmTagGetName(dbi->dbi_rpmtag);
 
 enterChroot(dbi);
