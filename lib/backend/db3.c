@@ -189,13 +189,8 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	    xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
 	}
 	if (dbi->dbi_tmpdir) {
-	    const char * root;
-	    char * tmpdir;
-
-	    root = rpmdb->db_root;
-	    if (rstreq(root, "/") || rpmdb->db_chrootDone)
-		root = NULL;
-	    tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
+	    char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	    xx = dbenv->set_tmp_dir(dbenv, tmpdir);
 	    xx = cvtdberr(dbi, "dbenv->set_tmp_dir", xx, _debug);
 	    tmpdir = _free(tmpdir);
@@ -448,8 +443,7 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 static int db3close(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    const char * root;
-    const char * home;
+    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
     char * dbhome;
     const char * dbfile;
     DB * db = dbi->dbi_db;
@@ -461,12 +455,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     /*
      * Get the prefix/root component and directory path.
      */
-    root = rpmdb->db_root;
-    if (rstreq(root, "/") || rpmdb->db_chrootDone)
-	root = NULL;
-    home = rpmdb->db_home;
-
-    dbhome = rpmGenPath(root, home, NULL);
+    dbhome = rpmGenPath(root, rpmdb->db_home, NULL);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
     } else {
@@ -566,8 +555,7 @@ exit:
 static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern const struct _dbiVec db3vec;
-    const char * root;
-    const char * home;
+    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
     char * dbhome;
     const char * dbfile;
     dbiIndex dbi = NULL;
@@ -593,12 +581,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Get the prefix/root component and directory path.
      */
-    root = rpmdb->db_root;
-    if (rstreq(root, "/") || rpmdb->db_chrootDone)
-	root = NULL;
-    home = rpmdb->db_home;
-
-    dbhome = rpmGenPath(root, home, NULL);
+    dbhome = rpmGenPath(root, rpmdb->db_home, NULL);
     if (dbi->dbi_temporary) {
 	dbfile = NULL;
     } else {

@@ -796,8 +796,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern const struct _dbiVec sqlitevec;
    
-    char * root;
-    char * home;
     char * dbhome;
     const char * dbfile;  
     char * dbfname;
@@ -816,12 +814,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
 
-   /*
-     * Get the prefix/root component and directory path
-     */
-    root = rpmdb->db_root;
-    home = rpmdb->db_home;
-    
     dbfile = rpmTagGetName(dbi->dbi_rpmtag);
 
 enterChroot(dbi);
@@ -835,7 +827,7 @@ enterChroot(dbi);
 
     dbi->dbi_mode=O_RDWR;
        
-    dbhome = rpmGenPath(NULL, home, NULL);
+    dbhome = rpmGenPath(NULL, rpmdb->db_home, NULL);
 
     /* 
      * Create the /var/lib/rpm directory if it doesn't exist (root only).
