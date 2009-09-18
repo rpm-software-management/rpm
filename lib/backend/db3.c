@@ -134,19 +134,10 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 
   { int xx;
 
- /* 4.1: dbenv->set_app_dispatch(???) */
- /* 4.1: dbenv->set_data_dir(???) */
- /* 4.1: dbenv->set_encrypt(???) */
-
     dbenv->set_alloc(dbenv,rpmdb->db_malloc, rpmdb->db_realloc, rpmdb->db_free);
     dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
-
- /* 4.1: dbenv->set_feedback(???) */
- /* 4.1: dbenv->set_flags(???) */
-
- /* dbenv->set_paniccall(???) */
 
 #if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
     /* 
@@ -197,29 +188,10 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	}
     }
 
- /* dbenv->set_lk_conflicts(???) */
- /* dbenv->set_lk_detect(???) */
- /* 4.1: dbenv->set_lk_max_lockers(???) */
- /* 4.1: dbenv->set_lk_max_locks(???) */
- /* 4.1: dbenv->set_lk_max_objects(???) */
-
- /* 4.1: dbenv->set_lg_bsize(???) */
- /* 4.1: dbenv->set_lg_dir(???) */
- /* 4.1: dbenv->set_lg_max(???) */
- /* 4.1: dbenv->set_lg_regionmax(???) */
-
     if (dbi->dbi_cachesize) {
 	xx = dbenv->set_cachesize(dbenv, 0, dbi->dbi_cachesize, 0);
 	xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
     }
-
- /* 4.1 dbenv->set_timeout(???) */
- /* dbenv->set_tx_max(???) */
- /* 4.1: dbenv->set_tx_timestamp(???) */
- /* dbenv->set_tx_recover(???) */
-
- /* dbenv->set_rep_transport(???) */
- /* dbenv->set_rep_limit(???) */
 
     if (dbi->dbi_no_fsync) {
 	xx = db_env_set_func_fsync(db3_fsync_disable);
@@ -486,7 +458,6 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
 	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
- /*	dbenv->set_paniccall(???) */
 #if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
@@ -721,16 +692,10 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		rc = cvtdberr(dbi, "db->set_alloc", rc, _debug);
 	    }
 
-/* 4.1: db->set_cache_priority(???) */
 	    if (rc == 0 && !dbi->dbi_use_dbenv && dbi->dbi_cachesize) {
 		rc = db->set_cachesize(db, 0, dbi->dbi_cachesize, 0);
 		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
 	    }
-/* 4.1: db->set_encrypt(???) */
-/* 4.1: db->set_errcall(dbenv, rpmdb->db_errcall); */
-/* 4.1: db->set_errfile(dbenv, rpmdb->db_errfile); */
-/* 4.1: db->set_errpfx(dbenv, rpmdb->db_errpfx); */
- /* 4.1: db->set_feedback(???) */
 
 	    if (rc == 0 && dbi->dbi_lorder) {
 		rc = db->set_lorder(db, dbi->dbi_lorder);
@@ -740,7 +705,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		rc = db->set_pagesize(db, dbi->dbi_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
 	    }
- /* 4.1: db->set_paniccall(???) */
 	    if (rc == 0 && oflags & DB_CREATE) {
 		switch(dbi->dbi_type) {
 		default:
@@ -772,7 +736,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    }
 		    break;
 		case DB_BTREE:
-/* 4.1: db->set_append_recno(???) */
 		    if (dbi->dbi_bt_flags) {
 			rc = db->set_flags(db, dbi->dbi_bt_flags);
 			rc = cvtdberr(dbi, "db->set_bt_flags", rc, _debug);
@@ -801,7 +764,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    break;
 		case DB_RECNO:
 		    if (dbi->dbi_re_delim) {
-/* 4.1: db->set_append_recno(???) */
 			rc = db->set_re_delim(db, dbi->dbi_re_delim);
 			rc = cvtdberr(dbi, "db->set_re_selim", rc, _debug);
 			if (rc) break;
