@@ -400,6 +400,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_rpmtag = rpmtag;
+    if (!dbi->dbi_file) dbi->dbi_file = xstrdup(rpmTagGetName(rpmtag));
     
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.

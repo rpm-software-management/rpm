@@ -797,7 +797,6 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     extern const struct _dbiVec sqlitevec;
    
     char * dbhome;
-    const char * dbfile;  
     char * dbfname;
     const char * sql_errcode;
     dbiIndex dbi;
@@ -814,16 +813,10 @@ static int sql_open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
 
-    dbfile = rpmTagGetName(dbi->dbi_rpmtag);
-
 enterChroot(dbi);
 
-    /*
-     * Make a copy of the tagName result..
-     * use this for the filename and table name
-     */
-    dbi->dbi_file = xstrdup(dbfile);
-    dbi->dbi_subfile = xstrdup(dbfile);
+    /* sqlite uses subfile for table name */
+    dbi->dbi_subfile = xstrdup(dbi->dbi_file);
 
     dbi->dbi_mode=O_RDWR;
        

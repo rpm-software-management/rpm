@@ -445,7 +445,6 @@ static int db3close(dbiIndex dbi, unsigned int flags)
     rpmdb rpmdb = dbi->dbi_rpmdb;
     const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
     char * dbhome;
-    const char * dbfile;
     DB * db = dbi->dbi_db;
     int _printit;
     int rc = 0, xx;
@@ -456,11 +455,6 @@ static int db3close(dbiIndex dbi, unsigned int flags)
      * Get the prefix/root component and directory path.
      */
     dbhome = rpmGenPath(root, rpmdb->db_home, NULL);
-    if (dbi->dbi_temporary) {
-	dbfile = NULL;
-    } else {
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : rpmTagGetName(dbi->dbi_rpmtag));
-    }
 
     if (db) {
 	rc = db->close(db, 0);
@@ -470,7 +464,7 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	db = dbi->dbi_db = NULL;
 
 	rpmlog(RPMLOG_DEBUG, "closed   db index       %s/%s\n",
-		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)));
+		dbhome, dbi->dbi_file);
 
     }
 
@@ -521,14 +515,13 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 
 	if (db != NULL) {
-		char * dbf = rpmGetPath(dbhome, "/", dbfile, NULL);
+		char * dbf = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
 
 		rc = db->verify(db, dbf, NULL, NULL, flags);
 		rc = cvtdberr(dbi, "db->verify", rc, _debug);
 
 		rpmlog(RPMLOG_DEBUG, "verified db index       %s/%s\n",
-			(dbhome ? dbhome : ""),
-			(dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)));
+			(dbhome ? dbhome : ""), dbi->dbi_file);
 
 	        /*
 		 * The DB handle may not be accessed again after
@@ -557,7 +550,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     extern const struct _dbiVec db3vec;
     const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
     char * dbhome;
-    const char * dbfile;
     dbiIndex dbi = NULL;
     int rc = 0;
     int xx;
@@ -582,11 +574,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Get the prefix/root component and directory path.
      */
     dbhome = rpmGenPath(root, rpmdb->db_home, NULL);
-    if (dbi->dbi_temporary) {
-	dbfile = NULL;
-    } else {
-	dbfile = (dbi->dbi_file ? dbi->dbi_file : rpmTagGetName(dbi->dbi_rpmtag));
-    }
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
     oflags &= ~DB_TRUNCATE;	/* XXX this is dangerous */
@@ -678,8 +665,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
 	/* dbhome is writable, and DB->open flags may conflict. */
-	const char * dbfn = (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag));
-	char * dbf = rpmGetPath(dbhome, "/", dbfn, NULL);
+	char * dbf = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
 
 	if (access(dbf, F_OK) == -1) {
 	    /* File does not exist, DB->open might create ... */
@@ -719,8 +705,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     {	char *dbiflags = prDbiOpenFlags(oflags, 0);
     	rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
-		dbhome, (dbfile ? dbfile : rpmTagGetName(dbi->dbi_rpmtag)),
-		dbiflags, dbi->dbi_mode);
+		dbhome, dbi->dbi_file, dbiflags, dbi->dbi_mode);
 	free(dbiflags);
     }
 
@@ -848,12 +833,14 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    if (rc == 0) {
+		const char *dbpath = dbi->dbi_temporary ? NULL : dbi->dbi_file;
 		char *fullpath = NULL;
 		/* When not in environment, absolute path is needed */
 		if (!dbi->dbi_use_dbenv && !dbi->dbi_temporary) {
-		    fullpath = rpmGetPath(dbhome, "/", dbfile, NULL);
+		    fullpath = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
+		    dbpath = fullpath;
 		}
-		rc = (db->open)(db, txnid, fullpath ? fullpath : dbfile, NULL,
+		rc = (db->open)(db, txnid, dbpath, NULL,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
@@ -918,11 +905,11 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 				_("cannot get %s lock on %s/%s\n"),
 				((dbi->dbi_mode & O_ACCMODE) == O_RDONLY)
 					? _("shared") : _("exclusive"),
-				dbhome, (dbfile ? dbfile : ""));
-		    } else if (dbfile) {
+				dbhome, dbi->dbi_file);
+		    } else {
 			rpmlog(RPMLOG_DEBUG,
 				"locked   db index       %s/%s\n",
-				dbhome, dbfile);
+				dbhome, dbi->dbi_file);
 		    }
 		}
 	    }
