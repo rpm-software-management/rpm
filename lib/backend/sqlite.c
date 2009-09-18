@@ -772,15 +772,10 @@ enterChroot(dbi);
 	rpmlog(RPMLOG_DEBUG, "closed   sql db         %s\n",
 		dbi->dbi_subfile);
 
-	dbi->dbi_stats = _free(dbi->dbi_stats);
-	dbi->dbi_file = _free(dbi->dbi_file);
-	dbi->dbi_subfile = _free(dbi->dbi_subfile);
-	dbi->dbi_db = _free(dbi->dbi_db);
-
 leaveChroot(dbi);
     }
 
-    dbi = _free(dbi);
+    dbi = db3Free(dbi);
 
     return rc;
 }
