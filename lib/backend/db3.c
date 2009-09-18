@@ -865,7 +865,12 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    if (rc == 0) {
-		rc = (db->open)(db, txnid, dbfile, NULL,
+		char *fullpath = NULL;
+		/* When not in environment, absolute path is needed */
+		if (!dbi->dbi_use_dbenv && !dbi->dbi_temporary) {
+		    fullpath = rpmGetPath(dbhome, "/", dbfile, NULL);
+		}
+		rc = (db->open)(db, txnid, fullpath ? fullpath : dbfile, NULL,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
 
 		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
@@ -874,6 +879,7 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    if (xx == 0)
 			dbi->dbi_type = dbi_type;
 		}
+		free(fullpath);
 	    }
 
 	    /* XXX return rc == errno without printing */
