@@ -14,10 +14,6 @@
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
-
-#if (DB_VERSION_MAJOR == 3) || (DB_VERSION_MAJOR == 4)
-#define	__USE_DB3	1
-
 RPM_GNUC_INTERNAL
 struct _dbiIndex db3dbi;
 
@@ -434,5 +430,3 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	
     return buf;
 }
-
-#endif
