@@ -12,7 +12,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmmacro.h>
-#include <rpm/rpmfileutil.h>	/* rpmioMkPath */
+#include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
 #include "lib/rpmdb_internal.h"
@@ -532,11 +532,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
 #endif
     }
-
-    /*
-     * Create the /var/lib/rpm directory if it doesn't exist (root only).
-     */
-    (void) rpmioMkpath(dbhome, 0755, getuid(), getgid());
 
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.

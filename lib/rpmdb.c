@@ -213,6 +213,13 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
+    /* Try to ensure db home exists, error out if we cant even create */
+    if (!db->db_mkdirDone) {
+	const char *dbhome = rpmdbHome(db);
+	db->db_mkdirDone = (rpmioMkpath(dbhome, 0755, getuid(), getgid()) == 0);
+	if (!db->db_mkdirDone) return NULL;
+    }
+
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 4)
 	_dbapi_rebuild = 4;

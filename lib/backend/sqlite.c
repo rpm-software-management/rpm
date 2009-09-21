@@ -31,7 +31,7 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
-#include <rpm/rpmfileutil.h>	/* rpmioMkpath */
+#include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmdb.h>
 
@@ -817,11 +817,6 @@ enterChroot(dbi);
        
     dbhome = rpmGenPath(NULL, rpmdb->db_home, NULL);
 
-    /* 
-     * Create the /var/lib/rpm directory if it doesn't exist (root only).
-     */
-    (void) rpmioMkpath(dbhome, 0755, getuid(), getgid());
-       
     dbfname = rpmGenPath(dbhome, dbi->dbi_file, NULL);
 
     rpmlog(RPMLOG_DEBUG, "opening  sql db         %s (%s) mode=0x%x\n",

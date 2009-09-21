@@ -265,6 +265,7 @@ struct rpmdb_s {
     int		db_remove_env;
     int		db_filter_dups;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
+    int		db_mkdirDone;	/*!< Has db_home been created? */
     void (*db_errcall) (const char *db_errpfx, char *buffer);
     FILE *	db_errfile;
     void * (*db_malloc) (size_t nbytes);
