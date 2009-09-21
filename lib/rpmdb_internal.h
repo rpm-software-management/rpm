@@ -188,10 +188,6 @@ struct _dbiIndex {
     int	dbi_debug;
     int	dbi_byteswapped;
 
-    char * dbi_host;
-    unsigned long dbi_cl_timeout;
-    unsigned long dbi_sv_timeout;
-
 	/* dbenv parameters */
     int	dbi_lorder;
     /* XXX db-4.3.14 adds dbenv as 1st arg. */

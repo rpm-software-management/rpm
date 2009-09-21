@@ -19,10 +19,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "debug.h"
 
-#if !defined(DB_CLIENT)	/* XXX db-4.2.42 retrofit */
-#define	DB_CLIENT	DB_RPCCLIENT
-#endif
-
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 {
     if (printit && error) {
@@ -97,7 +93,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int eflags;
-    int rc;
+    int rc, xx;
 
     if (dbenvp == NULL)
 	return 1;
@@ -114,10 +110,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	free(fstr);
     }
 
-    /* XXX Can't do RPC w/o host. */
-    if (dbi->dbi_host == NULL)
-	dbi->dbi_ecflags &= ~DB_CLIENT;
-
     /* XXX Set a default shm_key. */
     if ((dbi->dbi_eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {
 #if defined(HAVE_FTOK)
@@ -131,8 +123,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
     if (dbenv == NULL || rc)
 	goto errxit;
-
-  { int xx;
 
     dbenv->set_alloc(dbenv,rpmdb->db_malloc, rpmdb->db_realloc, rpmdb->db_free);
     dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
@@ -148,44 +138,27 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     dbenv->set_isalive(dbenv, db3isalive);
 #endif
 
-    if ((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) {
-	const char * home;
-	int retry = 0;
-
-	if ((home = strrchr(dbhome, '/')) != NULL)
-	    dbhome = ++home;
-
-	while (retry++ < 5) {
-	    xx = dbenv->set_rpc_server(dbenv, NULL, dbi->dbi_host,
-		dbi->dbi_cl_timeout, dbi->dbi_sv_timeout, 0);
-	    xx = cvtdberr(dbi, "dbenv->set_server", xx, _debug);
-	    if (!xx)
-		break;
-	    (void) sleep(15);
-	}
-    } else {
 #if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
-		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
+    dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
+	    (dbi->dbi_verbose & DB_VERB_CHKPOINT));
 #endif
-	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
-		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
-		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
-		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
+    dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
+	    (dbi->dbi_verbose & DB_VERB_DEADLOCK));
+    dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
+	    (dbi->dbi_verbose & DB_VERB_RECOVERY));
+    dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
+	    (dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
-	if (dbi->dbi_mmapsize) {
-	    xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
-	    xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
-	}
-	if (dbi->dbi_tmpdir) {
-	    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
-	    char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
-	    xx = dbenv->set_tmp_dir(dbenv, tmpdir);
-	    xx = cvtdberr(dbi, "dbenv->set_tmp_dir", xx, _debug);
-	    tmpdir = _free(tmpdir);
-	}
+    if (dbi->dbi_mmapsize) {
+	xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
+	xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
+    }
+    if (dbi->dbi_tmpdir) {
+	const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
+	char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
+	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
+	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", xx, _debug);
+	tmpdir = _free(tmpdir);
     }
 
     if (dbi->dbi_cachesize) {
@@ -202,7 +175,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	xx = dbenv->set_shm_key(dbenv, dbi->dbi_shmkey);
 	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
-  }
 
     rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
@@ -839,7 +811,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	     * glibc/kernel combinations.
 	     */
 	    if (rc == 0 && dbi->dbi_lockdbfd &&
-		!((dbi->dbi_ecflags & DB_CLIENT) && dbi->dbi_host) &&
 		(!dbi->dbi_use_dbenv || _lockdbfd++ == 0))
 	    {
 		int fdno = -1;

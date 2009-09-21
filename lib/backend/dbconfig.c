@@ -29,16 +29,6 @@ static int dbi_tear_down;
  */
 struct poptOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
-#if defined(DB_CLIENT)
- { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_CLIENT,
-	NULL, NULL },
-#endif
-#if defined(DB_RPCCLIENT)
- { "client",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_RPCCLIENT,
-	NULL, NULL },
- { "rpcclient",	0,POPT_BIT_SET,	&db3dbi.dbi_ecflags, DB_RPCCLIENT,
-	NULL, NULL },
-#endif
 
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
 	NULL, NULL },
@@ -114,15 +104,6 @@ struct poptOption rdbOptions[] = {
  { "shmkey",	0,POPT_ARG_LONG,	&db3dbi.dbi_shmkey, 0,
 	NULL, NULL },
  { "tmpdir",	0,POPT_ARG_STRING,	&db3dbi.dbi_tmpdir, 0,
-	NULL, NULL },
-
- { "host",	0,POPT_ARG_STRING,	&db3dbi.dbi_host, 0,
-	NULL, NULL },
- { "server",	0,POPT_ARG_STRING,	&db3dbi.dbi_host, 0,
-	NULL, NULL },
- { "cl_timeout", 0,POPT_ARG_LONG,	&db3dbi.dbi_cl_timeout, 0,
-	NULL, NULL },
- { "sv_timeout", 0,POPT_ARG_LONG,	&db3dbi.dbi_sv_timeout, 0,
 	NULL, NULL },
 
  { "verify",	0,POPT_ARG_NONE,	&db3dbi.dbi_verify_on_close, 0,
@@ -244,7 +225,6 @@ dbiIndex db3Free(dbiIndex dbi)
 	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_subfile = _free(dbi->dbi_subfile);
 	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
-	dbi->dbi_host = _free(dbi->dbi_host);
 	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_stats = _free(dbi->dbi_stats);

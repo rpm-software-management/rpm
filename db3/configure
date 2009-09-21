@@ -11,7 +11,7 @@ rm -f config.cache
 ARGS="`echo $* | sed -e 's% [^ ]*CFLAGS=[^ ]*%%' -e 's% -[^-][^ ]*%%g' -e 's% --param=[^ ]*%%g' -e 's%--cache-file=.*$%%'`"
 
 CC="$CC" CFLAGS="$CFLAGS" $db_dist/configure $ARGS \
-	--enable-shared --enable-static --enable-rpc \
+	--enable-shared --enable-static \
 	--with-uniquename=_rpmdb --srcdir=$db_dist
 
 mv Makefile Makefile.orig
