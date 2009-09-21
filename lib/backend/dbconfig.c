@@ -21,10 +21,6 @@
 RPM_GNUC_INTERNAL
 struct _dbiIndex db3dbi;
 
-static int dbi_use_cursors;
-
-static int dbi_tear_down;
-
 /** \ingroup db3
  */
 struct poptOption rdbOptions[] = {
@@ -107,10 +103,6 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
 
  { "verify",	0,POPT_ARG_NONE,	&db3dbi.dbi_verify_on_close, 0,
-	NULL, NULL },
- { "teardown",	0,POPT_ARG_NONE,	&dbi_tear_down, 0,
-	NULL, NULL },
- { "usecursors",0,POPT_ARG_NONE,	&dbi_use_cursors, 0,
 	NULL, NULL },
  { "usedbenv",	0,POPT_ARG_NONE,	&db3dbi.dbi_use_dbenv, 0,
 	NULL, NULL },
@@ -235,7 +227,7 @@ dbiIndex db3Free(dbiIndex dbi)
 
 /** @todo Set a reasonable "last gasp" default db config. */
 static const char * const db3_config_default =
-    "db3:hash:mpool:cdb:usecursors:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
+    "db3:hash:mpool:cdb:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
 
 dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 {
