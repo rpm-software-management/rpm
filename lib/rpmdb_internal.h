@@ -256,6 +256,7 @@ unsigned char * dbi_lk_conflicts;
 struct rpmdb_s {
     char 	* db_root;/*!< path prefix */
     char 	* db_home;/*!< directory path */
+    char	* db_fullpath;	/*!< full db path including prefix */
     int		db_flags;
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
@@ -522,6 +523,14 @@ unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
  */
 RPM_GNUC_INTERNAL
 unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
+
+/** \ingroup rpmdb
+ * Return rpmdb home directory (depending on chroot state)
+ * param db		rpmdb handle
+ * return		db home directory (or NULL on error)
+ */
+RPM_GNUC_INTERNAL
+const char *rpmdbHome(rpmdb db);
 
 /** \ingroup rpmdb
  * Return database iterator.

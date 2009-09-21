@@ -155,6 +155,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
     }
     if (dbi->dbi_tmpdir) {
+	/* XXX this isn't correct wrt chroot in+out */
 	const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
 	char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
@@ -388,18 +389,12 @@ static int db3stat(dbiIndex dbi, unsigned int flags)
 static int db3close(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
-    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
-    char * dbhome;
+    const char * dbhome = rpmdbHome(rpmdb);
     DB * db = dbi->dbi_db;
     int _printit;
     int rc = 0, xx;
 
     flags = 0;	/* XXX unused */
-
-    /*
-     * Get the prefix/root component and directory path.
-     */
-    dbhome = rpmGenPath(root, rpmdb->db_home, NULL);
 
     if (db) {
 	rc = db->close(db, 0);
@@ -443,6 +438,8 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	if (dbi->dbi_tmpdir) {
+	    /* XXX this isn't correct wrt chroot in+out */
+	    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
 	    char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
 	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
 	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
@@ -482,8 +479,6 @@ static int db3close(dbiIndex dbi, unsigned int flags)
 exit:
     dbi->dbi_db = NULL;
 
-    free(dbhome);
-
     dbi = db3Free(dbi);
 
     return rc;
@@ -492,8 +487,7 @@ exit:
 static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     extern const struct _dbiVec db3vec;
-    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
-    char * dbhome;
+    const char *dbhome = rpmdbHome(rpmdb);
     dbiIndex dbi = NULL;
     int rc = 0;
     int xx;
@@ -512,11 +506,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
-
-    /*
-     * Get the prefix/root component and directory path.
-     */
-    dbhome = rpmGenPath(root, rpmdb->db_home, NULL);
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
     oflags &= ~DB_TRUNCATE;	/* XXX this is dangerous */
@@ -858,8 +847,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	dbi->dbi_verify_on_close = 0;
 	(void) db3close(dbi, 0);
     }
-
-    free(dbhome);
 
     return rc;
 }
