@@ -14,12 +14,11 @@
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
-RPM_GNUC_INTERNAL
-struct _dbiIndex db3dbi;
+static struct _dbiIndex db3dbi;
 
 /** \ingroup db3
  */
-struct poptOption rdbOptions[] = {
+static const struct poptOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
 
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
@@ -248,7 +247,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 	memset(&db3dbi, 0, sizeof(db3dbi));
 /*=========*/
 	for (o = dbOpts; o && *o; o = oe) {
-	    struct poptOption *opt;
+	    const struct poptOption *opt;
 	    const char * tok;
 	    unsigned int argInfo;
 
@@ -399,7 +398,7 @@ dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag)
 char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 {
     ARGV_t flags = NULL;
-    struct poptOption *opt;
+    const struct poptOption *opt;
     char *buf;
 
     for (opt = rdbOptions; opt->longName != NULL; opt++) {
