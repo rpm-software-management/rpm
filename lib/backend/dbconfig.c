@@ -40,9 +40,6 @@ struct poptOption rdbOptions[] = {
 	NULL, NULL },
 #endif
 
- { "xa_create",	0,POPT_BIT_SET,	&db3dbi.dbi_cflags, DB_XA_CREATE,
-	NULL, NULL },
-
  { "create",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_CREATE,
 	NULL, NULL },
  { "thread",	0,POPT_BIT_SET,	&db3dbi.dbi_oeflags, DB_THREAD,
