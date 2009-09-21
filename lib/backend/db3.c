@@ -22,12 +22,13 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 {
     if (printit && error) {
+	int db_api = dbi->dbi_rpmdb->db_api;
 	if (msg)
 	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
-		dbi->dbi_api, error, msg, db_strerror(error));
+		db_api, error, msg, db_strerror(error));
 	else
 	    rpmlog(RPMLOG_ERR, _("db%d error(%d): %s\n"),
-		dbi->dbi_api, error, db_strerror(error));
+		db_api, error, db_strerror(error));
     }
     return error;
 }
@@ -511,7 +512,6 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if ((dbi = db3New(rpmdb, rpmtag)) == NULL)
 	return 1;
-    dbi->dbi_api = DB_VERSION_MAJOR;
 
     /*
      * Get the prefix/root component and directory path.
