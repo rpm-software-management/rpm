@@ -13,13 +13,9 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 
-#include "lib/rpmdb_internal.h"	/* XXX response cache needs dbiOpen et al. */
 #include "lib/rpmts_internal.h"
 
 #include "debug.h"
-
-
-RPM_GNUC_INTERNAL int _cacheDependsRC = 1;
 
 const char * const rpmNAME = PACKAGE;
 
@@ -346,63 +342,15 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  */
 static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
 {
-    DBT key;
-    DBT data;
     rpmdbMatchIterator mi;
     const char * Name;
     Header h;
-    int _cacheThisRC = 1;
     int rc;
     int xx;
     int retrying = 0;
 
     if ((Name = rpmdsN(dep)) == NULL)
 	return 0;	/* XXX can't happen */
-
-    /*
-     * Check if dbiOpen/dbiPut failed (e.g. permissions), we can't cache.
-     */
-    if (_cacheDependsRC) {
-	dbiIndex dbi;
-	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
-	if (dbi == NULL)
-	    _cacheDependsRC = 0;
-	else {
-	    const char * DNEVR;
-
-	    rc = -1;
-	    if ((DNEVR = rpmdsDNEVR(dep)) != NULL) {
-		DBC * dbcursor = NULL;
-		void * datap = NULL;
-		size_t datalen = 0;
-		size_t DNEVRlen = strlen(DNEVR);
-
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
-
-		memset(&key, 0, sizeof(key));
-		key.data = (void *) DNEVR;
-		key.size = DNEVRlen;
-		memset(&data, 0, sizeof(data));
-		data.data = datap;
-		data.size = datalen;
-/* FIX: data->data may be NULL */
-		xx = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-		DNEVR = key.data;
-		DNEVRlen = key.size;
-		datap = data.data;
-		datalen = data.size;
-
-		if (xx == 0 && datap && datalen == 4)
-		    memcpy(&rc, datap, datalen);
-		xx = dbiCclose(dbi, dbcursor, 0);
-	    }
-
-	    if (rc >= 0) {
-		rpmdsNotify(dep, _("(cached)"), rc);
-		return rc;
-	    }
-	}
-    }
 
 retry:
     rc = 0;	/* assume dependency is satisfied */
@@ -426,12 +374,6 @@ retry:
 
     /* Search added packages for the dependency. */
     if (rpmalSatisfiesDepend(ts->addedPackages, dep) != NULL) {
-	/*
-	 * XXX Ick, context sensitive answers from dependency cache.
-	 * XXX Always resolve added dependencies within context to disambiguate.
-	 */
-	if (_rpmds_nopromote)
-	    _cacheThisRC = 0;
 	goto exit;
     }
 
@@ -487,37 +429,6 @@ unsatisfied:
     rpmdsNotify(dep, NULL, rc);
 
 exit:
-    /*
-     * If dbiOpen/dbiPut fails (e.g. permissions), we can't cache.
-     */
-    if (_cacheDependsRC && _cacheThisRC) {
-	dbiIndex dbi;
-	dbi = dbiOpen(rpmtsGetRdb(ts), RPMDBI_DEPENDS, 0);
-	if (dbi == NULL) {
-	    _cacheDependsRC = 0;
-	} else {
-	    const char * DNEVR;
-	    xx = 0;
-	    if ((DNEVR = rpmdsDNEVR(dep)) != NULL) {
-		DBC * dbcursor = NULL;
-		size_t DNEVRlen = strlen(DNEVR);
-
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
-
-		memset(&key, 0, sizeof(key));
-		key.data = (void *) DNEVR;
-		key.size = DNEVRlen;
-		memset(&data, 0, sizeof(data));
-		data.data = &rc;
-		data.size = sizeof(rc);
-
-		xx = dbiPut(dbi, dbcursor, &key, &data, 0);
-		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	    }
-	    if (xx)
-		_cacheDependsRC = 0;
-	}
-    }
     return rc;
 }
 
@@ -798,7 +709,5 @@ exit:
 
     if (closeatexit)
 	xx = rpmtsCloseDB(ts);
-    else if (_cacheDependsRC)
-	xx = rpmdbCloseDBI(rpmtsGetRdb(ts), RPMDBI_DEPENDS);
     return rc;
 }
