@@ -162,24 +162,6 @@ static PyMappingMethods rpmps_as_mapping = {
 
 /** \ingroup py_c
  */
-static int rpmps_init(rpmpsObject * s, PyObject *args, PyObject *kwds)
-{
-    char * kwlist[] = {NULL};
-
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_init(%p,%p,%p)\n", s, args, kwds);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, ":rpmps_init", kwlist))
-	return -1;
-
-    s->ps = rpmpsCreate();
-    s->psi = NULL;
-
-    return 0;
-}
-
-/** \ingroup py_c
- */
 static void rpmps_free(rpmpsObject * s)
 {
 if (_rpmps_debug)
@@ -195,11 +177,8 @@ static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 {
     rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
 
-    /* Perform additional initialization. */
-    if (rpmps_init(s, args, kwds) < 0) {
-	rpmps_free(s);
-	return NULL;
-    }
+    s->ps = rpmpsCreate();
+    s->psi = NULL;
 
 if (_rpmps_debug)
 fprintf(stderr, "%p ++ ps %p\n", s, s->ps);
@@ -250,7 +229,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	(initproc) rpmps_init,		/* tp_init */
+	0,				/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmps_new,		/* tp_new */
 	(freefunc) rpmps_free,		/* tp_free */
