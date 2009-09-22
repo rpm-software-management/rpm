@@ -967,7 +967,6 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
     return list;
 }
 
-#if Py_TPFLAGS_HAVE_ITER
 static PyObject *
 rpmts_iter(rpmtsObject * s)
 {
@@ -977,7 +976,6 @@ fprintf(stderr, "*** rpmts_iter(%p) ts %p\n", s, s->ts);
     Py_INCREF(s);
     return (PyObject *)s;
 }
-#endif
 
 /**
  * @todo Add TR_ADDED filter to iterator.
@@ -1352,7 +1350,6 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT, 		/* tp_flags */
 	rpmts_doc,			/* tp_doc */
-#if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
@@ -1372,7 +1369,6 @@ PyTypeObject rpmts_Type = {
 	(newfunc) rpmts_new,		/* tp_new */
 	(freefunc) rpmts_free,		/* tp_free */
 	0,				/* tp_is_gc */
-#endif
 };
 
 /**

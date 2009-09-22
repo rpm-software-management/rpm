@@ -577,7 +577,6 @@ PyTypeObject rpmds_Type = {
 	Py_TPFLAGS_DEFAULT |		/* tp_flags */
 	    Py_TPFLAGS_HAVE_RICHCOMPARE,
 	rpmds_doc,			/* tp_doc */
-#if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	(richcmpfunc) rpmds_richcompare,/* tp_richcompare */
@@ -597,7 +596,6 @@ PyTypeObject rpmds_Type = {
 	(newfunc) rpmds_new,		/* tp_new */
 	(freefunc) rpmds_free,		/* tp_free */
 	0,				/* tp_is_gc */
-#endif
 };
 
 /* ---------- */

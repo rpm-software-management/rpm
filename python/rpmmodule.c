@@ -234,7 +234,6 @@ void init_rpm(void)
 {
     PyObject * d, *o, *tag = NULL, *dict, *m;
 
-#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfd_Type) < 0) return;
@@ -245,7 +244,6 @@ void init_rpm(void)
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
     if (PyType_Ready(&spec_Type) < 0) return;
-#endif
 
     m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
@@ -266,7 +264,6 @@ void init_rpm(void)
     if (pyrpmError != NULL)
 	PyDict_SetItemString(d, "error", pyrpmError);
 
-#if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     Py_INCREF(&hdr_Type);
     PyModule_AddObject(m, "hdr", (PyObject *) &hdr_Type);
 
@@ -293,17 +290,6 @@ void init_rpm(void)
 
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
-#else
-    hdr_Type.ob_type = &PyType_Type;
-    rpmds_Type.ob_type = &PyType_Type;
-    rpmfd_Type.ob_type = &PyType_Type;
-    rpmfi_Type.ob_type = &PyType_Type;
-    rpmmi_Type.ob_type = &PyType_Type;
-    rpmps_Type.ob_type = &PyType_Type;
-    rpmte_Type.ob_type = &PyType_Type;
-    rpmts_Type.ob_type = &PyType_Type;
-    spec_Type.ob_type =  &PyType_Type;
-#endif
 
     dict = PyDict_New();
     {	const char *tname, *sname;

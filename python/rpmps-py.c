@@ -254,7 +254,6 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT, 		/* tp_flags */
 	rpmps_doc,			/* tp_doc */
-#if Py_TPFLAGS_HAVE_ITER
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	(richcmpfunc)0,			/* tp_richcompare */
@@ -274,7 +273,6 @@ PyTypeObject rpmps_Type = {
 	(newfunc) rpmps_new,		/* tp_new */
 	(freefunc) rpmps_free,		/* tp_free */
 	0,				/* tp_is_gc */
-#endif
 };
 
 /* ---------- */
