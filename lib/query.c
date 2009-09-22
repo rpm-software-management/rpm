@@ -416,22 +416,10 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     }	break;
 
     case RPMQV_TID:
-    {	int mybase = 10;
-	const char * myarg = arg;
-	char * end = NULL;
-	unsigned long iid;
+    {	char * end = NULL;
+	rpm_tid_t iid = strtoul(arg, &end, 0);
 
-	/* XXX should be in strtoul */
-	if (*myarg == '0') {
-	    myarg++;
-	    mybase = 8;
-	    if (*myarg == 'x') {
-		myarg++;
-		mybase = 16;
-	    }
-	}
-	iid = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (iid == ULONG_MAX)) {
+	if ((*end) || (end == arg) || (iid == UINT_MAX)) {
 	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "tid", arg);
 	    return 1;
 	}
@@ -502,31 +490,19 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     }	break;
 
     case RPMQV_DBOFFSET:
-    {	int mybase = 10;
-	const char * myarg = arg;
-	char * end = NULL;
-	unsigned long recOffset;
+    {	char * end = NULL;
+	unsigned int recOffset = strtoul(arg, &end, 0);
 
-	/* XXX should be in strtoul */
-	if (*myarg == '0') {
-	    myarg++;
-	    mybase = 8;
-	    if (*myarg == 'x') {
-		myarg++;
-		mybase = 16;
-	    }
-	}
-	recOffset = strtoul(myarg, &end, mybase);
-	if ((*end) || (end == arg) || (recOffset == ULONG_MAX)) {
+	if ((*end) || (end == arg) || (recOffset == UINT_MAX)) {
 	    rpmlog(RPMLOG_ERR, _("invalid package number: %s\n"), arg);
 	    return 1;
 	}
-	rpmlog(RPMLOG_DEBUG, "package record number: %lu\n", recOffset);
+	rpmlog(RPMLOG_DEBUG, "package record number: %u\n", recOffset);
 	/* RPMDBI_PACKAGES */
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
 	if (qva->qva_mi == NULL) {
 	    rpmlog(RPMLOG_ERR,
-		_("record %lu could not be read\n"), recOffset);
+		_("record %u could not be read\n"), recOffset);
 	    res = 1;
 	} else
 	    res = rpmcliShowMatches(qva, ts);
