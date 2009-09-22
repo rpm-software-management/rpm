@@ -610,21 +610,8 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 rpmdsObject *
 hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    hdrObject * ho = (hdrObject *)s;
-    PyObject * to = NULL;
-    rpmTag tagN = RPMTAG_REQUIRENAME;
-    rpmsenseFlags flags = 0;
-    char * kwlist[] = {"to", "flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Oi:dsFromHeader", kwlist,
-	    &to, &flags))
-	return NULL;
-
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) return NULL;
-    }
-    return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, 0) );
+    return PyObject_Call((PyObject *) &rpmds_Type,
+			 Py_BuildValue("(O)", s), kwds);
 }
 
 rpmdsObject *
