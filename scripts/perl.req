@@ -82,12 +82,14 @@ sub process_file {
     
     # skip the "= <<" block
 
-    if ( ( m/^\s*\$(.*)\s*=\s*<<\s*["'](.*)['"]/) ||
-         ( m/^\s*\$(.*)\s*=\s*<<\s*(.*);/) ) {
+    if ( ( m/^\s*\$(?:.*)\s*=\s*<<\s*(["'`])(.*)\1/) ||
+         ( m/^\s*\$(.*)\s*=\s*<<(\w*)\s*;/) ) {
       $tag = $2;
       while (<FILE>) {
-        ( $_ =~ /^$tag/) && last;
+        chomp;
+        ( $_ eq $tag ) && last;
       }
+      $_ = <FILE>;
     }
 
     # skip q{} quoted sections - just hope we don't have curly brackets
