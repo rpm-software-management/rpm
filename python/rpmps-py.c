@@ -8,6 +8,14 @@
 
 #include "debug.h"
 
+/**
+ */
+struct rpmpsObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    rpmps	ps;
+    rpmpsi	psi;
+};
 
 static PyObject *
 rpmps_Debug(rpmpsObject * s, PyObject * args, PyObject * kwds)

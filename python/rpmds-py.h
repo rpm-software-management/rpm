@@ -7,14 +7,7 @@
  * \file python/rpmds-py.h
  */
 
-/**
- */
-typedef struct rpmdsObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    int		active;
-    rpmds	ds;
-} rpmdsObject;
+typedef struct rpmdsObject_s rpmdsObject;
 
 /**
  */

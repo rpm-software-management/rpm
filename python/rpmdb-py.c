@@ -101,6 +101,17 @@
  * \name Class: rpm.db
  */
 
+/** \ingroup py_c
+ */
+struct rpmdbObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    rpmdb db;
+    int offx;
+    int noffs;
+    int *offsets;
+} ;
+
 /**
  */
 static rpmmiObject *

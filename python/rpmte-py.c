@@ -48,6 +48,12 @@
  * @param tag	'Basenames'
  */
 
+struct rpmteObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    rpmte	te;
+};
+
 static PyObject *
 rpmte_Debug(rpmteObject * s, PyObject * args, PyObject * kwds)
 {

@@ -7,11 +7,7 @@
  * \file python/spec-py.h
  */
 
-typedef struct specObject_s {
-    PyObject_HEAD
-    /*type specific fields */
-    rpmSpec spec;
-} specObject;
+typedef struct specObject_s specObject;
 
 extern PyTypeObject spec_Type;
 

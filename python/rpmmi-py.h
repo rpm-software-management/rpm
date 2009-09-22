@@ -9,15 +9,6 @@
  */
 typedef struct rpmmiObject_s rpmmiObject;
 
-/** \ingroup py_c
- */
-struct rpmmiObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    PyObject *ref;		/* for db/ts refcounting */
-    rpmdbMatchIterator mi;
-} ;
-
 extern PyTypeObject rpmmi_Type;
 
 rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s);

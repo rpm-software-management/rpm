@@ -7,12 +7,7 @@
  * \file python/rpmfi-py.h
  */
 
-typedef struct rpmfiObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    int active;
-    rpmfi fi;
-} rpmfiObject;
+typedef struct rpmfiObject_s rpmfiObject;
 
 extern PyTypeObject rpmfi_Type;
 

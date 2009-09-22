@@ -12,6 +12,12 @@
 
 #include "debug.h"
 
+struct rpmfiObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    int active;
+    rpmfi fi;
+};
 
 static PyObject *
 rpmfi_Debug(rpmfiObject * s, PyObject * args, PyObject * kwds)

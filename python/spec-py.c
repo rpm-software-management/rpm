@@ -32,6 +32,11 @@
  *
  */
 
+struct specObject_s {
+    PyObject_HEAD
+    /*type specific fields */
+    rpmSpec spec;
+};
 
 static void 
 spec_dealloc(specObject * s) 

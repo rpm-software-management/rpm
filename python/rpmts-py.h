@@ -7,16 +7,7 @@
  * \file python/rpmts-py.h
  */
 
-typedef struct rpmtsObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    rpmts	ts;
-    PyObject * keyList;		/* keeps reference counts correct */
-    FD_t scriptFd;
-    rpmtsi tsi;
-    rpmElementType tsiFilter;
-    rpmprobFilterFlags ignoreSet;
-} rpmtsObject;
+typedef struct rpmtsObject_s rpmtsObject;
 
 extern PyTypeObject rpmts_Type;
 

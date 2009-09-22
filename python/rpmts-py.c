@@ -140,6 +140,17 @@ extern int _rpmts_debug;
  *	the ts.run() method.
  */
 
+struct rpmtsObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    rpmts	ts;
+    PyObject * keyList;		/* keeps reference counts correct */
+    FD_t scriptFd;
+    rpmtsi tsi;
+    rpmElementType tsiFilter;
+    rpmprobFilterFlags ignoreSet;
+};
+
 /** \ingroup py_c
  */
 struct rpmtsCallbackType_s {

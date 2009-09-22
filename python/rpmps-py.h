@@ -7,14 +7,7 @@
  * \file python/rpmps-py.h
  */
 
-/**
- */
-typedef struct rpmpsObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;		/*!< to look like PyModuleObject */
-    rpmps	ps;
-    rpmpsi	psi;
-} rpmpsObject;
+typedef struct rpmpsObject_s rpmpsObject;
 
 /**
  */

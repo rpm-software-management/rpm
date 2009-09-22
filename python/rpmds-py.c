@@ -13,6 +13,15 @@
 
 #include "debug.h"
 
+/**
+ */
+struct rpmdsObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;		/*!< to look like PyModuleObject */
+    int		active;
+    rpmds	ds;
+};
+
 
 /**
  * Split EVR into epoch, version, and release components.
