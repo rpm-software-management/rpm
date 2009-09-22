@@ -35,7 +35,6 @@
 int _rpmdb_debug = 0;
 
 static int _rebuildinprogress = 0;
-static int _db_filter_dups = 0;
 
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
@@ -911,7 +910,6 @@ rpmdb newRpmdb(const char * root,
     static int _initialized = 0;
 
     if (!_initialized) {
-	_db_filter_dups = rpmExpandNumeric("%{_filterdbdups}");
 	_initialized = 1;
     }
 
@@ -937,7 +935,6 @@ rpmdb newRpmdb(const char * root,
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
-    db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTags.max;
     db->db_malloc = rmalloc;
     db->db_realloc = rrealloc;
@@ -3231,30 +3228,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 			_("header #%u in the database is bad -- skipping.\n"),
 			_RECNUM);
 		continue;
-	    }
-
-	    /* Filter duplicate entries ? (bug in pre rpm-3.0.4) */
-	    if (_db_filter_dups || newdb->db_filter_dups) {
-		const char *name = headerGetString(h, RPMTAG_NAME);
-		const char *version = headerGetString(h, RPMTAG_VERSION);
-		const char *release = headerGetString(h, RPMTAG_RELEASE);
-		int skip = 0;
-
-		{   rpmdbMatchIterator mi;
-		    mi = rpmdbInitIterator(newdb, RPMTAG_NAME, name, 0);
-		    (void) rpmdbSetIteratorRE(mi, RPMTAG_VERSION,
-				RPMMIRE_DEFAULT, version);
-		    (void) rpmdbSetIteratorRE(mi, RPMTAG_RELEASE,
-				RPMMIRE_DEFAULT, release);
-		    while (rpmdbNextIterator(mi)) {
-			skip = 1;
-			break;
-		    }
-		    mi = rpmdbFreeIterator(mi);
-		}
-
-		if (skip)
-		    continue;
 	    }
 
 	    /* Deleted entries are eliminated in legacy headers by copy. */
