@@ -1079,8 +1079,7 @@ fprintf(stderr, "*** rpmts_Match(%p) ts %p\n", s, s->ts);
 	    &TagN, &Key))
 	return NULL;
 
-    if (TagN && (tag = tagNumFromPyObject (TagN)) == -1) {
-	PyErr_SetString(PyExc_TypeError, "unknown tag type");
+    if (TagN && (tag = tagNumFromPyObject (TagN)) == RPMTAG_NOT_FOUND) {
 	return NULL;
     }
 

@@ -400,10 +400,7 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return NULL;
-	}
+	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
     s->fi = rpmfiNew(NULL, hdrGetHeader(ho), tagN, flags);
 
@@ -495,10 +492,7 @@ hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return NULL;
-	}
+	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
     return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), tagN, flags) );
 }

@@ -507,10 +507,7 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return NULL;
-	}
+	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
     s->ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
 
@@ -603,10 +600,7 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return NULL;
-	}
+	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
     if (N != NULL) N = xstrdup(N);
     if (EVR != NULL) EVR = xstrdup(EVR);
@@ -628,10 +622,7 @@ hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 
     if (to != NULL) {
 	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return NULL;
-	}
+	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
     return rpmds_Wrap( rpmdsNew(hdrGetHeader(ho), tagN, 0) );
 }

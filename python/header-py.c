@@ -333,19 +333,21 @@ static void hdr_dealloc(hdrObject * s)
     PyObject_Del(s);
 }
 
-/** \ingroup py_c
- */
 rpmTag tagNumFromPyObject (PyObject *item)
 {
-    char * str;
+    rpmTag tag = RPMTAG_NOT_FOUND;
 
     if (PyInt_Check(item)) {
-	return PyInt_AsLong(item);
+	/* XXX we should probably validate tag numbers too */
+	tag = PyInt_AsLong(item);
     } else if (PyString_Check(item)) {
-	str = PyString_AsString(item);
-	return rpmTagGetValue(str);
+	tag = rpmTagGetValue(PyString_AsString(item));
     }
-    return RPMTAG_NOT_FOUND;
+    if (tag == RPMTAG_NOT_FOUND) {
+	PyErr_SetString(PyExc_ValueError, "unknown header tag");
+    }
+	
+    return tag;
 }
 
 /** \ingroup py_c
@@ -362,10 +364,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     struct rpmtd_s td;
 
     tag = tagNumFromPyObject (item);
-    if (tag == RPMTAG_NOT_FOUND) {
-	PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	return NULL;
-    }
+    if (tag == RPMTAG_NOT_FOUND) return NULL;
 
     tagtype = rpmTagGetType(tag); 
     forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
