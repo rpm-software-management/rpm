@@ -279,8 +279,6 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	    continue;
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
-	if (qva->qva_source == RPMQV_DBOFFSET)
-	    break;
     }
     return ec + rpmgiNumErrors(gi);
 }
@@ -295,8 +293,6 @@ int rpmcliShowMatches(QVA_t qva, rpmts ts)
 	rpmdbCheckSignals();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
-	if (qva->qva_source == RPMQV_DBOFFSET)
-	    break;
     }
     qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
     return ec;
