@@ -1001,26 +1001,6 @@ fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s-
 }
 
 /**
- * @todo Add TR_ADDED filter to iterator.
- */
-static PyObject *
-rpmts_Next(rpmtsObject * s)
-{
-    PyObject * result;
-
-if (_rpmts_debug)
-fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
-
-    result = rpmts_iternext(s);
-
-    if (result == NULL) {
-	Py_RETURN_NONE;
-    }
-
-    return result;
-}
-
-/**
  */
 static specObject *
 spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
@@ -1187,9 +1167,6 @@ static struct PyMethodDef rpmts_methods[] = {
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
- {"next",		(PyCFunction)rpmts_Next,	METH_NOARGS,
-"ts.next() -> te\n\
-- Retrieve next transaction set element.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
