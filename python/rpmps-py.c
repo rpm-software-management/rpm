@@ -233,8 +233,7 @@ rpmps psFromPs(rpmpsObject * s)
     return s->ps;
 }
 
-rpmpsObject *
-rpmps_Wrap(rpmps ps)
+PyObject * rpmps_Wrap(rpmps ps)
 {
     rpmpsObject * s = PyObject_New(rpmpsObject, &rpmps_Type);
 
@@ -242,5 +241,5 @@ rpmps_Wrap(rpmps ps)
 	return NULL;
     s->ps = ps;
     s->psi = NULL;
-    return s;
+    return (PyObject *) s;
 }

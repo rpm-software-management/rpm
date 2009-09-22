@@ -420,8 +420,7 @@ rpmfi fiFromFi(rpmfiObject * s)
     return s->fi;
 }
 
-rpmfiObject *
-rpmfi_Wrap(rpmfi fi)
+PyObject * rpmfi_Wrap(rpmfi fi)
 {
     rpmfiObject *s = PyObject_New(rpmfiObject, &rpmfi_Type);
 
@@ -429,11 +428,10 @@ rpmfi_Wrap(rpmfi fi)
 	return NULL;
     s->fi = fi;
     s->active = 0;
-    return s;
+    return (PyObject *) s;
 }
 
-rpmfiObject *
-hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
+PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     return PyObject_Call((PyObject *) &rpmfi_Type,
 			 Py_BuildValue("(O)", s), kwds);

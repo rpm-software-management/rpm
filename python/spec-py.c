@@ -204,12 +204,12 @@ rpmSpec specFromSpec(specObject *s)
     return s->spec;
 }
 
-specObject *
+PyObject *
 spec_Wrap(rpmSpec spec) 
 {
     specObject * s = PyObject_New(specObject, &spec_Type);
     if (s == NULL)
         return NULL;
     s->spec = spec; 
-    return s;
+    return (PyObject *) s;
 }

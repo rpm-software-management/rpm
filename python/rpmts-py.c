@@ -894,7 +894,7 @@ fprintf(stderr, "*** rpmts_SetProbFilter(%p) ts %p ignoreSet %x\n", s, s->ts, ig
 
 /** \ingroup py_c
  */
-static rpmpsObject *
+static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
 
@@ -991,7 +991,7 @@ fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s-
 
     te = rpmtsiNext(s->tsi, s->tsiFilter);
     if (te != NULL) {
-	result = (PyObject *) rpmte_Wrap(te);
+	result = rpmte_Wrap(te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
 	s->tsiFilter = 0;
@@ -1002,7 +1002,7 @@ fprintf(stderr, "*** rpmts_iternext(%p) ts %p tsi %p %d\n", s, s->ts, s->tsi, s-
 
 /**
  */
-static specObject *
+static PyObject *
 spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     const char * specfile;
@@ -1030,7 +1030,7 @@ spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 
 /**
  */
-static rpmmiObject *
+static PyObject *
 rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject *TagN = NULL;

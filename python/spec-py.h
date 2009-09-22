@@ -17,6 +17,6 @@ rpmSpec specFromSpec(specObject * spec);
 
 /**
  */
-specObject * spec_Wrap(rpmSpec spec);
+PyObject * spec_Wrap(rpmSpec spec);
 
 #endif /* RPMPYTHON_SPEC */

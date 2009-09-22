@@ -11,6 +11,6 @@ typedef struct rpmmiObject_s rpmmiObject;
 
 extern PyTypeObject rpmmi_Type;
 
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s);
+PyObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s);
 
 #endif

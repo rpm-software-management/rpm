@@ -217,7 +217,7 @@ rpmds_iternext(rpmdsObject * s)
 	rpmTag tagN = rpmdsTagN(s->ds);
 	rpmsenseFlags Flags = rpmdsFlags(s->ds);
 
-	result = (PyObject *) rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+	result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
@@ -310,8 +310,7 @@ rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
 }
 
-static PyObject *
-rpmds_Rpmlib(rpmdsObject * s)
+static PyObject * rpmds_Rpmlib(rpmdsObject * s)
 {
     rpmds ds = NULL;
     int xx;
@@ -319,7 +318,7 @@ rpmds_Rpmlib(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsRpmlib(&ds, NULL);
 
-    return (PyObject *) rpmds_Wrap( ds );
+    return rpmds_Wrap( ds );
 }
 
 
@@ -547,8 +546,7 @@ rpmds dsFromDs(rpmdsObject * s)
     return s->ds;
 }
 
-rpmdsObject *
-rpmds_Wrap(rpmds ds)
+PyObject * rpmds_Wrap(rpmds ds)
 {
     rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
 
@@ -556,11 +554,10 @@ rpmds_Wrap(rpmds ds)
 	return NULL;
     s->ds = ds;
     s->active = 0;
-    return s;
+    return (PyObject *) s;
 }
 
-rpmdsObject *
-rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
+PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_PROVIDENAME;
@@ -580,15 +577,13 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
-rpmdsObject *
-hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
+PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     return PyObject_Call((PyObject *) &rpmds_Type,
 			 Py_BuildValue("(O)", s), kwds);
 }
 
-rpmdsObject *
-hdr_dsOfHeader(PyObject * s)
+PyObject * hdr_dsOfHeader(PyObject * s)
 {
     hdrObject * ho = (hdrObject *)s;
     rpmTag tagN = RPMTAG_PROVIDENAME;

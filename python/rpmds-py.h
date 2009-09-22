@@ -19,18 +19,18 @@ rpmds dsFromDs(rpmdsObject * ds);
 
 /**
  */
-rpmdsObject * rpmds_Wrap(rpmds ds);
+PyObject * rpmds_Wrap(rpmds ds);
 
 /**
  */
-rpmdsObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds);
+PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds);
 
 /**
  */
-rpmdsObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
+PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds);
 
 /**
  */
-rpmdsObject * hdr_dsOfHeader(PyObject * s);
+PyObject * hdr_dsOfHeader(PyObject * s);
 
 #endif

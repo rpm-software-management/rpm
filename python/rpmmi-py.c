@@ -84,7 +84,7 @@ rpmmi_iternext(rpmmiObject * s)
 	s->mi = rpmdbFreeIterator(s->mi);
 	return NULL;
     }
-    return (PyObject *) hdr_Wrap(h);
+    return hdr_Wrap(h);
 }
 
 /**
@@ -211,9 +211,9 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
+PyObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
 {
-    rpmmiObject * mio = (rpmmiObject *) PyObject_New(rpmmiObject, &rpmmi_Type);
+    rpmmiObject * mio = PyObject_New(rpmmiObject, &rpmmi_Type);
 
     if (mio == NULL) {
         PyErr_SetString(pyrpmError, "out of memory creating rpmmiObject");
@@ -222,6 +222,6 @@ rpmmiObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
     mio->mi = mi;
     mio->ref = s;
     Py_INCREF(mio->ref);
-    return mio;
+    return (PyObject *) mio;
 }
 
