@@ -114,20 +114,6 @@ fprintf(stderr, "*** rpmps_print(%p,%p,%x)\n", s, (void *)fp, flags);
     return 0;
 }
 
-static PyObject * rpmps_getattro(PyObject * o, PyObject * n)
-{
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_getattro(%p,%p)\n", o, n);
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmps_setattro(PyObject * o, PyObject * n, PyObject * v)
-{
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_setattro(%p,%p,%p)\n", o, n, v);
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 static int
 rpmps_length(rpmpsObject * s)
 {
@@ -257,8 +243,8 @@ PyTypeObject rpmps_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmps_getattro,	/* tp_getattro */
-	(setattrofunc) rpmps_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT, 		/* tp_flags */
 	rpmps_doc,			/* tp_doc */

@@ -301,16 +301,6 @@ rpmte_print(rpmteObject * s, FILE * fp, int flags)
     return 0;
 }
 
-static PyObject * rpmte_getattro(PyObject * o, PyObject * n)
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmte_setattro(PyObject * o, PyObject * n, PyObject * v)
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 /**
  */
 static char rpmte_doc[] =
@@ -336,8 +326,8 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmte_getattro,	/* tp_getattro */
-	(setattrofunc) rpmte_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT,		/* tp_flags */
 	rpmte_doc,			/* tp_doc */

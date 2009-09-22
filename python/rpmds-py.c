@@ -449,16 +449,6 @@ rpmds_print(rpmdsObject * s, FILE * fp, int flags)
     return 0;
 }
 
-static PyObject * rpmds_getattro(PyObject * o, PyObject * n)
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmds_setattro(PyObject * o, PyObject * n, PyObject * v)
-{
-    return PyObject_GenericSetAttr(o, n, v);
-}
-
 static int
 rpmds_length(rpmdsObject * s)
 {
@@ -580,8 +570,8 @@ PyTypeObject rpmds_Type = {
 	(hashfunc)0,			/* tp_hash */
 	(ternaryfunc)0,			/* tp_call */
 	(reprfunc)0,			/* tp_str */
-	(getattrofunc) rpmds_getattro,	/* tp_getattro */
-	(setattrofunc) rpmds_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT |		/* tp_flags */
 	    Py_TPFLAGS_HAVE_RICHCOMPARE,
