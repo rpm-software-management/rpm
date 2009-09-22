@@ -411,17 +411,6 @@ fprintf(stderr, "%p -- fi %p\n", s, s->fi);
 
 /** \ingroup py_c
  */
-static PyObject * rpmfi_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmfi_debug < 0)
-fprintf(stderr, "*** rpmfi_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
-}
-
-/** \ingroup py_c
- */
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmfiObject * s = (void *) PyObject_New(rpmfiObject, subtype);
@@ -482,7 +471,7 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmfi_init,		/* tp_init */
-	(allocfunc) rpmfi_alloc,	/* tp_alloc */
+	0,				/* tp_alloc */
 	(newfunc) rpmfi_new,		/* tp_new */
 	(freefunc) rpmfi_free,		/* tp_free */
 	0,				/* tp_is_gc */

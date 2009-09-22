@@ -1288,17 +1288,6 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
 
 /** \ingroup py_c
  */
-static PyObject * rpmts_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmts_debug < 0)
-fprintf(stderr, "*** rpmts_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
-}
-
-/** \ingroup py_c
- */
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmtsObject * s = (void *) PyObject_New(rpmtsObject, subtype);
@@ -1376,7 +1365,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmts_init,		/* tp_init */
-	(allocfunc) rpmts_alloc,	/* tp_alloc */
+	0,				/* tp_alloc */
 	(newfunc) rpmts_new,		/* tp_new */
 	(freefunc) rpmts_free,		/* tp_free */
 	0,				/* tp_is_gc */

@@ -192,17 +192,6 @@ fprintf(stderr, "%p -- ps %p\n", s, s->ps);
 
 /** \ingroup py_c
  */
-static PyObject * rpmps_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
-}
-
-/** \ingroup py_c
- */
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
@@ -263,7 +252,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmps_init,		/* tp_init */
-	(allocfunc) rpmps_alloc,	/* tp_alloc */
+	0,				/* tp_alloc */
 	(newfunc) rpmps_new,		/* tp_new */
 	(freefunc) rpmps_free,		/* tp_free */
 	0,				/* tp_is_gc */

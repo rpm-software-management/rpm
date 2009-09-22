@@ -519,17 +519,6 @@ fprintf(stderr, "%p -- ds %p\n", s, s->ds);
 
 /** \ingroup py_c
  */
-static PyObject * rpmds_alloc(PyTypeObject * subtype, int nitems)
-{
-    PyObject * s = PyType_GenericAlloc(subtype, nitems);
-
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmds_alloc(%p,%d) ret %p\n", subtype, nitems, s);
-    return s;
-}
-
-/** \ingroup py_c
- */
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmdsObject * s = (void *) PyObject_New(rpmdsObject, subtype);
@@ -591,7 +580,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
 	(initproc) rpmds_init,		/* tp_init */
-	(allocfunc) rpmds_alloc,	/* tp_alloc */
+	0,				/* tp_alloc */
 	(newfunc) rpmds_new,		/* tp_new */
 	(freefunc) rpmds_free,		/* tp_free */
 	0,				/* tp_is_gc */
