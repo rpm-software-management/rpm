@@ -1,6 +1,6 @@
 # Makefile for rpm library.
 
-EXTRA_DIST = rpmdebug-py.c rpm/__init__.py
+EXTRA_DIST = rpm/__init__.py
 
 if PYTHON
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
