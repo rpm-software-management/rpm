@@ -217,8 +217,6 @@ rpmds_iternext(rpmdsObject * s)
 	rpmTag tagN = rpmdsTagN(s->ds);
 	rpmsenseFlags Flags = rpmdsFlags(s->ds);
 
-	if (N != NULL) N = xstrdup(N);
-	if (EVR != NULL) EVR = xstrdup(EVR);
 	result = (PyObject *) rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
