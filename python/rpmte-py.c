@@ -62,8 +62,7 @@ rpmte_Debug(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmte_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -205,8 +204,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 	PyErr_SetString(PyExc_TypeError, "invalid ds tag");
 	return NULL;
 #else
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
 #endif
     }
     return (PyObject *) rpmds_Wrap(rpmdsLink(ds, RPMDBG_M("rpmte_DS")));
@@ -219,8 +217,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     fi = rpmteFI(s->te);
     if (fi == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     return (PyObject *) rpmfi_Wrap(rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
 }

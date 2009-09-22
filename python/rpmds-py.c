@@ -74,8 +74,7 @@ rpmds_Debug(rpmdsObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmds_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -242,8 +241,7 @@ rpmds_Next(rpmdsObject * s)
     result = rpmds_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-        return Py_None;
+	Py_RETURN_NONE;
     }
     return result;
 }
@@ -273,8 +271,7 @@ rpmds_Notify(rpmdsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     rpmdsNotify(s->ds, where, rc);
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /* XXX rpmdsFind uses bsearch on s->ds, so a sort is needed. */
@@ -282,8 +279,7 @@ static PyObject *
 rpmds_Sort(rpmdsObject * s)
 {
     /* XXX sort on (N,EVR,F) here. */
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -370,8 +366,7 @@ rpmds_Problem(rpmdsObject * s)
 {
     if (!PyArg_ParseTuple(args, ":Problem"))
 	return NULL;
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 #endif
 

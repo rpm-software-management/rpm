@@ -174,8 +174,7 @@ rpmts_Debug(rpmtsObject * s, PyObject * args, PyObject * kwds)
 if (_rpmts_debug < 0)
 fprintf(stderr, "*** rpmts_Debug(%p) ts %p\n", s, s->ts);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 RPM_GNUC_NORETURN
@@ -239,8 +238,7 @@ fprintf(stderr, "*** rpmts_AddInstall(%p,%p,%p,%s) ts %p\n", s, h, key, how, s->
     if (key)
 	PyList_Append(s->keyList, key);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -416,8 +414,7 @@ fprintf(stderr, "*** rpmts_Check(%p) ts %p cb %p\n", s, s->ts, cbInfo.cb);
 	return list;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -447,8 +444,7 @@ fprintf(stderr, "*** rpmts_Clean(%p) ts %p\n", s, s->ts);
 
     rpmtsClean(s->ts);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -603,8 +599,7 @@ fprintf(stderr, "*** rpmts_HdrCheck(%p) ts %p\n", s, s->ts);
     	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
 	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
@@ -706,8 +701,7 @@ fprintf(stderr, "*** rpmts_PgpPrtPkts(%p) ts %p\n", s, s->ts);
     	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
 	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
@@ -740,8 +734,7 @@ fprintf(stderr, "*** rpmts_PgpImportPubkey(%p) ts %p\n", s, s->ts);
 	return NULL;
 
     if (blob == Py_None) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
     if (!PyString_Check(blob)) {
 	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
@@ -770,8 +763,7 @@ fprintf(stderr, "*** rpmts_GetKeys(%p) ts %p\n", s, s->ts);
     rpmtsGetKeys(s->ts, &data, &num);
     if (data == NULL || num <= 0) {
 	data = _free(data);
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     tuple = PyTuple_New(num);
@@ -954,8 +946,7 @@ fprintf(stderr, "*** rpmts_Run(%p) ts %p ignore %x\n", s, s->ts, s->ignoreSet);
 	list = PyList_New(0);
 	return list;
     } else if (!rc) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     list = PyList_New(0);
@@ -1033,8 +1024,7 @@ fprintf(stderr, "*** rpmts_Next(%p) ts %p\n", s, s->ts);
     result = rpmts_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;

@@ -214,8 +214,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
 {
     headerConvert(s->h, HEADERCONV_EXPANDFILELIST);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -224,8 +223,7 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 {
     headerConvert(s->h, HEADERCONV_COMPRESSFILELIST);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /* make a header with _all_ the tags we need */
@@ -254,8 +252,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
 {
     mungeFilelist (s->h);
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /** \ingroup py_c
@@ -763,8 +760,7 @@ rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 	return NULL;
     }
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 /**

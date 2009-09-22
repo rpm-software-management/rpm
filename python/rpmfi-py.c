@@ -27,8 +27,7 @@ rpmfi_Debug(rpmfiObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfi_debug))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -237,8 +236,7 @@ rpmfi_Next(rpmfiObject * s)
     result = rpmfi_iternext(s);
 
     if (result == NULL) {
-	Py_INCREF(Py_None);
-	return Py_None;
+	Py_RETURN_NONE;
     }
 
     return result;
@@ -248,15 +246,13 @@ rpmfi_Next(rpmfiObject * s)
 static PyObject *
 rpmfi_NextD(rpmfiObject * s)
 {
-	Py_INCREF(Py_None);
-	return Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
 rpmfi_InitD(rpmfiObject * s)
 {
-	Py_INCREF(Py_None);
-	return Py_None;
+    Py_RETURN_NONE;
 }
 #endif
 
