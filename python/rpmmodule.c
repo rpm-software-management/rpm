@@ -262,15 +262,9 @@ void init_rpm(void)
 
     d = PyModule_GetDict(m);
 
-#ifdef	HACK
-    pyrpmError = PyString_FromString("_rpm.error");
-    PyDict_SetItemString(d, "error", pyrpmError);
-    Py_DECREF(pyrpmError);
-#else
     pyrpmError = PyErr_NewException("_rpm.error", NULL, NULL);
     if (pyrpmError != NULL)
 	PyDict_SetItemString(d, "error", pyrpmError);
-#endif
 
 #if Py_TPFLAGS_HAVE_ITER        /* XXX backport to python-1.5.2 */
     Py_INCREF(&hdr_Type);
