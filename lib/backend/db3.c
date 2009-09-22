@@ -208,13 +208,11 @@ static int db3sync(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
-    int _printit;
 
-    if (db != NULL)
+    if (db != NULL) {
 	rc = db->sync(db, flags);
-    /* XXX DB_INCOMPLETE is returned occaisionally with multiple access. */
-    _printit = _debug;
-    rc = cvtdberr(dbi, "db->sync", rc, _printit);
+	rc = cvtdberr(dbi, "db->sync", rc, _debug);
+    }
     return rc;
 }
 
