@@ -2038,8 +2038,10 @@ top:
     } while (mi->mi_offset == 0);
 
     /* If next header is identical, return it now. */
-    if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
-	return mi->mi_h;
+    if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset) {
+	/* ...but rpmdb record numbers are unique, avoid endless loop */
+	return (mi->mi_rpmtag == RPMDBI_PACKAGES) ? NULL : mi->mi_h;
+    }
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
