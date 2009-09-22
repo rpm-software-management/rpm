@@ -18,7 +18,7 @@ _rpmmodule_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_PYTHON_LIB@
 
-_rpmmodule_la_SOURCES = rpmmodule.c system.h \
+_rpmmodule_la_SOURCES = rpmmodule.c rpmsystem-py.h \
 	header-py.c header-py.h \
 	rpmds-py.c rpmds-py.h \
 	rpmfi-py.c rpmfi-py.h \

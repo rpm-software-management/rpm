@@ -1,4 +1,4 @@
-#include "system.h"
+#include "rpmsystem-py.h"
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"

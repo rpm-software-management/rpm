@@ -1,4 +1,4 @@
-#include "system.h"
+#include "rpmsystem-py.h"
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmpgp.h>
