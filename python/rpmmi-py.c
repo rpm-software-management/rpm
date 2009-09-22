@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/rpmmi-py.c
- */
-
 #include "system.h"
 
 #include <rpm/rpmdb.h>
@@ -64,8 +60,6 @@
  * \name Class: Rpmmi
  */
 
-/** \ingroup py_c
- */
 struct rpmmiObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
@@ -73,8 +67,6 @@ struct rpmmiObject_s {
     rpmdbMatchIterator mi;
 } ;
 
-/**
- */
 static PyObject *
 rpmmi_iternext(rpmmiObject * s)
 {
@@ -87,8 +79,6 @@ rpmmi_iternext(rpmmiObject * s)
     return hdr_Wrap(h);
 }
 
-/**
- */
 static PyObject *
 rpmmi_Instance(rpmmiObject * s)
 {
@@ -100,8 +90,6 @@ rpmmi_Instance(rpmmiObject * s)
     return Py_BuildValue("i", rc);
 }
 
-/**
- */
 static PyObject *
 rpmmi_Count(rpmmiObject * s)
 {
@@ -113,8 +101,6 @@ rpmmi_Count(rpmmiObject * s)
     return Py_BuildValue("i", rc);
 }
 
-/**
- */
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 {
@@ -136,8 +122,6 @@ rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
     Py_RETURN_NONE;
 }
 
-/** \ingroup py_c
- */
 static struct PyMethodDef rpmmi_methods[] = {
     {"instance",    (PyCFunction) rpmmi_Instance,	METH_NOARGS,
 	NULL },
@@ -149,8 +133,6 @@ static struct PyMethodDef rpmmi_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
-/** \ingroup py_c
- */
 static void rpmmi_dealloc(rpmmiObject * s)
 {
     if (s) {
@@ -160,13 +142,9 @@ static void rpmmi_dealloc(rpmmiObject * s)
     }
 }
 
-/**
- */
 static char rpmmi_doc[] =
 "";
 
-/** \ingroup py_c
- */
 PyTypeObject rpmmi_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */

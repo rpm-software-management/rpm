@@ -3,18 +3,10 @@
 
 #include <rpm/rpmtypes.h>
 
-/** \ingroup py_c
- * \file python/header-py.h
- */
-
-/** \ingroup py_c
- */
 typedef struct hdrObject_s hdrObject;
 
 extern PyTypeObject hdr_Type;
 
-/** \ingroup py_c
- */
 extern PyObject * pyrpmError;
 
 PyObject * hdr_Wrap(Header h);

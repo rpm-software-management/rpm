@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/rpmfi-py.c
- */
-
 #include "system.h"
 
 #include <rpm/rpmtypes.h>
@@ -319,16 +315,12 @@ static PyMappingMethods rpmfi_as_mapping = {
         (objobjargproc)0,		/* mp_ass_subscript */
 };
 
-/** \ingroup py_c
- */
 static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 {
     s->active = 0;
     return 0;
 }
 
-/** \ingroup py_c
- */
 static void rpmfi_free(rpmfiObject * s)
 {
 if (_rpmfi_debug)
@@ -338,8 +330,6 @@ fprintf(stderr, "%p -- fi %p\n", s, s->fi);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup py_c
- */
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
@@ -362,8 +352,6 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     return rpmfi_Wrap(fi);
 }
 
-/**
- */
 static char rpmfi_doc[] =
 "";
 

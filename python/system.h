@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/system.h
- */
-
 #ifndef H_SYSTEM_PYTHON
 #define	H_SYSTEM_PYTHON
 

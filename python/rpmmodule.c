@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/rpmmodule.c
- */
-
 #include "system.h"
 
 #include <rpm/rpmlib.h>		/* rpmMachineScore, rpmReadConfigFiles */
@@ -26,12 +22,8 @@
  * \name Module: rpm
  */
 
-/**
- */
 PyObject * pyrpmError;
 
-/**
- */
 static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * arch;
@@ -46,8 +38,6 @@ static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", score);
 }
 
-/**
- *  */
 static PyObject * signalsCaught(PyObject * self, PyObject * check)
 {
     PyObject *caught, *o;
@@ -79,8 +69,6 @@ static PyObject * signalsCaught(PyObject * self, PyObject * check)
     return caught;
 }
 
-/**
- *  */
 static PyObject * checkSignals(PyObject * self, PyObject * args)
 {
     if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
@@ -88,9 +76,6 @@ static PyObject * checkSignals(PyObject * self, PyObject * args)
     Py_RETURN_NONE;
 }
 
-
-/**
- */
 static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
 {
     PyObject * fop = NULL;
@@ -114,8 +99,6 @@ static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
     return (PyObject *) Py_None;
 }
 
-/**
- */
 static PyObject *
 setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
 {
@@ -131,8 +114,6 @@ setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
     return (PyObject *) Py_None;
 }
 
-/**
- */
 static PyObject *
 setEpochPromote (PyObject * self, PyObject * args, PyObject * kwds)
 {
@@ -146,8 +127,6 @@ setEpochPromote (PyObject * self, PyObject * args, PyObject * kwds)
     return (PyObject *) Py_None;
 }
 
-/**
- */
 static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
 {
     char * kwlist[] = {"stats", NULL};
@@ -159,8 +138,6 @@ static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
     return (PyObject *) Py_None;
 }
 
-/**
- */
 static PyMethodDef rpmModuleMethods[] = {
     { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS|METH_KEYWORDS,
 "rpm.TransactionSet([rootDir, [db]]) -> ts\n\
@@ -220,8 +197,6 @@ static void rpm_exithook(void)
    rpmdbCheckTerminate(1);
 }
 
-/**
- */
 static char rpm__doc__[] =
 "";
 
@@ -253,8 +228,7 @@ static void addRpmTags(PyObject *module)
 }
 
 void init_rpm(void);	/* XXX eliminate gcc warning */
-/**
- */
+
 void init_rpm(void)
 {
     PyObject * d, *m;

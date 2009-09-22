@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/header-py.c
- */
-
 #include "system.h"
 
 #include <rpm/rpmlib.h>		/* rpmvercmp */
@@ -128,15 +124,11 @@
  * \name Class: rpm.hdr
  */
 
-/** \ingroup py_c
- */
 struct hdrObject_s {
     PyObject_HEAD
     Header h;
 } ;
 
-/** \ingroup py_c
- */
 static PyObject * hdrKeyList(hdrObject * s)
 {
     PyObject * list, *o;
@@ -174,8 +166,6 @@ static PyObject * hdrKeyList(hdrObject * s)
     return list;
 }
 
-/** \ingroup py_c
- */
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 {
     char * buf;
@@ -208,8 +198,6 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     return rc;
 }
 
-/** \ingroup py_c
- */
 static PyObject * hdrExpandFilelist(hdrObject * s)
 {
     headerConvert(s->h, HEADERCONV_EXPANDFILELIST);
@@ -217,8 +205,6 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
     Py_RETURN_NONE;
 }
 
-/** \ingroup py_c
- */
 static PyObject * hdrCompressFilelist(hdrObject * s)
 {
     headerConvert(s->h, HEADERCONV_COMPRESSFILELIST);
@@ -227,8 +213,6 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 }
 
 /* make a header with _all_ the tags we need */
-/** \ingroup py_c
- */
 static void mungeFilelist(Header h)
 {
     rpmtd fileNames = rpmtdNew();
@@ -246,8 +230,6 @@ static void mungeFilelist(Header h)
     rpmtdFree(fileNames);
 }
 
-/** \ingroup py_c
- */
 static PyObject * hdrFullFilelist(hdrObject * s)
 {
     mungeFilelist (s->h);
@@ -255,8 +237,6 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     Py_RETURN_NONE;
 }
 
-/** \ingroup py_c
- */
 static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
 {
     char * fmt;
@@ -285,8 +265,6 @@ static PyObject *hdrIsSource(hdrObject *s)
     return PyBool_FromLong(headerIsSource(s->h));
 }
 
-/**
- */
 static int hdr_compare(hdrObject * a, hdrObject * b)
 {
     return rpmVersionCompare(a->h, b->h);
@@ -297,8 +275,6 @@ static long hdr_hash(PyObject * h)
     return (long) h;
 }
 
-/** \ingroup py_c
- */
 static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
@@ -325,8 +301,6 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
-/** \ingroup py_c
- */
 static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) headerFree(s->h);
@@ -350,8 +324,6 @@ rpmTag tagNumFromPyObject (PyObject *item)
     return tag;
 }
 
-/** \ingroup py_c
- */
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
     rpmTagType tagtype, type;
@@ -484,21 +456,15 @@ static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
     return PyObject_GenericSetAttr(o, n, v);
 }
 
-/** \ingroup py_c
- */
 static PyMappingMethods hdr_as_mapping = {
 	(lenfunc) 0,			/* mp_length */
 	(binaryfunc) hdr_subscript,	/* mp_subscript */
 	(objobjargproc)0,		/* mp_ass_subscript */
 };
 
-/**
- */
 static char hdr_doc[] =
 "";
 
-/** \ingroup py_c
- */
 PyTypeObject hdr_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
@@ -557,8 +523,6 @@ Header hdrGetHeader(hdrObject * s)
     return s->h;
 }
 
-/**
- */
 PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
 {
     PyObject * hdr;
@@ -588,8 +552,6 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     return hdr;
 }
 
-/**
- */
 PyObject * rpmReadHeaders (FD_t fd)
 {
     PyObject * list;
@@ -626,8 +588,6 @@ PyObject * rpmReadHeaders (FD_t fd)
     return list;
 }
 
-/**
- */
 PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
@@ -646,8 +606,6 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     return list;
 }
 
-/**
- */
 PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
 {
     char * filespec;
@@ -764,8 +722,6 @@ rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     Py_RETURN_NONE;
 }
 
-/**
- */
 PyObject *
 rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
@@ -810,8 +766,6 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     return tuple;
 }
 
-/**
- */
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 {
     hdrObject * h1, * h2;
@@ -824,8 +778,6 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", hdr_compare(h1, h2));
 }
 
-/**
- */
 static int compare_values(const char *str1, const char *str2)
 {
     if (!str1 && !str2)

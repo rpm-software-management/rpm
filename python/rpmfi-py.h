@@ -3,10 +3,6 @@
 
 #include <rpm/rpmfi.h>
 
-/** \ingroup py_c
- * \file python/rpmfi-py.h
- */
-
 typedef struct rpmfiObject_s rpmfiObject;
 
 extern PyTypeObject rpmfi_Type;

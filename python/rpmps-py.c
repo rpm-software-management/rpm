@@ -1,15 +1,9 @@
-/** \ingroup py_c
- * \file python/rpmps-py.c
- */
-
 #include "system.h"
 
 #include "rpmps-py.h"
 
 #include "debug.h"
 
-/**
- */
 struct rpmpsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
@@ -80,8 +74,6 @@ static struct PyMethodDef rpmps_methods[] = {
  {NULL,		NULL}		/* sentinel */
 };
 
-/* ---------- */
-
 static void
 rpmps_dealloc(rpmpsObject * s)
 {
@@ -150,8 +142,6 @@ static PyMappingMethods rpmps_as_mapping = {
         (binaryfunc) rpmps_subscript,	/* mp_subscript */
 };
 
-/** \ingroup py_c
- */
 static void rpmps_free(rpmpsObject * s)
 {
 if (_rpmps_debug)
@@ -161,16 +151,12 @@ fprintf(stderr, "%p -- ps %p\n", s, s->ps);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup py_c
- */
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmps ps = rpmpsCreate();
     return rpmps_Wrap(ps);
 }
 
-/**
- */
 static char rpmps_doc[] =
 "";
 
@@ -218,8 +204,6 @@ PyTypeObject rpmps_Type = {
 	(freefunc) rpmps_free,		/* tp_free */
 	0,				/* tp_is_gc */
 };
-
-/* ---------- */
 
 rpmps psFromPs(rpmpsObject * s)
 {

@@ -3,10 +3,6 @@
 
 #include <rpm/rpmts.h>
 
-/** \ingroup py_c
- * \file python/rpmts-py.h
- */
-
 typedef struct rpmtsObject_s rpmtsObject;
 
 extern PyTypeObject rpmts_Type;

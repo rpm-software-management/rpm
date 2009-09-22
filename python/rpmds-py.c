@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/rpmds-py.c
- */
-
 #include "system.h"
 
 #include <rpm/rpmtypes.h>
@@ -13,8 +9,6 @@
 
 #include "debug.h"
 
-/**
- */
 struct rpmdsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
@@ -137,8 +131,6 @@ rpmds_Refs(rpmdsObject * s)
     return Py_BuildValue("i", rpmdsRefs(s->ds));
 }
 
-/**
- */
 static int compare_values(const char *str1, const char *str2)
 {
     if (!str1 && !str2)
@@ -445,16 +437,12 @@ static PyMappingMethods rpmds_as_mapping = {
         (objobjargproc)0,		/* mp_ass_subscript */
 };
 
-/** \ingroup py_c
- */
 static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
     s->active = 0;
     return 0;
 }
 
-/** \ingroup py_c
- */
 static void rpmds_free(rpmdsObject * s)
 {
 if (_rpmds_debug)
@@ -464,8 +452,6 @@ fprintf(stderr, "%p -- ds %p\n", s, s->ds);
     PyObject_Del((PyObject *)s);
 }
 
-/** \ingroup py_c
- */
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
@@ -488,8 +474,6 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     return rpmds_Wrap(ds);
 }
 
-/**
- */
 static char rpmds_doc[] =
 "";
 

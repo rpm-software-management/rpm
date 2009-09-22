@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/rpmmacro-py.c
- */
-
 #include "system.h"
 
 #include <structmember.h>
@@ -12,8 +8,6 @@
 
 #include "debug.h"
 
-/**
- */
 PyObject *
 rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
@@ -29,8 +23,6 @@ rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
     Py_RETURN_NONE;
 }
 
-/**
- */
 PyObject *
 rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
@@ -45,8 +37,6 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
     Py_RETURN_NONE;
 }
 
-/**
- */
 PyObject * 
 rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {

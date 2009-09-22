@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/spec-py.c
- */
-
 #include "system.h"
 
 #include "spec-py.h"
@@ -139,9 +135,6 @@ spec_get_sources(specObject *s)
     }
 
 }
-
-/**
- */
 
 static char spec_doc[] = "RPM Spec file object";
 

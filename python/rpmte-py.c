@@ -1,7 +1,3 @@
-/** \ingroup py_c
- * \file python/rpmte-py.c
- */
-
 #include "system.h"
 
 #include "header-py.h"	/* XXX tagNumFromPyObject */
@@ -219,8 +215,6 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     return rpmfi_Wrap(rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
 }
 
-/** \ingroup py_c
- */
 static struct PyMethodDef rpmte_methods[] = {
     {"Debug",	(PyCFunction)rpmte_Debug,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
@@ -295,13 +289,9 @@ rpmte_print(rpmteObject * s, FILE * fp, int flags)
     return 0;
 }
 
-/**
- */
 static char rpmte_doc[] =
 "";
 
-/** \ingroup py_c
- */
 PyTypeObject rpmte_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
 	0,				/* ob_size */
