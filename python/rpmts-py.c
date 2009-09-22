@@ -1252,14 +1252,6 @@ static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
 
 /** \ingroup py_c
  */
-static int rpmts_init(rpmtsObject * s, PyObject *args, PyObject *kwds)
-{
-    /* nothing to do atm... */
-    return 0;
-}
-
-/** \ingroup py_c
- */
 static void rpmts_free(rpmtsObject * s)
 {
 if (_rpmts_debug)
@@ -1289,7 +1281,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     if (_rpmts_debug < 0)
 	fprintf(stderr, "*** rpmts_new(%p,%p,%p)\n", s, args, kwds);
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_init", kwlist,
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_new", kwlist,
 	    &rootDir, &vsflags))
 	return NULL;
 
@@ -1354,7 +1346,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	(initproc) rpmts_init,		/* tp_init */
+	0,				/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmts_new,		/* tp_new */
 	(freefunc) rpmts_free,		/* tp_free */
