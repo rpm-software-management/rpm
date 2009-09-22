@@ -226,12 +226,39 @@ static void rpm_exithook(void)
 static char rpm__doc__[] =
 "";
 
+/*
+ * Add rpm tag dictionaries to the module
+ */
+static void addRpmTags(PyObject *module)
+{
+    PyObject *pyval, *pyname, *dict = PyDict_New();
+    rpmtd names = rpmtdNew();
+    rpmTagGetNames(names, 1);
+    const char *tagname, *shortname;
+    rpmTag tagval;
+
+    while ((tagname = rpmtdNextString(names))) {
+	shortname = tagname + strlen("RPMTAG_");
+	tagval = rpmTagGetValue(shortname);
+
+	PyModule_AddIntConstant(module, tagname, tagval);
+	pyval = PyInt_FromLong(tagval);
+	pyname = PyString_FromString(shortname);
+	PyDict_SetItem(dict, pyval, pyname);
+	Py_DECREF(pyval);
+	Py_DECREF(pyname);
+    }
+    PyModule_AddObject(module, "tagnames", dict);
+    rpmtdFreeData(names);
+    rpmtdFree(names);
+}
+
 void init_rpm(void);	/* XXX eliminate gcc warning */
 /**
  */
 void init_rpm(void)
 {
-    PyObject * d, *o, *tag = NULL, *dict, *m;
+    PyObject * d, *m;
 
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
@@ -286,30 +313,9 @@ void init_rpm(void)
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
 
-    dict = PyDict_New();
-    {	const char *tname, *sname;
-	rpmtd names = rpmtdNew();
-	rpmTagGetNames(names, 1);
+    addRpmTags(m);
 
-	while ((tname = rpmtdNextString(names))) {
-	    sname = tname + strlen("RPMTAG_");
-	    tag = PyInt_FromLong(rpmTagGetValue(sname));
-	    PyDict_SetItemString(d, tname, tag);
-	    Py_DECREF(tag);
-	    o = PyString_FromString(sname);
-	    PyDict_SetItem(dict, tag, o);
-	    Py_DECREF(o);
-	}
-	rpmtdFreeData(names);
-	rpmtdFree(names);
-    }	
-    PyDict_SetItemString(d, "tagnames", dict);
-    Py_DECREF(dict);
-
-
-#define REGISTER_ENUM(val) \
-    PyDict_SetItemString(d, #val, o=PyInt_FromLong( val )); \
-    Py_DECREF(o);
+#define REGISTER_ENUM(val) PyModule_AddIntConstant(m, #val, val)
 
     REGISTER_ENUM(RPMTAG_NOT_FOUND);
 
