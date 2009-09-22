@@ -1238,34 +1238,23 @@ fprintf(stderr, "%p -- ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
  */
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmtsObject * s = (void *) PyObject_New(rpmtsObject, subtype);
-
     char * rootDir = "/";
     rpmVSFlags vsflags = rpmExpandNumeric("%{?__vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
-
-    if (_rpmts_debug < 0)
-	fprintf(stderr, "*** rpmts_new(%p,%p,%p)\n", s, args, kwds);
+    rpmts ts = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_new", kwlist,
 	    &rootDir, &vsflags))
 	return NULL;
 
-    s->ts = rpmtsCreate();
+    ts = rpmtsCreate();
     /* XXX: Why is there no rpmts_SetRootDir() ? */
-    (void) rpmtsSetRootDir(s->ts, rootDir);
+    (void) rpmtsSetRootDir(ts, rootDir);
     /* XXX: make this use common code with rpmts_SetVSFlags() to check the
      *      python objects */
-    (void) rpmtsSetVSFlags(s->ts, vsflags);
-    s->keyList = PyList_New(0);
-    s->scriptFd = NULL;
-    s->tsi = NULL;
-    s->tsiFilter = 0;
+    (void) rpmtsSetVSFlags(ts, vsflags);
 
-    if (_rpmts_debug)
-	fprintf(stderr, "%p ++ ts %p db %p\n", s, s->ts, rpmtsGetRdb(s->ts));
-
-    return (PyObject *)s;
+    return rpmts_Wrap(ts);
 }
 
 /**
@@ -1325,4 +1314,17 @@ PyObject *
 rpmts_Create(PyObject * self, PyObject * args, PyObject * kwds)
 {
     return PyObject_Call((PyObject *) &rpmts_Type, args, kwds);
+}
+
+PyObject * rpmts_Wrap(rpmts ts)
+{
+    rpmtsObject * s = PyObject_New(rpmtsObject, &rpmts_Type);
+    if (s == NULL) return PyErr_NoMemory();
+
+    s->ts = ts;
+    s->keyList = PyList_New(0);
+    s->scriptFd = NULL;
+    s->tsi = NULL;
+    s->tsiFilter = 0;
+    return (PyObject *) s;
 }

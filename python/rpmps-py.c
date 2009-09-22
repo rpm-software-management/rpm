@@ -165,15 +165,8 @@ fprintf(stderr, "%p -- ps %p\n", s, s->ps);
  */
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmpsObject * s = (void *) PyObject_New(rpmpsObject, subtype);
-
-    s->ps = rpmpsCreate();
-    s->psi = NULL;
-
-if (_rpmps_debug)
-fprintf(stderr, "%p ++ ps %p\n", s, s->ps);
-
-    return (PyObject *)s;
+    rpmps ps = rpmpsCreate();
+    return rpmps_Wrap(ps);
 }
 
 /**
@@ -236,10 +229,9 @@ rpmps psFromPs(rpmpsObject * s)
 PyObject * rpmps_Wrap(rpmps ps)
 {
     rpmpsObject * s = PyObject_New(rpmpsObject, &rpmps_Type);
+    if (s == NULL) return PyErr_NoMemory();
 
-    if (s == NULL)
-	return NULL;
-    s->ps = ps;
+    s->ps = ps; /* XXX refcounts? */
     s->psi = NULL;
     return (PyObject *) s;
 }

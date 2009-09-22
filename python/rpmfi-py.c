@@ -342,10 +342,9 @@ fprintf(stderr, "%p -- fi %p\n", s, s->fi);
  */
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmfiObject * s = (void *) PyObject_New(rpmfiObject, subtype);
-
     hdrObject * ho = NULL;
     PyObject * to = NULL;
+    rpmfi fi = NULL;
     rpmTag tagN = RPMTAG_BASENAMES;
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
@@ -358,9 +357,9 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	tagN = tagNumFromPyObject(to);
 	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
-    s->fi = rpmfiNew(NULL, hdrGetHeader(ho), tagN, flags);
+    fi = rpmfiNew(NULL, hdrGetHeader(ho), tagN, flags);
 
-    return (PyObject *)s;
+    return rpmfi_Wrap(fi);
 }
 
 /**
@@ -423,9 +422,8 @@ rpmfi fiFromFi(rpmfiObject * s)
 PyObject * rpmfi_Wrap(rpmfi fi)
 {
     rpmfiObject *s = PyObject_New(rpmfiObject, &rpmfi_Type);
+    if (s == NULL) return PyErr_NoMemory();
 
-    if (s == NULL)
-	return NULL;
     s->fi = fi;
     s->active = 0;
     return (PyObject *) s;

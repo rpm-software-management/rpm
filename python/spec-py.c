@@ -208,8 +208,8 @@ PyObject *
 spec_Wrap(rpmSpec spec) 
 {
     specObject * s = PyObject_New(specObject, &spec_Type);
-    if (s == NULL)
-        return NULL;
+    if (s == NULL) return PyErr_NoMemory();
+
     s->spec = spec; 
     return (PyObject *) s;
 }

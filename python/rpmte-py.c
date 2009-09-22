@@ -349,8 +349,8 @@ PyTypeObject rpmte_Type = {
 PyObject * rpmte_Wrap(rpmte te)
 {
     rpmteObject *s = PyObject_New(rpmteObject, &rpmte_Type);
-    if (s == NULL)
-	return NULL;
+    if (s == NULL) return PyErr_NoMemory();
+
     s->te = te;
     return (PyObject *) s;
 }

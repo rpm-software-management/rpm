@@ -214,11 +214,8 @@ PyTypeObject rpmmi_Type = {
 PyObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
 {
     rpmmiObject * mio = PyObject_New(rpmmiObject, &rpmmi_Type);
+    if (mio == NULL) return PyErr_NoMemory();
 
-    if (mio == NULL) {
-        PyErr_SetString(pyrpmError, "out of memory creating rpmmiObject");
-        return NULL;
-    }
     mio->mi = mi;
     mio->ref = s;
     Py_INCREF(mio->ref);

@@ -468,11 +468,11 @@ fprintf(stderr, "%p -- ds %p\n", s, s->ds);
  */
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    rpmdsObject * s = (void *) PyObject_New(rpmdsObject, subtype);
     hdrObject * ho = NULL;
     PyObject * to = NULL;
     rpmTag tagN = RPMTAG_REQUIRENAME;
     rpmsenseFlags flags = 0;
+    rpmds ds = NULL;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_new", kwlist, 
@@ -483,9 +483,9 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	tagN = tagNumFromPyObject(to);
 	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
-    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
+    ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
 
-    return (PyObject *)s;
+    return rpmds_Wrap(ds);
 }
 
 /**
@@ -549,9 +549,8 @@ rpmds dsFromDs(rpmdsObject * s)
 PyObject * rpmds_Wrap(rpmds ds)
 {
     rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
+    if (s == NULL) return PyErr_NoMemory();
 
-    if (s == NULL)
-	return NULL;
     s->ds = ds;
     s->active = 0;
     return (PyObject *) s;
