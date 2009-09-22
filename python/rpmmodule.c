@@ -12,7 +12,6 @@
 
 #include "header-py.h"
 #include "rpmds-py.h"
-#include "rpmfd-py.h"
 #include "rpmfi-py.h"
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
@@ -236,7 +235,6 @@ void init_rpm(void)
 
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
-    if (PyType_Ready(&rpmfd_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
@@ -269,9 +267,6 @@ void init_rpm(void)
 
     Py_INCREF(&rpmds_Type);
     PyModule_AddObject(m, "ds", (PyObject *) &rpmds_Type);
-
-    Py_INCREF(&rpmfd_Type);
-    PyModule_AddObject(m, "fd", (PyObject *) &rpmfd_Type);
 
     Py_INCREF(&rpmfi_Type);
     PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
