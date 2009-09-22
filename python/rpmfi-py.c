@@ -479,20 +479,6 @@ rpmfi_Wrap(rpmfi fi)
 rpmfiObject *
 hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    hdrObject * ho = (hdrObject *)s;
-    PyObject * to = NULL;
-    rpmts ts = NULL;	/* XXX FIXME: fiFromHeader should be a ts method. */
-    rpmTag tagN = RPMTAG_BASENAMES;
-    int flags = 0;
-    char * kwlist[] = {"tag", "flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|Oi:fiFromHeader", kwlist,
-	    &to, &flags))
-	return NULL;
-
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) return NULL;
-    }
-    return rpmfi_Wrap( rpmfiNew(ts, hdrGetHeader(ho), tagN, flags) );
+    return PyObject_Call((PyObject *) &rpmfi_Type,
+			 Py_BuildValue("(O)", s), kwds);
 }
