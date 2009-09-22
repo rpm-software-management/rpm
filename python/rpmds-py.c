@@ -602,8 +602,6 @@ rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 	tagN = tagNumFromPyObject(to);
 	if (tagN == RPMTAG_NOT_FOUND) return NULL;
     }
-    if (N != NULL) N = xstrdup(N);
-    if (EVR != NULL) EVR = xstrdup(EVR);
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 
