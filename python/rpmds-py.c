@@ -475,29 +475,7 @@ static PyMappingMethods rpmds_as_mapping = {
  */
 static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
-    hdrObject * ho = NULL;
-    PyObject * to = NULL;
-    rpmTag tagN = RPMTAG_REQUIRENAME;
-    rpmsenseFlags flags = 0;
-    char * kwlist[] = {"header", "tag", "flags", NULL};
-
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** rpmds_init(%p,%p,%p)\n", s, args, kwds);
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_init", kwlist, 
-	    &hdr_Type, &ho, &to, &flags))
-	return -1;
-
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == -1) {
-	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
-	    return -1;
-	}
-    }
-    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
     s->active = 0;
-
     return 0;
 }
 
@@ -517,15 +495,24 @@ fprintf(stderr, "%p -- ds %p\n", s, s->ds);
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmdsObject * s = (void *) PyObject_New(rpmdsObject, subtype);
+    hdrObject * ho = NULL;
+    PyObject * to = NULL;
+    rpmTag tagN = RPMTAG_REQUIRENAME;
+    rpmsenseFlags flags = 0;
+    char * kwlist[] = {"header", "tag", "flags", NULL};
 
-    /* Perform additional initialization. */
-    if (rpmds_init(s, args, kwds) < 0) {
-	rpmds_free(s);
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_new", kwlist, 
+	    &hdr_Type, &ho, &to, &flags))
 	return NULL;
-    }
 
-if (_rpmds_debug)
-fprintf(stderr, "%p ++ ds %p\n", s, s->ds);
+    if (to != NULL) {
+	tagN = tagNumFromPyObject(to);
+	if (tagN == -1) {
+	    PyErr_SetString(PyExc_KeyError, "unknown header tag");
+	    return NULL;
+	}
+    }
+    s->ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
 
     return (PyObject *)s;
 }
