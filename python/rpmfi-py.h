@@ -7,6 +7,8 @@ typedef struct rpmfiObject_s rpmfiObject;
 
 extern PyTypeObject rpmfi_Type;
 
+#define rpmfiObject_Check(v)	((v)->ob_type == &rpmfi_Type)
+
 rpmfi fiFromFi(rpmfiObject * fi);
 
 PyObject * rpmfi_Wrap(rpmfi fi);

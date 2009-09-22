@@ -7,6 +7,8 @@ typedef struct hdrObject_s hdrObject;
 
 extern PyTypeObject hdr_Type;
 
+#define hdrObject_Check(v)	((v)->ob_type == &hdr_Type)
+
 extern PyObject * pyrpmError;
 
 PyObject * hdr_Wrap(Header h);

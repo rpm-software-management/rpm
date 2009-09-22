@@ -7,6 +7,8 @@ typedef struct rpmpsObject_s rpmpsObject;
 
 extern PyTypeObject rpmps_Type;
 
+#define rpmpsObject_Check(v)	((v)->ob_type == &rpmps_Type)
+
 rpmps psFromPs(rpmpsObject * ps);
 
 PyObject * rpmps_Wrap(rpmps ps);

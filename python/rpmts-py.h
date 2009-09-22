@@ -7,6 +7,8 @@ typedef struct rpmtsObject_s rpmtsObject;
 
 extern PyTypeObject rpmts_Type;
 
+#define rpmtsObject_Check(v)	((v)->ob_type == &rpmts_Type)
+
 /* XXX These names/constants have been removed from the rpmlib API. */
 enum {
    RPMDEP_SENSE_REQUIRES,		/*!< requirement not satisfied. */
