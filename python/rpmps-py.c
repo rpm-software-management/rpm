@@ -11,17 +11,6 @@ struct rpmpsObject_s {
     rpmpsi	psi;
 };
 
-static PyObject *
-rpmps_Debug(rpmpsObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-    
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmps_debug))
-	return NULL;
-
-    Py_RETURN_NONE;
-}
-
 static int
 rpmps_append(rpmpsObject * s, PyObject * value)
 {
@@ -47,9 +36,6 @@ rpmps_iternext(rpmpsObject * s)
 {
     PyObject * result = NULL;
 
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
-
     /* Reset loop indices on 1st entry. */
     if (s->psi == NULL) {
     	s->psi = rpmpsInitIterator(s->ps);
@@ -68,8 +54,6 @@ fprintf(stderr, "*** rpmps_iternext(%p) ps %p psi %p\n", s, s->ps, s->psi);
 }
 
 static struct PyMethodDef rpmps_methods[] = {
- {"Debug",	(PyCFunction)rpmps_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
   {"append",	(PyCFunction)rpmps_append,	METH_VARARGS, NULL},
  {NULL,		NULL}		/* sentinel */
 };
@@ -77,8 +61,6 @@ static struct PyMethodDef rpmps_methods[] = {
 static void
 rpmps_dealloc(rpmpsObject * s)
 {
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_dealloc(%p)\n", s);
     if (s) {
 	s->ps = rpmpsFree(s->ps);
 	PyObject_Del(s);
@@ -88,8 +70,6 @@ fprintf(stderr, "*** rpmps_dealloc(%p)\n", s);
 static int
 rpmps_print(rpmpsObject * s, FILE * fp, int flags)
 {
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_print(%p,%p,%x)\n", s, (void *)fp, flags);
     if (s && s->ps)
 	rpmpsPrint(fp, s->ps);
     return 0;
@@ -100,8 +80,6 @@ rpmps_length(rpmpsObject * s)
 {
     int rc;
     rc = rpmpsNumProblems(s->ps);
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_length(%p) rc %d\n", s, rc);
     return rc;
 }
 
@@ -131,9 +109,6 @@ rpmps_subscript(rpmpsObject * s, PyObject * key)
     }
     psi = rpmpsFreeIterator(psi);
 
-if (_rpmps_debug < 0)
-fprintf(stderr, "*** rpmps_subscript(%p,%p) %s\n", s, key, PyString_AsString(result));
-
     return result;
 }
 
@@ -144,8 +119,6 @@ static PyMappingMethods rpmps_as_mapping = {
 
 static void rpmps_free(rpmpsObject * s)
 {
-if (_rpmps_debug)
-fprintf(stderr, "%p -- ps %p\n", s, s->ps);
     s->ps = rpmpsFree(s->ps);
 
     PyObject_Del((PyObject *)s);

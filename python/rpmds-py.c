@@ -61,17 +61,6 @@ void rpmds_ParseEVR(char * evr,
 }
 
 static PyObject *
-rpmds_Debug(rpmdsObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmds_debug))
-	return NULL;
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
 rpmds_Count(rpmdsObject * s)
 {
     return Py_BuildValue("i", rpmdsCount(s->ds));
@@ -340,8 +329,6 @@ rpmds_Problem(rpmdsObject * s)
 #endif
 
 static struct PyMethodDef rpmds_methods[] = {
- {"Debug",	(PyCFunction)rpmds_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
  {"Count",	(PyCFunction)rpmds_Count,	METH_NOARGS,
 	"ds.Count -> Count	- Return no. of elements.\n" },
  {"Ix",		(PyCFunction)rpmds_Ix,		METH_NOARGS,
@@ -445,8 +432,6 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 
 static void rpmds_free(rpmdsObject * s)
 {
-if (_rpmds_debug)
-fprintf(stderr, "%p -- ds %p\n", s, s->ds);
     s->ds = rpmdsFree(s->ds);
 
     PyObject_Del((PyObject *)s);

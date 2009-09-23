@@ -16,17 +16,6 @@ struct rpmfiObject_s {
 };
 
 static PyObject *
-rpmfi_Debug(rpmfiObject * s, PyObject * args, PyObject * kwds)
-{
-    char * kwlist[] = {"debugLevel", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmfi_debug))
-	return NULL;
-
-    Py_RETURN_NONE;
-}
-
-static PyObject *
 rpmfi_FC(rpmfiObject * s)
 {
     return Py_BuildValue("i", rpmfiFC(s->fi));
@@ -218,8 +207,6 @@ rpmfi_iternext(rpmfiObject * s)
 }
 
 static struct PyMethodDef rpmfi_methods[] = {
- {"Debug",	(PyCFunction)rpmfi_Debug,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
  {"FC",		(PyCFunction)rpmfi_FC,		METH_NOARGS,
 	NULL},
  {"FX",		(PyCFunction)rpmfi_FX,		METH_NOARGS,
@@ -323,8 +310,6 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 
 static void rpmfi_free(rpmfiObject * s)
 {
-if (_rpmfi_debug)
-fprintf(stderr, "%p -- fi %p\n", s, s->fi);
     s->fi = rpmfiFree(s->fi);
 
     PyObject_Del((PyObject *)s);
