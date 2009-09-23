@@ -673,14 +673,14 @@ PyObject * rpmReadHeaders (FD_t fd)
 PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
-    int fileno;
+    PyObject *fo;
     PyObject * list;
     char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &fileno))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &fo))
 	return NULL;
 
-    fd = fdDup(fileno);
+    if ((fd = rpmFdFromPyObject(fo)) == NULL) return NULL;
 
     list = rpmReadHeaders (fd);
     Fclose(fd);
