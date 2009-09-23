@@ -265,6 +265,15 @@ static PyObject *hdrIsSource(hdrObject *s)
     return PyBool_FromLong(headerIsSource(s->h));
 }
 
+static PyObject *hdrHasKey(hdrObject *s, PyObject *pytag)
+{
+    rpmTag tag = tagNumFromPyObject(pytag);
+    if (tag == RPMTAG_NOT_FOUND) {
+	return NULL;
+    }
+    return PyBool_FromLong(headerIsEntry(s->h, tag));
+}
+
 static int hdr_compare(hdrObject * a, hdrObject * b)
 {
     return rpmVersionCompare(a->h, b->h);
@@ -285,6 +294,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
 	NULL },
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
+	NULL },
+    {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
     {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
