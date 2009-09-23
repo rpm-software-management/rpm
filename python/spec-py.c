@@ -43,12 +43,6 @@ spec_dealloc(specObject * s)
         PyObject_Del(s);
 }
 
-static int
-spec_print(specObject * s)
-{
-    return 0;
-}
-
 /* XXX TODO return something sensible if spec exists but component (eg %clean)
  * does not. Possibly "" or None */
 
@@ -188,7 +182,7 @@ PyTypeObject spec_Type = {
     sizeof(specObject),        /*tp_basicsize*/
     0,                         /*tp_itemsize*/
     (destructor) spec_dealloc, /*tp_dealloc*/
-    (printfunc) spec_print,    /*tp_print*/
+    0,                         /*tp_print*/
     0,                         /*tp_getattr*/
     0,                         /*tp_setattr*/
     0,                         /*tp_compare*/
