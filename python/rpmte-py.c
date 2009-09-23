@@ -99,6 +99,12 @@ rpmte_NEVR(rpmteObject * s)
 }
 
 static PyObject *
+rpmte_NEVRA(rpmteObject * s)
+{
+    return Py_BuildValue("s", rpmteNEVRA(s->te));
+}
+
+static PyObject *
 rpmte_Color(rpmteObject * s)
 {
     return Py_BuildValue("i", rpmteColor(s->te));
@@ -228,7 +234,10 @@ static struct PyMethodDef rpmte_methods[] = {
 - Return element os.\n" },
     {"NEVR",	(PyCFunction)rpmte_NEVR,	METH_NOARGS,
 "te.NEVR() -> NEVR\n\
-- Return element name-version-release.\n" },
+- Return element name-[epoch:]version-release.\n" },
+    {"NEVRA",	(PyCFunction)rpmte_NEVRA,	METH_NOARGS,
+"te.NEVRA() -> NEVRA\n\
+- Return element name-[epoch:]version-release.arch\n" },
     {"Color",(PyCFunction)rpmte_Color,		METH_NOARGS,
 	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
