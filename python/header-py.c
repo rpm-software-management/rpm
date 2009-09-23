@@ -274,6 +274,17 @@ static PyObject *hdrHasKey(hdrObject *s, PyObject *pytag)
     return PyBool_FromLong(headerIsEntry(s->h, tag));
 }
 
+static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
+{
+    char *kwlist[] = {"op", NULL};
+    headerConvOps op = -1;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &op)) {
+        return NULL;
+    }
+    return PyBool_FromLong(headerConvert(self->h, op));
+}
+
 static int hdr_compare(hdrObject * a, hdrObject * b)
 {
     return rpmVersionCompare(a->h, b->h);
@@ -294,6 +305,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"compressFilelist",(PyCFunction) hdrCompressFilelist,METH_NOARGS,
 	NULL },
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
+	NULL },
+    {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
