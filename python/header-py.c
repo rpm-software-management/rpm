@@ -9,6 +9,7 @@
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
+#include "rpmtd-py.h"
 
 #include "debug.h"
 
@@ -433,119 +434,18 @@ int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
 
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
-    rpmTagType tagtype, type;
     rpmTag tag = RPMTAG_NOT_FOUND;
-    rpm_count_t count, i;
-    rpm_data_t data;
-    PyObject * o, * metao;
-    char ** stringArray;
-    int forceArray = 0;
     struct rpmtd_s td;
+    PyObject *res = NULL;
 
     if (!tagNumFromPyObject(item, &tag)) return NULL;
-
-    tagtype = rpmTagGetType(tag); 
-    forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;
-
-    /* Retrieve data from extension or header. */
-    if (!headerGet(s->h, tag, &td, HEADERGET_EXT)) {
-	if (forceArray) {
-	    o = PyList_New(0);
-	} else {
-	    o = Py_None;
-	    Py_INCREF(o);
-	}
-	return o;
-    }
-
-    count = td.count;
-    data = td.data;
-    type = td.type;
-
-    switch (type) {
-    case RPM_BIN_TYPE:
-	o = PyString_FromStringAndSize(data, count);
-	break;
-
-    case RPM_INT32_TYPE:
-	if (count != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((int *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((int *) data));
-	}
-	break;
-
-    case RPM_CHAR_TYPE:
-    case RPM_INT8_TYPE:
-	if (count != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((char *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((char *) data));
-	}
-	break;
-
-    case RPM_INT16_TYPE:
-	if (count != 1 || forceArray) {
-	    metao = PyList_New(0);
-	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((short *) data)[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyInt_FromLong(*((short *) data));
-	}
-	break;
-
-    case RPM_STRING_ARRAY_TYPE:
-	stringArray = data;
-
-	metao = PyList_New(0);
-	for (i = 0; i < count; i++) {
-	    o = PyString_FromString(stringArray[i]);
-	    PyList_Append(metao, o);
-	    Py_DECREF(o);
-	}
-	o = metao;
-	break;
-
-    case RPM_STRING_TYPE:
-    case RPM_I18NSTRING_TYPE:
-	if (count != 1 || forceArray) {
-	    stringArray = data;
-
-	    metao = PyList_New(0);
-	    for (i=0; i < count; i++) {
-		o = PyString_FromString(stringArray[i]);
-		PyList_Append(metao, o);
-		Py_DECREF(o);
-	    }
-	    o = metao;
-	} else {
-	    o = PyString_FromString(data);
-	}
-	break;
-
-    default:
-	PyErr_SetString(PyExc_TypeError, "unsupported type in header");
-	return NULL;
-    }
+    
+    /* rpmtd_AsPyObj() knows how to handle empty containers and all */
+    (void) headerGet(s->h, tag, &td, HEADERGET_EXT);
+    res = rpmtd_AsPyobj(&td);
     rpmtdFreeData(&td);
 
-    return o;
+    return res;
 }
 
 static PyObject * hdr_getattro(PyObject * o, PyObject * n)
