@@ -1,5 +1,6 @@
 #include "rpmsystem-py.h"
 
+#include "header-py.h"
 #include "spec-py.h"
 
 /** \ingroup python
@@ -19,8 +20,7 @@
  * \code
  *  import rpm
  *  rpm.addMacro("_topdir","/path/to/topdir")
- *  ts=rpm.ts()
- *  s=ts.parseSpec("foo.spec")
+ *  s=rpm.spec("foo.spec")
  *  print s.prep()
  * \endcode
  *
@@ -148,6 +148,39 @@ static PyMethodDef spec_Spec_methods[] = {
     {NULL}  /* Sentinel */
 };
 
+static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
+{
+    rpmts ts = NULL;
+    const char * specfile;
+    rpmSpec spec = NULL;
+    char * buildRoot = NULL;
+    int recursing = 0;
+    char * passPhrase = "";
+    char *cookie = NULL;
+    int anyarch = 1;
+    int force = 1;
+    char * kwlist[] = {"specfile", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:spec_new", kwlist,
+				     &specfile))
+	return NULL;
+
+    /*
+     * Just how hysterical can you get? We need to create a transaction
+     * set to get back the results from parseSpec()...
+     */
+    ts = rpmtsCreate();
+    if (parseSpec(ts, specfile,"/", buildRoot,recursing, passPhrase,
+             	  cookie, anyarch, force) == 0) {
+	spec = rpmtsSpec(ts);
+    } else {
+	 PyErr_SetString(pyrpmError, "can't parse specfile\n");
+    }
+    rpmtsFree(ts);
+
+    return spec ? spec_Wrap(spec) : NULL;
+}
+
 PyTypeObject spec_Type = {
     PyObject_HEAD_INIT(&PyType_Type)
     0,                         /*ob_size*/
@@ -187,7 +220,7 @@ PyTypeObject spec_Type = {
     0,                         /* tp_dictoffset */
     0,                         /* tp_init */
     0,                         /* tp_alloc */
-    0,                         /* tp_new */
+    spec_new,                  /* tp_new */
     0,                         /* tp_free */
     0,                         /* tp_is_gc */
 };

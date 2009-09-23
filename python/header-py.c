@@ -126,11 +126,6 @@
  * \name Class: rpm.hdr
  */
 
-#define DEPRECATED_METHOD \
-    static int _warn = 0; \
-    if (!_warn) PyErr_Warn(PyExc_DeprecationWarning, "method is deprecated"); \
-    _warn = 1;
-
 struct hdrObject_s {
     PyObject_HEAD
     Header h;

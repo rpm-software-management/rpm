@@ -848,27 +848,9 @@ rpmts_iternext(rpmtsObject * s)
 static PyObject *
 spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    const char * specfile;
-    rpmSpec spec;
-    char * buildRoot = NULL;
-    int recursing = 0;
-    char * passPhrase = "";
-    char *cookie = NULL;
-    int anyarch = 1;
-    int force = 1;
-    char * kwlist[] = {"specfile", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:Parse", kwlist, &specfile))
-	return NULL;
-
-    if (parseSpec(s->ts, specfile,"/", buildRoot,recursing, passPhrase,
-             cookie, anyarch, force)!=0) {
-             PyErr_SetString(pyrpmError, "can't parse specfile\n");
-                     return NULL;
-   }
-
-    spec = rpmtsSpec(s->ts);
-    return spec_Wrap(spec);
+    DEPRECATED_METHOD;
+    /* we could pass in the ts from here but hardly worth the trouble */
+    return PyObject_Call((PyObject *) &spec_Type, args, kwds);
 }
 
 static PyObject *
