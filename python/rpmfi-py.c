@@ -264,18 +264,6 @@ rpmfi_dealloc(rpmfiObject * s)
 }
 
 static int
-rpmfi_print(rpmfiObject * s, FILE * fp, int flags)
-{
-    if (!(s && s->fi))
-	return -1;
-
-    s->fi = rpmfiInit(s->fi, 0);
-    while (rpmfiNext(s->fi) >= 0)
-	fprintf(fp, "%s\n", rpmfiFN(s->fi));
-    return 0;
-}
-
-static int
 rpmfi_length(rpmfiObject * s)
 {
     return rpmfiFC(s->fi);
@@ -348,7 +336,7 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_itemsize */
 	/* methods */
 	(destructor) rpmfi_dealloc,	/* tp_dealloc */
-	(printfunc) rpmfi_print,	/* tp_print */
+	0,				/* tp_print */
 	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc)0,			/* tp_compare */

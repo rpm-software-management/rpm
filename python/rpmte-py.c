@@ -261,21 +261,6 @@ static struct PyMethodDef rpmte_methods[] = {
 
 /* ---------- */
 
-static int
-rpmte_print(rpmteObject * s, FILE * fp, int flags)
-{
-    const char * tstr;
-    if (!(s && s->te))
-	return -1;
-    switch (rpmteType(s->te)) {
-    case TR_ADDED:	tstr = "++";	break;
-    case TR_REMOVED:	tstr = "--";	break;
-    default:		tstr = "??";	break;
-    }
-    fprintf(fp, "%s %s %s", tstr, rpmteNEVR(s->te), rpmteA(s->te));
-    return 0;
-}
-
 static char rpmte_doc[] =
 "";
 
@@ -286,7 +271,7 @@ PyTypeObject rpmte_Type = {
 	sizeof(rpmteObject),		/* tp_size */
 	0,				/* tp_itemsize */
 	(destructor)0,		 	/* tp_dealloc */
-	(printfunc) rpmte_print,	/* tp_print */
+	0,				/* tp_print */
 	(getattrfunc)0,		 	/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	0,				/* tp_compare */

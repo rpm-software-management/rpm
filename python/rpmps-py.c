@@ -68,14 +68,6 @@ rpmps_dealloc(rpmpsObject * s)
 }
 
 static int
-rpmps_print(rpmpsObject * s, FILE * fp, int flags)
-{
-    if (s && s->ps)
-	rpmpsPrint(fp, s->ps);
-    return 0;
-}
-
-static int
 rpmps_length(rpmpsObject * s)
 {
     int rc;
@@ -141,7 +133,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_itemsize */
 	/* methods */
 	(destructor) rpmps_dealloc,	/* tp_dealloc */
-	(printfunc) rpmps_print,	/* tp_print */
+	0,				/* tp_print */
 	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc)0,			/* tp_compare */

@@ -386,18 +386,6 @@ rpmds_dealloc(rpmdsObject * s)
 }
 
 static int
-rpmds_print(rpmdsObject * s, FILE * fp, int flags)
-{
-    if (!(s && s->ds))
-	return -1;
-
-    s->ds = rpmdsInit(s->ds);
-    while (rpmdsNext(s->ds) >= 0)
-	fprintf(fp, "%s\n", rpmdsDNEVR(s->ds));
-    return 0;
-}
-
-static int
 rpmds_length(rpmdsObject * s)
 {
     return rpmdsCount(s->ds);
@@ -470,7 +458,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_itemsize */
 	/* methods */
 	(destructor) rpmds_dealloc,	/* tp_dealloc */
-	(printfunc) rpmds_print,	/* tp_print */
+	0,				/* tp_print */
 	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
 	(cmpfunc) rpmds_compare,	/* tp_compare */
