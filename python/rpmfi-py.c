@@ -417,8 +417,3 @@ PyObject * rpmfi_Wrap(rpmfi fi)
     return (PyObject *) s;
 }
 
-PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    return PyObject_Call((PyObject *) &rpmfi_Type,
-			 Py_BuildValue("(O)", s), kwds);
-}

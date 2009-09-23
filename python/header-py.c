@@ -289,6 +289,13 @@ static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
     return PyBool_FromLong(headerConvert(self->h, op));
 }
 
+static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
+{
+    DEPRECATED_METHOD;
+    return PyObject_Call((PyObject *) &rpmfi_Type,
+			 Py_BuildValue("(O)", s), kwds);
+}
+
 static int hdr_compare(hdrObject * a, hdrObject * b)
 {
     return rpmVersionCompare(a->h, b->h);
