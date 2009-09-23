@@ -329,6 +329,7 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
+/* TODO: permit keyring check + retrofits on copy/load */
 static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 {
     PyObject *obj = NULL;
@@ -580,29 +581,10 @@ Header hdrGetHeader(hdrObject * s)
     return s->h;
 }
 
-PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
+PyObject * hdrLoad(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * hdr;
-    char * obj;
-    Header h;
-    int len;
-    char * kwlist[] = {"headers", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s#", kwlist, &obj, &len))
-	return NULL;
-
-    /* copy is needed to avoid surprises from data swab in headerLoad(). */
-    h = headerCopyLoad(obj);
-    if (!h) {
-	PyErr_SetString(pyrpmError, "bad header");
-	return NULL;
-    }
-    headerConvert(h, HEADERCONV_RETROFIT_V3);
-
-    hdr = hdr_Wrap(h);
-    h = headerFree(h);	/* XXX ref held by hdr */
-
-    return hdr;
+    DEPRECATED_METHOD;
+    return PyObject_Call((PyObject *) &hdr_Type, args, kwds);
 }
 
 PyObject * rpmReadHeaders (FD_t fd)
