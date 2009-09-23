@@ -375,6 +375,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 {
     PyObject *obj = NULL;
     Header h = NULL;
+    FD_t fd = NULL;
     char *kwlist[] = { "obj", NULL };
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj)) {
@@ -387,8 +388,13 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	h = headerCopy(hdrGetHeader((hdrObject*) obj));
     } else if (PyString_Check(obj)) {
 	h = headerCopyLoad(PyString_AsString(obj));
+    } else if ((fd = rpmFdFromPyObject(obj)) != NULL) {
+	Py_BEGIN_ALLOW_THREADS;
+	h = headerRead(fd, HEADER_MAGIC_YES);
+	Fclose(fd);
+	Py_END_ALLOW_THREADS;
     } else {
-	PyErr_SetNone(PyExc_TypeError);
+    	PyErr_SetString(PyExc_TypeError, "header, blob or file expected");
 	return NULL;
     }
 
