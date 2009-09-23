@@ -301,6 +301,35 @@ static struct PyMethodDef hdr_methods[] = {
     {NULL,		NULL}		/* sentinel */
 };
 
+static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
+{
+    PyObject *obj = NULL;
+    Header h = NULL;
+    char *kwlist[] = { "obj", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj)) {
+	return NULL;
+    }
+
+    if (obj == NULL) {
+	h = headerNew();
+    } else if (hdrObject_Check(obj)) {
+	h = headerCopy(hdrGetHeader((hdrObject*) obj));
+    } else if (PyString_Check(obj)) {
+	h = headerCopyLoad(PyString_AsString(obj));
+    } else {
+	PyErr_SetNone(PyExc_TypeError);
+	return NULL;
+    }
+
+    if (h == NULL) {
+	PyErr_SetString(pyrpmError, "bad header");
+	return NULL;
+    }
+    
+    return hdr_Wrap(h);
+}
+
 static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) headerFree(s->h);
@@ -504,7 +533,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_dictoffset */
 	0,				/* tp_init */
 	0,				/* tp_alloc */
-	0,				/* tp_new */
+	hdr_new,			/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
