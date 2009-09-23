@@ -278,10 +278,9 @@ static PyObject *hdrIsSource(hdrObject *s)
 
 static PyObject *hdrHasKey(hdrObject *s, PyObject *pytag)
 {
-    rpmTag tag = tagNumFromPyObject(pytag);
-    if (tag == RPMTAG_NOT_FOUND) {
-	return NULL;
-    }
+    rpmTag tag;
+    if (!tagNumFromPyObject(pytag, &tag)) return NULL;
+
     return PyBool_FromLong(headerIsEntry(s->h, tag));
 }
 
@@ -410,7 +409,7 @@ static void hdr_dealloc(hdrObject * s)
     PyObject_Del(s);
 }
 
-rpmTag tagNumFromPyObject (PyObject *item)
+int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
 {
     rpmTag tag = RPMTAG_NOT_FOUND;
 
@@ -419,12 +418,17 @@ rpmTag tagNumFromPyObject (PyObject *item)
 	tag = PyInt_AsLong(item);
     } else if (PyString_Check(item)) {
 	tag = rpmTagGetValue(PyString_AsString(item));
+    } else {
+	PyErr_SetString(PyExc_TypeError, "expected a string or integer");
+	return 0;
     }
     if (tag == RPMTAG_NOT_FOUND) {
 	PyErr_SetString(PyExc_ValueError, "unknown header tag");
+	return 0;
     }
-	
-    return tag;
+
+    *tagp = tag;
+    return 1;
 }
 
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
@@ -438,8 +442,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     int forceArray = 0;
     struct rpmtd_s td;
 
-    tag = tagNumFromPyObject (item);
-    if (tag == RPMTAG_NOT_FOUND) return NULL;
+    if (!tagNumFromPyObject(item, &tag)) return NULL;
 
     tagtype = rpmTagGetType(tag); 
     forceArray = (tagtype & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE;

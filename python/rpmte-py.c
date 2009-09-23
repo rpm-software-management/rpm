@@ -175,16 +175,13 @@ rpmte_Key(rpmteObject * s)
 static PyObject *
 rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * TagN = NULL;
     rpmds ds;
     rpmTag tag;
     char * kwlist[] = {"tag", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:DS", kwlist, &TagN))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:DS", kwlist,
+				tagNumFromPyObject, &tag))
 	return NULL;
-
-    tag = tagNumFromPyObject(TagN);
-    if (tag == RPMTAG_NOT_FOUND) return NULL;
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {

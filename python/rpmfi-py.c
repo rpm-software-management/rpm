@@ -316,10 +316,6 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	    &hdr_Type, &ho, &to, &flags))
 	return NULL;
 
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) return NULL;
-    }
     fi = rpmfiNew(NULL, hdrGetHeader(ho), tagN, flags);
 
     return rpmfi_Wrap(fi);

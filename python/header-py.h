@@ -15,7 +15,7 @@ PyObject * hdr_Wrap(Header h);
 
 Header hdrGetHeader(hdrObject * h);
 
-rpmTag tagNumFromPyObject (PyObject *item);
+int tagNumFromPyObject (PyObject *item, rpmTag *tagp);
 
 PyObject * labelCompare (PyObject * self, PyObject * args);
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds);

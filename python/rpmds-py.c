@@ -428,20 +428,15 @@ static void rpmds_free(rpmdsObject * s)
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
-    PyObject * to = NULL;
     rpmTag tagN = RPMTAG_REQUIRENAME;
     rpmsenseFlags flags = 0;
     rpmds ds = NULL;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmds_new", kwlist, 
-	    &hdr_Type, &ho, &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|O&i:rpmds_new", kwlist, 
+	    &hdr_Type, &ho, tagNumFromPyObject, &tagN, &flags))
 	return NULL;
 
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) return NULL;
-    }
     ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
 
     return rpmds_Wrap(ds);
@@ -515,21 +510,16 @@ PyObject * rpmds_Wrap(rpmds ds)
 
 PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject * to = NULL;
     rpmTag tagN = RPMTAG_PROVIDENAME;
     const char * N;
     const char * EVR = NULL;
     rpmsenseFlags Flags = 0;
     char * kwlist[] = {"to", "name", "evr", "flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Os|si:Single", kwlist,
-	    &to, &N, &EVR, &Flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&s|si:Single", kwlist,
+	    tagNumFromPyObject, &tagN, &N, &EVR, &Flags))
 	return NULL;
 
-    if (to != NULL) {
-	tagN = tagNumFromPyObject(to);
-	if (tagN == RPMTAG_NOT_FOUND) return NULL;
-    }
     return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
 }
 

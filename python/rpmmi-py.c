@@ -104,18 +104,14 @@ rpmmi_Count(rpmmiObject * s)
 static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject *TagN = NULL;
     int type;
     char * pattern;
     rpmTag tag;
     char * kwlist[] = {"tag", "type", "patern", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "Ois:Pattern", kwlist,
-	    &TagN, &type, &pattern))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&is:Pattern", kwlist,
+	    tagNumFromPyObject, &tag, &type, &pattern))
 	return NULL;
-
-    tag = tagNumFromPyObject (TagN);
-    if (tag == RPMTAG_NOT_FOUND) return NULL;
 
     rpmdbSetIteratorRE(s->mi, tag, type, pattern);
 

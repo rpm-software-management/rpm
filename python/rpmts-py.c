@@ -874,7 +874,6 @@ spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    PyObject *TagN = NULL;
     PyObject *Key = NULL;
     char *key = NULL;
 /* XXX lkey *must* be a 32 bit integer, int "works" on all known platforms. */
@@ -883,13 +882,9 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmTag tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OO:Match", kwlist,
-	    &TagN, &Key))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&O:Match", kwlist,
+	    tagNumFromPyObject, &tag, &Key))
 	return NULL;
-
-    if (TagN && (tag = tagNumFromPyObject (TagN)) == RPMTAG_NOT_FOUND) {
-	return NULL;
-    }
 
     if (Key) {
 	if (PyString_Check(Key)) {
