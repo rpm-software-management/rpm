@@ -7,6 +7,7 @@
 
 #include "header-py.h"
 #include "rpmds-py.h"
+#include "rpmfd-py.h"
 #include "rpmfi-py.h"
 
 #include "debug.h"
@@ -295,6 +296,30 @@ static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
     return PyBool_FromLong(headerConvert(self->h, op));
 }
 
+static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
+{
+    PyObject *fo = NULL;
+    char *kwlist[] = { "file", "magic", NULL };
+    int magic = 1;
+    FD_t fd = NULL;
+    int rc;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist, &fo, &magic))
+	return NULL;
+
+    if ((fd = rpmFdFromPyObject(fo)) == NULL) return NULL;
+
+    Py_BEGIN_ALLOW_THREADS;
+    rc = headerWrite(fd, s->h, magic ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
+    Py_END_ALLOW_THREADS;
+
+    if (rc) PyErr_SetFromErrno(PyExc_IOError);
+    Fclose(fd); /* avoid messing up errno wrt above */
+    if (rc) return NULL;
+
+    Py_RETURN_NONE;
+}
+
 static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
     DEPRECATED_METHOD;
@@ -333,7 +358,8 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
 	NULL },
-
+    {"write",		(PyCFunction)hdrWrite,		METH_VARARGS|METH_KEYWORDS,
+	NULL },
     {"dsOfHeader",	(PyCFunction)hdr_dsOfHeader,	METH_NOARGS,
 	NULL},
     {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
