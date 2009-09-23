@@ -537,11 +537,7 @@ PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds)
     /* copy is needed to avoid surprises from data swab in headerLoad(). */
     h = headerCopyLoad(obj);
     if (!h) {
-	if (errno == ENOMEM) {
-	    PyErr_SetString(pyrpmError, "out of memory");
-	} else {
-	    PyErr_SetString(pyrpmError, "bad header");
-	}
+	PyErr_SetString(pyrpmError, "bad header");
 	return NULL;
     }
     headerConvert(h, HEADERCONV_RETROFIT_V3);
