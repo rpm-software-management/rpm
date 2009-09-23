@@ -298,16 +298,14 @@ static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
 
 static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 {
-    PyObject *fo = NULL;
     char *kwlist[] = { "file", "magic", NULL };
     int magic = 1;
     FD_t fd = NULL;
     int rc;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", kwlist, &fo, &magic))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
+				     rpmFdFromPyObject, &fd, &magic))
 	return NULL;
-
-    if ((fd = rpmFdFromPyObject(fo)) == NULL) return NULL;
 
     Py_BEGIN_ALLOW_THREADS;
     rc = headerWrite(fd, s->h, magic ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
@@ -388,7 +386,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	h = headerCopy(hdrGetHeader((hdrObject*) obj));
     } else if (PyString_Check(obj)) {
 	h = headerCopyLoad(PyString_AsString(obj));
-    } else if ((fd = rpmFdFromPyObject(obj)) != NULL) {
+    } else if (rpmFdFromPyObject(obj, &fd)) {
 	Py_BEGIN_ALLOW_THREADS;
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	Fclose(fd);
@@ -673,14 +671,12 @@ PyObject * rpmReadHeaders (FD_t fd)
 PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
 {
     FD_t fd;
-    PyObject *fo;
     PyObject * list;
     char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", kwlist, &fo))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&", kwlist,
+				     rpmFdFromPyObject, &fd))
 	return NULL;
-
-    if ((fd = rpmFdFromPyObject(fo)) == NULL) return NULL;
 
     list = rpmReadHeaders (fd);
     Fclose(fd);

@@ -455,16 +455,15 @@ static PyObject *
 rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject * result = NULL;
-    PyObject * fo = NULL;
     Header h;
     FD_t fd;
     rpmRC rpmrc;
     char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:HdrFromFdno", kwlist, &fo))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:HdrFromFdno", kwlist,
+				     rpmFdFromPyObject, &fd))
     	return NULL;
 
-    if ((fd = rpmFdFromPyObject(fo)) == NULL) return NULL;
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
     Fclose(fd);
 

@@ -2,7 +2,7 @@
 #include "rpmsystem-py.h"
 #include "rpmfd-py.h"
 
-FD_t rpmFdFromPyObject(PyObject *obj)
+int rpmFdFromPyObject(PyObject *obj, FD_t *fdp)
 {
     FD_t fd = NULL;
 
@@ -13,10 +13,13 @@ FD_t rpmFdFromPyObject(PyObject *obj)
 	fd = fdDup(fileno(fp));
     } else {
 	PyErr_SetString(PyExc_TypeError, "integer or file object expected");
-	return NULL;
+	return 0;
     }
     if (fd == NULL || Ferror(fd)) {
 	PyErr_SetFromErrno(PyExc_IOError);
+	Fclose(fd);
+	return 0;
     }
-    return fd;
+    *fdp = fd;
+    return 1;
 }

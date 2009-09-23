@@ -3,6 +3,6 @@
 
 #include <rpm/rpmio.h>
 
-FD_t rpmFdFromPyObject(PyObject *obj);
+int rpmFdFromPyObject(PyObject *obj, FD_t *fdp);
 
 #endif
