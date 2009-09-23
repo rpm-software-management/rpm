@@ -241,7 +241,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     Py_RETURN_NONE;
 }
 
-static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
+static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 {
     char * fmt;
     char * r;
@@ -262,6 +262,12 @@ static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
     r = _free(r);
 
     return result;
+}
+
+static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
+{
+    DEPRECATED_METHOD;
+    return hdrFormat(s, args, kwds);
 }
 
 static PyObject *hdrIsSource(hdrObject *s)
@@ -318,6 +324,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"fullFilelist",	(PyCFunction) hdrFullFilelist,	METH_NOARGS,
 	NULL },
     {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
