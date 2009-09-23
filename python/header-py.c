@@ -124,6 +124,11 @@
  * \name Class: rpm.hdr
  */
 
+#define DEPRECATED_METHOD \
+    static int _warn = 0; \
+    if (!_warn) PyErr_Warn(PyExc_DeprecationWarning, "method is deprecated"); \
+    _warn = 1;
+
 struct hdrObject_s {
     PyObject_HEAD
     Header h;
@@ -200,6 +205,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 
 static PyObject * hdrExpandFilelist(hdrObject * s)
 {
+    DEPRECATED_METHOD;
     headerConvert(s->h, HEADERCONV_EXPANDFILELIST);
 
     Py_RETURN_NONE;
@@ -207,6 +213,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
 
 static PyObject * hdrCompressFilelist(hdrObject * s)
 {
+    DEPRECATED_METHOD;
     headerConvert(s->h, HEADERCONV_COMPRESSFILELIST);
 
     Py_RETURN_NONE;
@@ -218,6 +225,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     rpmtd fileNames = rpmtdNew();
     Header h = s->h;
 
+    DEPRECATED_METHOD;
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
