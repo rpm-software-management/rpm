@@ -213,9 +213,10 @@ static PyObject * hdrCompressFilelist(hdrObject * s)
 }
 
 /* make a header with _all_ the tags we need */
-static void mungeFilelist(Header h)
+static PyObject * hdrFullFilelist(hdrObject * s)
 {
     rpmtd fileNames = rpmtdNew();
+    Header h = s->h;
 
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
@@ -228,11 +229,6 @@ static void mungeFilelist(Header h)
 	rpmtdFreeData(fileNames);
     }
     rpmtdFree(fileNames);
-}
-
-static PyObject * hdrFullFilelist(hdrObject * s)
-{
-    mungeFilelist (s->h);
 
     Py_RETURN_NONE;
 }
