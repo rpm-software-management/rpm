@@ -402,7 +402,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) headerFree(s->h);
-    PyObject_Del(s);
+    s->ob_type->tp_free((PyObject *)s);
 }
 
 int tagNumFromPyObject (PyObject *item, rpmTag *tagp)

@@ -37,10 +37,10 @@ struct specObject_s {
 static void 
 spec_dealloc(specObject * s) 
 {
-        if (s->spec) {
-            s->spec=freeSpec(s->spec);
-        }
-        PyObject_Del(s);
+    if (s->spec) {
+	s->spec=freeSpec(s->spec);
+    }
+    s->ob_type->tp_free((PyObject *)s);
 }
 
 /* XXX TODO return something sensible if spec exists but component (eg %clean)

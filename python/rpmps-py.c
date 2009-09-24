@@ -61,10 +61,8 @@ static struct PyMethodDef rpmps_methods[] = {
 static void
 rpmps_dealloc(rpmpsObject * s)
 {
-    if (s) {
-	s->ps = rpmpsFree(s->ps);
-	PyObject_Del(s);
-    }
+    s->ps = rpmpsFree(s->ps);
+    s->ob_type->tp_free((PyObject *)s);
 }
 
 static int

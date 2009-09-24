@@ -131,11 +131,9 @@ static struct PyMethodDef rpmmi_methods[] = {
 
 static void rpmmi_dealloc(rpmmiObject * s)
 {
-    if (s) {
-	s->mi = rpmdbFreeIterator(s->mi);
-	Py_DECREF(s->ref);
-	PyObject_Del(s);
-    }
+    s->mi = rpmdbFreeIterator(s->mi);
+    Py_DECREF(s->ref);
+    s->ob_type->tp_free((PyObject *)s);
 }
 
 static char rpmmi_doc[] =

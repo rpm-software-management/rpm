@@ -982,7 +982,7 @@ static void rpmts_dealloc(rpmtsObject * s)
     /* this will free the keyList, and decrement the ref count of all
        the items on the list as well :-) */
     Py_DECREF(s->keyList);
-    PyObject_Del((PyObject *)s);
+    s->ob_type->tp_free((PyObject *)s);
 }
 
 static PyObject * rpmts_getattro(PyObject * o, PyObject * n)

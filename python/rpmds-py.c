@@ -379,10 +379,8 @@ The current index in ds is positioned at overlapping member upon success.\n" },
 static void
 rpmds_dealloc(rpmdsObject * s)
 {
-    if (s) {
-	s->ds = rpmdsFree(s->ds);
-	PyObject_Del(s);
-    }
+    s->ds = rpmdsFree(s->ds);
+    s->ob_type->tp_free((PyObject *)s);
 }
 
 static int
