@@ -107,13 +107,6 @@ static PyMappingMethods rpmps_as_mapping = {
         (binaryfunc) rpmps_subscript,	/* mp_subscript */
 };
 
-static void rpmps_free(rpmpsObject * s)
-{
-    s->ps = rpmpsFree(s->ps);
-
-    PyObject_Del((PyObject *)s);
-}
-
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmps ps = rpmpsCreate();
@@ -164,7 +157,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmps_new,		/* tp_new */
-	(freefunc) rpmps_free,		/* tp_free */
+	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
 

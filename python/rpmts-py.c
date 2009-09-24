@@ -1013,20 +1013,6 @@ static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
     return 0;
 }
 
-static void rpmts_free(rpmtsObject * s)
-{
-    s->ts = rpmtsFree(s->ts);
-
-    if (s->scriptFd)
-	Fclose(s->scriptFd);
-
-    /* this will free the keyList, and decrement the ref count of all
-       the items on the list as well :-) */
-    Py_DECREF(s->keyList);
-
-    PyObject_Del((PyObject *)s);
-}
-
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     char * rootDir = "/";
@@ -1091,7 +1077,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmts_new,		/* tp_new */
-	(freefunc) rpmts_free,		/* tp_free */
+	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
 

@@ -416,13 +416,6 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static void rpmds_free(rpmdsObject * s)
-{
-    s->ds = rpmdsFree(s->ds);
-
-    PyObject_Del((PyObject *)s);
-}
-
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
@@ -485,7 +478,7 @@ PyTypeObject rpmds_Type = {
 	(initproc) rpmds_init,		/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmds_new,		/* tp_new */
-	(freefunc) rpmds_free,		/* tp_free */
+	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
 

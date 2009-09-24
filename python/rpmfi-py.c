@@ -294,13 +294,6 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
     return 0;
 }
 
-static void rpmfi_free(rpmfiObject * s)
-{
-    s->fi = rpmfiFree(s->fi);
-
-    PyObject_Del((PyObject *)s);
-}
-
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     hdrObject * ho = NULL;
@@ -363,7 +356,7 @@ PyTypeObject rpmfi_Type = {
 	(initproc) rpmfi_init,		/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmfi_new,		/* tp_new */
-	(freefunc) rpmfi_free,		/* tp_free */
+	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
 
