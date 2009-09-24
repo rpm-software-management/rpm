@@ -487,7 +487,7 @@ PyTypeObject hdr_Type = {
 	(getattrofunc) hdr_getattro,	/* tp_getattro */
 	(setattrofunc) hdr_setattro,	/* tp_setattro */
 	0,				/* tp_as_buffer */
-	Py_TPFLAGS_DEFAULT,		/* tp_flags */
+	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	hdr_doc,			/* tp_doc */
 	0,				/* tp_traverse */
 	0,				/* tp_clear */

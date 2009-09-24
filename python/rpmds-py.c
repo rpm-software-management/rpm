@@ -459,7 +459,8 @@ PyTypeObject rpmds_Type = {
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT |		/* tp_flags */
-	    Py_TPFLAGS_HAVE_RICHCOMPARE,
+	    Py_TPFLAGS_HAVE_RICHCOMPARE |
+	    Py_TPFLAGS_BASETYPE,
 	rpmds_doc,			/* tp_doc */
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
