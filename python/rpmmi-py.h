@@ -7,6 +7,6 @@ extern PyTypeObject rpmmi_Type;
 
 #define rpmmiObject_Check(v)	((v)->ob_type == &rpmmi_Type)
 
-PyObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s);
+PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmdbMatchIterator mi, PyObject *s);
 
 #endif

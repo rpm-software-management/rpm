@@ -318,7 +318,7 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     fi = rpmfiNew(NULL, hdrGetHeader(ho), tagN, flags);
 
-    return rpmfi_Wrap(fi);
+    return rpmfi_Wrap(subtype, fi);
 }
 
 static char rpmfi_doc[] =
@@ -376,9 +376,9 @@ rpmfi fiFromFi(rpmfiObject * s)
     return s->fi;
 }
 
-PyObject * rpmfi_Wrap(rpmfi fi)
+PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi)
 {
-    rpmfiObject *s = PyObject_New(rpmfiObject, &rpmfi_Type);
+    rpmfiObject *s = (rpmfiObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return PyErr_NoMemory();
 
     s->fi = fi;

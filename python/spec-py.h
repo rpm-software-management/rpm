@@ -11,6 +11,6 @@ extern PyTypeObject spec_Type;
 
 rpmSpec specFromSpec(specObject * spec);
 
-PyObject * spec_Wrap(rpmSpec spec);
+PyObject * spec_Wrap(PyTypeObject *subtype, rpmSpec spec);
 
 #endif /* RPMPYTHON_SPEC */

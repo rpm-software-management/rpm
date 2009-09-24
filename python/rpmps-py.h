@@ -11,6 +11,6 @@ extern PyTypeObject rpmps_Type;
 
 rpmps psFromPs(rpmpsObject * ps);
 
-PyObject * rpmps_Wrap(rpmps ps);
+PyObject * rpmps_Wrap(PyTypeObject *subtype, rpmps ps);
 
 #endif

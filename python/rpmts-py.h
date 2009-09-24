@@ -15,7 +15,7 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-PyObject * rpmts_Wrap(rpmts ts);
+PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts);
 
 PyObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds);
 

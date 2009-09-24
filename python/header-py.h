@@ -16,7 +16,7 @@ extern PyTypeObject hdr_Type;
 
 extern PyObject * pyrpmError;
 
-PyObject * hdr_Wrap(Header h);
+PyObject * hdr_Wrap(PyTypeObject *subtype, Header h);
 
 Header hdrGetHeader(hdrObject * h);
 

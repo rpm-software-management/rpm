@@ -172,7 +172,7 @@ static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     }
     rpmtsFree(ts);
 
-    return spec ? spec_Wrap(spec) : NULL;
+    return spec ? spec_Wrap(subtype, spec) : NULL;
 }
 
 PyTypeObject spec_Type = {
@@ -225,9 +225,9 @@ rpmSpec specFromSpec(specObject *s)
 }
 
 PyObject *
-spec_Wrap(rpmSpec spec) 
+spec_Wrap(PyTypeObject *subtype, rpmSpec spec) 
 {
-    specObject * s = PyObject_New(specObject, &spec_Type);
+    specObject * s = (specObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return PyErr_NoMemory();
 
     s->spec = spec; 

@@ -119,7 +119,7 @@ static void rpmps_free(rpmpsObject * s)
 static PyObject * rpmps_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     rpmps ps = rpmpsCreate();
-    return rpmps_Wrap(ps);
+    return rpmps_Wrap(subtype, ps);
 }
 
 static char rpmps_doc[] =
@@ -175,9 +175,9 @@ rpmps psFromPs(rpmpsObject * s)
     return s->ps;
 }
 
-PyObject * rpmps_Wrap(rpmps ps)
+PyObject * rpmps_Wrap(PyTypeObject *subtype, rpmps ps)
 {
-    rpmpsObject * s = PyObject_New(rpmpsObject, &rpmps_Type);
+    rpmpsObject * s = (rpmpsObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return PyErr_NoMemory();
 
     s->ps = ps; /* XXX refcounts? */

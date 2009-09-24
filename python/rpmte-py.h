@@ -9,6 +9,6 @@ extern PyTypeObject rpmte_Type;
 
 #define rpmteObject_Check(v)	((v)->ob_type == &rpmte_Type)
 
-PyObject * rpmte_Wrap(rpmte te);
+PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te);
 
 #endif

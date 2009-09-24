@@ -463,7 +463,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
     switch (rpmrc) {
     case RPMRC_OK:
 	if (h)
-	    result = Py_BuildValue("N", hdr_Wrap(h));
+	    result = Py_BuildValue("N", hdr_Wrap(&hdr_Type, h));
 	h = headerFree(h);	/* XXX ref held by result */
 	break;
 
@@ -749,7 +749,7 @@ rpmts_SetProbFilter(rpmtsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
-    return rpmps_Wrap( rpmtsProblems(s->ts) );
+    return rpmps_Wrap(&rpmps_Type, rpmtsProblems(s->ts));
 }
 
 static PyObject *
@@ -829,7 +829,7 @@ rpmts_iternext(rpmtsObject * s)
 
     te = rpmtsiNext(s->tsi, s->tsiFilter);
     if (te != NULL) {
-	result = rpmte_Wrap(te);
+	result = rpmte_Wrap(&rpmte_Type, te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
 	s->tsiFilter = 0;
@@ -889,7 +889,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	}
     }
 
-    return rpmmi_Wrap( rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
+    return rpmmi_Wrap(&rpmmi_Type, rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
 }
 
 static struct PyMethodDef rpmts_methods[] = {
@@ -1045,7 +1045,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
      *      python objects */
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    return rpmts_Wrap(ts);
+    return rpmts_Wrap(subtype, ts);
 }
 
 static char rpmts_doc[] =
@@ -1101,9 +1101,9 @@ rpmts_Create(PyObject * self, PyObject * args, PyObject * kwds)
     return PyObject_Call((PyObject *) &rpmts_Type, args, kwds);
 }
 
-PyObject * rpmts_Wrap(rpmts ts)
+PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts)
 {
-    rpmtsObject * s = PyObject_New(rpmtsObject, &rpmts_Type);
+    rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return PyErr_NoMemory();
 
     s->ts = ts;

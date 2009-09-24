@@ -198,7 +198,7 @@ rpmds_iternext(rpmdsObject * s)
 	rpmTag tagN = rpmdsTagN(s->ds);
 	rpmsenseFlags Flags = rpmdsFlags(s->ds);
 
-	result = rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+	result = rpmds_Wrap(s->ob_type, rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
@@ -299,7 +299,7 @@ static PyObject * rpmds_Rpmlib(rpmdsObject * s)
     /* XXX check return code, permit arg (NULL uses system default). */
     xx = rpmdsRpmlib(&ds, NULL);
 
-    return rpmds_Wrap( ds );
+    return rpmds_Wrap(&rpmds_Type, ds);
 }
 
 
@@ -439,7 +439,7 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
 
-    return rpmds_Wrap(ds);
+    return rpmds_Wrap(subtype, ds);
 }
 
 static char rpmds_doc[] =
@@ -498,9 +498,9 @@ rpmds dsFromDs(rpmdsObject * s)
     return s->ds;
 }
 
-PyObject * rpmds_Wrap(rpmds ds)
+PyObject * rpmds_Wrap(PyTypeObject *subtype, rpmds ds)
 {
-    rpmdsObject * s = PyObject_New(rpmdsObject, &rpmds_Type);
+    rpmdsObject * s = (rpmdsObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return PyErr_NoMemory();
 
     s->ds = ds;
@@ -520,7 +520,7 @@ PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
 	    tagNumFromPyObject, &tagN, &N, &EVR, &Flags))
 	return NULL;
 
-    return rpmds_Wrap( rpmdsSingle(tagN, N, EVR, Flags) );
+    return rpmds_Wrap(&rpmds_Type, rpmdsSingle(tagN, N, EVR, Flags));
 }
 
 PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
@@ -535,5 +535,5 @@ PyObject * hdr_dsOfHeader(PyObject * s)
     rpmTag tagN = RPMTAG_PROVIDENAME;
     rpmsenseFlags Flags = RPMSENSE_EQUAL;
 
-    return rpmds_Wrap( rpmdsThis(hdrGetHeader(ho), tagN, Flags) );
+    return rpmds_Wrap(&rpmds_Type, rpmdsThis(hdrGetHeader(ho), tagN, Flags));
 }

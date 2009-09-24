@@ -76,7 +76,7 @@ rpmmi_iternext(rpmmiObject * s)
 	s->mi = rpmdbFreeIterator(s->mi);
 	return NULL;
     }
-    return hdr_Wrap(h);
+    return hdr_Wrap(&hdr_Type, h);
 }
 
 static PyObject *
@@ -185,9 +185,9 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_is_gc */
 };
 
-PyObject * rpmmi_Wrap(rpmdbMatchIterator mi, PyObject *s)
+PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmdbMatchIterator mi, PyObject *s)
 {
-    rpmmiObject * mio = PyObject_New(rpmmiObject, &rpmmi_Type);
+    rpmmiObject * mio = (rpmmiObject *)subtype->tp_alloc(subtype, 0);
     if (mio == NULL) return PyErr_NoMemory();
 
     mio->mi = mi;

@@ -11,7 +11,7 @@ extern PyTypeObject rpmds_Type;
 
 rpmds dsFromDs(rpmdsObject * ds);
 
-PyObject * rpmds_Wrap(rpmds ds);
+PyObject * rpmds_Wrap(PyTypeObject *subtype, rpmds ds);
 
 PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds);
 

@@ -396,7 +396,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	return NULL;
     }
     
-    return hdr_Wrap(h);
+    return hdr_Wrap(subtype, h);
 }
 
 static void hdr_dealloc(hdrObject * s)
@@ -510,9 +510,9 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_is_gc */
 };
 
-PyObject * hdr_Wrap(Header h)
+PyObject * hdr_Wrap(PyTypeObject *subtype, Header h)
 {
-    hdrObject * hdr = PyObject_New(hdrObject, &hdr_Type);
+    hdrObject * hdr = (hdrObject *)subtype->tp_alloc(subtype, 0);
     if (hdr == NULL) return PyErr_NoMemory();
 
     hdr->h = headerLink(h);
@@ -548,7 +548,7 @@ PyObject * rpmReadHeaders (FD_t fd)
 
     while (h) {
 	headerConvert(h, HEADERCONV_RETROFIT_V3);
-	hdr = hdr_Wrap(h);
+	hdr = hdr_Wrap(&hdr_Type, h);
 	if (PyList_Append(list, (PyObject *) hdr)) {
 	    Py_DECREF(list);
 	    Py_DECREF(hdr);
@@ -729,7 +729,7 @@ rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     tuple = PyTuple_New(2);
 
     if (h && tuple) {
-	PyTuple_SET_ITEM(tuple, 0, hdr_Wrap(h));
+	PyTuple_SET_ITEM(tuple, 0, hdr_Wrap(&hdr_Type, h));
 	PyTuple_SET_ITEM(tuple, 1, PyLong_FromLong(offset));
 	h = headerFree(h);
     } else {

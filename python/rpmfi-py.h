@@ -11,6 +11,6 @@ extern PyTypeObject rpmfi_Type;
 
 rpmfi fiFromFi(rpmfiObject * fi);
 
-PyObject * rpmfi_Wrap(rpmfi fi);
+PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi);
 
 #endif

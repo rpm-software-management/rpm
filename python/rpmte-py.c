@@ -192,7 +192,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 	Py_RETURN_NONE;
 #endif
     }
-    return rpmds_Wrap(rpmdsLink(ds, RPMDBG_M("rpmte_DS")));
+    return rpmds_Wrap(&rpmds_Type, rpmdsLink(ds, RPMDBG_M("rpmte_DS")));
 }
 
 static PyObject *
@@ -204,7 +204,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (fi == NULL) {
 	Py_RETURN_NONE;
     }
-    return rpmfi_Wrap(rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
+    return rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
 }
 
 static struct PyMethodDef rpmte_methods[] = {
@@ -314,9 +314,9 @@ PyTypeObject rpmte_Type = {
 	0,				/* tp_is_gc */
 };
 
-PyObject * rpmte_Wrap(rpmte te)
+PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te)
 {
-    rpmteObject *s = PyObject_New(rpmteObject, &rpmte_Type);
+    rpmteObject *s = (rpmteObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return PyErr_NoMemory();
 
     s->te = te;
