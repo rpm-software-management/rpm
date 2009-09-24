@@ -996,6 +996,7 @@ static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
     char * name = PyString_AsString(n);
     int fdno;
 
+    /* XXX TODO: eliminate this hackery */
     if (rstreq(name, "scriptFd")) {
 	if (!PyArg_Parse(v, "i", &fdno)) return -1;
 	if (fdno < 0) {
@@ -1006,8 +1007,7 @@ static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
 	    rpmtsSetScriptFd(s->ts, s->scriptFd);
 	}
     } else {
-	PyErr_SetString(PyExc_AttributeError, name);
-	return -1;
+	return PyObject_GenericSetAttr(o, n, v);
     }
 
     return 0;
