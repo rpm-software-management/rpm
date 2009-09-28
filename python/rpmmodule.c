@@ -95,8 +95,7 @@ static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
 
     (void) rpmlogSetFile(fp);
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -110,8 +109,7 @@ setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
 
     rpmSetVerbosity(level);
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
@@ -123,8 +121,7 @@ setEpochPromote (PyObject * self, PyObject * args, PyObject * kwds)
 	    &_rpmds_nopromote))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
@@ -134,8 +131,7 @@ static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmts_stats))
 	return NULL;
 
-    Py_INCREF(Py_None);
-    return (PyObject *) Py_None;
+    Py_RETURN_NONE;
 }
 
 static PyMethodDef rpmModuleMethods[] = {
