@@ -5,6 +5,7 @@ This module enables you to manipulate rpms and the rpm database.
 """
 
 import warnings
+import os
 from _rpm import *
 
 import _rpm
@@ -17,12 +18,14 @@ def headerLoad(*args, **kwds):
     warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)
     return hdr(*args, **kwds)
 
-def readHeaderListFromFD(fd, retrofit = True):
+def _fdno(fd):
     if hasattr(fd, "fileno"):
-        fdno = fd.fileno()
+        return fd.fileno()
     else:
-        fdno = fd
+        return fd
 
+def readHeaderListFromFD(fd, retrofit = True):
+    fdno = _fdno(fd)
     hlist = []
     while 1:
         try:
@@ -41,3 +44,13 @@ def readHeaderListFromFile(path):
     f.close()
     return hlist
     
+def readHeaderFromFD(fd):
+    fdno = _fdno(fd)
+    offset = os.lseek(fdno, 0, os.SEEK_CUR)
+    try:
+        h = hdr(fdno)
+    except _rpm.error:
+        h = None
+        offset = None
+
+    return (h, offset)

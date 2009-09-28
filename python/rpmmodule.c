@@ -156,8 +156,6 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "readHeaderFromFD", (PyCFunction) rpmSingleHeaderFromFD, METH_VARARGS|METH_KEYWORDS,
-	NULL },
 
     { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },
