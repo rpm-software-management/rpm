@@ -2,25 +2,17 @@
 #
 # osgideps.pl -- Analyze dependencies of OSGi bundles.
 #
-# Kyu Lee
-# Alphonse Van Assche <alcapcom@fedoraproject.org>
+# Kyu Lee (initial idea)
+# Alphonse Van Assche <alcapcom@fedoraproject.org> (current maintainer)
 #
 # $Id: osgideps.pl,v 1.0 2009/06/08 12:12:12 mej Exp $
-#
 
-use Cwd;
 use Getopt::Long;
 use File::Temp qw/ tempdir /;
+use threads;
+use Thread::Queue;
 
-$cdir = getcwd();
-$TEMPDIR = tempdir( CLEANUP => 1 );
 $MANIFEST_NAME = "META-INF/MANIFEST.MF";
-
-# prepare temporary directory
-if ( !( -d $TEMPDIR ) ) {
-	if ( ( $_ = `mkdir $TEMPDIR` ) != 0 ) { exit 1; }
-	elsif ( !( -w $TEMPDIR ) && ( -x $TEMPDIR ) ) { exit 1; }
-}
 
 # parse options
 my ( $show_provides, $show_requires, $show_system_bundles, $debug );
@@ -47,168 +39,208 @@ exit(0);
 
 # this function print provides of OSGi aware files
 sub getProvides {
+	
+	my $queue = Thread::Queue->new;
 	foreach $file (@_) {
-		chomp($file);
-		# we don't follow symlinks for provides
-		next if -f $file && -r $file && -l $file;
-		$file =~ s/[^[:print:]]//g;
-		if ( $file =~ m/$MANIFEST_NAME$/ || $file =~ m/\.jar$/ ) {
-			if ( $file =~ m/\.jar$/ ) {
-				if ( `jar tf $file | grep -e \^$MANIFEST_NAME` eq "$MANIFEST_NAME\n" ) {
-					# extract MANIFEST.MF file from jar to temporary directory
-					chdir $TEMPDIR;
-					`jar xf $file $MANIFEST_NAME`;
-					open( MANIFEST, "$MANIFEST_NAME" );
-					chdir $cdir;
-				}
-			} else {
-				open( MANIFEST, "$file" );
-			}
-			my $bundleName = "";
-			my $version = "";
-			# parse Bundle-SymbolicName, Bundle-Version and Export-Package attributes
-			while (<MANIFEST>) {
-				# get rid of non-print chars (some manifest files contain weird chars)
-				s/[^[:print]]//g;
-				if ( m/(^(Bundle-SymbolicName): )(.*)$/ ) {
-					$bundleName = "$3" . "\n";
-					while (<MANIFEST>) {
-						if ( m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
-							$len = length $_;
-							seek MANIFEST, $len * -1, 1;
-							last;
-						}
-						$bundleName .= "$_";
-					}
-					$bundleName =~ s/\s+//g;
-					$bundleName =~ s/;.*//g;
-				}
-				if ( m/(^Bundle-Version: )(.*)/ ) {
-					$version = $2;
-				}
-				if ( m/(^(Export-Package): )(.*)$/ ) {
-					my $bunlist = "$3" . "\n";
-					while (<MANIFEST>) {
-						if ( m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
-							$len = length $_;
-							seek MANIFEST, $len * -1, 1;
-							last;
-						}
-						$bunlist .= "$_";
-					}
-					push @bundlelist, parsePkgString($bunlist, $file);
-				}
-			}
+		$queue->enqueue($file);
+	}
 
-			# skip this jar if no bundle name exists
-			if ( !$bundleName eq "" ) {
-				if ( !$version eq "" ) {
-					$version = parseVersion($version);
-					push @bundlelist, { FILE => "$file", NAME => "$bundleName", VERSION => "$version" };
+	my @workers;
+	push @workers, threads->create('getProvidesWorker');
+	push @workers, threads->create('getProvidesWorker');
+	push @workers, threads->create('getProvidesWorker');
+	push @workers, threads->create('getProvidesWorker');
+
+	map { $_->join } @workers;
+	
+	sub getProvidesWorker {
+		while ( my $file = $queue->dequeue_nb ) {
+			chomp($file);
+			# we don't follow symlinks for provides
+			next if ( -f $file && -r $file && -l $file );
+			$file =~ s/[^[:print:]]//g;
+			if ( $file =~ m/$MANIFEST_NAME$/ || $file =~ m/\.jar$/ ) {
+				if ( $file =~ m/\.jar$/ ) {
+					if ( `zipinfo -1 $file 2> /dev/null | grep -e \^$MANIFEST_NAME` eq "$MANIFEST_NAME\n" ) {
+						# extract MANIFEST.MF file from jar to temporary directory
+						$tmpdir = tempdir( CLEANUP => 1 );						
+						`unzip -d $tmpdir -qqo $file $MANIFEST_NAME`;
+						open( MANIFEST, "$tmpdir/$MANIFEST_NAME" );
+					}
 				} else {
-					push @bundlelist, { FILE => "$file", NAME => "$bundleName", VERSION => "" };
+					open( MANIFEST, "$file" );
 				}
+				my $bundleName = "";
+				my $version = "";
+				# parse Bundle-SymbolicName, Bundle-Version and Export-Package attributes
+				while (<MANIFEST>) {
+					# get rid of non-print chars (some manifest files contain weird chars)
+					s/[^[:print]]//g;
+					if ( m/(^(Bundle-SymbolicName): )(.*)$/ ) {
+						$bundleName = "$3" . "\n";
+						while (<MANIFEST>) {
+							if ( m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
+								$len = length $_;
+								seek MANIFEST, $len * -1, 1;
+								last;
+							}
+							$bundleName .= "$_";
+						}
+						$bundleName =~ s/\s+//g;
+						$bundleName =~ s/;.*//g;
+					}
+					if ( m/(^Bundle-Version: )(.*)/ ) {
+						$version = $2;
+					}
+					if ( m/(^(Export-Package): )(.*)$/ ) {
+						my $bunlist = "$3" . "\n";
+						while (<MANIFEST>) {
+							if ( m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
+								$len = length $_;
+								seek MANIFEST, $len * -1, 1;
+								last;
+							}
+							$bunlist .= "$_";
+						}
+						push @bundlelist, parsePkgString($bunlist, $file);
+					}
+				}	
+	
+				# skip this jar if no bundle name exists
+				if ( !$bundleName eq "" ) {
+					if ( !$version eq "" ) {
+						$version = parseVersion($version);
+						push @bundlelist, { FILE => "$file", NAME => "$bundleName", VERSION => "$version" };
+					} else {	
+						push @bundlelist, { FILE => "$file", NAME => "$bundleName", VERSION => "" };
+					}
+				}
+				`rm -rf $tmpdir`;
 			}
 		}
-	}
-	if ( !$debug ) { @bundlelist = prepareOSGiBundlesList(@bundlelist); }
-	$list = "";
-	for $bundle (@bundlelist) {
-		if ( !$debug ) {
-			$list .= "osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
-		} else {
-			$list .= $bundle->{FILE} . " osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
+		if ( !$debug ) { @bundlelist = prepareOSGiBundlesList(@bundlelist); }
+		$list = "";
+		for $bundle (@bundlelist) {
+			if ( !$debug ) {
+				$list .= "osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
+			} else {
+				$list .= $bundle->{FILE} . " osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
+			}
 		}
+		print $list;
 	}
-	print $list;
 }
 
 # this function print requires of OSGi aware files
 sub getRequires {
+
+	my $queue = Thread::Queue->new;
 	foreach $file (@_) {
-		next if (-f $file && -r $file);
-		# we explicitly requires symlinked jars
-		if (-l $file) {
-			$file = readlink $file;
-			if ( !$file eq "" ) {							
-				print "$file" . "\n";
-			}
-			next;
-		} 
-		$file =~ s/[^[:print:]]//g;
-		if ( $file =~ m/$MANIFEST_NAME$/ || $file =~ m/\.jar$/ ) {
-			if ( $file =~ m/\.jar$/ ) {
-				if ( `jar tf $file | grep -e \^$MANIFEST_NAME` eq "$MANIFEST_NAME\n" ) {
-					# extract MANIFEST.MF file from jar to temporary directory
-					chdir $TEMPDIR;
-					`jar xf $file $MANIFEST_NAME`;
-					open( MANIFEST, "$MANIFEST_NAME" );
-					chdir $cdir;
+		$queue->enqueue($file);
+	}
+
+	my @workers;
+	push @workers, threads->create('getRequiresWorker');
+	push @workers, threads->create('getRequiresWorker');
+	push @workers, threads->create('getRequiresWorker');
+	push @workers, threads->create('getRequiresWorker');
+
+	map { $_->join } @workers;
+	
+	sub getRequiresWorker {
+		while ( my $file = $queue->dequeue_nb ) {
+			next if ( -f $file && -r $file );
+			$file =~ s/[^[:print:]]//g;
+			if ( $file =~ m/$MANIFEST_NAME$/ || $file =~ m/\.jar$/ ) {
+				# we explicitly requires symlinked jars
+				# _that_reside_outside_the_package_
+				if (-l $file) {
+					$exist = 0;
+					$lnksrc = `readlink -qen $file`;
+					foreach $exfile ( @allfiles ) {
+						$exfile =~ s/[^[:print:]]//g;
+						if ( $lnksrc =~ m/$exfile$/ ) {							
+							$exist = 1;
+							last;
+						}
+					}
+					print "$lnksrc\n" if (!$exist);
+					next;
+				}	 
+				
+				if ( $file =~ m/\.jar$/ ) {
+					if ( `zipinfo -1 $file 2> /dev/null | grep -e \^$MANIFEST_NAME` eq "$MANIFEST_NAME\n" ) {
+						# extract MANIFEST.MF file from jar to temporary directory
+						$tmpdir = tempdir( CLEANUP => 1 );
+						`unzip -d $tmpdir -qqo $file $MANIFEST_NAME`;
+						open( MANIFEST, "$tmpdir/$MANIFEST_NAME" );
+					}
+				} else {
+					open( MANIFEST, "$file" );
 				}
+				while (<MANIFEST>) {
+					if ( m/(^(Require-Bundle|Import-Package): )(.*)$/ ) {
+						my $bunlist = "$3" . "\n";
+						while (<MANIFEST>) {
+							if (m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
+								$len = length $_;
+								seek MANIFEST, $len * -1, 1;
+								last;
+							}
+							$bunlist .= "$_";
+						}
+						push @bundlelist, parsePkgString($bunlist, $file);
+					}
+					# we also explicitly require symlinked jars define by 
+					# Bundle-ClassPath attribut
+					if ( m/(^(Bundle-ClassPath): )(.*)$/ ) {
+						$bunclp = "$3" . "\n";
+						while (<MANIFEST>) {
+							if ( m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
+								$len = length $_;
+								seek MANIFEST, $len * -1, 1;
+								last;
+							}
+							$bunclp .= "$_";
+						}
+						$bunclp =~ s/\ //g;
+						$bunclp =~ s/\n//g;
+						$bunclp =~ s/[^[:print:]]//g;
+						$dir = `dirname $file`;
+						$dir =~ s/\n//g;
+						@jars = split /,/, $bunclp;
+						for $jarfile (@jars) {
+							$jarfile = "$dir\/\.\.\/$jarfile";
+							$jarfile = readlink $jarfile;
+							if ( !$jarfile eq "" ) {							
+								print "$jarfile" . "\n";
+							}
+						}
+					}
+				}
+				`rm -rf $tmpdir`;
+			}
+		}
+		if ( !$debug ) { @bundlelist = prepareOSGiBundlesList(@bundlelist); }
+		$list = "";
+		for $bundle (@bundlelist) {
+			# replace '=' by '>=' because qualifiers are set on provides 
+			# but not on requires.
+			$bundle->{VERSION} =~ s/\ =/\ >=/g;
+			if ( !$debug ) {
+				$list .= "osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
 			} else {
-				open( MANIFEST, "$file" );
-			}
-			while (<MANIFEST>) {
-				if ( m/(^(Require-Bundle|Import-Package): )(.*)$/ ) {
-					my $bunlist = "$3" . "\n";
-					while (<MANIFEST>) {
-						if (m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
-							$len = length $_;
-							seek MANIFEST, $len * -1, 1;
-							last;
-						}
-						$bunlist .= "$_";
-					}
-					push @bundlelist, parsePkgString($bunlist, $file);
-				}
-				# we also explicitly require symlinked jars define by 
-				# Bundle-ClassPath attribut
-				if ( m/(^(Bundle-ClassPath): )(.*)$/ ) {
-					$bunclp = "$3" . "\n";
-					while (<MANIFEST>) {
-						if ( m/^[[:upper:]][[:alpha:]]+-[[:upper:]][[:alpha:]]+: .*/ ) {
-							$len = length $_;
-							seek MANIFEST, $len * -1, 1;
-							last;
-						}
-						$bunclp .= "$_";
-					}
-					$bunclp =~ s/\ //g;
-					$bunclp =~ s/\n//g;
-					$bunclp =~ s/[^[:print:]]//g;
-					$dir = `dirname $file`;
-					$dir =~ s/\n//g;
-					@jars = split /,/, $bunclp;
-					for $jarfile (@jars) {
-						$jarfile = "$dir\/\.\.\/$jarfile";
-						$jarfile = readlink $jarfile;
-						if ( !$jarfile eq "" ) {							
-							print "$jarfile" . "\n";
-						}
-					}
-				}
+				$list .= $bundle->{FILE} . " osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
 			}
 		}
+		print $list;
 	}
-	if ( !$debug ) { @bundlelist = prepareOSGiBundlesList(@bundlelist); }
-	$list = "";
-	for $bundle (@bundlelist) {
-		# replace '=' by '>=' because qualifiers are set on provides 
-		# but not on requires.
-		$bundle->{VERSION} =~ s/\ =/\ >=/g;
-		if ( !$debug ) {
-			$list .= "osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
-		} else {
-			$list .= $bundle->{FILE} . " osgi(" . $bundle->{NAME} . ")" . $bundle->{VERSION} . "\n";
-		}
-	}
-	print $list;
 }
 
 # this function print system bundles of OSGi profile files.
 sub getSystemBundles {
 	foreach $file (@_) {
-		if ( -r $file && -r $file ) {
+		if ( -f $file && -r $file ) {
 			print "'$file' file not found or cannot be read!";
 			next;
 		} else {
@@ -261,8 +293,7 @@ sub parsePkgString {
 		$version = "";
 		$name = $reqelementfrmnt[0];
 		$name =~ s/\"//g;
-		# ignore 'system.bundle'.
-		# see http://help.eclipse.org/stable/index.jsp?topic=/org.eclipse.platform.doc.isv/porting/3.3/incompatibilities.html
+		# ignoring OSGi 'system.bundle' 
 		next if ( $name =~ m/^system\.bundle$/ );
 		for $i ( 1 .. $#reqelementfrmnt ) {
 			if ( $reqelementfrmnt[$i] =~ m/(^(bundle-|)version=")(.*)(")/ ) {
