@@ -576,29 +576,6 @@ PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
     return list;
 }
 
-PyObject * rpmHeaderFromFile(PyObject * self, PyObject * args, PyObject *kwds)
-{
-    char * filespec;
-    FD_t fd;
-    PyObject * list;
-    char * kwlist[] = {"file", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", kwlist, &filespec))
-	return NULL;
-
-    fd = Fopen(filespec, "r.fdio");
-
-    if (!fd) {
-	PyErr_SetFromErrno(pyrpmError);
-	return NULL;
-    }
-
-    list = rpmReadHeaders (fd);
-    Fclose(fd);
-
-    return list;
-}
-
 /**
  * This assumes the order of list matches the order of the new headers, and
  * throws an exception if that isn't true.

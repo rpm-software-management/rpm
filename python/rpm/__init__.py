@@ -16,3 +16,10 @@ _RPMVSF_NOSIGNATURES = _rpm._RPMVSF_NOSIGNATURES
 def headerLoad(*args, **kwds):
     warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)
     return hdr(*args, **kwds)
+
+def readHeaderListFromFile(path):
+    f = open(path)
+    hlist = readHeaderListFromFD(f)
+    f.close()
+    return hlist
+    
