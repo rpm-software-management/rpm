@@ -524,58 +524,6 @@ Header hdrGetHeader(hdrObject * s)
     return s->h;
 }
 
-PyObject * rpmReadHeaders (FD_t fd)
-{
-    PyObject * list;
-    Header h;
-    PyObject * hdr;
-
-    if (!fd) {
-	PyErr_SetFromErrno(pyrpmError);
-	return NULL;
-    }
-
-    list = PyList_New(0);
-    Py_BEGIN_ALLOW_THREADS
-    h = headerRead(fd, HEADER_MAGIC_YES);
-    Py_END_ALLOW_THREADS
-
-    while (h) {
-	headerConvert(h, HEADERCONV_RETROFIT_V3);
-	hdr = hdr_Wrap(&hdr_Type, h);
-	if (PyList_Append(list, (PyObject *) hdr)) {
-	    Py_DECREF(list);
-	    Py_DECREF(hdr);
-	    return NULL;
-	}
-	Py_DECREF(hdr);
-
-	h = headerFree(h);	/* XXX ref held by hdr */
-
-	Py_BEGIN_ALLOW_THREADS
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	Py_END_ALLOW_THREADS
-    }
-
-    return list;
-}
-
-PyObject * rpmHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    FD_t fd;
-    PyObject * list;
-    char * kwlist[] = {"fd", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&", kwlist,
-				     rpmFdFromPyObject, &fd))
-	return NULL;
-
-    list = rpmReadHeaders (fd);
-    Fclose(fd);
-
-    return list;
-}
-
 /**
  * This assumes the order of list matches the order of the new headers, and
  * throws an exception if that isn't true.

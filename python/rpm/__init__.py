@@ -17,6 +17,24 @@ def headerLoad(*args, **kwds):
     warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)
     return hdr(*args, **kwds)
 
+def readHeaderListFromFD(fd, retrofit = True):
+    if hasattr(fd, "fileno"):
+        fdno = fd.fileno()
+    else:
+        fdno = fd
+
+    hlist = []
+    while 1:
+        try:
+            h = hdr(fdno)
+            if retrofit:
+                h.convert(HEADERCONV_RETROFIT_V3)
+            hlist.append(h)
+        except _rpm.error:
+            break
+
+    return hlist
+        
 def readHeaderListFromFile(path):
     f = open(path)
     hlist = readHeaderListFromFD(f)
