@@ -54,3 +54,11 @@ def readHeaderFromFD(fd):
         offset = None
 
     return (h, offset)
+
+def signalsCaught(siglist):
+    caught = []
+    for sig in siglist:
+        if signalCaught(sig):
+            caught.append(sig)
+
+    return caught

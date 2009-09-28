@@ -38,35 +38,12 @@ static PyObject * archScore(PyObject * self, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", score);
 }
 
-static PyObject * signalsCaught(PyObject * self, PyObject * check)
+static PyObject * signalCaught(PyObject *self, PyObject *o)
 {
-    PyObject *caught, *o;
-    int llen;
-    int signum, i;
-    sigset_t newMask, oldMask;
+    int signo;
+    if (!PyArg_Parse(o, "i", &signo)) return NULL;
 
-    if (!PyList_Check(check)) {
-	PyErr_SetString(PyExc_TypeError, "list expected");
-	return NULL;
-    }
-
-    llen = PyList_Size(check);
-    caught = PyList_New(0);
-
-    /* block signals while checking for them */
-    (void) sigfillset(&newMask);
-    (void) sigprocmask(SIG_BLOCK, &newMask, &oldMask);
-
-    for (i = 0; i < llen; i++) {
-	o = PyList_GetItem(check, i);
-	signum = PyInt_AsLong(o);
-	if (rpmsqIsCaught(signum) > 0) {
-	    PyList_Append(caught, o);
-	}
-    }
-    (void) sigprocmask(SIG_SETMASK, &oldMask, NULL);
-
-    return caught;
+    return PyBool_FromLong(rpmsqIsCaught(signo));
 }
 
 static PyObject * checkSignals(PyObject * self, PyObject * args)
@@ -149,7 +126,7 @@ static PyMethodDef rpmModuleMethods[] = {
     { "archscore", (PyCFunction) archScore, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "signalsCaught", (PyCFunction) signalsCaught, METH_O, 
+    { "signalCaught", (PyCFunction) signalCaught, METH_O, 
 	NULL },
     { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
         NULL },
