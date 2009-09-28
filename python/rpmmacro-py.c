@@ -40,15 +40,21 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject * 
 rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
-    char *macro, *str;
+    char *macro;
     PyObject *res;
+    int num = 0;
+    char * kwlist[] = {"macro", "numeric", NULL};
 
-    if (!PyArg_ParseTuple(args, "s", &macro))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|i", kwlist, &macro, &num))
         return NULL;
 
-    str = rpmExpand(macro, NULL);
-    res = Py_BuildValue("s", str);
-    free(str);
+    if (num) {
+	res = Py_BuildValue("i", rpmExpandNumeric(macro));
+    } else {
+	char *str = rpmExpand(macro, NULL);
+	res = Py_BuildValue("s", str);
+	free(str);
+    }
     return res;
 }
 
