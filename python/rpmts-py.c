@@ -496,16 +496,9 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
     rpmRC rpmrc;
     char * kwlist[] = {"headers", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:HdrCheck", kwlist, &blob))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:HdrCheck", kwlist, &blob))
     	return NULL;
 
-    if (blob == Py_None) {
-	Py_RETURN_NONE;
-    }
-    if (!PyString_Check(blob)) {
-	PyErr_SetString(pyrpmError, "hdrCheck takes a string of octets");
-	return result;
-    }
     uh = PyString_AsString(blob);
     uc = PyString_Size(blob);
 
@@ -581,16 +574,9 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int rc;
     char * kwlist[] = {"octets", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:PgpPrtPkts", kwlist, &blob))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:PgpPrtPkts", kwlist, &blob))
     	return NULL;
 
-    if (blob == Py_None) {
-	Py_RETURN_NONE;
-    }
-    if (!PyString_Check(blob)) {
-	PyErr_SetString(pyrpmError, "pgpPrtPkts takes a string of octets");
-	return NULL;
-    }
     pkt = (unsigned char *)PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
@@ -608,17 +594,10 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
     int rc;
     char * kwlist[] = {"pubkey", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:PgpImportPubkey",
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:PgpImportPubkey",
     	    kwlist, &blob))
 	return NULL;
 
-    if (blob == Py_None) {
-	Py_RETURN_NONE;
-    }
-    if (!PyString_Check(blob)) {
-	PyErr_SetString(pyrpmError, "PgpImportPubkey takes a string of octets");
-	return NULL;
-    }
     pkt = (unsigned char *)PyString_AsString(blob);
     pktlen = PyString_Size(blob);
 
