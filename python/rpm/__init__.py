@@ -4,6 +4,7 @@ This module enables you to manipulate rpms and the rpm database.
 
 """
 
+import warnings
 from _rpm import *
 
 import _rpm
@@ -12,3 +13,6 @@ _RPMVSF_NOHEADER = _rpm._RPMVSF_NOHEADER
 _RPMVSF_NOPAYLOAD = _rpm._RPMVSF_NOPAYLOAD
 _RPMVSF_NOSIGNATURES = _rpm._RPMVSF_NOSIGNATURES
 
+def headerLoad(*args, **kwds):
+    warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)
+    return hdr(*args, **kwds)

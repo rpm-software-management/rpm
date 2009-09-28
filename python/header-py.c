@@ -524,12 +524,6 @@ Header hdrGetHeader(hdrObject * s)
     return s->h;
 }
 
-PyObject * hdrLoad(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    DEPRECATED_METHOD;
-    return PyObject_Call((PyObject *) &hdr_Type, args, kwds);
-}
-
 PyObject * rpmReadHeaders (FD_t fd)
 {
     PyObject * list;
