@@ -134,39 +134,16 @@ struct hdrObject_s {
 
 static PyObject * hdrKeyList(hdrObject * s)
 {
-    PyObject * list, *o;
-    HeaderIterator hi;
-    rpmtd td = rpmtdNew();
+    PyObject * keys = PyList_New(0);
+    HeaderIterator hi = headerInitIterator(s->h);
+    rpmTag tag;
 
-    list = PyList_New(0);
-
-    hi = headerInitIterator(s->h);
-    while (headerNext(hi, td)) {
-	rpmTag tag = rpmtdTag(td);
-        if (tag == HEADER_I18NTABLE) continue;
-
-	switch (rpmtdType(td)) {
-	case RPM_BIN_TYPE:
-	case RPM_INT32_TYPE:
-	case RPM_CHAR_TYPE:
-	case RPM_INT8_TYPE:
-	case RPM_INT16_TYPE:
-	case RPM_STRING_ARRAY_TYPE:
-	case RPM_STRING_TYPE:
-	    PyList_Append(list, o=PyInt_FromLong(tag));
-	    Py_DECREF(o);
-	    break;
-	case RPM_I18NSTRING_TYPE: /* hum.. ?`*/
-	case RPM_NULL_TYPE:
-	default:
-	    break;
-	}
-	rpmtdFreeData(td);
+    while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
+	PyList_Append(keys, PyInt_FromLong(tag));
     }
     headerFreeIterator(hi);
-    rpmtdFree(td);
 
-    return list;
+    return keys;
 }
 
 static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
