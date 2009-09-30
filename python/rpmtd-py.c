@@ -91,16 +91,26 @@ static PyObject *rpmtd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwd
     rpmtdObject *s = NULL;
     Header h = NULL;
     rpmTag tag;
-    char *kwlist[] = { "header", "tag", NULL };
+    int raw = 0;
+    int noext = 0;
+    headerGetFlags flags = (HEADERGET_EXT | HEADERGET_ALLOC);
+    char *kwlist[] = { "header", "tag", "raw", "noext", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&", kwlist,
-			hdrFromPyObject, &h, tagNumFromPyObject, &tag))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O&|ii", kwlist,
+			hdrFromPyObject, &h, tagNumFromPyObject, &tag,
+			&raw, &noext))
 	return NULL;
-		
+
+    if (raw) {
+	flags |= HEADERGET_RAW;
+	noext = 1; /* extensions with raw dont make sense */
+    }
+    if (noext) flags &= ~HEADERGET_EXT;
+
     if ((s = (rpmtdObject *)subtype->tp_alloc(subtype, 0)) == NULL)
 	return PyErr_NoMemory();
 
-    headerGet(h, tag, &(s->td), HEADERGET_EXT);
+    headerGet(h, tag, &(s->td), flags);
 
     return (PyObject *) s;
 }
