@@ -63,7 +63,8 @@ void rpmds_ParseEVR(char * evr,
 static PyObject *
 rpmds_Count(rpmdsObject * s)
 {
-    return Py_BuildValue("i", rpmdsCount(s->ds));
+    DEPRECATED_METHOD;
+    return Py_BuildValue("i", PyDict_Size((PyObject *)s));
 }
 
 static PyObject *
@@ -383,8 +384,7 @@ rpmds_dealloc(rpmdsObject * s)
     s->ob_type->tp_free((PyObject *)s);
 }
 
-static int
-rpmds_length(rpmdsObject * s)
+static Py_ssize_t rpmds_length(rpmdsObject * s)
 {
     return rpmdsCount(s->ds);
 }

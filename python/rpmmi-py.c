@@ -93,12 +93,8 @@ rpmmi_Instance(rpmmiObject * s)
 static PyObject *
 rpmmi_Count(rpmmiObject * s)
 {
-    int rc = 0;
-
-    if (s->mi != NULL)
-	rc = rpmdbGetIteratorCount(s->mi);
-
-    return Py_BuildValue("i", rc);
+    DEPRECATED_METHOD;
+    return Py_BuildValue("i", PyDict_Size((PyObject *)s));
 }
 
 static PyObject *
@@ -136,6 +132,16 @@ static void rpmmi_dealloc(rpmmiObject * s)
     s->ob_type->tp_free((PyObject *)s);
 }
 
+static Py_ssize_t rpmmi_length(rpmmiObject * s)
+{
+    return s->mi ? rpmdbGetIteratorCount(s->mi) : 0;
+}
+
+PyMappingMethods rpmmi_as_mapping = {
+    (lenfunc) rpmmi_length,		/* mp_length */
+    0,
+};
+
 static char rpmmi_doc[] =
 "";
 
@@ -153,7 +159,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
-	0,				/* tp_as_mapping */
+	&rpmmi_as_mapping,		/* tp_as_mapping */
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
