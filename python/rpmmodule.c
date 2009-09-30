@@ -12,6 +12,7 @@
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
 #include "rpmmacro-py.h"
+#include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
 #include "spec-py.h"
@@ -203,7 +204,7 @@ void init_rpm(void)
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
-
+    if (PyType_Ready(&rpmtd_Type) < 0) return;
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
     if (PyType_Ready(&spec_Type) < 0) return;
@@ -241,6 +242,9 @@ void init_rpm(void)
 
     Py_INCREF(&rpmps_Type);
     PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
+
+    Py_INCREF(&rpmtd_Type);
+    PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
 
     Py_INCREF(&rpmte_Type);
     PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
