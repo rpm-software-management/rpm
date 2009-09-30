@@ -1784,15 +1784,11 @@ HeaderIterator headerInitIterator(Header h)
     return hi;
 }
 
-int headerNext(HeaderIterator hi, rpmtd td)
+static indexEntry nextIndex(HeaderIterator hi)
 {
     Header h = hi->h;
     int slot;
     indexEntry entry = NULL;
-    int rc;
-
-    assert(td != NULL);
-    rpmtdReset(td);
 
     for (slot = hi->next_index; slot < h->indexUsed; slot++) {
 	entry = h->index + slot;
@@ -1801,15 +1797,28 @@ int headerNext(HeaderIterator hi, rpmtd td)
     }
     hi->next_index = slot;
     if (entry == NULL || slot >= h->indexUsed)
-	return 0;
+	return NULL;
 
     hi->next_index++;
+    return entry;
+}
 
-    td->tag = entry->info.tag;
+rpmTag headerNextTag(HeaderIterator hi)
+{
+    indexEntry entry = nextIndex(hi);
+    return entry ? entry->info.tag : RPMTAG_NOT_FOUND;
+}
 
-    rc = copyTdEntry(entry, td, HEADERGET_DEFAULT);
+int headerNext(HeaderIterator hi, rpmtd td)
+{
+    indexEntry entry = nextIndex(hi);
+    int rc = 0;
 
-    /* XXX 1 on success */
+    rpmtdReset(td);
+    if (entry) {
+	td->tag = entry->info.tag;
+	rc = copyTdEntry(entry, td, HEADERGET_DEFAULT);
+    }
     return ((rc == 1) ? 1 : 0);
 }
 
