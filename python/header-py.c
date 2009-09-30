@@ -378,7 +378,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
     if (obj == NULL) {
 	h = headerNew();
     } else if (hdrObject_Check(obj)) {
-	h = headerCopy(hdrGetHeader((hdrObject*) obj));
+	h = headerCopy(((hdrObject*) obj)->h);
     } else if (PyString_Check(obj)) {
 	h = headerCopyLoad(PyString_AsString(obj));
     } else if (rpmFdFromPyObject(obj, &fd)) {
@@ -527,9 +527,15 @@ PyObject * hdr_Wrap(PyTypeObject *subtype, Header h)
     return (PyObject *) hdr;
 }
 
-Header hdrGetHeader(hdrObject * s)
+int hdrFromPyObject(PyObject *item, Header *hptr)
 {
-    return s->h;
+    if (hdrObject_Check(item)) {
+	*hptr = ((hdrObject *) item)->h;
+	return 1;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "header object expected");
+	return 0;
+    }
 }
 
 /**

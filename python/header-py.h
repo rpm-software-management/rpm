@@ -18,7 +18,7 @@ extern PyObject * pyrpmError;
 
 PyObject * hdr_Wrap(PyTypeObject *subtype, Header h);
 
-Header hdrGetHeader(hdrObject * h);
+int hdrFromPyObject(PyObject *item, Header *h);
 
 int tagNumFromPyObject (PyObject *item, rpmTag *tagp);
 

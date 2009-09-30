@@ -418,17 +418,17 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    hdrObject * ho = NULL;
+    Header h = NULL;
     rpmTag tagN = RPMTAG_REQUIRENAME;
     rpmsenseFlags flags = 0;
     rpmds ds = NULL;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|O&i:rpmds_new", kwlist, 
-	    &hdr_Type, &ho, tagNumFromPyObject, &tagN, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&i:rpmds_new", kwlist, 
+	    	hdrFromPyObject, &h, tagNumFromPyObject, &tagN, &flags))
 	return NULL;
 
-    ds = rpmdsNew(hdrGetHeader(ho), tagN, 0);
+    ds = rpmdsNew(h, tagN, 0);
 
     return rpmds_Wrap(subtype, ds);
 }
@@ -523,9 +523,10 @@ PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 
 PyObject * hdr_dsOfHeader(PyObject * s)
 {
-    hdrObject * ho = (hdrObject *)s;
+    Header h = NULL;
     rpmTag tagN = RPMTAG_PROVIDENAME;
     rpmsenseFlags Flags = RPMSENSE_EQUAL;
+    if (!hdrFromPyObject(s, &h)) return NULL;
 
-    return rpmds_Wrap(&rpmds_Type, rpmdsThis(hdrGetHeader(ho), tagN, Flags));
+    return rpmds_Wrap(&rpmds_Type, rpmdsThis(h, tagN, Flags));
 }

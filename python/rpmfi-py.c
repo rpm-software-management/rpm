@@ -296,18 +296,18 @@ static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 
 static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    hdrObject * ho = NULL;
     PyObject * to = NULL;
+    Header h = NULL;
     rpmfi fi = NULL;
     rpmTag tagN = RPMTAG_BASENAMES;
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|Oi:rpmfi_init", kwlist,
-	    &hdr_Type, &ho, &to, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|Oi:rpmfi_init", kwlist,
+				hdrFromPyObject, &h, &to, &flags))
 	return NULL;
 
-    fi = rpmfiNew(NULL, hdrGetHeader(ho), tagN, flags);
+    fi = rpmfiNew(NULL, h, tagN, flags);
 
     return rpmfi_Wrap(subtype, fi);
 }

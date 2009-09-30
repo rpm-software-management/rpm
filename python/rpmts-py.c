@@ -173,15 +173,15 @@ static void die(PyObject *cb)
 static PyObject *
 rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    hdrObject * h;
+    Header h = NULL;
     PyObject * key;
     char * how = "u";	/* XXX default to upgrade element if missing */
     int isUpgrade = 0;
     char * kwlist[] = {"header", "key", "how", NULL};
     int rc = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!O|s:AddInstall", kwlist,
-    	    &hdr_Type, &h, &key, &how))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O|s:AddInstall", kwlist,
+    	    hdrFromPyObject, &h, &key, &how))
 	return NULL;
 
     if (how && !rstreq(how, "u") && !rstreq(how, "i")) {
@@ -190,7 +190,7 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
     } else if (how && rstreq(how, "u"))
     	isUpgrade = 1;
 
-    rc = rpmtsAddInstallElement(s->ts, hdrGetHeader(h), key, isUpgrade, NULL);
+    rc = rpmtsAddInstallElement(s->ts, h, key, isUpgrade, NULL);
     if (rc) {
 	PyErr_SetString(pyrpmError, "adding package to transaction failed");
 	return NULL;
