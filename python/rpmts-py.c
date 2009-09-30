@@ -141,7 +141,6 @@ struct rpmtsObject_s {
     PyObject * keyList;		/* keeps reference counts correct */
     FD_t scriptFd;
     rpmtsi tsi;
-    rpmElementType tsiFilter;
     rpmprobFilterFlags ignoreSet;
 };
 
@@ -791,7 +790,6 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
     return list;
 }
 
-/* TODO Add TR_ADDED filter to iterator. */
 static PyObject *
 rpmts_iternext(rpmtsObject * s)
 {
@@ -803,15 +801,13 @@ rpmts_iternext(rpmtsObject * s)
 	s->tsi = rpmtsiInit(s->ts);
 	if (s->tsi == NULL)
 	    return NULL;
-	s->tsiFilter = 0;
     }
 
-    te = rpmtsiNext(s->tsi, s->tsiFilter);
+    te = rpmtsiNext(s->tsi, 0);
     if (te != NULL) {
 	result = rpmte_Wrap(&rpmte_Type, te);
     } else {
 	s->tsi = rpmtsiFree(s->tsi);
-	s->tsiFilter = 0;
     }
 
     return result;
@@ -1075,6 +1071,5 @@ PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts)
     s->keyList = PyList_New(0);
     s->scriptFd = NULL;
     s->tsi = NULL;
-    s->tsiFilter = 0;
     return (PyObject *) s;
 }
