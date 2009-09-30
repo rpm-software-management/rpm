@@ -129,7 +129,8 @@
 struct hdrObject_s {
     PyObject_HEAD
     Header h;
-} ;
+    HeaderIterator hi;
+};
 
 static PyObject * hdrKeyList(hdrObject * s)
 {
@@ -405,6 +406,23 @@ static void hdr_dealloc(hdrObject * s)
     s->ob_type->tp_free((PyObject *)s);
 }
 
+static PyObject * hdr_iternext(hdrObject *s)
+{
+    PyObject *res = NULL;
+    rpmTag tag;
+
+    if (s->hi == NULL) s->hi = headerInitIterator(s->h);
+
+    if ((tag = headerNextTag(s->hi)) != RPMTAG_NOT_FOUND) {
+	int raw = 1;
+	res = PyObject_Call((PyObject *) &rpmtd_Type,
+			    Py_BuildValue("(Oii)", s, tag, raw), NULL);
+    } else {
+	s->hi = headerFreeIterator(s->hi);
+    }
+    return res;
+}
+
 int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
 {
     rpmTag tag = RPMTAG_NOT_FOUND;
@@ -501,8 +519,8 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
-	0,				/* tp_iter */
-	0,				/* tp_iternext */
+	PyObject_SelfIter,		/* tp_iter */
+	hdr_iternext,			/* tp_iternext */
 	hdr_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
