@@ -427,28 +427,36 @@ int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
     return 1;
 }
 
-static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
+static PyObject * hdrGetTag(Header h, rpmTag tag)
 {
-    rpmTag tag = RPMTAG_NOT_FOUND;
-    struct rpmtd_s td;
     PyObject *res = NULL;
+    struct rpmtd_s td;
 
-    if (!tagNumFromPyObject(item, &tag)) return NULL;
-    
     /* rpmtd_AsPyObj() knows how to handle empty containers and all */
-    (void) headerGet(s->h, tag, &td, HEADERGET_EXT);
+    (void) headerGet(h, tag, &td, HEADERGET_EXT);
     res = rpmtd_AsPyobj(&td);
     rpmtdFreeData(&td);
-
     return res;
 }
 
-static PyObject * hdr_getattro(PyObject * o, PyObject * n)
+static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
-    PyObject * res;
-    res = PyObject_GenericGetAttr(o, n);
-    if (res == NULL)
-	res = hdr_subscript((hdrObject *)o, n);
+    rpmTag tag;
+
+    if (!tagNumFromPyObject(item, &tag)) return NULL;
+    return hdrGetTag(s->h, tag);
+}
+
+static PyObject * hdr_getattro(hdrObject * s, PyObject * n)
+{
+    PyObject *res = PyObject_GenericGetAttr((PyObject *) s, n);
+    if (res == NULL) {
+	rpmTag tag;
+	if (tagNumFromPyObject(n, &tag)) {
+	    PyErr_Clear();
+	    res = hdrGetTag(s->h, tag);
+	}
+    }
     return res;
 }
 
