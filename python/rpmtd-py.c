@@ -165,7 +165,7 @@ PyTypeObject rpmtd_Type = {
 	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc)rpmtd_iternext,	/* tp_iternext */
 	0,				/* tp_methods */
-	&rpmtd_members,			/* tp_members */
+	rpmtd_members,			/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
