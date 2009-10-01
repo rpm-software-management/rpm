@@ -972,7 +972,6 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	return NULL;
 
     ts = rpmtsCreate();
-    /* XXX: Why is there no rpmts_SetRootDir() ? */
     (void) rpmtsSetRootDir(ts, rootDir);
     /* XXX: make this use common code with rpmts_SetVSFlags() to check the
      *      python objects */
@@ -984,6 +983,11 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 static PyObject *rpmts_get_tid(rpmtsObject *s, void *closure)
 {
     return Py_BuildValue("i", rpmtsGetTid(s->ts));
+}
+
+static PyObject *rpmts_get_rootDir(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("s", rpmtsRootDir(s->ts));
 }
 
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
@@ -1008,6 +1012,7 @@ static PyGetSetDef rpmts_getseters[] = {
 	/* only provide a setter until we have rpmfd wrappings */
 	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd, NULL },
 	{"tid",		(getter)rpmts_get_tid, NULL, NULL },
+	{"rootDir",	(getter)rpmts_get_rootDir, NULL, NULL },
 	{ NULL }
 };
 
