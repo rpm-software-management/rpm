@@ -1,7 +1,5 @@
 #include "rpmsystem-py.h"
 
-#include <structmember.h>
-
 #include <rpm/rpmmacro.h>
 
 #include "rpmmacro-py.h"

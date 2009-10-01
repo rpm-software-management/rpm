@@ -5,7 +5,8 @@
 #include <sys/types.h>
 #endif
 
-#include "Python.h"
+#include <Python.h>
+#include <structmember.h>
 
 #include "../system.h"
 

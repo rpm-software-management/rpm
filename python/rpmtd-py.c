@@ -3,7 +3,6 @@
  */
 
 #include "rpmsystem-py.h"
-#include <structmember.h>
 #include <rpm/rpmtd.h>
 #include <rpm/header.h>
 #include "rpmtd-py.h"
