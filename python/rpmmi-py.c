@@ -93,7 +93,7 @@ rpmmi_Instance(rpmmiObject * s)
 static PyObject *
 rpmmi_Count(rpmmiObject * s)
 {
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("use len(mi) instead");
     return Py_BuildValue("i", PyMapping_Size((PyObject *)s));
 }
 

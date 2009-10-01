@@ -180,7 +180,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 
 static PyObject * hdrExpandFilelist(hdrObject * s)
 {
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("use hdr.convert() instead");
     headerConvert(s->h, HEADERCONV_EXPANDFILELIST);
 
     Py_RETURN_NONE;
@@ -188,7 +188,7 @@ static PyObject * hdrExpandFilelist(hdrObject * s)
 
 static PyObject * hdrCompressFilelist(hdrObject * s)
 {
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("use hdr.convert() instead");
     headerConvert(s->h, HEADERCONV_COMPRESSFILELIST);
 
     Py_RETURN_NONE;
@@ -200,7 +200,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
     rpmtd fileNames = rpmtdNew();
     Header h = s->h;
 
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("obsolete method");
     if (!headerIsEntry (h, RPMTAG_BASENAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRNAMES)
 	|| !headerIsEntry (h, RPMTAG_DIRINDEXES))
@@ -237,12 +237,6 @@ static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
     r = _free(r);
 
     return result;
-}
-
-static PyObject * hdrSprintf(hdrObject * s, PyObject * args, PyObject * kwds)
-{
-    DEPRECATED_METHOD;
-    return hdrFormat(s, args, kwds);
 }
 
 static PyObject *hdrIsSource(hdrObject *s)
@@ -293,7 +287,7 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 
 static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("use convert() instead");
     return PyObject_Call((PyObject *) &rpmfi_Type,
 			 Py_BuildValue("(O)", s), kwds);
 }
@@ -325,7 +319,7 @@ static struct PyMethodDef hdr_methods[] = {
 	NULL },
     {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
-    {"sprintf",		(PyCFunction) hdrSprintf,	METH_VARARGS|METH_KEYWORDS,
+    {"sprintf",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
 	NULL },

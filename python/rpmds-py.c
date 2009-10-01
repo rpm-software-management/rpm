@@ -63,7 +63,7 @@ void rpmds_ParseEVR(char * evr,
 static PyObject *
 rpmds_Count(rpmdsObject * s)
 {
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("use len(ds) instead");
     return Py_BuildValue("i", PyMapping_Size((PyObject *)s));
 }
 

@@ -9,10 +9,8 @@ extern PyTypeObject hdr_Type;
 
 #define hdrObject_Check(v)	((v)->ob_type == &hdr_Type)
 
-#define DEPRECATED_METHOD \
-    static int _warn = 0; \
-    if (!_warn) PyErr_Warn(PyExc_DeprecationWarning, "method is deprecated"); \
-    _warn = 1;
+#define DEPRECATED_METHOD(_msg) \
+    PyErr_WarnEx(PyExc_PendingDeprecationWarning, (_msg), 2);
 
 extern PyObject * pyrpmError;
 

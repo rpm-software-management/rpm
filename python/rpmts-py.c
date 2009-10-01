@@ -781,7 +781,7 @@ rpmts_iternext(rpmtsObject * s)
 static PyObject *
 spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    DEPRECATED_METHOD;
+    DEPRECATED_METHOD("use 'spec = rpm.spec(<specfile>)' instead");
     /* we could pass in the ts from here but hardly worth the trouble */
     return PyObject_Call((PyObject *) &spec_Type, args, kwds);
 }
