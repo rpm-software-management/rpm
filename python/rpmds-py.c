@@ -64,7 +64,7 @@ static PyObject *
 rpmds_Count(rpmdsObject * s)
 {
     DEPRECATED_METHOD;
-    return Py_BuildValue("i", PyDict_Size((PyObject *)s));
+    return Py_BuildValue("i", PyMapping_Size((PyObject *)s));
 }
 
 static PyObject *

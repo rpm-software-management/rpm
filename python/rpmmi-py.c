@@ -94,7 +94,7 @@ static PyObject *
 rpmmi_Count(rpmmiObject * s)
 {
     DEPRECATED_METHOD;
-    return Py_BuildValue("i", PyDict_Size((PyObject *)s));
+    return Py_BuildValue("i", PyMapping_Size((PyObject *)s));
 }
 
 static PyObject *
