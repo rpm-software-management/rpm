@@ -981,6 +981,11 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     return rpmts_Wrap(subtype, ts);
 }
 
+static PyObject *rpmts_get_tid(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsGetTid(s->ts));
+}
+
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
 {
     int rc = 0;
@@ -1002,6 +1007,7 @@ static char rpmts_doc[] =
 static PyGetSetDef rpmts_getseters[] = {
 	/* only provide a setter until we have rpmfd wrappings */
 	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd, NULL },
+	{"tid",		(getter)rpmts_get_tid, NULL, NULL },
 	{ NULL }
 };
 
