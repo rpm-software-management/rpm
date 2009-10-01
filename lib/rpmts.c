@@ -1017,6 +1017,16 @@ rpm_color_t rpmtsPrefColor(rpmts ts)
     return (ts != NULL ? ts->prefcolor : 0);
 }
 
+rpm_color_t rpmtsSetPrefColor(rpmts ts, rpm_color_t color)
+{
+    rpm_color_t ocolor = 0;
+    if (ts != NULL) {
+	ocolor = ts->prefcolor;
+	ts->prefcolor = color;
+    }
+    return ocolor;
+}
+
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 {
     rpmop op = NULL;

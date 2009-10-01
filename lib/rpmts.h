@@ -571,6 +571,14 @@ rpm_color_t rpmtsPrefColor(rpmts ts);
 rpm_color_t rpmtsSetColor(rpmts ts, rpm_color_t color);
 
 /** \ingroup rpmts
+ * Set prefered file color
+ * @param ts		transaction set
+ * @param color		new color bits
+ * @return		previous color bits
+ */
+rpm_color_t rpmtsSetPrefColor(rpmts ts, rpm_color_t color);
+
+/** \ingroup rpmts
  * Retrieve operation timestamp from a transaction set.
  * @param ts		transaction set
  * @param opx		operation timestamp index
