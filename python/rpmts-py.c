@@ -527,41 +527,29 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
-static PyObject *
-rpmts_SetVSFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
+static PyObject * wrapSetGetOld(rpmtsObject *s, const char *name, PyObject *val)
 {
-    rpmVSFlags vsflags;
-    char * kwlist[] = {"flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetVSFlags", kwlist,
-	    &vsflags))
-    	return NULL;
-
-    /* XXX FIXME: value check on vsflags, or build pure python object 
-     * for it, and require an object of that type */
-
-    return Py_BuildValue("i", rpmtsSetVSFlags(s->ts, vsflags));
+    PyObject *oval = PyObject_GetAttrString((PyObject *)s, name);
+    if (PyObject_SetAttrString((PyObject *)s, name, val) == -1) {
+	Py_XDECREF(oval);
+	oval = NULL;
+    }
+    return oval;
 }
 
-static PyObject *
-rpmts_GetVSFlags(rpmtsObject * s)
+static PyObject * rpmts_SetVSFlags(rpmtsObject * s, PyObject * arg)
 {
-    return Py_BuildValue("i", rpmtsVSFlags(s->ts));
+    return wrapSetGetOld(s, "_vsflags", arg);
 }
 
-static PyObject *
-rpmts_SetColor(rpmtsObject * s, PyObject * args, PyObject * kwds)
+static PyObject * rpmts_GetVSFlags(rpmtsObject * s)
 {
-    rpm_color_t tscolor;
-    char * kwlist[] = {"color", NULL};
+    return PyObject_GetAttrString((PyObject *)s, "_vsflags");
+}
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:Color", kwlist, &tscolor))
-    	return NULL;
-
-    /* XXX FIXME: value check on tscolor, or build pure python object
-     * for it, and require an object of that type */
-
-    return Py_BuildValue("i", rpmtsSetColor(s->ts, tscolor));
+static PyObject * rpmts_SetColor(rpmtsObject * s, PyObject * arg)
+{
+    return wrapSetGetOld(s, "_color", arg);
 }
 
 static PyObject *
@@ -691,37 +679,14 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
     return NULL;
 }
 
-static PyObject *
-rpmts_SetFlags(rpmtsObject * s, PyObject * args, PyObject * kwds)
+static PyObject * rpmts_SetFlags(rpmtsObject * s, PyObject * arg)
 {
-    rpmtransFlags transFlags = 0;
-    char * kwlist[] = {"flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:SetFlags", kwlist,
-	    &transFlags))
-	return NULL;
-
-    /* XXX FIXME: value check on flags, or build pure python object 
-     * for it, and require an object of that type */
-
-    return Py_BuildValue("i", rpmtsSetFlags(s->ts, transFlags));
+    return wrapSetGetOld(s, "_flags", arg);
 }
 
-static PyObject *
-rpmts_SetProbFilter(rpmtsObject * s, PyObject * args, PyObject * kwds)
+static PyObject * rpmts_SetProbFilter(rpmtsObject * s, PyObject * arg)
 {
-    rpmprobFilterFlags ignoreSet = 0;
-    rpmprobFilterFlags oignoreSet;
-    char * kwlist[] = {"ignoreSet", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i:ProbFilter", kwlist,
-	    &ignoreSet))
-	return NULL;
-
-    oignoreSet = s->ignoreSet;
-    s->ignoreSet = ignoreSet;
-
-    return Py_BuildValue("i", oignoreSet);
+    return wrapSetGetOld(s, "_probFilter", arg);
 }
 
 static PyObject *
@@ -876,11 +841,11 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"order",	(PyCFunction) rpmts_Order,	METH_NOARGS,
 	NULL },
- {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_VARARGS|METH_KEYWORDS,
+ {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_O,
 "ts.setFlags(transFlags) -> previous transFlags\n\
 - Set control bit(s) for executing ts.run().\n\
   Note: This method replaces the 1st argument to the old ts.run()\n" },
- {"setProbFilter",	(PyCFunction) rpmts_SetProbFilter,	METH_VARARGS|METH_KEYWORDS,
+ {"setProbFilter",	(PyCFunction) rpmts_SetProbFilter,	METH_O,
 "ts.setProbFilter(ignoreSet) -> previous ignoreSet\n\
 - Set control bit(s) for ignoring problems found by ts.run().\n\
   Note: This method replaces the 2nd argument to the old ts.run()\n" },
@@ -916,7 +881,7 @@ static struct PyMethodDef rpmts_methods[] = {
 - Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
- {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_VARARGS|METH_KEYWORDS,
+ {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_O,
 "ts.setVSFlags(vsflags) -> ovsflags\n\
 - Set signature verification flags. Values for vsflags are:\n\
     rpm.RPMVSF_NOHDRCHK      if set, don't check rpmdb headers\n\
@@ -931,7 +896,7 @@ static struct PyMethodDef rpmts_methods[] = {
  {"getVSFlags",(PyCFunction) rpmts_GetVSFlags,	METH_NOARGS,
 "ts.getVSFlags() -> vsflags\n\
 - Retrieve current signature verification flags from transaction\n" },
- {"setColor",(PyCFunction) rpmts_SetColor,	METH_VARARGS|METH_KEYWORDS,
+ {"setColor",(PyCFunction) rpmts_SetColor,	METH_O,
 	NULL },
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -1005,14 +970,83 @@ static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
     return rc;
 }
 
+static PyObject *rpmts_get_color(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsColor(s->ts));
+}
+
+static PyObject *rpmts_get_prefcolor(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsPrefColor(s->ts));
+}
+
+static int rpmts_set_color(rpmtsObject *s, PyObject *value, void *closure)
+{
+    rpm_color_t color;
+    if (!PyArg_Parse(value, "i", &color)) return -1;
+
+    /* TODO: validate the bits */
+    rpmtsSetColor(s->ts, color);
+    return 0;
+}
+
+static int rpmts_set_prefcolor(rpmtsObject *s, PyObject *value, void *closure)
+{
+    rpm_color_t color;
+    if (!PyArg_Parse(value, "i", &color)) return -1;
+
+    /* TODO: validate the bits */
+    rpmtsSetPrefColor(s->ts, color);
+    return 0;
+}
+
+static int rpmts_set_flags(rpmtsObject *s, PyObject *value, void *closure)
+{
+    rpmtransFlags flags;
+    if (!PyArg_Parse(value, "i", &flags)) return -1;
+
+    /* TODO: validate the bits */
+    rpmtsSetFlags(s->ts, flags);
+    return 0;
+}
+
+static int rpmts_set_vsflags(rpmtsObject *s, PyObject *value, void *closure)
+{
+    rpmVSFlags flags;
+    if (!PyArg_Parse(value, "i", &flags)) return -1;
+
+    /* TODO: validate the bits */
+    rpmtsSetVSFlags(s->ts, flags);
+    return 0;
+}
+
+static PyObject *rpmts_get_flags(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsFlags(s->ts));
+}
+
+static PyObject *rpmts_get_vsflags(rpmtsObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtsVSFlags(s->ts));
+}
+
 static char rpmts_doc[] =
 "";
+
+static PyMemberDef rpmts_members[] = {
+	{"_probFilter",	T_INT, offsetof(rpmtsObject, ignoreSet), 0, NULL},
+	{NULL}
+};
 
 static PyGetSetDef rpmts_getseters[] = {
 	/* only provide a setter until we have rpmfd wrappings */
 	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd, NULL },
 	{"tid",		(getter)rpmts_get_tid, NULL, NULL },
 	{"rootDir",	(getter)rpmts_get_rootDir, NULL, NULL },
+	{"_color",	(getter)rpmts_get_color, (setter)rpmts_set_color, NULL},
+	{"_prefcolor",	(getter)rpmts_get_prefcolor, (setter)rpmts_set_prefcolor, NULL},
+	{"_flags",	(getter)rpmts_get_flags, (setter)rpmts_set_flags, NULL},
+	{"_vsflags",	(getter)rpmts_get_vsflags, (setter)rpmts_set_vsflags, NULL},
 	{ NULL }
 };
 
@@ -1046,7 +1080,7 @@ PyTypeObject rpmts_Type = {
 	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmts_iternext,	/* tp_iternext */
 	rpmts_methods,			/* tp_methods */
-	0,				/* tp_members */
+	rpmts_members,			/* tp_members */
 	rpmts_getseters,		/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
