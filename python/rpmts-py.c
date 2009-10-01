@@ -960,34 +960,6 @@ static void rpmts_dealloc(rpmtsObject * s)
     s->ob_type->tp_free((PyObject *)s);
 }
 
-static PyObject * rpmts_getattro(PyObject * o, PyObject * n)
-{
-    return PyObject_GenericGetAttr(o, n);
-}
-
-static int rpmts_setattro(PyObject * o, PyObject * n, PyObject * v)
-{
-    rpmtsObject *s = (rpmtsObject *)o;
-    char * name = PyString_AsString(n);
-    int fdno;
-
-    /* XXX TODO: eliminate this hackery */
-    if (rstreq(name, "scriptFd")) {
-	if (!PyArg_Parse(v, "i", &fdno)) return -1;
-	if (fdno < 0) {
-	    PyErr_SetString(PyExc_TypeError, "bad file descriptor");
-	    return -1;
-	} else {
-	    s->scriptFd = fdDup(fdno);
-	    rpmtsSetScriptFd(s->ts, s->scriptFd);
-	}
-    } else {
-	return PyObject_GenericSetAttr(o, n, v);
-    }
-
-    return 0;
-}
-
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     char * rootDir = "/";
@@ -1009,8 +981,29 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     return rpmts_Wrap(subtype, ts);
 }
 
+static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
+{
+    int rc = 0;
+    if (PyArg_Parse(value, "O&", rpmFdFromPyObject, &s->scriptFd)) {
+	rpmtsSetScriptFd(s->ts, s->scriptFd);
+    } else if (value == Py_None) {
+	Fclose(s->scriptFd);
+	s->scriptFd = NULL;
+	rpmtsSetScriptFd(s->ts, NULL);
+    } else {
+	rc = -1;
+    }
+    return rc;
+}
+
 static char rpmts_doc[] =
 "";
+
+static PyGetSetDef rpmts_getseters[] = {
+	/* only provide a setter until we have rpmfd wrappings */
+	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd, NULL },
+	{ NULL }
+};
 
 PyTypeObject rpmts_Type = {
 	PyObject_HEAD_INIT(&PyType_Type)
@@ -1030,8 +1023,8 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_hash */
 	0,				/* tp_call */
 	0,				/* tp_str */
-	(getattrofunc) rpmts_getattro, 	/* tp_getattro */
-	(setattrofunc) rpmts_setattro,	/* tp_setattro */
+	PyObject_GenericGetAttr, 	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
 	rpmts_doc,			/* tp_doc */
@@ -1043,7 +1036,7 @@ PyTypeObject rpmts_Type = {
 	(iternextfunc) rpmts_iternext,	/* tp_iternext */
 	rpmts_methods,			/* tp_methods */
 	0,				/* tp_members */
-	0,				/* tp_getset */
+	rpmts_getseters,		/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
 	0,				/* tp_descr_get */
