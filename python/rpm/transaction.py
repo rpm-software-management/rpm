@@ -10,22 +10,22 @@ class TransactionSet(_rpm.ts):
         return oval
         
     def setVSFlags(self, flags):
-        return _wrapSetGet('_vsflags', flags)
+        return self._wrapSetGet('_vsflags', flags)
 
     def getVSFlags(self):
         return self._vsflags
 
     def setColor(self, color):
-        return _wrapSetGet('_color', color)
+        return self._wrapSetGet('_color', color)
 
     def setPrefColor(self, color):
-        return _wrapSetGet('_prefcolor', color)
+        return self._wrapSetGet('_prefcolor', color)
 
     def setFlags(self, flags):
-        return _wrapSetGet('_flags', flags)
+        return self._wrapSetGet('_flags', flags)
 
     def setProbFilter(self, ignoreSet):
-        return _wrapSetGet('_probFilter', ignoreSet)
+        return self._wrapSetGet('_probFilter', ignoreSet)
 
     def parseSpec(self, specfile):
         import _rpmb
