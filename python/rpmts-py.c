@@ -527,31 +527,6 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
-static PyObject * wrapSetGetOld(rpmtsObject *s, const char *name, PyObject *val)
-{
-    PyObject *oval = PyObject_GetAttrString((PyObject *)s, name);
-    if (PyObject_SetAttrString((PyObject *)s, name, val) == -1) {
-	Py_XDECREF(oval);
-	oval = NULL;
-    }
-    return oval;
-}
-
-static PyObject * rpmts_SetVSFlags(rpmtsObject * s, PyObject * arg)
-{
-    return wrapSetGetOld(s, "_vsflags", arg);
-}
-
-static PyObject * rpmts_GetVSFlags(rpmtsObject * s)
-{
-    return PyObject_GetAttrString((PyObject *)s, "_vsflags");
-}
-
-static PyObject * rpmts_SetColor(rpmtsObject * s, PyObject * arg)
-{
-    return wrapSetGetOld(s, "_color", arg);
-}
-
 static PyObject *
 rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
@@ -677,16 +652,6 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
     cbInfo->_save = PyEval_SaveThread();
 
     return NULL;
-}
-
-static PyObject * rpmts_SetFlags(rpmtsObject * s, PyObject * arg)
-{
-    return wrapSetGetOld(s, "_flags", arg);
-}
-
-static PyObject * rpmts_SetProbFilter(rpmtsObject * s, PyObject * arg)
-{
-    return wrapSetGetOld(s, "_probFilter", arg);
 }
 
 static PyObject *
@@ -841,14 +806,6 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"order",	(PyCFunction) rpmts_Order,	METH_NOARGS,
 	NULL },
- {"setFlags",	(PyCFunction) rpmts_SetFlags,	METH_O,
-"ts.setFlags(transFlags) -> previous transFlags\n\
-- Set control bit(s) for executing ts.run().\n\
-  Note: This method replaces the 1st argument to the old ts.run()\n" },
- {"setProbFilter",	(PyCFunction) rpmts_SetProbFilter,	METH_O,
-"ts.setProbFilter(ignoreSet) -> previous ignoreSet\n\
-- Set control bit(s) for ignoring problems found by ts.run().\n\
-  Note: This method replaces the 2nd argument to the old ts.run()\n" },
  {"problems",	(PyCFunction) rpmts_Problems,	METH_NOARGS,
 "ts.problems() -> ps\n\
 - Return current problem set.\n" },
@@ -880,23 +837,6 @@ static struct PyMethodDef rpmts_methods[] = {
 "ts.hdrFromFdno(fdno) -> hdr\n\
 - Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
- {"setVSFlags",(PyCFunction) rpmts_SetVSFlags,	METH_O,
-"ts.setVSFlags(vsflags) -> ovsflags\n\
-- Set signature verification flags. Values for vsflags are:\n\
-    rpm.RPMVSF_NOHDRCHK      if set, don't check rpmdb headers\n\
-    rpm.RPMVSF_NEEDPAYLOAD   if not set, check header+payload (if possible)\n\
-    rpm.RPMVSF_NOSHA1HEADER  if set, don't check header SHA1 digest\n\
-    rpm.RPMVSF_NODSAHEADER   if set, don't check header DSA signature\n\
-    rpm.RPMVSF_NOMD5         if set, don't check header+payload MD5 digest\n\
-    rpm.RPMVSF_NODSA         if set, don't check header+payload DSA signature\n\
-    rpm.RPMVSF_NORSA         if set, don't check header+payload RSA signature\n\
-    rpm._RPMVSF_NODIGESTS    if set, don't check digest(s)\n\
-    rpm._RPMVSF_NOSIGNATURES if set, don't check signature(s)\n" },
- {"getVSFlags",(PyCFunction) rpmts_GetVSFlags,	METH_NOARGS,
-"ts.getVSFlags() -> vsflags\n\
-- Retrieve current signature verification flags from transaction\n" },
- {"setColor",(PyCFunction) rpmts_SetColor,	METH_O,
 	NULL },
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
