@@ -1094,12 +1094,6 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_is_gc */
 };
 
-PyObject *
-rpmts_Create(PyObject * self, PyObject * args, PyObject * kwds)
-{
-    return PyObject_Call((PyObject *) &rpmts_Type, args, kwds);
-}
-
 PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts)
 {
     rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);

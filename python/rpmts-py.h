@@ -17,6 +17,4 @@ enum {
 
 PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts);
 
-PyObject * rpmts_Create(PyObject * s, PyObject * args, PyObject * kwds);
-
 #endif

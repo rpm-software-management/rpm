@@ -7,12 +7,16 @@ This module enables you to manipulate rpms and the rpm database.
 import warnings
 import os
 from _rpm import *
+from transaction import *
 
 import _rpm
 _RPMVSF_NODIGESTS = _rpm._RPMVSF_NODIGESTS
 _RPMVSF_NOHEADER = _rpm._RPMVSF_NOHEADER
 _RPMVSF_NOPAYLOAD = _rpm._RPMVSF_NOPAYLOAD
 _RPMVSF_NOSIGNATURES = _rpm._RPMVSF_NOSIGNATURES
+
+# backwards compatibility + give the same class both ways
+ts = TransactionSet
 
 def headerLoad(*args, **kwds):
     warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)

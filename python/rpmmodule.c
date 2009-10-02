@@ -113,10 +113,6 @@ static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
 }
 
 static PyMethodDef rpmModuleMethods[] = {
-    { "TransactionSet", (PyCFunction) rpmts_Create, METH_VARARGS|METH_KEYWORDS,
-"rpm.TransactionSet([rootDir, [db]]) -> ts\n\
-- Create a transaction set.\n" },
-
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "delMacro", (PyCFunction) rpmmacro_DelMacro, METH_VARARGS|METH_KEYWORDS,
