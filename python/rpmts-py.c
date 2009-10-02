@@ -137,7 +137,6 @@ struct rpmtsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmts	ts;
-    PyObject * keyList;		/* keeps reference counts correct */
     FD_t scriptFd;
     rpmtsi tsi;
     rpmprobFilterFlags ignoreSet;
@@ -169,37 +168,19 @@ static void die(PyObject *cb)
 }
 
 static PyObject *
-rpmts_AddInstall(rpmtsObject * s, PyObject * args, PyObject * kwds)
+rpmts_AddInstall(rpmtsObject * s, PyObject * args)
 {
     Header h = NULL;
     PyObject * key;
-    char * how = "u";	/* XXX default to upgrade element if missing */
-    int isUpgrade = 0;
-    char * kwlist[] = {"header", "key", "how", NULL};
-    int rc = 0;
+    int how = 0;
+    int rc;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&O|s:AddInstall", kwlist,
-    	    hdrFromPyObject, &h, &key, &how))
+    if (!PyArg_ParseTuple(args, "O&Oi:AddInstall", 
+			  hdrFromPyObject, &h, &key, &how))
 	return NULL;
 
-    if (how && !rstreq(how, "u") && !rstreq(how, "i")) {
-	PyErr_SetString(PyExc_TypeError, "how argument must be \"u\" or \"i\"");
-	return NULL;
-    } else if (how && rstreq(how, "u"))
-    	isUpgrade = 1;
-
-    rc = rpmtsAddInstallElement(s->ts, h, key, isUpgrade, NULL);
-    if (rc) {
-	PyErr_SetString(pyrpmError, "adding package to transaction failed");
-	return NULL;
-    }
-	
-
-    /* This should increment the usage count for me */
-    if (key)
-	PyList_Append(s->keyList, key);
-
-    Py_RETURN_NONE;
+    rc = rpmtsAddInstallElement(s->ts, h, key, how, NULL);
+    return PyBool_FromLong((rc == 0));
 }
 
 /* TODO Permit finer control (i.e. not just --allmatches) of deleted elments.*/
@@ -762,7 +743,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 }
 
 static struct PyMethodDef rpmts_methods[] = {
- {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS|METH_KEYWORDS,
+ {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
 	NULL },
  {"addErase",	(PyCFunction) rpmts_AddErase,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -818,9 +799,6 @@ static void rpmts_dealloc(rpmtsObject * s)
     s->ts = rpmtsFree(s->ts);
 
     if (s->scriptFd) Fclose(s->scriptFd);
-    /* this will free the keyList, and decrement the ref count of all
-       the items on the list as well :-) */
-    Py_DECREF(s->keyList);
     s->ob_type->tp_free((PyObject *)s);
 }
 
@@ -999,7 +977,6 @@ PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts)
     if (s == NULL) return PyErr_NoMemory();
 
     s->ts = ts;
-    s->keyList = PyList_New(0);
     s->scriptFd = NULL;
     s->tsi = NULL;
     return (PyObject *) s;
