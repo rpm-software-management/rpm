@@ -13,7 +13,6 @@
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
 #include "rpmte-py.h"
-#include "spec-py.h"
 
 #include "rpmts-py.h"
 
@@ -744,14 +743,6 @@ rpmts_iternext(rpmtsObject * s)
 }
 
 static PyObject *
-spec_Parse(rpmtsObject * s, PyObject * args, PyObject * kwds)
-{
-    DEPRECATED_METHOD("use 'spec = rpm.spec(<specfile>)' instead");
-    /* we could pass in the ts from here but hardly worth the trouble */
-    return PyObject_Call((PyObject *) &spec_Type, args, kwds);
-}
-
-static PyObject *
 rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject *Key = NULL;
@@ -844,9 +835,6 @@ static struct PyMethodDef rpmts_methods[] = {
 	NULL },
  {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_NOARGS,
 	NULL },
- {"parseSpec",	(PyCFunction) spec_Parse,	METH_VARARGS|METH_KEYWORDS,
-"ts.parseSpec(\"/path/to/foo.spec\") -> spec\n\
-- Parse a spec file.\n" },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },

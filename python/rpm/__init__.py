@@ -15,6 +15,12 @@ _RPMVSF_NOHEADER = _rpm._RPMVSF_NOHEADER
 _RPMVSF_NOPAYLOAD = _rpm._RPMVSF_NOPAYLOAD
 _RPMVSF_NOSIGNATURES = _rpm._RPMVSF_NOSIGNATURES
 
+# try to import build bits but dont require it
+try:
+    from _rpmb import *
+except ImportError:
+    pass
+
 # backwards compatibility + give the same class both ways
 ts = TransactionSet
 

@@ -27,3 +27,6 @@ class TransactionSet(_rpm.ts):
     def setProbFilter(self, ignoreSet):
         return _wrapSetGet('_probFilter', ignoreSet)
 
+    def parseSpec(self, specfile):
+        import _rpmb
+        return _rpmb.spec(specfile)

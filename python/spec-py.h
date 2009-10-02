@@ -7,6 +7,8 @@ typedef struct specObject_s specObject;
 
 extern PyTypeObject spec_Type;
 
+extern PyObject *pyrpmbError;
+
 #define specObject_Check(v)	((v)->ob_type == &spec_Type)
 
 rpmSpec specFromSpec(specObject * spec);

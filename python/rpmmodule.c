@@ -15,7 +15,6 @@
 #include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
-#include "spec-py.h"
 
 #include "debug.h"
 
@@ -203,7 +202,6 @@ void init_rpm(void)
     if (PyType_Ready(&rpmtd_Type) < 0) return;
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
-    if (PyType_Ready(&spec_Type) < 0) return;
 
     m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
@@ -247,9 +245,6 @@ void init_rpm(void)
 
     Py_INCREF(&rpmts_Type);
     PyModule_AddObject(m, "ts", (PyObject *) &rpmts_Type);
-
-    Py_INCREF(&spec_Type);
-    PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
 
     addRpmTags(m);
 
