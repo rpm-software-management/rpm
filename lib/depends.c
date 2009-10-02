@@ -52,6 +52,9 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     rpmte p;
     unsigned int dboffset = headerGetInstance(h);
 
+    /* Can't remove what's not installed */
+    if (dboffset == 0) return 1;
+
     /* Filter out duplicate erasures. */
     if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
 	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,

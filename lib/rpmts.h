@@ -629,7 +629,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @param ts		transaction set
  * @param h		header
  * @param dboffset	ununsed
- * @return		0 on success
+ * @return		0 on success, 1 on error (not installed)
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
 
