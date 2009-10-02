@@ -30,3 +30,13 @@ class TransactionSet(_rpm.ts):
     def parseSpec(self, specfile):
         import _rpmb
         return _rpmb.spec(specfile)
+
+    def getKeys(self):
+        keys = []
+        for te in self:
+            keys.append(te.Key())
+        # Backwards compatibility goo - WTH does this return a *tuple* ?!
+        if not keys:
+            return None
+        else:
+            return tuple(keys)

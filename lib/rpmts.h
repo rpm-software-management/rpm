@@ -633,18 +633,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
 
-/** \ingroup rpmts
- * Retrieve keys from ordered transaction set.
- * @todo Removed packages have no keys, returned as interleaved NULL pointers.
- * @param ts		transaction set
- * @retval ep		address of returned element array pointer (or NULL)
- * @retval nep		address of no. of returned elements (or NULL)
- * @return		0 always
- */
-int rpmtsGetKeys(rpmts ts,
-		fnpyKey ** ep,
-		int * nep);
-
 #ifdef __cplusplus
 }
 #endif

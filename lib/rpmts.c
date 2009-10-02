@@ -1046,34 +1046,6 @@ int rpmtsSetNotifyCallback(rpmts ts,
     return 0;
 }
 
-int rpmtsGetKeys(const rpmts ts, fnpyKey ** ep, int * nep)
-{
-    int rc = 0;
-
-    if (nep) *nep = ts->orderCount;
-    if (ep) {
-	rpmtsi pi;	rpmte p;
-	fnpyKey * e;
-
-	*ep = e = xmalloc(ts->orderCount * sizeof(*e));
-	pi = rpmtsiInit(ts);
-	while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	    switch (rpmteType(p)) {
-	    case TR_ADDED:
-		*e = rpmteKey(p);
-		break;
-	    case TR_REMOVED:
-	    default:
-		*e = NULL;
-		break;
-	    }
-	    e++;
-	}
-	pi = rpmtsiFree(pi);
-    }
-    return rc;
-}
-
 rpmts rpmtsCreate(void)
 {
     rpmts ts;

@@ -567,33 +567,6 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rc);
 }
 
-static PyObject *
-rpmts_GetKeys(rpmtsObject * s)
-{
-    const void **data = NULL;
-    int num, i;
-    PyObject *tuple;
-
-    rpmtsGetKeys(s->ts, &data, &num);
-    if (data == NULL || num <= 0) {
-	data = _free(data);
-	Py_RETURN_NONE;
-    }
-
-    tuple = PyTuple_New(num);
-
-    for (i = 0; i < num; i++) {
-	PyObject *obj;
-	obj = (data[i] ? (PyObject *) data[i] : Py_None);
-	Py_INCREF(obj);
-	PyTuple_SetItem(tuple, i, obj);
-    }
-
-    data = _free(data);
-
-    return tuple;
-}
-
 static void *
 rpmtsCallback(const void * hd, const rpmCallbackType what,
 		         const rpm_loff_t amount, const rpm_loff_t total,
@@ -832,8 +805,6 @@ static struct PyMethodDef rpmts_methods[] = {
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
- {"getKeys",	(PyCFunction) rpmts_GetKeys,	METH_NOARGS,
 	NULL },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
