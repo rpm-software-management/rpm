@@ -111,6 +111,18 @@ static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
     Py_RETURN_NONE;
 }
 
+static PyObject * doLog(PyObject * self, PyObject * args, PyObject *kwds)
+{
+    int code;
+    const char *msg;
+    char * kwlist[] = {"code", "msg", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "is", kwlist, &code, &msg))
+	return NULL;
+
+    rpmlog(code, "%s", msg);
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -130,6 +142,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
+    { "log",		(PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
+	NULL },
     { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
