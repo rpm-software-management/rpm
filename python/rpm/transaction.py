@@ -61,3 +61,24 @@ class TransactionSet(_rpm.ts):
         if not _rpm.ts.addInstall(self, header, key, upgrade):
             raise _rpm.error, "adding package to transaction failed"
         self._keyList.append(key)
+
+    def addErase(self, item):
+        hdrs = []
+        if isinstance(item, _rpm.hdr):
+            hdrs = [item]
+        elif isinstance(item, _rpm.mi):
+            hdrs = item
+        elif isinstance(item, int):
+            hdrs = self.dbMatch(_rpm.RPMDBI_PACKAGES, item)
+        elif isinstance(item, str):
+            hdrs = self.dbMatch(_rpm.RPMDBI_LABEL, item)
+        else:
+            raise TypeError, "invalid type %s" % type(item)
+
+        for h in hdrs:
+            if not _rpm.ts.addErase(self, h):
+                raise _rpm.error, "package not installed"
+
+        # garbage collection should take care but just in case...
+        if isinstance(hdrs, _rpm.mi):
+            del hdrs

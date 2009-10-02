@@ -183,42 +183,15 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
     return PyBool_FromLong((rc == 0));
 }
 
-/* TODO Permit finer control (i.e. not just --allmatches) of deleted elments.*/
 static PyObject *
-rpmts_AddErase(rpmtsObject * s, PyObject * args, PyObject * kwds)
+rpmts_AddErase(rpmtsObject * s, PyObject * args)
 {
-    PyObject * o;
-    int installed = 0;
-    rpmdbMatchIterator mi = NULL;
     Header h;
-    char * kwlist[] = {"name", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:AddErase", kwlist, &o))
+    if (!PyArg_ParseTuple(args, "O&:AddErase", hdrFromPyObject, &h))
         return NULL;
 
-    if (PyString_Check(o)) {
-	char * name = PyString_AsString(o);
-	mi = rpmtsInitIterator(s->ts, RPMDBI_LABEL, name, 0);
-    } else if (PyInt_Check(o)) {
-	uint32_t recno = PyInt_AsLong(o);
-	mi = rpmtsInitIterator(s->ts, RPMDBI_PACKAGES, &recno, sizeof(recno));
-    } else {
-	PyErr_SetString(PyExc_TypeError, "string or integer expected");
-	return NULL;
-    }
-
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
-	installed++;
-	rpmtsAddEraseElement(s->ts, h, -1);
-    }
-    rpmdbFreeIterator(mi);
-    
-    if (installed) {
-	Py_RETURN_NONE;
-    } else {
-	PyErr_SetString(pyrpmError, "package not installed");
-	return NULL;
-    }
+    return PyBool_FromLong(rpmtsAddEraseElement(s->ts, h, -1) == 0);
 }
 
 static int
