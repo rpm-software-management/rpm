@@ -44,7 +44,16 @@ class TransactionSet(_rpm.ts):
         else:
             return tuple(keys)
 
-    def addInstall(self, header, key, how="u"):
+    def addInstall(self, item, key, how="u"):
+        if isinstance(item, str):
+            f = file(item)
+            header = self.hdrFromFdno(f)
+            f.close()
+        elif isinstance(item, file):
+            header = self.hdrFromFdno(item)
+        else:
+            header = item
+
         if not how in ['u', 'i']:
             raise ValueError, 'how argument must be "u" or "i"'
         upgrade = (how == "u")
