@@ -374,46 +374,25 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
 }
 
 static PyObject *
-rpmts_HdrCheck(rpmtsObject * s, PyObject * args, PyObject * kwds)
+rpmts_HdrCheck(rpmtsObject * s, PyObject *obj)
 {
     PyObject * blob;
-    PyObject * result = NULL;
     char * msg = NULL;
     const void * uh;
     int uc;
     rpmRC rpmrc;
-    char * kwlist[] = {"headers", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:HdrCheck", kwlist, &blob))
+    if (!PyArg_Parse(obj, "S:HdrCheck", &blob))
     	return NULL;
 
     uh = PyString_AsString(blob);
     uc = PyString_Size(blob);
 
+    Py_BEGIN_ALLOW_THREADS;
     rpmrc = headerCheck(s->ts, uh, uc, &msg);
+    Py_END_ALLOW_THREADS;
 
-    switch (rpmrc) {
-    case RPMRC_OK:
-	Py_INCREF(Py_None);
-	result = Py_None;
-	break;
-
-    case RPMRC_NOKEY:
-	PyErr_SetString(pyrpmError, "public key not availaiable");
-	break;
-
-    case RPMRC_NOTTRUSTED:
-	PyErr_SetString(pyrpmError, "public key not trusted");
-	break;
-
-    case RPMRC_FAIL:
-    default:
-	PyErr_SetString(pyrpmError, msg);
-	break;
-    }
-    msg = _free(msg);
-
-    return result;
+    return Py_BuildValue("(is)", rpmrc, msg);
 }
 
 static PyObject *
@@ -663,7 +642,7 @@ static struct PyMethodDef rpmts_methods[] = {
  {"hdrFromFdno",(PyCFunction) rpmts_HdrFromFdno,METH_VARARGS|METH_KEYWORDS,
 "ts.hdrFromFdno(fdno) -> hdr\n\
 - Read a package header from a file descriptor.\n" },
- {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_VARARGS|METH_KEYWORDS,
+ {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_O,
 	NULL },
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },

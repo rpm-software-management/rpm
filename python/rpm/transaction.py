@@ -138,3 +138,13 @@ class TransactionSet(_rpm.ts):
             res.append(((n, v, r),(needname,needver),needflags,sense,p.key))
 
         return res
+
+    def hdrCheck(self, blob):
+        res, msg = _rpm.ts.hdrCheck(self, blob)
+        # generate backwards compatibly broken exceptions
+        if res == _rpm.RPMRC_NOKEY:
+            raise _rpm.error, "public key not availaiable"
+        elif res == _rpm.RPMRC_NOTTRUSTED:
+            raise _rpm.error, "public key not trusted"
+        elif res != _rpm.RPMRC_OK:
+            raise _rpm.error, msg
