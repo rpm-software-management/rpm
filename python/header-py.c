@@ -292,9 +292,22 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 
 static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    DEPRECATED_METHOD("use convert() instead");
+    /* XXX this isn't quite right wrt arg passing */
     return PyObject_Call((PyObject *) &rpmfi_Type,
 			 Py_BuildValue("(O)", s), kwds);
+}
+
+static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
+{
+    /* XXX this isn't quite right wrt arg passing */
+    return PyObject_Call((PyObject *) &rpmds_Type,
+			 Py_BuildValue("(O)", s), kwds);
+}
+
+static PyObject * hdr_dsOfHeader(PyObject * s)
+{
+    return PyObject_Call((PyObject *) &rpmds_Type,
+			Py_BuildValue("(Oi)", s, RPMTAG_NEVR), NULL);
 }
 
 static int hdr_compare(hdrObject * a, hdrObject * b)

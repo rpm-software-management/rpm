@@ -418,18 +418,33 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
-    Header h = NULL;
+    PyObject *obj;
     rpmTag tagN = RPMTAG_REQUIRENAME;
-    rpmsenseFlags flags = 0;
     rpmds ds = NULL;
-    char * kwlist[] = {"header", "tag", "flags", NULL};
+    Header h = NULL;
+    char * kwlist[] = {"obj", "tag", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|O&i:rpmds_new", kwlist, 
-	    	hdrFromPyObject, &h, tagNumFromPyObject, &tagN, &flags))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&:rpmds_new", kwlist, 
+	    	 &obj, tagNumFromPyObject, &tagN))
 	return NULL;
 
-    ds = rpmdsNew(h, tagN, 0);
-
+    if (PyTuple_Check(obj)) {
+	const char *name = NULL;
+	const char *evr = NULL;
+	rpmsenseFlags flags = RPMSENSE_ANY;
+	if (PyArg_ParseTuple(obj, "s|is", &name, &flags, &evr)) {
+	    ds = rpmdsSingle(tagN, name, evr, flags);
+	}
+    } else if (hdrFromPyObject(obj, &h)) {
+	if (tagN == RPMTAG_NEVR) {
+	    ds = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	} else {
+	    ds = rpmdsNew(h, tagN, 0);
+	}
+    }
+    
+    if (ds == NULL) return NULL;
+	
     return rpmds_Wrap(subtype, ds);
 }
 
@@ -500,33 +515,3 @@ PyObject * rpmds_Wrap(PyTypeObject *subtype, rpmds ds)
     return (PyObject *) s;
 }
 
-PyObject * rpmds_Single(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    rpmTag tagN = RPMTAG_PROVIDENAME;
-    const char * N;
-    const char * EVR = NULL;
-    rpmsenseFlags Flags = 0;
-    char * kwlist[] = {"to", "name", "evr", "flags", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&s|si:Single", kwlist,
-	    tagNumFromPyObject, &tagN, &N, &EVR, &Flags))
-	return NULL;
-
-    return rpmds_Wrap(&rpmds_Type, rpmdsSingle(tagN, N, EVR, Flags));
-}
-
-PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
-{
-    return PyObject_Call((PyObject *) &rpmds_Type,
-			 Py_BuildValue("(O)", s), kwds);
-}
-
-PyObject * hdr_dsOfHeader(PyObject * s)
-{
-    Header h = NULL;
-    rpmTag tagN = RPMTAG_PROVIDENAME;
-    rpmsenseFlags Flags = RPMSENSE_EQUAL;
-    if (!hdrFromPyObject(s, &h)) return NULL;
-
-    return rpmds_Wrap(&rpmds_Type, rpmdsThis(h, tagN, Flags));
-}

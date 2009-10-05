@@ -158,9 +158,6 @@ static PyMethodDef rpmModuleMethods[] = {
     { "setStats", (PyCFunction) setStats, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
-    { "dsSingle", (PyCFunction) rpmds_Single, METH_VARARGS|METH_KEYWORDS,
-"rpm.dsSingle(TagN, N, [EVR, [Flags]] -> ds\n\
-- Create a single element dependency set.\n" },
     { NULL }
 } ;
 

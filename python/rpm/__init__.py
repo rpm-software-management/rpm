@@ -72,3 +72,6 @@ def signalsCaught(siglist):
             caught.append(sig)
 
     return caught
+
+def dsSingle(TagN, N, EVR = "", Flags = RPMSENSE_ANY):
+    return ds((N, EVR, Flags), TagN)
