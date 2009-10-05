@@ -82,3 +82,20 @@ class TransactionSet(_rpm.ts):
         # garbage collection should take care but just in case...
         if isinstance(hdrs, _rpm.mi):
             del hdrs
+
+    def run(self, callback, data):
+        rc = _rpm.ts.run(self, callback, data)
+
+        # crazy backwards compatibility goo: None for ok, list of problems
+        # if transaction didnt complete and empty list if it completed
+        # with errors
+        if rc == 0:
+            return None
+
+        res = []
+        if rc > 0:
+            for prob in self.problems():
+                item = ("%s" % prob, (prob.type, prob._str, prob._num))
+                res.append(item)
+        return res
+

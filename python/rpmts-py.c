@@ -590,9 +590,6 @@ static PyObject *
 rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     int rc;
-    PyObject * list;
-    rpmps ps;
-    rpmpsi psi;
     struct rpmtsCallbackType_s cbInfo;
     char * kwlist[] = {"callback", "data", NULL};
 
@@ -612,38 +609,13 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
     }
 
     rc = rpmtsRun(s->ts, NULL, s->ignoreSet);
-    ps = rpmtsProblems(s->ts);
 
     if (cbInfo.cb)
 	(void) rpmtsSetNotifyCallback(s->ts, NULL, NULL);
 
     PyEval_RestoreThread(cbInfo._save);
 
-    if (rc < 0) {
-	list = PyList_New(0);
-	return list;
-    } else if (!rc) {
-	Py_RETURN_NONE;
-    }
-
-    list = PyList_New(0);
-    psi = rpmpsInitIterator(ps);
-    while (rpmpsNextIterator(psi) >= 0) {
-	rpmProblem p = rpmpsGetProblem(psi);
-	char * ps = rpmProblemString(p);
-	PyObject * prob = Py_BuildValue("s(isN)", ps,
-			     rpmProblemGetType(p),
-			     rpmProblemGetStr(p),
-			     PyLong_FromLongLong(rpmProblemGetDiskNeed(p)));
-	PyList_Append(list, prob);
-	free(ps);
-	Py_DECREF(prob);
-    }
-
-    psi = rpmpsFreeIterator(psi);
-    ps = rpmpsFree(ps);
-
-    return list;
+    return Py_BuildValue("i", rc);
 }
 
 static PyObject *
