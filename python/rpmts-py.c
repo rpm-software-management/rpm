@@ -343,7 +343,9 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
     if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmFdFromPyObject, &fd))
     	return NULL;
 
+    Py_BEGIN_ALLOW_THREADS;
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
+    Py_END_ALLOW_THREADS;
     Fclose(fd);
 
     if (rpmrc == RPMRC_OK) {
