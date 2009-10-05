@@ -333,44 +333,26 @@ rpmts_VerifyDB(rpmtsObject * s)
 }
 
 static PyObject *
-rpmts_HdrFromFdno(rpmtsObject * s, PyObject * args, PyObject * kwds)
+rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
 {
-    PyObject * result = NULL;
+    PyObject *ho = NULL;
     Header h;
     FD_t fd;
     rpmRC rpmrc;
-    char * kwlist[] = {"fd", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:HdrFromFdno", kwlist,
-				     rpmFdFromPyObject, &fd))
+    if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmFdFromPyObject, &fd))
     	return NULL;
 
     rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
     Fclose(fd);
 
-    switch (rpmrc) {
-    case RPMRC_OK:
-	if (h)
-	    result = Py_BuildValue("N", hdr_Wrap(&hdr_Type, h));
-	h = headerFree(h);	/* XXX ref held by result */
-	break;
-
-    case RPMRC_NOKEY:
-	PyErr_SetString(pyrpmError, "public key not available");
-	break;
-
-    case RPMRC_NOTTRUSTED:
-	PyErr_SetString(pyrpmError, "public key not trusted");
-	break;
-
-    case RPMRC_NOTFOUND:
-    case RPMRC_FAIL:
-    default:
-	PyErr_SetString(pyrpmError, "error reading package header");
-	break;
+    if (rpmrc == RPMRC_OK) {
+	ho = hdr_Wrap(&hdr_Type, h);
+    } else {
+	Py_INCREF(Py_None);
+	ho = Py_None;
     }
-
-    return result;
+    return Py_BuildValue("(iN)", rpmrc, ho);
 }
 
 static PyObject *
@@ -639,7 +621,7 @@ static struct PyMethodDef rpmts_methods[] = {
  {"verifyDB",	(PyCFunction) rpmts_VerifyDB,	METH_NOARGS,
 "ts.verifyDB() -> None\n\
 - Verify the default transaction rpmdb.\n" },
- {"hdrFromFdno",(PyCFunction) rpmts_HdrFromFdno,METH_VARARGS|METH_KEYWORDS,
+ {"hdrFromFdno",(PyCFunction) rpmts_HdrFromFdno,METH_O,
 "ts.hdrFromFdno(fdno) -> hdr\n\
 - Read a package header from a file descriptor.\n" },
  {"hdrCheck",	(PyCFunction) rpmts_HdrCheck,	METH_O,

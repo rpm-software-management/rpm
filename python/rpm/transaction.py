@@ -148,3 +148,15 @@ class TransactionSet(_rpm.ts):
             raise _rpm.error, "public key not trusted"
         elif res != _rpm.RPMRC_OK:
             raise _rpm.error, msg
+
+    def hdrFromFdno(self, fd):
+        res, h = _rpm.ts.hdrFromFdno(self, fd)
+        # generate backwards compatibly broken exceptions
+        if res == _rpm.RPMRC_NOKEY:
+            raise _rpm.error, "public key not availaiable"
+        elif res == _rpm.RPMRC_NOTTRUSTED:
+            raise _rpm.error, "public key not trusted"
+        elif res != _rpm.RPMRC_OK:
+            raise _rpm.error, "error reading package header"
+
+        return h
