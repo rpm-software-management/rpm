@@ -4,6 +4,7 @@ import _rpm
 
 # TODO: migrate relevant documentation from C-side
 class TransactionSet(_rpm.ts):
+    _probFilter = 0
     # FIXME: kludge for keeping refcounts on transaction element keys
     _keyList = []
 
@@ -84,7 +85,7 @@ class TransactionSet(_rpm.ts):
             del hdrs
 
     def run(self, callback, data):
-        rc = _rpm.ts.run(self, callback, data)
+        rc = _rpm.ts.run(self, callback, data, self._probFilter)
 
         # crazy backwards compatibility goo: None for ok, list of problems
         # if transaction didnt complete and empty list if it completed

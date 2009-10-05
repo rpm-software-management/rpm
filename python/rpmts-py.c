@@ -139,7 +139,6 @@ struct rpmtsObject_s {
     rpmts	ts;
     FD_t scriptFd;
     rpmtsi tsi;
-    rpmprobFilterFlags ignoreSet;
 };
 
 struct rpmtsCallbackType_s {
@@ -591,10 +590,11 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     int rc;
     struct rpmtsCallbackType_s cbInfo;
-    char * kwlist[] = {"callback", "data", NULL};
+    rpmprobFilterFlags ignoreSet;
+    char * kwlist[] = {"callback", "data", "ignoreSet", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO:Run", kwlist,
-	    &cbInfo.cb, &cbInfo.data))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OOi:Run", kwlist,
+	    &cbInfo.cb, &cbInfo.data, &ignoreSet))
 	return NULL;
 
     cbInfo.tso = s;
@@ -608,7 +608,7 @@ rpmts_Run(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	(void) rpmtsSetNotifyCallback(s->ts, rpmtsCallback, (void *) &cbInfo);
     }
 
-    rc = rpmtsRun(s->ts, NULL, s->ignoreSet);
+    rc = rpmtsRun(s->ts, NULL, ignoreSet);
 
     if (cbInfo.cb)
 	(void) rpmtsSetNotifyCallback(s->ts, NULL, NULL);
@@ -855,11 +855,6 @@ static PyObject *rpmts_get_vsflags(rpmtsObject *s, void *closure)
 static char rpmts_doc[] =
 "";
 
-static PyMemberDef rpmts_members[] = {
-	{"_probFilter",	T_INT, offsetof(rpmtsObject, ignoreSet), 0, NULL},
-	{NULL}
-};
-
 static PyGetSetDef rpmts_getseters[] = {
 	/* only provide a setter until we have rpmfd wrappings */
 	{"scriptFd",	NULL,	(setter)rpmts_set_scriptFd, NULL },
@@ -902,7 +897,7 @@ PyTypeObject rpmts_Type = {
 	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmts_iternext,	/* tp_iternext */
 	rpmts_methods,			/* tp_methods */
-	rpmts_members,			/* tp_members */
+	0,				/* tp_members */
 	rpmts_getseters,		/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
