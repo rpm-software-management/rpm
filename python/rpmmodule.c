@@ -212,6 +212,7 @@ void init_rpm(void)
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
+    if (PyType_Ready(&rpmProblem_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
     if (PyType_Ready(&rpmtd_Type) < 0) return;
     if (PyType_Ready(&rpmte_Type) < 0) return;
@@ -247,6 +248,9 @@ void init_rpm(void)
 
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
+
+    Py_INCREF(&rpmProblem_Type);
+    PyModule_AddObject(m, "prob", (PyObject *) &rpmProblem_Type);
 
     Py_INCREF(&rpmps_Type);
     PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);

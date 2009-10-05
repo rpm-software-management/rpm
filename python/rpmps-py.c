@@ -4,12 +4,117 @@
 
 #include "debug.h"
 
+struct rpmProblemObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;
+    rpmProblem	prob;
+};
+
 struct rpmpsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmps	ps;
     rpmpsi	psi;
 };
+
+static char rpmprob_doc[] =
+"";
+
+static PyObject *rpmprob_get_type(rpmProblemObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmProblemGetType(s->prob));
+}
+
+static PyObject *rpmprob_get_pkgnevr(rpmProblemObject *s, void *closure)
+{
+    return Py_BuildValue("s", rpmProblemGetPkgNEVR(s->prob));
+}
+
+static PyObject *rpmprob_get_altnevr(rpmProblemObject *s, void *closure)
+{
+    return Py_BuildValue("s", rpmProblemGetAltNEVR(s->prob));
+}
+
+static PyObject *rpmprob_get_str(rpmProblemObject *s, void *closure)
+{
+    return Py_BuildValue("s", rpmProblemGetStr(s->prob));
+}
+
+static PyObject *rpmprob_get_num(rpmProblemObject *s, void *closure)
+{
+    return Py_BuildValue("L", rpmProblemGetDiskNeed(s->prob));
+}
+
+static PyGetSetDef rpmprob_getseters[] = {
+    { "type",		(getter)rpmprob_get_type, NULL, NULL },
+    { "pkgNEVR",	(getter)rpmprob_get_pkgnevr, NULL, NULL },
+    { "altNEVR",	(getter)rpmprob_get_altnevr, NULL, NULL },
+    { "_str",		(getter)rpmprob_get_str, NULL, NULL },
+    { "_num",		(getter)rpmprob_get_num, NULL, NULL },
+    { NULL }
+};
+
+static PyObject *rpmprob_str(rpmProblemObject *s)
+{
+    char *str = rpmProblemString(s->prob);
+    PyObject *res = Py_BuildValue("s", str);
+    free(str);
+    return res;
+}
+
+PyTypeObject rpmProblem_Type = {
+	PyObject_HEAD_INIT(&PyType_Type)
+	0,				/* ob_size */
+	"rpm.prob",			/* tp_name */
+	sizeof(rpmProblemObject),		/* tp_basicsize */
+	0,				/* tp_itemsize */
+	/* methods */
+	(destructor)0,			/* tp_dealloc */
+	0,				/* tp_print */
+	(getattrfunc)0,			/* tp_getattr */
+	(setattrfunc)0,			/* tp_setattr */
+	(cmpfunc)0,			/* tp_compare */
+	(reprfunc)0,			/* tp_repr */
+	0,				/* tp_as_number */
+	0,				/* tp_as_sequence */
+	0,				/* tp_as_mapping */
+	(hashfunc)0,			/* tp_hash */
+	(ternaryfunc)0,			/* tp_call */
+	(reprfunc)rpmprob_str,		/* tp_str */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
+	0,				/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
+	rpmprob_doc,			/* tp_doc */
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	(richcmpfunc)0,			/* tp_richcompare */
+	0,				/* tp_weaklistoffset */
+	0,				/* tp_iter */
+	0,				/* tp_iternext */
+	0,				/* tp_methods */
+	0,				/* tp_members */
+	rpmprob_getseters,		/* tp_getset */
+	0,				/* tp_base */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
+	0,				/* tp_dictoffset */
+	0,				/* tp_init */
+	0,				/* tp_alloc */
+	(newfunc)0,			/* tp_new */
+	0,				/* tp_free */
+	0,				/* tp_is_gc */
+};
+
+static PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
+{
+    rpmProblemObject * s = (rpmProblemObject *)subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return PyErr_NoMemory();
+
+    s->prob = prob;
+    return (PyObject *) s;
+}
 
 static int
 rpmps_append(rpmpsObject * s, PyObject * value)
@@ -41,11 +146,8 @@ rpmps_iternext(rpmpsObject * s)
     	s->psi = rpmpsInitIterator(s->ps);
     }
 
-    /* If more to do, return a problem set string. */
     if (rpmpsNextIterator(s->psi) >= 0) {
-	char * ps = rpmProblemString(rpmpsGetProblem(s->psi));
-	result = Py_BuildValue("s", ps);
-	free(ps);
+	result = rpmprob_Wrap(&rpmProblem_Type, rpmpsGetProblem(s->psi));
     } else {
 	s->psi = rpmpsFreeIterator(s->psi);
     }
