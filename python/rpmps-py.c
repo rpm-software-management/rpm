@@ -35,6 +35,16 @@ static PyObject *rpmprob_get_altnevr(rpmProblemObject *s, void *closure)
     return Py_BuildValue("s", rpmProblemGetAltNEVR(s->prob));
 }
 
+static PyObject *rpmprob_get_key(rpmProblemObject *s, void *closure)
+{
+    fnpyKey key = rpmProblemGetKey(s->prob);
+    if (key) {
+    	return Py_BuildValue("O", rpmProblemGetKey(s->prob));
+    } else {
+	Py_RETURN_NONE;
+    }
+}
+
 static PyObject *rpmprob_get_str(rpmProblemObject *s, void *closure)
 {
     return Py_BuildValue("s", rpmProblemGetStr(s->prob));
@@ -49,6 +59,7 @@ static PyGetSetDef rpmprob_getseters[] = {
     { "type",		(getter)rpmprob_get_type, NULL, NULL },
     { "pkgNEVR",	(getter)rpmprob_get_pkgnevr, NULL, NULL },
     { "altNEVR",	(getter)rpmprob_get_altnevr, NULL, NULL },
+    { "key",		(getter)rpmprob_get_key, NULL, NULL },
     { "_str",		(getter)rpmprob_get_str, NULL, NULL },
     { "_num",		(getter)rpmprob_get_num, NULL, NULL },
     { NULL }
