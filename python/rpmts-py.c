@@ -226,11 +226,8 @@ rpmts_SolveCallback(rpmts ts, rpmds ds, const void * data)
 static PyObject *
 rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    rpmps ps;
-    rpmProblem p;
-    PyObject * list, * cf;
     struct rpmtsCallbackType_s cbInfo;
-    int xx;
+    int rc;
     char * kwlist[] = {"callback", NULL};
 
     memset(&cbInfo, 0, sizeof(cbInfo));
@@ -243,77 +240,17 @@ rpmts_Check(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	    PyErr_SetString(PyExc_TypeError, "expected a callable");
 	    return NULL;
 	}
-	xx = rpmtsSetSolveCallback(s->ts, rpmts_SolveCallback, (void *)&cbInfo);
+	rc = rpmtsSetSolveCallback(s->ts, rpmts_SolveCallback, (void *)&cbInfo);
     }
 
     cbInfo.tso = s;
     cbInfo._save = PyEval_SaveThread();
 
-    xx = rpmtsCheck(s->ts);
-    ps = rpmtsProblems(s->ts);
+    rc = rpmtsCheck(s->ts);
 
     PyEval_RestoreThread(cbInfo._save);
 
-    if (ps != NULL) {
-	list = PyList_New(0);
-	rpmpsi psi = rpmpsInitIterator(ps);
-
-	/* XXX TODO: rpmlib >= 4.0.3 can return multiple suggested keys. */
-	while (rpmpsNextIterator(psi) >= 0) {
-	    char * altNEVR, * needsName;
-	    char * byName, * byVersion, * byRelease, *byArch;
-	    char * needsOP, * needsVersion;
-	    rpmsenseFlags needsFlags, sense;
-	    fnpyKey key;
-
-	    p = rpmpsGetProblem(psi);
-
-	    byName = xstrdup(rpmProblemGetPkgNEVR(p));
-	    if ((byArch= strrchr(byName, '.')) != NULL)
-		*byArch++ = '\0';
-	    if ((byRelease = strrchr(byName, '-')) != NULL)
-		*byRelease++ = '\0';
-	    if ((byVersion = strrchr(byName, '-')) != NULL)
-		*byVersion++ = '\0';
-
-	    key = rpmProblemGetKey(p);
-
-	    altNEVR = needsName = xstrdup(rpmProblemGetAltNEVR(p));
-	    if (needsName[1] == ' ') {
-		sense = (needsName[0] == 'C')
-			? RPMDEP_SENSE_CONFLICTS : RPMDEP_SENSE_REQUIRES;
-		needsName += 2;
-	    } else
-		sense = RPMDEP_SENSE_REQUIRES;
-	    if ((needsVersion = strrchr(needsName, ' ')) != NULL)
-		*needsVersion++ = '\0';
-
-	    needsFlags = 0;
-	    if ((needsOP = strrchr(needsName, ' ')) != NULL) {
-		for (*needsOP++ = '\0'; *needsOP != '\0'; needsOP++) {
-		    if (*needsOP == '<')	needsFlags |= RPMSENSE_LESS;
-		    else if (*needsOP == '>')	needsFlags |= RPMSENSE_GREATER;
-		    else if (*needsOP == '=')	needsFlags |= RPMSENSE_EQUAL;
-		}
-	    }
-
-	    cf = Py_BuildValue("((sss)(ss)iOi)", byName, byVersion, byRelease,
-			       needsName, needsVersion, needsFlags,
-			       (key != NULL ? key : Py_None),
-			       sense);
-	    PyList_Append(list, (PyObject *) cf);
-	    Py_DECREF(cf);
-	    free(byName);
-	    free(altNEVR);
-	}
-
-	psi = rpmpsFreeIterator(psi);
-	ps = rpmpsFree(ps);
-
-	return list;
-    }
-
-    Py_RETURN_NONE;
+    return PyBool_FromLong((rc == 0));
 }
 
 static PyObject *

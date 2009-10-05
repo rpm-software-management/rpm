@@ -100,3 +100,41 @@ class TransactionSet(_rpm.ts):
                 res.append(item)
         return res
 
+    def check(self, *args, **kwds):
+        _rpm.ts.check(self, *args, **kwds)
+
+        probs = self.problems()
+        if not probs:
+            return None
+
+        # compatibility: munge problem strings into dependency tuples of doom
+        res = []
+        for p in probs:
+            # is it anything we need to care about?
+            if p.type == _rpm.RPMPROB_CONFLICT:
+                sense = _rpm.RPMDEP_SENSE_CONFLICTS
+            elif p.type == _rpm.RPMPROB_REQUIRES:
+                sense = _rpm.RPMDEP_SENSE_REQUIRES
+            else:
+                continue
+
+            # strip arch, split to name, version, release
+            nevr = p.pkgNEVR.rsplit('.', 1)[0]
+            n, v, r = nevr.rsplit('-', 2)
+
+            # extract the dependency information
+            needs = p.altNEVR.split()[1:]
+            needname = needs[0]
+            needflags = _rpm.RPMSENSE_ANY
+            if len(needs) == 3:
+                needop = needs[1]
+                if needop.find('<') >= 0: needflags |= _rpm.RPMSENSE_LESS
+                if needop.find('=') >= 0: needflags |= _rpm.RPMSENSE_EQUAL
+                if needop.find('>') >= 0: needflags |= _rpm.RPMSENSE_GREATER
+                needver = needs[2]
+            else:
+                needver = ""
+
+            res.append(((n, v, r),(needname,needver),needflags,sense,p.key))
+
+        return res
