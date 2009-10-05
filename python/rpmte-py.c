@@ -185,12 +185,7 @@ rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 
     ds = rpmteDS(s->te, tag);
     if (ds == NULL) {
-#ifdef	DYING
-	PyErr_SetString(PyExc_TypeError, "invalid ds tag");
-	return NULL;
-#else
 	Py_RETURN_NONE;
-#endif
     }
     return rpmds_Wrap(&rpmds_Type, rpmdsLink(ds, RPMDBG_M("rpmte_DS")));
 }
