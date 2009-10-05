@@ -42,19 +42,19 @@ rpmfi_DX(rpmfiObject * s)
 static PyObject *
 rpmfi_BN(rpmfiObject * s)
 {
-    return Py_BuildValue("s", xstrdup(rpmfiBN(s->fi)));
+    return Py_BuildValue("s", rpmfiBN(s->fi));
 }
 
 static PyObject *
 rpmfi_DN(rpmfiObject * s)
 {
-    return Py_BuildValue("s", xstrdup(rpmfiDN(s->fi)));
+    return Py_BuildValue("s", rpmfiDN(s->fi));
 }
 
 static PyObject *
 rpmfi_FN(rpmfiObject * s)
 {
-    return Py_BuildValue("s", xstrdup(rpmfiFN(s->fi)));
+    return Py_BuildValue("s", rpmfiFN(s->fi));
 }
 
 static PyObject *
@@ -98,7 +98,7 @@ rpmfi_Digest(rpmfiObject * s)
 static PyObject *
 rpmfi_FLink(rpmfiObject * s)
 {
-    return Py_BuildValue("s", xstrdup(rpmfiFLink(s->fi)));
+    return Py_BuildValue("s", rpmfiFLink(s->fi));
 }
 
 static PyObject *
@@ -122,13 +122,13 @@ rpmfi_FMtime(rpmfiObject * s)
 static PyObject *
 rpmfi_FUser(rpmfiObject * s)
 {
-    return Py_BuildValue("s", xstrdup(rpmfiFUser(s->fi)));
+    return Py_BuildValue("s", rpmfiFUser(s->fi));
 }
 
 static PyObject *
 rpmfi_FGroup(rpmfiObject * s)
 {
-    return Py_BuildValue("s", xstrdup(rpmfiFGroup(s->fi)));
+    return Py_BuildValue("s", rpmfiFGroup(s->fi));
 }
 
 static PyObject *
@@ -144,7 +144,7 @@ rpmfi_FClass(rpmfiObject * s)
 
     if ((FClass = rpmfiFClass(s->fi)) == NULL)
 	FClass = "";
-    return Py_BuildValue("s", xstrdup(FClass));
+    return Py_BuildValue("s", FClass);
 }
 
 static PyObject *
@@ -279,7 +279,7 @@ rpmfi_subscript(rpmfiObject * s, PyObject * key)
 
     ix = (int) PyInt_AsLong(key);
     rpmfiSetFX(s->fi, ix);
-    return Py_BuildValue("s", xstrdup(rpmfiFN(s->fi)));
+    return Py_BuildValue("s", rpmfiFN(s->fi));
 }
 
 static PyMappingMethods rpmfi_as_mapping = {
