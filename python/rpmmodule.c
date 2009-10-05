@@ -64,7 +64,7 @@ static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
 
     if (fop) {
 	if (!PyFile_Check(fop)) {
-	    PyErr_SetString(pyrpmError, "requires file object");
+	    PyErr_SetString(PyExc_TypeError, "requires file object");
 	    return NULL;
 	}
 	fp = PyFile_AsFile(fop);
