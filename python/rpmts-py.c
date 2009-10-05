@@ -579,7 +579,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (rpmtsGetRdb(s->ts) == NULL) {
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || rpmtsGetRdb(s->ts) == NULL) {
-	    PyErr_SetString(PyExc_TypeError, "rpmdb open failed");
+	    PyErr_SetString(pyrpmError, "rpmdb open failed");
 	    return NULL;
 	}
     }
