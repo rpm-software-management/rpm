@@ -45,11 +45,6 @@ struct rpmfc_s {
 
     rpmds provides;	/*!< (no. provides) package provides */
     rpmds requires;	/*!< (no. requires) package requires */
-
-    StringBuf sb_java;	/*!< concatenated list of java colored files. */
-    StringBuf sb_perl;	/*!< concatenated list of perl colored files. */
-    StringBuf sb_python;/*!< concatenated list of python colored files. */
-
 };
 
 /**
@@ -637,11 +632,6 @@ rpmfc rpmfcFree(rpmfc fc)
 
 	fc->provides = rpmdsFree(fc->provides);
 	fc->requires = rpmdsFree(fc->requires);
-
-	fc->sb_java = freeStringBuf(fc->sb_java);
-	fc->sb_perl = freeStringBuf(fc->sb_perl);
-	fc->sb_python = freeStringBuf(fc->sb_python);
-
     }
     fc = _free(fc);
     return NULL;
