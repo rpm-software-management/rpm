@@ -19,6 +19,7 @@ EXTRA_DIST = \
 	find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
 	mono-find-requires mono-find-provides \
+	ocaml-find-requires.sh ocaml-find-provides.sh \
 	pkgconfigdeps.sh libtooldeps.sh \
 	fontconfig.prov desktop-file.prov
 
