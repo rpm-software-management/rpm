@@ -1,9 +1,10 @@
 #!/usr/bin/python
 
-import _rpm
+import rpm
+from _rpm import ts as _rpmts
 
 # TODO: migrate relevant documentation from C-side
-class TransactionSet(_rpm.ts):
+class TransactionSet(_rpmts):
     _probFilter = 0
     # FIXME: kludge for keeping refcounts on transaction element keys
     _keyList = []
@@ -59,33 +60,33 @@ class TransactionSet(_rpm.ts):
             raise ValueError, 'how argument must be "u" or "i"'
         upgrade = (how == "u")
 
-        if not _rpm.ts.addInstall(self, header, key, upgrade):
-            raise _rpm.error, "adding package to transaction failed"
+        if not _rpmts.addInstall(self, header, key, upgrade):
+            raise rpm.error, "adding package to transaction failed"
         self._keyList.append(key)
 
     def addErase(self, item):
         hdrs = []
-        if isinstance(item, _rpm.hdr):
+        if isinstance(item, rpm.hdr):
             hdrs = [item]
-        elif isinstance(item, _rpm.mi):
+        elif isinstance(item, rpm.mi):
             hdrs = item
         elif isinstance(item, int):
-            hdrs = self.dbMatch(_rpm.RPMDBI_PACKAGES, item)
+            hdrs = self.dbMatch(rpm.RPMDBI_PACKAGES, item)
         elif isinstance(item, str):
-            hdrs = self.dbMatch(_rpm.RPMDBI_LABEL, item)
+            hdrs = self.dbMatch(rpm.RPMDBI_LABEL, item)
         else:
             raise TypeError, "invalid type %s" % type(item)
 
         for h in hdrs:
-            if not _rpm.ts.addErase(self, h):
-                raise _rpm.error, "package not installed"
+            if not _rpmts.addErase(self, h):
+                raise rpm.error, "package not installed"
 
         # garbage collection should take care but just in case...
-        if isinstance(hdrs, _rpm.mi):
+        if isinstance(hdrs, rpm.mi):
             del hdrs
 
     def run(self, callback, data):
-        rc = _rpm.ts.run(self, callback, data, self._probFilter)
+        rc = _rpmts.run(self, callback, data, self._probFilter)
 
         # crazy backwards compatibility goo: None for ok, list of problems
         # if transaction didnt complete and empty list if it completed
@@ -101,7 +102,7 @@ class TransactionSet(_rpm.ts):
         return res
 
     def check(self, *args, **kwds):
-        _rpm.ts.check(self, *args, **kwds)
+        _rpmts.check(self, *args, **kwds)
 
         probs = self.problems()
         if not probs:
@@ -111,10 +112,10 @@ class TransactionSet(_rpm.ts):
         res = []
         for p in probs:
             # is it anything we need to care about?
-            if p.type == _rpm.RPMPROB_CONFLICT:
-                sense = _rpm.RPMDEP_SENSE_CONFLICTS
-            elif p.type == _rpm.RPMPROB_REQUIRES:
-                sense = _rpm.RPMDEP_SENSE_REQUIRES
+            if p.type == rpm.RPMPROB_CONFLICT:
+                sense = rpm.RPMDEP_SENSE_CONFLICTS
+            elif p.type == rpm.RPMPROB_REQUIRES:
+                sense = rpm.RPMDEP_SENSE_REQUIRES
             else:
                 continue
 
@@ -125,12 +126,12 @@ class TransactionSet(_rpm.ts):
             # extract the dependency information
             needs = p.altNEVR.split()[1:]
             needname = needs[0]
-            needflags = _rpm.RPMSENSE_ANY
+            needflags = rpm.RPMSENSE_ANY
             if len(needs) == 3:
                 needop = needs[1]
-                if needop.find('<') >= 0: needflags |= _rpm.RPMSENSE_LESS
-                if needop.find('=') >= 0: needflags |= _rpm.RPMSENSE_EQUAL
-                if needop.find('>') >= 0: needflags |= _rpm.RPMSENSE_GREATER
+                if needop.find('<') >= 0: needflags |= rpm.RPMSENSE_LESS
+                if needop.find('=') >= 0: needflags |= rpm.RPMSENSE_EQUAL
+                if needop.find('>') >= 0: needflags |= rpm.RPMSENSE_GREATER
                 needver = needs[2]
             else:
                 needver = ""
@@ -140,23 +141,23 @@ class TransactionSet(_rpm.ts):
         return res
 
     def hdrCheck(self, blob):
-        res, msg = _rpm.ts.hdrCheck(self, blob)
+        res, msg = _rpmts.hdrCheck(self, blob)
         # generate backwards compatibly broken exceptions
-        if res == _rpm.RPMRC_NOKEY:
-            raise _rpm.error, "public key not availaiable"
-        elif res == _rpm.RPMRC_NOTTRUSTED:
-            raise _rpm.error, "public key not trusted"
-        elif res != _rpm.RPMRC_OK:
-            raise _rpm.error, msg
+        if res == rpm.RPMRC_NOKEY:
+            raise rpm.error, "public key not availaiable"
+        elif res == rpm.RPMRC_NOTTRUSTED:
+            raise rpm.error, "public key not trusted"
+        elif res != rpm.RPMRC_OK:
+            raise rpm.error, msg
 
     def hdrFromFdno(self, fd):
-        res, h = _rpm.ts.hdrFromFdno(self, fd)
+        res, h = _rpmts.hdrFromFdno(self, fd)
         # generate backwards compatibly broken exceptions
-        if res == _rpm.RPMRC_NOKEY:
-            raise _rpm.error, "public key not availaiable"
-        elif res == _rpm.RPMRC_NOTTRUSTED:
-            raise _rpm.error, "public key not trusted"
-        elif res != _rpm.RPMRC_OK:
-            raise _rpm.error, "error reading package header"
+        if res == rpm.RPMRC_NOKEY:
+            raise rpm.error, "public key not availaiable"
+        elif res == rpm.RPMRC_NOTTRUSTED:
+            raise rpm.error, "public key not trusted"
+        elif res != rpm.RPMRC_OK:
+            raise rpm.error, "error reading package header"
 
         return h
