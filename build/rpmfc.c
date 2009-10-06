@@ -471,6 +471,8 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "libtool library ",         RPMFC_LIBTOOL|RPMFC_INCLUDE },
   { "pkgconfig ",               RPMFC_PKGCONFIG|RPMFC_INCLUDE },
 
+  { "Objective caml ",		RPMFC_OCAML|RPMFC_INCLUDE },
+
   /* XXX .NET executables and libraries.  file(1) cannot differ from win32 
    * executables unfortunately :( */
   { "Mono/.Net assembly",       RPMFC_MONO|RPMFC_INCLUDE },
@@ -770,6 +772,10 @@ static int rpmfcSCRIPT(rpmfc fc)
         xx = rpmfcHelper(fc, 'P', "mono");
         if (is_executable)
             xx = rpmfcHelper(fc, 'R', "mono");
+    } else
+    if (fc->fcolor->vals[fc->ix] & RPMFC_OCAML) {
+	xx = rpmfcHelper(fc, 'P', "ocaml");
+	xx = rpmfcHelper(fc, 'R', "ocaml");
     }
 
     return 0;
@@ -1115,7 +1121,7 @@ typedef const struct rpmfcApplyTbl_s {
 static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
     { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_BOURNE|
-			 RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|
+			 RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|RPMFC_OCAML|
 			 RPMFC_PKGCONFIG|RPMFC_LIBTOOL) },
     { rpmfcMISC,	RPMFC_FONT|RPMFC_TEXT },
     { NULL, 0 }

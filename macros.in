@@ -496,6 +496,9 @@ print (t)\
 %__pkgconfig_provides   %{_rpmconfigdir}/pkgconfigdeps.sh --provides
 %__pkgconfig_requires   %{_rpmconfigdir}/pkgconfigdeps.sh --requires
 
+%__ocaml_provides       %{_rpmconfigdir}/ocaml-find-provides.sh
+%__ocaml_requires       %{_rpmconfigdir}/ocaml-find-requires.sh
+
 %__fontconfig_provides	%{_rpmconfigdir}/fontconfig.prov
 %__desktop_provides	%{_rpmconfigdir}/desktop-file.prov
 
