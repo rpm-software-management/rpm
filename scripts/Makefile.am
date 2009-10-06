@@ -32,6 +32,7 @@ rpmconfig_SCRIPTS = \
 	perl.prov perl.req perldeps.pl pythondeps.sh osgideps.pl \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \
+	ocaml-find-requires.sh ocaml-find-provides.sh \
 	fontconfig.prov desktop-file.prov \
 	rpmdb_loadcvt rpmdiff rpm2cpio.sh tcl.req tgpg 
 
