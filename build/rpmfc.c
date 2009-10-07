@@ -326,6 +326,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 {
     const char * fn = fc->fn[fc->ix];
     char *buf = NULL;
+    char *mname = NULL;
     StringBuf sb_stdout = NULL;
     StringBuf sb_stdin;
     char *av[2];
@@ -347,7 +348,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     case 'P':
 	if (fc->skipProv)
 	    return 0;
-	rasprintf(&buf, "%%{?__%s_provides}", nsdep);
+	mname = rstrscat(NULL, "__", nsdep, "_provides", NULL);
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
@@ -355,12 +356,13 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     case 'R':
 	if (fc->skipReq)
 	    return 0;
-	rasprintf(&buf, "%%{?__%s_requires}", nsdep);
+	mname = rstrscat(NULL, "__", nsdep, "_requires", NULL);
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
 	tagN = RPMTAG_REQUIRENAME;
 	break;
     }
+    rasprintf(&buf, "%%{?%s:%%{%s} %%{?%s_opts}}", mname, mname, mname);
     av[0] = buf;
     av[1] = NULL;
 
@@ -428,6 +430,7 @@ assert(EVR != NULL);
     }
     sb_stdout = freeStringBuf(sb_stdout);
     free(buf);
+    free(mname);
 
     return 0;
 }

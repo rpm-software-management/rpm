@@ -475,7 +475,10 @@ print (t)\
 #%__find_obsoletes	???
 
 #
-# Path to scripts to autogenerate per-interpreter package dependencies,
+# Path to scripts to autogenerate per-interpreter package dependencies.
+# If the script supports extra options they can be passed by defining 
+# <helper_macro>_opts macro(s), eg in spec:
+# %define __ocaml_requires_opts -i Warnings
 #
 # Note: Used iff _use_internal_dependency_generator is non-zero. The
 # helpers are also used by %{_rpmconfigdir}/rpmdeps {--provides|--requires}.
