@@ -168,7 +168,7 @@ static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
              	  cookie, anyarch, force) == 0) {
 	spec = rpmtsSpec(ts);
     } else {
-	 PyErr_SetString(pyrpmbError, "can't parse specfile\n");
+	 PyErr_SetString(PyExc_ValueError, "can't parse specfile\n");
     }
     rpmtsFree(ts);
 

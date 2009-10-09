@@ -4,9 +4,6 @@
 
 #include "debug.h"
 
-/* hmm.. figure something better */
-PyObject * pyrpmbError;
-
 static char rpmb__doc__[] =
 "";
 
@@ -23,10 +20,6 @@ void init_rpmb(void)
 	return;
 
     d = PyModule_GetDict(m);
-
-    pyrpmbError = PyErr_NewException("_rpmb.error", NULL, NULL);
-    if (pyrpmbError != NULL)
-	PyDict_SetItemString(d, "error", pyrpmbError);
 
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
