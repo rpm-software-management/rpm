@@ -683,6 +683,17 @@ static void rpmts_dealloc(rpmtsObject * s)
 
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
+    rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return NULL;
+
+    s->ts = rpmtsCreate();
+    s->scriptFd = NULL;
+    s->tsi = NULL;
+    return (PyObject *) s;
+}
+
+static int rpmts_init(rpmtsObject *s, PyObject *args, PyObject *kwds)
+{
     char * rootDir = "/";
     rpmVSFlags vsflags = rpmExpandNumeric("%{?__vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
@@ -690,15 +701,14 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_new", kwlist,
 	    &rootDir, &vsflags))
-	return NULL;
+	return -1;
 
-    ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rootDir);
     /* XXX: make this use common code with rpmts_SetVSFlags() to check the
      *      python objects */
     (void) rpmtsSetVSFlags(ts, vsflags);
 
-    return rpmts_Wrap(subtype, ts);
+    return 0;
 }
 
 static PyObject *rpmts_get_tid(rpmtsObject *s, void *closure)
@@ -838,20 +848,9 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	0,				/* tp_init */
+	(initproc) rpmts_init,		/* tp_init */
 	0,				/* tp_alloc */
 	(newfunc) rpmts_new,		/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
-
-PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts)
-{
-    rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return NULL;
-
-    s->ts = ts;
-    s->scriptFd = NULL;
-    s->tsi = NULL;
-    return (PyObject *) s;
-}

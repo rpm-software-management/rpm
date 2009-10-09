@@ -15,6 +15,4 @@ enum {
    RPMDEP_SENSE_CONFLICTS		/*!< conflict was found. */
 };
 
-PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts);
-
 #endif
