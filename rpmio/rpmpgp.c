@@ -1407,10 +1407,8 @@ exit:
 
 }
 
-pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
+static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 {
-    uint8_t * b = NULL;
-    ssize_t blen;
     const char * enc = NULL;
     const char * crcenc = NULL;
     uint8_t * dec;
@@ -1422,13 +1420,6 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
     char * t, * te;
     int pstate = 0;
     pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
-    int rc;
-
-    rc = rpmioSlurp(fn, &b, &blen);
-    if (rc || b == NULL || blen <= 0) {
-	goto exit;
-    }
-
     if (pgpIsPkt(b)) {
 #ifdef NOTYET	/* XXX ASCII Pubkeys only, please. */
 	ec = 0;	/* XXX fish out pkt type. */
@@ -1439,6 +1430,7 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 #define	TOKEQ(_s, _tok)	(rstreqn((_s), (_tok), sizeof(_tok)-1))
 
     for (t = (char *)b; t && *t; t = te) {
+	int rc;
 	if ((te = strchr(t, '\n')) == NULL)
 	    te = t + strlen(t);
 	else
@@ -1532,9 +1524,8 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
 		ec = PGPARMOR_ERR_CRC_CHECK;
 		goto exit;
 	    }
-	    b = _free(b);
-	    b = dec;
-	    blen = declen;
+	    if (pkt) *pkt = dec;
+	    if (pktlen) *pktlen = declen;
 	    ec = PGPARMOR_PUBKEY;	/* XXX ASCII Pubkeys only, please. */
 	    goto exit;
 	    break;
@@ -1543,12 +1534,30 @@ pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
     ec = PGPARMOR_NONE;
 
 exit:
-    if (ec > PGPARMOR_NONE && pkt)
-	*pkt = b;
-    else if (b != NULL)
-	b = _free(b);
-    if (pktlen)
-	*pktlen = blen;
+    return ec;
+}
+
+pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen)
+{
+    uint8_t * b = NULL;
+    ssize_t blen;
+    pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
+    int rc = rpmioSlurp(fn, &b, &blen);
+    if (rc == 0 && b != NULL && blen > 0) {
+	ec = decodePkts(b, pkt, pktlen);
+    }
+    free(b);
+    return ec;
+}
+
+pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen)
+{
+    pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
+    if (armor && strlen(armor) > 0) {
+	uint8_t *b = (uint8_t*) xstrdup(armor);
+	ec = decodePkts(b, pkt, pktlen);
+	free(b);
+    }
     return ec;
 }
 

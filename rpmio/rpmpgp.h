@@ -1013,6 +1013,15 @@ int pgpPrtPkts(const uint8_t *pkts, size_t pktlen, pgpDig dig, int printing);
 pgpArmor pgpReadPkts(const char * fn, uint8_t ** pkt, size_t * pktlen);
 
 /** \ingroup rpmpgp
+ * Parse armored OpenPGP packets from memory.
+ * @param armor		armored OpenPGP packet string
+ * @retval pkt		dearmored OpenPGP packet(s) (malloced)
+ * @retval pktlen	dearmored OpenPGP packet(s) length in bytes
+ * @return		type of armor found
+ */
+pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen);
+
+/** \ingroup rpmpgp
  * Wrap a OpenPGP packets in ascii armor for transport.
  * @param atype		type of armor
  * @param s		binary pkt data
