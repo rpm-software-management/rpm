@@ -9,6 +9,7 @@
 #include "header-py.h"
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
+#include "rpmkeyring-py.h"
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
 #include "rpmmacro-py.h"
@@ -208,9 +209,11 @@ void init_rpm(void)
     if (PyType_Ready(&hdr_Type) < 0) return;
     if (PyType_Ready(&rpmds_Type) < 0) return;
     if (PyType_Ready(&rpmfi_Type) < 0) return;
+    if (PyType_Ready(&rpmKeyring_Type) < 0) return;
     if (PyType_Ready(&rpmmi_Type) < 0) return;
     if (PyType_Ready(&rpmProblem_Type) < 0) return;
     if (PyType_Ready(&rpmps_Type) < 0) return;
+    if (PyType_Ready(&rpmPubkey_Type) < 0) return;
     if (PyType_Ready(&rpmtd_Type) < 0) return;
     if (PyType_Ready(&rpmte_Type) < 0) return;
     if (PyType_Ready(&rpmts_Type) < 0) return;
@@ -243,6 +246,9 @@ void init_rpm(void)
     Py_INCREF(&rpmfi_Type);
     PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
 
+    Py_INCREF(&rpmKeyring_Type);
+    PyModule_AddObject(m, "keyring", (PyObject *) &rpmKeyring_Type);
+
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
 
@@ -251,6 +257,9 @@ void init_rpm(void)
 
     Py_INCREF(&rpmps_Type);
     PyModule_AddObject(m, "ps", (PyObject *) &rpmps_Type);
+
+    Py_INCREF(&rpmPubkey_Type);
+    PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
 
     Py_INCREF(&rpmtd_Type);
     PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
