@@ -424,10 +424,12 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
 static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
 {
     rpmKeyring keyring = NULL;
-    if (!PyArg_Parse(arg, "O&", rpmKeyringFromPyObject, &keyring))
+    if (arg == Py_None || rpmKeyringFromPyObject(arg, &keyring)) {
+	return PyBool_FromLong(rpmtsSetKeyring(s->ts, keyring) == 0);
+    } else {
+	PyErr_SetString(PyExc_TypeError, "rpm.keyring or None expected");
 	return NULL;
-
-    return PyBool_FromLong(rpmtsSetKeyring(s->ts, keyring) == 0);
+    }
 }
 
 static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds)
@@ -441,7 +443,11 @@ static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds
 	return NULL;
 
     keyring = rpmtsGetKeyring(s->ts, autoload);
-    return rpmKeyring_Wrap(&rpmKeyring_Type, keyring);
+    if (keyring) {
+	return rpmKeyring_Wrap(&rpmKeyring_Type, keyring);
+    } else {
+	Py_RETURN_NONE;
+    }
 }
 
 static void *
