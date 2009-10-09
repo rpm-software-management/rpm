@@ -9,6 +9,7 @@
 #include "header-py.h"
 #include "rpmds-py.h"	/* XXX for rpmdsNew */
 #include "rpmfd-py.h"
+#include "rpmkeyring-py.h"
 #include "rpmfi-py.h"	/* XXX for rpmfiNew */
 #include "rpmmi-py.h"
 #include "rpmps-py.h"
@@ -420,6 +421,29 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
     return Py_BuildValue("i", rc);
 }
 
+static PyObject *rpmts_setKeyring(rpmtsObject *s, PyObject *arg)
+{
+    rpmKeyring keyring = NULL;
+    if (!PyArg_Parse(arg, "O&", rpmKeyringFromPyObject, &keyring))
+	return NULL;
+
+    return PyBool_FromLong(rpmtsSetKeyring(s->ts, keyring) == 0);
+}
+
+static PyObject *rpmts_getKeyring(rpmtsObject *s, PyObject *args, PyObject *kwds)
+{
+    rpmKeyring keyring = NULL;
+    int autoload = 1;
+    char * kwlist[] = { "autoload", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i:getKeyring",
+				     kwlist, &autoload))
+	return NULL;
+
+    keyring = rpmtsGetKeyring(s->ts, autoload);
+    return rpmKeyring_Wrap(&rpmKeyring_Type, keyring);
+}
+
 static void *
 rpmtsCallback(const void * hd, const rpmCallbackType what,
 		         const rpm_loff_t amount, const rpm_loff_t total,
@@ -631,6 +655,10 @@ static struct PyMethodDef rpmts_methods[] = {
  {"pgpPrtPkts",	(PyCFunction) rpmts_PgpPrtPkts,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
  {"pgpImportPubkey",	(PyCFunction) rpmts_PgpImportPubkey,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+ {"getKeyring",	(PyCFunction) rpmts_getKeyring,	METH_VARARGS|METH_KEYWORDS, 
+	NULL },
+ {"setKeyring",	(PyCFunction) rpmts_setKeyring,	METH_O, 
 	NULL },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
