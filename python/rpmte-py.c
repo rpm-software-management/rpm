@@ -312,7 +312,7 @@ PyTypeObject rpmte_Type = {
 PyObject * rpmte_Wrap(PyTypeObject *subtype, rpmte te)
 {
     rpmteObject *s = (rpmteObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->te = te;
     return (PyObject *) s;

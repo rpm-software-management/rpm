@@ -848,7 +848,7 @@ PyTypeObject rpmts_Type = {
 PyObject * rpmts_Wrap(PyTypeObject *subtype, rpmts ts)
 {
     rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->ts = ts;
     s->scriptFd = NULL;

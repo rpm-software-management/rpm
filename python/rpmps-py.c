@@ -121,7 +121,7 @@ PyTypeObject rpmProblem_Type = {
 static PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
 {
     rpmProblemObject * s = (rpmProblemObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->prob = prob;
     return (PyObject *) s;
@@ -282,7 +282,7 @@ rpmps psFromPs(rpmpsObject * s)
 PyObject * rpmps_Wrap(PyTypeObject *subtype, rpmps ps)
 {
     rpmpsObject * s = (rpmpsObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->ps = ps; /* XXX refcounts? */
     s->psi = NULL;

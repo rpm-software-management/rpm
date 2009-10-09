@@ -192,7 +192,7 @@ PyTypeObject rpmmi_Type = {
 PyObject * rpmmi_Wrap(PyTypeObject *subtype, rpmdbMatchIterator mi, PyObject *s)
 {
     rpmmiObject * mio = (rpmmiObject *)subtype->tp_alloc(subtype, 0);
-    if (mio == NULL) return PyErr_NoMemory();
+    if (mio == NULL) return NULL;
 
     mio->mi = mi;
     mio->ref = s;

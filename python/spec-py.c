@@ -228,7 +228,7 @@ PyObject *
 spec_Wrap(PyTypeObject *subtype, rpmSpec spec) 
 {
     specObject * s = (specObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->spec = spec; 
     return (PyObject *) s;

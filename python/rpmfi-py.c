@@ -370,7 +370,7 @@ rpmfi fiFromFi(rpmfiObject * s)
 PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi)
 {
     rpmfiObject *s = (rpmfiObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->fi = fi;
     s->active = 0;

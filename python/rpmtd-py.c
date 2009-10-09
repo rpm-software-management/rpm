@@ -107,7 +107,7 @@ static PyObject *rpmtd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwd
     if (noext) flags &= ~HEADERGET_EXT;
 
     if ((s = (rpmtdObject *)subtype->tp_alloc(subtype, 0)) == NULL)
-	return PyErr_NoMemory();
+	return NULL;
 
     headerGet(h, tag, &(s->td), flags);
 

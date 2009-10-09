@@ -508,7 +508,7 @@ rpmds dsFromDs(rpmdsObject * s)
 PyObject * rpmds_Wrap(PyTypeObject *subtype, rpmds ds)
 {
     rpmdsObject * s = (rpmdsObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return PyErr_NoMemory();
+    if (s == NULL) return NULL;
 
     s->ds = ds;
     s->active = 0;
