@@ -697,16 +697,15 @@ static int rpmts_init(rpmtsObject *s, PyObject *args, PyObject *kwds)
     char * rootDir = "/";
     rpmVSFlags vsflags = rpmExpandNumeric("%{?__vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
-    rpmts ts = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_new", kwlist,
 	    &rootDir, &vsflags))
 	return -1;
 
-    (void) rpmtsSetRootDir(ts, rootDir);
+    (void) rpmtsSetRootDir(s->ts, rootDir);
     /* XXX: make this use common code with rpmts_SetVSFlags() to check the
      *      python objects */
-    (void) rpmtsSetVSFlags(ts, vsflags);
+    (void) rpmtsSetVSFlags(s->ts, vsflags);
 
     return 0;
 }
