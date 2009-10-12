@@ -689,7 +689,7 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
 	break;
 
     case PTOK_COND:
-	if (getCached(hsa->cache, token->u.cond.tag.tag) ||
+	if (getData(hsa, token->u.cond.tag.tag) ||
 		      headerIsEntry(hsa->h, token->u.cond.tag.tag)) {
 	    spft = token->u.cond.ifFormat;
 	    condNumFormats = token->u.cond.numIfTokens;
