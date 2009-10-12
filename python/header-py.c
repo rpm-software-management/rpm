@@ -468,7 +468,6 @@ static int hdr_ass_subscript(hdrObject *s, PyObject *key, PyObject *value)
     } else if (rpmtdFromPyObject(value, &td)) {
 	headerPut(s->h, td, HEADERPUT_DEFAULT);
     } else {
-	PyErr_SetString(PyExc_TypeError, "rpm.td type expected");
 	return -1;
     }
     return 0;

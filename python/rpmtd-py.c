@@ -206,6 +206,7 @@ int rpmtdFromPyObject(PyObject *obj, rpmtd *td)
 	*td = &(((rpmtdObject *)obj)->td);
 	return 1;
     } else {
+	PyErr_SetString(PyExc_TypeError, "rpm.td type expected");
 	return 0;
     }
 }
