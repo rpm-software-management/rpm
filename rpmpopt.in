@@ -51,17 +51,17 @@ rpm	alias --setugids -q --qf \
 	--POPTdesc=$"set user/group ownership of files in a package"
 
 rpm	alias --conflicts	--qf \
-  "[%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+  "[%|VERBOSE?{%{CONFLICTFLAGS:deptype}: }:{}|%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
 	--POPTdesc=$"list capabilities this package conflicts with"
 rpm	alias --obsoletes	--qf \
-  "[%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+  "[%|VERBOSE?{%{OBSOLETEFLAGS:deptype}: }:{}|%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list other packages removed by installing this package"
 rpm	alias --provides	--qf \
-  "[%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+  "[%|VERBOSE?{%{PROVIDEFLAGS:deptype}: }:{}|%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
 	--POPTdesc=$"list capabilities that this package provides"
 
 rpm	alias --requires	--qf \
-  "[%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+  "[%|VERBOSE?{%{REQUIREFLAGS:deptype}: }:{}|%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
 	--POPTdesc=$"list capabilities required by package(s)"
 rpm	alias -R --requires
 
