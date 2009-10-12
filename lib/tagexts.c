@@ -9,6 +9,7 @@
 #include <rpm/rpmmacro.h>	/* XXX for %_i18ndomains */
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmlog.h>
 
 #include "debug.h"
 
@@ -730,6 +731,19 @@ static int nevraTag(Header h, rpmtd td, headerGetFlags hgflags)
     return getNEVRA(h, td, NEVRA_NAME|NEVRA_EPOCH|NEVRA_VERSION|NEVRA_RELEASE|NEVRA_ARCH);
 }
 
+static int verboseTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    if (rpmIsVerbose()) {
+	td->type = RPM_INT32_TYPE;
+	td->count = 1;
+	td->data = &(td->count);
+	td->flags = RPMTD_NONE;
+	return 1;
+    } else {
+	return 0;
+    }
+}
+
 void *rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
@@ -769,6 +783,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_NVRA,		nvraTag },
     { RPMTAG_NEVRA,		nevraTag },
     { RPMTAG_HEADERCOLOR,	headercolorTag },
+    { RPMTAG_VERBOSE,		verboseTag },
     { 0, 			NULL }
 };
 
