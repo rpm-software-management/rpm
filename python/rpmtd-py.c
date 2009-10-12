@@ -130,8 +130,29 @@ static PyMappingMethods rpmtd_as_mapping = {
 };
 
 static PyMemberDef rpmtd_members[] = {
-    { "tag", T_INT, offsetof(rpmtdObject, td.tag), READONLY, NULL },
     { "type", T_INT, offsetof(rpmtdObject, td.type), READONLY, NULL },
+    { NULL }
+};
+
+static PyObject *rpmtd_get_tag(rpmtdObject *s, void *closure)
+{
+    return Py_BuildValue("i", rpmtdTag(&(s->td)));
+}
+
+static int rpmtd_set_tag(rpmtdObject *s, PyObject *value, void *closure)
+{
+    rpmTag tag;
+    if (!tagNumFromPyObject(value, &tag)) return -1;
+
+    if (!rpmtdSetTag(&(s->td), tag)) {
+	PyErr_SetString(PyExc_ValueError, "incompatible tag for data");
+	return -1;
+    }
+    return 0;
+}
+
+static PyGetSetDef rpmtd_getseters[] = {
+    { "tag", (getter)rpmtd_get_tag, (setter)rpmtd_set_tag, NULL },
     { NULL }
 };
 
@@ -166,7 +187,7 @@ PyTypeObject rpmtd_Type = {
 	(iternextfunc)rpmtd_iternext,	/* tp_iternext */
 	0,				/* tp_methods */
 	rpmtd_members,			/* tp_members */
-	0,				/* tp_getset */
+	rpmtd_getseters,		/* tp_getset */
 	0,				/* tp_base */
 	0,				/* tp_dict */
 	0,				/* tp_descr_get */
