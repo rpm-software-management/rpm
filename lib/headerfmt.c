@@ -643,8 +643,8 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
 	t = hsaReserve(hsa, need);
 	te = stpcpy(t, val);
 	hsa->vallen += (te - t);
-	val = _free(val);
     }
+    free(val);
 
     return (hsa->val + hsa->vallen);
 }
