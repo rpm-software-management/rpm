@@ -456,6 +456,24 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
     return hdrGetTag(s->h, tag);
 }
 
+static int hdr_ass_subscript(hdrObject *s, PyObject *key, PyObject *value)
+{
+    rpmTag tag;
+    rpmtd td;
+    if (!tagNumFromPyObject(key, &tag)) return -1;
+
+    if (value == NULL) {
+	/* XXX should failure raise key error? */
+	headerDel(s->h, tag);
+    } else if (rpmtdFromPyObject(value, &td)) {
+	headerPut(s->h, td, HEADERPUT_DEFAULT);
+    } else {
+	PyErr_SetString(PyExc_TypeError, "rpm.td type expected");
+	return -1;
+    }
+    return 0;
+}
+
 static PyObject * hdr_getattro(hdrObject * s, PyObject * n)
 {
     PyObject *res = PyObject_GenericGetAttr((PyObject *) s, n);
@@ -477,7 +495,7 @@ static int hdr_setattro(PyObject * o, PyObject * n, PyObject * v)
 static PyMappingMethods hdr_as_mapping = {
 	(lenfunc) 0,			/* mp_length */
 	(binaryfunc) hdr_subscript,	/* mp_subscript */
-	(objobjargproc)0,		/* mp_ass_subscript */
+	(objobjargproc)hdr_ass_subscript,/* mp_ass_subscript */
 };
 
 static char hdr_doc[] =

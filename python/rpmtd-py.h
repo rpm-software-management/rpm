@@ -5,6 +5,10 @@ typedef struct rpmtdObject_s rpmtdObject;
 
 extern PyTypeObject rpmtd_Type;
 
+#define rpmtdObject_Check(v)	((v)->ob_type == &rpmtd_Type)
+
 PyObject * rpmtd_AsPyobj(rpmtd td);
+
+int rpmtdFromPyObject(PyObject *obj, rpmtd *td);
 
 #endif

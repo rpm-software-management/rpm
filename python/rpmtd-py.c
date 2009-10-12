@@ -178,3 +178,14 @@ PyTypeObject rpmtd_Type = {
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
+
+int rpmtdFromPyObject(PyObject *obj, rpmtd *td)
+{
+    if (rpmtdObject_Check(obj)) {
+	*td = &(((rpmtdObject *)obj)->td);
+	return 1;
+    } else {
+	return 0;
+    }
+}
+
