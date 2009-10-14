@@ -96,7 +96,6 @@ static FD_t c2f(void * cookie)
 
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
-#define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
 
 #define	FDONLY(fd)	assert(fdGetIo(fd) == fdio)
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
@@ -400,8 +399,6 @@ FD_t fdNew(const char * msg)
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->digests = NULL;
-
-    fd->fd_cpioPos = 0;
 
     return fdLink(fd, msg);
 }

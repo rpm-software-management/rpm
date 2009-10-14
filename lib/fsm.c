@@ -10,7 +10,7 @@
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 
-#include "rpmio/rpmio_internal.h"	/* fdGet/SetCpioPos, fdInit/FiniDigest */
+#include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "lib/cpio.h"
 #include "lib/fsm.h"
 #define	fsmUNSAFE	fsmStage
@@ -529,15 +529,13 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
-    rpm_loff_t pos = 0;
     int rc, ec = 0;
 
     fsm->goal = goal;
     if (cfd != NULL) {
 	fsm->cfd = fdLink(cfd, RPMDBG_M("persist (fsm)"));
-	pos = fdGetCpioPos(fsm->cfd);
-	fdSetCpioPos(fsm->cfd, 0);
     }
+    fsm->cpioPos = 0;
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->digestalgo = rpmfiDigestAlgo(fi);
 
@@ -569,7 +567,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     if (rc && !ec) ec = rc;
 
     if (fsm->archiveSize && ec == 0)
-	*fsm->archiveSize = (fdGetCpioPos(fsm->cfd) - pos);
+	*fsm->archiveSize = fsm->cpioPos;
 
 /* FIX: *fsm->failedFile may be NULL */
    return ec;
@@ -1756,9 +1754,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmte te = fsmGetTe(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
 	    void * ptr;
-	    rpm_loff_t archivePos = fdGetCpioPos(fsm->cfd);
-	    if (archivePos > fsm->archivePos) {
-		fsm->archivePos = archivePos;
+	    if (fsm->cpioPos > fsm->archivePos) {
+		fsm->archivePos = fsm->cpioPos;
 		ptr = rpmtsNotify(ts, te, RPMCALLBACK_INST_PROGRESS,
 			fsm->archivePos, fi->archiveSize);
 	    }
@@ -2223,14 +2220,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	break;
     case FSM_POS:
-	left = (modulo - (fdGetCpioPos(fsm->cfd) % modulo)) % modulo;
+	left = (modulo - (fsm->cpioPos % modulo)) % modulo;
 	if (left) {
 	    fsm->wrlen = left;
 	    (void) fsmNext(fsm, FSM_DREAD);
 	}
 	break;
     case FSM_PAD:
-	left = (modulo - (fdGetCpioPos(fsm->cfd) % modulo)) % modulo;
+	left = (modulo - (fsm->cpioPos % modulo)) % modulo;
 	if (left) {
 	    memset(fsm->rdbuf, 0, left);
 	    /* XXX DWRITE uses rdnb for I/O length. */
@@ -2258,7 +2255,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->rdnb != fsm->wrlen || Ferror(fsm->cfd))
 	    rc = CPIOERR_READ_FAILED;
 	if (fsm->rdnb > 0)
-	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->rdnb);
+	    fsm->cpioPos += fsm->rdnb;
 	break;
     case FSM_DWRITE:
 	fsm->wrnb = Fwrite(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdnb, fsm->cfd);
@@ -2269,7 +2266,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->cfd))
 	    rc = CPIOERR_WRITE_FAILED;
 	if (fsm->wrnb > 0)
-	    fdSetCpioPos(fsm->cfd, fdGetCpioPos(fsm->cfd) + fsm->wrnb);
+	    fsm->cpioPos += fsm->wrnb;
 	break;
 
     case FSM_ROPEN:

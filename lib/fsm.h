@@ -133,6 +133,7 @@ struct fsm_s {
     hardLink_t li;		/*!< Current hard linked file(s). */
     rpm_loff_t * archiveSize;	/*!< Pointer to archive size. */
     rpm_loff_t archivePos;	/*!< Current archive position. */
+    rpm_loff_t cpioPos;
     char ** failedFile;		/*!< First file name that failed. */
     const char * subdir;	/*!< Current file sub-directory. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */

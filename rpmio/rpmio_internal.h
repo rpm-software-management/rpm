@@ -51,8 +51,6 @@ struct _FD_s {
     FDSTAT_t	stats;		/* I/O statistics */
 
     rpmDigestBundle digests;
-
-    rpm_loff_t	fd_cpioPos;	/* cpio: */
 };
 
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
@@ -60,24 +58,6 @@ struct _FD_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** \ingroup rpmio
- */
-static inline
-rpm_loff_t fdGetCpioPos(FD_t fd)
-{
-    FDSANE(fd);
-    return fd->fd_cpioPos;
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdSetCpioPos(FD_t fd, rpm_loff_t cpioPos)
-{
-    FDSANE(fd);
-    fd->fd_cpioPos = cpioPos;
-}
 
 static inline
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
