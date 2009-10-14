@@ -15,7 +15,7 @@
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "rpmio/digest.h"
-#include "rpmio/rpmio_internal.h"	/* fd*Digest(), fd stats */
+#include "rpmio/rpmio_internal.h"	/* fd digest bits */
 #include "lib/header_internal.h"	/* XXX headerCheck */
 
 #include "debug.h"
@@ -689,7 +689,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	    goto exit;
 	}
 
-	ctx = rpmDigestBundleDupCtx(fd->digests, (sigtag == RPMSIGTAG_MD5) ?
+	ctx = rpmDigestBundleDupCtx(fdGetBundle(fd), (sigtag == RPMSIGTAG_MD5) ?
 				    PGPHASHALGO_MD5 : dig->signature.hash_algo);
 	break;
     default:

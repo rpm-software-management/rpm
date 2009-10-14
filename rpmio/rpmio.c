@@ -94,6 +94,18 @@ static FD_t c2f(void * cookie)
     return fd;
 }
 
+void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
+{
+    FDSANE(fd);
+    fd->digests = bundle;
+}
+
+rpmDigestBundle fdGetBundle(FD_t fd)
+{
+    FDSANE(fd);
+    return fd->digests;
+}
+
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 

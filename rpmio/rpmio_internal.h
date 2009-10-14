@@ -59,12 +59,8 @@ struct _FD_s {
 extern "C" {
 #endif
 
-static inline
-void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
-{
-    FDSANE(fd);
-    fd->digests = bundle;
-}
+void fdSetBundle(FD_t fd, rpmDigestBundle bundle);
+rpmDigestBundle fdGetBundle(FD_t fd);
 
 /** \ingroup rpmio
  * Attach digest to fd.
