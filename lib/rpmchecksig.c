@@ -16,6 +16,7 @@
 #include <rpm/rpmkeyring.h>
 
 #include "rpmio/digest.h"
+#include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 

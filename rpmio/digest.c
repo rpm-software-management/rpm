@@ -244,33 +244,3 @@ DPRINTF((stderr, "*** Final(%p,%p,%p,%zd) hashctx %p digest %p\n", ctx, datap, l
     return 0;
 }
 
-void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
-{
-    if (fd->digests == NULL) {
-	fd->digests = rpmDigestBundleNew();
-    }
-    fdstat_enter(fd, FDSTAT_DIGEST);
-    rpmDigestBundleAdd(fd->digests, hashalgo, flags);
-    fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
-}
-
-void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
-{
-    if (fd && fd->digests) {
-	fdstat_enter(fd, FDSTAT_DIGEST);
-	rpmDigestBundleUpdate(fd->digests, buf, buflen);
-	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) buflen);
-    }
-}
-
-void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
-		void ** datap,
-		size_t * lenp,
-		int asAscii)
-{
-    if (fd && fd->digests) {
-	fdstat_enter(fd, FDSTAT_DIGEST);
-	rpmDigestBundleFinal(fd->digests, hashalgo, datap, lenp, asAscii);
-	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
-    }
-}
