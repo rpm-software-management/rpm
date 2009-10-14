@@ -198,8 +198,7 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
     return fd;
 }
 
-static inline int fdSeekNot(void * cookie,
-		_libio_pos_t pos,  int whence)
+static int fdSeekNot(void * cookie, _libio_pos_t pos,  int whence)
 {
     FD_t fd = c2f(cookie);
     FDSANE(fd);		/* XXX keep gcc quiet */
@@ -1089,15 +1088,6 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
     return rc;
 }
 
-static inline int bzdSeek(void * cookie, _libio_pos_t pos,
-			int whence)
-{
-    FD_t fd = c2f(cookie);
-
-    BZDONLY(fd);
-    return -2;
-}
-
 static int bzdClose( void * cookie)
 {
     FD_t fd = c2f(cookie);
@@ -1132,7 +1122,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 }
 
 static const struct FDIO_s bzdio_s = {
-  bzdRead, bzdWrite, bzdSeek, bzdClose, fdLink, fdFree, fdNew, fdFileno,
+  bzdRead, bzdWrite, fdSeekNot, bzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush
 };
 static const FDIO_t bzdio = &bzdio_s ;
@@ -1478,14 +1468,6 @@ static ssize_t lzdWrite(void * cookie, const char * buf, size_t count)
     return rc;
 }
 
-static inline int lzdSeek(void * cookie, _libio_pos_t pos, int whence)
-{
-    FD_t fd = c2f(cookie);
-
-    LZDONLY(fd);
-    return -2;
-}
-
 static int lzdClose(void * cookie)
 {
     FD_t fd = c2f(cookie);
@@ -1517,13 +1499,13 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 }
 
 static struct FDIO_s xzdio_s = {
-  lzdRead, lzdWrite, lzdSeek, lzdClose, NULL, NULL, NULL, fdFileno,
+  lzdRead, lzdWrite, fdSeekNot, lzdClose, NULL, NULL, NULL, fdFileno,
   NULL, xzdOpen, lzdFileno, lzdFlush
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
-  lzdRead, lzdWrite, lzdSeek, lzdClose, NULL, NULL, NULL, fdFileno,
+  lzdRead, lzdWrite, fdSeekNot, lzdClose, NULL, NULL, NULL, fdFileno,
   NULL, lzdOpen, lzdFileno, lzdFlush
 };
 static const FDIO_t lzdio = &lzdio_s;
