@@ -5,55 +5,8 @@
  * \file rpmio/rpmio_internal.h
  */
 
-#include <assert.h>
-
 #include <rpm/rpmio.h>
-#include <rpm/rpmurl.h>
-
 #include <rpm/rpmpgp.h>
-#include <rpm/rpmsw.h>
-
-/** \ingroup rpmio
- */
-typedef struct _FDSTACK_s {
-    FDIO_t		io;
-    void *		fp;
-    int			fdno;
-} FDSTACK_t;
-
-/** \ingroup rpmio
- * Cumulative statistics for a descriptor.
- */
-typedef	struct {
-    struct rpmop_s	ops[FDSTAT_MAX];	/*!< Cumulative statistics. */
-} * FDSTAT_t;
-
-/** \ingroup rpmio
- * The FD_t File Handle data structure.
- */
-struct _FD_s {
-    int		nrefs;
-    int		flags;
-#define	RPMIO_DEBUG_IO		0x40000000
-#define	RPMIO_DEBUG_REFS	0x20000000
-    int		magic;
-#define	FDMAGIC			0x04463138
-    int		nfps;
-    FDSTACK_t	fps[8];
-    int		urlType;	/* ufdio: */
-
-    int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
-    ssize_t	bytesRemain;	/* ufdio: */
-
-    int		syserrno;	/* last system errno encountered */
-    const void *errcookie;	/* gzdio/bzdio/ufdio/xzdio: */
-
-    FDSTAT_t	stats;		/* I/O statistics */
-
-    rpmDigestBundle digests;
-};
-
-#define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
 #ifdef __cplusplus
 extern "C" {
