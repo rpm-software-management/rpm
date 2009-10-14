@@ -153,69 +153,6 @@ void fdPop(FD_t fd)
     fd->nfps--;
 }
 
-/** \ingroup rpmio
- */
-static inline
-void fdstat_enter(FD_t fd, int opx)
-{
-    if (fd == NULL) return;
-    if (fd->stats != NULL)
-	(void) rpmswEnter(fdOp(fd, opx), (ssize_t) 0);
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdstat_exit(FD_t fd, int opx, ssize_t rc)
-{
-    if (fd == NULL) return;
-    if (rc == -1)
-	fd->syserrno = errno;
-    else if (rc > 0 && fd->bytesRemain > 0)
-	switch (opx) {
-	case FDSTAT_READ:
-	case FDSTAT_WRITE:
-	fd->bytesRemain -= rc;
-	    break;
-	default:
-	    break;
-	}
-    if (fd->stats != NULL)
-	(void) rpmswExit(fdOp(fd, opx), rc);
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdstat_print(FD_t fd, const char * msg, FILE * fp)
-{
-    static const int usec_scale = (1000*1000);
-    int opx;
-
-    if (fd == NULL || fd->stats == NULL) return;
-    for (opx = 0; opx < 4; opx++) {
-	rpmop op = &fd->stats->ops[opx];
-	if (op->count <= 0) continue;
-	switch (opx) {
-	case FDSTAT_READ:
-	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d reads, %8ld total bytes in %d.%06d secs\n",
-		op->count, (long)op->bytes,
-		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
-	    break;
-	case FDSTAT_WRITE:
-	    if (msg) fprintf(fp, "%s:", msg);
-	    fprintf(fp, "%8d writes, %8ld total bytes in %d.%06d secs\n",
-		op->count, (long)op->bytes,
-		(int)(op->usecs/usec_scale), (int)(op->usecs%usec_scale));
-	    break;
-	case FDSTAT_SEEK:
-	    break;
-	case FDSTAT_CLOSE:
-	    break;
-	}
-    }
-}
 
 /** \ingroup rpmio
  */
