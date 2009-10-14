@@ -57,15 +57,6 @@ struct _FD_s {
 
 #define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
 
-extern int _rpmio_debug;
-
-#define DBG(_f, _m, _x) \
-    \
-    if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
-
-#define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
-#define DBGREFS(_f, _x) DBG((_f), RPMIO_DEBUG_REFS, _x)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
