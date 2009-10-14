@@ -73,109 +73,6 @@ extern "C" {
 /** \ingroup rpmio
  */
 static inline
-FDIO_t fdGetIo(FD_t fd)
-{
-    FDSANE(fd);
-    return fd->fps[fd->nfps].io;
-}
-
-/** \ingroup rpmio
- */
-/* FIX: io may be NULL */
-static inline
-void fdSetIo(FD_t fd, FDIO_t io)
-{
-    FDSANE(fd);
-    fd->fps[fd->nfps].io = io;
-}
-
-/** \ingroup rpmio
- */
-static inline
-void * fdGetFp(FD_t fd)
-{
-    FDSANE(fd);
-    return fd->fps[fd->nfps].fp;
-}
-
-/** \ingroup rpmio
- */
-/* FIX: fp may be NULL */
-static inline
-void fdSetFp(FD_t fd, void * fp)
-{
-    FDSANE(fd);
-    fd->fps[fd->nfps].fp = fp;
-}
-
-/** \ingroup rpmio
- */
-static inline
-int fdGetFdno(FD_t fd)
-{
-    FDSANE(fd);
-    return fd->fps[fd->nfps].fdno;
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdSetFdno(FD_t fd, int fdno)
-{
-    FDSANE(fd);
-    fd->fps[fd->nfps].fdno = fdno;
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
-{
-    FDSANE(fd);
-    if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
-	return;
-    fd->nfps++;
-    fdSetIo(fd, io);
-    fdSetFp(fd, fp);
-    fdSetFdno(fd, fdno);
-}
-
-/** \ingroup rpmio
- */
-static inline
-void fdPop(FD_t fd)
-{
-    FDSANE(fd);
-    if (fd->nfps < 0) return;
-    fdSetIo(fd, NULL);
-    fdSetFp(fd, NULL);
-    fdSetFdno(fd, -1);
-    fd->nfps--;
-}
-
-
-/** \ingroup rpmio
- */
-static inline
-void fdSetSyserrno(FD_t fd, int syserrno, const void * errcookie)
-{
-    FDSANE(fd);
-    fd->syserrno = syserrno;
-    fd->errcookie = errcookie;
-}
-
-/** \ingroup rpmio
- */
-static inline
-int fdGetRdTimeoutSecs(FD_t fd)
-{
-    FDSANE(fd);
-    return fd->rd_timeoutsecs;
-}
-
-/** \ingroup rpmio
- */
-static inline
 rpm_loff_t fdGetCpioPos(FD_t fd)
 {
     FDSANE(fd);
@@ -196,16 +93,6 @@ void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
 {
     FDSANE(fd);
     fd->digests = bundle;
-}
-
-/** \ingroup rpmio
- */
-static inline
-FD_t c2f(void * cookie)
-{
-    FD_t fd = (FD_t) cookie;
-    FDSANE(fd);
-    return fd;
 }
 
 /** \ingroup rpmio

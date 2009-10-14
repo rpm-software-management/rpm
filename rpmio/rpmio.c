@@ -29,6 +29,64 @@ extern int h_errno;
 
 #include "debug.h"
 
+static FDIO_t fdGetIo(FD_t fd)
+{
+    FDSANE(fd);
+    return fd->fps[fd->nfps].io;
+}
+
+static void fdSetIo(FD_t fd, FDIO_t io)
+{
+    FDSANE(fd);
+    fd->fps[fd->nfps].io = io;
+}
+
+static void * fdGetFp(FD_t fd)
+{
+    FDSANE(fd);
+    return fd->fps[fd->nfps].fp;
+}
+
+static void fdSetFp(FD_t fd, void * fp)
+{
+    FDSANE(fd);
+    fd->fps[fd->nfps].fp = fp;
+}
+
+static void fdSetFdno(FD_t fd, int fdno)
+{
+    FDSANE(fd);
+    fd->fps[fd->nfps].fdno = fdno;
+}
+
+static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
+{
+    FDSANE(fd);
+    if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
+	return;
+    fd->nfps++;
+    fdSetIo(fd, io);
+    fdSetFp(fd, fp);
+    fdSetFdno(fd, fdno);
+}
+
+static void fdPop(FD_t fd)
+{
+    FDSANE(fd);
+    if (fd->nfps < 0) return;
+    fdSetIo(fd, NULL);
+    fdSetFp(fd, NULL);
+    fdSetFdno(fd, -1);
+    fd->nfps--;
+}
+
+static FD_t c2f(void * cookie)
+{
+    FD_t fd = (FD_t) cookie;
+    FDSANE(fd);
+    return fd;
+}
+
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 #define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 #define FDCPIOPOS(fd)	(fd ? ((FD_t)fd)->fd_cpioPos : -99)
@@ -646,15 +704,6 @@ static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
     FD_t fd = c2f(cookie);
     int bytesWritten;
     int total = 0;
-
-#ifdef	NOTYET
-    if (fdGetIo(fd) == fdio) {
-	struct stat sb;
-	(void) fstat(fdGetFdno(fd), &sb);
-	if (S_ISREG(sb.st_mode))
-	    return fdWrite(fd, buf, count);
-    }
-#endif
 
     UFDONLY(fd);
 
