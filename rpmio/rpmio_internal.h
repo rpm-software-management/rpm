@@ -21,11 +21,6 @@ rpmDigestBundle fdGetBundle(FD_t fd);
 void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags);
 
 /** \ingroup rpmio
- * Update digest(s) attached to fd.
- */
-void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen);
-
-/** \ingroup rpmio
  */
 void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 		void ** datap,

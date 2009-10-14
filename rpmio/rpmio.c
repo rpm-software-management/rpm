@@ -212,6 +212,11 @@ static const FDIO_t bzdio;
 static const FDIO_t xzdio;
 static const FDIO_t lzdio;
 
+/** \ingroup rpmio
+ * Update digest(s) attached to fd.
+ */
+static void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen);
+
 /**
  */
 int _rpmio_debug = 0;
@@ -2179,7 +2184,7 @@ void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
     fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
 }
 
-void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
+static void fdUpdateDigests(FD_t fd, const unsigned char * buf, size_t buflen)
 {
     if (fd && fd->digests) {
 	fdstat_enter(fd, FDSTAT_DIGEST);
@@ -2199,3 +2204,5 @@ void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
 	fdstat_exit(fd, FDSTAT_DIGEST, (ssize_t) 0);
     }
 }
+
+
