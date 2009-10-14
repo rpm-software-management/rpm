@@ -207,8 +207,7 @@ static int fdSeekNot(void * cookie, _libio_pos_t pos,  int whence)
 
 /** \ingroup rpmio
  */
-static inline
-int fdFileno(void * cookie)
+static int fdFileno(void * cookie)
 {
     FD_t fd;
     if (cookie == NULL) return -2;
@@ -330,7 +329,7 @@ DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)cou
     return rc;
 }
 
-static inline int fdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int fdSeek(void * cookie, _libio_pos_t pos, int whence)
 {
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t p = *pos;
@@ -650,7 +649,7 @@ fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(err
     return count;
 }
 
-static inline int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
 {
     FD_t fd = c2f(cookie);
 
@@ -779,7 +778,7 @@ ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
 
 #include <zlib.h>
 
-static inline void * gzdFileno(FD_t fd)
+static void * gzdFileno(FD_t fd)
 {
     void * rc = NULL;
     int i;
@@ -895,7 +894,7 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 }
 
 /* XXX zlib-1.0.4 has not */
-static inline int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
 {
 #ifdef USE_COOKIE_SEEK_POINTER
     _IO_off64_t p = *pos;
@@ -992,7 +991,7 @@ static const FDIO_t gzdio = &gzdio_s ;
 # define bzwrite BZ2_bzwrite
 #endif /* HAVE_BZ2_1_0 */
 
-static inline void * bzdFileno(FD_t fd)
+static void * bzdFileno(FD_t fd)
 {
     void * rc = NULL;
     int i;
@@ -1349,7 +1348,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 /* =============================================================== */
 
-static inline void * lzdFileno(FD_t fd)
+static void * lzdFileno(FD_t fd)
 {
     void * rc = NULL;
     int i;
@@ -1638,7 +1637,7 @@ DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
  * - bzopen:	's' is smallmode
  * - HACK:	'.' terminates, rest is type of I/O
  */
-static inline void cvtfmode (const char *m,
+static void cvtfmode (const char *m,
 				char *stdio, size_t nstdio,
 				char *other, size_t nother,
 				const char **end, int * f)
