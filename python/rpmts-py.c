@@ -137,8 +137,8 @@
 struct rpmtsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
+    rpmfdObject *scriptFd;
     rpmts	ts;
-    FD_t scriptFd;
     rpmtsi tsi;
 };
 
@@ -337,17 +337,17 @@ static PyObject *
 rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
 {
     PyObject *ho = NULL;
+    rpmfdObject *fdo = NULL;
     Header h;
-    FD_t fd;
     rpmRC rpmrc;
 
-    if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmFdFromPyObject, &fd))
+    if (!PyArg_Parse(arg, "O&:HdrFromFdno", rpmfdFromPyObject, &fdo))
     	return NULL;
 
     Py_BEGIN_ALLOW_THREADS;
-    rpmrc = rpmReadPackageFile(s->ts, fd, "rpmts_HdrFromFdno", &h);
+    rpmrc = rpmReadPackageFile(s->ts, rpmfdGetFd(fdo), "rpmts_HdrFromFdno", &h);
     Py_END_ALLOW_THREADS;
-    Fclose(fd);
+    Py_XDECREF(fdo);
 
     if (rpmrc == RPMRC_OK) {
 	ho = hdr_Wrap(&hdr_Type, h);
@@ -676,8 +676,7 @@ static void rpmts_dealloc(rpmtsObject * s)
 {
 
     s->ts = rpmtsFree(s->ts);
-
-    if (s->scriptFd) Fclose(s->scriptFd);
+    Py_XDECREF(s->scriptFd);
     s->ob_type->tp_free((PyObject *)s);
 }
 
@@ -722,11 +721,14 @@ static PyObject *rpmts_get_rootDir(rpmtsObject *s, void *closure)
 
 static int rpmts_set_scriptFd(rpmtsObject *s, PyObject *value, void *closure)
 {
+    rpmfdObject *fdo = NULL;
     int rc = 0;
-    if (PyArg_Parse(value, "O&", rpmFdFromPyObject, &s->scriptFd)) {
-	rpmtsSetScriptFd(s->ts, s->scriptFd);
+    if (PyArg_Parse(value, "O&", rpmfdFromPyObject, &fdo)) {
+	Py_XDECREF(s->scriptFd);
+	s->scriptFd = fdo;
+	rpmtsSetScriptFd(s->ts, rpmfdGetFd(s->scriptFd));
     } else if (value == Py_None) {
-	Fclose(s->scriptFd);
+	Py_XDECREF(s->scriptFd);
 	s->scriptFd = NULL;
 	rpmtsSetScriptFd(s->ts, NULL);
     } else {

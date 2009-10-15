@@ -7,7 +7,11 @@ typedef struct rpmfdObject_s rpmfdObject;
 
 extern PyTypeObject rpmfd_Type;
 
-int rpmFdFromPyObject(PyObject *obj, FD_t *fdp);
+#define rpmfdObject_Check(v)	((v)->ob_type == &rpmfd_Type)
+
+FD_t rpmfdGetFd(rpmfdObject *fdo);
+
+int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop);
 
 
 #endif

@@ -272,19 +272,20 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "file", "magic", NULL };
     int magic = 1;
-    FD_t fd = NULL;
+    rpmfdObject *fdo = NULL;
     int rc;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|i", kwlist,
-				     rpmFdFromPyObject, &fd, &magic))
+				     rpmfdFromPyObject, &fdo, &magic))
 	return NULL;
 
     Py_BEGIN_ALLOW_THREADS;
-    rc = headerWrite(fd, s->h, magic ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
+    rc = headerWrite(rpmfdGetFd(fdo), s->h,
+		     magic ? HEADER_MAGIC_YES : HEADER_MAGIC_NO);
     Py_END_ALLOW_THREADS;
 
     if (rc) PyErr_SetFromErrno(PyExc_IOError);
-    Fclose(fd); /* avoid messing up errno wrt above */
+    Py_XDECREF(fdo); /* avoid messing up errno with file close  */
     if (rc) return NULL;
 
     Py_RETURN_NONE;
@@ -359,8 +360,8 @@ static struct PyMethodDef hdr_methods[] = {
 static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 {
     PyObject *obj = NULL;
+    rpmfdObject *fdo = NULL;
     Header h = NULL;
-    FD_t fd = NULL;
     char *kwlist[] = { "obj", NULL };
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O", kwlist, &obj)) {
@@ -373,11 +374,11 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	h = headerCopy(((hdrObject*) obj)->h);
     } else if (PyString_Check(obj)) {
 	h = headerCopyLoad(PyString_AsString(obj));
-    } else if (rpmFdFromPyObject(obj, &fd)) {
+    } else if (rpmfdFromPyObject(obj, &fdo)) {
 	Py_BEGIN_ALLOW_THREADS;
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	Fclose(fd);
+	h = headerRead(rpmfdGetFd(fdo), HEADER_MAGIC_YES);
 	Py_END_ALLOW_THREADS;
+	Py_XDECREF(fdo);
     } else {
     	PyErr_SetString(PyExc_TypeError, "header, blob or file expected");
 	return NULL;

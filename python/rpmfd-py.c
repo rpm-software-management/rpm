@@ -3,25 +3,36 @@
 #include <rpm/rpmstring.h>
 #include "rpmfd-py.h"
 
-int rpmFdFromPyObject(PyObject *obj, FD_t *fdp)
-{
-    FD_t fd = NULL;
+struct rpmfdObject_s {
+    PyObject_HEAD
+    PyObject *md_dict;
+    FD_t fd;
+};
 
-    if (PyInt_Check(obj)) {
-	fd = fdDup(PyInt_AsLong(obj));
-    } else if (PyFile_Check(obj)) {
-	FILE *fp = PyFile_AsFile(obj);
-	fd = fdDup(fileno(fp));
+FD_t rpmfdGetFd(rpmfdObject *fdo)
+{
+    return fdo->fd;
+}
+
+int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop)
+{
+    rpmfdObject *fdo = NULL;
+
+    if (rpmfdObject_Check(obj)) {
+	Py_INCREF(obj);
+	fdo = (rpmfdObject *) obj;
     } else {
-	PyErr_SetString(PyExc_TypeError, "integer or file object expected");
+	fdo = (rpmfdObject *) PyObject_Call((PyObject *)&rpmfd_Type,
+			    		    Py_BuildValue("(O)", obj), NULL);
+    }
+    if (fdo == NULL) return 0;
+
+    if (Ferror(fdo->fd)) {
+	Py_DECREF(fdo);
+	PyErr_SetString(PyExc_IOError, Fstrerror(fdo->fd));
 	return 0;
     }
-    if (Ferror(fd)) {
-	PyErr_SetString(PyExc_IOError, Fstrerror(fd));
-	if (fd) Fclose(fd);
-	return 0;
-    }
-    *fdp = fd;
+    *fdop = fdo;
     return 1;
 }
 
@@ -30,12 +41,6 @@ static PyObject *err_closed(void)
     PyErr_SetString(PyExc_ValueError, "I/O operation on closed file");
     return NULL;
 }
-
-struct rpmfdObject_s {
-    PyObject_HEAD
-    PyObject *md_dict;
-    FD_t fd;
-};
 
 static PyObject *rpmfd_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
@@ -57,7 +62,13 @@ static PyObject *rpmfd_new(PyTypeObject *subtype,
 	fd = Fopen(PyString_AsString(fo), m);
 	Py_END_ALLOW_THREADS 
 	free(m);
-    } else if (!rpmFdFromPyObject(fo, &fd)) {
+    } else if (PyInt_Check(fo)) {
+	fd = fdDup(PyInt_AsLong(fo));
+    } else if (PyFile_Check(fo)) {
+	FILE *fp = PyFile_AsFile(fo);
+	fd = fdDup(fileno(fp));
+    } else {
+	PyErr_SetString(PyExc_TypeError, "path or file object expected");
 	return NULL;
     }
 
