@@ -28,18 +28,11 @@ def headerLoad(*args, **kwds):
     warnings.warn("Use rpm.hdr() instead.", DeprecationWarning, stacklevel=2)
     return hdr(*args, **kwds)
 
-def _fdno(fd):
-    if hasattr(fd, "fileno"):
-        return fd.fileno()
-    else:
-        return fd
-
-def readHeaderListFromFD(fd, retrofit = True):
-    fdno = _fdno(fd)
+def _doHeaderListFromFD(rpm_fd, retrofit):
     hlist = []
     while 1:
         try:
-            h = hdr(fdno)
+            h = hdr(rpm_fd)
             if retrofit:
                 h.convert(HEADERCONV_RETROFIT_V3)
             hlist.append(h)
@@ -47,18 +40,24 @@ def readHeaderListFromFD(fd, retrofit = True):
             break
 
     return hlist
+
+def readHeaderListFromFD(file_desc, retrofit = True):
+    if not isinstance(file_desc, fd):
+        file_desc = fd(file_desc)
+    return _doHeaderListFromFD(file_desc, retrofit)
         
-def readHeaderListFromFile(path):
-    f = open(path)
-    hlist = readHeaderListFromFD(f)
+def readHeaderListFromFile(path, retrofit = True):
+    f = fd(path)
+    hlist = _doHeaderListFromFD(f, retrofit)
     f.close()
     return hlist
     
-def readHeaderFromFD(fd):
-    fdno = _fdno(fd)
-    offset = os.lseek(fdno, 0, os.SEEK_CUR)
+def readHeaderFromFD(file_desc):
+    if not isinstance(file_desc, fd):
+        file_desc = fd(file_desc)
+    offset = os.lseek(file_desc.fileno(), 0, os.SEEK_CUR)
     try:
-        h = hdr(fdno)
+        h = hdr(file_desc)
     except _rpm.error:
         h = None
         offset = None
