@@ -135,6 +135,22 @@ rpmDigestBundle fdGetBundle(FD_t fd)
     return fd->digests;
 }
 
+static void * iotFileno(FD_t fd, FDIO_t iot)
+{
+    void * rc = NULL;
+
+    FDSANE(fd);
+    for (int i = fd->nfps; i >= 0; i--) {
+	FDSTACK_t * fps = &fd->fps[i];
+	if (fps->io != iot)
+	    continue;
+	rc = fps->fp;
+	break;
+    }
+    
+    return rc;
+}
+
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
 
 #define	FDONLY(fd)	assert(fdGetIo(fd) == fdio)
@@ -761,19 +777,7 @@ ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
 
 static void * gzdFileno(FD_t fd)
 {
-    void * rc = NULL;
-    int i;
-
-    FDSANE(fd);
-    for (i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t * fps = &fd->fps[i];
-	if (fps->io != gzdio)
-	    continue;
-	rc = fps->fp;
-	break;
-    }
-    
-    return rc;
+    return iotFileno(fd, gzdio);
 }
 
 static
@@ -974,19 +978,7 @@ static const FDIO_t gzdio = &gzdio_s ;
 
 static void * bzdFileno(FD_t fd)
 {
-    void * rc = NULL;
-    int i;
-
-    FDSANE(fd);
-    for (i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t * fps = &fd->fps[i];
-	if (fps->io != bzdio)
-	    continue;
-	rc = fps->fp;
-	break;
-    }
-    
-    return rc;
+    return iotFileno(fd, bzdio);
 }
 
 static FD_t bzdOpen(const char * path, const char * mode)
@@ -1331,19 +1323,12 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 static void * lzdFileno(FD_t fd)
 {
-    void * rc = NULL;
-    int i;
+    return iotFileno(fd, lzdio);
+}
 
-    FDSANE(fd);
-    for (i = fd->nfps; i >= 0; i--) {
-	    FDSTACK_t * fps = &fd->fps[i];
-	    if (fps->io != xzdio && fps->io != lzdio)
-		continue;
-	    rc = fps->fp;
-	break;
-    }
-    
-    return rc;
+static void * xzdFileno(FD_t fd)
+{
+    return iotFileno(fd, xzdio);
 }
 
 static FD_t xzdOpen(const char * path, const char * mode)
@@ -1480,7 +1465,7 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static struct FDIO_s xzdio_s = {
   lzdRead, lzdWrite, fdSeekNot, lzdClose, NULL, NULL, NULL, fdFileno,
-  NULL, xzdOpen, lzdFileno, lzdFlush
+  NULL, xzdOpen, xzdFileno, lzdFlush
 };
 static const FDIO_t xzdio = &xzdio_s;
 
