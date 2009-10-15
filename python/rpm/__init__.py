@@ -55,12 +55,12 @@ def readHeaderListFromFile(path, retrofit = True):
 def readHeaderFromFD(file_desc):
     if not isinstance(file_desc, fd):
         file_desc = fd(file_desc)
-    offset = os.lseek(file_desc.fileno(), 0, os.SEEK_CUR)
     try:
+        offset = file_desc.tell()
         h = hdr(file_desc)
-    except _rpm.error:
-        h = None
+    except (_rpm.error, IOError):
         offset = None
+        h = None
 
     return (h, offset)
 
