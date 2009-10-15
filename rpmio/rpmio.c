@@ -2052,6 +2052,21 @@ int Fflush(FD_t fd)
     return 0;
 }
 
+off_t Ftell(FD_t fd)
+{
+    FDIO_t iot;
+    off_t pos = -2; /* assume not implemented */
+
+    if (fd == NULL) return -1;
+    iot = fdGetIo(fd);
+    /* this wont work correctly for compressed types */
+    if (iot == fpio || iot == fdio || iot == ufdio) {
+	pos = lseek(Fileno(fd), 0, SEEK_CUR);
+    }
+
+    return pos;
+}
+
 int Ferror(FD_t fd)
 {
     int i, rc = 0;

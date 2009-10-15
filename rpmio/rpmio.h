@@ -65,6 +65,11 @@ ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd);
 int Fseek(FD_t fd, _libio_off_t offset, int whence);
 
 /** \ingroup rpmio
+ * ftell(3) clone.
+ */
+off_t Ftell(FD_t fd);
+
+/** \ingroup rpmio
  * fclose(3) clone.
  */
 int Fclose( FD_t fd);
