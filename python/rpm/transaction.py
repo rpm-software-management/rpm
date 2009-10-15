@@ -57,11 +57,11 @@ class TransactionSet(_rpmts):
             header = item
 
         if not how in ['u', 'i']:
-            raise ValueError, 'how argument must be "u" or "i"'
+            raise ValueError('how argument must be "u" or "i"')
         upgrade = (how == "u")
 
         if not _rpmts.addInstall(self, header, key, upgrade):
-            raise rpm.error, "adding package to transaction failed"
+            raise rpm.error("adding package to transaction failed")
         self._keyList.append(key)
 
     def addErase(self, item):
@@ -75,11 +75,11 @@ class TransactionSet(_rpmts):
         elif isinstance(item, str):
             hdrs = self.dbMatch(rpm.RPMDBI_LABEL, item)
         else:
-            raise TypeError, "invalid type %s" % type(item)
+            raise TypeError("invalid type %s" % type(item))
 
         for h in hdrs:
             if not _rpmts.addErase(self, h):
-                raise rpm.error, "package not installed"
+                raise rpm.error("package not installed")
 
         # garbage collection should take care but just in case...
         if isinstance(hdrs, rpm.mi):
@@ -144,20 +144,20 @@ class TransactionSet(_rpmts):
         res, msg = _rpmts.hdrCheck(self, blob)
         # generate backwards compatibly broken exceptions
         if res == rpm.RPMRC_NOKEY:
-            raise rpm.error, "public key not availaiable"
+            raise rpm.error("public key not availaiable")
         elif res == rpm.RPMRC_NOTTRUSTED:
-            raise rpm.error, "public key not trusted"
+            raise rpm.error("public key not trusted")
         elif res != rpm.RPMRC_OK:
-            raise rpm.error, msg
+            raise rpm.error(msg)
 
     def hdrFromFdno(self, fd):
         res, h = _rpmts.hdrFromFdno(self, fd)
         # generate backwards compatibly broken exceptions
         if res == rpm.RPMRC_NOKEY:
-            raise rpm.error, "public key not availaiable"
+            raise rpm.error("public key not availaiable")
         elif res == rpm.RPMRC_NOTTRUSTED:
-            raise rpm.error, "public key not trusted"
+            raise rpm.error("public key not trusted")
         elif res != rpm.RPMRC_OK:
-            raise rpm.error, "error reading package header"
+            raise rpm.error("error reading package header")
 
         return h
