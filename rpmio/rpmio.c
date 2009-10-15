@@ -321,22 +321,9 @@ off_t fdSize(FD_t fd)
     struct stat sb;
     off_t rc = -1; 
 
-#ifdef	NOISY
-DBGIO(0, (stderr, "==>\tfdSize(%p) rc %ld\n", fd, (long)rc));
-#endif
     FDSANE(fd);
-    switch (fd->urlType) {
-    case URL_IS_PATH:
-    case URL_IS_UNKNOWN:
-	if (fstat(Fileno(fd), &sb) == 0)
-	    rc = sb.st_size;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_HKP:
-    case URL_IS_FTP:
-    case URL_IS_DASH:
-	break;
-    }
+    if (fstat(Fileno(fd), &sb) == 0)
+	rc = sb.st_size;
     return rc;
 }
 
