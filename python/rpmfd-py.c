@@ -182,6 +182,16 @@ static PyObject *rpmfd_seek(rpmfdObject *s, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
+static PyObject *rpmfd_tell(rpmfdObject *s)
+{
+    off_t offset;
+    Py_BEGIN_ALLOW_THREADS
+    offset = Ftell(s->fd);
+    Py_END_ALLOW_THREADS
+    return Py_BuildValue("L", offset);
+    
+}
+
 static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "size", NULL };
@@ -256,6 +266,8 @@ static struct PyMethodDef rpmfd_methods[] = {
     { "read",	(PyCFunction) rpmfd_read,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     { "seek",	(PyCFunction) rpmfd_seek,	METH_VARARGS|METH_KEYWORDS,
+	NULL },
+    { "tell",	(PyCFunction) rpmfd_tell,	METH_NOARGS,
 	NULL },
     { "write",	(PyCFunction) rpmfd_write,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
