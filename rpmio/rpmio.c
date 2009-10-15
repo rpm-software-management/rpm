@@ -9,18 +9,6 @@
 #define	_USE_LIBIO	1
 #endif
 
-/* XXX HP-UX w/o -D_XOPEN_SOURCE needs */
-#if !defined(HAVE_HERRNO) && (defined(__hpux))
-extern int h_errno;
-#endif
-
-#ifndef IPPORT_FTP
-#define IPPORT_FTP	21
-#endif
-#ifndef	IPPORT_HTTP
-#define	IPPORT_HTTP	80
-#endif
-
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
@@ -163,8 +151,6 @@ static int noLibio = 0;
 #else
 static int noLibio = 1;
 #endif
-
-#define TIMEOUT_SECS 60
 
 /** \ingroup rpmio
  * \name RPMIO Vectors.
