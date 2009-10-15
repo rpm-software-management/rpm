@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import rpm
-from _rpm import ts as _rpmts
+from rpm._rpm import ts as _rpmts
 
 # TODO: migrate relevant documentation from C-side
 class TransactionSet(_rpmts):

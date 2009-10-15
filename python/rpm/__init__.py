@@ -6,10 +6,9 @@ This module enables you to manipulate rpms and the rpm database.
 
 import warnings
 import os
-from _rpm import *
-from transaction import *
-
-import _rpm
+from rpm._rpm import *
+from rpm.transaction import *
+import rpm._rpm as _rpm
 _RPMVSF_NODIGESTS = _rpm._RPMVSF_NODIGESTS
 _RPMVSF_NOHEADER = _rpm._RPMVSF_NOHEADER
 _RPMVSF_NOPAYLOAD = _rpm._RPMVSF_NOPAYLOAD
@@ -17,7 +16,7 @@ _RPMVSF_NOSIGNATURES = _rpm._RPMVSF_NOSIGNATURES
 
 # try to import build bits but dont require it
 try:
-    from _rpmb import *
+    from rpm._rpmb import *
 except ImportError:
     pass
 
