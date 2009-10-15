@@ -677,7 +677,7 @@ static void rpmts_dealloc(rpmtsObject * s)
 
     s->ts = rpmtsFree(s->ts);
     Py_XDECREF(s->scriptFd);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)

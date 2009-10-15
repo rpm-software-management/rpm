@@ -175,7 +175,7 @@ static void
 rpmps_dealloc(rpmpsObject * s)
 {
     s->ps = rpmpsFree(s->ps);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static int

@@ -107,7 +107,7 @@ static void rpmfd_dealloc(rpmfdObject *s)
 {
     PyObject *res = do_close(s);
     Py_XDECREF(res);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static PyObject *rpmfd_fileno(rpmfdObject *s)

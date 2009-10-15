@@ -11,7 +11,7 @@ struct rpmPubkeyObject_s {
 static void rpmPubkey_dealloc(rpmPubkeyObject * s)
 {
     s->pubkey = rpmPubkeyFree(s->pubkey);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static PyObject *rpmPubkey_new(PyTypeObject *subtype, 
@@ -103,7 +103,7 @@ struct rpmKeyringObject_s {
 static void rpmKeyring_dealloc(rpmKeyringObject * s)
 {
     rpmKeyringFree(s->keyring);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static PyObject *rpmKeyring_new(PyTypeObject *subtype, 

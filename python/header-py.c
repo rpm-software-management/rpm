@@ -395,7 +395,7 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 static void hdr_dealloc(hdrObject * s)
 {
     if (s->h) headerFree(s->h);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static PyObject * hdr_iternext(hdrObject *s)

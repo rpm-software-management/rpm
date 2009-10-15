@@ -40,7 +40,7 @@ spec_dealloc(specObject * s)
     if (s->spec) {
 	s->spec=freeSpec(s->spec);
     }
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 /* XXX TODO return something sensible if spec exists but component (eg %clean)

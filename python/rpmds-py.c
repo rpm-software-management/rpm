@@ -199,7 +199,7 @@ rpmds_iternext(rpmdsObject * s)
 	rpmTag tagN = rpmdsTagN(s->ds);
 	rpmsenseFlags Flags = rpmdsFlags(s->ds);
 
-	result = rpmds_Wrap(s->ob_type, rpmdsSingle(tagN, N, EVR, Flags) );
+	result = rpmds_Wrap(Py_TYPE(s), rpmdsSingle(tagN, N, EVR, Flags) );
     } else
 	s->active = 0;
 
@@ -381,7 +381,7 @@ static void
 rpmds_dealloc(rpmdsObject * s)
 {
     s->ds = rpmdsFree(s->ds);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static Py_ssize_t rpmds_length(rpmdsObject * s)

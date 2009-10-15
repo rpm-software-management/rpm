@@ -258,7 +258,7 @@ static void
 rpmfi_dealloc(rpmfiObject * s)
 {
     s->fi = rpmfiFree(s->fi);
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static int

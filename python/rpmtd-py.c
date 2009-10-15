@@ -117,7 +117,7 @@ static PyObject *rpmtd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwd
 static void rpmtd_dealloc(rpmtdObject * s)
 {
     rpmtdFreeData(&(s->td));
-    s->ob_type->tp_free((PyObject *)s);
+    Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
 static int rpmtd_length(rpmtdObject *s)
