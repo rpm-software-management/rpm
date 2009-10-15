@@ -51,8 +51,7 @@ static struct PyMethodDef rpmPubkey_methods[] = {
 static char rpmPubkey_doc[] = "";
 
 PyTypeObject rpmPubkey_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.pubkey",			/* tp_name */
 	sizeof(rpmPubkeyObject),	/* tp_size */
 	0,				/* tp_itemsize */
@@ -133,8 +132,7 @@ static char rpmKeyring_doc[] =
 "";
 
 PyTypeObject rpmKeyring_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.keyring",			/* tp_name */
 	sizeof(rpmKeyringObject),	/* tp_size */
 	0,				/* tp_itemsize */

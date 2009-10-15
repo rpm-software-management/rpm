@@ -157,8 +157,7 @@ static PyGetSetDef rpmtd_getseters[] = {
 };
 
 PyTypeObject rpmtd_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.td",			/* tp_name */
 	sizeof(rpmtdObject),		/* tp_size */
 	0,				/* tp_itemsize */

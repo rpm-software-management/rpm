@@ -316,8 +316,7 @@ static char rpmfi_doc[] =
 "";
 
 PyTypeObject rpmfi_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.fi",			/* tp_name */
 	sizeof(rpmfiObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */

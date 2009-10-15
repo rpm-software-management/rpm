@@ -176,8 +176,7 @@ static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 }
 
 PyTypeObject spec_Type = {
-    PyObject_HEAD_INIT(&PyType_Type)
-    0,                         /*ob_size*/
+    PyVarObject_HEAD_INIT(&PyType_Type, 0)
     "rpm.spec",               /*tp_name*/
     sizeof(specObject),        /*tp_basicsize*/
     0,                         /*tp_itemsize*/

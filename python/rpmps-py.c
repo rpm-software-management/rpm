@@ -74,8 +74,7 @@ static PyObject *rpmprob_str(rpmProblemObject *s)
 }
 
 PyTypeObject rpmProblem_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.prob",			/* tp_name */
 	sizeof(rpmProblemObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
@@ -230,8 +229,7 @@ static char rpmps_doc[] =
 "";
 
 PyTypeObject rpmps_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.ps",			/* tp_name */
 	sizeof(rpmpsObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */

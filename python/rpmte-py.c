@@ -266,8 +266,7 @@ static char rpmte_doc[] =
 "";
 
 PyTypeObject rpmte_Type = {
-	PyObject_HEAD_INIT(&PyType_Type)
-	0,				/* ob_size */
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.te",			/* tp_name */
 	sizeof(rpmteObject),		/* tp_size */
 	0,				/* tp_itemsize */
