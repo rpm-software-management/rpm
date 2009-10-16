@@ -58,7 +58,6 @@ struct _FD_s {
     FDSTACK_t	fps[8];
     int		urlType;	/* ufdio: */
 
-    int		rd_timeoutsecs;	/* ufdRead: per FD_t timer */
     ssize_t	bytesRemain;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
@@ -149,7 +148,6 @@ rpmDigestBundle fdGetBundle(FD_t fd)
 }
 
 #define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
-#define FDTO(fd)	(fd ? ((FD_t)fd)->rd_timeoutsecs : -99)
 
 #define	FDONLY(fd)	assert(fdGetIo(fd) == fdio)
 #define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
@@ -233,13 +231,6 @@ static const char * fdbg(FD_t fd)
     if (fd == NULL)
 	return buf;
 
-#ifdef DYING
-    sprintf(be, "fd %p", fd);	be += strlen(be);
-    if (fd->rd_timeoutsecs >= 0) {
-	sprintf(be, " secs %d", fd->rd_timeoutsecs);
-	be += strlen(be);
-    }
-#endif
     if (fd->bytesRemain != -1) {
 	sprintf(be, " clen %d", (int)fd->bytesRemain);
 	be += strlen(be);
@@ -452,7 +443,6 @@ FD_t fdNew(const char * msg)
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
 
-    fd->rd_timeoutsecs = 1;	/* XXX default value used to be -1 */
     fd->bytesRemain = -1;
     fd->syserrno = 0;
     fd->errcookie = NULL;
@@ -606,7 +596,6 @@ int fdWritable(FD_t fd, int secs)
 	rc = select(fdno + 1, NULL, &wrfds, NULL, tvp);
 #endif
 
-	/* HACK: EBADF on PUT chunked termination from ufdClose. */
 if (_rpmio_debug && !(rc == 1 && errno == 0))
 fprintf(stderr, "*** fdWritable fdno %d rc %d %s\n", fdno, rc, strerror(errno));
 	if (rc < 0) {
@@ -700,151 +689,6 @@ int ufdCopy(FD_t sfd, FD_t tfd)
     return rc;
 }
 
-/* =============================================================== */
-static ssize_t ufdRead(void * cookie, char * buf, size_t count)
-{
-    FD_t fd = c2f(cookie);
-    int bytesRead;
-    int total;
-
-    /* XXX preserve timedRead() behavior */
-    if (fdGetIo(fd) == fdio) {
-	struct stat sb;
-	int fdno = fdFileno(fd);
-	(void) fstat(fdno, &sb);
-	if (S_ISREG(sb.st_mode))
-	    return fdRead(fd, buf, count);
-    }
-
-    UFDONLY(fd);
-    assert(fd->rd_timeoutsecs >= 0);
-
-    for (total = 0; total < count; total += bytesRead) {
-
-	int rc;
-
-	bytesRead = 0;
-
-	/* Is there data to read? */
-	if (fd->bytesRemain == 0) return total;	/* XXX simulate EOF */
-	rc = fdReadable(fd, fd->rd_timeoutsecs);
-
-	switch (rc) {
-	case -1:	/* error */
-	case  0:	/* timeout */
-	    return total;
-	    break;
-	default:	/* data to read */
-	    break;
-	}
-
-	rc = fdRead(fd, buf + total, count - total);
-
-	if (rc < 0) {
-	    switch (errno) {
-	    case EWOULDBLOCK:
-		continue;
-		break;
-	    default:
-		break;
-	    }
-if (_rpmio_debug)
-fprintf(stderr, "*** read: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errno), buf);
-	    return rc;
-	    break;
-	} else if (rc == 0) {
-	    return total;
-	    break;
-	}
-	bytesRead = rc;
-    }
-
-    return count;
-}
-
-static ssize_t ufdWrite(void * cookie, const char * buf, size_t count)
-{
-    FD_t fd = c2f(cookie);
-    int bytesWritten;
-    int total = 0;
-
-    UFDONLY(fd);
-
-    for (total = 0; total < count; total += bytesWritten) {
-
-	int rc;
-
-	bytesWritten = 0;
-
-	/* Is there room to write data? */
-	if (fd->bytesRemain == 0) {
-fprintf(stderr, "*** ufdWrite fd %p WRITE PAST END OF CONTENT\n", fd);
-	    return total;	/* XXX simulate EOF */
-	}
-	rc = fdWritable(fd, 2);		/* XXX configurable? */
-
-	switch (rc) {
-	case -1:	/* error */
-	case  0:	/* timeout */
-	    return total;
-	    break;
-	default:	/* data to write */
-	    break;
-	}
-
-	rc = fdWrite(fd, buf + total, count - total);
-
-	if (rc < 0) {
-	    switch (errno) {
-	    case EWOULDBLOCK:
-		continue;
-		break;
-	    default:
-		break;
-	    }
-if (_rpmio_debug)
-fprintf(stderr, "*** write: rc %d errno %d %s \"%s\"\n", rc, errno, strerror(errno), buf);
-	    return rc;
-	    break;
-	} else if (rc == 0) {
-	    return total;
-	    break;
-	}
-	bytesWritten = rc;
-    }
-
-    return count;
-}
-
-static int ufdSeek(void * cookie, _libio_pos_t pos, int whence)
-{
-    FD_t fd = c2f(cookie);
-
-    switch (fd->urlType) {
-    case URL_IS_UNKNOWN:
-    case URL_IS_PATH:
-	break;
-    case URL_IS_HTTPS:
-    case URL_IS_HTTP:
-    case URL_IS_HKP:
-    case URL_IS_FTP:
-    case URL_IS_DASH:
-    default:
-        return -2;
-	break;
-    }
-    return fdSeek(cookie, pos, whence);
-}
-
-static int ufdClose( void * cookie)
-{
-    FD_t fd = c2f(cookie);
-
-    UFDONLY(fd);
-
-    return fdClose(fd);
-}
-
 /*
  * Deal with remote url's by fetching them with a helper application
  * and treat as local file afterwards.
@@ -881,7 +725,6 @@ static FD_t ufdOpen(const char * url, int flags, mode_t mode)
 {
     FD_t fd = NULL;
     const char * path;
-    int timeout = 1;
     urltype urlType = urlPath(url, &path);
 
 if (_rpmio_debug)
@@ -903,7 +746,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	    fd = fdDup((flags & O_ACCMODE) == O_WRONLY ?
 			STDOUT_FILENO : STDIN_FILENO);
 	}
-	timeout = 600; /* XXX W2DO? 10 mins? */
 	break;
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
@@ -915,12 +757,11 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     if (fd == NULL) return NULL;
 
     fdSetIo(fd, ufdio);
-    fd->rd_timeoutsecs = timeout;
     fd->bytesRemain = -1;
     fd->urlType = urlType;
 
     if (Fileno(fd) < 0) {
-	(void) ufdClose(fd);
+	(void) fdClose(fd);
 	return NULL;
     }
 DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (unsigned)mode, fdbg(fd)));
@@ -928,7 +769,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 }
 
 static const struct FDIO_s ufdio_s = {
-  ufdRead, ufdWrite, ufdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
+  fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL
 };
 static const FDIO_t ufdio = &ufdio_s ;
@@ -2184,7 +2025,7 @@ exit:
 }
 
 static const struct FDIO_s fpio_s = {
-  ufdRead, ufdWrite, fdSeek, ufdClose, fdLink, fdFree, fdNew, fdFileno,
+  fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
   ufdOpen, NULL, fdGetFp, NULL
 };
 static const FDIO_t fpio = &fpio_s ;
