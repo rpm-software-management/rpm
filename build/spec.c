@@ -530,7 +530,7 @@ struct OpenFileInfo * newOpenFileInfo(void)
     struct OpenFileInfo *ofi;
 
     ofi = xmalloc(sizeof(*ofi));
-    ofi->fd = NULL;
+    ofi->fp = NULL;
     ofi->fileName = NULL;
     ofi->lineNum = 0;
     ofi->readBuf[0] = '\0';

@@ -210,12 +210,12 @@ static int readLineFromOFI(rpmSpec spec, OFI_t *ofi)
 {
 retry:
     /* Make sure the current file is open */
-    if (ofi->fd == NULL) {
-	ofi->fd = Fopen(ofi->fileName, "r.fpio");
-	if (ofi->fd == NULL || Ferror(ofi->fd)) {
+    if (ofi->fp == NULL) {
+	ofi->fp = fopen(ofi->fileName, "r");
+	if (ofi->fp == NULL || ferror(ofi->fp)) {
 	    /* XXX Fstrerror */
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s: %s\n"),
-		     ofi->fileName, Fstrerror(ofi->fd));
+		     ofi->fileName, strerror(errno));
 	    return PART_ERROR;
 	}
 	spec->lineNum = ofi->lineNum = 0;
@@ -223,8 +223,7 @@ retry:
 
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
-	FILE * f = fdGetFILE(ofi->fd);
-	if (f == NULL || !fgets(ofi->readBuf, BUFSIZ, f)) {
+	if (!fgets(ofi->readBuf, BUFSIZ, ofi->fp)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
 		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));
@@ -233,7 +232,7 @@ retry:
 
 	    /* remove this file from the stack */
 	    spec->fileStack = ofi->next;
-	    (void) Fclose(ofi->fd);
+	    fclose(ofi->fp);
 	    ofi->fileName = _free(ofi->fileName);
 	    ofi = _free(ofi);
 
@@ -394,7 +393,7 @@ void closeSpec(rpmSpec spec)
     while (spec->fileStack) {
 	ofi = spec->fileStack;
 	spec->fileStack = spec->fileStack->next;
-	if (ofi->fd) (void) Fclose(ofi->fd);
+	if (ofi->fp) (void) fclose(ofi->fp);
 	ofi->fileName = _free(ofi->fileName);
 	ofi = _free(ofi);
     }

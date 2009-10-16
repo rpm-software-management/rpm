@@ -55,7 +55,7 @@ typedef struct ReadLevelEntry {
  */
 typedef struct OpenFileInfo {
     char * fileName;
-    FD_t fd;
+    FILE *fp;
     int lineNum;
     char readBuf[BUFSIZ];
     char * readPtr;
