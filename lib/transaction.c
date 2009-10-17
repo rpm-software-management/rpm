@@ -911,8 +911,8 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-    	/* If no pre/post-transaction script, then don't bother. */
-	if (!rpmteHaveTransScript(p, stag))
+	/* Skip failed elements & those without pre/posttrans */
+	if (!rpmteHaveTransScript(p, stag) || rpmteFailed(p))
 	    continue;
 
     	if (rpmteOpen(p, ts, 0)) {
