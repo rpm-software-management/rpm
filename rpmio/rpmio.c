@@ -1323,12 +1323,16 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 static void * lzdFileno(FD_t fd)
 {
-    return iotFileno(fd, lzdio);
-}
-
-static void * xzdFileno(FD_t fd)
-{
-    return iotFileno(fd, xzdio);
+    void * rc = NULL;
+    FDSANE(fd);
+    for (int i = fd->nfps; i >= 0; i--) {
+	FDSTACK_t * fps = &fd->fps[i];
+	if (fps->io != xzdio && fps->io != lzdio)
+	    continue;
+	rc = fps->fp;
+	break;
+    }
+    return rc;
 }
 
 static FD_t xzdOpen(const char * path, const char * mode)
@@ -1465,7 +1469,7 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static struct FDIO_s xzdio_s = {
   lzdRead, lzdWrite, fdSeekNot, lzdClose, NULL, NULL, NULL, fdFileno,
-  NULL, xzdOpen, xzdFileno, lzdFlush
+  NULL, xzdOpen, lzdFileno, lzdFlush
 };
 static const FDIO_t xzdio = &xzdio_s;
 
