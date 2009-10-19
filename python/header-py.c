@@ -568,7 +568,7 @@ int hdrFromPyObject(PyObject *item, Header *hptr)
  * This assumes the order of list matches the order of the new headers, and
  * throws an exception if that isn't true.
  */
-int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
+static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
     Header h;
     HeaderIterator hi;

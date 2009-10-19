@@ -23,8 +23,4 @@ int tagNumFromPyObject (PyObject *item, rpmTag *tagp);
 PyObject * labelCompare (PyObject * self, PyObject * args);
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds);
 PyObject * rpmMergeHeadersFromFD(PyObject * self, PyObject * args, PyObject * kwds);
-int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag);
-PyObject * rpmSingleHeaderFromFD(PyObject * self, PyObject * args, PyObject * kwds);
-PyObject * hdrLoad(PyObject * self, PyObject * args, PyObject * kwds);
-
 #endif
