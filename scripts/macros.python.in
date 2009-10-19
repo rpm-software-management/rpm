@@ -3,10 +3,10 @@
 # %include %{_rpmconfigdir}/macros.python
 
 # python main version
-%define py_ver         %(echo `python -c "import sys; print sys.version[:3]"`)
+%define py_ver         %(echo `python -c "import sys; sys.stdout.write(sys.version[:3])"`)
 
 # directories
-%define py_prefix      %(echo `python -c "import sys; print sys.prefix"`)
+%define py_prefix      %(echo `python -c "import sys; sys.stdout.write(sys.prefix)"`)
 %define py_libdir      %{py_prefix}/lib/python%{py_ver}
 %define py_incdir      /usr/include/python%{py_ver}
 %define py_sitedir     %{py_libdir}/site-packages
