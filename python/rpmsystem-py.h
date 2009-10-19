@@ -15,4 +15,8 @@ typedef ssize_t Py_ssize_t;
 typedef Py_ssize_t (*lenfunc)(PyObject *);
 #endif  
 
+#ifndef Py_TYPE
+#define Py_TYPE(o) ((o)->ob_type)
+#endif
+
 #endif	/* H_SYSTEM_PYTHON */
