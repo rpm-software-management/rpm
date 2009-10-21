@@ -82,6 +82,12 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 	extra = Flags & _ALL_REQUIRES_MASK;
     }
 
+    /* rpmlib() dependency sanity: only requires permitted, ensure sense bit */
+    if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1)) {
+	if (nametag != RPMTAG_REQUIRENAME) return 1;
+	extra |= RPMSENSE_RPMLIB;
+    }
+
     Flags = (Flags & RPMSENSE_SENSEMASK) | extra;
 
     if (EVR == NULL)

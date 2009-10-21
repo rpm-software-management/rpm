@@ -343,7 +343,7 @@ Package  freePackage(Package pkg);
  * @param EVR		(e.g. Requires: foo < 0:1.2-3, "0:1.2-3")
  * @param Flags		(e.g. Requires: foo < 0:1.2-3, both "Requires:" and "<")
  * @param index		(0 always)
- * @return		0 always
+ * @return		0 on success, 1 on error
  */
 int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
