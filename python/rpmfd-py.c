@@ -56,10 +56,10 @@ static PyObject *rpmfd_new(PyTypeObject *subtype,
 				     &fo, &mode, &flags))
 	return NULL;
 
-    if (PyString_Check(fo)) {
+    if (PyBytes_Check(fo)) {
 	char *m = rstrscat(NULL, mode, ".", flags, NULL);
 	Py_BEGIN_ALLOW_THREADS 
-	fd = Fopen(PyString_AsString(fo), m);
+	fd = Fopen(PyBytes_AsString(fo), m);
 	Py_END_ALLOW_THREADS 
 	free(m);
     } else if (PyInt_Check(fo)) {
@@ -220,7 +220,7 @@ static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
 	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
 	goto exit;
     }
-    res = PyString_FromStringAndSize(buf, read);
+    res = PyBytes_FromStringAndSize(buf, read);
 
 exit:
     free(buf);

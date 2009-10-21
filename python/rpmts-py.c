@@ -159,7 +159,7 @@ static void die(PyObject *cb)
 	PyErr_Print();
     }
     if ((r = PyObject_Repr(cb)) != NULL) { 
-	pyfn = PyString_AsString(r);
+	pyfn = PyBytes_AsString(r);
     }
     fprintf(stderr, _("error: python callback %s failed, aborting!\n"), 
 	    	      pyfn ? pyfn : "???");
@@ -370,8 +370,8 @@ rpmts_HdrCheck(rpmtsObject * s, PyObject *obj)
     if (!PyArg_Parse(obj, "S:HdrCheck", &blob))
     	return NULL;
 
-    uh = PyString_AsString(blob);
-    uc = PyString_Size(blob);
+    uh = PyBytes_AsString(blob);
+    uc = PyBytes_Size(blob);
 
     Py_BEGIN_ALLOW_THREADS;
     rpmrc = headerCheck(s->ts, uh, uc, &msg);
@@ -392,8 +392,8 @@ rpmts_PgpPrtPkts(rpmtsObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:PgpPrtPkts", kwlist, &blob))
     	return NULL;
 
-    pkt = (unsigned char *)PyString_AsString(blob);
-    pktlen = PyString_Size(blob);
+    pkt = (unsigned char *)PyBytes_AsString(blob);
+    pktlen = PyBytes_Size(blob);
 
     rc = pgpPrtPkts(pkt, pktlen, NULL, 1);
 
@@ -413,8 +413,8 @@ rpmts_PgpImportPubkey(rpmtsObject * s, PyObject * args, PyObject * kwds)
     	    kwlist, &blob))
 	return NULL;
 
-    pkt = (unsigned char *)PyString_AsString(blob);
-    pktlen = PyString_Size(blob);
+    pkt = (unsigned char *)PyBytes_AsString(blob);
+    pktlen = PyBytes_Size(blob);
 
     rc = rpmtsImportPubkey(s->ts, pkt, pktlen);
 
@@ -587,9 +587,9 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     if (Key) {
-	if (PyString_Check(Key)) {
-	    key = PyString_AsString(Key);
-	    len = PyString_Size(Key);
+	if (PyBytes_Check(Key)) {
+	    key = PyBytes_AsString(Key);
+	    len = PyBytes_Size(Key);
 	} else if (PyInt_Check(Key)) {
 	    lkey = PyInt_AsLong(Key);
 	    key = (char *)&lkey;

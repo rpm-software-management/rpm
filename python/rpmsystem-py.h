@@ -25,5 +25,12 @@ typedef Py_ssize_t (*lenfunc)(PyObject *);
 #define Py_TYPE(o) ((o)->ob_type)
 #endif
 
+#if ((PY_MAJOR_VERSION << 8) | (PY_MINOR_VERSION << 0)) < 0x0206
+#define PyXBytes_Check PyString_Check
+#define PyXBytes_FromString PyString_FromString
+#define PyXBytes_FromStringAndSize PyString_FromStringAndSize
+#define PyXBytes_Size PyString_Size
+#define PyXBytes_AsString PyString_AsString
+#endif
 
 #endif	/* H_SYSTEM_PYTHON */

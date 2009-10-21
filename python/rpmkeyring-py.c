@@ -26,7 +26,7 @@ static PyObject *rpmPubkey_new(PyTypeObject *subtype,
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "S", kwlist, &key))
 	return NULL;
 
-    if (pgpParsePkts(PyString_AsString(key), &pkt, &pktlen) <= 0) {
+    if (pgpParsePkts(PyBytes_AsString(key), &pkt, &pktlen) <= 0) {
 	PyErr_SetString(PyExc_ValueError, "invalid pubkey");
 	return NULL;
     }

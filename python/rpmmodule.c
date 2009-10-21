@@ -191,7 +191,7 @@ static void addRpmTags(PyObject *module)
 
 	PyModule_AddIntConstant(module, tagname, tagval);
 	pyval = PyInt_FromLong(tagval);
-	pyname = PyString_FromString(shortname);
+	pyname = PyBytes_FromString(shortname);
 	PyDict_SetItem(dict, pyval, pyname);
 	Py_DECREF(pyval);
 	Py_DECREF(pyname);

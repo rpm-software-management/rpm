@@ -17,13 +17,13 @@ static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass class)
 
     switch (class) {
     case RPM_STRING_CLASS:
-	res = PyString_FromString(rpmtdGetString(td));
+	res = PyBytes_FromString(rpmtdGetString(td));
 	break;
     case RPM_NUMERIC_CLASS:
 	res = PyLong_FromLongLong(rpmtdGetNumber(td));
 	break;
     case RPM_BINARY_CLASS:
-	res = PyString_FromStringAndSize(td->data, td->count);
+	res = PyBytes_FromStringAndSize(td->data, td->count);
 	break;
     default:
 	PyErr_SetString(PyExc_KeyError, "unknown data type");
@@ -66,7 +66,7 @@ static PyObject *rpmtd_str(rpmtdObject *s)
     PyObject *res = NULL;
     char *str = rpmtdFormat(&(s->td), RPMTD_FORMAT_STRING, NULL);
     if (str) {
-        res = PyString_FromString(str);
+        res = PyBytes_FromString(str);
 	free(str);
     } else {
 	res = PyObject_Repr((PyObject *)s);

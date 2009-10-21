@@ -172,7 +172,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	return NULL;
     }
 
-    rc = PyString_FromStringAndSize(buf, len);
+    rc = PyBytes_FromStringAndSize(buf, len);
     buf = _free(buf);
 
     return rc;
@@ -372,8 +372,8 @@ static PyObject *hdr_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 	h = headerNew();
     } else if (hdrObject_Check(obj)) {
 	h = headerCopy(((hdrObject*) obj)->h);
-    } else if (PyString_Check(obj)) {
-	h = headerCopyLoad(PyString_AsString(obj));
+    } else if (PyBytes_Check(obj)) {
+	h = headerCopyLoad(PyBytes_AsString(obj));
     } else if (rpmfdFromPyObject(obj, &fdo)) {
 	Py_BEGIN_ALLOW_THREADS;
 	h = headerRead(rpmfdGetFd(fdo), HEADER_MAGIC_YES);
@@ -422,8 +422,8 @@ int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
     if (PyInt_Check(item)) {
 	/* XXX we should probably validate tag numbers too */
 	tag = PyInt_AsLong(item);
-    } else if (PyString_Check(item)) {
-	tag = rpmTagGetValue(PyString_AsString(item));
+    } else if (PyBytes_Check(item)) {
+	tag = rpmTagGetValue(PyBytes_AsString(item));
     } else {
 	PyErr_SetString(PyExc_TypeError, "expected a string or integer");
 	return 0;
