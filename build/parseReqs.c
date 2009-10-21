@@ -37,9 +37,10 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
-    char * N, * EVR;
+    char * N = NULL, * EVR = NULL;
     rpmsenseFlags Flags;
     Header h;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     switch (tagN) {
     case RPMTAG_PROVIDEFLAGS:
@@ -106,7 +107,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	re = r;
@@ -133,7 +134,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 		rpmlog(RPMLOG_ERR,
 			 _("line %d: Versioned file name not permitted: %s\n"),
 			 spec->lineNum, spec->line);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 
 	    switch(tagN) {
@@ -163,21 +164,30 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	    if (*v == '\0' || ve == v) {
 		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
 			spec->lineNum, spec->line);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    rstrlcpy(EVR, v, (ve-v) + 1);
-	    if (rpmCharCheck(spec, EVR, ve-v, ".-_+:")) return RPMRC_FAIL;
+	    if (rpmCharCheck(spec, EVR, ve-v, ".-_+:")) goto exit;
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
 
-	(void) addReqProv(spec, h, tagN, N, EVR, Flags, index);
+	if (addReqProv(spec, h, tagN, N, EVR, Flags, index)) {
+	    rpmlog(RPMLOG_ERR, _("line %d: invalid dependency: %s\n"),
+		   spec->lineNum, spec->line);
+	    goto exit;
+	}
 
 	N = _free(N);
 	EVR = _free(EVR);
 
     }
+    rc = RPMRC_OK;
 
-    return RPMRC_OK;
+exit:
+    free(N);
+    free(EVR);
+
+    return rc;
 }
