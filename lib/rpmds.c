@@ -154,6 +154,14 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->EVR = evr.data;
 	headerGet(h, tagF, &flags, hgflags);
 	ds->Flags = flags.data;
+	/* ensure rpmlib() requires always have RPMSENSE_RPMLIB flag set */
+	if (tagN == RPMTAG_REQUIRENAME) {
+	    for (int i = 0; i < ds->Count; i++) {
+		if (!(ds->Flags[i] & RPMSENSE_RPMLIB) &&
+			rstreqn(ds->N[i], "rpmlib(", sizeof("rpmlib(")-1))
+		    ds->Flags[i] |= RPMSENSE_RPMLIB;
+	    }
+	}
 
 	ds->BT = headerGetNumber(h, RPMTAG_BUILDTIME);
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
