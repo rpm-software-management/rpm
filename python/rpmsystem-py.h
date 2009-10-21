@@ -33,4 +33,11 @@ typedef Py_ssize_t (*lenfunc)(PyObject *);
 #define PyXBytes_AsString PyString_AsString
 #endif
 
+/* For Python 3, use the PyLong type throughout in place of PyInt */
+#if PY_MAJOR_VERSION >= 3
+#define PyInt_Check PyLong_Check
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_FromLong PyLong_FromLong
+#endif
+
 #endif	/* H_SYSTEM_PYTHON */
