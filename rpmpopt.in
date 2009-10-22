@@ -140,9 +140,9 @@ rpm alias --rebuilddbpath	 --define '_dbapath_rebuild !#:+'
 #	[--dbpath DIRECTORY"	"use database in DIRECTORY"
 rpm	alias --dbpath		--define '_dbpath !#:+'
 #	[--ftpport <port>]	"port number of ftp server (or proxy)"
-rpm	alias --ftpport		--define '_ftpport !#:+'
+rpm	alias --ftpport		--define '_httpport !#:+'
 #	[--ftpproxy <host>]	"hostname or IP of ftp proxy"
-rpm	alias --ftpproxy	--define '_ftpproxy !#:+'
+rpm	alias --ftpproxy	--define '_httpproxy !#:+'
 #	[--httpport <port>]	"port number of http server (or proxy)"
 rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
@@ -152,8 +152,8 @@ rpm	alias --httpproxy	--define '_httpproxy !#:+'
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \
 	--POPTargs=$"DIRECTORY"
-rpmbuild alias --ftpport		--define '_ftpport !#:+'
-rpmbuild alias --ftpproxy	--define '_ftpproxy !#:+'
+rpmbuild alias --ftpport		--define '_httpport !#:+'
+rpmbuild alias --ftpproxy	--define '_httpproxy !#:+'
 rpmbuild alias --httpport	--define '_httpport !#:+'
 rpmbuild alias --httpproxy	--define '_httpproxy !#:+'
 rpmbuild alias --timecheck	--define '_timecheck !#:+'
