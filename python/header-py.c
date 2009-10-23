@@ -433,12 +433,14 @@ int utf8FromPyObject(PyObject *item, PyObject **str)
 int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
 {
     rpmTag tag = RPMTAG_NOT_FOUND;
+    PyObject *str = NULL;
 
     if (PyInt_Check(item)) {
 	/* XXX we should probably validate tag numbers too */
 	tag = PyInt_AsLong(item);
-    } else if (PyBytes_Check(item)) {
-	tag = rpmTagGetValue(PyBytes_AsString(item));
+    } else if (utf8FromPyObject(item, &str)) {
+	tag = rpmTagGetValue(PyBytes_AsString(str));
+	Py_DECREF(str);
     } else {
 	PyErr_SetString(PyExc_TypeError, "expected a string or integer");
 	return 0;
