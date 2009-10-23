@@ -575,6 +575,8 @@ static PyObject *
 rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     PyObject *Key = NULL;
+    PyObject *str = NULL;
+    PyObject *mio = NULL;
     char *key = NULL;
 /* XXX lkey *must* be a 32 bit integer, int "works" on all known platforms. */
     int lkey = 0;
@@ -587,21 +589,19 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	return NULL;
 
     if (Key) {
-	if (PyBytes_Check(Key)) {
-	    key = PyBytes_AsString(Key);
-	    len = PyBytes_Size(Key);
-	} else if (PyInt_Check(Key)) {
+	if (PyInt_Check(Key)) {
 	    lkey = PyInt_AsLong(Key);
 	    key = (char *)&lkey;
 	    len = sizeof(lkey);
+	} else if (utf8FromPyObject(Key, &str)) {
+	    key = PyBytes_AsString(str);
+	    len = PyBytes_Size(str);
 	} else {
 	    PyErr_SetString(PyExc_TypeError, "unknown key type");
 	    return NULL;
 	}
 	/* One of the conversions above failed, exception is set already */
-	if (PyErr_Occurred()) {
-	    return NULL;
-	}
+	if (PyErr_Occurred()) goto exit;
     }
 
     /* XXX If not already opened, open the database O_RDONLY now. */
@@ -610,11 +610,15 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
 	if (rc || rpmtsGetRdb(s->ts) == NULL) {
 	    PyErr_SetString(pyrpmError, "rpmdb open failed");
-	    return NULL;
+	    goto exit;
 	}
     }
 
-    return rpmmi_Wrap(&rpmmi_Type, rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
+    mio = rpmmi_Wrap(&rpmmi_Type, rpmtsInitIterator(s->ts, tag, key, len), (PyObject*)s);
+
+exit:
+    Py_XDECREF(str);
+    return mio;
 }
 
 static struct PyMethodDef rpmts_methods[] = {
