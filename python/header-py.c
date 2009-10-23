@@ -415,6 +415,21 @@ static PyObject * hdr_iternext(hdrObject *s)
     return res;
 }
 
+int utf8FromPyObject(PyObject *item, PyObject **str)
+{
+    PyObject *res = NULL;
+    if (PyBytes_Check(item)) {
+	Py_XINCREF(item);
+	res = item;
+    } else if (PyUnicode_Check(item)) {
+	res = PyUnicode_AsUTF8String(item);
+    }
+    if (res == NULL) return 0;
+
+    *str = res;
+    return 1;
+}
+
 int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
 {
     rpmTag tag = RPMTAG_NOT_FOUND;
