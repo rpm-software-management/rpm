@@ -6,8 +6,8 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 fi
 
 # If we don't have a python interpreter, avoid changing anything.
-python=${1:-/usr/bin/python}
-if [ ! -x "$python" ]; then
+default_python=${1:-/usr/bin/python}
+if [ ! -x "$default_python" ]; then
 	exit 0
 fi
 
@@ -19,8 +19,37 @@ if [ -z "$depth" -o "$depth" -le "1" ]; then
 	exit 0
 fi
 
+# .pyc/.pyo files embed a "magic" value, identifying the ABI version of Python
+# bytecode that they are for.
+#
+# The files below RPM_BUILD_ROOT could be targetting multiple versions of
+# python (e.g. a single build that emits several subpackages e.g. a
+# python26-foo subpackage, a python31-foo subpackage etc)
+#
+# Support this by assuming that below each /usr/lib/python$VERSION/, all
+# .pyc/.pyo files are to be compiled for /usr/bin/python$VERSION.
+# 
+# For example, below /usr/lib/python2.6/, we're targetting /usr/bin/python2.6
+# and below /usr/lib/python3.1/, we're targetting /usr/bin/python3.1
+
+for python_libdir in $RPM_BUILD_ROOT/usr/lib*/python*/ ;
+do
+	python_binary=/usr/bin/$(basename $python_libdir)
+	echo "Bytecompiling .py files below $python_libdir using $python_binary"
+
+	# Generate normal (.pyc) byte-compiled files.
+	$python_binary -c 'import compileall; compileall.compile_dir("'"$python_libdir"'", '"$depth"', "/", force=1, quiet=1)'
+
+	# Generate optimized (.pyo) byte-compiled files.
+	$python_binary -O -c 'import compileall; compileall.compile_dir("'"$python_libdir"'", '"$depth"', "/", force=1, quiet=1)'
+done
+
+
+# Handle other locations in the filesystem using the default python
+# implementation:
+
 # Generate normal (.pyc) byte-compiled files.
-$python    -c 'import compileall, re, sys; sys.exit (not compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/"'"), quiet=1))'
+$default_python -c 'import compileall, re, sys; sys.exit (not compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/|/usr/lib.*/python.+/"'"), quiet=1))'
 if [ $? != 0 ]; then
 	# One or more of the files had a syntax error
 	# XXX TODO: parametrize the exit code, only warn for now
@@ -28,4 +57,4 @@ if [ $? != 0 ]; then
 fi
 
 # Generate optimized (.pyo) byte-compiled files.
-$python -O -c 'import compileall, re; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/"'"))' > /dev/null
+$default_python -O -c 'import compileall, re; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/|/usr/lib.*/python.+/"'"))' > /dev/null
