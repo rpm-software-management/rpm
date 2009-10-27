@@ -910,17 +910,23 @@ void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     for (i = 0; i < ts->filesystemCount; i++, dsi++) {
 
 	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
-	    rpmpsAppend(ps, RPMPROB_DISKSPACE,
+	    if (dsi->bneeded != dsi->obneeded) {
+		rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVRA(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
+		   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
+		dsi->obneeded = dsi->bneeded;
+	    }
 	}
 
 	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
-	    rpmpsAppend(ps, RPMPROB_DISKNODES,
+	    if (dsi->ineeded != dsi->oineeded) {
+		rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVRA(te), rpmteKey(te),
 			ts->filesystems[i], NULL, NULL,
- 	    (adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+			(adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+		dsi->oineeded = dsi->ineeded;
+	    }
 	}
     }
     ps = rpmpsFree(ps);

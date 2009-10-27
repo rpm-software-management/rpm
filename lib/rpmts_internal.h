@@ -20,6 +20,8 @@ struct diskspaceInfo_s {
     int64_t bsize;	/*!< File system block size. */
     int64_t bavail;	/*!< No. of blocks available. */
     int64_t iavail;	/*!< No. of inodes available. */
+    int64_t obneeded;	/*!< Bookkeeping to avoid duplicate reports */
+    int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
 };
 
 /** \ingroup rpmts
