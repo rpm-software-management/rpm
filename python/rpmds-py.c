@@ -16,50 +16,6 @@ struct rpmdsObject_s {
     rpmds	ds;
 };
 
-
-/**
- * Split EVR into epoch, version, and release components.
- * @param evr		[epoch:]version[-release] string
- * @retval *ep		pointer to epoch
- * @retval *vp		pointer to version
- * @retval *rp		pointer to release
- */
-static
-void rpmds_ParseEVR(char * evr,
-		const char ** ep,
-		const char ** vp,
-		const char ** rp)
-{
-    const char *epoch;
-    const char *version;		/* assume only version is present */
-    const char *release;
-    char *s, *se;
-
-    s = evr;
-    while (*s && risdigit(*s)) s++;	/* s points to epoch terminator */
-    se = strrchr(s, '-');		/* se points to version terminator */
-
-    if (*s == ':') {
-	epoch = evr;
-	*s++ = '\0';
-	version = s;
-	if (*epoch == '\0') epoch = "0";
-    } else {
-	epoch = NULL;	/* XXX disable epoch compare if missing */
-	version = evr;
-    }
-    if (se) {
-	*se++ = '\0';
-	release = se;
-    } else {
-	release = NULL;
-    }
-
-    if (ep) *ep = epoch;
-    if (vp) *vp = version;
-    if (rp) *rp = release;
-}
-
 static PyObject *
 rpmds_Count(rpmdsObject * s)
 {
@@ -119,66 +75,6 @@ static PyObject *
 rpmds_Refs(rpmdsObject * s)
 {
     return Py_BuildValue("i", rpmdsRefs(s->ds));
-}
-
-static int compare_values(const char *str1, const char *str2)
-{
-    if (!str1 && !str2)
-	return 0;
-    else if (str1 && !str2)
-	return 1;
-    else if (!str1 && str2)
-	return -1;
-    return rpmvercmp(str1, str2);
-}
-
-static int
-rpmds_compare(rpmdsObject * a, rpmdsObject * b)
-{
-    char *aEVR = xstrdup(rpmdsEVR(a->ds));
-    const char *aE, *aV, *aR;
-    char *bEVR = xstrdup(rpmdsEVR(b->ds));
-    const char *bE, *bV, *bR;
-    int rc;
-
-    /* XXX W2DO? should N be compared? */
-    rpmds_ParseEVR(aEVR, &aE, &aV, &aR);
-    rpmds_ParseEVR(bEVR, &bE, &bV, &bR);
-
-    rc = compare_values(aE, bE);
-    if (!rc) {
-	rc = compare_values(aV, bV);
-	if (!rc)
-	    rc = compare_values(aR, bR);
-    }
-
-    aEVR = _free(aEVR);
-    bEVR = _free(bEVR);
-
-    return rc;
-}
-
-static PyObject *
-rpmds_richcompare(rpmdsObject * a, rpmdsObject * b, int op)
-{
-    int rc;
-
-    switch (op) {
-    case Py_NE:
-	/* XXX map ranges overlap boolean onto '!=' python syntax. */
-	rc = rpmdsCompare(a->ds, b->ds);
-	rc = (rc < 0 ? -1 : (rc == 0 ? 1 : 0));
-	break;
-    case Py_LT:
-    case Py_LE:
-    case Py_GT:
-    case Py_GE:
-    case Py_EQ:
-    default:
-	rc = -1;
-	break;
-    }
-    return Py_BuildValue("i", rc);
 }
 
 static PyObject *
@@ -426,7 +322,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_print */
 	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
-	(cmpfunc) rpmds_compare,	/* tp_compare */
+	0,				/* tp_compare */
 	(reprfunc)0,			/* tp_repr */
 	0,				/* tp_as_number */
 	0,				/* tp_as_sequence */
@@ -441,7 +337,7 @@ PyTypeObject rpmds_Type = {
 	rpmds_doc,			/* tp_doc */
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
-	(richcmpfunc) rpmds_richcompare,/* tp_richcompare */
+	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
 	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmds_iternext,	/* tp_iternext */
