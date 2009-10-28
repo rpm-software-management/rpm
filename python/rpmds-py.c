@@ -277,6 +277,16 @@ rpmds_Search(rpmdsObject * s, PyObject * arg)
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
 }
 
+static PyObject *rpmds_Compare(rpmdsObject * s, PyObject * o)
+{
+    rpmdsObject * ods;
+
+    if (!PyArg_Parse(o, "O!:Compare", &rpmds_Type, &ods))
+	return NULL;
+
+    return PyBool_FromLong(rpmdsCompare(s->ds, ods->ds));
+}
+
 static PyObject * rpmds_Rpmlib(rpmdsObject * s)
 {
     rpmds ds = NULL;
@@ -325,6 +335,8 @@ static struct PyMethodDef rpmds_methods[] = {
 The current index in ds is positioned at overlapping member upon success.\n" },
  {"Rpmlib",     (PyCFunction)rpmds_Rpmlib,      METH_NOARGS|METH_STATIC,
 	"ds.Rpmlib -> nds       - Return internal rpmlib dependency set.\n"},
+ {"Compare",	(PyCFunction)rpmds_Compare,	METH_O,
+	NULL},
  {NULL,		NULL}		/* sentinel */
 };
 
