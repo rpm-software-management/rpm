@@ -311,11 +311,6 @@ static PyObject * hdr_dsOfHeader(PyObject * s)
 			Py_BuildValue("(Oi)", s, RPMTAG_NEVR), NULL);
 }
 
-static int hdr_compare(hdrObject * a, hdrObject * b)
-{
-    return rpmVersionCompare(a->h, b->h);
-}
-
 static long hdr_hash(PyObject * h)
 {
     return (long) h;
@@ -527,7 +522,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_print */
 	(getattrfunc) 0, 		/* tp_getattr */
 	0,				/* tp_setattr */
-	(cmpfunc) hdr_compare,		/* tp_compare */
+	0,				/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
 	0,	 			/* tp_as_sequence */
@@ -683,7 +678,7 @@ PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds)
 	    &h1, &hdr_Type, &h2))
 	return NULL;
 
-    return Py_BuildValue("i", hdr_compare(h1, h2));
+    return Py_BuildValue("i", rpmVersionCompare(h1->h, h2->h));
 }
 
 static int compare_values(const char *str1, const char *str2)
