@@ -138,7 +138,6 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	const char *fuser = rpmfiFUser(fi);
 	const char *fgroup = rpmfiFGroup(fi);
 	const char *flink = rpmfiFLink(fi);
-	uint32_t fnlink = rpmfiFNlink(fi);
 	char *buf = NULL;
 
 	/* If querying only docs, skip non-doc files. */
@@ -209,6 +208,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
 	    rpmlog(RPMLOG_NOTICE, "%s%s\n", buf ? buf : "", fn);
 	}
 	else {
+	    uint32_t fnlink = rpmfiFNlink(fi);
 
 	    /* XXX Adjust directory link count and size for display output. */
 	    if (S_ISDIR(fmode)) {
