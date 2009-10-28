@@ -243,52 +243,37 @@ rpmds_Sort(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Find(rpmdsObject * s, PyObject * args, PyObject * kwds)
+rpmds_Find(rpmdsObject * s, PyObject * arg)
 {
-    PyObject * to = NULL;
     rpmdsObject * o;
-    int rc;
-    char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Find", kwlist, &to))
+    if (!PyArg_Parse(arg, "O!:Find", &rpmds_Type, &o))
 	return NULL;
-
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
 
     /* XXX make sure ods index is valid, real fix in lib/rpmds.c. */
     if (rpmdsIx(o->ds) == -1)	rpmdsSetIx(o->ds, 0);
 
-    rc = rpmdsFind(s->ds, o->ds);
-    return Py_BuildValue("i", rc);
+    return Py_BuildValue("i", rpmdsFind(s->ds, o->ds));
 }
 
 static PyObject *
-rpmds_Merge(rpmdsObject * s, PyObject * args, PyObject * kwds)
+rpmds_Merge(rpmdsObject * s, PyObject * arg)
 {
-    PyObject * to = NULL;
     rpmdsObject * o;
-    char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
+    if (!PyArg_Parse(arg, "O!:Merge", &rpmds_Type, &o))
 	return NULL;
 
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsMerge(&s->ds, o->ds));
 }
 static PyObject *
-rpmds_Search(rpmdsObject * s, PyObject * args, PyObject * kwds)
+rpmds_Search(rpmdsObject * s, PyObject * arg)
 {
-    PyObject * to = NULL;
     rpmdsObject * o;
-    char * kwlist[] = {"element", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Merge", kwlist, &to))
+    if (!PyArg_Parse(arg, "O!:Merge", &rpmds_Type, &o))
         return NULL;
 
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
     return Py_BuildValue("i", rpmdsSearch(s->ds, o->ds));
 }
 
@@ -330,11 +315,11 @@ static struct PyMethodDef rpmds_methods[] = {
 	NULL},
  {"Sort",	(PyCFunction)rpmds_Sort,	METH_NOARGS,
 	NULL},
- {"Find",	(PyCFunction)rpmds_Find,	METH_VARARGS|METH_KEYWORDS,
+ {"Find",	(PyCFunction)rpmds_Find,	METH_O,
 	NULL},
- {"Merge",	(PyCFunction)rpmds_Merge,	METH_VARARGS|METH_KEYWORDS,
+ {"Merge",	(PyCFunction)rpmds_Merge,	METH_O,
 	NULL},
- {"Search",     (PyCFunction)rpmds_Search,      METH_VARARGS|METH_KEYWORDS,
+ {"Search",     (PyCFunction)rpmds_Search,      METH_O,
 "ds.Search(element) -> matching ds index (-1 on failure)\n\
 - Check that element dependency range overlaps some member of ds.\n\
 The current index in ds is positioned at overlapping member upon success.\n" },
