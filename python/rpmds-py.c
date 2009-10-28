@@ -303,32 +303,6 @@ static PyObject * rpmds_Rpmlib(rpmdsObject * s)
     return rpmds_Wrap(&rpmds_Type, ds);
 }
 
-
-#ifdef	NOTYET
-static PyObject *
-rpmds_Compare(rpmdsObject * s, PyObject * args, PyObject * kwds)
-{
-    PyObject * to = NULL;
-    rpmdsObject * o;
-    char * kwlist[] = {"other", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O:Compare", kwlist, &to))
-	return NULL;
-
-    /* XXX ds type check needed. */
-    o = (rpmdsObject *)to;
-    return Py_BuildValue("i", rpmdsCompare(s->ds, o->ds));
-}
-
-static PyObject *
-rpmds_Problem(rpmdsObject * s)
-{
-    if (!PyArg_ParseTuple(args, ":Problem"))
-	return NULL;
-    Py_RETURN_NONE;
-}
-#endif
-
 static struct PyMethodDef rpmds_methods[] = {
  {"Count",	(PyCFunction)rpmds_Count,	METH_NOARGS,
 	"ds.Count -> Count	- Return no. of elements.\n" },
@@ -366,12 +340,6 @@ static struct PyMethodDef rpmds_methods[] = {
 The current index in ds is positioned at overlapping member upon success.\n" },
  {"Rpmlib",     (PyCFunction)rpmds_Rpmlib,      METH_NOARGS|METH_STATIC,
 	"ds.Rpmlib -> nds       - Return internal rpmlib dependency set.\n"},
-#ifdef	NOTYET
- {"Compare",	(PyCFunction)rpmds_Compare,	METH_VARARGS|METH_KEYWORDS,
-	NULL},
- {"Problem",	(PyCFunction)rpmds_Problem,	METH_NOARGS,
-	NULL},
-#endif
  {NULL,		NULL}		/* sentinel */
 };
 
