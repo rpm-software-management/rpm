@@ -51,6 +51,7 @@ static PyObject *rpmfd_new(PyTypeObject *subtype,
     PyObject *fo = NULL;
     rpmfdObject *s = NULL;
     FD_t fd = NULL;
+    int fdno;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ss", kwlist, 
 				     &fo, &mode, &flags))
@@ -62,11 +63,8 @@ static PyObject *rpmfd_new(PyTypeObject *subtype,
 	fd = Fopen(PyBytes_AsString(fo), m);
 	Py_END_ALLOW_THREADS 
 	free(m);
-    } else if (PyInt_Check(fo)) {
-	fd = fdDup(PyInt_AsLong(fo));
-    } else if (PyFile_Check(fo)) {
-	FILE *fp = PyFile_AsFile(fo);
-	fd = fdDup(fileno(fp));
+    } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
+	fd = fdDup(fdno);
     } else {
 	PyErr_SetString(PyExc_TypeError, "path or file object expected");
 	return NULL;
