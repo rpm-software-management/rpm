@@ -201,35 +201,88 @@ static void addRpmTags(PyObject *module)
     rpmtdFree(names);
 }
 
-void init_rpm(void);	/* XXX eliminate gcc warning */
+/*
+  Do any common preliminary work before python 2 vs python 3 module creation:
+*/
+static int prepareInitModule(void)
+{
+    if (PyType_Ready(&hdr_Type) < 0) return 0;
+    if (PyType_Ready(&rpmds_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfd_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfi_Type) < 0) return 0;
+    if (PyType_Ready(&rpmKeyring_Type) < 0) return 0;
+    if (PyType_Ready(&rpmmi_Type) < 0) return 0;
+    if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
+    if (PyType_Ready(&rpmps_Type) < 0) return 0;
+    if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
+    if (PyType_Ready(&rpmtd_Type) < 0) return 0;
+    if (PyType_Ready(&rpmte_Type) < 0) return 0;
+    if (PyType_Ready(&rpmts_Type) < 0) return 0;
 
+    return 1;
+}
+static int initModule(PyObject *m);
+
+#if PY_MAJOR_VERSION >= 3
+static int rpmModuleTraverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(pyrpmError);
+    return 0;
+}
+
+static int rpmModuleClear(PyObject *m) {
+    Py_CLEAR(pyrpmError);
+    return 0;
+}
+
+static struct PyModuleDef moduledef = {
+    PyModuleDef_HEAD_INIT,
+    "_rpm",            /* m_name */
+    rpm__doc__,        /* m_doc */
+    0,                 /* m_size */
+    rpmModuleMethods,
+    NULL,              /* m_reload */
+    rpmModuleTraverse,
+    rpmModuleClear,
+    NULL               /* m_free */
+};
+
+PyObject *
+PyInit__rpm(void);
+
+PyObject *
+PyInit__rpm(void)
+{
+    PyObject * m;
+    if (!prepareInitModule()) return NULL;
+    m = PyModule_Create(&moduledef);
+    initModule(m);
+    return m;
+}
+#else
+void init_rpm(void);	/* XXX eliminate gcc warning */
 void init_rpm(void)
 {
-    PyObject * d, *m;
+    PyObject * m;
 
-    if (PyType_Ready(&hdr_Type) < 0) return;
-    if (PyType_Ready(&rpmds_Type) < 0) return;
-    if (PyType_Ready(&rpmfd_Type) < 0) return;
-    if (PyType_Ready(&rpmfi_Type) < 0) return;
-    if (PyType_Ready(&rpmKeyring_Type) < 0) return;
-    if (PyType_Ready(&rpmmi_Type) < 0) return;
-    if (PyType_Ready(&rpmProblem_Type) < 0) return;
-    if (PyType_Ready(&rpmps_Type) < 0) return;
-    if (PyType_Ready(&rpmPubkey_Type) < 0) return;
-    if (PyType_Ready(&rpmtd_Type) < 0) return;
-    if (PyType_Ready(&rpmte_Type) < 0) return;
-    if (PyType_Ready(&rpmts_Type) < 0) return;
-
+    if (!prepareInitModule()) return;
     m = Py_InitModule3("_rpm", rpmModuleMethods, rpm__doc__);
     if (m == NULL)
 	return;
+    initModule(m);
+}
+#endif
+
+/* Shared python2/3 module initialization: */
+static int initModule(PyObject *m)
+{
+    PyObject * d;
 
     /* 
      * treat error to register rpm cleanup hook as fatal, tracebacks
      * can and will leave stale locks around if we can't clean up
      */
     if (Py_AtExit(rpm_exithook) == -1)
-	return;
+        return 0;
 
     rpmReadConfigFiles(NULL, NULL);
 
@@ -439,5 +492,7 @@ void init_rpm(void)
     REGISTER_ENUM(HEADERCONV_EXPANDFILELIST);
     REGISTER_ENUM(HEADERCONV_COMPRESSFILELIST);
     REGISTER_ENUM(HEADERCONV_RETROFIT_V3);
+
+    return 1;
 }
 
