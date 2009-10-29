@@ -55,25 +55,26 @@ static PyObject * checkSignals(PyObject * self, PyObject * args)
     Py_RETURN_NONE;
 }
 
-static PyObject * setLogFile (PyObject * self, PyObject * args, PyObject *kwds)
+static PyObject * setLogFile (PyObject * self, PyObject *arg)
 {
-    PyObject * fop = NULL;
-    FILE * fp = NULL;
-    char * kwlist[] = {"fileObject", NULL};
+    FILE *fp;
+    int fdno = PyObject_AsFileDescriptor(arg);
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O:logSetFile", kwlist, &fop))
-	return NULL;
-
-    if (fop) {
-	if (!PyFile_Check(fop)) {
-	    PyErr_SetString(PyExc_TypeError, "requires file object");
+    if (fdno >= 0) {
+	/* XXX we dont know the mode here.. guessing append for now */
+	fp = fdopen(fdno, "a");
+	if (fp == NULL) {
+	    PyErr_SetFromErrno(PyExc_IOError);
 	    return NULL;
 	}
-	fp = PyFile_AsFile(fop);
+    } else if (arg == Py_None) {
+	fp = NULL;
+    } else {
+	PyErr_SetString(PyExc_TypeError, "file object or None expected");
+	return NULL;
     }
 
     (void) rpmlogSetFile(fp);
-
     Py_RETURN_NONE;
 }
 
@@ -146,7 +147,7 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "log",		(PyCFunction) doLog, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "setLogFile", (PyCFunction) setLogFile, METH_VARARGS|METH_KEYWORDS,
+    { "setLogFile", (PyCFunction) setLogFile, METH_O,
 	NULL },
 
     { "versionCompare", (PyCFunction) versionCompare, METH_VARARGS|METH_KEYWORDS,
