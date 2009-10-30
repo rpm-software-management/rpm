@@ -615,6 +615,46 @@ static char * arraysizeFormat(rpmtd td, char * formatPrefix)
     return val;
 }
 
+static char * fstateFormat(rpmtd td, char * formatPrefix)
+{
+    char * val = NULL;
+
+    if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
+	val = xstrdup(_("(not a number)"));
+    } else {
+	const char * str;
+	rpmfileState fstate = rpmtdGetNumber(td);
+	switch (fstate) {
+	case RPMFILE_STATE_NORMAL:
+	    str = _("normal");
+	    break;
+	case RPMFILE_STATE_REPLACED:
+	    str = _("replaced");
+	    break;
+	case RPMFILE_STATE_NOTINSTALLED:
+	    str = _("not installed");
+	    break;
+	case RPMFILE_STATE_NETSHARED:
+	    str = _("net shared");
+	    break;
+	case RPMFILE_STATE_WRONGCOLOR:
+	    str = _("wrong color");
+	    break;
+	/* XXX headers should never have this value as file state */
+	case RPMFILE_STATE_MISSING:
+	    str = _("missing");
+	    break;
+	default:
+	    str = _("(unknown)");
+	    break;
+	}
+	
+	strcat(formatPrefix, "s");
+	rasprintf(&val, formatPrefix, str);
+    }
+    return val;
+}
+
 void *rpmHeaderFormatFuncByName(const char *fmt)
 {
     const struct headerFormatFunc_s * ext;
@@ -661,5 +701,6 @@ static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_DAY,		"day", 		dayFormat },
     { RPMTD_FORMAT_SHESCAPE,	"shescape", 	shescapeFormat },
     { RPMTD_FORMAT_ARRAYSIZE,	"arraysize", 	arraysizeFormat },
+    { RPMTD_FORMAT_FSTATE,	"fstate",	fstateFormat },
     { -1,			NULL, 		NULL }
 };
