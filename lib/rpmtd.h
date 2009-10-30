@@ -215,6 +215,7 @@ typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_ARRAYSIZE	= 14,	/* size of contained array (any type) */
     RPMTD_FORMAT_DEPTYPE	= 15,	/* dependency types (int types) */
     RPMTD_FORMAT_FSTATE		= 16,	/* file states (int types) */
+    RPMTD_FORMAT_VFLAGS		= 17,	/* file verify flags (int types) */
 } rpmtdFormats;
 
 /** \ingroup rpmtd
