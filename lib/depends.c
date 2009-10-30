@@ -26,6 +26,16 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 /* rpmlib provides */
 static rpmds rpmlibP = NULL;
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
+#define HASHTYPE depCache
+#define HTKEYTYPE const char *
+#define HTDATATYPE int
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+
 /**
  * Compare removed package instances (qsort/bsearch).
  * @param a		1st instance address
@@ -343,16 +353,19 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @param adding	dependency is from added package set?
  * @return		0 if satisfied, 1 if not satisfied, 2 if error
  */
-static int unsatisfiedDepend(rpmts ts, rpmds dep, int adding)
+static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep, int adding)
 {
     rpmdbMatchIterator mi;
-    const char * Name;
+    const char * Name = rpmdsN(dep);
+    const char * DNEVR = rpmdsDNEVR(dep);
     Header h;
     int rc;
     int xx;
     int retrying = 0;
+    int *cachedrc = NULL;
+    int cacheThis = 0;
 
-    if ((Name = rpmdsN(dep)) == NULL)
+    if (Name == NULL || DNEVR == NULL)
 	return 0;	/* XXX can't happen */
 
 retry:
@@ -379,6 +392,15 @@ retry:
     if (rpmalSatisfiesDepend(ts->addedPackages, dep) != NULL) {
 	goto exit;
     }
+
+    /* See if we already looked this up */
+    if (depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
+	rc = *cachedrc;
+	rpmdsNotify(dep, _("(cached)"), rc);
+	return rc;
+    }
+    /* Only bother caching the expensive rpmdb lookups */
+    cacheThis = 1;
 
     /* XXX only the installer does not have the database open here. */
     if (rpmtsGetRdb(ts) != NULL) {
@@ -432,6 +454,11 @@ unsatisfied:
     rpmdsNotify(dep, NULL, rc);
 
 exit:
+    if (cacheThis) {
+	char *key = xstrdup(DNEVR);
+	depCacheAddEntry(dcache, key, rc);
+    }
+	
     return rc;
 }
 
@@ -446,7 +473,7 @@ exit:
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
-static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
+static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 		rpmds requires, rpmds conflicts,
 		const char * depName, rpm_color_t tscolor, int adding)
 {
@@ -471,7 +498,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, requires, adding);
+	rc = unsatisfiedDepend(ts, dcache, requires, adding);
 
 	switch (rc) {
 	case 0:		/* requirements are satisfied. */
@@ -502,7 +529,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, conflicts, adding);
+	rc = unsatisfiedDepend(ts, dcache, conflicts, adding);
 
 	/* 1 == unsatisfied, 0 == satsisfied */
 	switch (rc) {
@@ -531,7 +558,7 @@ static int checkPackageDeps(rpmts ts, const char * pkgNEVRA,
  * @param adding	dependency is from added package set?
  * @return		0 no problems found
  */
-static int checkPackageSet(rpmts ts, const char * dep,
+static int checkPackageSet(rpmts ts, depCache dcache, const char * dep,
 		rpmdbMatchIterator mi, int adding)
 {
     Header h;
@@ -549,7 +576,7 @@ static int checkPackageSet(rpmts ts, const char * dep,
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, pkgNEVRA, requires, conflicts, dep, 0, adding);
+	rc = checkPackageDeps(ts, dcache, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
@@ -570,11 +597,11 @@ static int checkPackageSet(rpmts ts, const char * dep,
  * @param dep		requires name
  * @return		0 no problems found
  */
-static int checkDependentPackages(rpmts ts, const char * dep)
+static int checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
 {
     rpmdbMatchIterator mi;
     mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    return checkPackageSet(ts, dep, mi, 0);
+    return checkPackageSet(ts, dcache, dep, mi, 0);
 }
 
 /**
@@ -583,14 +610,14 @@ static int checkDependentPackages(rpmts ts, const char * dep)
  * @param dep		conflicts name
  * @return		0 no problems found
  */
-static int checkDependentConflicts(rpmts ts, const char * dep)
+static int checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
 {
     int rc = 0;
 
     if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
-	rc = checkPackageSet(ts, dep, mi, 1);
+	rc = checkPackageSet(ts, dcache, dep, mi, 1);
     }
 
     return rc;
@@ -604,7 +631,8 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int xx;
     int rc;
-
+    depCache dcache = NULL;
+    
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     /* Do lazy, readonly, open of rpm database. */
@@ -619,6 +647,10 @@ int rpmtsCheck(rpmts ts)
 
     rpmalMakeIndex(ts->addedPackages);
 
+    /* XXX FIXME: figure some kind of heuristic for the cache size */
+    dcache = depCacheCreate(5001, hashFunctionString, strcmp,
+				     (depCacheFreeKey)rfree, NULL);
+
     /*
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
@@ -630,7 +662,7 @@ int rpmtsCheck(rpmts ts)
 	/* FIX: rpmts{A,O} can return null. */
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-	rc = checkPackageDeps(ts, rpmteNEVRA(p),
+	rc = checkPackageDeps(ts, dcache, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,
@@ -647,7 +679,7 @@ int rpmtsCheck(rpmts ts)
 		continue;	/* XXX can't happen */
 
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, Name))
+	    if (!checkDependentConflicts(ts, dcache, Name))
 		continue;
 	    rc = 1;
 	    break;
@@ -677,7 +709,7 @@ int rpmtsCheck(rpmts ts)
 		continue;	/* XXX can't happen */
 
 	    /* Erasing: check provides against requiredby matches. */
-	    if (!checkDependentPackages(ts, Name))
+	    if (!checkDependentPackages(ts, dcache, Name))
 		continue;
 	    rc = 1;
 	    break;
@@ -692,7 +724,7 @@ int rpmtsCheck(rpmts ts)
 	    const char * fn = rpmfiFN(fi);
 
 	    /* Erasing: check filename against requiredby matches. */
-	    if (!checkDependentPackages(ts, fn))
+	    if (!checkDependentPackages(ts, dcache, fn))
 		continue;
 	    rc = 1;
 	    break;
@@ -707,6 +739,7 @@ int rpmtsCheck(rpmts ts)
 exit:
     mi = rpmdbFreeIterator(mi);
     pi = rpmtsiFree(pi);
+    depCacheFree(dcache);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
