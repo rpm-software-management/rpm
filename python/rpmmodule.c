@@ -74,12 +74,11 @@ static PyObject * setLogFile (PyObject * self, PyObject *arg)
 }
 
 static PyObject *
-setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
+setVerbosity (PyObject * self, PyObject * arg)
 {
     int level;
-    char * kwlist[] = {"level", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &level))
+    if (!PyArg_Parse(arg, "i", &level))
 	return NULL;
 
     rpmSetVerbosity(level);
@@ -88,22 +87,17 @@ setVerbosity (PyObject * self, PyObject * args, PyObject *kwds)
 }
 
 static PyObject *
-setEpochPromote (PyObject * self, PyObject * args, PyObject * kwds)
+setEpochPromote (PyObject * self, PyObject * arg)
 {
-    char * kwlist[] = {"promote", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist,
-	    &_rpmds_nopromote))
+    if (!PyArg_Parse(arg, "i", &_rpmds_nopromote))
 	return NULL;
 
     Py_RETURN_NONE;
 }
 
-static PyObject * setStats (PyObject * self, PyObject * args, PyObject * kwds)
+static PyObject * setStats (PyObject * self, PyObject * arg)
 {
-    char * kwlist[] = {"stats", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &_rpmts_stats))
+    if (!PyArg_Parse(arg, "i", &_rpmts_stats))
 	return NULL;
 
     Py_RETURN_NONE;
@@ -149,11 +143,11 @@ static PyMethodDef rpmModuleMethods[] = {
 	NULL },
     { "labelCompare", (PyCFunction) labelCompare, METH_VARARGS|METH_KEYWORDS,
 	NULL },
-    { "setVerbosity", (PyCFunction) setVerbosity, METH_VARARGS|METH_KEYWORDS,
+    { "setVerbosity", (PyCFunction) setVerbosity, METH_O,
 	NULL },
-    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_VARARGS|METH_KEYWORDS,
+    { "setEpochPromote", (PyCFunction) setEpochPromote, METH_O,
 	NULL },
-    { "setStats", (PyCFunction) setStats, METH_VARARGS|METH_KEYWORDS,
+    { "setStats", (PyCFunction) setStats, METH_O,
 	NULL },
 
     { NULL }
