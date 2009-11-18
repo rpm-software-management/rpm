@@ -43,63 +43,54 @@ spec_dealloc(specObject * s)
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-/* XXX TODO return something sensible if spec exists but component (eg %clean)
- * does not. Possibly "" or None */
-
 static PyObject * 
 spec_get_buildroot(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
-    if (spec != NULL && spec->buildRoot) {
+    if (spec->buildRoot) {
         return Py_BuildValue("s", spec->buildRoot);
     }
-    else {
-        return NULL;
-    }
+    Py_RETURN_NONE;
 }
 
 static PyObject * 
 spec_get_prep(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
-    PyObject *res = NULL;
-    if (spec != NULL && spec->prep) {
-        res = Py_BuildValue("s",getStringBuf(spec->prep));
+    if (spec->prep) {
+        return Py_BuildValue("s",getStringBuf(spec->prep));
     }
-    return res;
+    Py_RETURN_NONE;
 }
 
 static PyObject * 
 spec_get_build(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
-    PyObject *res = NULL;
-    if (spec != NULL && spec->build) {
-        res = Py_BuildValue("s",getStringBuf(spec->build));
+    if (spec->build) {
+        return Py_BuildValue("s",getStringBuf(spec->build));
     }
-    return res;
+    Py_RETURN_NONE;
 }
 
 static PyObject * 
 spec_get_install(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
-    PyObject *res = NULL;
-    if (spec != NULL && spec->install) {
-        res = Py_BuildValue("s",getStringBuf(spec->install));
+    if (spec->install) {
+        return Py_BuildValue("s",getStringBuf(spec->install));
     }
-    return res;
+    Py_RETURN_NONE;
 }
 
 static PyObject * 
 spec_get_clean(specObject * s) 
 {
     rpmSpec spec = specFromSpec(s);
-    PyObject *res = NULL;
     if (spec != NULL && spec->clean) {
-        res = Py_BuildValue("s",getStringBuf(spec->clean));
+        return Py_BuildValue("s",getStringBuf(spec->clean));
     }
-    return res;
+    Py_RETURN_NONE;
 }
 
 static PyObject *
