@@ -66,13 +66,19 @@ static PyObject *rpmprob_str(rpmProblemObject *s)
     return res;
 }
 
+static PyObject *rpmprob_dealloc(rpmProblemObject *s)
+{
+    s->prob = rpmProblemFree(s->prob);
+    Py_TYPE(s)->tp_free((PyObject *)s);
+}
+
 PyTypeObject rpmProblem_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
 	"rpm.prob",			/* tp_name */
 	sizeof(rpmProblemObject),		/* tp_basicsize */
 	0,				/* tp_itemsize */
 	/* methods */
-	(destructor)0,			/* tp_dealloc */
+	(destructor)rpmprob_dealloc,	/* tp_dealloc */
 	0,				/* tp_print */
 	(getattrfunc)0,			/* tp_getattr */
 	(setattrfunc)0,			/* tp_setattr */
@@ -115,7 +121,7 @@ PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
     rpmProblemObject * s = (rpmProblemObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return NULL;
 
-    s->prob = prob;
+    s->prob = rpmProblemLink(prob);
     return (PyObject *) s;
 }
 
