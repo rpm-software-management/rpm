@@ -96,28 +96,17 @@ spec_get_clean(specObject * s)
 static PyObject *
 spec_get_sources(specObject *s)
 {
-    struct Source * source;
-    PyObject *sourceList, *srcUrl;
-    rpmSpec spec;
-    char * fullSource;
+    rpmSpec spec = specFromSpec(s);
+    PyObject *sourceList = PyList_New(0);
+    struct Source *source;
 
-    sourceList = PyList_New(0);
-    spec = specFromSpec(s);
-    if ( spec != NULL) {
-        source = spec->sources;
+    for (source = spec->sources; source; source = source->next) {
+	PyObject *srcUrl = Py_BuildValue("(sii)", source->fullSource, 
+					 source->num, source->flags);
+	PyList_Append(sourceList, srcUrl);
+    } 
 
-         while (source != NULL) {
-            fullSource = source->fullSource;
-            srcUrl = Py_BuildValue("(sii)", fullSource, source->num, source->flags);
-            PyList_Append(sourceList, srcUrl);
-            source=source->next;
-        } 
-
-        return PyList_AsTuple(sourceList);
-    }
-    else {
-        return NULL;
-    }
+    return sourceList;
 
 }
 
