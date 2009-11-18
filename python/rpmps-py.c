@@ -247,11 +247,6 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_is_gc */
 };
 
-rpmps psFromPs(rpmpsObject * s)
-{
-    return s->ps;
-}
-
 PyObject * rpmps_Wrap(PyTypeObject *subtype, rpmps ps)
 {
     rpmpsObject * s = (rpmpsObject *)subtype->tp_alloc(subtype, 0);
