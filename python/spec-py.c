@@ -44,7 +44,7 @@ spec_dealloc(specObject * s)
 }
 
 static PyObject * 
-spec_get_buildroot(specObject * s) 
+spec_get_buildroot(specObject * s, void *closure) 
 {
     rpmSpec spec = specFromSpec(s);
     if (spec->buildRoot) {
@@ -54,7 +54,7 @@ spec_get_buildroot(specObject * s)
 }
 
 static PyObject * 
-spec_get_prep(specObject * s) 
+spec_get_prep(specObject * s, void *closure) 
 {
     rpmSpec spec = specFromSpec(s);
     if (spec->prep) {
@@ -64,7 +64,7 @@ spec_get_prep(specObject * s)
 }
 
 static PyObject * 
-spec_get_build(specObject * s) 
+spec_get_build(specObject * s, void *closure) 
 {
     rpmSpec spec = specFromSpec(s);
     if (spec->build) {
@@ -73,8 +73,7 @@ spec_get_build(specObject * s)
     Py_RETURN_NONE;
 }
 
-static PyObject * 
-spec_get_install(specObject * s) 
+static PyObject * spec_get_install(specObject * s, void *closure) 
 {
     rpmSpec spec = specFromSpec(s);
     if (spec->install) {
@@ -83,8 +82,7 @@ spec_get_install(specObject * s)
     Py_RETURN_NONE;
 }
 
-static PyObject * 
-spec_get_clean(specObject * s) 
+static PyObject * spec_get_clean(specObject * s, void *closure) 
 {
     rpmSpec spec = specFromSpec(s);
     if (spec != NULL && spec->clean) {
@@ -93,8 +91,7 @@ spec_get_clean(specObject * s)
     Py_RETURN_NONE;
 }
 
-static PyObject *
-spec_get_sources(specObject *s)
+static PyObject * spec_get_sources(specObject *s, void *closure)
 {
     rpmSpec spec = specFromSpec(s);
     PyObject *sourceList = PyList_New(0);
@@ -112,13 +109,13 @@ spec_get_sources(specObject *s)
 
 static char spec_doc[] = "RPM Spec file object";
 
-static PyMethodDef spec_Spec_methods[] = {
-    {"sources",   (PyCFunction) spec_get_sources, METH_VARARGS,  NULL },
-    {"prep",   (PyCFunction) spec_get_prep, METH_VARARGS,  NULL },
-    {"build",   (PyCFunction) spec_get_build, METH_VARARGS,  NULL },
-    {"install",   (PyCFunction) spec_get_install, METH_VARARGS,  NULL },
-    {"clean",   (PyCFunction) spec_get_clean, METH_VARARGS,  NULL },
-    {"buildRoot",   (PyCFunction) spec_get_buildroot, METH_VARARGS,  NULL },
+static PyGetSetDef spec_getseters[] = {
+    {"sources",   (getter) spec_get_sources, NULL, NULL },
+    {"prep",   (getter) spec_get_prep, NULL, NULL },
+    {"build",   (getter) spec_get_build, NULL, NULL },
+    {"install",   (getter) spec_get_install, NULL, NULL },
+    {"clean",   (getter) spec_get_clean, NULL, NULL },
+    {"buildRoot",   (getter) spec_get_buildroot, NULL, NULL },
     {NULL}  /* Sentinel */
 };
 
@@ -183,9 +180,9 @@ PyTypeObject spec_Type = {
     0,                         /* tp_weaklistoffset */
     0,                         /* tp_iter */
     0,                         /* tp_iternext */
-    spec_Spec_methods,         /* tp_methods */
+    0,			       /* tp_methods */
     0,                         /* tp_members */
-    0,                         /* tp_getset */
+    spec_getseters,            /* tp_getset */
     0,                         /* tp_base */
     0,                         /* tp_dict */
     0,                         /* tp_descr_get */
