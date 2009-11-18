@@ -46,7 +46,7 @@ spec_dealloc(specObject * s)
 static PyObject * 
 spec_get_buildroot(specObject * s, void *closure) 
 {
-    rpmSpec spec = specFromSpec(s);
+    rpmSpec spec = s->spec;
     if (spec->buildRoot) {
         return Py_BuildValue("s", spec->buildRoot);
     }
@@ -56,7 +56,7 @@ spec_get_buildroot(specObject * s, void *closure)
 static PyObject * 
 spec_get_prep(specObject * s, void *closure) 
 {
-    rpmSpec spec = specFromSpec(s);
+    rpmSpec spec = s->spec;
     if (spec->prep) {
         return Py_BuildValue("s",getStringBuf(spec->prep));
     }
@@ -66,7 +66,7 @@ spec_get_prep(specObject * s, void *closure)
 static PyObject * 
 spec_get_build(specObject * s, void *closure) 
 {
-    rpmSpec spec = specFromSpec(s);
+    rpmSpec spec = s->spec;
     if (spec->build) {
         return Py_BuildValue("s",getStringBuf(spec->build));
     }
@@ -75,7 +75,7 @@ spec_get_build(specObject * s, void *closure)
 
 static PyObject * spec_get_install(specObject * s, void *closure) 
 {
-    rpmSpec spec = specFromSpec(s);
+    rpmSpec spec = s->spec;
     if (spec->install) {
         return Py_BuildValue("s",getStringBuf(spec->install));
     }
@@ -84,7 +84,7 @@ static PyObject * spec_get_install(specObject * s, void *closure)
 
 static PyObject * spec_get_clean(specObject * s, void *closure) 
 {
-    rpmSpec spec = specFromSpec(s);
+    rpmSpec spec = s->spec;
     if (spec != NULL && spec->clean) {
         return Py_BuildValue("s",getStringBuf(spec->clean));
     }
@@ -93,7 +93,7 @@ static PyObject * spec_get_clean(specObject * s, void *closure)
 
 static PyObject * spec_get_sources(specObject *s, void *closure)
 {
-    rpmSpec spec = specFromSpec(s);
+    rpmSpec spec = s->spec;
     PyObject *sourceList = PyList_New(0);
     struct Source *source;
 
@@ -194,11 +194,6 @@ PyTypeObject spec_Type = {
     0,                         /* tp_free */
     0,                         /* tp_is_gc */
 };
-
-rpmSpec specFromSpec(specObject *s) 
-{
-    return s->spec;
-}
 
 PyObject *
 spec_Wrap(PyTypeObject *subtype, rpmSpec spec) 
