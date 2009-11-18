@@ -126,26 +126,6 @@ static PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
     return (PyObject *) s;
 }
 
-static int
-rpmps_append(rpmpsObject * s, PyObject * value)
-{
-    char *pkgNEVR, *altNEVR, *str1;
-    unsigned long ulong1;
-    int ignoreProblem;
-    rpmProblemType type;
-    fnpyKey key;
-
-    if (!PyArg_ParseTuple(value, "ssOiisN:rpmps value tuple",
-			&pkgNEVR, &altNEVR, &key,
-			&type, &ignoreProblem, &str1,
-			&ulong1))
-    {
-    	return -1;
-    }
-    rpmpsAppend(s->ps, type, pkgNEVR, key, str1, NULL, altNEVR, ulong1);
-    return 0;
-}
-
 static PyObject *
 rpmps_iternext(rpmpsObject * s)
 {
@@ -164,11 +144,6 @@ rpmps_iternext(rpmpsObject * s)
 
     return result;
 }
-
-static struct PyMethodDef rpmps_methods[] = {
-  {"append",	(PyCFunction)rpmps_append,	METH_VARARGS, NULL},
- {NULL,		NULL}		/* sentinel */
-};
 
 static void
 rpmps_dealloc(rpmpsObject * s)
@@ -257,7 +232,7 @@ PyTypeObject rpmps_Type = {
 	0,				/* tp_weaklistoffset */
 	PyObject_SelfIter,		/* tp_iter */
 	(iternextfunc) rpmps_iternext,	/* tp_iternext */
-	rpmps_methods,			/* tp_methods */
+	0,				/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
