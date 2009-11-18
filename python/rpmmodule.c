@@ -44,9 +44,8 @@ static PyObject * signalCaught(PyObject *self, PyObject *o)
     return PyBool_FromLong(rpmsqIsCaught(signo));
 }
 
-static PyObject * checkSignals(PyObject * self, PyObject * args)
+static PyObject * checkSignals(PyObject * self)
 {
-    if (!PyArg_ParseTuple(args, ":checkSignals")) return NULL;
     rpmdbCheckSignals();
     Py_RETURN_NONE;
 }
@@ -135,7 +134,7 @@ static PyMethodDef rpmModuleMethods[] = {
 
     { "signalCaught", (PyCFunction) signalCaught, METH_O, 
 	NULL },
-    { "checkSignals", (PyCFunction) checkSignals, METH_VARARGS,
+    { "checkSignals", (PyCFunction) checkSignals, METH_NOARGS,
         NULL },
 
     { "mergeHeaderListFromFD", (PyCFunction) rpmMergeHeadersFromFD, METH_VARARGS|METH_KEYWORDS,
