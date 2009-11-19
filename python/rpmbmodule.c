@@ -13,6 +13,7 @@ static char rpmb__doc__[] =
 static int prepareInitModule(void)
 {
     if (PyType_Ready(&spec_Type) < 0) return 0;
+    if (PyType_Ready(&specPkg_Type) < 0) return 0;
 
     return 1;
 }
@@ -21,6 +22,8 @@ static int initModule(PyObject *m)
 {
     Py_INCREF(&spec_Type);
     PyModule_AddObject(m, "spec", (PyObject *) &spec_Type);
+    Py_INCREF(&specPkg_Type);
+    PyModule_AddObject(m, "specPkg", (PyObject *) &specPkg_Type);
 
     return 1;
 }

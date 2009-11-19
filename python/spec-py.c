@@ -28,6 +28,82 @@
  *
  */
 
+/* Header objects are in another module, some hoop jumping required... */
+static PyObject *makeHeader(Header h)
+{
+    PyObject *rpmmod = PyImport_ImportModuleNoBlock("rpm");
+    if (rpmmod == NULL) return NULL;
+
+    PyObject *ptr = PyCObject_FromVoidPtr(h, NULL);
+    PyObject *hdr = PyObject_CallMethod(rpmmod, "hdr", "(O)", ptr);
+    Py_XDECREF(ptr);
+    Py_XDECREF(rpmmod);
+    return hdr;
+}
+
+struct specPkgObject_s {
+    PyObject_HEAD
+    /*type specific fields */
+    Package pkg;
+};
+
+static char specPkg_doc[] =
+"";
+
+static PyObject * specpkg_get_header(specPkgObject *s, void *closure)
+{
+    Package pkg = s->pkg;
+    return makeHeader(pkg->header);
+}
+
+static PyGetSetDef specpkg_getseters[] = {
+    { "header",	(getter) specpkg_get_header, NULL, NULL },
+    { NULL } 	/* sentinel */
+};
+
+PyTypeObject specPkg_Type = {
+	PyVarObject_HEAD_INIT(&PyType_Type, 0)
+	"rpm.specpkg",			/* tp_name */
+	sizeof(specPkgObject),		/* tp_size */
+	0,				/* tp_itemsize */
+	0, 				/* tp_dealloc */
+	0,				/* tp_print */
+	0, 				/* tp_getattr */
+	0,				/* tp_setattr */
+	0,				/* tp_compare */
+	0,				/* tp_repr */
+	0,				/* tp_as_number */
+	0,				/* tp_as_sequence */
+	0,				/* tp_as_mapping */
+	0,				/* tp_hash */
+	0,				/* tp_call */
+	0,				/* tp_str */
+	PyObject_GenericGetAttr,	/* tp_getattro */
+	PyObject_GenericSetAttr,	/* tp_setattro */
+	0,				/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
+	specPkg_doc,			/* tp_doc */
+	0,				/* tp_traverse */
+	0,				/* tp_clear */
+	0,				/* tp_richcompare */
+	0,				/* tp_weaklistoffset */
+	0,				/* tp_iter */
+	0,				/* tp_iternext */
+	0,				/* tp_methods */
+	0,				/* tp_members */
+	specpkg_getseters,		/* tp_getset */
+	0,				/* tp_base */
+	0,				/* tp_dict */
+	0,				/* tp_descr_get */
+	0,				/* tp_descr_set */
+	0,				/* tp_dictoffset */
+	0,				/* tp_init */
+	0,				/* tp_alloc */
+	0,				/* tp_new */
+	0,				/* tp_free */
+	0,				/* tp_is_gc */
+};
+
 struct specObject_s {
     PyObject_HEAD
     /*type specific fields */
@@ -107,6 +183,19 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 
 }
 
+static PyObject * spec_get_packages(specObject *s, void *closure)
+{
+    rpmSpec spec = s->spec;
+    PyObject *pkgList = PyList_New(0);
+    Package pkg;
+
+    for (pkg = spec->packages; pkg; pkg = pkg->next) {
+	PyObject *po = specPkg_Wrap(&specPkg_Type, pkg);
+	PyList_Append(pkgList, po);
+    }
+    return pkgList;
+}
+
 static char spec_doc[] = "RPM Spec file object";
 
 static PyGetSetDef spec_getseters[] = {
@@ -116,6 +205,7 @@ static PyGetSetDef spec_getseters[] = {
     {"install",   (getter) spec_get_install, NULL, NULL },
     {"clean",   (getter) spec_get_clean, NULL, NULL },
     {"buildRoot",   (getter) spec_get_buildroot, NULL, NULL },
+    {"packages", (getter) spec_get_packages, NULL, NULL },
     {NULL}  /* Sentinel */
 };
 
@@ -204,3 +294,13 @@ spec_Wrap(PyTypeObject *subtype, rpmSpec spec)
     s->spec = spec; 
     return (PyObject *) s;
 }
+
+PyObject * specPkg_Wrap(PyTypeObject *subtype, Package pkg) 
+{
+    specPkgObject * s = (specPkgObject *)subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return NULL;
+
+    s->pkg = pkg;
+    return (PyObject *) s;
+}
+
