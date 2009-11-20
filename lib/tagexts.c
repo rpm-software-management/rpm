@@ -744,6 +744,21 @@ static int verboseTag(Header h, rpmtd td, headerGetFlags hgflags)
     }
 }
 
+static int epochnumTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    /* For consistency, always return malloced data */
+    if (!headerGet(h, RPMTAG_EPOCH, td, HEADERGET_ALLOC)) {
+	uint32_t *e = malloc(sizeof(*e));
+	*e = 0;
+	td->data = e;
+	td->type = RPM_INT32_TYPE;
+	td->count = 1;
+	td->flags = RPMTD_ALLOCED;
+    }
+    td->tag = RPMTAG_EPOCHNUM;
+    return 1;
+}
+
 void *rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
@@ -784,6 +799,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_NEVRA,		nevraTag },
     { RPMTAG_HEADERCOLOR,	headercolorTag },
     { RPMTAG_VERBOSE,		verboseTag },
+    { RPMTAG_EPOCHNUM,		epochnumTag },
     { 0, 			NULL }
 };
 
