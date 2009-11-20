@@ -118,11 +118,11 @@ javadeps_LDADD =
 
 rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	tools/rpmdeps.c
-rpmdeps_LDADD =		build/librpmbuild.la
+rpmdeps_LDADD =		lib/librpm.la rpmio/librpmio.la build/librpmbuild.la @WITH_POPT_LIB@
 
 bin_PROGRAMS +=		rpmgraph
 rpmgraph_SOURCES =	tools/rpmgraph.c
-rpmgraph_LDADD =	lib/librpm.la
+rpmgraph_LDADD =	lib/librpm.la rpmio/librpmio.la @WITH_POPT_LIB@
 
 dist_bin_SCRIPTS =	scripts/gendiff
 
