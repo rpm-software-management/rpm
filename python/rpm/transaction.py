@@ -144,7 +144,7 @@ class TransactionSet(_rpmts):
         res, msg = _rpmts.hdrCheck(self, blob)
         # generate backwards compatibly broken exceptions
         if res == rpm.RPMRC_NOKEY:
-            raise rpm.error("public key not availaiable")
+            raise rpm.error("public key not available")
         elif res == rpm.RPMRC_NOTTRUSTED:
             raise rpm.error("public key not trusted")
         elif res != rpm.RPMRC_OK:
@@ -154,7 +154,7 @@ class TransactionSet(_rpmts):
         res, h = _rpmts.hdrFromFdno(self, fd)
         # generate backwards compatibly broken exceptions
         if res == rpm.RPMRC_NOKEY:
-            raise rpm.error("public key not availaiable")
+            raise rpm.error("public key not available")
         elif res == rpm.RPMRC_NOTTRUSTED:
             raise rpm.error("public key not trusted")
         elif res != rpm.RPMRC_OK:
