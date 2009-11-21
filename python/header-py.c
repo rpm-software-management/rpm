@@ -239,11 +239,6 @@ static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
     return result;
 }
 
-static PyObject *hdrInstance(hdrObject *s)
-{
-    return Py_BuildValue("i", headerGetInstance(s->h));
-}
-
 static PyObject *hdrIsSource(hdrObject *s)
 {
     return PyBool_FromLong(headerIsSource(s->h));
@@ -334,8 +329,6 @@ static struct PyMethodDef hdr_methods[] = {
     {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
     {"sprintf",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    {"instance",	(PyCFunction)hdrInstance,	METH_NOARGS,
 	NULL },
     {"isSource",	(PyCFunction)hdrIsSource,	METH_NOARGS, 
 	NULL },
