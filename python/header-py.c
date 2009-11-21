@@ -244,12 +244,12 @@ static PyObject *hdrIsSource(hdrObject *s)
     return PyBool_FromLong(headerIsSource(s->h));
 }
 
-static PyObject *hdrHasKey(hdrObject *s, PyObject *pytag)
+static int hdrContains(hdrObject *s, PyObject *pytag)
 {
     rpmTag tag;
     if (!tagNumFromPyObject(pytag, &tag)) return NULL;
 
-    return PyBool_FromLong(headerIsEntry(s->h, tag));
+    return headerIsEntry(s->h, tag);
 }
 
 static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
@@ -325,8 +325,6 @@ static struct PyMethodDef hdr_methods[] = {
     {"convert",		(PyCFunction) hdrConvert,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
     {"format",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
-	NULL },
-    {"has_key",		(PyCFunction) hdrHasKey,	METH_O,
 	NULL },
     {"sprintf",		(PyCFunction) hdrFormat,	METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -505,6 +503,19 @@ static PyMappingMethods hdr_as_mapping = {
 	(objobjargproc)hdr_ass_subscript,/* mp_ass_subscript */
 };
 
+static PySequenceMethods hdr_as_sequence = {
+    0,				/* sq_length */
+    0,				/* sq_concat */
+    0,				/* sq_repeat */
+    0,				/* sq_item */
+    0,				/* sq_slice */
+    0,				/* sq_ass_item */
+    0,				/* sq_ass_slice */
+    (objobjproc)hdrContains,	/* sq_contains */
+    0,				/* sq_inplace_concat */
+    0,				/* sq_inplace_repeat */
+};
+
 static char hdr_doc[] =
 "";
 
@@ -520,7 +531,7 @@ PyTypeObject hdr_Type = {
 	0,				/* tp_compare */
 	0,				/* tp_repr */
 	0,				/* tp_as_number */
-	0,	 			/* tp_as_sequence */
+	&hdr_as_sequence,		/* tp_as_sequence */
 	&hdr_as_mapping,		/* tp_as_mapping */
 	hdr_hash,			/* tp_hash */
 	0,				/* tp_call */
