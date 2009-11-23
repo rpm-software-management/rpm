@@ -247,7 +247,7 @@ static PyObject *hdrIsSource(hdrObject *s)
 static int hdrContains(hdrObject *s, PyObject *pytag)
 {
     rpmTag tag;
-    if (!tagNumFromPyObject(pytag, &tag)) return NULL;
+    if (!tagNumFromPyObject(pytag, &tag)) return -1;
 
     return headerIsEntry(s->h, tag);
 }
