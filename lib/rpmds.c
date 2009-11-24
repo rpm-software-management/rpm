@@ -155,7 +155,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	headerGet(h, tagF, &flags, hgflags);
 	ds->Flags = flags.data;
 	/* ensure rpmlib() requires always have RPMSENSE_RPMLIB flag set */
-	if (tagN == RPMTAG_REQUIRENAME) {
+	if (tagN == RPMTAG_REQUIRENAME && ds->Flags) {
 	    for (int i = 0; i < ds->Count; i++) {
 		if (!(ds->Flags[i] & RPMSENSE_RPMLIB) &&
 			rstreqn(ds->N[i], "rpmlib(", sizeof("rpmlib(")-1))
