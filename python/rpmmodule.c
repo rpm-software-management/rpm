@@ -204,7 +204,9 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmmi_Type) < 0) return 0;
     if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
     if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
+#if 0
     if (PyType_Ready(&rpmtd_Type) < 0) return 0;
+#endif
     if (PyType_Ready(&rpmte_Type) < 0) return 0;
     if (PyType_Ready(&rpmts_Type) < 0) return 0;
 
@@ -305,8 +307,10 @@ static int initModule(PyObject *m)
     Py_INCREF(&rpmPubkey_Type);
     PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
 
+#if 0
     Py_INCREF(&rpmtd_Type);
     PyModule_AddObject(m, "td", (PyObject *) &rpmtd_Type);
+#endif
 
     Py_INCREF(&rpmte_Type);
     PyModule_AddObject(m, "te", (PyObject *) &rpmte_Type);
