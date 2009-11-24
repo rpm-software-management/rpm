@@ -454,6 +454,126 @@ static PyObject * hdrGetTag(Header h, rpmTag tag)
     return res;
 }
 
+static int validItem(rpmTagClass class, PyObject *item)
+{
+    int rc;
+
+    switch (class) {
+    case RPM_NUMERIC_CLASS:
+	rc = (PyLong_Check(item) || PyInt_Check(item));
+	break;
+    case RPM_STRING_CLASS:
+	rc = (PyBytes_Check(item) || PyUnicode_Check(item));
+	break;
+    case RPM_BINARY_CLASS:
+	rc = PyBytes_Check(item);
+	break;
+    default:
+	rc = 0;
+	break;
+    }
+    return rc;
+}
+
+static int validData(rpmTag tag, rpmTagType type, PyObject *value)
+{
+    rpmTagClass class = rpmTagGetClass(tag);
+    rpmTagReturnType retype = (type & RPM_MASK_RETURN_TYPE);
+    int valid = 1;
+    
+    printf("%s: tag %s retype %x\n", __func__, rpmTagGetName(tag), retype); 
+    if (retype == RPM_SCALAR_RETURN_TYPE) {
+	valid = validItem(class, value);
+    } else if (retype == RPM_ARRAY_RETURN_TYPE && PyList_Check(value)) {
+	/* python lists can contain arbitrary objects, validate each item */
+	Py_ssize_t len = PyList_Size(value);
+	for (Py_ssize_t i = 0; i < len; i++) {
+	    PyObject *item = PyList_GetItem(value, i);
+	    if (!validItem(class, item)) {
+		valid = 0;
+		break;
+	    }
+	}
+    } else {
+	valid = 0;
+    }
+    return valid;
+}
+
+static int hdrAppendItem(Header h, rpmTag tag, rpmTagType type, PyObject *item)
+{
+    int rc = 0;
+
+    switch ((type & RPM_MASK_TYPE)) {
+    case RPM_I18NSTRING_TYPE: /* XXX this needs to be handled separately */
+    case RPM_STRING_TYPE:
+    case RPM_STRING_ARRAY_TYPE: {
+	PyObject *str = NULL;
+	if (utf8FromPyObject(item, &str)) 
+	    rc = headerPutString(h, tag, PyBytes_AsString(str));
+	Py_XDECREF(str);
+	} break;
+    case RPM_BIN_TYPE: {
+	uint8_t *val = (uint8_t *) PyBytes_AsString(item);
+	rpm_count_t len = PyBytes_Size(item);
+	rc = headerPutBin(h, tag, val, len);
+	} break;
+    case RPM_INT64_TYPE: {
+	uint64_t val = PyInt_AsUnsignedLongLongMask(item);
+	rc = headerPutUint64(h, tag, &val, 1);
+	} break;
+    case RPM_INT32_TYPE: {
+	uint32_t val = PyInt_AsUnsignedLongMask(item);
+	rc = headerPutUint32(h, tag, &val, 1);
+	} break;
+    case RPM_INT16_TYPE: {
+	uint16_t val = PyInt_AsUnsignedLongMask(item);
+	rc = headerPutUint16(h, tag, &val, 1);
+	} break;
+    case RPM_INT8_TYPE:
+    case RPM_CHAR_TYPE: {
+	uint8_t val = PyInt_AsUnsignedLongMask(item);
+	rc = headerPutUint8(h, tag, &val, 1);
+	} break;
+    default:
+	PyErr_SetString(PyExc_TypeError, "unhandled datatype");
+    }
+    return rc;
+}
+
+static int hdrPutTag(Header h, rpmTag tag, PyObject *value)
+{
+    rpmTagType type = rpmTagGetType(tag);
+    rpmTagReturnType retype = (type & RPM_MASK_RETURN_TYPE);
+    int rc = 0;
+
+    /* XXX this isn't really right (i18n strings etc) but for now ... */
+    if (headerIsEntry(h, tag)) {
+	PyErr_SetString(PyExc_TypeError, "tag already exists");
+	return rc;
+    }
+
+    /* validate all data before trying to insert */
+    if (!validData(tag, type, value)) { 
+	PyErr_SetString(PyExc_TypeError, "invalid type for tag");
+	return 0;
+    }
+
+    if (retype == RPM_SCALAR_RETURN_TYPE) {
+	rc = hdrAppendItem(h, tag, type, value);
+    } else if (retype == RPM_ARRAY_RETURN_TYPE && PyList_Check(value)) {
+	Py_ssize_t len = PyList_Size(value);
+	for (Py_ssize_t i = 0; i < len; i++) {
+	    PyObject *item = PyList_GetItem(value, i);
+	    rc = hdrAppendItem(h, tag, type, item);
+	}
+    } else {
+	PyErr_SetString(PyExc_RuntimeError, "cant happen, right?");
+    }
+
+    return rc;
+}
+
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
     rpmTag tag;
@@ -465,15 +585,12 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 static int hdr_ass_subscript(hdrObject *s, PyObject *key, PyObject *value)
 {
     rpmTag tag;
-    rpmtd td;
     if (!tagNumFromPyObject(key, &tag)) return -1;
 
     if (value == NULL) {
 	/* XXX should failure raise key error? */
 	headerDel(s->h, tag);
-    } else if (rpmtdFromPyObject(value, &td)) {
-	headerPut(s->h, td, HEADERPUT_DEFAULT);
-    } else {
+    } else if (!hdrPutTag(s->h, tag, value)) {
 	return -1;
     }
     return 0;
