@@ -481,7 +481,6 @@ static int validData(rpmTag tag, rpmTagType type, PyObject *value)
     rpmTagReturnType retype = (type & RPM_MASK_RETURN_TYPE);
     int valid = 1;
     
-    printf("%s: tag %s retype %x\n", __func__, rpmTagGetName(tag), retype); 
     if (retype == RPM_SCALAR_RETURN_TYPE) {
 	valid = validItem(class, value);
     } else if (retype == RPM_ARRAY_RETURN_TYPE && PyList_Check(value)) {
