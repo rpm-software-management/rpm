@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-07-21 11:21+0300\n"
+"POT-Creation-Date: 2009-11-25 09:20+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -583,32 +583,32 @@ msgstr "不容許以萬用字元解析：%s\n"
 msgid "File not found by glob: %s\n"
 msgstr "以萬用字元解析找不到檔案：%s\n"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "無法開啟 %%files 的檔案 %s: %s\n"
 
-#: build/files.c:1755
+#: build/files.c:1759
 #, c-format
 msgid "line: %s\n"
 msgstr "列：%s\n"
 
-#: build/files.c:2131
+#: build/files.c:2135
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "損壞的檔案：%s：%s\n"
 
-#: build/files.c:2153 build/parsePrep.c:29
+#: build/files.c:2157 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "損壞的所有者/組別：%s\n"
 
-#: build/files.c:2194
+#: build/files.c:2198
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "正在檢查未被打包的檔案：%s\n"
 
-#: build/files.c:2209
+#: build/files.c:2213
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -617,12 +617,12 @@ msgstr ""
 "發現被安裝但未被打包的檔案：\n"
 "%s"
 
-#: build/files.c:2235
+#: build/files.c:2239
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
 msgstr "正在處理檔案：%s-%s-%s\n"
 
-#: build/files.c:2244
+#: build/files.c:2248
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -2365,36 +2365,36 @@ msgstr "不正確的格式：%s\n"
 msgid "(contains no files)\n"
 msgstr "(沒有包含檔案)"
 
-#: lib/query.c:160
+#: lib/query.c:159
 msgid "normal        "
 msgstr "正常        "
 
-#: lib/query.c:163
+#: lib/query.c:162
 msgid "replaced      "
 msgstr "被替換      "
 
-#: lib/query.c:166
+#: lib/query.c:165
 msgid "not installed "
 msgstr "未安裝 "
 
-#: lib/query.c:169
+#: lib/query.c:168
 msgid "net shared    "
 msgstr "網路共享    "
 
-#: lib/query.c:172
+#: lib/query.c:171
 msgid "wrong color   "
 msgstr "錯誤顏色   "
 
-#: lib/query.c:175
+#: lib/query.c:174
 msgid "(no state)    "
 msgstr "(無狀態)    "
 
-#: lib/query.c:178
+#: lib/query.c:177
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(不明的 %3d) "
 
-#: lib/query.c:198
+#: lib/query.c:197
 msgid "package has not file owner/group lists\n"
 msgstr "套件內沒有檔案擁有者/群組記錄\n"
 
@@ -2412,47 +2412,47 @@ msgstr "群組 %s 內還沒有任何套件\n"
 msgid "no package triggers %s\n"
 msgstr "沒有套件內建觸發器 %s\n"
 
-#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:446
+#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:434
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "異常的 %s：%s\n"
 
-#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:451
+#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:439
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "沒有套件匹配：%s：%s\n"
 
-#: lib/query.c:461
+#: lib/query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "沒有套件需要 %s\n"
 
-#: lib/query.c:472
+#: lib/query.c:460
 #, c-format
 msgid "no package provides %s\n"
 msgstr "沒有套件提供 %s\n"
 
-#: lib/query.c:504
+#: lib/query.c:492
 #, c-format
 msgid "file %s: %s\n"
 msgstr "檔案 %s：%s\n"
 
-#: lib/query.c:507
+#: lib/query.c:495
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "檔案 %s 不屬於任何套件\n"
 
-#: lib/query.c:532
+#: lib/query.c:508
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "不正確的套件編號：%s\n"
 
-#: lib/query.c:540
+#: lib/query.c:516
 #, fuzzy, c-format
-msgid "record %lu could not be read\n"
+msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:556 lib/rpminstall.c:669
+#: lib/query.c:532 lib/rpminstall.c:669
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -3166,117 +3166,117 @@ msgstr "無法開啟 %s 索引\n"
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: lib/rpmdb.c:1144 lib/rpmdb.c:1273 lib/rpmdb.c:1323 lib/rpmdb.c:2187
-#: lib/rpmdb.c:2302 lib/rpmdb.c:2915
+#: lib/rpmdb.c:1145 lib/rpmdb.c:1274 lib/rpmdb.c:1324 lib/rpmdb.c:2188
+#: lib/rpmdb.c:2303 lib/rpmdb.c:2916
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:1507
+#: lib/rpmdb.c:1508
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader：跳過"
 
-#: lib/rpmdb.c:1517
+#: lib/rpmdb.c:1518
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:1617
+#: lib/rpmdb.c:1618
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: lib/rpmdb.c:1798
+#: lib/rpmdb.c:1799
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
 
-#: lib/rpmdb.c:2079
+#: lib/rpmdb.c:2080
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator：跳過"
 
-#: lib/rpmdb.c:2108
+#: lib/rpmdb.c:2109
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2520
+#: lib/rpmdb.c:2521
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"
 
-#: lib/rpmdb.c:2566
+#: lib/rpmdb.c:2567
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2615
+#: lib/rpmdb.c:2616
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引設定 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2634
+#: lib/rpmdb.c:2635
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2644
+#: lib/rpmdb.c:2645
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄 \"%2$s\" 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2772
+#: lib/rpmdb.c:2773
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "配置新套件實體時產生錯誤(%d)\n"
 
-#: lib/rpmdb.c:2820
+#: lib/rpmdb.c:2821
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd：跳過"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2932
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "儲存記錄 %2$s 於 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:3140
+#: lib/rpmdb.c:3141
 msgid "no dbpath has been set"
 msgstr "沒有 dbpath 已被設定"
 
-#: lib/rpmdb.c:3165
+#: lib/rpmdb.c:3166
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "臨時資料庫 %s 已經存在\n"
 
-#: lib/rpmdb.c:3173
+#: lib/rpmdb.c:3174
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: lib/rpmdb.c:3220
+#: lib/rpmdb.c:3221
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:3258
+#: lib/rpmdb.c:3259
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本在 %u 的記錄\n"
 
-#: lib/rpmdb.c:3273
+#: lib/rpmdb.c:3274
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: lib/rpmdb.c:3281
+#: lib/rpmdb.c:3282
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
-#: lib/rpmdb.c:3283
+#: lib/rpmdb.c:3284
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "以 %2$s 的檔案取代 %1$s 中的檔案來回復"
 
-#: lib/rpmdb.c:3295
+#: lib/rpmdb.c:3296
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
@@ -3291,35 +3291,35 @@ msgstr "資料庫%d 錯誤(%d) 來自 %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "資料庫%d 錯誤(%d): %s\n"
 
-#: lib/backend/db3.c:1092
+#: lib/backend/db3.c:1088
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: lib/backend/db3.c:1094
+#: lib/backend/db3.c:1090
 msgid "shared"
 msgstr "共享"
 
-#: lib/backend/db3.c:1094
+#: lib/backend/db3.c:1090
 msgid "exclusive"
 msgstr "互斥"
 
-#: lib/backend/dbconfig.c:329
+#: lib/backend/dbconfig.c:326
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "無法辨識的資料庫選項：\"%s\" 忽略。\n"
 
-#: lib/backend/dbconfig.c:366
+#: lib/backend/dbconfig.c:363
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s 有無效的數值，略過\n"
 
-#: lib/backend/dbconfig.c:375
+#: lib/backend/dbconfig.c:372
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s 有太大或太小的長整數值，略過\n"
 
-#: lib/backend/dbconfig.c:384
+#: lib/backend/dbconfig.c:381
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s 有太大或太小的整數值，略過\n"

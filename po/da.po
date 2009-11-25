@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-07-21 11:21+0300\n"
+"POT-Creation-Date: 2009-11-25 09:20+0200\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -587,44 +587,44 @@ msgstr "linie %d: Filnavn ikke tilladt: %s\n"
 msgid "File not found by glob: %s\n"
 msgstr "Fil ikke fundet med glob: %s\n"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Kunne ikke åbne '%%files'-fil %s: %s\n"
 
-#: build/files.c:1755
+#: build/files.c:1759
 #, c-format
 msgid "line: %s\n"
 msgstr "linie: %s\n"
 
-#: build/files.c:2131
+#: build/files.c:2135
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2153 build/parsePrep.c:29
+#: build/files.c:2157 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2194
+#: build/files.c:2198
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
 
-#: build/files.c:2209
+#: build/files.c:2213
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2235
+#: build/files.c:2239
 #, fuzzy, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
 
-#: build/files.c:2244
+#: build/files.c:2248
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -2446,36 +2446,36 @@ msgstr "ugyldigt format: %s\n"
 msgid "(contains no files)\n"
 msgstr "(indeholder ingen filer)"
 
-#: lib/query.c:160
+#: lib/query.c:159
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:163
+#: lib/query.c:162
 msgid "replaced      "
 msgstr "erstattet     "
 
-#: lib/query.c:166
+#: lib/query.c:165
 msgid "not installed "
 msgstr "ej installeret"
 
-#: lib/query.c:169
+#: lib/query.c:168
 msgid "net shared    "
 msgstr "ej delt       "
 
-#: lib/query.c:172
+#: lib/query.c:171
 msgid "wrong color   "
 msgstr ""
 
-#: lib/query.c:175
+#: lib/query.c:174
 msgid "(no state)    "
 msgstr "(ingen status)"
 
-#: lib/query.c:178
+#: lib/query.c:177
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(ukendt %3d)  "
 
-#: lib/query.c:198
+#: lib/query.c:197
 #, fuzzy
 msgid "package has not file owner/group lists\n"
 msgstr "pakke har hverken filejerskabs- eller id-lister\n"
@@ -2494,47 +2494,47 @@ msgstr "gruppe %s indeholder ingen pakker\n"
 msgid "no package triggers %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:446
+#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:434
 #, fuzzy, c-format
 msgid "malformed %s: %s\n"
 msgstr "Kunne ikke læse %s: %s.\n"
 
-#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:451
+#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:439
 #, fuzzy, c-format
 msgid "no package matches %s: %s\n"
 msgstr "ingen pakker udløser %s\n"
 
-#: lib/query.c:461
+#: lib/query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "ingen pakker kræver %s\n"
 
-#: lib/query.c:472
+#: lib/query.c:460
 #, c-format
 msgid "no package provides %s\n"
 msgstr "ingen pakker tilfører %s\n"
 
-#: lib/query.c:504
+#: lib/query.c:492
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: lib/query.c:507
+#: lib/query.c:495
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "filen %s tilhører ingen pakke\n"
 
-#: lib/query.c:532
+#: lib/query.c:508
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "ugyldigt pakkenummer: %s\n"
 
-#: lib/query.c:540
+#: lib/query.c:516
 #, fuzzy, c-format
-msgid "record %lu could not be read\n"
+msgid "record %u could not be read\n"
 msgstr "post %d kunne ikke læses\n"
 
-#: lib/query.c:556 lib/rpminstall.c:669
+#: lib/query.c:532 lib/rpminstall.c:669
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakken %s er ikke installeret\n"
@@ -3255,117 +3255,117 @@ msgstr "kan ikke åbne '%s'-indeks\n"
 msgid "no dbpath has been set\n"
 msgstr "der er ikke sat nogen dbpath\n"
 
-#: lib/rpmdb.c:1144 lib/rpmdb.c:1273 lib/rpmdb.c:1323 lib/rpmdb.c:2187
-#: lib/rpmdb.c:2302 lib/rpmdb.c:2915
+#: lib/rpmdb.c:1145 lib/rpmdb.c:1274 lib/rpmdb.c:1324 lib/rpmdb.c:2188
+#: lib/rpmdb.c:2303 lib/rpmdb.c:2916
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: lib/rpmdb.c:1507
+#: lib/rpmdb.c:1508
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:1517
+#: lib/rpmdb.c:1518
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: lib/rpmdb.c:1617
+#: lib/rpmdb.c:1618
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: Fread mislykkedes: %s\n"
 
-#: lib/rpmdb.c:1798
+#: lib/rpmdb.c:1799
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: åbning mislykkedes: %s\n"
 
-#: lib/rpmdb.c:2079
+#: lib/rpmdb.c:2080
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:2108
+#: lib/rpmdb.c:2109
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2520
+#: lib/rpmdb.c:2521
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: kan ikke læse hoved ved 0x%x\n"
 
-#: lib/rpmdb.c:2566
+#: lib/rpmdb.c:2567
 #, fuzzy, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: lib/rpmdb.c:2615
+#: lib/rpmdb.c:2616
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "fejl(%d) ved hentning af \"%s\"-poster fra '%s'-indekset\n"
 
-#: lib/rpmdb.c:2634
+#: lib/rpmdb.c:2635
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: lib/rpmdb.c:2644
+#: lib/rpmdb.c:2645
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "fejl(%d) ved fjernelse af post %s fra %s\n"
 
-#: lib/rpmdb.c:2772
+#: lib/rpmdb.c:2773
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "fejl(%d) under allokering af ny pakkeinstans\n"
 
-#: lib/rpmdb.c:2820
+#: lib/rpmdb.c:2821
 msgid "rpmdbAdd: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2932
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "fejl(%d) ved gemning af post %s i %s\n"
 
-#: lib/rpmdb.c:3140
+#: lib/rpmdb.c:3141
 msgid "no dbpath has been set"
 msgstr "der ikke sat nogen dbpath"
 
-#: lib/rpmdb.c:3165
+#: lib/rpmdb.c:3166
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "den midlertidige database %s eksisterer allerede\n"
 
-#: lib/rpmdb.c:3173
+#: lib/rpmdb.c:3174
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
 
-#: lib/rpmdb.c:3220
+#: lib/rpmdb.c:3221
 #, fuzzy, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "post nummer %d i databasen er fejlbehæftet -- overspringer.\n"
 
-#: lib/rpmdb.c:3258
+#: lib/rpmdb.c:3259
 #, fuzzy, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "kunne ikke tilføje posten, der tidligere var ved %d\n"
 
-#: lib/rpmdb.c:3273
+#: lib/rpmdb.c:3274
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "kunne ikke genopbygge database: original-databasen beholdes\n"
 
-#: lib/rpmdb.c:3281
+#: lib/rpmdb.c:3282
 msgid "failed to replace old database with new database!\n"
 msgstr "kunne ikke erstatte gammel database med ny database!\n"
 
-#: lib/rpmdb.c:3283
+#: lib/rpmdb.c:3284
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "erstat filer i %s med filer fra %s for at genoprette"
 
-#: lib/rpmdb.c:3295
+#: lib/rpmdb.c:3296
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "kunne ikke fjerne katalog %s: %s\n"
@@ -3380,35 +3380,35 @@ msgstr "db%d fejl(%d) fra %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d fejl(%d): %s\n"
 
-#: lib/backend/db3.c:1092
+#: lib/backend/db3.c:1088
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan ikke opnå %s lås på %s/%s\n"
 
-#: lib/backend/db3.c:1094
+#: lib/backend/db3.c:1090
 msgid "shared"
 msgstr "delt"
 
-#: lib/backend/db3.c:1094
+#: lib/backend/db3.c:1090
 msgid "exclusive"
 msgstr "eksklusiv"
 
-#: lib/backend/dbconfig.c:329
+#: lib/backend/dbconfig.c:326
 #, fuzzy, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "ukendt db-tilvalg: \"%s\" ignoreret\n"
 
-#: lib/backend/dbconfig.c:366
+#: lib/backend/dbconfig.c:363
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s har ugyldig talværdi, overspringes\n"
 
-#: lib/backend/dbconfig.c:375
+#: lib/backend/dbconfig.c:372
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s har for stor eller lille 'long'-værdi, overspringes\n"
 
-#: lib/backend/dbconfig.c:384
+#: lib/backend/dbconfig.c:381
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s har for stor eller lille heltalsværdi, overspringes\n"

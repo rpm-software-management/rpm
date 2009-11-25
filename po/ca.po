@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2009-07-21 11:21+0300\n"
+"POT-Creation-Date: 2009-11-25 09:20+0200\n"
 "PO-Revision-Date: 2009-04-25 17:36+0100\n"
 "Last-Translator: Agustí Grau <fedora@softcatala.org>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -636,32 +636,32 @@ msgstr "No es permet el glob: %s\n"
 msgid "File not found by glob: %s\n"
 msgstr "El glob no ha trobat el fitxer: %s\n"
 
-#: build/files.c:1747
+#: build/files.c:1751
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:1755
+#: build/files.c:1759
 #, c-format
 msgid "line: %s\n"
 msgstr "línia: %s\n"
 
-#: build/files.c:2131
+#: build/files.c:2135
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Fitxer no vàlid: %s: %s\n"
 
-#: build/files.c:2153 build/parsePrep.c:29
+#: build/files.c:2157 build/parsePrep.c:29
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Propietari/grup incorrecte: %s\n"
 
-#: build/files.c:2194
+#: build/files.c:2198
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "S'està comprovant fitxers no empaquetats: %s\n"
 
-#: build/files.c:2209
+#: build/files.c:2213
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -670,12 +670,12 @@ msgstr ""
 "Hi ha fitxers instal·lats però no empaquetats:\n"
 "%s"
 
-#: build/files.c:2235
+#: build/files.c:2239
 #, c-format
 msgid "Processing files: %s-%s-%s.%s\n"
 msgstr "S'està processant els fitxers: %s-%s-%s.%s\n"
 
-#: build/files.c:2244
+#: build/files.c:2248
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Els binaris dependents de l'arquitectura estan en el paquet noarch\n"
 
@@ -2438,36 +2438,36 @@ msgstr "format incorrecte: %s\n"
 msgid "(contains no files)\n"
 msgstr "(no conté fitxers)\n"
 
-#: lib/query.c:160
+#: lib/query.c:159
 msgid "normal        "
 msgstr "normal        "
 
-#: lib/query.c:163
+#: lib/query.c:162
 msgid "replaced      "
 msgstr "reemplaçat    "
 
-#: lib/query.c:166
+#: lib/query.c:165
 msgid "not installed "
 msgstr "no instal·lat "
 
-#: lib/query.c:169
+#: lib/query.c:168
 msgid "net shared    "
 msgstr "xarxa compartida"
 
-#: lib/query.c:172
+#: lib/query.c:171
 msgid "wrong color   "
 msgstr "color incorrecte "
 
-#: lib/query.c:175
+#: lib/query.c:174
 msgid "(no state)    "
 msgstr "(cap estat)   "
 
-#: lib/query.c:178
+#: lib/query.c:177
 #, c-format
 msgid "(unknown %3d) "
 msgstr "(%3d desconegut) "
 
-#: lib/query.c:198
+#: lib/query.c:197
 msgid "package has not file owner/group lists\n"
 msgstr "el paquet no té propietari dels fitxers/llistes de grup\n"
 
@@ -2485,47 +2485,47 @@ msgstr "el grup %s no conté cap paquet\n"
 msgid "no package triggers %s\n"
 msgstr "cap paquet dispara %s\n"
 
-#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:446
+#: lib/query.c:367 lib/query.c:388 lib/query.c:409 lib/query.c:434
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s mal format: %s\n"
 
-#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:451
+#: lib/query.c:377 lib/query.c:394 lib/query.c:420 lib/query.c:439
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "cap paquet concorda amb %s: %s\n"
 
-#: lib/query.c:461
+#: lib/query.c:449
 #, c-format
 msgid "no package requires %s\n"
 msgstr "cap paquet necessita %s\n"
 
-#: lib/query.c:472
+#: lib/query.c:460
 #, c-format
 msgid "no package provides %s\n"
 msgstr "cap paquet proporciona %s\n"
 
-#: lib/query.c:504
+#: lib/query.c:492
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fitxer %s: %s\n"
 
-#: lib/query.c:507
+#: lib/query.c:495
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "el fitxer %s no pertany a cap paquet\n"
 
-#: lib/query.c:532
+#: lib/query.c:508
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "número de paquet invàlid: %s\n"
 
-#: lib/query.c:540
-#, c-format
-msgid "record %lu could not be read\n"
+#: lib/query.c:516
+#, fuzzy, c-format
+msgid "record %u could not be read\n"
 msgstr "el registre %lu no es pot llegir\n"
 
-#: lib/query.c:556 lib/rpminstall.c:669
+#: lib/query.c:532 lib/rpminstall.c:669
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "no s'ha instal·lat el paquet %s\n"
@@ -3250,121 +3250,121 @@ msgstr "no es pot obrir l'índex %s\n"
 msgid "no dbpath has been set\n"
 msgstr "no s'ha establert cap dbpath\n"
 
-#: lib/rpmdb.c:1144 lib/rpmdb.c:1273 lib/rpmdb.c:1323 lib/rpmdb.c:2187
-#: lib/rpmdb.c:2302 lib/rpmdb.c:2915
+#: lib/rpmdb.c:1145 lib/rpmdb.c:1274 lib/rpmdb.c:1324 lib/rpmdb.c:2188
+#: lib/rpmdb.c:2303 lib/rpmdb.c:2916
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "s'ha produït un error (%d) en obtenir «%s» registres de l'índex %s\n"
 
-#: lib/rpmdb.c:1507
+#: lib/rpmdb.c:1508
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: s'està ignorant"
 
-#: lib/rpmdb.c:1517
+#: lib/rpmdb.c:1518
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "s'ha produït un error (%d) en emmagatzemar el registre #%d a %s\n"
 
-#: lib/rpmdb.c:1617
+#: lib/rpmdb.c:1618
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: ha fallat regexec: %s\n"
 
-#: lib/rpmdb.c:1798
+#: lib/rpmdb.c:1799
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: ha fallat regcomp: %s\n"
 
-#: lib/rpmdb.c:2079
+#: lib/rpmdb.c:2080
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: s'està ignorant"
 
-#: lib/rpmdb.c:2108
+#: lib/rpmdb.c:2109
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: s'ha obtingut la capçalera #%u malmesa -- s'està ignorant.\n"
 
-#: lib/rpmdb.c:2520
+#: lib/rpmdb.c:2521
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: no s'ha pogut llegir la capçalera a 0x%x\n"
 
-#: lib/rpmdb.c:2566
+#: lib/rpmdb.c:2567
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr ""
 "error(%d) en establir el registre de la capçalera #%d per a la supressió de %"
 "s\n"
 
-#: lib/rpmdb.c:2615
+#: lib/rpmdb.c:2616
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "error(%d) en establir els registres «%s» de l'índex %s\n"
 
-#: lib/rpmdb.c:2634
+#: lib/rpmdb.c:2635
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "error(%d) en emmagatzemar el registre «%s» en %s\n"
 
-#: lib/rpmdb.c:2644
+#: lib/rpmdb.c:2645
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "error(%d) en suprimir el registre «%s» de %s\n"
 
-#: lib/rpmdb.c:2772
+#: lib/rpmdb.c:2773
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "error(%d) en assignar la instància de nou paquet\n"
 
-#: lib/rpmdb.c:2820
+#: lib/rpmdb.c:2821
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: s'està ignorant"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2932
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "error(%d) en emmagatzemar el registre %s a %s\n"
 
-#: lib/rpmdb.c:3140
+#: lib/rpmdb.c:3141
 msgid "no dbpath has been set"
 msgstr "no s'ha establert el dbpath"
 
-#: lib/rpmdb.c:3165
+#: lib/rpmdb.c:3166
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "ja existeix la base de dades temporal %s\n"
 
-#: lib/rpmdb.c:3173
+#: lib/rpmdb.c:3174
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "ha fallat en crear el directori %s: %s\n"
 
-#: lib/rpmdb.c:3220
+#: lib/rpmdb.c:3221
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "la capçalera #%u de la base de dades és incorrecta -- s'ignorarà.\n"
 
-#: lib/rpmdb.c:3258
+#: lib/rpmdb.c:3259
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "no es pot afegir el registre originalment a %u\n"
 
-#: lib/rpmdb.c:3273
+#: lib/rpmdb.c:3274
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "no s'ha pogut remuntar la base de dades: es continua fent servir la base de "
 "dades original\n"
 
-#: lib/rpmdb.c:3281
+#: lib/rpmdb.c:3282
 msgid "failed to replace old database with new database!\n"
 msgstr "no s'ha pogut reemplaçar la base de dades antiga amb la nova\n"
 
-#: lib/rpmdb.c:3283
+#: lib/rpmdb.c:3284
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "reemplaçeu els fitxers a %s amb fitxers de %s per a recuperar-ho"
 
-#: lib/rpmdb.c:3295
+#: lib/rpmdb.c:3296
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "no s'ha pogut suprimir el directori %s: %s\n"
@@ -3379,35 +3379,35 @@ msgstr "db%d error(%d) de %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d error(%d): %s\n"
 
-#: lib/backend/db3.c:1092
+#: lib/backend/db3.c:1088
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no es pot obtenir el blocatge %s a %s/%s\n"
 
-#: lib/backend/db3.c:1094
+#: lib/backend/db3.c:1090
 msgid "shared"
 msgstr "compartit"
 
-#: lib/backend/db3.c:1094
+#: lib/backend/db3.c:1090
 msgid "exclusive"
 msgstr "exclusiu"
 
-#: lib/backend/dbconfig.c:329
+#: lib/backend/dbconfig.c:326
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "opció de la bd no reconeguda: s'ignora «%s».\n"
 
-#: lib/backend/dbconfig.c:366
+#: lib/backend/dbconfig.c:363
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s té un valor numèric invàlid, s'ignorarà\n"
 
-#: lib/backend/dbconfig.c:375
+#: lib/backend/dbconfig.c:372
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s té un valor de tipus «long» massa gran o massa petit, s'ignorarà\n"
 
-#: lib/backend/dbconfig.c:384
+#: lib/backend/dbconfig.c:381
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s té un valor de tipus «enter» massa llarg o massa petit, s'ignorarà\n"
