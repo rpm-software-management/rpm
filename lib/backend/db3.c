@@ -1016,17 +1016,12 @@ static int db3open(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    if (rc == 0) {
-		char * fullpath;
-		const char * dbpath;
-		fullpath = rpmGetPath(dbhome, "/", dbfile ? dbfile : "", NULL);
-
-#ifdef	HACK	/* XXX necessary to support dbsubfile */
-		dbpath = (!dbi->dbi_use_dbenv && !dbi->dbi_temporary)
-			? fullpath : dbfile;
-#else
-		dbpath = (!dbi->dbi_temporary)
-			? fullpath : dbfile;
-#endif
+		char * fullpath = NULL;
+		const char * dbpath = dbfile;
+		if (!dbi->dbi_use_dbenv && !dbi->dbi_temporary) {
+		    fullpath = rpmGetPath(dbhome, "/", dbfile, NULL);
+		    dbpath = fullpath;
+		}
 
 		rc = (db->open)(db, txnid, dbpath, dbsubfile,
 		    dbi->dbi_type, oflags, dbi->dbi_perms);
