@@ -1180,11 +1180,6 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
 	    else
 		memset(_digp->signid, 0, sizeof(_digp->signid));
 	}
-    case PGPTAG_PUBLIC_SUBKEY:
-	rc = pgpPrtKey(tag, h, hlen, _dig, _digp);
-	break;
-    case PGPTAG_SECRET_KEY:
-    case PGPTAG_SECRET_SUBKEY:
 	rc = pgpPrtKey(tag, h, hlen, _dig, _digp);
 	break;
     case PGPTAG_USER_ID:
@@ -1195,6 +1190,9 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
 	rc = pgpPrtComment(tag, h, hlen);
 	break;
 
+    case PGPTAG_PUBLIC_SUBKEY:
+    case PGPTAG_SECRET_KEY:
+    case PGPTAG_SECRET_SUBKEY:
     case PGPTAG_RESERVED:
     case PGPTAG_PUBLIC_SESSION_KEY:
     case PGPTAG_SYMMETRIC_SESSION_KEY:
