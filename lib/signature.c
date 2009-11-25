@@ -883,6 +883,7 @@ static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 
 	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
 			strerror(errno));
+	    _exit(EXIT_FAILURE);
 	}   break;
 	case RPMSIGTAG_RSA:
 	case RPMSIGTAG_PGP5:	/* XXX legacy */
@@ -932,7 +933,7 @@ static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
 
     (void) waitpid(pid, &status, 0);
 
-    return ((!WIFEXITED(status) || WEXITSTATUS(status)) ? 1 : 0);
+    return ((WIFEXITED(status) && WEXITSTATUS(status) == 0)) ? 0 : 1;
 }
 
 char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag)
