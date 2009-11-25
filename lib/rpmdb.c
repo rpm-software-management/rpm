@@ -921,7 +921,8 @@ rpmdb newRpmdb(const char * root,
 	return NULL;
     }
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
-    db->db_remove_env = 0;
+    /* XXX remove environment after chrooted operations, for now... */
+    db->db_remove_env = ((strcmp(db->db_root, "/") != 0)? 1 : 0);
     db->db_filter_dups = _db_filter_dups;
     db->db_ndbi = dbiTags.max;
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
