@@ -1265,6 +1265,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
 	rpm_mode_t mode = (fmode ? fmode[fc->ix] : 0);
+	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
 	s = argv[fc->ix];
 	slen = strlen(s);
@@ -1297,11 +1298,16 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		ftype = magic_file(ms, s);
 
 	    if (ftype == NULL) {
-		rpmlog(RPMLOG_ERR, 
+		rpmlog(is_executable ? RPMLOG_ERR : RPMLOG_WARNING, 
 		       _("Recognition of file \"%s\" failed: mode %06o %s\n"),
 		       s, mode, magic_error(ms));
-		magic_close(ms);
-		return RPMRC_FAIL;
+		/* only executable files are critical to dep extraction */
+		if (is_executable) {
+		    magic_close(ms);
+		    return RPMRC_FAIL;
+		}
+		/* unrecognized non-executables get treated as "data" */
+		ftype = "data";
 	    }
 	}
 
