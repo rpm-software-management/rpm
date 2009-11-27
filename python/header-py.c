@@ -296,11 +296,18 @@ static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwd
 			 Py_BuildValue("(O)", s), NULL);
 }
 
+/* Backwards compatibility. Flags argument is just a dummy and discarded. */
 static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    /* XXX this isn't quite right wrt arg passing */
+    rpmTag tag = RPMTAG_REQUIRENAME;
+    rpmsenseFlags flags = 0;
+    char * kwlist[] = {"to", "flags", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&i:dsFromHeader", kwlist,
+            tagNumFromPyObject, &tag, &flags))
+        return NULL;
+
     return PyObject_Call((PyObject *) &rpmds_Type,
-			 Py_BuildValue("(O)", s), kwds);
+			 Py_BuildValue("(Oi)", s, tag), NULL);
 }
 
 static PyObject * hdr_dsOfHeader(PyObject * s)
