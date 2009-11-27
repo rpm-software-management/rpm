@@ -356,7 +356,7 @@ AC_SUBST(WITH_POPT_LIB)
 
 #=================
 # Process --with/without-external-db
-AC_ARG_WITH(external_db, [  --with-external-db      build against an external Berkeley db],
+AC_ARG_WITH(external_db, [AS_HELP_STRING([--with-external-db],[build against an external Berkeley db])],
 [case "$with_external_db" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --with-external-db]) ;;
@@ -401,7 +401,7 @@ AC_SUBST([WITH_DB_LIB])
 
 #=================
 # Check for sqlite3 library.
-AC_ARG_ENABLE(sqlite3, [  --enable-sqlite3        enable sqlite3 support],
+AC_ARG_ENABLE(sqlite3, [AS_HELP_STRING([--enable-sqlite3],[enable sqlite3 support])],
 [case "$enable_sqlite3" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --enable-sqlite3])
@@ -661,7 +661,7 @@ AC_LIBOBJ(glob)
 AC_LIBOBJ(fnmatch)
 
 dnl check if python is requested
-AC_ARG_ENABLE(python, [  --enable-python         build rpm python bindings ],
+AC_ARG_ENABLE(python, [AS_HELP_STRING([--enable-python],[build rpm python bindings])],
 [case "$enable_python" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --enable-python])
@@ -703,7 +703,7 @@ AC_PATH_PROG(DOXYGEN, doxygen, no)
 dnl
 dnl Only build internal API + source hacking docs on request
 dnl
-AC_ARG_WITH(hackingdocs, [  --with-hackingdocs		build rpm hacking docs ],,[with_hackingdocs=no])
+AC_ARG_WITH(hackingdocs, [AS_HELP_STRING([--with-hackingdocs],[build rpm hacking docs])],,[with_hackingdocs=no])
 
 case "$with_hackingdocs" in
 auto)
@@ -717,7 +717,7 @@ esac
 AC_CHECK_PROG(HAVE_DOT,[dot],[YES],[NO])
 
 WITH_SELINUX_LIB=
-AC_ARG_WITH(selinux, [  --with-selinux          build with selinux support ],
+AC_ARG_WITH(selinux, [AS_HELP_STRING([--with-selinux],[build with selinux support])],
 [case "$with_selinux" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --with-selinux])
@@ -743,7 +743,7 @@ AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
 
 # libcap
 WITH_CAP_LIB=
-AC_ARG_WITH(cap, [  --with-cap              build with capability support ],
+AC_ARG_WITH(cap, [AS_HELP_STRING([--with-cap],[build with capability support])],
 [case "$with_cap" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --with-cap])
@@ -775,7 +775,7 @@ AC_SUBST(WITH_CAP_LIB)
 AM_CONDITIONAL(CAP,[test "$with_cap" = yes])
 
 WITH_ACL_LIB=
-AC_ARG_WITH(acl, [  --with-acl              build with acl support ],
+AC_ARG_WITH(acl, [AS_HELP_STRING([--with-acl],[build with acl support])],
 [case "$with_acl" in
 yes|no) ;;
 *) AC_MSG_ERROR([invalid argument to --with-acl])
@@ -802,7 +802,7 @@ AM_CONDITIONAL(ACL,[test "$with_acl" = yes])
 
 WITH_LUA_LIB=
 WITH_LUA_INCLUDE=
-AC_ARG_WITH(lua, [  --with-lua              build with lua support ],,[with_lua=yes])
+AC_ARG_WITH(lua, [AS_HELP_STRING([--with-lua],[build with lua support])],,[with_lua=yes])
 AS_IF([test "$with_lua" = yes],[
   AC_CHECK_HEADER([lua.h],[
     AC_CHECK_LIB(lua,[luaL_openlibs],[with_lua=yes],[
@@ -824,7 +824,7 @@ AC_SUBST(WITH_LUA_INCLUDE)
 AM_CONDITIONAL(WITH_LUAEXT,[test "$with_lua" = yes])
 
 with_dmalloc=no
-AC_ARG_WITH(dmalloc, [  --with-dmalloc          build with dmalloc debugging support ])
+AC_ARG_WITH(dmalloc, [AS_HELP_STRING([--with-dmalloc],[build with dmalloc debugging support])])
 if test "$with_dmalloc" = yes ; then
   AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
   LIBS="$LIBS -ldmalloc"
@@ -856,7 +856,7 @@ AC_CHECK_FUNC(lchown,
     dnl Does chown() follow symlinks? This should be a good enough test.
     AC_MSG_CHECKING(whether chown() follows symlinks)
     AC_ARG_ENABLE([broken-chown],
-    [  --enable-broken-chown   this system's chown follows symbolic links], 
+            [AS_HELP_STRING([--enable-broken-chown],[this system's chown follows symbolic links])], 
 	    result=$enableval, result=unknown)
     if echo "$build" | ${EGREP} "(aix)|(hpux)|(linux)" > /dev/null ; then
 	result=yes
