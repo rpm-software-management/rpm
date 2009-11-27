@@ -286,11 +286,14 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
+/*
+ * Just a backwards-compatibility dummy, the arguments are not looked at
+ * or used. TODO: push this over to python side...
+ */
 static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    /* XXX this isn't quite right wrt arg passing */
     return PyObject_Call((PyObject *) &rpmfi_Type,
-			 Py_BuildValue("(O)", s), kwds);
+			 Py_BuildValue("(O)", s), NULL);
 }
 
 static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
