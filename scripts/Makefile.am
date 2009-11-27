@@ -14,8 +14,7 @@ EXTRA_DIST = \
 	perldeps.pl perl.prov perl.req pythondeps.sh osgideps.pl \
 	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
 	rpm.daily rpm.log rpm.xinetd rpm2cpio.sh \
-	tcl.req tgpg u_pkg.sh \
-	vpkg-provides.sh vpkg-provides2.sh \
+	tcl.req tgpg vpkg-provides.sh \
 	find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
 	mono-find-requires mono-find-provides \
