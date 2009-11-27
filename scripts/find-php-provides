@@ -1,5 +1,4 @@
 #!/bin/sh
-ulimit -c 0
 cd `rpm --eval %{_builddir}`
 
 filelist=`sed "s/['\"]/\\\&/g"`
