@@ -1414,12 +1414,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		    fl->processingFailed = 1;
 		    return RPMRC_FAIL;
 		}
-	    } else {
-		if (is_ghost && !S_ISREG(statp->st_mode)) {
-		    rpmlog(RPMLOG_ERR, _("Only regular file can be %%ghost: %s\n"), diskPath);
-		    fl->processingFailed = 1;
-		    return RPMRC_FAIL;
-		}
 	    }
 	}
     }
