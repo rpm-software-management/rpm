@@ -61,7 +61,7 @@ AC_MSG_CHECKING(POSIX chmod)
 touch foo.chmodtest
 chmod 744 foo.chmodtest
 chmod +X foo.chmodtest 2>/dev/null
-a=`ls -l foo.chmodtest | awk '{print $1}'`
+a=`ls -l foo.chmodtest | awk '{print substr($1,1,10)}'`
 rm -f foo.chmodtest
 if test "$a" = "-rwxr-xr-x"; then
     AC_MSG_RESULT(yes)
