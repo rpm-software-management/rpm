@@ -399,39 +399,6 @@ esac
 
 AC_SUBST([WITH_DB_LIB])
 
-#=================
-# Check for sqlite3 library.
-AC_ARG_ENABLE(sqlite3, [AS_HELP_STRING([--enable-sqlite3],[enable sqlite3 support])],
-[case "$enable_sqlite3" in
-yes|no) ;;
-*) AC_MSG_ERROR([invalid argument to --enable-sqlite3])
-  ;;
-esac],
-[enable_sqlite3=no])
-
-WITH_SQLITE3_INCLUDE=
-WITH_SQLITE3_LIB=
-WITH_SQLITE3=no
-AS_IF([test "$enable_sqlite3" = yes],[
-  AC_CHECK_HEADERS([sqlite3.h],
-  [ AC_CHECK_LIB(sqlite3, sqlite3_open, [
-      WITH_SQLITE3_INCLUDE=
-      WITH_SQLITE3_LIB="-lsqlite3"
-      WITH_SQLITE3=yes
-    ],[
-      AC_MSG_ERROR([missing libsqlite3])
-    ])
-  ],[
-    AC_MSG_ERROR([missing sqlite3.h])
-  ])
-])
-
-AC_SUBST(WITH_SQLITE3_INCLUDE)
-AC_SUBST(WITH_SQLITE3_LIB)
-AM_CONDITIONAL([SQLITE3],[test "$WITH_SQLITE3" = yes])
-
-#=================
-
 dnl AmigaOS and IXEmul have a fork() dummy
   case "$host" in
     m68k-*-amigaos ) 

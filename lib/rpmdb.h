@@ -1,7 +1,7 @@
 #ifndef H_RPMDB
 #define H_RPMDB
 
-/** \ingroup rpmdb dbi db1 db3
+/** \ingroup rpmdb dbi
  * \file lib/rpmdb.h
  * Access RPM indices using Berkeley DB interface(s).
  */

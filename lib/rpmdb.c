@@ -172,27 +172,6 @@ static void dbiTagsFree(void)
     dbiTags.max = 0;
 }
 
-#define	DB1vec		NULL
-#define	DB2vec		NULL
-
-#ifdef HAVE_DB_H
-extern struct _dbiVec db3vec;
-#define	DB3vec		&db3vec
-#else
-#define DB3vec		NULL
-#endif
-
-#ifdef HAVE_SQLITE3_H
-extern struct _dbiVec sqlitevec;
-#define	SQLITEvec	&sqlitevec
-#else
-#define SQLITEvec	NULL
-#endif
-
-static struct _dbiVec * const mydbvecs[] = {
-    DB1vec, DB1vec, DB2vec, DB3vec, SQLITEvec, NULL
-};
-
 dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 {
     int dbix;
@@ -224,74 +203,27 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	_dbapi_rebuild = 4;
 /*    _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api); */
     _dbapi_wanted = (_rebuildinprogress ? _dbapi_rebuild : db->db_api);
-
-    switch (_dbapi_wanted) {
-    default:
-	_dbapi = _dbapi_wanted;
-	if (_dbapi < 0 || _dbapi >= 5 || mydbvecs[_dbapi] == NULL) {
-            rpmlog(RPMLOG_ERR, _("dbiOpen: dbapi %d not available\n"), _dbapi);
-	    return NULL;
-	}
-	errno = 0;
-	dbi = NULL;
-	rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
-	if (rc) {
-	    static int _printed[32];
-	    if (!_printed[dbix & 0x1f]++)
-		rpmlog(RPMLOG_ERR,
-			_("cannot open %s index using db%d - %s (%d)\n"),
-			rpmTagGetName(rpmtag), _dbapi,
-			(rc > 0 ? strerror(rc) : ""), rc);
-	    _dbapi = -1;
-	}
-	break;
-    case -1:
+    if (_dbapi == -1) {
 	_dbapi = 5;
-	while (_dbapi-- > 1) {
-	    if (mydbvecs[_dbapi] == NULL)
-		continue;
-	    errno = 0;
-	    dbi = NULL;
-	    rc = (*mydbvecs[_dbapi]->open) (db, rpmtag, &dbi);
-	    if (rc == 0 && dbi)
-		break;
-	}
-	if (_dbapi <= 0) {
-	    static int _printed[32];
-	    if (!_printed[dbix & 0x1f]++)
-		rpmlog(RPMLOG_ERR, _("cannot open %s index\n"),
-			rpmTagGetName(rpmtag));
-	    rc = 1;
-	    goto exit;
-	}
-	if (db->db_api == -1 && _dbapi > 0)
-	    db->db_api = _dbapi;
-    	break;
     }
 
-/* We don't ever _REQUIRE_ conversion... */
-#define	SQLITE_HACK
-#ifdef	SQLITE_HACK_XXX
-    /* Require conversion. */
-    if (rc && _dbapi_wanted >= 0 && _dbapi != _dbapi_wanted && _dbapi_wanted == _dbapi_rebuild) {
-	rc = (_rebuildinprogress ? 0 : 1);
-	goto exit;
+    if (_dbapi != 5) {
+	rpmlog(RPMLOG_ERR, _("dbiOpen: dbapi %d not available\n"), _dbapi);
+	return NULL;
+    }
+    errno = 0;
+    dbi = NULL;
+    rc = dbiOpenDB(db, rpmtag, &dbi);
+    if (rc) {
+	static int _printed[32];
+	if (!_printed[dbix & 0x1f]++)
+	    rpmlog(RPMLOG_ERR,
+		   _("cannot open %s index using db%d - %s (%d)\n"),
+		   rpmTagGetName(rpmtag), _dbapi,
+		   (rc > 0 ? strerror(rc) : ""), rc);
+	_dbapi = -1;
     }
 
-    /* Suggest possible configuration */
-    if (_dbapi_wanted >= 0 && _dbapi != _dbapi_wanted) {
-	rc = 1;
-	goto exit;
-    }
-
-    /* Suggest possible configuration */
-    if (_dbapi_wanted < 0 && _dbapi != _dbapi_rebuild) {
-	rc = (_rebuildinprogress ? 0 : 1);
-	goto exit;
-    }
-#endif
-
-exit:
     if (dbi != NULL && rc == 0) {
 	db->_dbi[dbix] = dbi;
 	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
@@ -306,35 +238,11 @@ exit:
     }
 #ifdef HAVE_DB_H
       else
-	dbi = db3Free(dbi);
+	dbi = dbiFree(dbi);
 #endif
 
 /* FIX: db->_dbi may be NULL */
     return dbi;
-}
-
-/* Retrieve (key,data) pair from index database. */
-int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc;
-    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
-    rc = (dbi->dbi_vec->cget) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
-    return rc;
-}
-
-/* Store (key,data) pair in index database. */
-int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc;
-    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
-    rc = (dbi->dbi_vec->cput) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
-    return rc;
 }
 
 /**
@@ -2019,7 +1927,7 @@ top:
 	    /*
 	     * If we got the next key, save the header instance number.
 	     *
-	     * For db3 Packages, instance 0 (i.e. mi->mi_setx == 0) is the
+	     * Instance 0 (i.e. mi->mi_setx == 0) is the
 	     * largest header instance in the database, and should be
 	     * skipped.
 	     */

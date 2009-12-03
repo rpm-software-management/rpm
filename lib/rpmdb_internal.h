@@ -42,123 +42,7 @@ struct _dbiIndexSet {
 };
 
 /** \ingroup dbi
- * Private methods for accessing an index database.
- */
-struct _dbiVec {
-    int dbv_major;			/*!< Berkeley db version major */
-    int dbv_minor;			/*!< Berkeley db version minor */
-    int dbv_patch;			/*!< Berkeley db version patch */
-
-/** \ingroup dbi
- * Return handle for an index database.
- * @param rpmdb		rpm database
- * @param rpmtag	rpm tag
- * @return		0 on success
- */
-    int (*open) (rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
-
-/** \ingroup dbi
- * Close index database, and destroy database handle.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*close) (dbiIndex dbi, unsigned int flags);
-
-/** \ingroup dbi
- * Flush pending operations to disk.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*sync) (dbiIndex dbi, unsigned int flags);
-
-/** \ingroup dbi
- * Open database cursor.
- * @param dbi		index database handle
- * @param txnid		database transaction handle
- * @retval dbcp		address of new database cursor
- * @param dbiflags	DB_WRITECURSOR or 0
- * @return		0 on success
- */
-    int (*copen) (dbiIndex dbi, DB_TXN * txnid,
-			DBC ** dbcp, unsigned int dbiflags);
-
-/** \ingroup dbi
- * Close database cursor.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*cclose) (dbiIndex dbi, DBC * dbcursor, unsigned int flags);
-
-/** \ingroup dbi
- * Delete (key,data) pair(s) using db->del or dbcursor->c_del.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->del)
- * @param key		delete key value/length/flags
- * @param data		delete data value/length/flags
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*cdel) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags);
-
-/** \ingroup dbi
- * Retrieve (key,data) pair using db->get or dbcursor->c_get.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->get)
- * @param key		retrieve key value/length/flags
- * @param data		retrieve data value/length/flags
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*cget) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags);
-
-/** \ingroup dbi
- * Store (key,data) pair using db->put or dbcursor->c_put.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->put)
- * @param key		store key value/length/flags
- * @param data		store data value/length/flags
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*cput) (dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-			unsigned int flags);
-
-/** \ingroup dbi
- * Retrieve count of (possible) duplicate items using dbcursor->c_count.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @param countp	address of count
- * @param flags		(unused)
- * @return		0 on success
- */
-    int (*ccount) (dbiIndex dbi, DBC * dbcursor,
-			unsigned int * countp,
-			unsigned int flags);
-
-/** \ingroup dbi
- * Is database byte swapped?
- * @param dbi		index database handle
- * @return		0 no
- */
-    int (*byteswapped) (dbiIndex dbi);
-
-/** \ingroup dbi
- * Save statistics in database handle.
- * @param dbi		index database handle
- * @param flags		retrieve statistics that don't require traversal?
- * @return		0 on success
- */
-    int (*stat) (dbiIndex dbi, unsigned int flags);
-};
-
-/** \ingroup dbi
- * Describes an index database (implemented on Berkeley db3 functionality).
+ * Describes an index database (implemented on Berkeley db functionality).
  */
 struct _dbiIndex {
     char * dbi_file;		/*!< file component of path */
@@ -245,9 +129,6 @@ unsigned char * dbi_lk_conflicts;
     DB * dbi_db;		/*!< Berkeley DB * handle */
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
     void * dbi_stats;		/*!< Berkeley db statistics */
-
-    const struct _dbiVec * dbi_vec;	/*!< private methods */
-
 };
 
 /** \ingroup rpmdb
@@ -300,25 +181,25 @@ enum rpmdbFlags {
 extern "C" {
 #endif
 
-/** \ingroup db3
+/** \ingroup dbi
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
  * @param rpmtag	rpm tag
  * @return		index database handle
  */
 RPM_GNUC_INTERNAL
-dbiIndex db3New(rpmdb rpmdb, rpmTag rpmtag);
+dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag);
 
-/** \ingroup db3
+/** \ingroup dbi
  * Destroy index database handle instance.
  * @param dbi		index database handle
  * @return		NULL always
  */
 RPM_GNUC_INTERNAL
-dbiIndex db3Free( dbiIndex dbi);
+dbiIndex dbiFree( dbiIndex dbi);
 
-/** \ingroup db3
- * Format db3 open flags for debugging print.
+/** \ingroup dbi
+ * Format dbi open flags for debugging print.
  * @param dbflags		db open flags
  * @param print_dbenv_flags	format db env flags instead?
  * @return			formatted flags (malloced)
@@ -337,6 +218,18 @@ RPM_GNUC_INTERNAL
 dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag,
 		unsigned int flags);
 
+
+/** \ingroup dbi
+ * Actually open the database of the index.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag
+ * @param dbiIndex	address of index database handle
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
+
+
 /* FIX: vector annotations */
 /** \ingroup dbi
  * Open a database cursor.
@@ -346,12 +239,9 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag,
  * @param flags		DB_WRITECURSOR if writing, or 0
  * @return		0 on success
  */
-static inline
+RPM_GNUC_INTERNAL
 int dbiCopen(dbiIndex dbi, DB_TXN * txnid,
-		DBC ** dbcp, unsigned int flags)
-{
-    return (*dbi->dbi_vec->copen) (dbi, txnid, dbcp, flags);
-}
+	     DBC ** dbcp, unsigned int flags);
 
 /** \ingroup dbi
  * Close a database cursor.
@@ -360,11 +250,8 @@ int dbiCopen(dbiIndex dbi, DB_TXN * txnid,
  * @param flags		(unused)
  * @return		0 on success
  */
-static inline
-int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
-{
-    return (*dbi->dbi_vec->cclose) (dbi, dbcursor, flags);
-}
+RPM_GNUC_INTERNAL
+int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags);
 
 /** \ingroup dbi
  * Delete (key,data) pair(s) from index database.
@@ -375,17 +262,9 @@ int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags)
  * @param flags		(unused)
  * @return		0 on success
  */
-static inline
+RPM_GNUC_INTERNAL
 int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc;
-    assert(key->data != NULL && key->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
-    rc = (dbi->dbi_vec->cdel) (dbi, dbcursor, key, data, flags);
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
-    return rc;
-}
+	   unsigned int flags);
 
 /** \ingroup dbi
  * Retrieve (key,data) pair from index database.
@@ -421,12 +300,24 @@ int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
  * @param flags		(unused)
  * @return		0 on success
  */
-static inline
 int dbiCount(dbiIndex dbi, DBC * dbcursor, unsigned int * countp,
-		unsigned int flags)
-{
-    return (*dbi->dbi_vec->ccount) (dbi, dbcursor, countp, flags);
-}
+	     unsigned int flags);
+
+/** \ingroup dbi
+ * Close index database.
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiClose(dbiIndex dbi, unsigned int flags);
+
+/** \ingroup dbi
+ * Flush pending operations to disk.
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+int dbiSync (dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
  * Verify (and close) index database.
@@ -438,57 +329,24 @@ static inline
 int dbiVerify(dbiIndex dbi, unsigned int flags)
 {
     dbi->dbi_verify_on_close = 1;
-    return (*dbi->dbi_vec->close) (dbi, flags);
+    return dbiClose(dbi, flags);
 }
 
-/** \ingroup dbi
- * Close index database.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-static inline
-int dbiClose(dbiIndex dbi, unsigned int flags)
-{
-    return (*dbi->dbi_vec->close) (dbi, flags);
-}
-
-/** \ingroup dbi
- * Flush pending operations to disk.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-static inline
-int dbiSync (dbiIndex dbi, unsigned int flags)
-{
-    return (*dbi->dbi_vec->sync) (dbi, flags);
-}
 
 /** \ingroup dbi
  * Is database byte swapped?
  * @param dbi		index database handle
  * @return		0 same order, 1 swapped order
  */
-static inline
-int dbiByteSwapped(dbiIndex dbi)
-{
-    if (dbi->dbi_byteswapped == -1)
-        dbi->dbi_byteswapped = (*dbi->dbi_vec->byteswapped) (dbi);
-    return dbi->dbi_byteswapped;
-}
+int dbiByteSwapped(dbiIndex dbi);
+
 /** \ingroup dbi
  * Is database byte swapped?
  * @param dbi		index database handle
  * @param flags		DB_FAST_STAT or 0
  * @return		0 on success
  */
-static inline
-int dbiStat(dbiIndex dbi, unsigned int flags)
-{
-    return (*dbi->dbi_vec->stat) (dbi, flags);
-}
-
+int dbiStat(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
  * Destroy set of index database items.
