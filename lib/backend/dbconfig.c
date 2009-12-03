@@ -222,7 +222,7 @@ dbiIndex dbiFree(dbiIndex dbi)
 
 /** @todo Set a reasonable "last gasp" default db config. */
 static const char * const dbi_config_default =
-    "db3:hash:mpool:cdb:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
+    "hash:mpool:cdb:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
 
 dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
 {
