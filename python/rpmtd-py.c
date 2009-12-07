@@ -54,6 +54,7 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     return res;
 }
 
+#if 0
 struct rpmtdObject_s {
     PyObject_HEAD
     PyObject *md_dict;
@@ -209,4 +210,4 @@ int rpmtdFromPyObject(PyObject *obj, rpmtd *td)
 	return 0;
     }
 }
-
+#endif
