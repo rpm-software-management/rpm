@@ -532,7 +532,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 
     dstring = _free(dstring);
 
-    rc = headerGet(h, tag, td, HEADERGET_DEFAULT);
+    rc = headerGet(h, tag, td, HEADERGET_ALLOC);
     return rc;
 }
 
