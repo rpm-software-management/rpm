@@ -404,9 +404,7 @@ static PyObject * hdr_iternext(hdrObject *s)
     if (s->hi == NULL) s->hi = headerInitIterator(s->h);
 
     if ((tag = headerNextTag(s->hi)) != RPMTAG_NOT_FOUND) {
-	int raw = 1;
-	res = PyObject_Call((PyObject *) &rpmtd_Type,
-			    Py_BuildValue("(Oii)", s, tag, raw), NULL);
+	res = PyInt_FromLong(tag);
     } else {
 	s->hi = headerFreeIterator(s->hi);
     }
