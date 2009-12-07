@@ -104,13 +104,9 @@ class TransactionSet(_rpmts):
     def check(self, *args, **kwds):
         _rpmts.check(self, *args, **kwds)
 
-        probs = self.problems()
-        if not probs:
-            return None
-
         # compatibility: munge problem strings into dependency tuples of doom
         res = []
-        for p in probs:
+        for p in self.problems():
             # is it anything we need to care about?
             if p.type == rpm.RPMPROB_CONFLICT:
                 sense = rpm.RPMDEP_SENSE_CONFLICTS
