@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
@@ -32,6 +32,7 @@ fi
 # For example, below /usr/lib/python2.6/, we're targetting /usr/bin/python2.6
 # and below /usr/lib/python3.1/, we're targetting /usr/bin/python3.1
 
+shopt -s nullglob
 for python_libdir in $RPM_BUILD_ROOT/usr/lib*/python*/ ;
 do
 	python_binary=/usr/bin/$(basename $python_libdir)
