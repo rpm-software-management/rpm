@@ -6,8 +6,6 @@
  * Structures and methods for build-time file classification.
  */
 
-#include <magic.h>
-
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>	/* for ARGV_t */
 #include <rpm/rpmstring.h>	/* for StringBuf */
