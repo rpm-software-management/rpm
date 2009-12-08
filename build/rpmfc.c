@@ -1,6 +1,8 @@
 #include "system.h"
 
 #include <signal.h>
+#include <magic.h>
+
 #if HAVE_GELF_H
 #include <gelf.h>
 
