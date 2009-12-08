@@ -152,6 +152,7 @@ static PyObject * hdrKeyList(hdrObject * s)
 
 	switch (rpmtdType(td)) {
 	case RPM_BIN_TYPE:
+	case RPM_INT64_TYPE:
 	case RPM_INT32_TYPE:
 	case RPM_CHAR_TYPE:
 	case RPM_INT8_TYPE:
@@ -386,17 +387,30 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	o = PyString_FromStringAndSize(data, count);
 	break;
 
-    case RPM_INT32_TYPE:
+    case RPM_INT64_TYPE:
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((int *) data)[i]);
+		o = PyLong_FromUnsignedLongLong(((uint64_t *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(*((int *) data));
+	    o = PyLong_FromUnsignedLongLong(*((uint64_t *) data));
+	}
+	break;
+    case RPM_INT32_TYPE:
+	if (count != 1 || forceArray) {
+	    metao = PyList_New(0);
+	    for (i = 0; i < count; i++) {
+		o = PyLong_FromLong(((uint32_t *) data)[i]);
+		PyList_Append(metao, o);
+		Py_DECREF(o);
+	    }
+	    o = metao;
+	} else {
+	    o = PyLong_FromLong(*((uint32_t *) data));
 	}
 	break;
 
@@ -405,13 +419,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((char *) data)[i]);
+		o = PyInt_FromLong(((uint8_t *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(*((char *) data));
+	    o = PyInt_FromLong(*((uint8_t *) data));
 	}
 	break;
 
@@ -419,13 +433,13 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 	if (count != 1 || forceArray) {
 	    metao = PyList_New(0);
 	    for (i = 0; i < count; i++) {
-		o = PyInt_FromLong(((short *) data)[i]);
+		o = PyInt_FromLong(((uint16_t *) data)[i]);
 		PyList_Append(metao, o);
 		Py_DECREF(o);
 	    }
 	    o = metao;
 	} else {
-	    o = PyInt_FromLong(*((short *) data));
+	    o = PyInt_FromLong(*((uint16_t *) data));
 	}
 	break;
 
