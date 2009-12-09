@@ -1173,10 +1173,8 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-#ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
-#endif
 
     if (rc == 0) {		/* success */
 	dbiIndexSet matches;
@@ -1196,11 +1194,6 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 		rc, (char*)key.data, rpmTagGetName(dbi->dbi_rpmtag));
 	rc = -1;
     }
-
-#ifdef	SQLITE_HACK
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-#endif
 
     return rc;
 }
@@ -2094,30 +2087,19 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi)
 
     xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
-#ifndef	SQLITE_HACK
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
-#endif
 
     if (rc) {			/* error/not found */
 	if (rc != DB_NOTFOUND)
 	    rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
 		rc, (char*)key->data, rpmTagGetName(dbi->dbi_rpmtag));
-#ifdef	SQLITE_HACK
-	xx = dbiCclose(dbi, dbcursor, 0);
-	dbcursor = NULL;
-#endif
 	return rc;
     }
 
     set = NULL;
     (void) dbt2set(dbi, data, &set);
-
-#ifdef	SQLITE_HACK
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
-#endif
 
     if (mi->mi_set == NULL) {
 	mi->mi_set = set;
@@ -3016,13 +2998,6 @@ cont:
     }
     unblockSignals(&sigMask);
 
-#ifdef	SQLITE_HACK_XXX
-    if (rc || _olddbapi == _newdbapi)
-	return rc;
-
-    rc = rpmdbRemoveDatabase(prefix, newdbpath, _newdbapi);
-
-#endif
     if (selinux) {
 	(void) matchpathcon_fini();
     }
