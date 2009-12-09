@@ -351,6 +351,7 @@ rpmts_HdrFromFdno(rpmtsObject * s, PyObject *arg)
 
     if (rpmrc == RPMRC_OK) {
 	ho = hdr_Wrap(&hdr_Type, h);
+	h = headerFree(h); /* ref held by python object */
     } else {
 	Py_INCREF(Py_None);
 	ho = Py_None;
