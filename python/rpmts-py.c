@@ -518,6 +518,7 @@ rpmts_Problems(rpmtsObject * s)
     while (rpmpsNextIterator(psi) >= 0) {
 	PyObject *prob = rpmprob_Wrap(&rpmProblem_Type, rpmpsGetProblem(psi));
 	PyList_Append(problems, prob);
+	Py_DECREF(prob);
     }
     rpmpsFreeIterator(psi);
     rpmpsFree(ps);
