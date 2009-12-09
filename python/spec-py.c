@@ -177,6 +177,7 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 	PyObject *srcUrl = Py_BuildValue("(sii)", source->fullSource, 
 					 source->num, source->flags);
 	PyList_Append(sourceList, srcUrl);
+	Py_DECREF(srcUrl);
     } 
 
     return sourceList;
@@ -192,6 +193,7 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
     for (pkg = spec->packages; pkg; pkg = pkg->next) {
 	PyObject *po = specPkg_Wrap(&specPkg_Type, pkg);
 	PyList_Append(pkgList, po);
+	Py_DECREF(po);
     }
     return pkgList;
 }

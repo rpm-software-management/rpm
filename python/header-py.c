@@ -139,7 +139,9 @@ static PyObject * hdrKeyList(hdrObject * s)
     rpmTag tag;
 
     while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
-	PyList_Append(keys, PyInt_FromLong(tag));
+	PyObject *to = PyInt_FromLong(tag);
+	PyList_Append(keys, to);
+	Py_DECREF(to);
     }
     headerFreeIterator(hi);
 
