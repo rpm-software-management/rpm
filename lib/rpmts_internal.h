@@ -7,32 +7,7 @@
 #include "lib/rpmhash.h"	/* XXX hashTable */
 #include "lib/fprint.h"
 
-/** \ingroup rpmts
- */
-typedef	struct diskspaceInfo_s * rpmDiskSpaceInfo;
-
-/** \ingroup rpmts
- */
-struct diskspaceInfo_s {
-    dev_t dev;		/*!< File system device number. */
-    int64_t bneeded;	/*!< No. of blocks needed. */
-    int64_t ineeded;	/*!< No. of inodes needed. */
-    int64_t bsize;	/*!< File system block size. */
-    int64_t bavail;	/*!< No. of blocks available. */
-    int64_t iavail;	/*!< No. of inodes available. */
-    int64_t obneeded;	/*!< Bookkeeping to avoid duplicate reports */
-    int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
-};
-
-/** \ingroup rpmts
- * Adjust for root only reserved space. On linux e2fs, this is 5%.
- */
-#define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
-
-/* argon thought a shift optimization here was a waste of time...  he's
-   probably right :-( */
-#define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
-
+typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
