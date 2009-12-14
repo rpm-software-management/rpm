@@ -458,33 +458,6 @@ rpm_tid_t rpmtsSetTid(rpmts ts, rpm_tid_t tid);
 rpmdb rpmtsGetRdb(rpmts ts);
 
 /** \ingroup rpmts
- * Initialize disk space info for each and every mounted file systems.
- * @param ts		transaction set
- * @return		0 on success
- */
-int rpmtsInitDSI(const rpmts ts);
-
-/** \ingroup rpmts
- * Update disk space info for a file.
- * @param ts		transaction set
- * @param dev		mount point device
- * @param fileSize	long (64bit) file size
- * @param prevSize	previous long file size (if upgrading)
- * @param fixupSize	long size difference
- * @param action	file disposition
- */
-void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
-		rpm_loff_t fileSize, rpm_loff_t prevSize, rpm_loff_t fixupSize,
-		rpmFileAction action);
-
-/** \ingroup rpmts
- * Check a transaction element for disk space problems.
- * @param ts		transaction set
- * @param te		current transaction element
- */
-void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te);
-
-/** \ingroup rpmts
  * Perform transaction progress notify callback.
  * @param ts		transaction set
  * @param te		current transaction element

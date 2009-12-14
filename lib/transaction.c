@@ -23,8 +23,212 @@
 #include "lib/cpio.h"
 #include "rpmio/rpmhook.h"
 
+/* XXX FIXME: merge with existing (broken?) tests in system.h */
+/* portability fiddles */
+#if STATFS_IN_SYS_STATVFS
+#include <sys/statvfs.h>
+
+#else
+# if STATFS_IN_SYS_VFS
+#  include <sys/vfs.h>
+# else
+#  if STATFS_IN_SYS_MOUNT
+#   include <sys/mount.h>
+#  else
+#   if STATFS_IN_SYS_STATFS
+#    include <sys/statfs.h>
+#   endif
+#  endif
+# endif
+#endif
+
 #include "debug.h"
 
+struct diskspaceInfo_s {
+    dev_t dev;		/*!< File system device number. */
+    int64_t bneeded;	/*!< No. of blocks needed. */
+    int64_t ineeded;	/*!< No. of inodes needed. */
+    int64_t bsize;	/*!< File system block size. */
+    int64_t bavail;	/*!< No. of blocks available. */
+    int64_t iavail;	/*!< No. of inodes available. */
+    int64_t obneeded;	/*!< Bookkeeping to avoid duplicate reports */
+    int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
+};
+
+/* Adjust for root only reserved space. On linux e2fs, this is 5%. */
+#define	adj_fs_blocks(_nb)	(((_nb) * 21) / 20)
+#define BLOCK_ROUND(size, block) (((size) + (block) - 1) / (block))
+
+static int rpmtsInitDSI(const rpmts ts)
+{
+    rpmDiskSpaceInfo dsi;
+    struct stat sb;
+    int rc;
+    int i;
+
+    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
+	return 0;
+
+    rpmlog(RPMLOG_DEBUG, "mounted filesystems:\n");
+    rpmlog(RPMLOG_DEBUG,
+	"    i        dev    bsize       bavail       iavail mount point\n");
+
+    rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
+    if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
+	return rc;
+
+    /* Get available space on mounted file systems. */
+
+    ts->dsi = _free(ts->dsi);
+    ts->dsi = xcalloc((ts->filesystemCount + 1), sizeof(*ts->dsi));
+
+    dsi = ts->dsi;
+
+    if (dsi != NULL)
+    for (i = 0; (i < ts->filesystemCount) && dsi; i++, dsi++) {
+#if STATFS_IN_SYS_STATVFS
+	struct statvfs sfb;
+	memset(&sfb, 0, sizeof(sfb));
+	rc = statvfs(ts->filesystems[i], &sfb);
+#else
+	struct statfs sfb;
+	memset(&sfb, 0, sizeof(sfb));
+#  if STAT_STATFS4
+/* This platform has the 4-argument version of the statfs call.  The last two
+ * should be the size of struct statfs and 0, respectively.  The 0 is the
+ * filesystem type, and is always 0 when statfs is called on a mounted
+ * filesystem, as we're doing.
+ */
+	rc = statfs(ts->filesystems[i], &sfb, sizeof(sfb), 0);
+#  else
+	rc = statfs(ts->filesystems[i], &sfb);
+#  endif
+#endif
+	if (rc)
+	    break;
+
+	rc = stat(ts->filesystems[i], &sb);
+	if (rc)
+	    break;
+	dsi->dev = sb.st_dev;
+
+	dsi->bsize = sfb.f_bsize;
+	dsi->bneeded = 0;
+	dsi->ineeded = 0;
+#ifdef STATFS_HAS_F_BAVAIL
+	dsi->bavail = (sfb.f_flag & ST_RDONLY) ? 0 : sfb.f_bavail;
+#else
+/* FIXME: the statfs struct doesn't have a member to tell how many blocks are
+ * available for non-superusers.  f_blocks - f_bfree is probably too big, but
+ * it's about all we can do.
+ */
+	dsi->bavail = sfb.f_blocks - sfb.f_bfree;
+#endif
+	/* XXX Avoid FAT and other file systems that have not inodes. */
+	/* XXX assigning negative value to unsigned type */
+	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+				? sfb.f_ffree : -1;
+	rpmlog(RPMLOG_DEBUG, 
+		"%5d 0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
+		i, (unsigned) dsi->dev, dsi->bsize,
+		dsi->bavail, dsi->iavail,
+		ts->filesystems[i]);
+    }
+    return rc;
+}
+
+static void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
+		rpm_loff_t fileSize, rpm_loff_t prevSize, rpm_loff_t fixupSize,
+		rpmFileAction action)
+{
+    rpmDiskSpaceInfo dsi;
+    int64_t bneeded;
+
+    dsi = ts->dsi;
+    if (dsi) {
+	while (dsi->bsize && dsi->dev != dev)
+	    dsi++;
+	if (dsi->bsize == 0)
+	    dsi = NULL;
+    }
+    if (dsi == NULL)
+	return;
+
+    bneeded = BLOCK_ROUND(fileSize, dsi->bsize);
+
+    switch (action) {
+    case FA_BACKUP:
+    case FA_SAVE:
+    case FA_ALTNAME:
+	dsi->ineeded++;
+	dsi->bneeded += bneeded;
+	break;
+
+    /*
+     * FIXME: If two packages share a file (same md5sum), and
+     * that file is being replaced on disk, will dsi->bneeded get
+     * adjusted twice? Quite probably!
+     */
+    case FA_CREATE:
+	dsi->bneeded += bneeded;
+	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->bsize);
+	break;
+
+    case FA_ERASE:
+	dsi->ineeded--;
+	dsi->bneeded -= bneeded;
+	break;
+
+    default:
+	break;
+    }
+
+    if (fixupSize)
+	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->bsize);
+}
+
+static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
+{
+    rpmDiskSpaceInfo dsi;
+    rpmps ps;
+    int fc;
+    int i;
+
+    if (ts->filesystems == NULL || ts->filesystemCount <= 0)
+	return;
+
+    dsi = ts->dsi;
+    if (dsi == NULL)
+	return;
+    fc = rpmfiFC(rpmteFI(te));
+    if (fc <= 0)
+	return;
+
+    ps = rpmtsProblems(ts);
+    for (i = 0; i < ts->filesystemCount; i++, dsi++) {
+
+	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
+	    if (dsi->bneeded != dsi->obneeded) {
+		rpmpsAppend(ps, RPMPROB_DISKSPACE,
+			rpmteNEVRA(te), rpmteKey(te),
+			ts->filesystems[i], NULL, NULL,
+		   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
+		dsi->obneeded = dsi->bneeded;
+	    }
+	}
+
+	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
+	    if (dsi->ineeded != dsi->oineeded) {
+		rpmpsAppend(ps, RPMPROB_DISKNODES,
+			rpmteNEVRA(te), rpmteKey(te),
+			ts->filesystems[i], NULL, NULL,
+			(adj_fs_blocks(dsi->ineeded) - dsi->iavail));
+		dsi->oineeded = dsi->ineeded;
+	    }
+	}
+    }
+    ps = rpmpsFree(ps);
+}
 
 /**
  */
