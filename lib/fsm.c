@@ -1282,35 +1282,6 @@ static int fsmMkdirs(FSM_t fsm)
     return rc;
 }
 
-#ifdef	NOTYET
-/**
- * Check for file on disk.
- * @param fsm		file state machine data
- * @return		0 on success
- */
-static int fsmStat(FSM_t fsm)
-{
-    int rc = 0;
-
-    if (fsm->path != NULL) {
-	int saveernno = errno;
-	rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
-			? FSM_LSTAT : FSM_STAT));
-	if (rc == CPIOERR_ENOENT) {
-	    errno = saveerrno;
-	    rc = 0;
-	    fsm->exists = 0;
-	} else if (rc == 0) {
-	    fsm->exists = 1;
-	}
-    } else {
-	/* Skip %ghost files on build. */
-	fsm->exists = 0;
-    }
-    return rc;
-}
-#endif
-
 static const char * rpmteTypeString(rpmte te)
 {
     switch(rpmteType(te)) {
@@ -1578,9 +1549,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	if (rc) break;
 
 	/* Perform lstat/stat for disk file. */
-#ifdef	NOTYET
-	rc = fsmStat(fsm);
-#else
 	if (fsm->path != NULL &&
 	    !(fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode)))
 	{
@@ -1597,7 +1565,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Skip %ghost files on build. */
 	    fsm->exists = 0;
 	}
-#endif
 	fsm->diskchecked = 1;
 	if (rc) break;
 
