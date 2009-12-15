@@ -23,8 +23,6 @@
 #define	_FSM_DEBUG	0
 int _fsm_debug = _FSM_DEBUG;
 
-int _fsm_threads = 0;
-
 /* XXX Failure to remove is not (yet) cause for failure. */
 static int strict_erasures = 0;
 
@@ -397,17 +395,9 @@ const char * dnlNextIterator(DNLI_t dnli)
     return dn;
 }
 
-static void * fsmThread(void * arg)
-{
-    FSM_t fsm = arg;
-    return ((void *) ((long) fsmStage(fsm, fsm->nstage)));
-}
-
 int fsmNext(FSM_t fsm, fileStage nstage)
 {
     fsm->nstage = nstage;
-    if (_fsm_threads)
-	return rpmsqJoin( rpmsqThread(fsmThread, fsm) );
     return fsmStage(fsm, fsm->nstage);
 }
 

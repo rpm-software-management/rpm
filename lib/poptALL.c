@@ -29,8 +29,6 @@ extern int _rpmds_nopromote;
 
 extern int _fsm_debug;
 
-extern int _fsm_threads;
-
 extern int _hdr_debug;
 
 extern int _print_pkts;
@@ -254,8 +252,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 
  { "fsmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_debug, -1,
 	N_("debug payload file state machine"), NULL},
- { "fsmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_fsm_threads, -1,
-	N_("use threads for file state machine"), NULL},
  { "hdrdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_hdr_debug, -1,
 	NULL, NULL},
  { "prtpkts", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_print_pkts, -1,
