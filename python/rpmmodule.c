@@ -12,6 +12,7 @@
 #include "rpmfi-py.h"
 #include "rpmkeyring-py.h"
 #include "rpmmi-py.h"
+#include "rpmki-py.h"
 #include "rpmps-py.h"
 #include "rpmmacro-py.h"
 #include "rpmtd-py.h"
@@ -202,6 +203,7 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmfi_Type) < 0) return 0;
     if (PyType_Ready(&rpmKeyring_Type) < 0) return 0;
     if (PyType_Ready(&rpmmi_Type) < 0) return 0;
+    if (PyType_Ready(&rpmki_Type) < 0) return 0;
     if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
     if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
 #if 0
@@ -300,6 +302,9 @@ static int initModule(PyObject *m)
 
     Py_INCREF(&rpmmi_Type);
     PyModule_AddObject(m, "mi", (PyObject *) &rpmmi_Type);
+
+    Py_INCREF(&rpmki_Type);
+    PyModule_AddObject(m, "ki", (PyObject *) &rpmki_Type);
 
     Py_INCREF(&rpmProblem_Type);
     PyModule_AddObject(m, "prob", (PyObject *) &rpmProblem_Type);

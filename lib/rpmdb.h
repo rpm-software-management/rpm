@@ -216,6 +216,46 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 int rpmdbRebuild(const char * prefix, rpmts ts,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
 
+
+
+
+/** \ingroup rpmdb
+ * Get a key iterator for an index
+ * @param db		rpm database
+ * @param rpmtag	the index to iterate over
+ * @return		the key iterator
+ */
+rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmTag rpmtag);
+
+/** \ingroup rpmdb
+ * Get the next key - must be called before getting the first key
+ * @param ki		key iterator
+ * @return 		0 on success; != 0 on error or end of index
+ */
+int rpmdbKeyIteratorNext(rpmdbKeyIterator ki);
+
+/** \ingroup rpmdb
+ * Get current key
+ * @param ki            key iterator
+ * @return		pointer to key content. Keys are not zero terminated!
+ */
+const void * rpmdbKeyIteratorKey(rpmdbKeyIterator ki);
+
+/** \ingroup rpmdb
+ * Get length of key
+ * @param ki            key iterator
+ * @return 		length of key
+ */
+size_t rpmdbKeyIteratorKeySize(rpmdbKeyIterator ki);
+
+/** \ingroup rpmdb
+ * Free key iterator
+ * @param ki            key iterator
+ * return 		NULL
+ */
+rpmdbKeyIterator rpmdbKeyIteratorFree(rpmdbKeyIterator ki);
+
+
 #ifdef __cplusplus
 }
 #endif

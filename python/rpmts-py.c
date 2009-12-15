@@ -12,6 +12,7 @@
 #include "rpmkeyring-py.h"
 #include "rpmfi-py.h"	/* XXX for rpmfiNew */
 #include "rpmmi-py.h"
+#include "rpmki-py.h"
 #include "rpmps-py.h"
 #include "rpmte-py.h"
 
@@ -628,6 +629,31 @@ exit:
     Py_XDECREF(str);
     return mio;
 }
+static PyObject *
+rpmts_Keys(rpmtsObject * s, PyObject * args, PyObject * kwds)
+{
+    rpmTag tag;
+    PyObject *mio = NULL;
+    char * kwlist[] = {"tag", "pattern", "type", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:Keys", kwlist,
+              tagNumFromPyObject, &tag))
+	return NULL;
+
+    /* XXX If not already opened, open the database O_RDONLY now. */
+    if (rpmtsGetRdb(s->ts) == NULL) {
+	int rc = rpmtsOpenDB(s->ts, O_RDONLY);
+	if (rc || rpmtsGetRdb(s->ts) == NULL) {
+	    PyErr_SetString(pyrpmError, "rpmdb open failed");
+	    goto exit;
+	}
+    }
+
+    mio = rpmki_Wrap(&rpmki_Type, rpmdbKeyIteratorInit(rpmtsGetRdb(s->ts), tag), (PyObject*)s);
+
+exit:
+    return mio;
+}
 
 static struct PyMethodDef rpmts_methods[] = {
  {"addInstall",	(PyCFunction) rpmts_AddInstall,	METH_VARARGS,
@@ -681,6 +707,9 @@ static struct PyMethodDef rpmts_methods[] = {
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
+ {"dbKeys",     (PyCFunction) rpmts_Keys,	METH_VARARGS|METH_KEYWORDS,
+"ts.dbKeys(TagN) -> ki\n\
+-Create a key iterator for the default transaction rpmdb.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 

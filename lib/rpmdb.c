@@ -512,9 +512,18 @@ struct rpmdbMatchIterator_s {
 
 };
 
-static rpmdb rpmdbRock;
+struct rpmdbKeyIterator_s {
+    rpmdbKeyIterator	ki_next;
+    rpmdb		ki_db;
+    dbiIndex		ki_dbi;
+    rpmTag		ki_rpmtag;
+    DBC *		ki_dbc;
+    DBT			ki_key;
+};
 
+static rpmdb rpmdbRock;
 static rpmdbMatchIterator rpmmiRock;
+static rpmdbKeyIterator rpmkiRock;
 
 int rpmdbCheckTerminate(int terminate)
 {
@@ -2252,6 +2261,101 @@ static int td2key(rpmtd tagdata, DBT *key, int *freedata)
 
     return 1;
 }
+/*
+ * rpmdbKeyIterator
+ */
+
+rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmTag rpmtag)
+{
+    rpmdbKeyIterator ki;
+    dbiIndex dbi = NULL;
+    int rc = 0;
+
+    if (db == NULL)
+	return NULL;
+
+    (void) rpmdbCheckSignals();
+
+    rc = dbiOpen(db, rpmtag, &dbi, 0);
+    if (dbi == NULL)
+	return NULL;
+
+    /* Chain cursors for teardown on abnormal exit. */
+    ki = xcalloc(1, sizeof(*ki));
+    ki->ki_next = rpmkiRock;
+    rpmkiRock = ki;
+
+    ki->ki_db = rpmdbLink(db);
+    ki->ki_rpmtag = rpmtag;
+    ki->ki_dbi = dbi;
+
+    return ki;
+}
+
+int rpmdbKeyIteratorNext(rpmdbKeyIterator ki)
+{
+    int rc, xx;
+    DBT data;
+
+    if (ki == NULL)
+	return 1;
+
+    if (ki->ki_dbc == NULL)
+        xx = dbiCopen(ki->ki_dbi, &ki->ki_dbc, 0);
+
+    memset(&data, 0, sizeof(data));
+    data.flags = DB_DBT_PARTIAL;
+    rc = dbiGet(ki->ki_dbi, ki->ki_dbc, &ki->ki_key, &data, DB_NEXT);
+
+    if (rc != 0 && rc != DB_NOTFOUND) {
+        rpmlog(RPMLOG_ERR,
+               _("error(%d:%s) getting next key from %s index\n"),
+               rc, db_strerror(rc), rpmTagGetName(ki->ki_rpmtag));
+    }
+    return rc;
+}
+
+const void * rpmdbKeyIteratorKey(rpmdbKeyIterator ki)
+{
+    if (ki == NULL) return NULL;
+    return ki->ki_key.data;
+}
+
+size_t rpmdbKeyIteratorKeySize(rpmdbKeyIterator ki)
+{
+    if (ki == NULL) return (size_t) 0;
+    return (size_t)(ki->ki_key.size);
+}
+
+
+rpmdbKeyIterator rpmdbKeyIteratorFree(rpmdbKeyIterator ki)
+{
+    rpmdbKeyIterator * prev, next;
+    int xx;
+
+    if (ki == NULL)
+        return ki;
+
+    prev = &rpmkiRock;
+    while ((next = *prev) != NULL && next != ki)
+        prev = &next->ki_next;
+    if (next) {
+        *prev = next->ki_next;
+        next->ki_next = NULL;
+    }
+
+    if (ki->ki_dbc)
+        xx = dbiCclose(ki->ki_dbi, ki->ki_dbc, 0);
+    ki->ki_dbc = NULL;
+    ki->ki_dbi = NULL; /* ??? */
+    ki->ki_db = rpmdbUnlink(ki->ki_db);
+
+    ki = _free(ki);
+    return ki;
+}
+
+
+
 
 static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 {
