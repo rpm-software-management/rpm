@@ -861,11 +861,8 @@ static int writeFile(FSM_t fsm, int writeData)
     }
 
     if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
-	char *p = NULL;
-	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
-		rstrcat(&p, ".");
-	rstrscat(&fsm->path, fsm->dirName, fsm->baseName, NULL);
-	fsm->path = p;
+	fsm->path = rstrscat(NULL, (fsm->mapFlags & CPIO_MAP_ADDDOT) ? "." : "",
+				   fsm->dirName, fsm->baseName, NULL);
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
 	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + fi->striplen : 
