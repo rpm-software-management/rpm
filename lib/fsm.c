@@ -1100,24 +1100,24 @@ static int fsmCommitLinks(FSM_t fsm)
 static int fsmRmdirs(FSM_t fsm)
 {
     char * path = fsm->path;
+    const char * dpath;
     void * dnli = dnlInitIterator(fsm, 1);
     char * dn = fsm->rdbuf;
     int dc = dnlCount(dnli);
     int rc = 0;
 
-    fsm->path = NULL;
     dn[0] = '\0';
     if (fsm->ldn != NULL && fsm->dnlx != NULL)
-    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
-	size_t dnlen = strlen(fsm->path);
+    while ((dpath = dnlNextIterator(dnli)) != NULL) {
+	size_t dnlen = strlen(dpath);
 	char * te;
 
 	dc = dnlIndex(dnli);
 	if (fsm->dnlx[dc] < 1 || fsm->dnlx[dc] >= dnlen)
 	    continue;
 
-	/* Copy to avoid const on fsm->path. */
-	te = stpcpy(dn, fsm->path) - 1;
+	/* Copy as we need to modify the string */
+	te = stpcpy(dn, dpath) - 1;
 	fsm->path = dn;
 
 	/* Remove generated directories. */
@@ -1148,6 +1148,7 @@ static int fsmMkdirs(FSM_t fsm)
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * path = fsm->path;
+    const char *dpath;
     mode_t st_mode = st->st_mode;
     void * dnli = dnlInitIterator(fsm, 0);
     char * dn = fsm->rdbuf;
@@ -1157,13 +1158,11 @@ static int fsmMkdirs(FSM_t fsm)
     rpmts ts = fsmGetTs(fsm);
     security_context_t scon = NULL;
 
-    fsm->path = NULL;
-
     dn[0] = '\0';
     fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
     if (fsm->dnlx != NULL)
-    while ((fsm->path = dnlNextIterator(dnli)) != NULL) {
-	size_t dnlen = strlen(fsm->path);
+    while ((dpath = dnlNextIterator(dnli)) != NULL) {
+	size_t dnlen = strlen(dpath);
 	char * te;
 
 	dc = dnlIndex(dnli);
@@ -1172,11 +1171,11 @@ static int fsmMkdirs(FSM_t fsm)
 	if (dnlen <= 1)
 	    continue;
 
-	if (dnlen <= fsm->ldnlen && rstreq(fsm->path, fsm->ldn))
+	if (dnlen <= fsm->ldnlen && rstreq(dpath, fsm->ldn))
 	    continue;
 
-	/* Copy to avoid const on fsm->path. */
-	(void) stpcpy(dn, fsm->path);
+	/* Copy as we need to modify the string */
+	(void) stpcpy(dn, dpath);
 	fsm->path = dn;
 
 	/* Assume '/' directory exists, "mkdir -p" for others if non-existent */
