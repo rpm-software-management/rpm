@@ -1099,15 +1099,13 @@ static int fsmRmdirs(FSM_t fsm)
     char * path = fsm->path;
     const char * dpath;
     void * dnli = dnlInitIterator(fsm, 1);
-    char * dn = fsm->rdbuf;
     int dc = dnlCount(dnli);
     int rc = 0;
 
-    dn[0] = '\0';
     if (fsm->ldn != NULL && fsm->dnlx != NULL)
     while ((dpath = dnlNextIterator(dnli)) != NULL) {
 	size_t dnlen = strlen(dpath);
-	char * te;
+	char *te, dn[dnlen+1];
 
 	dc = dnlIndex(dnli);
 	if (fsm->dnlx[dc] < 1 || fsm->dnlx[dc] >= dnlen)
@@ -1148,19 +1146,17 @@ static int fsmMkdirs(FSM_t fsm)
     const char *dpath;
     mode_t st_mode = st->st_mode;
     void * dnli = dnlInitIterator(fsm, 0);
-    char * dn = fsm->rdbuf;
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
     rpmts ts = fsmGetTs(fsm);
     security_context_t scon = NULL;
 
-    dn[0] = '\0';
     fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
     if (fsm->dnlx != NULL)
     while ((dpath = dnlNextIterator(dnli)) != NULL) {
 	size_t dnlen = strlen(dpath);
-	char * te;
+	char * te, dn[dnlen+1];
 
 	dc = dnlIndex(dnli);
 	if (dc < 0) continue;
