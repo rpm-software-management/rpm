@@ -459,7 +459,7 @@ static int saveHardLink(FSM_t fsm)
 
     /* Save the non-skipped file name and map index. */
     fsm->li->linkIndex = j;
-    fsm->path = _constfree(fsm->path);
+    fsm->path = _free(fsm->path);
     fsm->ix = ix;
     rc = fsmNext(fsm, FSM_MAP);
     return rc;
@@ -489,7 +489,7 @@ FSM_t newFSM(cpioMapFlags mapflags)
 FSM_t freeFSM(FSM_t fsm)
 {
     if (fsm) {
-	fsm->path = _constfree(fsm->path);
+	fsm->path = _free(fsm->path);
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
@@ -693,7 +693,7 @@ static int fsmMapPath(FSM_t fsm)
 
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
-	    fsm->path = _constfree(fsm->path);
+	    fsm->path = _free(fsm->path);
 	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
 	}
@@ -836,8 +836,8 @@ exit:
  */
 static int writeFile(FSM_t fsm, int writeData)
 {
-    const char * path = fsm->path;
-    const char * opath = fsm->opath;
+    char * path = fsm->path;
+    char * opath = fsm->opath;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
@@ -864,7 +864,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	char *p = NULL;
 	if (fsm->mapFlags & CPIO_MAP_ADDDOT)
 		rstrcat(&p, ".");
-	rstrscat(&p, fsm->dirName, fsm->baseName, NULL);
+	rstrscat(&fsm->path, fsm->dirName, fsm->baseName, NULL);
 	fsm->path = p;
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
@@ -873,7 +873,7 @@ static int writeFile(FSM_t fsm, int writeData)
     }
 
     rc = fsmNext(fsm, FSM_HWRITE);
-    _constfree(fsm->path);
+    _free(fsm->path);
     fsm->path = path;
     if (rc) goto exit;
 
@@ -962,7 +962,7 @@ exit:
  */
 static int writeLinkedFile(FSM_t fsm)
 {
-    const char * path = fsm->path;
+    char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
     int iterIndex = fsm->ix;
     int ec = 0;
@@ -987,7 +987,7 @@ static int writeLinkedFile(FSM_t fsm)
 	    *fsm->failedFile = xstrdup(fsm->path);
 	}
 
-	fsm->path = _constfree(fsm->path);
+	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
     }
 
@@ -1004,8 +1004,8 @@ static int writeLinkedFile(FSM_t fsm)
  */
 static int fsmMakeLinks(FSM_t fsm)
 {
-    const char * path = fsm->path;
-    const char * opath = fsm->opath;
+    char * path = fsm->path;
+    char * opath = fsm->opath;
     const char * nsuffix = fsm->nsuffix;
     int iterIndex = fsm->ix;
     int ec = 0;
@@ -1026,7 +1026,7 @@ static int fsmMakeLinks(FSM_t fsm)
 	if (fsm->li->createdPath == i) continue;
 
 	fsm->ix = fsm->li->filex[i];
-	fsm->path = _constfree(fsm->path);
+	fsm->path = _free(fsm->path);
 	rc = fsmNext(fsm, FSM_MAP);
 	if (XFA_SKIPPING(fsm->action)) continue;
 
@@ -1043,8 +1043,8 @@ static int fsmMakeLinks(FSM_t fsm)
 
 	fsm->li->linksLeft--;
     }
-    fsm->path = _constfree(fsm->path);
-    fsm->opath = _constfree(fsm->opath);
+    fsm->path = _free(fsm->path);
+    fsm->opath = _free(fsm->opath);
 
     fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
@@ -1060,7 +1060,7 @@ static int fsmMakeLinks(FSM_t fsm)
  */
 static int fsmCommitLinks(FSM_t fsm)
 {
-    const char * path = fsm->path;
+    char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
     int iterIndex = fsm->ix;
     struct stat * st = &fsm->sb;
@@ -1082,7 +1082,7 @@ static int fsmCommitLinks(FSM_t fsm)
 	rc = fsmNext(fsm, FSM_MAP);
 	if (!XFA_SKIPPING(fsm->action))
 	    rc = fsmNext(fsm, FSM_COMMIT);
-	fsm->path = _constfree(fsm->path);
+	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
     }
 
@@ -1099,7 +1099,7 @@ static int fsmCommitLinks(FSM_t fsm)
  */
 static int fsmRmdirs(FSM_t fsm)
 {
-    const char * path = fsm->path;
+    char * path = fsm->path;
     void * dnli = dnlInitIterator(fsm, 1);
     char * dn = fsm->rdbuf;
     int dc = dnlCount(dnli);
@@ -1147,7 +1147,7 @@ static int fsmMkdirs(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
-    const char * path = fsm->path;
+    char * path = fsm->path;
     mode_t st_mode = st->st_mode;
     void * dnli = dnlInitIterator(fsm, 0);
     char * dn = fsm->rdbuf;
@@ -1448,8 +1448,8 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
 #undef _tsmask
 	}
-	fsm->path = _constfree(fsm->path);
-	fsm->opath = _constfree(fsm->opath);
+	fsm->path = _free(fsm->path);
+	fsm->opath = _free(fsm->opath);
 	fsm->dnlx = _free(fsm->dnlx);
 
 	fsm->ldn = _free(fsm->ldn);
@@ -1479,7 +1479,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
 	break;
     case FSM_INIT:
-	fsm->path = _constfree(fsm->path);
+	fsm->path = _free(fsm->path);
 	fsm->postpone = 0;
 	fsm->diskchecked = fsm->exists = 0;
 	fsm->subdir = NULL;
@@ -1609,13 +1609,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 
 	if (S_ISREG(st->st_mode)) {
-	    const char * path = fsm->path;
+	    char * path = fsm->path;
 	    if (fsm->osuffix)
 		fsm->path = fsmFsPath(fsm, st, NULL, NULL);
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
 
 	    if (rc == 0 && fsm->osuffix) {
-		const char * opath = fsm->opath;
+		char * opath = fsm->opath;
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 		rc = fsmNext(fsm, FSM_RENAME);
@@ -1624,7 +1624,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			_("%s saved as %s\n"),
 				(fsm->opath ? fsm->opath : ""),
 				(fsm->path ? fsm->path : ""));
-		fsm->path = _constfree(fsm->path);
+		fsm->path = _free(fsm->path);
 		fsm->opath = opath;
 	    }
 
@@ -1641,7 +1641,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
-	    const char * opath = fsm->opath;
+	    char * opath = fsm->opath;
 
 	    if ((st->st_size + 1) > fsm->rdsize) {
 		rc = CPIOERR_HDR_SIZE;
@@ -1733,8 +1733,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->goal == FSM_PKGERASE)
 		rc = fsmNext(fsm, FSM_COMMIT);
 	}
-	fsm->path = _constfree(fsm->path);
-	fsm->opath = _constfree(fsm->opath);
+	fsm->path = _free(fsm->path);
+	fsm->opath = _free(fsm->opath);
 	memset(st, 0, sizeof(*st));
 	memset(ost, 0, sizeof(*ost));
 	break;
@@ -1743,8 +1743,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->osuffix && fsm->diskchecked &&
 	  (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
 	{
-	    const char * opath = fsm->opath;
-	    const char * path = fsm->path;
+	    char * opath = fsm->opath;
+	    char * path = fsm->path;
 	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
 	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
 	    rc = fsmNext(fsm, FSM_RENAME);
@@ -1753,9 +1753,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 				(fsm->opath ? fsm->opath : ""),
 				(fsm->path ? fsm->path : ""));
 	    }
-	    fsm->path = _constfree(fsm->path);
+	    fsm->path = _free(fsm->path);
 	    fsm->path = path;
-	    fsm->opath = _constfree(fsm->opath);
+	    fsm->opath = _free(fsm->opath);
 	    fsm->opath = opath;
 	}
 
@@ -1823,7 +1823,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 				(fsm->path ? fsm->path : ""));
 		    opath = _free(opath);
 		}
-		fsm->opath = _constfree(fsm->opath);
+		fsm->opath = _free(fsm->opath);
 	    }
 	    /*
 	     * Set file security context (if not disabled).
@@ -1867,13 +1867,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* Notify on success. */
 	if (!rc)		rc = fsmNext(fsm, FSM_NOTIFY);
 	else if (fsm->failedFile && *fsm->failedFile == NULL) {
-	    /* XXX ick, stripping const */
-	    *fsm->failedFile = (char *) fsm->path;
+	    *fsm->failedFile = fsm->path;
 	    fsm->path = NULL;
 	}
 	break;
     case FSM_DESTROY:
-	fsm->path = _constfree(fsm->path);
+	fsm->path = _free(fsm->path);
 
 	/* Check for hard links missing from payload. */
 	while ((fsm->li = fsm->links) != NULL) {
@@ -1889,12 +1888,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    if (fsm->failedFile && *fsm->failedFile == NULL) {
 			fsm->ix = fsm->li->filex[i];
 			if (!fsmNext(fsm, FSM_MAP)) {
-	    		    /* 
- 			     * XXX ick, stripping const. Out-of-sync
- 			     * hardlinks handled as sub-state, see
- 			     * changeset 4062:02b0c237b675
-			     */
-			    *fsm->failedFile = (char *) fsm->path;
+	    		    /* Out-of-sync hardlinks handled as sub-state */
+			    *fsm->failedFile = fsm->path;
 			    fsm->path = NULL;
 			}
 		    }
@@ -1930,7 +1925,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    (void) fsmNext(fsm, FSM_UNLINK);
 	    else
 		    rc = CPIOERR_UNLINK_FAILED;
-	    _constfree(fsm->path);
+	    _free(fsm->path);
 	    fsm->path = fsm->opath;
 	    fsm->opath = NULL;
 	    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
@@ -2149,7 +2144,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	rc = fsmUNSAFE(fsm, FSM_HREAD);
 	if (rc) break;
 	if (rstreq(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
-	    fsm->path = _constfree(fsm->path);
+	    fsm->path = _free(fsm->path);
 	    rc = CPIOERR_HDR_TRAILER;
 	}
 	if (!rc)

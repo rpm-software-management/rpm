@@ -112,8 +112,8 @@ typedef struct hardLink_s * hardLink_t;
  * File name and stat information.
  */
 struct fsm_s {
-    const char * path;		/*!< Current file name. */
-    const char * opath;		/*!< Original file name. */
+    char * path;		/*!< Current file name. */
+    char * opath;		/*!< Original file name. */
     FD_t cfd;			/*!< Payload file handle. */
     FD_t rfd;			/*!<  read: File handle. */
     char * rdbuf;		/*!<  read: Buffer. */
