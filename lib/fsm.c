@@ -111,19 +111,12 @@ static char * fsmFsPath(const FSM_t fsm,
     char * s = NULL;
 
     if (fsm) {
-	size_t nb;
-	char * t;
-	nb = strlen(fsm->dirName) +
-	    (st && !S_ISDIR(st->st_mode) ? (subdir ? strlen(subdir) : 0) : 0) +
-	    (st && !S_ISDIR(st->st_mode) ? (suffix ? strlen(suffix) : 0) : 0) +
-	    strlen(fsm->baseName) + 1;
-	s = t = xmalloc(nb);
-	t = stpcpy(t, fsm->dirName);
-	if (st && !S_ISDIR(st->st_mode))
-	    if (subdir) t = stpcpy(t, subdir);
-	t = stpcpy(t, fsm->baseName);
-	if (st && !S_ISDIR(st->st_mode))
-	    if (suffix) t = stpcpy(t, suffix);
+	int isDir = (st && S_ISDIR(st->st_mode));
+	s = rstrscat(NULL, fsm->dirName,
+			   (!isDir && subdir) ? subdir : "",
+			   fsm->baseName,
+			   (!isDir && suffix) ? suffix : "",
+			   NULL);
     }
     return s;
 }
