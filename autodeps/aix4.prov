@@ -107,7 +107,7 @@ export LANG
 # out.
 #
 filelist=`sed "s/['\"]/\\\&/g" | xargs file \
-	| egrep 'archive|executable|symbolic link' | cut -d: -f1`
+	| grep -E 'archive|executable|symbolic link' | cut -d: -f1`
 
 for f in $filelist
 do

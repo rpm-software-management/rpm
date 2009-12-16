@@ -84,7 +84,7 @@ do
 	#
 	# Is it a shared library?
 	#
-	maybe_shared_lib=`echo "$file_output" | egrep '(executable|library)'`
+	maybe_shared_lib=`echo "$file_output" | grep -E '(executable|library)'`
 	if test X"$maybe_shared_lib" != X ; then
 		chatr $f 2>/dev/null \
 		| awk '

@@ -79,7 +79,7 @@ do
 	#
 	# if it's a shared library, run odump on it.
 	#
-	maybe_shared_lib=`file $f | egrep 'COFF.*shared library'`
+	maybe_shared_lib=`file $f | grep -E 'COFF.*shared library'`
 	if test X"$maybe_shared_lib" != X ; then
 		odump -D $f 2>/dev/null | awk '
 

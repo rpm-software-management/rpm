@@ -59,7 +59,7 @@ find_prov_power()
    # Use the verbose version of dump to find the sharable objects 
    while read f
    do
-           LANG=C /usr/bin/dump -ov $f/ 2>/dev/null | egrep "^Flags.*SHROBJ|:$" |
+           LANG=C /usr/bin/dump -ov $f/ 2>/dev/null | grep -E "^Flags.*SHROBJ|:$" |
    	awk 'match($1,":$") { member=$1 }
    	!match($1,":$") {print member} '
    done | sed -e 's/:$//' -e 's/\/\[/\(/g' -e 's/\]/)/g' | xargs -i basename {} | 

@@ -108,7 +108,7 @@
 @mandrake@
 @mandrake@# make
 @mandrake@%_make_bin make
-@mandrake@%make if [ -z "$NPROCS" -a -f /proc/stat ]; then NPROCS=`egrep -c ^cpu[0-9]+ /proc/stat || :`; fi \
+@mandrake@%make if [ -z "$NPROCS" -a -f /proc/stat ]; then NPROCS=`grep -Ec ^cpu[0-9]+ /proc/stat || :`; fi \
 @mandrake@if [ -z "$NPROCS" -o "$NPROCS" -le "0" ]; then \
 @mandrake@  NPROCS=1 \
 @mandrake@fi \

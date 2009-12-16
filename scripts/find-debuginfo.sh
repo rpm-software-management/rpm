@@ -16,7 +16,7 @@
 # A -o switch that follows a -p switch or some -l switches produces
 # an additional output file with the debuginfo for the files in
 # the -l filelist file, or whose names match the -p pattern.
-# The -p argument is an egrep-style regexp matching the a file name,
+# The -p argument is an grep -E -style regexp matching the a file name,
 # and must not use anchors (^ or $).
 #
 # All file names in switches are relative to builddir (. if not given).
@@ -246,7 +246,7 @@ done
 
 if [ -s "$SOURCEFILE" ]; then
   mkdir -p "${RPM_BUILD_ROOT}/usr/src/debug"
-  LC_ALL=C sort -z -u "$SOURCEFILE" | egrep -v -z '(<internal>|<built-in>)$' |
+  LC_ALL=C sort -z -u "$SOURCEFILE" | grep -E -v -z '(<internal>|<built-in>)$' |
   (cd "$RPM_BUILD_DIR"; cpio -pd0mL "${RPM_BUILD_ROOT}/usr/src/debug")
   # stupid cpio creates new directories in mode 0700, fixup
   find "${RPM_BUILD_ROOT}/usr/src/debug" -type d -print0 |
@@ -268,7 +268,7 @@ fi
 # Append to $1 only the lines from stdin not already in the file.
 append_uniq()
 {
-  fgrep -f "$1" -x -v >> "$1"
+  grep -F -f "$1" -x -v >> "$1"
 }
 
 # Helper to generate list of corresponding .debug files from a file list.
@@ -288,7 +288,7 @@ filtered_list()
   local out="$1"
   shift
   test $# -gt 0 || return
-  fgrep -f <(filelist_debugfiles 's,^.*$,/usr/lib/debug&.debug,' "$@") \
+  grep -F -f <(filelist_debugfiles 's,^.*$,/usr/lib/debug&.debug,' "$@") \
   	-x $LISTFILE >> $out
   sed -n -f <(filelist_debugfiles 's/[\\.*+#]/\\&/g
 h
@@ -298,12 +298,12 @@ s,^.*$,s# /usr/lib/debug&.debug$##p,p
 ' "$@") "$LINKSFILE" | append_uniq "$out"
 }
 
-# Write an output debuginfo file list based on an egrep-style regexp.
+# Write an output debuginfo file list based on an grep -E -style regexp.
 pattern_list()
 {
   local out="$1" ptn="$2"
   test -n "$ptn" || return
-  egrep -x -e "$ptn" "$LISTFILE" >> "$out"
+  grep -E -x -e "$ptn" "$LISTFILE" >> "$out"
   sed -n -r "\#^$ptn #s/ .*\$//p" "$LINKSFILE" | append_uniq "$out"
 }
 
@@ -315,7 +315,7 @@ while ((i < nout)); do
   > ${outs[$i]}
   filtered_list ${outs[$i]} ${lists[$i]}
   pattern_list ${outs[$i]} "${ptns[$i]}"
-  fgrep -vx -f ${outs[$i]} "$LISTFILE" > "${LISTFILE}.new"
+  grep -Fvx -f ${outs[$i]} "$LISTFILE" > "${LISTFILE}.new"
   mv "${LISTFILE}.new" "$LISTFILE"
   ((++i))
 done

@@ -235,7 +235,7 @@ with:
 and if you wish to ensure that some directories are not traversed you
 can use the option: 
 
-    --ignore_dirs 'egrep|pattern|of|paths|to|ignore
+    --ignore_dirs 'grep-E|pattern|of|paths|to|ignore
 
 By default the generated rpm will include a %verifyscript to verify
 checksum of all files traversed has not changed.  This additional

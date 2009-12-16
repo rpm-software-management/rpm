@@ -49,7 +49,7 @@
 usage="usage: $0 --spec_header '/path/to/os-base-header.spec' \n"
 usage="$usage\t[--find_provides '/path/to/find-provides']\n"
 usage="$usage\t[--shlib_dirs 'dirs:which:contain:shared:libs']\n"
-usage="$usage\t[--ignore_dirs 'egrep|pattern|of|paths|to|ignore']\n"
+usage="$usage\t[--ignore_dirs 'grep-E|pattern|of|paths|to|ignore']\n"
 
 # these two should be unnessary as the regular dependency analysis
 # should take care of interpreters as well as shared libraries.
@@ -70,7 +70,7 @@ hostname=`uname -n`
 # if some subdirectories of the system directories needs to be ignored
 # (eg /usr/local is a subdirectory of /usr but should not be part of
 # the virtual package) then call this script with ignore_dirs set to a
-# vaild egrep pattern which discribes the directories to ignored.
+# valid grep -E pattern which discribes the directories to ignored.
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH
@@ -244,7 +244,7 @@ fi
 #
 for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
-	find $d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
+	find $d -type f -print 2>/dev/null | grep -E -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
 done
 
 sum_tmp=/tmp/sum.$$
@@ -258,7 +258,7 @@ fi
 #
 for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
-	find $d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $sum_cmd >> $sum_tmp
+	find $d -type f -print 2>/dev/null | grep -E -v \'$ignore_dirs\' | $sum_cmd >> $sum_tmp
 done
 
 
@@ -361,7 +361,7 @@ fi
 
 for d in `echo $shlib_dirs | sed -e 's/:/ /g'`
 do
-	find \$d -type f -print 2>/dev/null | egrep -v \'$ignore_dirs\' | $sum_cmd >> \$sum_current_tmp
+	find \$d -type f -print 2>/dev/null | grep -E -v \'$ignore_dirs\' | $sum_cmd >> \$sum_current_tmp
 done
 
 cat >\$sum_package_tmp <<_EOF_

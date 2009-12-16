@@ -11,7 +11,7 @@
 
 IFS=$'\n'
 filelist=($(grep -Ev '/usr/doc/|/usr/share/doc/'))
-monolist=($(printf "%s\n" "${filelist[@]}" | egrep "\\.(exe|dll)\$"))
+monolist=($(printf "%s\n" "${filelist[@]}" | grep -E "\\.(exe|dll)\$"))
 
 # If monodis is in the package being installed, use that one
 # This is to support building mono

@@ -7,7 +7,7 @@ ulimit -c 0
 
 filelist=`sed "s/['\"]/\\\&/g"`
 exelist=`if test "x$filelist" != x; then echo $filelist | xargs file | grep ":.*executable" | cut -d: -f1; fi`
-scriptlist=`if test "x$filelist" != x; then echo $filelist | xargs file | egrep ":.* (commands|script) " | cut -d: -f1; fi`
+scriptlist=`if test "x$filelist" != x; then echo $filelist | xargs file | grep -E ":.* (commands|script) " | cut -d: -f1; fi`
 liblist=`if test "x$filelist" != x; then echo $filelist | xargs file | grep ":.*shared object" | cut -d : -f1; fi`
 
 LDDLIST=`for f in $exelist; do

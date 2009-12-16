@@ -84,7 +84,7 @@ do
 	#
 	# If it's a shared library, run elfdump on it.
 	#
-	maybe_shared_lib=`file $f | egrep 'ELF.*dynamic lib'` 
+	maybe_shared_lib=`file $f | grep -E 'ELF.*dynamic lib'` 
 	if test X"$maybe_shared_lib" != X ; then
 		elfdump -L $f 2>/dev/null | awk '
 

@@ -45,7 +45,7 @@ LANG=C
 export LANG
 
 filelist=`sed "s/['\"]/\\\&/g" | xargs file \
-	| egrep '^.*:.*(executable |archive )' | cut -d: -f1`
+	| grep -E '^.*:.*(executable |archive )' | cut -d: -f1`
 
 for f in $filelist
 do

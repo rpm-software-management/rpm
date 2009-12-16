@@ -10,7 +10,7 @@ ulimit -c 0
 filelist=`sed "s/['\"]/\\\&/g"`
 [ -z "$filelist" ] && exit #emulate -r option for xargs
 
-for f in `echo $filelist | xargs file | fgrep executable | cut -d: -f1`; do
+for f in `echo $filelist | xargs file | grep -F executable | cut -d: -f1`; do
     ldd $f 2>/dev/null | awk '/\=\>/ { print $1 }'
 done | sort -u | sed "s/['\"]/\\\&/g" | xargs -n 1 basename | sort -u
 
