@@ -359,13 +359,6 @@ rpmfi rpmteFI(rpmte te);
 void rpmteColorDS(rpmte te, rpmTag tag);
 
 /** \ingroup rpmte
- * Return transaction element index.
- * @param tsi		transaction element iterator
- * @return		transaction element index
- */
-int rpmtsiOc(rpmtsi tsi);
-
-/** \ingroup rpmte
  * Destroy transaction element iterator.
  * @param tsi		transaction element iterator
  * @return		NULL always

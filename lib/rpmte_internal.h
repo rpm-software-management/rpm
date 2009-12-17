@@ -63,7 +63,6 @@ struct rpmfs_s {
  */
 struct rpmtsi_s {
     rpmts ts;		/*!< transaction set. */
-    int ocsave;		/*!< last returned iterator index. */
     int oc;		/*!< iterator index. */
 };
 

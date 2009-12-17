@@ -847,6 +847,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     rpmfi fi;
     rpmdbMatchIterator mi;
     int xx;
+    int oc = 0;
     const char * baseName;
 
     rpmStringSet baseNames = rpmStringSetCreate(fileCount, 
@@ -858,13 +859,10 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;   /* XXX can't happen */
-	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, rpmtsiOc(pi),
-		    ts->orderCount);
+	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, ts->orderCount);
 
 	/* Gather all installed headers with matching basename's. */
-	fi = rpmfiInit(fi, 0);
+	fi = rpmfiInit(rpmteFI(p), 0);
 	while (rpmfiNext(fi) >= 0) {
 	    size_t keylen;
 	    baseName = rpmfiBN(fi);

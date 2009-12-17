@@ -684,11 +684,6 @@ assert (ix < Count);
     free(refs);
 }
 
-int rpmtsiOc(rpmtsi tsi)
-{
-    return tsi->ocsave;
-}
-
 rpmtsi rpmtsiFree(rpmtsi tsi)
 {
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
@@ -704,7 +699,6 @@ rpmtsi rpmtsiInit(rpmts ts)
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->ts = rpmtsLink(ts, RPMDBG_M("rpmtsi"));
     tsi->oc = 0;
-    tsi->ocsave = tsi->oc;
     return tsi;
 }
 
@@ -723,7 +717,6 @@ rpmte rpmtsiNextElement(rpmtsi tsi)
 	return te;
 
     if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
-    tsi->ocsave = oc;
     if (oc != -1)
 	te = rpmtsElement(tsi->ts, oc);
     return te;
