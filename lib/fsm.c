@@ -397,6 +397,105 @@ int fsmNext(FSM_t fsm, fileStage nstage)
     return fsmStage(fsm, fsm->nstage);
 }
 
+/**
+ * Map next file path and action.
+ * @param fsm		file state machine
+ */
+static int fsmMapPath(FSM_t fsm)
+{
+    rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
+    int rc = 0;
+    int i;
+
+    fsm->osuffix = NULL;
+    fsm->nsuffix = NULL;
+    fsm->action = FA_UNKNOWN;
+
+    i = fsm->ix;
+    if (fi && i >= 0 && i < rpmfiFC(fi)) {
+	rpmte te = fsmGetTe(fsm);
+	rpmfs fs = rpmteGetFileStates(te);
+	/* XXX these should use rpmfiFFlags() etc */
+	fsm->action = rpmfsGetAction(fs, i);
+	fsm->fflags = rpmfiFFlagsIndex(fi, i);
+
+	/* src rpms have simple base name in payload. */
+	fsm->dirName = rpmfiDNIndex(fi, rpmfiDIIndex(fi, i));
+	fsm->baseName = rpmfiBNIndex(fi, i);
+
+	switch (fsm->action) {
+	case FA_SKIP:
+	    break;
+	case FA_UNKNOWN:
+	    break;
+
+	case FA_COPYOUT:
+	    break;
+	case FA_COPYIN:
+	case FA_CREATE:
+	    break;
+
+	case FA_SKIPNSTATE:
+	    if (rpmteType(te) == TR_ADDED)
+		rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
+	    break;
+
+	case FA_SKIPNETSHARED:
+	    if (rpmteType(te) == TR_ADDED)
+		rpmfsSetState(fs, i, RPMFILE_STATE_NETSHARED);
+	    break;
+
+	case FA_SKIPCOLOR:
+	    if (rpmteType(te) == TR_ADDED)
+		rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
+	    break;
+
+	case FA_BACKUP:
+	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+	    switch (rpmteType(te)) {
+	    case TR_ADDED:
+		fsm->osuffix = SUFFIX_RPMORIG;
+		break;
+	    case TR_REMOVED:
+		fsm->osuffix = SUFFIX_RPMSAVE;
+		break;
+	    }
+	    break;
+
+	case FA_ALTNAME:
+	    assert(rpmteType(te) == TR_ADDED);
+	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+		fsm->nsuffix = SUFFIX_RPMNEW;
+	    break;
+
+	case FA_SAVE:
+	    assert(rpmteType(te) == TR_ADDED);
+	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+		fsm->osuffix = SUFFIX_RPMSAVE;
+	    break;
+	case FA_ERASE:
+#if 0	/* XXX is this a genhdlist fix? */
+	    assert(rpmteType(>te) == TR_REMOVED);
+#endif
+	    /*
+	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
+	     * legacy rpm behavior.
+	     */
+	    break;
+	default:
+	    break;
+	}
+
+	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
+	    const struct stat * st = &fsm->sb;
+	    fsm->path = _free(fsm->path);
+	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
+		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
+	}
+    }
+    return rc;
+}
+
 /** \ingroup payload
  * Save hard link in chain.
  * @param fsm		file state machine data
@@ -470,7 +569,7 @@ static int saveHardLink(FSM_t fsm)
     fsm->li->linkIndex = j;
     fsm->path = _free(fsm->path);
     fsm->ix = ix;
-    rc = fsmNext(fsm, FSM_MAP);
+    rc = fsmMapPath(fsm);
     return rc;
 }
 
@@ -610,105 +709,6 @@ static int fsmMapFCaps(FSM_t fsm)
     return 0;
 }
 #endif
-
-/**
- * Map next file path and action.
- * @param fsm		file state machine
- */
-static int fsmMapPath(FSM_t fsm)
-{
-    rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
-    int rc = 0;
-    int i;
-
-    fsm->osuffix = NULL;
-    fsm->nsuffix = NULL;
-    fsm->action = FA_UNKNOWN;
-
-    i = fsm->ix;
-    if (fi && i >= 0 && i < rpmfiFC(fi)) {
-	rpmte te = fsmGetTe(fsm);
-	rpmfs fs = rpmteGetFileStates(te);
-	/* XXX these should use rpmfiFFlags() etc */
-	fsm->action = rpmfsGetAction(fs, i);
-	fsm->fflags = rpmfiFFlagsIndex(fi, i);
-
-	/* src rpms have simple base name in payload. */
-	fsm->dirName = rpmfiDNIndex(fi, rpmfiDIIndex(fi, i));
-	fsm->baseName = rpmfiBNIndex(fi, i);
-
-	switch (fsm->action) {
-	case FA_SKIP:
-	    break;
-	case FA_UNKNOWN:
-	    break;
-
-	case FA_COPYOUT:
-	    break;
-	case FA_COPYIN:
-	case FA_CREATE:
-	    break;
-
-	case FA_SKIPNSTATE:
-	    if (rpmteType(te) == TR_ADDED)
-		rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
-	    break;
-
-	case FA_SKIPNETSHARED:
-	    if (rpmteType(te) == TR_ADDED)
-		rpmfsSetState(fs, i, RPMFILE_STATE_NETSHARED);
-	    break;
-
-	case FA_SKIPCOLOR:
-	    if (rpmteType(te) == TR_ADDED)
-		rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
-	    break;
-
-	case FA_BACKUP:
-	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (rpmteType(te)) {
-	    case TR_ADDED:
-		fsm->osuffix = SUFFIX_RPMORIG;
-		break;
-	    case TR_REMOVED:
-		fsm->osuffix = SUFFIX_RPMSAVE;
-		break;
-	    }
-	    break;
-
-	case FA_ALTNAME:
-	    assert(rpmteType(te) == TR_ADDED);
-	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-		fsm->nsuffix = SUFFIX_RPMNEW;
-	    break;
-
-	case FA_SAVE:
-	    assert(rpmteType(te) == TR_ADDED);
-	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-		fsm->osuffix = SUFFIX_RPMSAVE;
-	    break;
-	case FA_ERASE:
-#if 0	/* XXX is this a genhdlist fix? */
-	    assert(rpmteType(>te) == TR_REMOVED);
-#endif
-	    /*
-	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
-	     * legacy rpm behavior.
-	     */
-	    break;
-	default:
-	    break;
-	}
-
-	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
-	    const struct stat * st = &fsm->sb;
-	    fsm->path = _free(fsm->path);
-	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
-		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
-	}
-    }
-    return rc;
-}
 
 /**
  * Map file stat(2) info.
@@ -985,7 +985,7 @@ static int writeLinkedFile(FSM_t fsm)
 	if (fsm->li->filex[i] < 0) continue;
 
 	fsm->ix = fsm->li->filex[i];
-	rc = fsmNext(fsm, FSM_MAP);
+	rc = fsmMapPath(fsm);
 
 	/* Write data after last link. */
 	rc = writeFile(fsm, (i == 0));
@@ -1025,7 +1025,7 @@ static int fsmMakeLinks(FSM_t fsm)
     fsm->ix = -1;
 
     fsm->ix = fsm->li->filex[fsm->li->createdPath];
-    rc = fsmNext(fsm, FSM_MAP);
+    rc = fsmMapPath(fsm);
     fsm->opath = fsm->path;
     fsm->path = NULL;
     for (i = 0; i < fsm->li->nlink; i++) {
@@ -1034,7 +1034,7 @@ static int fsmMakeLinks(FSM_t fsm)
 
 	fsm->ix = fsm->li->filex[i];
 	fsm->path = _free(fsm->path);
-	rc = fsmNext(fsm, FSM_MAP);
+	rc = fsmMapPath(fsm);
 	if (XFA_SKIPPING(fsm->action)) continue;
 
 	rc = fsmUNSAFE(fsm, FSM_VERIFY);
@@ -1086,7 +1086,7 @@ static int fsmCommitLinks(FSM_t fsm)
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
 	fsm->ix = fsm->li->filex[i];
-	rc = fsmNext(fsm, FSM_MAP);
+	rc = fsmMapPath(fsm);
 	if (!XFA_SKIPPING(fsm->action))
 	    rc = fsmNext(fsm, FSM_COMMIT);
 	fsm->path = _free(fsm->path);
@@ -1325,7 +1325,7 @@ static int fsmInit(FSM_t fsm)
     }
 
     /* Generate file path. */
-    rc = fsmNext(fsm, FSM_MAP);
+    rc = fsmMapPath(fsm);
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
@@ -1907,7 +1907,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    rc = CPIOERR_MISSING_HARDLINK;
 		    if (fsm->failedFile && *fsm->failedFile == NULL) {
 			fsm->ix = fsm->li->filex[i];
-			if (!fsmNext(fsm, FSM_MAP)) {
+			if (!fsmMapPath(fsm)) {
 	    		    /* Out-of-sync hardlinks handled as sub-state */
 			    *fsm->failedFile = fsm->path;
 			    fsm->path = NULL;
