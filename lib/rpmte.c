@@ -42,7 +42,6 @@ struct rpmte_s {
     int npreds;			/*!< No. of predecessors. */
     int tree;			/*!< Tree index. */
     int depth;			/*!< Depth in dependency tree. */
-    int breadth;		/*!< Breadth in dependency tree. */
     unsigned int db_instance;	/*!< Database instance (of removed pkgs) */
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
@@ -419,21 +418,6 @@ int rpmteSetDepth(rpmte te, int ndepth)
 	te->depth = ndepth;
     }
     return odepth;
-}
-
-int rpmteBreadth(rpmte te)
-{
-    return (te != NULL ? te->depth : 0);
-}
-
-int rpmteSetBreadth(rpmte te, int nbreadth)
-{
-    int obreadth = 0;
-    if (te != NULL) {
-	obreadth = te->breadth;
-	te->breadth = nbreadth;
-    }
-    return obreadth;
 }
 
 int rpmteNpreds(rpmte te)

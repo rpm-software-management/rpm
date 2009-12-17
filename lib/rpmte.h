@@ -181,21 +181,6 @@ int rpmteDepth(rpmte te);
 int rpmteSetDepth(rpmte te, int ndepth);
 
 /** \ingroup rpmte
- * Retrieve dependency tree breadth of transaction element.
- * @param te		transaction element
- * @return		breadth
- */
-int rpmteBreadth(rpmte te);
-
-/** \ingroup rpmte
- * Set dependency tree breadth of transaction element.
- * @param te		transaction element
- * @param nbreadth	new breadth
- * @return		previous breadth
- */
-int rpmteSetBreadth(rpmte te, int nbreadth);
-
-/** \ingroup rpmte
  * Retrieve tsort no. of predecessors of transaction element.
  * @param te		transaction element
  * @return		no. of predecessors
