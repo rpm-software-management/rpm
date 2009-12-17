@@ -1589,19 +1589,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	break;
-    case FSM_INIT:
-    case FSM_PRE:
-	break;
-    case FSM_MAP:
-	rc = fsmMapPath(fsm);
-	break;
-    case FSM_MKDIRS:
-	rc = fsmMkdirs(fsm);
-	break;
-    case FSM_RMDIRS:
-	if (fsm->dnlx)
-	    rc = fsmRmdirs(fsm);
-	break;
     case FSM_PROCESS:
 	if (fsm->postpone) {
 	    if (fsm->goal == FSM_PKGINSTALL)
