@@ -1143,6 +1143,17 @@ static int fsmRmdirs(FSM_t fsm)
     return rc;
 }
 
+static int fsmMkdir(FSM_t fsm)
+{
+    int rc = mkdir(fsm->path, (fsm->sb.st_mode & 07777));
+    if (_fsm_debug && (FSM_MKDIR & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_MKDIR),
+	       fsm->path, (unsigned)(fsm->sb.st_mode & 07777),
+	       (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
+    return rc;
+}
+
 /**
  * Create (if necessary) directories not explicitly included in package.
  * @param fsm		file state machine data
@@ -1210,7 +1221,7 @@ static int fsmMkdirs(FSM_t fsm)
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
 		st->st_mode = S_IFDIR | (_dirPerms & 07777);
-		rc = fsmNext(fsm, FSM_MKDIR);
+		rc = fsmMkdir(fsm);
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
@@ -1365,7 +1376,6 @@ static int fsmInit(FSM_t fsm)
     return rc;
 
 }
-
 
 /********************************************************************/
 
@@ -1657,7 +1667,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
 		st->st_mode |=  00700;
-		rc = fsmNext(fsm, FSM_MKDIR);
+		rc = fsmMkdir(fsm);
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
@@ -2013,14 +2023,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
 		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
-	break;
-    case FSM_MKDIR:
-	rc = mkdir(fsm->path, (st->st_mode & 07777));
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & 07777),
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
 	break;
     case FSM_RMDIR:
 	rc = rmdir(fsm->path);
