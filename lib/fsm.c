@@ -1446,6 +1446,68 @@ static int fsmRename(FSM_t fsm)
     return rc;
 }
 
+
+static int fsmChown(FSM_t fsm)
+{
+    int rc = chown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+    if (_fsm_debug && (FSM_CHOWN & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_CHOWN),
+	       fsm->path, (int)fsm->sb.st_uid, (int)fsm->sb.st_gid,
+	       (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
+    return rc;
+}
+
+static int fsmLChown(FSM_t fsm)
+{
+    int rc = 0;
+    rc = lchown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+    if (_fsm_debug && (FSM_LCHOWN & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_LCHOWN),
+	       fsm->path, (int)fsm->sb.st_uid, (int)fsm->sb.st_gid,
+	       (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
+    return rc;
+}
+
+static int fsmChmod(FSM_t fsm)
+{
+    int rc = chmod(fsm->path, (fsm->sb.st_mode & 07777));
+    if (_fsm_debug && (FSM_CHMOD & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_CHMOD),
+	       fsm->path, (unsigned)(fsm->sb.st_mode & 07777),
+	       (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
+    return rc;
+}
+
+static int fsmUtime(FSM_t fsm)
+{
+    int rc = 0;
+    struct utimbuf stamp;
+    stamp.actime = fsm->sb.st_mtime;
+    stamp.modtime = fsm->sb.st_mtime;
+    rc = utime(fsm->path, &stamp);
+    if (_fsm_debug && (FSM_UTIME & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", fileStageString(FSM_UTIME),
+	       fsm->path, (unsigned)fsm->sb.st_mtime,
+	       (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
+    return rc;
+}
+
+#if WITH_CAP
+static int fsmSetcap(FSM_t fsm)
+{
+    int rc = cap_set_file(fsm->path, fsm->fcaps);
+    if (rc < 0) {
+	rc = CPIOERR_SETCAP_FAILED;
+    }
+    return rc;
+}
+#endif /* WITH_CAP */
+
+
 /********************************************************************/
 
 #define	IS_DEV_LOG(_x)	\
@@ -1796,12 +1858,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 	if (fsm->goal == FSM_PKGINSTALL) {
 	    /* XXX only erase if temp fn w suffix is in use */
-	    if (fsm->sufbuf[0] != '\0')
+	    if (fsm->sufbuf[0] != '\0') {
 		if (S_ISDIR(st->st_mode)) {
 		    (void) fsmRmdir(fsm);
 		} else {
-		    fsmUnlink(fsm);
+		    (void) fsmUnlink(fsm);
 		}
+	    }
 
 #ifdef	NOTYET	/* XXX remove only dirs just created, not all. */
 	    if (fsm->dnlx)
@@ -1927,24 +1990,24 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())
-		    rc = fsmNext(fsm, FSM_LCHOWN);
+		    rc = fsmLChown(fsm);
 	    } else {
 		if (!rc && !getuid())
-		    rc = fsmNext(fsm, FSM_CHOWN);
+		    rc = fsmChown(fsm);
 		if (!rc)
-		    rc = fsmNext(fsm, FSM_CHMOD);
+		    rc = fsmChmod(fsm);
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
 		    rpmfi fi = fsmGetFi(fsm);
 		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
-		    rc = fsmNext(fsm, FSM_UTIME);
+		    rc = fsmUtime(fsm);
 		    st->st_mtime = mtime;
 		}
 #if WITH_CAP
 		if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
 		    rc = fsmMapFCaps(fsm);
 		    if (!rc && fsm->fcaps) {
-			rc = fsmNext(fsm, FSM_SETCAP);
+			rc = fsmSetcap(fsm);
 			cap_free(fsm->fcaps);
 		    }
 		    fsm->fcaps = NULL;
@@ -2050,50 +2113,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 	break;
-    case FSM_CHOWN:
-	rc = chown(fsm->path, st->st_uid, st->st_gid);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
-		fsm->path, (int)st->st_uid, (int)st->st_gid,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
-	break;
-    case FSM_LCHOWN:
-	rc = lchown(fsm->path, st->st_uid, st->st_gid);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
-		fsm->path, (int)st->st_uid, (int)st->st_gid,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
-	break;
-    case FSM_CHMOD:
-	rc = chmod(fsm->path, (st->st_mode & 07777));
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & 07777),
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
-	break;
-    case FSM_UTIME:
-	{   struct utimbuf stamp;
-	    stamp.actime = st->st_mtime;
-	    stamp.modtime = st->st_mtime;
-	    rc = utime(fsm->path, &stamp);
-	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", cur,
-			fsm->path, (unsigned)st->st_mtime,
-			(rc < 0 ? strerror(errno) : ""));
-	    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
-	}
-	break;
-#if WITH_CAP
-    case FSM_SETCAP:
-	rc = cap_set_file(fsm->path, fsm->fcaps);
-	if (rc < 0) {
-	    rc = CPIOERR_SETCAP_FAILED;
-	}
-	break;
-#endif /* WITH_CAP */
     case FSM_SYMLINK:
 	rc = symlink(fsm->opath, fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
