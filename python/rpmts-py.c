@@ -138,6 +138,7 @@ struct rpmtsObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     rpmfdObject *scriptFd;
+    PyObject *keyList;
     rpmts	ts;
     rpmtsi tsi;
 };
@@ -180,6 +181,9 @@ rpmts_AddInstall(rpmtsObject * s, PyObject * args)
 	return NULL;
 
     rc = rpmtsAddInstallElement(s->ts, h, key, how, NULL);
+    if (key && rc == 0) {
+	PyList_Append(s->keyList, key);
+    }
     return PyBool_FromLong((rc == 0));
 }
 
@@ -692,6 +696,7 @@ static void rpmts_dealloc(rpmtsObject * s)
 
     s->ts = rpmtsFree(s->ts);
     Py_XDECREF(s->scriptFd);
+    Py_XDECREF(s->keyList);
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
@@ -703,6 +708,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     s->ts = rpmtsCreate();
     s->scriptFd = NULL;
     s->tsi = NULL;
+    s->keyList = PyList_New(0);
     return (PyObject *) s;
 }
 

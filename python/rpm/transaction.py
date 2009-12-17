@@ -6,8 +6,6 @@ from rpm._rpm import ts as _rpmts
 # TODO: migrate relevant documentation from C-side
 class TransactionSet(_rpmts):
     _probFilter = 0
-    # FIXME: kludge for keeping refcounts on transaction element keys
-    _keyList = []
 
     def _wrapSetGet(self, attr, val):
         oval = getattr(self, attr)
@@ -62,7 +60,6 @@ class TransactionSet(_rpmts):
 
         if not _rpmts.addInstall(self, header, key, upgrade):
             raise rpm.error("adding package to transaction failed")
-        self._keyList.append(key)
 
     def addErase(self, item):
         hdrs = []
