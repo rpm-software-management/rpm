@@ -1377,6 +1377,20 @@ static int fsmInit(FSM_t fsm)
 
 }
 
+static int fsmUnlink(FSM_t fsm)
+{
+    int rc = 0;
+    if (fsm->mapFlags & CPIO_SBIT_CHECK)
+        removeSBITS(fsm->path);
+    rc = unlink(fsm->path);
+    if (_fsm_debug && (FSM_UNLINK & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", fileStageString(FSM_UNLINK),
+	       fsm->path, (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)
+	rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
+    return rc;
+}
+
 /********************************************************************/
 
 #define	IS_DEV_LOG(_x)	\
@@ -1728,8 +1742,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->goal == FSM_PKGINSTALL) {
 	    /* XXX only erase if temp fn w suffix is in use */
 	    if (fsm->sufbuf[0] != '\0')
-		(void) fsmNext(fsm,
-		    (S_ISDIR(st->st_mode) ? FSM_RMDIR : FSM_UNLINK));
+		if (S_ISDIR(st->st_mode)) {
+		    (void) fsmNext(fsm, FSM_RMDIR);
+		} else {
+		    fsmUnlink(fsm);
+		}
 
 #ifdef	NOTYET	/* XXX remove only dirs just created, not all. */
 	    if (fsm->dnlx)
@@ -1804,7 +1821,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			break;
 		    }
 		} else {
-		    rc = fsmNext(fsm, FSM_UNLINK);
+		    rc = fsmUnlink(fsm);
 		    if (!rc) break;
 		    switch (rc) {
 		    case CPIOERR_ENOENT:
@@ -1939,7 +1956,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
 	    rc = fsmNext(fsm, FSM_RENAME);
 	    if (!rc)
-		    (void) fsmNext(fsm, FSM_UNLINK);
+		    (void) fsmUnlink(fsm);
 	    else
 		    rc = CPIOERR_UNLINK_FAILED;
 	    _free(fsm->path);
@@ -1974,20 +1991,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	    /* XXX shouldn't do this with commit/undo. */
 	rc = 0;
-	if (fsm->stage == FSM_PROCESS) rc = fsmNext(fsm, FSM_UNLINK);
+	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-
-    case FSM_UNLINK:
-	if (fsm->mapFlags & CPIO_SBIT_CHECK)
-	    removeSBITS(fsm->path);
-	rc = unlink(fsm->path);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)
-	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
 	break;
     case FSM_RENAME:
 	if (fsm->mapFlags & CPIO_SBIT_CHECK)
