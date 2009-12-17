@@ -323,13 +323,6 @@ const char * rpmteNEVR(rpmte te);
 const char * rpmteNEVRA(rpmte te);
 
 /** \ingroup rpmte
- * Retrieve file handle from transaction element.
- * @param te		transaction element
- * @return		file handle
- */
-FD_t rpmteFd(rpmte te);
-
-/** \ingroup rpmte
  * Retrieve key from transaction element.
  * @param te		transaction element
  * @return		key

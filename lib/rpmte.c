@@ -577,11 +577,6 @@ FD_t rpmteSetFd(rpmte te, FD_t fd)
     return NULL;
 }
 
-FD_t rpmteFd(rpmte te)
-{
-    return (te != NULL ? te->fd : NULL);
-}
-
 fnpyKey rpmteKey(rpmte te)
 {
     return (te != NULL ? te->key : NULL);
