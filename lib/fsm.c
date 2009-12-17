@@ -1158,6 +1158,21 @@ static int fsmRmdirs(FSM_t fsm)
     return rc;
 }
 
+static int fsmLsetfcon(FSM_t fsm)
+{
+    int rc = 0;
+    if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
+	|| rstreq(fsm->fcontext, "<<none>>"))
+	return rc;
+    rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
+    if (_fsm_debug && (FSM_LSETFCON & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_LSETFCON),
+	       fsm->path, fsm->fcontext,
+	       (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
+    return rc;
+}
+
 static int fsmMkdir(FSM_t fsm)
 {
     int rc = mkdir(fsm->path, (fsm->sb.st_mode & 07777));
@@ -1244,7 +1259,7 @@ static int fsmMkdirs(FSM_t fsm)
 			if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 &&
 			    scon != NULL) {
             		    fsm->fcontext = scon;
-			    rc = fsmNext(fsm, FSM_LSETFCON);
+			    rc = fsmLsetfcon(fsm);
 			}
 		    }
 
@@ -1905,7 +1920,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (!rc && !getuid()) {
 		rc = fsmMapFContext(fsm);
 		if (!rc) {
-		    rc = fsmNext(fsm, FSM_LSETFCON);
+		    rc = fsmLsetfcon(fsm);
 		    freecon(fsm->fcontext);	
 		}
 		fsm->fcontext = NULL;
@@ -2034,17 +2049,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_LSETFCON:
-	if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
-	 || rstreq(fsm->fcontext, "<<none>>"))
-	    break;
-	rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->path, fsm->fcontext,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
 	break;
     case FSM_CHOWN:
 	rc = chown(fsm->path, st->st_uid, st->st_gid);
