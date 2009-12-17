@@ -307,17 +307,12 @@ rpmte rpmteNew(const rpmts ts, Header h,
 		int dboffset)
 {
     rpmte p = xcalloc(1, sizeof(*p));
-    uint32_t *ep; 
-    struct rpmtd_s size;
 
     p->type = type;
     addTE(ts, p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
-	headerGet(h, RPMTAG_SIGSIZE, &size, HEADERGET_DEFAULT);
-	if ((ep = rpmtdGetUint32(&size))) {
-	    p->pkgFileSize += 96 + 256 + *ep;
-	}
+	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
 	break;
     case TR_REMOVED:
 	/* nothing to do */
