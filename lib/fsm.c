@@ -1391,6 +1391,31 @@ static int fsmUnlink(FSM_t fsm)
     return rc;
 }
 
+static int fsmRename(FSM_t fsm)
+{
+    if (fsm->mapFlags & CPIO_SBIT_CHECK)
+        removeSBITS(fsm->path);
+    int rc = rename(fsm->opath, fsm->path);
+#if defined(ETXTBSY) && defined(__HPUX__)
+    if (rc && errno == ETXTBSY) {
+	char *path = NULL;
+	rstrscat(&path, fsm->path, "-RPMDELETE", NULL);
+	/*
+	 * XXX HP-UX (and other os'es) don't permit rename to busy
+	 * XXX files.
+	 */
+	rc = rename(fsm->path, path);
+	if (!rc) rc = rename(fsm->opath, fsm->path);
+	free(path);
+    }
+#endif
+    if (_fsm_debug && (FSM_RENAME & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_RENAME),
+	       fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
+    return rc;
+}
+
 /********************************************************************/
 
 #define	IS_DEV_LOG(_x)	\
@@ -1649,7 +1674,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		char * opath = fsm->opath;
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-		rc = fsmNext(fsm, FSM_RENAME);
+		rc = fsmRename(fsm);
 		if (!rc)
 		    rpmlog(RPMLOG_WARNING,
 			_("%s saved as %s\n"),
@@ -1781,7 +1806,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    char * path = fsm->path;
 	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
 	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-	    rc = fsmNext(fsm, FSM_RENAME);
+	    rc = fsmRename(fsm);
 	    if (!rc) {
 		rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
 				(fsm->opath ? fsm->opath : ""),
@@ -1849,7 +1874,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    {
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
-		rc = fsmNext(fsm, FSM_RENAME);
+		rc = fsmRename(fsm);
 		if (!rc && fsm->nsuffix) {
 		    char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
@@ -1954,7 +1979,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	     */
 	    fsm->opath = fsm->path;
 	    fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
-	    rc = fsmNext(fsm, FSM_RENAME);
+	    rc = fsmRename(fsm);
 	    if (!rc)
 		    (void) fsmUnlink(fsm);
 	    else
@@ -1994,28 +2019,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_RENAME:
-	if (fsm->mapFlags & CPIO_SBIT_CHECK)
-	    removeSBITS(fsm->path);
-	rc = rename(fsm->opath, fsm->path);
-#if defined(ETXTBSY) && defined(__HPUX__)
-	if (rc && errno == ETXTBSY) {
-	    char *path = NULL;
-	    rstrscat(&path, fsm->path, "-RPMDELETE", NULL);
-	    /*
-	     * XXX HP-UX (and other os'es) don't permit rename to busy
-	     * XXX files.
-	     */
-	    rc = rename(fsm->path, path);
-	    if (!rc) rc = rename(fsm->opath, fsm->path);
-	    free(path);
-	}
-#endif
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
 	break;
     case FSM_RMDIR:
 	rc = rmdir(fsm->path);
