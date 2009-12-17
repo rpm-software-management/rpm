@@ -1099,6 +1099,21 @@ static int fsmCommitLinks(FSM_t fsm)
     return rc;
 }
 
+static int fsmRmdir(FSM_t fsm)
+{
+    int rc = rmdir(fsm->path);
+    if (_fsm_debug && (FSM_RMDIR & FSM_SYSCALL))
+	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", fileStageString(FSM_RMDIR),
+	       fsm->path, (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)
+	switch (errno) {
+	case ENOENT:        rc = CPIOERR_ENOENT;    break;
+	case ENOTEMPTY:     rc = CPIOERR_ENOTEMPTY; break;
+	default:            rc = CPIOERR_RMDIR_FAILED; break;
+	}
+    return rc;
+}
+
 /**
  * Remove (if created) directories not explicitly included in package.
  * @param fsm		file state machine data
@@ -1129,7 +1144,7 @@ static int fsmRmdirs(FSM_t fsm)
 	do {
 	    if (*te == '/') {
 		*te = '\0';
-		rc = fsmNext(fsm, FSM_RMDIR);
+		rc = fsmRmdir(fsm);
 		*te = '/';
 	    }
 	    if (rc)
@@ -1768,7 +1783,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /* XXX only erase if temp fn w suffix is in use */
 	    if (fsm->sufbuf[0] != '\0')
 		if (S_ISDIR(st->st_mode)) {
-		    (void) fsmNext(fsm, FSM_RMDIR);
+		    (void) fsmRmdir(fsm);
 		} else {
 		    fsmUnlink(fsm);
 		}
@@ -1823,7 +1838,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->action == FA_ERASE) {
 		rpmte te = fsmGetTe(fsm);
 		if (S_ISDIR(st->st_mode)) {
-		    rc = fsmNext(fsm, FSM_RMDIR);
+		    rc = fsmRmdir(fsm);
 		    if (!rc) break;
 		    switch (rc) {
 		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
@@ -2019,18 +2034,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_RMDIR:
-	rc = rmdir(fsm->path);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)
-	    switch (errno) {
-	    case ENOENT:        rc = CPIOERR_ENOENT;    break;
-	    case ENOTEMPTY:     rc = CPIOERR_ENOTEMPTY; break;
-	    default:            rc = CPIOERR_RMDIR_FAILED; break;
-	    }
 	break;
     case FSM_LSETFCON:
 	if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
