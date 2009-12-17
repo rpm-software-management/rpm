@@ -43,7 +43,7 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
     RPMTRANS_FLAG_COMMIT	= (1 << 13),
     RPMTRANS_FLAG_UNDO		= (1 << 14),
-    RPMTRANS_FLAG_REVERSE	= (1 << 15),
+    RPMTRANS_FLAG_REVERSE	= (1 << 15),	/*!< obsolete, unused */
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
     RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */

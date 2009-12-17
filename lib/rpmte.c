@@ -703,8 +703,7 @@ rpmtsi rpmtsiInit(rpmts ts)
 
     tsi = xcalloc(1, sizeof(*tsi));
     tsi->ts = rpmtsLink(ts, RPMDBG_M("rpmtsi"));
-    tsi->reverse = ((rpmtsFlags(ts) & RPMTRANS_FLAG_REVERSE) ? 1 : 0);
-    tsi->oc = (tsi->reverse ? (rpmtsNElements(ts) - 1) : 0);
+    tsi->oc = 0;
     tsi->ocsave = tsi->oc;
     return tsi;
 }
@@ -723,11 +722,7 @@ rpmte rpmtsiNextElement(rpmtsi tsi)
     if (tsi == NULL || tsi->ts == NULL || rpmtsNElements(tsi->ts) <= 0)
 	return te;
 
-    if (tsi->reverse) {
-	if (tsi->oc >= 0)		oc = tsi->oc--;
-    } else {
-    	if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
-    }
+    if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
     tsi->ocsave = oc;
     if (oc != -1)
 	te = rpmtsElement(tsi->ts, oc);
