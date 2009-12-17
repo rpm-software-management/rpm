@@ -1574,7 +1574,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
 	/* Detect and create directories not explicitly in package. */
 	if (fsm->goal == FSM_PKGINSTALL) {
-	    rc = fsmNext(fsm, FSM_MKDIRS);
+	    rc = fsmMkdirs(fsm);
 	    if (!rc) fsm->mkdirsdone = 1;
 	}
 
@@ -1736,7 +1736,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 
 #ifdef	NOTYET	/* XXX remove only dirs just created, not all. */
 	    if (fsm->dnlx)
-		(void) fsmNext(fsm, FSM_RMDIRS);
+		(void) fsmRmdirs(fsm);
 #endif
 	    errno = saveerrno;
 	}
