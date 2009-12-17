@@ -517,13 +517,13 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, strlen(field), ".-_+") != RPMRC_OK) return RPMRC_FAIL;
+	if (rpmCharCheck(spec, field, strlen(field), ".-_+%{}") != RPMRC_OK) return RPMRC_FAIL;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, strlen(field), "._+") != RPMRC_OK) return RPMRC_FAIL;
+	if (rpmCharCheck(spec, field, strlen(field), "._+%{}") != RPMRC_OK) return RPMRC_FAIL;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_URL:
