@@ -1806,8 +1806,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /* XXX symlink(fsm->opath, fsm->path) */
 	    fsm->opath = fsm->wrbuf;
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_ENOENT)
-		rc = fsmNext(fsm, FSM_SYMLINK);
+	    if (rc == CPIOERR_ENOENT) {
+		rc = symlink(fsm->opath, fsm->path);
+		if (_fsm_debug && (FSM_SYMLINK & FSM_SYSCALL))
+		    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_SYMLINK),
+			   fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
+		if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
+	    }
 	    fsm->opath = opath;		/* XXX restore fsm->path */
 	} else if (S_ISFIFO(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
@@ -2112,13 +2117,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_SYMLINK:
-	rc = symlink(fsm->opath, fsm->path);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
 	break;
     case FSM_LINK:
 	rc = link(fsm->opath, fsm->path);
