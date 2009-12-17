@@ -1042,7 +1042,12 @@ static int fsmMakeLinks(FSM_t fsm)
 	if (!(rc == CPIOERR_ENOENT)) break;
 
 	/* XXX link(fsm->opath, fsm->path) */
-	rc = fsmNext(fsm, FSM_LINK);
+	rc = link(fsm->opath, fsm->path);
+	if (_fsm_debug && (FSM_LINK & FSM_SYSCALL))
+	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_LINK),
+		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
+	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
+
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
 	    *fsm->failedFile = xstrdup(fsm->path);
@@ -2117,13 +2122,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_LINK:
-	rc = link(fsm->opath, fsm->path);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", cur,
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
 	break;
     case FSM_MKFIFO:
 	rc = mkfifo(fsm->path, (st->st_mode & 07777));
