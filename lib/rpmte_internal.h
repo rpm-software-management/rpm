@@ -81,6 +81,9 @@ RPM_GNUC_INTERNAL
 int rpmteClose(rpmte te, rpmts ts, int reset_fi);
 
 RPM_GNUC_INTERNAL
+FD_t rpmtePayload(rpmte te);
+
+RPM_GNUC_INTERNAL
 int rpmteMarkFailed(rpmte te, rpmts ts);
 
 RPM_GNUC_INTERNAL

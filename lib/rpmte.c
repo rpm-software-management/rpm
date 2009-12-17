@@ -780,7 +780,7 @@ static Header rpmteFDHeader(rpmts ts, rpmte te)
 	rpmRC pkgrc;
 
 	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
-	pkgrc = rpmReadPackageFile(ts, rpmteFd(te), rpmteNEVRA(te), &h);
+	pkgrc = rpmReadPackageFile(ts, te->fd, rpmteNEVRA(te), &h);
 	rpmtsSetVSFlags(ts, ovsflags);
 	switch (pkgrc) {
 	default:
@@ -847,6 +847,18 @@ int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 	rpmteSetFI(te, NULL);
     }
     return 1;
+}
+
+FD_t rpmtePayload(rpmte te)
+{
+    FD_t payload = NULL;
+    if (te->fd && te->h) {
+	const char *compr = headerGetString(te->h, RPMTAG_PAYLOADCOMPRESSOR);
+	char *ioflags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
+	payload = Fdopen(fdDup(Fileno(te->fd)), ioflags);
+	free(ioflags);
+    }
+    return payload;
 }
 
 int rpmteMarkFailed(rpmte te, rpmts ts)

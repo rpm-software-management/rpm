@@ -1301,16 +1301,8 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 
-	    /* Retrieve type of payload compression. */
-	    rc = rpmpsmNext(psm, PSM_RPMIO_FLAGS);
-
-	    if (rpmteFd(psm->te) == NULL) {	/* XXX can't happen */
-		rc = RPMRC_FAIL;
-		break;
-	    }
-
-	    payload = Fdopen(fdDup(Fileno(rpmteFd(psm->te))), psm->rpmio_flags);
-	    if (payload == NULL) {	/* XXX can't happen */
+	    payload = rpmtePayload(psm->te);
+	    if (payload == NULL) {
 		rc = RPMRC_FAIL;
 		break;
 	    }
