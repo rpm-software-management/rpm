@@ -1825,7 +1825,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
-		rc = fsmNext(fsm, FSM_MKFIFO);
+
+		rc = mkfifo(fsm->path, (st->st_mode & 07777));
+		if (_fsm_debug && (FSM_MKFIFO & FSM_SYSCALL))
+		    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_MKFIFO),
+			   fsm->path, (unsigned)(st->st_mode & 07777),
+			   (rc < 0 ? strerror(errno) : ""));
+		if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
+
 		st->st_mode = st_mode;	/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISCHR(st->st_mode) ||
@@ -2122,14 +2129,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_MKFIFO:
-	rc = mkfifo(fsm->path, (st->st_mode & 07777));
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & 07777),
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
 	break;
     case FSM_MKNOD:
 	/* FIX: check S_IFIFO or dev != 0 */
