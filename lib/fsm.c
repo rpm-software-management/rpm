@@ -1840,8 +1840,16 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     S_ISSOCK(st->st_mode))
 	{
 	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
-	    if (rc == CPIOERR_ENOENT)
-		rc = fsmNext(fsm, FSM_MKNOD);
+	    if (rc == CPIOERR_ENOENT) {
+		/* FIX: check S_IFIFO or dev != 0 */
+		rc = mknod(fsm->path, (fsm->sb.st_mode & ~07777), fsm->sb.st_rdev);
+		if (_fsm_debug && (FSM_MKNOD & FSM_SYSCALL))
+		    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", fileStageString(FSM_MKNOD),
+			   fsm->path, (unsigned)(fsm->sb.st_mode & ~07777),
+			   (unsigned)fsm->sb.st_rdev,
+			   (rc < 0 ? strerror(errno) : ""));
+		if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
+	    }
 	} else {
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
 	    if (!IS_DEV_LOG(fsm->path))
@@ -2129,16 +2137,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_MKNOD:
-	/* FIX: check S_IFIFO or dev != 0 */
-	rc = mknod(fsm->path, (st->st_mode & ~07777), st->st_rdev);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", cur,
-		fsm->path, (unsigned)(st->st_mode & ~07777),
-		(unsigned)st->st_rdev,
-		(rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
 	break;
     case FSM_LSTAT:
 	rc = lstat(fsm->path, ost);
