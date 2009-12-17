@@ -1276,6 +1276,99 @@ static void removeSBITS(const char *path)
     }
 }
 
+/********************************************************************/
+
+static int fsmInit(FSM_t fsm)
+{
+    int rc = 0;
+
+    fsm->path = _free(fsm->path);
+    fsm->postpone = 0;
+    fsm->diskchecked = fsm->exists = 0;
+    fsm->subdir = NULL;
+    fsm->suffix = (fsm->sufbuf[0] != '\0' ? fsm->sufbuf : NULL);
+    fsm->action = FA_UNKNOWN;
+    fsm->osuffix = NULL;
+    fsm->nsuffix = NULL;
+
+    if (fsm->goal == FSM_PKGINSTALL) {
+	/* Read next header from payload, checking for end-of-payload. */
+	rc = fsmUNSAFE(fsm, FSM_NEXT);
+    }
+    if (rc) return rc;
+
+    /* Identify mapping index. */
+    fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
+	       ? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
+
+    /* Detect end-of-loop and/or mapping error. */
+    if (fsm->ix < 0) {
+	if (fsm->goal == FSM_PKGINSTALL) {
+#if 0
+	    rpmlog(RPMLOG_WARNING,
+		   _("archive file %s was not found in header file list\n"),
+		   fsm->path);
+#endif
+	    if (fsm->failedFile && *fsm->failedFile == NULL)
+		*fsm->failedFile = xstrdup(fsm->path);
+	    rc = CPIOERR_UNMAPPED_FILE;
+	} else {
+	    rc = CPIOERR_HDR_TRAILER;
+	}
+	return rc;
+    }
+
+    /* On non-install, mode must be known so that dirs don't get suffix. */
+    if (fsm->goal != FSM_PKGINSTALL) {
+	rpmfi fi = fsmGetFi(fsm);
+	fsm->sb.st_mode = rpmfiFModeIndex(fi, fsm->ix);
+    }
+
+    /* Generate file path. */
+    rc = fsmNext(fsm, FSM_MAP);
+    if (rc) return rc;
+
+    /* Perform lstat/stat for disk file. */
+    if (fsm->path != NULL &&
+	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(fsm->sb.st_mode)))
+    {
+	rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
+			     ? FSM_LSTAT : FSM_STAT));
+	if (rc == CPIOERR_ENOENT) {
+	    // errno = saveerrno; XXX temporary commented out
+	    rc = 0;
+	    fsm->exists = 0;
+	} else if (rc == 0) {
+	    fsm->exists = 1;
+	}
+    } else {
+	/* Skip %ghost files on build. */
+	fsm->exists = 0;
+    }
+    fsm->diskchecked = 1;
+    if (rc) return rc;
+
+    /* On non-install, the disk file stat is what's remapped. */
+    if (fsm->goal != FSM_PKGINSTALL)
+	fsm->sb = fsm->osb;			/* structure assignment */
+
+    /* Remap file perms, owner, and group. */
+    rc = fsmMapAttrs(fsm);
+    if (rc) return rc;
+
+    fsm->postpone = XFA_SKIPPING(fsm->action);
+    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
+	/* FIX: saveHardLink can modify fsm */
+	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
+	    fsm->postpone = saveHardLink(fsm);
+    }
+    return rc;
+
+}
+
+
+/********************************************************************/
+
 #define	IS_DEV_LOG(_x)	\
 	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
 	rstreqn((_x), "/dev/log", sizeof("/dev/log")-1) && \
@@ -1334,7 +1427,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_PKGINSTALL:
 	while (1) {
 	    /* Clean fsm, free'ing memory. Read next archive header. */
-	    rc = fsmUNSAFE(fsm, FSM_INIT);
+	    rc = fsmInit(fsm);
 
 	    /* Exit on end-of-payload. */
 	    if (rc == CPIOERR_HDR_TRAILER) {
@@ -1369,7 +1462,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_PKGCOMMIT:
 	while (1) {
 	    /* Clean fsm, free'ing memory. */
-	    rc = fsmUNSAFE(fsm, FSM_INIT);
+	    rc = fsmInit(fsm);
 
 	    /* Exit on end-of-payload. */
 	    if (rc == CPIOERR_HDR_TRAILER) {
@@ -1385,7 +1478,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     case FSM_PKGBUILD:
 	while (1) {
 
-	    rc = fsmUNSAFE(fsm, FSM_INIT);
+	    rc = fsmInit(fsm);
 
 	    /* Exit on end-of-payload. */
 	    if (rc == CPIOERR_HDR_TRAILER) {
@@ -1487,87 +1580,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
 	break;
     case FSM_INIT:
-	fsm->path = _free(fsm->path);
-	fsm->postpone = 0;
-	fsm->diskchecked = fsm->exists = 0;
-	fsm->subdir = NULL;
-	fsm->suffix = (fsm->sufbuf[0] != '\0' ? fsm->sufbuf : NULL);
-	fsm->action = FA_UNKNOWN;
-	fsm->osuffix = NULL;
-	fsm->nsuffix = NULL;
-
-	if (fsm->goal == FSM_PKGINSTALL) {
-	    /* Read next header from payload, checking for end-of-payload. */
-	    rc = fsmUNSAFE(fsm, FSM_NEXT);
-	}
-	if (rc) break;
-
-	/* Identify mapping index. */
-	fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
-		? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
-
-	/* Detect end-of-loop and/or mapping error. */
-	if (fsm->ix < 0) {
-	    if (fsm->goal == FSM_PKGINSTALL) {
-#if 0
-		rpmlog(RPMLOG_WARNING,
-		    _("archive file %s was not found in header file list\n"),
-			fsm->path);
-#endif
-		if (fsm->failedFile && *fsm->failedFile == NULL)
-		    *fsm->failedFile = xstrdup(fsm->path);
-		rc = CPIOERR_UNMAPPED_FILE;
-	    } else {
-		rc = CPIOERR_HDR_TRAILER;
-	    }
-	    break;
-	}
-
-	/* On non-install, mode must be known so that dirs don't get suffix. */
-	if (fsm->goal != FSM_PKGINSTALL) {
-	    rpmfi fi = fsmGetFi(fsm);
-	    st->st_mode = rpmfiFModeIndex(fi, fsm->ix);
-	}
-
-	/* Generate file path. */
-	rc = fsmNext(fsm, FSM_MAP);
-	if (rc) break;
-
-	/* Perform lstat/stat for disk file. */
-	if (fsm->path != NULL &&
-	    !(fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode)))
-	{
-	    rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
-			? FSM_LSTAT : FSM_STAT));
-	    if (rc == CPIOERR_ENOENT) {
-		errno = saveerrno;
-		rc = 0;
-		fsm->exists = 0;
-	    } else if (rc == 0) {
-		fsm->exists = 1;
-	    }
-	} else {
-	    /* Skip %ghost files on build. */
-	    fsm->exists = 0;
-	}
-	fsm->diskchecked = 1;
-	if (rc) break;
-
-	/* On non-install, the disk file stat is what's remapped. */
-	if (fsm->goal != FSM_PKGINSTALL)
-	    *st = *ost;			/* structure assignment */
-
-	/* Remap file perms, owner, and group. */
-	rc = fsmMapAttrs(fsm);
-	if (rc) break;
-
-	fsm->postpone = XFA_SKIPPING(fsm->action);
-	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
-	    /* FIX: saveHardLink can modify fsm */
-	    if (S_ISREG(st->st_mode) && st->st_nlink > 1)
-		fsm->postpone = saveHardLink(fsm);
-	}
-	break;
     case FSM_PRE:
 	break;
     case FSM_MAP:
