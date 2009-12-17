@@ -47,7 +47,7 @@ rpmlead rpmLeadNew(void)
     rpmGetArchInfo(NULL, &archnum);
     rpmGetOsInfo(NULL, &osnum);
 
-    l->major = (_noDirTokens ? 4: 3);
+    l->major = 3;
     l->minor = 0;
     l->archnum = archnum;
     l->osnum = osnum;
