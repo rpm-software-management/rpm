@@ -43,7 +43,7 @@ rpmte rpmteFree(rpmte te);
 
 /** \ingroup rpmte
  * Create a transaction element.
- * @param ts		transaction set
+ * @param ts		unused
  * @param h		header
  * @param type		TR_ADDED/TR_REMOVED
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)

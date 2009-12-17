@@ -119,7 +119,7 @@ static void delTE(rpmte p)
     return;
 }
 
-static rpmfi getFI(rpmte p, rpmts ts, Header h)
+static rpmfi getFI(rpmte p, Header h)
 {
     rpmfiFlags fiflags;
     fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
@@ -131,7 +131,7 @@ static rpmfi getFI(rpmte p, rpmts ts, Header h)
 	    rpmRelocateFileList(p->relocs, p->nrelocs, p->fs, h);
 	}
     }
-    return rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
+    return rpmfiNew(NULL, h, RPMTAG_BASENAMES, fiflags);
 }
 
 /* stupid bubble sort, but it's probably faster here */
@@ -154,7 +154,7 @@ static void sortRelocs(rpmRelocation *relocations, int numRelocations)
     }
 }
 
-static void buildRelocs(rpmts ts, rpmte p, Header h, rpmRelocation *relocs)
+static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
 {
     int i;
     struct rpmtd_s validRelocs;
@@ -223,15 +223,12 @@ static void buildRelocs(rpmts ts, rpmte p, Header h, rpmRelocation *relocs)
 
 /**
  * Initialize transaction element data from header.
- * @param ts		transaction set
  * @param p		transaction element
  * @param h		header
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
  */
-static void addTE(rpmts ts, rpmte p, Header h,
-		fnpyKey key,
-		rpmRelocation * relocs)
+static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 {
     p->name = headerGetAsString(h, RPMTAG_NAME);
     p->version = headerGetAsString(h, RPMTAG_VERSION);
@@ -253,7 +250,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
     p->nrelocs = 0;
     p->relocs = NULL;
     if (relocs != NULL)
-	buildRelocs(ts, p, h, relocs);
+	buildRelocs(p, h, relocs);
 
     p->db_instance = headerGetInstance(h);
     p->key = key;
@@ -276,7 +273,7 @@ static void addTE(rpmts ts, rpmte p, Header h,
 
 	rpmtdFreeData(&bnames);
     }
-    p->fi = getFI(p, ts, h);
+    p->fi = getFI(p, h);
 
     /* See if we have pre/posttrans scripts. */
     p->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
@@ -309,7 +306,7 @@ rpmte rpmteNew(const rpmts ts, Header h,
     rpmte p = xcalloc(1, sizeof(*p));
 
     p->type = type;
-    addTE(ts, p, h, key, relocs);
+    addTE(p, h, key, relocs);
     switch (type) {
     case TR_ADDED:
 	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
@@ -805,7 +802,7 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
     }
     if (h != NULL) {
 	if (reload_fi) {
-	    te->fi = getFI(te, ts, h);
+	    te->fi = getFI(te, h);
 	}
 	
 	rpmteSetHeader(te, h);
