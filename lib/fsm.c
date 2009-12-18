@@ -2172,7 +2172,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	}
 	break;
     case FSM_NEXT:
-	rc = fsmUNSAFE(fsm, FSM_HREAD);
+	rc = fsmNext(fsm, FSM_POS);
+	if (!rc)
+	    rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
 	if (rc) break;
 	if (rstreq(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
 	    fsm->path = _free(fsm->path);
@@ -2204,11 +2206,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->rdnb = left;
 	    (void) fsmNext(fsm, FSM_DWRITE);
 	}
-	break;
-    case FSM_HREAD:
-	rc = fsmNext(fsm, FSM_POS);
-	if (!rc)
-	    rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
 	break;
     case FSM_DREAD:
 	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);
