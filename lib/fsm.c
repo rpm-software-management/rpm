@@ -1685,7 +1685,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	if (!rc)
-	    rc = fsmNext(fsm, FSM_TRAILER);
+	    rc = cpioTrailerWrite(fsm);
 
 	break;
     case FSM_CREATE:
@@ -2204,9 +2204,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->rdnb = left;
 	    (void) fsmNext(fsm, FSM_DWRITE);
 	}
-	break;
-    case FSM_TRAILER:
-	rc = cpioTrailerWrite(fsm);
 	break;
     case FSM_HREAD:
 	rc = fsmNext(fsm, FSM_POS);
