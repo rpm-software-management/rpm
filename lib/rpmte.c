@@ -38,10 +38,6 @@ struct rpmte_s {
 
     rpmte depends;              /*!< Package updated by this package (ERASE te) */
     rpmte parent;		/*!< Parent transaction element. */
-    int degree;			/*!< No. of immediate children. */
-    int npreds;			/*!< No. of predecessors. */
-    int tree;			/*!< Tree index. */
-    int depth;			/*!< Depth in dependency tree. */
     unsigned int db_instance;	/*!< Database instance (of removed pkgs) */
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
@@ -407,45 +403,45 @@ rpm_loff_t rpmtePkgFileSize(rpmte te)
 
 int rpmteDepth(rpmte te)
 {
-    return (te != NULL ? te->depth : 0);
+    return (te && te->tsi ? te->tsi->depth : 0);
 }
 
 int rpmteSetDepth(rpmte te, int ndepth)
 {
     int odepth = 0;
-    if (te != NULL) {
-	odepth = te->depth;
-	te->depth = ndepth;
+    if (te && te->tsi) {
+	odepth = te->tsi->depth;
+	te->tsi->depth = ndepth;
     }
     return odepth;
 }
 
 int rpmteNpreds(rpmte te)
 {
-    return (te != NULL ? te->npreds : 0);
+    return (te && te->tsi ? te->tsi->npreds : 0);
 }
 
 int rpmteSetNpreds(rpmte te, int npreds)
 {
     int opreds = 0;
-    if (te != NULL) {
-	opreds = te->npreds;
-	te->npreds = npreds;
+    if (te && te->tsi) {
+	opreds = te->tsi->npreds;
+	te->tsi->npreds = npreds;
     }
     return opreds;
 }
 
 int rpmteTree(rpmte te)
 {
-    return (te != NULL ? te->tree : 0);
+    return (te && te->tsi ? te->tsi->tree : 0);
 }
 
 int rpmteSetTree(rpmte te, int ntree)
 {
     int otree = 0;
-    if (te != NULL) {
-	otree = te->tree;
-	te->tree = ntree;
+    if (te && te->tsi) {
+	otree = te->tsi->tree;
+	te->tsi->tree = ntree;
     }
     return otree;
 }
@@ -467,15 +463,15 @@ rpmte rpmteSetParent(rpmte te, rpmte pte)
 
 int rpmteDegree(rpmte te)
 {
-    return (te != NULL ? te->degree : 0);
+    return (te && te->tsi ? te->tsi->degree : 0);
 }
 
 int rpmteSetDegree(rpmte te, int ndegree)
 {
     int odegree = 0;
-    if (te != NULL) {
-	odegree = te->degree;
-	te->degree = ndegree;
+    if (te && te->tsi) {
+	odegree = te->tsi->degree;
+	te->tsi->degree = ndegree;
     }
     return odegree;
 }

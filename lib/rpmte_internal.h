@@ -17,6 +17,10 @@ struct relation_s {
 typedef struct relation_s * relation;
 
 struct tsortInfo_s {
+    int degree;			/*!< No. of immediate children. */
+    int npreds;			/*!< No. of predecessors. */
+    int tree;			/*!< Tree index. */
+    int depth;			/*!< Depth in dependency tree. */
     int	     tsi_count;     // #pkgs this pkg requires
     int	     tsi_qcnt;      // #pkgs requiring this package
     int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
