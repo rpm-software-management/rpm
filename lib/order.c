@@ -379,20 +379,20 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 		      rpmte * outer_queue,
 		      rpmte * outer_queue_end)
 {
-    int treex = rpmteTree(q);
-    int depth = rpmteDepth(q);
     char deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
     tsortInfo q_tsi = rpmteTSI(q);
+    int treex = q_tsi->tree;
+    int depth = q_tsi->depth;
 
     rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d%5d %*s%c%s\n",
-	   *newOrderCount, rpmteNpreds(q),
+	   *newOrderCount, q_tsi->npreds,
 	   q_tsi->tsi_qcnt,
 	   treex, depth,
 	   (2 * depth), "",
 	   deptypechar,
 	   (rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
 
-    (void) rpmteSetDegree(q, 0);
+    q_tsi->degree = 0;
 
     newOrder[*newOrderCount] = q;
     (*newOrderCount)++;
@@ -408,10 +408,10 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 
 	if (p && (--p_tsi->tsi_count) == 0) {
 
-	    (void) rpmteSetTree(p, treex);
-	    (void) rpmteSetDepth(p, depth+1);
+	    p_tsi->tree = treex;
+	    p_tsi->depth = depth + 1;
+	    p_tsi->degree = q_tsi->degree + 1;
 	    (void) rpmteSetParent(p, q);
-	    (void) rpmteSetDegree(q, rpmteDegree(q)+1);
 
 	    if (q_tsi->tsi_SccIdx > 1 && q_tsi->tsi_SccIdx != p_tsi->tsi_SccIdx) {
                 /* Relation point outside of this SCC: add to outside queue */
@@ -426,10 +426,10 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 	    if (--SCCs[p_tsi->tsi_SccIdx].count == 0) {
 		/* New SCC is ready, add this package as representative */
 
-		(void) rpmteSetTree(p, treex);
-		(void) rpmteSetDepth(p, depth+1);
+		p_tsi->tree = treex;
+		p_tsi->depth = depth + 1;
+		p_tsi->degree = q_tsi->degree + 1;
 		(void) rpmteSetParent(p, q);
-		(void) rpmteSetDegree(q, rpmteDegree(q)+1);
 
 		if (outer_queue != NULL) {
 		    addQ(p, outer_queue, outer_queue_end, prefcolor);
