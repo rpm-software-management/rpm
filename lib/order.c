@@ -605,15 +605,16 @@ int rpmtsOrder(rpmts ts)
     treex = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int npreds = rpmteTSI(p)->tsi_count;
-
-	(void) rpmteSetNpreds(p, npreds);
-	(void) rpmteSetDepth(p, 1);
+	tsortInfo p_tsi = rpmteTSI(p);
+	
+	int npreds = p_tsi->tsi_count;
+	p_tsi->npreds = npreds;
+	p_tsi->depth = 1;
 
 	if (npreds == 0)
-	    (void) rpmteSetTree(p, treex++);
+	    p_tsi->tree = treex++;
 	else
-	    (void) rpmteSetTree(p, -1);
+	    p_tsi->tree = -1;
     }
     pi = rpmtsiFree(pi);
     ts->ntrees = treex;
