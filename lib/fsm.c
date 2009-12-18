@@ -878,7 +878,7 @@ static int writeFile(FSM_t fsm, int writeData)
 					 rpmfiBNIndex(fi, fsm->ix)));
     }
 
-    rc = fsmNext(fsm, FSM_HWRITE);
+    rc = cpioHeaderWrite(fsm, st);
     _free(fsm->path);
     fsm->path = path;
     if (rc) goto exit;
@@ -2209,9 +2209,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	rc = fsmNext(fsm, FSM_POS);
 	if (!rc)
 	    rc = cpioHeaderRead(fsm, st);	/* Read next payload header. */
-	break;
-    case FSM_HWRITE:
-	rc = cpioHeaderWrite(fsm, st);		/* Write next payload header. */
 	break;
     case FSM_DREAD:
 	fsm->rdnb = Fread(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->wrlen, fsm->cfd);
