@@ -382,11 +382,11 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
     int treex = rpmteTree(q);
     int depth = rpmteDepth(q);
     char deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
-    tsortInfo tsi = rpmteTSI(q);
+    tsortInfo q_tsi = rpmteTSI(q);
 
     rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d%5d %*s%c%s\n",
 	   *newOrderCount, rpmteNpreds(q),
-	   rpmteTSI(q)->tsi_qcnt,
+	   q_tsi->tsi_qcnt,
 	   treex, depth,
 	   (2 * depth), "",
 	   deptypechar,
@@ -398,7 +398,7 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
     (*newOrderCount)++;
 
     /* T6. Erase relations. */
-    for (relation rel = rpmteTSI(q)->tsi_relations;
+    for (relation rel = q_tsi->tsi_relations;
 	 				rel != NULL; rel = rel->rel_next) {
 	rpmte p = rel->rel_suc;
 	tsortInfo p_tsi = rpmteTSI(p);
@@ -413,16 +413,16 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 	    (void) rpmteSetParent(p, q);
 	    (void) rpmteSetDegree(q, rpmteDegree(q)+1);
 
-	    if (tsi->tsi_SccIdx > 1 && tsi->tsi_SccIdx != p_tsi->tsi_SccIdx) {
+	    if (q_tsi->tsi_SccIdx > 1 && q_tsi->tsi_SccIdx != p_tsi->tsi_SccIdx) {
                 /* Relation point outside of this SCC: add to outside queue */
 		assert(outer_queue != NULL && outer_queue_end != NULL);
 		addQ(p, outer_queue, outer_queue_end, prefcolor);
 	    } else {
-		addQ(p, &tsi->tsi_suc, queue_end, prefcolor);
+		addQ(p, &q_tsi->tsi_suc, queue_end, prefcolor);
 	    }
 	}
 	if (p && p_tsi->tsi_SccIdx > 1 &&
-	                 p_tsi->tsi_SccIdx != rpmteTSI(q)->tsi_SccIdx) {
+	                 p_tsi->tsi_SccIdx != q_tsi->tsi_SccIdx) {
 	    if (--SCCs[p_tsi->tsi_SccIdx].count == 0) {
 		/* New SCC is ready, add this package as representative */
 
@@ -434,12 +434,12 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 		if (outer_queue != NULL) {
 		    addQ(p, outer_queue, outer_queue_end, prefcolor);
 		} else {
-		    addQ(p, &rpmteTSI(q)->tsi_suc, queue_end, prefcolor);
+		    addQ(p, &q_tsi->tsi_suc, queue_end, prefcolor);
 		}
 	    }
 	}
     }
-    tsi->tsi_SccIdx = 0;
+    q_tsi->tsi_SccIdx = 0;
 }
 
 static void collectSCC(rpm_color_t prefcolor, rpmte p,
