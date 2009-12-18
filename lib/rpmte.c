@@ -668,55 +668,6 @@ assert (ix < Count);
     free(refs);
 }
 
-rpmtsi rpmtsiFree(rpmtsi tsi)
-{
-    /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
-    if (tsi)
-	tsi->ts = rpmtsFree(tsi->ts);
-    return _free(tsi);
-}
-
-rpmtsi rpmtsiInit(rpmts ts)
-{
-    rpmtsi tsi = NULL;
-
-    tsi = xcalloc(1, sizeof(*tsi));
-    tsi->ts = rpmtsLink(ts, RPMDBG_M("rpmtsi"));
-    tsi->oc = 0;
-    return tsi;
-}
-
-/**
- * Return next transaction element.
- * @param tsi		transaction element iterator
- * @return		transaction element, NULL on termination
- */
-static
-rpmte rpmtsiNextElement(rpmtsi tsi)
-{
-    rpmte te = NULL;
-    int oc = -1;
-
-    if (tsi == NULL || tsi->ts == NULL || rpmtsNElements(tsi->ts) <= 0)
-	return te;
-
-    if (tsi->oc < rpmtsNElements(tsi->ts))	oc = tsi->oc++;
-    if (oc != -1)
-	te = rpmtsElement(tsi->ts, oc);
-    return te;
-}
-
-rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
-{
-    rpmte te;
-
-    while ((te = rpmtsiNextElement(tsi)) != NULL) {
-	if (type == 0 || (te->type & type) != 0)
-	    break;
-    }
-    return te;
-}
-
 static Header rpmteDBHeader(rpmts ts, unsigned int rec)
 {
     Header h = NULL;

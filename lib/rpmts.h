@@ -9,6 +9,7 @@
 #include <sys/types.h>
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmte.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmsw.h>
 #include <rpm/rpmpgp.h>
@@ -605,6 +606,28 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  * @return		0 on success, 1 on error (not installed)
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
+
+/** \ingroup rpmte
+ * Destroy transaction element iterator.
+ * @param tsi		transaction element iterator
+ * @return		NULL always
+ */
+rpmtsi rpmtsiFree(rpmtsi tsi);
+
+/** \ingroup rpmte
+ * Create transaction element iterator.
+ * @param ts		transaction set
+ * @return		transaction element iterator
+ */
+rpmtsi rpmtsiInit(rpmts ts);
+
+/** \ingroup rpmte
+ * Return next transaction element of type.
+ * @param tsi		transaction element iterator
+ * @param type		transaction element type selector (0 for any)
+ * @return		next transaction element of type, NULL on termination
+ */
+rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type);
 
 #ifdef __cplusplus
 }

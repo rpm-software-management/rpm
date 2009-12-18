@@ -22,11 +22,6 @@ extern int _rpmte_debug;
 typedef struct tsortInfo_s *		tsortInfo;
 
 /** \ingroup rpmte
- * Transaction element iterator.
- */
-typedef struct rpmtsi_s *		rpmtsi;
-
-/** \ingroup rpmte
  * Transaction element type.
  */
 typedef enum rpmElementType_e {
@@ -342,28 +337,6 @@ rpmfi rpmteFI(rpmte te);
  * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
  */
 void rpmteColorDS(rpmte te, rpmTag tag);
-
-/** \ingroup rpmte
- * Destroy transaction element iterator.
- * @param tsi		transaction element iterator
- * @return		NULL always
- */
-rpmtsi rpmtsiFree(rpmtsi tsi);
-
-/** \ingroup rpmte
- * Create transaction element iterator.
- * @param ts		transaction set
- * @return		transaction element iterator
- */
-rpmtsi rpmtsiInit(rpmts ts);
-
-/** \ingroup rpmte
- * Return next transaction element of type.
- * @param tsi		transaction element iterator
- * @param type		transaction element type selector (0 for any)
- * @return		next transaction element of type, NULL on termination
- */
-rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type);
 
 #ifdef __cplusplus
 }

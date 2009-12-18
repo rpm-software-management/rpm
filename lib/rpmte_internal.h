@@ -58,14 +58,6 @@ struct rpmfs_s {
     int allocatedReplaced;
 };
 
-/**
- * Iterator across transaction elements, forward on install, backward on erase.
- */
-struct rpmtsi_s {
-    rpmts ts;		/*!< transaction set. */
-    int oc;		/*!< iterator index. */
-};
-
 RPM_GNUC_INTERNAL
 rpmfi rpmteSetFI(rpmte te, rpmfi fi);
 
