@@ -174,10 +174,10 @@ static inline int addRelation(rpmts ts,
     }
 
     /* Save max. depth in dependency tree */
-    if (rpmteDepth(p) <= rpmteDepth(q))
-	(void) rpmteSetDepth(p, (rpmteDepth(q) + 1));
-    if (rpmteDepth(p) > ts->maxDepth)
-	ts->maxDepth = rpmteDepth(p);
+    if (tsi_p->depth <= tsi_q->depth)
+	tsi_p->depth = tsi_q->depth + 1;
+    if (tsi_p->depth > ts->maxDepth)
+	ts->maxDepth = tsi_p->depth;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = p;
