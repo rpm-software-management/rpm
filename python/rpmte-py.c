@@ -29,11 +29,7 @@
  * - te.NEVR()	Return package name-version-release.
  * - te.Color() Return package color bits.
  * - te.PkgFileSize() Return no. of bytes in package file (approx).
- * - te.Depth()	Return the level in the dependency tree (after ordering).
- * - te.Npreds() Return the number of package prerequisites (after ordering).
- * - te.Degree() Return the parent's degree + 1.
  * - te.Parent() Return the parent element index.
- * - te.Tree()	Return the root dependency tree index.
  * - te.AddedKey() Return the added package index (TR_ADDED).
  * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
  * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
@@ -117,34 +113,11 @@ rpmte_PkgFileSize(rpmteObject * s)
 }
 
 static PyObject *
-rpmte_Depth(rpmteObject * s)
-{
-    return Py_BuildValue("i", rpmteDepth(s->te));
-}
-
-static PyObject *
-rpmte_Npreds(rpmteObject * s)
-{
-    return Py_BuildValue("i", rpmteNpreds(s->te));
-}
-
-static PyObject *
-rpmte_Degree(rpmteObject * s)
-{
-    return Py_BuildValue("i", rpmteDegree(s->te));
-}
-
-static PyObject *
 rpmte_Parent(rpmteObject * s)
 {
     return Py_BuildValue("i", rpmteParent(s->te));
 }
 
-static PyObject *
-rpmte_Tree(rpmteObject * s)
-{
-    return Py_BuildValue("i", rpmteTree(s->te));
-}
 /*
 static PyObject *
 rpmte_DependsOnKey(rpmteObject * s)
@@ -234,15 +207,7 @@ static struct PyMethodDef rpmte_methods[] = {
 	NULL},
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
 	NULL},
-    {"Depth",	(PyCFunction)rpmte_Depth,	METH_NOARGS,
-	NULL},
-    {"Npreds",	(PyCFunction)rpmte_Npreds,	METH_NOARGS,
-	NULL},
-    {"Degree",	(PyCFunction)rpmte_Degree,	METH_NOARGS,
-	NULL},
     {"Parent",	(PyCFunction)rpmte_Parent,	METH_NOARGS,
-	NULL},
-    {"Tree",	(PyCFunction)rpmte_Tree,	METH_NOARGS,
 	NULL},
 /*    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
       NULL}, */

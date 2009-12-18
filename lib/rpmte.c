@@ -401,51 +401,6 @@ rpm_loff_t rpmtePkgFileSize(rpmte te)
     return (te != NULL ? te->pkgFileSize : 0);
 }
 
-int rpmteDepth(rpmte te)
-{
-    return (te && te->tsi ? te->tsi->depth : 0);
-}
-
-int rpmteSetDepth(rpmte te, int ndepth)
-{
-    int odepth = 0;
-    if (te && te->tsi) {
-	odepth = te->tsi->depth;
-	te->tsi->depth = ndepth;
-    }
-    return odepth;
-}
-
-int rpmteNpreds(rpmte te)
-{
-    return (te && te->tsi ? te->tsi->npreds : 0);
-}
-
-int rpmteSetNpreds(rpmte te, int npreds)
-{
-    int opreds = 0;
-    if (te && te->tsi) {
-	opreds = te->tsi->npreds;
-	te->tsi->npreds = npreds;
-    }
-    return opreds;
-}
-
-int rpmteTree(rpmte te)
-{
-    return (te && te->tsi ? te->tsi->tree : 0);
-}
-
-int rpmteSetTree(rpmte te, int ntree)
-{
-    int otree = 0;
-    if (te && te->tsi) {
-	otree = te->tsi->tree;
-	te->tsi->tree = ntree;
-    }
-    return otree;
-}
-
 rpmte rpmteParent(rpmte te)
 {
     return (te != NULL ? te->parent : NULL);
@@ -459,21 +414,6 @@ rpmte rpmteSetParent(rpmte te, rpmte pte)
 	te->parent = pte;
     }
     return opte;
-}
-
-int rpmteDegree(rpmte te)
-{
-    return (te && te->tsi ? te->tsi->degree : 0);
-}
-
-int rpmteSetDegree(rpmte te, int ndegree)
-{
-    int odegree = 0;
-    if (te && te->tsi) {
-	odegree = te->tsi->degree;
-	te->tsi->degree = ndegree;
-    }
-    return odegree;
 }
 
 tsortInfo rpmteTSI(rpmte te)

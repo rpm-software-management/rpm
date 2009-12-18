@@ -209,7 +209,6 @@ fprintf(stdout, "  rankdir=LR\n");
 fprintf(stdout, "//===== Packages:\n");
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, oType)) != NULL) {
-fprintf(stdout, "//%5d%5d %s\n", rpmteTree(p), rpmteDepth(p), rpmteN(p));
 	    q = rpmteParent(p);
 	    if (q != NULL)
 fprintf(stdout, "  \"%s\" -> \"%s\"\n", rpmteN(p), rpmteN(q));

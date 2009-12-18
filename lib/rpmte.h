@@ -161,51 +161,6 @@ void rpmteSetDBInstance(rpmte te, unsigned int instance);
 rpm_loff_t rpmtePkgFileSize(rpmte te);
 
 /** \ingroup rpmte
- * Retrieve dependency tree depth of transaction element.
- * @param te		transaction element
- * @return		depth
- */
-int rpmteDepth(rpmte te);
-
-/** \ingroup rpmte
- * Set dependency tree depth of transaction element.
- * @param te		transaction element
- * @param ndepth	new depth
- * @return		previous depth
- */
-int rpmteSetDepth(rpmte te, int ndepth);
-
-/** \ingroup rpmte
- * Retrieve tsort no. of predecessors of transaction element.
- * @param te		transaction element
- * @return		no. of predecessors
- */
-int rpmteNpreds(rpmte te);
-
-/** \ingroup rpmte
- * Set tsort no. of predecessors of transaction element.
- * @param te		transaction element
- * @param npreds	new no. of predecessors
- * @return		previous no. of predecessors
- */
-int rpmteSetNpreds(rpmte te, int npreds);
-
-/** \ingroup rpmte
- * Retrieve tree index of transaction element.
- * @param te		transaction element
- * @return		tree index
- */
-int rpmteTree(rpmte te);
-
-/** \ingroup rpmte
- * Set tree index of transaction element.
- * @param te		transaction element
- * @param ntree		new tree index
- * @return		previous tree index
- */
-int rpmteSetTree(rpmte te, int ntree);
-
-/** \ingroup rpmte
  * Retrieve parent transaction element.
  * @param te		transaction element
  * @return		parent transaction element
@@ -219,21 +174,6 @@ rpmte rpmteParent(rpmte te);
  * @return		previous parent transaction element
  */
 rpmte rpmteSetParent(rpmte te, rpmte pte);
-
-/** \ingroup rpmte
- * Retrieve number of children of transaction element.
- * @param te		transaction element
- * @return		tree index
- */
-int rpmteDegree(rpmte te);
-
-/** \ingroup rpmte
- * Set number of children of transaction element.
- * @param te		transaction element
- * @param ndegree	new number of children
- * @return		previous number of children
- */
-int rpmteSetDegree(rpmte te, int ndegree);
 
 /** \ingroup rpmte
  * Retrieve tsort info for transaction element.
