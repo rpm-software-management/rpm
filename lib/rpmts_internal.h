@@ -43,8 +43,6 @@ struct rpmts_s {
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */
-    int ntrees;			/*!< No. of dependency trees. */
-    int maxDepth;		/*!< Maximum depth of dependency tree(s). */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
     int chrootDone;		/*!< Has chroot(2) been been done? */

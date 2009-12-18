@@ -217,8 +217,6 @@ static inline int addRelation(rpmts ts,
     /* Save max. depth in dependency tree */
     if (tsi_p->depth <= tsi_q->depth)
 	tsi_p->depth = tsi_q->depth + 1;
-    if (tsi_p->depth > ts->maxDepth)
-	ts->maxDepth = tsi_p->depth;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = p;
@@ -659,7 +657,6 @@ int rpmtsOrder(rpmts ts)
 	    p_tsi->tree = -1;
     }
     pi = rpmtsiFree(pi);
-    ts->ntrees = treex;
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(ts);
