@@ -211,7 +211,7 @@ static inline int addRelation(rpmts ts,
     /* Record next "q <- p" relation (i.e. "p" requires "q"). */
     if (p != q) {
 	/* bump p predecessor count */
-	rpmteTSI(p)->tsi_count++;
+	tsi_p->tsi_count++;
     }
 
     /* Save max. depth in dependency tree */
@@ -222,19 +222,19 @@ static inline int addRelation(rpmts ts,
     rel->rel_suc = p;
     rel->rel_flags = flags;
 
-    rel->rel_next = rpmteTSI(q)->tsi_relations;
-    rpmteTSI(q)->tsi_relations = rel;
+    rel->rel_next = tsi_q->tsi_relations;
+    tsi_q->tsi_relations = rel;
     if (p != q) {
 	/* bump q successor count */
-	rpmteTSI(q)->tsi_qcnt++;
+	tsi_q->tsi_qcnt++;
     }
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = q;
     rel->rel_flags = flags;
 
-    rel->rel_next = rpmteTSI(p)->tsi_forward_relations;
-    rpmteTSI(p)->tsi_forward_relations = rel;
+    rel->rel_next = tsi_p->tsi_forward_relations;
+    tsi_p->tsi_forward_relations = rel;
 
     return 0;
 }
