@@ -30,6 +30,30 @@ struct scc_s {
 
 typedef struct scc_s * scc;
 
+struct relation_s {
+    rpmte   rel_suc;  // pkg requiring this package
+    rpmsenseFlags rel_flags; // accumulated flags of the requirements
+    struct relation_s * rel_next;
+};
+
+typedef struct relation_s * relation;
+
+struct tsortInfo_s {
+    int degree;			/*!< No. of immediate children. */
+    int npreds;			/*!< No. of predecessors. */
+    int tree;			/*!< Tree index. */
+    int depth;			/*!< Depth in dependency tree. */
+    int	     tsi_count;     // #pkgs this pkg requires
+    int	     tsi_qcnt;      // #pkgs requiring this package
+    int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
+    struct relation_s * tsi_relations;
+    struct relation_s * tsi_forward_relations;
+    rpmte    tsi_suc;        // used for queuing (addQ)
+    int      tsi_SccIdx;     // # of the SCC the node belongs to
+                             // (1 for trivial SCCs)
+    int      tsi_SccLowlink; // used for SCC detection
+};
+
 struct badDeps_s {
     char * pname;
     const char * qname;
@@ -105,6 +129,23 @@ static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
 	    return 1;
     }
     return 0;
+}
+
+static void rpmTSIFree(tsortInfo tsi)
+{
+    relation rel;
+
+    while (tsi->tsi_relations != NULL) {
+	rel = tsi->tsi_relations;
+	tsi->tsi_relations = tsi->tsi_relations->rel_next;
+	rel = _free(rel);
+    }
+    while (tsi->tsi_forward_relations != NULL) {
+	rel = tsi->tsi_forward_relations;
+	tsi->tsi_forward_relations = \
+	    tsi->tsi_forward_relations->rel_next;
+	rel = _free(rel);
+    }
 }
 
 /**
@@ -564,6 +605,8 @@ int rpmtsOrder(rpmts ts)
     int rc;
     rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts), prefcolor);
     scc SCCs;
+    int nelem = rpmtsNElements(ts);
+    tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -581,10 +624,9 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
     rpmalMakeIndex(erasedPackages);
 
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL)
-	rpmteNewTSI(p);
-    pi = rpmtsiFree(pi);
+    for (int i = 0; i < nelem; i++) {
+	rpmteSetTSI(ts->order[i], &sortInfo[i]);
+    }
 
     /* Record relations. */
     rpmlog(RPMLOG_DEBUG, "========== recording tsort relations\n");
@@ -661,10 +703,11 @@ int rpmtsOrder(rpmts ts)
     }
 
     /* Clean up tsort data */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL)
-	rpmteFreeTSI(p);
-    pi = rpmtsiFree(pi);
+    for (int i = 0; i < nelem; i++) {
+	rpmteSetTSI(ts->order[i], NULL);
+	rpmTSIFree(&sortInfo[i]);
+    }
+    free(sortInfo);
 
     assert(newOrderCount == ts->orderCount);
 

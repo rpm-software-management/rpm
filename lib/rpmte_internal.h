@@ -8,30 +8,6 @@
  * Dependncy ordering information.
  */
 
-struct relation_s {
-    rpmte   rel_suc;  // pkg requiring this package
-    rpmsenseFlags rel_flags; // accumulated flags of the requirements
-    struct relation_s * rel_next;
-};
-
-typedef struct relation_s * relation;
-
-struct tsortInfo_s {
-    int degree;			/*!< No. of immediate children. */
-    int npreds;			/*!< No. of predecessors. */
-    int tree;			/*!< Tree index. */
-    int depth;			/*!< Depth in dependency tree. */
-    int	     tsi_count;     // #pkgs this pkg requires
-    int	     tsi_qcnt;      // #pkgs requiring this package
-    int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
-    struct relation_s * tsi_relations;
-    struct relation_s * tsi_forward_relations;
-    rpmte    tsi_suc;        // used for queuing (addQ)
-    int      tsi_SccIdx;     // # of the SCC the node belongs to
-                             // (1 for trivial SCCs)
-    int      tsi_SccLowlink; // used for SCC detection
-};
-
 /**
  */
 typedef struct sharedFileInfo_s *		sharedFileInfo;
@@ -85,6 +61,12 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag);
 
 RPM_GNUC_INTERNAL
 rpmps rpmteProblems(rpmte te);
+
+RPM_GNUC_INTERNAL
+tsortInfo rpmteTSI(rpmte te);
+
+RPM_GNUC_INTERNAL
+void rpmteSetTSI(rpmte te, tsortInfo tsi);
 
 //RPM_GNUC_INTERNAL
 rpmfs rpmteGetFileStates(rpmte te);

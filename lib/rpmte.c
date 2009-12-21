@@ -421,32 +421,9 @@ tsortInfo rpmteTSI(rpmte te)
     return te->tsi;
 }
 
-void rpmteFreeTSI(rpmte te)
+void rpmteSetTSI(rpmte te, tsortInfo tsi)
 {
-    relation rel;
-    if (te == NULL || rpmteTSI(te) == NULL) return;
-
-    while (te->tsi->tsi_relations != NULL) {
-	rel = te->tsi->tsi_relations;
-	te->tsi->tsi_relations = te->tsi->tsi_relations->rel_next;
-	rel = _free(rel);
-    }
-    while (te->tsi->tsi_forward_relations != NULL) {
-	rel = te->tsi->tsi_forward_relations;
-	te->tsi->tsi_forward_relations = \
-	    te->tsi->tsi_forward_relations->rel_next;
-	rel = _free(rel);
-    }
-    te->tsi = _free(te->tsi);
-}
-
-void rpmteNewTSI(rpmte te)
-{
-    if (te != NULL) {
-	rpmteFreeTSI(te);
-	te->tsi = xcalloc(1, sizeof(*te->tsi));
-	memset(te->tsi, 0, sizeof(*te->tsi));
-    }
+    te->tsi = tsi;
 }
 
 void rpmteSetDependsOn(rpmte te, rpmte depends) {

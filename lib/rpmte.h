@@ -176,25 +176,6 @@ rpmte rpmteParent(rpmte te);
 rpmte rpmteSetParent(rpmte te, rpmte pte);
 
 /** \ingroup rpmte
- * Retrieve tsort info for transaction element.
- * @param te		transaction element
- * @return		tsort info
- */
-tsortInfo rpmteTSI(rpmte te);
-
-/** \ingroup rpmte
- * Destroy tsort info of transaction element.
- * @param te		transaction element
- */
-void rpmteFreeTSI(rpmte te);
-
-/** \ingroup rpmte
- * Initialize tsort info of transaction element.
- * @param te		transaction element
- */
-void rpmteNewTSI(rpmte te);
-
-/** \ingroup rpmte
  * Destroy dependency set info of transaction element.
  * @param te		transaction element
  */
