@@ -25,7 +25,7 @@ struct scc_s {
     int count; /* # of external requires this SCC has */
     /* int qcnt;  # of external requires pointing to this SCC */
     int size;  /* # of members */
-    rpmte * members;
+    tsortInfo * members;
 };
 
 typedef struct scc_s * scc;
@@ -281,22 +281,18 @@ static void addQ(rpmte p,
 }
 
 /* Search for SCCs and return an array last entry has a .size of 0 */
-static scc detectSCCs(rpmts ts)
+static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
 {
     int index = 0;                /* DFS node number counter */
-    rpmte stack[ts->orderCount];  /* An empty stack of nodes */
+    tsortInfo stack[nelem];  /* An empty stack of nodes */
     int stackcnt = 0;
-    rpmtsi pi;
-    rpmte p;
 
     int sccCnt = 2;
-    scc SCCs = xcalloc(ts->orderCount+3, sizeof(struct scc_s));
+    scc SCCs = xcalloc(nelem+3, sizeof(struct scc_s));
 
-    auto void tarjan(rpmte p);
+    auto void tarjan(tsortInfo tsi);
 
-    void tarjan(rpmte p) {
-	tsortInfo tsi = rpmteTSI(p);
-	rpmte q;
+    void tarjan(tsortInfo tsi) {
 	tsortInfo tsi_q;
 	relation rel;
 
@@ -306,7 +302,7 @@ static scc detectSCCs(rpmts ts)
 	tsi->tsi_SccIdx = index;
 	tsi->tsi_SccLowlink = index;
 
-	stack[stackcnt++] = p;                   /* Push p on the stack */
+	stack[stackcnt++] = tsi;                   /* Push p on the stack */
 	for (rel=tsi->tsi_relations; rel != NULL; rel=rel->rel_next) {
 	    /* Consider successors of p */
 	    tsi_q = rel->rel_suc;
@@ -315,7 +311,7 @@ static scc detectSCCs(rpmts ts)
 		continue;
 	    if (tsi_q->tsi_SccIdx == 0){
 		/* Was successor q not yet visited? */
-		tarjan(tsi_q->te);                       /* Recurse */
+		tarjan(tsi_q);                       /* Recurse */
 		/* negative index numers: use max as it is closer to 0 */
 		tsi->tsi_SccLowlink = (
 		    tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink
@@ -329,23 +325,20 @@ static scc detectSCCs(rpmts ts)
 
 	if (tsi->tsi_SccLowlink == tsi->tsi_SccIdx) {
 	    /* v is the root of an SCC? */
-	    if (stack[stackcnt-1] == p) {
+	    if (stack[stackcnt-1] == tsi) {
 		/* ignore trivial SCCs */
-		q = stack[--stackcnt];
-		tsi_q = rpmteTSI(q);
+		tsi_q = stack[--stackcnt];
 		tsi_q->tsi_SccIdx = 1;
 	    } else {
 		int stackIdx = stackcnt;
 		do {
-		    q = stack[--stackIdx];
-		    tsi_q = rpmteTSI(q);
+		    tsi_q = stack[--stackIdx];
 		    tsi_q->tsi_SccIdx = sccCnt;
-		} while (q != p);
+		} while (tsi_q != tsi);
 
 		stackIdx = stackcnt;
 		do {
-		    q = stack[--stackIdx];
-		    tsi_q = rpmteTSI(q);
+		    tsi_q = stack[--stackIdx];
 		    /* Calculate count for the SCC */
 		    SCCs[sccCnt].count += tsi_q->tsi_count;
 		    /* Subtract internal relations */
@@ -355,42 +348,40 @@ static scc detectSCCs(rpmts ts)
 				rel->rel_suc->tsi_SccIdx == sccCnt)
 			    SCCs[sccCnt].count--;
 		    }
-		} while (q != p);
+		} while (tsi_q != tsi);
 		SCCs[sccCnt].size = stackcnt - stackIdx;
 		/* copy members */
 		SCCs[sccCnt].members = xcalloc(SCCs[sccCnt].size,
-					       sizeof(rpmte));
+					       sizeof(tsortInfo));
 		memcpy(SCCs[sccCnt].members, stack + stackIdx,
-		       SCCs[sccCnt].size * sizeof(rpmte));
+		       SCCs[sccCnt].size * sizeof(tsortInfo));
 		stackcnt = stackIdx;
 		sccCnt++;
 	    }
 	}
     }
 
-    pi = rpmtsiInit(ts);
-    while ((p=rpmtsiNext(pi, 0)) != NULL) {
+    for (int i = 0; i < nelem; i++) {
+	tsortInfo tsi = &orderInfo[i];
 	/* Start a DFS at each node */
-	if (rpmteTSI(p)->tsi_SccIdx == 0)
-	    tarjan(p);
+	if (tsi->tsi_SccIdx == 0)
+	    tarjan(tsi);
     }
-    pi = rpmtsiFree(pi);
 
     SCCs = xrealloc(SCCs, (sccCnt+1)*sizeof(struct scc_s));
     /* Debug output */
     if (sccCnt > 2) {
-	int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS) ?
-		     RPMLOG_WARNING : RPMLOG_DEBUG;
+	int msglvl = debugloops ?  RPMLOG_WARNING : RPMLOG_DEBUG;
 	rpmlog(msglvl, "%i Strongly Connected Components\n", sccCnt-2);
 	for (int i = 2; i < sccCnt; i++) {
 	    rpmlog(msglvl, "SCC #%i: requires %i packages\n",
 		   i, SCCs[i].count);
 	    /* loop over members */
 	    for (int j = 0; j < SCCs[i].size; j++) {
-		rpmlog(msglvl, "\t%s\n", rpmteNEVRA(SCCs[i].members[j]));
+		tsortInfo member = SCCs[i].members[j];
+		rpmlog(msglvl, "\t%s\n", rpmteNEVRA(member->te));
 		/* show relations between members */
-		rpmte member = SCCs[i].members[j];
-		relation rel = rpmteTSI(member)->tsi_forward_relations;
+		relation rel = member->tsi_forward_relations;
 		for (; rel != NULL; rel=rel->rel_next) {
 		    if (rel->rel_suc->tsi_SccIdx!=i) continue;
 		    rpmlog(msglvl, "\t\t%s %s\n",
@@ -487,7 +478,7 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
     */
 
     /* can use a simple queue as edge weights are always 1 */
-    rpmte * queue = xmalloc((SCC.size+1) * sizeof(rpmte));
+    tsortInfo * queue = xmalloc((SCC.size+1) * sizeof(*queue));
 
     /*
      * Find packages that are prerequired and use them as
@@ -495,14 +486,13 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
      */
     start = end = 0;
     for (i = 0; i < SCC.size; i++) {
-	rpmte q = SCC.members[i];
-	tsortInfo tsi = rpmteTSI(q);
+	tsortInfo tsi = SCC.members[i];
 	tsi->tsi_SccLowlink = INT_MAX;
 	for (rel=tsi->tsi_forward_relations; rel != NULL; rel=rel->rel_next) {
 	    if (rel->rel_flags && rel->rel_suc->tsi_SccIdx == sccNr) {
-		if (rel->rel_suc->te != q) {
+		if (rel->rel_suc != tsi) {
 		    tsi->tsi_SccLowlink =  0;
-		    queue[end++] = q;
+		    queue[end++] = tsi;
 		} else {
 		    tsi->tsi_SccLowlink =  INT_MAX/2;
 		}
@@ -513,24 +503,22 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 
     if (start == end) { /* no regular prereqs; add self prereqs to queue */
 	for (i = 0; i < SCC.size; i++) {
-	    rpmte q = SCC.members[i];
-	    tsortInfo tsi = rpmteTSI(q);
+	    tsortInfo tsi = SCC.members[i];
 	    if (tsi->tsi_SccLowlink != INT_MAX) {
-		queue[end++] = q;
+		queue[end++] = tsi;
 	    }
 	}
     }
 
     /* Do Dijkstra */
     while (start != end) {
-	rpmte q = queue[start++];
-	tsortInfo tsi = rpmteTSI(q);
+	tsortInfo tsi = queue[start++];
 	for (rel=tsi->tsi_forward_relations; rel != NULL; rel=rel->rel_next) {
 	    tsortInfo next_tsi = rel->rel_suc;
 	    if (next_tsi->tsi_SccIdx != sccNr) continue;
 	    if (next_tsi->tsi_SccLowlink > tsi->tsi_SccLowlink+1) {
 		next_tsi->tsi_SccLowlink = tsi->tsi_SccLowlink + 1;
-		queue[end++] = rel->rel_suc->te;
+		queue[end++] = rel->rel_suc;
 	    }
 	}
     }
@@ -544,12 +532,11 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 
 	/* select best candidate to start with */
 	for (int i = 0; i < SCC.size; i++) {
-	    rpmte q = SCC.members[i];
-	    tsortInfo tsi = rpmteTSI(q);
+	    tsortInfo tsi = SCC.members[i];
 	    if (tsi->tsi_SccIdx == 0) /* package already collected */
 		continue;
 	    if (tsi->tsi_SccLowlink >= best_score) {
-		best = q;
+		best = tsi->te;
 		best_score = tsi->tsi_SccLowlink;
 	    }
 	}
@@ -625,7 +612,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
-    SCCs = detectSCCs(ts);
+    SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
 
@@ -645,10 +632,9 @@ int rpmtsOrder(rpmts ts)
 
 	/* Add one member of each leaf SCC */
 	for (int i = 2; SCCs[i].members != NULL; i++) {
-	    if (SCCs[i].count == 0 && rpmteType(SCCs[i].members[0]) == oType) {
-		p = SCCs[i].members[0];
-		rpmteTSI(p)->tsi_suc = NULL;
-		addQ(p, &q, &r, prefcolor);
+	    tsortInfo member = SCCs[i].members[0];
+	    if (SCCs[i].count == 0 && rpmteType(member->te) == oType) {
+		addQ(member->te, &q, &r, prefcolor);
 	    }
 	}
 
