@@ -39,7 +39,6 @@ struct relation_s {
 typedef struct relation_s * relation;
 
 struct tsortInfo_s {
-    int npreds;			/*!< No. of predecessors. */
     int depth;			/*!< Depth in dependency tree. */
     int	     tsi_count;     // #pkgs this pkg requires
     int	     tsi_qcnt;      // #pkgs requiring this package
@@ -421,7 +420,7 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
     int depth = q_tsi->depth;
 
     rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
-	   *newOrderCount, q_tsi->npreds,
+	   *newOrderCount, q_tsi->tsi_count,
 	   q_tsi->tsi_qcnt,
 	   depth, (2 * depth), "",
 	   deptypechar,
@@ -632,9 +631,6 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	tsortInfo p_tsi = rpmteTSI(p);
-	
-	int npreds = p_tsi->tsi_count;
-	p_tsi->npreds = npreds;
 	p_tsi->depth = 1;
     }
     pi = rpmtsiFree(pi);
