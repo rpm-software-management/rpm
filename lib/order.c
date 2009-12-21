@@ -45,7 +45,7 @@ struct tsortInfo_s {
     int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
     struct relation_s * tsi_relations;
     struct relation_s * tsi_forward_relations;
-    rpmte    tsi_suc;        // used for queuing (addQ)
+    tsortInfo tsi_suc;        // used for queuing (addQ)
     int      tsi_SccIdx;     // # of the SCC the node belongs to
                              // (1 for trivial SCCs)
     int      tsi_SccLowlink; // used for SCC detection
@@ -239,15 +239,13 @@ static inline int addRelation(rpmts ts,
  * @retval rp		address of last element
  * @param prefcolor
  */
-static void addQ(rpmte p,
-		rpmte * qp,
-		rpmte * rp,
+static void addQ(tsortInfo p, tsortInfo * qp, tsortInfo * rp,
 		rpm_color_t prefcolor)
 {
-    rpmte q, qprev;
+    tsortInfo q, qprev;
 
     /* Mark the package as queued. */
-    rpmteTSI(p)->tsi_reqx = 1;
+    p->tsi_reqx = 1;
 
     if ((*rp) == NULL) {	/* 1st element */
 	/* FIX: double indirection */
@@ -258,25 +256,25 @@ static void addQ(rpmte p,
     /* Find location in queue using metric tsi_qcnt. */
     for (qprev = NULL, q = (*qp);
 	 q != NULL;
-	 qprev = q, q = rpmteTSI(q)->tsi_suc)
+	 qprev = q, q = q->tsi_suc)
     {
 	/* XXX Insure preferred color first. */
-	if (rpmteColor(p) != prefcolor && rpmteColor(p) != rpmteColor(q))
+	if (rpmteColor(p->te) != prefcolor && rpmteColor(p->te) != rpmteColor(q->te))
 	    continue;
 
-	if (rpmteTSI(q)->tsi_qcnt <= rpmteTSI(p)->tsi_qcnt)
+	if (q->tsi_qcnt <= p->tsi_qcnt)
 	    break;
     }
 
     if (qprev == NULL) {	/* insert at beginning of list */
-	rpmteTSI(p)->tsi_suc = q;
+	p->tsi_suc = q;
 	(*qp) = p;		/* new head */
     } else if (q == NULL) {	/* insert at end of list */
-	rpmteTSI(qprev)->tsi_suc = p;
+	qprev->tsi_suc = p;
 	(*rp) = p;		/* new tail */
     } else {			/* insert between qprev and q */
-	rpmteTSI(p)->tsi_suc = q;
-	rpmteTSI(qprev)->tsi_suc = p;
+	p->tsi_suc = q;
+	qprev->tsi_suc = p;
     }
 }
 
@@ -394,71 +392,67 @@ static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
     return SCCs;
 }
 
-static void collectTE(rpm_color_t prefcolor, rpmte q,
+static void collectTE(rpm_color_t prefcolor, tsortInfo q,
 		      rpmte * newOrder, int * newOrderCount,
 		      scc SCCs,
-		      rpmte * queue_end,
-		      rpmte * outer_queue,
-		      rpmte * outer_queue_end)
+		      tsortInfo * queue_end,
+		      tsortInfo * outer_queue,
+		      tsortInfo * outer_queue_end)
 {
-    char deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
-    tsortInfo q_tsi = rpmteTSI(q);
+    char deptypechar = (rpmteType(q->te) == TR_REMOVED ? '-' : '+');
 
     if (rpmIsDebug()) {
 	int depth = 1;
 	/* figure depth in tree for nice formatting */
-	for (rpmte p = q; (p = rpmteParent(p)); depth++) {}
+	for (rpmte p = q->te; (p = rpmteParent(p)); depth++) {}
 	rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
-	       *newOrderCount, q_tsi->tsi_count, q_tsi->tsi_qcnt,
+	       *newOrderCount, q->tsi_count, q->tsi_qcnt,
 	       depth, (2 * depth), "",
-	       deptypechar, (rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
+	       deptypechar, rpmteNEVRA(q->te));
     }
 
-    newOrder[*newOrderCount] = q;
+    newOrder[*newOrderCount] = q->te;
     (*newOrderCount)++;
 
     /* T6. Erase relations. */
-    for (relation rel = q_tsi->tsi_relations;
-	 				rel != NULL; rel = rel->rel_next) {
-	tsortInfo p_tsi = rel->rel_suc;
-	rpmte p = p_tsi->te;
+    for (relation rel = q->tsi_relations; rel != NULL; rel = rel->rel_next) {
+	tsortInfo p = rel->rel_suc;
 	/* ignore already collected packages */
-	if (p_tsi->tsi_SccIdx == 0) continue;
+	if (p->tsi_SccIdx == 0) continue;
 	if (p == q) continue;
 
-	if (p && (--p_tsi->tsi_count) == 0) {
-	    (void) rpmteSetParent(p, q);
+	if (p && (--p->tsi_count) == 0) {
+	    (void) rpmteSetParent(p->te, q->te);
 
-	    if (q_tsi->tsi_SccIdx > 1 && q_tsi->tsi_SccIdx != p_tsi->tsi_SccIdx) {
+	    if (q->tsi_SccIdx > 1 && q->tsi_SccIdx != p->tsi_SccIdx) {
                 /* Relation point outside of this SCC: add to outside queue */
 		assert(outer_queue != NULL && outer_queue_end != NULL);
 		addQ(p, outer_queue, outer_queue_end, prefcolor);
 	    } else {
-		addQ(p, &q_tsi->tsi_suc, queue_end, prefcolor);
+		addQ(p, &q->tsi_suc, queue_end, prefcolor);
 	    }
 	}
-	if (p && p_tsi->tsi_SccIdx > 1 &&
-	                 p_tsi->tsi_SccIdx != q_tsi->tsi_SccIdx) {
-	    if (--SCCs[p_tsi->tsi_SccIdx].count == 0) {
+	if (p && p->tsi_SccIdx > 1 &&
+	                 p->tsi_SccIdx != q->tsi_SccIdx) {
+	    if (--SCCs[p->tsi_SccIdx].count == 0) {
 		/* New SCC is ready, add this package as representative */
-		(void) rpmteSetParent(p, q);
+		(void) rpmteSetParent(p->te, q->te);
 
 		if (outer_queue != NULL) {
 		    addQ(p, outer_queue, outer_queue_end, prefcolor);
 		} else {
-		    addQ(p, &q_tsi->tsi_suc, queue_end, prefcolor);
+		    addQ(p, &q->tsi_suc, queue_end, prefcolor);
 		}
 	    }
 	}
     }
-    q_tsi->tsi_SccIdx = 0;
+    q->tsi_SccIdx = 0;
 }
 
-static void collectSCC(rpm_color_t prefcolor, rpmte p,
+static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 		       rpmte * newOrder, int * newOrderCount,
-		       scc SCCs, rpmte * queue_end)
+		       scc SCCs, tsortInfo * queue_end)
 {
-    tsortInfo p_tsi = rpmteTSI(p);
     int sccNr = p_tsi->tsi_SccIdx;
     struct scc_s SCC = SCCs[sccNr];
     int i;
@@ -466,7 +460,7 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
     relation rel;
 
     /* remove p from the outer queue */
-    rpmte outer_queue_start = p_tsi->tsi_suc;
+    tsortInfo outer_queue_start = p_tsi->tsi_suc;
     p_tsi->tsi_suc = NULL;
 
     /*
@@ -526,8 +520,8 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 
 
     while (1) {
-	rpmte best = NULL;
-	rpmte inner_queue_start, inner_queue_end;
+	tsortInfo best = NULL;
+	tsortInfo inner_queue_start, inner_queue_end;
 	int best_score = 0;
 
 	/* select best candidate to start with */
@@ -536,7 +530,7 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 	    if (tsi->tsi_SccIdx == 0) /* package already collected */
 		continue;
 	    if (tsi->tsi_SccLowlink >= best_score) {
-		best = tsi->te;
+		best = tsi;
 		best_score = tsi->tsi_SccLowlink;
 	    }
 	}
@@ -549,9 +543,9 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 	addQ(best, &inner_queue_start, &inner_queue_end, prefcolor);
 
 	for (; inner_queue_start != NULL;
-	     inner_queue_start = rpmteTSI(inner_queue_start)->tsi_suc) {
+	     inner_queue_start = inner_queue_start->tsi_suc) {
 	    /* Mark the package as unqueued. */
-	    rpmteTSI(inner_queue_start)->tsi_reqx = 0;
+	    inner_queue_start->tsi_reqx = 0;
 	    collectTE(prefcolor, inner_queue_start, newOrder, newOrderCount,
 		      SCCs, &inner_queue_end, &outer_queue_start, queue_end);
 	}
@@ -565,8 +559,7 @@ int rpmtsOrder(rpmts ts)
 {
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
-    rpmte q;
-    rpmte r;
+    tsortInfo q, r;
     rpmte * newOrder;
     int newOrderCount = 0;
     int rc;
@@ -620,35 +613,34 @@ int rpmtsOrder(rpmts ts)
 	/* Do two separate runs: installs first - then erases */
 	int oType = !i ? TR_ADDED : TR_REMOVED;
 	q = r = NULL;
-	pi = rpmtsiInit(ts);
 	/* Scan for zeroes and add them to the queue */
-	while ((p = rpmtsiNext(pi, oType)) != NULL) {
-	    if (rpmteTSI(p)->tsi_count != 0)
+	for (int e = 0; e < nelem; e++) {
+	    tsortInfo p = &sortInfo[e];
+	    if (rpmteType(p->te) != oType) continue;
+	    if (p->tsi_count != 0)
 		continue;
-	    rpmteTSI(p)->tsi_suc = NULL;
+	    p->tsi_suc = NULL;
 	    addQ(p, &q, &r, prefcolor);
 	}
-	pi = rpmtsiFree(pi);
 
 	/* Add one member of each leaf SCC */
 	for (int i = 2; SCCs[i].members != NULL; i++) {
 	    tsortInfo member = SCCs[i].members[0];
 	    if (SCCs[i].count == 0 && rpmteType(member->te) == oType) {
-		addQ(member->te, &q, &r, prefcolor);
+		addQ(member, &q, &r, prefcolor);
 	    }
 	}
 
 	while (q != NULL) {
-	    tsortInfo q_tsi = rpmteTSI(q);
 	    /* Mark the package as unqueued. */
-	    q_tsi->tsi_reqx = 0;
-	    if (q_tsi->tsi_SccIdx > 1) {
+	    q->tsi_reqx = 0;
+	    if (q->tsi_SccIdx > 1) {
 		collectSCC(prefcolor, q, newOrder, &newOrderCount, SCCs, &r);
 	    } else {
 		collectTE(prefcolor, q, newOrder, &newOrderCount, SCCs, &r,
 			  NULL, NULL);
 	    }
-	    q = q_tsi->tsi_suc;
+	    q = q->tsi_suc;
 	}
     }
 
