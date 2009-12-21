@@ -39,7 +39,6 @@ struct relation_s {
 typedef struct relation_s * relation;
 
 struct tsortInfo_s {
-    int depth;			/*!< Depth in dependency tree. */
     int	     tsi_count;     // #pkgs this pkg requires
     int	     tsi_qcnt;      // #pkgs requiring this package
     int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
@@ -210,10 +209,6 @@ static inline int addRelation(rpmts ts,
 	/* bump p predecessor count */
 	tsi_p->tsi_count++;
     }
-
-    /* Save max. depth in dependency tree */
-    if (tsi_p->depth <= tsi_q->depth)
-	tsi_p->depth = tsi_q->depth + 1;
 
     rel = xcalloc(1, sizeof(*rel));
     rel->rel_suc = p;
@@ -417,14 +412,16 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 {
     char deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
     tsortInfo q_tsi = rpmteTSI(q);
-    int depth = q_tsi->depth;
 
-    rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
-	   *newOrderCount, q_tsi->tsi_count,
-	   q_tsi->tsi_qcnt,
-	   depth, (2 * depth), "",
-	   deptypechar,
-	   (rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
+    if (rpmIsDebug()) {
+	int depth = 1;
+	/* figure depth in tree for nice formatting */
+	for (rpmte p = q; (p = rpmteParent(p)); depth++) {}
+	rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
+	       *newOrderCount, q_tsi->tsi_count, q_tsi->tsi_qcnt,
+	       depth, (2 * depth), "",
+	       deptypechar, (rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
+    }
 
     newOrder[*newOrderCount] = q;
     (*newOrderCount)++;
@@ -439,7 +436,6 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 	if (p == q) continue;
 
 	if (p && (--p_tsi->tsi_count) == 0) {
-	    p_tsi->depth = depth + 1;
 	    (void) rpmteSetParent(p, q);
 
 	    if (q_tsi->tsi_SccIdx > 1 && q_tsi->tsi_SccIdx != p_tsi->tsi_SccIdx) {
@@ -454,7 +450,6 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 	                 p_tsi->tsi_SccIdx != q_tsi->tsi_SccIdx) {
 	    if (--SCCs[p_tsi->tsi_SccIdx].count == 0) {
 		/* New SCC is ready, add this package as representative */
-		p_tsi->depth = depth + 1;
 		(void) rpmteSetParent(p, q);
 
 		if (outer_queue != NULL) {
@@ -624,14 +619,6 @@ int rpmtsOrder(rpmts ts)
 	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, al, p, requires);
 	}
-    }
-    pi = rpmtsiFree(pi);
-
-    /* Save predecessor count and mark tree roots. */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	tsortInfo p_tsi = rpmteTSI(p);
-	p_tsi->depth = 1;
     }
     pi = rpmtsiFree(pi);
 
