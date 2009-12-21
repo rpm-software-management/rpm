@@ -39,6 +39,7 @@ struct relation_s {
 typedef struct relation_s * relation;
 
 struct tsortInfo_s {
+    rpmte te;
     int	     tsi_count;     // #pkgs this pkg requires
     int	     tsi_qcnt;      // #pkgs requiring this package
     int	     tsi_reqx;       // requires Idx/mark as (queued/loop)
@@ -605,6 +606,7 @@ int rpmtsOrder(rpmts ts)
     rpmalMakeIndex(erasedPackages);
 
     for (int i = 0; i < nelem; i++) {
+	sortInfo[i].te = ts->order[i];
 	rpmteSetTSI(ts->order[i], &sortInfo[i]);
     }
 
