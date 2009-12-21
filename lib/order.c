@@ -467,15 +467,16 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 		       rpmte * newOrder, int * newOrderCount,
 		       scc SCCs, rpmte * queue_end)
 {
-    int sccNr = rpmteTSI(p)->tsi_SccIdx;
+    tsortInfo p_tsi = rpmteTSI(p);
+    int sccNr = p_tsi->tsi_SccIdx;
     struct scc_s SCC = SCCs[sccNr];
     int i;
     int start, end;
     relation rel;
 
     /* remove p from the outer queue */
-    rpmte outer_queue_start = rpmteTSI(p)->tsi_suc;
-    rpmteTSI(p)->tsi_suc = NULL;
+    rpmte outer_queue_start = p_tsi->tsi_suc;
+    p_tsi->tsi_suc = NULL;
 
     /*
      * Run a multi source Dijkstra's algorithm to find relations
@@ -570,7 +571,7 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
     }
 
     /* restore outer queue */
-    rpmteTSI(p)->tsi_suc = outer_queue_start;
+    p_tsi->tsi_suc = outer_queue_start;
 }
 
 int rpmtsOrder(rpmts ts)
@@ -650,16 +651,17 @@ int rpmtsOrder(rpmts ts)
 	    }
 	}
 
-	/* Process queue */
-	for (; q != NULL; q = rpmteTSI(q)->tsi_suc) {
+	while (q != NULL) {
+	    tsortInfo q_tsi = rpmteTSI(q);
 	    /* Mark the package as unqueued. */
-	    rpmteTSI(q)->tsi_reqx = 0;
-	    if (rpmteTSI(q)->tsi_SccIdx > 1) {
+	    q_tsi->tsi_reqx = 0;
+	    if (q_tsi->tsi_SccIdx > 1) {
 		collectSCC(prefcolor, q, newOrder, &newOrderCount, SCCs, &r);
 	    } else {
 		collectTE(prefcolor, q, newOrder, &newOrderCount, SCCs, &r,
 			  NULL, NULL);
 	    }
+	    q = q_tsi->tsi_suc;
 	}
     }
 
