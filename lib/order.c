@@ -39,9 +39,7 @@ struct relation_s {
 typedef struct relation_s * relation;
 
 struct tsortInfo_s {
-    int degree;			/*!< No. of immediate children. */
     int npreds;			/*!< No. of predecessors. */
-    int tree;			/*!< Tree index. */
     int depth;			/*!< Depth in dependency tree. */
     int	     tsi_count;     // #pkgs this pkg requires
     int	     tsi_qcnt;      // #pkgs requiring this package
@@ -420,18 +418,14 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 {
     char deptypechar = (rpmteType(q) == TR_REMOVED ? '-' : '+');
     tsortInfo q_tsi = rpmteTSI(q);
-    int treex = q_tsi->tree;
     int depth = q_tsi->depth;
 
-    rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d%5d %*s%c%s\n",
+    rpmlog(RPMLOG_DEBUG, "%5d%5d%5d%5d %*s%c%s\n",
 	   *newOrderCount, q_tsi->npreds,
 	   q_tsi->tsi_qcnt,
-	   treex, depth,
-	   (2 * depth), "",
+	   depth, (2 * depth), "",
 	   deptypechar,
 	   (rpmteNEVRA(q) ? rpmteNEVRA(q) : "???"));
-
-    q_tsi->degree = 0;
 
     newOrder[*newOrderCount] = q;
     (*newOrderCount)++;
@@ -446,10 +440,7 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 	if (p == q) continue;
 
 	if (p && (--p_tsi->tsi_count) == 0) {
-
-	    p_tsi->tree = treex;
 	    p_tsi->depth = depth + 1;
-	    p_tsi->degree = q_tsi->degree + 1;
 	    (void) rpmteSetParent(p, q);
 
 	    if (q_tsi->tsi_SccIdx > 1 && q_tsi->tsi_SccIdx != p_tsi->tsi_SccIdx) {
@@ -464,10 +455,7 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
 	                 p_tsi->tsi_SccIdx != q_tsi->tsi_SccIdx) {
 	    if (--SCCs[p_tsi->tsi_SccIdx].count == 0) {
 		/* New SCC is ready, add this package as representative */
-
-		p_tsi->tree = treex;
 		p_tsi->depth = depth + 1;
-		p_tsi->degree = q_tsi->degree + 1;
 		(void) rpmteSetParent(p, q);
 
 		if (outer_queue != NULL) {
@@ -599,7 +587,6 @@ int rpmtsOrder(rpmts ts)
     rpmte r;
     rpmte * newOrder;
     int newOrderCount = 0;
-    int treex;
     int rc;
     rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts), prefcolor);
     scc SCCs;
@@ -642,7 +629,6 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiFree(pi);
 
     /* Save predecessor count and mark tree roots. */
-    treex = 0;
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	tsortInfo p_tsi = rpmteTSI(p);
@@ -650,18 +636,13 @@ int rpmtsOrder(rpmts ts)
 	int npreds = p_tsi->tsi_count;
 	p_tsi->npreds = npreds;
 	p_tsi->depth = 1;
-
-	if (npreds == 0)
-	    p_tsi->tree = treex++;
-	else
-	    p_tsi->tree = -1;
     }
     pi = rpmtsiFree(pi);
 
     newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(ts);
 
-    rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, tree, depth)\n");
+    rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
 
     for (int i = 0; i < 2; i++) {
 	/* Do two separate runs: installs first - then erases */
