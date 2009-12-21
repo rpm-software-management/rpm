@@ -31,7 +31,7 @@ struct scc_s {
 typedef struct scc_s * scc;
 
 struct relation_s {
-    rpmte   rel_suc;  // pkg requiring this package
+    tsortInfo   rel_suc;  // pkg requiring this package
     rpmsenseFlags rel_flags; // accumulated flags of the requirements
     struct relation_s * rel_next;
 };
@@ -199,7 +199,7 @@ static inline int addRelation(rpmts ts,
     tsi_q = rpmteTSI(q);
 
     /* if relation got already added just update the flags */
-    if (tsi_q->tsi_relations && tsi_q->tsi_relations->rel_suc == p) {
+    if (tsi_q->tsi_relations && tsi_q->tsi_relations->rel_suc == tsi_p) {
 	tsi_q->tsi_relations->rel_flags |= flags;
 	tsi_p->tsi_forward_relations->rel_flags |= flags;
 	return 0;
@@ -212,7 +212,7 @@ static inline int addRelation(rpmts ts,
     }
 
     rel = xcalloc(1, sizeof(*rel));
-    rel->rel_suc = p;
+    rel->rel_suc = tsi_p;
     rel->rel_flags = flags;
 
     rel->rel_next = tsi_q->tsi_relations;
@@ -223,7 +223,7 @@ static inline int addRelation(rpmts ts,
     }
 
     rel = xcalloc(1, sizeof(*rel));
-    rel->rel_suc = q;
+    rel->rel_suc = tsi_q;
     rel->rel_flags = flags;
 
     rel->rel_next = tsi_p->tsi_forward_relations;
@@ -309,14 +309,13 @@ static scc detectSCCs(rpmts ts)
 	stack[stackcnt++] = p;                   /* Push p on the stack */
 	for (rel=tsi->tsi_relations; rel != NULL; rel=rel->rel_next) {
 	    /* Consider successors of p */
-	    q = rel->rel_suc;
-	    tsi_q = rpmteTSI(q);
+	    tsi_q = rel->rel_suc;
 	    if (tsi_q->tsi_SccIdx > 0)
 		/* Ignore already found SCCs */
 		continue;
 	    if (tsi_q->tsi_SccIdx == 0){
 		/* Was successor q not yet visited? */
-		tarjan(q);                       /* Recurse */
+		tarjan(tsi_q->te);                       /* Recurse */
 		/* negative index numers: use max as it is closer to 0 */
 		tsi->tsi_SccLowlink = (
 		    tsi->tsi_SccLowlink > tsi_q->tsi_SccLowlink
@@ -352,8 +351,8 @@ static scc detectSCCs(rpmts ts)
 		    /* Subtract internal relations */
 		    for (rel=tsi_q->tsi_relations; rel != NULL;
 							rel=rel->rel_next) {
-			if (rel->rel_suc != q &&
-				rpmteTSI(rel->rel_suc)->tsi_SccIdx == sccCnt)
+			if (rel->rel_suc != tsi_q &&
+				rel->rel_suc->tsi_SccIdx == sccCnt)
 			    SCCs[sccCnt].count--;
 		    }
 		} while (q != p);
@@ -393,10 +392,10 @@ static scc detectSCCs(rpmts ts)
 		rpmte member = SCCs[i].members[j];
 		relation rel = rpmteTSI(member)->tsi_forward_relations;
 		for (; rel != NULL; rel=rel->rel_next) {
-		    if (rpmteTSI(rel->rel_suc)->tsi_SccIdx!=i) continue;
+		    if (rel->rel_suc->tsi_SccIdx!=i) continue;
 		    rpmlog(msglvl, "\t\t%s %s\n",
 			   rel->rel_flags ? "=>" : "->",
-			   rpmteNEVRA(rel->rel_suc));
+			   rpmteNEVRA(rel->rel_suc->te));
 		}
 	    }
 	}
@@ -430,8 +429,8 @@ static void collectTE(rpm_color_t prefcolor, rpmte q,
     /* T6. Erase relations. */
     for (relation rel = q_tsi->tsi_relations;
 	 				rel != NULL; rel = rel->rel_next) {
-	rpmte p = rel->rel_suc;
-	tsortInfo p_tsi = rpmteTSI(p);
+	tsortInfo p_tsi = rel->rel_suc;
+	rpmte p = p_tsi->te;
 	/* ignore already collected packages */
 	if (p_tsi->tsi_SccIdx == 0) continue;
 	if (p == q) continue;
@@ -500,8 +499,8 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 	tsortInfo tsi = rpmteTSI(q);
 	tsi->tsi_SccLowlink = INT_MAX;
 	for (rel=tsi->tsi_forward_relations; rel != NULL; rel=rel->rel_next) {
-	    if (rel->rel_flags && rpmteTSI(rel->rel_suc)->tsi_SccIdx == sccNr) {
-		if (rel->rel_suc != q) {
+	    if (rel->rel_flags && rel->rel_suc->tsi_SccIdx == sccNr) {
+		if (rel->rel_suc->te != q) {
 		    tsi->tsi_SccLowlink =  0;
 		    queue[end++] = q;
 		} else {
@@ -527,11 +526,11 @@ static void collectSCC(rpm_color_t prefcolor, rpmte p,
 	rpmte q = queue[start++];
 	tsortInfo tsi = rpmteTSI(q);
 	for (rel=tsi->tsi_forward_relations; rel != NULL; rel=rel->rel_next) {
-	    tsortInfo next_tsi = rpmteTSI(rel->rel_suc);
+	    tsortInfo next_tsi = rel->rel_suc;
 	    if (next_tsi->tsi_SccIdx != sccNr) continue;
 	    if (next_tsi->tsi_SccLowlink > tsi->tsi_SccLowlink+1) {
 		next_tsi->tsi_SccLowlink = tsi->tsi_SccLowlink + 1;
-		queue[end++] = rel->rel_suc;
+		queue[end++] = rel->rel_suc->te;
 	    }
 	}
     }
