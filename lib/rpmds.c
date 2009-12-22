@@ -853,7 +853,6 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     }
 
     result = 0;
-    if (provides != NULL)
     while (rpmdsNext(provides) >= 0) {
 
 	/* Filter out provides that came along for the ride. */
