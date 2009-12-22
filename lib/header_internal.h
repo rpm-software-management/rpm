@@ -107,23 +107,6 @@ uint64_t htonll( uint64_t n );
 RPM_GNUC_INTERNAL
 void headerSetInstance(Header h, unsigned int instance);
 
-/** \ingroup header
- * Retrieve tag value with type match.
- * If *type is RPM_NULL_TYPE any type will match, otherwise only *type will
- * match.
- *
- * @param h		header
- * @param tag		tag
- * @retval type		address of tag value data type (or NULL)
- * @retval p		address of pointer to tag value(s) (or NULL)
- * @retval c		address of number of values (or NULL)
- * @return		1 on success, 0 on failure
- */
-int headerGetRawEntry(Header h, rpmTag tag,
-			rpmTagType * type,
-			rpm_data_t * p, 
-			rpm_count_t * c);
-
 #ifdef __cplusplus
 }   
 #endif
