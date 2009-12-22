@@ -8,7 +8,6 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
-#include <rpm/rpmurl.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>		/* rpmtsOpenDB() needs rpmGetPath */
 #include <rpm/rpmstring.h>
@@ -620,26 +619,7 @@ rpmVSFlags rpmtsSetVSFlags(rpmts ts, rpmVSFlags vsflags)
 
 const char * rpmtsRootDir(rpmts ts)
 {
-    const char * rootDir = NULL;
-
-    if (ts != NULL && ts->rootDir != NULL) {
-	urltype ut = urlPath(ts->rootDir, &rootDir);
-	switch (ut) {
-	case URL_IS_UNKNOWN:
-	case URL_IS_PATH:
-	    break;
-	/* XXX these shouldn't be allowed as rootdir! */
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_HKP:
-	case URL_IS_FTP:
-	case URL_IS_DASH:
-	default:
-	    rootDir = "/";
-	    break;
-	}
-    }
-    return rootDir;
+    return ts ? ts->rootDir : NULL;
 }
 
 int rpmtsSetRootDir(rpmts ts, const char * rootDir)
