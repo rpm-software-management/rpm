@@ -92,14 +92,6 @@ extern "C" {
 #endif
 
 /** \ingroup header
- * Conver a 64bit value to network byte order.
- * @param n		a number
- * @return		number in network byte order
- */
-RPM_GNUC_INTERNAL
-uint64_t htonll( uint64_t n );
-
-/** \ingroup header
  * Set header instance (rpmdb record number)
  * @param h		header
  * @param instance	record number

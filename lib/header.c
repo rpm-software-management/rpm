@@ -86,6 +86,15 @@ typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags)
 
 extern void *rpmHeaderTagFunc(rpmTag tag);
 
+/* Convert a 64bit value to network byte order. */
+static uint64_t htonll( uint64_t n ) {
+    uint32_t *i = (uint32_t*)&n;
+    uint32_t b = i[0];
+    i[0] = htonl(i[1]);
+    i[1] = htonl(b);
+    return n;
+}
+
 Header headerLink(Header h)
 {
     if (h == NULL) return NULL;
