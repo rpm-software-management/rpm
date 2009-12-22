@@ -554,13 +554,6 @@ fi
 AC_C_INLINE
 
 dnl look for libc features
-PROVIDES_ERRNO=no
-AC_MSG_CHECKING(if <netdb.h> defines h_errno)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <netdb.h>]], [[printf("%d",h_errno)]])],[PROVIDES_ERRNO=yes],[])
-AC_MSG_RESULT($PROVIDES_ERRNO)
-if test $PROVIDES_ERRNO = yes; then
-	AC_DEFINE(HAVE_HERRNO, 1, [ Define as 1 if <netdb.h> defines h_errno])
-fi
 
 dnl If a system doesn't have S_IFSOCK, define it as 0 which will
 dnl make S_ISSOCK always return false (nice, eh?)
