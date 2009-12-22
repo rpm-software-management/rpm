@@ -5,11 +5,7 @@
  * \file lib/header_internal.h
  */
 
-#include <netinet/in.h>
-
 #include <rpm/header.h>
-
-#define	INDEX_MALLOC_SIZE	8
 
 /** \ingroup header
  * Description of tag data.
@@ -25,10 +21,6 @@ struct entryInfo_s {
 #define	REGION_TAG_TYPE		RPM_BIN_TYPE
 #define	REGION_TAG_COUNT	sizeof(struct entryInfo_s)
 
-#define	ENTRY_IS_REGION(_e) \
-	(((_e)->info.tag >= HEADER_IMAGE) && ((_e)->info.tag < HEADER_REGIONS))
-#define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
-
 /** \ingroup header
  * A single tag from a Header.
  */
@@ -38,26 +30,6 @@ struct indexEntry_s {
     rpm_data_t data; 		/*!< Location of tag data. */
     int length;			/*!< No. bytes of data. */
     int rdlen;			/*!< No. bytes of data in region. */
-};
-
-typedef enum headerFlags_e {
-    HEADERFLAG_SORTED    = (1 << 0), /*!< Are header entries sorted? */
-    HEADERFLAG_ALLOCATED = (1 << 1), /*!< Is 1st header region allocated? */
-    HEADERFLAG_LEGACY    = (1 << 2), /*!< Header came from legacy source? */
-    HEADERFLAG_DEBUG     = (1 << 3), /*!< Debug this header? */
-} headerFlags;
-
-/** \ingroup header
- * The Header data structure.
- */
-struct headerToken_s {
-    void * blob;		/*!< Header region blob. */
-    indexEntry index;		/*!< Array of tags. */
-    int indexUsed;		/*!< Current size of tag array. */
-    int indexAlloced;		/*!< Allocated size of tag array. */
-    unsigned int instance;	/*!< Rpmdb instance (offset) */
-    headerFlags flags;
-    int nrefs;			/*!< Reference count. */
 };
 
 /**

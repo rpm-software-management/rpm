@@ -68,10 +68,36 @@ static const int typeSizes[16] =  {
     0
 };
 
+typedef enum headerFlags_e {
+    HEADERFLAG_SORTED    = (1 << 0), /*!< Are header entries sorted? */
+    HEADERFLAG_ALLOCATED = (1 << 1), /*!< Is 1st header region allocated? */
+    HEADERFLAG_LEGACY    = (1 << 2), /*!< Header came from legacy source? */
+    HEADERFLAG_DEBUG     = (1 << 3), /*!< Debug this header? */
+} headerFlags;
+
+/** \ingroup header
+ * The Header data structure.
+ */
+struct headerToken_s {
+    void * blob;		/*!< Header region blob. */
+    indexEntry index;		/*!< Array of tags. */
+    int indexUsed;		/*!< Current size of tag array. */
+    int indexAlloced;		/*!< Allocated size of tag array. */
+    unsigned int instance;	/*!< Rpmdb instance (offset) */
+    headerFlags flags;
+    int nrefs;			/*!< Reference count. */
+};
+
 /** \ingroup header
  * Maximum no. of bytes permitted in a header.
  */
 static const size_t headerMaxbytes = (32*1024*1024);
+
+#define	INDEX_MALLOC_SIZE	8
+
+#define	ENTRY_IS_REGION(_e) \
+	(((_e)->info.tag >= HEADER_IMAGE) && ((_e)->info.tag < HEADER_REGIONS))
+#define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
 
 /** \ingroup header
  * HEADER_EXT_TAG format function prototype.
