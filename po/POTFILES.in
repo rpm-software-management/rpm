@@ -57,7 +57,6 @@ lib/signature.c
 lib/transaction.c
 lib/verify.c
 lib/fprint.c
-lib/hdrNVR.c
 lib/header.c
 lib/headerfmt.c
 lib/header_internal.c
