@@ -246,7 +246,6 @@ typedef void * cap_t;
 #define xrealloc(_ptr, _size) rrealloc((_ptr), (_size))
 #define xstrdup(_str) rstrdup((_str))
 #define _free(_ptr) rfree((_ptr))
-#define _constfree(_ptr) rfree((void *)(_ptr))
 
 /* Retrofit glibc __progname */
 #if defined __GLIBC__ && __GLIBC__ >= 2

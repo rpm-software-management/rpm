@@ -32,31 +32,31 @@ struct rpmfi_s {
     scidx_t * flangs;		/*!< Index to file lang(s) cache */
 
     uint32_t * dil;		/*!< Directory indice(s) (from header) */
-    const rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
-    const rpm_off_t * fsizes;	/*!< File size(s) (from header) */
-    const rpm_time_t * fmtimes;	/*!< File modification time(s) (from header) */
+    rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
+    rpm_off_t * fsizes;		/*!< File size(s) (from header) */
+    rpm_time_t * fmtimes;	/*!< File modification time(s) (from header) */
     rpm_mode_t * fmodes;	/*!< File mode(s) (from header) */
-    const rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */
-    const rpm_ino_t * finodes;	/*!< File inodes(s) (from header) */
+    rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */
+    rpm_ino_t * finodes;	/*!< File inodes(s) (from header) */
 
     scidx_t *fuser;		/*!< Index to file owner(s) cache */
     scidx_t *fgroup;		/*!< Index to file group(s) cache */
 
     char * fstates;		/*!< File state(s) (from header) */
 
-    const rpm_color_t * fcolors;/*!< File color bits (header) */
+    rpm_color_t * fcolors;	/*!< File color bits (header) */
     strcache fcapcache;		/*!< File capabilities cache */
     scidx_t * fcaps;		/*!< Index to file cap(s) cache */
 
-    const char ** cdict;	/*!< File class dictionary (header) */
+    char ** cdict;		/*!< File class dictionary (header) */
     rpm_count_t ncdict;		/*!< No. of class entries. */
-    const uint32_t * fcdictx;	/*!< File class dictionary index (header) */
+    uint32_t * fcdictx;		/*!< File class dictionary index (header) */
 
-    const uint32_t * ddict;	/*!< File depends dictionary (header) */
+    uint32_t * ddict;		/*!< File depends dictionary (header) */
     rpm_count_t nddict;		/*!< No. of depends entries. */
-    const uint32_t * fddictx;	/*!< File depends dictionary start (header) */
-    const uint32_t * fddictn;	/*!< File depends dictionary count (header) */
-    const rpm_flag_t * vflags;	/*!< File verify flag(s) (from header) */
+    uint32_t * fddictx;		/*!< File depends dictionary start (header) */
+    uint32_t * fddictn;		/*!< File depends dictionary count (header) */
+    rpm_flag_t * vflags;	/*!< File verify flag(s) (from header) */
 
     rpm_count_t dc;		/*!< No. of directories. */
     rpm_count_t fc;		/*!< No. of files. */

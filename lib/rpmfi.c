@@ -1079,21 +1079,22 @@ fprintf(stderr, "*** fi %p\t[%d]\n", fi, fi->fc);
 	fi->fstates = _free(fi->fstates);
 	fi->fps = _free(fi->fps);
 
+	/* these point to header memory if KEEPHEADER is used, dont free */
 	if (!(fi->fiflags & RPMFI_KEEPHEADER) && fi->h == NULL) {
-	    fi->fmtimes = _constfree(fi->fmtimes);
+	    fi->fmtimes = _free(fi->fmtimes);
 	    fi->fmodes = _free(fi->fmodes);
-	    fi->fflags = _constfree(fi->fflags);
-	    fi->vflags = _constfree(fi->vflags);
-	    fi->fsizes = _constfree(fi->fsizes);
-	    fi->frdevs = _constfree(fi->frdevs);
-	    fi->finodes = _constfree(fi->finodes);
+	    fi->fflags = _free(fi->fflags);
+	    fi->vflags = _free(fi->vflags);
+	    fi->fsizes = _free(fi->fsizes);
+	    fi->frdevs = _free(fi->frdevs);
+	    fi->finodes = _free(fi->finodes);
 	    fi->dil = _free(fi->dil);
 
-	    fi->fcolors = _constfree(fi->fcolors);
-	    fi->fcdictx = _constfree(fi->fcdictx);
-	    fi->ddict = _constfree(fi->ddict);
-	    fi->fddictx = _constfree(fi->fddictx);
-	    fi->fddictn = _constfree(fi->fddictn);
+	    fi->fcolors = _free(fi->fcolors);
+	    fi->fcdictx = _free(fi->fcdictx);
+	    fi->ddict = _free(fi->ddict);
+	    fi->fddictx = _free(fi->fddictx);
+	    fi->fddictn = _free(fi->fddictn);
 
 	}
     }
