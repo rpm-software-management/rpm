@@ -931,12 +931,14 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	} else {
 	    /* XXX FIXME: this is easy to do as macro expansion */
 	    if (! fl->passedSpecialDoc) {
+		char *mkdocdir = rpmExpand("%{__mkdir_p} $DOCDIR", NULL);
 		pkg->specialDoc = newStringBuf();
 		appendStringBuf(pkg->specialDoc, "DOCDIR=$RPM_BUILD_ROOT");
 		appendLineStringBuf(pkg->specialDoc, pkg->specialDocDir);
 		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
 		appendLineStringBuf(pkg->specialDoc, "rm -rf $DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, RPM_MKDIR_P " $DOCDIR");
+		appendLineStringBuf(pkg->specialDoc, mkdocdir);
+		free(mkdocdir);
 
 		*fileName = pkg->specialDocDir;
 		fl->passedSpecialDoc = 1;

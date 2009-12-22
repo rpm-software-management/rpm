@@ -326,8 +326,8 @@ static int doSetupMacro(rpmSpec spec, const char *line)
 
     /* if necessary, create and cd into the proper dir */
     if (createDir) {
-	rasprintf(&buf, RPM_MKDIR_P " %s\ncd '%s'",
-		spec->buildSubdir, spec->buildSubdir);
+	buf = rpmExpand("%{__mkdir_p} ", spec->buildSubdir, "\n",
+			"cd '", spec->buildSubdir, "'", NULL);
 	appendLineStringBuf(spec->prep, buf);
 	free(buf);
     }
