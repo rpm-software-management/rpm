@@ -156,11 +156,6 @@ char *realpath(const char *path, char resolved_path []);
 #include <sys/mman.h>
 #endif
 
-/* XXX FIXME: popt on sunos4.1.3: <sys/resource.h> requires <sys/time.h> */
-#if HAVE_SYS_RESOURCE_H && HAVE_SYS_TIME_H
-#include <sys/resource.h>
-#endif
-
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif

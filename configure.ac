@@ -383,7 +383,7 @@ AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
 
 AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
-AC_CHECK_HEADERS(sys/mman.h sys/resource.h sys/utsname.h sys/wait.h)
+AC_CHECK_HEADERS(sys/mman.h sys/utsname.h sys/wait.h)
 
 AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
