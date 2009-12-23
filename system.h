@@ -151,10 +151,6 @@ char *realpath(const char *path, char resolved_path []);
 #include <sys/mman.h>
 #endif
 
-#if HAVE_SYS_UTSNAME_H
-#include <sys/utsname.h>
-#endif
-
 #if HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif

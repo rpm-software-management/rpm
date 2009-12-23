@@ -5,6 +5,10 @@
 #include <setjmp.h>
 #endif
 
+#if HAVE_SYS_UTSNAME_H
+#include <sys/utsname.h>
+#endif
+
 #include <ctype.h>	/* XXX for /etc/rpm/platform contents */
 
 #if HAVE_SYS_SYSTEMCFG_H
