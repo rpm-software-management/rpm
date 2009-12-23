@@ -43,10 +43,6 @@ extern char ** environ;
 # endif
 #endif
 
-#ifdef HAVE_UTIME_H
-#include <utime.h>
-#endif
-
 #ifdef HAVE_STRING_H
 # if !STDC_HEADERS && HAVE_MEMORY_H
 #  include <memory.h>

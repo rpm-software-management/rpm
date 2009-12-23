@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <utime.h>
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmsq.h>

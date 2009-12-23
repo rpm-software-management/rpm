@@ -7,6 +7,7 @@
 #define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
 
 #include <sys/file.h>
+#include <utime.h>
 
 #ifndef	DYING	/* XXX already in "system.h" */
 #include <fnmatch.h>
