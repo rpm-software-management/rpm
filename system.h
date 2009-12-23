@@ -240,10 +240,6 @@ extern const char *__progname;
 #include <netdb.h>
 #endif
 
-#if HAVE_PWD_H
-#include <pwd.h>
-#endif
-
 /* Take care of NLS matters.  */
 
 #if HAVE_LOCALE_H

@@ -24,6 +24,7 @@
 
 # include "system.h"
 
+# include <pwd.h>
 # include <assert.h>
 
 #define	__alloca	alloca
