@@ -304,11 +304,6 @@ extern int setenv(const char *name, const char *value, int replace);
 extern void unsetenv(const char *name);
 #endif
 
-#if HAVE_SYS_SOCKET_H
-#include <sys/types.h>
-#include <sys/socket.h>
-#endif
-
 #if HAVE_POLL_H
 #include <poll.h>
 #else
