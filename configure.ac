@@ -377,7 +377,7 @@ AC_HEADER_TIME
 
 AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(limits.h)
-AC_CHECK_HEADERS(fcntl.h getopt.h grp.h memory.h netdb.h pwd.h utime.h)
+AC_CHECK_HEADERS(fcntl.h getopt.h memory.h netdb.h pwd.h utime.h)
 
 AC_CHECK_HEADERS(sys/ipc.h sys/socket.h sys/select.h)
 AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)

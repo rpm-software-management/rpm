@@ -163,10 +163,6 @@ char *realpath(const char *path, char resolved_path []);
 #include <getopt.h>
 #endif
 
-#if HAVE_GRP_H
-#include <grp.h>
-#endif
-
 #if HAVE_LIMITS_H
 #include <limits.h>
 #endif

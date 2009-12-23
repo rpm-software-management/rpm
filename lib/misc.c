@@ -4,15 +4,15 @@
 
 #include "system.h"
 
-/* just to put a marker in librpm.a */
-const char * const RPMVERSION = VERSION;
-
+#include <grp.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
 #include "lib/misc.h"
-
 #include "debug.h"
+
+/* just to put a marker in librpm.a */
+const char * const RPMVERSION = VERSION;
 
 /* unameToUid(), uidTouname() and the group variants are really poorly
    implemented. They really ought to use hash tables. I just made the
