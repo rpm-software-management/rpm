@@ -9,6 +9,14 @@
 
 #include "system.h"
 
+#if MAJOR_IN_MKDEV
+#include <sys/mkdev.h>
+#elif MAJOR_IN_SYSMACROS
+#include <sys/sysmacros.h>
+#else
+#include <sys/types.h> /* already included from system.h */
+#endif
+
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
 
