@@ -72,45 +72,6 @@ else
 fi
 AC_SUBST(FIXPERMS)
 
-dnl
-dnl see if we have a mkdir that supports `-p'.
-dnl
-AC_PATH_PROGS(RPM_MKDIR, mkdir, mkdir)
-AC_MSG_CHECKING(if $RPM_MKDIR supports -p)
-rm -rf conftest
-$RPM_MKDIR -p conftest/a 2>/dev/null
-if test $? = 0 ; then
-	rmdir conftest/a 2>/dev/null
-	if test $? = 0  ; then
-		:
-	else
-		RPM_MKDIR_P=0
-	fi
-
-	rmdir conftest 2>/dev/null
-	if test $? = 0 ; then
-		RPM_MKDIR_P="$RPM_MKDIR -p"
-	else
-		RPM_MKDIR_P=0
-	fi
-else
-	RPM_MKDIR_P=0
-fi
-
-if test X"$RPM_MKDIR_P" = X0 ; then
-	AC_MSG_RESULT(no)
-	RPM_MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
-else
-	AC_MSG_RESULT(yes)
-fi
-dnl
-dnl substitute this into config.h, so the C source picks it up.
-dnl
-AC_DEFINE_UNQUOTED(RPM_MKDIR_P, "${RPM_MKDIR_P}",
-[A full path to a program, possibly with arguments, that will create a
-   directory and all necessary parent directories, ala 'mkdir -p'])
-AC_SUBST(RPM_MKDIR_P)
-
 dnl AM_DISABLE_SHARED
 AM_PROG_LIBTOOL
 
@@ -185,6 +146,18 @@ AC_PATH_PROG(__OBJCOPY, objcopy, /usr/bin/objcopy, $MYPATH)
 AC_PATH_PROG(__OBJDUMP, objdump, /usr/bin/objdump, $MYPATH)
 AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 AC_PATH_PROG(__FAKECHROOT, fakechroot, /usr/bin/fakechroot, $MYPATH)
+
+dnl see if we have a mkdir that supports `-p' for rpmbuild's purposes
+AC_PROG_MKDIR_P
+if ! echo $MKDIR_P | grep -q mkdir; then 
+  __MKDIR_P="`echo ${prefix}/lib/rpm/mkinstalldirs`"
+else
+  __MKDIR_P=$MKDIR_P
+fi
+AC_DEFINE_UNQUOTED(__MKDIR_P, "${__MKDIR_P}",
+[A full path to a program, possibly with arguments, that will create a
+   directory and all necessary parent directories, ala 'mkdir -p'])
+AC_SUBST(__MKDIR_P)
 
 #=================
 # Check for zlib library. 

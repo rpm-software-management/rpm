@@ -51,7 +51,7 @@
 %__xz			@__XZ@
 %__make			@__MAKE@
 %__mkdir		@__MKDIR@
-%__mkdir_p		@MKDIR_P@
+%__mkdir_p		@__MKDIR_P@
 %__mv			@__MV@
 %__patch		@__PATCH@
 %__perl			@__PERL@
