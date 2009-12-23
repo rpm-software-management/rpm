@@ -155,10 +155,6 @@ char *realpath(const char *path, char resolved_path []);
 #include <sys/wait.h>
 #endif
 
-#if HAVE_GETOPT_H
-#include <getopt.h>
-#endif
-
 #if HAVE_LIMITS_H
 #include <limits.h>
 #endif
