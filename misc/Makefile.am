@@ -4,8 +4,7 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 EXTRA_DIST = \
-	basename.c	err.c		err.h \
-	error.c		error.h \
+	basename.c \
 	fakefork.c	fnmatch.c	fnmatch.h \
 	getcwd.c	getmntent.c	\
 	getwd.c		glob.c		glob.h				\
