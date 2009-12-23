@@ -74,7 +74,6 @@ extern char ** environ;
 # include <string.h>
 #else
 # include <strings.h>
-char *memchr ();
 #endif
 
 #if !defined(HAVE_STPCPY)
