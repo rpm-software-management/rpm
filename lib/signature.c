@@ -25,6 +25,11 @@
 char ** environ = NULL;
 #endif
 
+/* Solaris <= 2.6 limits getpass return to only 8 chars */
+#if HAVE_GETPASSPHRASE
+#define getpass getpassphrase
+#endif
+
 static int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
                      rpm_data_t p, rpm_count_t c)
 {
