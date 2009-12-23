@@ -214,8 +214,6 @@ AC_CHECK_FUNC(gethostname, [], [
     AC_CHECK_LIB(nsl, gethostname)
 ])
 
-AC_CHECK_HEADERS(error.h)
-
 AC_CHECK_HEADERS(poll.h)
 
 AC_CHECK_HEADERS(pthread.h)

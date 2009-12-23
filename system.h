@@ -89,10 +89,6 @@ char * stpncpy(char * dest, const char * src, size_t n);
 extern int errno;
 #endif
 
-#if HAVE_ERROR_H
-#include <error.h>
-#endif
-
 #if HAVE___SECURE_GETENV
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
