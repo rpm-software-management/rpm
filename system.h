@@ -173,10 +173,6 @@ char *realpath(const char *path, char resolved_path []);
 #endif
 #endif
 
-#if HAVE_ERR_H
-#include <err.h>
-#endif
-
 #if WITH_SELINUX
 #include <selinux/selinux.h>
 #else
