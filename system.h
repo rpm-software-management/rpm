@@ -189,10 +189,6 @@ char *realpath(const char *path, char resolved_path []);
 #include <err.h>
 #endif
 
-#if HAVE_MALLOC_H 
-#include <malloc.h>
-#endif
-
 #if WITH_SELINUX
 #include <selinux/selinux.h>
 #else
@@ -317,11 +313,6 @@ extern const char *__progname;
 
 #if NEED_STRINGS_H
 #include <strings.h>
-#endif
-
-#if NEED_MYREALLOC
-#define realloc(ptr,size) myrealloc(ptr,size)
-extern void *myrealloc(void *, size_t);
 #endif
 
 #if ! HAVE_SETENV
