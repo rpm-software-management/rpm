@@ -90,7 +90,7 @@ char * stpncpy(char * dest, const char * src, size_t n);
 extern int errno;
 #endif
 
-#if HAVE_ERROR && HAVE_ERROR_H
+#if HAVE_ERROR_H
 #include <error.h>
 #endif
 

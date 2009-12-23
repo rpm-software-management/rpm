@@ -210,23 +210,11 @@ dnl
 
 dnl Checks for libraries.
 
-AC_CHECK_FUNC(setreuid, [], [
-    AC_CHECK_LIB(ucb, setreuid, [if echo $LIBS | grep -- -lucb >/dev/null ;then :; else LIBS="$LIBS -lc -lucb" USEUCB=y;fi])
-])
-
-AC_CHECK_FUNC(rand, [], [
-    AC_CHECK_LIB(rand, rand, [])
-])
-
-AC_CHECK_FUNC(getdomainname, [], [
-    AC_CHECK_LIB(nsl, getdomainname)
-])
-AC_CHECK_FUNC(socket, [], [
-    AC_CHECK_LIB(socket, socket)
+AC_CHECK_FUNC(gethostname, [], [
+    AC_CHECK_LIB(nsl, gethostname)
 ])
 
 AC_CHECK_HEADERS(error.h)
-AC_CHECK_FUNCS(error)
 
 AC_CHECK_HEADERS(poll.h)
 
@@ -565,7 +553,6 @@ dnl point, but should offer good performance improvements, check after
 dnl 4.4.2.1...
 dnl AC_FUNC_MMAP
 
-AC_CHECK_FUNCS(getaddrinfo getnameinfo inet_aton)
 AC_CHECK_FUNCS(mtrace)
 AC_CHECK_FUNCS(strndup strerror)
 
