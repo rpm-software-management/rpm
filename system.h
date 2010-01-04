@@ -252,14 +252,6 @@ extern const char *__progname;
 #include <strings.h>
 #endif
 
-#if HAVE_POLL_H
-#include <poll.h>
-#else
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-#endif
-
 #if HAVE_GETMNTINFO || HAVE_GETMNTINFO_R || HAVE_MNTCTL
 # define GETMNTENT_ONE 0
 # define GETMNTENT_TWO 0

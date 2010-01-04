@@ -360,7 +360,7 @@ AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(limits.h)
 AC_CHECK_HEADERS(fcntl.h getopt.h memory.h netdb.h)
 
-AC_CHECK_HEADERS(sys/ipc.h sys/select.h)
+AC_CHECK_HEADERS(sys/ipc.h)
 AC_CHECK_HEADERS(sys/mman.h sys/utsname.h sys/wait.h)
 
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)

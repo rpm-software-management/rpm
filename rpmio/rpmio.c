@@ -5,6 +5,12 @@
 #include "system.h"
 #include <stdarg.h>
 
+#if defined(HAVE_POLL_H)
+#include <poll.h>
+#else
+#include <sys/select.h>
+#endif
+
 #if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
 #define	_USE_LIBIO	1
 #endif
