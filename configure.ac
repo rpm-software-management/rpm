@@ -552,7 +552,7 @@ AC_REPLACE_FUNCS(stpcpy stpncpy)
 AC_CHECK_FUNCS(__secure_getenv)
 
 AC_CHECK_FUNCS(
-   [mkstemp getcwd basename dirname realpath setenv unsetenv ftok regcomp],
+   [mkstemp getcwd basename dirname realpath setenv unsetenv ftok regcomp lchown],
    [], [AC_MSG_ERROR([function required by rpm])])
 
 dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
@@ -750,47 +750,6 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the ge
     ])
   ])
 ])
-
-AC_CHECK_FUNC(lchown,
-   [__CHOWN_RHF="%{__chown} -Rhf"
-    __CHGRP_RHF="%{__chgrp} -Rhf"
-    AC_DEFINE(HAVE_LCHOWN, 1, [Define as 1 if you have lchown()])],
-   [__CHOWN_RHF="%{__chown} -Rf"
-    __CHGRP_RHF="%{__chgrp} -Rf"
-    dnl Does chown() follow symlinks? This should be a good enough test.
-    AC_MSG_CHECKING(whether chown() follows symlinks)
-    AC_ARG_ENABLE([broken-chown],
-            [AS_HELP_STRING([--enable-broken-chown],[this system's chown follows symbolic links])], 
-	    result=$enableval, result=unknown)
-    if echo "$build" | ${EGREP} "(aix)|(hpux)|(linux)" > /dev/null ; then
-	result=yes
-    elif echo "$build" | ${EGREP} "(nextstep)" > /dev/null ; then
-	result=no
-    fi
-    if test $result = unknown; then
-	if test `${__ID} | cut -f2 -d\= | cut -f1 -d\(` = 0; then
-	    rm -f foo bar
-	    touch foo
-	    ln -s foo bar
-	    ${__CHOWN} 10 bar
-	    if test `ls -l foo | awk '{print $3}'` != "root"; then
-		result=yes
-	    else
-		result=no
-	    fi
-	    ${__RM} -f foo bar
-	else
-	    AC_MSG_CHECKING((cannot check by non-root user))
-	    result=no
-	fi
-    fi
-
-    AC_MSG_RESULT($result)
-    if test $result = yes; then
-	    AC_DEFINE(CHOWN_FOLLOWS_SYMLINK, 1, [Define as 1 if chown() follows symlinks and you don't have lchown()])
-    fi])
-AC_SUBST(__CHOWN_RHF)
-AC_SUBST(__CHGRP_RHF)
 
 if echo "$host_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"

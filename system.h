@@ -272,10 +272,6 @@ extern const char *__progname;
 #endif
 #endif
 
-#if ! HAVE_LCHOWN
-#define lchown chown
-#endif
-
 #if HAVE_GETMNTINFO || HAVE_GETMNTINFO_R || HAVE_MNTCTL
 # define GETMNTENT_ONE 0
 # define GETMNTENT_TWO 0

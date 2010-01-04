@@ -87,9 +87,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     else if (S_ISLNK(sb.st_mode)) {
 	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
 			RPMVERIFY_MODE | RPMVERIFY_CAPS);
-#if CHOWN_FOLLOWS_SYMLINK
-	    flags &= ~(RPMVERIFY_USER | RPMVERIFY_GROUP);
-#endif
     }
     else if (S_ISFIFO(sb.st_mode))
 	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |

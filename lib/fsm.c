@@ -2028,14 +2028,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
 	break;
     case FSM_LCHOWN:
-#if ! CHOWN_FOLLOWS_SYMLINK
 	rc = lchown(fsm->path, st->st_uid, st->st_gid);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", cur,
 		fsm->path, (int)st->st_uid, (int)st->st_gid,
 		(rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
-#endif
 	break;
     case FSM_CHMOD:
 	rc = chmod(fsm->path, (st->st_mode & 07777));
