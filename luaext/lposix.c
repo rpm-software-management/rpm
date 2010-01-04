@@ -5,6 +5,10 @@
 * 05 Nov 2003 22:09:10
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -360,10 +364,14 @@ static int Psleep(lua_State *L)			/** sleep(seconds) */
 
 static int Pputenv(lua_State *L)		/** putenv(string) */
 {
+#if HAVE_PUTENV
 	size_t l;
 	const char *s=luaL_checklstring(L, 1, &l);
 	char *e=malloc(++l);
 	return pushresult(L, (e==NULL) ? -1 : putenv(memcpy(e,s,l)), s);
+#else
+	return -1;
+#endif
 }
 
 

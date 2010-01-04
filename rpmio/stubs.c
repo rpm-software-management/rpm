@@ -18,10 +18,6 @@
 #include "misc/getwd.c"
 #endif
 
-#if !defined(HAVE_PUTENV)
-#include "misc/putenv.c"
-#endif
-
 #if defined(USE_GETMNTENT)
 #include "misc/getmntent.c"
 #endif

@@ -553,9 +553,10 @@ dnl AC_FUNC_MMAP
 
 AC_CHECK_FUNCS(mtrace)
 AC_CHECK_FUNCS(strndup)
+AC_CHECK_FUNCS(putenv)
 
 AC_REPLACE_FUNCS(basename getcwd getwd)
-AC_REPLACE_FUNCS(putenv realpath setenv)
+AC_REPLACE_FUNCS(realpath setenv)
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
 AC_CHECK_FUNCS(__secure_getenv)
