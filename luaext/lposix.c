@@ -22,6 +22,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <utime.h>
+#include <rpm/rpmutil.h>
 
 #define MYNAME		"posix"
 #define MYVERSION	MYNAME " library for " LUA_VERSION " / Nov 2003"
@@ -768,7 +769,7 @@ static int Pmkstemp(lua_State *L)
 	path = luaL_checkstring(L, 1);
 	if (path == NULL)
 		return 0;
-	dynpath = strdup(path);
+	dynpath = rstrdup(path);
 	fd = mkstemp(dynpath);
 	f = (FILE**)lua_newuserdata(L, sizeof(FILE*));
 	if (f == NULL) {

@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <rpm/rpmutil.h>
+
 #ifdef __aix__
 #define COMMENTCHAR '*'
 #else
@@ -41,7 +43,7 @@ our_mntent *getmntent(FILE *filep) {
 		start = chptr;
 		while (*chptr != ':') chptr++;
 		*chptr = '\0';
-		item.mnt_dir = strdup(start);
+		item.mnt_dir = rstrdup(start);
 		return &item;
 	    }
 #	else 
@@ -55,7 +57,7 @@ our_mntent *getmntent(FILE *filep) {
 	    while (!isspace(*chptr) && (*chptr)) chptr++;
 	    *chptr = '\0';
 
-	    item.our_mntdir = strdup(start);
+	    item.our_mntdir = rstrdup(start);
 	    return &item;
 #	endif
     }
