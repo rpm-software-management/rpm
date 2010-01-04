@@ -358,14 +358,6 @@ esac
 
 AC_SUBST([WITH_DB_LIB])
 
-dnl AmigaOS and IXEmul have a fork() dummy
-  case "$host" in
-    m68k-*-amigaos ) 
-	echo "Building for AmigaOS: using vfork() instead of fork()"; 
-	CFLAGS="$CFLAGS -Dfork=vfork" 
-	;;
-  esac
-
 AM_GNU_GETTEXT_VERSION([0.16.1])
 AM_GNU_GETTEXT([external])
 

@@ -4,7 +4,7 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 EXTRA_DIST = \
-	fakefork.c	fnmatch.c	fnmatch.h \
+	fnmatch.c	fnmatch.h \
 	getmntent.c	glob.c		glob.h		\
 	stpcpy.c	stpncpy.c
 
