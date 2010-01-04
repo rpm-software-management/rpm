@@ -68,7 +68,6 @@
 @redhat@#---------------------------------------------------------------------
 @redhat@#	Expanded at end of %prep
 @redhat@#
-@redhat@%__id_u		@__ID_U@
 @redhat@%_fixperms	%{__chmod} -Rf @FIXPERMS@
 @redhat@#---------------------------------------------------------------------
 @redhat@#	Always use %defattr(-,root,root) in %files (added in rpm-4.0.4)

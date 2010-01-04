@@ -102,18 +102,7 @@ AC_PATH_PROG(__GPG, gpg, /usr/bin/gpg, $MYPATH)
 AC_PATH_PROG(__GREP, grep, /bin/grep, $MYPATH)
 AC_PATH_PROG(__GZIP, gzip, /bin/gzip, $MYPATH)
 AC_PATH_PROG(__UNZIP, unzip, /usr/bin/unzip, $MYPATH)
-
 AC_PATH_PROG(__ID, id, /usr/bin/id, $MYPATH)
-AC_MSG_CHECKING(checking whether id supports -u)
-    if ${__ID} -u 2>&1 > /dev/null ; then
-	__ID_U="%{__id} -u"
-	AC_MSG_RESULT(yes)
-    else
-	__ID_U="%{__id} | %{__sed} 's/[[^=]]*=\\\\([[0-9]][[0-9]]*\\\\).*$/\\\\1/'"
-	AC_MSG_RESULT(no)
-    fi
-AC_SUBST(__ID_U)
-
 AC_PATH_PROG(__INSTALL, install, /usr/bin/install, $MYPATH)
 AC_PATH_PROG(__XZ, xz, /usr/bin/xz, $MYPATH)
 AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
