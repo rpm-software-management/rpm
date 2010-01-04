@@ -1,7 +1,7 @@
 #include "system.h"
 const char *__progname;
 
-#include <err.h>	/* XXX !HAVE_ERR_H: get from misc */
+#include <err.h>
 
 #include <rpm/rpmbuild.h>
 #include <rpm/header.h>

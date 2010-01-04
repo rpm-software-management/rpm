@@ -358,17 +358,15 @@ AC_HEADER_TIME
 
 AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(limits.h)
-AC_CHECK_HEADERS(fcntl.h getopt.h memory.h netdb.h utime.h)
+AC_CHECK_HEADERS(fcntl.h getopt.h memory.h netdb.h)
 
 AC_CHECK_HEADERS(sys/ipc.h sys/select.h)
-AC_CHECK_HEADERS(sys/types.h sys/stdtypes.h)
 AC_CHECK_HEADERS(sys/mman.h sys/utsname.h sys/wait.h)
 
-AC_CHECK_HEADERS(netinet/in_systm.h)
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)
 AC_CHECK_HEADERS(libio.h)
-AC_CHECK_HEADERS(err.h mcheck.h)
+AC_CHECK_HEADERS(mcheck.h)
 
 AC_CHECK_HEADERS(glob.h)
 
