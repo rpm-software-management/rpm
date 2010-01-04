@@ -880,6 +880,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	char * rdbuf = NULL;
 	void * mapped = (void *)-1;
 	size_t nmapped;
+	int xx;
 #endif
 
 	rc = fsmNext(fsm, FSM_ROPEN);

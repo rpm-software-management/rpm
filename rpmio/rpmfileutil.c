@@ -155,6 +155,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
     case URL_IS_UNKNOWN:
 #ifdef HAVE_MMAP
       if (pid == 0) {
+	int xx;
 	DIGEST_CTX ctx;
 	void * mapped;
 
