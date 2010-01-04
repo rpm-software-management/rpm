@@ -161,7 +161,7 @@ int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
 
 	if (fsize) {
 	    mapped = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fdno, 0);
-	    if (mapped == (void *)-1) {
+	    if (mapped == MAP_FAILED) {
 		xx = close(fdno);
 		rc = 1;
 		break;

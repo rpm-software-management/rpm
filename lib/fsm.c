@@ -878,7 +878,7 @@ static int writeFile(FSM_t fsm, int writeData)
     if (writeData && S_ISREG(st->st_mode)) {
 #ifdef HAVE_MMAP
 	char * rdbuf = NULL;
-	void * mapped = (void *)-1;
+	void * mapped = MAP_FAILED;
 	size_t nmapped;
 	int xx;
 #endif
@@ -890,7 +890,7 @@ static int writeFile(FSM_t fsm, int writeData)
 #ifdef HAVE_MMAP
 	nmapped = 0;
 	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fsm->rfd), 0);
-	if (mapped != (void *)-1) {
+	if (mapped != MAP_FAILED) {
 	    rdbuf = fsm->rdbuf;
 	    fsm->rdbuf = (char *) mapped;
 	    fsm->rdlen = nmapped = st->st_size;
@@ -904,7 +904,7 @@ static int writeFile(FSM_t fsm, int writeData)
 
 	while (left) {
 #ifdef HAVE_MMAP
-	  if (mapped != (void *)-1) {
+	  if (mapped != MAP_FAILED) {
 	    fsm->rdnb = nmapped;
 	  } else
 #endif
@@ -922,7 +922,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	}
 
 #ifdef HAVE_MMAP
-	if (mapped != (void *)-1) {
+	if (mapped != MAP_FAILED) {
 	    xx = msync(mapped, nmapped, MS_ASYNC);
 #if defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
