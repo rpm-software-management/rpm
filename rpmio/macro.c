@@ -1318,22 +1318,9 @@ expandMacro(MacroBuf mb)
 	}
 	
 	if (me == NULL) {	/* leave unknown %... as is */
-#ifndef HACK
-#if DEAD
-		/* XXX hack to skip over empty arg list */
-		if (fn == 1 && *f == '*') {
-			s = se;
-			continue;
-		}
-#endif
 		/* XXX hack to permit non-overloaded %foo to be passed */
 		c = '%';	/* XXX only need to save % */
 		SAVECHAR(mb, c);
-#else
-		rpmlog(RPMLOG_ERR,
-			_("Macro %%%.*s not found, skipping\n"), fn, f);
-		s = se;
-#endif
 		continue;
 	}
 
