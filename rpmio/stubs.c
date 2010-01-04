@@ -42,10 +42,6 @@
 #include "misc/stpncpy.c"
 #endif
 
-#if !defined(HAVE_STRSPN)
-#include "misc/strdup.c"
-#endif
-
 #if defined(USE_GNU_GLOB)
 #include "misc/fnmatch.h"
 #include "misc/fnmatch.c"

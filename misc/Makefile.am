@@ -9,7 +9,7 @@ EXTRA_DIST = \
 	getcwd.c	getmntent.c	\
 	getwd.c		glob.c		glob.h		\
 	myrealloc.c	putenv.c	realpath.c	\
-	setenv.c	stpcpy.c	stpncpy.c	strdup.c
+	setenv.c	stpcpy.c	stpncpy.c
 
 noinst_LTLIBRARIES = libmisc.la
 
