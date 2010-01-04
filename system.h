@@ -76,9 +76,6 @@ extern int errno;
 #undef getopt
 #else /* not STDC_HEADERS */
 char *getenv (const char *name);
-#if ! HAVE_REALPATH
-char *realpath(const char *path, char resolved_path []);
-#endif
 #endif /* STDC_HEADERS */
 
 /* XXX solaris2.5.1 has not */

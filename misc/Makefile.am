@@ -4,11 +4,9 @@ AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/rpm
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 EXTRA_DIST = \
-	basename.c \
 	fakefork.c	fnmatch.c	fnmatch.h \
-	getcwd.c	getmntent.c	\
-	getwd.c		glob.c		glob.h		\
-	realpath.c	stpcpy.c	stpncpy.c
+	getmntent.c	glob.c		glob.h		\
+	stpcpy.c	stpncpy.c
 
 noinst_LTLIBRARIES = libmisc.la
 

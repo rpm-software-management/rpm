@@ -6,24 +6,8 @@
 
 #include "system.h"
 
-#if !defined(HAVE_BASENAME)
-#include "misc/basename.c"
-#endif
-
-#if !defined(HAVE_GETCWD)
-#include "misc/getcwd.c"
-#endif
-
-#if !defined(HAVE_GETWD)
-#include "misc/getwd.c"
-#endif
-
 #if defined(USE_GETMNTENT)
 #include "misc/getmntent.c"
-#endif
-
-#if !defined(HAVE_REALPATH)
-#include "misc/realpath.c"
 #endif
 
 #if !defined(HAVE_STPCPY)
