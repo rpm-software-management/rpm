@@ -267,11 +267,6 @@ extern const char *__progname;
 #include <strings.h>
 #endif
 
-#if ! HAVE_SETENV
-extern int setenv(const char *name, const char *value, int replace);
-extern void unsetenv(const char *name);
-#endif
-
 #if HAVE_POLL_H
 #include <poll.h>
 #else

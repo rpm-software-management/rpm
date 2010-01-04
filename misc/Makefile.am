@@ -8,7 +8,7 @@ EXTRA_DIST = \
 	fakefork.c	fnmatch.c	fnmatch.h \
 	getcwd.c	getmntent.c	\
 	getwd.c		glob.c		glob.h		\
-	realpath.c	setenv.c	stpcpy.c	stpncpy.c
+	realpath.c	stpcpy.c	stpncpy.c
 
 noinst_LTLIBRARIES = libmisc.la
 

@@ -26,10 +26,6 @@
 #include "misc/realpath.c"
 #endif
 
-#if !defined(HAVE_SETENV)
-#include "misc/setenv.c"
-#endif
-
 #if !defined(HAVE_STPCPY)
 #include "misc/stpcpy.c"
 #endif
