@@ -248,18 +248,6 @@ extern const char *__progname;
 #include "misc/fnmatch.h"
 #endif
 
-#if ! HAVE_S_IFSOCK
-#define S_IFSOCK (0xc000)
-#endif
-
-#if ! HAVE_S_ISLNK
-#define S_ISLNK(mode) ((mode & 0xf000) == S_IFLNK)
-#endif
-
-#if ! HAVE_S_ISSOCK
-#define S_ISSOCK(mode) ((mode & 0xf000) == S_IFSOCK)
-#endif
-
 #if NEED_STRINGS_H
 #include <strings.h>
 #endif

@@ -506,30 +506,6 @@ AC_C_INLINE
 
 dnl look for libc features
 
-dnl If a system doesn't have S_IFSOCK, define it as 0 which will
-dnl make S_ISSOCK always return false (nice, eh?)
-AC_MSG_CHECKING(if <sys/stat.h> defines S_IFSOCK)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_IFSOCK)]])],[HAS_S_IFSOCK=yes],[HAS_S_IFSOCK=no])
-AC_MSG_RESULT($HAS_S_IFSOCK)
-if test $HAS_S_IFSOCK = yes; then
-	AC_DEFINE(HAVE_S_IFSOCK, 1, [Define as 1 if <sys/stat.h> defines S_IFSOCK])
-fi
-
-dnl Some Unix's are missing S_ISLNK, S_ISSOCK
-AC_MSG_CHECKING(if <sys/stat.h> defines S_ISLNK)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISLNK(0755))]])],[HAS_S_ISLNK=yes],[HAS_S_ISLNK=no])
-AC_MSG_RESULT($HAS_S_ISLNK)
-if test $HAS_S_ISLNK = yes; then
-	AC_DEFINE(HAVE_S_ISLNK, 1, [Define as 1 if <sys/stat.h> defines S_ISLNK])
-fi
-
-AC_MSG_CHECKING(if <sys/stat.h> defines S_ISSOCK)
-AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <sys/stat.h>]], [[printf("%d", S_ISSOCK(0755))]])],[HAS_S_ISSOCK=yes],[HAS_S_ISSOCK=no])
-AC_MSG_RESULT($HAS_S_ISSOCK)
-if test $HAS_S_ISSOCK = yes; then
-	AC_DEFINE(HAVE_S_ISSOCK, 1, [Define as 1 if <sys/stat.h> defines S_ISSOCK])
-fi
-
 dnl Check for missing typedefs
 AC_TYPE_MODE_T
 AC_TYPE_OFF_T
