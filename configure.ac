@@ -551,11 +551,9 @@ AC_REPLACE_FUNCS(stpcpy stpncpy)
 
 AC_CHECK_FUNCS(__secure_getenv)
 
-AC_CHECK_FUNCS(regcomp)
-
-AC_CHECK_FUNCS(ftok)
-
-AC_CHECK_FUNCS([mkstemp], [], [AC_MSG_ERROR([mkstemp() is required by rpm])])
+AC_CHECK_FUNCS(
+   [mkstemp getcwd basename dirname realpath setenv unsetenv ftok regcomp],
+   [], [AC_MSG_ERROR([function required by rpm])])
 
 dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
 dnl %files gets something like
