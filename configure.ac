@@ -812,8 +812,6 @@ elif echo "$host_os" | grep sunos > /dev/null; then
 	echo "hacking things up for sunos"
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
 	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
-	AC_DEFINE(NEED_MYREALLOC, 1, [Define as 1 if we need myrealloc])
-	AC_LIBOBJ(myrealloc)
 fi
 
 #

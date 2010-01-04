@@ -10,11 +10,6 @@
 
 #include "debug.h"
 
-#if NEED_MYREALLOC
-#define realloc(ptr,size) myrealloc(ptr,size)
-extern void *myrealloc(void *, size_t);
-#endif
-
 static rpmMemFailFunc failfunc = NULL;
 static void *failfunc_data = NULL;
 
