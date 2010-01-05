@@ -25,6 +25,7 @@
 # include "system.h"
 
 # include <stdlib.h>
+# include <string.h>
 # include <pwd.h>
 # include <assert.h>
 

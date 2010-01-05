@@ -32,10 +32,6 @@ extern char ** environ;
 #endif
 #endif
 
-#ifdef HAVE_STRING_H
-# include <string.h>
-#endif
-
 #if !defined(HAVE_STPCPY)
 char * stpcpy(char * dest, const char * src);
 #endif

@@ -61,6 +61,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define _STAT_VER		0
 #endif
 #include "system.h"
+#include <string.h>
 #include "rpmio/fts.h"
 #include <rpm/rpmio.h>
 #include <rpm/rpmurl.h>
