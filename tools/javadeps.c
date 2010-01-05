@@ -64,6 +64,7 @@ marc@redhat.com and ewt@redhat.com.
 #include <netinet/in.h>
 */
 
+#include <stdlib.h>
 #include <stdarg.h>
 #include <netdb.h>
 #include <rpm/rpmutil.h>

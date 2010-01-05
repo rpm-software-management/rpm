@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <stdarg.h>
+#include <stdlib.h>
 #include <rpm/rpmlog.h>
 #include "debug.h"
 

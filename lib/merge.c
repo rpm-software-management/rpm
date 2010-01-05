@@ -54,6 +54,7 @@ static char sccsid[] = "@(#)merge.c	8.2 (Berkeley) 2/14/94";
  */
 
 #include "system.h"
+#include <stdlib.h>
 #include "lib/rpmdb_internal.h" /* XXX for mergesort */
 
 #define ISIZE sizeof(int)

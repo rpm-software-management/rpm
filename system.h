@@ -58,20 +58,6 @@ extern int errno;
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 
-#ifdef STDC_HEADERS
-/* FIX: shrug */
-#define getopt system_getopt
-#include <stdlib.h>
-#undef getopt
-#else /* not STDC_HEADERS */
-char *getenv (const char *name);
-#endif /* STDC_HEADERS */
-
-/* XXX solaris2.5.1 has not */
-#if !defined(EXIT_FAILURE)
-#define	EXIT_FAILURE	1
-#endif
-
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #else
