@@ -33,12 +33,7 @@ extern char ** environ;
 #endif
 
 #ifdef HAVE_STRING_H
-# if !STDC_HEADERS && HAVE_MEMORY_H
-#  include <memory.h>
-# endif
 # include <string.h>
-#else
-# include <strings.h>
 #endif
 
 #if !defined(HAVE_STPCPY)
@@ -163,10 +158,6 @@ extern const char *__progname;
 #else
 #include "misc/glob.h"
 #include "misc/fnmatch.h"
-#endif
-
-#if NEED_STRINGS_H
-#include <strings.h>
 #endif
 
 #endif	/* H_SYSTEM */

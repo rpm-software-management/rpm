@@ -704,13 +704,11 @@ AC_CHECK_FUNC(getmntent, AC_DEFINE(HAVE_GETMNTENT, 1, [Define if you have the ge
 
 if echo "$host_os" | grep sco > /dev/null; then
 	echo "hacking things up for sco"
-	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
 	AC_DEFINE(HAVE_STRUCT_MNTTAB, 1,
 	[Define as 1 if you have "struct mnttab" (only sco?)])
 elif echo "$host_os" | grep sunos > /dev/null; then
 	echo "hacking things up for sunos"
 	CFLAGS="$CFLAGS -D__USE_FIXED_PROTOTYPES__"
-	AC_DEFINE(NEED_STRINGS_H, 1, [Define as one if we need to include <strings.h> (along with <string.h>)])
 fi
 
 #
