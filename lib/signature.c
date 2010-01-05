@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <inttypes.h>
+#include <sys/wait.h>
 #include <popt.h>
 
 #include <rpm/rpmtypes.h>

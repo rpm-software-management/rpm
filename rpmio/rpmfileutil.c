@@ -17,6 +17,7 @@
 #include <sys/mman.h>
 #endif
 
+#include <sys/wait.h>
 #include <popt.h>
 
 #include <rpm/rpmfileutil.h>

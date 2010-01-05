@@ -11,12 +11,13 @@ const char *__progname;
 #define	IAM_RPMK
 #endif
 
+#include <sys/wait.h>
+
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>

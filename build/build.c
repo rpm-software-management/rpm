@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <sys/wait.h>
+
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>

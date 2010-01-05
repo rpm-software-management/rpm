@@ -6,6 +6,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "system.h"
 
+#include <sys/wait.h>
 #if defined(HAVE_FTOK) && defined(HAVE_SYS_IPC_H)
 #include <sys/ipc.h>
 #endif

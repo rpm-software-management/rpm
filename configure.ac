@@ -358,7 +358,7 @@ AC_CHECK_HEADERS(limits.h)
 AC_CHECK_HEADERS(fcntl.h getopt.h memory.h)
 
 AC_CHECK_HEADERS(sys/ipc.h)
-AC_CHECK_HEADERS(sys/utsname.h sys/wait.h)
+AC_CHECK_HEADERS(sys/utsname.h)
 
 AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/mount.h sys/mntctl.h sys/param.h sys/vmount.h)

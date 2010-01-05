@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <sys/select.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include <magic.h>
 

@@ -97,10 +97,6 @@ char *getenv (const char *name);
 
 #include <ctype.h>
 
-#if HAVE_SYS_WAIT_H
-#include <sys/wait.h>
-#endif
-
 #if HAVE_LIMITS_H
 #include <limits.h>
 #endif

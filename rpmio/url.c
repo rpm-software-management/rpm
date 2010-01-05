@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <sys/wait.h>
 
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
