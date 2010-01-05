@@ -478,8 +478,9 @@ static const char * const _macro_i18ndomains = "%{?_i18ndomains}";
  */
 static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 {
-    char * dstring = rpmExpand(_macro_i18ndomains, NULL);
     int rc;
+#if defined(ENABLE_NLS)
+    char * dstring = rpmExpand(_macro_i18ndomains, NULL);
 
     td->type = RPM_STRING_TYPE;
     td->data = NULL;
@@ -497,9 +498,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 	/* change to en_US for msgkey -> msgid resolution */
 	langval = getenv(language);
 	(void) setenv(language, "en_US", 1);
-#if defined(ENABLE_NLS)
         ++_nl_msg_cat_cntr;
-#endif
 
 	msgid = NULL;
 	for (domain = dstring; domain != NULL; domain = de) {
@@ -514,9 +513,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 	    (void) setenv(language, langval, 1);
 	else
 	    unsetenv(language);
-#if defined(ENABLE_NLS)
         ++_nl_msg_cat_cntr;
-#endif
 
 	if (domain && msgid) {
 	    td->data = dgettext(domain, msgid);
@@ -531,6 +528,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
     }
 
     dstring = _free(dstring);
+#endif
 
     rc = headerGet(h, tag, td, HEADERGET_ALLOC);
     return rc;
