@@ -50,20 +50,7 @@ marc@redhat.com and ewt@redhat.com.
    
 */
 
-#include "system.h"
-
-/*
-  these includes are for my use, rpm will use #include "system.h"*
-*/
-
-/*
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <netinet/in.h>
-*/
-
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>

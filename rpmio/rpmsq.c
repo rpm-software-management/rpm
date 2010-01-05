@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <search.h>
 #include <errno.h>
+#include <stdio.h>
 
 #if defined(HAVE_PTHREAD_H)
 

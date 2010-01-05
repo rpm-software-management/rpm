@@ -9,8 +9,6 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
-
 #ifdef HAVE_SYS_PARAM_H
 #include <sys/param.h>
 #endif
