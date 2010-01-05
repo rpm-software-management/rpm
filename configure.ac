@@ -216,8 +216,6 @@ AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
 
 AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 
-AC_CHECK_FUNCS(vsnprintf snprintf)
-
 dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
 dnl not in the libc but in libport (for political reasons).  This check
 dnl can hopefully be removed soon.  Please use the default action
@@ -489,8 +487,6 @@ main() {
 ])
 fi
 
-AC_C_INLINE
-
 dnl look for libc features
 
 dnl Check for missing typedefs
@@ -500,7 +496,6 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
-AC_FUNC_VPRINTF
 AC_FUNC_MMAP
 
 AC_CHECK_FUNCS(mtrace)
