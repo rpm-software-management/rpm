@@ -63,6 +63,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <stdint.h>
 #include <dirent.h>
 
 typedef struct {
