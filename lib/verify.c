@@ -5,6 +5,9 @@
 
 #include "system.h"
 
+#if WITH_CAP
+#include <sys/capability.h>
+#endif
 #if WITH_ACL
 #include <acl/libacl.h>
 #endif

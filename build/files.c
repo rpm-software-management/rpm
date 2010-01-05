@@ -9,6 +9,9 @@
 #define	MYALLPERMS	07777
 
 #include <regex.h>
+#if WITH_CAP
+#include <sys/capability.h>
+#endif
 
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmpgp.h>

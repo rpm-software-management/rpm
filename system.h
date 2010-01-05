@@ -130,12 +130,6 @@ typedef	char * security_context_t;
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif
 
-#if WITH_CAP
-#include <sys/capability.h>
-#else
-typedef void * cap_t;
-#endif
-
 #include "rpmio/rpmutil.h"
 /* compatibility macros to avoid a mass-renaming all over the codebase */
 #define xmalloc(_size) rmalloc((_size))

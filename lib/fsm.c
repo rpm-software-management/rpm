@@ -9,6 +9,9 @@
 #if defined(HAVE_MMAP)
 #include <sys/mman.h>
 #endif
+#if WITH_CAP
+#include <sys/capability.h>
+#endif
 
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>

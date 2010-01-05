@@ -155,7 +155,7 @@ struct fsm_s {
     const char * baseName;	/*!< File base name. */
     const unsigned char * digest;	/*!< Binary digest (NULL disables). */
     security_context_t fcontext;/*!< File security context (NULL disables). */
-    cap_t fcaps;		/*!< File capabilities */
+    void *fcaps;		/*!< File capabilities */
     pgpHashAlgo digestalgo;	/*!< File digest algorithm */
     
     unsigned fflags;		/*!< File flags. */
