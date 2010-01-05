@@ -634,7 +634,7 @@ dnl AC_FUNC_MMAP
 
 AC_CHECK_FUNCS(getaddrinfo getnameinfo inet_aton)
 AC_CHECK_FUNCS(mtrace)
-AC_CHECK_FUNCS(strndup strerror)
+AC_CHECK_FUNCS(strerror)
 
 AC_REPLACE_FUNCS(basename getcwd getwd)
 AC_REPLACE_FUNCS(putenv realpath setenv)
