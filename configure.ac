@@ -506,13 +506,14 @@ AC_FUNC_MMAP
 AC_CHECK_FUNCS(mtrace)
 AC_CHECK_FUNCS(strndup)
 AC_CHECK_FUNCS(putenv)
+AC_CHECK_FUNCS(ftok)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
 AC_CHECK_FUNCS(__secure_getenv)
 
 AC_CHECK_FUNCS(
-   [mkstemp getcwd basename dirname realpath setenv unsetenv ftok regcomp lchown],
+   [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown],
    [], [AC_MSG_ERROR([function required by rpm])])
 
 dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
