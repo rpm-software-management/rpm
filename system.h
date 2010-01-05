@@ -118,15 +118,8 @@ typedef	char * security_context_t;
 
 #define	freecon(_c)
 
-#define	getfilecon(_fn, _c)	(-1)
-#define	lgetfilecon(_fn, _c)	(-1)
-#define	fgetfilecon(_fd, _c)	(-1)
-
 #define	setfilecon(_fn, _c)	(-1)
 #define	lsetfilecon(_fn, _c)	(-1)
-#define	fsetfilecon(_fd, _c)	(-1)
-
-#define	security_check_context(_c)	(0)
 
 #define	is_selinux_enabled()	(0)
 
