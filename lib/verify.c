@@ -5,6 +5,10 @@
 
 #include "system.h"
 
+#if WITH_ACL
+#include <acl/libacl.h>
+#endif
+
 #include <rpm/rpmcli.h>
 #include <rpm/header.h>
 #include <rpm/rpmlog.h>

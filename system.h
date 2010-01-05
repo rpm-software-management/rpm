@@ -151,10 +151,6 @@ typedef	char * security_context_t;
 typedef void * cap_t;
 #endif
 
-#if WITH_ACL
-#include <acl/libacl.h>
-#endif
-
 #if HAVE_MCHECK_H
 #include <mcheck.h>
 #endif	/* HAVE_MCHECK_H */
