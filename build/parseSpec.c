@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <errno.h>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE & related */
 #include <rpm/rpmbuild.h>

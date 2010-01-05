@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <errno.h>
 #include <sys/wait.h>
 
 #include <rpm/rpmbuild.h>

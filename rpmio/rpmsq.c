@@ -8,6 +8,7 @@
 #include <sys/signal.h>
 #include <sys/wait.h>
 #include <search.h>
+#include <errno.h>
 
 #if defined(HAVE_PTHREAD_H)
 

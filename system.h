@@ -40,11 +40,6 @@ char * stpcpy(char * dest, const char * src);
 char * stpncpy(char * dest, const char * src, size_t n);
 #endif
 
-#include <errno.h>
-#ifndef errno
-extern int errno;
-#endif
-
 #if HAVE___SECURE_GETENV
 #define	getenv(_s)	__secure_getenv(_s)
 #endif

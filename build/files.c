@@ -8,6 +8,7 @@
 
 #define	MYALLPERMS	07777
 
+#include <errno.h>
 #include <regex.h>
 #if WITH_CAP
 #include <sys/capability.h>

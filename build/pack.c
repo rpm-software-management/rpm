@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <errno.h>
+
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include <rpm/rpmts.h>
 #include <rpm/rpmbuild.h>

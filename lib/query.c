@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <errno.h>
 #include <inttypes.h>
 
 #include <rpm/rpmcli.h>

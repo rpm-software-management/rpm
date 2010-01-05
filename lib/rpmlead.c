@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <errno.h>
 #include <netinet/in.h>
 
 #include <rpm/rpmlib.h>		/* rpmGetOs/ArchInfo() */

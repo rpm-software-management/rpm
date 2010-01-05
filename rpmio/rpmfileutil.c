@@ -18,6 +18,7 @@
 #endif
 
 #include <sys/wait.h>
+#include <errno.h>
 #include <popt.h>
 
 #include <rpm/rpmfileutil.h>

@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <errno.h>
 #include <inttypes.h>
 #include <sys/wait.h>
 #include <popt.h>

@@ -16,6 +16,7 @@
 #else
 #include <sys/types.h> /* already included from system.h */
 #endif
+#include <errno.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>

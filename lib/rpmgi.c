@@ -3,6 +3,8 @@
  */
 #include "system.h"
 
+#include <errno.h>
+
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
 #include <rpm/rpmte.h>		/* XXX rpmElementType */

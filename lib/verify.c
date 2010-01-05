@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <errno.h>
 #if WITH_CAP
 #include <sys/capability.h>
 #endif

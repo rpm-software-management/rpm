@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <errno.h>
+
 #include <rpm/rpmlib.h>		/* rpmvercmp and others */
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmurl.h>

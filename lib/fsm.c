@@ -6,6 +6,7 @@
 #include "system.h"
 
 #include <utime.h>
+#include <errno.h>
 #if defined(HAVE_MMAP)
 #include <sys/mman.h>
 #endif

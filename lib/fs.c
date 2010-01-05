@@ -4,6 +4,7 @@
 
 #include "system.h"
 
+#include <errno.h>
 #include <rpm/rpmlib.h>		/* rpmGetFilesystem*() prototypes */
 #include <rpm/rpmfileutil.h>	/* for rpmGetPath */
 #include <rpm/rpmlog.h>

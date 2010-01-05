@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <stdarg.h>
+#include <errno.h>
 
 #if defined(HAVE_POLL_H)
 #include <poll.h>
