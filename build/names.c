@@ -7,6 +7,7 @@
 #include "system.h"
 #include <pwd.h>
 #include <grp.h>
+#include <netdb.h>
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 #include "debug.h"

@@ -9,7 +9,7 @@
 /* network byte order and is converted on the fly to host order. */
 
 #include "system.h"
-
+#include <netdb.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include "lib/header_internal.h"

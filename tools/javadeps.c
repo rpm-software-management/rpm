@@ -65,6 +65,7 @@ marc@redhat.com and ewt@redhat.com.
 */
 
 #include <stdarg.h>
+#include <netdb.h>
 #include <rpm/rpmutil.h>
 #include "debug.h"
 
