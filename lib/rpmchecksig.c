@@ -593,12 +593,9 @@ static void formatResult(rpmSigTag sigtag, rpmRC sigres, const char *result,
 	if (havekey && (sigres == RPMRC_NOKEY || sigres == RPMRC_NOTTRUSTED)) {
 	    const char *tempKey = strstr(result, "ey ID");
 	    if (tempKey) {
-		char *keyid = strndup(tempKey + 6, 8);
-	    	char *idprob = NULL;
-		rasprintf(&idprob, " %s#%s", signame, keyid);
-		rstrcat(keyprob, idprob);
-		free(keyid);
-		free(idprob);
+		char keyid[sizeof(pgpKeyID_t) + 1];
+		rstrlcpy(keyid, tempKey + 6, sizeof(keyid));
+		rstrscat(keyprob, " ", signame, "#", keyid, NULL);
 	    }
 	}
 	rasprintf(&msg, (*keyprob ? "(%s) " : "%s "), signame);
