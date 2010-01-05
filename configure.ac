@@ -352,7 +352,6 @@ dnl Checks for header files we can live without.
 AC_HEADER_STDC
 AC_HEADER_MAJOR
 AC_HEADER_DIRENT
-AC_HEADER_TIME
 
 AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(limits.h)
