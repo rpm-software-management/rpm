@@ -252,9 +252,6 @@ main(int argc, char *argv[])
     };
 
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 #if defined(ENABLE_NLS)
     (void)setlocale(LC_ALL, "" );

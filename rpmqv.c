@@ -12,6 +12,9 @@ const char *__progname;
 #endif
 
 #include <sys/wait.h>
+#if HAVE_MCHECK_H
+#include <mcheck.h>
+#endif
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */

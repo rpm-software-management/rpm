@@ -143,10 +143,6 @@ typedef	char * security_context_t;
 typedef void * cap_t;
 #endif
 
-#if HAVE_MCHECK_H
-#include <mcheck.h>
-#endif	/* HAVE_MCHECK_H */
-
 #include "rpmio/rpmutil.h"
 /* compatibility macros to avoid a mass-renaming all over the codebase */
 #define xmalloc(_size) rmalloc((_size))

@@ -6,6 +6,10 @@
 #include "system.h"
 const char *__progname;
 
+#if HAVE_MCHECK_H
+#include <mcheck.h>
+#endif
+
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>		/* rpmEVR, rpmReadConfigFiles etc */
 #include <rpm/rpmgi.h>
