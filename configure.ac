@@ -353,7 +353,6 @@ AC_HEADER_STDC
 AC_HEADER_MAJOR
 AC_HEADER_DIRENT
 
-AC_CHECK_HEADERS(locale.h)
 AC_CHECK_HEADERS(limits.h)
 AC_CHECK_HEADERS(fcntl.h getopt.h memory.h)
 
@@ -687,8 +686,6 @@ if test "$with_dmalloc" = yes ; then
   AC_DEFINE(DMALLOC, 1, [Build with dmalloc support?])
   LIBS="$LIBS -ldmalloc"
 fi
-
-AC_CHECK_FUNCS(setlocale)
 
 AC_CHECK_FUNCS(getpassphrase)
 

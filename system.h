@@ -154,25 +154,12 @@ typedef	char * security_context_t;
 extern const char *__progname;
 
 /* Take care of NLS matters.  */
-
-#if HAVE_LOCALE_H
-# include <locale.h>
-#endif
-#if !HAVE_SETLOCALE
-# define setlocale(Category, Locale) /* empty */
-#endif
-
 #if ENABLE_NLS
+# include <locale.h>
 # include <libintl.h>
 # define _(Text) dgettext (PACKAGE, Text)
 #else
-# undef bindtextdomain
-# define bindtextdomain(Domain, Directory) /* empty */
-# undef textdomain
-# define textdomain(Domain) /* empty */
 # define _(Text) Text
-# undef dgettext
-# define dgettext(DomainName, Text) Text
 #endif
 
 #define N_(Text) Text
