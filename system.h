@@ -78,18 +78,6 @@ char *getenv (const char *name);
 #include <sys/file.h>
 #endif
 
-#if !defined(SEEK_SET)
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
-#endif
-#if !defined(F_OK) 
-#define F_OK 0
-#define X_OK 1
-#define W_OK 2
-#define R_OK 4
-#endif
-
 #ifdef HAVE_DIRENT_H
 # include <dirent.h>
 # define NLENGTH(direct) (strlen((direct)->d_name))
