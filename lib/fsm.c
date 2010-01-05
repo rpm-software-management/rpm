@@ -6,6 +6,10 @@
 #include "system.h"
 
 #include <utime.h>
+#if defined(HAVE_MMAP)
+#include <sys/mman.h>
+#endif
+
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmsq.h>

@@ -13,6 +13,10 @@
 
 #endif
 
+#if defined(HAVE_MMAP)
+#include <sys/mman.h>
+#endif
+
 #include <popt.h>
 
 #include <rpm/rpmfileutil.h>
