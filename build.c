@@ -6,6 +6,7 @@
 
 #include <libgen.h>
 #include <errno.h>
+#include <ctype.h>
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmtag.h>

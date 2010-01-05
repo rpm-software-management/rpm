@@ -3,6 +3,7 @@
  */
 #include "system.h"
 
+#include <ctype.h>
 #include <rpm/rpmbuild.h>
 #include "debug.h"
 

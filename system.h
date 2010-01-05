@@ -67,8 +67,6 @@ char * stpncpy(char * dest, const char * src, size_t n);
 # endif /* HAVE_NDIR_H */
 #endif /* HAVE_DIRENT_H */
 
-#include <ctype.h>
-
 #if HAVE_LIMITS_H
 #include <limits.h>
 #endif

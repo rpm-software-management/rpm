@@ -5,6 +5,7 @@
 
 #include "system.h"
 
+#include <ctype.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>

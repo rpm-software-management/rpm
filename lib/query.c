@@ -7,6 +7,7 @@
 
 #include <errno.h>
 #include <inttypes.h>
+#include <ctype.h>
 
 #include <rpm/rpmcli.h>
 #include <rpm/header.h>

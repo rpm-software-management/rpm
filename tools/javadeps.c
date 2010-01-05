@@ -69,6 +69,7 @@ marc@redhat.com and ewt@redhat.com.
 #include <string.h>
 #include <netdb.h>
 #include <rpm/rpmutil.h>
+#include <ctype.h>
 #include "debug.h"
 
 /*---------typedefs---------*/

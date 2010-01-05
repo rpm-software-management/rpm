@@ -20,6 +20,7 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <popt.h>
+#include <ctype.h>
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmurl.h>
