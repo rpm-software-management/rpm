@@ -44,6 +44,7 @@
 %__grep			@__GREP@
 %__gzip			@__GZIP@
 %__id			@__ID@
+%__id_u			%{__id} -u
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
 # Deprecated, use %__xz instead.
