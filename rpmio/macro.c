@@ -1344,8 +1344,9 @@ expandMacro(MacroBuf mb)
 			me->used++;	/* Mark macro as used */
 	}
 
-	/* Free locally defined macros, such as macro options */
-	freeArgs(mb);
+	/* Free args for "%name " macros with opts */
+	if (me->opts != NULL)
+		freeArgs(mb);
 
 	s = se;
     }
