@@ -689,21 +689,29 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     }
 
     if (macro) {
-	char *macro_expanded = NULL,
-	     *macro_token = NULL,
-	     *field_set = NULL;
-	
-	rasprintf(&macro_token, "%%%s", macro);
-	macro_expanded = rpmExpand(macro_token);
-	if (!strcmp(macro_expanded, macro_token)) {
+	if ( !strcasecmp(macro, "requires") ||
+	     !strcasecmp(macro, "obsoletes") ||
+	     !strcasecmp(macro, "conflicts") ||
+	     !strcasecmp(macro, "provides")
+	  ) {
+	    char *macro_expanded = NULL,
+		*macro_token = NULL,
+		*field_set = NULL;
+
+	    rasprintf(&macro_token, "%%%s", macro);
+	    macro_expanded = rpmExpand(macro_token);
+	    if (!strcmp(macro_expanded, macro_token)) {
 		field_set = xstrdup(field);
-	} else {
+	    } else {
 		rasprintf(&field_set, "%s %s", macro_expanded, field);
+	    }
+	    addMacro(spec->macros, macro, NULL, field_set, RMIL_SPEC);
+	    free(macro_expanded);
+	    free(macro_token);
+	    free(field_set);
+	} else {
+	    addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
 	}
-	addMacro(spec->macros, macro, NULL, field_set, RMIL_SPEC);
-	free(macro_expanded);
-	free(macro_token);
-	free(field_set);
     }
     
     return RPMRC_OK;
