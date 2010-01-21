@@ -458,7 +458,7 @@ restart:
 	case URL_IS_HTTPS:
 	case URL_IS_HTTP:
 	case URL_IS_FTP:
-	{   char *tfn;
+	{   char *tfn = NULL;
 	    FD_t tfd;
 
 	    if (rpmIsVerbose())
