@@ -348,7 +348,7 @@ static int verifyHeader(QVA_t qva, const rpmts ts, Header h)
 	    static const char *const aok = ".";
 	    static const char *const unknown = "?";
 
-	    ec = (verifyResult != 0);
+	    if (verifyResult) ec = 1;
 
 #define	_verify(_RPMVERIFY_F, _C)	\
 	((verifyResult & _RPMVERIFY_F) ? _C : aok)
