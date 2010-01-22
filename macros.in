@@ -1037,13 +1037,13 @@ print (t)\
 
 #------------------------------------------------------------------------------
 # The make install analogue of %configure for modern autotools:
-%make_install make install DESTDIR=%{?buildroot}
+%make_install %{__make} install DESTDIR=%{?buildroot}
 
 #------------------------------------------------------------------------------
 # Former make install analogue, kept for compatibility and for old/broken
 #  packages that don't support DESTDIR properly.
 %makeinstall \
-  make \\\
+  %{__make} \\\
 	prefix=%{?buildroot:%{buildroot}}%{_prefix} \\\
 	exec_prefix=%{?buildroot:%{buildroot}}%{_exec_prefix} \\\
 	bindir=%{?buildroot:%{buildroot}}%{_bindir} \\\
