@@ -77,11 +77,11 @@ rpm \- RPM Package Manager
 .PP
 
 
- [\fB--changelog\fR] [\fB-c,--configfiles\fR] [\fB-d,--docfiles\fR] [\fB--dump\fR]
- [\fB--filesbypkg\fR] [\fB-i,--info\fR] [\fB--last\fR] [\fB-l,--list\fR]
- [\fB--provides\fR] [\fB--qf,--queryformat \fIQUERYFMT\fB\fR]
- [\fB-R,--requires\fR] [\fB--scripts\fR] [\fB-s,--state\fR]
- [\fB--triggers,--triggerscripts\fR]
+ [\fB--changelog\fR] [\fB-c,--configfiles\fR] [\fB--conflicts\fR]
+ [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--filesbypkg\fR] [\fB-i,--info\fR]
+ [\fB--last\fR] [\fB-l,--list\fR] [\fB--provides\fR]
+ [\fB--qf,--queryformat \fIQUERYFMT\fB\fR] [\fB-R,--requires\fR]
+ [\fB--scripts\fR] [\fB-s,--state\fR] [\fB--triggers,--triggerscripts\fR]
 
 .SS "verify-options"
 .PP
@@ -589,6 +589,9 @@ Display change information for the package.
 .TP
 \fB-c, --configfiles\fR
 List only configuration files (implies \fB-l\fR).
+.TP
+\fB--conflicts\fR
+List capabilities this package conflicts with.
 .TP
 \fB-d, --docfiles\fR
 List only documentation files (implies \fB-l\fR).
