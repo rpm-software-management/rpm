@@ -146,7 +146,7 @@ sub process_file {
 	(m/^(\s*)         # we hope the inclusion starts the line
 	 (require|use)\s+(?!\{)     # do not want 'do {' loops
 	 # quotes around name are always legal
-	 [\'\"]?([^\;\ \'\"\t]*)[\'\"]?[\t\;\ ]
+	 [\'\"]?([^\;\ \'\"\t#]*)[\'\"]?[\t\;\ ]
 	 # the syntax for 'use' allows version requirements
 	 \s*([.0-9]*)
 	 /x)
