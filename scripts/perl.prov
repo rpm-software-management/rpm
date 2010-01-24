@@ -81,13 +81,13 @@ sub process_file {
 
   my ($file) = @_;
   chomp $file;
-  
+
   open(FILE, "<$file") || return;
 
   my ($package, $version, $incomment, $inover) = ();
 
   while (<FILE>) {
-    
+
     # skip the documentation
 
     # we should not need to have item in this if statement (it
@@ -102,7 +102,7 @@ sub process_file {
       $incomment = 0;
       $inover = 0;
     }
-    
+
     if (m/^=(over)/) {
       $inover = 1;
     }
@@ -114,7 +114,7 @@ sub process_file {
     if ($incomment || $inover) {
        next;
     }
-    
+
     # skip the data section
     if (m/^__(DATA|END)__$/) {
       last;
@@ -125,7 +125,7 @@ sub process_file {
     # false positives as if they were provided packages (really ugly).
 
     if (m/^\s*package\s+([_:a-zA-Z0-9]+)\s*;/) {
-      $package=$1;
+      $package = $1;
       undef $version;
       if ($package eq 'main') {
         undef $package;
@@ -134,7 +134,7 @@ sub process_file {
         # the package definition is broken up over multiple blocks.
         # In that case, don't stomp a previous $VERSION we might have
         # found.  (See BZ#214496.)
-        $require{$package}=undef unless (exists $require{$package});
+        $require{$package} = undef unless (exists $require{$package});
       }
     }
 
@@ -149,44 +149,44 @@ sub process_file {
     #CGI/Apache.pm:$VERSION = (qw$Revision: 1.9 $)[1];
     #DynaLoader.pm:$VERSION = $VERSION = "1.03";     # avoid typo warning
     #General.pm:$Config::General::VERSION = 2.33;
-    # 
+    #
     # or with the new "our" pragma you could (read will) see:
     #
     #    our $VERSION = '1.00'
-    if (($package) && (m/^\s*(our\s+)?\$(\Q$package\E::)?VERSION\s*=\s+/)) {
+    if ($package && m/^\s*(our\s+)?\$(\Q$package\E::)?VERSION\s*=\s+/) {
 
       # first see if the version string contains the string
       # '$Revision' this often causes bizzare strings and is the most
       # common method of non static numbering.
 
       if (m/(\$Revision: (\d+[.0-9]+))/) {
-	$version= $2; 
-      } elsif (m/[\'\"]?(\d+[.0-9]+)[\'\"]?/) {
-	
-	# look for a static number hard coded in the script
-	
-	$version= $1; 
+        $version = $2;
+      } elsif (m/['"]?(\d+[.0-9]+)['"]?/) {
+
+        # look for a static number hard coded in the script
+
+        $version = $1;
       }
-      $require{$package}=$version;
+      $require{$package} = $version;
     }
-  
+
     # Allow someone to have a variable that defines virtual packages
-    # The variable is called $RPM_Provides.  It must be scoped with 
-    # "our", but not "local" or "my" (just would not make sense). 
-    # 
+    # The variable is called $RPM_Provides.  It must be scoped with
+    # "our", but not "local" or "my" (just would not make sense).
+    #
     # For instance:
-    #  
+    #
     #     $RPM_Provides = "blah bleah"
-    # 
+    #
     # Will generate provides for "blah" and "bleah".
     #
     # Each keyword can appear multiple times.  Don't
     #  bother with datastructures to store these strings,
     #  if we need to print it print it now.
-	
-    if ( m/^\s*(our\s+)?\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
+
+    if (m/^\s*(our\s+)?\$RPM_Provides\s*=\s*["'](.*)['"]/i) {
       foreach $_ (split(/\s+/, $2)) {
-	print "$_\n";
+        print "$_\n";
       }
     }
 
@@ -195,5 +195,5 @@ sub process_file {
   close(FILE) ||
     die("$0: Could not close file: '$file' : $!\n");
 
-  return ;
+  return;
 }

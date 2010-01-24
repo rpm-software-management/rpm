@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# RPM (and its source code) is covered under two separate licenses. 
+# RPM (and its source code) is covered under two separate licenses.
 
 # The entire code base may be distributed under the terms of the GNU
 # General Public License (GPL), which appears immediately below.
@@ -18,7 +18,7 @@
 # Erik Troan <ewt@redhat.com>.
 
 # a simple makedepend like script for perl.
- 
+
 # To save development time I do not parse the perl grammmar but
 # instead just lex it looking for what I want.  I take special care to
 # ignore comments and pod's.
@@ -44,10 +44,10 @@ if ("@ARGV") {
     process_file($_);
   }
 } else {
-  
+
   # notice we are passed a list of filenames NOT as common in unix the
   # contents of the file.
-  
+
   foreach (<>) {
     process_file($_);
   }
@@ -72,18 +72,18 @@ exit 0;
 
 
 sub process_file {
-  
+
   my ($file) = @_;
   chomp $file;
-  
+
   open(FILE, "<$file") || return;
-  
+
   while (<FILE>) {
-    
+
     # skip the "= <<" block
 
-    if ( ( m/^\s*\$(?:.*)\s*=\s*<<\s*(["'`])(.*)\1/) ||
-         ( m/^\s*\$(.*)\s*=\s*<<(\w*)\s*;/) ) {
+    if (m/^\s*\$(?:.*)\s*=\s*<<\s*(["'`])(.*)\1/ ||
+        m/^\s*\$(.*)\s*=\s*<<(\w*)\s*;/) {
       $tag = $2;
       while (<FILE>) {
         chomp;
@@ -95,7 +95,7 @@ sub process_file {
     # skip q{} quoted sections - just hope we don't have curly brackets
     # within the quote, nor an escaped hash mark that isn't a comment
     # marker, such as occurs right here. Draw the line somewhere.
-    if ( m/^.*\Wq[qxwr]?\s*([\{\(\[#|\/])[^})\]#|\/]*$/ && ! m/^\s*(require|use)\s/ ) {
+    if ( m/^.*\Wq[qxwr]?\s*([{([#|\/])[^})\]#|\/]*$/ && ! m/^\s*(require|use)\s/ ) {
       $tag = $1;
       $tag =~ tr/{\(\[\#|\//})]#|\//;
       while (<FILE>) {
@@ -116,7 +116,7 @@ sub process_file {
     if ( (m/^=(over)/) .. (m/^=(back)/) ) {
       next;
     }
-    
+
     # skip the data section
     if (m/^__(DATA|END)__$/) {
       last;
@@ -126,14 +126,14 @@ sub process_file {
     #  bother with datastructures to store these strings,
     #  if we need to print it print it now.
     #
-	# Again allow for "our".
-    if ( m/^\s*(our\s+)?\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
+        # Again allow for "our".
+    if (m/^\s*(our\s+)?\$RPM_Requires\s*=\s*["'](.*)['"]/i) {
       foreach $_ (split(/\s+/, $2)) {
-	print "$_\n";
+        print "$_\n";
       }
     }
 
-    if ( 
+    if (
 
 # ouch could be in a eval, perhaps we do not want these since we catch
 # an exception they must not be required
@@ -143,13 +143,13 @@ sub process_file {
 #   eval { require Carp } if defined $^S; # If error/warning during compilation,
 
 
-	(m/^(\s*)         # we hope the inclusion starts the line
-	 (require|use)\s+(?!\{)     # do not want 'do {' loops
-	 # quotes around name are always legal
-	 [\'\"]?([^\;\ \'\"\t#]*)[\'\"]?[\t\;\ ]
-	 # the syntax for 'use' allows version requirements
-	 \s*([.0-9]*)
-	 /x)
+        (m/^(\s*)         # we hope the inclusion starts the line
+         (require|use)\s+(?!\{)     # do not want 'do {' loops
+         # quotes around name are always legal
+         ['"]?([^; '"\t#]*)['"]?[\t; ]
+         # the syntax for 'use' allows version requirements
+         \s*([.0-9]*)
+         /x)
        ) {
       my ($whitespace, $statement, $module, $version) = ($1, $2, $3,$4);
 
@@ -163,7 +163,7 @@ sub process_file {
       # if there is some interpolation of variables just skip this
       # dependency, we do not want
       #        do "$ENV{LOGDIR}/$rcfile";
-   
+
       ($module =~ m/\$/) && next;
 
       # skip if the phrase was "use of" -- shows up in gimp-perl, et al.
@@ -195,7 +195,7 @@ sub process_file {
 
       $module =~ s/\.pm$//;
 
-      # some perl programmers write 'require URI/URL;' when 
+      # some perl programmers write 'require URI/URL;' when
       # they mean 'require URI::URL;'
 
       $module =~ s/\//::/;
@@ -209,7 +209,7 @@ sub process_file {
       # if module is a number then both require and use interpret that
       # to mean that a particular version of perl is specified
 
-      my $ver=$1;
+      my $ver = $1;
       if ($ver =~ /5.00/) {
         print "perl >= 0:$ver\n";
         next;
@@ -223,10 +223,10 @@ sub process_file {
 
       # ph files do not use the package name inside the file.
       # perlmodlib documentation says:
-      
+
       #       the .ph files made by h2ph will probably end up as
       #       extension modules made by h2xs.
-      
+
       # so do not expend much effort on these.
 
 
@@ -234,16 +234,16 @@ sub process_file {
       # will be included with the name sys/systeminfo.ph so only use the
       # basename of *.ph files
 
-      ($module  =~ m/\.ph$/) && next;
+      ($module =~ m/\.ph$/) && next;
 
-      $require{$module}=$version;
-      $line{$module}=$_;
+      $require{$module} = $version;
+      $line{$module} = $_;
     }
-    
+
   }
 
   close(FILE) ||
     die("$0: Could not close file: '$file' : $!\n");
-  
-  return ; 
+
+  return;
 }
