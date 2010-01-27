@@ -4,6 +4,9 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
+STRIP=${1:-strip}
+OBJDUMP=${2:-objdump}
+
 case `uname -a` in
 Darwin*) exit 0 ;;
 *) ;;
@@ -15,9 +18,9 @@ for f in `find $RPM_BUILD_ROOT -type f \( -perm -0100 -or -perm -0010 -or -perm 
         grep -v "^${RPM_BUILD_ROOT}/\?usr/lib/debug"  | \
 	sed -n -e 's/^\(.*\):[ 	]*ELF.*, stripped/\1/p'`; do
 	note="-R .note"
-	if objdump -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
+	if $OBJDUMP -h $f | grep '^[ 	]*[0-9]*[ 	]*.note[ 	]' -A 1 | \
 		grep ALLOC >/dev/null; then
 		note=
 	fi
-	strip -R .comment $note "$f" || :
+	$STRIP -R .comment $note "$f" || :
 done
