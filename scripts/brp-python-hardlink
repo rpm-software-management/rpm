@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# If using normal root, avoid changing anything.
+if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
+	exit 0
+fi
+
+# Hardlink identical *.pyc and *.pyo, originally from PLD's rpm-build-macros
+# Modified to use sha1sum instead of cmp to avoid a diffutils dependency.
+find "$RPM_BUILD_ROOT" -type f -name "*.pyc" | while read pyc ; do
+       pyo="$(echo $pyc | sed -e 's/.pyc$/.pyo/')"
+       if [ -f "$pyo" ] ; then
+               csha="$(sha1sum -b $pyc | cut -d' ' -f 1)" && \
+               osha="$(sha1sum -b $pyo | cut -d' ' -f 1)" && \
+               if [ "$csha" = "$osha" ] ; then
+                       ln -f "$pyc" "$pyo"
+               fi
+       fi
+done
