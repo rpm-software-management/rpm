@@ -20,7 +20,8 @@ EXTRA_DIST = \
 	mono-find-requires mono-find-provides \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
 	pkgconfigdeps.sh libtooldeps.sh \
-	fontconfig.prov desktop-file.prov
+	fontconfig.prov desktop-file.prov \
+	macros.perl macros.php macros.python
 
 rpmconfig_SCRIPTS = \
 	brp-compress brp-python-bytecompile brp-java-gcjcompile \
@@ -37,25 +38,6 @@ rpmconfig_SCRIPTS = \
 	rpmdb_loadcvt rpmdiff rpm2cpio.sh tcl.req tgpg 
 
 rpmconfig_DATA = \
-	rpmdiff.cgi rpm.daily rpm.log rpm.xinetd
+	rpmdiff.cgi rpm.daily rpm.log rpm.xinetd \
+	macros.perl macros.php macros.python
 
-rpmconfig_DATA += macros.perl
-macros.perl: $(srcdir)/macros.perl.in
-	@cat \
-	  < $(srcdir)/macros.perl.in > macros.perl
-CLEANFILES += macros.perl
-EXTRA_DIST += macros.perl.in
-
-rpmconfig_DATA += macros.php
-macros.php: $(srcdir)/macros.php.in
-	@cat \
-	  < $(srcdir)/macros.php.in > macros.php
-CLEANFILES += macros.php
-EXTRA_DIST += macros.php.in
-
-rpmconfig_DATA += macros.python
-macros.python: $(srcdir)/macros.python.in
-	@cat \
-	  < $(srcdir)/macros.python.in > macros.python
-CLEANFILES += macros.python
-EXTRA_DIST += macros.python.in
