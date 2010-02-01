@@ -1225,9 +1225,10 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     int xx;
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
     magic_t ms = NULL;
+    rpmRC rc = RPMRC_FAIL;
 
     if (fc == NULL || argv == NULL)
-	return 0;
+	return 0; /* XXX looks very wrong */
 
     fc->nfiles = argvCount(argv);
 
@@ -1243,14 +1244,13 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     if (ms == NULL) {
 	rpmlog(RPMLOG_ERR, _("magic_open(0x%x) failed: %s\n"),
 		msflags, strerror(errno));
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     xx = magic_load(ms, NULL);
     if (xx == -1) {
 	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(ms));
-	magic_close(ms);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
@@ -1294,8 +1294,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 		       s, mode, magic_error(ms));
 		/* only executable files are critical to dep extraction */
 		if (is_executable) {
-		    magic_close(ms);
-		    return RPMRC_FAIL;
+		    goto exit;
 		}
 		/* unrecognized non-executables get treated as "data" */
 		ftype = "data";
@@ -1333,13 +1332,14 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    fc->fwhite++;
 	}
     }
+    rc = RPMRC_OK;
 
+exit:
     fcav = argvFree(fcav);
-
     if (ms != NULL)
 	magic_close(ms);
 
-    return RPMRC_OK;
+    return rc;
 }
 
 /**
