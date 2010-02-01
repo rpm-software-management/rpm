@@ -334,17 +334,11 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     char *mname = NULL;
     StringBuf sb_stdout = NULL;
     StringBuf sb_stdin;
-    char *av[2];
-    rpmds * depsp, ds;
-    const char * N;
-    const char * EVR;
-    rpmsenseFlags Flags, dsContext;
+    rpmds * depsp;
+    rpmsenseFlags dsContext;
     rpmTag tagN;
-    ARGV_t pav;
-    const char * s;
-    int pac;
+    ARGV_t av = NULL;
     int xx;
-    int i;
 
     switch (deptype) {
     default:
@@ -368,8 +362,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	break;
     }
     rasprintf(&buf, "%%{?%s:%%{%s} %%{?%s_opts}}", mname, mname, mname);
-    av[0] = buf;
-    av[1] = NULL;
+    argvAdd(&av, buf);
+    buf = rfree(buf);
 
     sb_stdin = newStringBuf();
     appendLineStringBuf(sb_stdin, fn);
@@ -378,17 +372,19 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     sb_stdin = freeStringBuf(sb_stdin);
 
     if (xx == 0 && sb_stdout != NULL) {
-	pav = NULL;
+	ARGV_t pav = NULL;
+	int pac;
 	xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
 	pac = argvCount(pav);
 	if (pav)
-	for (i = 0; i < pac; i++) {
-	    N = pav[i];
-	    EVR = "";
-	    Flags = dsContext;
+	for (int i = 0; i < pac; i++) {
+	    rpmds ds = NULL;
+	    const char *N = pav[i];
+	    const char *EVR = "";
+	    rpmsenseFlags Flags = dsContext;
 	    if (pav[i+1] && strchr("=<>", *pav[i+1])) {
 		i++;
-		for (s = pav[i]; *s; s++) {
+		for (const char *s = pav[i]; *s; s++) {
 		    switch(*s) {
 		    default:
 assert(*s != '\0');
@@ -434,8 +430,8 @@ assert(EVR != NULL);
 	pav = argvFree(pav);
     }
     sb_stdout = freeStringBuf(sb_stdout);
-    free(buf);
     free(mname);
+    argvFree(av);
 
     return 0;
 }
