@@ -6,16 +6,11 @@
 #set -x
 
 # Usage:
-#   (1) Add the following to the spec file:
-#   %define _use_internal_dependency_generator 0
-#   %define __find_requires /usr/lib/rpm/ocaml-find-requires.sh
-#   %define __find_provides /usr/lib/rpm/ocaml-find-provides.sh
-#
-#   (2) If you don't want the module to depend on the exact compiler
+#   (1) If you don't want the module to depend on the exact compiler
 #   version then use ocaml-find-requires.sh -c, but this is not something
 #   you should do normally.
 #
-#   (3) For any modules which you want to ignore, use '-i Modulename'.
+#   (2) For any modules which you want to ignore, use '-i Modulename'.
 
 OCAMLOBJINFO=ocamlobjinfo
 TEMP=`getopt -o i:f: -n ocaml-find-provides.sh -- "$@"`
