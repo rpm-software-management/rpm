@@ -1218,10 +1218,6 @@ assert(dix >= 0);
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     ARGV_t fcav = NULL;
-    ARGV_t dav;
-    const char * s, * se;
-    size_t slen;
-    int fcolor;
     int xx;
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
     magic_t ms = NULL;
@@ -1255,11 +1251,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
 	const char * ftype;
+	const char * s = argv[fc->ix];
+	size_t slen = strlen(s);
+	int fcolor;
 	rpm_mode_t mode = (fmode ? fmode[fc->ix] : 0);
 	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
-
-	s = argv[fc->ix];
-	slen = strlen(s);
 
 	switch (mode & S_IFMT) {
 	case S_IFCHR:	ftype = "character special";	break;
@@ -1301,29 +1297,27 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    }
 	}
 
-	se = ftype;
-        rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, se);
+	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, ftype);
 
 	/* Save the path. */
 	xx = argvAdd(&fc->fn, s);
 
 	/* Save the file type string. */
-	xx = argvAdd(&fcav, se);
+	xx = argvAdd(&fcav, ftype);
 
 	/* Add (filtered) entry to sorted class dictionary. */
-	fcolor = rpmfcColoring(se);
+	fcolor = rpmfcColoring(ftype);
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    xx = rpmfcSaveArg(&fc->cdict, se);
+	    xx = rpmfcSaveArg(&fc->cdict, ftype);
     }
 
     /* Build per-file class index array. */
     fc->fknown = 0;
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
-	se = fcav[fc->ix];
-
-	dav = argvSearch(fc->cdict, se, NULL);
+	const char *se = fcav[fc->ix];
+	ARGV_t dav = argvSearch(fc->cdict, se, NULL);
 	if (dav) {
 	    xx = argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
 	    fc->fknown++;
