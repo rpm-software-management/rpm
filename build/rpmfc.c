@@ -462,10 +462,8 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "troff or preprocessor input",	RPMFC_MANPAGE|RPMFC_INCLUDE },
   { "GNU Info",			RPMFC_MANPAGE|RPMFC_INCLUDE },
 
-  { "perl script text",		RPMFC_PERL|RPMFC_INCLUDE },
+  { "perl ",			RPMFC_PERL|RPMFC_INCLUDE },
   { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
-
-  { " /usr/bin/python",		RPMFC_PYTHON|RPMFC_INCLUDE },
 
   /* XXX "a /usr/bin/python -t script text executable" */
   /* XXX "python 2.3 byte-compiled" */
@@ -670,7 +668,6 @@ rpmds rpmfcRequires(rpmfc fc)
 static int rpmfcSCRIPT(rpmfc fc)
 {
     const char * fn = fc->fn[fc->ix];
-    const char * bn;
     rpmds ds;
     char buf[BUFSIZ];
     FILE * fp;
@@ -726,13 +723,6 @@ static int rpmfcSCRIPT(rpmfc fc)
 
 	    ds = rpmdsFree(ds);
 	}
-
-	/* Set color based on interpreter name. */
-	bn = basename(s);
-	if (rstreq(bn, "perl"))
-	    fc->fcolor->vals[fc->ix] |= RPMFC_PERL;
-	else if (rstreqn(bn, "python", sizeof("python")-1))
-	    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
 
 	break;
     }
