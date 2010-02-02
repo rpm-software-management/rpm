@@ -169,13 +169,9 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     return dsi;
 }
 
-static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
-		rpm_loff_t fileSize, rpm_loff_t prevSize, rpm_loff_t fixupSize,
-		rpmFileAction action)
-{
+static rpmDiskSpaceInfo rpmtsGetDSI(const rpmts ts, dev_t dev,
+				    const char *dirName) {
     rpmDiskSpaceInfo dsi;
-    int64_t bneeded;
-
     dsi = ts->dsi;
     if (dsi) {
 	while (dsi->bsize && dsi->dev != dev)
@@ -185,6 +181,15 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 	    dsi = rpmtsCreateDSI(ts, dev, dirName, dsi - ts->dsi);
 	}
     }
+    return dsi;
+}
+
+static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
+		rpm_loff_t fileSize, rpm_loff_t prevSize, rpm_loff_t fixupSize,
+		rpmFileAction action)
+{
+    int64_t bneeded;
+    rpmDiskSpaceInfo dsi = rpmtsGetDSI(ts, dev, dirName);
     if (dsi == NULL)
 	return;
 
@@ -224,6 +229,37 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
     if (dsi->bneeded < dsi->obneeded) dsi->obneeded = dsi->bneeded;
     if (dsi->ineeded < dsi->oineeded) dsi->oineeded = dsi->ineeded;
 }
+
+/* return DSI of the device the rpmdb lives on */
+static rpmDiskSpaceInfo rpmtsDbDSI(const rpmts ts) {
+    const char *dbhome = rpmdbHome(rpmtsGetRdb(ts));
+    struct stat sb;
+    int rc;
+
+    rc = stat(dbhome, &sb);
+    if (rc) {
+	return NULL;
+    }
+    return rpmtsGetDSI(ts, sb.st_dev, dbhome);
+}
+
+/* Update DSI for changing size of the rpmdb */
+static void rpmtsUpdateDSIrpmDBSize(const rpmte p,
+				    rpmDiskSpaceInfo dsi) {
+    rpm_loff_t headerSize;
+    int64_t bneeded;
+
+    if (dsi==NULL) return;
+
+    headerSize = rpmteHeaderSize(p);
+    bneeded = BLOCK_ROUND(headerSize, dsi->bsize);
+    /* REMOVE doesn't neccessarily shrink the database */
+    if (rpmteType(p) == TR_ADDED) {
+	/* guessing that db grows 4 times more than the header size */
+	dsi->bneeded += (bneeded * 4);
+    }
+}
+
 
 static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 {
@@ -1309,6 +1345,7 @@ static int rpmtsPrepare(rpmts ts)
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
+    rpmDiskSpaceInfo dsi;
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 
@@ -1348,6 +1385,8 @@ static int rpmtsPrepare(rpmts ts)
     /* check against files in the rpmdb */
     checkInstalledFiles(ts, fileCount, ht, fpc);
 
+    dsi = rpmtsDbDSI(ts);
+
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	if ((fi = rpmteFI(p)) == NULL)
@@ -1357,6 +1396,8 @@ static int rpmtsPrepare(rpmts ts)
 	/* check files in ts against each other and update disk space
 	   needs on each partition for this package. */
 	handleOverlappedFiles(ts, ht, p, fi);
+
+	rpmtsUpdateDSIrpmDBSize(p, dsi);
 
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {
