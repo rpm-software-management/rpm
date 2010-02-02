@@ -119,5 +119,13 @@ void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 RPM_GNUC_INTERNAL
 void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, Header h);
 
+/** \ingroup rpmte
+ * Retrieve size in bytes of package header.
+ * @param te		transaction element
+ * @return		size in bytes of package file.
+ */
+RPM_GNUC_INTERNAL
+rpm_loff_t rpmteHeaderSize(rpmte te);
+
 #endif	/* _RPMTE_INTERNAL_H */
 
