@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2009-02-03 15:37-0300\n"
 "Last-Translator: Igor Pires Soares <igor@projetofedora.org>\n"
 "Language-Team: Brazilian Portuguese <fedora-trans-pt_br@redhat.com>\n"
@@ -1522,54 +1522,54 @@ msgstr "%s falhou\n"
 msgid "failed to write all data to %s\n"
 msgstr "falha ao gravar todos os dados em %s\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "A conversão de %s para inteiro longo falhou.\n"
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) falhou: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load falhou: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Falha no reconhecimento do arquivo \"%s\": modo %06o %s\n"
 
 # , c-format
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Localizando %s: %s\n"
 
 # , c-format
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Falha ao localizar %s:\n"
 
 # , c-format
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 msgid "Unable to get current dependency name.\n"
 msgstr "Não foi possível obter o nome da dependência atual.\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr "Não foi possível obter a dependência epoch-version-release atual.\n"
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 "O contador de arquivos das informações do mesmo não correspondem ao do "
 "arquivo no container.\n"
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr "O container não é do tipo de dados vetor de string.\n"
 
@@ -1739,34 +1739,6 @@ msgstr "%c %s faltando"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(%3d desconhecido) "
-
-# , c-format
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() falhou ao retornar o tamanho: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() falhou ao retornar os pontos de montagem: %s\n"
-
-# , c-format
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "falha ao iniciar %s: %s\n"
-
-# , c-format
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "falha ao abrir %s: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "o arquivo %s está em um dispositivo desconhecido\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2541,7 +2513,7 @@ msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
 # , c-format
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Não foi possível alterar o diretório raiz: %m\n"
@@ -3671,6 +3643,24 @@ msgstr "%s: falha na leitura do manifesto: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "não verificar a assinatura do cabeçalho+carga útil"
+
+# , c-format
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl() falhou ao retornar o tamanho: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() falhou ao retornar os pontos de montagem: %s\n"
+
+# , c-format
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "falha ao iniciar %s: %s\n"
+
+# , c-format
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "falha ao abrir %s: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "o arquivo %s está em um dispositivo desconhecido\n"
 
 # , c-format
 #~ msgid "use threads for file state machine"

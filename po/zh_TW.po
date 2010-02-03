@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1385,50 +1385,50 @@ msgstr "%s 失敗：%s\n"
 msgid "failed to write all data to %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "讀取 %s 失敗: %s。\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1594,31 +1594,6 @@ msgstr "缺少      %c %s"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(不明的 %3d) "
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() 回傳大小失敗：%s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() 回傳掛載點失敗：%s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "無法檢驗狀態：%s：%s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "開啟 %s 失敗：%s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "檔案 %s 位於一個不明的裝置上\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2373,7 +2348,7 @@ msgstr "%s 失敗的於檔案 %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s 失敗：%s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "移除目錄時失敗 %s: %s\n"
@@ -3457,6 +3432,21 @@ msgstr "%s: 讀取清單失敗：%s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "不驗證表頭+酬載簽名"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl() 回傳大小失敗：%s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() 回傳掛載點失敗：%s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "無法檢驗狀態：%s：%s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "開啟 %s 失敗：%s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "檔案 %s 位於一個不明的裝置上\n"
 
 #~ msgid "use threads for file state machine"
 #~ msgstr "使用執行緒做為檔案狀態機器"

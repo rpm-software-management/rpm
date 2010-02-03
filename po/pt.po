@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1408,50 +1408,50 @@ msgstr "O %s falhou\n"
 msgid "failed to write all data to %s\n"
 msgstr "não consegui escrever todos os dados em %s\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "o acesso ao %s falhou: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "%s rmdir de %s falhou: %s\n"
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "A procurar o %s: (usando o %s)...\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Não consegui encontrar o %s:\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1621,31 +1621,6 @@ msgstr "falta     %s"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(desconhecido %3d)"
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "o mntctl() falhou ao devolver o tamanho: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "o mntctl() falhou ao devolver o número de pontos de montagem: %s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "Não consegui analisar o %s: %s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "falhei ao aceder ao %s: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "o ficheiro %s está num dispositivo desconhecido\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2440,7 +2415,7 @@ msgstr "%s falhou no ficheiro %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s falhou: %s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "falhou a remoção da directoria %s: %s\n"
@@ -3538,6 +3513,21 @@ msgstr "%s: a leitura do manifesto falhou: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "verificar a assinatura do pacote"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "o mntctl() falhou ao devolver o tamanho: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "o mntctl() falhou ao devolver o número de pontos de montagem: %s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "Não consegui analisar o %s: %s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "falhei ao aceder ao %s: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "o ficheiro %s está num dispositivo desconhecido\n"
 
 #, fuzzy
 #~ msgid "use threads for file state machine"

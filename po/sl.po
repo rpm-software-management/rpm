@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -1429,50 +1429,50 @@ msgstr "%s neuspe¹en"
 msgid "failed to write all data to %s\n"
 msgstr "pisanje podatkov v %s je bilo neuspe¹no"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "odstranitev %s je bila neuspe¹na: %s"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Iskanje  %s: (z uporabo %s)...\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1644,31 +1644,6 @@ msgstr "manjka     %s\n"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(neznano %3d) "
-
-#: lib/fs.c:121
-#, fuzzy, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
-
-#: lib/fs.c:136
-#, fuzzy, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, fuzzy, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "status %s ni na voljo: %s"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "neuspe¹no odpiranje %s: %s\n"
-
-#: lib/fs.c:397
-#, fuzzy, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "datoteka %s se nahaja na neznani napravi"
 
 #: lib/fsm.c:736
 #, fuzzy, c-format
@@ -2486,7 +2461,7 @@ msgstr "neuspe¹no odpiranje %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s neuspe¹en"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "neuspe¹na odstranitev imenika %s: %s\n"
@@ -3591,6 +3566,25 @@ msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "preveri podpis paketa(-ov)"
+
+#, fuzzy
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
+
+#, fuzzy
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() ni uspe¹no vrnila velikosti fugger: %s"
+
+#, fuzzy
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "status %s ni na voljo: %s"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "neuspe¹no odpiranje %s: %s\n"
+
+#, fuzzy
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "datoteka %s se nahaja na neznani napravi"
 
 #, fuzzy
 #~ msgid "use threads for file state machine"

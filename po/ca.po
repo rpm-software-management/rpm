@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2009-04-25 17:36+0100\n"
 "Last-Translator: Agustí Grau <fedora@softcatala.org>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -1448,51 +1448,51 @@ msgstr "%s ha fallat\n"
 msgid "failed to write all data to %s\n"
 msgstr "ha fallat en escriure totes les dades a %s\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Ha fallat la conversió de %s a enter gran.\n"
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Ha fallat magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "Ha fallat magic_load: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Ha fallat el reconeixement del fitxer \"%s\": mode %06o %s\n"
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "S'està cercant %s: %s\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Ha fallat la cerca de %s:\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 msgid "Unable to get current dependency name.\n"
 msgstr "No s'ha pogut obtenir el nom de dependència actual.\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr "No s'ha pogut aconseguir la dependència actual epoc-version-release.\n"
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 "El compte de fitxers des de la informació del fitxer no coincideix amb el "
 "fitxer en el contenidor.\n"
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr "El contenidor no és del tipus vector de cadenes.\n"
 
@@ -1658,31 +1658,6 @@ msgstr "manca   %c %s"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(%3d desconegut) "
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctt() no ha retornat la mida: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() no ha retornat els punts de muntatge: %s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "no s'ha obtingut l'estat de %s: %s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "no s'ha pogut obrir %s: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "el fitxer %s és en un dispositiu desconegut\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2447,7 +2422,7 @@ msgstr "ha fallat %s al fitxer %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "ha fallat %s: %s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "No s'ha pogut canviar el directori root: %m\n"
@@ -3547,6 +3522,21 @@ msgstr "%s: ha fallat la lectura del manifest: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "no verifiquis la signatura de la capçalera i les dades"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctt() no ha retornat la mida: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() no ha retornat els punts de muntatge: %s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "no s'ha obtingut l'estat de %s: %s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "no s'ha pogut obrir %s: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "el fitxer %s és en un dispositiu desconegut\n"
 
 #~ msgid "use threads for file state machine"
 #~ msgstr "empra fluxos per a la màquina d'estat de fitxers"

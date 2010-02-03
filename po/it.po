@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2008-06-30 07:20+0200\n"
 "Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
 "Language-Team: Italian <fedora-trans-it@redhat.com>\n"
@@ -1433,50 +1433,50 @@ msgstr "%s fallito\n"
 msgid "failed to write all data to %s\n"
 msgstr "salvataggio di tutti i dati su %s fallito\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) fallita: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load fallita: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "magic_file(ms, \"%s\") fallito: modalità %06o %s\n"
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Ricerca di %s in corso: %s\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Impossibile trovare %s:\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "Impossibile cambiare directory root: %m\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1642,31 +1642,6 @@ msgstr "%c %s  mancanti"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(sconosciuto %3d) "
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() non ha ritornato alcuna dimensione: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() non ha ritornato alcun mount point: %s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "impossibile visualizzare statistiche per %s: %s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "impossibile aprire %s: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "file %s è su di un dispositivo sconosciuto\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2433,7 +2408,7 @@ msgstr "%s fallito sul file %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s fallito: %s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Impossibile cambiare directory root: %m\n"
@@ -3541,6 +3516,21 @@ msgstr "%s: lettura manifesto fallita: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "non verificare firma header+payload"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl() non ha ritornato alcuna dimensione: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() non ha ritornato alcun mount point: %s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "impossibile visualizzare statistiche per %s: %s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "impossibile aprire %s: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "file %s è su di un dispositivo sconosciuto\n"
 
 #~ msgid "use threads for file state machine"
 #~ msgstr "usa i thread per la macchina di stato dei file"

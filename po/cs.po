@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Jindrich Novy <jnovy@users.sourceforge.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1398,50 +1398,50 @@ msgstr "%s selhalo\n"
 msgid "failed to write all data to %s\n"
 msgstr "Nemohu zapsat všechna data do %s\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) selhalo: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load selhal: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "magic_file(ms, \"%s\") selhal: mód %06o %s\n"
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Hledám   %s: %s\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "Není možné změnit kořenový adresář: %m\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1607,31 +1607,6 @@ msgstr "chybí     %c %s"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(neznámý %3d) "
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() nevrátil velikost: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() nevrátil přípojné body: %s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "nemohu zjistit stav %s: %s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "nemohu otevřít %s: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "soubor %s je na neznámém zařízení\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2390,7 +2365,7 @@ msgstr "%s selhal na souboru %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s selhalo: %s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Není možné změnit kořenový adresář: %m\n"
@@ -3468,6 +3443,21 @@ msgstr "%s: čtení seznamu selhalo: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "neověřuj podpis hlavičky a payloadu"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl() nevrátil velikost: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() nevrátil přípojné body: %s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "nemohu zjistit stav %s: %s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "nemohu otevřít %s: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "soubor %s je na neznámém zařízení\n"
 
 #~ msgid "use threads for file state machine"
 #~ msgstr "použij vlákna pro nástroj stavu souborů"

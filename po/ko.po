@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1392,50 +1392,50 @@ msgstr "%s(이)가 실패했습니다\n"
 msgid "failed to write all data to %s\n"
 msgstr "%s에 모든 자료를 기록하는데 실패했습니다\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "%s(을)를 여는데 실패함: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "%s %s 디렉토리 삭제에 실패함: %s\n"
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "%s(을)를 찾는 중: (%s 사용)...\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s(을)를 찾는데 실패함:\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 #, fuzzy
 msgid "Unable to get current dependency name.\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1606,31 +1606,6 @@ msgstr "다음을 찾을 수 없음    %s"
 #, fuzzy
 msgid "(unknown)"
 msgstr "(알 수 없는 %3d)    "
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl()에서 크기를 반환하는데 실패함: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl()에서 마운트할 지점을 반환하는데 실패함: %s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "%s(을)를 여는데 실패함: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "%s 파일은 알 수 없는 장치 상에 있습니다\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2430,7 +2405,7 @@ msgstr "%2$s 파일의 %1$s(이)가 실패함: %3$s\n"
 msgid "%s failed: %s\n"
 msgstr "%s(이)가 실패함: %s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "%s 디렉토리를 삭제하는데 실패함: %s\n"
@@ -3532,6 +3507,21 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "패키지의 서명을 검사합니다"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl()에서 크기를 반환하는데 실패함: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl()에서 마운트할 지점을 반환하는데 실패함: %s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "%s의 상태(stat)를 표시하는데 실패함: %s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "%s(을)를 여는데 실패함: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "%s 파일은 알 수 없는 장치 상에 있습니다\n"
 
 #, fuzzy
 #~ msgid "use threads for file state machine"

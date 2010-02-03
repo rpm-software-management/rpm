@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4.90\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-01-08 10:16+0200\n"
+"POT-Creation-Date: 2010-02-03 17:37+0200\n"
 "PO-Revision-Date: 2008-03-11 11:15+0200\n"
 "Last-Translator: Panu Matilainen <pmatilai@redhat.com>\n"
 "Language-Team: Finnish\n"
@@ -1391,49 +1391,49 @@ msgstr "%s epäonnistui\n"
 msgid "failed to write all data to %s\n"
 msgstr "kaiken tiedon kirjoittaminen %s:ään ei onnistunut\n"
 
-#: build/rpmfc.c:1178
+#: build/rpmfc.c:1164
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:1258
+#: build/rpmfc.c:1241
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) epäonnistui: %s\n"
 
-#: build/rpmfc.c:1265
+#: build/rpmfc.c:1248
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load epäonnistui: %s\n"
 
-#: build/rpmfc.c:1307
+#: build/rpmfc.c:1289
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Tiedoston \"%s\" tunnistaminen epäonnistui: moodi %06o %s\n"
 
-#: build/rpmfc.c:1505
+#: build/rpmfc.c:1485
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Etsitään %s:ää: %s\n"
 
-#: build/rpmfc.c:1510 build/rpmfc.c:1519
+#: build/rpmfc.c:1490 build/rpmfc.c:1499
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s:ää ei löytynyt\n"
 
-#: build/rpmfc.c:1601 build/rpmfc.c:1632
+#: build/rpmfc.c:1581 build/rpmfc.c:1612
 msgid "Unable to get current dependency name.\n"
 msgstr ""
 
-#: build/rpmfc.c:1607 build/rpmfc.c:1638
+#: build/rpmfc.c:1587 build/rpmfc.c:1618
 msgid "Unable to get current dependency epoch-version-release.\n"
 msgstr ""
 
-#: build/rpmfc.c:1665
+#: build/rpmfc.c:1645
 msgid "File count from file info doesn't match file in container.\n"
 msgstr ""
 
-#: build/rpmfc.c:1680
+#: build/rpmfc.c:1660
 msgid "Container not of string array data type.\n"
 msgstr ""
 
@@ -1598,31 +1598,6 @@ msgstr ""
 #, fuzzy
 msgid "(unknown)"
 msgstr "(tuntematon %3d)"
-
-#: lib/fs.c:121
-#, c-format
-msgid "mntctl() failed to return size: %s\n"
-msgstr "mntctl() ei palauttanut kokoa: %s\n"
-
-#: lib/fs.c:136
-#, c-format
-msgid "mntctl() failed to return mount points: %s\n"
-msgstr "mntctl() ei palauttanut kohteita: %s\n"
-
-#: lib/fs.c:162 lib/fs.c:263 lib/fs.c:376
-#, c-format
-msgid "failed to stat %s: %s\n"
-msgstr "%s:n stat epäonnistui: %s\n"
-
-#: lib/fs.c:208
-#, c-format
-msgid "failed to open %s: %s\n"
-msgstr "%s:n avaus epäonnistui: %s\n"
-
-#: lib/fs.c:397
-#, c-format
-msgid "file %s is on an unknown device\n"
-msgstr "tiedosto %s sijaitsee tuntemattomalla laitteella\n"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2381,7 +2356,7 @@ msgstr "%s epäonnistui tiedostolle %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s epäonnistui: %s\n"
 
-#: lib/psm.c:1531 lib/transaction.c:1289 lib/verify.c:484
+#: lib/psm.c:1531 lib/transaction.c:1334 lib/verify.c:484
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Juurihakemiston vaihto ei onnistu: %m\n"
@@ -3458,6 +3433,21 @@ msgstr "%s: pakettilistan luku epäonnistui: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
+
+#~ msgid "mntctl() failed to return size: %s\n"
+#~ msgstr "mntctl() ei palauttanut kokoa: %s\n"
+
+#~ msgid "mntctl() failed to return mount points: %s\n"
+#~ msgstr "mntctl() ei palauttanut kohteita: %s\n"
+
+#~ msgid "failed to stat %s: %s\n"
+#~ msgstr "%s:n stat epäonnistui: %s\n"
+
+#~ msgid "failed to open %s: %s\n"
+#~ msgstr "%s:n avaus epäonnistui: %s\n"
+
+#~ msgid "file %s is on an unknown device\n"
+#~ msgstr "tiedosto %s sijaitsee tuntemattomalla laitteella\n"
 
 #~ msgid "cannot open %s index\n"
 #~ msgstr "indeksin %s avaus ei onnistu\n"
