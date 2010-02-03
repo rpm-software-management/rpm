@@ -838,7 +838,6 @@ exit:
     }
 
     /* keeps memory leak checkers quiet */
-    rpmFreeFilesystems();
     rpmlogClose();
 
 #ifdef	IAM_RPMQV

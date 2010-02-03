@@ -5,7 +5,7 @@
 #include "system.h"
 
 #include <rpm/rpmtypes.h>
-#include <rpm/rpmlib.h>		/* rpmGetFilesystem*() */
+#include <rpm/rpmlib.h>
 #include <rpm/rpmmacro.h>	/* XXX for %_i18ndomains */
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
@@ -158,25 +158,6 @@ exit:
 }
 
 /**
- * Retrieve mounted file system paths.
- * @param h		header
- * @retval td		tag data container
- * @return		1 on success
- */
-static int fsnamesTag(Header h, rpmtd td, headerGetFlags hgflags)
-{
-    const char ** list;
-
-    if (rpmGetFilesystemList(&list, &(td->count)))
-	return 0;
-
-    td->type = RPM_STRING_ARRAY_TYPE;
-    td->data = list;
-
-    return 1; 
-}
-
-/**
  * Retrieve install prefixes.
  * @param h		header
  * @retval td		tag data container
@@ -199,51 +180,6 @@ static int instprefixTag(Header h, rpmtd td, headerGetFlags hgflags)
     }
 
     return 0;
-}
-
-/**
- * Retrieve mounted file system space.
- * @param h		header
- * @retval td		tag data container
- * @return		1 on success
- */
-static int fssizesTag(Header h, rpmtd td, headerGetFlags hgflags)
-{
-    struct rpmtd_s fsizes, fnames;
-    const char ** filenames = NULL;
-    rpm_loff_t * filesizes = NULL;
-    rpm_loff_t * usages = NULL;
-    rpm_count_t numFiles = 0;
-
-    if (headerGet(h, RPMTAG_LONGFILESIZES, &fsizes, HEADERGET_EXT)) {
-	filesizes = fsizes.data;
-	headerGet(h, RPMTAG_FILENAMES, &fnames, HEADERGET_EXT);
-	filenames = fnames.data;
-	numFiles = rpmtdCount(&fnames);
-    }
-	
-    if (rpmGetFilesystemList(NULL, &(td->count)))
-	return 0;
-
-    td->type = RPM_INT64_TYPE;
-    td->flags = RPMTD_ALLOCED;
-
-    if (filenames == NULL) {
-	usages = xcalloc((td->count), sizeof(usages));
-	td->data = usages;
-
-	return 1;
-    }
-
-    if (rpmGetFilesystemUsage(filenames, filesizes, numFiles, &usages, 0))	
-	return 0;
-
-    td->data = usages;
-
-    rpmtdFreeData(&fnames);
-    rpmtdFreeData(&fsizes);
-
-    return 1;
 }
 
 /**
@@ -780,8 +716,6 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_ORIGFILENAMES,	origfilenamesTag },
     { RPMTAG_FILEPROVIDE,	fileprovideTag },
     { RPMTAG_FILEREQUIRE,	filerequireTag },
-    { RPMTAG_FSNAMES,		fsnamesTag },
-    { RPMTAG_FSSIZES,		fssizesTag },
     { RPMTAG_INSTALLPREFIX,	instprefixTag },
     { RPMTAG_TRIGGERCONDS,	triggercondsTag },
     { RPMTAG_TRIGGERTYPE,	triggertypeTag },

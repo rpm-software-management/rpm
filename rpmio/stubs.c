@@ -6,10 +6,6 @@
 
 #include "system.h"
 
-#if defined(USE_GETMNTENT)
-#include "misc/getmntent.c"
-#endif
-
 #if !defined(HAVE_STPCPY)
 #include "misc/stpcpy.c"
 #endif
