@@ -17,10 +17,9 @@ for d in ./usr/man/man* ./usr/man/*/man* ./usr/info \
 	./usr/share/doc/*/man/man* ./usr/lib/*/man/man*
 do
     [ -d $d ] || continue
-    for f in `find $d -type f`
+    for f in `find $d -type f ! -name dir`
     do
         [ -f "$f" ] || continue
-	[ "`basename $f`" = "dir" ] && continue
 
 	case "$f" in
 	 *.gz|*.Z)    gunzip  -f $f; b=`echo $f | sed -e 's/\.\(gz\|Z\)$//'`;;
