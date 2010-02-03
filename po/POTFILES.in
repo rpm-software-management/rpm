@@ -27,7 +27,6 @@ build/spec.c
 lib/cpio.c
 lib/depends.c
 lib/formats.c
-lib/fs.c
 lib/fsm.c
 lib/legacy.c
 lib/manifest.c
