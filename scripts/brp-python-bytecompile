@@ -1,4 +1,5 @@
 #!/bin/bash
+errors_terminate=$2
 
 # If using normal root, avoid changing anything.
 if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
@@ -33,16 +34,25 @@ fi
 # and below /usr/lib/python3.1/, we're targetting /usr/bin/python3.1
 
 shopt -s nullglob
-for python_libdir in $RPM_BUILD_ROOT/usr/lib*/python*/ ;
+for python_libdir in $RPM_BUILD_ROOT/usr/lib{,64}/python[0-9].[0-9]/ ;
 do
 	python_binary=/usr/bin/$(basename $python_libdir)
+	real_libdir=${python_libdir/$RPM_BUILD_ROOT/}
 	echo "Bytecompiling .py files below $python_libdir using $python_binary"
 
 	# Generate normal (.pyc) byte-compiled files.
-	$python_binary -c 'import compileall; compileall.compile_dir("'"$python_libdir"'", '"$depth"', "/", force=1, quiet=1)'
+	$python_binary -c 'import compileall, sys; sys.exit(not compileall.compile_dir("'"$python_libdir"'", '"$depth"', "'"$real_libdir"'", force=1, quiet=1))'
+	if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
+		# One or more of the files had a syntax error
+		exit 1
+	fi
 
 	# Generate optimized (.pyo) byte-compiled files.
-	$python_binary -O -c 'import compileall; compileall.compile_dir("'"$python_libdir"'", '"$depth"', "/", force=1, quiet=1)'
+	$python_binary -O -c 'import compileall, sys; sys.exit(not compileall.compile_dir("'"$python_libdir"'", '"$depth"', "'"$real_libdir"'", force=1, quiet=1))'
+	if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
+		# One or more of the files had a syntax error
+		exit 1
+	fi
 done
 
 
@@ -50,12 +60,16 @@ done
 # implementation:
 
 # Generate normal (.pyc) byte-compiled files.
-$default_python -c 'import compileall, re, sys; sys.exit (not compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/|/usr/lib.*/python.+/"'"), quiet=1))'
-if [ $? != 0 ]; then
+$default_python -c 'import compileall, re, sys; sys.exit (not compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]"'"), quiet=1))'
+if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
 	# One or more of the files had a syntax error
-	# XXX TODO: parametrize the exit code, only warn for now
-	exit 0
+	exit 1
 fi
 
 # Generate optimized (.pyo) byte-compiled files.
-$default_python -O -c 'import compileall, re; compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/|/usr/lib.*/python.+/"'"))' > /dev/null
+$default_python -O -c 'import compileall, re, sys; sys.exit(not compileall.compile_dir("'"$RPM_BUILD_ROOT"'", '"$depth"', "/", 1, re.compile(r"'"/bin/|/sbin/|/usr/lib(64)?/python[0-9]\.[0-9]"'"), quiet=1))' > /dev/null
+if [ $? -ne 0 -a 0$errors_terminate -ne 0 ]; then
+	# One or more of the files had a syntax error
+	exit 1
+fi
+exit 0
