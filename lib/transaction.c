@@ -134,7 +134,7 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     resolved_path = realpath(dirName, mntPoint);
     if (!resolved_path) {
 	strncpy(mntPoint, dirName, PATH_MAX);
-	mntPoint[PATH_MAX] = '\0';
+	mntPoint[PATH_MAX-1] = '\0';
     }
     char * end = NULL;
     while (end != mntPoint) {
