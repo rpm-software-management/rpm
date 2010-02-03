@@ -240,7 +240,7 @@ sub getRequires {
 # this function print system bundles of OSGi profile files.
 sub getSystemBundles {
 	foreach $file (@_) {
-		if ( -f $file && -r $file ) {
+		if ( ! -f $file || ! -r $file ) {
 			print "'$file' file not found or cannot be read!";
 			next;
 		} else {
