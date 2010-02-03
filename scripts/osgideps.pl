@@ -57,7 +57,7 @@ sub getProvides {
 		while ( my $file = $queue->dequeue_nb ) {
 			chomp($file);
 			# we don't follow symlinks for provides
-			next if ( -f $file && -r $file && -l $file );
+			next if ( -f $file && -r _ && -l _ );
 			$file =~ s/[^[:print:]]//g;
 			if ( $file =~ m/$MANIFEST_NAME$/ || $file =~ m/\.jar$/ ) {
 				if ( $file =~ m/\.jar$/ ) {
@@ -149,7 +149,7 @@ sub getRequires {
 	
 	sub getRequiresWorker {
 		while ( my $file = $queue->dequeue_nb ) {
-			next if ( -f $file && -r $file );
+			next if ( -f $file && -r _ );
 			$file =~ s/[^[:print:]]//g;
 			if ( $file =~ m/$MANIFEST_NAME$/ || $file =~ m/\.jar$/ ) {
 				# we explicitly requires symlinked jars
@@ -240,7 +240,7 @@ sub getRequires {
 # this function print system bundles of OSGi profile files.
 sub getSystemBundles {
 	foreach $file (@_) {
-		if ( ! -f $file || ! -r $file ) {
+		if ( ! -f $file || ! -r _ ) {
 			print "'$file' file not found or cannot be read!";
 			next;
 		} else {
