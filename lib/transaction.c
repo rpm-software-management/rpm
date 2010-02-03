@@ -45,6 +45,7 @@
 #include "debug.h"
 
 struct diskspaceInfo_s {
+    char * mntPoint;	/*!< File system mount point */
     dev_t dev;		/*!< File system device number. */
     int64_t bneeded;	/*!< No. of blocks needed. */
     int64_t ineeded;	/*!< No. of inodes needed. */
@@ -61,83 +62,114 @@ struct diskspaceInfo_s {
 
 static int rpmtsInitDSI(const rpmts ts)
 {
-    rpmDiskSpaceInfo dsi;
-    struct stat sb;
-    int rc;
-    int i;
-
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
-
-    rpmlog(RPMLOG_DEBUG, "mounted filesystems:\n");
-    rpmlog(RPMLOG_DEBUG,
-	"    i        dev    bsize       bavail       iavail mount point\n");
-
-    rc = rpmGetFilesystemList(&ts->filesystems, &ts->filesystemCount);
-    if (rc || ts->filesystems == NULL || ts->filesystemCount <= 0)
-	return rc;
-
-    /* Get available space on mounted file systems. */
-
     ts->dsi = _free(ts->dsi);
-    ts->dsi = xcalloc((ts->filesystemCount + 1), sizeof(*ts->dsi));
+    ts->filesystemCount = 0;
+    ts->dsi = xcalloc(1, sizeof(*ts->dsi));
+    return 0;
+}
 
-    dsi = ts->dsi;
+static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
+				       const char * dirName, int count)
+{
+    rpmDiskSpaceInfo dsi;
+    struct stat sb;
+    char * resolved_path;
+    char mntPoint[PATH_MAX];
+    int rc;
 
-    if (dsi != NULL)
-    for (i = 0; (i < ts->filesystemCount) && dsi; i++, dsi++) {
 #if STATFS_IN_SYS_STATVFS
-	struct statvfs sfb;
-	memset(&sfb, 0, sizeof(sfb));
-	rc = statvfs(ts->filesystems[i], &sfb);
+    struct statvfs sfb;
+    memset(&sfb, 0, sizeof(sfb));
+    rc = statvfs(dirName, &sfb);
 #else
-	struct statfs sfb;
-	memset(&sfb, 0, sizeof(sfb));
+    struct statfs sfb;
+    memset(&sfb, 0, sizeof(sfb));
 #  if STAT_STATFS4
 /* This platform has the 4-argument version of the statfs call.  The last two
  * should be the size of struct statfs and 0, respectively.  The 0 is the
  * filesystem type, and is always 0 when statfs is called on a mounted
  * filesystem, as we're doing.
  */
-	rc = statfs(ts->filesystems[i], &sfb, sizeof(sfb), 0);
+    rc = statfs(dirName, &sfb, sizeof(sfb), 0);
 #  else
-	rc = statfs(ts->filesystems[i], &sfb);
+    rc = statfs(dirName, &sfb);
 #  endif
 #endif
-	if (rc)
-	    break;
+    if (rc)
+	return NULL;
 
-	rc = stat(ts->filesystems[i], &sb);
-	if (rc)
-	    break;
-	dsi->dev = sb.st_dev;
+    rc = stat(dirName, &sb);
+    if (rc)
+	return NULL;
+    if (sb.st_dev != dev) // XXX WHY?
+	return NULL;
 
-	dsi->bsize = sfb.f_bsize;
-	dsi->bneeded = 0;
-	dsi->ineeded = 0;
+    ts->dsi = xrealloc(ts->dsi, (count + 2) * sizeof(*ts->dsi));
+    dsi = ts->dsi + count;
+    memset(dsi, 0, 2 * sizeof(*dsi));
+
+    dsi->dev = sb.st_dev;
+    dsi->bsize = sfb.f_bsize;
+    if (!dsi->bsize)
+	dsi->bsize = 512;       /* we need a bsize */
+    dsi->bneeded = 0;
+    dsi->ineeded = 0;
 #ifdef STATFS_HAS_F_BAVAIL
-	dsi->bavail = (sfb.f_flag & ST_RDONLY) ? 0 : sfb.f_bavail;
+    dsi->bavail = (sfb.f_flag & ST_RDONLY) ? 0 : sfb.f_bavail;
 #else
 /* FIXME: the statfs struct doesn't have a member to tell how many blocks are
  * available for non-superusers.  f_blocks - f_bfree is probably too big, but
  * it's about all we can do.
  */
-	dsi->bavail = sfb.f_blocks - sfb.f_bfree;
+    dsi->bavail = sfb.f_blocks - sfb.f_bfree;
 #endif
-	/* XXX Avoid FAT and other file systems that have not inodes. */
-	/* XXX assigning negative value to unsigned type */
-	dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
-				? sfb.f_ffree : -1;
-	rpmlog(RPMLOG_DEBUG, 
-		"%5d 0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
-		i, (unsigned) dsi->dev, dsi->bsize,
-		dsi->bavail, dsi->iavail,
-		ts->filesystems[i]);
+    /* XXX Avoid FAT and other file systems that have not inodes. */
+    /* XXX assigning negative value to unsigned type */
+    dsi->iavail = !(sfb.f_ffree == 0 && sfb.f_files == 0)
+	? sfb.f_ffree : -1;
+
+    /* Find mount point belonging to this device number */
+    resolved_path = realpath(dirName, mntPoint);
+    if (!resolved_path) {
+	strncpy(mntPoint, dirName, PATH_MAX);
+	mntPoint[PATH_MAX] = '\0';
     }
-    return rc;
+    char * end = NULL;
+    while (end != mntPoint) {
+	end = strrchr(mntPoint, '/');
+	if (end == mntPoint) { // reached "/"
+	    stat("/", &sb);
+	    if (dsi->dev != sb.st_dev) {
+		dsi->mntPoint = xstrdup(mntPoint);
+	    } else {
+		dsi->mntPoint = xstrdup("/");
+	    }
+	    break;
+	} else if (end) {
+	    *end = '\0';
+	} else { // dirName doesn't start with / - should not happen
+	    dsi->mntPoint = xstrdup(dirName);
+	    break;
+	}
+	stat(mntPoint, &sb);
+	if (dsi->dev != sb.st_dev) {
+	    *end = '/';
+	    dsi->mntPoint = xstrdup(mntPoint);
+	    break;
+	}
+    }
+
+    rpmlog(RPMLOG_DEBUG,
+	   "0x%08x %8" PRId64 " %12" PRId64 " %12" PRId64" %s\n",
+	   (unsigned) dsi->dev, dsi->bsize,
+	   dsi->bavail, dsi->iavail,
+	   dsi->mntPoint);
+    return dsi;
 }
 
-static void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
+static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 		rpm_loff_t fileSize, rpm_loff_t prevSize, rpm_loff_t fixupSize,
 		rpmFileAction action)
 {
@@ -148,8 +180,10 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev,
     if (dsi) {
 	while (dsi->bsize && dsi->dev != dev)
 	    dsi++;
-	if (dsi->bsize == 0)
-	    dsi = NULL;
+	if (dsi->bsize == 0) {
+	    /* create new entry */
+	    dsi = rpmtsCreateDSI(ts, dev, dirName, dsi - ts->dsi);
+	}
     }
     if (dsi == NULL)
 	return;
@@ -192,26 +226,22 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     rpmDiskSpaceInfo dsi;
     rpmps ps;
     int fc;
-    int i;
-
-    if (ts->filesystems == NULL || ts->filesystemCount <= 0)
-	return;
 
     dsi = ts->dsi;
-    if (dsi == NULL)
+    if (dsi == NULL || !dsi->bsize)
 	return;
     fc = rpmfiFC(rpmteFI(te));
     if (fc <= 0)
 	return;
 
     ps = rpmtsProblems(ts);
-    for (i = 0; i < ts->filesystemCount; i++, dsi++) {
+    for (; dsi->bsize; dsi++) {
 
 	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
 	    if (dsi->bneeded != dsi->obneeded) {
 		rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVRA(te), rpmteKey(te),
-			ts->filesystems[i], NULL, NULL,
+			dsi->mntPoint, NULL, NULL,
 		   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
 		dsi->obneeded = dsi->bneeded;
 	    }
@@ -221,7 +251,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 	    if (dsi->ineeded != dsi->oineeded) {
 		rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVRA(te), rpmteKey(te),
-			ts->filesystems[i], NULL, NULL,
+			dsi->mntPoint, NULL, NULL,
 			(adj_fs_blocks(dsi->ineeded) - dsi->iavail));
 		dsi->oineeded = dsi->ineeded;
 	    }
@@ -229,6 +259,20 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     }
     ps = rpmpsFree(ps);
 }
+
+static void rpmtsFreeDSI(rpmts ts){
+    rpmDiskSpaceInfo dsi;
+    if (ts == NULL)
+	return;
+    dsi = ts->dsi;
+    while (dsi && dsi->bsize != 0) {
+	dsi->mntPoint = _free(dsi->mntPoint);
+	dsi++;
+    }
+
+    ts->dsi = _free(ts->dsi);
+}
+
 
 /**
  */
@@ -543,8 +587,9 @@ assert(otherFi != NULL);
 	}
 
 	/* Update disk space info for a file. */
-	rpmtsUpdateDSI(ts, fiFps->entry->dev, rpmfiFSize(fi),
-		       rpmfiFReplacedSize(fi), fixupSize, rpmfsGetAction(fs, i));
+	rpmtsUpdateDSI(ts, fiFps->entry->dev, fiFps->entry->dirName,
+		       rpmfiFSize(fi), rpmfiFReplacedSize(fi),
+		       fixupSize, rpmfsGetAction(fs, i));
 
     }
     ps = rpmpsFree(ps);
@@ -1340,6 +1385,7 @@ static int rpmtsPrepare(rpmts ts)
 exit:
     ht = rpmFpHashFree(ht);
     fpc = fpCacheFree(fpc);
+    rpmtsFreeDSI(ts);
     return rc;
 }
 
