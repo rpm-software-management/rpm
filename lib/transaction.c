@@ -218,6 +218,10 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 
     if (fixupSize)
 	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->bsize);
+
+    /* adjust bookkeeping when requirements shrink */
+    if (dsi->bneeded < dsi->obneeded) dsi->obneeded = dsi->bneeded;
+    if (dsi->ineeded < dsi->oineeded) dsi->oineeded = dsi->ineeded;
 }
 
 static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
@@ -237,7 +241,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     for (; dsi->bsize; dsi++) {
 
 	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
-	    if (dsi->bneeded != dsi->obneeded) {
+	    if (dsi->bneeded > dsi->obneeded) {
 		rpmpsAppend(ps, RPMPROB_DISKSPACE,
 			rpmteNEVRA(te), rpmteKey(te),
 			dsi->mntPoint, NULL, NULL,
@@ -247,7 +251,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 	}
 
 	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
-	    if (dsi->ineeded != dsi->oineeded) {
+	    if (dsi->ineeded > dsi->oineeded) {
 		rpmpsAppend(ps, RPMPROB_DISKNODES,
 			rpmteNEVRA(te), rpmteKey(te),
 			dsi->mntPoint, NULL, NULL,
