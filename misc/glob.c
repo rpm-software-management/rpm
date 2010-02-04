@@ -28,6 +28,7 @@
 # include <string.h>
 # include <pwd.h>
 # include <assert.h>
+# include <sys/stat.h>		/* S_ISDIR */
 
 #define	__alloca	alloca
 #define	__stat		stat
