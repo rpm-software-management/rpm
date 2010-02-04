@@ -103,7 +103,7 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     rc = stat(dirName, &sb);
     if (rc)
 	return NULL;
-    if (sb.st_dev != dev) // XXX WHY?
+    if (sb.st_dev != dev)
 	return NULL;
 
     ts->dsi = xrealloc(ts->dsi, (count + 2) * sizeof(*ts->dsi));
@@ -139,7 +139,7 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
     char * end = NULL;
     while (end != mntPoint) {
 	end = strrchr(mntPoint, '/');
-	if (end == mntPoint) { // reached "/"
+	if (end == mntPoint) { /* reached "/" */
 	    stat("/", &sb);
 	    if (dsi->dev != sb.st_dev) {
 		dsi->mntPoint = xstrdup(mntPoint);
@@ -149,7 +149,7 @@ static rpmDiskSpaceInfo rpmtsCreateDSI(const rpmts ts, dev_t dev,
 	    break;
 	} else if (end) {
 	    *end = '\0';
-	} else { // dirName doesn't start with / - should not happen
+	} else { /* dirName doesn't start with / - should not happen */
 	    dsi->mntPoint = xstrdup(dirName);
 	    break;
 	}
