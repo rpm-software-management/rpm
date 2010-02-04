@@ -320,6 +320,8 @@ static int initModule(PyObject *m)
 
     addRpmTags(m);
 
+    PyModule_AddStringConstant(m, "version", RPMVERSION);
+
 #define REGISTER_ENUM(val) PyModule_AddIntConstant(m, #val, val)
 
     REGISTER_ENUM(RPMTAG_NOT_FOUND);
