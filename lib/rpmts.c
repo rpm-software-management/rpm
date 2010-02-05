@@ -855,8 +855,6 @@ rpmts rpmtsCreate(void)
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_TOTAL), -1);
-    ts->filesystemCount = 0;
-    ts->filesystems = NULL;
     ts->dsi = NULL;
 
     ts->solve = NULL;
