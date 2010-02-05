@@ -65,7 +65,6 @@ static int rpmtsInitDSI(const rpmts ts)
     if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_DISKSPACE)
 	return 0;
     ts->dsi = _free(ts->dsi);
-    ts->filesystemCount = 0;
     ts->dsi = xcalloc(1, sizeof(*ts->dsi));
     return 0;
 }
