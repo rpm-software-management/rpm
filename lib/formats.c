@@ -690,6 +690,19 @@ static char * vflagsFormat(rpmtd td, char * formatPrefix)
 
     return val;
 }
+
+static char * expandFormat(rpmtd td, char * formatPrefix)
+{
+    char *val = NULL;
+    if (rpmtdClass(td) != RPM_STRING_CLASS) {
+	val = xstrdup(_("(not a string)"));
+    } else {
+	val = rpmExpand(td->data, NULL);
+    }
+    strcat(formatPrefix, "s");
+    return val;
+}
+
 void *rpmHeaderFormatFuncByName(const char *fmt)
 {
     const struct headerFormatFunc_s * ext;
@@ -738,5 +751,6 @@ static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_ARRAYSIZE,	"arraysize", 	arraysizeFormat },
     { RPMTD_FORMAT_FSTATE,	"fstate",	fstateFormat },
     { RPMTD_FORMAT_VFLAGS,	"vflags",	vflagsFormat },
+    { RPMTD_FORMAT_EXPAND,	"expand",	expandFormat },
     { -1,			NULL, 		NULL }
 };
