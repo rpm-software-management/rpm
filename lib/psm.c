@@ -31,7 +31,6 @@
 
 #define	_PSM_DEBUG	0
 int _psm_debug = _PSM_DEBUG;
-int _psm_threads = 0;
 
 /**
  */
@@ -1121,17 +1120,9 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te)
     return rpmpsmLink(psm, RPMDBG_M("rpmpsmNew"));
 }
 
-static void * rpmpsmThread(void * arg)
-{
-    rpmpsm psm = arg;
-    return ((void *) rpmpsmStage(psm, psm->nstage));
-}
-
 static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
 {
     psm->nstage = nstage;
-    if (_psm_threads)
-	return rpmsqJoin( rpmsqThread(rpmpsmThread, psm) );
     return rpmpsmStage(psm, psm->nstage);
 }
 

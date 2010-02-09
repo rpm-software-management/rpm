@@ -39,8 +39,6 @@ extern int _print_pkts;
 
 extern int _psm_debug;
 
-extern int _psm_threads;
-
 extern int _rpmal_debug;
 
 extern int _rpmdb_debug;
@@ -262,8 +260,6 @@ struct poptOption rpmcliAllPoptTable[] = {
 	NULL, NULL},
  { "psmdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_debug, -1,
 	N_("debug package state machine"), NULL},
- { "psmthreads", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_psm_threads, -1,
-	N_("use threads for package state machine"), NULL},
  { "rpmaldebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmal_debug, -1,
 	NULL, NULL},
  { "rpmdbdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmdb_debug, -1,
