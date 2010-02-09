@@ -13,6 +13,11 @@
 typedef struct sharedFileInfo_s *		sharedFileInfo;
 
 /** \ingroup rpmte
+ * Transaction element ordering chain linkage.
+ */
+typedef struct tsortInfo_s *		tsortInfo;
+
+/** \ingroup rpmte
  * Transaction element file states.
  */
 typedef struct rpmfs_s *		rpmfs;

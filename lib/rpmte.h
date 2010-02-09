@@ -17,11 +17,6 @@ extern "C" {
 extern int _rpmte_debug;
 
 /** \ingroup rpmte
- * Transaction element ordering chain linkage.
- */
-typedef struct tsortInfo_s *		tsortInfo;
-
-/** \ingroup rpmte
  * Transaction element type.
  */
 typedef enum rpmElementType_e {
