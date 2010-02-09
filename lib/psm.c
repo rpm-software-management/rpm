@@ -60,27 +60,6 @@ struct rpmpsm_s {
     int nrefs;			/*!< Reference count. */
 };
 
-int rpmVersionCompare(Header first, Header second)
-{
-    /* Missing epoch becomes zero here, which is what we want */
-    uint32_t epochOne = headerGetNumber(first, RPMTAG_EPOCH);
-    uint32_t epochTwo = headerGetNumber(second, RPMTAG_EPOCH);
-    int rc;
-
-    if (epochOne < epochTwo)
-	return -1;
-    else if (epochOne > epochTwo)
-	return 1;
-
-    rc = rpmvercmp(headerGetString(first, RPMTAG_VERSION),
-		   headerGetString(second, RPMTAG_VERSION));
-    if (rc)
-	return rc;
-
-    return rpmvercmp(headerGetString(first, RPMTAG_RELEASE),
-		     headerGetString(second, RPMTAG_RELEASE));
-}
-
 /**
  * Macros to be defined from per-header tag values.
  * @todo Should other macros be added from header when installing a package?
