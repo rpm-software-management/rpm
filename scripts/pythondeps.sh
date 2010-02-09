@@ -23,7 +23,7 @@ case $1 in
     #    /PATH/OF/BUILDROOT/usr/lib64/pythonMAJOR.MINOR/
     # generating (uniqely) lines of the form:
     #    python(abi) = MAJOR.MINOR
-    grep "/usr/lib[^/]*/python.\../*" \
+    grep "/usr/lib[^/]*/python.\../.*" \
         | sed -e "s|.*/usr/lib[^/]*/python\(.\..\)/.*|python(abi) = \1|g" \
         | sort | uniq
     ;;
