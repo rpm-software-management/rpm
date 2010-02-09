@@ -51,7 +51,7 @@ struct rpmte_s {
 
     rpm_color_t color;		/*!< Color bit(s) from package dependencies. */
     rpm_loff_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
-    rpm_loff_t headerSize;	/*!< No. of bytes in package header */
+    unsigned int headerSize;	/*!< No. of bytes in package header */
 
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
@@ -403,7 +403,7 @@ rpm_loff_t rpmtePkgFileSize(rpmte te)
     return (te != NULL ? te->pkgFileSize : 0);
 }
 
-rpm_loff_t rpmteHeaderSize(rpmte te) {
+unsigned int rpmteHeaderSize(rpmte te) {
     return (te != NULL ? te->headerSize : 0);
 }
 

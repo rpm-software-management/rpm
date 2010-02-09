@@ -130,7 +130,7 @@ void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, He
  * @return		size in bytes of package file.
  */
 RPM_GNUC_INTERNAL
-rpm_loff_t rpmteHeaderSize(rpmte te);
+unsigned int rpmteHeaderSize(rpmte te);
 
 #endif	/* _RPMTE_INTERNAL_H */
 
