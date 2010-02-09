@@ -447,20 +447,18 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
-		   const char *script, int arg1, int arg2)
+static rpmRC runLuaScript(rpmpsm psm, Header h,
+		   const char *sname, rpmlogLvl lvl,
+		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
     rpmRC rc = RPMRC_FAIL;
-    int warn_only = 0;
     const rpmts ts = psm->ts;
 #ifdef WITH_LUA
-    char *sname = NULL;
     int rootFd = -1;
     int xx;
+    ARGV_t argv = argvp ? *argvp : NULL;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
-
-    rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
 
     rpmlog(RPMLOG_DEBUG, "%s: %s running <lua> scriptlet.\n",
 	   psm->stepName, sname);
@@ -499,8 +497,6 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 
     if (rpmluaRunScript(lua, script, sname) == 0) {
 	rc = RPMRC_OK;
-    } else if ((stag != RPMTAG_PREIN && stag != RPMTAG_PREUN)) {
-	warn_only = 1;
     }
 
     rpmluaDelVar(lua, "arg");
@@ -513,17 +509,10 @@ static rpmRC runLuaScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t argv,
 	    xx = chroot(".");
 	xx = rpmtsSetChrootDone(ts, 0);
     }
-    free(sname);
 #else
-    rpmlog(RPMLOG_ERR, _("<lua> scriptlet support not built in\n"));
+    rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
 #endif
 
-    if (rc != RPMRC_OK) {
-	if (warn_only) {
-	    rc = RPMRC_OK;
-	}
-	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
-    }
     return rc;
 }
 
@@ -622,45 +611,19 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 }
 
 /**
- * Run scriptlet with args.
- *
- * Run a script with an interpreter. If the interpreter is not specified,
- * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
- * the header will be ignored, passing instead arg1 and arg2.
- *
- * @param psm		package state machine data
- * @param h		header
- * @param stag		scriptlet section tag
- * @param argvp		ARGV_t pointer to args from header, *argvp[0] is the 
- * 			interpreter to use. Pointer as we might need to 
- * 			modify via argvAdd()
- * @param script	scriptlet from header
- * @param arg1		no. instances of package installed after scriptlet exec
- *			(-1 is no arg)
- * @param arg2		ditto, but for the target package
- * @return		0 on success
+ * Run an external script.
  */
-static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
-		const char * script, int arg1, int arg2)
+static rpmRC runExtScript(rpmpsm psm, Header h,
+		   const char *sname, rpmlogLvl lvl,
+		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
-    const rpmts ts = psm->ts;
-    char * fn = NULL;
-    int xx;
     FD_t scriptFd;
     FD_t out = NULL;
-    rpmRC rc = RPMRC_FAIL; /* assume failure */
-    int warn_only = 0;
-    char *sname = NULL; 
     struct rpmtd_s prefixes;
-
-    assert(argvp != NULL);
-    if (*argvp == NULL && script == NULL)
-	return RPMRC_OK;
-
-    if (*argvp && *argvp[0] && rstreq(*argvp[0], "<lua>")) {
-	return runLuaScript(psm, h, stag, *argvp, script, arg1, arg2);
-    }
-    rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
+    char * fn = NULL;
+    rpmts ts = psm->ts;
+    int xx;
+    rpmRC rc = RPMRC_FAIL;
 
     psm->sq.reaper = 1;
 
@@ -747,19 +710,14 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
     (void) psmWait(psm);
 
     if (psm->sq.reaped < 0) {
-	rpmlog(RPMLOG_ERR, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
+	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
 		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
     } else if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
       	if (WIFSIGNALED(psm->sq.status)) {
-	    rpmlog(RPMLOG_ERR, _("%s scriptlet failed, signal %d\n"),
+	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
                    sname, WTERMSIG(psm->sq.status));
 	} else {
-	    /* filter out "regular" error exits from non-pre scriptlets */
-	    if ((stag != RPMTAG_PREIN && stag != RPMTAG_PREUN)) {
-		warn_only = 1;
-	    }
-	    rpmlog(warn_only ? RPMLOG_WARNING : RPMLOG_ERR, 
-		   _("%s scriptlet failed, exit status %d\n"),
+	    rpmlog(lvl, _("%s scriptlet failed, exit status %d\n"),
 		   sname, WEXITSTATUS(psm->sq.status));
 	}
     } else {
@@ -769,15 +727,6 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
 exit:
     rpmtdFreeData(&prefixes);
-
-    /* notify callback for all errors, "total" abused for warning/error */
-    if (rc != RPMRC_OK) {
-	if (warn_only) {
-	    rc = RPMRC_OK;
-	}
-	(void) rpmtsNotify(ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
-    }
-
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
@@ -786,8 +735,59 @@ exit:
 	    xx = unlink(fn);
 	fn = _free(fn);
     }
-    free(sname);
+    return rc;
+}
 
+/**
+ * Run scriptlet with args.
+ *
+ * Run a script with an interpreter. If the interpreter is not specified,
+ * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
+ * the header will be ignored, passing instead arg1 and arg2.
+ *
+ * @param psm		package state machine data
+ * @param h		header
+ * @param stag		scriptlet section tag
+ * @param argvp		ARGV_t pointer to args from header, *argvp[0] is the 
+ * 			interpreter to use. Pointer as we might need to 
+ * 			modify via argvAdd()
+ * @param script	scriptlet from header
+ * @param arg1		no. instances of package installed after scriptlet exec
+ *			(-1 is no arg)
+ * @param arg2		ditto, but for the target package
+ * @return		0 on success
+ */
+static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
+		const char * script, int arg1, int arg2)
+{
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
+    char *sname = NULL; 
+    int warn_only = (stag != RPMTAG_PREIN && stag != RPMTAG_PREUN);
+    rpmlogLvl loglvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
+
+    if (*argvp == NULL && script == NULL)
+	return RPMRC_OK;
+
+    rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
+    if (*argvp[0] && rstreq(*argvp[0], "<lua>")) {
+	rc = runLuaScript(psm, h, sname, loglvl, argvp, script, arg1, arg2);
+    } else {
+	rc = runExtScript(psm, h, sname, loglvl, argvp, script, arg1, arg2);
+    }
+
+    /* 
+     * Notify callback for all errors. "total" abused for warning/error,
+     * rc only reflects whether the condition prevented install/erase 
+     * (which is only happens with %prein and %preun scriptlets) or not.
+     */
+    if (rc != RPMRC_OK) {
+	if (warn_only) {
+	    rc = RPMRC_OK;
+	}
+	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
+    }
+
+    free(sname);
     return rc;
 }
 
