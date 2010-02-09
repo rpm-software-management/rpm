@@ -11,6 +11,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
+#include <rpm/rpmmacro.h>
 
 #include "rpmio/digest.h"
 #include "lib/manifest.h"
