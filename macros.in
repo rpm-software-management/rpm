@@ -485,6 +485,9 @@ print (t)\
 # helpers are also used by %{_rpmconfigdir}/rpmdeps {--provides|--requires}.
 #%__perl_provides	%{_rpmconfigdir}/perldeps.pl --provides
 #%__perl_requires	%{_rpmconfigdir}/perldeps.pl --requires
+
+%__interpreter_requires	%{_rpmconfigdir}/interpreter.req
+
 %__perl_provides	%{_rpmconfigdir}/perl.prov
 %__perl_requires	%{_rpmconfigdir}/perl.req
 

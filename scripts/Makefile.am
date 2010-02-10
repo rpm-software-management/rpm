@@ -20,7 +20,7 @@ EXTRA_DIST = \
 	mono-find-requires mono-find-provides \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
 	pkgconfigdeps.sh libtooldeps.sh \
-	fontconfig.prov desktop-file.prov \
+	fontconfig.prov desktop-file.prov interpreter.req \
 	macros.perl macros.php macros.python
 
 rpmconfig_SCRIPTS = \
@@ -34,7 +34,7 @@ rpmconfig_SCRIPTS = \
 	mono-find-requires mono-find-provides \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
-	fontconfig.prov desktop-file.prov \
+	fontconfig.prov desktop-file.prov interpreter.req \
 	rpmdb_loadcvt rpmdiff rpm2cpio.sh tcl.req tgpg 
 
 rpmconfig_DATA = \

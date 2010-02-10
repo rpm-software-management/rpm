@@ -466,7 +466,8 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
   { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
 
-  { " script",			RPMFC_SCRIPT },
+  /* "foo script text" is a file with shebang interpreter directive */
+  { " script text",		RPMFC_SCRIPT },
   { " document",		RPMFC_DOCUMENT },
 
   { " compressed",		RPMFC_COMPRESSED },
@@ -671,6 +672,30 @@ rpmds rpmfcRequires(rpmfc fc)
     return (fc != NULL ? fc->requires : NULL);
 }
 
+static int isExecutable(const char *fn)
+{
+    struct stat st;
+    if (stat(fn, &st) < 0)
+	return -1;
+    return (S_ISREG(st.st_mode) && (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)));
+}
+
+/**
+ * Extract interpreter dependencies.
+ * @param fc		file classifier
+ * @return		0 on success
+ */
+static int rpmfcINTERP(rpmfc fc)
+{
+    int rc = 0;
+    int is_executable = isExecutable(fc->fn[fc->ix]);
+
+    if (is_executable < 0) return -1;
+    /* only executables are searched, and these can only be requires */
+    if (is_executable)
+	rc = rpmfcGenDeps(fc, "interpreter", DEP_REQ);
+    return rc;
+}
 
 /**
  * Extract script dependencies.
@@ -681,66 +706,11 @@ static int rpmfcSCRIPT(rpmfc fc)
 {
     const char * fn = fc->fn[fc->ix];
     int fcolor = fc->fcolor->vals[fc->ix];
-    rpmds ds;
-    char buf[BUFSIZ];
-    FILE * fp;
-    char * s, * se;
-    int i;
-    struct stat sb, * st = &sb;
-    int is_executable;
+    int is_executable = isExecutable(fn);
     int xx;
 
-    /* Only executable scripts are searched. */
-    if (stat(fn, st) < 0)
+    if (is_executable < 0)
 	return -1;
-    is_executable = (st->st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
-
-    fp = fopen(fn, "r");
-    if (fp == NULL || ferror(fp)) {
-	if (fp) (void) fclose(fp);
-	return -1;
-    }
-
-    /* Look for #! interpreter in first 10 lines. */
-    for (i = 0; i < 10; i++) {
-
-	s = fgets(buf, sizeof(buf) - 1, fp);
-	if (s == NULL || ferror(fp) || feof(fp))
-	    break;
-	s[sizeof(buf)-1] = '\0';
-	if (!(s[0] == '#' && s[1] == '!'))
-	    continue;
-	s += 2;
-
-	while (*s && strchr(" \t\n\r", *s) != NULL)
-	    s++;
-	if (*s == '\0')
-	    continue;
-	if (*s != '/')
-	    continue;
-
-	for (se = s+1; *se; se++) {
-	    if (strchr(" \t\n\r", *se) != NULL)
-		break;
-	}
-	*se = '\0';
-	se++;
-
-	if (is_executable) {
-	    /* Add to package requires. */
-	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, s, "", RPMSENSE_FIND_REQUIRES);
-	    xx = rpmdsMerge(&fc->requires, ds);
-
-	    /* Add to file requires. */
-	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds);
-
-	    ds = rpmdsFree(ds);
-	}
-
-	break;
-    }
-
-    (void) fclose(fp);
 
     if (fcolor & RPMFC_PERL) {
 	depTypes types = DEP_NONE;
@@ -1108,8 +1078,8 @@ typedef const struct rpmfcApplyTbl_s {
  */
 static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcELF,		RPMFC_ELF },
-    { rpmfcSCRIPT,	(RPMFC_SCRIPT|RPMFC_BOURNE|
-			 RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|RPMFC_OCAML|
+    { rpmfcINTERP,	RPMFC_SCRIPT },
+    { rpmfcSCRIPT,	(RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|RPMFC_OCAML|
 			 RPMFC_PKGCONFIG|RPMFC_LIBTOOL) },
     { rpmfcMISC,	RPMFC_FONT|RPMFC_TEXT },
     { NULL, 0 }
