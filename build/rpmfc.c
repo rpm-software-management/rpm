@@ -436,6 +436,22 @@ assert(EVR != NULL);
     return 0;
 }
 
+typedef enum depTypes_e {
+    DEP_NONE = 0,
+    DEP_REQ  = (1 << 0),
+    DEP_PROV = (1 << 1),
+} depTypes;
+
+static int rpmfcGenDeps(rpmfc fc, const char *class, depTypes types)
+{
+    int rc = 0;
+    if (types & DEP_PROV)
+	rc += rpmfcHelper(fc, 'P', class);
+    if (types & DEP_REQ)
+	rc += rpmfcHelper(fc, 'R', class);
+    return rc;
+}
+
 /**
  */
 static const struct rpmfcTokens_s const rpmfcTokens[] = {
@@ -664,6 +680,7 @@ rpmds rpmfcRequires(rpmfc fc)
 static int rpmfcSCRIPT(rpmfc fc)
 {
     const char * fn = fc->fn[fc->ix];
+    int fcolor = fc->fcolor->vals[fc->ix];
     rpmds ds;
     char buf[BUFSIZ];
     FILE * fp;
@@ -725,41 +742,28 @@ static int rpmfcSCRIPT(rpmfc fc)
 
     (void) fclose(fp);
 
-    if (fc->fcolor->vals[fc->ix] & RPMFC_PERL) {
-	if (fc->fcolor->vals[fc->ix] & RPMFC_MODULE)
-	    xx = rpmfcHelper(fc, 'P', "perl");
-	if (is_executable || (fc->fcolor->vals[fc->ix] & RPMFC_MODULE))
-	    xx = rpmfcHelper(fc, 'R', "perl");
-    }
-    if (fc->fcolor->vals[fc->ix] & RPMFC_PYTHON) {
-	xx = rpmfcHelper(fc, 'P', "python");
-#ifdef	NOTYET
+    if (fcolor & RPMFC_PERL) {
+	depTypes types = DEP_NONE;
+	if (fcolor & RPMFC_MODULE)
+	    types |= (DEP_PROV|DEP_PROV);
 	if (is_executable)
-#endif
-	    xx = rpmfcHelper(fc, 'R', "python");
-    } else 
-    if (fc->fcolor->vals[fc->ix] & RPMFC_LIBTOOL) {
-        xx = rpmfcHelper(fc, 'P', "libtool");
-#ifdef  NOTYET
-        if (is_executable)
-#endif
-            xx = rpmfcHelper(fc, 'R', "libtool");
-    } else
-    if (fc->fcolor->vals[fc->ix] & RPMFC_PKGCONFIG) {
-        xx = rpmfcHelper(fc, 'P', "pkgconfig");
-#ifdef  NOTYET
-        if (is_executable)
-#endif
-            xx = rpmfcHelper(fc, 'R', "pkgconfig");
-    } else 
-    if (fc->fcolor->vals[fc->ix] & RPMFC_MONO) {
-        xx = rpmfcHelper(fc, 'P', "mono");
-        if (is_executable)
-            xx = rpmfcHelper(fc, 'R', "mono");
-    } else
-    if (fc->fcolor->vals[fc->ix] & RPMFC_OCAML) {
-	xx = rpmfcHelper(fc, 'P', "ocaml");
-	xx = rpmfcHelper(fc, 'R', "ocaml");
+	    types |= DEP_REQ;
+	xx = rpmfcGenDeps(fc, "perl", types);
+    } else if (fcolor & RPMFC_MONO) {
+	depTypes types = DEP_PROV;
+	if (is_executable)
+	    types |= DEP_REQ;
+	xx = rpmfcGenDeps(fc, "mono", types);
+    /* The rest dont have clear rules wrt executability, do both req & prov */
+    } else if (fcolor & RPMFC_PYTHON) {
+	xx = rpmfcGenDeps(fc, "python", (DEP_REQ|DEP_PROV));
+    } else if (fcolor & RPMFC_OCAML) {
+	xx = rpmfcGenDeps(fc, "ocaml", (DEP_REQ|DEP_PROV));
+    /* XXX libtool and pkgconfig are not scripts... */
+    } else if (fcolor & RPMFC_LIBTOOL) {
+	xx = rpmfcGenDeps(fc, "libtool", (DEP_REQ|DEP_PROV));
+    } else if (fcolor & RPMFC_PKGCONFIG) {
+	xx = rpmfcGenDeps(fc, "pkgconfig", (DEP_REQ|DEP_PROV));
     }
 
     return 0;
