@@ -2,5 +2,5 @@
 
 # TODO: handle #!/usr/bin/env somehow
 while read filename; do
-    sed -n -e '1s:^#!\([^[:space:]]*\).*:\1:p' "$filename"
+    sed -n -e '1s:^#![[:space:]]*\([^[:space:]]*\).*:\1:p' "$filename"
 done
