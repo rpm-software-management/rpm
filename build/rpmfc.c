@@ -759,9 +759,7 @@ static int rpmfcMISC(rpmfc fc)
 	goto exit;
     }
 
-    (void) rpmfcHelper(fc, 'P', what);
-    rc = 0;
-
+    rc = rpmfcGenDeps(fc, what, (DEP_REQ|DEP_PROV));
 exit:
     return rc;
 }
