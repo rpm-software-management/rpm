@@ -32,7 +32,6 @@ AM_CPPFLAGS += -I$(top_srcdir)/rpmio
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
-AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
 AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
 
@@ -88,16 +87,16 @@ DISTCLEANFILES += find-requires
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
 rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpm_LDADD +=		@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	build.c rpmqv.c build.h debug.h system.h
 rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMBT
 rpmbuild_LDADD =	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
-rpmbuild_LDADD += 	@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpmbuild_LDADD += 	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
-rpm2cpio_LDADD +=	@WITH_LIBELF_LIB@ @WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+rpm2cpio_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 
 if LIBELF
@@ -108,6 +107,11 @@ rpmlibexec_PROGRAMS +=	debugedit
 debugedit_SOURCES =	tools/debugedit.c tools/hashtab.c tools/hashtab.h
 debugedit_LDADD =	rpmio/librpmio.la
 debugedit_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
+
+rpmlibexec_PROGRAMS +=	elfdeps
+elfdeps_SOURCES =	tools/elfdeps.c
+elfdeps_LDADD =		rpmio/librpmio.la
+elfdeps_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
 endif
 endif
 

@@ -4,7 +4,6 @@ AM_CPPFLAGS =  -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += @WITH_NSS_INCLUDE@
 AM_CPPFLAGS += @WITH_MAGIC_INCLUDE@
 AM_CPPFLAGS += @WITH_POPT_INCLUDE@
-AM_CPPFLAGS += @WITH_LIBELF_INCLUDE@
 AM_CPPFLAGS += -I$(top_srcdir)/misc
 
 usrlibdir = $(libdir)
@@ -19,5 +18,4 @@ librpmbuild_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
-	@WITH_LIBELF_LIB@ \
 	@WITH_MAGIC_LIB@

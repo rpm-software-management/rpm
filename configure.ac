@@ -225,7 +225,6 @@ AC_CHECK_LIB(port, writev)
 
 #=================
 # Check for libelf library. Prefer external, otherwise none.
-WITH_LIBELF_INCLUDE=
 WITH_LIBELF_LIB=
 AC_CHECK_HEADER([libelf.h])
 AC_CHECK_HEADERS([gelf.h], [
@@ -235,7 +234,6 @@ AC_CHECK_HEADERS([gelf.h], [
 	    WITH_LIBELF=yes
 	])
 ])
-AC_SUBST(WITH_LIBELF_INCLUDE)
 AC_SUBST(WITH_LIBELF_LIB)
 AM_CONDITIONAL(LIBELF,[test "$WITH_LIBELF" = yes])
 

@@ -476,7 +476,7 @@ print (t)\
 #%__find_obsoletes	???
 
 #
-# Path to scripts to autogenerate per-interpreter package dependencies.
+# Path to scripts to autogenerate per-filetype package dependencies.
 # If the script supports extra options they can be passed by defining 
 # <helper_macro>_opts macro(s), eg in spec:
 # %define __ocaml_requires_opts -i Warnings
@@ -487,6 +487,9 @@ print (t)\
 #%__perl_requires	%{_rpmconfigdir}/perldeps.pl --requires
 
 %__interpreter_requires	%{_rpmconfigdir}/interpreter.req
+
+%__elf_provides		%{_rpmconfigdir}/elfdeps --provides %{?__filter_GLIBC_PRIVATE:--filter-private}
+%__elf_requires		%{_rpmconfigdir}/elfdeps --requires %{?__filter_GLIBC_PRIVATE:--filter-private}
 
 %__perl_provides	%{_rpmconfigdir}/perl.prov
 %__perl_requires	%{_rpmconfigdir}/perl.req
