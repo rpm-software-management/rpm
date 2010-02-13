@@ -19,7 +19,7 @@
 
 # a simple makedepend like script for perl.
 
-# To save development time I do not parse the perl grammmar but
+# To save development time I do not parse the perl grammar but
 # instead just lex it looking for what I want.  I take special care to
 # ignore comments and pod's.
 
@@ -54,6 +54,9 @@ if ("@ARGV") {
 }
 
 
+foreach $perlver (sort keys %perlreq) {
+  print "perl >= $perlver\n";
+}
 foreach $module (sort keys %require) {
   if (length($require{$module}) == 0) {
     print "perl($module)\n";
@@ -151,7 +154,7 @@ sub process_file {
          \s*([.0-9]*)
          /x)
        ) {
-      my ($whitespace, $statement, $module, $version) = ($1, $2, $3,$4);
+      my ($whitespace, $statement, $module, $version) = ($1, $2, $3, $4);
 
       # we only consider require statements that are flush against
       # the left edge. any other require statements give too many
@@ -169,7 +172,7 @@ sub process_file {
       # skip if the phrase was "use of" -- shows up in gimp-perl, et al.
       next if $module eq 'of';
 
-      # if the module ends in a comma we probaly caught some
+      # if the module ends in a comma we probably caught some
       # documentation of the form 'check stuff,\n do stuff, clean
       # stuff.' there are several of these in the perl distribution
 
@@ -181,8 +184,7 @@ sub process_file {
 
       #      ($module =~ m/^\./) && next;
 
-      # if the module ends with .pm strip it to leave only basename.
-      # starts with /, which means its an absolute path to a file
+      # if the module starts with /, it is an absolute path to a file
       if ($module =~ m(^/)) {
         print "$module\n";
         next;
@@ -193,6 +195,7 @@ sub process_file {
       $module =~ s/qw.*$//;
       $module =~ s/\(.*$//;
 
+      # if the module ends with .pm, strip it to leave only basename.
       $module =~ s/\.pm$//;
 
       # some perl programmers write 'require URI/URL;' when
@@ -211,11 +214,11 @@ sub process_file {
 
       my $ver = $1;
       if ($ver =~ /5.00/) {
-        print "perl >= 0:$ver\n";
+        $perlreq{"0:$ver"} = 1;
         next;
       }
       else {
-        print "perl >= 1:$ver\n";
+        $perlreq{"1:$ver"} = 1;
         next;
       }
 
@@ -237,7 +240,6 @@ sub process_file {
       ($module =~ m/\.ph$/) && next;
 
       $require{$module} = $version;
-      $line{$module} = $_;
     }
 
   }
