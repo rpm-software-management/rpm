@@ -244,18 +244,18 @@ sub process_file {
 
       # use base qw(Foo) dependencies
       if ($statement eq "use" && $module eq "base") {
-        $require{$module} = undef;
+        $require{$module} ||= undef;
         if ($version =~ /^qw\s*[(\/]\s*([^)\/]+?)\s*[)\/]/) {
-          $require{$_} = undef for split(' ', $1);
+          $require{$_} ||= undef for split(' ', $1);
         }
         elsif ($version =~ /(["'])([^"']+)\1/) {
-          $require{$2} = undef;
+          $require{$2} ||= undef;
         }
         next;
       }
       $version = undef unless $version =~ /^$modver_re$/o;
 
-      $require{$module} = $version;
+      $require{$module} ||= $version;
     }
 
   }
