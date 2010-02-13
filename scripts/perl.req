@@ -136,6 +136,8 @@ sub process_file {
       }
     }
 
+    my $modver_re = qr/[.0-9]+/;
+
     if (
 
 # ouch could be in a eval, perhaps we do not want these since we catch
@@ -151,7 +153,8 @@ sub process_file {
          # quotes around name are always legal
          ['"]?([^; '"\t#]*)['"]?[\t; ]
          # the syntax for 'use' allows version requirements
-         \s*([.0-9]*)
+         # the latter part is for "use base qw(Foo)" and friends special case
+         \s*($modver_re|(qw\s*[(\/]\s*|['"])[^)\/"'\$]*?\s*[)\/"'])?
          /x)
        ) {
       my ($whitespace, $statement, $module, $version) = ($1, $2, $3, $4);
@@ -238,6 +241,19 @@ sub process_file {
       # basename of *.ph files
 
       ($module =~ m/\.ph$/) && next;
+
+      # use base qw(Foo) dependencies
+      if ($statement eq "use" && $module eq "base") {
+        $require{$module} = undef;
+        if ($version =~ /^qw\s*[(\/]\s*([^)\/]+?)\s*[)\/]/) {
+          $require{$_} = undef for split(' ', $1);
+        }
+        elsif ($version =~ /(["'])([^"']+)\1/) {
+          $require{$2} = undef;
+        }
+        next;
+      }
+      $version = undef unless $version =~ /^$modver_re$/o;
 
       $require{$module} = $version;
     }
