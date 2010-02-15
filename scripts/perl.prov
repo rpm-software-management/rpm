@@ -94,7 +94,7 @@ sub process_file {
     # properly belongs in the over/back section) but people do not
     # read the perldoc.
 
-    if (m/^=(head[1-4]|pod|item)/) {
+    if (m/^=(head[1-4]|pod|for|item)/) {
       $incomment = 1;
     }
 
