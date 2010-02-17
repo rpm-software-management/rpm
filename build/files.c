@@ -1750,7 +1750,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
     if (pkg->fileFile) {
 	char *ffn;
-	ARGV_t filelists;
+	ARGV_t filelists = NULL;
 	FILE *fd;
 
 	argvSplit(&filelists, getStringBuf(pkg->fileFile), "\n");
@@ -1781,6 +1781,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	    }
 	    (void) fclose(fd);
 	}
+	argvFree(filelists);
     }
     
     /* Init the file list structure */
