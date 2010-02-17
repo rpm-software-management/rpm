@@ -31,40 +31,6 @@ enum FCOLOR_e {
 #define	RPMFC_ELF	(RPMFC_ELF32|RPMFC_ELF64|RPMFC_ELFMIPSN32)
 	/* (1 << 3) leaks into package headers, reserved */
 
-	/* bits 4-6 unused */
-    RPMFC_OCAML			= (1 <<  7),
-    RPMFC_PKGCONFIG		= (1 <<  8),
-    RPMFC_LIBTOOL		= (1 <<  9),
-    RPMFC_BOURNE		= (1 << 10),
-    RPMFC_MONO			= (1 << 11),
-
-    RPMFC_SCRIPT		= (1 << 12),
-    RPMFC_STATIC		= (1 << 13),
-    RPMFC_NOTSTRIPPED		= (1 << 14),
-	/* bit 15 unused */
-
-	/* bits 16-19 are enumerated, not bits */
-    RPMFC_DIRECTORY		= (1 << 16),
-    RPMFC_SYMLINK		= (2 << 16),
-    RPMFC_DEVICE		= (3 << 16),
-    RPMFC_LIBRARY		= (4 << 16),
-    RPMFC_FONT			= (5 << 16),
-    RPMFC_IMAGE			= (6 << 16),
-    RPMFC_MANPAGE		= (7 << 16),
-    RPMFC_TEXT			= (8 << 16),
-    RPMFC_DOCUMENT		= (9 << 16),
-
-    RPMFC_ARCHIVE		= (1 << 20),
-    RPMFC_COMPRESSED		= (1 << 21),
-    RPMFC_MODULE		= (1 << 22),
-    RPMFC_EXECUTABLE		= (1 << 23),
-
-    RPMFC_PERL			= (1 << 24),
-    RPMFC_JAVA			= (1 << 25),
-    RPMFC_PYTHON		= (1 << 26),
-    RPMFC_PHP			= (1 << 27),
-    RPMFC_TCL			= (1 << 28),
-
     RPMFC_WHITE			= (1 << 29),
     RPMFC_INCLUDE		= (1 << 30),
     RPMFC_ERROR			= (1 << 31)
@@ -87,13 +53,6 @@ typedef const struct rpmfcTokens_s * rpmfcToken;
  */
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 		int failnonzero);
-
-/** \ingroup rpmfc
- * Return file color given file(1) string.
- * @param fmstr		file(1) string
- * @return		file color
- */
-int rpmfcColoring(const char * fmstr);
 
 /** \ingroup rpmfc
  * Print results of file classification.

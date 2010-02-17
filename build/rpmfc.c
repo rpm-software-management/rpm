@@ -31,6 +31,7 @@ struct rpmfc_s {
     size_t brlen;	/*!< strlen(spec->buildRoot) */
 
     ARGV_t fn;		/*!< (no. files) file names */
+    ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     ARGI_t fcolor;	/*!< (no. files) file colors */
     ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
@@ -48,6 +49,7 @@ struct rpmfc_s {
 struct rpmfcTokens_s {
     const char * token;
     rpm_color_t colors;
+    const char * attrs;
 };  
 
 /**
@@ -443,112 +445,137 @@ static int rpmfcGenDeps(rpmfc fc, const char *class, depTypes types)
     return rc;
 }
 
-/**
- */
+/* Handle RPMFC_INCLUDE "stop signal" as an attribute? */
 static const struct rpmfcTokens_s const rpmfcTokens[] = {
-  { "directory",		RPMFC_DIRECTORY|RPMFC_INCLUDE },
+  { "directory",		RPMFC_INCLUDE, "directory" },
 
-  { " shared object",		RPMFC_LIBRARY },
-  { " executable",		RPMFC_EXECUTABLE },
-  { " statically linked",	RPMFC_STATIC },
-  { " not stripped",		RPMFC_NOTSTRIPPED },
-  { " archive",			RPMFC_ARCHIVE },
+  { " shared object",		RPMFC_BLACK, "library" },
+  { " executable",		RPMFC_BLACK, "executable" },
+  { " statically linked",	RPMFC_BLACK, "static" },
+  { " not stripped",		RPMFC_BLACK, "notstripped" },
+  { " archive",			RPMFC_BLACK, "archive" },
 
-  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
-  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
+  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE, "elf" },
+  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE, "elf" },
 
   /* "foo script text" is a file with shebang interpreter directive */
-  { " script text",		RPMFC_SCRIPT },
-  { " document",		RPMFC_DOCUMENT },
+  { " script text",		RPMFC_BLACK, "script" },
+  { " document",		RPMFC_BLACK, "document" },
 
-  { " compressed",		RPMFC_COMPRESSED },
+  { " compressed",		RPMFC_BLACK, "compressed" },
 
-  { "troff or preprocessor input",	RPMFC_MANPAGE|RPMFC_INCLUDE },
-  { "GNU Info",			RPMFC_MANPAGE|RPMFC_INCLUDE },
+  { "troff or preprocessor input",	RPMFC_INCLUDE, "man" },
+  { "GNU Info",			RPMFC_INCLUDE, "info" },
 
-  { "perl ",			RPMFC_PERL|RPMFC_INCLUDE },
-  { "Perl5 module source text", RPMFC_PERL|RPMFC_MODULE|RPMFC_INCLUDE },
+  { "perl ",			RPMFC_INCLUDE, "perl" },
+  { "Perl5 module source text", RPMFC_INCLUDE, "perl,module" },
 
   /* XXX "a /usr/bin/python -t script text executable" */
   /* XXX "python 2.3 byte-compiled" */
-  { "python ",			RPMFC_PYTHON|RPMFC_INCLUDE },
+  { "python ",			RPMFC_INCLUDE, "python" },
 
-  { "libtool library ",         RPMFC_LIBTOOL|RPMFC_INCLUDE },
-  { "pkgconfig ",               RPMFC_PKGCONFIG|RPMFC_INCLUDE },
+  { "libtool library ",         RPMFC_INCLUDE, "libtool" },
+  { "pkgconfig ",               RPMFC_INCLUDE, "pkgconfig" },
 
-  { "Objective caml ",		RPMFC_OCAML|RPMFC_INCLUDE },
+  { "Objective caml ",		RPMFC_INCLUDE, "ocaml" },
 
   /* XXX .NET executables and libraries.  file(1) cannot differ from win32 
    * executables unfortunately :( */
-  { "Mono/.Net assembly",       RPMFC_MONO|RPMFC_INCLUDE },
+  { "Mono/.Net assembly",       RPMFC_INCLUDE, "mono" },
 
-  { "current ar archive",	RPMFC_STATIC|RPMFC_LIBRARY|RPMFC_ARCHIVE|RPMFC_INCLUDE },
+  { "current ar archive",	RPMFC_INCLUDE, "static,library,archive" },
 
-  { "Zip archive data",		RPMFC_COMPRESSED|RPMFC_ARCHIVE|RPMFC_INCLUDE },
-  { "tar archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
-  { "cpio archive",		RPMFC_ARCHIVE|RPMFC_INCLUDE },
-  { "RPM v3",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
-  { "RPM v4",			RPMFC_ARCHIVE|RPMFC_INCLUDE },
+  { "Zip archive data",		RPMFC_INCLUDE, "compressed,archive" },
+  { "tar archive",		RPMFC_INCLUDE, "archive" },
+  { "cpio archive",		RPMFC_INCLUDE, "archive" },
+  { "RPM v3",			RPMFC_INCLUDE, "archive" },
+  { "RPM v4",			RPMFC_INCLUDE, "archive" },
 
-  { " image",			RPMFC_IMAGE|RPMFC_INCLUDE },
-  { " font metrics",		RPMFC_WHITE|RPMFC_INCLUDE },
-  { " font",			RPMFC_FONT|RPMFC_INCLUDE },
-  { " Font",			RPMFC_FONT|RPMFC_INCLUDE },
+  { " image",			RPMFC_INCLUDE, "image" },
+  { " font metrics",		RPMFC_WHITE|RPMFC_INCLUDE, NULL },
+  { " font",			RPMFC_INCLUDE, "font" },
+  { " Font",			RPMFC_INCLUDE, "font" },
 
-  { " commands",		RPMFC_SCRIPT|RPMFC_INCLUDE },
-  { " script",			RPMFC_SCRIPT|RPMFC_INCLUDE },
+  { " commands",		RPMFC_INCLUDE, "script" },
+  { " script",			RPMFC_INCLUDE, "script" },
 
-  { "empty",			RPMFC_WHITE|RPMFC_INCLUDE },
+  { "empty",			RPMFC_INCLUDE, NULL },
 
-  { "HTML",			RPMFC_WHITE|RPMFC_INCLUDE },
-  { "SGML",			RPMFC_WHITE|RPMFC_INCLUDE },
-  { "XML",			RPMFC_WHITE|RPMFC_INCLUDE },
+  { "HTML",			RPMFC_INCLUDE, NULL },
+  { "SGML",			RPMFC_INCLUDE, NULL },
+  { "XML",			RPMFC_INCLUDE, NULL },
 
-  { " source",			RPMFC_WHITE|RPMFC_INCLUDE },
-  { "GLS_BINARY_LSB_FIRST",	RPMFC_WHITE|RPMFC_INCLUDE },
-  { " DB ",			RPMFC_WHITE|RPMFC_INCLUDE },
+  { " source",			RPMFC_INCLUDE, NULL },
+  { "GLS_BINARY_LSB_FIRST",	RPMFC_INCLUDE, NULL },
+  { " DB ",			RPMFC_INCLUDE, NULL },
 
-  { "symbolic link to",		RPMFC_SYMLINK },
-  { "socket",			RPMFC_DEVICE },
-  { "special",			RPMFC_DEVICE },
-  { " text",			RPMFC_TEXT|RPMFC_INCLUDE },
+  { "symbolic link to",		RPMFC_BLACK, "symlink" },
+  { "socket",			RPMFC_BLACK, "device" }, /* XXX device? */
+  { "special",			RPMFC_BLACK, "device" },
+  { " text",			RPMFC_INCLUDE, "text" },
 
-  { "ASCII",			RPMFC_WHITE },
-  { "ISO-8859",			RPMFC_WHITE },
+  { "ASCII",			RPMFC_WHITE, NULL },
+  { "ISO-8859",			RPMFC_WHITE, NULL },
 
-  { "data",			RPMFC_WHITE },
+  { "data",			RPMFC_WHITE, NULL },
 
-  { "application",		RPMFC_WHITE },
-  { "boot",			RPMFC_WHITE },
-  { "catalog",			RPMFC_WHITE },
-  { "code",			RPMFC_WHITE },
-  { "file",			RPMFC_WHITE },
-  { "format",			RPMFC_WHITE },
-  { "message",			RPMFC_WHITE },
-  { "program",			RPMFC_WHITE },
+  { "application",		RPMFC_WHITE, NULL },
+  { "boot",			RPMFC_WHITE, NULL },
+  { "catalog",			RPMFC_WHITE, NULL },
+  { "code",			RPMFC_WHITE, NULL },
+  { "file",			RPMFC_WHITE, NULL },
+  { "format",			RPMFC_WHITE, NULL },
+  { "message",			RPMFC_WHITE, NULL },
+  { "program",			RPMFC_WHITE, NULL },
 
-  { "broken symbolic link to ",	RPMFC_WHITE|RPMFC_ERROR },
-  { "can't read",		RPMFC_WHITE|RPMFC_ERROR },
-  { "can't stat",		RPMFC_WHITE|RPMFC_ERROR },
-  { "executable, can't read",	RPMFC_WHITE|RPMFC_ERROR },
-  { "core file",		RPMFC_WHITE|RPMFC_ERROR },
+  { "broken symbolic link to ",	RPMFC_WHITE|RPMFC_ERROR, NULL },
+  { "can't read",		RPMFC_WHITE|RPMFC_ERROR, NULL },
+  { "can't stat",		RPMFC_WHITE|RPMFC_ERROR, NULL },
+  { "executable, can't read",	RPMFC_WHITE|RPMFC_ERROR, NULL },
+  { "core file",		RPMFC_WHITE|RPMFC_ERROR, NULL },
 
-  { NULL,			RPMFC_BLACK }
+  { NULL,			RPMFC_BLACK, NULL }
 };
 
-int rpmfcColoring(const char * fmstr)
+static int hasAttr(ARGV_t attrs, const char *name)
+{
+    return (argvSearch(attrs, name, NULL) != NULL);
+}
+
+static void addAttr(ARGV_t *attrs, const char *name)
+{
+    if (!hasAttr(*attrs, name)) {
+	argvAdd(attrs, name);
+	argvSort(*attrs, NULL);
+    }
+}
+
+/* Return attribute tokens + color for a given libmagic classification string */
+static void rpmfcAttributes(const char * fmstr, ARGV_t *attrs, int *color)
 {
     rpmfcToken fct;
+    ARGV_t fattrs = NULL;
     rpm_color_t fcolor = RPMFC_BLACK;
 
     for (fct = rpmfcTokens; fct->token != NULL; fct++) {
 	if (strstr(fmstr, fct->token) == NULL)
 	    continue;
+
+	if (fct->attrs) {
+	    ARGV_t atokens = NULL;
+	    argvSplit(&atokens, fct->attrs, ",");
+	    for (ARGV_t token = atokens; token && *token; token++)
+		addAttr(&fattrs, *token);
+	    argvFree(atokens);
+	}
+
 	fcolor |= fct->colors;
 	if (fcolor & RPMFC_INCLUDE)
-	    return fcolor;
+	    break;
     }
-    return fcolor;
+
+    if (attrs) *attrs = fattrs;
+    if (color) *color |= fcolor;
 }
 
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
@@ -632,6 +659,9 @@ rpmfc rpmfcFree(rpmfc fc)
 {
     if (fc) {
 	fc->fn = argvFree(fc->fn);
+	for (int i = 0; i < fc->nfiles; i++)
+	    argvFree(fc->fattrs[i]);
+	fc->fattrs = _free(fc->fattrs);
 	fc->fcolor = argiFree(fc->fcolor);
 	fc->fcdictx = argiFree(fc->fcdictx);
 	fc->fddictx = argiFree(fc->fddictx);
@@ -672,7 +702,7 @@ static int isExecutable(const char *fn)
 }
 
 /**
- * Extract interpreter dependencies.
+ * Extract script interpreter dependencies.
  * @param fc		file classifier
  * @return		0 on success
  */
@@ -689,41 +719,41 @@ static int rpmfcINTERP(rpmfc fc)
 }
 
 /**
- * Extract script dependencies.
+ * Extract language (rather loose definition...) specific dependencies.
  * @param fc		file classifier
  * @return		0 on success
  */
 static int rpmfcSCRIPT(rpmfc fc)
 {
     const char * fn = fc->fn[fc->ix];
-    int fcolor = fc->fcolor->vals[fc->ix];
+    ARGV_t fattrs = fc->fattrs[fc->ix];
     int is_executable = isExecutable(fn);
     int xx;
 
     if (is_executable < 0)
 	return -1;
 
-    if (fcolor & RPMFC_PERL) {
+    if (hasAttr(fattrs, "perl")) {
 	depTypes types = DEP_NONE;
-	if (fcolor & RPMFC_MODULE)
+	if (hasAttr(fattrs, "module"))
 	    types |= (DEP_PROV|DEP_PROV);
 	if (is_executable)
 	    types |= DEP_REQ;
 	xx = rpmfcGenDeps(fc, "perl", types);
-    } else if (fcolor & RPMFC_MONO) {
+    } else if (hasAttr(fattrs, "mono")) {
 	depTypes types = DEP_PROV;
 	if (is_executable)
 	    types |= DEP_REQ;
 	xx = rpmfcGenDeps(fc, "mono", types);
     /* The rest dont have clear rules wrt executability, do both req & prov */
-    } else if (fcolor & RPMFC_PYTHON) {
+    } else if (hasAttr(fattrs, "python")) {
 	xx = rpmfcGenDeps(fc, "python", (DEP_REQ|DEP_PROV));
-    } else if (fcolor & RPMFC_OCAML) {
+    } else if (hasAttr(fattrs, "ocaml")) {
 	xx = rpmfcGenDeps(fc, "ocaml", (DEP_REQ|DEP_PROV));
     /* XXX libtool and pkgconfig are not scripts... */
-    } else if (fcolor & RPMFC_LIBTOOL) {
+    } else if (hasAttr(fattrs, "libtool")) {
 	xx = rpmfcGenDeps(fc, "libtool", (DEP_REQ|DEP_PROV));
-    } else if (fcolor & RPMFC_PKGCONFIG) {
+    } else if (hasAttr(fattrs, "pkgconfig")) {
 	xx = rpmfcGenDeps(fc, "pkgconfig", (DEP_REQ|DEP_PROV));
     }
 
@@ -746,12 +776,11 @@ static int rpmfcMISC(rpmfc fc)
     int rc = -1;
     const char *what = NULL;
     const char * fn = fc->fn[fc->ix];
-    /* this part is enumerated, compare equality not bit flags */
-    int ftype = fc->fcolor->vals[fc->ix] & 0x000F0000;
+    ARGV_t fattrs = fc->fattrs[fc->ix];
 
-    if (ftype == RPMFC_FONT) {
+    if (hasAttr(fattrs, "font")) {
 	what = "fontconfig";
-    } else if (ftype == RPMFC_TEXT && rpmFileHasSuffix(fn, ".desktop")) {
+    } else if (hasAttr(fattrs, "text") && rpmFileHasSuffix(fn, ".desktop")) {
 	what = "desktop";
     }
 
@@ -765,17 +794,16 @@ exit:
 }
 typedef const struct rpmfcApplyTbl_s {
     int (*func) (rpmfc fc);
-    int colormask;
+    const char *attrs;
 } * rpmfcApplyTbl;
 
 /**
  */
 static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
-    { rpmfcELF,		RPMFC_ELF },
-    { rpmfcINTERP,	RPMFC_SCRIPT },
-    { rpmfcSCRIPT,	(RPMFC_PERL|RPMFC_PYTHON|RPMFC_MONO|RPMFC_OCAML|
-			 RPMFC_PKGCONFIG|RPMFC_LIBTOOL) },
-    { rpmfcMISC,	RPMFC_FONT|RPMFC_TEXT },
+    { rpmfcELF,		"elf" },
+    { rpmfcINTERP,	"script" },
+    { rpmfcSCRIPT,	"perl,python,mono,ocaml,pkgconfig,libtool" },
+    { rpmfcMISC,	"font,text" },
     { NULL, 0 }
 };
 
@@ -800,7 +828,7 @@ rpmRC rpmfcApply(rpmfc fc)
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 
-	/* XXX Insure that /usr/lib{,64}/python files are marked RPMFC_PYTHON */
+	/* XXX Insure that /usr/lib{,64}/python files are marked as python */
 	/* XXX HACK: classification by path is intrinsically stupid. */
 	{   const char *fn = strstr(fc->fn[fc->ix], "/usr/lib");
 	    if (fn) {
@@ -808,15 +836,20 @@ rpmRC rpmfcApply(rpmfc fc)
 		if (fn[0] == '6' && fn[1] == '4')
 		    fn += 2;
 		if (rstreqn(fn, "/python", sizeof("/python")-1))
-		    fc->fcolor->vals[fc->ix] |= RPMFC_PYTHON;
+		    addAttr(&fc->fattrs[fc->ix], "python");
 	    }
 	}
 
 	if (fc->fcolor->vals[fc->ix])
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
-	    if (!(fc->fcolor->vals[fc->ix] & fcat->colormask))
-		continue;
-	    xx = (*fcat->func) (fc);
+	    ARGV_t applyAttrs = NULL;
+	    argvSplit(&applyAttrs, fcat->attrs, ",");
+	    for (ARGV_t attr = applyAttrs; attr && *attr; attr++) {
+		if (!hasAttr(fc->fattrs[fc->ix], *attr))
+		    continue;
+		xx = (*fcat->func) (fc);
+	    }
+	    argvFree(applyAttrs);
 	}
     }
 
@@ -895,6 +928,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	return 0; /* XXX looks very wrong */
 
     fc->nfiles = argvCount(argv);
+    fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
 
     /* Initialize the per-file dictionary indices. */
     xx = argiAdd(&fc->fddictx, fc->nfiles-1, 0);
@@ -921,7 +955,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	const char * ftype;
 	const char * s = argv[fc->ix];
 	size_t slen = strlen(s);
-	int fcolor;
+	int fcolor = RPMFC_BLACK;
 	rpm_mode_t mode = (fmode ? fmode[fc->ix] : 0);
 	int is_executable = (mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
@@ -973,8 +1007,9 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Save the file type string. */
 	xx = argvAdd(&fcav, ftype);
 
-	/* Add (filtered) entry to sorted class dictionary. */
-	fcolor = rpmfcColoring(ftype);
+	/* Add (filtered) file attribute tokens */
+	rpmfcAttributes(ftype, &fc->fattrs[fc->ix], &fcolor);
+
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
