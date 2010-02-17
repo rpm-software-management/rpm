@@ -833,7 +833,9 @@ rpmRC rpmfcApply(rpmfc fc)
 	    }
 	}
 
-	if (fc->fcolor->vals[fc->ix])
+	if (fc->fattrs[fc->ix] == NULL)
+	    continue;
+
 	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
 	    ARGV_t applyAttrs = NULL;
 	    argvSplit(&applyAttrs, fcat->attrs, ",");
