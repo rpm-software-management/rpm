@@ -282,18 +282,15 @@ exit:
     return ec;
 }
 
-/**
- */
-static int rpmfcSaveArg(ARGV_t * argvp, const char * key)
+static void argvAddUniq(ARGV_t * argvp, const char * key)
 {
-    int rc = 0;
-
     if (argvSearch(*argvp, key, NULL) == NULL) {
-	rc = argvAdd(argvp, key);
-	rc = argvSort(*argvp, NULL);
+	argvAdd(argvp, key);
+	argvSort(*argvp, NULL);
     }
-    return rc;
 }
+
+#define hasAttr(_a, _n) (argvSearch((_a), (_n), NULL) != NULL)
 
 static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds, char deptype)
 {
@@ -301,7 +298,7 @@ static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds, char deptype)
 	char *key = NULL;
 	rasprintf(&key, "%08d%c %s %s 0x%08x", ix, deptype,
 		  rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
-	rpmfcSaveArg(argvp, key);
+	argvAddUniq(argvp, key);
 	free(key);
     }
 }
@@ -530,19 +527,6 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { NULL,			RPMFC_BLACK, NULL }
 };
 
-static int hasAttr(ARGV_t attrs, const char *name)
-{
-    return (argvSearch(attrs, name, NULL) != NULL);
-}
-
-static void addAttr(ARGV_t *attrs, const char *name)
-{
-    if (!hasAttr(*attrs, name)) {
-	argvAdd(attrs, name);
-	argvSort(*attrs, NULL);
-    }
-}
-
 /* Return attribute tokens + color for a given libmagic classification string */
 static void rpmfcAttributes(const char * fmstr, ARGV_t *attrs, int *color)
 {
@@ -558,7 +542,7 @@ static void rpmfcAttributes(const char * fmstr, ARGV_t *attrs, int *color)
 	    ARGV_t atokens = NULL;
 	    argvSplit(&atokens, fct->attrs, ",");
 	    for (ARGV_t token = atokens; token && *token; token++)
-		addAttr(&fattrs, *token);
+		argvAddUniq(&fattrs, *token);
 	    argvFree(atokens);
 	}
 
@@ -829,7 +813,7 @@ rpmRC rpmfcApply(rpmfc fc)
 		if (fn[0] == '6' && fn[1] == '4')
 		    fn += 2;
 		if (rstreqn(fn, "/python", sizeof("/python")-1))
-		    addAttr(&fc->fattrs[fc->ix], "python");
+		    argvAddUniq(&fc->fattrs[fc->ix], "python");
 	    }
 	}
 
@@ -1008,7 +992,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    xx = rpmfcSaveArg(&fc->cdict, ftype);
+	    argvAddUniq(&fc->cdict, ftype);
     }
 
     /* Build per-file class index array. */
