@@ -1,6 +1,9 @@
 #!/bin/sh
 
-# TODO: handle #!/usr/bin/env somehow
+# TODO: handle "#!/usr/bin/env foo" somehow
 while read filename; do
+    # common cases 
     sed -n -e '1s:^#![[:space:]]*\(/[^[:space:]]\{1,\}\).*:\1:p' "$filename"
+    #!/usr/bin/env /foo/bar
+    sed -n -e '1s:^#![[:space:]]*[^[:space:]]*/bin/env[[:space:]]\{1,\}\(/[^[:space:]]\{1,\}\):\1:p' "$filename"
 done
