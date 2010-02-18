@@ -426,16 +426,6 @@ typedef enum depTypes_e {
     DEP_PROV = (1 << 1),
 } depTypes;
 
-static int rpmfcGenDeps(rpmfc fc, const char *class, depTypes types)
-{
-    int rc = 0;
-    if (types & DEP_PROV)
-	rc += rpmfcHelper(fc, 'P', class);
-    if (types & DEP_REQ)
-	rc += rpmfcHelper(fc, 'R', class);
-    return rc;
-}
-
 /* Handle RPMFC_INCLUDE "stop signal" as an attribute? */
 static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { "directory",		RPMFC_INCLUDE, "directory" },
@@ -724,114 +714,50 @@ static int isExecutable(const char *fn)
 }
 
 /**
- * Extract script interpreter dependencies.
+ * Extract dependencies for a given attribute.
  * @param fc		file classifier
+ * @param attr		attribute name
  * @return		0 on success
  */
-static int rpmfcSCRIPT(rpmfc fc)
-{
-    int rc = 0;
-    int is_executable = isExecutable(fc->fn[fc->ix]);
-
-    if (is_executable < 0) return -1;
-    /* only executables are searched, and these can only be requires */
-    if (is_executable)
-	rc = rpmfcGenDeps(fc, "script", DEP_REQ);
-    return rc;
-}
-
-/**
- * Extract language (rather loose definition...) specific dependencies.
- * @param fc		file classifier
- * @return		0 on success
- */
-static int rpmfcLANG(rpmfc fc)
+static int rpmfcAttrDeps(rpmfc fc, const char *attr)
 {
     const char * fn = fc->fn[fc->ix];
     ARGV_t fattrs = fc->fattrs[fc->ix];
     int is_executable = isExecutable(fn);
-    int xx;
+    depTypes types = DEP_NONE;
+    int rc = 0;
 
     if (is_executable < 0)
 	return -1;
 
-    if (hasAttr(fattrs, "perl")) {
-	depTypes types = DEP_NONE;
+    /* TODO: generalize this logic into classification attributes */
+    if (rstreq(attr, "script")) {
+	if (is_executable) 
+	    types |= DEP_REQ;
+    } else if (rstreq(attr, "perl")) {
 	if (hasAttr(fattrs, "module"))
 	    types |= (DEP_PROV|DEP_PROV);
 	if (is_executable)
 	    types |= DEP_REQ;
-	xx = rpmfcGenDeps(fc, "perl", types);
-    } else if (hasAttr(fattrs, "mono")) {
-	depTypes types = DEP_PROV;
+    } else if (rstreq(attr, "mono")) {
+	types = DEP_PROV;
 	if (is_executable)
 	    types |= DEP_REQ;
-	xx = rpmfcGenDeps(fc, "mono", types);
-    /* The rest dont have clear rules wrt executability, do both req & prov */
-    } else if (hasAttr(fattrs, "python")) {
-	xx = rpmfcGenDeps(fc, "python", (DEP_REQ|DEP_PROV));
-    } else if (hasAttr(fattrs, "ocaml")) {
-	xx = rpmfcGenDeps(fc, "ocaml", (DEP_REQ|DEP_PROV));
-    /* XXX libtool and pkgconfig are not scripts... */
-    } else if (hasAttr(fattrs, "libtool")) {
-	xx = rpmfcGenDeps(fc, "libtool", (DEP_REQ|DEP_PROV));
-    } else if (hasAttr(fattrs, "pkgconfig")) {
-	xx = rpmfcGenDeps(fc, "pkgconfig", (DEP_REQ|DEP_PROV));
+    } else {
+	types = (DEP_REQ|DEP_PROV);
     }
 
-    return 0;
-}
+    if (types & DEP_PROV)
+	rc += rpmfcHelper(fc, 'P', attr);
+    if (types & DEP_REQ)
+	rc += rpmfcHelper(fc, 'R', attr);
 
-/**
- * Extract Elf dependencies.
- * @param fc		file classifier
- * @return		0 on success
- */
-static int rpmfcELF(rpmfc fc)
-{
-    return rpmfcGenDeps(fc, "elf", (DEP_REQ|DEP_PROV));
-}
-
-static int rpmfcMISC(rpmfc fc)
-{
-    struct stat st;
-    int rc = -1;
-    const char *what = NULL;
-    const char * fn = fc->fn[fc->ix];
-    ARGV_t fattrs = fc->fattrs[fc->ix];
-
-    if (hasAttr(fattrs, "font")) {
-	what = "font";
-    } else if (hasAttr(fattrs, "desktop")) {
-	what = "desktop";
-    }
-
-    if (what == NULL || stat(fn, &st) < 0 || !S_ISREG(st.st_mode)) {
-	goto exit;
-    }
-
-    rc = rpmfcGenDeps(fc, what, (DEP_REQ|DEP_PROV));
-exit:
     return rc;
 }
-typedef const struct rpmfcApplyTbl_s {
-    int (*func) (rpmfc fc);
-    const char *attrs;
-} * rpmfcApplyTbl;
 
-/**
- */
-static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
-    { rpmfcELF,		"elf" },
-    { rpmfcSCRIPT,	"script" },
-    { rpmfcLANG,	"perl,python,mono,ocaml,pkgconfig,libtool" },
-    { rpmfcMISC,	"font,desktop" },
-    { NULL, 0 }
-};
 
 rpmRC rpmfcApply(rpmfc fc)
 {
-    rpmfcApplyTbl fcat;
     const char * s;
     char * se;
     rpmds ds;
@@ -849,19 +775,8 @@ rpmRC rpmfcApply(rpmfc fc)
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
-
-	if (fc->fattrs[fc->ix] == NULL)
-	    continue;
-
-	for (fcat = rpmfcApplyTable; fcat->func != NULL; fcat++) {
-	    ARGV_t applyAttrs = NULL;
-	    argvSplit(&applyAttrs, fcat->attrs, ",");
-	    for (ARGV_t attr = applyAttrs; attr && *attr; attr++) {
-		if (!hasAttr(fc->fattrs[fc->ix], *attr))
-		    continue;
-		xx = (*fcat->func) (fc);
-	    }
-	    argvFree(applyAttrs);
+	for (ARGV_t fattr = fc->fattrs[fc->ix]; fattr && *fattr; fattr++) {
+	    xx = rpmfcAttrDeps(fc, *fattr);
 	}
     }
 
