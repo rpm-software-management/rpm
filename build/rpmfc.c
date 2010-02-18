@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <signal.h>
 #include <magic.h>
+#include <regex.h>
 
 #include <rpm/header.h>
 #include <rpm/rpmbuild.h>
@@ -527,31 +528,63 @@ static const struct rpmfcTokens_s const rpmfcTokens[] = {
   { NULL,			RPMFC_BLACK, NULL }
 };
 
+typedef struct rpmfcPathTbl_s {
+    const char *pattern;
+    const char *attrs;
+} * rpmfcPathTbl;
+
+
+static struct rpmfcPathTbl_s rpmfcPathTable[] = {
+    { "^/usr/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|so)$",
+	"python" },
+    { NULL, NULL },
+};
+
+static void argvAddTokens(ARGV_t *argv, const char *tnames)
+{
+    if (tnames) {
+	ARGV_t tokens = NULL;
+	argvSplit(&tokens, tnames, ",");
+	for (ARGV_t token = tokens; token && *token; token++)
+	    argvAddUniq(argv, *token);
+	argvFree(tokens);
+    }
+}
+
+static void rpmfcPathAttributes(const char *path, ARGV_t *attrs)
+{
+    for (rpmfcPathTbl pcat = rpmfcPathTable; pcat->pattern; pcat++) {
+	char *pattern = rpmExpand(pcat->pattern, NULL);
+	regex_t reg;
+	if (regcomp(&reg, pattern, REG_EXTENDED)) {
+	    rpmlog(RPMLOG_WARNING, _("Ignoring invalid regex: %s\n"), pattern);
+	} else {
+	    if (regexec(&reg, path, 0, NULL, 0) == 0) {
+		argvAddTokens(attrs, pcat->attrs);
+	    }
+	    regfree(&reg);
+	}
+	free(pattern);
+    }
+}
+
 /* Return attribute tokens + color for a given libmagic classification string */
 static void rpmfcAttributes(const char * fmstr, ARGV_t *attrs, int *color)
 {
     rpmfcToken fct;
-    ARGV_t fattrs = NULL;
     rpm_color_t fcolor = RPMFC_BLACK;
 
     for (fct = rpmfcTokens; fct->token != NULL; fct++) {
 	if (strstr(fmstr, fct->token) == NULL)
 	    continue;
 
-	if (fct->attrs) {
-	    ARGV_t atokens = NULL;
-	    argvSplit(&atokens, fct->attrs, ",");
-	    for (ARGV_t token = atokens; token && *token; token++)
-		argvAddUniq(&fattrs, *token);
-	    argvFree(atokens);
-	}
+	argvAddTokens(attrs, fct->attrs);
 
 	fcolor |= fct->colors;
 	if (fcolor & RPMFC_INCLUDE)
 	    break;
     }
 
-    if (attrs) *attrs = fattrs;
     if (color) *color |= fcolor;
 }
 
@@ -805,18 +838,6 @@ rpmRC rpmfcApply(rpmfc fc)
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 
-	/* XXX Insure that /usr/lib{,64}/python files are marked as python */
-	/* XXX HACK: classification by path is intrinsically stupid. */
-	{   const char *fn = strstr(fc->fn[fc->ix], "/usr/lib");
-	    if (fn) {
-		fn += sizeof("/usr/lib")-1;
-		if (fn[0] == '6' && fn[1] == '4')
-		    fn += 2;
-		if (rstreqn(fn, "/python", sizeof("/python")-1))
-		    argvAddUniq(&fc->fattrs[fc->ix], "python");
-	    }
-	}
-
 	if (fc->fattrs[fc->ix] == NULL)
 	    continue;
 
@@ -988,6 +1009,9 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
 	/* Add (filtered) file attribute tokens */
 	rpmfcAttributes(ftype, &fc->fattrs[fc->ix], &fcolor);
+
+	/* Add path-based attributes, strip buildroot for regex sanity */
+	rpmfcPathAttributes(s+fc->brlen, &fc->fattrs[fc->ix]);
 
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 
