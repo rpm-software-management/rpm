@@ -539,6 +539,8 @@ static struct rpmfcPathTbl_s rpmfcPathTable[] = {
 	"python" },
     { "^%{_bindir}/python[[:digit:]]\\.[[:digit:]]$",
 	"python" },
+    { "^%{_datadir}/.*/.*\\.desktop$",
+	"desktop" },
     { NULL, NULL },
 };
 
@@ -800,7 +802,7 @@ static int rpmfcMISC(rpmfc fc)
 
     if (hasAttr(fattrs, "font")) {
 	what = "font";
-    } else if (hasAttr(fattrs, "text") && rpmFileHasSuffix(fn, ".desktop")) {
+    } else if (hasAttr(fattrs, "desktop")) {
 	what = "desktop";
     }
 
@@ -823,7 +825,7 @@ static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcELF,		"elf" },
     { rpmfcSCRIPT,	"script" },
     { rpmfcLANG,	"perl,python,mono,ocaml,pkgconfig,libtool" },
-    { rpmfcMISC,	"font,text" },
+    { rpmfcMISC,	"font,desktop" },
     { NULL, 0 }
 };
 
