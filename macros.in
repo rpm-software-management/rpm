@@ -486,7 +486,7 @@ print (t)\
 #%__perl_provides	%{_rpmconfigdir}/perldeps.pl --provides
 #%__perl_requires	%{_rpmconfigdir}/perldeps.pl --requires
 
-%__interpreter_requires	%{_rpmconfigdir}/interpreter.req
+%__script_requires	%{_rpmconfigdir}/script.req
 
 %__elf_provides		%{_rpmconfigdir}/elfdeps --provides %{?__filter_GLIBC_PRIVATE:--filter-private}
 %__elf_requires		%{_rpmconfigdir}/elfdeps --requires %{?__filter_GLIBC_PRIVATE:--filter-private}

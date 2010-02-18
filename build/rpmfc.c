@@ -683,7 +683,7 @@ static int isExecutable(const char *fn)
  * @param fc		file classifier
  * @return		0 on success
  */
-static int rpmfcINTERP(rpmfc fc)
+static int rpmfcSCRIPT(rpmfc fc)
 {
     int rc = 0;
     int is_executable = isExecutable(fc->fn[fc->ix]);
@@ -691,7 +691,7 @@ static int rpmfcINTERP(rpmfc fc)
     if (is_executable < 0) return -1;
     /* only executables are searched, and these can only be requires */
     if (is_executable)
-	rc = rpmfcGenDeps(fc, "interpreter", DEP_REQ);
+	rc = rpmfcGenDeps(fc, "script", DEP_REQ);
     return rc;
 }
 
@@ -700,7 +700,7 @@ static int rpmfcINTERP(rpmfc fc)
  * @param fc		file classifier
  * @return		0 on success
  */
-static int rpmfcSCRIPT(rpmfc fc)
+static int rpmfcLANG(rpmfc fc)
 {
     const char * fn = fc->fn[fc->ix];
     ARGV_t fattrs = fc->fattrs[fc->ix];
@@ -778,8 +778,8 @@ typedef const struct rpmfcApplyTbl_s {
  */
 static const struct rpmfcApplyTbl_s const rpmfcApplyTable[] = {
     { rpmfcELF,		"elf" },
-    { rpmfcINTERP,	"script" },
-    { rpmfcSCRIPT,	"perl,python,mono,ocaml,pkgconfig,libtool" },
+    { rpmfcSCRIPT,	"script" },
+    { rpmfcLANG,	"perl,python,mono,ocaml,pkgconfig,libtool" },
     { rpmfcMISC,	"font,text" },
     { NULL, 0 }
 };
