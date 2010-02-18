@@ -615,12 +615,20 @@ assert(fx < fc->fcdictx->nvals);
 	cx = fc->fcdictx->vals[fx];
 assert(fx < fc->fcolor->nvals);
 	fcolor = fc->fcolor->vals[fx];
+	ARGV_t fattrs = fc->fattrs[fx];
 
 	fprintf(fp, "%3d %s", fx, fc->fn[fx]);
 	if (fcolor != RPMFC_BLACK)
 		fprintf(fp, "\t0x%x", fc->fcolor->vals[fx]);
 	else
 		fprintf(fp, "\t%s", fc->cdict[cx]);
+	if (fattrs) {
+	    char *attrs = argvJoin(fattrs, ",");
+	    fprintf(fp, " [%s]", attrs);
+	    free(attrs);
+	} else {
+	    fprintf(fp, " [none]");
+	}
 	fprintf(fp, "\n");
 
 	if (fc->fddictx == NULL || fc->fddictn == NULL)
