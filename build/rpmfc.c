@@ -537,6 +537,8 @@ typedef struct rpmfcPathTbl_s {
 static struct rpmfcPathTbl_s rpmfcPathTable[] = {
     { "^/usr/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|so)$",
 	"python" },
+    { "^%{_bindir}/python[[:digit:]]\\.[[:digit:]]$",
+	"python" },
     { NULL, NULL },
 };
 
