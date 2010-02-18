@@ -509,8 +509,8 @@ print (t)\
 %__ocaml_provides       %{_rpmconfigdir}/ocaml-find-provides.sh
 %__ocaml_requires       %{_rpmconfigdir}/ocaml-find-requires.sh
 
-%__fontconfig_provides	%{_rpmconfigdir}/fontconfig.prov
-%__fontconfig_requires	%{nil}
+%__font_provides	%{_rpmconfigdir}/fontconfig.prov
+%__font_requires	%{nil}
 %__desktop_provides	%{_rpmconfigdir}/desktop-file.prov
 %__desktop_requires	%{nil}
 

@@ -799,7 +799,7 @@ static int rpmfcMISC(rpmfc fc)
     ARGV_t fattrs = fc->fattrs[fc->ix];
 
     if (hasAttr(fattrs, "font")) {
-	what = "fontconfig";
+	what = "font";
     } else if (hasAttr(fattrs, "text") && rpmFileHasSuffix(fn, ".desktop")) {
 	what = "desktop";
     }
