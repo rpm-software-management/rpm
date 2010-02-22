@@ -32,8 +32,6 @@ struct rpmte_s {
     char * release;		/*!< Release: */
     char * arch;		/*!< Architecture hint. */
     char * os;			/*!< Operating system hint. */
-    int archScore;		/*!< (TR_ADDED) Arch score. */
-    int osScore;		/*!< (TR_ADDED) Os score. */
     int isSource;		/*!< (TR_ADDED) source rpm? */
 
     rpmte depends;              /*!< Package updated by this package (ERASE te) */
@@ -233,10 +231,7 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->epoch = headerGetAsString(h, RPMTAG_EPOCH);
 
     p->arch = headerGetAsString(h, RPMTAG_ARCH);
-    p->archScore = p->arch ? rpmMachineScore(RPM_MACHTABLE_INSTARCH, p->arch) : 0;
-
     p->os = headerGetAsString(h, RPMTAG_OS);
-    p->osScore = p->os ? rpmMachineScore(RPM_MACHTABLE_INSTOS, p->os) : 0;
 
     p->isSource = headerIsSource(h);
     
