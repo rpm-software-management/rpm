@@ -33,6 +33,7 @@ static const rpmTag copyTagsDuringParse[] = {
     RPMTAG_VENDOR,
     RPMTAG_ICON,
     RPMTAG_URL,
+    RPMTAG_VCS,
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
@@ -700,6 +701,8 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_URL:
     case RPMTAG_DISTTAG:
     case RPMTAG_BUGURL:
+    /* XXX TODO: validate format somehow */
+    case RPMTAG_VCS:
 	SINGLE_TOKEN_ONLY;
 	headerPutString(pkg->header, tag, field);
 	break;
@@ -884,6 +887,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_GROUP,		1, 0, LEN_AND_STR("group")},
     {RPMTAG_PACKAGER,		0, 0, LEN_AND_STR("packager")},
     {RPMTAG_URL,		0, 0, LEN_AND_STR("url")},
+    {RPMTAG_VCS,        0, 0, LEN_AND_STR("vcs")},
     {RPMTAG_SOURCE,		0, 0, LEN_AND_STR("source")},
     {RPMTAG_PATCH,		0, 0, LEN_AND_STR("patch")},
     {RPMTAG_NOSOURCE,		0, 0, LEN_AND_STR("nosource")},
