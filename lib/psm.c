@@ -401,29 +401,6 @@ static rpmTag triggertag(rpmsenseFlags sense)
 }
 
 /**
- * Wait for child process to be reaped.
- * @param psm		package state machine data
- * @return		
- */
-static pid_t psmWait(rpmpsm psm)
-{
-    const rpmts ts = psm->ts;
-    rpmtime_t msecs;
-
-    (void) rpmsqWait(&psm->sq);
-    msecs = psm->sq.op.usecs/1000;
-    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), &psm->sq.op);
-
-    rpmlog(RPMLOG_DEBUG,
-	"%s: waitpid(%d) rc %d status %x secs %u.%03u\n",
-	psm->stepName, (unsigned)psm->sq.child,
-	(unsigned)psm->sq.reaped, psm->sq.status,
-	(unsigned)msecs/1000, (unsigned)msecs%1000);
-
-    return psm->sq.reaped;
-}
-
-/**
  * Run internal Lua script.
  */
 static rpmRC runLuaScript(rpmpsm psm, ARGV_const_t prefixes,
@@ -679,7 +656,11 @@ static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
 	goto exit;
     }
 
-    (void) psmWait(psm);
+    rpmsqWait(&psm->sq);
+
+    rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
+	   psm->stepName, (unsigned)psm->sq.child,
+	   (unsigned)psm->sq.reaped, psm->sq.status);
 
     if (psm->sq.reaped < 0) {
 	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
@@ -740,11 +721,14 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, rpmTag stag,
 	return RPMRC_OK;
 
     rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
+
+    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
     if (*argvp[0] && rstreq(*argvp[0], "<lua>")) {
 	rc = runLuaScript(psm, prefixes, sname, loglvl, argvp, script, arg1, arg2);
     } else {
 	rc = runExtScript(psm, prefixes, sname, loglvl, argvp, script, arg1, arg2);
     }
+    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* 
      * Notify callback for all errors. "total" abused for warning/error,
