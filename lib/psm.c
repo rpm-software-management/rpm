@@ -401,12 +401,11 @@ static rpmTag triggertag(rpmsenseFlags sense)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, ARGV_const_t prefixes,
+static rpmRC runLuaScript(rpmts ts, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
     rpmRC rc = RPMRC_FAIL;
-    const rpmts ts = psm->ts;
 #ifdef WITH_LUA
     int rootFd = -1;
     int xx;
@@ -414,8 +413,7 @@ static rpmRC runLuaScript(rpmpsm psm, ARGV_const_t prefixes,
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
 
-    rpmlog(RPMLOG_DEBUG, "%s: %s running <lua> scriptlet.\n",
-	   psm->stepName, sname);
+    rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
     if (!rpmtsChrootDone(ts)) {
 	const char *rootDir = rpmtsRootDir(ts);
 	xx = chdir("/");
@@ -566,14 +564,13 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
 /**
  * Run an external script.
  */
-static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
+static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
     FD_t scriptFd;
     FD_t out = NULL;
     char * fn = NULL;
-    rpmts ts = psm->ts;
     int xx;
     rpmRC rc = RPMRC_FAIL;
     struct rpmsqElem sq;
@@ -581,7 +578,7 @@ static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
     memset(&sq, 0, sizeof(sq));
     sq.reaper = 1;
 
-    rpmlog(RPMLOG_DEBUG, "%s: %s scriptlet start\n", psm->stepName, sname);
+    rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
 
     if (argvCount(*argvp) == 0) {
 	argvAdd(argvp, "/bin/sh");
@@ -646,8 +643,8 @@ static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
 
     xx = rpmsqFork(&sq);
     if (sq.child == 0) {
-	rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
-	       psm->stepName, sname, *argvp[0], (unsigned)getpid());
+	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
+	       sname, *argvp[0], (unsigned)getpid());
 	doScriptExec(ts, *argvp, prefixes, scriptFd, out);
     }
 
@@ -659,8 +656,7 @@ static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
     rpmsqWait(&sq);
 
     rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
-	   psm->stepName, (unsigned)sq.child,
-	   (unsigned)sq.reaped, sq.status);
+	   sname, (unsigned)sq.child, (unsigned)sq.reaped, sq.status);
 
     if (sq.reaped < 0) {
 	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
@@ -724,9 +720,9 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, rpmTag stag,
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
     if (*argvp[0] && rstreq(*argvp[0], "<lua>")) {
-	rc = runLuaScript(psm, prefixes, sname, loglvl, argvp, script, arg1, arg2);
+	rc = runLuaScript(psm->ts, prefixes, sname, loglvl, argvp, script, arg1, arg2);
     } else {
-	rc = runExtScript(psm, prefixes, sname, loglvl, argvp, script, arg1, arg2);
+	rc = runExtScript(psm->ts, prefixes, sname, loglvl, argvp, script, arg1, arg2);
     }
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
 
