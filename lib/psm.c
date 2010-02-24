@@ -35,8 +35,6 @@ int _psm_debug = _PSM_DEBUG;
 /**
  */
 struct rpmpsm_s {
-    struct rpmsqElem sq;	/*!< Scriptlet/signal queue element. */
-
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
@@ -578,8 +576,10 @@ static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
     rpmts ts = psm->ts;
     int xx;
     rpmRC rc = RPMRC_FAIL;
+    struct rpmsqElem sq;
 
-    psm->sq.reaper = 1;
+    memset(&sq, 0, sizeof(sq));
+    sq.reaper = 1;
 
     rpmlog(RPMLOG_DEBUG, "%s: %s scriptlet start\n", psm->stepName, sname);
 
@@ -644,34 +644,34 @@ static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
 	goto exit;
     }
 
-    xx = rpmsqFork(&psm->sq);
-    if (psm->sq.child == 0) {
+    xx = rpmsqFork(&sq);
+    if (sq.child == 0) {
 	rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
 	       psm->stepName, sname, *argvp[0], (unsigned)getpid());
 	doScriptExec(ts, *argvp, prefixes, scriptFd, out);
     }
 
-    if (psm->sq.child == (pid_t)-1) {
+    if (sq.child == (pid_t)-1) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sname, strerror(errno));
 	goto exit;
     }
 
-    rpmsqWait(&psm->sq);
+    rpmsqWait(&sq);
 
     rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
-	   psm->stepName, (unsigned)psm->sq.child,
-	   (unsigned)psm->sq.reaped, psm->sq.status);
+	   psm->stepName, (unsigned)sq.child,
+	   (unsigned)sq.reaped, sq.status);
 
-    if (psm->sq.reaped < 0) {
+    if (sq.reaped < 0) {
 	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sname, psm->sq.child, psm->sq.reaped, strerror(errno));
-    } else if (!WIFEXITED(psm->sq.status) || WEXITSTATUS(psm->sq.status)) {
-      	if (WIFSIGNALED(psm->sq.status)) {
+		 sname, sq.child, sq.reaped, strerror(errno));
+    } else if (!WIFEXITED(sq.status) || WEXITSTATUS(sq.status)) {
+      	if (WIFSIGNALED(sq.status)) {
 	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
-                   sname, WTERMSIG(psm->sq.status));
+                   sname, WTERMSIG(sq.status));
 	} else {
 	    rpmlog(lvl, _("%s scriptlet failed, exit status %d\n"),
-		   sname, WEXITSTATUS(psm->sq.status));
+		   sname, WEXITSTATUS(sq.status));
 	}
     } else {
 	/* if we get this far we're clear */
