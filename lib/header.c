@@ -1142,7 +1142,8 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 	}
 	break;
     case RPM_STRING_TYPE:
-	if (count == 1) {
+	/* simple string, but fallthrough if its actually an array */
+	if (count == 1 && !argvArray) {
 	    td->data = allocMem ? xstrdup(entry->data) : entry->data;
 	    break;
 	}
