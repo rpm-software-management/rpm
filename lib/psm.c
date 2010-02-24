@@ -426,7 +426,7 @@ static pid_t psmWait(rpmpsm psm)
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmpsm psm, Header h,
+static rpmRC runLuaScript(rpmpsm psm, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
@@ -495,7 +495,7 @@ static rpmRC runLuaScript(rpmpsm psm, Header h,
     return rc;
 }
 
-static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
+static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
     const char * rootDir;
@@ -550,21 +550,20 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 	ipath = _free(ipath);
     }
 
-    if (rpmtdCount(prefixes) > 0) {
-	const char *pfx;
-	/* backwards compatibility */
-	if ((pfx = rpmtdGetString(prefixes))) {
-	    xx = setenv("RPM_INSTALL_PREFIX", pfx, 1);
-	}
+    for (ARGV_const_t pf = prefixes; pf && *pf; pf++) {
+	char *name = NULL;
+	int num = (pf - prefixes);
 
-	while ((pfx = rpmtdNextString(prefixes))) {
-	    char *name = NULL;
-	    rasprintf(&name, "RPM_INSTALL_PREFIX%d", rpmtdGetIndex(prefixes));
-	    xx = setenv(name, pfx, 1);
-	    free(name);
+	rasprintf(&name, "RPM_INSTALL_PREFIX%d", num);
+	setenv(name, *pf, 1);
+	free(name);
+
+	/* scripts might still be using the old style prefix */
+	if (num == 0) {
+	    setenv("RPM_INSTALL_PREFIX", *pf, 1);
 	}
     }
-
+	
     rootDir = rpmtsRootDir(ts);
     if (rootDir  != NULL) {	/* XXX can't happen */
 	if (!rpmtsChrootDone(ts) &&
@@ -592,13 +591,12 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, rpmtd prefixes,
 /**
  * Run an external script.
  */
-static rpmRC runExtScript(rpmpsm psm, Header h,
+static rpmRC runExtScript(rpmpsm psm, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
     FD_t scriptFd;
     FD_t out = NULL;
-    struct rpmtd_s prefixes;
     char * fn = NULL;
     rpmts ts = psm->ts;
     int xx;
@@ -610,11 +608,6 @@ static rpmRC runExtScript(rpmpsm psm, Header h,
 
     if (argvCount(*argvp) == 0) {
 	argvAdd(argvp, "/bin/sh");
-    }
-
-    /* Try new style prefixes first, then old. Otherwise there are none.. */
-    if (!headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, HEADERGET_DEFAULT)) {
-	headerGet(h, RPMTAG_INSTALLPREFIX, &prefixes, HEADERGET_DEFAULT);
     }
 
     if (script) {
@@ -678,7 +671,7 @@ static rpmRC runExtScript(rpmpsm psm, Header h,
     if (psm->sq.child == 0) {
 	rpmlog(RPMLOG_DEBUG, "%s: %s\texecv(%s) pid %d\n",
 	       psm->stepName, sname, *argvp[0], (unsigned)getpid());
-	doScriptExec(ts, *argvp, &prefixes, scriptFd, out);
+	doScriptExec(ts, *argvp, prefixes, scriptFd, out);
     }
 
     if (psm->sq.child == (pid_t)-1) {
@@ -705,7 +698,6 @@ static rpmRC runExtScript(rpmpsm psm, Header h,
     }
 
 exit:
-    rpmtdFreeData(&prefixes);
     if (out)
 	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
@@ -725,7 +717,7 @@ exit:
  * the header will be ignored, passing instead arg1 and arg2.
  *
  * @param psm		package state machine data
- * @param h		header
+ * @param prefixes	install prefixes
  * @param stag		scriptlet section tag
  * @param argvp		ARGV_t pointer to args from header, *argvp[0] is the 
  * 			interpreter to use. Pointer as we might need to 
@@ -736,8 +728,8 @@ exit:
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
-		const char * script, int arg1, int arg2)
+static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, rpmTag stag, 
+		       ARGV_t * argvp, const char * script, int arg1, int arg2)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     char *sname = NULL; 
@@ -749,9 +741,9 @@ static rpmRC runScript(rpmpsm psm, Header h, rpmTag stag, ARGV_t * argvp,
 
     rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
     if (*argvp[0] && rstreq(*argvp[0], "<lua>")) {
-	rc = runLuaScript(psm, h, sname, loglvl, argvp, script, arg1, arg2);
+	rc = runLuaScript(psm, prefixes, sname, loglvl, argvp, script, arg1, arg2);
     } else {
-	rc = runExtScript(psm, h, sname, loglvl, argvp, script, arg1, arg2);
+	rc = runExtScript(psm, prefixes, sname, loglvl, argvp, script, arg1, arg2);
     }
 
     /* 
@@ -779,7 +771,7 @@ static rpmRC runInstScript(rpmpsm psm)
 {
     rpmRC rc = RPMRC_OK;
     ARGV_t argv;
-    struct rpmtd_s script, prog;
+    struct rpmtd_s script, prog, pfx;
     const char *str;
     Header h = rpmteHeader(psm->te);
 
@@ -796,8 +788,10 @@ static rpmRC runInstScript(rpmpsm psm)
 	argvAdd(&argv, str);
     }
 
-    rc = runScript(psm, h, psm->scriptTag, &argv,
+    headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
+    rc = runScript(psm, pfx.data, psm->scriptTag, &argv,
 		   rpmtdGetString(&script), psm->scriptArg, -1);
+    rpmtdFreeData(&pfx);
     argvFree(argv);
 
 exit:
@@ -823,6 +817,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 {
     const rpmts ts = psm->ts;
     rpmds trigger = NULL;
+    struct rpmtd_s pfx;
     const char * sourceName = headerGetString(sourceH, RPMTAG_NAME);
     const char * triggerName = headerGetString(trigH, RPMTAG_NAME);
     rpmRC rc = RPMRC_OK;
@@ -832,6 +827,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     if (trigger == NULL)
 	return rc;
 
+    headerGet(trigH, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
@@ -878,7 +874,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		{
 		    ARGV_t argv = argvNew();
 		    argvAdd(&argv, *(triggerProgs + index));
-		    rc = runScript(psm, trigH, triggertag(psm->sense), 
+		    rc = runScript(psm, pfx.data, triggertag(psm->sense), 
 			    &argv, triggerScripts[index],
 			    arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
@@ -899,6 +895,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	break;
     }
 
+    rpmtdFreeData(&pfx);
     trigger = rpmdsFree(trigger);
 
     return rc;
