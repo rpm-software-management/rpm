@@ -994,8 +994,6 @@ static const char * pkgStageString(pkgStage a)
     case PSM_TRIGGERS:		return "triggers";
     case PSM_IMMED_TRIGGERS:	return "immedtriggers";
 
-    case PSM_RPMIO_FLAGS:	return "rpmioflags";
-
     case PSM_RPMDB_ADD:		return "rpmdbadd";
     case PSM_RPMDB_REMOVE:	return "rpmdbremove";
 
@@ -1506,14 +1504,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	/* Run triggers in this package other package(s) set off. */
 	rc = runImmedTriggers(psm);
 	break;
-
-    case PSM_RPMIO_FLAGS:
-    {   Header h = rpmteHeader(psm->te);
-	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
-	psm->rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
-	headerFree(h);
-	rc = RPMRC_OK;
-    }	break;
 
     case PSM_RPMDB_ADD: {
 	Header h;
