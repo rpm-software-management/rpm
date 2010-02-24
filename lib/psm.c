@@ -796,14 +796,13 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 			int arg2, unsigned char * triggersAlreadyRun)
 {
     const rpmts ts = psm->ts;
-    rpmds trigger = NULL;
+    rpmds trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     struct rpmtd_s pfx;
     const char * sourceName = headerGetString(sourceH, RPMTAG_NAME);
     const char * triggerName = headerGetString(trigH, RPMTAG_NAME);
     rpmRC rc = RPMRC_OK;
     int i;
 
-    trigger = rpmdsInit(rpmdsNew(trigH, RPMTAG_TRIGGERNAME, 0));
     if (trigger == NULL)
 	return rc;
 
@@ -811,54 +810,43 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	const char * Name;
-	rpmsenseFlags Flags = rpmdsFlags(trigger);
 	struct rpmtd_s tscripts, tprogs, tindexes;
 	headerGetFlags hgflags = HEADERGET_MINMEM;
 
-	if ((Name = rpmdsN(trigger)) == NULL)
-	    continue;   /* XXX can't happen */
-
-	if (!rstreq(Name, sourceName))
-	    continue;
-	if (!(Flags & psm->sense))
+	if (!(rpmdsFlags(trigger) & psm->sense))
 	    continue;
 
-	/*
-	 * XXX Trigger on any provided dependency, not just the package NEVR.
-	 */
+ 	if (!rstreq(rpmdsN(trigger), sourceName))
+	    continue;
+
+	/* XXX Trigger on any provided dependency, not just the package NEVR */
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
 
+	/* XXX FIXME: this leaks memory if scripts or progs retrieve fails */
 	if (!(headerGet(trigH, RPMTAG_TRIGGERINDEX, &tindexes, hgflags) &&
 	      headerGet(trigH, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags) &&
 	      headerGet(trigH, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags))) {
 	    continue;
-	}
-
-	{   int arg1;
-	    int index;
+	} else {
+	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 	    const char ** triggerScripts = tscripts.data;
 	    const char ** triggerProgs = tprogs.data;
 	    uint32_t * triggerIndices = tindexes.data;
 
-	    arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
 	    } else {
 		arg1 += psm->countCorrection;
-		index = triggerIndices[i];
-		if (triggersAlreadyRun == NULL ||
-		    triggersAlreadyRun[index] == 0)
-		{
+		int ix = triggerIndices[i];
+		if (triggersAlreadyRun == NULL || triggersAlreadyRun[ix] == 0) {
 		    ARGV_t argv = argvNew();
-		    argvAdd(&argv, *(triggerProgs + index));
+		    argvAdd(&argv, *(triggerProgs + ix));
 		    rc = runScript(psm, pfx.data, triggertag(psm->sense), 
-			    &argv, triggerScripts[index],
-			    arg1, arg2);
+				&argv, triggerScripts[ix], arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
-			triggersAlreadyRun[index] = 1;
+			triggersAlreadyRun[ix] = 1;
 		    argvFree(argv);
 		}
 	    }
