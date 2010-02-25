@@ -313,22 +313,6 @@ static void rpmtsFreeDSI(rpmts ts){
 }
 
 
-/**
- */
-static int archOkay(const char * pkgArch)
-{
-    if (pkgArch == NULL) return 0;
-    return (rpmMachineScore(RPM_MACHTABLE_INSTARCH, pkgArch) ? 1 : 0);
-}
-
-/**
- */
-static int osOkay(const char * pkgOs)
-{
-    if (pkgOs == NULL) return 0;
-    return (rpmMachineScore(RPM_MACHTABLE_INSTOS, pkgOs) ? 1 : 0);
-}
-
 /* Calculate total number of files involved in transaction */
 static uint64_t countFiles(rpmts ts)
 {
@@ -1099,6 +1083,9 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
     mi = rpmdbFreeIterator(mi);
 }
 
+#define badArch(_a) (rpmMachineScore(RPM_MACHTABLE_INSTARCH, (_a)) == 0)
+#define badOs(_a) (rpmMachineScore(RPM_MACHTABLE_INSTOS, (_a)) == 0)
+
 /*
  * For packages being installed:
  * - verify package arch/os.
@@ -1107,6 +1094,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 static rpmps checkProblems(rpmts ts)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
+    rpmprobFilterFlags probFilter = rpmtsFilterFlags(ts);
     rpmps ps = rpmpsCreate();
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
@@ -1118,21 +1106,15 @@ static rpmps checkProblems(rpmts ts)
 	rpmdbMatchIterator mi;
 	rpmpsi psi;
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREARCH))
-	    if (!archOkay(rpmteA(p)))
-		rpmpsAppend(ps, RPMPROB_BADARCH,
-			rpmteNEVRA(p), rpmteKey(p),
-			rpmteA(p), NULL,
-			NULL, 0);
+	if (!(probFilter & RPMPROB_FILTER_IGNOREARCH) && badArch(rpmteA(p)))
+	    rpmpsAppend(ps, RPMPROB_BADARCH, rpmteNEVRA(p), rpmteKey(p),
+			rpmteA(p), NULL, NULL, 0);
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_IGNOREOS))
-	    if (!osOkay(rpmteO(p)))
-		rpmpsAppend(ps, RPMPROB_BADOS,
-			rpmteNEVRA(p), rpmteKey(p),
-			rpmteO(p), NULL,
-			NULL, 0);
+	if (!(probFilter & RPMPROB_FILTER_IGNOREOS) && badOs(rpmteO(p)))
+	    rpmpsAppend(ps, RPMPROB_BADOS, rpmteNEVRA(p), rpmteKey(p),
+			rpmteO(p), NULL, NULL, 0);
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_OLDPACKAGE)) {
+	if (!(probFilter & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
@@ -1140,7 +1122,7 @@ static rpmps checkProblems(rpmts ts)
 	    mi = rpmdbFreeIterator(mi);
 	}
 
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)) {
+	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG)) {
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
@@ -1161,7 +1143,7 @@ static rpmps checkProblems(rpmts ts)
 	}
 
 	/* XXX rpmte problems can only be relocation problems atm */
-	if (!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_FORCERELOCATE)) {
+	if (!(probFilter & RPMPROB_FILTER_FORCERELOCATE)) {
 	    psi = rpmpsInitIterator(rpmteProblems(p));
 	    while (rpmpsNextIterator(psi) >= 0) {
 		rpmpsAppendProblem(ps, rpmpsGetProblem(psi));
