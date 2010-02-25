@@ -1184,16 +1184,10 @@ static int runTransScripts(rpmts ts, rpmTag stag)
     rpmtsi pi; 
     rpmte p;
     rpmpsm psm;
-    rpmTag progtag = RPMTAG_NOT_FOUND;
     int xx;
 
-    if (stag == RPMTAG_PRETRANS) {
-	progtag = RPMTAG_PRETRANSPROG;
-    } else if (stag == RPMTAG_POSTTRANS) {
-	progtag = RPMTAG_POSTTRANSPROG;
-    } else {
+    if (stag != RPMTAG_PRETRANS && stag != RPMTAG_POSTTRANS)
 	return -1;
-    }
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
@@ -1203,7 +1197,7 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 
     	if (rpmteOpen(p, ts, 0)) {
 	    psm = rpmpsmNew(ts, p);
-	    xx = rpmpsmScriptStage(psm, stag, progtag);
+	    xx = rpmpsmScriptStage(psm, stag);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts, 0);
 	}

@@ -41,7 +41,6 @@ struct rpmpsm_s {
     char * rpmio_flags;
     char * failedFile;
     int scriptTag;		/*!< Scriptlet data tag. */
-    int progTag;		/*!< Scriptlet interpreter tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
     rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
@@ -685,11 +684,10 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     return NULL;
 }
 
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag)
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag)
 {
     assert(psm != NULL);
     psm->scriptTag = scriptTag;
-    psm->progTag = progTag;
     if (scriptTag == RPMTAG_VERIFYSCRIPT) {
 	psm->stepName = "verify";
     }
@@ -814,7 +812,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	if (psm->goal == PSM_PKGINSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
-	    psm->progTag = RPMTAG_PREINPROG;
 	    psm->sense = RPMSENSE_TRIGGERPREIN;
 	    psm->countCorrection = 0;   /* XXX is this correct?!? */
 
@@ -836,7 +833,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	if (psm->goal == PSM_PKGERASE) {
 	    psm->scriptTag = RPMTAG_PREUN;
-	    psm->progTag = RPMTAG_PREUNPROG;
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
 
@@ -976,7 +972,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (rc) break;
 
 	    psm->scriptTag = RPMTAG_POSTIN;
-	    psm->progTag = RPMTAG_POSTINPROG;
 	    psm->sense = RPMSENSE_TRIGGERIN;
 	    psm->countCorrection = 0;
 
@@ -1001,7 +996,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PSM_PKGERASE) {
 
 	    psm->scriptTag = RPMTAG_POSTUN;
-	    psm->progTag = RPMTAG_POSTUNPROG;
 	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
 	    psm->countCorrection = -1;
 

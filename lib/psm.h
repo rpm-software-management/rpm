@@ -107,14 +107,13 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 #define	rpmpsmUNSAFE	rpmpsmSTAGE
 
 /**
- * Run rpmpsmStage(PSM_SCRIPT) for scriptTag and progTag
+ * Run rpmpsmStage(PSM_SCRIPT) for scriptTag
  * @param psm		package state machine data
  * @param scriptTag	scriptlet tag to execute
- * @param progTag	scriptlet prog tag to execute
  * @return 		0 on success
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag, rpmTag progTag);
+rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag);
 
 #ifdef __cplusplus
 }

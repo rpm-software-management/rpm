@@ -285,7 +285,7 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
 
     /* create psm to run the script */
     psm = rpmpsmNew(ts, te);
-    rpmpsmScriptStage(psm, RPMTAG_VERIFYSCRIPT, RPMTAG_VERIFYSCRIPTPROG);
+    rpmpsmScriptStage(psm, RPMTAG_VERIFYSCRIPT);
     rc = rpmpsmStage(psm, PSM_SCRIPT);
     psm = rpmpsmFree(psm);
 
