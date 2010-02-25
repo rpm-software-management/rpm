@@ -320,11 +320,8 @@ static uint64_t countFiles(rpmts ts)
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
     rpmfi fi;
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;   /* XXX can't happen */
-	fc += rpmfiFC(fi);
-    }
+    while ((p = rpmtsiNext(pi, 0)) != NULL)
+	fc += rpmfiFC(rpmteFI(p));
     pi = rpmtsiFree(pi);
     return fc;
 }
@@ -762,8 +759,6 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 	ix = rpmfiDX(fi);
 	dn = rpmfiDN(fi);
 	dnlen = strlen(dn);
-	if (dn == NULL)
-	    continue;	/* XXX can't happen */
 
 	drc[ix]++;
 
@@ -1236,9 +1231,7 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-	fi = rpmfiInit(fi, 0);
+	fi = rpmfiInit(rpmteFI(p), 0);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	while ((i = rpmfiNext(fi)) >= 0) {
 	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
@@ -1328,10 +1321,7 @@ static int rpmtsPrepare(rpmts ts)
     /* Skip netshared paths, not our i18n files, and excluded docs */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-
-	if (rpmfiFC(fi) == 0)
+	if (rpmfiFC(rpmteFI(p)) == 0)
 	    continue;
 	if (rpmteType(p) == TR_ADDED) {
 	    skipInstallFiles(ts, p);
