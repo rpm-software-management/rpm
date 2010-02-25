@@ -1443,20 +1443,9 @@ static int rpmtsProcess(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	if (rpmteOpen(p, ts, 1)) {
-	    rpmpsm psm = NULL;
-	    pkgStage stage = PSM_UNKNOWN;
-
-	    switch (tetype) {
-	    case TR_ADDED:
-		stage = PSM_PKGINSTALL;
-		break;
-	    case TR_REMOVED:
-		stage = PSM_PKGERASE;
-		break;
-	    }
-	    psm = rpmpsmNew(ts, p);
+	    rpmpsm psm = rpmpsmNew(ts, p);
 	    (void) rpmswEnter(rpmtsOp(ts, op), 0);
-	    failed = rpmpsmStage(psm, stage);
+	    failed = rpmpsmRun(psm, rpmteType(p));
 	    (void) rpmswExit(rpmtsOp(ts, op), 0);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts, 1);

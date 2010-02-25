@@ -6,11 +6,18 @@
  * Package state machine to handle a package from a transaction set.
  */
 
-#include <rpm/rpmcallback.h>
+#include <rpm/rpmte.h>
 
 extern int _psm_debug;
 
 typedef struct rpmpsm_s * rpmpsm;
+
+typedef enum pkgGoal_e {
+    PKG_NONE		= 0,
+    /* permit using rpmteType() for install + erase goals */
+    PKG_INSTALL		= TR_ADDED,
+    PKG_ERASE		= TR_REMOVED,
+} pkgGoal;
 
 typedef enum pkgStage_e {
     PSM_UNKNOWN		=  0,
@@ -21,8 +28,6 @@ typedef enum pkgStage_e {
     PSM_UNDO		=  5,
     PSM_FINI		=  6,
 
-    PSM_PKGINSTALL	=  7,
-    PSM_PKGERASE	=  8,
     PSM_PKGCOMMIT	= 10,
 
     PSM_CREATE		= 17,
@@ -80,6 +85,9 @@ rpmpsm rpmpsmFree(rpmpsm psm);
  */
 RPM_GNUC_INTERNAL
 rpmpsm rpmpsmNew(rpmts ts, rpmte te);
+
+RPM_GNUC_INTERNAL
+rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal);
 
 /**
  * Package state machine driver.

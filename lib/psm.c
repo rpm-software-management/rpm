@@ -37,7 +37,7 @@ struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
-    const char * stepName;
+    const char * goalName;
     char * rpmio_flags;
     char * failedFile;
     int scriptTag;		/*!< Scriptlet data tag. */
@@ -324,7 +324,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     }
 
     psm = rpmpsmNew(ts, te);
-    psm->goal = PSM_PKGINSTALL;
+    psm->goal = PKG_INSTALL;
 
    	/* FIX: psm->fi->dnl should be owned. */
     if (rpmpsmStage(psm, PSM_PROCESS) == RPMRC_OK)
@@ -605,40 +605,6 @@ exit:
     return rc;
 }
 
-static const char * pkgStageString(pkgStage a)
-{
-    switch(a) {
-    case PSM_UNKNOWN:		return "unknown";
-
-    case PSM_PKGINSTALL:	return "  install";
-    case PSM_PKGERASE:		return "    erase";
-    case PSM_PKGCOMMIT:		return "   commit";
-
-    case PSM_INIT:		return "init";
-    case PSM_PRE:		return "pre";
-    case PSM_PROCESS:		return "process";
-    case PSM_POST:		return "post";
-    case PSM_UNDO:		return "undo";
-    case PSM_FINI:		return "fini";
-
-    case PSM_CREATE:		return "create";
-    case PSM_NOTIFY:		return "notify";
-    case PSM_DESTROY:		return "destroy";
-    case PSM_COMMIT:		return "commit";
-
-    case PSM_CHROOT_IN:		return "chrootin";
-    case PSM_CHROOT_OUT:	return "chrootout";
-    case PSM_SCRIPT:		return "script";
-    case PSM_TRIGGERS:		return "triggers";
-    case PSM_IMMED_TRIGGERS:	return "immedtriggers";
-
-    case PSM_RPMDB_ADD:		return "rpmdbadd";
-    case PSM_RPMDB_REMOVE:	return "rpmdbremove";
-
-    default:			return "???";
-    }
-}
-
 rpmpsm rpmpsmUnlink(rpmpsm psm, const char * msg)
 {
     if (psm == NULL) return NULL;
@@ -689,7 +655,7 @@ rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag)
     assert(psm != NULL);
     psm->scriptTag = scriptTag;
     if (scriptTag == RPMTAG_VERIFYSCRIPT) {
-	psm->stepName = "verify";
+	psm->goalName = "verify";
     }
     return rpmpsmStage(psm, PSM_SCRIPT);
 }
@@ -731,7 +697,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_INIT:
 	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files, test = %d\n",
-		psm->stepName, rpmteNEVR(psm->te),
+		psm->goalName, rpmteNEVR(psm->te),
 		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
 
 	/*
@@ -745,7 +711,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    break;
 	}
 
-	if (psm->goal == PSM_PKGINSTALL) {
+	if (psm->goal == PKG_INSTALL) {
 	    rpmdbMatchIterator mi;
 	    Header oh;
 	    int fc = rpmfiFC(fi);
@@ -799,7 +765,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	
 	    rc = RPMRC_OK;
 	}
-	if (psm->goal == PSM_PKGERASE) {
+	if (psm->goal == PKG_ERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
 	}
 	break;
@@ -810,7 +776,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	rc = rpmpsmNext(psm, PSM_CHROOT_IN);
 	if (rc) break;
 
-	if (psm->goal == PSM_PKGINSTALL) {
+	if (psm->goal == PKG_INSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->sense = RPMSENSE_TRIGGERPREIN;
 	    psm->countCorrection = 0;   /* XXX is this correct?!? */
@@ -831,7 +797,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 	}
 
-	if (psm->goal == PSM_PKGERASE) {
+	if (psm->goal == PKG_ERASE) {
 	    psm->scriptTag = RPMTAG_PREUN;
 	    psm->sense = RPMSENSE_TRIGGERUN;
 	    psm->countCorrection = -1;
@@ -853,7 +819,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_PROCESS:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
-	if (psm->goal == PSM_PKGINSTALL) {
+	if (psm->goal == PKG_INSTALL) {
 	    FD_t payload = NULL;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
@@ -910,7 +876,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 	}
-	if (psm->goal == PSM_PKGERASE) {
+	if (psm->goal == PKG_ERASE) {
 	    int fc = rpmfiFC(fi);
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
@@ -943,7 +909,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_POST:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
-	if (psm->goal == PSM_PKGINSTALL) {
+	if (psm->goal == PKG_INSTALL) {
 	    rpm_time_t installTime = (rpm_time_t) time(NULL);
 	    rpmfs fs = rpmteGetFileStates(psm->te);
 	    rpm_count_t fc = rpmfsFC(fs);
@@ -993,7 +959,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		rc = markReplacedFiles(psm);
 
 	}
-	if (psm->goal == PSM_PKGERASE) {
+	if (psm->goal == PKG_ERASE) {
 
 	    psm->scriptTag = RPMTAG_POSTUN;
 	    psm->sense = RPMSENSE_TRIGGERPOSTUN;
@@ -1027,10 +993,10 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
-			psm->stepName, psm->failedFile, cpioStrerror(rc));
+			psm->goalName, psm->failedFile, cpioStrerror(rc));
 	    else
 		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
-			psm->stepName, cpioStrerror(rc));
+			psm->goalName, cpioStrerror(rc));
 
 	    /* XXX notify callback on error. */
 	    psm->what = RPMCALLBACK_CPIO_ERROR;
@@ -1039,7 +1005,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 	}
 
-	if (psm->goal == PSM_PKGERASE) {
+	if (psm->goal == PKG_ERASE) {
 	    if (psm->te != NULL) 
 		rpmteSetHeader(psm->te, NULL);
  	}
@@ -1048,17 +1014,6 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	fi->apath = _free(fi->apath);
 	break;
 
-    case PSM_PKGINSTALL:
-    case PSM_PKGERASE:
-	psm->goal = stage;
-	psm->stepName = pkgStageString(stage);
-
-	rc = rpmpsmNext(psm, PSM_INIT);
-	if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
-	if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
-	if (!rc) rc = rpmpsmNext(psm, PSM_POST);
-	xx = rpmpsmNext(psm, PSM_FINI);
-	break;
     case PSM_PKGCOMMIT:
 	break;
 
@@ -1153,5 +1108,38 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
    }
 
+    return rc;
+}
+
+static const char * pkgGoalString(pkgGoal goal)
+{
+    switch(goal) {
+    case PKG_INSTALL:	return "  install";
+    case PKG_ERASE:	return "    erase";
+    default:		return "???";
+    }
+}
+
+rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (psm) {
+	psm->goal = goal;
+	psm->goalName = pkgGoalString(goal);
+
+	switch (goal) {
+	case PKG_INSTALL:
+	case PKG_ERASE:
+	    rc = rpmpsmNext(psm, PSM_INIT);
+	    if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
+	    if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
+	    if (!rc) rc = rpmpsmNext(psm, PSM_POST);
+	    (void) rpmpsmNext(psm, PSM_FINI);
+	    break;
+	default:
+	    break;
+	}
+    }
     return rc;
 }
