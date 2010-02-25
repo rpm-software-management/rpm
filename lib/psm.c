@@ -63,7 +63,6 @@ struct rpmpsm_s {
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
     const char * goalName;
-    char * rpmio_flags;
     char * failedFile;
     int scriptTag;		/*!< Scriptlet data tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
@@ -670,7 +669,6 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 
     (void) rpmpsmUnlink(psm, RPMDBG_M("rpmpsmFree"));
 
-    free(psm->rpmio_flags);
     memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
     psm = _free(psm);
 
