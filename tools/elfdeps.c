@@ -244,7 +244,7 @@ static int processFile(const char *fn, int dtype)
 	char *dep;
 	bn = bn ? bn + 1 : fn;
 	dep = rstrscat(NULL, bn, marker, NULL);
-	argvAdd(&ei->requires, dep);
+	argvAdd(&ei->provides, dep);
 	rfree(dep);
     }
 
