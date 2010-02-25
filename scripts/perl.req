@@ -39,6 +39,10 @@
 
 # by Ken Estes Mail.com kestes@staff.mail.com
 
+$HAVE_VERSION = 0;
+eval { require version; $HAVE_VERSION = 1; };
+
+
 if ("@ARGV") {
   foreach (@ARGV) {
     process_file($_);
@@ -73,6 +77,18 @@ foreach $module (sort keys %require) {
 exit 0;
 
 
+
+sub add_require {
+  my ($module, $newver) = @_;
+  my $oldver = $require{$module};
+  if ($oldver) {
+    $require{$module} = $newver
+      if ($HAVE_VERSION && $newver && version->new($oldver) < $newver);
+  }
+  else {
+    $require{$module} = $newver;
+  }
+}
 
 sub process_file {
 
@@ -247,18 +263,18 @@ sub process_file {
 
       # use base qw(Foo) dependencies
       if ($statement eq "use" && $module eq "base") {
-        $require{$module} ||= undef;
+        add_require($module, undef);
         if ($version =~ /^qw\s*[(\/]\s*([^)\/]+?)\s*[)\/]/) {
-          $require{$_} ||= undef for split(' ', $1);
+          add_require($_, undef) for split(' ', $1);
         }
         elsif ($version =~ /(["'])([^"']+)\1/) {
-          $require{$2} ||= undef;
+          add_require($2, undef);
         }
         next;
       }
       $version = undef unless $version =~ /^$modver_re$/o;
 
-      $require{$module} ||= $version;
+      add_require($module, $version);
     }
 
   }
