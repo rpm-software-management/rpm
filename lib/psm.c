@@ -22,8 +22,6 @@
 #include "lib/psm.h"
 #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
 #include "lib/rpmte_internal.h"	/* XXX internal apis */
-#include "lib/rpmlead.h"		/* writeLead proto */
-#include "lib/signature.h"		/* signature constants */
 #include "lib/rpmscript.h"
 
 #include "debug.h"
