@@ -12,16 +12,6 @@ extern int _psm_debug;
 
 typedef struct rpmpsm_s * rpmpsm;
 
-/**
- */
-#define	PSM_VERBOSE	0x8000
-#define	PSM_INTERNAL	0x4000
-#define	PSM_SYSCALL	0x2000
-#define	PSM_DEAD	0x1000
-#define	_fv(_a)		((_a) | PSM_VERBOSE)
-#define	_fi(_a)		((_a) | PSM_INTERNAL)
-#define	_fs(_a)		((_a) | (PSM_INTERNAL | PSM_SYSCALL))
-#define	_fd(_a)		((_a) | (PSM_INTERNAL | PSM_DEAD))
 typedef enum pkgStage_e {
     PSM_UNKNOWN		=  0,
     PSM_INIT		=  1,
@@ -45,16 +35,11 @@ typedef enum pkgStage_e {
     PSM_SCRIPT		= 53,
     PSM_TRIGGERS	= 54,
     PSM_IMMED_TRIGGERS	= 55,
-    PSM_RPMIO_FLAGS	= 56,
 
     PSM_RPMDB_ADD	= 98,
     PSM_RPMDB_REMOVE	= 99
 
 } pkgStage;
-#undef	_fv
-#undef	_fi
-#undef	_fs
-#undef	_fd
 
 #ifdef __cplusplus
 extern "C" {
