@@ -79,7 +79,10 @@ sub process_file {
   my ($file) = @_;
   chomp $file;
 
-  open(FILE, "<$file") || return;
+  if (!open(FILE, $file)) {
+    warn("$0: Warning: Could not open file '$file' for reading: $!\n");
+    return;
+  }
 
   while (<FILE>) {
 
