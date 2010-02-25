@@ -319,7 +319,6 @@ static uint64_t countFiles(rpmts ts)
     uint64_t fc = 0;
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
-    rpmfi fi;
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	fc += rpmfiFC(rpmteFI(p));
     pi = rpmtsiFree(pi);
@@ -415,7 +414,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 
     ps = rpmtsProblems(ts);
     fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
     while ((i = rpmfiNext(fi)) >= 0) {
 	rpm_color_t oFColor, FColor;
 	struct fingerPrint_s * fiFps;
