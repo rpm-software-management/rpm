@@ -115,12 +115,12 @@ sub process_file {
     # properly belongs in the over/back section) but people do not
     # read the perldoc.
 
-    if ( (m/^=(head[1-4]|pod|for|item)/) .. (m/^=(cut)/) ) {
-      next;
+    if (/^=(head[1-4]|pod|for|item)/) {
+      /^=cut/ && next while <FILE>;
     }
 
-    if ( (m/^=(over)/) .. (m/^=(back)/) ) {
-      next;
+    if (/^=over/) {
+      /^=back/ && next while <FILE>;
     }
 
     # skip the data section
