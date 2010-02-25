@@ -723,6 +723,15 @@ rpmps rpmteProblems(rpmte te)
     return te ? te->probs : NULL;
 }
 
+const char * rpmteTypeString(rpmte te)
+{
+    switch(rpmteType(te)) {
+    case TR_ADDED:	return _("install");
+    case TR_REMOVED:	return _("erase");
+    default:		return "???";
+    }
+}
+
 rpmfs rpmteGetFileStates(rpmte te) {
     return te->fs;
 }

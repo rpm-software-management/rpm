@@ -1261,15 +1261,6 @@ static int fsmMkdirs(FSM_t fsm)
     return rc;
 }
 
-static const char * rpmteTypeString(rpmte te)
-{
-    switch(rpmteType(te)) {
-    case TR_ADDED:	return " install";
-    case TR_REMOVED:	return "   erase";
-    default:		return "???";
-    }
-}
-
 #define	IS_DEV_LOG(_x)	\
 	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
 	rstreqn((_x), "/dev/log", sizeof("/dev/log")-1) && \

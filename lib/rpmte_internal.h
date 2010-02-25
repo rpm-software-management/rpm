@@ -68,6 +68,9 @@ RPM_GNUC_INTERNAL
 rpmps rpmteProblems(rpmte te);
 
 RPM_GNUC_INTERNAL
+const char * rpmteTypeString(rpmte te);
+
+RPM_GNUC_INTERNAL
 tsortInfo rpmteTSI(rpmte te);
 
 RPM_GNUC_INTERNAL
