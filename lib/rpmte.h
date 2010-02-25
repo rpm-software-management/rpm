@@ -226,9 +226,11 @@ const char * rpmteNEVRA(rpmte te);
 fnpyKey rpmteKey(rpmte te);
 
 /** \ingroup rpmte
- * Return failed status of transaction element.
+ * Return failure status of transaction element.
+ * If the element itself failed, this is 1, larger count means one of
+ * it's parents failed.
  * @param te		transaction element
- * @return		1 if transaction element (or its parents) failed
+ * @return		number of failures for this transaction element
  */
 int rpmteFailed(rpmte te);
 
