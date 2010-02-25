@@ -9,16 +9,14 @@
 
 #include <rpm/rpmlib.h>		/* rpmvercmp and others */
 #include <rpm/rpmmacro.h>
-#include <rpm/rpmurl.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
-#include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
+#include <rpm/rpmfileutil.h>
 #include <rpm/rpmdb.h>		/* XXX for db_chrootDone */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
 
-#include "rpmio/rpmlua.h"
 #include "lib/cpio.h"
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/psm.h"
@@ -26,6 +24,7 @@
 #include "lib/rpmte_internal.h"	/* XXX internal apis */
 #include "lib/rpmlead.h"		/* writeLead proto */
 #include "lib/signature.h"		/* signature constants */
+#include "lib/rpmscript.h"
 
 #include "debug.h"
 
@@ -350,32 +349,6 @@ exit:
     return rpmrc;
 }
 
-static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
-
-/**
- * Return scriptlet name from tag.
- * @param tag		scriptlet tag
- * @return		name of scriptlet
- */
-static const char * tag2sln(rpmTag tag)
-{
-    switch ((rpm_tag_t) tag) {
-    case RPMTAG_PRETRANS:       return "%pretrans";
-    case RPMTAG_TRIGGERPREIN:   return "%triggerprein";
-    case RPMTAG_PREIN:          return "%pre";
-    case RPMTAG_POSTIN:         return "%post";
-    case RPMTAG_TRIGGERIN:      return "%triggerin";
-    case RPMTAG_TRIGGERUN:      return "%triggerun";
-    case RPMTAG_PREUN:          return "%preun";
-    case RPMTAG_POSTUN:         return "%postun";
-    case RPMTAG_POSTTRANS:      return "%posttrans";
-    case RPMTAG_TRIGGERPOSTUN:  return "%triggerpostun";
-    case RPMTAG_VERIFYSCRIPT:   return "%verify";
-    default: break;
-    }
-    return "%unknownscript";
-}
-
 static rpmTag triggertag(rpmsenseFlags sense) 
 {
     rpmTag tag = RPMTAG_NOT_FOUND;
@@ -399,295 +372,7 @@ static rpmTag triggertag(rpmsenseFlags sense)
 }
 
 /**
- * Run internal Lua script.
- */
-static rpmRC runLuaScript(rpmts ts, ARGV_const_t prefixes,
-		   const char *sname, rpmlogLvl lvl,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2)
-{
-    rpmRC rc = RPMRC_FAIL;
-#ifdef WITH_LUA
-    int rootFd = -1;
-    int xx;
-    ARGV_t argv = argvp ? *argvp : NULL;
-    rpmlua lua = NULL; /* Global state. */
-    rpmluav var;
-
-    rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
-    if (!rpmtsChrootDone(ts)) {
-	const char *rootDir = rpmtsRootDir(ts);
-	xx = chdir("/");
-	rootFd = open(".", O_RDONLY, 0);
-	if (rootFd >= 0) {
-	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
-		xx = chroot(rootDir);
-	    xx = rpmtsSetChrootDone(ts, 1);
-	}
-    }
-
-    /* Create arg variable */
-    rpmluaPushTable(lua, "arg");
-    var = rpmluavNew();
-    rpmluavSetListMode(var, 1);
-    if (argv) {
-	char **p;
-	for (p = argv; *p; p++) {
-	    rpmluavSetValue(var, RPMLUAV_STRING, *p);
-	    rpmluaSetVar(lua, var);
-	}
-    }
-    if (arg1 >= 0) {
-	rpmluavSetValueNum(var, arg1);
-	rpmluaSetVar(lua, var);
-    }
-    if (arg2 >= 0) {
-	rpmluavSetValueNum(var, arg2);
-	rpmluaSetVar(lua, var);
-    }
-    var = rpmluavFree(var);
-    rpmluaPop(lua);
-
-    if (rpmluaRunScript(lua, script, sname) == 0) {
-	rc = RPMRC_OK;
-    }
-
-    rpmluaDelVar(lua, "arg");
-
-    if (rootFd >= 0) {
-	const char *rootDir = rpmtsRootDir(ts);
-	xx = fchdir(rootFd);
-	xx = close(rootFd);
-	if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
-	    xx = chroot(".");
-	xx = rpmtsSetChrootDone(ts, 0);
-    }
-#else
-    rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
-#endif
-
-    return rc;
-}
-
-static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
-			FD_t scriptFd, FD_t out)
-{
-    const char * rootDir;
-    int pipes[2];
-    int flag;
-    int fdno;
-    int xx;
-    int open_max;
-
-    (void) signal(SIGPIPE, SIG_DFL);
-    pipes[0] = pipes[1] = 0;
-    /* make stdin inaccessible */
-    xx = pipe(pipes);
-    xx = close(pipes[1]);
-    xx = dup2(pipes[0], STDIN_FILENO);
-    xx = close(pipes[0]);
-
-    /* XXX Force FD_CLOEXEC on all inherited fdno's. */
-    open_max = sysconf(_SC_OPEN_MAX);
-    if (open_max == -1) {
-	open_max = 1024;
-    }
-    for (fdno = 3; fdno < open_max; fdno++) {
-	flag = fcntl(fdno, F_GETFD);
-	if (flag == -1 || (flag & FD_CLOEXEC))
-	    continue;
-	xx = fcntl(fdno, F_SETFD, FD_CLOEXEC);
-	/* XXX W2DO? debug msg for inheirited fdno w/o FD_CLOEXEC */
-    }
-
-    if (scriptFd != NULL) {
-	int sfdno = Fileno(scriptFd);
-	int ofdno = Fileno(out);
-	if (sfdno != STDERR_FILENO)
-	    xx = dup2(sfdno, STDERR_FILENO);
-	if (ofdno != STDOUT_FILENO)
-	    xx = dup2(ofdno, STDOUT_FILENO);
-	/* make sure we don't close stdin/stderr/stdout by mistake! */
-	if (ofdno > STDERR_FILENO && ofdno != sfdno)
-	    xx = Fclose (out);
-	if (sfdno > STDERR_FILENO && ofdno != sfdno)
-	    xx = Fclose (scriptFd);
-    }
-
-    {   char *ipath = rpmExpand("%{_install_script_path}", NULL);
-	const char *path = SCRIPT_PATH;
-
-	if (ipath && ipath[5] != '%')
-	    path = ipath;
-
-	xx = setenv("PATH", path, 1);
-	ipath = _free(ipath);
-    }
-
-    for (ARGV_const_t pf = prefixes; pf && *pf; pf++) {
-	char *name = NULL;
-	int num = (pf - prefixes);
-
-	rasprintf(&name, "RPM_INSTALL_PREFIX%d", num);
-	setenv(name, *pf, 1);
-	free(name);
-
-	/* scripts might still be using the old style prefix */
-	if (num == 0) {
-	    setenv("RPM_INSTALL_PREFIX", *pf, 1);
-	}
-    }
-	
-    rootDir = rpmtsRootDir(ts);
-    if (rootDir  != NULL) {	/* XXX can't happen */
-	if (!rpmtsChrootDone(ts) &&
-	    !(rootDir[0] == '/' && rootDir[1] == '\0'))
-	{
-	    xx = chroot(rootDir);
-	}
-	xx = chdir("/");
-
-	/* XXX Don't mtrace into children. */
-	unsetenv("MALLOC_CHECK_");
-
-	/* Permit libselinux to do the scriptlet exec. */
-	if (rpmtsSELinuxEnabled(ts) == 1) {	
-	    xx = rpm_execcon(0, argv[0], argv, environ);
-	}
-
-	if (xx == 0) {
-	    xx = execv(argv[0], argv);
-	}
-    }
-    _exit(127); /* exit 127 for compatibility with bash(1) */
-}
-
-/**
- * Run an external script.
- */
-static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
-		   const char *sname, rpmlogLvl lvl,
-		   ARGV_t * argvp, const char *script, int arg1, int arg2)
-{
-    FD_t scriptFd;
-    FD_t out = NULL;
-    char * fn = NULL;
-    int xx;
-    rpmRC rc = RPMRC_FAIL;
-    struct rpmsqElem sq;
-
-    memset(&sq, 0, sizeof(sq));
-    sq.reaper = 1;
-
-    rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
-
-    if (argvCount(*argvp) == 0) {
-	argvAdd(argvp, "/bin/sh");
-    }
-
-    if (script) {
-	const char * rootDir = rpmtsRootDir(ts);
-	FD_t fd;
-
-	fd = rpmMkTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
-	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("Couldn't create temporary file for %s: %s\n"),
-		   sname, strerror(errno));
-	    goto exit;
-	}
-
-	if (rpmIsDebug() &&
-	    (rstreq(*argvp[0], "/bin/sh") || rstreq(*argvp[0], "/bin/bash")))
-	{
-	    static const char set_x[] = "set -x\n";
-	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
-	}
-
-	xx = Fwrite(script, sizeof(script[0]), strlen(script), fd);
-	xx = Fclose(fd);
-
-	{   const char * sn = fn;
-	    if (!rpmtsChrootDone(ts) && rootDir != NULL &&
-		!(rootDir[0] == '/' && rootDir[1] == '\0'))
-	    {
-		sn += strlen(rootDir)-1;
-	    }
-	    argvAdd(argvp, sn);
-	}
-
-	if (arg1 >= 0) {
-	    argvAddNum(argvp, arg1);
-	}
-	if (arg2 >= 0) {
-	    argvAddNum(argvp, arg2);
-	}
-    }
-
-    scriptFd = rpmtsScriptFd(ts);
-    if (scriptFd != NULL) {
-	if (rpmIsVerbose()) {
-	    out = fdDup(Fileno(scriptFd));
-	} else {
-	    out = Fopen("/dev/null", "w.fdio");
-	    if (Ferror(out)) {
-		out = fdDup(Fileno(scriptFd));
-	    }
-	}
-    } else {
-	out = fdDup(STDOUT_FILENO);
-    }
-    if (out == NULL) { 
-	rpmlog(RPMLOG_ERR, _("Couldn't duplicate file descriptor: %s: %s\n"),
-	       sname, strerror(errno));
-	goto exit;
-    }
-
-    xx = rpmsqFork(&sq);
-    if (sq.child == 0) {
-	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
-	       sname, *argvp[0], (unsigned)getpid());
-	doScriptExec(ts, *argvp, prefixes, scriptFd, out);
-    }
-
-    if (sq.child == (pid_t)-1) {
-	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sname, strerror(errno));
-	goto exit;
-    }
-
-    rpmsqWait(&sq);
-
-    rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
-	   sname, (unsigned)sq.child, (unsigned)sq.reaped, sq.status);
-
-    if (sq.reaped < 0) {
-	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sname, sq.child, sq.reaped, strerror(errno));
-    } else if (!WIFEXITED(sq.status) || WEXITSTATUS(sq.status)) {
-      	if (WIFSIGNALED(sq.status)) {
-	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
-                   sname, WTERMSIG(sq.status));
-	} else {
-	    rpmlog(lvl, _("%s scriptlet failed, exit status %d\n"),
-		   sname, WEXITSTATUS(sq.status));
-	}
-    } else {
-	/* if we get this far we're clear */
-	rc = RPMRC_OK;
-    }
-
-exit:
-    if (out)
-	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
-
-    if (script) {
-	if (!rpmIsDebug())
-	    xx = unlink(fn);
-	fn = _free(fn);
-    }
-    return rc;
-}
-
-/**
- * Run scriptlet with args.
+ * Run a scriptlet with args.
  *
  * Run a script with an interpreter. If the interpreter is not specified,
  * /bin/sh will be used. If the interpreter is /bin/sh, then the args from
@@ -695,89 +380,50 @@ exit:
  *
  * @param psm		package state machine data
  * @param prefixes	install prefixes
- * @param stag		scriptlet section tag
- * @param argvp		ARGV_t pointer to args from header, *argvp[0] is the 
- * 			interpreter to use. Pointer as we might need to 
- * 			modify via argvAdd()
  * @param script	scriptlet from header
  * @param arg1		no. instances of package installed after scriptlet exec
  *			(-1 is no arg)
  * @param arg2		ditto, but for the target package
  * @return		0 on success
  */
-static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, rpmTag stag, 
-		       ARGV_t * argvp, const char * script, int arg1, int arg2)
+static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, 
+		       rpmScript script, int arg1, int arg2)
 {
-    rpmRC rc = RPMRC_FAIL; /* assume failure */
-    char *sname = NULL; 
-    int warn_only = (stag != RPMTAG_PREIN && stag != RPMTAG_PREUN);
-    rpmlogLvl loglvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
-
-    if (*argvp == NULL && script == NULL)
-	return RPMRC_OK;
-
-    rasprintf(&sname, "%s(%s)", tag2sln(stag), rpmteNEVRA(psm->te));
-
-    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
-    if (*argvp[0] && rstreq(*argvp[0], "<lua>")) {
-	rc = runLuaScript(psm->ts, prefixes, sname, loglvl, argvp, script, arg1, arg2);
-    } else {
-	rc = runExtScript(psm->ts, prefixes, sname, loglvl, argvp, script, arg1, arg2);
-    }
-    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+    rpmRC rc = RPMRC_OK;
+    int warn_only =(script->tag != RPMTAG_PREIN && script->tag != RPMTAG_PREUN);
 
     /* 
      * Notify callback for all errors. "total" abused for warning/error,
      * rc only reflects whether the condition prevented install/erase 
      * (which is only happens with %prein and %preun scriptlets) or not.
      */
+    rc = rpmScriptRun(script, arg1, arg2, psm->ts, prefixes, warn_only);
     if (rc != RPMRC_OK) {
 	if (warn_only) {
 	    rc = RPMRC_OK;
 	}
-	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
+	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, script->tag, rc);
     }
 
-    free(sname);
     return rc;
 }
 
-/**
- * Retrieve and run scriptlet from header.
- * @param psm		package state machine data
- * @return		rpmRC return code
- */
 static rpmRC runInstScript(rpmpsm psm)
 {
     rpmRC rc = RPMRC_OK;
-    ARGV_t argv;
-    struct rpmtd_s script, prog, pfx;
-    const char *str;
+    struct rpmtd_s pfx;
     Header h = rpmteHeader(psm->te);
+    rpmScript script = rpmScriptFromTag(h, psm->scriptTag);
 
-    if (h == NULL)	/* XXX can't happen */
-	return RPMRC_FAIL;
-
-    headerGet(h, psm->scriptTag, &script, HEADERGET_DEFAULT);
-    headerGet(h, psm->progTag, &prog, HEADERGET_DEFAULT);
-    if (rpmtdCount(&script) == 0 && rpmtdCount(&prog) == 0)
-	goto exit;
-
-    argv = argvNew();
-    while ((str = rpmtdNextString(&prog))) {
-	argvAdd(&argv, str);
+    if (script) {
+	headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
+	rc = runScript(psm, pfx.data, script, psm->scriptArg, -1);
+	rpmtdFreeData(&pfx);
     }
 
-    headerGet(h, RPMTAG_INSTPREFIXES, &pfx, HEADERGET_ALLOC|HEADERGET_ARGV);
-    rc = runScript(psm, pfx.data, psm->scriptTag, &argv,
-		   rpmtdGetString(&script), psm->scriptArg, -1);
-    rpmtdFreeData(&pfx);
-    argvFree(argv);
-
-exit:
-    rpmtdFreeData(&script);
-    rpmtdFreeData(&prog);
+    rpmScriptFree(script);
     headerFree(h);
+
     return rc;
 }
 
@@ -830,24 +476,29 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    continue;
 	} else {
 	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
-	    const char ** triggerScripts = tscripts.data;
-	    const char ** triggerProgs = tprogs.data;
+	    char ** triggerScripts = tscripts.data;
+	    char ** triggerProgs = tprogs.data;
 	    uint32_t * triggerIndices = tindexes.data;
+	    uint32_t ix = triggerIndices[i];
 
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
 	    } else {
 		arg1 += psm->countCorrection;
-		int ix = triggerIndices[i];
+
 		if (triggersAlreadyRun == NULL || triggersAlreadyRun[ix] == 0) {
-		    ARGV_t argv = argvNew();
-		    argvAdd(&argv, *(triggerProgs + ix));
-		    rc = runScript(psm, pfx.data, triggertag(psm->sense), 
-				&argv, triggerScripts[ix], arg1, arg2);
+		    /* construct script manually, this must not be freed */
+		    char *args[2] = { triggerProgs[ix], NULL };
+		    struct rpmScript_s script = {
+			.tag = triggertag(psm->sense),
+			.body = triggerScripts[ix],
+			.args = args
+		    };
+			
+		    rc = runScript(psm, pfx.data, &script, arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
 			triggersAlreadyRun[ix] = 1;
-		    argvFree(argv);
 		}
 	    }
 	}
@@ -1179,13 +830,7 @@ rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOPRE)) {
 		rc = rpmpsmNext(psm, PSM_SCRIPT);
-		if (rc != RPMRC_OK) {
-		    rpmlog(RPMLOG_ERR,
-			_("%s: %s scriptlet failed (%d), skipping %s\n"),
-			psm->stepName, tag2sln(psm->scriptTag), rc,
-			rpmteNEVR(psm->te));
-		    break;
-		}
+		if (rc) break;
 	    }
 	}
 
