@@ -101,6 +101,7 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
 [1],
 [],
 [error: unpacking of archive failed on file /usr/share/symlinktest: cpio: rename failed - Is a directory
+error: symlinktest-1.0-2.noarch: install failed
 ])
 AT_CLEANUP
 

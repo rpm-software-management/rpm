@@ -1476,6 +1476,8 @@ static int rpmtsProcess(rpmts ts)
 	    rpmteClose(p, ts, 1);
 	}
 	if (failed) {
+	    rpmlog(RPMLOG_ERR, _("%s: %s failed\n"),
+		   rpmteNEVRA(p), rpmteTypeString(p));
 	    rpmteMarkFailed(p, ts);
 	    rc++;
 	}
