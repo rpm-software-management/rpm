@@ -31,8 +31,33 @@
 #define	_PSM_DEBUG	0
 int _psm_debug = _PSM_DEBUG;
 
-/**
- */
+typedef enum pkgStage_e {
+    PSM_UNKNOWN		=  0,
+    PSM_INIT		=  1,
+    PSM_PRE		=  2,
+    PSM_PROCESS		=  3,
+    PSM_POST		=  4,
+    PSM_UNDO		=  5,
+    PSM_FINI		=  6,
+
+    PSM_PKGCOMMIT	= 10,
+
+    PSM_CREATE		= 17,
+    PSM_NOTIFY		= 22,
+    PSM_DESTROY		= 23,
+    PSM_COMMIT		= 25,
+
+    PSM_CHROOT_IN	= 51,
+    PSM_CHROOT_OUT	= 52,
+    PSM_SCRIPT		= 53,
+    PSM_TRIGGERS	= 54,
+    PSM_IMMED_TRIGGERS	= 55,
+
+    PSM_RPMDB_ADD	= 98,
+    PSM_RPMDB_REMOVE	= 99
+
+} pkgStage;
+
 struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
@@ -55,6 +80,8 @@ struct rpmpsm_s {
 
     int nrefs;			/*!< Reference count. */
 };
+
+static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 
 /**
  * Macros to be defined from per-header tag values.
@@ -650,16 +677,6 @@ rpmpsm rpmpsmFree(rpmpsm psm)
     return NULL;
 }
 
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag)
-{
-    assert(psm != NULL);
-    psm->scriptTag = scriptTag;
-    if (scriptTag == RPMTAG_VERIFYSCRIPT) {
-	psm->goalName = "verify";
-    }
-    return rpmpsmStage(psm, PSM_SCRIPT);
-}
-
 rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
@@ -683,7 +700,7 @@ static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
     return rpmpsmStage(psm, psm->nstage);
 }
 
-rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
+static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
     rpm_color_t tscolor = rpmtsColor(ts);
@@ -1116,7 +1133,10 @@ static const char * pkgGoalString(pkgGoal goal)
     switch(goal) {
     case PKG_INSTALL:	return "  install";
     case PKG_ERASE:	return "    erase";
-    default:		return "???";
+    case PKG_VERIFY:	return "   verify";
+    case PKG_PRETRANS:	return " pretrans";
+    case PKG_POSTTRANS:	return "posttrans";
+    default:		return "unknown";
     }
 }
 
@@ -1136,6 +1156,12 @@ rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal)
 	    if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
 	    if (!rc) rc = rpmpsmNext(psm, PSM_POST);
 	    (void) rpmpsmNext(psm, PSM_FINI);
+	    break;
+	case PKG_PRETRANS:
+	case PKG_POSTTRANS:
+	case PKG_VERIFY:
+	    psm->scriptTag = goal;
+	    rc = rpmpsmStage(psm, PSM_SCRIPT);
 	    break;
 	default:
 	    break;

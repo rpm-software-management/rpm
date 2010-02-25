@@ -1197,7 +1197,8 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 
     	if (rpmteOpen(p, ts, 0)) {
 	    psm = rpmpsmNew(ts, p);
-	    xx = rpmpsmScriptStage(psm, stag);
+	    /* XXX should %pretrans failure fail the package install? */
+	    xx = rpmpsmRun(psm, stag);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts, 0);
 	}

@@ -17,34 +17,11 @@ typedef enum pkgGoal_e {
     /* permit using rpmteType() for install + erase goals */
     PKG_INSTALL		= TR_ADDED,
     PKG_ERASE		= TR_REMOVED,
+    /* permit using scriptname for these for now... */
+    PKG_VERIFY		= RPMTAG_VERIFYSCRIPT,
+    PKG_PRETRANS	= RPMTAG_PRETRANS,
+    PKG_POSTTRANS	= RPMTAG_POSTTRANS,
 } pkgGoal;
-
-typedef enum pkgStage_e {
-    PSM_UNKNOWN		=  0,
-    PSM_INIT		=  1,
-    PSM_PRE		=  2,
-    PSM_PROCESS		=  3,
-    PSM_POST		=  4,
-    PSM_UNDO		=  5,
-    PSM_FINI		=  6,
-
-    PSM_PKGCOMMIT	= 10,
-
-    PSM_CREATE		= 17,
-    PSM_NOTIFY		= 22,
-    PSM_DESTROY		= 23,
-    PSM_COMMIT		= 25,
-
-    PSM_CHROOT_IN	= 51,
-    PSM_CHROOT_OUT	= 52,
-    PSM_SCRIPT		= 53,
-    PSM_TRIGGERS	= 54,
-    PSM_IMMED_TRIGGERS	= 55,
-
-    PSM_RPMDB_ADD	= 98,
-    PSM_RPMDB_REMOVE	= 99
-
-} pkgStage;
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,27 +63,14 @@ rpmpsm rpmpsmFree(rpmpsm psm);
 RPM_GNUC_INTERNAL
 rpmpsm rpmpsmNew(rpmts ts, rpmte te);
 
-RPM_GNUC_INTERNAL
-rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal);
-
 /**
  * Package state machine driver.
  * @param psm		package state machine data
- * @param stage		next stage
+ * @param goal		state machine goal
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
-#define	rpmpsmUNSAFE	rpmpsmSTAGE
-
-/**
- * Run rpmpsmStage(PSM_SCRIPT) for scriptTag
- * @param psm		package state machine data
- * @param scriptTag	scriptlet tag to execute
- * @return 		0 on success
- */
-RPM_GNUC_INTERNAL
-rpmRC rpmpsmScriptStage(rpmpsm psm, rpmTag scriptTag);
+rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal);
 
 #ifdef __cplusplus
 }
