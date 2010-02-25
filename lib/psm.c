@@ -1018,10 +1018,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    xx = rpmpsmNext(psm, PSM_NOTIFY);
 	}
 
-	if (psm->goal == PKG_ERASE) {
-	    if (psm->te != NULL) 
-		rpmteSetHeader(psm->te, NULL);
- 	}
 	psm->failedFile = _free(psm->failedFile);
 
 	fi->apath = _free(fi->apath);
