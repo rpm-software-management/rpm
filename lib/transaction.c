@@ -618,34 +618,20 @@ assert(otherFi != NULL);
  * @param p		current transaction element
  * @param h		installed header
  * @param ps		problem set
- * @return		0 if not newer, 1 if okay
  */
-static int ensureOlder(const rpmte p, const Header h, rpmps ps)
+static void ensureOlder(const rpmte p, const Header h, rpmps ps)
 {
     rpmsenseFlags reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     rpmds req;
-    int rc;
-
-    if (p == NULL || h == NULL)
-	return 1;
 
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), rpmteEVR(p), reqFlags);
-    rc = rpmdsNVRMatchesDep(h, req, _rpmds_nopromote);
-    req = rpmdsFree(req);
-
-    if (rc == 0) {
+    if (rpmdsNVRMatchesDep(h, req, _rpmds_nopromote) == 0) {
 	char * altNEVR = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmpsAppend(ps, RPMPROB_OLDPACKAGE,
-		rpmteNEVRA(p), rpmteKey(p),
-		NULL, NULL,
-		altNEVR,
-		0);
-	altNEVR = _free(altNEVR);
-	rc = 1;
-    } else
-	rc = 0;
-
-    return rc;
+	rpmpsAppend(ps, RPMPROB_OLDPACKAGE, rpmteNEVRA(p), rpmteKey(p),
+		    NULL, NULL, altNEVR, 0);
+	free(altNEVR);
+    }
+    rpmdsFree(req);
 }
 
 /**
