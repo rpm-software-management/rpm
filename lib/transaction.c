@@ -1191,8 +1191,8 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	/* Skip failed elements & those without pre/posttrans */
-	if (!rpmteHaveTransScript(p, stag) || rpmteFailed(p))
+	/* Skip elements without pre/posttrans */
+	if (!rpmteHaveTransScript(p, stag))
 	    continue;
 
     	if (rpmteOpen(p, ts, 0)) {
@@ -1442,14 +1442,6 @@ static int rpmtsProcess(rpmts ts)
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	if (rpmteFailed(p)) {
-	    /* XXX this should be a warning, need a better message though */
-	    rpmlog(RPMLOG_DEBUG, "element %s marked as failed, skipping\n",
-					rpmteNEVRA(p));
-	    rc++;
-	    continue;
-	}
-	
 	if (rpmteOpen(p, ts, 1)) {
 	    rpmpsm psm = NULL;
 	    pkgStage stage = PSM_UNKNOWN;
@@ -1470,9 +1462,9 @@ static int rpmtsProcess(rpmts ts)
 	    rpmteClose(p, ts, 1);
 	}
 	if (failed) {
-	    rpmlog(RPMLOG_ERR, _("%s: %s failed\n"),
-		   rpmteNEVRA(p), rpmteTypeString(p));
-	    rpmteMarkFailed(p, ts);
+	    int fails = rpmteMarkFailed(p, ts);
+	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
+		   rpmteTypeString(p), fails > 1 ? _("skipped") : _("failed"));
 	    rc++;
 	}
 	(void) rpmdbSync(rpmtsGetRdb(ts));

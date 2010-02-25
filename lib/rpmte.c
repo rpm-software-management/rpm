@@ -623,7 +623,7 @@ int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 {
     Header h = NULL;
     unsigned int instance;
-    if (te == NULL || ts == NULL)
+    if (te == NULL || ts == NULL || rpmteFailed(te))
 	goto exit;
 
     instance = rpmteDBInstance(te);
