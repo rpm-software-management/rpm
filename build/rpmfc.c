@@ -736,7 +736,7 @@ static int rpmfcAttrDeps(rpmfc fc, const char *attr)
 	    types |= DEP_REQ;
     } else if (rstreq(attr, "perl")) {
 	if (hasAttr(fattrs, "module"))
-	    types |= (DEP_PROV|DEP_PROV);
+	    types |= (DEP_REQ|DEP_PROV);
 	if (is_executable)
 	    types |= DEP_REQ;
     } else if (rstreq(attr, "mono")) {
