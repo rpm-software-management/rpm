@@ -259,15 +259,12 @@ static void rpmtsUpdateDSIrpmDBSize(const rpmte p,
 
 static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 {
-    rpmDiskSpaceInfo dsi;
+    rpmDiskSpaceInfo dsi = ts->dsi;
     rpmps ps;
-    int fc;
 
-    dsi = ts->dsi;
     if (dsi == NULL || !dsi->bsize)
 	return;
-    fc = rpmfiFC(rpmteFI(te));
-    if (fc <= 0)
+    if (rpmfiFC(rpmteFI(te)) <= 0)
 	return;
 
     ps = rpmtsProblems(ts);
