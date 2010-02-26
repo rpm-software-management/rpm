@@ -1137,17 +1137,23 @@ rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal)
     rpmRC rc = RPMRC_FAIL;
 
     if (psm) {
+	rpmtsOpX op;
 	psm->goal = goal;
 	psm->goalName = pkgGoalString(goal);
 
 	switch (goal) {
 	case PKG_INSTALL:
 	case PKG_ERASE:
+	    op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
+	    rpmswEnter(rpmtsOp(psm->ts, op), 0);
+
 	    rc = rpmpsmNext(psm, PSM_INIT);
 	    if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
 	    if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
 	    if (!rc) rc = rpmpsmNext(psm, PSM_POST);
 	    (void) rpmpsmNext(psm, PSM_FINI);
+
+	    rpmswExit(rpmtsOp(psm->ts, op), 0);
 	    break;
 	case PKG_PRETRANS:
 	case PKG_POSTTRANS:

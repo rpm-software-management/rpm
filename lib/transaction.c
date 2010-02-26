@@ -1393,17 +1393,13 @@ static int rpmtsProcess(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	int failed = 1;
-	rpmElementType tetype = rpmteType(p);
-	rpmtsOpX op = (tetype == TR_ADDED) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	if (rpmteOpen(p, ts, 1)) {
 	    rpmpsm psm = rpmpsmNew(ts, p);
-	    (void) rpmswEnter(rpmtsOp(ts, op), 0);
 	    failed = rpmpsmRun(psm, rpmteType(p));
-	    (void) rpmswExit(rpmtsOp(ts, op), 0);
 	    psm = rpmpsmFree(psm);
 	    rpmteClose(p, ts, 1);
 	}
