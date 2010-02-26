@@ -11,16 +11,13 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
-#include <rpm/argv.h>
 
-#include "lib/rpmdb_internal.h"	/* XXX for dbiIndexSetCount */
 #include "lib/fprint.h"
 #include "lib/psm.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"
-#include "lib/cpio.h"
 #include "rpmio/rpmhook.h"
 
 /* XXX FIXME: merge with existing (broken?) tests in system.h */
