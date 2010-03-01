@@ -109,7 +109,6 @@ typedef struct FileList_s {
     int devminor;
     
     int isDir;
-    int inFtw;
     rpmfileAttrs currentFlags;
     specdFlags currentSpecdFlags;
     rpmVerifyFlags currentVerifyFlags;
@@ -1527,7 +1526,6 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
     int myFtsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
     int rc = RPMRC_FAIL;
 
-    fl->inFtw = 1;  /* Flag to indicate file has buildRoot prefixed */
     fl->isDir = 1;  /* Keep it from following myftw() again         */
 
     ftsSet[0] = (char *) diskPath;
@@ -1563,7 +1561,6 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
     (void) Fts_close(ftsp);
 
     fl->isDir = 0;
-    fl->inFtw = 0;
 
     return rc;
 }
@@ -1778,7 +1775,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     fl.isSpecialDoc = 0;
 
     fl.isDir = 0;
-    fl.inFtw = 0;
     fl.currentFlags = 0;
     fl.currentVerifyFlags = 0;
     
@@ -1825,7 +1821,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	
 	/* Reset for a new line in %files */
 	fl.isDir = 0;
-	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
 	fl.currentSpecdFlags = ((unsigned)fl.defSpecdFlags) >> 8;
@@ -1894,7 +1889,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
 	/* Reset for %doc */
 	fl.isDir = 0;
-	fl.inFtw = 0;
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 
