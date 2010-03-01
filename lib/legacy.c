@@ -187,33 +187,6 @@ exit:
 
 static void legacyRetrofit(Header h)
 {
-    struct rpmtd_s dprefix;
-
-    /*
-     * We don't use these entries (and rpm >= 2 never has) and they are
-     * pretty misleading. Let's just get rid of them so they don't confuse
-     * anyone.
-     */
-    if (headerIsEntry(h, RPMTAG_FILEUSERNAME))
-	(void) headerDel(h, RPMTAG_FILEUIDS);
-    if (headerIsEntry(h, RPMTAG_FILEGROUPNAME))
-	(void) headerDel(h, RPMTAG_FILEGIDS);
-
-    /*
-     * We switched the way we do relocatable packages. We fix some of
-     * it up here, though the install code still has to be a bit 
-     * careful. This fixup makes queries give the new values though,
-     * which is quite handy.
-     */
-    if (headerGet(h, RPMTAG_DEFAULTPREFIX, &dprefix, HEADERGET_MINMEM)) {
-	const char *prefix = rpmtdGetString(&dprefix);
-	char * nprefix = stripTrailingChar(xstrdup(prefix), '/');
-	
-	headerPutString(h, RPMTAG_PREFIXES, nprefix);
-	free(nprefix);
-	rpmtdFreeData(&dprefix);
-    }
-
     /*
      * The file list was moved to a more compressed format which not
      * only saves memory (nice), but gives fingerprinting a nice, fat
