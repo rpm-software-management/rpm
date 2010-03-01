@@ -96,7 +96,6 @@ static StringBuf check_fileList = NULL;
  */
 typedef struct FileList_s {
     char * buildRoot;
-    char * prefix;
 
     int fileCount;
     int processingFailed;
@@ -1082,8 +1081,6 @@ static void genCpioListAndHeader(FileList fl,
     /* Generate the header. */
     if (! isSrc) {
 	skipLen = 1;
-	if (fl->prefix)
-	    skipLen += strlen(fl->prefix);
     }
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
@@ -1368,22 +1365,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     /* XXX make sure '/' can be packaged also */
     if (*cpioPath == '\0')
 	cpioPath = "/";
-
-    /* If we are using a prefix, validate the file */
-    if (!fl->inFtw && fl->prefix) {
-	const char *prefixPtr = fl->prefix;
-
-	while (*prefixPtr && *cpioPath && (*cpioPath == *prefixPtr)) {
-	    prefixPtr++;
-	    cpioPath++;
-	}
-	if (*prefixPtr || (*cpioPath && *cpioPath != '/')) {
-	    rpmlog(RPMLOG_ERR, _("File doesn't match prefix (%s): %s\n"),
-		     fl->prefix, cpioPath);
-	    fl->processingFailed = 1;
-	    return RPMRC_FAIL;
-	}
-    }
 
     if (statp == NULL) {
 	time_t now = time(NULL);
@@ -1790,8 +1771,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
 
-    fl.prefix = headerGetAsString(pkg->header, RPMTAG_DEFAULTPREFIX);
-
     fl.fileCount = 0;
     fl.processingFailed = 0;
 
@@ -1958,7 +1937,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     
 exit:
     fl.buildRoot = _free(fl.buildRoot);
-    fl.prefix = _free(fl.prefix);
 
     freeAttrRec(&fl.cur_ar);
     freeAttrRec(&fl.def_ar);
@@ -2111,7 +2089,6 @@ int processSourceFiles(rpmSpec spec)
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
-    fl.prefix = NULL;
     fl.buildRoot = NULL;
 
     s = getStringBuf(sourceFiles);
