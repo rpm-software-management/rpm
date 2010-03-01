@@ -756,17 +756,9 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 	    if (fc <= 0)				break;
 	
-	    /*
-	     * Old format relocatable packages need the entire default
-	     * prefix stripped to form the cpio list, while all other packages
-	     * need the leading / stripped.
-	     */
 	    {   struct rpmtd_s filenames;
 		rpmTag ftag = RPMTAG_FILENAMES;
 		Header h = rpmteHeader(psm->te);
-		const char *p = headerGetString(h, RPMTAG_DEFAULTPREFIX);
-
-		fi->striplen = p ? strlen(p) + 1 : 1;
 	
 		if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 		    ftag = RPMTAG_ORIGFILENAMES;

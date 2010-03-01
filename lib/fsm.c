@@ -874,7 +874,8 @@ static int writeFile(FSM_t fsm, int writeData)
 				   fsm->dirName, fsm->baseName, NULL);
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
-	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + fi->striplen : 
+	int striplen = 1; /* strip leading / from archive paths */
+	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] + striplen : 
 					 rpmfiBNIndex(fi, fsm->ix)));
     }
 
