@@ -727,7 +727,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PKG_INSTALL) {
 	    rpmdbMatchIterator mi;
 	    Header oh;
-	    int fc = rpmfiFC(fi);
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
@@ -754,9 +753,9 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rc = RPMRC_OK;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-	    if (fc <= 0)				break;
 	
-	    {   struct rpmtd_s filenames;
+	    if (rpmfiFC(fi) > 0) {
+		struct rpmtd_s filenames;
 		rpmTag ftag = RPMTAG_FILENAMES;
 		Header h = rpmteHeader(psm->te);
 	
@@ -767,8 +766,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		fi->apath = filenames.data; /* Ick.. */
 		headerFree(h);
 	    }
-	
-	    rc = RPMRC_OK;
 	}
 	if (psm->goal == PKG_ERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
