@@ -1270,12 +1270,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     if (fc->provides != NULL && rpmdsCount(fc->provides) > 0 && !fc->skipProv) {
 	rpmds pi = rpmdsInit(fc->provides);
 	while (rpmdsNext(pi) >= 0) {
-	    const char *name = rpmdsN(pi);
-	    const char *evr = rpmdsEVR(pi);
 	    rpmsenseFlags flags = rpmdsFlags(pi);
 	
-	    headerPutString(pkg->header, RPMTAG_PROVIDENAME, name);
-	    headerPutString(pkg->header, RPMTAG_PROVIDEVERSION, evr);
+	    headerPutString(pkg->header, RPMTAG_PROVIDENAME, rpmdsN(pi));
+	    headerPutString(pkg->header, RPMTAG_PROVIDEVERSION, rpmdsEVR(pi));
 	    headerPutUint32(pkg->header, RPMTAG_PROVIDEFLAGS, &flags, 1);
 	}
     }
@@ -1284,12 +1282,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     if (fc->requires != NULL && rpmdsCount(fc->requires) > 0 && !fc->skipReq) {
 	rpmds pi = rpmdsInit(fc->requires);
 	while (rpmdsNext(pi) >= 0) {
-	    const char *name = rpmdsN(pi);
-	    const char *evr = rpmdsEVR(pi);
 	    rpmsenseFlags flags = rpmdsFlags(pi);
 	
-	    headerPutString(pkg->header, RPMTAG_REQUIRENAME, name);
-	    headerPutString(pkg->header, RPMTAG_REQUIREVERSION, evr);
+	    headerPutString(pkg->header, RPMTAG_REQUIRENAME, rpmdsN(pi));
+	    headerPutString(pkg->header, RPMTAG_REQUIREVERSION, rpmdsEVR(pi));
 	    headerPutUint32(pkg->header, RPMTAG_REQUIREFLAGS, &flags, 1);
 	}
     }
