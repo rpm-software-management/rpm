@@ -1247,11 +1247,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Add per-file colors(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECOLORS, fc->fcolor)) {
 	rpm_color_t *fcolor;
-	if (ac != rpmtdCount(&td)) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("File count from file info doesn't match file in container.\n"));
-	    goto exit;
-	}
 	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
 	while ((fcolor = rpmtdNextUint32(&td))) {
@@ -1262,11 +1257,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Add classes(#classes) */
     if (rpmtdFromArgv(&td, RPMTAG_CLASSDICT, fc->cdict)) {
-	if (rpmtdType(&td) != RPM_STRING_ARRAY_TYPE) {
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Container not of string array data type.\n"));
-	    goto exit;
-	}
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
