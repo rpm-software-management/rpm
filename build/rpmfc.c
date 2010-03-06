@@ -1148,8 +1148,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
     char *buf = NULL;
-    const char * N;
-    const char * EVR;
     int genConfigDeps;
     int rc = RPMRC_OK;
     int xx;
@@ -1208,20 +1206,8 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
-	    N = rpmdsN(pkg->ds);
-	    if (N == NULL) {
-		rc = RPMRC_FAIL;
-		rpmlog(RPMLOG_ERR, _("Unable to get current dependency name.\n"));
-		goto exit;
-	    }
-	    EVR = rpmdsEVR(pkg->ds);
-	    if (EVR == NULL) {
-		rc = RPMRC_FAIL;
-		rpmlog(RPMLOG_ERR, _("Unable to get current dependency epoch-version-release.\n"));
-		goto exit;
-	    }
-	    rasprintf(&buf, "config(%s)", N);
-	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, EVR,
+	    rasprintf(&buf, "config(%s)", rpmdsN(pkg->ds));
+	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, rpmdsEVR(pkg->ds),
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    free(buf);
 	    xx = rpmdsMerge(&fc->provides, ds);
@@ -1239,20 +1225,8 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {
-	    N = rpmdsN(pkg->ds);
-	    if (N == NULL) {
-		rc = RPMRC_FAIL;
-		rpmlog(RPMLOG_ERR, _("Unable to get current dependency name.\n"));
-		goto exit;
-	    }
-	    EVR = rpmdsEVR(pkg->ds);
-	    if (EVR == NULL) {
-		rc = RPMRC_FAIL;
-		rpmlog(RPMLOG_ERR, _("Unable to get current dependency epoch-version-release.\n"));
-		goto exit;
-	    }
-	    rasprintf(&buf, "config(%s)", N);
-	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, EVR,
+	    rasprintf(&buf, "config(%s)", rpmdsN(pkg->ds));
+	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, rpmdsEVR(pkg->ds),
 			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    free(buf);
 	    xx = rpmdsMerge(&fc->requires, ds);
