@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-03-06 11:17+0200\n"
-"PO-Revision-Date: 2010-01-24 20:32+0100\n"
+"PO-Revision-Date: 2010-03-06 14:48+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
@@ -1403,9 +1403,9 @@ msgid "failed to write all data to %s\n"
 msgstr "zapisanie wszystkich danych do %s nie powiodło się\n"
 
 #: build/rpmfc.c:554
-#, fuzzy, c-format
+#, c-format
 msgid "Ignoring invalid regex: %s\n"
-msgstr "wiersz %d: nieprawidłowa zależność: %s\n"
+msgstr "Ignorowanie nieprawidłowego wyrażenia regularnego: %s\n"
 
 #: build/rpmfc.c:792
 #, c-format
@@ -1593,9 +1593,8 @@ msgid "(unknown)"
 msgstr "(nieznany)"
 
 #: lib/formats.c:699
-#, fuzzy
 msgid "(not a string)"
-msgstr "(nie jest liczbą)"
+msgstr "(nie jest ciągiem)"
 
 #: lib/fsm.c:736
 #, c-format
@@ -2837,13 +2836,12 @@ msgid "Unknown format"
 msgstr "Nieznany format"
 
 #: lib/rpmte.c:728
-#, fuzzy
 msgid "install"
-msgstr "(zainstalowane) "
+msgstr "instalacja"
 
 #: lib/rpmte.c:729
 msgid "erase"
-msgstr ""
+msgstr "usunięcie"
 
 #: lib/rpmts.c:93
 #, c-format
@@ -2973,12 +2971,11 @@ msgstr "Podpis: NIEZNANY (%d)\n"
 
 #: lib/transaction.c:1403
 msgid "skipped"
-msgstr ""
+msgstr "pominięto"
 
 #: lib/transaction.c:1403
-#, fuzzy
 msgid "failed"
-msgstr "%s nie powiodło się\n"
+msgstr "nie powiodło się"
 
 #: lib/verify.c:332
 #, c-format
@@ -3413,59 +3410,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "File doesn't match prefix (%s): %s\n"
-#~ msgstr "Plik nie zgadza się z przedrostkiem (%s): %s\n"
-
-#~ msgid "Unable to get current dependency name.\n"
-#~ msgstr "Nie można uzyskać bieżącej nazwy zależności.\n"
-
-#~ msgid "Unable to get current dependency epoch-version-release.\n"
-#~ msgstr "Nie można uzyskać bieżącej zależności epoka-wersja-wydanie.\n"
-
-#~ msgid "File count from file info doesn't match file in container.\n"
-#~ msgstr ""
-#~ "Licznik pliku z informacji o pliku nie zgadza się z plikiem w "
-#~ "kontenerze.\n"
-
-#~ msgid "Container not of string array data type.\n"
-#~ msgstr "Kontener nie jest typem danych tablicy ciągów.\n"
-
-#~ msgid "use threads for package state machine"
-#~ msgstr "użycie wątków dla maszyny stanu pakietów"
-
-#~ msgid "<lua> scriptlet support not built in\n"
-#~ msgstr "obsługa skryptów <lua> nie jest wbudowana\n"
-
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Nie można utworzyć pliku tymczasowego dla %s: %s\n"
-
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "Nie można utworzyć kopii deskryptora pliku: %s: %s\n"
-
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "skrypt %s nie powiódł się, waitpid(%d) rc %d: %s\n"
-
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "skrypt %s nie powiódł się, sygnał %d\n"
-
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "skrypt %s nie powiódł się, stan wyjścia %d\n"
-
-#~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"
-#~ msgstr "%s: skrypt %s nie powiódł się (%d), pomijanie %s\n"
-
-#~ msgid "mntctl() failed to return size: %s\n"
-#~ msgstr "mntctl() nie zwróciło rozmiaru: %s\n"
-
-#~ msgid "mntctl() failed to return mount points: %s\n"
-#~ msgstr "mntctl() nie zwróciło punktów montowania: %s\n"
-
-#~ msgid "failed to stat %s: %s\n"
-#~ msgstr "wykonanie stat na %s nie powiodło się: %s\n"
-
-#~ msgid "failed to open %s: %s\n"
-#~ msgstr "otwarcie %s nie powiodło się: %s\n"
-
-#~ msgid "file %s is on an unknown device\n"
-#~ msgstr "plik %s jest na nieznanym urządzeniu\n"
