@@ -396,13 +396,14 @@ rpmScript rpmScriptFromTag(Header h, rpmTag scriptTag)
 	script->tag = scriptTag;
 	rasprintf(&script->descr, "%s(%s)", tag2sln(scriptTag), nevra);
 	script->body = headerGetAsString(h, scriptTag);
+
 	/* macros need to be expanded before possible queryformat */
-	if (flags & RPMSCRIPT_EXPAND) {
+	if (script->body && (flags & RPMSCRIPT_EXPAND)) {
 	    char *body = rpmExpand(script->body, NULL);
 	    free(script->body);
 	    script->body = body;
 	}
-	if (flags & RPMSCRIPT_QFORMAT) {
+	if (script->body && (flags & RPMSCRIPT_QFORMAT)) {
 	    /* XXX TODO: handle queryformat errors */
 	    char *body = headerFormat(h, script->body, NULL);
 	    free(script->body);

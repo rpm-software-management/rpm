@@ -526,11 +526,11 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 			.args = args
 		    };
 
-		    if (script.flags & RPMSCRIPT_EXPAND) {
+		    if (script.body && (script.flags & RPMSCRIPT_EXPAND)) {
 			macro = rpmExpand(script.body, NULL);
 			script.body = macro;
 		    }
-		    if (script.flags & RPMSCRIPT_QFORMAT) {
+		    if (script.body && (script.flags & RPMSCRIPT_QFORMAT)) {
 			qformat = headerFormat(trigH, script.body, NULL);
 			script.body = qformat;
 		    }
