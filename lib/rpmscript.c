@@ -346,6 +346,23 @@ static rpmTag getProgTag(rpmTag scriptTag)
     }
 }
 
+static rpmTag getFlagTag(rpmTag scriptTag)
+{
+    switch (scriptTag) {
+    case RPMTAG_PRETRANS:	return RPMTAG_PRETRANSFLAGS;
+    case RPMTAG_POSTTRANS:	return RPMTAG_POSTTRANSFLAGS;
+    case RPMTAG_PREUN:		return RPMTAG_PREUNFLAGS;
+    case RPMTAG_POSTUN:		return RPMTAG_POSTUNFLAGS;
+    case RPMTAG_PREIN:		return RPMTAG_PREINFLAGS;
+    case RPMTAG_POSTIN:		return RPMTAG_POSTINFLAGS;
+    case RPMTAG_VERIFYSCRIPT:	return RPMTAG_VERIFYSCRIPTFLAGS;
+    case RPMTAG_TRIGGERSCRIPTS:	return RPMTAG_TRIGGERSCRIPTFLAGS;
+    default:
+       break;
+    }
+    return RPMTAG_NOT_FOUND;
+}
+
 static const char * tag2sln(rpmTag tag)
 {
     switch ((rpm_tag_t) tag) {
@@ -373,11 +390,24 @@ rpmScript rpmScriptFromTag(Header h, rpmTag scriptTag)
     if (headerIsEntry(h, scriptTag) || headerIsEntry(h, progTag)) {
 	struct rpmtd_s prog;
 	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
+	rpmscriptFlags flags = headerGetNumber(h, getFlagTag(scriptTag));
 
 	script = xcalloc(1, sizeof(*script));
 	script->tag = scriptTag;
-	script->body = headerGetAsString(h, scriptTag);
 	rasprintf(&script->descr, "%s(%s)", tag2sln(scriptTag), nevra);
+	script->body = headerGetAsString(h, scriptTag);
+	/* macros need to be expanded before possible queryformat */
+	if (flags & RPMSCRIPT_EXPAND) {
+	    char *body = rpmExpand(script->body, NULL);
+	    free(script->body);
+	    script->body = body;
+	}
+	if (flags & RPMSCRIPT_QFORMAT) {
+	    /* XXX TODO: handle queryformat errors */
+	    char *body = headerFormat(h, script->body, NULL);
+	    free(script->body);
+	    script->body = body;
+	}
 
 	if (headerGet(h, progTag, &prog, (HEADERGET_ALLOC|HEADERGET_ARGV))) {
 	    script->args = prog.data;

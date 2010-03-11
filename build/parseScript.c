@@ -10,6 +10,7 @@
 #include <rpm/rpmlog.h>
 
 #include "rpmio/rpmlua.h"
+#include "lib/rpmscript.h"	/* script flags */
 
 #include "debug.h"
 
@@ -17,7 +18,7 @@
 /**
  */
 static int addTriggerIndex(Package pkg, const char *file,
-	const char *script, const char *prog)
+	const char *script, const char *prog, rpmscriptFlags flags)
 {
     struct TriggerFileEntry *tfe;
     struct TriggerFileEntry *list = pkg->triggerFiles;
@@ -37,6 +38,7 @@ static int addTriggerIndex(Package pkg, const char *file,
     tfe->fileName = (file) ? xstrdup(file) : NULL;
     tfe->script = (script && *script != '\0') ? xstrdup(script) : NULL;
     tfe->prog = xstrdup(prog);
+    tfe->flags = flags;
     tfe->index = index;
     tfe->next = NULL;
 
@@ -70,6 +72,8 @@ int parseScript(rpmSpec spec, int parsePart)
     rpmTag tag = 0;
     rpmsenseFlags tagflags = 0;
     rpmTag progtag = 0;
+    rpmTag flagtag = 0;
+    rpmscriptFlags scriptFlags = 0;
     int flag = PART_SUBNAME;
     Package pkg;
     StringBuf sb = NULL;
@@ -85,10 +89,14 @@ int parseScript(rpmSpec spec, int parsePart)
     const char *name = NULL;
     const char *prog = "/bin/sh";
     const char *file = NULL;
+    int expand = 0;
+    int qformat = 1;
     struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
+	{ NULL, 'e', POPT_ARG_NONE, &expand, 'e',	NULL, NULL},
+	{ NULL, 'q', POPT_ARG_NONE, &qformat, 'q',	NULL, NULL},
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
@@ -97,42 +105,49 @@ int parseScript(rpmSpec spec, int parsePart)
 	tag = RPMTAG_PREIN;
 	tagflags = RPMSENSE_SCRIPT_PRE;
 	progtag = RPMTAG_PREINPROG;
+	flagtag = RPMTAG_PREINFLAGS;
 	partname = "%pre";
 	break;
       case PART_POST:
 	tag = RPMTAG_POSTIN;
 	tagflags = RPMSENSE_SCRIPT_POST;
 	progtag = RPMTAG_POSTINPROG;
+	flagtag = RPMTAG_POSTINFLAGS;
 	partname = "%post";
 	break;
       case PART_PREUN:
 	tag = RPMTAG_PREUN;
 	tagflags = RPMSENSE_SCRIPT_PREUN;
 	progtag = RPMTAG_PREUNPROG;
+	flagtag = RPMTAG_PREUNFLAGS;
 	partname = "%preun";
 	break;
       case PART_POSTUN:
 	tag = RPMTAG_POSTUN;
 	tagflags = RPMSENSE_SCRIPT_POSTUN;
 	progtag = RPMTAG_POSTUNPROG;
+	flagtag = RPMTAG_POSTUNFLAGS;
 	partname = "%postun";
 	break;
       case PART_PRETRANS:
 	tag = RPMTAG_PRETRANS;
 	tagflags = 0;
 	progtag = RPMTAG_PRETRANSPROG;
+	flagtag = RPMTAG_PRETRANSFLAGS;
 	partname = "%pretrans";
 	break;
       case PART_POSTTRANS:
 	tag = RPMTAG_POSTTRANS;
 	tagflags = 0;
 	progtag = RPMTAG_POSTTRANSPROG;
+	flagtag = RPMTAG_POSTTRANSFLAGS;
 	partname = "%posttrans";
 	break;
       case PART_VERIFYSCRIPT:
 	tag = RPMTAG_VERIFYSCRIPT;
 	tagflags = RPMSENSE_SCRIPT_VERIFY;
 	progtag = RPMTAG_VERIFYSCRIPTPROG;
+	flagtag = RPMTAG_VERIFYSCRIPTFLAGS;
 	partname = "%verifyscript";
 	break;
       case PART_TRIGGERPREIN:
@@ -140,6 +155,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERPREIN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRIGGERSCRIPTFLAGS;
 	partname = "%triggerprein";
 	break;
       case PART_TRIGGERIN:
@@ -147,6 +163,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERIN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRIGGERSCRIPTFLAGS;
 	partname = "%triggerin";
 	break;
       case PART_TRIGGERUN:
@@ -154,6 +171,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERUN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRIGGERSCRIPTFLAGS;
 	partname = "%triggerun";
 	break;
       case PART_TRIGGERPOSTUN:
@@ -161,6 +179,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	tagflags = 0;
 	reqtag = RPMTAG_TRIGGERPOSTUN;
 	progtag = RPMTAG_TRIGGERSCRIPTPROG;
+	flagtag = RPMTAG_TRIGGERSCRIPTFLAGS;
 	partname = "%triggerpostun";
 	break;
     }
@@ -247,6 +266,9 @@ int parseScript(rpmSpec spec, int parsePart)
 	goto exit;
     }
 
+    scriptFlags |= expand ? RPMSCRIPT_EXPAND : 0;
+    scriptFlags |= qformat ? RPMSCRIPT_QFORMAT : 0;
+
     sb = newStringBuf();
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	nextPart = PART_NONE;
@@ -286,11 +308,15 @@ int parseScript(rpmSpec spec, int parsePart)
 		progArgv[0], NULL, (tagflags | RPMSENSE_INTERP), 0);
     }
 
+    if (scriptFlags) {
+	rpmlibNeedsFeature(pkg->header, "ScriptletExpansion", "4.9.0-1");
+    }
+
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* Add file/index/prog triple to the trigger file list */
-	index = addTriggerIndex(pkg, file, p, progArgv[0]);
+	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags);
 
 	/* Generate the trigger tags */
 	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))
@@ -318,6 +344,9 @@ int parseScript(rpmSpec spec, int parsePart)
 
 	if (*p != '\0') {
 	    headerPutString(pkg->header, tag, p);
+	}
+	if (scriptFlags) {
+	    headerPutUint32(pkg->header, flagtag, &scriptFlags, 1);
 	}
 
 	if (file) {

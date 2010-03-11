@@ -24,6 +24,7 @@ struct TriggerFileEntry {
     char * fileName;
     char * script;
     char * prog;
+    uint32_t flags;
     struct TriggerFileEntry * next;
 };
 

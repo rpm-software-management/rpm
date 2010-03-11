@@ -961,6 +961,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 	(		 RPMSENSE_EQUAL),
     N_("support for POSIX.1e file capabilities") },
 #endif
+    { "rpmlib(ScriptletExpansion)",    "4.9.0-1",
+	(		RPMSENSE_EQUAL),
+    N_("package scriptlets can be expanded at install time.") },
     { NULL,				NULL, 0,	NULL }
 };
 

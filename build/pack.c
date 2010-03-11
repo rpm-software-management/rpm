@@ -185,6 +185,7 @@ static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTag ta
 static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 {
     struct TriggerFileEntry *p;
+    int addflags = 0;
     
     if (pkg->preInFile) {
 	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
@@ -237,8 +238,20 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 	}
     }
 
+    /* if any trigger has flags, we need to add flags entry for all of them */
+    for (p = pkg->triggerFiles; p != NULL; p = p->next) {
+	if (p->flags) {
+	    addflags = 1;
+	    break;
+	}
+    }
+
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
 	headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTPROG, p->prog);
+	if (addflags) {
+	    headerPutUint32(pkg->header, RPMTAG_TRIGGERSCRIPTFLAGS,
+			    &p->flags, 1);
+	}
 
 	if (p->script) {
 	    headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTS, p->script);

@@ -479,7 +479,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	struct rpmtd_s tscripts, tprogs, tindexes;
+	struct rpmtd_s tscripts, tprogs, tindexes, tflags;
 	headerGetFlags hgflags = HEADERGET_MINMEM;
 
 	if (!(rpmdsFlags(trigger) & psm->sense))
@@ -502,7 +502,11 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	    char ** triggerScripts = tscripts.data;
 	    char ** triggerProgs = tprogs.data;
 	    uint32_t * triggerIndices = tindexes.data;
+	    uint32_t * triggerFlags = NULL;
 	    uint32_t ix = triggerIndices[i];
+
+	    headerGet(trigH, RPMTAG_TRIGGERSCRIPTFLAGS, &tflags, hgflags);
+	    triggerFlags = tflags.data;
 
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
@@ -511,17 +515,31 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		arg1 += psm->countCorrection;
 
 		if (triggersAlreadyRun == NULL || triggersAlreadyRun[ix] == 0) {
-		    /* construct script manually, this must not be freed */
+		    /* XXX TODO add rpmScript API to handle this, ugh */
+		    char *macro = NULL;
+		    char *qformat = NULL;
 		    char *args[2] = { triggerProgs[ix], NULL };
 		    struct rpmScript_s script = {
 			.tag = triggertag(psm->sense),
 			.body = triggerScripts[ix],
+			.flags = triggerFlags[ix],
 			.args = args
 		    };
-			
+
+		    if (script.flags & RPMSCRIPT_EXPAND) {
+			macro = rpmExpand(script.body, NULL);
+			script.body = macro;
+		    }
+		    if (script.flags & RPMSCRIPT_QFORMAT) {
+			qformat = headerFormat(trigH, script.body, NULL);
+			script.body = qformat;
+		    }
+
 		    rc = runScript(psm, pfx.data, &script, arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
 			triggersAlreadyRun[ix] = 1;
+		    free(macro);
+		    free(qformat);
 		}
 	    }
 	}

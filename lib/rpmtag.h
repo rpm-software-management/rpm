@@ -292,6 +292,14 @@ typedef enum rpmTag_e {
     RPMTAG_HEADERCOLOR		= 5017, /* i extension */
     RPMTAG_VERBOSE		= 5018, /* i extension */
     RPMTAG_EPOCHNUM		= 5019, /* i extension */
+    RPMTAG_PREINFLAGS		= 5020, /* i */
+    RPMTAG_POSTINFLAGS		= 5021, /* i */
+    RPMTAG_PREUNFLAGS		= 5022, /* i */
+    RPMTAG_POSTUNFLAGS		= 5023, /* i */
+    RPMTAG_PRETRANSFLAGS	= 5024, /* i */
+    RPMTAG_POSTTRANSFLAGS	= 5025, /* i */
+    RPMTAG_VERIFYSCRIPTFLAGS	= 5026, /* i */
+    RPMTAG_TRIGGERSCRIPTFLAGS	= 5027, /* i[] */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
