@@ -522,7 +522,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		    struct rpmScript_s script = {
 			.tag = triggertag(psm->sense),
 			.body = triggerScripts[ix],
-			.flags = triggerFlags[ix],
+			.flags = triggerFlags ? triggerFlags[ix] : 0,
 			.args = args
 		    };
 
