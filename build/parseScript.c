@@ -90,7 +90,7 @@ int parseScript(rpmSpec spec, int parsePart)
     const char *prog = "/bin/sh";
     const char *file = NULL;
     int expand = 0;
-    int qformat = 1;
+    int qformat = 0;
     struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
