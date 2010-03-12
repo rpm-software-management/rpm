@@ -171,6 +171,19 @@ rpmte rpmteParent(rpmte te);
 rpmte rpmteSetParent(rpmte te, rpmte pte);
 
 /** \ingroup rpmte
+ * Return problem set info of transaction element.
+ * @param te		transaction element
+ * @return		problem set (or NULL if none)
+ */
+rpmps rpmteProblems(rpmte te);
+
+/** \ingroup rpmte
+ * Destroy problem set info of transaction element.
+ * @param te		transaction element
+ */
+void rpmteCleanProblems(rpmte te);
+
+/** \ingroup rpmte
  * Destroy dependency set info of transaction element.
  * @param te		transaction element
  */

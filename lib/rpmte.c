@@ -715,7 +715,14 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag)
 
 rpmps rpmteProblems(rpmte te)
 {
-    return te ? te->probs : NULL;
+    return (te != NULL) ? rpmpsLink(te->probs, RPMDBG_M("rpmteProbs")) : NULL;
+}
+
+void rpmteCleanProblems(rpmte te)
+{
+    if (te != NULL && te->probs != NULL) {
+	te->probs = rpmpsFree(te->probs);
+    }
 }
 
 void rpmteAddProblem(rpmte te, rpmProblemType type,
@@ -727,6 +734,27 @@ void rpmteAddProblem(rpmte te, rpmProblemType type,
 	    te->probs = rpmpsCreate();
 	rpmpsAppend(te->probs, type, rpmteNEVRA(te), rpmteKey(te),
 		    dn, bn, altNEVR, number);
+    }
+}
+
+void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
+		        fnpyKey * suggestedKeys, int adding)
+{
+    if (te != NULL) {
+	const char * DNEVR = rpmdsDNEVR(ds);
+	rpmProblemType type;
+	fnpyKey key = (suggestedKeys ? suggestedKeys[0] : NULL);
+
+	if (te->probs == NULL)
+	    te->probs = rpmpsCreate();
+
+	switch ((unsigned)DNEVR[0]) {
+	case 'C':	type = RPMPROB_CONFLICT;	break;
+	default:
+	case 'R':	type = RPMPROB_REQUIRES;	break;
+	}
+
+	rpmpsAppend(te->probs, type, pkgNEVR, key, NULL, NULL, DNEVR, adding);
     }
 }
 
