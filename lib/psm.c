@@ -26,9 +26,6 @@
 
 #include "debug.h"
 
-#define	_PSM_DEBUG	0
-int _psm_debug = _PSM_DEBUG;
-
 typedef enum pkgStage_e {
     PSM_UNKNOWN		=  0,
     PSM_INIT		=  1,
@@ -56,7 +53,7 @@ typedef enum pkgStage_e {
 
 } pkgStage;
 
-struct rpmpsm_s {
+typedef struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
@@ -76,8 +73,10 @@ struct rpmpsm_s {
     pkgStage nstage;		/*!< Next psm stage. */
 
     int nrefs;			/*!< Reference count. */
-};
+} * rpmpsm;
 
+static rpmpsm rpmpsmNew(rpmts ts, rpmte te);
+static rpmpsm rpmpsmFree(rpmpsm psm);
 static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
 
 /**
@@ -647,33 +646,10 @@ exit:
     return rc;
 }
 
-rpmpsm rpmpsmUnlink(rpmpsm psm, const char * msg)
-{
-    if (psm == NULL) return NULL;
-if (_psm_debug && msg != NULL)
-fprintf(stderr, "--> psm %p -- %d: %s\n", psm, psm->nrefs, msg);
-    psm->nrefs--;
-    return NULL;
-}
-
-rpmpsm rpmpsmLink(rpmpsm psm, const char * msg)
-{
-    if (psm == NULL) return NULL;
-    psm->nrefs++;
-
-if (_psm_debug && msg != NULL)
-fprintf(stderr, "--> psm %p ++ %d %s\n", psm, psm->nrefs, msg);
-
-    return psm;
-}
-
-rpmpsm rpmpsmFree(rpmpsm psm)
+static rpmpsm rpmpsmFree(rpmpsm psm)
 {
     if (psm == NULL)
 	return NULL;
-
-    if (psm->nrefs > 1)
-	return rpmpsmUnlink(psm, RPMDBG_M("rpmpsmFree"));
 
     psm->fi = rpmfiFree(psm->fi);
 #ifdef	NOTYET
@@ -683,15 +659,13 @@ rpmpsm rpmpsmFree(rpmpsm psm)
 #endif
     psm->ts = rpmtsFree(psm->ts);
 
-    (void) rpmpsmUnlink(psm, RPMDBG_M("rpmpsmFree"));
-
     memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
     psm = _free(psm);
 
     return NULL;
 }
 
-rpmpsm rpmpsmNew(rpmts ts, rpmte te)
+static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
 
@@ -705,7 +679,7 @@ rpmpsm rpmpsmNew(rpmts ts, rpmte te)
     	psm->fi = rpmfiLink(rpmteFI(te), RPMDBG_M("rpmpsmNew"));
     }
 
-    return rpmpsmLink(psm, RPMDBG_M("rpmpsmNew"));
+    return psm;
 }
 
 static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
@@ -1139,8 +1113,9 @@ static const char * pkgGoalString(pkgGoal goal)
     }
 }
 
-rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal)
+rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 {
+    rpmpsm psm = rpmpsmNew(ts, te);
     rpmRC rc = RPMRC_FAIL;
 
     if (psm) {
@@ -1172,5 +1147,6 @@ rpmRC rpmpsmRun(rpmpsm psm, pkgGoal goal)
 	    break;
 	}
     }
+    rpmpsmFree(psm);
     return rc;
 }

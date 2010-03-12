@@ -1138,7 +1138,6 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 {
     rpmtsi pi; 
     rpmte p;
-    rpmpsm psm;
     int xx;
 
     if (stag != RPMTAG_PRETRANS && stag != RPMTAG_POSTTRANS)
@@ -1151,10 +1150,8 @@ static int runTransScripts(rpmts ts, rpmTag stag)
 	    continue;
 
     	if (rpmteOpen(p, ts, 0)) {
-	    psm = rpmpsmNew(ts, p);
 	    /* XXX should %pretrans failure fail the package install? */
-	    xx = rpmpsmRun(psm, stag);
-	    psm = rpmpsmFree(psm);
+	    xx = rpmpsmRun(ts, p, stag);
 	    rpmteClose(p, ts, 0);
 	}
     }
@@ -1392,9 +1389,7 @@ static int rpmtsProcess(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	if (rpmteOpen(p, ts, 1)) {
-	    rpmpsm psm = rpmpsmNew(ts, p);
-	    failed = rpmpsmRun(psm, rpmteType(p));
-	    psm = rpmpsmFree(psm);
+	    failed = rpmpsmRun(ts, p, rpmteType(p));
 	    rpmteClose(p, ts, 1);
 	}
 	if (failed) {

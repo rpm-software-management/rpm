@@ -271,7 +271,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  */
 static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
 {
-    rpmpsm psm = NULL;
     rpmte te = NULL;
     int rc = 0;
 
@@ -283,10 +282,7 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(ts, scriptFd);
 
-    /* create psm to run the script */
-    psm = rpmpsmNew(ts, te);
-    rc = rpmpsmRun(psm, PKG_VERIFY);
-    psm = rpmpsmFree(psm);
+    rc = rpmpsmRun(ts, te, PKG_VERIFY);
 
     if (scriptFd != NULL)
 	rpmtsSetScriptFd(ts, NULL);
