@@ -539,7 +539,6 @@ static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
     }
-    mi = rpmdbFreeIterator(mi);
 }
 
 /**
@@ -549,9 +548,9 @@ static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
  */
 static void checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
 {
-    rpmdbMatchIterator mi;
-    mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
     checkPackageSet(ts, dcache, dep, mi, 0);
+    rpmdbFreeIterator(mi);
 }
 
 /**
@@ -561,9 +560,9 @@ static void checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
  */
 static void checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
 {
-    rpmdbMatchIterator mi;
-    mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
     checkPackageSet(ts, dcache, dep, mi, 1);
+    rpmdbFreeIterator(mi);
 }
 
 int rpmtsCheck(rpmts ts)
