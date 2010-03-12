@@ -571,7 +571,6 @@ int rpmtsCheck(rpmts ts)
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
-    int xx;
     int rc;
     depCache dcache = NULL;
     
@@ -637,12 +636,11 @@ int rpmtsCheck(rpmts ts)
     pi = rpmtsiFree(pi);
 
 exit:
-    pi = rpmtsiFree(pi);
     depCacheFree(dcache);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
     if (closeatexit)
-	xx = rpmtsCloseDB(ts);
+	(void) rpmtsCloseDB(ts);
     return rc;
 }
