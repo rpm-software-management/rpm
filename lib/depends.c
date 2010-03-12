@@ -14,6 +14,7 @@
 #include <rpm/rpmfi.h>
 
 #include "lib/rpmts_internal.h"
+#include "lib/rpmte_internal.h"
 
 #include "debug.h"
 
@@ -466,6 +467,7 @@ exit:
 /**
  * Check added requires/conflicts against against installed+added packages.
  * @param ts		transaction set
+ * @param te		related transaction element
  * @param pkgNEVRA	package name-version-release.arch
  * @param requires	Requires: dependencies (or NULL)
  * @param conflicts	Conflicts: dependencies (or NULL)
@@ -473,8 +475,8 @@ exit:
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
  */
-static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
-		rpmds requires, rpmds conflicts,
+static void checkPackageDeps(rpmts ts, depCache dcache, rpmte te,
+		const char * pkgNEVRA, rpmds requires, rpmds conflicts,
 		const char * depName, rpm_color_t tscolor, int adding)
 {
     rpm_color_t dscolor;
@@ -491,7 +493,7 @@ static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 	    continue;
 
 	if (unsatisfiedDepend(ts, dcache, requires, adding) == 1)
-	    rpmdsProblem(ts->probs, pkgNEVRA, requires, NULL, adding);
+	    rpmteAddDepProblem(te, pkgNEVRA, requires, NULL, adding);
     }
 
     conflicts = rpmdsInit(conflicts);
@@ -506,7 +508,7 @@ static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 	    continue;
 
 	if (unsatisfiedDepend(ts, dcache, conflicts, adding) == 0)
-	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
+	    rpmteAddDepProblem(te, pkgNEVRA, conflicts, NULL, adding);
     }
 }
 
@@ -519,8 +521,8 @@ static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
  * @param mi		rpm database iterator
  * @param adding	dependency is from added package set?
  */
-static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
-		rpmdbMatchIterator mi, int adding)
+static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
+			const char * dep, rpmdbMatchIterator mi, int adding)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     Header h;
@@ -534,7 +536,7 @@ static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
 
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	checkPackageDeps(ts, dcache, pkgNEVRA, requires, conflicts, dep, 0, adding);
+	checkPackageDeps(ts, dcache, te, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
@@ -546,10 +548,11 @@ static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
  * @param ts		transaction set
  * @param dep		requires name
  */
-static void checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
+static void checkDependentPackages(rpmts ts, depCache dcache,
+				   rpmte te, const char * dep)
 {
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    checkPackageSet(ts, dcache, dep, mi, 0);
+    checkPackageSet(ts, dcache, te, dep, mi, 0);
     rpmdbFreeIterator(mi);
 }
 
@@ -558,10 +561,11 @@ static void checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
  * @param ts		transaction set
  * @param dep		conflicts name
  */
-static void checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
+static void checkDependentConflicts(rpmts ts, depCache dcache,
+				    rpmte te, const char * dep)
 {
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
-    checkPackageSet(ts, dcache, dep, mi, 1);
+    checkPackageSet(ts, dcache, te, dep, mi, 1);
     rpmdbFreeIterator(mi);
 }
 
@@ -585,9 +589,6 @@ int rpmtsCheck(rpmts ts)
 	closeatexit = 1;
     }
 
-    ts->probs = rpmpsFree(ts->probs);
-    ts->probs = rpmpsCreate();
-
     rpmalMakeIndex(tsmem->addedPackages);
 
     /* XXX FIXME: figure some kind of heuristic for the cache size */
@@ -604,7 +605,7 @@ int rpmtsCheck(rpmts ts)
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-	checkPackageDeps(ts, dcache, rpmteNEVRA(p),
+	checkPackageDeps(ts, dcache, p, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,
@@ -612,7 +613,7 @@ int rpmtsCheck(rpmts ts)
 
 	/* Adding: check provides key against conflicts matches. */
 	while (rpmdsNext(provides) >= 0) {
-	    checkDependentConflicts(ts, dcache, rpmdsN(provides));
+	    checkDependentConflicts(ts, dcache, p, rpmdsN(provides));
 	}
     }
     pi = rpmtsiFree(pi);
@@ -630,12 +631,12 @@ int rpmtsCheck(rpmts ts)
 
 	/* Erasing: check provides against requiredby matches. */
 	while (rpmdsNext(provides) >= 0) {
-	    checkDependentPackages(ts, dcache, rpmdsN(provides));
+	    checkDependentPackages(ts, dcache, p, rpmdsN(provides));
 	}
 
 	/* Erasing: check filename against requiredby matches. */
 	while (rpmfiNext(fi) >= 0) {
-	    checkDependentPackages(ts, dcache, rpmfiFN(fi));
+	    checkDependentPackages(ts, dcache, p, rpmfiFN(fi));
 	}
     }
     pi = rpmtsiFree(pi);

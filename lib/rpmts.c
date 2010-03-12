@@ -476,19 +476,34 @@ int rpmtsSetSolveCallback(rpmts ts,
 
 rpmps rpmtsProblems(rpmts ts)
 {
-    rpmps ps = NULL;
-    if (ts) {
-	if (ts->probs)
-	    ps = rpmpsLink(ts->probs, RPMDBG_M("rpmtsProblems"));
+    rpmps ps = rpmpsCreate();
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+
+    /* XXX TODO this cries for rpmpsMerge() */
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	rpmps teprobs = rpmteProblems(p);
+	if (teprobs) {
+	    rpmpsi psi = rpmpsInitIterator(teprobs);
+	    while (rpmpsNextIterator(psi) >= 0) {
+		rpmProblem prob = rpmpsGetProblem(psi);
+		rpmpsAppendProblem(ps, prob);
+	    }
+	    rpmpsFreeIterator(psi);
+	    rpmpsFree(teprobs);
+	}
     }
+    pi = rpmtsiFree(pi);
     return ps;
 }
 
 void rpmtsCleanProblems(rpmts ts)
 {
-    if (ts && ts->probs) {
-	ts->probs = rpmpsFree(ts->probs);
-    }
+    rpmte p;
+    rpmtsi pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL)
+	rpmteCleanProblems(p);
+    pi = rpmtsiFree(pi);
 }
 
 void rpmtsClean(rpmts ts)
@@ -920,8 +935,6 @@ rpmts rpmtsCreate(void)
     ts->chrootDone = 0;
 
     ts->selinuxEnabled = is_selinux_enabled();
-
-    ts->probs = NULL;
 
     ts->keyring = NULL;
 

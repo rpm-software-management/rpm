@@ -37,7 +37,6 @@ struct rpmts_s {
     rpmCallbackFunction notify;	/*!< Callback function. */
     rpmCallbackData notifyData;	/*!< Callback private data. */
 
-    rpmps probs;		/*!< Current problems in transaction. */
     rpmprobFilterFlags ignoreSet;
 				/*!< Bits to filter current problems. */
 

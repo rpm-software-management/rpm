@@ -797,32 +797,6 @@ exit:
     return result;
 }
 
-void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
-	const fnpyKey * suggestedKeys, int adding)
-{
-    const char * DNEVR = rpmdsDNEVR(ds);
-    const char * EVR = rpmdsEVR(ds);
-    rpmProblemType type;
-    fnpyKey key;
-
-    if (ps == NULL) return;
-
-    if (EVR == NULL) EVR = "?EVR?";
-    if (DNEVR == NULL) DNEVR = "? ?N? ?OP? ?EVR?";
-
-    rpmlog(RPMLOG_DEBUG, "package %s has unsatisfied %s: %s\n",
-	    pkgNEVR, ds->Type, DNEVR+2);
-
-    switch ((unsigned)DNEVR[0]) {
-    case 'C':	type = RPMPROB_CONFLICT;	break;
-    default:
-    case 'R':	type = RPMPROB_REQUIRES;	break;
-    }
-
-    key = (suggestedKeys ? suggestedKeys[0] : NULL);
-    rpmpsAppend(ps, type, pkgNEVR, key, NULL, NULL, DNEVR, adding);
-}
-
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
     rpmds provides = NULL;

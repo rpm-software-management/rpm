@@ -322,7 +322,6 @@ int rpmdsMerge(rpmds * dsp, rpmds ods);
  **/
 int rpmdsSearch(rpmds ds, rpmds ods);
 
-
 /** \ingroup rpmds
  * Compare two versioned dependency ranges, looking for overlap.
  * @param A		1st dependency
@@ -330,18 +329,6 @@ int rpmdsSearch(rpmds ds, rpmds ods);
  * @return		1 if dependencies overlap, 0 otherwise
  */
 int rpmdsCompare(const rpmds A, const rpmds B);
-
-/** \ingroup rpmds
- * Report a Requires: or Conflicts: dependency problem.
- * @param ps		transaction set problems
- * @param pkgNEVR	package name/epoch/version/release
- * @param ds		dependency set
- * @param suggestedKeys	filename or python object address
- * @param adding	dependency problem is from added package set?
- */
-void rpmdsProblem(rpmps ps, const char * pkgNEVR, const rpmds ds,
-		const fnpyKey * suggestedKeys,
-		int adding);
 
 /** \ingroup rpmds
  * Compare package provides dependencies from header with a single dependency.
