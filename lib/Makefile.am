@@ -29,7 +29,7 @@ librpm_la_SOURCES = \
 	rpmal.c rpmal.h rpmchecksig.c rpmds.c rpmfi.c rpmfi_internal.h rpmgi.c \
 	rpminstall.c rpmts_internal.h \
 	rpmlead.c rpmlead.h rpmps.c rpmrc.c \
-	rpmte.c rpmte_internal.h rpmts.c \
+	rpmte.c rpmte_internal.h rpmts.c rpmfs.h rpmfs.c \
 	rpmvercmp.c signature.c signature.h transaction.c \
 	verify.c rpmlock.c rpmlock.h misc.h \
 	rpmscript.h rpmscript.c legacy.c merge.c \

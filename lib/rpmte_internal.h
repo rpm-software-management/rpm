@@ -3,45 +3,12 @@
 
 #include <rpm/rpmte.h>
 #include <rpm/rpmds.h>
-
-/** \ingroup rpmte
- * Dependncy ordering information.
- */
-
-/**
- */
-typedef struct sharedFileInfo_s *		sharedFileInfo;
+#include "lib/rpmfs.h"
 
 /** \ingroup rpmte
  * Transaction element ordering chain linkage.
  */
 typedef struct tsortInfo_s *		tsortInfo;
-
-/** \ingroup rpmte
- * Transaction element file states.
- */
-typedef struct rpmfs_s *		rpmfs;
-
-/**
- */
-struct sharedFileInfo_s {
-    int pkgFileNum;
-    int otherPkg;
-    int otherFileNum;
-};
-
-typedef char rpm_fstate_t;
-
-struct rpmfs_s {
-    unsigned int fc;
-
-    rpm_fstate_t * states;
-    rpmFileAction * actions;	/*!< File disposition(s). */
-
-    sharedFileInfo replaced;	/*!< (TR_ADDED) to be replaced files in the rpmdb */
-    int numReplaced;
-    int allocatedReplaced;
-};
 
 RPM_GNUC_INTERNAL
 rpmfi rpmteSetFI(rpmte te, rpmfi fi);
@@ -76,44 +43,8 @@ tsortInfo rpmteTSI(rpmte te);
 RPM_GNUC_INTERNAL
 void rpmteSetTSI(rpmte te, tsortInfo tsi);
 
-//RPM_GNUC_INTERNAL
+/* XXX should be internal too but build code needs for now... */
 rpmfs rpmteGetFileStates(rpmte te);
-
-RPM_GNUC_INTERNAL
-rpmfs rpmfsNew(unsigned int fc, rpmElementType type);
-
-RPM_GNUC_INTERNAL
-rpmfs rpmfsFree(rpmfs fs);
-
-RPM_GNUC_INTERNAL
-rpm_count_t rpmfsFC(rpmfs fs);
-
-RPM_GNUC_INTERNAL
-void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum);
-
-RPM_GNUC_INTERNAL
-sharedFileInfo rpmfsGetReplaced(rpmfs fs);
-
-RPM_GNUC_INTERNAL
-sharedFileInfo rpmfsNextReplaced(rpmfs fs , sharedFileInfo replaced);
-
-RPM_GNUC_INTERNAL
-void rpmfsSetState(rpmfs fs, unsigned int ix, rpmfileState state);
-
-RPM_GNUC_INTERNAL
-rpmfileState rpmfsGetState(rpmfs fs, unsigned int ix);
-
-/*
- * May return NULL
- */
-RPM_GNUC_INTERNAL
-rpm_fstate_t * rpmfsGetStates(rpmfs fs);
-
-RPM_GNUC_INTERNAL
-rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
-
-//RPM_GNUC_INTERNAL
-void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
 
 /* XXX here for now... */
 /**
