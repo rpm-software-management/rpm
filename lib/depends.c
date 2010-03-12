@@ -475,9 +475,8 @@ exit:
  * @param depName	dependency name to filter (or NULL)
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
- * @return		0
  */
-static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
+static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 		rpmds requires, rpmds conflicts,
 		const char * depName, rpm_color_t tscolor, int adding)
 {
@@ -521,8 +520,6 @@ static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 	if (unsatisfiedDepend(ts, dcache, conflicts, adding) == 0)
 	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
     }
-
-    return 0;
 }
 
 /**
@@ -533,72 +530,54 @@ static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
  * @param dep		dependency name
  * @param mi		rpm database iterator
  * @param adding	dependency is from added package set?
- * @return		0 no problems found
  */
-static int checkPackageSet(rpmts ts, depCache dcache, const char * dep,
+static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
 		rpmdbMatchIterator mi, int adding)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     Header h;
-    int ec = 0;
 
     (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
 			      tsmem->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA;
 	rpmds requires, conflicts;
-	int rc;
 
 	pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
 	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
-	rc = checkPackageDeps(ts, dcache, pkgNEVRA, requires, conflicts, dep, 0, adding);
+	checkPackageDeps(ts, dcache, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
-
-	if (rc) {
-	    ec = 1;
-	    break;
-	}
     }
     mi = rpmdbFreeIterator(mi);
-
-    return ec;
 }
 
 /**
  * Check to-be-erased dependencies against installed requires.
  * @param ts		transaction set
  * @param dep		requires name
- * @return		0 no problems found
  */
-static int checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
+static void checkDependentPackages(rpmts ts, depCache dcache, const char * dep)
 {
     rpmdbMatchIterator mi;
     mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    return checkPackageSet(ts, dcache, dep, mi, 0);
+    checkPackageSet(ts, dcache, dep, mi, 0);
 }
 
 /**
  * Check to-be-added dependencies against installed conflicts.
  * @param ts		transaction set
  * @param dep		conflicts name
- * @return		0 no problems found
  */
-static int checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
+static void checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
 {
-    int rc = 0;
-
-    if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
-	rpmdbMatchIterator mi;
-	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
-	rc = checkPackageSet(ts, dcache, dep, mi, 1);
-    }
-
-    return rc;
+    rpmdbMatchIterator mi;
+    mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
+    checkPackageSet(ts, dcache, dep, mi, 1);
 }
 
 int rpmtsCheck(rpmts ts)
@@ -641,15 +620,12 @@ int rpmtsCheck(rpmts ts)
 	/* FIX: rpmts{A,O} can return null. */
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-	rc = checkPackageDeps(ts, dcache, rpmteNEVRA(p),
+	checkPackageDeps(ts, dcache, rpmteNEVRA(p),
 			rpmteDS(p, RPMTAG_REQUIRENAME),
 			rpmteDS(p, RPMTAG_CONFLICTNAME),
 			NULL,
 			tscolor, 1);
-	if (rc)
-	    goto exit;
 
-	rc = 0;
 	provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
 	while (rpmdsNext(provides) >= 0) {
 	    const char * Name;
@@ -658,13 +634,8 @@ int rpmtsCheck(rpmts ts)
 		continue;	/* XXX can't happen */
 
 	    /* Adding: check provides key against conflicts matches. */
-	    if (!checkDependentConflicts(ts, dcache, Name))
-		continue;
-	    rc = 1;
-	    break;
+	    checkDependentConflicts(ts, dcache, Name);
 	}
-	if (rc)
-	    goto exit;
     }
     pi = rpmtsiFree(pi);
 
@@ -680,7 +651,6 @@ int rpmtsCheck(rpmts ts)
 	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	rc = 0;
 	while (rpmdsNext(provides) >= 0) {
 	    const char * Name;
 
@@ -688,32 +658,19 @@ int rpmtsCheck(rpmts ts)
 		continue;	/* XXX can't happen */
 
 	    /* Erasing: check provides against requiredby matches. */
-	    if (!checkDependentPackages(ts, dcache, Name))
-		continue;
-	    rc = 1;
-	    break;
+	    checkDependentPackages(ts, dcache, Name);
 	}
-	if (rc)
-	    goto exit;
 
-	rc = 0;
 	fi = rpmteFI(p);
 	fi = rpmfiInit(fi, 0);
 	while (rpmfiNext(fi) >= 0) {
 	    const char * fn = rpmfiFN(fi);
 
 	    /* Erasing: check filename against requiredby matches. */
-	    if (!checkDependentPackages(ts, dcache, fn))
-		continue;
-	    rc = 1;
-	    break;
+	    checkDependentPackages(ts, dcache, fn);
 	}
-	if (rc)
-	    goto exit;
     }
     pi = rpmtsiFree(pi);
-
-    rc = 0;
 
 exit:
     mi = rpmdbFreeIterator(mi);
