@@ -369,9 +369,6 @@ static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep, int adding)
     int *cachedrc = NULL;
     int cacheThis = 0;
 
-    if (Name == NULL || DNEVR == NULL)
-	return 0;	/* XXX can't happen */
-
 retry:
     rc = 0;	/* assume dependency is satisfied */
 
@@ -481,16 +478,11 @@ static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 		const char * depName, rpm_color_t tscolor, int adding)
 {
     rpm_color_t dscolor;
-    const char * Name;
 
     requires = rpmdsInit(requires);
     while (rpmdsNext(requires) >= 0) {
-
-	if ((Name = rpmdsN(requires)) == NULL)
-	    continue;	/* XXX can't happen */
-
 	/* Filter out requires that came along for the ride. */
-	if (depName != NULL && !rstreq(depName, Name))
+	if (depName != NULL && !rstreq(depName, rpmdsN(requires)))
 	    continue;
 
 	/* Ignore colored requires not in our rainbow. */
@@ -504,12 +496,8 @@ static void checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 
     conflicts = rpmdsInit(conflicts);
     while (rpmdsNext(conflicts) >= 0) {
-
-	if ((Name = rpmdsN(conflicts)) == NULL)
-	    continue;	/* XXX can't happen */
-
 	/* Filter out conflicts that came along for the ride. */
-	if (depName != NULL && !rstreq(depName, Name))
+	if (depName != NULL && !rstreq(depName, rpmdsN(conflicts)))
 	    continue;
 
 	/* Ignore colored conflicts not in our rainbow. */
@@ -540,13 +528,11 @@ static void checkPackageSet(rpmts ts, depCache dcache, const char * dep,
     (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
 			      tsmem->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	char * pkgNEVRA;
-	rpmds requires, conflicts;
+	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
+	rpmds requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
+	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 
-	pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
-	requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
 	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
-	conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
 	checkPackageDeps(ts, dcache, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
@@ -615,9 +601,8 @@ int rpmtsCheck(rpmts ts)
      */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmds provides;
+	rpmds provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
 
-	/* FIX: rpmts{A,O} can return null. */
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 	checkPackageDeps(ts, dcache, rpmteNEVRA(p),
@@ -626,15 +611,9 @@ int rpmtsCheck(rpmts ts)
 			NULL,
 			tscolor, 1);
 
-	provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
+	/* Adding: check provides key against conflicts matches. */
 	while (rpmdsNext(provides) >= 0) {
-	    const char * Name;
-
-	    if ((Name = rpmdsN(provides)) == NULL)
-		continue;	/* XXX can't happen */
-
-	    /* Adding: check provides key against conflicts matches. */
-	    checkDependentConflicts(ts, dcache, Name);
+	    checkDependentConflicts(ts, dcache, rpmdsN(provides));
 	}
     }
     pi = rpmtsiFree(pi);
@@ -645,29 +624,19 @@ int rpmtsCheck(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	rpmds provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
-	rpmfi fi;
+	rpmfi fi = rpmfiInit(rpmteFI(p), 0);
 
-	/* FIX: rpmts{A,O} can return null. */
 	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
+	/* Erasing: check provides against requiredby matches. */
 	while (rpmdsNext(provides) >= 0) {
-	    const char * Name;
-
-	    if ((Name = rpmdsN(provides)) == NULL)
-		continue;	/* XXX can't happen */
-
-	    /* Erasing: check provides against requiredby matches. */
-	    checkDependentPackages(ts, dcache, Name);
+	    checkDependentPackages(ts, dcache, rpmdsN(provides));
 	}
 
-	fi = rpmteFI(p);
-	fi = rpmfiInit(fi, 0);
+	/* Erasing: check filename against requiredby matches. */
 	while (rpmfiNext(fi) >= 0) {
-	    const char * fn = rpmfiFN(fi);
-
-	    /* Erasing: check filename against requiredby matches. */
-	    checkDependentPackages(ts, dcache, fn);
+	    checkDependentPackages(ts, dcache, rpmfiFN(fi));
 	}
     }
     pi = rpmtsiFree(pi);
