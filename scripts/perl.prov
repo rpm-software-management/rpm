@@ -116,7 +116,7 @@ sub process_file {
       $inover = 0;
     }
 
-    if ($incomment || $inover) {
+    if ($incomment || $inover || m/^\s*#/) {
        next;
     }
 
