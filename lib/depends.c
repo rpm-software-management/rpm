@@ -354,7 +354,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * @param ts		transaction set
  * @param dep		dependency
  * @param adding	dependency is from added package set?
- * @return		0 if satisfied, 1 if not satisfied, 2 if error
+ * @return		0 if satisfied, 1 if not satisfied
  */
 static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep, int adding)
 {
@@ -475,7 +475,7 @@ exit:
  * @param depName	dependency name to filter (or NULL)
  * @param tscolor	color bits for transaction set (0 disables)
  * @param adding	dependency is from added package set?
- * @return		0 no problems found
+ * @return		0
  */
 static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 		rpmds requires, rpmds conflicts,
@@ -483,12 +483,9 @@ static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 {
     rpm_color_t dscolor;
     const char * Name;
-    int rc;
-    int ourrc = 0;
 
     requires = rpmdsInit(requires);
-    if (requires != NULL)
-    while (!ourrc && rpmdsNext(requires) >= 0) {
+    while (rpmdsNext(requires) >= 0) {
 
 	if ((Name = rpmdsN(requires)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -502,24 +499,12 @@ static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, dcache, requires, adding);
-
-	switch (rc) {
-	case 0:		/* requirements are satisfied. */
-	    break;
-	case 1:		/* requirements are not satisfied. */
+	if (unsatisfiedDepend(ts, dcache, requires, adding) == 1)
 	    rpmdsProblem(ts->probs, pkgNEVRA, requires, NULL, adding);
-	    break;
-	case 2:		/* something went wrong! */
-	default:
-	    ourrc = 1;
-	    break;
-	}
     }
 
     conflicts = rpmdsInit(conflicts);
-    if (conflicts != NULL)
-    while (!ourrc && rpmdsNext(conflicts) >= 0) {
+    while (rpmdsNext(conflicts) >= 0) {
 
 	if ((Name = rpmdsN(conflicts)) == NULL)
 	    continue;	/* XXX can't happen */
@@ -533,23 +518,11 @@ static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
-	rc = unsatisfiedDepend(ts, dcache, conflicts, adding);
-
-	/* 1 == unsatisfied, 0 == satsisfied */
-	switch (rc) {
-	case 0:		/* conflicts exist. */
+	if (unsatisfiedDepend(ts, dcache, conflicts, adding) == 0)
 	    rpmdsProblem(ts->probs, pkgNEVRA, conflicts, NULL, adding);
-	    break;
-	case 1:		/* conflicts don't exist. */
-	    break;
-	case 2:		/* something went wrong! */
-	default:
-	    ourrc = 1;
-	    break;
-	}
     }
 
-    return ourrc;
+    return 0;
 }
 
 /**
