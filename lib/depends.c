@@ -57,7 +57,7 @@ static int intcmp(const void * a, const void * b)
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(rpmts ts, Header h, rpmte depends)
+static int removePackage(tsMembers tsmem, Header h, rpmte depends)
 {
     rpmte p;
     unsigned int dboffset = headerGetInstance(h);
@@ -66,36 +66,37 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (dboffset == 0) return 1;
 
     /* Filter out duplicate erasures. */
-    if (ts->numRemovedPackages > 0 && ts->removedPackages != NULL) {
-	if (bsearch(&dboffset, ts->removedPackages, ts->numRemovedPackages,
-			sizeof(*ts->removedPackages), intcmp) != NULL)
+    if (tsmem->numRemovedPackages > 0 && tsmem->removedPackages != NULL) {
+	if (bsearch(&dboffset,
+		    tsmem->removedPackages, tsmem->numRemovedPackages,
+		    sizeof(*tsmem->removedPackages), intcmp) != NULL)
 	    return 0;
     }
 
-    if (ts->numRemovedPackages == ts->allocedRemovedPackages) {
-	ts->allocedRemovedPackages += ts->delta;
-	ts->removedPackages = xrealloc(ts->removedPackages,
-		sizeof(ts->removedPackages) * ts->allocedRemovedPackages);
+    if (tsmem->numRemovedPackages == tsmem->allocedRemovedPackages) {
+	tsmem->allocedRemovedPackages += tsmem->delta;
+	tsmem->removedPackages = xrealloc(tsmem->removedPackages,
+		sizeof(tsmem->removedPackages) * tsmem->allocedRemovedPackages);
     }
 
-    if (ts->removedPackages != NULL) {	/* XXX can't happen. */
-	ts->removedPackages[ts->numRemovedPackages] = dboffset;
-	ts->numRemovedPackages++;
-	if (ts->numRemovedPackages > 1)
-	    qsort(ts->removedPackages, ts->numRemovedPackages,
-			sizeof(*ts->removedPackages), intcmp);
+    if (tsmem->removedPackages != NULL) {	/* XXX can't happen. */
+	tsmem->removedPackages[tsmem->numRemovedPackages] = dboffset;
+	tsmem->numRemovedPackages++;
+	if (tsmem->numRemovedPackages > 1)
+	    qsort(tsmem->removedPackages, tsmem->numRemovedPackages,
+			sizeof(*tsmem->removedPackages), intcmp);
     }
 
-    if (ts->orderCount >= ts->orderAlloced) {
-	ts->orderAlloced += (ts->orderCount - ts->orderAlloced) + ts->delta;
-	ts->order = xrealloc(ts->order, sizeof(*ts->order) * ts->orderAlloced);
+    if (tsmem->orderCount >= tsmem->orderAlloced) {
+	tsmem->orderAlloced += (tsmem->orderCount - tsmem->orderAlloced) + tsmem->delta;
+	tsmem->order = xrealloc(tsmem->order, sizeof(*tsmem->order) * tsmem->orderAlloced);
     }
 
-    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL, -1);
+    p = rpmteNew(NULL, h, TR_REMOVED, NULL, NULL, -1);
     rpmteSetDependsOn(p, depends);
 
-    ts->order[ts->orderCount] = p;
-    ts->orderCount++;
+    tsmem->order[tsmem->orderCount] = p;
+    tsmem->orderCount++;
 
     return 0;
 }
@@ -103,6 +104,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t hcolor;
     rpm_color_t ohcolor;
@@ -124,14 +126,14 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto exit;
     }
 
-    if (ts->addedPackages == NULL) {
-	ts->addedPackages = rpmalCreate(5, tscolor, rpmtsPrefColor(ts));
+    if (tsmem->addedPackages == NULL) {
+	tsmem->addedPackages = rpmalCreate(5, tscolor, rpmtsPrefColor(ts));
     }
 
     /* XXX Always add source headers. */
     isSource = headerIsSource(h);
     if (isSource) {
-	oc = ts->orderCount;
+	oc = tsmem->orderCount;
 	goto addheader;
     }
 
@@ -212,7 +214,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
 	    duplicate = 1;
-	    rpmalDel(ts->addedPackages, p);
+	    rpmalDel(tsmem->addedPackages, p);
 	    break;
 	}
     }
@@ -223,27 +225,28 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto exit;
 
 addheader:
-    if (oc >= ts->orderAlloced) {
-	ts->orderAlloced += (oc - ts->orderAlloced) + ts->delta;
-	ts->order = xrealloc(ts->order, ts->orderAlloced * sizeof(*ts->order));
+    if (oc >= tsmem->orderAlloced) {
+	tsmem->orderAlloced += (oc - tsmem->orderAlloced) + tsmem->delta;
+	tsmem->order = xrealloc(tsmem->order,
+			tsmem->orderAlloced * sizeof(*tsmem->order));
     }
 
-    p = rpmteNew(ts, h, TR_ADDED, key, relocs, -1);
+    p = rpmteNew(NULL, h, TR_ADDED, key, relocs, -1);
 
-    if (duplicate && oc < ts->orderCount) {
-	ts->order[oc] = rpmteFree(ts->order[oc]);
+    if (duplicate && oc < tsmem->orderCount) {
+	tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
     }
 
-    ts->order[oc] = p;
+    tsmem->order[oc] = p;
     if (!duplicate) {
-	ts->orderCount++;
+	tsmem->orderCount++;
 	rpmcliPackagesTotal++;
     }
     
-    rpmalAdd(ts->addedPackages, p);
+    rpmalAdd(tsmem->addedPackages, p);
 
     if (!duplicate) {
-	ts->numAddedPackages++;
+	tsmem->numAddedPackages++;
     }
 
     /* XXX rpmgi hack: Save header in transaction element if requested. */
@@ -278,7 +281,7 @@ addheader:
 	if (rpmVersionCompare(h, oh) == 0)
 	    continue;
 
-	xx = removePackage(ts, oh, p);
+	xx = removePackage(tsmem, oh, p);
     }
     mi = rpmdbFreeIterator(mi);
 
@@ -300,8 +303,8 @@ addheader:
 	else
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
 
-	xx = rpmdbPruneIterator(mi,
-	    ts->removedPackages, ts->numRemovedPackages, 1);
+	xx = rpmdbPruneIterator(mi, tsmem->removedPackages, 
+				tsmem->numRemovedPackages, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
@@ -321,7 +324,7 @@ addheader:
 #ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
 		if (rpmVersionCompare(h, oh))
 #endif
-		    xx = removePackage(ts, oh, p);
+		    xx = removePackage(tsmem, oh, p);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		ohNEVRA = _free(ohNEVRA);
@@ -343,7 +346,7 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
-    return removePackage(ts, h, NULL);
+    return removePackage(rpmtsMembers(ts), h, NULL);
 }
 
 /**
@@ -355,6 +358,7 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  */
 static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep, int adding)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpmdbMatchIterator mi;
     const char * Name = rpmdsN(dep);
     const char * DNEVR = rpmdsDNEVR(dep);
@@ -389,7 +393,7 @@ retry:
     }
 
     /* Search added packages for the dependency. */
-    if (rpmalSatisfiesDepend(ts->addedPackages, dep) != NULL) {
+    if (rpmalSatisfiesDepend(tsmem->addedPackages, dep) != NULL) {
 	goto exit;
     }
 
@@ -409,8 +413,8 @@ retry:
 
 	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 
-	    (void) rpmdbPruneIterator(mi,
-			ts->removedPackages, ts->numRemovedPackages, 1);
+	    (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
+				      tsmem->numRemovedPackages, 1);
 
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		rpmdsNotify(dep, _("(db files)"), rc);
@@ -421,8 +425,8 @@ retry:
 	}
 
 	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-	(void) rpmdbPruneIterator(mi,
-			ts->removedPackages, ts->numRemovedPackages, 1);
+	(void) rpmdbPruneIterator(mi, tsmem->removedPackages,
+				  tsmem->numRemovedPackages, 1);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, _("(db provides)"), rc);
@@ -443,7 +447,7 @@ retry:
 		goto exit;
 	    if (xx == -1) {
 		retrying = 1;
-		rpmalMakeIndex(ts->addedPackages);
+		rpmalMakeIndex(tsmem->addedPackages);
 		goto retry;
 	    }
 	}
@@ -561,11 +565,12 @@ static int checkPackageDeps(rpmts ts, depCache dcache, const char * pkgNEVRA,
 static int checkPackageSet(rpmts ts, depCache dcache, const char * dep,
 		rpmdbMatchIterator mi, int adding)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     Header h;
     int ec = 0;
 
-    (void) rpmdbPruneIterator(mi,
-		ts->removedPackages, ts->numRemovedPackages, 1);
+    (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
+			      tsmem->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA;
 	rpmds requires, conflicts;
@@ -625,6 +630,7 @@ static int checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
 
 int rpmtsCheck(rpmts ts)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
@@ -645,7 +651,7 @@ int rpmtsCheck(rpmts ts)
     ts->probs = rpmpsFree(ts->probs);
     ts->probs = rpmpsCreate();
 
-    rpmalMakeIndex(ts->addedPackages);
+    rpmalMakeIndex(tsmem->addedPackages);
 
     /* XXX FIXME: figure some kind of heuristic for the cache size */
     dcache = depCacheCreate(5001, hashFunctionString, strcmp,

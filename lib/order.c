@@ -557,6 +557,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 
 int rpmtsOrder(rpmts ts)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpmtsi pi; rpmte p;
     tsortInfo q, r;
@@ -574,7 +575,7 @@ int rpmtsOrder(rpmts ts)
      * XXX FIXME: this gets needlesly called twice on normal usage patterns,
      * should track the need for generating the index somewhere
      */
-    rpmalMakeIndex(ts->addedPackages);
+    rpmalMakeIndex(tsmem->addedPackages);
 
     /* Create erased package index. */
     pi = rpmtsiInit(ts);
@@ -585,8 +586,8 @@ int rpmtsOrder(rpmts ts)
     rpmalMakeIndex(erasedPackages);
 
     for (int i = 0; i < nelem; i++) {
-	sortInfo[i].te = ts->order[i];
-	rpmteSetTSI(ts->order[i], &sortInfo[i]);
+	sortInfo[i].te = tsmem->order[i];
+	rpmteSetTSI(tsmem->order[i], &sortInfo[i]);
     }
 
     /* Record relations. */
@@ -594,7 +595,7 @@ int rpmtsOrder(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmal al = (rpmteType(p) == TR_REMOVED) ? 
-		   erasedPackages : ts->addedPackages;
+		   erasedPackages : tsmem->addedPackages;
 	rpmds requires = rpmdsInit(rpmteDS(p, RPMTAG_REQUIRENAME));
 
 	while (rpmdsNext(requires) >= 0) {
@@ -604,7 +605,7 @@ int rpmtsOrder(rpmts ts)
     }
     pi = rpmtsiFree(pi);
 
-    newOrder = xcalloc(ts->orderCount, sizeof(*newOrder));
+    newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));
 
     rpmlog(RPMLOG_DEBUG, "========== tsorting packages (order, #predecessors, #succesors, depth)\n");
@@ -646,16 +647,16 @@ int rpmtsOrder(rpmts ts)
 
     /* Clean up tsort data */
     for (int i = 0; i < nelem; i++) {
-	rpmteSetTSI(ts->order[i], NULL);
+	rpmteSetTSI(tsmem->order[i], NULL);
 	rpmTSIFree(&sortInfo[i]);
     }
     free(sortInfo);
 
-    assert(newOrderCount == ts->orderCount);
+    assert(newOrderCount == tsmem->orderCount);
 
-    ts->order = _free(ts->order);
-    ts->order = newOrder;
-    ts->orderAlloced = ts->orderCount;
+    tsmem->order = _free(tsmem->order);
+    tsmem->order = newOrder;
+    tsmem->orderAlloced = tsmem->orderCount;
     rc = 0;
 
     freeBadDeps();

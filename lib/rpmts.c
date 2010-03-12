@@ -494,6 +494,7 @@ void rpmtsCleanProblems(rpmts ts)
 void rpmtsClean(rpmts ts)
 {
     rpmtsi pi; rpmte p;
+    tsMembers tsmem = rpmtsMembers(ts);
 
     if (ts == NULL)
 	return;
@@ -504,26 +505,26 @@ void rpmtsClean(rpmts ts)
 	rpmteCleanDS(p);
     pi = rpmtsiFree(pi);
 
-    ts->addedPackages = rpmalFree(ts->addedPackages);
-    ts->numAddedPackages = 0;
+    tsmem->addedPackages = rpmalFree(tsmem->addedPackages);
+    tsmem->numAddedPackages = 0;
 
     rpmtsCleanProblems(ts);
 }
 
 void rpmtsEmpty(rpmts ts)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     if (ts == NULL)
 	return;
 
     rpmtsClean(ts);
 
-    for (int oc = 0; oc < ts->orderCount; oc++) {
-	ts->order[oc] = rpmteFree(ts->order[oc]);
+    for (int oc = 0; oc < tsmem->orderCount; oc++) {
+	tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
     }
 
-    ts->orderCount = 0;
-
-    ts->numRemovedPackages = 0;
+    tsmem->orderCount = 0;
+    tsmem->numRemovedPackages = 0;
     return;
 }
 
@@ -561,6 +562,7 @@ static void rpmtsPrintStats(rpmts ts)
 
 rpmts rpmtsFree(rpmts ts)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     if (ts == NULL)
 	return NULL;
 
@@ -571,7 +573,9 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseDB(ts);
 
-    ts->removedPackages = _free(ts->removedPackages);
+    tsmem->removedPackages = _free(tsmem->removedPackages);
+    tsmem->order = _free(tsmem->order);
+    ts->members = _free(ts->members);
 
     ts->dsi = _free(ts->dsi);
 
@@ -581,9 +585,6 @@ rpmts rpmtsFree(rpmts ts)
     }
     ts->rootDir = _free(ts->rootDir);
     ts->currDir = _free(ts->currDir);
-
-    ts->order = _free(ts->order);
-    ts->orderAlloced = 0;
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -751,8 +752,9 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 int rpmtsNElements(rpmts ts)
 {
     int nelements = 0;
-    if (ts != NULL && ts->order != NULL) {
-	nelements = ts->orderCount;
+    tsMembers tsmem = rpmtsMembers(ts);
+    if (tsmem != NULL && tsmem->order != NULL) {
+	nelements = tsmem->orderCount;
     }
     return nelements;
 }
@@ -760,9 +762,10 @@ int rpmtsNElements(rpmts ts)
 rpmte rpmtsElement(rpmts ts, int ix)
 {
     rpmte te = NULL;
-    if (ts != NULL && ts->order != NULL) {
-	if (ix >= 0 && ix < ts->orderCount)
-	    te = ts->order[ix];
+    tsMembers tsmem = rpmtsMembers(ts);
+    if (tsmem != NULL && tsmem->order != NULL) {
+	if (ix >= 0 && ix < tsmem->orderCount)
+	    te = tsmem->order[ix];
     }
     return te;
 }
@@ -848,9 +851,15 @@ int rpmtsSetNotifyCallback(rpmts ts,
     return 0;
 }
 
+tsMembers rpmtsMembers(rpmts ts)
+{
+    return (ts != NULL) ? ts->members : NULL;
+}
+
 rpmts rpmtsCreate(void)
 {
     rpmts ts;
+    tsMembers tsmem;
 
     ts = xcalloc(1, sizeof(*ts));
     memset(&ts->ops, 0, sizeof(ts->ops));
@@ -865,7 +874,6 @@ rpmts rpmtsCreate(void)
 
     ts->scriptFd = NULL;
     ts->tid = (rpm_tid_t) time(NULL);
-    ts->delta = 5;
 
     ts->color = rpmExpandNumeric("%{?_transaction_color}");
     ts->prefcolor = rpmExpandNumeric("%{?_prefer_color}")?:2;
@@ -894,23 +902,24 @@ rpmts rpmtsCreate(void)
 	free(tmp);
     }
 
-    ts->numRemovedPackages = 0;
-    ts->allocedRemovedPackages = ts->delta;
-    ts->removedPackages = xcalloc(ts->allocedRemovedPackages,
-			sizeof(*ts->removedPackages));
+    tsmem = xcalloc(1, sizeof(*ts->members));
+    tsmem->delta = 5;
+    tsmem->numAddedPackages = 0;
+    tsmem->addedPackages = NULL;
+    tsmem->numRemovedPackages = 0;
+    tsmem->allocedRemovedPackages = tsmem->delta;
+    tsmem->removedPackages = xcalloc(tsmem->allocedRemovedPackages,
+				     sizeof(*tsmem->removedPackages));
+    tsmem->orderAlloced = 0;
+    tsmem->orderCount = 0;
+    tsmem->order = NULL;
+    ts->members = tsmem;
 
     ts->rootDir = NULL;
     ts->currDir = NULL;
     ts->chrootDone = 0;
 
     ts->selinuxEnabled = is_selinux_enabled();
-
-    ts->numAddedPackages = 0;
-    ts->addedPackages = NULL;
-
-    ts->orderAlloced = 0;
-    ts->orderCount = 0;
-    ts->order = NULL;
 
     ts->probs = NULL;
 

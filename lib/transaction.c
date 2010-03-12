@@ -884,6 +884,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 static
 rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpmtsi pi;  rpmte p;
     rpmfi fi;
     rpmdbMatchIterator mi;
@@ -900,7 +901,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
-	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, ts->orderCount);
+	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, tsmem->orderCount);
 
 	/* Gather all installed headers with matching basename's. */
 	fi = rpmfiInit(rpmteFI(p), 0);
@@ -934,6 +935,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 static
 void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrintCache fpc)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpmte p;
     rpmfi fi;
     rpmfs fs;
@@ -972,9 +974,9 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	/* Is this package being removed? */
 	installedPkg = rpmdbGetIteratorOffset(mi);
 	beingRemoved = 0;
-	if (ts->removedPackages != NULL)
-	for (j = 0; j < ts->numRemovedPackages; j++) {
-	    if (ts->removedPackages[j] != installedPkg)
+	if (tsmem->removedPackages != NULL)
+	for (j = 0; j < tsmem->numRemovedPackages; j++) {
+	    if (tsmem->removedPackages[j] != installedPkg)
 	        continue;
 	    beingRemoved = 1;
 	    break;
@@ -1278,6 +1280,7 @@ static int rpmtsFinish(rpmts ts)
 
 static int rpmtsPrepare(rpmts ts)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpmtsi pi;
     rpmte p;
     rpmfi fi;
@@ -1321,7 +1324,7 @@ static int rpmtsPrepare(rpmts ts)
 	(void) rpmtsSetChrootDone(ts, 1);
     }
     
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, ts->orderCount);
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, tsmem->orderCount);
     addFingerprints(ts, fileCount, ht, fpc);
     /* check against files in the rpmdb */
     checkInstalledFiles(ts, fileCount, ht, fpc);
@@ -1347,7 +1350,7 @@ static int rpmtsPrepare(rpmts ts)
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
     pi = rpmtsiFree(pi);
-    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, ts->orderCount);
+    rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, tsmem->orderCount);
 
     /* return from chroot if done earlier */
     if (rpmtsChrootDone(ts)) {
@@ -1447,7 +1450,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) ||
 		(rpmpsNumProblems(ts->probs) &&
 		(okProbs == NULL || rpmpsTrim(ts->probs, okProbs)))) {
-	rc = ts->orderCount;
+	tsMembers tsmem = rpmtsMembers(ts);
+	rc = tsmem->orderCount;
 	goto exit;
     }
 

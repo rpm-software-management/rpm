@@ -9,6 +9,21 @@
 
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
+/* Transaction set elements information */
+typedef struct tsMembers_s {
+    int * removedPackages;	/*!< Set of packages being removed. */
+    int numRemovedPackages;	/*!< No. removed package instances. */
+    int allocedRemovedPackages;	/*!< Size of removed packages array. */
+
+    rpmal addedPackages;	/*!< Set of packages being installed. */
+    int numAddedPackages;	/*!< No. added package instances. */
+
+    rpmte * order;		/*!< Packages sorted by dependencies. */
+    int orderCount;		/*!< No. of transaction elements. */
+    int orderAlloced;		/*!< No. of allocated transaction elements. */
+    int delta;			/*!< Delta for reallocation. */
+} * tsMembers;
+
 /** \ingroup rpmts
  * The set of packages to be installed/removed atomically.
  */
@@ -31,23 +46,13 @@ struct rpmts_s {
     rpmdb rdb;			/*!< Install database handle. */
     int dbmode;			/*!< Install database open mode. */
 
-    int * removedPackages;	/*!< Set of packages being removed. */
-    int numRemovedPackages;	/*!< No. removed package instances. */
-    int allocedRemovedPackages;	/*!< Size of removed packages array. */
-
-    rpmal addedPackages;	/*!< Set of packages being installed. */
-    int numAddedPackages;	/*!< No. added package instances. */
-
-    rpmte * order;		/*!< Packages sorted by dependencies. */
-    int orderCount;		/*!< No. of transaction elements. */
-    int orderAlloced;		/*!< No. of allocated transaction elements. */
+    tsMembers members;		/*!< Transaction set member info (order etc) */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
     int chrootDone;		/*!< Has chroot(2) been been done? */
     char * rootDir;		/*!< Path to top of install tree. */
     char * currDir;		/*!< Current working directory. */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
-    int delta;			/*!< Delta for reallocation. */
     rpm_tid_t tid;		/*!< Transaction id. */
 
     rpm_color_t color;		/*!< Transaction color bits. */
@@ -66,5 +71,8 @@ struct rpmts_s {
 
     int nrefs;			/*!< Reference count. */
 };
+
+RPM_GNUC_INTERNAL
+tsMembers rpmtsMembers(rpmts ts);
 
 #endif /* _RPMTS_INTERNAL_H */
