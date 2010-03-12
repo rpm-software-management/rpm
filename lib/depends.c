@@ -569,7 +569,6 @@ int rpmtsCheck(rpmts ts)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
-    rpmdbMatchIterator mi = NULL;
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
     int xx;
@@ -638,7 +637,6 @@ int rpmtsCheck(rpmts ts)
     pi = rpmtsiFree(pi);
 
 exit:
-    mi = rpmdbFreeIterator(mi);
     pi = rpmtsiFree(pi);
     depCacheFree(dcache);
 
