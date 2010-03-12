@@ -35,6 +35,11 @@ RPM_GNUC_INTERNAL
 rpmps rpmteProblems(rpmte te);
 
 RPM_GNUC_INTERNAL
+void rpmteAddProblem(rpmte te, rpmProblemType type,
+                     const char *dn, const char *bn,
+                     const char *altNEVR, uint64_t number);
+
+RPM_GNUC_INTERNAL
 const char * rpmteTypeString(rpmte te);
 
 RPM_GNUC_INTERNAL

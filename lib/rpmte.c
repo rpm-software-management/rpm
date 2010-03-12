@@ -197,12 +197,8 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
 	    }
 
 	    if (!valid) {
-		if (p->probs == NULL) {
-		    p->probs = rpmpsCreate();
-		}
-		rpmpsAppend(p->probs, RPMPROB_BADRELOCATE,
-			rpmteNEVRA(p), rpmteKey(p),
-			p->relocs[i].oldPath, NULL, NULL, 0);
+		rpmteAddProblem(p, RPMPROB_BADRELOCATE,
+				p->relocs[i].oldPath, NULL, NULL, 0);
 	    }
 	} else {
 	    p->relocs[i].newPath = NULL;
@@ -720,6 +716,18 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag)
 rpmps rpmteProblems(rpmte te)
 {
     return te ? te->probs : NULL;
+}
+
+void rpmteAddProblem(rpmte te, rpmProblemType type,
+		     const char *dn, const char *bn,
+		     const char *altNEVR, uint64_t number)
+{
+    if (te != NULL) {
+	if (te->probs == NULL)
+	    te->probs = rpmpsCreate();
+	rpmpsAppend(te->probs, type, rpmteNEVRA(te), rpmteKey(te),
+		    dn, bn, altNEVR, number);
+    }
 }
 
 const char * rpmteTypeString(rpmte te)
