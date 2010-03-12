@@ -37,10 +37,8 @@ typedef enum rpmprobFilterFlags_e {
 typedef struct rpmProblem_s * rpmProblem;
 
 /** \ingroup rpmps
- * Transaction problems found while processing a transaction set/
+ * Problem set iterator
  */
-typedef struct rpmps_s * rpmps;
-
 typedef struct rpmpsi_s * rpmpsi;
 
 /** \ingroup rpmps
