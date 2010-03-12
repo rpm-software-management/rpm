@@ -532,8 +532,6 @@ static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
 	rpmds requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
 	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 
-	(void) rpmdsSetNoPromote(requires, _rpmds_nopromote);
-	(void) rpmdsSetNoPromote(conflicts, _rpmds_nopromote);
 	checkPackageDeps(ts, dcache, te, pkgNEVRA, requires, conflicts, dep, 0, adding);
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
