@@ -439,15 +439,13 @@ retry:
      * Search for an unsatisfied dependency.
      */
     if (adding && !retrying && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
-	if (ts->solve != NULL) {
-	    xx = (*ts->solve) (ts, dep, ts->solveData);
-	    if (xx == 0)
-		goto exit;
-	    if (xx == -1) {
-		retrying = 1;
-		rpmalMakeIndex(tsmem->addedPackages);
-		goto retry;
-	    }
+	xx = rpmtsSolve(ts, dep);
+	if (xx == 0)
+	    goto exit;
+	if (xx == -1) {
+	    retrying = 1;
+	    rpmalMakeIndex(tsmem->addedPackages);
+	    goto retry;
 	}
     }
 

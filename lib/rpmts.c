@@ -474,6 +474,15 @@ int rpmtsSetSolveCallback(rpmts ts,
     return rc;
 }
 
+int rpmtsSolve(rpmts ts, rpmds key)
+{
+    int rc = 0;
+    if (ts && ts->solve) {
+	rc = (*ts->solve)(ts, key, ts->solveData);
+    }
+    return rc;
+}
+
 rpmps rpmtsProblems(rpmts ts)
 {
     rpmps ps = rpmpsCreate();

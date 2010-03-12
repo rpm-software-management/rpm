@@ -74,4 +74,7 @@ struct rpmts_s {
 RPM_GNUC_INTERNAL
 tsMembers rpmtsMembers(rpmts ts);
 
+RPM_GNUC_INTERNAL
+int rpmtsSolve(rpmts ts, rpmds key);
+
 #endif /* _RPMTS_INTERNAL_H */
