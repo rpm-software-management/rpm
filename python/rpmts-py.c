@@ -517,15 +517,8 @@ rpmtsCallback(const void * hd, const rpmCallbackType what,
 static PyObject *
 rpmts_Problems(rpmtsObject * s)
 {
-    PyObject *problems = PyList_New(0);
     rpmps ps = rpmtsProblems(s->ts);
-    rpmpsi psi = rpmpsInitIterator(ps);
-    while (rpmpsNextIterator(psi) >= 0) {
-	PyObject *prob = rpmprob_Wrap(&rpmProblem_Type, rpmpsGetProblem(psi));
-	PyList_Append(problems, prob);
-	Py_DECREF(prob);
-    }
-    rpmpsFreeIterator(psi);
+    PyObject *problems = rpmps_AsList(ps);
     rpmpsFree(ps);
     return problems;
 }

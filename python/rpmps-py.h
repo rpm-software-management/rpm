@@ -11,4 +11,6 @@ extern PyTypeObject rpmProblem_Type;
 
 PyObject * rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob);
 
+PyObject *rpmps_AsList(rpmps ps);
+
 #endif
