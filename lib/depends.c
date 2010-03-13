@@ -436,16 +436,18 @@ retry:
     }
 
     /*
-     * Search for an unsatisfied dependency.
+     * Search for an unsatisfied dependency (requires only).
      */
     if (adding && !retrying && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
-	xx = rpmtsSolve(ts, dep);
-	if (xx == 0)
-	    goto exit;
-	if (xx == -1) {
-	    retrying = 1;
-	    rpmalMakeIndex(tsmem->addedPackages);
-	    goto retry;
+	if (rpmdsTagN(dep) == RPMTAG_REQUIRENAME) {
+	    xx = rpmtsSolve(ts, dep);
+	    if (xx == 0)
+		goto exit;
+	    if (xx == -1) {
+		retrying = 1;
+		rpmalMakeIndex(tsmem->addedPackages);
+		goto retry;
+	    }
 	}
     }
 
