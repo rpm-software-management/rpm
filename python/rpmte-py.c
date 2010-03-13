@@ -4,6 +4,7 @@
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
 #include "rpmte-py.h"
+#include "rpmps-py.h"
 
 #include "debug.h"
 
@@ -30,6 +31,7 @@
  * - te.Color() Return package color bits.
  * - te.PkgFileSize() Return no. of bytes in package file (approx).
  * - te.Parent() Return the parent element index.
+ * - te.Problems() Return problems associated with this element.
  * - te.AddedKey() Return the added package index (TR_ADDED).
  * - te.DependsOnKey() Return the package index for the added package (TR_REMOVED).
  * - te.DBOffset() Return the Packages database instance number (TR_REMOVED)
@@ -116,6 +118,14 @@ static PyObject *
 rpmte_Parent(rpmteObject * s)
 {
     return Py_BuildValue("i", rpmteParent(s->te));
+}
+
+static PyObject * rpmte_Problems(rpmteObject * s)
+{
+    rpmps ps = rpmteProblems(s->te);
+    PyObject *problems = rpmps_AsList(ps);
+    rpmpsFree(ps);
+    return problems;
 }
 
 /*
@@ -208,6 +218,8 @@ static struct PyMethodDef rpmte_methods[] = {
     {"PkgFileSize",(PyCFunction)rpmte_PkgFileSize,	METH_NOARGS,
 	NULL},
     {"Parent",	(PyCFunction)rpmte_Parent,	METH_NOARGS,
+	NULL},
+    {"Problems",(PyCFunction)rpmte_Problems,	METH_NOARGS,
 	NULL},
 /*    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
       NULL}, */
