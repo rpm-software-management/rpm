@@ -476,7 +476,7 @@ int rpmtsSetSolveCallback(rpmts ts,
 
 int rpmtsSolve(rpmts ts, rpmds key)
 {
-    int rc = 0;
+    int rc = 1; /* assume not found */
     if (ts && ts->solve) {
 	rc = (*ts->solve)(ts, key, ts->solveData);
     }

@@ -74,6 +74,7 @@ struct rpmts_s {
 RPM_GNUC_INTERNAL
 tsMembers rpmtsMembers(rpmts ts);
 
+/* returns -1 for retry, 0 for ignore and 1 for not found */
 RPM_GNUC_INTERNAL
 int rpmtsSolve(rpmts ts, rpmds key);
 
