@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-03-06 11:17+0200\n"
-"PO-Revision-Date: 2010-03-13 20:26+0200\n"
+"PO-Revision-Date: 2010-03-14 16:55+0200\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
@@ -2915,7 +2915,7 @@ msgstr "бінарний об’єкт sigh (%d): ПОМИЛКА, read пове�
 #: lib/signature.c:233
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
-msgstr ""
+msgstr "теґ sigh[%d]: ПОМИЛКА, теґ %d тип %d зміщення %d к-ть %d\n"
 
 #: lib/signature.c:243
 msgid "sigh load: BAD\n"
@@ -2924,12 +2924,12 @@ msgstr "завантаження sigh: ПОМИЛКА\n"
 #: lib/signature.c:256
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
-msgstr ""
+msgstr "pad sigh (%zd): ПОМИЛКА, прочитано %zd байтів\n"
 
 #: lib/signature.c:272
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
-msgstr ""
+msgstr "sigSize sigh (%zd): ПОМИЛКА, помилка fstat(2)\n"
 
 #: lib/signature.c:355
 #, c-format
@@ -2982,7 +2982,7 @@ msgstr "Заголовок "
 
 #: lib/signature.c:848
 msgid "Verify signature: BAD PARAMETERS\n"
-msgstr ""
+msgstr "Перевірка підпису: ПОМИЛКОВІ ПАРАМЕТРИ\n"
 
 #: lib/signature.c:869
 #, c-format
@@ -3065,7 +3065,7 @@ msgstr "вираз має завершуватися символом |"
 
 #: lib/headerfmt.c:733
 msgid "array iterator used with different sized arrays"
-msgstr ""
+msgstr "ітератор масиву використано з двома масивами різної розмірності"
 
 #: lib/poptDB.c:18
 msgid "initialize database"
@@ -3074,6 +3074,8 @@ msgstr "ініціалізувати базу даних"
 #: lib/poptDB.c:20
 msgid "rebuild database inverted lists from installed package headers"
 msgstr ""
+"перебудувати зворотні списки бази даних на основі заголовків встановлених "
+"пакунків"
 
 #: lib/poptDB.c:23
 msgid "verify database files"
@@ -3082,27 +3084,27 @@ msgstr "перевірити файли бази даних"
 #: lib/rpmdb.c:155
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-msgstr ""
+msgstr "dbiTagsInit: невідома назва теґу: «%s» проігноровано\n"
 
 #: lib/rpmdb.c:213
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
-msgstr ""
+msgstr "dbiOpen: dbapi %d не доступний\n"
 
 #: lib/rpmdb.c:223
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
-msgstr ""
+msgstr "не вдалося відкрити покажчик %s за допомогою db%d — %s (%d)\n"
 
 #: lib/rpmdb.c:838
 msgid "no dbpath has been set\n"
-msgstr ""
+msgstr "не було встановлено шляху dbpath\n"
 
 #: lib/rpmdb.c:1066 lib/rpmdb.c:1195 lib/rpmdb.c:1240 lib/rpmdb.c:2098
 #: lib/rpmdb.c:2204 lib/rpmdb.c:2817
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
-msgstr ""
+msgstr "помилка(%d) отримання записів «%s» з покажчика %s\n"
 
 #: lib/rpmdb.c:1424
 msgid "miFreeHeader: skipping"
@@ -3111,17 +3113,17 @@ msgstr "miFreeHeader: пропущено"
 #: lib/rpmdb.c:1434
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
-msgstr ""
+msgstr "помилка (%d) збереження запису №%d до %s\n"
 
 #: lib/rpmdb.c:1532
 #, c-format
 msgid "%s: regexec failed: %s\n"
-msgstr ""
+msgstr "%s: помилка regexec: %s\n"
 
 #: lib/rpmdb.c:1713
 #, c-format
 msgid "%s: regcomp failed: %s\n"
-msgstr ""
+msgstr "%s: помилка regcomp: %s\n"
 
 #: lib/rpmdb.c:1995
 msgid "rpmdbNextIterator: skipping"
@@ -3130,37 +3132,37 @@ msgstr "rpmdbNextIterator: пропущено"
 #: lib/rpmdb.c:2022
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr ""
+msgstr "rpmdb: отримано пошкоджений заголовок №%u — пропущено.\n"
 
 #: lib/rpmdb.c:2422
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
-msgstr ""
+msgstr "%s: не вдалося прочитати заголовок за адресою 0x%x\n"
 
 #: lib/rpmdb.c:2468
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
-msgstr ""
+msgstr "помилка (%d) встановлення запису заголовка №%d для вилучення %s\n"
 
 #: lib/rpmdb.c:2517
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
-msgstr ""
+msgstr "помилка (%d) встановлення записів «%s» за покажчиком %s\n"
 
 #: lib/rpmdb.c:2536
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
-msgstr ""
+msgstr "помилка (%d) під час спроби збереження запису «%s» до %s\n"
 
 #: lib/rpmdb.c:2546
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
-msgstr ""
+msgstr "помилка (%d) під час спроби вилучення запису «%s» з %s\n"
 
 #: lib/rpmdb.c:2674
 #, c-format
 msgid "error(%d) allocating new package instance\n"
-msgstr ""
+msgstr "помилка (%d) розподілу нового екземпляра пакунка\n"
 
 #: lib/rpmdb.c:2722
 msgid "rpmdbAdd: skipping"
@@ -3169,11 +3171,11 @@ msgstr "rpmdbAdd: пропущено"
 #: lib/rpmdb.c:2833
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
-msgstr ""
+msgstr "помилка (%d) під час спроби збереження запису %s до %s\n"
 
 #: lib/rpmdb.c:3035
 msgid "no dbpath has been set"
-msgstr ""
+msgstr "не було встановлено шляху dbpath"
 
 #: lib/rpmdb.c:3060
 #, c-format
@@ -3188,25 +3190,27 @@ msgstr "не вдалося створити каталог %s: %s\n"
 #: lib/rpmdb.c:3115
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
-msgstr ""
+msgstr "заголовок №%u у базі даних є помилковим — пропущено.\n"
 
 #: lib/rpmdb.c:3129
 #, c-format
 msgid "cannot add record originally at %u\n"
-msgstr ""
+msgstr "не вдалося додати запис з початковим розташуванням у %u\n"
 
 #: lib/rpmdb.c:3144
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
+"не вдалося перебудувати базу даних: початкова база даних залишається на "
+"місці\n"
 
 #: lib/rpmdb.c:3152
 msgid "failed to replace old database with new database!\n"
-msgstr ""
+msgstr "не вдалося замінити стару базу даних новою!\n"
 
 #: lib/rpmdb.c:3154
 #, c-format
 msgid "replace files in %s with files from %s to recover"
-msgstr ""
+msgstr "замінити файли у %s файлами з %s для відновлення"
 
 #: lib/rpmdb.c:3166
 #, c-format
@@ -3216,17 +3220,17 @@ msgstr "не вдалося вилучити каталог %s: %s\n"
 #: lib/backend/db3.c:29
 #, c-format
 msgid "db%d error(%d) from %s: %s\n"
-msgstr ""
+msgstr "помилка db%d (%d) з %s: %s\n"
 
 #: lib/backend/db3.c:32
 #, c-format
 msgid "db%d error(%d): %s\n"
-msgstr ""
+msgstr "помилка db%d (%d): %s\n"
 
 #: lib/backend/db3.c:839
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
-msgstr ""
+msgstr "не вдалося отримати блокування %s на %s/%s\n"
 
 #: lib/backend/db3.c:841
 msgid "shared"
@@ -3234,102 +3238,103 @@ msgstr "спільний"
 
 #: lib/backend/db3.c:841
 msgid "exclusive"
-msgstr ""
+msgstr "ексклюзивний"
 
 #: lib/backend/dbconfig.c:287
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
-msgstr ""
+msgstr "невідомий параметр db: «%s» проігноровано.\n"
 
 #: lib/backend/dbconfig.c:324
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
-msgstr ""
+msgstr "%s має некоректне числове значення, пропущено\n"
 
 #: lib/backend/dbconfig.c:333
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr ""
+"%s має занадто велике або занадто мале довге ціле значення, пропущено\n"
 
 #: lib/backend/dbconfig.c:342
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
-msgstr ""
+msgstr "%s має занадто велике або занадто мале ціле значення, пропущено\n"
 
 #: python/rpmts-py.c:165
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
-msgstr ""
+msgstr "error: помилка зворотного виклику python %s, перервано!\n"
 
 #: rpmio/macro.c:189
 #, c-format
 msgid "======================== active %d empty %d\n"
-msgstr ""
+msgstr "=================== активних %d порожніх %d\n"
 
 #: rpmio/macro.c:328
 #, c-format
 msgid "%3d>%*s(empty)"
-msgstr ""
+msgstr "%3d>%*s(порожньо)"
 
 #: rpmio/macro.c:369
 #, c-format
 msgid "%3d<%*s(empty)\n"
-msgstr ""
+msgstr "%3d<%*s(порожньо)\n"
 
 #: rpmio/macro.c:565 rpmio/macro.c:603
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
-msgstr ""
+msgstr "Запис макросу %%%s не завершено\n"
 
 #: rpmio/macro.c:622
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
-msgstr ""
+msgstr "Макрос %%%s має некоректну назву (%%define)\n"
 
 #: rpmio/macro.c:628
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
-msgstr ""
+msgstr "Запис параметрів макросу %%%s не завершено\n"
 
 #: rpmio/macro.c:633
 #, c-format
 msgid "Macro %%%s has empty body\n"
-msgstr ""
+msgstr "Тіло макросу %%%s є порожнім\n"
 
 #: rpmio/macro.c:638
 #, c-format
 msgid "Macro %%%s failed to expand\n"
-msgstr ""
+msgstr "Не вдалося розгорнути макрос %%%s\n"
 
 #: rpmio/macro.c:673
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
-msgstr ""
+msgstr "Макрос %%%s має некоректну назву (%%undefine)\n"
 
 #: rpmio/macro.c:762
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
-msgstr ""
+msgstr "Макрос %%%s (%s) не було використано під рівнем %d\n"
 
 #: rpmio/macro.c:844
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
-msgstr ""
+msgstr "Невідомий параметр %c у %s(%s)\n"
 
 #: rpmio/macro.c:1049
 #, c-format
 msgid "Recursion depth(%d) greater than max(%d)\n"
-msgstr ""
+msgstr "Глибина рекурсії (%d) перевищує максимальну (%d)\n"
 
 #: rpmio/macro.c:1118 rpmio/macro.c:1135
 #, c-format
 msgid "Unterminated %c: %s\n"
-msgstr ""
+msgstr "Не закрито %c: %s\n"
 
 #: rpmio/macro.c:1176
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
-msgstr ""
+msgstr "За %% вказано непридатний до обробки макрос\n"
 
 #: rpmio/macro.c:1392
 msgid "Target buffer overflow\n"
@@ -3377,7 +3382,7 @@ msgstr "некоректний синтаксис у файлі lua: %s\n"
 #: rpmio/rpmlua.c:662
 #, c-format
 msgid "lua hook failed: %s\n"
-msgstr ""
+msgstr "помилка виклику lua: %s\n"
 
 #: rpmio/rpmlog.c:37
 msgid "(no error)"
@@ -3399,11 +3404,12 @@ msgstr "попередження: "
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr ""
+"у відповідь на спробу отримання області пам’яті (%u байтів) повернуто NULL.\n"
 
 #: rpmio/rpmpgp.c:1333
 #, c-format
 msgid "V%d %s/%s %s, key ID %s"
-msgstr ""
+msgstr "V%d %s/%s %s, ід. ключа %s"
 
 #: rpmio/rpmpgp.c:1341
 msgid "(none)"
@@ -3412,11 +3418,11 @@ msgstr "(нічого)"
 #: rpmio/rpmpgp.c:1612
 #, c-format
 msgid "Failed to register fork handler: %m\n"
-msgstr ""
+msgstr "Не вдалося зареєструвати обробник розгалуження: %m\n"
 
 #: rpmio/url.c:216
 msgid "url port must be a number\n"
-msgstr ""
+msgstr "значення порту url має бути цілим числом\n"
 
 #: tools/rpmgraph.c:169
 #, c-format
