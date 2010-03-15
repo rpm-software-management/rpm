@@ -520,7 +520,7 @@ int parsePrep(rpmSpec spec)
 	}
     }
 
-    argvSplit(&saveLines, getStringBuf(sb), "\n");
+    saveLines = argvSplitString(getStringBuf(sb), "\n", ARGV_NONE);
     for (lines = saveLines; *lines; lines++) {
 	res = 0;
 	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
