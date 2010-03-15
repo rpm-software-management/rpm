@@ -12,8 +12,7 @@ EXTRA_DIST = \
 	check-buildroot check-rpaths check-rpaths-worker \
 	find-debuginfo.sh find-lang.sh \
 	perldeps.pl perl.prov perl.req pythondeps.sh osgideps.pl \
-	rpmdb_loadcvt rpmdiff rpmdiff.cgi \
-	rpm.daily rpm.log rpm2cpio.sh \
+	rpmdb_loadcvt rpm.daily rpm.log rpm2cpio.sh \
 	tcl.req tgpg vpkg-provides.sh \
 	find-requires.php find-provides.php \
 	find-php-provides find-php-requires \
@@ -35,9 +34,9 @@ rpmconfig_SCRIPTS = \
 	pkgconfigdeps.sh libtooldeps.sh \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
 	fontconfig.prov desktop-file.prov script.req \
-	rpmdb_loadcvt rpmdiff rpm2cpio.sh tcl.req tgpg 
+	rpmdb_loadcvt rpm2cpio.sh tcl.req tgpg 
 
 rpmconfig_DATA = \
-	rpmdiff.cgi rpm.daily rpm.log \
+	rpm.daily rpm.log \
 	macros.perl macros.php macros.python
 
