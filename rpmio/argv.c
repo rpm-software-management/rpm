@@ -167,7 +167,7 @@ int argvAppend(ARGV_t * argvp, ARGV_const_t av)
     return 0;
 }
 
-int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
+ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
 {
     char *dest = xmalloc(strlen(str) + 1);
     ARGV_t argv;
@@ -188,14 +188,22 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
     argv = xmalloc( (argc + 1) * sizeof(*argv));
 
     for (c = 0, s = dest; s < t; s+= strlen(s) + 1) {
-	if (*s == '\0')
+	if (*s == '\0' && (flags & ARGV_SKIPEMPTY))
 	    continue;
 	argv[c] = xstrdup(s);
 	c++;
     }
     argv[c] = NULL;
-    *argvp = argv;
     free(dest);
+    return argv;
+}
+
+/* Backwards compatibility */
+int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
+{
+    if (argvp) {
+	*argvp = argvSplitString(str, seps, ARGV_SKIPEMPTY);
+    }
     return 0;
 }
 

@@ -138,6 +138,20 @@ int argvAddNum(ARGV_t * argvp, int val);
  */
 int argvAppend(ARGV_t * argvp, ARGV_const_t av);
 
+typedef enum argvFlags_e {
+    ARGV_NONE		= 0,
+    ARGV_SKIPEMPTY	= (1 << 0),	/* omit empty strings from result */
+} argvFlags;
+
+/** \ingroup rpmargv
+ * Split a string into an argv array.
+ * @param str		string arg to split
+ * @param seps		seperator characters
+ * @param flags		flags to control behavior
+ * @return		argv array
+ */
+ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags);
+
 /** \ingroup rpmargv
  * Split a string into an argv array.
  * @retval *argvp	argv array
