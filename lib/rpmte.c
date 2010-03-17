@@ -473,22 +473,15 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
     if (te == NULL)
 	return NULL;
 
-    if (tag == RPMTAG_NAME)
-	return te->this;
-    else
-    if (tag == RPMTAG_PROVIDENAME)
-	return te->provides;
-    else
-    if (tag == RPMTAG_REQUIRENAME)
-	return te->requires;
-    else
-    if (tag == RPMTAG_CONFLICTNAME)
-	return te->conflicts;
-    else
-    if (tag == RPMTAG_OBSOLETENAME)
-	return te->obsoletes;
-    else
-	return NULL;
+    switch (tag) {
+    case RPMTAG_NAME:		return te->this;
+    case RPMTAG_PROVIDENAME:	return te->provides;
+    case RPMTAG_REQUIRENAME:	return te->requires;
+    case RPMTAG_CONFLICTNAME:	return te->conflicts;
+    case RPMTAG_OBSOLETENAME:	return te->obsoletes;
+    default:			break;
+    }
+    return NULL;
 }
 
 rpmfi rpmteSetFI(rpmte te, rpmfi fi)
