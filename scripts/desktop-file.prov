@@ -9,11 +9,13 @@ OLD_IFS="$IFS"
 while read instfile ; do
 	case "$instfile" in
 	*.desktop)
-		mime=`cat "$instfile" | grep MimeType= | cut -d'=' -f2`
-                IFS=';'
+		if ! grep -q '^Type=Application$' "$instfile"; then continue; fi
+		if ! grep -q '^Exec=' "$instfile"; then continue; fi
+		mime=`grep '^MimeType=' "$instfile" | cut -d'=' -f2`
+		IFS=';'
 		for type in $mime ; do
-		        echo 'mimehandler('$type')'
-	        done
+			echo 'mimehandler('$type')'
+		done
 		;;
 	esac
 done
