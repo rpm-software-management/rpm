@@ -462,51 +462,28 @@ exit:
     return rc;
 }
 
-/**
- * Check added requires/conflicts against against installed+added packages.
- * @param ts		transaction set
- * @param te		related transaction element
- * @param pkgNEVRA	package name-version-release.arch
- * @param requires	Requires: dependencies (or NULL)
- * @param conflicts	Conflicts: dependencies (or NULL)
- * @param depName	dependency name to filter (or NULL)
- * @param tscolor	color bits for transaction set (0 disables)
- * @param adding	dependency is from added package set?
- */
-static void checkPackageDeps(rpmts ts, depCache dcache, rpmte te,
-		const char * pkgNEVRA, rpmds requires, rpmds conflicts,
+/* Check a dependency set for problems */
+static void checkDS(rpmts ts, depCache dcache, rpmte te,
+		const char * pkgNEVRA, rpmds ds,
 		const char * depName, rpm_color_t tscolor, int adding)
 {
     rpm_color_t dscolor;
+    /* require-problems are unsatisfied, others appear "satisfied" */
+    int is_problem = (rpmdsTagN(ds) == RPMTAG_REQUIRENAME);
 
-    requires = rpmdsInit(requires);
-    while (rpmdsNext(requires) >= 0) {
-	/* Filter out requires that came along for the ride. */
-	if (depName != NULL && !rstreq(depName, rpmdsN(requires)))
+    ds = rpmdsInit(ds);
+    while (rpmdsNext(ds) >= 0) {
+	/* Filter out dependencies that came along for the ride. */
+	if (depName != NULL && !rstreq(depName, rpmdsN(ds)))
 	    continue;
 
-	/* Ignore colored requires not in our rainbow. */
-	dscolor = rpmdsColor(requires);
+	/* Ignore colored dependencies not in our rainbow. */
+	dscolor = rpmdsColor(ds);
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
-	if (unsatisfiedDepend(ts, dcache, requires, adding) == 1)
-	    rpmteAddDepProblem(te, pkgNEVRA, requires, NULL, adding);
-    }
-
-    conflicts = rpmdsInit(conflicts);
-    while (rpmdsNext(conflicts) >= 0) {
-	/* Filter out conflicts that came along for the ride. */
-	if (depName != NULL && !rstreq(depName, rpmdsN(conflicts)))
-	    continue;
-
-	/* Ignore colored conflicts not in our rainbow. */
-	dscolor = rpmdsColor(conflicts);
-	if (tscolor && dscolor && !(tscolor & dscolor))
-	    continue;
-
-	if (unsatisfiedDepend(ts, dcache, conflicts, adding) == 0)
-	    rpmteAddDepProblem(te, pkgNEVRA, conflicts, NULL, adding);
+	if (unsatisfiedDepend(ts, dcache, ds, adding) == is_problem)
+	    rpmteAddDepProblem(te, pkgNEVRA, ds, NULL, adding);
     }
 }
 
@@ -532,7 +509,9 @@ static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
 	rpmds requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
 	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 
-	checkPackageDeps(ts, dcache, te, pkgNEVRA, requires, conflicts, dep, 0, adding);
+	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0, adding);
+	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0, adding);
+
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
@@ -582,11 +561,11 @@ int rpmtsCheck(rpmts ts)
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-	checkPackageDeps(ts, dcache, p, rpmteNEVRA(p),
-			rpmteDS(p, RPMTAG_REQUIRENAME),
-			rpmteDS(p, RPMTAG_CONFLICTNAME),
-			NULL,
-			tscolor, 1);
+
+	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_REQUIRENAME),
+		NULL, tscolor, 1);
+	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_CONFLICTNAME),
+		NULL, tscolor, 1);
 
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
