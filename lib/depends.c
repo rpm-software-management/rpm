@@ -102,6 +102,14 @@ static int removePackage(tsMembers tsmem, Header h, rpmte depends)
     return 0;
 }
 
+/* Return rpmdb iterator with removals pruned out */
+static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmTag tag, const char * key)
+{
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, tag, key, 0);
+    tsMembers tsmem = rpmtsMembers(ts);
+    rpmdbPruneIterator(mi, tsmem->removedPackages, tsmem->numRemovedPackages,1);
+    return mi;
+}
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
@@ -291,10 +299,7 @@ addheader:
 	if (rstreq(rpmteN(p), Name))
 	    continue;
 
-	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
-
-	xx = rpmdbPruneIterator(mi, tsmem->removedPackages, 
-				tsmem->numRemovedPackages, 1);
+	mi = rpmtsPrunedIterator(ts, RPMTAG_NAME, Name);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
@@ -394,10 +399,7 @@ retry:
     cacheThis = 1;
 
     if (Name[0] == '/') {
-	mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-
-	(void) rpmdbPruneIterator(mi, tsmem->removedPackages,
-				  tsmem->numRemovedPackages, 1);
+	mi = rpmtsPrunedIterator(ts, RPMTAG_BASENAMES, Name);
 
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmdsNotify(dep, _("(db files)"), rc);
@@ -407,9 +409,7 @@ retry:
 	mi = rpmdbFreeIterator(mi);
     }
 
-    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
-    (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
-			      tsmem->numRemovedPackages, 1);
+    mi = rpmtsPrunedIterator(ts, RPMTAG_PROVIDENAME, Name);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
 	    rpmdsNotify(dep, _("(db provides)"), rc);
@@ -482,11 +482,8 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
 static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
 			const char * dep, rpmdbMatchIterator mi, int adding)
 {
-    tsMembers tsmem = rpmtsMembers(ts);
     Header h;
 
-    (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
-			      tsmem->numRemovedPackages, 1);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmds requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
@@ -508,7 +505,7 @@ static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
 static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 			  rpmTag depTag, const char *dep)
 {
-    rpmdbMatchIterator mi = rpmtsInitIterator(ts, depTag, dep, 0);
+    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep);
     checkPackageSet(ts, dcache, te, dep, mi, 0);
     rpmdbFreeIterator(mi);
 }
