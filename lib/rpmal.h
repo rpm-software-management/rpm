@@ -61,30 +61,10 @@ RPM_GNUC_INTERNAL
 void rpmalMakeIndex(rpmal al);
 
 /**
- * Check added package file lists for package(s) that provide a file.
+ * Lookup best provider for a dependency in the available list
  * @param al		available list
  * @param ds		dependency set
- * @return		associated package(s), NULL if none
- */
-RPM_GNUC_INTERNAL
-rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds);
-
-/**
- * Check added package file lists for package(s) that have a provide.
- * @param al		available list
- * @param ds		dependency set
- * @retval keyp		added package key pointer (or NULL)
- * @return		associated package(s), NULL if none
- */
-RPM_GNUC_INTERNAL
-rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds);
-
-/**
- * Check added package file lists for first package that has a provide.
- * @todo Eliminate.
- * @param al		available list
- * @param ds		dependency set
- * @return		associated package key, NULL if none
+ * @return		best provider for the dependency, NULL if none
  */
 RPM_GNUC_INTERNAL
 rpmte rpmalSatisfiesDepend(const rpmal al, const rpmds ds);

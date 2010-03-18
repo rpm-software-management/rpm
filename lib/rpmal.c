@@ -274,8 +274,7 @@ void rpmalMakeIndex(rpmal al)
     }
 }
 
-rpmte *
-rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
+static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     const char *fileName = rpmdsN(ds);
     const char *slash; 
@@ -320,8 +319,7 @@ rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
     return ret;
 }
 
-rpmte *
-rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
+static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     rpmte * ret = NULL;
     int i, found;
