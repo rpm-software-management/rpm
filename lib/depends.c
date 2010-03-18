@@ -111,7 +111,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     rpm_color_t ohcolor;
     rpmdbMatchIterator mi;
     Header oh;
-    int isSource;
+    int isSource = headerIsSource(h);
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
     rpmds oldChk = NULL, newChk = NULL, sameChk = NULL;
@@ -132,7 +132,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     /* XXX Always add source headers. */
-    isSource = headerIsSource(h);
     if (isSource) {
 	oc = tsmem->orderCount;
 	goto addheader;
@@ -165,9 +164,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    const char * parch = rpmteA(p);
 	    const char * pos = rpmteO(p);
 
-	    if (arch == NULL || parch == NULL)
-		continue;
-	    if (os == NULL || pos == NULL)
+	    if (arch == NULL || parch == NULL || os == NULL || pos == NULL)
 		continue;
 	    if (!rstreq(arch, parch) || !rstreq(os, pos))
 		continue;
@@ -254,12 +251,8 @@ addheader:
     if (upgrade & 0x2)
 	(void) rpmteSetHeader(p, h);
 
-    /* If not upgrading, then we're done. */
-    if (!(upgrade & 0x1))
-	goto exit;
-
-    /* XXX binary rpms always have RPMTAG_SOURCERPM, source rpms do not */
-    if (isSource)
+    /* If not upgrading or a source package, then we're done. */
+    if (!(upgrade & 0x1) || isSource)
 	goto exit;
 
     /* Do lazy (readonly?) open of rpm database. */
@@ -288,7 +281,6 @@ addheader:
 
     obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME), RPMDBG_M("Obsoletes"));
     obsoletes = rpmdsInit(obsoletes);
-    if (obsoletes != NULL)
     while (rpmdsNext(obsoletes) >= 0) {
 	const char * Name;
 
