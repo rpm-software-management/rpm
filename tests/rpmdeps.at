@@ -1,0 +1,182 @@
+#    rpmdeps.at: rpm dependency tests
+
+AT_BANNER([RPM dependencies])
+
+# ------------------------------
+# 
+AT_SETUP([missing dependency])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-two" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	deptest-two is needed by deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+# ------------------------------
+# 
+AT_SETUP([cross-depending packages])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-two" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+run rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "reqs deptest-one" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# 
+AT_SETUP([unsatisfied versioned require])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-two >= 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+run rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs deptest-foo = 1.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[2],
+[],
+[error: Failed dependencies:
+	deptest-two >= 2.0 is needed by deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+# ------------------------------
+# 
+AT_SETUP([satisfied versioned require])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-foo >= 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+run rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs deptest-foo = 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# 
+AT_SETUP([versioned conflict in transaction])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "cfls deptest-two < 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+run rpmbuild --quiet -bb \
+	--define "pkg two" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[2],
+[],
+[error: Failed dependencies:
+	deptest-two < 2.0 conflicts with deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+# ------------------------------
+# 
+AT_SETUP([versioned conflict in database])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "cfls deptest-two < 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+run rpmbuild --quiet -bb \
+	--define "pkg two" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+],
+[1],
+[],
+[error: Failed dependencies:
+	deptest-two < 2.0 conflicts with (installed) deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+# ------------------------------
+# 
+AT_SETUP([erase to break dependencies])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-foo >= 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+run rpmbuild --quiet -bb \
+	--define "pkg two" \
+	--define "provs deptest-foo = 2.0" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -e deptest-two
+],
+[1],
+[],
+[error: Failed dependencies:
+	deptest-foo >= 2.0 is needed by (installed) deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
