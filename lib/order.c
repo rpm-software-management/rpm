@@ -571,19 +571,12 @@ int rpmtsOrder(rpmts ts)
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
-    /*
-     * XXX FIXME: this gets needlesly called twice on normal usage patterns,
-     * should track the need for generating the index somewhere
-     */
-    rpmalMakeIndex(tsmem->addedPackages);
-
     /* Create erased package index. */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
         rpmalAdd(erasedPackages, p);
     }
     pi = rpmtsiFree(pi);
-    rpmalMakeIndex(erasedPackages);
 
     for (int i = 0; i < nelem; i++) {
 	sortInfo[i].te = tsmem->order[i];

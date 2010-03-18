@@ -433,7 +433,6 @@ retry:
 	    goto exit;
 	if (xx == -1) {
 	    retrying = 1;
-	    rpmalMakeIndex(tsmem->addedPackages);
 	    goto retry;
 	}
     }
@@ -521,7 +520,6 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 
 int rpmtsCheck(rpmts ts)
 {
-    tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
@@ -536,8 +534,6 @@ int rpmtsCheck(rpmts ts)
 	    goto exit;
 	closeatexit = 1;
     }
-
-    rpmalMakeIndex(tsmem->addedPackages);
 
     /* XXX FIXME: figure some kind of heuristic for the cache size */
     dcache = depCacheCreate(5001, hashFunctionString, strcmp,

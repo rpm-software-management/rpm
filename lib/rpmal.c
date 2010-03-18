@@ -244,7 +244,7 @@ void rpmalAdd(rpmal al, rpmte p)
     assert(((rpmalNum)(alp - al->list)) == pkgNum);
 }
 
-void rpmalMakeIndex(rpmal al)
+static void rpmalMakeIndex(rpmal al)
 {
     availablePackage alp;
     int i;
@@ -332,6 +332,9 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 
     if (al == NULL || ds == NULL || (name = rpmdsN(ds)) == NULL)
 	return ret;
+
+    if (al->providesHash == NULL && al->fileHash == NULL)
+	rpmalMakeIndex(al);
 
     if (*name == '/') {
 	/* First, look for files "contained" in package ... */

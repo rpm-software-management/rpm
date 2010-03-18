@@ -54,13 +54,6 @@ void rpmalAdd(rpmal al,
 	      rpmte p);
 
 /**
- * Generate index for available list.
- * @param al		available list
- */
-RPM_GNUC_INTERNAL
-void rpmalMakeIndex(rpmal al);
-
-/**
  * Lookup best provider for a dependency in the available list
  * @param al		available list
  * @param ds		dependency set
