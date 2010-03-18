@@ -508,12 +508,15 @@ static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
 	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmds requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
 	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
+	rpmds obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
 	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0, adding);
 	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0, adding);
+	checkDS(ts, dcache, te, pkgNEVRA, obsoletes, dep, 0, adding);
 
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
+	obsoletes = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
     }
 }
@@ -571,6 +574,9 @@ int rpmtsCheck(rpmts ts)
 	while (rpmdsNext(provides) >= 0) {
 	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, rpmdsN(provides));
 	}
+
+	/* Check package name (not provides!) against installed obsoletes */
+	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
     }
     pi = rpmtsiFree(pi);
 
