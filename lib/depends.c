@@ -617,7 +617,7 @@ static int checkDependentConflicts(rpmts ts, depCache dcache, const char * dep)
     if (rpmtsGetRdb(ts) != NULL) {	/* XXX is this necessary? */
 	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
-	rc = checkPackageSet(ts, dcache, dep, mi, 1);
+	rc = checkPackageSet(ts, dcache, dep, mi, 0);
     }
 
     return rc;
