@@ -12,10 +12,7 @@
 extern "C" {
 #endif
 
-extern int _rpmal_debug;
-
 typedef struct rpmal_s * rpmal;
-typedef void * rpmalKey;
 
 /**
  * Initialize available packckages, items, and directory list.

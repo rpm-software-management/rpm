@@ -17,9 +17,6 @@
 typedef struct availablePackage_s * availablePackage;
 typedef int rpmalNum;
 
-int _rpmal_debug = 0;
-
-
 /** \ingroup rpmdep
  * Info about a single package to be installed.
  */
@@ -27,7 +24,6 @@ struct availablePackage_s {
     rpmte p;                    /*!< transaction member */
     rpmds provides;		/*!< Provides: dependencies. */
     rpmfi fi;			/*!< File info set. */
-    fnpyKey key;		/*!< Associated file name/python object */
 };
 
 typedef struct availableIndexEntry_s *	availableIndexEntry;
@@ -228,9 +224,6 @@ void rpmalAdd(rpmal al, rpmte p)
     alp = al->list + pkgNum;
 
     alp->p = p;
-
-    if (_rpmal_debug)
-	fprintf(stderr, "*** add %p[%d]\n", al->list, (int) pkgNum);
 
     alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME),
 			      RPMDBG_M("Provides (rpmalAdd)"));
