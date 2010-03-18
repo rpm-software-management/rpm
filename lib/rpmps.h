@@ -56,6 +56,7 @@ typedef enum rpmProblemType_e {
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
     RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
     RPMPROB_DISKNODES,	/*!< installing package ... needs ... on the ... filesystem */
+    RPMPROB_OBSOLETES,	/*!< package ... is obsoleted by ... */
  } rpmProblemType;
 
 /** \ingroup rpmps

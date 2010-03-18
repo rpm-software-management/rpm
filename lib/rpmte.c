@@ -742,6 +742,7 @@ void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 	    te->probs = rpmpsCreate();
 
 	switch ((unsigned)DNEVR[0]) {
+	case 'O':	type = RPMPROB_OBSOLETES;	break;
 	case 'C':	type = RPMPROB_CONFLICT;	break;
 	default:
 	case 'R':	type = RPMPROB_REQUIRES;	break;

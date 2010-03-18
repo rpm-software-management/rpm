@@ -367,6 +367,11 @@ char * rpmProblemString(const rpmProblem prob)
 		altNEVR+2,
 		(prob->num1 ? "" : _("(installed) ")), pkgNEVR);
 	break;
+    case RPMPROB_OBSOLETES:
+	rc = rasprintf(&buf, _("%s is obsoleted by %s%s"),
+		altNEVR+2,
+		(prob->num1 ? "" : _("(installed) ")), pkgNEVR);
+	break;
     default:
 	rc = rasprintf(&buf,
 		_("unknown error %d encountered while manipulating package %s"),
