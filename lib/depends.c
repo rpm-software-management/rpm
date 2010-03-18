@@ -299,10 +299,7 @@ addheader:
 	if (rstreq(rpmteN(p), Name))
 	    continue;
 
-	if (Name[0] == '/')
-	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-	else
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_NAME, Name, 0);
 
 	xx = rpmdbPruneIterator(mi, tsmem->removedPackages, 
 				tsmem->numRemovedPackages, 1);
