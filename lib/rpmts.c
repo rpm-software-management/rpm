@@ -336,22 +336,6 @@ static void loadKeyring(rpmts ts)
     }
 }
 
-rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig)
-{
-    rpmRC res = RPMRC_NOKEY;
-
-    if (dig == NULL)
-	goto exit;
-
-    if (ts->keyring == NULL) {
-	loadKeyring(ts);
-    }
-    res = rpmKeyringLookup(ts->keyring, dig);
-
-exit:
-    return res;
-}
-
 /* Build pubkey header. */
 static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
 {

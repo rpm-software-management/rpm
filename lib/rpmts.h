@@ -278,14 +278,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmts
- * Retrieve pubkey from rpm database.
- * @param ts		rpm transaction
- * @param dig		OpenPGP packet container
- * @return		RPMRC_OK on success, RPMRC_NOKEY if not found
- */
-rpmRC rpmtsFindPubkey(rpmts ts, pgpDig dig) RPM_GNUC_DEPRECATED;
-
-/** \ingroup rpmts
  * Import public key packet(s).
  * @todo Implicit --update policy for gpg-pubkey headers.
  * @param ts            transaction set
