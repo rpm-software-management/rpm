@@ -47,11 +47,9 @@ void rpmalDel(rpmal al, rpmte p);
  * Add package to available list.
  * @param al	        available list
  * @param p             package
- * @return		available package index
  */
 RPM_GNUC_INTERNAL
-void rpmalAdd(rpmal al,
-	      rpmte p);
+void rpmalAdd(rpmal al, rpmte p);
 
 /**
  * Lookup best provider for a dependency in the available list
