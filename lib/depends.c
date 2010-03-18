@@ -393,36 +393,31 @@ retry:
     /* Only bother caching the expensive rpmdb lookups */
     cacheThis = 1;
 
-    /* XXX only the installer does not have the database open here. */
-    if (rpmtsGetRdb(ts) != NULL) {
-	if (Name[0] == '/') {
-	    /* depFlags better be 0! */
+    if (Name[0] == '/') {
+	mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
 
-	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, Name, 0);
-
-	    (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
-				      tsmem->numRemovedPackages, 1);
-
-	    while ((h = rpmdbNextIterator(mi)) != NULL) {
-		rpmdsNotify(dep, _("(db files)"), rc);
-		mi = rpmdbFreeIterator(mi);
-		goto exit;
-	    }
-	    mi = rpmdbFreeIterator(mi);
-	}
-
-	mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
 	(void) rpmdbPruneIterator(mi, tsmem->removedPackages,
 				  tsmem->numRemovedPackages, 1);
+
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
-		rpmdsNotify(dep, _("(db provides)"), rc);
-		mi = rpmdbFreeIterator(mi);
-		goto exit;
-	    }
+	    rpmdsNotify(dep, _("(db files)"), rc);
+	    mi = rpmdbFreeIterator(mi);
+	    goto exit;
 	}
 	mi = rpmdbFreeIterator(mi);
     }
+
+    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, Name, 0);
+    (void) rpmdbPruneIterator(mi, tsmem->removedPackages,
+			      tsmem->numRemovedPackages, 1);
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
+	if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
+	    rpmdsNotify(dep, _("(db provides)"), rc);
+	    mi = rpmdbFreeIterator(mi);
+	    goto exit;
+	}
+    }
+    mi = rpmdbFreeIterator(mi);
 
     /*
      * Search for an unsatisfied dependency.
