@@ -539,28 +539,11 @@ static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
     }
 }
 
-/**
- * Check to-be-erased dependencies against installed requires.
- * @param ts		transaction set
- * @param dep		requires name
- */
-static void checkDependentPackages(rpmts ts, depCache dcache,
-				   rpmte te, const char * dep)
+/* Check a given dependency type against installed packages */
+static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
+			  rpmTag depTag, const char *dep)
 {
-    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, dep, 0);
-    checkPackageSet(ts, dcache, te, dep, mi, 0);
-    rpmdbFreeIterator(mi);
-}
-
-/**
- * Check to-be-added dependencies against installed conflicts.
- * @param ts		transaction set
- * @param dep		conflicts name
- */
-static void checkDependentConflicts(rpmts ts, depCache dcache,
-				    rpmte te, const char * dep)
-{
-    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_CONFLICTNAME, dep, 0);
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, depTag, dep, 0);
     checkPackageSet(ts, dcache, te, dep, mi, 0);
     rpmdbFreeIterator(mi);
 }
@@ -605,9 +588,9 @@ int rpmtsCheck(rpmts ts)
 			NULL,
 			tscolor, 1);
 
-	/* Adding: check provides key against conflicts matches. */
+	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
-	    checkDependentConflicts(ts, dcache, p, rpmdsN(provides));
+	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, rpmdsN(provides));
 	}
     }
     pi = rpmtsiFree(pi);
@@ -623,14 +606,13 @@ int rpmtsCheck(rpmts ts)
 	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	/* Erasing: check provides against requiredby matches. */
+	/* Check provides and filenames against installed dependencies. */
 	while (rpmdsNext(provides) >= 0) {
-	    checkDependentPackages(ts, dcache, p, rpmdsN(provides));
+	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmdsN(provides));
 	}
 
-	/* Erasing: check filename against requiredby matches. */
 	while (rpmfiNext(fi) >= 0) {
-	    checkDependentPackages(ts, dcache, p, rpmfiFN(fi));
+	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
 	}
     }
     pi = rpmtsiFree(pi);
