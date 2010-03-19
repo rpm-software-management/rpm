@@ -270,7 +270,7 @@ addheader:
     }
 
     /* On upgrade, erase older packages of same color (if any). */
-    hcolor = headerGetNumber(h, RPMTAG_HEADERCOLOR);
+    hcolor = rpmteColor(p);
     mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 
