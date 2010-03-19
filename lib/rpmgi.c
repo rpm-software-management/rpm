@@ -38,8 +38,6 @@ struct rpmgi_s {
     char * hdrPath;		/*!< Path to current iterator header. */
     Header h;			/*!< Current iterator header. */
 
-    rpmtsi tsi;
-
     rpmdbMatchIterator mi;
 
     ARGV_t argv;
@@ -274,7 +272,6 @@ rpmgi rpmgiFree(rpmgi gi)
 
     gi->argv = argvFree(gi->argv);
 
-    gi->tsi = rpmtsiFree(gi->tsi);
     gi->mi = rpmdbFreeIterator(gi->mi);
     gi->ts = rpmtsFree(gi->ts);
 
@@ -302,7 +299,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
     gi->hdrPath = NULL;
     gi->h = NULL;
 
-    gi->tsi = NULL;
     gi->mi = NULL;
     gi->argv = argvNew();
     gi->argc = 0;
@@ -349,29 +345,6 @@ rpmRC rpmgiNext(rpmgi gi)
 	    goto enditer;
 	}
 	break;
-    case RPMDBI_ADDED:
-    {	rpmte p;
-
-	if (!gi->active) {
-	    gi->tsi = rpmtsiInit(gi->ts);
-	    gi->active = 1;
-	}
-	if ((p = rpmtsiNext(gi->tsi, TR_ADDED)) != NULL) {
-	    Header h = rpmteHeader(p);
-	    if (h != NULL)
-		if (!(gi->flags & RPMGI_NOHEADER)) {
-		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", (unsigned)gi->i);
-		gi->hdrPath = rpmExpand("added h# ", hnum, NULL);
-		rpmrc = RPMRC_OK;
-		h = headerFree(h);
-	    }
-	}
-	if (rpmrc != RPMRC_OK) {
-	    gi->tsi = rpmtsiFree(gi->tsi);
-	    goto enditer;
-	}
-    }	break;
     case RPMDBI_ARGLIST: 
 	/* XXX gi->active initialize? */
 if (_rpmgi_debug  < 0)
