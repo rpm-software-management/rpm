@@ -27,17 +27,12 @@ rpmgiFlags giFlags = RPMGI_NONE;
  */
 struct rpmgi_s {
     rpmts ts;			/*!< Iterator transaction set. */
-    rpmTag tag;		/*!< Iterator type. */
-    const void * keyp;		/*!< Iterator key. */
-    size_t keylen;		/*!< Iterator key length. */
 
     rpmgiFlags flags;		/*!< Iterator control bits. */
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
     int errors;
     Header h;			/*!< Current iterator header. */
-
-    rpmdbMatchIterator mi;
 
     ARGV_t argv;
     int argc;
@@ -176,8 +171,8 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
     int ac = 0;
     int xx;
 
-    /* XXX Expand globs only if requested or for gi specific tags */
-    if ((gi->flags & RPMGI_NOGLOB) || !(gi->tag == RPMDBI_ARGLIST)) {
+    /* XXX Expand globs only if requested */
+    if ((gi->flags & RPMGI_NOGLOB)) {
 	if (argv != NULL) {
 	    while (argv[ac] != NULL)
 		ac++;
@@ -203,59 +198,6 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
     return rpmrc;
 }
 
-/**
- * Return rpmdb match iterator with filters (if any) set.
- * @param gi		generalized iterator
- * @returns		RPMRC_OK on success
- */
-static rpmRC rpmgiInitFilter(rpmgi gi)
-{
-    rpmRC rpmrc = RPMRC_OK;
-    ARGV_t av;
-    int res = 0;
-
-    gi->mi = rpmtsInitIterator(gi->ts, gi->tag, gi->keyp, gi->keylen);
-
-if (_rpmgi_debug < 0)
-fprintf(stderr, "*** gi %p\tmi %p\n", gi, gi->mi);
-
-    if (gi->argv != NULL)
-    for (av = gi->argv; *av != NULL; av++) {
-	rpmTag tag = RPMTAG_NAME;
-	const char * pat;
-	char * a, * ae;
-
-	pat = a = xstrdup(*av);
-	tag = RPMTAG_NAME;
-
-	/* Parse for "tag=pattern" args. */
-	if ((ae = strchr(a, '=')) != NULL) {
-	    *ae++ = '\0';
-	    tag = rpmTagGetValue(a);
-	    if (tag == RPMTAG_NOT_FOUND) {
-		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
-		res = 1;
-	    }
-	    pat = ae;
-	}
-
-	if (!res) {
-if (_rpmgi_debug  < 0)
-fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (long) (av - gi->argv), *av, rpmTagGetName(tag), pat);
-	    res = rpmdbSetIteratorRE(gi->mi, tag, RPMMIRE_DEFAULT, pat);
-	}
-	a = _free(a);
-
-	if (res == 0)
-	    continue;
-
-	rpmrc = RPMRC_FAIL;
-	break;
-    }
-
-    return rpmrc;
-}
-
 rpmgi rpmgiFree(rpmgi gi)
 {
     if (gi == NULL)
@@ -264,9 +206,6 @@ rpmgi rpmgiFree(rpmgi gi)
     gi->h = headerFree(gi->h);
 
     gi->argv = argvFree(gi->argv);
-
-    gi->mi = rpmdbFreeIterator(gi->mi);
-    gi->ts = rpmtsFree(gi->ts);
 
     memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
     gi = _free(gi);
@@ -281,9 +220,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
 	return NULL;
 
     gi->ts = rpmtsLink(ts, __FUNCTION__);
-    gi->tag = tag;
-    gi->keyp = keyp;
-    gi->keylen = keylen;
 
     gi->flags = 0;
     gi->active = 0;
@@ -291,7 +227,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
     gi->errors = 0;
     gi->h = NULL;
 
-    gi->mi = NULL;
     gi->argv = argvNew();
     gi->argc = 0;
 
@@ -308,34 +243,7 @@ rpmRC rpmgiNext(rpmgi gi)
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);
 
-    if (++gi->i >= 0)
-    switch (gi->tag) {
-    default:
-    case RPMDBI_PACKAGES:
-	if (!gi->active) {
-	    rpmrc = rpmgiInitFilter(gi);
-	    if (rpmrc != RPMRC_OK)
-	        goto enditer;
-	    gi->active = 1;
-	}
-	if (gi->mi != NULL) {	/* XXX unnecessary */
-	    Header h = rpmdbNextIterator(gi->mi);
-	    if (h != NULL) {
-		gi->h = headerLink(h);
-		rpmrc = RPMRC_OK;
-		/* XXX header reference held by iterator, so no headerFree */
-	    } else
-	        rpmrc = RPMRC_NOTFOUND;
-	}
-	if (rpmrc != RPMRC_OK) {
-	    goto enditer;
-	}
-	break;
-    case RPMDBI_ARGLIST: 
-	/* XXX gi->active initialize? */
-if (_rpmgi_debug  < 0)
-fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i]);
-
+    if (++gi->i >= 0) {
 	/* 
  	 * Read next header, lazily expanding manifests as found,
  	 * count + skip errors.
@@ -350,14 +258,11 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 
 	if (rpmrc != RPMRC_OK)	/* XXX check this */
 	    goto enditer;
-
-	break;
     }
 
     return rpmrc;
 
 enditer:
-    gi->mi = rpmdbFreeIterator(gi->mi);
     gi->h = headerFree(gi->h);
     gi->i = -1;
     gi->active = 0;

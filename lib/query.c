@@ -314,8 +314,11 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 
     switch (qva->qva_source) {
     case RPMQV_RPM:
-    case RPMQV_ALL:
 	res = rpmgiShowMatches(qva, ts);
+	break;
+
+    case RPMQV_ALL:
+	res = rpmcliShowMatches(qva, ts);
 	break;
 
     case RPMQV_SPECFILE:
@@ -541,13 +544,56 @@ static int rpmcliArgIterHelper(rpmts ts, QVA_t qva, rpmTag tag, ARGV_const_t arg
     return ec;
 }
 
+/*
+ * Apply extra query filters. By default patterns applied to package
+ * name, others can be specified with <tagname>=<pattern>
+ */
+static rpmRC applyFilters(rpmdbMatchIterator mi, ARGV_const_t argv)
+{
+    rpmRC rc = RPMRC_OK;
+
+    for (ARGV_const_t arg = argv; arg && *arg != NULL; arg++) {
+	rpmTag tag = RPMTAG_NAME;
+	char a[strlen(*arg)+1], *ae;
+	const char *pat = a;
+
+	strcpy(a, *arg);
+
+	/* Parse for "tag=pattern" args. */
+	if ((ae = strchr(a, '=')) != NULL) {
+	    *ae++ = '\0';
+	    tag = rpmTagGetValue(a);
+	    if (tag == RPMTAG_NOT_FOUND) {
+		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
+		rc = RPMRC_FAIL;
+		break;
+	    }
+	    pat = ae;
+	}
+
+	rpmdbSetIteratorRE(mi, tag, RPMMIRE_DEFAULT, pat);
+    }
+
+    return rc;
+}
+
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     int ec = 0;
 
+    /* 
+     * This is all wonderfully inconsistent... sort it out once
+     * rpmgi is out of the picture.
+     */
     switch (qva->qva_source) {
     case RPMQV_ALL:
-	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_PACKAGES, argv, RPMGI_NONE);
+	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+	if (applyFilters(qva->qva_mi, argv) != RPMRC_OK) {
+	    ec = 1;
+	    qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
+	} else {
+	    ec += rpmQueryVerify(qva, ts, NULL);
+	}
 	break;
     case RPMQV_RPM:
 	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_ARGLIST, argv, giFlags);
