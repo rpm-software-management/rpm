@@ -36,13 +36,11 @@ rpmgi rpmgiFree(rpmgi gi);
 /** \ingroup rpmgi
  * Return a generalized iterator.
  * @param ts		transaction set
- * @param tag		rpm tag
- * @param keyp		key data (NULL for sequential access)
- * @param keylen	key data length (0 will use strlen(keyp))
+ * @param flags		iterator flags
+ * @param argv		arg list
  * @return		new iterator
  */
-rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp,
-		size_t keylen);
+rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
 
 /** \ingroup rpmgi
  * Perform next iteration step.
@@ -57,16 +55,6 @@ rpmRC rpmgiNext(rpmgi gi);
  * @returns		header
  */
 Header rpmgiHeader(rpmgi gi);
-
-/** \ingroup rpmgi
- * Load iterator args.
- * @param gi		generalized iterator
- * @param argv		arg list
- * @param flags		iterator flags
- * @return 		RPMRC_OK on success
- */
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, rpmgiFlags flags);
-
 
 /** \ingroup rpmgi
  * Return number of errors (file not found etc) encountered during iteration

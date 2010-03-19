@@ -531,19 +531,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     return res;
 }
 
-static int rpmcliArgIterHelper(rpmts ts, QVA_t qva, rpmTag tag, ARGV_const_t argv, rpmgiFlags gFlgs)
-{
-    int ec = 0;
-
-    qva->qva_gi = rpmgiNew(ts, tag, NULL, 0);
-    rpmgiSetArgs(qva->qva_gi, argv, gFlgs);
-    
-    /* FIX: argv can be NULL, cast to pass argv array */
-    ec = rpmQueryVerify(qva, ts, (tag == RPMDBI_PACKAGES)? (const char *) argv : NULL);
-    qva->qva_gi = rpmgiFree(qva->qva_gi);
-    return ec;
-}
-
 /*
  * Apply extra query filters. By default patterns applied to package
  * name, others can be specified with <tagname>=<pattern>
@@ -596,7 +583,9 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	}
 	break;
     case RPMQV_RPM:
-	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_ARGLIST, argv, giFlags);
+	qva->qva_gi = rpmgiNew(ts, giFlags, argv);
+	ec = rpmQueryVerify(qva, ts, NULL);
+	qva->qva_gi = rpmgiFree(qva->qva_gi);
 	break;
     default:
 	for (ARGV_const_t arg = argv; arg && *arg; arg++)

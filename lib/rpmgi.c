@@ -162,12 +162,10 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
  * Append globbed arg list to iterator.
  * @param gi		generalized iterator
  * @param argv		arg list to be globbed (or NULL)
- * @returns		RPMRC_OK on success
  */
-static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
+static void rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 {
     const char * arg;
-    rpmRC rpmrc = RPMRC_OK;
     int ac = 0;
     int xx;
 
@@ -176,11 +174,10 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 	if (argv != NULL) {
 	    while (argv[ac] != NULL)
 		ac++;
-/* XXX argv is not NULL */
 	    xx = argvAppend(&gi->argv, argv);
 	}
 	gi->argc = ac;
-	return rpmrc;
+	return;
     }
 
     if (argv != NULL)
@@ -195,7 +192,7 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 	t = _free(t);
 	ac = 0;
     }
-    return rpmrc;
+    return;
 }
 
 rpmgi rpmgiFree(rpmgi gi)
@@ -212,23 +209,22 @@ rpmgi rpmgiFree(rpmgi gi)
     return NULL;
 }
 
-rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
+rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 
-    if (gi == NULL)
-	return NULL;
-
     gi->ts = rpmtsLink(ts, __FUNCTION__);
 
-    gi->flags = 0;
+    gi->flags = flags;
     gi->active = 0;
     gi->i = -1;
     gi->errors = 0;
     gi->h = NULL;
 
+    gi->flags = flags;
     gi->argv = argvNew();
     gi->argc = 0;
+    rpmgiGlobArgv(gi, argv);
 
     return gi;
 }
@@ -272,12 +268,6 @@ enditer:
 Header rpmgiHeader(rpmgi gi)
 {
     return (gi != NULL ? gi->h : NULL);
-}
-
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, rpmgiFlags flags)
-{
-    gi->flags = flags;
-    return rpmgiGlobArgv(gi, argv);
 }
 
 int rpmgiNumErrors(rpmgi gi)
