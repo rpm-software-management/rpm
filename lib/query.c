@@ -315,7 +315,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     switch (qva->qva_source) {
     case RPMQV_RPM:
     case RPMQV_ALL:
-    case RPMQV_HDLIST:
 	res = rpmgiShowMatches(qva, ts);
 	break;
 
@@ -552,9 +551,6 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	break;
     case RPMQV_RPM:
 	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_ARGLIST, argv, giFlags);
-	break;
-    case RPMQV_HDLIST:
-	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_HDLIST, argv, giFlags);
 	break;
     default:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);

@@ -42,8 +42,6 @@ struct rpmgi_s {
 
     rpmdbMatchIterator mi;
 
-    FD_t fd;
-
     ARGV_t argv;
     int argc;
 };
@@ -187,9 +185,7 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
     int xx;
 
     /* XXX Expand globs only if requested or for gi specific tags */
-    if ((gi->flags & RPMGI_NOGLOB)
-     || !(gi->tag == RPMDBI_HDLIST || gi->tag == RPMDBI_ARGLIST))
-    {
+    if ((gi->flags & RPMGI_NOGLOB) || !(gi->tag == RPMDBI_ARGLIST)) {
 	if (argv != NULL) {
 	    while (argv[ac] != NULL)
 		ac++;
@@ -278,10 +274,6 @@ rpmgi rpmgiFree(rpmgi gi)
 
     gi->argv = argvFree(gi->argv);
 
-    if (gi->fd != NULL) {
-	(void) Fclose(gi->fd);
-	gi->fd = NULL;
-    }
     gi->tsi = rpmtsiFree(gi->tsi);
     gi->mi = rpmdbFreeIterator(gi->mi);
     gi->ts = rpmtsFree(gi->ts);
@@ -312,7 +304,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
 
     gi->tsi = NULL;
     gi->mi = NULL;
-    gi->fd = NULL;
     gi->argv = argvNew();
     gi->argc = 0;
 
@@ -323,7 +314,6 @@ rpmRC rpmgiNext(rpmgi gi)
 {
     char hnum[32];
     rpmRC rpmrc = RPMRC_NOTFOUND;
-    int xx;
 
     if (gi == NULL)
 	return rpmrc;
@@ -382,29 +372,6 @@ rpmRC rpmgiNext(rpmgi gi)
 	    goto enditer;
 	}
     }	break;
-    case RPMDBI_HDLIST:
-	if (!gi->active) {
-	    const char * path = "/usr/share/comps/%{_arch}/hdlist";
-	    gi->fd = rpmgiOpen(path, "r.ufdio");
-	    gi->active = 1;
-	}
-	if (gi->fd != NULL) {
-	    Header h = headerRead(gi->fd, HEADER_MAGIC_YES);
-	    if (h != NULL) {
-		if (!(gi->flags & RPMGI_NOHEADER))
-		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", (unsigned)gi->i);
-		gi->hdrPath = rpmExpand("hdlist h# ", hnum, NULL);
-		rpmrc = RPMRC_OK;
-		h = headerFree(h);
-	    }
-	}
-	if (rpmrc != RPMRC_OK) {
-	    if (gi->fd != NULL) (void) Fclose(gi->fd);
-	    gi->fd = NULL;
-	    goto enditer;
-	}
-	break;
     case RPMDBI_ARGLIST: 
 	/* XXX gi->active initialize? */
 if (_rpmgi_debug  < 0)

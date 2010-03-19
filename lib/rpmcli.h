@@ -95,7 +95,6 @@ typedef enum rpmQVSources_e {
     RPMQV_HDRID,	/*!< ... from header id (immutable header SHA1). */
     RPMQV_FILEID,	/*!< ... from file id (file MD5). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
-    RPMQV_HDLIST,	/*!< ... from system hdlist. */
 } rpmQVSources;
 
 /** \ingroup rpmcli

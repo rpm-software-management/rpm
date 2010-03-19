@@ -751,8 +751,7 @@ int main(int argc, char *argv[])
 
 #ifdef	IAM_RPMQV
     case MODE_QUERY:
-	if (!poptPeekArg(optCon)
-	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
+	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for query"));
 
 	qva->qva_specQuery = rpmspecQuery;
@@ -766,8 +765,7 @@ int main(int argc, char *argv[])
 	verifyFlags &= ~qva->qva_flags;
 	qva->qva_flags = (rpmQueryFlags) verifyFlags;
 
-	if (!poptPeekArg(optCon)
-	 && !(qva->qva_source == RPMQV_ALL || qva->qva_source == RPMQV_HDLIST))
+	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for verify"));
 	ec = rpmcliVerify(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
     }	break;

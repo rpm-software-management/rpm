@@ -141,9 +141,6 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_AVAILABLE:
 	name = "Available";
 	break;
-    case RPMDBI_HDLIST:
-	name = "Hdlist";
-	break;
     case RPMDBI_ARGLIST:
 	name = "Arglist";
 	break;
@@ -202,7 +199,6 @@ static rpmTagType _tagType(rpmTag tag)
     case RPMDBI_ADDED:
     case RPMDBI_REMOVED:
     case RPMDBI_AVAILABLE:
-    case RPMDBI_HDLIST:
     case RPMDBI_ARGLIST:
 	break;
     default:
@@ -250,8 +246,6 @@ static rpmTag _tagValue(const char * tagstr)
 	return RPMDBI_REMOVED;
     if (!rstrcasecmp(tagstr, "Available"))
 	return RPMDBI_AVAILABLE;
-    if (!rstrcasecmp(tagstr, "Hdlist"))
-	return RPMDBI_HDLIST;
     if (!rstrcasecmp(tagstr, "Arglist"))
 	return RPMDBI_ARGLIST;
 
