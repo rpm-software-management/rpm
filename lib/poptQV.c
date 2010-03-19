@@ -45,7 +45,6 @@ static void rpmQVSourceArgCallback( poptContext con,
     case 'R':	/* from --resign */
 	if (qva->qva_mode == '\0' || strchr("qQ ", qva->qva_mode)) {
 	    qva->qva_mode = opt->val;
-	    qva->qva_char = ' ';
 	}
 	break;
     case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;

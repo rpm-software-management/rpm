@@ -536,7 +536,7 @@ static int rpmcliArgIterHelper(rpmts ts, QVA_t qva, rpmTag tag, ARGV_const_t arg
     int ec = 0;
 
     qva->qva_gi = rpmgiNew(ts, tag, NULL, 0);
-    qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, gFlgs);
+    rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, gFlgs);
     
     if (qva->qva_gi != NULL && (rpmgiGetFlags(qva->qva_gi) & RPMGI_TSADD))	/* Load the ts with headers. */
         while ((rpmrc = rpmgiNext(qva->qva_gi)) == RPMRC_OK)
@@ -573,7 +573,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	break;
     default:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	qva->qva_rc = rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+	rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
 	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));

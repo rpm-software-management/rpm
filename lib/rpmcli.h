@@ -177,7 +177,6 @@ struct rpmQVKArguments_s {
     rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
     rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
     rpmgi qva_gi;		/*!< Generalized iterator on args. */
-    rpmRC qva_rc;		/*!< Current return code. */
 
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
@@ -196,7 +195,6 @@ struct rpmQVKArguments_s {
 		- 'K'	from --checksig, -K
 		- 'R'	from --resign
 		*/
-    char	qva_char;	/*!< (unused) always ' ' */
 };
 
 /** \ingroup rpmcli
