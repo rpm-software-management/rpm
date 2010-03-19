@@ -31,6 +31,7 @@ extern rpmgiFlags giFlags;
  * @param gi		generalized iterator
  * @return		NULL always
  */
+RPM_GNUC_INTERNAL
 rpmgi rpmgiFree(rpmgi gi);
 
 /** \ingroup rpmgi
@@ -40,6 +41,7 @@ rpmgi rpmgiFree(rpmgi gi);
  * @param argv		arg list
  * @return		new iterator
  */
+RPM_GNUC_INTERNAL
 rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
 
 /** \ingroup rpmgi
@@ -47,6 +49,7 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
  * @param gi		generalized iterator
  * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
  */
+RPM_GNUC_INTERNAL
 rpmRC rpmgiNext(rpmgi gi);
 
 /** \ingroup rpmgi
@@ -54,6 +57,7 @@ rpmRC rpmgiNext(rpmgi gi);
  * @param gi		generalized iterator
  * @returns		header
  */
+RPM_GNUC_INTERNAL
 Header rpmgiHeader(rpmgi gi);
 
 /** \ingroup rpmgi
@@ -61,6 +65,7 @@ Header rpmgiHeader(rpmgi gi);
  * @param gi		generalized iterator
  * @return 		number of errors
  */
+RPM_GNUC_INTERNAL
 int rpmgiNumErrors(rpmgi gi);
 
 #ifdef __cplusplus

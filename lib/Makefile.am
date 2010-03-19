@@ -26,8 +26,8 @@ librpm_la_SOURCES = \
 	cpio.c cpio.h depends.c order.c formats.c tagexts.c fsm.c fsm.h \
 	manifest.c manifest.h misc.c package.c \
 	poptALL.c poptI.c poptQV.c psm.c psm.h query.c \
-	rpmal.c rpmal.h rpmchecksig.c rpmds.c rpmfi.c rpmfi_internal.h rpmgi.c \
-	rpminstall.c rpmts_internal.h \
+	rpmal.c rpmal.h rpmchecksig.c rpmds.c rpmfi.c rpmfi_internal.h \
+	rpmgi.h rpmgi.c rpminstall.c rpmts_internal.h \
 	rpmlead.c rpmlead.h rpmps.c rpmrc.c \
 	rpmte.c rpmte_internal.h rpmts.c rpmfs.h rpmfs.c \
 	rpmvercmp.c signature.c signature.h transaction.c \
