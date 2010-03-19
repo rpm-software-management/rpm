@@ -553,13 +553,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_ARGLIST, argv, giFlags);
 	break;
     default:
-	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	rpmgiSetArgs(qva->qva_gi, argv, 
-		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
-	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
-	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));
-	}
-	qva->qva_gi = rpmgiFree(qva->qva_gi);
+	for (ARGV_const_t arg = argv; arg && *arg; arg++)
+	    ec += rpmQueryVerify(qva, ts, *arg);
 	break;
     }
 

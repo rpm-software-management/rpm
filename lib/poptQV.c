@@ -122,9 +122,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("do not glob arguments"), NULL},
  { "nomanifest", '\0', POPT_BIT_SET, &giFlags, RPMGI_NOMANIFEST,
 	N_("do not process non-package files as manifests"), NULL},
- { "noheader", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_NOHEADER,
-	N_("do not read headers"), NULL},
-
 
    POPT_TABLEEND
 };

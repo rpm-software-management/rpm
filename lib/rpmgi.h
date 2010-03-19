@@ -22,7 +22,6 @@ typedef enum rpmgiFlags_e {
     RPMGI_NONE		= 0,
     RPMGI_NOGLOB	= (1 << 2),
     RPMGI_NOMANIFEST	= (1 << 3),
-    RPMGI_NOHEADER	= (1 << 4)
 } rpmgiFlags;
 
 extern rpmgiFlags giFlags;
@@ -51,13 +50,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp,
  * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
  */
 rpmRC rpmgiNext(rpmgi gi);
-
-/** \ingroup rpmgi
- * Return current header path.
- * @param gi		generalized iterator
- * @returns		header path
- */
-const char * rpmgiHdrPath(rpmgi gi);
 
 /** \ingroup rpmgi
  * Return current iteration header.

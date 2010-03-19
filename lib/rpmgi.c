@@ -35,7 +35,6 @@ struct rpmgi_s {
     int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
     int errors;
-    char * hdrPath;		/*!< Path to current iterator header. */
     Header h;			/*!< Current iterator header. */
 
     rpmdbMatchIterator mi;
@@ -132,14 +131,9 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
     if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
-	char * fn;	/* XXX gi->hdrPath? */
-
-	fn = gi->argv[gi->i];
-	if (!(gi->flags & RPMGI_NOHEADER)) {
-	    h = rpmgiReadHeader(gi, fn);
-	    if (h != NULL)
-		rpmrc = RPMRC_OK;
-	} else
+	char * fn = gi->argv[gi->i];
+	h = rpmgiReadHeader(gi, fn);
+	if (h != NULL)
 	    rpmrc = RPMRC_OK;
 
 	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
@@ -267,7 +261,6 @@ rpmgi rpmgiFree(rpmgi gi)
     if (gi == NULL)
 	return NULL;
 
-    gi->hdrPath = _free(gi->hdrPath);
     gi->h = headerFree(gi->h);
 
     gi->argv = argvFree(gi->argv);
@@ -296,7 +289,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
     gi->active = 0;
     gi->i = -1;
     gi->errors = 0;
-    gi->hdrPath = NULL;
     gi->h = NULL;
 
     gi->mi = NULL;
@@ -308,7 +300,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
 
 rpmRC rpmgiNext(rpmgi gi)
 {
-    char hnum[32];
     rpmRC rpmrc = RPMRC_NOTFOUND;
 
     if (gi == NULL)
@@ -316,8 +307,6 @@ rpmRC rpmgiNext(rpmgi gi)
 
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);
-    gi->hdrPath = _free(gi->hdrPath);
-    hnum[0] = '\0';
 
     if (++gi->i >= 0)
     switch (gi->tag) {
@@ -332,10 +321,7 @@ rpmRC rpmgiNext(rpmgi gi)
 	if (gi->mi != NULL) {	/* XXX unnecessary */
 	    Header h = rpmdbNextIterator(gi->mi);
 	    if (h != NULL) {
-		if (!(gi->flags & RPMGI_NOHEADER))
-		    gi->h = headerLink(h);
-		sprintf(hnum, "%u", rpmdbGetIteratorOffset(gi->mi));
-		gi->hdrPath = rpmExpand("rpmdb h# ", hnum, NULL);
+		gi->h = headerLink(h);
 		rpmrc = RPMRC_OK;
 		/* XXX header reference held by iterator, so no headerFree */
 	    } else
@@ -365,7 +351,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	if (rpmrc != RPMRC_OK)	/* XXX check this */
 	    goto enditer;
 
-	gi->hdrPath = xstrdup(gi->argv[gi->i]);
 	break;
     }
 
@@ -374,15 +359,9 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 enditer:
     gi->mi = rpmdbFreeIterator(gi->mi);
     gi->h = headerFree(gi->h);
-    gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;
     gi->active = 0;
     return rpmrc;
-}
-
-const char * rpmgiHdrPath(rpmgi gi)
-{
-    return (gi != NULL ? gi->hdrPath : NULL);
 }
 
 Header rpmgiHeader(rpmgi gi)
