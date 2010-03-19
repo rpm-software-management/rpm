@@ -27,7 +27,6 @@ struct rpmgi_s {
     rpmgiFlags flags;		/*!< Iterator control bits. */
     int i;			/*!< Element index. */
     int errors;
-    Header h;			/*!< Current iterator header. */
 
     ARGV_t argv;
     int argc;
@@ -112,21 +111,18 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
  * @todo An empty file read as manifest truncates argv returning RPMRC_NOTFOUND.
  * @todo Chained manifests lose an arg someplace.
  * @param gi		generalized iterator
- * @return		RPMRC_OK on success
+ * @return		header on success
  */
-static rpmRC rpmgiLoadReadHeader(rpmgi gi)
+static Header rpmgiLoadReadHeader(rpmgi gi)
 {
-    rpmRC rpmrc = RPMRC_NOTFOUND;
     Header h = NULL;
 
     if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
 	char * fn = gi->argv[gi->i];
 	h = rpmgiReadHeader(gi, fn);
-	if (h != NULL)
-	    rpmrc = RPMRC_OK;
 
-	if (rpmrc == RPMRC_OK || gi->flags & RPMGI_NOMANIFEST)
+	if (h != NULL || gi->flags & RPMGI_NOMANIFEST)
 	    break;
 	if (errno == ENOENT) {
 	    break;
@@ -134,22 +130,16 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
-	rpmrc = rpmgiLoadManifest(gi, fn);
-	if (rpmrc != RPMRC_OK) {
+	if (rpmgiLoadManifest(gi, fn) != RPMRC_OK) {
 	    gi->argv[gi->i] = fn;	/* Manifest failed, restore fn */
 	    rpmlog(RPMLOG_ERR, 
 		   _("%s: not an rpm package (or package manifest)\n"), fn);
 	    break;
 	}
 	fn = _free(fn);
-	rpmrc = RPMRC_NOTFOUND;
     } while (1);
 
-    if (rpmrc == RPMRC_OK && h != NULL)
-	gi->h = headerLink(h);
-    h = headerFree(h);
-
-    return rpmrc;
+    return h;
 }
 
 
@@ -195,8 +185,6 @@ rpmgi rpmgiFree(rpmgi gi)
     if (gi == NULL)
 	return NULL;
 
-    gi->h = headerFree(gi->h);
-
     gi->argv = argvFree(gi->argv);
 
     memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
@@ -213,7 +201,6 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
     gi->flags = flags;
     gi->i = -1;
     gi->errors = 0;
-    gi->h = NULL;
 
     gi->flags = flags;
     gi->argv = argvNew();
@@ -225,37 +212,26 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
 
 Header rpmgiNext(rpmgi gi)
 {
-    rpmRC rpmrc = RPMRC_NOTFOUND;
+    Header h = NULL;
 
-    if (gi == NULL)
-	return NULL;
-
-    /* Free header from previous iteration. */
-    gi->h = headerFree(gi->h);
-
-    if (++gi->i >= 0) {
+    if (gi != NULL && ++gi->i >= 0) {
 	/* 
  	 * Read next header, lazily expanding manifests as found,
  	 * count + skip errors.
  	 */
-	rpmrc = RPMRC_NOTFOUND;	
 	while (gi->i < gi->argc) {
-	    if ((rpmrc = rpmgiLoadReadHeader(gi)) == RPMRC_OK) 
+	    if ((h = rpmgiLoadReadHeader(gi)) != NULL) 
 		break;
 	    gi->errors++;
 	    gi->i++;
         }
 
-	if (rpmrc != RPMRC_OK)	/* XXX check this */
-	    goto enditer;
+	/* Out of things to try, end of iteration */
+	if (h == NULL)
+	    gi->i = -1;
     }
 
-    return gi->h;
-
-enditer:
-    gi->h = headerFree(gi->h);
-    gi->i = -1;
-    return NULL;
+    return h;
 }
 
 int rpmgiNumErrors(rpmgi gi)

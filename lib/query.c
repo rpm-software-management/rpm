@@ -278,6 +278,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	rpmdbCheckSignals();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
+	headerFree(h);
     }
     return ec + rpmgiNumErrors(gi);
 }

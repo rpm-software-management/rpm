@@ -43,7 +43,7 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
 /** \ingroup rpmgi
  * Perform next iteration step.
  * @param gi		generalized iterator
- * @returns		next header, NULL on end of iteration
+ * @returns		next header (new reference), NULL on end of iteration
  */
 RPM_GNUC_INTERNAL
 Header rpmgiNext(rpmgi gi);
