@@ -69,7 +69,6 @@ lib/backend/dbconfig.c
 python/rpmts-py.c
 rpmio/argv.c
 rpmio/digest.c
-rpmio/fts.c
 rpmio/macro.c
 rpmio/rpmfileutil.c
 rpmio/rpmlua.c
