@@ -7,10 +7,8 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
-#include <rpm/rpmte.h>		/* XXX rpmElementType */
 #include <rpm/rpmts.h>
 #include <rpm/rpmgi.h>
-#include <rpm/rpmdb.h>
 #include <rpm/rpmmacro.h>		/* XXX rpmExpand */
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
@@ -18,8 +16,6 @@
 #include "lib/manifest.h"
 
 #include "debug.h"
-
-int _rpmgi_debug = 0;
 
 rpmgiFlags giFlags = RPMGI_NONE;
 
@@ -29,7 +25,6 @@ struct rpmgi_s {
     rpmts ts;			/*!< Iterator transaction set. */
 
     rpmgiFlags flags;		/*!< Iterator control bits. */
-    int active;			/*!< Iterator is active? */
     int i;			/*!< Element index. */
     int errors;
     Header h;			/*!< Current iterator header. */
@@ -216,7 +211,6 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
     gi->ts = rpmtsLink(ts, __FUNCTION__);
 
     gi->flags = flags;
-    gi->active = 0;
     gi->i = -1;
     gi->errors = 0;
     gi->h = NULL;
@@ -261,7 +255,6 @@ Header rpmgiNext(rpmgi gi)
 enditer:
     gi->h = headerFree(gi->h);
     gi->i = -1;
-    gi->active = 0;
     return NULL;
 }
 

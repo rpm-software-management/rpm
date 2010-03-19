@@ -12,10 +12,6 @@
 extern "C" {
 #endif
 
-/**
- */
-extern int _rpmgi_debug;
-
 /** \ingroup rpmgi
  */
 typedef enum rpmgiFlags_e {
