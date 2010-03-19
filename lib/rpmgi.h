@@ -47,18 +47,10 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv);
 /** \ingroup rpmgi
  * Perform next iteration step.
  * @param gi		generalized iterator
- * @returns		RPMRC_OK on success, RPMRC_NOTFOUND on EOI
+ * @returns		next header, NULL on end of iteration
  */
 RPM_GNUC_INTERNAL
-rpmRC rpmgiNext(rpmgi gi);
-
-/** \ingroup rpmgi
- * Return current iteration header.
- * @param gi		generalized iterator
- * @returns		header
- */
-RPM_GNUC_INTERNAL
-Header rpmgiHeader(rpmgi gi);
+Header rpmgiNext(rpmgi gi);
 
 /** \ingroup rpmgi
  * Return number of errors (file not found etc) encountered during iteration

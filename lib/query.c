@@ -270,15 +270,12 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 {
     rpmgi gi = qva->qva_gi;
     int ec = 0;
+    Header h;
 
-    while (rpmgiNext(gi) == RPMRC_OK) {
-	Header h;
+    while ((h = rpmgiNext(gi)) != NULL) {
 	int rc;
 
 	rpmdbCheckSignals();
-	h = rpmgiHeader(gi);
-	if (h == NULL)		/* XXX perhaps stricter break instead? */
-	    continue;
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
     }

@@ -229,12 +229,12 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
     return gi;
 }
 
-rpmRC rpmgiNext(rpmgi gi)
+Header rpmgiNext(rpmgi gi)
 {
     rpmRC rpmrc = RPMRC_NOTFOUND;
 
     if (gi == NULL)
-	return rpmrc;
+	return NULL;
 
     /* Free header from previous iteration. */
     gi->h = headerFree(gi->h);
@@ -256,18 +256,13 @@ rpmRC rpmgiNext(rpmgi gi)
 	    goto enditer;
     }
 
-    return rpmrc;
+    return gi->h;
 
 enditer:
     gi->h = headerFree(gi->h);
     gi->i = -1;
     gi->active = 0;
-    return rpmrc;
-}
-
-Header rpmgiHeader(rpmgi gi)
-{
-    return (gi != NULL ? gi->h : NULL);
+    return NULL;
 }
 
 int rpmgiNumErrors(rpmgi gi)
