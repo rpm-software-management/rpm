@@ -39,22 +39,6 @@ typedef enum rpmgiFlags_e {
 
 extern rpmgiFlags giFlags;
 
-/** \ingroup rpmgi
- * Unreference a generalized iterator instance.
- * @param gi		generalized iterator
- * @param msg
- * @return		NULL always
- */
-rpmgi rpmgiUnlink (rpmgi gi, const char * msg);
-
-/** \ingroup rpmgi
- * Reference a generalized iterator instance.
- * @param gi		generalized iterator
- * @param msg
- * @return		new generalized iterator reference
- */
-rpmgi rpmgiLink (rpmgi gi, const char * msg);
-
 /** \ingroup rpmgi 
  * Destroy a generalized iterator.
  * @param gi		generalized iterator

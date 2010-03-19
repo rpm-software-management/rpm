@@ -51,8 +51,6 @@ struct rpmgi_s {
     int ftsOpts;
     FTS * ftsp;
     FTSENT * fts;
-
-    int nrefs;			/*!< Reference count. */
 };
 
 static const char * const ftsInfoStrings[] = {
@@ -362,38 +360,10 @@ fprintf(stderr, "\tav %p[%ld]: \"%s\" -> %s ~= \"%s\"\n", gi->argv, (long) (av -
     return rpmrc;
 }
 
-rpmgi rpmgiUnlink(rpmgi gi, const char * msg)
-{
-    if (gi == NULL) return NULL;
-
-if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p -- %d: %s\n", gi, gi->nrefs, msg);
-
-    gi->nrefs--;
-    return NULL;
-}
-
-rpmgi rpmgiLink(rpmgi gi, const char * msg)
-{
-    if (gi == NULL) return NULL;
-    gi->nrefs++;
-
-if (_rpmgi_debug && msg != NULL)
-fprintf(stderr, "--> gi %p ++ %d: %s\n", gi, gi->nrefs, msg);
-
-    return gi;
-}
-
 rpmgi rpmgiFree(rpmgi gi)
 {
     if (gi == NULL)
 	return NULL;
-
-    if (gi->nrefs > 1)
-	return rpmgiUnlink(gi, __FUNCTION__);
-
-    (void) rpmgiUnlink(gi, __FUNCTION__);
-
 
     gi->hdrPath = _free(gi->hdrPath);
     gi->h = headerFree(gi->h);
@@ -446,8 +416,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
     gi->ftsOpts = 0;
     gi->ftsp = NULL;
     gi->fts = NULL;
-
-    gi = rpmgiLink(gi, __FUNCTION__);
 
     return gi;
 }
