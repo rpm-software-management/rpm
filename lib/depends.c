@@ -114,19 +114,80 @@ static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmTag tag, const char *
 #define skipColor(_tscolor, _color, _ocolor) \
 	((_tscolor) && (_color) && (_ocolor) && !((_color) & (_ocolor)))
 
+/* Add erase elements for older packages of same color (if any). */
+static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
+				rpmte p, rpm_color_t hcolor, Header h)
+{
+    Header oh;
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+
+    while((oh = rpmdbNextIterator(mi)) != NULL) {
+	/* Ignore colored packages not in our rainbow. */
+	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
+	    continue;
+
+	/* Skip packages that contain identical NEVR. */
+	if (rpmVersionCompare(h, oh) == 0)
+	    continue;
+
+	removePackage(tsmem, oh, p);
+    }
+    mi = rpmdbFreeIterator(mi);
+}
+
+/* Add erase elements for obsoleted packages of same color (if any). */
+static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
+				rpmte p, rpm_color_t hcolor)
+{
+    rpmds obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
+    Header oh;
+
+    while (rpmdsNext(obsoletes) >= 0) {
+	const char * Name;
+	rpmdbMatchIterator mi = NULL;
+
+	if ((Name = rpmdsN(obsoletes)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	/* XXX avoid self-obsoleting packages. */
+	if (rstreq(rpmteN(p), Name))
+	    continue;
+
+	mi = rpmtsPrunedIterator(ts, RPMTAG_NAME, Name);
+
+	while((oh = rpmdbNextIterator(mi)) != NULL) {
+	    /* Ignore colored packages not in our rainbow. */
+	    if (skipColor(tscolor, hcolor, 
+			  headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
+		continue;
+
+	    /*
+	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
+	     * If no obsoletes version info is available, match all names.
+	     */
+	    if (rpmdsEVR(obsoletes) == NULL
+		     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
+		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
+		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
+			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
+		ohNEVRA = _free(ohNEVRA);
+
+		removePackage(tsmem, oh, p);
+	    }
+	}
+	mi = rpmdbFreeIterator(mi);
+    }
+}
+
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
-    rpm_color_t hcolor;
-    rpmdbMatchIterator mi;
-    Header oh;
     int isSource = headerIsSource(h);
     int duplicate = 0;
     rpmtsi pi = NULL; rpmte p;
     rpmds oldChk = NULL, newChk = NULL, sameChk = NULL;
-    rpmds obsoletes;
     int ec = 0;
     int rc;
     int oc;
@@ -271,57 +332,9 @@ addheader:
 	    goto exit;
     }
 
-    /* On upgrade, erase older packages of same color (if any). */
-    hcolor = rpmteColor(p);
-    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
-    while((oh = rpmdbNextIterator(mi)) != NULL) {
-	/* Ignore colored packages not in our rainbow. */
-	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
-	    continue;
-
-	/* Skip packages that contain identical NEVR. */
-	if (rpmVersionCompare(h, oh) == 0)
-	    continue;
-
-	removePackage(tsmem, oh, p);
-    }
-    mi = rpmdbFreeIterator(mi);
-
-    obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
-    while (rpmdsNext(obsoletes) >= 0) {
-	const char * Name;
-
-	if ((Name = rpmdsN(obsoletes)) == NULL)
-	    continue;	/* XXX can't happen */
-
-	/* XXX avoid self-obsoleting packages. */
-	if (rstreq(rpmteN(p), Name))
-	    continue;
-
-	mi = rpmtsPrunedIterator(ts, RPMTAG_NAME, Name);
-
-	while((oh = rpmdbNextIterator(mi)) != NULL) {
-	    /* Ignore colored packages not in our rainbow. */
-	    if (skipColor(tscolor, hcolor, 
-			  headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
-		continue;
-
-	    /*
-	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
-	     * If no obsoletes version info is available, match all names.
-	     */
-	    if (rpmdsEVR(obsoletes) == NULL
-	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
-		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
-		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
-			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
-		ohNEVRA = _free(ohNEVRA);
-
-		removePackage(tsmem, oh, p);
-	    }
-	}
-	mi = rpmdbFreeIterator(mi);
-    }
+    /* Add erasure elements for old versions and obsoletions */
+    addUpgradeErasures(ts, tsmem, tscolor, p, rpmteColor(p), h);
+    addObsoleteErasures(ts, tsmem, tscolor, p, rpmteColor(p));
 
     ec = 0;
 
