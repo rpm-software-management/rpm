@@ -316,13 +316,11 @@ addheader:
 	    if (rpmdsEVR(obsoletes) == NULL
 	     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
 		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
-#ifdef	DYING	/* XXX see http://bugzilla.redhat.com #134497 */
-		if (rpmVersionCompare(h, oh))
-#endif
-		    xx = removePackage(tsmem, oh, p);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		ohNEVRA = _free(ohNEVRA);
+
+		removePackage(tsmem, oh, p);
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
