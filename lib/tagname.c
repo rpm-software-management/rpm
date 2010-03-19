@@ -129,18 +129,6 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_PACKAGES:
 	name = "Packages";
 	break;
-    case RPMDBI_DEPENDS:
-	name = "Depends";
-	break;
-    case RPMDBI_ADDED:
-	name = "Added";
-	break;
-    case RPMDBI_REMOVED:
-	name = "Removed";
-	break;
-    case RPMDBI_AVAILABLE:
-	name = "Available";
-	break;
     case RPMDBI_ARGLIST:
 	name = "Arglist";
 	break;
@@ -195,10 +183,6 @@ static rpmTagType _tagType(rpmTag tag)
 
     switch (tag) {
     case RPMDBI_PACKAGES:
-    case RPMDBI_DEPENDS:
-    case RPMDBI_ADDED:
-    case RPMDBI_REMOVED:
-    case RPMDBI_AVAILABLE:
     case RPMDBI_ARGLIST:
 	break;
     default:
@@ -238,14 +222,6 @@ static rpmTag _tagValue(const char * tagstr)
 
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
-    if (!rstrcasecmp(tagstr, "Depends"))
-	return RPMDBI_DEPENDS;
-    if (!rstrcasecmp(tagstr, "Added"))
-	return RPMDBI_ADDED;
-    if (!rstrcasecmp(tagstr, "Removed"))
-	return RPMDBI_REMOVED;
-    if (!rstrcasecmp(tagstr, "Available"))
-	return RPMDBI_AVAILABLE;
     if (!rstrcasecmp(tagstr, "Arglist"))
 	return RPMDBI_ARGLIST;
 

@@ -11,11 +11,7 @@ extern "C" {
  * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
  */
 #define	RPMDBI_PACKAGES		0	/* Installed package headers. */
-#define	RPMDBI_DEPENDS		1	/* Dependency resolution cache. */
 #define	RPMDBI_LABEL		2	/* Fingerprint search marker. */
-#define	RPMDBI_ADDED		3	/* Added package headers. */
-#define	RPMDBI_REMOVED		4	/* Removed package headers. */
-#define	RPMDBI_AVAILABLE	5	/* Available package headers. */
 #define	RPMDBI_ARGLIST		6	/* (rpmgi) Argument list. */
 
 /**

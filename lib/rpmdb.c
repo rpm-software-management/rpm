@@ -112,7 +112,7 @@ static int dbiTagToDbix(rpmTag rpmtag)
 static void dbiTagsInit(void)
 {
     static const char * const _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:ObsoleteName:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Depends:Pubkeys";
+	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:ObsoleteName:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys";
     char * dbiTagStr = NULL;
     char * o, * oe;
     rpmTag rpmtag;
@@ -643,22 +643,6 @@ static struct rpmdb_s const dbTemplate = {
     _DB_MAJOR,	_DB_ERRPFX
 };
 
-static int isTemporaryDB(rpmTag rpmtag) 
-{
-    int rc = 0;
-    switch (rpmtag) {
-    case RPMDBI_AVAILABLE:
-    case RPMDBI_ADDED:
-    case RPMDBI_REMOVED:
-    case RPMDBI_DEPENDS:
-	rc = 1;
-	break;
-    default:
-	break;
-    }
-    return rc;
-}
-
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
 {
     rpmop op = NULL;
@@ -707,9 +691,6 @@ int rpmdbOpenAll(rpmdb db)
     if (dbiTags.tags != NULL)
     for (dbix = 0; dbix < dbiTags.max; dbix++) {
 	if (db->_dbi[dbix] != NULL)
-	    continue;
-	/* Filter out temporary databases */
-	if (isTemporaryDB(dbiTags.tags[dbix])) 
 	    continue;
 	(void) dbiOpen(db, dbiTags.tags[dbix], db->db_flags);
     }
@@ -894,14 +875,9 @@ static int openDatabase(const char * prefix,
 	rc = 0;
 	if (dbiTags.tags != NULL)
 	for (dbix = 0; rc == 0 && dbix < dbiTags.max; dbix++) {
-	    dbiIndex dbi;
-	    rpmTag rpmtag;
+	    rpmTag rpmtag = dbiTags.tags[dbix];
+	    dbiIndex dbi = dbiOpen(db, rpmtag, 0);
 
-	    /* Filter out temporary databases */
-	    if (isTemporaryDB((rpmtag = dbiTags.tags[dbix])))
-		continue;
-
-	    dbi = dbiOpen(db, rpmtag, 0);
 	    if (dbi == NULL) {
 		rc = -2;
 		break;
@@ -2446,10 +2422,6 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    dbi = NULL;
 	    rpmtag = dbiTags.tags[dbix];
 
-	    /* Filter out temporary databases */
-	    if (isTemporaryDB(rpmtag)) 
-		continue;
-
 	    if (rpmtag == RPMDBI_PACKAGES) {
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
@@ -2691,10 +2663,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	    rpmrc = RPMRC_NOTFOUND;
 	    dbi = NULL;
 	    rpmtag = dbiTags.tags[dbix];
-
-	    /* Filter out temporary databases */
-	    if (isTemporaryDB(rpmtag)) 
-		continue;
 
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
@@ -2943,17 +2911,10 @@ static int rpmdbMoveDatabase(const char * prefix,
     case 3:
 	if (dbiTags.tags != NULL)
 	for (i = 0; i < dbiTags.max; i++) {
-	    const char * base;
-	    char *src, *dest;
-	    rpmTag rpmtag;
-
-	    /* Filter out temporary databases */
-	    if (isTemporaryDB((rpmtag = dbiTags.tags[i])))
-		continue;
-
-	    base = rpmTagGetName(rpmtag);
-	    src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
-	    dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
+	    rpmTag rpmtag = dbiTags.tags[i];
+	    const char *base = rpmTagGetName(rpmtag);
+	    char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
+	    char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
 
 	    if (access(src, F_OK) != 0)
 		goto cont;
