@@ -127,7 +127,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     rpmtsi pi = NULL; rpmte p;
     rpmds oldChk = NULL, newChk = NULL, sameChk = NULL;
     rpmds obsoletes;
-    int xx;
     int ec = 0;
     int rc;
     int oc;
@@ -284,7 +283,7 @@ addheader:
 	if (rpmVersionCompare(h, oh) == 0)
 	    continue;
 
-	xx = removePackage(tsmem, oh, p);
+	removePackage(tsmem, oh, p);
     }
     mi = rpmdbFreeIterator(mi);
 
