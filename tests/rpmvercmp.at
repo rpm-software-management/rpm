@@ -17,10 +17,12 @@ done
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
 ],
 [0],
-[ignore],
-[ignore])
+[versiontest-2.0-1.noarch
+],
+[])
 AT_CLEANUP
 
 # Test upgrading to older package (should fail)
@@ -32,8 +34,9 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
 ],
 [2],
-[ignore],
-[ignore])
+[],
+[	package versiontest-2.0-1.noarch (which is newer than versiontest-1.0-1.noarch) is already installed
+])
 AT_CLEANUP
 
 # Test downgrading to older package with --oldpackage
@@ -43,14 +46,15 @@ RPMDB_CLEAR
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -q versiontest
 ],
 [0],
-[ignore],
+[versiontest-1.0-1.noarch
+],
 [ignore])
 AT_CLEANUP
 
 # Test upgrade of different versions in same transaction
-# XXX test that only 2.0-1 was installed
 AT_SETUP([rpm -U two versions of same package])
 AT_CHECK([
 RPMDB_CLEAR
@@ -58,14 +62,15 @@ RPMDB_CLEAR
 runroot rpm -U \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
   "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
 ],
 [0],
-[ignore],
-[ignore])
+[versiontest-2.0-1.noarch
+],
+[])
 AT_CLEANUP
 
 # Test install of two different versions in same transaction
-# TODO: test that both got installed
 AT_SETUP([rpm -i two versions of same package])
 AT_CHECK([
 RPMDB_CLEAR
@@ -73,10 +78,13 @@ RPMDB_CLEAR
 runroot rpm -i \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
   "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
+runroot rpm -q versiontest
 ],
 [0],
-[ignore],
-[ignore])
+[versiontest-2.0-1.noarch
+versiontest-1.0-1.noarch
+],
+[])
 AT_CLEANUP
 
 # Test install of two different versions in same transaction
@@ -85,14 +93,15 @@ AT_SETUP([rpm -i identical versions of same package])
 AT_CHECK([
 RPMDB_CLEAR
 
-# TODO test just one was installed, this only emits warnings
-runroot rpm -ivh \
+runroot rpm -i \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -q versiontest
 ],
 [0],
-[ignore],
-[ignore])
+[versiontest-1.0-1.noarch
+],
+[])
 AT_CLEANUP
 
 # TODO: the same with epoch vs no epoch
