@@ -97,13 +97,6 @@ const char * rpmgiHdrPath(rpmgi gi);
 Header rpmgiHeader(rpmgi gi);
 
 /** \ingroup rpmgi
- * Return current iteration transaction set.
- * @param gi		generalized iterator
- * @returns		transaction set
- */
-rpmts rpmgiTs(rpmgi gi);
-
-/** \ingroup rpmgi
  * Load iterator args.
  * @param gi		generalized iterator
  * @param argv		arg list

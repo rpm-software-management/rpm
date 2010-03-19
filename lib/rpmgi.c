@@ -638,11 +638,6 @@ Header rpmgiHeader(rpmgi gi)
     return (gi != NULL ? gi->h : NULL);
 }
 
-rpmts rpmgiTs(rpmgi gi)
-{
-    return (gi != NULL ? gi->ts : NULL);
-}
-
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, int ftsOpts, rpmgiFlags flags)
 {
     gi->ftsOpts = ftsOpts;
