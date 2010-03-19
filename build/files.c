@@ -23,7 +23,7 @@
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 #include "rpmio/base64.h"
-#include "rpmio/fts.h"
+#include "build/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
 #include "build/buildio.h"

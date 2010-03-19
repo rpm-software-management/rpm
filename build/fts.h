@@ -32,6 +32,8 @@
 #ifndef	_FTS_H
 #define	_FTS_H 1
 
+#include <rpm/rpmutil.h>
+
 #if defined(__GLIBC__)
 #include <features.h>
 #else
@@ -157,6 +159,7 @@ __BEGIN_DECLS
  * @param instr
  * @return		file set member
  */
+RPM_GNUC_INTERNAL
 FTSENT	*Fts_children (FTS * sp, int instr) __THROW
 ;
 
@@ -165,6 +168,7 @@ FTSENT	*Fts_children (FTS * sp, int instr) __THROW
  * @param sp		file hierarchy state
  * @return		0 on sucess, -1 on error
  */
+RPM_GNUC_INTERNAL
 int	 Fts_close (FTS * sp) __THROW
 ;
 
@@ -175,6 +179,7 @@ int	 Fts_close (FTS * sp) __THROW
  * @param compar	traversal ordering (or NULL)
  * @return 		file hierarchy state (or NULL on error)
  */
+RPM_GNUC_INTERNAL
 FTS	*Fts_open (char * const * argv, int options,
 		   int (*compar) (const FTSENT **, const FTSENT **)) __THROW
 	;
@@ -184,6 +189,7 @@ FTS	*Fts_open (char * const * argv, int options,
  * @param sp		file hierarchy state
  * @return		file set member
  */
+RPM_GNUC_INTERNAL
 FTSENT	*Fts_read (FTS * sp) __THROW
 ;
 
@@ -194,6 +200,7 @@ FTSENT	*Fts_read (FTS * sp) __THROW
  * @param instr		new disposition for file set member
  * @return		0 on sucess, -1 on error
  */
+RPM_GNUC_INTERNAL
 int	 Fts_set (FTS * sp, FTSENT * p, int instr) __THROW
 ;
 

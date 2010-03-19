@@ -37,7 +37,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #include <fcntl.h>
 #include <dirent.h>
 #include <errno.h>
-#include "rpmio/fts.h"
+#include "build/fts.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -63,7 +63,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #include "system.h"
 #include <string.h>
 #include <errno.h>
-#include "rpmio/fts.h"
+#include "build/fts.h"
 #include <rpm/rpmio.h>
 #include <rpm/rpmurl.h>
 #   define __set_errno(val) (*__errno_location ()) = (val)
