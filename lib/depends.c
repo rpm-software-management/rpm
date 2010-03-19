@@ -110,13 +110,16 @@ static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmTag tag, const char *
     rpmdbPruneIterator(mi, tsmem->removedPackages, tsmem->numRemovedPackages,1);
     return mi;
 }
+
+#define skipColor(_tscolor, _color, _ocolor) \
+	((_tscolor) && (_color) && (_ocolor) && !((_color) & (_ocolor)))
+
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t hcolor;
-    rpm_color_t ohcolor;
     rpmdbMatchIterator mi;
     Header oh;
     int isSource = headerIsSource(h);
@@ -273,10 +276,8 @@ addheader:
     hcolor = rpmteColor(p);
     mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
     while((oh = rpmdbNextIterator(mi)) != NULL) {
-
 	/* Ignore colored packages not in our rainbow. */
-	ohcolor = headerGetNumber(oh, RPMTAG_HEADERCOLOR);
-	if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+	if (skipColor(tscolor, hcolor, headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
 	    continue;
 
 	/* Skip packages that contain identical NEVR. */
@@ -302,10 +303,8 @@ addheader:
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
-	    ohcolor = headerGetNumber(oh, RPMTAG_HEADERCOLOR);
-	    /* XXX provides *are* colored, effectively limiting Obsoletes:
-		to matching only colored Provides: based on pkg coloring. */
-	    if (tscolor && hcolor && ohcolor && !(hcolor & ohcolor))
+	    if (skipColor(tscolor, hcolor, 
+			  headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
 		continue;
 
 	    /*
