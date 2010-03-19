@@ -20,8 +20,6 @@ extern int _rpmgi_debug;
  */
 typedef enum rpmgiFlags_e {
     RPMGI_NONE		= 0,
-    RPMGI_TSADD		= (1 << 0),
-    RPMGI_TSORDER	= (1 << 1),
     RPMGI_NOGLOB	= (1 << 2),
     RPMGI_NOMANIFEST	= (1 << 3),
     RPMGI_NOHEADER	= (1 << 4)
@@ -107,13 +105,6 @@ Header rpmgiHeader(rpmgi gi);
 rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv,
 		int ftsOpts, rpmgiFlags flags);
 
-
-/** \ingroup rpmgi
- * Retrieve iterator flags
- * @param gi		generalized iterator
- * @return		iterator flags
- */
-rpmgiFlags rpmgiGetFlags(rpmgi gi);
 
 /** \ingroup rpmgi
  * Return number of errors (file not found etc) encountered during iteration

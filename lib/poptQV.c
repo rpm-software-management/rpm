@@ -129,10 +129,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "whatprovides", '\0', 0, 0, POPT_WHATPROVIDES, 
 	N_("query/verify the package(s) which provide a dependency"), "CAPABILITY" },
 
- { "transaction", 'T', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, (RPMGI_TSADD|RPMGI_TSORDER),
-	N_("create transaction set"), NULL},
- { "noorder", '\0', POPT_BIT_CLR|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_TSORDER,
-	N_("do not order transaction set"), NULL},
  { "noglob", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &giFlags, RPMGI_NOGLOB,
 	N_("do not glob arguments"), NULL},
  { "nomanifest", '\0', POPT_BIT_SET, &giFlags, RPMGI_NOMANIFEST,

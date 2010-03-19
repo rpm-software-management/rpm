@@ -584,43 +584,10 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 	break;
     }
 
-    if ((gi->flags & RPMGI_TSADD) && gi->h != NULL) {
-	/* XXX rpmgi hack: Save header in transaction element. */
-	xx = rpmtsAddInstallElement(gi->ts, gi->h, (fnpyKey)gi->hdrPath, 2, NULL);
-    }
-
     return rpmrc;
 
 enditer:
     gi->mi = rpmdbFreeIterator(gi->mi);
-    if (gi->flags & RPMGI_TSORDER) {
-	rpmts ts = gi->ts;
-	rpmps ps;
-
-	/* XXX installed database needs close here. */
-	xx = rpmtsCloseDB(ts);
-	xx = rpmtsSetDBMode(ts, -1);	/* XXX disable lazy opens */
-
-	xx = rpmtsCheck(ts);
-
-	/* XXX query/verify will need the glop added to a buffer instead. */
-	ps = rpmtsProblems(ts);
-	if (rpmpsNumProblems(ps) > 0) {
-	    /* XXX rpminstall will need RPMLOG_ERR */
-	    rpmlog(RPMLOG_INFO, _("Failed dependencies:\n"));
-	    if (rpmIsVerbose())
-		rpmpsPrint(NULL, ps);
-	}
-	ps = rpmpsFree(ps);
-	rpmtsCleanProblems(ts);
-
-	xx = rpmtsOrder(ts);
-
-	gi->tag = RPMDBI_ADDED;			/* XXX hackery */
-	gi->flags &= ~(RPMGI_TSADD|RPMGI_TSORDER);
-
-    }
-
     gi->h = headerFree(gi->h);
     gi->hdrPath = _free(gi->hdrPath);
     gi->i = -1;
@@ -643,11 +610,6 @@ rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, int ftsOpts, rpmgiFlags flags)
     gi->ftsOpts = ftsOpts;
     gi->flags = flags;
     return rpmgiGlobArgv(gi, argv);
-}
-
-rpmgiFlags rpmgiGetFlags(rpmgi gi)
-{
-    return (gi != NULL ? gi->flags : RPMGI_NONE);
 }
 
 int rpmgiNumErrors(rpmgi gi)

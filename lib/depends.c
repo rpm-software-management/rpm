@@ -318,10 +318,6 @@ addheader:
 	tsmem->numAddedPackages++;
     }
 
-    /* XXX rpmgi hack: Save header in transaction element if requested. */
-    if (upgrade & 0x2)
-	(void) rpmteSetHeader(p, h);
-
     /* If not upgrading or a source package, then we're done. */
     if (!(upgrade & 0x1) || isSource)
 	goto exit;
