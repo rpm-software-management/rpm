@@ -170,28 +170,6 @@ static void rpmcliAllArgCallback( poptContext con,
     }
 }
 
-int ftsOpts = 0;
-
-struct poptOption rpmcliFtsPoptTable[] = {
- { "comfollow", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_COMFOLLOW,
-	N_("follow command line symlinks"), NULL },
- { "logical", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_LOGICAL,
-	N_("logical walk"), NULL },
- { "nochdir", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_NOCHDIR,
-	N_("don't change directories"), NULL },
- { "nostat", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_NOSTAT,
-	N_("don't get stat info"), NULL },
- { "physical", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_PHYSICAL,
-	N_("physical walk"), NULL },
- { "seedot", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_SEEDOT,
-	N_("return dot and dot-dot"), NULL },
- { "xdev", '\0', POPT_BIT_SET,		&ftsOpts, RPMGI_XDEV,
-	N_("don't cross devices"), NULL },
- { "whiteout", '\0', POPT_BIT_SET,	&ftsOpts, RPMGI_WHITEOUT,
-	N_("return whiteout information"), NULL },
-   POPT_TABLEEND
-};
-
 struct poptOption rpmcliAllPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,

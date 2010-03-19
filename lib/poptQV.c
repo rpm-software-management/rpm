@@ -24,7 +24,6 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_QUERYBYFILEID	-1009
 #define POPT_QUERYBYTID		-1010
 #define POPT_HDLIST		-1011
-#define POPT_FTSWALK		-1012
 
 /* ========== Query/Verify/Signature source args */
 static void rpmQVSourceArgCallback( poptContext con,
@@ -67,8 +66,6 @@ static void rpmQVSourceArgCallback( poptContext con,
 				qva->qva_sourceCount++; break;
     case POPT_HDLIST: qva->qva_source |= RPMQV_HDLIST;
 				qva->qva_sourceCount++; break;
-    case POPT_FTSWALK:qva->qva_source |= RPMQV_FTSWALK;
-				qva->qva_sourceCount++; break;
 
 /* XXX SPECFILE is not verify sources */
     case POPT_SPECFILE:
@@ -100,8 +97,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
  { "package", 'p', 0, 0, 'p',
 	N_("query/verify a package file"), NULL },
 
- { "ftswalk", 'W', 0, 0, POPT_FTSWALK,
-	N_("query/verify package(s) from TOP file tree walk"), "TOP" },
  { "hdlist", 'H', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_HDLIST,
 	N_("query/verify package(s) from system HDLIST"), "HDLIST" },
 

@@ -25,18 +25,6 @@ typedef enum rpmgiFlags_e {
     RPMGI_NOHEADER	= (1 << 4)
 } rpmgiFlags;
 
-/** \ingroup rpmgi
- * rpmgi FTS-flags
- */
-#define RPMGI_COMFOLLOW   0x0001          /* follow command line symlinks */
-#define RPMGI_LOGICAL     0x0002          /* logical walk */
-#define RPMGI_NOCHDIR     0x0004          /* don't change directories */
-#define RPMGI_NOSTAT      0x0008          /* don't get stat info */
-#define RPMGI_PHYSICAL    0x0010          /* physical walk */
-#define RPMGI_SEEDOT      0x0020          /* return dot and dot-dot */
-#define RPMGI_XDEV        0x0040          /* don't cross devices */
-#define RPMGI_WHITEOUT    0x0080          /* return whiteout information */
-
 extern rpmgiFlags giFlags;
 
 /** \ingroup rpmgi 
@@ -82,12 +70,10 @@ Header rpmgiHeader(rpmgi gi);
  * Load iterator args.
  * @param gi		generalized iterator
  * @param argv		arg list
- * @param ftsOpts	fts(3) flags
  * @param flags		iterator flags
  * @return 		RPMRC_OK on success
  */
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv,
-		int ftsOpts, rpmgiFlags flags);
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, rpmgiFlags flags);
 
 
 /** \ingroup rpmgi

@@ -30,10 +30,6 @@ extern int _noDirTokens;
  */
 extern struct poptOption		rpmcliAllPoptTable[];
 
-extern int ftsOpts;
-
-extern struct poptOption		rpmcliFtsPoptTable[];
-
 extern const char * rpmcliPipeOutput;
 
 extern const char * rpmcliRcfile;
@@ -100,7 +96,6 @@ typedef enum rpmQVSources_e {
     RPMQV_FILEID,	/*!< ... from file id (file MD5). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
     RPMQV_HDLIST,	/*!< ... from system hdlist. */
-    RPMQV_FTSWALK	/*!< ... from fts(3) walk. */
 } rpmQVSources;
 
 /** \ingroup rpmcli

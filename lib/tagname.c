@@ -147,9 +147,6 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_ARGLIST:
 	name = "Arglist";
 	break;
-    case RPMDBI_FTSWALK:
-	name = "Ftswalk";
-	break;
 
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
@@ -207,7 +204,6 @@ static rpmTagType _tagType(rpmTag tag)
     case RPMDBI_AVAILABLE:
     case RPMDBI_HDLIST:
     case RPMDBI_ARGLIST:
-    case RPMDBI_FTSWALK:
 	break;
     default:
 	if (_rpmTags.byValue == NULL)
@@ -258,8 +254,6 @@ static rpmTag _tagValue(const char * tagstr)
 	return RPMDBI_HDLIST;
     if (!rstrcasecmp(tagstr, "Arglist"))
 	return RPMDBI_ARGLIST;
-    if (!rstrcasecmp(tagstr, "Ftswalk"))
-	return RPMDBI_FTSWALK;
 
     if (_rpmTags.byName == NULL)
 	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);

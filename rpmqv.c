@@ -86,9 +86,6 @@ static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmVerifyPoptTable, 0,
 	N_("Verify options (with -V or --verify):"),
 	NULL },
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliFtsPoptTable, 0,
-        N_("File tree walk options (with --ftswalk):"),
-        NULL },
 #endif	/* IAM_RPMQV */
 
 #ifdef	IAM_RPMK

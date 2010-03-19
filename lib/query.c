@@ -316,7 +316,6 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_RPM:
     case RPMQV_ALL:
     case RPMQV_HDLIST:
-    case RPMQV_FTSWALK:
 	res = rpmgiShowMatches(qva, ts);
 	break;
 
@@ -535,7 +534,7 @@ static int rpmcliArgIterHelper(rpmts ts, QVA_t qva, rpmTag tag, ARGV_const_t arg
     int ec = 0;
 
     qva->qva_gi = rpmgiNew(ts, tag, NULL, 0);
-    rpmgiSetArgs(qva->qva_gi, argv, ftsOpts, gFlgs);
+    rpmgiSetArgs(qva->qva_gi, argv, gFlgs);
     
     /* FIX: argv can be NULL, cast to pass argv array */
     ec = rpmQueryVerify(qva, ts, (tag == RPMDBI_PACKAGES)? (const char *) argv : NULL);
@@ -557,14 +556,9 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
     case RPMQV_HDLIST:
 	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_HDLIST, argv, giFlags);
 	break;
-    case RPMQV_FTSWALK:
-	if (ftsOpts == 0)
-	    ftsOpts = (RPMGI_COMFOLLOW | RPMGI_LOGICAL | RPMGI_NOSTAT);
-	ec = rpmcliArgIterHelper(ts, qva, RPMDBI_FTSWALK, argv, giFlags);
-	break;
     default:
 	qva->qva_gi = rpmgiNew(ts, RPMDBI_ARGLIST, NULL, 0);
-	rpmgiSetArgs(qva->qva_gi, argv, ftsOpts,
+	rpmgiSetArgs(qva->qva_gi, argv, 
 		(giFlags | (RPMGI_NOGLOB|RPMGI_NOHEADER)));
 	while (rpmgiNext(qva->qva_gi) == RPMRC_OK) {
 	    ec += rpmQueryVerify(qva, ts, rpmgiHdrPath(qva->qva_gi));

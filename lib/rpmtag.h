@@ -18,7 +18,6 @@ extern "C" {
 #define	RPMDBI_AVAILABLE	5	/* Available package headers. */
 #define	RPMDBI_HDLIST		6	/* (rpmgi) Header list. */
 #define	RPMDBI_ARGLIST		7	/* (rpmgi) Argument list. */
-#define	RPMDBI_FTSWALK		8	/* (rpmgi) File tree  walk. */
 
 /**
  * Header private tags.

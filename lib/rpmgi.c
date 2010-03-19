@@ -15,7 +15,6 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
-#include "rpmio/fts.h"
 #include "lib/manifest.h"
 
 #include "debug.h"
@@ -47,37 +46,7 @@ struct rpmgi_s {
 
     ARGV_t argv;
     int argc;
-
-    int ftsOpts;
-    FTS * ftsp;
-    FTSENT * fts;
 };
-
-static const char * const ftsInfoStrings[] = {
-    "UNKNOWN",
-    "D",
-    "DC",
-    "DEFAULT",
-    "DNR",
-    "DOT",
-    "DP",
-    "ERR",
-    "F",
-    "INIT",
-    "NS",
-    "NSOK",
-    "SL",
-    "SLNONE",
-    "W",
-};
-
-static const char * ftsInfoStr(int fts_info)
-{
-
-    if (!(fts_info >= 1 && fts_info <= 14))
-	fts_info = 0;
-    return ftsInfoStrings[ fts_info ];
-}
 
 /**
  * Open a file after macro expanding path.
@@ -203,67 +172,6 @@ static rpmRC rpmgiLoadReadHeader(rpmgi gi)
     return rpmrc;
 }
 
-/**
- * Filter file tree walk path.
- * @param gi		generalized iterator
- * @return		RPMRC_OK on success
- */
-static rpmRC rpmgiWalkPathFilter(rpmgi gi)
-{
-    FTSENT * fts = gi->fts;
-    rpmRC rpmrc = RPMRC_NOTFOUND;
-    static const int indent = 2;
-
-
-if (_rpmgi_debug < 0)
-rpmlog(RPMLOG_DEBUG, "FTS_%s\t%*s %s%s\n", ftsInfoStr(fts->fts_info),
-		indent * (fts->fts_level < 0 ? 0 : fts->fts_level), "",
-		fts->fts_name,
-	((fts->fts_info == FTS_D || fts->fts_info == FTS_DP) ? "/" : ""));
-
-    switch (fts->fts_info) {
-    case FTS_F:
-	/* Ignore all but *.rpm files. */
-	if (!rpmFileHasSuffix(fts->fts_name, ".rpm"))
-	    break;
-	rpmrc = RPMRC_OK;
-	break;
-    default:
-	break;
-    }
-    return rpmrc;
-}
-
-/**
- * Read header from next package, lazily walking file tree.
- * @param gi		generalized iterator
- * @return		RPMRC_OK on success
- */
-static rpmRC rpmgiWalkReadHeader(rpmgi gi)
-{
-    rpmRC rpmrc = RPMRC_NOTFOUND;
-
-    if (gi->ftsp != NULL)
-    while ((gi->fts = Fts_read(gi->ftsp)) != NULL) {
-	rpmrc = rpmgiWalkPathFilter(gi);
-	if (rpmrc == RPMRC_OK)
-	    break;
-    }
-
-    if (rpmrc == RPMRC_OK) {
-	Header h = NULL;
-	if (!(gi->flags & RPMGI_NOHEADER)) {
-	    /* XXX rpmrc = rpmgiLoadReadHeader(gi); */
-	    if (gi->fts != NULL)	/* XXX can't happen */
-		h = rpmgiReadHeader(gi, gi->fts->fts_path);
-	}
-	if (h != NULL)
-	    gi->h = headerLink(h);
-	h = headerFree(h);
-    }
-
-    return rpmrc;
-}
 
 /**
  * Append globbed arg list to iterator.
@@ -280,7 +188,7 @@ static rpmRC rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 
     /* XXX Expand globs only if requested or for gi specific tags */
     if ((gi->flags & RPMGI_NOGLOB)
-     || !(gi->tag == RPMDBI_HDLIST || gi->tag == RPMDBI_ARGLIST || gi->tag == RPMDBI_FTSWALK))
+     || !(gi->tag == RPMDBI_HDLIST || gi->tag == RPMDBI_ARGLIST))
     {
 	if (argv != NULL) {
 	    while (argv[ac] != NULL)
@@ -370,12 +278,6 @@ rpmgi rpmgiFree(rpmgi gi)
 
     gi->argv = argvFree(gi->argv);
 
-    if (gi->ftsp != NULL) {
-	int xx;
-	xx = Fts_close(gi->ftsp);
-	gi->ftsp = NULL;
-	gi->fts = NULL;
-    }
     if (gi->fd != NULL) {
 	(void) Fclose(gi->fd);
 	gi->fd = NULL;
@@ -413,9 +315,6 @@ rpmgi rpmgiNew(rpmts ts, rpmTag tag, const void * keyp, size_t keylen)
     gi->fd = NULL;
     gi->argv = argvNew();
     gi->argc = 0;
-    gi->ftsOpts = 0;
-    gi->ftsp = NULL;
-    gi->fts = NULL;
 
     return gi;
 }
@@ -528,28 +427,6 @@ fprintf(stderr, "*** gi %p\t%p[%d]: %s\n", gi, gi->argv, gi->i, gi->argv[gi->i])
 
 	gi->hdrPath = xstrdup(gi->argv[gi->i]);
 	break;
-    case RPMDBI_FTSWALK:
-	if (gi->argv == NULL)		/* HACK */
-	    goto enditer;
-
-	if (!gi->active) {
-	    gi->ftsp = Fts_open((char *const *)gi->argv, gi->ftsOpts, NULL);
-	    /* XXX NULL with open(2)/malloc(3) errno set */
-	    gi->active = 1;
-	}
-
-	/* Read next header, lazily walking file tree. */
-	rpmrc = rpmgiWalkReadHeader(gi);
-
-	if (rpmrc != RPMRC_OK) {
-	    xx = Fts_close(gi->ftsp);
-	    gi->ftsp = NULL;
-	    goto enditer;
-	}
-
-	if (gi->fts != NULL)
-	    gi->hdrPath = xstrdup(gi->fts->fts_path);
-	break;
     }
 
     return rpmrc;
@@ -573,9 +450,8 @@ Header rpmgiHeader(rpmgi gi)
     return (gi != NULL ? gi->h : NULL);
 }
 
-rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, int ftsOpts, rpmgiFlags flags)
+rpmRC rpmgiSetArgs(rpmgi gi, ARGV_const_t argv, rpmgiFlags flags)
 {
-    gi->ftsOpts = ftsOpts;
     gi->flags = flags;
     return rpmgiGlobArgv(gi, argv);
 }
