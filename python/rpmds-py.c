@@ -196,7 +196,7 @@ static PyObject * rpmds_Rpmlib(rpmdsObject * s)
 
 static struct PyMethodDef rpmds_methods[] = {
  {"Count",	(PyCFunction)rpmds_Count,	METH_NOARGS,
-	"ds.Count -> Count	- Return no. of elements.\n" },
+	"Deprecated, use len(ds) instead.\n" },
  {"Ix",		(PyCFunction)rpmds_Ix,		METH_NOARGS,
 	"ds.Ix -> Ix		- Return current element index.\n" },
  {"DNEVR",	(PyCFunction)rpmds_DNEVR,	METH_NOARGS,
