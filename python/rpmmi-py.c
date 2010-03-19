@@ -118,7 +118,7 @@ static struct PyMethodDef rpmmi_methods[] = {
     {"instance",    (PyCFunction) rpmmi_Instance,	METH_NOARGS,
 	NULL },
     {"count",       (PyCFunction) rpmmi_Count,		METH_NOARGS,
-	NULL },
+"Deprecated, use len(mi) instead.\n" },
     {"pattern",	    (PyCFunction) rpmmi_Pattern,	METH_VARARGS|METH_KEYWORDS,
 "mi.pattern(TagN, mire_type, pattern)\n\
 - Set a secondary match pattern on tags from retrieved header.\n" },
