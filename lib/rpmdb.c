@@ -34,8 +34,6 @@
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "debug.h"
 
-int _rpmdb_debug = 0;
-
 static int _rebuildinprogress = 0;
 
 #define	_DBI_FLAGS	0
@@ -730,7 +728,7 @@ int rpmdbClose(rpmdb db)
     if (db == NULL)
 	goto exit;
 
-    (void) rpmdbUnlink(db, RPMDBG_M("rpmdbClose"));
+    (void) rpmdbUnlink(db);
 
     if (db->nrefs > 0)
 	goto exit;
@@ -832,7 +830,7 @@ rpmdb newRpmdb(const char * root,
     db->db_free = NULL; /* XXX rfree() prototype differs from free() */
     db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     db->nrefs = 0;
-    return rpmdbLink(db, RPMDBG_M("rpmdbCreate"));
+    return rpmdbLink(db);
 }
 
 static int openDatabase(const char * prefix,
@@ -915,19 +913,17 @@ exit:
     return rc;
 }
 
-rpmdb rpmdbUnlink(rpmdb db, const char * msg)
+rpmdb rpmdbUnlink(rpmdb db)
 {
-if (_rpmdb_debug)
-fprintf(stderr, "--> db %p -- %d %s\n", db, db->nrefs, msg);
-    db->nrefs--;
+    if (db)
+	db->nrefs--;
     return NULL;
 }
 
-rpmdb rpmdbLink(rpmdb db, const char * msg)
+rpmdb rpmdbLink(rpmdb db)
 {
-    db->nrefs++;
-if (_rpmdb_debug)
-fprintf(stderr, "--> db %p ++ %d %s\n", db, db->nrefs, msg);
+    if (db)
+	db->nrefs++;
     return db;
 }
 
@@ -1463,7 +1459,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
-    mi->mi_db = rpmdbUnlink(mi->mi_db, RPMDBG_M("matchIterator"));
+    mi->mi_db = rpmdbUnlink(mi->mi_db);
 
     mi = _free(mi);
 
@@ -2226,7 +2222,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
 
-    mi->mi_db = rpmdbLink(db, RPMDBG_M("matchIterator"));
+    mi->mi_db = rpmdbLink(db);
     mi->mi_rpmtag = rpmtag;
 
     mi->mi_dbc = NULL;

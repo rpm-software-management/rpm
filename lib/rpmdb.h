@@ -13,8 +13,6 @@
 extern "C" {
 #endif
 
-extern int _rpmdb_debug;
-
 /**
  * Tag value pattern match mode.
  */
@@ -51,18 +49,16 @@ int rpmdbSetChrootDone(rpmdb db, int chrootDone);
 /** \ingroup rpmdb
  * Unreference a database instance.
  * @param db		rpm database
- * @param msg
  * @return		NULL always
  */
-rpmdb rpmdbUnlink (rpmdb db, const char * msg);
+rpmdb rpmdbUnlink(rpmdb db);
 
 /** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
- * @param msg
  * @return		new rpm database reference
  */
-rpmdb rpmdbLink (rpmdb db, const char * msg);
+rpmdb rpmdbLink(rpmdb db);
 
 /** \ingroup rpmdb
  * Open rpm database.
