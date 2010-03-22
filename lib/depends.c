@@ -197,8 +197,6 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
-	const char *pkgNEVR, *addNEVR;
-	int skip = 0;
 
 	/* Only added binary packages need checking */
 	if (rpmteType(p) == TR_REMOVED || rpmteIsSource(p))
@@ -222,36 +220,26 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 	 * Always skip identical NEVR. 
  	 * On upgrade, if newer NEVR was previously added, skip adding older.
  	 */
-	if (rpmdsCompare(sameChk, this)) {
-	    skip = 1;
-	    addNEVR = rpmdsDNEVR(sameChk);
-	} else if (upgrade && rpmdsCompare(newChk, this)) {
-	    skip = 1;
-	    addNEVR = rpmdsDNEVR(newChk);
-	}
-
-	if (skip) {
-	    pkgNEVR = rpmdsDNEVR(this);
-	    if (rpmIsVerbose())
-		rpmlog(RPMLOG_WARNING,
-		    _("package %s was already added, skipping %s\n"),
-		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
-		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
+	if (rpmdsCompare(sameChk, this) ||
+		(upgrade && rpmdsCompare(newChk, this))) {
 	    oc = -1;
 	    break;;
 	}
 
  	/* On upgrade, if older NEVR was previously added, replace with new */
 	if (upgrade && rpmdsCompare(oldChk, this) != 0) {
-	    pkgNEVR = rpmdsDNEVR(this);
-	    addNEVR = rpmdsDNEVR(newChk);
-	    if (rpmIsVerbose())
-		rpmlog(RPMLOG_WARNING,
-		    _("package %s was already added, replacing with %s\n"),
-		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
-		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
 	    break;
 	}
+    }
+
+    /* If we broke out of the loop early we've something to say */
+    if (p != NULL && rpmIsVerbose()) {
+	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
+	const char *msg = (oc < 0) ?
+		    _("package %s was already added, skipping %s\n") :
+		    _("package %s was already added, replacing with %s\n");
+	rpmlog(RPMLOG_WARNING, msg, rpmteNEVRA(p), nevra);
+	free(nevra);
     }
 
     rpmtsiFree(pi);
