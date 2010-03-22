@@ -196,7 +196,7 @@ rpmgi rpmgiNew(rpmts ts, rpmgiFlags flags, ARGV_const_t argv)
 {
     rpmgi gi = xcalloc(1, sizeof(*gi));
 
-    gi->ts = rpmtsLink(ts, __FUNCTION__);
+    gi->ts = rpmtsLink(ts);
 
     gi->flags = flags;
     gi->i = -1;

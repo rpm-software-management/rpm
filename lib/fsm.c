@@ -159,7 +159,7 @@ mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts, RPMDBG_M("mapIterator"));
+    iter->ts = rpmtsLink(ts);
     iter->te = te; /* XXX rpmte is not refcounted yet */
     iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
     iter->reverse = (rpmteType(te) == TR_REMOVED);

@@ -669,7 +669,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
 
-    if (ts)	psm->ts = rpmtsLink(ts, RPMDBG_M("rpmpsmNew"));
+    if (ts)	psm->ts = rpmtsLink(ts);
     if (te) {
 #ifdef	NOTYET
 	psm->te = rpmteLink(te, RPMDBG_M("rpmpsmNew")); 

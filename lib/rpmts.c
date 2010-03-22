@@ -37,23 +37,19 @@ struct rpmtsi_s {
 
 static void loadKeyring(rpmts ts);
 
-int _rpmts_debug = 0;
-
 int _rpmts_stats = 0;
 
-rpmts rpmtsUnlink(rpmts ts, const char * msg)
+rpmts rpmtsUnlink(rpmts ts)
 {
-if (_rpmts_debug)
-fprintf(stderr, "--> ts %p -- %d %s\n", ts, ts->nrefs, msg);
-    ts->nrefs--;
+    if (ts)
+	ts->nrefs--;
     return NULL;
 }
 
-rpmts rpmtsLink(rpmts ts, const char * msg)
+rpmts rpmtsLink(rpmts ts)
 {
-    ts->nrefs++;
-if (_rpmts_debug)
-fprintf(stderr, "--> ts %p ++ %d %s\n", ts, ts->nrefs, msg);
+    if (ts)
+	ts->nrefs++;
     return ts;
 }
 
@@ -575,7 +571,7 @@ rpmts rpmtsFree(rpmts ts)
 	return NULL;
 
     if (ts->nrefs > 1)
-	return rpmtsUnlink(ts, RPMDBG_M("tsCreate"));
+	return rpmtsUnlink(ts);
 
     rpmtsEmpty(ts);
 
@@ -601,7 +597,7 @@ rpmts rpmtsFree(rpmts ts)
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
 
-    (void) rpmtsUnlink(ts, RPMDBG_M("tsCreate"));
+    (void) rpmtsUnlink(ts);
 
     ts = _free(ts);
 
@@ -933,7 +929,7 @@ rpmts rpmtsCreate(void)
 
     ts->nrefs = 0;
 
-    return rpmtsLink(ts, RPMDBG_M("tsCreate"));
+    return rpmtsLink(ts);
 }
 
 rpmtsi rpmtsiFree(rpmtsi tsi)
@@ -949,7 +945,7 @@ rpmtsi rpmtsiInit(rpmts ts)
     rpmtsi tsi = NULL;
 
     tsi = xcalloc(1, sizeof(*tsi));
-    tsi->ts = rpmtsLink(ts, RPMDBG_M("rpmtsi"));
+    tsi->ts = rpmtsLink(ts);
     tsi->oc = 0;
     return tsi;
 }
