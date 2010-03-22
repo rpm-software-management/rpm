@@ -49,7 +49,7 @@ rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
 /** \ingroup rpmte
  * Retrieve header from transaction element.
  * @param te		transaction element
- * @return		header
+ * @return		header (new reference)
  */
 Header rpmteHeader(rpmte te);
 
