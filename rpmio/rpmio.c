@@ -63,8 +63,6 @@ struct _FD_s {
     rpmDigestBundle digests;
 };
 
-#define	FDSANE(fd)	assert(fd && fd->magic == FDMAGIC)
-
 #define DBG(_f, _m, _x) \
     \
     if ((_rpmio_debug | ((_f) ? ((FD_t)(_f))->flags : 0)) & (_m)) fprintf _x \
@@ -121,8 +119,7 @@ static void fdPop(FD_t fd)
 static FD_t c2f(void * cookie)
 {
     FD_t fd = (FD_t) cookie;
-    FDSANE(fd);
-    return fd;
+    return (fd && fd->magic == FDMAGIC) ? fd : NULL;
 }
 
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
@@ -367,10 +364,8 @@ static int fdSeekNot(void * cookie, _libio_pos_t pos,  int whence)
  */
 static int fdFileno(void * cookie)
 {
-    FD_t fd;
-    if (cookie == NULL) return -2;
-    fd = c2f(cookie);
-    return fd->fps[0].fdno;
+    FD_t fd = c2f(cookie);
+    return (fd != NULL) ? fd->fps[0].fdno : -2;
 }
 
 FILE * fdGetFILE(FD_t fd)
