@@ -15,8 +15,6 @@
 
 #include "debug.h"
 
-int _rpmte_debug = 0;
-
 /** \ingroup rpmte
  * A single package instance to be installed/removed atomically.
  */

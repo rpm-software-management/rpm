@@ -12,10 +12,6 @@
 extern "C" {
 #endif
 
-/**
- */
-extern int _rpmte_debug;
-
 /** \ingroup rpmte
  * Transaction element type.
  */

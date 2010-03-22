@@ -44,8 +44,6 @@ extern int _psm_debug;
 
 extern int _rpmsq_debug;
 
-extern int _rpmte_debug;
-
 extern int _rpmts_stats;
 
 const char * rpmcliPipeOutput = NULL;
@@ -227,8 +225,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},
  { "rpmsqdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmsq_debug, -1,
-	NULL, NULL},
- { "rpmtedebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmte_debug, -1,
 	NULL, NULL},
  { "stats", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmts_stats, -1,
 	NULL, NULL},
