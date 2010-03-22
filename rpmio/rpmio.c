@@ -73,38 +73,35 @@ struct _FD_s {
 
 static FDIO_t fdGetIo(FD_t fd)
 {
-    FDSANE(fd);
-    return fd->fps[fd->nfps].io;
+    return (fd != NULL) ? fd->fps[fd->nfps].io : NULL;
 }
 
 static void fdSetIo(FD_t fd, FDIO_t io)
 {
-    FDSANE(fd);
-    fd->fps[fd->nfps].io = io;
+    if (fd)
+	fd->fps[fd->nfps].io = io;
 }
 
 static void * fdGetFp(FD_t fd)
 {
-    FDSANE(fd);
-    return fd->fps[fd->nfps].fp;
+    return (fd != NULL) ? fd->fps[fd->nfps].fp : NULL;
 }
 
 static void fdSetFp(FD_t fd, void * fp)
 {
-    FDSANE(fd);
-    fd->fps[fd->nfps].fp = fp;
+    if (fd)
+	fd->fps[fd->nfps].fp = fp;
 }
 
 static void fdSetFdno(FD_t fd, int fdno)
 {
-    FDSANE(fd);
-    fd->fps[fd->nfps].fdno = fdno;
+    if (fd) 
+	fd->fps[fd->nfps].fdno = fdno;
 }
 
 static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 {
-    FDSANE(fd);
-    if (fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
+    if (fd == NULL || fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
 	return;
     fd->nfps++;
     fdSetIo(fd, io);
@@ -114,8 +111,7 @@ static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 
 static void fdPop(FD_t fd)
 {
-    FDSANE(fd);
-    if (fd->nfps < 0) return;
+    if (fd == NULL || fd->nfps < 0) return;
     fdSetIo(fd, NULL);
     fdSetFp(fd, NULL);
     fdSetFdno(fd, -1);
@@ -131,21 +127,22 @@ static FD_t c2f(void * cookie)
 
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
 {
-    FDSANE(fd);
-    fd->digests = bundle;
+    if (fd)
+	fd->digests = bundle;
 }
 
 rpmDigestBundle fdGetBundle(FD_t fd)
 {
-    FDSANE(fd);
-    return fd->digests;
+    return (fd != NULL) ? fd->digests : NULL;
 }
 
 static void * iotFileno(FD_t fd, FDIO_t iot)
 {
     void * rc = NULL;
 
-    FDSANE(fd);
+    if (fd == NULL)
+	return NULL;
+
     for (int i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
 	if (fps->io != iot)
@@ -343,8 +340,7 @@ off_t fdSize(FD_t fd)
     struct stat sb;
     off_t rc = -1; 
 
-    FDSANE(fd);
-    if (fstat(Fileno(fd), &sb) == 0)
+    if (fd != NULL && fstat(Fileno(fd), &sb) == 0)
 	rc = sb.st_size;
     return rc;
 }
@@ -364,8 +360,6 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
 
 static int fdSeekNot(void * cookie, _libio_pos_t pos,  int whence)
 {
-    FD_t fd = c2f(cookie);
-    FDSANE(fd);		/* XXX keep gcc quiet */
     return -2;
 }
 
@@ -398,7 +392,6 @@ FD_t fdLink(void * cookie)
  */
 FD_t fdFree( FD_t fd)
 {
-    FDSANE(fd);
     if (fd) {
 	if (--fd->nrefs > 0)
 	    return fd;
@@ -1322,7 +1315,10 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 static void * lzdFileno(FD_t fd)
 {
     void * rc = NULL;
-    FDSANE(fd);
+    
+    if (fd == NULL)
+	return NULL;
+
     for (int i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
 	if (fps->io != xzdio && fps->io != lzdio)
@@ -1485,7 +1481,6 @@ const char *Fstrerror(FD_t fd)
 {
     if (fd == NULL)
 	return (errno ? strerror(errno) : "");
-    FDSANE(fd);
     return getFdErrstr(fd);
 }
 
@@ -1683,9 +1678,8 @@ FD_t Fdopen(FD_t ofd, const char *fmode)
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
-    FDSANE(fd);
 
-    if (fmode == NULL)
+    if (fd == NULL || fmode == NULL)
 	return NULL;
 
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, NULL);
