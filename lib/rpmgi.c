@@ -185,6 +185,7 @@ rpmgi rpmgiFree(rpmgi gi)
     if (gi == NULL)
 	return NULL;
 
+    gi->ts = rpmtsFree(gi->ts);
     gi->argv = argvFree(gi->argv);
 
     memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
