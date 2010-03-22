@@ -186,6 +186,8 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 {
     int oc;
+    const char * arch = headerGetString(h, RPMTAG_ARCH);
+    const char * os = headerGetString(h, RPMTAG_OS);
     rpmte p;
     rpmds oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
     rpmds newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
@@ -203,8 +205,6 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 	    continue;
 
 	if (tscolor) {
-	    const char * arch = headerGetString(h, RPMTAG_ARCH);
-	    const char * os = headerGetString(h, RPMTAG_OS);
 	    const char * parch = rpmteA(p);
 	    const char * pos = rpmteO(p);
 
