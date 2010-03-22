@@ -434,7 +434,7 @@ static ssize_t fdRead(void * cookie, char * buf, size_t count)
     FD_t fd = c2f(cookie);
     ssize_t rc;
 
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     fdstat_enter(fd, FDSTAT_READ);
     rc = read(fdFileno(fd), buf, (count > fd->bytesRemain ? fd->bytesRemain : count));
@@ -455,7 +455,7 @@ static ssize_t fdWrite(void * cookie, const char * buf, size_t count)
     int fdno = fdFileno(fd);
     ssize_t rc;
 
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     if (fd->digests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
@@ -480,6 +480,9 @@ static int fdSeek(void * cookie, _libio_pos_t pos, int whence)
     FD_t fd = c2f(cookie);
     off_t rc;
 
+    if (fd == NULL)
+	return -2;
+
     assert(fd->bytesRemain == -1);	/* XXX FIXME fadio only for now */
     fdstat_enter(fd, FDSTAT_SEEK);
     rc = lseek(fdFileno(fd), p, whence);
@@ -494,12 +497,11 @@ DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence
  */
 static int fdClose( void * cookie)
 {
-    FD_t fd;
+    FD_t fd = c2f(cookie);
     int fdno;
     int rc;
 
-    if (cookie == NULL) return -2;
-    fd = c2f(cookie);
+    if (fd == NULL) return -2;
     fdno = fdFileno(fd);
 
     fdSetFdno(fd, -1);
@@ -786,7 +788,7 @@ static FD_t gzdFdopen(void * cookie, const char *fmode)
     int fdno;
     gzFile gzfile;
 
-    if (fmode == NULL) return NULL;
+    if (fd == NULL || fmode == NULL) return NULL;
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
@@ -984,7 +986,7 @@ static FD_t bzdFdopen(void * cookie, const char * fmode)
     int fdno;
     BZFILE *bzfile;
 
-    if (fmode == NULL) return NULL;
+    if (fd == NULL || fmode == NULL) return NULL;
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
@@ -1008,7 +1010,7 @@ static ssize_t bzdRead(void * cookie, char * buf, size_t count)
     BZFILE *bzfile;
     ssize_t rc = 0;
 
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
     bzfile = bzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
     if (bzfile)
@@ -1030,7 +1032,7 @@ static ssize_t bzdWrite(void * cookie, const char * buf, size_t count)
     BZFILE *bzfile;
     ssize_t rc;
 
-    if (fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0;	/* XXX simulate EOF */
 
     if (fd->digests && count > 0) fdUpdateDigests(fd, (void *)buf, count);
 
@@ -1341,7 +1343,7 @@ static FD_t xzdFdopen(void * cookie, const char * fmode)
     int fdno;
     LZFILE *lzfile;
 
-    if (fmode == NULL) return NULL;
+    if (fd == NULL || fmode == NULL) return NULL;
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
     if (fdno < 0) return NULL;
@@ -1368,7 +1370,7 @@ static FD_t lzdFdopen(void * cookie, const char * fmode)
     int fdno;
     LZFILE *lzfile;
 
-    if (fmode == NULL) return NULL;
+    if (fd == NULL || fmode == NULL) return NULL;
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
     if (fdno < 0) return NULL;
@@ -1390,7 +1392,7 @@ static ssize_t lzdRead(void * cookie, char * buf, size_t count)
     LZFILE *lzfile;
     ssize_t rc = 0;
 
-    if (fd->bytesRemain == 0) return 0; /* XXX simulate EOF */
+    if (fd == NULL || fd->bytesRemain == 0) return 0; /* XXX simulate EOF */
     lzfile = lzdFileno(fd);
     fdstat_enter(fd, FDSTAT_READ);
     if (lzfile)
@@ -1486,8 +1488,8 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
     fdio_read_function_t _read;
     int rc;
 
-    FDSANE(fd);
-DBGIO(fd, (stderr, "==> Fread(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
+    if (fd == NULL)
+	return 0;
 
     if (fdGetIo(fd) == fpio) {
 	rc = fread(buf, size, nmemb, fdGetFILE(fd));
@@ -1505,8 +1507,8 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
     fdio_write_function_t _write;
     int rc;
 
-    FDSANE(fd);
-DBGIO(fd, (stderr, "==> Fwrite(%p,%u,%u,%p) %s\n", buf, (unsigned)size, (unsigned)nmemb, (fd ? fd : NULL), fdbg(fd)));
+    if (fd == NULL)
+	return 0;
 
     if (fdGetIo(fd) == fpio) {
 	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
@@ -1530,8 +1532,8 @@ int Fseek(FD_t fd, _libio_off_t offset, int whence) {
 
     long int rc;
 
-    FDSANE(fd);
-DBGIO(fd, (stderr, "==> Fseek(%p,%ld,%d) %s\n", fd, (long)offset, whence, fdbg(fd)));
+    if (fd == NULL)
+	return -1;
 
     if (fdGetIo(fd) == fpio) {
 	FILE *fp;
@@ -1551,8 +1553,8 @@ int Fclose(FD_t fd)
 {
     int rc = 0, ec = 0;
 
-    FDSANE(fd);
-DBGIO(fd, (stderr, "==> Fclose(%p) %s\n", (fd ? fd : NULL), fdbg(fd)));
+    if (fd == NULL)
+	return -1;
 
     fd = fdLink(fd);
     while (fd->nfps >= 0) {
