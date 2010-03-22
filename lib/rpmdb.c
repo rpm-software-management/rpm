@@ -27,6 +27,7 @@
 #include <rpm/rpmds.h>			/* XXX isInstallPreReq macro only */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmdb.h>
+#include <rpm/rpmts.h>
 #include <rpm/argv.h>
 
 #include "lib/rpmdb_internal.h"
@@ -1460,6 +1461,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
     mi->mi_db = rpmdbUnlink(mi->mi_db);
+    mi->mi_ts = rpmtsFree(mi->mi_ts);
 
     mi = _free(mi);
 
@@ -1816,8 +1818,7 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
     int rc = 0;
     if (mi == NULL)
 	return 0;
-    /* XXX forward linkage prevents rpmtsLink */
-    mi->mi_ts = ts;
+    mi->mi_ts = rpmtsLink(ts);
     mi->mi_hdrchk = hdrchk;
     return rc;
 }
