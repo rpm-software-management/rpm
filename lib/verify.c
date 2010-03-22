@@ -29,9 +29,6 @@
 
 #define S_ISDEV(m) (S_ISBLK((m)) || S_ISCHR((m)))
 
-extern int _rpmds_unspecified_epoch_noise;
-extern int _cacheDependsRC;
-
 /* If cap_compare() (Linux extension) not available, do it the hard way */
 #if WITH_CAP && !defined(HAVE_CAP_COMPARE)
 static int cap_compare(cap_t acap, cap_t bcap)
