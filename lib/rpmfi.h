@@ -14,8 +14,6 @@
 extern "C" {
 #endif
 
-extern int _rpmfi_debug;
-
 /** \ingroup rpmfi
  * File types.
  * These are the file types used internally by rpm. The file
@@ -99,19 +97,16 @@ struct rpmRelocation_s {
 /** \ingroup rpmfi
  * Unreference a file info set instance.
  * @param fi		file info set
- * @param msg
  * @return		NULL always
  */
-rpmfi rpmfiUnlink (rpmfi fi,
-		const char * msg);
+rpmfi rpmfiUnlink (rpmfi fi);
 
 /** \ingroup rpmfi
  * Reference a file info set instance.
  * @param fi		file info set
- * @param msg
  * @return		new file info set reference
  */
-rpmfi rpmfiLink (rpmfi fi, const char * msg);
+rpmfi rpmfiLink (rpmfi fi);
 
 /** \ingroup rpmfi
  * Return file count from file info set.

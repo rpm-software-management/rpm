@@ -182,7 +182,7 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     if (fi == NULL) {
 	Py_RETURN_NONE;
     }
-    return rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi, RPMDBG_M("rpmte_FI")));
+    return rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi));
 }
 
 static struct PyMethodDef rpmte_methods[] = {

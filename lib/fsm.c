@@ -142,7 +142,7 @@ static void * mapFreeIterator(void * p)
 /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
 	iter->te = NULL; /* XXX rpmte is not refcounted yet */
-	iter->fi = rpmfiUnlink(iter->fi, RPMDBG_M("mapFreeIterator"));
+	iter->fi = rpmfiUnlink(iter->fi);
     }
     return _free(p);
 }
@@ -161,7 +161,7 @@ mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts);
     iter->te = te; /* XXX rpmte is not refcounted yet */
-    iter->fi = rpmfiLink(fi, RPMDBG_M("mapIterator"));
+    iter->fi = rpmfiLink(fi);
     iter->reverse = (rpmteType(te) == TR_REMOVED);
     iter->i = (iter->reverse ? (rpmfiFC(fi) - 1) : 0);
     iter->isave = iter->i;

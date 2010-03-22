@@ -86,24 +86,17 @@ static strcache strcacheFree(strcache cache)
     return NULL;
 } 
 
-
-int _rpmfi_debug = 0;
-
-rpmfi rpmfiUnlink(rpmfi fi, const char * msg)
+rpmfi rpmfiUnlink(rpmfi fi)
 {
-    if (fi == NULL) return NULL;
-if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p -- %d %s\n", fi, fi->nrefs, msg);
-    fi->nrefs--;
+    if (fi)
+	fi->nrefs--;
     return NULL;
 }
 
-rpmfi rpmfiLink(rpmfi fi, const char * msg)
+rpmfi rpmfiLink(rpmfi fi)
 {
-    if (fi == NULL) return NULL;
-    fi->nrefs++;
-if (_rpmfi_debug && msg != NULL)
-fprintf(stderr, "--> fi %p ++ %d %s\n", fi, fi->nrefs, msg);
+    if (fi)
+	fi->nrefs++;
     return fi;
 }
 
@@ -491,10 +484,6 @@ int rpmfiNext(rpmfi fi)
 		fi->j = fi->dil[fi->i];
 	} else
 	    fi->i = -1;
-
-if (_rpmfi_debug  < 0 && i != -1)
-fprintf(stderr, "*** fi %p\t[%d] %s%s\n", fi, i, (i >= 0 ? fi->dnl[fi->j] : ""), (i >= 0 ? fi->bnl[fi->i] : ""));
-
     }
 
     return i;
@@ -521,10 +510,6 @@ int rpmfiNextD(rpmfi fi)
 	    j = fi->j;
 	else
 	    fi->j = -1;
-
-if (_rpmfi_debug  < 0 && j != -1)
-fprintf(stderr, "*** fi %p\t[%d]\n", fi, j);
-
     }
 
     return j;
@@ -1055,10 +1040,7 @@ rpmfi rpmfiFree(rpmfi fi)
     if (fi == NULL) return NULL;
 
     if (fi->nrefs > 1)
-	return rpmfiUnlink(fi, __FUNCTION__);
-
-if (_rpmfi_debug < 0)
-fprintf(stderr, "*** fi %p\t[%d]\n", fi, fi->fc);
+	return rpmfiUnlink(fi);
 
     if (fi->fc > 0) {
 	fi->bnl = _free(fi->bnl);
@@ -1108,7 +1090,7 @@ fprintf(stderr, "*** fi %p\t[%d]\n", fi, fi->fc);
 
     fi->h = headerFree(fi->h);
 
-    (void) rpmfiUnlink(fi, __FUNCTION__);
+    (void) rpmfiUnlink(fi);
     memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
     fi = _free(fi);
 
@@ -1267,15 +1249,13 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
     fi->fn = NULL;
 
 exit:
-if (_rpmfi_debug < 0)
-fprintf(stderr, "*** fi %p\t[%d]\n", fi, (fi ? fi->fc : 0));
 
     if (fi != NULL) {
 	fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
     }
 
     /* FIX: rpmfi null annotations */
-    return rpmfiLink(fi, __FUNCTION__);
+    return rpmfiLink(fi);
 }
 
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)

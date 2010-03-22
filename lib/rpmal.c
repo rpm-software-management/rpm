@@ -227,7 +227,7 @@ void rpmalAdd(rpmal al, rpmte p)
 
     alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME),
 			      RPMDBG_M("Provides (rpmalAdd)"));
-    alp->fi = rpmfiLink(rpmteFI(p), RPMDBG_M("Files (rpmalAdd)"));
+    alp->fi = rpmfiLink(rpmteFI(p));
 
     if (al->providesHash != NULL) { // index is already created
 	rpmalAddProvides(al, pkgNum, alp->provides);

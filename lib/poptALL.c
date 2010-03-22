@@ -46,8 +46,6 @@ extern int _rpmds_debug;
 /* XXX avoid -lrpmbuild linkage. */
        int _rpmfc_debug;
 
-extern int _rpmfi_debug;
-
 extern int _rpmps_debug;
 
 extern int _rpmsq_debug;
@@ -235,8 +233,6 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "rpmdsdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmds_debug, -1,
 	NULL, NULL},
  { "rpmfcdebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfc_debug, -1,
-	NULL, NULL},
- { "rpmfidebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmfi_debug, -1,
 	NULL, NULL},
  { "rpmiodebug", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_rpmio_debug, -1,
 	N_("debug rpmio I/O"), NULL},

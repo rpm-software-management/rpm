@@ -789,7 +789,7 @@ rpmRC packageBinaries(rpmSpec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageBinaries)"));
-	csa->cpioList = rpmfiLink(pkg->cpioList, RPMDBG_M("packageBinaries"));
+	csa->cpioList = rpmfiLink(pkg->cpioList);
 
 	rc = writeRPM(&pkg->header, NULL, fn, csa, spec->passPhrase, NULL);
 	csa->cpioList = rpmfiFree(csa->cpioList);
@@ -845,8 +845,7 @@ rpmRC packageSources(rpmSpec spec)
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
 	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageSources)"));
-	csa->cpioList = rpmfiLink(spec->sourceCpioList, 
-				  RPMDBG_M("packageSources"));
+	csa->cpioList = rpmfiLink(spec->sourceCpioList); 
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, 

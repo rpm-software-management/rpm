@@ -676,7 +676,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 #else
 	psm->te = te;
 #endif
-    	psm->fi = rpmfiLink(rpmteFI(te), RPMDBG_M("rpmpsmNew"));
+    	psm->fi = rpmfiLink(rpmteFI(te));
     }
 
     return psm;
