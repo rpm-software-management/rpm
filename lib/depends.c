@@ -179,54 +179,27 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
     }
 }
 
-int rpmtsAddInstallElement(rpmts ts, Header h,
-			fnpyKey key, int upgrade, rpmRelocation * relocs)
+/*
+ * Check for previously added versions with the same name and arch/os.
+ * Return index where to place this element, or -1 to skip.
+ */
+static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 {
-    tsMembers tsmem = rpmtsMembers(ts);
-    rpm_color_t tscolor = rpmtsColor(ts);
-    int isSource = headerIsSource(h);
-    int duplicate = 0;
-    rpmtsi pi = NULL; rpmte p;
-    rpmds oldChk = NULL, newChk = NULL, sameChk = NULL;
-    int ec = 0;
-    int rc;
     int oc;
+    rpmte p;
+    rpmds oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
+    rpmds newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
+    rpmds sameChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
+    rpmtsi pi = rpmtsiInit(ts);
 
-    /* Check for supported payload format if it's a package */
-    if (key && headerCheckPayloadFormat(h) != RPMRC_OK) {
-	ec = 1;
-	goto exit;
-    }
-
-    if (tsmem->addedPackages == NULL) {
-	tsmem->addedPackages = rpmalCreate(5, tscolor, rpmtsPrefColor(ts));
-    }
-
-    /* XXX Always add source headers. */
-    if (isSource) {
-	oc = tsmem->orderCount;
-	goto addheader;
-    }
-
-    /*
-     * Check for previously added versions with the same name and arch/os.
-     * FIXME: only catches previously added, older packages.
-     */
-    oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
-    sameChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
-    for (pi = rpmtsiInit(ts), oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
+    for (oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
 	rpmds this;
 	const char *pkgNEVR, *addNEVR;
 	int skip = 0;
 
-	/* XXX Only added packages need be checked for dupes. */
-	if (rpmteType(p) == TR_REMOVED)
-	    continue;
-
-	/* XXX Never check source headers. */
-	if (rpmteIsSource(p))
+	/* Only added binary packages need checking */
+	if (rpmteType(p) == TR_REMOVED || rpmteIsSource(p))
 	    continue;
 
 	if (tscolor) {
@@ -247,8 +220,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
 	/* 
 	 * Always skip identical NEVR. 
- 	 * On upgrade, if newer NEVR was previously added, 
- 	 * then skip adding older. 
+ 	 * On upgrade, if newer NEVR was previously added, skip adding older.
  	 */
 	if (rpmdsCompare(sameChk, this)) {
 	    skip = 1;
@@ -265,16 +237,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		    _("package %s was already added, skipping %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
-	    ec = 0;
-	    goto exit;
+	    oc = -1;
+	    break;;
 	}
 
-	/*
- 	 * On upgrade, if older NEVR was previously added, 
- 	 * then replace old with new. 
- 	 */
-	rc = rpmdsCompare(oldChk, this);
-	if (upgrade && rc != 0) {
+ 	/* On upgrade, if older NEVR was previously added, replace with new */
+	if (upgrade && rpmdsCompare(oldChk, this) != 0) {
 	    pkgNEVR = rpmdsDNEVR(this);
 	    addNEVR = rpmdsDNEVR(newChk);
 	    if (rpmIsVerbose())
@@ -282,18 +250,51 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 		    _("package %s was already added, replacing with %s\n"),
 		    (pkgNEVR ? pkgNEVR + 2 : "?pkgNEVR?"),
 		    (addNEVR ? addNEVR + 2 : "?addNEVR?"));
-	    duplicate = 1;
-	    rpmalDel(tsmem->addedPackages, p);
 	    break;
 	}
     }
-    pi = rpmtsiFree(pi);
 
-    /* If newer NEVR was already added, exit now. */
-    if (ec)
+    rpmtsiFree(pi);
+    rpmdsFree(oldChk);
+    rpmdsFree(newChk);
+    rpmdsFree(sameChk);
+    return oc;
+}
+
+
+int rpmtsAddInstallElement(rpmts ts, Header h,
+			fnpyKey key, int upgrade, rpmRelocation * relocs)
+{
+    tsMembers tsmem = rpmtsMembers(ts);
+    rpm_color_t tscolor = rpmtsColor(ts);
+    rpmte p = NULL;
+    int isSource = headerIsSource(h);
+    int ec = 0;
+    int oc = tsmem->orderCount;
+
+    /* Check for supported payload format if it's a package */
+    if (key && headerCheckPayloadFormat(h) != RPMRC_OK) {
+	ec = 1;
 	goto exit;
+    }
 
-addheader:
+    /* Check binary packages for redundancies in the set */
+    if (!isSource) {
+	oc = findPos(ts, tscolor, h, upgrade);
+	/* If we're replacing a previously added element, free the old one */
+	if (oc >= 0 && oc < tsmem->orderCount) {
+	    rpmalDel(tsmem->addedPackages, tsmem->order[oc]);
+	    tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
+	/* If newer NEVR was already added, we're done */
+	} else if (oc < 0) {
+	    goto exit;
+	}
+    }
+
+    if (tsmem->addedPackages == NULL) {
+	tsmem->addedPackages = rpmalCreate(5, tscolor, rpmtsPrefColor(ts));
+    }
+
     if (oc >= tsmem->orderAlloced) {
 	tsmem->orderAlloced += (oc - tsmem->orderAlloced) + tsmem->delta;
 	tsmem->order = xrealloc(tsmem->order,
@@ -302,12 +303,8 @@ addheader:
 
     p = rpmteNew(NULL, h, TR_ADDED, key, relocs, -1);
 
-    if (duplicate && oc < tsmem->orderCount) {
-	tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
-    }
-
     tsmem->order[oc] = p;
-    if (!duplicate) {
+    if (oc == tsmem->orderCount) {
 	tsmem->orderCount++;
 	tsmem->numAddedPackages++;
 	rpmcliPackagesTotal++;
@@ -329,13 +326,7 @@ addheader:
     addUpgradeErasures(ts, tsmem, tscolor, p, rpmteColor(p), h);
     addObsoleteErasures(ts, tsmem, tscolor, p, rpmteColor(p));
 
-    ec = 0;
-
 exit:
-    oldChk = rpmdsFree(oldChk);
-    newChk = rpmdsFree(newChk);
-    sameChk = rpmdsFree(sameChk);
-    pi = rpmtsiFree(pi);
     return ec;
 }
 
