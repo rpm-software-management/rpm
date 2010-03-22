@@ -180,27 +180,52 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 }
 
 /*
- * Check for previously added versions with the same name and arch/os.
+ * Check for previously added versions and obsoletions.
  * Return index where to place this element, or -1 to skip.
  */
 static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 {
     int oc;
+    int obsolete = 0;
     const char * arch = headerGetString(h, RPMTAG_ARCH);
     const char * os = headerGetString(h, RPMTAG_OS);
     rpmte p;
     rpmds oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
     rpmds newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
     rpmds sameChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
+    rpmds obsChk = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
     rpmtsi pi = rpmtsiInit(ts);
 
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-	rpmds this;
+	rpmds this, obsoletes;
 
 	/* Only added binary packages need checking */
 	if (rpmteType(p) == TR_REMOVED || rpmteIsSource(p))
 	    continue;
+
+	/* Skip packages obsoleted by already added packages */
+	obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
+	while (rpmdsNext(obsoletes) >= 0) {
+	    if (rpmdsCompare(obsoletes, sameChk)) {
+		obsolete = 1;
+		oc = -1;
+		break;
+	    }
+	}
+
+	/* Replace already added obsoleted packages by obsoleting package */
+	this = rpmteDS(p, RPMTAG_NAME);
+	rpmdsInit(obsChk);
+	while (rpmdsNext(obsChk) >= 0) {
+	    if (rpmdsCompare(obsChk, this)) {
+		obsolete = 1;
+		break;
+	    }
+	}
+
+	if (obsolete)
+	    break;
 
 	if (tscolor) {
 	    const char * parch = rpmteA(p);
@@ -211,10 +236,6 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 	    if (!rstreq(arch, parch) || !rstreq(os, pos))
 		continue;
 	}
-
-	/* OK, binary rpm's with same arch and os.  Check NEVR. */
-	if ((this = rpmteDS(p, RPMTAG_NAME)) == NULL)
-	    continue;	/* XXX can't happen */
 
 	/* 
 	 * Always skip identical NEVR. 
@@ -246,6 +267,7 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
     rpmdsFree(oldChk);
     rpmdsFree(newChk);
     rpmdsFree(sameChk);
+    rpmdsFree(obsChk);
     return oc;
 }
 
