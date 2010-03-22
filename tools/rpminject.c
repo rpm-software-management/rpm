@@ -372,7 +372,7 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
     int rc;
 
     csa->cpioArchiveSize = 0;
-    csa->cpioFdIn = fdNew("init (rewriteRPM)");
+    csa->cpioFdIn = fdNew();
     csa->cpioList = NULL;
 
     /* Read rpm and (partially) recreate spec/pkg control structures */

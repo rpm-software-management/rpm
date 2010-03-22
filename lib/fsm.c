@@ -519,7 +519,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 
     fsm->goal = goal;
     if (cfd != NULL) {
-	fsm->cfd = fdLink(cfd, RPMDBG_M("persist (fsm)"));
+	fsm->cfd = fdLink(cfd);
     }
     fsm->cpioPos = 0;
     fsm->iter = mapInitIterator(ts, te, fi);
@@ -568,7 +568,7 @@ int fsmTeardown(FSM_t fsm)
 
     fsm->iter = mapFreeIterator(fsm->iter);
     if (fsm->cfd != NULL) {
-	fsm->cfd = fdFree(fsm->cfd, RPMDBG_M("persist (fsm)"));
+	fsm->cfd = fdFree(fsm->cfd);
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;

@@ -788,13 +788,12 @@ rpmRC packageBinaries(rpmSpec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageBinaries)"));
+	csa->cpioFdIn = fdNew();
 	csa->cpioList = rpmfiLink(pkg->cpioList);
 
 	rc = writeRPM(&pkg->header, NULL, fn, csa, spec->passPhrase, NULL);
 	csa->cpioList = rpmfiFree(csa->cpioList);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
-			       RPMDBG_M("init (packageBinaries)"));
+	csa->cpioFdIn = fdFree(csa->cpioFdIn);
 	if (rc == RPMRC_OK) {
 	    /* Do check each written package if enabled */
 	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", fn, NULL);
@@ -844,7 +843,7 @@ rpmRC packageSources(rpmSpec spec)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew(RPMDBG_M("init (packageSources)"));
+	csa->cpioFdIn = fdNew();
 	csa->cpioList = rpmfiLink(spec->sourceCpioList); 
 
 	spec->sourcePkgId = NULL;
@@ -857,8 +856,7 @@ rpmRC packageSources(rpmSpec spec)
 	}
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn, 
-			       RPMDBG_M("init (packageSources)"));
+	csa->cpioFdIn = fdFree(csa->cpioFdIn);
 	pkgcheck = _free(pkgcheck);
 	fn = _free(fn);
     }

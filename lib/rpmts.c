@@ -584,7 +584,7 @@ rpmts rpmtsFree(rpmts ts)
     ts->dsi = _free(ts->dsi);
 
     if (ts->scriptFd != NULL) {
-	ts->scriptFd = fdFree(ts->scriptFd, RPMDBG_M("rpmtsFree"));
+	ts->scriptFd = fdFree(ts->scriptFd);
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
@@ -674,13 +674,11 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 
     if (ts != NULL) {
 	if (ts->scriptFd != NULL) {
-	    ts->scriptFd = fdFree(ts->scriptFd, 
-				  RPMDBG_M("rpmtsSetScriptFd"));
+	    ts->scriptFd = fdFree(ts->scriptFd);
 	    ts->scriptFd = NULL;
 	}
 	if (scriptFd != NULL)
-	    ts->scriptFd = fdLink((void *)scriptFd, 
-				  RPMDBG_M("rpmtsSetScriptFd"));
+	    ts->scriptFd = fdLink(scriptFd);
     }
 }
 

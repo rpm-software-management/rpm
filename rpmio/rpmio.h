@@ -124,15 +124,15 @@ FILE * fdGetFILE(FD_t fd);
 
 /** \ingroup rpmio
  */
-FD_t fdLink (void * cookie, const char * msg);
+FD_t fdLink(void * cookie);
 
 /** \ingroup rpmio
  */
-FD_t fdFree(FD_t fd, const char * msg);
+FD_t fdFree(FD_t fd);
 
 /** \ingroup rpmio
  */
-FD_t fdNew (const char * msg);
+FD_t fdNew (void);
 
 /** \ingroup rpmio
  */

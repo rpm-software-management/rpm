@@ -93,7 +93,7 @@ static void delTE(rpmte p)
     p->fi = rpmfiFree(p->fi);
 
     if (p->fd != NULL)
-        p->fd = fdFree(p->fd, RPMDBG_M("delTE"));
+        p->fd = fdFree(p->fd);
 
     p->os = _free(p->os);
     p->arch = _free(p->arch);
@@ -456,9 +456,9 @@ FD_t rpmteSetFd(rpmte te, FD_t fd)
 {
     if (te != NULL)  {
 	if (te->fd != NULL)
-	    te->fd = fdFree(te->fd, RPMDBG_M("rpmteSetFd"));
+	    te->fd = fdFree(te->fd);
 	if (fd != NULL)
-	    te->fd = fdLink(fd, RPMDBG_M("rpmteSetFd"));
+	    te->fd = fdLink(fd);
     }
     return NULL;
 }
