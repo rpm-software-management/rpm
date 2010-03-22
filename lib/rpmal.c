@@ -225,8 +225,7 @@ void rpmalAdd(rpmal al, rpmte p)
 
     alp->p = p;
 
-    alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME),
-			      RPMDBG_M("Provides (rpmalAdd)"));
+    alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME));
     alp->fi = rpmfiLink(rpmteFI(p));
 
     if (al->providesHash != NULL) { // index is already created

@@ -75,23 +75,17 @@ static int dsType(rpmTag tag,
     return rc;
 }    
 
-rpmds rpmdsUnlink(rpmds ds, const char * msg)
+rpmds rpmdsUnlink(rpmds ds)
 {
-    if (ds == NULL) return NULL;
-if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p -- %d %s\n", ds, ds->nrefs, msg);
-    ds->nrefs--;
+    if (ds)
+	ds->nrefs--;
     return NULL;
 }
 
-rpmds rpmdsLink(rpmds ds, const char * msg)
+rpmds rpmdsLink(rpmds ds)
 {
-    if (ds == NULL) return NULL;
-    ds->nrefs++;
-
-if (_rpmds_debug && msg != NULL)
-fprintf(stderr, "--> ds %p ++ %d %s\n", ds, ds->nrefs, msg);
-
+    if (ds)
+	ds->nrefs++;
     return ds;
 }
 
@@ -103,10 +97,7 @@ rpmds rpmdsFree(rpmds ds)
 	return NULL;
 
     if (ds->nrefs > 1)
-	return rpmdsUnlink(ds, ds->Type);
-
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
+	return rpmdsUnlink(ds);
 
     if (dsType(ds->tagN, NULL, &tagEVR, &tagF))
 	return NULL;
@@ -121,7 +112,7 @@ fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
     ds->Color = _free(ds->Color);
     ds->Refs = _free(ds->Refs);
 
-    (void) rpmdsUnlink(ds, ds->Type);
+    (void) rpmdsUnlink(ds);
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
     ds = _free(ds);
     return NULL;
@@ -166,10 +157,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->BT = headerGetNumber(h, RPMTAG_BUILDTIME);
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
-	ds = rpmdsLink(ds, ds->Type);
-
-if (_rpmds_debug < 0)
-fprintf(stderr, "*** ds %p\t%s[%d]\n", ds, ds->Type, ds->Count);
+	ds = rpmdsLink(ds);
     }
 
 exit:
@@ -253,7 +241,7 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
     ds->i = 0;
 
 exit:
-    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+    return rpmdsLink(ds);
 }
 
 int rpmdsCount(const rpmds ds)
@@ -514,8 +502,7 @@ assert(ods->Flags != NULL);
     nb = (ds->Count * sizeof(*ds->Flags));
     ds->Flags = memcpy(xmalloc(nb), ods->Flags, nb);
 
-/* FIX: ds->Flags is kept, not only */
-    return rpmdsLink(ds, (ds ? ds->Type : NULL));
+    return rpmdsLink(ds);
 
 }
 

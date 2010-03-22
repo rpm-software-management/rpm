@@ -17,10 +17,6 @@ extern "C" {
 
 /**
  */
-extern int _rpmds_debug;
-
-/**
- */
 extern int _rpmds_nopromote;
 
 /** \ingroup rpmds
@@ -94,17 +90,16 @@ typedef	enum rpmsenseFlags_e {
 /** \ingroup rpmds
  * Unreference a dependency set instance.
  * @param ds		dependency set
- * @param msg
  * @return		NULL always
  */
-rpmds rpmdsUnlink (rpmds ds, const char * msg);
+rpmds rpmdsUnlink(rpmds ds);
+
 /** \ingroup rpmds
  * Reference a dependency set instance.
  * @param ds		dependency set
- * @param msg
  * @return		new dependency set reference
  */
-rpmds rpmdsLink (rpmds ds, const char * msg);
+rpmds rpmdsLink(rpmds ds);
 
 /** \ingroup rpmds
  * Destroy a dependency set.
