@@ -13,8 +13,6 @@
 extern "C" {
 #endif
 
-extern int _rpmps_debug;
-
 /** \ingroup rpmps
  * @todo Generalize filter mechanism.
  */
@@ -153,19 +151,16 @@ char * rpmProblemString(const rpmProblem prob);
 /** \ingroup rpmps
  * Unreference a problem set instance.
  * @param ps		problem set
- * @param msg
  * @return		problem set
  */
-rpmps rpmpsUnlink (rpmps ps,
-		const char * msg);
+rpmps rpmpsUnlink (rpmps ps);
 
 /** \ingroup rpmps
  * Reference a problem set instance.
  * @param ps		transaction set
- * @param msg
  * @return		new transaction set reference
  */
-rpmps rpmpsLink (rpmps ps, const char * msg);
+rpmps rpmpsLink (rpmps ps);
 
 /** \ingroup rpmps
  * Return number of problems in set.

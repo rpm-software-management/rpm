@@ -708,7 +708,7 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag)
 
 rpmps rpmteProblems(rpmte te)
 {
-    return (te != NULL) ? rpmpsLink(te->probs, RPMDBG_M("rpmteProbs")) : NULL;
+    return (te != NULL) ? rpmpsLink(te->probs) : NULL;
 }
 
 void rpmteCleanProblems(rpmte te)
