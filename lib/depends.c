@@ -309,14 +309,11 @@ addheader:
     tsmem->order[oc] = p;
     if (!duplicate) {
 	tsmem->orderCount++;
+	tsmem->numAddedPackages++;
 	rpmcliPackagesTotal++;
     }
     
     rpmalAdd(tsmem->addedPackages, p);
-
-    if (!duplicate) {
-	tsmem->numAddedPackages++;
-    }
 
     /* If not upgrading or a source package, then we're done. */
     if (!(upgrade & 0x1) || isSource)
