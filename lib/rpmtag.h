@@ -12,7 +12,6 @@ extern "C" {
  */
 #define	RPMDBI_PACKAGES		0	/* Installed package headers. */
 #define	RPMDBI_LABEL		2	/* Fingerprint search marker. */
-#define	RPMDBI_ARGLIST		6	/* (rpmgi) Argument list. */
 
 /**
  * Header private tags.

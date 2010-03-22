@@ -129,10 +129,6 @@ static const char * _tagName(rpmTag tag)
     case RPMDBI_PACKAGES:
 	name = "Packages";
 	break;
-    case RPMDBI_ARGLIST:
-	name = "Arglist";
-	break;
-
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
 	name = "Conflictname";
@@ -183,7 +179,6 @@ static rpmTagType _tagType(rpmTag tag)
 
     switch (tag) {
     case RPMDBI_PACKAGES:
-    case RPMDBI_ARGLIST:
 	break;
     default:
 	if (_rpmTags.byValue == NULL)
@@ -222,8 +217,6 @@ static rpmTag _tagValue(const char * tagstr)
 
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
-    if (!rstrcasecmp(tagstr, "Arglist"))
-	return RPMDBI_ARGLIST;
 
     if (_rpmTags.byName == NULL)
 	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
