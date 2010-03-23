@@ -12,8 +12,8 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-#include <rpm/rpmgi.h>
 
+#include "lib/rpmgi.h"
 #include "lib/manifest.h"
 #include "debug.h"
 

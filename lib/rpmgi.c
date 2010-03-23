@@ -8,11 +8,11 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
 #include <rpm/rpmts.h>
-#include <rpm/rpmgi.h>
 #include <rpm/rpmmacro.h>		/* XXX rpmExpand */
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
+#include "lib/rpmgi.h"
 #include "lib/manifest.h"
 
 #include "debug.h"

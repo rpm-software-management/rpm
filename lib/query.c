@@ -13,11 +13,11 @@
 #include <rpm/header.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfi.h>
-#include <rpm/rpmgi.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>	/* rpmCleanPath */
 
+#include "lib/rpmgi.h"
 #include "lib/manifest.h"
 
 #include "debug.h"
