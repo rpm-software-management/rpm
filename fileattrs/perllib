@@ -1,0 +1,3 @@
+%__perlmod_provides	%{_rpmconfigdir}/perl.prov
+%__perlmod_requires	%{_rpmconfigdir}/perl.req
+%__perlmod_pattern	^/usr/lib(64)?/perl[[:digit:]]/.*\\.pm$

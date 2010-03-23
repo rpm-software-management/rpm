@@ -19,6 +19,13 @@
 
 #include "debug.h"
 
+typedef struct rpmfcAttr_s {
+    char *name;
+    regex_t *pattern;
+    regex_t *magic;
+    int exeonly;
+} * rpmfcAttr;
+
 /**
  */
 struct rpmfc_s {
@@ -30,6 +37,8 @@ struct rpmfc_s {
     int skipReq;	/*!< Don't auto-generate Requires:? */
     int tracked;	/*!< Versioned Provides: tracking dependency added? */
     size_t brlen;	/*!< strlen(spec->buildRoot) */
+
+    rpmfcAttr *atypes;	/*!< known file attribute types */
 
     ARGV_t fn;		/*!< (no. files) file names */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
@@ -45,13 +54,63 @@ struct rpmfc_s {
     rpmds requires;	/*!< (no. requires) package requires */
 };
 
-/**
- */
 struct rpmfcTokens_s {
     const char * token;
     rpm_color_t colors;
-    const char * attrs;
 };  
+
+static char *rpmfcAttrMacro(const char *name, const char *attr)
+{
+    char *macro = rpmExpand("%{?__", name, "_", attr, "}", NULL);
+    return rstreq(macro, "") ? rfree(macro) : macro;
+}
+
+static regex_t *rpmfcAttrReg(const char *name, const char *attr)
+{
+    regex_t *reg = NULL;
+    char *pattern = rpmfcAttrMacro(name, attr);
+    if (pattern) {
+	reg = rcalloc(1, sizeof(*reg));
+	if (regcomp(reg, pattern, REG_EXTENDED) != 0) { 
+	    rpmlog(RPMLOG_WARNING, _("Ignoring invalid regex %s\n"), pattern);
+	    reg = rfree(reg);
+	}
+	rfree(pattern);
+    }
+    return reg;
+}
+
+static rpmfcAttr rpmfcAttrNew(const char *name)
+{
+    rpmfcAttr attr = xcalloc(1, sizeof(*attr));
+
+    char *eom = rpmfcAttrMacro(name, "exeonly");
+    attr->exeonly = rpmExpandNumeric(eom);
+    free(eom);
+
+    attr->name = xstrdup(name);
+    attr->pattern = rpmfcAttrReg(name, "pattern");
+    attr->magic = rpmfcAttrReg(name, "magic");
+    
+    return attr;
+}
+
+static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
+{
+    if (attr) {
+	if (attr->pattern) {
+	    regfree(attr->pattern);
+	    rfree(attr->pattern);
+	}
+	if (attr->magic) {
+	    regfree(attr->magic);
+	    rfree(attr->magic);
+	}
+	rfree(attr->name);
+	rfree(attr);
+    }
+    return NULL;
+}
 
 /**
  */
@@ -420,118 +479,53 @@ assert(EVR != NULL);
     return 0;
 }
 
-typedef enum depTypes_e {
-    DEP_NONE = 0,
-    DEP_REQ  = (1 << 0),
-    DEP_PROV = (1 << 1),
-} depTypes;
-
-/* Handle RPMFC_INCLUDE "stop signal" as an attribute? */
+/* Only used for elf coloring and controlling RPMTAG_FILECLASS inclusion now */
 static const struct rpmfcTokens_s const rpmfcTokens[] = {
-  { "directory",		RPMFC_INCLUDE, "directory" },
+  { "directory",		RPMFC_INCLUDE },
 
-  { " shared object",		RPMFC_BLACK, "library" },
-  { " executable",		RPMFC_BLACK, "executable" },
-  { " statically linked",	RPMFC_BLACK, "static" },
-  { " not stripped",		RPMFC_BLACK, "notstripped" },
-  { " archive",			RPMFC_BLACK, "archive" },
+  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },
+  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE },
 
-  { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE, "elf" },
-  { "ELF 64-bit",		RPMFC_ELF64|RPMFC_INCLUDE, "elf" },
+  { "troff or preprocessor input",	RPMFC_INCLUDE },
+  { "GNU Info",			RPMFC_INCLUDE },
 
-  /* "foo script text" is a file with shebang interpreter directive */
-  { " script text",		RPMFC_BLACK, "script" },
-  { " document",		RPMFC_BLACK, "document" },
+  { "perl ",			RPMFC_INCLUDE },
+  { "Perl5 module source text", RPMFC_INCLUDE },
+  { "python ",			RPMFC_INCLUDE },
 
-  { " compressed",		RPMFC_BLACK, "compressed" },
+  { "libtool library ",         RPMFC_INCLUDE },
+  { "pkgconfig ",               RPMFC_INCLUDE },
 
-  { "troff or preprocessor input",	RPMFC_INCLUDE, "man" },
-  { "GNU Info",			RPMFC_INCLUDE, "info" },
+  { "Objective caml ",		RPMFC_INCLUDE },
+  { "Mono/.Net assembly",       RPMFC_INCLUDE },
 
-  { "perl ",			RPMFC_INCLUDE, "perl" },
-  { "Perl5 module source text", RPMFC_INCLUDE, "perl,module" },
+  { "current ar archive",	RPMFC_INCLUDE },
+  { "Zip archive data",		RPMFC_INCLUDE },
+  { "tar archive",		RPMFC_INCLUDE },
+  { "cpio archive",		RPMFC_INCLUDE },
+  { "RPM v3",			RPMFC_INCLUDE },
+  { "RPM v4",			RPMFC_INCLUDE },
 
-  /* XXX "a /usr/bin/python -t script text executable" */
-  /* XXX "python 2.3 byte-compiled" */
-  { "python ",			RPMFC_INCLUDE, "python" },
+  { " image",			RPMFC_INCLUDE },
+  { " font",			RPMFC_INCLUDE },
+  { " Font",			RPMFC_INCLUDE },
 
-  { "libtool library ",         RPMFC_INCLUDE, "libtool" },
-  { "pkgconfig ",               RPMFC_INCLUDE, "pkgconfig" },
+  { " commands",		RPMFC_INCLUDE },
+  { " script",			RPMFC_INCLUDE },
 
-  { "Objective caml ",		RPMFC_INCLUDE, "ocaml" },
+  { "empty",			RPMFC_INCLUDE },
 
-  /* XXX .NET executables and libraries.  file(1) cannot differ from win32 
-   * executables unfortunately :( */
-  { "Mono/.Net assembly",       RPMFC_INCLUDE, "mono" },
+  { "HTML",			RPMFC_INCLUDE },
+  { "SGML",			RPMFC_INCLUDE },
+  { "XML",			RPMFC_INCLUDE },
 
-  { "current ar archive",	RPMFC_INCLUDE, "static,library,archive" },
+  { " source",			RPMFC_INCLUDE },
+  { "GLS_BINARY_LSB_FIRST",	RPMFC_INCLUDE },
+  { " DB ",			RPMFC_INCLUDE },
 
-  { "Zip archive data",		RPMFC_INCLUDE, "compressed,archive" },
-  { "tar archive",		RPMFC_INCLUDE, "archive" },
-  { "cpio archive",		RPMFC_INCLUDE, "archive" },
-  { "RPM v3",			RPMFC_INCLUDE, "archive" },
-  { "RPM v4",			RPMFC_INCLUDE, "archive" },
+  { " text",			RPMFC_INCLUDE },
 
-  { " image",			RPMFC_INCLUDE, "image" },
-  { " font metrics",		RPMFC_WHITE|RPMFC_INCLUDE, NULL },
-  { " font",			RPMFC_INCLUDE, "font" },
-  { " Font",			RPMFC_INCLUDE, "font" },
-
-  { " commands",		RPMFC_INCLUDE, "script" },
-  { " script",			RPMFC_INCLUDE, "script" },
-
-  { "empty",			RPMFC_INCLUDE, NULL },
-
-  { "HTML",			RPMFC_INCLUDE, NULL },
-  { "SGML",			RPMFC_INCLUDE, NULL },
-  { "XML",			RPMFC_INCLUDE, NULL },
-
-  { " source",			RPMFC_INCLUDE, NULL },
-  { "GLS_BINARY_LSB_FIRST",	RPMFC_INCLUDE, NULL },
-  { " DB ",			RPMFC_INCLUDE, NULL },
-
-  { "symbolic link to",		RPMFC_BLACK, "symlink" },
-  { "socket",			RPMFC_BLACK, "device" }, /* XXX device? */
-  { "special",			RPMFC_BLACK, "device" },
-  { " text",			RPMFC_INCLUDE, "text" },
-
-  { "ASCII",			RPMFC_WHITE, NULL },
-  { "ISO-8859",			RPMFC_WHITE, NULL },
-
-  { "data",			RPMFC_WHITE, NULL },
-
-  { "application",		RPMFC_WHITE, NULL },
-  { "boot",			RPMFC_WHITE, NULL },
-  { "catalog",			RPMFC_WHITE, NULL },
-  { "code",			RPMFC_WHITE, NULL },
-  { "file",			RPMFC_WHITE, NULL },
-  { "format",			RPMFC_WHITE, NULL },
-  { "message",			RPMFC_WHITE, NULL },
-  { "program",			RPMFC_WHITE, NULL },
-
-  { "broken symbolic link to ",	RPMFC_WHITE|RPMFC_ERROR, NULL },
-  { "can't read",		RPMFC_WHITE|RPMFC_ERROR, NULL },
-  { "can't stat",		RPMFC_WHITE|RPMFC_ERROR, NULL },
-  { "executable, can't read",	RPMFC_WHITE|RPMFC_ERROR, NULL },
-  { "core file",		RPMFC_WHITE|RPMFC_ERROR, NULL },
-
-  { NULL,			RPMFC_BLACK, NULL }
-};
-
-typedef struct rpmfcPathTbl_s {
-    const char *pattern;
-    const char *attrs;
-} * rpmfcPathTbl;
-
-
-static struct rpmfcPathTbl_s rpmfcPathTable[] = {
-    { "^/usr/lib(64)?/python[[:digit:]]\\.[[:digit:]]/.*\\.(py[oc]?|so)$",
-	"python" },
-    { "^%{_bindir}/python[[:digit:]]\\.[[:digit:]]$",
-	"python" },
-    { "^%{_datadir}/.*/.*\\.desktop$",
-	"desktop" },
-    { NULL, NULL },
+  { NULL,			RPMFC_BLACK }
 };
 
 static void argvAddTokens(ARGV_t *argv, const char *tnames)
@@ -545,25 +539,36 @@ static void argvAddTokens(ARGV_t *argv, const char *tnames)
     }
 }
 
-static void rpmfcPathAttributes(const char *path, ARGV_t *attrs)
+static int regMatch(regex_t *reg, const char *val)
 {
-    for (rpmfcPathTbl pcat = rpmfcPathTable; pcat->pattern; pcat++) {
-	char *pattern = rpmExpand(pcat->pattern, NULL);
-	regex_t reg;
-	if (regcomp(&reg, pattern, REG_EXTENDED)) {
-	    rpmlog(RPMLOG_WARNING, _("Ignoring invalid regex: %s\n"), pattern);
-	} else {
-	    if (regexec(&reg, path, 0, NULL, 0) == 0) {
-		argvAddTokens(attrs, pcat->attrs);
-	    }
-	    regfree(&reg);
-	}
-	free(pattern);
+    return (reg && regexec(reg, val, 0, NULL, 0) == 0);
+}
+
+static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
+{
+    const char *path = fullpath + fc->brlen;
+    int is_executable = 0;
+    struct stat st;
+    if (stat(fullpath, &st) == 0) {
+	is_executable = (S_ISREG(st.st_mode)) &&
+			(st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+    }
+
+    for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++) {
+	/* Filter out by file modes if set */
+	if ((*attr)->exeonly && !is_executable)
+	    continue;
+
+	/* Add attributes on libmagic type & path pattern matches */
+	if (regMatch((*attr)->magic, ftype))
+	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
+	if (regMatch((*attr)->pattern, path))
+	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
     }
 }
 
-/* Return attribute tokens + color for a given libmagic classification string */
-static void rpmfcAttributes(const char * fmstr, ARGV_t *attrs, int *color)
+/* Return color for a given libmagic classification string */
+static rpm_color_t rpmfcColor(const char * fmstr)
 {
     rpmfcToken fct;
     rpm_color_t fcolor = RPMFC_BLACK;
@@ -572,14 +577,12 @@ static void rpmfcAttributes(const char * fmstr, ARGV_t *attrs, int *color)
 	if (strstr(fmstr, fct->token) == NULL)
 	    continue;
 
-	argvAddTokens(attrs, fct->attrs);
-
 	fcolor |= fct->colors;
 	if (fcolor & RPMFC_INCLUDE)
 	    break;
     }
 
-    if (color) *color |= fcolor;
+    return fcolor;
 }
 
 void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
@@ -670,6 +673,9 @@ assert(ix < nrequires);
 rpmfc rpmfcFree(rpmfc fc)
 {
     if (fc) {
+	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++)
+	    rpmfcAttrFree(*attr);
+	rfree(fc->atypes);
 	fc->fn = argvFree(fc->fn);
 	for (int i = 0; i < fc->nfiles; i++)
 	    argvFree(fc->fattrs[i]);
@@ -705,57 +711,6 @@ rpmds rpmfcRequires(rpmfc fc)
     return (fc != NULL ? fc->requires : NULL);
 }
 
-static int isExecutable(const char *fn)
-{
-    struct stat st;
-    if (stat(fn, &st) < 0)
-	return -1;
-    return (S_ISREG(st.st_mode) && (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH)));
-}
-
-/**
- * Extract dependencies for a given attribute.
- * @param fc		file classifier
- * @param attr		attribute name
- * @return		0 on success
- */
-static int rpmfcAttrDeps(rpmfc fc, const char *attr)
-{
-    const char * fn = fc->fn[fc->ix];
-    ARGV_t fattrs = fc->fattrs[fc->ix];
-    int is_executable = isExecutable(fn);
-    depTypes types = DEP_NONE;
-    int rc = 0;
-
-    if (is_executable < 0)
-	return -1;
-
-    /* TODO: generalize this logic into classification attributes */
-    if (rstreq(attr, "script")) {
-	if (is_executable) 
-	    types |= DEP_REQ;
-    } else if (rstreq(attr, "perl")) {
-	if (hasAttr(fattrs, "module"))
-	    types |= (DEP_REQ|DEP_PROV);
-	if (is_executable)
-	    types |= DEP_REQ;
-    } else if (rstreq(attr, "mono")) {
-	types = DEP_PROV;
-	if (is_executable)
-	    types |= DEP_REQ;
-    } else {
-	types = (DEP_REQ|DEP_PROV);
-    }
-
-    if (types & DEP_PROV)
-	rc += rpmfcHelper(fc, 'P', attr);
-    if (types & DEP_REQ)
-	rc += rpmfcHelper(fc, 'R', attr);
-
-    return rc;
-}
-
-
 rpmRC rpmfcApply(rpmfc fc)
 {
     const char * s;
@@ -776,7 +731,8 @@ rpmRC rpmfcApply(rpmfc fc)
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
 	for (ARGV_t fattr = fc->fattrs[fc->ix]; fattr && *fattr; fattr++) {
-	    xx = rpmfcAttrDeps(fc, *fattr);
+	    xx += rpmfcHelper(fc, 'P', *fattr);
+	    xx += rpmfcHelper(fc, 'R', *fattr);
 	}
     }
 
@@ -843,6 +799,26 @@ assert(dix >= 0);
     return RPMRC_OK;
 }
 
+static int initAttrs(rpmfc fc)
+{
+    ARGV_t files = NULL;
+    char * attrPath = rpmExpand("%{_fileattrsdir}/*", NULL);
+    int nattrs = 0;
+
+    /* Discover known attributes from pathnames + initialize them */
+    if (rpmGlob(attrPath, NULL, &files) == 0) {
+	nattrs = argvCount(files);
+	fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
+	for (int i = 0; i < nattrs; i++) {
+	    fc->atypes[i] = rpmfcAttrNew(basename(files[i]));
+	}
+	fc->atypes[nattrs] = NULL;
+	argvFree(files);
+    }
+    free(attrPath);
+    return nattrs;
+}
+
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     ARGV_t fcav = NULL;
@@ -853,6 +829,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     if (fc == NULL || argv == NULL)
 	return 0; /* XXX looks very wrong */
+
+    if (initAttrs(fc) < 1) {
+	rpmlog(RPMLOG_ERR, _("No file attributes configured\n"));
+	goto exit;
+    }
 
     fc->nfiles = argvCount(argv);
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
@@ -934,11 +915,11 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Save the file type string. */
 	xx = argvAdd(&fcav, ftype);
 
-	/* Add (filtered) file attribute tokens */
-	rpmfcAttributes(ftype, &fc->fattrs[fc->ix], &fcolor);
+	/* Add (filtered) file coloring */
+	fcolor |= rpmfcColor(ftype);
 
-	/* Add path-based attributes, strip buildroot for regex sanity */
-	rpmfcPathAttributes(s+fc->brlen, &fc->fattrs[fc->ix]);
+	/* Add attributes based on file type and/or path */
+	rpmfcAttributes(fc, ftype, s);
 
 	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
 

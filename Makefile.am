@@ -19,9 +19,9 @@ endif
 if WITH_LUAEXT
 SUBDIRS += luaext
 endif
-SUBDIRS += rpmio lib build python scripts doc . tests
+SUBDIRS += rpmio lib build python scripts fileattrs doc . tests
 
-DIST_SUBDIRS = po misc luaext rpmio lib build python scripts doc tests
+DIST_SUBDIRS = po misc luaext rpmio lib build python scripts fileattrs doc tests
 
 pkgconfigdir = $(libdir)/pkgconfig
 

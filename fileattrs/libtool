@@ -1,0 +1,3 @@
+%__libtool_provides	%{_rpmconfigdir}/libtooldeps.sh --provides %{buildroot} %{name}
+%__libtool_requires	%{_rpmconfigdir}/libtooldeps.sh --requires %{buildroot} %{name}
+%__libtool_pattern	^%{_libdir}/.*\.la$

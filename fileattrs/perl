@@ -1,0 +1,3 @@
+%__perl_requires	%{_rpmconfigdir}/perl.req
+%__perl_magic		^.*perl .*$
+%__perl_exeonly		1

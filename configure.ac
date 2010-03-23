@@ -816,7 +816,7 @@ AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
 
 AC_CONFIG_FILES([Makefile
 	rpmio/Makefile lib/Makefile build/Makefile
-	po/Makefile.in scripts/Makefile 
+	po/Makefile.in scripts/Makefile fileattrs/Makefile
 	misc/Makefile 
 	doc/Makefile
 	python/Makefile

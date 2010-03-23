@@ -1,0 +1,3 @@
+%__mono_provides	%{_rpmconfigdir}/mono-find-provides.sh
+%__mono_requires	%{_rpmconfigdir}/mono-find-requires.sh
+%__mono_magic		^Mono/.Net assembly.*$

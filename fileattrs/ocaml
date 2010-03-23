@@ -1,0 +1,3 @@
+%__ocaml_provides	%{_rpmconfigdir}/ocaml-find-provides.sh
+%__ocaml_requires	%{_rpmconfigdir}/ocaml-find-requires.sh
+%__ocaml_magic		^Objective caml.*$
