@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-03-22 15:15+0200\n"
-"PO-Revision-Date: 2010-03-06 14:48+0100\n"
+"PO-Revision-Date: 2010-03-24 13:26+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
@@ -2525,10 +2525,8 @@ msgid "support for POSIX.1e file capabilities"
 msgstr "obsługa możliwości plików POSIX.1e"
 
 #: lib/rpmds.c:927
-#, fuzzy
 msgid "package scriptlets can be expanded at install time."
-msgstr ""
-"skrypty pakietu mogą odwoływać się do bazy danych RPM podczas instalowania."
+msgstr "skrypty pakietu mogą być rozszerzane w czasie instalacji."
 
 #: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:298
 #: lib/rpminstall.c:329 tools/rpmgraph.c:119 tools/rpmgraph.c:156
@@ -2698,9 +2696,9 @@ msgid "%s conflicts with %s%s"
 msgstr "%s jest w konflikcie z %s%s"
 
 #: lib/rpmps.c:369
-#, fuzzy, c-format
+#, c-format
 msgid "%s is obsoleted by %s%s"
-msgstr "%s jest wymagane przez %s%s"
+msgstr "%s jest zastępowane przez %s%s"
 
 #: lib/rpmps.c:375
 #, c-format
@@ -3361,48 +3359,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "File tree walk options (with --ftswalk):"
-#~ msgstr "Opcje przejścia tree plików (z --ftswalk):"
-
-#~ msgid "follow command line symlinks"
-#~ msgstr "podążanie za dowiązaniami symbolicznymi z wiersza poleceń"
-
-#~ msgid "logical walk"
-#~ msgstr "przechodzenie logicznie"
-
-#~ msgid "don't change directories"
-#~ msgstr "bez zmieniania katalogów"
-
-#~ msgid "don't get stat info"
-#~ msgstr "bez uzyskiwania informacji ze stat"
-
-#~ msgid "physical walk"
-#~ msgstr "przechodzenie fizycznie"
-
-#~ msgid "return dot and dot-dot"
-#~ msgstr "zwracanie kropki i kropki-kropki"
-
-#~ msgid "don't cross devices"
-#~ msgstr "bez przechodzenia między urządzeniami"
-
-#~ msgid "return whiteout information"
-#~ msgstr "zwrócenie informacji o whiteout"
-
-#~ msgid "debug package state machine"
-#~ msgstr "debugowanie maszyny stanu pakietu"
-
-#~ msgid "query/verify package(s) from TOP file tree walk"
-#~ msgstr "odpytanie/sprawdzenie pakietów z przejścia tree plików TOP"
-
-#~ msgid "query/verify package(s) from system HDLIST"
-#~ msgstr "odpytanie/sprawdzenie pakietów z HDLIST systemu"
-
-#~ msgid "create transaction set"
-#~ msgstr "utworzenie zestawu transakcji"
-
-#~ msgid "do not order transaction set"
-#~ msgstr "bez porządkowania zestawu transakcji"
-
-#~ msgid "do not read headers"
-#~ msgstr "bez odczytywania nagłówków"
