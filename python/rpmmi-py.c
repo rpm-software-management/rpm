@@ -137,9 +137,28 @@ static Py_ssize_t rpmmi_length(rpmmiObject * s)
     return s->mi ? rpmdbGetIteratorCount(s->mi) : 0;
 }
 
+static int rpmmi_bool(rpmmiObject *s)
+{
+    return (s->mi != NULL);
+}
+
 PyMappingMethods rpmmi_as_mapping = {
     (lenfunc) rpmmi_length,		/* mp_length */
     0,
+};
+
+static PyNumberMethods rpmmi_as_number = {
+	0, /* nb_add */
+	0, /* nb_subtract */
+	0, /* nb_multiply */
+	0, /* nb_divide */
+	0, /* nb_remainder */
+	0, /* nb_divmod */
+	0, /* nb_power */
+	0, /* nb_negative */
+	0, /* nb_positive */
+	0, /* nb_absolute */
+	(inquiry)rpmmi_bool, /* nb_bool/nonzero */
 };
 
 static char rpmmi_doc[] =
@@ -156,7 +175,7 @@ PyTypeObject rpmmi_Type = {
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
-	0,				/* tp_as_number */
+	&rpmmi_as_number,		/* tp_as_number */
 	0,				/* tp_as_sequence */
 	&rpmmi_as_mapping,		/* tp_as_mapping */
 	0,				/* tp_hash */
