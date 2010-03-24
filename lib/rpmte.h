@@ -258,13 +258,6 @@ rpmds rpmteDS(rpmte te, rpmTag tag);
  */
 rpmfi rpmteFI(rpmte te);
 
-/** \ingroup rpmte
- * Calculate transaction element dependency colors/refs from file info.
- * @param te		transaction element
- * @param tag		dependency tag (RPMTAG_PROVIDENAME, RPMTAG_REQUIRENAME)
- */
-void rpmteColorDS(rpmte te, rpmTag tag);
-
 #ifdef __cplusplus
 }
 #endif

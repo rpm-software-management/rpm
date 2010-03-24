@@ -62,6 +62,7 @@ struct rpmte_s {
     rpmfs fs;
 };
 
+static void rpmteColorDS(rpmte te, rpmTag tag); /* forward declaration */
 
 void rpmteCleanDS(rpmte te)
 {
@@ -500,7 +501,7 @@ rpmfi rpmteFI(rpmte te)
     return te->fi; /* XXX take fi reference here? */
 }
 
-void rpmteColorDS(rpmte te, rpmTag tag)
+static void rpmteColorDS(rpmte te, rpmTag tag)
 {
     rpmfi fi = rpmteFI(te);
     rpmds ds = rpmteDS(te, tag);
