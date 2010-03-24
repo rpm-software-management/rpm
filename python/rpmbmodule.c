@@ -25,6 +25,12 @@ static int initModule(PyObject *m)
     Py_INCREF(&specPkg_Type);
     PyModule_AddObject(m, "specPkg", (PyObject *) &specPkg_Type);
 
+#define REGISTER_ENUM(val) PyModule_AddIntConstant(m, #val, val)
+    REGISTER_ENUM(RPMBUILD_ISSOURCE);
+    REGISTER_ENUM(RPMBUILD_ISPATCH);
+    REGISTER_ENUM(RPMBUILD_ISICON);
+    REGISTER_ENUM(RPMBUILD_ISNO);
+
     return 1;
 }
 
