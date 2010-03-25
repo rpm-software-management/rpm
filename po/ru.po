@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-22 15:15+0200\n"
+"POT-Creation-Date: 2010-03-25 16:47+0200\n"
 "PO-Revision-Date: 2002-08-27 13:36-0400\n"
 "Last-Translator: Eugene Kanter, <eugene@blackcatlinux.com>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -115,7 +115,7 @@ msgstr "Общие параметры для всех режимов и компонентов rpm:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:140 lib/poptALL.c:66
+#: rpmqv.c:140 lib/poptALL.c:65
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM версия %s\n"
@@ -1331,17 +1331,17 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm[23]"
 
-#: build/poptBT.c:202 lib/poptALL.c:181 lib/poptI.c:236 lib/poptQV.c:293
+#: build/poptBT.c:202 lib/poptALL.c:180 lib/poptI.c:236 lib/poptQV.c:293
 #: lib/poptQV.c:331
 msgid "don't verify package digest(s)"
 msgstr "не проверять дайджест пакета(ов)"
 
-#: build/poptBT.c:204 lib/poptALL.c:183 lib/poptI.c:238 lib/poptQV.c:295
+#: build/poptBT.c:204 lib/poptALL.c:182 lib/poptI.c:238 lib/poptQV.c:295
 #: lib/poptQV.c:334
 msgid "don't verify database header(s) when retrieved"
 msgstr "не проверять заголовки, извлекаемые из базы данных"
 
-#: build/poptBT.c:206 lib/poptALL.c:185 lib/poptI.c:240 lib/poptQV.c:297
+#: build/poptBT.c:206 lib/poptALL.c:184 lib/poptI.c:240 lib/poptQV.c:297
 #: lib/poptQV.c:336
 msgid "don't verify package signature(s)"
 msgstr "не проверять подпись(и) в пакете(ах)"
@@ -1370,67 +1370,72 @@ msgstr "генерировать PGP/GPG-подпись"
 msgid "override target platform"
 msgstr "переопределить целевую платформу"
 
-#: build/rpmfc.c:101
+#: build/rpmfc.c:75
+#, fuzzy, c-format
+msgid "Ignoring invalid regex %s\n"
+msgstr "строка %d: Неверное число: %s\n"
+
+#: build/rpmfc.c:160
 #, fuzzy, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Сбой ветвления %s: %s\n"
 
-#: build/rpmfc.c:116
+#: build/rpmfc.c:175
 #, fuzzy, c-format
 msgid "Couldn't chdir to %s: %s\n"
 msgstr "Невозможно выполнить %s: %s\n"
 
-#: build/rpmfc.c:127
+#: build/rpmfc.c:186
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Невозможно выполнить %s: %s\n"
 
-#: build/rpmfc.c:132
+#: build/rpmfc.c:191
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Сбой ветвления %s: %s\n"
 
-#: build/rpmfc.c:218
+#: build/rpmfc.c:277
 #, c-format
 msgid "%s failed\n"
 msgstr "%s не удалось\n"
 
-#: build/rpmfc.c:222
+#: build/rpmfc.c:281
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "запись всех данных в %s не удалась\n"
 
-#: build/rpmfc.c:554
-#, fuzzy, c-format
-msgid "Ignoring invalid regex: %s\n"
-msgstr "строка %d: Неверное число: %s\n"
-
-#: build/rpmfc.c:792
+#: build/rpmfc.c:748
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:870
+#: build/rpmfc.c:834
+#, fuzzy
+msgid "No file attributes configured\n"
+msgstr "ошибка gpg при записи подписи\n"
+
+#: build/rpmfc.c:851
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "невозможно открыть %s: %s\n"
 
-#: build/rpmfc.c:877
+#: build/rpmfc.c:858
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s ошибка удаления каталога %s: %s\n"
 
-#: build/rpmfc.c:918
+#: build/rpmfc.c:899
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1118
+#: build/rpmfc.c:1099
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Идет поиск  %s: %s\n"
 
-#: build/rpmfc.c:1123 build/rpmfc.c:1132
+#: build/rpmfc.c:1104 build/rpmfc.c:1113
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
@@ -1748,79 +1753,79 @@ msgstr "%s не может быть установлен\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:168
+#: lib/poptALL.c:167
 msgid "predefine MACRO with value EXPR"
 msgstr "преопределить MACRO со значением EXPR"
 
-#: lib/poptALL.c:169 lib/poptALL.c:172
+#: lib/poptALL.c:168 lib/poptALL.c:171
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:171
+#: lib/poptALL.c:170
 msgid "define MACRO with value EXPR"
 msgstr "определить MACRO со значением EXPR"
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:173
 msgid "print macro expansion of EXPR"
 msgstr "вывести значение макроса EXPR"
 
-#: lib/poptALL.c:175
+#: lib/poptALL.c:174
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:177 lib/poptALL.c:192 lib/poptALL.c:196
+#: lib/poptALL.c:176 lib/poptALL.c:191 lib/poptALL.c:195
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "использовать <FILE:...> вместо файла(ов) по умолчанию"
 
-#: lib/poptALL.c:178 lib/poptALL.c:193 lib/poptALL.c:197
+#: lib/poptALL.c:177 lib/poptALL.c:192 lib/poptALL.c:196
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:187
 msgid "send stdout to CMD"
 msgstr "послать стандартный вывод в CMD"
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:188
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:199
 msgid "use ROOT as top level directory"
 msgstr "использовать ROOT как корневой каталог"
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:200
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:203
 msgid "display known query tags"
 msgstr "отобразить известные ключи запроса"
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:205
 msgid "display final rpmrc and macro configuration"
 msgstr "показать текущее значение rpmrc и макросов"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:207
 msgid "provide less detailed output"
 msgstr "выводить минимум сообщений"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:209
 msgid "provide more detailed output"
 msgstr "выводить более детальные сообщения"
 
-#: lib/poptALL.c:212
+#: lib/poptALL.c:211
 msgid "print the version of rpm being used"
 msgstr "вывести номер версии этой прграммы"
 
-#: lib/poptALL.c:218
+#: lib/poptALL.c:217
 msgid "debug payload file state machine"
 msgstr "отладка машины состояния присоединенных файлов "
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:225
 msgid "debug rpmio I/O"
 msgstr "отладка процесса ввода/вывода rpmio"
 
-#: lib/poptALL.c:294
+#: lib/poptALL.c:293
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: таблица параметров неправильно настроена (%d)\n"
@@ -2274,7 +2279,7 @@ msgstr "%s ошибка на файле %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s не удалось: %s\n"
 
-#: lib/psm.c:1037 lib/transaction.c:1284 lib/verify.c:479
+#: lib/psm.c:1037 lib/transaction.c:1284 lib/verify.c:464
 #, fuzzy, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "ошибка удаления каталога %s: %s\n"
@@ -2658,76 +2663,76 @@ msgstr "невозможно получить блокировку %s на %s/%s\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr ""
 
-#: lib/rpmps.c:306
+#: lib/rpmprob.c:117
 msgid "different"
 msgstr "различный"
 
-#: lib/rpmps.c:312
+#: lib/rpmprob.c:123
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "пакет %s предназначен для архитектуры %s"
 
-#: lib/rpmps.c:317
+#: lib/rpmprob.c:128
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "пакет %s предназначен для операционной системы %s"
 
-#: lib/rpmps.c:321
+#: lib/rpmprob.c:132
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакет %s уже установлен"
 
-#: lib/rpmps.c:325
+#: lib/rpmprob.c:136
 #, fuzzy, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "путь %s в пакете %s - не перемещаемый"
 
-#: lib/rpmps.c:330
+#: lib/rpmprob.c:141
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфликт файла %s при попытках установки %s и %s"
 
-#: lib/rpmps.c:335
+#: lib/rpmprob.c:146
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "файл %s из устанавливаемого пакета %s конфликтует с файлом из пакета %s"
 
-#: lib/rpmps.c:340
+#: lib/rpmprob.c:151
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакет %s (который новее, чем %s) уже установлен"
 
-#: lib/rpmps.c:345
+#: lib/rpmprob.c:156
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr "для установки пакета %s нужно %<PRIu64>%c байт на файловой системе %s"
 
-#: lib/rpmps.c:355
+#: lib/rpmprob.c:166
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr "для установки пакета %s нужно %<PRIu64> inodes на файловой системе %s"
 
-#: lib/rpmps.c:359
+#: lib/rpmprob.c:170
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s нужен для %s%s"
 
-#: lib/rpmps.c:361 lib/rpmps.c:366 lib/rpmps.c:371
+#: lib/rpmprob.c:172 lib/rpmprob.c:177 lib/rpmprob.c:182
 msgid "(installed) "
 msgstr "(установлен)"
 
-#: lib/rpmps.c:364
+#: lib/rpmprob.c:175
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s конфликтует с %s%s"
 
-#: lib/rpmps.c:369
+#: lib/rpmprob.c:180
 #, fuzzy, c-format
 msgid "%s is obsoleted by %s%s"
 msgstr "%s нужен для %s%s"
 
-#: lib/rpmps.c:375
+#: lib/rpmprob.c:186
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "неизвестная ошибка %d при работе с пакетом %s"
@@ -2767,42 +2772,42 @@ msgstr "Неполная строка по умолчанию в %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Слишком много аргументов в строке по умолчанию в %s:%d\n"
 
-#: lib/rpmrc.c:485
+#: lib/rpmrc.c:486
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "отсутствует ':' (найден 0x%02x) в %s:%d\n"
 
-#: lib/rpmrc.c:502 lib/rpmrc.c:542
+#: lib/rpmrc.c:503 lib/rpmrc.c:543
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "отсутствует аргумент для %s в %s:%d\n"
 
-#: lib/rpmrc.c:518
+#: lib/rpmrc.c:519
 #, fuzzy, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "невозможно открыть %s в %s:%d %s\n"
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:535
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "отсутствует архитектура для %s в %s:%d\n"
 
-#: lib/rpmrc.c:601
+#: lib/rpmrc.c:602
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "неверный параметр '%s' в %s:%d\n"
 
-#: lib/rpmrc.c:1371
+#: lib/rpmrc.c:1372
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Неизвестная система: %s\n"
 
-#: lib/rpmrc.c:1372
+#: lib/rpmrc.c:1373
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1592
+#: lib/rpmrc.c:1593
 #, fuzzy, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Невозможно открыть %s для чтения: %s.\n"
@@ -2812,12 +2817,12 @@ msgstr "Невозможно открыть %s для чтения: %s.\n"
 msgid "Unknown format"
 msgstr "неизвестный тэг"
 
-#: lib/rpmte.c:756
+#: lib/rpmte.c:757
 #, fuzzy
 msgid "install"
 msgstr "(установлен)"
 
-#: lib/rpmte.c:757
+#: lib/rpmte.c:758
 msgid "erase"
 msgstr ""
 
@@ -2958,12 +2963,12 @@ msgstr ""
 msgid "failed"
 msgstr "%s не удалось\n"
 
-#: lib/verify.c:328
+#: lib/verify.c:318
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "отсутствует   %c %s"
 
-#: lib/verify.c:421
+#: lib/verify.c:409
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Неудовлетворенные зависимости для %s: "

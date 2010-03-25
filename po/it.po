@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-22 15:15+0200\n"
+"POT-Creation-Date: 2010-03-25 16:47+0200\n"
 "PO-Revision-Date: 2008-06-30 07:20+0200\n"
 "Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
 "Language-Team: Italian <fedora-trans-it@redhat.com>\n"
@@ -121,7 +121,7 @@ msgstr "Opzioni comuni per tutte le modalità rpm ed eseguibili:"
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:140 lib/poptALL.c:66
+#: rpmqv.c:140 lib/poptALL.c:65
 #, c-format
 msgid "RPM version %s\n"
 msgstr "Versione RPM %s\n"
@@ -1355,17 +1355,17 @@ msgstr ""
 "genera l'intestazione/i del pacchetto compatibile con il packaging (legacy) "
 "rpm[23]"
 
-#: build/poptBT.c:202 lib/poptALL.c:181 lib/poptI.c:236 lib/poptQV.c:293
+#: build/poptBT.c:202 lib/poptALL.c:180 lib/poptI.c:236 lib/poptQV.c:293
 #: lib/poptQV.c:331
 msgid "don't verify package digest(s)"
 msgstr "non verificare il digest del pacchetto/i"
 
-#: build/poptBT.c:204 lib/poptALL.c:183 lib/poptI.c:238 lib/poptQV.c:295
+#: build/poptBT.c:204 lib/poptALL.c:182 lib/poptI.c:238 lib/poptQV.c:295
 #: lib/poptQV.c:334
 msgid "don't verify database header(s) when retrieved"
 msgstr "non verificare l'intestazione/i del database una volta ripristinata"
 
-#: build/poptBT.c:206 lib/poptALL.c:185 lib/poptI.c:240 lib/poptQV.c:297
+#: build/poptBT.c:206 lib/poptALL.c:184 lib/poptI.c:240 lib/poptQV.c:297
 #: lib/poptQV.c:336
 msgid "don't verify package signature(s)"
 msgstr "non verificare la firma/e del pacchetto"
@@ -1394,67 +1394,72 @@ msgstr "genera la firma PGP/GPG"
 msgid "override target platform"
 msgstr "annulla la piattaforma target"
 
-#: build/rpmfc.c:101
+#: build/rpmfc.c:75
+#, fuzzy, c-format
+msgid "Ignoring invalid regex %s\n"
+msgstr "riga %d: Numero errato: %s\n"
+
+#: build/rpmfc.c:160
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Impossibile creare la pipe per %s: %m\n"
 
-#: build/rpmfc.c:116
+#: build/rpmfc.c:175
 #, c-format
 msgid "Couldn't chdir to %s: %s\n"
 msgstr "Impossibile chdir in %s: %s\n"
 
-#: build/rpmfc.c:127
+#: build/rpmfc.c:186
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Impossibile eseguire %s: %s\n"
 
-#: build/rpmfc.c:132
+#: build/rpmfc.c:191
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Impossibile biforcare %s: %s\n"
 
-#: build/rpmfc.c:218
+#: build/rpmfc.c:277
 #, c-format
 msgid "%s failed\n"
 msgstr "%s fallito\n"
 
-#: build/rpmfc.c:222
+#: build/rpmfc.c:281
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "salvataggio di tutti i dati su %s fallito\n"
 
-#: build/rpmfc.c:554
-#, fuzzy, c-format
-msgid "Ignoring invalid regex: %s\n"
-msgstr "riga %d: Numero errato: %s\n"
-
-#: build/rpmfc.c:792
+#: build/rpmfc.c:748
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:870
+#: build/rpmfc.c:834
+#, fuzzy
+msgid "No file attributes configured\n"
+msgstr "pgp non è riuscito a salvare la firma\n"
+
+#: build/rpmfc.c:851
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) fallita: %s\n"
 
-#: build/rpmfc.c:877
+#: build/rpmfc.c:858
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load fallita: %s\n"
 
-#: build/rpmfc.c:918
+#: build/rpmfc.c:899
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "magic_file(ms, \"%s\") fallito: modalità %06o %s\n"
 
-#: build/rpmfc.c:1118
+#: build/rpmfc.c:1099
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Ricerca di %s in corso: %s\n"
 
-#: build/rpmfc.c:1123 build/rpmfc.c:1132
+#: build/rpmfc.c:1104 build/rpmfc.c:1113
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Impossibile trovare %s:\n"
@@ -1773,79 +1778,79 @@ msgstr "%s è un Delta RPM e non può essere installato direttamente\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Payload non supportato (%s) nel pacchetto %s\n"
 
-#: lib/poptALL.c:168
+#: lib/poptALL.c:167
 msgid "predefine MACRO with value EXPR"
 msgstr "predefinisci MACRO con un valore EXPR"
 
-#: lib/poptALL.c:169 lib/poptALL.c:172
+#: lib/poptALL.c:168 lib/poptALL.c:171
 msgid "'MACRO EXPR'"
 msgstr "'MACRO EXPR'"
 
-#: lib/poptALL.c:171
+#: lib/poptALL.c:170
 msgid "define MACRO with value EXPR"
 msgstr "definisci MACRO con un valore EXPR"
 
-#: lib/poptALL.c:174
+#: lib/poptALL.c:173
 msgid "print macro expansion of EXPR"
 msgstr "stapare espansione macro di EXPR"
 
-#: lib/poptALL.c:175
+#: lib/poptALL.c:174
 msgid "'EXPR'"
 msgstr "'EXPR'"
 
-#: lib/poptALL.c:177 lib/poptALL.c:192 lib/poptALL.c:196
+#: lib/poptALL.c:176 lib/poptALL.c:191 lib/poptALL.c:195
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "leggi <FILE:...> invece del file predefinito/i"
 
-#: lib/poptALL.c:178 lib/poptALL.c:193 lib/poptALL.c:197
+#: lib/poptALL.c:177 lib/poptALL.c:192 lib/poptALL.c:196
 msgid "<FILE:...>"
 msgstr "<FILE:...>"
 
-#: lib/poptALL.c:188
+#: lib/poptALL.c:187
 msgid "send stdout to CMD"
 msgstr "invia stdout a CMD"
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:188
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:199
 msgid "use ROOT as top level directory"
 msgstr "usa ROOT come cartella top level"
 
-#: lib/poptALL.c:201
+#: lib/poptALL.c:200
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:203
 msgid "display known query tags"
 msgstr "visualizza etichette di interrogazione conosciute"
 
-#: lib/poptALL.c:206
+#: lib/poptALL.c:205
 msgid "display final rpmrc and macro configuration"
 msgstr "visualizza la configurazione finale di rpmrc e macro"
 
-#: lib/poptALL.c:208
+#: lib/poptALL.c:207
 msgid "provide less detailed output"
 msgstr "fornisci un output meno dettagliato"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:209
 msgid "provide more detailed output"
 msgstr "fornisci un output più dettagliato"
 
-#: lib/poptALL.c:212
+#: lib/poptALL.c:211
 msgid "print the version of rpm being used"
 msgstr "visualizza la versione di rpm utilizzata"
 
-#: lib/poptALL.c:218
+#: lib/poptALL.c:217
 msgid "debug payload file state machine"
 msgstr "macchina di stato del file payload di debug"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:225
 msgid "debug rpmio I/O"
 msgstr "debug rpmio I/O"
 
-#: lib/poptALL.c:294
+#: lib/poptALL.c:293
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabella opzioni configurata in modo errato (%d)\n"
@@ -2297,7 +2302,7 @@ msgstr "%s fallito sul file %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s fallito: %s\n"
 
-#: lib/psm.c:1037 lib/transaction.c:1284 lib/verify.c:479
+#: lib/psm.c:1037 lib/transaction.c:1284 lib/verify.c:464
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Impossibile cambiare directory root: %m\n"
@@ -2689,56 +2694,56 @@ msgstr "impossibile creare il lock di transazione su %s (%s)\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "attesa del lock di transazione per %s\n"
 
-#: lib/rpmps.c:306
+#: lib/rpmprob.c:117
 msgid "different"
 msgstr "diverso"
 
-#: lib/rpmps.c:312
+#: lib/rpmprob.c:123
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "il pacchetto %s è stato ideato per una architettura %s"
 
-#: lib/rpmps.c:317
+#: lib/rpmprob.c:128
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "il pacchetto %s è stato ideato per un sistema operativo %s"
 
-#: lib/rpmps.c:321
+#: lib/rpmprob.c:132
 #, c-format
 msgid "package %s is already installed"
 msgstr "il pacchetto %s è già installato"
 
-#: lib/rpmps.c:325
+#: lib/rpmprob.c:136
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "il percorso %s nel pacchetto %s non è riposizionabile"
 
-#: lib/rpmps.c:330
+#: lib/rpmprob.c:141
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "il file %s entra in conflitto durante il tentativo d'installazione di %s e %s"
 
-#: lib/rpmps.c:335
+#: lib/rpmprob.c:146
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "il file %s dell'installazione di %s entra in conflitto con il file del "
 "pacchetto %s"
 
-#: lib/rpmps.c:340
+#: lib/rpmprob.c:151
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "il pacchetto %s (il quale risulta essere più recente di %s) è già installato"
 
-#: lib/rpmps.c:345
+#: lib/rpmprob.c:156
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr ""
 "l'installazione del pacchetto %s necessita %<PRIu64>%cB sul filesystem %s"
 
-#: lib/rpmps.c:355
+#: lib/rpmprob.c:166
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr ""
@@ -2747,28 +2752,28 @@ msgstr ""
 
 # fix bug 450663
 # (team-it-rev080611)
-#: lib/rpmps.c:359
+#: lib/rpmprob.c:170
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s necessario a %s%s"
 
-#: lib/rpmps.c:361 lib/rpmps.c:366 lib/rpmps.c:371
+#: lib/rpmprob.c:172 lib/rpmprob.c:177 lib/rpmprob.c:182
 msgid "(installed) "
 msgstr "(installato) "
 
-#: lib/rpmps.c:364
+#: lib/rpmprob.c:175
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s entra in conflitto con %s%s"
 
 # fix bug 450663
 # (team-it-rev080611)
-#: lib/rpmps.c:369
+#: lib/rpmprob.c:180
 #, fuzzy, c-format
 msgid "%s is obsoleted by %s%s"
 msgstr "%s necessario a %s%s"
 
-#: lib/rpmps.c:375
+#: lib/rpmprob.c:186
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2810,42 +2815,42 @@ msgstr "Riga di default incompleta su %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Troppi argomenti nella riga di default su %s:%d\n"
 
-#: lib/rpmrc.c:485
+#: lib/rpmrc.c:486
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "':' mancanti (trovato 0x%02x) su %s:%d\n"
 
-#: lib/rpmrc.c:502 lib/rpmrc.c:542
+#: lib/rpmrc.c:503 lib/rpmrc.c:543
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argomento mancante per %s su %s:%d\n"
 
-#: lib/rpmrc.c:518
+#: lib/rpmrc.c:519
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "impossibile aprire %s su %s:%d: %m\n"
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:535
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "architettura mancante per %s su %s:%d\n"
 
-#: lib/rpmrc.c:601
+#: lib/rpmrc.c:602
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "opzione errata '%s' su %s:%d\n"
 
-#: lib/rpmrc.c:1371
+#: lib/rpmrc.c:1372
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema sconosciuto: %s\n"
 
-#: lib/rpmrc.c:1372
+#: lib/rpmrc.c:1373
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Si prega di contattare %s\n"
 
-#: lib/rpmrc.c:1592
+#: lib/rpmrc.c:1593
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Impossibile aprire %s per la lettura: %m.\n"
@@ -2855,12 +2860,12 @@ msgstr "Impossibile aprire %s per la lettura: %m.\n"
 msgid "Unknown format"
 msgstr "Sconosciuta"
 
-#: lib/rpmte.c:756
+#: lib/rpmte.c:757
 #, fuzzy
 msgid "install"
 msgstr "(installato) "
 
-#: lib/rpmte.c:757
+#: lib/rpmte.c:758
 msgid "erase"
 msgstr ""
 
@@ -3000,12 +3005,12 @@ msgstr ""
 msgid "failed"
 msgstr "%s fallito\n"
 
-#: lib/verify.c:328
+#: lib/verify.c:318
 #, c-format
 msgid "missing   %c %s"
 msgstr "%c %s  mancanti"
 
-#: lib/verify.c:421
+#: lib/verify.c:409
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dipendenze non soddisfatte per %s:\n"
