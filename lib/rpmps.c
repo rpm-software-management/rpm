@@ -80,9 +80,8 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi)
     if (psi != NULL) {
 	rpmpsUnlink(psi->ps);
 	free(psi);
-	psi = NULL;
     }
-    return psi;
+    return NULL;
 }
 
 int rpmpsNextIterator(rpmpsi psi)
