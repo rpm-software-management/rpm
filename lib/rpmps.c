@@ -100,11 +100,11 @@ int rpmpsNextIterator(rpmpsi psi)
 
 rpmProblem rpmpsGetProblem(rpmpsi psi)
 {
-    rpmProblem *p = NULL;
+    rpmProblem p = NULL;
     if (psi != NULL && psi->ix >= 0 && psi->ix < rpmpsNumProblems(psi->ps)) {
-	p = psi->ps->probs + psi->ix;
+	p = psi->ps->probs[psi->ix];
     } 
-    return p ? *p : NULL;
+    return p;
 }
 
 rpmps rpmpsCreate(void)
