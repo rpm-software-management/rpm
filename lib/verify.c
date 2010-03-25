@@ -263,10 +263,9 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
  * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header
- * @param scriptFd      file handle to use for stderr (or NULL)
  * @return              0 on success
  */
-static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
+static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h)
 {
     rpmte te = NULL;
     int rc = 0;
@@ -276,13 +275,7 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h, FD_t scriptFd)
     te = rpmtsElement(ts, 0);
     rpmteOpen(te, ts, 0);
     
-    if (scriptFd != NULL)
-	rpmtsSetScriptFd(ts, scriptFd);
-
     rc = rpmpsmRun(ts, te, PKG_VERIFY);
-
-    if (scriptFd != NULL)
-	rpmtsSetScriptFd(ts, NULL);
 
     /* clean up our fake transaction bits */
     rpmteClose(te, ts, 0);
@@ -449,11 +442,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     if ((qva->qva_flags & VERIFY_SCRIPT)
      && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
     {
-	FD_t fdo = fdDup(STDOUT_FILENO);
-	if ((rc = rpmVerifyScript(qva, ts, h, fdo)) != 0)
+	if ((rc = rpmVerifyScript(qva, ts, h)) != 0)
 	    ec = rc;
-	if (fdo != NULL)
-	    rc = Fclose(fdo);
     }
 
     return ec;
@@ -464,6 +454,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     rpmVSFlags vsflags, ovsflags;
     int ec = 0, xx;
     const char * rootDir = rpmtsRootDir(ts);
+    FD_t scriptFd = fdDup(STDOUT_FILENO);
 
     /* 
      * Open the DB + indices explicitly before possible chroot,
@@ -494,9 +485,11 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 	vsflags |= RPMVSF_NOHDRCHK;
     vsflags &= ~RPMVSF_NEEDPAYLOAD;
 
+    rpmtsSetScriptFd(ts, scriptFd);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
     vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    rpmtsSetScriptFd(ts, NULL);
 
     if (qva->qva_showPackage == showVerifyPackage)
         qva->qva_showPackage = NULL;
@@ -510,6 +503,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     }
 
 exit:
+    Fclose(scriptFd);
 
     return ec;
 }
