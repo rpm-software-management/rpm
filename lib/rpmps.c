@@ -134,8 +134,7 @@ rpmps rpmpsFree(rpmps ps)
 
 void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 {
-    rpmProblem *p = NULL;
-    if (ps == NULL) return;
+    if (ps == NULL || prob == NULL) return;
 
     if (ps->numProblems == ps->numProblemsAlloced) {
 	if (ps->numProblemsAlloced)
@@ -146,9 +145,8 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 			ps->numProblemsAlloced * sizeof(ps->probs));
     }
 
-    p = ps->probs + ps->numProblems;
+    ps->probs[ps->numProblems] = rpmProblemLink(prob);
     ps->numProblems++;
-    *p = rpmProblemLink(prob);
 }
 
 void rpmpsAppend(rpmps ps, rpmProblemType type,
