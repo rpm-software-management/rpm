@@ -67,7 +67,7 @@ int rpmpsNumProblems(rpmps ps)
 rpmpsi rpmpsInitIterator(rpmps ps)
 {
     rpmpsi psi = NULL;
-    if (ps != NULL) {
+    if (ps != NULL && ps->numProblems > 0) {
 	psi = xcalloc(1, sizeof(*psi));
 	psi->ps = rpmpsLink(ps);
 	psi->ix = -1;
