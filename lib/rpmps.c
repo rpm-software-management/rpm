@@ -161,8 +161,6 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
     rpmProblemFree(p);
 }
 
-#define XSTRCMP(a, b) ((!(a) && !(b)) || ((a) && (b) && rstreq((a), (b))))
-
 /* XXX TODO: implement with iterators */
 int rpmpsTrim(rpmps ps, rpmps filter)
 {
@@ -181,8 +179,7 @@ int rpmpsTrim(rpmps ps, rpmps filter)
 
     while ((f - filter->probs) < filter->numProblems) {
 	while ((t - ps->probs) < ps->numProblems) {
-	    if ((*f)->type == (*t)->type && (*t)->key == (*f)->key &&
-		     XSTRCMP((*f)->str1, (*t)->str1))
+	    if (rpmProblemCompare(*f, *t) == 0)
 		break;
 	    t++;
 	    gotProblems = 1;
@@ -370,24 +367,29 @@ char * rpmProblemString(const rpmProblem prob)
     return buf;
 }
 
-static int sameProblem(const rpmProblem ap, const rpmProblem bp)
+static int cmpStr(const char *s1, const char *s2)
+{
+    if (s1 == s2) return 0;
+    if (s1 && s2) return strcmp(s1, s2);
+    return 1;
+}
+
+int rpmProblemCompare(rpmProblem ap, rpmProblem bp)
 {
     if (ap->type != bp->type)
-	return 0;
-    if (ap->pkgNEVR)
-	if (bp->pkgNEVR && !rstreq(ap->pkgNEVR, bp->pkgNEVR))
-	    return 0;
-    if (ap->altNEVR)
-	if (bp->altNEVR && !rstreq(ap->altNEVR, bp->altNEVR))
-	    return 0;
-    if (ap->str1)
-	if (bp->str1 && !rstreq(ap->str1, bp->str1))
-	    return 0;
-
+	return 1;
+    if (ap->key != bp->key)
+	return 1;
     if (ap->num1 != bp->num1)
-	return 0;
+	return 1;
+    if (cmpStr(ap->pkgNEVR, bp->pkgNEVR))
+	return 1;
+    if (cmpStr(ap->altNEVR, bp->altNEVR))
+	return 1;
+    if (cmpStr(ap->str1, bp->str1))
+	return 1;
 
-    return 1;
+    return 0;
 }
 
 void rpmpsPrint(FILE *fp, rpmps ps)
@@ -410,7 +412,7 @@ void rpmpsPrint(FILE *fp, rpmps ps)
 	rpmpsi psif = rpmpsInitIterator(ps);
 	/* Filter already displayed problems. */
     	while ((j = rpmpsNextIterator(psif)) < i) {
-	    if (sameProblem(p, rpmpsGetProblem(psif)))
+	    if (rpmProblemCompare(p, rpmpsGetProblem(psif)) == 0)
 		break;
 	}
 	rpmpsFreeIterator(psif);

@@ -97,6 +97,14 @@ rpmProblem rpmProblemLink(rpmProblem prob);
 rpmProblem rpmProblemUnlink(rpmProblem prob);
 
 /** \ingroup rpmps
+ * Compare two problems for equality.
+ * @param ap		1st problem
+ * @param bp		2nd problem
+ * @return		1 if the problems differ, 0 otherwise
+ */
+int rpmProblemCompare(rpmProblem ap, rpmProblem bp);
+
+/** \ingroup rpmps
  * Return package NEVR
  * @param prob		rpm problem
  * @return		package NEVR
