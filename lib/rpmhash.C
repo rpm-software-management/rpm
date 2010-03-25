@@ -30,7 +30,10 @@ struct HASHSTRUCT {
     hashFunctionType fn;		/*!< generate hash value for key */
     hashEqualityType eq;		/*!< compare hash keys for equality */
     hashFreeKey freeKey;
+    int bucketCount;			/*!< number of used buckets */
+    int keyCount;			/*!< number of keys */
 #ifdef HTDATATYPE
+    int dataCount;			/*!< number of data entries */
     hashFreeData freeData;
 #endif
 };
@@ -72,10 +75,31 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
     ht->freeKey = freeKey;
 #ifdef HTDATATYPE
     ht->freeData = freeData;
+    ht->dataCount = 0;
 #endif
     ht->fn = fn;
     ht->eq = eq;
+    ht->bucketCount = ht->keyCount = 0;
     return ht;
+}
+
+static HASHPREFIX(Resize)(HASHTYPE ht, int numBuckets) {
+    Bucket * buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+
+    for (int i=0; i<ht->numBuckets; i++) {
+	Bucket b = ht->buckets[i];
+	Bucket nextB;
+	while (b != NULL) {
+	    unsigned int hash = ht->fn(b->key) % numBuckets;
+	    nextB = b->next;
+	    b->next = buckets[hash];
+	    buckets[hash] = b;
+	    b = nextB;
+	}
+    }
+    free(ht->buckets);
+    ht->buckets = buckets;
+    ht->numBuckets = numBuckets;
 }
 
 void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
@@ -92,12 +116,17 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
     b = ht->buckets[hash];
     b_addr = ht->buckets + hash;
 
+    if (b == NULL) {
+	ht->bucketCount += 1;
+    }
+
     while (b && ht->eq(b->key, key)) {
 	b_addr = &(b->next);
 	b = b->next;
     }
 
     if (b == NULL) {
+	ht->keyCount += 1;
 	b = xmalloc(sizeof(*b));
 	b->key = key;
 #ifdef HTDATATYPE
@@ -116,7 +145,11 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
 	// though increasing dataCount after the resize
 	b->data[b->dataCount++] = data;
     }
+    ht->dataCount += 1;
 #endif
+    if (ht->keyCount > ht->numBuckets) {
+	HASHPREFIX(Resize)(ht, ht->numBuckets * 2);
+    }
 }
 
 HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
