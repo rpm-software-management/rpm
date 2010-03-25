@@ -46,6 +46,7 @@ lib/rpmgi.c
 lib/rpminstall.c
 lib/rpmlead.c
 lib/rpmlock.c
+lib/rpmprob.c
 lib/rpmps.c
 lib/rpmrc.c
 lib/rpmtd.c
