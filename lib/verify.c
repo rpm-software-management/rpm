@@ -391,36 +391,33 @@ static int verifyHeader(QVA_t qva, const rpmts ts, Header h)
  * @param h		header
  * @return		number of problems found (0 for no problems)
  */
-static int verifyDependencies(QVA_t qva, rpmts ts,
-		Header h)
+static int verifyDependencies(QVA_t qva, rpmts ts, Header h)
 {
     rpmps ps;
-    rpmpsi psi;
-    int rc = 0;		/* assume no problems */
-    int xx;
+    rpmte te;
+    int rc;
 
     rpmtsEmpty(ts);
     (void) rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
 
-    xx = rpmtsCheck(ts);
-    ps = rpmtsProblems(ts);
+    (void) rpmtsCheck(ts);
+    te = rpmtsElement(ts, 0);
+    ps = rpmteProblems(te);
+    rc = rpmpsNumProblems(ps);
 
-    psi = rpmpsInitIterator(ps);
-    if (rpmpsNumProblems(ps) > 0) {
-	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmlog(RPMLOG_NOTICE, _("Unsatisfied dependencies for %s:\n"), nevra);
-	free(nevra);
+    if (rc > 0) {
+	rpmlog(RPMLOG_NOTICE, _("Unsatisfied dependencies for %s:\n"),
+	       rpmteNEVRA(te));
+	rpmpsi psi = rpmpsInitIterator(ps);
+
 	while (rpmpsNextIterator(psi) >= 0) {
-	    rpmProblem p = rpmpsGetProblem(psi);
-	    char * ps = rpmProblemString(p);
+	    char * ps = rpmProblemString(rpmpsGetProblem(psi));
 	    rpmlog(RPMLOG_NOTICE, "\t%s\n", ps);
 	    free(ps);
-	    rc++;	
 	}
+	psi = rpmpsFreeIterator(psi);
     }
-    psi = rpmpsFreeIterator(psi);
     ps = rpmpsFree(ps);
-
     rpmtsEmpty(ts);
 
     return rc;
