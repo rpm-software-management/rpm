@@ -19,7 +19,6 @@ struct rpmProblem_s {
     char * altNEVR;
     fnpyKey key;
     rpmProblemType type;
-    int ignoreProblem;
     char * str1;
     uint64_t num1;
     int nrefs;
@@ -181,10 +180,6 @@ int rpmpsTrim(rpmps ps, rpmps filter)
     f = filter->probs;
 
     while ((f - filter->probs) < filter->numProblems) {
-	if (!(*f)->ignoreProblem) {
-	    f++;
-	    continue;
-	}
 	while ((t - ps->probs) < ps->numProblems) {
 	    if ((*f)->type == (*t)->type && (*t)->key == (*f)->key &&
 		     XSTRCMP((*f)->str1, (*t)->str1))
@@ -197,7 +192,6 @@ int rpmpsTrim(rpmps ps, rpmps filter)
 	if ((t - ps->probs) == ps->numProblems)
 	    break;
 
-	(*t)->ignoreProblem = (*f)->ignoreProblem;
 	t++, f++;
     }
 
@@ -220,7 +214,6 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
     p->type = type;
     p->key = key;
     p->num1 = number;
-    p->ignoreProblem = 0;
 
     p->pkgNEVR = (pkgNEVR ? xstrdup(pkgNEVR) : NULL);
     p->altNEVR = (altNEVR ? xstrdup(altNEVR) : NULL);
@@ -413,9 +406,6 @@ void rpmpsPrint(FILE *fp, rpmps ps)
     while ((i = rpmpsNextIterator(psi)) >= 0) {
 	int j;
 	rpmProblem p = rpmpsGetProblem(psi);
-
-	if (p->ignoreProblem)
-	    continue;
 
 	rpmpsi psif = rpmpsInitIterator(ps);
 	/* Filter already displayed problems. */
