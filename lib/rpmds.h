@@ -201,6 +201,14 @@ rpmsenseFlags rpmdsFlags(const rpmds ds);
 rpmTag rpmdsTagN(const rpmds ds);
 
 /** \ingroup rpmds
+ * Return dependency header instance, ie whether the dependency comes from 
+ * an installed header or not.
+ * @param ds		dependency set
+ * @return		header instance of dependency (0 for not installed)
+ */
+unsigned int rpmdsInstance(rpmds ds);
+
+/** \ingroup rpmds
  * Return dependency build time.
  * @param ds		dependency set
  * @return		dependency build time, 0 on invalid

@@ -29,6 +29,7 @@ struct rpmds_s {
     time_t BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     int32_t Count;		/*!< No. of elements */
+    unsigned int instance;	/*!< From rpmdb instance? */
     int i;			/*!< Element index. */
     unsigned l;			/*!< Low element (bsearch). */
     unsigned u;			/*!< High element (bsearch). */
@@ -140,6 +141,7 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	ds->N = names.data;
 	ds->Count = rpmtdCount(&names);
 	ds->nopromote = _rpmds_nopromote;
+	ds->instance = headerGetInstance(h);
 
 	headerGet(h, tagEVR, &evr, hgflags);
 	ds->EVR = evr.data;
@@ -212,6 +214,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
 {
     char *evr = headerGetAsString(h, RPMTAG_EVR);
     rpmds ds = rpmdsSingle(tagN, headerGetString(h, RPMTAG_NAME), evr, Flags);
+    if (ds) ds->instance = headerGetInstance(h);
     free(evr);
     return ds;
 }
@@ -338,6 +341,11 @@ time_t rpmdsSetBT(const rpmds ds, time_t BT)
 	ds->BT = BT;
     }
     return oBT;
+}
+
+unsigned int rpmdsInstance(rpmds ds)
+{
+    return (ds != NULL) ? ds->instance : 0;
 }
 
 int rpmdsNoPromote(const rpmds ds)
