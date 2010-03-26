@@ -469,18 +469,10 @@ rpmps rpmtsProblems(rpmts ts)
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
 
-    /* XXX TODO this cries for rpmpsMerge() */
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmps teprobs = rpmteProblems(p);
-	if (teprobs) {
-	    rpmpsi psi = rpmpsInitIterator(teprobs);
-	    while (rpmpsNextIterator(psi) >= 0) {
-		rpmProblem prob = rpmpsGetProblem(psi);
-		rpmpsAppendProblem(ps, prob);
-	    }
-	    rpmpsFreeIterator(psi);
-	    rpmpsFree(teprobs);
-	}
+	rpmpsMerge(ps, teprobs);
+	rpmpsFree(teprobs);
     }
     pi = rpmtsiFree(pi);
     return ps;
