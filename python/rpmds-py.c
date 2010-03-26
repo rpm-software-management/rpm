@@ -90,12 +90,7 @@ rpmds_iternext(rpmdsObject * s)
 
     /* If more to do, return a (N, EVR, Flags) tuple. */
     if (rpmdsNext(s->ds) >= 0) {
-	const char * N = rpmdsN(s->ds);
-	const char * EVR = rpmdsEVR(s->ds);
-	rpmTag tagN = rpmdsTagN(s->ds);
-	rpmsenseFlags Flags = rpmdsFlags(s->ds);
-
-	result = rpmds_Wrap(Py_TYPE(s), rpmdsSingle(tagN, N, EVR, Flags) );
+	result = rpmds_Wrap(Py_TYPE(s), rpmdsCurrent(s->ds));
     } else
 	s->active = 0;
 
