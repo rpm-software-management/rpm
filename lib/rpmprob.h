@@ -54,18 +54,15 @@ typedef enum rpmProblemType_e {
  * @param type		type of problem
  * @param pkgNEVR	package name
  * @param key		filename or python object address
- * @param dn		directory name
- * @param bn		file base name
  * @param altNEVR	related (e.g. through a dependency) package name
+ * @param str		generic string attribute
  * @param number	generic number attribute
  * @return		rpmProblem
  */
 rpmProblem rpmProblemCreate(rpmProblemType type,
-                            const char * pkgNEVR,
-                            fnpyKey key,
-                            const char * dn, const char * bn,
+                            const char * pkgNEVR, fnpyKey key,
                             const char * altNEVR,
-                            uint64_t number);
+                            const char * str, uint64_t number);
 
 /** \ingroup rpmprob
  * Destroy a problem item.

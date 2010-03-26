@@ -724,7 +724,7 @@ void rpmteAddProblem(rpmte te, rpmProblemType type,
 	if (te->probs == NULL)
 	    te->probs = rpmpsCreate();
 	rpmpsAppend(te->probs, type, rpmteNEVRA(te), rpmteKey(te),
-		    str, NULL, altNEVR, number);
+		    altNEVR, str, number);
     }
 }
 
@@ -746,7 +746,7 @@ void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 	case 'R':	type = RPMPROB_REQUIRES;	break;
 	}
 
-	rpmpsAppend(te->probs, type, pkgNEVR, key, NULL, NULL, DNEVR, adding);
+	rpmpsAppend(te->probs, type, pkgNEVR, key, DNEVR, NULL, adding);
     }
 }
 

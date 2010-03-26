@@ -140,14 +140,13 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 }
 
 void rpmpsAppend(rpmps ps, rpmProblemType type,
-		const char * pkgNEVR, fnpyKey key,
-		const char * dn, const char * bn,
-		const char * altNEVR, uint64_t number)
+		const char * pkgNEVR, fnpyKey key, const char * altNEVR,
+		const char * str, uint64_t number)
 {
     rpmProblem p = NULL;
     if (ps == NULL) return;
 
-    p = rpmProblemCreate(type, pkgNEVR, key, dn, bn, altNEVR, number);
+    p = rpmProblemCreate(type, pkgNEVR, key, altNEVR, str, number);
     rpmpsAppendProblem(ps, p);
     rpmProblemFree(p);
 }

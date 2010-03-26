@@ -23,14 +23,11 @@ struct rpmProblem_s {
 };
 
 rpmProblem rpmProblemCreate(rpmProblemType type,
-                            const char * pkgNEVR,
-                            fnpyKey key,
-                            const char * dn, const char * bn,
+                            const char * pkgNEVR, fnpyKey key,
                             const char * altNEVR,
-                            uint64_t number)
+                            const char * str, uint64_t number)
 {
     rpmProblem p = xcalloc(1, sizeof(*p));
-    char *t;
 
     p->type = type;
     p->key = key;
@@ -38,15 +35,8 @@ rpmProblem rpmProblemCreate(rpmProblemType type,
 
     p->pkgNEVR = (pkgNEVR ? xstrdup(pkgNEVR) : NULL);
     p->altNEVR = (altNEVR ? xstrdup(altNEVR) : NULL);
+    p->str1 = (str ? xstrdup(str) : NULL);
 
-    p->str1 = NULL;
-    if (dn != NULL || bn != NULL) {
-        t = xcalloc(1,  (dn != NULL ? strlen(dn) : 0) +
-                        (bn != NULL ? strlen(bn) : 0) + 1);
-        p->str1 = t;
-        if (dn != NULL) t = stpcpy(t, dn);
-        if (bn != NULL) t = stpcpy(t, bn);
-    }
     return rpmProblemLink(p);
 }
 
