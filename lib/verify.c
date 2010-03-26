@@ -409,9 +409,10 @@ static int verifyDependencies(QVA_t qva, rpmts ts, Header h)
 	rpmlog(RPMLOG_NOTICE, _("Unsatisfied dependencies for %s:\n"),
 	       rpmteNEVRA(te));
 	rpmpsi psi = rpmpsInitIterator(ps);
+	rpmProblem p;
 
-	while (rpmpsNextIterator(psi) >= 0) {
-	    char * ps = rpmProblemString(rpmpsGetProblem(psi));
+	while ((p = rpmpsiNext(psi)) != NULL) {
+	    char * ps = rpmProblemString(p);
 	    rpmlog(RPMLOG_NOTICE, "\t%s\n", ps);
 	    free(ps);
 	}

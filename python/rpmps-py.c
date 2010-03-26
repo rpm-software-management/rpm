@@ -129,10 +129,12 @@ PyObject *rpmps_AsList(rpmps ps)
 {
     PyObject *problems = PyList_New(0);
     rpmpsi psi = rpmpsInitIterator(ps);
-    while (rpmpsNextIterator(psi) >= 0) {
-        PyObject *prob = rpmprob_Wrap(&rpmProblem_Type, rpmpsGetProblem(psi));
-        PyList_Append(problems, prob);
-        Py_DECREF(prob);
+    rpmProblem prob;
+
+    while ((prob = rpmpsiNext(psi))) {
+        PyObject *pyprob = rpmprob_Wrap(&rpmProblem_Type, prob);
+        PyList_Append(problems, pyprob);
+        Py_DECREF(pyprob);
     }
     rpmpsFreeIterator(psi);
     return problems;
