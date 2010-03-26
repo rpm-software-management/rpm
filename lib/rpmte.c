@@ -718,11 +718,11 @@ void rpmteCleanProblems(rpmte te)
 }
 
 static void appendProblem(rpmte te, rpmProblemType type,
-		const char * pkgNEVR, fnpyKey key, const char * altNEVR,
+		fnpyKey key, const char * altNEVR,
 		const char * str, uint64_t number)
 {
     rpmProblem o;
-    rpmProblem p = rpmProblemCreate(type, pkgNEVR, key, altNEVR, str, number);
+    rpmProblem p = rpmProblemCreate(type, te->NEVRA, key, altNEVR, str, number);
     rpmpsi psi = rpmpsInitIterator(te->probs);
 
     /* Only add new, unique problems to the set */
@@ -744,8 +744,7 @@ void rpmteAddProblem(rpmte te, rpmProblemType type,
 		     const char *altNEVR, const char *str, uint64_t number)
 {
     if (te != NULL) {
-	appendProblem(te, type, rpmteNEVRA(te), rpmteKey(te),
-		    altNEVR, str, number);
+	appendProblem(te, type, rpmteKey(te), altNEVR, str, number);
     }
 }
 
@@ -764,7 +763,7 @@ void rpmteAddDepProblem(rpmte te, const char * altNEVR, rpmds ds,
 	case 'R':	type = RPMPROB_REQUIRES;	break;
 	}
 
-	appendProblem(te, type, rpmteNEVRA(te), key, altNEVR, DNEVR+2, adding);
+	appendProblem(te, type, key, altNEVR, DNEVR+2, adding);
     }
 }
 
