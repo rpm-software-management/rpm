@@ -200,6 +200,10 @@ static int cmpStr(const char *s1, const char *s2)
 
 int rpmProblemCompare(rpmProblem ap, rpmProblem bp)
 {
+    if (ap == bp)
+	return 0;
+    if (ap == NULL || bp == NULL)
+	return 1;
     if (ap->type != bp->type)
 	return 1;
     if (ap->key != bp->key)
