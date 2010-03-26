@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-03-25 16:47+0200\n"
-"PO-Revision-Date: 2010-03-24 13:26+0100\n"
+"PO-Revision-Date: 2010-03-26 02:00+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
@@ -1369,9 +1369,9 @@ msgid "override target platform"
 msgstr "zastąpienie platformy docelowej"
 
 #: build/rpmfc.c:75
-#, fuzzy, c-format
+#, c-format
 msgid "Ignoring invalid regex %s\n"
-msgstr "Ignorowanie nieprawidłowego wyrażenia regularnego: %s\n"
+msgstr "Ignorowanie nieprawidłowego wyrażenia regularnego %s\n"
 
 #: build/rpmfc.c:160
 #, c-format
@@ -1409,9 +1409,8 @@ msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konwersja %s na długą liczbę całkowitą nie powiodła się.\n"
 
 #: build/rpmfc.c:834
-#, fuzzy
 msgid "No file attributes configured\n"
-msgstr "zapisanie podpisu przez gpg nie powiodło się\n"
+msgstr "Brak skonfigurowanych atrybutów plików\n"
 
 #: build/rpmfc.c:851
 #, c-format
