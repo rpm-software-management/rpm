@@ -210,16 +210,8 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     return tbuf;
 }
 
-rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
-{
-    char *evr = headerGetAsString(h, RPMTAG_EVR);
-    rpmds ds = rpmdsSingle(tagN, headerGetString(h, RPMTAG_NAME), evr, Flags);
-    if (ds) ds->instance = headerGetInstance(h);
-    free(evr);
-    return ds;
-}
-
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
+static rpmds singleDS(rpmTag tagN, const char * N, const char * EVR,
+		      rpmsenseFlags Flags, unsigned int instance)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -230,11 +222,10 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
     ds->tagN = tagN;
-    {	time_t now = time(NULL);
-	ds->BT = now;
-    }
+    ds->BT = time(NULL);
     ds->Count = 1;
     ds->nopromote = _rpmds_nopromote;
+    ds->instance = instance;
 
     ds->N = rpmdsDupArgv(&N, 1);
     ds->EVR = rpmdsDupArgv(&EVR, 1);
@@ -245,6 +236,20 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
 
 exit:
     return rpmdsLink(ds);
+}
+
+rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
+{
+    char *evr = headerGetAsString(h, RPMTAG_EVR);
+    rpmds ds = singleDS(tagN, headerGetString(h, RPMTAG_NAME),
+			evr, Flags, headerGetInstance(h));
+    free(evr);
+    return ds;
+}
+
+rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
+{
+    return singleDS(tagN, N, EVR, Flags, 0);
 }
 
 int rpmdsCount(const rpmds ds)
