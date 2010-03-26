@@ -354,7 +354,8 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
 	if (rConflicts) {
 	    char *altNEVR = headerGetAsString(otherHeader, RPMTAG_NEVRA);
-	    rpmteAddProblem(p, RPMPROB_FILE_CONFLICT, altNEVR, rpmfiFN(fi), 0);
+	    rpmteAddProblem(p, RPMPROB_FILE_CONFLICT, altNEVR, rpmfiFN(fi),
+			    headerGetInstance(otherHeader));
 	    free(altNEVR);
 	}
 
@@ -602,7 +603,8 @@ static void ensureOlder(const rpmte p, const Header h)
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), rpmteEVR(p), reqFlags);
     if (rpmdsNVRMatchesDep(h, req, _rpmds_nopromote) == 0) {
 	char * altNEVR = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmteAddProblem(p, RPMPROB_OLDPACKAGE, altNEVR, NULL, 0);
+	rpmteAddProblem(p, RPMPROB_OLDPACKAGE, altNEVR, NULL,
+			headerGetInstance(h));
 	free(altNEVR);
     }
     rpmdsFree(req);
@@ -1074,6 +1076,7 @@ static rpmps checkProblems(rpmts ts)
 	}
 
 	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG)) {
+	    Header h;
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
 	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
@@ -1083,8 +1086,9 @@ static rpmps checkProblems(rpmts ts)
 		rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(p));
 	    }
 
-	    if (rpmdbNextIterator(mi) != NULL) {
-		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL, 0);
+	    if ((h = rpmdbNextIterator(mi)) != NULL) {
+		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL,
+				headerGetInstance(h));
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}
