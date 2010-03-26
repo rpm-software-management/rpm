@@ -259,7 +259,7 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
 	ps = rpmpsFree(ps);
     }
 
-    if ((eflags? 1 : (!stop)) && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
+    if (!stop && !(ia->installInterfaceFlags & INSTALL_NOORDER)) {
 	if (rpmtsOrder(ts)) {
 	    rc = numPackages;
 	    stop = 1;
@@ -267,16 +267,10 @@ static int rpmcliTransaction(rpmts ts, struct rpmInstallArguments_s * ia,
     }
 
     if (numPackages && !stop) {
-
-	if (eflags) {
-	    rpmlog(RPMLOG_DEBUG, "erasing packages\n");
-	    rpmtsClean(ts);
-	    rc = rpmtsRun(ts, NULL, ia->probFilter & (RPMPROB_FILTER_DISKSPACE|RPMPROB_FILTER_DISKNODES));
-	} else {
-	    rpmlog(RPMLOG_DEBUG, "installing binary packages\n");
-	    rpmtsClean(ts);
-	    rc = rpmtsRun(ts, NULL, ia->probFilter);
-	}
+	rpmlog(RPMLOG_DEBUG, eflags ? "erasing packages\n" :
+				      "installing binary packages\n");
+	rpmtsClean(ts);
+	rc = rpmtsRun(ts, NULL, ia->probFilter);
 
 	ps = rpmtsProblems(ts);
 
