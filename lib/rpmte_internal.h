@@ -33,8 +33,7 @@ int rpmteHaveTransScript(rpmte te, rpmTag tag);
 
 RPM_GNUC_INTERNAL
 void rpmteAddProblem(rpmte te, rpmProblemType type,
-                     const char *dn, const char *bn,
-                     const char *altNEVR, uint64_t number);
+                     const char *altNEVR, const char *str, uint64_t number);
 
 RPM_GNUC_INTERNAL
 void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,

@@ -270,8 +270,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
 	    if (dsi->bneeded > dsi->obneeded) {
-		rpmteAddProblem(te, RPMPROB_DISKSPACE,
-			dsi->mntPoint, NULL, NULL,
+		rpmteAddProblem(te, RPMPROB_DISKSPACE, dsi->mntPoint, NULL,
 		   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
 		dsi->obneeded = dsi->bneeded;
 	    }
@@ -279,8 +278,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
 	    if (dsi->ineeded > dsi->oineeded) {
-		rpmteAddProblem(te, RPMPROB_DISKNODES,
-			dsi->mntPoint, NULL, NULL,
+		rpmteAddProblem(te, RPMPROB_DISKNODES, dsi->mntPoint, NULL,
 			(adj_fs_blocks(dsi->ineeded) - dsi->iavail));
 		dsi->oineeded = dsi->ineeded;
 	    }
@@ -356,8 +354,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
 	if (rConflicts) {
 	    char *altNEVR = headerGetAsString(otherHeader, RPMTAG_NEVRA);
-	    rpmteAddProblem(p, RPMPROB_FILE_CONFLICT,
-			    rpmfiDN(fi), rpmfiBN(fi), altNEVR, 0);
+	    rpmteAddProblem(p, RPMPROB_FILE_CONFLICT, altNEVR, rpmfiFN(fi), 0);
 	    free(altNEVR);
 	}
 
@@ -527,7 +524,7 @@ assert(otherFi != NULL);
 		}
 		if (rConflicts) {
 		    rpmteAddProblem(p, RPMPROB_NEW_FILE_CONFLICT,
-				    fn, NULL, rpmteNEVRA(otherTe), 0);
+				    rpmteNEVRA(otherTe), fn, 0);
 		}
 	    }
 
@@ -605,7 +602,7 @@ static void ensureOlder(const rpmte p, const Header h)
     req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), rpmteEVR(p), reqFlags);
     if (rpmdsNVRMatchesDep(h, req, _rpmds_nopromote) == 0) {
 	char * altNEVR = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmteAddProblem(p, RPMPROB_OLDPACKAGE, NULL, NULL, altNEVR, 0);
+	rpmteAddProblem(p, RPMPROB_OLDPACKAGE, altNEVR, NULL, 0);
 	free(altNEVR);
     }
     rpmdsFree(req);
@@ -1063,10 +1060,10 @@ static rpmps checkProblems(rpmts ts)
 	rpmdbMatchIterator mi;
 
 	if (!(probFilter & RPMPROB_FILTER_IGNOREARCH) && badArch(rpmteA(p)))
-	    rpmteAddProblem(p, RPMPROB_BADARCH, rpmteA(p), NULL, NULL, 0);
+	    rpmteAddProblem(p, RPMPROB_BADARCH, rpmteA(p), NULL, 0);
 
 	if (!(probFilter & RPMPROB_FILTER_IGNOREOS) && badOs(rpmteO(p)))
-	    rpmteAddProblem(p, RPMPROB_BADOS, rpmteO(p), NULL, NULL, 0);
+	    rpmteAddProblem(p, RPMPROB_BADOS, rpmteO(p), NULL, 0);
 
 	if (!(probFilter & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
@@ -1087,7 +1084,7 @@ static rpmps checkProblems(rpmts ts)
 	    }
 
 	    if (rpmdbNextIterator(mi) != NULL) {
-		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL, NULL, 0);
+		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL, 0);
 	    }
 	    mi = rpmdbFreeIterator(mi);
 	}

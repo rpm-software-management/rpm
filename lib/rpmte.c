@@ -196,8 +196,8 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
 	    }
 
 	    if (!valid) {
-		rpmteAddProblem(p, RPMPROB_BADRELOCATE,
-				p->relocs[i].oldPath, NULL, NULL, 0);
+		rpmteAddProblem(p, RPMPROB_BADRELOCATE, NULL,
+				p->relocs[i].oldPath, 0);
 	    }
 	} else {
 	    p->relocs[i].newPath = NULL;
@@ -718,14 +718,13 @@ void rpmteCleanProblems(rpmte te)
 }
 
 void rpmteAddProblem(rpmte te, rpmProblemType type,
-		     const char *dn, const char *bn,
-		     const char *altNEVR, uint64_t number)
+		     const char *altNEVR, const char *str, uint64_t number)
 {
     if (te != NULL) {
 	if (te->probs == NULL)
 	    te->probs = rpmpsCreate();
 	rpmpsAppend(te->probs, type, rpmteNEVRA(te), rpmteKey(te),
-		    dn, bn, altNEVR, number);
+		    str, NULL, altNEVR, number);
     }
 }
 
