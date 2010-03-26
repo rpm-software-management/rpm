@@ -137,6 +137,14 @@ void rpmpsAppend(rpmps ps, rpmProblemType type,
  */
 int rpmpsTrim(rpmps ps, rpmps filter);
 
+/** \ingroup rpmps
+ * Merge problem set into another.
+ * @param dest		destination problem set
+ * @param src		source problem set
+ * @return		number of problems merged
+ */
+int rpmpsMerge(rpmps dest, rpmps src);
+
 #ifdef __cplusplus
 }
 #endif

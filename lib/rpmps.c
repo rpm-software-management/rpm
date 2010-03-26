@@ -189,6 +189,22 @@ int rpmpsTrim(rpmps ps, rpmps filter)
     return gotProblems;
 }
 
+/*
+ * TODO: filter out duplicates while merging. Also horribly inefficient... */
+int rpmpsMerge(rpmps dest, rpmps src)
+{
+    int rc = 0;
+    if (dest != NULL) {
+	rpmProblem p;
+	rpmpsi spi = rpmpsInitIterator(src);
+	while ((p = rpmpsiNext(spi)) != NULL) {
+	    rpmpsAppendProblem(dest, p);
+	    rc++;
+	}
+    }
+    return rc;
+}
+
 void rpmpsPrint(FILE *fp, rpmps ps)
 {
     char * msg = NULL;
