@@ -721,11 +721,22 @@ static void appendProblem(rpmte te, rpmProblemType type,
 		const char * pkgNEVR, fnpyKey key, const char * altNEVR,
 		const char * str, uint64_t number)
 {
-    if (te->probs == NULL)
-	te->probs = rpmpsCreate();
-
+    rpmProblem o;
     rpmProblem p = rpmProblemCreate(type, pkgNEVR, key, altNEVR, str, number);
-    rpmpsAppendProblem(te->probs, p);
+    rpmpsi psi = rpmpsInitIterator(te->probs);
+
+    /* Only add new, unique problems to the set */
+    while ((o = rpmpsiNext(psi))) {
+	if (rpmProblemCompare(p, o) == 0)
+	    break;
+    }
+    rpmpsFreeIterator(psi);
+
+    if (o == NULL) {
+	if (te->probs == NULL)
+	    te->probs = rpmpsCreate();
+	rpmpsAppendProblem(te->probs, p);
+    }
     rpmProblemFree(p);
 }
 

@@ -194,35 +194,15 @@ int rpmpsMerge(rpmps dest, rpmps src)
 
 void rpmpsPrint(FILE *fp, rpmps ps)
 {
-    char * msg = NULL;
-    rpmpsi psi = NULL;
-    int i;
+    rpmProblem p;
+    rpmpsi psi = rpmpsInitIterator(ps);
+    FILE *f = (fp != NULL) ? fp : stderr;
 
-    if (ps == NULL || ps->probs == NULL || ps->numProblems <= 0)
-	return;
-
-    if (fp == NULL)
-	fp = stderr;
-
-    psi = rpmpsInitIterator(ps);
-    while ((i = rpmpsNextIterator(psi)) >= 0) {
-	int j;
-	rpmProblem p = rpmpsGetProblem(psi);
-
-	rpmpsi psif = rpmpsInitIterator(ps);
-	/* Filter already displayed problems. */
-    	while ((j = rpmpsNextIterator(psif)) < i) {
-	    if (rpmProblemCompare(p, rpmpsGetProblem(psif)) == 0)
-		break;
-	}
-	rpmpsFreeIterator(psif);
-	if (j < i)
-	    continue;
-
-	msg = rpmProblemString(p);
-	fprintf(fp, "\t%s\n", msg);
-	msg = _free(msg);
-
+    while ((p = rpmpsiNext(psi))) {
+	char *msg = rpmProblemString(p);
+	fprintf(f, "\t%s\n", msg);
+	free(msg);
     }
-    psi = rpmpsFreeIterator(psi);
+    rpmpsFreeIterator(psi);
 }
+
