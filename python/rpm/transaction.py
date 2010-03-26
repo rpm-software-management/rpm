@@ -113,11 +113,11 @@ class TransactionSet(_rpmts):
                 continue
 
             # strip arch, split to name, version, release
-            nevr = p.pkgNEVR.rsplit('.', 1)[0]
+            nevr = p.altNEVR.rsplit('.', 1)[0]
             n, v, r = nevr.rsplit('-', 2)
 
             # extract the dependency information
-            needs = p.altNEVR.split()[1:]
+            needs = p._str.split()[1:]
             needname = needs[0]
             needflags = rpm.RPMSENSE_ANY
             if len(needs) == 3:

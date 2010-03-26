@@ -749,7 +749,7 @@ void rpmteAddProblem(rpmte te, rpmProblemType type,
     }
 }
 
-void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
+void rpmteAddDepProblem(rpmte te, const char * altNEVR, rpmds ds,
 		        fnpyKey * suggestedKeys, int adding)
 {
     if (te != NULL) {
@@ -764,7 +764,7 @@ void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 	case 'R':	type = RPMPROB_REQUIRES;	break;
 	}
 
-	appendProblem(te, type, pkgNEVR, key, DNEVR, NULL, adding);
+	appendProblem(te, type, rpmteNEVRA(te), key, altNEVR, DNEVR+2, adding);
     }
 }
 
