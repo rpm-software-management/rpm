@@ -471,19 +471,12 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
     }
 }
 
-/**
- * Check dependency against installed packages.
- * Adding: check name/provides dep against each conflict match,
- * Erasing: check name/provides/filename dep against each requiredby match.
- * @param ts		transaction set
- * @param dep		dependency name
- * @param mi		rpm database iterator
- * @param adding	dependency is from added package set?
- */
-static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
-			const char * dep, rpmdbMatchIterator mi, int adding)
+/* Check a given dependency type against installed packages */
+static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
+			  rpmTag depTag, const char *dep)
 {
     Header h;
+    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep);
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
@@ -491,23 +484,15 @@ static void checkPackageSet(rpmts ts, depCache dcache, rpmte te,
 	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 	rpmds obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
-	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0, adding);
-	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0, adding);
-	checkDS(ts, dcache, te, pkgNEVRA, obsoletes, dep, 0, adding);
+	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0, 0);
+	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0, 0);
+	checkDS(ts, dcache, te, pkgNEVRA, obsoletes, dep, 0, 0);
 
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
 	obsoletes = rpmdsFree(requires);
 	pkgNEVRA = _free(pkgNEVRA);
     }
-}
-
-/* Check a given dependency type against installed packages */
-static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
-			  rpmTag depTag, const char *dep)
-{
-    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep);
-    checkPackageSet(ts, dcache, te, dep, mi, 0);
     rpmdbFreeIterator(mi);
 }
 
