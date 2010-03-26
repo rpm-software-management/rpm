@@ -139,18 +139,6 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
     ps->numProblems++;
 }
 
-void rpmpsAppend(rpmps ps, rpmProblemType type,
-		const char * pkgNEVR, fnpyKey key, const char * altNEVR,
-		const char * str, uint64_t number)
-{
-    rpmProblem p = NULL;
-    if (ps == NULL) return;
-
-    p = rpmProblemCreate(type, pkgNEVR, key, altNEVR, str, number);
-    rpmpsAppendProblem(ps, p);
-    rpmProblemFree(p);
-}
-
 /* XXX TODO: implement with iterators */
 int rpmpsTrim(rpmps ps, rpmps filter)
 {

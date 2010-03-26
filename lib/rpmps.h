@@ -103,20 +103,6 @@ void rpmpsPrint(FILE *fp, rpmps ps);
 void rpmpsAppendProblem(rpmps ps, rpmProblem prob);
 
 /** \ingroup rpmps
- * Append a problem to current set of problems.
- * @param ps		problem set
- * @param type		type of problem
- * @param pkgNEVR	package name
- * @param key		filename or python object address
- * @param altNEVR	related (e.g. through a dependency) package name
- * @param str		generic string attribute
- * @param number	generic number attribute
- */
-void rpmpsAppend(rpmps ps, rpmProblemType type,
-		const char * pkgNEVR, fnpyKey key, const char * altNEVR,
-		const char *str, uint64_t number);
-
-/** \ingroup rpmps
  * Filter a problem set.
  *
  * As the problem sets are generated in an order solely dependent

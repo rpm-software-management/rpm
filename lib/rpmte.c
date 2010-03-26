@@ -717,13 +717,23 @@ void rpmteCleanProblems(rpmte te)
     }
 }
 
+static void appendProblem(rpmte te, rpmProblemType type,
+		const char * pkgNEVR, fnpyKey key, const char * altNEVR,
+		const char * str, uint64_t number)
+{
+    if (te->probs == NULL)
+	te->probs = rpmpsCreate();
+
+    rpmProblem p = rpmProblemCreate(type, pkgNEVR, key, altNEVR, str, number);
+    rpmpsAppendProblem(te->probs, p);
+    rpmProblemFree(p);
+}
+
 void rpmteAddProblem(rpmte te, rpmProblemType type,
 		     const char *altNEVR, const char *str, uint64_t number)
 {
     if (te != NULL) {
-	if (te->probs == NULL)
-	    te->probs = rpmpsCreate();
-	rpmpsAppend(te->probs, type, rpmteNEVRA(te), rpmteKey(te),
+	appendProblem(te, type, rpmteNEVRA(te), rpmteKey(te),
 		    altNEVR, str, number);
     }
 }
@@ -736,9 +746,6 @@ void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 	rpmProblemType type;
 	fnpyKey key = (suggestedKeys ? suggestedKeys[0] : NULL);
 
-	if (te->probs == NULL)
-	    te->probs = rpmpsCreate();
-
 	switch ((unsigned)DNEVR[0]) {
 	case 'O':	type = RPMPROB_OBSOLETES;	break;
 	case 'C':	type = RPMPROB_CONFLICT;	break;
@@ -746,7 +753,7 @@ void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 	case 'R':	type = RPMPROB_REQUIRES;	break;
 	}
 
-	rpmpsAppend(te->probs, type, pkgNEVR, key, DNEVR, NULL, adding);
+	appendProblem(te, type, pkgNEVR, key, DNEVR, NULL, adding);
     }
 }
 
