@@ -37,7 +37,7 @@ void rpmteAddProblem(rpmte te, rpmProblemType type,
 
 RPM_GNUC_INTERNAL
 void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
-		        fnpyKey * suggestedKeys, int adding);
+		        fnpyKey * suggestedKeys);
 
 RPM_GNUC_INTERNAL
 const char * rpmteTypeString(rpmte te);

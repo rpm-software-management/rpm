@@ -349,10 +349,9 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
  * Check dep for an unsatisfied dependency.
  * @param ts		transaction set
  * @param dep		dependency
- * @param adding	dependency is from added package set?
  * @return		0 if satisfied, 1 if not satisfied
  */
-static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep, int adding)
+static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpmdbMatchIterator mi;
@@ -364,6 +363,7 @@ static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep, int adding)
     int retrying = 0;
     int *cachedrc = NULL;
     int cacheThis = 0;
+    int adding = (rpmdsInstance(dep) == 0);
 
 retry:
     rc = 0;	/* assume dependency is satisfied */
@@ -449,7 +449,7 @@ exit:
 /* Check a dependency set for problems */
 static void checkDS(rpmts ts, depCache dcache, rpmte te,
 		const char * pkgNEVRA, rpmds ds,
-		const char * depName, rpm_color_t tscolor, int adding)
+		const char * depName, rpm_color_t tscolor)
 {
     rpm_color_t dscolor;
     /* require-problems are unsatisfied, others appear "satisfied" */
@@ -466,8 +466,8 @@ static void checkDS(rpmts ts, depCache dcache, rpmte te,
 	if (tscolor && dscolor && !(tscolor & dscolor))
 	    continue;
 
-	if (unsatisfiedDepend(ts, dcache, ds, adding) == is_problem)
-	    rpmteAddDepProblem(te, pkgNEVRA, ds, NULL, adding);
+	if (unsatisfiedDepend(ts, dcache, ds) == is_problem)
+	    rpmteAddDepProblem(te, pkgNEVRA, ds, NULL);
     }
 }
 
@@ -484,9 +484,9 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
 	rpmds obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
-	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0, 0);
-	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0, 0);
-	checkDS(ts, dcache, te, pkgNEVRA, obsoletes, dep, 0, 0);
+	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0);
+	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0);
+	checkDS(ts, dcache, te, pkgNEVRA, obsoletes, dep, 0);
 
 	conflicts = rpmdsFree(conflicts);
 	requires = rpmdsFree(requires);
@@ -529,9 +529,9 @@ int rpmtsCheck(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_REQUIRENAME),
-		NULL, tscolor, 1);
+		NULL, tscolor);
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_CONFLICTNAME),
-		NULL, tscolor, 1);
+		NULL, tscolor);
 
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {

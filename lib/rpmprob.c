@@ -159,17 +159,17 @@ char * rpmProblemString(rpmProblem prob)
     case RPMPROB_REQUIRES:
 	rc = rasprintf(&buf, _("%s is needed by %s%s"),
 		prob->str1,
-		(prob->num1 ? "" : _("(installed) ")), altNEVR);
+		(prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
     case RPMPROB_CONFLICT:
 	rc = rasprintf(&buf, _("%s conflicts with %s%s"),
 		prob->str1,
-		(prob->num1 ? "" : _("(installed) ")), altNEVR);
+		(prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
     case RPMPROB_OBSOLETES:
 	rc = rasprintf(&buf, _("%s is obsoleted by %s%s"),
 		prob->str1,
-		(prob->num1 ? "" : _("(installed) ")), altNEVR);
+		(prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
     default:
 	rc = rasprintf(&buf,
