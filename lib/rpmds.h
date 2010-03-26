@@ -144,6 +144,13 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags);
 rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
+ * Return a new dependency set of size 1 from the current iteration index
+ * @param ds		dependency set
+ * @return		new dependency set
+ */
+rpmds rpmdsCurrent(rpmds ds);
+
+/** \ingroup rpmds
  * Return dependency set count.
  * @param ds		dependency set
  * @return		current count

@@ -252,6 +252,16 @@ rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags F
     return singleDS(tagN, N, EVR, Flags, 0);
 }
 
+rpmds rpmdsCurrent(rpmds ds)
+{
+    rpmds cds = NULL;
+    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
+	cds = singleDS(ds->tagN, ds->N[ds->i], ds->EVR[ds->i],
+		       ds->Flags[ds->i], ds->instance);
+    }
+    return cds;
+}
+
 int rpmdsCount(const rpmds ds)
 {
     return (ds != NULL ? ds->Count : 0);
