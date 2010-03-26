@@ -55,6 +55,13 @@ rpmpsi rpmpsInitIterator(rpmps ps);
 rpmpsi rpmpsFreeIterator(rpmpsi psi);
 
 /** \ingroup rpmps
+ * Return next problem from iterator
+ * @param psi		problem set iterator
+ * @return		next problem (weak ref), NULL on termination
+ */
+rpmProblem rpmpsiNext(rpmpsi psi);
+
+/** \ingroup rpmps
  * Return next problem set iterator index
  * @param psi		problem set iterator
  * @return		iterator index, -1 on termination

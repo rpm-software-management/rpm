@@ -69,18 +69,23 @@ rpmpsi rpmpsFreeIterator(rpmpsi psi)
     return NULL;
 }
 
-int rpmpsNextIterator(rpmpsi psi)
+rpmProblem rpmpsiNext(rpmpsi psi)
 {
-    int i = -1;
-
-    if (psi != NULL && ++psi->ix >= 0) {
-	if (psi->ix < rpmpsNumProblems(psi->ps)) {
-	    i = psi->ix;
+    rpmProblem p = NULL;
+    if (psi != NULL && psi->ps != NULL && ++psi->ix >= 0) {
+	rpmps ps = psi->ps;
+	if (psi->ix < ps->numProblems) {
+	    p = ps->probs[psi->ix];
 	} else {
 	    psi->ix = -1;
-	}	     
+	}
     }
-    return i;
+    return p;
+}
+
+int rpmpsNextIterator(rpmpsi psi)
+{
+    return (rpmpsiNext(psi) != NULL) ? psi->ix : -1;
 }
 
 rpmProblem rpmpsGetProblem(rpmpsi psi)
