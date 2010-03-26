@@ -270,7 +270,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 	if (dsi->bavail >= 0 && adj_fs_blocks(dsi->bneeded) > dsi->bavail) {
 	    if (dsi->bneeded > dsi->obneeded) {
-		rpmteAddProblem(te, RPMPROB_DISKSPACE, dsi->mntPoint, NULL,
+		rpmteAddProblem(te, RPMPROB_DISKSPACE, NULL, dsi->mntPoint,
 		   (adj_fs_blocks(dsi->bneeded) - dsi->bavail) * dsi->bsize);
 		dsi->obneeded = dsi->bneeded;
 	    }
@@ -278,7 +278,7 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 
 	if (dsi->iavail >= 0 && adj_fs_blocks(dsi->ineeded) > dsi->iavail) {
 	    if (dsi->ineeded > dsi->oineeded) {
-		rpmteAddProblem(te, RPMPROB_DISKNODES, dsi->mntPoint, NULL,
+		rpmteAddProblem(te, RPMPROB_DISKNODES, NULL, dsi->mntPoint,
 			(adj_fs_blocks(dsi->ineeded) - dsi->iavail));
 		dsi->oineeded = dsi->ineeded;
 	    }
