@@ -45,38 +45,34 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
-    rpmTag nametag = 0;
     rpmTag versiontag = 0;
     rpmTag flagtag = 0;
     rpmTag indextag = 0;
     rpmsenseFlags extra = RPMSENSE_ANY;
-    
-    if (Flags & RPMSENSE_PROVIDES) {
-	nametag = RPMTAG_PROVIDENAME;
+
+    switch (tagN) {
+    case RPMTAG_PROVIDENAME:
 	versiontag = RPMTAG_PROVIDEVERSION;
 	flagtag = RPMTAG_PROVIDEFLAGS;
 	extra = Flags & RPMSENSE_FIND_PROVIDES;
-    } else if (Flags & RPMSENSE_OBSOLETES) {
-	nametag = RPMTAG_OBSOLETENAME;
+	break;
+    case RPMTAG_OBSOLETENAME:
 	versiontag = RPMTAG_OBSOLETEVERSION;
 	flagtag = RPMTAG_OBSOLETEFLAGS;
-    } else if (Flags & RPMSENSE_CONFLICTS) {
-	nametag = RPMTAG_CONFLICTNAME;
+	break;
+    case RPMTAG_CONFLICTNAME:
 	versiontag = RPMTAG_CONFLICTVERSION;
 	flagtag = RPMTAG_CONFLICTFLAGS;
-    } else if (Flags & RPMSENSE_PREREQ) {
-	nametag = RPMTAG_REQUIRENAME;
-	versiontag = RPMTAG_REQUIREVERSION;
-	flagtag = RPMTAG_REQUIREFLAGS;
-	extra = Flags & _ALL_REQUIRES_MASK;
-    } else if (Flags & RPMSENSE_TRIGGER) {
-	nametag = RPMTAG_TRIGGERNAME;
+	break;
+    case RPMTAG_TRIGGERNAME:
 	versiontag = RPMTAG_TRIGGERVERSION;
 	flagtag = RPMTAG_TRIGGERFLAGS;
 	indextag = RPMTAG_TRIGGERINDEX;
 	extra = Flags & RPMSENSE_TRIGGER;
-    } else {
-	nametag = RPMTAG_REQUIRENAME;
+	break;
+    case RPMTAG_REQUIRENAME:
+    default:
+	tagN = RPMTAG_REQUIRENAME;
 	versiontag = RPMTAG_REQUIREVERSION;
 	flagtag = RPMTAG_REQUIREFLAGS;
 	extra = Flags & _ALL_REQUIRES_MASK;
@@ -84,7 +80,7 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 
     /* rpmlib() dependency sanity: only requires permitted, ensure sense bit */
     if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1)) {
-	if (nametag != RPMTAG_REQUIRENAME) return 1;
+	if (tagN != RPMTAG_REQUIRENAME) return 1;
 	extra |= RPMSENSE_RPMLIB;
     }
 
@@ -94,8 +90,8 @@ int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
 	EVR = "";
     
     /* Avoid adding duplicate dependencies. */
-    if (isNewDep(h, nametag, N, EVR, Flags, indextag, index)) {
-	headerPutString(h, nametag, N);
+    if (isNewDep(h, tagN, N, EVR, Flags, indextag, index)) {
+	headerPutString(h, tagN, N);
 	headerPutString(h, versiontag, EVR);
 	headerPutUint32(h, flagtag, &Flags, 1);
 	if (indextag) {

@@ -39,55 +39,63 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 {
     const char *r, *re, *v, *ve;
     char * N = NULL, * EVR = NULL;
+    rpmTag nametag = 0;
     rpmsenseFlags Flags;
     Header h;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     switch (tagN) {
     case RPMTAG_PROVIDEFLAGS:
-	tagflags |= RPMSENSE_PROVIDES;
+	nametag = RPMTAG_PROVIDENAME;
 	h = pkg->header;
 	break;
     case RPMTAG_OBSOLETEFLAGS:
-	tagflags |= RPMSENSE_OBSOLETES;
+	nametag = RPMTAG_OBSOLETENAME;
 	h = pkg->header;
 	break;
     case RPMTAG_CONFLICTFLAGS:
-	tagflags |= RPMSENSE_CONFLICTS;
+	nametag = RPMTAG_CONFLICTNAME;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDCONFLICTS:
-	tagflags |= RPMSENSE_CONFLICTS;
+	nametag = RPMTAG_CONFLICTNAME;
 	h = spec->buildRestrictions;
 	break;
     case RPMTAG_PREREQ:
 	/* XXX map legacy PreReq into Requires(pre,preun) */
+	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= (RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_PREUN);
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPREIN:
+	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERPREIN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERIN:
+	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERIN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPOSTUN:
+	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERPOSTUN;
 	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERUN:
+	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERUN;
 	h = pkg->header;
 	break;
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
+	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= RPMSENSE_ANY;
 	h = spec->buildRestrictions;
 	break;
     default:
     case RPMTAG_REQUIREFLAGS:
+	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= RPMSENSE_ANY;
 	h = pkg->header;
 	break;
@@ -174,7 +182,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	} else
 	    EVR = NULL;
 
-	if (addReqProv(spec, h, tagN, N, EVR, Flags, index)) {
+	if (addReqProv(spec, h, nametag, N, EVR, Flags, index)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: invalid dependency: %s\n"),
 		   spec->lineNum, spec->line);
 	    goto exit;
