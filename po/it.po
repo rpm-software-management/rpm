@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-25 16:47+0200\n"
+"POT-Creation-Date: 2010-03-29 16:08+0300\n"
 "PO-Revision-Date: 2008-06-30 07:20+0200\n"
 "Last-Translator: Francesco Tombolini <tombo@adamantio.net>\n"
 "Language-Team: Italian <fedora-trans-it@redhat.com>\n"
@@ -606,7 +606,7 @@ msgstr "Il file deve essere preceduto da \"/\": %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Glob non permesso: %s\n"
 
-#: build/files.c:1695 lib/rpminstall.c:427
+#: build/files.c:1695 lib/rpminstall.c:421
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "File non trovato da glob: %s\n"
@@ -924,147 +924,147 @@ msgstr "riga %d: Seconda descrizione\n"
 msgid "line %d: Error parsing %%files: %s\n"
 msgstr "riga %d: Errore nell'analisi dei %%files: %s\n"
 
-#: build/parsePreamble.c:224
+#: build/parsePreamble.c:218
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "L'architettura è esclusa: %s\n"
 
-#: build/parsePreamble.c:229
+#: build/parsePreamble.c:223
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "L'architettura non è inclusa: %s\n"
 
-#: build/parsePreamble.c:234
+#: build/parsePreamble.c:228
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS è escluso: %s\n"
 
-#: build/parsePreamble.c:239
+#: build/parsePreamble.c:233
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS non è incluso: %s\n"
 
-#: build/parsePreamble.c:265
+#: build/parsePreamble.c:259
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "il campo %s deve essere presente nel pacchetto: %s\n"
 
-#: build/parsePreamble.c:292
+#: build/parsePreamble.c:282
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Voci %s duplicate nel pacchetto: %s\n"
 
-#: build/parsePreamble.c:346
+#: build/parsePreamble.c:336
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "illegal _docdir_fmt: %s\n"
 
-#: build/parsePreamble.c:374
+#: build/parsePreamble.c:364
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Impossibile aprire l'icona %s: %s\n"
 
-#: build/parsePreamble.c:392
+#: build/parsePreamble.c:382
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Impossibile leggere l'icona %s: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:395
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Tipo di icona sconosciuto: %s\n"
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:432
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "riga %d: L'etichetta necessita solo di un token: %s\n"
 
-#: build/parsePreamble.c:464
+#: build/parsePreamble.c:454
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "riga %d: Carattere '-' illegale in %s: %s\n"
 
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:457
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "riga %d: Carattere '-' illegale in %s: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:463
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "riga %d: Carattere '-' illegale in %s: %s\n"
 
-#: build/parsePreamble.c:498
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "riga %d: Etichetta malformata: %s\n"
 
-#: build/parsePreamble.c:506
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "riga %d: Etichetta vuota: %s\n"
 
-#: build/parsePreamble.c:562
+#: build/parsePreamble.c:552
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "riga %d: I prefissi non devono finire con \"/\": %s\n"
 
-#: build/parsePreamble.c:575
+#: build/parsePreamble.c:565
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "riga %d: Docdir deve iniziare con '/': %s\n"
 
-#: build/parsePreamble.c:588
+#: build/parsePreamble.c:578
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "linea %d: Il campo Epoca deve essere un numero: %s\n"
 
-#: build/parsePreamble.c:628 build/parsePreamble.c:639
+#: build/parsePreamble.c:618
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "riga %d: %s errati: qualificatori: %s\n"
 
-#: build/parsePreamble.c:665
+#: build/parsePreamble.c:645
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "riga %d: Formato BuildArchitecture errato: %s\n"
 
-#: build/parsePreamble.c:675
+#: build/parsePreamble.c:655
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:687
+#: build/parsePreamble.c:667
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Errore interno: Etichetta Bogus %d\n"
 
-#: build/parsePreamble.c:768
+#: build/parsePreamble.c:748
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "riga %d: Versione necessaria: %s\n"
 
-#: build/parsePreamble.c:829
+#: build/parsePreamble.c:811
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Specifiche errate del pacchetto: %s\n"
 
-#: build/parsePreamble.c:835
+#: build/parsePreamble.c:817
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Il pacchetto è già esistente: %s\n"
 
-#: build/parsePreamble.c:866
+#: build/parsePreamble.c:848
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "riga %d: Etichetta sconosciuta: %s\n"
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:880
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "La BuildRoot non può essere vuota\n"
 
-#: build/parsePreamble.c:902
+#: build/parsePreamble.c:884
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "La BuildRoot non può essere \"/\"\n"
@@ -1129,7 +1129,7 @@ msgstr "Numero patch non valido %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "riga %d: secondo %%prep\n"
 
-#: build/parseReqs.c:109
+#: build/parseReqs.c:108
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
@@ -1137,17 +1137,17 @@ msgstr ""
 "riga %d: I token della dipendenza devono iniziare con i caratteri alfa-"
 "numerici, '_' o '/': %s\n"
 
-#: build/parseReqs.c:136
+#: build/parseReqs.c:135
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "riga %d: Versione nome del file non permessa: %s\n"
 
-#: build/parseReqs.c:166
+#: build/parseReqs.c:165
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "riga %d: Versione necessaria: %s\n"
 
-#: build/parseReqs.c:178
+#: build/parseReqs.c:177
 #, fuzzy, c-format
 msgid "line %d: invalid dependency: %s\n"
 msgstr "riga %d: Numero errato: %s\n"
@@ -1541,25 +1541,9 @@ msgstr "il pacchetto %s è già stato aggiunto, salto %s\n"
 msgid "package %s was already added, replacing with %s\n"
 msgstr "il pacchetto %s è stato già aggiunto, sostituzione con %s in corso\n"
 
-#: lib/depends.c:382
-msgid "(rpmlib provides)"
-msgstr "(rpmlib provides)"
-
-#: lib/depends.c:396
-msgid "(cached)"
-msgstr "(cached)"
-
-#: lib/depends.c:406
-msgid "(db files)"
-msgstr "(file db)"
-
-#: lib/depends.c:416
-msgid "(db provides)"
-msgstr "(db provides)"
-
 #: lib/formats.c:76 lib/formats.c:117 lib/formats.c:207 lib/formats.c:234
-#: lib/formats.c:282 lib/formats.c:305 lib/formats.c:585 lib/formats.c:624
-#: lib/formats.c:665
+#: lib/formats.c:283 lib/formats.c:306 lib/formats.c:586 lib/formats.c:625
+#: lib/formats.c:666
 msgid "(not a number)"
 msgstr "(non è un numero)"
 
@@ -1572,62 +1556,62 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:360
+#: lib/formats.c:361
 msgid "(not base64)"
 msgstr "(non base64)"
 
-#: lib/formats.c:372
+#: lib/formats.c:373
 msgid "(invalid type)"
 msgstr "(tipo non valido)"
 
-#: lib/formats.c:396 lib/formats.c:482
+#: lib/formats.c:397 lib/formats.c:483
 msgid "(not a blob)"
 msgstr "(non è un blob)"
 
-#: lib/formats.c:435
+#: lib/formats.c:436
 msgid "(invalid xml type)"
 msgstr "(tipo xml non valido)"
 
-#: lib/formats.c:505
+#: lib/formats.c:506
 msgid "(not an OpenPGP signature)"
 msgstr "(non è una firma OpenPGP)"
 
-#: lib/formats.c:630
+#: lib/formats.c:631
 #, fuzzy
 msgid "normal"
 msgstr "normale        "
 
-#: lib/formats.c:633
+#: lib/formats.c:634
 #, fuzzy
 msgid "replaced"
 msgstr "sostituito      "
 
-#: lib/formats.c:636
+#: lib/formats.c:637
 #, fuzzy
 msgid "not installed"
 msgstr "non installato "
 
-#: lib/formats.c:639
+#: lib/formats.c:640
 #, fuzzy
 msgid "net shared"
 msgstr "rete condivisa    "
 
-#: lib/formats.c:642
+#: lib/formats.c:643
 #, fuzzy
 msgid "wrong color"
 msgstr "colore errato   "
 
-#: lib/formats.c:646
+#: lib/formats.c:647
 #, fuzzy
 msgid "missing"
 msgstr "%c %s  mancanti"
 
-#: lib/formats.c:649
+#: lib/formats.c:650
 #, fuzzy
 msgid "(unknown)"
 msgstr "(sconosciuto %3d) "
 
-#: lib/formats.c:699
+#: lib/formats.c:700
 #, fuzzy
 msgid "(not a string)"
 msgstr "(non è un numero)"
@@ -1642,33 +1626,33 @@ msgstr "l'utente %s non esiste - utilizzazione utente root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "il gruppo %s non esiste - utilizzazione utente root\n"
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1499
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "file archive %s non è stato trovato nell'elenco dei file di intestazione\n"
 
-#: lib/fsm.c:1618 lib/fsm.c:1746
+#: lib/fsm.c:1617 lib/fsm.c:1745
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s salvato cme %s\n"
 
-#: lib/fsm.c:1773
+#: lib/fsm.c:1772
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir di %s fallito: La cartella non è vuota\n"
 
-#: lib/fsm.c:1779
+#: lib/fsm.c:1778
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir di %s fallito: %s\n"
 
-#: lib/fsm.c:1793
+#: lib/fsm.c:1792
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "scollegamento %s di %s fallito: %s\n"
 
-#: lib/fsm.c:1815
+#: lib/fsm.c:1814
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s creato come %s\n"
@@ -2302,7 +2286,7 @@ msgstr "%s fallito sul file %s: %s\n"
 msgid "%s failed: %s\n"
 msgstr "%s fallito: %s\n"
 
-#: lib/psm.c:1037 lib/transaction.c:1284 lib/verify.c:464
+#: lib/psm.c:1037 lib/transaction.c:1285 lib/verify.c:465
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Impossibile cambiare directory root: %m\n"
@@ -2404,7 +2388,7 @@ msgstr "numero del pacchetto non valido: %s\n"
 msgid "record %u could not be read\n"
 msgstr "il record %lu non può essere letto\n"
 
-#: lib/query.c:518 lib/rpminstall.c:673
+#: lib/query.c:518 lib/rpminstall.c:667
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "il pacchetto %s non è stato installato\n"
@@ -2413,14 +2397,6 @@ msgstr "il pacchetto %s non è stato installato\n"
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "tag sconosciuto: \"%s\"\n"
-
-#: lib/rpmal.c:302
-msgid "(added files)"
-msgstr "(file aggiunti)"
-
-#: lib/rpmal.c:357
-msgid "(added provide)"
-msgstr "(provisioning aggiunto)"
 
 #: lib/rpmchecksig.c:51 lib/rpmchecksig.c:823
 #, c-format
@@ -2506,91 +2482,91 @@ msgstr " (CHIAVI NON FIDATE:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:424
+#: lib/rpmds.c:399
 msgid "NO "
 msgstr "NO "
 
-#: lib/rpmds.c:424
+#: lib/rpmds.c:399
 msgid "YES"
 msgstr "SI"
 
-#: lib/rpmds.c:877
+#: lib/rpmds.c:852
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "PreReq:, Provides:, e Obsoletes: versioni per il supporto delle dipendenze."
 
-#: lib/rpmds.c:880
+#: lib/rpmds.c:855
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "file name conservati come tuple (dirName,baseName,dirIndex), non come "
 "percorsi."
 
-#: lib/rpmds.c:884
+#: lib/rpmds.c:859
 msgid "package payload can be compressed using bzip2."
 msgstr "il payload del pacchetto può essere compresso utilizzando bzip2."
 
-#: lib/rpmds.c:889
+#: lib/rpmds.c:864
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "il payload del pacchetto può essere compresso utilizzando lzma."
 
-#: lib/rpmds.c:892
+#: lib/rpmds.c:867
 msgid "package payload can be compressed using lzma."
 msgstr "il payload del pacchetto può essere compresso utilizzando lzma."
 
-#: lib/rpmds.c:896
+#: lib/rpmds.c:871
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "il/i file payload del pacchetto presentano un prefisso \"./\""
 
-#: lib/rpmds.c:899
+#: lib/rpmds.c:874
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 "il nome-versione-release del pacchetto non viene implicitamente fornito."
 
-#: lib/rpmds.c:902
+#: lib/rpmds.c:877
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 "le etichette di intestazione vengono sempre ordinate dopo il loro "
 "caricamento."
 
-#: lib/rpmds.c:905
+#: lib/rpmds.c:880
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "l'interpreter di scriptlet può utilizzare gli argomenti presenti "
 "nell'intestazione."
 
-#: lib/rpmds.c:908
+#: lib/rpmds.c:883
 msgid "a hardlink file set may be installed without being complete."
 msgstr "un set di file hardlink può essere installato senza che sia completo."
 
-#: lib/rpmds.c:911
+#: lib/rpmds.c:886
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "le scriptlet del pacchetto potrebbero accedere al database rpm durante "
 "l'installazione."
 
-#: lib/rpmds.c:915
+#: lib/rpmds.c:890
 msgid "internal support for lua scripts."
 msgstr "supporto interno per gli script lua."
 
-#: lib/rpmds.c:919
+#: lib/rpmds.c:894
 #, fuzzy
 msgid "file digest algorithm is per package configurable"
 msgstr "l'algoritmo digest di checksum dei file è configurabile per pacchetto"
 
-#: lib/rpmds.c:923
+#: lib/rpmds.c:898
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:927
+#: lib/rpmds.c:902
 #, fuzzy
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 "le scriptlet del pacchetto potrebbero accedere al database rpm durante "
 "l'installazione."
 
-#: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:298
-#: lib/rpminstall.c:329 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:292
+#: lib/rpminstall.c:323 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "apertura di %s fallita: %s\n"
@@ -2612,52 +2588,52 @@ msgstr "Preparazione pacchetti per l'installazione..."
 msgid "Failed dependencies:\n"
 msgstr "Dipendenze fallite:\n"
 
-#: lib/rpminstall.c:311
+#: lib/rpminstall.c:305
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: non è un pacchetto rpm (o un manifesto del pacchetto): %s\n"
 
-#: lib/rpminstall.c:351 lib/rpminstall.c:735 tools/rpmgraph.c:139
+#: lib/rpminstall.c:345 lib/rpminstall.c:729 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s non può essere installato\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:459
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Ripristino di %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:471
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "omissione %s - trasferimento fallito - %s\n"
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:538
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "il pacchetto %s non è riposizionabile\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:565
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "errore di lettura dal file %s\n"
 
-#: lib/rpminstall.c:577
+#: lib/rpminstall.c:571
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "il file %s necessita di una nuova versione di RPM\n"
 
-#: lib/rpminstall.c:680
+#: lib/rpminstall.c:674
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" specifica pacchetti multipli\n"
 
-#: lib/rpminstall.c:719
+#: lib/rpminstall.c:713
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "impossibile aprire %s: %s\n"
 
-#: lib/rpminstall.c:725
+#: lib/rpminstall.c:719
 #, c-format
 msgid "Installing %s\n"
 msgstr "installazione di %s in corso\n"
@@ -2694,56 +2670,56 @@ msgstr "impossibile creare il lock di transazione su %s (%s)\n"
 msgid "waiting for transaction lock on %s\n"
 msgstr "attesa del lock di transazione per %s\n"
 
-#: lib/rpmprob.c:117
+#: lib/rpmprob.c:107
 msgid "different"
 msgstr "diverso"
 
-#: lib/rpmprob.c:123
+#: lib/rpmprob.c:113
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "il pacchetto %s è stato ideato per una architettura %s"
 
-#: lib/rpmprob.c:128
+#: lib/rpmprob.c:118
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "il pacchetto %s è stato ideato per un sistema operativo %s"
 
-#: lib/rpmprob.c:132
+#: lib/rpmprob.c:122
 #, c-format
 msgid "package %s is already installed"
 msgstr "il pacchetto %s è già installato"
 
-#: lib/rpmprob.c:136
+#: lib/rpmprob.c:126
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "il percorso %s nel pacchetto %s non è riposizionabile"
 
-#: lib/rpmprob.c:141
+#: lib/rpmprob.c:131
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr ""
 "il file %s entra in conflitto durante il tentativo d'installazione di %s e %s"
 
-#: lib/rpmprob.c:146
+#: lib/rpmprob.c:136
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr ""
 "il file %s dell'installazione di %s entra in conflitto con il file del "
 "pacchetto %s"
 
-#: lib/rpmprob.c:151
+#: lib/rpmprob.c:141
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr ""
 "il pacchetto %s (il quale risulta essere più recente di %s) è già installato"
 
-#: lib/rpmprob.c:156
+#: lib/rpmprob.c:146
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr ""
 "l'installazione del pacchetto %s necessita %<PRIu64>%cB sul filesystem %s"
 
-#: lib/rpmprob.c:166
+#: lib/rpmprob.c:156
 #, fuzzy, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
 msgstr ""
@@ -2752,28 +2728,28 @@ msgstr ""
 
 # fix bug 450663
 # (team-it-rev080611)
-#: lib/rpmprob.c:170
+#: lib/rpmprob.c:160
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s necessario a %s%s"
 
-#: lib/rpmprob.c:172 lib/rpmprob.c:177 lib/rpmprob.c:182
+#: lib/rpmprob.c:162 lib/rpmprob.c:167 lib/rpmprob.c:172
 msgid "(installed) "
 msgstr "(installato) "
 
-#: lib/rpmprob.c:175
+#: lib/rpmprob.c:165
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s entra in conflitto con %s%s"
 
 # fix bug 450663
 # (team-it-rev080611)
-#: lib/rpmprob.c:180
+#: lib/rpmprob.c:170
 #, fuzzy, c-format
 msgid "%s is obsoleted by %s%s"
 msgstr "%s necessario a %s%s"
 
-#: lib/rpmprob.c:186
+#: lib/rpmprob.c:176
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
@@ -2860,12 +2836,12 @@ msgstr "Impossibile aprire %s per la lettura: %m.\n"
 msgid "Unknown format"
 msgstr "Sconosciuta"
 
-#: lib/rpmte.c:757
+#: lib/rpmte.c:763
 #, fuzzy
 msgid "install"
 msgstr "(installato) "
 
-#: lib/rpmte.c:758
+#: lib/rpmte.c:764
 msgid "erase"
 msgstr ""
 
@@ -2996,11 +2972,11 @@ msgstr "Verifica firma: PARAMETRI ERRATI\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Firma: SCONOSCIUTA (%d)\n"
 
-#: lib/transaction.c:1366
+#: lib/transaction.c:1367
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1366
+#: lib/transaction.c:1367
 #, fuzzy
 msgid "failed"
 msgstr "%s fallito\n"
@@ -3430,10 +3406,6 @@ msgstr "(nessun errore)"
 msgid "Failed to register fork handler: %m\n"
 msgstr "Impossibile leggere il file spec da %s\n"
 
-#: rpmio/url.c:216
-msgid "url port must be a number\n"
-msgstr "la porta url deve essere un numero\n"
-
 #: tools/rpmgraph.c:169
 #, c-format
 msgid "%s: read manifest failed: %s\n"
@@ -3442,6 +3414,27 @@ msgstr "%s: lettura manifesto fallita: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "non verificare firma header+payload"
+
+#~ msgid "(rpmlib provides)"
+#~ msgstr "(rpmlib provides)"
+
+#~ msgid "(cached)"
+#~ msgstr "(cached)"
+
+#~ msgid "(db files)"
+#~ msgstr "(file db)"
+
+#~ msgid "(db provides)"
+#~ msgstr "(db provides)"
+
+#~ msgid "(added files)"
+#~ msgstr "(file aggiunti)"
+
+#~ msgid "(added provide)"
+#~ msgstr "(provisioning aggiunto)"
+
+#~ msgid "url port must be a number\n"
+#~ msgstr "la porta url deve essere un numero\n"
 
 #~ msgid "File tree walk options (with --ftswalk):"
 #~ msgstr "Opzioni vista albero dei file (con --ftswalk):"
