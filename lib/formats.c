@@ -245,23 +245,22 @@ static char * deptypeFormat(rpmtd td, char * formatPrefix)
 	    argvAdd(&sdeps, "postun");
 	if (item & RPMSENSE_SCRIPT_VERIFY)
 	    argvAdd(&sdeps, "verify");
+	if (item & RPMSENSE_INTERP)
+	    argvAdd(&sdeps, "interp");
+	if (item & RPMSENSE_RPMLIB)
+	    argvAdd(&sdeps, "rpmlib");
+	if ((item & RPMSENSE_FIND_REQUIRES) || (item & RPMSENSE_FIND_PROVIDES))
+	    argvAdd(&sdeps, "auto");
+	if (item & RPMSENSE_PREREQ)
+	    argvAdd(&sdeps, "prereq");
 
 	if (sdeps) {
 	    val = argvJoin(sdeps, ",");
-	    argvFree(sdeps);
 	} else {
-	    if (item & RPMSENSE_RPMLIB)
-		val = xstrdup("rpmlib");
-	    else if (item & RPMSENSE_INTERP)
-		val = xstrdup("interp");
-	    else if ((item & RPMSENSE_FIND_REQUIRES) || 
-		     (item & RPMSENSE_FIND_PROVIDES))
-		val = xstrdup("auto");
-	    else if (item & RPMSENSE_PREREQ)
-		val = xstrdup("prereq");
-	    else
-		val = xstrdup("manual");
+	    val = xstrdup("manual");
 	}
+
+	argvFree(sdeps);
     }
     return val;
 }
