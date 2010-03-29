@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2009-01-11 01:27+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
@@ -1403,7 +1403,7 @@ msgstr "Konnte nicht chdir zu %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Konnte %s nicht ausführen: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte fork %s nicht ausführen: %s\n"
@@ -2799,6 +2799,35 @@ msgstr "Bitte (in Englisch) %s kontaktieren\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kann %s nicht zum Lesen öffnen: %m.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr "<lua>-Scriptlet-Unterstützung nicht eingebaut\n"
+
+#: lib/rpmscript.c:211
+#, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Konnte keine temporäre Datei erzeugen für %s: %s\n"
+
+#: lib/rpmscript.c:257
+#, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Konnte Datei-Beschreiber nicht duplizieren: %s: %s\n"
+
+#: lib/rpmscript.c:280
+#, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s Scriptlet fehlgeschlagen, waitpid(%d) rc %d: %s\n"
+
+#: lib/rpmscript.c:284
+#, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s Scriptlet fehlgeschlagen, Signal %d\n"
+
+#: lib/rpmscript.c:287
+#, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "%s Scriptlet fehlgeschlagen, Beenden-Status %d\n"
+
 #: lib/rpmtd.c:257
 msgid "Unknown format"
 msgstr "Unbekanntes Format"
@@ -3462,24 +3491,6 @@ msgstr "Keine Überprüfung der Header- und Nutzdaten-Signatur"
 
 #~ msgid "use threads for package state machine"
 #~ msgstr "Benutze Threads für Paket-Status"
-
-#~ msgid "<lua> scriptlet support not built in\n"
-#~ msgstr "<lua>-Scriptlet-Unterstützung nicht eingebaut\n"
-
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Konnte keine temporäre Datei erzeugen für %s: %s\n"
-
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "Konnte Datei-Beschreiber nicht duplizieren: %s: %s\n"
-
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s Scriptlet fehlgeschlagen, waitpid(%d) rc %d: %s\n"
-
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "%s Scriptlet fehlgeschlagen, Signal %d\n"
-
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "%s Scriptlet fehlgeschlagen, Beenden-Status %d\n"
 
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 #~ msgstr "%s: %s Scriptlet fehlgeschlagen (%d), überspringe %s\n"

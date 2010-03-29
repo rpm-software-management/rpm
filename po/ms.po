@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2008-06-14 00:38+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
@@ -1378,7 +1378,7 @@ msgstr "&Lompat ke hiperlink"
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
@@ -2801,6 +2801,35 @@ msgstr "Sila hubungi %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Tidak dapat membuka %s untuk dibaca: %m.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Tak dapat membuka fail %s."
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Tak dapat membuka fail %s."
+
+#: lib/rpmscript.c:280
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "Gagal untuk mencari seksyen: %s"
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "Gagal untuk mencari seksyen: %s"
+
+#: lib/rpmscript.c:287
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "Gagal untuk mencari seksyen: %s"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3409,26 +3438,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Unable to get current dependency name.\n"
 #~ msgstr "Tidak dapat untuk menukar direktori root: %m\n"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Tak dapat membuka fail %s."
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "Tak dapat membuka fail %s."
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "Gagal untuk mencari seksyen: %s"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "Gagal untuk mencari seksyen: %s"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "Gagal untuk mencari seksyen: %s"
 
 #, fuzzy
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"

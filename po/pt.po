@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -1389,7 +1389,7 @@ msgstr "Não consegui executar o %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Não consegui executar o %s: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Não consegui executar à parte o %s: %s\n"
@@ -2813,6 +2813,37 @@ msgstr "Por favor contacte o %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Não consegui abrir o %s para leitura: %s.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Não consegui executar à parte o %s: %s\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Não consegui executar à parte o %s: %s\n"
+
+#: lib/rpmscript.c:280
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s: %s script falhou (%d), a saltar %s-%s-%s\n"
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr ""
+"a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
+
+#: lib/rpmscript.c:287
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr ""
+"a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3449,28 +3480,6 @@ msgstr "verificar a assinatura do pacote"
 #, fuzzy
 #~ msgid "use threads for package state machine"
 #~ msgstr "depurar máquina de estados de ficheiros"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Não consegui executar à parte o %s: %s\n"
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "Não consegui executar à parte o %s: %s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s: %s script falhou (%d), a saltar %s-%s-%s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr ""
-#~ "a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr ""
-#~ "a execução do 'scriptlet' %s do %s-%s-%s falhou com código de erro %d\n"
 
 #, fuzzy
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"

@@ -49,6 +49,7 @@ lib/rpmlock.c
 lib/rpmprob.c
 lib/rpmps.c
 lib/rpmrc.c
+lib/rpmscript.c
 lib/rpmtd.c
 lib/rpmte.c
 lib/rpmts.c

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -1373,7 +1373,7 @@ msgstr "%s(을)를 실행할 수 없음: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s(을)를 실행할 수 없음: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s(을)를 fork 할 수 없음: %s\n"
@@ -2798,6 +2798,40 @@ msgstr ""
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s(을)를 열 수 없음: %s.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "%s(을)를 fork 할 수 없음: %s\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "%s(을)를 fork 할 수 없음: %s\n"
+
+#: lib/rpmscript.c:280
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr ""
+"%s: %s 스크립틀릿(scriptlet)이 실패했습니다 (%d), %s-%s-%s(을)를 생략합니다\n"
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr ""
+"%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
+"$d\n"
+
+#: lib/rpmscript.c:287
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr ""
+"%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상황 %5"
+"$d\n"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3439,32 +3473,6 @@ msgstr "패키지의 서명을 검사합니다"
 #, fuzzy
 #~ msgid "use threads for package state machine"
 #~ msgstr "컴퓨터의 상태(state) 파일을 디버그 합니다"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "%s(을)를 fork 할 수 없음: %s\n"
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "%s(을)를 fork 할 수 없음: %s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr ""
-#~ "%s: %s 스크립틀릿(scriptlet)이 실패했습니다 (%d), %s-%s-%s(을)를 생략합니"
-#~ "다\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr ""
-#~ "%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상"
-#~ "황 %5$d\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr ""
-#~ "%2$s-%3$s-%4$s의 %1$s 스크립틀릿(scriptlet) 실행에 실패했습니다, 종료 상"
-#~ "황 %5$d\n"
 
 #, fuzzy
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"

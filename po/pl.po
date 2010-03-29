@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2010-03-26 02:00+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
@@ -1388,7 +1388,7 @@ msgstr "Nie można wykonać chdir do %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nie można wykonać %s: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nie można rozdzielić %s: %s\n"
@@ -2759,6 +2759,36 @@ msgstr "Proszę skontaktować się z %s\n"
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nie można otworzyć %s do odczytania: %m.\n"
+
+#: lib/rpmscript.c:85
+#, fuzzy
+msgid "<lua> scriptlet support not built in\n"
+msgstr "Obsługa możliwości plików nie jest wbudowana\n"
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Nie można utworzyć potoku dla %s: %m\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Nie można utworzyć potoku dla %s: %m\n"
+
+#: lib/rpmscript.c:280
+#, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr ""
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s: Fwrite nie powiodło się: %s\n"
+
+#: lib/rpmscript.c:287
+#, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr ""
 
 #: lib/rpmtd.c:257
 msgid "Unknown format"

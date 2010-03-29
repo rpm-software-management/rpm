@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2001-07-05 08:02+300\n"
 "Last-Translator: Nilgun Belma Buguner <nilgun@technologist.com>\n"
 "Language-Team: Turkish <tr@li.org>\n"
@@ -1400,7 +1400,7 @@ msgstr "%s icra edilemedi: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s icra edilemedi: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s ayrýlamadý: %s\n"
@@ -2817,6 +2817,35 @@ msgstr ""
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s okuma eriþimi için açýlamadý: %s.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "%s ayrýlamadý: %s\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "%s ayrýlamadý: %s\n"
+
+#: lib/rpmscript.c:280
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s: %s betiði baþarýsýz (%d), %s-%s-%s atlanýyor\n"
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
+
+#: lib/rpmscript.c:287
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3452,26 +3481,6 @@ msgstr "paket imzasýný denetler"
 #, fuzzy
 #~ msgid "use threads for package state machine"
 #~ msgstr "hata ayýklama dosyasý durum motoru"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "%s ayrýlamadý: %s\n"
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "%s ayrýlamadý: %s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s: %s betiði baþarýsýz (%d), %s-%s-%s atlanýyor\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "%s betiðinin %s-%s-%s'den icrasý baþarýsýz, çýkýþta durum %d\n"
 
 #, fuzzy
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"

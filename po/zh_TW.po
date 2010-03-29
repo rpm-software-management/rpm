@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1366,7 +1366,7 @@ msgstr "無法執行 %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "無法執行 %s: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
@@ -2749,6 +2749,35 @@ msgstr ""
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "無法開啟 %s 以讀取：%s\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "無法開啟 %s：%s\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "無法開啟 %s：%s\n"
+
+#: lib/rpmscript.c:280
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，waitpid(%d) rc %d: %s\n"
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
+
+#: lib/rpmscript.c:287
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3403,26 +3432,6 @@ msgstr "不驗證表頭+酬載簽名"
 
 #~ msgid "use threads for package state machine"
 #~ msgstr "使用執行緒用於套件狀態機"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "無法開啟 %s：%s\n"
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "無法開啟 %s：%s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，waitpid(%d) rc %d: %s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
 
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 #~ msgstr "%s：%s 短命令稿執行失敗 (%d)，略過 %s\n"

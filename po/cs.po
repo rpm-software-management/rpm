@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Jindrich Novy <jnovy@users.sourceforge.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1379,7 +1379,7 @@ msgstr "Nemohu změnit adresář na %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nemohu provést fork %s: %s\n"
@@ -2762,6 +2762,35 @@ msgstr "Prosím kontaktujte %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nemohu otevřít %s pro čtení: %m.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Nemohu vytvořit rouru pro %s: %m\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Nemohu vytvořit rouru pro %s: %m\n"
+
+#: lib/rpmscript.c:280
+#, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s scriptlet selhal, waitpid(%d) rc %d: %s\n"
+
+#: lib/rpmscript.c:284
+#, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s skriplet selhal, signál %d\n"
+
+#: lib/rpmscript.c:287
+#, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "provedení %s skripletu selhalo, návratový kód: %d\n"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3414,23 +3443,6 @@ msgstr "neověřuj podpis hlavičky a payloadu"
 
 #~ msgid "use threads for package state machine"
 #~ msgstr "použij vlákna pro nástroj stavu balíčků"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Nemohu vytvořit rouru pro %s: %m\n"
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "Nemohu vytvořit rouru pro %s: %m\n"
-
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s scriptlet selhal, waitpid(%d) rc %d: %s\n"
-
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "%s skriplet selhal, signál %d\n"
-
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "provedení %s skripletu selhalo, návratový kód: %d\n"
 
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 #~ msgstr "%s: scriptlet %s selhal (%d), přeskakuji %s\n"

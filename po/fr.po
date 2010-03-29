@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -1405,7 +1405,7 @@ msgstr "Impossible d'exécuter %s: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Impossible d'exécuter %s: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Impossible d'ouvrir %s: %s\n"
@@ -2832,6 +2832,35 @@ msgstr "Contactez %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Impossible d'ouvrir %s en lecture: %s.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, fuzzy, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Impossible d'ouvrir %s: %s\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Impossible d'ouvrir %s: %s\n"
+
+#: lib/rpmscript.c:280
+#, fuzzy, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s(%s-%s-%s) échec du scriptlet, waitpid(%d) rc %d: %s\n"
+
+#: lib/rpmscript.c:284
+#, fuzzy, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
+
+#: lib/rpmscript.c:287
+#, fuzzy, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
+
 #: lib/rpmtd.c:257
 #, fuzzy
 msgid "Unknown format"
@@ -3502,26 +3531,6 @@ msgstr "ne pas vérifier la signature de l'entete+charge_utile"
 #, fuzzy
 #~ msgid "use threads for package state machine"
 #~ msgstr "déboguer la machine à état du paquetage"
-
-#, fuzzy
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Impossible d'ouvrir %s: %s\n"
-
-#, fuzzy
-#~ msgid "Couldn't duplicate file descriptor: %s: %s\n"
-#~ msgstr "Impossible d'ouvrir %s: %s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s(%s-%s-%s) échec du scriptlet, waitpid(%d) rc %d: %s\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
-
-#, fuzzy
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "%s(%s-%s-%s) échec du scriplet, code de sortie %d\n"
 
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 #~ msgstr "%s: échec du scriptlet %s (%d), on saute %s\n"

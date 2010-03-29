@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4.90\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-29 16:08+0300\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
 "PO-Revision-Date: 2008-03-11 11:15+0200\n"
 "Last-Translator: Panu Matilainen <pmatilai@redhat.com>\n"
 "Language-Team: Finnish\n"
@@ -1372,7 +1372,7 @@ msgstr "Siirtyminen hakemistoon %s ei onnistunut: %s\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Ei voitu suorittaa %s:ää: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Ei voitu suorittaa %s:ää: %s\n"
@@ -2754,6 +2754,35 @@ msgstr "Ota yhteyttä %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "En voi avata %s luettavaksi: %m.\n"
 
+#: lib/rpmscript.c:85
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+
+#: lib/rpmscript.c:211
+#, c-format
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Ei voitu luoda tilapäistiedostoa %s:lle: %s\n"
+
+#: lib/rpmscript.c:257
+#, fuzzy, c-format
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Ei voitu luoda putkea %s:lle: %m\n"
+
+#: lib/rpmscript.c:280
+#, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "%s scripti epäonnistui, waitpid(%d) palautti %d: %s\n"
+
+#: lib/rpmscript.c:284
+#, c-format
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "%s skripti epäonnistui, signaali %d\n"
+
+#: lib/rpmscript.c:287
+#, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "%s skripti epäonnistui, palautti %d\n"
+
 #: lib/rpmtd.c:257
 msgid "Unknown format"
 msgstr "Tuntematon formaatti"
@@ -3335,18 +3364,6 @@ msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
 
 #~ msgid "File tree walk options (with --ftswalk):"
 #~ msgstr "Hakemistopuuvalitsimet (--ftswalk yhteydessä):"
-
-#~ msgid "Couldn't create temporary file for %s: %s\n"
-#~ msgstr "Ei voitu luoda tilapäistiedostoa %s:lle: %s\n"
-
-#~ msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-#~ msgstr "%s scripti epäonnistui, waitpid(%d) palautti %d: %s\n"
-
-#~ msgid "%s scriptlet failed, signal %d\n"
-#~ msgstr "%s skripti epäonnistui, signaali %d\n"
-
-#~ msgid "%s scriptlet failed, exit status %d\n"
-#~ msgstr "%s skripti epäonnistui, palautti %d\n"
 
 #~ msgid "%s: %s scriptlet failed (%d), skipping %s\n"
 #~ msgstr "%s: %s skripti epäonnistui (%d), ohitetaan %s\n"
