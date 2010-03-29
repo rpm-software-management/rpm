@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-03-29 16:14+0300\n"
-"PO-Revision-Date: 2010-03-26 02:00+0100\n"
+"PO-Revision-Date: 2010-03-29 16:37+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
@@ -2761,34 +2761,33 @@ msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nie można otworzyć %s do odczytania: %m.\n"
 
 #: lib/rpmscript.c:85
-#, fuzzy
 msgid "<lua> scriptlet support not built in\n"
-msgstr "Obsługa możliwości plików nie jest wbudowana\n"
+msgstr "Obsługa skryptów <lua> nie jest wbudowana\n"
 
 #: lib/rpmscript.c:211
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
-msgstr "Nie można utworzyć potoku dla %s: %m\n"
+msgstr "Nie można utworzyć pliku tymczasowego dla %s: %s\n"
 
 #: lib/rpmscript.c:257
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr "Nie można utworzyć potoku dla %s: %m\n"
+msgstr "Nie można utworzyć kopii deskryptora pliku: %s: %s\n"
 
 #: lib/rpmscript.c:280
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr ""
+msgstr "Skrypt %s nie powiódł się, waitpid(%d) rc %d: %s\n"
 
 #: lib/rpmscript.c:284
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, signal %d\n"
-msgstr "%s: Fwrite nie powiodło się: %s\n"
+msgstr "Skrypt %s nie powiódł się, sygnał %d\n"
 
 #: lib/rpmscript.c:287
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
-msgstr ""
+msgstr "Skrypt %s nie powiódł się, stan wyjścia %d\n"
 
 #: lib/rpmtd.c:257
 msgid "Unknown format"
@@ -3365,24 +3364,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "(rpmlib provides)"
-#~ msgstr "(dostarczane w rpmlib)"
-
-#~ msgid "(cached)"
-#~ msgstr "(zapisano w pamięci podręcznej)"
-
-#~ msgid "(db files)"
-#~ msgstr "(pliki w bazie danych)"
-
-#~ msgid "(db provides)"
-#~ msgstr "(dostarczane w bazie danych)"
-
-#~ msgid "(added files)"
-#~ msgstr "(dodano pliki)"
-
-#~ msgid "(added provide)"
-#~ msgstr "(dodano zasób)"
-
-#~ msgid "url port must be a number\n"
-#~ msgstr "port adresu URL musi być liczbą\n"
