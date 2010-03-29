@@ -247,21 +247,6 @@ rpm_color_t rpmdsColor(const rpmds ds);
 rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color);
 
 /** \ingroup rpmds
- * Return current dependency file refs.
- * @param ds		dependency set
- * @return		current dependency file refs, -1 on global
- */
-int32_t rpmdsRefs(const rpmds ds);
-
-/** \ingroup rpmds
- * Return current dependency color.
- * @param ds		dependency set
- * @param refs		new dependency refs
- * @return		previous dependency refs
- */
-int32_t rpmdsSetRefs(const rpmds ds, int32_t refs);
-
-/** \ingroup rpmds
  * Notify of results of dependency match.
  * @param ds		dependency set
  * @param where		where dependency was resolved (or NULL)

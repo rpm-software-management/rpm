@@ -66,12 +66,6 @@ rpmds_Color(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_Refs(rpmdsObject * s)
-{
-    return Py_BuildValue("i", rpmdsRefs(s->ds));
-}
-
-static PyObject *
 rpmds_iternext(rpmdsObject * s)
 {
     PyObject * result = NULL;
@@ -205,8 +199,6 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.TagN -> TagN	- Return current TagN.\n" },
  {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,
 	"ds.Color -> Color	- Return current Color.\n" },
- {"Refs",	(PyCFunction)rpmds_Refs,	METH_NOARGS,
-	"ds.Refs -> Refs	- Return current Refs.\n" },
  {"SetNoPromote",(PyCFunction)rpmds_SetNoPromote, METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"Notify",	(PyCFunction)rpmds_Notify,	METH_VARARGS|METH_KEYWORDS,

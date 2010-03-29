@@ -509,10 +509,8 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     char mydt;
     const uint32_t * ddict;
     rpm_color_t * colors;
-    int32_t * refs;
     rpm_color_t val;
     int Count;
-    size_t nb;
     unsigned ix;
     int ndx, i;
 
@@ -532,10 +530,8 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     }
 
     colors = xcalloc(Count, sizeof(*colors));
-    nb = Count * sizeof(*refs);
-    refs = memset(xmalloc(nb), -1, nb);
 
-    /* Calculate dependency color and reference count. */
+    /* Calculate dependency color. */
     fi = rpmfiInit(fi, 0);
     if (fi != NULL)
     while (rpmfiNext(fi) >= 0) {
@@ -551,23 +547,17 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
 	    ix &= 0x00ffffff;
 assert (ix < Count);
 	    colors[ix] |= val;
-	    refs[ix]++;
 	}
     }
 
-    /* Set color/refs values in dependency set. */
+    /* Set color values in dependency set. */
     ds = rpmdsInit(ds);
     while ((i = rpmdsNext(ds)) >= 0) {
 	val = colors[i];
 	te->color |= val;
 	(void) rpmdsSetColor(ds, val);
-	val = refs[i];
-	if (val >= 0)
-	    val++;
-	(void) rpmdsSetRefs(ds, val);
     }
     free(colors);
-    free(refs);
 }
 
 static Header rpmteDBHeader(rpmts ts, unsigned int rec)

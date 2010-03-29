@@ -25,7 +25,6 @@ struct rpmds_s {
     const char ** EVR;		/*!< Epoch-Version-Release. */
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
     rpm_color_t * Color;	/*!< Bit(s) calculated from file color(s). */
-    int32_t * Refs;		/*!< No. of file refs. */
     rpmTag tagN;		/*!< Header tag. */
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
@@ -110,7 +109,6 @@ rpmds rpmdsFree(rpmds ds)
 
     ds->DNEVR = _free(ds->DNEVR);
     ds->Color = _free(ds->Color);
-    ds->Refs = _free(ds->Refs);
 
     (void) rpmdsUnlink(ds);
     memset(ds, 0, sizeof(*ds));		/* XXX trash and burn */
@@ -156,7 +154,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	}
 
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
-	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
 	ds = rpmdsLink(ds);
     }
 
@@ -384,30 +381,6 @@ rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color)
 	}
     }
     return ocolor;
-}
-
-int32_t rpmdsRefs(const rpmds ds)
-{
-    int32_t Refs = 0;
-
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->Refs != NULL)
-	    Refs = ds->Refs[ds->i];
-    }
-    return Refs;
-}
-
-int32_t rpmdsSetRefs(const rpmds ds, int32_t refs)
-{
-    int32_t orefs = 0;
-
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->Refs != NULL) {
-	    orefs = ds->Refs[ds->i];
-	    ds->Refs[ds->i] = refs;
-	}
-    }
-    return orefs;
 }
 
 void rpmdsNotify(rpmds ds, const char * where, int rc)
