@@ -131,16 +131,6 @@ static struct tokenBits_s const installScriptBits[] = {
 
 /**
  */
-static const struct tokenBits_s const buildScriptBits[] = {
-    { "prep",		RPMSENSE_SCRIPT_PREP },
-    { "build",		RPMSENSE_SCRIPT_BUILD },
-    { "install",	RPMSENSE_SCRIPT_INSTALL },
-    { "clean",		RPMSENSE_SCRIPT_CLEAN },
-    { NULL, 0 }
-};
-
-/**
- */
 static int parseBits(const char * s, const tokenBits tokbits,
 		rpmsenseFlags * bp)
 {
@@ -621,17 +611,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	if ((rc = parseNoSource(spec, field, tag)))
 	    return rc;
 	break;
-    case RPMTAG_BUILDPREREQ:
-    case RPMTAG_BUILDREQUIRES:
-	if ((rc = parseBits(lang, buildScriptBits, &tagflags))) {
-	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Bad %s: qualifiers: %s\n"),
-		     spec->lineNum, rpmTagGetName(tag), spec->line);
-	    return rc;
-	}
-	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
-	    return rc;
-	break;
     case RPMTAG_REQUIREFLAGS:
     case RPMTAG_PREREQ:
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
@@ -643,6 +622,8 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
+    case RPMTAG_BUILDPREREQ:
+    case RPMTAG_BUILDREQUIRES:
     case RPMTAG_BUILDCONFLICTS:
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_OBSOLETEFLAGS:

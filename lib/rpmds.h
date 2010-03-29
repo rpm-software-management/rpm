@@ -43,10 +43,7 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_TRIGGERUN	= (1 << 17),	/*!< %triggerun dependency. */
     RPMSENSE_TRIGGERPOSTUN = (1 << 18),	/*!< %triggerpostun dependency. */
     RPMSENSE_MISSINGOK	= (1 << 19),	/*!< suggests/enhances hint. */
-    RPMSENSE_SCRIPT_PREP = (1 << 20),	/*!< %prep build dependency. */
-    RPMSENSE_SCRIPT_BUILD = (1 << 21),	/*!< %build build dependency. */
-    RPMSENSE_SCRIPT_INSTALL = (1 << 22),/*!< %install build dependency. */
-    RPMSENSE_SCRIPT_CLEAN = (1 << 23),	/*!< %clean build dependency. */
+    /* bits 20-23 unused */
     RPMSENSE_RPMLIB = (1 << 24),	/*!< rpmlib(feature) dependency. */
     RPMSENSE_TRIGGERPREIN = (1 << 25),	/*!< %triggerprein dependency. */
     RPMSENSE_KEYRING	= (1 << 26),
@@ -68,10 +65,6 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_SCRIPT_POSTUN | \
     RPMSENSE_SCRIPT_VERIFY | \
     RPMSENSE_FIND_REQUIRES | \
-    RPMSENSE_SCRIPT_PREP | \
-    RPMSENSE_SCRIPT_BUILD | \
-    RPMSENSE_SCRIPT_INSTALL | \
-    RPMSENSE_SCRIPT_CLEAN | \
     RPMSENSE_RPMLIB | \
     RPMSENSE_KEYRING | \
     RPMSENSE_PREREQ)
