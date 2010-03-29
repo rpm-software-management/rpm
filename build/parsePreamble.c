@@ -138,6 +138,7 @@ static int parseBits(const char * s, const tokenBits tokbits,
     const char * se;
     rpmsenseFlags bits = RPMSENSE_ANY;
     int c = 0;
+    int rc = RPMRC_OK;
 
     if (s) {
 	while (*s != '\0') {
@@ -151,8 +152,10 @@ static int parseBits(const char * s, const tokenBits tokbits,
 		    strlen(tb->name) == (se-s) && rstreqn(tb->name, s, (se-s)))
 		    break;
 	    }
-	    if (tb->name == NULL)
+	    if (tb->name == NULL) {
+		rc = RPMRC_FAIL;
 		break;
+	    }
 	    bits |= tb->bits;
 	    while ((c = *se) && risspace(c)) se++;
 	    if (c != ',')
@@ -160,8 +163,8 @@ static int parseBits(const char * s, const tokenBits tokbits,
 	    s = ++se;
 	}
     }
-    if (c == 0 && bp) *bp = bits;
-    return (c ? RPMRC_FAIL : RPMRC_OK);
+    *bp |= bits;
+    return rc;
 }
 
 /**
