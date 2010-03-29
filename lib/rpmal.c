@@ -299,7 +299,7 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 		if (alp->p == NULL) // deleted
 		    continue;
 
-		rpmdsNotify(ds, _("(added files)"), 0);
+		rpmdsNotify(ds, "(added files)", 0);
 
 		ret[found] = alp->p;
 		found++;
@@ -354,7 +354,7 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	    rc = rpmdsCompare(alp->provides, ds);
 
 	if (rc) {
-	    rpmdsNotify(ds, _("(added provide)"), 0);
+	    rpmdsNotify(ds, "(added provide)", 0);
 	    ret[found] = alp->p;
 	    found++;
 	}

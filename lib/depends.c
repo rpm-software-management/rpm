@@ -379,7 +379,7 @@ retry:
 	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
 	
 	if (rpmlibP != NULL && rpmdsSearch(rpmlibP, dep) >= 0) {
-	    rpmdsNotify(dep, _("(rpmlib provides)"), rc);
+	    rpmdsNotify(dep, "(rpmlib provides)", rc);
 	    goto exit;
 	}
 	goto unsatisfied;
@@ -393,7 +393,7 @@ retry:
     /* See if we already looked this up */
     if (depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
 	rc = *cachedrc;
-	rpmdsNotify(dep, _("(cached)"), rc);
+	rpmdsNotify(dep, "(cached)", rc);
 	return rc;
     }
     /* Only bother caching the expensive rpmdb lookups */
@@ -403,7 +403,7 @@ retry:
 	mi = rpmtsPrunedIterator(ts, RPMTAG_BASENAMES, Name);
 
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    rpmdsNotify(dep, _("(db files)"), rc);
+	    rpmdsNotify(dep, "(db files)", rc);
 	    mi = rpmdbFreeIterator(mi);
 	    goto exit;
 	}
@@ -413,7 +413,7 @@ retry:
     mi = rpmtsPrunedIterator(ts, RPMTAG_PROVIDENAME, Name);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
-	    rpmdsNotify(dep, _("(db provides)"), rc);
+	    rpmdsNotify(dep, "(db provides)", rc);
 	    mi = rpmdbFreeIterator(mi);
 	    goto exit;
 	}
