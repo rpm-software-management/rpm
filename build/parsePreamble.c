@@ -274,20 +274,16 @@ static int checkForRequired(Header h, const char * NVR)
 static int checkForDuplicates(Header h, const char * NVR)
 {
     int res = RPMRC_OK;
-    rpmTag lastTag, tag;
-    HeaderIterator hi;
-    struct rpmtd_s td;
-    
-    for (hi = headerInitIterator(h), lastTag = 0;
-	headerNext(hi, &td), tag = rpmtdTag(&td);
-	lastTag = tag)
-    {
+    rpmTag tag, lastTag = RPMTAG_NOT_FOUND;
+    HeaderIterator hi = headerInitIterator(h);
+
+    while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
 	if (tag == lastTag) {
 	    rpmlog(RPMLOG_ERR, _("Duplicate %s entries in package: %s\n"),
 		     rpmTagGetName(tag), NVR);
 	    res = RPMRC_FAIL;
 	}
-	rpmtdFreeData(&td);
+	lastTag = tag;
     }
     hi = headerFreeIterator(hi);
 
