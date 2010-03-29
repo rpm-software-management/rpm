@@ -45,6 +45,12 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     switch (tagN) {
+    default:
+    case RPMTAG_REQUIREFLAGS:
+	nametag = RPMTAG_REQUIRENAME;
+	tagflags |= RPMSENSE_ANY;
+	h = pkg->header;
+	break;
     case RPMTAG_PROVIDEFLAGS:
 	nametag = RPMTAG_PROVIDENAME;
 	h = pkg->header;
@@ -56,10 +62,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
     case RPMTAG_CONFLICTFLAGS:
 	nametag = RPMTAG_CONFLICTNAME;
 	h = pkg->header;
-	break;
-    case RPMTAG_BUILDCONFLICTS:
-	nametag = RPMTAG_CONFLICTNAME;
-	h = spec->buildRestrictions;
 	break;
     case RPMTAG_PREREQ:
 	/* XXX map legacy PreReq into Requires(pre,preun) */
@@ -93,11 +95,9 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	tagflags |= RPMSENSE_ANY;
 	h = spec->buildRestrictions;
 	break;
-    default:
-    case RPMTAG_REQUIREFLAGS:
-	nametag = RPMTAG_REQUIRENAME;
-	tagflags |= RPMSENSE_ANY;
-	h = pkg->header;
+    case RPMTAG_BUILDCONFLICTS:
+	nametag = RPMTAG_CONFLICTNAME;
+	h = spec->buildRestrictions;
 	break;
     }
 
