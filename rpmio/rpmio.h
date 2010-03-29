@@ -134,14 +134,6 @@ FD_t fdFree(FD_t fd);
  */
 FD_t fdNew (void);
 
-/** \ingroup rpmio
- */
-int fdWritable(FD_t fd, int secs);
-
-/** \ingroup rpmio
- */
-int fdReadable(FD_t fd, int secs);
-
 /**
  */
 int ufdCopy(FD_t sfd, FD_t tfd);
