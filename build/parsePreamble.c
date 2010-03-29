@@ -476,7 +476,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     char * field = spec->line;
     char * end;
     int multiToken = 0;
-    rpmsenseFlags tagflags;
+    rpmsenseFlags tagflags = RPMSENSE_ANY;
     int rc;
     int xx;
     
@@ -628,7 +628,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_OBSOLETEFLAGS:
     case RPMTAG_PROVIDEFLAGS:
-	tagflags = RPMSENSE_ANY;
 	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
 	    return rc;
 	break;
