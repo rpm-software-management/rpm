@@ -254,6 +254,8 @@ static char * deptypeFormat(rpmtd td, char * formatPrefix)
 	    argvAdd(&sdeps, "auto");
 	if (item & RPMSENSE_PREREQ)
 	    argvAdd(&sdeps, "prereq");
+	if (item & RPMSENSE_PRETRANS)
+	    argvAdd(&sdeps, "pretrans");
 
 	if (sdeps) {
 	    val = argvJoin(sdeps, ",");

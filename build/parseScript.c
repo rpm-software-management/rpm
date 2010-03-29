@@ -131,7 +131,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	break;
       case PART_PRETRANS:
 	tag = RPMTAG_PRETRANS;
-	tagflags = 0;
+	tagflags = RPMSENSE_PRETRANS;
 	progtag = RPMTAG_PRETRANSPROG;
 	flagtag = RPMTAG_PRETRANSFLAGS;
 	partname = "%pretrans";

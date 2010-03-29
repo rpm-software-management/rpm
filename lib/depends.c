@@ -364,6 +364,7 @@ static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep)
     int *cachedrc = NULL;
     int cacheThis = 0;
     int adding = (rpmdsInstance(dep) == 0);
+    rpmsenseFlags dsflags = rpmdsFlags(dep);
 
 retry:
     rc = 0;	/* assume dependency is satisfied */
@@ -373,7 +374,7 @@ retry:
      * on rpmlib provides. The dependencies look like "rpmlib(YaddaYadda)".
      * Check those dependencies now.
      */
-    if (rpmdsFlags(dep) & RPMSENSE_RPMLIB) {
+    if (dsflags & RPMSENSE_RPMLIB) {
 	static int oneshot = -1;
 	if (oneshot) 
 	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
@@ -385,8 +386,9 @@ retry:
 	goto unsatisfied;
     }
 
-    /* Search added packages for the dependency. */
-    if (rpmalSatisfiesDepend(tsmem->addedPackages, dep) != NULL) {
+    /* Pretrans dependencies can't be satisfied by added packages. */
+    if (!(dsflags & RPMSENSE_PRETRANS) &&
+		rpmalSatisfiesDepend(tsmem->addedPackages, dep) != NULL) {
 	goto exit;
     }
 
@@ -423,7 +425,8 @@ retry:
     /*
      * Search for an unsatisfied dependency.
      */
-    if (adding && !retrying && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+    if (adding && !retrying && !(dsflags & RPMSENSE_PRETRANS) &&
+		!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
 	xx = rpmtsSolve(ts, dep);
 	if (xx == 0)
 	    goto exit;

@@ -165,8 +165,8 @@ static inline int addRelation(rpmts ts,
 
     dsflags = rpmdsFlags(requires);
 
-    /* Avoid rpmlib feature and package config dependencies */
-    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG))
+    /* Avoid dependendencies which are not relevant for ordering */
+    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS))
 	return 0;
 
     q = rpmalSatisfiesDepend(al, requires);
