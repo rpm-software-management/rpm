@@ -41,7 +41,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
     char * N = NULL, * EVR = NULL;
     rpmTag nametag = 0;
     rpmsenseFlags Flags;
-    Header h;
+    Header h = pkg->header; /* everything except buildrequires go here */
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     switch (tagN) {
@@ -49,45 +49,36 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
     case RPMTAG_REQUIREFLAGS:
 	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= RPMSENSE_ANY;
-	h = pkg->header;
 	break;
     case RPMTAG_PROVIDEFLAGS:
 	nametag = RPMTAG_PROVIDENAME;
-	h = pkg->header;
 	break;
     case RPMTAG_OBSOLETEFLAGS:
 	nametag = RPMTAG_OBSOLETENAME;
-	h = pkg->header;
 	break;
     case RPMTAG_CONFLICTFLAGS:
 	nametag = RPMTAG_CONFLICTNAME;
-	h = pkg->header;
 	break;
     case RPMTAG_PREREQ:
 	/* XXX map legacy PreReq into Requires(pre,preun) */
 	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= (RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_PREUN);
-	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPREIN:
 	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERPREIN;
-	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERIN:
 	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERIN;
-	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERPOSTUN:
 	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERPOSTUN;
-	h = pkg->header;
 	break;
     case RPMTAG_TRIGGERUN:
 	nametag = RPMTAG_TRIGGERNAME;
 	tagflags |= RPMSENSE_TRIGGERUN;
-	h = pkg->header;
 	break;
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
