@@ -5,6 +5,17 @@
 #include <rpm/rpmds.h>
 #include "lib/rpmfs.h"
 
+typedef enum pkgGoal_e {
+    PKG_NONE		= 0,
+    /* permit using rpmteType() for install + erase goals */
+    PKG_INSTALL		= TR_ADDED,
+    PKG_ERASE		= TR_REMOVED,
+    /* permit using scriptname for these for now... */
+    PKG_VERIFY		= RPMTAG_VERIFYSCRIPT,
+    PKG_PRETRANS	= RPMTAG_PRETRANS,
+    PKG_POSTTRANS	= RPMTAG_POSTTRANS,
+} pkgGoal;
+
 /** \ingroup rpmte
  * Transaction element ordering chain linkage.
  */
@@ -70,6 +81,16 @@ void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, He
  */
 RPM_GNUC_INTERNAL
 unsigned int rpmteHeaderSize(rpmte te);
+
+/**
+ * Package state machine driver.
+ * @param ts		transaction set
+ * @param te		transaction element
+ * @param goal		state machine goal
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal);
 
 #endif	/* _RPMTE_INTERNAL_H */
 

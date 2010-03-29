@@ -13,7 +13,6 @@
 #include <rpm/rpmstring.h>
 
 #include "lib/fprint.h"
-#include "lib/psm.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
