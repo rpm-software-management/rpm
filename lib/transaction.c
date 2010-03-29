@@ -1099,32 +1099,18 @@ static rpmps checkProblems(rpmts ts)
 /*
  * Run pre/post transaction scripts for transaction set
  * param ts	Transaction set
- * param stag	RPMTAG_PRETRANS or RPMTAG_POSTTRANS
- * return	0 on success, -1 on error (invalid script tag)
+ * param goal	PKG_PRETRANS/PKG_POSTTRANS
+ * return	0 on success
  */
-static int runTransScripts(rpmts ts, rpmTag stag) 
+static int runTransScripts(rpmts ts, pkgGoal goal) 
 {
-    rpmtsi pi; 
     rpmte p;
-    int xx;
-
-    if (stag != RPMTAG_PRETRANS && stag != RPMTAG_POSTTRANS)
-	return -1;
-
-    pi = rpmtsiInit(ts);
+    rpmtsi pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	/* Skip elements without pre/posttrans */
-	if (!rpmteHaveTransScript(p, stag))
-	    continue;
-
-    	if (rpmteOpen(p, ts, 0)) {
-	    /* XXX should %pretrans failure fail the package install? */
-	    xx = rpmpsmRun(ts, p, stag);
-	    rpmteClose(p, ts, 0);
-	}
+	rpmteProcess(p, ts, goal);
     }
     pi = rpmtsiFree(pi);
-    return 0;
+    return 0; /* what to do about failures? */
 }
 
 /* Add fingerprint for each file not skipped. */
@@ -1351,19 +1337,15 @@ static int rpmtsProcess(rpmts ts)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	int failed = 1;
+	int failed;
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	if (rpmteOpen(p, ts, 1)) {
-	    failed = rpmpsmRun(ts, p, rpmteType(p));
-	    rpmteClose(p, ts, 1);
-	}
+	failed = rpmteProcess(p, ts, rpmteType(p));
 	if (failed) {
-	    int fails = rpmteMarkFailed(p, ts);
 	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
-		   rpmteTypeString(p), fails > 1 ? _("skipped") : _("failed"));
+		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));
 	    rc++;
 	}
 	(void) rpmdbSync(rpmtsGetRdb(ts));
@@ -1404,7 +1386,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
      	  || (rpmpsNumProblems(tsprobs) &&
 		(okProbs == NULL || rpmpsTrim(tsprobs, okProbs))))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
-	runTransScripts(ts, RPMTAG_PRETRANS);
+	runTransScripts(ts, PKG_PRETRANS);
     }
     tsprobs = rpmpsFree(tsprobs);
 
@@ -1434,7 +1416,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Run post-transaction scripts unless disabled */
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPOST))) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
-	runTransScripts(ts, RPMTAG_POSTTRANS);
+	runTransScripts(ts, PKG_POSTTRANS);
     }
 
     /* Finish up... */

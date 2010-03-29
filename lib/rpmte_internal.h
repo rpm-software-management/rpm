@@ -28,19 +28,10 @@ RPM_GNUC_INTERNAL
 FD_t rpmteSetFd(rpmte te, FD_t fd);
 
 RPM_GNUC_INTERNAL
-int rpmteOpen(rpmte te, rpmts ts, int reload_fi);
-
-RPM_GNUC_INTERNAL
-int rpmteClose(rpmte te, rpmts ts, int reset_fi);
-
-RPM_GNUC_INTERNAL
 FD_t rpmtePayload(rpmte te);
 
 RPM_GNUC_INTERNAL
-int rpmteMarkFailed(rpmte te, rpmts ts);
-
-RPM_GNUC_INTERNAL
-int rpmteHaveTransScript(rpmte te, rpmTag tag);
+int rpmteProcess(rpmte te, rpmts ts, pkgGoal goal);
 
 RPM_GNUC_INTERNAL
 void rpmteAddProblem(rpmte te, rpmProblemType type,

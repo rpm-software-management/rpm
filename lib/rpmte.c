@@ -62,7 +62,9 @@ struct rpmte_s {
     rpmfs fs;
 };
 
-static void rpmteColorDS(rpmte te, rpmTag tag); /* forward declaration */
+/* forward declarations */
+static void rpmteColorDS(rpmte te, rpmTag tag);
+static int rpmteClose(rpmte te, rpmts ts, int reset_fi);
 
 void rpmteCleanDS(rpmte te)
 {
@@ -597,7 +599,7 @@ static Header rpmteFDHeader(rpmts ts, rpmte te)
     return h;
 }
 
-int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
+static int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
 {
     Header h = NULL;
     unsigned int instance;
@@ -628,7 +630,7 @@ exit:
     return (h != NULL);
 }
 
-int rpmteClose(rpmte te, rpmts ts, int reset_fi)
+static int rpmteClose(rpmte te, rpmts ts, int reset_fi)
 {
     if (te == NULL || ts == NULL)
 	return 0;
@@ -663,7 +665,7 @@ FD_t rpmtePayload(rpmte te)
     return payload;
 }
 
-int rpmteMarkFailed(rpmte te, rpmts ts)
+static int rpmteMarkFailed(rpmte te, rpmts ts)
 {
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
@@ -684,7 +686,7 @@ int rpmteFailed(rpmte te)
     return (te != NULL) ? te->failed : -1;
 }
 
-int rpmteHaveTransScript(rpmte te, rpmTag tag)
+static int rpmteHaveTransScript(rpmte te, rpmTag tag)
 {
     int rc = 0;
     if (tag == RPMTAG_PRETRANS) {
@@ -770,3 +772,29 @@ rpmfs rpmteGetFileStates(rpmte te) {
     return te->fs;
 }
 
+int rpmteProcess(rpmte te, rpmts ts, pkgGoal goal)
+{
+    /* Only install/erase resets pkg file info */
+    int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE);
+    int reset_fi = (scriptstage == 0);
+    int failed = 1;
+
+    /* Dont bother opening for elements without pre/posttrans scripts */
+    if (goal == PKG_PRETRANS || goal == PKG_POSTTRANS) {
+	if (!rpmteHaveTransScript(te, goal)) {
+	    return 0;
+	}
+    }
+
+    if (rpmteOpen(te, ts, reset_fi)) {
+	failed = rpmpsmRun(ts, te, goal);
+	rpmteClose(te, ts, reset_fi);
+    }
+    
+    /* XXX should %pretrans failure fail the package install? */
+    if (failed && !scriptstage) {
+	failed = rpmteMarkFailed(te, ts);
+    }
+
+    return failed;
+}

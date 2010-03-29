@@ -22,7 +22,7 @@
 #include <rpm/rpmfileutil.h>
 
 #include "lib/misc.h" 	/* uidToUname(), gnameToGid */
-#include "lib/rpmte_internal.h"	/* rpmteOpen(), rpmteClose() */
+#include "lib/rpmte_internal.h"	/* rpmteProcess() */
 
 #include "debug.h"
 
@@ -272,12 +272,10 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h)
     /* fake up a erasure transaction element */
     rc = rpmtsAddEraseElement(ts, h, -1);
     te = rpmtsElement(ts, 0);
-    rpmteOpen(te, ts, 0);
-    
-    rc = rpmpsmRun(ts, te, PKG_VERIFY);
+
+    rc = rpmteProcess(te, ts, PKG_VERIFY);
 
     /* clean up our fake transaction bits */
-    rpmteClose(te, ts, 0);
     rpmtsEmpty(ts);
 
     return rc;
