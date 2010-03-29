@@ -26,7 +26,6 @@ struct rpmds_s {
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
     rpm_color_t * Color;	/*!< Bit(s) calculated from file color(s). */
     int32_t * Refs;		/*!< No. of file refs. */
-    time_t BT;			/*!< Package build time tie breaker. */
     rpmTag tagN;		/*!< Header tag. */
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
@@ -156,7 +155,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	    }
 	}
 
-	ds->BT = headerGetNumber(h, RPMTAG_BUILDTIME);
 	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 	ds->Refs = xcalloc(ds->Count, sizeof(*ds->Refs));
 	ds = rpmdsLink(ds);
@@ -222,7 +220,6 @@ static rpmds singleDS(rpmTag tagN, const char * N, const char * EVR,
     ds = xcalloc(1, sizeof(*ds));
     ds->Type = Type;
     ds->tagN = tagN;
-    ds->BT = time(NULL);
     ds->Count = 1;
     ds->nopromote = _rpmds_nopromote;
     ds->instance = instance;
@@ -338,24 +335,6 @@ rpmTag rpmdsTagN(const rpmds ds)
     if (ds != NULL)
 	tagN = ds->tagN;
     return tagN;
-}
-
-time_t rpmdsBT(const rpmds ds)
-{
-    time_t BT = 0;
-    if (ds != NULL && ds->BT > 0)
-	BT = ds->BT;
-    return BT;
-}
-
-time_t rpmdsSetBT(const rpmds ds, time_t BT)
-{
-    time_t oBT = 0;
-    if (ds != NULL) {
-	oBT = ds->BT;
-	ds->BT = BT;
-    }
-    return oBT;
 }
 
 unsigned int rpmdsInstance(rpmds ds)

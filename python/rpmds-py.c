@@ -54,12 +54,6 @@ rpmds_Flags(rpmdsObject * s)
 }
 
 static PyObject *
-rpmds_BT(rpmdsObject * s)
-{
-    return Py_BuildValue("i", (int) rpmdsBT(s->ds));
-}
-
-static PyObject *
 rpmds_TagN(rpmdsObject * s)
 {
     return Py_BuildValue("i", rpmdsTagN(s->ds));
@@ -207,8 +201,6 @@ static struct PyMethodDef rpmds_methods[] = {
 	"ds.EVR -> EVR		- Return current EVR.\n" },
  {"Flags",	(PyCFunction)rpmds_Flags,	METH_NOARGS,
 	"ds.Flags -> Flags	- Return current Flags.\n" },
- {"BT",		(PyCFunction)rpmds_BT,		METH_NOARGS,
-	"ds.BT -> BT	- Return build time.\n" },
  {"TagN",	(PyCFunction)rpmds_TagN,	METH_NOARGS,
 	"ds.TagN -> TagN	- Return current TagN.\n" },
  {"Color",	(PyCFunction)rpmds_Color,	METH_NOARGS,

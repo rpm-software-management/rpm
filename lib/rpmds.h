@@ -209,21 +209,6 @@ rpmTag rpmdsTagN(const rpmds ds);
 unsigned int rpmdsInstance(rpmds ds);
 
 /** \ingroup rpmds
- * Return dependency build time.
- * @param ds		dependency set
- * @return		dependency build time, 0 on invalid
- */
-time_t rpmdsBT(const rpmds ds);
-
-/** \ingroup rpmds
- * Set dependency build time.
- * @param ds		dependency set
- * @param BT		build time
- * @return		dependency build time, 0 on invalid
- */
-time_t rpmdsSetBT(const rpmds ds, time_t BT);
-
-/** \ingroup rpmds
  * Return current "Don't promote Epoch:" flag.
  *
  * This flag controls for Epoch: promotion when a dependency set is
