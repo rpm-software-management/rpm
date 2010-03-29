@@ -153,7 +153,6 @@ rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
 	    }
 	}
 
-	ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 	ds = rpmdsLink(ds);
     }
 
@@ -375,10 +374,11 @@ rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color)
     rpm_color_t ocolor = 0;
 
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->Color != NULL) {
-	    ocolor = ds->Color[ds->i];
-	    ds->Color[ds->i] = color;
+	if (ds->Color == NULL) {
+	    ds->Color = xcalloc(ds->Count, sizeof(*ds->Color));
 	}
+	ocolor = ds->Color[ds->i];
+	ds->Color[ds->i] = color;
     }
     return ocolor;
 }
