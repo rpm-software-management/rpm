@@ -611,10 +611,6 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
 	    }
 
-	    if (rc == 0 && dbi->dbi_lorder) {
-		rc = db->set_lorder(db, dbi->dbi_lorder);
-		rc = cvtdberr(dbi, "db->set_lorder", rc, _debug);
-	    }
 	    if (rc == 0 && dbi->dbi_pagesize) {
 		rc = db->set_pagesize(db, dbi->dbi_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);

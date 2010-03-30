@@ -36,7 +36,6 @@ struct _dbiIndex {
     int	dbi_byteswapped;
 
 	/* dbenv parameters */
-    int	dbi_lorder;
     /* XXX db-4.3.14 adds dbenv as 1st arg. */
     int	dbi_verbose;
 	/* mpool sub-system parameters */

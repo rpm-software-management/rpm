@@ -108,9 +108,6 @@ static const struct poptOption rdbOptions[] = {
  { "verbose",	0,POPT_ARG_VAL,		&staticdbi.dbi_verbose, -1,
 	NULL, NULL },
 
- { "lorder",	0,POPT_ARG_INT,		&staticdbi.dbi_lorder, 0,
-	NULL, NULL },
-
  { "mmapsize", 0,POPT_ARG_INT,		&staticdbi.dbi_mmapsize, 0,
 	NULL, NULL },
  { "mp_mmapsize", 0,POPT_ARG_INT,	&staticdbi.dbi_mmapsize, 0,
