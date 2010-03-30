@@ -18,6 +18,8 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include "debug.h"
 
+static const char * _errpfx = "rpmdb";
+
 static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 {
     if (printit && error) {
@@ -113,7 +115,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 
     dbenv->set_alloc(dbenv, rmalloc, rrealloc, NULL);
     dbenv->set_errcall(dbenv, NULL);
-    dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
+    dbenv->set_errpfx(dbenv, _errpfx);
 
 #if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
     /* 
@@ -412,7 +414,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 	if (rc || dbenv == NULL) goto exit;
 
 	dbenv->set_errcall(dbenv, NULL);
-	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
+	dbenv->set_errpfx(dbenv, _errpfx);
 #if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
 		(dbi->dbi_verbose & DB_VERB_CHKPOINT));

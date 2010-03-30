@@ -566,11 +566,10 @@ static int unblockSignals(sigset_t * oldMask)
 #define _DB_PERMS	0644
 
 #define _DB_MAJOR	-1
-#define	_DB_ERRPFX	"rpmdb"
 
 static struct rpmdb_s const dbTemplate = {
     _DB_ROOT,	_DB_HOME, _DB_FULLPATH, _DB_FLAGS, _DB_MODE, _DB_PERMS,
-    _DB_MAJOR,	_DB_ERRPFX
+    _DB_MAJOR,
 };
 
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
@@ -670,7 +669,6 @@ int rpmdbClose(rpmdb db)
 	if (xx && rc == 0) rc = xx;
     	db->_dbi[dbix] = NULL;
     }
-    db->db_errpfx = _free(db->db_errpfx);
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_fullpath = _free(db->db_fullpath);
@@ -720,7 +718,6 @@ rpmdb newRpmdb(const char * root,
 		int mode, int perms, int flags)
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
-    const char * epfx = _DB_ERRPFX;
     static int _initialized = 0;
 
     if (!_initialized) {
@@ -746,7 +743,6 @@ rpmdb newRpmdb(const char * root,
     }
     db->db_root = rpmGetPath((root && *root) ? root : _DB_ROOT, NULL);
     db->db_fullpath = rpmGenPath(db->db_root, db->db_home, NULL);
-    db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->_dbi = xcalloc(dbiTagsMax, sizeof(*db->_dbi));

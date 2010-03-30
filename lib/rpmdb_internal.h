@@ -117,7 +117,6 @@ struct rpmdb_s {
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
-    char 	* db_errpfx;
     int		db_remove_env;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     int		db_mkdirDone;	/*!< Has db_home been created? */
