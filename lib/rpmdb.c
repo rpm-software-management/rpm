@@ -2411,13 +2411,10 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 
 	if (dbiTags.tags != NULL)
 	for (dbix = 0; dbix < dbiTags.max; dbix++) {
-	    dbiIndex dbi;
-	    rpmTag rpmtag;
+	    dbiIndex dbi = NULL;
+	    rpmTag rpmtag = dbiTags.tags[dbix];
 	    int xx = 0;
 	    struct rpmtd_s tagdata;
-
-	    dbi = NULL;
-	    rpmtag = dbiTags.tags[dbix];
 
 	    if (rpmtag == RPMDBI_PACKAGES) {
 		dbi = dbiOpen(db, rpmtag, 0);
@@ -2652,14 +2649,12 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	if (dbiTags.tags != NULL)
 	for (dbix = 0; dbix < dbiTags.max; dbix++) {
-	    rpmTag rpmtag;
-	    rpmRC rpmrc;
+	    rpmTag rpmtag = dbiTags.tags[dbix];
+	    rpmRC rpmrc = RPMRC_NOTFOUND;
 	    int j;
 	    struct rpmtd_s tagdata, reqflags;
 
-	    rpmrc = RPMRC_NOTFOUND;
 	    dbi = NULL;
-	    rpmtag = dbiTags.tags[dbix];
 
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
