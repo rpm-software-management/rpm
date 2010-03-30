@@ -295,40 +295,6 @@ int dbiByteSwapped(dbiIndex dbi);
  */
 int dbiStat(dbiIndex dbi, unsigned int flags);
 
-/** \ingroup dbi
- * Destroy set of index database items.
- * @param set	set of index database items
- * @return	NULL always
- */
-RPM_GNUC_INTERNAL
-dbiIndexSet dbiFreeIndexSet(dbiIndexSet set);
-
-/** \ingroup dbi
- * Count items in index database set.
- * @param set	set of index database items
- * @return	number of items
- */
-RPM_GNUC_INTERNAL
-unsigned int dbiIndexSetCount(dbiIndexSet set);
-
-/** \ingroup dbi
- * Return record offset of header from element in index database set.
- * @param set	set of index database items
- * @param recno	index of item in set
- * @return	record offset of header
- */
-RPM_GNUC_INTERNAL
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
-
-/** \ingroup dbi
- * Return file index from element in index database set.
- * @param set	set of index database items
- * @param recno	index of item in set
- * @return	file index
- */
-RPM_GNUC_INTERNAL
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
-
 /** \ingroup rpmdb
  * Return rpmdb home directory (depending on chroot state)
  * param db		rpmdb handle
