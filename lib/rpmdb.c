@@ -2988,26 +2988,24 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
 
     tfn = rpmGetPath("%{?_dbpath}", NULL);
-    if (!(tfn && tfn[0] != '\0'))
-    {
+    if (rstreq(tfn, "")) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set"));
 	rc = 1;
 	goto exit;
     }
     dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
-    if (!(prefix[0] == '/' && prefix[1] == '\0'))
+    if (!rstreq(prefix, "/"))
 	dbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
     tfn = rpmGetPath("%{?_dbpath_rebuild}", NULL);
-    if (!(tfn && tfn[0] != '\0' && !rstreq(tfn, dbpath)))
-    {
+    if (!rstreq(tfn, "") && !rstreq(tfn, dbpath)) {
 	tfn = _free(tfn);
 	rasprintf(&tfn, "%srebuilddb.%d", dbpath, (int) getpid());
 	nocleanup = 0;
     }
     newdbpath = newrootdbpath = rpmGetPath(prefix, tfn, NULL);
-    if (!(prefix[0] == '/' && prefix[1] == '\0'))
+    if (!rstreq(prefix, "/"))
 	newdbpath += strlen(prefix) - 1;
     tfn = _free(tfn);
 
