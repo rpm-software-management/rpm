@@ -64,8 +64,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "rdonly",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_RDONLY,
 	NULL, NULL },
- { "truncate",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_TRUNCATE,
-	NULL, NULL },
  { "fcntl_locking",0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_FCNTL_LOCKING,
 	NULL, NULL },
 

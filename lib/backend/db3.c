@@ -501,7 +501,6 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	return 1;
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
-    oflags &= ~DB_TRUNCATE;	/* XXX this is dangerous */
 
 #if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
     if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
@@ -515,9 +514,6 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	oflags |= DB_CREATE;
 	dbi->dbi_oeflags |= DB_CREATE;
     }
-#ifdef	DANGEROUS
-    if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
-#endif
 
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
