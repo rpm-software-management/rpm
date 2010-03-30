@@ -114,7 +114,26 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
     return *sp;
 }
 
-dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
+/** \ingroup dbi
+ * Verify (and close) index database.
+ * @param dbi		index database handle
+ * @param flags		(unused)
+ * @return		0 on success
+ */
+static int dbiVerify(dbiIndex dbi, unsigned int flags)
+{
+    dbi->dbi_verify_on_close = 1;
+    return dbiClose(dbi, flags);
+}
+
+/** \ingroup dbi
+ * Return handle for an index database.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag
+ * @param flags		(unused)
+ * @return		index database handle
+ */
+static dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 {
     int dbix = -1;
     dbiIndex dbi = NULL;

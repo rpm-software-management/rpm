@@ -124,18 +124,6 @@ RPM_GNUC_INTERNAL
 char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 
 /** \ingroup dbi
- * Return handle for an index database.
- * @param db		rpm database
- * @param rpmtag	rpm tag
- * @param flags		(unused)
- * @return		index database handle
- */
-RPM_GNUC_INTERNAL
-dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag,
-		unsigned int flags);
-
-
-/** \ingroup dbi
  * Actually open the database of the index.
  * @param db		rpm database
  * @param rpmtag	rpm tag
@@ -234,19 +222,6 @@ int dbiClose(dbiIndex dbi, unsigned int flags);
  * @return		0 on success
  */
 int dbiSync (dbiIndex dbi, unsigned int flags);
-
-/** \ingroup dbi
- * Verify (and close) index database.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-static inline
-int dbiVerify(dbiIndex dbi, unsigned int flags)
-{
-    dbi->dbi_verify_on_close = 1;
-    return dbiClose(dbi, flags);
-}
 
 
 /** \ingroup dbi
