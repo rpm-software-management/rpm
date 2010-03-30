@@ -157,7 +157,6 @@ struct rpmdb_s {
     rpmdb	db_next;
     int		db_opens;
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
-    int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
 
     struct rpmop_s db_getops;

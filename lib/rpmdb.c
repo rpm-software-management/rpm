@@ -651,7 +651,6 @@ int rpmdbCloseDBI(rpmdb db, rpmTag rpmtag)
 int rpmdbClose(rpmdb db)
 {
     rpmdb * prev, next;
-    int dbix;
     int rc = 0;
 
     if (db == NULL)
@@ -663,7 +662,7 @@ int rpmdbClose(rpmdb db)
 	goto exit;
 
     if (db->_dbi)
-    for (dbix = db->db_ndbi; --dbix >= 0; ) {
+    for (int dbix = dbiTagsMax; --dbix >= 0; ) {
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
@@ -699,11 +698,10 @@ exit:
 
 int rpmdbSync(rpmdb db)
 {
-    int dbix;
     int rc = 0;
 
     if (db == NULL) return 0;
-    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
@@ -751,11 +749,10 @@ rpmdb newRpmdb(const char * root,
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
-    db->db_ndbi = dbiTagsMax;
     db->db_malloc = rmalloc;
     db->db_realloc = rrealloc;
     db->db_free = NULL; /* XXX rfree() prototype differs from free() */
-    db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
+    db->_dbi = xcalloc(dbiTagsMax, sizeof(*db->_dbi));
     db->nrefs = 0;
     return rpmdbLink(db);
 }
@@ -884,11 +881,10 @@ int rpmdbVerify(const char * prefix)
     rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
 
     if (db != NULL) {
-	int dbix;
 	int xx;
 	rc = rpmdbOpenAll(db);
 
-	for (dbix = db->db_ndbi; --dbix >= 0; ) {
+	for (int dbix = dbiTagsMax; --dbix >= 0; ) {
 	    if (db->_dbi[dbix] == NULL)
 		continue;
 	   		/* FIX: double indirection. */
