@@ -46,7 +46,6 @@ struct _dbiIndexSet {
  */
 struct _dbiIndex {
     char * dbi_file;		/*!< file component of path */
-    char * dbi_subfile;
     char * dbi_tmpdir;		/*!< temporary directory */
 
     int	dbi_ecflags;		/*!< db_env_create flags */
@@ -68,7 +67,6 @@ struct _dbiIndex {
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
     int	dbi_temporary;		/*!< non-persistent */
-    int	dbi_debug;
     int	dbi_byteswapped;
 
 	/* dbenv parameters */
@@ -76,27 +74,10 @@ struct _dbiIndex {
     /* XXX db-4.3.14 adds dbenv as 1st arg. */
     void (*db_errcall) (void * dbenv, const char *db_errpfx, char *buffer);
     FILE *	dbi_errfile;
-    char * dbi_errpfx;
     int	dbi_verbose;
-    int	dbi_region_init;
-    int	dbi_tas_spins;
 	/* mpool sub-system parameters */
     int	dbi_mmapsize;	/*!< (10Mb) */
     int	dbi_cachesize;	/*!< (128Kb) */
-	/* lock sub-system parameters */
-    unsigned int dbi_lk_max;
-    unsigned int dbi_lk_detect;
-int dbi_lk_nmodes;
-unsigned char * dbi_lk_conflicts;
-	/* log sub-system parameters */
-    unsigned int dbi_lg_max;
-    unsigned int dbi_lg_bsize;
-	/* transaction sub-system parameters */
-    unsigned int dbi_tx_max;
-#if 0
-    int	(*dbi_tx_recover) (DB_ENV *dbenv, DBT *log_rec,
-				DB_LSN *lsnp, int redo, void *info);
-#endif
 	/* dbinfo parameters */
     int	dbi_pagesize;		/*!< (fs blksize) */
 	/* hash access parameters */

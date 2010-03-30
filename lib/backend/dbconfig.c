@@ -86,8 +86,6 @@ static const struct poptOption rdbOptions[] = {
 
  { "file",	0,POPT_ARG_STRING,	&staticdbi.dbi_file, 0,
 	NULL, NULL },
- { "subfile",	0,POPT_ARG_STRING,	&staticdbi.dbi_subfile, 0,
-	NULL, NULL },
  { "mode",	0,POPT_ARG_INT,		&staticdbi.dbi_mode, 0,
 	NULL, NULL },
  { "perms",	0,POPT_ARG_INT,		&staticdbi.dbi_perms, 0,
@@ -109,16 +107,8 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "temporary",	0,POPT_ARG_NONE,	&staticdbi.dbi_temporary, 0,
 	NULL, NULL },
- { "debug",	0,POPT_ARG_NONE,	&staticdbi.dbi_debug, 0,
-	NULL, NULL },
 
  { "cachesize",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
-	NULL, NULL },
- { "errpfx",	0,POPT_ARG_STRING,	&staticdbi.dbi_errpfx, 0,
-	NULL, NULL },
- { "region_init", 0,POPT_ARG_VAL,	&staticdbi.dbi_region_init, 1,
-	NULL, NULL },
- { "tas_spins",	0,POPT_ARG_INT,		&staticdbi.dbi_tas_spins, 0,
 	NULL, NULL },
 
 #if defined(DB_VERB_CHKPOINT)
@@ -132,25 +122,6 @@ static const struct poptOption rdbOptions[] = {
  { "waitsfor",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_WAITSFOR,
 	NULL, NULL },
  { "verbose",	0,POPT_ARG_VAL,		&staticdbi.dbi_verbose, -1,
-	NULL, NULL },
-
- { "lk_oldest",	0,POPT_ARG_VAL,		&staticdbi.dbi_lk_detect, DB_LOCK_OLDEST,
-	NULL, NULL },
- { "lk_random",	0,POPT_ARG_VAL,		&staticdbi.dbi_lk_detect, DB_LOCK_RANDOM,
-	NULL, NULL },
- { "lk_youngest",0, POPT_ARG_VAL,	&staticdbi.dbi_lk_detect, DB_LOCK_YOUNGEST,
-	NULL, NULL },
-/* XXX lk_conflicts matrix */
- { "lk_max",	0,POPT_ARG_INT,		&staticdbi.dbi_lk_max, 0,
-	NULL, NULL },
-
- { "lg_bsize",	0,POPT_ARG_INT,		&staticdbi.dbi_lg_bsize, 0,
-	NULL, NULL },
- { "lg_max",	0,POPT_ARG_INT,		&staticdbi.dbi_lg_max, 0,
-	NULL, NULL },
-
-/* XXX tx_recover */
- { "tx_max",	0,POPT_ARG_INT,		&staticdbi.dbi_tx_max, 0,
 	NULL, NULL },
 
  { "lorder",	0,POPT_ARG_INT,		&staticdbi.dbi_lorder, 0,
@@ -210,9 +181,7 @@ dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
 	dbi->dbi_file = _free(dbi->dbi_file);
-	dbi->dbi_subfile = _free(dbi->dbi_subfile);
 	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
-	dbi->dbi_errpfx = _free(dbi->dbi_errpfx);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
