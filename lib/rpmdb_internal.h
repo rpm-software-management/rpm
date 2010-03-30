@@ -57,7 +57,6 @@ struct _dbiIndex {
     int	dbi_type;		/*!< db index type */
     unsigned dbi_mode;		/*!< mode to use on open */
     int	dbi_perms;		/*!< file permission to use on open */
-    long dbi_shmkey;		/*!< shared memory base key */
 
     int	dbi_verify_on_close;
     int	dbi_use_dbenv;		/*!< use db environment? */

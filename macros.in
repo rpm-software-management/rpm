@@ -551,7 +551,6 @@ print (t)\
 #   recover_fatal ???	DB_RECOVER_FATAL
 #   private	+++	DB_PRIVATE
 #   lockdown	???	DB_LOCKDOWN
-#   shared	+++	DB_SYSTEM_MEM
 #---------------------- DB->open parameters and tunable values:
 #   pagesize=512 +++	DB->set_pagesize
 #---------------------- DB->open bits:

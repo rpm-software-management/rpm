@@ -496,7 +496,6 @@ AC_FUNC_MMAP
 
 AC_CHECK_FUNCS(mtrace)
 AC_CHECK_FUNCS(putenv)
-AC_CHECK_FUNCS(ftok)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 

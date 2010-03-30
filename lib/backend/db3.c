@@ -8,9 +8,6 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <errno.h>
 #include <sys/wait.h>
-#if defined(HAVE_FTOK) && defined(HAVE_SYS_IPC_H)
-#include <sys/ipc.h>
-#endif
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmmacro.h>
@@ -109,15 +106,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	free(fstr);
     }
 
-    /* XXX Set a default shm_key. */
-    if ((dbi->dbi_eflags & DB_SYSTEM_MEM) && dbi->dbi_shmkey == 0) {
-#if defined(HAVE_FTOK)
-	dbi->dbi_shmkey = ftok(dbhome, 0);
-#else
-	dbi->dbi_shmkey = 0x44631380;
-#endif
-    }
-
     rc = db_env_create(&dbenv, dbi->dbi_ecflags);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
     if (dbenv == NULL || rc)
@@ -160,11 +148,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     if (dbi->dbi_no_fsync) {
 	xx = db_env_set_func_fsync(fsync_disable);
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
-    }
-
-    if (dbi->dbi_shmkey) {
-	xx = dbenv->set_shm_key(dbenv, dbi->dbi_shmkey);
-	xx = cvtdberr(dbi, "dbenv->set_shm_key", xx, _debug);
     }
 
     rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
