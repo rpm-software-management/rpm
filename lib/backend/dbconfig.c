@@ -76,8 +76,6 @@ static const struct poptOption rdbOptions[] = {
  { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_UNKNOWN,
 	NULL, NULL },
 
- { "file",	0,POPT_ARG_STRING,	&staticdbi.dbi_file, 0,
-	NULL, NULL },
  { "mode",	0,POPT_ARG_INT,		&staticdbi.dbi_mode, 0,
 	NULL, NULL },
  { "perms",	0,POPT_ARG_INT,		&staticdbi.dbi_perms, 0,
@@ -128,7 +126,6 @@ static const struct poptOption rdbOptions[] = {
 dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
-	dbi->dbi_file = _free(dbi->dbi_file);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
     }
@@ -279,7 +276,7 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_rpmtag = rpmtag;
-    if (!dbi->dbi_file) dbi->dbi_file = xstrdup(rpmTagGetName(rpmtag));
+    dbi->dbi_file = rpmTagGetName(rpmtag);
     
     /*
      * Inverted lists have join length of 2, primary data has join length of 1.

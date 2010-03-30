@@ -14,7 +14,7 @@ typedef struct _dbiIndex * dbiIndex;
  * Describes an index database (implemented on Berkeley db functionality).
  */
 struct _dbiIndex {
-    char * dbi_file;		/*!< file component of path */
+    const char * dbi_file;	/*!< file component of path */
 
     int	dbi_ecflags;		/*!< db_env_create flags */
     int	dbi_cflags;		/*!< db_create flags */
