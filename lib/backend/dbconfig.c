@@ -122,44 +122,6 @@ static const struct poptOption rdbOptions[] = {
  { "pagesize",	0,POPT_ARG_INT,		&staticdbi.dbi_pagesize, 0,
 	NULL, NULL },
 
-/* XXX bt_minkey */
-/* XXX bt_compare */
-/* XXX bt_dup_compare */
-/* XXX bt_prefix */
- { "bt_dup",	0,POPT_BIT_SET,	&staticdbi.dbi_bt_flags, DB_DUP,
-	NULL, NULL },
- { "bt_dupsort",0,POPT_BIT_SET,	&staticdbi.dbi_bt_flags, DB_DUPSORT,
-	NULL, NULL },
- { "bt_recnum",	0,POPT_BIT_SET,	&staticdbi.dbi_bt_flags, DB_RECNUM,
-	NULL, NULL },
- { "bt_revsplitoff", 0,POPT_BIT_SET,	&staticdbi.dbi_bt_flags, DB_REVSPLITOFF,
-	NULL, NULL },
-
- { "h_dup",	0,POPT_BIT_SET,	&staticdbi.dbi_h_flags, DB_DUP,
-	NULL, NULL },
- { "h_dupsort",	0,POPT_BIT_SET,	&staticdbi.dbi_h_flags, DB_DUPSORT,
-	NULL, NULL },
- { "h_ffactor",	0,POPT_ARG_INT,		&staticdbi.dbi_h_ffactor, 0,
-	NULL, NULL },
- { "h_nelem",	0,POPT_ARG_INT,		&staticdbi.dbi_h_nelem, 0,
-	NULL, NULL },
-
- { "re_renumber", 0,POPT_BIT_SET,	&staticdbi.dbi_re_flags, DB_RENUMBER,
-	NULL, NULL },
- { "re_snapshot",0,POPT_BIT_SET,	&staticdbi.dbi_re_flags, DB_SNAPSHOT,
-	NULL, NULL },
- { "re_delim",	0,POPT_ARG_INT,		&staticdbi.dbi_re_delim, 0,
-	NULL, NULL },
- { "re_len",	0,POPT_ARG_INT,		&staticdbi.dbi_re_len, 0,
-	NULL, NULL },
- { "re_pad",	0,POPT_ARG_INT,		&staticdbi.dbi_re_pad, 0,
-	NULL, NULL },
- { "re_source",	0,POPT_ARG_STRING,	&staticdbi.dbi_re_source, 0,
-	NULL, NULL },
-
- { "q_extentsize", 0,POPT_ARG_INT,	&staticdbi.dbi_q_extentsize, 0,
-	NULL, NULL },
-
     POPT_TABLEEND
 };
 
@@ -167,7 +129,6 @@ dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
 	dbi->dbi_file = _free(dbi->dbi_file);
-	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
     }
@@ -340,9 +301,6 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
 	dbi->dbi_mmapsize = 16 * 1024 * 1024;
 	dbi->dbi_cachesize = 1 * 1024 * 1024;
     }
-
-    if ((dbi->dbi_bt_flags | dbi->dbi_h_flags) & DB_DUP)
-	dbi->dbi_permit_dups = 1;
 
     /* FIX: *(rdbOptions->arg) reachable */
     return dbi;

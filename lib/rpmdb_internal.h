@@ -75,27 +75,6 @@ struct _dbiIndex {
     int	dbi_cachesize;	/*!< (128Kb) */
 	/* dbinfo parameters */
     int	dbi_pagesize;		/*!< (fs blksize) */
-	/* hash access parameters */
-    unsigned int dbi_h_ffactor;	/*!< */
-    unsigned int (*dbi_h_hash_fcn) (DB *, const void *bytes,
-				unsigned int length);
-    unsigned int dbi_h_nelem;	/*!< */
-    unsigned int dbi_h_flags;	/*!< DB_DUP, DB_DUPSORT */
-    int (*dbi_h_dup_compare_fcn) (DB *, const DBT *, const DBT *);
-	/* btree access parameters */
-    int	dbi_bt_flags;
-    int	dbi_bt_minkey;
-    int	(*dbi_bt_compare_fcn) (DB *, const DBT *, const DBT *);
-    int	(*dbi_bt_dup_compare_fcn) (DB *, const DBT *, const DBT *);
-    size_t (*dbi_bt_prefix_fcn) (DB *, const DBT *, const DBT *);
-	/* recno access parameters */
-    int	dbi_re_flags;
-    int	dbi_re_delim;
-    unsigned int dbi_re_len;
-    int	dbi_re_pad;
-    char * dbi_re_source;
-	/* queue access parameters */
-    unsigned int dbi_q_extentsize;
 
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;	/*!< rpm tag used for index */

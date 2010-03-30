@@ -92,7 +92,6 @@ static int isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
 
 static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 {
-    rpmdb rpmdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int eflags;
     int rc, xx;
@@ -619,94 +618,6 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    if (rc == 0 && dbi->dbi_pagesize) {
 		rc = db->set_pagesize(db, dbi->dbi_pagesize);
 		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
-	    }
-	    if (rc == 0 && oflags & DB_CREATE) {
-		switch(dbi->dbi_type) {
-		default:
-		case DB_HASH:
-		    if (dbi->dbi_h_ffactor) {
-			rc = db->set_h_ffactor(db, dbi->dbi_h_ffactor);
-			rc = cvtdberr(dbi, "db->set_h_ffactor", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_h_nelem) {
-			rc = db->set_h_nelem(db, dbi->dbi_h_nelem);
-			rc = cvtdberr(dbi, "db->set_h_nelem", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_h_flags) {
-			rc = db->set_flags(db, dbi->dbi_h_flags);
-			rc = cvtdberr(dbi, "db->set_h_flags", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_h_hash_fcn) {
-			rc = db->set_h_hash(db, dbi->dbi_h_hash_fcn);
-			rc = cvtdberr(dbi, "db->set_h_hash", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_h_dup_compare_fcn) {
-			rc = db->set_dup_compare(db, dbi->dbi_h_dup_compare_fcn);
-			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
-			if (rc) break;
-		    }
-		    break;
-		case DB_BTREE:
-		    if (dbi->dbi_bt_flags) {
-			rc = db->set_flags(db, dbi->dbi_bt_flags);
-			rc = cvtdberr(dbi, "db->set_bt_flags", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_bt_minkey) {
-			rc = db->set_bt_minkey(db, dbi->dbi_bt_minkey);
-			rc = cvtdberr(dbi, "db->set_bt_minkey", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_bt_compare_fcn) {
-			rc = db->set_bt_compare(db, dbi->dbi_bt_compare_fcn);
-			rc = cvtdberr(dbi, "db->set_bt_compare", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_bt_dup_compare_fcn) {
-			rc = db->set_dup_compare(db, dbi->dbi_bt_dup_compare_fcn);
-			rc = cvtdberr(dbi, "db->set_dup_compare", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_bt_prefix_fcn) {
-			rc = db->set_bt_prefix(db, dbi->dbi_bt_prefix_fcn);
-			rc = cvtdberr(dbi, "db->set_bt_prefix", rc, _debug);
-			if (rc) break;
-		    }
-		    break;
-		case DB_RECNO:
-		    if (dbi->dbi_re_delim) {
-			rc = db->set_re_delim(db, dbi->dbi_re_delim);
-			rc = cvtdberr(dbi, "db->set_re_selim", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_re_len) {
-			rc = db->set_re_len(db, dbi->dbi_re_len);
-			rc = cvtdberr(dbi, "db->set_re_len", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_re_pad) {
-			rc = db->set_re_pad(db, dbi->dbi_re_pad);
-			rc = cvtdberr(dbi, "db->set_re_pad", rc, _debug);
-			if (rc) break;
-		    }
-		    if (dbi->dbi_re_source) {
-			rc = db->set_re_source(db, dbi->dbi_re_source);
-			rc = cvtdberr(dbi, "db->set_re_source", rc, _debug);
-			if (rc) break;
-		    }
-		    break;
-		case DB_QUEUE:
-		    if (dbi->dbi_q_extentsize) {
-			rc = db->set_q_extentsize(db, dbi->dbi_q_extentsize);
-			rc = cvtdberr(dbi, "db->set_q_extentsize", rc, _debug);
-			if (rc) break;
-		    }
-		    break;
-		}
 	    }
 
 	    if (rc == 0) {
