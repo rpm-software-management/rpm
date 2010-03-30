@@ -442,7 +442,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
 	rc = (dbenv->open)(dbenv, dbhome,
-            DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
+            DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE, 0);
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
 	if (rc) goto exit;
 

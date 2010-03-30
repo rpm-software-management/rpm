@@ -549,8 +549,6 @@ print (t)\
 #   lock	???	DB_INIT_LOCK
 #   recover	???	DB_RECOVER
 #   recover_fatal ???	DB_RECOVER_FATAL
-#   use_environ	???	DB_USE_ENVIRON
-#   use_environ_root ??? DB_USE_ENVIRON_ROOT
 #   private	+++	DB_PRIVATE
 #   lockdown	???	DB_LOCKDOWN
 #   shared	+++	DB_SYSTEM_MEM
