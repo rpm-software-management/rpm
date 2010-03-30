@@ -41,14 +41,27 @@ static int _rebuildinprogress = 0;
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
 
-struct dbiTags_s {
-    rpmTag * tags;
-    rpmTag max;
-    int nlink;
+static rpmTag const dbiTags[] = {
+    RPMDBI_PACKAGES,
+    RPMTAG_NAME,
+    RPMTAG_BASENAMES,
+    RPMTAG_GROUP,
+    RPMTAG_REQUIRENAME,
+    RPMTAG_PROVIDENAME,
+    RPMTAG_CONFLICTNAME,
+    RPMTAG_OBSOLETENAME,
+    RPMTAG_TRIGGERNAME,
+    RPMTAG_DIRNAMES,
+    RPMTAG_REQUIREVERSION,
+    RPMTAG_PROVIDEVERSION,
+    RPMTAG_INSTALLTID,
+    RPMTAG_SIGMD5,
+    RPMTAG_SHA1HEADER,
+    RPMTAG_FILEDIGESTS,
+    RPMTAG_PUBKEYS,
 };
 
-/* XXX should dbitags be per-db instead? */
-static struct dbiTags_s dbiTags = { NULL, 0, 0 };
+#define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmTag))
 
 /* Bit mask macros. */
 typedef	unsigned int __pbm_bits;
@@ -88,94 +101,9 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
     return *sp;
 }
 
-/**
- * Return dbi index used for rpm tag.
- * @param rpmtag	rpm header tag
- * @return		dbi index, -1 on error
- */
-static int dbiTagToDbix(rpmTag rpmtag)
-{
-    int dbix;
-
-    if (dbiTags.tags != NULL)
-    for (dbix = 0; dbix < dbiTags.max; dbix++) {
-	if (rpmtag == dbiTags.tags[dbix])
-	    return dbix;
-    }
-    return -1;
-}
-
-/**
- * Initialize database (index, tag) tuple from configuration.
- */
-static void dbiTagsInit(void)
-{
-    static const char * const _dbiTagStr_default =
-	"Packages:Name:Basenames:Group:Requirename:Providename:Conflictname:ObsoleteName:Triggername:Dirnames:Requireversion:Provideversion:Installtid:Sigmd5:Sha1header:Filedigests:Pubkeys";
-    char * dbiTagStr = NULL;
-    char * o, * oe;
-    rpmTag rpmtag;
-
-    dbiTags.nlink++;
-    if (dbiTags.tags != NULL && dbiTags.max > 0) {
-	return;
-    }
-
-    dbiTagStr = rpmExpand("%{?_dbi_tags}", NULL);
-    if (!(dbiTagStr && *dbiTagStr)) {
-	dbiTagStr = _free(dbiTagStr);
-	dbiTagStr = xstrdup(_dbiTagStr_default);
-    }
-
-    /* Discard previous values. */
-    dbiTags.tags = _free(dbiTags.tags);
-    dbiTags.max = 0;
-
-    /* Always allocate package index */
-    dbiTags.tags = xcalloc(1, sizeof(*dbiTags.tags));
-    dbiTags.tags[dbiTags.max++] = RPMDBI_PACKAGES;
-
-    for (o = dbiTagStr; o && *o; o = oe) {
-	while (*o && risspace(*o))
-	    o++;
-	if (*o == '\0')
-	    break;
-	for (oe = o; oe && *oe; oe++) {
-	    if (risspace(*oe))
-		break;
-	    if (oe[0] == ':' && !(oe[1] == '/' && oe[2] == '/'))
-		break;
-	}
-	if (oe && *oe)
-	    *oe++ = '\0';
-	rpmtag = rpmTagGetValue(o);
-	if (rpmtag == RPMTAG_NOT_FOUND) {
-	    rpmlog(RPMLOG_WARNING,
-		_("dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"), o);
-	    continue;
-	}
-	if (dbiTagToDbix(rpmtag) >= 0)
-	    continue;
-
-	dbiTags.tags = xrealloc(dbiTags.tags, (dbiTags.max + 1) * sizeof(*dbiTags.tags)); /* XXX memory leak */
-	dbiTags.tags[dbiTags.max++] = rpmtag;
-    }
-
-    dbiTagStr = _free(dbiTagStr);
-}
-
-static void dbiTagsFree(void)
-{
-    if (--dbiTags.nlink > 0) {
-	return;
-    }
-    dbiTags.tags = _free(dbiTags.tags);
-    dbiTags.max = 0;
-}
-
 dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
 {
-    int dbix;
+    int dbix = -1;
     dbiIndex dbi = NULL;
     int _dbapi, _dbapi_rebuild, _dbapi_wanted;
     int rc = 0;
@@ -183,8 +111,11 @@ dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
     if (db == NULL)
 	return NULL;
 
-    dbix = dbiTagToDbix(rpmtag);
-    if (dbix < 0 || dbix >= dbiTags.max)
+    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (rpmtag == dbiTags[dbix])
+	    break;
+    }
+    if (dbix < 0)
 	return NULL;
 
     /* Is this index already open ? */
@@ -682,30 +613,27 @@ int rpmdbSetChrootDone(rpmdb db, int chrootDone)
 
 int rpmdbOpenAll(rpmdb db)
 {
-    int dbix;
     int rc = 0;
 
     if (db == NULL) return -2;
 
-    if (dbiTags.tags != NULL)
-    for (dbix = 0; dbix < dbiTags.max; dbix++) {
+    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (db->_dbi[dbix] != NULL)
 	    continue;
-	(void) dbiOpen(db, dbiTags.tags[dbix], db->db_flags);
+	(void) dbiOpen(db, dbiTags[dbix], db->db_flags);
     }
     return rc;
 }
 
 int rpmdbCloseDBI(rpmdb db, rpmTag rpmtag)
 {
-    int dbix;
     int rc = 0;
 
-    if (db == NULL || db->_dbi == NULL || dbiTags.tags == NULL)
+    if (db == NULL || db->_dbi == NULL)
 	return 0;
 
-    for (dbix = 0; dbix < dbiTags.max; dbix++) {
-	if (dbiTags.tags[dbix] != rpmtag)
+    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
+	if (dbiTags[dbix] != rpmtag)
 	    continue;
 	if (db->_dbi[dbix] != NULL) {
 	    int xx;
@@ -759,8 +687,6 @@ int rpmdbClose(rpmdb db)
     }
 
     db = _free(db);
-
-    dbiTagsFree();
 
 exit:
     (void) rpmsqEnable(-SIGHUP,	NULL);
@@ -825,7 +751,7 @@ rpmdb newRpmdb(const char * root,
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
-    db->db_ndbi = dbiTags.max;
+    db->db_ndbi = dbiTagsMax;
     db->db_malloc = rmalloc;
     db->db_realloc = rrealloc;
     db->db_free = NULL; /* XXX rfree() prototype differs from free() */
@@ -843,8 +769,6 @@ static int openDatabase(const char * prefix,
     int rc, xx;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
     int minimal = flags & RPMDB_FLAG_MINIMAL;
-
-    dbiTagsInit();
 
     /* Insure that _dbapi has one of -1, 1, 2, or 3 */
     if (_dbapi < -1 || _dbapi > 4)
@@ -869,12 +793,9 @@ static int openDatabase(const char * prefix,
 
     db->db_api = _dbapi;
 
-    {	int dbix;
-
-	rc = 0;
-	if (dbiTags.tags != NULL)
-	for (dbix = 0; rc == 0 && dbix < dbiTags.max; dbix++) {
-	    rpmTag rpmtag = dbiTags.tags[dbix];
+    {   rc = 0;
+	for (int dbix = 0; rc == 0 && dbix < dbiTagsMax; dbix++) {
+	    rpmTag rpmtag = dbiTags[dbix];
 	    dbiIndex dbi = dbiOpen(db, rpmtag, 0);
 
 	    if (dbi == NULL) {
@@ -2401,13 +2322,12 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     (void) blockSignals(&signalMask);
 
 	/* FIX: rpmvals heartburn */
-    {	int dbix;
+    {
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
-	if (dbiTags.tags != NULL)
-	for (dbix = 0; dbix < dbiTags.max; dbix++) {
+	for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
 	    dbiIndex dbi = NULL;
-	    rpmTag rpmtag = dbiTags.tags[dbix];
+	    rpmTag rpmtag = dbiTags[dbix];
 	    int xx = 0;
 	    struct rpmtd_s tagdata;
 
@@ -2632,9 +2552,8 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     if (hdrNum) {	
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
-	if (dbiTags.tags != NULL)
-	for (dbix = 0; dbix < dbiTags.max; dbix++) {
-	    rpmTag rpmtag = dbiTags.tags[dbix];
+	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	    rpmTag rpmtag = dbiTags[dbix];
 	    rpmRC rpmrc = RPMRC_NOTFOUND;
 	    int j;
 	    struct rpmtd_s tagdata, reqflags;
@@ -2841,13 +2760,11 @@ static int rpmdbRemoveDatabase(const char * prefix,
     char *path;
     int xx;
 
-    dbiTagsInit();
     switch (_dbapi) {
     case 4:
     case 3:
-	if (dbiTags.tags != NULL)
-	for (i = 0; i < dbiTags.max; i++) {
-	    const char * base = rpmTagGetName(dbiTags.tags[i]);
+	for (i = 0; i < dbiTagsMax; i++) {
+	    const char * base = rpmTagGetName(dbiTags[i]);
 	    path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
 	    if (access(path, F_OK) == 0)
 	    	xx = unlink(path);
@@ -2860,7 +2777,6 @@ static int rpmdbRemoveDatabase(const char * prefix,
     case 0:
 	break;
     }
-    dbiTagsFree();
 
     path = rpmGetPath(prefix, "/", dbpath, NULL);
     xx = rmdir(path);
@@ -2880,15 +2796,13 @@ static int rpmdbMoveDatabase(const char * prefix,
     int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
     sigset_t sigMask;
 
-    dbiTagsInit();
     blockSignals(&sigMask);
     switch (_olddbapi) {
     case 4:
         /* Fall through */
     case 3:
-	if (dbiTags.tags != NULL)
-	for (i = 0; i < dbiTags.max; i++) {
-	    rpmTag rpmtag = dbiTags.tags[i];
+	for (i = 0; i < dbiTagsMax; i++) {
+	    rpmTag rpmtag = dbiTags[i];
 	    const char *base = rpmTagGetName(rpmtag);
 	    char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
 	    char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
@@ -2941,7 +2855,6 @@ cont:
     if (selinux) {
 	(void) matchpathcon_fini();
     }
-    dbiTagsFree();
     return rc;
 }
 
