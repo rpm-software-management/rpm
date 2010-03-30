@@ -46,7 +46,6 @@ struct _dbiIndexSet {
  */
 struct _dbiIndex {
     char * dbi_file;		/*!< file component of path */
-    char * dbi_tmpdir;		/*!< temporary directory */
 
     int	dbi_ecflags;		/*!< db_env_create flags */
     int	dbi_cflags;		/*!< db_create flags */
@@ -66,7 +65,6 @@ struct _dbiIndex {
     int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
-    int	dbi_temporary;		/*!< non-persistent */
     int	dbi_byteswapped;
 
 	/* dbenv parameters */

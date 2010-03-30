@@ -151,14 +151,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
 	xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
     }
-    if (dbi->dbi_tmpdir) {
-	/* XXX this isn't correct wrt chroot in+out */
-	const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
-	char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
-	xx = dbenv->set_tmp_dir(dbenv, tmpdir);
-	xx = cvtdberr(dbi, "dbenv->set_tmp_dir", xx, _debug);
-	tmpdir = _free(tmpdir);
-    }
 
     if (dbi->dbi_cachesize) {
 	xx = dbenv->set_cachesize(dbenv, 0, dbi->dbi_cachesize, 0);
@@ -429,7 +421,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 	rpmdb->db_opens--;
     }
 
-    if (dbi->dbi_verify_on_close && !dbi->dbi_temporary) {
+    if (dbi->dbi_verify_on_close) {
 	DB_ENV * dbenv = NULL;
 
 	rc = db_env_create(&dbenv, 0);
@@ -449,16 +441,6 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
 		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
 
-	if (dbi->dbi_tmpdir) {
-	    /* XXX this isn't correct wrt chroot in+out */
-	    const char * root = rpmdb->db_chrootDone ? NULL : rpmdb->db_root;
-	    char * tmpdir = rpmGenPath(root, dbi->dbi_tmpdir, NULL);
-	    rc = dbenv->set_tmp_dir(dbenv, tmpdir);
-	    rc = cvtdberr(dbi, "dbenv->set_tmp_dir", rc, _debug);
-	    tmpdir = _free(tmpdir);
-	    if (rc) goto exit;
-	}
-	    
 	rc = (dbenv->open)(dbenv, dbhome,
             DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE | DB_USE_ENVIRON, 0);
 	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
@@ -528,21 +510,14 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Map open mode flags onto configured database/environment flags.
      */
-    if (dbi->dbi_temporary) {
+    if ((dbi->dbi_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
+    if (dbi->dbi_mode & O_CREAT) {
 	oflags |= DB_CREATE;
 	dbi->dbi_oeflags |= DB_CREATE;
-	oflags &= ~DB_RDONLY;
-	dbi->dbi_oflags &= ~DB_RDONLY;
-    } else {
-	if ((dbi->dbi_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
-	if (dbi->dbi_mode & O_CREAT) {
-	    oflags |= DB_CREATE;
-	    dbi->dbi_oeflags |= DB_CREATE;
-	}
-#ifdef	DANGEROUS
-	if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
-#endif
     }
+#ifdef	DANGEROUS
+    if ( dbi->dbi_mode & O_TRUNC) oflags |= DB_TRUNCATE;
+#endif
 
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
@@ -566,16 +541,9 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    /* ... DB_RDONLY maps dbhome perms across files ...  */
-	    if (dbi->dbi_temporary) {
-		oflags |= DB_CREATE;
-		dbi->dbi_oeflags |= DB_CREATE;
-		oflags &= ~DB_RDONLY;
-		dbi->dbi_oflags &= ~DB_RDONLY;
-	    } else {
-		oflags |= DB_RDONLY;
-		/* ... and DB_WRITECURSOR won't be needed ...  */
-		dbi->dbi_oflags |= DB_RDONLY;
-	    }
+	    oflags |= DB_RDONLY;
+	    /* ... and DB_WRITECURSOR won't be needed ...  */
+	    dbi->dbi_oflags |= DB_RDONLY;
 
 	} else {	/* dbhome is writable, check for persistent dbenv. */
 	    char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
@@ -761,10 +729,10 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    }
 
 	    if (rc == 0) {
-		const char *dbpath = dbi->dbi_temporary ? NULL : dbi->dbi_file;
+		const char *dbpath = dbi->dbi_file;
 		char *fullpath = NULL;
 		/* When not in environment, absolute path is needed */
-		if (!dbi->dbi_use_dbenv && !dbi->dbi_temporary) {
+		if (!dbi->dbi_use_dbenv) {
 		    fullpath = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
 		    dbpath = fullpath;
 		}

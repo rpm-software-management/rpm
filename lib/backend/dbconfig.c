@@ -92,8 +92,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "shmkey",	0,POPT_ARG_LONG,	&staticdbi.dbi_shmkey, 0,
 	NULL, NULL },
- { "tmpdir",	0,POPT_ARG_STRING,	&staticdbi.dbi_tmpdir, 0,
-	NULL, NULL },
 
  { "verify",	0,POPT_ARG_NONE,	&staticdbi.dbi_verify_on_close, 0,
 	NULL, NULL },
@@ -104,8 +102,6 @@ static const struct poptOption rdbOptions[] = {
  { "nodbsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_dbsync, 0,
 	NULL, NULL },
  { "lockdbfd",	0,POPT_ARG_NONE,	&staticdbi.dbi_lockdbfd, 0,
-	NULL, NULL },
- { "temporary",	0,POPT_ARG_NONE,	&staticdbi.dbi_temporary, 0,
 	NULL, NULL },
 
  { "cachesize",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
@@ -181,7 +177,6 @@ dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
 	dbi->dbi_file = _free(dbi->dbi_file);
-	dbi->dbi_tmpdir = _free(dbi->dbi_tmpdir);
 	dbi->dbi_re_source = _free(dbi->dbi_re_source);
 	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);

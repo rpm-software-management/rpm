@@ -576,7 +576,6 @@ print (t)\
 #   verify		(db3 only) Verify Packages db after RW close?
 #   lockdbfd		(always on for Packages) Use fcntl(2) locking ?
 #   nofsync		Disable fsync(2) call performed after db3 writes?
-#   temporary		Unlink file when closing.
 #
 
 # XXX Use transactions and logs for rpmdb durability (no clue yet):
@@ -587,7 +586,7 @@ print (t)\
 # XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
 %__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb
 
-%__dbi_other			%{?_tmppath:tmpdir=%{_tmppath}} %{?__dbi_cdb}
+%__dbi_other			%{?__dbi_cdb}
 
 # Note: adding nofsync here speeds up --rebuilddb a lot.
 %__dbi_rebuild			nofsync !log !txn !cdb
