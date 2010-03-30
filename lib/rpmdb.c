@@ -2570,24 +2570,17 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
     (void) blockSignals(&signalMask);
 
-    {
+    dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
+    if (dbi != NULL) {
 	unsigned int firstkey = 0;
 	void * keyp = &firstkey;
 	size_t keylen = sizeof(firstkey);
-	void * datap = NULL;
-	size_t datalen = 0;
-
-      dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
-      if (dbi != NULL) {
-
-	/* XXX db0: hack to pass sizeof header to fadAlloc */
-	datap = h;
-	datalen = headerSizeof(h, HEADER_MAGIC_NO);
+	void * datap = h;
+	size_t datalen = headerSizeof(h, HEADER_MAGIC_NO);
 
 	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
-
 	key.data = keyp;
 	key.size = keylen;
 	data.data = datap;
@@ -2626,8 +2619,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	dbcursor = NULL;
-      }
-
     }
 
     if (ret) {
@@ -2638,8 +2629,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
     /* Now update the indexes */
 
-    if (hdrNum)
-    {	
+    if (hdrNum) {	
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
 	if (dbiTags.tags != NULL)
