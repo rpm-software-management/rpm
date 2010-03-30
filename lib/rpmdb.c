@@ -984,6 +984,15 @@ int rpmdbVerify(const char * prefix)
     return rc;
 }
 
+static Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
+{   
+    rpmdbMatchIterator mi = rpmdbInitIterator(db, RPMDBI_PACKAGES,
+					      &offset, sizeof(offset));
+    Header h = headerLink(rpmdbNextIterator(mi));
+    rpmdbFreeIterator(mi);
+    return h;
+}
+
 /**
  * Find file matches in database.
  * @param db		rpm database
@@ -1062,15 +1071,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	uint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
 	unsigned int prevoff;
-	Header h;
-
-	{   rpmdbMatchIterator mi;
-	    mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &offset, sizeof(offset));
-	    h = rpmdbNextIterator(mi);
-	    if (h)
-		h = headerLink(h);
-	    mi = rpmdbFreeIterator(mi);
-	}
+	Header h = rpmdbGetHeaderAt(db, offset);
 
 	if (h == NULL) {
 	    i++;
@@ -2383,13 +2384,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
 
-    {	rpmdbMatchIterator mi;
-	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &hdrNum, sizeof(hdrNum));
-	h = rpmdbNextIterator(mi);
-	if (h)
-	    h = headerLink(h);
-	mi = rpmdbFreeIterator(mi);
-    }
+    h = rpmdbGetHeaderAt(db, hdrNum);
 
     if (h == NULL) {
 	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
