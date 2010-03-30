@@ -8,38 +8,7 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmutil.h>
 
-/**
- */
-typedef struct _dbiIndexItem * dbiIndexItem;
-
-/** \ingroup rpmdb
- * A single element (i.e. inverted list from tag values) of a database.
- */
-typedef struct _dbiIndexSet * dbiIndexSet;
-
-/**
- */
 typedef struct _dbiIndex * dbiIndex;
-
-/* this will break if sizeof(int) != 4 */
-/** \ingroup dbi
- * A single item from an index database (i.e. the "data returned").
- * Note: In rpm-3.0.4 and earlier, this structure was passed by value,
- * and was identical to the "data saved" structure below.
- */
-struct _dbiIndexItem {
-    unsigned int hdrNum;		/*!< header instance in db */
-    unsigned int tagNum;		/*!< tag index in header */
-};
-
-/** \ingroup dbi
- * Items retrieved from the index database.
- */
-struct _dbiIndexSet {
-    struct _dbiIndexItem * recs;	/*!< array of records */
-    unsigned int count;			/*!< number of records */
-    size_t alloced;			/*!< alloced size */
-};
 
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db functionality).

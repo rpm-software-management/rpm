@@ -63,6 +63,19 @@ static rpmTag const dbiTags[] = {
 
 #define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmTag))
 
+/* A single item from an index database (i.e. the "data returned"). */
+typedef struct _dbiIndexItem {
+    unsigned int hdrNum;		/*!< header instance in db */
+    unsigned int tagNum;		/*!< tag index in header */
+} * dbiIndexItem;
+
+/* Items retrieved from the index database.*/
+typedef struct _dbiIndexSet {
+    struct _dbiIndexItem * recs;	/*!< array of records */
+    unsigned int count;			/*!< number of records */
+    size_t alloced;			/*!< alloced size */
+} * dbiIndexSet;
+
 /* Bit mask macros. */
 typedef	unsigned int __pbm_bits;
 #define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
