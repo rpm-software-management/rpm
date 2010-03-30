@@ -127,7 +127,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     if (dbenv == NULL || rc)
 	goto errxit;
 
-    dbenv->set_alloc(dbenv,rpmdb->db_malloc, rpmdb->db_realloc, rpmdb->db_free);
+    dbenv->set_alloc(dbenv, rmalloc, rrealloc, NULL);
     dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
@@ -660,8 +660,7 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 	    if (rc == 0 && !dbi->dbi_use_dbenv) {
-		rc = db->set_alloc(db,
-			rpmdb->db_malloc, rpmdb->db_realloc, rpmdb->db_free);
+		rc = db->set_alloc(db, rmalloc, rrealloc, NULL);
 		rc = cvtdberr(dbi, "db->set_alloc", rc, _debug);
 	    }
 

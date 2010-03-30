@@ -99,7 +99,6 @@ unsigned char * dbi_lk_conflicts;
 #endif
 	/* dbinfo parameters */
     int	dbi_pagesize;		/*!< (fs blksize) */
-    void * (*dbi_malloc) (size_t nbytes);
 	/* hash access parameters */
     unsigned int dbi_h_ffactor;	/*!< */
     unsigned int (*dbi_h_hash_fcn) (DB *, const void *bytes,
@@ -148,15 +147,12 @@ struct rpmdb_s {
     int		db_mkdirDone;	/*!< Has db_home been created? */
     void (*db_errcall) (const char *db_errpfx, char *buffer);
     FILE *	db_errfile;
-    void * (*db_malloc) (size_t nbytes);
-    void * (*db_realloc) (void * ptr,
-						size_t nbytes);
-    void (*db_free) (void * ptr);
     unsigned char * db_bits;	/*!< package instance bit mask. */
     int		db_nbits;	/*!< no. of bits in mask. */
     rpmdb	db_next;
     int		db_opens;
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
+    int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
 
     struct rpmop_s db_getops;

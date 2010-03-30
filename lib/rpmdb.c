@@ -749,9 +749,6 @@ rpmdb newRpmdb(const char * root,
     db->db_errpfx = rpmExpand( (epfx && *epfx ? epfx : _DB_ERRPFX), NULL);
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
-    db->db_malloc = rmalloc;
-    db->db_realloc = rrealloc;
-    db->db_free = NULL; /* XXX rfree() prototype differs from free() */
     db->_dbi = xcalloc(dbiTagsMax, sizeof(*db->_dbi));
     db->nrefs = 0;
     return rpmdbLink(db);
