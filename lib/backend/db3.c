@@ -101,10 +101,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     if (dbenvp == NULL)
 	return 1;
 
-    /* XXX HACK */
-    if (rpmdb->db_errfile == NULL)
-	rpmdb->db_errfile = stderr;
-
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
     if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
@@ -128,8 +124,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	goto errxit;
 
     dbenv->set_alloc(dbenv, rmalloc, rrealloc, NULL);
-    dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
-    dbenv->set_errfile(dbenv, rpmdb->db_errfile);
+    dbenv->set_errcall(dbenv, NULL);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
 
 #if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
@@ -441,8 +436,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
 	if (rc || dbenv == NULL) goto exit;
 
-	dbenv->set_errcall(dbenv, (void *) rpmdb->db_errcall);
-	dbenv->set_errfile(dbenv, rpmdb->db_errfile);
+	dbenv->set_errcall(dbenv, NULL);
 	dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
 #if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
 	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,

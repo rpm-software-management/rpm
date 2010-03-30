@@ -72,8 +72,6 @@ struct _dbiIndex {
 	/* dbenv parameters */
     int	dbi_lorder;
     /* XXX db-4.3.14 adds dbenv as 1st arg. */
-    void (*db_errcall) (void * dbenv, const char *db_errpfx, char *buffer);
-    FILE *	dbi_errfile;
     int	dbi_verbose;
 	/* mpool sub-system parameters */
     int	dbi_mmapsize;	/*!< (10Mb) */
@@ -126,8 +124,6 @@ struct rpmdb_s {
     int		db_remove_env;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     int		db_mkdirDone;	/*!< Has db_home been created? */
-    void (*db_errcall) (const char *db_errpfx, char *buffer);
-    FILE *	db_errfile;
     unsigned char * db_bits;	/*!< package instance bit mask. */
     int		db_nbits;	/*!< no. of bits in mask. */
     rpmdb	db_next;
