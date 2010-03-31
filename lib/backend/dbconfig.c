@@ -69,10 +69,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "hash", 	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_HASH,
 	NULL, NULL },
- { "recno",	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_RECNO,
-	NULL, NULL },
- { "queue",	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_QUEUE,
-	NULL, NULL },
  { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_UNKNOWN,
 	NULL, NULL },
 

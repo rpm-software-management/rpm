@@ -560,8 +560,6 @@ print (t)\
 #---------------------- DB->open types:
 #   btree		DB_BTREE
 #   hash		DB_HASH
-#   recno	???	DB_RECNO
-#   queue	???	DB_QUEUE
 #   unknown	+++	DB_UNKNOWN
 #---------------------- DB->set_flags bits:
 #   bt_dup	+++	(btree only) DB_DUP
@@ -587,7 +585,6 @@ print (t)\
 
 # Note: adding nofsync here speeds up --rebuilddb a lot.
 %__dbi_rebuild			nofsync !log !txn !cdb
-%__dbi_transient		%{__dbi_rebuild} temporary private
 %__dbi_perms			perms=0644
 
 #
