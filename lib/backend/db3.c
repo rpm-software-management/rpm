@@ -125,10 +125,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     dbenv->set_isalive(dbenv, isalive);
 #endif
 
-#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-    dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
-	    (dbi->dbi_verbose & DB_VERB_CHKPOINT));
-#endif
     dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 	    (dbi->dbi_verbose & DB_VERB_DEADLOCK));
     dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
@@ -357,24 +353,16 @@ dbiIndexType dbiType(dbiIndex dbi)
 int dbiStat(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
     DB_TXN * txnid = NULL;
-#endif
     int rc = 0;
 
     assert(db != NULL);
-#if defined(DB_FAST_STAT)
     if (flags)
 	flags = DB_FAST_STAT;
     else
-#endif
 	flags = 0;
     dbi->dbi_stats = _free(dbi->dbi_stats);
-#if (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
     rc = db->stat(db, txnid, &dbi->dbi_stats, flags);
-#else
-    rc = db->stat(db, &dbi->dbi_stats, flags);
-#endif
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
     return rc;
 }
@@ -424,10 +412,6 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 
 	dbenv->set_errcall(dbenv, NULL);
 	dbenv->set_errpfx(dbenv, _errpfx);
-#if !(DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR >= 3)
-	xx = dbenv->set_verbose(dbenv, DB_VERB_CHKPOINT,
-		(dbi->dbi_verbose & DB_VERB_CHKPOINT));
-#endif
 	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
 	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
