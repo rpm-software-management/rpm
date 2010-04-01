@@ -735,8 +735,6 @@ int rpmdbSync(rpmdb db)
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
-	if (db->_dbi[dbix]->dbi_no_dbsync)
-	    continue;
     	xx = dbiSync(db->_dbi[dbix], 0);
 	if (xx && rc == 0) rc = xx;
     }
@@ -2373,8 +2371,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		    rc = dbiDel(dbi, dbcursor, &key, &data, 0);
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
-		if (!dbi->dbi_no_dbsync)
-		    xx = dbiSync(dbi, 0);
+		xx = dbiSync(dbi, 0);
 		continue;
 	    }
 	
@@ -2460,8 +2457,7 @@ cont:
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    dbcursor = NULL;
 
-	    if (!dbi->dbi_no_dbsync)
-		xx = dbiSync(dbi, 0);
+	    xx = dbiSync(dbi, 0);
 
 	    rpmtdFreeData(&tagdata);
 	}
@@ -2617,8 +2613,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		data.size = 0;
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
-		if (!dbi->dbi_no_dbsync)
-		    xx = dbiSync(dbi, 0);
+		xx = dbiSync(dbi, 0);
 		continue;
 		break;
 	    case RPMTAG_REQUIRENAME:
@@ -2731,8 +2726,7 @@ cont:
 	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 	    dbcursor = NULL;
 
-	    if (!dbi->dbi_no_dbsync)
-		xx = dbiSync(dbi, 0);
+	    xx = dbiSync(dbi, 0);
 
 	    rpmtdFreeData(&tagdata);
 	}

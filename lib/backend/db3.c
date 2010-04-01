@@ -182,7 +182,7 @@ int dbiSync(dbiIndex dbi, unsigned int flags)
     DB * db = dbi->dbi_db;
     int rc = 0;
 
-    if (db != NULL) {
+    if (db != NULL && !dbi->dbi_no_dbsync) {
 	rc = db->sync(db, flags);
 	rc = cvtdberr(dbi, "db->sync", rc, _debug);
     }
