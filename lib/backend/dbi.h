@@ -86,7 +86,7 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
+int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
 
 
 /* FIX: vector annotations */

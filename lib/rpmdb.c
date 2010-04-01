@@ -121,7 +121,7 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
  * @param flags		(unused)
  * @return		index database handle
  */
-static dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
+static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 {
     int dbix = -1;
     dbiIndex dbi = NULL;
@@ -165,7 +165,7 @@ static dbiIndex dbiOpen(rpmdb db, rpmTag rpmtag, unsigned int flags)
     }
     errno = 0;
     dbi = NULL;
-    rc = dbiOpenDB(db, rpmtag, &dbi);
+    rc = dbiOpen(db, rpmtag, &dbi);
     if (rc) {
 	static int _printed[32];
 	if (!_printed[dbix & 0x1f]++)
@@ -641,7 +641,7 @@ int rpmdbOpenAll(rpmdb db)
     for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (db->_dbi[dbix] != NULL)
 	    continue;
-	(void) dbiOpen(db, dbiTags[dbix], db->db_flags);
+	(void) rpmdbOpenIndex(db, dbiTags[dbix], db->db_flags);
     }
     return rc;
 }
@@ -806,7 +806,7 @@ static int openDatabase(const char * prefix,
     {   rc = 0;
 	for (int dbix = 0; rc == 0 && dbix < dbiTagsMax; dbix++) {
 	    rpmTag rpmtag = dbiTags[dbix];
-	    dbiIndex dbi = dbiOpen(db, rpmtag, 0);
+	    dbiIndex dbi = rpmdbOpenIndex(db, rpmtag, 0);
 
 	    if (dbi == NULL) {
 		rc = -2;
@@ -963,7 +963,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     if (baseName == NULL)
 	goto exit;
 
-    dbi = dbiOpen(db, dbtag, 0);
+    dbi = rpmdbOpenIndex(db, dbtag, 0);
     if (dbi != NULL) {
 	dbcursor = NULL;
 	xx = dbiCopen(dbi, &dbcursor, 0);
@@ -1072,7 +1072,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
 
-    dbi = dbiOpen(db, dbtag, 0);
+    dbi = rpmdbOpenIndex(db, dbtag, 0);
     if (dbi == NULL)
 	return 0;
 
@@ -1373,7 +1373,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	next->mi_next = NULL;
     }
 
-    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
+    dbi = rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)	/* XXX can't happen */
 	return NULL;
 
@@ -1776,7 +1776,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
-    dbi = dbiOpen(mi->mi_db, RPMDBI_PACKAGES, 0);
+    dbi = rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -1992,7 +1992,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi)
     if (key->data == NULL)
 	return 1;
 
-    dbi = dbiOpen(mi->mi_db, mi->mi_rpmtag, 0);
+    dbi = rpmdbOpenIndex(mi->mi_db, mi->mi_rpmtag, 0);
     if (dbi == NULL)
 	return 1;
 
@@ -2069,7 +2069,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	isLabel = 1;
     }
 
-    dbi = dbiOpen(db, rpmtag, 0);
+    dbi = rpmdbOpenIndex(db, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -2346,7 +2346,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    struct rpmtd_s tagdata;
 
 	    if (rpmtag == RPMDBI_PACKAGES) {
-		dbi = dbiOpen(db, rpmtag, 0);
+		dbi = rpmdbOpenIndex(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 	      
@@ -2373,7 +2373,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 		continue;
 
-	    if (!(dbi = dbiOpen(db, rpmtag, 0))) {
+	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0))) {
 		rpmtdFreeData(&tagdata);
 		continue;
 	    }
@@ -2502,7 +2502,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
     (void) blockSignals(&signalMask);
 
-    dbi = dbiOpen(db, RPMDBI_PACKAGES, 0);
+    dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
     if (dbi != NULL) {
 	unsigned int firstkey = 0;
 	void * keyp = &firstkey;
@@ -2574,7 +2574,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	    switch (rpmtag) {
 	    case RPMDBI_PACKAGES:
-		dbi = dbiOpen(db, rpmtag, 0);
+		dbi = rpmdbOpenIndex(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
 		xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
@@ -2630,7 +2630,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		tagdata.count = 1;
 	    }
 
-	    if (!(dbi = dbiOpen(db, rpmtag, 0))) {
+	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0))) {
 		rpmtdFreeData(&tagdata);
 		continue;
 	    }

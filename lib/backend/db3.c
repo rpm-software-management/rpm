@@ -472,7 +472,7 @@ exit:
     return rc;
 }
 
-int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
+int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     const char *dbhome = rpmdbHome(rpmdb);
     dbiIndex dbi = NULL;
