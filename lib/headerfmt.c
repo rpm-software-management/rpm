@@ -85,6 +85,7 @@ typedef struct headerSprintfArgs_s {
     size_t alloced;
     int numTokens;
     int i;
+    headerGetFlags hgflags;
 } * headerSprintfArgs;
 
 
@@ -157,6 +158,8 @@ static void hsaInit(headerSprintfArgs hsa)
     hsa->i = 0;
     if (tag != NULL && tag->tag == -2)
 	hsa->hi = headerInitIterator(hsa->h);
+    /* Normally with bells and whistles enabled, but raw dump on iteration. */
+    hsa->hgflags = (hsa->hi == NULL) ? HEADERGET_EXT : HEADERGET_RAW;
 }
 
 /**
@@ -602,7 +605,7 @@ static rpmtd getData(headerSprintfArgs hsa, rpmTag tag)
 
     if (!(td = getCached(hsa->cache, tag))) {
 	td = rpmtdNew();
-	if (!headerGet(hsa->h, tag, td, HEADERGET_EXT)) {
+	if (!headerGet(hsa->h, tag, td, hsa->hgflags)) {
 	    rpmtdFree(td);
 	    return NULL;
 	}
