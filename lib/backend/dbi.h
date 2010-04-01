@@ -1,7 +1,14 @@
 #ifndef _DBI_H
 #define _DBI_H
 
+
 typedef struct _dbiIndex * dbiIndex;
+
+/* Type of the dbi, also serves as the join key size */
+typedef enum dbiIndexType_e {
+    DBI_PRIMARY 	= (1 * sizeof(int32_t)),
+    DBI_SECONDARY	= (2 * sizeof(int32_t)),
+} dbiIndexType;
 
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db functionality).
@@ -39,7 +46,7 @@ struct _dbiIndex {
 
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     rpmTag dbi_rpmtag;	/*!< rpm tag used for index */
-    int	dbi_jlen;		/*!< size of join key */
+    dbiIndexType dbi_type;	/*! Type of dbi (primary / index) */
 
     DB * dbi_db;		/*!< Berkeley DB * handle */
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
@@ -198,5 +205,13 @@ int dbiByteSwapped(dbiIndex dbi);
  */
 RPM_GNUC_INTERNAL
 int dbiStat(dbiIndex dbi, unsigned int flags);
+
+/** \ingroup dbi
+ * Type of dbi (primary data / index)
+ * @param dbi		index database handle
+ * @return		type of dbi
+ */
+RPM_GNUC_INTERNAL
+dbiIndexType dbiType(dbiIndex dbi);
 
 #endif /* _DBI_H */

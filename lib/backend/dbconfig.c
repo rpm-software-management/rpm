@@ -270,19 +270,7 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_rpmtag = rpmtag;
     dbi->dbi_file = rpmTagGetName(rpmtag);
-    
-    /*
-     * Inverted lists have join length of 2, primary data has join length of 1.
-     */
-    switch (rpmtag) {
-    case RPMDBI_PACKAGES:
-	dbi->dbi_jlen = 1 * sizeof(int32_t);
-	break;
-    default:
-	dbi->dbi_jlen = 2 * sizeof(int32_t);
-	break;
-    }
-
+    dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
     if (!dbi->dbi_use_dbenv) {		/* dbenv is always used now. */

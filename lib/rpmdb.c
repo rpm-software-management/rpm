@@ -256,6 +256,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
     const char * sdbir;
     dbiIndexSet set;
     unsigned int i;
+    dbiIndexType itype = dbiType(dbi);
 
     if (dbi == NULL || data == NULL || setp == NULL)
 	return -1;
@@ -266,12 +267,12 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
     }
 
     set = xcalloc(1, sizeof(*set));
-    dbiGrowSet(set, data->size / dbi->dbi_jlen);
-    set->count = data->size / dbi->dbi_jlen;
+    dbiGrowSet(set, data->size / itype);
+    set->count = data->size / itype;
 
-    switch (dbi->dbi_jlen) {
+    switch (itype) {
     default:
-    case 2*sizeof(int32_t):
+    case DBI_SECONDARY:
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -287,7 +288,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	    set->recs[i].tagNum = tagNum.ui;
 	}
 	break;
-    case 1*sizeof(int32_t):
+    case DBI_PRIMARY:
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 
@@ -317,20 +318,21 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     int _dbbyteswapped = dbiByteSwapped(dbi);
     char * tdbir;
     unsigned int i;
+    dbiIndexType itype = dbiType(dbi);
 
     if (dbi == NULL || data == NULL || set == NULL)
 	return -1;
 
-    data->size = set->count * (dbi->dbi_jlen);
+    data->size = set->count * itype;
     if (data->size == 0) {
 	data->data = NULL;
 	return 0;
     }
     tdbir = data->data = xmalloc(data->size);
 
-    switch (dbi->dbi_jlen) {
+    switch (itype) {
     default:
-    case 2*sizeof(int32_t):
+    case DBI_SECONDARY:
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum, tagNum;
 
@@ -348,7 +350,7 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
 	    tdbir += sizeof(tagNum.ui);
 	}
 	break;
-    case 1*sizeof(int32_t):
+    case DBI_PRIMARY:
 	for (i = 0; i < set->count; i++) {
 	    union _dbswap hdrNum;
 

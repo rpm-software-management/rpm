@@ -349,6 +349,11 @@ int dbiByteSwapped(dbiIndex dbi)
     return rc;
 }
 
+dbiIndexType dbiType(dbiIndex dbi)
+{
+    return dbi->dbi_type;
+}
+
 int dbiStat(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
