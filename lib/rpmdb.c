@@ -1108,6 +1108,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 
 /**
  * Attempt partial matches on name[-version[-release]] strings.
+ * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
@@ -1118,7 +1119,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
+static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, DBC * dbcursor,
 		DBT * key, DBT * data,
 		const char * name,
 		const char * version,
@@ -1157,8 +1158,7 @@ static rpmRC dbiFindMatches(dbiIndex dbi, DBC * dbcursor,
 	if (recoff == 0)
 	    continue;
 
-	mi = rpmdbInitIterator(dbi->dbi_rpmdb,
-			RPMDBI_PACKAGES, &recoff, sizeof(recoff));
+	mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, &recoff, sizeof(recoff));
 
 	/* Set iterator selectors for version/release if available. */
 	if (version &&
@@ -1199,6 +1199,7 @@ exit:
  * Lookup by name, name-version, and finally by name-version-release.
  * Both version and release can be patterns.
  * @todo Name must be an exact match, as name is a db key.
+ * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMTAG_NAME)
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
@@ -1207,8 +1208,8 @@ exit:
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		const char * arg, dbiIndexSet * matches)
+static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, DBC * dbcursor,
+		DBT * key, DBT * data, const char * arg, dbiIndexSet * matches)
 {
     const char * release;
     char * localarg;
@@ -1220,7 +1221,7 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
     /* did they give us just a name? */
-    rc = dbiFindMatches(dbi, dbcursor, key, data, arg, NULL, NULL, matches);
+    rc = dbiFindMatches(db, dbi, dbcursor, key, data, arg, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND) return rc;
 
     /* FIX: double indirection */
@@ -1253,7 +1254,8 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     }
 
     *s = '\0';
-    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, NULL, matches);
+    rc = dbiFindMatches(db, dbi, dbcursor, key, data,
+			localarg, s + 1, NULL, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
@@ -1286,7 +1288,8 @@ static rpmRC dbiFindByLabel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
     *s = '\0';
    	/* FIX: *matches may be NULL. */
-    rc = dbiFindMatches(dbi, dbcursor, key, data, localarg, s + 1, release, matches);
+    rc = dbiFindMatches(db, dbi, dbcursor, key, data,
+			localarg, s + 1, release, matches);
 exit:
     free(localarg);
     return rc;
@@ -2089,7 +2092,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 
 	if (isLabel) {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
-	    rc = dbiFindByLabel(dbi, dbcursor, key, data, keyp, &set);
+	    rc = dbiFindByLabel(db, dbi, dbcursor, key, data, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
