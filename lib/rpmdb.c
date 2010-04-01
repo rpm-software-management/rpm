@@ -139,7 +139,6 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	return NULL;
 
     /* Is this index already open ? */
-    /* FIX: db->_dbi may be NULL */
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
@@ -188,7 +187,6 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	dbi = dbiFree(dbi);
     }
 
-/* FIX: db->_dbi may be NULL */
     return dbi;
 }
 
@@ -641,7 +639,6 @@ int rpmdbClose(rpmdb db)
     if (db->nrefs > 0)
 	goto exit;
 
-    if (db->_dbi)
     for (int dbix = dbiTagsMax; --dbix >= 0; ) {
 	int xx;
 	if (db->_dbi[dbix] == NULL)
@@ -855,13 +852,11 @@ int rpmdbVerify(const char * prefix)
 	for (int dbix = dbiTagsMax; --dbix >= 0; ) {
 	    if (db->_dbi[dbix] == NULL)
 		continue;
-	   		/* FIX: double indirection. */
 	    xx = dbiVerify(db->_dbi[dbix], 0);
 	    if (xx && rc == 0) rc = xx;
 	    db->_dbi[dbix] = NULL;
 	}
 
-	/* FIX: db->_dbi[] may be NULL. */
 	xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
 	db = NULL;
