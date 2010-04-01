@@ -350,21 +350,27 @@ dbiIndexType dbiType(dbiIndex dbi)
     return dbi->dbi_type;
 }
 
-int dbiStat(dbiIndex dbi, unsigned int flags)
+int dbiNumKeys(dbiIndex dbi, int fast)
 {
     DB * db = dbi->dbi_db;
-    DB_TXN * txnid = NULL;
-    int rc = 0;
+    int rc, nkeys = -1;
+    void *sp = NULL;
 
-    assert(db != NULL);
-    if (flags)
-	flags = DB_FAST_STAT;
-    else
-	flags = 0;
-    dbi->dbi_stats = _free(dbi->dbi_stats);
-    rc = db->stat(db, txnid, &dbi->dbi_stats, flags);
+    rc = db->stat(db, dbi->dbi_txnid, &sp, fast ? DB_FAST_STAT : 0);
     rc = cvtdberr(dbi, "db->stat", rc, _debug);
-    return rc;
+
+    if (rc == 0 && sp) {
+	if (dbi->dbi_dbtype == DB_HASH) {
+	    DB_HASH_STAT *hash = sp;
+	    nkeys = hash->hash_nkeys;
+	} else if (dbi->dbi_dbtype == DB_BTREE) {
+	    DB_BTREE_STAT *btree = sp;
+	    nkeys = btree->bt_nkeys;
+	}
+	free(sp);
+    }
+
+    return nkeys;
 }
 
 int dbiVerify(dbiIndex dbi, unsigned int flags)

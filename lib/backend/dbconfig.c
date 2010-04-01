@@ -119,7 +119,6 @@ static const struct poptOption rdbOptions[] = {
 dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
-	dbi->dbi_stats = _free(dbi->dbi_stats);
 	dbi = _free(dbi);
     }
     return dbi;

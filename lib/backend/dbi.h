@@ -49,7 +49,6 @@ struct _dbiIndex {
 
     DB * dbi_db;		/*!< Berkeley DB * handle */
     DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
-    void * dbi_stats;		/*!< Berkeley db statistics */
 };
 
 /** \ingroup dbi
@@ -197,13 +196,13 @@ RPM_GNUC_INTERNAL
 int dbiByteSwapped(dbiIndex dbi);
 
 /** \ingroup dbi
- * Is database byte swapped?
+ * Return number of keys in index
  * @param dbi		index database handle
- * @param flags		DB_FAST_STAT or 0
- * @return		0 on success
+ * @param fast		fast, cached estimate or slow but accurate?
+ * @return		number of keys in index, -1 on error
  */
 RPM_GNUC_INTERNAL
-int dbiStat(dbiIndex dbi, unsigned int flags);
+int dbiNumKeys(dbiIndex dbi, int fast);
 
 /** \ingroup dbi
  * Type of dbi (primary data / index)

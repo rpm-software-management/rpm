@@ -178,20 +178,15 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 
     if (dbi != NULL && rc == 0) {
 	db->_dbi[dbix] = dbi;
+	/* Grab a fast estimate of package count for allocation */
 	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
-	    db->db_nbits = 1024;
-	    if (!dbiStat(dbi, DB_FAST_STAT)) {
-		DB_HASH_STAT * hash = (DB_HASH_STAT *)dbi->dbi_stats;
-		if (hash)
-		    db->db_nbits += hash->hash_nkeys;
-	    }
+	    int nkeys = dbiNumKeys(dbi, 1);
+	    db->db_nbits = 1024 + (nkeys > 0 ? nkeys : 0);
 	    db->db_bits = PBM_ALLOC(db->db_nbits);
 	}
-    }
-#ifdef HAVE_DB_H
-      else
+    } else {
 	dbi = dbiFree(dbi);
-#endif
+    }
 
 /* FIX: db->_dbi may be NULL */
     return dbi;
@@ -687,6 +682,13 @@ int rpmdbClose(rpmdb db)
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
+
+	/* Force full statistics generation at package db close */
+	if (dbiTags[dbix] == RPMDBI_PACKAGES && 
+		    (db->db_mode & O_ACCMODE) != O_RDONLY) {
+	    (void) dbiNumKeys(db->_dbi[dbix], 0);
+	}
+
     	xx = dbiClose(db->_dbi[dbix], 0);
 	if (xx && rc == 0) rc = xx;
     	db->_dbi[dbix] = NULL;
