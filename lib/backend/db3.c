@@ -630,13 +630,13 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    dbpath = fullpath;
 		}
 		rc = (db->open)(db, txnid, dbpath, NULL,
-		    dbi->dbi_type, oflags, dbi->dbi_perms);
+		    dbi->dbi_dbtype, oflags, dbi->dbi_perms);
 
-		if (rc == 0 && dbi->dbi_type == DB_UNKNOWN) {
-		    DBTYPE dbi_type = DB_UNKNOWN;
-		    xx = db->get_type(db, &dbi_type);
+		if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
+		    DBTYPE dbi_dbtype = DB_UNKNOWN;
+		    xx = db->get_type(db, &dbi_dbtype);
 		    if (xx == 0)
-			dbi->dbi_type = dbi_type;
+			dbi->dbi_dbtype = dbi_dbtype;
 		}
 		free(fullpath);
 	    }

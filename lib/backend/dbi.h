@@ -16,7 +16,7 @@ struct _dbiIndex {
     int	dbi_oflags;		/*!< db->open flags */
     int	dbi_tflags;		/*!< dbenv->txn_begin flags */
 
-    int	dbi_type;		/*!< db index type */
+    DBTYPE dbi_dbtype;		/*!< db index type */
     unsigned dbi_mode;		/*!< mode to use on open */
     int	dbi_perms;		/*!< file permission to use on open */
 

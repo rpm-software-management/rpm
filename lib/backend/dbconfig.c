@@ -65,11 +65,11 @@ static const struct poptOption rdbOptions[] = {
  { "fcntl_locking",0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_FCNTL_LOCKING,
 	NULL, NULL },
 
- { "btree",	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_BTREE,
+ { "btree",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_BTREE,
 	NULL, NULL },
- { "hash", 	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_HASH,
+ { "hash", 	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_HASH,
 	NULL, NULL },
- { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_type, DB_UNKNOWN,
+ { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
 	NULL, NULL },
 
  { "mode",	0,POPT_ARG_INT,		&staticdbi.dbi_mode, 0,
