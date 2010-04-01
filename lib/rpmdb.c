@@ -975,7 +975,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     dbi = dbiOpen(db, RPMTAG_BASENAMES, 0);
     if (dbi != NULL) {
 	dbcursor = NULL;
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+	xx = dbiCopen(dbi, &dbcursor, 0);
 
 	key->data = (void *) baseName;
 	key->size = strlen(baseName);
@@ -1087,7 +1087,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     key.data = (void *) name;
     key.size = strlen(name);
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
@@ -1792,7 +1792,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
      * marked with DB_WRITECURSOR as well.
      */
     if (mi->mi_dbc == NULL)
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &mi->mi_dbc, mi->mi_cflags);
+	xx = dbiCopen(dbi, &mi->mi_dbc, mi->mi_cflags);
 
     key = &mi->mi_key;
     memset(key, 0, sizeof(*key));
@@ -2001,7 +2001,7 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi)
     if (dbi == NULL)
 	return 1;
 
-    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+    xx = dbiCopen(dbi, &dbcursor, 0);
     rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
@@ -2096,14 +2096,14 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	int xx;
 
 	if (isLabel) {
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+	    xx = dbiCopen(dbi, &dbcursor, 0);
 	    rc = dbiFindByLabel(dbi, dbcursor, key, data, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
 	    rc = rpmdbFindByFile(db, keyp, key, data, &set);
 	} else {
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, 0);
+	    xx = dbiCopen(dbi, &dbcursor, 0);
 
 	    key->data = (void *) keyp;
 	    key->size = keylen;
@@ -2361,7 +2361,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		key.data = &mi_offset;
 		key.size = sizeof(mi_offset.ui);
 
-		rc = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		rc = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 		rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
 		if (rc) {
 		    rpmlog(RPMLOG_ERR,
@@ -2382,7 +2382,7 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmtdFreeData(&tagdata);
 		continue;
 	    }
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	    logAddRemove(1, &tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
@@ -2515,7 +2515,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	void * datap = h;
 	size_t datalen = headerSizeof(h, HEADER_MAGIC_NO);
 
-	xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+	xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
 	key.data = keyp;
@@ -2582,7 +2582,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		dbi = dbiOpen(db, rpmtag, 0);
 		if (dbi == NULL)	/* XXX shouldn't happen */
 		    continue;
-		xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+		xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 		mi_offset.ui = hdrNum;
 		if (dbiByteSwapped(dbi) == 1)
@@ -2639,7 +2639,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		rpmtdFreeData(&tagdata);
 		continue;
 	    }
-	    xx = dbiCopen(dbi, dbi->dbi_txnid, &dbcursor, DB_WRITECURSOR);
+	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	    logAddRemove(0, &tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {

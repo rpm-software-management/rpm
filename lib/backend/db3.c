@@ -202,8 +202,7 @@ int dbiCclose(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
-int dbiCopen(dbiIndex dbi, DB_TXN * txnid,
-		DBC ** dbcp, unsigned int dbiflags)
+int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
 {
     DB * db = dbi->dbi_db;
     DBC * dbcursor = NULL;
@@ -219,7 +218,7 @@ int dbiCopen(dbiIndex dbi, DB_TXN * txnid,
     } else
 	flags = 0;
 
-    rc = db->cursor(db, txnid, &dbcursor, flags);
+    rc = db->cursor(db, dbi->dbi_txnid, &dbcursor, flags);
     rc = cvtdberr(dbi, "db->cursor", rc, _debug);
 
     if (dbcp)

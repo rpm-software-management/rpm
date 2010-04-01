@@ -137,14 +137,12 @@ int dbiOpenDB(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
 /** \ingroup dbi
  * Open a database cursor.
  * @param dbi		index database handle
- * @param txnid		database transaction handle
  * @retval dbcp		returned database cursor
  * @param flags		DB_WRITECURSOR if writing, or 0
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int dbiCopen(dbiIndex dbi, DB_TXN * txnid,
-	     DBC ** dbcp, unsigned int flags);
+int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags);
 
 /** \ingroup dbi
  * Close a database cursor.
