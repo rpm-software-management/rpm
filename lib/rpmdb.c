@@ -718,11 +718,6 @@ rpmdb newRpmdb(const char * root,
 		int mode, int perms, int flags)
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
-    static int _initialized = 0;
-
-    if (!_initialized) {
-	_initialized = 1;
-    }
 
     *db = dbTemplate;	/* structure assignment */
 
