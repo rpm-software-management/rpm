@@ -45,7 +45,6 @@ struct _dbiIndex {
     int	dbi_pagesize;		/*!< (fs blksize) */
 
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
-    rpmTag dbi_rpmtag;	/*!< rpm tag used for index */
     dbiIndexType dbi_type;	/*! Type of dbi (primary / index) */
 
     DB * dbi_db;		/*!< Berkeley DB * handle */

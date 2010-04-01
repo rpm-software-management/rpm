@@ -268,7 +268,6 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     dbi->dbi_mode = rpmdb->db_mode;
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rpmdb;
-    dbi->dbi_rpmtag = rpmtag;
     dbi->dbi_file = rpmTagGetName(rpmtag);
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
