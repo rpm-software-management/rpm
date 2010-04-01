@@ -575,20 +575,6 @@ static int unblockSignals(sigset_t * oldMask)
     return sigprocmask(SIG_SETMASK, oldMask, NULL);
 }
 
-#define	_DB_ROOT	"/"
-#define	_DB_HOME	"%{_dbpath}"
-#define _DB_FULLPATH	NULL
-#define	_DB_FLAGS	0
-#define _DB_MODE	0
-#define _DB_PERMS	0644
-
-#define _DB_MAJOR	-1
-
-static struct rpmdb_s const dbTemplate = {
-    _DB_ROOT,	_DB_HOME, _DB_FULLPATH, _DB_FLAGS, _DB_MODE, _DB_PERMS,
-    _DB_MAJOR,
-};
-
 rpmop rpmdbOp(rpmdb rpmdb, rpmdbOpX opx)
 {
     rpmop op = NULL;
@@ -711,36 +697,30 @@ int rpmdbSync(rpmdb db)
     return rc;
 }
 
-/* FIX: dbTemplate structure assignment */
-static
-rpmdb newRpmdb(const char * root,
-		const char * home,
-		int mode, int perms, int flags)
+static rpmdb newRpmdb(const char * root, const char * home,
+		      int mode, int perms, int flags)
 {
     rpmdb db = xcalloc(sizeof(*db), 1);
 
-    *db = dbTemplate;	/* structure assignment */
-
-    db->_dbi = NULL;
-
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
-    if (mode >= 0)	db->db_mode = mode;
-    if (perms >= 0)	db->db_perms = perms;
-    if (flags >= 0)	db->db_flags = flags;
+    db->db_mode = (mode >= 0) ? mode : 0;
+    db->db_perms = (perms >= 0) ? perms : 0644;
+    db->db_flags = (flags >= 0) ? flags : 0;
 
-    db->db_home = rpmGetPath( (home && *home ? home : _DB_HOME), NULL);
+    db->db_home = rpmGetPath( (home && *home ? home : "%{_dbpath}"), NULL);
     if (!(db->db_home && db->db_home[0] != '%')) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
 	db->db_home = _free(db->db_home);
 	db = _free(db);
 	return NULL;
     }
-    db->db_root = rpmGetPath((root && *root) ? root : _DB_ROOT, NULL);
+    db->db_root = rpmGetPath((root && *root) ? root : "/", NULL);
     db->db_fullpath = rpmGenPath(db->db_root, db->db_home, NULL);
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->_dbi = xcalloc(dbiTagsMax, sizeof(*db->_dbi));
+    db->db_api = -1; /* hmm... */
     db->nrefs = 0;
     return rpmdbLink(db);
 }
