@@ -1065,16 +1065,13 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     dbcursor = NULL;
 
     if (rc == 0) {		/* success */
-	dbiIndexSet matches;
-	/* FIX: matches might be NULL */
-	matches = NULL;
+	dbiIndexSet matches = NULL;
 	(void) dbt2set(dbi, &data, &matches);
 	if (matches) {
 	    rc = dbiIndexSetCount(matches);
 	    matches = dbiFreeIndexSet(matches);
 	}
-    } else
-    if (rc == DB_NOTFOUND) {	/* not found */
+    } else if (rc == DB_NOTFOUND) {	/* not found */
 	rc = 0;
     } else {			/* error */
 	rpmlog(RPMLOG_ERR,
@@ -1119,8 +1116,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, DBC * dbcursor,
 	(void) dbt2set(dbi, data, matches);
 	if (version == NULL && release == NULL)
 	    return RPMRC_OK;
-    } else
-    if (rc == DB_NOTFOUND) {	/* not found */
+    } else if (rc == DB_NOTFOUND) {	/* not found */
 	return RPMRC_NOTFOUND;
     } else {			/* error */
 	rpmlog(RPMLOG_ERR,
