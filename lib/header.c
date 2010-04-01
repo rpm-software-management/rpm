@@ -1857,7 +1857,7 @@ void headerCopyTags(Header headerFrom, Header headerTo,
     for (p = tagstocopy; *p != 0; p++) {
 	if (headerIsEntry(headerTo, *p))
 	    continue;
-	if (!headerGet(headerFrom, *p, &td, HEADERGET_MINMEM))
+	if (!headerGet(headerFrom, *p, &td, (HEADERGET_MINMEM|HEADERGET_RAW)))
 	    continue;
 	(void) headerPut(headerTo, &td, HEADERPUT_DEFAULT);
 	rpmtdFreeData(&td);
