@@ -19,7 +19,7 @@ EXTRA_PROGRAMS =
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
-	backend/dbconfig.c backend/db3.c \
+	backend/dbconfig.c backend/db3.c backend/dbi.h \
 	headerutil.c header.c headerfmt.c header_internal.h \
 	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
 	fprint.c fprint.h tagname.c rpmtd.c \

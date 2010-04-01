@@ -374,6 +374,12 @@ int dbiStat(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
+int dbiVerify(dbiIndex dbi, unsigned int flags)
+{
+    dbi->dbi_verify_on_close = 1;
+    return dbiClose(dbi, flags);
+}
+
 int dbiClose(dbiIndex dbi, unsigned int flags)
 {
     rpmdb rpmdb = dbi->dbi_rpmdb;
