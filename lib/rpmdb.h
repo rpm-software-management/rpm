@@ -86,14 +86,6 @@ int rpmdbInit(const char * prefix, int perms);
  */
 int rpmdbVerify(const char * prefix);
 
-/**
- * Close a single database index.
- * @param db		rpm database
- * @param rpmtag	rpm tag
- * @return              0 on success
- */
-int rpmdbCloseDBI(rpmdb db, rpmTag rpmtag);
-
 /** \ingroup rpmdb
  * Close all database indices and free rpmdb.
  * @param db		rpm database

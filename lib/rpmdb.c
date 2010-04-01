@@ -641,28 +641,6 @@ int rpmdbOpenAll(rpmdb db)
     return rc;
 }
 
-int rpmdbCloseDBI(rpmdb db, rpmTag rpmtag)
-{
-    int rc = 0;
-
-    if (db == NULL || db->_dbi == NULL)
-	return 0;
-
-    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
-	if (dbiTags[dbix] != rpmtag)
-	    continue;
-	if (db->_dbi[dbix] != NULL) {
-	    int xx;
-	   		/* FIX: double indirection. */
-	    xx = dbiClose(db->_dbi[dbix], 0);
-	    if (xx && rc == 0) rc = xx;
-	    db->_dbi[dbix] = NULL;
-	}
-	break;
-    }
-    return rc;
-}
-
 /* XXX query.c, rpminstall.c, verify.c */
 int rpmdbClose(rpmdb db)
 {
