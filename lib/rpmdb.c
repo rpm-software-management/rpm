@@ -2848,7 +2848,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     tfn = _free(tfn);
 
     tfn = rpmGetPath("%{?_dbpath_rebuild}", NULL);
-    if (!rstreq(tfn, "") && !rstreq(tfn, dbpath)) {
+    if (rstreq(tfn, "") || rstreq(tfn, dbpath)) {
 	tfn = _free(tfn);
 	rasprintf(&tfn, "%srebuilddb.%d", dbpath, (int) getpid());
 	nocleanup = 0;
