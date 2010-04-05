@@ -6,16 +6,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-03-06 11:17+0200\n"
-"PO-Revision-Date: 2010-03-14 16:55+0200\n"
+"POT-Creation-Date: 2010-03-29 16:14+0300\n"
+"PO-Revision-Date: 2010-04-05 10:21+0300\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Lokalize 1.0\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
-"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<"
+"=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: build.c:43
 msgid "Failed build dependencies:\n"
@@ -93,158 +93,150 @@ msgstr "Опитати параметри (за допомогою -q або --q
 msgid "Verify options (with -V or --verify):"
 msgstr "Перевірити параметри (за допомогою -V або --verify):"
 
-#: rpmqv.c:90
-msgid "File tree walk options (with --ftswalk):"
-msgstr "Параметри обробки ієрархії файлів (з --ftswalk):"
-
-#: rpmqv.c:96
+#: rpmqv.c:93
 msgid "Signature options:"
 msgstr "Параметри підписування:"
 
-#: rpmqv.c:102
+#: rpmqv.c:99
 msgid "Database options:"
 msgstr "Параметри бази даних:"
 
-#: rpmqv.c:108
+#: rpmqv.c:105
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr ""
-"Параметри збирання з [ <файл spec> | <архів tar> | <пакунок з кодами> ]:"
+msgstr "Параметри збирання з [ <файл spec> | <архів tar> | <пакунок з кодами> ]:"
 
-#: rpmqv.c:114
+#: rpmqv.c:111
 msgid "Install/Upgrade/Erase options:"
 msgstr "Параметри встановлення/оновлення/вилучення:"
 
-#: rpmqv.c:121 tools/rpmdeps.c:32 tools/rpmgraph.c:248
+#: rpmqv.c:118 tools/rpmdeps.c:32 tools/rpmgraph.c:248
 msgid "Common options for all rpm modes and executables:"
 msgstr "Загальні параметри для всіх режимів та виконуваних файлів rpm:"
 
-#: rpmqv.c:137 lib/poptI.c:31
+#: rpmqv.c:134 lib/poptI.c:31
 #, c-format
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: rpmqv.c:143 lib/poptALL.c:82
+#: rpmqv.c:140 lib/poptALL.c:65
 #, c-format
 msgid "RPM version %s\n"
 msgstr "Версія RPM %s\n"
 
-#: rpmqv.c:148
+#: rpmqv.c:145
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 msgstr "© Red Hat, Inc., 1998–2002\n"
 
-#: rpmqv.c:149
+#: rpmqv.c:146
 #, c-format
-msgid ""
-"This program may be freely redistributed under the terms of the GNU GPL\n"
+msgid "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Цю програму можна вільно поширювати за умови дотримання GNU GPL\n"
 
-#: rpmqv.c:281
+#: rpmqv.c:278
 #, c-format
 msgid "Internal error in argument processing (%d) :-(\n"
 msgstr "Внутрішня помилка під час обробки параметрів (%d) :-(\n"
 
-#: rpmqv.c:319 rpmqv.c:325 rpmqv.c:331 rpmqv.c:368
+#: rpmqv.c:316 rpmqv.c:322 rpmqv.c:328 rpmqv.c:365
 msgid "only one major mode may be specified"
 msgstr "можна визначати лише один основний режим"
 
-#: rpmqv.c:347
+#: rpmqv.c:344
 msgid "one type of query/verify may be performed at a time"
 msgstr "за один раз можна виконувати лише один тип запиту або перевірки"
 
-#: rpmqv.c:351
+#: rpmqv.c:348
 msgid "unexpected query flags"
 msgstr "неочікувані прапорці запитів"
 
-#: rpmqv.c:354
+#: rpmqv.c:351
 msgid "unexpected query format"
 msgstr "неочікуваний формат запитів"
 
-#: rpmqv.c:357
+#: rpmqv.c:354
 msgid "unexpected query source"
 msgstr "неочікуване джерело запиту"
 
-#: rpmqv.c:400
+#: rpmqv.c:397
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "у примусовому режимі можна виконувати лише встановлення, оновлення, "
 "вилучення кодів та файла специфікації"
 
-#: rpmqv.c:402
+#: rpmqv.c:399
 msgid "files may only be relocated during package installation"
 msgstr "змінювати розташування файлів можна лише під час встановлення пакунка"
 
-#: rpmqv.c:405
+#: rpmqv.c:402
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "не можна використовувати --prefix разом з --relocate або --excludepath"
 
-#: rpmqv.c:408
+#: rpmqv.c:405
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate і --excludepath можна використовувати лише під час встановлення "
 "нових пакунків"
 
-#: rpmqv.c:411
+#: rpmqv.c:408
 msgid "--prefix may only be used when installing new packages"
-msgstr ""
-"--prefix можна використовувати, лише під час встановлення нових пакунків"
+msgstr "--prefix можна використовувати, лише під час встановлення нових пакунків"
 
-#: rpmqv.c:414
+#: rpmqv.c:411
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументи параметра --prefix мають починатися символом /"
 
-#: rpmqv.c:417
+#: rpmqv.c:414
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:421
+#: rpmqv.c:418
 msgid "--percent may only be specified during package installation"
 msgstr "--percent можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:425
+#: rpmqv.c:422
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:429
+#: rpmqv.c:426
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:433
+#: rpmqv.c:430
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:437
+#: rpmqv.c:434
 msgid "only one of --excludedocs and --includedocs may be specified"
-msgstr ""
-"можна вказувати лише один з параметрів, --excludedocs або --includedocs"
+msgstr "можна вказувати лише один з параметрів, --excludedocs або --includedocs"
 
-#: rpmqv.c:441
+#: rpmqv.c:438
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:445
+#: rpmqv.c:442
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:450
+#: rpmqv.c:447
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:454
+#: rpmqv.c:451
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:458
+#: rpmqv.c:455
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles можна вказувати лише під час встановлення пакунків"
 
-#: rpmqv.c:463
+#: rpmqv.c:460
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "--justdb можна вказувати лише під час встановлення або вилучення пакунків"
 
-#: rpmqv.c:468
+#: rpmqv.c:465
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -252,7 +244,7 @@ msgstr ""
 "параметри вимикання скриптів можна вказувати лише під час встановлення або "
 "вилучення пакунків"
 
-#: rpmqv.c:473
+#: rpmqv.c:470
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -260,7 +252,7 @@ msgstr ""
 "параметри вимикання перемикачів можна вказувати лише під час встановлення "
 "або вилучення пакунків"
 
-#: rpmqv.c:477
+#: rpmqv.c:474
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -268,7 +260,7 @@ msgstr ""
 "--nodeps можна вказувати лише під час збирання, перезбирання, "
 "перекомпіляції, встановлення, вилучення або перевірки пакунків"
 
-#: rpmqv.c:482
+#: rpmqv.c:479
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -276,7 +268,7 @@ msgstr ""
 "--test можна вказувати лише під час встановлення, вилучення або збирання "
 "пакунків"
 
-#: rpmqv.c:487
+#: rpmqv.c:484
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -284,86 +276,86 @@ msgstr ""
 "--root (-r) можна вказувати лише під час встановлення, вилучення, опитування "
 "або перезбирання бази даних"
 
-#: rpmqv.c:498
+#: rpmqv.c:495
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи параметра --root (-r) мають починатися символом /"
 
-#: rpmqv.c:524
+#: rpmqv.c:521
 #, c-format
 msgid "no files to sign\n"
 msgstr "файлів для підписування не виявлено\n"
 
-#: rpmqv.c:529
+#: rpmqv.c:526
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "не вдалося отримати доступ до файла %s\n"
 
-#: rpmqv.c:549
+#: rpmqv.c:546
 msgid "Enter pass phrase: "
 msgstr "Введіть пароль: "
 
-#: rpmqv.c:551
+#: rpmqv.c:548
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Помилковий пароль\n"
 
-#: rpmqv.c:555
+#: rpmqv.c:552
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Пароль підтверджено.\n"
 
-#: rpmqv.c:560
+#: rpmqv.c:557
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Некоректна специфікація %%_signature у файлі макросу.\n"
 
-#: rpmqv.c:567
+#: rpmqv.c:564
 msgid "--sign may only be used during package building"
 msgstr "--sign можна використовувати лише під час збирання пакунків"
 
-#: rpmqv.c:577
+#: rpmqv.c:574
 #, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr "спроба створення каналу для параметра --pipe зазнала невдачі: %m\n"
 
-#: rpmqv.c:587
+#: rpmqv.c:584
 #, c-format
 msgid "exec failed\n"
 msgstr "помилка виконання exec\n"
 
-#: rpmqv.c:623
+#: rpmqv.c:620
 msgid "no packages files given for rebuild"
 msgstr "не вказано файлів пакунків для перезбирання"
 
-#: rpmqv.c:689
+#: rpmqv.c:686
 msgid "no spec files given for build"
 msgstr "не вказано файлів специфікацій для збирання"
 
-#: rpmqv.c:691
+#: rpmqv.c:688
 msgid "no tar files given for build"
 msgstr "не вказано файлів tar для збирання"
 
-#: rpmqv.c:712
+#: rpmqv.c:709
 msgid "no packages given for erase"
 msgstr "не вказано пакунків для вилучення"
 
-#: rpmqv.c:746
+#: rpmqv.c:743
 msgid "no packages given for install"
 msgstr "не вказано пакунків для встановлення"
 
-#: rpmqv.c:759
+#: rpmqv.c:755
 msgid "no arguments given for query"
 msgstr "не вказано аргументів запиту"
 
-#: rpmqv.c:774
+#: rpmqv.c:769
 msgid "no arguments given for verify"
 msgstr "не вказано аргументів перевірки"
 
-#: rpmqv.c:789
+#: rpmqv.c:784
 msgid "no arguments given"
 msgstr "не вказано жодних параметрів"
 
-#: build/build.c:134 build/pack.c:433
+#: build/build.c:134 build/pack.c:446
 msgid "Unable to open temp file.\n"
 msgstr "Не вдалося відкрити файл тимчасових даних.\n"
 
@@ -592,7 +584,7 @@ msgstr "Назва файла має починатися з «/»: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Не можна використовувати glob: %s\n"
 
-#: build/files.c:1695 lib/rpminstall.c:427
+#: build/files.c:1695 lib/rpminstall.c:421
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "У glob файла не виявлено: %s\n"
@@ -694,153 +686,153 @@ msgstr "помилка читання cpio_copy: %s\n"
 msgid "%s: line: %s\n"
 msgstr "%s: рядок: %s\n"
 
-#: build/pack.c:192
+#: build/pack.c:193
 #, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Не вдалося відкрити файл PreIn: %s\n"
 
-#: build/pack.c:199
+#: build/pack.c:200
 #, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Не вдалося відкрити файл PreUn: %s\n"
 
-#: build/pack.c:206
+#: build/pack.c:207
 #, c-format
 msgid "Could not open PreTrans file: %s\n"
 msgstr "Не вдалося відкрити файл PreTrans: %s\n"
 
-#: build/pack.c:213
+#: build/pack.c:214
 #, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Не вдалося відкрити файл PostIn: %s\n"
 
-#: build/pack.c:220
+#: build/pack.c:221
 #, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Не вдалося відкрити файл PostUn: %s\n"
 
-#: build/pack.c:227
+#: build/pack.c:228
 #, c-format
 msgid "Could not open PostTrans file: %s\n"
 msgstr "Не вдалося відкрити файл PostTrans: %s\n"
 
-#: build/pack.c:235
+#: build/pack.c:236
 #, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Не вдалося відкрити файл VerifyScript: %s\n"
 
-#: build/pack.c:249
+#: build/pack.c:262
 #, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Не вдалося відкрити файл скрипту Trigger: %s\n"
 
-#: build/pack.c:275
+#: build/pack.c:288
 #, c-format
 msgid "readRPM: open %s: %s\n"
 msgstr "readRPM: відкриття %s: %s\n"
 
-#: build/pack.c:284
+#: build/pack.c:297
 #, c-format
 msgid "%s: Fseek failed: %s\n"
 msgstr "%s: помилка Fseek: %s\n"
 
-#: build/pack.c:314
+#: build/pack.c:327
 #, c-format
 msgid "readRPM: %s is not an RPM package\n"
 msgstr "readRPM: %s не є пакунком RPM\n"
 
-#: build/pack.c:319
+#: build/pack.c:332
 #, c-format
 msgid "readRPM: reading header from %s\n"
 msgstr "readRPM: читання заголовка з %s\n"
 
-#: build/pack.c:397
+#: build/pack.c:410
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Невідомий спосіб стиснення вмісту: %s\n"
 
-#: build/pack.c:420
+#: build/pack.c:433
 msgid "Unable to create immutable header region.\n"
 msgstr "Не вдалося створити незмінну область заголовка.\n"
 
-#: build/pack.c:440
+#: build/pack.c:453
 msgid "Unable to write temp header\n"
 msgstr "Не вдалося записати тимчасовий заголовок\n"
 
-#: build/pack.c:450
+#: build/pack.c:463
 msgid "Bad CSA data\n"
 msgstr "Помилкові дані CSA\n"
 
-#: build/pack.c:485
+#: build/pack.c:498
 #, c-format
 msgid "Generating signature: %d\n"
 msgstr "Створення підпису: %d\n"
 
-#: build/pack.c:522
+#: build/pack.c:535
 msgid "Unable to reload signature header.\n"
 msgstr "Не вдалося перезавантажити заголовок підпису.\n"
 
-#: build/pack.c:530
+#: build/pack.c:543
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Не вдалося відкрити %s: %s\n"
 
-#: build/pack.c:542
+#: build/pack.c:555
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Не вдалося записати пакунок: %s\n"
 
-#: build/pack.c:558
+#: build/pack.c:571
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Не вдалося відкрити ціль підписування %s: %s\n"
 
-#: build/pack.c:569
+#: build/pack.c:582
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Не вдалося прочитати заголовок з %s: %s\n"
 
-#: build/pack.c:583
+#: build/pack.c:596
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Не вдалося записати заголовок до %s: %s\n"
 
-#: build/pack.c:595
+#: build/pack.c:608
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Не вдалося прочитати вміст з %s: %s\n"
 
-#: build/pack.c:602
+#: build/pack.c:615
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Не вдалося записати вміст до %s: %s\n"
 
-#: build/pack.c:639
+#: build/pack.c:652
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Записано: %s\n"
 
-#: build/pack.c:690
+#: build/pack.c:703
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Виконання «%s»:\n"
 
-#: build/pack.c:693
+#: build/pack.c:706
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Спроба виконання «%s» зазнала невдачі.\n"
 
-#: build/pack.c:697
+#: build/pack.c:710
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Спроба перевірки пакунка «%s» зазнала невдачі.\n"
 
-#: build/pack.c:749
+#: build/pack.c:762
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Не вдалося створити назву файла виведених даних для пакунка %s: %s\n"
 
-#: build/pack.c:766
+#: build/pack.c:779
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "не вдалося створити %s: %s\n"
@@ -885,17 +877,17 @@ msgstr "у %%changelog не вказано опису\n"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "рядок %d: помилка під час обробки %%description: %s\n"
 
-#: build/parseDescription.c:48 build/parseFiles.c:43 build/parseScript.c:212
+#: build/parseDescription.c:48 build/parseFiles.c:43 build/parseScript.c:231
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "рядок %d: помилковий параметр %s: %s\n"
 
-#: build/parseDescription.c:59 build/parseFiles.c:54 build/parseScript.c:223
+#: build/parseDescription.c:59 build/parseFiles.c:54 build/parseScript.c:242
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "рядок %d: забагато назв: %s\n"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parseScript.c:231
+#: build/parseDescription.c:67 build/parseFiles.c:62 build/parseScript.c:250
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "рядок %d: пакунка не існує: %s\n"
@@ -910,147 +902,147 @@ msgstr "рядок %d: повторний опис\n"
 msgid "line %d: Error parsing %%files: %s\n"
 msgstr "рядок %d: помилка під час обробки %%files: %s\n"
 
-#: build/parsePreamble.c:224
+#: build/parsePreamble.c:218
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Виключено архітектуру: %s\n"
 
-#: build/parsePreamble.c:229
+#: build/parsePreamble.c:223
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Не включено архітектуру: %s\n"
 
-#: build/parsePreamble.c:234
+#: build/parsePreamble.c:228
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "Виключено ОС: %s\n"
 
-#: build/parsePreamble.c:239
+#: build/parsePreamble.c:233
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "Не включено ОС: %s\n"
 
-#: build/parsePreamble.c:265
+#: build/parsePreamble.c:259
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "У пакунку має бути поле %s: %s\n"
 
-#: build/parsePreamble.c:292
+#: build/parsePreamble.c:282
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Дублювання записів %s у пакунку: %s\n"
 
-#: build/parsePreamble.c:346
+#: build/parsePreamble.c:336
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "некоректне _docdir_fmt: %s\n"
 
-#: build/parsePreamble.c:374
+#: build/parsePreamble.c:364
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Не вдалося відкрити піктограму %s: %s\n"
 
-#: build/parsePreamble.c:392
+#: build/parsePreamble.c:382
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Не вдалося прочитати піктограму %s: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:395
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Невідомий тип піктограми: %s\n"
 
-#: build/parsePreamble.c:442
+#: build/parsePreamble.c:432
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "рядок %d: у тезі має бути лише один елемент: %s\n"
 
-#: build/parsePreamble.c:464
+#: build/parsePreamble.c:454
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "рядок %d: некоректний символ «%c» у: %s\n"
 
-#: build/parsePreamble.c:467
+#: build/parsePreamble.c:457
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "рядок %d: некоректний символ у: %s\n"
 
-#: build/parsePreamble.c:473
+#: build/parsePreamble.c:463
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "рядок %d: некоректна послідовність «..» у: %s\n"
 
-#: build/parsePreamble.c:498
+#: build/parsePreamble.c:488
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "рядок %d: помилковий теґ: %s\n"
 
-#: build/parsePreamble.c:506
+#: build/parsePreamble.c:496
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "рядок %d: порожній теґ: %s\n"
 
-#: build/parsePreamble.c:562
+#: build/parsePreamble.c:552
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "рядок %d: префікси не повинні завершуватися на «/»: %s\n"
 
-#: build/parsePreamble.c:575
+#: build/parsePreamble.c:565
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "рядок %d: запис Docdir має починатися з «/»: %s\n"
 
-#: build/parsePreamble.c:588
+#: build/parsePreamble.c:578
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "рядок %d: у полі Epoch має бути вказано ціле невід’ємне число: %s\n"
 
-#: build/parsePreamble.c:628 build/parsePreamble.c:639
+#: build/parsePreamble.c:618
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "рядок %d: помилкове значення %s: специфікатори: %s\n"
 
-#: build/parsePreamble.c:665
+#: build/parsePreamble.c:645
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "рядок %d: помилковий формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:675
+#: build/parsePreamble.c:655
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "рядок %d: передбачено підтримку лише підпакунків типу noarch: %s\n"
 
-#: build/parsePreamble.c:687
+#: build/parsePreamble.c:667
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутрішня помилка: зайвий теґ %d\n"
 
-#: build/parsePreamble.c:768
+#: build/parsePreamble.c:748
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "рядок %d: %s вважається застарілим: %s\n"
 
-#: build/parsePreamble.c:829
+#: build/parsePreamble.c:811
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Помилкова специфікація пакунка: %s\n"
 
-#: build/parsePreamble.c:835
+#: build/parsePreamble.c:817
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Пакунок вже існує: %s\n"
 
-#: build/parsePreamble.c:866
+#: build/parsePreamble.c:848
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "рядок %d: невідомий теґ: %s\n"
 
-#: build/parsePreamble.c:898
+#: build/parsePreamble.c:880
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} не може бути порожнім\n"
 
-#: build/parsePreamble.c:902
+#: build/parsePreamble.c:884
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} не може приймати значення «/»\n"
@@ -1114,56 +1106,54 @@ msgstr "Некоректний номер латки %s: %s\n"
 msgid "line %d: second %%prep\n"
 msgstr "рядок %d: друге %%prep\n"
 
-#: build/parseReqs.c:109
+#: build/parseReqs.c:108
 #, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr ""
-"рядок %d: записи залежностей мають починатися з букви, числа, «_» або «/»: "
-"%s\n"
+"рядок %d: записи залежностей мають починатися з букви, числа, «_» або «/»: %s\n"
 
-#: build/parseReqs.c:136
+#: build/parseReqs.c:135
 #, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "рядок %d: не можна використовувати версії у назвах файлів: %s\n"
 
-#: build/parseReqs.c:166
+#: build/parseReqs.c:165
 #, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "рядок %d: слід вказати версію: %s\n"
 
-#: build/parseReqs.c:178
+#: build/parseReqs.c:177
 #, c-format
 msgid "line %d: invalid dependency: %s\n"
 msgstr "рядок %d: некоректна залежність: %s\n"
 
-#: build/parseScript.c:172
+#: build/parseScript.c:191
 #, c-format
 msgid "line %d: triggers must have --: %s\n"
 msgstr "рядок %d: у записах перемикачів має бути --: %s\n"
 
-#: build/parseScript.c:182 build/parseScript.c:245
+#: build/parseScript.c:201 build/parseScript.c:264
 #, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "рядок %d: помилка під час обробки %s: %s\n"
 
-#: build/parseScript.c:194
+#: build/parseScript.c:213
 #, c-format
 msgid "line %d: internal script must end with '>': %s\n"
-msgstr ""
-"рядок %d: запис вбудованого скрипту має завершуватися символом «>»: %s\n"
+msgstr "рядок %d: запис вбудованого скрипту має завершуватися символом «>»: %s\n"
 
-#: build/parseScript.c:200
+#: build/parseScript.c:219
 #, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "рядок %d: програма скрипту має починатися з  символу «/»: %s\n"
 
-#: build/parseScript.c:238
+#: build/parseScript.c:257
 #, c-format
 msgid "line %d: Second %s\n"
 msgstr "рядок %d: друге %s\n"
 
-#: build/parseScript.c:281
+#: build/parseScript.c:303
 #, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "рядок %d: непідтримуваний вбудований скрипт: %s\n"
@@ -1344,18 +1334,18 @@ msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 "створити заголовки пакунків, сумісні з (застарілим) пакуванням версій rpm[23]"
 
-#: build/poptBT.c:202 lib/poptALL.c:219 lib/poptI.c:236 lib/poptQV.c:312
-#: lib/poptQV.c:350
+#: build/poptBT.c:202 lib/poptALL.c:180 lib/poptI.c:236 lib/poptQV.c:293
+#: lib/poptQV.c:331
 msgid "don't verify package digest(s)"
 msgstr "не перевіряти контрольні суми пакунків"
 
-#: build/poptBT.c:204 lib/poptALL.c:221 lib/poptI.c:238 lib/poptQV.c:314
-#: lib/poptQV.c:353
+#: build/poptBT.c:204 lib/poptALL.c:182 lib/poptI.c:238 lib/poptQV.c:295
+#: lib/poptQV.c:334
 msgid "don't verify database header(s) when retrieved"
 msgstr "не перевіряти заголовки, отримані з бази даних"
 
-#: build/poptBT.c:206 lib/poptALL.c:223 lib/poptI.c:240 lib/poptQV.c:316
-#: lib/poptQV.c:355
+#: build/poptBT.c:206 lib/poptALL.c:184 lib/poptI.c:240 lib/poptQV.c:297
+#: lib/poptQV.c:336
 msgid "don't verify package signature(s)"
 msgstr "не перевіряти підписи пакунків"
 
@@ -1383,67 +1373,73 @@ msgstr "створити підпис PGP/GPG"
 msgid "override target platform"
 msgstr "перевизначити платформу призначення"
 
-#: build/rpmfc.c:101
+#: build/rpmfc.c:75
+#, c-format
+#| msgid "Ignoring invalid regex: %s\n"
+msgid "Ignoring invalid regex %s\n"
+msgstr "Ігноруємо некоректний формальний вираз %s\n"
+
+#: build/rpmfc.c:160
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Не вдалося створити канал для %s: %m\n"
 
-#: build/rpmfc.c:116
+#: build/rpmfc.c:175
 #, c-format
 msgid "Couldn't chdir to %s: %s\n"
 msgstr "Не вдалося змінити каталог на %s: %s\n"
 
-#: build/rpmfc.c:127
+#: build/rpmfc.c:186
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Не вдалося виконати %s: %s\n"
 
-#: build/rpmfc.c:132
+#: build/rpmfc.c:191 lib/rpmscript.c:270
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Не вдалося розгалуження %s: %s\n"
 
-#: build/rpmfc.c:218
+#: build/rpmfc.c:277
 #, c-format
 msgid "%s failed\n"
 msgstr "Помилка %s\n"
 
-#: build/rpmfc.c:222
+#: build/rpmfc.c:281
 #, c-format
 msgid "failed to write all data to %s\n"
 msgstr "Не вдалося записати всі дані до %s\n"
 
-#: build/rpmfc.c:554
-#, c-format
-msgid "Ignoring invalid regex: %s\n"
-msgstr "Ігноруємо некоректний формальний вираз: %s\n"
-
-#: build/rpmfc.c:792
+#: build/rpmfc.c:748
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Невдала спроба перетворення %s у формат long integer.\n"
 
-#: build/rpmfc.c:870
+#: build/rpmfc.c:834
+#| msgid "gpg failed to write signature\n"
+msgid "No file attributes configured\n"
+msgstr "Не вказано атрибутів файла\n"
+
+#: build/rpmfc.c:851
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "помилка magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:877
+#: build/rpmfc.c:858
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "помилка magic_load: %s\n"
 
-#: build/rpmfc.c:918
+#: build/rpmfc.c:899
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Спроба розпізнавання файла «%s» зазнала невдачі: режим %06o %s\n"
 
-#: build/rpmfc.c:1118
+#: build/rpmfc.c:1099
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Пошук %s: %s\n"
 
-#: build/rpmfc.c:1123 build/rpmfc.c:1132
+#: build/rpmfc.c:1104 build/rpmfc.c:1113
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Не вдалося знайти %s:\n"
@@ -1516,35 +1512,19 @@ msgstr "Файла архіву не вказано у заголовку"
 msgid " failed - "
 msgstr " помилка - "
 
-#: lib/depends.c:194
+#: lib/depends.c:260
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "пакунок %s вже було додано, пропускаємо %s\n"
 
-#: lib/depends.c:211
+#: lib/depends.c:261
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "пакунок %s вже було додано, замінюємо на %s\n"
 
-#: lib/depends.c:385
-msgid "(rpmlib provides)"
-msgstr "(rpmlib provides)"
-
-#: lib/depends.c:399
-msgid "(cached)"
-msgstr "(кешовано)"
-
-#: lib/depends.c:416
-msgid "(db files)"
-msgstr "(файли db)"
-
-#: lib/depends.c:428
-msgid "(db provides)"
-msgstr "(db provides)"
-
 #: lib/formats.c:76 lib/formats.c:117 lib/formats.c:207 lib/formats.c:234
-#: lib/formats.c:282 lib/formats.c:305 lib/formats.c:585 lib/formats.c:624
-#: lib/formats.c:665
+#: lib/formats.c:283 lib/formats.c:306 lib/formats.c:586 lib/formats.c:625
+#: lib/formats.c:666
 msgid "(not a number)"
 msgstr "(не є числом)"
 
@@ -1557,55 +1537,55 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:360
+#: lib/formats.c:361
 msgid "(not base64)"
 msgstr "(не є base64)"
 
-#: lib/formats.c:372
+#: lib/formats.c:373
 msgid "(invalid type)"
 msgstr "(некоректний тип)"
 
-#: lib/formats.c:396 lib/formats.c:482
+#: lib/formats.c:397 lib/formats.c:483
 msgid "(not a blob)"
 msgstr "(не є бінарним об’єктом)"
 
-#: lib/formats.c:435
+#: lib/formats.c:436
 msgid "(invalid xml type)"
 msgstr "(некоректний тип xml)"
 
-#: lib/formats.c:505
+#: lib/formats.c:506
 msgid "(not an OpenPGP signature)"
 msgstr "(не є підписом OpenPGP)"
 
-#: lib/formats.c:630
+#: lib/formats.c:631
 msgid "normal"
 msgstr "звичайний"
 
-#: lib/formats.c:633
+#: lib/formats.c:634
 msgid "replaced"
 msgstr "замінено"
 
-#: lib/formats.c:636
+#: lib/formats.c:637
 msgid "not installed"
 msgstr "не встановлено"
 
-#: lib/formats.c:639
+#: lib/formats.c:640
 msgid "net shared"
 msgstr "мережевий"
 
-#: lib/formats.c:642
+#: lib/formats.c:643
 msgid "wrong color"
 msgstr "помилковий колір"
 
-#: lib/formats.c:646
+#: lib/formats.c:647
 msgid "missing"
 msgstr "немає"
 
-#: lib/formats.c:649
+#: lib/formats.c:650
 msgid "(unknown)"
 msgstr "(невідомо)"
 
-#: lib/formats.c:699
+#: lib/formats.c:700
 msgid "(not a string)"
 msgstr "(не є рядком)"
 
@@ -1619,32 +1599,32 @@ msgstr "запису користувача %s не існує, — викори
 msgid "group %s does not exist - using root\n"
 msgstr "запису групи %s не існує, — використовуємо root\n"
 
-#: lib/fsm.c:1500
+#: lib/fsm.c:1499
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "файла архіву %s не знайдено у списку файлів заголовка\n"
 
-#: lib/fsm.c:1618 lib/fsm.c:1746
+#: lib/fsm.c:1617 lib/fsm.c:1745
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s збережено як %s\n"
 
-#: lib/fsm.c:1773
+#: lib/fsm.c:1772
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s вилучення каталогу %s зазнало невдачі: каталог не є порожнім\n"
 
-#: lib/fsm.c:1779
+#: lib/fsm.c:1778
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s вилучення каталогу %s зазнало невдачі: %s\n"
 
-#: lib/fsm.c:1793
+#: lib/fsm.c:1792
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s не вдалося вилучити %s: %s\n"
 
-#: lib/fsm.c:1815
+#: lib/fsm.c:1814
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s створено як %s\n"
@@ -1755,115 +1735,79 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Непідтримуваний вміст (%s) у пакунку %s\n"
 
-#: lib/poptALL.c:179
-msgid "follow command line symlinks"
-msgstr "слідувати за символічними посиланням з командного рядка"
-
-#: lib/poptALL.c:181
-msgid "logical walk"
-msgstr "логічний обхід"
-
-#: lib/poptALL.c:183
-msgid "don't change directories"
-msgstr "не змінювати каталогів"
-
-#: lib/poptALL.c:185
-msgid "don't get stat info"
-msgstr "не отримувати даних за допомогою stat"
-
-#: lib/poptALL.c:187
-msgid "physical walk"
-msgstr "фізичний обхід"
-
-#: lib/poptALL.c:189
-msgid "return dot and dot-dot"
-msgstr "повертати крапку і дві крапки"
-
-#: lib/poptALL.c:191
-msgid "don't cross devices"
-msgstr "не перетинати межі пристроїв"
-
-#: lib/poptALL.c:193
-msgid "return whiteout information"
-msgstr "повертати неформатовані дані"
-
-#: lib/poptALL.c:206
+#: lib/poptALL.c:167
 msgid "predefine MACRO with value EXPR"
 msgstr "попередньо визначити для МАКРОСу значення ВИРАЗ"
 
-#: lib/poptALL.c:207 lib/poptALL.c:210
+#: lib/poptALL.c:168 lib/poptALL.c:171
 msgid "'MACRO EXPR'"
 msgstr "'МАКРОС ВИРАЗ'"
 
-#: lib/poptALL.c:209
+#: lib/poptALL.c:170
 msgid "define MACRO with value EXPR"
 msgstr "визначити МАКРОС зі значенням ВИРАЗ"
 
-#: lib/poptALL.c:212
+#: lib/poptALL.c:173
 msgid "print macro expansion of EXPR"
 msgstr "вивести розгорнуте значення макросу ВИРАЗ"
 
-#: lib/poptALL.c:213
+#: lib/poptALL.c:174
 msgid "'EXPR'"
 msgstr "'ВИРАЗ'"
 
-#: lib/poptALL.c:215 lib/poptALL.c:230 lib/poptALL.c:234
+#: lib/poptALL.c:176 lib/poptALL.c:191 lib/poptALL.c:195
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "читати <ФАЙЛ:...> замість типових файлів"
 
-#: lib/poptALL.c:216 lib/poptALL.c:231 lib/poptALL.c:235
+#: lib/poptALL.c:177 lib/poptALL.c:192 lib/poptALL.c:196
 msgid "<FILE:...>"
 msgstr "<ФАЙЛ:...>"
 
-#: lib/poptALL.c:226
+#: lib/poptALL.c:187
 msgid "send stdout to CMD"
 msgstr "вивести stdout у CMD"
 
-#: lib/poptALL.c:227
+#: lib/poptALL.c:188
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:238
+#: lib/poptALL.c:199
 msgid "use ROOT as top level directory"
 msgstr "використовувати КОРІНЬ як каталог найвищого рівня"
 
-#: lib/poptALL.c:239
+#: lib/poptALL.c:200
 msgid "ROOT"
 msgstr "КОРІНЬ"
 
-#: lib/poptALL.c:242
+#: lib/poptALL.c:203
 msgid "display known query tags"
 msgstr "показати відомі теґи запитів"
 
-#: lib/poptALL.c:244
+#: lib/poptALL.c:205
 msgid "display final rpmrc and macro configuration"
 msgstr "показати остаточний rpmrc і налаштування макросів"
 
-#: lib/poptALL.c:246
+#: lib/poptALL.c:207
 msgid "provide less detailed output"
 msgstr "обмежити виведення даних"
 
-#: lib/poptALL.c:248
+#: lib/poptALL.c:209
 msgid "provide more detailed output"
 msgstr "вивести докладні дані"
 
-#: lib/poptALL.c:250
+#: lib/poptALL.c:211
 msgid "print the version of rpm being used"
 msgstr "вивести використану версію rpm"
 
-#: lib/poptALL.c:256
+#: lib/poptALL.c:217
 msgid "debug payload file state machine"
 msgstr "зневаджування кінцевого автомата файлів вмісту"
 
-#: lib/poptALL.c:262
-msgid "debug package state machine"
-msgstr "зневаджування кінцевого автомата пакунків"
-
-#: lib/poptALL.c:276
+#: lib/poptALL.c:225
 msgid "debug rpmio I/O"
 msgstr "зневаджування вводу-виводу rpmio"
 
-#: lib/poptALL.c:350
+#: lib/poptALL.c:293
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: помилкове налаштування таблиці параметрів (%d)\n"
@@ -1899,8 +1843,8 @@ msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
 msgstr ""
-"вилучити всі пакунки, що відповідають ключу <пакунок> (зазвичай, якщо <"
-"пакунок> вказує на декілька пакунків, буде повідомлено про помилку)"
+"вилучити всі пакунки, що відповідають ключу <пакунок> (зазвичай, якщо "
+"<пакунок> вказує на декілька пакунків, буде повідомлено про помилку)"
 
 #: lib/poptI.c:141 lib/poptI.c:220
 msgid "do not execute package scriptlet(s)"
@@ -1988,7 +1932,7 @@ msgstr "оновити базу даних, але не вносити змін 
 msgid "do not verify package dependencies"
 msgstr "не перевіряти залежностей пакунків"
 
-#: lib/poptI.c:204 lib/poptQV.c:270 lib/poptQV.c:272
+#: lib/poptI.c:204 lib/poptQV.c:251 lib/poptQV.c:253
 msgid "don't verify digest of files"
 msgstr "не перевіряти контрольних сум файлів"
 
@@ -2096,240 +2040,220 @@ msgstr "не встановлювати, лише повідомити, чи б�
 msgid "upgrade package(s)"
 msgstr "оновити пакунки"
 
-#: lib/poptQV.c:94
+#: lib/poptQV.c:87
 msgid "query/verify all packages"
 msgstr "опитати/перевірити всі пакунки"
 
-#: lib/poptQV.c:96
+#: lib/poptQV.c:89
 msgid "rpm checksig mode"
 msgstr "режим перевірки підписів"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:91
 msgid "query/verify package(s) owning file"
 msgstr "опитати/перевірити пакунки, до яких належить файл"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:93
 msgid "query/verify package(s) in group"
 msgstr "опитати/перевірити пакунки з групи"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:95
 msgid "query/verify a package file"
 msgstr "опитати/перевірити файл пакунка"
 
-#: lib/poptQV.c:105
-msgid "query/verify package(s) from TOP file tree walk"
-msgstr "опитати/перевірити пакунки з дерева файлів TOP"
-
-#: lib/poptQV.c:107
-msgid "query/verify package(s) from system HDLIST"
-msgstr "опитати/перевірити пакунки з системного списку HDLIST"
-
-#: lib/poptQV.c:110
+#: lib/poptQV.c:98
 msgid "query/verify package(s) with package identifier"
 msgstr "опитати/перевірити пакунки за ідентифікатором пакунка"
 
-#: lib/poptQV.c:112
+#: lib/poptQV.c:100
 msgid "query/verify package(s) with header identifier"
 msgstr "опитати/перевірити пакунки за ідентифікатором заголовка"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:102
 msgid "query/verify package(s) with file identifier"
 msgstr "опитати/перевірити пакунки за ідентифікатором файла"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:105
 msgid "rpm query mode"
 msgstr "режим опитування rpm"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:107
 msgid "query/verify a header instance"
 msgstr "опитати/перевірити екземпляр заголовка"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:109
 msgid "query a spec file"
 msgstr "опитати файл spec"
 
-#: lib/poptQV.c:121
+#: lib/poptQV.c:109
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:123
+#: lib/poptQV.c:111
 msgid "query/verify package(s) from install transaction"
 msgstr "опитати/перевірити пакунки з операції зі встановлення"
 
-#: lib/poptQV.c:125
+#: lib/poptQV.c:113
 msgid "query the package(s) triggered by the package"
 msgstr "опитати пакунки, які пов’язано з пакунком"
 
-#: lib/poptQV.c:127
+#: lib/poptQV.c:115
 msgid "rpm verify mode"
 msgstr "режим перевірки rpm"
 
-#: lib/poptQV.c:129
+#: lib/poptQV.c:117
 msgid "query/verify the package(s) which require a dependency"
 msgstr "опитати/перевірити пакунки, яким потрібні залежні пакунки"
 
-#: lib/poptQV.c:131
+#: lib/poptQV.c:119
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "опитати/перевірити пакунки, які надають файли залежностей"
 
-#: lib/poptQV.c:134
-msgid "create transaction set"
-msgstr "створити набір операції"
-
-#: lib/poptQV.c:136
-msgid "do not order transaction set"
-msgstr "не впорядковувати набір операції"
-
-#: lib/poptQV.c:138
+#: lib/poptQV.c:122
 msgid "do not glob arguments"
 msgstr "не збирати аргументи разом"
 
-#: lib/poptQV.c:140
+#: lib/poptQV.c:124
 msgid "do not process non-package files as manifests"
 msgstr "не обробляти не запаковані файли як маніфести"
 
-#: lib/poptQV.c:142
-msgid "do not read headers"
-msgstr "не читати заголовків"
-
-#: lib/poptQV.c:237
+#: lib/poptQV.c:218
 msgid "list all configuration files"
 msgstr "показати список всіх файлів налаштувань"
 
-#: lib/poptQV.c:239
+#: lib/poptQV.c:220
 msgid "list all documentation files"
 msgstr "показати список всіх файлів документації"
 
-#: lib/poptQV.c:241
+#: lib/poptQV.c:222
 msgid "dump basic file information"
 msgstr "створити дамп основних даних щодо файлів"
 
-#: lib/poptQV.c:245
+#: lib/poptQV.c:226
 msgid "list files in package"
 msgstr "показати список файлів у пакунку"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:231
 #, c-format
 msgid "skip %%ghost files"
 msgstr "пропускати файли %%ghost"
 
-#: lib/poptQV.c:255
+#: lib/poptQV.c:236
 msgid "use the following query format"
 msgstr "використовувати вказаний нижче формат запиту"
 
-#: lib/poptQV.c:257
+#: lib/poptQV.c:238
 msgid "display the states of the listed files"
 msgstr "показати стан файлів зі списку"
 
-#: lib/poptQV.c:275
+#: lib/poptQV.c:256
 msgid "don't verify size of files"
 msgstr "не перевіряти розмірів файлів"
 
-#: lib/poptQV.c:278
+#: lib/poptQV.c:259
 msgid "don't verify symlink path of files"
 msgstr "не перевіряти шляхи символічних посилань на файли"
 
-#: lib/poptQV.c:281
+#: lib/poptQV.c:262
 msgid "don't verify owner of files"
 msgstr "не перевіряти власників файлів"
 
-#: lib/poptQV.c:284
+#: lib/poptQV.c:265
 msgid "don't verify group of files"
 msgstr "не перевіряти групу власників файлів"
 
-#: lib/poptQV.c:287
+#: lib/poptQV.c:268
 msgid "don't verify modification time of files"
 msgstr "не перевіряти час зміни файлів"
 
-#: lib/poptQV.c:290 lib/poptQV.c:293
+#: lib/poptQV.c:271 lib/poptQV.c:274
 msgid "don't verify mode of files"
 msgstr "не перевіряти права доступу до файлів"
 
-#: lib/poptQV.c:296
+#: lib/poptQV.c:277
 msgid "don't verify capabilities of files"
 msgstr "не перевіряти можливості файлів"
 
-#: lib/poptQV.c:299
+#: lib/poptQV.c:280
 msgid "don't verify file security contexts"
 msgstr "не перевіряти контексти безпеки файла"
 
-#: lib/poptQV.c:301
+#: lib/poptQV.c:282
 msgid "don't verify files in package"
 msgstr "не перевіряти файли у пакунку"
 
-#: lib/poptQV.c:303 tools/rpmgraph.c:244
+#: lib/poptQV.c:284 tools/rpmgraph.c:244
 msgid "don't verify package dependencies"
 msgstr "не перевіряти залежності пакунків"
 
-#: lib/poptQV.c:306 lib/poptQV.c:309
+#: lib/poptQV.c:287 lib/poptQV.c:290
 msgid "don't execute verify script(s)"
 msgstr "не виконувати скриптів перевірки"
 
-#: lib/poptQV.c:321
+#: lib/poptQV.c:302
 msgid "don't verify GPG V3 DSA signature(s)"
 msgstr "не перевіряти підписів DSA GPG V3"
 
-#: lib/poptQV.c:324
+#: lib/poptQV.c:305
 msgid "don't verify PGP V3 RSA/MD5 signature(s)"
 msgstr "не перевіряти підписів RSA/MD5 PGP V3"
 
-#: lib/poptQV.c:337
+#: lib/poptQV.c:318
 msgid "sign package(s) (identical to --resign)"
 msgstr "підписати пакунки (тотожне до --resign)"
 
-#: lib/poptQV.c:339
+#: lib/poptQV.c:320
 msgid "verify package signature(s)"
 msgstr "перевірити підписи пакунка"
 
-#: lib/poptQV.c:341
+#: lib/poptQV.c:322
 msgid "delete package signatures"
 msgstr "вилучити підписи пакунка"
 
-#: lib/poptQV.c:343
+#: lib/poptQV.c:324
 msgid "import an armored public key"
 msgstr "імпортувати захищених відкритий ключ"
 
-#: lib/poptQV.c:345
+#: lib/poptQV.c:326
 msgid "sign package(s) (identical to --addsign)"
 msgstr "підписати пакунки (тотожне до --addsign)"
 
-#: lib/poptQV.c:347
+#: lib/poptQV.c:328
 msgid "generate signature"
 msgstr "створити підпис"
 
-#: lib/psm.c:218
+#: lib/psm.c:217
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr "Для %s можливості rpmlib є недостатніми:\n"
 
-#: lib/psm.c:260
+#: lib/psm.c:259
 msgid "source package expected, binary found\n"
 msgstr "слід було вказати пакунок з кодами, вказано бінарний пакунок\n"
 
-#: lib/psm.c:313
+#: lib/psm.c:312
 msgid "source package contains no .spec file\n"
 msgstr "у пакунку з кодами не міститься файла .spec\n"
 
-#: lib/psm.c:869
+#: lib/psm.c:858
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "спроба розпакування архіву завершилася невдало%s%s: %s\n"
 
-#: lib/psm.c:870
+#: lib/psm.c:859
 msgid " on file "
 msgstr " на файлі "
 
-#: lib/psm.c:1000
+#: lib/psm.c:989
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "помилка дії %s на файлі %s: %s\n"
 
-#: lib/psm.c:1003
+#: lib/psm.c:992
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "помилка дії %s: %s\n"
 
-#: lib/psm.c:1048 lib/transaction.c:1319 lib/verify.c:483
+#: lib/psm.c:1037 lib/transaction.c:1285 lib/verify.c:465
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Не вдалося змінити кореневий каталог: %m\n"
@@ -2378,71 +2302,67 @@ msgstr "у пакунку немає списків власника/групи 
 
 #: lib/query.c:229
 msgid "package has neither file owner or id lists\n"
-msgstr ""
-"у пакунку немає ні списку власників файлів, ні списку ідентифікаторів\n"
+msgstr "у пакунку немає ні списку власників файлів, ні списку ідентифікаторів\n"
 
-#: lib/query.c:332
+#: lib/query.c:331
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "у групі %s не міститься жодного пакунка\n"
 
-#: lib/query.c:341
+#: lib/query.c:340
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "жоден з пакунків не перемикає %s\n"
 
-#: lib/query.c:354 lib/query.c:375 lib/query.c:396 lib/query.c:421
+#: lib/query.c:353 lib/query.c:374 lib/query.c:395 lib/query.c:420
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "помилковий формат %s: %s\n"
 
-#: lib/query.c:364 lib/query.c:381 lib/query.c:407 lib/query.c:426
+#: lib/query.c:363 lib/query.c:380 lib/query.c:406 lib/query.c:425
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "жодне з пакунків не відповідає ключу %s: %s\n"
 
-#: lib/query.c:436
+#: lib/query.c:435
 #, c-format
 msgid "no package requires %s\n"
 msgstr "жоден з пакунків не потребує %s\n"
 
-#: lib/query.c:447
+#: lib/query.c:446
 #, c-format
 msgid "no package provides %s\n"
 msgstr "жоден з пакунків не надає %s\n"
 
-#: lib/query.c:479
+#: lib/query.c:478
 #, c-format
 msgid "file %s: %s\n"
 msgstr "файл %s: %s\n"
 
-#: lib/query.c:482
+#: lib/query.c:481
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "файл %s не належить до жодного з пакунків\n"
 
-#: lib/query.c:495
+#: lib/query.c:494
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "некоректний номер пакунка: %s\n"
 
-#: lib/query.c:503
+#: lib/query.c:502
 #, c-format
 msgid "record %u could not be read\n"
 msgstr "не вдалося прочитати запис %u\n"
 
-#: lib/query.c:519 lib/rpminstall.c:673
+#: lib/query.c:518 lib/rpminstall.c:667
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "пакунок %s не встановлено\n"
 
-#: lib/rpmal.c:311
-msgid "(added files)"
-msgstr "(додані файли)"
-
-#: lib/rpmal.c:364
-msgid "(added provide)"
-msgstr "(додано потрібні залежності)"
+#: lib/query.c:552
+#, c-format
+msgid "unknown tag: \"%s\"\n"
+msgstr "невідомий теґ: «%s»\n"
 
 #: lib/rpmchecksig.c:51 lib/rpmchecksig.c:823
 #, c-format
@@ -2528,95 +2448,91 @@ msgstr " (НЕНАДІЙНІ КЛЮЧІ:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmds.c:436
+#: lib/rpmds.c:399
 msgid "NO "
 msgstr "НІ "
 
-#: lib/rpmds.c:436
+#: lib/rpmds.c:399
 msgid "YES"
 msgstr "ТАК"
 
-#: lib/rpmds.c:916
+#: lib/rpmds.c:852
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides: і Obsoletes: підтримка версій залежностей."
 
-#: lib/rpmds.c:919
+#: lib/rpmds.c:855
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "назви файлів збережено як кортеж (dirName,baseName,dirIndex), а не як шлях."
 
-#: lib/rpmds.c:923
+#: lib/rpmds.c:859
 msgid "package payload can be compressed using bzip2."
 msgstr "вміст пакунка може бути стиснуто за допомогою bzip2."
 
-#: lib/rpmds.c:928
+#: lib/rpmds.c:864
 msgid "package payload can be compressed using xz."
 msgstr "вміст пакунка може бути стиснуто за допомогою xz."
 
-#: lib/rpmds.c:931
+#: lib/rpmds.c:867
 msgid "package payload can be compressed using lzma."
 msgstr "вміст пакунка може бути стиснуто за допомогою lzma."
 
-#: lib/rpmds.c:935
+#: lib/rpmds.c:871
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "файли вмісту пакунка мають префікс «./»."
 
-#: lib/rpmds.c:938
+#: lib/rpmds.c:874
 msgid "package name-version-release is not implicitly provided."
 msgstr "назва-версія-випуск пакунка не надаються автоматично."
 
-#: lib/rpmds.c:941
+#: lib/rpmds.c:877
 msgid "header tags are always sorted after being loaded."
 msgstr "теґи заголовка завжди впорядковуються після завантаження."
 
-#: lib/rpmds.c:944
+#: lib/rpmds.c:880
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 "інтерпретатор допоміжних скриптів може використовувати аргументи з заголовка."
 
-#: lib/rpmds.c:947
+#: lib/rpmds.c:883
 msgid "a hardlink file set may be installed without being complete."
 msgstr "підтримується часткове встановлення набору жорстких посилань пакунка."
 
-#: lib/rpmds.c:950
+#: lib/rpmds.c:886
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "допоміжні скрипти пакунка можуть отримувати доступ до бази даних rpm під час "
 "встановлення."
 
-#: lib/rpmds.c:954
+#: lib/rpmds.c:890
 msgid "internal support for lua scripts."
 msgstr "вбудована підтримка скриптів lua."
 
-#: lib/rpmds.c:958
+#: lib/rpmds.c:894
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 "алгоритм обчислення контрольних сум може бути вибрано для кожного з пакунків "
 "окремо"
 
-#: lib/rpmds.c:962
+#: lib/rpmds.c:898
 msgid "support for POSIX.1e file capabilities"
 msgstr "підтримка мандатів файлів POSIX.1e"
 
-#: lib/rpmgi.c:97 lib/rpminstall.c:115 lib/rpminstall.c:298
-#: lib/rpminstall.c:329 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpmds.c:902
+#| msgid "package scriptlets may access the rpm database while installing."
+msgid "package scriptlets can be expanded at install time."
+msgstr "допоміжні скрипти пакунка може бути розширено під час встановлення."
+
+#: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:292
+#: lib/rpminstall.c:323 tools/rpmgraph.c:119 tools/rpmgraph.c:156
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "помилка відкриття %s: %s\n"
 
-#: lib/rpmgi.c:194
+#: lib/rpmgi.c:136
 #, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: не є пакунком rpm (або маніфестом пакунка)\n"
-
-#: lib/rpmgi.c:342
-#, c-format
-msgid "unknown tag: \"%s\"\n"
-msgstr "невідомий теґ: «%s»\n"
-
-#: lib/rpmgi.c:610 lib/rpminstall.c:254 tools/rpmgraph.c:194
-msgid "Failed dependencies:\n"
-msgstr "Помилкові залежності:\n"
 
 #: lib/rpminstall.c:174
 msgid "Preparing..."
@@ -2626,52 +2542,56 @@ msgstr "Підготовка..."
 msgid "Preparing packages for installation..."
 msgstr "Приготування пакунків до встановлення..."
 
-#: lib/rpminstall.c:311
+#: lib/rpminstall.c:254 tools/rpmgraph.c:194
+msgid "Failed dependencies:\n"
+msgstr "Помилкові залежності:\n"
+
+#: lib/rpminstall.c:305
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: не є пакунком rpm (або маніфестом пакунка): %s\n"
 
-#: lib/rpminstall.c:351 lib/rpminstall.c:735 tools/rpmgraph.c:139
+#: lib/rpminstall.c:345 lib/rpminstall.c:729 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s не можна встановити\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:459
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Отримання %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:471
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "пропускаємо %s — помилка отримання\n"
 
-#: lib/rpminstall.c:544
+#: lib/rpminstall.c:538
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "пакунок %s не придатний до переміщення\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:565
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "помилка читання з файла %s\n"
 
-#: lib/rpminstall.c:577
+#: lib/rpminstall.c:571
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "файл %s потребує новішої версії RPM\n"
 
-#: lib/rpminstall.c:680
+#: lib/rpminstall.c:674
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "«%s» задає декілька пакунків:\n"
 
-#: lib/rpminstall.c:719
+#: lib/rpminstall.c:713
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "не вдалося відкрити %s: %s\n"
 
-#: lib/rpminstall.c:725
+#: lib/rpminstall.c:719
 #, c-format
 msgid "Installing %s\n"
 msgstr "Встановлення %s\n"
@@ -2707,71 +2627,76 @@ msgstr "не вдалося заблокувати для виконання о�
 msgid "waiting for transaction lock on %s\n"
 msgstr "очікування на блокування %s для виконання операції\n"
 
-#: lib/rpmps.c:308
+#: lib/rpmprob.c:107
 msgid "different"
 msgstr "різні"
 
-#: lib/rpmps.c:314
+#: lib/rpmprob.c:113
 #, c-format
 msgid "package %s is intended for a %s architecture"
 msgstr "пакунок %s призначено для архітектури %s"
 
-#: lib/rpmps.c:319
+#: lib/rpmprob.c:118
 #, c-format
 msgid "package %s is intended for a %s operating system"
 msgstr "пакунок %s призначено для операційної системи %s"
 
-#: lib/rpmps.c:323
+#: lib/rpmprob.c:122
 #, c-format
 msgid "package %s is already installed"
 msgstr "пакунок %s вже встановлено"
 
-#: lib/rpmps.c:327
+#: lib/rpmprob.c:126
 #, c-format
 msgid "path %s in package %s is not relocatable"
 msgstr "шлях %s у пакунку %s не можна переміщати"
 
-#: lib/rpmps.c:332
+#: lib/rpmprob.c:131
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
 msgstr "конфлікт файлів %s під час спроби встановлення пакунків %s і %s"
 
-#: lib/rpmps.c:337
+#: lib/rpmprob.c:136
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
 msgstr "файл %s, який встановлюється у %s, конфліктує з файлом з пакунка %s"
 
-#: lib/rpmps.c:342
+#: lib/rpmprob.c:141
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
 msgstr "пакунок %s (який є новішим за %s) вже встановлено"
 
-#: lib/rpmps.c:347
+#: lib/rpmprob.c:146
 #, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
 msgstr "встановлення пакунка %s потребує %<PRIu64>%cБ у файловій системі %s"
 
-#: lib/rpmps.c:357
+#: lib/rpmprob.c:156
 #, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
-msgstr ""
-"встановлення пакунка %s потребує %<PRIu64> inod-ів у файловій системі %s"
+msgstr "встановлення пакунка %s потребує %<PRIu64> inod-ів у файловій системі %s"
 
-#: lib/rpmps.c:361
+#: lib/rpmprob.c:160
 #, c-format
 msgid "%s is needed by %s%s"
 msgstr "%s потрібен для %s%s"
 
-#: lib/rpmps.c:363 lib/rpmps.c:368
+#: lib/rpmprob.c:162 lib/rpmprob.c:167 lib/rpmprob.c:172
 msgid "(installed) "
 msgstr "(встановлено) "
 
-#: lib/rpmps.c:366
+#: lib/rpmprob.c:165
 #, c-format
 msgid "%s conflicts with %s%s"
 msgstr "%s конфліктує з %s%s"
 
-#: lib/rpmps.c:372
+#: lib/rpmprob.c:170
+#, c-format
+#| msgid "%s is needed by %s%s"
+msgid "%s is obsoleted by %s%s"
+msgstr "%s став застарілим через %s%s"
+
+#: lib/rpmprob.c:176
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "сталася невідома помилка %d під час обробки пакунка %s"
@@ -2811,79 +2736,114 @@ msgstr "Неповний типовий рядок у %s:%d\n"
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Забагато аргументів у типовому рядку у %s:%d\n"
 
-#: lib/rpmrc.c:485
+#: lib/rpmrc.c:486
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "не вистачає «:» (виявлено 0x%02x) у %s:%d\n"
 
-#: lib/rpmrc.c:502 lib/rpmrc.c:542
+#: lib/rpmrc.c:503 lib/rpmrc.c:543
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "не вистачає аргументу для %s у %s:%d\n"
 
-#: lib/rpmrc.c:518
+#: lib/rpmrc.c:519
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "Не вдалося відкрити %s у %s:%d: %m\n"
 
-#: lib/rpmrc.c:534
+#: lib/rpmrc.c:535
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "не вистачає архітектури для %s у %s:%d\n"
 
-#: lib/rpmrc.c:601
+#: lib/rpmrc.c:602
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "помилковий параметр «%s» у %s:%d\n"
 
-#: lib/rpmrc.c:1371
+#: lib/rpmrc.c:1372
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Невідома система: %s\n"
 
-#: lib/rpmrc.c:1372
+#: lib/rpmrc.c:1373
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Будь ласка, зв’яжіться з %s\n"
 
-#: lib/rpmrc.c:1592
+#: lib/rpmrc.c:1593
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Не вдалося відкрити %s для читання: %m.\n"
+
+#: lib/rpmscript.c:85
+#| msgid "File capability support not built in\n"
+msgid "<lua> scriptlet support not built in\n"
+msgstr ""
+"підтримку допоміжних скриптів мовою <lua> не було передбачено під час "
+"збирання\n"
+
+#: lib/rpmscript.c:211
+#, c-format
+#| msgid "Couldn't create pipe for %s: %m\n"
+msgid "Couldn't create temporary file for %s: %s\n"
+msgstr "Не вдалося створити тимчасовий файл для %s: %s\n"
+
+#: lib/rpmscript.c:257
+#, c-format
+#| msgid "Couldn't create pipe for %s: %m\n"
+msgid "Couldn't duplicate file descriptor: %s: %s\n"
+msgstr "Не вдалося здублювати дескриптор файла: %s: %s\n"
+
+#: lib/rpmscript.c:280
+#, c-format
+msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
+msgstr "помилка допоміжного скрипту %s, очікування pid (%d) rc %d: %s\n"
+
+#: lib/rpmscript.c:284
+#, c-format
+#| msgid "%s: Fwrite failed: %s\n"
+msgid "%s scriptlet failed, signal %d\n"
+msgstr "помилка допоміжного скрипту %s, сигнал %d\n"
+
+#: lib/rpmscript.c:287
+#, c-format
+msgid "%s scriptlet failed, exit status %d\n"
+msgstr "помилка допоміжного скрипту %s, стан виходу %d\n"
 
 #: lib/rpmtd.c:257
 msgid "Unknown format"
 msgstr "Невідомий формат"
 
-#: lib/rpmte.c:728
+#: lib/rpmte.c:763
 msgid "install"
 msgstr "встановити"
 
-#: lib/rpmte.c:729
+#: lib/rpmte.c:764
 msgid "erase"
 msgstr "вилучити"
 
-#: lib/rpmts.c:93
+#: lib/rpmts.c:89
 #, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "не вдалося відкрити базу даних Packages у %s\n"
 
-#: lib/rpmts.c:178
+#: lib/rpmts.c:174
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "зайвий символ «(» у мітці пакунка: %s\n"
 
-#: lib/rpmts.c:196
+#: lib/rpmts.c:192
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "не вистачає «(» у мітці пакунка: %s\n"
 
-#: lib/rpmts.c:204
+#: lib/rpmts.c:200
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "не вистачає «)» у мітці пакунка: %s\n"
 
-#: lib/rpmts.c:275
+#: lib/rpmts.c:271
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: спроба читання відкритого ключа завершилася невдало.\n"
@@ -2989,20 +2949,20 @@ msgstr "Перевірка підпису: ПОМИЛКОВІ ПАРАМЕТРИ
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Підпис: НЕВІДОМИЙ (%d)\n"
 
-#: lib/transaction.c:1403
+#: lib/transaction.c:1367
 msgid "skipped"
 msgstr "пропущено"
 
-#: lib/transaction.c:1403
+#: lib/transaction.c:1367
 msgid "failed"
 msgstr "невдача"
 
-#: lib/verify.c:332
+#: lib/verify.c:318
 #, c-format
 msgid "missing   %c %s"
 msgstr "не вистачає   %c %s"
 
-#: lib/verify.c:425
+#: lib/verify.c:409
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Незадоволені залежності для %s:\n"
@@ -3081,138 +3041,138 @@ msgstr ""
 msgid "verify database files"
 msgstr "перевірити файли бази даних"
 
-#: lib/rpmdb.c:155
+#: lib/rpmdb.c:154
 #, c-format
 msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 msgstr "dbiTagsInit: невідома назва теґу: «%s» проігноровано\n"
 
-#: lib/rpmdb.c:213
+#: lib/rpmdb.c:212
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr "dbiOpen: dbapi %d не доступний\n"
 
-#: lib/rpmdb.c:223
+#: lib/rpmdb.c:222
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "не вдалося відкрити покажчик %s за допомогою db%d — %s (%d)\n"
 
-#: lib/rpmdb.c:838
+#: lib/rpmdb.c:818
 msgid "no dbpath has been set\n"
 msgstr "не було встановлено шляху dbpath\n"
 
-#: lib/rpmdb.c:1066 lib/rpmdb.c:1195 lib/rpmdb.c:1240 lib/rpmdb.c:2098
-#: lib/rpmdb.c:2204 lib/rpmdb.c:2817
+#: lib/rpmdb.c:1039 lib/rpmdb.c:1168 lib/rpmdb.c:1213 lib/rpmdb.c:2071
+#: lib/rpmdb.c:2177 lib/rpmdb.c:2782
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "помилка(%d) отримання записів «%s» з покажчика %s\n"
 
-#: lib/rpmdb.c:1424
+#: lib/rpmdb.c:1397
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: пропущено"
 
-#: lib/rpmdb.c:1434
+#: lib/rpmdb.c:1407
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "помилка (%d) збереження запису №%d до %s\n"
 
-#: lib/rpmdb.c:1532
+#: lib/rpmdb.c:1506
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: помилка regexec: %s\n"
 
-#: lib/rpmdb.c:1713
+#: lib/rpmdb.c:1687
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: помилка regcomp: %s\n"
 
-#: lib/rpmdb.c:1995
+#: lib/rpmdb.c:1968
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: пропущено"
 
-#: lib/rpmdb.c:2022
+#: lib/rpmdb.c:1995
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: отримано пошкоджений заголовок №%u — пропущено.\n"
 
-#: lib/rpmdb.c:2422
+#: lib/rpmdb.c:2395
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: не вдалося прочитати заголовок за адресою 0x%x\n"
 
-#: lib/rpmdb.c:2468
+#: lib/rpmdb.c:2437
 #, c-format
 msgid "error(%d) setting header #%d record for %s removal\n"
 msgstr "помилка (%d) встановлення запису заголовка №%d для вилучення %s\n"
 
-#: lib/rpmdb.c:2517
+#: lib/rpmdb.c:2486
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "помилка (%d) встановлення записів «%s» за покажчиком %s\n"
 
-#: lib/rpmdb.c:2536
+#: lib/rpmdb.c:2505
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "помилка (%d) під час спроби збереження запису «%s» до %s\n"
 
-#: lib/rpmdb.c:2546
+#: lib/rpmdb.c:2515
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "помилка (%d) під час спроби вилучення запису «%s» з %s\n"
 
-#: lib/rpmdb.c:2674
+#: lib/rpmdb.c:2643
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "помилка (%d) розподілу нового екземпляра пакунка\n"
 
-#: lib/rpmdb.c:2722
+#: lib/rpmdb.c:2687
 msgid "rpmdbAdd: skipping"
 msgstr "rpmdbAdd: пропущено"
 
-#: lib/rpmdb.c:2833
+#: lib/rpmdb.c:2798
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "помилка (%d) під час спроби збереження запису %s до %s\n"
 
-#: lib/rpmdb.c:3035
+#: lib/rpmdb.c:2993
 msgid "no dbpath has been set"
 msgstr "не було встановлено шляху dbpath"
 
-#: lib/rpmdb.c:3060
+#: lib/rpmdb.c:3018
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "вже існує тимчасова база даних %s\n"
 
-#: lib/rpmdb.c:3068
+#: lib/rpmdb.c:3026
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "не вдалося створити каталог %s: %s\n"
 
-#: lib/rpmdb.c:3115
+#: lib/rpmdb.c:3073
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "заголовок №%u у базі даних є помилковим — пропущено.\n"
 
-#: lib/rpmdb.c:3129
+#: lib/rpmdb.c:3087
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "не вдалося додати запис з початковим розташуванням у %u\n"
 
-#: lib/rpmdb.c:3144
+#: lib/rpmdb.c:3102
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "не вдалося перебудувати базу даних: початкова база даних залишається на "
 "місці\n"
 
-#: lib/rpmdb.c:3152
+#: lib/rpmdb.c:3110
 msgid "failed to replace old database with new database!\n"
 msgstr "не вдалося замінити стару базу даних новою!\n"
 
-#: lib/rpmdb.c:3154
+#: lib/rpmdb.c:3112
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "замінити файли у %s файлами з %s для відновлення"
 
-#: lib/rpmdb.c:3166
+#: lib/rpmdb.c:3124
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "не вдалося вилучити каталог %s: %s\n"
@@ -3253,8 +3213,7 @@ msgstr "%s має некоректне числове значення, проп
 #: lib/backend/dbconfig.c:333
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
-msgstr ""
-"%s має занадто велике або занадто мале довге ціле значення, пропущено\n"
+msgstr "%s має занадто велике або занадто мале довге ціле значення, пропущено\n"
 
 #: lib/backend/dbconfig.c:342
 #, c-format
@@ -3420,10 +3379,6 @@ msgstr "(нічого)"
 msgid "Failed to register fork handler: %m\n"
 msgstr "Не вдалося зареєструвати обробник розгалуження: %m\n"
 
-#: rpmio/url.c:216
-msgid "url port must be a number\n"
-msgstr "значення порту url має бути цілим числом\n"
-
 #: tools/rpmgraph.c:169
 #, c-format
 msgid "%s: read manifest failed: %s\n"
@@ -3433,4 +3388,68 @@ msgstr "%s: помилка читання маніфесту: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "не перевіряти підпис заголовка та вмісту"
 
+#~ msgid "File tree walk options (with --ftswalk):"
+#~ msgstr "Параметри обробки ієрархії файлів (з --ftswalk):"
 
+#~ msgid "(rpmlib provides)"
+#~ msgstr "(rpmlib provides)"
+
+#~ msgid "(cached)"
+#~ msgstr "(кешовано)"
+
+#~ msgid "(db files)"
+#~ msgstr "(файли db)"
+
+#~ msgid "(db provides)"
+#~ msgstr "(db provides)"
+
+#~ msgid "follow command line symlinks"
+#~ msgstr "слідувати за символічними посиланням з командного рядка"
+
+#~ msgid "logical walk"
+#~ msgstr "логічний обхід"
+
+#~ msgid "don't change directories"
+#~ msgstr "не змінювати каталогів"
+
+#~ msgid "don't get stat info"
+#~ msgstr "не отримувати даних за допомогою stat"
+
+#~ msgid "physical walk"
+#~ msgstr "фізичний обхід"
+
+#~ msgid "return dot and dot-dot"
+#~ msgstr "повертати крапку і дві крапки"
+
+#~ msgid "don't cross devices"
+#~ msgstr "не перетинати межі пристроїв"
+
+#~ msgid "return whiteout information"
+#~ msgstr "повертати неформатовані дані"
+
+#~ msgid "debug package state machine"
+#~ msgstr "зневаджування кінцевого автомата пакунків"
+
+#~ msgid "query/verify package(s) from TOP file tree walk"
+#~ msgstr "опитати/перевірити пакунки з дерева файлів TOP"
+
+#~ msgid "query/verify package(s) from system HDLIST"
+#~ msgstr "опитати/перевірити пакунки з системного списку HDLIST"
+
+#~ msgid "create transaction set"
+#~ msgstr "створити набір операції"
+
+#~ msgid "do not order transaction set"
+#~ msgstr "не впорядковувати набір операції"
+
+#~ msgid "do not read headers"
+#~ msgstr "не читати заголовків"
+
+#~ msgid "(added files)"
+#~ msgstr "(додані файли)"
+
+#~ msgid "(added provide)"
+#~ msgstr "(додано потрібні залежності)"
+
+#~ msgid "url port must be a number\n"
+#~ msgstr "значення порту url має бути цілим числом\n"
