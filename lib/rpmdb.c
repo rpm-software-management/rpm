@@ -37,8 +37,7 @@
 
 enum rpmdbFlags {
 	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
-	RPMDB_FLAG_MINIMAL	= (1 << 1),
-	RPMDB_FLAG_REBUILD	= (1 << 2),
+	RPMDB_FLAG_REBUILD	= (1 << 1),
 };
 
 #define	_DBI_FLAGS	0
@@ -734,7 +733,6 @@ static int openDatabase(const char * prefix,
     rpmdb db;
     int rc, xx;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
-    int minimal = flags & RPMDB_FLAG_MINIMAL;
 
     /* Insure that _dbapi has one of -1, 1, 2, or 3 */
     if (_dbapi < -1 || _dbapi > 4)
@@ -759,37 +757,9 @@ static int openDatabase(const char * prefix,
 
     db->db_api = _dbapi;
 
-    {   rc = 0;
-	for (int dbix = 0; rc == 0 && dbix < dbiTagsMax; dbix++) {
-	    rpmTag rpmtag = dbiTags[dbix];
-	    dbiIndex dbi = rpmdbOpenIndex(db, rpmtag, 0);
+    /* Just the primary Packages database opened here */
+    rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0) != NULL) ? 0 : -2;
 
-	    if (dbi == NULL) {
-		rc = -2;
-		break;
-	    }
-
-	    switch (rpmtag) {
-	    case RPMDBI_PACKAGES:
-		if (dbi == NULL) rc |= 1;
-#if 0
-		/* XXX open only Packages, indices created on the fly. */
-		if (db->db_api == 3)
-#endif
-		    goto exit;
-		break;
-	    case RPMTAG_NAME:
-		if (dbi == NULL) rc |= 1;
-		if (minimal)
-		    goto exit;
-		break;
-	    default:
-		break;
-	    }
-	}
-    }
-
-exit:
     if (rc || justCheck || dbp == NULL)
 	xx = rpmdbClose(db);
     else {
@@ -2883,8 +2853,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     rpmlog(RPMLOG_DEBUG, "opening old database with dbapi %d\n",
 		_dbapi);
-    if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
-		     RPMDB_FLAG_MINIMAL)) {
+    if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
