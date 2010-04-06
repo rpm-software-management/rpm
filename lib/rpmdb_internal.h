@@ -38,16 +38,6 @@ struct rpmdb_s {
     int nrefs;			/*!< Reference count. */
 };
 
-/* for RPM's internal use only */
-
-/** \ingroup rpmdb
- */
-enum rpmdbFlags {
-	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
-	RPMDB_FLAG_MINIMAL	= (1 << 1),
-	RPMDB_FLAG_CHROOT	= (1 << 2)
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif

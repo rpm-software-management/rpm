@@ -37,6 +37,12 @@
 
 static int _rebuildinprogress = 0;
 
+enum rpmdbFlags {
+	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
+	RPMDB_FLAG_MINIMAL	= (1 << 1),
+	RPMDB_FLAG_CHROOT	= (1 << 2)
+};
+
 #define	_DBI_FLAGS	0
 #define	_DBI_PERMS	0644
 #define	_DBI_MAJOR	-1
