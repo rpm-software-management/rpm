@@ -40,10 +40,6 @@ enum rpmdbFlags {
 	RPMDB_FLAG_REBUILD	= (1 << 1),
 };
 
-#define	_DBI_FLAGS	0
-#define	_DBI_PERMS	0644
-#define	_DBI_MAJOR	-1
-
 static rpmTag const dbiTags[] = {
     RPMDBI_PACKAGES,
     RPMTAG_NAME,
