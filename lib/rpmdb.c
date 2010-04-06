@@ -35,12 +35,10 @@
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "debug.h"
 
-static int _rebuildinprogress = 0;
-
 enum rpmdbFlags {
 	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
 	RPMDB_FLAG_MINIMAL	= (1 << 1),
-	RPMDB_FLAG_CHROOT	= (1 << 2)
+	RPMDB_FLAG_REBUILD	= (1 << 2),
 };
 
 #define	_DBI_FLAGS	0
@@ -158,8 +156,8 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 4)
 	_dbapi_rebuild = 4;
-/*    _dbapi_wanted = (_rebuildinprogress ? -1 : db->db_api); */
-    _dbapi_wanted = (_rebuildinprogress ? _dbapi_rebuild : db->db_api);
+    _dbapi_wanted = (db->db_flags & RPMDB_FLAG_REBUILD) ?
+		    _dbapi_rebuild : db->db_api;
     if (_dbapi == -1) {
 	_dbapi = 5;
     }
@@ -2883,8 +2881,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     removedir = 1;
 
-    _rebuildinprogress = 0;
-
     rpmlog(RPMLOG_DEBUG, "opening old database with dbapi %d\n",
 		_dbapi);
     if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 
@@ -2893,16 +2889,14 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	goto exit;
     }
     _dbapi = olddb->db_api;
-    _rebuildinprogress = 1;
     rpmlog(RPMLOG_DEBUG, "opening new database with dbapi %d\n",
 		_dbapi_rebuild);
     (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
-    if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb, O_RDWR | O_CREAT, 0644, 0)) {
+    if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb,
+		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
 	rc = 1;
 	goto exit;
     }
-
-    _rebuildinprogress = 0;
 
     _dbapi_rebuild = newdb->db_api;
     
