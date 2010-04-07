@@ -2382,6 +2382,61 @@ cont:
     return 0;
 }
 
+/* Try to allocate a new header instance number */
+static unsigned int nextInstance(dbiIndex dbi)
+{
+    unsigned int hdrNum = 0;
+    DBT key, data;
+    DBC * dbcursor = NULL;
+
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+
+    if (dbi != NULL) {
+	unsigned int firstkey = 0;
+	union _dbswap mi_offset;
+	int ret;
+
+	ret = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+
+	/* Key 0 holds the current largest instance, fetch it */
+	key.data = &firstkey;
+	key.size = sizeof(firstkey);
+	ret = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+
+	/* Rather complicated "increment by one", bswapping as needed */
+	if (ret == 0 && data.data) {
+	    memcpy(&mi_offset, data.data, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    hdrNum = mi_offset.ui;
+	}
+	++hdrNum;
+	mi_offset.ui = hdrNum;
+	if (dbiByteSwapped(dbi) == 1)
+	    _DBSWAP(mi_offset);
+	if (ret == 0 && data.data) {
+	    memcpy(data.data, &mi_offset, sizeof(mi_offset.ui));
+	} else {
+	    data.data = &mi_offset;
+	    data.size = sizeof(mi_offset.ui);
+	}
+
+	/* Unless we manage to insert the new instance number, we failed */
+	ret = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
+	if (ret) {
+	    hdrNum = 0;
+	    rpmlog(RPMLOG_ERR,
+		_("error(%d) allocating new package instance\n"), ret);
+	}
+
+	ret = dbiSync(dbi, 0);
+	ret = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+    }
+    
+    return hdrNum;
+}
+
 /* XXX install.c */
 int rpmdbAdd(rpmdb db, int iid, Header h,
 	     rpmts ts,
@@ -2431,49 +2486,9 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     (void) blockSignals(&signalMask);
 
     dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
-    if (dbi != NULL) {
-	unsigned int firstkey = 0;
-
-	xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
-
-	/* Retrieve join key for next header instance. */
-	key.data = &firstkey;
-	key.size = sizeof(firstkey);
-	ret = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-
-	hdrNum = 0;
-	if (ret == 0 && data.data) {
-	    memcpy(&mi_offset, data.data, sizeof(mi_offset.ui));
-	    if (dbiByteSwapped(dbi) == 1)
-		_DBSWAP(mi_offset);
-	    hdrNum = mi_offset.ui;
-	}
-	++hdrNum;
-	mi_offset.ui = hdrNum;
-	if (dbiByteSwapped(dbi) == 1)
-	    _DBSWAP(mi_offset);
-	if (ret == 0 && data.data) {
-	    memcpy(data.data, &mi_offset, sizeof(mi_offset.ui));
-	} else {
-	    data.data = &mi_offset;
-	    data.size = sizeof(mi_offset.ui);
-	}
-
-	ret = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
-	xx = dbiSync(dbi, 0);
-
-	xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	dbcursor = NULL;
-    }
-
-    if (ret) {
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) allocating new package instance\n"), ret);
-	goto exit;
-    }
+    hdrNum = nextInstance(dbi);
 
     /* Now update the indexes */
-
     if (hdrNum) {	
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 
