@@ -224,15 +224,6 @@ RPM_GNUC_INTERNAL
 int dbiByteSwapped(dbiIndex dbi);
 
 /** \ingroup dbi
- * Return number of keys in index
- * @param dbi		index database handle
- * @param fast		fast, cached estimate or slow but accurate?
- * @return		number of keys in index, -1 on error
- */
-RPM_GNUC_INTERNAL
-int dbiNumKeys(dbiIndex dbi, int fast);
-
-/** \ingroup dbi
  * Type of dbi (primary data / index)
  * @param dbi		index database handle
  * @return		type of dbi

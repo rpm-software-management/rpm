@@ -73,6 +73,8 @@ typedef struct _dbiIndexSet {
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
 
+static unsigned int pkgInstance(dbiIndex dbi, int new);
+
 /* Bit mask macros. */
 typedef	unsigned int __pbm_bits;
 #define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
@@ -174,10 +176,9 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 
     if (dbi != NULL && rc == 0) {
 	db->_dbi[dbix] = dbi;
-	/* Grab a fast estimate of package count for allocation */
+	/* Allocate for current max header instance number + some reserve */
 	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
-	    int nkeys = dbiNumKeys(dbi, 1);
-	    db->db_nbits = 1024 + (nkeys > 0 ? nkeys : 0);
+	    db->db_nbits = 1024 + pkgInstance(dbi, 0);
 	    db->db_bits = PBM_ALLOC(db->db_nbits);
 	}
     } else {
@@ -640,12 +641,6 @@ int rpmdbClose(rpmdb db)
 	int xx;
 	if (db->_dbi[dbix] == NULL)
 	    continue;
-
-	/* Force full statistics generation at package db close */
-	if (dbiTags[dbix] == RPMDBI_PACKAGES && 
-		    (db->db_mode & O_ACCMODE) != O_RDONLY) {
-	    (void) dbiNumKeys(db->_dbi[dbix], 0);
-	}
 
     	xx = dbiClose(db->_dbi[dbix], 0);
 	if (xx && rc == 0) rc = xx;
@@ -2393,8 +2388,8 @@ cont:
     return 0;
 }
 
-/* Try to allocate a new header instance number */
-static unsigned int nextInstance(dbiIndex dbi)
+/* Get current header instance number or try to allocate a new one */
+static unsigned int pkgInstance(dbiIndex dbi, int new)
 {
     unsigned int hdrNum = 0;
     DBT key, data;
@@ -2403,46 +2398,49 @@ static unsigned int nextInstance(dbiIndex dbi)
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
 
-    if (dbi != NULL) {
+    if (dbi != NULL && dbiType(dbi) == DBI_PRIMARY) {
 	unsigned int firstkey = 0;
 	union _dbswap mi_offset;
 	int ret;
 
-	ret = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+	ret = dbiCopen(dbi, &dbcursor, new ? DB_WRITECURSOR : 0);
 
 	/* Key 0 holds the current largest instance, fetch it */
 	key.data = &firstkey;
 	key.size = sizeof(firstkey);
 	ret = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
 
-	/* Rather complicated "increment by one", bswapping as needed */
 	if (ret == 0 && data.data) {
 	    memcpy(&mi_offset, data.data, sizeof(mi_offset.ui));
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
 	    hdrNum = mi_offset.ui;
 	}
-	++hdrNum;
-	mi_offset.ui = hdrNum;
-	if (dbiByteSwapped(dbi) == 1)
-	    _DBSWAP(mi_offset);
-	if (ret == 0 && data.data) {
-	    memcpy(data.data, &mi_offset, sizeof(mi_offset.ui));
-	} else {
-	    data.data = &mi_offset;
-	    data.size = sizeof(mi_offset.ui);
-	}
 
-	/* Unless we manage to insert the new instance number, we failed */
-	ret = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
-	if (ret) {
-	    hdrNum = 0;
-	    rpmlog(RPMLOG_ERR,
-		_("error(%d) allocating new package instance\n"), ret);
-	}
+	if (new) {
+	    /* Rather complicated "increment by one", bswapping as needed */
+	    ++hdrNum;
+	    mi_offset.ui = hdrNum;
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    if (ret == 0 && data.data) {
+		memcpy(data.data, &mi_offset, sizeof(mi_offset.ui));
+	    } else {
+		data.data = &mi_offset;
+		data.size = sizeof(mi_offset.ui);
+	    }
 
-	ret = dbiSync(dbi, 0);
-	ret = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+	    /* Unless we manage to insert the new instance number, we failed */
+	    ret = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
+	    if (ret) {
+		hdrNum = 0;
+		rpmlog(RPMLOG_ERR,
+		    _("error(%d) allocating new package instance\n"), ret);
+	    }
+
+	    ret = dbiSync(dbi, 0);
+	}
+	ret = dbiCclose(dbi, dbcursor, 0);
     }
     
     return hdrNum;
@@ -2474,7 +2472,7 @@ int rpmdbAdd(rpmdb db, Header h)
     (void) blockSignals(&signalMask);
 
     dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
-    hdrNum = nextInstance(dbi);
+    hdrNum = pkgInstance(dbi, 1);
 
     /* Add header to primary index */
     ret = updatePackages(dbi, hdrNum, &hdr);
