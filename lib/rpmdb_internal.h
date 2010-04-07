@@ -14,6 +14,24 @@ extern "C" {
 #endif
 
 /** \ingroup rpmdb
+ * Add package header to rpm database and indices.
+ * @param db		rpm database
+ * @param h		header
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbAdd(rpmdb db, Header h);
+
+/** \ingroup rpmdb
+ * Remove package header from rpm database and indices.
+ * @param db		rpm database
+ * @param h		header
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbRemove(rpmdb db, Header h);
+
+/** \ingroup rpmdb
  * Return rpmdb home directory (depending on chroot state)
  * param db		rpmdb handle
  * return		db home directory (or NULL on error)

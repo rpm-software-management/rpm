@@ -21,6 +21,7 @@
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
 #include "lib/rpmte_internal.h"	/* XXX internal apis */
+#include "lib/rpmdb_internal.h" /* rpmdbAdd/Remove */
 #include "lib/rpmscript.h"
 
 #include "debug.h"

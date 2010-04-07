@@ -234,22 +234,6 @@ int rpmdbCheckTerminate(int terminate);
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 
 /** \ingroup rpmdb
- * Add package header to rpm database and indices.
- * @param db		rpm database
- * @param h		header
- * @return		0 on success
- */
-int rpmdbAdd(rpmdb db, Header h);
-
-/** \ingroup rpmdb
- * Remove package header from rpm database and indices.
- * @param db		rpm database
- * @param h		header
- * @return		0 on success
- */
-int rpmdbRemove(rpmdb db, Header h);
-
-/** \ingroup rpmdb
  * Rebuild database indices from package headers.
  * @param prefix	path to top of install tree
  * @param ts		transaction set (or NULL)
