@@ -2421,27 +2421,17 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
     if (dbi != NULL) {
 	unsigned int firstkey = 0;
-	void * keyp = &firstkey;
-	size_t keylen = sizeof(firstkey);
-	void * datap = h;
-	size_t datalen = headerSizeof(h, HEADER_MAGIC_NO);
 
 	xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	/* Retrieve join key for next header instance. */
-	key.data = keyp;
-	key.size = keylen;
-	data.data = datap;
-	data.size = datalen;
+	key.data = &firstkey;
+	key.size = sizeof(firstkey);
 	ret = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-	keyp = key.data;
-	keylen = key.size;
-	datap = data.data;
-	datalen = data.size;
 
 	hdrNum = 0;
-	if (ret == 0 && datap) {
-	    memcpy(&mi_offset, datap, sizeof(mi_offset.ui));
+	if (ret == 0 && data.data) {
+	    memcpy(&mi_offset, data.data, sizeof(mi_offset.ui));
 	    if (dbiByteSwapped(dbi) == 1)
 		_DBSWAP(mi_offset);
 	    hdrNum = mi_offset.ui;
@@ -2450,17 +2440,12 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	mi_offset.ui = hdrNum;
 	if (dbiByteSwapped(dbi) == 1)
 	    _DBSWAP(mi_offset);
-	if (ret == 0 && datap) {
-	    memcpy(datap, &mi_offset, sizeof(mi_offset.ui));
+	if (ret == 0 && data.data) {
+	    memcpy(data.data, &mi_offset, sizeof(mi_offset.ui));
 	} else {
-	    datap = &mi_offset;
-	    datalen = sizeof(mi_offset.ui);
+	    data.data = &mi_offset;
+	    data.size = sizeof(mi_offset.ui);
 	}
-
-	key.data = keyp;
-	key.size = keylen;
-	data.data = datap;
-	data.size = datalen;
 
 	ret = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
 	xx = dbiSync(dbi, 0);
