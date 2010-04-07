@@ -2388,8 +2388,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
     DBC * dbcursor = NULL;
-    DBT key;
-    DBT data;
+    DBT key, data, hdr;
     sigset_t signalMask;
     dbiIndex dbi;
     int dbix;
@@ -2398,12 +2397,36 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     int ret = 0;
     int rc;
     int xx;
+    int hdrOk;
 
     if (db == NULL)
 	return 0;
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
+    memset(&hdr, 0, sizeof(hdr));
+
+    hdr.size = headerSizeof(h, HEADER_MAGIC_NO);
+    hdr.data = headerUnload(h);
+    hdrOk = (hdr.data != NULL && hdr.size > 0);
+    
+    /* Check header digest/signature if enabled. */
+    if (hdrchk && ts) {
+	char * msg = NULL;
+	rpmRC rpmrc = (*hdrchk) (ts, hdr.data, hdr.size, &msg);
+	int lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
+
+	hdrOk = (rpmrc != RPMRC_FAIL);
+
+	rpmlog(lvl, "%s h#%8u %s", hdrOk ? "  +++" : _("rpmdbAdd: skipping"),
+		hdrNum, (msg ? msg : "\n"));
+	msg = _free(msg);
+    }
+
+    if (!hdrOk) {
+	ret = -1;
+	goto exit;
+    }
 
     (void) blockSignals(&signalMask);
 
@@ -2456,7 +2479,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 
 	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	    rpmTag rpmtag = dbiTags[dbix];
-	    rpmRC rpmrc = RPMRC_NOTFOUND;
 	    int j;
 	    struct rpmtd_s tagdata, reqflags;
 
@@ -2474,28 +2496,10 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     		    _DBSWAP(mi_offset);
 		key.data = (void *) &mi_offset;
 		key.size = sizeof(mi_offset.ui);
-		data.data = headerUnload(h);
-		data.size = headerSizeof(h, HEADER_MAGIC_NO);
 
-		/* Check header digest/signature on blob export. */
-		if (hdrchk && ts) {
-		    char * msg = NULL;
-		    int lvl;
+		xx = dbiPut(dbi, dbcursor, &key, &hdr, DB_KEYLAST);
+		xx = dbiSync(dbi, 0);
 
-		    rpmrc = (*hdrchk) (ts, data.data, data.size, &msg);
-		    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-		    rpmlog(lvl, "%s h#%8u %s",
-			(rpmrc == RPMRC_FAIL ? _("rpmdbAdd: skipping") : "  +++"),
-				hdrNum, (msg ? msg : "\n"));
-		    msg = _free(msg);
-		}
-
-		if (data.data != NULL && rpmrc != RPMRC_FAIL) {
-		    xx = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
-		    xx = dbiSync(dbi, 0);
-		}
-		data.data = _free(data.data);
-		data.size = 0;
 		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
 		dbcursor = NULL;
 		xx = dbiSync(dbi, 0);
@@ -2624,6 +2628,7 @@ cont:
     }
 
 exit:
+    free(hdr.data);
     (void) unblockSignals(&signalMask);
 
     return ret;
