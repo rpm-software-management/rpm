@@ -2213,25 +2213,67 @@ static void logAddRemove(int removing, rpmtd tagdata)
     }
 }
 
+/* Update primary Packages index. NULL hdr means remove */
+static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
+{
+    union _dbswap mi_offset;
+    int rc = 0;
+    int xx;
+    DBC * dbcursor = NULL;
+    DBT key;
+
+    if (dbi == NULL || hdrNum == 0)
+	return 1;
+
+    memset(&key, 0, sizeof(key));
+
+    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+
+    mi_offset.ui = hdrNum;
+    if (dbiByteSwapped(dbi) == 1)
+	_DBSWAP(mi_offset);
+    key.data = (void *) &mi_offset;
+    key.size = sizeof(mi_offset.ui);
+
+    if (hdr) {
+	rc = dbiPut(dbi, dbcursor, &key, hdr, DB_KEYLAST);
+	if (rc) {
+	    rpmlog(RPMLOG_ERR,
+		   _("error(%d) adding header #%d record\n"), rc, hdrNum);
+	}
+    } else {
+	DBT data;
+
+	memset(&data, 0, sizeof(data));
+	xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+	rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+	if (rc) {
+	    rpmlog(RPMLOG_ERR,
+		   _("error(%d) removing header #%d record\n"), rc, hdrNum);
+	} else
+	    rc = dbiDel(dbi, dbcursor, &key, &data, 0);
+    }
+    xx = dbiSync(dbi, 0);
+
+    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+    xx = dbiSync(dbi, 0);
+
+    return rc;
+}
+
 /* XXX psm.c */
 int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 		rpmts ts,
 		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
-    DBC * dbcursor = NULL;
-    DBT key;
-    DBT data;
-    union _dbswap mi_offset;
+    dbiIndex dbi;
     Header h;
     sigset_t signalMask;
     int ret = 0;
-    int rc = 0;
 
     if (db == NULL)
 	return 0;
 
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
 
     h = rpmdbGetHeaderAt(db, hdrNum);
 
@@ -2249,48 +2291,31 @@ int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
 
     (void) blockSignals(&signalMask);
 
-	/* FIX: rpmvals heartburn */
-    {
-	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+    dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
+    /* Remove header from primary index */
+    ret = updatePackages(dbi, hdrNum, NULL);
 
-	for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
-	    dbiIndex dbi = NULL;
+    /* Remove associated data from secondary indexes */
+    if (ret == 0) {
+	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+	int rc = 0;
+	DBC * dbcursor = NULL;
+	DBT key, data;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+
+	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    rpmTag rpmtag = dbiTags[dbix];
 	    int xx = 0;
 	    struct rpmtd_s tagdata;
 
-	    if (rpmtag == RPMDBI_PACKAGES) {
-		dbi = rpmdbOpenIndex(db, rpmtag, 0);
-		if (dbi == NULL)	/* XXX shouldn't happen */
-		    continue;
-	      
-		mi_offset.ui = hdrNum;
-		if (dbiByteSwapped(dbi) == 1)
-    		    _DBSWAP(mi_offset);
-		key.data = &mi_offset;
-		key.size = sizeof(mi_offset.ui);
-
-		rc = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
-		rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-		if (rc) {
-		    rpmlog(RPMLOG_ERR,
-			_("error(%d) setting header #%d record for %s removal\n"),
-			rc, hdrNum, rpmTagGetName(rpmtag));
-		} else
-		    rc = dbiDel(dbi, dbcursor, &key, &data, 0);
-		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-		dbcursor = NULL;
-		xx = dbiSync(dbi, 0);
+	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
 		continue;
-	    }
-	
+
 	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 		continue;
 
-	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0))) {
-		rpmtdFreeData(&tagdata);
-		continue;
-	    }
 	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	    logAddRemove(1, &tagdata);
@@ -2442,23 +2467,16 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 	     rpmts ts,
 	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
 {
-    DBC * dbcursor = NULL;
-    DBT key, data, hdr;
+    DBT hdr;
     sigset_t signalMask;
     dbiIndex dbi;
-    int dbix;
-    union _dbswap mi_offset;
     unsigned int hdrNum = 0;
     int ret = 0;
-    int rc;
-    int xx;
     int hdrOk;
 
     if (db == NULL)
 	return 0;
 
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
     memset(&hdr, 0, sizeof(hdr));
 
     hdr.size = headerSizeof(h, HEADER_MAGIC_NO);
@@ -2488,38 +2506,26 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
     hdrNum = nextInstance(dbi);
 
-    /* Now update the indexes */
-    if (hdrNum) {	
+    /* Add header to primary index */
+    ret = updatePackages(dbi, hdrNum, &hdr);
+
+    /* Add associated data to secondary indexes */
+    if (ret == 0) {	
 	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+	DBT key, data;
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
 
-	for (dbix = 0; dbix < dbiTagsMax; dbix++) {
+	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    rpmTag rpmtag = dbiTags[dbix];
-	    int j;
+	    int rc, xx, j;
 	    struct rpmtd_s tagdata, reqflags;
+	    DBC * dbcursor = NULL;
 
-	    dbi = NULL;
+	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
+		continue;
 
 	    switch (rpmtag) {
-	    case RPMDBI_PACKAGES:
-		dbi = rpmdbOpenIndex(db, rpmtag, 0);
-		if (dbi == NULL)	/* XXX shouldn't happen */
-		    continue;
-		xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
-
-		mi_offset.ui = hdrNum;
-		if (dbiByteSwapped(dbi) == 1)
-    		    _DBSWAP(mi_offset);
-		key.data = (void *) &mi_offset;
-		key.size = sizeof(mi_offset.ui);
-
-		xx = dbiPut(dbi, dbcursor, &key, &hdr, DB_KEYLAST);
-		xx = dbiSync(dbi, 0);
-
-		xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-		dbcursor = NULL;
-		xx = dbiSync(dbi, 0);
-		continue;
-		break;
 	    case RPMTAG_REQUIRENAME:
 		headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
 		headerGet(h, RPMTAG_REQUIREFLAGS, &reqflags, HEADERGET_MINMEM);
@@ -2539,10 +2545,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
 		tagdata.count = 1;
 	    }
 
-	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0))) {
-		rpmtdFreeData(&tagdata);
-		continue;
-	    }
 	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	    logAddRemove(0, &tagdata);
