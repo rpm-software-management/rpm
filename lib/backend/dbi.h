@@ -1,8 +1,36 @@
 #ifndef _DBI_H
 #define _DBI_H
 
-
 typedef struct _dbiIndex * dbiIndex;
+
+/** \ingroup rpmdb
+ * Describes the collection of index databases used by rpm.
+ */
+struct rpmdb_s {
+    char 	* db_root;/*!< path prefix */
+    char 	* db_home;/*!< directory path */
+    char	* db_fullpath;	/*!< full db path including prefix */
+    int		db_flags;
+    int		db_mode;	/*!< open mode */
+    int		db_perms;	/*!< open permissions */
+    int		db_api;		/*!< Berkeley API type */
+    int		db_remove_env;
+    int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
+    int		db_mkdirDone;	/*!< Has db_home been created? */
+    unsigned char * db_bits;	/*!< package instance bit mask. */
+    int		db_nbits;	/*!< no. of bits in mask. */
+    rpmdb	db_next;
+    int		db_opens;
+    void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
+    int		db_ndbi;	/*!< No. of tag indices. */
+    dbiIndex * _dbi;		/*!< Tag indices. */
+
+    struct rpmop_s db_getops;
+    struct rpmop_s db_putops;
+    struct rpmop_s db_delops;
+
+    int nrefs;			/*!< Reference count. */
+};
 
 /* Type of the dbi, also serves as the join key size */
 typedef enum dbiIndexType_e {
