@@ -244,10 +244,10 @@ int rpmdbAdd(rpmdb db, Header h);
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param db		rpm database
- * @param hdrNum	package instance number in database
+ * @param h		header
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, unsigned int hdrNum);
+int rpmdbRemove(rpmdb db, Header h);
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.

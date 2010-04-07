@@ -1087,12 +1087,17 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     }   break;
 
     case PSM_RPMDB_REMOVE:
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmteDBInstance(psm->te));
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	if (rc == RPMRC_OK)
-	    rpmteSetDBInstance(psm->te, 0);
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	    Header h = rpmteHeader(psm->te);
+
+	    (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
+	    rc = rpmdbRemove(rpmtsGetRdb(ts), h);
+	    (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
+
+	    if (rc == RPMRC_OK)
+		rpmteSetDBInstance(psm->te, 0);
+	    headerFree(h);
+	}
 	break;
 
     default:
