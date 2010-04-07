@@ -395,6 +395,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
 
     {   rpm_tid_t tid = rpmtsGetTid(ts);
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
+	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
 	headerPutUint32(h, RPMTAG_BUILDTIME, &tid, 1);
     }
     rc = 0;
@@ -429,7 +430,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     /* Add header to database. */
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	goto exit;
-    if (rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h, NULL, NULL) != 0)
+    if (rpmdbAdd(rpmtsGetRdb(ts), 0, h, NULL, NULL) != 0)
 	goto exit;
     rc = RPMRC_OK;
 

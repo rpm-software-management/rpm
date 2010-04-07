@@ -1068,14 +1068,20 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_RPMDB_ADD: {
 	Header h;
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
+
 	h = rpmteHeader(psm->te);
+
+	if (!headerIsEntry(h, RPMTAG_INSTALLTID)) {
+	    rpm_tid_t tid = rpmtsGetTid(ts);
+	    if (tid != 0 && tid != (rpm_tid_t)-1)
+		headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
+	}
+	
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 	if (!(rpmtsVSFlags(ts) & RPMVSF_NOHDRCHK))
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h,
-				ts, headerCheck);
+	    rc = rpmdbAdd(rpmtsGetRdb(ts), 0, h, ts, headerCheck);
 	else
-	    rc = rpmdbAdd(rpmtsGetRdb(ts), rpmtsGetTid(ts), h,
-				NULL, NULL);
+	    rc = rpmdbAdd(rpmtsGetRdb(ts), 0, h, NULL, NULL);
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 
 	if (rc == RPMRC_OK)

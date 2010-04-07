@@ -2405,15 +2405,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
 
-#ifdef	NOTYET	/* XXX headerDel() broken on dribbles. */
-    xx = headerDel(h, RPMTAG_REMOVETID);
-#endif
-    if (iid != 0 && iid != -1) {
-	rpm_tid_t tid = iid;
-	if (!headerIsEntry(h, RPMTAG_INSTALLTID)) 
-	    headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-    }
-
     (void) blockSignals(&signalMask);
 
     dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);

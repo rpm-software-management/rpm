@@ -236,7 +236,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
  * @param db		rpm database
- * @param iid		install transaction id (iid = 0 or -1 to skip)
+ * @param iid		(unused)
  * @param h		header
  * @param ts		(unused) transaction set (or NULL)
  * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
@@ -248,7 +248,7 @@ int rpmdbAdd(rpmdb db, int iid, Header h, rpmts ts,
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param db		rpm database
- * @param rid		(unused) remove transaction id (rid = 0 or -1 to skip)
+ * @param rid		(unused)
  * @param hdrNum	package instance number in database
  * @param ts		(unused) transaction set (or NULL)
  * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
