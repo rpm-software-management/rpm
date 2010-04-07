@@ -430,7 +430,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     /* Add header to database. */
     if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
 	goto exit;
-    if (rpmdbAdd(rpmtsGetRdb(ts), 0, h, NULL, NULL) != 0)
+    if (rpmdbAdd(rpmtsGetRdb(ts), h) != 0)
 	goto exit;
     rc = RPMRC_OK;
 

@@ -236,27 +236,18 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi);
 /** \ingroup rpmdb
  * Add package header to rpm database and indices.
  * @param db		rpm database
- * @param iid		(unused)
  * @param h		header
- * @param ts		(unused) transaction set (or NULL)
- * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbAdd(rpmdb db, int iid, Header h, rpmts ts,
-	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
+int rpmdbAdd(rpmdb db, Header h);
 
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param db		rpm database
- * @param rid		(unused)
  * @param hdrNum	package instance number in database
- * @param ts		(unused) transaction set (or NULL)
- * @param (*hdrchk)	(unused) headerCheck() vector (or NULL)
  * @return		0 on success
  */
-int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
-		rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
+int rpmdbRemove(rpmdb db, unsigned int hdrNum);
 
 /** \ingroup rpmdb
  * Rebuild database indices from package headers.

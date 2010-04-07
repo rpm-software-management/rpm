@@ -2261,10 +2261,7 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
     return rc;
 }
 
-/* XXX psm.c */
-int rpmdbRemove(rpmdb db, int rid, unsigned int hdrNum,
-		rpmts ts,
-		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
+int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 {
     dbiIndex dbi;
     Header h;
@@ -2462,10 +2459,7 @@ static unsigned int nextInstance(dbiIndex dbi)
     return hdrNum;
 }
 
-/* XXX install.c */
-int rpmdbAdd(rpmdb db, int iid, Header h,
-	     rpmts ts,
-	     rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg))
+int rpmdbAdd(rpmdb db, Header h)
 {
     DBT hdr;
     sigset_t signalMask;
@@ -2483,19 +2477,6 @@ int rpmdbAdd(rpmdb db, int iid, Header h,
     hdr.data = headerUnload(h);
     hdrOk = (hdr.data != NULL && hdr.size > 0);
     
-    /* Check header digest/signature if enabled. */
-    if (hdrchk && ts) {
-	char * msg = NULL;
-	rpmRC rpmrc = (*hdrchk) (ts, hdr.data, hdr.size, &msg);
-	int lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-
-	hdrOk = (rpmrc != RPMRC_FAIL);
-
-	rpmlog(lvl, "%s h#%8u %s", hdrOk ? "  +++" : _("rpmdbAdd: skipping"),
-		hdrNum, (msg ? msg : "\n"));
-	msg = _free(msg);
-    }
-
     if (!hdrOk) {
 	ret = -1;
 	goto exit;
@@ -2886,7 +2867,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    /* Deleted entries are eliminated in legacy headers by copy. */
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
-		rc = rpmdbAdd(newdb, -1, (nh ? nh : h), ts, hdrchk);
+		rc = rpmdbAdd(newdb, (nh ? nh : h));
 		nh = headerFree(nh);
 	    }
 
