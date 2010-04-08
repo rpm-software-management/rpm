@@ -105,7 +105,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	free(fstr);
     }
 
-    rc = db_env_create(&dbenv, dbi->dbi_ecflags);
+    rc = db_env_create(&dbenv, 0);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
     if (dbenv == NULL || rc)
 	goto errxit;
