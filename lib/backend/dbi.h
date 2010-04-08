@@ -51,7 +51,6 @@ struct _dbiIndex {
     int	dbi_tflags;		/*!< dbenv->txn_begin flags */
 
     DBTYPE dbi_dbtype;		/*!< db index type */
-    int	dbi_perms;		/*!< file permission to use on open */
 
     int	dbi_verify_on_close;
     int	dbi_use_dbenv;		/*!< use db environment? */

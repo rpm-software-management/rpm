@@ -72,9 +72,6 @@ static const struct poptOption rdbOptions[] = {
  { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
 	NULL, NULL },
 
- { "perms",	0,POPT_ARG_INT,		&staticdbi.dbi_perms, 0,
-	NULL, NULL },
-
  { "verify",	0,POPT_ARG_NONE,	&staticdbi.dbi_verify_on_close, 0,
 	NULL, NULL },
  { "usedbenv",	0,POPT_ARG_NONE,	&staticdbi.dbi_use_dbenv, 0,
@@ -124,7 +121,7 @@ dbiIndex dbiFree(dbiIndex dbi)
 
 /** @todo Set a reasonable "last gasp" default db config. */
 static const char * const dbi_config_default =
-    "hash:mpool:cdb:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512:perms=0644";
+    "hash:mpool:cdb:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512";
 
 dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
 {
@@ -260,8 +257,6 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     *dbi = staticdbi;	/* structure assignment */
     memset(&staticdbi, 0, sizeof(staticdbi));
 
-    if (!(dbi->dbi_perms & 0600))
-	dbi->dbi_perms = 0644;
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_file = rpmTagGetName(rpmtag);

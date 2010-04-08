@@ -143,7 +143,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
     }
 
-    rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_perms);
+    rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_rpmdb->db_perms);
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
@@ -591,7 +591,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    dbpath = fullpath;
 		}
 		rc = (db->open)(db, NULL, dbpath, NULL,
-		    dbi->dbi_dbtype, oflags, dbi->dbi_perms);
+		    dbi->dbi_dbtype, oflags, rpmdb->db_perms);
 
 		if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
 		    DBTYPE dbi_dbtype = DB_UNKNOWN;

@@ -585,14 +585,12 @@ print (t)\
 
 # Note: adding nofsync here speeds up --rebuilddb a lot.
 %__dbi_rebuild			nofsync !log !txn !cdb
-%__dbi_perms			perms=0644
 
 #
 #--- Hash database configuration
 %__dbi_htconfig	\
   hash		\
   %{__dbi_other}\
-  %{__dbi_perms}\
 %{nil}
 
 %__dbi_htconfig_current		%{__dbi_htconfig}
@@ -608,7 +606,6 @@ print (t)\
 %__dbi_btconfig	\
   btree		\
   %{__dbi_other}\
-  %{__dbi_perms}\
 %{nil}
 
 %__dbi_btconfig_current		%{__dbi_btconfig}
