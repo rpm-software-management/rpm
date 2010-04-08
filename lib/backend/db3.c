@@ -468,48 +468,45 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
      */
-    if (dbi->dbi_use_dbenv) {
+    if (access(dbhome, W_OK) == -1) {
 
-	if (access(dbhome, W_OK) == -1) {
+	/* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
+	oflags &= ~DB_CREATE;
 
-	    /* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
-	    oflags &= ~DB_CREATE;
+	/* ... but DBENV->open might still need DB_CREATE ... */
+	if (dbi->dbi_eflags & DB_PRIVATE) {
+	    dbi->dbi_eflags &= ~DB_JOINENV;
+	} else {
+	    dbi->dbi_eflags |= DB_JOINENV;
+	    dbi->dbi_oeflags &= ~DB_CREATE;
+	    dbi->dbi_oeflags &= ~DB_THREAD;
+	    /* ... but, unless DB_PRIVATE is used, skip DBENV. */
+	    dbi->dbi_use_dbenv = 0;
+	}
 
-	    /* ... but DBENV->open might still need DB_CREATE ... */
+	/* ... DB_RDONLY maps dbhome perms across files ...  */
+	oflags |= DB_RDONLY;
+	/* ... and DB_WRITECURSOR won't be needed ...  */
+	dbi->dbi_oflags |= DB_RDONLY;
+
+    } else {	/* dbhome is writable, check for persistent dbenv. */
+	char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
+
+	if (access(dbf, F_OK) == -1) {
+	    /* ... non-existent (or unwritable) DBENV, will create ... */
+	    dbi->dbi_oeflags |= DB_CREATE;
+	    dbi->dbi_eflags &= ~DB_JOINENV;
+	} else {
+	    /* ... pre-existent (or bogus) DBENV, will join ... */
 	    if (dbi->dbi_eflags & DB_PRIVATE) {
 		dbi->dbi_eflags &= ~DB_JOINENV;
 	    } else {
 		dbi->dbi_eflags |= DB_JOINENV;
 		dbi->dbi_oeflags &= ~DB_CREATE;
 		dbi->dbi_oeflags &= ~DB_THREAD;
-		/* ... but, unless DB_PRIVATE is used, skip DBENV. */
-		dbi->dbi_use_dbenv = 0;
 	    }
-
-	    /* ... DB_RDONLY maps dbhome perms across files ...  */
-	    oflags |= DB_RDONLY;
-	    /* ... and DB_WRITECURSOR won't be needed ...  */
-	    dbi->dbi_oflags |= DB_RDONLY;
-
-	} else {	/* dbhome is writable, check for persistent dbenv. */
-	    char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
-
-	    if (access(dbf, F_OK) == -1) {
-		/* ... non-existent (or unwritable) DBENV, will create ... */
-		dbi->dbi_oeflags |= DB_CREATE;
-		dbi->dbi_eflags &= ~DB_JOINENV;
-	    } else {
-		/* ... pre-existent (or bogus) DBENV, will join ... */
-		if (dbi->dbi_eflags & DB_PRIVATE) {
-		    dbi->dbi_eflags &= ~DB_JOINENV;
-		} else {
-		    dbi->dbi_eflags |= DB_JOINENV;
-		    dbi->dbi_oeflags &= ~DB_CREATE;
-		    dbi->dbi_oeflags &= ~DB_THREAD;
-		}
-	    }
-	    dbf = _free(dbf);
 	}
+	dbf = _free(dbf);
     }
 
     /*
