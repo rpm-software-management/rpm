@@ -456,15 +456,11 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
 
-#if 0	/* XXX rpmdb: illegal flag combination specified to DB->open */
-    if ( dbi->dbi_mode & O_EXCL) oflags |= DB_EXCL;
-#endif
-
     /*
      * Map open mode flags onto configured database/environment flags.
      */
-    if ((dbi->dbi_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
-    if (dbi->dbi_mode & O_CREAT) {
+    if ((rpmdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
+    if (rpmdb->db_mode & O_CREAT) {
 	oflags |= DB_CREATE;
 	dbi->dbi_oeflags |= DB_CREATE;
     }
@@ -561,7 +557,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     {	char *dbiflags = prDbiOpenFlags(oflags, 0);
     	rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
-		dbhome, dbi->dbi_file, dbiflags, dbi->dbi_mode);
+		dbhome, dbi->dbi_file, dbiflags, rpmdb->db_mode);
 	free(dbiflags);
     }
 
@@ -641,7 +637,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    l.l_whence = 0;
 		    l.l_start = 0;
 		    l.l_len = 0;
-		    l.l_type = (dbi->dbi_mode & O_ACCMODE) == O_RDONLY
+		    l.l_type = (rpmdb->db_mode & O_ACCMODE) == O_RDONLY
 				? F_RDLCK : F_WRLCK;
 		    l.l_pid = 0;
 
@@ -654,7 +650,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 			    ? 0 : 1);
 			rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
 				_("cannot get %s lock on %s/%s\n"),
-				((dbi->dbi_mode & O_ACCMODE) == O_RDONLY)
+				((rpmdb->db_mode & O_ACCMODE) == O_RDONLY)
 					? _("shared") : _("exclusive"),
 				dbhome, dbi->dbi_file);
 		    } else {

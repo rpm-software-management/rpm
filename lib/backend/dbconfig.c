@@ -72,8 +72,6 @@ static const struct poptOption rdbOptions[] = {
  { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
 	NULL, NULL },
 
- { "mode",	0,POPT_ARG_INT,		&staticdbi.dbi_mode, 0,
-	NULL, NULL },
  { "perms",	0,POPT_ARG_INT,		&staticdbi.dbi_perms, 0,
 	NULL, NULL },
 
@@ -264,7 +262,6 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
 
     if (!(dbi->dbi_perms & 0600))
 	dbi->dbi_perms = 0644;
-    dbi->dbi_mode = rpmdb->db_mode;
     /* FIX: figger lib/dbi refcounts */
     dbi->dbi_rpmdb = rpmdb;
     dbi->dbi_file = rpmTagGetName(rpmtag);
