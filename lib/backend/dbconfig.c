@@ -79,10 +79,6 @@ static const struct poptOption rdbOptions[] = {
  { "cachesize",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
 	NULL, NULL },
 
-#if defined(DB_VERB_CHKPOINT)
- { "chkpoint",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_CHKPOINT,
-	NULL, NULL },
-#endif
  { "deadlock",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_DEADLOCK,
 	NULL, NULL },
  { "recovery",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_RECOVERY,
