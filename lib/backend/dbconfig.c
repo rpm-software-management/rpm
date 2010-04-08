@@ -44,16 +44,9 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "recover_fatal", 0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_RECOVER_FATAL,
 	NULL, NULL },
- { "txn_nosync", 0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_TXN_NOSYNC,
-	NULL, NULL },
  { "lockdown",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_LOCKDOWN,
 	NULL, NULL },
  { "private",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_PRIVATE,
-	NULL, NULL },
-
- { "txn_sync",	0,POPT_BIT_SET,	&staticdbi.dbi_tflags, DB_TXN_SYNC,
-	NULL, NULL },
- { "txn_nowait",0,POPT_BIT_SET,	&staticdbi.dbi_tflags, DB_TXN_NOWAIT,
 	NULL, NULL },
 
  { "excl",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_EXCL,
