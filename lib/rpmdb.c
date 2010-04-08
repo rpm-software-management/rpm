@@ -61,14 +61,14 @@ static rpmTag const dbiTags[] = {
 #define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmTag))
 
 /* A single item from an index database (i.e. the "data returned"). */
-typedef struct _dbiIndexItem {
+struct dbiIndexItem {
     unsigned int hdrNum;		/*!< header instance in db */
     unsigned int tagNum;		/*!< tag index in header */
-} * dbiIndexItem;
+};
 
 /* Items retrieved from the index database.*/
 typedef struct _dbiIndexSet {
-    struct _dbiIndexItem * recs;	/*!< array of records */
+    struct dbiIndexItem * recs;	/*!< array of records */
     unsigned int count;			/*!< number of records */
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
@@ -186,20 +186,6 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
     }
 
     return dbi;
-}
-
-/**
- * Create and initialize item for index database set.
- * @param hdrNum	header instance in db
- * @param tagNum	tag index in header
- * @return		new item
- */
-static dbiIndexItem dbiIndexNewItem(unsigned int hdrNum, unsigned int tagNum)
-{
-    dbiIndexItem rec = xcalloc(1, sizeof(*rec));
-    rec->hdrNum = hdrNum;
-    rec->tagNum = tagNum;
-    return rec;
 }
 
 union _dbswap {
@@ -855,7 +841,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     dbiIndex dbi = NULL;
     DBC * dbcursor;
     dbiIndexSet allMatches = NULL;
-    dbiIndexItem rec = NULL;
     rpmTag dbtag = RPMTAG_BASENAMES;
     unsigned int i;
     int rc = -2; /* assume error */
@@ -904,7 +889,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     if (rc || allMatches == NULL) goto exit;
 
     *matches = xcalloc(1, sizeof(**matches));
-    rec = dbiIndexNewItem(0, 0);
     fpc = fpCacheCreate(allMatches->count);
     fp1 = fpLookup(fpc, dirName, baseName, 1);
 
@@ -935,9 +919,11 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 
 	    fp2 = fpLookup(fpc, dirNames[dirIndexes[num]], baseNames[num], 1);
 	    if (FP_EQUAL(fp1, fp2)) {
-		rec->hdrNum = dbiIndexRecordOffset(allMatches, i);
-		rec->tagNum = dbiIndexRecordFileNumber(allMatches, i);
-		xx = dbiAppendSet(*matches, rec, 1, sizeof(*rec), 0);
+		struct dbiIndexItem rec = { 
+		    .hdrNum = dbiIndexRecordOffset(allMatches, i),
+		    .tagNum = dbiIndexRecordFileNumber(allMatches, i),
+		};
+		xx = dbiAppendSet(*matches, &rec, 1, sizeof(rec), 0);
 	    }
 
 	    prevoff = offset;
@@ -952,7 +938,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	h = headerFree(h);
     }
 
-    rec = _free(rec);
     fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
@@ -2280,7 +2265,7 @@ int rpmdbRemove(rpmdb db, Header h)
 
     /* Remove associated data from secondary indexes */
     if (ret == 0) {
-	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
+	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = 0 };
 	int rc = 0;
 	DBC * dbcursor = NULL;
 	DBT key, data;
@@ -2336,7 +2321,7 @@ int rpmdbRemove(rpmdb db, Header h)
 		    goto cont;
 		}
 
-		rc = dbiPruneSet(set, rec, 1, sizeof(*rec), 1);
+		rc = dbiPruneSet(set, &rec, 1, sizeof(rec), 1);
 
 		/* If nothing was pruned, then don't bother updating. */
 		if (rc) {
@@ -2378,8 +2363,6 @@ cont:
 
 	    rpmtdFreeData(&tagdata);
 	}
-
-	rec = _free(rec);
     }
 
     (void) unblockSignals(&signalMask);
@@ -2479,14 +2462,13 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
-	dbiIndexItem rec = dbiIndexNewItem(hdrNum, 0);
 	DBT key, data;
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    rpmTag rpmtag = dbiTags[dbix];
-	    int rc, xx, j;
+	    int rc, xx, j, i;
 	    struct rpmtd_s tagdata, reqflags;
 	    DBC * dbcursor = NULL;
 
@@ -2516,15 +2498,12 @@ int rpmdbAdd(rpmdb db, Header h)
 	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 
 	    logAddRemove(0, &tagdata);
-	    while (rpmtdNext(&tagdata) >= 0) {
+	    while ((i = rpmtdNext(&tagdata)) >= 0) {
 		dbiIndexSet set;
-		int i, freedata = 0;
+		int freedata = 0;
+		/* Include the tagNum in all indices (only files use though) */
+		struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
 
-		/*
-		 * Include the tagNum in all indices. rpm-3.0.4 and earlier
-		 * included the tagNum only for files.
-		 */
-		i = rec->tagNum = rpmtdGetIndex(&tagdata);
 		switch (rpmtag) {
 		case RPMTAG_REQUIRENAME: {
 		    /* Filter out install prerequisites. */
@@ -2577,7 +2556,7 @@ int rpmdbAdd(rpmdb db, Header h)
 		if (set == NULL)		/* not found or duplicate */
 		    set = xcalloc(1, sizeof(*set));
 
-		(void) dbiAppendSet(set, rec, 1, sizeof(*rec), 0);
+		(void) dbiAppendSet(set, &rec, 1, sizeof(rec), 0);
 
 		(void) set2dbt(dbi, &data, set);
 		rc = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
@@ -2605,7 +2584,6 @@ cont:
 	    rpmtdFreeData(&tagdata);
 	}
 
-	rec = _free(rec);
 	/* If everthing ok, mark header as installed now */
 	if (ret == 0) {
 	    headerSetInstance(h, hdrNum);
