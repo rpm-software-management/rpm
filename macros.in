@@ -554,9 +554,7 @@ print (t)\
 #---------------------- DB->open parameters and tunable values:
 #   pagesize=512 +++	DB->set_pagesize
 #---------------------- DB->open bits:
-#   excl	???	DB_EXCL
 #   nommap	???	DB_NOMMAP
-#   rdonly		DB_RDONLY
 #---------------------- DB->open types:
 #   btree		DB_BTREE
 #   hash		DB_HASH

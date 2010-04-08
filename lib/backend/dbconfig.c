@@ -49,11 +49,7 @@ static const struct poptOption rdbOptions[] = {
  { "private",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_PRIVATE,
 	NULL, NULL },
 
- { "excl",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_EXCL,
-	NULL, NULL },
  { "nommap",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_NOMMAP,
-	NULL, NULL },
- { "rdonly",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_RDONLY,
 	NULL, NULL },
  { "fcntl_locking",0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_FCNTL_LOCKING,
 	NULL, NULL },
