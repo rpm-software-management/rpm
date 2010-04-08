@@ -542,7 +542,6 @@ print (t)\
 #   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
 #---------------------- DBENV->open bits:
 #   joinenv		DB_JOIN_ENV
-#   mpool		DB_INIT_MPOOL
 #   cdb		+++	DB_INIT_CDB
 #   txn		???	DB_INIT_TXN
 #   log		???	DB_INIT_LOG
@@ -565,19 +564,18 @@ print (t)\
 #   ht_dup	+++	(hash only) DB_DUP
 #   ht_dupsort	+++	(hash only) DB_DUPSORT
 #----------------------- rpmdb specific configuration:
-#   usedbenv		(always on) Use db3 environment?
 #   verify		(db3 only) Verify Packages db after RW close?
 #   lockdbfd		(always on for Packages) Use fcntl(2) locking ?
 #   nofsync		Disable fsync(2) call performed after db3 writes?
 #
 
 # XXX Use transactions and logs for rpmdb durability (no clue yet):
-#%__dbi_other			create joinenv mpool txn log \
+#%__dbi_other			create joinenv txn log \
 #				mp_mmapsize=8Mb mp_size=512Kb
 
 # Use a CDB database model for concurrent access.
 # XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
-%__dbi_cdb			create cdb mpool mp_mmapsize=16Mb mp_size=1Mb
+%__dbi_cdb			create cdb mp_mmapsize=16Mb mp_size=1Mb
 
 %__dbi_other			%{?__dbi_cdb}
 

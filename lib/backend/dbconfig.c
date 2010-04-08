@@ -34,8 +34,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "log",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_LOG,
 	NULL, NULL },
- { "mpool",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_MPOOL,
-	NULL, NULL },
  { "txn",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_TXN,
 	NULL, NULL },
  { "joinenv",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_JOINENV,
@@ -62,8 +60,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
 
  { "verify",	0,POPT_ARG_NONE,	&staticdbi.dbi_verify_on_close, 0,
-	NULL, NULL },
- { "usedbenv",	0,POPT_ARG_NONE,	&staticdbi.dbi_use_dbenv, 0,
 	NULL, NULL },
  { "nofsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_fsync, 0,
 	NULL, NULL },
@@ -106,7 +102,7 @@ dbiIndex dbiFree(dbiIndex dbi)
 
 /** @todo Set a reasonable "last gasp" default db config. */
 static const char * const dbi_config_default =
-    "hash:mpool:cdb:verbose:mp_mmapsize=8Mb:cachesize=512Kb:pagesize=512";
+    "hash:cdb:verbose";
 
 dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
 {
@@ -248,12 +244,13 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
-    if (!dbi->dbi_use_dbenv) {		/* dbenv is always used now. */
-	dbi->dbi_use_dbenv = 1;
-	dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
-	dbi->dbi_mmapsize = 16 * 1024 * 1024;
-	dbi->dbi_cachesize = 1 * 1024 * 1024;
-    }
+    /* XXX FIXME: These all are environment, not per-dbi configuration */
+    dbi->dbi_use_dbenv = 1;
+    dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
+    /* Throw in some defaults if configuration didn't set any */
+    if (!dbi->dbi_mmapsize) dbi->dbi_mmapsize = 16 * 1024 * 1024;
+    if (!dbi->dbi_cachesize) dbi->dbi_cachesize = 1 * 1024 * 1024;
+
 
     /* FIX: *(rdbOptions->arg) reachable */
     return dbi;
