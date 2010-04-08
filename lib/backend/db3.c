@@ -68,7 +68,6 @@ static int fsync_disable(int fd)
     return 0;
 }
 
-#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
 /*
  * dbenv->failchk() callback method for determining is the given pid/tid 
  * is alive. We only care about pid's though. 
@@ -88,7 +87,6 @@ static int isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
     
     return alive;
 }
-#endif
 
 static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 {
@@ -116,14 +114,12 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     dbenv->set_errcall(dbenv, NULL);
     dbenv->set_errpfx(dbenv, _errpfx);
 
-#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
     /* 
      * These enable automatic stale lock removal. 
      * thread_count 8 is some kind of "magic minimum" value...
      */
     dbenv->set_thread_count(dbenv, 8);
     dbenv->set_isalive(dbenv, isalive);
-#endif
 
     dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
 	    (dbi->dbi_verbose & DB_VERB_DEADLOCK));
@@ -152,13 +148,11 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     if (rc)
 	goto errxit;
 
-#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
     /* stale lock removal */
     rc = dbenv->failchk(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->failchk", rc, _debug);
     if (rc)
 	goto errxit;
-#endif
 
     *dbenvp = dbenv;
 

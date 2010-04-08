@@ -310,24 +310,14 @@ esac],
 case "$with_external_db" in
 yes )
   AC_CHECK_HEADERS([db.h],[
-    AC_CHECK_TYPE([db_threadid_t],[],
-      [AC_MSG_WARN([missing type db_threadid_t])],
-      [#include <db.h>])
-    save_LIBS="$LIBS"
-    AC_CHECK_LIB([db],[db_create],[],[
-      AC_MSG_ERROR([missing db_create in libdb])
-      ])
-    AC_CHECK_LIB([db],[db_env_create],[],[
-      AC_MSG_ERROR([missing db_env_create in libdb])
-      ])
-    AC_CHECK_LIB([db],[db_env_set_func_fsync],[],[
-      AC_MSG_ERROR([missing db_env_set_func_fsync in libdb])
-      ])
-    AC_CHECK_LIB([db],[db_strerror],[],[
-      AC_MSG_ERROR([missing db_strerror in libdb])
-      ])
-    WITH_DB_LIB=-ldb
-    LIBS="$save_LIBS"
+    AC_PREPROC_IFELSE([
+	#include <db.h>
+	#if !(DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
+	#error Berkeley DB too old
+	#endif
+    ],[ WITH_DB_LIB=-ldb ], 
+      [ AC_MSG_ERROR([Berkeley DB version >= 4.5 required])
+    ])
   ],[
     AC_MSG_ERROR([missing required header db.h])
   ])
