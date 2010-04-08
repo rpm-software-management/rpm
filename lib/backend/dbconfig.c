@@ -23,8 +23,6 @@ static const struct poptOption rdbOptions[] = {
 
  { "create",	0,POPT_BIT_SET,	&staticdbi.dbi_oeflags, DB_CREATE,
 	NULL, NULL },
- { "thread",	0,POPT_BIT_SET,	&staticdbi.dbi_oeflags, DB_THREAD,
-	NULL, NULL },
 
  { "force",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_FORCE,
 	NULL, NULL },

@@ -539,7 +539,6 @@ print (t)\
 #   cachesize=1Mb	DBENV->set_cachesize, DB->set_cachesize
 #---------------------- DBENV->open and DB->open common bits:
 #   create		DB_CREATE
-#   thread	???	DB_THREAD	(useless w/o posix mutexes on linux)
 #---------------------- DBENV->open bits:
 #   joinenv		DB_JOIN_ENV
 #   cdb		+++	DB_INIT_CDB

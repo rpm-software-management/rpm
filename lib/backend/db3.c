@@ -479,7 +479,6 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	} else {
 	    dbi->dbi_eflags |= DB_JOINENV;
 	    dbi->dbi_oeflags &= ~DB_CREATE;
-	    dbi->dbi_oeflags &= ~DB_THREAD;
 	    /* ... but, unless DB_PRIVATE is used, skip DBENV. */
 	    dbi->dbi_use_dbenv = 0;
 	}
@@ -503,7 +502,6 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    } else {
 		dbi->dbi_eflags |= DB_JOINENV;
 		dbi->dbi_oeflags &= ~DB_CREATE;
-		dbi->dbi_oeflags &= ~DB_THREAD;
 	    }
 	}
 	dbf = _free(dbf);
