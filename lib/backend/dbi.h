@@ -45,7 +45,6 @@ struct _dbiIndex {
     const char * dbi_file;	/*!< file component of path */
 
     int	dbi_ecflags;		/*!< db_env_create flags */
-    int	dbi_cflags;		/*!< db_create flags */
     int	dbi_oeflags;		/*!< common (db,dbenv}->open flags */
     int	dbi_eflags;		/*!< dbenv->open flags */
     int	dbi_oflags;		/*!< db->open flags */

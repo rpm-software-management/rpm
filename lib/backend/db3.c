@@ -575,7 +575,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (rc == 0) {
 	static int _lockdbfd = 0;
 
-	rc = db_create(&db, dbenv, dbi->dbi_cflags);
+	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 	    if (rc == 0 && !dbi->dbi_use_dbenv) {
