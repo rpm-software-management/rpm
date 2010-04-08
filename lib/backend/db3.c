@@ -214,7 +214,7 @@ int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
     } else
 	flags = 0;
 
-    rc = db->cursor(db, dbi->dbi_txnid, &dbcursor, flags);
+    rc = db->cursor(db, NULL, &dbcursor, flags);
     rc = cvtdberr(dbi, "db->cursor", rc, _debug);
 
     if (dbcp)
@@ -238,7 +238,7 @@ int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 
     (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
     if (dbcursor == NULL) {
-	rc = db->put(db, dbi->dbi_txnid, key, data, 0);
+	rc = db->put(db, NULL, key, data, 0);
 	rc = cvtdberr(dbi, "db->put", rc, _debug);
     } else {
 	rc = dbcursor->c_put(dbcursor, key, data, DB_KEYLAST);
@@ -260,7 +260,7 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
 
     if (dbcursor == NULL) {
-	rc = db->del(db, dbi->dbi_txnid, key, flags);
+	rc = db->del(db, NULL, key, flags);
 	rc = cvtdberr(dbi, "db->del", rc, _debug);
     } else {
 	int _printit;
@@ -296,7 +296,7 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     assert(db != NULL);
     if (dbcursor == NULL) {
 	/* XXX duplicates require cursors. */
-	rc = db->get(db, dbi->dbi_txnid, key, data, 0);
+	rc = db->get(db, NULL, key, data, 0);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->get", rc, _printit);
@@ -448,7 +448,6 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     DB * db = NULL;
     DB_ENV * dbenv = NULL;
-    DB_TXN * txnid = NULL;
     uint32_t oflags;
     int _printit;
 
@@ -601,7 +600,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    fullpath = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
 		    dbpath = fullpath;
 		}
-		rc = (db->open)(db, txnid, dbpath, NULL,
+		rc = (db->open)(db, NULL, dbpath, NULL,
 		    dbi->dbi_dbtype, oflags, dbi->dbi_perms);
 
 		if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
@@ -616,8 +615,6 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
-
-	    dbi->dbi_txnid = NULL;
 
 	    /*
 	     * Lock a file using fcntl(2). Traditionally this is Packages,

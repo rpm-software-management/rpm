@@ -75,7 +75,6 @@ struct _dbiIndex {
     dbiIndexType dbi_type;	/*! Type of dbi (primary / index) */
 
     DB * dbi_db;		/*!< Berkeley DB * handle */
-    DB_TXN * dbi_txnid;		/*!< Bekerley DB_TXN * transaction id */
 };
 
 /** \ingroup dbi
