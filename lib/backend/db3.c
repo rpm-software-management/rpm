@@ -98,7 +98,6 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	return 1;
 
     eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
-    if (eflags & DB_JOINENV) eflags &= DB_JOINENV;
 
     {	char *fstr = prDbiOpenFlags(eflags, 1);
 	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
@@ -475,9 +474,8 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
 	/* ... but DBENV->open might still need DB_CREATE ... */
 	if (dbi->dbi_eflags & DB_PRIVATE) {
-	    dbi->dbi_eflags &= ~DB_JOINENV;
+	    /* ... nothing ... */
 	} else {
-	    dbi->dbi_eflags |= DB_JOINENV;
 	    dbi->dbi_oeflags &= ~DB_CREATE;
 	    /* ... but, unless DB_PRIVATE is used, skip DBENV. */
 	    dbi->dbi_use_dbenv = 0;
@@ -494,13 +492,11 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	if (access(dbf, F_OK) == -1) {
 	    /* ... non-existent (or unwritable) DBENV, will create ... */
 	    dbi->dbi_oeflags |= DB_CREATE;
-	    dbi->dbi_eflags &= ~DB_JOINENV;
 	} else {
 	    /* ... pre-existent (or bogus) DBENV, will join ... */
 	    if (dbi->dbi_eflags & DB_PRIVATE) {
-		dbi->dbi_eflags &= ~DB_JOINENV;
+		/* ... nothing ... */
 	    } else {
-		dbi->dbi_eflags |= DB_JOINENV;
 		dbi->dbi_oeflags &= ~DB_CREATE;
 	    }
 	}

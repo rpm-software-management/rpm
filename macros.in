@@ -540,7 +540,6 @@ print (t)\
 #---------------------- DBENV->open and DB->open common bits:
 #   create		DB_CREATE
 #---------------------- DBENV->open bits:
-#   joinenv		DB_JOIN_ENV
 #   cdb		+++	DB_INIT_CDB
 #   txn		???	DB_INIT_TXN
 #   log		???	DB_INIT_LOG
@@ -569,7 +568,7 @@ print (t)\
 #
 
 # XXX Use transactions and logs for rpmdb durability (no clue yet):
-#%__dbi_other			create joinenv txn log \
+#%__dbi_other			create txn log \
 #				mp_mmapsize=8Mb mp_size=512Kb
 
 # Use a CDB database model for concurrent access.

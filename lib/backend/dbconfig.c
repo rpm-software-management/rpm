@@ -34,8 +34,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
  { "txn",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_TXN,
 	NULL, NULL },
- { "joinenv",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_JOINENV,
-	NULL, NULL },
  { "recover",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_RECOVER,
 	NULL, NULL },
  { "recover_fatal", 0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_RECOVER_FATAL,
@@ -244,7 +242,7 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
 
     /* XXX FIXME: These all are environment, not per-dbi configuration */
     dbi->dbi_use_dbenv = 1;
-    dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_JOINENV);
+    dbi->dbi_eflags |= (DB_INIT_MPOOL);
     /* Throw in some defaults if configuration didn't set any */
     if (!dbi->dbi_mmapsize) dbi->dbi_mmapsize = 16 * 1024 * 1024;
     if (!dbi->dbi_cachesize) dbi->dbi_cachesize = 1 * 1024 * 1024;
