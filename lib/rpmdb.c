@@ -141,13 +141,6 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
-    /* Try to ensure db home exists, error out if we cant even create */
-    if (!db->db_mkdirDone) {
-	const char *dbhome = rpmdbHome(db);
-	db->db_mkdirDone = (rpmioMkpath(dbhome, 0755, getuid(), getgid()) == 0);
-	if (!db->db_mkdirDone) return NULL;
-    }
-
     _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
     if (_dbapi_rebuild < 1 || _dbapi_rebuild > 4)
 	_dbapi_rebuild = 4;
@@ -724,16 +717,20 @@ static int openDatabase(const char * prefix,
     if (db == NULL)
 	return 1;
 
-    (void) rpmsqEnable(SIGHUP,	NULL);
-    (void) rpmsqEnable(SIGINT,	NULL);
-    (void) rpmsqEnable(SIGTERM,NULL);
-    (void) rpmsqEnable(SIGQUIT,NULL);
-    (void) rpmsqEnable(SIGPIPE,NULL);
-
     db->db_api = _dbapi;
 
-    /* Just the primary Packages database opened here */
-    rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0) != NULL) ? 0 : -2;
+    /* Try to ensure db home exists, error out if we cant even create */
+    rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
+    if (rc == 0) {
+	(void) rpmsqEnable(SIGHUP, NULL);
+	(void) rpmsqEnable(SIGINT, NULL);
+	(void) rpmsqEnable(SIGTERM,NULL);
+	(void) rpmsqEnable(SIGQUIT,NULL);
+	(void) rpmsqEnable(SIGPIPE,NULL);
+
+	/* Just the primary Packages database opened here */
+	rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0) != NULL) ? 0 : -2;
+    }
 
     if (rc || justCheck || dbp == NULL)
 	xx = rpmdbClose(db);
