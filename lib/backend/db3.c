@@ -450,11 +450,9 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     const char *dbhome = rpmdbHome(rpmdb);
     dbiIndex dbi = NULL;
     int rc = 0;
-    int xx;
 
     DB * db = NULL;
     uint32_t oflags;
-    int _printit;
 
     if (dbip)
 	*dbip = NULL;
@@ -508,29 +506,27 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     rc = db_init(dbi, dbhome);
 
-    {	char *dbiflags = prDbiOpenFlags(oflags, 0);
-    	rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
-		dbhome, dbi->dbi_file, dbiflags, rpmdb->db_mode);
-	free(dbiflags);
-    }
 
     if (rc == 0) {
-	static int _lockdbfd = 0;
 
 	rc = db_create(&db, rpmdb->db_dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
+	    static int _lockdbfd = 0;
+	    int _printit, xx;
+	    char *dbfs = prDbiOpenFlags(oflags, 0);
+	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
+			dbhome, dbi->dbi_file, dbfs, rpmdb->db_mode);
+	    free(dbfs);
 
-	    if (rc == 0) {
-		rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
-		    dbi->dbi_dbtype, oflags, rpmdb->db_perms);
+	    rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
+		dbi->dbi_dbtype, oflags, rpmdb->db_perms);
 
-		if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
-		    DBTYPE dbi_dbtype = DB_UNKNOWN;
-		    xx = db->get_type(db, &dbi_dbtype);
-		    if (xx == 0)
-			dbi->dbi_dbtype = dbi_dbtype;
-		}
+	    if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
+		DBTYPE dbi_dbtype = DB_UNKNOWN;
+		xx = db->get_type(db, &dbi_dbtype);
+		if (xx == 0)
+		    dbi->dbi_dbtype = dbi_dbtype;
 	    }
 
 	    /* XXX return rc == errno without printing */
