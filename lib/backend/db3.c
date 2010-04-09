@@ -371,7 +371,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 
     }
 
-    if (rpmdb->db_dbenv != NULL && dbi->dbi_use_dbenv) {
+    if (rpmdb->db_dbenv != NULL && rpmdb->db_use_env) {
 	if (rpmdb->db_opens == 1) {
 	    xx = db_fini(dbi, (dbhome ? dbhome : ""));
 	    rpmdb->db_dbenv = NULL;
@@ -478,7 +478,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	} else {
 	    dbi->dbi_oeflags &= ~DB_CREATE;
 	    /* ... but, unless DB_PRIVATE is used, skip DBENV. */
-	    dbi->dbi_use_dbenv = 0;
+	    rpmdb->db_use_env = 0;
 	}
 
 	/* ... DB_RDONLY maps dbhome perms across files ...  */
@@ -533,7 +533,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
 
-    if (dbi->dbi_use_dbenv) {
+    if (rpmdb->db_use_env) {
 	if (rpmdb->db_dbenv == NULL) {
 	    rc = db_init(dbi, dbhome, &dbenv);
 	    if (rc == 0) {
@@ -558,12 +558,12 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
-	    if (rc == 0 && !dbi->dbi_use_dbenv) {
+	    if (rc == 0 && !rpmdb->db_use_env) {
 		rc = db->set_alloc(db, rmalloc, rrealloc, NULL);
 		rc = cvtdberr(dbi, "db->set_alloc", rc, _debug);
 	    }
 
-	    if (rc == 0 && !dbi->dbi_use_dbenv && dbi->dbi_cachesize) {
+	    if (rc == 0 && !rpmdb->db_use_env && dbi->dbi_cachesize) {
 		rc = db->set_cachesize(db, 0, dbi->dbi_cachesize, 0);
 		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
 	    }
@@ -577,7 +577,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		const char *dbpath = dbi->dbi_file;
 		char *fullpath = NULL;
 		/* When not in environment, absolute path is needed */
-		if (!dbi->dbi_use_dbenv) {
+		if (!rpmdb->db_use_env) {
 		    fullpath = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
 		    dbpath = fullpath;
 		}
@@ -616,7 +616,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	     * glibc/kernel combinations.
 	     */
 	    if (rc == 0 && dbi->dbi_lockdbfd &&
-		(!dbi->dbi_use_dbenv || _lockdbfd++ == 0))
+		(!rpmdb->db_use_env || _lockdbfd++ == 0))
 	    {
 		int fdno = -1;
 
@@ -635,7 +635,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    rc = fcntl(fdno, F_SETLK, (void *) &l);
 		    if (rc) {
 			/* Warning iff using non-private CDB locking. */
-			rc = ((dbi->dbi_use_dbenv &&
+			rc = ((rpmdb->db_use_env &&
 				(dbi->dbi_eflags & DB_INIT_CDB) &&
 				!(dbi->dbi_eflags & DB_PRIVATE))
 			    ? 0 : 1);

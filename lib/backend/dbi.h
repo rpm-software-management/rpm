@@ -14,6 +14,7 @@ struct rpmdb_s {
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
+    int		db_use_env;	/*!< use db environment? */
     int		db_remove_env;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     unsigned char * db_bits;	/*!< package instance bit mask. */
@@ -50,7 +51,6 @@ struct _dbiIndex {
     DBTYPE dbi_dbtype;		/*!< db index type */
 
     int	dbi_verify_on_close;
-    int	dbi_use_dbenv;		/*!< use db environment? */
     int	dbi_permit_dups;	/*!< permit duplicate entries? */
     int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
