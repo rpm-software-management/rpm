@@ -537,8 +537,6 @@ print (t)\
 #---------------------- DBENV->open parameters and tunable values:
 #   mmapsize=16Mb	DBENV->set_mp_mmapsize
 #   cachesize=1Mb	DBENV->set_cachesize, DB->set_cachesize
-#---------------------- DBENV->open and DB->open common bits:
-#   create		DB_CREATE
 #---------------------- DBENV->open bits:
 #   cdb		+++	DB_INIT_CDB
 #   txn		???	DB_INIT_TXN
@@ -568,12 +566,12 @@ print (t)\
 #
 
 # XXX Use transactions and logs for rpmdb durability (no clue yet):
-#%__dbi_other			create txn log \
+#%__dbi_other			txn log \
 #				mp_mmapsize=8Mb mp_size=512Kb
 
 # Use a CDB database model for concurrent access.
 # XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
-%__dbi_cdb			create cdb mp_mmapsize=16Mb mp_size=1Mb
+%__dbi_cdb			cdb mp_mmapsize=16Mb mp_size=1Mb
 
 %__dbi_other			%{?__dbi_cdb}
 

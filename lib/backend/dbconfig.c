@@ -21,11 +21,6 @@ static struct _dbiIndex staticdbi;
 static const struct poptOption rdbOptions[] = {
  /* XXX DB_CXX_NO_EXCEPTIONS */
 
- { "create",	0,POPT_BIT_SET,	&staticdbi.dbi_oeflags, DB_CREATE,
-	NULL, NULL },
-
- { "force",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_FORCE,
-	NULL, NULL },
  { "cdb",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_CDB,
 	NULL, NULL },
  { "lock",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_LOCK,
@@ -239,9 +234,10 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     dbi->dbi_file = rpmTagGetName(rpmtag);
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
+    dbi->dbi_oflags |= DB_CREATE;
 
     /* XXX FIXME: These all are environment, not per-dbi configuration */
-    dbi->dbi_eflags |= (DB_INIT_MPOOL);
+    dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_CREATE);
     /* Throw in some defaults if configuration didn't set any */
     if (!dbi->dbi_mmapsize) dbi->dbi_mmapsize = 16 * 1024 * 1024;
     if (!dbi->dbi_cachesize) dbi->dbi_cachesize = 1 * 1024 * 1024;
@@ -261,12 +257,10 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	if (opt->argInfo != POPT_BIT_SET)
 	    continue;
 	if (print_dbenv_flags) {
-	    if (!(opt->arg == &staticdbi.dbi_oeflags ||
-		  opt->arg == &staticdbi.dbi_eflags))
+	    if (!(opt->arg == &staticdbi.dbi_eflags))
 		continue;
 	} else {
-	    if (!(opt->arg == &staticdbi.dbi_oeflags ||
-		  opt->arg == &staticdbi.dbi_oflags))
+	    if (!(opt->arg == &staticdbi.dbi_oflags))
 		continue;
 	}
 	if ((dbflags & opt->val) != opt->val)

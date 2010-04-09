@@ -91,18 +91,11 @@ static int isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
 static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 {
     DB_ENV *dbenv = NULL;
-    int eflags;
     int rc, xx;
+    int retry_open = 2;
 
     if (dbenvp == NULL)
 	return 1;
-
-    eflags = (dbi->dbi_oeflags | dbi->dbi_eflags);
-
-    {	char *fstr = prDbiOpenFlags(eflags, 1);
-	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
-	free(fstr);
-    }
 
     rc = db_env_create(&dbenv, 0);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
@@ -142,7 +135,24 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
     }
 
-    rc = (dbenv->open)(dbenv, dbhome, eflags, dbi->dbi_rpmdb->db_perms);
+    /*
+     * Actually open the environment. Fall back to private environment
+     * if we dont have permission to join/create shared environment.
+     */
+    while (retry_open) {
+	char *fstr = prDbiOpenFlags(dbi->dbi_eflags, 1);
+	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
+	free(fstr);
+
+	rc = (dbenv->open)(dbenv, dbhome,
+			   dbi->dbi_eflags, dbi->dbi_rpmdb->db_perms);
+	if (rc == EACCES) {
+	    dbi->dbi_eflags |= DB_PRIVATE;
+	    retry_open--;
+	} else {
+	    retry_open = 0;
+	}
+    }
     rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
@@ -453,7 +463,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if ((dbi = dbiNew(rpmdb, rpmtag)) == NULL)
 	return 1;
 
-    oflags = (dbi->dbi_oeflags | dbi->dbi_oflags);
+    oflags = dbi->dbi_oflags;
 
     /*
      * Map open mode flags onto configured database/environment flags.
@@ -461,46 +471,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if ((rpmdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
     if (rpmdb->db_mode & O_CREAT) {
 	oflags |= DB_CREATE;
-	dbi->dbi_oeflags |= DB_CREATE;
-    }
-
-    /*
-     * Avoid incompatible DB_CREATE/DB_RDONLY flags on DBENV->open.
-     */
-    if (access(dbhome, W_OK) == -1) {
-
-	/* dbhome is unwritable, don't attempt DB_CREATE on DB->open ... */
-	oflags &= ~DB_CREATE;
-
-	/* ... but DBENV->open might still need DB_CREATE ... */
-	if (dbi->dbi_eflags & DB_PRIVATE) {
-	    /* ... nothing ... */
-	} else {
-	    dbi->dbi_oeflags &= ~DB_CREATE;
-	    /* ... but, unless DB_PRIVATE is used, skip DBENV. */
-	    rpmdb->db_use_env = 0;
-	}
-
-	/* ... DB_RDONLY maps dbhome perms across files ...  */
-	oflags |= DB_RDONLY;
-	/* ... and DB_WRITECURSOR won't be needed ...  */
-	dbi->dbi_oflags |= DB_RDONLY;
-
-    } else {	/* dbhome is writable, check for persistent dbenv. */
-	char * dbf = rpmGetPath(dbhome, "/__db.001", NULL);
-
-	if (access(dbf, F_OK) == -1) {
-	    /* ... non-existent (or unwritable) DBENV, will create ... */
-	    dbi->dbi_oeflags |= DB_CREATE;
-	} else {
-	    /* ... pre-existent (or bogus) DBENV, will join ... */
-	    if (dbi->dbi_eflags & DB_PRIVATE) {
-		/* ... nothing ... */
-	    } else {
-		dbi->dbi_oeflags &= ~DB_CREATE;
-	    }
-	}
-	dbf = _free(dbf);
+	dbi->dbi_oflags |= DB_CREATE;
     }
 
     /*
