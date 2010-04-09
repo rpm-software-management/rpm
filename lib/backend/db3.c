@@ -43,6 +43,11 @@ static int db_fini(dbiIndex dbi, const char * dbhome)
     if (dbenv == NULL)
 	return 0;
 
+    if (rpmdb->db_opens > 1) {
+	rpmdb->db_opens--;
+	return 0;
+    }
+
     rc = dbenv->close(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
 
@@ -88,14 +93,17 @@ static int isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
     return alive;
 }
 
-static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
+static int db_init(dbiIndex dbi, const char * dbhome)
 {
+    rpmdb rdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int rc, xx;
     int retry_open = 2;
 
-    if (dbenvp == NULL)
-	return 1;
+    if (rdb->db_dbenv != NULL) {
+	rdb->db_opens++;
+	return 0;
+    }
 
     rc = db_env_create(&dbenv, 0);
     rc = cvtdberr(dbi, "db_env_create", rc, _debug);
@@ -163,7 +171,8 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     if (rc)
 	goto errxit;
 
-    *dbenvp = dbenv;
+    rdb->db_dbenv = dbenv;
+    rdb->db_opens = 1;
 
     return 0;
 
@@ -381,13 +390,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 
     }
 
-    if (rpmdb->db_dbenv != NULL) {
-	if (rpmdb->db_opens == 1) {
-	    xx = db_fini(dbi, (dbhome ? dbhome : ""));
-	    rpmdb->db_dbenv = NULL;
-	}
-	rpmdb->db_opens--;
-    }
+    xx = db_fini(dbi, dbhome ? dbhome : "");
 
     if (dbi->dbi_verify_on_close) {
 	DB_ENV * dbenv = NULL;
@@ -450,7 +453,6 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     int xx;
 
     DB * db = NULL;
-    DB_ENV * dbenv = NULL;
     uint32_t oflags;
     int _printit;
 
@@ -504,16 +506,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
 
-    if (rpmdb->db_dbenv == NULL) {
-	rc = db_init(dbi, dbhome, &dbenv);
-	if (rc == 0) {
-	    rpmdb->db_dbenv = dbenv;
-	    rpmdb->db_opens = 1;
-	}
-    } else {
-	dbenv = rpmdb->db_dbenv;
-	rpmdb->db_opens++;
-    }
+    rc = db_init(dbi, dbhome);
 
     {	char *dbiflags = prDbiOpenFlags(oflags, 0);
     	rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
@@ -524,7 +517,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (rc == 0) {
 	static int _lockdbfd = 0;
 
-	rc = db_create(&db, dbenv, 0);
+	rc = db_create(&db, rpmdb->db_dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 
