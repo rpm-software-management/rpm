@@ -381,7 +381,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 
     }
 
-    if (rpmdb->db_dbenv != NULL && rpmdb->db_use_env) {
+    if (rpmdb->db_dbenv != NULL) {
 	if (rpmdb->db_opens == 1) {
 	    xx = db_fini(dbi, (dbhome ? dbhome : ""));
 	    rpmdb->db_dbenv = NULL;
@@ -504,17 +504,15 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
 
-    if (rpmdb->db_use_env) {
-	if (rpmdb->db_dbenv == NULL) {
-	    rc = db_init(dbi, dbhome, &dbenv);
-	    if (rc == 0) {
-		rpmdb->db_dbenv = dbenv;
-		rpmdb->db_opens = 1;
-	    }
-	} else {
-	    dbenv = rpmdb->db_dbenv;
-	    rpmdb->db_opens++;
+    if (rpmdb->db_dbenv == NULL) {
+	rc = db_init(dbi, dbhome, &dbenv);
+	if (rc == 0) {
+	    rpmdb->db_dbenv = dbenv;
+	    rpmdb->db_opens = 1;
 	}
+    } else {
+	dbenv = rpmdb->db_dbenv;
+	rpmdb->db_opens++;
     }
 
     {	char *dbiflags = prDbiOpenFlags(oflags, 0);
@@ -529,30 +527,9 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	rc = db_create(&db, dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
-	    if (rc == 0 && !rpmdb->db_use_env) {
-		rc = db->set_alloc(db, rmalloc, rrealloc, NULL);
-		rc = cvtdberr(dbi, "db->set_alloc", rc, _debug);
-	    }
-
-	    if (rc == 0 && !rpmdb->db_use_env && dbi->dbi_cachesize) {
-		rc = db->set_cachesize(db, 0, dbi->dbi_cachesize, 0);
-		rc = cvtdberr(dbi, "db->set_cachesize", rc, _debug);
-	    }
-
-	    if (rc == 0 && dbi->dbi_pagesize) {
-		rc = db->set_pagesize(db, dbi->dbi_pagesize);
-		rc = cvtdberr(dbi, "db->set_pagesize", rc, _debug);
-	    }
 
 	    if (rc == 0) {
-		const char *dbpath = dbi->dbi_file;
-		char *fullpath = NULL;
-		/* When not in environment, absolute path is needed */
-		if (!rpmdb->db_use_env) {
-		    fullpath = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
-		    dbpath = fullpath;
-		}
-		rc = (db->open)(db, NULL, dbpath, NULL,
+		rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
 		    dbi->dbi_dbtype, oflags, rpmdb->db_perms);
 
 		if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
@@ -561,7 +538,6 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    if (xx == 0)
 			dbi->dbi_dbtype = dbi_dbtype;
 		}
-		free(fullpath);
 	    }
 
 	    /* XXX return rc == errno without printing */
@@ -586,9 +562,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	     * With NPTL posix mutexes, revert to fcntl lock on non-functioning
 	     * glibc/kernel combinations.
 	     */
-	    if (rc == 0 && dbi->dbi_lockdbfd &&
-		(!rpmdb->db_use_env || _lockdbfd++ == 0))
-	    {
+	    if (rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
 		int fdno = -1;
 
 		if (!(db->fd(db, &fdno) == 0 && fdno >= 0)) {
@@ -606,8 +580,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 		    rc = fcntl(fdno, F_SETLK, (void *) &l);
 		    if (rc) {
 			/* Warning iff using non-private CDB locking. */
-			rc = ((rpmdb->db_use_env &&
-				(dbi->dbi_eflags & DB_INIT_CDB) &&
+			rc = (((dbi->dbi_eflags & DB_INIT_CDB) &&
 				!(dbi->dbi_eflags & DB_PRIVATE))
 			    ? 0 : 1);
 			rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),

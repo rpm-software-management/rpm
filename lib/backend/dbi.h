@@ -14,7 +14,6 @@ struct rpmdb_s {
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
-    int		db_use_env;	/*!< use db environment? */
     int		db_remove_env;
     int		db_chrootDone;	/*!< If chroot(2) done, ignore db_root. */
     unsigned char * db_bits;	/*!< package instance bit mask. */
