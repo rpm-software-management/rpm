@@ -760,12 +760,16 @@ exit:
 rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     rpmRC rc;
-    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
+    rpmKeyring keyring = 0;
+
+    if ((vsflags & _RPMVSF_NOSIGNATURES) != _RPMVSF_NOSIGNATURES)
+	keyring = rpmtsGetKeyring(ts, 1);
 
     rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp);
 
-    rpmKeyringFree(keyring);
+    if (keyring)
+	rpmKeyringFree(keyring);
     return rc;
 }
 
