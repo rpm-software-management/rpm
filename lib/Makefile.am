@@ -148,16 +148,6 @@ rpmdb_stat_LDADD = \
 	$(top_builddir)/db3/util_sig.o \
 	librpm.la
 
-rpmlibexec_PROGRAMS += rpmdb_svc
-rpmdb_svc_SOURCES =
-rpmdb_svc_LDADD = \
-	$(top_builddir)/db3/db_server_proc.o \
-	$(top_builddir)/db3/db_server_svc.o \
-	$(top_builddir)/db3/db_server_util.o \
-	$(top_builddir)/db3/gen_db_server.o \
-	$(top_builddir)/db3/util_log.o \
-	librpm.la
-
 rpmlibexec_PROGRAMS += rpmdb_upgrade
 rpmdb_upgrade_SOURCES =
 rpmdb_upgrade_LDADD = \
