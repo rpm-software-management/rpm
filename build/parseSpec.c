@@ -272,6 +272,7 @@ int readLine(rpmSpec spec, int strip)
     retry:
 	if ((rc = readLineFromOFI(spec, ofi)) != 0)
 	    return rc;
+	ofi = spec->fileStack;
 
 	/* Copy next file line into the spec line buffer */
 	rc = copyNextLineFromOFI(spec, ofi);
