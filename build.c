@@ -126,7 +126,13 @@ static char * getTarSpec(const char *arg)
 	if (!(fp = popen(cmd, "r"))) {
 	    rpmlog(RPMLOG_ERR, _("Failed to open tar pipe: %m\n"));
 	} else {
-	    char *fok = fgets(tarbuf, sizeof(tarbuf) - 1, fp);
+	    char *fok;
+	    for (;;) {
+		fok = fgets(tarbuf, sizeof(tarbuf) - 1, fp);
+		/* tar sometimes prints "tar: Record size = 16" messages */
+		if (!fok || strncmp(fok, "tar: ", 5) != 0)
+		    break;
+	    }
 	    pclose(fp);
 	    gotspec = (fok != NULL) && isSpecFile(tmpSpecFile);
 	}
