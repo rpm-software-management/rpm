@@ -557,8 +557,13 @@ static rpmRC parseForAttr(const char * buf, FileList fl)
 	}
 	ar->ar_fmode = ui;
     } else {
-	ar->ar_fmodestr = fl->def_ar.ar_fmodestr;
-	ar->ar_fmode = fl->def_ar.ar_fmode;
+	if (ret_ar == &(fl->def_ar)) {
+	    ar->ar_fmodestr = NULL;
+	    ar->ar_fmode = 0;
+	} else {
+	    ar->ar_fmodestr = fl->def_ar.ar_fmodestr;
+	    ar->ar_fmode = fl->def_ar.ar_fmode;
+	}
     }
 
     if (ar->ar_dmodestr && !isAttrDefault(ar->ar_dmodestr)) {
@@ -570,15 +575,30 @@ static rpmRC parseForAttr(const char * buf, FileList fl)
 	}
 	ar->ar_dmode = ui;
     } else {
-	ar->ar_dmodestr = fl->def_ar.ar_dmodestr;
-	ar->ar_dmode = fl->def_ar.ar_dmode;
+	if (ret_ar == &(fl->def_ar)) {
+	    ar->ar_dmodestr = NULL;
+	    ar->ar_dmode = 0;
+	} else {
+	    ar->ar_dmodestr = fl->def_ar.ar_dmodestr;
+	    ar->ar_dmode = fl->def_ar.ar_dmode;
+	}
     }
 
-    if (!(ar->ar_user && !isAttrDefault(ar->ar_user)))
-	ar->ar_user = fl->def_ar.ar_user;
+    if (!(ar->ar_user && !isAttrDefault(ar->ar_user))) {
+	if (ret_ar == &(fl->def_ar)) {
+	    ar->ar_user = NULL;
+	} else {
+	    ar->ar_user = fl->def_ar.ar_user;
+	}
+    }
 
-    if (!(ar->ar_group && !isAttrDefault(ar->ar_group)))
-	ar->ar_group = fl->def_ar.ar_group;
+    if (!(ar->ar_group && !isAttrDefault(ar->ar_group))) {
+	if (ret_ar == &(fl->def_ar)) {
+	    ar->ar_group = NULL;
+	} else {
+	    ar->ar_group = fl->def_ar.ar_group;
+	}
+    }
 
     dupAttrRec(ar, ret_ar);
 
