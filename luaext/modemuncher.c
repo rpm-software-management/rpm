@@ -245,11 +245,11 @@ printf("modemuncher: doneflag = %u\n", doneFlag);
 		if (ch_mode) switch (op)
 		{
 			case '+':
-			*mode = *mode |= ch_mode & affected_bits;
+			*mode |= ch_mode & affected_bits;
 			break;
 
 			case '-':
-			*mode = *mode &= ~(ch_mode & affected_bits);
+			*mode &= ~(ch_mode & affected_bits);
 			break;
 
 			case '=':
