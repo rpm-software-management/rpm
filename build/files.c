@@ -2068,7 +2068,7 @@ int processSourceFiles(rpmSpec spec)
 	if (srcPtr->flags & RPMBUILD_ISPATCH) {
 	    headerPutString(spec->sourceHeader, RPMTAG_PATCH, srcPtr->source);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOPATCH,
 				&srcPtr->num, 1);
 	    }
 	}
