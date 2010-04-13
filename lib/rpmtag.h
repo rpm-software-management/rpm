@@ -128,8 +128,8 @@ typedef enum rpmTag_e {
     RPMTAG_REQUIRENAME		= 1049,	/* s[] */
 #define	RPMTAG_REQUIRES RPMTAG_REQUIRENAME	/* s[] */
     RPMTAG_REQUIREVERSION	= 1050,	/* s[] */
-    RPMTAG_NOSOURCE		= 1051, /* i internal */
-    RPMTAG_NOPATCH		= 1052, /* i internal */
+    RPMTAG_NOSOURCE		= 1051, /* i */
+    RPMTAG_NOPATCH		= 1052, /* i */
     RPMTAG_CONFLICTFLAGS	= 1053, /* i[] */
     RPMTAG_CONFLICTNAME		= 1054,	/* s[] */
 #define	RPMTAG_CONFLICTS RPMTAG_CONFLICTNAME	/* s[] */
