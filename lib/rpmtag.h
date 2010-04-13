@@ -97,8 +97,8 @@ typedef enum rpmTag_e {
     RPMTAG_FILESIZES		= 1028,	/* i[] */
     RPMTAG_FILESTATES		= 1029, /* c[] */
     RPMTAG_FILEMODES		= 1030,	/* h[] */
-    RPMTAG_FILEUIDS		= 1031, /* i[] internal */
-    RPMTAG_FILEGIDS		= 1032, /* i[] internal */
+    RPMTAG_FILEUIDS		= 1031, /* i[] internal - obsolete */
+    RPMTAG_FILEGIDS		= 1032, /* i[] internal - obsolete */
     RPMTAG_FILERDEVS		= 1033,	/* h[] */
     RPMTAG_FILEMTIMES		= 1034, /* i[] */
     RPMTAG_FILEDIGESTS		= 1035,	/* s[] */
@@ -129,7 +129,7 @@ typedef enum rpmTag_e {
 #define	RPMTAG_C	RPMTAG_CONFLICTNAME	/* s[] */
     RPMTAG_CONFLICTVERSION	= 1055,	/* s[] */
     RPMTAG_DEFAULTPREFIX	= 1056, /* s internal - deprecated */
-    RPMTAG_BUILDROOT		= 1057, /* s internal */
+    RPMTAG_BUILDROOT		= 1057, /* s internal - obsolete */
     RPMTAG_INSTALLPREFIX	= 1058, /* s internal - deprecated */
     RPMTAG_EXCLUDEARCH		= 1059, /* s[] */
     RPMTAG_EXCLUDEOS		= 1060, /* s[] */
@@ -170,8 +170,8 @@ typedef enum rpmTag_e {
     RPMTAG_TRIGGERPOSTUN	= 1102, /* internal */
     RPMTAG_AUTOREQ		= 1103, /* internal */
     RPMTAG_AUTOPROV		= 1104, /* internal */
-    RPMTAG_CAPABILITY		= 1105, /* i legacy - obsolete */
-    RPMTAG_SOURCEPACKAGE	= 1106, /* i legacy - obsolete */
+    RPMTAG_CAPABILITY		= 1105, /* i internal - obsolete */
+    RPMTAG_SOURCEPACKAGE	= 1106, /* i */
     RPMTAG_OLDORIGFILENAMES	= 1107, /* internal - obsolete */
     RPMTAG_BUILDPREREQ		= 1108, /* internal */
     RPMTAG_BUILDREQUIRES	= 1109, /* internal */
@@ -196,7 +196,7 @@ typedef enum rpmTag_e {
     RPMTAG_INSTALLTID		= 1128,	/* i */
     RPMTAG_REMOVETID		= 1129,	/* i */
     RPMTAG_SHA1RHN		= 1130, /* internal - obsolete */
-    RPMTAG_RHNPLATFORM		= 1131,	/* s deprecated */
+    RPMTAG_RHNPLATFORM		= 1131,	/* s internal - obsolete */
     RPMTAG_PLATFORM		= 1132,	/* s */
     RPMTAG_PATCHESNAME		= 1133, /* s[] deprecated placeholder (SuSE) */
     RPMTAG_PATCHESFLAGS		= 1134, /* i[] deprecated placeholder (SuSE) */
@@ -261,8 +261,8 @@ typedef enum rpmTag_e {
     RPMTAG_OBSOLETEATTRSX	= 1190, /* i[] (unimplemented) */
     RPMTAG_PROVIDEATTRSX	= 1191, /* i[] (unimplemented) */
     RPMTAG_REQUIREATTRSX	= 1192, /* i[] (unimplemented) */
-    RPMTAG_BUILDPROVIDES	= 1193, /* internal */
-    RPMTAG_BUILDOBSOLETES	= 1194, /* internal */
+    RPMTAG_BUILDPROVIDES	= 1193, /* internal (unimplemented) */
+    RPMTAG_BUILDOBSOLETES	= 1194, /* internal (unimplemented) */
     RPMTAG_DBINSTANCE		= 1195, /* i extension */
     RPMTAG_NVRA			= 1196, /* s extension */
     RPMTAG_FILENAMES		= 5000, /* s[] extension */
