@@ -65,6 +65,23 @@ runroot rpm -i \
 
 AT_CLEANUP
 
+# ------------------------------
+# reinstall a noarch package (with no files)
+AT_SETUP([rpm -U --replacepkgs])
+AT_KEYWORDS([rpmdb install])
+
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+tpkg="foo-1.0-1.noarch.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -i "${tpkg}" && runroot rpm -U --replacepkgs "${tpkg}"
+],
+[0])
+
+AT_CLEANUP
 
 # ------------------------------
 # install a package into a local rpmdb
