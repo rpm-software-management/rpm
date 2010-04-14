@@ -387,7 +387,7 @@ retry:
     }
 
     /* Dont look at pre-requisites of already installed packages */
-    if (!adding && isInstallPreReq(dsflags))
+    if (!adding && isInstallPreReq(dsflags) && !isErasePreReq(dsflags))
 	goto exit;
 
     /* Pretrans dependencies can't be satisfied by added packages. */
