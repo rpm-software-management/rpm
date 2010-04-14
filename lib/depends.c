@@ -386,6 +386,10 @@ retry:
 	goto unsatisfied;
     }
 
+    /* Dont look at pre-requisites of already installed packages */
+    if (!adding && isInstallPreReq(dsflags))
+	goto exit;
+
     /* Pretrans dependencies can't be satisfied by added packages. */
     if (!(dsflags & RPMSENSE_PRETRANS) &&
 		rpmalSatisfiesDepend(tsmem->addedPackages, dep) != NULL) {
