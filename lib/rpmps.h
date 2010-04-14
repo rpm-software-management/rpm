@@ -103,23 +103,6 @@ void rpmpsPrint(FILE *fp, rpmps ps);
 void rpmpsAppendProblem(rpmps ps, rpmProblem prob);
 
 /** \ingroup rpmps
- * Filter a problem set.
- *
- * As the problem sets are generated in an order solely dependent
- * on the ordering of the packages in the transaction, and that
- * ordering can't be changed, the problem sets must be parallel to
- * one another. Additionally, the filter set must be a subset of the
- * target set, given the operations available on transaction set.
- * This is good, as it lets us perform this trim in linear time, rather
- * then logarithmic or quadratic.
- *
- * @param ps		problem set
- * @param filter	problem filter (or NULL)
- * @return		0 no problems, 1 if problems remain
- */
-int rpmpsTrim(rpmps ps, rpmps filter);
-
-/** \ingroup rpmps
  * Merge problem set into another.
  * @param dest		destination problem set
  * @param src		source problem set

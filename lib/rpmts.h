@@ -188,7 +188,7 @@ int rpmtsOrder(rpmts ts);
  *    - setup the rpm verify signature flags via rpmtsSetVSFlags().
  *       
  * @param ts		transaction set
- * @param okProbs	previously known problems (or NULL)
+ * @param okProbs	unused
  * @param ignoreSet	bits to filter problem types
  * @return		0 on success, -1 on error, >0 with newProbs set
  */

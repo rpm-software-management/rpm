@@ -1383,8 +1383,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point and not disabled otherwise. */
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPRE))
-     	  || (rpmpsNumProblems(tsprobs) &&
-		(okProbs == NULL || rpmpsTrim(tsprobs, okProbs))))) {
+     	  || (rpmpsNumProblems(tsprobs)))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
 	runTransScripts(ts, PKG_PRETRANS);
     }
@@ -1398,9 +1397,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     tsprobs = rpmtsProblems(ts);
 
      /* If unfiltered problems exist, free memory and return. */
-    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) ||
-		(rpmpsNumProblems(tsprobs) &&
-		(okProbs == NULL || rpmpsTrim(tsprobs, okProbs)))) {
+    if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) || (rpmpsNumProblems(tsprobs))) {
 	tsMembers tsmem = rpmtsMembers(ts);
 	rc = tsmem->orderCount;
 	goto exit;

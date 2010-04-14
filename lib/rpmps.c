@@ -139,43 +139,6 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
     ps->numProblems++;
 }
 
-/* XXX TODO: implement with iterators */
-int rpmpsTrim(rpmps ps, rpmps filter)
-{
-    rpmProblem *t;
-    rpmProblem *f;
-    int gotProblems = 0;
-
-    if (ps == NULL || ps->numProblems == 0)
-	return 0;
-
-    if (filter == NULL)
-	return (ps->numProblems == 0 ? 0 : 1);
-
-    t = ps->probs;
-    f = filter->probs;
-
-    while ((f - filter->probs) < filter->numProblems) {
-	while ((t - ps->probs) < ps->numProblems) {
-	    if (rpmProblemCompare(*f, *t) == 0)
-		break;
-	    t++;
-	    gotProblems = 1;
-	}
-
-	/* XXX This can't happen, but let's be sane in case it does. */
-	if ((t - ps->probs) == ps->numProblems)
-	    break;
-
-	t++, f++;
-    }
-
-    if ((t - ps->probs) < ps->numProblems)
-	gotProblems = 1;
-
-    return gotProblems;
-}
-
 /*
  * TODO: filter out duplicates while merging. Also horribly inefficient... */
 int rpmpsMerge(rpmps dest, rpmps src)
