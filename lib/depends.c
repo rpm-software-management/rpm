@@ -487,17 +487,11 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmds requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
-	rpmds conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
-	rpmds obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
+	rpmds ds = rpmdsNew(h, depTag, 0);
 
-	checkDS(ts, dcache, te, pkgNEVRA, requires, dep, 0);
-	checkDS(ts, dcache, te, pkgNEVRA, conflicts, dep, 0);
-	checkDS(ts, dcache, te, pkgNEVRA, obsoletes, dep, 0);
+	checkDS(ts, dcache, te, pkgNEVRA, ds, dep, 0);
 
-	conflicts = rpmdsFree(conflicts);
-	requires = rpmdsFree(requires);
-	obsoletes = rpmdsFree(requires);
+	ds = rpmdsFree(ds);
 	pkgNEVRA = _free(pkgNEVRA);
     }
     rpmdbFreeIterator(mi);
