@@ -59,6 +59,7 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #if defined(__APPLE__)
 #   define __errno_location()	(__error())
 #   define _STAT_VER		0
+#   define __fxstat64(_stat_ver, _fd, _sbp) fstat64((_fd), (_sbp))
 #endif
 #include "system.h"
 #include "rpmio/fts.h"
