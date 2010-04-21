@@ -122,7 +122,7 @@ static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
  */
 static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 {
-    int dbix = -1;
+    int dbix;
     dbiIndex dbi = NULL;
     int _dbapi, _dbapi_rebuild, _dbapi_wanted;
     int rc = 0;
@@ -134,7 +134,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
 	if (rpmtag == dbiTags[dbix])
 	    break;
     }
-    if (dbix < 0)
+    if (dbix >= dbiTagsMax)
 	return NULL;
 
     /* Is this index already open ? */
