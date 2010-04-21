@@ -16,8 +16,6 @@
 
 #include "debug.h"
 
-int _hdr_debug = 0;
-
 /** \ingroup header
  */
 const unsigned char rpm_header_magic[8] = {
@@ -123,21 +121,15 @@ static uint64_t htonll( uint64_t n ) {
 
 Header headerLink(Header h)
 {
-    if (h == NULL) return NULL;
-
-    h->nrefs++;
-if (_hdr_debug)
-fprintf(stderr, "--> h  %p ++ %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
-
+    if (h != NULL)
+	h->nrefs++;
     return h;
 }
 
 Header headerUnlink(Header h)
 {
-    if (h == NULL) return NULL;
-if (_hdr_debug)
-fprintf(stderr, "--> h  %p -- %d at %s:%u\n", h, h->nrefs, __FILE__, __LINE__);
-    h->nrefs--;
+    if (h != NULL)
+	h->nrefs--;
     return NULL;
 }
 
