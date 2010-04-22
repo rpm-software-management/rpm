@@ -1421,6 +1421,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
 exit:
     tsprobs = rpmpsFree(tsprobs);
-    rpmtsFreeLock(lock);
+    rpmlockFree(lock);
     return rc;
 }

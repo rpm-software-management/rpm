@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <inttypes.h>
+#include <libgen.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>			/* rpmReadPackage etc */
@@ -21,7 +22,6 @@
 
 #include "rpmio/digest.h"
 #include "lib/rpmal.h"
-#include "lib/rpmlock.h"
 #include "lib/rpmts_internal.h"
 #include "lib/misc.h"
 
@@ -98,7 +98,7 @@ int rpmtsInitDB(rpmts ts, int dbmode)
     int rc = -1;
     if (lock)
 	    rc = rpmdbInit(ts->rootDir, dbmode);
-    rpmtsFreeLock(lock);
+    rpmlockFree(lock);
     return rc;
 }
 
@@ -129,7 +129,7 @@ int rpmtsRebuildDB(rpmts ts)
 	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
     else
 	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
-    rpmtsFreeLock(lock);
+    rpmlockFree(lock);
     return rc;
 }
 
@@ -971,3 +971,25 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
     }
     return te;
 }
+
+#define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
+rpmlock rpmtsAcquireLock(rpmts ts)
+{
+    static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
+    static const char * rpmlock_path = NULL;
+    const char *rootDir = rpmtsRootDir(ts);
+
+    if (!rootDir || rpmtsChrootDone(ts))
+	rootDir = "/";
+    /* XXX oneshot to determine path for fcntl lock. */
+    if (rpmlock_path == NULL) {
+	char * t = rpmGenPath(rootDir, rpmlock_path_default, NULL);
+	if (t == NULL || *t == '\0' || *t == '%')
+	    t = xstrdup(RPMLOCK_PATH);
+	rpmlock_path = xstrdup(t);
+	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
+	t = _free(t);
+    }
+    return rpmlockAcquire(rpmlock_path, _("transaction"));
+}
+

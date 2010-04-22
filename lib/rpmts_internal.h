@@ -6,6 +6,7 @@
 #include "lib/rpmal.h"		/* XXX availablePackage */
 #include "lib/rpmhash.h"	/* XXX hashTable */
 #include "lib/fprint.h"
+#include "lib/rpmlock.h"
 
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
@@ -78,4 +79,6 @@ tsMembers rpmtsMembers(rpmts ts);
 RPM_GNUC_INTERNAL
 int rpmtsSolve(rpmts ts, rpmds key);
 
+RPM_GNUC_INTERNAL
+rpmlock rpmtsAcquireLock(rpmts ts);
 #endif /* _RPMTS_INTERNAL_H */
