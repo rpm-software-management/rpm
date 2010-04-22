@@ -582,6 +582,7 @@ rpmts rpmtsFree(rpmts ts)
     }
     ts->rootDir = _free(ts->rootDir);
     ts->currDir = _free(ts->currDir);
+    ts->lockPath = _free(ts->lockPath);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -976,20 +977,23 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
 rpmlock rpmtsAcquireLock(rpmts ts)
 {
     static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
-    static const char * rpmlock_path = NULL;
-    const char *rootDir = rpmtsRootDir(ts);
 
-    if (!rootDir || rpmtsChrootDone(ts))
-	rootDir = "/";
-    /* XXX oneshot to determine path for fcntl lock. */
-    if (rpmlock_path == NULL) {
-	char * t = rpmGenPath(rootDir, rpmlock_path_default, NULL);
-	if (t == NULL || *t == '\0' || *t == '%')
+    if (ts->lockPath == NULL) {
+	const char *rootDir = rpmtsRootDir(ts);
+	char *t;
+
+	if (!rootDir || rpmtsChrootDone(ts))
+	    rootDir = "/";
+
+	t = rpmGenPath(rootDir, rpmlock_path_default, NULL);
+	if (t == NULL || *t == '\0' || *t == '%') {
+	    free(t);
 	    t = xstrdup(RPMLOCK_PATH);
-	rpmlock_path = xstrdup(t);
+	}
+	ts->lockPath = xstrdup(t);
 	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
-	t = _free(t);
+	free(t);
     }
-    return rpmlockAcquire(rpmlock_path, _("transaction"));
+    return rpmlockAcquire(ts->lockPath, _("transaction"));
 }
 
