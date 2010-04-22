@@ -15,10 +15,6 @@
 
 /* Internal interface */
 
-#define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
-static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
-static const char * rpmlock_path = NULL;
-
 enum {
     RPMLOCK_READ   = 1 << 0,
     RPMLOCK_WRITE  = 1 << 1,
@@ -30,26 +26,17 @@ struct rpmlock_s {
     int openmode;
 };
 
-static rpmlock rpmlock_new(const char *rootdir)
+static rpmlock rpmlock_new(const char *lock_path)
 {
     rpmlock lock = (rpmlock) malloc(sizeof(*lock));
 
-    /* XXX oneshot to determine path for fcntl lock. */
-    if (rpmlock_path == NULL) {
-	char * t = rpmGenPath(rootdir, rpmlock_path_default, NULL);
-	if (t == NULL || *t == '\0' || *t == '%')
-	    t = xstrdup(RPMLOCK_PATH);
-	rpmlock_path = xstrdup(t);
-	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
-	t = _free(t);
-    }
     if (lock != NULL) {
 	mode_t oldmask = umask(022);
-	lock->fd = open(rpmlock_path, O_RDWR|O_CREAT, 0644);
+	lock->fd = open(lock_path, O_RDWR|O_CREAT, 0644);
 	(void) umask(oldmask);
 
 	if (lock->fd == -1) {
-	    lock->fd = open(rpmlock_path, O_RDONLY);
+	    lock->fd = open(lock_path, O_RDONLY);
 	    if (lock->fd == -1) {
 		free(lock);
 		lock = NULL;
@@ -111,14 +98,27 @@ static void rpmlock_release(rpmlock lock)
 
 /* External interface */
 
+#define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
 rpmlock rpmtsAcquireLock(rpmts ts)
 {
+    static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
+    static const char * rpmlock_path = NULL;
     const char *rootDir = rpmtsRootDir(ts);
     rpmlock lock;
 
     if (!rootDir || rpmtsChrootDone(ts))
 	rootDir = "/";
-    lock = rpmlock_new(rootDir);
+    /* XXX oneshot to determine path for fcntl lock. */
+    if (rpmlock_path == NULL) {
+	char * t = rpmGenPath(rootDir, rpmlock_path_default, NULL);
+	if (t == NULL || *t == '\0' || *t == '%')
+	    t = xstrdup(RPMLOCK_PATH);
+	rpmlock_path = xstrdup(t);
+	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
+	t = _free(t);
+    }
+
+    lock = rpmlock_new(rpmlock_path);
     if (!lock) {
 	rpmlog(RPMLOG_ERR, 
 		_("can't create transaction lock on %s (%s)\n"), 
