@@ -135,7 +135,13 @@ int rpmtsRebuildDB(rpmts ts)
 
 int rpmtsVerifyDB(rpmts ts)
 {
-    return rpmdbVerify(ts->rootDir);
+    int rc = -1;
+    rpmlock lock = rpmtsAcquireLock(ts);
+    if (lock) {
+	int rc = rpmdbVerify(ts->rootDir);
+	rpmlockFree(lock);
+    }
+    return rc;
 }
 
 /* keyp might no be defined. */
