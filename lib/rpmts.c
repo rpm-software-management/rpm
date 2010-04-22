@@ -94,7 +94,7 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 
 int rpmtsInitDB(rpmts ts, int dbmode)
 {
-    void *lock = rpmtsAcquireLock(ts);
+    rpmlock lock = rpmtsAcquireLock(ts);
     int rc = -1;
     if (lock)
 	    rc = rpmdbInit(ts->rootDir, dbmode);
@@ -123,7 +123,7 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
 int rpmtsRebuildDB(rpmts ts)
 {
     int rc;
-    void *lock = rpmtsAcquireLock(ts);
+    rpmlock lock = rpmtsAcquireLock(ts);
     if (!lock) return -1;
     if (!(ts->vsflags & RPMVSF_NOHDRCHK))
 	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);

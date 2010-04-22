@@ -1,7 +1,9 @@
 #ifndef RPMLOCK_H
 #define RPMLOCK_H 
 
-void * rpmtsAcquireLock(rpmts ts);
-void rpmtsFreeLock(void *lock);
+typedef struct rpmlock_s * rpmlock;
+
+rpmlock rpmtsAcquireLock(rpmts ts);
+void rpmtsFreeLock(rpmlock lock);
 
 #endif

@@ -1357,7 +1357,7 @@ static int rpmtsProcess(rpmts ts)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = -1; /* assume failure */
-    void * lock = NULL;
+    rpmlock lock = NULL;
     rpmps tsprobs = NULL;
 
     /* XXX programmer error segfault avoidance. */

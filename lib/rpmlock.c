@@ -25,10 +25,10 @@ enum {
     RPMLOCK_WAIT   = 1 << 2,
 };
 
-typedef struct {
+struct rpmlock_s {
     int fd;
     int openmode;
-} * rpmlock;
+};
 
 static rpmlock rpmlock_new(const char *rootdir)
 {
@@ -111,7 +111,7 @@ static void rpmlock_release(rpmlock lock)
 
 /* External interface */
 
-void *rpmtsAcquireLock(rpmts ts)
+rpmlock rpmtsAcquireLock(rpmts ts)
 {
     const char *rootDir = rpmtsRootDir(ts);
     rpmlock lock;
@@ -138,10 +138,10 @@ void *rpmtsAcquireLock(rpmts ts)
     return lock;
 }
 
-void rpmtsFreeLock(void *lock)
+void rpmtsFreeLock(rpmlock lock)
 {
-    rpmlock_release((rpmlock)lock); /* Not really needed here. */
-    rpmlock_free((rpmlock)lock);
+    rpmlock_release(lock); /* Not really needed here. */
+    rpmlock_free(lock);
 }
 
 
