@@ -40,8 +40,6 @@ static const struct poptOption rdbOptions[] = {
 
  { "nommap",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_NOMMAP,
 	NULL, NULL },
- { "fcntl_locking",0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_FCNTL_LOCKING,
-	NULL, NULL },
 
  { "btree",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_BTREE,
 	NULL, NULL },
