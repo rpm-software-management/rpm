@@ -36,7 +36,7 @@ static int skipPrivate(const char *s)
 
 static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 {
-    Elf_Data *data;
+    Elf_Data *data = NULL;
     unsigned int offset, auxoffset;
     char *soname = NULL;
 
@@ -80,7 +80,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 
 static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 {
-    Elf_Data *data;
+    Elf_Data *data = NULL;
     char *soname = NULL;
     while ((data = elf_getdata(scn, data)) != NULL) {
 	unsigned int offset = 0, auxoffset;
@@ -124,7 +124,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 
 static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 {
-    Elf_Data *data;
+    Elf_Data *data = NULL;
     while ((data = elf_getdata(scn, data)) != NULL) {
 	for (int i = 0; i < (shdr->sh_size / shdr->sh_entsize); i++) {
 	    ARGV_t *deptype = NULL;
@@ -172,7 +172,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 
 static void processSections(elfInfo *ei)
 {
-    Elf_Scn * scn;
+    Elf_Scn * scn = NULL;
     while ((scn = elf_nextscn(ei->elf, scn)) != NULL) {
 	GElf_Shdr shdr_mem, *shdr;
 	shdr = gelf_getshdr(scn, &shdr_mem);

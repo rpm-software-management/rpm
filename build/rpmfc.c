@@ -726,7 +726,7 @@ rpmRC rpmfcApply(rpmfc fc)
     int dix;
     int ix;
     int i;
-    int xx;
+    int xx = 0;
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {

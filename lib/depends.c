@@ -502,7 +502,7 @@ int rpmtsCheck(rpmts ts)
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
-    int rc;
+    int rc = 0;
     depCache dcache = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
