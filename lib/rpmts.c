@@ -138,7 +138,7 @@ int rpmtsVerifyDB(rpmts ts)
     int rc = -1;
     rpmlock lock = rpmtsAcquireLock(ts);
     if (lock) {
-	int rc = rpmdbVerify(ts->rootDir);
+	rc = rpmdbVerify(ts->rootDir);
 	rpmlockFree(lock);
     }
     return rc;
