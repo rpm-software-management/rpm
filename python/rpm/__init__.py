@@ -14,6 +14,9 @@ _RPMVSF_NOHEADER = _rpm._RPMVSF_NOHEADER
 _RPMVSF_NOPAYLOAD = _rpm._RPMVSF_NOPAYLOAD
 _RPMVSF_NOSIGNATURES = _rpm._RPMVSF_NOSIGNATURES
 
+__version__ = _rpm.__version__
+__version_info__ = tuple(__version__.split('.'))
+
 # try to import build bits but dont require it
 try:
     from rpm._rpmb import *
