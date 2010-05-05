@@ -211,6 +211,28 @@ int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
     return rc;
 }
 
+#endif
+
+
+unsigned int HASHPREFIX(NumBuckets)(HASHTYPE ht) {
+    return ht->numBuckets;
+}
+
+unsigned int HASHPREFIX(UsedBuckets)(HASHTYPE ht) {
+    return ht->bucketCount;
+}
+
+unsigned int HASHPREFIX(NumKeys)(HASHTYPE ht) {
+    return ht->keyCount;
+}
+
+#ifdef HTDATATYPE
+unsigned int HASHPREFIX(NumData)(HASHTYPE ht) {
+    return ht->dataCount;
+}
+#endif
+
+
 void HASHPREFIX(PrintStats)(HASHTYPE ht) {
     int i;
     Bucket bucket;
@@ -236,5 +258,3 @@ void HASHPREFIX(PrintStats)(HASHTYPE ht) {
     fprintf(stderr, "Values: %i\n", datacnt);
     fprintf(stderr, "Max Keys/Bucket: %i\n", maxbuckets);
 }
-
-#endif

@@ -96,6 +96,41 @@ RPM_GNUC_INTERNAL
 int  HASHPREFIX(HasEntry)(HASHTYPE ht, HTKEYTYPE key);
 
 /**
+ * How many buckets are currently allocated (result is implementation 
+ * dependent)
+ * @param ht            pointer to hash table
+ * @result		number of buckets allocated
+ */
+RPM_GNUC_INTERNAL
+unsigned int HASHPREFIX(NumBuckets)(HASHTYPE ht);
+
+/**
+ * How many buckets are used (result is implementation dependent)
+ * @param ht            pointer to hash table
+ * @result		number of buckets used
+ */
+RPM_GNUC_INTERNAL
+unsigned int HASHPREFIX(UsedBuckets)(HASHTYPE ht);
+
+/**
+ * How many (unique) keys have been added to the hash table
+ * @param ht            pointer to hash table
+ * @result		number of unique keys
+ */
+// RPM_GNUC_INTERNAL
+unsigned int HASHPREFIX(NumKeys)(HASHTYPE ht);
+
+#ifdef HTDATATYPE
+/**
+ * How many data entries have been added to the hash table
+ * @param ht            pointer to hash table
+ * @result		number of data entries
+ */
+RPM_GNUC_INTERNAL
+unsigned int HASHPREFIX(NumData)(HASHTYPE ht);
+#endif
+
+/**
  * Print statistics about the hash to stderr
  * This is for debugging only
  * @param ht            pointer to hash table
