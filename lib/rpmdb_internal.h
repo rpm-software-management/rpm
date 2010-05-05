@@ -56,6 +56,25 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
  */
 void rpmdbSortIterator(rpmdbMatchIterator mi);
 
+/* avoid importing rpmts_internal.h */
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE intHash
+#define HTKEYTYPE unsigned int
+#include "rpmhash.H"
+#undef HASHTYPE
+#undef HTKEYTYPE
+
+/** \ingroup rpmdb
+ * Remove items from set of package instances to iterate.
+ * @note Sorted hdrNums are always passed in rpmlib.
+ * @param mi		rpm database iterator
+ * @param hdrNums	hash of package instances
+ * @return		0 on success, 1 on failure (bad args)
+ */
+int rpmdbPruneIterator(rpmdbMatchIterator mi, intHash hdrNums);
+
 #ifndef __APPLE__
 /**
  *  * Mergesort, same arguments as qsort(2).

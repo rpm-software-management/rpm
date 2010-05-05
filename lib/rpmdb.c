@@ -1916,14 +1916,29 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi)
     return rc;
 }
 
-int rpmdbPruneIterator(rpmdbMatchIterator mi, int * hdrNums,
-	int nHdrNums, int sorted)
+int rpmdbPruneIterator(rpmdbMatchIterator mi, intHash hdrNums)
 {
-    if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
+    if (mi == NULL || hdrNums == NULL || intHashNumKeys(hdrNums) <= 0)
 	return 1;
 
-    if (mi->mi_set)
-	(void) dbiPruneSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), sorted);
+    if (!mi->mi_set)
+        return 0;
+
+    unsigned int from;
+    unsigned int to = 0;
+    unsigned int num = mi->mi_set->count;
+
+    assert(mi->mi_set->count > 0);
+
+    for (from = 0; from < num; from++) {
+	if (intHashHasEntry(hdrNums, mi->mi_set->recs[from].hdrNum)) {
+	    mi->mi_set->count--;
+	    continue;
+	}
+	if (from != to)
+	    mi->mi_set->recs[to] = mi->mi_set->recs[from]; /* structure assignment */
+	to++;
+    }
     return 0;
 }
 

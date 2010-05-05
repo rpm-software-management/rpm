@@ -954,14 +954,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 
 	/* Is this package being removed? */
 	installedPkg = rpmdbGetIteratorOffset(mi);
-	beingRemoved = 0;
-	if (tsmem->removedPackages != NULL)
-	for (j = 0; j < tsmem->numRemovedPackages; j++) {
-	    if (tsmem->removedPackages[j] != installedPkg)
-	        continue;
-	    beingRemoved = 1;
-	    break;
-	}
+	beingRemoved = intHashHasEntry(tsmem->removedPackages, installedPkg);
 
 	h = headerLink(h);
 	headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);

@@ -36,6 +36,16 @@ static rpmds rpmlibP = NULL;
 #define HTDATATYPE int
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
+#define HASHTYPE intHash
+#define HTKEYTYPE unsigned int
+#include "rpmhash.C"
+#undef HASHTYPE
+#undef HASHKEYTYPE
+
 
 /**
  * Compare removed package instances (qsort/bsearch).
@@ -67,26 +77,11 @@ static int removePackage(tsMembers tsmem, Header h, rpmte depends)
     if (dboffset == 0) return 1;
 
     /* Filter out duplicate erasures. */
-    if (tsmem->numRemovedPackages > 0 && tsmem->removedPackages != NULL) {
-	if (bsearch(&dboffset,
-		    tsmem->removedPackages, tsmem->numRemovedPackages,
-		    sizeof(*tsmem->removedPackages), intcmp) != NULL)
-	    return 0;
+    if (intHashHasEntry(tsmem->removedPackages, dboffset)) {
+        return 0;
     }
 
-    if (tsmem->numRemovedPackages == tsmem->allocedRemovedPackages) {
-	tsmem->allocedRemovedPackages += tsmem->delta;
-	tsmem->removedPackages = xrealloc(tsmem->removedPackages,
-		sizeof(tsmem->removedPackages) * tsmem->allocedRemovedPackages);
-    }
-
-    if (tsmem->removedPackages != NULL) {	/* XXX can't happen. */
-	tsmem->removedPackages[tsmem->numRemovedPackages] = dboffset;
-	tsmem->numRemovedPackages++;
-	if (tsmem->numRemovedPackages > 1)
-	    qsort(tsmem->removedPackages, tsmem->numRemovedPackages,
-			sizeof(*tsmem->removedPackages), intcmp);
-    }
+    intHashAddEntry(tsmem->removedPackages, dboffset);
 
     if (tsmem->orderCount >= tsmem->orderAlloced) {
 	tsmem->orderAlloced += (tsmem->orderCount - tsmem->orderAlloced) + tsmem->delta;
@@ -107,7 +102,7 @@ static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmTag tag, const char *
 {
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, tag, key, 0);
     tsMembers tsmem = rpmtsMembers(ts);
-    rpmdbPruneIterator(mi, tsmem->removedPackages, tsmem->numRemovedPackages,1);
+    rpmdbPruneIterator(mi, tsmem->removedPackages);
     return mi;
 }
 

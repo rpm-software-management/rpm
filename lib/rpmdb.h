@@ -144,18 +144,6 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi,
 		const int * hdrNums, int nHdrNums);
 
 /** \ingroup rpmdb
- * Remove items from set of package instances to iterate.
- * @note Sorted hdrNums are always passed in rpmlib.
- * @param mi		rpm database iterator
- * @param hdrNums	array of package instances
- * @param nHdrNums	number of elements in array
- * @param sorted	is the array sorted? (array will be sorted on return)
- * @return		0 on success, 1 on failure (bad args)
- */
-int rpmdbPruneIterator(rpmdbMatchIterator mi,
-		int * hdrNums, int nHdrNums, int sorted);
-
-/** \ingroup rpmdb
  * Add pattern to iterator selector.
  * @param mi		rpm database iterator
  * @param tag		rpm tag

@@ -515,6 +515,18 @@ void rpmtsClean(rpmts ts)
     rpmtsCleanProblems(ts);
 }
 
+/* hash comparison function */
+static int uintCmp(unsigned int a, unsigned int b)
+{
+    return (a != b);
+}
+
+/* "hash"function*/ 
+static unsigned int uintId(unsigned int a)
+{
+    return a;
+}
+
 void rpmtsEmpty(rpmts ts)
 {
     tsMembers tsmem = rpmtsMembers(ts);
@@ -528,7 +540,7 @@ void rpmtsEmpty(rpmts ts)
     }
 
     tsmem->orderCount = 0;
-    tsmem->numRemovedPackages = 0;
+    intHashEmpty(tsmem->removedPackages);
     return;
 }
 
@@ -577,7 +589,7 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseDB(ts);
 
-    tsmem->removedPackages = _free(tsmem->removedPackages);
+    tsmem->removedPackages = intHashFree(tsmem->removedPackages);
     tsmem->order = _free(tsmem->order);
     ts->members = _free(ts->members);
 
@@ -906,13 +918,9 @@ rpmts rpmtsCreate(void)
     }
 
     tsmem = xcalloc(1, sizeof(*ts->members));
-    tsmem->delta = 5;
     tsmem->numAddedPackages = 0;
     tsmem->addedPackages = NULL;
-    tsmem->numRemovedPackages = 0;
-    tsmem->allocedRemovedPackages = tsmem->delta;
-    tsmem->removedPackages = xcalloc(tsmem->allocedRemovedPackages,
-				     sizeof(*tsmem->removedPackages));
+    tsmem->removedPackages = intHashCreate(128, uintId, uintCmp, NULL);
     tsmem->orderAlloced = 0;
     tsmem->orderCount = 0;
     tsmem->order = NULL;
