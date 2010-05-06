@@ -13,18 +13,16 @@ struct rpmfs_s {
     int allocatedReplaced;
 };
 
-rpmfs rpmfsNew(unsigned int fc, rpmElementType type) {
-    rpmfs fs = xmalloc(sizeof(*fs));
+rpmfs rpmfsNew(unsigned int fc, rpmElementType type)
+{
+    rpmfs fs = xcalloc(1, sizeof(*fs));
     fs->fc = fc;
-    fs->replaced = NULL;
-    fs->states = NULL;
+    fs->actions = xmalloc(fc * sizeof(*fs->actions));
+    memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
     if (type == TR_ADDED) {
 	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
 	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
     }
-    fs->actions = xmalloc(fc * sizeof(*fs->actions));
-    memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
-    fs->numReplaced = fs->allocatedReplaced = 0;
     return fs;
 }
 
