@@ -221,12 +221,10 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 
 	    oh = headerCopyLoad(utd.data);
 	    hi = headerInitIterator(oh);
-	    for (hi = headerInitIterator(oh);
-		headerNext(hi, &copytd);
-		rpmtdFreeData(&copytd))
-	    {
+	    while (headerNext(hi, &copytd)) {
 		if (copytd.data)
 		    xx = headerPut(nh, &copytd, HEADERPUT_DEFAULT);
+		rpmtdFreeData(&copytd);
 	    }
 	    hi = headerFreeIterator(hi);
 	    oh = headerFree(oh);
