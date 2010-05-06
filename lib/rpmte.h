@@ -21,28 +21,6 @@ typedef enum rpmElementType_e {
 } rpmElementType;
 
 /** \ingroup rpmte
- * Destroy a transaction element.
- * @param te		transaction element
- * @return		NULL always
- */
-rpmte rpmteFree(rpmte te);
-
-/** \ingroup rpmte
- * Create a transaction element.
- * @param ts		unused
- * @param h		header
- * @param type		TR_ADDED/TR_REMOVED
- * @param key		(TR_ADDED) package retrieval key (e.g. file name)
- * @param relocs	(TR_ADDED) package file relocations
- * @param dboffset	unused
- * @return		new transaction element
- */
-rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
-		fnpyKey key,
-		rpmRelocation * relocs,
-		int dboffset);
-
-/** \ingroup rpmte
  * Retrieve header from transaction element.
  * @param te		transaction element
  * @return		header (new reference)

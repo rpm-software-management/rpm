@@ -21,6 +21,30 @@ typedef enum pkgGoal_e {
  */
 typedef struct tsortInfo_s *		tsortInfo;
 
+/** \ingroup rpmte
+ * Create a transaction element.
+ * @param ts		unused
+ * @param h		header
+ * @param type		TR_ADDED/TR_REMOVED
+ * @param key		(TR_ADDED) package retrieval key (e.g. file name)
+ * @param relocs	(TR_ADDED) package file relocations
+ * @param dboffset	unused
+ * @return		new transaction element
+ */
+RPM_GNUC_INTERNAL
+rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
+		fnpyKey key,
+		rpmRelocation * relocs,
+		int dboffset);
+
+/** \ingroup rpmte
+ * Destroy a transaction element.
+ * @param te		transaction element
+ * @return		NULL always
+ */
+RPM_GNUC_INTERNAL
+rpmte rpmteFree(rpmte te);
+
 RPM_GNUC_INTERNAL
 rpmfi rpmteSetFI(rpmte te, rpmfi fi);
 

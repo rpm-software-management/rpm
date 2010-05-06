@@ -23,6 +23,7 @@
 #include "rpmio/digest.h"
 #include "lib/rpmal.h"
 #include "lib/rpmts_internal.h"
+#include "lib/rpmte_internal.h"
 #include "lib/misc.h"
 
 #include "debug.h"
