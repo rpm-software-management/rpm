@@ -152,12 +152,13 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
     }
 }
 
-HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
+void HASHPREFIX(Empty)( HASHTYPE ht)
 {
     Bucket b, n;
     int i;
-    if (ht==NULL)
-	return ht;
+
+    if (ht->bucketCount == 0) return;
+
     for (i = 0; i < ht->numBuckets; i++) {
 	b = ht->buckets[i];
 	if (b == NULL)
@@ -179,7 +180,18 @@ HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
 	    b = _free(b);
 	} while ((b = n) != NULL);
     }
+    ht->bucketCount = 0;
+    ht->keyCount = 0;
+#ifdef HTDATATYPE
+    ht->dataCount = 0;
+#endif
+}
 
+HASHTYPE HASHPREFIX(Free)(HASHTYPE ht)
+{
+    if (ht==NULL)
+        return ht;
+    HASHPREFIX(Empty)(ht);
     ht->buckets = _free(ht->buckets);
     ht = _free(ht);
 

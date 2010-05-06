@@ -56,6 +56,13 @@ RPM_GNUC_INTERNAL
 HASHTYPE  HASHPREFIX(Free)( HASHTYPE ht);
 
 /**
+ * Remove all entries from the hash table.
+ * @param ht            pointer to hash table
+ */
+RPM_GNUC_INTERNAL
+void HASHPREFIX(Empty)(HASHTYPE ht);
+
+/**
  * Add item to hash table.
  * @param ht            pointer to hash table
  * @param key           key
