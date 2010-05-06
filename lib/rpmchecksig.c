@@ -387,30 +387,22 @@ exit:
  * Import public key(s).
  * @todo Implicit --update policy for gpg-pubkey headers.
  * @param ts		transaction set
- * @param qva		mode flags and parameters
  * @param argv		array of pubkey file names (NULL terminated)
  * @return		0 on success
  */
-static int rpmcliImportPubkeys(const rpmts ts, QVA_t qva, ARGV_const_t argv)
+static int rpmcliImportPubkeys(const rpmts ts, ARGV_const_t argv)
 {
     const char * fn;
-    unsigned char * pkt = NULL;
-    size_t pktlen = 0;
-    char * t = NULL;
     int res = 0;
-    rpmRC rpmrc;
-    int rc;
-
-    if (argv == NULL) return res;
 
     while ((fn = *argv++) != NULL) {
-
-	rpmtsClean(ts);
-	pkt = _free(pkt);
-	t = _free(t);
+	unsigned char * pkt = NULL;
+	size_t pktlen = 0;
+	char * t = NULL;
+	int rc;
 
 	/* If arg looks like a keyid, then attempt keyserver retrieve. */
-	if (fn[0] == '0' && fn[1] == 'x') {
+	if (rstreqn(fn, "0x", 2)) {
 	    const char * s;
 	    int i;
 	    for (i = 0, s = fn+2; *s && isxdigit(*s); s++, i++)
@@ -423,29 +415,25 @@ static int rpmcliImportPubkeys(const rpmts ts, QVA_t qva, ARGV_const_t argv)
 	}
 
 	/* Read pgp packet. */
-	if ((rc = pgpReadPkts(fn, &pkt, &pktlen)) <= 0) {
+	rc = pgpReadPkts(fn, &pkt, &pktlen);
+	if (rc == PGPARMOR_PUBKEY) {
+	    /* Import pubkey packet(s). */
+	    if (rpmtsImportPubkey(ts, pkt, pktlen) != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, _("%s: import failed.\n"), fn);
+		res++;
+	    }
+	} else if (rc < 0) {
 	    rpmlog(RPMLOG_ERR, _("%s: import read failed(%d).\n"), fn, rc);
 	    res++;
-	    continue;
-	}
-	if (rc != PGPARMOR_PUBKEY) {
+	} else {
 	    rpmlog(RPMLOG_ERR, _("%s: not an armored public key.\n"), fn);
 	    res++;
-	    continue;
 	}
 
-	/* Import pubkey packet(s). */
-	if ((rpmrc = rpmtsImportPubkey(ts, pkt, pktlen)) != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, _("%s: import failed.\n"), fn);
-	    res++;
-	    continue;
-	}
-
+	free(pkt);
+	free(t);
     }
     
-rpmtsClean(ts);
-    pkt = _free(pkt);
-    t = _free(t);
     return res;
 }
 
@@ -801,7 +789,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     case RPMSIGN_CHK_SIGNATURE:
 	break;
     case RPMSIGN_IMPORT_PUBKEY:
-	return rpmcliImportPubkeys(ts, qva, argv);
+	return rpmcliImportPubkeys(ts, argv);
 	break;
     case RPMSIGN_NEW_SIGNATURE:
     case RPMSIGN_ADD_SIGNATURE:
