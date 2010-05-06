@@ -208,19 +208,10 @@ static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 
 	/* Dump the immutable region (if present). */
 	if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
-	    HeaderIterator hi;
 	    struct rpmtd_s copytd;
-	    Header oh;
-	    Header nh;
-
-	    nh = headerNew();
-	    if (nh == NULL) {
-		rpmtdFreeData(&utd);
-		goto exit;
-	    }
-
-	    oh = headerCopyLoad(utd.data);
-	    hi = headerInitIterator(oh);
+	    Header nh = headerNew();
+	    Header oh = headerCopyLoad(utd.data);
+	    HeaderIterator hi = headerInitIterator(oh);
 	    while (headerNext(hi, &copytd)) {
 		if (copytd.data)
 		    xx = headerPut(nh, &copytd, HEADERPUT_DEFAULT);
