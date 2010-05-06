@@ -46,21 +46,6 @@ static rpmds rpmlibP = NULL;
 #undef HASHTYPE
 #undef HASHKEYTYPE
 
-
-/**
- * Compare removed package instances (qsort/bsearch).
- * @param a		1st instance address
- * @param b		2nd instance address
- * @return		result of comparison
- */
-static int intcmp(const void * a, const void * b)
-{
-    const int * aptr = a;
-    const int * bptr = b;
-    int rc = (*aptr - *bptr);
-    return rc;
-}
-
 /**
  * Add removed package instance to ordered transaction set.
  * @param ts		transaction set
