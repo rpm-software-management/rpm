@@ -214,15 +214,7 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
 
-    {
-	// get number of files by hand as rpmfiNew needs p->fs
-	struct rpmtd_s bnames;
-	headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
-
-	p->fs = rpmfsNew(rpmtdCount(&bnames), p->type);
-
-	rpmtdFreeData(&bnames);
-    }
+    p->fs = rpmfsNew(h, p->type);
     p->fi = getFI(p, h);
 
     /* See if we have pre/posttrans scripts. */

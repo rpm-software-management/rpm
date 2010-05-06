@@ -19,7 +19,7 @@ struct sharedFileInfo_s {
 };
 
 RPM_GNUC_INTERNAL
-rpmfs rpmfsNew(unsigned int fc, rpmElementType type);
+rpmfs rpmfsNew(Header h, rpmElementType type);
 
 RPM_GNUC_INTERNAL
 rpmfs rpmfsFree(rpmfs fs);

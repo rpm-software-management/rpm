@@ -1,4 +1,5 @@
 #include "system.h"
+#include <rpm/header.h>
 #include "lib/rpmfs.h"
 #include "debug.h"
 
@@ -13,12 +14,17 @@ struct rpmfs_s {
     int allocatedReplaced;
 };
 
-rpmfs rpmfsNew(unsigned int fc, rpmElementType type)
+rpmfs rpmfsNew(Header h, rpmElementType type)
 {
+    struct rpmtd_s bnames;
     rpmfs fs = xcalloc(1, sizeof(*fs));
-    fs->fc = fc;
-    fs->actions = xmalloc(fc * sizeof(*fs->actions));
-    memset(fs->actions, FA_UNKNOWN, fc * sizeof(*fs->actions));
+    
+    headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
+    fs->fc = rpmtdCount(&bnames);
+    rpmtdFreeData(&bnames);
+
+    fs->actions = xmalloc(fs->fc * sizeof(*fs->actions));
+    memset(fs->actions, FA_UNKNOWN, fs->fc * sizeof(*fs->actions));
     if (type == TR_ADDED) {
 	fs->states = xmalloc(sizeof(*fs->states) * fs->fc);
 	memset(fs->states, RPMFILE_STATE_NORMAL, fs->fc);
