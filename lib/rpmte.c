@@ -75,45 +75,6 @@ void rpmteCleanDS(rpmte te)
     te->obsoletes = rpmdsFree(te->obsoletes);
 }
 
-/**
- * Destroy transaction element data.
- * @param p		transaction element
- */
-static void delTE(rpmte p)
-{
-    if (p->relocs) {
-	for (int i = 0; i < p->nrelocs; i++) {
-	    free(p->relocs[i].oldPath);
-	    free(p->relocs[i].newPath);
-	}
-	free(p->relocs);
-    }
-
-    rpmteCleanDS(p);
-
-    p->fi = rpmfiFree(p->fi);
-
-    if (p->fd != NULL)
-        p->fd = fdFree(p->fd);
-
-    p->os = _free(p->os);
-    p->arch = _free(p->arch);
-    p->epoch = _free(p->epoch);
-    p->name = _free(p->name);
-    p->version = _free(p->version);
-    p->release = _free(p->release);
-    p->NEVR = _free(p->NEVR);
-    p->NEVRA = _free(p->NEVRA);
-
-    p->h = headerFree(p->h);
-    p->fs = rpmfsFree(p->fs);
-    p->probs = rpmpsFree(p->probs);
-
-    memset(p, 0, sizeof(*p));	/* XXX trash and burn */
-    /* FIX: p->{NEVR,name} annotations */
-    return;
-}
-
 static rpmfi getFI(rpmte p, Header h)
 {
     rpmfiFlags fiflags;
@@ -280,8 +241,32 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 rpmte rpmteFree(rpmte te)
 {
     if (te != NULL) {
-	delTE(te);
-	te = _free(te);
+	if (te->relocs) {
+	    for (int i = 0; i < te->nrelocs; i++) {
+		free(te->relocs[i].oldPath);
+		free(te->relocs[i].newPath);
+	    }
+	    free(te->relocs);
+	}
+
+	free(te->os);
+	free(te->arch);
+	free(te->epoch);
+	free(te->name);
+	free(te->version);
+	free(te->release);
+	free(te->NEVR);
+	free(te->NEVRA);
+
+	fdFree(te->fd);
+	rpmfiFree(te->fi);
+	headerFree(te->h);
+	rpmfsFree(te->fs);
+	rpmpsFree(te->probs);
+	rpmteCleanDS(te);
+
+	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
+	free(te);
     }
     return NULL;
 }
