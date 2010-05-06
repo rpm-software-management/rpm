@@ -26,17 +26,20 @@ rpmfs rpmfsNew(unsigned int fc, rpmElementType type)
     return fs;
 }
 
-rpmfs rpmfsFree(rpmfs fs) {
-    fs->replaced = _free(fs->replaced);
-    fs->states = _free(fs->states);
-    fs->actions = _free(fs->actions);
-
-    fs = _free(fs);
-    return fs;
+rpmfs rpmfsFree(rpmfs fs)
+{
+    if (fs != NULL) {
+	fs->replaced = _free(fs->replaced);
+	fs->states = _free(fs->states);
+	fs->actions = _free(fs->actions);
+	fs = _free(fs);
+    }
+    return NULL;
 }
 
-rpm_count_t rpmfsFC(rpmfs fs) {
-    return fs->fc;
+rpm_count_t rpmfsFC(rpmfs fs)
+{
+    return (fs != NULL) ? fs->fc : 0;
 }
 
 void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
