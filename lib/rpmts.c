@@ -918,6 +918,7 @@ rpmts rpmtsCreate(void)
     }
 
     tsmem = xcalloc(1, sizeof(*ts->members));
+    tsmem->delta = 5;
     tsmem->numAddedPackages = 0;
     tsmem->addedPackages = NULL;
     tsmem->removedPackages = intHashCreate(128, uintId, uintCmp, NULL);
