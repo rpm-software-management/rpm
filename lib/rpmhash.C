@@ -83,7 +83,7 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
     return ht;
 }
 
-static HASHPREFIX(Resize)(HASHTYPE ht, int numBuckets) {
+static void HASHPREFIX(Resize)(HASHTYPE ht, int numBuckets) {
     Bucket * buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
 
     for (int i=0; i<ht->numBuckets; i++) {
