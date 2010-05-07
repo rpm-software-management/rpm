@@ -1100,7 +1100,7 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     rpmte p;
     rpmtsi pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmteProcess(p, ts, goal);
+	rpmteProcess(p, goal);
     }
     pi = rpmtsiFree(pi);
     return 0; /* what to do about failures? */
@@ -1335,7 +1335,7 @@ static int rpmtsProcess(rpmts ts)
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
-	failed = rpmteProcess(p, ts, rpmteType(p));
+	failed = rpmteProcess(p, rpmteType(p));
 	if (failed) {
 	    rpmlog(RPMLOG_ERR, "%s: %s %s\n", rpmteNEVRA(p),
 		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));

@@ -65,7 +65,7 @@ struct rpmte_s {
 
 /* forward declarations */
 static void rpmteColorDS(rpmte te, rpmTag tag);
-static int rpmteClose(rpmte te, rpmts ts, int reset_fi);
+static int rpmteClose(rpmte te, int reset_fi);
 
 void rpmteCleanDS(rpmte te)
 {
@@ -538,12 +538,13 @@ assert (ix < Count);
     free(colors);
 }
 
-static Header rpmteDBHeader(rpmts ts, unsigned int rec)
+static Header rpmteDBHeader(rpmte te)
 {
     Header h = NULL;
     rpmdbMatchIterator mi;
 
-    mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &rec, sizeof(rec));
+    mi = rpmtsInitIterator(te->ts, RPMDBI_PACKAGES,
+			   &te->db_instance, sizeof(te->db_instance));
     /* iterator returns weak refs, grab hold of header */
     if ((h = rpmdbNextIterator(mi)))
 	h = headerLink(h);
@@ -551,20 +552,21 @@ static Header rpmteDBHeader(rpmts ts, unsigned int rec)
     return h;
 }
 
-static Header rpmteFDHeader(rpmts ts, rpmte te)
+static Header rpmteFDHeader(rpmte te)
 {
     Header h = NULL;
-    te->fd = rpmtsNotify(ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
+    te->fd = rpmtsNotify(te->ts, te, RPMCALLBACK_INST_OPEN_FILE, 0, 0);
     if (te->fd != NULL) {
 	rpmVSFlags ovsflags;
 	rpmRC pkgrc;
 
-	ovsflags = rpmtsSetVSFlags(ts, rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD);
-	pkgrc = rpmReadPackageFile(ts, te->fd, rpmteNEVRA(te), &h);
-	rpmtsSetVSFlags(ts, ovsflags);
+	ovsflags = rpmtsSetVSFlags(te->ts,
+				   rpmtsVSFlags(te->ts) | RPMVSF_NEEDPAYLOAD);
+	pkgrc = rpmReadPackageFile(te->ts, te->fd, rpmteNEVRA(te), &h);
+	rpmtsSetVSFlags(te->ts, ovsflags);
 	switch (pkgrc) {
 	default:
-	    rpmteClose(te, ts, 1);
+	    rpmteClose(te, 1);
 	    break;
 	case RPMRC_NOTTRUSTED:
 	case RPMRC_NOKEY:
@@ -575,22 +577,20 @@ static Header rpmteFDHeader(rpmts ts, rpmte te)
     return h;
 }
 
-static int rpmteOpen(rpmte te, rpmts ts, int reload_fi)
+static int rpmteOpen(rpmte te, int reload_fi)
 {
     Header h = NULL;
-    unsigned int instance;
-    if (te == NULL || ts == NULL || rpmteFailed(te))
+    if (te == NULL || te->ts == NULL || rpmteFailed(te))
 	goto exit;
 
-    instance = rpmteDBInstance(te);
     rpmteSetHeader(te, NULL);
 
     switch (rpmteType(te)) {
     case TR_ADDED:
-	h = instance ? rpmteDBHeader(ts, instance) : rpmteFDHeader(ts, te);
+	h = rpmteDBInstance(te) ? rpmteDBHeader(te) : rpmteFDHeader(te);
 	break;
     case TR_REMOVED:
-	h = rpmteDBHeader(ts, instance);
+	h = rpmteDBHeader(te);
     	break;
     }
     if (h != NULL) {
@@ -606,15 +606,15 @@ exit:
     return (h != NULL);
 }
 
-static int rpmteClose(rpmte te, rpmts ts, int reset_fi)
+static int rpmteClose(rpmte te, int reset_fi)
 {
-    if (te == NULL || ts == NULL)
+    if (te == NULL || te->ts == NULL)
 	return 0;
 
     switch (te->type) {
     case TR_ADDED:
 	if (te->fd) {
-	    rpmtsNotify(ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
+	    rpmtsNotify(te->ts, te, RPMCALLBACK_INST_CLOSE_FILE, 0, 0);
 	    te->fd = NULL;
 	}
 	break;
@@ -641,9 +641,9 @@ FD_t rpmtePayload(rpmte te)
     return payload;
 }
 
-static int rpmteMarkFailed(rpmte te, rpmts ts)
+static int rpmteMarkFailed(rpmte te)
 {
-    rpmtsi pi = rpmtsiInit(ts);
+    rpmtsi pi = rpmtsiInit(te->ts);
     rpmte p;
 
     te->failed++;
@@ -748,7 +748,7 @@ rpmfs rpmteGetFileStates(rpmte te) {
     return te->fs;
 }
 
-int rpmteProcess(rpmte te, rpmts ts, pkgGoal goal)
+int rpmteProcess(rpmte te, pkgGoal goal)
 {
     /* Only install/erase resets pkg file info */
     int scriptstage = (goal != PKG_INSTALL && goal != PKG_ERASE);
@@ -762,14 +762,14 @@ int rpmteProcess(rpmte te, rpmts ts, pkgGoal goal)
 	}
     }
 
-    if (rpmteOpen(te, ts, reset_fi)) {
-	failed = rpmpsmRun(ts, te, goal);
-	rpmteClose(te, ts, reset_fi);
+    if (rpmteOpen(te, reset_fi)) {
+	failed = rpmpsmRun(te->ts, te, goal);
+	rpmteClose(te, reset_fi);
     }
     
     /* XXX should %pretrans failure fail the package install? */
     if (failed && !scriptstage) {
-	failed = rpmteMarkFailed(te, ts);
+	failed = rpmteMarkFailed(te);
     }
 
     return failed;

@@ -273,7 +273,7 @@ static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h)
     rc = rpmtsAddEraseElement(ts, h, -1);
     te = rpmtsElement(ts, 0);
 
-    rc = rpmteProcess(te, ts, PKG_VERIFY);
+    rc = rpmteProcess(te, PKG_VERIFY);
 
     /* clean up our fake transaction bits */
     rpmtsEmpty(ts);
