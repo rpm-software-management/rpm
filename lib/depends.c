@@ -53,8 +53,9 @@ static rpmds rpmlibP = NULL;
  * @param depends	installed package of pair (or RPMAL_NOMATCH on erase)
  * @return		0 on success
  */
-static int removePackage(tsMembers tsmem, Header h, rpmte depends)
+static int removePackage(rpmts ts, Header h, rpmte depends)
 {
+    tsMembers tsmem = rpmtsMembers(ts);
     rpmte p;
     unsigned int dboffset = headerGetInstance(h);
 
@@ -73,7 +74,7 @@ static int removePackage(tsMembers tsmem, Header h, rpmte depends)
 	tsmem->order = xrealloc(tsmem->order, sizeof(*tsmem->order) * tsmem->orderAlloced);
     }
 
-    p = rpmteNew(NULL, h, TR_REMOVED, NULL, NULL, -1);
+    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
     rpmteSetDependsOn(p, depends);
 
     tsmem->order[tsmem->orderCount] = p;
@@ -110,7 +111,7 @@ static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 	if (rpmVersionCompare(h, oh) == 0)
 	    continue;
 
-	removePackage(tsmem, oh, p);
+	removePackage(ts, oh, p);
     }
     mi = rpmdbFreeIterator(mi);
 }
@@ -152,7 +153,7 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		ohNEVRA = _free(ohNEVRA);
 
-		removePackage(tsmem, oh, p);
+		removePackage(ts, oh, p);
 	    }
 	}
 	mi = rpmdbFreeIterator(mi);
@@ -291,7 +292,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 			tsmem->orderAlloced * sizeof(*tsmem->order));
     }
 
-    p = rpmteNew(NULL, h, TR_ADDED, key, relocs, -1);
+    p = rpmteNew(ts, h, TR_ADDED, key, relocs);
 
     tsmem->order[oc] = p;
     if (oc == tsmem->orderCount) {
@@ -322,7 +323,7 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
-    return removePackage(rpmtsMembers(ts), h, NULL);
+    return removePackage(ts, h, NULL);
 }
 
 /**

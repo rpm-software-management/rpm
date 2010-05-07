@@ -23,19 +23,16 @@ typedef struct tsortInfo_s *		tsortInfo;
 
 /** \ingroup rpmte
  * Create a transaction element.
- * @param ts		unused
+ * @param ts		transaction set
  * @param h		header
  * @param type		TR_ADDED/TR_REMOVED
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
- * @param dboffset	unused
  * @return		new transaction element
  */
 RPM_GNUC_INTERNAL
-rpmte rpmteNew(const rpmts ts, Header h, rpmElementType type,
-		fnpyKey key,
-		rpmRelocation * relocs,
-		int dboffset);
+rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
+	       rpmRelocation * relocs);
 
 /** \ingroup rpmte
  * Destroy a transaction element.

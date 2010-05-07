@@ -44,6 +44,7 @@ struct rpmte_s {
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmfi fi;			/*!< File information. */
     rpmps probs;		/*!< Problems (relocations) */
+    rpmts ts;			/*!< Parent transaction */
 
     rpm_color_t color;		/*!< Color bit(s) from package dependencies. */
     rpm_loff_t pkgFileSize;	/*!< No. of bytes in package file (approx). */
@@ -256,6 +257,7 @@ rpmte rpmteFree(rpmte te)
 	rpmfsFree(te->fs);
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
+	rpmtsUnlink(te->ts);
 
 	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
 	free(te);
@@ -263,14 +265,11 @@ rpmte rpmteFree(rpmte te)
     return NULL;
 }
 
-rpmte rpmteNew(const rpmts ts, Header h,
-		rpmElementType type,
-		fnpyKey key,
-		rpmRelocation * relocs,
-		int dboffset)
+rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
+	       rpmRelocation * relocs)
 {
     rpmte p = xcalloc(1, sizeof(*p));
-
+    p->ts = rpmtsLink(ts);
     p->type = type;
     addTE(p, h, key, relocs);
     switch (type) {
