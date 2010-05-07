@@ -151,6 +151,7 @@ int rpmpsMerge(rpmps dest, rpmps src)
 	    rpmpsAppendProblem(dest, p);
 	    rc++;
 	}
+	rpmpsFreeIterator(spi);
     }
     return rc;
 }
