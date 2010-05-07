@@ -25,11 +25,11 @@ int rpmdbAdd(rpmdb db, Header h);
 /** \ingroup rpmdb
  * Remove package header from rpm database and indices.
  * @param db		rpm database
- * @param h		header
+ * @param hdrNum	package instance number in database
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int rpmdbRemove(rpmdb db, Header h);
+int rpmdbRemove(rpmdb db, unsigned int hdrNum);
 
 /** \ingroup rpmdb
  * Return rpmdb home directory (depending on chroot state)

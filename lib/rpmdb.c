@@ -2253,17 +2253,23 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
     return rc;
 }
 
-int rpmdbRemove(rpmdb db, Header h)
+int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 {
     dbiIndex dbi;
+    Header h;
     sigset_t signalMask;
     int ret = 0;
-    unsigned int hdrNum = headerGetInstance(h);
 
-    if (db == NULL || hdrNum == 0)
+    if (db == NULL)
+	return 0;
+
+    h = rpmdbGetHeaderAt(db, hdrNum);
+
+    if (h == NULL) {
+	rpmlog(RPMLOG_ERR, _("%s: cannot read header at 0x%x\n"),
+	      "rpmdbRemove", hdrNum);
 	return 1;
-
-    {	
+    } else {
 	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmlog(RPMLOG_DEBUG, "  --- h#%8u %s\n", hdrNum, nevra);
 	free(nevra);
@@ -2378,6 +2384,8 @@ cont:
     }
 
     (void) unblockSignals(&signalMask);
+
+    h = headerFree(h);
 
     /* XXX return ret; */
     return 0;
