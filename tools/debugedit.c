@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009, 2010 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -444,13 +444,13 @@ has_prefix (const char  *str,
 {
   size_t str_len;
   size_t prefix_len;
-  
+
   str_len = strlen (str);
   prefix_len = strlen (prefix);
 
   if (str_len < prefix_len)
     return 0;
-  
+
   return strncmp (str, prefix, prefix_len) == 0;
 }
 
@@ -468,9 +468,9 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 
   if (phase != 0)
     return 0;
-  
+
   ptr += off;
-  
+
   endcu = ptr + 4;
   endcu += read_32 (ptr);
   if (endcu == ptr + 0xffffffff)
@@ -493,7 +493,7 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	     value);
       return 1;
     }
-  
+
   endprol = ptr + 4;
   endprol += read_32 (ptr);
   if (endprol > endcu)
@@ -502,10 +502,10 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	     dso->filename);
       return 1;
     }
-  
+
   opcode_base = ptr[4];
   ptr = dir = ptr + 4 + opcode_base;
-  
+
   /* dir table: */
   value = 1;
   while (*ptr != 0)
@@ -600,12 +600,12 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	}
 
       free (s);
-      
+
       read_uleb128 (ptr);
       read_uleb128 (ptr);
     }
   ++ptr;
-  
+
   if (dest_dir)
     {
       unsigned char *srcptr, *buf = NULL;
@@ -631,11 +631,11 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	  if (*srcptr == '/' && has_prefix ((char *)srcptr, base_dir))
 	    {
 	      if (dest_len < base_len)
-		  ++abs_dir_cnt;
+		++abs_dir_cnt;
 	      memcpy (ptr, dest_dir, dest_len);
 	      ptr += dest_len;
 	      readptr += base_len;
-		}
+	    }
 	  srcptr += len;
 
 	  shrank += srcptr - readptr;
@@ -644,9 +644,9 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	  shrank -= len;
 	  ptr += len;
 
-	      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
-			    ELF_C_SET, ELF_F_DIRTY);
-	    }
+	  elf_flagdata (debug_sections[DEBUG_STR].elf_data,
+			ELF_C_SET, ELF_F_DIRTY);
+	}
 
       if (shrank > 0)
 	{
@@ -654,7 +654,7 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	    error (EXIT_FAILURE, 0,
 		   "canonicalization unexpectedly shrank by one character");
 	  else
-	    {	    
+	    {
 	      memset (ptr, 'X', shrank);
 	      ptr += shrank;
 	      *ptr++ = '\0';
@@ -708,8 +708,6 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
   return 0;
 }
 
-
-
 static unsigned char *
 edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 {
@@ -717,7 +715,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
   uint32_t list_offs;
   int found_list_offs;
   char *comp_dir;
-  
+
   comp_dir = NULL;
   list_offs = 0;
   found_list_offs = 0;
@@ -726,7 +724,6 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
       uint32_t form = t->attr[i].form;
       size_t len = 0;
       size_t base_len, dest_len;
-      
 
       while (1)
 	{
@@ -740,56 +737,56 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	    }
 
 	  if (t->attr[i].attr == DW_AT_comp_dir)
-	  {
-	      if ( form == DW_FORM_string )
-	      {
+	    {
+	      if (form == DW_FORM_string)
+		{
 		  free (comp_dir);
 		  comp_dir = strdup ((char *)ptr);
-		  
+
 		  if (phase == 1 && dest_dir && has_prefix ((char *)ptr, base_dir))
-		  {
+		    {
 		      base_len = strlen (base_dir);
 		      dest_len = strlen (dest_dir);
-		      
+
 		      memcpy (ptr, dest_dir, dest_len);
 		      if (dest_len < base_len)
-		      {
+			{
 			  memset(ptr + dest_len, '/',
 				 base_len - dest_len);
-			  
-		      }
+
+			}
 		      elf_flagdata (debug_sections[DEBUG_INFO].elf_data,
 				    ELF_C_SET, ELF_F_DIRTY);
-		  }
-	      }
-	  
+		    }
+		}
+
 	      else if (form == DW_FORM_strp &&
 		       debug_sections[DEBUG_STR].data)
-	      {
+		{
 		  char *dir;
 
 		  dir = (char *) debug_sections[DEBUG_STR].data
-		      + do_read_32_relocated (ptr);
+		    + do_read_32_relocated (ptr);
 
 		  free (comp_dir);
 		  comp_dir = strdup (dir);
 
 		  if (phase == 1 && dest_dir && has_prefix (dir, base_dir))
-		  {
+		    {
 		      base_len = strlen (base_dir);
 		      dest_len = strlen (dest_dir);
-		  
+
 		      memcpy (dir, dest_dir, dest_len);
 		      if (dest_len < base_len)
-		      {
+			{
 			  memmove (dir + dest_len, dir + base_len,
 				   strlen (dir + base_len) + 1);
-		      }
+			}
 		      elf_flagdata (debug_sections[DEBUG_STR].elf_data,
 				    ELF_C_SET, ELF_F_DIRTY);
-		  }
-	      }
-	  }
+		    }
+		}
+	    }
 	  else if ((t->tag == DW_TAG_compile_unit
 		    || t->tag == DW_TAG_partial_unit)
 		   && t->attr[i].attr == DW_AT_name
@@ -797,9 +794,9 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		   && debug_sections[DEBUG_STR].data)
 	    {
 	      char *name;
-	      
+
 	      name = (char *) debug_sections[DEBUG_STR].data
-		     + do_read_32_relocated (ptr);
+		+ do_read_32_relocated (ptr);
 	      if (*name == '/' && comp_dir == NULL)
 		{
 		  char *enddir = strrchr (name, '/');
@@ -818,7 +815,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 		{
 		  base_len = strlen (base_dir);
 		  dest_len = strlen (dest_dir);
-		  
+
 		  memcpy (name, dest_dir, dest_len);
 		  if (dest_len < base_len)
 		    {
@@ -896,7 +893,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 
 	  if (form == DW_FORM_block1)
 	    ptr += len;
-	  
+
 	  break;
 	}
     }
@@ -985,7 +982,7 @@ edit_dwarf2 (DSO *dso)
 		      return 1;
 		    }
 
-		  scn = dso->scn[i]; 
+		  scn = dso->scn[i];
 		  data = elf_rawdata (scn, NULL);
 		  assert (data != NULL && data->d_buf != NULL);
 		  assert (elf_rawdata (scn, data) == NULL);
@@ -1061,7 +1058,7 @@ edit_dwarf2 (DSO *dso)
 	  int rtype;
 
 	  i = debug_sections[DEBUG_INFO].relsec;
-	  scn = dso->scn[i]; 
+	  scn = dso->scn[i];
 	  data = elf_getdata (scn, NULL);
 	  assert (data != NULL && data->d_buf != NULL);
 	  assert (elf_getdata (scn, data) == NULL);
@@ -1179,13 +1176,13 @@ edit_dwarf2 (DSO *dso)
 		  error (0, 0, "%s: 64-bit DWARF not supported", dso->filename);
 		  return 1;
 		}
-	      
+
 	      if (endcu > endsec)
 		{
 		  error (0, 0, "%s: .debug_info too small", dso->filename);
 		  return 1;
 		}
-	      
+
 	      cu_version = read_16 (ptr);
 	      if (cu_version != 2 && cu_version != 3)
 		{
@@ -1193,7 +1190,7 @@ edit_dwarf2 (DSO *dso)
 			 cu_version);
 		  return 1;
 		}
-	      
+
 	      value = read_32_relocated (ptr);
 	      if (value >= debug_sections[DEBUG_ABBREV].size)
 		{
@@ -1204,7 +1201,7 @@ edit_dwarf2 (DSO *dso)
 			   dso->filename);
 		  return 1;
 		}
-	      
+
 	      if (ptr_size == 0)
 		{
 		  ptr_size = read_1 (ptr);
@@ -1221,12 +1218,12 @@ edit_dwarf2 (DSO *dso)
 			 dso->filename);
 		  return 1;
 		}
-	      
+
 	      abbrev = read_abbrev (dso,
 				    debug_sections[DEBUG_ABBREV].data + value);
 	      if (abbrev == NULL)
 		return 1;
-	      
+
 	      while (ptr < endcu)
 		{
 		  tag.entry = read_uleb128 (ptr);
@@ -1240,18 +1237,18 @@ edit_dwarf2 (DSO *dso)
 		      htab_delete (abbrev);
 		      return 1;
 		    }
-		  
+
 		  ptr = edit_attributes (dso, ptr, t, phase);
 		  if (ptr == NULL)
 		    break;
 		}
-	      
+
 	      htab_delete (abbrev);
 	    }
 	}
       free (relbuf);
     }
-  
+
   return 0;
 }
 
@@ -1314,7 +1311,7 @@ fdopen_dso (int fd, const char *name)
     }
 
   elf_flagelf (elf, ELF_C_SET, ELF_F_LAYOUT);
-  
+
   memset (dso, 0, sizeof(DSO));
   dso->elf = elf;
   dso->ehdr = ehdr;
@@ -1471,7 +1468,7 @@ main (int argc, char *argv[])
   size_t build_id_offset = 0, build_id_size = 0;
 
   optCon = poptGetContext("debugedit", argc, (const char **)argv, optionsTable, 0);
-  
+
   while ((nextopt = poptGetNextOpt (optCon)) > 0 || nextopt == POPT_ERROR_BADOPT)
     /* do nothing */ ;
 
@@ -1483,7 +1480,7 @@ main (int argc, char *argv[])
 	      argv[0]);
       exit (1);
     }
-  
+
   args = poptGetArgs (optCon);
   if (args == NULL || args[0] == NULL || args[1] != NULL)
     {
@@ -1522,12 +1519,12 @@ main (int argc, char *argv[])
       free (dest_dir);
       dest_dir = p;
     }
-  
+
   if (list_file != NULL)
     {
       list_file_fd = open (list_file, O_WRONLY|O_CREAT|O_APPEND, 0644);
     }
-  
+
   file = args[0];
 
   if (elf_version(EV_CURRENT) == EV_NONE)
@@ -1559,7 +1556,7 @@ main (int argc, char *argv[])
   for (i = 1; i < dso->ehdr.e_shnum; i++)
     {
       const char *name;
-      
+
       switch (dso->shdr[i].sh_type)
 	{
 	case SHT_PROGBITS:
@@ -1588,7 +1585,7 @@ main (int argc, char *argv[])
 	      Elf_Data src = dst;
 	      src.d_buf = data->d_buf;
 	      assert (sizeof (Elf32_Nhdr) == sizeof (Elf64_Nhdr));
-	      while ((char *) data->d_buf + data->d_size - 
+	      while ((char *) data->d_buf + data->d_size -
 		     (char *) src.d_buf > (int) sizeof nh
 		     && elf32_xlatetom (&dst, &src, dso->ehdr.e_ident[EI_DATA]))
 		{
@@ -1599,7 +1596,7 @@ main (int argc, char *argv[])
 		      && !memcmp ((char *) src.d_buf + sizeof nh, "GNU", sizeof "GNU"))
 		    {
 		      build_id = data;
-		      build_id_offset = (char *) src.d_buf + len - 
+		      build_id_offset = (char *) src.d_buf + len -
 					(char *) data->d_buf;
 		      build_id_size = nh.n_descsz;
 		      break;
@@ -1633,7 +1630,7 @@ main (int argc, char *argv[])
 
   /* Restore old access rights */
   chmod (file, stat_buf.st_mode);
-  
+
   poptFreeContext (optCon);
 
   return 0;
