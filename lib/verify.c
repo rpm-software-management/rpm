@@ -466,7 +466,9 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 {
     rpmVSFlags vsflags, ovsflags;
     int ec = 0, xx;
+    int dirfd = -1;
     const char * rootDir = rpmtsRootDir(ts);
+    FD_t scriptFd = fdDup(STDOUT_FILENO);
 
     /* 
      * Open the DB + indices explicitly before possible chroot,
@@ -475,7 +477,8 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     rpmtsOpenDB(ts, O_RDONLY);
     rpmdbOpenAll(rpmtsGetRdb(ts));
     if (rootDir && !rstreq(rootDir, "/")) {
-	if (chroot(rootDir) == -1) {
+	dirfd = open(".", O_RDONLY);
+	if (dirfd == -1 || chdir("/") == -1 || chroot(rootDir) == -1) {
 	    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
 	    ec = 1;
 	    goto exit;
@@ -509,10 +512,13 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     if (rpmtsChrootDone(ts)) {
 	/* only done if previous chroot succeeded, assume success */
 	xx = chroot(".");
+	xx = fchdir(dirfd);
 	rpmtsSetChrootDone(ts, 0);
     }
 
 exit:
+    Fclose(scriptFd);
+    if (dirfd >= 0) close(dirfd);
 
     return ec;
 }
