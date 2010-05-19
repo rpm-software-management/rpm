@@ -23,6 +23,11 @@ static int _print = 0;
 static int _crypto_initialized = 0;
 static int _new_process = 1;
 
+typedef const struct pgpValTbl_s {
+    int val;
+    char const * const str;
+} * pgpValTbl;
+ 
 static struct pgpValTbl_s const pgpSigTypeTbl[] = {
     { PGPSIGTYPE_BINARY,	"Binary document signature" },
     { PGPSIGTYPE_TEXT,		"Text document signature" },

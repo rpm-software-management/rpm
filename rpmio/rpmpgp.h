@@ -37,13 +37,6 @@ typedef uint8_t pgpKeyID_t[8];
 typedef uint8_t pgpTime_t[4];
 
 /** \ingroup rpmpgp
- */
-typedef const struct pgpValTbl_s {
-    int val;
-    char const * const str;
-} * pgpValTbl;
- 
-/** \ingroup rpmpgp
  * 4.3. Packet Tags
  * 
  * The packet tag denotes what type of packet the body holds. Note that
