@@ -302,10 +302,11 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	} else {
 	    ds = rpmdsNew(h, tagN, 0);
 	}
+    } else {
+	PyErr_SetString(PyExc_TypeError, "header or tuple expected");
+	return NULL;
     }
     
-    if (ds == NULL) return NULL;
-	
     return rpmds_Wrap(subtype, ds);
 }
 
