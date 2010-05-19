@@ -913,6 +913,19 @@ typedef enum pgpArmorKey_e {
     PGPARMORKEY_CHARSET		= 5  /*!< Charset: */
 } pgpArmorKey;
 
+typedef enum pgpValType_e {
+    PGPVAL_TAG			= 1,
+    PGPVAL_ARMORBLOCK		= 2,
+    PGPVAL_ARMORKEY		= 3,
+    PGPVAL_SIGTYPE		= 4,
+    PGPVAL_SUBTYPE		= 5,
+    PGPVAL_PUBKEYALGO		= 6,
+    PGPVAL_SYMKEYALGO		= 7,
+    PGPVAL_COMPRESSALGO		= 8,
+    PGPVAL_HASHALGO		= 9,
+    PGPVAL_SERVERPREFS		= 10,
+} pgpValType;
+
 /** \ingroup rpmpgp
  * Bit(s) to control digest operation.
  */
@@ -920,6 +933,13 @@ typedef enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
 } rpmDigestFlags;
 
+/** \ingroup rpmpgp
+ * Return string representation of am OpenPGP value.
+ * @param type		type of value
+ * @param val		byte value to lookup
+ * @return		string value of byte
+ */
+const char * pgpValString(pgpValType type, uint8_t val);
 
 /** \ingroup rpmpgp
  * Return (native-endian) integer from big-endian representation.
