@@ -1,7 +1,7 @@
 #!/bin/sh
 #findlang - automagically generate list of language specific files
 #for inclusion in an rpm spec file.
-#This does assume that the *.mo files are under .../share/locale/...
+#This does assume that the *.mo files are under .../locale/...
 #Run with no arguments gets a usage message.
 
 #findlang is copyright (c) 1998 by W. L. Estes <wlestes@uncg.edu>
@@ -99,8 +99,8 @@ done
 
 find $TOP_DIR -type f -o -type l|sed '
 s:'"$TOP_DIR"'::
-'"$ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
-'"$NO_ALL_NAME$MO"'s:\(.*/share/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
+'"$ALL_NAME$MO"'s:\(.*/locale/\)\([^/_]\+\)\(.*\.mo$\):%lang(\2) \1\2\3:
+'"$NO_ALL_NAME$MO"'s:\(.*/locale/\)\([^/_]\+\)\(.*/'"$NAME"'\.mo$\):%lang(\2) \1\2\3:
 s:^\([^%].*\)::
 s:%lang(C) ::
 /^$/d' > $MO_NAME
