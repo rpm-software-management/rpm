@@ -4,7 +4,6 @@
 #include <rpm/rpmts.h>
 
 #include "lib/rpmal.h"		/* XXX availablePackage */
-#include "lib/rpmhash.h"	/* XXX hashTable */
 #include "lib/fprint.h"
 #include "lib/rpmlock.h"
 

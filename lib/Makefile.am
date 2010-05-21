@@ -21,7 +21,7 @@ usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	backend/dbconfig.c backend/db3.c backend/dbi.h \
 	headerutil.c header.c headerfmt.c header_internal.h \
-	poptDB.c rpmhash.c rpmhash.h rpmdb.c rpmdb_internal.h \
+	poptDB.c rpmdb.c rpmdb_internal.h \
 	fprint.c fprint.h tagname.c rpmtd.c \
 	cpio.c cpio.h depends.c order.c formats.c tagexts.c fsm.c fsm.h \
 	manifest.c manifest.h misc.c package.c \

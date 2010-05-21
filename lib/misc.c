@@ -15,6 +15,23 @@
 /* just to put a marker in librpm.a */
 const char * const RPMVERSION = VERSION;
 
+unsigned int hashFunctionString(const char * string)
+{
+    /* Jenkins One-at-a-time hash */
+    unsigned int hash = 0xe4721b68;
+
+    while (*string != '\0') {
+      hash += *string;
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
+      string++;
+    }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
+    return hash;
+}
+
 /* unameToUid(), uidTouname() and the group variants are really poorly
    implemented. They really ought to use hash tables. I just made the
    guess that most files would be owned by root or the same person/group

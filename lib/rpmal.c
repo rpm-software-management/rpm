@@ -10,7 +10,7 @@
 #include <rpm/rpmfi.h>
 
 #include "lib/rpmal.h"
-#include "lib/rpmhash.h"
+#include "lib/misc.h"
 
 #include "debug.h"
 
