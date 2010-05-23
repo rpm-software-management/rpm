@@ -173,7 +173,7 @@ sub process_file {
          ['"]?([^; '"\t#]*)['"]?[\t; ]
          # the syntax for 'use' allows version requirements
          # the latter part is for "use base qw(Foo)" and friends special case
-         \s*($modver_re|(qw\s*[(\/]\s*|['"])[^)\/"'\$]*?\s*[)\/"'])?
+         \s*($modver_re|(qw\s*[(\/'"]\s*|['"])[^)\/"'\$]*?\s*[)\/"'])?
          /x)
        ) {
       my ($whitespace, $statement, $module, $version) = ($1, $2, $3, $4);
@@ -264,7 +264,7 @@ sub process_file {
       # use base qw(Foo) dependencies
       if ($statement eq "use" && $module eq "base") {
         add_require($module, undef);
-        if ($version =~ /^qw\s*[(\/]\s*([^)\/]+?)\s*[)\/]/) {
+        if ($version =~ /^qw\s*[(\/'"]\s*([^)\/"']+?)\s*[)\/"']/) {
           add_require($_, undef) for split(' ', $1);
         }
         elsif ($version =~ /(["'])([^"']+)\1/) {
