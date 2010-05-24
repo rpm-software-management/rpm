@@ -130,17 +130,6 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	char *from, *to, *p;
 	to = spec->lbufPtr ? spec->lbufPtr : spec->lbuf;
 	from = ofi->readPtr;
-	if (from) {
-	    SKIPSPACE(from);
-	    if (*from == '#') {
-		ch = ' ';
-		from++;
-		while (*from && ch != '\n')
-		    ch = *from++;
-	    } else {
-		from = ofi->readPtr;
-	    }
-	}
 	ch = ' ';
 	while (from && *from && ch != '\n')
 	    ch = *to++ = *from++;
