@@ -320,13 +320,11 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2,
 	argvAdd(&args, "/bin/sh");
     }
 
-    rpmswEnter(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
     if (rstreq(args[0], "<lua>")) {
 	rc = runLuaScript(ts, prefixes, script->descr, lvl, &args, script->body, arg1, arg2);
     } else {
 	rc = runExtScript(ts, prefixes, script->descr, lvl, &args, script->body, arg1, arg2);
     }
-    rpmswExit(rpmtsOp(ts, RPMTS_OP_SCRIPTLETS), 0);
     argvFree(args);
 
     return rc;

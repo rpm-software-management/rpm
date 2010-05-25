@@ -414,12 +414,15 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
     rpmRC rc = RPMRC_OK;
     int warn_only =(script->tag != RPMTAG_PREIN && script->tag != RPMTAG_PREUN);
 
+    rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+    rc = rpmScriptRun(script, arg1, arg2, psm->ts, prefixes, warn_only);
+    rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+
     /* 
      * Notify callback for all errors. "total" abused for warning/error,
      * rc only reflects whether the condition prevented install/erase 
      * (which is only happens with %prein and %preun scriptlets) or not.
      */
-    rc = rpmScriptRun(script, arg1, arg2, psm->ts, prefixes, warn_only);
     if (rc != RPMRC_OK) {
 	if (warn_only) {
 	    rc = RPMRC_OK;
