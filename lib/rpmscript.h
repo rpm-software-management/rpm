@@ -27,7 +27,7 @@ RPM_GNUC_INTERNAL
 rpmScript rpmScriptFree(rpmScript script);
 
 RPM_GNUC_INTERNAL
-rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2,
-                   rpmts ts, ARGV_const_t prefixes, int warn_only);
+rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
+                   ARGV_const_t prefixes, int warn_only, int selinux);
 
 #endif /* _RPMSCRIPT_H */

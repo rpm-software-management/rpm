@@ -415,7 +415,8 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
     int warn_only =(script->tag != RPMTAG_PREIN && script->tag != RPMTAG_PREUN);
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
-    rc = rpmScriptRun(script, arg1, arg2, psm->ts, prefixes, warn_only);
+    rc = rpmScriptRun(script, arg1, arg2, rpmtsScriptFd(psm->ts),
+		      prefixes, warn_only, rpmtsSELinuxEnabled(psm->ts));
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* 

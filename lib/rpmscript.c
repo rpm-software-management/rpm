@@ -5,12 +5,10 @@
 
 #define _RPMSQ_INTERNAL
 #include <rpm/rpmsq.h>
-#include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmsw.h>
 #include <rpm/header.h>
 
 #include "rpmio/rpmlua.h"
@@ -21,8 +19,8 @@
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmts ts, ARGV_const_t prefixes,
-		   const char *sname, rpmlogLvl lvl,
+static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
+		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -79,7 +77,7 @@ static rpmRC runLuaScript(rpmts ts, ARGV_const_t prefixes,
 
 static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
-static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
+static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
     int pipes[2];
@@ -152,7 +150,7 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
 	unsetenv("MALLOC_CHECK_");
 
 	/* Permit libselinux to do the scriptlet exec. */
-	if (rpmtsSELinuxEnabled(ts) == 1) {	
+	if (selinux == 1) {	
 	    xx = rpm_execcon(0, argv[0], argv, environ);
 	}
 
@@ -166,11 +164,10 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
 /**
  * Run an external script.
  */
-static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
-		   const char *sname, rpmlogLvl lvl,
+static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
+		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
-    FD_t scriptFd;
     FD_t out = NULL;
     char * fn = NULL;
     int xx;
@@ -209,7 +206,6 @@ static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
 	}
     }
 
-    scriptFd = rpmtsScriptFd(ts);
     if (scriptFd != NULL) {
 	if (rpmIsVerbose()) {
 	    out = fdDup(Fileno(scriptFd));
@@ -232,7 +228,7 @@ static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
     if (sq.child == 0) {
 	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
 	       sname, *argvp[0], (unsigned)getpid());
-	doScriptExec(ts, *argvp, prefixes, scriptFd, out);
+	doScriptExec(selinux, *argvp, prefixes, scriptFd, out);
     }
 
     if (sq.child == (pid_t)-1) {
@@ -273,8 +269,8 @@ exit:
     return rc;
 }
 
-rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2,
-		   rpmts ts, ARGV_const_t prefixes, int warn_only)
+rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
+		   ARGV_const_t prefixes, int warn_only, int selinux)
 {
     ARGV_t args = NULL;
     rpmlogLvl lvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
@@ -290,9 +286,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2,
     }
 
     if (rstreq(args[0], "<lua>")) {
-	rc = runLuaScript(ts, prefixes, script->descr, lvl, &args, script->body, arg1, arg2);
+	rc = runLuaScript(selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
     } else {
-	rc = runExtScript(ts, prefixes, script->descr, lvl, &args, script->body, arg1, arg2);
+	rc = runExtScript(selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
     }
     argvFree(args);
 
