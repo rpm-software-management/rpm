@@ -27,23 +27,12 @@ static rpmRC runLuaScript(rpmts ts, ARGV_const_t prefixes,
 {
     rpmRC rc = RPMRC_FAIL;
 #ifdef WITH_LUA
-    int rootFd = -1;
-    int xx;
     ARGV_t argv = argvp ? *argvp : NULL;
     rpmlua lua = NULL; /* Global state. */
     rpmluav var;
+    int cwd = -1;
 
     rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
-    if (!rpmtsChrootDone(ts)) {
-	const char *rootDir = rpmtsRootDir(ts);
-	xx = chdir("/");
-	rootFd = open(".", O_RDONLY, 0);
-	if (rootFd >= 0) {
-	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
-		xx = chroot(rootDir);
-	    xx = rpmtsSetChrootDone(ts, 1);
-	}
-    }
 
     /* Create arg variable */
     rpmluaPushTable(lua, "arg");
@@ -67,20 +56,20 @@ static rpmRC runLuaScript(rpmts ts, ARGV_const_t prefixes,
     var = rpmluavFree(var);
     rpmluaPop(lua);
 
-    if (rpmluaRunScript(lua, script, sname) == 0) {
-	rc = RPMRC_OK;
+    /* Lua scripts can change our cwd, save and restore */
+    cwd = open(".", O_RDONLY);
+    if (cwd != -1) {
+	int xx;
+	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname) == 0) {
+	    rc = RPMRC_OK;
+	}
+	/* XXX no way to return error from restore meaningfully atm */
+	xx = fchdir(cwd);
+	close(cwd);
     }
 
     rpmluaDelVar(lua, "arg");
 
-    if (rootFd >= 0) {
-	const char *rootDir = rpmtsRootDir(ts);
-	xx = fchdir(rootFd);
-	xx = close(rootFd);
-	if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
-	    xx = chroot(".");
-	xx = rpmtsSetChrootDone(ts, 0);
-    }
 #else
     rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
 #endif
@@ -93,7 +82,6 @@ static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr
 static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
-    const char * rootDir;
     int pipes[2];
     int flag;
     int fdno;
@@ -159,15 +147,7 @@ static void doScriptExec(rpmts ts, ARGV_const_t argv, ARGV_const_t prefixes,
 	}
     }
 	
-    rootDir = rpmtsRootDir(ts);
-    if (rootDir  != NULL) {	/* XXX can't happen */
-	if (!rpmtsChrootDone(ts) &&
-	    !(rootDir[0] == '/' && rootDir[1] == '\0'))
-	{
-	    xx = chroot(rootDir);
-	}
-	xx = chdir("/");
-
+    if (chdir("/") == 0) {
 	/* XXX Don't mtrace into children. */
 	unsetenv("MALLOC_CHECK_");
 
@@ -203,10 +183,7 @@ static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
     rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
 
     if (script) {
-	const char * rootDir = rpmtsRootDir(ts);
-	FD_t fd;
-
-	fd = rpmMkTempFile((!rpmtsChrootDone(ts) ? rootDir : "/"), &fn);
+	FD_t fd = rpmMkTempFile("/", &fn);
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("Couldn't create temporary file for %s: %s\n"),
 		   sname, strerror(errno));
@@ -223,15 +200,7 @@ static rpmRC runExtScript(rpmts ts, ARGV_const_t prefixes,
 	xx = Fwrite(script, sizeof(script[0]), strlen(script), fd);
 	xx = Fclose(fd);
 
-	{   const char * sn = fn;
-	    if (!rpmtsChrootDone(ts) && rootDir != NULL &&
-		!(rootDir[0] == '/' && rootDir[1] == '\0'))
-	    {
-		sn += strlen(rootDir)-1;
-	    }
-	    argvAdd(argvp, sn);
-	}
-
+	argvAdd(argvp, fn);
 	if (arg1 >= 0) {
 	    argvAddNum(argvp, arg1);
 	}

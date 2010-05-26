@@ -769,10 +769,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_PRE:
 	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 
-	/* Change root directory if requested and not already done. */
-	rc = rpmpsmNext(psm, PSM_CHROOT_IN);
-	if (rc) break;
-
 	if (psm->goal == PKG_INSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->sense = RPMSENSE_TRIGGERPREIN;
@@ -976,16 +972,10 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
 		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 	}
-
-	/* Restore root directory if changed. */
-	xx = rpmpsmNext(psm, PSM_CHROOT_OUT);
 	break;
     case PSM_UNDO:
 	break;
     case PSM_FINI:
-	/* Restore root directory if changed. */
-	xx = rpmpsmNext(psm, PSM_CHROOT_OUT);
-
 	if (rc) {
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
@@ -1123,7 +1113,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
     rpmpsm psm = rpmpsmNew(ts, te);
     rpmRC rc = RPMRC_FAIL;
 
-    if (psm) {
+    if (rpmpsmNext(psm, PSM_CHROOT_IN) == RPMRC_OK) {
 	rpmtsOpX op;
 	psm->goal = goal;
 	psm->goalName = pkgGoalString(goal);
@@ -1151,6 +1141,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	default:
 	    break;
 	}
+	(void) rpmpsmNext(psm, PSM_CHROOT_OUT);
     }
     rpmpsmFree(psm);
     return rc;
