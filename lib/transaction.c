@@ -1376,7 +1376,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Run pre-transaction scripts, but only if there are no known
      * problems up to this point and not disabled otherwise. */
-    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPRE))
+    if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRE))
      	  || (rpmpsNumProblems(tsprobs)))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
 	runTransScripts(ts, PKG_PRETRANS);
@@ -1405,7 +1405,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     rc = rpmtsProcess(ts) ? -1 : 0;
 
     /* Run post-transaction scripts unless disabled */
-    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_NOPOST))) {
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_NOPOST))) {
 	rpmlog(RPMLOG_DEBUG, "running post-transaction scripts\n");
 	runTransScripts(ts, PKG_POSTTRANS);
     }

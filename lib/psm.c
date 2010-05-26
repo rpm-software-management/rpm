@@ -705,9 +705,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_UNKNOWN:
 	break;
     case PSM_INIT:
-	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files, test = %d\n",
-		psm->goalName, rpmteNEVR(psm->te),
-		rpmfiFC(fi), (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST));
+	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n",
+		psm->goalName, rpmteNEVR(psm->te), rpmfiFC(fi));
 
 	/*
 	 * When we run scripts, we pass an argument which is the number of
@@ -768,8 +767,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	break;
     case PSM_PRE:
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-
 	if (psm->goal == PKG_INSTALL) {
 	    psm->scriptTag = RPMTAG_PREIN;
 	    psm->sense = RPMSENSE_TRIGGERPREIN;
@@ -811,8 +808,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	break;
     case PSM_PROCESS:
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-
 	if (psm->goal == PKG_INSTALL) {
 	    FD_t payload = NULL;
 
@@ -901,8 +896,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	break;
     case PSM_POST:
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-
 	if (psm->goal == PKG_INSTALL) {
 	    rpm_time_t installTime = (rpm_time_t) time(NULL);
 	    rpmfs fs = rpmteGetFileStates(psm->te);
@@ -1061,10 +1054,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
 
     case PSM_RPMDB_ADD: {
-	Header h;
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
-
-	h = rpmteHeader(psm->te);
+	Header h = rpmteHeader(psm->te);
 
 	if (!headerIsEntry(h, RPMTAG_INSTALLTID)) {
 	    rpm_tid_t tid = rpmtsGetTid(ts);
@@ -1082,7 +1072,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     }   break;
 
     case PSM_RPMDB_REMOVE:
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)	break;
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmteDBInstance(psm->te));
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
@@ -1111,9 +1100,14 @@ static const char * pkgGoalString(pkgGoal goal)
 
 rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 {
-    rpmpsm psm = rpmpsmNew(ts, te);
+    rpmpsm psm = NULL;
     rpmRC rc = RPMRC_FAIL;
 
+    /* Psm can't fail in test mode, just return early */
+    if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
+	return RPMRC_OK;
+
+    psm = rpmpsmNew(ts, te);
     if (rpmpsmNext(psm, PSM_CHROOT_IN) == RPMRC_OK) {
 	rpmtsOpX op;
 	psm->goal = goal;
