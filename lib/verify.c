@@ -258,25 +258,23 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
 /**
  * Return exit code from running verify script from header.
- * @todo malloc/free/refcount handling is fishy here.
- * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header
  * @return              0 on success
  */
-static int rpmVerifyScript(QVA_t qva, rpmts ts, Header h)
+static int rpmVerifyScript(rpmts ts, Header h)
 {
-    rpmte te = NULL;
     int rc = 0;
 
-    /* fake up a erasure transaction element */
-    rc = rpmtsAddEraseElement(ts, h, -1);
-    te = rpmtsElement(ts, 0);
+    if (headerIsEntry(h, RPMTAG_VERIFYSCRIPT)) {
+	/* fake up a erasure transaction element */
+	(void) rpmtsAddEraseElement(ts, h, -1);
 
-    rc = rpmteProcess(te, PKG_VERIFY);
+	rc = rpmteProcess(rpmtsElement(ts, 0), PKG_VERIFY);
 
-    /* clean up our fake transaction bits */
-    rpmtsEmpty(ts);
+	/* clean up our fake transaction bits */
+	rpmtsEmpty(ts);
+    }
 
     return rc;
 }
@@ -434,10 +432,8 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	if ((rc = verifyHeader(qva, ts, h)) != 0)
 	    ec = rc;
     }
-    if ((qva->qva_flags & VERIFY_SCRIPT)
-     && headerIsEntry(h, RPMTAG_VERIFYSCRIPT))
-    {
-	if ((rc = rpmVerifyScript(qva, ts, h)) != 0)
+    if (qva->qva_flags & VERIFY_SCRIPT) {
+	if ((rc = rpmVerifyScript(ts, h)) != 0)
 	    ec = rc;
     }
 
