@@ -381,12 +381,11 @@ static int verifyHeader(QVA_t qva, const rpmts ts, Header h)
 
 /**
  * Check installed package dependencies for problems.
- * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header
  * @return		number of problems found (0 for no problems)
  */
-static int verifyDependencies(QVA_t qva, rpmts ts, Header h)
+static int verifyDependencies(rpmts ts, Header h)
 {
     rpmps ps;
     rpmte te;
@@ -425,7 +424,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
     int rc;
 
     if (qva->qva_flags & VERIFY_DEPS) {
-	if ((rc = verifyDependencies(qva, ts, h)) != 0)
+	if ((rc = verifyDependencies(ts, h)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
