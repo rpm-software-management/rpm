@@ -275,6 +275,37 @@ static int rpmVerifyScript(rpmts ts, Header h)
     return rc;
 }
 
+#define unknown "?"
+#define	_verify(_RPMVERIFY_F, _C, _pad)	\
+	((verifyResult & _RPMVERIFY_F) ? _C : _pad)
+#define	_verifylink(_RPMVERIFY_F, _C, _pad)	\
+	((verifyResult & RPMVERIFY_READLINKFAIL) ? unknown : \
+	 (verifyResult & _RPMVERIFY_F) ? _C : _pad)
+#define	_verifyfile(_RPMVERIFY_F, _C, _pad)	\
+	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
+	 (verifyResult & _RPMVERIFY_F) ? _C : _pad)
+char * rpmVerifyString(uint32_t verifyResult, const char *pad)
+{
+    char *fmt = NULL;
+    rasprintf(&fmt, "%s%s%s%s%s%s%s%s%s",
+		_verifyfile(RPMVERIFY_FILEDIGEST, "5", pad),
+		_verify(RPMVERIFY_FILESIZE, "S", pad),
+		_verifylink(RPMVERIFY_LINKTO, "L", pad),
+		_verify(RPMVERIFY_MTIME, "T", pad),
+		_verify(RPMVERIFY_RDEV, "D", pad),
+		_verify(RPMVERIFY_USER, "U", pad),
+		_verify(RPMVERIFY_GROUP, "G", pad),
+		_verify(RPMVERIFY_MODE, "M", pad),
+		_verify(RPMVERIFY_CAPS, "P", pad));
+		
+    return fmt;
+}
+#undef _verifyfile
+#undef _verifylink
+#undef _verify
+#undef aok
+#undef unknown
+
 /**
  * Check file info from header against what's actually installed.
  * @param ts		transaction set
@@ -330,38 +361,8 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 		ec = rc;
 	    }
 	} else if (verifyResult || rpmIsVerbose()) {
-	    const char * size, * filedigest, * link, * mtime, * mode;
-	    const char * group, * user, * rdev, *caps;
-	    static const char *const aok = ".";
-	    static const char *const unknown = "?";
-
-	    if (verifyResult) ec = 1;
-
-#define	_verify(_RPMVERIFY_F, _C)	\
-	((verifyResult & _RPMVERIFY_F) ? _C : aok)
-#define	_verifylink(_RPMVERIFY_F, _C)	\
-	((verifyResult & RPMVERIFY_READLINKFAIL) ? unknown : \
-	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
-#define	_verifyfile(_RPMVERIFY_F, _C)	\
-	((verifyResult & RPMVERIFY_READFAIL) ? unknown : \
-	 (verifyResult & _RPMVERIFY_F) ? _C : aok)
-	
-	    filedigest = _verifyfile(RPMVERIFY_FILEDIGEST, "5");
-	    size = _verify(RPMVERIFY_FILESIZE, "S");
-	    link = _verifylink(RPMVERIFY_LINKTO, "L");
-	    mtime = _verify(RPMVERIFY_MTIME, "T");
-	    rdev = _verify(RPMVERIFY_RDEV, "D");
-	    user = _verify(RPMVERIFY_USER, "U");
-	    group = _verify(RPMVERIFY_GROUP, "G");
-	    mode = _verify(RPMVERIFY_MODE, "M");
-	    caps = _verify(RPMVERIFY_CAPS, "P");
-
-#undef _verifyfile
-#undef _verifylink
-#undef _verify
-
-	    rasprintf(&buf, "%s%s%s%s%s%s%s%s%s  %c %s",
-			size, mode, filedigest, rdev, link, user, group, mtime, caps,
+	    char *verifyFormat = rpmVerifyString(verifyResult, ".");
+	    rasprintf(&buf, "%s  %c %s", verifyFormat,
 			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
 			 (fileAttrs & RPMFILE_DOC)	? 'd' :
 			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
@@ -369,6 +370,9 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
 			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
 			rpmfiFN(fi));
+	    free(verifyFormat);
+
+	    if (verifyResult) ec = 1;
 	}
 
 	if (buf) {

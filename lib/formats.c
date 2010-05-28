@@ -15,6 +15,7 @@
 
 #include "rpmio/digest.h"
 #include "lib/manifest.h"
+#include "lib/misc.h"
 
 #include "debug.h"
 
@@ -638,36 +639,15 @@ static char * fstateFormat(rpmtd td, char * formatPrefix)
 static char * vflagsFormat(rpmtd td, char * formatPrefix)
 {
     char * val = NULL;
-    char buf[15];
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	uint64_t vflags = rpmtdGetNumber(td);
-	buf[0] = '\0';
-	if (vflags & RPMVERIFY_FILEDIGEST)
-	    strcat(buf, "5");
-	if (vflags & RPMVERIFY_FILESIZE)
-	    strcat(buf, "S");
-	if (vflags & RPMVERIFY_LINKTO)
-	    strcat(buf, "L");
-	if (vflags & RPMVERIFY_MTIME)
-	    strcat(buf, "T");
-	if (vflags & RPMVERIFY_RDEV)
-	    strcat(buf, "D");
-	if (vflags & RPMVERIFY_USER)
-	    strcat(buf, "U");
-	if (vflags & RPMVERIFY_GROUP)
-	    strcat(buf, "G");
-	if (vflags & RPMVERIFY_MODE)
-	    strcat(buf, "M");
-	if (vflags & RPMVERIFY_CAPS)
-	    strcat(buf, "P");
-
 	strcat(formatPrefix, "s");
+	char *buf = rpmVerifyString(rpmtdGetNumber(td), "");
 	rasprintf(&val, formatPrefix, buf);
+	buf = _free(buf);
     }
-
     return val;
 }
 
