@@ -281,30 +281,26 @@ static int rpmVerifyScript(rpmts ts, Header h)
 
 /**
  * Check file info from header against what's actually installed.
- * @param qva		parsed query/verify options
  * @param ts		transaction set
  * @param h		header to verify
+ * @param omitMask	bits to disable verify checks
+ * @param ghosts	should ghosts be verified?
  * @return		0 no problems, 1 problems found
  */
-static int verifyHeader(QVA_t qva, const rpmts ts, Header h)
+static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 {
     rpmVerifyAttrs verifyResult = 0;
-    /* FIX: union? */
-    rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
     int ec = 0;		/* assume no problems */
-    char *buf = NULL;
-
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
+
     rpmfiInit(fi, 0);
     while (rpmfiNext(fi) >= 0) {
-	rpmfileAttrs fileAttrs;
+	rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
+	char *buf = NULL;
 	int rc;
 
-	fileAttrs = rpmfiFFlags(fi);
-
 	/* If not verifying %ghost, skip ghost files. */
-	if (!(qva->qva_fflags & RPMFILE_GHOST)
-	&& (fileAttrs & RPMFILE_GHOST))
+	if ((fileAttrs & RPMFILE_GHOST) && !ghosts)
 	    continue;
 
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
@@ -420,6 +416,8 @@ static int verifyDependencies(rpmts ts, Header h)
 
 int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 {
+    rpmVerifyAttrs omitMask = ((qva->qva_flags & VERIFY_ATTRS) ^ VERIFY_ATTRS);
+    int ghosts = (qva->qva_fflags & RPMFILE_GHOST);
     int ec = 0;
     int rc;
 
@@ -428,7 +426,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_FILES) {
-	if ((rc = verifyHeader(qva, ts, h)) != 0)
+	if ((rc = verifyHeader(ts, h, omitMask, ghosts)) != 0)
 	    ec = rc;
     }
     if (qva->qva_flags & VERIFY_SCRIPT) {
