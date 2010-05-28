@@ -232,11 +232,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 #endif
 
     if ((flags & RPMVERIFY_MTIME) && (sb.st_mtime != rpmfiFMtime(fi))) {
-	/* Filter out timestamp differences of shared files */
-	rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
-	if (rpmdbGetIteratorCount(mi) < 2) 
-	    *res |= RPMVERIFY_MTIME;
-	rpmdbFreeIterator(mi);
+	*res |= RPMVERIFY_MTIME;
     }
 
     if (flags & RPMVERIFY_USER) {
@@ -304,6 +300,16 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	    continue;
 
 	rc = rpmVerifyFile(ts, fi, &verifyResult, omitMask);
+
+	/* Filter out timestamp differences of shared files */
+	if (rc == 0 && (verifyResult & RPMVERIFY_MTIME)) {
+	    rpmdbMatchIterator mi;
+	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, rpmfiFN(fi), 0);
+	    if (rpmdbGetIteratorCount(mi) > 1) 
+		verifyResult &= ~RPMVERIFY_MTIME;
+	    rpmdbFreeIterator(mi);
+	}
+
 	if (rc) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
 		rasprintf(&buf, _("missing   %c %s"),
