@@ -636,7 +636,7 @@ static char * fstateFormat(rpmtd td, char * formatPrefix)
     return val;
 }
 
-static char * vflagsFormat(rpmtd td, char * formatPrefix)
+static char * verifyFlags(rpmtd td, char * formatPrefix, const char *pad)
 {
     char * val = NULL;
 
@@ -644,11 +644,21 @@ static char * vflagsFormat(rpmtd td, char * formatPrefix)
 	val = xstrdup(_("(not a number)"));
     } else {
 	strcat(formatPrefix, "s");
-	char *buf = rpmVerifyString(rpmtdGetNumber(td), "");
+	char *buf = rpmVerifyString(rpmtdGetNumber(td), pad);
 	rasprintf(&val, formatPrefix, buf);
 	buf = _free(buf);
     }
     return val;
+}
+
+static char * vflagsFormat(rpmtd td, char * formatPrefix)
+{
+    return verifyFlags(td, formatPrefix, "");
+}
+
+static char * fstatusFormat(rpmtd td, char * formatPrefix)
+{
+    return verifyFlags(td, formatPrefix, ".");
 }
 
 static char * expandFormat(rpmtd td, char * formatPrefix)
@@ -712,5 +722,6 @@ static const struct headerFormatFunc_s rpmHeaderFormats[] = {
     { RPMTD_FORMAT_FSTATE,	"fstate",	fstateFormat },
     { RPMTD_FORMAT_VFLAGS,	"vflags",	vflagsFormat },
     { RPMTD_FORMAT_EXPAND,	"expand",	expandFormat },
+    { RPMTD_FORMAT_FSTATUS,	"fstatus",	fstatusFormat },
     { -1,			NULL, 		NULL }
 };

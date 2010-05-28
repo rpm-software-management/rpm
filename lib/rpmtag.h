@@ -293,6 +293,7 @@ typedef enum rpmTag_e {
     RPMTAG_POSTTRANSFLAGS	= 5025, /* i */
     RPMTAG_VERIFYSCRIPTFLAGS	= 5026, /* i */
     RPMTAG_TRIGGERSCRIPTFLAGS	= 5027, /* i[] */
+    RPMTAG_FILESTATUS		= 5028, /* i[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

@@ -217,6 +217,7 @@ typedef enum rpmtdFormats_e {
     RPMTD_FORMAT_FSTATE		= 16,	/* file states (int types) */
     RPMTD_FORMAT_VFLAGS		= 17,	/* file verify flags (int types) */
     RPMTD_FORMAT_EXPAND		= 18,	/* macro expansion (string types) */
+    RPMTD_FORMAT_FSTATUS	= 19,	/* file verify status (int types) */
 } rpmtdFormats;
 
 /** \ingroup rpmtd
