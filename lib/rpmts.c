@@ -154,7 +154,10 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
     char *tmp = NULL;
     int xx;
 
-    if (ts->keyring == NULL)
+    if (ts == NULL)
+	return NULL;
+
+    if (ts && ts->keyring == NULL)
 	loadKeyring(ts);
 
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
