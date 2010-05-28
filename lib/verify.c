@@ -306,6 +306,21 @@ char * rpmVerifyString(uint32_t verifyResult, const char *pad)
 #undef aok
 #undef unknown
 
+char * rpmFFlagsString(uint32_t fflags, const char *pad)
+{
+    char *fmt = NULL;
+    rasprintf(&fmt, "%s%s%s%s%s%s%s%s",
+		(fflags & RPMFILE_DOC) ? "d" : pad,
+		(fflags & RPMFILE_CONFIG) ? "c" : pad,
+		(fflags & RPMFILE_SPECFILE) ? "s" : pad,
+		(fflags & RPMFILE_MISSINGOK) ? "m" : pad,
+		(fflags & RPMFILE_NOREPLACE) ? "n" : pad,
+		(fflags & RPMFILE_GHOST) ? "g" : pad,
+		(fflags & RPMFILE_LICENSE) ? "l" : pad,
+		(fflags & RPMFILE_README) ? "r" : pad);
+    return fmt;
+}
+
 /**
  * Check file info from header against what's actually installed.
  * @param ts		transaction set
@@ -323,7 +338,8 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
     rpmfiInit(fi, 0);
     while (rpmfiNext(fi) >= 0) {
 	rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
-	char *buf = NULL;
+	char *buf = NULL, *attrFormat;
+	char ac;
 	int rc;
 
 	/* If not verifying %ghost, skip ghost files. */
@@ -341,16 +357,11 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	    rpmdbFreeIterator(mi);
 	}
 
+	attrFormat = rpmFFlagsString(fileAttrs, "");
+	ac = rstreq(attrFormat, "") ? ' ' : attrFormat[0];
 	if (rc) {
 	    if (!(fileAttrs & (RPMFILE_MISSINGOK|RPMFILE_GHOST)) || rpmIsVerbose()) {
-		rasprintf(&buf, _("missing   %c %s"),
-			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
-			 (fileAttrs & RPMFILE_DOC)	? 'd' :
-			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
-			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
-			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
-			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
-			rpmfiFN(fi));
+		rasprintf(&buf, _("missing   %c %s"), ac, rpmfiFN(fi));
 		if ((verifyResult & RPMVERIFY_LSTATFAIL) != 0 &&
 		    errno != ENOENT) {
 		    char *app;
@@ -362,18 +373,12 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	    }
 	} else if (verifyResult || rpmIsVerbose()) {
 	    char *verifyFormat = rpmVerifyString(verifyResult, ".");
-	    rasprintf(&buf, "%s  %c %s", verifyFormat,
-			((fileAttrs & RPMFILE_CONFIG)	? 'c' :
-			 (fileAttrs & RPMFILE_DOC)	? 'd' :
-			 (fileAttrs & RPMFILE_GHOST)	? 'g' :
-			 (fileAttrs & RPMFILE_LICENSE)	? 'l' :
-			 (fileAttrs & RPMFILE_PUBKEY)	? 'P' :
-			 (fileAttrs & RPMFILE_README)	? 'r' : ' '), 
-			rpmfiFN(fi));
+	    rasprintf(&buf, "%s  %c %s", verifyFormat, ac, rpmfiFN(fi));
 	    free(verifyFormat);
 
 	    if (verifyResult) ec = 1;
 	}
+	free(attrFormat);
 
 	if (buf) {
 	    rpmlog(RPMLOG_NOTICE, "%s\n", buf);

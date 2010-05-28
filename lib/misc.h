@@ -21,6 +21,9 @@ RPM_GNUC_INTERNAL
 char * rpmVerifyString(uint32_t verifyResult, const char *pad);
 
 RPM_GNUC_INTERNAL
+char * rpmFFlagsString(uint32_t fflags, const char *pad);
+
+RPM_GNUC_INTERNAL
 unsigned int hashFunctionString(const char * string);
 /*
  * These may be called w/ a NULL argument to flush the cache -- they return

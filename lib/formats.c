@@ -301,32 +301,14 @@ static char * permsFormat(rpmtd td, char * formatPrefix)
 static char * fflagsFormat(rpmtd td, char * formatPrefix)
 {
     char * val = NULL;
-    char buf[15];
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	uint64_t anint = rpmtdGetNumber(td);
-	buf[0] = '\0';
-	if (anint & RPMFILE_DOC)
-	    strcat(buf, "d");
-	if (anint & RPMFILE_CONFIG)
-	    strcat(buf, "c");
-	if (anint & RPMFILE_SPECFILE)
-	    strcat(buf, "s");
-	if (anint & RPMFILE_MISSINGOK)
-	    strcat(buf, "m");
-	if (anint & RPMFILE_NOREPLACE)
-	    strcat(buf, "n");
-	if (anint & RPMFILE_GHOST)
-	    strcat(buf, "g");
-	if (anint & RPMFILE_LICENSE)
-	    strcat(buf, "l");
-	if (anint & RPMFILE_README)
-	    strcat(buf, "r");
-
+	char *buf = rpmFFlagsString(rpmtdGetNumber(td), "");
 	strcat(formatPrefix, "s");
 	rasprintf(&val, formatPrefix, buf);
+	free(buf);
     }
 
     return val;
