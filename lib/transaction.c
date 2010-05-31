@@ -1222,7 +1222,7 @@ static int rpmtsPrepare(rpmts ts)
     rpmtsi pi;
     rpmte p;
     rpmfi fi;
-    int xx, rc = 0;
+    int rc = 0;
     uint64_t fileCount = countFiles(ts);
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
