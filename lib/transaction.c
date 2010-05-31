@@ -14,6 +14,7 @@
 
 #include "lib/fprint.h"
 #include "lib/misc.h"
+#include "lib/rpmchroot.h"
 #include "lib/rpmlock.h"
 #include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
@@ -1195,18 +1196,10 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     }
 
     /* XXX Make sure the database is open RDWR for package install/erase. */
-    if (rpmtsOpenDB(ts, dbmode)) {
-	return -1;	/* XXX W2DO? */
-    }
+    if (rpmtsOpenDB(ts, dbmode) || rpmChrootSet(rpmtsRootDir(ts)))
+	return -1;
 
     ts->ignoreSet = ignoreSet;
-
-    {	char * currDir = rpmGetCwd();
-	rpmtsSetCurrDir(ts, currDir);
-	currDir = _free(currDir);
-    }
-
-    (void) rpmtsSetChrootDone(ts, 0);
     (void) rpmtsSetTid(ts, tid);
 
     /* Get available space on mounted file systems. */
@@ -1220,7 +1213,7 @@ static int rpmtsFinish(rpmts ts)
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
 	matchpathcon_fini();
     }
-    return 0;
+    return rpmChrootSet(NULL);
 }
 
 static int rpmtsPrepare(rpmts ts)
@@ -1231,8 +1224,6 @@ static int rpmtsPrepare(rpmts ts)
     rpmfi fi;
     int xx, rc = 0;
     uint64_t fileCount = countFiles(ts);
-    const char * rootDir = rpmtsRootDir(ts);
-    int dochroot = (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/');
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
@@ -1254,19 +1245,10 @@ static int rpmtsPrepare(rpmts ts)
     }
     pi = rpmtsiFree(pi);
 
-    /* Enter chroot for fingerprinting if necessary */
-    if (!rpmtsChrootDone(ts)) {
-	xx = chdir("/");
-	if (dochroot) {
-	    /* opening db before chroot not optimal, see rhbz#103852 c#3 */
-	    xx = rpmdbOpenAll(ts->rdb);
-	    if (chroot(rootDir) == -1) {
-		rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
-		rc = -1;
-		goto exit;
-	    }
-	}
-	(void) rpmtsSetChrootDone(ts, 1);
+    /* Open rpmdb & enter chroot for fingerprinting if necessary */
+    if (rpmdbOpenAll(ts->rdb) || rpmChrootIn()) {
+	rc = -1;
+	goto exit;
     }
     
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, tsmem->orderCount);
@@ -1298,14 +1280,8 @@ static int rpmtsPrepare(rpmts ts)
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, tsmem->orderCount);
 
     /* return from chroot if done earlier */
-    if (rpmtsChrootDone(ts)) {
-	const char * currDir = rpmtsCurrDir(ts);
-	if (dochroot)
-	    xx = chroot(".");
-	(void) rpmtsSetChrootDone(ts, 0);
-	if (currDir != NULL)
-	    xx = chdir(currDir);
-    }
+    if (rpmChrootOut())
+	rc = -1;
 
     /* File info sets, fp caches etc not needed beyond here, free 'em up. */
     pi = rpmtsiInit(ts);

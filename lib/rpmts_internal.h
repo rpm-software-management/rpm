@@ -46,9 +46,7 @@ struct rpmts_s {
     tsMembers members;		/*!< Transaction set member info (order etc) */
 
     int selinuxEnabled;		/*!< Is SE linux enabled? */
-    int chrootDone;		/*!< Has chroot(2) been been done? */
     char * rootDir;		/*!< Path to top of install tree. */
-    char * currDir;		/*!< Current working directory. */
     char * lockPath;		/*!< Transaction lock path */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     rpm_tid_t tid;		/*!< Transaction id. */

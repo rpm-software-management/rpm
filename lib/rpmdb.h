@@ -39,14 +39,6 @@ typedef enum rpmdbOpX_e {
 rpmop rpmdbOp(rpmdb db, rpmdbOpX opx);
 
 /** \ingroup rpmdb
- * Set chrootDone flag, i.e. has chroot(2) been performed?
- * @param db            rpm database
- * @param chrootDone    new chrootDone flag
- * @return              previous chrootDone flag
- */
-int rpmdbSetChrootDone(rpmdb db, int chrootDone);
-
-/** \ingroup rpmdb
  * Unreference a database instance.
  * @param db		rpm database
  * @return		NULL always

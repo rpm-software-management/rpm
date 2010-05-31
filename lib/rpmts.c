@@ -22,6 +22,7 @@
 
 #include "rpmio/digest.h"
 #include "lib/rpmal.h"
+#include "lib/rpmchroot.h"
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"
 #include "lib/misc.h"
@@ -603,7 +604,6 @@ rpmts rpmtsFree(rpmts ts)
 	ts->scriptFd = NULL;
     }
     ts->rootDir = _free(ts->rootDir);
-    ts->currDir = _free(ts->currDir);
     ts->lockPath = _free(ts->lockPath);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
@@ -658,24 +658,6 @@ int rpmtsSetRootDir(rpmts ts, const char * rootDir)
     return 0;
 }
 
-const char * rpmtsCurrDir(rpmts ts)
-{
-    const char * currDir = NULL;
-    if (ts != NULL) {
-	currDir = ts->currDir;
-    }
-    return currDir;
-}
-
-void rpmtsSetCurrDir(rpmts ts, const char * currDir)
-{
-    if (ts != NULL) {
-	ts->currDir = _free(ts->currDir);
-	if (currDir)
-	    ts->currDir = xstrdup(currDir);
-    }
-}
-
 FD_t rpmtsScriptFd(rpmts ts)
 {
     FD_t scriptFd = NULL;
@@ -701,22 +683,6 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
 int rpmtsSELinuxEnabled(rpmts ts)
 {
     return (ts != NULL ? (ts->selinuxEnabled > 0) : 0);
-}
-
-int rpmtsChrootDone(rpmts ts)
-{
-    return (ts != NULL ? ts->chrootDone : 0);
-}
-
-int rpmtsSetChrootDone(rpmts ts, int chrootDone)
-{
-    int ochrootDone = 0;
-    if (ts != NULL) {
-	ochrootDone = ts->chrootDone;
-	rpmdbSetChrootDone(rpmtsGetRdb(ts), chrootDone);
-	ts->chrootDone = chrootDone;
-    }
-    return ochrootDone;
 }
 
 rpm_tid_t rpmtsGetTid(rpmts ts)
@@ -931,8 +897,6 @@ rpmts rpmtsCreate(void)
     ts->members = tsmem;
 
     ts->rootDir = NULL;
-    ts->currDir = NULL;
-    ts->chrootDone = 0;
 
     ts->selinuxEnabled = is_selinux_enabled();
 
@@ -1001,7 +965,7 @@ rpmlock rpmtsAcquireLock(rpmts ts)
 	const char *rootDir = rpmtsRootDir(ts);
 	char *t;
 
-	if (!rootDir || rpmtsChrootDone(ts))
+	if (!rootDir || rpmChrootDone())
 	    rootDir = "/";
 
 	t = rpmGenPath(rootDir, rpmlock_path_default, NULL);

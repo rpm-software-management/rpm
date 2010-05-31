@@ -30,6 +30,7 @@
 #include <rpm/rpmts.h>
 #include <rpm/argv.h>
 
+#include "lib/rpmchroot.h"
 #include "lib/rpmdb_internal.h"
 #include "lib/fprint.h"
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
@@ -573,19 +574,9 @@ const char *rpmdbHome(rpmdb db)
 {
     const char *dbdir = NULL;
     if (db) {
-	dbdir = db->db_chrootDone ? db->db_home : db->db_fullpath;
+	dbdir = rpmChrootDone() ? db->db_home : db->db_fullpath;
     }
     return dbdir;
-}
-
-int rpmdbSetChrootDone(rpmdb db, int chrootDone)
-{
-    int ochrootDone = 0;
-    if (db != NULL) {
-	ochrootDone = db->db_chrootDone;
-	db->db_chrootDone = chrootDone;
-    }
-    return ochrootDone;
 }
 
 int rpmdbOpenAll(rpmdb db)

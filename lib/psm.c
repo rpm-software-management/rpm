@@ -12,13 +12,14 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>
-#include <rpm/rpmdb.h>		/* XXX for db_chrootDone */
+#include <rpm/rpmdb.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
 
 #include "lib/cpio.h"
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
+#include "lib/rpmchroot.h"
 #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
 #include "lib/rpmte_internal.h"	/* XXX internal apis */
 #include "lib/rpmdb_internal.h" /* rpmdbAdd/Remove */
@@ -42,8 +43,6 @@ typedef enum pkgStage_e {
     PSM_DESTROY		= 23,
     PSM_COMMIT		= 25,
 
-    PSM_CHROOT_IN	= 51,
-    PSM_CHROOT_OUT	= 52,
     PSM_SCRIPT		= 53,
     PSM_TRIGGERS	= 54,
     PSM_IMMED_TRIGGERS	= 55,
@@ -64,7 +63,6 @@ typedef struct rpmpsm_s {
     int scriptArg;		/*!< Scriptlet package arg. */
     rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
     int countCorrection;	/*!< 0 if installing, -1 if removing. */
-    int chrootDone;		/*!< Was chroot(2) done by pkgStage? */
     rpmCallbackType what;	/*!< Callback type. */
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
@@ -1012,35 +1010,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	xx = fsmTeardown(rpmfiFSM(fi));
 	break;
 
-    case PSM_CHROOT_IN:
-    {	const char * rootDir = rpmtsRootDir(ts);
-	/* Change root directory if requested and not already done. */
-	if (rootDir != NULL && !(rootDir[0] == '/' && rootDir[1] == '\0')
-	 && !rpmtsChrootDone(ts) && !psm->chrootDone)
-	{
-	    xx = chdir("/");
-	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
-	        if (chroot(rootDir) == -1) {
-		    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
-		    return -1;
-		}
-	    psm->chrootDone = 1;
-	    (void) rpmtsSetChrootDone(ts, 1);
-	}
-    }	break;
-    case PSM_CHROOT_OUT:
-	/* Restore root directory if changed. */
-	if (psm->chrootDone) {
-	    const char * rootDir = rpmtsRootDir(ts);
-	    const char * currDir = rpmtsCurrDir(ts);
-	    if (rootDir != NULL && !rstreq(rootDir, "/") && *rootDir == '/')
-		rc = chroot(".");
-	    psm->chrootDone = 0;
-	    (void) rpmtsSetChrootDone(ts, 0);
-	    if (currDir != NULL)	/* XXX can't happen */
-		xx = chdir(currDir);
-	}
-	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
 	rc = runInstScript(psm);
 	break;
@@ -1108,7 +1077,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	return RPMRC_OK;
 
     psm = rpmpsmNew(ts, te);
-    if (rpmpsmNext(psm, PSM_CHROOT_IN) == RPMRC_OK) {
+    if (rpmChrootIn() == 0) {
 	rpmtsOpX op;
 	psm->goal = goal;
 	psm->goalName = pkgGoalString(goal);
@@ -1136,7 +1105,8 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	default:
 	    break;
 	}
-	(void) rpmpsmNext(psm, PSM_CHROOT_OUT);
+	/* XXX an error here would require a full abort */
+	(void) rpmChrootOut();
     }
     rpmpsmFree(psm);
     return rc;

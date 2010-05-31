@@ -375,20 +375,6 @@ const char * rpmtsRootDir(rpmts ts);
 int rpmtsSetRootDir(rpmts ts, const char * rootDir);
 
 /** \ingroup rpmts
- * Get transaction currDir, i.e. current directory before chroot(2).
- * @param ts		transaction set
- * @return		transaction currDir
- */
-const char * rpmtsCurrDir(rpmts ts);
-
-/** \ingroup rpmts
- * Set transaction currDir, i.e. current directory before chroot(2).
- * @param ts		transaction set
- * @param currDir	new transaction currDir (or NULL)
- */
-void rpmtsSetCurrDir(rpmts ts, const char * currDir);
-
-/** \ingroup rpmts
  * Get transaction script file handle, i.e. stdout/stderr on scriptlet execution
  * @param ts		transaction set
  * @return		transaction script file handle
@@ -408,21 +394,6 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd);
  * @return		selinuxEnabled flag
  */
 int rpmtsSELinuxEnabled(rpmts ts);
-
-/** \ingroup rpmts
- * Get chrootDone flag, i.e. has chroot(2) been performed?
- * @param ts		transaction set
- * @return		chrootDone flag
- */
-int rpmtsChrootDone(rpmts ts);
-
-/** \ingroup rpmts
- * Set chrootDone flag, i.e. has chroot(2) been performed?
- * @param ts		transaction set
- * @param chrootDone	new chrootDone flag
- * @return		previous chrootDone flag
- */
-int rpmtsSetChrootDone(rpmts ts, int chrootDone);
 
 /** \ingroup rpmts
  * Get transaction id, i.e. transaction time stamp.

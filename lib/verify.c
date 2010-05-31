@@ -22,6 +22,7 @@
 #include <rpm/rpmfileutil.h>
 
 #include "lib/misc.h" 	/* uidToUname(), gnameToGid */
+#include "lib/rpmchroot.h"
 #include "lib/rpmte_internal.h"	/* rpmteProcess() */
 
 #include "debug.h"
@@ -455,9 +456,7 @@ int showVerifyPackage(QVA_t qva, rpmts ts, Header h)
 int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 {
     rpmVSFlags vsflags, ovsflags;
-    int ec = 0, xx;
-    int dirfd = -1;
-    const char * rootDir = rpmtsRootDir(ts);
+    int ec = 0;
     FD_t scriptFd = fdDup(STDOUT_FILENO);
 
     /* 
@@ -466,15 +465,9 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
      */
     rpmtsOpenDB(ts, O_RDONLY);
     rpmdbOpenAll(rpmtsGetRdb(ts));
-    if (rootDir && !rstreq(rootDir, "/")) {
-	dirfd = open(".", O_RDONLY);
-	if (dirfd == -1 || chdir("/") == -1 || chroot(rootDir) == -1) {
-	    rpmlog(RPMLOG_ERR, _("Unable to change root directory: %m\n"));
-	    ec = 1;
-	    goto exit;
-	} else {
-	    rpmtsSetChrootDone(ts, 1);
-	}
+    if (rpmChrootSet(rpmtsRootDir(ts)) || rpmChrootIn()) {
+	ec = 1;
+	goto exit;
     }
 
     if (qva->qva_showPackage == NULL)
@@ -501,16 +494,11 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
 
     rpmtsEmpty(ts);
 
-    if (rpmtsChrootDone(ts)) {
-	/* only done if previous chroot succeeded, assume success */
-	xx = chroot(".");
-	xx = fchdir(dirfd);
-	rpmtsSetChrootDone(ts, 0);
-    }
+    if (rpmChrootOut() || rpmChrootSet(NULL))
+	ec = 1;
 
 exit:
     Fclose(scriptFd);
-    if (dirfd >= 0) close(dirfd);
 
     return ec;
 }
