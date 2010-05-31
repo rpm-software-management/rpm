@@ -63,7 +63,6 @@ typedef enum fileStage_e {
     FSM_LSTAT	=  _fs(48),
     FSM_STAT	=  _fs(49),
     FSM_READLINK=  _fs(50),
-    FSM_CHROOT	=  _fs(51),
     FSM_SETCAP	=  _fs(52),
 
     FSM_NEXT	=  _fd(65),

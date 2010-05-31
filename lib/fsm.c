@@ -2128,9 +2128,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = 0;
 	}
 	break;
-    case FSM_CHROOT:
-	break;
-
     case FSM_NEXT:
 	rc = fsmUNSAFE(fsm, FSM_HREAD);
 	if (rc) break;
@@ -2342,7 +2339,6 @@ static const char * fileStageString(fileStage a) {
     case FSM_LSTAT:	return "lstat";
     case FSM_STAT:	return "stat";
     case FSM_READLINK:	return "readlink";
-    case FSM_CHROOT:	return "chroot";
     case FSM_SETCAP:	return "setcap";
 
     case FSM_NEXT:	return "next";
