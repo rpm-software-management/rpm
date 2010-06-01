@@ -430,19 +430,25 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     rpmPubkey pubkey = NULL;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    int krc;
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
-    if (rpmKeyringAddKey(keyring, pubkey) != 0)
-	goto exit;
-    if (makePubkeyHeader(ts, pubkey, h) != 0) 
+    krc = rpmKeyringAddKey(keyring, pubkey);
+    if (krc < 0)
 	goto exit;
 
-    /* Add header to database. */
-    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-	goto exit;
-    if (rpmdbAdd(rpmtsGetRdb(ts), h) != 0)
-	goto exit;
+    /* If we dont already have the key, make a persistent record of it */
+    if (krc == 0) {
+	if (makePubkeyHeader(ts, pubkey, h) != 0) 
+	    goto exit;
+
+	/* Add header to database. */
+	if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+	    goto exit;
+	if (rpmdbAdd(rpmtsGetRdb(ts), h) != 0)
+	    goto exit;
+    }
     rc = RPMRC_OK;
 
 exit:
