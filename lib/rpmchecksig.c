@@ -372,29 +372,59 @@ exit:
     return res;
 }
 
-/** \ingroup rpmcli
- * Import public key(s).
- * @todo Implicit --update policy for gpg-pubkey headers.
- * @param ts		transaction set
- * @param argv		array of pubkey file names (NULL terminated)
- * @return		0 on success
- */
-static int rpmcliImportPubkeys(const rpmts ts, ARGV_const_t argv)
+static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
 {
-    const char * fn;
+    char const * const pgpmark = "-----BEGIN PGP ";
+    size_t marklen = strlen(pgpmark);
     int res = 0;
-
-    while ((fn = *argv++) != NULL) {
-	unsigned char * pkt = NULL;
+    int keyno = 1;
+    char *start = buf;
+    
+    while (start) {
+	uint8_t *pkt = NULL;
 	size_t pktlen = 0;
-	char * t = NULL;
-	int rc;
+	
+	/* Read pgp packet. */
+	if (pgpParsePkts(start, &pkt, &pktlen) == PGPARMOR_PUBKEY) {
+	    /* Import pubkey packet(s). */
+	    if (rpmtsImportPubkey(ts, pkt, pktlen) != RPMRC_OK) {
+		rpmlog(RPMLOG_ERR, _("%s: key %d import failed.\n"), fn, keyno);
+		res++;
+	    }
+	} else {
+	    rpmlog(RPMLOG_ERR, _("%s: key %d not an armored public key.\n"),
+		   fn, keyno);
+	    res++;
+	}
+	
+	/* See if there are more keys in the buffer */
+	if (start + marklen < buf + blen) {
+	    start = strstr(start + marklen, pgpmark);
+	} else {
+	    start = NULL;
+	}
+
+	keyno++;
+	free(pkt);
+    }
+    return res;
+}
+
+static int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
+{
+    int res = 0;
+    for (ARGV_const_t arg = argv; arg && *arg; arg++) {
+	const char *fn = *arg;
+	uint8_t *buf = NULL;
+	ssize_t blen = 0;
+	char *t = NULL;
+	int iorc;
 
 	/* If arg looks like a keyid, then attempt keyserver retrieve. */
 	if (rstreqn(fn, "0x", 2)) {
-	    const char * s;
+	    const char * s = fn + 2;
 	    int i;
-	    for (i = 0, s = fn+2; *s && isxdigit(*s); s++, i++)
+	    for (i = 0; *s && isxdigit(*s); s++, i++)
 		{};
 	    if (i == 8 || i == 16) {
 		t = rpmExpand("%{_hkp_keyserver_query}", fn+2, NULL);
@@ -403,26 +433,18 @@ static int rpmcliImportPubkeys(const rpmts ts, ARGV_const_t argv)
 	    }
 	}
 
-	/* Read pgp packet. */
-	rc = pgpReadPkts(fn, &pkt, &pktlen);
-	if (rc == PGPARMOR_PUBKEY) {
-	    /* Import pubkey packet(s). */
-	    if (rpmtsImportPubkey(ts, pkt, pktlen) != RPMRC_OK) {
-		rpmlog(RPMLOG_ERR, _("%s: import failed.\n"), fn);
-		res++;
-	    }
-	} else if (rc < 0) {
-	    rpmlog(RPMLOG_ERR, _("%s: import read failed(%d).\n"), fn, rc);
+	/* Read the file and try to import all contained keys */
+	iorc = rpmioSlurp(fn, &buf, &blen);
+	if (iorc || buf == NULL || blen < 64) {
+	    rpmlog(RPMLOG_ERR, _("%s: import read failed(%d).\n"), fn, iorc);
 	    res++;
 	} else {
-	    rpmlog(RPMLOG_ERR, _("%s: not an armored public key.\n"), fn);
-	    res++;
+	    res += doImport(ts, fn, (char *)buf, blen);
 	}
-
-	free(pkt);
+	
 	free(t);
+	free(buf);
     }
-    
     return res;
 }
 
