@@ -355,27 +355,25 @@ static int checkFreshenStatus(rpmts ts, struct rpmEIU * eiu)
 {
     rpmdbMatchIterator mi = NULL;
     const char * name = headerGetString(eiu->h, RPMTAG_NAME);
-    Header oldH;
-    int count;
+    const char *arch = headerGetString(eiu->h, RPMTAG_ARCH);
+    Header oldH = NULL;
 
     if (name != NULL)
         mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
-    count = rpmdbGetIteratorCount(mi);
-    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
-        if (rpmVersionCompare(oldH, eiu->h) < 0)
-	    continue;
-	/* same or newer package already installed */
-	count = 0;
-	break;
-    }
-    mi = rpmdbFreeIterator(mi);
-    if (count == 0) {
-        eiu->h = headerFree(eiu->h);
-	return -1;
-    }
-    /* Package is newer than those currently installed. */
+    if (rpmtsColor(ts) && arch)
+	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
 
-   return 1;
+    while ((oldH = rpmdbNextIterator(mi)) != NULL) {
+	/* Package is newer than those currently installed. */
+        if (rpmVersionCompare(oldH, eiu->h) < 0)
+	    break;
+    }
+
+    mi = rpmdbFreeIterator(mi);
+    if (oldH == NULL) {
+        eiu->h = headerFree(eiu->h);
+    }
+   return (oldH != NULL);
 }
 
 /** @todo Generalize --freshen policies. */
