@@ -327,6 +327,46 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
     return removePackage(ts, h, NULL);
 }
 
+/* Cached rpmdb provide lookup, returns 0 if satisfied, 1 otherwise */
+static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
+{
+    const char * Name = rpmdsN(dep);
+    const char * DNEVR = rpmdsDNEVR(dep);
+    int *cachedrc = NULL;
+    rpmdbMatchIterator mi = NULL;
+    Header h = NULL;
+    int rc;
+
+    /* See if we already looked this up */
+    if (depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
+	rc = *cachedrc;
+	rpmdsNotify(dep, "(cached)", rc);
+	return rc;
+    }
+
+    if (Name[0] == '/') {
+	mi = rpmtsPrunedIterator(ts, RPMTAG_BASENAMES, Name);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    rpmdsNotify(dep, "(db files)", rc);
+	    break;
+	}
+    } else {
+	mi = rpmtsPrunedIterator(ts, RPMTAG_PROVIDENAME, Name);
+	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
+		rpmdsNotify(dep, "(db provides)", rc);
+		break;
+	    }
+	}
+    }
+    rpmdbFreeIterator(mi);
+
+    /* Cache the relatively expensive rpmdb lookup results */
+    rc = (h != NULL) ? 0 : 1;
+    depCacheAddEntry(dcache, xstrdup(DNEVR), rc);
+    return rc;
+}
+
 /**
  * Check dep for an unsatisfied dependency.
  * @param ts		transaction set
@@ -336,15 +376,8 @@ int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 static int unsatisfiedDepend(rpmts ts, depCache dcache, rpmds dep)
 {
     tsMembers tsmem = rpmtsMembers(ts);
-    rpmdbMatchIterator mi;
-    const char * Name = rpmdsN(dep);
-    const char * DNEVR = rpmdsDNEVR(dep);
-    Header h;
     int rc;
-    int xx;
     int retrying = 0;
-    int *cachedrc = NULL;
-    int cacheThis = 0;
     int adding = (rpmdsInstance(dep) == 0);
     rpmsenseFlags dsflags = rpmdsFlags(dep);
 
@@ -378,42 +411,14 @@ retry:
 	goto exit;
     }
 
-    /* See if we already looked this up */
-    if (depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
-	rc = *cachedrc;
-	rpmdsNotify(dep, "(cached)", rc);
-	return rc;
-    }
-    /* Only bother caching the expensive rpmdb lookups */
-    cacheThis = 1;
+    /* See if the rpmdb provides it */
+    if (rpmdbProvides(ts, dcache, dep) == 0)
+	goto exit;
 
-    if (Name[0] == '/') {
-	mi = rpmtsPrunedIterator(ts, RPMTAG_BASENAMES, Name);
-
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    rpmdsNotify(dep, "(db files)", rc);
-	    mi = rpmdbFreeIterator(mi);
-	    goto exit;
-	}
-	mi = rpmdbFreeIterator(mi);
-    }
-
-    mi = rpmtsPrunedIterator(ts, RPMTAG_PROVIDENAME, Name);
-    while ((h = rpmdbNextIterator(mi)) != NULL) {
-	if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
-	    rpmdsNotify(dep, "(db provides)", rc);
-	    mi = rpmdbFreeIterator(mi);
-	    goto exit;
-	}
-    }
-    mi = rpmdbFreeIterator(mi);
-
-    /*
-     * Search for an unsatisfied dependency.
-     */
+    /* Search for an unsatisfied dependency. */
     if (adding && !retrying && !(dsflags & RPMSENSE_PRETRANS) &&
 		!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
-	xx = rpmtsSolve(ts, dep);
+	int xx = rpmtsSolve(ts, dep);
 	if (xx == 0)
 	    goto exit;
 	if (xx == -1) {
@@ -427,11 +432,6 @@ unsatisfied:
     rpmdsNotify(dep, NULL, rc);
 
 exit:
-    if (cacheThis) {
-	char *key = xstrdup(DNEVR);
-	depCacheAddEntry(dcache, key, rc);
-    }
-	
     return rc;
 }
 
