@@ -1471,10 +1471,13 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 	    }
 	    if (rc != PGPARMOR_PUBKEY)	/* XXX ASCII Pubkeys only, please. */
 		continue;
-	    armortype = t;
 
-	    t = te - (sizeof("-----\n")-1);
-	    if (!TOKEQ(t, "-----\n"))
+	    armortype = pgpValStr(pgpArmorTbl, rc);
+	    t += strlen(armortype);
+	    if (!TOKEQ(t, "-----"))
+		continue;
+	    t += sizeof("-----")-1;
+	    if (*t != '\n' && *t != '\r')
 		continue;
 	    *t = '\0';
 	    pstate++;
@@ -1484,7 +1487,7 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 	    rc = pgpValTok(pgpArmorKeyTbl, t, te);
 	    if (rc >= 0)
 		continue;
-	    if (*t != '\n') {
+	    if (*t != '\n' && *t != '\r') {
 		pstate = 0;
 		continue;
 	    }
