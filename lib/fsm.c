@@ -1320,6 +1320,16 @@ static const char * rpmteTypeString(rpmte te)
     }
 }
 
+static void removeSBITS(const char *path)
+{
+    struct stat stb;
+    if (lstat(path, &stb) == 0) {
+	if (S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0) {
+	    (void) chmod(path, stb.st_mode & 0777);
+	}
+    }
+}
+
 #define	IS_DEV_LOG(_x)	\
 	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
 	rstreqn((_x), "/dev/log", sizeof("/dev/log")-1) && \
@@ -2024,11 +2034,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
 
     case FSM_UNLINK:
-	if (fsm->mapFlags & CPIO_SBIT_CHECK) {
-	    struct stat stb;
-	    if (lstat(fsm->path, &stb) == 0 && S_ISREG(stb.st_mode) && (stb.st_mode & 06000) != 0)
-		chmod(fsm->path, stb.st_mode & 0777);
-	}
+	if (fsm->mapFlags & CPIO_SBIT_CHECK)
+	    removeSBITS(fsm->path);
 	rc = unlink(fsm->path);
 	if (_fsm_debug && (stage & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", cur,
@@ -2037,6 +2044,8 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
 	break;
     case FSM_RENAME:
+	if (fsm->mapFlags & CPIO_SBIT_CHECK)
+	    removeSBITS(fsm->path);
 	rc = rename(fsm->opath, fsm->path);
 #if defined(ETXTBSY) && defined(__HPUX__)
 	if (rc && errno == ETXTBSY) {
