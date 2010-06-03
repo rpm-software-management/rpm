@@ -262,7 +262,7 @@ int urlGetFile(const char * url, const char * dest)
 
     /* XXX TODO: sanity checks like target == dest... */
 
-    rasprintf(&cmd, "%s %s %s\n", urlhelper, target, url);
+    rasprintf(&cmd, "%s %s %s", urlhelper, target, url);
     urlhelper = _free(urlhelper);
 
     if ((pid = fork()) == 0) {
