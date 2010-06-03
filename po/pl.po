@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-05-31 14:32+0300\n"
-"PO-Revision-Date: 2010-03-29 16:37+0100\n"
+"PO-Revision-Date: 2010-06-03 20:45+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
@@ -2433,9 +2433,9 @@ msgid ")"
 msgstr ")"
 
 #: lib/rpmchroot.c:58 lib/rpmchroot.c:83
-#, fuzzy, c-format
+#, c-format
 msgid "%s: chroot directory not set\n"
-msgstr "wykonanie %s rmdir na %s nie powiodło się: katalog nie jest pusty\n"
+msgstr "%s: nie ustawiono katalogu chroot\n"
 
 #: lib/rpmchroot.c:69
 #, c-format
@@ -2443,9 +2443,9 @@ msgid "Unable to change root directory: %m\n"
 msgstr "Nie można zmienić katalogu roota: %m\n"
 
 #: lib/rpmchroot.c:94
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to restore root directory: %m\n"
-msgstr "Nie można zmienić katalogu roota: %m\n"
+msgstr "Nie można przywrócić katalogu roota: %m\n"
 
 #: lib/rpmds.c:399
 msgid "NO "
@@ -2613,14 +2613,14 @@ msgid "not an rpm package\n"
 msgstr "nie jest pakietem RPM\n"
 
 #: lib/rpmlock.c:102 lib/rpmlock.c:109
-#, fuzzy, c-format
+#, c-format
 msgid "can't create %s lock on %s (%s)\n"
-msgstr "nie można utworzyć blokady transakcji na %s (%s)\n"
+msgstr "nie można utworzyć blokady %s na %s (%s)\n"
 
 #: lib/rpmlock.c:106
-#, fuzzy, c-format
+#, c-format
 msgid "waiting for %s lock on %s\n"
-msgstr "oczekiwanie na blokadę transakcji na %s\n"
+msgstr "oczekiwanie na blokadę %s na %s\n"
 
 #: lib/rpmprob.c:107
 msgid "different"
@@ -2838,7 +2838,7 @@ msgstr "%s: odczytanie klucza publicznego nie powiodło się.\n"
 
 #: lib/rpmts.c:980
 msgid "transaction"
-msgstr ""
+msgstr "transakcji"
 
 #: lib/signature.c:135
 #, c-format
@@ -3082,14 +3082,14 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: pobrano uszkodzony nagłówek #%u - pomijanie.\n"
 
 #: lib/rpmdb.c:2225
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) adding header #%d record\n"
-msgstr "błąd(%d) podczas ustawiania wpisu nagłówka #%d do usunięcia %s\n"
+msgstr "błąd(%d) podczas dodawania wpisu nagłówka #%d\n"
 
 #: lib/rpmdb.c:2235
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) removing header #%d record\n"
-msgstr "błąd(%d) podczas ustawiania wpisu nagłówka #%d do usunięcia %s\n"
+msgstr "błąd(%d) podczas usuwania wpisu nagłówka #%d\n"
 
 #: lib/rpmdb.c:2260
 #, c-format
@@ -3374,9 +3374,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
-#~ msgstr "dbiTagsInit: nierozpoznana nazwa znacznika: \"%s\" zignorowano\n"
-
-#~ msgid "rpmdbAdd: skipping"
-#~ msgstr "rpmdbAdd: pomijanie"
