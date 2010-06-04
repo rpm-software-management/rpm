@@ -1004,6 +1004,25 @@ static int writeLinkedFile(FSM_t fsm)
     return ec;
 }
 
+static int fsmStat(FSM_t fsm, int dolstat)
+{
+    int rc;
+    if (dolstat){
+	rc = lstat(fsm->path, &fsm->osb);
+    } else {
+        rc = stat(fsm->path, &fsm->osb);
+    }
+    if (_fsm_debug && (FSM_STAT & FSM_SYSCALL) && rc && errno != ENOENT)
+        rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n",
+               fileStageString(dolstat ? FSM_LSTAT : FSM_STAT),
+               fsm->path, (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0) {
+        rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
+        memset(&fsm->osb, 0, sizeof(fsm->osb));	/* XXX s390x hackery */
+    }
+    return rc;
+}
+
 /** \ingroup payload
  * Create pending hard links to existing file.
  * @param fsm		file state machine data
@@ -1246,7 +1265,7 @@ static int fsmMkdirs(FSM_t fsm)
 	    }
 
 	    /* Validate next component of path. */
-	    rc = fsmUNSAFE(fsm, FSM_LSTAT);
+	    rc = fsmStat(fsm, 1); /* lstat */
 	    *te = '/';
 
 	    /* Directory already exists? */
@@ -1378,8 +1397,7 @@ static int fsmInit(FSM_t fsm)
     if (fsm->path != NULL &&
 	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(fsm->sb.st_mode)))
     {
-	rc = fsmUNSAFE(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)
-			     ? FSM_LSTAT : FSM_STAT));
+	rc = fsmStat(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)));
 	if (rc == CPIOERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
@@ -1511,6 +1529,7 @@ static int fsmSetcap(FSM_t fsm)
     return rc;
 }
 #endif /* WITH_CAP */
+
 
 
 /********************************************************************/
@@ -2110,7 +2129,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	} else if (S_ISDIR(st->st_mode)) {
 	    if (S_ISDIR(ost->st_mode))		return 0;
 	    if (S_ISLNK(ost->st_mode)) {
-		rc = fsmUNSAFE(fsm, FSM_STAT);
+		rc = fsmStat(fsm, 0);
 		if (rc == CPIOERR_ENOENT) rc = 0;
 		if (rc) break;
 		errno = saveerrno;
@@ -2137,26 +2156,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_LSTAT:
-	rc = lstat(fsm->path, ost);
-	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) {
-	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
-	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
-	}
-	break;
-    case FSM_STAT:
-	rc = stat(fsm->path, ost);
-	if (_fsm_debug && (stage & FSM_SYSCALL) && rc && errno != ENOENT)
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n", cur,
-		fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0) {
-	    rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_STAT_FAILED);
-	    memset(ost, 0, sizeof(*ost));	/* XXX s390x hackery */
-	}
 	break;
     case FSM_READLINK:
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
