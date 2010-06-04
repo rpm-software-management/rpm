@@ -837,6 +837,23 @@ exit:
     return rc;
 }
 
+static int fsmReadLink(FSM_t fsm)
+{
+    int rc;
+    /* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
+    rc = readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
+    if (_fsm_debug && (FSM_READLINK & FSM_SYSCALL))
+        rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", fileStageString(FSM_READLINK),
+               fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
+    if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
+    else {
+        fsm->rdnb = rc;
+        fsm->rdbuf[fsm->rdnb] = '\0';
+        rc = 0;
+    }
+    return rc;
+}
+
 /** \ingroup payload
  * Write next item to payload stream.
  * @param fsm		file state machine data
@@ -863,7 +880,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	 * I don't think that's a specified standard.
 	 */
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = fsmUNSAFE(fsm, FSM_READLINK);
+	rc = fsmReadLink(fsm);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
 	rstrcat(&symbuf, fsm->rdbuf);	/* XXX save readlink return. */
@@ -2138,7 +2155,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	} else if (S_ISLNK(st->st_mode)) {
 	    if (S_ISLNK(ost->st_mode)) {
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-		rc = fsmUNSAFE(fsm, FSM_READLINK);
+		rc = fsmReadLink(fsm);
 		errno = saveerrno;
 		if (rc) break;
 		if (rstreq(fsm->opath, fsm->rdbuf))	return 0;
@@ -2156,19 +2173,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
 	if (rc == 0)	rc = CPIOERR_ENOENT;
 	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	break;
-    case FSM_READLINK:
-	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", cur,
-		fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
-	else {
-	    fsm->rdnb = rc;
-	    fsm->rdbuf[fsm->rdnb] = '\0';
-	    rc = 0;
-	}
 	break;
     case FSM_NEXT:
 	rc = fsmNext(fsm, FSM_POS);
