@@ -75,9 +75,8 @@ msgid "cannot re-open payload: %s\n"
 msgstr "kuorman uudelleenavaus ei onnistu: %s\n"
 
 #: rpmqv.c:81
-#, fuzzy
 msgid "Query/Verify package selection options:"
-msgstr "kysele/tarkista paketteja ryhmässä"
+msgstr "Kysely/tarkistus pakettivalitsimet"
 
 #: rpmqv.c:84
 msgid "Query options (with -q or --query):"
@@ -481,9 +480,9 @@ msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
 #: build/files.c:831
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid capability: %s\n"
-msgstr "Virheellinen %s merkki: %s\n"
+msgstr ""
 
 #: build/files.c:842
 msgid "File capability support not built in\n"
@@ -555,14 +554,14 @@ msgid "%s: not an armored public key.\n"
 msgstr "%s: ei ole panssaroitu julkinen avain.\n"
 
 #: build/files.c:1634
-#, fuzzy, c-format
+#, c-format
 msgid "%s: policy file read failed.\n"
-msgstr "%s: julkisen avaimen luku epäonnistui\n"
+msgstr ""
 
 #: build/files.c:1642
-#, fuzzy, c-format
+#, c-format
 msgid "%s: failed to encode\n"
-msgstr "Makron %%%s laajennos ei onnistunut\n"
+msgstr ""
 
 #: build/files.c:1681
 #, c-format
@@ -614,9 +613,9 @@ msgstr ""
 "%s"
 
 #: build/files.c:2244
-#, fuzzy, c-format
+#, c-format
 msgid "Processing files: %s\n"
-msgstr "Käsitellään tiedostoja: %s-%s-%s\n"
+msgstr "Käsitellään tiedostoja: %s\n"
 
 #: build/files.c:2255
 msgid "Arch dependent binaries in noarch package\n"
@@ -803,19 +802,19 @@ msgid "Wrote: %s\n"
 msgstr "Kirjoitettiin: %s\n"
 
 #: build/pack.c:703
-#, fuzzy, c-format
+#, c-format
 msgid "Executing \"%s\":\n"
-msgstr "Suoritetaan(%s): %s\n"
+msgstr "Suoritetaan \"%s\":\n"
 
 #: build/pack.c:706
-#, fuzzy, c-format
+#, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr "%s:n suoritus epäonnistui (%s): %s\n"
+msgstr "%s:n suoritus epäonnistui.\n"
 
 #: build/pack.c:710
-#, fuzzy, c-format
+#, c-format
 msgid "Package check \"%s\" failed.\n"
-msgstr "Salasanan tarkistus epäonnistui\n"
+msgstr "Paketin tarkistus \"%s\" epäonnistui.\n"
 
 #: build/pack.c:762
 #, c-format
@@ -948,19 +947,19 @@ msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
 #: build/parsePreamble.c:454
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr "rivi %d: laiton merkki '-' %s:ssä: %s\n"
+msgstr "rivi %d: laiton merkki '%c' %s:ssä\n"
 
 #: build/parsePreamble.c:457
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char in: %s\n"
-msgstr "rivi %d: laiton merkki '-' %s:ssä: %s\n"
+msgstr "rivi %d: laiton merkki %s:ssä\n"
 
 #: build/parsePreamble.c:463
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "rivi %d: laiton merkki '-' %s:ssä: %s\n"
+msgstr "rivi %d: laiton merkkijono \"..\" %s:ssä\n"
 
 #: build/parsePreamble.c:488
 #, c-format
@@ -1008,9 +1007,9 @@ msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
 #: build/parsePreamble.c:748
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: %s is deprecated: %s\n"
-msgstr "rivi %d: versio vaaditaan: %s\n"
+msgstr ""
 
 #: build/parsePreamble.c:811
 #, c-format
@@ -1028,14 +1027,14 @@ msgid "line %d: Unknown tag: %s\n"
 msgstr "rivi %d: tuntematon nimiö: %s\n"
 
 #: build/parsePreamble.c:880
-#, fuzzy, c-format
+#, c-format
 msgid "%%{buildroot} couldn't be empty\n"
-msgstr "BuildRoot ei voi olla tyhjä\n"
+msgstr "%%{buildroot} ei voi olla tyhjä\n"
 
 #: build/parsePreamble.c:884
-#, fuzzy, c-format
+#, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
-msgstr "BuildRoot ei voi olla \"/\"\n"
+msgstr "%%{buildroot} ei voi olla \"/\"\n"
 
 #: build/parsePrep.c:26
 #, c-format
@@ -1113,9 +1112,9 @@ msgid "line %d: Version required: %s\n"
 msgstr "rivi %d: versio vaaditaan: %s\n"
 
 #: build/parseReqs.c:177
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: invalid dependency: %s\n"
-msgstr "rivi %d: virheellinen numero: %s\n"
+msgstr "rivi %d: virheellinen riippuvuus: %s\n"
 
 #: build/parseScript.c:191
 #, c-format
@@ -1353,9 +1352,9 @@ msgid "override target platform"
 msgstr "ohita kohdealusta"
 
 #: build/rpmfc.c:75
-#, fuzzy, c-format
+#, c-format
 msgid "Ignoring invalid regex %s\n"
-msgstr "rivi %d: virheellinen numero: %s\n"
+msgstr ""
 
 #: build/rpmfc.c:160
 #, c-format
@@ -1393,9 +1392,9 @@ msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
 #: build/rpmfc.c:834
-#, fuzzy
+#, 
 msgid "No file attributes configured\n"
-msgstr "gpg ei voinut kirjoittaa allekirjoitusta\n"
+msgstr ""
 
 #: build/rpmfc.c:851
 #, c-format
@@ -1473,9 +1472,9 @@ msgid "Missing hard link(s)"
 msgstr ""
 
 #: lib/cpio.c:226
-#, fuzzy
+#, 
 msgid "Digest mismatch"
-msgstr "MD5-tarkistussumma ei täsmää"
+msgstr "Tarkistussumma ei täsmää"
 
 #: lib/cpio.c:227
 msgid "Internal error"
@@ -1535,43 +1534,36 @@ msgid "(not an OpenPGP signature)"
 msgstr "(ei ole OpenPGP-allekirjoitus)"
 
 #: lib/formats.c:592
-#, fuzzy
 msgid "normal"
-msgstr "normaali      "
+msgstr "normaali"
 
 #: lib/formats.c:595
-#, fuzzy
 msgid "replaced"
-msgstr "korvattu      "
+msgstr "korvattu"
 
 #: lib/formats.c:598
-#, fuzzy
 msgid "not installed"
-msgstr "ei asennettu  "
+msgstr "ei asennettu"
 
 #: lib/formats.c:601
-#, fuzzy
 msgid "net shared"
-msgstr "verkkojaettu  "
+msgstr "verkkojaettu"
 
 #: lib/formats.c:604
-#, fuzzy
 msgid "wrong color"
-msgstr "väärä väri    "
+msgstr "väärä väri"
 
 #: lib/formats.c:608
 msgid "missing"
 msgstr ""
 
 #: lib/formats.c:611
-#, fuzzy
 msgid "(unknown)"
-msgstr "(tuntematon %3d)"
+msgstr "(tuntematon)"
 
 #: lib/formats.c:650
-#, fuzzy
 msgid "(not a string)"
-msgstr "(ei ole luku)"
+msgstr "(ei ole merkkijono)"
 
 #: lib/fsm.c:736
 #, c-format
@@ -1619,9 +1611,9 @@ msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
 msgstr ""
 
 #: lib/package.c:192
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable V%u signature\n"
-msgstr "ohitetaan paketti %s jonka V%u allekirjoitusta ei voida varmentaa\n"
+msgstr "ohitetaan %s jonka V%u allekirjoitusta ei voida varmentaa\n"
 
 #: lib/package.c:226
 #, c-format
@@ -1913,14 +1905,13 @@ msgid "do not verify package dependencies"
 msgstr "älä tarkista paketin riippuvuuksia"
 
 #: lib/poptI.c:204 lib/poptQV.c:251 lib/poptQV.c:253
-#, fuzzy
+#, 
 msgid "don't verify digest of files"
-msgstr "älä tarkista tiedostojen MD5-summaa"
+msgstr "älä tarkista tiedostojen tarkistussummia"
 
 #: lib/poptI.c:206
-#, fuzzy
 msgid "don't verify digest of files (obsolete)"
-msgstr "älä tarkista tiedostojen MD5-summaa"
+msgstr "älä tarkista tiedostojen tarkistussummia"
 
 #: lib/poptI.c:208
 msgid "don't install file security contexts"
@@ -2152,9 +2143,8 @@ msgid "don't verify mode of files"
 msgstr "älä tarkista tiedostojen oikeuksia"
 
 #: lib/poptQV.c:277
-#, fuzzy
 msgid "don't verify capabilities of files"
-msgstr "älä tarkista tiedostojen kokoa"
+msgstr ""
 
 #: lib/poptQV.c:280
 msgid "don't verify file security contexts"
@@ -2205,9 +2195,9 @@ msgid "generate signature"
 msgstr "luo allekirjoitus"
 
 #: lib/psm.c:215
-#, fuzzy, c-format
+#, c-format
 msgid "Missing rpmlib features for %s:\n"
-msgstr "puuttuva argumentti %s:lle: %s:%d\n"
+msgstr ""
 
 #: lib/psm.c:257
 msgid "source package expected, binary found\n"
@@ -2328,7 +2318,7 @@ msgid "invalid package number: %s\n"
 msgstr "virheellinen paketin numero: %s\n"
 
 #: lib/query.c:502
-#, fuzzy, c-format
+#, c-format
 msgid "record %u could not be read\n"
 msgstr "tietuetta %lu ei voitu lukea\n"
 
@@ -2426,9 +2416,9 @@ msgid ")"
 msgstr ""
 
 #: lib/rpmchroot.c:58 lib/rpmchroot.c:83
-#, fuzzy, c-format
+#, c-format
 msgid "%s: chroot directory not set\n"
-msgstr "%s %s rmdir epäonnistui - hakemisto ei ole tyhjä\n"
+msgstr "%s: juurihakemistoa ei ole asetettu\n"
 
 #: lib/rpmchroot.c:69
 #, c-format
@@ -2436,9 +2426,9 @@ msgid "Unable to change root directory: %m\n"
 msgstr "Juurihakemiston vaihto ei onnistu: %m\n"
 
 #: lib/rpmchroot.c:94
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to restore root directory: %m\n"
-msgstr "Juurihakemiston vaihto ei onnistu: %m\n"
+msgstr "Juurihakemiston palautus ei onnistu: %m\n"
 
 #: lib/rpmds.c:399
 msgid "NO "
@@ -2505,9 +2495,9 @@ msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
 #: lib/rpmds.c:902
-#, fuzzy
+#,
 msgid "package scriptlets can be expanded at install time."
-msgstr "paketti %s on jo asennettuna"
+msgstr ""
 
 #: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:292
 #: lib/rpminstall.c:323 tools/rpmgraph.c:119 tools/rpmgraph.c:156
@@ -2600,19 +2590,18 @@ msgid "read failed: %s (%d)\n"
 msgstr "luku epäonnistui: %s (%d)\n"
 
 #: lib/rpmlead.c:128
-#, fuzzy
 msgid "not an rpm package\n"
-msgstr "ei ole RPM paketti"
+msgstr "ei ole RPM paketti\n"
 
 #: lib/rpmlock.c:102 lib/rpmlock.c:109
-#, fuzzy, c-format
+#, c-format
 msgid "can't create %s lock on %s (%s)\n"
-msgstr "transaktio-lukon luonti %s:een ei onnistu (%s)\n"
+msgstr "%s-lukon luonti %s:een ei onnistu (%s)\n"
 
 #: lib/rpmlock.c:106
-#, fuzzy, c-format
+#, c-format
 msgid "waiting for %s lock on %s\n"
-msgstr "odotetaan transaktio-lukkoa %s\n"
+msgstr "odotetaan %s-lukkoa %s\n"
 
 #: lib/rpmprob.c:107
 msgid "different"
@@ -2774,9 +2763,9 @@ msgid "Couldn't create temporary file for %s: %s\n"
 msgstr "Ei voitu luoda tilapäistiedostoa %s:lle: %s\n"
 
 #: lib/rpmscript.c:222
-#, fuzzy, c-format
+#, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
-msgstr "Ei voitu luoda putkea %s:lle: %m\n"
+msgstr ""
 
 #: lib/rpmscript.c:245
 #, c-format
@@ -2798,9 +2787,8 @@ msgid "Unknown format"
 msgstr "Tuntematon formaatti"
 
 #: lib/rpmte.c:741
-#, fuzzy
 msgid "install"
-msgstr "(asennettu) "
+msgstr ""
 
 #: lib/rpmte.c:742
 msgid "erase"
@@ -2941,14 +2929,13 @@ msgid "skipped"
 msgstr ""
 
 #: lib/transaction.c:1318
-#, fuzzy
 msgid "failed"
-msgstr "%s epäonnistui\n"
+msgstr "epäonnistui"
 
 #: lib/verify.c:365
 #, c-format
 msgid "missing   %c %s"
-msgstr ""
+msgstr "puuttuva  %c %s"
 
 #: lib/verify.c:415
 #, c-format
@@ -3076,14 +3063,14 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: ohitetaan vioittunut otsikkotietue #%u.\n"
 
 #: lib/rpmdb.c:2225
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) adding header #%d record\n"
-msgstr "virhe(%d) asetettaessa otsikon #%d tietuetta %s poistettavaksi\n"
+msgstr "virhe(%d) lisättäessä otsikkon #%d tietuetta\n"
 
 #: lib/rpmdb.c:2235
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) removing header #%d record\n"
-msgstr "virhe(%d) asetettaessa otsikon #%d tietuetta %s poistettavaksi\n"
+msgstr "virhe(%d) poistettaessa otsikon #%d tietuetta\n"
 
 #: lib/rpmdb.c:2260
 #, c-format
@@ -3346,19 +3333,18 @@ msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "muistin varaus (%u tavua) palautti NULL:in.\n"
 
 #: rpmio/rpmpgp.c:1356
-#, fuzzy, c-format
+#, c-format
 msgid "V%d %s/%s %s, key ID %s"
-msgstr "%sV%d %s allekirjoitus: %s, avain %s\n"
+msgstr ""
 
 #: rpmio/rpmpgp.c:1364
-#, fuzzy
 msgid "(none)"
-msgstr "(ei virhettä)"
+msgstr "(ei mitään)"
 
 #: rpmio/rpmpgp.c:1635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to register fork handler: %m\n"
-msgstr "Spec-tiedoston avaaminen %s:sta epäonnistui\n"
+msgstr ""
 
 #: tools/rpmgraph.c:169
 #, c-format
