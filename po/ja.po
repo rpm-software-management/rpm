@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-05-31 14:32+0300\n"
-"PO-Revision-Date: 2010-06-08 07:09+0900\n"
+"PO-Revision-Date: 2010-06-08 07:11+0900\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -494,13 +494,13 @@ msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "ロケール %.*s の重複が %%lang(%s) にあります。\n"
 
 #: build/files.c:831
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid capability: %s\n"
-msgstr "無効なトークン %s: %s\n"
+msgstr "不正なケーパビリティです: %s\n"
 
 #: build/files.c:842
 msgid "File capability support not built in\n"
-msgstr ""
+msgstr "ファイル ケーパビリティのサポートが組み込まれていません\n"
 
 #: build/files.c:897
 #, c-format
