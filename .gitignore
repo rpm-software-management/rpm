@@ -9,6 +9,8 @@
 /lib/rpmdb_*
 !/lib/rpmdb_internal.h
 /po/*.gmo
+*.*~
+*.o
 *.lo
 *.la
 *.tmp
@@ -17,13 +19,16 @@ Makefile.in
 Makefile.in.in
 
 /ABOUT-NLS
+/ChangeLog
 /Doxytags
 /aclocal.m4
 /autom4te.cache
 /db.h
+/debugedit
 /depcomp
 /doc/librpm.doxy
 /doc/librpm/html
+/elfdeps
 /find-provides
 /find-requires
 /include
@@ -60,10 +65,10 @@ Makefile.in.in
 /rpmgraph
 /rpmi
 /rpmk
-/rpmpopt-4.4.90
-/rpmpopt-4.5.90
+/rpmpopt-*
 /rpmq
 /rpmrc
+/rpmsort
 /scripts/macros.perl
 /scripts/macros.php
 /scripts/macros.python
