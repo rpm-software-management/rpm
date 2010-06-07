@@ -1083,6 +1083,8 @@ static int fsmStat(FSM_t fsm, int dolstat)
     return rc;
 }
 
+static int fsmVerify(FSM_t fsm);
+
 /** \ingroup payload
  * Create pending hard links to existing file.
  * @param fsm		file state machine data
@@ -1116,7 +1118,7 @@ static int fsmMakeLinks(FSM_t fsm)
 	rc = fsmMapPath(fsm);
 	if (XFA_SKIPPING(fsm->action)) continue;
 
-	rc = fsmUNSAFE(fsm, FSM_VERIFY);
+	rc = fsmVerify(fsm);
 	if (!rc) continue;
 	if (!(rc == CPIOERR_ENOENT)) break;
 
@@ -1590,7 +1592,63 @@ static int fsmSetcap(FSM_t fsm)
 }
 #endif /* WITH_CAP */
 
+static int fsmVerify(FSM_t fsm)
+{
+    int rc;
+    struct stat * st = &fsm->sb;
+    struct stat * ost = &fsm->osb;
+    int saveerrno = errno;
 
+    if (fsm->diskchecked && !fsm->exists) {
+        return CPIOERR_ENOENT;
+    }
+    if (S_ISREG(st->st_mode)) {
+        /*
+         * XXX HP-UX (and other os'es) don't permit unlink on busy
+         * XXX files.
+         */
+        fsm->opath = fsm->path;
+        fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
+        rc = fsmRename(fsm);
+        if (!rc)
+            (void) fsmUnlink(fsm);
+        else
+            rc = CPIOERR_UNLINK_FAILED;
+        _free(fsm->path);
+        fsm->path = fsm->opath;
+        fsm->opath = NULL;
+        return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
+    } else if (S_ISDIR(st->st_mode)) {
+        if (S_ISDIR(ost->st_mode)) return 0;
+        if (S_ISLNK(ost->st_mode)) {
+            rc = fsmStat(fsm, 0);
+            if (rc == CPIOERR_ENOENT) rc = 0;
+            if (rc) return rc;
+            errno = saveerrno;
+            if (S_ISDIR(ost->st_mode)) return 0;
+        }
+    } else if (S_ISLNK(st->st_mode)) {
+        if (S_ISLNK(ost->st_mode)) {
+            /* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
+            rc = fsmReadLink(fsm);
+            errno = saveerrno;
+            if (rc) return rc;
+            if (rstreq(fsm->opath, fsm->rdbuf))	return 0;
+        }
+    } else if (S_ISFIFO(st->st_mode)) {
+        if (S_ISFIFO(ost->st_mode)) return 0;
+    } else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
+        if ((S_ISCHR(ost->st_mode) || S_ISBLK(ost->st_mode)) &&
+            (ost->st_rdev == st->st_rdev)) return 0;
+    } else if (S_ISSOCK(st->st_mode)) {
+        if (S_ISSOCK(ost->st_mode)) return 0;
+    }
+    /* XXX shouldn't do this with commit/undo. */
+    rc = 0;
+    if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
+    if (rc == 0)	rc = CPIOERR_ENOENT;
+    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
+}
 
 /********************************************************************/
 
@@ -1807,7 +1865,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    char * path = fsm->path;
 	    if (fsm->osuffix)
 		fsm->path = fsmFsPath(fsm, st, NULL, NULL);
-	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
+	    rc = fsmVerify(fsm);
 
 	    if (rc == 0 && fsm->osuffix) {
 		char * opath = fsm->opath;
@@ -1828,7 +1886,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = expandRegular(fsm);
 	} else if (S_ISDIR(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
-	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
+	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
 		st->st_mode |=  00700;
@@ -1852,7 +1910,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->wrbuf[st->st_size] = '\0';
 	    /* XXX symlink(fsm->opath, fsm->path) */
 	    fsm->opath = fsm->wrbuf;
-	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
+	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
 		rc = symlink(fsm->opath, fsm->path);
 		if (_fsm_debug && (FSM_SYMLINK & FSM_SYSCALL))
@@ -1864,7 +1922,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	} else if (S_ISFIFO(st->st_mode)) {
 	    mode_t st_mode = st->st_mode;
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
-	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
+	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
 
@@ -1881,7 +1939,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		   S_ISBLK(st->st_mode) ||
     S_ISSOCK(st->st_mode))
 	{
-	    rc = fsmUNSAFE(fsm, FSM_VERIFY);
+	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
 		/* FIX: check S_IFIFO or dev != 0 */
 		rc = mknod(fsm->path, (fsm->sb.st_mode & ~07777), fsm->sb.st_rdev);
@@ -2126,59 +2184,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	fsm->ldnalloc = fsm->ldnlen = 0;
 	fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
 	fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
-	break;
-    case FSM_VERIFY:
-	if (fsm->diskchecked && !fsm->exists) {
-	    rc = CPIOERR_ENOENT;
-	    break;
-	}
-	if (S_ISREG(st->st_mode)) {
-	    /*
-	     * XXX HP-UX (and other os'es) don't permit unlink on busy
-	     * XXX files.
-	     */
-	    fsm->opath = fsm->path;
-	    fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
-	    rc = fsmRename(fsm);
-	    if (!rc)
-		    (void) fsmUnlink(fsm);
-	    else
-		    rc = CPIOERR_UNLINK_FAILED;
-	    _free(fsm->path);
-	    fsm->path = fsm->opath;
-	    fsm->opath = NULL;
-	    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
-	    break;
-	} else if (S_ISDIR(st->st_mode)) {
-	    if (S_ISDIR(ost->st_mode))		return 0;
-	    if (S_ISLNK(ost->st_mode)) {
-		rc = fsmStat(fsm, 0);
-		if (rc == CPIOERR_ENOENT) rc = 0;
-		if (rc) break;
-		errno = saveerrno;
-		if (S_ISDIR(ost->st_mode))	return 0;
-	    }
-	} else if (S_ISLNK(st->st_mode)) {
-	    if (S_ISLNK(ost->st_mode)) {
-	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-		rc = fsmReadLink(fsm);
-		errno = saveerrno;
-		if (rc) break;
-		if (rstreq(fsm->opath, fsm->rdbuf))	return 0;
-	    }
-	} else if (S_ISFIFO(st->st_mode)) {
-	    if (S_ISFIFO(ost->st_mode))		return 0;
-	} else if (S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode)) {
-	    if ((S_ISCHR(ost->st_mode) || S_ISBLK(ost->st_mode)) &&
-		(ost->st_rdev == st->st_rdev))	return 0;
-	} else if (S_ISSOCK(st->st_mode)) {
-	    if (S_ISSOCK(ost->st_mode))		return 0;
-	}
-	    /* XXX shouldn't do this with commit/undo. */
-	rc = 0;
-	if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
-	if (rc == 0)	rc = CPIOERR_ENOENT;
-	return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 	break;
     case FSM_NEXT:
 	rc = fsmNext(fsm, FSM_POS);
