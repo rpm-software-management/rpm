@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-05-31 14:32+0300\n"
-"PO-Revision-Date: 2010-06-02 09:00+0900\n"
+"PO-Revision-Date: 2010-06-08 07:09+0900\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -106,7 +106,7 @@ msgstr "署名オプション:"
 
 #: rpmqv.c:99
 msgid "Database options:"
-msgstr "データベースオプション:"
+msgstr "データベース オプション:"
 
 #: rpmqv.c:105
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
@@ -248,7 +248,7 @@ msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"スクリプトを無効にするようなオプションは、パッケージのインストール・削除時の"
+"スクリプトを無効にするようなオプションは、パッケージのインストール、削除時の"
 "み指定できます。"
 
 #: rpmqv.c:470
@@ -256,16 +256,16 @@ msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr ""
-"トリガーを無効にするようなオプションはパッケージ インストール・削除時のみ指定"
-"できます。"
+"トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ"
+"指定できます。"
 
 #: rpmqv.c:474
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
-"--nodeps はパッケージ作成/リビルド/リコンパイル/インストール/削除/検証時のみ"
-"指定できます。"
+"--nodeps はパッケージの作成、リビルド、リコンパイル、インストール、削除、"
+"検証時のみ指定できます。"
 
 #: rpmqv.c:479
 msgid ""
@@ -278,8 +278,8 @@ msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
-"--root (-r) はインストール/削除/問い合わせ/データベース再構築時のみ指定できま"
-"す"
+"--root (-r) はインストール、削除、問い合わせ、データベース再構築時のみ"
+"指定できます"
 
 #: rpmqv.c:495
 msgid "arguments to --root (-r) must begin with a /"
@@ -312,7 +312,7 @@ msgstr "パスフレーズは正常です。\n"
 #: rpmqv.c:557
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
-msgstr "マクロファイル中の無効な %%_signature 指定。\n"
+msgstr "マクロ ファイル中の無効な %%_signature 指定。\n"
 
 #: rpmqv.c:564
 msgid "--sign may only be used during package building"
@@ -550,7 +550,7 @@ msgstr "ファイルが見つかりません: %s\n"
 #: build/files.c:1522
 #, c-format
 msgid "File %s too large for payload\n"
-msgstr ""
+msgstr "ペイロードのためのファイル %s が大きすぎます\n"
 
 #: build/files.c:1616
 #, c-format
@@ -565,7 +565,7 @@ msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 #: build/files.c:1626 lib/rpmchecksig.c:418
 #, c-format
 msgid "%s: not an armored public key.\n"
-msgstr "%s: ASCII形式の公開鍵ではありません。\n"
+msgstr "%s: ASCII 形式の公開鍵ではありません。\n"
 
 #: build/files.c:1634
 #, c-format
@@ -593,9 +593,9 @@ msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
 #: build/files.c:1766
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open %%files file %s: %m\n"
-msgstr "%%files のファイル %s を開けません: %s\\n\n"
+msgstr "%%files のファイル %s を開けません: %m\n"
 
 #: build/files.c:1774
 #, c-format
@@ -715,9 +715,9 @@ msgid "Could not open PostUn file: %s\n"
 msgstr "PostUn ファイルを開けませんでした: %s\n"
 
 #: build/pack.c:228
-#, fuzzy, c-format
+#, c-format
 msgid "Could not open PostTrans file: %s\n"
-msgstr "PostIn ファイルを開けませんでした: %s\n"
+msgstr "PostTrans ファイルを開けませんでした: %s\n"
 
 #: build/pack.c:236
 #, c-format
@@ -961,19 +961,19 @@ msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 
 #: build/parsePreamble.c:454
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr "%d 行目: %s 中に不正な文字 '-' : %s\n"
+msgstr "%d 行目: 不正な文字 '%c' : %s\n"
 
 #: build/parsePreamble.c:457
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal char in: %s\n"
-msgstr "%d 行目: %s 中に不正な文字 '-' : %s\n"
+msgstr "%d 行目: 不正な文字 '-' : %s\n"
 
 #: build/parsePreamble.c:463
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
-msgstr "%d 行目: %s 中に不正な文字 '-' : %s\n"
+msgstr "%d 行目: 不正なシーケンス 「..」 : %s\n"
 
 #: build/parsePreamble.c:488
 #, c-format
@@ -1409,9 +1409,9 @@ msgid "No file attributes configured\n"
 msgstr ""
 
 #: build/rpmfc.c:851
-#, fuzzy, c-format
+#, c-format
 msgid "magic_open(0x%x) failed: %s\n"
-msgstr "%s のオープンに失敗: %s\n"
+msgstr "magic_open(0x%x) に失敗しました: %s\n"
 
 #: build/rpmfc.c:858
 #, c-format
@@ -1439,9 +1439,9 @@ msgid "line %d: Bad number: %s\n"
 msgstr "%d 行目: 不正な番号: %s\n"
 
 #: build/spec.c:233
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Bad no%s number: %u\n"
-msgstr "%d 行目: 不正な no%s 番号: %d\n"
+msgstr "%d 行目: 不正な no%s 番号: %u\n"
 
 #: build/spec.c:296
 #, c-format
@@ -1565,9 +1565,8 @@ msgid "wrong color"
 msgstr "間違った色"
 
 #: lib/formats.c:608
-#, fuzzy
 msgid "missing"
-msgstr "%c %s が見つかりません。"
+msgstr "見つかりません"
 
 #: lib/formats.c:611
 msgid "(unknown)"
@@ -1580,7 +1579,7 @@ msgstr "(文字列でない)"
 #: lib/fsm.c:736
 #, c-format
 msgid "user %s does not exist - using root\n"
-msgstr "ユーザ %s は存在しません - root を使用します\n"
+msgstr "ユーザー %s は存在しません - root を使用します\n"
 
 #: lib/fsm.c:743
 #, c-format
@@ -1640,17 +1639,17 @@ msgstr "タグ[%d]: 異常です。tag %d type %d offset %d count %d\n"
 #: lib/package.c:255 lib/signature.c:188
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
-msgstr "region オフセット: 異常です。tag %d type %d offset %d count %d\n"
+msgstr "リージョン オフセット: 異常です。tag %d type %d offset %d count %d\n"
 
 #: lib/package.c:273 lib/signature.c:212
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
-msgstr "region ヘッダー以降: 異常です。tag %d type %d offset %d count %d\n"
+msgstr "リージョン ヘッダー以降: 異常です。tag %d type %d offset %d count %d\n"
 
 #: lib/package.c:283 lib/signature.c:222
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
-msgstr "region サイズ: 異常です。ril(%d) > il(%d)\n"
+msgstr "リージョン容量: 異常です。ril(%d) > il(%d)\n"
 
 #: lib/package.c:310
 msgid "hdr SHA1: BAD, not hex\n"
@@ -1671,26 +1670,26 @@ msgstr "ヘッダー容量(%d): 異常です。読み込み結果は %d です�
 
 #: lib/package.c:477
 msgid "hdr magic: BAD\n"
-msgstr "ヘッダーマジック: 異常です。\n"
+msgstr "ヘッダー マジック: 異常です。\n"
 
 #: lib/package.c:482
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
-msgstr "ヘッダータグ: 異常です。タグ(%d)の番号が範囲外です。\n"
+msgstr "ヘッダー タグ: 異常です。タグ(%d)の番号が範囲外です。\n"
 
 #: lib/package.c:488
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
-msgstr "ヘッダーデータ: 異常です。バイト数(%d)が範囲外です。\n"
+msgstr "ヘッダー データ: 異常です。バイト数(%d)が範囲外です。\n"
 
 #: lib/package.c:498
-#, fuzzy, c-format
+#, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
-msgstr "ヘッダー blob(%d): 異常です。読み込み結果は %d です。\n"
+msgstr "ヘッダー blob(%zd): 異常です。読み込み結果は %d です。\n"
 
 #: lib/package.c:510
 msgid "hdr load: BAD\n"
-msgstr "ヘッダーロード: 異常です。\n"
+msgstr "ヘッダー ロード: 異常です。\n"
 
 #: lib/package.c:582 lib/rpmchecksig.c:183 lib/rpmchecksig.c:623
 #, c-format
@@ -1713,14 +1712,14 @@ msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread に失敗しました: %s\n"
 
 #: lib/package.c:794
-#, fuzzy, c-format
+#, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
-msgstr "%s をインストールできません。\n"
+msgstr "%s はデルタ RPM で、直接インストールできません。\n"
 
 #: lib/package.c:798
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
-msgstr ""
+msgstr "パッケージ %s 内にサポートしていないペイロード (%s) です。\n"
 
 #: lib/poptALL.c:165
 msgid "predefine MACRO with value EXPR"
@@ -1760,7 +1759,7 @@ msgstr "CMD"
 
 #: lib/poptALL.c:197
 msgid "use ROOT as top level directory"
-msgstr "ROOT をトップディレクトリとして使用します。"
+msgstr "ROOT をトップ ディレクトリーとして使用します。"
 
 #: lib/poptALL.c:198
 msgid "ROOT"
@@ -1797,7 +1796,7 @@ msgstr "rpmio 入出力のデバッグ"
 #: lib/poptALL.c:289
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
-msgstr "%s: オプションテーブルの設定が正しくありません (%d)\n"
+msgstr "%s: オプション テーブルの設定が正しくありません (%d)\n"
 
 #: lib/poptI.c:54
 msgid "exclude paths must begin with a /"
@@ -1926,7 +1925,7 @@ msgstr "ファイルのダイジェストを検証しません (旧式)。"
 
 #: lib/poptI.c:208
 msgid "don't install file security contexts"
-msgstr "ファイルのセキュリティコンテキストをインストールしません。"
+msgstr "ファイルのセキュリティ コンテキストをインストールしません。"
 
 #: lib/poptI.c:212
 msgid "do not reorder package installation to satisfy dependencies"
@@ -2026,7 +2025,7 @@ msgstr "パッケージをアップグレードします。"
 
 #: lib/poptQV.c:87
 msgid "query/verify all packages"
-msgstr "全てのパッケージについて問い合わせ/検証します。"
+msgstr "すべてのパッケージについて問い合わせ/検証します。"
 
 #: lib/poptQV.c:89
 msgid "rpm checksig mode"
@@ -2062,7 +2061,7 @@ msgstr "rpm 問い合わせモード"
 
 #: lib/poptQV.c:107
 msgid "query/verify a header instance"
-msgstr "ヘッダーインスタンスの問い合わせ/検証をします。"
+msgstr "ヘッダー インスタンスの問い合わせ/検証をします。"
 
 #: lib/poptQV.c:109
 msgid "query a spec file"
@@ -2074,8 +2073,7 @@ msgstr "<spec>"
 
 #: lib/poptQV.c:111
 msgid "query/verify package(s) from install transaction"
-msgstr ""
-"インストールトランザクションからのパッケージの問い合わせ/検証をします。"
+msgstr "インストール トランザクションからのパッケージの問い合わせ/検証をします。"
 
 #: lib/poptQV.c:113
 msgid "query the package(s) triggered by the package"
@@ -2124,7 +2122,7 @@ msgstr "%%ghost ファイルをスキップします。"
 
 #: lib/poptQV.c:236
 msgid "use the following query format"
-msgstr "以下の問い合わせフォーマットを使用します。"
+msgstr "以下の問い合わせ書式を使用します。"
 
 #: lib/poptQV.c:238
 msgid "display the states of the listed files"
@@ -2132,7 +2130,7 @@ msgstr "列挙したファイルの状態を表示します。"
 
 #: lib/poptQV.c:256
 msgid "don't verify size of files"
-msgstr "ファイルサイズを検証しません。"
+msgstr "ファイル容量を検証しません。"
 
 #: lib/poptQV.c:259
 msgid "don't verify symlink path of files"
@@ -2155,13 +2153,12 @@ msgid "don't verify mode of files"
 msgstr "ファイルのモードを検証しません。"
 
 #: lib/poptQV.c:277
-#, fuzzy
 msgid "don't verify capabilities of files"
-msgstr "ファイルサイズを検証しません。"
+msgstr "ファイルのケーパビリティ (capability) を検証しません。"
 
 #: lib/poptQV.c:280
 msgid "don't verify file security contexts"
-msgstr "ファイルセキュリティコンテキストを検証しません。"
+msgstr "ファイルのセキュリティ コンテキストを検証しません。"
 
 #: lib/poptQV.c:282
 msgid "don't verify files in package"
@@ -2242,7 +2239,7 @@ msgstr "%s: 失敗: %s\n"
 #: lib/query.c:115
 #, c-format
 msgid "incorrect format: %s\n"
-msgstr "不正なフォーマット: %s\n"
+msgstr "不正な書式: %s\n"
 
 #: lib/query.c:127
 msgid "(contains no files)\n"
@@ -2298,12 +2295,12 @@ msgstr "%s をトリガーするパッケージが存在しません。\n"
 #: lib/query.c:353 lib/query.c:374 lib/query.c:395 lib/query.c:420
 #, c-format
 msgid "malformed %s: %s\n"
-msgstr "不正な %s 指定: %s\n"
+msgstr "不正な %s の指定: %s\n"
 
 #: lib/query.c:363 lib/query.c:380 lib/query.c:406 lib/query.c:425
 #, c-format
 msgid "no package matches %s: %s\n"
-msgstr "%s にマッチするパッケージは存在しません: %s\n"
+msgstr "%s に一致するパッケージは存在しません: %s\n"
 
 #: lib/query.c:435
 #, c-format
@@ -2463,7 +2460,7 @@ msgstr ""
 
 #: lib/rpmds.c:859
 msgid "package payload can be compressed using bzip2."
-msgstr "パッケージペイロードが bzip2 を用いて圧縮できます。"
+msgstr "パッケージ ペイロードが bzip2 を用いて圧縮できます。"
 
 #: lib/rpmds.c:864
 msgid "package payload can be compressed using xz."
@@ -2504,17 +2501,15 @@ msgstr "lua スクリプトの内部サポート。"
 
 #: lib/rpmds.c:894
 msgid "file digest algorithm is per package configurable"
-msgstr ""
+msgstr "ファイルのダイジェストアルゴリズムはパッケージ毎の設定です"
 
 #: lib/rpmds.c:898
 msgid "support for POSIX.1e file capabilities"
-msgstr ""
+msgstr "POSIX..1e ファイル ケーパビリティ (capability) のためのサポート"
 
 #: lib/rpmds.c:902
-#, fuzzy
 msgid "package scriptlets can be expanded at install time."
-msgstr ""
-"インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
+msgstr "パッケージのスクリプトはインストール時間を長くすることができます。"
 
 #: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:292
 #: lib/rpminstall.c:323 tools/rpmgraph.c:119 tools/rpmgraph.c:156
@@ -2690,9 +2685,9 @@ msgid "%s conflicts with %s%s"
 msgstr "%s は %s%s と競合します。"
 
 #: lib/rpmprob.c:170
-#, fuzzy, c-format
+#, c-format
 msgid "%s is obsoleted by %s%s"
-msgstr "%s は %s%s に必要とされています"
+msgstr "%s は %s%s によって不要とされています"
 
 #: lib/rpmprob.c:176
 #, c-format
@@ -2745,9 +2740,9 @@ msgid "missing argument for %s at %s:%d\n"
 msgstr "%s の引数がありません (%s:%d)\n"
 
 #: lib/rpmrc.c:519
-#, fuzzy, c-format
+#, c-format
 msgid "cannot open %s at %s:%d: %m\n"
-msgstr "%s を開けません (%s:%d): %s\n"
+msgstr "%s が開けません (%s:%d): %m\n"
 
 #: lib/rpmrc.c:535
 #, c-format
@@ -2770,9 +2765,9 @@ msgid "Please contact %s\n"
 msgstr "%s に連絡してください。\n"
 
 #: lib/rpmrc.c:1593
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s for reading: %m.\n"
-msgstr "%s を読み込み用に開けません: %s。\n"
+msgstr "%s を読み込み用に開けません: %m。\n"
 
 #: lib/rpmscript.c:72
 msgid "<lua> scriptlet support not built in\n"
@@ -2789,20 +2784,19 @@ msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr "ファイル ディスクリプターの複製ができません: %s: %s\n"
 
 #: lib/rpmscript.c:245
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
-msgstr ""
-"%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。waitpid (%d)。rc %d: %s\n"
+msgstr "%s スクリプトの実行に失敗しました。waitpid (%d) rc %d: %s\n"
 
 #: lib/rpmscript.c:249
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, signal %d\n"
-msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
+msgstr "%s スクリプトの実行に失敗しました。シグナル %d\n"
 
 #: lib/rpmscript.c:252
-#, fuzzy, c-format
+#, c-format
 msgid "%s scriptlet failed, exit status %d\n"
-msgstr "%s(%s-%s-%s.%s) スクリプトの実行に失敗しました。終了ステータス %d\n"
+msgstr "%s スクリプトの実行に失敗しました。終了ステータス %d\n"
 
 #: lib/rpmtd.c:257
 msgid "Unknown format"
@@ -2837,7 +2831,7 @@ msgid "missing ')' in package label: %s\n"
 msgstr "パッケージラベル中に「)」がありません: %s\n"
 
 #: lib/rpmts.c:282
-#, fuzzy, c-format
+#, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
@@ -2848,7 +2842,7 @@ msgstr "トランザクション"
 #: lib/signature.c:135
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
-msgstr "署名サイズ (%d): 不正、read が %d を返しました\n"
+msgstr "署名の容量 (%d): 異常、read が %d を返しました\n"
 
 #: lib/signature.c:140
 msgid "sigh magic: BAD\n"
@@ -2857,17 +2851,17 @@ msgstr "署名の目印: 不正\n"
 #: lib/signature.c:146
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
-msgstr "署名タグ: 不正、タグの数 (%d) が範囲外です。\n"
+msgstr "署名タグ: 異常、タグの数 (%d) が範囲外です。\n"
 
 #: lib/signature.c:152
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
-msgstr "署名データ: 不正、バイト数 (%d) が範囲外です。\n"
+msgstr "署名データ: 異常、バイト数 (%d) が範囲外です。\n"
 
 #: lib/signature.c:167
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
-msgstr "署名 blob(%d): 不正、read が %d を返しました。\n"
+msgstr "署名 blob(%d): 異常、read が %d を返しました。\n"
 
 #: lib/signature.c:233
 #, c-format
@@ -2879,14 +2873,14 @@ msgid "sigh load: BAD\n"
 msgstr "署名の読み込み: 不正。\n"
 
 #: lib/signature.c:256
-#, fuzzy, c-format
+#, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
-msgstr "署名の pad サイズ(%d): 不正、%d バイト読み込みました。\n"
+msgstr "署名の pad 容量(%zd): 異常、%zd バイト読み込みました。\n"
 
 #: lib/signature.c:272
-#, fuzzy, c-format
+#, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
-msgstr "署名のサイズ(%d): 不正、fstat(2) に失敗しました。\n"
+msgstr "署名の容量(%zd): 異常、fstat(2) に失敗しました。\n"
 
 #: lib/signature.c:355
 #, c-format
@@ -2899,9 +2893,9 @@ msgid "Could not exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
 #: lib/signature.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "gpg exec failed (%d)\n"
-msgstr "実行失敗\n"
+msgstr "gpg の実行に失敗しました (%d)\n"
 
 #: lib/signature.c:398
 msgid "gpg failed to write signature\n"
@@ -3068,14 +3062,14 @@ msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
 #: lib/rpmdb.c:1324
-#, fuzzy, c-format
+#, c-format
 msgid "%s: regexec failed: %s\n"
-msgstr "%s: Fseek に失敗しました: %s\n"
+msgstr "%s: 正規表現に失敗しました: %s\n"
 
 #: lib/rpmdb.c:1505
-#, fuzzy, c-format
+#, c-format
 msgid "%s: regcomp failed: %s\n"
-msgstr "%s: オープンに失敗しました: %s\n"
+msgstr "%s: regcomp に失敗しました: %s\n"
 
 #: lib/rpmdb.c:1786
 msgid "rpmdbNextIterator: skipping"
@@ -3088,14 +3082,14 @@ msgstr ""
 "rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
 
 #: lib/rpmdb.c:2225
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) adding header #%d record\n"
-msgstr "エラー(%d) - ヘッダー #%d レコードに %s の削除を設定時\n"
+msgstr "エラー(%d) - ヘッダー #%d レコードの追加時\n"
 
 #: lib/rpmdb.c:2235
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d) removing header #%d record\n"
-msgstr "エラー(%d) - ヘッダー #%d レコードに %s の削除を設定時\n"
+msgstr "エラー(%d) - ヘッダー #%d レコードの削除時\n"
 
 #: lib/rpmdb.c:2260
 #, c-format
@@ -3137,9 +3131,9 @@ msgid "temporary database %s already exists\n"
 msgstr "一時的なデータベース %s は既に存在しています。\n"
 
 #: lib/rpmdb.c:2796
-#, fuzzy, c-format
+#, c-format
 msgid "failed to create directory %s: %s\n"
-msgstr "ディレクトリ %s の削除失敗: %s\n"
+msgstr "ディレクトリー %s の作成に失敗しました: %s\n"
 
 #: lib/rpmdb.c:2838
 #, c-format
@@ -3167,7 +3161,7 @@ msgstr "復元するには %s 内のファイルを %s 内のファイルで置�
 #: lib/rpmdb.c:2889
 #, c-format
 msgid "failed to remove directory %s: %s\n"
-msgstr "ディレクトリ %s の削除失敗: %s\n"
+msgstr "ディレクトリー %s の削除に失敗しました: %s\n"
 
 #: lib/backend/db3.c:28
 #, c-format
@@ -3292,9 +3286,9 @@ msgid "Target buffer overflow\n"
 msgstr "ターゲットバッファのオーバフローです。\n"
 
 #: rpmio/rpmfileutil.c:277
-#, fuzzy, c-format
+#, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr "一時ファイル %s の作成に失敗しました。\n"
+msgstr "一時ファイル %s の作成に失敗しました: %m\n"
 
 #: rpmio/rpmfileutil.c:342 rpmio/rpmfileutil.c:348
 #, c-format
@@ -3307,34 +3301,33 @@ msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
 #: rpmio/rpmfileutil.c:733
-#, fuzzy
 msgid "failed to create directory"
-msgstr "ディレクトリ %s の削除失敗: %s\n"
+msgstr "ディレクトリーの作成に失敗しました"
 
 #: rpmio/rpmlua.c:461
-#, fuzzy, c-format
+#, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
-msgstr "旧来の構文はサポートされません: %s\n"
+msgstr "lua スクリプトで不正な文法がありました: %s\n"
 
 #: rpmio/rpmlua.c:477
-#, fuzzy, c-format
+#, c-format
 msgid "invalid syntax in lua script: %s\n"
-msgstr "旧来の構文はサポートされません: %s\n"
+msgstr "lua スクリプトで不正な文法がありました: %s\n"
 
 #: rpmio/rpmlua.c:482 rpmio/rpmlua.c:501
-#, fuzzy, c-format
+#, c-format
 msgid "lua script failed: %s\n"
-msgstr "%s: Fwrite に失敗しました: %s\n"
+msgstr "lua スクリプトに失敗しました: %s\n"
 
 #: rpmio/rpmlua.c:496
-#, fuzzy, c-format
+#, c-format
 msgid "invalid syntax in lua file: %s\n"
-msgstr "無効なパッケージ番号: %s\n"
+msgstr "lua ファイルに不正な文法がありました: %s\n"
 
 #: rpmio/rpmlua.c:662
-#, fuzzy, c-format
+#, c-format
 msgid "lua hook failed: %s\n"
-msgstr "%s: Fseek に失敗しました: %s\n"
+msgstr "lua のフックに失敗しました: %s\n"
 
 #: rpmio/rpmlog.c:37
 msgid "(no error)"
@@ -3358,19 +3351,18 @@ msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "メモリ割り当て (%u バイト) が NULL を返しました。\n"
 
 #: rpmio/rpmpgp.c:1356
-#, fuzzy, c-format
+#, c-format
 msgid "V%d %s/%s %s, key ID %s"
-msgstr "V3 DSA 署名: "
+msgstr "V%d %s/%s %s、鍵 ID %s"
 
 #: rpmio/rpmpgp.c:1364
-#, fuzzy
 msgid "(none)"
-msgstr "(エラーなし)"
+msgstr "(なし)"
 
 #: rpmio/rpmpgp.c:1635
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to register fork handler: %m\n"
-msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
+msgstr "フォーク ハンドラーの登録に失敗しました: %m\n"
 
 #: tools/rpmgraph.c:169
 #, c-format
