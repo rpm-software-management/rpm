@@ -2320,7 +2320,7 @@ msgstr "virheellinen paketin numero: %s\n"
 #: lib/query.c:502
 #, c-format
 msgid "record %u could not be read\n"
-msgstr "tietuetta %lu ei voitu lukea\n"
+msgstr "tietuetta %u ei voitu lukea\n"
 
 #: lib/query.c:518 lib/rpminstall.c:667
 #, c-format
