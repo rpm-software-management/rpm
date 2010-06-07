@@ -610,6 +610,49 @@ FSM_t freeFSM(FSM_t fsm)
     return _free(fsm);
 }
 
+/* forward declaration*/
+static int fsmMkdirs(FSM_t fsm);
+
+static int fsmCreate(FSM_t fsm)
+{
+    int rc;
+    {   rpmts ts = fsmGetTs(fsm);
+#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
+        fsm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
+			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
+#undef _tsmask
+    }
+    fsm->path = _free(fsm->path);
+    fsm->opath = _free(fsm->opath);
+    fsm->dnlx = _free(fsm->dnlx);
+
+    fsm->ldn = _free(fsm->ldn);
+    fsm->ldnalloc = fsm->ldnlen = 0;
+
+    fsm->rdsize = fsm->wrsize = 0;
+    fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
+    fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
+    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
+        fsm->rdsize = 8 * BUFSIZ;
+        fsm->rdbuf = fsm->rdb = xmalloc(fsm->rdsize);
+        fsm->wrsize = 8 * BUFSIZ;
+        fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
+    }
+
+    fsm->mkdirsdone = 0;
+    fsm->ix = -1;
+    fsm->links = NULL;
+    fsm->li = NULL;
+    errno = 0;	/* XXX get rid of EBADF */
+
+    /* Detect and create directories not explicitly in package. */
+    if (fsm->goal == FSM_PKGINSTALL) {
+        rc = fsmMkdirs(fsm);
+        if (!rc) fsm->mkdirsdone = 1;
+    }
+    return rc;
+}
+
 int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 		rpm_loff_t * archiveSize, char ** failedFile)
@@ -645,7 +688,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     }
 
     ec = fsm->rc = 0;
-    rc = fsmUNSAFE(fsm, FSM_CREATE);
+    rc = fsmCreate(fsm);
     if (rc && !ec) ec = rc;
 
     rc = fsmUNSAFE(fsm, fsm->goal);
@@ -1722,43 +1765,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
 	if (!rc)
 	    rc = cpioTrailerWrite(fsm);
-
-	break;
-    case FSM_CREATE:
-	{   rpmts ts = fsmGetTs(fsm);
-#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-	    fsm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
-			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
-#undef _tsmask
-	}
-	fsm->path = _free(fsm->path);
-	fsm->opath = _free(fsm->opath);
-	fsm->dnlx = _free(fsm->dnlx);
-
-	fsm->ldn = _free(fsm->ldn);
-	fsm->ldnalloc = fsm->ldnlen = 0;
-
-	fsm->rdsize = fsm->wrsize = 0;
-	fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
-	fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
-	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
-	    fsm->rdsize = 8 * BUFSIZ;
-	    fsm->rdbuf = fsm->rdb = xmalloc(fsm->rdsize);
-	    fsm->wrsize = 8 * BUFSIZ;
-	    fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
-	}
-
-	fsm->mkdirsdone = 0;
-	fsm->ix = -1;
-	fsm->links = NULL;
-	fsm->li = NULL;
-	errno = 0;	/* XXX get rid of EBADF */
-
-	/* Detect and create directories not explicitly in package. */
-	if (fsm->goal == FSM_PKGINSTALL) {
-	    rc = fsmMkdirs(fsm);
-	    if (!rc) fsm->mkdirsdone = 1;
-	}
 
 	break;
     case FSM_PROCESS:
