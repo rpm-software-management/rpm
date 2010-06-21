@@ -254,6 +254,10 @@ struct poptOption rpmInstallPoptTable[] = {
 	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOTRIGGERPOSTUN,
 	N_("do not execute any %%triggerpostun scriptlet(s)"), NULL},
 
+ { "nocollections", '\0', POPT_BIT_SET,
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOCOLLECTIONS,
+	N_("do not perform any collection actions"), NULL},
+
  { "oldpackage", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_OLDPACKAGE,
 	N_("upgrade to an old version of the package (--force on upgrades does this automatically)"),

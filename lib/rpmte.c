@@ -6,11 +6,13 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE_* */
+#include <rpm/rpmmacro.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
 
+#include "lib/collections.h"
 #include "lib/rpmte_internal.h"
 
 #include "debug.h"
@@ -748,6 +750,129 @@ rpmfs rpmteGetFileStates(rpmte te) {
     return te->fs;
 }
 
+static int rpmteRunCollection(rpmte te, const char *collname,
+			      rpmCollHook hook)
+{
+#define STR1(x) #x
+#define STR(x) STR1(x)
+
+    void *handle = NULL;
+    collHookFunc hookFunc;
+    const char *hookFuncSym;
+    rpmCollHook *pluginHooks;
+    char *plugin;
+    char *options;
+    char *error;
+
+    int rc = RPMRC_FAIL;
+    if (rpmtsFlags(te->ts) & RPMTRANS_FLAG_NOCOLLECTIONS) {
+	return RPMRC_OK;
+    }
+
+    plugin = rpmExpand("%{?__collection_", collname, "}", NULL);
+    if (!plugin || rstreq(plugin, "")) {
+	fprintf(stderr, "Failed to expand %%__collection_%s macro\n",
+		collname);
+	goto exit;
+    }
+
+    /* split the options from the plugin string */
+#define SKIPSPACE(s)    { while (*(s) &&  risspace(*(s))) (s)++; }
+#define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
+    options = plugin;
+    SKIPNONSPACE(options);
+    if (risspace(*options)) {
+	*options = '\0';
+	options++;
+	SKIPSPACE(options);
+    }
+    if (*options == '\0') {
+	options = NULL;
+    }
+
+    handle = dlopen(plugin, RTLD_LAZY);
+    if (!handle) {
+	fprintf(stderr, "Failed to open %s: %s\n", plugin, dlerror());
+	goto exit;
+    }
+
+    dlerror();
+
+    pluginHooks = (rpmCollHook *) dlsym(handle, STR(COLLECTION_HOOKS));
+    if ((error = dlerror()) != NULL) {
+	fprintf(stderr, "Failed to resolve symbol: %s\n",
+		STR(COLLECTION_HOOKS));
+	goto exit;
+    }
+
+    if (!(*pluginHooks & hook)) {
+	/* plugin doesn't support this hook, exit */
+	rc = RPMRC_OK;
+	goto exit;
+    }
+
+    switch (hook) {
+    case COLLHOOK_POST_ADD:
+	hookFuncSym = STR(COLLHOOK_POST_ADD_FUNC);
+	break;
+    case COLLHOOK_POST_ANY:
+	hookFuncSym = STR(COLLHOOK_POST_ANY_FUNC);
+	break;
+    case COLLHOOK_PRE_REMOVE:
+	hookFuncSym = STR(COLLHOOK_PRE_REMOVE_FUNC);
+	break;
+    default:
+	goto exit;
+    }
+
+    *(void **) (&hookFunc) = dlsym(handle, hookFuncSym);
+    if ((error = dlerror()) != NULL) {
+	fprintf(stderr, "Failed to resolve symbol %s: %s\n",
+		hookFuncSym, error);
+	goto exit;
+    }
+
+    if (rpmtsFlags(te->ts) & (RPMTRANS_FLAG_TEST | RPMTRANS_FLAG_JUSTDB)) {
+	/* don't perform the action if --test or --justdb are set */
+	rc = RPMRC_OK;
+    } else {
+	rc = (*hookFunc) (te->ts, collname, options);
+    }
+
+  exit:
+    if (handle)
+	dlclose(handle);
+    _free(plugin);
+
+    return rc;
+}
+
+static rpmRC rpmteRunAllCollections(rpmte te, rpmCollHook hook)
+{
+    ARGV_const_t colls;
+    rpmRC rc = RPMRC_OK;
+
+    switch (hook) {
+    case COLLHOOK_POST_ADD:
+	colls = te->lastInCollectionsAdd;
+	break;
+    case COLLHOOK_POST_ANY:
+	colls = te->lastInCollectionsAny;
+	break;
+    case COLLHOOK_PRE_REMOVE:
+	colls = te->firstInCollectionsRemove;
+	break;
+    default:
+	colls = NULL;
+    }
+
+    for (; colls && *colls; colls++) {
+	rpmteRunCollection(te, *colls, hook);
+    }
+
+    return rc;
+}
+
 int rpmteProcess(rpmte te, pkgGoal goal)
 {
     /* Only install/erase resets pkg file info */
@@ -762,11 +887,16 @@ int rpmteProcess(rpmte te, pkgGoal goal)
 	}
     }
 
+    rpmteRunAllCollections(te, COLLHOOK_PRE_REMOVE);
+
     if (rpmteOpen(te, reset_fi)) {
 	failed = rpmpsmRun(te->ts, te, goal);
 	rpmteClose(te, reset_fi);
     }
     
+    rpmteRunAllCollections(te, COLLHOOK_POST_ADD);
+    rpmteRunAllCollections(te, COLLHOOK_POST_ANY);
+
     /* XXX should %pretrans failure fail the package install? */
     if (failed && !scriptstage) {
 	failed = rpmteMarkFailed(te);

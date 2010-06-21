@@ -144,4 +144,6 @@ extern const char *__progname;
 #include "misc/fnmatch.h"
 #endif
 
+#include <dlfcn.h>
+
 #endif	/* H_SYSTEM */
