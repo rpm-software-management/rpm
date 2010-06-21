@@ -63,6 +63,11 @@ struct rpmte_s {
     int failed;			/*!< (parent) install/erase failed */
 
     rpmfs fs;
+
+    ARGV_t lastInCollectionsAny;	/*!< list of collections this te is the last to be installed or removed */
+    ARGV_t lastInCollectionsAdd;	/*!< list of collections this te is the last to be only installed */
+    ARGV_t firstInCollectionsRemove;	/*!< list of collections this te is the first to be only removed */
+    ARGV_t collections;			/*!< list of collections */
 };
 
 /* forward declarations */
@@ -185,6 +190,8 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
  */
 static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 {
+    struct rpmtd_s colls;
+
     p->name = headerGetAsString(h, RPMTAG_NAME);
     p->version = headerGetAsString(h, RPMTAG_VERSION);
     p->release = headerGetAsString(h, RPMTAG_RELEASE);
@@ -228,6 +235,19 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
 			RPMTE_HAVE_POSTTRANS : 0;
 
+    p->lastInCollectionsAny = NULL;
+    p->lastInCollectionsAdd = NULL;
+    p->firstInCollectionsRemove = NULL;
+    p->collections = NULL;
+    if (headerGet(h, RPMTAG_COLLECTIONS, &colls, HEADERGET_MINMEM)) {
+	const char *collname;
+	while ((collname = rpmtdNextString(&colls))) {
+	    argvAdd(&p->collections, collname);
+	}
+	argvSort(p->collections, NULL);
+	rpmtdFreeData(&colls);
+    }
+
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
     return;
@@ -260,6 +280,11 @@ rpmte rpmteFree(rpmte te)
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
 	rpmtsUnlink(te->ts);
+
+	argvFree(te->collections);
+	argvFree(te->lastInCollectionsAny);
+	argvFree(te->lastInCollectionsAdd);
+	argvFree(te->firstInCollectionsRemove);
 
 	memset(te, 0, sizeof(*te));	/* XXX trash and burn */
 	free(te);
@@ -366,6 +391,46 @@ rpm_color_t rpmteSetColor(rpmte te, rpm_color_t color)
 	te->color = color;
     }
     return ocolor;
+}
+
+ARGV_const_t rpmteCollections(rpmte te)
+{
+    return (te != NULL) ? te->collections : NULL;
+}
+
+int rpmteHasCollection(rpmte te, const char *collname)
+{
+    return (argvSearch(rpmteCollections(te), collname, NULL) != NULL);
+}
+
+int rpmteAddToLastInCollectionAdd(rpmte te, const char *collname)
+{
+    if (te != NULL) {
+	argvAdd(&te->lastInCollectionsAdd, collname);
+	argvSort(te->lastInCollectionsAdd, NULL);
+	return 0;
+    }
+    return -1;
+}
+
+int rpmteAddToLastInCollectionAny(rpmte te, const char *collname)
+{
+    if (te != NULL) {
+	argvAdd(&te->lastInCollectionsAny, collname);
+	argvSort(te->lastInCollectionsAny, NULL);
+	return 0;
+    }
+    return -1;
+}
+
+int rpmteAddToFirstInCollectionRemove(rpmte te, const char *collname)
+{
+    if (te != NULL) {
+	argvAdd(&te->firstInCollectionsRemove, collname);
+	argvSort(te->firstInCollectionsRemove, NULL);
+	return 0;
+    }
+    return -1;
 }
 
 rpm_loff_t rpmtePkgFileSize(rpmte te)

@@ -104,5 +104,36 @@ unsigned int rpmteHeaderSize(rpmte te);
 RPM_GNUC_INTERNAL
 rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal);
 
+/** \ingroup rpmte
+ * Add a collection to the list of last collections for the installation
+ * section of a transaction element
+ * @param te		transaction element
+ * @param collname		collection name
+ * @return		0 on success, non-zero on error
+ */
+RPM_GNUC_INTERNAL
+int rpmteAddToLastInCollectionAdd(rpmte te, const char * collname);
+
+/** \ingroup rpmte
+ * Add a collection to the list of last collections for the installation
+ * or removal section of a transaction element
+ * @param te		transaction element
+ * @param collname		collection name
+ * @return		0 on success, non-zero on error
+ */
+RPM_GNUC_INTERNAL
+int rpmteAddToLastInCollectionAny(rpmte te, const char * collname);
+
+/** \ingroup rpmte
+ * Add a collection to the list of first collections for the removal
+ * section of a transaction element
+ * @param te		transaction element
+ * @param collname		collection name
+ * @return		0 on success, non-zero on error
+ */
+RPM_GNUC_INTERNAL
+int rpmteAddToFirstInCollectionRemove(rpmte te, const char * collname);
+
+
 #endif	/* _RPMTE_INTERNAL_H */
 

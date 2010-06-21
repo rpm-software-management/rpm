@@ -7,6 +7,7 @@
  */
 
 #include <rpm/rpmtypes.h>
+#include <rpm/argv.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -235,6 +236,22 @@ rpmds rpmteDS(rpmte te, rpmTag tag);
  * @return		file info tag set
  */
 rpmfi rpmteFI(rpmte te);
+
+/** \ingroup rpmte
+ * Retrieve list of collections
+ * @param te		transaction element
+ * @return		list of collections
+ */
+ARGV_const_t rpmteCollections(rpmte te);
+
+/** \ingroup rpmte
+ * Determine a transaction element is part of a collection
+ * @param te		transaction element
+ * @param collname	collection name
+ * @return		1 if collname is part of a collection, 0 if not
+ */
+int rpmteHasCollection(rpmte te, const char * collname);
+
 
 #ifdef __cplusplus
 }
