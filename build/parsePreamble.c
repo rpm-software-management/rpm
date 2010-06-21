@@ -663,6 +663,9 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 	    spec->BANames = _free(spec->BANames);
 	break;
     }
+    case RPMTAG_COLLECTIONS:
+	addOrAppendListEntry(pkg->header, tag, field);
+	break;
     default:
 	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
 	return RPMRC_FAIL;
@@ -730,6 +733,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_DOCDIR,		0, 0, LEN_AND_STR("docdir")},
     {RPMTAG_DISTTAG,		0, 0, LEN_AND_STR("disttag")},
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
+    {RPMTAG_COLLECTIONS,	0, 0, LEN_AND_STR("collections")},
     {0, 0, 0, 0}
 };
 
