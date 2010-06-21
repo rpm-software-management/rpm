@@ -11,6 +11,7 @@
 
 #include "lib/rpmal.h"
 #include "lib/misc.h"
+#include "lib/rpmte_internal.h"
 
 #include "debug.h"
 
@@ -392,4 +393,29 @@ rpmalSatisfiesDepend(const rpmal al, const rpmds ds)
 	free(providers);
     }
     return best;
+}
+
+rpmte *
+rpmalAllInCollection(const rpmal al, const char *collname)
+{
+    rpmte *ret = NULL;
+    int found = 0;
+    rpmalNum pkgNum;
+
+    if (!al || !al->list || !collname)
+	return NULL;
+
+    for (pkgNum = 0; pkgNum < al->size; pkgNum++) {
+	rpmte p = al->list[pkgNum].p;
+	if (rpmteHasCollection(p, collname)) {
+	    ret = xrealloc(ret, sizeof(*ret) * (found + 1 + 1));
+	    ret[found] = p;
+	    found++;
+	}
+    }
+    if (ret) {
+	ret[found] = NULL;
+    }
+
+    return ret;
 }

@@ -57,6 +57,17 @@ void rpmalAdd(rpmal al, rpmte p);
 RPM_GNUC_INTERNAL
 rpmte rpmalSatisfiesDepend(const rpmal al, const rpmds ds);
 
+/**
+ * Get a list of transaction elements that are memebers of a collection in the
+ * available list
+ * @param al		available list
+ * @param collname	collection name to search for
+ * @return		NULL-terminated list of transaction elements that are
+ *			members of the specified collection
+ */
+RPM_GNUC_INTERNAL
+rpmte * rpmalAllInCollection(const rpmal al, const char * collname);
+
 #ifdef __cplusplus
 }
 #endif

@@ -145,45 +145,24 @@ static void rpmTSIFree(tsortInfo tsi)
     }
 }
 
-/**
- * Record next "q <- p" relation (i.e. "p" requires "q").
- * @param ts		transaction set
- * @param p		predecessor (i.e. package that "Requires: q")
- * @param requires	relation
- * @return		0 always
- */
-static inline int addRelation(rpmts ts,
-			      rpmal al,
-			      rpmte p,
-			      rpmds requires)
+static inline int addSingleRelation(rpmte p,
+				    rpmte q,
+				    rpmsenseFlags dsflags)
 {
-    rpmte q;
-    struct tsortInfo_s * tsi_p, * tsi_q;
+    struct tsortInfo_s *tsi_p, *tsi_q;
     relation rel;
     rpmElementType teType = rpmteType(p);
-    rpmsenseFlags flags, dsflags;
-
-    dsflags = rpmdsFlags(requires);
-
-    /* Avoid dependendencies which are not relevant for ordering */
-    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS))
-	return 0;
-
-    q = rpmalSatisfiesDepend(al, requires);
+    rpmsenseFlags flags;
 
     /* Avoid deps outside this transaction and self dependencies */
     if (q == NULL || q == p)
 	return 0;
 
-    /* Avoid certain dependency relations. */
-    if (ignoreDep(ts, p, q))
-	return 0;
-
     /* Erasures are reversed installs. */
     if (teType == TR_REMOVED) {
-        rpmte r = p;
-        p = q;
-        q = r;
+	rpmte r = p;
+	p = q;
+	q = r;
 	flags = isErasePreReq(dsflags);
     } else {
 	flags = isInstallPreReq(dsflags);
@@ -192,7 +171,7 @@ static inline int addRelation(rpmts ts,
     /* map legacy prereq to pre/preun as needed */
     if (isLegacyPreReq(dsflags)) {
 	flags |= (teType == TR_ADDED) ?
-		 RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
+	    RPMSENSE_SCRIPT_PRE : RPMSENSE_SCRIPT_PREUN;
     }
 
     tsi_p = rpmteTSI(p);
@@ -228,6 +207,54 @@ static inline int addRelation(rpmts ts,
 
     rel->rel_next = tsi_p->tsi_forward_relations;
     tsi_p->tsi_forward_relations = rel;
+
+    return 0;
+}
+
+/**
+ * Record next "q <- p" relation (i.e. "p" requires "q").
+ * @param ts		transaction set
+ * @param p		predecessor (i.e. package that "Requires: q")
+ * @param requires	relation
+ * @return		0 always
+ */
+static inline int addRelation(rpmts ts,
+			      rpmal al,
+			      rpmte p,
+			      rpmds requires)
+{
+    rpmte q;
+    ARGV_const_t qcolls;
+    rpmsenseFlags dsflags;
+
+    dsflags = rpmdsFlags(requires);
+
+    /* Avoid dependendencies which are not relevant for ordering */
+    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS))
+	return 0;
+
+    q = rpmalSatisfiesDepend(al, requires);
+
+    /* Avoid deps outside this transaction and self dependencies */
+    if (q == NULL || q == p)
+	return 0;
+
+    /* Avoid certain dependency relations. */
+    if (ignoreDep(ts, p, q))
+	return 0;
+
+    addSingleRelation(p, q, dsflags);
+
+    /* If q is a member of any collections, make sure p requires all packages
+     * that are also in those collections */
+    for (qcolls = rpmteCollections(q); qcolls && *qcolls; qcolls++) {
+	rpmte *te;
+	rpmte *tes = rpmalAllInCollection(al, *qcolls);
+	for (te = tes; te && *te; te++) {
+	    addSingleRelation(p, *te, RPMSENSE_SCRIPT_PRE);
+	}
+	_free(tes);
+    }
 
     return 0;
 }
