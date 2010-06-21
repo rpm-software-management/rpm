@@ -1159,6 +1159,11 @@ done \
 %__urlhelper_proxyopts   %{?_httpproxy:--proxy %{_httpproxy}%{?_httpport::%{_httpport}}}%{!?_httpproxy:%{nil}}
 %_urlhelper             %{__urlhelpercmd} %{?__urlhelper_localopts} %{?__urlhelper_proxyopts} %{__urlhelperopts}
 
+#------------------------------------------------------------------------------
+# Collection specific macros
+%__plugindir		%{_rpmconfigdir}/plugins
+%__collection_font	%{__plugindir}/exec.so /usr/bin/fc-cache
+%__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
 
 # \endverbatim
 #*/

@@ -811,5 +811,6 @@ AC_CONFIG_FILES([Makefile
 	python/Makefile
  	luaext/Makefile
  	tests/Makefile
+ 	plugins/Makefile
   ])
 AC_OUTPUT
