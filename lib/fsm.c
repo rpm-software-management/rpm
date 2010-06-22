@@ -1264,7 +1264,7 @@ static int fsmMkdirs(FSM_t fsm)
 static void removeSBITS(const char *path)
 {
     struct stat stb;
-    if (lstat(path, &stb) == 0 && S_ISREG(stb.st_mode) && stb.st_nlink > 1) {
+    if (lstat(path, &stb) == 0 && S_ISREG(stb.st_mode)) {
 	if ((stb.st_mode & 06000) != 0) {
 	    (void) chmod(path, stb.st_mode & 0777);
 	}
