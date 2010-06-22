@@ -12,9 +12,7 @@ typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 /* Transaction set elements information */
 typedef struct tsMembers_s {
     intHash removedPackages;	/*!< Set of packages being removed. */
-
     rpmal addedPackages;	/*!< Set of packages being installed. */
-    int numAddedPackages;	/*!< No. added package instances. */
 
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */

@@ -298,7 +298,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     tsmem->order[oc] = p;
     if (oc == tsmem->orderCount) {
 	tsmem->orderCount++;
-	tsmem->numAddedPackages++;
 	rpmcliPackagesTotal++;
     }
     
