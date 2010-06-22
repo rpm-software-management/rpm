@@ -334,7 +334,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     int *cachedrc = NULL;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
-    int rc;
+    int rc = 0;
 
     /* See if we already looked this up */
     if (depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
@@ -343,13 +343,18 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 	return rc;
     }
 
+    /* See if a filename dependency is a real file in some package */
     if (Name[0] == '/') {
 	mi = rpmtsPrunedIterator(ts, RPMTAG_BASENAMES, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmdsNotify(dep, "(db files)", rc);
 	    break;
 	}
-    } else {
+	rpmdbFreeIterator(mi);
+    }
+
+    /* Otherwise look in provides no matter what the dependency looks like */
+    if (h == NULL) {
 	mi = rpmtsPrunedIterator(ts, RPMTAG_PROVIDENAME, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
@@ -357,11 +362,11 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 		break;
 	    }
 	}
+	rpmdbFreeIterator(mi);
     }
-    rpmdbFreeIterator(mi);
+    rc = (h != NULL) ? 0 : 1;
 
     /* Cache the relatively expensive rpmdb lookup results */
-    rc = (h != NULL) ? 0 : 1;
     depCacheAddEntry(dcache, xstrdup(DNEVR), rc);
     return rc;
 }
