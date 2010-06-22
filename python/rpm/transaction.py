@@ -117,7 +117,7 @@ class TransactionSet(_rpmts):
             n, v, r = nevr.rsplit('-', 2)
 
             # extract the dependency information
-            needs = p._str.split()[1:]
+            needs = p._str.split()
             needname = needs[0]
             needflags = rpm.RPMSENSE_ANY
             if len(needs) == 3:
