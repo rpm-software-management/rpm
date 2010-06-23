@@ -11,6 +11,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
+#include <rpm/rpmlog.h>
 
 #include "lib/collections.h"
 #include "lib/rpmte_internal.h"
@@ -836,7 +837,7 @@ static int rpmteRunCollection(rpmte te, const char *collname,
 
     plugin = rpmExpand("%{?__collection_", collname, "}", NULL);
     if (!plugin || rstreq(plugin, "")) {
-	fprintf(stderr, "Failed to expand %%__collection_%s macro\n",
+	rpmlog(RPMLOG_ERR, _("Failed to expand %%__collection_%s macro\n"),
 		collname);
 	goto exit;
     }
@@ -857,7 +858,7 @@ static int rpmteRunCollection(rpmte te, const char *collname,
 
     handle = dlopen(plugin, RTLD_LAZY);
     if (!handle) {
-	fprintf(stderr, "Failed to open %s: %s\n", plugin, dlerror());
+	rpmlog(RPMLOG_ERR, _("Failed to open %s: %s\n"), plugin, dlerror());
 	goto exit;
     }
 
@@ -865,7 +866,7 @@ static int rpmteRunCollection(rpmte te, const char *collname,
 
     pluginHooks = (rpmCollHook *) dlsym(handle, STR(COLLECTION_HOOKS));
     if ((error = dlerror()) != NULL) {
-	fprintf(stderr, "Failed to resolve symbol: %s\n",
+	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol: %s\n"),
 		STR(COLLECTION_HOOKS));
 	goto exit;
     }
@@ -892,7 +893,7 @@ static int rpmteRunCollection(rpmte te, const char *collname,
 
     *(void **) (&hookFunc) = dlsym(handle, hookFuncSym);
     if ((error = dlerror()) != NULL) {
-	fprintf(stderr, "Failed to resolve symbol %s: %s\n",
+	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
 		hookFuncSym, error);
 	goto exit;
     }
