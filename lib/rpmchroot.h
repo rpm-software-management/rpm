@@ -30,7 +30,7 @@ int rpmChrootOut(void);
  * Return chrooted status.
  * return		1 if chrooted, 0 otherwise
  */
-RPM_GNUC_INTERNAL
+/* RPM_GNUC_INTERNAL */
 int rpmChrootDone(void);
 
 #endif /* _RPMCHROOT_H */
