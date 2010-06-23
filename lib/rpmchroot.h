@@ -16,14 +16,14 @@ int rpmChrootSet(const char *rootDir);
  * Enter chroot if necessary.
  * return		-1 on error, 0 on success.
  */
-RPM_GNUC_INTERNAL
+/* RPM_GNUC_INTERNAL */
 int rpmChrootIn(void);
 
 /** \ingroup rpmchroot
  * Return from chroot if necessary.
  * return		-1 on error, 0 succes.
  */
-RPM_GNUC_INTERNAL
+/* RPM_GNUC_INTERNAL */
 int rpmChrootOut(void);
 
 /** \ingroup rpmchroot
