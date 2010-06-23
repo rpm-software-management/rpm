@@ -660,6 +660,8 @@ int main(int argc, char *argv[])
 	case 'b':
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_CLEAN;
+	    if ((ba->buildChar == 'b') && ba->shortCircuit)
+		break;
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
 	    ba->buildAmount |= RPMBUILD_CHECK;

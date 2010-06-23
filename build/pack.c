@@ -753,6 +753,10 @@ rpmRC packageBinaries(rpmSpec spec)
 	if (spec->sourcePkgId != NULL) {
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
+
+	if (rpmBTArgs.shortCircuit) {
+	    (void) rpmlibNeedsFeature(pkg->header, "ShortCircuited", "4.9.0-1");
+	}
 	
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;

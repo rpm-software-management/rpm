@@ -170,8 +170,10 @@ used standalone, eg. "\fBrpmbuild\fR \fB--rmspec foo.spec\fR").
 .TP
 \fB--short-circuit\fR
 Skip straight to specified stage (i.e., skip all stages leading
-up to the specified stage).  Only valid with \fB-bc\fR
-and \fB-bi\fR.
+up to the specified stage).  Only valid with \fB-bc\fR, \fB-bi\fR,
+and \fB-bb\fR.  Useful for local testing only.  Packages built this
+way will be marked with an unsatisfiable dependency to prevent
+their accidental use.
 .TP
 \fB--sign\fR
 Embed a GPG signature in the package. This signature can be used
