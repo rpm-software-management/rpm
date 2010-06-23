@@ -215,6 +215,7 @@ AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
 ])
 
 AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
+AC_SEARCH_LIBS(dlopen, [dl])
 
 dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
 dnl not in the libc but in libport (for political reasons).  This check
