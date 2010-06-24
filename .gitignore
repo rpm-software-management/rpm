@@ -1,6 +1,5 @@
 .*
 !.gitignore
-/build/*
 /config*
 !configure.ac
 /db3
