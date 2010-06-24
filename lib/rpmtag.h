@@ -28,6 +28,7 @@ extern "C" {
 /** \ingroup rpmtag
  * Tags identify data in package headers.
  * @note tags should not have value 0!
+ * @note all new tags should be added above 5000
  */
 /** @todo: Somehow supply type **/
 typedef enum rpmTag_e {
@@ -265,7 +266,7 @@ typedef enum rpmTag_e {
     RPMTAG_BUILDOBSOLETES	= 1194, /* internal (unimplemented) */
     RPMTAG_DBINSTANCE		= 1195, /* i extension */
     RPMTAG_NVRA			= 1196, /* s extension */
-    RPMTAG_COLLECTIONS		= 1197, /* s[] list of collections */
+    /* tags 1997-4999 reserved */
     RPMTAG_FILENAMES		= 5000, /* s[] extension */
     RPMTAG_FILEPROVIDE		= 5001, /* s[] extension */
     RPMTAG_FILEREQUIRE		= 5002, /* s[] extension */
@@ -295,6 +296,7 @@ typedef enum rpmTag_e {
     RPMTAG_VERIFYSCRIPTFLAGS	= 5026, /* i */
     RPMTAG_TRIGGERSCRIPTFLAGS	= 5027, /* i[] */
     RPMTAG_FILESTATUS		= 5028, /* i[] extension */
+    RPMTAG_COLLECTIONS		= 5029, /* s[] list of collections */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
