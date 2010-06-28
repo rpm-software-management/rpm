@@ -810,9 +810,6 @@ exit:
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    const char * pkgN;
-    char * pkgEVR;
-    rpmsenseFlags pkgFlags = RPMSENSE_EQUAL;
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
 
@@ -824,15 +821,11 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 	return rc;
 
     /* Get package information from header */
-    pkgN = headerGetString(h, RPMTAG_NAME);
-    pkgEVR = headerGetAsString(h, RPMTAG_EVR);
-    if ((pkg = rpmdsSingle(RPMTAG_PROVIDENAME, pkgN, pkgEVR, pkgFlags)) != NULL) {
-	if (nopromote)
-	    (void) rpmdsSetNoPromote(pkg, nopromote);
-	rc = rpmdsCompare(pkg, req);
-	pkg = rpmdsFree(pkg);
-    }
-    free(pkgEVR);
+    pkg = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    if (nopromote)
+	rpmdsSetNoPromote(pkg, nopromote);
+    rc = rpmdsCompare(pkg, req);
+    rpmdsFree(pkg);
 
     return rc;
 }
