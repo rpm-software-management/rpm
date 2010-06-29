@@ -53,7 +53,7 @@ rpm \- RPM Package Manager
 
 
 
-\fBrpm\fR {\fB--addsign|--resign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+\fBrpm\fR {\fB--addsign|--resign|--delsign\fR} \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
 
 
 
@@ -785,6 +785,12 @@ options generate and insert new signatures for each package
 \fIPACKAGE_FILE\fR given, replacing any
 existing signatures. There are two options for historical reasons,
 there is no difference in behavior currently.
+
+\fBrpm\fR \fB--delsign\fR \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
+.PP
+Delete all signatures from each package \fIPACKAGE_FILE\fR given.
+
 .SS "USING GPG TO SIGN PACKAGES"
 .PP
 In order to sign packages using GPG, \fBrpm\fR
