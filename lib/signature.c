@@ -321,6 +321,29 @@ Header rpmFreeSignature(Header sigh)
     return headerFree(sigh);
 }
 
+/*
+ * NSS doesn't support everything GPG does. Basic tests to see if the 
+ * generated signature is something we can use.
+ */
+static int validatePGPSig(pgpDigParams sigp)
+{
+    pgpHashAlgo pa = sigp->pubkey_algo;
+    /* TODO: query from the implementation instead of hardwiring here */
+    if (pa != PGPPUBKEYALGO_DSA && pa != PGPPUBKEYALGO_RSA) {
+	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %d\n"),
+		sigp->pubkey_algo);
+	return 1;
+    }
+
+    if (rpmDigestLength(sigp->hash_algo) == 0) {
+	rpmlog(RPMLOG_ERR, _("Unsupported PGP hash algorithm %d\n"),
+	       sigp->hash_algo);
+	return 1;
+    }
+
+    return 0;
+}
+
 /**
  * Generate GPG signature(s) for a header+payload file.
  * @param file		header+payload file name
@@ -450,8 +473,8 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	break;
     }
 
+    rc = validatePGPSig(sigp);
     dig = pgpFreeDig(dig);
-    rc = 0;
 
 exit:
     (void) unlink(sigfile);
