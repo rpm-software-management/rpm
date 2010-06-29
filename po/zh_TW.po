@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-05-31 14:32+0300\n"
+"POT-Creation-Date: 2010-06-29 11:58+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -314,31 +314,31 @@ msgstr "執行失敗\n"
 msgid "no packages files given for rebuild"
 msgstr "沒有指定要重建的套件名稱"
 
-#: rpmqv.c:686
+#: rpmqv.c:688
 msgid "no spec files given for build"
 msgstr "沒有指定用於組建的規格檔案名稱"
 
-#: rpmqv.c:688
+#: rpmqv.c:690
 msgid "no tar files given for build"
 msgstr "沒有指定用於組建的打包檔案名稱"
 
-#: rpmqv.c:709
+#: rpmqv.c:711
 msgid "no packages given for erase"
 msgstr "沒有指定要清除的套件名稱"
 
-#: rpmqv.c:743
+#: rpmqv.c:745
 msgid "no packages given for install"
 msgstr "沒有指定要安裝的套件名稱"
 
-#: rpmqv.c:755
+#: rpmqv.c:757
 msgid "no arguments given for query"
 msgstr "沒有指定查詢引數"
 
-#: rpmqv.c:769
+#: rpmqv.c:771
 msgid "no arguments given for verify"
 msgstr "沒有指定校驗引數"
 
-#: rpmqv.c:784
+#: rpmqv.c:786
 msgid "no arguments given"
 msgstr "沒有指定引數"
 
@@ -544,7 +544,7 @@ msgstr "%s：無法呼叫不明的標記 (%d)。\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: build/files.c:1626 lib/rpmchecksig.c:418
+#: build/files.c:1626
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s：不是一個受保護的公鑰。\n"
@@ -569,7 +569,7 @@ msgstr "檔案需要以「/」開頭：%s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "不容許以萬用字元解析：%s\n"
 
-#: build/files.c:1715 lib/rpminstall.c:421
+#: build/files.c:1715 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "以萬用字元解析找不到檔案：%s\n"
@@ -812,12 +812,12 @@ msgstr "執行 %s 失敗 (%s)：%s\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "密文偵測失敗\n"
 
-#: build/pack.c:762
+#: build/pack.c:766
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "無法產生套件 %s 的檔案名稱輸出：%s\n"
 
-#: build/pack.c:779
+#: build/pack.c:783
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "無法建立 %s：%s\n"
@@ -997,37 +997,37 @@ msgstr "列 %d：損壞的組建架構格式：%s\n"
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:667
+#: build/parsePreamble.c:670
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "內部錯誤：假造的標記 %d\n"
 
-#: build/parsePreamble.c:748
+#: build/parsePreamble.c:752
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "列 %d：需要版本描述：%s\n"
 
-#: build/parsePreamble.c:811
+#: build/parsePreamble.c:815
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不當的套件規格：%s\n"
 
-#: build/parsePreamble.c:817
+#: build/parsePreamble.c:821
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "套件已存在：%s\n"
 
-#: build/parsePreamble.c:848
+#: build/parsePreamble.c:852
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "列 %d：不明標記：%s\n"
 
-#: build/parsePreamble.c:880
+#: build/parsePreamble.c:884
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot 不能是「/」：%s\n"
 
-#: build/parsePreamble.c:884
+#: build/parsePreamble.c:888
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot 不能是「/」：%s\n"
@@ -1578,32 +1578,32 @@ msgstr "使用者 %s 不存在 - 現使用 root 代替\n"
 msgid "group %s does not exist - using root\n"
 msgstr "使用者組 %s 不存在 - 現使用 root 代替\n"
 
-#: lib/fsm.c:1499
+#: lib/fsm.c:1514
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "保存檔案 %s 在檔案清單表頭中找不到\n"
 
-#: lib/fsm.c:1617 lib/fsm.c:1745
+#: lib/fsm.c:1632 lib/fsm.c:1760
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s 已被另存為 %s\n"
 
-#: lib/fsm.c:1772
+#: lib/fsm.c:1787
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s 移除目錄 %s 失敗：目錄非空\n"
 
-#: lib/fsm.c:1778
+#: lib/fsm.c:1793
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: lib/fsm.c:1792
+#: lib/fsm.c:1807
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s 刪除檔案 %s 失敗：%s\n"
 
-#: lib/fsm.c:1814
+#: lib/fsm.c:1829
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s 如同 %s 而建立\n"
@@ -1683,12 +1683,12 @@ msgstr "hdr blob(%d):不當的，讀取回傳 %d\n"
 msgid "hdr load: BAD\n"
 msgstr "hdr 載入：不當的\n"
 
-#: lib/package.c:582 lib/rpmchecksig.c:183 lib/rpmchecksig.c:623
+#: lib/package.c:582 lib/rpmchecksig.c:183 lib/rpmchecksig.c:645
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s：rpmReadSignature 失敗：%s"
 
-#: lib/package.c:589 lib/rpmchecksig.c:190 lib/rpmchecksig.c:630
+#: lib/package.c:589 lib/rpmchecksig.c:190 lib/rpmchecksig.c:652
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s：未發現簽名\n"
@@ -1698,7 +1698,7 @@ msgstr "%s：未發現簽名\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s:：headerRead 失敗：%s"
 
-#: lib/package.c:686 lib/rpmchecksig.c:91 lib/rpmchecksig.c:463
+#: lib/package.c:686 lib/rpmchecksig.c:91 lib/rpmchecksig.c:485
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread 失敗：%s\n"
@@ -1869,7 +1869,7 @@ msgstr "--replacepkgs 與 --replacefiles 的速寫"
 msgid "upgrade package(s) if already installed"
 msgstr "如果套件已安裝，執行更新"
 
-#: lib/poptI.c:173 lib/poptI.c:189 lib/poptI.c:281
+#: lib/poptI.c:173 lib/poptI.c:189 lib/poptI.c:285
 msgid "<packagefile>+"
 msgstr "<套件檔案>+"
 
@@ -1972,44 +1972,48 @@ msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "不執行任何作業後觸發執行的短命令稿"
 
 #: lib/poptI.c:259
+msgid "do not perform any collection actions"
+msgstr ""
+
+#: lib/poptI.c:263
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr "更新到一個舊版本的套件 (在更新作業中 --force 指令會自動進行此步驟)"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:267
 msgid "print percentages as package installs"
 msgstr "安裝套件時印出進度百分比"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:269
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "如果可以，把套件重新部署到 <目錄>"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:270
 msgid "<dir>"
 msgstr "<目錄>"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:272
 msgid "relocate files from path <old> to <new>"
 msgstr "將檔案從 <舊目錄> 重新部署到 <新目錄>"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:273
 msgid "<old>=<new>"
 msgstr "<舊目錄>=<新目錄>"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:276
 msgid "ignore file conflicts between packages"
 msgstr "忽略套件之間的檔案衝突"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:279
 msgid "reinstall if the package is already present"
 msgstr "如果套件已存在則重新安裝"
 
-#: lib/poptI.c:277
+#: lib/poptI.c:281
 msgid "don't install, but tell if it would work or not"
 msgstr "不真正安裝，只回報作業結果是否正確"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:284
 msgid "upgrade package(s)"
 msgstr "更新套件"
 
@@ -2324,7 +2328,7 @@ msgstr "不正確的套件編號：%s\n"
 msgid "record %u could not be read\n"
 msgstr "記錄 %u 無法讀取\n"
 
-#: lib/query.c:518 lib/rpminstall.c:667
+#: lib/query.c:518 lib/rpminstall.c:665
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2334,7 +2338,7 @@ msgstr "套件 %s 尚未安裝\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "不明的標記：「%s」\n"
 
-#: lib/rpmchecksig.c:51 lib/rpmchecksig.c:800
+#: lib/rpmchecksig.c:51 lib/rpmchecksig.c:822
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
@@ -2369,52 +2373,57 @@ msgstr "%s：writeLead 失敗：%s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s：rpmWriteSignature 失敗：%s\n"
 
-#: lib/rpmchecksig.c:411
-#, c-format
-msgid "%s: import failed.\n"
+#: lib/rpmchecksig.c:391
+#, fuzzy, c-format
+msgid "%s: key %d import failed.\n"
 msgstr "%s：匯入失敗。\n"
 
-#: lib/rpmchecksig.c:415
+#: lib/rpmchecksig.c:395
+#, fuzzy, c-format
+msgid "%s: key %d not an armored public key.\n"
+msgstr "%s：不是一個受保護的公鑰。\n"
+
+#: lib/rpmchecksig.c:439
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s：匯入讀取時失敗(%d)。\n"
 
-#: lib/rpmchecksig.c:442
+#: lib/rpmchecksig.c:464
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s：headerRead 失敗\n"
 
-#: lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:473
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:485
+#: lib/rpmchecksig.c:507
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:733
+#: lib/rpmchecksig.c:755
 msgid "NOT OK"
 msgstr "不正確"
 
-#: lib/rpmchecksig.c:733
+#: lib/rpmchecksig.c:755
 msgid "OK"
 msgstr "正確"
 
-#: lib/rpmchecksig.c:735
+#: lib/rpmchecksig.c:757
 msgid " (MISSING KEYS:"
 msgstr " (丟失的密鑰："
 
-#: lib/rpmchecksig.c:737
+#: lib/rpmchecksig.c:759
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:760
 msgid " (UNTRUSTED KEYS:"
 msgstr " (不信任的密鑰："
 
-#: lib/rpmchecksig.c:740
+#: lib/rpmchecksig.c:762
 msgid ")"
 msgstr ")"
 
@@ -2441,65 +2450,65 @@ msgstr "否 "
 msgid "YES"
 msgstr "是"
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:845
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:、Provides:、以及 Obsoletes: 相依支援版本。"
 
-#: lib/rpmds.c:855
+#: lib/rpmds.c:848
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "檔案名稱儲存為 (dirName、baseName、dirIndex) 字組，而非路徑。"
 
-#: lib/rpmds.c:859
+#: lib/rpmds.c:852
 msgid "package payload can be compressed using bzip2."
 msgstr "套件酬載可以使用 bzip2 壓縮。"
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:857
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "套件酬載可以使用 bzip2 壓縮。"
 
-#: lib/rpmds.c:867
+#: lib/rpmds.c:860
 #, fuzzy
 msgid "package payload can be compressed using lzma."
 msgstr "套件酬載可以使用 bzip2 壓縮。"
 
-#: lib/rpmds.c:871
+#: lib/rpmds.c:864
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "套件酬載檔案有\"./\"字首。"
 
-#: lib/rpmds.c:874
+#: lib/rpmds.c:867
 msgid "package name-version-release is not implicitly provided."
 msgstr "套件的名稱-版本-發行編號沒有被隱含指出。"
 
-#: lib/rpmds.c:877
+#: lib/rpmds.c:870
 msgid "header tags are always sorted after being loaded."
 msgstr "表頭標記總在載入之後自動排序。"
 
-#: lib/rpmds.c:880
+#: lib/rpmds.c:873
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "命令稿解譯器可以從表頭中呼叫引數。"
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:876
 msgid "a hardlink file set may be installed without being complete."
 msgstr "硬式鏈結檔案組合也許沒有被完整安裝。"
 
-#: lib/rpmds.c:886
+#: lib/rpmds.c:879
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "套件內建短命令稿在安裝程序中可以存取 rpm 資料庫。"
 
-#: lib/rpmds.c:890
+#: lib/rpmds.c:883
 msgid "internal support for lua scripts."
 msgstr "內部支援 lua 命令稿。"
 
-#: lib/rpmds.c:894
+#: lib/rpmds.c:887
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:898
+#: lib/rpmds.c:891
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:902
+#: lib/rpmds.c:895
 #, fuzzy
 msgid "package scriptlets can be expanded at install time."
 msgstr "套件內建短命令稿在安裝程序中可以存取 rpm 資料庫。"
@@ -2532,47 +2541,47 @@ msgstr "相依性偵測失敗：\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: 不是 rpm 套件(或套件清單)：%s\n"
 
-#: lib/rpminstall.c:345 lib/rpminstall.c:729 tools/rpmgraph.c:139
+#: lib/rpminstall.c:345 lib/rpminstall.c:727 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:457
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "取回中 %s\n"
 
-#: lib/rpminstall.c:471
+#: lib/rpminstall.c:469
 #, fuzzy, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "略過 %s - 傳輸失敗 - %s\n"
 
-#: lib/rpminstall.c:538
+#: lib/rpminstall.c:536
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不能重新部署\n"
 
-#: lib/rpminstall.c:565
+#: lib/rpminstall.c:563
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "讀取檔案 %s 時發生錯誤\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:569
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "檔案 %s 需要更新版本的 RPM\n"
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:672
 #, fuzzy, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "「%s」指定了多個套件\n"
 
-#: lib/rpminstall.c:713
+#: lib/rpminstall.c:711
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟檔案 %s：%s\n"
 
-#: lib/rpminstall.c:719
+#: lib/rpminstall.c:717
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"
@@ -2793,14 +2802,34 @@ msgstr "%s(%s-%s-%s.%s) 短命令稿執行失敗，離開狀態 %d\n"
 msgid "Unknown format"
 msgstr "不明的標記"
 
-#: lib/rpmte.c:741
+#: lib/rpmte.c:809
 #, fuzzy
 msgid "install"
 msgstr "(已安裝) "
 
-#: lib/rpmte.c:742
+#: lib/rpmte.c:810
 msgid "erase"
 msgstr ""
+
+#: lib/rpmte.c:840
+#, c-format
+msgid "Failed to expand %%__collection_%s macro\n"
+msgstr ""
+
+#: lib/rpmte.c:861
+#, fuzzy, c-format
+msgid "Failed to open %s: %s\n"
+msgstr "開啟 %s 失敗：%s\n"
+
+#: lib/rpmte.c:869
+#, fuzzy, c-format
+msgid "Failed to resolve symbol: %s\n"
+msgstr "讀取 %s 失敗: %s。\n"
+
+#: lib/rpmte.c:896
+#, fuzzy, c-format
+msgid "Failed to resolve symbol %s: %s\n"
+msgstr "無法將 %s 更名為 %s：%m\n"
 
 #: lib/rpmts.c:91
 #, c-format
@@ -2827,7 +2856,7 @@ msgstr "丟失的「)」存在於套件標籤中：%s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s：公鑰讀入失敗。\n"
 
-#: lib/rpmts.c:980
+#: lib/rpmts.c:984
 #, fuzzy
 msgid "transaction"
 msgstr "建立異動作業集"
@@ -2875,71 +2904,81 @@ msgstr "sigh 填充(%d):不當，讀取 %d 位元組\n"
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%d):不當，fstat(2)失敗\n"
 
-#: lib/signature.c:355
+#: lib/signature.c:333
+#, c-format
+msgid "Unsupported PGP pubkey algorithm %d\n"
+msgstr ""
+
+#: lib/signature.c:339
+#, c-format
+msgid "Unsupported PGP hash algorithm %d\n"
+msgstr ""
+
+#: lib/signature.c:378
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
 msgstr ""
 
-#: lib/signature.c:375 lib/signature.c:661
+#: lib/signature.c:398 lib/signature.c:684
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "無法執行 %s: %s\n"
 
-#: lib/signature.c:392
+#: lib/signature.c:415
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "gpg 執行失敗 (%d)\n"
 
-#: lib/signature.c:398
+#: lib/signature.c:421
 msgid "gpg failed to write signature\n"
 msgstr "寫入簽名時 gpg 失敗\n"
 
-#: lib/signature.c:416
+#: lib/signature.c:439
 msgid "unable to read the signature\n"
 msgstr "無法讀取簽名\n"
 
-#: lib/signature.c:500
+#: lib/signature.c:523
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/signature.c:666 lib/signature.c:706
+#: lib/signature.c:689 lib/signature.c:729
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "在巨集檔案中有無效的 %%_signature spec\n"
 
-#: lib/signature.c:700
+#: lib/signature.c:723
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "您必須在您的巨集檔案中設定 \"%%_gpg_name\"\n"
 
-#: lib/signature.c:741
+#: lib/signature.c:764
 #, fuzzy
 msgid "MD5 digest:"
 msgstr "MD 5 摘要："
 
-#: lib/signature.c:780
+#: lib/signature.c:803
 #, fuzzy
 msgid "Header SHA1 digest:"
 msgstr "表頭 SHA1 摘要："
 
-#: lib/signature.c:835
+#: lib/signature.c:858
 msgid "Header "
 msgstr "表頭 "
 
-#: lib/signature.c:848
+#: lib/signature.c:871
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "驗證簽名：不當的參數\n"
 
-#: lib/signature.c:869
+#: lib/signature.c:892
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "簽名：不明 (%d)\n"
 
-#: lib/transaction.c:1318
+#: lib/transaction.c:1397
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1318
+#: lib/transaction.c:1397
 #, fuzzy
 msgid "failed"
 msgstr "%s 失敗：%s\n"
@@ -3344,17 +3383,17 @@ msgstr "警告："
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "記憶體配置 (%u 位元組) 回傳空值。\n"
 
-#: rpmio/rpmpgp.c:1356
+#: rpmio/rpmpgp.c:1357
 #, fuzzy, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr " DSA 簽名："
 
-#: rpmio/rpmpgp.c:1364
+#: rpmio/rpmpgp.c:1365
 #, fuzzy
 msgid "(none)"
 msgstr "(無錯誤)"
 
-#: rpmio/rpmpgp.c:1635
+#: rpmio/rpmpgp.c:1639
 #, fuzzy, c-format
 msgid "Failed to register fork handler: %m\n"
 msgstr "無法從 %s 讀取規格檔案\n"
@@ -3458,9 +3497,6 @@ msgstr "不驗證表頭+酬載簽名"
 
 #~ msgid "failed to stat %s: %s\n"
 #~ msgstr "無法檢驗狀態：%s：%s\n"
-
-#~ msgid "failed to open %s: %s\n"
-#~ msgstr "開啟 %s 失敗：%s\n"
 
 #~ msgid "file %s is on an unknown device\n"
 #~ msgstr "檔案 %s 位於一個不明的裝置上\n"
@@ -3648,9 +3684,6 @@ msgstr "不驗證表頭+酬載簽名"
 
 #~ msgid "%s: headerGetEntry failed\n"
 #~ msgstr "%s：headerGetEntry 失敗\n"
-
-#~ msgid "Failed to read %s: %s.\n"
-#~ msgstr "讀取 %s 失敗: %s。\n"
 
 #~ msgid "%s expansion failed at %s:%d \"%s\"\n"
 #~ msgstr "%s 擴充失敗於 %s:%d \"%s\"\n"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-05-31 14:32+0300\n"
+"POT-Creation-Date: 2010-06-29 11:58+0300\n"
 "PO-Revision-Date: 2009-04-06 22:38+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -327,31 +327,31 @@ msgstr "neuspelo izvršavanje\n"
 msgid "no packages files given for rebuild"
 msgstr "nema zadatih datoteka paketa za ponovno pravljenje"
 
-#: rpmqv.c:686
+#: rpmqv.c:688
 msgid "no spec files given for build"
 msgstr "nema zadatih datoteka specifikacije za pravljenje"
 
-#: rpmqv.c:688
+#: rpmqv.c:690
 msgid "no tar files given for build"
 msgstr "nema zadatih tar datoteka za pravljenje"
 
-#: rpmqv.c:709
+#: rpmqv.c:711
 msgid "no packages given for erase"
 msgstr "nema zadatih paketa za brisanje"
 
-#: rpmqv.c:743
+#: rpmqv.c:745
 msgid "no packages given for install"
 msgstr "nema zadatih paketa za instalaciju"
 
-#: rpmqv.c:755
+#: rpmqv.c:757
 msgid "no arguments given for query"
 msgstr "nema zadatih argumenata za upit"
 
-#: rpmqv.c:769
+#: rpmqv.c:771
 msgid "no arguments given for verify"
 msgstr "nema zadatih argumenata za proveru"
 
-#: rpmqv.c:784
+#: rpmqv.c:786
 msgid "no arguments given"
 msgstr "nema zadatih argumenata"
 
@@ -557,7 +557,7 @@ msgstr "%s: ne mogu da učitam nepoznatu oznaku (%d).\n"
 msgid "%s: public key read failed.\n"
 msgstr "%s: neuspelo čitanje javnog ključa.\n"
 
-#: build/files.c:1626 lib/rpmchecksig.c:418
+#: build/files.c:1626
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: javni ključ nije ojačan.\n"
@@ -582,7 +582,7 @@ msgstr "Ispred datoteke je potrebno da stoji „/“: %s\n"
 msgid "Glob not permitted: %s\n"
 msgstr "Preklapanje nije dozvoljeno: %s\n"
 
-#: build/files.c:1715 lib/rpminstall.c:421
+#: build/files.c:1715 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronađena poklapanjem: %s\n"
@@ -825,12 +825,12 @@ msgstr "Izvršavanje „%s“ nije uspelo.\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Neuspela provera paketa „%s“.\n"
 
-#: build/pack.c:762
+#: build/pack.c:766
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Ne mogu da napravim ime izlazne datoteke za paket %s: %s\n"
 
-#: build/pack.c:779
+#: build/pack.c:783
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ne mogu da napravim %s: %s\n"
@@ -1010,37 +1010,37 @@ msgstr "red %d: Loš oblik za BuildArchitecture: %s\n"
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "red %d: Samo noarch podpaketi su podržani: %s\n"
 
-#: build/parsePreamble.c:667
+#: build/parsePreamble.c:670
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interna greška: Lažna oznaka %d\n"
 
-#: build/parsePreamble.c:748
+#: build/parsePreamble.c:752
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "red %d: Neophodna verzija: %s\n"
 
-#: build/parsePreamble.c:811
+#: build/parsePreamble.c:815
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Loša specifikacija paketa: %s\n"
 
-#: build/parsePreamble.c:817
+#: build/parsePreamble.c:821
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket već postoji: %s\n"
 
-#: build/parsePreamble.c:848
+#: build/parsePreamble.c:852
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "red %d: Nepoznata oznaka: %s\n"
 
-#: build/parsePreamble.c:880
+#: build/parsePreamble.c:884
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} ne može biti prazno\n"
 
-#: build/parsePreamble.c:884
+#: build/parsePreamble.c:888
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} ne može biti „/“\n"
@@ -1595,32 +1595,32 @@ msgstr "korisnik %s ne postoji - koristim root\n"
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s ne postoji - koristim root\n"
 
-#: lib/fsm.c:1499
+#: lib/fsm.c:1514
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "datoteka arhive %s nije pronađena u zaglavlju spiska datoteka\n"
 
-#: lib/fsm.c:1617 lib/fsm.c:1745
+#: lib/fsm.c:1632 lib/fsm.c:1760
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sačuvano kao %s\n"
 
-#: lib/fsm.c:1772
+#: lib/fsm.c:1787
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nije uspelo: Direktorijum nije prazan\n"
 
-#: lib/fsm.c:1778
+#: lib/fsm.c:1793
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nije uspelo: %s\n"
 
-#: lib/fsm.c:1792
+#: lib/fsm.c:1807
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s nije uspelo: %s\n"
 
-#: lib/fsm.c:1814
+#: lib/fsm.c:1829
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s napravljeno kao %s\n"
@@ -1700,12 +1700,12 @@ msgstr "hdr blob(%zd): LOŠE, čitam vraćeno %d\n"
 msgid "hdr load: BAD\n"
 msgstr "hdr load: LOŠE\n"
 
-#: lib/package.c:582 lib/rpmchecksig.c:183 lib/rpmchecksig.c:623
+#: lib/package.c:582 lib/rpmchecksig.c:183 lib/rpmchecksig.c:645
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature nije uspelo: %s"
 
-#: lib/package.c:589 lib/rpmchecksig.c:190 lib/rpmchecksig.c:630
+#: lib/package.c:589 lib/rpmchecksig.c:190 lib/rpmchecksig.c:652
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nema potpisa na raspolaganju\n"
@@ -1715,7 +1715,7 @@ msgstr "%s: Nema potpisa na raspolaganju\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead nije uspelo: %s"
 
-#: lib/package.c:686 lib/rpmchecksig.c:91 lib/rpmchecksig.c:463
+#: lib/package.c:686 lib/rpmchecksig.c:91 lib/rpmchecksig.c:485
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nije uspelo: %s\n"
@@ -1889,7 +1889,7 @@ msgstr "skraćenica za --replacepkgs --replacefiles"
 msgid "upgrade package(s) if already installed"
 msgstr "nadgradi pakete ako su već instalirani"
 
-#: lib/poptI.c:173 lib/poptI.c:189 lib/poptI.c:281
+#: lib/poptI.c:173 lib/poptI.c:189 lib/poptI.c:285
 msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
@@ -1993,45 +1993,49 @@ msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "nemoj izvršiti nijednu %%triggerpostun skripticu(e)"
 
 #: lib/poptI.c:259
+msgid "do not perform any collection actions"
+msgstr ""
+
+#: lib/poptI.c:263
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
 msgstr ""
 "nadgradi na staru verziju paketa (--force kod nadgradnje ovo radi samostalno)"
 
-#: lib/poptI.c:263
+#: lib/poptI.c:267
 msgid "print percentages as package installs"
 msgstr "ispisuj procente dok se paket instalira"
 
-#: lib/poptI.c:265
+#: lib/poptI.c:269
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "premesti paket u <dir>, ako se može premestiti"
 
-#: lib/poptI.c:266
+#: lib/poptI.c:270
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:268
+#: lib/poptI.c:272
 msgid "relocate files from path <old> to <new>"
 msgstr "premesti datoteke iz putanje <old> u <new>"
 
-#: lib/poptI.c:269
+#: lib/poptI.c:273
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:272
+#: lib/poptI.c:276
 msgid "ignore file conflicts between packages"
 msgstr "zanemari sukobe datoteka između paketa"
 
-#: lib/poptI.c:275
+#: lib/poptI.c:279
 msgid "reinstall if the package is already present"
 msgstr "ponovo instaliraj ako je paket već prisutan"
 
-#: lib/poptI.c:277
+#: lib/poptI.c:281
 msgid "don't install, but tell if it would work or not"
 msgstr "nemoj instalirati, ali reci da li bi radilo ili ne"
 
-#: lib/poptI.c:280
+#: lib/poptI.c:284
 msgid "upgrade package(s)"
 msgstr "nadgradi paket(e)"
 
@@ -2344,7 +2348,7 @@ msgstr "neispravan broj paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr "zapis %lu ne može biti pročitan\n"
 
-#: lib/query.c:518 lib/rpminstall.c:667
+#: lib/query.c:518 lib/rpminstall.c:665
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -2354,7 +2358,7 @@ msgstr "paket %s nije instaliran\n"
 msgid "unknown tag: \"%s\"\n"
 msgstr "nepoznata oznaka: „%s“\n"
 
-#: lib/rpmchecksig.c:51 lib/rpmchecksig.c:800
+#: lib/rpmchecksig.c:51 lib/rpmchecksig.c:822
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: otvaranje nije uspelo: %s\n"
@@ -2388,53 +2392,58 @@ msgstr "%s: writeLead nije uspelo: %s\n"
 msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature nije uspelo: %s\n"
 
-#: lib/rpmchecksig.c:411
-#, c-format
-msgid "%s: import failed.\n"
+#: lib/rpmchecksig.c:391
+#, fuzzy, c-format
+msgid "%s: key %d import failed.\n"
 msgstr "%s: uvoz nije uspeo.\n"
 
-#: lib/rpmchecksig.c:415
+#: lib/rpmchecksig.c:395
+#, fuzzy, c-format
+msgid "%s: key %d not an armored public key.\n"
+msgstr "%s: javni ključ nije ojačan.\n"
+
+#: lib/rpmchecksig.c:439
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr "%s: uvozno čitanje nije uspelo(%d).\n"
 
-#: lib/rpmchecksig.c:442
+#: lib/rpmchecksig.c:464
 #, c-format
 msgid "%s: headerRead failed\n"
 msgstr "%s: headerRead nije uspeo\n"
 
-#: lib/rpmchecksig.c:451
+#: lib/rpmchecksig.c:473
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 "%s: Nepromenjiva regija zaglavlja se ne može iščitati. Oštećen paket?\n"
 
-#: lib/rpmchecksig.c:485
+#: lib/rpmchecksig.c:507
 #, c-format
 msgid "skipping package %s with unverifiable V%u signature\n"
 msgstr "preskačem paket %s sa nepotvrđenim V%u potpisom\n"
 
-#: lib/rpmchecksig.c:733
+#: lib/rpmchecksig.c:755
 msgid "NOT OK"
 msgstr "NIJE UREDU"
 
-#: lib/rpmchecksig.c:733
+#: lib/rpmchecksig.c:755
 msgid "OK"
 msgstr "UREDU"
 
-#: lib/rpmchecksig.c:735
+#: lib/rpmchecksig.c:757
 msgid " (MISSING KEYS:"
 msgstr " (NEDOSTAJUĆI KLJUČEVI:"
 
-#: lib/rpmchecksig.c:737
+#: lib/rpmchecksig.c:759
 msgid ") "
 msgstr ") "
 
-#: lib/rpmchecksig.c:738
+#: lib/rpmchecksig.c:760
 msgid " (UNTRUSTED KEYS:"
 msgstr " (NEPOUZDANI KLJUČEVI:"
 
-#: lib/rpmchecksig.c:740
+#: lib/rpmchecksig.c:762
 msgid ")"
 msgstr ")"
 
@@ -2461,68 +2470,68 @@ msgstr "NE "
 msgid "YES"
 msgstr "DA"
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:845
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "Neophodne:, Obezbeđene:, i Zastarele: verzije podrške zavisnosti."
 
-#: lib/rpmds.c:855
+#: lib/rpmds.c:848
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ime(na) datoteke sačuvano kao (nazivDirektorijuma,osnovnoIme,"
 "indeksDirektorijuma) par, ne kao putanja."
 
-#: lib/rpmds.c:859
+#: lib/rpmds.c:852
 msgid "package payload can be compressed using bzip2."
 msgstr "tovar paketa može biti komprimovan koristeći bzip2."
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:857
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "tovar paketa može biti komprimovan koristeći lzma."
 
-#: lib/rpmds.c:867
+#: lib/rpmds.c:860
 msgid "package payload can be compressed using lzma."
 msgstr "tovar paketa može biti komprimovan koristeći lzma."
 
-#: lib/rpmds.c:871
+#: lib/rpmds.c:864
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "datoteka(e) tovara paketa ima prefiks „./“."
 
-#: lib/rpmds.c:874
+#: lib/rpmds.c:867
 msgid "package name-version-release is not implicitly provided."
 msgstr "naziv paketa-verzija-izdanje nije implicitno navedeno."
 
-#: lib/rpmds.c:877
+#: lib/rpmds.c:870
 msgid "header tags are always sorted after being loaded."
 msgstr "oznake zaglavlja se uvek sortiraju nakon učitavanja."
 
-#: lib/rpmds.c:880
+#: lib/rpmds.c:873
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "prevodilac skriptice može koristiti argumente zaglavlja."
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:876
 msgid "a hardlink file set may be installed without being complete."
 msgstr "datoteka čvrste veze može biti instalirana iako nije potpuna."
 
-#: lib/rpmds.c:886
+#: lib/rpmds.c:879
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skriptica paketa može pristupiti rpm bazi podataka tokom instalacije."
 
-#: lib/rpmds.c:890
+#: lib/rpmds.c:883
 msgid "internal support for lua scripts."
 msgstr "unutrašnja podrška za skripte lua."
 
-#: lib/rpmds.c:894
+#: lib/rpmds.c:887
 #, fuzzy
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 "algoritam za sažimanje kontrolne sume datoteke se može podešavati po paketu"
 
-#: lib/rpmds.c:898
+#: lib/rpmds.c:891
 msgid "support for POSIX.1e file capabilities"
 msgstr "podrška za POSIX.1e mogućnosti datoteka"
 
-#: lib/rpmds.c:902
+#: lib/rpmds.c:895
 #, fuzzy
 msgid "package scriptlets can be expanded at install time."
 msgstr "skriptica paketa može pristupiti rpm bazi podataka tokom instalacije."
@@ -2555,47 +2564,47 @@ msgstr "Neuspele zavisnosti:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nije rpm paket (ili manifest paketa): %s\n"
 
-#: lib/rpminstall.c:345 lib/rpminstall.c:729 tools/rpmgraph.c:139
+#: lib/rpminstall.c:345 lib/rpminstall.c:727 tools/rpmgraph.c:139
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s se ne može instalirati\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:457
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpminstall.c:471
+#: lib/rpminstall.c:469
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "preskačem %s - neuspeo prenos\n"
 
-#: lib/rpminstall.c:538
+#: lib/rpminstall.c:536
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s se ne može premeštati\n"
 
-#: lib/rpminstall.c:565
+#: lib/rpminstall.c:563
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "greška pri čitanju iz datoteke %s\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:569
 #, c-format
 msgid "file %s requires a newer version of RPM\n"
 msgstr "datoteka %s zahteva noviju verziju RPM-a\n"
 
-#: lib/rpminstall.c:674
+#: lib/rpminstall.c:672
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "„%s“ određuje više paketa:\n"
 
-#: lib/rpminstall.c:713
+#: lib/rpminstall.c:711
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ne mogu da otvorim %s: %s\n"
 
-#: lib/rpminstall.c:719
+#: lib/rpminstall.c:717
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
@@ -2814,14 +2823,34 @@ msgstr "%s skriptica nije uspela, izlazni status %d\n"
 msgid "Unknown format"
 msgstr "Nepoznat oblik"
 
-#: lib/rpmte.c:741
+#: lib/rpmte.c:809
 #, fuzzy
 msgid "install"
 msgstr "(instalirano) "
 
-#: lib/rpmte.c:742
+#: lib/rpmte.c:810
 msgid "erase"
 msgstr ""
+
+#: lib/rpmte.c:840
+#, c-format
+msgid "Failed to expand %%__collection_%s macro\n"
+msgstr ""
+
+#: lib/rpmte.c:861
+#, fuzzy, c-format
+msgid "Failed to open %s: %s\n"
+msgstr "neuspelo otvaranje %s: %s\n"
+
+#: lib/rpmte.c:869
+#, fuzzy, c-format
+msgid "Failed to resolve symbol: %s\n"
+msgstr "neuspelo otvaranje %s: %s\n"
+
+#: lib/rpmte.c:896
+#, fuzzy, c-format
+msgid "Failed to resolve symbol %s: %s\n"
+msgstr "Neuspela promena imena %s u %s: %m\n"
 
 #: lib/rpmts.c:91
 #, c-format
@@ -2848,7 +2877,7 @@ msgstr "nedostaje „)“ u oznaci paketa: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: neuspelo čitanje javnog ključa.\n"
 
-#: lib/rpmts.c:980
+#: lib/rpmts.c:984
 #, fuzzy
 msgid "transaction"
 msgstr "napravi skup transakcija"
@@ -2896,69 +2925,79 @@ msgstr "sigh podloška(%zd): LOŠE, čitam %zd bajtova\n"
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%zd): LOŠE, fstat(2) nije uspeo\n"
 
-#: lib/signature.c:355
+#: lib/signature.c:333
+#, c-format
+msgid "Unsupported PGP pubkey algorithm %d\n"
+msgstr ""
+
+#: lib/signature.c:339
+#, c-format
+msgid "Unsupported PGP hash algorithm %d\n"
+msgstr ""
+
+#: lib/signature.c:378
 #, c-format
 msgid "Couldn't create pipe for signing: %m"
 msgstr "Ne mogu da napravim cev za potpisivanje: %m"
 
-#: lib/signature.c:375 lib/signature.c:661
+#: lib/signature.c:398 lib/signature.c:684
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "Ne mogu da izvršim %s: %s\n"
 
-#: lib/signature.c:392
+#: lib/signature.c:415
 #, c-format
 msgid "gpg exec failed (%d)\n"
 msgstr "neuspelo gpg izvršavanje (%d)\n"
 
-#: lib/signature.c:398
+#: lib/signature.c:421
 msgid "gpg failed to write signature\n"
 msgstr "gpg nije uspeo da zapiše potpis\n"
 
-#: lib/signature.c:416
+#: lib/signature.c:439
 msgid "unable to read the signature\n"
 msgstr "ne mogu da pročitam potpis\n"
 
-#: lib/signature.c:500
+#: lib/signature.c:523
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Nepromenjiva regija zaglavlja se ne može iščitati. Oštećen paket?\n"
 
-#: lib/signature.c:666 lib/signature.c:706
+#: lib/signature.c:689 lib/signature.c:729
 #, c-format
 msgid "Invalid %%_signature spec in macro file\n"
 msgstr "Neispravna specifikacija %%_potpisa u datoteci makroa\n"
 
-#: lib/signature.c:700
+#: lib/signature.c:723
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Morate postaviti „%%_gpg_name“ u makro datoteci\n"
 
-#: lib/signature.c:741
+#: lib/signature.c:764
 msgid "MD5 digest:"
 msgstr "MD5 sažetak:"
 
-#: lib/signature.c:780
+#: lib/signature.c:803
 msgid "Header SHA1 digest:"
 msgstr "SHA1 sažetak zaglavlja:"
 
-#: lib/signature.c:835
+#: lib/signature.c:858
 msgid "Header "
 msgstr "Zaglavlje "
 
-#: lib/signature.c:848
+#: lib/signature.c:871
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Potvrdi potpis: LOŠI PARAMETRI\n"
 
-#: lib/signature.c:869
+#: lib/signature.c:892
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Potpis: NEPOZNAT (%d)\n"
 
-#: lib/transaction.c:1318
+#: lib/transaction.c:1397
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1318
+#: lib/transaction.c:1397
 #, fuzzy
 msgid "failed"
 msgstr "%s nije uspelo\n"
@@ -3366,17 +3405,17 @@ msgstr "upozorenje: "
 msgid "memory alloc (%u bytes) returned NULL.\n"
 msgstr "alokacija memorije (%u bajta) je vratila NAL.\n"
 
-#: rpmio/rpmpgp.c:1356
+#: rpmio/rpmpgp.c:1357
 #, fuzzy, c-format
 msgid "V%d %s/%s %s, key ID %s"
 msgstr "%sV%d %s potpis: %s, ID ključa %s\n"
 
-#: rpmio/rpmpgp.c:1364
+#: rpmio/rpmpgp.c:1365
 #, fuzzy
 msgid "(none)"
 msgstr "(bez greške)"
 
-#: rpmio/rpmpgp.c:1635
+#: rpmio/rpmpgp.c:1639
 #, fuzzy, c-format
 msgid "Failed to register fork handler: %m\n"
 msgstr "Neuspelo čitanje datoteke specifikacije iz %s\n"
@@ -3490,9 +3529,6 @@ msgstr "nemoj proveravati potpis zaglavlja+tovara"
 
 #~ msgid "failed to stat %s: %s\n"
 #~ msgstr "stat nije uspeo %s: %s\n"
-
-#~ msgid "failed to open %s: %s\n"
-#~ msgstr "neuspelo otvaranje %s: %s\n"
 
 #~ msgid "file %s is on an unknown device\n"
 #~ msgstr "datoteka %s je na nepoznatom uređaju\n"
