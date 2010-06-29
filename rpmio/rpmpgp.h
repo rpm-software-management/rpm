@@ -263,6 +263,7 @@ typedef enum pgpHashAlgo_e {
     PGPHASHALGO_SHA256		=  8,	/*!< SHA256 */
     PGPHASHALGO_SHA384		=  9,	/*!< SHA384 */
     PGPHASHALGO_SHA512		= 10,	/*!< SHA512 */
+    PGPHASHALGO_SHA224		= 11,	/*!< SHA224 */
 } pgpHashAlgo;
 
 /** \ingroup rpmpgp
