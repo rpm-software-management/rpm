@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-06-29 11:58+0300\n"
-"PO-Revision-Date: 2010-06-03 20:45+0200\n"
+"PO-Revision-Date: 2010-06-30 11:38+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "MIME-Version: 1.0\n"
@@ -1987,7 +1987,7 @@ msgstr "bez wykonania żadnych skryptów %%triggerpostun"
 
 #: lib/poptI.c:259
 msgid "do not perform any collection actions"
-msgstr ""
+msgstr "bez wykonywania żadnych działań kolekcji"
 
 #: lib/poptI.c:263
 msgid ""
@@ -2387,14 +2387,14 @@ msgid "%s: rpmWriteSignature failed: %s\n"
 msgstr "%s: rpmWriteSignature nie powiodło się: %s\n"
 
 #: lib/rpmchecksig.c:391
-#, fuzzy, c-format
+#, c-format
 msgid "%s: key %d import failed.\n"
-msgstr "%s: zaimportowanie nie powiodło się.\n"
+msgstr "%s: zaimportowanie klucza %d nie powiodło się.\n"
 
 #: lib/rpmchecksig.c:395
-#, fuzzy, c-format
+#, c-format
 msgid "%s: key %d not an armored public key.\n"
-msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
+msgstr "%s: klucz %d nie jest opakowanym kluczem publicznym.\n"
 
 #: lib/rpmchecksig.c:439
 #, c-format
@@ -2823,22 +2823,22 @@ msgstr "usunięcie"
 #: lib/rpmte.c:840
 #, c-format
 msgid "Failed to expand %%__collection_%s macro\n"
-msgstr ""
+msgstr "Rozwinięcie makra %%__collection_%s nie powiodło się\n"
 
 #: lib/rpmte.c:861
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open %s: %s\n"
-msgstr "Nie można otworzyć %s: %s\n"
+msgstr "Otwarcie %s nie powiodło się: %s\n"
 
 #: lib/rpmte.c:869
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resolve symbol: %s\n"
-msgstr "Zmiana nazwy %s na %s nie powiodła się: %m\n"
+msgstr "Rozwiązanie symbolu nie powiodło się: %s\n"
 
 #: lib/rpmte.c:896
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resolve symbol %s: %s\n"
-msgstr "Zmiana nazwy %s na %s nie powiodła się: %m\n"
+msgstr "Rozwiązanie symbolu %s nie powiodło się: %s\n"
 
 #: lib/rpmts.c:91
 #, c-format
@@ -2915,12 +2915,12 @@ msgstr "sigh rozmiar podpisu(%zd): BŁĘDNY, fstat(2) nie powiodło się\n"
 #: lib/signature.c:333
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %d\n"
-msgstr ""
+msgstr "Nieobsługiwany algorytm klucza publicznego PGP %d\n"
 
 #: lib/signature.c:339
 #, c-format
 msgid "Unsupported PGP hash algorithm %d\n"
-msgstr ""
+msgstr "Nieobsługiwany algorytm mieszania PGP %d\n"
 
 #: lib/signature.c:378
 #, c-format
