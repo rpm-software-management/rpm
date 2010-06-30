@@ -234,7 +234,8 @@ top:
 	    if ((nbw = write(toProg[1], writePtr,
 		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
 	        if (errno != EAGAIN) {
-		    perror("getOutputFrom()");
+		    rpmlog(RPMLOG_ERR, _("%s: failure writing to %s: %m\n"),
+			   __func__, argv[0]);
 	            exit(EXIT_FAILURE);
 		}
 	        nbw = 0;
