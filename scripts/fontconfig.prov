@@ -12,7 +12,10 @@
 
 fcquery=/usr/bin/fc-query
 
-[ -x $fcquery ] || exit 0
+if [ -x $fcquery ]; then
+    cat > /dev/null
+    exit 0
+fi
 
 # filter out anything outside main fontconfig path
 grep /usr/share/fonts/ |
