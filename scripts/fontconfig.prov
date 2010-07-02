@@ -12,7 +12,7 @@
 
 fcquery=/usr/bin/fc-query
 
-if [ -x $fcquery ]; then
+if [ ! -x $fcquery ]; then
     cat > /dev/null
     exit 0
 fi
