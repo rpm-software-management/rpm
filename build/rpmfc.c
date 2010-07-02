@@ -129,6 +129,40 @@ static int rpmfcExpandAppend(ARGV_t * argvp, ARGV_const_t av)
     return 0;
 }
 
+static int _sigpipe[2] = { -1, -1 };
+
+static void sigpipe_handler(int sig)
+{
+    char sigc = sig;
+    int xx; /* shut up gcc, we can't handle an error here */
+    xx = write(_sigpipe[1], &sigc, 1);
+}
+
+static int sigpipe_init(void)
+{
+    if (pipe(_sigpipe) < 0)
+	return -1;
+    /* Set close on exec and non-blocking (must not get stuck in sighandler) */
+    fcntl(_sigpipe[0], F_SETFL, (fcntl(_sigpipe[0], F_GETFL)|O_NONBLOCK));
+    fcntl(_sigpipe[0], F_SETFD, (fcntl(_sigpipe[0], F_GETFD)|FD_CLOEXEC));
+    fcntl(_sigpipe[1], F_SETFL, (fcntl(_sigpipe[1], F_GETFL)|O_NONBLOCK));
+    fcntl(_sigpipe[1], F_SETFD, (fcntl(_sigpipe[1], F_GETFD)|FD_CLOEXEC));
+    /* XXX SIGPIPE too, but NSPR disables it already, dont mess with it */
+    signal(SIGCHLD, sigpipe_handler); 
+    return _sigpipe[0];
+}
+
+static void sigpipe_finish(void)
+{
+    signal(SIGCHLD, SIG_DFL); 
+    close(_sigpipe[0]);
+    close(_sigpipe[1]);
+    _sigpipe[0] = -1;
+    _sigpipe[1] = -1;
+}
+
+#define max(x,y) ((x) > (y) ? (x) : (y))
+
 /** \ingroup rpmbuild
  * Return output from helper script.
  * @todo Use poll(2) rather than select(2), if available.
@@ -144,32 +178,31 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
                         int failNonZero)
 {
     pid_t child, reaped;
-    int toProg[2];
-    int fromProg[2];
+    int toProg[2] = { -1, -1 };
+    int fromProg[2] = { -1, -1 };
     int status;
-    void *oldhandler;
     StringBuf readBuff;
-    int done;
+    int myerrno = 0;
+    int sigpipe = sigpipe_init();
+    int ret = 1; /* assume failure */
 
-    /* FIX: cast? */
-    oldhandler = signal(SIGPIPE, SIG_IGN);
-
-    toProg[0] = toProg[1] = 0;
-    fromProg[0] = fromProg[1] = 0;
-    if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
+    if (sigpipe < 0 || pipe(toProg) < 0 || pipe(fromProg) < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
 	return NULL;
     }
     
-    if (!(child = fork())) {
-	(void) close(toProg[1]);
-	(void) close(fromProg[0]);
+    child = fork();
+    if (child == 0) {
+	/* NSPR messes with SIGPIPE, reset to default for the kids */
+	signal(SIGPIPE, SIG_DFL);
+	close(toProg[1]);
+	close(fromProg[0]);
 	
-	(void) dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
-	(void) dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
+	dup2(toProg[0], STDIN_FILENO);   /* Make stdin the in pipe */
+	close(toProg[0]);
 
-	(void) close(toProg[0]);
-	(void) close(fromProg[1]);
+	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
+	close(fromProg[1]);
 
 	if (dir && chdir(dir)) {
 	    rpmlog(RPMLOG_ERR, _("Couldn't chdir to %s: %s\n"),
@@ -181,8 +214,7 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
                         argv[0], (unsigned)getpid());
 
 	unsetenv("MALLOC_CHECK_");
-	(void) execvp(argv[0], (char *const *)argv);
-	/* XXX this error message is probably not seen. */
+	execvp(argv[0], (char *const *)argv);
 	rpmlog(RPMLOG_ERR, _("Couldn't exec %s: %s\n"),
 		argv[0], strerror(errno));
 	_exit(EXIT_FAILURE);
@@ -193,95 +225,99 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	return NULL;
     }
 
-    (void) close(toProg[0]);
-    (void) close(fromProg[1]);
+    close(toProg[0]);
+    close(fromProg[1]);
 
-    /* Do not block reading or writing from/to prog. */
-    (void) fcntl(fromProg[0], F_SETFL, O_NONBLOCK);
-    (void) fcntl(toProg[1], F_SETFL, O_NONBLOCK);
-    
     readBuff = newStringBuf();
 
-    do {
+    while (1) {
 	fd_set ibits, obits;
-	struct timeval tv;
-	int nfd, nbw, nbr;
+	int nfd = 0;
 	int rc;
+	char buf[BUFSIZ+1];
 
-	done = 0;
-top:
 	FD_ZERO(&ibits);
 	FD_ZERO(&obits);
-	if (fromProg[0] >= 0) {
-	    FD_SET(fromProg[0], &ibits);
-	}
-	if (toProg[1] >= 0) {
+
+	FD_SET(sigpipe, &ibits);
+	nfd = max(nfd, sigpipe);
+	FD_SET(fromProg[0], &ibits);
+	nfd = max(nfd, fromProg[0]);
+
+	if (writeBytesLeft > 0) {
 	    FD_SET(toProg[1], &obits);
+	    nfd = max(nfd, toProg[1]);
 	}
-	/* XXX values set to limit spinning with perl doing ~100 forks/sec. */
-	tv.tv_sec = 0;
-	tv.tv_usec = 10000;
-	nfd = ((fromProg[0] > toProg[1]) ? fromProg[0] : toProg[1]);
-	if ((rc = select(nfd, &ibits, &obits, NULL, &tv)) < 0) {
-	    if (errno == EINTR)
-		goto top;
+
+	rc = select(nfd + 1, &ibits, &obits, NULL, NULL);
+	if (rc < 0 && errno == EINTR) continue;
+	if (rc < 0) {
+	    myerrno = errno;
 	    break;
 	}
 
-	/* Write any data to program */
-	if (toProg[1] >= 0 && FD_ISSET(toProg[1], &obits)) {
-          if (writePtr && writeBytesLeft > 0) {
-	    if ((nbw = write(toProg[1], writePtr,
-		    (1024<writeBytesLeft) ? 1024 : writeBytesLeft)) < 0) {
-	        if (errno != EAGAIN) {
-		    rpmlog(RPMLOG_ERR, _("%s: failure writing to %s: %m\n"),
-			   __func__, argv[0]);
-	            exit(EXIT_FAILURE);
-		}
-	        nbw = 0;
+	/* Child exited, we're done */
+	if (FD_ISSET(sigpipe, &ibits)) {
+	    while (read(sigpipe, buf, sizeof(buf)) > 0) {};
+	    break;
+	}
+
+	/* Write data to child */
+	if (writeBytesLeft > 0 && FD_ISSET(toProg[1], &obits)) {
+	    size_t nb = (1024 < writeBytesLeft) ? 1024 : writeBytesLeft;
+	    int nbw = write(toProg[1], writePtr, nb);
+	    if (nbw < 0 && errno == EINTR) continue;
+	    if (nbw < 0) {
+		myerrno = errno;
+		break;
 	    }
 	    writeBytesLeft -= nbw;
 	    writePtr += nbw;
-	  } else if (toProg[1] >= 0) {	/* close write fd */
-	    (void) close(toProg[1]);
-	    toProg[1] = -1;
-	  }
+	    /* Close write-side pipe to notify child on EOF */
+	    if (writeBytesLeft == 0) {
+		close(toProg[1]);
+		toProg[1] = -1;
+	    }
 	}
 	
-	/* Read any data from prog */
-	{   char buf[BUFSIZ+1];
+	/* Read when we get data back from the child */
+	if (FD_ISSET(fromProg[0], &ibits)) {
+	    int nbr;
 	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
 		buf[nbr] = '\0';
 		appendStringBuf(readBuff, buf);
 	    }
 	}
-
-	/* terminate on (non-blocking) EOF or error */
-	done = (nbr == 0 || (nbr < 0 && errno != EAGAIN));
-
-    } while (!done);
+    }
 
     /* Clean up */
     if (toProg[1] >= 0)
-    	(void) close(toProg[1]);
+    	close(toProg[1]);
     if (fromProg[0] >= 0)
-	(void) close(fromProg[0]);
-    /* FIX: cast? */
-    (void) signal(SIGPIPE, oldhandler);
+	close(fromProg[0]);
 
     /* Collect status from prog */
     reaped = waitpid(child, &status, 0);
     rpmlog(RPMLOG_DEBUG, "\twaitpid(%d) rc %d status %x\n",
         (unsigned)child, (unsigned)reaped, status);
 
+    sigpipe_finish();
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
-	rpmlog(RPMLOG_ERR, _("%s failed\n"), argv[0]);
-	return NULL;
+	rpmlog(RPMLOG_ERR, _("%s failed: %x\n"), argv[0], status);
+	goto exit;
     }
-    if (writeBytesLeft) {
-	rpmlog(RPMLOG_ERR, _("failed to write all data to %s\n"), argv[0]);
-	return NULL;
+    if (writeBytesLeft || myerrno) {
+	rpmlog(RPMLOG_ERR, _("failed to write all data to %s: %s\n"), 
+		argv[0], strerror(myerrno));
+	goto exit;
     }
+    ret = 0;
+
+exit:
+    if (ret) {
+	readBuff = freeStringBuf(readBuff);
+    }
+
     return readBuff;
 }
 
