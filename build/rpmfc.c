@@ -247,6 +247,10 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	if (writeBytesLeft > 0) {
 	    FD_SET(toProg[1], &obits);
 	    nfd = max(nfd, toProg[1]);
+	} else if (toProg[1] >= 0) {
+	    /* Close write-side pipe to notify child on EOF */
+	    close(toProg[1]);
+	    toProg[1] = -1;
 	}
 
 	rc = select(nfd + 1, &ibits, &obits, NULL, NULL);
@@ -273,11 +277,6 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	    }
 	    writeBytesLeft -= nbw;
 	    writePtr += nbw;
-	    /* Close write-side pipe to notify child on EOF */
-	    if (writeBytesLeft == 0) {
-		close(toProg[1]);
-		toProg[1] = -1;
-	    }
 	}
 	
 	/* Read when we get data back from the child */
