@@ -1166,50 +1166,6 @@ static int fsmRmdir(FSM_t fsm)
     return rc;
 }
 
-/**
- * Remove (if created) directories not explicitly included in package.
- * @param fsm		file state machine data
- * @return		0 on success
- */
-static int fsmRmdirs(FSM_t fsm)
-{
-    char * path = fsm->path;
-    const char * dpath;
-    void * dnli = dnlInitIterator(fsm, 1);
-    int dc = dnlCount(dnli);
-    int rc = 0;
-
-    if (fsm->ldn != NULL && fsm->dnlx != NULL)
-    while ((dpath = dnlNextIterator(dnli)) != NULL) {
-	size_t dnlen = strlen(dpath);
-	char *te, dn[dnlen+1];
-
-	dc = dnlIndex(dnli);
-	if (fsm->dnlx[dc] < 1 || fsm->dnlx[dc] >= dnlen)
-	    continue;
-
-	/* Copy as we need to modify the string */
-	te = stpcpy(dn, dpath) - 1;
-	fsm->path = dn;
-
-	/* Remove generated directories. */
-	do {
-	    if (*te == '/') {
-		*te = '\0';
-		rc = fsmRmdir(fsm);
-		*te = '/';
-	    }
-	    if (rc)
-		break;
-	    te--;
-	} while ((te - fsm->path) > fsm->dnlx[dc]);
-    }
-    dnli = dnlFreeIterator(dnli);
-
-    fsm->path = path;
-    return rc;
-}
-
 static int fsmLsetfcon(FSM_t fsm)
 {
     int rc = 0;
@@ -1956,11 +1912,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    (void) fsmUnlink(fsm);
 		}
 	    }
-
-#ifdef	NOTYET	/* XXX remove only dirs just created, not all. */
-	    if (fsm->dnlx)
-		(void) fsmRmdirs(fsm);
-#endif
 	    errno = saveerrno;
 	}
 	if (fsm->failedFile && *fsm->failedFile == NULL)
