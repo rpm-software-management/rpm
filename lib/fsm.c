@@ -423,68 +423,34 @@ static int fsmMapPath(FSM_t fsm)
 	fsm->dirName = rpmfiDNIndex(fi, rpmfiDIIndex(fi, i));
 	fsm->baseName = rpmfiBNIndex(fi, i);
 
-	switch (fsm->action) {
-	case FA_SKIP:
-	    break;
-	case FA_UNKNOWN:
-	    break;
-
-	case FA_COPYOUT:
-	    break;
-	case FA_COPYIN:
-	case FA_CREATE:
-	    break;
-
-	case FA_SKIPNSTATE:
-	    if (rpmteType(te) == TR_ADDED)
+        if (rpmteType(te) == TR_ADDED) {
+            switch (fsm->action) {
+            case FA_SKIPNSTATE:
 		rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
-	    break;
-
-	case FA_SKIPNETSHARED:
-	    if (rpmteType(te) == TR_ADDED)
+                break;
+            case FA_SKIPNETSHARED:
 		rpmfsSetState(fs, i, RPMFILE_STATE_NETSHARED);
-	    break;
-
-	case FA_SKIPCOLOR:
-	    if (rpmteType(te) == TR_ADDED)
+                break;
+            case FA_SKIPCOLOR:
 		rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
-	    break;
+                break;
+            case FA_ALTNAME:
+                if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+                    fsm->nsuffix = SUFFIX_RPMNEW;
+                break;
+            case FA_SAVE:
+                if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
+                    fsm->osuffix = SUFFIX_RPMSAVE;
+                break;
+            default:
+                break;
+            }
+        }
 
-	case FA_BACKUP:
-	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-	    switch (rpmteType(te)) {
-	    case TR_ADDED:
-		fsm->osuffix = SUFFIX_RPMORIG;
-		break;
-	    case TR_REMOVED:
-		fsm->osuffix = SUFFIX_RPMSAVE;
-		break;
-	    }
-	    break;
-
-	case FA_ALTNAME:
-	    assert(rpmteType(te) == TR_ADDED);
-	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-		fsm->nsuffix = SUFFIX_RPMNEW;
-	    break;
-
-	case FA_SAVE:
-	    assert(rpmteType(te) == TR_ADDED);
-	    if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-		fsm->osuffix = SUFFIX_RPMSAVE;
-	    break;
-	case FA_ERASE:
-#if 0	/* XXX is this a genhdlist fix? */
-	    assert(rpmteType(>te) == TR_REMOVED);
-#endif
-	    /*
-	     * XXX TODO: %ghost probably shouldn't be removed, but that changes
-	     * legacy rpm behavior.
-	     */
-	    break;
-	default:
-	    break;
-	}
+        if (fsm->action == FA_BACKUP && !(fsm->fflags & RPMFILE_GHOST)) {
+            /* XXX Don't if %ghost file. */
+            fsm->osuffix = (rpmteType(te) == TR_ADDED) ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE;
+        }
 
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
