@@ -378,7 +378,7 @@ static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
     size_t marklen = strlen(pgpmark);
     int res = 0;
     int keyno = 1;
-    char *start = buf;
+    char *start = strstr(buf, pgpmark);
     
     while (start) {
 	uint8_t *pkt = NULL;
