@@ -1046,8 +1046,7 @@ expandMacro(MacroBuf mb)
 
     if (++mb->depth > max_macro_depth) {
 	rpmlog(RPMLOG_ERR,
-		_("Recursion depth(%d) greater than max(%d)\n"),
-		mb->depth, max_macro_depth);
+		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
 	mb->depth--;
 	mb->expand_trace = 1;
 	return 1;
