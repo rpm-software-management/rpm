@@ -366,7 +366,7 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
     int choplen;
 
     if (!(te > t)) {
-	fprintf(stderr, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
+	rpmlog(RPMLOG_DEBUG, _("%3d<%*s(empty)\n"), mb->depth, (2 * mb->depth + 1), "");
 	return;
     }
 
@@ -389,10 +389,10 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 	}
     }
 
-    fprintf(stderr, "%3d<%*s", mb->depth, (2 * mb->depth + 1), "");
+    rpmlog(RPMLOG_DEBUG,"%3d<%*s", mb->depth, (2 * mb->depth + 1), "");
     if (te > t)
-	fprintf(stderr, "%.*s%s", (int)(te - t), t, ellipsis);
-    fprintf(stderr, "\n");
+	rpmlog(RPMLOG_DEBUG, "%.*s%s", (int)(te - t), t, ellipsis);
+    rpmlog(RPMLOG_DEBUG, "\n");
 }
 
 #define	SKIPBLANK(_s, _c)	\
