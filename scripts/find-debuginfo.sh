@@ -191,7 +191,7 @@ while read nlinks inum f; do
       link=$debugfn
       get_debugfn "$linked"
       echo "hard linked $link to $debugfn"
-      ln -nf "$debugfn" "$link"
+      mkdir -p "$(dirname "$link")" && ln -nf "$debugfn" "$link"
       continue
     else
       eval linked_$inum=\$f
