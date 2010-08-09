@@ -207,6 +207,8 @@ while read nlinks inum f; do
     $strict && exit 2
   fi
 
+  [ -x /usr/bin/gdb-add-index ] && /usr/bin/gdb-add-index "$f" > /dev/null 2>&1
+
   # A binary already copied into /usr/lib/debug doesn't get stripped,
   # just has its file names collected and adjusted.
   case "$dn" in
