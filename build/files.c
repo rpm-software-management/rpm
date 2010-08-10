@@ -29,6 +29,7 @@
 #include "build/buildio.h"
 
 #include "debug.h"
+#include <libgen.h>
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
