@@ -411,10 +411,11 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
 {
     rpmRC rc = RPMRC_OK;
     int warn_only =(script->tag != RPMTAG_PREIN && script->tag != RPMTAG_PREUN);
+    int selinux = !(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_NOCONTEXTS);
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
     rc = rpmScriptRun(script, arg1, arg2, rpmtsScriptFd(psm->ts),
-		      prefixes, warn_only, rpmtsSELinuxEnabled(psm->ts));
+		      prefixes, warn_only, selinux);
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* 
