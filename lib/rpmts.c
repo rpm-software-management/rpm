@@ -685,11 +685,6 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
     }
 }
 
-int rpmtsSELinuxEnabled(rpmts ts)
-{
-    return (ts != NULL ? (ts->selinuxEnabled > 0) : 0);
-}
-
 rpm_tid_t rpmtsGetTid(rpmts ts)
 {
     rpm_tid_t tid = (rpm_tid_t)-1;  /* XXX -1 is time(2) error return. */
@@ -901,9 +896,6 @@ rpmts rpmtsCreate(void)
     ts->members = tsmem;
 
     ts->rootDir = NULL;
-
-    ts->selinuxEnabled = is_selinux_enabled();
-
     ts->keyring = NULL;
 
     ts->nrefs = 0;

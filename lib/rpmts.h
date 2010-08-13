@@ -390,13 +390,6 @@ FD_t rpmtsScriptFd(rpmts ts);
 void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd);
 
 /** \ingroup rpmts
- * Get selinuxEnabled flag, i.e. is SE linux enabled?
- * @param ts		transaction set
- * @return		selinuxEnabled flag
- */
-int rpmtsSELinuxEnabled(rpmts ts);
-
-/** \ingroup rpmts
  * Get transaction id, i.e. transaction time stamp.
  * @param ts		transaction set
  * @return		transaction id

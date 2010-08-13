@@ -43,7 +43,6 @@ struct rpmts_s {
 
     tsMembers members;		/*!< Transaction set member info (order etc) */
 
-    int selinuxEnabled;		/*!< Is SE linux enabled? */
     char * rootDir;		/*!< Path to top of install tree. */
     char * lockPath;		/*!< Transaction lock path */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */

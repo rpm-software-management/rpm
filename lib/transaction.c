@@ -1262,7 +1262,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
 
     /* if SELinux isn't enabled, init fails or test run, don't bother... */
-    if (!rpmtsSELinuxEnabled(ts) || (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+    if (!is_selinux_enabled() || (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
         rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
     }
 
