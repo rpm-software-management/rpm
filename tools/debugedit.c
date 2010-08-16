@@ -677,7 +677,7 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
 	  size_t len = (abs_dir_cnt + abs_file_cnt) * (base_len - dest_len);
 
 	  if (len == 1)
-	    error (EXIT_FAILURE, 0, "-b arg has to be either the same length as -d arg, or more than 1 char shorter");
+	    error (EXIT_FAILURE, 0, "-b arg has to be either the same length as -d arg, or more than 1 char longer");
 	  memset (ptr, 'X', len - 1);
 	  ptr += len - 1;
 	  *ptr++ = '\0';
@@ -1507,7 +1507,7 @@ main (int argc, char *argv[])
 	}
       if (strlen (dest_dir) > strlen (base_dir))
 	{
-	  fprintf (stderr, "Only dest dir longer than base dir not supported\n");
+	  fprintf (stderr, "Dest dir longer than base dir is not supported\n");
 	  exit (1);
 	}
     }
