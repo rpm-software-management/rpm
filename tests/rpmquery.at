@@ -62,6 +62,18 @@ hello.spec
 AT_CLEANUP
 
 # ------------------------------
+AT_SETUP([rpm -q --specfile])
+AT_KEYWORDS([query])
+AT_CHECK([
+run rpm \
+  -q --specfile --qf "%{name}" "${abs_srcdir}"/data/SPECS/hello.spec
+],
+[0],
+[hello],
+[])
+AT_CLEANUP
+
+# ------------------------------
 AT_SETUP([rpm -ql -p *.i386.rpm])
 AT_KEYWORDS([query])
 AT_CHECK([
