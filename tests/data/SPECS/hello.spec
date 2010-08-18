@@ -9,6 +9,7 @@ Vendor: Red Hat Software
 Packager: Red Hat Software <bugs@redhat.com>
 URL: http://www.redhat.com
 Source0: hello-1.0.tar.gz
+Patch0: hello-1.0-modernize.patch
 Excludearch: lsi
 Excludeos: cpm
 Provides: hi
@@ -22,6 +23,7 @@ Simple rpm demonstration.
 
 %prep
 %setup -q
+%patch0 -p1 -b .modernize
 
 %build
 make

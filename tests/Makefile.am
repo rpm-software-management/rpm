@@ -35,6 +35,7 @@ EXTRA_DIST += data/SPECS/configtest.spec
 EXTRA_DIST += data/SPECS/flangtest.spec
 EXTRA_DIST += data/SPECS/symlinktest.spec
 EXTRA_DIST += data/SPECS/deptest.spec
+EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
 EXTRA_DIST += data/RPMS/foo-1.0-1.noarch.rpm

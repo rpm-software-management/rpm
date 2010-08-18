@@ -1,0 +1,13 @@
+diff -up hello-1.0/hello.c.orig hello-1.0/hello.c
+--- hello-1.0/hello.c.orig	2010-08-18 11:45:55.000000000 +0300
++++ hello-1.0/hello.c	2010-08-18 11:48:23.000000000 +0300
+@@ -1,5 +1,7 @@
+-int
+-main()
++#include <stdio.h>
++
++int main(int argc, char *argv[])
+ {
+ 	printf("hello\n");
++	return 0;
+ }
