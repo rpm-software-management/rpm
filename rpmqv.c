@@ -81,7 +81,7 @@ static struct poptOption optionsTable[] = {
 	NULL },
 #endif	/* IAM_RPMEIU */
 
- { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
+ { "quiet", '\0', POPT_ARGFLAG_DOC_HIDDEN, &quiet, 0, NULL, NULL},
 
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"),
