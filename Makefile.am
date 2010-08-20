@@ -90,7 +90,7 @@ rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	rpmbuild.c build.c build.h debug.h system.h
-rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMBT
+rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmbuild_LDADD =	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmbuild_LDADD += 	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 

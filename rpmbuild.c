@@ -16,16 +16,8 @@ const char *__progname;
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
-
-#ifdef	IAM_RPMBT
-#include "build.h"
-#define GETOPT_REBUILD		1003
-#define GETOPT_RECOMPILE	1004
-#endif
-
-#if defined(IAM_RPMBT)
 #include "lib/signature.h"
-#endif
+#include "build.h"
 
 #include "debug.h"
 
@@ -49,11 +41,9 @@ static int quiet;
 /* the structure describing the options we take and the defaults */
 static struct poptOption optionsTable[] = {
 
-#ifdef	IAM_RPMBT
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmBuildPoptTable, 0,
 	N_("Build options with [ <specfile> | <tarball> | <source package> ]:"),
 	NULL },
-#endif	/* IAM_RPMBT */
 
  { "quiet", '\0', 0, &quiet, 0,			NULL, NULL},
 
@@ -105,17 +95,10 @@ int main(int argc, char *argv[])
 {
     rpmts ts = NULL;
     enum modes bigMode = MODE_UNKNOWN;
-
-#ifdef	IAM_RPMBT
     BTA_t ba = &rpmBTArgs;
-#endif
-
-#if defined(IAM_RPMBT)
     char * passPhrase = "";
-#endif
 
     int arg;
-
     const char *optArg, *poptCtx;
     pid_t pipeChild = 0;
     poptContext optCon;
@@ -135,9 +118,7 @@ int main(int argc, char *argv[])
     }
 
     /* Set the major mode based on argv[0] */
-#ifdef	IAM_RPMBT
     if (rstreq(__progname, "rpmbuild"))	bigMode = MODE_BUILD;
-#endif
 
 #if defined(ENABLE_NLS)
     /* set up the correct locale */
@@ -150,9 +131,7 @@ int main(int argc, char *argv[])
     rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
 
     /* Only build has it's own set of aliases, everything else uses rpm */
-#ifdef	IAM_RPMBT
     poptCtx = "rpmbuild";
-#endif
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
@@ -185,7 +164,6 @@ int main(int argc, char *argv[])
 
     rpmcliConfigured();
 
-#ifdef	IAM_RPMBT
     switch (ba->buildMode) {
     case 'b':	bigMode = MODE_BUILD;		break;
     case 't':	bigMode = MODE_TARBUILD;	break;
@@ -203,7 +181,6 @@ int main(int argc, char *argv[])
 	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
 	argerror("--buildroot may only be used during package builds");
     }
-#endif	/* IAM_RPMBT */
     
     if (rpmcliRootDir && rpmcliRootDir[1] && (bigMode & ~MODES_FOR_ROOT))
 	argerror(_("--root (-r) may only be specified during "
@@ -225,7 +202,6 @@ int main(int argc, char *argv[])
     if (quiet)
 	rpmSetVerbosity(RPMLOG_WARNING);
 
-#if defined(IAM_RPMBT)
     if (ba->sign) {
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_TARBUILD)
@@ -284,7 +260,6 @@ int main(int argc, char *argv[])
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
         (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
-#endif	/* IAM_RPMBT */
 
     if (rpmcliPipeOutput) {
 	if (pipe(p) < 0) {
@@ -309,7 +284,6 @@ int main(int argc, char *argv[])
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     switch (bigMode) {
-#ifdef	IAM_RPMBT
     case MODE_REBUILD:
     case MODE_RECOMPILE:
     {	const char * pkg;
@@ -402,7 +376,6 @@ int main(int argc, char *argv[])
 	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
 	}
     }	break;
-#endif	/* IAM_RPMBT */
 
     case MODE_UNKNOWN:
 	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
@@ -429,11 +402,9 @@ exit:
     /* keeps memory leak checkers quiet */
     rpmlogClose();
 
-#ifdef	IAM_RPMBT
     freeNames();
     ba->buildRootOverride = _free(ba->buildRootOverride);
     ba->targets = _free(ba->targets);
-#endif
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
