@@ -187,16 +187,8 @@ int main(int argc, char *argv[])
 		 "installation, erasure, querying, and "
 		 "database rebuilds"));
 
-    if (rpmcliRootDir) {
-	switch (urlIsURL(rpmcliRootDir)) {
-	default:
-	    if (bigMode & MODES_FOR_ROOT)
-		break;
-	case URL_IS_UNKNOWN:
-	    if (rpmcliRootDir[0] != '/')
-		argerror(_("arguments to --root (-r) must begin with a /"));
-	    break;
-	}
+    if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
+	argerror(_("arguments to --root (-r) must begin with a /"));
     }
 
     if (quiet)
