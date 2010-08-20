@@ -19,26 +19,6 @@ static int noDeps = 1;
 
 static rpmVSFlags vsflags = 0;
 
-static inline const char * identifyDepend(int32_t f)
-{
-    if (isLegacyPreReq(f))
-	return "PreReq:";
-    f = _notpre(f);
-    if (f & RPMSENSE_SCRIPT_PRE)
-	return "Requires(pre):";
-    if (f & RPMSENSE_SCRIPT_POST)
-	return "Requires(post):";
-    if (f & RPMSENSE_SCRIPT_PREUN)
-	return "Requires(preun):";
-    if (f & RPMSENSE_SCRIPT_POSTUN)
-	return "Requires(postun):";
-    if (f & RPMSENSE_SCRIPT_VERIFY)
-	return "Requires(verify):";
-    if (f & RPMSENSE_FIND_REQUIRES)
-	return "Requires(auto):";
-    return "Requires:";
-}
-
 static int
 rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 {
