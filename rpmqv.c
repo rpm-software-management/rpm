@@ -4,15 +4,10 @@ const char *__progname;
 #define	_AUTOHELP
 
 #include <sys/wait.h>
-#if HAVE_MCHECK_H
-#include <mcheck.h>
-#endif
-
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmfileutil.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
@@ -123,9 +118,6 @@ int main(int argc, char *argv[])
     char * passPhrase = "";
 #endif
 
-    int arg;
-
-    const char *optArg, *poptCtx;
     pid_t pipeChild = 0;
     poptContext optCon;
     int ec = 0;
@@ -134,10 +126,7 @@ int main(int argc, char *argv[])
 #ifdef	IAM_RPMEIU
     int i;
 #endif
-	
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
+
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 
     /* XXX glibc churn sanity */
@@ -145,6 +134,8 @@ int main(int argc, char *argv[])
 	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
 	else __progname = argv[0];
     }
+
+    optCon = initCli("rpm", optionsTable, argc, argv);
 
     /* Set the major mode based on argv[0] */
 #ifdef	IAM_RPMQV
@@ -169,50 +160,6 @@ int main(int argc, char *argv[])
 	break;
     }
 #endif
-
-#if defined(ENABLE_NLS)
-    /* set up the correct locale */
-    (void) setlocale(LC_ALL, "" );
-
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-#endif
-
-    rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
-
-    /* Only build has it's own set of aliases, everything else uses rpm */
-    poptCtx = "rpm";
-
-    /* Make a first pass through the arguments, looking for --rcfile */
-    /* We need to handle that before dealing with the rest of the arguments. */
-    /* XXX popt argv definition should be fixed instead of casting... */
-    optCon = poptGetContext(poptCtx, argc, (const char **)argv, optionsTable, 0);
-    {
-	char *poptfile = rpmGenPath(rpmConfigDir(), LIBRPMALIAS_FILENAME, NULL);
-	(void) poptReadConfigFile(optCon, poptfile);
-	free(poptfile);
-    }
-    (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, rpmConfigDir(), 1);
-
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
-
-	switch (arg) {
-	default:
-	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
-	    exit(EXIT_FAILURE);
-	}
-    }
-
-    if (arg < -1) {
-	fprintf(stderr, "%s: %s\n", 
-		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
-		poptStrerror(arg));
-	exit(EXIT_FAILURE);
-    }
-
-    rpmcliConfigured();
 
 #ifdef	IAM_RPMDB
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_DB)) {
@@ -610,18 +557,10 @@ exit:
 
     ts = rpmtsFree(ts);
 
-    optCon = poptFreeContext(optCon);
-    rpmFreeMacros(NULL);
-	rpmFreeMacros(rpmCLIMacroContext);
-    rpmFreeRpmrc();
-
     if (pipeChild) {
 	(void) fclose(stdout);
 	(void) waitpid(pipeChild, &status, 0);
     }
-
-    /* keeps memory leak checkers quiet */
-    rpmlogClose();
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
@@ -634,12 +573,5 @@ exit:
     ia->relocations = _free(ia->relocations);
 #endif
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
-
-    /* XXX Avoid exit status overflow. Status 255 is special to xargs(1) */
-    if (ec > 254) ec = 254;
-
-    return ec;
+    return finishCli(optCon, ec);
 }

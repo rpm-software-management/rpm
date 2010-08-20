@@ -7,9 +7,6 @@ const char *__progname;
 #include <libgen.h>
 #include <ctype.h>
 #include <sys/wait.h>
-#if HAVE_MCHECK_H
-#include <mcheck.h>
-#endif
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
@@ -389,9 +386,6 @@ int main(int argc, char *argv[])
     BTA_t ba = &rpmBTArgs;
     char * passPhrase = "";
 
-    int arg;
-    const char *optArg;
-    const char *poptCtx = "rpmbuild";
     const char *pkg = NULL;
     pid_t pipeChild = 0;
     poptContext optCon;
@@ -399,9 +393,6 @@ int main(int argc, char *argv[])
     int status;
     int p[2];
 	
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    mtrace();	/* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
     setprogname(argv[0]);	/* Retrofit glibc __progname */
 
     /* XXX glibc churn sanity */
@@ -410,51 +401,12 @@ int main(int argc, char *argv[])
 	else __progname = argv[0];
     }
 
-#if defined(ENABLE_NLS)
-    /* set up the correct locale */
-    (void) setlocale(LC_ALL, "" );
-
-    bindtextdomain(PACKAGE, LOCALEDIR);
-    textdomain(PACKAGE);
-#endif
-
-    rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
-
-    /* Make a first pass through the arguments, looking for --rcfile */
-    /* We need to handle that before dealing with the rest of the arguments. */
-    /* XXX popt argv definition should be fixed instead of casting... */
-    optCon = poptGetContext(poptCtx, argc, (const char **)argv, optionsTable, 0);
-    {
-	char *poptfile = rpmGenPath(rpmConfigDir(), LIBRPMALIAS_FILENAME, NULL);
-	(void) poptReadConfigFile(optCon, poptfile);
-	free(poptfile);
-    }
-    (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, rpmConfigDir(), 1);
-
-    while ((arg = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
-
-	switch (arg) {
-	default:
-	    fprintf(stderr, _("Internal error in argument processing (%d) :-(\n"), arg);
-	    exit(EXIT_FAILURE);
-	}
-    }
-
-    if (arg < -1) {
-	fprintf(stderr, "%s: %s\n", 
-		poptBadOption(optCon, POPT_BADOPTION_NOALIAS), 
-		poptStrerror(arg));
-	exit(EXIT_FAILURE);
-    }
+    optCon = initCli("rpmbuild", optionsTable, argc, argv);
 
     if (argc <= 1 || poptPeekArg(optCon) == NULL) {
 	printUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
-
-    rpmcliConfigured();
 
     switch (ba->buildMode) {
     case 'b':	bigMode = MODE_BUILD;		break;
@@ -599,29 +551,14 @@ exit:
 
     ts = rpmtsFree(ts);
 
-    optCon = poptFreeContext(optCon);
-    rpmFreeMacros(NULL);
-    rpmFreeMacros(rpmCLIMacroContext);
-    rpmFreeRpmrc();
-
     if (pipeChild) {
 	(void) fclose(stdout);
 	(void) waitpid(pipeChild, &status, 0);
     }
 
-    /* keeps memory leak checkers quiet */
-    rpmlogClose();
-
     freeNames();
     ba->buildRootOverride = _free(ba->buildRootOverride);
     ba->targets = _free(ba->targets);
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
-
-    /* XXX Avoid exit status overflow. Status 255 is special to xargs(1) */
-    if (ec > 254) ec = 254;
-
-    return ec;
+    return finishCli(optCon, ec);
 }
