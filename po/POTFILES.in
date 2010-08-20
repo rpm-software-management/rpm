@@ -2,7 +2,6 @@
 
 # Package source files
 
-build.c
 rpm2cpio.c
 rpmqv.c
 rpmbuild.c
