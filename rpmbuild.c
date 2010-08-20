@@ -93,6 +93,7 @@ int main(int argc, char *argv[])
     int arg;
     const char *optArg;
     const char *poptCtx = "rpmbuild";
+    const char *pkg = NULL;
     pid_t pipeChild = 0;
     poptContext optCon;
     int ec = 0;
@@ -224,8 +225,6 @@ int main(int argc, char *argv[])
     switch (bigMode) {
     case MODE_REBUILD:
     case MODE_RECOMPILE:
-    {	const char * pkg;
-
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
 
@@ -255,12 +254,9 @@ int main(int argc, char *argv[])
 	    if (ec)
 		break;
 	}
-
-    }	break;
-
+	break;
     case MODE_BUILD:
     case MODE_TARBUILD:
-    {	const char * pkg;
         if (!quiet) while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
        
@@ -303,7 +299,7 @@ int main(int argc, char *argv[])
 	    rpmFreeMacros(NULL);
 	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
 	}
-    }	break;
+	break;
     }
 
 exit:
@@ -312,7 +308,7 @@ exit:
 
     optCon = poptFreeContext(optCon);
     rpmFreeMacros(NULL);
-	rpmFreeMacros(rpmCLIMacroContext);
+    rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
 
     if (pipeChild) {
