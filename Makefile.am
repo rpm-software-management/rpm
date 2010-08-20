@@ -84,14 +84,22 @@ rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
 DISTCLEANFILES = find-provides
 DISTCLEANFILES += find-requires
 
+noinst_LTLIBRARIES = 		libcliutils.la
+libcliutils_la_SOURCES = 	cliutils.h cliutils.c
+libcliutils_la_CPPFLAGS =	$(AM_CPPFLAGS)
+libcliutils_la_LIBADD = 	lib/librpm.la rpmio/librpmio.la
+libcliutils_la_LIBADD +=	@WITH_POPT_LIB@
+
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
-rpm_LDADD =		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
+rpm_LDADD =		libcliutils.la
+rpm_LDADD +=		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	rpmbuild.c debug.h system.h
 rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS)
-rpmbuild_LDADD =	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
+rpmbuild_LDADD =	libcliutils.la
+rpmbuild_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmbuild_LDADD += 	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h

@@ -20,6 +20,7 @@ const char *__progname;
 #if defined(IAM_RPMK)
 #include "lib/signature.h"
 #endif
+#include "cliutils.h"
 
 #include "debug.h"
 
@@ -96,36 +97,6 @@ static struct poptOption optionsTable[] = {
    POPT_AUTOHELP
    POPT_TABLEEND
 };
-
-RPM_GNUC_NORETURN
-static void argerror(const char * desc)
-{
-    fprintf(stderr, _("%s: %s\n"), __progname, desc);
-    exit(EXIT_FAILURE);
-}
-
-static void printVersion(FILE * fp)
-{
-    fprintf(fp, _("RPM version %s\n"), rpmEVR);
-}
-
-static void printBanner(FILE * fp)
-{
-    fprintf(fp, _("Copyright (C) 1998-2002 - Red Hat, Inc.\n"));
-    fprintf(fp, _("This program may be freely redistributed under the terms of the GNU GPL\n"));
-}
-
-static void printUsage(poptContext con, FILE * fp, int flags)
-{
-    printVersion(fp);
-    printBanner(fp);
-    fprintf(fp, "\n");
-
-    if (rpmIsVerbose())
-	poptPrintHelp(con, fp, flags);
-    else
-	poptPrintUsage(con, fp, flags);
-}
 
 int main(int argc, char *argv[])
 {

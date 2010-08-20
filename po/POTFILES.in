@@ -2,6 +2,7 @@
 
 # Package source files
 
+cliutils.c
 rpm2cpio.c
 rpmqv.c
 rpmbuild.c
