@@ -123,15 +123,7 @@ int main(int argc, char *argv[])
     int i;
 #endif
 
-    setprogname(argv[0]);	/* Retrofit glibc __progname */
-
-    /* XXX glibc churn sanity */
-    if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
-    }
-
-    optCon = initCli("rpm", optionsTable, argc, argv);
+    optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Set the major mode based on argv[0] */
 #ifdef	IAM_RPMQV
@@ -547,5 +539,7 @@ exit:
     ia->relocations = _free(ia->relocations);
 #endif
 
-    return finishCli(optCon, ec);
+    rpmcliFini(optCon);
+
+    return RETVAL(ec);
 }

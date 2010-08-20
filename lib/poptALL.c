@@ -230,7 +230,11 @@ struct poptOption rpmcliAllPoptTable[] = {
 poptContext
 rpmcliFini(poptContext optCon)
 {
-    optCon = poptFreeContext(optCon);
+    poptFreeContext(optCon);
+    rpmFreeMacros(NULL);
+    rpmFreeMacros(rpmCLIMacroContext);
+    rpmFreeRpmrc();
+    rpmlogClose();
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */

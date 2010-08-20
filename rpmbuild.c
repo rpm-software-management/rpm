@@ -386,18 +386,8 @@ int main(int argc, char *argv[])
     char * passPhrase = "";
 
     const char *pkg = NULL;
-    poptContext optCon;
     int ec = 0;
-	
-    setprogname(argv[0]);	/* Retrofit glibc __progname */
-
-    /* XXX glibc churn sanity */
-    if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
-    }
-
-    optCon = initCli("rpmbuild", optionsTable, argc, argv);
+    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
 
     if (argc <= 1 || poptPeekArg(optCon) == NULL) {
 	printUsage(optCon, stderr, 0);
@@ -534,5 +524,7 @@ exit:
     ba->buildRootOverride = _free(ba->buildRootOverride);
     ba->targets = _free(ba->targets);
 
-    return finishCli(optCon, ec);
+    rpmcliFini(optCon);
+
+    return RETVAL(ec);
 }
