@@ -168,9 +168,6 @@ int main(int argc, char *argv[])
 	argerror(_("arguments to --root (-r) must begin with a /"));
     }
 
-    if (quiet)
-	rpmSetVerbosity(RPMLOG_WARNING);
-
     if (ba->sign) {
 	int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
 	switch (sigTag) {
@@ -200,6 +197,9 @@ int main(int argc, char *argv[])
         (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
 
+    /* rpmbuild is rather chatty by default */
+    rpmSetVerbosity(quiet ? RPMLOG_WARNING : RPMLOG_INFO);
+
     if (rpmcliPipeOutput) {
 	if (pipe(p) < 0) {
 	    fprintf(stderr, _("creating a pipe for --pipe failed: %m\n"));
@@ -225,9 +225,6 @@ int main(int argc, char *argv[])
     switch (bigMode) {
     case MODE_REBUILD:
     case MODE_RECOMPILE:
-        while (!rpmIsVerbose())
-	    rpmIncreaseVerbosity();
-
 	ba->buildAmount =
 	    RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL | RPMBUILD_CHECK;
 	if (bigMode == MODE_REBUILD) {
@@ -257,9 +254,6 @@ int main(int argc, char *argv[])
 	break;
     case MODE_BUILD:
     case MODE_TARBUILD:
-        if (!quiet) while (!rpmIsVerbose())
-	    rpmIncreaseVerbosity();
-       
 	switch (ba->buildChar) {
 	case 'a':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
