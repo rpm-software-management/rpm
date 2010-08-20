@@ -50,11 +50,6 @@ static struct poptOption optionsTable[] = {
    POPT_TABLEEND
 };
 
-#ifdef __MINT__
-/* MiNT cannot dynamically increase the stack.  */
-long _stksize = 64 * 1024L;
-#endif
-
 RPM_GNUC_NORETURN
 static void argerror(const char * desc)
 {
