@@ -26,15 +26,9 @@ enum modes {
     MODE_REBUILD	= (1 <<  5),
     MODE_RECOMPILE	= (1 <<  8),
     MODE_TARBUILD	= (1 << 11),
-#define	MODES_BT (MODE_BUILD | MODE_TARBUILD | MODE_REBUILD | MODE_RECOMPILE)
 
     MODE_UNKNOWN	= 0
 };
-
-#define	MODES_FOR_DBPATH	(MODES_BT)
-#define	MODES_FOR_NODEPS	(MODES_BT)
-#define	MODES_FOR_TEST		(MODES_BT)
-#define	MODES_FOR_ROOT		(MODES_BT)
 
 static int quiet;
 
@@ -94,12 +88,13 @@ static void printUsage(poptContext con, FILE * fp, int flags)
 int main(int argc, char *argv[])
 {
     rpmts ts = NULL;
-    enum modes bigMode = MODE_UNKNOWN;
+    enum modes bigMode = MODE_BUILD;
     BTA_t ba = &rpmBTArgs;
     char * passPhrase = "";
 
     int arg;
-    const char *optArg, *poptCtx;
+    const char *optArg;
+    const char *poptCtx = "rpmbuild";
     pid_t pipeChild = 0;
     poptContext optCon;
     int ec = 0;
@@ -117,9 +112,6 @@ int main(int argc, char *argv[])
 	else __progname = argv[0];
     }
 
-    /* Set the major mode based on argv[0] */
-    if (rstreq(__progname, "rpmbuild"))	bigMode = MODE_BUILD;
-
 #if defined(ENABLE_NLS)
     /* set up the correct locale */
     (void) setlocale(LC_ALL, "" );
@@ -129,9 +121,6 @@ int main(int argc, char *argv[])
 #endif
 
     rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
-
-    /* Only build has it's own set of aliases, everything else uses rpm */
-    poptCtx = "rpmbuild";
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
@@ -170,22 +159,6 @@ int main(int argc, char *argv[])
     case 'B':	bigMode = MODE_REBUILD;		break;
     case 'C':	bigMode = MODE_RECOMPILE;	break;
     }
-
-    if ((ba->buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
-	bigMode = MODE_BUILD;
-
-    if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
-	bigMode = MODE_BUILD;
-
-    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
-	argerror("--buildroot may only be used during package builds");
-    }
-    
-    if (rpmcliRootDir && rpmcliRootDir[1] && (bigMode & ~MODES_FOR_ROOT))
-	argerror(_("--root (-r) may only be specified during "
-		 "installation, erasure, querying, and "
-		 "database rebuilds"));
 
     if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
 	argerror(_("arguments to --root (-r) must begin with a /"));
