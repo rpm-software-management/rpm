@@ -249,6 +249,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     const char * optArg;
     poptContext optCon;
     int rc;
+    const char *ctx;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
@@ -276,7 +277,10 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	return NULL;
     }
 
-    optCon = poptGetContext(__progname, argc, (const char **)argv, optionsTable, 0);
+    /* XXX hack to get popt working from build tree wrt lt-foo names */
+    ctx = rstreqn(__progname, "lt-", 3) ? __progname + 3 : __progname;
+
+    optCon = poptGetContext(ctx, argc, (const char **)argv, optionsTable, 0);
     {
 	char *poptfile = rpmGenPath(rpmConfigDir(), LIBRPMALIAS_FILENAME, NULL);
 	(void) poptReadConfigFile(optCon, poptfile);
