@@ -344,7 +344,7 @@ int main(int argc, char *argv[])
     if (quiet)
 	rpmSetVerbosity(RPMLOG_WARNING);
 
-#if defined(IAM_RPK)
+#if defined(IAM_RPMK)
     if (ka->sign) {
 	if (bigMode == MODE_RESIGN) {
 	    const char ** av;
