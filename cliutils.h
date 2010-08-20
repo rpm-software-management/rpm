@@ -17,4 +17,8 @@ poptContext initCli(const char *ctx, struct poptOption *optionsTable,
 /* Free up common resources, return "normalized" exit code */
 int finishCli(poptContext optCon, int rc);
 
+int initPipe(void);
+
+void finishPipe(void);
+
 #endif /* _CLIUTIL_H */

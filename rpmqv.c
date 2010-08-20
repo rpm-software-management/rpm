@@ -3,7 +3,6 @@ const char *__progname;
 
 #define	_AUTOHELP
 
-#include <sys/wait.h>
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmbuild.h>
@@ -118,11 +117,8 @@ int main(int argc, char *argv[])
     char * passPhrase = "";
 #endif
 
-    pid_t pipeChild = 0;
     poptContext optCon;
     int ec = 0;
-    int status;
-    int p[2];
 #ifdef	IAM_RPMEIU
     int i;
 #endif
@@ -403,25 +399,8 @@ int main(int argc, char *argv[])
     }
 #endif	/* IAM_RPMK */
 
-    if (rpmcliPipeOutput) {
-	if (pipe(p) < 0) {
-	    fprintf(stderr, _("creating a pipe for --pipe failed: %m\n"));
-	    goto exit;
-	}
-
-	if (!(pipeChild = fork())) {
-	    (void) signal(SIGPIPE, SIG_DFL);
-	    (void) close(p[1]);
-	    (void) dup2(p[0], STDIN_FILENO);
-	    (void) close(p[0]);
-	    (void) execl("/bin/sh", "/bin/sh", "-c", rpmcliPipeOutput, NULL);
-	    fprintf(stderr, _("exec failed\n"));
-	}
-
-	(void) close(p[0]);
-	(void) dup2(p[1], STDOUT_FILENO);
-	(void) close(p[1]);
-    }
+    if (rpmcliPipeOutput && initPipe())
+	exit(EXIT_FAILURE);
 	
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
@@ -554,13 +533,8 @@ int main(int argc, char *argv[])
     }
 
 exit:
-
     ts = rpmtsFree(ts);
-
-    if (pipeChild) {
-	(void) fclose(stdout);
-	(void) waitpid(pipeChild, &status, 0);
-    }
+    finishPipe();
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
