@@ -19,26 +19,6 @@ const char *__progname;
 
 #include "debug.h"
 
-static inline const char * identifyDepend(rpmsenseFlags f)
-{
-    if (isLegacyPreReq(f))
-	return "PreReq:";
-    f = _notpre(f);
-    if (f & RPMSENSE_SCRIPT_PRE)
-	return "Requires(pre):";
-    if (f & RPMSENSE_SCRIPT_POST)
-	return "Requires(post):";
-    if (f & RPMSENSE_SCRIPT_PREUN)
-	return "Requires(preun):";
-    if (f & RPMSENSE_SCRIPT_POSTUN)
-	return "Requires(postun):";
-    if (f & RPMSENSE_SCRIPT_VERIFY)
-	return "Requires(verify):";
-    if (f & RPMSENSE_FIND_REQUIRES)
-	return "Requires(auto):";
-    return "Requires:";
-}
-
 static int
 do_tsort(const char *fileArgv[], int noDeps)
 {
