@@ -171,37 +171,28 @@ int main(int argc, char *argv[])
 	rpmSetVerbosity(RPMLOG_WARNING);
 
     if (ba->sign) {
-        if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
-	    bigMode == MODE_TARBUILD)
-	{
-            if (poptPeekArg(optCon)) {
-		int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-		switch (sigTag) {
-		  case 0:
-		    break;
-		  case RPMSIGTAG_PGP:
-		  case RPMSIGTAG_GPG:
-		  case RPMSIGTAG_DSA:
-		  case RPMSIGTAG_RSA:
-		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
-		    if (passPhrase == NULL) {
-			fprintf(stderr, _("Pass phrase check failed\n"));
-			ec = EXIT_FAILURE;
-			goto exit;
-		    }
-		    fprintf(stderr, _("Pass phrase is good.\n"));
-		    passPhrase = xstrdup(passPhrase);
-		    break;
-		  default:
-		    fprintf(stderr,
-		            _("Invalid %%_signature spec in macro file.\n"));
-		    ec = EXIT_FAILURE;
-		    goto exit;
-		    break;
-		}
+	int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
+	switch (sigTag) {
+	case 0:
+	    break;
+	case RPMSIGTAG_PGP:
+	case RPMSIGTAG_GPG:
+	case RPMSIGTAG_DSA:
+	case RPMSIGTAG_RSA:
+	    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
+	    if (passPhrase == NULL) {
+		fprintf(stderr, _("Pass phrase check failed\n"));
+		ec = EXIT_FAILURE;
+		goto exit;
 	    }
-	} else {
-	    argerror(_("--sign may only be used during package building"));
+	    fprintf(stderr, _("Pass phrase is good.\n"));
+	    passPhrase = xstrdup(passPhrase);
+	    break;
+	default:
+	    fprintf(stderr, _("Invalid %%_signature spec in macro file.\n"));
+	    ec = EXIT_FAILURE;
+	    goto exit;
+	    break;
 	}
     } else {
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
