@@ -14,63 +14,51 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-06-29 11:58+0300\n"
+"POT-Creation-Date: 2010-08-20 14:26+0300\n"
 "PO-Revision-Date: 2010-06-08 07:11+0900\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
+"Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: KBabel 1.3.1\n"
 
-#: build.c:43
-msgid "Failed build dependencies:\n"
-msgstr "ビルド依存性の失敗:\n"
-
-#: build.c:67
+#: cliutils.c:20 lib/poptI.c:31
 #, c-format
-msgid "Unable to open spec file %s: %s\n"
-msgstr "spec ファイル %s を開けません: %s\n"
+msgid "%s: %s\n"
+msgstr "%s: %s\n"
 
-#: build.c:129
+#: cliutils.c:26 lib/poptALL.c:63
 #, c-format
-msgid "Failed to open tar pipe: %m\n"
-msgstr "tar パイプのオープンに失敗しました: %m\n"
+msgid "RPM version %s\n"
+msgstr "RPM バージョン %s\n"
 
-#: build.c:148
+#: cliutils.c:31
 #, c-format
-msgid "Failed to read spec file from %s\n"
-msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
+msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
+msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
-#: build.c:160
+#: cliutils.c:32
 #, c-format
-msgid "Failed to rename %s to %s: %m\n"
-msgstr "%s を %s に名前を変更できませんでした: %m\n"
+msgid ""
+"This program may be freely redistributed under the terms of the GNU GPL\n"
+msgstr "このプログラムは GNU GPL の下で自由に配布できます。\n"
 
-#: build.c:237
+#: cliutils.c:85
 #, c-format
-msgid "failed to stat %s: %m\n"
-msgstr "stat %s に失敗しました: %m\n"
+msgid "Internal error in argument processing (%d) :-(\n"
+msgstr "引数処理 (%d) での内部エラー :-(\n"
 
-#: build.c:241
+#: cliutils.c:123
 #, c-format
-msgid "File %s is not a regular file.\n"
-msgstr "%s は通常ファイルではありません。\n"
+msgid "creating a pipe for --pipe failed: %m\n"
+msgstr "--pipe でのパイプ作成に失敗: %m\n"
 
-#: build.c:248
+#: cliutils.c:133
 #, c-format
-msgid "File %s does not appear to be a specfile.\n"
-msgstr "ファイル %s は spec ファイルではないようです。\n"
-
-#: build.c:326
-#, c-format
-msgid "Building target platforms: %s\n"
-msgstr "ビルド対象プラットフォーム: %s\n"
-
-#: build.c:341
-#, c-format
-msgid "Building for target %s\n"
-msgstr "ターゲット %s 用にビルド中\n"
+msgid "exec failed\n"
+msgstr "実行失敗\n"
 
 #: rpm2cpio.c:62
 #, c-format
@@ -87,163 +75,133 @@ msgstr "パッケージのヘッダー読み込み中にエラー\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "ペイロードを再開けません: %s\n"
 
-#: rpmqv.c:81
+#: rpmqv.c:56
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "グループに所属するパッケージを問い合わせ/検証します。"
 
-#: rpmqv.c:84
+#: rpmqv.c:59
 msgid "Query options (with -q or --query):"
 msgstr "問い合わせオプション (-q または --query):"
 
-#: rpmqv.c:87
+#: rpmqv.c:62
 msgid "Verify options (with -V or --verify):"
 msgstr "検証オプション (-V または --verify):"
 
-#: rpmqv.c:93
+#: rpmqv.c:68
 msgid "Signature options:"
 msgstr "署名オプション:"
 
-#: rpmqv.c:99
+#: rpmqv.c:74
 msgid "Database options:"
 msgstr "データベース オプション:"
 
-#: rpmqv.c:105
-msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr "[ <specfile> | <tarball> | <source package> ] とのビルドオプション:"
-
-#: rpmqv.c:111
+#: rpmqv.c:80
 msgid "Install/Upgrade/Erase options:"
 msgstr "インストール/アップグレード/アンインストールオプション:"
 
-#: rpmqv.c:118 tools/rpmdeps.c:32 tools/rpmgraph.c:248
+#: rpmqv.c:87 rpmbuild.c:42 tools/rpmdeps.c:32 tools/rpmgraph.c:248
 msgid "Common options for all rpm modes and executables:"
 msgstr "全モード・コマンドで共通のオプション:"
 
-#: rpmqv.c:134 lib/poptI.c:31
-#, c-format
-msgid "%s: %s\n"
-msgstr "%s: %s\n"
-
-#: rpmqv.c:140 lib/poptALL.c:63
-#, c-format
-msgid "RPM version %s\n"
-msgstr "RPM バージョン %s\n"
-
-#: rpmqv.c:145
-#, c-format
-msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-
-#: rpmqv.c:146
-#, c-format
-msgid ""
-"This program may be freely redistributed under the terms of the GNU GPL\n"
-msgstr "このプログラムは GNU GPL の下で自由に配布できます。\n"
-
-#: rpmqv.c:278
-#, c-format
-msgid "Internal error in argument processing (%d) :-(\n"
-msgstr "引数処理 (%d) での内部エラー :-(\n"
-
-#: rpmqv.c:316 rpmqv.c:322 rpmqv.c:328 rpmqv.c:365
+#: rpmqv.c:164 rpmqv.c:170 rpmqv.c:176 rpmqv.c:213
 msgid "only one major mode may be specified"
 msgstr "一つのメジャーモードのみを指定して下さい"
 
-#: rpmqv.c:344
+#: rpmqv.c:192
 msgid "one type of query/verify may be performed at a time"
 msgstr "問い合わせ/検証は一度に一つしか実行できません。"
 
-#: rpmqv.c:348
+#: rpmqv.c:196
 msgid "unexpected query flags"
 msgstr "予期せぬ問い合わせのフラグ"
 
-#: rpmqv.c:351
+#: rpmqv.c:199
 msgid "unexpected query format"
 msgstr "予期せぬ問い合わせのフォーマット"
 
-#: rpmqv.c:354
+#: rpmqv.c:202
 msgid "unexpected query source"
 msgstr "予期せぬ問い合わせのソース"
 
-#: rpmqv.c:397
+#: rpmqv.c:245
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "インストール、アップグレード、ソース削除、スペックファイル削除時のみ強制でき"
 "ます。"
 
-#: rpmqv.c:399
+#: rpmqv.c:247
 msgid "files may only be relocated during package installation"
 msgstr "ファイルはパッケージのインストール時にのみ再配置できます。"
 
-#: rpmqv.c:402
+#: rpmqv.c:250
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "--prefix は --relocate や --excludepath とは同時には使用できません。"
 
-#: rpmqv.c:405
+#: rpmqv.c:253
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate と --excludepath は新しいパッケージをインストールする時のみ使用で"
 "きます。"
 
-#: rpmqv.c:408
+#: rpmqv.c:256
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix は新規パッケージのインストール時のみ使用できます。"
 
-#: rpmqv.c:411
+#: rpmqv.c:259
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix の引数は / から始まらなければなりません。"
 
-#: rpmqv.c:414
+#: rpmqv.c:262
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:418
+#: rpmqv.c:266
 msgid "--percent may only be specified during package installation"
 msgstr "--percent はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:422
+#: rpmqv.c:270
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:426
+#: rpmqv.c:274
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:430
+#: rpmqv.c:278
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:434
+#: rpmqv.c:282
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs と --includedocs は同時には指定できません。"
 
-#: rpmqv.c:438
+#: rpmqv.c:286
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:442
+#: rpmqv.c:290
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:447
+#: rpmqv.c:295
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:451
+#: rpmqv.c:299
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches はパッケージ削除時のみ指定できます。"
 
-#: rpmqv.c:455
+#: rpmqv.c:303
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:460
+#: rpmqv.c:308
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb はパッケージ インストール・削除時のみ指定できます。"
 
-#: rpmqv.c:465
+#: rpmqv.c:313
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -251,7 +209,7 @@ msgstr ""
 "スクリプトを無効にするようなオプションは、パッケージのインストール、削除時の"
 "み指定できます。"
 
-#: rpmqv.c:470
+#: rpmqv.c:318
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -259,7 +217,7 @@ msgstr ""
 "トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指"
 "定できます。"
 
-#: rpmqv.c:474
+#: rpmqv.c:322
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -267,13 +225,13 @@ msgstr ""
 "--nodeps はパッケージの作成、リビルド、リコンパイル、インストール、削除、検証"
 "時のみ指定できます。"
 
-#: rpmqv.c:479
+#: rpmqv.c:327
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test はパッケージのインストール/削除/作成時のみ指定できます。"
 
-#: rpmqv.c:484
+#: rpmqv.c:332
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -281,84 +239,115 @@ msgstr ""
 "--root (-r) はインストール、削除、問い合わせ、データベース再構築時のみ指定で"
 "きます"
 
-#: rpmqv.c:495
+#: rpmqv.c:337 rpmbuild.c:415
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらなければなりません。"
 
-#: rpmqv.c:521
+#: rpmqv.c:351
 #, c-format
 msgid "no files to sign\n"
 msgstr "署名するファイルがありません\n"
 
-#: rpmqv.c:526
+#: rpmqv.c:356
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "ファイル %s にアクセスできません。\n"
 
-#: rpmqv.c:546
+#: rpmqv.c:376 rpmbuild.c:427
 msgid "Enter pass phrase: "
 msgstr "パスフレーズの入力: "
 
-#: rpmqv.c:548
+#: rpmqv.c:378 rpmbuild.c:429
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "パスフレーズのチェックに失敗しました。\n"
 
-#: rpmqv.c:552
+#: rpmqv.c:382 rpmbuild.c:433
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "パスフレーズは正常です。\n"
 
-#: rpmqv.c:557
+#: rpmqv.c:387 rpmbuild.c:437
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "マクロ ファイル中の無効な %%_signature 指定。\n"
 
-#: rpmqv.c:564
+#: rpmqv.c:394
 msgid "--sign may only be used during package building"
 msgstr "--sign はパッケージ作成時のみ指定できます。"
 
-#: rpmqv.c:574
-#, c-format
-msgid "creating a pipe for --pipe failed: %m\n"
-msgstr "--pipe でのパイプ作成に失敗: %m\n"
-
-#: rpmqv.c:584
-#, c-format
-msgid "exec failed\n"
-msgstr "実行失敗\n"
-
-#: rpmqv.c:620
-msgid "no packages files given for rebuild"
-msgstr "リビルドするパッケージが指定されていません。"
-
-#: rpmqv.c:688
-msgid "no spec files given for build"
-msgstr "ビルドのための spec ファイルが指定されていません。"
-
-#: rpmqv.c:690
-msgid "no tar files given for build"
-msgstr "ビルドのための tar ファイルが指定されていません。"
-
-#: rpmqv.c:711
+#: rpmqv.c:429
 msgid "no packages given for erase"
 msgstr "アンインストールするパッケージが指定されていません。"
 
-#: rpmqv.c:745
+#: rpmqv.c:463
 msgid "no packages given for install"
 msgstr "インストールするパッケージが指定されていません。"
 
-#: rpmqv.c:757
+#: rpmqv.c:475
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数が指定されていません。"
 
-#: rpmqv.c:771
+#: rpmqv.c:489
 msgid "no arguments given for verify"
 msgstr "検証のための引数が指定されていません。"
 
-#: rpmqv.c:786
+#: rpmqv.c:504
 msgid "no arguments given"
 msgstr "引数が指定されていません。"
+
+#: rpmbuild.c:36
+msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
+msgstr "[ <specfile> | <tarball> | <source package> ] とのビルドオプション:"
+
+#: rpmbuild.c:65
+msgid "Failed build dependencies:\n"
+msgstr "ビルド依存性の失敗:\n"
+
+#: rpmbuild.c:87
+#, c-format
+msgid "Unable to open spec file %s: %s\n"
+msgstr "spec ファイル %s を開けません: %s\n"
+
+#: rpmbuild.c:149
+#, c-format
+msgid "Failed to open tar pipe: %m\n"
+msgstr "tar パイプのオープンに失敗しました: %m\n"
+
+#: rpmbuild.c:168
+#, c-format
+msgid "Failed to read spec file from %s\n"
+msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
+
+#: rpmbuild.c:180
+#, c-format
+msgid "Failed to rename %s to %s: %m\n"
+msgstr "%s を %s に名前を変更できませんでした: %m\n"
+
+#: rpmbuild.c:255
+#, c-format
+msgid "failed to stat %s: %m\n"
+msgstr "stat %s に失敗しました: %m\n"
+
+#: rpmbuild.c:259
+#, c-format
+msgid "File %s is not a regular file.\n"
+msgstr "%s は通常ファイルではありません。\n"
+
+#: rpmbuild.c:266
+#, c-format
+msgid "File %s does not appear to be a specfile.\n"
+msgstr "ファイル %s は spec ファイルではないようです。\n"
+
+#: rpmbuild.c:344
+#, c-format
+msgid "Building target platforms: %s\n"
+msgstr "ビルド対象プラットフォーム: %s\n"
+
+#: rpmbuild.c:359
+#, c-format
+msgid "Building for target %s\n"
+msgstr "ターゲット %s 用にビルド中\n"
 
 #: build/build.c:134 build/pack.c:446
 msgid "Unable to open temp file.\n"
@@ -438,188 +427,188 @@ msgstr "&& と || は文字列には使えません\n"
 msgid "syntax error in expression\n"
 msgstr "式中で文法エラー\n"
 
-#: build/files.c:241
+#: build/files.c:242
 #, c-format
 msgid "TIMECHECK failure: %s\n"
 msgstr "TIMECHECK 失敗: %s\n"
 
-#: build/files.c:304 build/files.c:497 build/files.c:714
+#: build/files.c:305 build/files.c:498 build/files.c:715
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "%s に '(' がありません %s\n"
 
-#: build/files.c:314 build/files.c:650 build/files.c:724 build/files.c:816
+#: build/files.c:315 build/files.c:651 build/files.c:725 build/files.c:817
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "%s(%s の後に ')' がありません\n"
 
-#: build/files.c:350 build/files.c:673
+#: build/files.c:351 build/files.c:674
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "無効なトークン %s: %s\n"
 
-#: build/files.c:459
+#: build/files.c:460
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s が %s %s にありません\n"
 
-#: build/files.c:512
+#: build/files.c:513
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "%s() に続く空白がありません: %s\n"
 
-#: build/files.c:548
+#: build/files.c:549
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "文法エラー: %s(%s)\n"
 
-#: build/files.c:557
+#: build/files.c:558
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "不正なモード指定: %s(%s)\n"
 
-#: build/files.c:575
+#: build/files.c:576
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "不正なディレクトリモード指定: %s(%s)\n"
 
-#: build/files.c:749
+#: build/files.c:750
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "異常なロケール長: \"%.*s (%%lang(%s))\"\n"
 
-#: build/files.c:759
+#: build/files.c:760
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "ロケール %.*s の重複が %%lang(%s) にあります。\n"
 
-#: build/files.c:831
+#: build/files.c:832
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "不正なケーパビリティです: %s\n"
 
-#: build/files.c:842
+#: build/files.c:843
 msgid "File capability support not built in\n"
 msgstr "ファイル ケーパビリティのサポートが組み込まれていません\n"
 
-#: build/files.c:897
+#: build/files.c:898
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "%%docdir の引数は 1 つのみです\n"
 
-#: build/files.c:926
+#: build/files.c:927
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "1 行に 2 つのファイル: %s\n"
 
-#: build/files.c:939
+#: build/files.c:940
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "ファイルは \"/\" から始まらなければなりません: %s\n"
 
-#: build/files.c:950
+#: build/files.c:951
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "他のフォームで特別な %%doc を混ぜることはできません: %s\n"
 
-#: build/files.c:1091
+#: build/files.c:1092
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 "不明なファイルのダイジェスト アルゴリズム %u です。MD5 にフォールバックしま"
 "す。\n"
 
-#: build/files.c:1117
+#: build/files.c:1118
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "ファイルが2回表記されています: %s\n"
 
-#: build/files.c:1240
+#: build/files.c:1241
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1411
+#: build/files.c:1412
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1419
+#: build/files.c:1420
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:1522
+#: build/files.c:1523
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "ペイロードのためのファイル %s が大きすぎます\n"
 
-#: build/files.c:1616
+#: build/files.c:1617
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:1622
+#: build/files.c:1623
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:1626
+#: build/files.c:1627
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII 形式の公開鍵ではありません。\n"
 
-#: build/files.c:1634
+#: build/files.c:1635
 #, c-format
 msgid "%s: policy file read failed.\n"
 msgstr "%s: ポリシーファイルの読み込みに失敗しました。\n"
 
-#: build/files.c:1642
+#: build/files.c:1643
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: エンコードに失敗\n"
 
-#: build/files.c:1681
+#: build/files.c:1682
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:1703
+#: build/files.c:1704
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:1715 lib/rpminstall.c:419
+#: build/files.c:1716 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:1766
+#: build/files.c:1767
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "%%files のファイル %s を開けません: %m\n"
 
-#: build/files.c:1774
+#: build/files.c:1775
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
 
-#: build/files.c:2139
+#: build/files.c:2140
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2161 build/parsePrep.c:31
+#: build/files.c:2162 build/parsePrep.c:31
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2202
+#: build/files.c:2203
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "伸張ファイルの検査中: %s\n"
 
-#: build/files.c:2217
+#: build/files.c:2218
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -628,12 +617,12 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2244
+#: build/files.c:2245
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
 
-#: build/files.c:2255
+#: build/files.c:2256
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリー\n"
 
@@ -1371,66 +1360,66 @@ msgstr "ターゲットプラットフォームを強制指定"
 msgid "Ignoring invalid regex %s\n"
 msgstr "不正な正規表現 %s を無視します\n"
 
-#: build/rpmfc.c:160
+#: build/rpmfc.c:190
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "%s のためのパイプ作成ができません: %m\n"
 
-#: build/rpmfc.c:175
+#: build/rpmfc.c:208
 #, c-format
 msgid "Couldn't chdir to %s: %s\n"
 msgstr "%s に作業ディレクトリーを移動できません: %s\n"
 
-#: build/rpmfc.c:186
+#: build/rpmfc.c:218
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
-#: build/rpmfc.c:191 lib/rpmscript.c:235
+#: build/rpmfc.c:223 lib/rpmscript.c:235
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s のフォークに失敗しました: %s\n"
 
-#: build/rpmfc.c:277
-#, c-format
-msgid "%s failed\n"
-msgstr "%s に失敗しました\n"
+#: build/rpmfc.c:305
+#, fuzzy, c-format
+msgid "%s failed: %x\n"
+msgstr "%s: 失敗: %s\n"
 
-#: build/rpmfc.c:281
-#, c-format
-msgid "failed to write all data to %s\n"
+#: build/rpmfc.c:309
+#, fuzzy, c-format
+msgid "failed to write all data to %s: %s\n"
 msgstr "%s へ全データの書き込みに失敗しました。\n"
 
-#: build/rpmfc.c:748
+#: build/rpmfc.c:784
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "%s の整数(long int)への変換に失敗しました。\n"
 
-#: build/rpmfc.c:834
+#: build/rpmfc.c:870
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:851
+#: build/rpmfc.c:887
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) に失敗しました: %s\n"
 
-#: build/rpmfc.c:858
+#: build/rpmfc.c:894
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load に失敗しました: %s\n"
 
-#: build/rpmfc.c:899
+#: build/rpmfc.c:935
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: build/rpmfc.c:1099
+#: build/rpmfc.c:1135
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "%s を検索しています: %s\n"
 
-#: build/rpmfc.c:1104 build/rpmfc.c:1113
+#: build/rpmfc.c:1140 build/rpmfc.c:1149
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "%s の検索に失敗しました:\n"
@@ -1578,42 +1567,42 @@ msgstr "(不明)  "
 msgid "(not a string)"
 msgstr "(文字列でない)"
 
-#: lib/fsm.c:736
+#: lib/fsm.c:745
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザー %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:743
+#: lib/fsm.c:752
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:1514
+#: lib/fsm.c:1358
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダーファイルリストにありません。\n"
 
-#: lib/fsm.c:1632 lib/fsm.c:1760
+#: lib/fsm.c:1799 lib/fsm.c:1946
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されました。\n"
 
-#: lib/fsm.c:1787
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:1793
+#: lib/fsm.c:1979
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:1807
+#: lib/fsm.c:1993
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:1829
+#: lib/fsm.c:2015
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
@@ -2224,21 +2213,21 @@ msgstr "ソースパッケージが期待されますが、これはバイナリ
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージに .spec ファイルがありません\n"
 
-#: lib/psm.c:851
+#: lib/psm.c:852
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
-#: lib/psm.c:852
+#: lib/psm.c:853
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:974
+#: lib/psm.c:975
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:977
+#: lib/psm.c:978
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
@@ -2867,7 +2856,7 @@ msgstr "パッケージラベル中に「)」がありません: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: lib/rpmts.c:984
+#: lib/rpmts.c:976
 msgid "transaction"
 msgstr "トランザクション"
 
@@ -3309,21 +3298,22 @@ msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
 #: rpmio/macro.c:1049
-#, c-format
-msgid "Recursion depth(%d) greater than max(%d)\n"
-msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
+msgid ""
+"Too many levels of recursion in macro expansion. It is likely caused by "
+"recursive macro declaration.\n"
+msgstr ""
 
-#: rpmio/macro.c:1118 rpmio/macro.c:1135
+#: rpmio/macro.c:1117 rpmio/macro.c:1134
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1176
+#: rpmio/macro.c:1175
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
 
-#: rpmio/macro.c:1392
+#: rpmio/macro.c:1391
 msgid "Target buffer overflow\n"
 msgstr "ターゲットバッファのオーバフローです。\n"
 
@@ -3414,6 +3404,21 @@ msgstr "%s: manifest の読み込みに失敗: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "ヘッダーとペイロード署名を検証しません。"
+
+#~ msgid "no packages files given for rebuild"
+#~ msgstr "リビルドするパッケージが指定されていません。"
+
+#~ msgid "no spec files given for build"
+#~ msgstr "ビルドのための spec ファイルが指定されていません。"
+
+#~ msgid "no tar files given for build"
+#~ msgstr "ビルドのための tar ファイルが指定されていません。"
+
+#~ msgid "%s failed\n"
+#~ msgstr "%s に失敗しました\n"
+
+#~ msgid "Recursion depth(%d) greater than max(%d)\n"
+#~ msgstr "再帰の深さ (%d) が最大値 (%d) より大きくなっています。\n"
 
 #~ msgid "dbiTagsInit: unrecognized tag name: \"%s\" ignored\n"
 #~ msgstr "dbiTagsInit: 不明なタグ名: \"%s\" は無視します\n"
