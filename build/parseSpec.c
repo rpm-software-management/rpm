@@ -432,8 +432,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 
     if (rootDir)
 	spec->rootDir = xstrdup(rootDir);
-    if (passPhrase)
-	spec->passPhrase = xstrdup(passPhrase);
     if (cookie)
 	spec->cookie = xstrdup(cookie);
 
@@ -519,7 +517,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = NULL;
 		if (parseSpec(ts, specFile, spec->rootDir, buildRoot, 1,
-				  passPhrase, cookie, anyarch, force)
+				  NULL, cookie, anyarch, force)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;

@@ -120,7 +120,6 @@ struct rpmSpec_s {
     int force;
     int anyarch;
 
-    char * passPhrase;
     int timeCheck;
     char * cookie;
 

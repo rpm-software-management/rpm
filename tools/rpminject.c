@@ -385,11 +385,9 @@ rewriteRPM(const char *fni, const char *fno, cmd_t *cmds[], int ncmds)
 
     /* Rewrite the rpm */
     if (headerIsSource(spec->packages->header)) {
-	rc = writeRPM(&spec->packages->header, NULL, fno, 
-		csa, spec->passPhrase, &(spec->cookie));
+	rc = writeRPM(&spec->packages->header, NULL, fno, csa, &(spec->cookie));
     } else {
-	rc = writeRPM(&spec->packages->header, NULL, fno,
-		csa, spec->passPhrase, NULL);
+	rc = writeRPM(&spec->packages->header, NULL, fno, csa, NULL);
     }
 
 exit:

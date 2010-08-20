@@ -349,7 +349,7 @@ rpmRC readRPM(const char *fileName, rpmSpec *specp,
 }
 
 rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
-	     CSA_t csa, char *passPhrase, char **cookie)
+	     CSA_t csa, char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -491,14 +491,9 @@ rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	sizetag = RPMSIGTAG_LONGSIZE;
 	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
     }
-    (void) rpmAddSignature(sig, sigtarget, sizetag, passPhrase);
-    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, passPhrase);
+    (void) rpmAddSignature(sig, sigtarget, sizetag, NULL);
+    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, NULL);
 
-    if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
-	rpmlog(RPMLOG_NOTICE, _("Generating signature: %d\n"), sigtag);
-	(void) rpmAddSignature(sig, sigtarget, sigtag, passPhrase);
-    }
-    
     if (SHA1) {
 	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
 	rpmtdReset(&td);
@@ -795,7 +790,7 @@ rpmRC packageBinaries(rpmSpec spec)
 	csa->cpioFdIn = fdNew();
 	csa->cpioList = rpmfiLink(pkg->cpioList);
 
-	rc = writeRPM(&pkg->header, NULL, fn, csa, spec->passPhrase, NULL);
+	rc = writeRPM(&pkg->header, NULL, fn, csa, NULL);
 	csa->cpioList = rpmfiFree(csa->cpioList);
 	csa->cpioFdIn = fdFree(csa->cpioFdIn);
 	if (rc == RPMRC_OK) {
@@ -852,7 +847,7 @@ rpmRC packageSources(rpmSpec spec)
 
 	spec->sourcePkgId = NULL;
 	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, 
-		csa, spec->passPhrase, &(spec->cookie));
+		csa, &(spec->cookie));
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {

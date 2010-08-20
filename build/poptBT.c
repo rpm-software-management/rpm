@@ -45,8 +45,6 @@ int noLang = 0;
 
 static int noBuild = 0;
 
-static int signIt = 0;
-
 /**
  */
 static void buildArgCallback( poptContext con,
@@ -84,7 +82,6 @@ static void buildArgCallback( poptContext con,
     case POPT_NOBUILD: rba->noBuild = 1; break;
     case POPT_NOLANG: rba->noLang = 1; break;
     case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
-    case POPT_SIGN: rba->sign = 1; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
@@ -213,8 +210,6 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("remove specfile when done"), NULL},
  { "short-circuit", '\0', 0, 0,  POPT_SHORTCIRCUIT,
 	N_("skip straight to specified stage (only for c,i)"), NULL },
- { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &signIt, POPT_SIGN,
-	N_("generate PGP/GPG signature"), NULL },
  { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
 	N_("override target platform"), "CPU-VENDOR-OS" },
    POPT_TABLEEND

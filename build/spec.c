@@ -430,7 +430,6 @@ rpmSpec newSpec(void)
     spec->buildRoot = NULL;
     spec->buildSubdir = NULL;
 
-    spec->passPhrase = NULL;
     spec->timeCheck = 0;
     spec->cookie = NULL;
 
@@ -508,7 +507,6 @@ rpmSpec freeSpec(rpmSpec spec)
     }
     spec->BANames = _free(spec->BANames);
 
-    spec->passPhrase = _free(spec->passPhrase);
     spec->cookie = _free(spec->cookie);
 
 #ifdef WITH_LUA
@@ -546,7 +544,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     Package pkg;
     char * buildRoot = NULL;
     int recursing = 0;
-    char * passPhrase = "";
     char *cookie = NULL;
     int anyarch = 1;
     int force = 1;
@@ -557,7 +554,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	goto exit;
 
     /* FIX: make spec abstract */
-    if (parseSpec(ts, arg, "/", buildRoot, recursing, passPhrase,
+    if (parseSpec(ts, arg, "/", buildRoot, recursing, NULL,
 		cookie, anyarch, force)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {

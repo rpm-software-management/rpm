@@ -197,7 +197,6 @@ exit:
 
 static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 {
-    const char * passPhrase = ba->passPhrase;
     const char * cookie = ba->cookie;
     int buildAmount = ba->buildAmount;
     char * buildRootURL = NULL;
@@ -276,7 +275,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(ts, specFile, ba->rootdir, buildRootURL, 0, passPhrase,
+    if (parseSpec(ts, specFile, ba->rootdir, buildRootURL, 0, NULL,
 		cookie, _anyarch(buildAmount), ba->force))
     {
 	goto exit;
@@ -383,7 +382,6 @@ int main(int argc, char *argv[])
     rpmts ts = NULL;
     enum modes bigMode = MODE_BUILD;
     BTA_t ba = &rpmBTArgs;
-    char * passPhrase = "";
 
     const char *pkg = NULL;
     int ec = 0;
@@ -403,35 +401,6 @@ int main(int argc, char *argv[])
 
     if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
 	argerror(_("arguments to --root (-r) must begin with a /"));
-    }
-
-    if (ba->sign) {
-	int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-	switch (sigTag) {
-	case 0:
-	    break;
-	case RPMSIGTAG_PGP:
-	case RPMSIGTAG_GPG:
-	case RPMSIGTAG_DSA:
-	case RPMSIGTAG_RSA:
-	    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
-	    if (passPhrase == NULL) {
-		fprintf(stderr, _("Pass phrase check failed\n"));
-		ec = EXIT_FAILURE;
-		goto exit;
-	    }
-	    fprintf(stderr, _("Pass phrase is good.\n"));
-	    passPhrase = xstrdup(passPhrase);
-	    break;
-	default:
-	    fprintf(stderr, _("Invalid %%_signature spec in macro file.\n"));
-	    ec = EXIT_FAILURE;
-	    goto exit;
-	    break;
-	}
-    } else {
-    	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
-        (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
 
     /* rpmbuild is rather chatty by default */
@@ -462,7 +431,6 @@ int main(int argc, char *argv[])
 	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
 	    if (ec == 0) {
 		ba->rootdir = rpmcliRootDir;
-		ba->passPhrase = passPhrase;
 		ec = build(ts, specFile, ba, rpmcliRcfile);
 	    }
 	    ba->cookie = _free(ba->cookie);
@@ -505,7 +473,6 @@ int main(int argc, char *argv[])
 
 	while ((pkg = poptGetArg(optCon))) {
 	    ba->rootdir = rpmcliRootDir;
-	    ba->passPhrase = passPhrase;
 	    ba->cookie = NULL;
 	    ec = build(ts, pkg, ba, rpmcliRcfile);
 	    if (ec)
@@ -515,8 +482,6 @@ int main(int argc, char *argv[])
 	}
 	break;
     }
-
-exit:
 
     ts = rpmtsFree(ts);
     finishPipe();

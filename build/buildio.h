@@ -45,14 +45,12 @@ rpmRC readRPM(const char * fileName,
  * @retval *pkgidp	header+payload MD5 of package (NULL to disable).
  * @param fileName	file name of package
  * @param csa
- * @param passPhrase
  * @retval cookie	generated cookie (i.e build host/time)
  * @return		RPMRC_OK on success
  */
 rpmRC writeRPM(Header * hdrp, unsigned char ** pkgidp,
 		const char * fileName,
 		CSA_t csa,
-		char * passPhrase,
 		char ** cookie);
 
 #ifdef __cplusplus

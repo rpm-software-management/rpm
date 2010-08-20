@@ -309,14 +309,12 @@ struct rpmBuildArguments_s {
     int buildAmount;		/*!< Bit(s) to control operation. */
     char * buildRootOverride; 	/*!< from --buildroot */
     char * targets;		/*!< Target platform(s), comma separated. */
-    const char * passPhrase;	/*!< Pass phrase. */
     char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
     int force;			/*!< from --force */
     int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
     int noLang;			/*!< from --nolang */
     int shortCircuit;		/*!< from --short-circuit */
-    int sign;			/*!< from --sign */
     char buildMode;		/*!< Build mode (one of "btBC") */
     char buildChar;		/*!< Build stage (one of "abcilps ") */
     const char * rootdir;

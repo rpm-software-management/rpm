@@ -387,7 +387,7 @@ int processSourceFiles(rpmSpec spec);
  * @param rootDir
  * @param buildRoot
  * @param recursing	parse is recursive?
- * @param passPhrase
+ * @param passPhrase	(unused)
  * @param cookie
  * @param anyarch
  * @param force
