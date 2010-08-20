@@ -3,14 +3,6 @@ const char *__progname;
 
 #define	_AUTOHELP
 
-#if defined(IAM_RPM) 
-#define	IAM_RPMBT
-#define	IAM_RPMDB
-#define	IAM_RPMEIU
-#define	IAM_RPMQV
-#define	IAM_RPMK
-#endif
-
 #include <sys/wait.h>
 #if HAVE_MCHECK_H
 #include <mcheck.h>
@@ -25,13 +17,7 @@ const char *__progname;
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
 
-#ifdef	IAM_RPMBT
-#include "build.h"
-#define GETOPT_REBUILD		1003
-#define GETOPT_RECOMPILE	1004
-#endif
-
-#if defined(IAM_RPMBT) || defined(IAM_RPMK)
+#if defined(IAM_RPMK)
 #include "lib/signature.h"
 #endif
 
@@ -47,12 +33,6 @@ enum modes {
     MODE_ERASE		= (1 <<  2),
 #define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 
-    MODE_BUILD		= (1 <<  4),
-    MODE_REBUILD	= (1 <<  5),
-    MODE_RECOMPILE	= (1 <<  8),
-    MODE_TARBUILD	= (1 << 11),
-#define	MODES_BT (MODE_BUILD | MODE_TARBUILD | MODE_REBUILD | MODE_RECOMPILE)
-
     MODE_CHECKSIG	= (1 <<  6),
     MODE_RESIGN		= (1 <<  7),
 #define	MODES_K	 (MODE_CHECKSIG | MODE_RESIGN)
@@ -66,10 +46,10 @@ enum modes {
     MODE_UNKNOWN	= 0
 };
 
-#define	MODES_FOR_DBPATH	(MODES_BT | MODES_IE | MODES_QV | MODES_DB)
-#define	MODES_FOR_NODEPS	(MODES_BT | MODES_IE | MODE_VERIFY)
-#define	MODES_FOR_TEST		(MODES_BT | MODES_IE)
-#define	MODES_FOR_ROOT		(MODES_BT | MODES_IE | MODES_QV | MODES_DB | MODES_K)
+#define	MODES_FOR_DBPATH	(MODES_IE | MODES_QV | MODES_DB)
+#define	MODES_FOR_NODEPS	(MODES_IE | MODE_VERIFY)
+#define	MODES_FOR_TEST		(MODES_IE)
+#define	MODES_FOR_ROOT		(MODES_IE | MODES_QV | MODES_DB | MODES_K)
 
 static int quiet;
 
@@ -99,12 +79,6 @@ static struct poptOption optionsTable[] = {
 	N_("Database options:"),
 	NULL },
 #endif	/* IAM_RPMDB */
-
-#ifdef	IAM_RPMBT
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmBuildPoptTable, 0,
-	N_("Build options with [ <specfile> | <tarball> | <source package> ]:"),
-	NULL },
-#endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMEIU
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmInstallPoptTable, 0,
@@ -167,10 +141,6 @@ int main(int argc, char *argv[])
     QVA_t qva = &rpmQVKArgs;
 #endif
 
-#ifdef	IAM_RPMBT
-    BTA_t ba = &rpmBTArgs;
-#endif
-
 #ifdef	IAM_RPMEIU
    struct rpmInstallArguments_s * ia = &rpmIArgs;
 #endif
@@ -183,7 +153,7 @@ int main(int argc, char *argv[])
    QVA_t ka = &rpmQVKArgs;
 #endif
 
-#if defined(IAM_RPMBT) || defined(IAM_RPMK)
+#if defined(IAM_RPMK)
     char * passPhrase = "";
 #endif
 
@@ -211,9 +181,6 @@ int main(int argc, char *argv[])
     }
 
     /* Set the major mode based on argv[0] */
-#ifdef	IAM_RPMBT
-    if (rstreq(__progname, "rpmbuild"))	bigMode = MODE_BUILD;
-#endif
 #ifdef	IAM_RPMQV
     if (rstreq(__progname, "rpmquery"))	bigMode = MODE_QUERY;
     if (rstreq(__progname, "rpmverify")) bigMode = MODE_VERIFY;
@@ -228,10 +195,6 @@ int main(int argc, char *argv[])
     case MODE_RESIGN:	qva->qva_mode = 'R';	break;
     case MODE_INSTALL:
     case MODE_ERASE:
-    case MODE_BUILD:
-    case MODE_REBUILD:
-    case MODE_RECOMPILE:
-    case MODE_TARBUILD:
     case MODE_INITDB:
     case MODE_REBUILDDB:
     case MODE_VERIFYDB:
@@ -252,11 +215,7 @@ int main(int argc, char *argv[])
     rpmSetVerbosity(RPMLOG_NOTICE);	/* XXX silly use by showrc */
 
     /* Only build has it's own set of aliases, everything else uses rpm */
-#ifdef	IAM_RPMBT
-    poptCtx = "rpmbuild";
-#else
     poptCtx = "rpm";
-#endif
 
     /* Make a first pass through the arguments, looking for --rcfile */
     /* We need to handle that before dealing with the rest of the arguments. */
@@ -289,26 +248,6 @@ int main(int argc, char *argv[])
 
     rpmcliConfigured();
 
-#ifdef	IAM_RPMBT
-    switch (ba->buildMode) {
-    case 'b':	bigMode = MODE_BUILD;		break;
-    case 't':	bigMode = MODE_TARBUILD;	break;
-    case 'B':	bigMode = MODE_REBUILD;		break;
-    case 'C':	bigMode = MODE_RECOMPILE;	break;
-    }
-
-    if ((ba->buildAmount & RPMBUILD_RMSOURCE) && bigMode == MODE_UNKNOWN)
-	bigMode = MODE_BUILD;
-
-    if ((ba->buildAmount & RPMBUILD_RMSPEC) && bigMode == MODE_UNKNOWN)
-	bigMode = MODE_BUILD;
-
-    if (ba->buildRootOverride && bigMode != MODE_BUILD &&
-	bigMode != MODE_REBUILD && bigMode != MODE_TARBUILD) {
-	argerror("--buildroot may only be used during package builds");
-    }
-#endif	/* IAM_RPMBT */
-    
 #ifdef	IAM_RPMDB
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_DB)) {
     if (da->init) {
@@ -500,19 +439,9 @@ int main(int argc, char *argv[])
     if (quiet)
 	rpmSetVerbosity(RPMLOG_WARNING);
 
-#if defined(IAM_RPMBT) || defined(IAM_RPMK)
-    if (0
-#if defined(IAM_RPMBT)
-    || ba->sign 
-#endif
-#if defined(IAM_RPMK)
-    || ka->sign
-#endif
-    )
-    {
-        if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
-	    bigMode == MODE_RESIGN || bigMode == MODE_TARBUILD)
-	{
+#if defined(IAM_RPK)
+    if (ka->sign) {
+	if (bigMode == MODE_RESIGN) {
 	    const char ** av;
 	    struct stat sb;
 	    int errors = 0;
@@ -567,7 +496,7 @@ int main(int argc, char *argv[])
     	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
         (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
     }
-#endif	/* IAM_RPMBT || IAM_RPMK */
+#endif	/* IAM_RPMK */
 
     if (rpmcliPipeOutput) {
 	if (pipe(p) < 0) {
@@ -607,101 +536,6 @@ int main(int argc, char *argv[])
 	ec = rpmtsVerifyDB(ts);
 	break;
 #endif	/* IAM_RPMDB */
-
-#ifdef	IAM_RPMBT
-    case MODE_REBUILD:
-    case MODE_RECOMPILE:
-    {	const char * pkg;
-
-        while (!rpmIsVerbose())
-	    rpmIncreaseVerbosity();
-
-	if (!poptPeekArg(optCon))
-	    argerror(_("no packages files given for rebuild"));
-
-	ba->buildAmount =
-	    RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL | RPMBUILD_CHECK;
-	if (bigMode == MODE_REBUILD) {
-	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    ba->buildAmount |= RPMBUILD_RMSOURCE;
-	    ba->buildAmount |= RPMBUILD_RMSPEC;
-	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    ba->buildAmount |= RPMBUILD_RMBUILD;
-	}
-
-	while ((pkg = poptGetArg(optCon))) {
-	    char * specFile = NULL;
-
-	    ba->cookie = NULL;
-	    ec = rpmInstallSource(ts, pkg, &specFile, &ba->cookie);
-	    if (ec == 0) {
-		ba->rootdir = rpmcliRootDir;
-		ba->passPhrase = passPhrase;
-		ec = build(ts, specFile, ba, rpmcliRcfile);
-	    }
-	    ba->cookie = _free(ba->cookie);
-	    specFile = _free(specFile);
-
-	    if (ec)
-		break;
-	}
-
-    }	break;
-
-    case MODE_BUILD:
-    case MODE_TARBUILD:
-    {	const char * pkg;
-        if (!quiet) while (!rpmIsVerbose())
-	    rpmIncreaseVerbosity();
-       
-	switch (ba->buildChar) {
-	case 'a':
-	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
-	case 'b':
-	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
-	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    if ((ba->buildChar == 'b') && ba->shortCircuit)
-		break;
-	case 'i':
-	    ba->buildAmount |= RPMBUILD_INSTALL;
-	    ba->buildAmount |= RPMBUILD_CHECK;
-	    if ((ba->buildChar == 'i') && ba->shortCircuit)
-		break;
-	case 'c':
-	    ba->buildAmount |= RPMBUILD_BUILD;
-	    if ((ba->buildChar == 'c') && ba->shortCircuit)
-		break;
-	case 'p':
-	    ba->buildAmount |= RPMBUILD_PREP;
-	    break;
-	    
-	case 'l':
-	    ba->buildAmount |= RPMBUILD_FILECHECK;
-	    break;
-	case 's':
-	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
-	    break;
-	}
-
-	if (!poptPeekArg(optCon)) {
-	    if (bigMode == MODE_BUILD)
-		argerror(_("no spec files given for build"));
-	    else
-		argerror(_("no tar files given for build"));
-	}
-
-	while ((pkg = poptGetArg(optCon))) {
-	    ba->rootdir = rpmcliRootDir;
-	    ba->passPhrase = passPhrase;
-	    ba->cookie = NULL;
-	    ec = build(ts, pkg, ba, rpmcliRcfile);
-	    if (ec)
-		break;
-	    rpmFreeMacros(NULL);
-	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
-	}
-    }	break;
-#endif	/* IAM_RPMBT */
 
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
@@ -802,12 +636,6 @@ int main(int argc, char *argv[])
     case MODE_REBUILDDB:
     case MODE_VERIFYDB:
 #endif
-#if !defined(IAM_RPMBT)
-    case MODE_BUILD:
-    case MODE_REBUILD:
-    case MODE_RECOMPILE:
-    case MODE_TARBUILD:
-#endif
 #if !defined(IAM_RPMEIU)
     case MODE_INSTALL:
     case MODE_ERASE:
@@ -839,12 +667,6 @@ exit:
 
 #ifdef	IAM_RPMQV
     qva->qva_queryFormat = _free(qva->qva_queryFormat);
-#endif
-
-#ifdef	IAM_RPMBT
-    freeNames();
-    ba->buildRootOverride = _free(ba->buildRootOverride);
-    ba->targets = _free(ba->targets);
 #endif
 
 #ifdef	IAM_RPMEIU
