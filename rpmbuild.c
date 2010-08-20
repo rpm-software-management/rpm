@@ -26,8 +26,6 @@ enum modes {
     MODE_REBUILD	= (1 <<  5),
     MODE_RECOMPILE	= (1 <<  8),
     MODE_TARBUILD	= (1 << 11),
-
-    MODE_UNKNOWN	= 0
 };
 
 static int quiet;
@@ -151,6 +149,11 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 
+    if (argc <= 1 || poptPeekArg(optCon) == NULL) {
+	printUsage(optCon, stderr, 0);
+	exit(EXIT_FAILURE);
+    }
+
     rpmcliConfigured();
 
     switch (ba->buildMode) {
@@ -171,27 +174,6 @@ int main(int argc, char *argv[])
         if (bigMode == MODE_REBUILD || bigMode == MODE_BUILD ||
 	    bigMode == MODE_TARBUILD)
 	{
-	    const char ** av;
-	    struct stat sb;
-	    int errors = 0;
-
-	    if ((av = poptGetArgs(optCon)) == NULL) {
-		fprintf(stderr, _("no files to sign\n"));
-		errors++;
-	    } else
-	    while (*av) {
-		if (stat(*av, &sb)) {
-		    fprintf(stderr, _("cannot access file %s\n"), *av);
-		    errors++;
-		}
-		av++;
-	    }
-
-	    if (errors) {
-		ec = errors;
-		goto exit;
-	    }
-
             if (poptPeekArg(optCon)) {
 		int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
 		switch (sigTag) {
@@ -255,9 +237,6 @@ int main(int argc, char *argv[])
 
         while (!rpmIsVerbose())
 	    rpmIncreaseVerbosity();
-
-	if (!poptPeekArg(optCon))
-	    argerror(_("no packages files given for rebuild"));
 
 	ba->buildAmount =
 	    RPMBUILD_PREP | RPMBUILD_BUILD | RPMBUILD_INSTALL | RPMBUILD_CHECK;
@@ -323,13 +302,6 @@ int main(int argc, char *argv[])
 	    break;
 	}
 
-	if (!poptPeekArg(optCon)) {
-	    if (bigMode == MODE_BUILD)
-		argerror(_("no spec files given for build"));
-	    else
-		argerror(_("no tar files given for build"));
-	}
-
 	while ((pkg = poptGetArg(optCon))) {
 	    ba->rootdir = rpmcliRootDir;
 	    ba->passPhrase = passPhrase;
@@ -341,13 +313,6 @@ int main(int argc, char *argv[])
 	    (void) rpmReadConfigFiles(rpmcliRcfile, NULL);
 	}
     }	break;
-
-    case MODE_UNKNOWN:
-	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
-	    printUsage(optCon, stderr, 0);
-	    ec = argc;
-	}
-	break;
     }
 
 exit:
