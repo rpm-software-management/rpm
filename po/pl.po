@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-08-20 14:26+0300\n"
-"PO-Revision-Date: 2010-06-30 11:38+0200\n"
+"PO-Revision-Date: 2010-08-22 22:29+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -1383,14 +1383,14 @@ msgid "Couldn't fork %s: %s\n"
 msgstr "Nie można rozdzielić %s: %s\n"
 
 #: build/rpmfc.c:305
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed: %x\n"
-msgstr "%s nie powiodło się: %s\n"
+msgstr "%s nie powiodło się: %x\n"
 
 #: build/rpmfc.c:309
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write all data to %s: %s\n"
-msgstr "zapisanie wszystkich danych do %s nie powiodło się\n"
+msgstr "zapisanie wszystkich danych do %s nie powiodło się: %s\n"
 
 #: build/rpmfc.c:784
 #, c-format
@@ -3301,6 +3301,8 @@ msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
+"Za dużo poziomów rekurencji w rozwinięciu makra. Prawdopodobnie jest to "
+"spowodowane rekurencyjną deklaracją makra.\n"
 
 #: rpmio/macro.c:1117 rpmio/macro.c:1134
 #, c-format
@@ -3403,18 +3405,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:246
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "no packages files given for rebuild"
-#~ msgstr "nie podano nazw pakietów do przebudowania"
-
-#~ msgid "no spec files given for build"
-#~ msgstr "nie podano nazw plików spec do zbudowania"
-
-#~ msgid "no tar files given for build"
-#~ msgstr "nie podano plików tar do zbudowania"
-
-#~ msgid "%s failed\n"
-#~ msgstr "%s nie powiodło się\n"
-
-#~ msgid "Recursion depth(%d) greater than max(%d)\n"
-#~ msgstr "Głębokość rekurencji(%d) większa niż maksymalna(%d)\n"
