@@ -1,8 +1,6 @@
 #include "system.h"
 const char *__progname;
 
-#define	_AUTOHELP
-
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
 #include <rpm/rpmbuild.h>
