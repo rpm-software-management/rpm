@@ -321,13 +321,6 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 Package newPackage(rpmSpec spec);
 
 /** \ingroup rpmbuild
- * Destroy all packages associated with spec file.
- * @param packages	package control structure chain
- * @return		NULL
- */
-Package freePackages(Package packages);
-
-/** \ingroup rpmbuild
  * Destroy package control structure.
  * @param pkg		package control structure
  * @return		NULL

@@ -171,7 +171,7 @@ Package freePackage(Package pkg)
     return NULL;
 }
 
-Package freePackages(Package packages)
+static Package freePackages(Package packages)
 {
     Package p;
 
