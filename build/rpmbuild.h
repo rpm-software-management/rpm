@@ -275,14 +275,6 @@ int parseScript(rpmSpec spec, int parsePart);
 int parseExpressionBoolean(rpmSpec spec, const char * expr);
 
 /** \ingroup rpmbuild
- * Evaluate string expression.
- * @param spec		spec file control structure
- * @param expr		expression to parse
- * @return
- */
-char * parseExpressionString(rpmSpec spec, const char * expr);
-
-/** \ingroup rpmbuild
  * Remove all sources assigned to spec file.
  *
  * @param spec		spec file control structure
