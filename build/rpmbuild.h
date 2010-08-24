@@ -170,16 +170,6 @@ rpmParseState isPart(const char * line)	;
 uint32_t parseUnsignedNum(const char * line, uint32_t * res);
 
 /** \ingroup rpmbuild
- * Add changelog entry to header.
- * @param h		header
- * @param time		time of change
- * @param name		person who made the change
- * @param text		description of change
- */
-void addChangelogEntry(Header h, time_t time, const char * name,
-		const char * text);
-
-/** \ingroup rpmbuild
  * Parse %%build/%%install/%%clean section(s) of a spec file.
  * @param spec		spec file control structure
  * @param parsePart	current rpmParseState

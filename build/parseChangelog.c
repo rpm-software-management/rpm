@@ -13,7 +13,7 @@
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
 
-void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
+static void addChangelogEntry(Header h, time_t time, const char *name, const char *text)
 {
     rpm_time_t mytime = time;	/* XXX convert to header representation */
 				
