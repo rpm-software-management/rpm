@@ -11,8 +11,8 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+#include <rpm/rpmbuild.h>
 
-#include "build/buildio.h"
 #include "rpmio/rpmlua.h"
 
 #include "debug.h"

@@ -20,9 +20,14 @@
 #include "lib/rpmte_internal.h"		/* rpmfs */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
-#include "build/buildio.h"
 
 #include "debug.h"
+
+typedef struct cpioSourceArchive_s {
+    rpm_loff_t	cpioArchiveSize;
+    FD_t	cpioFdIn;
+    rpmfi	cpioList;
+} * CSA_t;
 
 /**
  * @todo Create transaction set *much* earlier.
@@ -273,82 +278,7 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     return RPMRC_OK;
 }
 
-rpmRC readRPM(const char *fileName, rpmSpec *specp, 
-		Header *sigs, CSA_t csa)
-{
-    FD_t fdi;
-    rpmSpec spec;
-    rpmRC rc;
-
-    fdi = (fileName != NULL)
-	? Fopen(fileName, "r.ufdio")
-	: fdDup(STDIN_FILENO);
-
-    if (fdi == NULL || Ferror(fdi)) {
-	rpmlog(RPMLOG_ERR, _("readRPM: open %s: %s\n"),
-		(fileName ? fileName : "<stdin>"),
-		Fstrerror(fdi));
-	if (fdi) (void) Fclose(fdi);
-	return RPMRC_FAIL;
-    }
-
-    /* XXX FIXME: EPIPE on <stdin> */
-    if (Fseek(fdi, 0, SEEK_SET) == -1) {
-	rpmlog(RPMLOG_ERR, _("%s: Fseek failed: %s\n"),
-			(fileName ? fileName : "<stdin>"), Fstrerror(fdi));
-	return RPMRC_FAIL;
-    }
-
-    /* Reallocate build data structures */
-    spec = newSpec();
-    spec->packages = newPackage(spec);
-
-    /* XXX the header just allocated will be allocated again */
-    spec->packages->header = headerFree(spec->packages->header);
-
-    /* Read the rpm lead, signatures, and header */
-    {	rpmts ts = rpmtsCreate();
-
-	/* XXX W2DO? pass fileName? */
-	rc = rpmReadPackageFile(ts, fdi, "readRPM",
-			 &spec->packages->header);
-
-	ts = rpmtsFree(ts);
-
-	if (sigs) *sigs = NULL;			/* XXX HACK */
-    }
-
-    switch (rc) {
-    case RPMRC_OK:
-    case RPMRC_NOKEY:
-    case RPMRC_NOTTRUSTED:
-	break;
-    case RPMRC_NOTFOUND:
-	rpmlog(RPMLOG_ERR, _("readRPM: %s is not an RPM package\n"),
-		(fileName ? fileName : "<stdin>"));
-	return RPMRC_FAIL;
-    case RPMRC_FAIL:
-    default:
-	rpmlog(RPMLOG_ERR, _("readRPM: reading header from %s\n"),
-		(fileName ? fileName : "<stdin>"));
-	return RPMRC_FAIL;
-	break;
-    }
-
-    if (specp)
-	*specp = spec;
-    else
-	spec = freeSpec(spec);
-
-    if (csa != NULL)
-	csa->cpioFdIn = fdi;
-    else
-	(void) Fclose(fdi);
-
-    return RPMRC_OK;
-}
-
-rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
+static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	     CSA_t csa, char **cookie)
 {
     FD_t fd = NULL;

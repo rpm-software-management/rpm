@@ -26,7 +26,6 @@
 #include "build/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
-#include "build/buildio.h"
 
 #include "debug.h"
 #include <libgen.h>

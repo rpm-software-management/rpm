@@ -9,7 +9,7 @@ AM_CPPFLAGS += -I$(top_srcdir)/misc
 usrlibdir = $(libdir)
 usrlib_LTLIBRARIES = librpmbuild.la
 librpmbuild_la_SOURCES = \
-	build.c buildio.h expression.c files.c misc.c names.c pack.c \
+	build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
 	parseSpec.c poptBT.c reqprov.c rpmfc.c spec.c fts.h fts.c
