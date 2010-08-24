@@ -219,14 +219,6 @@ spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang);
  */
 int addSource(rpmSpec spec, Package pkg, const char * field, rpmTag tag);
 
-/** \ingroup rpmbuild
- * parseNoSource.
- * @param spec		spec file control structure
- * @param field		field to parse
- * @param tag		tag
- */
-int parseNoSource(rpmSpec spec, const char * field, rpmTag tag);
-
 #ifdef __cplusplus
 }
 #endif

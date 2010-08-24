@@ -18,8 +18,6 @@
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
-#define SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
-#define SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
 /**
  * @param p		trigger entry chain
@@ -183,63 +181,6 @@ Package freePackages(Package packages)
 	p = freePackage(p);
     }
     return NULL;
-}
-
-/**
- */
-static inline struct Source *findSource(rpmSpec spec, uint32_t num, int flag)
-{
-    struct Source *p;
-
-    for (p = spec->sources; p != NULL; p = p->next)
-	if ((num == p->num) && (p->flags & flag)) return p;
-
-    return NULL;
-}
-
-int parseNoSource(rpmSpec spec, const char * field, rpmTag tag)
-{
-    const char *f, *fe;
-    const char *name;
-    int flag;
-    uint32_t num;
-
-    if (tag == RPMTAG_NOSOURCE) {
-	flag = RPMBUILD_ISSOURCE;
-	name = "source";
-    } else {
-	flag = RPMBUILD_ISPATCH;
-	name = "patch";
-    }
-    
-    fe = field;
-    for (f = fe; *f != '\0'; f = fe) {
-        struct Source *p;
-
-	SKIPWHITE(f);
-	if (*f == '\0')
-	    break;
-	fe = f;
-	SKIPNONWHITE(fe);
-	if (*fe != '\0') fe++;
-
-	if (parseUnsignedNum(f, &num)) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Bad number: %s\n"),
-		     spec->lineNum, f);
-	    return RPMRC_FAIL;
-	}
-
-	if (! (p = findSource(spec, num, flag))) {
-	    rpmlog(RPMLOG_ERR, _("line %d: Bad no%s number: %u\n"),
-		     spec->lineNum, name, num);
-	    return RPMRC_FAIL;
-	}
-
-	p->flags |= RPMBUILD_ISNO;
-
-    }
-
-    return 0;
 }
 
 int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
