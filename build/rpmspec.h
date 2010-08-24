@@ -198,10 +198,6 @@ rpmSpec freeSpec(rpmSpec spec);
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg);
 
 /** \ingroup rpmbuild
- */
-struct OpenFileInfo * newOpenFileInfo(void);
-
-/** \ingroup rpmbuild
  * stashSt.
  * @param spec		spec file control structure
  * @param h		header

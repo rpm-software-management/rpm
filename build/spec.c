@@ -342,21 +342,6 @@ rpmSpec freeSpec(rpmSpec spec)
     return spec;
 }
 
-struct OpenFileInfo * newOpenFileInfo(void)
-{
-    struct OpenFileInfo *ofi;
-
-    ofi = xmalloc(sizeof(*ofi));
-    ofi->fp = NULL;
-    ofi->fileName = NULL;
-    ofi->lineNum = 0;
-    ofi->readBuf[0] = '\0';
-    ofi->readPtr = NULL;
-    ofi->next = NULL;
-
-    return ofi;
-}
-
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     rpmSpec spec = NULL;

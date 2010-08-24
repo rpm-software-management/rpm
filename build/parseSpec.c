@@ -96,6 +96,21 @@ void handleComments(char *s)
 	*s = '\0';
 }
 
+static struct OpenFileInfo * newOpenFileInfo(void)
+{
+    struct OpenFileInfo *ofi;
+
+    ofi = xmalloc(sizeof(*ofi));
+    ofi->fp = NULL;
+    ofi->fileName = NULL;
+    ofi->lineNum = 0;
+    ofi->readBuf[0] = '\0';
+    ofi->readPtr = NULL;
+    ofi->next = NULL;
+
+    return ofi;
+}
+
 /**
  */
 static void forceIncludeFile(rpmSpec spec, const char * fileName)
