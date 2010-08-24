@@ -619,7 +619,7 @@ static void addPackageProvides(Header h)
     free(evr);
 }
 
-rpmRC checkPackages(char *pkgcheck)
+static rpmRC checkPackages(char *pkgcheck)
 {
     int fail = rpmExpandNumeric("%{?_nonzero_exit_pkgcheck_terminate_build}");
     int xx;
