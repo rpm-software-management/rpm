@@ -137,14 +137,6 @@ rpmgraph_LDADD =	lib/librpm.la rpmio/librpmio.la @WITH_POPT_LIB@
 
 dist_bin_SCRIPTS =	scripts/gendiff
 
-check_PROGRAMS =	rpminject
-rpminject_SOURCES =	tools/rpminject.c
-rpminject_LDADD =	build/librpmbuild.la
-
-check_PROGRAMS +=	rpmsort
-rpmsort_SOURCES =	tools/rpmsort.c
-rpmsort_LDADD =		lib/librpm.la
-
 rpmconfig_DATA = rpmrc
 rpmrc: $(top_srcdir)/rpmrc.in
 	@$(SED) \
