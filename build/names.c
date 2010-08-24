@@ -177,30 +177,3 @@ gid_t getGidS(const char *gname)
     return gids[gid_used++];
 }
 
-rpm_time_t * getBuildTime(void)
-{
-    static rpm_time_t buildTime[1];
-
-    if (buildTime[0] == 0)
-	buildTime[0] = (int32_t) time(NULL);
-    return buildTime;
-}
-
-const char * buildHost(void)
-{
-    static char hostname[1024];
-    static int oneshot = 0;
-    struct hostent *hbn;
-
-    if (! oneshot) {
-        (void) gethostname(hostname, sizeof(hostname));
-	hbn = gethostbyname(hostname);
-	if (hbn)
-	    strcpy(hostname, hbn->h_name);
-	else
-	    rpmlog(RPMLOG_WARNING,
-			_("Could not canonicalize hostname: %s\n"), hostname);
-	oneshot = 1;
-    }
-    return(hostname);
-}

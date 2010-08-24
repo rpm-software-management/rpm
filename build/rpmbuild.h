@@ -135,18 +135,6 @@ const char * getGnameS(const char * gname);
 gid_t getGidS(const char * gname);
 
 /** \ingroup rpmbuild
- * Return build hostname.
- * @return		build hostname
- */
-const char * buildHost(void)	;
-
-/** \ingroup rpmbuild
- * Return build time stamp.
- * @return		build time stamp
- */
-rpm_time_t * getBuildTime(void)	;
-
-/** \ingroup rpmbuild
  * Read next line from spec file.
  * @param spec		spec file control structure
  * @param strip		truncate comments?

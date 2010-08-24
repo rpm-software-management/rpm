@@ -6,6 +6,8 @@
 #include "system.h"
 
 #include <errno.h>
+#include <netdb.h>
+#include <time.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include <rpm/rpmts.h>
@@ -147,6 +149,33 @@ exit:
     return sb;
 }
 
+static rpm_time_t * getBuildTime(void)
+{
+    static rpm_time_t buildTime[1];
+
+    if (buildTime[0] == 0)
+	buildTime[0] = (int32_t) time(NULL);
+    return buildTime;
+}
+
+static const char * buildHost(void)
+{
+    static char hostname[1024];
+    static int oneshot = 0;
+    struct hostent *hbn;
+
+    if (! oneshot) {
+        (void) gethostname(hostname, sizeof(hostname));
+	hbn = gethostbyname(hostname);
+	if (hbn)
+	    strcpy(hostname, hbn->h_name);
+	else
+	    rpmlog(RPMLOG_WARNING,
+			_("Could not canonicalize hostname: %s\n"), hostname);
+	oneshot = 1;
+    }
+    return(hostname);
+}
 /**
  */
 static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
