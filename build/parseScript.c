@@ -6,11 +6,12 @@
 #include "system.h"
 
 #include <rpm/header.h>
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 
 #include "rpmio/rpmlua.h"
 #include "lib/rpmscript.h"	/* script flags */
+#include "build/rpmbuild_internal.h"
+#include "build/rpmbuild_misc.h"
 
 #include "debug.h"
 

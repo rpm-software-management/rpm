@@ -14,6 +14,7 @@ const char *__progname;
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
 #include "lib/signature.h"
+#include "build/rpmbuild_misc.h"	/* XXX freeNames() */
 #include "cliutils.h"
 
 #include "debug.h"

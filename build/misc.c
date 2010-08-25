@@ -4,7 +4,8 @@
 #include "system.h"
 
 #include <ctype.h>
-#include <rpm/rpmbuild.h>
+#include <stdlib.h>
+#include "build/rpmbuild_misc.h"
 #include "debug.h"
 
 uint32_t parseUnsignedNum(const char * line, uint32_t * res)

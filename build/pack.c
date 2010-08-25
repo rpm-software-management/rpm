@@ -11,7 +11,6 @@
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include <rpm/rpmts.h>
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
@@ -22,6 +21,8 @@
 #include "lib/rpmte_internal.h"		/* rpmfs */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
+#include "build/rpmbuild_internal.h"
+#include "build/rpmbuild_misc.h"
 
 #include "debug.h"
 

@@ -8,8 +8,9 @@
 #include <pwd.h>
 #include <grp.h>
 #include <netdb.h>
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
+#include "build/rpmbuild_misc.h"
 #include "debug.h"
 
 #define UGIDMAX 1024

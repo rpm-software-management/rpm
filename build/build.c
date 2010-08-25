@@ -8,9 +8,9 @@
 #include <errno.h>
 #include <sys/wait.h>
 
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+#include "build/rpmbuild_internal.h"
 
 #include "debug.h"
 

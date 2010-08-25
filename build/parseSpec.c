@@ -9,11 +9,12 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmlib.h>		/* RPM_MACHTABLE & related */
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmts.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
+#include "build/rpmbuild_internal.h"
+#include "build/rpmbuild_misc.h"
 #include "debug.h"
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }

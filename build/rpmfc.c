@@ -8,14 +8,14 @@
 #include <regex.h>
 
 #include <rpm/header.h>
-#include <rpm/rpmbuild.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
+
+#include "build/rpmbuild_internal.h"
 
 #include "debug.h"
 

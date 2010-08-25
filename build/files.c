@@ -14,7 +14,6 @@
 #include <sys/capability.h>
 #endif
 
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmpgp.h>
 #include <rpm/argv.h>
 #include <rpm/rpmfc.h>
@@ -26,6 +25,8 @@
 #include "build/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
+#include "build/rpmbuild_internal.h"
+#include "build/rpmbuild_misc.h"
 
 #include "debug.h"
 #include <libgen.h>

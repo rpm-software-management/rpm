@@ -6,7 +6,8 @@
 #include "system.h"
 
 #include <rpm/header.h>
-#include <rpm/rpmbuild.h>
+#include <rpm/rpmstring.h>
+#include "build/rpmbuild_misc.h"
 #include "debug.h"
 
 static int isNewDep(Header h, rpmTag nametag,

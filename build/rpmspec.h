@@ -165,12 +165,6 @@ struct Package_s {
 };
 
 /** \ingroup rpmbuild
- * Create and initialize rpmSpec structure.
- * @return spec		spec file control structure
- */
-rpmSpec newSpec(void);
-
-/** \ingroup rpmbuild
  * Destroy Spec structure.
  * @param spec		spec file control structure
  * @return		NULL always
@@ -185,15 +179,6 @@ rpmSpec freeSpec(rpmSpec spec);
  * @return		0 on success, else no. of failures
  */
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg);
-
-/** \ingroup rpmbuild
- * stashSt.
- * @param spec		spec file control structure
- * @param h		header
- * @param tag		tag
- * @param lang		locale
- */
-spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang);
 
 #ifdef __cplusplus
 }

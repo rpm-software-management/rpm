@@ -13,9 +13,8 @@
 
 #include "system.h"
 
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
-
+#include "build/rpmbuild_internal.h"
 #include "debug.h"
 
 /* #define DEBUG_PARSER 1 */
