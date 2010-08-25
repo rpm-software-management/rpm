@@ -201,6 +201,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     char * specFile = NULL;
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
+    int justRm = ((buildAmount & ~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) == 0);
 
 #ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
@@ -283,18 +284,11 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
-    if ( ba->buildAmount&RPMBUILD_RMSOURCE && !(ba->buildAmount&~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) ) {
-	rc = doRmSource(spec);
-	if ( rc == RPMRC_OK && ba->buildAmount&RPMBUILD_RMSPEC )
-	    rc = unlink(specFile);
-	goto exit;
-    }
-
     /* Assemble source header from parsed components */
     initSourceHeader(spec);
 
-    /* Check build prerequisites */
-    if (!ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
+    /* Check build prerequisites if necessary, unless disabled */
+    if (!justRm && !ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
 	goto exit;
     }
 
