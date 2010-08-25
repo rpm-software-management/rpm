@@ -284,13 +284,6 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 Package newPackage(rpmSpec spec);
 
 /** \ingroup rpmbuild
- * Destroy package control structure.
- * @param pkg		package control structure
- * @return		NULL
- */
-Package  freePackage(Package pkg);
-
-/** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.
  * @param spec		spec file control structure
  * @param h		header

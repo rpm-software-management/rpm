@@ -142,7 +142,7 @@ Package newPackage(rpmSpec spec)
     return p;
 }
 
-Package freePackage(Package pkg)
+static Package freePackage(Package pkg)
 {
     if (pkg == NULL) return NULL;
     
