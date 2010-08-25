@@ -18,7 +18,7 @@ static int _build_debug = 0;
 
 /**
  */
-rpmRC doRmSource(rpmSpec spec)
+static rpmRC doRmSource(rpmSpec spec)
 {
     struct Source *p;
     Package pkg;
