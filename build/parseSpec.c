@@ -21,6 +21,15 @@
 
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
+typedef struct OpenFileInfo {
+    char * fileName;
+    FILE *fp;
+    int lineNum;
+    char readBuf[BUFSIZ];
+    char * readPtr;
+    struct OpenFileInfo * next;
+} OFI_t;
+
 static const struct PartRec {
     int part;
     size_t len;
