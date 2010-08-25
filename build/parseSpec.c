@@ -565,8 +565,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 		spec = nspec;
 	    }
 
-	    (void) rpmtsSetSpec(ts, spec);
-	    return 0;
+	    goto exit;
 	}
     }
 
@@ -607,6 +606,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
   }
 
     closeSpec(spec);
+exit:
     (void) rpmtsSetSpec(ts, spec);
 
     return 0;
