@@ -2005,6 +2005,7 @@ void initSourceHeader(rpmSpec spec)
 {
     HeaderIterator hi;
     struct rpmtd_s td;
+    struct Source *srcPtr;
 
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
@@ -2023,6 +2024,24 @@ void initSourceHeader(rpmSpec spec)
     if (spec->BANames && spec->BACount > 0) {
 	headerPutStringArray(spec->sourceHeader, RPMTAG_BUILDARCHS,
 		  spec->BANames, spec->BACount);
+    }
+
+    /* Add tags for sources and patches */
+    for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
+	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
+	    headerPutString(spec->sourceHeader, RPMTAG_SOURCE, srcPtr->source);
+	    if (srcPtr->flags & RPMBUILD_ISNO) {
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
+				&srcPtr->num, 1);
+	    }
+	}
+	if (srcPtr->flags & RPMBUILD_ISPATCH) {
+	    headerPutString(spec->sourceHeader, RPMTAG_PATCH, srcPtr->source);
+	    if (srcPtr->flags & RPMBUILD_ISNO) {
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOPATCH,
+				&srcPtr->num, 1);
+	    }
+	}
     }
 }
 
@@ -2056,29 +2075,11 @@ int processSourceFiles(rpmSpec spec)
     genSourceRpmName(spec);
     /* Construct the file list and source entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
-    if (spec->sourceHeader != NULL)
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
-	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    headerPutString(spec->sourceHeader, RPMTAG_SOURCE, srcPtr->source);
-	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
-				&srcPtr->num, 1);
-	    }
-	}
-	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    headerPutString(spec->sourceHeader, RPMTAG_PATCH, srcPtr->source);
-	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerPutUint32(spec->sourceHeader, RPMTAG_NOPATCH,
-				&srcPtr->num, 1);
-	    }
-	}
-
-      {	char * sfn;
-	sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
+	char * sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	appendLineStringBuf(sourceFiles, sfn);
 	sfn = _free(sfn);
-      }
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
