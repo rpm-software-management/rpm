@@ -417,6 +417,74 @@ void closeSpec(rpmSpec spec)
     }
 }
 
+static const rpmTag sourceTags[] = {
+    RPMTAG_NAME,
+    RPMTAG_VERSION,
+    RPMTAG_RELEASE,
+    RPMTAG_EPOCH,
+    RPMTAG_SUMMARY,
+    RPMTAG_DESCRIPTION,
+    RPMTAG_PACKAGER,
+    RPMTAG_DISTRIBUTION,
+    RPMTAG_DISTURL,
+    RPMTAG_VENDOR,
+    RPMTAG_LICENSE,
+    RPMTAG_GROUP,
+    RPMTAG_OS,
+    RPMTAG_ARCH,
+    RPMTAG_CHANGELOGTIME,
+    RPMTAG_CHANGELOGNAME,
+    RPMTAG_CHANGELOGTEXT,
+    RPMTAG_URL,
+    RPMTAG_BUGURL,
+    HEADER_I18NTABLE,
+    0
+};
+
+static void initSourceHeader(rpmSpec spec)
+{
+    HeaderIterator hi;
+    struct rpmtd_s td;
+    struct Source *srcPtr;
+
+    spec->sourceHeader = headerNew();
+    /* Only specific tags are added to the source package header */
+    headerCopyTags(spec->packages->header, spec->sourceHeader, sourceTags);
+
+    /* Add the build restrictions */
+    hi = headerInitIterator(spec->buildRestrictions);
+    while (headerNext(hi, &td)) {
+	if (rpmtdCount(&td) > 0) {
+	    (void) headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+	}
+	rpmtdFreeData(&td);
+    }
+    hi = headerFreeIterator(hi);
+
+    if (spec->BANames && spec->BACount > 0) {
+	headerPutStringArray(spec->sourceHeader, RPMTAG_BUILDARCHS,
+		  spec->BANames, spec->BACount);
+    }
+
+    /* Add tags for sources and patches */
+    for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
+	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
+	    headerPutString(spec->sourceHeader, RPMTAG_SOURCE, srcPtr->source);
+	    if (srcPtr->flags & RPMBUILD_ISNO) {
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
+				&srcPtr->num, 1);
+	    }
+	}
+	if (srcPtr->flags & RPMBUILD_ISPATCH) {
+	    headerPutString(spec->sourceHeader, RPMTAG_PATCH, srcPtr->source);
+	    if (srcPtr->flags & RPMBUILD_ISNO) {
+		headerPutUint32(spec->sourceHeader, RPMTAG_NOPATCH,
+				&srcPtr->num, 1);
+	    }
+	}
+    }
+}
+
 extern int noLang;		/* XXX FIXME: pass as arg */
 
 int parseSpec(rpmts ts, const char *specFile, const char *rootDir,

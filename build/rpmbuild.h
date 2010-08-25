@@ -324,12 +324,6 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
 int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test);
 
 /** \ingroup rpmbuild
- * Create and initialize header for source package.
- * @param spec		spec file control structure
- */
-void initSourceHeader(rpmSpec spec);
-
-/** \ingroup rpmbuild
  * Post-build processing for source package.
  * @param spec		spec file control structure
  * @return		0 on success
