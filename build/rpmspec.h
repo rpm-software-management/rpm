@@ -17,17 +17,6 @@ extern "C" {
  */
 typedef struct Package_s * Package;
 
-/** \ingroup rpmbuild
- */
-struct TriggerFileEntry {
-    int index;
-    char * fileName;
-    char * script;
-    char * prog;
-    uint32_t flags;
-    struct TriggerFileEntry * next;
-};
-
 #define RPMBUILD_ISSOURCE	(1 << 0)
 #define RPMBUILD_ISPATCH	(1 << 1)
 #define RPMBUILD_ISICON		(1 << 2)
@@ -45,38 +34,8 @@ struct Source {
 struct Source * next;
 };
 
-/** \ingroup rpmbuild
- */
-typedef struct ReadLevelEntry {
-    int reading;
-    struct ReadLevelEntry * next;
-} RLE_t;
-
-/** \ingroup rpmbuild
- */
-typedef struct spectag_s {
-    int t_tag;
-    int t_startx;
-    int t_nlines;
-    char * t_lang;
-    char * t_msgid;
-} * spectag;
-
-/** \ingroup rpmbuild
- */
-typedef struct spectags_s {
-    spectag st_t;
-    int st_nalloc;
-    int st_ntags;
-} * spectags;
-
-/** \ingroup rpmbuild
- */
-typedef struct speclines_s {
-    char **sl_lines;
-    int sl_nalloc;
-    int sl_nlines;
-} * speclines;
+typedef struct spectags_s * spectags;
+typedef struct speclines_s * speclines;
 
 /** \ingroup rpmbuild
  * The structure used to store values parsed from a spec file.

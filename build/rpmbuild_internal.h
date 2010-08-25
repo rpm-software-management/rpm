@@ -4,6 +4,40 @@
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmutil.h>
 
+struct TriggerFileEntry {
+    int index;
+    char * fileName;
+    char * script;
+    char * prog;
+    uint32_t flags;
+    struct TriggerFileEntry * next;
+};
+
+typedef struct ReadLevelEntry {
+    int reading;
+    struct ReadLevelEntry * next;
+} RLE_t;
+
+typedef struct spectag_s {
+    int t_tag;
+    int t_startx;
+    int t_nlines;
+    char * t_lang;
+    char * t_msgid;
+} * spectag;
+
+struct spectags_s {
+    spectag st_t;
+    int st_nalloc;
+    int st_ntags;
+};
+
+struct speclines_s {
+    char **sl_lines;
+    int sl_nalloc;
+    int sl_nlines;
+};
+
 #define PART_SUBNAME  0
 #define PART_NAME     1
 
