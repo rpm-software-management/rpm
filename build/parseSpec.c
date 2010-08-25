@@ -607,6 +607,8 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 
     closeSpec(spec);
 exit:
+    /* Assemble source header from parsed components */
+    initSourceHeader(spec);
     (void) rpmtsSetSpec(ts, spec);
 
     return 0;

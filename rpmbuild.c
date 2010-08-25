@@ -284,9 +284,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
-    /* Assemble source header from parsed components */
-    initSourceHeader(spec);
-
     /* Check build prerequisites if necessary, unless disabled */
     if (!justRm && !ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
 	goto exit;
