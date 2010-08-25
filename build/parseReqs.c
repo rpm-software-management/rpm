@@ -173,7 +173,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 	} else
 	    EVR = NULL;
 
-	if (addReqProv(spec, h, nametag, N, EVR, Flags, index)) {
+	if (addReqProv(h, nametag, N, EVR, Flags, index)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: invalid dependency: %s\n"),
 		   spec->lineNum, spec->line);
 	    goto exit;

@@ -304,7 +304,7 @@ int parseScript(rpmSpec spec, int parsePart)
 		 spec->lineNum, progArgv[0]);
 	goto exit;
     } else {
-        (void) addReqProv(spec, pkg->header, RPMTAG_REQUIRENAME,
+        (void) addReqProv(pkg->header, RPMTAG_REQUIRENAME,
 		progArgv[0], NULL, (tagflags | RPMSENSE_INTERP), 0);
     }
 

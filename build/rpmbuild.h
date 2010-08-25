@@ -285,7 +285,6 @@ Package newPackage(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Add dependency to header, filtering duplicates.
- * @param spec		spec file control structure
  * @param h		header
  * @param tagN		tag, identifies type of dependency
  * @param N		(e.g. Requires: foo < 0:1.2-3, "foo")
@@ -294,7 +293,7 @@ Package newPackage(rpmSpec spec);
  * @param index		(0 always)
  * @return		0 on success, 1 on error
  */
-int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
+int addReqProv(Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index);
 

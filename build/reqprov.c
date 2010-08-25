@@ -41,7 +41,7 @@ static int isNewDep(Header h, rpmTag nametag,
     return new;
 }
 
-int addReqProv(rpmSpec spec, Header h, rpmTag tagN,
+int addReqProv(Header h, rpmTag tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
@@ -109,8 +109,7 @@ int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
 
     rasprintf(&reqname, "rpmlib(%s)", feature);
 
-    /* XXX 1st arg is unused */
-    res = addReqProv(NULL, h, RPMTAG_REQUIRENAME, reqname, featureEVR,
+    res = addReqProv(h, RPMTAG_REQUIRENAME, reqname, featureEVR,
 		     RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
 
     free(reqname);
