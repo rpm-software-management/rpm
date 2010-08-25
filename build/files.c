@@ -2065,13 +2065,6 @@ int processSourceFiles(rpmSpec spec)
     }
     sourceFiles = newStringBuf();
 
-    /* XXX
-     * XXX This is where the source header for noarch packages needs
-     * XXX to be initialized.
-     */
-    if (spec->sourceHeader == NULL)
-	initSourceHeader(spec);
-
     genSourceRpmName(spec);
     /* Construct the file list and source entries */
     appendLineStringBuf(sourceFiles, spec->specFile);
