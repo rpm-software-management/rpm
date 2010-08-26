@@ -95,43 +95,15 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 
 Package newPackage(rpmSpec spec)
 {
-    Package p;
-    Package pp;
-
-    p = xcalloc(1, sizeof(*p));
-
+    Package p = xcalloc(1, sizeof(*p));
     p->header = headerNew();
-    p->ds = NULL;
-    p->icon = NULL;
-
     p->autoProv = 1;
     p->autoReq = 1;
-    
-#if 0    
-    p->reqProv = NULL;
-    p->triggers = NULL;
-    p->triggerScripts = NULL;
-#endif
-
-    p->triggerFiles = NULL;
-    
-    p->fileFile = NULL;
-    p->fileList = NULL;
-
-    p->cpioList = NULL;
-
-    p->preInFile = NULL;
-    p->postInFile = NULL;
-    p->preUnFile = NULL;
-    p->postUnFile = NULL;
-    p->verifyFile = NULL;
-
-    p->specialDoc = NULL;
-    p->specialDocDir = NULL;
 
     if (spec->packages == NULL) {
 	spec->packages = p;
     } else {
+	Package pp;
 	/* Always add package to end of list */
 	for (pp = spec->packages; pp->next != NULL; pp = pp->next)
 	    {};
