@@ -495,6 +495,27 @@ static void initSourceHeader(rpmSpec spec)
     }
 }
 
+static void addTargets(Package Pkgs)
+{
+    char *platform = rpmExpand("%{_target_platform}", NULL);
+    char *arch = rpmExpand("%{_target_cpu}", NULL);
+    char *os = rpmExpand("%{_target_os}", NULL);
+
+    for (Package pkg = Pkgs; pkg != NULL; pkg = pkg->next) {
+	headerPutString(pkg->header, RPMTAG_OS, os);
+	/* noarch subpackages already have arch set here, leave it alone */
+	if (!headerIsEntry(pkg->header, RPMTAG_ARCH)) {
+	    headerPutString(pkg->header, RPMTAG_ARCH, arch);
+	}
+	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
+
+	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+    }
+    free(platform);
+    free(arch);
+    free(os);
+}
+
 extern int noLang;		/* XXX FIXME: pass as arg */
 
 int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
@@ -503,7 +524,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
-    Package pkg;
     rpmSpec spec;
     
     /* Set up a new Spec structure with no packages. */
@@ -654,34 +674,17 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 	free(body);
     }
 
-    /* Check for description in each package and add arch and os */
-  {
-    char *platform = rpmExpand("%{_target_platform}", NULL);
-    char *arch = rpmExpand("%{_target_cpu}", NULL);
-    char *os = rpmExpand("%{_target_os}", NULL);
-
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+    /* Check for description in each package */
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (!headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
 	    rpmlog(RPMLOG_ERR, _("Package has no %%description: %s\n"),
 		   headerGetString(pkg->header, RPMTAG_NAME));
 	    goto errxit;
 	}
-
-	headerPutString(pkg->header, RPMTAG_OS, os);
-	/* noarch subpackages already have arch set here, leave it alone */
-	if (!headerIsEntry(pkg->header, RPMTAG_ARCH)) {
-	    headerPutString(pkg->header, RPMTAG_ARCH, arch);
-	}
-	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
-
-	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
-
     }
 
-    platform = _free(platform);
-    arch = _free(arch);
-    os = _free(os);
-  }
+    /* Add arch, os and platform for each package */
+    addTargets(spec->packages);
 
     closeSpec(spec);
 exit:
