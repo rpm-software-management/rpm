@@ -2164,9 +2164,6 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	const char *a;
 	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
-	if (pkg->fileList == NULL)
-	    continue;
-
 	nvr = headerGetAsString(pkg->header, RPMTAG_NVRA);
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
 	free(nvr);

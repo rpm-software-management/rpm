@@ -99,6 +99,7 @@ Package newPackage(rpmSpec spec)
     p->header = headerNew();
     p->autoProv = 1;
     p->autoReq = 1;
+    p->fileList = newStringBuf();
 
     if (spec->packages == NULL) {
 	spec->packages = p;
