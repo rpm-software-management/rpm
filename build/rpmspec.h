@@ -119,6 +119,7 @@ struct Package_s {
 
     StringBuf fileFile;
     StringBuf fileList;		/* If NULL, package will not be written */
+    StringBuf policyList;
 
     Package next;
 };

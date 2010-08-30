@@ -70,7 +70,8 @@ typedef enum rpmParseState_e {
     PART_BUILDARCHITECTURES= 29+PART_BASE,/*!< */ 
     PART_TRIGGERPOSTUN  = 30+PART_BASE, /*!< */ 
     PART_TRIGGERPREIN   = 31+PART_BASE, /*!< */ 
-    PART_LAST           = 32+PART_BASE  /*!< */ 
+    PART_POLICIES       = 32+PART_BASE, /*!< */
+    PART_LAST           = 33+PART_BASE  /*!< */
 } rpmParseState; 
 
 
@@ -141,6 +142,14 @@ int parseDescription(rpmSpec spec);
  */
 RPM_GNUC_INTERNAL
 int parseFiles(rpmSpec spec);
+
+/** \ingroup rpmbuild
+ * Parse %%sepolicy section of a spec file.
+ * @param spec		spec file control structure
+ * @return		>= 0 next rpmParseState, < 0 on error
+ */
+RPM_GNUC_INTERNAL
+int parsePolicies(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Parse tags from preamble of a spec file.
@@ -254,6 +263,15 @@ Package newPackage(rpmSpec spec);
  */
 RPM_GNUC_INTERNAL
 int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test);
+
+/** \ingroup rpmbuild
+ * Post-build processing for policies in binary package(s).
+ * @param spec		spec file control structure
+ * @param test		don't execute scripts or package if testing
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int processBinaryPolicies(rpmSpec spec, int test);
 
 /** \ingroup rpmbuild
  * Post-build processing for source package.

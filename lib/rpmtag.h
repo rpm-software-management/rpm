@@ -297,6 +297,10 @@ typedef enum rpmTag_e {
     RPMTAG_TRIGGERSCRIPTFLAGS	= 5027, /* i[] */
     RPMTAG_FILESTATUS		= 5028, /* i[] extension */
     RPMTAG_COLLECTIONS		= 5029, /* s[] list of collections */
+    RPMTAG_POLICYNAMES		= 5030,	/* s[] */
+    RPMTAG_POLICYTYPES		= 5031,	/* s[] */
+    RPMTAG_POLICYTYPESINDEXES	= 5032,	/* i[] */
+    RPMTAG_POLICYFLAGS		= 5033,	/* i[] */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;

@@ -57,6 +57,7 @@ static const struct PartRec {
     { PART_TRIGGERIN,     LEN_AND_STR("%triggerin")},
     { PART_TRIGGERIN,     LEN_AND_STR("%trigger")},
     { PART_VERIFYSCRIPT,  LEN_AND_STR("%verifyscript")},
+    { PART_POLICIES,      LEN_AND_STR("%sepolicy")},
     {0, 0, 0}
 };
 
@@ -601,6 +602,10 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 
 	case PART_FILES:
 	    parsePart = parseFiles(spec);
+	    break;
+
+	case PART_POLICIES:
+	    parsePart = parsePolicies(spec);
 	    break;
 
 	case PART_NONE:		/* XXX avoid gcc whining */

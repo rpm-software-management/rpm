@@ -260,6 +260,10 @@ rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 	    (rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL, test)))
 		goto exit;
 
+	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY)) &&
+	    (rc = processBinaryPolicies(spec, test)))
+		goto exit;
+
 	if (((what & RPMBUILD_PACKAGESOURCE) && !test) &&
 	    (rc = packageSources(spec)))
 		return rc;
