@@ -57,9 +57,11 @@
 %__patch		@__PATCH@
 %__perl			@__PERL@
 %__python		@__PYTHON@
+%__restorecon		@__RESTORECON@
 %__rm			@__RM@
 %__rsh			@__RSH@
 %__sed			@__SED@
+%__semodule		@__SEMODULE@
 %__ssh			@__SSH@
 %__tar			@__TAR@
 %__unzip		@__UNZIP@
@@ -1164,6 +1166,7 @@ done \
 %__plugindir		%{_rpmconfigdir}/plugins
 %__collection_font	%{__plugindir}/exec.so /usr/bin/fc-cache
 %__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
+%__collection_sepolicy		%{__plugindir}/sepolicy.so
 
 # \endverbatim
 #*/

@@ -109,6 +109,7 @@ AC_PATH_PROG(__MAKE, make, /usr/bin/make, $MYPATH)
 AC_PATH_PROG(__MKDIR, mkdir, /bin/mkdir, $MYPATH)
 AC_PATH_PROG(__MV, mv, /bin/mv, $MYPATH)
 AC_PATH_PROG(__PATCH, patch, /usr/bin/patch, $MYPATH)
+AC_PATH_PROG(__RESTORECON, restorecon, /sbin/restorecon, $MYPATH)
 AC_MSG_CHECKING(old version of patch)
     PATCHVERSION=`patch --version 2>&1`
 
@@ -126,6 +127,7 @@ AC_PATH_PROG(__PYTHON, python, /usr/bin/python, $MYPATH)
 AC_PATH_PROG(__RM, rm, /bin/rm, $MYPATH)
 AC_PATH_PROG(__RSH, rsh, /usr/bin/rsh, $MYPATH)
 AC_PATH_PROG(__SED, sed, /bin/sed, $MYPATH)
+AC_PATH_PROG(__SEMODULE, semodule, /usr/bin/semodule, $MYPATH)
 AC_PATH_PROG(__SSH, ssh, /usr/bin/ssh, $MYPATH)
 AC_PATH_PROG(__TAR, tar, /bin/tar, $MYPATH)
 
@@ -572,8 +574,14 @@ esac],
 
 AS_IF([test "$with_selinux" = yes],[
   AC_CHECK_HEADER([selinux/selinux.h],[
-    AC_CHECK_LIB(selinux,[is_selinux_enabled],[with_selinux=yes],[
-      AC_MSG_ERROR([--with-selinux given, but libselinux not found])])
+    save_LIBS="$LIBS"
+    AC_CHECK_LIB([selinux],[is_selinux_enabled],[],[
+      AC_MSG_ERROR([--with-selinux given, but is_selinux_enabled not found in libselinux])])
+    AC_CHECK_LIB([selinux],[selinux_getpolicytype],[],[
+      AC_MSG_ERROR([--with-selinux given, but selinux_getpolicytype not found in libselinux])])
+    AC_CHECK_LIB([selinux],[selinux_reset_config],[],[
+      AC_MSG_ERROR([--with-selinux given, but selinux_reset_config not found in libselinux])])
+    LIBS="$save_LIBS"
   ],[
     AC_MSG_ERROR([--with-selinux given, but selinux/selinux.h not found])
   ])
@@ -590,11 +598,46 @@ AS_IF([test "$with_selinux" = yes],[
   ],[
     AC_MSG_ERROR([--with-selinux given, but selinux/label.h not found])
   ])
+
+  AC_CHECK_HEADER([semanage/semanage.h],[
+    save_LIBS="$LIBS"
+    AC_CHECK_LIB([semanage],[semanage_begin_transaction],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_begin_transaction missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_commit],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_commit missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_connect],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_connect missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_disconnect],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_disconnect missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_handle_create],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_handle_create missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_handle_destroy],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_handle_destroy missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_is_connected],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_is_connected missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_module_install_base_file],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_module_install_base_file missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_module_install_file],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_module_install_file missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_module_remove],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_module_remove missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_select_store],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_select_store missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_set_check_contexts],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_set_check_contexts missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_set_create_store],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_set_create_store missing in libsemanage])])
+    AC_CHECK_LIB([semanage],[semanage_set_reload],[],[
+      AC_MSG_ERROR([--with-selinux given, but semanage_set_reload missing in libsemanage])])
+    LIBS="$save_LIBS"
+  ],[
+    AC_MSG_ERROR([--with-selinux given, but semanage/semanage.h not found])
+  ])
 ])
 
 AS_IF([test "$with_selinux" = yes],[
   AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
-  WITH_SELINUX_LIB="-lselinux"
+  WITH_SELINUX_LIB="-lselinux -lsemanage"
 ])
 AC_SUBST(WITH_SELINUX_LIB)
 AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
