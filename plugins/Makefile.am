@@ -15,5 +15,5 @@ pluginsdir = $(rpmconfigdir)/plugins
 
 plugins_LTLIBRARIES = exec.la
 
-exec_la_SOURCES = collection.h exec.c
+exec_la_SOURCES = plugin.h exec.c
 exec_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la

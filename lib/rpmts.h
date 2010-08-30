@@ -514,6 +514,13 @@ rpm_color_t rpmtsSetPrefColor(rpmts ts, rpm_color_t color);
 rpmop rpmtsOp(rpmts ts, rpmtsOpX opx);
 
 /** \ingroup rpmts
+ * Get the plugins associated with a transaction set
+ * @param ts		transaction set
+ * @return		plugins
+ */
+rpmPlugins rpmtsPlugins(rpmts ts);
+
+/** \ingroup rpmts
  * Set transaction notify callback function and argument.
  *
  * @warning This call must be made before rpmtsRun() for

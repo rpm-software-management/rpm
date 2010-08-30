@@ -19,6 +19,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmte.h>
+#include <rpm/rpmplugins.h>
 
 #include "rpmio/digest.h"
 #include "lib/rpmal.h"
@@ -615,6 +616,8 @@ rpmts rpmtsFree(rpmts ts)
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
     ts->installLangs = argvFree(ts->installLangs);
 
+    ts->plugins = rpmpluginsFree(ts->plugins);
+
     if (_rpmts_stats)
 	rpmtsPrintStats(ts);
 
@@ -825,6 +828,11 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
     return op;
 }
 
+rpmPlugins rpmtsPlugins(rpmts ts)
+{
+    return (ts != NULL ? ts->plugins : NULL);
+}
+
 int rpmtsSetNotifyCallback(rpmts ts,
 		rpmCallbackFunction notify, rpmCallbackData notifyData)
 {
@@ -899,6 +907,8 @@ rpmts rpmtsCreate(void)
     ts->keyring = NULL;
 
     ts->nrefs = 0;
+
+    ts->plugins = rpmpluginsNew(ts);
 
     return rpmtsLink(ts);
 }

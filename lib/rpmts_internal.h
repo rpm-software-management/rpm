@@ -62,6 +62,8 @@ struct rpmts_s {
 
     rpmSpec spec;		/*!< Spec file control structure. */
 
+    rpmPlugins plugins;		/*!< Transaction plugins */
+
     int nrefs;			/*!< Reference count. */
 };
 

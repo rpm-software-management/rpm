@@ -34,7 +34,7 @@ librpm_la_SOURCES = \
 	verify.c rpmlock.c rpmlock.h misc.h \
 	rpmscript.h rpmscript.c legacy.c merge.c \
 	rpmliblua.c rpmliblua.h rpmchroot.c rpmchroot.h \
-	collections.h
+	rpmplugins.c rpmplugins.h
 
 librpm_la_LDFLAGS = -version-info 1:0:0
 

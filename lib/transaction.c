@@ -1108,7 +1108,7 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     return 0; /* what to do about failures? */
 }
 
-static int rpmtsDetermineCollectionPoints(rpmts ts)
+static int rpmtsSetupCollections(rpmts ts)
 {
     /* seenCollectionsPost and TEs are basically a key-value pair. each item in
      * seenCollectionsPost is a collection that has been seen from any package,
@@ -1138,6 +1138,8 @@ static int rpmtsDetermineCollectionPoints(rpmts ts)
 		rpmteAddToLastInCollectionAdd(TEs[i], seenCollectionsPost[i]);
 	    }
 	}
+
+	rpmteSetupCollectionPlugins(p);
 
 	for (collname = rpmteCollections(p); collname && *collname; collname++) {
 	    /* figure out if we've seen this collection in post before */
@@ -1426,7 +1428,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	goto exit;
     }
 
-    rpmtsDetermineCollectionPoints(ts);
+    rpmtsSetupCollections(ts);
 
     /* Check package set for problems */
     tsprobs = checkProblems(ts);

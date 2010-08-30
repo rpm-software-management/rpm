@@ -1,11 +1,30 @@
-#include "collection.h"
+#include "plugin.h"
 
 #include <sys/wait.h>
 
-rpmCollHook COLLECTION_HOOKS = COLLHOOK_POST_ANY;
+static char * options;
+static char * name;
 
-rpmRC COLLHOOK_POST_ANY_FUNC(rpmts ts, const char *collname,
-			     const char *options)
+rpmPluginHook PLUGIN_HOOKS = \
+	PLUGINHOOK_INIT | \
+	PLUGINHOOK_CLEANUP | \
+	PLUGINHOOK_COLL_POST_ANY;
+
+rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
+{
+    options = strdup(opts);
+    name = strdup(name);
+    return RPMRC_OK;
+}
+
+rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+{
+    options = _free(options);
+    name = _free(name);
+    return RPMRC_OK;
+}
+
+rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)
 {
     int rc = RPMRC_FAIL;
 
@@ -16,7 +35,7 @@ rpmRC COLLHOOK_POST_ANY_FUNC(rpmts ts, const char *collname,
     if (options) {
 	int status = system(options);
 	if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-	    rpmlog(RPMLOG_ERR, "%s collection action failed\n", collname);
+	    rpmlog(RPMLOG_ERR, "%s collection action failed\n", name);
 	    goto exit;
 	}
     }

@@ -134,6 +134,13 @@ int rpmteAddToLastInCollectionAny(rpmte te, const char * collname);
 RPM_GNUC_INTERNAL
 int rpmteAddToFirstInCollectionRemove(rpmte te, const char * collname);
 
+/** \ingroup rpmte
+ * Sends the open te plugin hook for each plugins with the transaction element open
+ * @param te		transaction element
+ * @return		0 on success, non-zero on error
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmteSetupCollectionPlugins(rpmte te);
 
 #endif	/* _RPMTE_INTERNAL_H */
 
