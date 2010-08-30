@@ -577,6 +577,19 @@ AS_IF([test "$with_selinux" = yes],[
   ],[
     AC_MSG_ERROR([--with-selinux given, but selinux/selinux.h not found])
   ])
+
+  AC_CHECK_HEADER([selinux/label.h],[
+    save_LIBS="$LIBS"
+    AC_CHECK_LIB([selinux],[selabel_close],[],[
+      AC_MSG_ERROR([--with-selinux given, but selabel_close not found in libselinux])])
+    AC_CHECK_LIB([selinux],[selabel_lookup_raw],[],[
+      AC_MSG_ERROR([--with-selinux given, but selabel_lookup_raw not found in libselinux])])
+    AC_CHECK_LIB([selinux],[selabel_open],[],[
+      AC_MSG_ERROR([--with-selinux given, but selabel_open not found in libselinux])])
+    LIBS="$save_LIBS"
+  ],[
+    AC_MSG_ERROR([--with-selinux given, but selinux/label.h not found])
+  ])
 ])
 
 AS_IF([test "$with_selinux" = yes],[

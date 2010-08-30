@@ -43,6 +43,8 @@ struct rpmts_s {
 
     tsMembers members;		/*!< Transaction set member info (order etc) */
 
+    struct selabel_handle * selabelHandle;	/*!< Handle to selabel */
+
     char * rootDir;		/*!< Path to top of install tree. */
     char * lockPath;		/*!< Transaction lock path */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */

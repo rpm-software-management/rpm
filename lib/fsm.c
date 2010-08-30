@@ -693,10 +693,10 @@ static int fsmMapFContext(FSM_t fsm)
      * Find file security context (if not disabled).
      */
     fsm->fcontext = NULL;
-    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
+    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && rpmtsSELabelHandle(ts)) {
 	security_context_t scon = NULL;
 
-	if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 && scon != NULL) {
+	if (selabel_lookup_raw(rpmtsSELabelHandle(ts), &scon, fsm->path, st->st_mode) == 0 && scon != NULL) {
 	    fsm->fcontext = scon;
 	}
     }
@@ -1263,8 +1263,8 @@ static int fsmMkdirs(FSM_t fsm)
 		if (!rc) {
 		    /* XXX FIXME? only new dir will have context set. */
 		    /* Get file security context from patterns. */
-		    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-			if (matchpathcon(fsm->path, st->st_mode, &scon) == 0 &&
+		    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && rpmtsSELabelHandle(ts)) {
+			if (selabel_lookup_raw(rpmtsSELabelHandle(ts), &scon, fsm->path, st->st_mode) == 0 &&
 			    scon != NULL) {
             		    fsm->fcontext = scon;
 			    rc = fsmLsetfcon(fsm);

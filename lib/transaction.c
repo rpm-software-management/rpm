@@ -1269,11 +1269,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     }
 
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	char *fn = rpmGetPath("%{?_install_file_context_path}", NULL);
-	if (matchpathcon_init(fn) == -1) {
-	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
-	}
-	free(fn);
+	rpmtsSELabelInit(ts, selinux_file_context_path());
     }
 
     /* XXX Make sure the database is open RDWR for package install/erase. */
@@ -1292,7 +1288,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 static int rpmtsFinish(rpmts ts)
 {
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	matchpathcon_fini();
+	rpmtsSELabelFini(ts);
     }
     return rpmChrootSet(NULL);
 }

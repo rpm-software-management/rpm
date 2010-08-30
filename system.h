@@ -78,6 +78,7 @@ char * stpncpy(char * dest, const char * src, size_t n);
 
 #if WITH_SELINUX
 #include <selinux/selinux.h>
+#include <selinux/label.h>
 #else
 typedef	char * security_context_t;
 
@@ -91,6 +92,10 @@ typedef	char * security_context_t;
 #define matchpathcon_init(_fn)			(-1)
 #define matchpathcon_fini()			(0)
 #define matchpathcon(_fn, _fm, _c)		(-1)
+
+#define selabel_lookup_raw(_hnd, _scon, _key,_type)	(-1)
+
+#define selinux_file_context_path() (0)
 
 #define rpm_execcon(_v, _fn, _av, _envp)	(0)
 #endif

@@ -688,6 +688,49 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
     }
 }
 
+struct selabel_handle * rpmtsSELabelHandle(rpmts ts)
+{
+#if WITH_SELINUX
+    if (ts != NULL) {
+	return ts->selabelHandle;
+    }
+#endif
+    return NULL;
+}
+
+rpmRC rpmtsSELabelInit(rpmts ts, const char *path)
+{
+#if WITH_SELINUX
+    if (ts == NULL || path == NULL) {
+	return RPMRC_FAIL;
+    }
+
+    struct selinux_opt opts[] = {
+	{SELABEL_OPT_PATH, path}
+    };
+
+    if (ts->selabelHandle) {
+	rpmtsSELabelFini(ts);
+    }
+    ts->selabelHandle = selabel_open(SELABEL_CTX_FILE, opts, 1);
+
+    if (!ts->selabelHandle) {
+	return RPMRC_FAIL;
+    }
+#endif
+    return RPMRC_OK;
+}
+
+void rpmtsSELabelFini(rpmts ts)
+{
+#if WITH_SELINUX
+    if (ts && ts->selabelHandle) {
+	selabel_close(ts->selabelHandle);
+	ts->selabelHandle = NULL;
+    }
+#endif
+}
+
 rpm_tid_t rpmtsGetTid(rpmts ts)
 {
     rpm_tid_t tid = (rpm_tid_t)-1;  /* XXX -1 is time(2) error return. */
@@ -905,6 +948,8 @@ rpmts rpmtsCreate(void)
 
     ts->rootDir = NULL;
     ts->keyring = NULL;
+
+    ts->selabelHandle = NULL;
 
     ts->nrefs = 0;
 
