@@ -864,7 +864,6 @@ static VFA_t virtualFileAttributes[] = {
 	{ "%readme",	0,	RPMFILE_README },
 	{ "%license",	0,	RPMFILE_LICENSE },
 	{ "%pubkey",	0,	RPMFILE_PUBKEY },
-	{ "%policy",	0,	RPMFILE_POLICY },
 	{ NULL, 0, 0 }
 };
 
@@ -932,7 +931,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    if (fl->currentFlags & RPMFILE_DOC) {
 		rstrscat(&specialDocBuf, " ", s, NULL);
 	    } else
-	    if (fl->currentFlags & (RPMFILE_POLICY|RPMFILE_PUBKEY))
+	    if (fl->currentFlags & RPMFILE_PUBKEY)
 	    {
 		*fileName = s;
 	    } else {
@@ -1587,7 +1586,7 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
 }
 
 /**
- * Add a pubkey/policy/icon to a binary package.
+ * Add a pubkey/icon to a binary package.
  * @param pkg
  * @param fl		package file tree walk data
  * @param fileName	path to file, relative is builddir, absolute buildroot.
@@ -1630,13 +1629,6 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	apkt = pgpArmorWrap(PGPARMOR_PUBKEY, pkt, pktlen);
 	break;
     }
-    case RPMTAG_POLICIES:
-	if ((xx = rpmioSlurp(fn, &pkt, &pktlen)) != 0 || pkt == NULL) {
-	    rpmlog(RPMLOG_ERR, _("%s: policy file read failed.\n"), fn);
-	    goto exit;
-	}
-	apkt = b64encode(pkt, pktlen, -1);
-	break;
     }
 
     if (!apkt) {
@@ -1889,8 +1881,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
 	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_PUBKEYS);
-	} else if (fl.currentFlags & RPMFILE_POLICY) {
-	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_POLICIES);
 	} else {
 	    (void) processBinaryFile(pkg, &fl, fileName);
 	}
