@@ -223,12 +223,12 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags);
  */
 int headerPutString(Header h, rpmTag tag, const char *val);
 int headerPutStringArray(Header h, rpmTag tag, const char **val, rpm_count_t size);
-int headerPutBin(Header h, rpmTag tag, uint8_t *val, rpm_count_t size);
-int headerPutChar(Header h, rpmTag tag, char *val, rpm_count_t size);
-int headerPutUint8(Header h, rpmTag tag, uint8_t *val, rpm_count_t size);
-int headerPutUint16(Header h, rpmTag tag, uint16_t *val, rpm_count_t size);
-int headerPutUint32(Header h, rpmTag tag, uint32_t *val, rpm_count_t size);
-int headerPutUint64(Header h, rpmTag tag, uint64_t *val, rpm_count_t size);
+int headerPutBin(Header h, rpmTag tag, const uint8_t *val, rpm_count_t size);
+int headerPutChar(Header h, rpmTag tag, const char *val, rpm_count_t size);
+int headerPutUint8(Header h, rpmTag tag, const uint8_t *val, rpm_count_t size);
+int headerPutUint16(Header h, rpmTag tag, const uint16_t *val, rpm_count_t size);
+int headerPutUint32(Header h, rpmTag tag, const uint32_t *val, rpm_count_t size);
+int headerPutUint64(Header h, rpmTag tag, const uint64_t *val, rpm_count_t size);
 /** @} */
 
 /** \ingroup header
