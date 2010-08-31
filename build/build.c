@@ -14,8 +14,6 @@
 
 #include "debug.h"
 
-static int _build_debug = 0;
-
 /**
  */
 static rpmRC doRmSource(rpmSpec spec)
@@ -171,8 +169,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
 	goto exit;
     }
     
-if (_build_debug)
-fprintf(stderr, "*** rootDir %s buildDir %s\n", rootDir, buildDir);
     if (buildDir && buildDir[0] != '/') {
 	rc = RPMRC_FAIL;
 	goto exit;
