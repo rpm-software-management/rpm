@@ -696,3 +696,18 @@ errxit:
     spec = freeSpec(spec);
     return PART_ERROR;
 }
+
+rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
+		     const char *buildRoot)
+{
+    rpmts ts = rpmtsCreate();
+    rpmSpec spec = NULL;
+
+    if (parseSpec(ts, specFile, NULL, buildRoot, 0, NULL, NULL,
+		  (flags & RPMSPEC_ANYARCH), (flags & RPMSPEC_FORCE)) == 0) {
+	spec = rpmtsSetSpec(ts, NULL);
+    }
+
+    rpmtsFree(ts);
+    return spec;
+}

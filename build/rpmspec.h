@@ -24,6 +24,12 @@ typedef struct Package_s * Package;
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
+typedef enum rpmSpecFlags_e {
+    RPMSPEC_NONE	= 0,
+    RPMSPEC_ANYARCH	= (1 << 0),
+    RPMSPEC_FORCE	= (1 << 1),
+} rpmSpecFlags;
+
 /** \ingroup rpmbuild
  */
 struct Source {

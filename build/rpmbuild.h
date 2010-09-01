@@ -71,6 +71,18 @@ extern int _noDirTokens;
 
 /** \ingroup rpmbuild
  * Parse spec file into spec control structure.
+ * @todo Eliminate buildRoot from here, its a build, not spec property
+ *
+ * @param specFile	path to spec file
+ * @param flags		flags to control operation
+ * @param buildRoot	buildRoot override or NULL for default
+ * @return		new spec control structure
+ */
+rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
+		     const char *buildRoot);
+
+/** \ingroup rpmbuild
+ * Parse spec file into spec control structure.
  * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile
  * @param rootDir	(unused)
