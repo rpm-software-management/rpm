@@ -820,18 +820,6 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags)
     return otransFlags;
 }
 
-rpmSpec rpmtsSpec(rpmts ts)
-{
-    return ts->spec;
-}
-
-rpmSpec rpmtsSetSpec(rpmts ts, rpmSpec spec)
-{
-    rpmSpec ospec = ts->spec;
-    ts->spec = spec;
-    return ospec;
-}
-
 rpm_color_t rpmtsColor(rpmts ts)
 {
     return (ts != NULL ? ts->color : 0);

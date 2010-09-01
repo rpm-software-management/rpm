@@ -482,21 +482,6 @@ rpmtransFlags rpmtsFlags(rpmts ts);
 rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags);
 
 /** \ingroup rpmts
- * Get spec control structure from transaction set.
- * @param ts		transaction set
- * @return		spec control structure
- */
-rpmSpec rpmtsSpec(rpmts ts);
-
-/** \ingroup rpmts
- * Set a spec control structure in transaction set.
- * @param ts		transaction set
- * @param spec		new spec control structure
- * @return		previous spec control structure
- */
-rpmSpec rpmtsSetSpec(rpmts ts, rpmSpec spec);
-
-/** \ingroup rpmts
  * Retrieve color bits of transaction set.
  * @param ts		transaction set
  * @return		color bits

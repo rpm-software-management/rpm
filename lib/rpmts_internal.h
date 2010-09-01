@@ -62,8 +62,6 @@ struct rpmts_s {
 
     struct rpmop_s ops[RPMTS_OP_MAX];
 
-    rpmSpec spec;		/*!< Spec file control structure. */
-
     rpmPlugins plugins;		/*!< Transaction plugins */
 
     int nrefs;			/*!< Reference count. */
