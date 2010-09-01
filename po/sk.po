@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-08-20 14:26+0300\n"
+"POT-Creation-Date: 2010-09-01 10:24+0300\n"
 "PO-Revision-Date: 1999-04-08 21:37+02:00\n"
 "Last-Translator: Stanislav Meduna <stano@eunet.sk>\n"
 "Language-Team: Slovak <sk-i18n@rak.isternet.sk>\n"
@@ -32,17 +32,12 @@ msgid ""
 "This program may be freely redistributed under the terms of the GNU GPL\n"
 msgstr "Program mô¾e by» voµne redistribuovaný v súlade s podmienkami GNU GPL"
 
-#: cliutils.c:85
-#, c-format
-msgid "Internal error in argument processing (%d) :-(\n"
-msgstr "Vnútorná chyba pri spracovaní argumentu (%d) :-(\n"
-
-#: cliutils.c:123
+#: cliutils.c:52
 #, fuzzy, c-format
 msgid "creating a pipe for --pipe failed: %m\n"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: cliutils.c:133
+#: cliutils.c:62
 #, c-format
 msgid "exec failed\n"
 msgstr "vykonanie zlyhalo\n"
@@ -62,149 +57,149 @@ msgstr "chyba pri èítaní hlavièky balíka\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "nie je mo¾né otvori» súbor %s\n"
 
-#: rpmqv.c:56
+#: rpmqv.c:54
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "opýta» sa v¹etkých balíkov v skupine"
 
-#: rpmqv.c:59
+#: rpmqv.c:57
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:62
+#: rpmqv.c:60
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:68
+#: rpmqv.c:66
 #, fuzzy
 msgid "Signature options:"
 msgstr "Veµkos» podpisu:   %d\n"
 
-#: rpmqv.c:74
+#: rpmqv.c:72
 msgid "Database options:"
 msgstr ""
 
-#: rpmqv.c:80
+#: rpmqv.c:78
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:87 rpmbuild.c:42 tools/rpmdeps.c:32 tools/rpmgraph.c:248
+#: rpmqv.c:85 rpmbuild.c:41 tools/rpmdeps.c:32 tools/rpmgraph.c:228
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
-#: rpmqv.c:164 rpmqv.c:170 rpmqv.c:176 rpmqv.c:213
+#: rpmqv.c:154 rpmqv.c:160 rpmqv.c:166 rpmqv.c:203
 msgid "only one major mode may be specified"
 msgstr "mô¾e by» pou¾itý iba jeden hlavný re¾im"
 
-#: rpmqv.c:192
+#: rpmqv.c:182
 msgid "one type of query/verify may be performed at a time"
 msgstr "naraz mô¾e by» vykonaný jeden typ otázky alebo overenia"
 
-#: rpmqv.c:196
+#: rpmqv.c:186
 #, fuzzy
 msgid "unexpected query flags"
 msgstr "neoèakávaný zdroj pre otázku"
 
-#: rpmqv.c:199
+#: rpmqv.c:189
 #, fuzzy
 msgid "unexpected query format"
 msgstr "neoèakávaný zdroj pre otázku"
 
-#: rpmqv.c:202
+#: rpmqv.c:192
 msgid "unexpected query source"
 msgstr "neoèakávaný zdroj pre otázku"
 
-#: rpmqv.c:245
+#: rpmqv.c:235
 #, fuzzy
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "iba in¹talácia, aktualizácia a odstránenie zdrojov mô¾u by» vynútené"
 
-#: rpmqv.c:247
+#: rpmqv.c:237
 msgid "files may only be relocated during package installation"
 msgstr "súbory mô¾u by» presunuté iba poèas inètalácie balíka"
 
-#: rpmqv.c:250
+#: rpmqv.c:240
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:253
+#: rpmqv.c:243
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate a --excludepath mô¾u by» pou¾ité iba poèas in¹talácie nových "
 "balíkov"
 
-#: rpmqv.c:256
+#: rpmqv.c:246
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix mô¾e by» pou¾itý iba poèas in¹talácie nových balíkov"
 
-#: rpmqv.c:259
+#: rpmqv.c:249
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty pre --prefix musia zaèína» znakom /"
 
-#: rpmqv.c:262
+#: rpmqv.c:252
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) mô¾e by» pou¾itý iba poèas in¹talácie balíka"
 
-#: rpmqv.c:266
+#: rpmqv.c:256
 msgid "--percent may only be specified during package installation"
 msgstr "--percent mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:270
+#: rpmqv.c:260
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:274
+#: rpmqv.c:264
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:278
+#: rpmqv.c:268
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:282
+#: rpmqv.c:272
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "mô¾e by» pou¾itá iba jedna voµba z --excludedocs a --includedocs"
 
-#: rpmqv.c:286
+#: rpmqv.c:276
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:290
+#: rpmqv.c:280
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:295
+#: rpmqv.c:285
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:299
+#: rpmqv.c:289
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches mô¾e by» pou¾ité iba poèas odstránenia balíkov"
 
-#: rpmqv.c:303
+#: rpmqv.c:293
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles mô¾e by» pou¾ité iba poèas in¹talácie balíka"
 
-#: rpmqv.c:308
+#: rpmqv.c:298
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka"
 
-#: rpmqv.c:313
+#: rpmqv.c:303
 #, fuzzy
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka"
 
-#: rpmqv.c:318
+#: rpmqv.c:308
 #, fuzzy
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "--justdb mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka"
 
-#: rpmqv.c:322
+#: rpmqv.c:312
 #, fuzzy
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
@@ -213,7 +208,7 @@ msgstr ""
 "--nodeps mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo overenia "
 "balíka"
 
-#: rpmqv.c:327
+#: rpmqv.c:317
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -221,7 +216,7 @@ msgstr ""
 "--test mô¾e by» pou¾ité iba poèas in¹talácie, odstránenia alebo zostavenia "
 "balíka"
 
-#: rpmqv.c:332
+#: rpmqv.c:322
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -229,120 +224,120 @@ msgstr ""
 "--root (-r) mô¾e by» pou¾ité iba poèas in¹talácie a odstránenia balíka, "
 "otázky alebo znovuzostavenia databázy"
 
-#: rpmqv.c:337 rpmbuild.c:415
+#: rpmqv.c:327 rpmbuild.c:393
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty pre --root (-r) musia zaèína» znakom /"
 
-#: rpmqv.c:351
+#: rpmqv.c:341
 #, c-format
 msgid "no files to sign\n"
 msgstr ""
 
-#: rpmqv.c:356
+#: rpmqv.c:346
 #, c-format
 msgid "cannot access file %s\n"
 msgstr "nie je mo¾né pracova» so súborom %s\n"
 
-#: rpmqv.c:376 rpmbuild.c:427
+#: rpmqv.c:366
 msgid "Enter pass phrase: "
 msgstr ""
 
-#: rpmqv.c:378 rpmbuild.c:429
+#: rpmqv.c:368
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "Kontrola hesla zlyhala\n"
 
-#: rpmqv.c:382 rpmbuild.c:433
+#: rpmqv.c:372
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "Heslo je v poriadku.\n"
 
-#: rpmqv.c:387 rpmbuild.c:437
+#: rpmqv.c:377
 #, c-format
 msgid "Invalid %%_signature spec in macro file.\n"
 msgstr "Chybná ¹pecifikácia %%_signature v makro-súbore.\n"
 
-#: rpmqv.c:394
+#: rpmqv.c:384
 msgid "--sign may only be used during package building"
 msgstr "--sign mô¾e by» pou¾íté iba poèas zostavenia balíka"
 
-#: rpmqv.c:429
+#: rpmqv.c:419
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
-#: rpmqv.c:463
+#: rpmqv.c:453
 msgid "no packages given for install"
 msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
-#: rpmqv.c:475
+#: rpmqv.c:465
 msgid "no arguments given for query"
 msgstr "neboli zadané ¾iadne argumenty pre otázku"
 
-#: rpmqv.c:489
+#: rpmqv.c:479
 msgid "no arguments given for verify"
 msgstr "neboli zadané ¾iadne argumenty pre overenie"
 
-#: rpmqv.c:504
+#: rpmqv.c:494
 #, fuzzy
 msgid "no arguments given"
 msgstr "neboli zadané ¾iadne argumenty pre otázku"
 
-#: rpmbuild.c:36
+#: rpmbuild.c:35
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmbuild.c:65
+#: rpmbuild.c:64
 #, fuzzy
 msgid "Failed build dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
 
-#: rpmbuild.c:87
+#: rpmbuild.c:86
 #, fuzzy, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Nie je mo¾né otvori» spec súbor: %s\n"
 
-#: rpmbuild.c:149
+#: rpmbuild.c:148
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Otvorenie rúry pre tar zlyhalo: %s\n"
 
-#: rpmbuild.c:168
+#: rpmbuild.c:167
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
 
-#: rpmbuild.c:180
+#: rpmbuild.c:179
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
 
-#: rpmbuild.c:255
+#: rpmbuild.c:254
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "nepodarilo sa zisti» stav %s: %s"
 
-#: rpmbuild.c:259
+#: rpmbuild.c:258
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Súbor nie je obyèajný súbor: %s\n"
 
-#: rpmbuild.c:266
+#: rpmbuild.c:265
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s zrejme nie je RPM balík\n"
 
-#: rpmbuild.c:344
+#: rpmbuild.c:333
 #, fuzzy, c-format
 msgid "Building target platforms: %s\n"
 msgstr "predefinova» cieµovú platformu"
 
-#: rpmbuild.c:359
+#: rpmbuild.c:348
 #, fuzzy, c-format
 msgid "Building for target %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: build/build.c:134 build/pack.c:446
+#: build/build.c:134 build/pack.c:405
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "Nie je mo¾né otvori» doèasný súbor"
@@ -362,70 +357,70 @@ msgstr "Vykonanie %s zlyhalo (%s)"
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Chybný výstupný kód z %s (%s)"
 
-#: build/build.c:288
+#: build/build.c:292
 msgid ""
 "\n"
 "\n"
 "RPM build errors:\n"
 msgstr ""
 
-#: build/expression.c:212
+#: build/expression.c:211
 #, fuzzy
 msgid "syntax error while parsing ==\n"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/expression.c:242
+#: build/expression.c:241
 #, fuzzy
 msgid "syntax error while parsing &&\n"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/expression.c:251
+#: build/expression.c:250
 #, fuzzy
 msgid "syntax error while parsing ||\n"
 msgstr "chyba syntaxe vo výraze"
 
-#: build/expression.c:301
+#: build/expression.c:300
 #, fuzzy
 msgid "parse error in expression\n"
 msgstr "chyba pri analýze výrazu"
 
-#: build/expression.c:333
+#: build/expression.c:332
 #, fuzzy
 msgid "unmatched (\n"
 msgstr "nepárová ("
 
-#: build/expression.c:365
+#: build/expression.c:364
 #, fuzzy
 msgid "- only on numbers\n"
 msgstr "- ibe pre èísla"
 
-#: build/expression.c:381
+#: build/expression.c:380
 #, fuzzy
 msgid "! only on numbers\n"
 msgstr "! iba pre èísla"
 
-#: build/expression.c:423 build/expression.c:471 build/expression.c:529
-#: build/expression.c:621
+#: build/expression.c:422 build/expression.c:470 build/expression.c:528
+#: build/expression.c:620
 #, fuzzy
 msgid "types must match\n"
 msgstr "typy sa musia zhodova»"
 
-#: build/expression.c:436
+#: build/expression.c:435
 #, fuzzy
 msgid "* / not suported for strings\n"
 msgstr "* / nie sú podporované pre re»azce"
 
-#: build/expression.c:487
+#: build/expression.c:486
 #, fuzzy
 msgid "- not suported for strings\n"
 msgstr "- nie je podporované pre re»azce"
 
-#: build/expression.c:634
+#: build/expression.c:633
 #, fuzzy
 msgid "&& and || not suported for strings\n"
 msgstr "&& a || nie sú podporované pre re»azce"
 
-#: build/expression.c:667 build/expression.c:714
+#: build/expression.c:666
 #, fuzzy
 msgid "syntax error in expression\n"
 msgstr "chyba syntaxe vo výraze"
@@ -494,342 +489,312 @@ msgstr "Chybný %s prvok: %s"
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:898
+#: build/files.c:897
 #, fuzzy, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Iba jeden argument pre %%docdir"
 
-#: build/files.c:927
+#: build/files.c:926
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dva súbory na riadku: %s"
 
-#: build/files.c:940
+#: build/files.c:939
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Súbory musia zaèína» znakom \"/\": %s"
 
-#: build/files.c:951
+#: build/files.c:950
 #, fuzzy, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nie je mo¾né mie¹a» ¹peciálne %%doc s inými formami: %s"
 
-#: build/files.c:1092
+#: build/files.c:1091
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1118
+#: build/files.c:1117
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Súbor zadaný dvakrát: %s."
 
-#: build/files.c:1241
+#: build/files.c:1240
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1412
+#: build/files.c:1411
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1420
+#: build/files.c:1419
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1523
+#: build/files.c:1522
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1617
+#: build/files.c:1616
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1623
+#: build/files.c:1622
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: build/files.c:1627
+#: build/files.c:1626
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
 #: build/files.c:1635
 #, fuzzy, c-format
-msgid "%s: policy file read failed.\n"
-msgstr "%s: readLead zlyhalo\n"
-
-#: build/files.c:1643
-#, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "Makro %%%s sa nepodarilo expandova»"
 
-#: build/files.c:1682
+#: build/files.c:1674
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Súbor potrebuje na zaèiatku \"/\": %s"
 
-#: build/files.c:1704
+#: build/files.c:1696
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/files.c:1716 lib/rpminstall.c:419
+#: build/files.c:1708 lib/rpminstall.c:419
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Súbor nebol nájdený: %s"
 
-#: build/files.c:1767
+#: build/files.c:1759
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "chybe: nie je mo¾né otvori» %%files súbor: %s"
 
-#: build/files.c:1775
+#: build/files.c:1767
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "riadok: %s"
 
-#: build/files.c:2140
+#: build/files.c:2056
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: build/files.c:2162 build/parsePrep.c:31
+#: build/files.c:2078 build/parsePrep.c:32
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
-#: build/files.c:2203
+#: build/files.c:2119
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "vyhµadáva sa balík %s\n"
 
-#: build/files.c:2218
+#: build/files.c:2134
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2245
+#: build/files.c:2158
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
 
-#: build/files.c:2256
+#: build/files.c:2169
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
-#: build/names.c:49
+#: build/names.c:50
 msgid "getUname: too many uid's\n"
 msgstr ""
 
-#: build/names.c:71
+#: build/names.c:72
 msgid "getUnameS: too many uid's\n"
 msgstr ""
 
-#: build/names.c:96
+#: build/names.c:97
 msgid "getUidS: too many uid's\n"
 msgstr ""
 
-#: build/names.c:121
+#: build/names.c:122
 msgid "getGname: too many gid's\n"
 msgstr ""
 
-#: build/names.c:143
+#: build/names.c:144
 msgid "getGnameS: too many gid's\n"
 msgstr ""
 
-#: build/names.c:168
+#: build/names.c:169
 msgid "getGidS: too many gid's\n"
 msgstr ""
 
-#: build/names.c:202
-#, c-format
-msgid "Could not canonicalize hostname: %s\n"
-msgstr "Nie je mo¾né kanonizova» názov poèítaèa: %s\n"
-
-#: build/pack.c:75
+#: build/pack.c:83
 #, fuzzy, c-format
 msgid "create archive failed on file %s: %s\n"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: build/pack.c:78
+#: build/pack.c:86
 #, fuzzy, c-format
 msgid "create archive failed: %s\n"
 msgstr "vytvorenie archívu zlyhalo pri súbore %s: %s"
 
-#: build/pack.c:99
+#: build/pack.c:107
 #, fuzzy, c-format
 msgid "cpio_copy write failed: %s\n"
 msgstr "cpio_copy zápis zlyhal: %s"
 
-#: build/pack.c:106
+#: build/pack.c:114
 #, fuzzy, c-format
 msgid "cpio_copy read failed: %s\n"
 msgstr "cpio_copy èítanie zlyhalo: %s"
 
-#: build/pack.c:131
+#: build/pack.c:139
 #, fuzzy, c-format
 msgid "%s: line: %s\n"
 msgstr "riadok: %s"
 
-#: build/pack.c:193
+#: build/pack.c:175
+#, c-format
+msgid "Could not canonicalize hostname: %s\n"
+msgstr "Nie je mo¾né kanonizova» názov poèítaèa: %s\n"
+
+#: build/pack.c:228
 #, fuzzy, c-format
 msgid "Could not open PreIn file: %s\n"
 msgstr "Nie je mo¾né otvori» PreIn súbor: %s"
 
-#: build/pack.c:200
+#: build/pack.c:235
 #, fuzzy, c-format
 msgid "Could not open PreUn file: %s\n"
 msgstr "Nie je mo¾né otvori» PreUn súbor: %s"
 
-#: build/pack.c:207
+#: build/pack.c:242
 #, fuzzy, c-format
 msgid "Could not open PreTrans file: %s\n"
 msgstr "Nie je mo¾né otvori» PreIn súbor: %s"
 
-#: build/pack.c:214
+#: build/pack.c:249
 #, fuzzy, c-format
 msgid "Could not open PostIn file: %s\n"
 msgstr "Nie je mo¾né otvori» PostIn súbor: %s"
 
-#: build/pack.c:221
+#: build/pack.c:256
 #, fuzzy, c-format
 msgid "Could not open PostUn file: %s\n"
 msgstr "Nie je mo¾né otvori» PostUn súbor: %s"
 
-#: build/pack.c:228
+#: build/pack.c:263
 #, fuzzy, c-format
 msgid "Could not open PostTrans file: %s\n"
 msgstr "Nie je mo¾né otvori» PostIn súbor: %s"
 
-#: build/pack.c:236
+#: build/pack.c:271
 #, fuzzy, c-format
 msgid "Could not open VerifyScript file: %s\n"
 msgstr "Nie je mo¾né otvori» VerifyScript súbor: %s"
 
-#: build/pack.c:262
+#: build/pack.c:297
 #, fuzzy, c-format
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Nie je mo¾né otvori» Trigger skriptový súbor: %s"
 
-#: build/pack.c:288
-#, c-format
-msgid "readRPM: open %s: %s\n"
-msgstr "readRPM: otvorenie %s: %s\n"
-
-#: build/pack.c:297
-#, fuzzy, c-format
-msgid "%s: Fseek failed: %s\n"
-msgstr "%s: readLead zlyhalo\n"
-
-#: build/pack.c:327
-#, c-format
-msgid "readRPM: %s is not an RPM package\n"
-msgstr "readRPM: %s nie je RPM balík\n"
-
-#: build/pack.c:332
-#, c-format
-msgid "readRPM: reading header from %s\n"
-msgstr "readRPM: èítanie hlavièky %s\n"
-
-#: build/pack.c:410
+#: build/pack.c:369
 #, fuzzy, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/pack.c:433
+#: build/pack.c:392
 #, fuzzy
 msgid "Unable to create immutable header region.\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/pack.c:453
+#: build/pack.c:412
 #, fuzzy
 msgid "Unable to write temp header\n"
 msgstr "Nie je mo¾né zapísa» %s"
 
-#: build/pack.c:463
+#: build/pack.c:422
 #, fuzzy
 msgid "Bad CSA data\n"
 msgstr "Chybné CSA dáta"
 
-#: build/pack.c:498
-#, c-format
-msgid "Generating signature: %d\n"
-msgstr "Vytvára sa PGP podpis: %d\n"
-
-#: build/pack.c:535
+#: build/pack.c:489
 #, fuzzy
 msgid "Unable to reload signature header.\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/pack.c:543
+#: build/pack.c:497
 #, fuzzy, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Otvorenie %s zlyhalo\n"
 
-#: build/pack.c:555
+#: build/pack.c:509
 #, fuzzy, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:571
+#: build/pack.c:525
 #, fuzzy, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Nie je preèíta» sigtarget: %s"
 
-#: build/pack.c:582
+#: build/pack.c:536
 #, fuzzy, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/pack.c:596
+#: build/pack.c:550
 #, fuzzy, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:608
+#: build/pack.c:562
 #, fuzzy, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/pack.c:615
+#: build/pack.c:569
 #, fuzzy, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nie je mo¾né zapísa» balík: %s"
 
-#: build/pack.c:652
+#: build/pack.c:606
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapísané: %s\n"
 
-#: build/pack.c:703
+#: build/pack.c:657
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Vykonáva sa: %s\n"
 
-#: build/pack.c:706
+#: build/pack.c:660
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Vykonanie %s zlyhalo (%s)"
 
-#: build/pack.c:710
+#: build/pack.c:664
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Kontrola hesla zlyhala\n"
 
-#: build/pack.c:766
+#: build/pack.c:717
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nie je mo¾né vytvori» meno výstupného súboru pre balík %s: %s\n"
 
-#: build/pack.c:783
+#: build/pack.c:734
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nie je mo¾né zapísa» do %s: "
@@ -874,17 +839,20 @@ msgstr "¾iadny popis v %%changelog"
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "riadok %d: Chyba pri analýze %%description: %s"
 
-#: build/parseDescription.c:48 build/parseFiles.c:43 build/parseScript.c:231
+#: build/parseDescription.c:48 build/parseFiles.c:43 build/parsePolicies.c:45
+#: build/parseScript.c:232
 #, fuzzy, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "riadok %d: Chybná voµba %s: %s"
 
-#: build/parseDescription.c:59 build/parseFiles.c:54 build/parseScript.c:242
+#: build/parseDescription.c:59 build/parseFiles.c:54 build/parsePolicies.c:55
+#: build/parseScript.c:243
 #, fuzzy, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "riadok %d: Priveµa názvov: %s"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parseScript.c:250
+#: build/parseDescription.c:67 build/parseFiles.c:62 build/parsePolicies.c:62
+#: build/parseScript.c:251
 #, fuzzy, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "riadok %d: Balík neexistuje: %s"
@@ -899,481 +867,569 @@ msgstr "riadok %d: Druhý popis"
 msgid "line %d: Error parsing %%files: %s\n"
 msgstr "riadok %d: Chyba pri analýze %%files: %s"
 
-#: build/parsePreamble.c:218
+#: build/parsePolicies.c:32
+#, fuzzy, c-format
+msgid "line %d: Error parsing %%policies: %s\n"
+msgstr "riadok %d: Chyba pri analýze %%files: %s"
+
+#: build/parsePreamble.c:154
+#, fuzzy, c-format
+msgid "line %d: Bad number: %s\n"
+msgstr "riadok %d: Chybné èíslo: %s"
+
+#: build/parsePreamble.c:160
+#, fuzzy, c-format
+msgid "line %d: Bad no%s number: %u\n"
+msgstr "riadok %d: Chybné no%s èíslo: %d"
+
+#: build/parsePreamble.c:223
+#, c-format
+msgid "line %d: Bad %s number: %s\n"
+msgstr "riadok %d: Chybné %s èíslo: %s\n"
+
+#: build/parsePreamble.c:237
+#, fuzzy, c-format
+msgid "%s %d defined multiple times\n"
+msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
+
+#: build/parsePreamble.c:399
 #, fuzzy, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektúra je vynechaná: %s"
 
-#: build/parsePreamble.c:223
+#: build/parsePreamble.c:404
 #, fuzzy, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektúra nie je obsiahnutá: %s"
 
-#: build/parsePreamble.c:228
+#: build/parsePreamble.c:409
 #, fuzzy, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je vynechaný: %s"
 
-#: build/parsePreamble.c:233
+#: build/parsePreamble.c:414
 #, fuzzy, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS nie je obsiahnutý: %s"
 
-#: build/parsePreamble.c:259
+#: build/parsePreamble.c:440
 #, fuzzy, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "V balíku musí existova» pole %s: %s"
 
-#: build/parsePreamble.c:282
+#: build/parsePreamble.c:463
 #, fuzzy, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Duplicitné záznamy %s v balíku: %s"
 
-#: build/parsePreamble.c:336
+#: build/parsePreamble.c:517
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:364
+#: build/parsePreamble.c:545
 #, fuzzy, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:382
+#: build/parsePreamble.c:563
 #, fuzzy, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Nie je mo¾né preèíta» ikonu: %s"
 
-#: build/parsePreamble.c:395
+#: build/parsePreamble.c:576
 #, fuzzy, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámy typ ikony: %s"
 
-#: build/parsePreamble.c:432
+#: build/parsePreamble.c:613
 #, fuzzy, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "riadok %d: Chybná voµba %s: %s"
 
-#: build/parsePreamble.c:454
+#: build/parsePreamble.c:635
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:457
+#: build/parsePreamble.c:638
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:463
+#: build/parsePreamble.c:644
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "riadok %d: Neprípustný znak '-' v %s: %s"
 
-#: build/parsePreamble.c:488
+#: build/parsePreamble.c:669
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "riadok %d: Znetvorený popis: %s"
 
-#: build/parsePreamble.c:496
+#: build/parsePreamble.c:677
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "riadok %d: Prázdny popis: %s"
 
-#: build/parsePreamble.c:552
+#: build/parsePreamble.c:733
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "riadok %d: Prefixy nesmú konèi» \"/\": %s"
 
-#: build/parsePreamble.c:565
+#: build/parsePreamble.c:746
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "riadok %d: Docdir musí zaèína» '/': %s"
 
-#: build/parsePreamble.c:578
+#: build/parsePreamble.c:759
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "riadok %d: Epoch/Serial pole musí by» èíslo: %s"
 
-#: build/parsePreamble.c:618
+#: build/parsePreamble.c:799
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "riadok %d: Chybné %s èíslo: %s\n"
 
-#: build/parsePreamble.c:645
+#: build/parsePreamble.c:826
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "riadok %d: Chybný formát BuildArchitecture: %s"
 
-#: build/parsePreamble.c:655
+#: build/parsePreamble.c:836
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:670
+#: build/parsePreamble.c:851
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interná chyba: Èudný popis %d "
 
-#: build/parsePreamble.c:752
+#: build/parsePreamble.c:933
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/parsePreamble.c:815
+#: build/parsePreamble.c:996
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Chybná ¹pecifikácia balíka: %s"
 
-#: build/parsePreamble.c:821
+#: build/parsePreamble.c:1002
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balík u¾ existuje: %s"
 
-#: build/parsePreamble.c:852
+#: build/parsePreamble.c:1033
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "riadok %d: Neznámy popis: %s"
 
-#: build/parsePreamble.c:884
+#: build/parsePreamble.c:1065
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
 
-#: build/parsePreamble.c:888
+#: build/parsePreamble.c:1069
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "riadok %d: BuildRoot nemô¾e by» \"/\": %s"
 
-#: build/parsePrep.c:26
+#: build/parsePrep.c:27
 #, fuzzy, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Chybný zdroj %s: %s"
 
-#: build/parsePrep.c:71
+#: build/parsePrep.c:72
 #, fuzzy, c-format
 msgid "No patch number %u\n"
 msgstr "Neexistuje patch èíslo %d"
 
-#: build/parsePrep.c:73
+#: build/parsePrep.c:74
 #, c-format
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr ""
 
-#: build/parsePrep.c:149
+#: build/parsePrep.c:150
 #, fuzzy, c-format
 msgid "No source number %u\n"
 msgstr "Neexistuje zdroj èíslo %d"
 
-#: build/parsePrep.c:151
+#: build/parsePrep.c:152
 #, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: build/parsePrep.c:173
+#: build/parsePrep.c:174
 #, fuzzy, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Nebolo mo¾né prenies» nie-zdroj %s: %s"
 
-#: build/parsePrep.c:271
+#: build/parsePrep.c:272
 #, fuzzy, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Chyba pri analýze %%setup: %s"
 
-#: build/parsePrep.c:282
+#: build/parsePrep.c:283
 #, fuzzy, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "riadok %d: Chybný argument pre %%setup %c: %s"
 
-#: build/parsePrep.c:297
+#: build/parsePrep.c:298
 #, fuzzy, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "riadok %d: Chybná voµba pre %%setup %s: %s"
 
-#: build/parsePrep.c:456
+#: build/parsePrep.c:457
 #, fuzzy, c-format
 msgid "%s: %s: %s\n"
 msgstr "súbor %s: %s\n"
 
-#: build/parsePrep.c:469
+#: build/parsePrep.c:470
 #, fuzzy, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: build/parsePrep.c:498
+#: build/parsePrep.c:499
 #, fuzzy, c-format
 msgid "line %d: second %%prep\n"
 msgstr "riadok %d: druhý %%prep"
 
-#: build/parseReqs.c:108
+#: build/parseReqs.c:109
 #, fuzzy, c-format
 msgid ""
 "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
 msgstr "riadok %d: %s: prvky musia zaèína» alfanumerickým znakom: %s"
 
-#: build/parseReqs.c:135
+#: build/parseReqs.c:136
 #, fuzzy, c-format
 msgid "line %d: Versioned file name not permitted: %s\n"
 msgstr "riadok %d: Názvy súborov v %s neobsahujú verzie: %s"
 
-#: build/parseReqs.c:165
+#: build/parseReqs.c:166
 #, fuzzy, c-format
 msgid "line %d: Version required: %s\n"
 msgstr "riadok %d: V %s sú vy¾adované verzie: %s"
 
-#: build/parseReqs.c:177
+#: build/parseReqs.c:178
 #, fuzzy, c-format
 msgid "line %d: invalid dependency: %s\n"
 msgstr "riadok %d: Chybné èíslo: %s"
 
-#: build/parseScript.c:191
+#: build/parseScript.c:192
 #, fuzzy, c-format
 msgid "line %d: triggers must have --: %s\n"
 msgstr "riadok %d: triggers musia obsahova» --: %s"
 
-#: build/parseScript.c:201 build/parseScript.c:264
+#: build/parseScript.c:202 build/parseScript.c:265
 #, fuzzy, c-format
 msgid "line %d: Error parsing %s: %s\n"
 msgstr "riadok %d: Chyba pri analýze %s: %s"
 
-#: build/parseScript.c:213
+#: build/parseScript.c:214
 #, fuzzy, c-format
 msgid "line %d: internal script must end with '>': %s\n"
 msgstr "riadok %d: program skriptu musí zaèína» '/': %s"
 
-#: build/parseScript.c:219
+#: build/parseScript.c:220
 #, fuzzy, c-format
 msgid "line %d: script program must begin with '/': %s\n"
 msgstr "riadok %d: program skriptu musí zaèína» '/': %s"
 
-#: build/parseScript.c:257
+#: build/parseScript.c:258
 #, fuzzy, c-format
 msgid "line %d: Second %s\n"
 msgstr "riadok %d: Druhý %s"
 
-#: build/parseScript.c:303
+#: build/parseScript.c:304
 #, fuzzy, c-format
 msgid "line %d: unsupported internal script: %s\n"
 msgstr "riadok %d: Chyba pri analýze %%description: %s"
 
-#: build/parseSpec.c:175
+#: build/parseSpec.c:201
 #, fuzzy, c-format
 msgid "line %d: %s\n"
 msgstr "riadok %d: %s"
 
-#: build/parseSpec.c:219
+#: build/parseSpec.c:245
 #, fuzzy, c-format
 msgid "Unable to open %s: %s\n"
 msgstr "otvorenie zlyhalo: %s\n"
 
-#: build/parseSpec.c:231
+#: build/parseSpec.c:257
 #, fuzzy, c-format
 msgid "Unclosed %%if\n"
 msgstr "Neuzavretý %%if"
 
-#: build/parseSpec.c:321
+#: build/parseSpec.c:347
 #, c-format
 msgid "%s:%d: parseExpressionBoolean returns %d\n"
 msgstr ""
 
-#: build/parseSpec.c:330
+#: build/parseSpec.c:356
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%else bez if"
 
-#: build/parseSpec.c:342
+#: build/parseSpec.c:368
 #, fuzzy, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif bez if"
 
-#: build/parseSpec.c:356 build/parseSpec.c:365
+#: build/parseSpec.c:382 build/parseSpec.c:391
 #, fuzzy, c-format
 msgid "malformed %%include statement\n"
 msgstr "znetvorený príkaz %%include"
 
-#: build/parseSpec.c:535
+#: build/parseSpec.c:651
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "®iadne zostaviteµné architektúry"
 
-#: build/parseSpec.c:575
+#: build/parseSpec.c:685
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Balík neobsahuje %%description: %s"
 
-#: build/poptBT.c:93
+#: build/policies.c:86
+#, c-format
+msgid "Policy module '%s' duplicated with overlapping types\n"
+msgstr ""
+
+#: build/policies.c:92
+#, c-format
+msgid "Base modules '%s' and '%s' have overlapping types\n"
+msgstr ""
+
+#: build/policies.c:100
+#, fuzzy
+msgid "Failed to get policies from header\n"
+msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
+
+#: build/policies.c:153
+#, c-format
+msgid "%%semodule requires a file path\n"
+msgstr ""
+
+#: build/policies.c:162
+#, fuzzy, c-format
+msgid "Failed to read  policy file: %s\n"
+msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
+
+#: build/policies.c:169
+#, fuzzy, c-format
+msgid "Failed to encode policy file: %s\n"
+msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
+
+#: build/policies.c:186
+#, fuzzy, c-format
+msgid "Failed to determine a policy name: %s\n"
+msgstr "Otvorenie rúry pre tar zlyhalo: %s\n"
+
+#: build/policies.c:198
+#, c-format
+msgid ""
+"'%s' type given with other types in %%semodule %s. Compacting types to "
+"'%s'.\n"
+msgstr ""
+
+#: build/policies.c:248
+#, fuzzy, c-format
+msgid "Error parsing %s: %s\n"
+msgstr "Chyba pri analýze %%setup: %s"
+
+#: build/policies.c:254
+#, fuzzy, c-format
+msgid "Expecting %%semodule tag: %s\n"
+msgstr "Vykonáva sa: %s\n"
+
+#: build/policies.c:264
+#, fuzzy, c-format
+msgid "Missing module path in line: %s\n"
+msgstr "chýbajúce    %s\n"
+
+#: build/policies.c:270
+#, fuzzy, c-format
+msgid "Too many arguments in line: %s\n"
+msgstr "Priveµa argumentov v riadku údajov na %s:%d"
+
+#: build/policies.c:309
+#, fuzzy, c-format
+msgid "Processing policies: %s\n"
+msgstr "Spracovávajú sa súbory: %s\n"
+
+#: build/poptBT.c:90
 #, fuzzy, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "buildroot u¾ bol zadaný"
 
-#: build/poptBT.c:133
+#: build/poptBT.c:130
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "príprava (rozbali» zdrojové súbory a aplikova» záplaty)"
 
-#: build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140 build/poptBT.c:143
-#: build/poptBT.c:146 build/poptBT.c:149 build/poptBT.c:152
+#: build/poptBT.c:131 build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140
+#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149
 msgid "<specfile>"
 msgstr ""
 
-#: build/poptBT.c:136
+#: build/poptBT.c:133
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: build/poptBT.c:139
+#: build/poptBT.c:136
 #, fuzzy
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "in¹taluje sa zdrojový balík\n"
 
-#: build/poptBT.c:142
+#: build/poptBT.c:139
 #, fuzzy, c-format
 msgid "verify %files section from <specfile>"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: build/poptBT.c:145
+#: build/poptBT.c:142
 #, fuzzy
 msgid "build source and binary packages from <specfile>"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: build/poptBT.c:148
+#: build/poptBT.c:145
 #, fuzzy
 msgid "build binary package only from <specfile>"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: build/poptBT.c:151
+#: build/poptBT.c:148
 #, fuzzy
 msgid "build source package only from <specfile>"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: build/poptBT.c:155
+#: build/poptBT.c:152
 #, fuzzy, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "príprava (rozbali» zdrojové súbory a aplikova» záplaty)"
 
-#: build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162 build/poptBT.c:165
-#: build/poptBT.c:168 build/poptBT.c:171 build/poptBT.c:174
+#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162
+#: build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
 msgid "<tarball>"
 msgstr ""
 
-#: build/poptBT.c:158
+#: build/poptBT.c:155
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:161
+#: build/poptBT.c:158
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: build/poptBT.c:164
+#: build/poptBT.c:161
 #, fuzzy, c-format
 msgid "verify %files section from <tarball>"
 msgstr "zdrojový balík neobsahuje ¾iadny .spec súbor"
 
-#: build/poptBT.c:167
+#: build/poptBT.c:164
 #, fuzzy
 msgid "build source and binary packages from <tarball>"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: build/poptBT.c:170
+#: build/poptBT.c:167
 #, fuzzy
 msgid "build binary package only from <tarball>"
 msgstr "nájdených %d zdrojových a %d binárnych balíkov\n"
 
-#: build/poptBT.c:173
+#: build/poptBT.c:170
 #, fuzzy
 msgid "build source package only from <tarball>"
 msgstr "zostavi» balík pre OS/architektúru <os>"
 
-#: build/poptBT.c:177
+#: build/poptBT.c:174
 #, fuzzy
 msgid "build binary package from <source package>"
 msgstr "binárny balík (príprava, kompilácia, in¹talácia, zabalenie)"
 
-#: build/poptBT.c:178 build/poptBT.c:181
+#: build/poptBT.c:175 build/poptBT.c:178
 #, fuzzy
 msgid "<source package>"
 msgstr "nájdených %d balíkov\n"
 
-#: build/poptBT.c:180
+#: build/poptBT.c:177
 #, fuzzy
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "in¹taluje sa zdrojový balík\n"
 
-#: build/poptBT.c:184
+#: build/poptBT.c:181
 msgid "override build root"
 msgstr "predefinova» adresár pre zostavenie balíka"
 
-#: build/poptBT.c:186
+#: build/poptBT.c:183
 msgid "remove build tree when done"
 msgstr "po ukonèení odstráni» adresár, v ktorom sa balík zostavoval"
 
-#: build/poptBT.c:188
+#: build/poptBT.c:185
 msgid "generate headers compatible with rpm4 packaging"
 msgstr ""
 
-#: build/poptBT.c:190
+#: build/poptBT.c:187
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr ""
 
-#: build/poptBT.c:192
+#: build/poptBT.c:189
 #, fuzzy
 msgid "debug file state machine"
 msgstr "chybný stav súboru: %s"
 
-#: build/poptBT.c:194
+#: build/poptBT.c:191
 msgid "do not execute any stages of the build"
 msgstr "nevykona» ¾iadne etapy zostavenia"
 
-#: build/poptBT.c:196
+#: build/poptBT.c:193
 #, fuzzy
 msgid "do not verify build dependencies"
 msgstr "neoverova» závislosti balíka"
 
-#: build/poptBT.c:198
+#: build/poptBT.c:195
 msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
 msgstr ""
 
-#: build/poptBT.c:202 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
+#: build/poptBT.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
 #: lib/poptQV.c:331
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "neoverova» závislosti balíka"
 
-#: build/poptBT.c:204 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
+#: build/poptBT.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
 #: lib/poptQV.c:334
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "neoverova» architektúru balíka"
 
-#: build/poptBT.c:206 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
+#: build/poptBT.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
 #: lib/poptQV.c:336
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "overi» podpis balíka"
 
-#: build/poptBT.c:209
+#: build/poptBT.c:206
 #, fuzzy
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "neakceptova» lokalizované re»azce zo spec-súboru"
 
-#: build/poptBT.c:211
+#: build/poptBT.c:208
 #, fuzzy
 msgid "remove sources when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build/poptBT.c:213
+#: build/poptBT.c:210
 #, fuzzy
 msgid "remove specfile when done"
 msgstr "po ukonèení odstráni» zdrojové súbory a spec-súbor"
 
-#: build/poptBT.c:215
+#: build/poptBT.c:212
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "preskoèi» priamo k urèenej etape (iba pre c, i)"
 
-#: build/poptBT.c:217
-msgid "generate PGP/GPG signature"
-msgstr "vytvori» PGP/GPG podpis"
-
-#: build/poptBT.c:219
+#: build/poptBT.c:214
 msgid "override target platform"
 msgstr "predefinova» cieµovú platformu"
 
@@ -1447,27 +1503,7 @@ msgstr "Zis»ujú sa po¾adované vlastnosti...\n"
 msgid "Failed to find %s:\n"
 msgstr "Nepodarilo sa zisti» poskytované vlastnosti"
 
-#: build/spec.c:227
-#, fuzzy, c-format
-msgid "line %d: Bad number: %s\n"
-msgstr "riadok %d: Chybné èíslo: %s"
-
-#: build/spec.c:233
-#, fuzzy, c-format
-msgid "line %d: Bad no%s number: %u\n"
-msgstr "riadok %d: Chybné no%s èíslo: %d"
-
-#: build/spec.c:296
-#, c-format
-msgid "line %d: Bad %s number: %s\n"
-msgstr "riadok %d: Chybné %s èíslo: %s\n"
-
-#: build/spec.c:310
-#, fuzzy, c-format
-msgid "%s %d defined multiple times\n"
-msgstr "\"%s\" ¹pecifikuje viac balíkov\n"
-
-#: build/spec.c:565
+#: build/spec.c:341
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "otázka na spec-súbor %s zlyhala, nie je mo¾né analyzova»\n"
@@ -1823,7 +1859,7 @@ msgstr "chybný stav súboru: %s"
 msgid "debug rpmio I/O"
 msgstr ""
 
-#: lib/poptALL.c:289
+#: lib/poptALL.c:297
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -2241,7 +2277,7 @@ msgstr "zobrazi» súbory v balíku"
 msgid "don't verify files in package"
 msgstr "zobrazi» súbory v balíku"
 
-#: lib/poptQV.c:284 tools/rpmgraph.c:244
+#: lib/poptQV.c:284 tools/rpmgraph.c:224
 #, fuzzy
 msgid "don't verify package dependencies"
 msgstr "neoverova» závislosti balíka"
@@ -2609,7 +2645,7 @@ msgid "package scriptlets can be expanded at install time."
 msgstr "balík %s nie je nain¹talovaný\n"
 
 #: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:292
-#: lib/rpminstall.c:323 tools/rpmgraph.c:119 tools/rpmgraph.c:156
+#: lib/rpminstall.c:323 tools/rpmgraph.c:99 tools/rpmgraph.c:136
 #, fuzzy, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo\n"
@@ -2628,7 +2664,7 @@ msgstr ""
 msgid "Preparing packages for installation..."
 msgstr "neboli zadané ¾iadne balíky pre in¹taláciu"
 
-#: lib/rpminstall.c:254 tools/rpmgraph.c:194
+#: lib/rpminstall.c:254 tools/rpmgraph.c:174
 #, fuzzy
 msgid "Failed dependencies:\n"
 msgstr "nevyrie¹ené závislosti:\n"
@@ -2638,7 +2674,7 @@ msgstr "nevyrie¹ené závislosti:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "¾iadny z balíkov nespú¹»a %s\n"
 
-#: lib/rpminstall.c:345 lib/rpminstall.c:727 tools/rpmgraph.c:139
+#: lib/rpminstall.c:345 lib/rpminstall.c:727 tools/rpmgraph.c:119
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je mo¾né nain¹talova»\n"
@@ -2716,6 +2752,31 @@ msgstr "nie je mo¾né získa» %s zámok pre databázu"
 #, fuzzy, c-format
 msgid "waiting for %s lock on %s\n"
 msgstr "nie je mo¾né získa» %s zámok pre databázu"
+
+#: lib/rpmplugins.c:60
+#, fuzzy, c-format
+msgid "Failed to dlopen %s %s\n"
+msgstr "nepodarilo sa otvori» %s: %s"
+
+#: lib/rpmplugins.c:67
+#, fuzzy, c-format
+msgid "Failed to resolve symbol %s: %s\n"
+msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
+
+#: lib/rpmplugins.c:88
+#, c-format
+msgid "Failed to expand %%__collection_%s macro\n"
+msgstr ""
+
+#: lib/rpmplugins.c:137 lib/rpmplugins.c:142
+#, c-format
+msgid "Plugin %s not loaded\n"
+msgstr ""
+
+#: lib/rpmplugins.c:150
+#, fuzzy, c-format
+msgid "Failed to resolve %s plugin symbol %s: %s\n"
+msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
 
 #: lib/rpmprob.c:107
 msgid "different"
@@ -2909,52 +2970,32 @@ msgstr "nein¹talovaný "
 msgid "erase"
 msgstr ""
 
-#: lib/rpmte.c:840
-#, c-format
-msgid "Failed to expand %%__collection_%s macro\n"
-msgstr ""
-
-#: lib/rpmte.c:861
-#, fuzzy, c-format
-msgid "Failed to open %s: %s\n"
-msgstr "nepodarilo sa otvori» %s: %s"
-
-#: lib/rpmte.c:869
-#, fuzzy, c-format
-msgid "Failed to resolve symbol: %s\n"
-msgstr "Nie je mo¾né preèíta» %s: %s."
-
-#: lib/rpmte.c:896
-#, fuzzy, c-format
-msgid "Failed to resolve symbol %s: %s\n"
-msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
-
-#: lib/rpmts.c:91
+#: lib/rpmts.c:92
 #, fuzzy, c-format
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je mo¾né otvori» %s/packages.rpm\n"
 
-#: lib/rpmts.c:185
+#: lib/rpmts.c:186
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/rpmts.c:203
+#: lib/rpmts.c:204
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "chýbajúce    %s\n"
 
-#: lib/rpmts.c:211
+#: lib/rpmts.c:212
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "chybné èíslo balíku: %s\n"
 
-#: lib/rpmts.c:282
+#: lib/rpmts.c:283
 #, fuzzy, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: lib/rpmts.c:976
+#: lib/rpmts.c:1031
 msgid "transaction"
 msgstr ""
 
@@ -3072,11 +3113,11 @@ msgstr ""
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Doplnenie podpisu: %d\n"
 
-#: lib/transaction.c:1397
+#: lib/transaction.c:1395
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1397
+#: lib/transaction.c:1395
 #, fuzzy
 msgid "failed"
 msgstr "%s zlyhalo"
@@ -3340,6 +3381,92 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
+#: plugins/sepolicy.c:219
+#, fuzzy, c-format
+msgid "Failed to decode policy for %s\n"
+msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
+
+#: plugins/sepolicy.c:226
+#, fuzzy, c-format
+msgid "Failed to create temporary file for %s: %s\n"
+msgstr "Nie je mo¾né vytvori» proces %s"
+
+#: plugins/sepolicy.c:232
+#, fuzzy, c-format
+msgid "Failed to write %s policy to file %s\n"
+msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
+
+#: plugins/sepolicy.c:304
+#, fuzzy
+msgid "Failed to create semanage handle\n"
+msgstr "nepodarilo sa vytvori» %s\n"
+
+#: plugins/sepolicy.c:310
+#, fuzzy
+msgid "Failed to connect to policy handler\n"
+msgstr "Pripojenie k serveru zlyhalo"
+
+#: plugins/sepolicy.c:314
+#, fuzzy, c-format
+msgid "Failed to begin policy transaction: %s\n"
+msgstr "nepodarilo sa otvori» %s: %s"
+
+#: plugins/sepolicy.c:345
+#, fuzzy, c-format
+msgid "Failed to remove temporary policy file %s: %s\n"
+msgstr "nepodarilo sa odstráni» adresár %s: %s\n"
+
+#: plugins/sepolicy.c:393
+#, fuzzy, c-format
+msgid "Failed to install policy module: %s (%s)\n"
+msgstr "Nie je mo¾né premenova» %s na %s: %s\n"
+
+#: plugins/sepolicy.c:423
+#, fuzzy, c-format
+msgid "Failed to remove policy module: %s\n"
+msgstr "Nie je mo¾né preèíta» %s: %s."
+
+#: plugins/sepolicy.c:447 plugins/sepolicy.c:499
+#, fuzzy, c-format
+msgid "Failed to fork process: %s\n"
+msgstr "nepodarilo sa otvori» %s: %s"
+
+#: plugins/sepolicy.c:457 plugins/sepolicy.c:509
+#, fuzzy, c-format
+msgid "Failed to execute %s: %s\n"
+msgstr "nepodarilo sa vytvori» %s\n"
+
+#: plugins/sepolicy.c:463 plugins/sepolicy.c:515
+#, fuzzy, c-format
+msgid "%s terminated abnormally\n"
+msgstr "Makro %%%s obsahuje neukonèené telo"
+
+#: plugins/sepolicy.c:467 plugins/sepolicy.c:519
+#, fuzzy, c-format
+msgid "%s failed with exit code %i\n"
+msgstr "Makro %%%s sa nepodarilo expandova»"
+
+#: plugins/sepolicy.c:474
+msgid "Failed to commit policy changes\n"
+msgstr ""
+
+#: plugins/sepolicy.c:491
+msgid "Failed to expand restorecon path"
+msgstr ""
+
+#: plugins/sepolicy.c:570
+msgid "Failed to relabel filesystem. Files may be mislabeled\n"
+msgstr ""
+
+#: plugins/sepolicy.c:574
+msgid "Failed to reload file contexts. Files may be mislabeled\n"
+msgstr ""
+
+#: plugins/sepolicy.c:601
+#, fuzzy, c-format
+msgid "Failed to extract policy from %s\n"
+msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
+
 #: python/rpmts-py.c:165
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
@@ -3503,15 +3630,41 @@ msgstr "(chyba 0x%x)"
 msgid "Failed to register fork handler: %m\n"
 msgstr "Nie je mo¾né preèíta» spec súbor z %s\n"
 
-#: tools/rpmgraph.c:169
+#: tools/rpmgraph.c:149
 #, fuzzy, c-format
 msgid "%s: read manifest failed: %s\n"
 msgstr "%s: readLead zlyhalo\n"
 
-#: tools/rpmgraph.c:246
+#: tools/rpmgraph.c:226
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "overi» podpis balíka"
+
+#~ msgid "Internal error in argument processing (%d) :-(\n"
+#~ msgstr "Vnútorná chyba pri spracovaní argumentu (%d) :-(\n"
+
+#, fuzzy
+#~ msgid "%s: policy file read failed.\n"
+#~ msgstr "%s: readLead zlyhalo\n"
+
+#~ msgid "readRPM: open %s: %s\n"
+#~ msgstr "readRPM: otvorenie %s: %s\n"
+
+#, fuzzy
+#~ msgid "%s: Fseek failed: %s\n"
+#~ msgstr "%s: readLead zlyhalo\n"
+
+#~ msgid "readRPM: %s is not an RPM package\n"
+#~ msgstr "readRPM: %s nie je RPM balík\n"
+
+#~ msgid "readRPM: reading header from %s\n"
+#~ msgstr "readRPM: èítanie hlavièky %s\n"
+
+#~ msgid "Generating signature: %d\n"
+#~ msgstr "Vytvára sa PGP podpis: %d\n"
+
+#~ msgid "generate PGP/GPG signature"
+#~ msgstr "vytvori» PGP/GPG podpis"
 
 #~ msgid "no packages files given for rebuild"
 #~ msgstr "neboli zadané ¾iadne balíky pre znovuzostavenie"
@@ -3730,9 +3883,6 @@ msgstr "overi» podpis balíka"
 #~ msgid "Unable to lookup server host name"
 #~ msgstr "Nie je mo¾né vyhµada» názov servera"
 
-#~ msgid "Failed to connect to server"
-#~ msgstr "Pripojenie k serveru zlyhalo"
-
 #~ msgid "Failed to establish data connection to server"
 #~ msgstr "Vytvorenie dátového spojenia k serveru zlyhalo"
 
@@ -3819,10 +3969,6 @@ msgstr "overi» podpis balíka"
 #, fuzzy
 #~ msgid "URL helper failed: %s (%d)\n"
 #~ msgstr "èítanie zlyhalo: %s (%d)"
-
-#, fuzzy
-#~ msgid "failed to create %s: %s\n"
-#~ msgstr "nepodarilo sa vytvori» %s\n"
 
 #, fuzzy
 #~ msgid "Unable to reload signature header\n"
