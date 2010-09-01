@@ -274,7 +274,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(ts, specFile, ba->rootdir, buildRootURL, 0, NULL,
+    if (parseSpec(ts, specFile, NULL, buildRootURL, 0, NULL,
 		NULL, _anyarch(buildAmount), ba->force))
     {
 	goto exit;

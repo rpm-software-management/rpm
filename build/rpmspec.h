@@ -44,7 +44,7 @@ struct rpmSpec_s {
     char * specFile;	/*!< Name of the spec file. */
     char * buildRoot;
     char * buildSubdir;
-    char * rootDir;
+    const char * rootDir;
 
     speclines sl;
     spectags st;

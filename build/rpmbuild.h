@@ -73,7 +73,7 @@ extern int _noDirTokens;
  * Parse spec file into spec control structure.
  * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile
- * @param rootDir
+ * @param rootDir	(unused)
  * @param buildRoot
  * @param recursing	parse is recursive?
  * @param passPhrase	(unused)

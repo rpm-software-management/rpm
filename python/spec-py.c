@@ -233,7 +233,7 @@ static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
      * set to get back the results from parseSpec()...
      */
     ts = rpmtsCreate();
-    if (parseSpec(ts, specfile,"/", buildRoot,recursing, passPhrase,
+    if (parseSpec(ts, specfile, NULL, buildRoot,recursing, passPhrase,
              	  cookie, anyarch, force) == 0) {
 	spec = rpmtsSpec(ts);
     } else {

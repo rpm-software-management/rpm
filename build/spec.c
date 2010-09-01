@@ -266,7 +266,6 @@ rpmSpec freeSpec(rpmSpec spec)
 
     spec->buildRoot = _free(spec->buildRoot);
     spec->buildSubdir = _free(spec->buildSubdir);
-    spec->rootDir = _free(spec->rootDir);
     spec->specFile = _free(spec->specFile);
 
     closeSpec(spec);
@@ -329,7 +328,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	goto exit;
 
     /* FIX: make spec abstract */
-    if (parseSpec(ts, arg, "/", buildRoot, recursing, NULL,
+    if (parseSpec(ts, arg, NULL, buildRoot, recursing, NULL,
 		NULL, anyarch, force)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {

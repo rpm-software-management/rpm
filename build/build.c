@@ -219,6 +219,8 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
     int test = buildArgs->noBuild;
     char *cookie = buildArgs->cookie ? xstrdup(buildArgs->cookie) : NULL;
 
+    /* XXX TODO: rootDir is only relevant during build, eliminate from spec */
+    spec->rootDir = buildArgs->rootdir;
     if (!spec->recursing && spec->BACount) {
 	int x;
 	/* When iterating over BANames, do the source    */
@@ -286,6 +288,7 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 
 exit:
     free(cookie);
+    spec->rootDir = NULL;
     if (rc != RPMRC_OK && rpmlogGetNrecs() > 0) {
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
