@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-09-01 10:24+0300\n"
-"PO-Revision-Date: 2010-08-22 22:29+0200\n"
+"PO-Revision-Date: 2010-09-01 22:06+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -859,9 +859,9 @@ msgid "line %d: Error parsing %%files: %s\n"
 msgstr "wiersz %d: błąd podczas przetwarzania %%files: %s\n"
 
 #: build/parsePolicies.c:32
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
-msgstr "wiersz %d: błąd podczas przetwarzania %%files: %s\n"
+msgstr "wiersz %d: błąd podczas przetwarzania %%policies: %s\n"
 
 #: build/parsePreamble.c:154
 #, c-format
@@ -1187,37 +1187,36 @@ msgstr "Pakiet nie posiada %%description: %s\n"
 #: build/policies.c:86
 #, c-format
 msgid "Policy module '%s' duplicated with overlapping types\n"
-msgstr ""
+msgstr "Moduł polityki \"%s\" posiada kopię z pokrywającymi się typami\n"
 
 #: build/policies.c:92
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr ""
+msgstr "Podstawowe moduły \"%s\" i \"%s\" posiadają pokrywające się typy\n"
 
 #: build/policies.c:100
-#, fuzzy
 msgid "Failed to get policies from header\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Uzyskanie polityk z nagłówka nie powiodło się\n"
 
 #: build/policies.c:153
 #, c-format
 msgid "%%semodule requires a file path\n"
-msgstr ""
+msgstr "%%semodule wymaga ścieżki do pliku\n"
 
 #: build/policies.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read  policy file: %s\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Odczytanie pliku polityki nie powiodło się: %s\n"
 
 #: build/policies.c:169
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to encode policy file: %s\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Odkodowanie pliku polityki nie powiodło się: %s\n"
 
 #: build/policies.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to determine a policy name: %s\n"
-msgstr "Otwarcie potoku tar nie powiodło się: %m\n"
+msgstr "Ustalenie nazwy polityki nie powiodło się: %s\n"
 
 #: build/policies.c:198
 #, c-format
@@ -1225,31 +1224,33 @@ msgid ""
 "'%s' type given with other types in %%semodule %s. Compacting types to "
 "'%s'.\n"
 msgstr ""
+"Typ \"%s\" został podany razem z innymi typami w %%semodule %s. "
+"Kompaktowanie typów do \"%s\".\n"
 
 #: build/policies.c:248
-#, fuzzy, c-format
+#, c-format
 msgid "Error parsing %s: %s\n"
-msgstr "Błąd podczas przetwarzania %%setup: %s\n"
+msgstr "Błąd podczas przetwarzania %s: %s\n"
 
 #: build/policies.c:254
-#, fuzzy, c-format
+#, c-format
 msgid "Expecting %%semodule tag: %s\n"
-msgstr "Wykonywanie(%s): %s\n"
+msgstr "Oczekiwano znacznika %%semodule: %s\n"
 
 #: build/policies.c:264
-#, fuzzy, c-format
+#, c-format
 msgid "Missing module path in line: %s\n"
-msgstr "Brak %s w %s %s\n"
+msgstr "Brak ścieżki do modułu w wierszu: %s\n"
 
 #: build/policies.c:270
-#, fuzzy, c-format
+#, c-format
 msgid "Too many arguments in line: %s\n"
-msgstr "Za dużo parametrów w wierszu danych w %s:%d\n"
+msgstr "Za dużo parametrów w wierszu: %s\n"
 
 #: build/policies.c:309
-#, fuzzy, c-format
+#, c-format
 msgid "Processing policies: %s\n"
-msgstr "Przetwarzanie plików: %s\n"
+msgstr "Przetwarzanie polityk: %s\n"
 
 #: build/poptBT.c:90
 #, c-format
@@ -2657,9 +2658,9 @@ msgid "waiting for %s lock on %s\n"
 msgstr "oczekiwanie na blokadę %s na %s\n"
 
 #: lib/rpmplugins.c:60
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s %s\n"
-msgstr "Otwarcie %s nie powiodło się: %s\n"
+msgstr "Wykonanie dlopen na %s %s nie powiodło się\n"
 
 #: lib/rpmplugins.c:67
 #, c-format
@@ -2674,12 +2675,12 @@ msgstr "Rozwinięcie makra %%__collection_%s nie powiodło się\n"
 #: lib/rpmplugins.c:137 lib/rpmplugins.c:142
 #, c-format
 msgid "Plugin %s not loaded\n"
-msgstr ""
+msgstr "Wtyczka %s nie jest wczytana\n"
 
 #: lib/rpmplugins.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resolve %s plugin symbol %s: %s\n"
-msgstr "Rozwiązanie symbolu %s nie powiodło się: %s\n"
+msgstr "Rozwiązanie wtyczki %s symbolu %s nie powiodło się: %s\n"
 
 #: lib/rpmprob.c:107
 msgid "different"
@@ -3278,91 +3279,92 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s ma za dużą lub za małą wartość całkowitą, pominięto\n"
 
 #: plugins/sepolicy.c:219
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decode policy for %s\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Odkodowanie polityki dla %s nie powiodło się\n"
 
 #: plugins/sepolicy.c:226
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create temporary file for %s: %s\n"
-msgstr "Nie można utworzyć pliku tymczasowego dla %s: %s\n"
+msgstr "Utworzenie pliku tymczasowego dla %s nie powiodło się: %s\n"
 
 #: plugins/sepolicy.c:232
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write %s policy to file %s\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Zapisanie polityki %s do pliku %s nie powiodło się\n"
 
 #: plugins/sepolicy.c:304
-#, fuzzy
 msgid "Failed to create semanage handle\n"
-msgstr "Zarejestrowanie obsługi rozdzielenia nie powiodło się: %m\n"
+msgstr "Utworzenie obsługi semanage nie powiodło się\n"
 
 #: plugins/sepolicy.c:310
-#, fuzzy
 msgid "Failed to connect to policy handler\n"
-msgstr "Zarejestrowanie obsługi rozdzielenia nie powiodło się: %m\n"
+msgstr "Połączenie z obsługą polityki nie powiodło się\n"
 
 #: plugins/sepolicy.c:314
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to begin policy transaction: %s\n"
-msgstr "Otwarcie %s nie powiodło się: %s\n"
+msgstr "Rozpoczęcie transakcji polityki nie powiodło się: %s\n"
 
 #: plugins/sepolicy.c:345
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove temporary policy file %s: %s\n"
-msgstr "usunięcie katalogu %s nie powiodło się: %s\n"
+msgstr "Usunięcie tymczasowego pliku polityki %s nie powiodło się: %s\n"
 
 #: plugins/sepolicy.c:393
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to install policy module: %s (%s)\n"
-msgstr "Rozwiązanie symbolu %s nie powiodło się: %s\n"
+msgstr "Zainstalowanie modułu polityki nie powiodło się: %s (%s)\n"
 
 #: plugins/sepolicy.c:423
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove policy module: %s\n"
-msgstr "Rozwiązanie symbolu nie powiodło się: %s\n"
+msgstr "Usunięcie modułu polityki nie powiodło się: %s\n"
 
 #: plugins/sepolicy.c:447 plugins/sepolicy.c:499
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to fork process: %s\n"
-msgstr "Otwarcie %s nie powiodło się: %s\n"
+msgstr "Rozdzielenie procesu nie powiodło się: %s\n"
 
 #: plugins/sepolicy.c:457 plugins/sepolicy.c:509
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to execute %s: %s\n"
-msgstr "Otwarcie %s nie powiodło się: %s\n"
+msgstr "Wykonanie %s nie powiodło się: %s\n"
 
 #: plugins/sepolicy.c:463 plugins/sepolicy.c:515
-#, fuzzy, c-format
+#, c-format
 msgid "%s terminated abnormally\n"
-msgstr "Makro %%%s posiada niezakończone ciało\n"
+msgstr "%s zostało nienormalnie zakończone\n"
 
 #: plugins/sepolicy.c:467 plugins/sepolicy.c:519
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed with exit code %i\n"
-msgstr "%s: odkodowanie nie powiodło się\n"
+msgstr "%s nie powiodło się z kodem wyjścia %i\n"
 
 #: plugins/sepolicy.c:474
 msgid "Failed to commit policy changes\n"
-msgstr ""
+msgstr "Wprowadzenie zmian w polityce nie powiodło się\n"
 
 #: plugins/sepolicy.c:491
-#, fuzzy
 msgid "Failed to expand restorecon path"
-msgstr "Rozwinięcie makra %%__collection_%s nie powiodło się\n"
+msgstr "Rozwinięcie makra restorecon nie powiodło się"
 
 #: plugins/sepolicy.c:570
 msgid "Failed to relabel filesystem. Files may be mislabeled\n"
 msgstr ""
+"Ponowne nadanie etykiet systemowi plików nie powiodło się. Pliki mogą "
+"posiadać błędne etykiety\n"
 
 #: plugins/sepolicy.c:574
 msgid "Failed to reload file contexts. Files may be mislabeled\n"
 msgstr ""
+"Ponowne wczytanie kontekstów plików nie powiodło się. Pliki mogą posiadać "
+"błędne etykiety\n"
 
 #: plugins/sepolicy.c:601
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to extract policy from %s\n"
-msgstr "Odczytanie pliku spec z %s nie powiodło się\n"
+msgstr "Wydobycie polityki z %s nie powiodło się\n"
 
 #: python/rpmts-py.c:165
 #, c-format
@@ -3533,27 +3535,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:226
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "Internal error in argument processing (%d) :-(\n"
-#~ msgstr "Wewnętrzny błąd w przetwarzaniu parametru (%d) :-(\n"
-
-#~ msgid "%s: policy file read failed.\n"
-#~ msgstr "%s: odczytanie pliku polityki nie powiodło się.\n"
-
-#~ msgid "readRPM: open %s: %s\n"
-#~ msgstr "readRPM: otwarcie %s: %s\n"
-
-#~ msgid "%s: Fseek failed: %s\n"
-#~ msgstr "%s: Fseek nie powiodło się: %s\n"
-
-#~ msgid "readRPM: %s is not an RPM package\n"
-#~ msgstr "readRPM: %s nie jest pakietem RPM\n"
-
-#~ msgid "readRPM: reading header from %s\n"
-#~ msgstr "readRPM: odczytywanie nagłówka z %s\n"
-
-#~ msgid "Generating signature: %d\n"
-#~ msgstr "Tworzenie podpisu: %d\n"
-
-#~ msgid "generate PGP/GPG signature"
-#~ msgstr "utworzenie podpisu PGP/GPG"
