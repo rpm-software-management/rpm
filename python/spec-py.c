@@ -114,7 +114,7 @@ static void
 spec_dealloc(specObject * s) 
 {
     if (s->spec) {
-	s->spec=freeSpec(s->spec);
+	s->spec=rpmSpecFree(s->spec);
     }
     Py_TYPE(s)->tp_free((PyObject *)s);
 }

@@ -248,7 +248,7 @@ rpmSpec newSpec(void)
     return spec;
 }
 
-rpmSpec freeSpec(rpmSpec spec)
+rpmSpec rpmSpecFree(rpmSpec spec)
 {
 
     if (spec == NULL) return NULL;
@@ -291,7 +291,7 @@ rpmSpec freeSpec(rpmSpec spec)
 	if (spec->BASpecs != NULL)
 	while (spec->BACount--) {
 	    spec->BASpecs[spec->BACount] =
-			freeSpec(spec->BASpecs[spec->BACount]);
+			rpmSpecFree(spec->BASpecs[spec->BACount]);
 	}
 	spec->BASpecs = _free(spec->BASpecs);
     }
@@ -332,6 +332,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	xx = qva->qva_showPackage(qva, ts, pkg->header);
 
 exit:
-    spec = freeSpec(spec);
+    spec = rpmSpecFree(spec);
     return res;
 }

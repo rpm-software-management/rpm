@@ -132,7 +132,7 @@ struct Package_s {
  * @param spec		spec file control structure
  * @return		NULL always
  */
-rpmSpec freeSpec(rpmSpec spec);
+rpmSpec rpmSpecFree(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Function to query spec file(s).

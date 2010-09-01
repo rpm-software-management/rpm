@@ -301,7 +301,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 
 exit:
     free(specFile);
-    freeSpec(spec);
+    rpmSpecFree(spec);
     free(buildRootURL);
     return rc;
 }
