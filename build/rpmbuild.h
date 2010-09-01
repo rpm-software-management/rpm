@@ -34,6 +34,42 @@ typedef enum rpmBuildFlags_e {
 } rpmBuildFlags;
 
 /** \ingroup rpmbuild
+ * Describe build command line request.
+ */
+struct rpmBuildArguments_s {
+    rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
+    int buildAmount;		/*!< Bit(s) to control operation. */
+    char * buildRootOverride; 	/*!< from --buildroot */
+    char * targets;		/*!< Target platform(s), comma separated. */
+    char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
+    int force;			/*!< from --force */
+    int noBuild;		/*!< from --nobuild */
+    int noDeps;			/*!< from --nodeps */
+    int noLang;			/*!< from --nolang */
+    int shortCircuit;		/*!< from --short-circuit */
+    char buildMode;		/*!< Build mode (one of "btBC") */
+    char buildChar;		/*!< Build stage (one of "abcilps ") */
+    const char * rootdir;
+};
+
+/** \ingroup rpmbuild
+ */
+typedef	struct rpmBuildArguments_s *	BTA_t;
+
+/** \ingroup rpmbuild
+ */
+extern struct rpmBuildArguments_s	rpmBTArgs;
+
+/** \ingroup rpmbuild
+ */
+extern struct poptOption		rpmBuildPoptTable[];
+
+/** \ingroup rpmbuild
+ * Should version 3 packages be produced?
+ */
+extern int _noDirTokens;
+
+/** \ingroup rpmbuild
  * Parse spec file into spec control structure.
  * @param ts		transaction set (spec file control in ts->spec)
  * @param specFile

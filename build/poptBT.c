@@ -45,6 +45,8 @@ int noLang = 0;
 
 static int noBuild = 0;
 
+int _noDirTokens = 0;
+
 /**
  */
 static void buildArgCallback( poptContext con,

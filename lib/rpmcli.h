@@ -21,11 +21,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmcli
- * Should version 3 packages be produced?
- */
-extern int _noDirTokens;
-
-/** \ingroup rpmcli
  * Popt option table for options shared by all modes and executables.
  */
 extern struct poptOption		rpmcliAllPoptTable[];
@@ -297,40 +292,6 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn);
  * @return		0 on success, else no. of failures
  */
 int rpmcliVerify(rpmts ts, QVA_t qva, ARGV_const_t argv);
-
-/* ==================================================================== */
-/** \name RPMBT */
-
-/** \ingroup rpmcli
- * Describe build command line request.
- */
-struct rpmBuildArguments_s {
-    rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
-    int buildAmount;		/*!< Bit(s) to control operation. */
-    char * buildRootOverride; 	/*!< from --buildroot */
-    char * targets;		/*!< Target platform(s), comma separated. */
-    char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
-    int force;			/*!< from --force */
-    int noBuild;		/*!< from --nobuild */
-    int noDeps;			/*!< from --nodeps */
-    int noLang;			/*!< from --nolang */
-    int shortCircuit;		/*!< from --short-circuit */
-    char buildMode;		/*!< Build mode (one of "btBC") */
-    char buildChar;		/*!< Build stage (one of "abcilps ") */
-    const char * rootdir;
-};
-
-/** \ingroup rpmcli
- */
-typedef	struct rpmBuildArguments_s *	BTA_t;
-
-/** \ingroup rpmcli
- */
-extern struct rpmBuildArguments_s	rpmBTArgs;
-
-/** \ingroup rpmcli
- */
-extern struct poptOption		rpmBuildPoptTable[];
 
 /* ==================================================================== */
 /** \name RPMEIU */
