@@ -213,9 +213,10 @@ exit:
     return rc;
 }
 
-static rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test)
+static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 {
     rpmRC rc = RPMRC_OK;
+    int test = buildArgs->noBuild;
 
     if (!spec->recursing && spec->BACount) {
 	int x;
@@ -223,10 +224,9 @@ static rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 	/* packaging on the first run, and skip RMSOURCE altogether */
 	if (spec->BASpecs != NULL)
 	for (x = 0; x < spec->BACount; x++) {
-	    if ((rc = buildSpec(ts, spec->BASpecs[x],
+	    if ((rc = buildSpec(buildArgs, spec->BASpecs[x],
 				(what & ~RPMBUILD_RMSOURCE) |
-				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE)),
-				test))) {
+				(x ? 0 : (what & RPMBUILD_PACKAGESOURCE))))) {
 		goto exit;
 	    }
 	}
@@ -294,5 +294,6 @@ exit:
 
 rpmRC rpmSpecBuild(BTA_t buildArgs, rpmSpec spec)
 {
-    return buildSpec(NULL, spec, buildArgs->buildAmount, buildArgs->noBuild);
+    /* buildSpec() can recurse with different buildAmount, pass it separately */
+    return buildSpec(buildArgs, spec, buildArgs->buildAmount);
 }
