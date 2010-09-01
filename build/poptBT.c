@@ -80,7 +80,7 @@ static void buildArgCallback( poptContext con,
 	break;
 
     case POPT_NOBUILD: rba->noBuild = 1; break;
-    case POPT_NOLANG: rba->noLang = 1; break;
+    case POPT_NOLANG: rba->specFlags |= RPMSPEC_NOLANG; break;
     case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
@@ -113,7 +113,7 @@ static void buildArgCallback( poptContext con,
 	break;
 
     case RPMCLI_POPT_FORCE:
-	rba->force = 1;
+	rba->specFlags |= RPMSPEC_FORCE;
 	break;
 
     }
@@ -183,7 +183,7 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("remove build tree when done"), NULL},
  { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
 	N_("generate headers compatible with rpm4 packaging"), NULL},
- { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmBTArgs.force, RPMCLI_POPT_FORCE,
+ { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_FORCE,
         N_("ignore ExcludeArch: directives from spec file"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
 	N_("debug file state machine"), NULL},
