@@ -213,7 +213,7 @@ exit:
     return rc;
 }
 
-rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test)
+static rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -290,4 +290,9 @@ exit:
     }
 
     return rc;
+}
+
+rpmRC rpmSpecBuild(BTA_t buildArgs, rpmSpec spec)
+{
+    return buildSpec(NULL, spec, buildArgs->buildAmount, buildArgs->noBuild);
 }

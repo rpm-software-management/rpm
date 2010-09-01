@@ -92,13 +92,11 @@ int parseSpec(rpmts ts, const char * specFile,
 
 /** \ingroup rpmbuild
  * Build stages state machine driver.
- * @param ts		transaction set
+ * @param buildArgs	build arguments
  * @param spec		spec file control structure
- * @param what		bit(s) to enable stages of build
- * @param test		don't execute scripts or package if testing
  * @return		RPMRC_OK on success
  */
-rpmRC buildSpec(rpmts ts, rpmSpec spec, int what, int test);
+rpmRC rpmSpecBuild(BTA_t buildArgs, rpmSpec spec);
 
 #ifdef __cplusplus
 }
