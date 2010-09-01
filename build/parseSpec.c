@@ -517,8 +517,6 @@ static void addTargets(Package Pkgs)
     free(os);
 }
 
-extern int noLang;		/* XXX FIXME: pass as arg */
-
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 const char *buildRoot, int recursing)
 {

@@ -28,6 +28,7 @@ typedef enum rpmSpecFlags_e {
     RPMSPEC_NONE	= 0,
     RPMSPEC_ANYARCH	= (1 << 0),
     RPMSPEC_FORCE	= (1 << 1),
+    RPMSPEC_NOLANG	= (1 << 2),
 } rpmSpecFlags;
 
 /** \ingroup rpmbuild

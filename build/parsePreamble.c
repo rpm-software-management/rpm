@@ -615,8 +615,6 @@ if (multiToken) { \
     return RPMRC_FAIL; \
 }
 
-extern int noLang;
-
 /**
  * Check for inappropriate characters. All alphanums are considered sane.
  * @param spec		spec
@@ -714,7 +712,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
     case RPMTAG_PACKAGER:
 	if (!*lang) {
 	    headerPutString(pkg->header, tag, field);
-	} else if (!(noLang && !rstreq(lang, RPMBUILD_DEFAULT_LANG)))
+	} else if (!((spec->flags & RPMSPEC_NOLANG) && !rstreq(lang, RPMBUILD_DEFAULT_LANG)))
 	    (void) headerAddI18NString(pkg->header, tag, field, lang);
 	break;
     case RPMTAG_BUILDROOT:

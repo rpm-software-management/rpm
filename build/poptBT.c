@@ -41,8 +41,6 @@ struct rpmBuildArguments_s         rpmBTArgs;
 
 extern int _fsm_debug;
 
-int noLang = 0;
-
 static int noBuild = 0;
 
 int _noDirTokens = 0;
@@ -204,7 +202,7 @@ struct poptOption rpmBuildPoptTable[] = {
  { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
- { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, &noLang, POPT_NOLANG,
+ { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOLANG,
 	N_("do not accept i18N msgstr's from specfile"), NULL},
  { "rmsource", '\0', 0, 0, POPT_RMSOURCE,
 	N_("remove sources when done"), NULL},

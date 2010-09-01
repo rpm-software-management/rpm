@@ -10,8 +10,6 @@
 #include "build/rpmbuild_internal.h"
 #include "debug.h"
 
-extern int noLang;
-
 int parseDescription(rpmSpec spec)
 {
     int nextPart = PART_ERROR;	/* assume error */
@@ -105,7 +103,7 @@ int parseDescription(rpmSpec spec)
     }
     
     stripTrailingBlanksStringBuf(sb);
-    if (!(noLang && !rstreq(lang, RPMBUILD_DEFAULT_LANG))) {
+    if (!((spec->flags & RPMSPEC_NOLANG) && !rstreq(lang, RPMBUILD_DEFAULT_LANG))) {
 	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
 			getStringBuf(sb), lang);
     }
