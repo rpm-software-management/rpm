@@ -202,6 +202,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
     int justRm = ((buildAmount & ~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) == 0);
+    rpmSpecFlags specFlags = RPMSPEC_NONE;
 
 #ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
@@ -274,13 +275,14 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     /* Parse the spec file */
 #define	_anyarch(_f)	\
 (((_f)&(RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL|RPMBUILD_PACKAGEBINARY)) == 0)
-    if (parseSpec(ts, specFile, NULL, buildRootURL, 0, NULL,
-		NULL, _anyarch(buildAmount), ba->force))
-    {
-	goto exit;
-    }
+    if (_anyarch(buildAmount))
+	specFlags |= RPMSPEC_ANYARCH;
+    if (ba->force)
+	specFlags |= RPMSPEC_FORCE;
 #undef	_anyarch
-    if ((spec = rpmtsSetSpec(ts, NULL)) == NULL) {
+    
+    spec = rpmSpecParse(specFile, specFlags, buildRootURL);
+    if (spec == NULL) {
 	goto exit;
     }
 

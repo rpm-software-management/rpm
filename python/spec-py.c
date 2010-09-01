@@ -213,35 +213,23 @@ static PyGetSetDef spec_getseters[] = {
 
 static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 {
-    rpmts ts = NULL;
+    char * kwlist[] = {"specfile", NULL};
     const char * specfile;
     rpmSpec spec = NULL;
-    char * buildRoot = NULL;
-    int recursing = 0;
-    char * passPhrase = "";
-    char *cookie = NULL;
-    int anyarch = 1;
-    int force = 1;
-    char * kwlist[] = {"specfile", NULL};
+    /* TODO: add arguments to control these */
+    rpmSpecFlags flags = (RPMSPEC_ANYARCH|RPMSPEC_FORCE);
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:spec_new", kwlist,
 				     &specfile))
 	return NULL;
 
-    /*
-     * Just how hysterical can you get? We need to create a transaction
-     * set to get back the results from parseSpec()...
-     */
-    ts = rpmtsCreate();
-    if (parseSpec(ts, specfile, NULL, buildRoot,recursing, passPhrase,
-             	  cookie, anyarch, force) == 0) {
-	spec = rpmtsSpec(ts);
-    } else {
-	 PyErr_SetString(PyExc_ValueError, "can't parse specfile\n");
+    spec = rpmSpecParse(specfile, flags, NULL);
+    if (spec == NULL) {
+	PyErr_SetString(PyExc_ValueError, "can't parse specfile\n");
+	return NULL;
     }
-    rpmtsFree(ts);
 
-    return spec ? spec_Wrap(subtype, spec) : NULL;
+    return spec_Wrap(subtype, spec);
 }
 
 PyTypeObject spec_Type = {

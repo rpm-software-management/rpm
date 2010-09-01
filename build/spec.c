@@ -314,29 +314,21 @@ rpmSpec freeSpec(rpmSpec spec)
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     rpmSpec spec = NULL;
-    Package pkg;
-    char * buildRoot = NULL;
-    int recursing = 0;
-    int anyarch = 1;
-    int force = 1;
     int res = 1;
     int xx;
 
     if (qva->qva_showPackage == NULL)
 	goto exit;
 
-    /* FIX: make spec abstract */
-    if (parseSpec(ts, arg, NULL, buildRoot, recursing, NULL,
-		NULL, anyarch, force)
-      || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
-    {
+    spec = rpmSpecParse(arg, (RPMSPEC_ANYARCH|RPMSPEC_FORCE), NULL);
+    if (spec == NULL) {
 	rpmlog(RPMLOG_ERR,
 	    		_("query of specfile %s failed, can't parse\n"), arg);
 	goto exit;
     }
 
     res = 0;
-    for (pkg = spec->packages; pkg != NULL; pkg = pkg->next)
+    for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next)
 	xx = qva->qva_showPackage(qva, ts, pkg->header);
 
 exit:
