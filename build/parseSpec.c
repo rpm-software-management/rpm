@@ -519,9 +519,9 @@ static void addTargets(Package Pkgs)
 
 extern int noLang;		/* XXX FIXME: pass as arg */
 
-int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
-		const char *buildRoot, int recursing, const char *passPhrase,
-		const char *cookie, int anyarch, int force)
+static int parseSpec(rpmts ts, const char *specFile, 
+		const char *buildRoot, int recursing,
+		int anyarch, int force)
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -627,8 +627,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 		    continue;
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(ts, specFile, NULL, buildRoot, 1,
-				  NULL, NULL, anyarch, force)
+		if (parseSpec(ts, specFile, buildRoot, 1, anyarch, force)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
@@ -703,7 +702,7 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
     rpmts ts = rpmtsCreate();
     rpmSpec spec = NULL;
 
-    if (parseSpec(ts, specFile, NULL, buildRoot, 0, NULL, NULL,
+    if (parseSpec(ts, specFile, buildRoot, 0,
 		  (flags & RPMSPEC_ANYARCH), (flags & RPMSPEC_FORCE)) == 0) {
 	spec = rpmtsSetSpec(ts, NULL);
     }

@@ -82,27 +82,6 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot);
 
 /** \ingroup rpmbuild
- * Parse spec file into spec control structure.
- * @param ts		transaction set (spec file control in ts->spec)
- * @param specFile
- * @param rootDir	(unused)
- * @param buildRoot
- * @param recursing	parse is recursive?
- * @param passPhrase	(unused)
- * @param cookie	(unused)
- * @param anyarch
- * @param force
- * @return
- */
-int parseSpec(rpmts ts, const char * specFile,
-		const char * rootDir,
-		const char * buildRoot,
-		int recursing,
-		const char * passPhrase,
-		const char * cookie,
-		int anyarch, int force);
-
-/** \ingroup rpmbuild
  * Build stages state machine driver.
  * @param buildArgs	build arguments
  * @param spec		spec file control structure
