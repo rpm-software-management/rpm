@@ -520,8 +520,7 @@ static void addTargets(Package Pkgs)
 extern int noLang;		/* XXX FIXME: pass as arg */
 
 static int parseSpec(rpmts ts, const char *specFile, 
-		const char *buildRoot, int recursing,
-		int anyarch, int force)
+		const char *buildRoot, int recursing, rpmSpecFlags flags)
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -541,8 +540,8 @@ static int parseSpec(rpmts ts, const char *specFile,
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->recursing = recursing;
-    spec->anyarch = anyarch;
-    spec->force = force;
+    spec->anyarch = (flags & RPMSPEC_ANYARCH);
+    spec->force = (flags & RPMSPEC_FORCE);
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
@@ -627,7 +626,7 @@ static int parseSpec(rpmts ts, const char *specFile,
 		    continue;
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = NULL;
-		if (parseSpec(ts, specFile, buildRoot, 1, anyarch, force)
+		if (parseSpec(ts, specFile, buildRoot, 1, flags)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;
@@ -702,8 +701,7 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
     rpmts ts = rpmtsCreate();
     rpmSpec spec = NULL;
 
-    if (parseSpec(ts, specFile, buildRoot, 0,
-		  (flags & RPMSPEC_ANYARCH), (flags & RPMSPEC_FORCE)) == 0) {
+    if (parseSpec(ts, specFile, buildRoot, 0, flags) == 0) {
 	spec = rpmtsSetSpec(ts, NULL);
     }
 
