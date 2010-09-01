@@ -544,8 +544,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
     spec->anyarch = anyarch;
     spec->force = force;
 
-    spec->timeCheck = rpmExpandNumeric("%{_timecheck}");
-
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */
     /* which handles the initial entry into a spec file.         */

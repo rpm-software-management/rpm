@@ -166,7 +166,6 @@ rpmbuild alias --ftpport		--define '_httpport !#:+'
 rpmbuild alias --ftpproxy	--define '_httpproxy !#:+'
 rpmbuild alias --httpport	--define '_httpport !#:+'
 rpmbuild alias --httpproxy	--define '_httpproxy !#:+'
-rpmbuild alias --timecheck	--define '_timecheck !#:+'
 rpmbuild alias --with		--define "_with_!#:+     --with-!#:+" \
 	--POPTdesc=$"enable configure <option> for build" \
 	--POPTargs=$"<option>"

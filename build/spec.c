@@ -224,8 +224,6 @@ rpmSpec newSpec(void)
     spec->buildRoot = NULL;
     spec->buildSubdir = NULL;
 
-    spec->timeCheck = 0;
-
     spec->buildRestrictions = headerNew();
     spec->BANames = NULL;
     spec->BACount = 0;

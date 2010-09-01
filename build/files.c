@@ -228,27 +228,6 @@ static char *strtokWithQuotes(char *s, const char *delim)
 
 /**
  */
-static void timeCheck(int tc, Header h)
-{
-    rpm_time_t * mtime;
-    time_t currentTime = time(NULL);
-    struct rpmtd_s files, mtimes;
-
-    headerGet(h, RPMTAG_FILENAMES, &files, HEADERGET_EXT);
-    headerGet(h, RPMTAG_FILEMTIMES, &mtimes, HEADERGET_MINMEM);
-    
-    while ((mtime = rpmtdNextUint32(&mtimes))) {
-	if ((currentTime - (time_t) *mtime) > tc) {
-	    rpmlog(RPMLOG_WARNING, _("TIMECHECK failure: %s\n"), 
-		    rpmtdGetString(&files));
-	}
-    }
-    rpmtdFreeData(&files);
-    rpmtdFreeData(&mtimes);
-}
-
-/**
- */
 typedef const struct VFA {
     const char const * attribute;
     int not;
@@ -1937,9 +1916,6 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
 
     genCpioListAndHeader(&fl, &pkg->cpioList, pkg->header, 0);
 
-    if (spec->timeCheck)
-	timeCheck(spec->timeCheck, pkg->header);
-    
 exit:
     fl.buildRoot = _free(fl.buildRoot);
 

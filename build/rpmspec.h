@@ -68,8 +68,6 @@ struct rpmSpec_s {
     int force;
     int anyarch;
 
-    int timeCheck;
-
     struct Source * sources;
     int numSources;
     int noSource;
