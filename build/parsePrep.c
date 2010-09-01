@@ -79,7 +79,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* On non-build parse's, file cannot be stat'd or read. */
-    if (spec->force || checkOwners(fn)) goto exit;
+    if ((spec->flags & RPMSPEC_FORCE) || checkOwners(fn)) goto exit;
 
     if (db) {
 	rasprintf(&arg_backup,
@@ -180,7 +180,7 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 #endif
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
-    if (!spec->force && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
+    if (!(spec->flags & RPMSPEC_FORCE) && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
 	fn = _free(fn);
 	return NULL;
     }
@@ -533,7 +533,7 @@ int parsePrep(rpmSpec spec)
 	} else {
 	    appendLineStringBuf(spec->prep, *lines);
 	}
-	if (res && !spec->force) {
+	if (res && !(spec->flags & RPMSPEC_FORCE)) {
 	    /* fixup from RPMRC_FAIL do*Macro() codes for now */
 	    nextPart = PART_ERROR; 
 	    goto exit;

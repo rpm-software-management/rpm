@@ -1075,7 +1075,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     }
 
     /* XXX Skip valid arch check if not building binary package */
-    if (!spec->anyarch && checkForValidArchitectures(spec)) {
+    if (!(spec->flags & RPMSPEC_ANYARCH) && checkForValidArchitectures(spec)) {
 	goto exit;
     }
 

@@ -540,8 +540,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     }
     addMacro(NULL, "_docdir", NULL, "%{_defaultdocdir}", RMIL_SPEC);
     spec->recursing = recursing;
-    spec->anyarch = (flags & RPMSPEC_ANYARCH);
-    spec->force = (flags & RPMSPEC_FORCE);
+    spec->flags = flags;
 
     /* All the parse*() functions expect to have a line pre-read */
     /* in the spec's line buffer.  Except for parsePreamble(),   */

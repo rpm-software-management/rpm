@@ -230,8 +230,7 @@ rpmSpec newSpec(void)
     spec->recursing = 0;
     spec->BASpecs = NULL;
 
-    spec->force = 0;
-    spec->anyarch = 0;
+    spec->flags = RPMSPEC_NONE;
 
     spec->macros = rpmGlobalMacroContext;
     

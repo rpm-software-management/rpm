@@ -71,8 +71,7 @@ struct rpmSpec_s {
     int BACount;
     int recursing;		/*!< parse is recursive? */
 
-    int force;
-    int anyarch;
+    rpmSpecFlags flags;
 
     struct Source * sources;
     int numSources;
