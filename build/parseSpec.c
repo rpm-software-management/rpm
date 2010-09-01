@@ -519,8 +519,8 @@ static void addTargets(Package Pkgs)
 
 extern int noLang;		/* XXX FIXME: pass as arg */
 
-static int parseSpec(rpmts ts, const char *specFile, 
-		const char *buildRoot, int recursing, rpmSpecFlags flags)
+static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
+			 const char *buildRoot, int recursing)
 {
     rpmParseState parsePart = PART_PREAMBLE;
     int initialPackage = 1;
@@ -625,10 +625,8 @@ static int parseSpec(rpmts ts, const char *specFile,
 		if (!rpmMachineScore(RPM_MACHTABLE_BUILDARCH, spec->BANames[x]))
 		    continue;
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
-		spec->BASpecs[index] = NULL;
-		if (parseSpec(ts, specFile, buildRoot, 1, flags)
-		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
-		{
+		spec->BASpecs[index] = parseSpec(specFile, flags, buildRoot, 1);
+		if (spec->BASpecs[index] == NULL) {
 			spec->BACount = index;
 			goto errxit;
 		}
@@ -686,25 +684,16 @@ static int parseSpec(rpmts ts, const char *specFile,
 exit:
     /* Assemble source header from parsed components */
     initSourceHeader(spec);
-    (void) rpmtsSetSpec(ts, spec);
 
-    return 0;
+    return spec;
 
 errxit:
     spec = freeSpec(spec);
-    return PART_ERROR;
+    return NULL;
 }
 
 rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot)
 {
-    rpmts ts = rpmtsCreate();
-    rpmSpec spec = NULL;
-
-    if (parseSpec(ts, specFile, buildRoot, 0, flags) == 0) {
-	spec = rpmtsSetSpec(ts, NULL);
-    }
-
-    rpmtsFree(ts);
-    return spec;
+    return parseSpec(specFile, flags, buildRoot, 0);
 }
