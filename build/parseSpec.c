@@ -546,8 +546,6 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 
     if (rootDir)
 	spec->rootDir = xstrdup(rootDir);
-    if (cookie)
-	spec->cookie = xstrdup(cookie);
 
     spec->timeCheck = rpmExpandNumeric("%{_timecheck}");
 
@@ -635,7 +633,7 @@ int parseSpec(rpmts ts, const char *specFile, const char *rootDir,
 		addMacro(NULL, "_target_cpu", NULL, spec->BANames[x], RMIL_RPMRC);
 		spec->BASpecs[index] = NULL;
 		if (parseSpec(ts, specFile, spec->rootDir, buildRoot, 1,
-				  NULL, cookie, anyarch, force)
+				  NULL, NULL, anyarch, force)
 		 || (spec->BASpecs[index] = rpmtsSetSpec(ts, NULL)) == NULL)
 		{
 			spec->BACount = index;

@@ -284,17 +284,19 @@ int processSourceFiles(rpmSpec spec);
 /** \ingroup rpmbuild
  * Generate binary package(s).
  * @param spec		spec file control structure
+ * @param cookie	build identifier "cookie" or NULL
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL
-rpmRC packageBinaries(rpmSpec spec);
+rpmRC packageBinaries(rpmSpec spec, const char *cookie);
 
 /** \ingroup rpmbuild
  * Generate source package.
  * @param spec		spec file control structure
+ * @retval cookie	build identifier "cookie" or NULL
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL
-rpmRC packageSources(rpmSpec spec);
+rpmRC packageSources(rpmSpec spec, char **cookie);
 
 #endif /* _RPMBUILD_INTERNAL_H */

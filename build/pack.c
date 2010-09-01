@@ -668,7 +668,7 @@ static rpmRC checkPackages(char *pkgcheck)
     return RPMRC_OK;
 }
 
-rpmRC packageBinaries(rpmSpec spec)
+rpmRC packageBinaries(rpmSpec spec, const char *cookie)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
@@ -683,8 +683,8 @@ rpmRC packageBinaries(rpmSpec spec)
 	if ((rc = processScriptFiles(spec, pkg)))
 	    return rc;
 	
-	if (spec->cookie) {
-	    headerPutString(pkg->header, RPMTAG_COOKIE, spec->cookie);
+	if (cookie) {
+	    headerPutString(pkg->header, RPMTAG_COOKIE, cookie);
 	}
 
 	/* Copy changelog from src rpm */
@@ -779,7 +779,7 @@ rpmRC packageBinaries(rpmSpec spec)
     return RPMRC_OK;
 }
 
-rpmRC packageSources(rpmSpec spec)
+rpmRC packageSources(rpmSpec spec, char **cookie)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
@@ -790,8 +790,6 @@ rpmRC packageSources(rpmSpec spec)
     headerPutString(spec->sourceHeader, RPMTAG_BUILDHOST, buildHost());
     headerPutUint32(spec->sourceHeader, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
-    spec->cookie = _free(spec->cookie);
-    
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
@@ -802,8 +800,7 @@ rpmRC packageSources(rpmSpec spec)
 	csa->cpioList = rpmfiLink(spec->sourceCpioList); 
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, 
-		csa, &(spec->cookie));
+	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, csa, cookie);
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {

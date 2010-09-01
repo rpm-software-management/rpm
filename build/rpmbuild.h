@@ -77,7 +77,7 @@ extern int _noDirTokens;
  * @param buildRoot
  * @param recursing	parse is recursive?
  * @param passPhrase	(unused)
- * @param cookie
+ * @param cookie	(unused)
  * @param anyarch
  * @param force
  * @return

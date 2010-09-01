@@ -69,7 +69,6 @@ struct rpmSpec_s {
     int anyarch;
 
     int timeCheck;
-    char * cookie;
 
     struct Source * sources;
     int numSources;

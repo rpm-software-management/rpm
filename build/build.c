@@ -217,6 +217,7 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 {
     rpmRC rc = RPMRC_OK;
     int test = buildArgs->noBuild;
+    char *cookie = buildArgs->cookie ? xstrdup(buildArgs->cookie) : NULL;
 
     if (!spec->recursing && spec->BACount) {
 	int x;
@@ -261,11 +262,11 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 
 	if (((what & RPMBUILD_PACKAGESOURCE) && !test) &&
-	    (rc = packageSources(spec)))
+	    (rc = packageSources(spec, &cookie)))
 		return rc;
 
 	if (((what & RPMBUILD_PACKAGEBINARY) && !test) &&
-	    (rc = packageBinaries(spec)))
+	    (rc = packageBinaries(spec, cookie)))
 		goto exit;
 	
 	if ((what & RPMBUILD_CLEAN) &&
@@ -284,6 +285,7 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	(void) unlink(spec->specFile);
 
 exit:
+    free(cookie);
     if (rc != RPMRC_OK && rpmlogGetNrecs() > 0) {
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);

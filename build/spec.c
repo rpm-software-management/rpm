@@ -225,7 +225,6 @@ rpmSpec newSpec(void)
     spec->buildSubdir = NULL;
 
     spec->timeCheck = 0;
-    spec->cookie = NULL;
 
     spec->buildRestrictions = headerNew();
     spec->BANames = NULL;
@@ -301,8 +300,6 @@ rpmSpec freeSpec(rpmSpec spec)
     }
     spec->BANames = _free(spec->BANames);
 
-    spec->cookie = _free(spec->cookie);
-
 #ifdef WITH_LUA
     rpmlua lua = NULL; /* global state */
     rpmluaDelVar(lua, "patches");
@@ -323,7 +320,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     Package pkg;
     char * buildRoot = NULL;
     int recursing = 0;
-    char *cookie = NULL;
     int anyarch = 1;
     int force = 1;
     int res = 1;
@@ -334,7 +330,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 
     /* FIX: make spec abstract */
     if (parseSpec(ts, arg, "/", buildRoot, recursing, NULL,
-		cookie, anyarch, force)
+		NULL, anyarch, force)
       || (spec = rpmtsSetSpec(ts, NULL)) == NULL)
     {
 	rpmlog(RPMLOG_ERR,
