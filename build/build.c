@@ -254,12 +254,13 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
-	    (rc = processSourceFiles(spec)))
+	    (rc = processSourceFiles(spec, buildArgs->pkgFlags)))
 		goto exit;
 
 	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY) ||
 	    (what & RPMBUILD_FILECHECK)) &&
-	    (rc = processBinaryFiles(spec, what & RPMBUILD_INSTALL, test)))
+	    (rc = processBinaryFiles(spec, buildArgs->pkgFlags,
+				     what & RPMBUILD_INSTALL, test)))
 		goto exit;
 
 	if (((what & RPMBUILD_INSTALL) || (what & RPMBUILD_PACKAGEBINARY)) &&

@@ -20,7 +20,7 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_NOBUILD		-1017
 #define	POPT_SHORTCIRCUIT	-1018
 #define	POPT_RMSPEC		-1019
-#define	POPT_SIGN		-1020
+#define POPT_NODIRTOKENS	-1020
 
 #define	POPT_REBUILD		0x4220
 #define	POPT_RECOMPILE		0x4320
@@ -40,8 +40,6 @@ struct rpmBuildArguments_s         rpmBTArgs;
 #define	POPT_TS			0x7473
 
 extern int _fsm_debug;
-
-int _noDirTokens = 0;
 
 /**
  */
@@ -77,6 +75,7 @@ static void buildArgCallback( poptContext con,
 	}
 	break;
 
+    case POPT_NODIRTOKENS: rba->pkgFlags |= RPMBUILD_PKG_NODIRTOKENS; break;
     case POPT_NOBUILD: rba->buildAmount |= RPMBUILD_NOBUILD; break;
     case POPT_NOLANG: rba->specFlags |= RPMSPEC_NOLANG; break;
     case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
@@ -179,8 +178,6 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("override build root"), "DIRECTORY" },
  { "clean", '\0', 0, 0, POPT_RMBUILD,
 	N_("remove build tree when done"), NULL},
- { "dirtokens", '\0', POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN, &_noDirTokens, 0,
-	N_("generate headers compatible with rpm4 packaging"), NULL},
  { "force", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_FORCE,
         N_("ignore ExcludeArch: directives from spec file"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
@@ -189,8 +186,8 @@ struct poptOption rpmBuildPoptTable[] = {
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },
- { "nodirtokens", '\0', POPT_ARG_VAL, &_noDirTokens, 1,
-	N_("generate package header(s) compatible with (legacy) rpm[23] packaging"),
+ { "nodirtokens", '\0', 0, 0, POPT_NODIRTOKENS,
+	N_("generate package header(s) compatible with (legacy) rpm v3 packaging"),
 	NULL},
 
  { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,

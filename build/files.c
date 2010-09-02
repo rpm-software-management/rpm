@@ -110,6 +110,7 @@ typedef struct FileList_s {
     int devminor;
     
     int isDir;
+    rpmBuildPkgFlags pkgFlags;
     rpmfileAttrs currentFlags;
     specdFlags currentSpecdFlags;
     rpmVerifyFlags currentVerifyFlags;
@@ -1303,7 +1304,7 @@ static void genCpioListAndHeader(FileList fl,
   }
 
     /* Compress filelist unless legacy format requested */
-    if (!_noDirTokens) {
+    if (!(fl->pkgFlags & RPMBUILD_PKG_NODIRTOKENS)) {
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
 	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
@@ -1703,8 +1704,8 @@ exit:
 
 /**
  */
-static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
-			       int installSpecialDoc, int test)
+static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
+				 Package pkg, int installSpecialDoc, int test)
 {
     struct FileList_s fl;
     char *s, **fp;
@@ -1789,6 +1790,7 @@ static rpmRC processPackageFiles(rpmSpec spec, Package pkg,
     fl.defSpecdFlags = 0;
 
     fl.largeFiles = 0;
+    fl.pkgFlags = pkgFlags;
 
     fl.docDirs = NULL;
     {	char *docs = rpmGetPath("%{?__docdir_path}", NULL);
@@ -1944,7 +1946,7 @@ static void genSourceRpmName(rpmSpec spec)
     }
 }
 
-int processSourceFiles(rpmSpec spec)
+int processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 {
     struct Source *srcPtr;
     StringBuf sourceFiles;
@@ -1996,6 +1998,7 @@ int processSourceFiles(rpmSpec spec)
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
     fl.processingFailed = 0;
     fl.fileListRecsUsed = 0;
+    fl.pkgFlags = pkgFlags;
     fl.buildRoot = NULL;
 
     s = getStringBuf(sourceFiles);
@@ -2117,7 +2120,8 @@ exit:
     return rc;
 }
 
-int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
+int processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
+			int installSpecialDoc, int test)
 {
     Package pkg;
     int rc = RPMRC_OK;
@@ -2134,7 +2138,7 @@ int processBinaryFiles(rpmSpec spec, int installSpecialDoc, int test)
 	rpmlog(RPMLOG_NOTICE, _("Processing files: %s\n"), nvr);
 	free(nvr);
 		   
-	if ((rc = processPackageFiles(spec, pkg, installSpecialDoc, test)) != RPMRC_OK ||
+	if ((rc = processPackageFiles(spec, pkgFlags, pkg, installSpecialDoc, test)) != RPMRC_OK ||
 	    (rc = rpmfcGenerateDepends(spec, pkg)) != RPMRC_OK)
 	    goto exit;
 

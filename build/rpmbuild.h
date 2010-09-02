@@ -36,11 +36,20 @@ typedef enum rpmBuildFlags_e {
 } rpmBuildFlags;
 
 /** \ingroup rpmbuild
+ * Bit(s) to control package generation
+ */
+typedef enum rpmBuildPkgFlags_e {
+    RPMBUILD_PKG_NONE		= 0,
+    RPMBUILD_PKG_NODIRTOKENS	= (1 << 0), /*!< Legacy filename layout */
+} rpmBuildPkgFlags;
+
+/** \ingroup rpmbuild
  * Describe build command line request.
  */
 struct rpmBuildArguments_s {
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control verification. */
     rpmSpecFlags specFlags;	/*!< Bit(s) to control spec parsing. */
+    rpmBuildPkgFlags pkgFlags;	/*!< Bit(s) to control package generation. */
     int buildAmount;		/*!< Bit(s) to control operation. */
     char * buildRootOverride; 	/*!< from --buildroot */
     char * targets;		/*!< Target platform(s), comma separated. */
@@ -63,11 +72,6 @@ extern struct rpmBuildArguments_s	rpmBTArgs;
 /** \ingroup rpmbuild
  */
 extern struct poptOption		rpmBuildPoptTable[];
-
-/** \ingroup rpmbuild
- * Should version 3 packages be produced?
- */
-extern int _noDirTokens;
 
 /** \ingroup rpmbuild
  * Parse spec file into spec control structure.
