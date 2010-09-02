@@ -66,14 +66,6 @@ struct rpmBuildArguments_s {
 typedef	struct rpmBuildArguments_s *	BTA_t;
 
 /** \ingroup rpmbuild
- */
-extern struct rpmBuildArguments_s	rpmBTArgs;
-
-/** \ingroup rpmbuild
- */
-extern struct poptOption		rpmBuildPoptTable[];
-
-/** \ingroup rpmbuild
  * Parse spec file into spec control structure.
  * @todo Eliminate buildRoot from here, its a build, not spec property
  *
