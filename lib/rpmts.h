@@ -316,7 +316,7 @@ int rpmtsSetSolveCallback(rpmts ts,
 /** \ingroup rpmts
  * Return current transaction set problems.
  * @param ts		transaction set
- * @return		current problem set (or NULL)
+ * @return		current problem set (or NULL if no problems)
  */
 rpmps rpmtsProblems(rpmts ts);
 

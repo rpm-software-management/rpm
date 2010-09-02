@@ -494,6 +494,12 @@ rpmps rpmtsProblems(rpmts ts)
 	rpmpsFree(teprobs);
     }
     pi = rpmtsiFree(pi);
+
+    /* Return NULL on no problems instead of an empty set */
+    if (rpmpsNumProblems(ps) == 0) {
+	ps = rpmpsFree(ps);
+    }
+
     return ps;
 }
 
