@@ -26,7 +26,6 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_BUILDROOT		-1015
 #define	POPT_TARGETPLATFORM	-1016
 #define	POPT_NOBUILD		-1017
-#define	POPT_SHORTCIRCUIT	-1018
 #define	POPT_RMSPEC		-1019
 #define POPT_NODIRTOKENS	-1020
 
@@ -48,6 +47,9 @@ static struct rpmBuildArguments_s rpmBTArgs;
 #define	POPT_TS			0x7473
 
 extern int _fsm_debug;
+
+static int noDeps = 0;			/*!< from --nodeps */
+static int shortCircuit = 0;		/*!< from --short-circuit */
 
 static void buildArgCallback( poptContext con,
 	enum poptCallbackReason reason,
@@ -74,7 +76,7 @@ static void buildArgCallback( poptContext con,
     case POPT_TP:
     case POPT_TS:
 	if (opt->val == POPT_BS || opt->val == POPT_TS)
-	    rba->noDeps = 1;
+	    noDeps = 1;
 	if (rba->buildMode == '\0' && rba->buildChar == '\0') {
 	    rba->buildMode = (((unsigned)opt->val) >> 8) & 0xff;
 	    rba->buildChar = (opt->val     ) & 0xff;
@@ -84,7 +86,6 @@ static void buildArgCallback( poptContext con,
     case POPT_NODIRTOKENS: rba->pkgFlags |= RPMBUILD_PKG_NODIRTOKENS; break;
     case POPT_NOBUILD: rba->buildAmount |= RPMBUILD_NOBUILD; break;
     case POPT_NOLANG: rba->specFlags |= RPMSPEC_NOLANG; break;
-    case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
@@ -109,10 +110,6 @@ static void buildArgCallback( poptContext con,
 
     case RPMCLI_POPT_NOHDRCHK:
 	rba->qva_flags |= VERIFY_HDRCHK;
-	break;
-
-    case RPMCLI_POPT_NODEPS:
-	rba->noDeps = 1;
 	break;
 
     case RPMCLI_POPT_FORCE:
@@ -187,7 +184,7 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("debug file state machine"), NULL},
  { "nobuild", '\0', 0, 0,  POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
- { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
+ { "nodeps", '\0', POPT_ARG_VAL, &noDeps, 1,
 	N_("do not verify build dependencies"), NULL },
  { "nodirtokens", '\0', 0, 0, POPT_NODIRTOKENS,
 	N_("generate package header(s) compatible with (legacy) rpm v3 packaging"),
@@ -206,7 +203,7 @@ static struct poptOption rpmBuildPoptTable[] = {
 	N_("remove sources when done"), NULL},
  { "rmspec", '\0', 0, 0, POPT_RMSPEC,
 	N_("remove specfile when done"), NULL},
- { "short-circuit", '\0', 0, 0,  POPT_SHORTCIRCUIT,
+ { "short-circuit", '\0', POPT_ARG_VAL, &shortCircuit,  1,
 	N_("skip straight to specified stage (only for c,i)"), NULL },
  { "target", '\0', POPT_ARG_STRING, 0,  POPT_TARGETPLATFORM,
 	N_("override target platform"), "CPU-VENDOR-OS" },
@@ -479,7 +476,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
 
     /* Check build prerequisites if necessary, unless disabled */
-    if (!justRm && !ba->noDeps && checkSpec(ts, spec->sourceHeader)) {
+    if (!justRm && !noDeps && checkSpec(ts, spec->sourceHeader)) {
 	goto exit;
     }
 
@@ -631,16 +628,16 @@ int main(int argc, char *argv[])
 	case 'b':
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    if ((ba->buildChar == 'b') && ba->shortCircuit)
+	    if ((ba->buildChar == 'b') && shortCircuit)
 		break;
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
 	    ba->buildAmount |= RPMBUILD_CHECK;
-	    if ((ba->buildChar == 'i') && ba->shortCircuit)
+	    if ((ba->buildChar == 'i') && shortCircuit)
 		break;
 	case 'c':
 	    ba->buildAmount |= RPMBUILD_BUILD;
-	    if ((ba->buildChar == 'c') && ba->shortCircuit)
+	    if ((ba->buildChar == 'c') && shortCircuit)
 		break;
 	case 'p':
 	    ba->buildAmount |= RPMBUILD_PREP;
