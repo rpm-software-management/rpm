@@ -17,10 +17,12 @@ extern "C" {
  */
 typedef struct Package_s * Package;
 
-#define RPMBUILD_ISSOURCE	(1 << 0)
-#define RPMBUILD_ISPATCH	(1 << 1)
-#define RPMBUILD_ISICON		(1 << 2)
-#define RPMBUILD_ISNO		(1 << 3)
+typedef enum rpmSourceFlags_e {
+    RPMBUILD_ISSOURCE	= (1 << 0),
+    RPMBUILD_ISPATCH	= (1 << 1),
+    RPMBUILD_ISICON	= (1 << 2),
+    RPMBUILD_ISNO	= (1 << 3),
+} rpmSourceFlags;
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
