@@ -7,9 +7,8 @@
 
 /** \ingroup rpmbuild
  * Destroy uid/gid caches.
- * @todo Get this out of the ABI
  */
-/* RPM_GNUC_INTERNAL XXX should be internal too but rpmbuild "needs" for now */
+RPM_GNUC_INTERNAL
 void freeNames(void);
 
 /** \ingroup rpmbuild

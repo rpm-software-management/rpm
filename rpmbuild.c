@@ -14,7 +14,6 @@ const char *__progname;
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
 #include "lib/signature.h"
-#include "build/rpmbuild_misc.h"	/* XXX freeNames() */
 #include "cliutils.h"
 
 #include "debug.h"
@@ -474,7 +473,6 @@ int main(int argc, char *argv[])
 
     ts = rpmtsFree(ts);
     finishPipe();
-    freeNames();
     ba->buildRootOverride = _free(ba->buildRootOverride);
     ba->targets = _free(ba->targets);
 

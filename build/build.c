@@ -11,6 +11,7 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
 #include "build/rpmbuild_internal.h"
+#include "build/rpmbuild_misc.h"
 
 #include "debug.h"
 
@@ -295,6 +296,7 @@ exit:
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }
+    freeNames();
 
     return rc;
 }
