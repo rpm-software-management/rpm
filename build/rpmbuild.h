@@ -71,6 +71,14 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot);
 
 /** \ingroup rpmbuild
+ * Verify build depencies of a spec against.
+ * @param ts		(empty) transaction set
+ * @param spec		parsed spec control structure
+ * @return		rpm problem set or NULL on no problems
+ */
+rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec);
+
+/** \ingroup rpmbuild
  * Build stages state machine driver.
  * @param buildArgs	build arguments
  * @param spec		spec file control structure

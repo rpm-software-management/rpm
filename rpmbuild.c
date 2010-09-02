@@ -242,30 +242,17 @@ static struct poptOption optionsTable[] = {
    POPT_TABLEEND
 };
 
-static int checkSpec(rpmts ts, Header h)
+static int checkSpec(rpmts ts, rpmSpec spec)
 {
-    rpmps ps;
     int rc;
+    rpmps ps = rpmSpecCheckDeps(ts, spec);
 
-    if (!headerIsEntry(h, RPMTAG_REQUIRENAME)
-     && !headerIsEntry(h, RPMTAG_CONFLICTNAME))
-	return 0;
-
-    rc = rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
-
-    rc = rpmtsCheck(ts);
-
-    ps = rpmtsProblems(ts);
-    if (rc == 0 && rpmpsNumProblems(ps) > 0) {
+    if (ps) {
 	rpmlog(RPMLOG_ERR, _("Failed build dependencies:\n"));
 	rpmpsPrint(NULL, ps);
-	rc = 1;
     }
+    rc = (ps != NULL);
     ps = rpmpsFree(ps);
-
-    /* XXX nuke the added package. */
-    rpmtsClean(ts);
-
     return rc;
 }
 
@@ -481,7 +468,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     }
 
     /* Check build prerequisites if necessary, unless disabled */
-    if (!justRm && !noDeps && checkSpec(ts, spec->sourceHeader)) {
+    if (!justRm && !noDeps && checkSpec(ts, spec)) {
 	goto exit;
     }
 

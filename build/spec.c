@@ -310,6 +310,20 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     return spec;
 }
 
+rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
+{
+    rpmps probs = NULL;
+
+    rpmtsClean(ts);
+
+    rpmtsAddInstallElement(ts, spec->sourceHeader, NULL, 0, NULL);
+    rpmtsCheck(ts);
+    probs = rpmtsProblems(ts);
+
+    rpmtsClean(ts);
+    return probs;
+}
+
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     rpmSpec spec = NULL;
