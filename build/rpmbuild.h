@@ -53,8 +53,6 @@ struct rpmBuildArguments_s {
     char * buildRootOverride; 	/*!< from --buildroot */
     char * targets;		/*!< Target platform(s), comma separated. */
     char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
-    char buildMode;		/*!< Build mode (one of "btBC") */
-    char buildChar;		/*!< Build stage (one of "abcilps ") */
     const char * rootdir;
 };
 

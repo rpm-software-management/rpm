@@ -51,6 +51,8 @@ extern int _fsm_debug;
 static rpmVerifyFlags qva_flags = 0;	/*!< Bit(s) to control verification */
 static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
+static char buildMode = 0;		/*!< Build mode (one of "btBC") */
+static char buildChar = 0;		/*!< Build stage (one of "abcilps ") */
 
 static void buildArgCallback( poptContext con,
 	enum poptCallbackReason reason,
@@ -78,9 +80,9 @@ static void buildArgCallback( poptContext con,
     case POPT_TS:
 	if (opt->val == POPT_BS || opt->val == POPT_TS)
 	    noDeps = 1;
-	if (rba->buildMode == '\0' && rba->buildChar == '\0') {
-	    rba->buildMode = (((unsigned)opt->val) >> 8) & 0xff;
-	    rba->buildChar = (opt->val     ) & 0xff;
+	if (buildMode == '\0' && buildChar == '\0') {
+	    buildMode = (((unsigned)opt->val) >> 8) & 0xff;
+	    buildChar = (opt->val     ) & 0xff;
 	}
 	break;
 
@@ -410,7 +412,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
-    if (ba->buildMode == 't') {
+    if (buildMode == 't') {
     	char *srcdir = NULL, *dir;
 
 	specFile = getTarSpec(arg);
@@ -485,7 +487,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
     
-    if (ba->buildMode == 't')
+    if (buildMode == 't')
 	(void) unlink(specFile);
     rc = 0;
 
@@ -573,7 +575,7 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 
-    switch (ba->buildMode) {
+    switch (buildMode) {
     case 'b':	bigMode = MODE_BUILD;		break;
     case 't':	bigMode = MODE_TARBUILD;	break;
     case 'B':	bigMode = MODE_REBUILD;		break;
@@ -623,22 +625,22 @@ int main(int argc, char *argv[])
 	break;
     case MODE_BUILD:
     case MODE_TARBUILD:
-	switch (ba->buildChar) {
+	switch (buildChar) {
 	case 'a':
 	    ba->buildAmount |= RPMBUILD_PACKAGESOURCE;
 	case 'b':
 	    ba->buildAmount |= RPMBUILD_PACKAGEBINARY;
 	    ba->buildAmount |= RPMBUILD_CLEAN;
-	    if ((ba->buildChar == 'b') && shortCircuit)
+	    if ((buildChar == 'b') && shortCircuit)
 		break;
 	case 'i':
 	    ba->buildAmount |= RPMBUILD_INSTALL;
 	    ba->buildAmount |= RPMBUILD_CHECK;
-	    if ((ba->buildChar == 'i') && shortCircuit)
+	    if ((buildChar == 'i') && shortCircuit)
 		break;
 	case 'c':
 	    ba->buildAmount |= RPMBUILD_BUILD;
-	    if ((ba->buildChar == 'c') && shortCircuit)
+	    if ((buildChar == 'c') && shortCircuit)
 		break;
 	case 'p':
 	    ba->buildAmount |= RPMBUILD_PREP;
