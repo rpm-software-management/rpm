@@ -79,6 +79,14 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec);
 
 /** \ingroup rpmbuild
+ * Retrieve build dependency set from spec.
+ * @param spec		parsed spec control structure
+ * @param tag		dependency tag
+ * @return		dependency set of tag (or NULL)
+ */
+rpmds rpmSpecDS(rpmSpec spec, rpmTag tag);
+
+/** \ingroup rpmbuild
  * Build stages state machine driver.
  * @param buildArgs	build arguments
  * @param spec		spec file control structure

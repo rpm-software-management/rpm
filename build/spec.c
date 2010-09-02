@@ -310,6 +310,11 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     return spec;
 }
 
+rpmds rpmSpecDS(rpmSpec spec, rpmTag tag)
+{
+    return (spec != NULL) ? rpmdsNew(spec->buildRestrictions, tag, 0) : NULL;
+}
+
 rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
 {
     rpmps probs = NULL;
