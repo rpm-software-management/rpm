@@ -41,8 +41,6 @@ struct rpmBuildArguments_s         rpmBTArgs;
 
 extern int _fsm_debug;
 
-static int noBuild = 0;
-
 int _noDirTokens = 0;
 
 /**
@@ -79,7 +77,7 @@ static void buildArgCallback( poptContext con,
 	}
 	break;
 
-    case POPT_NOBUILD: rba->noBuild = 1; break;
+    case POPT_NOBUILD: rba->buildAmount |= RPMBUILD_NOBUILD; break;
     case POPT_NOLANG: rba->specFlags |= RPMSPEC_NOLANG; break;
     case POPT_SHORTCIRCUIT: rba->shortCircuit = 1; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
@@ -187,7 +185,7 @@ struct poptOption rpmBuildPoptTable[] = {
         N_("ignore ExcludeArch: directives from spec file"), NULL},
  { "fsmdebug", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_DOC_HIDDEN), &_fsm_debug, -1,
 	N_("debug file state machine"), NULL},
- { "nobuild", '\0', 0, &noBuild,  POPT_NOBUILD,
+ { "nobuild", '\0', 0, 0,  POPT_NOBUILD,
 	N_("do not execute any stages of the build"), NULL },
  { "nodeps", '\0', 0, NULL, RPMCLI_POPT_NODEPS,
 	N_("do not verify build dependencies"), NULL },

@@ -30,7 +30,9 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_RMSOURCE	= (1 <<  8),	/*!< Remove source(s) and patch(s). */
     RPMBUILD_RMBUILD	= (1 <<  9),	/*!< Remove build sub-tree. */
     RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
-    RPMBUILD_RMSPEC	= (1 << 11)	/*!< Remove spec file. */
+    RPMBUILD_RMSPEC	= (1 << 11),	/*!< Remove spec file. */
+
+    RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
 } rpmBuildFlags;
 
 /** \ingroup rpmbuild
@@ -43,7 +45,6 @@ struct rpmBuildArguments_s {
     char * buildRootOverride; 	/*!< from --buildroot */
     char * targets;		/*!< Target platform(s), comma separated. */
     char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
-    int noBuild;		/*!< from --nobuild */
     int noDeps;			/*!< from --nodeps */
     int shortCircuit;		/*!< from --short-circuit */
     char buildMode;		/*!< Build mode (one of "btBC") */

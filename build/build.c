@@ -216,7 +216,7 @@ exit:
 static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 {
     rpmRC rc = RPMRC_OK;
-    int test = buildArgs->noBuild;
+    int test = (what & RPMBUILD_NOBUILD);
     char *cookie = buildArgs->cookie ? xstrdup(buildArgs->cookie) : NULL;
 
     /* XXX TODO: rootDir is only relevant during build, eliminate from spec */
