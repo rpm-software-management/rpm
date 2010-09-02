@@ -53,6 +53,7 @@ static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
 static char buildMode = 0;		/*!< Build mode (one of "btBC") */
 static char buildChar = 0;		/*!< Build stage (one of "abcilps ") */
+static ARGV_t build_targets = NULL;	/*!< Target platform(s) */
 
 static void buildArgCallback( poptContext con,
 	enum poptCallbackReason reason,
@@ -100,7 +101,7 @@ static void buildArgCallback( poptContext con,
 	rba->buildRootOverride = xstrdup(arg);
 	break;
     case POPT_TARGETPLATFORM:
-	rstrscat(&rba->targets, rba->targets ? "," : "", arg, NULL);
+	argvSplit(&build_targets, arg, ",");
 	break;
 
     case RPMCLI_POPT_NODIGEST:
@@ -500,9 +501,8 @@ exit:
 
 static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 {
-    char *t, *te;
     int rc = 0;
-    char * targets = ba->targets;
+    char * targets = argvJoin(build_targets, ",");
 #define	buildCleanMask	(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)
     int cleanFlags = ba->buildAmount & buildCleanMask;
     rpmVSFlags vsflags, ovsflags;
@@ -516,7 +516,7 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
 	vsflags |= RPMVSF_NOHDRCHK;
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
-    if (targets == NULL) {
+    if (build_targets == NULL) {
 	rc =  buildForTarget(ts, arg, ba);
 	goto exit;
     }
@@ -526,25 +526,17 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     printf(_("Building target platforms: %s\n"), targets);
 
     ba->buildAmount &= ~buildCleanMask;
-    for (t = targets; *t != '\0'; t = te) {
-	char *target;
-	if ((te = strchr(t, ',')) == NULL)
-	    te = t + strlen(t);
-	target = xmalloc(te-t+1);
-	strncpy(target, t, (te-t));
-	target[te-t] = '\0';
-	if (*te != '\0')
-	    te++;
-	else	/* XXX Perform clean-up after last target build. */
+    for (ARGV_const_t target = build_targets; target && *target; target++) {
+	/* Perform clean-up after last target build. */
+	if (*(target + 1) == NULL)
 	    ba->buildAmount |= cleanFlags;
 
-	printf(_("Building for target %s\n"), target);
+	printf(_("Building for target %s\n"), *target);
 
 	/* Read in configuration for target. */
 	rpmFreeMacros(NULL);
 	rpmFreeRpmrc();
-	(void) rpmReadConfigFiles(rcfile, target);
-	free(target);
+	(void) rpmReadConfigFiles(rcfile, *target);
 	rc = buildForTarget(ts, arg, ba);
 	if (rc)
 	    break;
@@ -556,6 +548,7 @@ exit:
     rpmFreeMacros(NULL);
     rpmFreeRpmrc();
     (void) rpmReadConfigFiles(rcfile, NULL);
+    free(targets);
 
     return rc;
 }
@@ -669,7 +662,7 @@ int main(int argc, char *argv[])
     ts = rpmtsFree(ts);
     finishPipe();
     ba->buildRootOverride = _free(ba->buildRootOverride);
-    ba->targets = _free(ba->targets);
+    build_targets = argvFree(build_targets);
 
     rpmcliFini(optCon);
 

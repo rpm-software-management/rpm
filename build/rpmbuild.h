@@ -51,7 +51,6 @@ struct rpmBuildArguments_s {
     rpmBuildPkgFlags pkgFlags;	/*!< Bit(s) to control package generation. */
     int buildAmount;		/*!< Bit(s) to control operation. */
     char * buildRootOverride; 	/*!< from --buildroot */
-    char * targets;		/*!< Target platform(s), comma separated. */
     char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
     const char * rootdir;
 };
