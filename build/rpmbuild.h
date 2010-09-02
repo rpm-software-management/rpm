@@ -87,12 +87,12 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec);
 rpmds rpmSpecDS(rpmSpec spec, rpmTag tag);
 
 /** \ingroup rpmbuild
- * Build stages state machine driver.
- * @param buildArgs	build arguments
+ * Spec build stages state machine driver.
  * @param spec		spec file control structure
+ * @param buildArgs	build arguments
  * @return		RPMRC_OK on success
  */
-rpmRC rpmSpecBuild(BTA_t buildArgs, rpmSpec spec);
+rpmRC rpmSpecBuild(rpmSpec spec, BTA_t buildArgs);
 
 #ifdef __cplusplus
 }

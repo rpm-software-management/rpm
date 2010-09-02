@@ -472,7 +472,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
 	goto exit;
     }
 
-    if (rpmSpecBuild(ba, spec)) {
+    if (rpmSpecBuild(spec, ba)) {
 	goto exit;
     }
     
