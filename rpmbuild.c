@@ -48,6 +48,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 
 extern int _fsm_debug;
 
+static rpmVerifyFlags qva_flags = 0;	/*!< Bit(s) to control verification */
 static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
 
@@ -101,15 +102,15 @@ static void buildArgCallback( poptContext con,
 	break;
 
     case RPMCLI_POPT_NODIGEST:
-	rba->qva_flags |= VERIFY_DIGEST;
+	qva_flags |= VERIFY_DIGEST;
 	break;
 
     case RPMCLI_POPT_NOSIGNATURE:
-	rba->qva_flags |= VERIFY_SIGNATURE;
+	qva_flags |= VERIFY_SIGNATURE;
 	break;
 
     case RPMCLI_POPT_NOHDRCHK:
-	rba->qva_flags |= VERIFY_HDRCHK;
+	qva_flags |= VERIFY_HDRCHK;
 	break;
 
     case RPMCLI_POPT_FORCE:
@@ -505,11 +506,11 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     rpmVSFlags vsflags, ovsflags;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
-    if (ba->qva_flags & VERIFY_DIGEST)
+    if (qva_flags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
-    if (ba->qva_flags & VERIFY_SIGNATURE)
+    if (qva_flags & VERIFY_SIGNATURE)
 	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (ba->qva_flags & VERIFY_HDRCHK)
+    if (qva_flags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
