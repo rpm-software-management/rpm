@@ -47,7 +47,6 @@ typedef enum rpmBuildPkgFlags_e {
  * Describe build command line request.
  */
 struct rpmBuildArguments_s {
-    rpmSpecFlags specFlags;	/*!< Bit(s) to control spec parsing. */
     rpmBuildPkgFlags pkgFlags;	/*!< Bit(s) to control package generation. */
     int buildAmount;		/*!< Bit(s) to control operation. */
     char * buildRootOverride; 	/*!< from --buildroot */

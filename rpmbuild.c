@@ -48,6 +48,7 @@ static struct rpmBuildArguments_s rpmBTArgs;
 
 extern int _fsm_debug;
 
+static rpmSpecFlags spec_flags = 0;	/*!< Bit(s) to control spec parsing. */
 static rpmVerifyFlags qva_flags = 0;	/*!< Bit(s) to control verification */
 static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
@@ -89,7 +90,7 @@ static void buildArgCallback( poptContext con,
 
     case POPT_NODIRTOKENS: rba->pkgFlags |= RPMBUILD_PKG_NODIRTOKENS; break;
     case POPT_NOBUILD: rba->buildAmount |= RPMBUILD_NOBUILD; break;
-    case POPT_NOLANG: rba->specFlags |= RPMSPEC_NOLANG; break;
+    case POPT_NOLANG: spec_flags |= RPMSPEC_NOLANG; break;
     case POPT_RMSOURCE: rba->buildAmount |= RPMBUILD_RMSOURCE; break;
     case POPT_RMSPEC: rba->buildAmount |= RPMBUILD_RMSPEC; break;
     case POPT_RMBUILD: rba->buildAmount |= RPMBUILD_RMBUILD; break;
@@ -117,7 +118,7 @@ static void buildArgCallback( poptContext con,
 	break;
 
     case RPMCLI_POPT_FORCE:
-	rba->specFlags |= RPMSPEC_FORCE;
+	spec_flags |= RPMSPEC_FORCE;
 	break;
 
     }
@@ -397,7 +398,7 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     rpmSpec spec = NULL;
     int rc = 1; /* assume failure */
     int justRm = ((buildAmount & ~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) == 0);
-    rpmSpecFlags specFlags = ba->specFlags;
+    rpmSpecFlags specFlags = spec_flags;
 
 #ifndef	DYING
     rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
