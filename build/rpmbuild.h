@@ -15,7 +15,7 @@ extern "C" {
 #endif
 
 /** \ingroup rpmbuild
- * Bit(s) to control buildSpec() operation.
+ * Bit(s) to control rpmSpecBuild() operation.
  */
 typedef enum rpmBuildFlags_e {
     RPMBUILD_NONE	= 0,
@@ -44,11 +44,11 @@ typedef enum rpmBuildPkgFlags_e {
 } rpmBuildPkgFlags;
 
 /** \ingroup rpmbuild
- * Describe build command line request.
+ * Describe build request.
  */
 struct rpmBuildArguments_s {
     rpmBuildPkgFlags pkgFlags;	/*!< Bit(s) to control package generation. */
-    int buildAmount;		/*!< Bit(s) to control operation. */
+    rpmBuildFlags buildAmount;	/*!< Bit(s) to control build execution. */
     char * buildRootOverride; 	/*!< from --buildroot */
     char * cookie;		/*!< NULL for binary, ??? for source, rpm's */
     const char * rootdir;
