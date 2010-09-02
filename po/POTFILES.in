@@ -23,7 +23,6 @@ build/parseReqs.c
 build/parseScript.c
 build/parseSpec.c
 build/policies.c
-build/poptBT.c
 build/reqprov.c
 build/rpmfc.c
 build/spec.c
