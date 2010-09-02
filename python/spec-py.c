@@ -213,14 +213,14 @@ static PyGetSetDef spec_getseters[] = {
 
 static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 {
-    char * kwlist[] = {"specfile", NULL};
+    char * kwlist[] = {"specfile", "flags", NULL};
     const char * specfile;
     rpmSpec spec = NULL;
-    /* TODO: add arguments to control these */
+    /* XXX This is a dumb default but anything else breaks compatibility... */
     rpmSpecFlags flags = (RPMSPEC_ANYARCH|RPMSPEC_FORCE);
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:spec_new", kwlist,
-				     &specfile))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|i:spec_new", kwlist,
+				     &specfile, &flags))
 	return NULL;
 
     spec = rpmSpecParse(specfile, flags, NULL);
