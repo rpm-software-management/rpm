@@ -668,7 +668,7 @@ static rpmRC checkPackages(char *pkgcheck)
     return RPMRC_OK;
 }
 
-rpmRC packageBinaries(rpmSpec spec, const char *cookie)
+rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 {
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
@@ -705,7 +705,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie)
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
 
-	if (rpmBTArgs.shortCircuit) {
+	if (cheating) {
 	    (void) rpmlibNeedsFeature(pkg->header, "ShortCircuited", "4.9.0-1");
 	}
 	

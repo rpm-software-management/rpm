@@ -234,6 +234,8 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	    }
 	}
     } else {
+	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL));
+
 	if ((what & RPMBUILD_PREP) &&
 	    (rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test)))
 		goto exit;
@@ -268,7 +270,7 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 		return rc;
 
 	if (((what & RPMBUILD_PACKAGEBINARY) && !test) &&
-	    (rc = packageBinaries(spec, cookie)))
+	    (rc = packageBinaries(spec, cookie, (didBuild == 0))))
 		goto exit;
 	
 	if ((what & RPMBUILD_CLEAN) &&

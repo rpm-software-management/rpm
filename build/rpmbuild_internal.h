@@ -285,10 +285,11 @@ int processSourceFiles(rpmSpec spec);
  * Generate binary package(s).
  * @param spec		spec file control structure
  * @param cookie	build identifier "cookie" or NULL
+ * @param cheating	was build shortcircuited?
  * @return		RPMRC_OK on success
  */
 RPM_GNUC_INTERNAL
-rpmRC packageBinaries(rpmSpec spec, const char *cookie);
+rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating);
 
 /** \ingroup rpmbuild
  * Generate source package.
