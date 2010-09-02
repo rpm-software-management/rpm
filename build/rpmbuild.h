@@ -29,7 +29,7 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_PACKAGEBINARY = (1 <<  7),	/*!< Create binary package(s). */
     RPMBUILD_RMSOURCE	= (1 <<  8),	/*!< Remove source(s) and patch(s). */
     RPMBUILD_RMBUILD	= (1 <<  9),	/*!< Remove build sub-tree. */
-    RPMBUILD_STRINGBUF	= (1 << 10),	/*!< only for doScript() */
+    RPMBUILD_STRINGBUF	= (1 << 10),	/*!< Internal use only */
     RPMBUILD_RMSPEC	= (1 << 11),	/*!< Remove spec file. */
 
     RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
