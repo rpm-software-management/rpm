@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-01 10:24+0300\n"
+"POT-Creation-Date: 2010-09-02 14:29+0300\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -88,7 +88,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:85 rpmbuild.c:41 tools/rpmdeps.c:32 tools/rpmgraph.c:228
+#: rpmqv.c:85 rpmbuild.c:237 tools/rpmdeps.c:32 tools/rpmgraph.c:228
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgstr ""
 "--root (-r) sme biti podan le ob namestitvi, odstranitvi poizvedbi ali "
 "vnovièni izgradnji paketa"
 
-#: rpmqv.c:327 rpmbuild.c:393
+#: rpmqv.c:327 rpmbuild.c:567
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenti izbire --root (-r) se morajo zaèeti z /"
 
@@ -282,81 +282,251 @@ msgstr "argumenti za preverjanje niso podani"
 msgid "no arguments given"
 msgstr "argumenti za poizvedbo niso podani"
 
-#: rpmbuild.c:35
+#: rpmbuild.c:99
+#, fuzzy, c-format
+msgid "buildroot already specified, ignoring %s\n"
+msgstr "buildroot je ¾e doloèen"
+
+#: rpmbuild.c:132
+#, fuzzy, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr "priprava (razpakiraj izvorno kodo in uporabi popravke)"
+
+#: rpmbuild.c:133 rpmbuild.c:136 rpmbuild.c:139 rpmbuild.c:142 rpmbuild.c:145
+#: rpmbuild.c:148 rpmbuild.c:151
+msgid "<specfile>"
+msgstr ""
+
+#: rpmbuild.c:135
+#, fuzzy
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr "izgradnja prek stopnje %%prep iz datoteke s specifikacijami"
+
+#: rpmbuild.c:138
+#, fuzzy
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr "izgradnja prek stopnje %%install iz datoteke s specifikacijami"
+
+#: rpmbuild.c:141
+#, fuzzy, c-format
+msgid "verify %files section from <specfile>"
+msgstr "preverjanje dela datoteke s specifikacijami %%files"
+
+#: rpmbuild.c:144
+#, fuzzy
+msgid "build source and binary packages from <specfile>"
+msgstr "izgradi izvorni in binarni paket iz datoteke s specifikacijami"
+
+#: rpmbuild.c:147
+#, fuzzy
+msgid "build binary package only from <specfile>"
+msgstr "izgradi binarni paket iz datoteke .spec"
+
+#: rpmbuild.c:150
+#, fuzzy
+msgid "build source package only from <specfile>"
+msgstr "izgradi izvorni paket iz datoteke .spec"
+
+#: rpmbuild.c:154
+#, fuzzy, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr "priprava (razpakiraj izvorno kodo in uporabi popravke)"
+
+#: rpmbuild.c:155 rpmbuild.c:158 rpmbuild.c:161 rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:170 rpmbuild.c:173
+msgid "<tarball>"
+msgstr ""
+
+#: rpmbuild.c:157
+#, fuzzy
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "paket izgradi prek stopnje %%prep iz arhiva tar"
+
+#: rpmbuild.c:160
+#, fuzzy
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr "paket izgradi prek stopnje %%install iz arhiva tar"
+
+#: rpmbuild.c:163
+#, fuzzy, c-format
+msgid "verify %files section from <tarball>"
+msgstr "preverjanje dela %%files iz arhiva tar"
+
+#: rpmbuild.c:166
+#, fuzzy
+msgid "build source and binary packages from <tarball>"
+msgstr "iz arhiva tar izgradi izvorni in binarni paket"
+
+#: rpmbuild.c:169
+#, fuzzy
+msgid "build binary package only from <tarball>"
+msgstr "iz arhiva tar izgradi binarni paket"
+
+#: rpmbuild.c:172
+#, fuzzy
+msgid "build source package only from <tarball>"
+msgstr "iz arhiva tar izgradi izvorni paket"
+
+#: rpmbuild.c:176
+#, fuzzy
+msgid "build binary package from <source package>"
+msgstr "binarni paket izgradi iz izvornega"
+
+#: rpmbuild.c:177 rpmbuild.c:180
+#, fuzzy
+msgid "<source package>"
+msgstr "ni paketov\n"
+
+#: rpmbuild.c:179
+#, fuzzy
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr "izgradnja prek stopnje %%install iz izvornega paketa"
+
+#: rpmbuild.c:183
+msgid "override build root"
+msgstr "brez upo¹tevanja vrhnjega imenika izgradnje"
+
+#: rpmbuild.c:185
+msgid "remove build tree when done"
+msgstr "po zakljuèku drevo imenikov v katerih smo pakete gradili odstrani"
+
+#: rpmbuild.c:187
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr ""
+
+#: rpmbuild.c:189
+#, fuzzy
+msgid "debug file state machine"
+msgstr "okvarjeno stanje datoteke: %s"
+
+#: rpmbuild.c:191
+msgid "do not execute any stages of the build"
+msgstr "brez izvajanja katerekoli od stopenj izgradnje"
+
+#: rpmbuild.c:193
+#, fuzzy
+msgid "do not verify build dependencies"
+msgstr "brez preverjanja soodvisnosti paketa"
+
+#: rpmbuild.c:195
+msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
+msgstr ""
+
+#: rpmbuild.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
+#: lib/poptQV.c:331
+#, fuzzy
+msgid "don't verify package digest(s)"
+msgstr "brez preverjanja soodvisnosti paketa"
+
+#: rpmbuild.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
+#: lib/poptQV.c:334
+#, fuzzy
+msgid "don't verify database header(s) when retrieved"
+msgstr "brez preverjanja arhitekture paketa"
+
+#: rpmbuild.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
+#: lib/poptQV.c:336
+#, fuzzy
+msgid "don't verify package signature(s)"
+msgstr "preveri podpis paketa(-ov)"
+
+#: rpmbuild.c:206
+#, fuzzy
+msgid "do not accept i18N msgstr's from specfile"
+msgstr "brez sprejemanja internacionaliziranih katalogov iz datoteke spec"
+
+#: rpmbuild.c:208
+msgid "remove sources when done"
+msgstr "po zakljuèku naj se izvorna koda izbri¹e"
+
+#: rpmbuild.c:210
+msgid "remove specfile when done"
+msgstr "po zakljuèku odstrani datoteko s specifikacijami"
+
+#: rpmbuild.c:212
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "preskok naravnost na doloèeno stopnjo (samo za c,i)"
+
+#: rpmbuild.c:214
+msgid "override target platform"
+msgstr "brez upo¹tevanja strojnega okolja ciljnega sistema"
+
+#: rpmbuild.c:231
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmbuild.c:64
+#: rpmbuild.c:251
 #, fuzzy
 msgid "Failed build dependencies:\n"
 msgstr "izdelava soodvisnosti je bila neuspe¹na:\n"
 
-#: rpmbuild.c:86
+#: rpmbuild.c:269
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Datoteke s specifikacijami %s ni mo¾no odpreti: %s\n"
 
-#: rpmbuild.c:148
+#: rpmbuild.c:331
 #, fuzzy, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Povezava s programom tar je bila neuspe¹na: %m\n"
 
-#: rpmbuild.c:167
+#: rpmbuild.c:350
 #, fuzzy, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Neuspe¹no branje datoteke s specifikacijami iz %s"
 
-#: rpmbuild.c:179
+#: rpmbuild.c:362
 #, fuzzy, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Preimenovanje %s v %s je bilo neuspe¹no: %m"
 
-#: rpmbuild.c:254
+#: rpmbuild.c:437
 #, fuzzy, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "status %s ni na voljo: %s"
 
-#: rpmbuild.c:258
+#: rpmbuild.c:441
 #, fuzzy, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Datoteka ni obièajna datoteka: %s\n"
 
-#: rpmbuild.c:265
+#: rpmbuild.c:448
 #, fuzzy, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Ne ka¾e, da je %s datoteka s specifikacijami."
 
-#: rpmbuild.c:333
+#: rpmbuild.c:514
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Izgradnja za ciljna strojna okolja: %s\n"
 
-#: rpmbuild.c:348
+#: rpmbuild.c:522
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Izgradnja za ciljni sistem %s\n"
 
-#: build/build.c:134 build/pack.c:405
+#: build/build.c:133 build/pack.c:405
 #, fuzzy
 msgid "Unable to open temp file.\n"
 msgstr "Zaèasne datoteke ni mo¾no odpreti"
 
-#: build/build.c:184
+#: build/build.c:181
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Izvajanje(%s): %s\n"
 
-#: build/build.c:190
+#: build/build.c:187
 #, fuzzy, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Izvajanje %s je bilo neuspe¹no (%s): %s"
 
-#: build/build.c:199
+#: build/build.c:196
 #, fuzzy, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "%s javi neuspe¹no izhodno kodo (%s)"
 
-#: build/build.c:292
+#: build/build.c:297
 msgid ""
 "\n"
 "\n"
@@ -424,193 +594,188 @@ msgstr "&& in || nista podprta za nize"
 msgid "syntax error in expression\n"
 msgstr "napaka v sklanji izraza"
 
-#: build/files.c:242
-#, c-format
-msgid "TIMECHECK failure: %s\n"
-msgstr "TIMECHECK neuspe¹en: %s\n"
-
-#: build/files.c:305 build/files.c:498 build/files.c:715
+#: build/files.c:285 build/files.c:478 build/files.c:695
 #, fuzzy, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/files.c:315 build/files.c:651 build/files.c:725 build/files.c:817
+#: build/files.c:295 build/files.c:631 build/files.c:705 build/files.c:797
 #, fuzzy, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Manjkajoèi ,)` v %s(%s"
 
-#: build/files.c:351 build/files.c:674
+#: build/files.c:331 build/files.c:654
 #, fuzzy, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Neveljaven ¾eton %s: %s"
 
-#: build/files.c:460
+#: build/files.c:440
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Manjkajoèi ,(` v %s %s"
 
-#: build/files.c:513
+#: build/files.c:493
 #, fuzzy, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Neprazen znak sledi %s(): %s"
 
-#: build/files.c:549
+#: build/files.c:529
 #, fuzzy, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Nepravilna skladnja: %s(%s)"
 
-#: build/files.c:558
+#: build/files.c:538
 #, fuzzy, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Nepravilno doloèilo naèina: %s(%s)"
 
-#: build/files.c:576
+#: build/files.c:556
 #, fuzzy, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Nepravilno doloèilo naèina imenika: %s(%s)"
 
-#: build/files.c:750
+#: build/files.c:730
 #, fuzzy, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Nenavadna dol¾ina za locale: \"%.s\" pri %%lang(%s)"
 
-#: build/files.c:760
+#: build/files.c:740
 #, fuzzy, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Podvojeni locale %.*s za %%lang(%s)"
 
-#: build/files.c:832
+#: build/files.c:812
 #, fuzzy, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Neveljaven ¾eton %s: %s"
 
-#: build/files.c:843
+#: build/files.c:823
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:897
+#: build/files.c:877
 #, fuzzy, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Za %%docdir je podan samo en argument"
 
-#: build/files.c:926
+#: build/files.c:906
 #, fuzzy, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dve datoteki v eni vrstici: %s"
 
-#: build/files.c:939
+#: build/files.c:919
 #, fuzzy, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Ime datoteke se mora zaèeti z \"/\": %s"
 
-#: build/files.c:950
+#: build/files.c:930
 #, fuzzy, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Posebnih %%doc ni mo¾no me¹ati z ostalimi oblikami: %s"
 
-#: build/files.c:1091
+#: build/files.c:1071
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1117
+#: build/files.c:1097
 #, fuzzy, c-format
 msgid "File listed twice: %s\n"
 msgstr "Datoteka je navedena dvakrat: %s"
 
-#: build/files.c:1240
+#: build/files.c:1220
 #, fuzzy, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1411
+#: build/files.c:1391
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1419
+#: build/files.c:1399
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1522
+#: build/files.c:1502
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1616
+#: build/files.c:1596
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1622
+#: build/files.c:1602
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: build/files.c:1626
+#: build/files.c:1606
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1635
+#: build/files.c:1615
 #, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "Makro %%%s se ne raz¹iri"
 
-#: build/files.c:1674
+#: build/files.c:1654
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1696
+#: build/files.c:1676
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1708 lib/rpminstall.c:419
+#: build/files.c:1688 lib/rpminstall.c:419
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1759
+#: build/files.c:1739
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1767
+#: build/files.c:1747
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2056
+#: build/files.c:2035
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
-#: build/files.c:2078 build/parsePrep.c:32
+#: build/files.c:2057 build/parsePrep.c:32
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
 
-#: build/files.c:2119
+#: build/files.c:2098
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "i¹èemo paket %s\n"
 
-#: build/files.c:2134
+#: build/files.c:2113
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2158
+#: build/files.c:2138
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
 
-#: build/files.c:2169
+#: build/files.c:2149
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -833,30 +998,30 @@ msgstr "v %%changelog je manjkajoèe ime"
 msgid "no description in %%changelog\n"
 msgstr "opis v %%changelog manjka"
 
-#: build/parseDescription.c:35
+#: build/parseDescription.c:33
 #, fuzzy, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "vrstica %d: Napaka pri razèlembi v razdelku %%description: %s"
 
-#: build/parseDescription.c:48 build/parseFiles.c:43 build/parsePolicies.c:45
+#: build/parseDescription.c:46 build/parseFiles.c:43 build/parsePolicies.c:45
 #: build/parseScript.c:232
 #, fuzzy, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "vrstica %d: Napaèna izbira %s: %s"
 
-#: build/parseDescription.c:59 build/parseFiles.c:54 build/parsePolicies.c:55
+#: build/parseDescription.c:57 build/parseFiles.c:54 build/parsePolicies.c:55
 #: build/parseScript.c:243
 #, fuzzy, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "vrstica %d: Preveè imen: %s"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parsePolicies.c:62
+#: build/parseDescription.c:65 build/parseFiles.c:62 build/parsePolicies.c:62
 #: build/parseScript.c:251
 #, fuzzy, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "vrstica %d: Paket ne obstaja: %s"
 
-#: build/parseDescription.c:77
+#: build/parseDescription.c:75
 #, fuzzy, c-format
 msgid "line %d: Second description\n"
 msgstr "vrstica %d: Drugi opis"
@@ -946,92 +1111,92 @@ msgstr "Neznan tip ikone: %s"
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "vrstica %d: Napaèna izbira %s: %s"
 
-#: build/parsePreamble.c:635
+#: build/parsePreamble.c:633
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:638
+#: build/parsePreamble.c:636
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:642
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "vrstica %d: Neveljaven znak ,-` v %s: %s"
 
-#: build/parsePreamble.c:669
+#: build/parsePreamble.c:667
 #, fuzzy, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "vrstica %d: Deformirana znaèka: %s"
 
-#: build/parsePreamble.c:677
+#: build/parsePreamble.c:675
 #, fuzzy, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "vrstica %d: Prazna znaèka: %s"
 
-#: build/parsePreamble.c:733
+#: build/parsePreamble.c:731
 #, fuzzy, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "vrstica %d: Predpone se ne smejo konèati z /: %s"
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:744
 #, fuzzy, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "vrstica %d: Docdir se mora zaèeti z \"/\": %s"
 
-#: build/parsePreamble.c:759
+#: build/parsePreamble.c:757
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "vrstica %d: polje Epoch/Serial mora biti ¹tevilo: %s"
 
-#: build/parsePreamble.c:799
+#: build/parsePreamble.c:797
 #, fuzzy, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "vrstica %d: Okvarjeno ¹tevilo %s: %s\n"
 
-#: build/parsePreamble.c:826
+#: build/parsePreamble.c:824
 #, fuzzy, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "vrstica %d: Napaèna oblika BuildArchitecture: %s"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:834
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:851
+#: build/parsePreamble.c:849
 #, fuzzy, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Notranja napaka: Neprava znaèka %d"
 
-#: build/parsePreamble.c:933
+#: build/parsePreamble.c:931
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "vrstica %d: Zahtevana razlièica: %s"
 
-#: build/parsePreamble.c:996
+#: build/parsePreamble.c:994
 #, fuzzy, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Nepravilno doloèilo paketa: %s"
 
-#: build/parsePreamble.c:1002
+#: build/parsePreamble.c:1000
 #, fuzzy, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paket ¾e obstaja: %s"
 
-#: build/parsePreamble.c:1033
+#: build/parsePreamble.c:1031
 #, fuzzy, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "vrstica %d: Neznana znaèka: %s"
 
-#: build/parsePreamble.c:1065
+#: build/parsePreamble.c:1063
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
 
-#: build/parsePreamble.c:1069
+#: build/parsePreamble.c:1067
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot ne more biti \"/\": %s"
@@ -1184,12 +1349,12 @@ msgstr "%s:%d: Najden je bil %%endif brez pripadajoèega if"
 msgid "malformed %%include statement\n"
 msgstr "Deformiran stavek %%include"
 
-#: build/parseSpec.c:651
+#: build/parseSpec.c:637
 #, fuzzy
 msgid "No compatible architectures found for build\n"
 msgstr "Arhitektura za izgradnjo ni prisotna"
 
-#: build/parseSpec.c:685
+#: build/parseSpec.c:671
 #, fuzzy, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "V paketu manjka %%description: %s"
@@ -1261,180 +1426,6 @@ msgstr "Preveè argumentov v podatkovni vrstici v %s:%d"
 msgid "Processing policies: %s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
 
-#: build/poptBT.c:90
-#, fuzzy, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot je ¾e doloèen"
-
-#: build/poptBT.c:130
-#, fuzzy, c-format
-msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "priprava (razpakiraj izvorno kodo in uporabi popravke)"
-
-#: build/poptBT.c:131 build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149
-msgid "<specfile>"
-msgstr ""
-
-#: build/poptBT.c:133
-#, fuzzy
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "izgradnja prek stopnje %%prep iz datoteke s specifikacijami"
-
-#: build/poptBT.c:136
-#, fuzzy
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr "izgradnja prek stopnje %%install iz datoteke s specifikacijami"
-
-#: build/poptBT.c:139
-#, fuzzy, c-format
-msgid "verify %files section from <specfile>"
-msgstr "preverjanje dela datoteke s specifikacijami %%files"
-
-#: build/poptBT.c:142
-#, fuzzy
-msgid "build source and binary packages from <specfile>"
-msgstr "izgradi izvorni in binarni paket iz datoteke s specifikacijami"
-
-#: build/poptBT.c:145
-#, fuzzy
-msgid "build binary package only from <specfile>"
-msgstr "izgradi binarni paket iz datoteke .spec"
-
-#: build/poptBT.c:148
-#, fuzzy
-msgid "build source package only from <specfile>"
-msgstr "izgradi izvorni paket iz datoteke .spec"
-
-#: build/poptBT.c:152
-#, fuzzy, c-format
-msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "priprava (razpakiraj izvorno kodo in uporabi popravke)"
-
-#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162
-#: build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
-msgid "<tarball>"
-msgstr ""
-
-#: build/poptBT.c:155
-#, fuzzy
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "paket izgradi prek stopnje %%prep iz arhiva tar"
-
-#: build/poptBT.c:158
-#, fuzzy
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr "paket izgradi prek stopnje %%install iz arhiva tar"
-
-#: build/poptBT.c:161
-#, fuzzy, c-format
-msgid "verify %files section from <tarball>"
-msgstr "preverjanje dela %%files iz arhiva tar"
-
-#: build/poptBT.c:164
-#, fuzzy
-msgid "build source and binary packages from <tarball>"
-msgstr "iz arhiva tar izgradi izvorni in binarni paket"
-
-#: build/poptBT.c:167
-#, fuzzy
-msgid "build binary package only from <tarball>"
-msgstr "iz arhiva tar izgradi binarni paket"
-
-#: build/poptBT.c:170
-#, fuzzy
-msgid "build source package only from <tarball>"
-msgstr "iz arhiva tar izgradi izvorni paket"
-
-#: build/poptBT.c:174
-#, fuzzy
-msgid "build binary package from <source package>"
-msgstr "binarni paket izgradi iz izvornega"
-
-#: build/poptBT.c:175 build/poptBT.c:178
-#, fuzzy
-msgid "<source package>"
-msgstr "ni paketov\n"
-
-#: build/poptBT.c:177
-#, fuzzy
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr "izgradnja prek stopnje %%install iz izvornega paketa"
-
-#: build/poptBT.c:181
-msgid "override build root"
-msgstr "brez upo¹tevanja vrhnjega imenika izgradnje"
-
-#: build/poptBT.c:183
-msgid "remove build tree when done"
-msgstr "po zakljuèku drevo imenikov v katerih smo pakete gradili odstrani"
-
-#: build/poptBT.c:185
-msgid "generate headers compatible with rpm4 packaging"
-msgstr ""
-
-#: build/poptBT.c:187
-msgid "ignore ExcludeArch: directives from spec file"
-msgstr ""
-
-#: build/poptBT.c:189
-#, fuzzy
-msgid "debug file state machine"
-msgstr "okvarjeno stanje datoteke: %s"
-
-#: build/poptBT.c:191
-msgid "do not execute any stages of the build"
-msgstr "brez izvajanja katerekoli od stopenj izgradnje"
-
-#: build/poptBT.c:193
-#, fuzzy
-msgid "do not verify build dependencies"
-msgstr "brez preverjanja soodvisnosti paketa"
-
-#: build/poptBT.c:195
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-
-#: build/poptBT.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
-#: lib/poptQV.c:331
-#, fuzzy
-msgid "don't verify package digest(s)"
-msgstr "brez preverjanja soodvisnosti paketa"
-
-#: build/poptBT.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
-#: lib/poptQV.c:334
-#, fuzzy
-msgid "don't verify database header(s) when retrieved"
-msgstr "brez preverjanja arhitekture paketa"
-
-#: build/poptBT.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
-#: lib/poptQV.c:336
-#, fuzzy
-msgid "don't verify package signature(s)"
-msgstr "preveri podpis paketa(-ov)"
-
-#: build/poptBT.c:206
-#, fuzzy
-msgid "do not accept i18N msgstr's from specfile"
-msgstr "brez sprejemanja internacionaliziranih katalogov iz datoteke spec"
-
-#: build/poptBT.c:208
-msgid "remove sources when done"
-msgstr "po zakljuèku naj se izvorna koda izbri¹e"
-
-#: build/poptBT.c:210
-msgid "remove specfile when done"
-msgstr "po zakljuèku odstrani datoteko s specifikacijami"
-
-#: build/poptBT.c:212
-msgid "skip straight to specified stage (only for c,i)"
-msgstr "preskok naravnost na doloèeno stopnjo (samo za c,i)"
-
-#: build/poptBT.c:214
-msgid "override target platform"
-msgstr "brez upo¹tevanja strojnega okolja ciljnega sistema"
-
 #: build/rpmfc.c:75
 #, fuzzy, c-format
 msgid "Ignoring invalid regex %s\n"
@@ -1505,7 +1496,7 @@ msgstr "Iskanje  %s: (z uporabo %s)...\n"
 msgid "Failed to find %s:\n"
 msgstr "Neuspe¹no iskanje %s:"
 
-#: build/spec.c:341
+#: build/spec.c:344
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "poizvedba po datoteki spec. %s je bila neuspe¹na, razèlemba ni mo¾na\n"
@@ -2719,26 +2710,26 @@ msgstr "ni mo¾no odpreti %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Name¹èanje %s\n"
 
-#: lib/rpmlead.c:103
+#: lib/rpmlead.c:101
 #, fuzzy
 msgid "not an rpm package"
 msgstr "navedeni argument ni paket RPM\n"
 
-#: lib/rpmlead.c:107
+#: lib/rpmlead.c:105
 #, fuzzy
 msgid "illegal signature type"
 msgstr "%s: Podpis ni na voljo\n"
 
-#: lib/rpmlead.c:111
+#: lib/rpmlead.c:109
 msgid "unsupported RPM package version"
 msgstr ""
 
-#: lib/rpmlead.c:124
+#: lib/rpmlead.c:122
 #, fuzzy, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "branje je bilo neuspe¹no: %s (%d)"
 
-#: lib/rpmlead.c:128
+#: lib/rpmlead.c:126
 #, fuzzy
 msgid "not an rpm package\n"
 msgstr "navedeni argument ni paket RPM\n"
@@ -2997,7 +2988,7 @@ msgstr "neveljavna ¹tevilka paketa: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: lib/rpmts.c:1031
+#: lib/rpmts.c:1025
 msgid "transaction"
 msgstr ""
 
@@ -3645,6 +3636,9 @@ msgstr "%s: branje Fread je bilo neuspe¹no: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "preveri podpis paketa(-ov)"
+
+#~ msgid "TIMECHECK failure: %s\n"
+#~ msgstr "TIMECHECK neuspe¹en: %s\n"
 
 #~ msgid "Internal error in argument processing (%d) :-(\n"
 #~ msgstr "Notranja napaka pri obdelavi argumentov (%d) :-\n"

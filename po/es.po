@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm.rpm-4-7-x.rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-01 10:24+0300\n"
+"POT-Creation-Date: 2010-09-02 14:29+0300\n"
 "PO-Revision-Date: 2010-06-30 20:22-0300\n"
 "Last-Translator: Héctor Daniel Cabrera <logan@fedoraproject.org>\n"
 "Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
@@ -93,7 +93,7 @@ msgstr "Opciones de la base de datos:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opciones de Instalación/Actualización/Remoción:"
 
-#: rpmqv.c:85 rpmbuild.c:41 tools/rpmdeps.c:32 tools/rpmgraph.c:228
+#: rpmqv.c:85 rpmbuild.c:237 tools/rpmdeps.c:32 tools/rpmgraph.c:228
 msgid "Common options for all rpm modes and executables:"
 msgstr "Opciones comunes para todos los modos rpm y ejecutables:"
 
@@ -248,7 +248,7 @@ msgstr ""
 "--root (-r) sólo puede ser especificado durante instalación, eliminación, "
 "consulta y re-construcción de la base de datos"
 
-#: rpmqv.c:327 rpmbuild.c:393
+#: rpmqv.c:327 rpmbuild.c:567
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "los argumentos de --root (-r) deben iniciar con una /"
 
@@ -305,81 +305,246 @@ msgstr "no ha sido indicado ningún argumento para la verificación"
 msgid "no arguments given"
 msgstr "no ha sido indicado ningún argumento"
 
-#: rpmbuild.c:35
+#: rpmbuild.c:99
+#, c-format
+msgid "buildroot already specified, ignoring %s\n"
+msgstr "buildroot ya especificado, ignorando %s\n"
+
+#: rpmbuild.c:132
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr ""
+"construir a través de %prep (desempaquetar fuentes y aplicar parches) desde "
+"<specfile>"
+
+#: rpmbuild.c:133 rpmbuild.c:136 rpmbuild.c:139 rpmbuild.c:142 rpmbuild.c:145
+#: rpmbuild.c:148 rpmbuild.c:151
+msgid "<specfile>"
+msgstr "<specfile>"
+
+#: rpmbuild.c:135
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr "construir a través de %build (%prep, luego compilar) desde <specfile>"
+
+#: rpmbuild.c:138
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr ""
+"construir a través de %install (%prep, %build, luego instalar) desde "
+"<specfile>"
+
+#: rpmbuild.c:141
+#, c-format
+msgid "verify %files section from <specfile>"
+msgstr "verificar la sección %files de <specfile>"
+
+#: rpmbuild.c:144
+msgid "build source and binary packages from <specfile>"
+msgstr "construir paquetes binarios y fuente desde <specfile>"
+
+#: rpmbuild.c:147
+msgid "build binary package only from <specfile>"
+msgstr "construir paquetes binarios únicamente desde <specfile>"
+
+#: rpmbuild.c:150
+msgid "build source package only from <specfile>"
+msgstr "construir paquete fuente únicamente desde <specfile>"
+
+#: rpmbuild.c:154
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr ""
+"construir a través de %prep (desempaquetar fuentes y aplicar parches) desde "
+"<tarball>"
+
+#: rpmbuild.c:155 rpmbuild.c:158 rpmbuild.c:161 rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:170 rpmbuild.c:173
+msgid "<tarball>"
+msgstr "<tarball>"
+
+#: rpmbuild.c:157
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "construir a través de %build (%prep, luego compilar) desde <tarball>"
+
+#: rpmbuild.c:160
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr ""
+"construir a través de %install (%prep, %build, luego instalar) desde "
+"<tarball>"
+
+#: rpmbuild.c:163
+#, c-format
+msgid "verify %files section from <tarball>"
+msgstr "verificar sección %files desde <tarball>"
+
+#: rpmbuild.c:166
+msgid "build source and binary packages from <tarball>"
+msgstr "construir paquetes binarios y fuente desde <tarball>"
+
+#: rpmbuild.c:169
+msgid "build binary package only from <tarball>"
+msgstr "construir paquete binario únicamente desde <tarball>"
+
+#: rpmbuild.c:172
+msgid "build source package only from <tarball>"
+msgstr "construir paquete fuente desde <tarball> "
+
+#: rpmbuild.c:176
+msgid "build binary package from <source package>"
+msgstr "construir paquete binario desde <source package>"
+
+#: rpmbuild.c:177 rpmbuild.c:180
+msgid "<source package>"
+msgstr "<paquete fuente>"
+
+#: rpmbuild.c:179
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"construir a través de %install (%prep, %build, luego instalar) desde "
+"<paquete fuente>"
+
+#: rpmbuild.c:183
+msgid "override build root"
+msgstr "sobreescribir construcción de root"
+
+#: rpmbuild.c:185
+msgid "remove build tree when done"
+msgstr "remover árbol de construcción al finalizar"
+
+#: rpmbuild.c:187
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr "ignorar directivas ExcludeArch desde el archivo spec"
+
+#: rpmbuild.c:189
+msgid "debug file state machine"
+msgstr "depurar archivo de la máquina de estado"
+
+#: rpmbuild.c:191
+msgid "do not execute any stages of the build"
+msgstr "no ejecutar ningún nivel de la construcción"
+
+#: rpmbuild.c:193
+msgid "do not verify build dependencies"
+msgstr "no verificar dependencias de la construcción"
+
+#: rpmbuild.c:195
+#, fuzzy
+msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
+msgstr ""
+"generar encabezados de paquetes compatibles con el empaquetamiento rpm[23] "
+"(legado)"
+
+#: rpmbuild.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
+#: lib/poptQV.c:331
+msgid "don't verify package digest(s)"
+msgstr "no verificar resumen del paquete(s)"
+
+#: rpmbuild.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
+#: lib/poptQV.c:334
+msgid "don't verify database header(s) when retrieved"
+msgstr ""
+"no verificar la base de datos de lo(s) encabezado(s) cuando sean recuperadas"
+
+#: rpmbuild.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
+#: lib/poptQV.c:336
+msgid "don't verify package signature(s)"
+msgstr "no verificar la firma(s) del paquete"
+
+#: rpmbuild.c:206
+msgid "do not accept i18N msgstr's from specfile"
+msgstr "no aceptar msgstr i18N desde el archivo spec"
+
+#: rpmbuild.c:208
+msgid "remove sources when done"
+msgstr "eliminar fuentes al finalizar"
+
+#: rpmbuild.c:210
+msgid "remove specfile when done"
+msgstr "eliminar el archivo spec al finalizar"
+
+#: rpmbuild.c:212
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "Ir a etapa especificada (solo para c,i)"
+
+#: rpmbuild.c:214
+msgid "override target platform"
+msgstr "sobreescribir plataforma de destino"
+
+#: rpmbuild.c:231
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Opciones de construcción con [ <archivo spec> | <tarball> | <paquete "
 "fuente> ]:"
 
-#: rpmbuild.c:64
+#: rpmbuild.c:251
 msgid "Failed build dependencies:\n"
 msgstr "Fallo al construir las dependencias:\n"
 
-#: rpmbuild.c:86
+#: rpmbuild.c:269
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "No se puede abrir el archivo spec %s: %s\n"
 
-#: rpmbuild.c:148
+#: rpmbuild.c:331
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Falló la apertura de la tuberia para tar: %m\n"
 
-#: rpmbuild.c:167
+#: rpmbuild.c:350
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Falló la lectura del archivo spec desde %s\n"
 
-#: rpmbuild.c:179
+#: rpmbuild.c:362
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Falló al renombrar %s to %s: %m\n"
 
-#: rpmbuild.c:254
+#: rpmbuild.c:437
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "falló la llamada stat sobre %s: %m\n"
 
-#: rpmbuild.c:258
+#: rpmbuild.c:441
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "El archivo %s no es un archivo regular.\n"
 
-#: rpmbuild.c:265
+#: rpmbuild.c:448
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "El archivo %s no parece ser un archivo spec.\n"
 
-#: rpmbuild.c:333
+#: rpmbuild.c:514
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Construyendo las plataformas de destino: %s\n"
 
-#: rpmbuild.c:348
+#: rpmbuild.c:522
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Construyendo para el destino %s\n"
 
-#: build/build.c:134 build/pack.c:405
+#: build/build.c:133 build/pack.c:405
 msgid "Unable to open temp file.\n"
 msgstr "No es posible abrir archivo temporal.\n"
 
-#: build/build.c:184
+#: build/build.c:181
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Ejecutando(%s): %s\n"
 
-#: build/build.c:190
+#: build/build.c:187
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Falló exec sobre %s  (%s): %s\n"
 
-#: build/build.c:199
+#: build/build.c:196
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Estado de salida erróneo de %s (%s)\n"
 
-#: build/build.c:292
+#: build/build.c:297
 msgid ""
 "\n"
 "\n"
@@ -438,182 +603,177 @@ msgstr "&& y || no están soportados en cadenas\n"
 msgid "syntax error in expression\n"
 msgstr "error de sintaxis en la expresión\n"
 
-#: build/files.c:242
-#, c-format
-msgid "TIMECHECK failure: %s\n"
-msgstr "Falló TIMECHECK: %s\n"
-
-#: build/files.c:305 build/files.c:498 build/files.c:715
+#: build/files.c:285 build/files.c:478 build/files.c:695
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "'(' ausente en %s %s\n"
 
-#: build/files.c:315 build/files.c:651 build/files.c:725 build/files.c:817
+#: build/files.c:295 build/files.c:631 build/files.c:705 build/files.c:797
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "')' ausente en %s(%s\n"
 
-#: build/files.c:351 build/files.c:674
+#: build/files.c:331 build/files.c:654
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Elemento %s no válido: %s\n"
 
-#: build/files.c:460
+#: build/files.c:440
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s ausente en %s %s\n"
 
-#: build/files.c:513
+#: build/files.c:493
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Ningún espacio en blanco después de %s(): %s\n"
 
-#: build/files.c:549
+#: build/files.c:529
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Sintaxis errónea: %s(%s)\n"
 
-#: build/files.c:558
+#: build/files.c:538
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "modo spec erróneo: %s(%s)\n"
 
-#: build/files.c:576
+#: build/files.c:556
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "dirmode spec erróneo: %s(%s)\n"
 
-#: build/files.c:750
+#: build/files.c:730
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "tamaño de localización inusual: \"%.*s\" en %%lang(%s)\n"
 
-#: build/files.c:760
+#: build/files.c:740
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Localización duplicada %.*s en %%lang(%s)\n"
 
-#: build/files.c:832
+#: build/files.c:812
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Capacidad inválida %s\n"
 
-#: build/files.c:843
+#: build/files.c:823
 msgid "File capability support not built in\n"
 msgstr "Soporte para la capacidad del archivo no construido\n"
 
-#: build/files.c:897
+#: build/files.c:877
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Solo un argumento para %%docdir\n"
 
-#: build/files.c:926
+#: build/files.c:906
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dos archivos en una línea: %s\n"
 
-#: build/files.c:939
+#: build/files.c:919
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Los archivos deben iniciar con \"/\": %s\n"
 
-#: build/files.c:950
+#: build/files.c:930
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "No se puede mezclar %%doc especial con otros formatos: %s\n"
 
-#: build/files.c:1091
+#: build/files.c:1071
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Algoritmo de resumen de archivo %u desconocido, regresando a MD5\n"
 
-#: build/files.c:1117
+#: build/files.c:1097
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Archivo listado dos veces: %s\n"
 
-#: build/files.c:1240
+#: build/files.c:1220
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "El enlace simbólico apunta a BuildRoot: %s -> %s\n"
 
-#: build/files.c:1411
+#: build/files.c:1391
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 "Atributos de archivo explícito solicitados en las especificaciones para: %s\n"
 
-#: build/files.c:1419
+#: build/files.c:1399
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Archivo no encontrado: %s\n"
 
-#: build/files.c:1522
+#: build/files.c:1502
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "Archivo %s muy largo para carga útil\n"
 
-#: build/files.c:1616
+#: build/files.c:1596
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: no se puede cargar, etiqueta (%d) desconocida.\n"
 
-#: build/files.c:1622
+#: build/files.c:1602
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: falló la lectura de la clave publica.\n"
 
-#: build/files.c:1626
+#: build/files.c:1606
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: no es una clave pública con armadura.\n"
 
-#: build/files.c:1635
+#: build/files.c:1615
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: falló la codificación\n"
 
-#: build/files.c:1674
+#: build/files.c:1654
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "El archivo necesita comenzar con \"/\": %s\n"
 
-#: build/files.c:1696
+#: build/files.c:1676
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob no permitido: %s\n"
 
-#: build/files.c:1708 lib/rpminstall.c:419
+#: build/files.c:1688 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Archivo no encontrado por glob: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1739
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "No se pudo abrir el archivo %%files %s: %m\n"
 
-#: build/files.c:1767
+#: build/files.c:1747
 #, c-format
 msgid "line: %s\n"
 msgstr "línea: %s\n"
 
-#: build/files.c:2056
+#: build/files.c:2035
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Archivo erróneo: %s: %s\n"
 
-#: build/files.c:2078 build/parsePrep.c:32
+#: build/files.c:2057 build/parsePrep.c:32
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "propietario/grupo erróneo: %s\n"
 
-#: build/files.c:2119
+#: build/files.c:2098
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Comprobando si hay archivos desempaquetados: %s\n"
 
-#: build/files.c:2134
+#: build/files.c:2113
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -622,12 +782,12 @@ msgstr ""
 "Se encontraron archivos instalados (pero desempaquetados):\n"
 "%s"
 
-#: build/files.c:2158
+#: build/files.c:2138
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Procesando archivos: %s\n"
 
-#: build/files.c:2169
+#: build/files.c:2149
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 "Binarios dependientes de la arquitectura en paquetes sin arquitectura\n"
@@ -848,30 +1008,30 @@ msgstr "nombre ausente en %%changelog\n"
 msgid "no description in %%changelog\n"
 msgstr "ninguna descripción en %%changelog\n"
 
-#: build/parseDescription.c:35
+#: build/parseDescription.c:33
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "línea %d: Error al analizar %%description: %s\n"
 
-#: build/parseDescription.c:48 build/parseFiles.c:43 build/parsePolicies.c:45
+#: build/parseDescription.c:46 build/parseFiles.c:43 build/parsePolicies.c:45
 #: build/parseScript.c:232
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "línea %d: Opción errónea %s: %s\n"
 
-#: build/parseDescription.c:59 build/parseFiles.c:54 build/parsePolicies.c:55
+#: build/parseDescription.c:57 build/parseFiles.c:54 build/parsePolicies.c:55
 #: build/parseScript.c:243
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "línea %d: Demasiados nombres: %s\n"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parsePolicies.c:62
+#: build/parseDescription.c:65 build/parseFiles.c:62 build/parsePolicies.c:62
 #: build/parseScript.c:251
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "línea %d: El paquete no existe: %s\n"
 
-#: build/parseDescription.c:77
+#: build/parseDescription.c:75
 #, c-format
 msgid "line %d: Second description\n"
 msgstr "línea %d: Segunda descripción\n"
@@ -961,92 +1121,92 @@ msgstr "Tipo de icono desconocido: %s\n"
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "línea %d: La etiqueta solo recibe patrones individuales: %s\n"
 
-#: build/parsePreamble.c:635
+#: build/parsePreamble.c:633
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "línea %d: Carácter '%c' ilegal en: %s\n"
 
-#: build/parsePreamble.c:638
+#: build/parsePreamble.c:636
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "línea %d: Carácter ilegal en: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:642
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "línea %d: Secuencia \"..\" ilegal en: %s\n"
 
-#: build/parsePreamble.c:669
+#: build/parsePreamble.c:667
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "línea %d: Etiqueta mal formada: %s\n"
 
-#: build/parsePreamble.c:677
+#: build/parsePreamble.c:675
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "línea %d: Etiqueta vacía: %s\n"
 
-#: build/parsePreamble.c:733
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "línea %d: Los prefijos deben finalizar en \"/\": %s\n"
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:744
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "línea %d: Docdir debe iniciar con '/': %s\n"
 
-#: build/parsePreamble.c:759
+#: build/parsePreamble.c:757
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "línea %d: El campo epoch debe ser un número sin signo: %s\n"
 
-#: build/parsePreamble.c:799
+#: build/parsePreamble.c:797
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "línea %d: %s erróneo: calificadores: %s\n"
 
-#: build/parsePreamble.c:826
+#: build/parsePreamble.c:824
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "línea %d: Formato BuildArchitecture erróneo: %s\n"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:834
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "linea %d: Solo existe soporte para subpaquetes sin arquitectura: %s\n"
 
-#: build/parsePreamble.c:851
+#: build/parsePreamble.c:849
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Error interno: Etiqueta errónea %d\n"
 
-#: build/parsePreamble.c:933
+#: build/parsePreamble.c:931
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "línea %d: %s se encuentra obsoleta: %s\n"
 
-#: build/parsePreamble.c:996
+#: build/parsePreamble.c:994
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Especificación de paquete errónea: %s\n"
 
-#: build/parsePreamble.c:1002
+#: build/parsePreamble.c:1000
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "El paquete ya existe: %s\n"
 
-#: build/parsePreamble.c:1033
+#: build/parsePreamble.c:1031
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "línea %d: Etiqueta desconocida: %s\n"
 
-#: build/parsePreamble.c:1065
+#: build/parsePreamble.c:1063
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} no puede ser vacío\n"
 
-#: build/parsePreamble.c:1069
+#: build/parsePreamble.c:1067
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{BuildRoot} no puede ser \"/\"\n"
@@ -1198,11 +1358,11 @@ msgstr "%s:%d: Tiene un %%endif sin %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "declaración %%include malformada\n"
 
-#: build/parseSpec.c:651
+#: build/parseSpec.c:637
 msgid "No compatible architectures found for build\n"
 msgstr "No se encontraron arquitecturas compatibles para la construcción\n"
 
-#: build/parseSpec.c:685
+#: build/parseSpec.c:671
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "El paquete no tiene %%description: %s\n"
@@ -1274,174 +1434,6 @@ msgstr "Demasiados argumentos en la línea de datos en %s:%d\n"
 msgid "Processing policies: %s\n"
 msgstr "Procesando archivos: %s\n"
 
-#: build/poptBT.c:90
-#, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot ya especificado, ignorando %s\n"
-
-#: build/poptBT.c:130
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"construir a través de %prep (desempaquetar fuentes y aplicar parches) desde "
-"<specfile>"
-
-#: build/poptBT.c:131 build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149
-msgid "<specfile>"
-msgstr "<specfile>"
-
-#: build/poptBT.c:133
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "construir a través de %build (%prep, luego compilar) desde <specfile>"
-
-#: build/poptBT.c:136
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"construir a través de %install (%prep, %build, luego instalar) desde "
-"<specfile>"
-
-#: build/poptBT.c:139
-#, c-format
-msgid "verify %files section from <specfile>"
-msgstr "verificar la sección %files de <specfile>"
-
-#: build/poptBT.c:142
-msgid "build source and binary packages from <specfile>"
-msgstr "construir paquetes binarios y fuente desde <specfile>"
-
-#: build/poptBT.c:145
-msgid "build binary package only from <specfile>"
-msgstr "construir paquetes binarios únicamente desde <specfile>"
-
-#: build/poptBT.c:148
-msgid "build source package only from <specfile>"
-msgstr "construir paquete fuente únicamente desde <specfile>"
-
-#: build/poptBT.c:152
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"construir a través de %prep (desempaquetar fuentes y aplicar parches) desde "
-"<tarball>"
-
-#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162
-#: build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
-msgid "<tarball>"
-msgstr "<tarball>"
-
-#: build/poptBT.c:155
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "construir a través de %build (%prep, luego compilar) desde <tarball>"
-
-#: build/poptBT.c:158
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"construir a través de %install (%prep, %build, luego instalar) desde "
-"<tarball>"
-
-#: build/poptBT.c:161
-#, c-format
-msgid "verify %files section from <tarball>"
-msgstr "verificar sección %files desde <tarball>"
-
-#: build/poptBT.c:164
-msgid "build source and binary packages from <tarball>"
-msgstr "construir paquetes binarios y fuente desde <tarball>"
-
-#: build/poptBT.c:167
-msgid "build binary package only from <tarball>"
-msgstr "construir paquete binario únicamente desde <tarball>"
-
-#: build/poptBT.c:170
-msgid "build source package only from <tarball>"
-msgstr "construir paquete fuente desde <tarball> "
-
-#: build/poptBT.c:174
-msgid "build binary package from <source package>"
-msgstr "construir paquete binario desde <source package>"
-
-#: build/poptBT.c:175 build/poptBT.c:178
-msgid "<source package>"
-msgstr "<paquete fuente>"
-
-#: build/poptBT.c:177
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"construir a través de %install (%prep, %build, luego instalar) desde "
-"<paquete fuente>"
-
-#: build/poptBT.c:181
-msgid "override build root"
-msgstr "sobreescribir construcción de root"
-
-#: build/poptBT.c:183
-msgid "remove build tree when done"
-msgstr "remover árbol de construcción al finalizar"
-
-#: build/poptBT.c:185
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "generar encabezados compatibles con el empaquetado rpm4"
-
-#: build/poptBT.c:187
-msgid "ignore ExcludeArch: directives from spec file"
-msgstr "ignorar directivas ExcludeArch desde el archivo spec"
-
-#: build/poptBT.c:189
-msgid "debug file state machine"
-msgstr "depurar archivo de la máquina de estado"
-
-#: build/poptBT.c:191
-msgid "do not execute any stages of the build"
-msgstr "no ejecutar ningún nivel de la construcción"
-
-#: build/poptBT.c:193
-msgid "do not verify build dependencies"
-msgstr "no verificar dependencias de la construcción"
-
-#: build/poptBT.c:195
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"generar encabezados de paquetes compatibles con el empaquetamiento rpm[23] "
-"(legado)"
-
-#: build/poptBT.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
-#: lib/poptQV.c:331
-msgid "don't verify package digest(s)"
-msgstr "no verificar resumen del paquete(s)"
-
-#: build/poptBT.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
-#: lib/poptQV.c:334
-msgid "don't verify database header(s) when retrieved"
-msgstr ""
-"no verificar la base de datos de lo(s) encabezado(s) cuando sean recuperadas"
-
-#: build/poptBT.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
-#: lib/poptQV.c:336
-msgid "don't verify package signature(s)"
-msgstr "no verificar la firma(s) del paquete"
-
-#: build/poptBT.c:206
-msgid "do not accept i18N msgstr's from specfile"
-msgstr "no aceptar msgstr i18N desde el archivo spec"
-
-#: build/poptBT.c:208
-msgid "remove sources when done"
-msgstr "eliminar fuentes al finalizar"
-
-#: build/poptBT.c:210
-msgid "remove specfile when done"
-msgstr "eliminar el archivo spec al finalizar"
-
-#: build/poptBT.c:212
-msgid "skip straight to specified stage (only for c,i)"
-msgstr "Ir a etapa especificada (solo para c,i)"
-
-#: build/poptBT.c:214
-msgid "override target platform"
-msgstr "sobreescribir plataforma de destino"
-
 #: build/rpmfc.c:75
 #, c-format
 msgid "Ignoring invalid regex %s\n"
@@ -1511,7 +1503,7 @@ msgstr "Buscando %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Falló la búsqueda de %s:\n"
 
-#: build/spec.c:341
+#: build/spec.c:344
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "la consulta del archivo spec %s falló, no se pudo analizar\n"
@@ -2666,24 +2658,24 @@ msgstr "no se puede abrir %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Instalando %s\n"
 
-#: lib/rpmlead.c:103
+#: lib/rpmlead.c:101
 msgid "not an rpm package"
 msgstr "no es un paquete rpm"
 
-#: lib/rpmlead.c:107
+#: lib/rpmlead.c:105
 msgid "illegal signature type"
 msgstr "tipo de firma ilegal"
 
-#: lib/rpmlead.c:111
+#: lib/rpmlead.c:109
 msgid "unsupported RPM package version"
 msgstr "versión del paquete RPM no soportada"
 
-#: lib/rpmlead.c:124
+#: lib/rpmlead.c:122
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "falló la lectura: %s  (%d)\n"
 
-#: lib/rpmlead.c:128
+#: lib/rpmlead.c:126
 msgid "not an rpm package\n"
 msgstr "no es un paquete rpm\n"
 
@@ -2944,7 +2936,7 @@ msgstr "')' ausente en la etiqueta del paquete: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: lectura de la clave publica fallida.\n"
 
-#: lib/rpmts.c:1031
+#: lib/rpmts.c:1025
 msgid "transaction"
 msgstr "transacción"
 
@@ -3586,6 +3578,12 @@ msgstr "%s: falló la lectura del manifiesto: %s\n"
 #: tools/rpmgraph.c:226
 msgid "don't verify header+payload signature"
 msgstr "no verificar firma de encabezado+carga"
+
+#~ msgid "TIMECHECK failure: %s\n"
+#~ msgstr "Falló TIMECHECK: %s\n"
+
+#~ msgid "generate headers compatible with rpm4 packaging"
+#~ msgstr "generar encabezados compatibles con el empaquetado rpm4"
 
 #~ msgid "Internal error in argument processing (%d) :-(\n"
 #~ msgstr "Error interno en el procesamiento del argumento (%d) :-(\n"

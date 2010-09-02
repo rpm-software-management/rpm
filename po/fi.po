@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4.90\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-01 10:24+0300\n"
+"POT-Creation-Date: 2010-09-02 14:29+0300\n"
 "PO-Revision-Date: 2008-03-11 11:15+0200\n"
 "Last-Translator: Panu Matilainen <pmatilai@redhat.com>\n"
 "Language-Team: Finnish\n"
@@ -81,7 +81,7 @@ msgstr "Tietokantavalitsimet:"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Asennus-, päivitys- ja poistovalitsimet:"
 
-#: rpmqv.c:85 rpmbuild.c:41 tools/rpmdeps.c:32 tools/rpmgraph.c:228
+#: rpmqv.c:85 rpmbuild.c:237 tools/rpmdeps.c:32 tools/rpmgraph.c:228
 msgid "Common options for all rpm modes and executables:"
 msgstr "Yhteiset valitsimet kaikille rpm moodeille:"
 
@@ -221,7 +221,7 @@ msgstr ""
 "--root (-r): voidaan käyttää vain paketteja asennettaessa, poistettaessa, "
 "kyseltäessä ja tietokannan uudelleenluonnissa"
 
-#: rpmqv.c:327 rpmbuild.c:393
+#: rpmqv.c:327 rpmbuild.c:567
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametrit --root (-r):lle alettava /-merkillä"
 
@@ -278,79 +278,232 @@ msgstr "tarkistukselle ei annettu parametrejä"
 msgid "no arguments given"
 msgstr "ei annettu parametrejä"
 
-#: rpmbuild.c:35
+#: rpmbuild.c:99
+#, c-format
+msgid "buildroot already specified, ignoring %s\n"
+msgstr "buildroot on jo määritelty, %s:ää ei huomioida\n"
+
+#: rpmbuild.c:132
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr "käännä %prep-osioon asti spec-tiedostosta"
+
+#: rpmbuild.c:133 rpmbuild.c:136 rpmbuild.c:139 rpmbuild.c:142 rpmbuild.c:145
+#: rpmbuild.c:148 rpmbuild.c:151
+msgid "<specfile>"
+msgstr "<spec-tiedosto>"
+
+#: rpmbuild.c:135
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
+
+#: rpmbuild.c:138
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr ""
+"käännä %install-osioon asti (%prep, %build ja %install) spec-tiedostosta"
+
+#: rpmbuild.c:141
+#, c-format
+msgid "verify %files section from <specfile>"
+msgstr "tarkista %files-osio spec-tiedostosta"
+
+#: rpmbuild.c:144
+msgid "build source and binary packages from <specfile>"
+msgstr "käännä lähde- ja binääripaketit spec-tiedostosta"
+
+#: rpmbuild.c:147
+msgid "build binary package only from <specfile>"
+msgstr "käännä vain binääripaketti spec-tiedostosta"
+
+#: rpmbuild.c:150
+msgid "build source package only from <specfile>"
+msgstr "käännä vain lähdepaketti spec-tiedostosta"
+
+#: rpmbuild.c:154
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr "käännä %prep-osioon asti tar-tiedostosta"
+
+#: rpmbuild.c:155 rpmbuild.c:158 rpmbuild.c:161 rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:170 rpmbuild.c:173
+msgid "<tarball>"
+msgstr "<tar-tiedosto>"
+
+#: rpmbuild.c:157
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "käännä %build-osioon asti (%prep ja %build) tar-tiedostosta"
+
+#: rpmbuild.c:160
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr ""
+"käännä %install-osioon asti (%prep, %build ja %install) tar-tiedostosta"
+
+#: rpmbuild.c:163
+#, c-format
+msgid "verify %files section from <tarball>"
+msgstr "tarkista %files-osio tar-tiedostosta"
+
+#: rpmbuild.c:166
+msgid "build source and binary packages from <tarball>"
+msgstr "käännä lähde- ja binääripaketit tar-tiedostosta"
+
+#: rpmbuild.c:169
+msgid "build binary package only from <tarball>"
+msgstr "käännä vain binääripaketti tar-tiedostosta"
+
+#: rpmbuild.c:172
+msgid "build source package only from <tarball>"
+msgstr "käännä vain lähdepaketti tar-tiedostosta"
+
+#: rpmbuild.c:176
+msgid "build binary package from <source package>"
+msgstr "käännä binääripaketti lähdepaketista"
+
+#: rpmbuild.c:177 rpmbuild.c:180
+msgid "<source package>"
+msgstr "<lähdepaketti>"
+
+#: rpmbuild.c:179
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr "käännä %install-osioon asti (%prep, %build ja %install) lähdepaketista"
+
+#: rpmbuild.c:183
+msgid "override build root"
+msgstr "ohita käännösjuuri"
+
+#: rpmbuild.c:185
+msgid "remove build tree when done"
+msgstr "poista käännöspuu, kun valmis"
+
+#: rpmbuild.c:187
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr "jätä ExcludeArch-directiivit huomioimatta"
+
+#: rpmbuild.c:189
+msgid "debug file state machine"
+msgstr ""
+
+#: rpmbuild.c:191
+msgid "do not execute any stages of the build"
+msgstr "älä suorita mitään käännöksen vaiheita"
+
+#: rpmbuild.c:193
+msgid "do not verify build dependencies"
+msgstr "älä tarkista käännösriippuvuuksia"
+
+#: rpmbuild.c:195
+msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
+msgstr ""
+
+#: rpmbuild.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
+#: lib/poptQV.c:331
+msgid "don't verify package digest(s)"
+msgstr "älä tarkista pakettien tarkistussummia"
+
+#: rpmbuild.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
+#: lib/poptQV.c:334
+msgid "don't verify database header(s) when retrieved"
+msgstr "älä tarkista otsikkotietoja haettaessa tietokanssata"
+
+#: rpmbuild.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
+#: lib/poptQV.c:336
+msgid "don't verify package signature(s)"
+msgstr "älä tarkista paketin allekirjoitusta"
+
+#: rpmbuild.c:206
+msgid "do not accept i18N msgstr's from specfile"
+msgstr ""
+
+#: rpmbuild.c:208
+msgid "remove sources when done"
+msgstr "poista lähdekoodit kun valmis"
+
+#: rpmbuild.c:210
+msgid "remove specfile when done"
+msgstr "poista määrittelytiedosto kun valmis"
+
+#: rpmbuild.c:212
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "siirry suoraan määriteltyyn vaiheeseen (vain c ja i yhteydessä)"
+
+#: rpmbuild.c:214
+msgid "override target platform"
+msgstr "ohita kohdealusta"
+
+#: rpmbuild.c:231
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "Käännösvalitsimet:"
 
-#: rpmbuild.c:64
+#: rpmbuild.c:251
 msgid "Failed build dependencies:\n"
 msgstr "Puuttuvia käännösriippuvuuksia:\n"
 
-#: rpmbuild.c:86
+#: rpmbuild.c:269
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "En voi avata spec-tiedostoa %s: %s\n"
 
-#: rpmbuild.c:148
+#: rpmbuild.c:331
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "tar-putken avaus epäonnistui: %m\n"
 
-#: rpmbuild.c:167
+#: rpmbuild.c:350
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Spec-tiedoston avaaminen %s:sta epäonnistui\n"
 
-#: rpmbuild.c:179
+#: rpmbuild.c:362
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Uudelleen nimeäminen %s -> %s epäonnistui: %m\n"
 
-#: rpmbuild.c:254
+#: rpmbuild.c:437
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "%s:n stat epäonnistui: %m\n"
 
-#: rpmbuild.c:258
+#: rpmbuild.c:441
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Tiedosto %s ole tavallinen tiedosto.\n"
 
-#: rpmbuild.c:265
+#: rpmbuild.c:448
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Tiedosto %s ei vaikuta spec-tiedostolta.\n"
 
-#: rpmbuild.c:333
+#: rpmbuild.c:514
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Käännetään kohdealustoille: %s\n"
 
-#: rpmbuild.c:348
+#: rpmbuild.c:522
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Käännetään kohteelle %s\n"
 
-#: build/build.c:134 build/pack.c:405
+#: build/build.c:133 build/pack.c:405
 msgid "Unable to open temp file.\n"
 msgstr "En voi avata väliaikaistiedostoa.\n"
 
-#: build/build.c:184
+#: build/build.c:181
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Suoritetaan(%s): %s\n"
 
-#: build/build.c:190
+#: build/build.c:187
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "%s:n suoritus epäonnistui (%s): %s\n"
 
-#: build/build.c:199
+#: build/build.c:196
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr ""
 
-#: build/build.c:292
+#: build/build.c:297
 msgid ""
 "\n"
 "\n"
@@ -408,181 +561,176 @@ msgstr "&& ja || ei tuettu merkkijoinoille\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksivirhe lausekkeessa\n"
 
-#: build/files.c:242
-#, c-format
-msgid "TIMECHECK failure: %s\n"
-msgstr ""
-
-#: build/files.c:305 build/files.c:498 build/files.c:715
+#: build/files.c:285 build/files.c:478 build/files.c:695
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Puuttuva '(' %s %s:ssä\n"
 
-#: build/files.c:315 build/files.c:651 build/files.c:725 build/files.c:817
+#: build/files.c:295 build/files.c:631 build/files.c:705 build/files.c:797
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "puuttuva ')' %s:(%s:ssä\n"
 
-#: build/files.c:351 build/files.c:674
+#: build/files.c:331 build/files.c:654
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Virheellinen %s merkki: %s\n"
 
-#: build/files.c:460
+#: build/files.c:440
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Puuttuva %s %s %s:ssä\n"
 
-#: build/files.c:513
+#: build/files.c:493
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:549
+#: build/files.c:529
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Virheellinen syntaksi: %s(%s)\n"
 
-#: build/files.c:558
+#: build/files.c:538
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Virheellinen oikeusmäärittely %s(%s)\n"
 
-#: build/files.c:576
+#: build/files.c:556
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Virheellinen hakemisto-oikeusmäärittely %s(%s)\n"
 
-#: build/files.c:750
+#: build/files.c:730
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Epätavallinen locale-pituus: \"%.*s\" %%lang(%s):ssä\n"
 
-#: build/files.c:760
+#: build/files.c:740
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:832
+#: build/files.c:812
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr ""
 
-#: build/files.c:843
+#: build/files.c:823
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:897
+#: build/files.c:877
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
-#: build/files.c:926
+#: build/files.c:906
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Kaksi tiedostoa yhdellä rivillä %s\n"
 
-#: build/files.c:939
+#: build/files.c:919
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Tiedostojen täytyy alkaa \"/\": %s\n"
 
-#: build/files.c:950
+#: build/files.c:930
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1091
+#: build/files.c:1071
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1117
+#: build/files.c:1097
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Tiedosto lueteltu kahdesti: %s\n"
 
-#: build/files.c:1240
+#: build/files.c:1220
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolinen linkki osoittaa BuildRoot:iin: %s -> %s\n"
 
-#: build/files.c:1411
+#: build/files.c:1391
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1419
+#: build/files.c:1399
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei löytynyt: %s\n"
 
-#: build/files.c:1522
+#: build/files.c:1502
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1616
+#: build/files.c:1596
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1622
+#: build/files.c:1602
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui\n"
 
-#: build/files.c:1626
+#: build/files.c:1606
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ei ole panssaroitu julkinen avain.\n"
 
-#: build/files.c:1635
+#: build/files.c:1615
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1674
+#: build/files.c:1654
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Tiedosto tarvitsee aloitusmerkin \"/\": %s\n"
 
-#: build/files.c:1696
+#: build/files.c:1676
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Täydennys ei sallittu: %s\n"
 
-#: build/files.c:1708 lib/rpminstall.c:419
+#: build/files.c:1688 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1739
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "%%files tiedostoa %s ei voitu avata: %m\n"
 
-#: build/files.c:1767
+#: build/files.c:1747
 #, c-format
 msgid "line: %s\n"
 msgstr "rivi: %s\n"
 
-#: build/files.c:2056
+#: build/files.c:2035
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Virheellinen tiedosto: %s: %s\n"
 
-#: build/files.c:2078 build/parsePrep.c:32
+#: build/files.c:2057 build/parsePrep.c:32
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Virheellinen omistaja/ryhmä: %s\n"
 
-#: build/files.c:2119
+#: build/files.c:2098
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Tarkistetaan paketoimattomia tiedostoja: %s\n"
 
-#: build/files.c:2134
+#: build/files.c:2113
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -591,12 +739,12 @@ msgstr ""
 "Löytyi asennettuja (mutta paketoimattomia) tiedostoja:\n"
 "%s"
 
-#: build/files.c:2158
+#: build/files.c:2138
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Käsitellään tiedostoja: %s\n"
 
-#: build/files.c:2169
+#: build/files.c:2149
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -815,30 +963,30 @@ msgstr "puuttuva nimi %%changelog:issa\n"
 msgid "no description in %%changelog\n"
 msgstr "ei kuvausta %%changelog:issa\n"
 
-#: build/parseDescription.c:35
+#: build/parseDescription.c:33
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "rivi %d: virhe jäsennettäessä %%description-osiota %s\n"
 
-#: build/parseDescription.c:48 build/parseFiles.c:43 build/parsePolicies.c:45
+#: build/parseDescription.c:46 build/parseFiles.c:43 build/parsePolicies.c:45
 #: build/parseScript.c:232
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "rivi %d: virheellinen valinta %s: %s\n"
 
-#: build/parseDescription.c:59 build/parseFiles.c:54 build/parsePolicies.c:55
+#: build/parseDescription.c:57 build/parseFiles.c:54 build/parsePolicies.c:55
 #: build/parseScript.c:243
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "rivi %d: liikaa nimiä: %s\n"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parsePolicies.c:62
+#: build/parseDescription.c:65 build/parseFiles.c:62 build/parsePolicies.c:62
 #: build/parseScript.c:251
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "line %d: pakettia ei ole olemassa: %s\n"
 
-#: build/parseDescription.c:77
+#: build/parseDescription.c:75
 #, c-format
 msgid "line %d: Second description\n"
 msgstr "line %d: toinen %%description-osio\n"
@@ -928,92 +1076,92 @@ msgstr "Tuntematon ikonityyppi: %s\n"
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:635
+#: build/parsePreamble.c:633
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "rivi %d: laiton merkki '%c' %s:ssä\n"
 
-#: build/parsePreamble.c:638
+#: build/parsePreamble.c:636
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "rivi %d: laiton merkki %s:ssä\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:642
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "rivi %d: laiton merkkijono \"..\" %s:ssä\n"
 
-#: build/parsePreamble.c:669
+#: build/parsePreamble.c:667
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:677
+#: build/parsePreamble.c:675
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:733
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:744
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:759
+#: build/parsePreamble.c:757
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "rivi %d: Epoch-kentän täytyy olla etumerkitön numero: %s\n"
 
-#: build/parsePreamble.c:799
+#: build/parsePreamble.c:797
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:826
+#: build/parsePreamble.c:824
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "rivi %d: virheellinen käännösarkkitehtuurin muoto: %s\n"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:834
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:851
+#: build/parsePreamble.c:849
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:933
+#: build/parsePreamble.c:931
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:996
+#: build/parsePreamble.c:994
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Virheellinen pakettimäärittely: %s\n"
 
-#: build/parsePreamble.c:1002
+#: build/parsePreamble.c:1000
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paketti on jo olemassa: %s\n"
 
-#: build/parsePreamble.c:1033
+#: build/parsePreamble.c:1031
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "rivi %d: tuntematon nimiö: %s\n"
 
-#: build/parsePreamble.c:1065
+#: build/parsePreamble.c:1063
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} ei voi olla tyhjä\n"
 
-#: build/parsePreamble.c:1069
+#: build/parsePreamble.c:1067
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} ei voi olla \"/\"\n"
@@ -1163,11 +1311,11 @@ msgstr "%s:%d: %%endif ilman %%if:iä\n"
 msgid "malformed %%include statement\n"
 msgstr "virheellinen %%include-lause\n"
 
-#: build/parseSpec.c:651
+#: build/parseSpec.c:637
 msgid "No compatible architectures found for build\n"
 msgstr "Ei yhteensopivia arkkitehtureeja käännökselle\n"
 
-#: build/parseSpec.c:685
+#: build/parseSpec.c:671
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Paketissa ei ole %%description-osiota: %s\n"
@@ -1239,163 +1387,6 @@ msgstr "Liian monta parametriä datarivillä %s:%d\n"
 msgid "Processing policies: %s\n"
 msgstr "Käsitellään tiedostoja: %s\n"
 
-#: build/poptBT.c:90
-#, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot on jo määritelty, %s:ää ei huomioida\n"
-
-#: build/poptBT.c:130
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr "käännä %prep-osioon asti spec-tiedostosta"
-
-#: build/poptBT.c:131 build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149
-msgid "<specfile>"
-msgstr "<spec-tiedosto>"
-
-#: build/poptBT.c:133
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr "käännä %build-osioon asti (%prep ja %build) spec-tiedostosta"
-
-#: build/poptBT.c:136
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"käännä %install-osioon asti (%prep, %build ja %install) spec-tiedostosta"
-
-#: build/poptBT.c:139
-#, c-format
-msgid "verify %files section from <specfile>"
-msgstr "tarkista %files-osio spec-tiedostosta"
-
-#: build/poptBT.c:142
-msgid "build source and binary packages from <specfile>"
-msgstr "käännä lähde- ja binääripaketit spec-tiedostosta"
-
-#: build/poptBT.c:145
-msgid "build binary package only from <specfile>"
-msgstr "käännä vain binääripaketti spec-tiedostosta"
-
-#: build/poptBT.c:148
-msgid "build source package only from <specfile>"
-msgstr "käännä vain lähdepaketti spec-tiedostosta"
-
-#: build/poptBT.c:152
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr "käännä %prep-osioon asti tar-tiedostosta"
-
-#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162
-#: build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
-msgid "<tarball>"
-msgstr "<tar-tiedosto>"
-
-#: build/poptBT.c:155
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "käännä %build-osioon asti (%prep ja %build) tar-tiedostosta"
-
-#: build/poptBT.c:158
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"käännä %install-osioon asti (%prep, %build ja %install) tar-tiedostosta"
-
-#: build/poptBT.c:161
-#, c-format
-msgid "verify %files section from <tarball>"
-msgstr "tarkista %files-osio tar-tiedostosta"
-
-#: build/poptBT.c:164
-msgid "build source and binary packages from <tarball>"
-msgstr "käännä lähde- ja binääripaketit tar-tiedostosta"
-
-#: build/poptBT.c:167
-msgid "build binary package only from <tarball>"
-msgstr "käännä vain binääripaketti tar-tiedostosta"
-
-#: build/poptBT.c:170
-msgid "build source package only from <tarball>"
-msgstr "käännä vain lähdepaketti tar-tiedostosta"
-
-#: build/poptBT.c:174
-msgid "build binary package from <source package>"
-msgstr "käännä binääripaketti lähdepaketista"
-
-#: build/poptBT.c:175 build/poptBT.c:178
-msgid "<source package>"
-msgstr "<lähdepaketti>"
-
-#: build/poptBT.c:177
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr "käännä %install-osioon asti (%prep, %build ja %install) lähdepaketista"
-
-#: build/poptBT.c:181
-msgid "override build root"
-msgstr "ohita käännösjuuri"
-
-#: build/poptBT.c:183
-msgid "remove build tree when done"
-msgstr "poista käännöspuu, kun valmis"
-
-#: build/poptBT.c:185
-msgid "generate headers compatible with rpm4 packaging"
-msgstr ""
-
-#: build/poptBT.c:187
-msgid "ignore ExcludeArch: directives from spec file"
-msgstr "jätä ExcludeArch-directiivit huomioimatta"
-
-#: build/poptBT.c:189
-msgid "debug file state machine"
-msgstr ""
-
-#: build/poptBT.c:191
-msgid "do not execute any stages of the build"
-msgstr "älä suorita mitään käännöksen vaiheita"
-
-#: build/poptBT.c:193
-msgid "do not verify build dependencies"
-msgstr "älä tarkista käännösriippuvuuksia"
-
-#: build/poptBT.c:195
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-
-#: build/poptBT.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
-#: lib/poptQV.c:331
-msgid "don't verify package digest(s)"
-msgstr "älä tarkista pakettien tarkistussummia"
-
-#: build/poptBT.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
-#: lib/poptQV.c:334
-msgid "don't verify database header(s) when retrieved"
-msgstr "älä tarkista otsikkotietoja haettaessa tietokanssata"
-
-#: build/poptBT.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
-#: lib/poptQV.c:336
-msgid "don't verify package signature(s)"
-msgstr "älä tarkista paketin allekirjoitusta"
-
-#: build/poptBT.c:206
-msgid "do not accept i18N msgstr's from specfile"
-msgstr ""
-
-#: build/poptBT.c:208
-msgid "remove sources when done"
-msgstr "poista lähdekoodit kun valmis"
-
-#: build/poptBT.c:210
-msgid "remove specfile when done"
-msgstr "poista määrittelytiedosto kun valmis"
-
-#: build/poptBT.c:212
-msgid "skip straight to specified stage (only for c,i)"
-msgstr "siirry suoraan määriteltyyn vaiheeseen (vain c ja i yhteydessä)"
-
-#: build/poptBT.c:214
-msgid "override target platform"
-msgstr "ohita kohdealusta"
-
 #: build/rpmfc.c:75
 #, c-format
 msgid "Ignoring invalid regex %s\n"
@@ -1465,7 +1456,7 @@ msgstr "Etsitään %s:ää: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "%s:ää ei löytynyt\n"
 
-#: build/spec.c:341
+#: build/spec.c:344
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "määrittelytiedoston %s kysely epäonnistui\n"
@@ -2602,24 +2593,24 @@ msgstr "virhe: en voi avata %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Asennetaan %s\n"
 
-#: lib/rpmlead.c:103
+#: lib/rpmlead.c:101
 msgid "not an rpm package"
 msgstr "ei ole RPM paketti"
 
-#: lib/rpmlead.c:107
+#: lib/rpmlead.c:105
 msgid "illegal signature type"
 msgstr "laiton allekirjoitustyyppi"
 
-#: lib/rpmlead.c:111
+#: lib/rpmlead.c:109
 msgid "unsupported RPM package version"
 msgstr "RPM pakettiversio ei ole tuettu"
 
-#: lib/rpmlead.c:124
+#: lib/rpmlead.c:122
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "luku epäonnistui: %s (%d)\n"
 
-#: lib/rpmlead.c:128
+#: lib/rpmlead.c:126
 msgid "not an rpm package\n"
 msgstr "ei ole RPM paketti\n"
 
@@ -2874,7 +2865,7 @@ msgstr ""
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui.\n"
 
-#: lib/rpmts.c:1031
+#: lib/rpmts.c:1025
 msgid "transaction"
 msgstr ""
 

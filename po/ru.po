@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-01 10:24+0300\n"
+"POT-Creation-Date: 2010-09-02 14:29+0300\n"
 "PO-Revision-Date: 2010-04-02 21:55+0800\n"
 "Last-Translator: Misha Shnurapet <zayzayats@yandex.ru>\n"
 "Language-Team: Black Cat Linux Team <blackcat-support@blackcatlinux.com>\n"
@@ -84,7 +84,7 @@ msgstr "Параметры базы данных"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Параметры Установки/Обновления/Удаления:"
 
-#: rpmqv.c:85 rpmbuild.c:41 tools/rpmdeps.c:32 tools/rpmgraph.c:228
+#: rpmqv.c:85 rpmbuild.c:237 tools/rpmdeps.c:32 tools/rpmgraph.c:228
 msgid "Common options for all rpm modes and executables:"
 msgstr "Общие параметры для всех режимов и компонентов rpm:"
 
@@ -226,7 +226,7 @@ msgstr ""
 "--root (-r) может быть указана только при установке, удалении, запросах "
 "пакета и перестроении базы данных"
 
-#: rpmqv.c:327 rpmbuild.c:393
+#: rpmqv.c:327 rpmbuild.c:567
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументы для --root (-r) должны начинаться с /"
 
@@ -283,80 +283,243 @@ msgstr "не заданы аргументы для верификации"
 msgid "no arguments given"
 msgstr "не заданы аргументы"
 
-#: rpmbuild.c:35
+#: rpmbuild.c:99
+#, c-format
+msgid "buildroot already specified, ignoring %s\n"
+msgstr "buildroot уже указан, %s игнорируется\n"
+
+#: rpmbuild.c:132
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <specfile>"
+msgstr ""
+"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из <файл "
+"спецификации>"
+
+#: rpmbuild.c:133 rpmbuild.c:136 rpmbuild.c:139 rpmbuild.c:142 rpmbuild.c:145
+#: rpmbuild.c:148 rpmbuild.c:151
+msgid "<specfile>"
+msgstr "<файл спецификации>"
+
+#: rpmbuild.c:135
+msgid "build through %build (%prep, then compile) from <specfile>"
+msgstr ""
+"выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
+
+#: rpmbuild.c:138
+msgid "build through %install (%prep, %build, then install) from <specfile>"
+msgstr ""
+"выполнить по стадию %install (%prep, %build, затем установка) из <файл "
+"спецификации>"
+
+#: rpmbuild.c:141
+#, c-format
+msgid "verify %files section from <specfile>"
+msgstr "проверить раздел %files из <файл спецификации>"
+
+#: rpmbuild.c:144
+msgid "build source and binary packages from <specfile>"
+msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
+
+#: rpmbuild.c:147
+msgid "build binary package only from <specfile>"
+msgstr "собрать двоичный пакет по <файл спецификации>"
+
+#: rpmbuild.c:150
+msgid "build source package only from <specfile>"
+msgstr "собрать исходный пакет по <файлу спецификации>"
+
+#: rpmbuild.c:154
+#, c-format
+msgid "build through %prep (unpack sources and apply patches) from <tarball>"
+msgstr ""
+"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из "
+"<архив tar>"
+
+#: rpmbuild.c:155 rpmbuild.c:158 rpmbuild.c:161 rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:170 rpmbuild.c:173
+msgid "<tarball>"
+msgstr "<архив tar>"
+
+#: rpmbuild.c:157
+msgid "build through %build (%prep, then compile) from <tarball>"
+msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
+
+#: rpmbuild.c:160
+msgid "build through %install (%prep, %build, then install) from <tarball>"
+msgstr ""
+"выполнить по стадию %install (%prep, %build, затем установка) из <архив tar>"
+
+#: rpmbuild.c:163
+#, c-format
+msgid "verify %files section from <tarball>"
+msgstr "проверить секцию %files из <архив tar>"
+
+#: rpmbuild.c:166
+msgid "build source and binary packages from <tarball>"
+msgstr "собрать исходный и двоичный пакеты из <архив tar>"
+
+#: rpmbuild.c:169
+msgid "build binary package only from <tarball>"
+msgstr "собрать двоичный пакет из <архив tar>"
+
+#: rpmbuild.c:172
+msgid "build source package only from <tarball>"
+msgstr "собрать исходный пакет из <архив tar>"
+
+#: rpmbuild.c:176
+msgid "build binary package from <source package>"
+msgstr "собрать двоичный пакет из <исходный пакет>"
+
+#: rpmbuild.c:177 rpmbuild.c:180
+msgid "<source package>"
+msgstr "<исходный пакет>"
+
+#: rpmbuild.c:179
+msgid ""
+"build through %install (%prep, %build, then install) from <source package>"
+msgstr ""
+"выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
+"пакет>"
+
+#: rpmbuild.c:183
+msgid "override build root"
+msgstr "переопределить build root"
+
+#: rpmbuild.c:185
+msgid "remove build tree when done"
+msgstr "после завершения удалить дерево исходников"
+
+#: rpmbuild.c:187
+msgid "ignore ExcludeArch: directives from spec file"
+msgstr "игнорировать ExcludeArch: в файле конфигурации"
+
+#: rpmbuild.c:189
+msgid "debug file state machine"
+msgstr "отладка машины состояния файлов"
+
+#: rpmbuild.c:191
+msgid "do not execute any stages of the build"
+msgstr "не выполнять никаких этапов сборки"
+
+#: rpmbuild.c:193
+msgid "do not verify build dependencies"
+msgstr "не проверять зависимости пакета перед сборкой"
+
+#: rpmbuild.c:195
+#, fuzzy
+msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
+msgstr ""
+"создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm[23]"
+
+#: rpmbuild.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
+#: lib/poptQV.c:331
+msgid "don't verify package digest(s)"
+msgstr "не проверять дайджест пакета(ов)"
+
+#: rpmbuild.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
+#: lib/poptQV.c:334
+msgid "don't verify database header(s) when retrieved"
+msgstr "не проверять заголовки, извлекаемые из базы данных"
+
+#: rpmbuild.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
+#: lib/poptQV.c:336
+msgid "don't verify package signature(s)"
+msgstr "не проверять подпись(и) в пакете(ах)"
+
+#: rpmbuild.c:206
+msgid "do not accept i18N msgstr's from specfile"
+msgstr "игнорировать строки i18N из файла спецификации"
+
+#: rpmbuild.c:208
+msgid "remove sources when done"
+msgstr "после завершения удалить исходники"
+
+#: rpmbuild.c:210
+msgid "remove specfile when done"
+msgstr "после завершения удалить файл спецификации"
+
+#: rpmbuild.c:212
+msgid "skip straight to specified stage (only for c,i)"
+msgstr "перейти непосредственно к указанному этапу (только для c,i)"
+
+#: rpmbuild.c:214
+msgid "override target platform"
+msgstr "переопределить целевую платформу"
+
+#: rpmbuild.c:231
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 "Параметры сборки с [ <файл спецификации> | <тар архив> | <исходный пакет> ]:"
 
-#: rpmbuild.c:64
+#: rpmbuild.c:251
 msgid "Failed build dependencies:\n"
 msgstr "Неудовлетворенные зависимости сборки:\n"
 
-#: rpmbuild.c:86
+#: rpmbuild.c:269
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Ошибка открытия файла спецификации %s: %s\n"
 
-#: rpmbuild.c:148
+#: rpmbuild.c:331
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Ошибка открытия канала tar: %m\n"
 
-#: rpmbuild.c:167
+#: rpmbuild.c:350
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Ошибка чтения файла спецификации из %s\n"
 
-#: rpmbuild.c:179
+#: rpmbuild.c:362
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Невозможно переименовать %s в %s: %m\n"
 
-#: rpmbuild.c:254
+#: rpmbuild.c:437
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "невозможно получить информацию о %s: %m\n"
 
-#: rpmbuild.c:258
+#: rpmbuild.c:441
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Не обычный файл: %s.\n"
 
-#: rpmbuild.c:265
+#: rpmbuild.c:448
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Файл %s не похож на файл спецификации.\n"
 
-#: rpmbuild.c:333
+#: rpmbuild.c:514
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Платформы для сборки: %s\n"
 
-#: rpmbuild.c:348
+#: rpmbuild.c:522
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Сборка для платформы %s\n"
 
-#: build/build.c:134 build/pack.c:405
+#: build/build.c:133 build/pack.c:405
 msgid "Unable to open temp file.\n"
 msgstr "Невозможно открыть временный файл.\n"
 
-#: build/build.c:184
+#: build/build.c:181
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Выполняется(%s): %s\n"
 
-#: build/build.c:190
+#: build/build.c:187
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Выполнить %s не удалось (%s): %s\n"
 
-#: build/build.c:199
+#: build/build.c:196
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Неверный код возврата из %s (%s)\n"
 
-#: build/build.c:292
+#: build/build.c:297
 msgid ""
 "\n"
 "\n"
@@ -415,181 +578,176 @@ msgstr "&& и || не поддерживаются для строк\n"
 msgid "syntax error in expression\n"
 msgstr "синтаксическая ошибка в выражении\n"
 
-#: build/files.c:242
-#, c-format
-msgid "TIMECHECK failure: %s\n"
-msgstr "Ошибка TIMECHECK: %s\n"
-
-#: build/files.c:305 build/files.c:498 build/files.c:715
+#: build/files.c:285 build/files.c:478 build/files.c:695
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Отсутствует '(' в %s %s\n"
 
-#: build/files.c:315 build/files.c:651 build/files.c:725 build/files.c:817
+#: build/files.c:295 build/files.c:631 build/files.c:705 build/files.c:797
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "отсутствует ')' в %s(%s\n"
 
-#: build/files.c:351 build/files.c:674
+#: build/files.c:331 build/files.c:654
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
-#: build/files.c:460
+#: build/files.c:440
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Отсутствует %s в %s %s\n"
 
-#: build/files.c:513
+#: build/files.c:493
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Не пробел следует после %s(): %s\n"
 
-#: build/files.c:549
+#: build/files.c:529
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Неверный синтаксис: %s(%s)\n"
 
-#: build/files.c:558
+#: build/files.c:538
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Неверные права: %s(%s)\n"
 
-#: build/files.c:576
+#: build/files.c:556
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Неверные права на каталог %s(%s)\n"
 
-#: build/files.c:750
+#: build/files.c:730
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Необычная длина locale: \"%.*s\" в %%lang(%s)\n"
 
-#: build/files.c:760
+#: build/files.c:740
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Дубликат locale %.*s в %%lang(%s)\n"
 
-#: build/files.c:832
+#: build/files.c:812
 #, fuzzy, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Неверный токен %s: %s\n"
 
-#: build/files.c:843
+#: build/files.c:823
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:897
+#: build/files.c:877
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Только один аргумент для %%docdir\n"
 
-#: build/files.c:926
+#: build/files.c:906
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Два файла в одной строке: %s\n"
 
-#: build/files.c:939
+#: build/files.c:919
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:950
+#: build/files.c:930
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Нельзя смешивать спец. %%doc с другими формами: %s\n"
 
-#: build/files.c:1091
+#: build/files.c:1071
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Не удается проверить файл %u, возврат к MD5\n"
 
-#: build/files.c:1117
+#: build/files.c:1097
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Файл указан дважды: %s\n"
 
-#: build/files.c:1240
+#: build/files.c:1220
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Символическая ссылка указывает на BuildRoot: %s -> %s\n"
 
-#: build/files.c:1411
+#: build/files.c:1391
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1419
+#: build/files.c:1399
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1522
+#: build/files.c:1502
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1616
+#: build/files.c:1596
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1622
+#: build/files.c:1602
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: build/files.c:1626
+#: build/files.c:1606
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: это не открытый ключ.\n"
 
-#: build/files.c:1635
+#: build/files.c:1615
 #, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "Невозможно раскрыть макрос %%%s\n"
 
-#: build/files.c:1674
+#: build/files.c:1654
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Файл должен начинаться с \"/\": %s\n"
 
-#: build/files.c:1696
+#: build/files.c:1676
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob не разрешаются: %s\n"
 
-#: build/files.c:1708 lib/rpminstall.c:419
+#: build/files.c:1688 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Файл не найден: %s\n"
 
-#: build/files.c:1759
+#: build/files.c:1739
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Невозможно открыть файл %%files %s: %s\n"
 
-#: build/files.c:1767
+#: build/files.c:1747
 #, c-format
 msgid "line: %s\n"
 msgstr "строка: %s\n"
 
-#: build/files.c:2056
+#: build/files.c:2035
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Неверный файл %s: %s\n"
 
-#: build/files.c:2078 build/parsePrep.c:32
+#: build/files.c:2057 build/parsePrep.c:32
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Неверная пара владелец/группа: %s\n"
 
-#: build/files.c:2119
+#: build/files.c:2098
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Проверка на неупакованный(е) файл(ы): %s\n"
 
-#: build/files.c:2134
+#: build/files.c:2113
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -598,12 +756,12 @@ msgstr ""
 "Обнаружен(ы) установленный(е) (но не упакованный(е)) файл(ы):\n"
 "%s"
 
-#: build/files.c:2158
+#: build/files.c:2138
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
 
-#: build/files.c:2169
+#: build/files.c:2149
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Двоичные данные с архитекутрой в пакете noarch\n"
 
@@ -822,30 +980,30 @@ msgstr "пропущено имя в %%changelog\n"
 msgid "no description in %%changelog\n"
 msgstr "нет описания в %%changelog\n"
 
-#: build/parseDescription.c:35
+#: build/parseDescription.c:33
 #, c-format
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr "строка %d: Ошибка анализа %%description: %s\n"
 
-#: build/parseDescription.c:48 build/parseFiles.c:43 build/parsePolicies.c:45
+#: build/parseDescription.c:46 build/parseFiles.c:43 build/parsePolicies.c:45
 #: build/parseScript.c:232
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr "строка %d: Неверный параметр %s: %s\n"
 
-#: build/parseDescription.c:59 build/parseFiles.c:54 build/parsePolicies.c:55
+#: build/parseDescription.c:57 build/parseFiles.c:54 build/parsePolicies.c:55
 #: build/parseScript.c:243
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr "строка %d: Слишком много имен: %s\n"
 
-#: build/parseDescription.c:67 build/parseFiles.c:62 build/parsePolicies.c:62
+#: build/parseDescription.c:65 build/parseFiles.c:62 build/parsePolicies.c:62
 #: build/parseScript.c:251
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
 msgstr "строка %d: Пакет не существует: %s\n"
 
-#: build/parseDescription.c:77
+#: build/parseDescription.c:75
 #, c-format
 msgid "line %d: Second description\n"
 msgstr "строка %d: Второе описание\n"
@@ -935,92 +1093,92 @@ msgstr "Неизвестный тип пиктограммы: %s\n"
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "строка %d: Ярлык требует только один аргумент: %s\n"
 
-#: build/parsePreamble.c:635
+#: build/parsePreamble.c:633
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s\n"
 
-#: build/parsePreamble.c:638
+#: build/parsePreamble.c:636
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:642
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "строка %d: Недопустимый символ '-' в %s: %s\n"
 
-#: build/parsePreamble.c:669
+#: build/parsePreamble.c:667
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "строка %d: Неверный тэг: %s\n"
 
-#: build/parsePreamble.c:677
+#: build/parsePreamble.c:675
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "строка %d: Пустой тэг: %s\n"
 
-#: build/parsePreamble.c:733
+#: build/parsePreamble.c:731
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "строка %d: Префикс не может заканчиваться на \"/\": %s\n"
 
-#: build/parsePreamble.c:746
+#: build/parsePreamble.c:744
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "строка %d: Docdir должен начинаться с '/': %s\n"
 
-#: build/parsePreamble.c:759
+#: build/parsePreamble.c:757
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "строка %d: Поле Epoch/Serial должно быть числом: %s\n"
 
-#: build/parsePreamble.c:799
+#: build/parsePreamble.c:797
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "строка %d: Неверное число %s: определяет: %s\n"
 
-#: build/parsePreamble.c:826
+#: build/parsePreamble.c:824
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "строка %d: Неверный формат BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:836
+#: build/parsePreamble.c:834
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:851
+#: build/parsePreamble.c:849
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Внутренняя ошибка: Неизвестный ярлык %d\n"
 
-#: build/parsePreamble.c:933
+#: build/parsePreamble.c:931
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "строка %d: Требуется версия: %s\n"
 
-#: build/parsePreamble.c:996
+#: build/parsePreamble.c:994
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Неверная спецификация пакета: %s\n"
 
-#: build/parsePreamble.c:1002
+#: build/parsePreamble.c:1000
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Пакет уже существует: %s\n"
 
-#: build/parsePreamble.c:1033
+#: build/parsePreamble.c:1031
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "строка %d: Неизвестный тэг: %s\n"
 
-#: build/parsePreamble.c:1065
+#: build/parsePreamble.c:1063
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot не может быть \"/\": %s\n"
 
-#: build/parsePreamble.c:1069
+#: build/parsePreamble.c:1067
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot не может быть \"/\": %s\n"
@@ -1173,11 +1331,11 @@ msgstr "%s:%d: Найден %%endif без %%if\n"
 msgid "malformed %%include statement\n"
 msgstr "неверное объявление %%include\n"
 
-#: build/parseSpec.c:651
+#: build/parseSpec.c:637
 msgid "No compatible architectures found for build\n"
 msgstr "Не найдены совместимые архитектуры для сборки.\n"
 
-#: build/parseSpec.c:685
+#: build/parseSpec.c:671
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Пакет не имеет %%description: %s\n"
@@ -1249,172 +1407,6 @@ msgstr "Слишком много аргументов в строке данных в %s:%d\n"
 msgid "Processing policies: %s\n"
 msgstr "Обрабатываются файлы: %s-%s-%s\n"
 
-#: build/poptBT.c:90
-#, c-format
-msgid "buildroot already specified, ignoring %s\n"
-msgstr "buildroot уже указан, %s игнорируется\n"
-
-#: build/poptBT.c:130
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из <файл "
-"спецификации>"
-
-#: build/poptBT.c:131 build/poptBT.c:134 build/poptBT.c:137 build/poptBT.c:140
-#: build/poptBT.c:143 build/poptBT.c:146 build/poptBT.c:149
-msgid "<specfile>"
-msgstr "<файл спецификации>"
-
-#: build/poptBT.c:133
-msgid "build through %build (%prep, then compile) from <specfile>"
-msgstr ""
-"выполнить по стадию %build (%prep, затем компиляция) из <файл спецификации>"
-
-#: build/poptBT.c:136
-msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка) из <файл "
-"спецификации>"
-
-#: build/poptBT.c:139
-#, c-format
-msgid "verify %files section from <specfile>"
-msgstr "проверить раздел %files из <файл спецификации>"
-
-#: build/poptBT.c:142
-msgid "build source and binary packages from <specfile>"
-msgstr "собрать исходный и двоичный пакеты по <файл спецификации>"
-
-#: build/poptBT.c:145
-msgid "build binary package only from <specfile>"
-msgstr "собрать двоичный пакет по <файл спецификации>"
-
-#: build/poptBT.c:148
-msgid "build source package only from <specfile>"
-msgstr "собрать исходный пакет по <файлу спецификации>"
-
-#: build/poptBT.c:152
-#, c-format
-msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"выполнить по стадию %prep (развернуть исходники и наложить заплаты) из "
-"<архив tar>"
-
-#: build/poptBT.c:153 build/poptBT.c:156 build/poptBT.c:159 build/poptBT.c:162
-#: build/poptBT.c:165 build/poptBT.c:168 build/poptBT.c:171
-msgid "<tarball>"
-msgstr "<архив tar>"
-
-#: build/poptBT.c:155
-msgid "build through %build (%prep, then compile) from <tarball>"
-msgstr "выполнить по стадию %build (%prep, затем компиляция) из <архив tar>"
-
-#: build/poptBT.c:158
-msgid "build through %install (%prep, %build, then install) from <tarball>"
-msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка) из <архив tar>"
-
-#: build/poptBT.c:161
-#, c-format
-msgid "verify %files section from <tarball>"
-msgstr "проверить секцию %files из <архив tar>"
-
-#: build/poptBT.c:164
-msgid "build source and binary packages from <tarball>"
-msgstr "собрать исходный и двоичный пакеты из <архив tar>"
-
-#: build/poptBT.c:167
-msgid "build binary package only from <tarball>"
-msgstr "собрать двоичный пакет из <архив tar>"
-
-#: build/poptBT.c:170
-msgid "build source package only from <tarball>"
-msgstr "собрать исходный пакет из <архив tar>"
-
-#: build/poptBT.c:174
-msgid "build binary package from <source package>"
-msgstr "собрать двоичный пакет из <исходный пакет>"
-
-#: build/poptBT.c:175 build/poptBT.c:178
-msgid "<source package>"
-msgstr "<исходный пакет>"
-
-#: build/poptBT.c:177
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"выполнить по стадию %install (%prep, %build, затем установка)  из <исходный "
-"пакет>"
-
-#: build/poptBT.c:181
-msgid "override build root"
-msgstr "переопределить build root"
-
-#: build/poptBT.c:183
-msgid "remove build tree when done"
-msgstr "после завершения удалить дерево исходников"
-
-#: build/poptBT.c:185
-msgid "generate headers compatible with rpm4 packaging"
-msgstr "создать заголовки, совместимые с пакетами rpm4"
-
-#: build/poptBT.c:187
-msgid "ignore ExcludeArch: directives from spec file"
-msgstr "игнорировать ExcludeArch: в файле конфигурации"
-
-#: build/poptBT.c:189
-msgid "debug file state machine"
-msgstr "отладка машины состояния файлов"
-
-#: build/poptBT.c:191
-msgid "do not execute any stages of the build"
-msgstr "не выполнять никаких этапов сборки"
-
-#: build/poptBT.c:193
-msgid "do not verify build dependencies"
-msgstr "не проверять зависимости пакета перед сборкой"
-
-#: build/poptBT.c:195
-msgid "generate package header(s) compatible with (legacy) rpm[23] packaging"
-msgstr ""
-"создать заголовок(ки) пакета, совместимые с (устаревшими)  форматами rpm[23]"
-
-#: build/poptBT.c:199 lib/poptALL.c:178 lib/poptI.c:236 lib/poptQV.c:293
-#: lib/poptQV.c:331
-msgid "don't verify package digest(s)"
-msgstr "не проверять дайджест пакета(ов)"
-
-#: build/poptBT.c:201 lib/poptALL.c:180 lib/poptI.c:238 lib/poptQV.c:295
-#: lib/poptQV.c:334
-msgid "don't verify database header(s) when retrieved"
-msgstr "не проверять заголовки, извлекаемые из базы данных"
-
-#: build/poptBT.c:203 lib/poptALL.c:182 lib/poptI.c:240 lib/poptQV.c:297
-#: lib/poptQV.c:336
-msgid "don't verify package signature(s)"
-msgstr "не проверять подпись(и) в пакете(ах)"
-
-#: build/poptBT.c:206
-msgid "do not accept i18N msgstr's from specfile"
-msgstr "игнорировать строки i18N из файла спецификации"
-
-#: build/poptBT.c:208
-msgid "remove sources when done"
-msgstr "после завершения удалить исходники"
-
-#: build/poptBT.c:210
-msgid "remove specfile when done"
-msgstr "после завершения удалить файл спецификации"
-
-#: build/poptBT.c:212
-msgid "skip straight to specified stage (only for c,i)"
-msgstr "перейти непосредственно к указанному этапу (только для c,i)"
-
-#: build/poptBT.c:214
-msgid "override target platform"
-msgstr "переопределить целевую платформу"
-
 #: build/rpmfc.c:75
 #, fuzzy, c-format
 msgid "Ignoring invalid regex %s\n"
@@ -1485,7 +1477,7 @@ msgstr "Идет поиск  %s: %s\n"
 msgid "Failed to find %s:\n"
 msgstr "Невозможно найти %s:\n"
 
-#: build/spec.c:341
+#: build/spec.c:344
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr "запрос файла спецификации %s не удался, невозможно разобрать файл\n"
@@ -2649,26 +2641,26 @@ msgstr "невозможно открыть %s: %s\n"
 msgid "Installing %s\n"
 msgstr "Устанавливается %s\n"
 
-#: lib/rpmlead.c:103
+#: lib/rpmlead.c:101
 #, fuzzy
 msgid "not an rpm package"
 msgstr "%s: это не пакет RPM\n"
 
-#: lib/rpmlead.c:107
+#: lib/rpmlead.c:105
 #, fuzzy
 msgid "illegal signature type"
 msgstr "%s: Подпись недоступна\n"
 
-#: lib/rpmlead.c:111
+#: lib/rpmlead.c:109
 msgid "unsupported RPM package version"
 msgstr ""
 
-#: lib/rpmlead.c:124
+#: lib/rpmlead.c:122
 #, c-format
 msgid "read failed: %s (%d)\n"
 msgstr "ошибка чтения: %s (%d)\n"
 
-#: lib/rpmlead.c:128
+#: lib/rpmlead.c:126
 #, fuzzy
 msgid "not an rpm package\n"
 msgstr "%s: это не пакет RPM\n"
@@ -2925,7 +2917,7 @@ msgstr "неверный номер пакета: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: ошибка чтения во время импортирования.\n"
 
-#: lib/rpmts.c:1031
+#: lib/rpmts.c:1025
 msgid "transaction"
 msgstr ""
 
@@ -3567,6 +3559,12 @@ msgstr "%s: ошибка чтения списка файлов: %s\n"
 #: tools/rpmgraph.c:226
 msgid "don't verify header+payload signature"
 msgstr "не проверять подпись заголовока и содержимого"
+
+#~ msgid "TIMECHECK failure: %s\n"
+#~ msgstr "Ошибка TIMECHECK: %s\n"
+
+#~ msgid "generate headers compatible with rpm4 packaging"
+#~ msgstr "создать заголовки, совместимые с пакетами rpm4"
 
 #~ msgid "Internal error in argument processing (%d) :-(\n"
 #~ msgstr "Внутренняя ошибка при обработке аргументов (%d) :-(\n"
