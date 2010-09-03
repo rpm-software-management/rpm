@@ -158,6 +158,10 @@ rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
 
+rpm	exec --addsign		@BINDIR@/rpmsign --addsign
+rpm	exec --delsign		@BINDIR@/rpmsign --delsign
+rpm	exec --resign		@BINDIR@/rpmsign --resign
+
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \
 	--POPTdesc=$"use database in DIRECTORY" \

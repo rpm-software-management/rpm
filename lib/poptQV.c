@@ -287,16 +287,10 @@ struct poptOption rpmSignPoptTable[] = {
 /* FIX: cast? */
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	rpmQVSourceArgCallback, 0, NULL, NULL },
- { "addsign", '\0', 0, NULL, 'A',
-	N_("sign package(s) (identical to --resign)"), NULL },
  { "checksig", 'K', 0, NULL, 'K',
 	N_("verify package signature(s)"), NULL },
- { "delsign", '\0', 0, NULL, 'D',
-	N_("delete package signatures"), NULL },
  { "import", '\0', 0, NULL, 'I',
 	N_("import an armored public key"), NULL },
- { "resign", '\0', 0, NULL, 'R',
-	N_("sign package(s) (identical to --addsign)"), NULL },
 
    POPT_TABLEEND
 };

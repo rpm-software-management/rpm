@@ -9,9 +9,6 @@ const char *__progname;
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
 
-#if defined(IAM_RPMK)
-#include "lib/signature.h"
-#endif
 #include "cliutils.h"
 
 #include "debug.h"
@@ -27,9 +24,8 @@ enum modes {
 #define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 
     MODE_CHECKSIG	= (1 <<  6),
-    MODE_RESIGN		= (1 <<  7),
     MODE_KEYRING	= (1 <<  8),
-#define	MODES_K	 (MODE_CHECKSIG | MODE_RESIGN | MODE_KEYRING)
+#define	MODES_K	 (MODE_CHECKSIG | MODE_KEYRING)
 
     MODE_INITDB		= (1 << 10),
     MODE_REBUILDDB	= (1 << 12),
@@ -112,10 +108,6 @@ int main(int argc, char *argv[])
    QVA_t ka = &rpmQVKArgs;
 #endif
 
-#if defined(IAM_RPMK)
-    char * passPhrase = "";
-#endif
-
     poptContext optCon;
     int ec = 0;
 #ifdef	IAM_RPMEIU
@@ -136,7 +128,6 @@ int main(int argc, char *argv[])
     case MODE_QUERY:	qva->qva_mode = 'q';	break;
     case MODE_VERIFY:	qva->qva_mode = 'V';	break;
     case MODE_CHECKSIG:	qva->qva_mode = 'K';	break;
-    case MODE_RESIGN:	qva->qva_mode = 'R';	break;
     case MODE_INSTALL:
     case MODE_ERASE:
     case MODE_INITDB:
@@ -217,13 +208,6 @@ int main(int argc, char *argv[])
 	    break;
 	case RPMSIGN_CHK_SIGNATURE:
 	    bigMode = MODE_CHECKSIG;
-	    break;
-	case RPMSIGN_ADD_SIGNATURE:
-	case RPMSIGN_NEW_SIGNATURE:
-	    ka->sign = 1;
-	    /* fallthrough */
-	case RPMSIGN_DEL_SIGNATURE:
-	    bigMode = MODE_RESIGN;
 	    break;
 	}
   }
@@ -329,65 +313,6 @@ int main(int argc, char *argv[])
 
     if (quiet)
 	rpmSetVerbosity(RPMLOG_WARNING);
-
-#if defined(IAM_RPMK)
-    if (ka->sign) {
-	if (bigMode == MODE_RESIGN) {
-	    const char ** av;
-	    struct stat sb;
-	    int errors = 0;
-
-	    if ((av = poptGetArgs(optCon)) == NULL) {
-		fprintf(stderr, _("no files to sign\n"));
-		errors++;
-	    } else
-	    while (*av) {
-		if (stat(*av, &sb)) {
-		    fprintf(stderr, _("cannot access file %s\n"), *av);
-		    errors++;
-		}
-		av++;
-	    }
-
-	    if (errors) {
-		ec = errors;
-		goto exit;
-	    }
-
-            if (poptPeekArg(optCon)) {
-		int sigTag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY);
-		switch (sigTag) {
-		  case 0:
-		    break;
-		  case RPMSIGTAG_PGP:
-		  case RPMSIGTAG_GPG:
-		  case RPMSIGTAG_DSA:
-		  case RPMSIGTAG_RSA:
-		    passPhrase = rpmGetPassPhrase(_("Enter pass phrase: "), sigTag);
-		    if (passPhrase == NULL) {
-			fprintf(stderr, _("Pass phrase check failed\n"));
-			ec = EXIT_FAILURE;
-			goto exit;
-		    }
-		    fprintf(stderr, _("Pass phrase is good.\n"));
-		    passPhrase = xstrdup(passPhrase);
-		    break;
-		  default:
-		    fprintf(stderr,
-		            _("Invalid %%_signature spec in macro file.\n"));
-		    ec = EXIT_FAILURE;
-		    goto exit;
-		    break;
-		}
-	    }
-	} else {
-	    argerror(_("--sign may only be used during package building"));
-	}
-    } else {
-    	/* Make rpmLookupSignatureType() return 0 ("none") from now on */
-        (void) rpmLookupSignatureType(RPMLOOKUPSIG_DISABLE);
-    }
-#endif	/* IAM_RPMK */
 
     if (rpmcliPipeOutput && initPipe())
 	exit(EXIT_FAILURE);
@@ -496,13 +421,6 @@ int main(int argc, char *argv[])
 	ec = rpmcliVerifySignatures(ts, ka, (ARGV_const_t) poptGetArgs(optCon));
 	break;
     }  
-    case MODE_RESIGN:
-	if (!poptPeekArg(optCon))
-	    argerror(_("no arguments given"));
-	ec = rpmcliSign((ARGV_const_t) poptGetArgs(optCon),
-			(qva->qva_mode == RPMSIGN_DEL_SIGNATURE),
-			rpmLookupSignatureType(RPMLOOKUPSIG_QUERY), passPhrase);
-    	break;
 #endif	/* IAM_RPMK */
 	
 #if !defined(IAM_RPMQV)
@@ -511,7 +429,6 @@ int main(int argc, char *argv[])
 #endif
 #if !defined(IAM_RPMK)
     case MODE_CHECKSIG:
-    case MODE_RESIGN:
 #endif
 #if !defined(IAM_RPMDB)
     case MODE_INITDB:
@@ -530,7 +447,6 @@ int main(int argc, char *argv[])
 	break;
     }
 
-exit:
     ts = rpmtsFree(ts);
     finishPipe();
 

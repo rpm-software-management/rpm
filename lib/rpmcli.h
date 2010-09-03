@@ -170,16 +170,13 @@ struct rpmQVKArguments_s {
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
     char * qva_queryFormat;	/*!< Format for headerFormat(). */
-    int sign;			/*!< Is a passphrase needed? */
     char	qva_mode;
 		/*!<
 		- 'q'	from --query, -q
 		- 'Q'	from --querytags
 		- 'V'	from --verify, -V
-		- 'A'	from --addsign
 		- 'I'	from --import
 		- 'K'	from --checksig, -K
-		- 'R'	from --resign
 		*/
 };
 
@@ -430,9 +427,6 @@ extern struct poptOption rpmDatabasePoptTable[];
  */
 typedef enum rpmSignFlags_e {
     RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
-    RPMSIGN_NEW_SIGNATURE	= 'R',	/*!< from --resign */
-    RPMSIGN_ADD_SIGNATURE	= 'A',	/*!< from --addsign */
-    RPMSIGN_DEL_SIGNATURE	= 'D',	/*!< from --delsign */
     RPMSIGN_IMPORT_PUBKEY	= 'I',	/*!< from --import */
 } rpmSignFlags;
 

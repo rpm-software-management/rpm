@@ -182,6 +182,7 @@ rpmconfig_DATA += rpmpopt-$(VERSION)
 rpmpopt-@VERSION@: $(top_srcdir)/rpmpopt.in
 	@$(SED) \
 	  -e "s,[@]RPMCONFIGDIR[@],$(rpmconfigdir),g" \
+	  -e "s,[@]BINDIR[@],$(bindir),g" \
 	  < $(top_srcdir)/rpmpopt.in > rpmpopt-@VERSION@.tmp \
 	  && ( cd $(top_builddir) && ./config.status --file=${subdir}/rpmpopt-@VERSION@:${subdir}/rpmpopt-@VERSION@.tmp )
 CLEANFILES += rpmpopt-@VERSION@.tmp rpmpopt-@VERSION@
