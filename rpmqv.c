@@ -493,6 +493,8 @@ int main(int argc, char *argv[])
 
 	verifyFlags &= ~rpmcliQueryFlags;
 	ka->qva_flags = (rpmQueryFlags) verifyFlags;
+	ec = rpmcliVerifySignatures(ts, ka, (ARGV_const_t) poptGetArgs(optCon));
+	break;
     }  
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
