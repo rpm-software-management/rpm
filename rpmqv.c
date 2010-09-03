@@ -413,14 +413,8 @@ int main(int argc, char *argv[])
 	ec = rpmcliImportPubkeys(ts, (ARGV_const_t) poptGetArgs(optCon));
 	break;
     case MODE_CHECKSIG:
-    {	rpmVerifyFlags verifyFlags =
-		(VERIFY_FILEDIGEST|VERIFY_DIGEST|VERIFY_SIGNATURE);
-
-	verifyFlags &= ~rpmcliQueryFlags;
-	ka->qva_flags = (rpmQueryFlags) verifyFlags;
-	ec = rpmcliVerifySignatures(ts, ka, (ARGV_const_t) poptGetArgs(optCon));
+	ec = rpmcliVerifySignatures(ts, (ARGV_const_t) poptGetArgs(optCon));
 	break;
-    }  
 #endif	/* IAM_RPMK */
 	
 #if !defined(IAM_RPMQV)

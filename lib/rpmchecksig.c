@@ -439,18 +439,22 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
     return rc;
 }
 
-int rpmcliVerifySignatures(rpmts ts, QVA_t qva, ARGV_const_t argv)
+int rpmcliVerifySignatures(rpmts ts, ARGV_const_t argv)
 {
     const char * arg;
     int res = 0;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmVerifyFlags verifyFlags = (VERIFY_DIGEST|VERIFY_SIGNATURE);
+    
+    verifyFlags &= ~rpmcliQueryFlags;
+
     while ((arg = *argv++) != NULL) {
 	FD_t fd = Fopen(arg, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
 		     arg, Fstrerror(fd));
 	    res++;
-	} else if (rpmpkgVerifySigs(keyring, qva->qva_flags, fd, arg)) {
+	} else if (rpmpkgVerifySigs(keyring, verifyFlags, fd, arg)) {
 	    res++;
 	}
 
