@@ -28,7 +28,8 @@ enum modes {
 
     MODE_CHECKSIG	= (1 <<  6),
     MODE_RESIGN		= (1 <<  7),
-#define	MODES_K	 (MODE_CHECKSIG | MODE_RESIGN)
+    MODE_KEYRING	= (1 <<  8),
+#define	MODES_K	 (MODE_CHECKSIG | MODE_RESIGN | MODE_KEYRING)
 
     MODE_INITDB		= (1 << 10),
     MODE_REBUILDDB	= (1 << 12),
@@ -212,15 +213,17 @@ int main(int argc, char *argv[])
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
 	switch (ka->qva_mode) {
 	case RPMSIGN_IMPORT_PUBKEY:
+	    bigMode = MODE_KEYRING;
+	    break;
 	case RPMSIGN_CHK_SIGNATURE:
 	    bigMode = MODE_CHECKSIG;
-	    ka->sign = 0;
 	    break;
 	case RPMSIGN_ADD_SIGNATURE:
 	case RPMSIGN_NEW_SIGNATURE:
+	    ka->sign = 1;
+	    /* fallthrough */
 	case RPMSIGN_DEL_SIGNATURE:
 	    bigMode = MODE_RESIGN;
-	    ka->sign = (ka->qva_mode != RPMSIGN_DEL_SIGNATURE);
 	    break;
 	}
   }
@@ -479,6 +482,11 @@ int main(int argc, char *argv[])
 #endif	/* IAM_RPMQV */
 
 #ifdef IAM_RPMK
+    case MODE_KEYRING:
+	if (!poptPeekArg(optCon))
+	    argerror(_("no arguments given"));
+	ec = rpmcliImportPubkeys(ts, (ARGV_const_t) poptGetArgs(optCon));
+	break;
     case MODE_CHECKSIG:
     {	rpmVerifyFlags verifyFlags =
 		(VERIFY_FILEDIGEST|VERIFY_DIGEST|VERIFY_SIGNATURE);
