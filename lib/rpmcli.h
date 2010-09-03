@@ -430,7 +430,6 @@ extern struct poptOption rpmDatabasePoptTable[];
  * Bit(s) to control rpmReSign() operation.
  */
 typedef enum rpmSignFlags_e {
-    RPMSIGN_NONE		= 0,
     RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
     RPMSIGN_NEW_SIGNATURE	= 'R',	/*!< from --resign */
     RPMSIGN_ADD_SIGNATURE	= 'A',	/*!< from --addsign */

@@ -211,9 +211,6 @@ int main(int argc, char *argv[])
 #ifdef	IAM_RPMK
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
 	switch (ka->qva_mode) {
-	case RPMSIGN_NONE:
-	    ka->sign = 0;
-	    break;
 	case RPMSIGN_IMPORT_PUBKEY:
 	case RPMSIGN_CHK_SIGNATURE:
 	    bigMode = MODE_CHECKSIG;

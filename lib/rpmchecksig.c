@@ -807,7 +807,6 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     case RPMSIGN_DEL_SIGNATURE:
 	return rpmReSign(ts, qva, argv);
 	break;
-    case RPMSIGN_NONE:
     default:
 	return -1;
 	break;

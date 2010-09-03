@@ -297,8 +297,6 @@ struct poptOption rpmSignPoptTable[] = {
 	N_("import an armored public key"), NULL },
  { "resign", '\0', 0, NULL, 'R',
 	N_("sign package(s) (identical to --addsign)"), NULL },
- { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
-	N_("generate signature"), NULL },
 
    POPT_TABLEEND
 };
