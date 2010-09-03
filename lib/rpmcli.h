@@ -423,18 +423,6 @@ extern struct poptOption rpmDatabasePoptTable[];
 /** \name RPMK */
 
 /** \ingroup rpmcli
- * Bit(s) to control rpmReSign() operation.
- */
-typedef enum rpmSignFlags_e {
-    RPMSIGN_CHK_SIGNATURE	= 'K',	/*!< from --checksig */
-    RPMSIGN_IMPORT_PUBKEY	= 'I',	/*!< from --import */
-} rpmSignFlags;
-
-/** \ingroup rpmcli
- */
-extern struct poptOption rpmSignPoptTable[];
-
-/** \ingroup rpmcli
  * Create/delete package signatures.
  * @param argv		array of package path arguments (NULL terminated)
  * @param deleting	adding or deleting signature(s)

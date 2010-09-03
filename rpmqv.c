@@ -23,10 +23,6 @@ enum modes {
     MODE_ERASE		= (1 <<  2),
 #define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 
-    MODE_CHECKSIG	= (1 <<  6),
-    MODE_KEYRING	= (1 <<  8),
-#define	MODES_K	 (MODE_CHECKSIG | MODE_KEYRING)
-
     MODE_INITDB		= (1 << 10),
     MODE_REBUILDDB	= (1 << 12),
     MODE_VERIFYDB	= (1 << 13),
@@ -39,7 +35,7 @@ enum modes {
 #define	MODES_FOR_DBPATH	(MODES_IE | MODES_QV | MODES_DB)
 #define	MODES_FOR_NODEPS	(MODES_IE | MODE_VERIFY)
 #define	MODES_FOR_TEST		(MODES_IE)
-#define	MODES_FOR_ROOT		(MODES_IE | MODES_QV | MODES_DB | MODES_K)
+#define	MODES_FOR_ROOT		(MODES_IE | MODES_QV | MODES_DB)
 
 static int quiet;
 
@@ -57,12 +53,6 @@ static struct poptOption optionsTable[] = {
 	N_("Verify options (with -V or --verify):"),
 	NULL },
 #endif	/* IAM_RPMQV */
-
-#ifdef	IAM_RPMK
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmSignPoptTable, 0,
-	N_("Signature options:"),
-	NULL },
-#endif	/* IAM_RPMK */
 
 #ifdef	IAM_RPMDB
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmDatabasePoptTable, 0,
@@ -104,10 +94,6 @@ int main(int argc, char *argv[])
    struct rpmDatabaseArguments_s * da = &rpmDBArgs;
 #endif
 
-#if defined(IAM_RPMK)
-   QVA_t ka = &rpmQVKArgs;
-#endif
-
     poptContext optCon;
     int ec = 0;
 #ifdef	IAM_RPMEIU
@@ -127,7 +113,6 @@ int main(int argc, char *argv[])
     switch (bigMode) {
     case MODE_QUERY:	qva->qva_mode = 'q';	break;
     case MODE_VERIFY:	qva->qva_mode = 'V';	break;
-    case MODE_CHECKSIG:	qva->qva_mode = 'K';	break;
     case MODE_INSTALL:
     case MODE_ERASE:
     case MODE_INITDB:
@@ -199,19 +184,6 @@ int main(int argc, char *argv[])
 	    bigMode = MODE_ERASE;
     }
 #endif	/* IAM_RPMEIU */
-
-#ifdef	IAM_RPMK
-  if (bigMode == MODE_UNKNOWN || (bigMode & MODES_K)) {
-	switch (ka->qva_mode) {
-	case RPMSIGN_IMPORT_PUBKEY:
-	    bigMode = MODE_KEYRING;
-	    break;
-	case RPMSIGN_CHK_SIGNATURE:
-	    bigMode = MODE_CHECKSIG;
-	    break;
-	}
-  }
-#endif	/* IAM_RPMK */
 
 #if defined(IAM_RPMEIU)
     if (!( bigMode == MODE_INSTALL ) &&
@@ -406,23 +378,9 @@ int main(int argc, char *argv[])
     }	break;
 #endif	/* IAM_RPMQV */
 
-#ifdef IAM_RPMK
-    case MODE_KEYRING:
-	if (!poptPeekArg(optCon))
-	    argerror(_("no arguments given"));
-	ec = rpmcliImportPubkeys(ts, (ARGV_const_t) poptGetArgs(optCon));
-	break;
-    case MODE_CHECKSIG:
-	ec = rpmcliVerifySignatures(ts, (ARGV_const_t) poptGetArgs(optCon));
-	break;
-#endif	/* IAM_RPMK */
-	
 #if !defined(IAM_RPMQV)
     case MODE_QUERY:
     case MODE_VERIFY:
-#endif
-#if !defined(IAM_RPMK)
-    case MODE_CHECKSIG:
 #endif
 #if !defined(IAM_RPMDB)
     case MODE_INITDB:

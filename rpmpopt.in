@@ -161,6 +161,9 @@ rpm	alias --httpproxy	--define '_httpproxy !#:+'
 rpm	exec --addsign		@BINDIR@/rpmsign --addsign
 rpm	exec --delsign		@BINDIR@/rpmsign --delsign
 rpm	exec --resign		@BINDIR@/rpmsign --resign
+rpm	exec --checksig		@BINDIR@/rpmkeys --checksig
+rpm	exec -K			@BINDIR@/rpmkeys --checksig
+rpm	exec --import		@BINDIR@/rpmkeys --import
 
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \

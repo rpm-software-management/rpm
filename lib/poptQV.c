@@ -36,11 +36,6 @@ static void rpmQVSourceArgCallback( poptContext con,
     case 'q':	/* from --query, -q */
     case 'Q':	/* from --querytags (handled by poptALL) */
     case 'V':	/* from --verify, -V */
-    case 'A':	/* from --addsign */
-    case 'D':	/* from --delsign */
-    case 'I':	/* from --import */
-    case 'K':	/* from --checksig, -K */
-    case 'R':	/* from --resign */
 	if (qva->qva_mode == '\0' || strchr("qQ ", qva->qva_mode)) {
 	    qva->qva_mode = opt->val;
 	}
@@ -278,19 +273,4 @@ struct poptOption rpmVerifyPoptTable[] = {
         N_("don't execute verify script(s)"), NULL },
 
     POPT_TABLEEND
-};
-
-/**
- * Signature mode options.
- */
-struct poptOption rpmSignPoptTable[] = {
-/* FIX: cast? */
- { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
-	rpmQVSourceArgCallback, 0, NULL, NULL },
- { "checksig", 'K', 0, NULL, 'K',
-	N_("verify package signature(s)"), NULL },
- { "import", '\0', 0, NULL, 'I',
-	N_("import an armored public key"), NULL },
-
-   POPT_TABLEEND
 };
