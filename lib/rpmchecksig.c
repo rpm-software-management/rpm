@@ -410,7 +410,7 @@ static int doImport(rpmts ts, const char *fn, char *buf, ssize_t blen)
     return res;
 }
 
-static int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
+int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv)
 {
     int res = 0;
     for (ARGV_const_t arg = argv; arg && *arg; arg++) {

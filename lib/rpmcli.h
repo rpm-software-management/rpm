@@ -450,6 +450,13 @@ extern struct poptOption rpmSignPoptTable[];
  */
 int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv);
 
+/** Import public key(s) to rpm keyring
+ * @param ts		transaction set
+ * @param argv		array of pubkey path arguments (NULL terminated)
+ * @return		0 on success
+ */
+int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv);
+
 #ifdef __cplusplus
 }
 #endif
