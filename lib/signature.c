@@ -27,11 +27,6 @@
 char ** environ = NULL;
 #endif
 
-/* Solaris <= 2.6 limits getpass return to only 8 chars */
-#if HAVE_GETPASSPHRASE
-#define getpass getpassphrase
-#endif
-
 static int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
                      rpm_data_t p, rpm_count_t c)
 {
@@ -42,39 +37,6 @@ static int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
     sigtd.data = p;
     sigtd.count = c;
     return headerPut(h, &sigtd, HEADERPUT_DEFAULT);
-}
-
-int rpmLookupSignatureType(int action)
-{
-    static int disabled = 0;
-    int rc = 0;
-
-    switch (action) {
-    case RPMLOOKUPSIG_DISABLE:
-	disabled = -2;
-	break;
-    case RPMLOOKUPSIG_ENABLE:
-	disabled = 0;
-    case RPMLOOKUPSIG_QUERY:
-	if (disabled)
-	    break;	/* Disabled */
-      { char *name = rpmExpand("%{?_signature}", NULL);
-	if (!(name && *name != '\0'))
-	    rc = 0;
-	else if (!rstrcasecmp(name, "none"))
-	    rc = 0;
-	else if (!rstrcasecmp(name, "pgp"))
-	    rc = RPMSIGTAG_PGP;
-	else if (!rstrcasecmp(name, "pgp5"))	/* XXX legacy */
-	    rc = RPMSIGTAG_PGP;
-	else if (!rstrcasecmp(name, "gpg"))
-	    rc = RPMSIGTAG_GPG;
-	else
-	    rc = -1;	/* Invalid %_signature spec in macro file */
-	name = _free(name);
-      }	break;
-    }
-    return rc;
 }
 
 /**
@@ -633,111 +595,6 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
     free(pkt);
 
     return ret;
-}
-
-static int checkPassPhrase(const char * passPhrase, const rpmSigTag sigTag)
-{
-    int passPhrasePipe[2];
-    int pid, status;
-    int rc;
-    int xx;
-
-    passPhrasePipe[0] = passPhrasePipe[1] = 0;
-    xx = pipe(passPhrasePipe);
-    if (!(pid = fork())) {
-	const char * cmd;
-	char *const *av;
-	int fdno;
-
-	xx = close(STDIN_FILENO);
-	xx = close(STDOUT_FILENO);
-	xx = close(passPhrasePipe[1]);
-	if (! rpmIsVerbose())
-	    xx = close(STDERR_FILENO);
-	if ((fdno = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
-	    xx = dup2(fdno, STDIN_FILENO);
-	    xx = close(fdno);
-	}
-	if ((fdno = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
-	    xx = dup2(fdno, STDOUT_FILENO);
-	    xx = close(fdno);
-	}
-	xx = dup2(passPhrasePipe[0], 3);
-
-	unsetenv("MALLOC_CHECK_");
-	switch (sigTag) {
-	case RPMSIGTAG_RSA:
-	case RPMSIGTAG_PGP5:	/* XXX legacy */
-	case RPMSIGTAG_PGP:
-	case RPMSIGTAG_DSA:
-	case RPMSIGTAG_GPG:
-	{   const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
-
-	    if (gpg_path && *gpg_path != '\0')
-  		(void) setenv("GNUPGHOME", gpg_path, 1);
-
-	    cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
-	    rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-	    if (!rc)
-		rc = execve(av[0], av+1, environ);
-
-	    rpmlog(RPMLOG_ERR, _("Could not exec %s: %s\n"), "gpg",
-			strerror(errno));
-	    _exit(EXIT_FAILURE);
-	}   break;
-	default: /* This case should have been screened out long ago. */
-	    rpmlog(RPMLOG_ERR, _("Invalid %%_signature spec in macro file\n"));
-	    _exit(EXIT_FAILURE);
-	    break;
-	}
-    }
-
-    xx = close(passPhrasePipe[0]);
-    xx = write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
-    xx = write(passPhrasePipe[1], "\n", 1);
-    xx = close(passPhrasePipe[1]);
-
-    (void) waitpid(pid, &status, 0);
-
-    return ((WIFEXITED(status) && WEXITSTATUS(status) == 0)) ? 0 : 1;
-}
-
-char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag)
-{
-    char *pass = NULL;
-    int aok = 0;
-
-    switch (sigTag) {
-    case RPMSIGTAG_RSA:
-    case RPMSIGTAG_PGP5: 	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_DSA:
-    case RPMSIGTAG_GPG:
-      { char *name = rpmExpand("%{?_gpg_name}", NULL);
-	aok = (name && *name != '\0');
-	name = _free(name);
-      }
-	if (aok)
-	    break;
-	rpmlog(RPMLOG_ERR,
-		_("You must set \"%%_gpg_name\" in your macro file\n"));
-	break;
-    default:
-	/* Currently the calling function (rpm.c:main) is checking this and
-	 * doing a better job.  This section should never be accessed.
-	 */
-	rpmlog(RPMLOG_ERR, _("Invalid %%_signature spec in macro file\n"));
-	break;
-    }
-
-    if (aok) {
-	pass = getpass( (prompt ? prompt : "") );
-
-	if (checkPassPhrase(pass, sigTag))
-	    pass = NULL;
-    }
-
-    return pass;
 }
 
 static const char * rpmSigString(rpmRC res)

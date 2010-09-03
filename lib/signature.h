@@ -74,30 +74,6 @@ rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX
  */
 Header rpmFreeSignature(Header h);
 
-/******************************************************************/
-
-/**
- *  Possible actions for rpmLookupSignatureType()
- */
-#define RPMLOOKUPSIG_QUERY	0	/* Lookup type in effect          */
-#define RPMLOOKUPSIG_DISABLE	1	/* Disable (--sign was not given) */
-#define RPMLOOKUPSIG_ENABLE	2	/* Re-enable %_signature          */
-
-/** \ingroup signature
- * Return type of signature needed for signing/building.
- * @param action	enable/disable/query action
- * @return		sigTag to use, 0 if none, -1 on error
- */
-int rpmLookupSignatureType(int action);
-
-/** \ingroup signature
- * Read a pass phrase using getpass(3), confirm with gpg/pgp helper binaries.
- * @param prompt	user prompt
- * @param sigTag	signature type/tag
- * @return		pass phrase
- */
-char * rpmGetPassPhrase(const char * prompt, const rpmSigTag sigTag);
-
 #ifdef __cplusplus
 }
 #endif
