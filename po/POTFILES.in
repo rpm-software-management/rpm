@@ -45,6 +45,7 @@ lib/rpmchecksig.c
 lib/rpmchroot.c
 lib/rpmds.c
 lib/rpmfi.c
+lib/rpmgensig.c
 lib/rpmgi.c
 lib/rpminstall.c
 lib/rpmlead.c
