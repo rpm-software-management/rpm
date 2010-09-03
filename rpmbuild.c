@@ -49,7 +49,6 @@ static struct rpmBuildArguments_s rpmBTArgs;
 extern int _fsm_debug;
 
 static rpmSpecFlags spec_flags = 0;	/*!< Bit(s) to control spec parsing. */
-static rpmVerifyFlags qva_flags = 0;	/*!< Bit(s) to control verification */
 static int noDeps = 0;			/*!< from --nodeps */
 static int shortCircuit = 0;		/*!< from --short-circuit */
 static char buildMode = 0;		/*!< Build mode (one of "btBC") */
@@ -103,18 +102,6 @@ static void buildArgCallback( poptContext con,
 	break;
     case POPT_TARGETPLATFORM:
 	argvSplit(&build_targets, arg, ",");
-	break;
-
-    case RPMCLI_POPT_NODIGEST:
-	qva_flags |= VERIFY_DIGEST;
-	break;
-
-    case RPMCLI_POPT_NOSIGNATURE:
-	qva_flags |= VERIFY_SIGNATURE;
-	break;
-
-    case RPMCLI_POPT_NOHDRCHK:
-	qva_flags |= VERIFY_HDRCHK;
 	break;
 
     case RPMCLI_POPT_FORCE:
@@ -194,13 +181,6 @@ static struct poptOption rpmBuildPoptTable[] = {
  { "nodirtokens", '\0', 0, 0, POPT_NODIRTOKENS,
 	N_("generate package header(s) compatible with (legacy) rpm v3 packaging"),
 	NULL},
-
- { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
-        N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
- { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
 
  { "nolang", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_NOLANG,
 	N_("do not accept i18N msgstr's from specfile"), NULL},
@@ -496,11 +476,11 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     rpmVSFlags vsflags, ovsflags;
 
     vsflags = rpmExpandNumeric("%{_vsflags_build}");
-    if (qva_flags & VERIFY_DIGEST)
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
-    if (qva_flags & VERIFY_SIGNATURE)
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
 	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (qva_flags & VERIFY_HDRCHK)
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
