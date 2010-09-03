@@ -78,7 +78,7 @@ pkginclude_HEADERS += build/rpmspec.h
 rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio rpmbuild
+bin_PROGRAMS =		rpm2cpio rpmbuild rpmsign
 
 rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
@@ -97,6 +97,12 @@ rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMK -DIAM_RPMQV
 rpm_LDADD =		libcliutils.la
 rpm_LDADD +=		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+
+rpmsign_SOURCES =	rpmsign.c debug.h system.h
+rpmsign_CPPFLAGS =	$(AM_CPPFLAGS)
+rpmsign_LDADD =		libcliutils.la
+rpmsign_LDADD +=	lib/librpm.la rpmio/librpmio.la
+rpmsign_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	rpmbuild.c debug.h system.h
 rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS)
@@ -191,8 +197,6 @@ install-exec-hook:
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmquery
 	rm -f $(DESTDIR)$(bindir)/rpmverify
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
-	rm -f $(DESTDIR)$(bindir)/rpmsign
-	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmsign
 	rm -f $(DESTDIR)$(bindir)/rpmdb
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmdb
 
@@ -206,7 +210,6 @@ install-data-local:
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/rpmquery
-	@rm -f $(DESTDIR)$(bindir)/rpmsign
 	@rm -f $(DESTDIR)$(bindir)/rpmverify
 	@rm -f $(DESTDIR)$(bindir)/rpmdb
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/platform/

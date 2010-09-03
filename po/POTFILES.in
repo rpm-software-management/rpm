@@ -6,6 +6,7 @@ cliutils.c
 rpm2cpio.c
 rpmqv.c
 rpmbuild.c
+rpmsign.c
 build/build.c
 build/expression.c
 build/files.c
