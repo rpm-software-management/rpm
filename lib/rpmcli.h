@@ -171,7 +171,6 @@ struct rpmQVKArguments_s {
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */
     char * qva_queryFormat;	/*!< Format for headerFormat(). */
     int sign;			/*!< Is a passphrase needed? */
-    const char * passPhrase;	/*!< Pass phrase. */
     char	qva_mode;
 		/*!<
 		- 'q'	from --query, -q
@@ -442,13 +441,13 @@ typedef enum rpmSignFlags_e {
 extern struct poptOption rpmSignPoptTable[];
 
 /** \ingroup rpmcli
- * Create/Modify/Check elements from signature header.
- * @param ts		transaction set
- * @param qva		mode flags and parameters
- * @param argv		array of arguments (NULL terminated)
+ * Create/delete package signatures.
+ * @param argv		array of package path arguments (NULL terminated)
+ * @param deleting	adding or deleting signature(s)
+ * @param passPhrase	passphrase (or NULL when deleting)
  * @return		0 on success
  */
-int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv);
+int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase);
 
 /** Import public key(s) to rpm keyring
  * @param ts		transaction set

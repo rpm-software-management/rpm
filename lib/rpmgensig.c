@@ -357,35 +357,11 @@ exit:
     return res;
 }
 
-static int rpmReSign(QVA_t qva, ARGV_const_t argv)
+int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase)
 {
     int res = 0;
-    int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     for (ARGV_const_t arg = argv; arg && *arg; arg++) {
-	res += rpmSign(*arg, deleting, qva->passPhrase);
+	res += rpmSign(*arg, deleting, passPhrase);
     }
     return res;
-}
-
-int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
-{
-    if (argv == NULL) return -1;
-
-    switch (qva->qva_mode) {
-    case RPMSIGN_CHK_SIGNATURE:
-	return rpmcliVerifySignatures(ts, qva, argv);
-	break;
-    case RPMSIGN_IMPORT_PUBKEY:
-	return rpmcliImportPubkeys(ts, argv);
-	break;
-    case RPMSIGN_NEW_SIGNATURE:
-    case RPMSIGN_ADD_SIGNATURE:
-    case RPMSIGN_DEL_SIGNATURE:
-	return rpmReSign(qva, argv);
-	break;
-    default:
-	break;
-    }
-
-    return -1;
 }

@@ -499,8 +499,8 @@ int main(int argc, char *argv[])
     case MODE_RESIGN:
 	if (!poptPeekArg(optCon))
 	    argerror(_("no arguments given"));
-	ka->passPhrase = passPhrase;
-	ec = rpmcliSign(ts, ka, (ARGV_const_t) poptGetArgs(optCon));
+	ec = rpmcliSign((ARGV_const_t) poptGetArgs(optCon),
+			(qva->qva_mode == RPMSIGN_DEL_SIGNATURE), passPhrase);
     	break;
 #endif	/* IAM_RPMK */
 	
