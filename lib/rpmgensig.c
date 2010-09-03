@@ -126,12 +126,11 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
 
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
- * @param ts		transaction set
  * @param qva		mode flags and parameters
  * @param argv		array of package file names (NULL terminated)
  * @return		0 on success, -1 on error
  */
-static int rpmReSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
+static int rpmReSign(QVA_t qva, ARGV_const_t argv)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -380,7 +379,7 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
     case RPMSIGN_NEW_SIGNATURE:
     case RPMSIGN_ADD_SIGNATURE:
     case RPMSIGN_DEL_SIGNATURE:
-	return rpmReSign(ts, qva, argv);
+	return rpmReSign(qva, argv);
 	break;
     default:
 	break;
