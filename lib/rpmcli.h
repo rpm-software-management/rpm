@@ -371,7 +371,6 @@ struct rpmInstallArguments_s {
     int incldocs;
     rpmRelocation * relocations;
     char * prefix;
-    const char * rootdir;
 };
 
 /** \ingroup rpmcli

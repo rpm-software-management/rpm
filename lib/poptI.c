@@ -18,7 +18,6 @@ struct rpmInstallArguments_s rpmIArgs = {
     0,			/* incldocs */
     NULL,		/* relocations */
     NULL,		/* prefix */
-    NULL		/* rootdir */
 };
 
 #define	POPT_RELOCATE		-1021
