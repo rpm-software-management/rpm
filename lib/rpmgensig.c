@@ -126,26 +126,23 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
 
 /** \ingroup rpmcli
  * Create/modify elements in signature header.
- * @param qva		mode flags and parameters
- * @param argv		array of package file names (NULL terminated)
+ * @param rpm		path to package
+ * @param deleting	adding or deleting signature?
+ * @param passPhrase	passPhrase (or NULL when deleting)
  * @return		0 on success, -1 on error
  */
-static int rpmReSign(QVA_t qva, ARGV_const_t argv)
+static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
     rpmlead lead;
     rpmSigTag sigtag;
-    const char *rpm;
     char *sigtarget = NULL, *trpm = NULL;
     Header sigh = NULL;
     char * msg;
     int res = -1; /* assume failure */
-    int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
     int xx;
     
-    if (argv)
-    while ((rpm = *argv++) != NULL)
     {
     	rpmRC rc;
 	struct rpmtd_s utd;
@@ -231,7 +228,7 @@ static int rpmReSign(QVA_t qva, ARGV_const_t argv)
 	    int nsigs = sizeof(sigs) / sizeof(rpmSigTag);
 	    for (int i = 0; i < nsigs; i++) {
 		(void) headerDel(sigh, sigs[i]);
-		if (rpmAddSignature(sigh, sigtarget, sigs[i], qva->passPhrase))
+		if (rpmAddSignature(sigh, sigtarget, sigs[i], passPhrase))
 		    goto exit;
 	    }
 	}
@@ -268,7 +265,7 @@ static int rpmReSign(QVA_t qva, ARGV_const_t argv)
 	    }
 
 	    xx = headerDel(sigh, sigtag);
-	    if (rpmAddSignature(sigh, sigtarget, sigtag, qva->passPhrase)) {
+	    if (rpmAddSignature(sigh, sigtarget, sigtag, passPhrase)) {
 		goto exit;
 	    }
 
@@ -288,10 +285,9 @@ static int rpmReSign(QVA_t qva, ARGV_const_t argv)
 			rpm, signid);
 		    free(signid);
 
-		    /* Clean up intermediate target */
-		    xx = unlink(sigtarget);
-		    sigtarget = _free(sigtarget);
-		    continue;
+		    /* Already signed by same key is not an error */
+		    res = 0;
+		    goto exit;
 		}
 	    }
 	}
@@ -338,11 +334,6 @@ static int rpmReSign(QVA_t qva, ARGV_const_t argv)
 	    xx = rename(trpm, rpm);
 	    xx = chmod(rpm, st.st_mode);
 	}
-	trpm = _free(trpm);
-
-	/* Clean up intermediate target */
-	xx = unlink(sigtarget);
-	sigtarget = _free(sigtarget);
     }
 
     res = 0;
@@ -353,6 +344,7 @@ exit:
 
     sigh = rpmFreeSignature(sigh);
 
+    /* Clean up intermediate target */
     if (sigtarget) {
 	xx = unlink(sigtarget);
 	sigtarget = _free(sigtarget);
@@ -362,6 +354,16 @@ exit:
 	free(trpm);
     }
 
+    return res;
+}
+
+static int rpmReSign(QVA_t qva, ARGV_const_t argv)
+{
+    int res = 0;
+    int deleting = (qva->qva_mode == RPMSIGN_DEL_SIGNATURE);
+    for (ARGV_const_t arg = argv; arg && *arg; arg++) {
+	res += rpmSign(*arg, deleting, qva->passPhrase);
+    }
     return res;
 }
 
