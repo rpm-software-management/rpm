@@ -93,7 +93,7 @@ libcliutils_la_LIBADD = 	lib/librpm.la rpmio/librpmio.la
 libcliutils_la_LIBADD +=	@WITH_POPT_LIB@
 
 rpm_SOURCES =		rpmqv.c debug.h system.h
-rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMQV
+rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU -DIAM_RPMQV
 rpm_LDADD =		libcliutils.la
 rpm_LDADD +=		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@

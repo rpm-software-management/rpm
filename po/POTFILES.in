@@ -69,7 +69,6 @@ lib/fprint.c
 lib/header.c
 lib/headerfmt.c
 lib/merge.c
-lib/poptDB.c
 lib/rpmdb.c
 lib/tagexts.c
 lib/tagname.c

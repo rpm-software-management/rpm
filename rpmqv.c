@@ -23,19 +23,13 @@ enum modes {
     MODE_ERASE		= (1 <<  2),
 #define	MODES_IE (MODE_INSTALL | MODE_ERASE)
 
-    MODE_INITDB		= (1 << 10),
-    MODE_REBUILDDB	= (1 << 12),
-    MODE_VERIFYDB	= (1 << 13),
-#define	MODES_DB (MODE_INITDB | MODE_REBUILDDB | MODE_VERIFYDB)
-
-
     MODE_UNKNOWN	= 0
 };
 
-#define	MODES_FOR_DBPATH	(MODES_IE | MODES_QV | MODES_DB)
+#define	MODES_FOR_DBPATH	(MODES_IE | MODES_QV)
 #define	MODES_FOR_NODEPS	(MODES_IE | MODE_VERIFY)
 #define	MODES_FOR_TEST		(MODES_IE)
-#define	MODES_FOR_ROOT		(MODES_IE | MODES_QV | MODES_DB)
+#define	MODES_FOR_ROOT		(MODES_IE | MODES_QV)
 
 static int quiet;
 
@@ -53,12 +47,6 @@ static struct poptOption optionsTable[] = {
 	N_("Verify options (with -V or --verify):"),
 	NULL },
 #endif	/* IAM_RPMQV */
-
-#ifdef	IAM_RPMDB
- { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmDatabasePoptTable, 0,
-	N_("Database options:"),
-	NULL },
-#endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMEIU
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmInstallPoptTable, 0,
@@ -90,10 +78,6 @@ int main(int argc, char *argv[])
    struct rpmInstallArguments_s * ia = &rpmIArgs;
 #endif
 
-#if defined(IAM_RPMDB)
-   struct rpmDatabaseArguments_s * da = &rpmDBArgs;
-#endif
-
     poptContext optCon;
     int ec = 0;
 #ifdef	IAM_RPMEIU
@@ -115,37 +99,11 @@ int main(int argc, char *argv[])
     case MODE_VERIFY:	qva->qva_mode = 'V';	break;
     case MODE_INSTALL:
     case MODE_ERASE:
-    case MODE_INITDB:
-    case MODE_REBUILDDB:
-    case MODE_VERIFYDB:
     case MODE_UNKNOWN:
     default:
 	break;
     }
 #endif
-
-#ifdef	IAM_RPMDB
-  if (bigMode == MODE_UNKNOWN || (bigMode & MODES_DB)) {
-    if (da->init) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_INITDB;
-    } else
-    if (da->rebuild) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_REBUILDDB;
-    } else
-    if (da->verify) {
-	if (bigMode != MODE_UNKNOWN) 
-	    argerror(_("only one major mode may be specified"));
-	else
-	    bigMode = MODE_VERIFYDB;
-    }
-  }
-#endif	/* IAM_RPMDB */
 
 #ifdef	IAM_RPMQV
   if (bigMode == MODE_UNKNOWN || (bigMode & MODES_QV)) {
@@ -292,22 +250,6 @@ int main(int argc, char *argv[])
     ts = rpmtsCreate();
     (void) rpmtsSetRootDir(ts, rpmcliRootDir);
     switch (bigMode) {
-#ifdef	IAM_RPMDB
-    case MODE_INITDB:
-	ec = rpmtsInitDB(ts, 0644);
-	break;
-
-    case MODE_REBUILDDB:
-    {   rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
-	rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, vsflags);
-	ec = rpmtsRebuildDB(ts);
-	vsflags = rpmtsSetVSFlags(ts, ovsflags);
-    }	break;
-    case MODE_VERIFYDB:
-	ec = rpmtsVerifyDB(ts);
-	break;
-#endif	/* IAM_RPMDB */
-
 #ifdef	IAM_RPMEIU
     case MODE_ERASE:
 	if (ia->noDeps) ia->installInterfaceFlags |= UNINSTALL_NODEPS;
@@ -381,11 +323,6 @@ int main(int argc, char *argv[])
 #if !defined(IAM_RPMQV)
     case MODE_QUERY:
     case MODE_VERIFY:
-#endif
-#if !defined(IAM_RPMDB)
-    case MODE_INITDB:
-    case MODE_REBUILDDB:
-    case MODE_VERIFYDB:
 #endif
 #if !defined(IAM_RPMEIU)
     case MODE_INSTALL:

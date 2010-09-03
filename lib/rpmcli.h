@@ -399,27 +399,6 @@ extern struct rpmInstallArguments_s rpmIArgs;
 extern struct poptOption rpmInstallPoptTable[];
 
 /* ==================================================================== */
-/** \name RPMDB */
-/* --- database modes */
-
-/** \ingroup rpmcli
- * Describe database command line requests.
- */
-struct rpmDatabaseArguments_s {
-    int init;			/*!< from --initdb */
-    int rebuild;		/*!< from --rebuilddb */
-    int verify;			/*!< from --verifydb */
-};
-
-/** \ingroup rpmcli
- */
-extern struct rpmDatabaseArguments_s rpmDBArgs;
-
-/** \ingroup rpmcli
- */
-extern struct poptOption rpmDatabasePoptTable[];
-
-/* ==================================================================== */
 /** \name RPMK */
 
 /** \ingroup rpmcli
