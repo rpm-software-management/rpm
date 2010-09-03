@@ -78,7 +78,7 @@ pkginclude_HEADERS += build/rpmspec.h
 rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio rpmbuild rpmkeys rpmsign
+bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign
 
 rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
@@ -97,6 +97,12 @@ rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMDB -DIAM_RPMEIU -DIAM_RPMQV
 rpm_LDADD =		libcliutils.la
 rpm_LDADD +=		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+
+rpmdb_SOURCES =		rpmdb.c debug.h system.h
+rpmdb_CPPFLAGS =	$(AM_CPPFLAGS)
+rpmdb_LDADD =		libcliutils.la
+rpmdb_LDADD +=		lib/librpm.la rpmio/librpmio.la
+rpmdb_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmkeys_SOURCES =	rpmkeys.c debug.h system.h
 rpmkeys_CPPFLAGS =	$(AM_CPPFLAGS)
@@ -204,8 +210,6 @@ install-exec-hook:
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmquery
 	rm -f $(DESTDIR)$(bindir)/rpmverify
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
-	rm -f $(DESTDIR)$(bindir)/rpmdb
-	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmdb
 
 install-data-local:
 	@case "@host_os@" in \
@@ -218,7 +222,6 @@ install-data-local:
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/rpmquery
 	@rm -f $(DESTDIR)$(bindir)/rpmverify
-	@rm -f $(DESTDIR)$(bindir)/rpmdb
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/platform/
 
 MAINTAINERCLEANFILES = ChangeLog
