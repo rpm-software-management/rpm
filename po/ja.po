@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-03 15:12+0300\n"
+"POT-Creation-Date: 2010-09-03 17:13+0300\n"
 "PO-Revision-Date: 2010-06-08 07:11+0900\n"
 "Last-Translator: SEKINE Tatsuo <tsekine@sdri.co.jp>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -70,134 +70,126 @@ msgstr "パッケージのヘッダー読み込み中にエラー\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "ペイロードを再開けません: %s\n"
 
-#: rpmqv.c:51
+#: rpmqv.c:41
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "グループに所属するパッケージを問い合わせ/検証します。"
 
-#: rpmqv.c:54
+#: rpmqv.c:44
 msgid "Query options (with -q or --query):"
 msgstr "問い合わせオプション (-q または --query):"
 
-#: rpmqv.c:57
+#: rpmqv.c:47
 msgid "Verify options (with -V or --verify):"
 msgstr "検証オプション (-V または --verify):"
 
-#: rpmqv.c:63
-msgid "Signature options:"
-msgstr "署名オプション:"
-
-#: rpmqv.c:69
-msgid "Database options:"
-msgstr "データベース オプション:"
-
-#: rpmqv.c:75
+#: rpmqv.c:53
 msgid "Install/Upgrade/Erase options:"
 msgstr "インストール/アップグレード/アンインストールオプション:"
 
-#: rpmqv.c:82 rpmbuild.c:217 rpmsign.c:24 tools/rpmdeps.c:32
-#: tools/rpmgraph.c:222
+#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr "全モード・コマンドで共通のオプション:"
 
-#: rpmqv.c:146 rpmqv.c:152 rpmqv.c:158 rpmqv.c:195 rpmsign.c:180
-msgid "only one major mode may be specified"
-msgstr "一つのメジャーモードのみを指定して下さい"
-
-#: rpmqv.c:174
+#: rpmqv.c:117
 msgid "one type of query/verify may be performed at a time"
 msgstr "問い合わせ/検証は一度に一つしか実行できません。"
 
-#: rpmqv.c:178
+#: rpmqv.c:121
 msgid "unexpected query flags"
 msgstr "予期せぬ問い合わせのフラグ"
 
-#: rpmqv.c:181
+#: rpmqv.c:124
 msgid "unexpected query format"
 msgstr "予期せぬ問い合わせのフォーマット"
 
-#: rpmqv.c:184
+#: rpmqv.c:127
 msgid "unexpected query source"
 msgstr "予期せぬ問い合わせのソース"
 
-#: rpmqv.c:219
+#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:180
+msgid "only one major mode may be specified"
+msgstr "一つのメジャーモードのみを指定して下さい"
+
+#: rpmqv.c:149
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "インストール、アップグレード、ソース削除、スペックファイル削除時のみ強制でき"
 "ます。"
 
-#: rpmqv.c:221
+#: rpmqv.c:151
 msgid "files may only be relocated during package installation"
 msgstr "ファイルはパッケージのインストール時にのみ再配置できます。"
 
-#: rpmqv.c:224
+#: rpmqv.c:154
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "--prefix は --relocate や --excludepath とは同時には使用できません。"
 
-#: rpmqv.c:227
+#: rpmqv.c:157
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate と --excludepath は新しいパッケージをインストールする時のみ使用で"
 "きます。"
 
-#: rpmqv.c:230
+#: rpmqv.c:160
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix は新規パッケージのインストール時のみ使用できます。"
 
-#: rpmqv.c:233
+#: rpmqv.c:163
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix の引数は / から始まらなければなりません。"
 
-#: rpmqv.c:236
+#: rpmqv.c:166
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:240
+#: rpmqv.c:170
 msgid "--percent may only be specified during package installation"
 msgstr "--percent はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:244
+#: rpmqv.c:174
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:248
+#: rpmqv.c:178
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:252
+#: rpmqv.c:182
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:256
+#: rpmqv.c:186
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs と --includedocs は同時には指定できません。"
 
-#: rpmqv.c:260
+#: rpmqv.c:190
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:264
+#: rpmqv.c:194
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:269
+#: rpmqv.c:199
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:273
+#: rpmqv.c:203
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches はパッケージ削除時のみ指定できます。"
 
-#: rpmqv.c:277
+#: rpmqv.c:207
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles はパッケージのインストール時のみ指定できます。"
 
-#: rpmqv.c:282
+#: rpmqv.c:212
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb はパッケージ インストール・削除時のみ指定できます。"
 
-#: rpmqv.c:287
+#: rpmqv.c:217
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -205,7 +197,7 @@ msgstr ""
 "スクリプトを無効にするようなオプションは、パッケージのインストール、削除時の"
 "み指定できます。"
 
-#: rpmqv.c:292
+#: rpmqv.c:222
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -213,7 +205,7 @@ msgstr ""
 "トリガーを無効にするようなオプションはパッケージのインストール、削除時のみ指"
 "定できます。"
 
-#: rpmqv.c:296
+#: rpmqv.c:226
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -221,13 +213,13 @@ msgstr ""
 "--nodeps はパッケージの作成、リビルド、リコンパイル、インストール、削除、検証"
 "時のみ指定できます。"
 
-#: rpmqv.c:301
+#: rpmqv.c:231
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test はパッケージのインストール/削除/作成時のみ指定できます。"
 
-#: rpmqv.c:306
+#: rpmqv.c:236
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -235,29 +227,25 @@ msgstr ""
 "--root (-r) はインストール、削除、問い合わせ、データベース再構築時のみ指定で"
 "きます"
 
-#: rpmqv.c:311 rpmbuild.c:547
+#: rpmqv.c:241 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらなければなりません。"
 
-#: rpmqv.c:344
+#: rpmqv.c:258
 msgid "no packages given for erase"
 msgstr "アンインストールするパッケージが指定されていません。"
 
-#: rpmqv.c:378
+#: rpmqv.c:292
 msgid "no packages given for install"
 msgstr "インストールするパッケージが指定されていません。"
 
-#: rpmqv.c:390
+#: rpmqv.c:304
 msgid "no arguments given for query"
 msgstr "問い合わせのための引数が指定されていません。"
 
-#: rpmqv.c:404
+#: rpmqv.c:318
 msgid "no arguments given for verify"
 msgstr "検証のための引数が指定されていません。"
-
-#: rpmqv.c:412 rpmsign.c:168
-msgid "no arguments given"
-msgstr "引数が指定されていません。"
 
 #: rpmbuild.c:98
 #, c-format
@@ -448,6 +436,36 @@ msgstr "ビルド対象プラットフォーム: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用にビルド中\n"
+
+#: rpmdb.c:24
+msgid "initialize database"
+msgstr "データベースを初期化します。"
+
+#: rpmdb.c:26
+msgid "rebuild database inverted lists from installed package headers"
+msgstr ""
+"インストールされたパッケージヘッダーから、データベースのインデックスを再構築"
+"します。"
+
+#: rpmdb.c:29
+msgid "verify database files"
+msgstr "データベースの検証を行います。"
+
+#: rpmkeys.c:25
+msgid "verify package signature(s)"
+msgstr "署名の検証を行います。"
+
+#: rpmkeys.c:27
+msgid "import an armored public key"
+msgstr "ASCII 化された公開鍵を取り込みます。"
+
+#: rpmkeys.c:30 rpmkeys.c:32
+msgid "list keys from RPM keyring"
+msgstr ""
+
+#: rpmkeys.c:55 rpmsign.c:168
+msgid "no arguments given"
+msgstr "引数が指定されていません。"
 
 #: rpmsign.c:26
 #, fuzzy
@@ -1941,7 +1959,7 @@ msgstr "データベースを更新しますが、ファイルシステムの変
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません。"
 
-#: lib/poptI.c:190 lib/poptQV.c:239 lib/poptQV.c:241
+#: lib/poptI.c:190 lib/poptQV.c:234 lib/poptQV.c:236
 msgid "don't verify digest of files"
 msgstr "ファイルのダイジェストを検証しません。"
 
@@ -2053,163 +2071,155 @@ msgstr "インストールせずに、テストのみを行います。"
 msgid "upgrade package(s)"
 msgstr "パッケージをアップグレードします。"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:82
 msgid "query/verify all packages"
 msgstr "すべてのパッケージについて問い合わせ/検証します。"
 
-#: lib/poptQV.c:89
+#: lib/poptQV.c:84
 msgid "rpm checksig mode"
 msgstr "rpm の署名検査モード"
 
-#: lib/poptQV.c:91
+#: lib/poptQV.c:86
 msgid "query/verify package(s) owning file"
 msgstr "<file> を所有しているパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:88
 msgid "query/verify package(s) in group"
 msgstr "グループに所属するパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:90
 msgid "query/verify a package file"
 msgstr "パッケージファイルの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:93
 msgid "query/verify package(s) with package identifier"
 msgstr "パッケージ ID で問い合わせ/検証します。"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:95
 msgid "query/verify package(s) with header identifier"
 msgstr "ヘッダー ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:97
 msgid "query/verify package(s) with file identifier"
 msgstr "ファイル ID でパッケージを問い合わせ/検証します。"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:100
 msgid "rpm query mode"
 msgstr "rpm 問い合わせモード"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:102
 msgid "query/verify a header instance"
 msgstr "ヘッダー インスタンスの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "query a spec file"
 msgstr "spec ファイルを問い合わせます。"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:106
 msgid "query/verify package(s) from install transaction"
 msgstr ""
 "インストール トランザクションからのパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:108
 msgid "query the package(s) triggered by the package"
 msgstr "パッケージによってトリガーされるパッケージを問い合わせます。"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:110
 msgid "rpm verify mode"
 msgstr "RPM 検証モード"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:112
 msgid "query/verify the package(s) which require a dependency"
 msgstr "依存性を要求するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:114
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "依存性を提供するパッケージの問い合わせ/検証をします。"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:117
 msgid "do not glob arguments"
 msgstr "引数を glob パターンとしてみなしません。"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:119
 msgid "do not process non-package files as manifests"
 msgstr "リスト内の非パッケージファイルを処理しません。"
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:201
 msgid "list all configuration files"
 msgstr "全ての設定ファイルを列挙します。"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:203
 msgid "list all documentation files"
 msgstr "全てのドキュメントファイルを列挙します。"
 
-#: lib/poptQV.c:210
+#: lib/poptQV.c:205
 msgid "dump basic file information"
 msgstr "基本的なファイル情報をダンプします。"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:209
 msgid "list files in package"
 msgstr "パッケージ中のファイルを列挙します。"
 
-#: lib/poptQV.c:219
+#: lib/poptQV.c:214
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost ファイルをスキップします。"
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:219
 msgid "use the following query format"
 msgstr "以下の問い合わせ書式を使用します。"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:221
 msgid "display the states of the listed files"
 msgstr "列挙したファイルの状態を表示します。"
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:239
 msgid "don't verify size of files"
 msgstr "ファイル容量を検証しません。"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:242
 msgid "don't verify symlink path of files"
 msgstr "ファイルのシンボリックリンクを検証しません。"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:245
 msgid "don't verify owner of files"
 msgstr "ファイルの所有者を検証しません。"
 
-#: lib/poptQV.c:253
+#: lib/poptQV.c:248
 msgid "don't verify group of files"
 msgstr "ファイルの所有グループを検証しません。"
 
-#: lib/poptQV.c:256
+#: lib/poptQV.c:251
 msgid "don't verify modification time of files"
 msgstr "ファイルの最終更新日を検証しません。"
 
-#: lib/poptQV.c:259 lib/poptQV.c:262
+#: lib/poptQV.c:254 lib/poptQV.c:257
 msgid "don't verify mode of files"
 msgstr "ファイルのモードを検証しません。"
 
-#: lib/poptQV.c:265
+#: lib/poptQV.c:260
 msgid "don't verify capabilities of files"
 msgstr "ファイルのケーパビリティ (capability) を検証しません。"
 
-#: lib/poptQV.c:268
+#: lib/poptQV.c:263
 msgid "don't verify file security contexts"
 msgstr "ファイルのセキュリティ コンテキストを検証しません。"
 
-#: lib/poptQV.c:270
+#: lib/poptQV.c:265
 msgid "don't verify files in package"
 msgstr "パッケージ中のファイルを検証しません。"
 
-#: lib/poptQV.c:272 tools/rpmgraph.c:218
+#: lib/poptQV.c:267 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "パッケージの依存関係を検証しません。"
 
-#: lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptQV.c:270 lib/poptQV.c:273
 msgid "don't execute verify script(s)"
 msgstr "検証スクリプトを実行しません。"
-
-#: lib/poptQV.c:291
-msgid "verify package signature(s)"
-msgstr "署名の検証を行います。"
-
-#: lib/poptQV.c:293
-msgid "import an armored public key"
-msgstr "ASCII 化された公開鍵を取り込みます。"
 
 #: lib/psm.c:215
 #, c-format
@@ -2403,7 +2413,7 @@ msgstr "(信頼できない鍵:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:450 lib/rpmgensig.c:45
+#: lib/rpmchecksig.c:454 lib/rpmgensig.c:45
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: オープンに失敗しました: %s\n"
@@ -3050,20 +3060,6 @@ msgstr "式の終わりに | が期待されます。"
 msgid "array iterator used with different sized arrays"
 msgstr "配列の繰り返し指定が、サイズが異なる配列の間で使用されています"
 
-#: lib/poptDB.c:18
-msgid "initialize database"
-msgstr "データベースを初期化します。"
-
-#: lib/poptDB.c:20
-msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"インストールされたパッケージヘッダーから、データベースのインデックスを再構築"
-"します。"
-
-#: lib/poptDB.c:23
-msgid "verify database files"
-msgstr "データベースの検証を行います。"
-
 #: lib/rpmdb.c:155
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
@@ -3491,6 +3487,12 @@ msgstr "%s: manifest の読み込みに失敗: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "ヘッダーとペイロード署名を検証しません。"
+
+#~ msgid "Signature options:"
+#~ msgstr "署名オプション:"
+
+#~ msgid "Database options:"
+#~ msgstr "データベース オプション:"
 
 #~ msgid "no files to sign\n"
 #~ msgstr "署名するファイルがありません\n"

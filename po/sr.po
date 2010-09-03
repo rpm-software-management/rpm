@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-03 15:12+0300\n"
+"POT-Creation-Date: 2010-09-03 17:13+0300\n"
 "PO-Revision-Date: 2009-04-06 22:38+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -65,132 +65,124 @@ msgstr "грешка при читању заглавља из пакета\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "не могу да поново отворим товар: %s\n"
 
-#: rpmqv.c:51
+#: rpmqv.c:41
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "испитај/провери пакет(е) у групи"
 
-#: rpmqv.c:54
+#: rpmqv.c:44
 msgid "Query options (with -q or --query):"
 msgstr "Опције упита (са -q или --query):"
 
-#: rpmqv.c:57
+#: rpmqv.c:47
 msgid "Verify options (with -V or --verify):"
 msgstr "Опције провере (са -V или --verify):"
 
-#: rpmqv.c:63
-msgid "Signature options:"
-msgstr "Опције потписа:"
-
-#: rpmqv.c:69
-msgid "Database options:"
-msgstr "Опције базе података:"
-
-#: rpmqv.c:75
+#: rpmqv.c:53
 msgid "Install/Upgrade/Erase options:"
 msgstr "Опције инсталације/надградње/брисања:"
 
-#: rpmqv.c:82 rpmbuild.c:217 rpmsign.c:24 tools/rpmdeps.c:32
-#: tools/rpmgraph.c:222
+#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr "Заједничке опције за све rpm режиме и извршне програме:"
 
-#: rpmqv.c:146 rpmqv.c:152 rpmqv.c:158 rpmqv.c:195 rpmsign.c:180
-msgid "only one major mode may be specified"
-msgstr "само један главни режим сме бити наведен"
-
-#: rpmqv.c:174
+#: rpmqv.c:117
 msgid "one type of query/verify may be performed at a time"
 msgstr "једна врста упита/провере сме бити урађена одједном"
 
-#: rpmqv.c:178
+#: rpmqv.c:121
 msgid "unexpected query flags"
 msgstr "неочекиване заставице упита"
 
-#: rpmqv.c:181
+#: rpmqv.c:124
 msgid "unexpected query format"
 msgstr "неочекиван облик упита"
 
-#: rpmqv.c:184
+#: rpmqv.c:127
 msgid "unexpected query source"
 msgstr "неочекивани извор упита"
 
-#: rpmqv.c:219
+#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:180
+msgid "only one major mode may be specified"
+msgstr "само један главни режим сме бити наведен"
+
+#: rpmqv.c:149
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "само инсталација, надградња, rmsource и rmspec могу бити приморани"
 
-#: rpmqv.c:221
+#: rpmqv.c:151
 msgid "files may only be relocated during package installation"
 msgstr "датотеке смеју бити премештане само током инсталације пакета"
 
-#: rpmqv.c:224
+#: rpmqv.c:154
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "не може се користити --prefix уз --relocate или --excludepath"
 
-#: rpmqv.c:227
+#: rpmqv.c:157
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate и --excludepath могу бити употребљене само при инсталацији нових "
 "пакета"
 
-#: rpmqv.c:230
+#: rpmqv.c:160
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix може бити употребљена само при инсталацији нових пакета"
 
-#: rpmqv.c:233
+#: rpmqv.c:163
 msgid "arguments to --prefix must begin with a /"
 msgstr "аргументи за --prefix морају почети знаком /"
 
-#: rpmqv.c:236
+#: rpmqv.c:166
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:240
+#: rpmqv.c:170
 msgid "--percent may only be specified during package installation"
 msgstr "--percent може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:244
+#: rpmqv.c:174
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:248
+#: rpmqv.c:178
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludecocs може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:252
+#: rpmqv.c:182
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includecocs може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:256
+#: rpmqv.c:186
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "може се навести само једна од --excludedocs или --includedocs"
 
-#: rpmqv.c:260
+#: rpmqv.c:190
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:264
+#: rpmqv.c:194
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:269
+#: rpmqv.c:199
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:273
+#: rpmqv.c:203
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches може бити наведена само током брисања пакета"
 
-#: rpmqv.c:277
+#: rpmqv.c:207
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles може бити наведена само током инсталације пакета"
 
-#: rpmqv.c:282
+#: rpmqv.c:212
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb може бити наведена само током инсталације и брисања пакета"
 
-#: rpmqv.c:287
+#: rpmqv.c:217
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -198,7 +190,7 @@ msgstr ""
 "опције искључивања скрипте могу бити наведене само током инсталације и "
 "брисања пакета"
 
-#: rpmqv.c:292
+#: rpmqv.c:222
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -206,7 +198,7 @@ msgstr ""
 "опције искључивања окидача могу бити наведене само током инсталације и "
 "брисања пакета"
 
-#: rpmqv.c:296
+#: rpmqv.c:226
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -214,14 +206,14 @@ msgstr ""
 "--nodeps може бити наведена само током прављења, поновног прављења, поновног "
 "компилирања, брисања, и провере пакета"
 
-#: rpmqv.c:301
+#: rpmqv.c:231
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 "--test може бити наведена само током инсталације, брисања, и прављења пакета"
 
-#: rpmqv.c:306
+#: rpmqv.c:236
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -229,29 +221,25 @@ msgstr ""
 "--root (-r) може бити наведена само током инсталације, брисања, упита, и "
 "поновног прављења базе података"
 
-#: rpmqv.c:311 rpmbuild.c:547
+#: rpmqv.c:241 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "аргументи за --root (-r) морају почети знаком /"
 
-#: rpmqv.c:344
+#: rpmqv.c:258
 msgid "no packages given for erase"
 msgstr "нема задатих пакета за брисање"
 
-#: rpmqv.c:378
+#: rpmqv.c:292
 msgid "no packages given for install"
 msgstr "нема задатих пакета за инсталацију"
 
-#: rpmqv.c:390
+#: rpmqv.c:304
 msgid "no arguments given for query"
 msgstr "нема задатих аргумената за упит"
 
-#: rpmqv.c:404
+#: rpmqv.c:318
 msgid "no arguments given for verify"
 msgstr "нема задатих аргумената за проверу"
-
-#: rpmqv.c:412 rpmsign.c:168
-msgid "no arguments given"
-msgstr "нема задатих аргумената"
 
 #: rpmbuild.c:98
 #, c-format
@@ -446,6 +434,35 @@ msgstr "Правим циљне платформе: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Правим за циљ %s\n"
+
+#: rpmdb.c:24
+msgid "initialize database"
+msgstr "иницијализуј базу података"
+
+#: rpmdb.c:26
+msgid "rebuild database inverted lists from installed package headers"
+msgstr ""
+"поново направи обрнуте спискове базе података из заглавља инсталираних пакета"
+
+#: rpmdb.c:29
+msgid "verify database files"
+msgstr "провера датотека базе података"
+
+#: rpmkeys.c:25
+msgid "verify package signature(s)"
+msgstr "провери потписе пакета"
+
+#: rpmkeys.c:27
+msgid "import an armored public key"
+msgstr "увези ојачани јавни кључ"
+
+#: rpmkeys.c:30 rpmkeys.c:32
+msgid "list keys from RPM keyring"
+msgstr ""
+
+#: rpmkeys.c:55 rpmsign.c:168
+msgid "no arguments given"
+msgstr "нема задатих аргумената"
 
 #: rpmsign.c:26
 #, fuzzy
@@ -1947,7 +1964,7 @@ msgstr "ажурирај базу података, али немој мењат
 msgid "do not verify package dependencies"
 msgstr "немој проверавати зависности пакета"
 
-#: lib/poptI.c:190 lib/poptQV.c:239 lib/poptQV.c:241
+#: lib/poptI.c:190 lib/poptQV.c:234 lib/poptQV.c:236
 #, fuzzy
 msgid "don't verify digest of files"
 msgstr "немој проверавати MD5 сажетке датотека"
@@ -2061,162 +2078,154 @@ msgstr "немој инсталирати, али реци да ли би рад
 msgid "upgrade package(s)"
 msgstr "надгради пакет(е)"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:82
 msgid "query/verify all packages"
 msgstr "испитај/провери све пакете"
 
-#: lib/poptQV.c:89
+#: lib/poptQV.c:84
 msgid "rpm checksig mode"
 msgstr "rpm checksig режим"
 
-#: lib/poptQV.c:91
+#: lib/poptQV.c:86
 msgid "query/verify package(s) owning file"
 msgstr "испитај/провери пакет(е) које поседују датотеку"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:88
 msgid "query/verify package(s) in group"
 msgstr "испитај/провери пакет(е) у групи"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:90
 msgid "query/verify a package file"
 msgstr "испитај/провери датотеку пакета"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:93
 msgid "query/verify package(s) with package identifier"
 msgstr "испитај/провери пакет(е) са идентификатором пакета"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:95
 msgid "query/verify package(s) with header identifier"
 msgstr "испитај/провери пакет(е) са идентификатором заглавља"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:97
 msgid "query/verify package(s) with file identifier"
 msgstr "испитај/провери пакет(е) са идентификатором датотеке"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:100
 msgid "rpm query mode"
 msgstr "режим rpm упита"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:102
 msgid "query/verify a header instance"
 msgstr "испитај/провери инстанцу заглавља"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "query a spec file"
 msgstr "испитај датотеку спецификације"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:106
 msgid "query/verify package(s) from install transaction"
 msgstr "испитај/провери пакет(е) из трансакције инсталације"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:108
 msgid "query the package(s) triggered by the package"
 msgstr "испитај пакет(е) које је активирао овај пакет"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:110
 msgid "rpm verify mode"
 msgstr "режим rpm провере"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:112
 msgid "query/verify the package(s) which require a dependency"
 msgstr "испитај/провери пакет(е) који захтевају зависности"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:114
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "испитај/провери пакет(е) који пружају зависности"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:117
 msgid "do not glob arguments"
 msgstr "немој преклапати аргументе"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:119
 msgid "do not process non-package files as manifests"
 msgstr "немој обрађивати датотеке које нису пакети као манифесте"
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:201
 msgid "list all configuration files"
 msgstr "испиши све датотеке подешавања"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:203
 msgid "list all documentation files"
 msgstr "испиши све датотеке документације"
 
-#: lib/poptQV.c:210
+#: lib/poptQV.c:205
 msgid "dump basic file information"
 msgstr "избаци основне податке о датотеци"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:209
 msgid "list files in package"
 msgstr "испиши датотеке у пакету"
 
-#: lib/poptQV.c:219
+#: lib/poptQV.c:214
 #, c-format
 msgid "skip %%ghost files"
 msgstr "прескочи %%ghost датотеке"
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:219
 msgid "use the following query format"
 msgstr "користи следећи облик упита"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:221
 msgid "display the states of the listed files"
 msgstr "прикажи стања наведених датотека"
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:239
 msgid "don't verify size of files"
 msgstr "немој проверавати величину датотека"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:242
 msgid "don't verify symlink path of files"
 msgstr "немој проверавати путање симболичких веза датотека"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:245
 msgid "don't verify owner of files"
 msgstr "немој проверавати власника датотека"
 
-#: lib/poptQV.c:253
+#: lib/poptQV.c:248
 msgid "don't verify group of files"
 msgstr "немој проверавати групу датотека"
 
-#: lib/poptQV.c:256
+#: lib/poptQV.c:251
 msgid "don't verify modification time of files"
 msgstr "немој проверавати време мењања датотека"
 
-#: lib/poptQV.c:259 lib/poptQV.c:262
+#: lib/poptQV.c:254 lib/poptQV.c:257
 msgid "don't verify mode of files"
 msgstr "немој проверавати режим приступа датотека"
 
-#: lib/poptQV.c:265
+#: lib/poptQV.c:260
 msgid "don't verify capabilities of files"
 msgstr "немој проверавати могућности датотека"
 
-#: lib/poptQV.c:268
+#: lib/poptQV.c:263
 msgid "don't verify file security contexts"
 msgstr "немој проверавати безбедносне контексте датотека"
 
-#: lib/poptQV.c:270
+#: lib/poptQV.c:265
 msgid "don't verify files in package"
 msgstr "немој проверавати датотеке у пакету"
 
-#: lib/poptQV.c:272 tools/rpmgraph.c:218
+#: lib/poptQV.c:267 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "немој проверавати зависности пакета"
 
-#: lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptQV.c:270 lib/poptQV.c:273
 msgid "don't execute verify script(s)"
 msgstr "немој извршити скрипту(е) провере"
-
-#: lib/poptQV.c:291
-msgid "verify package signature(s)"
-msgstr "провери потписе пакета"
-
-#: lib/poptQV.c:293
-msgid "import an armored public key"
-msgstr "увези ојачани јавни кључ"
 
 #: lib/psm.c:215
 #, fuzzy, c-format
@@ -2410,7 +2419,7 @@ msgstr " (НЕПОУЗДАНИ КЉУЧЕВИ:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:450 lib/rpmgensig.c:45
+#: lib/rpmchecksig.c:454 lib/rpmgensig.c:45
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: отварање није успело: %s\n"
@@ -3059,19 +3068,6 @@ msgstr "| очекиван на крају израза"
 msgid "array iterator used with different sized arrays"
 msgstr "показивач низа коришћен са низовима различитих величина"
 
-#: lib/poptDB.c:18
-msgid "initialize database"
-msgstr "иницијализуј базу података"
-
-#: lib/poptDB.c:20
-msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"поново направи обрнуте спискове базе података из заглавља инсталираних пакета"
-
-#: lib/poptDB.c:23
-msgid "verify database files"
-msgstr "провера датотека базе података"
-
 #: lib/rpmdb.c:155
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
@@ -3501,6 +3497,12 @@ msgstr "%s: неуспело читање манифеста: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "немој проверавати потпис заглавља+товара"
+
+#~ msgid "Signature options:"
+#~ msgstr "Опције потписа:"
+
+#~ msgid "Database options:"
+#~ msgstr "Опције базе података:"
 
 #~ msgid "no files to sign\n"
 #~ msgstr "нема датотека за потписивање\n"

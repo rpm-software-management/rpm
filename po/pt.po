@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-03 15:12+0300\n"
+"POT-Creation-Date: 2010-09-03 17:13+0300\n"
 "PO-Revision-Date: 2002-02-14 10:51+0000\n"
 "Last-Translator: José Nuno Coelho Sanarra Pires <jncp@rnl.ist.utl.pt>\n"
 "Language-Team: pt <morais@kde.org\n"
@@ -58,135 +58,127 @@ msgstr "erro ao ler o cabeçalho do pacote\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "não consigo aceder de novo ao conteúdo: %s\n"
 
-#: rpmqv.c:51
+#: rpmqv.c:41
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "pesquisar/verificar o(s) pacote(s) no grupo"
 
-#: rpmqv.c:54
+#: rpmqv.c:44
 msgid "Query options (with -q or --query):"
 msgstr "Opções de pesquisa (com o -q ou o --query):"
 
-#: rpmqv.c:57
+#: rpmqv.c:47
 msgid "Verify options (with -V or --verify):"
 msgstr "Opções de verificação (com o -V ou o --verify):"
 
-#: rpmqv.c:63
-msgid "Signature options:"
-msgstr "Opções de assinatura:"
-
-#: rpmqv.c:69
-msgid "Database options:"
-msgstr "Opções da base de dados:"
-
-#: rpmqv.c:75
+#: rpmqv.c:53
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opções de Instalação/Actualização/Remoção:"
 
-#: rpmqv.c:82 rpmbuild.c:217 rpmsign.c:24 tools/rpmdeps.c:32
-#: tools/rpmgraph.c:222
+#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "Opções comuns para todos os modos do rpm:"
 
-#: rpmqv.c:146 rpmqv.c:152 rpmqv.c:158 rpmqv.c:195 rpmsign.c:180
-msgid "only one major mode may be specified"
-msgstr "só pode ser especificado um 'major mode'"
-
-#: rpmqv.c:174
+#: rpmqv.c:117
 msgid "one type of query/verify may be performed at a time"
 msgstr "só pode ser realizado um tipo de pesquisa/verificação de cada vez"
 
-#: rpmqv.c:178
+#: rpmqv.c:121
 msgid "unexpected query flags"
 msgstr "opções de pesquisa inesperadas"
 
-#: rpmqv.c:181
+#: rpmqv.c:124
 msgid "unexpected query format"
 msgstr "formato de pesquisa inesperado"
 
-#: rpmqv.c:184
+#: rpmqv.c:127
 msgid "unexpected query source"
 msgstr "origem de pesquisa inesperada"
 
-#: rpmqv.c:219
+#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:180
+msgid "only one major mode may be specified"
+msgstr "só pode ser especificado um 'major mode'"
+
+#: rpmqv.c:149
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "só a instalação, a actualização, o rmsource e o rmpspec podem ser forçados"
 
-#: rpmqv.c:221
+#: rpmqv.c:151
 msgid "files may only be relocated during package installation"
 msgstr ""
 "os ficheiros só podem ser mudados de sítio durante a instalação do pacote"
 
-#: rpmqv.c:224
+#: rpmqv.c:154
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:227
+#: rpmqv.c:157
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "o --relocate e o --excludepath só podem ser usados ao instalar pacotes novos"
 
-#: rpmqv.c:230
+#: rpmqv.c:160
 msgid "--prefix may only be used when installing new packages"
 msgstr "o --prefix só pode ser usado ao instalar pacotes novos"
 
-#: rpmqv.c:233
+#: rpmqv.c:163
 msgid "arguments to --prefix must begin with a /"
 msgstr "os argumentos do --prefix têm de começar por /"
 
-#: rpmqv.c:236
+#: rpmqv.c:166
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "o --hash (-h) só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:240
+#: rpmqv.c:170
 msgid "--percent may only be specified during package installation"
 msgstr "o --percent só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:244
+#: rpmqv.c:174
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "o --replacepkgs só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:248
+#: rpmqv.c:178
 msgid "--excludedocs may only be specified during package installation"
 msgstr "o --excludedocs  só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:252
+#: rpmqv.c:182
 msgid "--includedocs may only be specified during package installation"
 msgstr "o --includedocs  só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:256
+#: rpmqv.c:186
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "só uma das opções --excludedocs e --includedocs pode ser usada"
 
-#: rpmqv.c:260
+#: rpmqv.c:190
 msgid "--ignorearch may only be specified during package installation"
 msgstr "o --ignorearch só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:264
+#: rpmqv.c:194
 msgid "--ignoreos may only be specified during package installation"
 msgstr "o --ignoreos só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:269
+#: rpmqv.c:199
 msgid "--ignoresize may only be specified during package installation"
 msgstr "o --ignoresize só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:273
+#: rpmqv.c:203
 msgid "--allmatches may only be specified during package erasure"
 msgstr "o --allmatches só pode ser indicado ao apagar o pacote"
 
-#: rpmqv.c:277
+#: rpmqv.c:207
 msgid "--allfiles may only be specified during package installation"
 msgstr "o --allfiles só pode ser indicado durante a instalação do pacote"
 
-#: rpmqv.c:282
+#: rpmqv.c:212
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "o --justdb só pode ser indicado durante a instalação ou a remoção do pacote"
 
-#: rpmqv.c:287
+#: rpmqv.c:217
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -194,7 +186,7 @@ msgstr ""
 "a desactivação de 'scripts' só pode ser indicado durante a instalação ou a "
 "remoção de pacotes"
 
-#: rpmqv.c:292
+#: rpmqv.c:222
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -202,7 +194,7 @@ msgstr ""
 "a desactivação dos 'triggers' só pode ser usado durante a instalação ou "
 "remoção de pacotes"
 
-#: rpmqv.c:296
+#: rpmqv.c:226
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -210,7 +202,7 @@ msgstr ""
 "o --nodeps só pode ser indicado durante a criação, reconstrução, "
 "recompilação, instalação, remoção ou verificação do pacote"
 
-#: rpmqv.c:301
+#: rpmqv.c:231
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -218,7 +210,7 @@ msgstr ""
 "o --test só pode ser indicado durante a instalação, remoção ou criação do "
 "pacote"
 
-#: rpmqv.c:306
+#: rpmqv.c:236
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -226,30 +218,25 @@ msgstr ""
 "o --root (-r) só pode ser indicado durante a instalação, remoção ou pesquisa "
 "do pacote ou na reconstrução da base de dados"
 
-#: rpmqv.c:311 rpmbuild.c:547
+#: rpmqv.c:241 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "os argumentos do --root (-r) têm de começar por /"
 
-#: rpmqv.c:344
+#: rpmqv.c:258
 msgid "no packages given for erase"
 msgstr "não foram indicados pacotes para apagar"
 
-#: rpmqv.c:378
+#: rpmqv.c:292
 msgid "no packages given for install"
 msgstr "não foram indicados pacotes para instalar"
 
-#: rpmqv.c:390
+#: rpmqv.c:304
 msgid "no arguments given for query"
 msgstr "não foram indicados argumentos para a pesquisa"
 
-#: rpmqv.c:404
+#: rpmqv.c:318
 msgid "no arguments given for verify"
 msgstr "não foram indicados argumentos para a verificação"
-
-#: rpmqv.c:412 rpmsign.c:168
-#, fuzzy
-msgid "no arguments given"
-msgstr "não foram indicados argumentos para a pesquisa"
 
 #: rpmbuild.c:98
 #, c-format
@@ -448,6 +435,38 @@ msgstr "A construir plataformas alvo: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "A construir para o alvo %s\n"
+
+#: rpmdb.c:24
+msgid "initialize database"
+msgstr "inicializar a base de dados"
+
+#: rpmdb.c:26
+msgid "rebuild database inverted lists from installed package headers"
+msgstr ""
+"reconstruir as listas invertidas da base dados com os cabeçalhos dos pacotes "
+"instalados"
+
+#: rpmdb.c:29
+msgid "verify database files"
+msgstr "verificar ficheiros da base de dados"
+
+#: rpmkeys.c:25
+#, fuzzy
+msgid "verify package signature(s)"
+msgstr "verificar a assinatura do pacote"
+
+#: rpmkeys.c:27
+msgid "import an armored public key"
+msgstr ""
+
+#: rpmkeys.c:30 rpmkeys.c:32
+msgid "list keys from RPM keyring"
+msgstr ""
+
+#: rpmkeys.c:55 rpmsign.c:168
+#, fuzzy
+msgid "no arguments given"
+msgstr "não foram indicados argumentos para a pesquisa"
 
 #: rpmsign.c:26
 #, fuzzy
@@ -1970,7 +1989,7 @@ msgstr "actualiza a base de dados, mas não altera o sistema de ficheiros"
 msgid "do not verify package dependencies"
 msgstr "não verifica as dependências do pacote"
 
-#: lib/poptI.c:190 lib/poptQV.c:239 lib/poptQV.c:241
+#: lib/poptI.c:190 lib/poptQV.c:234 lib/poptQV.c:236
 #, fuzzy
 msgid "don't verify digest of files"
 msgstr "não verificar o MD5 dos ficheiros"
@@ -2086,170 +2105,161 @@ msgstr "não instala, mas indica se iria funcionar ou não"
 msgid "upgrade package(s)"
 msgstr "actualizar pacote(s)"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:82
 msgid "query/verify all packages"
 msgstr "pesquisar/verificar todos os pacotes"
 
-#: lib/poptQV.c:89
+#: lib/poptQV.c:84
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "modo de verificação do rpm"
 
-#: lib/poptQV.c:91
+#: lib/poptQV.c:86
 msgid "query/verify package(s) owning file"
 msgstr "pesquisar/verificar o(s) pacote(s) que contém(êm) o ficheiro"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:88
 msgid "query/verify package(s) in group"
 msgstr "pesquisar/verificar o(s) pacote(s) no grupo"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:90
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "pesquisar/verificar todos os pacotes"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:93
 msgid "query/verify package(s) with package identifier"
 msgstr "pesquisar/verificar o(s) pacote(s) com o identificador do pacote"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:95
 msgid "query/verify package(s) with header identifier"
 msgstr "pesquisar/verificar o(s) pacote(s) com o identificador do cabeçalho"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:97
 msgid "query/verify package(s) with file identifier"
 msgstr "pesquisar/verificar o(s) pacote(s) com o identificador do ficheiro"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:100
 msgid "rpm query mode"
 msgstr "modo de pesquisa do rpm"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:102
 #, fuzzy
 msgid "query/verify a header instance"
 msgstr "pesquisar/verificar o(s) pacote(s) com o identificador do cabeçalho"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "query a spec file"
 msgstr "pesquisar um ficheiro spec"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:106
 msgid "query/verify package(s) from install transaction"
 msgstr "pesquisar/verificar o(s) pacote(s) de transacção de instalação"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:108
 msgid "query the package(s) triggered by the package"
 msgstr "pesquisar o(s) pacote(s) activados pelo pacote"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:110
 msgid "rpm verify mode"
 msgstr "modo de verificação do rpm"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:112
 msgid "query/verify the package(s) which require a dependency"
 msgstr "pesquisar/verificar o(s) pacote(s) que precisa duma dependência"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:114
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "pesquisar/verificar o(s) pacote(s) que oferecem uma dependência"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "não foram indicados argumentos para a pesquisa"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:119
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:201
 msgid "list all configuration files"
 msgstr "listar todos os ficheiros de configuração"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:203
 msgid "list all documentation files"
 msgstr "listar todos os ficheiros de documentação"
 
-#: lib/poptQV.c:210
+#: lib/poptQV.c:205
 msgid "dump basic file information"
 msgstr "apresentar a informação básica do ficheiro"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:209
 msgid "list files in package"
 msgstr "listar os ficheiros no pacote"
 
-#: lib/poptQV.c:219
+#: lib/poptQV.c:214
 #, c-format
 msgid "skip %%ghost files"
 msgstr "ignorar ficheiros %%ghost"
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:219
 msgid "use the following query format"
 msgstr "usar o formato de pesquisa seguinte"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:221
 msgid "display the states of the listed files"
 msgstr "mostrar os estados dos ficheiros listados"
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:239
 msgid "don't verify size of files"
 msgstr "não verificar os tamanho dos ficheiros"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:242
 msgid "don't verify symlink path of files"
 msgstr "não verificar as ligações simbólicas dos ficheiros"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:245
 msgid "don't verify owner of files"
 msgstr "não verificar o dono dos ficheiros"
 
-#: lib/poptQV.c:253
+#: lib/poptQV.c:248
 msgid "don't verify group of files"
 msgstr "não verificar o grupo dos ficheiros"
 
-#: lib/poptQV.c:256
+#: lib/poptQV.c:251
 msgid "don't verify modification time of files"
 msgstr "não verificar hora de modificação dos ficheiros"
 
-#: lib/poptQV.c:259 lib/poptQV.c:262
+#: lib/poptQV.c:254 lib/poptQV.c:257
 msgid "don't verify mode of files"
 msgstr "não verificar o modo dos ficheiros"
 
-#: lib/poptQV.c:265
+#: lib/poptQV.c:260
 #, fuzzy
 msgid "don't verify capabilities of files"
 msgstr "não verificar os tamanho dos ficheiros"
 
-#: lib/poptQV.c:268
+#: lib/poptQV.c:263
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "não verificar os ficheiros no pacote"
 
-#: lib/poptQV.c:270
+#: lib/poptQV.c:265
 msgid "don't verify files in package"
 msgstr "não verificar os ficheiros no pacote"
 
-#: lib/poptQV.c:272 tools/rpmgraph.c:218
+#: lib/poptQV.c:267 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "não verificar as dependências do pacote"
 
-#: lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptQV.c:270 lib/poptQV.c:273
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "não executar o %verifyscript (se existir)"
-
-#: lib/poptQV.c:291
-#, fuzzy
-msgid "verify package signature(s)"
-msgstr "verificar a assinatura do pacote"
-
-#: lib/poptQV.c:293
-msgid "import an armored public key"
-msgstr ""
 
 #: lib/psm.c:215
 #, fuzzy, c-format
@@ -2446,7 +2456,7 @@ msgstr " (CHAVES SUSPEITAS:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:450 lib/rpmgensig.c:45
+#: lib/rpmchecksig.c:454 lib/rpmgensig.c:45
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: o acesso falhou: %s\n"
@@ -3104,20 +3114,6 @@ msgstr "esperado um | no fim da expressão"
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: lib/poptDB.c:18
-msgid "initialize database"
-msgstr "inicializar a base de dados"
-
-#: lib/poptDB.c:20
-msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"reconstruir as listas invertidas da base dados com os cabeçalhos dos pacotes "
-"instalados"
-
-#: lib/poptDB.c:23
-msgid "verify database files"
-msgstr "verificar ficheiros da base de dados"
-
 #: lib/rpmdb.c:155
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
@@ -3548,6 +3544,12 @@ msgstr "%s: a leitura do manifesto falhou: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "verificar a assinatura do pacote"
+
+#~ msgid "Signature options:"
+#~ msgstr "Opções de assinatura:"
+
+#~ msgid "Database options:"
+#~ msgstr "Opções da base de dados:"
 
 #~ msgid "no files to sign\n"
 #~ msgstr "não existem ficheiros a assinar\n"

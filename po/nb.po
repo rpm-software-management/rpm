@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-03 15:12+0300\n"
+"POT-Creation-Date: 2010-09-03 17:13+0300\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -58,131 +58,123 @@ msgstr "feil under lesing av header fra pakke\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "kan ikke gjenåpne \"payload\": %s\n"
 
-#: rpmqv.c:51
+#: rpmqv.c:41
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "spør/verifiser pakke(r) i gruppe"
 
-#: rpmqv.c:54
+#: rpmqv.c:44
 msgid "Query options (with -q or --query):"
 msgstr ""
 
-#: rpmqv.c:57
+#: rpmqv.c:47
 msgid "Verify options (with -V or --verify):"
 msgstr ""
 
-#: rpmqv.c:63
-msgid "Signature options:"
-msgstr ""
-
-#: rpmqv.c:69
-msgid "Database options:"
-msgstr ""
-
-#: rpmqv.c:75
+#: rpmqv.c:53
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:82 rpmbuild.c:217 rpmsign.c:24 tools/rpmdeps.c:32
-#: tools/rpmgraph.c:222
+#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
 
-#: rpmqv.c:146 rpmqv.c:152 rpmqv.c:158 rpmqv.c:195 rpmsign.c:180
-msgid "only one major mode may be specified"
-msgstr "kun ett større modi kan spesifiseres"
-
-#: rpmqv.c:174
+#: rpmqv.c:117
 msgid "one type of query/verify may be performed at a time"
 msgstr "én type spørring/verifisering kan utføres om gangen"
 
-#: rpmqv.c:178
+#: rpmqv.c:121
 msgid "unexpected query flags"
 msgstr "uventede flagg for spørring"
 
-#: rpmqv.c:181
+#: rpmqv.c:124
 msgid "unexpected query format"
 msgstr "ventet spørringsformat"
 
-#: rpmqv.c:184
+#: rpmqv.c:127
 msgid "unexpected query source"
 msgstr "uventet spørringskilde"
 
-#: rpmqv.c:219
+#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:180
+msgid "only one major mode may be specified"
+msgstr "kun ett større modi kan spesifiseres"
+
+#: rpmqv.c:149
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "kun installasjon, oppgradering, rmsource og rmspec kan tvinges"
 
-#: rpmqv.c:221
+#: rpmqv.c:151
 msgid "files may only be relocated during package installation"
 msgstr "filer kan kun omplasseres under pakkeinstallasjon"
 
-#: rpmqv.c:224
+#: rpmqv.c:154
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:227
+#: rpmqv.c:157
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate og --excludepath kan kun brukes ved installasjon av nye pakker"
 
-#: rpmqv.c:230
+#: rpmqv.c:160
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix kan kun brukes ved installasjon av nye pakker"
 
-#: rpmqv.c:233
+#: rpmqv.c:163
 msgid "arguments to --prefix must begin with a /"
 msgstr "argumenter til --prefix må begynne med en /"
 
-#: rpmqv.c:236
+#: rpmqv.c:166
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) kan kun spesifiseres under pakkeinstallasjon"
 
-#: rpmqv.c:240
+#: rpmqv.c:170
 msgid "--percent may only be specified during package installation"
 msgstr "--percent kan kun spesifiseres under pakkeinstallasjon"
 
-#: rpmqv.c:244
+#: rpmqv.c:174
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:248
+#: rpmqv.c:178
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:252
+#: rpmqv.c:182
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:256
+#: rpmqv.c:186
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr ""
 
-#: rpmqv.c:260
+#: rpmqv.c:190
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:264
+#: rpmqv.c:194
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:269
+#: rpmqv.c:199
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:273
+#: rpmqv.c:203
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 
-#: rpmqv.c:277
+#: rpmqv.c:207
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 
-#: rpmqv.c:282
+#: rpmqv.c:212
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:287
+#: rpmqv.c:217
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -190,7 +182,7 @@ msgstr ""
 "skript som slår av alternativer kan kun spesifiseres under pakkeinstallasjon "
 "og sletting"
 
-#: rpmqv.c:292
+#: rpmqv.c:222
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -198,49 +190,44 @@ msgstr ""
 "alternativer som slår av utløsing  kan kun spesifiseres under "
 "pakkeinstallasjon, og sletting"
 
-#: rpmqv.c:296
+#: rpmqv.c:226
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr ""
 
-#: rpmqv.c:301
+#: rpmqv.c:231
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr ""
 
-#: rpmqv.c:306
+#: rpmqv.c:236
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr ""
 
-#: rpmqv.c:311 rpmbuild.c:547
+#: rpmqv.c:241 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
-#: rpmqv.c:344
+#: rpmqv.c:258
 #, fuzzy
 msgid "no packages given for erase"
 msgstr "ingen pakker oppgitt for installering"
 
-#: rpmqv.c:378
+#: rpmqv.c:292
 msgid "no packages given for install"
 msgstr "ingen pakker oppgitt for installering"
 
-#: rpmqv.c:390
+#: rpmqv.c:304
 msgid "no arguments given for query"
 msgstr "ingen argumenter oppgitt for spørring"
 
-#: rpmqv.c:404
+#: rpmqv.c:318
 msgid "no arguments given for verify"
 msgstr "ingen argumenter oppgitt for verifisering"
-
-#: rpmqv.c:412 rpmsign.c:168
-#, fuzzy
-msgid "no arguments given"
-msgstr "ingen argumenter oppgitt for spørring"
 
 #: rpmbuild.c:98
 #, c-format
@@ -435,6 +422,36 @@ msgstr "Bygger målplattformene: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger for mål %s\n"
+
+#: rpmdb.c:24
+msgid "initialize database"
+msgstr "initier database"
+
+#: rpmdb.c:26
+msgid "rebuild database inverted lists from installed package headers"
+msgstr "gjenoppbygg database inverterte lister fra installerte pakkers headere"
+
+#: rpmdb.c:29
+msgid "verify database files"
+msgstr ""
+
+#: rpmkeys.c:25
+#, fuzzy
+msgid "verify package signature(s)"
+msgstr "verifiser pakkesignatur"
+
+#: rpmkeys.c:27
+msgid "import an armored public key"
+msgstr ""
+
+#: rpmkeys.c:30 rpmkeys.c:32
+msgid "list keys from RPM keyring"
+msgstr ""
+
+#: rpmkeys.c:55 rpmsign.c:168
+#, fuzzy
+msgid "no arguments given"
+msgstr "ingen argumenter oppgitt for spørring"
 
 #: rpmsign.c:26
 #, fuzzy
@@ -1950,7 +1967,7 @@ msgstr "oppdater databasen, men ikke modifiser filsystemet"
 msgid "do not verify package dependencies"
 msgstr "ikke verifiser pakkeavhengigheter"
 
-#: lib/poptI.c:190 lib/poptQV.c:239 lib/poptQV.c:241
+#: lib/poptI.c:190 lib/poptQV.c:234 lib/poptQV.c:236
 #, fuzzy
 msgid "don't verify digest of files"
 msgstr "ikke verifiser størrelse på filer"
@@ -2065,174 +2082,165 @@ msgstr "ikke installer, men si ifra om det ville virke eller ikke"
 msgid "upgrade package(s)"
 msgstr "oppgrader pakke(r)"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:82
 msgid "query/verify all packages"
 msgstr "spør/verifiser alle pakker"
 
-#: lib/poptQV.c:89
+#: lib/poptQV.c:84
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "rpm spørremodus"
 
-#: lib/poptQV.c:91
+#: lib/poptQV.c:86
 msgid "query/verify package(s) owning file"
 msgstr "spør/verifiser pakke(r) som eier fil"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:88
 msgid "query/verify package(s) in group"
 msgstr "spør/verifiser pakke(r) i gruppe"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:90
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "spør/verifiser alle pakker"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:93
 #, fuzzy
 msgid "query/verify package(s) with package identifier"
 msgstr "spør/verifiser pakke(r) som eier fil"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:95
 #, fuzzy
 msgid "query/verify package(s) with header identifier"
 msgstr "spør/verifiser pakke(r) som eier fil"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:97
 #, fuzzy
 msgid "query/verify package(s) with file identifier"
 msgstr "spør/verifiser pakke(r) som eier fil"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:100
 msgid "rpm query mode"
 msgstr "rpm spørremodus"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:102
 #, fuzzy
 msgid "query/verify a header instance"
 msgstr "spør/verifiser pakke(r) som eier fil"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "query a spec file"
 msgstr "spørring på spec-fil"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "<spec>"
 msgstr ""
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:106
 #, fuzzy
 msgid "query/verify package(s) from install transaction"
 msgstr "spør/verifiser pakke(r) i gruppe"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:108
 msgid "query the package(s) triggered by the package"
 msgstr "spør pakker utløst av <pakke>"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:110
 msgid "rpm verify mode"
 msgstr ""
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:112
 msgid "query/verify the package(s) which require a dependency"
 msgstr "spør etter etter pakker som trenger <funk> funksjonalitet"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:114
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "spør etter pakker som tilbyr <funk> funksjonalitet"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "ingen argumenter oppgitt for spørring"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:119
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:201
 msgid "list all configuration files"
 msgstr ""
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:203
 msgid "list all documentation files"
 msgstr ""
 
-#: lib/poptQV.c:210
+#: lib/poptQV.c:205
 msgid "dump basic file information"
 msgstr ""
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:209
 msgid "list files in package"
 msgstr ""
 
-#: lib/poptQV.c:219
+#: lib/poptQV.c:214
 #, c-format
 msgid "skip %%ghost files"
 msgstr ""
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:219
 msgid "use the following query format"
 msgstr ""
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:221
 msgid "display the states of the listed files"
 msgstr ""
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:239
 msgid "don't verify size of files"
 msgstr "ikke verifiser størrelse på filer"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:242
 msgid "don't verify symlink path of files"
 msgstr "ikke verifiser sti til symbolske lenker for filer"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:245
 msgid "don't verify owner of files"
 msgstr "ikke verifiser eier av filer"
 
-#: lib/poptQV.c:253
+#: lib/poptQV.c:248
 msgid "don't verify group of files"
 msgstr "ikke verifiser gruppe for filer"
 
-#: lib/poptQV.c:256
+#: lib/poptQV.c:251
 msgid "don't verify modification time of files"
 msgstr "ikke verifisert endringsdato for filer"
 
-#: lib/poptQV.c:259 lib/poptQV.c:262
+#: lib/poptQV.c:254 lib/poptQV.c:257
 msgid "don't verify mode of files"
 msgstr "ikke verifiser modus for filer"
 
-#: lib/poptQV.c:265
+#: lib/poptQV.c:260
 #, fuzzy
 msgid "don't verify capabilities of files"
 msgstr "ikke verifiser størrelse på filer"
 
-#: lib/poptQV.c:268
+#: lib/poptQV.c:263
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "ikke verifiser filer i pakke"
 
-#: lib/poptQV.c:270
+#: lib/poptQV.c:265
 msgid "don't verify files in package"
 msgstr "ikke verifiser filer i pakke"
 
-#: lib/poptQV.c:272 tools/rpmgraph.c:218
+#: lib/poptQV.c:267 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "ikke verifiser pakkeavhengigheter"
 
-#: lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptQV.c:270 lib/poptQV.c:273
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "ikke kjør %verifyscript (hvis noen)"
-
-#: lib/poptQV.c:291
-#, fuzzy
-msgid "verify package signature(s)"
-msgstr "verifiser pakkesignatur"
-
-#: lib/poptQV.c:293
-msgid "import an armored public key"
-msgstr ""
 
 #: lib/psm.c:215
 #, fuzzy, c-format
@@ -2428,7 +2436,7 @@ msgstr ""
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:450 lib/rpmgensig.c:45
+#: lib/rpmchecksig.c:454 lib/rpmgensig.c:45
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: åpne feilet: %s\n"
@@ -3083,18 +3091,6 @@ msgstr ""
 
 #: lib/headerfmt.c:736
 msgid "array iterator used with different sized arrays"
-msgstr ""
-
-#: lib/poptDB.c:18
-msgid "initialize database"
-msgstr "initier database"
-
-#: lib/poptDB.c:20
-msgid "rebuild database inverted lists from installed package headers"
-msgstr "gjenoppbygg database inverterte lister fra installerte pakkers headere"
-
-#: lib/poptDB.c:23
-msgid "verify database files"
 msgstr ""
 
 #: lib/rpmdb.c:155

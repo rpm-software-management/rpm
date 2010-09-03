@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-03 15:12+0300\n"
+"POT-Creation-Date: 2010-09-03 17:13+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -64,182 +64,170 @@ msgstr "讀取套件的表頭資訊時發生錯誤\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "無法重新開啟酬載：%s\n"
 
-#: rpmqv.c:51
+#: rpmqv.c:41
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "查詢/校驗套件所屬的組別"
 
-#: rpmqv.c:54
+#: rpmqv.c:44
 msgid "Query options (with -q or --query):"
 msgstr "查詢選項 (使用 -q 或 --query)："
 
-#: rpmqv.c:57
+#: rpmqv.c:47
 msgid "Verify options (with -V or --verify):"
 msgstr "校驗選項 (使用 -V 或 --verify)："
 
-#: rpmqv.c:63
-msgid "Signature options:"
-msgstr "簽名選項："
-
-#: rpmqv.c:69
-msgid "Database options:"
-msgstr "資料庫選項："
-
-#: rpmqv.c:75
+#: rpmqv.c:53
 msgid "Install/Upgrade/Erase options:"
 msgstr "安裝/更新/清除選項："
 
-#: rpmqv.c:82 rpmbuild.c:217 rpmsign.c:24 tools/rpmdeps.c:32
-#: tools/rpmgraph.c:222
+#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr "用於所有 rpm 模式和可執行檔案的共同選項："
 
-#: rpmqv.c:146 rpmqv.c:152 rpmqv.c:158 rpmqv.c:195 rpmsign.c:180
-msgid "only one major mode may be specified"
-msgstr "只能指定一個主要工作模式"
-
-#: rpmqv.c:174
+#: rpmqv.c:117
 msgid "one type of query/verify may be performed at a time"
 msgstr "只有查詢/校驗兩種工作模式能被同時選用"
 
-#: rpmqv.c:178
+#: rpmqv.c:121
 msgid "unexpected query flags"
 msgstr "不可預料的查詢旗標"
 
-#: rpmqv.c:181
+#: rpmqv.c:124
 msgid "unexpected query format"
 msgstr "不可預料的查詢格式"
 
-#: rpmqv.c:184
+#: rpmqv.c:127
 msgid "unexpected query source"
 msgstr "不可預料的查詢來源"
 
-#: rpmqv.c:219
+#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:180
+msgid "only one major mode may be specified"
+msgstr "只能指定一個主要工作模式"
+
+#: rpmqv.c:149
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "只有安裝、更新、移除原始碼檔案、移除規格檔案幾種作業可被強制執行"
 
-#: rpmqv.c:221
+#: rpmqv.c:151
 msgid "files may only be relocated during package installation"
 msgstr "在套件安裝時檔案可以被重新部署"
 
-#: rpmqv.c:224
+#: rpmqv.c:154
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "--prefix 不能和 --relocate 或 --excludepath 同時使用"
 
-#: rpmqv.c:227
+#: rpmqv.c:157
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr "--relocate 和 --excludepath 只能在安裝新軟體時使用"
 
-#: rpmqv.c:230
+#: rpmqv.c:160
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix 只能在安裝新軟體時使用"
 
-#: rpmqv.c:233
+#: rpmqv.c:163
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix 的引數必須以「/」開頭"
 
-#: rpmqv.c:236
+#: rpmqv.c:166
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) 選項只能在套件安裝時指定"
 
-#: rpmqv.c:240
+#: rpmqv.c:170
 msgid "--percent may only be specified during package installation"
 msgstr "--percent 選項只能在套件安裝時指定"
 
-#: rpmqv.c:244
+#: rpmqv.c:174
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 選項只能在套件安裝時指定"
 
-#: rpmqv.c:248
+#: rpmqv.c:178
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs 選項只能在套件安裝時指定"
 
-#: rpmqv.c:252
+#: rpmqv.c:182
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs 選項只能在套件安裝時指定"
 
-#: rpmqv.c:256
+#: rpmqv.c:186
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs 和 --includedocs 兩個選項中只能指定一個"
 
-#: rpmqv.c:260
+#: rpmqv.c:190
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch 選項只能在套件安裝時指定"
 
-#: rpmqv.c:264
+#: rpmqv.c:194
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos 選項只能在套件安裝時指定"
 
-#: rpmqv.c:269
+#: rpmqv.c:199
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize 選項只能在套件安裝時指定"
 
-#: rpmqv.c:273
+#: rpmqv.c:203
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches 選項只能在套件清除時指定"
 
-#: rpmqv.c:277
+#: rpmqv.c:207
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles 選項只能在套件安裝時指定"
 
-#: rpmqv.c:282
+#: rpmqv.c:212
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb 選項只能在套件安裝和清除時指定"
 
-#: rpmqv.c:287
+#: rpmqv.c:217
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "與命令稿停用有關的選項只能在套件安裝和清除時指定"
 
-#: rpmqv.c:292
+#: rpmqv.c:222
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "與觸發停用有關的選項只能在套件安裝和清除時指定"
 
-#: rpmqv.c:296
+#: rpmqv.c:226
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
 msgstr "--nodeps 選項只能在套件的組建、重建、重編譯、安裝、清除和校驗時指定"
 
-#: rpmqv.c:301
+#: rpmqv.c:231
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test 選項只能在套件的安裝、清除和組建時指定"
 
-#: rpmqv.c:306
+#: rpmqv.c:236
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
 msgstr "--root(-r) 選項只能在套件的安裝、清除、查詢和資料庫重建時指定"
 
-#: rpmqv.c:311 rpmbuild.c:547
+#: rpmqv.c:241 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 的引數必須以「/」開頭"
 
-#: rpmqv.c:344
+#: rpmqv.c:258
 msgid "no packages given for erase"
 msgstr "沒有指定要清除的套件名稱"
 
-#: rpmqv.c:378
+#: rpmqv.c:292
 msgid "no packages given for install"
 msgstr "沒有指定要安裝的套件名稱"
 
-#: rpmqv.c:390
+#: rpmqv.c:304
 msgid "no arguments given for query"
 msgstr "沒有指定查詢引數"
 
-#: rpmqv.c:404
+#: rpmqv.c:318
 msgid "no arguments given for verify"
 msgstr "沒有指定校驗引數"
-
-#: rpmqv.c:412 rpmsign.c:168
-msgid "no arguments given"
-msgstr "沒有指定引數"
 
 #: rpmbuild.c:98
 #, c-format
@@ -430,6 +418,34 @@ msgstr "組建目標平台：%s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "組建目標 %s\n"
+
+#: rpmdb.c:24
+msgid "initialize database"
+msgstr "初始化資料庫"
+
+#: rpmdb.c:26
+msgid "rebuild database inverted lists from installed package headers"
+msgstr "從安裝的套件表頭重建資料庫的反相清單"
+
+#: rpmdb.c:29
+msgid "verify database files"
+msgstr "驗證資料庫檔案"
+
+#: rpmkeys.c:25
+msgid "verify package signature(s)"
+msgstr "校驗套件簽名"
+
+#: rpmkeys.c:27
+msgid "import an armored public key"
+msgstr "匯入一個受保護的公鑰"
+
+#: rpmkeys.c:30 rpmkeys.c:32
+msgid "list keys from RPM keyring"
+msgstr ""
+
+#: rpmkeys.c:55 rpmsign.c:168
+msgid "no arguments given"
+msgstr "沒有指定引數"
 
 #: rpmsign.c:26
 #, fuzzy
@@ -1929,7 +1945,7 @@ msgstr "僅更新資料庫，但不對檔案系統進行修改"
 msgid "do not verify package dependencies"
 msgstr "不偵測套件相依性"
 
-#: lib/poptI.c:190 lib/poptQV.c:239 lib/poptQV.c:241
+#: lib/poptI.c:190 lib/poptQV.c:234 lib/poptQV.c:236
 #, fuzzy
 msgid "don't verify digest of files"
 msgstr "不校驗檔案的 MD5 碼值"
@@ -2041,163 +2057,155 @@ msgstr "不真正安裝，只回報作業結果是否正確"
 msgid "upgrade package(s)"
 msgstr "更新套件"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:82
 msgid "query/verify all packages"
 msgstr "查詢/校驗所有套件"
 
-#: lib/poptQV.c:89
+#: lib/poptQV.c:84
 msgid "rpm checksig mode"
 msgstr "rpm 檢查簽名模式"
 
-#: lib/poptQV.c:91
+#: lib/poptQV.c:86
 msgid "query/verify package(s) owning file"
 msgstr "查詢/校驗屬於套件的檔案"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:88
 msgid "query/verify package(s) in group"
 msgstr "查詢/校驗套件所屬的組別"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:90
 msgid "query/verify a package file"
 msgstr "查詢/校驗一個套件檔案"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:93
 msgid "query/verify package(s) with package identifier"
 msgstr "根據套件的識別查詢/校驗套件"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:95
 msgid "query/verify package(s) with header identifier"
 msgstr "根據表頭識別查詢/校驗套件"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:97
 msgid "query/verify package(s) with file identifier"
 msgstr "根據檔案識別查詢/校驗套件"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:100
 msgid "rpm query mode"
 msgstr "rpm 查詢模式"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:102
 msgid "query/verify a header instance"
 msgstr "查詢/驗證表頭實體"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "query a spec file"
 msgstr "查詢一個規格檔案"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "<spec>"
 msgstr "<規格檔>"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:106
 msgid "query/verify package(s) from install transaction"
 msgstr "從安裝異動作業查詢/驗證套件"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:108
 msgid "query the package(s) triggered by the package"
 msgstr "查詢由套件所觸發的套件"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:110
 msgid "rpm verify mode"
 msgstr "rpm 校驗模式"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:112
 msgid "query/verify the package(s) which require a dependency"
 msgstr "查詢/校驗需要某個相依物件的套件"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:114
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "查詢/校驗提供某個相依物件的套件"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:117
 msgid "do not glob arguments"
 msgstr "不以萬用字元解析引數"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:119
 msgid "do not process non-package files as manifests"
 msgstr "不以清單方式處理非套件檔案"
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:201
 msgid "list all configuration files"
 msgstr "列出所有配置檔案"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:203
 msgid "list all documentation files"
 msgstr "列出所有文件檔案"
 
-#: lib/poptQV.c:210
+#: lib/poptQV.c:205
 msgid "dump basic file information"
 msgstr "調出基本的檔案資訊"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:209
 msgid "list files in package"
 msgstr "列出套件內的檔案"
 
-#: lib/poptQV.c:219
+#: lib/poptQV.c:214
 #, c-format
 msgid "skip %%ghost files"
 msgstr "略過 %%ghost 檔案"
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:219
 msgid "use the following query format"
 msgstr "使用以下的查詢格式"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:221
 msgid "display the states of the listed files"
 msgstr "顯示列出的每個檔案的狀態"
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:239
 msgid "don't verify size of files"
 msgstr "不校驗檔案大小"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:242
 msgid "don't verify symlink path of files"
 msgstr "不校驗檔案的連結路徑"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:245
 msgid "don't verify owner of files"
 msgstr "不校驗檔案的擁有者"
 
-#: lib/poptQV.c:253
+#: lib/poptQV.c:248
 msgid "don't verify group of files"
 msgstr "不校驗檔案的屬組"
 
-#: lib/poptQV.c:256
+#: lib/poptQV.c:251
 msgid "don't verify modification time of files"
 msgstr "不校驗檔案的修改時間"
 
-#: lib/poptQV.c:259 lib/poptQV.c:262
+#: lib/poptQV.c:254 lib/poptQV.c:257
 msgid "don't verify mode of files"
 msgstr "不校驗檔案的模式"
 
-#: lib/poptQV.c:265
+#: lib/poptQV.c:260
 #, fuzzy
 msgid "don't verify capabilities of files"
 msgstr "不校驗檔案大小"
 
-#: lib/poptQV.c:268
+#: lib/poptQV.c:263
 msgid "don't verify file security contexts"
 msgstr "不校驗檔案的安全關聯"
 
-#: lib/poptQV.c:270
+#: lib/poptQV.c:265
 msgid "don't verify files in package"
 msgstr "不校驗套件內的檔案"
 
-#: lib/poptQV.c:272 tools/rpmgraph.c:218
+#: lib/poptQV.c:267 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "不校驗套件的相依關係"
 
-#: lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptQV.c:270 lib/poptQV.c:273
 msgid "don't execute verify script(s)"
 msgstr "不執行校驗命令稿"
-
-#: lib/poptQV.c:291
-msgid "verify package signature(s)"
-msgstr "校驗套件簽名"
-
-#: lib/poptQV.c:293
-msgid "import an armored public key"
-msgstr "匯入一個受保護的公鑰"
 
 #: lib/psm.c:215
 #, fuzzy, c-format
@@ -2392,7 +2400,7 @@ msgstr " (不信任的密鑰："
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:450 lib/rpmgensig.c:45
+#: lib/rpmchecksig.c:454 lib/rpmgensig.c:45
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
@@ -3043,18 +3051,6 @@ msgstr "| 預期於運算式的結束"
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
-#: lib/poptDB.c:18
-msgid "initialize database"
-msgstr "初始化資料庫"
-
-#: lib/poptDB.c:20
-msgid "rebuild database inverted lists from installed package headers"
-msgstr "從安裝的套件表頭重建資料庫的反相清單"
-
-#: lib/poptDB.c:23
-msgid "verify database files"
-msgstr "驗證資料庫檔案"
-
 #: lib/rpmdb.c:155
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
@@ -3483,6 +3479,12 @@ msgstr "%s: 讀取清單失敗：%s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "不驗證表頭+酬載簽名"
+
+#~ msgid "Signature options:"
+#~ msgstr "簽名選項："
+
+#~ msgid "Database options:"
+#~ msgstr "資料庫選項："
 
 #~ msgid "no files to sign\n"
 #~ msgstr "沒有要簽名的檔案\n"

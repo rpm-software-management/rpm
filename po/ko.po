@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.4\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-03 15:12+0300\n"
+"POT-Creation-Date: 2010-09-03 17:13+0300\n"
 "PO-Revision-Date: 2002-03-04 17:17+0900\n"
 "Last-Translator: Jong-Hoon Ryu <redhat4u@netian.com>\n"
 "Language-Team: GNU Translation project <ko@li.org>\n"
@@ -57,145 +57,137 @@ msgstr "패키지의 헤더를 읽는 도중 오류가 발생했습니다\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "payload를 다시 열 수 없음: %s\n"
 
-#: rpmqv.c:51
+#: rpmqv.c:41
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "그룹 안의 패키지를 질의/검증 합니다"
 
-#: rpmqv.c:54
+#: rpmqv.c:44
 msgid "Query options (with -q or --query):"
 msgstr "질의 옵션 (-q 또는 --query 옵션과 함께 사용):"
 
-#: rpmqv.c:57
+#: rpmqv.c:47
 msgid "Verify options (with -V or --verify):"
 msgstr "검증 옵션 (-V 또는 --verify 옵션과 함께 사용):"
 
-#: rpmqv.c:63
-msgid "Signature options:"
-msgstr "서명 옵션:"
-
-#: rpmqv.c:69
-msgid "Database options:"
-msgstr "데이터베이스 옵션:"
-
-#: rpmqv.c:75
+#: rpmqv.c:53
 msgid "Install/Upgrade/Erase options:"
 msgstr "설치/업그레이드/삭제 옵션:"
 
-#: rpmqv.c:82 rpmbuild.c:217 rpmsign.c:24 tools/rpmdeps.c:32
-#: tools/rpmgraph.c:222
+#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 #, fuzzy
 msgid "Common options for all rpm modes and executables:"
 msgstr "모든 rpm 모드에서의 일반적인 옵션:"
 
-#: rpmqv.c:146 rpmqv.c:152 rpmqv.c:158 rpmqv.c:195 rpmsign.c:180
-msgid "only one major mode may be specified"
-msgstr "하나의 주(major) 모드만 지정할 수 있습니다"
-
-#: rpmqv.c:174
+#: rpmqv.c:117
 msgid "one type of query/verify may be performed at a time"
 msgstr "질의/검증 유형은 각각 다른 유형과 동시에 수행할 수 있습니다"
 
-#: rpmqv.c:178
+#: rpmqv.c:121
 msgid "unexpected query flags"
 msgstr "부적절한 질의 플래그 입니다"
 
-#: rpmqv.c:181
+#: rpmqv.c:124
 msgid "unexpected query format"
 msgstr "부적절한 질의 형식 입니다"
 
-#: rpmqv.c:184
+#: rpmqv.c:127
 msgid "unexpected query source"
 msgstr "부적절한 질의 소스 입니다"
 
-#: rpmqv.c:219
+#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:180
+msgid "only one major mode may be specified"
+msgstr "하나의 주(major) 모드만 지정할 수 있습니다"
+
+#: rpmqv.c:149
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr "설치, 업그레이드, 소스 삭제, spec 파일 삭제시에만 수행됩니다"
 
-#: rpmqv.c:221
+#: rpmqv.c:151
 msgid "files may only be relocated during package installation"
 msgstr "패키지 설치시에만 파일을 재배치할 수 있습니다"
 
-#: rpmqv.c:224
+#: rpmqv.c:154
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr ""
 
-#: rpmqv.c:227
+#: rpmqv.c:157
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "--relocate 와 --excludepath 옵션은 최신의 패키지를 설치할 때에만 사용할 수 있"
 "습니다"
 
-#: rpmqv.c:230
+#: rpmqv.c:160
 msgid "--prefix may only be used when installing new packages"
 msgstr "--prefix 옵션은 최신의 패키지를 설치할 때에만 사용할 수 있습니다"
 
-#: rpmqv.c:233
+#: rpmqv.c:163
 msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
-#: rpmqv.c:236
+#: rpmqv.c:166
 msgid "--hash (-h) may only be specified during package installation"
 msgstr "--hash (-h) 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:240
+#: rpmqv.c:170
 msgid "--percent may only be specified during package installation"
 msgstr "--percent 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:244
+#: rpmqv.c:174
 msgid "--replacepkgs may only be specified during package installation"
 msgstr "--replacepkgs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:248
+#: rpmqv.c:178
 msgid "--excludedocs may only be specified during package installation"
 msgstr "--excludedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:252
+#: rpmqv.c:182
 msgid "--includedocs may only be specified during package installation"
 msgstr "--includedocs 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:256
+#: rpmqv.c:186
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "--excludedocs 와 --includedocs 옵션만 지정할 수 있습니다"
 
-#: rpmqv.c:260
+#: rpmqv.c:190
 msgid "--ignorearch may only be specified during package installation"
 msgstr "--ignorearch 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:264
+#: rpmqv.c:194
 msgid "--ignoreos may only be specified during package installation"
 msgstr "--ignoreos 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:269
+#: rpmqv.c:199
 msgid "--ignoresize may only be specified during package installation"
 msgstr "--ignoresize 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:273
+#: rpmqv.c:203
 msgid "--allmatches may only be specified during package erasure"
 msgstr "--allmatches 옵션은 패키지 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:277
+#: rpmqv.c:207
 msgid "--allfiles may only be specified during package installation"
 msgstr "--allfiles 옵션은 패키지 설치시에만 지정할 수 있습니다"
 
-#: rpmqv.c:282
+#: rpmqv.c:212
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr "--justdb 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:287
+#: rpmqv.c:217
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
 msgstr "스크립트 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:292
+#: rpmqv.c:222
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
 msgstr "트리거 해제 옵션은 패키지 설치와 삭제시에만 지정할 수 있습니다"
 
-#: rpmqv.c:296
+#: rpmqv.c:226
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -203,13 +195,13 @@ msgstr ""
 "--nodeps 옵션은 패키지 제작, 재제작(rebuild), 재컴파일(recompile), 설치, 삭"
 "제, 검증시에만 지정할 수 있습니다"
 
-#: rpmqv.c:301
+#: rpmqv.c:231
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
 msgstr "--test 옵션은 패키지 설치, 삭제, 제작시에만 지정할 수 있습니다"
 
-#: rpmqv.c:306
+#: rpmqv.c:236
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -217,30 +209,25 @@ msgstr ""
 "--root (-r) 옵션은 패키지 설치, 삭제, 질의, 데이터베이스 재구축시에만 지정할 "
 "수 있습니다"
 
-#: rpmqv.c:311 rpmbuild.c:547
+#: rpmqv.c:241 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 옵션의 인수는 반드시 '/' 로 시작해야 합니다"
 
-#: rpmqv.c:344
+#: rpmqv.c:258
 msgid "no packages given for erase"
 msgstr "삭제할 패키지가 지정되지 않았습니다"
 
-#: rpmqv.c:378
+#: rpmqv.c:292
 msgid "no packages given for install"
 msgstr "설치할 패키지가 지정되지 않았습니다"
 
-#: rpmqv.c:390
+#: rpmqv.c:304
 msgid "no arguments given for query"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: rpmqv.c:404
+#: rpmqv.c:318
 msgid "no arguments given for verify"
 msgstr "검증에 필요한 인수가 지정되지 않았습니다"
-
-#: rpmqv.c:412 rpmsign.c:168
-#, fuzzy
-msgid "no arguments given"
-msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
 #: rpmbuild.c:98
 #, c-format
@@ -434,6 +421,38 @@ msgstr "목표대상(target) 플랫폼으로 제작 중: %s\n"
 #, c-format
 msgid "Building for target %s\n"
 msgstr "%s(을)를 제작하고 있습니다\n"
+
+#: rpmdb.c:24
+msgid "initialize database"
+msgstr "데이터베이스를 초기화 합니다"
+
+#: rpmdb.c:26
+msgid "rebuild database inverted lists from installed package headers"
+msgstr ""
+"설치된 패키지 헤더에서 상반된 목록(inverted lists)의 데이터베이스를 재구축 합"
+"니다"
+
+#: rpmdb.c:29
+msgid "verify database files"
+msgstr "데이터베이스 파일을 검사합니다"
+
+#: rpmkeys.c:25
+#, fuzzy
+msgid "verify package signature(s)"
+msgstr "패키지의 서명을 검사합니다"
+
+#: rpmkeys.c:27
+msgid "import an armored public key"
+msgstr ""
+
+#: rpmkeys.c:30 rpmkeys.c:32
+msgid "list keys from RPM keyring"
+msgstr ""
+
+#: rpmkeys.c:55 rpmsign.c:168
+#, fuzzy
+msgid "no arguments given"
+msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
 #: rpmsign.c:26
 #, fuzzy
@@ -1955,7 +1974,7 @@ msgstr "파일시스템을 변경하지 않고, 데이터베이스를 갱신합니다"
 msgid "do not verify package dependencies"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: lib/poptI.c:190 lib/poptQV.c:239 lib/poptQV.c:241
+#: lib/poptI.c:190 lib/poptQV.c:234 lib/poptQV.c:236
 #, fuzzy
 msgid "don't verify digest of files"
 msgstr "파일의 MD5 축약(digest)을 검사하지 않습니다"
@@ -2073,170 +2092,161 @@ msgstr "패키지를 설치하지 않고, 제대로 설치되는지만 확인합니다"
 msgid "upgrade package(s)"
 msgstr "패키지를 업그레이드 합니다"
 
-#: lib/poptQV.c:87
+#: lib/poptQV.c:82
 msgid "query/verify all packages"
 msgstr "모든 패키지에 대해 질의/검증합니다"
 
-#: lib/poptQV.c:89
+#: lib/poptQV.c:84
 #, fuzzy
 msgid "rpm checksig mode"
 msgstr "rpm 검증 모드"
 
-#: lib/poptQV.c:91
+#: lib/poptQV.c:86
 msgid "query/verify package(s) owning file"
 msgstr "파일이 들어있는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:88
 msgid "query/verify package(s) in group"
 msgstr "그룹 안의 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:90
 #, fuzzy
 msgid "query/verify a package file"
 msgstr "모든 패키지에 대해 질의/검증합니다"
 
-#: lib/poptQV.c:98
+#: lib/poptQV.c:93
 msgid "query/verify package(s) with package identifier"
 msgstr "패키지 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:100
+#: lib/poptQV.c:95
 msgid "query/verify package(s) with header identifier"
 msgstr "헤더 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:97
 msgid "query/verify package(s) with file identifier"
 msgstr "파일 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:105
+#: lib/poptQV.c:100
 msgid "rpm query mode"
 msgstr "rpm 질의 모드"
 
-#: lib/poptQV.c:107
+#: lib/poptQV.c:102
 #, fuzzy
 msgid "query/verify a header instance"
 msgstr "헤더 식별자(identifier)를 사용하여 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "query a spec file"
 msgstr "spec 파일에 대해 질의합니다"
 
-#: lib/poptQV.c:109
+#: lib/poptQV.c:104
 msgid "<spec>"
 msgstr "<spec>"
 
-#: lib/poptQV.c:111
+#: lib/poptQV.c:106
 msgid "query/verify package(s) from install transaction"
 msgstr "설치 내용을 통해 패키지를 질의/검증 합니다"
 
-#: lib/poptQV.c:113
+#: lib/poptQV.c:108
 msgid "query the package(s) triggered by the package"
 msgstr "패키지로 인해 생성되는(triggered) 패키지에 대해 질의합니다"
 
-#: lib/poptQV.c:115
+#: lib/poptQV.c:110
 msgid "rpm verify mode"
 msgstr "rpm 검증 모드"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:112
 msgid "query/verify the package(s) which require a dependency"
 msgstr "의존성을 필요로 하는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:114
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "의존성을 제공하는 패키지에 대해 질의/검증 합니다"
 
-#: lib/poptQV.c:122
+#: lib/poptQV.c:117
 #, fuzzy
 msgid "do not glob arguments"
 msgstr "질의에 필요한 인수가 지정되지 않았습니다"
 
-#: lib/poptQV.c:124
+#: lib/poptQV.c:119
 msgid "do not process non-package files as manifests"
 msgstr ""
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:201
 msgid "list all configuration files"
 msgstr "모든 설정 파일을 나열합니다"
 
-#: lib/poptQV.c:208
+#: lib/poptQV.c:203
 msgid "list all documentation files"
 msgstr "모든 문서 파일을 나열합니다"
 
-#: lib/poptQV.c:210
+#: lib/poptQV.c:205
 msgid "dump basic file information"
 msgstr "기본 파일 정보를 보여줍니다"
 
-#: lib/poptQV.c:214
+#: lib/poptQV.c:209
 msgid "list files in package"
 msgstr "패키지 안의 파일을 나열합니다"
 
-#: lib/poptQV.c:219
+#: lib/poptQV.c:214
 #, c-format
 msgid "skip %%ghost files"
 msgstr "%%ghost 파일을 생략합니다"
 
-#: lib/poptQV.c:224
+#: lib/poptQV.c:219
 msgid "use the following query format"
 msgstr "다음의 질의 형식을 사용하십시요"
 
-#: lib/poptQV.c:226
+#: lib/poptQV.c:221
 msgid "display the states of the listed files"
 msgstr "나열된 파일의 상태(state)를 보여줍니다"
 
-#: lib/poptQV.c:244
+#: lib/poptQV.c:239
 msgid "don't verify size of files"
 msgstr "파일의 용량을 검사하지 않습니다"
 
-#: lib/poptQV.c:247
+#: lib/poptQV.c:242
 msgid "don't verify symlink path of files"
 msgstr "파일의 심볼릭 링크 경로를 검사하지 않습니다"
 
-#: lib/poptQV.c:250
+#: lib/poptQV.c:245
 msgid "don't verify owner of files"
 msgstr "파일의 소유자를 검사하지 않습니다"
 
-#: lib/poptQV.c:253
+#: lib/poptQV.c:248
 msgid "don't verify group of files"
 msgstr "파일의 그룹을 검사하지 않습니다"
 
-#: lib/poptQV.c:256
+#: lib/poptQV.c:251
 msgid "don't verify modification time of files"
 msgstr "파일의 최종 변경 시간을 검사하지 않습니다"
 
-#: lib/poptQV.c:259 lib/poptQV.c:262
+#: lib/poptQV.c:254 lib/poptQV.c:257
 msgid "don't verify mode of files"
 msgstr "파일의 모드를 검사하지 않습니다"
 
-#: lib/poptQV.c:265
+#: lib/poptQV.c:260
 #, fuzzy
 msgid "don't verify capabilities of files"
 msgstr "파일의 용량을 검사하지 않습니다"
 
-#: lib/poptQV.c:268
+#: lib/poptQV.c:263
 #, fuzzy
 msgid "don't verify file security contexts"
 msgstr "패키지 안의 파일을 검사하지 않습니다"
 
-#: lib/poptQV.c:270
+#: lib/poptQV.c:265
 msgid "don't verify files in package"
 msgstr "패키지 안의 파일을 검사하지 않습니다"
 
-#: lib/poptQV.c:272 tools/rpmgraph.c:218
+#: lib/poptQV.c:267 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "패키지의 의존성을 검사하지 않습니다"
 
-#: lib/poptQV.c:275 lib/poptQV.c:278
+#: lib/poptQV.c:270 lib/poptQV.c:273
 #, fuzzy
 msgid "don't execute verify script(s)"
 msgstr "%verifyscript를 실행하지 않습니다 (있을 경우)"
-
-#: lib/poptQV.c:291
-#, fuzzy
-msgid "verify package signature(s)"
-msgstr "패키지의 서명을 검사합니다"
-
-#: lib/poptQV.c:293
-msgid "import an armored public key"
-msgstr ""
 
 #: lib/psm.c:215
 #, fuzzy, c-format
@@ -2432,7 +2442,7 @@ msgstr " (키를 신뢰할 수 없음:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:450 lib/rpmgensig.c:45
+#: lib/rpmchecksig.c:454 lib/rpmgensig.c:45
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: 여는데 실패했습니다: %s\n"
@@ -3092,20 +3102,6 @@ msgstr "표현식의 끝부분에 '|' 가 와야합니다"
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: lib/poptDB.c:18
-msgid "initialize database"
-msgstr "데이터베이스를 초기화 합니다"
-
-#: lib/poptDB.c:20
-msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"설치된 패키지 헤더에서 상반된 목록(inverted lists)의 데이터베이스를 재구축 합"
-"니다"
-
-#: lib/poptDB.c:23
-msgid "verify database files"
-msgstr "데이터베이스 파일을 검사합니다"
-
 #: lib/rpmdb.c:155
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
@@ -3540,6 +3536,12 @@ msgstr "%s: 읽는데 실패했습니다: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "패키지의 서명을 검사합니다"
+
+#~ msgid "Signature options:"
+#~ msgstr "서명 옵션:"
+
+#~ msgid "Database options:"
+#~ msgstr "데이터베이스 옵션:"
 
 #~ msgid "no files to sign\n"
 #~ msgstr "서명할 파일이 없습니다\n"
