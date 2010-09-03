@@ -787,17 +787,36 @@ int rpmVerifySignatures(QVA_t qva, rpmts ts, FD_t fd, const char * fn)
     return rc;
 }
 
-int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
+int rpmcliVerifySignatures(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     const char * arg;
     int res = 0;
-    int xx;
-    rpmKeyring keyring = NULL;
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    while ((arg = *argv++) != NULL) {
+	FD_t fd = Fopen(arg, "r.ufdio");
+	if (fd == NULL || Ferror(fd)) {
+	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
+		     arg, Fstrerror(fd));
+	    res++;
+	} else if (rpmpkgVerifySigs(keyring, qva->qva_flags, fd, arg)) {
+	    res++;
+	}
 
-    if (argv == NULL) return res;
+	Fclose(fd);
+	rpmdbCheckSignals();
+    }
+    rpmKeyringFree(keyring);
+    return res;
+}
+
+int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
+{
+
+    if (argv == NULL) return -1;
 
     switch (qva->qva_mode) {
     case RPMSIGN_CHK_SIGNATURE:
+	return rpmcliVerifySignatures(ts, qva, argv);
 	break;
     case RPMSIGN_IMPORT_PUBKEY:
 	return rpmcliImportPubkeys(ts, argv);
@@ -808,27 +827,8 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	return rpmReSign(ts, qva, argv);
 	break;
     default:
-	return -1;
 	break;
     }
 
-    keyring = rpmtsGetKeyring(ts, 1);
-    while ((arg = *argv++) != NULL) {
-	FD_t fd;
-
-	fd = Fopen(arg, "r.ufdio");
-	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("%s: open failed: %s\n"), 
-		     arg, Fstrerror(fd));
-	    res++;
-	} else if (rpmpkgVerifySigs(keyring, qva->qva_flags, fd, arg)) {
-	    res++;
-	}
-
-	if (fd != NULL) xx = Fclose(fd);
-	rpmdbCheckSignals();
-    }
-    rpmKeyringFree(keyring);
-
-    return res;
+    return -1;
 }

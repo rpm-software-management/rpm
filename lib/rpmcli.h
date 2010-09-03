@@ -457,6 +457,15 @@ int rpmcliSign(rpmts ts, QVA_t qva, ARGV_const_t argv);
  */
 int rpmcliImportPubkeys(rpmts ts, ARGV_const_t argv);
 
+/** \ingroup rpmcli
+ * Verify package signatures
+ * @param ts		transaction set
+ * @param qva		mode flags and parameters
+ * @param argv		array of package path arguments (NULL terminated)
+ * @return		0 on success
+ */
+int rpmcliVerifySignatures(rpmts ts, QVA_t qva, ARGV_const_t argv);
+
 #ifdef __cplusplus
 }
 #endif
