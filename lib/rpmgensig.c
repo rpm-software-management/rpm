@@ -128,15 +128,16 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
  * Create/modify elements in signature header.
  * @param rpm		path to package
  * @param deleting	adding or deleting signature?
- * @param passPhrase	passPhrase (or NULL when deleting)
+ * @param sigtag	signature to generate (ignored when deleting)
+ * @param passPhrase	passPhrase (ignored when deleting)
  * @return		0 on success, -1 on error
  */
-static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
+static int rpmSign(const char *rpm, int deleting, 
+		rpmSigTag sigtag, const char *passPhrase)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
     rpmlead lead;
-    rpmSigTag sigtag;
     char *sigtarget = NULL, *trpm = NULL;
     Header sigh = NULL;
     char * msg;
@@ -239,8 +240,8 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	    xx = headerDel(sigh, RPMSIGTAG_PGP5);
 	    xx = headerDel(sigh, RPMSIGTAG_PGP);
 	    xx = headerDel(sigh, RPMSIGTAG_RSA);
-	} else		/* If gpg/pgp is configured, replace the signature. */
-	if ((sigtag = rpmLookupSignatureType(RPMLOOKUPSIG_QUERY)) > 0) {
+	} else if (sigtag > 0) {
+	    /* If gpg/pgp is configured, replace the signature. */
 	    pgpKeyID_t oldsignid, newsignid;
 
 	    /* Grab the old signature fingerprint (if any) */
@@ -357,11 +358,12 @@ exit:
     return res;
 }
 
-int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase)
+int rpmcliSign(ARGV_const_t argv, int deleting,
+		rpmSigTag sigtag, const char *passPhrase)
 {
     int res = 0;
     for (ARGV_const_t arg = argv; arg && *arg; arg++) {
-	res += rpmSign(*arg, deleting, passPhrase);
+	res += rpmSign(*arg, deleting, sigtag, passPhrase);
     }
     return res;
 }

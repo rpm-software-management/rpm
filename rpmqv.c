@@ -500,7 +500,8 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon))
 	    argerror(_("no arguments given"));
 	ec = rpmcliSign((ARGV_const_t) poptGetArgs(optCon),
-			(qva->qva_mode == RPMSIGN_DEL_SIGNATURE), passPhrase);
+			(qva->qva_mode == RPMSIGN_DEL_SIGNATURE),
+			rpmLookupSignatureType(RPMLOOKUPSIG_QUERY), passPhrase);
     	break;
 #endif	/* IAM_RPMK */
 	
