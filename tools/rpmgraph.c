@@ -44,12 +44,6 @@ rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
     if (fileArgv == NULL)
 	return 0;
 
-    if (ia->qva_flags & VERIFY_DIGEST)
-	vsflags |= _RPMVSF_NODIGESTS;
-    if (ia->qva_flags & VERIFY_SIGNATURE)
-	vsflags |= _RPMVSF_NOSIGNATURES;
-    ovsflags = rpmtsSetVSFlags(ts, vsflags);
-
     /* Build fully globbed list of arguments in argv[argc]. */
     for (fnp = fileArgv; *fnp; fnp++) {
 	av = _free(av);

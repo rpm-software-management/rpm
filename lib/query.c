@@ -613,11 +613,11 @@ int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
     }
 
     vsflags = rpmExpandNumeric("%{?_vsflags_query}");
-    if (qva->qva_flags & VERIFY_DIGEST)
+    if (rpmcliQueryFlags & VERIFY_DIGEST)
 	vsflags |= _RPMVSF_NODIGESTS;
-    if (qva->qva_flags & VERIFY_SIGNATURE)
+    if (rpmcliQueryFlags & VERIFY_SIGNATURE)
 	vsflags |= _RPMVSF_NOSIGNATURES;
-    if (qva->qva_flags & VERIFY_HDRCHK)
+    if (rpmcliQueryFlags & VERIFY_HDRCHK)
 	vsflags |= RPMVSF_NOHDRCHK;
 
     ovsflags = rpmtsSetVSFlags(ts, vsflags);

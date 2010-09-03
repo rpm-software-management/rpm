@@ -368,7 +368,6 @@ struct rpmInstallArguments_s {
     rpmtransFlags transFlags;
     rpmprobFilterFlags probFilter;
     rpmInstallFlags installInterfaceFlags;
-    rpmQueryFlags qva_flags;	/*!< from --nodigest/--nosignature */
     int numRelocations;
     int noDeps;
     int incldocs;

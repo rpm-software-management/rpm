@@ -166,18 +166,6 @@ static void queryArgCallback(poptContext con,
 	}
 	break;
 
-    case RPMCLI_POPT_NODIGEST:
-	qva->qva_flags |= VERIFY_DIGEST;
-	break;
-
-    case RPMCLI_POPT_NOSIGNATURE:
-	qva->qva_flags |= VERIFY_SIGNATURE;
-	break;
-
-    case RPMCLI_POPT_NOHDRCHK:
-	qva->qva_flags |= VERIFY_HDRCHK;
-	break;
-
     case RPMCLI_POPT_NODEPS:
 	qva->qva_flags |= VERIFY_DEPS;
 	break;
@@ -289,21 +277,6 @@ struct poptOption rpmVerifyPoptTable[] = {
  { "noscripts", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOSCRIPTS,
         N_("don't execute verify script(s)"), NULL },
 
- { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
-        N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
- { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
-
-/** @todo Add --nogpg/--nopgp aliases to rpmpopt, eliminate. */
- { "nogpg", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify GPG V3 DSA signature(s)"), NULL },
- { "nopgp", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify PGP V3 RSA/MD5 signature(s)"), NULL },
-
     POPT_TABLEEND
 };
 
@@ -326,14 +299,6 @@ struct poptOption rpmSignPoptTable[] = {
 	N_("sign package(s) (identical to --addsign)"), NULL },
  { "sign", '\0', POPT_ARGFLAG_DOC_HIDDEN, &rpmQVKArgs.sign, 0,
 	N_("generate signature"), NULL },
-
- { "nodigest", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_DIGEST,
-        N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
-	&rpmQVKArgs.qva_flags, VERIFY_HDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
- { "nosignature", '\0', POPT_BIT_SET, &rpmQVKArgs.qva_flags, VERIFY_SIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
 
    POPT_TABLEEND
 };

@@ -13,7 +13,6 @@ struct rpmInstallArguments_s rpmIArgs = {
     0,			/* transFlags */
     0,			/* probFilter */
     0,			/* installInterfaceFlags */
-    0,			/* qva_flags */
     0,			/* numRelocations */
     0,			/* noDeps */
     0,			/* incldocs */
@@ -76,18 +75,6 @@ static void installArgCallback( poptContext con,
 	ia->relocations[ia->numRelocations].newPath = newPath;
 	ia->numRelocations++;
       }	break;
-
-    case RPMCLI_POPT_NODIGEST:
-	ia->qva_flags |= VERIFY_DIGEST;
-	break;
-
-    case RPMCLI_POPT_NOSIGNATURE:
-	ia->qva_flags |= VERIFY_SIGNATURE;
-	break;
-
-    case RPMCLI_POPT_NOHDRCHK:
-	ia->qva_flags |= VERIFY_HDRCHK;
-	break;
 
     case RPMCLI_POPT_NODEPS:
 	ia->noDeps = 1;
@@ -231,13 +218,6 @@ struct poptOption rpmInstallPoptTable[] = {
  { "nopostun", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
 	RPMTRANS_FLAG_NOPOSTUN,
 	N_("do not execute %%postun scriptlet (if any)"), NULL },
-
- { "nodigest", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NODIGEST,
-        N_("don't verify package digest(s)"), NULL },
- { "nohdrchk", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOHDRCHK,
-        N_("don't verify database header(s) when retrieved"), NULL },
- { "nosignature", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, RPMCLI_POPT_NOSIGNATURE,
-        N_("don't verify package signature(s)"), NULL },
 
  { "notriggers", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, _noTransTriggers,
 	N_("do not execute any scriptlet(s) triggered by this package"), NULL},

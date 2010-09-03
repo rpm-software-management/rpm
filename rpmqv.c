@@ -486,7 +486,7 @@ int main(int argc, char *argv[])
     {	rpmVerifyFlags verifyFlags =
 		(VERIFY_FILEDIGEST|VERIFY_DIGEST|VERIFY_SIGNATURE);
 
-	verifyFlags &= ~ka->qva_flags;
+	verifyFlags &= ~rpmcliQueryFlags;
 	ka->qva_flags = (rpmQueryFlags) verifyFlags;
     }  
     case MODE_RESIGN:
