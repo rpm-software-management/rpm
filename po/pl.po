@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-09-03 17:13+0300\n"
-"PO-Revision-Date: 2010-09-01 22:06+0200\n"
+"PO-Revision-Date: 2010-09-04 08:49+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -362,10 +362,9 @@ msgid "do not verify build dependencies"
 msgstr "bez sprawdzania zależności budowania"
 
 #: rpmbuild.c:182
-#, fuzzy
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr ""
-"utworzenie nagłówków pakietu zgodnych z (przestarzałymi) pakietami RPM[23]"
+"utworzenie nagłówków pakietu zgodnych z (przestarzałymi) pakietami RPM v3"
 
 #: rpmbuild.c:186
 msgid "do not accept i18N msgstr's from specfile"
@@ -464,16 +463,15 @@ msgstr "zaimportowanie opakowanego klucza publicznego"
 
 #: rpmkeys.c:30 rpmkeys.c:32
 msgid "list keys from RPM keyring"
-msgstr ""
+msgstr "wyświetlenie listy kluczy z bazy kluczy RPM"
 
 #: rpmkeys.c:55 rpmsign.c:168
 msgid "no arguments given"
 msgstr "nie podano parametrów"
 
 #: rpmsign.c:26
-#, fuzzy
 msgid "sign package(s)"
-msgstr "zainstalowanie pakietów"
+msgstr "podpisanie pakietów"
 
 #: rpmsign.c:28
 msgid "sign package(s) (identical to --addsign)"
@@ -3491,39 +3489,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "Signature options:"
-#~ msgstr "Opcje podpisu:"
-
-#~ msgid "Database options:"
-#~ msgstr "Opcje bazy danych:"
-
-#~ msgid "no files to sign\n"
-#~ msgstr "brak plików do podpisania\n"
-
-#~ msgid "cannot access file %s\n"
-#~ msgstr "nie można uzyskać dostępu do pliku %s\n"
-
-#~ msgid "--sign may only be used during package building"
-#~ msgstr "--sign można użyć tylko podczas budowania pakietów"
-
-#~ msgid "don't verify GPG V3 DSA signature(s)"
-#~ msgstr "bez sprawdzania podpisów GPG V3 DSA"
-
-#~ msgid "don't verify PGP V3 RSA/MD5 signature(s)"
-#~ msgstr "bez sprawdzania podpisów PGP V3 RSA/MD5"
-
-#~ msgid "sign package(s) (identical to --resign)"
-#~ msgstr "podpisanie pakietów (identyczne z --resign)"
-
-#~ msgid "generate signature"
-#~ msgstr "utworzenie podpisu"
-
-#~ msgid "Invalid %%_signature spec in macro file\n"
-#~ msgstr "Nieprawidłowa specyfikacja %%_signature w pliku makr\n"
-
-#~ msgid "TIMECHECK failure: %s\n"
-#~ msgstr "TIMECHECK nie powiodło się: %s\n"
-
-#~ msgid "generate headers compatible with rpm4 packaging"
-#~ msgstr "utworzenie nagłówków zgodnych z pakietami RPM4"
