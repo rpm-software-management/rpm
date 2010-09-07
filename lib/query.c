@@ -310,10 +310,6 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	return 1;
 
     switch (qva->qva_source) {
-    case RPMQV_SPECFILE:
-	res = ((qva->qva_specQuery != NULL)
-		? qva->qva_specQuery(ts, qva, arg) : 1);
-	break;
     case RPMQV_GROUP:
 	mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (mi == NULL) {
@@ -506,7 +502,7 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
     }
 
-    if (qva->qva_source != RPMQV_SPECFILE && mi != NULL) {
+    if (mi != NULL) {
 	res = rpmcliShowMatches(qva, ts, mi);
 	mi = rpmdbFreeIterator(mi);
     }
@@ -568,6 +564,12 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	gi = rpmgiFree(gi);
 	break;
     }
+    case RPMQV_SPECFILE:
+	for (ARGV_const_t arg = argv; arg && *arg; arg++) {
+	    ec += ((qva->qva_specQuery != NULL)
+		    ? qva->qva_specQuery(ts, qva, *arg) : 1);
+	}
+	break;
     default:
 	for (ARGV_const_t arg = argv; arg && *arg; arg++)
 	    ec += rpmQueryVerify(qva, ts, *arg);
