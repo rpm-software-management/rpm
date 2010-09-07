@@ -122,7 +122,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     if (!(qva->qva_flags & QUERY_FOR_DUMPFILES))
 	fiflags |= RPMFI_NOFILEDIGESTS;
 
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, fiflags);
+    fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, fiflags);
     if (rpmfiFC(fi) <= 0) {
 	rpmlog(RPMLOG_NOTICE, _("(contains no files)\n"));
 	goto exit;
@@ -276,7 +276,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
 	int rc;
 
 	rpmdbCheckSignals();
-	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
+	if ((rc = qva->qva_showPackage(qva, NULL, h)) != 0)
 	    ec = rc;
 	headerFree(h);
     }
@@ -291,7 +291,7 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts)
     while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
 	int rc;
 	rpmdbCheckSignals();
-	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
+	if ((rc = qva->qva_showPackage(qva, NULL, h)) != 0)
 	    ec = rc;
     }
     qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
