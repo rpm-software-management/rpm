@@ -294,7 +294,6 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts)
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
 	    ec = rc;
     }
-    qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
     return ec;
 }
 
@@ -311,19 +310,10 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	return 1;
 
     switch (qva->qva_source) {
-    case RPMQV_RPM:
-	res = rpmgiShowMatches(qva, ts);
-	break;
-
-    case RPMQV_ALL:
-	res = rpmcliShowMatches(qva, ts);
-	break;
-
     case RPMQV_SPECFILE:
 	res = ((qva->qva_specQuery != NULL)
 		? qva->qva_specQuery(ts, qva, arg) : 1);
 	break;
-
     case RPMQV_GROUP:
 	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
 	if (qva->qva_mi == NULL) {
@@ -523,8 +513,12 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	}
 	break;
     }
-    
+    default:
+	res = -1;
+	break;
     }
+
+    qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
    
     return res;
 }
@@ -575,14 +569,14 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
 	if (applyFilters(qva->qva_mi, argv) != RPMRC_OK) {
 	    ec = 1;
-	    qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
 	} else {
-	    ec += rpmQueryVerify(qva, ts, NULL);
+	    ec = rpmcliShowMatches(qva, ts);
 	}
+	qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
 	break;
     case RPMQV_RPM:
 	qva->qva_gi = rpmgiNew(ts, giFlags, argv);
-	ec = rpmQueryVerify(qva, ts, NULL);
+	ec = rpmgiShowMatches(qva, ts);
 	qva->qva_gi = rpmgiFree(qva->qva_gi);
 	break;
     default:
