@@ -1,0 +1,122 @@
+#    rpmverify.at: rpm verification tests
+
+AT_BANNER([RPM verification])
+
+# ------------------------------
+# 
+AT_SETUP([dependency problems])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+rm -rf "${TOPDIR}"
+
+run rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "reqs deptest-two" \
+	  ${RPMDATA}/SPECS/deptest.spec
+
+runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -Va
+],
+[1],
+[Unsatisfied dependencies for deptest-one-1.0-1.noarch:
+	deptest-two is needed by (installed) deptest-one-1.0-1.noarch
+],
+[])
+AT_CLEANUP
+
+# Test file verify when no errors expected.
+# Ignore dependencies here as we're not testing for them, and
+# --nogroup --nouser is required when running tests as non-root.
+AT_SETUP([files with no problems])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+
+tpkg="hello-1.0-1.i386.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos "${tpkg}"
+runroot rpm -Va --nodeps --nouser --nogroup
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# Test file verify when no errors expected in verbose mode.
+AT_SETUP([files with no problems in verbose mode])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+
+tpkg="hello-1.0-1.i386.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos "${tpkg}"
+runroot rpm -Vva --nodeps --nouser --nogroup
+],
+[0],
+[.........    /usr/local/bin/hello
+.........    /usr/share/doc/hello-1.0
+.........  d /usr/share/doc/hello-1.0/FAQ
+],
+[])
+AT_CLEANUP
+
+# Test file verify after mutilating the files a bit.
+AT_SETUP([verify files with problems present])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+
+tpkg="hello-1.0-1.i386.rpm"
+cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos "${tpkg}"
+rm -f "${RPMTEST}"/usr/share/doc/hello-1.0/FAQ
+chmod u-x "${RPMTEST}"/usr/local/bin/hello
+dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \
+   conv=notrunc bs=1 seek=5 count=6 2> /dev/null
+runroot rpm -Va --nodeps --nouser --nogroup
+],
+[1],
+[5..T...M.    /usr/local/bin/hello
+missing   d /usr/share/doc/hello-1.0/FAQ
+],
+[])
+AT_CLEANUP
+
+# Test verify script success & failure behavior
+# Ignoring stderr spew for now
+AT_SETUP([verifyscript failure])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+
+rm -rf "${TOPDIR}"
+run rpmbuild --quiet -bb "${RPMDATA}"/SPECS/verifyscript.spec
+runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
+rm -f "${RPMTEST}"/var/checkme
+runroot rpm -V --nodeps verifyscript
+],
+[1],
+[],
+[ignore])
+AT_CLEANUP
+
+AT_SETUP([verifyscript success])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+
+rm -rf "${TOPDIR}"
+run rpmbuild --quiet -bb "${RPMDATA}"/SPECS/verifyscript.spec
+runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
+touch "${RPMTEST}"/var/checkme
+runroot rpm -V --nodeps verifyscript
+],
+[0],
+[],
+[])
+AT_CLEANUP
