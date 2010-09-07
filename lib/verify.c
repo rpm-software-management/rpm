@@ -267,7 +267,7 @@ static int rpmVerifyScript(rpmts ts, Header h)
 	/* fake up a erasure transaction element */
 	(void) rpmtsAddEraseElement(ts, h, -1);
 
-	rc = rpmteProcess(rpmtsElement(ts, 0), PKG_VERIFY);
+	rc = (rpmteProcess(rpmtsElement(ts, 0), PKG_VERIFY) != RPMRC_OK);
 
 	/* clean up our fake transaction bits */
 	rpmtsEmpty(ts);
