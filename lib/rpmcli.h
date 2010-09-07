@@ -164,8 +164,6 @@ struct rpmQVKArguments_s {
     int 	qva_sourceCount;/*!< Exclusive option check (>1 is error). */
     rpmQueryFlags qva_flags;	/*!< Bit(s) to control operation. */
     rpmfileAttrs qva_fflags;	/*!< Bit(s) to filter on attribute. */
-    rpmdbMatchIterator qva_mi;	/*!< Match iterator on selected headers. */
-    rpmgi qva_gi;		/*!< Generalized iterator on args. */
 
     QVF_t qva_showPackage;	/*!< Function to display iterator matches. */
     QSpecF_t qva_specQuery;	/*!< Function to query spec file. */

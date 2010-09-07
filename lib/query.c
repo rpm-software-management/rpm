@@ -266,9 +266,8 @@ void rpmDisplayQueryTags(FILE * fp)
     rpmtdFree(names);
 }
 
-static int rpmgiShowMatches(QVA_t qva, rpmts ts)
+static int rpmgiShowMatches(QVA_t qva, rpmts ts, rpmgi gi)
 {
-    rpmgi gi = qva->qva_gi;
     int ec = 0;
     Header h;
 
@@ -283,12 +282,12 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
     return ec + rpmgiNumErrors(gi);
 }
 
-static int rpmcliShowMatches(QVA_t qva, rpmts ts)
+static int rpmcliShowMatches(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
 {
     Header h;
     int ec = 0;
 
-    while ((h = rpmdbNextIterator(qva->qva_mi)) != NULL) {
+    while ((h = rpmdbNextIterator(mi)) != NULL) {
 	int rc;
 	rpmdbCheckSignals();
 	if ((rc = qva->qva_showPackage(qva, ts, h)) != 0)
@@ -303,6 +302,7 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     const char * s;
     int i;
     int provides_checked = 0;
+    rpmdbMatchIterator mi = NULL;
 
     (void) rpmdbCheckSignals();
 
@@ -315,8 +315,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 		? qva->qva_specQuery(ts, qva, arg) : 1);
 	break;
     case RPMQV_GROUP:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_GROUP, arg, 0);
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE,
 		_("group %s does not contain any packages\n"), arg);
 	    res = 1;
@@ -324,8 +324,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
 
     case RPMQV_TRIGGEREDBY:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, arg, 0);
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, arg, 0);
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package triggers %s\n"), arg);
 	    res = 1;
 	}
@@ -346,8 +346,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
         for (i = 0, t = MD5, s = arg; i < 16; i++, t++, s += 2)
             *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 	
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, MD5, sizeof(MD5));
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_SIGMD5, MD5, sizeof(MD5));
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"pkgid", arg);
 	    res = 1;
@@ -362,8 +362,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    return 1;
 	}
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_SHA1HEADER, arg, 0);
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_SHA1HEADER, arg, 0);
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"hdrid", arg);
 	    res = 1;
@@ -387,8 +387,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
         for (i = 0, s = arg; i < diglen; i++, t++, s += 2)
             *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, diglen);
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, diglen);
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"fileid", arg);
 	    res = 1;
@@ -405,8 +405,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "tid", arg);
 	    return 1;
 	}
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_INSTALLTID, &iid, sizeof(iid));
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_INSTALLTID, &iid, sizeof(iid));
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
 			"tid", arg);
 	    res = 1;
@@ -414,8 +414,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     }	break;
 
     case RPMQV_WHATREQUIRES:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMTAG_REQUIRENAME, arg, 0);
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_NOTICE, _("no package requires %s\n"), arg);
 	    res = 1;
 	}
@@ -424,8 +424,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
 	    provides_checked = 1;
-	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, arg, 0);
-	    if (qva->qva_mi == NULL) {
+	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, arg, 0);
+	    if (mi == NULL) {
 		rpmlog(RPMLOG_NOTICE, _("no package provides %s\n"), arg);
 		res = 1;
 	    }
@@ -450,11 +450,11 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
 
-	qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
-	if (qva->qva_mi == NULL && !provides_checked)
-	    qva->qva_mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
+	mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, fn, 0);
+	if (mi == NULL && !provides_checked)
+	    mi = rpmtsInitIterator(ts, RPMTAG_PROVIDENAME, fn, 0);
 
-	if (qva->qva_mi == NULL) {
+	if (mi == NULL) {
 	    struct stat sb;
 	    if (lstat(fn, &sb) != 0)
 		rpmlog(RPMLOG_ERR, _("file %s: %s\n"), fn, strerror(errno));
@@ -477,8 +477,8 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	}
 	rpmlog(RPMLOG_DEBUG, "package record number: %u\n", recOffset);
 	/* RPMDBI_PACKAGES */
-	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
-	if (qva->qva_mi == NULL) {
+	mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, &recOffset, sizeof(recOffset));
+	if (mi == NULL) {
 	    rpmlog(RPMLOG_ERR,
 		_("record %u could not be read\n"), recOffset);
 	    res = 1;
@@ -488,17 +488,16 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
     case RPMQV_PACKAGE:
     {
 	int matches = 0;
-	rpmdbMatchIterator mi;
 	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
 	while (rpmdbNextIterator(mi) != NULL) {
 	    matches++;
 	}
-	rpmdbFreeIterator(mi);
+	mi = rpmdbFreeIterator(mi);
 	if (! matches) {
 	    rpmlog(RPMLOG_NOTICE, _("package %s is not installed\n"), arg);
 	    res = 1;
 	} else {
-	    qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, arg, 0);
 	}
 	break;
     }
@@ -507,9 +506,9 @@ static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 	break;
     }
 
-    if (qva->qva_source != RPMQV_SPECFILE && qva->qva_mi != NULL) {
-	res = rpmcliShowMatches(qva, ts);
-	qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
+    if (qva->qva_source != RPMQV_SPECFILE && mi != NULL) {
+	res = rpmcliShowMatches(qva, ts, mi);
+	mi = rpmdbFreeIterator(mi);
     }
    
     return res;
@@ -552,25 +551,23 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 {
     int ec = 0;
 
-    /* 
-     * This is all wonderfully inconsistent... sort it out once
-     * rpmgi is out of the picture.
-     */
     switch (qva->qva_source) {
-    case RPMQV_ALL:
-	qva->qva_mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-	if (applyFilters(qva->qva_mi, argv) != RPMRC_OK) {
+    case RPMQV_ALL: {
+	rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+	if (applyFilters(mi, argv) != RPMRC_OK) {
 	    ec = 1;
 	} else {
-	    ec = rpmcliShowMatches(qva, ts);
+	    ec = rpmcliShowMatches(qva, ts, mi);
 	}
-	qva->qva_mi = rpmdbFreeIterator(qva->qva_mi);
+	mi = rpmdbFreeIterator(mi);
 	break;
-    case RPMQV_RPM:
-	qva->qva_gi = rpmgiNew(ts, giFlags, argv);
-	ec = rpmgiShowMatches(qva, ts);
-	qva->qva_gi = rpmgiFree(qva->qva_gi);
+    }
+    case RPMQV_RPM: {
+	rpmgi gi = rpmgiNew(ts, giFlags, argv);
+	ec = rpmgiShowMatches(qva, ts, gi);
+	gi = rpmgiFree(gi);
 	break;
+    }
     default:
 	for (ARGV_const_t arg = argv; arg && *arg; arg++)
 	    ec += rpmQueryVerify(qva, ts, *arg);
