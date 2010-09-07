@@ -197,19 +197,6 @@ extern struct poptOption rpmQueryPoptTable[];
 extern struct poptOption rpmVerifyPoptTable[];
 
 /** \ingroup rpmcli
- * Display query/verify information for each header in iterator.
- *
- * This routine uses:
- *	- qva->qva_mi		rpm database iterator
- *	- qva->qva_showPackage	query/verify display routine
- *
- * @param qva		parsed query/verify options
- * @param ts		transaction set
- * @return		result of last non-zero showPackage() return
- */
-int rpmcliShowMatches(QVA_t qva, rpmts ts);
-
-/** \ingroup rpmcli
  * Display list of tags that can be used in --queryformat.
  * @param fp	file handle to use for display
  */

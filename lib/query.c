@@ -283,7 +283,7 @@ static int rpmgiShowMatches(QVA_t qva, rpmts ts)
     return ec + rpmgiNumErrors(gi);
 }
 
-int rpmcliShowMatches(QVA_t qva, rpmts ts)
+static int rpmcliShowMatches(QVA_t qva, rpmts ts)
 {
     Header h;
     int ec = 0;
