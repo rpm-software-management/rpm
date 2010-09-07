@@ -203,20 +203,6 @@ extern struct poptOption rpmVerifyPoptTable[];
 void rpmDisplayQueryTags(FILE * fp);
 
 /** \ingroup rpmcli
- * Common query/verify source interface, called once for each CLI arg.
- *
- * This routine uses:
- *	- qva->qva_mi		rpm database iterator
- *	- qva->qva_showPackage	query/verify display routine
- *
- * @param qva		parsed query/verify options
- * @param ts		transaction set
- * @param arg		name of source to query/verify
- * @return		showPackage() result, 1 if rpmdbInitIterator() is NULL
- */
-int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg);
-
-/** \ingroup rpmcli
  * Display results of package query.
  * @todo Devise a meaningful return code.
  * @param qva		parsed query/verify options

@@ -298,7 +298,7 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts)
     return ec;
 }
 
-int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
+static int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg)
 {
     int res = 0;
     const char * s;
