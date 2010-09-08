@@ -68,7 +68,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
     char ** av = NULL;
     int argc = (argcPtr ? *argcPtr : 0);
     char ** argv = (argvPtr ? *argvPtr : NULL);
-    FILE * f = fdGetFILE(fd);
+    FILE * f = fdopen(Fileno(fd), "r");
     rpmRC rpmrc = RPMRC_OK;
     int i, j, next, npre;
 
