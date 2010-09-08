@@ -347,7 +347,7 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 
     res = 0;
     for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-	xx = qva->qva_showPackage(qva, NULL, pkg->header);
+	xx = qva->qva_showPackage(qva, ts, pkg->header);
 
 exit:
     spec = rpmSpecFree(spec);

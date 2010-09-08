@@ -140,7 +140,7 @@ typedef struct rpmQVKArguments_s * QVA_t;
  * Function to display iterator matches.
  *
  * @param qva		parsed query/verify options
- * @param ts		(unused)
+ * @param ts		transaction set
  * @param h		header to use for query/verify
  * @return		0 on success
  */
@@ -149,7 +149,7 @@ typedef	int (*QVF_t) (QVA_t qva, rpmts ts, Header h);
 /** \ingroup rpmcli
  * Function to query spec file.
  *
- * @param ts		(unused)
+ * @param ts		transaction set
  * @param qva		parsed query/verify options
  * @param arg		query argument
  * @return		0 on success
@@ -220,7 +220,7 @@ int rpmQueryVerify(QVA_t qva, rpmts ts, const char * arg);
  * Display results of package query.
  * @todo Devise a meaningful return code.
  * @param qva		parsed query/verify options
- * @param ts		(unused)
+ * @param ts		transaction set
  * @param h		header to use for query
  * @return		0 always
  */

@@ -138,7 +138,7 @@ rpmSpec rpmSpecFree(rpmSpec spec);
 
 /** \ingroup rpmbuild
  * Function to query spec file(s).
- * @param ts		(unused)
+ * @param ts		transaction set
  * @param qva		parsed query/verify options
  * @param arg		query argument
  * @return		0 on success, else no. of failures
