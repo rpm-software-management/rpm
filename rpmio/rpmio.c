@@ -6,10 +6,6 @@
 #include <stdarg.h>
 #include <errno.h>
 
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
-#define	_USE_LIBIO	1
-#endif
-
 #include <rpm/rpmlog.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
@@ -19,6 +15,10 @@
 #include "rpmio/rpmio_internal.h"
 
 #include "debug.h"
+
+#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
+#define	_USE_LIBIO	1
+#endif
 
 typedef struct _FDSTACK_s {
     FDIO_t		io;
