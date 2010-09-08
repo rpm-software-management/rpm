@@ -76,9 +76,10 @@ static rpmRC rpmgiLoadManifest(rpmgi gi, const char * path)
  * Return header from package.
  * @param gi		generalized iterator
  * @param path		file path
- * @return		header (NULL on failure)
+ * @retval hdrp		header (NULL on failure)
+ * @return		1 if path could be opened, 0 if not
  */
-static Header rpmgiReadHeader(rpmgi gi, const char * path)
+static int rpmgiReadHeader(rpmgi gi, const char * path, Header * hdrp)
 {
     FD_t fd = rpmgiOpen(path, "r.ufdio");
     Header h = NULL;
@@ -103,7 +104,8 @@ static Header rpmgiReadHeader(rpmgi gi, const char * path)
 	}
     }
 
-    return h;
+    *hdrp = h;
+    return (fd != NULL);
 }
 
 /**
@@ -120,13 +122,10 @@ static Header rpmgiLoadReadHeader(rpmgi gi)
     if (gi->argv != NULL && gi->argv[gi->i] != NULL)
     do {
 	char * fn = gi->argv[gi->i];
-	h = rpmgiReadHeader(gi, fn);
+	int rc = rpmgiReadHeader(gi, fn, &h);
 
-	if (h != NULL || gi->flags & RPMGI_NOMANIFEST)
+	if (h != NULL || (gi->flags & RPMGI_NOMANIFEST) || rc == 0)
 	    break;
-	if (errno == ENOENT) {
-	    break;
-	}
 
 	/* Not a header, so try for a manifest. */
 	gi->argv[gi->i] = NULL;		/* Mark the insertion point */
