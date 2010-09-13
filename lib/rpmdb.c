@@ -1639,6 +1639,46 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
     return rc;
 }
 
+static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
+{
+    rpmRC rpmrc = RPMRC_NOTFOUND;
+
+    if (!(mi->mi_hdrchk && mi->mi_ts))
+	return rpmrc;
+
+    /* Don't bother re-checking a previously read header. */
+    if (mi->mi_db->db_bits) {
+	pbm_set * set;
+
+	set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+		    &mi->mi_db->db_nbits, mi->mi_offset);
+	if (PBM_ISSET(mi->mi_offset, set))
+	    rpmrc = RPMRC_OK;
+    }
+
+    /* If blob is unchecked, check blob import consistency now. */
+    if (rpmrc != RPMRC_OK) {
+	char * msg = NULL;
+	int lvl;
+
+	rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
+	lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
+	rpmlog(lvl, "%s h#%8u %s",
+	    (rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
+		    mi->mi_offset, (msg ? msg : "\n"));
+	msg = _free(msg);
+
+	/* Mark header checked. */
+	if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
+	    pbm_set * set;
+
+	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
+		    &mi->mi_db->db_nbits, mi->mi_offset);
+	    PBM_SET(mi->mi_offset, set);
+	}
+    }
+    return rpmrc;
+}
 
 /* FIX: mi->mi_key.data may be NULL */
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
@@ -1756,45 +1796,9 @@ top:
     if (uh == NULL)
 	return NULL;
 
-    /* Check header digest/signature once (if requested). */
-    if (mi->mi_hdrchk && mi->mi_ts) {
-	rpmRC rpmrc = RPMRC_NOTFOUND;
-
-	/* Don't bother re-checking a previously read header. */
-	if (mi->mi_db->db_bits) {
-	    pbm_set * set;
-
-	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi->mi_offset);
-	    if (PBM_ISSET(mi->mi_offset, set))
-		rpmrc = RPMRC_OK;
-	}
-
-	/* If blob is unchecked, check blob import consistency now. */
-	if (rpmrc != RPMRC_OK) {
-	    char * msg = NULL;
-	    int lvl;
-
-	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, uh, uhlen, &msg);
-	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
-	    rpmlog(lvl, "%s h#%8u %s",
-		(rpmrc == RPMRC_FAIL ? _("rpmdbNextIterator: skipping") : " read"),
-			mi->mi_offset, (msg ? msg : "\n"));
-	    msg = _free(msg);
-
-	    /* Mark header checked. */
-	    if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
-		pbm_set * set;
-
-		set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-			&mi->mi_db->db_nbits, mi->mi_offset);
-		PBM_SET(mi->mi_offset, set);
-	    }
-
-	    /* Skip damaged and inconsistent headers. */
-	    if (rpmrc == RPMRC_FAIL)
-		goto top;
-	}
+    /* Verify header if enabled, skip damaged and inconsistent headers */
+    if (miVerifyHeader(mi, uh, uhlen) == RPMRC_FAIL) {
+	goto top;
     }
 
     /* Did the header blob load correctly? */
