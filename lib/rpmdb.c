@@ -1255,8 +1255,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     }
 
     dbi = rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0);
-    if (dbi == NULL)	/* XXX can't happen */
-	return NULL;
 
     xx = miFreeHeader(mi, dbi);
 
