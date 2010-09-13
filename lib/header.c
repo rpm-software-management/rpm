@@ -162,13 +162,17 @@ Header headerFree(Header h)
     return h;
 }
 
-Header headerNew(void)
+static Header headerCreate(void *blob, int32_t indexLen)
 {
     Header h = xcalloc(1, sizeof(*h));
-
-    h->blob = NULL;
-    h->indexAlloced = INDEX_MALLOC_SIZE;
-    h->indexUsed = 0;
+    h->blob = blob;
+    if (blob) {
+	h->indexAlloced = indexLen + 1;
+	h->indexUsed = indexLen;
+    } else {
+	h->indexAlloced = INDEX_MALLOC_SIZE;
+	h->indexUsed = 0;
+    }
     h->instance = 0;
     h->flags |= HEADERFLAG_SORTED;
 
@@ -178,6 +182,11 @@ Header headerNew(void)
 
     h->nrefs = 0;
     return headerLink(h);
+}
+
+Header headerNew(void)
+{
+    return headerCreate(NULL, 0);
 }
 
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
@@ -808,15 +817,7 @@ Header headerLoad(void * uh)
     dataStart = (unsigned char *) (pe + il);
     dataEnd = dataStart + dl;
 
-    h = xcalloc(1, sizeof(*h));
-    h->blob = uh;
-    h->indexAlloced = il + 1;
-    h->indexUsed = il;
-    h->instance = 0;
-    h->index = xcalloc(h->indexAlloced, sizeof(*h->index));
-    h->flags |= HEADERFLAG_SORTED;
-    h->nrefs = 0;
-    h = headerLink(h);
+    h = headerCreate(uh, il);
 
     entry = h->index;
     if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
