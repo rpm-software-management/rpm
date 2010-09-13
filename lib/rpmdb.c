@@ -592,6 +592,21 @@ int rpmdbOpenAll(rpmdb db)
     return rc;
 }
 
+static int dbiForeach(dbiIndex *dbis,
+		  int (*func) (dbiIndex, unsigned int), int delete)
+{
+    int xx, rc = 0;
+    for (int dbix = dbiTagsMax; --dbix >= 0; ) {
+	if (dbis[dbix] == NULL)
+	    continue;
+	xx = func(dbis[dbix], 0);
+	if (xx && rc == 0) rc = xx;
+	if (delete)
+	    dbis[dbix] = NULL;
+    }
+    return rc;
+}
+
 /* XXX query.c, rpminstall.c, verify.c */
 int rpmdbClose(rpmdb db)
 {
@@ -606,15 +621,8 @@ int rpmdbClose(rpmdb db)
     if (db->nrefs > 0)
 	goto exit;
 
-    for (int dbix = dbiTagsMax; --dbix >= 0; ) {
-	int xx;
-	if (db->_dbi[dbix] == NULL)
-	    continue;
+    rc = dbiForeach(db->_dbi, dbiClose, 1);
 
-    	xx = dbiClose(db->_dbi[dbix], 0);
-	if (xx && rc == 0) rc = xx;
-    	db->_dbi[dbix] = NULL;
-    }
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_fullpath = _free(db->db_fullpath);
@@ -642,17 +650,9 @@ exit:
 
 int rpmdbSync(rpmdb db)
 {
-    int rc = 0;
-
     if (db == NULL) return 0;
-    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
-	int xx;
-	if (db->_dbi[dbix] == NULL)
-	    continue;
-    	xx = dbiSync(db->_dbi[dbix], 0);
-	if (xx && rc == 0) rc = xx;
-    }
-    return rc;
+
+    return dbiForeach(db->_dbi, dbiSync, 0);
 }
 
 static rpmdb newRpmdb(const char * root, const char * home,
@@ -788,13 +788,7 @@ int rpmdbVerify(const char * prefix)
 	int xx;
 	rc = rpmdbOpenAll(db);
 
-	for (int dbix = dbiTagsMax; --dbix >= 0; ) {
-	    if (db->_dbi[dbix] == NULL)
-		continue;
-	    xx = dbiVerify(db->_dbi[dbix], 0);
-	    if (xx && rc == 0) rc = xx;
-	    db->_dbi[dbix] = NULL;
-	}
+	rc = dbiForeach(db->_dbi, dbiVerify, 1);
 
 	xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
