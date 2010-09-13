@@ -943,8 +943,7 @@ exit:
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
     DBC * dbcursor = NULL;
-    DBT key; 
-    DBT data; 
+    DBT key, data; 
     dbiIndex dbi;
     rpmTag dbtag = RPMTAG_NAME;
     int rc;
@@ -953,12 +952,12 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     if (db == NULL)
 	return 0;
 
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
     dbi = rpmdbOpenIndex(db, dbtag, 0);
     if (dbi == NULL)
 	return 0;
+
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
 
     key.data = (void *) name;
     key.size = strlen(name);
@@ -1945,7 +1944,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 		const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
-    DBT key, data;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     void * mi_keyp = NULL;
@@ -1971,17 +1969,18 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
 
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
     /*
      * Handle label and file name special cases.
      * Otherwise, retrieve join keys for secondary lookup.
      */
     if (rpmtag != RPMDBI_PACKAGES && keyp) {
+	DBT key, data;
 	DBC * dbcursor = NULL;
 	int rc;
 	int xx;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
 
 	if (isLabel) {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
@@ -2367,16 +2366,16 @@ cont:
 static unsigned int pkgInstance(dbiIndex dbi, int new)
 {
     unsigned int hdrNum = 0;
-    DBT key, data;
-    DBC * dbcursor = NULL;
-
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
 
     if (dbi != NULL && dbiType(dbi) == DBI_PRIMARY) {
+	DBC * dbcursor = NULL;
+	DBT key, data;
 	unsigned int firstkey = 0;
 	union _dbswap mi_offset;
 	int ret;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
 
 	ret = dbiCopen(dbi, &dbcursor, new ? DB_WRITECURSOR : 0);
 
