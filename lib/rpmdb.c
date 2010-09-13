@@ -658,7 +658,16 @@ int rpmdbSync(rpmdb db)
 static rpmdb newRpmdb(const char * root, const char * home,
 		      int mode, int perms, int flags)
 {
-    rpmdb db = xcalloc(sizeof(*db), 1);
+    rpmdb db = NULL;
+    char * db_home = rpmGetPath((home && *home) ? home : "%{_dbpath}", NULL);
+
+    if (!(db_home && db_home[0] != '%')) {
+	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
+	free(db_home);
+	return NULL;
+    }
+
+    db = xcalloc(sizeof(*db), 1);
 
     if (!(perms & 0600)) perms = 0644;	/* XXX sanity */
 
@@ -666,13 +675,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
     db->db_perms = (perms >= 0) ? perms : 0644;
     db->db_flags = (flags >= 0) ? flags : 0;
 
-    db->db_home = rpmGetPath( (home && *home ? home : "%{_dbpath}"), NULL);
-    if (!(db->db_home && db->db_home[0] != '%')) {
-	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
-	db->db_home = _free(db->db_home);
-	db = _free(db);
-	return NULL;
-    }
+    db->db_home = db_home;
     db->db_root = rpmGetPath((root && *root) ? root : "/", NULL);
     db->db_fullpath = rpmGenPath(db->db_root, db->db_home, NULL);
     /* XXX remove environment after chrooted operations, for now... */
