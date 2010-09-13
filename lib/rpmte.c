@@ -280,7 +280,7 @@ rpmte rpmteFree(rpmte te)
 	rpmfsFree(te->fs);
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
-	rpmtsUnlink(te->ts);
+	rpmtsFree(te->ts);
 
 	argvFree(te->collections);
 	argvFree(te->lastInCollectionsAny);

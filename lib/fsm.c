@@ -142,7 +142,7 @@ static void * mapFreeIterator(void * p)
 /* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
 	iter->te = NULL; /* XXX rpmte is not refcounted yet */
-	iter->fi = rpmfiUnlink(iter->fi);
+	iter->fi = rpmfiFree(iter->fi);
     }
     return _free(p);
 }

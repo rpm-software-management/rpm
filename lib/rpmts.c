@@ -779,7 +779,7 @@ void * rpmtsNotify(rpmts ts, rpmte te,
 	ptr = ts->notify(h, what, amount, total, cbkey, ts->notifyData);
 
 	if (h) {
-	    headerUnlink(h); /* undo rpmteHeader() ref */
+	    headerFree(h); /* undo rpmteHeader() ref */
 	}
     }
     return ptr;
