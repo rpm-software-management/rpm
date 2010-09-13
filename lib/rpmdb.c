@@ -1949,7 +1949,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
 rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 		const void * keyp, size_t keylen)
 {
-    rpmdbMatchIterator mi;
+    rpmdbMatchIterator mi = NULL;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     void * mi_keyp = NULL;
@@ -1969,11 +1969,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     dbi = rpmdbOpenIndex(db, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
-
-    /* Chain cursors for teardown on abnormal exit. */
-    mi = xcalloc(1, sizeof(*mi));
-    mi->mi_next = rpmmiRock;
-    rpmmiRock = mi;
 
     /*
      * Handle label and file name special cases.
@@ -2022,10 +2017,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	}
 	if (rc)	{	/* error/not found */
 	    set = dbiFreeIndexSet(set);
-	    rpmmiRock = mi->mi_next;
-	    mi->mi_next = NULL;
-	    mi = _free(mi);
-	    return NULL;
+	    goto exit;
 	}
     }
 
@@ -2054,14 +2046,18 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 	}
     }
 
+    mi = xcalloc(1, sizeof(*mi));
     mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
-
+    mi->mi_set = set;
     mi->mi_db = rpmdbLink(db);
     mi->mi_rpmtag = rpmtag;
 
+    /* Chain cursors for teardown on abnormal exit. */
+    mi->mi_next = rpmmiRock;
+    rpmmiRock = mi;
+
     mi->mi_dbc = NULL;
-    mi->mi_set = set;
     mi->mi_setx = 0;
     mi->mi_h = NULL;
     mi->mi_sorted = 0;
@@ -2076,6 +2072,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_ts = NULL;
     mi->mi_hdrchk = NULL;
 
+exit:
     return mi;
 }
 
