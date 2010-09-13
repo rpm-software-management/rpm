@@ -196,13 +196,6 @@ int rpmtsOrder(rpmts ts);
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet);
 
 /** \ingroup rpmts
- * Unreference a transaction instance.
- * @param ts		transaction set
- * @return		NULL always
- */
-rpmts rpmtsUnlink (rpmts ts);
-
-/** \ingroup rpmts
  * Reference a transaction set instance.
  * @param ts		transaction set
  * @return		new transaction set reference

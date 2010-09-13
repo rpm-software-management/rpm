@@ -22,6 +22,8 @@ struct rpmProblem_s {
     int nrefs;
 };
 
+static rpmProblem rpmProblemUnlink(rpmProblem prob);
+
 rpmProblem rpmProblemCreate(rpmProblemType type,
                             const char * pkgNEVR, fnpyKey key,
                             const char * altNEVR,
@@ -62,7 +64,7 @@ rpmProblem rpmProblemLink(rpmProblem prob)
     return prob;
 }
 
-rpmProblem rpmProblemUnlink(rpmProblem prob)
+static rpmProblem rpmProblemUnlink(rpmProblem prob)
 {
     if (prob) {
 	prob->nrefs--;

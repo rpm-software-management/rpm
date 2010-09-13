@@ -86,7 +86,7 @@ static strcache strcacheFree(strcache cache)
     return NULL;
 } 
 
-rpmfi rpmfiUnlink(rpmfi fi)
+static rpmfi rpmfiUnlink(rpmfi fi)
 {
     if (fi)
 	fi->nrefs--;

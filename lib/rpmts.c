@@ -42,7 +42,7 @@ static void loadKeyring(rpmts ts);
 
 int _rpmts_stats = 0;
 
-rpmts rpmtsUnlink(rpmts ts)
+static rpmts rpmtsUnlink(rpmts ts)
 {
     if (ts)
 	ts->nrefs--;

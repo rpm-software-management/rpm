@@ -25,7 +25,7 @@ struct rpmpsi_s {
 };
 
 
-rpmps rpmpsUnlink(rpmps ps)
+static rpmps rpmpsUnlink(rpmps ps)
 {
     if (ps) {
 	ps->nrefs--;

@@ -81,13 +81,6 @@ typedef	enum rpmsenseFlags_e {
 #define	isErasePreReq(_x)	((_x) & _ERASE_ONLY_MASK)
 
 /** \ingroup rpmds
- * Unreference a dependency set instance.
- * @param ds		dependency set
- * @return		NULL always
- */
-rpmds rpmdsUnlink(rpmds ds);
-
-/** \ingroup rpmds
  * Reference a dependency set instance.
  * @param ds		dependency set
  * @return		new dependency set reference

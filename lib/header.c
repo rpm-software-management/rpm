@@ -126,7 +126,7 @@ Header headerLink(Header h)
     return h;
 }
 
-Header headerUnlink(Header h)
+static Header headerUnlink(Header h)
 {
     if (h != NULL)
 	h->nrefs--;

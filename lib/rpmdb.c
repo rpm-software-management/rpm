@@ -75,6 +75,7 @@ typedef struct _dbiIndexSet {
 } * dbiIndexSet;
 
 static unsigned int pkgInstance(dbiIndex dbi, int new);
+static rpmdb rpmdbUnlink(rpmdb db);
 
 /* Bit mask macros. */
 typedef	unsigned int __pbm_bits;
@@ -732,7 +733,7 @@ static int openDatabase(const char * prefix,
     return rc;
 }
 
-rpmdb rpmdbUnlink(rpmdb db)
+static rpmdb rpmdbUnlink(rpmdb db)
 {
     if (db)
 	db->nrefs--;

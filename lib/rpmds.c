@@ -74,7 +74,7 @@ static int dsType(rpmTag tag,
     return rc;
 }    
 
-rpmds rpmdsUnlink(rpmds ds)
+static rpmds rpmdsUnlink(rpmds ds)
 {
     if (ds)
 	ds->nrefs--;

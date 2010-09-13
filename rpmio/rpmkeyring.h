@@ -48,13 +48,6 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
 rpmKeyring rpmKeyringLink(rpmKeyring keyring);
 
 /** \ingroup rpmkeyring
- * Unreference a keyring.
- * @param keyring	keyring handle
- * @return		NULL always
- */
-rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
-
-/** \ingroup rpmkeyring
  * Create a new rpmPubkey from OpenPGP packet
  * @param pkt		OpenPGP packet data
  * @param pktlen	Data length
@@ -82,13 +75,6 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key);
  * @return		new pubkey reference
  */
 rpmPubkey rpmPubkeyLink(rpmPubkey key);
-
-/** \ingroup rpmkeyring
- * Unreference a pubkey.
- * @param key		Pubkey
- * @return		NULL always
- */
-rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
 
 /** \ingroup rpmkeyring
  * Parse OpenPGP pubkey parameters.

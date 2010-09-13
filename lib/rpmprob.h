@@ -79,13 +79,6 @@ rpmProblem rpmProblemFree(rpmProblem prob);
 rpmProblem rpmProblemLink(rpmProblem prob);
 
 /** \ingroup rpmprob
- * Unreference an rpmProblem instance
- * @param prob		rpm problem
- * @return		rpm problem
- */
-rpmProblem rpmProblemUnlink(rpmProblem prob);
-
-/** \ingroup rpmprob
  * Compare two problems for equality.
  * @param ap		1st problem
  * @param bp		2nd problem

@@ -20,13 +20,6 @@ extern "C" {
 typedef struct rpmpsi_s * rpmpsi;
 
 /** \ingroup rpmps
- * Unreference a problem set instance.
- * @param ps		problem set
- * @return		problem set
- */
-rpmps rpmpsUnlink (rpmps ps);
-
-/** \ingroup rpmps
  * Reference a problem set instance.
  * @param ps		transaction set
  * @return		new transaction set reference

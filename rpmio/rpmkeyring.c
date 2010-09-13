@@ -24,6 +24,9 @@ struct rpmKeyring_s {
     int nrefs;
 };
 
+static rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
+static rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
+
 static int keyidcmp(const void *k1, const void *k2)
 {
     const struct rpmPubkey_s *key1 = *(const struct rpmPubkey_s **) k1;
@@ -94,7 +97,7 @@ rpmKeyring rpmKeyringLink(rpmKeyring keyring)
     return keyring;
 }
 
-rpmKeyring rpmKeyringUnlink(rpmKeyring keyring)
+static rpmKeyring rpmKeyringUnlink(rpmKeyring keyring)
 {
     if (keyring) {
 	keyring->nrefs--;
@@ -157,7 +160,7 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key)
     return key;
 }
 
-rpmPubkey rpmPubkeyUnlink(rpmPubkey key)
+static rpmPubkey rpmPubkeyUnlink(rpmPubkey key)
 {
     if (key) {
 	key->nrefs--;

@@ -39,13 +39,6 @@ typedef enum rpmdbOpX_e {
 rpmop rpmdbOp(rpmdb db, rpmdbOpX opx);
 
 /** \ingroup rpmdb
- * Unreference a database instance.
- * @param db		rpm database
- * @return		NULL always
- */
-rpmdb rpmdbUnlink(rpmdb db);
-
-/** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
  * @return		new rpm database reference

@@ -94,13 +94,6 @@ struct rpmRelocation_s {
 };
 
 /** \ingroup rpmfi
- * Unreference a file info set instance.
- * @param fi		file info set
- * @return		NULL always
- */
-rpmfi rpmfiUnlink (rpmfi fi);
-
-/** \ingroup rpmfi
  * Reference a file info set instance.
  * @param fi		file info set
  * @return		new file info set reference

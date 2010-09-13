@@ -55,13 +55,6 @@ Header headerFree( Header h);
 Header headerLink(Header h);
 
 /** \ingroup header
- * Dereference a header instance.
- * @param h		header
- * @return		new header reference
- */
-Header headerUnlink(Header h);
-
-/** \ingroup header
  * Sort tags in header.
  * @param h		header
  */
