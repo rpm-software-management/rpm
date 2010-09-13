@@ -1191,26 +1191,24 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
-	DBT _key, _data;
-	DBT * key = &_key;
-	DBT * data = &_data;
+	DBT key, data;
 	sigset_t signalMask;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 	int xx;
 
-	memset(key, 0, sizeof(*key));
-	memset(data, 0, sizeof(*data));
-	key->data = (void *) &mi->mi_prevoffset;
-	key->size = sizeof(mi->mi_prevoffset);
-	data->data = headerUnload(mi->mi_h);
-	data->size = headerSizeof(mi->mi_h, HEADER_MAGIC_NO);
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+	key.data = (void *) &mi->mi_prevoffset;
+	key.size = sizeof(mi->mi_prevoffset);
+	data.data = headerUnload(mi->mi_h);
+	data.size = headerSizeof(mi->mi_h, HEADER_MAGIC_NO);
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
 	    char * msg = NULL;
 	    int lvl;
 
-	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data->data, data->size, &msg);
+	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data.data, data.size, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
@@ -1218,9 +1216,9 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    msg = _free(msg);
 	}
 
-	if (data->data != NULL && rpmrc != RPMRC_FAIL) {
+	if (data.data != NULL && rpmrc != RPMRC_FAIL) {
 	    (void) blockSignals(&signalMask);
-	    rc = dbiPut(dbi, mi->mi_dbc, key, data, DB_KEYLAST);
+	    rc = dbiPut(dbi, mi->mi_dbc, &key, &data, DB_KEYLAST);
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
 			_("error(%d) storing record #%d into %s\n"),
@@ -1229,8 +1227,8 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    xx = dbiSync(dbi, 0);
 	    (void) unblockSignals(&signalMask);
 	}
-	data->data = _free(data->data);
-	data->size = 0;
+	data.data = _free(data.data);
+	data.size = 0;
     }
 
     mi->mi_h = headerFree(mi->mi_h);
@@ -1649,8 +1647,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     dbiIndex dbi;
     void * uh;
     size_t uhlen;
-    DBT _key, _data;
-    DBT * key, * data;
+    DBT key, data;
     void * keyp;
     size_t keylen;
     int rc;
@@ -1672,10 +1669,8 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi->mi_dbc == NULL)
 	xx = dbiCopen(dbi, &mi->mi_dbc, mi->mi_cflags);
 
-    key = &_key;
-    memset(key, 0, sizeof(*key));
-    data = &_data;
-    memset(data, 0, sizeof(*data));
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
 
 top:
     uh = NULL;
@@ -1696,20 +1691,20 @@ top:
 	    keylen = sizeof(mi_offset.ui);
 	} else {
 
-	    key->data = keyp = (void *)mi->mi_keyp;
-	    key->size = keylen = mi->mi_keylen;
-	    data->data = uh;
-	    data->size = uhlen;
+	    key.data = keyp = (void *)mi->mi_keyp;
+	    key.size = keylen = mi->mi_keylen;
+	    data.data = uh;
+	    data.size = uhlen;
 #if !defined(_USE_COPY_LOAD)
-	    data->flags |= DB_DBT_MALLOC;
+	    data.flags |= DB_DBT_MALLOC;
 #endif
-	    rc = dbiGet(dbi, mi->mi_dbc, key, data,
-			(key->data == NULL ? DB_NEXT : DB_SET));
-	    data->flags = 0;
-	    keyp = key->data;
-	    keylen = key->size;
-	    uh = data->data;
-	    uhlen = data->size;
+	    rc = dbiGet(dbi, mi->mi_dbc, &key, &data,
+			(key.data == NULL ? DB_NEXT : DB_SET));
+	    data.flags = 0;
+	    keyp = key.data;
+	    keylen = key.size;
+	    uh = data.data;
+	    uhlen = data.size;
 
 	    /*
 	     * If we got the next key, save the header instance number.
@@ -1740,17 +1735,17 @@ top:
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
-	key->data = keyp;
-	key->size = keylen;
+	key.data = keyp;
+	key.size = keylen;
 #if !defined(_USE_COPY_LOAD)
-	data->flags |= DB_DBT_MALLOC;
+	data.flags |= DB_DBT_MALLOC;
 #endif
-	rc = dbiGet(dbi, mi->mi_dbc, key, data, DB_SET);
-	data->flags = 0;
-	keyp = key->data;
-	keylen = key->size;
-	uh = data->data;
-	uhlen = data->size;
+	rc = dbiGet(dbi, mi->mi_dbc, &key, &data, DB_SET);
+	data.flags = 0;
+	keyp = key.data;
+	keylen = key.size;
+	uh = data.data;
+	uhlen = data.size;
 	if (rc)
 	    return NULL;
     }
@@ -1860,32 +1855,28 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const void * keyp, size_t keylen)
 {
     DBC * dbcursor;
-    DBT _data, _key;
-    DBT * key = &_key;
-    DBT * data = &_data;
+    DBT data, key;
     dbiIndex dbi = NULL;
     dbiIndexSet set;
     int rc;
     int xx;
 
-    if (mi == NULL)
+    if (mi == NULL || keyp == NULL)
 	return 1;
 
-    memset(key, 0, sizeof(*key));
-    memset(data, 0, sizeof(*data));
-    key->data = (void *) keyp;
-    key->size = keylen ? keylen : strlen(keyp);
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+    key.data = (void *) keyp;
+    key.size = keylen ? keylen : strlen(keyp);
 
     dbcursor = mi->mi_dbc;
-    if (key->data == NULL)
-	return 1;
 
     dbi = rpmdbOpenIndex(mi->mi_db, mi->mi_rpmtag, 0);
     if (dbi == NULL)
 	return 1;
 
     xx = dbiCopen(dbi, &dbcursor, 0);
-    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+    rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
     xx = dbiCclose(dbi, dbcursor, 0);
     dbcursor = NULL;
 
@@ -1893,12 +1884,12 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 	if (rc != DB_NOTFOUND)
 	    rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, (char*)key->data, rpmTagGetName(mi->mi_rpmtag));
+		rc, (char*)key.data, rpmTagGetName(mi->mi_rpmtag));
 	return rc;
     }
 
     set = NULL;
-    (void) dbt2set(dbi, data, &set);
+    (void) dbt2set(dbi, &data, &set);
 
     if (mi->mi_set == NULL) {
 	mi->mi_set = set;
@@ -1954,8 +1945,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 		const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
-    DBT _key, _data;
-    DBT * key, * data;
+    DBT key, data;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     void * mi_keyp = NULL;
@@ -1981,10 +1971,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
 
-    key = &_key;
-    data = &_data;
-    memset(key, 0, sizeof(*key));
-    memset(data, 0, sizeof(*data));
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
 
     /*
      * Handle label and file name special cases.
@@ -1997,32 +1985,32 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 
 	if (isLabel) {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
-	    rc = dbiFindByLabel(db, dbi, dbcursor, key, data, keyp, &set);
+	    rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
 	} else if (rpmtag == RPMTAG_BASENAMES) {
-	    rc = rpmdbFindByFile(db, keyp, key, data, &set);
+	    rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
 	} else {
 	    xx = dbiCopen(dbi, &dbcursor, 0);
 
-	    key->data = (void *) keyp;
-	    key->size = keylen;
-	    if (key->data && key->size == 0)
-	        key->size = strlen((char *)key->data);
-	    if (key->data && key->size == 0)
-	        key->size++;	/* XXX "/" fixup. */
+	    key.data = (void *) keyp;
+	    key.size = keylen;
+	    if (key.data && key.size == 0)
+	        key.size = strlen((char *)key.data);
+	    if (key.data && key.size == 0)
+	        key.size++;	/* XXX "/" fixup. */
 
-	    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+	    rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
 	    if (rc > 0) {
 		rpmlog(RPMLOG_ERR,
 			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, (key->data ? (char *)key->data : "???"), 
+			rc, (key.data ? (char *)key.data : "???"), 
 			rpmTagGetName(rpmtag));
 	    }
 
 	    /* Join keys need to be native endian internally. */
 	    if (rc == 0)
-		(void) dbt2set(dbi, data, &set);
+		(void) dbt2set(dbi, &data, &set);
 
 	    xx = dbiCclose(dbi, dbcursor, 0);
 	    dbcursor = NULL;
