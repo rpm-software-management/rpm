@@ -457,8 +457,6 @@ struct rpmdbMatchIterator_s {
     rpmTag		mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
-    DBT			mi_key;
-    DBT			mi_data;
     int			mi_setx;
     Header		mi_h;
     int			mi_sorted;
@@ -1193,12 +1191,15 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
-	DBT * key = &mi->mi_key;
-	DBT * data = &mi->mi_data;
+	DBT _key, _data;
+	DBT * key = &_key;
+	DBT * data = &_data;
 	sigset_t signalMask;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 	int xx;
 
+	memset(key, 0, sizeof(*key));
+	memset(data, 0, sizeof(*data));
 	key->data = (void *) &mi->mi_prevoffset;
 	key->size = sizeof(mi->mi_prevoffset);
 	data->data = headerUnload(mi->mi_h);
@@ -1648,8 +1649,8 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     dbiIndex dbi;
     void * uh;
     size_t uhlen;
-    DBT * key;
-    DBT * data;
+    DBT _key, _data;
+    DBT * key, * data;
     void * keyp;
     size_t keylen;
     int rc;
@@ -1671,9 +1672,9 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi->mi_dbc == NULL)
 	xx = dbiCopen(dbi, &mi->mi_dbc, mi->mi_cflags);
 
-    key = &mi->mi_key;
+    key = &_key;
     memset(key, 0, sizeof(*key));
-    data = &mi->mi_data;
+    data = &_data;
     memset(data, 0, sizeof(*data));
 
 top:
@@ -1855,11 +1856,13 @@ void rpmdbSortIterator(rpmdbMatchIterator mi)
     }
 }
 
-static int rpmdbGrowIterator(rpmdbMatchIterator mi)
+int rpmdbExtendIterator(rpmdbMatchIterator mi,
+			const void * keyp, size_t keylen)
 {
     DBC * dbcursor;
-    DBT * key;
-    DBT * data;
+    DBT _data, _key;
+    DBT * key = &_key;
+    DBT * data = &_data;
     dbiIndex dbi = NULL;
     dbiIndexSet set;
     int rc;
@@ -1868,9 +1871,12 @@ static int rpmdbGrowIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return 1;
 
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
+    key->data = (void *) keyp;
+    key->size = keylen ? keylen : strlen(keyp);
+
     dbcursor = mi->mi_dbc;
-    key = &mi->mi_key;
-    data = &mi->mi_data;
     if (key->data == NULL)
 	return 1;
 
@@ -1948,8 +1954,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 		const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi;
-    DBT * key;
-    DBT * data;
+    DBT _key, _data;
+    DBT * key, * data;
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     void * mi_keyp = NULL;
@@ -1975,8 +1981,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_next = rpmmiRock;
     rpmmiRock = mi;
 
-    key = &mi->mi_key;
-    data = &mi->mi_data;
+    key = &_key;
+    data = &_data;
+    memset(key, 0, sizeof(*key));
+    memset(data, 0, sizeof(*data));
 
     /*
      * Handle label and file name special cases.
@@ -2076,21 +2084,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
     mi->mi_hdrchk = NULL;
 
     return mi;
-}
-
-/** \ingroup rpmdb
- * Return database iterator.
- * @param mi		rpm database iterator
- * @param keyp		key data (NULL for sequential access)
- * @param keylen	key data length (0 will use strlen(keyp))
- * @return		0 on success
- */
-int rpmdbExtendIterator(rpmdbMatchIterator mi,
-			const void * keyp, size_t keylen)
-{
-    mi->mi_key.data = (void *) keyp;
-    mi->mi_key.size = keylen ? keylen : strlen(keyp);
-    return rpmdbGrowIterator(mi);
 }
 
 /*
