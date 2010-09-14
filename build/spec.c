@@ -319,13 +319,13 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
 {
     rpmps probs = NULL;
 
-    rpmtsClean(ts);
+    rpmtsEmpty(ts);
 
     rpmtsAddInstallElement(ts, spec->sourceHeader, NULL, 0, NULL);
     rpmtsCheck(ts);
     probs = rpmtsProblems(ts);
 
-    rpmtsClean(ts);
+    rpmtsEmpty(ts);
     return probs;
 }
 
