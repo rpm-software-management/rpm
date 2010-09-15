@@ -525,6 +525,10 @@ int rpmtsCheck(rpmts ts)
 	    checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, rpmdsN(provides));
 	}
 
+	/* Skip obsoletion checks for source packages (ie build) */
+	if (rpmteIsSource(p))
+	    continue;
+
 	/* Check package name (not provides!) against installed obsoletes */
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
     }
