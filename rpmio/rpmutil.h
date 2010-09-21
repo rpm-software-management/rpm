@@ -146,6 +146,6 @@ typedef void * (*rpmMemFailFunc) (size_t size, void *data);
  * @param data		User data (or NULL)
  * @return		Previous callback function
  */
-void * rpmSetMemFail(rpmMemFailFunc func, void *data);
+rpmMemFailFunc rpmSetMemFail(rpmMemFailFunc func, void *data);
 
 #endif /* _RPMUTIL_H */
