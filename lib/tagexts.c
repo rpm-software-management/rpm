@@ -43,16 +43,13 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     uint32_t *dirIndexes;
     rpm_count_t count;
     size_t size;
-    rpmTag dirNameTag = 0;
-    rpmTag dirIndexesTag = 0;
+    rpmTag dirNameTag = RPMTAG_DIRNAMES;
+    rpmTag dirIndexesTag = RPMTAG_DIRINDEXES;
     char * t;
     int i;
     struct rpmtd_s bnames, dnames, dixs;
 
-    if (tagN == RPMTAG_BASENAMES) {
-	dirNameTag = RPMTAG_DIRNAMES;
-	dirIndexesTag = RPMTAG_DIRINDEXES;
-    } else if (tagN == RPMTAG_ORIGBASENAMES) {
+    if (tagN == RPMTAG_ORIGBASENAMES) {
 	dirNameTag = RPMTAG_ORIGDIRNAMES;
 	dirIndexesTag = RPMTAG_ORIGDIRINDEXES;
     }
