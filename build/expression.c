@@ -26,11 +26,16 @@
 #define DEBUG(x)
 #endif
 
+typedef enum { 
+    VALUE_TYPE_INTEGER,
+    VALUE_TYPE_STRING,
+} valueType;
+
 /**
  * Encapsulation of a "value"
  */
 typedef struct _value {
-  enum { VALUE_TYPE_INTEGER, VALUE_TYPE_STRING } type;
+  valueType type;
   union {
     char *s;
     int i;
