@@ -250,13 +250,13 @@ typedef struct dnli_s {
  * @param a		directory name iterator
  * @retval		NULL always
  */
-static void * dnlFreeIterator(void * a)
+static DNLI_t dnlFreeIterator(DNLI_t dnli)
 {
-    if (a) {
-	DNLI_t dnli = (void *)a;
+    if (dnli) {
 	if (dnli->active) free(dnli->active);
+	free(dnli);
     }
-    return _free(a);
+    return NULL;
 }
 
 /** \ingroup payload
@@ -279,10 +279,7 @@ static inline int dnlIndex(const DNLI_t dnli)
  * @param reverse	traverse directory names in reverse order?
  * @return		directory name iterator
  */
-static
-void * dnlInitIterator(const FSM_t fsm,
-		int reverse)
-	
+static DNLI_t dnlInitIterator(const FSM_t fsm, int reverse)
 {
     rpmfi fi = fsmGetFi(fsm);
     rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
@@ -1202,7 +1199,7 @@ static int fsmMkdirs(FSM_t fsm)
     char * path = fsm->path;
     const char *dpath;
     mode_t st_mode = st->st_mode;
-    void * dnli = dnlInitIterator(fsm, 0);
+    DNLI_t dnli = dnlInitIterator(fsm, 0);
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
