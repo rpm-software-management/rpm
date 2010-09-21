@@ -58,7 +58,7 @@ typedef struct rpmpsm_s {
     rpmfi fi;			/*!< transaction element file info */
     const char * goalName;
     char * failedFile;
-    int scriptTag;		/*!< Scriptlet data tag. */
+    rpmTag scriptTag;		/*!< Scriptlet data tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
     rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
