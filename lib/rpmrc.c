@@ -1445,8 +1445,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 
     /* XXX For now, set canonical target to arch-os */
     if (ct == NULL) {
-	ct = xmalloc(strlen(ca) + sizeof("-") + strlen(co));
-	sprintf(ct, "%s-%s", ca, co);
+	rasprintf(&ct, "%s-%s", ca, co);
     }
 
 /*
