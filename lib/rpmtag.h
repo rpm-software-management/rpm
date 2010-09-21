@@ -401,9 +401,23 @@ const char * rpmTagGetName(rpmTag tag);
 /** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
- * @return		tag data type, RPM_NULL_TYPE on not found.
+ * @return		tag data type + return type, RPM_NULL_TYPE on not found.
  */
 rpmTagType rpmTagGetType(rpmTag tag);
+
+/** \ingroup rpmtag
+ * Return tag data type from value.
+ * @param tag		tag value
+ * @return		tag data type, RPM_NULL_TYPE on not found.
+ */
+rpmTagType rpmTagGetTagType(rpmTag tag);
+
+/** \ingroup rpmtag
+ * Return tag data type from value.
+ * @param tag		tag value
+ * @return		tag data return type, RPM_NULL_TYPE on not found.
+ */
+rpmTagReturnType rpmTagGetReturnType(rpmTag tag);
 
 /** \ingroup rpmtag
  * Return tag data class from value.

@@ -253,6 +253,16 @@ rpmTagType rpmTagGetType(rpmTag tag)
     return ((*rpmTags->tagType)(tag));
 }
 
+rpmTagType rpmTagGetTagType(rpmTag tag)
+{
+    return (rpmTagType)((*rpmTags->tagType)(tag) & RPM_MASK_TYPE);
+}
+
+rpmTagReturnType rpmTagGetReturnType(rpmTag tag)
+{
+    return ((*rpmTags->tagType)(tag) & RPM_MASK_RETURN_TYPE);
+}
+
 rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 {
     rpmTagClass class;
