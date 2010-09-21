@@ -263,7 +263,7 @@ Package newPackage(rpmSpec spec);
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
+rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			int installSpecialDoc, int test);
 
 /** \ingroup rpmbuild
@@ -273,7 +273,7 @@ int processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int processBinaryPolicies(rpmSpec spec, int test);
+rpmRC processBinaryPolicies(rpmSpec spec, int test);
 
 /** \ingroup rpmbuild
  * Post-build processing for source package.
@@ -282,7 +282,7 @@ int processBinaryPolicies(rpmSpec spec, int test);
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags);
+rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags);
 
 /** \ingroup rpmbuild
  * Generate binary package(s).

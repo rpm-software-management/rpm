@@ -864,7 +864,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     rpmRC rc = RPMRC_FAIL;
 
     if (fc == NULL || argv == NULL)
-	return 0; /* XXX looks very wrong */
+	return RPMRC_OK; /* XXX looks very wrong */
 
     if (initAttrs(fc) < 1) {
 	rpmlog(RPMLOG_ERR, _("No file attributes configured\n"));
@@ -1088,13 +1088,13 @@ static void printDeps(Header h)
 
 /**
  */
-static int rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
+static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 {
     StringBuf sb_stdin;
     StringBuf sb_stdout;
     DepMsg_t dm;
     int failnonzero = 0;
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
 
     /*
      * Create file manifest buffer to deliver to dependency finder.
@@ -1166,18 +1166,18 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     int ac = rpmfiFC(fi);
     char *buf = NULL;
     int genConfigDeps;
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
     int xx;
     int idx;
     struct rpmtd_s td;
 
     /* Skip packages with no files. */
     if (ac <= 0)
-	return 0;
+	return rc;
 
     /* Skip packages that have dependency generation disabled. */
     if (! (pkg->autoReq || pkg->autoProv))
-	return 0;
+	return rc;
 
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {

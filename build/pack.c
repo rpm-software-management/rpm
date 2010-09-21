@@ -658,7 +658,7 @@ static rpmRC checkPackages(char *pkgcheck)
     xx = system(pkgcheck);
     if (WEXITSTATUS(xx) == -1 || WEXITSTATUS(xx) == 127) {
 	rpmlog(RPMLOG_ERR, _("Execution of \"%s\" failed.\n"), pkgcheck);
-	if (fail) return 127;
+	if (fail) return RPMRC_NOTFOUND;
     }
     if (WEXITSTATUS(xx) != 0) {
 	rpmlog(RPMLOG_ERR, _("Package check \"%s\" failed.\n"), pkgcheck);

@@ -115,7 +115,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
     }
 
     /* Glob manifest items. */
-    rpmrc = rpmGlob(s, &ac, &av);
+    rpmrc = (rpmGlob(s, &ac, &av) == 0 ? RPMRC_OK : RPMRC_FAIL);
     if (rpmrc != RPMRC_OK) goto exit;
 
     rpmlog(RPMLOG_DEBUG, "adding %d args from manifest.\n", ac);

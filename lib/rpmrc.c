@@ -624,9 +624,9 @@ static rpmRC rpmPlatform(const char * platform)
     ssize_t blen = 0;
     int init_platform = 0;
     char * p, * pe;
-    int rc;
+    rpmRC rc;
 
-    rc = rpmioSlurp(platform, &b, &blen);
+    rc = (rpmioSlurp(platform, &b, &blen) == 0) ? RPMRC_OK : RPMRC_FAIL;
 
     if (rc || b == NULL || blen <= 0) {
 	rc = RPMRC_FAIL;

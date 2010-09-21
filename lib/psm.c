@@ -687,7 +687,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
     return psm;
 }
 
-static int rpmpsmNext(rpmpsm psm, pkgStage nstage)
+static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 {
     psm->nstage = nstage;
     return rpmpsmStage(psm, psm->nstage);
@@ -1035,7 +1035,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
-	rc = rpmdbAdd(rpmtsGetRdb(ts), h);
+	rc = (rpmdbAdd(rpmtsGetRdb(ts), h) == 0) ? RPMRC_OK : RPMRC_FAIL;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBADD), 0);
 
 	if (rc == RPMRC_OK)
@@ -1045,7 +1045,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
     case PSM_RPMDB_REMOVE:
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
-	rc = rpmdbRemove(rpmtsGetRdb(ts), rpmteDBInstance(psm->te));
+	rc = (rpmdbRemove(rpmtsGetRdb(ts), rpmteDBInstance(psm->te)) == 0) ?
+						    RPMRC_OK : RPMRC_FAIL;
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_DBREMOVE), 0);
 	if (rc == RPMRC_OK)
 	    rpmteSetDBInstance(psm->te, 0);

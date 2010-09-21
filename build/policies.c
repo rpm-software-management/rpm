@@ -26,7 +26,7 @@ typedef struct ModuleRec_s {
 
 static rpmRC writeModuleToHeader(ModuleRec mod, Package pkg)
 {
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
     ARGV_t av;
     uint32_t count;
     struct rpmtd_s policies;
@@ -293,10 +293,10 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
     return rc;
 }
 
-int processBinaryPolicies(rpmSpec spec, int test)
+rpmRC processBinaryPolicies(rpmSpec spec, int test)
 {
     Package pkg;
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
     char *nvr;
 
 #if WITH_SELINUX

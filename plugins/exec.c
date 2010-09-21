@@ -26,7 +26,7 @@ rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
 
 rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)
 {
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
 
     if (rpmChrootIn()) {
 	goto exit;

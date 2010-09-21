@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     FD_t fdi, fdo;
     Header h;
     char * rpmio_flags = NULL;
-    rpmRC rc;
+    int rc;
     FD_t gzdi;
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */

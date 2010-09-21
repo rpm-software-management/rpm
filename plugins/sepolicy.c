@@ -213,7 +213,7 @@ static rpmRC sepolWritePolicy(const sepol * pol, char **path)
     FD_t fd = NULL;
     char *policy = NULL;
     size_t policylen;
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
 
     if (b64decode(pol->data, (void **) &policy, &policylen) != 0) {
 	rpmlog(RPMLOG_ERR, _("Failed to decode policy for %s\n"),
@@ -532,7 +532,7 @@ static rpmRC sepolGo()
     semanage_handle_t *sh;
     int existingPolicy;
     char *policytype = NULL;
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
 
     static int performed = 0;
     if (performed) {

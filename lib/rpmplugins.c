@@ -30,7 +30,7 @@ static int rpmpluginsGetPluginIndex(rpmPlugins plugins, const char *name)
     return -1;
 }
 
-static rpmRC rpmpluginsHookIsSupported(void *handle, rpmPluginHook hook)
+static int rpmpluginsHookIsSupported(void *handle, rpmPluginHook hook)
 {
     rpmPluginHook *supportedHooks =
 	(rpmPluginHook *) dlsym(handle, STR(PLUGIN_HOOKS));
@@ -81,7 +81,7 @@ rpmRC rpmpluginsAddCollectionPlugin(rpmPlugins plugins, const char *name)
 {
     char *path;
     char *options;
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
 
     path = rpmExpand("%{?__collection_", name, "}", NULL);
     if (!path || rstreq(path, "")) {

@@ -361,7 +361,7 @@ static rpmRC parseForDev(const char * buf, FileList fl)
     const char * name;
     const char * errstr = NULL;
     char *p, *pe, *q = NULL;
-    int rc = RPMRC_FAIL;	/* assume error */
+    rpmRC rc = RPMRC_FAIL;	/* assume error */
 
     if ((p = strstr(buf, (name = "%dev"))) == NULL)
 	return RPMRC_OK;
@@ -862,7 +862,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 			  FileList fl, const char ** fileName)
 {
     char *s, *t;
-    int res;
+    rpmRC res;
     char *specialDocBuf = NULL;
 
     *fileName = NULL;
@@ -1526,7 +1526,7 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
     FTS * ftsp;
     FTSENT * fts;
     int myFtsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
 
     fl->isDir = 1;  /* Keep it from following myftw() again         */
 
@@ -1544,7 +1544,7 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
 	    break;
 	case FTS_DOT:		/* dot or dot-dot */
 	case FTS_DP:		/* postorder directory */
-	    rc = 0;
+	    rc = RPMRC_OK;
 	    break;
 	case FTS_NS:		/* stat(2) failed */
 	case FTS_DNR:		/* unreadable directory */
@@ -1584,7 +1584,7 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
     uint8_t * pkt = NULL;
     ssize_t pktlen = 0;
     int absolute = 0;
-    int rc = RPMRC_FAIL;
+    rpmRC rc = RPMRC_FAIL;
     int xx;
 
     if (*fileName == '/') {
@@ -1647,7 +1647,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     int quote = 1;	/* XXX permit quoted glob characters. */
     int doGlob;
     char *diskPath = NULL;
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
     
     doGlob = glob_pattern_p(fileName, quote);
 
@@ -1680,8 +1680,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    goto exit;
 	}
 
-	rc = rpmGlob(diskPath, &argc, &argv);
-	if (rc == 0 && argc >= 1) {
+	if (rpmGlob(diskPath, &argc, &argv) == 0 && argc >= 1) {
 	    for (i = 0; i < argc; i++) {
 		rc = addFile(fl, argv[i], NULL);
 	    }
@@ -1948,7 +1947,7 @@ static void genSourceRpmName(rpmSpec spec)
     }
 }
 
-int processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
+rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 {
     struct Source *srcPtr;
     StringBuf sourceFiles;
@@ -2075,7 +2074,7 @@ int processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     sourceFiles = freeStringBuf(sourceFiles);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     freeAttrRec(&fl.def_ar);
-    return fl.processingFailed;
+    return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
 /**
@@ -2122,11 +2121,11 @@ exit:
     return rc;
 }
 
-int processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
+rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			int installSpecialDoc, int test)
 {
     Package pkg;
-    int rc = RPMRC_OK;
+    rpmRC rc = RPMRC_OK;
     
     check_fileList = newStringBuf();
     genSourceRpmName(spec);
