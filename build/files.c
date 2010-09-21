@@ -233,7 +233,7 @@ static char *strtokWithQuotes(char *s, const char *delim)
  */
 typedef const struct VFA {
     const char const * attribute;
-    int not;
+    int neg; /* XXX unused */
     int	flag;
 } VFA_t;
 
@@ -892,7 +892,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		if (rstreq(s, "%dir"))
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
 	    } else {
-		if (vfa->not)
+		if (vfa->neg)
 		    fl->currentFlags &= ~vfa->flag;
 		else
 		    fl->currentFlags |= vfa->flag;

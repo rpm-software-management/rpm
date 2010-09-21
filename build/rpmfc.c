@@ -999,7 +999,7 @@ struct DepMsg_s {
     rpmTag vtag;
     rpmTag ftag;
     int mask;
-    int xor;
+    int xormask;
 };
 
 /**
@@ -1070,7 +1070,7 @@ static void printDeps(Header h)
 
 	    Flags = rpmdsFlags(ds);
 	
-	    if (!((Flags & dm->mask) ^ dm->xor))
+	    if (!((Flags & dm->mask) ^ dm->xormask))
 		continue;
 	    if (bingo == 0) {
 		rpmlog(RPMLOG_NOTICE, "%s:", (dm->msg ? dm->msg : ""));

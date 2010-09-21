@@ -14,7 +14,7 @@ static int isNewDep(Header h, rpmTag nametag,
 		  const char *N, const char *EVR, rpmsenseFlags Flags,
 		  rpmTag indextag, uint32_t index)
 {
-    int new = 1;
+    int isnew = 1;
     struct rpmtd_s idx;
     rpmds ads = rpmdsNew(h, nametag, 0);
     rpmds bds = rpmdsSingle(nametag, N, EVR, Flags);
@@ -25,13 +25,13 @@ static int isNewDep(Header h, rpmTag nametag,
 
     /* XXX there's no guarantee the ds is sorted here so rpmdsFind() wont do */
     rpmdsInit(ads);
-    while (new && rpmdsNext(ads) >= 0) {
+    while (isnew && rpmdsNext(ads) >= 0) {
 	if (!rstreq(rpmdsN(ads), rpmdsN(bds))) continue;
 	if (!rstreq(rpmdsEVR(ads), rpmdsEVR(bds))) continue;
 	if (rpmdsFlags(ads) != rpmdsFlags(bds)) continue;
 	if (indextag && rpmtdSetIndex(&idx, rpmdsIx(ads)) >= 0 &&
 			rpmtdGetNumber(&idx) != index) continue;
-	new = 0;
+	isnew = 0;
     }
     
     if (indextag) {
@@ -39,7 +39,7 @@ static int isNewDep(Header h, rpmTag nametag,
     }
     rpmdsFree(ads);
     rpmdsFree(bds);
-    return new;
+    return isnew;
 }
 
 int addReqProv(Header h, rpmTag tagN,
