@@ -74,7 +74,7 @@ ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ && !/unimplemente
 }' < $1 | sort
 
 cat << EOF
-    { NULL, NULL, 0, 0, 0 }
+    { NULL, NULL, RPMTAG_NOT_FOUND, RPM_NULL_TYPE, 0 }
 };
 EOF
 
