@@ -135,16 +135,15 @@ static char * fsmFsPath(const FSM_t fsm,
  * @param p		file info iterator
  * @retval		NULL always
  */
-static void * mapFreeIterator(void * p)
+static FSMI_t mapFreeIterator(FSMI_t iter)
 {
-    FSMI_t iter = p;
     if (iter) {
-/* XXX rpmswExit() */
 	iter->ts = rpmtsFree(iter->ts);
 	iter->te = NULL; /* XXX rpmte is not refcounted yet */
 	iter->fi = rpmfiFree(iter->fi);
+	free(iter);
     }
-    return _free(p);
+    return NULL;
 }
 
 /** \ingroup payload
@@ -153,7 +152,7 @@ static void * mapFreeIterator(void * p)
  * @param fi		transaction element file info
  * @return		file info iterator
  */
-static void *
+static FSMI_t 
 mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
 {
     FSMI_t iter = NULL;
@@ -173,9 +172,8 @@ mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
  * @param a		file info iterator
  * @return		next index, -1 on termination
  */
-static int mapNextIterator(void * a)
+static int mapNextIterator(FSMI_t iter)
 {
-    FSMI_t iter = a;
     int i = -1;
 
     if (iter) {
