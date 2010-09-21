@@ -37,7 +37,7 @@
 
 /**
  */
-enum specdFlags_e {
+enum specfFlags_e {
     SPECD_DEFFILEMODE	= (1 << 0),
     SPECD_DEFDIRMODE	= (1 << 1),
     SPECD_DEFUID	= (1 << 2),
@@ -51,7 +51,7 @@ enum specdFlags_e {
     SPECD_VERIFY	= (1 << 12)
 };
 
-typedef rpmFlags specdFlags;
+typedef rpmFlags specfFlags;
 
 /**
  */
@@ -72,7 +72,7 @@ typedef struct FileListRec_s {
     const char *uname;
     const char *gname;
     unsigned	flags;
-    specdFlags	specdFlags;	/* which attributes have been explicitly specified. */
+    specfFlags	specdFlags;	/* which attributes have been explicitly specified. */
     rpmVerifyFlags verifyFlags;
     char *langs;		/* XXX locales separated with | */
     char *caps;
@@ -114,11 +114,11 @@ typedef struct FileList_s {
     int isDir;
     rpmBuildPkgFlags pkgFlags;
     rpmfileAttrs currentFlags;
-    specdFlags currentSpecdFlags;
+    specfFlags currentSpecdFlags;
     rpmVerifyFlags currentVerifyFlags;
     struct AttrRec_s cur_ar;
     struct AttrRec_s def_ar;
-    specdFlags defSpecdFlags;
+    specfFlags defSpecdFlags;
     rpmVerifyFlags defVerifyFlags;
     int nLangs;
     char ** currentLangs;
@@ -266,7 +266,7 @@ static rpmRC parseForVerify(const char * buf, FileList fl)
     rpmVerifyFlags *resultVerify;
     int negated;
     rpmVerifyFlags verifyFlags;
-    specdFlags * specdFlags;
+    specfFlags * specdFlags;
     rpmRC rc = RPMRC_FAIL;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {
@@ -459,7 +459,7 @@ static rpmRC parseForAttr(const char * buf, FileList fl)
     int x;
     struct AttrRec_s arbuf;
     AttrRec ar = &arbuf, ret_ar;
-    specdFlags * specdFlags;
+    specfFlags * specdFlags;
     rpmRC rc = RPMRC_FAIL;
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
