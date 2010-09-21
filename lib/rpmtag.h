@@ -32,6 +32,7 @@ extern "C" {
  */
 /** @todo: Somehow supply type **/
 typedef enum rpmTag_e {
+    RPMTAG_NOT_FOUND		= -1,			/*!< Unknown tag */
 
     RPMTAG_HEADERIMAGE		= HEADER_IMAGE,		/*!< Current image. */
     RPMTAG_HEADERSIGNATURES	= HEADER_SIGNATURES,	/*!< Signatures. */
@@ -306,7 +307,6 @@ typedef enum rpmTag_e {
 } rpmTag;
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
-#define RPMTAG_NOT_FOUND		-1
 
 /** \ingroup signature
  * Tags found in signature header from package.
