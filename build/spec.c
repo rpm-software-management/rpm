@@ -167,7 +167,8 @@ static inline speclines freeSl(speclines sl)
     for (i = 0; i < sl->sl_nlines; i++)
 	sl->sl_lines[i] = _free(sl->sl_lines[i]);
     sl->sl_lines = _free(sl->sl_lines);
-    return _free(sl);
+    _free(sl);
+    return NULL;
 }
 
 /**
@@ -182,7 +183,8 @@ static inline spectags freeSt(spectags st)
 	t->t_msgid = _free(t->t_msgid);
     }
     st->st_t = _free(st->st_t);
-    return _free(st);
+    _free(st);
+    return NULL;
 }
 
 rpmSpec newSpec(void)

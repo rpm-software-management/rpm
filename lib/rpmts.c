@@ -955,9 +955,11 @@ rpmts rpmtsCreate(void)
 rpmtsi rpmtsiFree(rpmtsi tsi)
 {
     /* XXX watchout: a funky recursion segfaults here iff nrefs is wrong. */
-    if (tsi)
+    if (tsi) {
 	tsi->ts = rpmtsFree(tsi->ts);
-    return _free(tsi);
+	_free(tsi);
+    }
+    return NULL;
 }
 
 rpmtsi rpmtsiInit(rpmts ts)

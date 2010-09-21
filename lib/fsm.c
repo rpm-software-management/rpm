@@ -544,8 +544,9 @@ static hardLink_t freeHardLink(hardLink_t li)
     if (li) {
 	li->nsuffix = _free(li->nsuffix);	/* XXX elements are shared */
 	li->filex = _free(li->filex);
+	_free(li);
     }
-    return _free(li);
+    return NULL;
 }
 
 FSM_t newFSM(cpioMapFlags mapflags)
@@ -567,8 +568,9 @@ FSM_t freeFSM(FSM_t fsm)
 	fsm->dnlx = _free(fsm->dnlx);
 	fsm->ldn = _free(fsm->ldn);
 	fsm->iter = mapFreeIterator(fsm->iter);
+	_free(fsm);
     }
-    return _free(fsm);
+    return NULL;
 }
 
 /* forward declaration*/
