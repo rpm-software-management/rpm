@@ -3,12 +3,9 @@
 #include <rpm/rpmtd.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
+#include "lib/misc.h"		/* format function prototypes */
 
 #include "debug.h"
-
-typedef char * (*headerTagFormatFunction) (rpmtd td, char *formatPrefix);
-
-extern void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
 
 rpmtd rpmtdNew(void)
 {

@@ -10,18 +10,17 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
+#include "lib/misc.h"		/* tag function proto */
 
 #include "debug.h"
 
 struct headerTagFunc_s {
     rpmTag tag;		/*!< Tag of extension. */
-    void *func;		/*!< Pointer to formatter function. */	
+    headerTagTagFunction func;	/*!< Pointer to formatter function. */	
 };
 
 /* forward declarations */
 static const struct headerTagFunc_s rpmHeaderTagExtensions[];
-
-void *rpmHeaderTagFunc(rpmTag tag);
 
 /** \ingroup rpmfi
  * Retrieve file names from header.
@@ -716,10 +715,10 @@ static int filestatusTag(Header h, rpmtd td, headerGetFlags hgflags)
     return (fc > 0);
 }
 
-void *rpmHeaderTagFunc(rpmTag tag)
+headerTagTagFunction rpmHeaderTagFunc(rpmTag tag)
 {
     const struct headerTagFunc_s * ext;
-    void *func = NULL;
+    headerTagTagFunction func = NULL;
 
     for (ext = rpmHeaderTagExtensions; ext->func != NULL; ext++) {
 	if (ext->tag == tag) {

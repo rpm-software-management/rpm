@@ -8,25 +8,13 @@
 #include <rpm/rpmtag.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
+#include "lib/misc.h"		/* format function protos */
 
 #include "debug.h"
 
 #define PARSER_BEGIN 	0
 #define PARSER_IN_ARRAY 1
 #define PARSER_IN_EXPR  2
-
-/** \ingroup header
- * HEADER_EXT_FORMAT format function prototype.
- * This will only ever be passed RPM_INT32_TYPE or RPM_STRING_TYPE to
- * help keep things simple.
- *
- * @param td		tag data container
- * @param formatPrefix
- * @return		formatted string
- */
-typedef char * (*headerTagFormatFunction) (rpmtd td, char * formatPrefix);
-
-extern void *rpmHeaderFormatFuncByName(const char *fmt);
 
 /** \ingroup header
  */

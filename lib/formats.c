@@ -26,14 +26,11 @@
 struct headerFormatFunc_s {
     rpmtdFormats fmt;	/*!< Value of extension */
     const char *name;	/*!< Name of extension. */
-    void *func;		/*!< Pointer to formatter function. */	
+    headerTagFormatFunction func;	/*!< Pointer to formatter function. */	
 };
 
 /* forward declarations */
 static const struct headerFormatFunc_s rpmHeaderFormats[];
-
-void *rpmHeaderFormatFuncByName(const char *fmt);
-void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
 
 /**
  * barebones string representation with no extra formatting
@@ -655,10 +652,10 @@ static char * expandFormat(rpmtd td, char * formatPrefix)
     return val;
 }
 
-void *rpmHeaderFormatFuncByName(const char *fmt)
+headerTagFormatFunction rpmHeaderFormatFuncByName(const char *fmt)
 {
     const struct headerFormatFunc_s * ext;
-    void *func = NULL;
+    headerTagFormatFunction func = NULL;
 
     for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
 	if (rstreq(ext->name, fmt)) {
@@ -669,10 +666,10 @@ void *rpmHeaderFormatFuncByName(const char *fmt)
     return func;
 }
 
-void *rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
+headerTagFormatFunction rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
 {
     const struct headerFormatFunc_s * ext;
-    void *func = NULL;
+    headerTagFormatFunction func = NULL;
 
     for (ext = rpmHeaderFormats; ext->name != NULL; ext++) {
 	if (fmt == ext->fmt) {

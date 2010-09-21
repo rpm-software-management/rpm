@@ -13,6 +13,7 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include "lib/header_internal.h"
+#include "lib/misc.h"			/* tag function proto */
 
 #include "debug.h"
 
@@ -98,19 +99,6 @@ static const size_t headerMaxbytes = (32*1024*1024);
 #define	ENTRY_IS_REGION(_e) \
 	(((_e)->info.tag >= RPMTAG_HEADERIMAGE) && ((_e)->info.tag < RPMTAG_HEADERREGIONS))
 #define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
-
-/** \ingroup header
- * HEADER_EXT_TAG format function prototype.
- * This is allowed to fail, which indicates the tag doesn't exist.
- *
- * @param h		header
- * @retval td		tag data container
- * @param flags		modifier flags
- * @return		0 on success
- */
-typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags);
-
-extern void *rpmHeaderTagFunc(rpmTag tag);
 
 /* Convert a 64bit value to network byte order. */
 static uint64_t htonll( uint64_t n ) {

@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <rpm/rpmtypes.h>
+#include <rpm/header.h>		/* for headerGetFlags typedef, duh.. */
 
 #ifdef __cplusplus
 extern "C" {
@@ -25,6 +26,19 @@ char * rpmFFlagsString(uint32_t fflags, const char *pad);
 
 RPM_GNUC_INTERNAL
 unsigned int hashFunctionString(const char * string);
+
+typedef char * (*headerTagFormatFunction) (rpmtd td, char * formatPrefix);
+typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags);
+
+RPM_GNUC_INTERNAL
+headerTagTagFunction rpmHeaderTagFunc(rpmTag tag);
+
+RPM_GNUC_INTERNAL
+headerTagFormatFunction rpmHeaderFormatFuncByName(const char *fmt);
+
+RPM_GNUC_INTERNAL
+headerTagFormatFunction rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
+
 /*
  * These may be called w/ a NULL argument to flush the cache -- they return
  * -1 if the user can't be found.
