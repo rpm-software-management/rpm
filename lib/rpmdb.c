@@ -74,7 +74,7 @@ typedef struct _dbiIndexSet {
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
 
-static unsigned int pkgInstance(dbiIndex dbi, int new);
+static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
 
 /* Bit mask macros. */
@@ -593,7 +593,7 @@ int rpmdbOpenAll(rpmdb db)
 }
 
 static int dbiForeach(dbiIndex *dbis,
-		  int (*func) (dbiIndex, unsigned int), int delete)
+		  int (*func) (dbiIndex, unsigned int), int del)
 {
     int xx, rc = 0;
     for (int dbix = dbiTagsMax; --dbix >= 0; ) {
@@ -601,7 +601,7 @@ static int dbiForeach(dbiIndex *dbis,
 	    continue;
 	xx = func(dbis[dbix], 0);
 	if (xx && rc == 0) rc = xx;
-	if (delete)
+	if (del)
 	    dbis[dbix] = NULL;
     }
     return rc;
@@ -2361,7 +2361,7 @@ cont:
 }
 
 /* Get current header instance number or try to allocate a new one */
-static unsigned int pkgInstance(dbiIndex dbi, int new)
+static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 {
     unsigned int hdrNum = 0;
 
@@ -2375,7 +2375,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int new)
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
-	ret = dbiCopen(dbi, &dbcursor, new ? DB_WRITECURSOR : 0);
+	ret = dbiCopen(dbi, &dbcursor, alloc ? DB_WRITECURSOR : 0);
 
 	/* Key 0 holds the current largest instance, fetch it */
 	key.data = &firstkey;
@@ -2389,7 +2389,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int new)
 	    hdrNum = mi_offset.ui;
 	}
 
-	if (new) {
+	if (alloc) {
 	    /* Rather complicated "increment by one", bswapping as needed */
 	    ++hdrNum;
 	    mi_offset.ui = hdrNum;
