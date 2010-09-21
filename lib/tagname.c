@@ -265,29 +265,29 @@ rpmTagReturnType rpmTagGetReturnType(rpmTag tag)
 
 rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 {
-    rpmTagClass class;
+    rpmTagClass tclass;
     switch (type & RPM_MASK_TYPE) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
     case RPM_INT16_TYPE:
     case RPM_INT32_TYPE:
     case RPM_INT64_TYPE:
-	class = RPM_NUMERIC_CLASS;
+	tclass = RPM_NUMERIC_CLASS;
 	break;
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     case RPM_I18NSTRING_TYPE:
-	class = RPM_STRING_CLASS;
+	tclass = RPM_STRING_CLASS;
 	break;
     case RPM_BIN_TYPE:
-	class = RPM_BINARY_CLASS;
+	tclass = RPM_BINARY_CLASS;
 	break;
     case RPM_NULL_TYPE:
     default:
-	class = RPM_NULL_CLASS;
+	tclass = RPM_NULL_CLASS;
 	break;
     }
-    return class;
+    return tclass;
 }
 
 rpmTagClass rpmTagGetClass(rpmTag tag)

@@ -464,11 +464,11 @@ static PyObject * hdrGetTag(Header h, rpmTag tag)
     return res;
 }
 
-static int validItem(rpmTagClass class, PyObject *item)
+static int validItem(rpmTagClass tclass, PyObject *item)
 {
     int rc;
 
-    switch (class) {
+    switch (tclass) {
     case RPM_NUMERIC_CLASS:
 	rc = (PyLong_Check(item) || PyInt_Check(item));
 	break;
@@ -487,17 +487,17 @@ static int validItem(rpmTagClass class, PyObject *item)
 
 static int validData(rpmTag tag, rpmTagType type, rpmTagReturnType retype, PyObject *value)
 {
-    rpmTagClass class = rpmTagGetClass(tag);
+    rpmTagClass tclass = rpmTagGetClass(tag);
     int valid = 1;
     
     if (retype == RPM_SCALAR_RETURN_TYPE) {
-	valid = validItem(class, value);
+	valid = validItem(tclass, value);
     } else if (retype == RPM_ARRAY_RETURN_TYPE && PyList_Check(value)) {
 	/* python lists can contain arbitrary objects, validate each item */
 	Py_ssize_t len = PyList_Size(value);
 	for (Py_ssize_t i = 0; i < len; i++) {
 	    PyObject *item = PyList_GetItem(value, i);
-	    if (!validItem(class, item)) {
+	    if (!validItem(tclass, item)) {
 		valid = 0;
 		break;
 	    }

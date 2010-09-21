@@ -11,11 +11,11 @@
 /*
  * Convert single tag data item to python object of suitable type
  */
-static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass class)
+static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass tclass)
 {
     PyObject *res = NULL;
 
-    switch (class) {
+    switch (tclass) {
     case RPM_STRING_CLASS:
 	res = PyBytes_FromString(rpmtdGetString(td));
 	break;
@@ -36,7 +36,7 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
 {
     PyObject *res = NULL;
     int array = (rpmTagGetReturnType(td->tag) == RPM_ARRAY_RETURN_TYPE);
-    rpmTagClass class = rpmtdClass(td);
+    rpmTagClass tclass = rpmtdClass(td);
 
     if (!array && rpmtdCount(td) < 1) {
 	Py_RETURN_NONE;
@@ -45,12 +45,12 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     if (array) {
 	res = PyList_New(0);
 	while (rpmtdNext(td) >= 0) {
-	    PyObject *item = rpmtd_ItemAsPyobj(td, class);
+	    PyObject *item = rpmtd_ItemAsPyobj(td, tclass);
 	    PyList_Append(res, item);
 	    Py_DECREF(item);
 	}
     } else {
-	res = rpmtd_ItemAsPyobj(td, class);
+	res = rpmtd_ItemAsPyobj(td, tclass);
     }
     return res;
 }

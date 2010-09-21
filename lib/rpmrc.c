@@ -1153,9 +1153,9 @@ static void defaultMachine(const char ** arch,
 
 #	if defined(__linux__) && defined(__i386__)
 	{
-	    char class = (char) (RPMClass() | '0');
+	    char mclass = (char) (RPMClass() | '0');
 
-	    if ((class == '6' && is_athlon()) || class == '7')
+	    if ((mclass == '6' && is_athlon()) || mclass == '7')
 	    	strcpy(un.machine, "athlon");
 	    else if (is_pentium4())
 		strcpy(un.machine, "pentium4");
@@ -1163,8 +1163,8 @@ static void defaultMachine(const char ** arch,
 		strcpy(un.machine, "pentium3");
 	    else if (is_geode())
 		strcpy(un.machine, "geode");
-	    else if (strchr("3456", un.machine[1]) && un.machine[1] != class)
-		un.machine[1] = class;
+	    else if (strchr("3456", un.machine[1]) && un.machine[1] != mclass)
+		un.machine[1] = mclass;
 	}
 #	endif
 

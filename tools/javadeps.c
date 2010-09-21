@@ -985,7 +985,7 @@ char*
 findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
   char ignore[10];
   unsigned short type = 0;
-  unsigned short class = 0;
+  unsigned short jclass = 0;
   char *className;
 
   /* seek a little past the end of the table */
@@ -996,13 +996,13 @@ findClassName (FILE *fileHandle, symbolTable_t *symbolTable) {
   
   my_fread(&type, 2, 1, fileHandle);
   type=ntohs(type);
-  class = symbolTable->classRef[type];
-  if( !class ||
-      !symbolTable->stringList[class] ) {
-      die("Couln't find class: %d, provided by file.\n", class);
+  jclass = symbolTable->classRef[type];
+  if( !jclass ||
+      !symbolTable->stringList[jclass] ) {
+      die("Couln't find class: %d, provided by file.\n", jclass);
   }
 
-  className=symbolTable->stringList[class];
+  className=symbolTable->stringList[jclass];
   
   return className;
 
