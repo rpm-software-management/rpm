@@ -84,7 +84,7 @@ Header headerCopy(Header h)
     }
     hi = headerFreeIterator(hi);
 
-    return headerReload(nh, HEADER_IMAGE);
+    return headerReload(nh, RPMTAG_HEADERIMAGE);
 }
 
 void headerCopyTags(Header headerFrom, Header headerTo, 

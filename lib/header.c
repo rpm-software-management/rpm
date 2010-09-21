@@ -96,7 +96,7 @@ static const size_t headerMaxbytes = (32*1024*1024);
 #define	INDEX_MALLOC_SIZE	8
 
 #define	ENTRY_IS_REGION(_e) \
-	(((_e)->info.tag >= HEADER_IMAGE) && ((_e)->info.tag < HEADER_REGIONS))
+	(((_e)->info.tag >= RPMTAG_HEADERIMAGE) && ((_e)->info.tag < RPMTAG_HEADERREGIONS))
 #define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
 
 /** \ingroup header
@@ -822,10 +822,10 @@ Header headerLoad(void * uh)
     h = headerCreate(uh, il);
 
     entry = h->index;
-    if (!(htonl(pe->tag) < HEADER_I18NTABLE)) {
+    if (!(htonl(pe->tag) < RPMTAG_HEADERI18NTABLE)) {
 	h->flags |= HEADERFLAG_LEGACY;
 	entry->info.type = REGION_TAG_TYPE;
-	entry->info.tag = HEADER_IMAGE;
+	entry->info.tag = RPMTAG_HEADERIMAGE;
 	entry->info.count = REGION_TAG_COUNT;
 	entry->info.offset = ((unsigned char *)pe - dataStart); /* negative offset */
 
@@ -867,7 +867,7 @@ Header headerLoad(void * uh)
 	    } else {
 		ril = il;
 		rdl = (ril * sizeof(struct entryInfo_s));
-		entry->info.tag = HEADER_IMAGE;
+		entry->info.tag = RPMTAG_HEADERIMAGE;
 	    }
 	}
 	entry->info.offset = -rdl;	/* negative offset */
@@ -942,7 +942,7 @@ Header headerReload(Header h, rpmTag tag)
 	return NULL;
     }
     if (ENTRY_IS_REGION(nh->index)) {
-	if (tag == HEADER_SIGNATURES || tag == HEADER_IMMUTABLE)
+	if (tag == RPMTAG_HEADERSIGNATURES || tag == RPMTAG_HEADERIMMUTABLE)
 	    nh->index[0].info.tag = tag;
     }
     return nh;
@@ -1105,7 +1105,7 @@ static int copyTdEntry(const indexEntry entry, rpmtd td, headerGetFlags flags)
 
 	    rdl = entry->rdlen;
 	    count = 2 * sizeof(*ei) + (ril * sizeof(*pe)) + rdl;
-	    if (entry->info.tag == HEADER_IMAGE) {
+	    if (entry->info.tag == RPMTAG_HEADERIMAGE) {
 		ril -= 1;
 		pe += 1;
 	    } else {
@@ -1271,7 +1271,7 @@ static int copyI18NEntry(Header h, indexEntry entry, rpmtd td,
 	(lang = getenv("LANG")) == NULL)
 	    goto exit;
     
-    if ((table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
+    if ((table = findEntry(h, RPMTAG_HEADERI18NTABLE, RPM_STRING_ARRAY_TYPE)) == NULL)
 	goto exit;
 
     for (l = lang; *l != '\0'; l = le) {
@@ -1527,7 +1527,7 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
     rpm_count_t i, langNum;
     char * buf;
 
-    table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+    table = findEntry(h, RPMTAG_HEADERI18NTABLE, RPM_STRING_ARRAY_TYPE);
     entry = findEntry(h, tag, RPM_I18NSTRING_TYPE);
 
     if (!table && entry)
@@ -1545,13 +1545,13 @@ int headerAddI18NString(Header h, rpmTag tag, const char * string,
 	}
 	
 	rpmtdReset(&td);
-	td.tag = HEADER_I18NTABLE;
+	td.tag = RPMTAG_HEADERI18NTABLE;
 	td.type = RPM_STRING_ARRAY_TYPE;
 	td.data = (void *) charArray;
 	td.count = count;
 	if (!headerPut(h, &td, HEADERPUT_DEFAULT))
 	    return 0;
-	table = findEntry(h, HEADER_I18NTABLE, RPM_STRING_ARRAY_TYPE);
+	table = findEntry(h, RPMTAG_HEADERI18NTABLE, RPM_STRING_ARRAY_TYPE);
     }
 
     if (!table)

@@ -584,7 +584,7 @@ static rpmtd getCached(rpmtd *cache, rpmTag tag)
 {
     rpmtd td = NULL;
 
-    if (tag >= HEADER_IMAGE && tag < RPMTAG_FIRSTFREE_TAG && cache[tag]) {
+    if (tag >= RPMTAG_HEADERIMAGE && tag < RPMTAG_FIRSTFREE_TAG && cache[tag]) {
 	td = cache[tag];
     }
     return td;
