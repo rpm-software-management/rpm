@@ -86,4 +86,8 @@ int mergesort(void *base, size_t nmemb, size_t size,
 /* mergesort is defined in stdlib.h on Mac OS X */
 #endif /* __APPLE__ */
 
+#ifdef __cplusplus
+}
+#endif
+
 #endif
