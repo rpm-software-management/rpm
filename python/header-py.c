@@ -485,10 +485,9 @@ static int validItem(rpmTagClass class, PyObject *item)
     return rc;
 }
 
-static int validData(rpmTag tag, rpmTagType type, PyObject *value)
+static int validData(rpmTag tag, rpmTagType type, rpmTagReturnType retype, PyObject *value)
 {
     rpmTagClass class = rpmTagGetClass(tag);
-    rpmTagReturnType retype = (type & RPM_MASK_RETURN_TYPE);
     int valid = 1;
     
     if (retype == RPM_SCALAR_RETURN_TYPE) {
@@ -513,7 +512,7 @@ static int hdrAppendItem(Header h, rpmTag tag, rpmTagType type, PyObject *item)
 {
     int rc = 0;
 
-    switch ((type & RPM_MASK_TYPE)) {
+    switch (type) {
     case RPM_I18NSTRING_TYPE: /* XXX this needs to be handled separately */
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE: {
@@ -552,8 +551,8 @@ static int hdrAppendItem(Header h, rpmTag tag, rpmTagType type, PyObject *item)
 
 static int hdrPutTag(Header h, rpmTag tag, PyObject *value)
 {
-    rpmTagType type = rpmTagGetType(tag);
-    rpmTagReturnType retype = (type & RPM_MASK_RETURN_TYPE);
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
     int rc = 0;
 
     /* XXX this isn't really right (i18n strings etc) but for now ... */
@@ -563,7 +562,7 @@ static int hdrPutTag(Header h, rpmTag tag, PyObject *value)
     }
 
     /* validate all data before trying to insert */
-    if (!validData(tag, type, value)) { 
+    if (!validData(tag, type, retype, value)) { 
 	PyErr_SetString(PyExc_TypeError, "invalid type for tag");
 	return 0;
     }

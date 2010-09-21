@@ -264,7 +264,7 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
 int rpmtdSetTag(rpmtd td, rpmTag tag)
 {
     assert(td != NULL);
-    rpmTagType newtype = rpmTagGetType(tag);
+    rpmTagType newtype = rpmTagGetTagType(tag);
     int rc = 0;
 
     /* 
@@ -276,13 +276,13 @@ int rpmtdSetTag(rpmtd td, rpmTag tag)
 	goto exit;
 
     if (td->data || td->count > 0) {
-	if (rpmTagGetType(td->tag) != rpmTagGetType(tag)) {
+	if (rpmTagGetTagType(td->tag) != rpmTagGetTagType(tag)) {
 	    goto exit;
 	}
     } 
 
     td->tag = tag;
-    td->type = newtype & RPM_MASK_TYPE;
+    td->type = newtype;
     rc = 1;
     
 exit:
@@ -307,8 +307,8 @@ static inline int rpmtdSet(rpmtd td, rpmTag tag, rpmTagType type,
 
 int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
     
     if (count < 1)
 	return 0;
@@ -334,8 +334,8 @@ int rpmtdFromUint8(rpmtd td, rpmTag tag, uint8_t *data, rpm_count_t count)
 
 int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
     if (type != RPM_INT16_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
@@ -346,8 +346,8 @@ int rpmtdFromUint16(rpmtd td, rpmTag tag, uint16_t *data, rpm_count_t count)
 
 int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
     if (type != RPM_INT32_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
@@ -358,8 +358,8 @@ int rpmtdFromUint32(rpmtd td, rpmTag tag, uint32_t *data, rpm_count_t count)
 
 int rpmtdFromUint64(rpmtd td, rpmTag tag, uint64_t *data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
     if (type != RPM_INT64_TYPE || count < 1) 
 	return 0;
     if (retype != RPM_ARRAY_RETURN_TYPE && count > 1) 
@@ -370,7 +370,7 @@ int rpmtdFromUint64(rpmtd td, rpmTag tag, uint64_t *data, rpm_count_t count)
 
 int rpmtdFromString(rpmtd td, rpmTag tag, const char *data)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
     int rc = 0;
 
     if (type == RPM_STRING_TYPE) {
@@ -384,7 +384,7 @@ int rpmtdFromString(rpmtd td, rpmTag tag, const char *data)
 
 int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t count)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
     if (type != RPM_STRING_ARRAY_TYPE || count < 1)
 	return 0;
     if (type == RPM_STRING_TYPE && count != 1)
@@ -396,7 +396,7 @@ int rpmtdFromStringArray(rpmtd td, rpmTag tag, const char **data, rpm_count_t co
 int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
 {
     int count = argvCount(argv);
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
 
     if (type != RPM_STRING_ARRAY_TYPE || count < 1)
 	return 0;
@@ -407,8 +407,8 @@ int rpmtdFromArgv(rpmtd td, rpmTag tag, ARGV_t argv)
 int rpmtdFromArgi(rpmtd td, rpmTag tag, ARGI_t argi)
 {
     int count = argiCount(argi);
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
-    rpmTagReturnType retype = rpmTagGetType(tag) & RPM_MASK_RETURN_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
 
     if (type != RPM_INT32_TYPE || retype != RPM_ARRAY_RETURN_TYPE || count < 1)
 	return 0;

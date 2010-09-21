@@ -156,12 +156,13 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
 			rpm_constdata_t data, rpm_count_t size)
 {
     struct rpmtd_s td;
-    rpmTagType type = rpmTagGetType(tag);
+    rpmTagType type = rpmTagGetTagType(tag);
+    rpmTagReturnType retype = rpmTagGetReturnType(tag);
     headerPutFlags flags = HEADERPUT_APPEND; 
     int valid = 1;
 
     /* Basic sanity checks: type must match and there must be data to put */
-    if ((type & RPM_MASK_TYPE) != reqtype 
+    if (type != reqtype 
 	|| size < 1 || data == NULL || h == NULL) {
 	valid = 0;
     }
@@ -170,9 +171,9 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
      * Non-array types can't be appended to. Binary types use size
      * for data length, for other non-array types size must be 1.
      */
-    if ((type & RPM_MASK_RETURN_TYPE) != RPM_ARRAY_RETURN_TYPE) {
+    if (retype != RPM_ARRAY_RETURN_TYPE) {
 	flags = HEADERPUT_DEFAULT;
-	if ((type & RPM_MASK_TYPE) != RPM_BIN_TYPE && size != 1) {
+	if (type != RPM_BIN_TYPE && size != 1) {
 	    valid = 0;
 	}
     }
@@ -180,7 +181,7 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
     if (valid) {
 	rpmtdReset(&td);
 	td.tag = tag;
-	td.type = type & RPM_MASK_TYPE;
+	td.type = type;
 	td.data = (void *) data;
 	td.count = size;
 
@@ -192,7 +193,7 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
 	
 int headerPutString(Header h, rpmTag tag, const char *val)
 {
-    rpmTagType type = rpmTagGetType(tag) & RPM_MASK_TYPE;
+    rpmTagType type = rpmTagGetTagType(tag);
     const void *sptr = NULL;
 
     /* string arrays expect char **, arrange that */

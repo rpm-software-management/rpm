@@ -35,8 +35,7 @@ static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass class)
 PyObject *rpmtd_AsPyobj(rpmtd td)
 {
     PyObject *res = NULL;
-    rpmTagType type = rpmTagGetType(td->tag);
-    int array = ((type & RPM_MASK_RETURN_TYPE) == RPM_ARRAY_RETURN_TYPE);
+    int array = (rpmTagGetReturnType(td->tag) == RPM_ARRAY_RETURN_TYPE);
     rpmTagClass class = rpmtdClass(td);
 
     if (!array && rpmtdCount(td) < 1) {

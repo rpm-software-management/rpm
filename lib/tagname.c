@@ -292,7 +292,7 @@ rpmTagClass rpmTagTypeGetClass(rpmTagType type)
 
 rpmTagClass rpmTagGetClass(rpmTag tag)
 {
-    return rpmTagTypeGetClass(rpmTagGetType(tag));
+    return rpmTagTypeGetClass(rpmTagGetTagType(tag));
 }
 
 rpmTag rpmTagGetValue(const char * tagstr)
