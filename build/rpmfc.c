@@ -70,7 +70,7 @@ static regex_t *rpmfcAttrReg(const char *name, const char *attr)
     regex_t *reg = NULL;
     char *pattern = rpmfcAttrMacro(name, attr);
     if (pattern) {
-	reg = rcalloc(1, sizeof(*reg));
+	reg = xcalloc(1, sizeof(*reg));
 	if (regcomp(reg, pattern, REG_EXTENDED) != 0) { 
 	    rpmlog(RPMLOG_WARNING, _("Ignoring invalid regex %s\n"), pattern);
 	    reg = _free(reg);
