@@ -143,12 +143,9 @@ static void queryArgCallback(poptContext con,
 	if (arg) {
 	    char * qf = (char *)qva->qva_queryFormat;
 	    if (qf) {
-		size_t len = strlen(qf) + strlen(arg) + 1;
-		qf = xrealloc(qf, len);
-		strcat(qf, arg);
+		rstrcat(&qf, arg);
 	    } else {
-		qf = xmalloc(strlen(arg) + 1);
-		strcpy(qf, arg);
+		qf = xstrdup(arg);
 	    }
 	    qva->qva_queryFormat = qf;
 	}
