@@ -63,12 +63,18 @@ static void compressFilelist(Header h)
 	}
     }
 
+    /* 
+     * XXX EVIL HACK, FIXME:
+     * This modifies (and then restores) a const string from rpmtd
+     * through basename retrieved from strrchr() which silently 
+     * casts away const on return.
+     */
     while ((i = rpmtdNext(&fileNames)) >= 0) {
 	char ** needle;
 	char savechar;
 	char * baseName;
 	size_t len;
-	const char *filename = rpmtdGetString(&fileNames);
+	char *filename = (char *) rpmtdGetString(&fileNames); /* HACK HACK */
 
 	if (filename == NULL)	/* XXX can't happen */
 	    continue;
