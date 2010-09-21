@@ -136,7 +136,8 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 {
     char *fn;
     char *buf = NULL;
-    char *tar, *taropts;
+    char *tar;
+    const char *taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
 
@@ -155,9 +156,6 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
     }
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
-
-    /* FIX: shrug */
-    taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
 
 #ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
     /* XXX
