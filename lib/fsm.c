@@ -539,7 +539,7 @@ static int saveHardLink(FSM_t fsm)
  * @param li		set of hard links
  * @return		NULL always
  */
-static void * freeHardLink(hardLink_t li)
+static hardLink_t freeHardLink(hardLink_t li)
 {
     if (li) {
 	li->nsuffix = _free(li->nsuffix);	/* XXX elements are shared */
