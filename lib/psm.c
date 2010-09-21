@@ -574,8 +574,8 @@ static rpmRC runTriggers(rpmpsm psm)
 {
     const rpmts ts = psm->ts;
     int numPackage = -1;
-    rpmRC rc = RPMRC_OK;
     const char * N = NULL;
+    int nerrors = 0;
 
     if (psm->te) 	/* XXX can't happen */
 	N = rpmteN(psm->te);
@@ -593,13 +593,13 @@ static rpmRC runTriggers(rpmpsm psm)
 	psm->countCorrection = 0;
 	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, N, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
-	    rc |= handleOneTrigger(psm, h, triggeredH, numPackage, NULL);
+	    nerrors += handleOneTrigger(psm, h, triggeredH, numPackage, NULL);
 	mi = rpmdbFreeIterator(mi);
 	psm->countCorrection = countCorrection;
 	headerFree(h);
     }
 
-    return rc;
+    return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 /**
@@ -611,9 +611,9 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 {
     const rpmts ts = psm->ts;
     unsigned char * triggersRun;
-    rpmRC rc = RPMRC_OK;
     struct rpmtd_s tnames, tindexes;
     Header h = rpmteHeader(psm->te);
+    int nerrors = 0;
 
     if (!(headerGet(h, RPMTAG_TRIGGERNAME, &tnames, HEADERGET_MINMEM) &&
 	  headerGet(h, RPMTAG_TRIGGERINDEX, &tindexes, HEADERGET_MINMEM))) {
@@ -634,7 +634,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, trigName, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
-		rc |= handleOneTrigger(psm, sourceH, h,
+		nerrors += handleOneTrigger(psm, sourceH, h,
 				rpmdbGetIteratorCount(mi),
 				triggersRun);
 	    }
@@ -648,7 +648,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 
 exit:
     headerFree(h);
-    return rc;
+    return (nerrors == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 static rpmpsm rpmpsmFree(rpmpsm psm)
