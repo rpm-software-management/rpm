@@ -326,7 +326,7 @@ rpmsenseFlags rpmdsFlags(const rpmds ds)
 
 rpmTag rpmdsTagN(const rpmds ds)
 {
-    rpmTag tagN = 0;
+    rpmTag tagN = RPMTAG_NOT_FOUND;
 
     if (ds != NULL)
 	tagN = ds->tagN;

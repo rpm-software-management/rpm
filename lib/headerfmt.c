@@ -224,7 +224,7 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
 	? &token->u.cond.tag : &token->u.tag);
 
     stag->fmt = NULL;
-    stag->tag = -1;
+    stag->tag = RPMTAG_NOT_FOUND;
 
     if (rstreq(tagname, "*")) {
 	stag->tag = -2;
