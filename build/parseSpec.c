@@ -35,7 +35,7 @@ static const struct PartRec {
     int part;
     size_t len;
     const char * token;
-} const partList[] = {
+} partList[] = {
     { PART_PREAMBLE,      LEN_AND_STR("%package")},
     { PART_PREP,          LEN_AND_STR("%prep")},
     { PART_BUILD,         LEN_AND_STR("%build")},

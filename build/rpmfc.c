@@ -516,7 +516,7 @@ assert(EVR != NULL);
 }
 
 /* Only used for elf coloring and controlling RPMTAG_FILECLASS inclusion now */
-static const struct rpmfcTokens_s const rpmfcTokens[] = {
+static const struct rpmfcTokens_s rpmfcTokens[] = {
   { "directory",		RPMFC_INCLUDE },
 
   { "ELF 32-bit",		RPMFC_ELF32|RPMFC_INCLUDE },

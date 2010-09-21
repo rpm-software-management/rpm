@@ -232,7 +232,7 @@ static char *strtokWithQuotes(char *s, const char *delim)
 /**
  */
 typedef const struct VFA {
-    const char const * attribute;
+    const char * attribute;
     int neg; /* XXX unused */
     int	flag;
 } VFA_t;
