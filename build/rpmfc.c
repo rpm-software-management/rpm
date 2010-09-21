@@ -62,7 +62,7 @@ struct rpmfcTokens_s {
 static char *rpmfcAttrMacro(const char *name, const char *attr)
 {
     char *macro = rpmExpand("%{?__", name, "_", attr, "}", NULL);
-    return rstreq(macro, "") ? rfree(macro) : macro;
+    return rstreq(macro, "") ? _free(macro) : macro;
 }
 
 static regex_t *rpmfcAttrReg(const char *name, const char *attr)
@@ -73,7 +73,7 @@ static regex_t *rpmfcAttrReg(const char *name, const char *attr)
 	reg = rcalloc(1, sizeof(*reg));
 	if (regcomp(reg, pattern, REG_EXTENDED) != 0) { 
 	    rpmlog(RPMLOG_WARNING, _("Ignoring invalid regex %s\n"), pattern);
-	    reg = rfree(reg);
+	    reg = _free(reg);
 	}
 	rfree(pattern);
     }
@@ -442,7 +442,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     }
     rasprintf(&buf, "%%{?%s:%%{%s} %%{?%s_opts}}", mname, mname, mname);
     argvAdd(&av, buf);
-    buf = rfree(buf);
+    buf = _free(buf);
 
     sb_stdin = newStringBuf();
     appendLineStringBuf(sb_stdin, fn);

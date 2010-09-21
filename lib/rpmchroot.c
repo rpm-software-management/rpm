@@ -30,7 +30,7 @@ int rpmChrootSet(const char *rootDir)
     if (rootState.chrootDone != 0)
 	return -1;
 
-    rootState.rootDir = rfree(rootState.rootDir);
+    rootState.rootDir = _free(rootState.rootDir);
     if (rootState.cwd >= 0) {
 	close(rootState.cwd);
 	rootState.cwd = -1;
