@@ -123,7 +123,7 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 /* this *must* be kept in alphabetical order */
 /* The order of the flags is archSpecific, required, macroize, localize */
 
-static const struct rpmOption const optionTable[] = {
+static const struct rpmOption optionTable[] = {
     { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
     { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
