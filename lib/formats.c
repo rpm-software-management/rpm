@@ -29,9 +29,6 @@ struct headerFormatFunc_s {
     headerTagFormatFunction func;	/*!< Pointer to formatter function. */	
 };
 
-/* forward declarations */
-static const struct headerFormatFunc_s rpmHeaderFormats[];
-
 /**
  * barebones string representation with no extra formatting
  * @param td		tag data container
@@ -652,6 +649,31 @@ static char * expandFormat(rpmtd td, char * formatPrefix)
     return val;
 }
 
+static const struct headerFormatFunc_s rpmHeaderFormats[] = {
+    { RPMTD_FORMAT_STRING,	"string",	stringFormat },
+    { RPMTD_FORMAT_ARMOR,	"armor",	armorFormat },
+    { RPMTD_FORMAT_BASE64,	"base64",	base64Format },
+    { RPMTD_FORMAT_PGPSIG,	"pgpsig",	pgpsigFormat },
+    { RPMTD_FORMAT_DEPFLAGS,	"depflags",	depflagsFormat },
+    { RPMTD_FORMAT_DEPTYPE,	"deptype",	deptypeFormat },
+    { RPMTD_FORMAT_FFLAGS,	"fflags",	fflagsFormat },
+    { RPMTD_FORMAT_PERMS,	"perms",	permsFormat },
+    { RPMTD_FORMAT_PERMS,	"permissions",	permsFormat },
+    { RPMTD_FORMAT_TRIGGERTYPE,	"triggertype",	triggertypeFormat },
+    { RPMTD_FORMAT_XML,		"xml",		xmlFormat },
+    { RPMTD_FORMAT_OCTAL,	"octal", 	octalFormat },
+    { RPMTD_FORMAT_HEX,		"hex", 		hexFormat },
+    { RPMTD_FORMAT_DATE,	"date", 	dateFormat },
+    { RPMTD_FORMAT_DAY,		"day", 		dayFormat },
+    { RPMTD_FORMAT_SHESCAPE,	"shescape", 	shescapeFormat },
+    { RPMTD_FORMAT_ARRAYSIZE,	"arraysize", 	arraysizeFormat },
+    { RPMTD_FORMAT_FSTATE,	"fstate",	fstateFormat },
+    { RPMTD_FORMAT_VFLAGS,	"vflags",	vflagsFormat },
+    { RPMTD_FORMAT_EXPAND,	"expand",	expandFormat },
+    { RPMTD_FORMAT_FSTATUS,	"fstatus",	fstatusFormat },
+    { -1,			NULL, 		NULL }
+};
+
 headerTagFormatFunction rpmHeaderFormatFuncByName(const char *fmt)
 {
     const struct headerFormatFunc_s * ext;
@@ -680,27 +702,3 @@ headerTagFormatFunction rpmHeaderFormatFuncByValue(rpmtdFormats fmt)
     return func;
 }
 
-static const struct headerFormatFunc_s rpmHeaderFormats[] = {
-    { RPMTD_FORMAT_STRING,	"string",	stringFormat },
-    { RPMTD_FORMAT_ARMOR,	"armor",	armorFormat },
-    { RPMTD_FORMAT_BASE64,	"base64",	base64Format },
-    { RPMTD_FORMAT_PGPSIG,	"pgpsig",	pgpsigFormat },
-    { RPMTD_FORMAT_DEPFLAGS,	"depflags",	depflagsFormat },
-    { RPMTD_FORMAT_DEPTYPE,	"deptype",	deptypeFormat },
-    { RPMTD_FORMAT_FFLAGS,	"fflags",	fflagsFormat },
-    { RPMTD_FORMAT_PERMS,	"perms",	permsFormat },
-    { RPMTD_FORMAT_PERMS,	"permissions",	permsFormat },
-    { RPMTD_FORMAT_TRIGGERTYPE,	"triggertype",	triggertypeFormat },
-    { RPMTD_FORMAT_XML,		"xml",		xmlFormat },
-    { RPMTD_FORMAT_OCTAL,	"octal", 	octalFormat },
-    { RPMTD_FORMAT_HEX,		"hex", 		hexFormat },
-    { RPMTD_FORMAT_DATE,	"date", 	dateFormat },
-    { RPMTD_FORMAT_DAY,		"day", 		dayFormat },
-    { RPMTD_FORMAT_SHESCAPE,	"shescape", 	shescapeFormat },
-    { RPMTD_FORMAT_ARRAYSIZE,	"arraysize", 	arraysizeFormat },
-    { RPMTD_FORMAT_FSTATE,	"fstate",	fstateFormat },
-    { RPMTD_FORMAT_VFLAGS,	"vflags",	vflagsFormat },
-    { RPMTD_FORMAT_EXPAND,	"expand",	expandFormat },
-    { RPMTD_FORMAT_FSTATUS,	"fstatus",	fstatusFormat },
-    { -1,			NULL, 		NULL }
-};
