@@ -79,6 +79,10 @@ struct rpmfi_s {
     int nrefs;		/*!< Reference count. */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 RPM_GNUC_INTERNAL
 int rpmfiDIIndex(rpmfi fi, int dx);
 
@@ -159,5 +163,10 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
 
 /* XXX can't be internal as build code needs this */
 FSM_t rpmfiFSM(rpmfi fi);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif	/* _RPMFI_INTERNAL_H */
 

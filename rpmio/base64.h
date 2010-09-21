@@ -3,6 +3,10 @@
 
 #include <sys/types.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* returns malloced base64 encoded string
  * lines are split with \n characters to be nearest lower multiple of linelen
  * if linelen/4 == 0 lines are not split
@@ -27,3 +31,7 @@ int b64decode(const char *in, void **out, size_t *outlen);
  * returns NULL on failures
  */
 char *b64crc(const unsigned char *data, size_t len);
+
+#ifdef __cplusplus
+}
+#endif

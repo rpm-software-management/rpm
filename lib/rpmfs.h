@@ -18,6 +18,10 @@ struct sharedFileInfo_s {
     int otherFileNum;
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 RPM_GNUC_INTERNAL
 rpmfs rpmfsNew(Header h, rpmElementType type);
 
@@ -51,5 +55,9 @@ rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix);
 
 /* XXX this should be internal too but build code needs for now */
 void rpmfsSetAction(rpmfs fs, unsigned int ix, rpmFileAction action);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMFS_H */

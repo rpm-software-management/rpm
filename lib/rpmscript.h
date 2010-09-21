@@ -22,6 +22,10 @@ struct rpmScript_s {
     rpmscriptFlags flags;	/* flags to control operation */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromTag(Header h, rpmTag scriptTag);
 
@@ -32,4 +36,7 @@ RPM_GNUC_INTERNAL
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
                    ARGV_const_t prefixes, int warn_only, int selinux);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* _RPMSCRIPT_H */

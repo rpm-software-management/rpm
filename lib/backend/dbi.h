@@ -69,6 +69,10 @@ struct _dbiIndex {
     DB * dbi_db;		/*!< Berkeley DB * handle */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup dbi
  * Return new configured index database handle instance.
  * @param rpmdb		rpm database
@@ -220,5 +224,9 @@ int dbiByteSwapped(dbiIndex dbi);
  */
 RPM_GNUC_INTERNAL
 dbiIndexType dbiType(dbiIndex dbi);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _DBI_H */

@@ -3,6 +3,10 @@
 
 #include <rpm/rpmutil.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmchroot
  * Set or clear process-wide chroot directory.
  * Calling this while chrooted is an error.
@@ -32,5 +36,10 @@ int rpmChrootOut(void);
  */
 /* RPM_GNUC_INTERNAL */
 int rpmChrootDone(void);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* _RPMCHROOT_H */

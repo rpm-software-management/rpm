@@ -5,6 +5,10 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmds.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmbuild
  * Destroy uid/gid caches.
  */
@@ -105,5 +109,9 @@ int addReqProv(Header h, rpmTag tagN,
  */
 RPM_GNUC_INTERNAL
 int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMBUILD_MISC_H */

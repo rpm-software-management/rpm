@@ -79,6 +79,10 @@ typedef enum rpmParseState_e {
 #define STRIP_TRAILINGSPACE (1 << 0)
 #define STRIP_COMMENTS      (1 << 1)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmbuild
  * Create and initialize rpmSpec structure.
  * @return spec		spec file control structure
@@ -302,5 +306,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating);
  */
 RPM_GNUC_INTERNAL
 rpmRC packageSources(rpmSpec spec, char **cookie);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMBUILD_INTERNAL_H */

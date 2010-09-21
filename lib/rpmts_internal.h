@@ -67,6 +67,10 @@ struct rpmts_s {
     int nrefs;			/*!< Reference count. */
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+ 
 RPM_GNUC_INTERNAL
 tsMembers rpmtsMembers(rpmts ts);
 
@@ -76,4 +80,8 @@ int rpmtsSolve(rpmts ts, rpmds key);
 
 RPM_GNUC_INTERNAL
 rpmlock rpmtsAcquireLock(rpmts ts);
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* _RPMTS_INTERNAL_H */

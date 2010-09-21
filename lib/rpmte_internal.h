@@ -21,6 +21,10 @@ typedef enum pkgGoal_e {
  */
 typedef struct tsortInfo_s *		tsortInfo;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmte
  * Create a transaction element.
  * @param ts		transaction set
@@ -141,6 +145,10 @@ int rpmteAddToFirstInCollectionRemove(rpmte te, const char * collname);
  */
 RPM_GNUC_INTERNAL
 rpmRC rpmteSetupCollectionPlugins(rpmte te);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif	/* _RPMTE_INTERNAL_H */
 
