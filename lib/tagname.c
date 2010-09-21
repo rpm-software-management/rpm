@@ -17,6 +17,7 @@ struct headerTagTableEntry_s {
     const char * shortname;	/*!< "Human readable" short name. */
     rpmTag val;			/*!< Tag numeric value. */
     rpmTagType type;		/*!< Tag type. */
+    rpmTagReturnType retype;	/*!< Tag return type. */
     int extension;		/*!< Extension or "real" tag */
 };
 
@@ -201,7 +202,8 @@ static rpmTagType _tagType(rpmTag tag)
 		    i--;
 		}
 		t = _rpmTags.byValue[i];
-		return t->type;
+		/* XXX this is dumb */
+		return (rpmTagType)(t->type | t->retype);
 	    }
 	}
 	break;

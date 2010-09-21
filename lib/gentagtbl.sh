@@ -67,9 +67,9 @@ ${AWK} '/[\t ](RPMTAG_[A-Z0-9]*)[ \t]+([0-9]*)/ && !/internal/ && !/unimplemente
 	tn = substr(tnarg, index(tnarg, "_") + 1)
 	sn = (substr(tn, 1, 1) tolower(substr(tn, 2)))
 	if ($2 == "=") {
-		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE + RPM_%s_RETURN_TYPE, %d },\n", tnarg, sn, tnarg, tt, ta, ext)
+		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE, RPM_%s_RETURN_TYPE, %d },\n", tnarg, sn, tnarg, tt, ta, ext)
 	} else {
-		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE + RPM_%s_RETURN_TYPE, %d },\n", tnarg, sn, $3, tt, ta, ext)
+		printf("    { \"%s\", \"%s\", %s, RPM_%s_TYPE, RPM_%s_RETURN_TYPE, %d },\n", tnarg, sn, $3, tt, ta, ext)
 	}
 }' < $1 | sort
 
