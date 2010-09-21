@@ -19,6 +19,8 @@
 
 #include "debug.h"
 
+const char * const RPMVERSION = VERSION;
+
 const char * const rpmNAME = PACKAGE;
 
 const char * const rpmEVR = VERSION;

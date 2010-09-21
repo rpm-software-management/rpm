@@ -12,9 +12,6 @@
 #include "lib/misc.h"
 #include "debug.h"
 
-/* just to put a marker in librpm.a */
-const char * const RPMVERSION = VERSION;
-
 unsigned int hashFunctionString(const char * string)
 {
     /* Jenkins One-at-a-time hash */
