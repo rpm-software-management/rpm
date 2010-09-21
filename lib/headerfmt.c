@@ -27,17 +27,19 @@ struct sprintfTag_s {
     char * type;
 };
 
+typedef enum {
+    PTOK_NONE = 0,
+    PTOK_TAG,
+    PTOK_ARRAY,
+    PTOK_STRING,
+    PTOK_COND
+} ptokType;
+
 /** \ingroup header
  */
 typedef struct sprintfToken_s * sprintfToken;
 struct sprintfToken_s {
-    enum {
-	PTOK_NONE = 0,
-	PTOK_TAG,
-	PTOK_ARRAY,
-	PTOK_STRING,
-	PTOK_COND
-    } type;
+    ptokType type;
     union {
 	struct sprintfTag_s tag;	/*!< PTOK_TAG */
 	struct {
