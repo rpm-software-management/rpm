@@ -18,7 +18,7 @@ rpmDigestBundle fdGetBundle(FD_t fd);
 /** \ingroup rpmio
  * Attach digest to fd.
  */
-void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags);
+void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, rpmDigestFlags flags);
 
 /** \ingroup rpmio
  */

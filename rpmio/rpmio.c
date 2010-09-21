@@ -50,7 +50,7 @@ struct _FD_s {
     ssize_t	bytesRemain;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
-    const void *errcookie;	/* gzdio/bzdio/ufdio/xzdio: */
+    const char *errcookie;	/* gzdio/bzdio/ufdio/xzdio: */
 
     FDSTAT_t	stats;		/* I/O statistics */
 
@@ -1883,7 +1883,7 @@ static const struct FDIO_s fpio_s = {
 };
 static const FDIO_t fpio = &fpio_s ;
 
-void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, int flags)
+void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, rpmDigestFlags flags)
 {
     if (fd->digests == NULL) {
 	fd->digests = rpmDigestBundleNew();
