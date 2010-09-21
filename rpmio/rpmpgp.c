@@ -319,12 +319,12 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
  * @return		0 on success
  */
 static int pgpMpiSet(const char * pre, unsigned int lbits,
-		void *dest, const uint8_t * p, const uint8_t * pend)
+		uint8_t *dest, const uint8_t * p, const uint8_t * pend)
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
     size_t nbytes;
-    char *t = dest;
+    uint8_t *t = dest;
     unsigned int ix;
 
     if ((p + ((mbits+7) >> 3)) > pend)
