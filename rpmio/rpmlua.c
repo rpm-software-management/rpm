@@ -79,7 +79,7 @@ rpmlua rpmluaNew()
     return lua;
 }
 
-void *rpmluaFree(rpmlua lua)
+rpmlua rpmluaFree(rpmlua lua)
 {
     if (lua) {
 	if (lua->L) lua_close(lua->L);
@@ -337,7 +337,7 @@ rpmluav rpmluavNew(void)
     return var;
 }
 
-void *rpmluavFree(rpmluav var)
+rpmluav rpmluavFree(rpmluav var)
 {
     free(var);
     return NULL;

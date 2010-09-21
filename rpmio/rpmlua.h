@@ -43,7 +43,7 @@ typedef struct rpmlua_s * rpmlua;
 typedef struct rpmluav_s * rpmluav;
 
 rpmlua rpmluaNew(void);
-void *rpmluaFree(rpmlua lua);
+rpmlua rpmluaFree(rpmlua lua);
 rpmlua rpmluaGetGlobalState(void);
 
 int rpmluaCheckScript(rpmlua lua, const char *script,
@@ -67,7 +67,7 @@ void rpmluaPushTable(rpmlua lua, const char *key, ...);
 void rpmluaPop(rpmlua lua);
 
 rpmluav rpmluavNew(void);
-void * rpmluavFree(rpmluav var);
+rpmluav rpmluavFree(rpmluav var);
 void rpmluavSetListMode(rpmluav var, int flag);
 void rpmluavSetKey(rpmluav var, rpmluavType type, const void *value);
 void rpmluavSetValue(rpmluav var, rpmluavType type, const void *value);
