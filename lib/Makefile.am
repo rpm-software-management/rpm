@@ -13,7 +13,7 @@ AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
 
 check_PROGRAMS =
 CLEANFILES =
-EXTRA_DIST = gentagtbl.sh tagtbl.c rpmhash.C rpmhash.H
+EXTRA_DIST = gentagtbl.sh tagtbl.C rpmhash.C rpmhash.H
 EXTRA_PROGRAMS =
 
 usrlibdir = $(libdir)
@@ -52,11 +52,11 @@ else
 librpm_la_LIBADD += @WITH_DB_LIB@
 endif
 
-tagtbl.c: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
+tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
 	@AWK=${AWK} ${SHELL} $(srcdir)/gentagtbl.sh \
 		    	     $(srcdir)/rpmtag.h > $@.new && \
 	 mv -f $@.new $@
-BUILT_SOURCES = tagtbl.c
+BUILT_SOURCES = tagtbl.C
 
 if WITH_INTERNAL_DB
 # XXX watchout, $(top_builddir)/db3/libdb.la created by this Makefile may surprise
