@@ -19,9 +19,6 @@ struct headerTagFunc_s {
     headerTagTagFunction func;	/*!< Pointer to formatter function. */	
 };
 
-/* forward declarations */
-static const struct headerTagFunc_s rpmHeaderTagExtensions[];
-
 /** \ingroup rpmfi
  * Retrieve file names from header.
  *
@@ -715,20 +712,6 @@ static int filestatusTag(Header h, rpmtd td, headerGetFlags hgflags)
     return (fc > 0);
 }
 
-headerTagTagFunction rpmHeaderTagFunc(rpmTag tag)
-{
-    const struct headerTagFunc_s * ext;
-    headerTagTagFunction func = NULL;
-
-    for (ext = rpmHeaderTagExtensions; ext->func != NULL; ext++) {
-	if (ext->tag == tag) {
-	    func = ext->func;
-	    break;
-	}
-    }
-    return func;
-}
-
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -757,4 +740,18 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_FILESTATUS,	filestatusTag },
     { 0, 			NULL }
 };
+
+headerTagTagFunction rpmHeaderTagFunc(rpmTag tag)
+{
+    const struct headerTagFunc_s * ext;
+    headerTagTagFunction func = NULL;
+
+    for (ext = rpmHeaderTagExtensions; ext->func != NULL; ext++) {
+	if (ext->tag == tag) {
+	    func = ext->func;
+	    break;
+	}
+    }
+    return func;
+}
 
