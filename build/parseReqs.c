@@ -40,7 +40,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
 {
     const char *r, *re, *v, *ve;
     char * N = NULL, * EVR = NULL;
-    rpmTag nametag = 0;
+    rpmTag nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
     Header h = pkg->header; /* everything except buildrequires go here */
     rpmRC rc = RPMRC_FAIL; /* assume failure */
