@@ -289,7 +289,7 @@ static char * getTarSpec(const char *arg)
     char *specDir;
     char *specBase;
     char *tmpSpecFile;
-    const char **try;
+    const char **spec;
     char tarbuf[BUFSIZ];
     int gotspec = 0, res;
     static const char *tryspec[] = { "Specfile", "\\*.spec", NULL };
@@ -299,12 +299,12 @@ static char * getTarSpec(const char *arg)
 
     (void) close(mkstemp(tmpSpecFile));
 
-    for (try = tryspec; *try != NULL; try++) {
+    for (spec = tryspec; *spec != NULL; spec++) {
 	FILE *fp;
 	char *cmd;
 
 	cmd = rpmExpand("%{uncompress: ", arg, "} | ",
-			"%{__tar} xOvf - --wildcards ", *try,
+			"%{__tar} xOvf - --wildcards ", *spec,
 			" 2>&1 > ", tmpSpecFile, NULL);
 
 	if (!(fp = popen(cmd, "r"))) {
