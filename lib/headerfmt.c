@@ -794,7 +794,7 @@ static rpmtd *cacheCreate(void)
 /**
  * Free tag data cache contents and destroy cache.
  */
-static void *cacheFree(rpmtd *cache)
+static rpmtd *cacheFree(rpmtd *cache)
 {
     rpmtd *td = cache;
     for (int i = 0; i < RPMTAG_FIRSTFREE_TAG; i++, td++) {
