@@ -40,7 +40,7 @@ struct rpmte_s {
     unsigned int db_instance;	/*!< Database instance (of removed pkgs) */
     tsortInfo tsi;		/*!< Dependency ordering chains. */
 
-    rpmds this;			/*!< This package's provided NEVR. */
+    rpmds thisds;		/*!< This package's provided NEVR. */
     rpmds provides;		/*!< Provides: dependencies. */
     rpmds requires;		/*!< Requires: dependencies. */
     rpmds conflicts;		/*!< Conflicts: dependencies. */
@@ -77,7 +77,7 @@ static int rpmteClose(rpmte te, int reset_fi);
 
 void rpmteCleanDS(rpmte te)
 {
-    te->this = rpmdsFree(te->this);
+    te->thisds = rpmdsFree(te->thisds);
     te->provides = rpmdsFree(te->provides);
     te->requires = rpmdsFree(te->requires);
     te->conflicts = rpmdsFree(te->conflicts);
@@ -219,7 +219,7 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->pkgFileSize = 0;
     p->headerSize = headerSizeof(h, HEADER_MAGIC_NO);
 
-    p->this = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    p->thisds = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
     p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
@@ -519,7 +519,7 @@ rpmds rpmteDS(rpmte te, rpmTag tag)
 	return NULL;
 
     switch (tag) {
-    case RPMTAG_NAME:		return te->this;
+    case RPMTAG_NAME:		return te->thisds;
     case RPMTAG_PROVIDENAME:	return te->provides;
     case RPMTAG_REQUIRENAME:	return te->requires;
     case RPMTAG_CONFLICTNAME:	return te->conflicts;

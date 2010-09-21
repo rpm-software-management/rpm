@@ -182,7 +182,7 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
     for (oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-	rpmds this, obsoletes;
+	rpmds thisds, obsoletes;
 
 	/* Only added binary packages need checking */
 	if (rpmteType(p) == TR_REMOVED || rpmteIsSource(p))
@@ -199,10 +199,10 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 	}
 
 	/* Replace already added obsoleted packages by obsoleting package */
-	this = rpmteDS(p, RPMTAG_NAME);
+	thisds = rpmteDS(p, RPMTAG_NAME);
 	rpmdsInit(obsChk);
 	while (rpmdsNext(obsChk) >= 0) {
-	    if (rpmdsCompare(obsChk, this)) {
+	    if (rpmdsCompare(obsChk, thisds)) {
 		obsolete = 1;
 		break;
 	    }
@@ -225,14 +225,14 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 	 * Always skip identical NEVR. 
  	 * On upgrade, if newer NEVR was previously added, skip adding older.
  	 */
-	if (rpmdsCompare(sameChk, this) ||
-		(upgrade && rpmdsCompare(newChk, this))) {
+	if (rpmdsCompare(sameChk, thisds) ||
+		(upgrade && rpmdsCompare(newChk, thisds))) {
 	    oc = -1;
 	    break;;
 	}
 
  	/* On upgrade, if older NEVR was previously added, replace with new */
-	if (upgrade && rpmdsCompare(oldChk, this) != 0) {
+	if (upgrade && rpmdsCompare(oldChk, thisds) != 0) {
 	    break;
 	}
     }
