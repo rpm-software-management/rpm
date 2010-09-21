@@ -587,10 +587,10 @@ rpmtsi rpmtsiInit(rpmts ts);
 /** \ingroup rpmte
  * Return next transaction element of type.
  * @param tsi		transaction element iterator
- * @param type		transaction element type selector (0 for any)
+ * @param types		transaction element type selector (0 for any)
  * @return		next transaction element of type, NULL on termination
  */
-rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type);
+rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types);
 
 #ifdef __cplusplus
 }

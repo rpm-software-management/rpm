@@ -990,12 +990,12 @@ rpmte rpmtsiNextElement(rpmtsi tsi)
     return te;
 }
 
-rpmte rpmtsiNext(rpmtsi tsi, rpmElementType type)
+rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types)
 {
     rpmte te;
 
     while ((te = rpmtsiNextElement(tsi)) != NULL) {
-	if (type == 0 || (rpmteType(te) & type) != 0)
+	if (types == 0 || (rpmteType(te) & types) != 0)
 	    break;
     }
     return te;

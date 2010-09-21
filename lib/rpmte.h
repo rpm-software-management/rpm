@@ -21,6 +21,8 @@ typedef enum rpmElementType_e {
     TR_REMOVED		= (1 << 1)	/*!< Package will be removed. */
 } rpmElementType;
 
+typedef rpmFlags rpmElementTypes;
+
 /** \ingroup rpmte
  * Retrieve header from transaction element.
  * @param te		transaction element
