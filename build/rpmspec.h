@@ -17,21 +17,25 @@ extern "C" {
  */
 typedef struct Package_s * Package;
 
-typedef enum rpmSourceFlags_e {
+enum rpmSourceFlags_e {
     RPMBUILD_ISSOURCE	= (1 << 0),
     RPMBUILD_ISPATCH	= (1 << 1),
     RPMBUILD_ISICON	= (1 << 2),
     RPMBUILD_ISNO	= (1 << 3),
-} rpmSourceFlags;
+};
+
+typedef rpmFlags rpmSourceFlags;
 
 #define RPMBUILD_DEFAULT_LANG "C"
 
-typedef enum rpmSpecFlags_e {
+enum rpmSpecFlags_e {
     RPMSPEC_NONE	= 0,
     RPMSPEC_ANYARCH	= (1 << 0),
     RPMSPEC_FORCE	= (1 << 1),
     RPMSPEC_NOLANG	= (1 << 2),
-} rpmSpecFlags;
+};
+
+typedef rpmFlags rpmSpecFlags;
 
 /** \ingroup rpmbuild
  */

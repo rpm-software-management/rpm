@@ -6,14 +6,18 @@
  * Structure(s) used for policy sets.
  */
 
+#include <rpm/rpmtypes.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-typedef enum rpmpolFlags_e {
+enum rpmpolFlags_e {
 	RPMPOL_FLAG_NONE = 0,
 	RPMPOL_FLAG_BASE = (1 << 0)
-} rpmpolFlags;
+};
+
+typedef rpmFlags rpmpolFlags;
 
 #define RPMPOL_TYPE_DEFAULT "default"
 

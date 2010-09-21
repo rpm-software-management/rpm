@@ -4,11 +4,13 @@
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>
 
-typedef enum rpmscriptFlags_e {
+enum rpmscriptFlags_e {
     RPMSCRIPT_NONE	= 0,
     RPMSCRIPT_EXPAND	= (1 << 0),     /* macro expansion */
     RPMSCRIPT_QFORMAT	= (1 << 1),	/* header queryformat expansion */
-} rpmscriptFlags;
+};
+
+typedef rpmFlags rpmscriptFlags;
 
 typedef struct rpmScript_s * rpmScript;
 

@@ -66,12 +66,14 @@ static const int typeSizes[16] =  {
     0
 };
 
-typedef enum headerFlags_e {
+enum headerFlags_e {
     HEADERFLAG_SORTED    = (1 << 0), /*!< Are header entries sorted? */
     HEADERFLAG_ALLOCATED = (1 << 1), /*!< Is 1st header region allocated? */
     HEADERFLAG_LEGACY    = (1 << 2), /*!< Header came from legacy source? */
     HEADERFLAG_DEBUG     = (1 << 3), /*!< Debug this header? */
-} headerFlags;
+};
+
+typedef rpmFlags headerFlags;
 
 /** \ingroup header
  * The Header data structure.

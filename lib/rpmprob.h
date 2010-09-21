@@ -18,7 +18,7 @@ typedef struct rpmProblem_s * rpmProblem;
 /** \ingroup rpmprob
  * @todo Generalize filter mechanism.
  */
-typedef enum rpmprobFilterFlags_e {
+enum rpmprobFilterFlags_e {
     RPMPROB_FILTER_NONE		= 0,
     RPMPROB_FILTER_IGNOREOS	= (1 << 0),	/*!< from --ignoreos */
     RPMPROB_FILTER_IGNOREARCH	= (1 << 1),	/*!< from --ignorearch */
@@ -29,7 +29,9 @@ typedef enum rpmprobFilterFlags_e {
     RPMPROB_FILTER_OLDPACKAGE	= (1 << 6),	/*!< from --oldpackage */
     RPMPROB_FILTER_DISKSPACE	= (1 << 7),	/*!< from --ignoresize */
     RPMPROB_FILTER_DISKNODES	= (1 << 8)	/*!< from --ignoresize */
-} rpmprobFilterFlags;
+};
+
+typedef rpmFlags rpmprobFilterFlags;
 
 /** \ingroup rpmprob
  * Enumerate transaction set problem types.

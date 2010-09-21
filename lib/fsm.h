@@ -89,7 +89,7 @@ typedef enum fileStage_e {
 
 /** \ingroup payload
  */
-typedef enum cpioMapFlags_e {
+enum cpioMapFlags_e {
     CPIO_MAP_PATH	= (1 << 0),
     CPIO_MAP_MODE	= (1 << 1),
     CPIO_MAP_UID	= (1 << 2),
@@ -100,7 +100,8 @@ typedef enum cpioMapFlags_e {
     CPIO_ALL_HARDLINKS	= (1 << 7), /*!< fail if hardlinks are missing. */
     CPIO_MAP_TYPE	= (1 << 8),  /*!< only for building. */
     CPIO_SBIT_CHECK	= (1 << 9)
-} cpioMapFlags;
+};
+typedef rpmFlags cpioMapFlags;
 
 typedef struct fsmIterator_s * FSMI_t;
 typedef struct fsm_s * FSM_t;

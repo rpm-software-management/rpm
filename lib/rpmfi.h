@@ -46,7 +46,7 @@ typedef enum rpmfileState_e {
 /**
  * File Attributes.
  */
-typedef	enum rpmfileAttrs_e {
+enum rpmfileAttrs_e {
     RPMFILE_NONE	= 0,
     RPMFILE_CONFIG	= (1 <<  0),	/*!< from %%config */
     RPMFILE_DOC		= (1 <<  1),	/*!< from %%doc */
@@ -60,7 +60,9 @@ typedef	enum rpmfileAttrs_e {
     RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude, internal */
     RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
-} rpmfileAttrs;
+};
+
+typedef rpmFlags rpmfileAttrs;
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
 
@@ -367,7 +369,7 @@ rpmfi rpmfiInitD(rpmfi fi, int dx);
  */
 rpmfi rpmfiFree(rpmfi fi);
 
-typedef enum rpmfiFlags_e {
+enum rpmfiFlags_e {
     RPMFI_NOHEADER		= 0,
     RPMFI_KEEPHEADER		= (1 << 0),
     RPMFI_NOFILECLASS		= (1 << 1),
@@ -389,7 +391,9 @@ typedef enum rpmfiFlags_e {
     RPMFI_NOFILEFLAGS		= (1 << 17),
     RPMFI_ISBUILD		= (1 << 30), 	/* internal */
     RPMFI_ISSOURCE		= (1 << 31), 	/* internal */
-} rpmfiFlags;
+};
+
+typedef rpmFlags rpmfiFlags;
 
 #define RPMFI_FLAGS_ERASE \
     (RPMFI_NOFILECLASS | RPMFI_NOFILELANGS | \

@@ -36,6 +36,8 @@ typedef struct rpmtd_s * rpmtd;
 typedef uint32_t	rpm_color_t;
 typedef uint32_t	rpm_flag_t;
 typedef uint32_t	rpm_tid_t;
+
+typedef uint32_t	rpmFlags;
 /** @} */
 
 /** \ingroup rpmtypes

@@ -38,7 +38,7 @@ enum FCOLOR_e {
 
 /** \ingroup rpmfc
  */
-typedef	enum FCOLOR_e FCOLOR_t;
+typedef	rpmFlags FCOLOR_t;
 
 /** \ingroup rpmfc
  */

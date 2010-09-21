@@ -596,13 +596,14 @@ static int headercolorTag(Header h, rpmtd td, headerGetFlags hgflags)
     return numberTag(td, hcolor);
 }
 
-typedef enum nevraFlags_e {
+enum nevraFlags_e {
     NEVRA_NAME		= (1 << 0),
     NEVRA_EPOCH		= (1 << 1),
     NEVRA_VERSION	= (1 << 2),
     NEVRA_RELEASE	= (1 << 3),
     NEVRA_ARCH		= (1 << 4)
-} nevraFlags;
+};
+typedef rpmFlags nevraFlags;
 
 static int getNEVRA(Header h, rpmtd td, nevraFlags flags)
 {

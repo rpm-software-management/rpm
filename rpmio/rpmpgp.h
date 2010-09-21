@@ -930,9 +930,11 @@ typedef enum pgpValType_e {
 /** \ingroup rpmpgp
  * Bit(s) to control digest operation.
  */
-typedef enum rpmDigestFlags_e {
+enum rpmDigestFlags_e {
     RPMDIGEST_NONE	= 0
-} rpmDigestFlags;
+};
+
+typedef rpmFlags rpmDigestFlags;
 
 /** \ingroup rpmpgp
  * Return string representation of am OpenPGP value.

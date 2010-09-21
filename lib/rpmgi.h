@@ -14,11 +14,13 @@ extern "C" {
 
 /** \ingroup rpmgi
  */
-typedef enum rpmgiFlags_e {
+enum rpmgiFlags_e {
     RPMGI_NONE		= 0,
     RPMGI_NOGLOB	= (1 << 2),
     RPMGI_NOMANIFEST	= (1 << 3),
-} rpmgiFlags;
+};
+
+typedef rpmFlags rpmgiFlags;
 
 extern rpmgiFlags giFlags;
 

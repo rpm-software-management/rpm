@@ -6,6 +6,7 @@
  */
 
 #include <stdio.h>
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -138,10 +139,12 @@ int argvAddNum(ARGV_t * argvp, int val);
  */
 int argvAppend(ARGV_t * argvp, ARGV_const_t av);
 
-typedef enum argvFlags_e {
+enum argvFlags_e {
     ARGV_NONE		= 0,
     ARGV_SKIPEMPTY	= (1 << 0),	/* omit empty strings from result */
-} argvFlags;
+};
+
+typedef rpmFlags argvFlags;
 
 /** \ingroup rpmargv
  * Split a string into an argv array.

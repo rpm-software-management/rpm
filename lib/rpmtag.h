@@ -381,13 +381,15 @@ typedef enum rpmSubTagType_e {
 /** \ingroup header
  *  * Identify how to return the header data type.
  *   */
-typedef enum rpmTagReturnType_e {
+enum rpmTagReturnType_e {
     RPM_ANY_RETURN_TYPE         = 0,
     RPM_SCALAR_RETURN_TYPE      = 0x00010000,
     RPM_ARRAY_RETURN_TYPE       = 0x00020000,
     RPM_MAPPING_RETURN_TYPE     = 0x00040000,
     RPM_MASK_RETURN_TYPE        = 0xffff0000
-} rpmTagReturnType;
+};
+
+typedef rpmFlags rpmTagReturnType;
 
 /** \ingroup rpmtag
  * Return tag name from value.

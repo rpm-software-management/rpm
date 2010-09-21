@@ -25,7 +25,7 @@ extern int _rpmts_stats;
 /** \ingroup rpmts
  * Bit(s) to control rpmtsRun() operation.
  */
-typedef enum rpmtransFlags_e {
+enum rpmtransFlags_e {
     RPMTRANS_FLAG_NONE		= 0,
     RPMTRANS_FLAG_TEST		= (1 <<  0),	/*!< from --test */
     RPMTRANS_FLAG_BUILD_PROBS	= (1 <<  1),	/*!< don't process payload */
@@ -63,7 +63,9 @@ typedef enum rpmtransFlags_e {
     RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
     RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
-} rpmtransFlags;
+};
+
+typedef rpmFlags rpmtransFlags;
 
 #define	_noTransScripts		\
   ( RPMTRANS_FLAG_NOPRE |	\
@@ -82,7 +84,7 @@ typedef enum rpmtransFlags_e {
 /** \ingroup rpmts
  * Bit(s) to control digest and signature verification.
  */
-typedef enum rpmVSFlags_e {
+enum rpmVSFlags_e {
     RPMVSF_DEFAULT	= 0,
     RPMVSF_NOHDRCHK	= (1 <<  0),
     RPMVSF_NEEDPAYLOAD	= (1 <<  1),
@@ -97,7 +99,9 @@ typedef enum rpmVSFlags_e {
     RPMVSF_NODSA	= (1 << 18),
     RPMVSF_NORSA	= (1 << 19)
     /* bit(s) 16-31 unused */
-} rpmVSFlags;
+};
+
+typedef rpmFlags rpmVSFlags;
 
 #define	_RPMVSF_NODIGESTS	\
   ( RPMVSF_NOSHA1HEADER |	\

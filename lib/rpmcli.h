@@ -75,7 +75,7 @@ rpmcliFini(poptContext optCon);
  * Query/Verify argument qualifiers.
  * @todo Reassign to tag values.
  */
-typedef enum rpmQVSources_e {
+enum rpmQVSources_e {
     RPMQV_PACKAGE = 0,	/*!< ... from package name db search. */
     RPMQV_PATH,		/*!< ... from file path db search. */
     RPMQV_ALL,		/*!< ... from each installed package. */
@@ -90,13 +90,15 @@ typedef enum rpmQVSources_e {
     RPMQV_HDRID,	/*!< ... from header id (immutable header SHA1). */
     RPMQV_FILEID,	/*!< ... from file id (file MD5). */
     RPMQV_TID,		/*!< ... from install transaction id (time stamp). */
-} rpmQVSources;
+};
+
+typedef rpmFlags rpmQVSources;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmQuery() operation, stored in qva_flags.
  * @todo Merge rpmQueryFlags, rpmVerifyFlags, and rpmVerifyAttrs?.
  */
-typedef enum rpmQueryFlags_e {
+enum rpmQueryFlags_e {
     QUERY_FOR_DEFAULT	= 0,		/*!< */
     QUERY_MD5		= (1 << 0),	/*!< from --nomd5 */
     QUERY_FILEDIGEST	= (1 << 0),	/*!< from --nofiledigest, same as --nomd5 */
@@ -121,7 +123,9 @@ typedef enum rpmQueryFlags_e {
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
     QUERY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
     QUERY_FOR_DUMPFILES	= (1 << 27)	/*!< query:  from --dump */
-} rpmQueryFlags;
+};
+
+typedef rpmFlags rpmQueryFlags;
 
 #define	_QUERY_FOR_BITS	\
    (QUERY_FOR_LIST|QUERY_FOR_STATE|QUERY_FOR_DOCS|QUERY_FOR_CONFIG|\
@@ -265,7 +269,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, ARGV_const_t argv);
 /** \ingroup rpmcli
  * Bit(s) to control rpmInstall() operation.
  */
-typedef enum rpmInstallFlags_e {
+enum rpmInstallFlags_e {
     INSTALL_NONE	= 0,
     INSTALL_PERCENT	= (1 << 0),	/*!< from --percent */
     INSTALL_HASH	= (1 << 1),	/*!< from --hash */
@@ -277,7 +281,9 @@ typedef enum rpmInstallFlags_e {
     INSTALL_INSTALL	= (1 << 7),	/*!< from --install */
     INSTALL_ERASE	= (1 << 8),	/*!< from --erase */
     INSTALL_ALLMATCHES	= (1 << 9)	/*!< from --allmatches */
-} rpmInstallFlags;
+};
+
+typedef rpmFlags rpmInstallFlags;
 
 /** \ingroup rpmcli
  * Bit(s) to control rpmErase() operation.

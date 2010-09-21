@@ -16,7 +16,7 @@ extern "C" {
 #define PLUGINHOOK_COLL_POST_ANY_FUNC		pluginhook_coll_post_any
 #define PLUGINHOOK_COLL_PRE_REMOVE_FUNC		pluginhook_coll_pre_remove
 
-typedef enum rpmPluginHook_e {
+enum rpmPluginHook_e {
     PLUGINHOOK_NONE		= 0,
     PLUGINHOOK_INIT		= 1 << 0,
     PLUGINHOOK_CLEANUP		= 1 << 1,
@@ -24,7 +24,9 @@ typedef enum rpmPluginHook_e {
     PLUGINHOOK_COLL_POST_ADD	= 1 << 3,
     PLUGINHOOK_COLL_POST_ANY	= 1 << 4,
     PLUGINHOOK_COLL_PRE_REMOVE	= 1 << 5
-} rpmPluginHook;
+};
+
+typedef rpmFlags rpmPluginHook;
 
 /** \ingroup rpmplugins
  * Create a new plugins structure

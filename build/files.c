@@ -37,7 +37,7 @@
 
 /**
  */
-typedef enum specdFlags_e {
+enum specdFlags_e {
     SPECD_DEFFILEMODE	= (1 << 0),
     SPECD_DEFDIRMODE	= (1 << 1),
     SPECD_DEFUID	= (1 << 2),
@@ -49,7 +49,9 @@ typedef enum specdFlags_e {
     SPECD_UID		= (1 << 10),
     SPECD_GID		= (1 << 11),
     SPECD_VERIFY	= (1 << 12)
-} specdFlags;
+};
+
+typedef rpmFlags specdFlags;
 
 /**
  */

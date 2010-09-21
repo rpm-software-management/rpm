@@ -17,7 +17,7 @@ extern "C" {
 /** \ingroup rpmbuild
  * Bit(s) to control rpmSpecBuild() operation.
  */
-typedef enum rpmBuildFlags_e {
+enum rpmBuildFlags_e {
     RPMBUILD_NONE	= 0,
     RPMBUILD_PREP	= (1 <<  0),	/*!< Execute %%prep. */
     RPMBUILD_BUILD	= (1 <<  1),	/*!< Execute %%build. */
@@ -33,15 +33,19 @@ typedef enum rpmBuildFlags_e {
     RPMBUILD_RMSPEC	= (1 << 11),	/*!< Remove spec file. */
 
     RPMBUILD_NOBUILD	= (1 << 31)	/*!< Don't execute or package. */
-} rpmBuildFlags;
+};
+
+typedef rpmFlags rpmBuildFlags;
 
 /** \ingroup rpmbuild
  * Bit(s) to control package generation
  */
-typedef enum rpmBuildPkgFlags_e {
+enum rpmBuildPkgFlags_e {
     RPMBUILD_PKG_NONE		= 0,
     RPMBUILD_PKG_NODIRTOKENS	= (1 << 0), /*!< Legacy filename layout */
-} rpmBuildPkgFlags;
+};
+
+typedef rpmFlags rpmBuildPkgFlags;
 
 /** \ingroup rpmbuild
  * Describe build request.

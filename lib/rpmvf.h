@@ -14,7 +14,7 @@ extern "C" {
 /** \ingroup rpmvf
  * Bit(s) for rpmVerifyFile() attributes and result.
  */
-typedef enum rpmVerifyAttrs_e {
+enum rpmVerifyAttrs_e {
     RPMVERIFY_NONE	= 0,		/*!< */
     RPMVERIFY_MD5	= (1 << 0),	/*!< from %verify(md5) - obsolete */
     RPMVERIFY_FILEDIGEST= (1 << 0),	/*!< from %verify(filedigest) */
@@ -34,7 +34,10 @@ typedef enum rpmVerifyAttrs_e {
     RPMVERIFY_READFAIL	= (1 << 29),	/*!< file read failed */
     RPMVERIFY_LSTATFAIL	= (1 << 30),	/*!< lstat failed */
     RPMVERIFY_LGETFILECONFAIL	= (1 << 31)	/*!< lgetfilecon failed */
-} rpmVerifyAttrs;
+};
+
+typedef rpmFlags rpmVerifyAttrs;
+
 #define	RPMVERIFY_ALL		~(RPMVERIFY_NONE)
 #define	RPMVERIFY_FAILURES	\
   (RPMVERIFY_LSTATFAIL|RPMVERIFY_READFAIL|RPMVERIFY_READLINKFAIL|RPMVERIFY_LGETFILECONFAIL)
@@ -42,7 +45,7 @@ typedef enum rpmVerifyAttrs_e {
 /** \ingroup rpmvf
  * Bit(s) to control rpmVerify() operation
  */
-typedef enum rpmVerifyFlags_e {
+enum rpmVerifyFlags_e {
     VERIFY_DEFAULT	= 0,		/*!< */
     VERIFY_MD5		= (1 << 0),	/*!< from --nomd5 - obsolete */
     VERIFY_FILEDIGEST	= (1 << 0),	/*!< from --nofiledigest */
@@ -69,7 +72,9 @@ typedef enum rpmVerifyFlags_e {
     VERIFY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
     VERIFY_FOR_DUMPFILES= (1 << 27)	/*!< query:  from --dump */
 	/* bits 28-31 used in rpmVerifyAttrs */
-} rpmVerifyFlags;
+};
+
+typedef rpmFlags rpmVerifyFlags;
 
 #define	VERIFY_ATTRS	\
   ( VERIFY_FILEDIGEST | VERIFY_SIZE | VERIFY_LINKTO | VERIFY_USER | VERIFY_GROUP | \

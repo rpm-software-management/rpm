@@ -22,7 +22,7 @@ extern int _rpmds_nopromote;
 /** \ingroup rpmds
  * Dependency Attributes.
  */
-typedef	enum rpmsenseFlags_e {
+enum rpmsenseFlags_e {
     RPMSENSE_ANY	= 0,
     RPMSENSE_LESS	= (1 << 1),
     RPMSENSE_GREATER	= (1 << 2),
@@ -49,7 +49,9 @@ typedef	enum rpmsenseFlags_e {
     RPMSENSE_KEYRING	= (1 << 26),
     /* bit 27 unused */
     RPMSENSE_CONFIG	= (1 << 28)
-} rpmsenseFlags;
+};
+
+typedef rpmFlags rpmsenseFlags;
 
 #define	RPMSENSE_SENSEMASK	15	 /* Mask to get senses, ie serial, */
                                          /* less, greater, equal.          */

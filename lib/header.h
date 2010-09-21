@@ -156,14 +156,16 @@ int headerIsEntry(Header h, rpmTag tag);
  * tags don't generally honor the other flags, MINMEM, RAW, ALLOC and ARGV 
  * are only relevant for non-extension data.
  */
-typedef enum headerGetFlags_e {
+enum headerGetFlags_e {
     HEADERGET_DEFAULT	= 0,	    /* legacy headerGetEntry() behavior */
     HEADERGET_MINMEM 	= (1 << 0), /* pointers can refer to header memory */
     HEADERGET_EXT 	= (1 << 1), /* lookup extension types too */
     HEADERGET_RAW 	= (1 << 2), /* return raw contents (no i18n lookups) */
     HEADERGET_ALLOC	= (1 << 3), /* always allocate memory for all data */
     HEADERGET_ARGV	= (1 << 4), /* return string arrays NULL-terminated */
-} headerGetFlags;
+};
+
+typedef rpmFlags headerGetFlags;
 
 /** \ingroup header
  * Retrieve tag value.
@@ -176,10 +178,12 @@ typedef enum headerGetFlags_e {
 int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags);
 
 
-typedef enum headerPutFlags_e {
+enum headerPutFlags_e {
     HEADERPUT_DEFAULT	= 0,
     HEADERPUT_APPEND 	= (1 << 0),
-} headerPutFlags;
+};
+
+typedef rpmFlags headerPutFlags;
 
 /** \ingroup header
  * Add or append tag to header.
