@@ -50,11 +50,11 @@ urltype urlIsURL(const char * url)
 urltype urlPath(const char * url, const char ** pathp)
 {
     const char *path;
-    int urltype;
+    urltype type;
 
     path = url;
-    urltype = urlIsURL(url);
-    switch (urltype) {
+    type = urlIsURL(url);
+    switch (type) {
     case URL_IS_FTP:
 	url += sizeof("ftp://") - 1;
 	path = strchr(url, '/');
@@ -89,7 +89,7 @@ urltype urlPath(const char * url, const char ** pathp)
     }
     if (pathp)
 	*pathp = path;
-    return urltype;
+    return type;
 }
 
 int urlGetFile(const char * url, const char * dest)
