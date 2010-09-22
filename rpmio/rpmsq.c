@@ -179,8 +179,7 @@ int rpmsqIsCaught(int signum)
 }
 
 #ifdef SA_SIGINFO
-void rpmsqAction(int signum,
-		void * info, void * context)
+void rpmsqAction(int signum, siginfo_t * info, void * context)
 #else
 void rpmsqAction(int signum)
 #endif
@@ -265,7 +264,7 @@ int rpmsqEnable(int signum, rpmsqAction_t handler)
 #else
 		sa.sa_flags = 0;
 #endif
-		sa.sa_sigaction = (void*)(handler != NULL ? handler : tbl->handler);
+		sa.sa_sigaction = (handler != NULL ? handler : tbl->handler);
 		if (sigaction(tbl->signum, &sa, &tbl->oact) < 0) {
 		    SUB_REF(tbl);
 		    break;

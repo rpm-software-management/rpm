@@ -31,7 +31,7 @@ typedef struct rpmsqElem * rpmsq;
  * @param context	signal context
  */
 #ifdef SA_SIGINFO
-typedef void (*rpmsqAction_t) (int signum, void * info, void * context);
+typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
 #else
 typedef void (*rpmsqAction_t) (int signum);
 #endif
@@ -74,7 +74,7 @@ int rpmsqIsCaught(int signum);
  * @param context	signal context
  */
 #ifdef SA_SIGINFO
-void rpmsqAction(int signum, void * info, void * context);
+void rpmsqAction(int signum, siginfo_t * info, void * context);
 #else
 void rpmsqAction(int signum);
 #endif
