@@ -18,7 +18,7 @@
 /**
  */
 static struct urlstring {
-    const char const * leadin;
+    const char * leadin;
     urltype	ret;
 } const urlstrings[] = {
     { "file://",	URL_IS_PATH },
