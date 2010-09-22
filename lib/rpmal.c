@@ -27,30 +27,17 @@ struct availablePackage_s {
     rpmfi fi;			/*!< File info set. */
 };
 
-typedef struct availableIndexEntry_s *	availableIndexEntry;
-
 /** \ingroup rpmdep
  * A single available item (e.g. a Provides: dependency).
  */
-struct availableIndexEntry_s {
+typedef struct availableIndexEntry_s {
     rpmalNum pkgNum;	        /*!< Containing package index. */
     unsigned int entryIx;	/*!< Dependency index. */
-};
+} * availableIndexEntry;
 
 struct fileNameEntry_s {
     const char * dirName;
     const char * baseName;
-};
-
-
-/** \ingroup rpmdep
- * A file to be installed/removed.
- */
-typedef struct fileIndexEntry_s * fileIndex;
-
-struct fileIndexEntry_s {
-    rpmalNum pkgNum;		/*!< Containing package index. */
-    unsigned int entryIx;
 };
 
 #undef HASHTYPE
@@ -67,11 +54,9 @@ struct fileIndexEntry_s {
 #undef HTDATATYPE
 #define HASHTYPE rpmalFileHash
 #define HTKEYTYPE struct fileNameEntry_s
-#define HTDATATYPE struct fileIndexEntry_s
+#define HTDATATYPE struct availableIndexEntry_s
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
-
-
 
 /** \ingroup rpmdep
  * Set of available packages, items, and directories.
@@ -171,7 +156,7 @@ void rpmalDel(rpmal al, rpmte p)
 
 static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi){
     struct fileNameEntry_s fileName;
-    struct fileIndexEntry_s fileEntry;
+    struct availableIndexEntry_s fileEntry;
     int i;
     rpm_color_t ficolor;
 
@@ -278,7 +263,7 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 
     /* Split path into dirname and basename components for lookup */
     if ((slash = strrchr(fileName, '/')) != NULL) {
-	fileIndex result;
+	availableIndexEntry result;
 	int resultCnt = 0;
 	size_t bnStart = (slash - fileName) + 1;
 	char dirName[bnStart + 1];
