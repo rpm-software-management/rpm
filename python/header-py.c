@@ -165,7 +165,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
 	headerFree(s->h);
     }
-    len = headerSizeof(h, 0);
+    len = headerSizeof(h, HEADER_MAGIC_NO);
     buf = headerUnload(h);
     h = headerFree(h);
 
@@ -268,7 +268,7 @@ static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
 static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "file", "magic", NULL };
-    int magic = 1;
+    int magic = HEADER_MAGIC_YES;
     rpmfdObject *fdo = NULL;
     int rc;
 
