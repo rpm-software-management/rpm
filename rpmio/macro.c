@@ -1008,7 +1008,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     }
 
     if (b) {
-	(void) expandT(mb, b, strlen(b));
+	(void) expandMacro(mb, b);
     }
     free(buf);
 }
@@ -1285,7 +1285,7 @@ expandMacro(MacroBuf mb, const char *src)
 			rc = expandT(mb, g, gn);
 		} else
 		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
-			rc = expandT(mb, me->body, strlen(me->body));
+			rc = expandMacro(mb, me->body);
 		}
 		s = se;
 		continue;
@@ -1302,7 +1302,7 @@ expandMacro(MacroBuf mb, const char *src)
 			rc = expandT(mb, g, gn);
 		} else
 		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
-			rc = expandT(mb, me->body, strlen(me->body));
+			rc = expandMacro(mb, me->body);
 		}
 		s = se;
 		continue;
