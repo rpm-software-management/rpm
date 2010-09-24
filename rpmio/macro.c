@@ -1349,38 +1349,41 @@ expandMacro(MacroBuf mb, const char *src)
 
 /* =============================================================== */
 
-int
-expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
+static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
 {
     MacroBuf mb = xcalloc(1, sizeof(*mb));
-    char *tbuf = NULL;
+    size_t tlen = MACROBUFSIZ + strlen(src);
+    char *tbuf = xcalloc(tlen + 1, sizeof(*tbuf));
     int rc = 0;
-
-    if (sbuf == NULL || slen == 0) 
-	goto exit;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
-    tbuf = xcalloc(slen + 1, sizeof(*tbuf));
-
     mb->t = tbuf;
-    mb->nb = slen;
+    mb->nb = tlen;
     mb->depth = 0;
     mb->macro_trace = print_macro_trace;
     mb->expand_trace = print_expand_trace;
     mb->mc = mc;
 
-    rc = expandMacro(mb, sbuf);
+    rc = expandMacro(mb, src);
 
     if (mb->nb == 0)
 	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 
-    tbuf[slen] = '\0';	/* XXX just in case */
-    strncpy(sbuf, tbuf, (slen - mb->nb + 1));
+    tbuf[tlen] = '\0';	/* XXX just in case */
+    /* expanded output is usually much less than alloced buffer, downsize */
+    *target = xrealloc(tbuf, strlen(tbuf) + 1);
 
-exit:
     _free(mb);
-    _free(tbuf);
+    return rc;
+}
+
+int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
+{
+    char *target = NULL;
+    int rc = doExpandMacros(mc, sbuf, &target);
+    rstrlcpy(sbuf, target, slen);
+    free(target);
     return rc;
 }
 
@@ -1554,18 +1557,18 @@ rpmFreeMacros(rpmMacroContext mc)
 char * 
 rpmExpand(const char *arg, ...)
 {
-    size_t blen = MACROBUFSIZ;
-    char *buf = NULL;
+    size_t blen = 0;
+    char *buf = NULL, *ret = NULL;
     char *pe;
     const char *s;
     va_list ap;
 
     if (arg == NULL) {
-	buf = xstrdup("");
+	ret = xstrdup("");
 	goto exit;
     }
 
-    /* precalculate unexpanded size on top of MACROBUFSIZ */
+    /* precalculate unexpanded size */
     va_start(ap, arg);
     for (s = arg; s != NULL; s = va_arg(ap, const char *))
 	blen += strlen(s);
@@ -1579,14 +1582,11 @@ rpmExpand(const char *arg, ...)
 	pe = stpcpy(pe, s);
     va_end(ap);
 
-    (void) expandMacros(NULL, NULL, buf, blen);
+    (void) doExpandMacros(NULL, buf, &ret);
 
-    /* expanded output is usually much less than alloced buffer, downsize */
-    blen = strlen(buf);
-    buf = xrealloc(buf, blen + 1);
-
+    free(buf);
 exit:
-    return buf;
+    return ret;
 }
 
 int
