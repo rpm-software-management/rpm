@@ -62,7 +62,6 @@ rpmMacroContext rpmCLIMacroContext = &rpmCLIMacroContext_s;
  * Macro expansion state.
  */
 typedef struct MacroBuf_s {
-    const char * s;		/*!< Text to expand. */
     char * t;			/*!< Expansion buffer. */
     size_t nb;			/*!< No. bytes remaining in expansion buffer. */
     int depth;			/*!< Current expansion depth. */
@@ -87,7 +86,7 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* forward ref */
-static int expandMacro(MacroBuf mb);
+static int expandMacro(MacroBuf mb, const char *src);
 
 /* =============================================================== */
 
@@ -427,17 +426,12 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
 static int
 expandT(MacroBuf mb, const char * f, size_t flen)
 {
-    char *sbuf;
-    const char *s = mb->s;
+    char *sbuf = xcalloc(flen + 1, sizeof(*sbuf));
     int rc;
-
-    sbuf = xcalloc(flen + 1, sizeof(*sbuf));
 
     strncpy(sbuf, f, flen);
     sbuf[flen] = '\0';
-    mb->s = sbuf;
-    rc = expandMacro(mb);
-    mb->s = s;
+    rc = expandMacro(mb, sbuf);
 
     _free(sbuf);
 
@@ -454,7 +448,6 @@ expandT(MacroBuf mb, const char * f, size_t flen)
 static int
 expandU(MacroBuf mb, char * u, size_t ulen)
 {
-    const char *s = mb->s;
     char *t = mb->t;
     size_t nb = mb->nb;
     char *tbuf;
@@ -462,16 +455,14 @@ expandU(MacroBuf mb, char * u, size_t ulen)
 
     tbuf = xcalloc(ulen + 1, sizeof(*tbuf));
 
-    mb->s = u;
     mb->t = tbuf;
     mb->nb = ulen;
-    rc = expandMacro(mb);
+    rc = expandMacro(mb, u);
 
     tbuf[ulen] = '\0';	/* XXX just in case */
     if (ulen > mb->nb)
 	strncpy(u, tbuf, (ulen - mb->nb + 1));
 
-    mb->s = s;
     mb->t = t;
     mb->nb = nb;
 
@@ -1026,14 +1017,15 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
  * The main macro recursion loop.
  * @todo Dynamically reallocate target buffer.
  * @param mb		macro expansion state
+ * @param src		string to expand
  * @return		0 on success, 1 on failure
  */
 static int
-expandMacro(MacroBuf mb)
+expandMacro(MacroBuf mb, const char *src)
 {
     rpmMacroEntry *mep;
     rpmMacroEntry me;
-    const char *s = mb->s, *se;
+    const char *s = src, *se;
     const char *f, *fe;
     const char *g, *ge;
     size_t fn, gn;
@@ -1337,8 +1329,7 @@ expandMacro(MacroBuf mb)
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
-		mb->s = me->body;
-		rc = expandMacro(mb);
+		rc = expandMacro(mb, me->body);
 		if (rc == 0)
 			me->used++;	/* Mark macro as used */
 	}
@@ -1351,7 +1342,6 @@ expandMacro(MacroBuf mb)
     }
 
     *mb->t = '\0';
-    mb->s = s;
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
 	printExpansion(mb, t, mb->t);
@@ -1375,7 +1365,6 @@ expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
 
     tbuf = xcalloc(slen + 1, sizeof(*tbuf));
 
-    mb->s = sbuf;
     mb->t = tbuf;
     mb->nb = slen;
     mb->depth = 0;
@@ -1385,7 +1374,7 @@ expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     mb->spec = spec;	/* (future) %file expansion info */
     mb->mc = mc;
 
-    rc = expandMacro(mb);
+    rc = expandMacro(mb, sbuf);
 
     if (mb->nb == 0)
 	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
