@@ -765,7 +765,7 @@ rpmRC rpmfcApply(rpmfc fc)
     int xx = 0;
 
     /* Generate package and per-file dependencies. */
-    for (fc->ix = 0; fc->fn[fc->ix] != NULL; fc->ix++) {
+    for (fc->ix = 0; fc->fn != NULL && fc->fn[fc->ix] != NULL; fc->ix++) {
 	for (ARGV_t fattr = fc->fattrs[fc->ix]; fattr && *fattr; fattr++) {
 	    xx += rpmfcHelper(fc, 'P', *fattr);
 	    xx += rpmfcHelper(fc, 'R', *fattr);
