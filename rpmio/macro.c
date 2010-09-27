@@ -201,25 +201,24 @@ findEntry(rpmMacroContext mc, const char * name, size_t namelen)
 {
     rpmMacroEntry key, *ret;
     struct rpmMacroEntry_s keybuf;
-    char *namebuf = NULL;
+    char namebuf[namelen+1];
+    const char *mname = name;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
     if (mc->macroTable == NULL || mc->firstFree == 0)
 	return NULL;
 
     if (namelen > 0) {
-	namebuf = xcalloc(namelen + 1, sizeof(*namebuf));
 	strncpy(namebuf, name, namelen);
 	namebuf[namelen] = '\0';
-	name = namebuf;
+	mname = namebuf;
     }
     
     key = &keybuf;
     memset(key, 0, sizeof(*key));
-    key->name = (char *)name;
+    key->name = (char *)mname;
     ret = (rpmMacroEntry *) bsearch(&key, mc->macroTable, mc->firstFree,
 			sizeof(*(mc->macroTable)), compareMacroName);
-    _free(namebuf);
     /* XXX TODO: find 1st empty slot and return that */
     return ret;
 }
