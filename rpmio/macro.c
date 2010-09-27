@@ -435,28 +435,33 @@ expandT(MacroBuf mb, const char * f, size_t flen)
 }
 
 /**
- * Save source/target and expand macro in u.
+ * Macro-expand string src, return result in dynamically allocated buffer.
  * @param mb		macro expansion state
- * @param u		input macro, output expansion
- * @param ulen		no. bytes in u buffer
+ * @param src		string to expand
+ * @param slen		input string length (or 0 for strlen())
+ * @retval target	pointer to expanded string (malloced)
  * @return		result of expansion
  */
 static int
-expandU(MacroBuf mb, char * u, size_t ulen)
+expandThis(MacroBuf mb, const char * src, size_t slen, char **target)
 {
     struct MacroBuf_s umb;
     int rc;
+    char *tstr = NULL;
+
+    if (slen) {
+	tstr = xmalloc(slen + 1);
+	strncpy(tstr, src, slen);
+	tstr[slen] = '\0';
+    }
 
     /* Copy other state from "parent", but we want a buffer of our own */
     umb = *mb;
     umb.buf = NULL;
-    rc = expandMacro(&umb, u);
+    rc = expandMacro(&umb, tstr ? tstr : src);
+    *target = umb.buf;
 
-    /* Copy back result, flag error on truncation */
-    rc += (rstrlcpy(u, umb.buf, ulen) >= ulen);
-    
-    _free(umb.buf);
-
+    _free(tstr);
     return rc;
 }
 
@@ -480,15 +485,12 @@ static void mbAppend(MacroBuf mb, char c)
 static int
 doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 {
-    size_t blen = MACROBUFSIZ + clen;
-    char *buf = xmalloc(blen);
+    char *buf = NULL;
     FILE *shf;
     int rc = 0;
     int c;
 
-    strncpy(buf, cmd, clen);
-    buf[clen] = '\0';
-    rc = expandU(mb, buf, blen);
+    rc = expandThis(mb, cmd, clen, &buf);
     if (rc)
 	goto exit;
 
@@ -528,7 +530,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     char *buf = xmalloc(blen);
     char *n = buf, *ne = n;
     char *o = NULL, *oe;
-    char *b, *be;
+    char *b, *be, *ebody = NULL;
     int c;
     int oc = ')';
 
@@ -622,15 +624,19 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	goto exit;
     }
 
-    if (expandbody && expandU(mb, b, (&buf[blen] - b))) {
-	rpmlog(RPMLOG_ERR, _("Macro %%%s failed to expand\n"), n);
-	goto exit;
+    if (expandbody) {
+	if (expandThis(mb, b, 0, &ebody)) {
+	    rpmlog(RPMLOG_ERR, _("Macro %%%s failed to expand\n"), n);
+	    goto exit;
+	}
+	b = ebody;
     }
 
     addMacro(mb->mc, n, o, b, (level - 1));
 
 exit:
     _free(buf);
+    _free(ebody);
     return se;
 }
 
@@ -888,12 +894,9 @@ exit:
 static void
 doOutput(MacroBuf mb, int waserror, const char * msg, size_t msglen)
 {
-    size_t blen = MACROBUFSIZ + msglen;
-    char *buf = xmalloc(blen);
+    char *buf = NULL;
 
-    strncpy(buf, msg, msglen);
-    buf[msglen] = '\0';
-    (void) expandU(mb, buf, blen);
+    (void) expandThis(mb, msg, msglen, &buf);
     if (waserror)
 	rpmlog(RPMLOG_ERR, "%s\n", buf);
     else
@@ -914,16 +917,15 @@ static void
 doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 		const char * g, size_t gn)
 {
-    size_t blen = MACROBUFSIZ + fn + gn;
-    char *buf = xmalloc(blen);
+    char *buf = NULL;
     char *b = NULL, *be;
     int c;
 
-    buf[0] = '\0';
     if (g != NULL) {
-	strncpy(buf, g, gn);
-	buf[gn] = '\0';
-	(void) expandU(mb, buf, blen);
+	(void) expandThis(mb, g, gn, &buf);
+    } else {
+	buf = xmalloc(MACROBUFSIZ + fn + gn);
+	buf[0] = '\0';
     }
     if (STREQ("basename", f, fn)) {
 	if ((b = strrchr(buf, '/')) == NULL)
