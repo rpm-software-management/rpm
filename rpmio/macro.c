@@ -444,23 +444,18 @@ expandT(MacroBuf mb, const char * f, size_t flen)
 static int
 expandU(MacroBuf mb, char * u, size_t ulen)
 {
-    size_t tpos = mb->tpos;
-    size_t nb = mb->nb;
-    char *tbuf = mb->buf;
+    struct MacroBuf_s umb;
     int rc;
 
-    /* Force new expansion buffer */
-    mb->buf = NULL;
-    rc = expandMacro(mb, u);
+    /* Copy other state from "parent", but we want a buffer of our own */
+    umb = *mb;
+    umb.buf = NULL;
+    rc = expandMacro(&umb, u);
 
     /* Copy back result, flag error on truncation */
-    rc += (rstrlcpy(u, mb->buf, ulen) >= ulen);
+    rc += (rstrlcpy(u, umb.buf, ulen) >= ulen);
     
-    _free(mb->buf);
-
-    mb->buf = tbuf;
-    mb->tpos = tpos;
-    mb->nb = nb;
+    _free(umb.buf);
 
     return rc;
 }
