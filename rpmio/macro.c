@@ -62,7 +62,8 @@ rpmMacroContext rpmCLIMacroContext = &rpmCLIMacroContext_s;
  * Macro expansion state.
  */
 typedef struct MacroBuf_s {
-    char * t;			/*!< Expansion buffer. */
+    char * buf;			/*!< Expansion buffer. */
+    size_t tpos;		/*!< Current position in expansion buffer */
     size_t nb;			/*!< No. bytes remaining in expansion buffer. */
     int depth;			/*!< Current expansion depth. */
     int macro_trace;		/*!< Pre-print macro to expand? */
@@ -70,7 +71,7 @@ typedef struct MacroBuf_s {
     rpmMacroContext mc;
 } * MacroBuf;
 
-#define SAVECHAR(_mb, _c) { *(_mb)->t = (_c), (_mb)->t++, (_mb)->nb--; }
+#define SAVECHAR(_mb, _c) { (_mb)->buf[mb->tpos++] = (_c); (_mb)->nb--; }
 
 
 #define	_MAX_MACRO_DEPTH	16
@@ -446,25 +447,25 @@ expandT(MacroBuf mb, const char * f, size_t flen)
 static int
 expandU(MacroBuf mb, char * u, size_t ulen)
 {
-    char *t = mb->t;
+    size_t tpos = mb->tpos;
     size_t nb = mb->nb;
-    char *tbuf;
+    char *tbuf = mb->buf;
     int rc;
 
-    tbuf = xcalloc(ulen + 1, sizeof(*tbuf));
-
-    mb->t = tbuf;
+    mb->buf = xcalloc(ulen + 1, sizeof(*mb->buf));
+    mb->tpos = 0;
     mb->nb = ulen;
     rc = expandMacro(mb, u);
 
-    tbuf[ulen] = '\0';	/* XXX just in case */
+    mb->buf[ulen] = '\0';	/* XXX just in case */
     if (ulen > mb->nb)
-	strncpy(u, tbuf, (ulen - mb->nb + 1));
+	strncpy(u, mb->buf, (ulen - mb->nb + 1));
 
-    mb->t = t;
+    _free(mb->buf);
+
+    mb->buf = tbuf;
+    mb->tpos = tpos;
     mb->nb = nb;
-
-    _free(tbuf);
 
     return rc;
 }
@@ -503,8 +504,8 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
     (void) pclose(shf);
 
     /* XXX delete trailing \r \n */
-    while (iseol(mb->t[-1])) {
-	*(mb->t--) = '\0';
+    while (iseol(mb->buf[mb->tpos-1])) {
+	mb->buf[mb->tpos--] = '\0';
 	mb->nb++;
     }
 
@@ -1027,7 +1028,7 @@ expandMacro(MacroBuf mb, const char *src)
     const char *f, *fe;
     const char *g, *ge;
     size_t fn, gn;
-    char *t = mb->t;	/* save expansion pointer for printExpand */
+    size_t tpos = mb->tpos; /* save expansion pointer for printExpand */
     int c;
     int rc = 0;
     int negate;
@@ -1062,7 +1063,7 @@ expandMacro(MacroBuf mb, const char *src)
 	f = fe = NULL;
 	g = ge = NULL;
 	if (mb->depth > 1)	/* XXX full expansion for outermost level */
-		t = mb->t;	/* save expansion pointer for printExpand */
+	    tpos = mb->tpos;	/* save expansion pointer for printExpand */
 	negate = 0;
 	lastc = NULL;
 	chkexist = 0;
@@ -1235,8 +1236,8 @@ expandMacro(MacroBuf mb, const char *src)
 		    size_t len = strlen(printbuf);
 		    if (len > mb->nb)
 			len = mb->nb;
-		    memcpy(mb->t, printbuf, len);
-		    mb->t += len;
+		    memcpy(mb->buf+tpos, printbuf, len);
+		    mb->tpos += len;
 		    mb->nb -= len;
 		}
 		rpmluaSetPrintBuffer(lua, 0);
@@ -1339,10 +1340,10 @@ expandMacro(MacroBuf mb, const char *src)
 	s = se;
     }
 
-    *mb->t = '\0';
+    mb->buf[mb->tpos] = '\0';
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
-	printExpansion(mb, t, mb->t);
+	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
     return rc;
 }
 
@@ -1358,7 +1359,8 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
-    mb->t = tbuf;
+    mb->buf = tbuf;
+    mb->tpos = 0;
     mb->nb = tlen;
     mb->depth = 0;
     mb->macro_trace = print_macro_trace;
