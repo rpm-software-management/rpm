@@ -1242,7 +1242,7 @@ expandMacro(MacroBuf mb, const char *src)
 		    size_t len = strlen(printbuf);
 		    if (len > mb->nb)
 			len = mb->nb;
-		    memcpy(mb->buf+tpos, printbuf, len);
+		    memcpy(mb->buf+mb->tpos, printbuf, len);
 		    mb->tpos += len;
 		    mb->nb -= len;
 		}
