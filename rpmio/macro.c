@@ -452,15 +452,13 @@ expandU(MacroBuf mb, char * u, size_t ulen)
     char *tbuf = mb->buf;
     int rc;
 
-    mb->buf = xcalloc(ulen + 1, sizeof(*mb->buf));
-    mb->tpos = 0;
-    mb->nb = ulen;
+    /* Force new expansion buffer */
+    mb->buf = NULL;
     rc = expandMacro(mb, u);
 
-    mb->buf[ulen] = '\0';	/* XXX just in case */
-    if (ulen > mb->nb)
-	strncpy(u, mb->buf, (ulen - mb->nb + 1));
-
+    /* Copy back result, flag error on truncation */
+    rc += (rstrlcpy(u, mb->buf, ulen) >= ulen);
+    
     _free(mb->buf);
 
     mb->buf = tbuf;
@@ -1027,13 +1025,20 @@ expandMacro(MacroBuf mb, const char *src)
     const char *s = src, *se;
     const char *f, *fe;
     const char *g, *ge;
-    size_t fn, gn;
-    size_t tpos = mb->tpos; /* save expansion pointer for printExpand */
+    size_t fn, gn, tpos;
     int c;
     int rc = 0;
     int negate;
     const char * lastc;
     int chkexist;
+
+    if (mb->buf == NULL) {
+	size_t blen = MACROBUFSIZ + strlen(src);
+	mb->buf = xcalloc(blen + 1, sizeof(*mb->buf));
+	mb->tpos = 0;
+	mb->nb = blen;
+    }
+    tpos = mb->tpos; /* save expansion pointer for printExpand */
 
     if (++mb->depth > max_macro_depth) {
 	rpmlog(RPMLOG_ERR,
@@ -1353,15 +1358,11 @@ expandMacro(MacroBuf mb, const char *src)
 static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
 {
     MacroBuf mb = xcalloc(1, sizeof(*mb));
-    size_t tlen = MACROBUFSIZ + strlen(src);
-    char *tbuf = xcalloc(tlen + 1, sizeof(*tbuf));
     int rc = 0;
 
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
-    mb->buf = tbuf;
-    mb->tpos = 0;
-    mb->nb = tlen;
+    mb->buf = NULL;
     mb->depth = 0;
     mb->macro_trace = print_macro_trace;
     mb->expand_trace = print_expand_trace;
@@ -1372,9 +1373,9 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     if (mb->nb == 0)
 	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 
-    tbuf[tlen] = '\0';	/* XXX just in case */
+    mb->buf[mb->tpos] = '\0';	/* XXX just in case */
     /* expanded output is usually much less than alloced buffer, downsize */
-    *target = xrealloc(tbuf, strlen(tbuf) + 1);
+    *target = xrealloc(mb->buf, mb->tpos + 1);
 
     _free(mb);
     return rc;
