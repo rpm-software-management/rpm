@@ -67,7 +67,6 @@ typedef struct MacroBuf_s {
     int depth;			/*!< Current expansion depth. */
     int macro_trace;		/*!< Pre-print macro to expand? */
     int expand_trace;		/*!< Post-print macro expansion? */
-    void * spec;		/*!< (future) %file expansion info?. */
     rpmMacroContext mc;
 } * MacroBuf;
 
@@ -1369,8 +1368,6 @@ expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     mb->depth = 0;
     mb->macro_trace = print_macro_trace;
     mb->expand_trace = print_expand_trace;
-
-    mb->spec = spec;	/* (future) %file expansion info */
     mb->mc = mc;
 
     rc = expandMacro(mb, sbuf);
