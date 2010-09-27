@@ -71,9 +71,6 @@ typedef struct MacroBuf_s {
     rpmMacroContext mc;
 } * MacroBuf;
 
-#define SAVECHAR(_mb, _c) { (_mb)->buf[mb->tpos++] = (_c); (_mb)->nb--; }
-
-
 #define	_MAX_MACRO_DEPTH	16
 static int max_macro_depth = _MAX_MACRO_DEPTH;
 
@@ -468,6 +465,16 @@ expandU(MacroBuf mb, char * u, size_t ulen)
     return rc;
 }
 
+static void mbAppend(MacroBuf mb, char c)
+{
+    if (mb->nb < 1) {
+	mb->buf = xrealloc(mb->buf, mb->tpos + mb->nb + MACROBUFSIZ);
+	mb->nb += MACROBUFSIZ;
+    }
+    mb->buf[mb->tpos++] = c;
+    mb->nb--;
+}
+
 /**
  * Expand output of shell command into target buffer.
  * @param mb		macro expansion state
@@ -495,9 +502,7 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	goto exit;
     }
     while((c = fgetc(shf)) != EOF) {
-	if (mb->nb > 1) {
-	    SAVECHAR(mb, c);
-	} 
+	mbAppend(mb, c);
     }
     (void) pclose(shf);
 
@@ -1012,7 +1017,6 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 
 /**
  * The main macro recursion loop.
- * @todo Dynamically reallocate target buffer.
  * @param mb		macro expansion state
  * @param src		string to expand
  * @return		0 on success, 1 on failure
@@ -1048,7 +1052,7 @@ expandMacro(MacroBuf mb, const char *src)
 	return 1;
     }
 
-    while (rc == 0 && mb->nb > 0 && (c = *s) != '\0') {
+    while (rc == 0 && (c = *s) != '\0') {
 	s++;
 	/* Copy text until next macro */
 	switch(c) {
@@ -1059,7 +1063,7 @@ expandMacro(MacroBuf mb, const char *src)
 		    s++;	/* skip first % in %% */
 		}
 	default:
-		SAVECHAR(mb, c);
+		mbAppend(mb, c);
 		continue;
 		break;
 	}
@@ -1165,7 +1169,7 @@ expandMacro(MacroBuf mb, const char *src)
 	if ((fe - f) <= 0) {
 /* XXX Process % in unknown context */
 		c = '%';	/* XXX only need to save % */
-		SAVECHAR(mb, c);
+		mbAppend(mb, c);
 #if 0
 		rpmlog(RPMLOG_ERR,
 			_("A %% is followed by an unparseable macro\n"));
@@ -1315,7 +1319,7 @@ expandMacro(MacroBuf mb, const char *src)
 	if (me == NULL) {	/* leave unknown %... as is */
 		/* XXX hack to permit non-overloaded %foo to be passed */
 		c = '%';	/* XXX only need to save % */
-		SAVECHAR(mb, c);
+		mbAppend(mb, c);
 		continue;
 	}
 
@@ -1369,9 +1373,6 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     mb->mc = mc;
 
     rc = expandMacro(mb, src);
-
-    if (mb->nb == 0)
-	rpmlog(RPMLOG_ERR, _("Target buffer overflow\n"));
 
     mb->buf[mb->tpos] = '\0';	/* XXX just in case */
     /* expanded output is usually much less than alloced buffer, downsize */
