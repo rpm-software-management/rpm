@@ -475,6 +475,17 @@ static void mbAppend(MacroBuf mb, char c)
     mb->nb--;
 }
 
+static void mbAppendStr(MacroBuf mb, const char *str)
+{
+    size_t len = strlen(str);
+    if (len > mb->nb) {
+	mb->buf = xrealloc(mb->buf, mb->tpos + mb->nb + MACROBUFSIZ + len);
+	mb->nb += MACROBUFSIZ + len;
+    }
+    memcpy(mb->buf+mb->tpos, str, len);
+    mb->tpos += len;
+    mb->nb -= len;
+}
 /**
  * Expand output of shell command into target buffer.
  * @param mb		macro expansion state
@@ -1239,12 +1250,7 @@ expandMacro(MacroBuf mb, const char *src)
 		    rc = 1;
 		printbuf = rpmluaGetPrintBuffer(lua);
 		if (printbuf) {
-		    size_t len = strlen(printbuf);
-		    if (len > mb->nb)
-			len = mb->nb;
-		    memcpy(mb->buf+mb->tpos, printbuf, len);
-		    mb->tpos += len;
-		    mb->nb -= len;
+		    mbAppendStr(mb, printbuf);
 		}
 		rpmluaSetPrintBuffer(lua, 0);
 		free(scriptbuf);
