@@ -83,7 +83,7 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 #define	MACRO_CHUNK_SIZE	16
 
 /* forward ref */
-static int expandMacro(MacroBuf mb, const char *src);
+static int expandMacro(MacroBuf mb, const char *src, size_t slen);
 
 /* =============================================================== */
 
@@ -413,28 +413,6 @@ printExpansion(MacroBuf mb, const char * t, const char * te)
     }
 
 /**
- * Save source and expand field into target.
- * @param mb		macro expansion state
- * @param f		field
- * @param flen		no. bytes in field
- * @return		result of expansion
- */
-static int
-expandT(MacroBuf mb, const char * f, size_t flen)
-{
-    char *sbuf = xcalloc(flen + 1, sizeof(*sbuf));
-    int rc;
-
-    strncpy(sbuf, f, flen);
-    sbuf[flen] = '\0';
-    rc = expandMacro(mb, sbuf);
-
-    _free(sbuf);
-
-    return rc;
-}
-
-/**
  * Macro-expand string src, return result in dynamically allocated buffer.
  * @param mb		macro expansion state
  * @param src		string to expand
@@ -447,21 +425,13 @@ expandThis(MacroBuf mb, const char * src, size_t slen, char **target)
 {
     struct MacroBuf_s umb;
     int rc;
-    char *tstr = NULL;
-
-    if (slen) {
-	tstr = xmalloc(slen + 1);
-	strncpy(tstr, src, slen);
-	tstr[slen] = '\0';
-    }
 
     /* Copy other state from "parent", but we want a buffer of our own */
     umb = *mb;
     umb.buf = NULL;
-    rc = expandMacro(&umb, tstr ? tstr : src);
+    rc = expandMacro(&umb, src, slen);
     *target = umb.buf;
 
-    _free(tstr);
     return rc;
 }
 
@@ -1018,7 +988,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     }
 
     if (b) {
-	(void) expandMacro(mb, b);
+	(void) expandMacro(mb, b, 0);
     }
     free(buf);
 }
@@ -1030,7 +1000,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
  * @return		0 on success, 1 on failure
  */
 static int
-expandMacro(MacroBuf mb, const char *src)
+expandMacro(MacroBuf mb, const char *src, size_t slen)
 {
     rpmMacroEntry *mep;
     rpmMacroEntry me;
@@ -1043,9 +1013,18 @@ expandMacro(MacroBuf mb, const char *src)
     int negate;
     const char * lastc;
     int chkexist;
+    char *source = NULL;
+
+    /* Handle non-terminated substrings by creating a terminated copy */
+    if (slen > 0) {
+	source = xmalloc(slen + 1);
+	strncpy(source, src, slen);
+	source[slen] = '\0';
+	s = source;
+    }
 
     if (mb->buf == NULL) {
-	size_t blen = MACROBUFSIZ + strlen(src);
+	size_t blen = MACROBUFSIZ + strlen(s);
 	mb->buf = xcalloc(blen + 1, sizeof(*mb->buf));
 	mb->tpos = 0;
 	mb->nb = blen;
@@ -1057,6 +1036,7 @@ expandMacro(MacroBuf mb, const char *src)
 		_("Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"));
 	mb->depth--;
 	mb->expand_trace = 1;
+	_free(source);
 	return 1;
     }
 
@@ -1293,10 +1273,10 @@ expandMacro(MacroBuf mb, const char *src)
 		}
 
 		if (g && g < ge) {		/* Expand X in %{-f:X} */
-			rc = expandT(mb, g, gn);
+			rc = expandMacro(mb, g, gn);
 		} else
 		if (me && me->body && *me->body) {/* Expand %{-f}/%{-f*} */
-			rc = expandMacro(mb, me->body);
+			rc = expandMacro(mb, me->body, 0);
 		}
 		s = se;
 		continue;
@@ -1310,10 +1290,10 @@ expandMacro(MacroBuf mb, const char *src)
 			continue;
 		}
 		if (g && g < ge) {		/* Expand X in %{?f:X} */
-			rc = expandT(mb, g, gn);
+			rc = expandMacro(mb, g, gn);
 		} else
 		if (me && me->body && *me->body) { /* Expand %{?f}/%{?f*} */
-			rc = expandMacro(mb, me->body);
+			rc = expandMacro(mb, me->body, 0);
 		}
 		s = se;
 		continue;
@@ -1340,7 +1320,7 @@ expandMacro(MacroBuf mb, const char *src)
 
 	/* Recursively expand body of macro */
 	if (me->body && *me->body) {
-		rc = expandMacro(mb, me->body);
+		rc = expandMacro(mb, me->body, 0);
 		if (rc == 0)
 			me->used++;	/* Mark macro as used */
 	}
@@ -1356,6 +1336,7 @@ expandMacro(MacroBuf mb, const char *src)
     mb->depth--;
     if (rc != 0 || mb->expand_trace)
 	printExpansion(mb, mb->buf+tpos, mb->buf+mb->tpos);
+    _free(source);
     return rc;
 }
 
@@ -1375,7 +1356,7 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     mb->expand_trace = print_expand_trace;
     mb->mc = mc;
 
-    rc = expandMacro(mb, src);
+    rc = expandMacro(mb, src, 0);
 
     mb->buf[mb->tpos] = '\0';	/* XXX just in case */
     /* expanded output is usually much less than alloced buffer, downsize */
