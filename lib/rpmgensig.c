@@ -110,6 +110,7 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
     struct rpmtd_s pkt;
     int rc = 1;
 
+    memset(signid, 0, sizeof(signid));
     if (headerGet(sig, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
 	pgpDig dig = pgpNewDig();
 
@@ -121,6 +122,56 @@ static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
 	dig = pgpFreeDig(dig);
 	rpmtdFreeData(&pkt);
     }
+    return rc;
+}
+
+static void deleteSigs(Header sigh)
+{
+    headerDel(sigh, RPMSIGTAG_GPG);
+    headerDel(sigh, RPMSIGTAG_PGP);
+    headerDel(sigh, RPMSIGTAG_DSA);
+    headerDel(sigh, RPMSIGTAG_RSA);
+    headerDel(sigh, RPMSIGTAG_PGP5);
+}
+
+static int sameSignature(rpmSigTag sigtag, Header sig1, Header sig2)
+{
+    pgpKeyID_t id1, id2;
+    int rc = 0; /* signatures differ if either is not present */
+
+    /* XXX TODO: compare the parameters too, not just ID */
+    if (getSignid(sig1, sigtag, id1) == 0 && getSignid(sig2, sigtag, id2) == 0)
+	rc = (memcmp(id1, id2, sizeof(id1)) == 0);
+    return rc;
+}
+
+static int replaceSignature(Header sigh, const char *sigtarget,
+			    const char *passPhrase)
+{
+    /* Grab a copy of the header so we can compare the result */
+    Header oldsigh = headerCopy(sigh);
+    int rc = -1;
+    
+    /* Nuke all signature tags */
+    deleteSigs(sigh);
+
+    /*
+     * rpmAddSignature() internals parse the actual signing result and 
+     * use appropriate DSA/RSA tags regardless of what we pass from here.
+     * RPMSIGTAG_GPG is only used to signal its an actual signature
+     * and not just a digest we're adding, and says nothing
+     * about the actual tags that gets created. 
+     */
+    if (rpmAddSignature(sigh, sigtarget, RPMSIGTAG_GPG, passPhrase) == 0) {
+	/* Lets see what we got and whether its the same signature as before */
+	rpmSigTag sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
+					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
+
+	rc = sameSignature(sigtag, sigh, oldsigh);
+
+    }
+
+    headerFree(oldsigh);
     return rc;
 }
 
@@ -235,61 +286,18 @@ static int rpmSign(const char *rpm, int deleting,
 	}
 
 	if (deleting) {	/* Nuke all the signature tags. */
-	    xx = headerDel(sigh, RPMSIGTAG_GPG);
-	    xx = headerDel(sigh, RPMSIGTAG_DSA);
-	    xx = headerDel(sigh, RPMSIGTAG_PGP5);
-	    xx = headerDel(sigh, RPMSIGTAG_PGP);
-	    xx = headerDel(sigh, RPMSIGTAG_RSA);
+	    deleteSigs(sigh);
 	} else if (sigtag > 0) {
-	    /* If gpg/pgp is configured, replace the signature. */
-	    pgpKeyID_t oldsignid, newsignid;
-
-	    /* Grab the old signature fingerprint (if any) */
-	    memset(oldsignid, 0, sizeof(oldsignid));
-	    xx = getSignid(sigh, sigtag, oldsignid);
-
-	    switch (sigtag) {
-	    case RPMSIGTAG_DSA:
-		xx = headerDel(sigh, RPMSIGTAG_GPG);
-		break;
-	    case RPMSIGTAG_RSA:
-		xx = headerDel(sigh, RPMSIGTAG_PGP);
-		break;
-	    case RPMSIGTAG_GPG:
-		xx = headerDel(sigh, RPMSIGTAG_DSA);
-	    case RPMSIGTAG_PGP5:
-	    case RPMSIGTAG_PGP:
-		xx = headerDel(sigh, RPMSIGTAG_RSA);
-		break;
-	    default:
-		break;
-	    }
-
-	    xx = headerDel(sigh, sigtag);
-	    if (rpmAddSignature(sigh, sigtarget, sigtag, passPhrase)) {
-		goto exit;
-	    }
-
-	    /* If package was previously signed, check for same signer. */
-	    memset(newsignid, 0, sizeof(newsignid));
-	    if (memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
-
-		/* Grab the new signature fingerprint */
-		xx = getSignid(sigh, sigtag, newsignid);
-
-		/* If same signer, skip resigning the package. */
-		if (!memcmp(oldsignid, newsignid, sizeof(oldsignid))) {
-
-		    char *signid = pgpHexStr(newsignid+4, sizeof(newsignid)-4);
+	    res = replaceSignature(sigh, sigtarget, passPhrase);
+	    if (res != 0) {
+		if (res == 1) {
 		    rpmlog(RPMLOG_WARNING,
-			_("%s: was already signed by key ID %s, skipping\n"),
-			rpm, signid);
-		    free(signid);
-
-		    /* Already signed by same key is not an error */
+			"%s already contains identical signature, skipping\n",
+			rpm);
+		    /* Identical signature is not an error */
 		    res = 0;
-		    goto exit;
 		}
+		goto exit;
 	    }
 	}
 
