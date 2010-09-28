@@ -500,8 +500,6 @@ podobným spôsobom vytvoriť váš verejný a tajný kľúčový pár (bližši
 sú v dokumentácii ku PGP).
 Taktiež potrebujete konfigurovať makrá:
 
-.IP "\fB_signature\fP"
-Typ podpisu. Momentálne je podporované iba pgp.
 .IP "\fB_pgp_name\fP"
 Meno "užívateľa", ktorého kľúčom sa má podpísať balík.
 .PP
@@ -514,8 +512,6 @@ Napríkad pre použitie PGP na podpísanie balíka ako užívateľ
 \fB"John Doe <jdoe@foo.com>"\fP zo zväzku kľúčov umiestnených
 v \fB/etc/rpm/.pgp\fP použitím \fB/usr/bin/pgp\fP zápis bude
 obsahovať
-
-.I "\fB%_signature pgp\fP"
 
 .I "\fB%_pgp_path /etc/rpm/.pgp\fP"
 

@@ -709,9 +709,6 @@ vous\-même, vous devrez également créer votre propre paire clé publique/clé
 secrète (voir le manuel GPG). Vous devrez également configurer les macros
 suivantes\ :
 .TP
-\fB%_signature\fR
-Le type de signature. Actuellement, seuls gpg et pgp sont supportés.
-.TP
 \fB%_gpg_name\fR
 Le nom de l'«\ utilisateur\ » dont vous voulez utiliser la clé pour
 signer vos paquetages.
@@ -726,7 +723,6 @@ devriez inclure
 .PP
 
 .nf
-%_signature gpg
 %_gpg_path /etc/rpm/.gpg
 %_gpg_name John Doe <jdoe@foo.com>
 %_gpgbin /usr/bin/gpg

@@ -984,10 +984,6 @@ DSA の方が好ましい。
 .B rpm
 マクロを設定することも必要であろう。
 .TP
-\fB%_signature\fR
-署名の形式。
-現在のところ gpg と pgp のみがサポートされている。
-.TP
 \fB%_gpg_name\fR
 パッケージに署名するのに使用したい鍵のユーザ名。
 .PP
@@ -1000,7 +996,6 @@ DSA の方が好ましい。
 としてパッケージに GPG を使って署名する場合には
 .PP
 .nf
-%_signature gpg
 %_gpg_path /etc/rpm/.gpg
 %_gpg_name John Doe <jdoe@foo.com>
 %_gpgbin /usr/bin/gpg
