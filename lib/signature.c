@@ -289,7 +289,7 @@ Header rpmFreeSignature(Header sigh)
  */
 static int validatePGPSig(pgpDigParams sigp)
 {
-    pgpHashAlgo pa = sigp->pubkey_algo;
+    pgpPubkeyAlgo pa = sigp->pubkey_algo;
     /* TODO: query from the implementation instead of hardwiring here */
     if (pa != PGPPUBKEYALGO_DSA && pa != PGPPUBKEYALGO_RSA) {
 	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %d\n"),
