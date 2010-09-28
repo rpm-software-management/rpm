@@ -263,7 +263,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *missingKeys = NULL; 
     char *untrustedKeys = NULL;
     struct rpmtd_s sigtd;
-    rpmTag sigtag;
+    rpmSigTag sigtag;
     pgpDig dig = NULL;
     pgpDigParams sigp;
     Header sigh = NULL;
