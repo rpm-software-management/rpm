@@ -597,7 +597,6 @@ static char * fstateFormat(rpmtd td, char * formatPrefix)
 	case RPMFILE_STATE_WRONGCOLOR:
 	    str = _("wrong color");
 	    break;
-	/* XXX headers should never have this value as file state */
 	case RPMFILE_STATE_MISSING:
 	    str = _("missing");
 	    break;

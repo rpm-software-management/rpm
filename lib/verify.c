@@ -72,6 +72,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     case RPMFILE_STATE_REPLACED:
     case RPMFILE_STATE_NOTINSTALLED:
     case RPMFILE_STATE_WRONGCOLOR:
+    case RPMFILE_STATE_MISSING:
 	return 0;
 	break;
     case RPMFILE_STATE_NORMAL:
