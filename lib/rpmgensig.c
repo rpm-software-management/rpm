@@ -179,12 +179,10 @@ static int replaceSignature(Header sigh, const char *sigtarget,
  * Create/modify elements in signature header.
  * @param rpm		path to package
  * @param deleting	adding or deleting signature?
- * @param sigtag	signature to generate (ignored when deleting)
  * @param passPhrase	passPhrase (ignored when deleting)
  * @return		0 on success, -1 on error
  */
-static int rpmSign(const char *rpm, int deleting, 
-		rpmSigTag sigtag, const char *passPhrase)
+static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
@@ -287,7 +285,7 @@ static int rpmSign(const char *rpm, int deleting,
 
 	if (deleting) {	/* Nuke all the signature tags. */
 	    deleteSigs(sigh);
-	} else if (sigtag > 0) {
+	} else {
 	    res = replaceSignature(sigh, sigtarget, passPhrase);
 	    if (res != 0) {
 		if (res == 1) {
@@ -366,12 +364,11 @@ exit:
     return res;
 }
 
-int rpmcliSign(ARGV_const_t argv, int deleting,
-		rpmSigTag sigtag, const char *passPhrase)
+int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase)
 {
     int res = 0;
     for (ARGV_const_t arg = argv; arg && *arg; arg++) {
-	res += rpmSign(*arg, deleting, sigtag, passPhrase);
+	res += rpmSign(*arg, deleting, passPhrase);
     }
     return res;
 }

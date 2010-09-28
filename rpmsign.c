@@ -34,28 +34,6 @@ static struct poptOption optionsTable[] = {
     POPT_TABLEEND
 };
 
-static rpmSigTag lookupSignatureType(void)
-{
-    rpmSigTag rc = 0;
-
-    char *name = rpmExpand("%{?_signature}", NULL);
-    if (!(name && *name != '\0'))
-	rc = 0;
-    else if (!rstrcasecmp(name, "none"))
-	rc = 0;
-    else if (!rstrcasecmp(name, "pgp"))
-	rc = RPMSIGTAG_PGP;
-    else if (!rstrcasecmp(name, "pgp5"))	/* XXX legacy */
-	rc = RPMSIGTAG_PGP;
-    else if (!rstrcasecmp(name, "gpg"))
-	rc = RPMSIGTAG_GPG;
-    else
-	rc = -1;	/* Invalid %_signature spec in macro file */
-
-    name = _free(name);
-    return rc;
-}
-
 static int checkPassPhrase(const char * passPhrase)
 {
     int passPhrasePipe[2];
@@ -116,7 +94,6 @@ static int checkPassPhrase(const char * passPhrase)
 static int doSign(ARGV_const_t args)
 {
     int rc = EXIT_FAILURE;
-    int sigTag = lookupSignatureType();
     char * passPhrase = NULL;
     char * name = rpmExpand("%{?_gpg_name}", NULL);
 
@@ -125,24 +102,12 @@ static int doSign(ARGV_const_t args)
 	goto exit;
     }
 
-    switch (sigTag) {
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_GPG:
-    case RPMSIGTAG_DSA:
-    case RPMSIGTAG_RSA:
-	break;
-    default:
-	fprintf(stderr, _("Invalid %%_signature spec in macro file.\n"));
-	goto exit;
-	break;
-    }
-
     /* XXX FIXME: eliminate obsolete getpass() usage */
     passPhrase = getpass(_("Enter pass phrase: "));
     passPhrase = (passPhrase != NULL) ? rstrdup(passPhrase) : NULL;
     if (checkPassPhrase(passPhrase) == 0) {
 	fprintf(stderr, _("Pass phrase is good.\n"));
-	rc = rpmcliSign(args, 0, sigTag, passPhrase);
+	rc = rpmcliSign(args, 0, passPhrase);
     } else {
 	fprintf(stderr, _("Pass phrase check failed\n"));
     }
@@ -174,7 +139,7 @@ int main(int argc, char *argv[])
 	ec = doSign(args);
 	break;
     case MODE_DELSIGN:
-	ec = rpmcliSign(args, 1, 0, NULL);
+	ec = rpmcliSign(args, 1, NULL);
 	break;
     default:
 	argerror(_("only one major mode may be specified"));

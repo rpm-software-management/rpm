@@ -209,9 +209,6 @@ package or when debugging this package.\
 #	(legacy).
 %_rpmfilename		%{_build_name_fmt}
 
-#	The default signature type.
-%_signature		gpg
-
 #	The directory where sources/patches from a source package will be
 #	installed. This is also where sources/patches are found when building.
 %_sourcedir		%{_topdir}/SOURCES

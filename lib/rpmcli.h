@@ -382,12 +382,10 @@ extern struct poptOption rpmInstallPoptTable[];
  * Create/delete package signatures.
  * @param argv		array of package path arguments (NULL terminated)
  * @param deleting	adding or deleting signature(s)
- * @param sigTag	signature tag (ignored when deleting)
  * @param passPhrase	passphrase (ignored when deleting)
  * @return		0 on success
  */
-int rpmcliSign(ARGV_const_t argv, int deleting,
-		rpmSigTag sigTag, const char *passPhrase);
+int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase);
 
 /** Import public key(s) to rpm keyring
  * @param ts		transaction set
