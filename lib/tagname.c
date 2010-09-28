@@ -177,13 +177,7 @@ static rpmTagType _tagType(rpmTag tag)
 
     if (_rpmTags.byValue == NULL)
 	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
-
-    switch (tag) {
-    case RPMDBI_PACKAGES:
-	break;
-    default:
-	if (_rpmTags.byValue == NULL)
-	    break;
+    if (_rpmTags.byValue) {
 	l = 0;
 	u = _rpmTags.byValueSize;
 	while (l < u) {
@@ -206,7 +200,6 @@ static rpmTagType _tagType(rpmTag tag)
 		return (rpmTagType)(t->type | t->retype);
 	    }
 	}
-	break;
     }
     return RPM_NULL_TYPE;
 }
