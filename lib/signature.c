@@ -576,12 +576,12 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
     case RPMSIGTAG_GPG: {
-	rpmSigTag hdrtag = (sigTag == RPMSIGTAG_GPG) ?
-			    RPMSIGTAG_DSA : RPMSIGTAG_RSA;
+	rpmSigTag hdrtag;
 	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
 	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	/* XXX Piggyback a header-only DSA/RSA signature as well. */
+	hdrtag = (sigTag == RPMSIGTAG_GPG) ?  RPMSIGTAG_DSA : RPMSIGTAG_RSA;
 	ret = makeHDRSignature(sigh, file, hdrtag, passPhrase);
 	} break;
     case RPMSIGTAG_RSA:
