@@ -66,7 +66,7 @@ typedef struct rpmpsm_s {
     rpmCallbackType what;	/*!< Callback type. */
     rpm_loff_t amount;		/*!< Callback amount. */
     rpm_loff_t total;		/*!< Callback total. */
-    pkgStage goal;
+    pkgGoal goal;
     pkgStage stage;		/*!< Current psm stage. */
     pkgStage nstage;		/*!< Next psm stage. */
 
