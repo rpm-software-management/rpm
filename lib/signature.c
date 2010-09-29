@@ -27,18 +27,6 @@
 char ** environ = NULL;
 #endif
 
-static int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
-                     rpm_data_t p, rpm_count_t c)
-{
-    struct rpmtd_s sigtd;
-    rpmtdReset(&sigtd);
-    sigtd.tag = tag;
-    sigtd.type = type;
-    sigtd.data = p;
-    sigtd.count = c;
-    return headerPut(h, &sigtd, HEADERPUT_DEFAULT);
-}
-
 /**
  * Print package size.
  * @todo rpmio: use fdSize rather than fstat(2) to get file size.

@@ -19,6 +19,19 @@ typedef	enum sigType_e {
 extern "C" {
 #endif
 
+/* Dumb wrapper around headerPut() for signature header */
+static inline int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
+                     rpm_data_t p, rpm_count_t c)
+{
+    struct rpmtd_s sigtd;
+    rpmtdReset(&sigtd);
+    sigtd.tag = tag;
+    sigtd.type = type;
+    sigtd.data = p;
+    sigtd.count = c;
+    return headerPut(h, &sigtd, HEADERPUT_DEFAULT);
+}
+
 /** \ingroup signature
  * Return new, empty (signature) header instance.
  * @return		signature header
