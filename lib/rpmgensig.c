@@ -130,34 +130,12 @@ static int validatePGPSig(pgpDigParams sigp)
     return 0;
 }
 
-/**
- * Generate GPG signature(s) for a header+payload file.
- * @param file		header+payload file name
- * @retval *sigTagp	signature tag
- * @retval *pktp	signature packet(s)
- * @retval *pktlenp	signature packet(s) length
- * @param passPhrase	private key pass phrase
- * @return		0 on success, 1 on failure
- */
-static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
-		uint8_t ** pktp, size_t * pktlenp,
-		const char * passPhrase)
+static int runGPG(const char *file, const char *sigfile, const char * passPhrase)
 {
-    char * sigfile = NULL;
     int pid, status;
     int inpipe[2];
     FILE * fpipe;
-    struct stat st;
-    const char * cmd;
-    char *const *av;
-    pgpDig dig = NULL;
-    pgpDigParams sigp = NULL;
     int rc = 1; /* assume failure */
-
-    rasprintf(&sigfile, "%s.sig", file);
-
-    addMacro(NULL, "__plaintext_filename", NULL, file, -1);
-    addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
 
     inpipe[0] = inpipe[1] = 0;
     if (pipe(inpipe) < 0) {
@@ -165,7 +143,12 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
 	goto exit;
     }
 
+    addMacro(NULL, "__plaintext_filename", NULL, file, -1);
+    addMacro(NULL, "__signature_filename", NULL, sigfile, -1);
+
     if (!(pid = fork())) {
+	char *const *av;
+	char *cmd = NULL;
 	const char *gpg_path = rpmExpand("%{?_gpg_path}", NULL);
 
 	(void) dup2(inpipe[0], 3);
@@ -199,8 +182,34 @@ static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
     (void) waitpid(pid, &status, 0);
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("gpg exec failed (%d)\n"), WEXITSTATUS(status));
-	goto exit;
+    } else {
+	rc = 0;
     }
+exit:
+    return rc;
+}
+
+/**
+ * Generate GPG signature(s) for a header+payload file.
+ * @param file		header+payload file name
+ * @retval *sigTagp	signature tag
+ * @retval *pktp	signature packet(s)
+ * @retval *pktlenp	signature packet(s) length
+ * @param passPhrase	private key pass phrase
+ * @return		0 on success, 1 on failure
+ */
+static int makeGPGSignature(const char * file, rpmSigTag * sigTagp,
+		uint8_t ** pktp, size_t * pktlenp,
+		const char * passPhrase)
+{
+    char * sigfile = rstrscat(NULL, file, ".sig", NULL);
+    struct stat st;
+    pgpDig dig = NULL;
+    pgpDigParams sigp = NULL;
+    int rc = 1; /* assume failure */
+
+    if (runGPG(file, sigfile, passPhrase))
+	goto exit;
 
     if (stat(sigfile, &st)) {
 	/* GPG failed to write signature */
