@@ -173,13 +173,13 @@ static int replaceSignature(Header sigh, const char *sigtarget,
     deleteSigs(sigh);
 
     /*
-     * rpmAddSignature() internals parse the actual signing result and 
+     * rpmGenSignature() internals parse the actual signing result and 
      * use appropriate DSA/RSA tags regardless of what we pass from here.
      * RPMSIGTAG_GPG is only used to signal its an actual signature
      * and not just a digest we're adding, and says nothing
      * about the actual tags that gets created. 
      */
-    if (rpmAddSignature(sigh, sigtarget, RPMSIGTAG_GPG, passPhrase) == 0) {
+    if (rpmGenSignature(sigh, sigtarget, RPMSIGTAG_GPG, passPhrase) == 0) {
 	/* Lets see what we got and whether its the same signature as before */
 	rpmSigTag sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
 					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
@@ -295,7 +295,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	    int nsigs = sizeof(sigs) / sizeof(rpmSigTag);
 	    for (int i = 0; i < nsigs; i++) {
 		(void) headerDel(sigh, sigs[i]);
-		if (rpmAddSignature(sigh, sigtarget, sigs[i], passPhrase))
+		if (rpmGenDigest(sigh, sigtarget, sigs[i]))
 		    goto exit;
 	    }
 	}

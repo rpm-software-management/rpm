@@ -500,6 +500,37 @@ exit:
     return ret;
 }
 
+int rpmGenSignature(Header sigh, const char * file, rpmSigTag sigTag,
+		const char * passPhrase)
+{
+    uint8_t * pkt = NULL;
+    size_t pktlen;
+    int ret = -1;	/* assume failure. */
+
+    switch (sigTag) {
+    case RPMSIGTAG_PGP5:	/* XXX legacy */
+    case RPMSIGTAG_PGP:
+    case RPMSIGTAG_GPG: {
+	rpmSigTag hdrtag;
+	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	    break;
+	/* XXX Piggyback a header-only DSA/RSA signature as well. */
+	hdrtag = (sigTag == RPMSIGTAG_GPG) ?  RPMSIGTAG_DSA : RPMSIGTAG_RSA;
+	ret = makeHDRSignature(sigh, file, hdrtag, passPhrase);
+	} break;
+    case RPMSIGTAG_RSA:
+    case RPMSIGTAG_DSA:
+	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
+	break;
+    default:
+	break;
+    }
+    free(pkt);
+
+    return ret;
+}
+
 static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
 {
     Header h = NULL;
@@ -556,8 +587,7 @@ exit:
     return ret;
 }
 
-int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
-		const char * passPhrase)
+int rpmGenDigest(Header sigh, const char * file, rpmSigTag sigTag)
 {
     struct stat st;
     uint8_t * pkt = NULL;
@@ -590,21 +620,6 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
 	    break;
 	ret = 0;
-	break;
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_GPG: {
-	rpmSigTag hdrtag;
-	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    break;
-	/* XXX Piggyback a header-only DSA/RSA signature as well. */
-	hdrtag = (sigTag == RPMSIGTAG_GPG) ?  RPMSIGTAG_DSA : RPMSIGTAG_RSA;
-	ret = makeHDRSignature(sigh, file, hdrtag, passPhrase);
-	} break;
-    case RPMSIGTAG_RSA:
-    case RPMSIGTAG_DSA:
-	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
 	break;
     case RPMSIGTAG_SHA1:
 	ret = makeHDRDigest(sigh, file, sigTag);

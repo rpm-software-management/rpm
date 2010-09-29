@@ -45,6 +45,15 @@ rpmRC rpmReadSignature(FD_t fd, Header *sighp, sigType sig_type, char ** msg);
 int rpmWriteSignature(FD_t fd, Header h);
 
 /** \ingroup signature
+ * Generate digest(s) from a header+payload file, save in signature header.
+ * @param sigh		signature header
+ * @param file		header+payload file name
+ * @param sigTag	type of digest(s) to add
+ * @return		0 on success, -1 on failure
+ */
+int rpmGenDigest(Header sigh, const char * file, rpmSigTag sigTag);
+
+/** \ingroup signature
  * Generate signature(s) from a header+payload file, save in signature header.
  * @param sigh		signature header
  * @param file		header+payload file name
@@ -52,7 +61,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @param passPhrase	private key pass phrase
  * @return		0 on success, -1 on failure
  */
-int rpmAddSignature(Header sigh, const char * file,
+int rpmGenSignature(Header sigh, const char * file,
 		    rpmSigTag sigTag, const char * passPhrase);
 
 /** \ingroup signature

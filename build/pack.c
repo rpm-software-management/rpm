@@ -450,8 +450,8 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
 	sizetag = RPMSIGTAG_LONGSIZE;
 	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
     }
-    (void) rpmAddSignature(sig, sigtarget, sizetag, NULL);
-    (void) rpmAddSignature(sig, sigtarget, RPMSIGTAG_MD5, NULL);
+    (void) rpmGenDigest(sig, sigtarget, sizetag);
+    (void) rpmGenDigest(sig, sigtarget, RPMSIGTAG_MD5);
 
     if (SHA1) {
 	/* XXX can't use rpmtdFromFoo() on RPMSIGTAG_* items */
