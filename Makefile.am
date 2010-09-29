@@ -70,6 +70,8 @@ pkginclude_HEADERS += lib/rpmtypes.h
 pkginclude_HEADERS += lib/rpmvf.h
 pkginclude_HEADERS += lib/rpmplugins.h
 
+pkginclude_HEADERS += lib/rpmsign.h
+
 pkginclude_HEADERS += build/rpmbuild.h
 pkginclude_HEADERS += build/rpmfc.h
 pkginclude_HEADERS += build/rpmspec.h
@@ -113,7 +115,7 @@ rpmkeys_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 rpmsign_SOURCES =	rpmsign.c debug.h system.h
 rpmsign_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmsign_LDADD =		libcliutils.la
-rpmsign_LDADD +=	lib/librpm.la rpmio/librpmio.la
+rpmsign_LDADD +=	lib/librpmsign.la lib/librpm.la rpmio/librpmio.la
 rpmsign_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	rpmbuild.c debug.h system.h

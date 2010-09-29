@@ -11,7 +11,7 @@
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmpgp.h>
-#include <rpm/rpmcli.h>
+#include <rpm/rpmsign.h>
 #include <rpm/rpmfileutil.h>	/* rpmMkTemp() */
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>

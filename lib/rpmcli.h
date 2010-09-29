@@ -378,15 +378,6 @@ extern struct poptOption rpmInstallPoptTable[];
 /* ==================================================================== */
 /** \name RPMK */
 
-/** \ingroup rpmcli
- * Create/delete package signatures.
- * @param argv		array of package path arguments (NULL terminated)
- * @param deleting	adding or deleting signature(s)
- * @param passPhrase	passphrase (ignored when deleting)
- * @return		0 on success
- */
-int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase);
-
 /** Import public key(s) to rpm keyring
  * @param ts		transaction set
  * @param argv		array of pubkey path arguments (NULL terminated)
