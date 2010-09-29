@@ -278,7 +278,6 @@ static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
 	h = headerRead(fd, HEADER_MAGIC_YES);
 	if (h == NULL)
 	    goto exit;
-	(void) Fclose(fd);	fd = NULL;
 
 	if (headerIsEntry(h, RPMTAG_HEADERIMMUTABLE)) {
 	    DIGEST_CTX ctx;
@@ -290,7 +289,6 @@ static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
 		rpmlog(RPMLOG_ERR, 
 				_("Immutable header region could not be read. "
 				"Corrupted package?\n"));
-		h = headerFree(h);
 		goto exit;
 	    }
 	    ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
@@ -299,7 +297,6 @@ static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
 	    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
 	    rpmtdFreeData(&utd);
 	}
-	h = headerFree(h);
 
 	if (SHA1 == NULL)
 	    goto exit;
@@ -308,7 +305,6 @@ static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
 	ret = 0;
 	break;
     default:
-	goto exit;
 	break;
     }
 
