@@ -99,30 +99,25 @@ exit:
 }
 
 /**
- * Retrieve signer fingerprint from an OpenPGP signature tag.
- * @param sig		signature header
+ * Retrieve signature from header tag
+ * @param sigh		signature header
  * @param sigtag	signature tag
- * @retval signid	signer fingerprint
- * @return		0 on success
+ * @return		parsed pgp dig or NULL
  */
-static int getSignid(Header sig, rpmSigTag sigtag, pgpKeyID_t signid)
+static pgpDig getSig(Header sigh, rpmSigTag sigtag)
 {
     struct rpmtd_s pkt;
-    int rc = 1;
+    pgpDig dig = NULL;
 
-    memset(signid, 0, sizeof(signid));
-    if (headerGet(sig, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
-	pgpDig dig = pgpNewDig();
+    if (headerGet(sigh, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
+	dig = pgpNewDig();
 
-	if (!pgpPrtPkts(pkt.data, pkt.count, dig, 0)) {
-	    memcpy(signid, dig->signature.signid, sizeof(dig->signature.signid));
-	    rc = 0;
+	if (pgpPrtPkts(pkt.data, pkt.count, dig, 0) != 0) {
+	    dig = pgpFreeDig(dig);
 	}
-     
-	dig = pgpFreeDig(dig);
 	rpmtdFreeData(&pkt);
     }
-    return rc;
+    return dig;
 }
 
 static void deleteSigs(Header sigh)
@@ -134,14 +129,36 @@ static void deleteSigs(Header sigh)
     headerDel(sigh, RPMSIGTAG_PGP5);
 }
 
-static int sameSignature(rpmSigTag sigtag, Header sig1, Header sig2)
+static int sameSignature(rpmSigTag sigtag, Header h1, Header h2)
 {
-    pgpKeyID_t id1, id2;
-    int rc = 0; /* signatures differ if either is not present */
+    pgpDig dig1 = getSig(h1, sigtag);
+    pgpDig dig2 = getSig(h2, sigtag);
+    int rc = 0; /* assume different, eg if either signature doesn't exist */
 
-    /* XXX TODO: compare the parameters too, not just ID */
-    if (getSignid(sig1, sigtag, id1) == 0 && getSignid(sig2, sigtag, id2) == 0)
-	rc = (memcmp(id1, id2, sizeof(id1)) == 0);
+    /* XXX This part really belongs to rpmpgp.[ch] */
+    if (dig1 && dig2) {
+	pgpDigParams sig1 = &dig1->signature;
+	pgpDigParams sig2 = &dig2->signature;
+
+	/* XXX Should we compare something else too? */
+	if (sig1->hash_algo != sig2->hash_algo)
+	    goto exit;
+	if (sig1->pubkey_algo != sig2->pubkey_algo)
+	    goto exit;
+	if (sig1->version != sig2->version)
+	    goto exit;
+	if (sig1->sigtype != sig2->sigtype)
+	    goto exit;
+	if (memcmp(sig1->signid, sig2->signid, sizeof(sig1->signid)) != 0)
+	    goto exit;
+
+	/* Parameters match, assume same signature */
+	rc = 1;
+    }
+
+exit:
+    pgpFreeDig(dig1);
+    pgpFreeDig(dig2);
     return rc;
 }
 
