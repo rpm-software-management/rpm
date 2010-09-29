@@ -324,34 +324,26 @@ exit:
     return ret;
 }
 
-static int rpmGenSignature(Header sigh, const char * file, rpmSigTag sigTag,
+static int rpmGenSignature(Header sigh, const char * file,
 		const char * passPhrase)
 {
     uint8_t * pkt = NULL;
     size_t pktlen;
+    rpmSigTag sigTag = RPMSIGTAG_GPG;
+    rpmSigTag hdrtag;
     int ret = -1;	/* assume failure. */
 
-    switch (sigTag) {
-    case RPMSIGTAG_PGP5:	/* XXX legacy */
-    case RPMSIGTAG_PGP:
-    case RPMSIGTAG_GPG: {
-	rpmSigTag hdrtag;
-	if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    break;
-	/* XXX Piggyback a header-only DSA/RSA signature as well. */
-	hdrtag = (sigTag == RPMSIGTAG_GPG) ?  RPMSIGTAG_DSA : RPMSIGTAG_RSA;
-	ret = makeHDRSignature(sigh, file, hdrtag, passPhrase);
-	} break;
-    case RPMSIGTAG_RSA:
-    case RPMSIGTAG_DSA:
-	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
-	break;
-    default:
-	break;
-    }
-    free(pkt);
+    if (makeGPGSignature(file, &sigTag, &pkt, &pktlen, passPhrase) != 0)
+	goto exit;
+    if (sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen) == 0)
+	goto exit;
 
+    /* XXX Piggyback a header-only DSA/RSA signature as well. */
+    hdrtag = (sigTag == RPMSIGTAG_GPG) ?  RPMSIGTAG_DSA : RPMSIGTAG_RSA;
+    ret = makeHDRSignature(sigh, file, hdrtag, passPhrase);
+
+exit:
+    free(pkt);
     return ret;
 }
 
@@ -431,12 +423,9 @@ static int replaceSignature(Header sigh, const char *sigtarget,
 
     /*
      * rpmGenSignature() internals parse the actual signing result and 
-     * use appropriate DSA/RSA tags regardless of what we pass from here.
-     * RPMSIGTAG_GPG is only used to signal its an actual signature
-     * and not just a digest we're adding, and says nothing
-     * about the actual tags that gets created. 
+     * adds appropriate tags for DSA/RSA.
      */
-    if (rpmGenSignature(sigh, sigtarget, RPMSIGTAG_GPG, passPhrase) == 0) {
+    if (rpmGenSignature(sigh, sigtarget, passPhrase) == 0) {
 	/* Lets see what we got and whether its the same signature as before */
 	rpmSigTag sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
 					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
