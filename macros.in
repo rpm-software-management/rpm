@@ -611,10 +611,7 @@ print (t)\
 %_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
 
 %_dbi_config_Dirnames		%{_dbi_btconfig}
-%_dbi_config_Requireversion	%{_dbi_btconfig}
-%_dbi_config_Provideversion	%{_dbi_btconfig}
 %_dbi_config_Installtid		%{_dbi_btconfig}
-%_dbi_config_Removetid		%{_dbi_btconfig}
 
 %_dbi_config	%{_dbi_htconfig}
 
