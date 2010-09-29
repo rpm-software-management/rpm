@@ -108,26 +108,55 @@ exit:
 }
 
 /*
+ * Validate generated signature and insert to header if it looks sane.
  * NSS doesn't support everything GPG does. Basic tests to see if the 
  * generated signature is something we can use.
+ * Return 0 on success, 1 on failure.
  */
-static int validatePGPSig(pgpDigParams sigp)
+static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 {
-    pgpPubkeyAlgo pa = sigp->pubkey_algo;
-    /* TODO: query from the implementation instead of hardwiring here */
-    if (pa != PGPPUBKEYALGO_DSA && pa != PGPPUBKEYALGO_RSA) {
-	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %d\n"),
-		sigp->pubkey_algo);
-	return 1;
-    }
+    pgpDig dig = pgpNewDig();
+    pgpDigParams sigp = &dig->signature;
+    rpmSigTag sigtag;
+    struct rpmtd_s sigtd;
+    int rc = 1; /* assume failure */
+
+    if (pgpPrtPkts(pkt, pktlen, dig, 0) != 0)
+	goto exit;
 
     if (rpmDigestLength(sigp->hash_algo) == 0) {
 	rpmlog(RPMLOG_ERR, _("Unsupported PGP hash algorithm %d\n"),
 	       sigp->hash_algo);
-	return 1;
+	goto exit;
     }
 
-    return 0;
+    switch (sigp->pubkey_algo) {
+    case PGPPUBKEYALGO_DSA:
+	sigtag = ishdr ? RPMSIGTAG_DSA : RPMSIGTAG_GPG;
+	break;
+    case PGPPUBKEYALGO_RSA:
+	sigtag = ishdr ? RPMSIGTAG_RSA : RPMSIGTAG_PGP;
+	break;
+    default:
+	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %d\n"),
+		sigp->pubkey_algo);
+	goto exit;
+	break;
+    }
+
+    /* Looks sane, insert into header */
+    rpmtdReset(&sigtd);
+    sigtd.count = pktlen;
+    sigtd.data = pkt;
+    sigtd.type = RPM_BIN_TYPE;
+    sigtd.tag = sigtag;
+
+    /* Argh, reversed return codes */
+    rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0);
+
+exit:
+    dig = pgpFreeDig(dig);
+    return rc;
 }
 
 static int runGPG(const char *file, const char *sigfile, const char * passPhrase)
@@ -204,8 +233,6 @@ static int makeGPGSignature(Header sigh, int ishdr,
     struct stat st;
     uint8_t * pkt = NULL;
     size_t pktlen = 0;
-    pgpDig dig = NULL;
-    pgpDigParams sigp = NULL;
     int rc = 1; /* assume failure */
 
     if (runGPG(file, sigfile, passPhrase))
@@ -238,37 +265,7 @@ static int makeGPGSignature(Header sigh, int ishdr,
     rpmlog(RPMLOG_DEBUG, "Got %zd bytes of GPG sig\n", pktlen);
 
     /* Parse the signature, change signature tag as appropriate. */
-    dig = pgpNewDig();
-
-    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
-    sigp = &dig->signature;
-
-    rc = validatePGPSig(sigp);
-    if (rc == 0) {
-	struct rpmtd_s sigtd;
-
-	sigtd.count = pktlen;
-	sigtd.data = pkt;
-	sigtd.type = RPM_BIN_TYPE;
-
-	switch (sigp->pubkey_algo) {
-	case PGPPUBKEYALGO_DSA:
-	    sigtd.tag = ishdr ? RPMSIGTAG_DSA : RPMSIGTAG_GPG;
-	    break;
-	case PGPPUBKEYALGO_RSA:
-	    sigtd.tag = ishdr ? RPMSIGTAG_RSA : RPMSIGTAG_PGP;
-	    break;
-	default: /* can't happen after validatePGPSig() */
-	    goto exit;
-	    break;
-	}
-
-	/* Argh, reversed return codes */
-	rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0);
-    }
-
-    dig = pgpFreeDig(dig);
-
+    rc = putSignature(sigh, ishdr, pkt, pktlen);
 exit:
     (void) unlink(sigfile);
     free(sigfile);
