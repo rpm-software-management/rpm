@@ -461,6 +461,49 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
     uint8_t * pkt = NULL;
     size_t pktlen;
     char * fn = NULL;
+    int ret = -1;	/* assume failure. */
+
+    switch (sigTag) {
+    case RPMSIGTAG_DSA:
+    case RPMSIGTAG_RSA:
+	fd = Fopen(file, "r.fdio");
+	if (fd == NULL || Ferror(fd))
+	    goto exit;
+	h = headerRead(fd, HEADER_MAGIC_YES);
+	if (h == NULL)
+	    goto exit;
+	(void) Fclose(fd);
+	fd = rpmMkTempFile(NULL, &fn);
+	if (fd == NULL || Ferror(fd))
+	    goto exit;
+	if (headerWrite(fd, h, HEADER_MAGIC_YES))
+	    goto exit;
+	(void) Fclose(fd);	fd = NULL;
+	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
+	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
+	    goto exit;
+	ret = 0;
+	break;
+    default:
+	goto exit;
+	break;
+    }
+
+exit:
+    if (fn) {
+	(void) unlink(fn);
+	free(fn);
+    }
+    free(pkt);
+    h = headerFree(h);
+    if (fd != NULL) (void) Fclose(fd);
+    return ret;
+}
+
+static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
+{
+    Header h = NULL;
+    FD_t fd = NULL;
     char * SHA1 = NULL;
     int ret = -1;	/* assume failure. */
 
@@ -501,37 +544,12 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	    goto exit;
 	ret = 0;
 	break;
-    case RPMSIGTAG_DSA:
-    case RPMSIGTAG_RSA:
-	fd = Fopen(file, "r.fdio");
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	if (h == NULL)
-	    goto exit;
-	(void) Fclose(fd);
-	fd = rpmMkTempFile(NULL, &fn);
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	if (headerWrite(fd, h, HEADER_MAGIC_YES))
-	    goto exit;
-	(void) Fclose(fd);	fd = NULL;
-	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    goto exit;
-	ret = 0;
-	break;
     default:
 	goto exit;
 	break;
     }
 
 exit:
-    if (fn) {
-	(void) unlink(fn);
-	free(fn);
-    }
-    free(pkt);
     free(SHA1);
     h = headerFree(h);
     if (fd != NULL) (void) Fclose(fd);
@@ -586,8 +604,10 @@ int rpmAddSignature(Header sigh, const char * file, rpmSigTag sigTag,
 	} break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-    case RPMSIGTAG_SHA1:
 	ret = makeHDRSignature(sigh, file, sigTag, passPhrase);
+	break;
+    case RPMSIGTAG_SHA1:
+	ret = makeHDRDigest(sigh, file, sigTag);
 	break;
     default:
 	break;
