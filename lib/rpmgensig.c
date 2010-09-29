@@ -10,6 +10,7 @@
 #include <popt.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
+#include <rpm/rpmmacro.h>
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmsign.h>
 #include <rpm/rpmfileutil.h>	/* rpmMkTemp() */

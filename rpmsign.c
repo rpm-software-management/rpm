@@ -4,6 +4,7 @@
 
 #include <popt.h>
 #include <rpm/rpmcli.h>
+#include <rpm/rpmsign.h>
 #include "cliutils.h"
 #include "debug.h"
 
