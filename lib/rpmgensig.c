@@ -287,31 +287,26 @@ static int makeHDRSignature(Header sigh, const char * file, rpmSigTag sigTag,
     char * fn = NULL;
     int ret = -1;	/* assume failure. */
 
-    switch (sigTag) {
-    case RPMSIGTAG_DSA:
-    case RPMSIGTAG_RSA:
-	fd = Fopen(file, "r.fdio");
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	h = headerRead(fd, HEADER_MAGIC_YES);
-	if (h == NULL)
-	    goto exit;
-	(void) Fclose(fd);
-	fd = rpmMkTempFile(NULL, &fn);
-	if (fd == NULL || Ferror(fd))
-	    goto exit;
-	if (headerWrite(fd, h, HEADER_MAGIC_YES))
-	    goto exit;
-	(void) Fclose(fd);	fd = NULL;
-	if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase)
-	 || !sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen))
-	    goto exit;
-	ret = 0;
-	break;
-    default:
+    fd = Fopen(file, "r.fdio");
+    if (fd == NULL || Ferror(fd))
 	goto exit;
-	break;
-    }
+    h = headerRead(fd, HEADER_MAGIC_YES);
+    if (h == NULL)
+	goto exit;
+    (void) Fclose(fd);
+
+    fd = rpmMkTempFile(NULL, &fn);
+    if (fd == NULL || Ferror(fd))
+	goto exit;
+    if (headerWrite(fd, h, HEADER_MAGIC_YES))
+	goto exit;
+
+    if (makeGPGSignature(fn, &sigTag, &pkt, &pktlen, passPhrase) != 0)
+	goto exit;
+    if (sighdrPut(sigh, sigTag, RPM_BIN_TYPE, pkt, pktlen) == 0)
+	goto exit;
+
+    ret = 0;
 
 exit:
     if (fn) {
