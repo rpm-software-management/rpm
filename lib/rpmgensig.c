@@ -324,7 +324,7 @@ exit:
     return ret;
 }
 
-int rpmGenSignature(Header sigh, const char * file, rpmSigTag sigTag,
+static int rpmGenSignature(Header sigh, const char * file, rpmSigTag sigTag,
 		const char * passPhrase)
 {
     uint8_t * pkt = NULL;

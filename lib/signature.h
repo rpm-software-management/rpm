@@ -67,17 +67,6 @@ int rpmWriteSignature(FD_t fd, Header h);
 int rpmGenDigest(Header sigh, const char * file, rpmSigTag sigTag);
 
 /** \ingroup signature
- * Generate signature(s) from a header+payload file, save in signature header.
- * @param sigh		signature header
- * @param file		header+payload file name
- * @param sigTag	type of signature(s) to add
- * @param passPhrase	private key pass phrase
- * @return		0 on success, -1 on failure
- */
-int rpmGenSignature(Header sigh, const char * file,
-		    rpmSigTag sigTag, const char * passPhrase);
-
-/** \ingroup signature
  * Verify a signature from a package.
  *
  * @param keyring	keyring handle
