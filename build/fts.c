@@ -62,11 +62,10 @@ static char sccsid[] = "@(#)fts.c	8.6 (Berkeley) 8/14/94";
 #   define __fxstat64(_stat_ver, _fd, _sbp) fstat64((_fd), (_sbp))
 #endif
 #include "system.h"
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include "build/fts.h"
-#include <rpm/rpmio.h>
-#include <rpm/rpmurl.h>
 #   define __set_errno(val) (*__errno_location ()) = (val)
 #   define __open	open
 #   define __close	close
@@ -169,23 +168,6 @@ Fts_open(char * const * argv, int options,
 		if ((len = strlen(*argv)) == 0) {
 			__set_errno (ENOENT);
 			goto mem3;
-		}
-
-		/* Use fchdir(2) speedup only if local DASDI. */
-		switch (urlIsURL(*argv)) {
-		case URL_IS_DASH:
-		case URL_IS_HKP:
-			__set_errno (ENOENT);
-			goto mem3;
-			break;
-		case URL_IS_HTTPS:
-		case URL_IS_HTTP:
-		case URL_IS_FTP:
-			SET(FTS_NOCHDIR);
-			break;
-		case URL_IS_UNKNOWN:
-		case URL_IS_PATH:
-			break;
 		}
 
 		p = fts_alloc(sp, *argv, len);
