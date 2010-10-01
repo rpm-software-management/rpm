@@ -119,16 +119,6 @@ spec_dealloc(specObject * s)
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static PyObject * 
-spec_get_buildroot(specObject * s, void *closure) 
-{
-    rpmSpec spec = s->spec;
-    if (spec->buildRoot) {
-        return Py_BuildValue("s", spec->buildRoot);
-    }
-    Py_RETURN_NONE;
-}
-
 static PyObject * getSection(rpmSpec spec, int section)
 {
     const char *sect = rpmSpecGetSection(spec, section);
@@ -203,7 +193,6 @@ static PyGetSetDef spec_getseters[] = {
     {"build",   (getter) spec_get_build, NULL, NULL },
     {"install",   (getter) spec_get_install, NULL, NULL },
     {"clean",   (getter) spec_get_clean, NULL, NULL },
-    {"buildRoot",   (getter) spec_get_buildroot, NULL, NULL },
     {"packages", (getter) spec_get_packages, NULL, NULL },
     {NULL}  /* Sentinel */
 };
