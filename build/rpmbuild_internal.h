@@ -50,6 +50,7 @@ struct Source * next;
 
 typedef struct spectags_s * spectags;
 typedef struct speclines_s * speclines;
+typedef struct Package_s * Package;
 
 /** \ingroup rpmbuild
  * The structure used to store values parsed from a spec file.

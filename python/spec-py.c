@@ -45,7 +45,7 @@ static PyObject *makeHeader(Header h)
 struct specPkgObject_s {
     PyObject_HEAD
     /*type specific fields */
-    Package pkg;
+    rpmSpecPkg pkg;
 };
 
 static char specPkg_doc[] =
@@ -172,7 +172,7 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 {
     rpmSpec spec = s->spec;
     PyObject *sourceList = PyList_New(0);
-    struct Source *source;
+    rpmSpecSrc source;
 
     for (source = spec->sources; source; source = source->next) {
 	PyObject *srcUrl = Py_BuildValue("(sii)", source->fullSource, 
@@ -189,7 +189,7 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
 {
     rpmSpec spec = s->spec;
     PyObject *pkgList = PyList_New(0);
-    Package pkg;
+    rpmSpecPkg pkg;
 
     for (pkg = spec->packages; pkg; pkg = pkg->next) {
 	PyObject *po = specPkg_Wrap(&specPkg_Type, pkg);

@@ -15,7 +15,8 @@ extern "C" {
 
 /** \ingroup rpmbuild
  */
-typedef struct Package_s * Package;
+typedef struct Package_s * rpmSpecPkg;
+typedef struct Source * rpmSpecSrc;
 
 enum rpmSourceFlags_e {
     RPMBUILD_ISSOURCE	= (1 << 0),

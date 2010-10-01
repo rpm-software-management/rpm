@@ -13,6 +13,6 @@ extern PyTypeObject specPkg_Type;
 #define specPkgObject_Check(v)	((v)->ob_type == &specPkg_Type)
 
 PyObject * spec_Wrap(PyTypeObject *subtype, rpmSpec spec);
-PyObject * specPkg_Wrap(PyTypeObject *subtype, Package pkg);
+PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg);
 
 #endif /* RPMPYTHON_SPEC */
