@@ -724,6 +724,13 @@ AC_SUBST(WITH_LUA_LIB)
 AC_SUBST(WITH_LUA_INCLUDE)
 AM_CONDITIONAL(WITH_LUAEXT,[test "$with_lua" = yes])
 
+AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
+AS_IF([test "$enable_plugins" = yes],[
+  AC_DEFINE(ENABLE_PLUGINS, 1, [Build with plugin support?])
+])
+AM_CONDITIONAL(ENABLE_PLUGINS,[test "$enable_plugins" = yes])
+
+
 with_dmalloc=no
 AC_ARG_WITH(dmalloc, [AS_HELP_STRING([--with-dmalloc],[build with dmalloc debugging support])])
 if test "$with_dmalloc" = yes ; then
