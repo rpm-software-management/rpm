@@ -410,6 +410,20 @@ const char * rpmSpecSrcFilename(rpmSpecSrc src, int full)
     return source;
 }
 
+const char * rpmSpecGetSection(rpmSpec spec, int section)
+{
+    if (spec) {
+	switch (section) {
+	case RPMBUILD_PREP:	return getStringBuf(spec->prep);
+	case RPMBUILD_BUILD:	return getStringBuf(spec->build);
+	case RPMBUILD_INSTALL:	return getStringBuf(spec->install);
+	case RPMBUILD_CHECK:	return getStringBuf(spec->check);
+	case RPMBUILD_CLEAN:	return getStringBuf(spec->clean);
+	}
+    }
+    return NULL;
+}
+
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     rpmSpec spec = NULL;

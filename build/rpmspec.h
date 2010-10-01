@@ -65,6 +65,9 @@ rpmSourceFlags rpmSpecSrcFlags(rpmSpecSrc src);
 int rpmSpecSrcNum(rpmSpecSrc src);
 const char * rpmSpecSrcFilename(rpmSpecSrc src, int full);
 
+/* Retrieve parsed spec script section (RPMBUILD_PREP, RPMBUILD_BUILD etc) */
+const char * rpmSpecGetSection(rpmSpec spec, int section);
+
 /** \ingroup rpmbuild
  * Function to query spec file(s).
  * @param ts		transaction set
