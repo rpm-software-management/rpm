@@ -271,6 +271,15 @@ RPM_GNUC_INTERNAL
 rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			int installSpecialDoc, int test);
 
+/** \ingroup rpmfc
+ * Generate package dependencies.
+ * @param spec		spec file control
+ * @param pkg		package control
+ * @return		RPMRC_OK on success
+ */
+RPM_GNUC_INTERNAL
+rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
+
 /** \ingroup rpmbuild
  * Post-build processing for policies in binary package(s).
  * @param spec		spec file control structure

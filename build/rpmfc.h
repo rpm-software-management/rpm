@@ -93,14 +93,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode);
 rpmRC rpmfcApply(rpmfc fc);
 
 /** \ingroup rpmfc
- * Generate package dependencies.
- * @param spec		spec file control
- * @param pkg		package control
- * @return		RPMRC_OK on success
- */
-rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
-
-/** \ingroup rpmfc
  * Retrieve file classification provides
  * @param fc		file classifier
  * @return		rpmds dependency set of fc provides
