@@ -124,7 +124,7 @@ unsigned int HASHPREFIX(UsedBuckets)(HASHTYPE ht);
  * @param ht            pointer to hash table
  * @result		number of unique keys
  */
-// RPM_GNUC_INTERNAL
+RPM_GNUC_INTERNAL
 unsigned int HASHPREFIX(NumKeys)(HASHTYPE ht);
 
 #ifdef HTDATATYPE

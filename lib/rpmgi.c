@@ -17,6 +17,7 @@
 
 #include "debug.h"
 
+RPM_GNUC_INTERNAL
 rpmgiFlags giFlags = RPMGI_NONE;
 
 /** \ingroup rpmgi
