@@ -129,42 +129,35 @@ spec_get_buildroot(specObject * s, void *closure)
     Py_RETURN_NONE;
 }
 
+static PyObject * getSection(rpmSpec spec, int section)
+{
+    const char *sect = rpmSpecGetSection(spec, section);
+    if (sect) {
+	return Py_BuildValue("s", sect);
+    }
+    Py_RETURN_NONE;
+}
+
 static PyObject * 
 spec_get_prep(specObject * s, void *closure) 
 {
-    rpmSpec spec = s->spec;
-    if (spec->prep) {
-        return Py_BuildValue("s",getStringBuf(spec->prep));
-    }
-    Py_RETURN_NONE;
+    return getSection(s->spec, RPMBUILD_PREP);
 }
 
 static PyObject * 
 spec_get_build(specObject * s, void *closure) 
 {
-    rpmSpec spec = s->spec;
-    if (spec->build) {
-        return Py_BuildValue("s",getStringBuf(spec->build));
-    }
-    Py_RETURN_NONE;
+    return getSection(s->spec, RPMBUILD_BUILD);
 }
 
 static PyObject * spec_get_install(specObject * s, void *closure) 
 {
-    rpmSpec spec = s->spec;
-    if (spec->install) {
-        return Py_BuildValue("s",getStringBuf(spec->install));
-    }
-    Py_RETURN_NONE;
+    return getSection(s->spec, RPMBUILD_INSTALL);
 }
 
 static PyObject * spec_get_clean(specObject * s, void *closure) 
 {
-    rpmSpec spec = s->spec;
-    if (spec != NULL && spec->clean) {
-        return Py_BuildValue("s",getStringBuf(spec->clean));
-    }
-    Py_RETURN_NONE;
+    return getSection(s->spec, RPMBUILD_CLEAN);
 }
 
 static PyObject * spec_get_sources(specObject *s, void *closure)
