@@ -2,7 +2,6 @@
 
 EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
-if PYTHON
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
 AM_CPPFLAGS += -I$(top_srcdir)/misc
@@ -39,4 +38,3 @@ _rpmbmodule_la_LIBADD = \
 
 _rpmbmodule_la_SOURCES = rpmbmodule.c rpmsystem-py.h \
 	spec-py.c spec-py.h
-endif
