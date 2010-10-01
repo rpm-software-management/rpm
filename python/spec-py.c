@@ -2,7 +2,6 @@
 
 #include "header-py.h"
 #include "spec-py.h"
-#include "build/rpmbuild_internal.h"	/* XXX FIXME! */
 
 /** \ingroup python
  * \name Class: Rpmspec
@@ -288,7 +287,7 @@ spec_Wrap(PyTypeObject *subtype, rpmSpec spec)
     return (PyObject *) s;
 }
 
-PyObject * specPkg_Wrap(PyTypeObject *subtype, Package pkg) 
+PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg) 
 {
     specPkgObject * s = (specPkgObject *)subtype->tp_alloc(subtype, 0);
     if (s == NULL) return NULL;
