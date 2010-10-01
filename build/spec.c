@@ -331,6 +331,85 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
     return probs;
 }
 
+struct rpmSpecIter_s {
+    void *next;
+};
+
+#define SPEC_LISTITER_INIT(_itertype, _iteritem)	\
+    _itertype iter = NULL;				\
+    if (spec) {						\
+	iter = xcalloc(1, sizeof(*iter));		\
+	iter->next = spec->_iteritem;			\
+    }							\
+    return iter
+
+#define SPEC_LISTITER_NEXT(_valuetype)			\
+    _valuetype item = NULL;				\
+    if (iter) {						\
+	item = iter->next;				\
+	iter->next = (item) ? item->next : NULL;	\
+    }							\
+    return item
+
+#define SPEC_LISTITER_FREE()				\
+    free(iter);						\
+    return NULL
+
+
+rpmSpecPkgIter rpmSpecPkgIterInit(rpmSpec spec)
+{
+    SPEC_LISTITER_INIT(rpmSpecPkgIter, packages);
+}
+
+rpmSpecPkgIter rpmSpecPkgIterFree(rpmSpecPkgIter iter)
+{
+    SPEC_LISTITER_FREE();
+}
+
+rpmSpecPkg rpmSpecPkgIterNext(rpmSpecPkgIter iter)
+{
+    SPEC_LISTITER_NEXT(rpmSpecPkg);
+}
+
+Header rpmSpecPkgHeader(rpmSpecPkg pkg)
+{
+    return (pkg != NULL) ? pkg->header : NULL;
+}
+
+rpmSpecSrcIter rpmSpecSrcIterInit(rpmSpec spec)
+{
+    SPEC_LISTITER_INIT(rpmSpecSrcIter, sources);
+}
+
+rpmSpecSrcIter rpmSpecSrcIterFree(rpmSpecSrcIter iter)
+{
+    SPEC_LISTITER_FREE();
+}
+
+rpmSpecSrc rpmSpecSrcIterNext(rpmSpecSrcIter iter)
+{
+    SPEC_LISTITER_NEXT(rpmSpecSrc);
+}
+
+rpmSourceFlags rpmSpecSrcFlags(rpmSpecSrc src)
+{
+    return (src != NULL) ? src->flags : 0;
+}
+
+int rpmSpecSrcNum(rpmSpecSrc src)
+{
+    return (src != NULL) ? src->num : -1;
+}
+
+const char * rpmSpecSrcFilename(rpmSpecSrc src, int full)
+{
+    const char *source = NULL;
+    if (src) {
+	source = full ? src->fullSource : src->source;
+    }
+    return source;
+}
+
 int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     rpmSpec spec = NULL;

@@ -17,6 +17,8 @@ extern "C" {
  */
 typedef struct Package_s * rpmSpecPkg;
 typedef struct Source * rpmSpecSrc;
+typedef struct rpmSpecIter_s * rpmSpecPkgIter;
+typedef struct rpmSpecIter_s * rpmSpecSrcIter;
 
 enum rpmSourceFlags_e {
     RPMBUILD_ISSOURCE	= (1 << 0),
@@ -44,6 +46,24 @@ typedef rpmFlags rpmSpecFlags;
  * @return		NULL always
  */
 rpmSpec rpmSpecFree(rpmSpec spec);
+
+/* Iterator for spec packages */
+rpmSpecPkgIter rpmSpecPkgIterInit(rpmSpec spec);
+rpmSpecPkg rpmSpecPkgIterNext(rpmSpecPkgIter iter);
+rpmSpecPkgIter rpmSpecPkgIterFree(rpmSpecPkgIter iter);
+
+/* Getters for spec package attributes */
+Header rpmSpecPkgHeader(rpmSpecPkg pkg);
+
+/* Iterator for spec sources */
+rpmSpecSrcIter rpmSpecSrcIterInit(rpmSpec spec);
+rpmSpecSrc rpmSpecSrcIterNext(rpmSpecSrcIter iter);
+rpmSpecSrcIter rpmSpecSrcIterFree(rpmSpecSrcIter iter);
+
+/* Getters for spec source attributes */
+rpmSourceFlags rpmSpecSrcFlags(rpmSpecSrc src);
+int rpmSpecSrcNum(rpmSpecSrc src);
+const char * rpmSpecSrcFilename(rpmSpecSrc src, int full);
 
 /** \ingroup rpmbuild
  * Function to query spec file(s).
