@@ -12,7 +12,7 @@ librpmbuild_la_SOURCES = \
 	build.c expression.c files.c misc.c names.c pack.c \
 	parseBuildInstallClean.c parseChangelog.c parseDescription.c \
 	parseFiles.c parsePreamble.c parsePrep.c parseReqs.c parseScript.c \
-	parseSpec.c reqprov.c rpmfc.c spec.c fts.h fts.c \
+	parseSpec.c reqprov.c rpmfc.c spec.c \
 	parsePolicies.c policies.c \
 	rpmbuild_internal.h rpmbuild_misc.h
 
@@ -20,5 +20,6 @@ librpmbuild_la_LDFLAGS = -version-info 1:0:0
 librpmbuild_la_LIBADD = \
 	$(top_builddir)/lib/librpm.la \
 	$(top_builddir)/rpmio/librpmio.la \
+	$(top_builddir)/misc/libmisc.la \
 	@WITH_POPT_LIB@ \
 	@WITH_MAGIC_LIB@
