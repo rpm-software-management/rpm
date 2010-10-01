@@ -199,6 +199,7 @@ rpmRC rpmCharCheck(rpmSpec spec, char *field, size_t fsize, const char *whitelis
  * @param tag		tag
  * @param lang		locale
  */
+RPM_GNUC_INTERNAL
 spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang);
 
 /** \ingroup rpmbuild
