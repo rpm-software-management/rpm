@@ -38,6 +38,102 @@ struct speclines_s {
     int sl_nlines;
 };
 
+/** \ingroup rpmbuild
+ */
+struct Source {
+    char * fullSource;
+    char * source;     /* Pointer into fullSource */
+    int flags;
+    uint32_t num;
+struct Source * next;
+};
+
+typedef struct spectags_s * spectags;
+typedef struct speclines_s * speclines;
+
+/** \ingroup rpmbuild
+ * The structure used to store values parsed from a spec file.
+ */
+struct rpmSpec_s {
+    char * specFile;	/*!< Name of the spec file. */
+    char * buildRoot;
+    char * buildSubdir;
+    const char * rootDir;
+
+    speclines sl;
+    spectags st;
+
+    struct OpenFileInfo * fileStack;
+    char lbuf[10*BUFSIZ];
+    char *lbufPtr;
+    char nextpeekc;
+    char * nextline;
+    char * line;
+    int lineNum;
+
+    struct ReadLevelEntry * readStack;
+
+    Header buildRestrictions;
+    rpmSpec * BASpecs;
+    const char ** BANames;
+    int BACount;
+    int recursing;		/*!< parse is recursive? */
+
+    rpmSpecFlags flags;
+
+    struct Source * sources;
+    int numSources;
+    int noSource;
+
+    char * sourceRpmName;
+    unsigned char * sourcePkgId;
+    Header sourceHeader;
+    rpmfi sourceCpioList;
+
+    rpmMacroContext macros;
+
+    StringBuf prep;		/*!< %prep scriptlet. */
+    StringBuf build;		/*!< %build scriptlet. */
+    StringBuf install;		/*!< %install scriptlet. */
+    StringBuf check;		/*!< %check scriptlet. */
+    StringBuf clean;		/*!< %clean scriptlet. */
+
+    Package packages;		/*!< Package list. */
+};
+
+/** \ingroup rpmbuild
+ * The structure used to store values for a package.
+ */
+struct Package_s {
+    Header header;
+    rpmds ds;			/*!< Requires: N = EVR */
+    rpmfi cpioList;
+
+    struct Source * icon;
+
+    int autoReq;
+    int autoProv;
+
+    char * preInFile;	/*!< %pre scriptlet. */
+    char * postInFile;	/*!< %post scriptlet. */
+    char * preUnFile;	/*!< %preun scriptlet. */
+    char * postUnFile;	/*!< %postun scriptlet. */
+    char * preTransFile;	/*!< %pretrans scriptlet. */
+    char * postTransFile;	/*!< %posttrans scriptlet. */
+    char * verifyFile;	/*!< %verifyscript scriptlet. */
+
+    StringBuf specialDoc;
+    char *specialDocDir;
+
+    struct TriggerFileEntry * triggerFiles;
+
+    StringBuf fileFile;
+    StringBuf fileList;		/* If NULL, package will not be written */
+    StringBuf policyList;
+
+    Package next;
+};
+
 #define PART_SUBNAME  0
 #define PART_NAME     1
 

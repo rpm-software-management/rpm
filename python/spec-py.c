@@ -2,6 +2,7 @@
 
 #include "header-py.h"
 #include "spec-py.h"
+#include "build/rpmbuild_internal.h"	/* XXX FIXME! */
 
 /** \ingroup python
  * \name Class: Rpmspec
