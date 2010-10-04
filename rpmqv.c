@@ -303,9 +303,7 @@ int main(int argc, char *argv[])
 	if (!poptPeekArg(optCon) && !(qva->qva_source == RPMQV_ALL))
 	    argerror(_("no arguments given for query"));
 
-	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
-	qva->qva_specQuery = NULL;
 	break;
 
     case MODE_VERIFY:

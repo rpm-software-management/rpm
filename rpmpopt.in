@@ -168,6 +168,7 @@ rpm	exec --import		@BINDIR@/rpmkeys --import
 rpm	exec --initdb		@BINDIR@/rpmdb --initdb
 rpm	exec --rebuilddb	@BINDIR@/rpmdb --rebuilddb
 rpm	exec --verifydb		@BINDIR@/rpmdb --verifydb
+rpm	exec --specfile		@BINDIR@/rpmspec -q
 
 #==============================================================================
 rpmbuild	alias --dbpath		--define '_dbpath !#:+' \

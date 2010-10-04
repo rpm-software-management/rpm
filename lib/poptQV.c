@@ -18,7 +18,6 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_QUERYBYNUMBER	-1003
 #define POPT_TRIGGEREDBY	-1004
 #define POPT_DUMP		-1005
-#define POPT_SPECFILE		-1006
 #define POPT_QUERYBYPKGID	-1007
 #define POPT_QUERYBYHDRID	-1008
 #define POPT_QUERYBYFILEID	-1009
@@ -59,11 +58,6 @@ static void rpmQVSourceArgCallback( poptContext con,
     case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID;
 				qva->qva_sourceCount++; break;
 
-/* XXX SPECFILE is not verify sources */
-    case POPT_SPECFILE:
-	qva->qva_source |= RPMQV_SPECFILE;
-	qva->qva_sourceCount++;
-	break;
     case POPT_QUERYBYNUMBER:
 	qva->qva_source |= RPMQV_DBOFFSET; 
 	qva->qva_sourceCount++;
@@ -100,8 +94,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("rpm query mode"), NULL },
  { "querybynumber", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYNUMBER,
 	N_("query/verify a header instance"), "HDRNUM" },
- { "specfile", '\0', 0, 0, POPT_SPECFILE,
-	N_("query a spec file"), N_("<spec>") },
  { "tid", '\0', POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_QUERYBYTID,
 	N_("query/verify package(s) from install transaction"), "TID" },
  { "triggeredby", '\0', 0, 0, POPT_TRIGGEREDBY, 

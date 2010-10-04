@@ -88,7 +88,7 @@ pkginclude_HEADERS += build/rpmspec.h
 rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign
+bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
 
 rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
@@ -105,7 +105,7 @@ libcliutils_la_LIBADD +=	@WITH_POPT_LIB@
 rpm_SOURCES =		rpmqv.c debug.h system.h
 rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU -DIAM_RPMQV
 rpm_LDADD =		libcliutils.la
-rpm_LDADD +=		build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
+rpm_LDADD +=		lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmdb_SOURCES =		rpmdb.c debug.h system.h
@@ -131,6 +131,12 @@ rpmbuild_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmbuild_LDADD =	libcliutils.la
 rpmbuild_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
 rpmbuild_LDADD += 	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
+
+rpmspec_SOURCES =	rpmspec.c debug.h system.h
+rpmspec_CPPFLAGS =	$(AM_CPPFLAGS)
+rpmspec_LDADD =		libcliutils.la
+rpmspec_LDADD +=	build/librpmbuild.la lib/librpm.la rpmio/librpmio.la
+rpmspec_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpm2cpio_SOURCES =	rpm2cpio.c debug.h system.h
 rpm2cpio_LDADD =	lib/librpm.la rpmio/librpmio.la
