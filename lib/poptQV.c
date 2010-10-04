@@ -140,15 +140,7 @@ static void queryArgCallback(poptContext con,
 	break;
 
     case POPT_QUERYFORMAT:
-	if (arg) {
-	    char * qf = (char *)qva->qva_queryFormat;
-	    if (qf) {
-		rstrcat(&qf, arg);
-	    } else {
-		qf = xstrdup(arg);
-	    }
-	    qva->qva_queryFormat = qf;
-	}
+	rstrcat(&qva->qva_queryFormat, arg);
 	break;
 
     case 'i':
