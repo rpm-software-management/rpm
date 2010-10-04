@@ -192,5 +192,12 @@ rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#
 rpmbuild alias --sign \
 	--pipe "grep '.*: .*\.rpm$'|cut -d: -f2|xargs rpm --addsign" \
 	--POPTdesc=$"generate GPG signature"
+
+rpmsign alias --key-id  --define '_gpg_name !#:+' \
+	--POPTdesc=$"key id/name to sign with" \
+	--POPargs=$"<id>"
+rpmsign alias --digest-algo --define '_gpg_digest_algo !#:+' \
+	--POPTdesc=$"override default digest algorithm (eg sha1/sha256)" \
+	--POPTargs=$"<algorithm>"
 # \endverbatim
 #*/

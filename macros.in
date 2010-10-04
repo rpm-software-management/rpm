@@ -633,7 +633,9 @@ print (t)\
 	gpg --batch --no-verbose --passphrase-fd 3 -u "%{_gpg_name}" -so -
 
 %__gpg_sign_cmd			%{__gpg} \
-	gpg --batch --no-verbose --no-armor --passphrase-fd 3 --no-secmem-warning \
+	gpg --batch --no-verbose --no-armor --passphrase-fd 3 \
+	%{?_gpg_digest_algo:--digest-algo %{_gpg_digest_algo}} \
+	--no-secmem-warning \
 	-u "%{_gpg_name}" -sbo %{__signature_filename} %{__plaintext_filename}
 
 # XXX rpm >= 4.1 verifies signatures internally
