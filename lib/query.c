@@ -287,6 +287,9 @@ static int rpmcliShowMatches(QVA_t qva, rpmts ts, rpmdbMatchIterator mi)
     Header h;
     int ec = 0;
 
+    if (mi == NULL)
+	return 1;
+
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	int rc;
 	rpmdbCheckSignals();
@@ -493,12 +496,12 @@ exit:
 }
 
 /*
- * Apply extra query filters. By default patterns applied to package
- * name, others can be specified with <tagname>=<pattern>
+ * Initialize db iterator with optional filters.  By default patterns
+ * applied to package name, others can be specified with <tagname>=<pattern>
  */
-static rpmRC applyFilters(rpmdbMatchIterator mi, ARGV_const_t argv)
+static rpmdbMatchIterator initFilterIterator(rpmts ts, ARGV_const_t argv)
 {
-    rpmRC rc = RPMRC_OK;
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
 
     for (ARGV_const_t arg = argv; arg && *arg != NULL; arg++) {
 	rpmTag tag = RPMTAG_NAME;
@@ -513,7 +516,7 @@ static rpmRC applyFilters(rpmdbMatchIterator mi, ARGV_const_t argv)
 	    tag = rpmTagGetValue(a);
 	    if (tag == RPMTAG_NOT_FOUND) {
 		rpmlog(RPMLOG_ERR, _("unknown tag: \"%s\"\n"), a);
-		rc = RPMRC_FAIL;
+		mi = rpmdbFreeIterator(mi);
 		break;
 	    }
 	    pat = ae;
@@ -522,7 +525,7 @@ static rpmRC applyFilters(rpmdbMatchIterator mi, ARGV_const_t argv)
 	rpmdbSetIteratorRE(mi, tag, RPMMIRE_DEFAULT, pat);
     }
 
-    return rc;
+    return mi;
 }
 
 int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
@@ -531,12 +534,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 
     switch (qva->qva_source) {
     case RPMQV_ALL: {
-	rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-	if (applyFilters(mi, argv) != RPMRC_OK) {
-	    ec = 1;
-	} else {
-	    ec = rpmcliShowMatches(qva, ts, mi);
-	}
+	rpmdbMatchIterator mi = initFilterIterator(ts, argv);
+	ec = rpmcliShowMatches(qva, ts, mi);
 	mi = rpmdbFreeIterator(mi);
 	break;
     }
@@ -555,7 +554,7 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
     default:
 	for (ARGV_const_t arg = argv; arg && *arg; arg++) {
 	    rpmdbMatchIterator mi = initQueryIterator(qva, ts, *arg);
-	    ec += (mi != NULL) ? rpmcliShowMatches(qva, ts, mi) : 1;
+	    ec += rpmcliShowMatches(qva, ts, mi);
 	    rpmdbFreeIterator(mi);
 	}
 	break;
