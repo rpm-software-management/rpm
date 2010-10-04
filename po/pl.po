@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-09-29 12:14+0300\n"
-"PO-Revision-Date: 2010-09-04 08:49+0200\n"
+"PO-Revision-Date: 2010-10-04 11:32+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -3475,12 +3475,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "Invalid %%_signature spec in macro file.\n"
-#~ msgstr "Nieprawidłowa specyfikacja %%_signature w pliku makra.\n"
-
-#~ msgid "%s: was already signed by key ID %s, skipping\n"
-#~ msgstr "%s: został był podpisany kluczem o identyfikatorze %s, pomijanie\n"
-
-#~ msgid "Target buffer overflow\n"
-#~ msgstr "Przepełnienie bufora docelowego\n"
