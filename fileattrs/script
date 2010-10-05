@@ -1,3 +1,3 @@
 %__script_requires	%{_rpmconfigdir}/script.req
 %__script_magic		^.* script text.*$
-%__script_exeonly	1
+%__script_flags		exeonly

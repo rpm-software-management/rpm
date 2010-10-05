@@ -23,7 +23,7 @@ typedef struct rpmfcAttr_s {
     char *name;
     regex_t *pattern;
     regex_t *magic;
-    int exeonly;
+    ARGV_t flags;
 } * rpmfcAttr;
 
 /**
@@ -84,9 +84,9 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
 {
     rpmfcAttr attr = xcalloc(1, sizeof(*attr));
 
-    char *eom = rpmfcAttrMacro(name, "exeonly");
-    attr->exeonly = rpmExpandNumeric(eom);
-    free(eom);
+    char *flags = rpmfcAttrMacro(name, "flags");
+    attr->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY);
+    free(flags);
 
     attr->name = xstrdup(name);
     attr->pattern = rpmfcAttrReg(name, "pattern");
@@ -106,6 +106,7 @@ static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
 	    regfree(attr->magic);
 	    rfree(attr->magic);
 	}
+	argvFree(attr->flags);
 	rfree(attr->name);
 	rfree(attr);
     }
@@ -592,7 +593,7 @@ static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
 
     for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++) {
 	/* Filter out by file modes if set */
-	if ((*attr)->exeonly && !is_executable)
+	if (hasAttr((*attr)->flags, "exeonly") && !is_executable)
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
