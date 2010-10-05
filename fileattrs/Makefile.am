@@ -5,7 +5,7 @@ include $(top_srcdir)/rpm.am
 fattrsdir = $(rpmconfigdir)/fileattrs
 
 fattrs_DATA = \
-	desktop elf font libtool perl perllib pkgconfig python \
-	ocaml script
+	desktop.attr elf.attr font.attr libtool.attr perl.attr perllib.attr \
+	pkgconfig.attr python.attr ocaml.attr script.attr
 
 EXTRA_DIST = $(fattrs_DATA)

@@ -839,7 +839,7 @@ assert(dix >= 0);
 static int initAttrs(rpmfc fc)
 {
     ARGV_t files = NULL;
-    char * attrPath = rpmExpand("%{_fileattrsdir}/*", NULL);
+    char * attrPath = rpmExpand("%{_fileattrsdir}/*.attr", NULL);
     int nattrs = 0;
 
     /* Discover known attributes from pathnames + initialize them */
@@ -847,7 +847,9 @@ static int initAttrs(rpmfc fc)
 	nattrs = argvCount(files);
 	fc->atypes = xcalloc(nattrs + 1, sizeof(*fc->atypes));
 	for (int i = 0; i < nattrs; i++) {
-	    fc->atypes[i] = rpmfcAttrNew(basename(files[i]));
+	    char *bn = basename(files[i]);
+	    bn[strlen(bn)-strlen(".attr")] = '\0';
+	    fc->atypes[i] = rpmfcAttrNew(bn);
 	}
 	fc->atypes[nattrs] = NULL;
 	argvFree(files);
