@@ -170,13 +170,17 @@ int argvAppend(ARGV_t * argvp, ARGV_const_t av)
 
 ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags)
 {
-    char *dest = xmalloc(strlen(str) + 1);
+    char *dest = NULL;
     ARGV_t argv;
     int argc = 1;
     const char * s;
     char * t;
     int c;
 
+    if (str == NULL || seps == NULL)
+	return NULL;
+
+    dest = xmalloc(strlen(str) + 1);
     for (argc = 1, s = str, t = dest; (c = *s); s++, t++) {
 	if (strchr(seps, c)) {
 	    argc++;
