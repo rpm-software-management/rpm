@@ -213,7 +213,6 @@ typedef int (*HRE_t) (Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
 #define isCompressed	rpmFileIsCompressed
 #define makeTempFile	rpmMkTempFile
 #define whatis		rpmfiWhatis
-#define freeFilesystems	rpmFreeFilesystems
 #define	tagName		rpmTagGetName
 #define tagType		rpmTagGetType
 #define tagValue	rpmTagGetValue

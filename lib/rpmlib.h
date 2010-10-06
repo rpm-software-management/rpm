@@ -203,33 +203,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
  */
 int rpmvercmp(const char * a, const char * b);
 
-/**
- * Release storage used by file system usage cache.
- */
-void rpmFreeFilesystems(void);
-
-/**
- * Return (cached) file system mount points.
- * @retval listptr		addess of file system names (or NULL)
- * @retval num			address of number of file systems (or NULL)
- * @return			0 on success, 1 on error
- */
-int rpmGetFilesystemList( const char *** listptr,
-		unsigned int * num);
-
-/**
- * Determine per-file system usage for a list of files.
- * @param fileList		array of absolute file names
- * @param fssizes		array of file sizes
- * @param numFiles		number of files in list
- * @retval usagesPtr		address of per-file system usage array (or NULL)
- * @param flags			(unused)
- * @return			0 on success, 1 on error
- */
-int rpmGetFilesystemUsage(const char ** fileList, rpm_loff_t * fssizes,
-		unsigned int numFiles, rpm_loff_t ** usagesPtr,
-		int flags);
-
 #ifdef __cplusplus
 }
 #endif
