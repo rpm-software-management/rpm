@@ -13,6 +13,10 @@ const char *__progname;
 
 #include "debug.h"
 
+#if defined(IAM_RPMQ) || defined(IAM_RPMV)
+#define IAM_RPMQV
+#endif
+
 enum modes {
 
     MODE_QUERY		= (1 <<  0),
@@ -40,13 +44,17 @@ static struct poptOption optionsTable[] = {
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQVSourcePoptTable, 0,
         N_("Query/Verify package selection options:"),
         NULL },
+#endif
+#ifdef IAM_RPMQ
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmQueryPoptTable, 0,
 	N_("Query options (with -q or --query):"),
 	NULL },
+#endif
+#ifdef IAM_RPMV
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmVerifyPoptTable, 0,
 	N_("Verify options (with -V or --verify):"),
 	NULL },
-#endif	/* IAM_RPMQV */
+#endif
 
 #ifdef	IAM_RPMEIU
  { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmInstallPoptTable, 0,
