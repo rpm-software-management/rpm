@@ -184,6 +184,11 @@ static PyObject * spec_get_packages(specObject *s, void *closure)
     return pkgList;
 }
 
+static PyObject * spec_get_source_header(specObject *s, void *closure)
+{
+    return makeHeader(rpmSpecSourceHeader(s->spec));
+}
+
 static char spec_doc[] = "RPM Spec file object";
 
 static PyGetSetDef spec_getseters[] = {
@@ -193,6 +198,7 @@ static PyGetSetDef spec_getseters[] = {
     {"install",   (getter) spec_get_install, NULL, NULL },
     {"clean",   (getter) spec_get_clean, NULL, NULL },
     {"packages", (getter) spec_get_packages, NULL, NULL },
+    {"sourceHeader", (getter) spec_get_source_header, NULL, NULL },
     {NULL}  /* Sentinel */
 };
 
