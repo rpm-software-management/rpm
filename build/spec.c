@@ -312,6 +312,11 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     return spec;
 }
 
+Header rpmSpecSourceHeader(rpmSpec spec)
+{
+	return spec->sourceHeader;
+}
+
 rpmds rpmSpecDS(rpmSpec spec, rpmTag tag)
 {
     return (spec != NULL) ? rpmdsNew(spec->buildRestrictions, tag, 0) : NULL;
@@ -323,7 +328,7 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
 
     rpmtsEmpty(ts);
 
-    rpmtsAddInstallElement(ts, spec->sourceHeader, NULL, 0, NULL);
+    rpmtsAddInstallElement(ts, rpmSpecSourceHeader(spec), NULL, 0, NULL);
     rpmtsCheck(ts);
     probs = rpmtsProblems(ts);
 

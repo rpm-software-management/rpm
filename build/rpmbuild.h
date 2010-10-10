@@ -75,6 +75,14 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 		     const char *buildRoot);
 
 /** \ingroup rpmbuild
+ * Return the headers of the SRPM that would be built from the spec file
+ *
+ * @param specFile	path to spec file
+ * @return		Header
+ */
+Header rpmSpecSourceHeader(rpmSpec spec);
+
+/** \ingroup rpmbuild
  * Verify build depencies of a spec against.
  * @param ts		(empty) transaction set
  * @param spec		parsed spec control structure
