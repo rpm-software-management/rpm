@@ -11,7 +11,7 @@ AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
 
 AM_LDFLAGS = -avoid-version -module -shared
 
-pluginsdir = $(rpmconfigdir)/plugins
+pluginsdir = $(libdir)/rpm-plugins
 
 plugins_LTLIBRARIES = exec.la sepolicy.la
 

@@ -1159,7 +1159,7 @@ done \
 
 #------------------------------------------------------------------------------
 # Collection specific macros
-%__plugindir		%{_rpmconfigdir}/plugins
+%__plugindir		%{_libdir}/rpm-plugins
 %__collection_font	%{__plugindir}/exec.so /usr/bin/fc-cache
 %__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
 %__collection_sepolicy		%{__plugindir}/sepolicy.so
