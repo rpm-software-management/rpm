@@ -199,5 +199,22 @@ rpmsign alias --key-id  --define '_gpg_name !#:+' \
 rpmsign alias --digest-algo --define '_gpg_digest_algo !#:+' \
 	--POPTdesc=$"override default digest algorithm (eg sha1/sha256)" \
 	--POPTargs=$"<algorithm>"
+
+rpmspec	alias --conflicts	--qf \
+  "[%|VERBOSE?{%{CONFLICTFLAGS:deptype}: }:{}|%{CONFLICTNAME} %{CONFLICTFLAGS:depflags} %{CONFLICTVERSION}\n]" \
+	--POPTdesc=$"list capabilities this package conflicts with"
+rpmspec	alias --obsoletes	--qf \
+  "[%|VERBOSE?{%{OBSOLETEFLAGS:deptype}: }:{}|%{OBSOLETENAME} %|OBSOLETEFLAGS?{%{OBSOLETEFLAGS:depflags} %{OBSOLETEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list other packages removed by installing this package"
+rpmspec	alias --provides	--qf \
+  "[%|VERBOSE?{%{PROVIDEFLAGS:deptype}: }:{}|%{PROVIDENAME} %|PROVIDEFLAGS?{%{PROVIDEFLAGS:depflags} %{PROVIDEVERSION}}:{}|\n]" \
+	--POPTdesc=$"list capabilities that this package provides"
+rpmspec	alias --requires	--qf \
+  "[%|VERBOSE?{%{REQUIREFLAGS:deptype}: }:{}|%{REQUIRENAME} %{REQUIREFLAGS:depflags} %{REQUIREVERSION}\n]" \
+	--POPTdesc=$"list capabilities required by package(s)"
+rpmspec	alias --buildconflicts	--srpm --conflicts \
+	--POPTdesc=$"list capabilities conflicting with build of this package"
+rpmspec	alias --buildrequires	--srpm --requires \
+	--POPTdesc=$"list capabilities required to build this package"
 # \endverbatim
 #*/
