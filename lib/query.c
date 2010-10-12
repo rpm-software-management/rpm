@@ -545,7 +545,8 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
 	gi = rpmgiFree(gi);
 	break;
     }
-    case RPMQV_SPECFILE:
+    case RPMQV_SPECRPMS:
+    case RPMQV_SPECSRPM:
 	for (ARGV_const_t arg = argv; arg && *arg; arg++) {
 	    ec += ((qva->qva_specQuery != NULL)
 		    ? qva->qva_specQuery(ts, qva, *arg) : 1);
