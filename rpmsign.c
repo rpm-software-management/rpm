@@ -109,6 +109,7 @@ static int doSign(poptContext optCon)
     if (checkPassPhrase(passPhrase) == 0) {
 	const char *arg;
 	fprintf(stderr, _("Pass phrase is good.\n"));
+	rc = 0;
 	while ((arg = poptGetArg(optCon)) != NULL) {
 	    rc += rpmPkgSign(arg, NULL, passPhrase);
 	}
@@ -142,6 +143,7 @@ int main(int argc, char *argv[])
 	ec = doSign(optCon);
 	break;
     case MODE_DELSIGN:
+	ec = 0;
 	while ((arg = poptGetArg(optCon)) != NULL) {
 	    ec += rpmPkgDelSign(arg);
 	}
