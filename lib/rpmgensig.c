@@ -630,12 +630,3 @@ int rpmPkgDelSign(const char *path)
 {
     return rpmSign(path, 1, NULL);
 }
-
-int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase)
-{
-    int res = 0;
-    for (ARGV_const_t arg = argv; arg && *arg; arg++) {
-	res += rpmSign(*arg, deleting, passPhrase);
-    }
-    return res;
-}
