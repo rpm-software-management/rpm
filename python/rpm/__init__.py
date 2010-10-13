@@ -23,6 +23,12 @@ try:
 except ImportError:
     pass
 
+# try to import signing bits but dont require it
+try:
+    from rpm._rpms import *
+except ImportError:
+    pass
+
 # backwards compatibility + give the same class both ways
 ts = TransactionSet
 
