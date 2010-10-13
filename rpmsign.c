@@ -92,7 +92,7 @@ static int checkPassPhrase(const char * passPhrase)
 }
 
 /* TODO: permit overriding macro setup on the command line */
-static int doSign(ARGV_const_t args)
+static int doSign(poptContext optCon)
 {
     int rc = EXIT_FAILURE;
     char * passPhrase = NULL;
@@ -107,8 +107,11 @@ static int doSign(ARGV_const_t args)
     passPhrase = getpass(_("Enter pass phrase: "));
     passPhrase = (passPhrase != NULL) ? rstrdup(passPhrase) : NULL;
     if (checkPassPhrase(passPhrase) == 0) {
+	const char *arg;
 	fprintf(stderr, _("Pass phrase is good.\n"));
-	rc = rpmcliSign(args, 0, passPhrase);
+	while ((arg = poptGetArg(optCon)) != NULL) {
+	    rc += rpmPkgSign(arg, NULL, passPhrase);
+	}
     } else {
 	fprintf(stderr, _("Pass phrase check failed\n"));
     }
@@ -122,25 +125,26 @@ int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
     poptContext optCon = rpmcliInit(argc, argv, optionsTable);
-    ARGV_const_t args = NULL;
+    const char *arg;
     
     if (argc <= 1) {
 	printUsage(optCon, stderr, 0);
 	goto exit;
     }
 
-    args = (ARGV_const_t) poptGetArgs(optCon);
-    if (args == NULL) {
+    if (poptPeekArg(optCon) == NULL) {
 	argerror(_("no arguments given"));
     }
 
     switch (mode) {
     case MODE_ADDSIGN:
     case MODE_RESIGN:
-	ec = doSign(args);
+	ec = doSign(optCon);
 	break;
     case MODE_DELSIGN:
-	ec = rpmcliSign(args, 1, NULL);
+	while ((arg = poptGetArg(optCon)) != NULL) {
+	    ec += rpmPkgDelSign(arg);
+	}
 	break;
     default:
 	argerror(_("only one major mode may be specified"));
