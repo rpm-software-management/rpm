@@ -608,6 +608,29 @@ exit:
     return res;
 }
 
+int rpmPkgSign(const char *path,
+		const struct rpmSignArgs * args, const char *passPhrase)
+{
+    int rc;
+
+    if (args && args->keyid) {
+	addMacro(NULL, "_gpg_name", NULL, args->keyid, RMIL_GLOBAL);
+    }
+
+    rc = rpmSign(path, 0, passPhrase);
+
+    if (args && args->keyid) {
+	delMacro(NULL, "_gpg_name");
+    }
+
+    return rc;
+}
+
+int rpmPkgDelSign(const char *path)
+{
+    return rpmSign(path, 1, NULL);
+}
+
 int rpmcliSign(ARGV_const_t argv, int deleting, const char *passPhrase)
 {
     int res = 0;
