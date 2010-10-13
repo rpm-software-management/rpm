@@ -613,14 +613,27 @@ int rpmPkgSign(const char *path,
 {
     int rc;
 
-    if (args && args->keyid) {
-	addMacro(NULL, "_gpg_name", NULL, args->keyid, RMIL_GLOBAL);
+    if (args) {
+	if (args->hashalgo) {
+	    char *algo = NULL;
+	    rasprintf(&algo, "%d", args->hashalgo);
+	    addMacro(NULL, "_gpg_digest_algo", NULL, algo, RMIL_GLOBAL);
+	    free(algo);
+	}
+	if (args->keyid) {
+	    addMacro(NULL, "_gpg_name", NULL, args->keyid, RMIL_GLOBAL);
+	}
     }
 
     rc = rpmSign(path, 0, passPhrase);
 
-    if (args && args->keyid) {
-	delMacro(NULL, "_gpg_name");
+    if (args) {
+	if (args->hashalgo) {
+	    delMacro(NULL, "_gpg_digest_algo");
+	}
+	if (args->keyid) {
+	    delMacro(NULL, "_gpg_name");
+	}
     }
 
     return rc;
