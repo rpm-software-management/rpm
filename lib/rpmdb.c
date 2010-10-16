@@ -1969,51 +1969,85 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
      * Handle label and file name special cases.
      * Otherwise, retrieve join keys for secondary lookup.
      */
-    if (rpmtag != RPMDBI_PACKAGES && keyp) {
+    if (rpmtag != RPMDBI_PACKAGES) {
 	DBT key, data;
 	DBC * dbcursor = NULL;
-	int rc;
+	int rc = 0;
 	int xx;
 
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
-	if (isLabel) {
-	    xx = dbiCopen(dbi, &dbcursor, 0);
-	    rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
-	    xx = dbiCclose(dbi, dbcursor, 0);
-	    dbcursor = NULL;
-	} else if (rpmtag == RPMTAG_BASENAMES) {
-	    rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
+        if (keyp) {
+
+            if (isLabel) {
+                xx = dbiCopen(dbi, &dbcursor, 0);
+                rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
+                xx = dbiCclose(dbi, dbcursor, 0);
+                dbcursor = NULL;
+            } else if (rpmtag == RPMTAG_BASENAMES) {
+                rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
+            } else {
+                xx = dbiCopen(dbi, &dbcursor, 0);
+
+                key.data = (void *) keyp;
+                key.size = keylen;
+                if (key.data && key.size == 0)
+                    key.size = strlen((char *)key.data);
+                if (key.data && key.size == 0)
+                    key.size++;	/* XXX "/" fixup. */
+
+                rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+                if (rc > 0) {
+                    rpmlog(RPMLOG_ERR,
+                           _("error(%d) getting \"%s\" records from %s index\n"),
+                           rc, (key.data ? (char *)key.data : "???"),
+                           rpmTagGetName(rpmtag));
+                }
+
+                /* Join keys need to be native endian internally. */
+                if (rc == 0)
+                    (void) dbt2set(dbi, &data, &set);
+
+                xx = dbiCclose(dbi, dbcursor, 0);
+                dbcursor = NULL;
+            }
+            if (rc)	{	/* error/not found */
+                set = dbiFreeIndexSet(set);
+                goto exit;
+            }
 	} else {
-	    xx = dbiCopen(dbi, &dbcursor, 0);
+            /* get all entries from index */
+            xx = dbiCopen(dbi, &dbcursor, 0);
 
-	    key.data = (void *) keyp;
-	    key.size = keylen;
-	    if (key.data && key.size == 0)
-	        key.size = strlen((char *)key.data);
-	    if (key.data && key.size == 0)
-	        key.size++;	/* XXX "/" fixup. */
+            while (rc==0) {
+                dbiIndexSet newset = NULL;
 
-	    rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-	    if (rc > 0) {
-		rpmlog(RPMLOG_ERR,
-			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, (key.data ? (char *)key.data : "???"), 
-			rpmTagGetName(rpmtag));
-	    }
+                rc = dbiGet(dbi, dbcursor, &key, &data, DB_NEXT);
+                (void) dbt2set(dbi, &data, &newset);
+                if (set == NULL) {
+                    set = newset;
+                } else {
+                    dbiAppendSet(set, newset->recs, newset->count, sizeof(*(set->recs)), 0);
+                    dbiFreeIndexSet(newset);
+                }
+            }
 
-	    /* Join keys need to be native endian internally. */
-	    if (rc == 0)
-		(void) dbt2set(dbi, &data, &set);
+            if (rc != DB_NOTFOUND) {
+                rpmlog(RPMLOG_ERR,
+                       _("error(%d) getting \"%s\" records from %s index\n"),
+                       rc, (key.data ? (char *)key.data : "???"),
+                       rpmTagGetName(rpmtag));
+            }
 
-	    xx = dbiCclose(dbi, dbcursor, 0);
-	    dbcursor = NULL;
-	}
-	if (rc)	{	/* error/not found */
-	    set = dbiFreeIndexSet(set);
-	    goto exit;
-	}
+            xx = dbiCclose(dbi, dbcursor, 0);
+            dbcursor = NULL;
+
+            if (rc != DB_NOTFOUND)	{	/* error */
+                set = dbiFreeIndexSet(set);
+                goto exit;
+            }
+        }
     }
 
     /* Copy the retrieval key, byte swapping header instance if necessary. */
@@ -2066,6 +2100,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 
     mi->mi_ts = NULL;
     mi->mi_hdrchk = NULL;
+
+    if (rpmtag != RPMDBI_PACKAGES && keyp == NULL) {
+        rpmdbSortIterator(mi);
+    }
 
 exit:
     return mi;
