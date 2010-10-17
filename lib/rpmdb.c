@@ -2456,6 +2456,127 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
     return hdrNum;
 }
 
+/* Add data to secondary index */
+static int addToIndex(dbiIndex dbi, rpmTag rpmtag, unsigned int hdrNum, Header h)
+{
+    int xx, i, rc = 0;
+    struct rpmtd_s tagdata, reqflags;
+    DBC * dbcursor = NULL;
+
+    switch (rpmtag) {
+    case RPMTAG_REQUIRENAME:
+	headerGet(h, RPMTAG_REQUIREFLAGS, &reqflags, HEADERGET_MINMEM);
+	/* fallthrough */
+    default:
+	headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
+	break;
+    }
+
+    if (rpmtdCount(&tagdata) == 0) {
+	if (rpmtag != RPMTAG_GROUP)
+	    goto exit;
+
+	/* XXX preserve legacy behavior */
+	tagdata.type = RPM_STRING_TYPE;
+	tagdata.data = (const char **) "Unknown";
+	tagdata.count = 1;
+    }
+
+    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+
+    logAddRemove(0, &tagdata);
+    while ((i = rpmtdNext(&tagdata)) >= 0) {
+	dbiIndexSet set;
+	int freedata = 0, j;
+	DBT key, data;
+	/* Include the tagNum in all indices (only files use though) */
+	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
+
+	switch (rpmtag) {
+	case RPMTAG_REQUIRENAME: {
+	    /* Filter out install prerequisites. */
+	    rpm_flag_t *rflag = rpmtdNextUint32(&reqflags);
+	    if (rflag && isInstallPreReq(*rflag) &&
+			 !isErasePreReq(*rflag))
+		continue;
+	    break;
+	    }
+	case RPMTAG_TRIGGERNAME:
+	    if (i > 0) {	/* don't add duplicates */
+		const char **tnames = tagdata.data;
+		const char *str = rpmtdGetString(&tagdata);
+		for (j = 0; j < i; j++) {
+		    if (rstreq(str, tnames[j]))
+			break;
+		}
+		if (j < i)
+		    continue;
+	    }
+	    break;
+	default:
+	    break;
+	}
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+
+	if (!td2key(&tagdata, &key, &freedata)) {
+	    continue;
+	}
+
+	/*
+	 * XXX with duplicates, an accurate data value and
+	 * DB_GET_BOTH is needed.
+	 */
+
+	set = NULL;
+
+	rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+	if (rc == 0) {			/* success */
+	/* With duplicates, cursor is positioned, discard the record. */
+	    if (!dbi->dbi_permit_dups)
+		(void) dbt2set(dbi, &data, &set);
+	} else if (rc != DB_NOTFOUND) {	/* error */
+	    rpmlog(RPMLOG_ERR,
+		_("error(%d) getting \"%s\" records from %s index\n"),
+		rc, (char*)key.data, rpmTagGetName(rpmtag));
+	    rc += 1;
+	    goto cont;
+	}
+
+	if (set == NULL)		/* not found or duplicate */
+	    set = xcalloc(1, sizeof(*set));
+
+	(void) dbiAppendSet(set, &rec, 1, sizeof(rec), 0);
+
+	(void) set2dbt(dbi, &data, set);
+	rc = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
+
+	if (rc) {
+	    rpmlog(RPMLOG_ERR,
+			_("error(%d) storing record %s into %s\n"),
+			rc, (char*)key.data, rpmTagGetName(rpmtag));
+	    rc += 1;
+	}
+	data.data = _free(data.data);
+	data.size = 0;
+	set = dbiFreeIndexSet(set);
+cont:
+	if (freedata) {
+	    free(key.data);
+	}
+    }
+
+    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+    dbcursor = NULL;
+
+    xx = dbiSync(dbi, 0);
+
+exit:
+    rpmtdFreeData(&tagdata);
+    return rc;
+}
+
 int rpmdbAdd(rpmdb db, Header h)
 {
     DBT hdr;
@@ -2489,132 +2610,19 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
-	DBT key, data;
-	memset(&key, 0, sizeof(key));
-	memset(&data, 0, sizeof(data));
-
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    rpmTag rpmtag = dbiTags[dbix];
-	    int rc, xx, j, i;
-	    struct rpmtd_s tagdata, reqflags;
-	    DBC * dbcursor = NULL;
 
 	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
 		continue;
 
-	    switch (rpmtag) {
-	    case RPMTAG_REQUIRENAME:
-		headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
-		headerGet(h, RPMTAG_REQUIREFLAGS, &reqflags, HEADERGET_MINMEM);
-		break;
-	    default:
-		headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM);
-		break;
-	    }
-
-	    if (rpmtdCount(&tagdata) == 0) {
-		if (rpmtag != RPMTAG_GROUP)
-		    continue;
-
-		/* XXX preserve legacy behavior */
-		tagdata.type = RPM_STRING_TYPE;
-		tagdata.data = (const char **) "Unknown";
-		tagdata.count = 1;
-	    }
-
-	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
-
-	    logAddRemove(0, &tagdata);
-	    while ((i = rpmtdNext(&tagdata)) >= 0) {
-		dbiIndexSet set;
-		int freedata = 0;
-		/* Include the tagNum in all indices (only files use though) */
-		struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
-
-		switch (rpmtag) {
-		case RPMTAG_REQUIRENAME: {
-		    /* Filter out install prerequisites. */
-		    rpm_flag_t *rflag = rpmtdNextUint32(&reqflags);
-		    if (rflag && isInstallPreReq(*rflag) &&
-				 !isErasePreReq(*rflag))
-			continue;
-		    break;
-		    }
-		case RPMTAG_TRIGGERNAME:
-		    if (i > 0) {	/* don't add duplicates */
-			const char **tnames = tagdata.data;
-			const char *str = rpmtdGetString(&tagdata);
-			for (j = 0; j < i; j++) {
-			    if (rstreq(str, tnames[j]))
-				break;
-			}
-			if (j < i)
-			    continue;
-		    }
-		    break;
-		default:
-		    break;
-		}
-
-		if (!td2key(&tagdata, &key, &freedata)) {
-		    continue;
-		}
-
-		/* 
- 		 * XXX with duplicates, an accurate data value and 
- 		 * DB_GET_BOTH is needed. 
- 		 */
-
-		set = NULL;
-
-		rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-		if (rc == 0) {			/* success */
-		/* With duplicates, cursor is positioned, discard the record. */
-		    if (!dbi->dbi_permit_dups)
-			(void) dbt2set(dbi, &data, &set);
-		} else if (rc != DB_NOTFOUND) {	/* error */
-		    rpmlog(RPMLOG_ERR,
-			_("error(%d) getting \"%s\" records from %s index\n"),
-			rc, (char*)key.data, rpmTagGetName(rpmtag));
-		    ret += 1;
-		    goto cont;
-		}
-
-		if (set == NULL)		/* not found or duplicate */
-		    set = xcalloc(1, sizeof(*set));
-
-		(void) dbiAppendSet(set, &rec, 1, sizeof(rec), 0);
-
-		(void) set2dbt(dbi, &data, set);
-		rc = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
-
-		if (rc) {
-		    rpmlog(RPMLOG_ERR,
-				_("error(%d) storing record %s into %s\n"),
-				rc, (char*)key.data, rpmTagGetName(rpmtag));
-		    ret += 1;
-		}
-		data.data = _free(data.data);
-		data.size = 0;
-		set = dbiFreeIndexSet(set);
-cont:
-		if (freedata) {
-		    free(key.data);
-		}
-	    }
-
-	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	    dbcursor = NULL;
-
-	    xx = dbiSync(dbi, 0);
-
-	    rpmtdFreeData(&tagdata);
+	    ret += addToIndex(dbi, rpmtag, hdrNum, h);
 	}
+    }
 
-	/* If everthing ok, mark header as installed now */
-	if (ret == 0) {
-	    headerSetInstance(h, hdrNum);
-	}
+    /* If everthing ok, mark header as installed now */
+    if (ret == 0) {
+	headerSetInstance(h, hdrNum);
     }
 
 exit:
