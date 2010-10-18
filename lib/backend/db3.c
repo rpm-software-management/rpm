@@ -507,6 +507,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     const char *dbhome = rpmdbHome(rpmdb);
     dbiIndex dbi = NULL;
     int rc = 0;
+    int retry_open;
 
     DB * db = NULL;
     uint32_t oflags;
@@ -527,55 +528,32 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      * Map open mode flags onto configured database/environment flags.
      */
     if ((rpmdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
-    if (rpmdb->db_mode & O_CREAT) {
-	oflags |= DB_CREATE;
-	dbi->dbi_oflags |= DB_CREATE;
-    }
-
-    /*
-     * Avoid incompatible DB_CREATE/DB_RDONLY flags on DB->open.
-     */
-    if ((oflags & DB_CREATE) && (oflags & DB_RDONLY)) {
-	/* dbhome is writable, and DB->open flags may conflict. */
-	char * dbf = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
-
-	if (access(dbf, F_OK) == -1) {
-	    /* File does not exist, DB->open might create ... */
-	    oflags &= ~DB_RDONLY;
-	} else {
-	    /* File exists, DB->open need not create ... */
-	    oflags &= ~DB_CREATE;
-	}
-
-	/* Only writers need DB_WRITECURSOR ... */
-	if (!(oflags & DB_RDONLY) && access(dbf, W_OK) == 0) {
-	    dbi->dbi_oflags &= ~DB_RDONLY;
-	} else {
-	    dbi->dbi_oflags |= DB_RDONLY;
-	}
-	dbf = _free(dbf);
-    }
-
-    /*
-     * Turn off verify-on-close if opening read-only.
-     */
-    if (oflags & DB_RDONLY)
-	dbi->dbi_verify_on_close = 0;
 
     rc = db_init(dbi, dbhome);
 
-    if (rc == 0) {
+    retry_open = (rc == 0) ? 2 : 0;
+
+    while (retry_open) {
 	rc = db_create(&db, rpmdb->db_dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 	    int _printit, xx;
 	    char *dbfs = prDbiOpenFlags(oflags, 0);
 	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
-			dbhome, dbi->dbi_file, dbfs, rpmdb->db_mode);
+		    dbhome, dbi->dbi_file, dbfs, rpmdb->db_mode);
 	    free(dbfs);
 
 	    rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
 		dbi->dbi_dbtype, oflags, rpmdb->db_perms);
+
+	    /* Attempt to create if missing, discarding DB_RDONLY (!) */
+	    if (rc == ENOENT) {
+		oflags |= DB_CREATE;
+		oflags &= ~DB_RDONLY;
+		retry_open--;
+	    } else {
+		retry_open = 0;
+	    }
 
 	    if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
 		DBTYPE dbi_dbtype = DB_UNKNOWN;
@@ -587,10 +565,22 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
+
+	    if (rc != 0) {
+		db->close(db, 0);
+		db = NULL;
+	    }
 	}
     }
 
+    /*
+     * Turn off verify-on-close if opening read-only.
+     */
+    if (oflags & DB_RDONLY)
+	dbi->dbi_verify_on_close = 0;
+
     dbi->dbi_db = db;
+    dbi->dbi_oflags = oflags;
 
     if (rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
 	rc = dbiFlock(dbi, rpmdb->db_mode);

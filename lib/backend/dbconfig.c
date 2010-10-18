@@ -232,7 +232,6 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     dbi->dbi_file = rpmTagGetName(rpmtag);
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
-    dbi->dbi_oflags |= DB_CREATE;
 
     /* XXX FIXME: These all are environment, not per-dbi configuration */
     dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_CREATE);
