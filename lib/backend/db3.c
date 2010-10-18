@@ -578,6 +578,12 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
      */
     if (oflags & DB_RDONLY)
 	dbi->dbi_verify_on_close = 0;
+    
+    /* Any indexes created here mean we'll need an index rebuild */
+    if (dbiType(dbi) == DBI_SECONDARY && (oflags & DB_CREATE)) {
+	rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbi->dbi_file);
+	rpmdb->db_buildindex++;
+    }
 
     dbi->dbi_db = db;
     dbi->dbi_oflags = oflags;

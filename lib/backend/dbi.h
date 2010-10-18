@@ -22,6 +22,7 @@ struct rpmdb_s {
     void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
+    int		db_buildindex;	/*!< Index rebuild indicator */
 
     struct rpmop_s db_getops;
     struct rpmop_s db_putops;
