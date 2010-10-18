@@ -763,8 +763,7 @@ int rpmdbInit (const char * prefix, int perms)
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
     int rc;
 
-    rc = openDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR),
-		perms, RPMDB_FLAG_JUSTCHECK);
+    rc = openDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR), perms, 0);
     if (db != NULL) {
 	int xx;
 	xx = rpmdbOpenAll(db);
