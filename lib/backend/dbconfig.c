@@ -274,5 +274,5 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
     buf = argvJoin(flags, ":");
     argvFree(flags);
 	
-    return buf;
+    return buf ? buf : xstrdup("(none)");
 }
