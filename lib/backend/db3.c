@@ -445,6 +445,63 @@ exit:
     return rc;
 }
 
+/*
+ * Lock a file using fcntl(2). Traditionally this is Packages,
+ * the file used to store metadata of installed header(s),
+ * as Packages is always opened, and should be opened first,
+ * for any rpmdb access.
+ *
+ * If no DBENV is used, then access is protected with a
+ * shared/exclusive locking scheme, as always.
+ *
+ * With a DBENV, the fcntl(2) lock is necessary only to keep
+ * the riff-raff from playing where they don't belong, as
+ * the DBENV should provide it's own locking scheme. So try to
+ * acquire a lock, but permit failures, as some other
+ * DBENV player may already have acquired the lock.
+ *
+ * With NPTL posix mutexes, revert to fcntl lock on non-functioning
+ * glibc/kernel combinations.
+ */
+static int dbiFlock(dbiIndex dbi, int mode)
+{
+    int fdno = -1;
+    int rc = 0;
+    DB * db = dbi->dbi_db;
+
+    if (!(db->fd(db, &fdno) == 0 && fdno >= 0)) {
+	rc = 1;
+    } else {
+	const char *dbhome = rpmdbHome(dbi->dbi_rpmdb);
+	struct flock l;
+	memset(&l, 0, sizeof(l));
+	l.l_whence = 0;
+	l.l_start = 0;
+	l.l_len = 0;
+	l.l_type = (mode & O_ACCMODE) == O_RDONLY
+		    ? F_RDLCK : F_WRLCK;
+	l.l_pid = 0;
+
+	rc = fcntl(fdno, F_SETLK, (void *) &l);
+	if (rc) {
+	    /* Warning iff using non-private CDB locking. */
+	    rc = (((dbi->dbi_eflags & DB_INIT_CDB) &&
+		    !(dbi->dbi_eflags & DB_PRIVATE))
+		? 0 : 1);
+	    rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
+		    _("cannot get %s lock on %s/%s\n"),
+		    ((mode & O_ACCMODE) == O_RDONLY)
+			    ? _("shared") : _("exclusive"),
+		    dbhome, dbi->dbi_file);
+	} else {
+	    rpmlog(RPMLOG_DEBUG,
+		    "locked   db index       %s/%s\n",
+		    dbhome, dbi->dbi_file);
+	}
+    }
+    return rc;
+}
+
 int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 {
     const char *dbhome = rpmdbHome(rpmdb);
@@ -453,6 +510,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     DB * db = NULL;
     uint32_t oflags;
+    static int _lockdbfd = 0;
 
     if (dbip)
 	*dbip = NULL;
@@ -506,13 +564,10 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 
     rc = db_init(dbi, dbhome);
 
-
     if (rc == 0) {
-
 	rc = db_create(&db, rpmdb->db_dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
-	    static int _lockdbfd = 0;
 	    int _printit, xx;
 	    char *dbfs = prDbiOpenFlags(oflags, 0);
 	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
@@ -532,62 +587,14 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
-
-	    /*
-	     * Lock a file using fcntl(2). Traditionally this is Packages,
-	     * the file used to store metadata of installed header(s),
-	     * as Packages is always opened, and should be opened first,
-	     * for any rpmdb access.
-	     *
-	     * If no DBENV is used, then access is protected with a
-	     * shared/exclusive locking scheme, as always.
-	     *
-	     * With a DBENV, the fcntl(2) lock is necessary only to keep
-	     * the riff-raff from playing where they don't belong, as
-	     * the DBENV should provide it's own locking scheme. So try to
-	     * acquire a lock, but permit failures, as some other
-	     * DBENV player may already have acquired the lock.
-	     *
-	     * With NPTL posix mutexes, revert to fcntl lock on non-functioning
-	     * glibc/kernel combinations.
-	     */
-	    if (rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
-		int fdno = -1;
-
-		if (!(db->fd(db, &fdno) == 0 && fdno >= 0)) {
-		    rc = 1;
-		} else {
-		    struct flock l;
-		    memset(&l, 0, sizeof(l));
-		    l.l_whence = 0;
-		    l.l_start = 0;
-		    l.l_len = 0;
-		    l.l_type = (rpmdb->db_mode & O_ACCMODE) == O_RDONLY
-				? F_RDLCK : F_WRLCK;
-		    l.l_pid = 0;
-
-		    rc = fcntl(fdno, F_SETLK, (void *) &l);
-		    if (rc) {
-			/* Warning iff using non-private CDB locking. */
-			rc = (((dbi->dbi_eflags & DB_INIT_CDB) &&
-				!(dbi->dbi_eflags & DB_PRIVATE))
-			    ? 0 : 1);
-			rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
-				_("cannot get %s lock on %s/%s\n"),
-				((rpmdb->db_mode & O_ACCMODE) == O_RDONLY)
-					? _("shared") : _("exclusive"),
-				dbhome, dbi->dbi_file);
-		    } else {
-			rpmlog(RPMLOG_DEBUG,
-				"locked   db index       %s/%s\n",
-				dbhome, dbi->dbi_file);
-		    }
-		}
-	    }
 	}
     }
 
     dbi->dbi_db = db;
+
+    if (rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
+	rc = dbiFlock(dbi, rpmdb->db_mode);
+    }
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	*dbip = dbi;
