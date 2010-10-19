@@ -364,8 +364,20 @@ dbiIndexType dbiType(dbiIndex dbi)
 
 int dbiVerify(dbiIndex dbi, unsigned int flags)
 {
-    dbi->dbi_verify_on_close = 1;
-    return dbiClose(dbi, flags);
+    int rc = 0;
+
+    if (dbi && dbi->dbi_db) {
+	DB * db = dbi->dbi_db;
+	
+	rc = db->verify(db, dbi->dbi_file, NULL, NULL, flags);
+	rc = cvtdberr(dbi, "db->verify", rc, _debug);
+
+	rpmlog(RPMLOG_DEBUG, "verified db index       %s\n", dbi->dbi_file);
+
+	/* db->verify() destroys the handle, make sure nobody accesses it */
+	dbi->dbi_db = NULL;
+    }
+    return rc;
 }
 
 int dbiClose(dbiIndex dbi, unsigned int flags)
@@ -387,57 +399,10 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 
 	rpmlog(RPMLOG_DEBUG, "closed   db index       %s/%s\n",
 		dbhome, dbi->dbi_file);
-
     }
 
     xx = db_fini(dbi, dbhome ? dbhome : "");
 
-    if (dbi->dbi_verify_on_close) {
-	DB_ENV * dbenv = NULL;
-
-	rc = db_env_create(&dbenv, 0);
-	rc = cvtdberr(dbi, "db_env_create", rc, _debug);
-	if (rc || dbenv == NULL) goto exit;
-
-	dbenv->set_errcall(dbenv, NULL);
-	dbenv->set_errpfx(dbenv, _errpfx);
-	xx = dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
-		(dbi->dbi_verbose & DB_VERB_DEADLOCK));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
-		(dbi->dbi_verbose & DB_VERB_RECOVERY));
-	xx = dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
-		(dbi->dbi_verbose & DB_VERB_WAITSFOR));
-
-	rc = (dbenv->open)(dbenv, dbhome,
-            DB_CREATE | DB_INIT_MPOOL | DB_PRIVATE, 0);
-	rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
-	if (rc) goto exit;
-
-	rc = db_create(&db, dbenv, 0);
-	rc = cvtdberr(dbi, "db_create", rc, _debug);
-
-	if (db != NULL) {
-		char * dbf = rpmGetPath(dbhome, "/", dbi->dbi_file, NULL);
-
-		rc = db->verify(db, dbf, NULL, NULL, flags);
-		rc = cvtdberr(dbi, "db->verify", rc, _debug);
-
-		rpmlog(RPMLOG_DEBUG, "verified db index       %s/%s\n",
-			(dbhome ? dbhome : ""), dbi->dbi_file);
-
-	        /*
-		 * The DB handle may not be accessed again after
-		 * DB->verify is called, regardless of its return.
-		 */
-		db = NULL;
-		dbf = _free(dbf);
-	}
-	xx = dbenv->close(dbenv, 0);
-	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
-	if (rc == 0 && xx) rc = xx;
-    }
-
-exit:
     dbi->dbi_db = NULL;
 
     dbi = dbiFree(dbi);
@@ -508,6 +473,7 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
     dbiIndex dbi = NULL;
     int rc = 0;
     int retry_open;
+    int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 
     DB * db = NULL;
     uint32_t oflags;
@@ -536,6 +502,11 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
     while (retry_open) {
 	rc = db_create(&db, rdb->db_dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
+
+	/* For verify we only want the handle, not an open db */
+	if (verifyonly)
+	    break;
+
 	if (rc == 0 && db != NULL) {
 	    int _printit, xx;
 	    char *dbfs = prDbiOpenFlags(oflags, 0);
@@ -573,12 +544,6 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
 	}
     }
 
-    /*
-     * Turn off verify-on-close if opening read-only.
-     */
-    if (oflags & DB_RDONLY)
-	dbi->dbi_verify_on_close = 0;
-    
     /* Any indexes created here mean we'll need an index rebuild */
     if (dbiType(dbi) == DBI_SECONDARY && (oflags & DB_CREATE)) {
 	rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbi->dbi_file);
@@ -588,14 +553,13 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
     dbi->dbi_db = db;
     dbi->dbi_oflags = oflags;
 
-    if (rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
+    if (!verifyonly && rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
 	rc = dbiFlock(dbi, rdb->db_mode);
     }
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
 	*dbip = dbi;
     } else {
-	dbi->dbi_verify_on_close = 0;
 	(void) dbiClose(dbi, 0);
     }
 

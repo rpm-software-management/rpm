@@ -48,8 +48,6 @@ static const struct poptOption rdbOptions[] = {
  { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
 	NULL, NULL },
 
- { "verify",	0,POPT_ARG_NONE,	&staticdbi.dbi_verify_on_close, 0,
-	NULL, NULL },
  { "nofsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_fsync, 0,
 	NULL, NULL },
  { "nodbsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_dbsync, 0,

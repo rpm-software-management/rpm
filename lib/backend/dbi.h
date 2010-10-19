@@ -1,6 +1,12 @@
 #ifndef _DBI_H
 #define _DBI_H
 
+enum rpmdbFlags {
+    RPMDB_FLAG_JUSTCHECK	= (1 << 0),
+    RPMDB_FLAG_REBUILD		= (1 << 1),
+    RPMDB_FLAG_VERIFYONLY	= (1 << 2),
+};
+
 typedef struct _dbiIndex * dbiIndex;
 
 /** \ingroup rpmdb
@@ -48,7 +54,6 @@ struct _dbiIndex {
 
     DBTYPE dbi_dbtype;		/*!< db index type */
 
-    int	dbi_verify_on_close;
     int	dbi_permit_dups;	/*!< permit duplicate entries? */
     int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */

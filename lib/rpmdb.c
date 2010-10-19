@@ -36,11 +36,6 @@
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "debug.h"
 
-enum rpmdbFlags {
-	RPMDB_FLAG_JUSTCHECK	= (1 << 0),
-	RPMDB_FLAG_REBUILD	= (1 << 1),
-};
-
 static rpmTag const dbiTags[] = {
     RPMDBI_PACKAGES,
     RPMTAG_NAME,
@@ -207,8 +202,9 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, int flags)
 
     if (dbi != NULL && rc == 0) {
 	db->_dbi[dbix] = dbi;
+	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 	/* Allocate for current max header instance number + some reserve */
-	if (rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
+	if (!verifyonly && rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
 	    db->db_nbits = 1024 + pkgInstance(dbi, 0);
 	    db->db_bits = PBM_ALLOC(db->db_nbits);
 	}
@@ -770,7 +766,7 @@ static int openDatabase(const char * prefix,
 	(void) rpmsqEnable(SIGPIPE,NULL);
 
 	/* Just the primary Packages database opened here */
-	rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0) != NULL) ? 0 : -2;
+	rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, db->db_flags) != NULL) ? 0 : -2;
     }
 
     if (rc || justCheck || dbp == NULL)
@@ -829,13 +825,14 @@ int rpmdbVerify(const char * prefix)
     int _dbapi = rpmExpandNumeric("%{_dbapi}");
     int rc = 0;
 
-    rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644, 0);
+    rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644,
+			RPMDB_FLAG_VERIFYONLY);
 
     if (db != NULL) {
 	int xx;
 	rc = rpmdbOpenAll(db);
 
-	rc = dbiForeach(db->_dbi, dbiVerify, 1);
+	rc = dbiForeach(db->_dbi, dbiVerify, 0);
 
 	xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
