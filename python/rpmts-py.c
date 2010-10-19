@@ -679,7 +679,7 @@ static struct PyMethodDef rpmts_methods[] = {
  {"setKeyring",	(PyCFunction) rpmts_setKeyring,	METH_O, 
 	NULL },
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
-"ts.dbMatch([TagN, [key, [len]]]) -> mi\n\
+"ts.dbMatch([TagN, [key]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
     {NULL,		NULL}		/* sentinel */
 };
