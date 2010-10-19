@@ -155,10 +155,10 @@ static int buildIndexes(rpmdb db)
  * Return handle for an index database.
  * @param db		rpm database
  * @param rpmtag	rpm tag
- * @param flags		(unused)
+ * @param flags
  * @return		index database handle
  */
-static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
+static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
@@ -194,7 +194,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, unsigned int flags)
     }
     errno = 0;
     dbi = NULL;
-    rc = dbiOpen(db, rpmtag, &dbi);
+    rc = dbiOpen(db, rpmtag, &dbi, flags);
     if (rc) {
 	static int _printed[32];
 	if (!_printed[dbix & 0x1f]++)

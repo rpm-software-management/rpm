@@ -105,10 +105,11 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
  * @param db		rpm database
  * @param rpmtag	rpm tag
  * @param dbiIndex	address of index database handle
+ * @param flags
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip);
+int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip, int flags);
 
 
 /* FIX: vector annotations */
