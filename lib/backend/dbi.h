@@ -9,6 +9,14 @@ enum rpmdbFlags {
 
 typedef struct _dbiIndex * dbiIndex;
 
+struct _dbConfig {
+    int	db_eflags;	/*!< dbenv->open flags */
+    int	db_mmapsize;	/*!< (10Mb) */
+    int	db_cachesize;	/*!< (128Kb) */
+    int	db_verbose;
+    int	db_no_fsync;	/*!< no-op fsync for db */
+};
+
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */
@@ -20,15 +28,18 @@ struct rpmdb_s {
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_api;		/*!< Berkeley API type */
-    int		db_remove_env;
     unsigned char * db_bits;	/*!< package instance bit mask. */
     int		db_nbits;	/*!< no. of bits in mask. */
     rpmdb	db_next;
     int		db_opens;
-    void *	db_dbenv;	/*!< Berkeley DB_ENV handle. */
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
     int		db_buildindex;	/*!< Index rebuild indicator */
+
+    /* dbenv and related parameters */
+    void * db_dbenv;		/*!< Berkeley DB_ENV handle. */
+    struct _dbConfig cfg;
+    int db_remove_env;
 
     struct rpmop_s db_getops;
     struct rpmop_s db_putops;
@@ -49,25 +60,13 @@ typedef enum dbiIndexType_e {
 struct _dbiIndex {
     const char * dbi_file;	/*!< file component of path */
 
-    int	dbi_eflags;		/*!< dbenv->open flags */
-    int	dbi_oflags;		/*!< db->open flags */
-
     DBTYPE dbi_dbtype;		/*!< db index type */
-
+    int	dbi_oflags;		/*!< db->open flags */
+    int	dbi_pagesize;		/*!< (fs blksize) */
     int	dbi_permit_dups;	/*!< permit duplicate entries? */
-    int	dbi_no_fsync;		/*!< no-op fsync for db */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */
     int	dbi_lockdbfd;		/*!< do fcntl lock on db fd */
     int	dbi_byteswapped;
-
-	/* dbenv parameters */
-    /* XXX db-4.3.14 adds dbenv as 1st arg. */
-    int	dbi_verbose;
-	/* mpool sub-system parameters */
-    int	dbi_mmapsize;	/*!< (10Mb) */
-    int	dbi_cachesize;	/*!< (128Kb) */
-	/* dbinfo parameters */
-    int	dbi_pagesize;		/*!< (fs blksize) */
 
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     dbiIndexType dbi_type;	/*! Type of dbi (primary / index) */

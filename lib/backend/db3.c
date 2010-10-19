@@ -99,6 +99,7 @@ static int db_init(dbiIndex dbi, const char * dbhome)
     DB_ENV *dbenv = NULL;
     int rc, xx;
     int retry_open = 2;
+    struct _dbConfig * cfg = &rdb->cfg;
 
     if (rdb->db_dbenv != NULL) {
 	rdb->db_opens++;
@@ -122,23 +123,23 @@ static int db_init(dbiIndex dbi, const char * dbhome)
     dbenv->set_isalive(dbenv, isalive);
 
     dbenv->set_verbose(dbenv, DB_VERB_DEADLOCK,
-	    (dbi->dbi_verbose & DB_VERB_DEADLOCK));
+	    (cfg->db_verbose & DB_VERB_DEADLOCK));
     dbenv->set_verbose(dbenv, DB_VERB_RECOVERY,
-	    (dbi->dbi_verbose & DB_VERB_RECOVERY));
+	    (cfg->db_verbose & DB_VERB_RECOVERY));
     dbenv->set_verbose(dbenv, DB_VERB_WAITSFOR,
-	    (dbi->dbi_verbose & DB_VERB_WAITSFOR));
+	    (cfg->db_verbose & DB_VERB_WAITSFOR));
 
-    if (dbi->dbi_mmapsize) {
-	xx = dbenv->set_mp_mmapsize(dbenv, dbi->dbi_mmapsize);
+    if (cfg->db_mmapsize) {
+	xx = dbenv->set_mp_mmapsize(dbenv, cfg->db_mmapsize);
 	xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
     }
 
-    if (dbi->dbi_cachesize) {
-	xx = dbenv->set_cachesize(dbenv, 0, dbi->dbi_cachesize, 0);
+    if (cfg->db_cachesize) {
+	xx = dbenv->set_cachesize(dbenv, 0, cfg->db_cachesize, 0);
 	xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
     }
 
-    if (dbi->dbi_no_fsync) {
+    if (cfg->db_no_fsync) {
 	xx = db_env_set_func_fsync(fsync_disable);
 	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
     }
@@ -148,14 +149,14 @@ static int db_init(dbiIndex dbi, const char * dbhome)
      * if we dont have permission to join/create shared environment.
      */
     while (retry_open) {
-	char *fstr = prDbiOpenFlags(dbi->dbi_eflags, 1);
+	char *fstr = prDbiOpenFlags(cfg->db_eflags, 1);
 	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
 	free(fstr);
 
 	rc = (dbenv->open)(dbenv, dbhome,
-			   dbi->dbi_eflags, dbi->dbi_rpmdb->db_perms);
+			   cfg->db_eflags, dbi->dbi_rpmdb->db_perms);
 	if (rc == EACCES) {
-	    dbi->dbi_eflags |= DB_PRIVATE;
+	    cfg->db_eflags |= DB_PRIVATE;
 	    retry_open--;
 	} else {
 	    retry_open = 0;
@@ -216,11 +217,12 @@ int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
     DBC * dbcursor = NULL;
     int flags;
     int rc;
+    const struct _dbConfig * cfg = &dbi->dbi_rpmdb->cfg;
 
    /* XXX DB_WRITECURSOR cannot be used with sunrpc dbenv. */
     assert(db != NULL);
     if ((dbiflags & DB_WRITECURSOR) &&
-	(dbi->dbi_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+	(cfg->db_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
     {
 	flags = DB_WRITECURSOR;
     } else
@@ -449,9 +451,10 @@ static int dbiFlock(dbiIndex dbi, int mode)
 
 	rc = fcntl(fdno, F_SETLK, (void *) &l);
 	if (rc) {
+	    const struct _dbConfig *cfg = &dbi->dbi_rpmdb->cfg;
 	    /* Warning iff using non-private CDB locking. */
-	    rc = (((dbi->dbi_eflags & DB_INIT_CDB) &&
-		    !(dbi->dbi_eflags & DB_PRIVATE))
+	    rc = (((cfg->db_eflags & DB_INIT_CDB) &&
+		    !(cfg->db_eflags & DB_PRIVATE))
 		? 0 : 1);
 	    rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
 		    _("cannot get %s lock on %s/%s\n"),

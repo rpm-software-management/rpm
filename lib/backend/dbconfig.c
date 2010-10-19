@@ -15,48 +15,49 @@
 #include "debug.h"
 
 static struct _dbiIndex staticdbi;
+static struct _dbConfig staticcfg;
 
 /** \ingroup dbi
  */
 static const struct poptOption rdbOptions[] = {
  /* Environment options */
    
- { "cdb",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_CDB,
+ { "cdb",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_CDB,
 	NULL, NULL },
- { "lock",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_LOCK,
+ { "lock",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_LOCK,
 	NULL, NULL },
- { "log",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_LOG,
+ { "log",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_LOG,
 	NULL, NULL },
- { "txn",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_TXN,
+ { "txn",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_INIT_TXN,
 	NULL, NULL },
- { "recover",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_RECOVER,
+ { "recover",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_RECOVER,
 	NULL, NULL },
- { "recover_fatal", 0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_RECOVER_FATAL,
+ { "recover_fatal", 0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_RECOVER_FATAL,
 	NULL, NULL },
- { "lockdown",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_LOCKDOWN,
+ { "lockdown",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_LOCKDOWN,
 	NULL, NULL },
- { "private",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_PRIVATE,
-	NULL, NULL },
-
- { "deadlock",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_DEADLOCK,
-	NULL, NULL },
- { "recovery",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_RECOVERY,
-	NULL, NULL },
- { "waitsfor",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_WAITSFOR,
-	NULL, NULL },
- { "verbose",	0,POPT_ARG_VAL,		&staticdbi.dbi_verbose, -1,
+ { "private",	0,POPT_BIT_SET,	&staticcfg.db_eflags, DB_PRIVATE,
 	NULL, NULL },
 
- { "cachesize",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
+ { "deadlock",	0,POPT_BIT_SET,	&staticcfg.db_verbose, DB_VERB_DEADLOCK,
 	NULL, NULL },
- { "mmapsize", 0,POPT_ARG_INT,		&staticdbi.dbi_mmapsize, 0,
+ { "recovery",	0,POPT_BIT_SET,	&staticcfg.db_verbose, DB_VERB_RECOVERY,
 	NULL, NULL },
- { "mp_mmapsize", 0,POPT_ARG_INT,	&staticdbi.dbi_mmapsize, 0,
+ { "waitsfor",	0,POPT_BIT_SET,	&staticcfg.db_verbose, DB_VERB_WAITSFOR,
 	NULL, NULL },
- { "mp_size",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
+ { "verbose",	0,POPT_ARG_VAL,		&staticcfg.db_verbose, -1,
 	NULL, NULL },
 
- { "nofsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_fsync, 0,
+ { "cachesize",	0,POPT_ARG_INT,		&staticcfg.db_cachesize, 0,
+	NULL, NULL },
+ { "mmapsize", 0,POPT_ARG_INT,		&staticcfg.db_mmapsize, 0,
+	NULL, NULL },
+ { "mp_mmapsize", 0,POPT_ARG_INT,	&staticcfg.db_mmapsize, 0,
+	NULL, NULL },
+ { "mp_size",	0,POPT_ARG_INT,		&staticcfg.db_cachesize, 0,
+	NULL, NULL },
+
+ { "nofsync",	0,POPT_ARG_NONE,	&staticcfg.db_no_fsync, 0,
 	NULL, NULL },
 
  /* Per-dbi options */
@@ -232,12 +233,15 @@ dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag)
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */
 
-    /* XXX FIXME: These all are environment, not per-dbi configuration */
-    dbi->dbi_eflags |= (DB_INIT_MPOOL|DB_CREATE);
-    /* Throw in some defaults if configuration didn't set any */
-    if (!dbi->dbi_mmapsize) dbi->dbi_mmapsize = 16 * 1024 * 1024;
-    if (!dbi->dbi_cachesize) dbi->dbi_cachesize = 1 * 1024 * 1024;
-
+    /* XXX FIXME: Get environment configuration out of here! */
+    if (rdb->db_dbenv == NULL) {
+	struct _dbConfig * cfg = &rdb->cfg;
+	*cfg = staticcfg;	/* structure assignment */
+	cfg->db_eflags |= (DB_INIT_MPOOL|DB_CREATE);
+	/* Throw in some defaults if configuration didn't set any */
+	if (!cfg->db_mmapsize) cfg->db_mmapsize = 16 * 1024 * 1024;
+	if (!cfg->db_cachesize) cfg->db_cachesize = 1 * 1024 * 1024;
+    }
 
     /* FIX: *(rdbOptions->arg) reachable */
     return dbi;
@@ -253,7 +257,7 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags)
 	if (opt->argInfo != POPT_BIT_SET)
 	    continue;
 	if (print_dbenv_flags) {
-	    if (!(opt->arg == &staticdbi.dbi_eflags))
+	    if (!(opt->arg == &staticcfg.db_eflags))
 		continue;
 	} else {
 	    if (!(opt->arg == &staticdbi.dbi_oflags))
