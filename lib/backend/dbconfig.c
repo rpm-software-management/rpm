@@ -19,8 +19,8 @@ static struct _dbiIndex staticdbi;
 /** \ingroup dbi
  */
 static const struct poptOption rdbOptions[] = {
- /* XXX DB_CXX_NO_EXCEPTIONS */
-
+ /* Environment options */
+   
  { "cdb",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_CDB,
 	NULL, NULL },
  { "lock",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_INIT_LOCK,
@@ -38,26 +38,6 @@ static const struct poptOption rdbOptions[] = {
  { "private",	0,POPT_BIT_SET,	&staticdbi.dbi_eflags, DB_PRIVATE,
 	NULL, NULL },
 
- { "nommap",	0,POPT_BIT_SET,	&staticdbi.dbi_oflags, DB_NOMMAP,
-	NULL, NULL },
-
- { "btree",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_BTREE,
-	NULL, NULL },
- { "hash", 	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_HASH,
-	NULL, NULL },
- { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
-	NULL, NULL },
-
- { "nofsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_fsync, 0,
-	NULL, NULL },
- { "nodbsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_dbsync, 0,
-	NULL, NULL },
- { "lockdbfd",	0,POPT_ARG_NONE,	&staticdbi.dbi_lockdbfd, 0,
-	NULL, NULL },
-
- { "cachesize",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
-	NULL, NULL },
-
  { "deadlock",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_DEADLOCK,
 	NULL, NULL },
  { "recovery",	0,POPT_BIT_SET,	&staticdbi.dbi_verbose, DB_VERB_RECOVERY,
@@ -67,13 +47,34 @@ static const struct poptOption rdbOptions[] = {
  { "verbose",	0,POPT_ARG_VAL,		&staticdbi.dbi_verbose, -1,
 	NULL, NULL },
 
+ { "cachesize",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
+	NULL, NULL },
  { "mmapsize", 0,POPT_ARG_INT,		&staticdbi.dbi_mmapsize, 0,
 	NULL, NULL },
  { "mp_mmapsize", 0,POPT_ARG_INT,	&staticdbi.dbi_mmapsize, 0,
 	NULL, NULL },
  { "mp_size",	0,POPT_ARG_INT,		&staticdbi.dbi_cachesize, 0,
 	NULL, NULL },
+
+ { "nofsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_fsync, 0,
+	NULL, NULL },
+
+ /* Per-dbi options */
  { "pagesize",	0,POPT_ARG_INT,		&staticdbi.dbi_pagesize, 0,
+	NULL, NULL },
+ { "nommap",	0,POPT_BIT_SET,		&staticdbi.dbi_oflags, DB_NOMMAP,
+	NULL, NULL },
+
+ { "btree",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_BTREE,
+	NULL, NULL },
+ { "hash", 	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_HASH,
+	NULL, NULL },
+ { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
+	NULL, NULL },
+
+ { "nodbsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_dbsync, 0,
+	NULL, NULL },
+ { "lockdbfd",	0,POPT_ARG_NONE,	&staticdbi.dbi_lockdbfd, 0,
 	NULL, NULL },
 
     POPT_TABLEEND
