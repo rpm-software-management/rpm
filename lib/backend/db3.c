@@ -20,10 +20,10 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 static const char * _errpfx = "rpmdb";
 
-static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+static int dbapi_err(rpmdb rdb, const char * msg, int error, int printit)
 {
     if (printit && error) {
-	int db_api = dbi->dbi_rpmdb->db_api;
+	int db_api = rdb->db_api;
 	if (msg)
 	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
 		db_api, error, msg, db_strerror(error));
@@ -32,6 +32,11 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 		db_api, error, db_strerror(error));
     }
     return error;
+}
+
+static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
+{
+    return dbapi_err(dbi->dbi_rpmdb, msg, error, printit);
 }
 
 static int db_fini(dbiIndex dbi, const char * dbhome)
