@@ -36,15 +36,15 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
 
 static int db_fini(dbiIndex dbi, const char * dbhome)
 {
-    rpmdb rpmdb = dbi->dbi_rpmdb;
-    DB_ENV * dbenv = rpmdb->db_dbenv;
+    rpmdb rdb = dbi->dbi_rpmdb;
+    DB_ENV * dbenv = rdb->db_dbenv;
     int rc;
 
     if (dbenv == NULL)
 	return 0;
 
-    if (rpmdb->db_opens > 1) {
-	rpmdb->db_opens--;
+    if (rdb->db_opens > 1) {
+	rdb->db_opens--;
 	return 0;
     }
 
@@ -53,7 +53,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome)
 
     rpmlog(RPMLOG_DEBUG, "closed   db environment %s\n", dbhome);
 
-    if (rpmdb->db_remove_env) {
+    if (rdb->db_remove_env) {
 	int xx;
 
 	xx = db_env_create(&dbenv, 0);
@@ -370,8 +370,8 @@ int dbiVerify(dbiIndex dbi, unsigned int flags)
 
 int dbiClose(dbiIndex dbi, unsigned int flags)
 {
-    rpmdb rpmdb = dbi->dbi_rpmdb;
-    const char * dbhome = rpmdbHome(rpmdb);
+    rpmdb rdb = dbi->dbi_rpmdb;
+    const char * dbhome = rpmdbHome(rdb);
     DB * db = dbi->dbi_db;
     int _printit;
     int rc = 0, xx;
@@ -502,9 +502,9 @@ static int dbiFlock(dbiIndex dbi, int mode)
     return rc;
 }
 
-int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
+int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip)
 {
-    const char *dbhome = rpmdbHome(rpmdb);
+    const char *dbhome = rpmdbHome(rdb);
     dbiIndex dbi = NULL;
     int rc = 0;
     int retry_open;
@@ -519,7 +519,7 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Parse db configuration parameters.
      */
-    if ((dbi = dbiNew(rpmdb, rpmtag)) == NULL)
+    if ((dbi = dbiNew(rdb, rpmtag)) == NULL)
 	return 1;
 
     oflags = dbi->dbi_oflags;
@@ -527,24 +527,24 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /*
      * Map open mode flags onto configured database/environment flags.
      */
-    if ((rpmdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
+    if ((rdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
 
     rc = db_init(dbi, dbhome);
 
     retry_open = (rc == 0) ? 2 : 0;
 
     while (retry_open) {
-	rc = db_create(&db, rpmdb->db_dbenv, 0);
+	rc = db_create(&db, rdb->db_dbenv, 0);
 	rc = cvtdberr(dbi, "db_create", rc, _debug);
 	if (rc == 0 && db != NULL) {
 	    int _printit, xx;
 	    char *dbfs = prDbiOpenFlags(oflags, 0);
 	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
-		    dbhome, dbi->dbi_file, dbfs, rpmdb->db_mode);
+		    dbhome, dbi->dbi_file, dbfs, rdb->db_mode);
 	    free(dbfs);
 
 	    rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
-		dbi->dbi_dbtype, oflags, rpmdb->db_perms);
+		dbi->dbi_dbtype, oflags, rdb->db_perms);
 
 	    /* Attempt to create if missing, discarding DB_RDONLY (!) */
 	    if (rc == ENOENT) {
@@ -582,14 +582,14 @@ int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip)
     /* Any indexes created here mean we'll need an index rebuild */
     if (dbiType(dbi) == DBI_SECONDARY && (oflags & DB_CREATE)) {
 	rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbi->dbi_file);
-	rpmdb->db_buildindex++;
+	rdb->db_buildindex++;
     }
 
     dbi->dbi_db = db;
     dbi->dbi_oflags = oflags;
 
     if (rc == 0 && dbi->dbi_lockdbfd && _lockdbfd++ == 0) {
-	rc = dbiFlock(dbi, rpmdb->db_mode);
+	rc = dbiFlock(dbi, rdb->db_mode);
     }
 
     if (rc == 0 && dbi->dbi_db != NULL && dbip != NULL) {
