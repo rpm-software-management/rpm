@@ -39,9 +39,8 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     return dbapi_err(dbi->dbi_rpmdb, msg, error, printit);
 }
 
-static int db_fini(dbiIndex dbi, const char * dbhome)
+static int db_fini(rpmdb rdb, const char * dbhome)
 {
-    rpmdb rdb = dbi->dbi_rpmdb;
     DB_ENV * dbenv = rdb->db_dbenv;
     int rc;
 
@@ -54,7 +53,7 @@ static int db_fini(dbiIndex dbi, const char * dbhome)
     }
 
     rc = dbenv->close(dbenv, 0);
-    rc = cvtdberr(dbi, "dbenv->close", rc, _debug);
+    rc = dbapi_err(rdb, "dbenv->close", rc, _debug);
 
     rpmlog(RPMLOG_DEBUG, "closed   db environment %s\n", dbhome);
 
@@ -62,10 +61,10 @@ static int db_fini(dbiIndex dbi, const char * dbhome)
 	int xx;
 
 	xx = db_env_create(&dbenv, 0);
-	xx = cvtdberr(dbi, "db_env_create", xx, _debug);
+	xx = dbapi_err(rdb, "db_env_create", xx, _debug);
 	xx = dbenv->remove(dbenv, dbhome, 0);
 	/* filter out EBUSY as it just means somebody else gets to clean it */
-	xx = cvtdberr(dbi, "dbenv->remove", xx, (xx == EBUSY ? 0 : _debug));
+	xx = dbapi_err(rdb, "dbenv->remove", xx, (xx == EBUSY ? 0 : _debug));
 
 	rpmlog(RPMLOG_DEBUG, "removed  db environment %s\n", dbhome);
 
@@ -98,9 +97,8 @@ static int isalive(DB_ENV *dbenv, pid_t pid, db_threadid_t tid, uint32_t flags)
     return alive;
 }
 
-static int db_init(dbiIndex dbi, const char * dbhome)
+static int db_init(rpmdb rdb, const char * dbhome)
 {
-    rpmdb rdb = dbi->dbi_rpmdb;
     DB_ENV *dbenv = NULL;
     int rc, xx;
     int retry_open = 2;
@@ -112,7 +110,7 @@ static int db_init(dbiIndex dbi, const char * dbhome)
     }
 
     rc = db_env_create(&dbenv, 0);
-    rc = cvtdberr(dbi, "db_env_create", rc, _debug);
+    rc = dbapi_err(rdb, "db_env_create", rc, _debug);
     if (dbenv == NULL || rc)
 	goto errxit;
 
@@ -136,17 +134,17 @@ static int db_init(dbiIndex dbi, const char * dbhome)
 
     if (cfg->db_mmapsize) {
 	xx = dbenv->set_mp_mmapsize(dbenv, cfg->db_mmapsize);
-	xx = cvtdberr(dbi, "dbenv->set_mp_mmapsize", xx, _debug);
+	xx = dbapi_err(rdb, "dbenv->set_mp_mmapsize", xx, _debug);
     }
 
     if (cfg->db_cachesize) {
 	xx = dbenv->set_cachesize(dbenv, 0, cfg->db_cachesize, 0);
-	xx = cvtdberr(dbi, "dbenv->set_cachesize", xx, _debug);
+	xx = dbapi_err(rdb, "dbenv->set_cachesize", xx, _debug);
     }
 
     if (cfg->db_no_fsync) {
 	xx = db_env_set_func_fsync(fsync_disable);
-	xx = cvtdberr(dbi, "db_env_set_func_fsync", xx, _debug);
+	xx = dbapi_err(rdb, "db_env_set_func_fsync", xx, _debug);
     }
 
     /*
@@ -158,8 +156,7 @@ static int db_init(dbiIndex dbi, const char * dbhome)
 	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
 	free(fstr);
 
-	rc = (dbenv->open)(dbenv, dbhome,
-			   cfg->db_eflags, dbi->dbi_rpmdb->db_perms);
+	rc = (dbenv->open)(dbenv, dbhome, cfg->db_eflags, rdb->db_perms);
 	if (rc == EACCES) {
 	    cfg->db_eflags |= DB_PRIVATE;
 	    retry_open--;
@@ -167,13 +164,13 @@ static int db_init(dbiIndex dbi, const char * dbhome)
 	    retry_open = 0;
 	}
     }
-    rc = cvtdberr(dbi, "dbenv->open", rc, _debug);
+    rc = dbapi_err(rdb, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
 
     /* stale lock removal */
     rc = dbenv->failchk(dbenv, 0);
-    rc = cvtdberr(dbi, "dbenv->failchk", rc, _debug);
+    rc = dbapi_err(rdb, "dbenv->failchk", rc, _debug);
     if (rc)
 	goto errxit;
 
@@ -186,7 +183,7 @@ errxit:
     if (dbenv) {
 	int xx;
 	xx = dbenv->close(dbenv, 0);
-	xx = cvtdberr(dbi, "dbenv->close", xx, _debug);
+	xx = dbapi_err(rdb, "dbenv->close", xx, _debug);
     }
     return rc;
 }
@@ -408,7 +405,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 		dbhome, dbi->dbi_file);
     }
 
-    xx = db_fini(dbi, dbhome ? dbhome : "");
+    xx = db_fini(rdb, dbhome ? dbhome : "");
 
     dbi->dbi_db = NULL;
 
@@ -503,7 +500,7 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
      */
     if ((rdb->db_mode & O_ACCMODE) == O_RDONLY) oflags |= DB_RDONLY;
 
-    rc = db_init(dbi, dbhome);
+    rc = db_init(rdb, dbhome);
 
     retry_open = (rc == 0) ? 2 : 0;
 
