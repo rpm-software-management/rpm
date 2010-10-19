@@ -91,7 +91,7 @@ dbiIndex dbiFree(dbiIndex dbi)
 static const char * const dbi_config_default =
     "hash:cdb:verbose";
 
-dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
+dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
     char *dbOpts;
@@ -226,7 +226,7 @@ dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag)
     memset(&staticdbi, 0, sizeof(staticdbi));
 
     /* FIX: figger lib/dbi refcounts */
-    dbi->dbi_rpmdb = rpmdb;
+    dbi->dbi_rpmdb = rdb;
     dbi->dbi_file = rpmTagGetName(rpmtag);
     dbi->dbi_type = (rpmtag == RPMDBI_PACKAGES) ? DBI_PRIMARY : DBI_SECONDARY;
     dbi->dbi_byteswapped = -1;	/* -1 unknown, 0 native order, 1 alien order */

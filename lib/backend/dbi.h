@@ -81,12 +81,12 @@ extern "C" {
 
 /** \ingroup dbi
  * Return new configured index database handle instance.
- * @param rpmdb		rpm database
+ * @param rdb		rpm database
  * @param rpmtag	rpm tag
  * @return		index database handle
  */
 RPM_GNUC_INTERNAL
-dbiIndex dbiNew(rpmdb rpmdb, rpmTag rpmtag);
+dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag);
 
 /** \ingroup dbi
  * Destroy index database handle instance.
@@ -114,7 +114,7 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int dbiOpen(rpmdb rpmdb, rpmTag rpmtag, dbiIndex * dbip, int flags);
+int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags);
 
 
 /* FIX: vector annotations */
