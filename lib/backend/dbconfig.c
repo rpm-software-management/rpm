@@ -61,8 +61,6 @@ static const struct poptOption rdbOptions[] = {
 	NULL, NULL },
 
  /* Per-dbi options */
- { "pagesize",	0,POPT_ARG_INT,		&staticdbi.dbi_pagesize, 0,
-	NULL, NULL },
  { "nommap",	0,POPT_BIT_SET,		&staticdbi.dbi_oflags, DB_NOMMAP,
 	NULL, NULL },
 
