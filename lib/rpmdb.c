@@ -121,7 +121,7 @@ static int buildIndexes(rpmdb db)
     rc += doOpenAll(db);
 
     /* If the main db was just created, this is expected - dont whine */
-    if (!(db->_dbi[0]->dbi_oflags & DB_CREATE)) {
+    if (!(dbiFlags(db->_dbi[0]) & DBI_CREATED)) {
 	rpmlog(RPMLOG_WARNING,
 	       _("Generating %d missing index(es), please wait...\n"),
 	       db->db_buildindex);
@@ -136,7 +136,7 @@ static int buildIndexes(rpmdb db)
 	/* Build all secondary indexes which were created on open */
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    dbiIndex dbi = db->_dbi[dbix];
-	    if (dbi && (dbi->dbi_oflags & DB_CREATE)) {
+	    if (dbi && (dbiFlags(dbi) & DBI_CREATED)) {
 		rc += addToIndex(dbi, dbiTags[dbix], hdrNum, h);
 	    }
 	}
