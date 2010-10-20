@@ -206,6 +206,11 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, int flags)
 		db->db_nbits = 1024 + pkgInstance(dbi, 0);
 		db->db_bits = PBM_ALLOC(db->db_nbits);
 	    }
+	    /* If primary got created, we can safely run without fsync */
+	    if ((dbiFlags(dbi) & DBI_CREATED) || db->cfg.db_no_fsync) {
+		rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
+		dbSetFSync(db->db_dbenv, 0);
+	    }
 	} else { /* secondary index */
 	    if (!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
 		rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
@@ -666,6 +671,10 @@ int rpmdbClose(rpmdb db)
 
     if (db->nrefs > 0)
 	goto exit;
+
+    /* Always re-enable fsync on close of rw-database */
+    if ((db->db_mode & O_ACCMODE) != O_RDONLY)
+	dbSetFSync(db->db_dbenv, 1);
 
     rc = dbiForeach(db->_dbi, dbiClose, 1);
 

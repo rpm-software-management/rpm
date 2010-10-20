@@ -82,6 +82,11 @@ struct _dbiIndex {
 extern "C" {
 #endif
 
+
+RPM_GNUC_INTERNAL
+/* Globally enable/disable fsync in the backend */
+void dbSetFSync(void *dbenv, int enable);
+
 /** \ingroup dbi
  * Return new configured index database handle instance.
  * @param rdb		rpm database

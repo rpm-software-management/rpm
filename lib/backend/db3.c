@@ -156,11 +156,6 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	xx = dbapi_err(rdb, "dbenv->set_cachesize", xx, _debug);
     }
 
-    if (cfg->db_no_fsync) {
-	xx = db_env_set_func_fsync(fsync_disable);
-	xx = dbapi_err(rdb, "db_env_set_func_fsync", xx, _debug);
-    }
-
     /*
      * Actually open the environment. Fall back to private environment
      * if we dont have permission to join/create shared environment.
@@ -200,6 +195,11 @@ errxit:
 	xx = dbapi_err(rdb, "dbenv->close", xx, _debug);
     }
     return rc;
+}
+
+void dbSetFSync(void *dbenv, int enable)
+{
+    db_env_set_func_fsync(enable ? fdatasync : fsync_disable);
 }
 
 int dbiSync(dbiIndex dbi, unsigned int flags)
