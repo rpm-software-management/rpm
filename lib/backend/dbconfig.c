@@ -65,13 +65,6 @@ static const struct poptOption rdbOptions[] = {
  { "nommap",	0,POPT_BIT_SET,		&staticdbi.dbi_oflags, DB_NOMMAP,
 	NULL, NULL },
 
- { "btree",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_BTREE,
-	NULL, NULL },
- { "hash", 	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_HASH,
-	NULL, NULL },
- { "unknown",	0,POPT_ARG_VAL,		&staticdbi.dbi_dbtype, DB_UNKNOWN,
-	NULL, NULL },
-
  { "nodbsync",	0,POPT_ARG_NONE,	&staticdbi.dbi_no_dbsync, 0,
 	NULL, NULL },
  { "lockdbfd",	0,POPT_ARG_NONE,	&staticdbi.dbi_lockdbfd, 0,
@@ -88,10 +81,6 @@ dbiIndex dbiFree(dbiIndex dbi)
     return dbi;
 }
 
-/** @todo Set a reasonable "last gasp" default db config. */
-static const char * const dbi_config_default =
-    "hash:cdb:verbose";
-
 dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
@@ -103,7 +92,7 @@ dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag)
 	dbOpts = _free(dbOpts);
 	dbOpts = rpmExpand("%{_dbi_config}", NULL);
 	if (!(dbOpts && *dbOpts && *dbOpts != '%')) {
-	    dbOpts = rpmExpand(dbi_config_default, NULL);
+	    dbOpts = _free(dbOpts);
 	}
     }
 

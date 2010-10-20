@@ -65,7 +65,6 @@ enum dbiFlags_e {
 struct _dbiIndex {
     const char * dbi_file;	/*!< file component of path */
 
-    DBTYPE dbi_dbtype;		/*!< db index type */
     int	dbi_oflags;		/*!< db->open flags */
     int	dbi_permit_dups;	/*!< permit duplicate entries? */
     int	dbi_no_dbsync;		/*!< don't call dbiSync */

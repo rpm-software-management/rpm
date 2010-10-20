@@ -513,6 +513,7 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
     int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 
     DB * db = NULL;
+    DBTYPE dbtype = DB_UNKNOWN;
     uint32_t oflags;
     static int _lockdbfd = 0;
 
@@ -552,27 +553,31 @@ int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
 	    free(dbfs);
 
 	    rc = (db->open)(db, NULL, dbi->dbi_file, NULL,
-		dbi->dbi_dbtype, oflags, rdb->db_perms);
+			    dbtype, oflags, rdb->db_perms);
 
 	    /* Attempt to create if missing, discarding DB_RDONLY (!) */
 	    if (rc == ENOENT) {
 		oflags |= DB_CREATE;
 		oflags &= ~DB_RDONLY;
+		dbtype = (dbiType(dbi) == DBI_PRIMARY) ?  DB_HASH : DB_BTREE;
 		retry_open--;
 	    } else {
 		retry_open = 0;
 	    }
 
-	    if (rc == 0 && dbi->dbi_dbtype == DB_UNKNOWN) {
-		DBTYPE dbi_dbtype = DB_UNKNOWN;
-		xx = db->get_type(db, &dbi_dbtype);
-		if (xx == 0)
-		    dbi->dbi_dbtype = dbi_dbtype;
-	    }
-
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
 	    xx = cvtdberr(dbi, "db->open", rc, _printit);
+
+	    /* Validate the index type is something we can support */
+	    if ((rc == 0) && (dbtype == DB_UNKNOWN)) {
+		db->get_type(db, &dbtype);
+		if (dbtype != DB_HASH && dbtype != DB_BTREE) {
+		    rpmlog(RPMLOG_ERR, _("invalid index type %x on %s/%s\n"),
+				dbtype, dbhome, dbi->dbi_file);
+		    rc = 1;
+		}
+	    }
 
 	    if (rc != 0) {
 		db->close(db, 0);
