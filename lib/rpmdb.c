@@ -206,6 +206,11 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, int flags)
 		db->db_nbits = 1024 + pkgInstance(dbi, 0);
 		db->db_bits = PBM_ALLOC(db->db_nbits);
 	    }
+	} else { /* secondary index */
+	    if (!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
+		rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
+		db->db_buildindex++;
+	    }
 	}
     }
 
