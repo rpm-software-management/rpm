@@ -2888,7 +2888,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     _dbapi = olddb->db_api;
     rpmlog(RPMLOG_DEBUG, "opening new database with dbapi %d\n",
 		_dbapi_rebuild);
-    (void) rpmDefineMacro(NULL, "_rpmdb_rebuild %{nil}", -1);
     if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb,
 		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
 	rc = 1;

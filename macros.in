@@ -501,14 +501,7 @@ print (t)\
 # list of tokens, with an optional '!' negation to explicitly disable bit
 # values, or a "=value" if a parameter. A per-tag value is used (e.g.
 # %_dbi_config_Packages) if defined, otherwise a per-rpmdb default
-# (e.g. %_dbi_config). The configuration is also conditioned on the
-# existence of an internal %{_rpmdb_rebuild} switch to permit changing
-# the configuration while rebuilding an rpmdb database.
-#
-# The rpmdb configuration tokens are in a popt table in rpmdb/dbconfig.c,
-# see that for the latest gory details. Note carefully that, unless you
-# are writing an rpm installer, you shouldn't have to touch *any* of these
-# parameters.
+# (e.g. %_dbi_config).
 #
 # Here's a short list of the tokens, with a guess of whether the option is
 # useful:
@@ -528,54 +521,24 @@ print (t)\
 #    engineering to convert everbody's databases to btree, not gonna happen
 #    soon.
 #
-# See the db3-devel package, or http://www.sleepycat.com for Berkeley db-3.x
-# documentation.
-#
 #   token	works?	Berkeley db flag or value
 #==================================================
-#---------------------- DBENV->open parameters and tunable values:
+#---------------------- DBENV tunable values:
 #   mmapsize=16Mb	DBENV->set_mp_mmapsize
 #   cachesize=1Mb	DBENV->set_cachesize, DB->set_cachesize
-#---------------------- DBENV->open bits:
-#   cdb		+++	DB_INIT_CDB
-#   txn		???	DB_INIT_TXN
-#   log		???	DB_INIT_LOG
-#   lock	???	DB_INIT_LOCK
-#   recover	???	DB_RECOVER
-#   recover_fatal ???	DB_RECOVER_FATAL
-#   private	+++	DB_PRIVATE
-#   lockdown	???	DB_LOCKDOWN
-#---------------------- DB->open parameters and tunable values:
-#   pagesize=512 +++	DB->set_pagesize
 #---------------------- DB->open bits:
 #   nommap	???	DB_NOMMAP
 #---------------------- DB->open types:
 #   btree		DB_BTREE
 #   hash		DB_HASH
 #   unknown	+++	DB_UNKNOWN
-#---------------------- DB->set_flags bits:
-#   bt_dup	+++	(btree only) DB_DUP
-#   bt_dupsort	+++	(btree only) DB_DUPSORT
-#   ht_dup	+++	(hash only) DB_DUP
-#   ht_dupsort	+++	(hash only) DB_DUPSORT
 #----------------------- rpmdb specific configuration:
-#   verify		(db3 only) Verify Packages db after RW close?
 #   lockdbfd		(always on for Packages) Use fcntl(2) locking ?
 #   nofsync		Disable fsync(2) call performed after db3 writes?
 #
 
-# XXX Use transactions and logs for rpmdb durability (no clue yet):
-#%__dbi_other			txn log \
-#				mp_mmapsize=8Mb mp_size=512Kb
-
-# Use a CDB database model for concurrent access.
-# XXX Add "private" here for legacy interoperation transiting to glibc+nptl.
-%__dbi_cdb			cdb mp_mmapsize=16Mb mp_size=1Mb
-
-%__dbi_other			%{?__dbi_cdb}
-
-# Note: adding nofsync here speeds up --rebuilddb a lot.
-%__dbi_rebuild			nofsync !log !txn !cdb
+# Misc BDB tuning options
+%__dbi_other			mp_mmapsize=16Mb mp_size=1Mb
 
 #
 #--- Hash database configuration
@@ -584,13 +547,7 @@ print (t)\
   %{__dbi_other}\
 %{nil}
 
-%__dbi_htconfig_current		%{__dbi_htconfig}
-%__dbi_htconfig_rebuild		%{__dbi_htconfig} %{__dbi_rebuild}
-
-%_dbi_htconfig		\
-  %{?_rpmdb_rebuild:%{__dbi_htconfig_rebuild}}\
-  %{!?_rpmdb_rebuild:%{__dbi_htconfig_current}}\
-%{nil}
+%_dbi_htconfig			%{__dbi_htconfig}
 
 #
 #--- Btree database configuration
@@ -599,13 +556,7 @@ print (t)\
   %{__dbi_other}\
 %{nil}
 
-%__dbi_btconfig_current		%{__dbi_btconfig}
-%__dbi_btconfig_rebuild		%{__dbi_btconfig} %{__dbi_rebuild}
-
-%_dbi_btconfig		\
-  %{?_rpmdb_rebuild:%{__dbi_btconfig_rebuild}}\
-  %{!?_rpmdb_rebuild:%{__dbi_btconfig_current}}\
-%{nil}
+%_dbi_btconfig			%{__dbi_btconfig}
 
 # "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
 %_dbi_config_Packages		%{_dbi_htconfig} lockdbfd
