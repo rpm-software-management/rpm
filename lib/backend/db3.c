@@ -381,6 +381,11 @@ int dbiFlags(dbiIndex dbi)
     return flags;
 }
 
+const char * dbiName(dbiIndex dbi)
+{
+    return dbi->dbi_file;
+}
+
 int dbiVerify(dbiIndex dbi, unsigned int flags)
 {
     int rc = 0;

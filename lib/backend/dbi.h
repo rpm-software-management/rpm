@@ -243,6 +243,15 @@ dbiIndexType dbiType(dbiIndex dbi);
  */
 RPM_GNUC_INTERNAL
 int dbiFlags(dbiIndex dbi);
+
+/** \ingroup dbi
+ * Retrieve index name (same as the backing file name)
+ * @param dbi		index database handle
+ * @return		dbi name
+ */
+RPM_GNUC_INTERNAL
+const char * dbiName(dbiIndex dbi);
+
 #ifdef __cplusplus
 }
 #endif
