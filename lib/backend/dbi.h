@@ -54,6 +54,12 @@ typedef enum dbiIndexType_e {
     DBI_SECONDARY	= (2 * sizeof(int32_t)),
 } dbiIndexType;
 
+enum dbiFlags_e {
+    DBI_NONE		= 0,
+    DBI_CREATED		= (1 << 0),
+    DBI_RDONLY		= (1 << 1),
+};
+
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db functionality).
  */
@@ -231,6 +237,13 @@ int dbiByteSwapped(dbiIndex dbi);
 RPM_GNUC_INTERNAL
 dbiIndexType dbiType(dbiIndex dbi);
 
+/** \ingroup dbi
+ * Retrieve index control flags (new/existing, read-only etc)
+ * @param dbi		index database handle
+ * @return		dbi control flags
+ */
+RPM_GNUC_INTERNAL
+int dbiFlags(dbiIndex dbi);
 #ifdef __cplusplus
 }
 #endif

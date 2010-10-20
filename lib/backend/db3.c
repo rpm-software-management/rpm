@@ -366,6 +366,21 @@ dbiIndexType dbiType(dbiIndex dbi)
     return dbi->dbi_type;
 }
 
+int dbiFlags(dbiIndex dbi)
+{
+    DB *db = dbi->dbi_db;
+    int flags = DBI_NONE;
+    uint32_t oflags = 0;
+
+    if (db && db->get_open_flags(db, &oflags) == 0) {
+	if (oflags & DB_CREATE)
+	    flags |= DBI_CREATED;
+	if (oflags & DB_RDONLY)
+	    flags |= DBI_RDONLY;
+    }
+    return flags;
+}
+
 int dbiVerify(dbiIndex dbi, unsigned int flags)
 {
     int rc = 0;
