@@ -190,26 +190,23 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, int flags)
     errno = 0;
     dbi = NULL;
     rc = dbiOpen(db, rpmtag, &dbi, flags);
+
     if (rc) {
 	static int _printed[32];
 	if (!_printed[dbix & 0x1f]++)
-	    rpmlog(RPMLOG_ERR,
-		   _("cannot open %s index using db%d - %s (%d)\n"),
+	    rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
 		   rpmTagGetName(rpmtag), _dbapi,
 		   (rc > 0 ? strerror(rc) : ""), rc);
-	_dbapi = -1;
-    }
-
-    if (dbi != NULL && rc == 0) {
+    } else {
 	db->_dbi[dbix] = dbi;
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
-	/* Allocate for current max header instance number + some reserve */
-	if (!verifyonly && rpmtag == RPMDBI_PACKAGES && db->db_bits == NULL) {
-	    db->db_nbits = 1024 + pkgInstance(dbi, 0);
-	    db->db_bits = PBM_ALLOC(db->db_nbits);
+	if (dbiType(dbi) == DBI_PRIMARY) {
+	    /* Allocate for current max header instance number + some reserve */
+	    if (!verifyonly && (db->db_bits == NULL)) {
+		db->db_nbits = 1024 + pkgInstance(dbi, 0);
+		db->db_bits = PBM_ALLOC(db->db_nbits);
+	    }
 	}
-    } else {
-	dbi = dbiFree(dbi);
     }
 
     return dbi;
