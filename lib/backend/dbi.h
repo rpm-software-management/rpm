@@ -10,7 +10,6 @@ enum rpmdbFlags {
 typedef struct _dbiIndex * dbiIndex;
 
 struct _dbConfig {
-    int	db_eflags;	/*!< dbenv->open flags */
     int	db_mmapsize;	/*!< (10Mb) */
     int	db_cachesize;	/*!< (128Kb) */
     int	db_verbose;

@@ -39,6 +39,14 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     return dbapi_err(dbi->dbi_rpmdb, msg, error, printit);
 }
 
+static uint32_t db_envflags(DB * db)
+{
+    DB_ENV * env = db->get_env(db);
+    uint32_t eflags = 0;
+    (void) env->get_open_flags(env, &eflags);
+    return eflags;
+}
+
 static int db_fini(rpmdb rdb, const char * dbhome)
 {
     DB_ENV * dbenv = rdb->db_dbenv;
@@ -103,11 +111,17 @@ static int db_init(rpmdb rdb, const char * dbhome)
     int rc, xx;
     int retry_open = 2;
     struct _dbConfig * cfg = &rdb->cfg;
+    /* This is our setup, thou shall not have other setups before us */
+    uint32_t eflags = (DB_CREATE|DB_INIT_MPOOL|DB_INIT_CDB);
 
     if (rdb->db_dbenv != NULL) {
 	rdb->db_opens++;
 	return 0;
     }
+
+    /* By no means necessary but speeds things up a bit */
+    if (rdb->db_flags & RPMDB_FLAG_REBUILD)
+	eflags &= ~DB_INIT_CDB;
 
     rc = db_env_create(&dbenv, 0);
     rc = dbapi_err(rdb, "db_env_create", rc, _debug);
@@ -152,13 +166,13 @@ static int db_init(rpmdb rdb, const char * dbhome)
      * if we dont have permission to join/create shared environment.
      */
     while (retry_open) {
-	char *fstr = prDbiOpenFlags(cfg->db_eflags, 1);
+	char *fstr = prDbiOpenFlags(eflags, 1);
 	rpmlog(RPMLOG_DEBUG, "opening  db environment %s %s\n", dbhome, fstr);
 	free(fstr);
 
-	rc = (dbenv->open)(dbenv, dbhome, cfg->db_eflags, rdb->db_perms);
+	rc = (dbenv->open)(dbenv, dbhome, eflags, rdb->db_perms);
 	if (rc == EACCES) {
-	    cfg->db_eflags |= DB_PRIVATE;
+	    eflags |= DB_PRIVATE;
 	    retry_open--;
 	} else {
 	    retry_open = 0;
@@ -219,12 +233,12 @@ int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
     DBC * dbcursor = NULL;
     int flags;
     int rc;
-    const struct _dbConfig * cfg = &dbi->dbi_rpmdb->cfg;
-
+    uint32_t eflags = db_envflags(db);
+    
    /* XXX DB_WRITECURSOR cannot be used with sunrpc dbenv. */
     assert(db != NULL);
     if ((dbiflags & DB_WRITECURSOR) &&
-	(cfg->db_eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+	(eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
     {
 	flags = DB_WRITECURSOR;
     } else
@@ -473,11 +487,9 @@ static int dbiFlock(dbiIndex dbi, int mode)
 
 	rc = fcntl(fdno, F_SETLK, (void *) &l);
 	if (rc) {
-	    const struct _dbConfig *cfg = &dbi->dbi_rpmdb->cfg;
+	    uint32_t eflags = db_envflags(db);
 	    /* Warning iff using non-private CDB locking. */
-	    rc = (((cfg->db_eflags & DB_INIT_CDB) &&
-		    !(cfg->db_eflags & DB_PRIVATE))
-		? 0 : 1);
+	    rc = (((eflags & DB_INIT_CDB) && !(eflags & DB_PRIVATE)) ? 0 : 1);
 	    rpmlog( (rc ? RPMLOG_ERR : RPMLOG_WARNING),
 		    _("cannot get %s lock on %s/%s\n"),
 		    ((mode & O_ACCMODE) == O_RDONLY)
