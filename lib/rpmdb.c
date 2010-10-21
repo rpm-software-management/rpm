@@ -2277,7 +2277,7 @@ rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmTag rpmtag)
     (void) rpmdbCheckSignals();
 
     rc = dbiOpen(db, rpmtag, &dbi, 0);
-    if (dbi == NULL)
+    if (rc || dbi == NULL)
 	return NULL;
 
     /* Chain cursors for teardown on abnormal exit. */

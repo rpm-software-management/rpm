@@ -634,7 +634,7 @@ rpmts_Keys(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     rpmTag tag;
     PyObject *mio = NULL;
-    char * kwlist[] = {"tag", "pattern", "type", NULL};
+    char * kwlist[] = {"tag", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:Keys", kwlist,
               tagNumFromPyObject, &tag))
@@ -649,7 +649,12 @@ rpmts_Keys(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	}
     }
 
-    mio = rpmki_Wrap(&rpmki_Type, rpmdbKeyIteratorInit(rpmtsGetRdb(s->ts), tag), (PyObject*)s);
+    rpmdbKeyIterator ki = rpmdbKeyIteratorInit(rpmtsGetRdb(s->ts), tag);
+    if (ki == NULL) {
+        PyErr_SetString(PyExc_KeyError, "No index for this tag");
+        return NULL;
+    }
+    mio = rpmki_Wrap(&rpmki_Type, ki, (PyObject*)s);
 
 exit:
     return mio;
