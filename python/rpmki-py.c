@@ -27,6 +27,7 @@
  * \endcode
  *
  * ts.dbMatch() can be used to get the packages containing the keys of interest
+ */
 
 /** \ingroup python
  * \name Class: Rpmki
@@ -77,7 +78,7 @@ static PyNumberMethods rpmki_as_number = {
 	0, /* nb_negative */
 	0, /* nb_positive */
 	0, /* nb_absolute */
-	0, (inquiry)rpmki_bool, /* nb_bool/nonzero */
+	(inquiry)rpmki_bool, /* nb_bool/nonzero */
 };
 
 static char rpmki_doc[] =
