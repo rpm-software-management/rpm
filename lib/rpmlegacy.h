@@ -22,8 +22,8 @@ typedef uint32_t	uint_32 RPM_GNUC_DEPRECATED;
 typedef uint16_t	uint_16 RPM_GNUC_DEPRECATED;
 typedef uint8_t		uint_8 RPM_GNUC_DEPRECATED;
 
-typedef rpmTag *	hTAG_t RPM_GNUC_DEPRECATED;
-typedef rpmTagType *	hTYP_t RPM_GNUC_DEPRECATED;
+typedef rpm_tag_t *	hTAG_t RPM_GNUC_DEPRECATED;
+typedef rpm_tagtype_t *	hTYP_t RPM_GNUC_DEPRECATED;
 typedef const void *	hPTR_t RPM_GNUC_DEPRECATED;
 typedef rpm_count_t *	hCNT_t RPM_GNUC_DEPRECATED;
 
@@ -45,8 +45,8 @@ typedef rpmSpec		Spec RPM_GNUC_DEPRECATED;
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntry(Header h, rpmTag tag,
-			rpmTagType * type,
+int headerGetEntry(Header h, rpm_tag_t tag,
+			rpm_tagtype_t * type,
 			rpm_data_t * p,
 			rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
@@ -63,8 +63,8 @@ int headerGetEntry(Header h, rpmTag tag,
  * @retval *c		number of values (or NULL)
  * @return		1 on success, 0 on failure
  */
-int headerGetEntryMinMemory(Header h, rpmTag tag,
-			rpmTagType * type,
+int headerGetEntryMinMemory(Header h, rpm_tag_t tag,
+			rpm_tagtype_t * type,
 			rpm_data_t * p, 
 			rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
@@ -82,7 +82,7 @@ int headerGetEntryMinMemory(Header h, rpmTag tag,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddEntry(Header h, rpmTag tag, rpmTagType type, 
+int headerAddEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type, 
 		   rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
@@ -99,7 +99,7 @@ int headerAddEntry(Header h, rpmTag tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
+int headerAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
@@ -111,7 +111,7 @@ int headerAppendEntry(Header h, rpmTag tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
+int headerAddOrAppendEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 		rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
@@ -126,7 +126,7 @@ int headerAddOrAppendEntry(Header h, rpmTag tag, rpmTagType type,
  * @param c		number of values
  * @return		1 on success, 0 on failure
  */
-int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
+int headerModifyEntry(Header h, rpm_tag_t tag, rpm_tagtype_t type,
 			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
@@ -139,7 +139,7 @@ int headerModifyEntry(Header h, rpmTag tag, rpmTagType type,
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-int headerRemoveEntry(Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
+int headerRemoveEntry(Header h, rpm_tag_t tag) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
  * Return formatted output string from header tags.
@@ -168,8 +168,8 @@ int headerRemoveEntry(Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
  * @return		1 on success, 0 on failure
  */
 int headerNextIterator(HeaderIterator hi,
-		rpmTag * tag,
-		rpmTagType * type,
+		rpm_tag_t * tag,
+		rpm_tagtype_t * type,
 		rpm_data_t * p,
 		rpm_count_t * c) RPM_GNUC_DEPRECATED;
 
@@ -182,7 +182,7 @@ int headerNextIterator(HeaderIterator hi,
  * @param type		type of data (or -1 to force free)
  * @return		NULL always
  */
-void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
+void * headerFreeTag(Header h, rpm_data_t data, rpm_tagtype_t type) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
  * Free data allocated when retrieved from header.
@@ -192,20 +192,20 @@ void * headerFreeTag(Header h, rpm_data_t data, rpmTagType type) RPM_GNUC_DEPREC
  * @param type		type of data (or RPM_FORCEFREE_TYPE to force free)
  * @return		NULL always
  */
-void * headerFreeData(rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
+void * headerFreeData(rpm_data_t data, rpm_tagtype_t type) RPM_GNUC_DEPRECATED;
 
 /** \ingroup header_legacy
  * Prototypes for headerGetEntry(), headerFreeData() etc vectors.
  * @{
  */
-typedef void * (*HFD_t) (rpm_data_t data, rpmTagType type) RPM_GNUC_DEPRECATED;
-typedef int (*HGE_t) (Header h, rpmTag tag, rpmTagType * type,
+typedef void * (*HFD_t) (rpm_data_t data, rpm_tagtype_t type) RPM_GNUC_DEPRECATED;
+typedef int (*HGE_t) (Header h, rpm_tag_t tag, rpm_tagtype_t * type,
 			rpm_data_t * p, rpm_count_t * c) RPM_GNUC_DEPRECATED;
-typedef int (*HAE_t) (Header h, rpmTag tag, rpmTagType type,
+typedef int (*HAE_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
 			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
-typedef int (*HME_t) (Header h, rpmTag tag, rpmTagType type,
+typedef int (*HME_t) (Header h, rpm_tag_t tag, rpm_tagtype_t type,
 			rpm_constdata_t p, rpm_count_t c) RPM_GNUC_DEPRECATED;
-typedef int (*HRE_t) (Header h, rpmTag tag) RPM_GNUC_DEPRECATED;
+typedef int (*HRE_t) (Header h, rpm_tag_t tag) RPM_GNUC_DEPRECATED;
 /** @} */
 
 /* other misc renamed / namespaced functions */
