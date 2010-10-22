@@ -50,7 +50,6 @@ static rpmTag const dbiTags[] = {
     RPMTAG_INSTALLTID,
     RPMTAG_SIGMD5,
     RPMTAG_SHA1HEADER,
-    RPMTAG_FILEDIGESTS,
     RPMTAG_PUBKEYS,
 };
 
@@ -2214,25 +2213,7 @@ static int td2key(rpmtd tagdata, DBT *key, int *freedata)
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	str = rpmtdGetString(tagdata);
-	if (rpmtdTag(tagdata) == RPMTAG_FILEDIGESTS) {
-	    size_t binlen;
-	    uint8_t *t;
-	
-	    /* Filter out empty MD5 strings. */
-	    if (!(str && *str != '\0'))
-		return 0;
-
-	    binlen = strlen(str) / 2;
-	    bin = xmalloc(binlen);
-	    /* Convert from hex to binary. */
-	    t = bin;
-	    for (int j = 0; j < binlen; j++, t++, str += 2) 
-		*t = (rnibble(str[0]) << 4) | rnibble(str[1]);
-	    key->data = bin;
-	    key->size = binlen;
-	    *freedata = 1;
-	    break;
-	} else if (rpmtdTag(tagdata) == RPMTAG_PUBKEYS) {
+	if (rpmtdTag(tagdata) == RPMTAG_PUBKEYS) {
 	    /* Extract the pubkey id from the base64 blob. */
 	    bin = xmalloc(sizeof(pgpKeyID_t));
 	    int nbin = pgpExtractPubkeyFingerprint(str, bin);
