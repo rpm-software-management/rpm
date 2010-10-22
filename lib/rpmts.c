@@ -148,7 +148,7 @@ int rpmtsVerifyDB(rpmts ts)
 }
 
 /* keyp might no be defined. */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;

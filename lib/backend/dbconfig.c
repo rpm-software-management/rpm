@@ -81,7 +81,7 @@ dbiIndex dbiFree(dbiIndex dbi)
     return dbi;
 }
 
-dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag)
+dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 {
     dbiIndex dbi = xcalloc(1, sizeof(*dbi));
     char *dbOpts;

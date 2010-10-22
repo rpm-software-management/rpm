@@ -263,12 +263,12 @@ int rpmtsVerifyDB(rpmts ts);
 /** \ingroup rpmts
  * Return transaction database iterator.
  * @param ts		transaction set
- * @param rpmtag	rpm tag
+ * @param rpmtag	database index tag
  * @param keyp		key data (NULL for sequential access)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmTag rpmtag,
+rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmts

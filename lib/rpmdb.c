@@ -36,20 +36,20 @@
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "debug.h"
 
-static rpmTag const dbiTags[] = {
+static rpmDbiTag const dbiTags[] = {
     RPMDBI_PACKAGES,
-    RPMTAG_NAME,
-    RPMTAG_BASENAMES,
-    RPMTAG_GROUP,
-    RPMTAG_REQUIRENAME,
-    RPMTAG_PROVIDENAME,
-    RPMTAG_CONFLICTNAME,
-    RPMTAG_OBSOLETENAME,
-    RPMTAG_TRIGGERNAME,
-    RPMTAG_DIRNAMES,
-    RPMTAG_INSTALLTID,
-    RPMTAG_SIGMD5,
-    RPMTAG_SHA1HEADER,
+    RPMDBI_NAME,
+    RPMDBI_BASENAMES,
+    RPMDBI_GROUP,
+    RPMDBI_REQUIRENAME,
+    RPMDBI_PROVIDENAME,
+    RPMDBI_CONFLICTNAME,
+    RPMDBI_OBSOLETENAME,
+    RPMDBI_TRIGGERNAME,
+    RPMDBI_DIRNAMES,
+    RPMDBI_INSTALLTID,
+    RPMDBI_SIGMD5,
+    RPMDBI_SHA1HEADER,
 };
 
 #define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmTag))
@@ -68,7 +68,7 @@ typedef struct _dbiIndexSet {
 } * dbiIndexSet;
 
 static int doOpenAll(rpmdb db);
-static int addToIndex(dbiIndex dbi, rpmTag rpmtag, unsigned int hdrNum, Header h);
+static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
 
@@ -151,7 +151,7 @@ static int buildIndexes(rpmdb db)
  * @param flags
  * @return		index database handle
  */
-static dbiIndex rpmdbOpenIndex(rpmdb db, rpmTag rpmtag, int flags)
+static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
@@ -492,7 +492,7 @@ struct rpmdbMatchIterator_s {
     void *		mi_keyp;
     size_t		mi_keylen;
     rpmdb		mi_db;
-    rpmTag		mi_rpmtag;
+    rpmDbiTagVal	mi_rpmtag;
     dbiIndexSet		mi_set;
     DBC *		mi_dbc;
     int			mi_setx;
@@ -514,7 +514,7 @@ struct rpmdbKeyIterator_s {
     rpmdbKeyIterator	ki_next;
     rpmdb		ki_db;
     dbiIndex		ki_dbi;
-    rpmTag		ki_rpmtag;
+    rpmDbiTagVal	ki_rpmtag;
     DBC *		ki_dbc;
     DBT			ki_key;
 };
@@ -887,7 +887,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     dbiIndex dbi = NULL;
     DBC * dbcursor;
     dbiIndexSet allMatches = NULL;
-    rpmTag dbtag = RPMTAG_BASENAMES;
+    rpmDbiTag dbtag = RPMDBI_BASENAMES;
     unsigned int i;
     int rc = -2; /* assume error */
     int xx;
@@ -1005,7 +1005,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     DBC * dbcursor = NULL;
     DBT key, data; 
     dbiIndex dbi;
-    rpmTag dbtag = RPMTAG_NAME;
+    rpmDbiTag dbtag = RPMDBI_NAME;
     int rc;
     int xx;
 
@@ -1049,7 +1049,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 /**
  * Attempt partial matches on name[-version[-release]] strings.
  * @param db		rpmdb handle
- * @param dbi		index database handle (always RPMTAG_NAME)
+ * @param dbi		index database handle (always RPMDBI_NAME)
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
@@ -1139,7 +1139,7 @@ exit:
  * Both version and release can be patterns.
  * @todo Name must be an exact match, as name is a db key.
  * @param db		rpmdb handle
- * @param dbi		index database handle (always RPMTAG_NAME)
+ * @param dbi		index database handle (always RPMDBI_NAME)
  * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
@@ -1416,7 +1416,7 @@ static int mireCmp(const void * a, const void * b)
  * @param pattern	pattern to duplicate
  * @return		duplicated pattern
  */
-static char * mireDup(rpmTag tag, rpmMireMode *modep,
+static char * mireDup(rpmTagVal tag, rpmMireMode *modep,
 			const char * pattern)
 {
     const char * s;
@@ -1504,7 +1504,7 @@ static char * mireDup(rpmTag tag, rpmMireMode *modep,
     return pat;
 }
 
-int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
 		rpmMireMode mode, const char * pattern)
 {
     static rpmMireMode defmode = (rpmMireMode)-1;
@@ -2003,7 +2003,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 		const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
@@ -2019,7 +2019,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
 
     /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
     if (rpmtag == RPMDBI_LABEL) {
-	rpmtag = RPMTAG_NAME;
+	rpmtag = RPMDBI_NAME;
 	isLabel = 1;
     }
 
@@ -2050,7 +2050,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
                 rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
                 xx = dbiCclose(dbi, dbcursor, 0);
                 dbcursor = NULL;
-            } else if (rpmtag == RPMTAG_BASENAMES) {
+            } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
             } else {
                 xx = dbiCopen(dbi, &dbcursor, 0);
@@ -2228,7 +2228,7 @@ static int td2key(rpmtd tagdata, DBT *key, int *freedata)
  * rpmdbKeyIterator
  */
 
-rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmTag rpmtag)
+rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmDbiTagVal rpmtag)
 {
     rpmdbKeyIterator ki;
     dbiIndex dbi = NULL;
@@ -2421,7 +2421,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	memset(&data, 0, sizeof(data));
 
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
-	    rpmTag rpmtag = dbiTags[dbix];
+	    rpmDbiTag rpmtag = dbiTags[dbix];
 	    int xx = 0;
 	    struct rpmtd_s tagdata;
 
@@ -2579,7 +2579,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 }
 
 /* Add data to secondary index */
-static int addToIndex(dbiIndex dbi, rpmTag rpmtag, unsigned int hdrNum, Header h)
+static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     int xx, i, rc = 0;
     struct rpmtd_s tagdata, reqflags;
@@ -2733,7 +2733,7 @@ int rpmdbAdd(rpmdb db, Header h)
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
-	    rpmTag rpmtag = dbiTags[dbix];
+	    rpmDbiTag rpmtag = dbiTags[dbix];
 
 	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
 		continue;
@@ -2827,7 +2827,7 @@ static int rpmdbMoveDatabase(const char * prefix,
         /* Fall through */
     case 3:
 	for (i = 0; i < dbiTagsMax; i++) {
-	    rpmTag rpmtag = dbiTags[i];
+	    rpmDbiTag rpmtag = dbiTags[i];
 	    const char *base = rpmTagGetName(rpmtag);
 	    char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
 	    char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);

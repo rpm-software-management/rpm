@@ -136,7 +136,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi,
  * @param pattern	pattern to match
  * @return		0 on success
  */
-int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTag tag,
+int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
 		rpmMireMode mode, const char * pattern);
 
 /** \ingroup rpmdb
@@ -169,12 +169,12 @@ int rpmdbSetHdrChk(rpmdbMatchIterator mi, rpmts ts,
 /** \ingroup rpmdb
  * Return database iterator.
  * @param db		rpm database
- * @param rpmtag	rpm tag
+ * @param rpmtag	database index tag
  * @param keyp		key data (NULL for sequential access)
  * @param keylen	key data length (0 will use strlen(keyp))
  * @return		NULL on failure
  */
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmTag rpmtag,
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmdb
@@ -225,7 +225,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
  * @param rpmtag	the index to iterate over
  * @return		the key iterator
  */
-rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmTag rpmtag);
+rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmDbiTagVal rpmtag);
 
 /** \ingroup rpmdb
  * Get the next key - must be called before getting the first key

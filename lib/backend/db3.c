@@ -504,7 +504,7 @@ static int dbiFlock(dbiIndex dbi, int mode)
     return rc;
 }
 
-int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags)
+int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 {
     const char *dbhome = rpmdbHome(rdb);
     dbiIndex dbi = NULL;

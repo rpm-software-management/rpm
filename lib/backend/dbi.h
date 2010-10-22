@@ -89,11 +89,11 @@ void dbSetFSync(void *dbenv, int enable);
 /** \ingroup dbi
  * Return new configured index database handle instance.
  * @param rdb		rpm database
- * @param rpmtag	rpm tag
+ * @param rpmtag	database index tag
  * @return		index database handle
  */
 RPM_GNUC_INTERNAL
-dbiIndex dbiNew(rpmdb rdb, rpmTag rpmtag);
+dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag);
 
 /** \ingroup dbi
  * Destroy index database handle instance.
@@ -115,13 +115,13 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 /** \ingroup dbi
  * Actually open the database of the index.
  * @param db		rpm database
- * @param rpmtag	rpm tag
+ * @param rpmtag	database index tag
  * @param dbiIndex	address of index database handle
  * @param flags
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int dbiOpen(rpmdb rdb, rpmTag rpmtag, dbiIndex * dbip, int flags);
+int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
 
 
 /* FIX: vector annotations */
