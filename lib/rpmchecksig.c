@@ -166,9 +166,9 @@ static rpmRC parsePGP(rpmtd sigtd, const char *fn, pgpDig dig)
  * Figure best available signature. 
  * XXX TODO: Similar detection in rpmReadPackageFile(), unify these.
  */
-static rpmSigTag bestSig(Header sigh, int nosignatures, int nodigests)
+static rpmTagVal bestSig(Header sigh, int nosignatures, int nodigests)
 {
-    rpmSigTag sigtag = 0;
+    rpmTagVal sigtag = 0;
     if (sigtag == 0 && !nosignatures) {
 	if (headerIsEntry(sigh, RPMSIGTAG_DSA))
 	    sigtag = RPMSIGTAG_DSA;
@@ -188,7 +188,7 @@ static rpmSigTag bestSig(Header sigh, int nosignatures, int nodigests)
     return sigtag;
 }
 
-static const char *sigtagname(rpmSigTag sigtag, int upper)
+static const char *sigtagname(rpmTagVal sigtag, int upper)
 {
     const char *n = NULL;
 
@@ -231,7 +231,7 @@ static const char *sigtagname(rpmSigTag sigtag, int upper)
  * if misssing/untrusted key it's uppercase in parenthesis
  * and stash the key id as <SIGTYPE>#<keyid>. Pfft.
  */
-static void formatResult(rpmSigTag sigtag, rpmRC sigres, const char *result,
+static void formatResult(rpmTagVal sigtag, rpmRC sigres, const char *result,
 			 int havekey, char **keyprob, char **buf)
 {
     char *msg = NULL;
@@ -263,7 +263,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *missingKeys = NULL; 
     char *untrustedKeys = NULL;
     struct rpmtd_s sigtd;
-    rpmSigTag sigtag;
+    rpmTagVal sigtag;
     pgpDig dig = NULL;
     pgpDigParams sigp;
     Header sigh = NULL;
