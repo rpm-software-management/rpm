@@ -266,7 +266,7 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     PyObject *obj;
-    rpmTag tagN = RPMTAG_REQUIRENAME;
+    rpmTagVal tagN = RPMTAG_REQUIRENAME;
     rpmds ds = NULL;
     Header h = NULL;
     char * kwlist[] = {"obj", "tag", NULL};

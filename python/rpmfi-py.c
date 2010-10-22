@@ -299,7 +299,7 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     PyObject * to = NULL;
     Header h = NULL;
     rpmfi fi = NULL;
-    rpmTag tagN = RPMTAG_BASENAMES;
+    rpmTagVal tagN = RPMTAG_BASENAMES;
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 

@@ -136,7 +136,7 @@ static PyObject * hdrKeyList(hdrObject * s)
 {
     PyObject * keys = PyList_New(0);
     HeaderIterator hi = headerInitIterator(s->h);
-    rpmTag tag;
+    rpmTagVal tag;
 
     while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
 	PyObject *to = PyInt_FromLong(tag);
@@ -248,7 +248,7 @@ static PyObject *hdrIsSource(hdrObject *s)
 
 static int hdrContains(hdrObject *s, PyObject *pytag)
 {
-    rpmTag tag;
+    rpmTagVal tag;
     if (!tagNumFromPyObject(pytag, &tag)) return -1;
 
     return headerIsEntry(s->h, tag);
@@ -301,7 +301,7 @@ static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwd
 /* Backwards compatibility. Flags argument is just a dummy and discarded. */
 static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    rpmTag tag = RPMTAG_REQUIRENAME;
+    rpmTagVal tag = RPMTAG_REQUIRENAME;
     rpmsenseFlags flags = 0;
     char * kwlist[] = {"to", "flags", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&i:dsFromHeader", kwlist,
@@ -401,7 +401,7 @@ static void hdr_dealloc(hdrObject * s)
 static PyObject * hdr_iternext(hdrObject *s)
 {
     PyObject *res = NULL;
-    rpmTag tag;
+    rpmTagVal tag;
 
     if (s->hi == NULL) s->hi = headerInitIterator(s->h);
 
@@ -428,9 +428,9 @@ int utf8FromPyObject(PyObject *item, PyObject **str)
     return 1;
 }
 
-int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
+int tagNumFromPyObject (PyObject *item, rpmTagVal *tagp)
 {
-    rpmTag tag = RPMTAG_NOT_FOUND;
+    rpmTagVal tag = RPMTAG_NOT_FOUND;
     PyObject *str = NULL;
 
     if (PyInt_Check(item)) {
@@ -452,7 +452,7 @@ int tagNumFromPyObject (PyObject *item, rpmTag *tagp)
     return 1;
 }
 
-static PyObject * hdrGetTag(Header h, rpmTag tag)
+static PyObject * hdrGetTag(Header h, rpmTagVal tag)
 {
     PyObject *res = NULL;
     struct rpmtd_s td;
@@ -485,7 +485,7 @@ static int validItem(rpmTagClass tclass, PyObject *item)
     return rc;
 }
 
-static int validData(rpmTag tag, rpmTagType type, rpmTagReturnType retype, PyObject *value)
+static int validData(rpmTagVal tag, rpmTagType type, rpmTagReturnType retype, PyObject *value)
 {
     rpmTagClass tclass = rpmTagGetClass(tag);
     int valid = 1;
@@ -508,7 +508,7 @@ static int validData(rpmTag tag, rpmTagType type, rpmTagReturnType retype, PyObj
     return valid;
 }
 
-static int hdrAppendItem(Header h, rpmTag tag, rpmTagType type, PyObject *item)
+static int hdrAppendItem(Header h, rpmTagVal tag, rpmTagType type, PyObject *item)
 {
     int rc = 0;
 
@@ -549,7 +549,7 @@ static int hdrAppendItem(Header h, rpmTag tag, rpmTagType type, PyObject *item)
     return rc;
 }
 
-static int hdrPutTag(Header h, rpmTag tag, PyObject *value)
+static int hdrPutTag(Header h, rpmTagVal tag, PyObject *value)
 {
     rpmTagType type = rpmTagGetTagType(tag);
     rpmTagReturnType retype = rpmTagGetReturnType(tag);
@@ -584,7 +584,7 @@ static int hdrPutTag(Header h, rpmTag tag, PyObject *value)
 
 static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 {
-    rpmTag tag;
+    rpmTagVal tag;
 
     if (!tagNumFromPyObject(item, &tag)) return NULL;
     return hdrGetTag(s->h, tag);
@@ -592,7 +592,7 @@ static PyObject * hdr_subscript(hdrObject * s, PyObject * item)
 
 static int hdr_ass_subscript(hdrObject *s, PyObject *key, PyObject *value)
 {
-    rpmTag tag;
+    rpmTagVal tag;
     if (!tagNumFromPyObject(key, &tag)) return -1;
 
     if (value == NULL) {
@@ -608,7 +608,7 @@ static PyObject * hdr_getattro(hdrObject * s, PyObject * n)
 {
     PyObject *res = PyObject_GenericGetAttr((PyObject *) s, n);
     if (res == NULL) {
-	rpmTag tag;
+	rpmTagVal tag;
 	if (tagNumFromPyObject(n, &tag)) {
 	    PyErr_Clear();
 	    res = hdrGetTag(s->h, tag);
@@ -715,7 +715,7 @@ static int rpmMergeHeaders(PyObject * list, FD_t fd, int matchTag)
 {
     Header h;
     HeaderIterator hi;
-    rpmTag newMatch, oldMatch;
+    rpmTagVal newMatch, oldMatch;
     hdrObject * hdr;
     rpm_count_t count = 0;
     int rc = 1; /* assume failure */

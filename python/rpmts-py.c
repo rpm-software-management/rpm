@@ -590,7 +590,7 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 /* XXX lkey *must* be a 32 bit integer, int "works" on all known platforms. */
     int lkey = 0;
     int len = 0;
-    rpmTag tag = RPMDBI_PACKAGES;
+    rpmDbiTagVal tag = RPMDBI_PACKAGES;
     char * kwlist[] = {"tagNumber", "key", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&O:Match", kwlist,
@@ -632,7 +632,7 @@ exit:
 static PyObject *
 rpmts_Keys(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
-    rpmTag tag;
+    rpmDbiTagVal tag;
     PyObject *mio = NULL;
     char * kwlist[] = {"tag", NULL};
 

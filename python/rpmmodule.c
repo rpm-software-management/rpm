@@ -174,7 +174,7 @@ static void addRpmTags(PyObject *module)
     rpmtd names = rpmtdNew();
     rpmTagGetNames(names, 1);
     const char *tagname, *shortname;
-    rpmTag tagval;
+    rpmTagVal tagval;
 
     while ((tagname = rpmtdNextString(names))) {
 	shortname = tagname + strlen("RPMTAG_");

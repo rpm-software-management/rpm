@@ -91,7 +91,7 @@ static PyObject *rpmtd_new(PyTypeObject * subtype, PyObject *args, PyObject *kwd
 {
     rpmtdObject *s = NULL;
     Header h = NULL;
-    rpmTag tag;
+    rpmTagVal tag;
     int raw = 0;
     int noext = 0;
     headerGetFlags flags = (HEADERGET_EXT | HEADERGET_ALLOC);
@@ -143,7 +143,7 @@ static PyObject *rpmtd_get_tag(rpmtdObject *s, void *closure)
 
 static int rpmtd_set_tag(rpmtdObject *s, PyObject *value, void *closure)
 {
-    rpmTag tag;
+    rpmTagVal tag;
     if (!tagNumFromPyObject(value, &tag)) return -1;
 
     if (!rpmtdSetTag(&(s->td), tag)) {

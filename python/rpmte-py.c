@@ -159,7 +159,7 @@ static PyObject *
 rpmte_DS(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
     rpmds ds;
-    rpmTag tag;
+    rpmTagVal tag;
     char * kwlist[] = {"tag", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&:DS", kwlist,

@@ -18,7 +18,7 @@ PyObject * hdr_Wrap(PyTypeObject *subtype, Header h);
 
 int hdrFromPyObject(PyObject *item, Header *h);
 int utf8FromPyObject(PyObject *item, PyObject **str);
-int tagNumFromPyObject (PyObject *item, rpmTag *tagp);
+int tagNumFromPyObject (PyObject *item, rpmTagVal *tagp);
 
 PyObject * labelCompare (PyObject * self, PyObject * args);
 PyObject * versionCompare (PyObject * self, PyObject * args, PyObject * kwds);
