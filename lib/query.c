@@ -252,7 +252,7 @@ void rpmDisplayQueryTags(FILE * fp)
     while ((tname = rpmtdNextString(names))) {
 	sname = tname + strlen("RPMTAG_");
 	if (rpmIsVerbose()) {
-	    rpmTag tag = rpmTagGetValue(sname);
+	    rpmTagVal tag = rpmTagGetValue(sname);
 	    rpmTagType type = rpmTagGetTagType(tag);
 	    fprintf(fp, "%-20s %6d", sname, tag);
 	    if (type > RPM_NULL_TYPE && type <= RPM_MAX_TYPE)
