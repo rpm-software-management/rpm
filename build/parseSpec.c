@@ -428,7 +428,7 @@ void closeSpec(rpmSpec spec)
     }
 }
 
-static const rpmTag sourceTags[] = {
+static const rpmTagVal sourceTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,

@@ -317,7 +317,7 @@ Header rpmSpecSourceHeader(rpmSpec spec)
 	return spec->sourceHeader;
 }
 
-rpmds rpmSpecDS(rpmSpec spec, rpmTag tag)
+rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag)
 {
     return (spec != NULL) ? rpmdsNew(spec->buildRestrictions, tag, 0) : NULL;
 }

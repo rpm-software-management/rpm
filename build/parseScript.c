@@ -69,11 +69,11 @@ int parseScript(rpmSpec spec, int parsePart)
     const char **progArgv = NULL;
     int progArgc;
     const char *partname = NULL;
-    rpmTag reqtag = 0;
-    rpmTag tag = 0;
+    rpmTagVal reqtag = 0;
+    rpmTagVal tag = 0;
     rpmsenseFlags tagflags = 0;
-    rpmTag progtag = 0;
-    rpmTag flagtag = 0;
+    rpmTagVal progtag = 0;
+    rpmTagVal flagtag = 0;
     rpmscriptFlags scriptFlags = 0;
     int flag = PART_SUBNAME;
     Package pkg;

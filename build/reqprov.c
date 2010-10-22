@@ -10,9 +10,9 @@
 #include "build/rpmbuild_misc.h"
 #include "debug.h"
 
-static int isNewDep(Header h, rpmTag nametag,
+static int isNewDep(Header h, rpmTagVal nametag,
 		  const char *N, const char *EVR, rpmsenseFlags Flags,
-		  rpmTag indextag, uint32_t index)
+		  rpmTagVal indextag, uint32_t index)
 {
     int isnew = 1;
     struct rpmtd_s idx;
@@ -42,13 +42,13 @@ static int isNewDep(Header h, rpmTag nametag,
     return isnew;
 }
 
-int addReqProv(Header h, rpmTag tagN,
+int addReqProv(Header h, rpmTagVal tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
-    rpmTag versiontag = 0;
-    rpmTag flagtag = 0;
-    rpmTag indextag = 0;
+    rpmTagVal versiontag = 0;
+    rpmTagVal flagtag = 0;
+    rpmTagVal indextag = 0;
     rpmsenseFlags extra = RPMSENSE_ANY;
 
     switch (tagN) {

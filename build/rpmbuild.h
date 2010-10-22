@@ -95,7 +95,7 @@ rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec);
  * @param tag		dependency tag
  * @return		dependency set of tag (or NULL)
  */
-rpmds rpmSpecDS(rpmSpec spec, rpmTag tag);
+rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag);
 
 /** \ingroup rpmbuild
  * Spec build stages state machine driver.

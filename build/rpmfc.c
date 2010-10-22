@@ -416,7 +416,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     StringBuf sb_stdin;
     rpmds * depsp;
     rpmsenseFlags dsContext;
-    rpmTag tagN;
+    rpmTagVal tagN;
     ARGV_t av = NULL;
     int xx;
 
@@ -998,9 +998,9 @@ typedef struct DepMsg_s * DepMsg_t;
 struct DepMsg_s {
     const char * msg;
     char * const argv[4];
-    rpmTag ntag;
-    rpmTag vtag;
-    rpmTag ftag;
+    rpmTagVal ntag;
+    rpmTagVal vtag;
+    rpmTagVal ftag;
     int mask;
     int xormask;
 };
@@ -1109,7 +1109,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
-	rpmTag tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
+	rpmTagVal tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 	rpmsenseFlags tagflags;
 	char * s = NULL;
 

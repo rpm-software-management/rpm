@@ -22,7 +22,7 @@
 
 /**
  */
-static const rpmTag copyTagsDuringParse[] = {
+static const rpmTagVal copyTagsDuringParse[] = {
     RPMTAG_EPOCH,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -46,7 +46,7 @@ static const rpmTag copyTagsDuringParse[] = {
 
 /**
  */
-static const rpmTag requiredTags[] = {
+static const rpmTagVal requiredTags[] = {
     RPMTAG_NAME,
     RPMTAG_VERSION,
     RPMTAG_RELEASE,
@@ -57,7 +57,7 @@ static const rpmTag requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, rpmTag tag, const char * line)
+static void addOrAppendListEntry(Header h, rpmTagVal tag, const char * line)
 {
     int xx;
     int argc;
@@ -125,7 +125,7 @@ static struct Source *findSource(rpmSpec spec, uint32_t num, int flag)
     return NULL;
 }
 
-static int parseNoSource(rpmSpec spec, const char * field, rpmTag tag)
+static int parseNoSource(rpmSpec spec, const char * field, rpmTagVal tag)
 {
     const char *f, *fe;
     const char *name;
@@ -170,7 +170,7 @@ static int parseNoSource(rpmSpec spec, const char * field, rpmTag tag)
     return 0;
 }
 
-static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTag tag)
+static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag)
 {
     struct Source *p;
     int flag = 0;
@@ -367,7 +367,7 @@ static inline char * findLastChar(char * s)
 
 /**
  */
-static int isMemberInEntry(Header h, const char *name, rpmTag tag)
+static int isMemberInEntry(Header h, const char *name, rpmTagVal tag)
 {
     struct rpmtd_s td;
     int found = 0;
@@ -433,7 +433,7 @@ exit:
 static int checkForRequired(Header h, const char * NVR)
 {
     int res = RPMRC_OK;
-    const rpmTag * p;
+    const rpmTagVal * p;
 
     for (p = requiredTags; *p != 0; p++) {
 	if (!headerIsEntry(h, *p)) {
@@ -456,7 +456,7 @@ static int checkForRequired(Header h, const char * NVR)
 static int checkForDuplicates(Header h, const char * NVR)
 {
     int res = RPMRC_OK;
-    rpmTag tag, lastTag = RPMTAG_NOT_FOUND;
+    rpmTagVal tag, lastTag = RPMTAG_NOT_FOUND;
     HeaderIterator hi = headerInitIterator(h);
 
     while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
@@ -475,7 +475,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 /**
  */
 static struct optionalTag {
-    rpmTag	ot_tag;
+    rpmTagVal	ot_tag;
     const char * ot_mac;
 } const optionalTags[] = {
     { RPMTAG_VENDOR,		"%{vendor}" },
@@ -585,7 +585,7 @@ exit:
     return rc;
 }
 
-spectag stashSt(rpmSpec spec, Header h, rpmTag tag, const char * lang)
+spectag stashSt(rpmSpec spec, Header h, rpmTagVal tag, const char * lang)
 {
     spectag t = NULL;
 
@@ -650,7 +650,7 @@ rpmRC rpmCharCheck(rpmSpec spec, char *field, size_t fsize, const char *whitelis
 
 /**
  */
-static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
+static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 		const char *macro, const char *lang)
 {
     char * field = spec->line;
@@ -865,7 +865,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTag tag,
 /**
  */
 typedef const struct PreambleRec_s {
-    rpmTag tag;
+    rpmTagVal tag;
     int type;
     int deprecated;
     size_t len;
@@ -922,7 +922,7 @@ static struct PreambleRec_s const preambleList[] = {
 
 /**
  */
-static int findPreambleTag(rpmSpec spec,rpmTag * tag,
+static int findPreambleTag(rpmSpec spec,rpmTagVal * tag,
 		const char ** macro, char * lang)
 {
     PreambleRec p;
@@ -1025,7 +1025,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     } else {
 	while (! (nextPart = isPart(spec->line))) {
 	    const char * macro;
-	    rpmTag tag;
+	    rpmTagVal tag;
 
 	    /* Skip blank lines */
 	    linep = spec->line;
@@ -1096,7 +1096,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 
     if (pkg != spec->packages) {
 	headerCopyTags(spec->packages->header, pkg->header,
-			(rpmTag *)copyTagsDuringParse);
+			(rpmTagVal *)copyTagsDuringParse);
     }
 
     if (checkForRequired(pkg->header, NVR)) {

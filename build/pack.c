@@ -179,7 +179,7 @@ static const char * buildHost(void)
 }
 /**
  */
-static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
+static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTagVal tag)
 {
     StringBuf sb = newStringBuf();
     const char *s = headerGetString(h, tag);
@@ -200,7 +200,7 @@ static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTag tag)
 
 /**
  */
-static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTag tag)
+static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTagVal tag)
 {
     StringBuf sb = newStringBuf();
     const char *s;

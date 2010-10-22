@@ -1576,7 +1576,7 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
  * @return		RPMRC_OK on success
  */
 static rpmRC processMetadataFile(Package pkg, FileList fl, 
-				 const char * fileName, rpmTag tag)
+				 const char * fileName, rpmTagVal tag)
 {
     const char * buildDir = "%{_builddir}/%{?buildsubdir}/";
     char * fn = NULL;

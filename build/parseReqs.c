@@ -35,12 +35,12 @@ const char * token;
 #define	SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define	SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
-rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTag tagN,
+rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
     char * N = NULL, * EVR = NULL;
-    rpmTag nametag = RPMTAG_NOT_FOUND;
+    rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
     Header h = pkg->header; /* everything except buildrequires go here */
     rpmRC rc = RPMRC_FAIL; /* assume failure */

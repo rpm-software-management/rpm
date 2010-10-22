@@ -96,7 +96,7 @@ uint32_t parseUnsignedNum(const char * line, uint32_t * res);
  * @return		0 on success, 1 on error
  */
 RPM_GNUC_INTERNAL
-int addReqProv(Header h, rpmTag tagN,
+int addReqProv(Header h, rpmTagVal tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index);
 
