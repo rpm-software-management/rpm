@@ -738,7 +738,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { 0, 			NULL }
 };
 
-headerTagTagFunction rpmHeaderTagFunc(rpmTag tag)
+headerTagTagFunction rpmHeaderTagFunc(rpmTagVal tag)
 {
     const struct headerTagFunc_s * ext;
     headerTagTagFunction func = NULL;

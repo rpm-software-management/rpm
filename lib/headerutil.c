@@ -88,9 +88,9 @@ Header headerCopy(Header h)
 }
 
 void headerCopyTags(Header headerFrom, Header headerTo, 
-		    const rpmTag * tagstocopy)
+		    const rpmTagVal * tagstocopy)
 {
-    const rpmTag * p;
+    const rpmTagVal * p;
     struct rpmtd_s td;
 
     if (headerFrom == headerTo)
@@ -106,7 +106,7 @@ void headerCopyTags(Header headerFrom, Header headerTo,
     }
 }
 
-char * headerGetAsString(Header h, rpmTag tag)
+char * headerGetAsString(Header h, rpmTagVal tag)
 {
     char *res = NULL;
     struct rpmtd_s td;
@@ -120,7 +120,7 @@ char * headerGetAsString(Header h, rpmTag tag)
     return res;
 }
 
-const char * headerGetString(Header h, rpmTag tag)
+const char * headerGetString(Header h, rpmTagVal tag)
 {
     const char *res = NULL;
     struct rpmtd_s td;
@@ -134,7 +134,7 @@ const char * headerGetString(Header h, rpmTag tag)
     return res;
 }
 
-uint64_t headerGetNumber(Header h, rpmTag tag)
+uint64_t headerGetNumber(Header h, rpmTagVal tag)
 {
     uint64_t res = 0;
     struct rpmtd_s td;
@@ -152,7 +152,7 @@ uint64_t headerGetNumber(Header h, rpmTag tag)
  * Sanity check data types against tag table before putting. Assume
  * append on all array-types.
  */
-static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
+static int headerPutType(Header h, rpmTagVal tag, rpmTagType reqtype,
 			rpm_constdata_t data, rpm_count_t size)
 {
     struct rpmtd_s td;
@@ -191,7 +191,7 @@ static int headerPutType(Header h, rpmTag tag, rpmTagType reqtype,
     return valid;
 }
 	
-int headerPutString(Header h, rpmTag tag, const char *val)
+int headerPutString(Header h, rpmTagVal tag, const char *val)
 {
     rpmTagType type = rpmTagGetTagType(tag);
     const void *sptr = NULL;
@@ -208,37 +208,37 @@ int headerPutString(Header h, rpmTag tag, const char *val)
     return headerPutType(h, tag, type, sptr, 1);
 }
 
-int headerPutStringArray(Header h, rpmTag tag, const char **array, rpm_count_t size)
+int headerPutStringArray(Header h, rpmTagVal tag, const char **array, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_STRING_ARRAY_TYPE, array, size);
 }
 
-int headerPutChar(Header h, rpmTag tag, const char *val, rpm_count_t size)
+int headerPutChar(Header h, rpmTagVal tag, const char *val, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_CHAR_TYPE, val, size);
 }
 
-int headerPutUint8(Header h, rpmTag tag, const uint8_t *val, rpm_count_t size)
+int headerPutUint8(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_INT8_TYPE, val, size);
 }
 
-int headerPutUint16(Header h, rpmTag tag, const uint16_t *val, rpm_count_t size)
+int headerPutUint16(Header h, rpmTagVal tag, const uint16_t *val, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_INT16_TYPE, val, size);
 }
 
-int headerPutUint32(Header h, rpmTag tag, const uint32_t *val, rpm_count_t size)
+int headerPutUint32(Header h, rpmTagVal tag, const uint32_t *val, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_INT32_TYPE, val, size);
 }
 
-int headerPutUint64(Header h, rpmTag tag, const uint64_t *val, rpm_count_t size)
+int headerPutUint64(Header h, rpmTagVal tag, const uint64_t *val, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_INT64_TYPE, val, size);
 }
 
-int headerPutBin(Header h, rpmTag tag, const uint8_t *val, rpm_count_t size)
+int headerPutBin(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size)
 {
     return headerPutType(h, tag, RPM_BIN_TYPE, val, size);
 }

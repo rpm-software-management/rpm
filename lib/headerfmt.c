@@ -21,7 +21,7 @@
 typedef struct sprintfTag_s * sprintfTag;
 struct sprintfTag_s {
     headerTagFormatFunction fmt;
-    rpmTag tag;
+    rpmTagVal tag;
     int justOne;
     char * format;
     char * type;
@@ -566,7 +566,7 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     return 0;
 }
 
-static rpmtd getCached(rpmtd *cache, rpmTag tag)
+static rpmtd getCached(rpmtd *cache, rpmTagVal tag)
 {
     rpmtd td = NULL;
 
@@ -585,7 +585,7 @@ static rpmtd getCached(rpmtd *cache, rpmTag tag)
  * @retval *countptr
  * @return		1 on success, 0 on failure
  */
-static rpmtd getData(headerSprintfArgs hsa, rpmTag tag)
+static rpmtd getData(headerSprintfArgs hsa, rpmTagVal tag)
 {
     rpmtd td = NULL;
 

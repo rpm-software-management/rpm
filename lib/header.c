@@ -719,7 +719,7 @@ void * headerUnload(Header h)
  * @return 		header entry
  */
 static
-indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
+indexEntry findEntry(Header h, rpmTagVal tag, rpmTagType type)
 {
     indexEntry entry;
     struct indexEntry_s key;
@@ -746,7 +746,7 @@ indexEntry findEntry(Header h, rpmTag tag, rpmTagType type)
     return NULL;
 }
 
-int headerDel(Header h, rpmTag tag)
+int headerDel(Header h, rpmTagVal tag)
 {
     indexEntry last = h->index + h->indexUsed;
     indexEntry entry, first;
@@ -915,7 +915,7 @@ errxit:
     return h;
 }
 
-Header headerReload(Header h, rpmTag tag)
+Header headerReload(Header h, rpmTagVal tag)
 {
     Header nh;
     size_t length;
@@ -1044,7 +1044,7 @@ exit:
     return (nb == length ? 0 : 1);
 }
 
-int headerIsEntry(Header h, rpmTag tag)
+int headerIsEntry(Header h, rpmTagVal tag)
 {
    		/* FIX: h modified by sort. */
     return (findEntry(h, tag, RPM_NULL_TYPE) ? 1 : 0);
@@ -1339,7 +1339,7 @@ static int intGetTdEntry(Header h, rpmtd td, headerGetFlags flags)
     return ((rc == 1) ? 1 : 0);
 }
 
-int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags)
+int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags)
 {
     int rc;
     headerTagTagFunction tagfunc = intGetTdEntry;
@@ -1505,7 +1505,7 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags)
     return rc;
 }
 
-int headerAddI18NString(Header h, rpmTag tag, const char * string,
+int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 		const char * lang)
 {
     indexEntry table, entry;
@@ -1728,7 +1728,7 @@ static indexEntry nextIndex(HeaderIterator hi)
     return entry;
 }
 
-rpmTag headerNextTag(HeaderIterator hi)
+rpmTagVal headerNextTag(HeaderIterator hi)
 {
     indexEntry entry = nextIndex(hi);
     return entry ? entry->info.tag : RPMTAG_NOT_FOUND;

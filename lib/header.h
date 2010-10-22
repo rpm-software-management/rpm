@@ -99,7 +99,7 @@ void * headerUnload(Header h);
  * @param tag		region tag
  * @return		on-disk header (with offsets)
  */
-Header headerReload(Header h, rpmTag tag);
+Header headerReload(Header h, rpmTagVal tag);
 
 /** \ingroup header
  * Duplicate a header.
@@ -145,7 +145,7 @@ int headerWrite(FD_t fd, Header h, enum hMagic magicp);
  * @param tag		tag
  * @return		1 on success, 0 on failure
  */
-int headerIsEntry(Header h, rpmTag tag);
+int headerIsEntry(Header h, rpmTagVal tag);
 
 /** \ingroup header
  * Modifier flags for headerGet() operation.
@@ -175,7 +175,7 @@ typedef rpmFlags headerGetFlags;
  * @param flags		retrieval modifier flags
  * @return		1 on success, 0 on failure
  */
-int headerGet(Header h, rpmTag tag, rpmtd td, headerGetFlags flags);
+int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags);
 
 
 enum headerPutFlags_e {
@@ -218,14 +218,14 @@ int headerPut(Header h, rpmtd td, headerPutFlags flags);
  * @return		1 on success, 0 on failure
  * 
  */
-int headerPutString(Header h, rpmTag tag, const char *val);
-int headerPutStringArray(Header h, rpmTag tag, const char **val, rpm_count_t size);
-int headerPutBin(Header h, rpmTag tag, const uint8_t *val, rpm_count_t size);
-int headerPutChar(Header h, rpmTag tag, const char *val, rpm_count_t size);
-int headerPutUint8(Header h, rpmTag tag, const uint8_t *val, rpm_count_t size);
-int headerPutUint16(Header h, rpmTag tag, const uint16_t *val, rpm_count_t size);
-int headerPutUint32(Header h, rpmTag tag, const uint32_t *val, rpm_count_t size);
-int headerPutUint64(Header h, rpmTag tag, const uint64_t *val, rpm_count_t size);
+int headerPutString(Header h, rpmTagVal tag, const char *val);
+int headerPutStringArray(Header h, rpmTagVal tag, const char **val, rpm_count_t size);
+int headerPutBin(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
+int headerPutChar(Header h, rpmTagVal tag, const char *val, rpm_count_t size);
+int headerPutUint8(Header h, rpmTagVal tag, const uint8_t *val, rpm_count_t size);
+int headerPutUint16(Header h, rpmTagVal tag, const uint16_t *val, rpm_count_t size);
+int headerPutUint32(Header h, rpmTagVal tag, const uint32_t *val, rpm_count_t size);
+int headerPutUint64(Header h, rpmTagVal tag, const uint64_t *val, rpm_count_t size);
 /** @} */
 
 /** \ingroup header
@@ -248,7 +248,7 @@ int headerPutUint64(Header h, rpmTag tag, const uint64_t *val, rpm_count_t size)
  * @param lang		locale
  * @return		1 on success, 0 on failure
  */
-int headerAddI18NString(Header h, rpmTag tag, const char * string,
+int headerAddI18NString(Header h, rpmTagVal tag, const char * string,
 		const char * lang);
 
 /** \ingroup header
@@ -269,7 +269,7 @@ int headerMod(Header h, rpmtd td);
  * @param tag		tag
  * @return		0 on success, 1 on failure (INCONSISTENT)
  */
-int headerDel(Header h, rpmTag tag);
+int headerDel(Header h, rpmTagVal tag);
 
 /** \ingroup header
  * Return formatted output string from header tags.
@@ -289,7 +289,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg);
  * @param tagstocopy	array of tags that are copied
  */
 void headerCopyTags(Header headerFrom, Header headerTo, 
-		    const rpmTag * tagstocopy);
+		    const rpmTagVal * tagstocopy);
 
 /** \ingroup header
  * Destroy header tag iterator.
@@ -318,7 +318,7 @@ int headerNext(HeaderIterator hi, rpmtd td);
  * @param hi		header tag iterator
  * @return		next tag, RPMTAG_NOT_FOUND to stop iteration
  */
-rpmTag headerNextTag(HeaderIterator hi);
+rpmTagVal headerNextTag(HeaderIterator hi);
 
 /** \ingroup header
  * Return name, version, release strings from header.
@@ -385,7 +385,7 @@ char * headerGetEVR(Header h, const char **np);
  * @param tag		tag to retrieve
  * @return 		string pointer (malloced) or NULL on failure
  */
-char * headerGetAsString(Header h, rpmTag tag);
+char * headerGetAsString(Header h, rpmTagVal tag);
 
 /** \ingroup header
  * Return a simple string tag from header
@@ -393,7 +393,7 @@ char * headerGetAsString(Header h, rpmTag tag);
  * @param tag		tag to retrieve
  * @return		string pointer (to header memory) or NULL on failure
  */
-const char * headerGetString(Header h, rpmTag tag);
+const char * headerGetString(Header h, rpmTagVal tag);
 
 /* \ingroup header
  * Return a simple number tag (or extension) from header
@@ -401,7 +401,7 @@ const char * headerGetString(Header h, rpmTag tag);
  * @param tag		tag to retrieve
  * @return		numeric tag value or 0 on failure
  */
-uint64_t headerGetNumber(Header h, rpmTag tag);
+uint64_t headerGetNumber(Header h, rpmTagVal tag);
 
 /** \ingroup header
  * Return header color.

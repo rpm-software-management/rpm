@@ -31,7 +31,7 @@ typedef char * (*headerTagFormatFunction) (rpmtd td, char * formatPrefix);
 typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags);
 
 RPM_GNUC_INTERNAL
-headerTagTagFunction rpmHeaderTagFunc(rpmTag tag);
+headerTagTagFunction rpmHeaderTagFunc(rpmTagVal tag);
 
 RPM_GNUC_INTERNAL
 headerTagFormatFunction rpmHeaderFormatFuncByName(const char *fmt);
