@@ -328,7 +328,7 @@ static rpmTag getFlagTag(rpmTag scriptTag)
 
 static const char * tag2sln(rpmTag tag)
 {
-    switch ((rpm_tag_t) tag) {
+    switch (tag) {
     case RPMTAG_PRETRANS:       return "%pretrans";
     case RPMTAG_TRIGGERPREIN:   return "%triggerprein";
     case RPMTAG_PREIN:          return "%pre";
