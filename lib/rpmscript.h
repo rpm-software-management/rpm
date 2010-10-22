@@ -15,7 +15,7 @@ typedef rpmFlags rpmscriptFlags;
 typedef struct rpmScript_s * rpmScript;
 
 struct rpmScript_s {
-    rpmTag tag;		/* script tag */
+    rpmTagVal tag;	/* script tag */
     char **args;	/* scriptlet call arguments */
     char *body;		/* script body */
     char *descr;	/* description for logging */
@@ -27,7 +27,7 @@ extern "C" {
 #endif
 
 RPM_GNUC_INTERNAL
-rpmScript rpmScriptFromTag(Header h, rpmTag scriptTag);
+rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag);
 
 RPM_GNUC_INTERNAL
 rpmScript rpmScriptFree(rpmScript script);

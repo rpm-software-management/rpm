@@ -58,7 +58,7 @@ typedef struct rpmpsm_s {
     rpmfi fi;			/*!< transaction element file info */
     const char * goalName;
     char * failedFile;
-    rpmTag scriptTag;		/*!< Scriptlet data tag. */
+    rpmTagVal scriptTag;	/*!< Scriptlet data tag. */
     int npkgs_installed;	/*!< No. of installed instances. */
     int scriptArg;		/*!< Scriptlet package arg. */
     rpmsenseFlags sense;	/*!< One of RPMSENSE_TRIGGER{PREIN,IN,UN,POSTUN}. */
@@ -369,9 +369,9 @@ exit:
     return rpmrc;
 }
 
-static rpmTag triggertag(rpmsenseFlags sense) 
+static rpmTagVal triggertag(rpmsenseFlags sense) 
 {
-    rpmTag tag = RPMTAG_NOT_FOUND;
+    rpmTagVal tag = RPMTAG_NOT_FOUND;
     switch (sense) {
     case RPMSENSE_TRIGGERIN:
 	tag = RPMTAG_TRIGGERIN;

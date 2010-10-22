@@ -295,7 +295,7 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     return rc;
 }
 
-static rpmTag getProgTag(rpmTag scriptTag)
+static rpmTagVal getProgTag(rpmTagVal scriptTag)
 {
     switch (scriptTag) {
     case RPMTAG_PREIN:		return RPMTAG_PREINPROG;
@@ -309,7 +309,7 @@ static rpmTag getProgTag(rpmTag scriptTag)
     }
 }
 
-static rpmTag getFlagTag(rpmTag scriptTag)
+static rpmTagVal getFlagTag(rpmTagVal scriptTag)
 {
     switch (scriptTag) {
     case RPMTAG_PRETRANS:	return RPMTAG_PRETRANSFLAGS;
@@ -326,7 +326,7 @@ static rpmTag getFlagTag(rpmTag scriptTag)
     return RPMTAG_NOT_FOUND;
 }
 
-static const char * tag2sln(rpmTag tag)
+static const char * tag2sln(rpmTagVal tag)
 {
     switch (tag) {
     case RPMTAG_PRETRANS:       return "%pretrans";
@@ -345,10 +345,10 @@ static const char * tag2sln(rpmTag tag)
     return "%unknownscript";
 }
 
-rpmScript rpmScriptFromTag(Header h, rpmTag scriptTag)
+rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 {
     rpmScript script = NULL;
-    rpmTag progTag = getProgTag(scriptTag);
+    rpmTagVal progTag = getProgTag(scriptTag);
 
     if (headerIsEntry(h, scriptTag) || headerIsEntry(h, progTag)) {
 	struct rpmtd_s prog;
