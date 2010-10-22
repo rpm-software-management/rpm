@@ -23,8 +23,8 @@ typedef rpmFlags rpmtdFlags;
  * @todo		Make this opaque (at least outside rpm itself)
  */
 struct rpmtd_s {
-    rpmTag tag;		/* rpm tag of this data entry*/
-    rpmTagType type;	/* data type */
+    rpm_tag_t tag;	/* rpm tag of this data entry*/
+    rpm_tagtype_t type;	/* data type */
     rpm_count_t count;	/* number of entries */
     rpm_data_t data;	/* pointer to actual data */
     rpmtdFlags flags;	/* flags on memory allocation etc */
