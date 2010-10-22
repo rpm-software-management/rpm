@@ -324,8 +324,8 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     int xx;
     rpmRC rc = RPMRC_OK;
     struct rpmtd_s td;
-    rpmSigTag sizetag;
-    rpmTag payloadtag;
+    rpmTagVal sizetag;
+    rpmTagVal payloadtag;
 
     /* Transfer header reference form *hdrp to h. */
     h = headerLink(*hdrp);
@@ -610,7 +610,7 @@ exit:
     return rc;
 }
 
-static const rpmTag copyTags[] = {
+static const rpmTagVal copyTags[] = {
     RPMTAG_CHANGELOGTIME,
     RPMTAG_CHANGELOGNAME,
     RPMTAG_CHANGELOGTEXT,
