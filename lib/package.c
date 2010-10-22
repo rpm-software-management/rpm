@@ -392,8 +392,8 @@ verifyinfo_exit:
 	}
 	/* fallthrough */
     case RPMTAG_SHA1HEADER: {
-	pgpHashAlgo hashalgo = (info.tag == RPMTAG_SHA1HEADER) ?
-				PGPHASHALGO_SHA1 : dig->signature.hash_algo;
+	int hashalgo = (info.tag == RPMTAG_SHA1HEADER) ?
+			PGPHASHALGO_SHA1 : dig->signature.hash_algo;
 	ildl[0] = htonl(ril);
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
@@ -548,7 +548,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     ssize_t count;
     rpmlead l = NULL;
     Header sigh = NULL;
-    rpmSigTag sigtag;
+    rpmTagVal sigtag;
     struct rpmtd_s sigtd;
     Header h = NULL;
     char * msg;
@@ -662,8 +662,8 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	/* fallthrough */
     case RPMSIGTAG_SHA1:
     {	struct rpmtd_s utd;
-	pgpHashAlgo hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
-			    PGPHASHALGO_SHA1 : dig->signature.hash_algo;
+	int hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
+			PGPHASHALGO_SHA1 : dig->signature.hash_algo;
 
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
