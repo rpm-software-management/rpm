@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-09-29 12:14+0300\n"
+"POT-Creation-Date: 2010-10-22 15:01+0300\n"
 "PO-Revision-Date: 2009-04-25 17:36+0100\n"
 "Last-Translator: Agustí Grau <fedora@softcatala.org>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -79,147 +79,147 @@ msgstr "s'ha produït un error en llegir la capçalera del paquet\n"
 msgid "cannot re-open payload: %s\n"
 msgstr "no s'ha pogut tornar a obrir les dades de càrrega: %s\n"
 
-#: rpmqv.c:41
+#: rpmqv.c:45
 #, fuzzy
 msgid "Query/Verify package selection options:"
 msgstr "comprova paquets en el grup"
 
-#: rpmqv.c:44
+#: rpmqv.c:50
 msgid "Query options (with -q or --query):"
 msgstr "Opcions de consulta (amb -q o --query):"
 
-#: rpmqv.c:47
+#: rpmqv.c:55
 msgid "Verify options (with -V or --verify):"
 msgstr "Opcions de verificació (amb -V o --verify):"
 
-#: rpmqv.c:53
+#: rpmqv.c:61
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opcions d'instal·lació/actualització/supressió:"
 
-#: rpmqv.c:60 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:24
+#: rpmqv.c:68 rpmbuild.c:217 rpmdb.c:22 rpmkeys.c:23 rpmsign.c:25
 #: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr "Opcions comunes per a tots els modes d'rpm i executables:"
 
-#: rpmqv.c:117
+#: rpmqv.c:125
 msgid "one type of query/verify may be performed at a time"
 msgstr "només es pot realitzar un tipus de consulta/verificació alhora"
 
-#: rpmqv.c:121
+#: rpmqv.c:129
 msgid "unexpected query flags"
 msgstr "indicadors inesperats de la consulta"
 
-#: rpmqv.c:124
+#: rpmqv.c:132
 msgid "unexpected query format"
 msgstr "format inesperat de la consulta"
 
-#: rpmqv.c:127
+#: rpmqv.c:135
 msgid "unexpected query source"
 msgstr "font inesperada de la consulta"
 
-#: rpmqv.c:138 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:145
+#: rpmqv.c:146 rpmdb.c:64 rpmkeys.c:69 rpmsign.c:152
 msgid "only one major mode may be specified"
 msgstr "només es pot especificar un mode principal"
 
-#: rpmqv.c:149
+#: rpmqv.c:157
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
 msgstr ""
 "només es poden forçar la instal·lació, l'actualització, l'rmsource i l'rmspec"
 
-#: rpmqv.c:151
+#: rpmqv.c:159
 msgid "files may only be relocated during package installation"
 msgstr "només es poden reubicar els fitxers durant la instal·lació d'un paquet"
 
-#: rpmqv.c:154
+#: rpmqv.c:162
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "no es pot utilitzar l'opció --prefix amb --relocate o --excludepath"
 
-#: rpmqv.c:157
+#: rpmqv.c:165
 msgid ""
 "--relocate and --excludepath may only be used when installing new packages"
 msgstr ""
 "només es poden utilitzar les opcions --relocate i --excludepath quan "
 "s'estiguin instal·lant paquets nous"
 
-#: rpmqv.c:160
+#: rpmqv.c:168
 msgid "--prefix may only be used when installing new packages"
 msgstr ""
 "només es pot utilitzar l'opció --prefix quan s'estiguin instal·lant paquets "
 "nous"
 
-#: rpmqv.c:163
+#: rpmqv.c:171
 msgid "arguments to --prefix must begin with a /"
 msgstr "els arguments a --prefix han de començar amb una /"
 
-#: rpmqv.c:166
+#: rpmqv.c:174
 msgid "--hash (-h) may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --hash (-h) durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:170
+#: rpmqv.c:178
 msgid "--percent may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --percent durant la instal·lació d'un paquet"
 
-#: rpmqv.c:174
+#: rpmqv.c:182
 msgid "--replacepkgs may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --replacepkgs durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:178
+#: rpmqv.c:186
 msgid "--excludedocs may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --excludedocs durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:182
+#: rpmqv.c:190
 msgid "--includedocs may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --includedocs durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:186
+#: rpmqv.c:194
 msgid "only one of --excludedocs and --includedocs may be specified"
 msgstr "només es pot especificar una opció entre --excludedocs i --includedocs"
 
-#: rpmqv.c:190
+#: rpmqv.c:198
 msgid "--ignorearch may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --ignorearch durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:194
+#: rpmqv.c:202
 msgid "--ignoreos may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --ignoreos durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:199
+#: rpmqv.c:207
 msgid "--ignoresize may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --ignoresize durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:203
+#: rpmqv.c:211
 msgid "--allmatches may only be specified during package erasure"
 msgstr ""
 "només es pot especificar l'opció --allmatches durant la supressió d'un paquet"
 
-#: rpmqv.c:207
+#: rpmqv.c:215
 msgid "--allfiles may only be specified during package installation"
 msgstr ""
 "només es pot especificar l'opció --allfiles durant la instal·lació d'un "
 "paquet"
 
-#: rpmqv.c:212
+#: rpmqv.c:220
 msgid "--justdb may only be specified during package installation and erasure"
 msgstr ""
 "només es pot especificar l'opció --justdb durant la instal·lació i supressió "
 "d'un paquet"
 
-#: rpmqv.c:217
+#: rpmqv.c:225
 msgid ""
 "script disabling options may only be specified during package installation "
 "and erasure"
@@ -227,7 +227,7 @@ msgstr ""
 "només es poden especificar les opcions d'inhabilitació d'scripts durant la "
 "instal·lació i supressió d'un paquet"
 
-#: rpmqv.c:222
+#: rpmqv.c:230
 msgid ""
 "trigger disabling options may only be specified during package installation "
 "and erasure"
@@ -235,7 +235,7 @@ msgstr ""
 "només es poden especificar les opcions d'inhabilitació de l'activador durant "
 "la instal·lació i supressió d'un paquet"
 
-#: rpmqv.c:226
+#: rpmqv.c:234
 msgid ""
 "--nodeps may only be specified during package building, rebuilding, "
 "recompilation, installation,erasure, and verification"
@@ -244,7 +244,7 @@ msgstr ""
 "reconstrucció, la recompilació, la instal·lació, la supressió i la "
 "verificació d'un paquet"
 
-#: rpmqv.c:231
+#: rpmqv.c:239
 msgid ""
 "--test may only be specified during package installation, erasure, and "
 "building"
@@ -252,7 +252,7 @@ msgstr ""
 "només es pot especificar l'opció --test durant la instal·lació, la supressió "
 "i el muntatge d'un paquet"
 
-#: rpmqv.c:236
+#: rpmqv.c:244
 msgid ""
 "--root (-r) may only be specified during installation, erasure, querying, "
 "and database rebuilds"
@@ -260,23 +260,23 @@ msgstr ""
 "només es pot especificar l'opció --root (-r) durant la instal·lació, "
 "supressió, consulta i reconstrucció d'una base de dades"
 
-#: rpmqv.c:241 rpmbuild.c:547
+#: rpmqv.c:249 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "els arguments a --root (-r) han de començar per /"
 
-#: rpmqv.c:258
+#: rpmqv.c:266
 msgid "no packages given for erase"
 msgstr "no s'han donat paquets per a suprimir"
 
-#: rpmqv.c:292
+#: rpmqv.c:300
 msgid "no packages given for install"
 msgstr "no s'han donat paquets per a instal·lar"
 
-#: rpmqv.c:304
+#: rpmqv.c:312
 msgid "no arguments given for query"
 msgstr "no s'han donat arguments per a consultar"
 
-#: rpmqv.c:318
+#: rpmqv.c:324
 msgid "no arguments given for verify"
 msgstr "no s'han donat arguments per a verificar"
 
@@ -507,43 +507,43 @@ msgstr "importa una clau pública armada"
 msgid "list keys from RPM keyring"
 msgstr ""
 
-#: rpmkeys.c:55 rpmsign.c:133
+#: rpmkeys.c:55 rpmsign.c:137
 msgid "no arguments given"
 msgstr "no s'han donat arguments"
 
-#: rpmsign.c:26
+#: rpmsign.c:27
 #, fuzzy
 msgid "sign package(s)"
 msgstr "instal·la paquets"
 
-#: rpmsign.c:28
+#: rpmsign.c:29
 msgid "sign package(s) (identical to --addsign)"
 msgstr "signa els paquets (igual que --addsign)"
 
-#: rpmsign.c:30
+#: rpmsign.c:31
 msgid "delete package signatures"
 msgstr "suprimeix les signatures dels paquets"
 
-#: rpmsign.c:78 lib/rpmgensig.c:183
+#: rpmsign.c:79 sign/rpmgensig.c:196
 #, c-format
 msgid "Could not exec %s: %s\n"
 msgstr "No es pot executar %s: %s\n"
 
-#: rpmsign.c:101
+#: rpmsign.c:102
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
 msgstr "Heu d'establir «%%_gpg_name» al vostre fitxer de macros\n"
 
-#: rpmsign.c:106
+#: rpmsign.c:107
 msgid "Enter pass phrase: "
 msgstr "Introduïu la contrasenya:"
 
-#: rpmsign.c:109
+#: rpmsign.c:111
 #, c-format
 msgid "Pass phrase is good.\n"
 msgstr "La contrasenya és correcta.\n"
 
-#: rpmsign.c:112
+#: rpmsign.c:117
 #, c-format
 msgid "Pass phrase check failed\n"
 msgstr "La verificació de la contrasenya ha fallat\n"
@@ -1066,167 +1066,167 @@ msgstr "línia %d: s'ha produït un error en analitzar %%files: %s\n"
 msgid "line %d: Error parsing %%policies: %s\n"
 msgstr "línia %d: s'ha produït un error en analitzar %%files: %s\n"
 
-#: build/parsePreamble.c:154
+#: build/parsePreamble.c:155
 #, c-format
 msgid "line %d: Bad number: %s\n"
 msgstr "línia %d: número incorrecte: %s\n"
 
-#: build/parsePreamble.c:160
+#: build/parsePreamble.c:161
 #, c-format
 msgid "line %d: Bad no%s number: %u\n"
 msgstr "línia %d: Numero dolent%s número: %u\n"
 
-#: build/parsePreamble.c:223
+#: build/parsePreamble.c:224
 #, c-format
 msgid "line %d: Bad %s number: %s\n"
 msgstr "línia %d: número %s incorrecte: %s\n"
 
-#: build/parsePreamble.c:237
+#: build/parsePreamble.c:238
 #, c-format
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d definit múltiples vegades\n"
 
-#: build/parsePreamble.c:399
+#: build/parsePreamble.c:400
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "S'ha exclòs l'arquitectura: %s\n"
 
-#: build/parsePreamble.c:404
+#: build/parsePreamble.c:405
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "No s'inclou l'arquitectura: %s\n"
 
-#: build/parsePreamble.c:409
+#: build/parsePreamble.c:410
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "S'ha exclòs el SO: %s\n"
 
-#: build/parsePreamble.c:414
+#: build/parsePreamble.c:415
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "No s'ha inclòs el SO: %s\n"
 
-#: build/parsePreamble.c:440
+#: build/parsePreamble.c:441
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "El camp %s ha de ser present al paquet: %s\n"
 
-#: build/parsePreamble.c:463
+#: build/parsePreamble.c:464
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "L'entrada %s és duplicada al paquet: %s\n"
 
-#: build/parsePreamble.c:517
+#: build/parsePreamble.c:518
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "_docdir_fmt no és vàlid: %s\n"
 
-#: build/parsePreamble.c:545
+#: build/parsePreamble.c:546
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "No s'ha pogut obrir la icona %s: %s\n"
 
-#: build/parsePreamble.c:563
+#: build/parsePreamble.c:564
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "No s'ha pogut llegir la icona %s: %s\n"
 
-#: build/parsePreamble.c:576
+#: build/parsePreamble.c:577
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "El tipus d'icona és desconegut: %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "línia %d: l'etiqueta pren un únic testimoni: %s\n"
 
-#: build/parsePreamble.c:633
+#: build/parsePreamble.c:634
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
 
-#: build/parsePreamble.c:636
+#: build/parsePreamble.c:637
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
 
-#: build/parsePreamble.c:642
+#: build/parsePreamble.c:643
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "línia %d: caràcter «-» no permès a %s: %s\n"
 
-#: build/parsePreamble.c:667
+#: build/parsePreamble.c:668
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "línia %d: l'etiqueta és malament formada: %s\n"
 
-#: build/parsePreamble.c:675
+#: build/parsePreamble.c:676
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "línia %d: l'etiqueta és buida: %s\n"
 
-#: build/parsePreamble.c:731
+#: build/parsePreamble.c:734
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "línia %d: els prefixos no poden acabar en «/»: %s \n"
 
-#: build/parsePreamble.c:744
+#: build/parsePreamble.c:747
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "línia %d: «Docdir» ha de començar per «/»: %s\n"
 
-#: build/parsePreamble.c:757
+#: build/parsePreamble.c:760
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "línia %d: el camp Epoch ha d'ésser un nombre sense signe: %s\n"
 
-#: build/parsePreamble.c:797
+#: build/parsePreamble.c:800
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "línia %d: %s és incorrecte: qualificadors: %s\n"
 
-#: build/parsePreamble.c:824
+#: build/parsePreamble.c:827
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "línia %d: el format de «BuildArchitecture» és incorrecte: %s\n"
 
-#: build/parsePreamble.c:834
+#: build/parsePreamble.c:837
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "linia %d: Només els subpaquets noarch estan suportats: %s\n"
 
-#: build/parsePreamble.c:849
+#: build/parsePreamble.c:852
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "S'ha produït un error intern: l'etiqueta %d és incorrecta\n"
 
-#: build/parsePreamble.c:931
+#: build/parsePreamble.c:935
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "línia %d: es requereix la versió: %s\n"
 
-#: build/parsePreamble.c:994
+#: build/parsePreamble.c:998
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "L'especificació del paquet és incorrecta: %s\n"
 
-#: build/parsePreamble.c:1000
+#: build/parsePreamble.c:1004
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "El paquet ja existeix: %s\n"
 
-#: build/parsePreamble.c:1031
+#: build/parsePreamble.c:1035
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "línia %d: l'etiqueta és desconeguda: %s\n"
 
-#: build/parsePreamble.c:1063
+#: build/parsePreamble.c:1067
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} no pot estar buit\n"
 
-#: build/parsePreamble.c:1067
+#: build/parsePreamble.c:1071
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} no pot ésser \"/\"\n"
@@ -1459,72 +1459,72 @@ msgstr "S'està processant els fitxers: %s-%s-%s.%s\n"
 msgid "Ignoring invalid regex %s\n"
 msgstr "línia %d: número incorrecte: %s\n"
 
-#: build/rpmfc.c:190
+#: build/rpmfc.c:191
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "No s'ha pogut crear la canonada per a %s: %m\n"
 
-#: build/rpmfc.c:208
+#: build/rpmfc.c:209
 #, c-format
 msgid "Couldn't chdir to %s: %s\n"
 msgstr "No s'ha pogut canviar al directori %s: %s\n"
 
-#: build/rpmfc.c:218
+#: build/rpmfc.c:219
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "No s'ha pogut executar %s: %s\n"
 
-#: build/rpmfc.c:223 lib/rpmscript.c:235
+#: build/rpmfc.c:224 lib/rpmscript.c:235
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "No s'ha pogut crear el procés fill de «%s»: %s\n"
 
-#: build/rpmfc.c:305
+#: build/rpmfc.c:306
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "ha fallat %s: %s\n"
 
-#: build/rpmfc.c:309
+#: build/rpmfc.c:310
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "ha fallat en escriure totes les dades a %s\n"
 
-#: build/rpmfc.c:784
+#: build/rpmfc.c:785
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Ha fallat la conversió de %s a enter gran.\n"
 
-#: build/rpmfc.c:870
+#: build/rpmfc.c:873
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "el gpg no ha escrit la signatura\n"
 
-#: build/rpmfc.c:887
+#: build/rpmfc.c:890
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Ha fallat magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:894
+#: build/rpmfc.c:897
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "Ha fallat magic_load: %s\n"
 
-#: build/rpmfc.c:935
+#: build/rpmfc.c:938
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Ha fallat el reconeixement del fitxer \"%s\": mode %06o %s\n"
 
-#: build/rpmfc.c:1135
+#: build/rpmfc.c:1138
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "S'està cercant %s: %s\n"
 
-#: build/rpmfc.c:1140 build/rpmfc.c:1149
+#: build/rpmfc.c:1143 build/rpmfc.c:1152
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Ha fallat la cerca de %s:\n"
 
-#: build/spec.c:346
+#: build/spec.c:444
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
 msgstr ""
@@ -1712,26 +1712,26 @@ msgstr "s'està ometent %s amb una firma V%u no verificable\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "mida del blob(%d): dolenta, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:237 lib/package.c:292 lib/package.c:360 lib/signature.c:116
+#: lib/package.c:237 lib/package.c:292 lib/package.c:360 lib/signature.c:129
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 "etiqueta[%d]: dolenta, etiqueta %d tipus %d desplaçament %d compte %d\n"
 
-#: lib/package.c:255 lib/signature.c:130
+#: lib/package.c:255 lib/signature.c:143
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 "desplaçament de regió: dolent, etiqueta %d tipus %d desplaçament %d compte "
 "%d\n"
 
-#: lib/package.c:273 lib/signature.c:154
+#: lib/package.c:273 lib/signature.c:167
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 "tros de regió: dolenta, etiqueta %d tipus %d desplaçament %d compte %d\n"
 
-#: lib/package.c:283 lib/signature.c:164
+#: lib/package.c:283 lib/signature.c:177
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "la dimensió de la regió:  dolenta, ril(%d) > il(%d)\n"
@@ -1777,12 +1777,12 @@ msgstr "capçalera blob(%zd): dolenta, la lectura ha retornat %d\n"
 msgid "hdr load: BAD\n"
 msgstr "càrrega de la capçalera: dolenta\n"
 
-#: lib/package.c:582 lib/rpmchecksig.c:297 lib/rpmgensig.c:496
+#: lib/package.c:582 lib/rpmchecksig.c:297 sign/rpmgensig.c:467
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: El rpmReadSignature ha fallat: %s"
 
-#: lib/package.c:589 lib/rpmchecksig.c:304 lib/rpmgensig.c:503
+#: lib/package.c:589 lib/rpmchecksig.c:304 sign/rpmgensig.c:474
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: No hi ha signatura disponible\n"
@@ -1792,7 +1792,7 @@ msgstr "%s: No hi ha signatura disponible\n"
 msgid "%s: headerRead failed: %s"
 msgstr "%s: El headerRead ha fallat: %s"
 
-#: lib/package.c:686 lib/rpmchecksig.c:137 lib/rpmgensig.c:93
+#: lib/package.c:686 lib/rpmchecksig.c:137 sign/rpmgensig.c:94
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: El Fread ha fallat: %s\n"
@@ -2014,7 +2014,7 @@ msgstr "actualitza la base de dades, però no modifiquis el sistema de fitxers"
 msgid "do not verify package dependencies"
 msgstr "no verifiquis les dependències dels paquets"
 
-#: lib/poptI.c:190 lib/poptQV.c:231 lib/poptQV.c:233
+#: lib/poptI.c:190 lib/poptQV.c:210 lib/poptQV.c:212
 msgid "don't verify digest of files"
 msgstr "no verificar els resums dels fitxers"
 
@@ -2127,153 +2127,141 @@ msgstr "no instal·lis, però digues si funcionarà correctament o no"
 msgid "upgrade package(s)"
 msgstr "actualitza paquets"
 
-#: lib/poptQV.c:82
+#: lib/poptQV.c:73
 msgid "query/verify all packages"
 msgstr "comprova tots els paquets"
 
-#: lib/poptQV.c:84
+#: lib/poptQV.c:75
 msgid "rpm checksig mode"
 msgstr "mode de comprovació de signatura"
 
-#: lib/poptQV.c:86
+#: lib/poptQV.c:77
 msgid "query/verify package(s) owning file"
 msgstr "comprova a quins paquets pertany aquest fitxer"
 
-#: lib/poptQV.c:88
+#: lib/poptQV.c:79
 msgid "query/verify package(s) in group"
 msgstr "comprova paquets en el grup"
 
-#: lib/poptQV.c:90
+#: lib/poptQV.c:81
 msgid "query/verify a package file"
 msgstr "comprova un paquet"
 
-#: lib/poptQV.c:93
+#: lib/poptQV.c:84
 msgid "query/verify package(s) with package identifier"
 msgstr "comprova quins paquets tenen identificador"
 
-#: lib/poptQV.c:95
+#: lib/poptQV.c:86
 msgid "query/verify package(s) with header identifier"
 msgstr "comprova paquets amb identificació de capçalera"
 
-#: lib/poptQV.c:97
-msgid "query/verify package(s) with file identifier"
-msgstr "comprova els paquets amb identificació de fitxer"
-
-#: lib/poptQV.c:100
+#: lib/poptQV.c:89
 msgid "rpm query mode"
 msgstr "mode de consulta"
 
-#: lib/poptQV.c:102
+#: lib/poptQV.c:91
 msgid "query/verify a header instance"
 msgstr "comprova una instància de capçalera"
 
-#: lib/poptQV.c:104
-msgid "query a spec file"
-msgstr "consulta un fitxer d'especificació"
-
-#: lib/poptQV.c:104
-msgid "<spec>"
-msgstr "<fitxer d'especificació>"
-
-#: lib/poptQV.c:106
+#: lib/poptQV.c:93
 msgid "query/verify package(s) from install transaction"
 msgstr "comprova els paquets de la transacció d'instal·lació"
 
-#: lib/poptQV.c:108
+#: lib/poptQV.c:95
 msgid "query the package(s) triggered by the package"
 msgstr "consulta els paquets exigits pel paquet"
 
-#: lib/poptQV.c:110
+#: lib/poptQV.c:97
 msgid "rpm verify mode"
 msgstr "mode de verificació"
 
-#: lib/poptQV.c:112
+#: lib/poptQV.c:99
 msgid "query/verify the package(s) which require a dependency"
 msgstr "comprova les relacions de dependència dels paquets"
 
-#: lib/poptQV.c:114
+#: lib/poptQV.c:101
 msgid "query/verify the package(s) which provide a dependency"
 msgstr "comprova els paquets que satisfan les relacions de dependència"
 
-#: lib/poptQV.c:117
+#: lib/poptQV.c:104
 msgid "do not glob arguments"
 msgstr "no passis els arguments"
 
-#: lib/poptQV.c:119
+#: lib/poptQV.c:106
 msgid "do not process non-package files as manifests"
 msgstr ""
 "no processis els fitxers que no pertanyin al paquet com a fitxers manifest"
 
-#: lib/poptQV.c:198
+#: lib/poptQV.c:177
 msgid "list all configuration files"
 msgstr "mostra tots els fitxers de configuració"
 
-#: lib/poptQV.c:200
+#: lib/poptQV.c:179
 msgid "list all documentation files"
 msgstr "mostra llista de fitxers de documentació"
 
-#: lib/poptQV.c:202
+#: lib/poptQV.c:181
 msgid "dump basic file information"
 msgstr "mostra informació bàsica del fitxer"
 
-#: lib/poptQV.c:206
+#: lib/poptQV.c:185
 msgid "list files in package"
 msgstr "mostra tots els fitxers del paquet"
 
-#: lib/poptQV.c:211
+#: lib/poptQV.c:190
 #, c-format
 msgid "skip %%ghost files"
 msgstr "omet fitxers %%ghost"
 
-#: lib/poptQV.c:216
+#: lib/poptQV.c:195
 msgid "use the following query format"
 msgstr "utilitza el format de consulta següent"
 
-#: lib/poptQV.c:218
+#: lib/poptQV.c:197
 msgid "display the states of the listed files"
 msgstr "mostra l'estat dels fitxers de la llista"
 
-#: lib/poptQV.c:236
+#: lib/poptQV.c:215
 msgid "don't verify size of files"
 msgstr "no comprovis la mida dels fitxers"
 
-#: lib/poptQV.c:239
+#: lib/poptQV.c:218
 msgid "don't verify symlink path of files"
 msgstr "no comprovis l'enllaç simbòlic dels fitxers"
 
-#: lib/poptQV.c:242
+#: lib/poptQV.c:221
 msgid "don't verify owner of files"
 msgstr "no comprovis qui és el propietari dels fitxers"
 
-#: lib/poptQV.c:245
+#: lib/poptQV.c:224
 msgid "don't verify group of files"
 msgstr "no comprovis a quin grup pertanyen els fitxers"
 
-#: lib/poptQV.c:248
+#: lib/poptQV.c:227
 msgid "don't verify modification time of files"
 msgstr "no comprovis la data de modificació dels fitxers"
 
-#: lib/poptQV.c:251 lib/poptQV.c:254
+#: lib/poptQV.c:230 lib/poptQV.c:233
 msgid "don't verify mode of files"
 msgstr "no comprovis el mode dels fitxers"
 
-#: lib/poptQV.c:257
+#: lib/poptQV.c:236
 msgid "don't verify capabilities of files"
 msgstr "no verifiquis les capacitats dels fitxers"
 
-#: lib/poptQV.c:260
+#: lib/poptQV.c:239
 msgid "don't verify file security contexts"
 msgstr "no comprovis els contextos de seguretat dels fitxers"
 
-#: lib/poptQV.c:262
+#: lib/poptQV.c:241
 msgid "don't verify files in package"
 msgstr "no comprovis els fitxers del paquet"
 
-#: lib/poptQV.c:264 tools/rpmgraph.c:218
+#: lib/poptQV.c:243 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
 msgstr "no comprovis les relacions de dependència del paquet"
 
-#: lib/poptQV.c:267 lib/poptQV.c:270
+#: lib/poptQV.c:246 lib/poptQV.c:249
 msgid "don't execute verify script(s)"
 msgstr "no executis els scripts de verificació"
 
@@ -2355,62 +2343,62 @@ msgstr "el paquet no té propietari dels fitxers/llistes de grup\n"
 msgid "package has neither file owner or id lists\n"
 msgstr "el paquet no té ni propietari de fitxer ni llistes d'id\n"
 
-#: lib/query.c:316
+#: lib/query.c:319
 #, c-format
 msgid "group %s does not contain any packages\n"
 msgstr "el grup %s no conté cap paquet\n"
 
-#: lib/query.c:323
+#: lib/query.c:326
 #, c-format
 msgid "no package triggers %s\n"
 msgstr "cap paquet dispara %s\n"
 
-#: lib/query.c:334 lib/query.c:353 lib/query.c:372 lib/query.c:395
+#: lib/query.c:337 lib/query.c:356 lib/query.c:372
 #, c-format
 msgid "malformed %s: %s\n"
 msgstr "%s mal format: %s\n"
 
-#: lib/query.c:344 lib/query.c:359 lib/query.c:383 lib/query.c:400
+#: lib/query.c:347 lib/query.c:362 lib/query.c:377
 #, c-format
 msgid "no package matches %s: %s\n"
 msgstr "cap paquet concorda amb %s: %s\n"
 
-#: lib/query.c:408
+#: lib/query.c:385
 #, c-format
 msgid "no package requires %s\n"
 msgstr "cap paquet necessita %s\n"
 
-#: lib/query.c:417
+#: lib/query.c:394
 #, c-format
 msgid "no package provides %s\n"
 msgstr "cap paquet proporciona %s\n"
 
-#: lib/query.c:447
+#: lib/query.c:424
 #, c-format
 msgid "file %s: %s\n"
 msgstr "fitxer %s: %s\n"
 
-#: lib/query.c:450
+#: lib/query.c:427
 #, c-format
 msgid "file %s is not owned by any package\n"
 msgstr "el fitxer %s no pertany a cap paquet\n"
 
-#: lib/query.c:461
+#: lib/query.c:438
 #, c-format
 msgid "invalid package number: %s\n"
 msgstr "número de paquet invàlid: %s\n"
 
-#: lib/query.c:468
+#: lib/query.c:445
 #, fuzzy, c-format
 msgid "record %u could not be read\n"
 msgstr "el registre %lu no es pot llegir\n"
 
-#: lib/query.c:481 lib/rpminstall.c:665
+#: lib/query.c:458 lib/rpminstall.c:665
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "no s'ha instal·lat el paquet %s\n"
 
-#: lib/query.c:515
+#: lib/query.c:492
 #, c-format
 msgid "unknown tag: \"%s\"\n"
 msgstr "etiqueta desconeguda: «%s»\n"
@@ -2471,7 +2459,7 @@ msgstr " (CLAUS NO FIABLES:"
 msgid ")"
 msgstr ")"
 
-#: lib/rpmchecksig.c:454 lib/rpmgensig.c:53
+#: lib/rpmchecksig.c:454 sign/rpmgensig.c:54
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr "%s: ha fallat l'apertura: %s\n"
@@ -2570,65 +2558,13 @@ msgstr ""
 "els scriptlets del paquet poden accedir la base de dades rpm durant la "
 "instal·lació"
 
-#: lib/rpmgensig.c:87
-#, c-format
-msgid "%s: Fwrite failed: %s\n"
-msgstr "%s: ha fallat l'Fwrite: %s\n"
-
-#: lib/rpmgensig.c:97
-#, c-format
-msgid "%s: Fflush failed: %s\n"
-msgstr "%s: ha fallat l'Fflush: %s\n"
-
-#: lib/rpmgensig.c:118
-#, c-format
-msgid "Unsupported PGP pubkey algorithm %d\n"
-msgstr ""
-
-#: lib/rpmgensig.c:124
-#, c-format
-msgid "Unsupported PGP hash algorithm %d\n"
-msgstr ""
-
-#: lib/rpmgensig.c:163
-#, c-format
-msgid "Couldn't create pipe for signing: %m"
-msgstr "No s'ha pogut crear una canonada per a la signatura: %m"
-
-#: lib/rpmgensig.c:200
-#, c-format
-msgid "gpg exec failed (%d)\n"
-msgstr "ha fallat l'execució del gpg (%d)\n"
-
-#: lib/rpmgensig.c:206
-msgid "gpg failed to write signature\n"
-msgstr "el gpg no ha escrit la signatura\n"
-
-#: lib/rpmgensig.c:224
-msgid "unable to read the signature\n"
-msgstr "no es pot llegir la signatura\n"
-
-#: lib/rpmgensig.c:513 lib/rpmgensig.c:583
-msgid "rpmMkTemp failed\n"
-msgstr "Ha fallat rpmMkTemp\n"
-
-#: lib/rpmgensig.c:591
-#, c-format
-msgid "%s: writeLead failed: %s\n"
-msgstr "%s: ha fallat writeLead: %s\n"
-
-#: lib/rpmgensig.c:597
-#, c-format
-msgid "%s: rpmWriteSignature failed: %s\n"
-msgstr "%s: ha fallat rpmWriteSignature: %s\n"
-
-#: lib/rpmgi.c:48 lib/rpminstall.c:115 lib/rpminstall.c:292
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:292
 #: lib/rpminstall.c:323 tools/rpmgraph.c:93 tools/rpmgraph.c:130
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "ha fallat l'apertura de %s: %s\n"
 
-#: lib/rpmgi.c:135
+#: lib/rpmgi.c:136
 #, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: no és un paquet rpm (o un manifest de paquet)\n"
@@ -2977,73 +2913,73 @@ msgstr "%s: ha fallat la lectura de la clau pública.\n"
 msgid "transaction"
 msgstr "crea un conjunt de transaccions"
 
-#: lib/signature.c:77
+#: lib/signature.c:90
 #, c-format
 msgid "sigh size(%d): BAD, read returned %d\n"
 msgstr "mida sigh(%d): dolenta, la lectura ha retornat %d\n"
 
-#: lib/signature.c:82
+#: lib/signature.c:95
 msgid "sigh magic: BAD\n"
 msgstr "magic sigh: dolent\n"
 
-#: lib/signature.c:88
+#: lib/signature.c:101
 #, c-format
 msgid "sigh tags: BAD, no. of tags(%d) out of range\n"
 msgstr "etiquetes sigh: dolentes, número d'etiquetes(%d) fora de rang\n"
 
-#: lib/signature.c:94
+#: lib/signature.c:107
 #, c-format
 msgid "sigh data: BAD, no. of  bytes(%d) out of range\n"
 msgstr "dades sigh: dolentes, número de bytes(%d) fora de rang\n"
 
-#: lib/signature.c:109
+#: lib/signature.c:122
 #, c-format
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "blob sigh(%d): dolent, lectura ha retornat %d\n"
 
-#: lib/signature.c:175
+#: lib/signature.c:188
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 "etiqueta sigh[%d]: dolenta, etiqueta %d tipus %d desplaçament %d compte %d\n"
 
-#: lib/signature.c:185
+#: lib/signature.c:198
 msgid "sigh load: BAD\n"
 msgstr "càrrega sigh: dolenta\n"
 
-#: lib/signature.c:198
+#: lib/signature.c:211
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "emplenat sigh(%zd): dolent, s'han llegit %zd bytes\n"
 
-#: lib/signature.c:214
+#: lib/signature.c:227
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigSize sigh(%zd): dolent, ha fallat fstat(2)\n"
 
-#: lib/signature.c:291
+#: lib/signature.c:303
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 "La regió inmutable de la capçalera no s'ha pogut llegir. És possible que el "
 "paquet sigui corrupte\n"
 
-#: lib/signature.c:388
+#: lib/signature.c:397
 msgid "MD5 digest:"
 msgstr "Resum MD5:"
 
-#: lib/signature.c:427
+#: lib/signature.c:436
 msgid "Header SHA1 digest:"
 msgstr "Capçalera de resum SHA1:"
 
-#: lib/signature.c:482
+#: lib/signature.c:491
 msgid "Header "
 msgstr "Capçalera "
 
-#: lib/signature.c:495
+#: lib/signature.c:504
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Verifiqueu la signatura: paràmetres dolents\n"
 
-#: lib/signature.c:516
+#: lib/signature.c:525
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatura: desconeguda (%d)\n"
@@ -3127,138 +3063,148 @@ msgstr "s'esperava | al final de l'expressió"
 msgid "array iterator used with different sized arrays"
 msgstr "iterador de matrius emprat amb matrius de mides diferents"
 
-#: lib/rpmdb.c:156
+#: lib/rpmdb.c:124
+#, c-format
+msgid "Generating %d missing index(es), please wait...\n"
+msgstr ""
+
+#: lib/rpmdb.c:185
 #, c-format
 msgid "dbiOpen: dbapi %d not available\n"
 msgstr "dbiOpen: dbapi %d no disponible\n"
 
-#: lib/rpmdb.c:166
+#: lib/rpmdb.c:195
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "no es pot obrir l'índex de %s emprant db%d - %s (%d)\n"
 
-#: lib/rpmdb.c:665
+#: lib/rpmdb.c:727
 msgid "no dbpath has been set\n"
 msgstr "no s'ha establert cap dbpath\n"
 
-#: lib/rpmdb.c:861 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1886
-#: lib/rpmdb.c:2001 lib/rpmdb.c:2539
+#: lib/rpmdb.c:923 lib/rpmdb.c:1041 lib/rpmdb.c:1086 lib/rpmdb.c:1948
+#: lib/rpmdb.c:2068 lib/rpmdb.c:2103 lib/rpmdb.c:2663
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "s'ha produït un error (%d) en obtenir «%s» registres de l'índex %s\n"
 
-#: lib/rpmdb.c:1211
+#: lib/rpmdb.c:1273
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: s'està ignorant"
 
-#: lib/rpmdb.c:1221
+#: lib/rpmdb.c:1283
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "s'ha produït un error (%d) en emmagatzemar el registre #%d a %s\n"
 
-#: lib/rpmdb.c:1319
+#: lib/rpmdb.c:1381
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: ha fallat regexec: %s\n"
 
-#: lib/rpmdb.c:1500
+#: lib/rpmdb.c:1562
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: ha fallat regcomp: %s\n"
 
-#: lib/rpmdb.c:1664
+#: lib/rpmdb.c:1726
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: s'està ignorant"
 
-#: lib/rpmdb.c:1809
+#: lib/rpmdb.c:1871
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: s'ha obtingut la capçalera #%u malmesa -- s'està ignorant.\n"
 
-#: lib/rpmdb.c:2203
+#: lib/rpmdb.c:2275
+#, fuzzy, c-format
+msgid "error(%d:%s) getting next key from %s index\n"
+msgstr "s'ha produït un error (%d) en obtenir «%s» registres de l'índex %s\n"
+
+#: lib/rpmdb.c:2363
 #, fuzzy, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr ""
 "error(%d) en establir el registre de la capçalera #%d per a la supressió de "
 "%s\n"
 
-#: lib/rpmdb.c:2213
+#: lib/rpmdb.c:2373
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr ""
 "error(%d) en establir el registre de la capçalera #%d per a la supressió de "
 "%s\n"
 
-#: lib/rpmdb.c:2238
+#: lib/rpmdb.c:2398
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: no s'ha pogut llegir la capçalera a 0x%x\n"
 
-#: lib/rpmdb.c:2305
+#: lib/rpmdb.c:2465
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "error(%d) en establir els registres «%s» de l'índex %s\n"
 
-#: lib/rpmdb.c:2324
+#: lib/rpmdb.c:2484
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "error(%d) en emmagatzemar el registre «%s» en %s\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2494
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "error(%d) en suprimir el registre «%s» de %s\n"
 
-#: lib/rpmdb.c:2410
+#: lib/rpmdb.c:2570
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "error(%d) en assignar la instància de nou paquet\n"
 
-#: lib/rpmdb.c:2555
+#: lib/rpmdb.c:2679
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "error(%d) en emmagatzemar el registre %s a %s\n"
 
-#: lib/rpmdb.c:2742
+#: lib/rpmdb.c:2910
 msgid "no dbpath has been set"
 msgstr "no s'ha establert el dbpath"
 
-#: lib/rpmdb.c:2766
+#: lib/rpmdb.c:2934
 #, c-format
 msgid "temporary database %s already exists\n"
 msgstr "ja existeix la base de dades temporal %s\n"
 
-#: lib/rpmdb.c:2774
+#: lib/rpmdb.c:2942
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "ha fallat en crear el directori %s: %s\n"
 
-#: lib/rpmdb.c:2816
+#: lib/rpmdb.c:2983
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "la capçalera #%u de la base de dades és incorrecta -- s'ignorarà.\n"
 
-#: lib/rpmdb.c:2830
+#: lib/rpmdb.c:2997
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "no es pot afegir el registre originalment a %u\n"
 
-#: lib/rpmdb.c:2845
+#: lib/rpmdb.c:3012
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "no s'ha pogut remuntar la base de dades: es continua fent servir la base de "
 "dades original\n"
 
-#: lib/rpmdb.c:2853
+#: lib/rpmdb.c:3020
 msgid "failed to replace old database with new database!\n"
 msgstr "no s'ha pogut reemplaçar la base de dades antiga amb la nova\n"
 
-#: lib/rpmdb.c:2855
+#: lib/rpmdb.c:3022
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "reemplaçeu els fitxers a %s amb fitxers de %s per a recuperar-ho"
 
-#: lib/rpmdb.c:2867
+#: lib/rpmdb.c:3034
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "no s'ha pogut suprimir el directori %s: %s\n"
@@ -3273,35 +3219,40 @@ msgstr "db%d error(%d) de %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d error(%d): %s\n"
 
-#: lib/backend/db3.c:576
+#: lib/backend/db3.c:494
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no es pot obtenir el blocatge %s a %s/%s\n"
 
-#: lib/backend/db3.c:578
+#: lib/backend/db3.c:496
 msgid "shared"
 msgstr "compartit"
 
-#: lib/backend/db3.c:578
+#: lib/backend/db3.c:496
 msgid "exclusive"
 msgstr "exclusiu"
 
-#: lib/backend/dbconfig.c:156
+#: lib/backend/db3.c:576
+#, fuzzy, c-format
+msgid "invalid index type %x on %s/%s\n"
+msgstr "verificat índex de bd       %s/%s\n"
+
+#: lib/backend/dbconfig.c:144
 #, c-format
 msgid "unrecognized db option: \"%s\" ignored.\n"
 msgstr "opció de la bd no reconeguda: s'ignora «%s».\n"
 
-#: lib/backend/dbconfig.c:193
+#: lib/backend/dbconfig.c:181
 #, c-format
 msgid "%s has invalid numeric value, skipped\n"
 msgstr "%s té un valor numèric invàlid, s'ignorarà\n"
 
-#: lib/backend/dbconfig.c:202
+#: lib/backend/dbconfig.c:190
 #, c-format
 msgid "%s has too large or too small long value, skipped\n"
 msgstr "%s té un valor de tipus «long» massa gran o massa petit, s'ignorarà\n"
 
-#: lib/backend/dbconfig.c:211
+#: lib/backend/dbconfig.c:199
 #, c-format
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
@@ -3393,7 +3344,7 @@ msgstr ""
 msgid "Failed to extract policy from %s\n"
 msgstr "No s'ha pogut llegir el fitxer d'especificacions des de %s\n"
 
-#: python/rpmts-py.c:165
+#: python/rpmts-py.c:166
 #, c-format
 msgid "error: python callback %s failed, aborting!\n"
 msgstr ""
@@ -3551,6 +3502,58 @@ msgstr "(cap error)"
 msgid "Failed to register fork handler: %m\n"
 msgstr "No s'ha pogut llegir el fitxer d'especificacions des de %s\n"
 
+#: sign/rpmgensig.c:88
+#, c-format
+msgid "%s: Fwrite failed: %s\n"
+msgstr "%s: ha fallat l'Fwrite: %s\n"
+
+#: sign/rpmgensig.c:98
+#, c-format
+msgid "%s: Fflush failed: %s\n"
+msgstr "%s: ha fallat l'Fflush: %s\n"
+
+#: sign/rpmgensig.c:128
+#, c-format
+msgid "Unsupported PGP hash algorithm %d\n"
+msgstr ""
+
+#: sign/rpmgensig.c:141
+#, c-format
+msgid "Unsupported PGP pubkey algorithm %d\n"
+msgstr ""
+
+#: sign/rpmgensig.c:171
+#, c-format
+msgid "Couldn't create pipe for signing: %m"
+msgstr "No s'ha pogut crear una canonada per a la signatura: %m"
+
+#: sign/rpmgensig.c:213
+#, c-format
+msgid "gpg exec failed (%d)\n"
+msgstr "ha fallat l'execució del gpg (%d)\n"
+
+#: sign/rpmgensig.c:243
+msgid "gpg failed to write signature\n"
+msgstr "el gpg no ha escrit la signatura\n"
+
+#: sign/rpmgensig.c:260
+msgid "unable to read the signature\n"
+msgstr "no es pot llegir la signatura\n"
+
+#: sign/rpmgensig.c:484 sign/rpmgensig.c:554
+msgid "rpmMkTemp failed\n"
+msgstr "Ha fallat rpmMkTemp\n"
+
+#: sign/rpmgensig.c:562
+#, c-format
+msgid "%s: writeLead failed: %s\n"
+msgstr "%s: ha fallat writeLead: %s\n"
+
+#: sign/rpmgensig.c:568
+#, c-format
+msgid "%s: rpmWriteSignature failed: %s\n"
+msgstr "%s: ha fallat rpmWriteSignature: %s\n"
+
 #: tools/rpmgraph.c:143
 #, c-format
 msgid "%s: read manifest failed: %s\n"
@@ -3559,6 +3562,15 @@ msgstr "%s: ha fallat la lectura del manifest: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "no verifiquis la signatura de la capçalera i les dades"
+
+#~ msgid "query/verify package(s) with file identifier"
+#~ msgstr "comprova els paquets amb identificació de fitxer"
+
+#~ msgid "query a spec file"
+#~ msgstr "consulta un fitxer d'especificació"
+
+#~ msgid "<spec>"
+#~ msgstr "<fitxer d'especificació>"
 
 #~ msgid "Invalid %%_signature spec in macro file.\n"
 #~ msgstr "L'especificació de %%_signature al fitxer macro no és vàlida.\n"
@@ -4278,9 +4290,6 @@ msgstr "no verifiquis la signatura de la capçalera i les dades"
 
 #~ msgid "closed   db index       %s/%s\n"
 #~ msgstr "tancat   índex de bd %s/%s\n"
-
-#~ msgid "verified db index       %s/%s\n"
-#~ msgstr "verificat índex de bd       %s/%s\n"
 
 #~ msgid "opening  db index       %s/%s %s mode=0x%x\n"
 #~ msgstr "obrint   índex de bd       %s/%s %s mode=0x%x\n"
