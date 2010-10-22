@@ -52,7 +52,7 @@ static rpmDbiTag const dbiTags[] = {
     RPMDBI_SHA1HEADER,
 };
 
-#define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmTag))
+#define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmDbiTag))
 
 /* A single item from an index database (i.e. the "data returned"). */
 struct dbiIndexItem {
@@ -477,7 +477,7 @@ static dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
 }
 
 typedef struct miRE_s {
-    rpmTag		tag;		/*!< header tag */
+    rpmTagVal		tag;		/*!< header tag */
     rpmMireMode		mode;		/*!< pattern match mode */
     char *		pattern;	/*!< pattern string */
     int			notmatch;	/*!< like "grep -v" */
