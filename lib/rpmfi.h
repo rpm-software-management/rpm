@@ -200,7 +200,7 @@ rpmfileState rpmfiFState(rpmfi fi);
  * @param fi		file info set
  * @return		digest algorithm of file info set, 0 on invalid
  */
-pgpHashAlgo rpmfiDigestAlgo(rpmfi fi);
+int rpmfiDigestAlgo(rpmfi fi);
 
 /** \ingroup rpmfi
  * Return current file (binary) digest of file info set.
@@ -209,7 +209,7 @@ pgpHashAlgo rpmfiDigestAlgo(rpmfi fi);
  * @retval diglen	digest hash length (pass NULL to ignore)
  * @return		current file digest, NULL on invalid
  */
-const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
+const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *diglen);
 
 /** \ingroup rpmfi
  * Return current file (hex) digest of file info set.
@@ -220,7 +220,7 @@ const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *diglen);
  * @retval algo		digest hash algoritm used (pass NULL to ignore)
  * @return		current file digest (malloc'ed), NULL on invalid
  */
-char * rpmfiFDigestHex(rpmfi fi, pgpHashAlgo *algo);
+char * rpmfiFDigestHex(rpmfi fi, int *algo);
 
 /** \ingroup rpmfi
  * Return current file (binary) md5 digest from file info set.

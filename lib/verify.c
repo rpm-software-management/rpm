@@ -121,7 +121,7 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 
     if (flags & RPMVERIFY_FILEDIGEST) {
 	const unsigned char *digest; 
-	pgpHashAlgo algo;
+	int algo;
 	size_t diglen;
 
 	/* XXX If --nomd5, then prelinked library sizes are not corrected. */

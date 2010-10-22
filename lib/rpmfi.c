@@ -254,18 +254,18 @@ rpmfileState rpmfiFStateIndex(rpmfi fi, int ix)
 const unsigned char * rpmfiMD5(rpmfi fi)
 {
     const unsigned char *digest;
-    pgpHashAlgo algo = 0;
+    int algo = 0;
 
     digest = rpmfiFDigest(fi, &algo, NULL);
     return (algo == PGPHASHALGO_MD5) ? digest : NULL;
 }
 
-pgpHashAlgo rpmfiDigestAlgo(rpmfi fi)
+int rpmfiDigestAlgo(rpmfi fi)
 {
     return fi ? fi->digestalgo : 0;
 }
 
-const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, pgpHashAlgo *algo, size_t *len)
+const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, int *algo, size_t *len)
 {
     const unsigned char *digest = NULL;
 
@@ -281,7 +281,7 @@ const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, pgpHashAlgo *algo, siz
     return digest;
 }
 
-char * rpmfiFDigestHex(rpmfi fi, pgpHashAlgo *algo)
+char * rpmfiFDigestHex(rpmfi fi, int *algo)
 {
     size_t diglen = 0;
     char *fdigest = NULL;
@@ -577,7 +577,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 	return strcmp(alink, blink);
     } else if (awhat == REG) {
 	size_t adiglen, bdiglen;
-	pgpHashAlgo aalgo, balgo;
+	int aalgo, balgo;
 	const unsigned char * adigest = rpmfiFDigest(afi, &aalgo, &adiglen);
 	const unsigned char * bdigest = rpmfiFDigest(bfi, &balgo, &bdiglen);
 	if (adigest == bdigest) return 0;
@@ -640,7 +640,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
      */
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
-	pgpHashAlgo oalgo, nalgo;
+	int oalgo, nalgo;
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
 	odigest = rpmfiFDigest(ofi, &oalgo, &odiglen);
@@ -703,7 +703,7 @@ int rpmfiConfigConflict(const rpmfi fi)
     
     memset(buffer, 0, sizeof(buffer));
     if (newWhat == REG) {
-	pgpHashAlgo algo;
+	int algo;
 	size_t diglen;
 	const unsigned char *ndigest = rpmfiFDigest(fi, &algo, &diglen);
 	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
@@ -1205,7 +1205,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
     if (headerGet(h, RPMTAG_FILEDIGESTALGO, &digalgo, HEADERGET_MINMEM)) {
-	pgpHashAlgo *algo = rpmtdGetUint32(&digalgo);
+	uint32_t *algo = rpmtdGetUint32(&digalgo);
 	/* Hmm, what to do with unknown digest algorithms? */
 	if (algo && rpmDigestLength(*algo) != 0) {
 	    fi->digestalgo = *algo;
@@ -1338,7 +1338,7 @@ RPMFI_ITERFUNC(rpm_loff_t, FSize, i)
 RPMFI_ITERFUNC(rpm_color_t, FColor, i)
 RPMFI_ITERFUNC(uint32_t, FNlink, i)
 
-const unsigned char * rpmfiFDigest(rpmfi fi, pgpHashAlgo *algo, size_t *len)
+const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 {
     return rpmfiFDigestIndex(fi, fi ? fi->i : -1, algo, len);
 }

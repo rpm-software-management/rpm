@@ -566,7 +566,7 @@ assert(otherFi != NULL);
 	    }
 		
 	    /* Here is a pre-existing modified config file that needs saving. */
-	    {	pgpHashAlgo algo = 0;
+	    {	int algo = 0;
 		size_t diglen = 0;
 		const unsigned char *digest;
 		if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {

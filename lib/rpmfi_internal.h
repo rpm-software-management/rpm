@@ -66,7 +66,7 @@ struct rpmfi_s {
 
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
-    pgpHashAlgo digestalgo;	/*!< File digest algorithm */
+    int digestalgo;		/*!< File digest algorithm */
     unsigned char * digests;	/*!< File digests in binary. */
 
     char * fn;			/*!< File name buffer. */
@@ -129,7 +129,7 @@ RPM_GNUC_INTERNAL
 rpm_mode_t rpmfiFModeIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
-const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, pgpHashAlgo *algo, size_t *len);
+const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, int *algo, size_t *len);
 
 RPM_GNUC_INTERNAL
 rpm_rdev_t rpmfiFRdevIndex(rpmfi fi, int ix);
