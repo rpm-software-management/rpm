@@ -1055,7 +1055,7 @@ static void genCpioListAndHeader(FileList fl,
     FileListRec flp;
     char buf[BUFSIZ];
     int i;
-    pgpHashAlgo defaultalgo = PGPHASHALGO_MD5, digestalgo;
+    uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
 
     /*
