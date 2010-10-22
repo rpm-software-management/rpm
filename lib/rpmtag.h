@@ -397,42 +397,42 @@ typedef rpmFlags rpmTagReturnType;
  * @param tag		tag value
  * @return		tag name, "(unknown)" on not found
  */
-const char * rpmTagGetName(rpmTag tag);
+const char * rpmTagGetName(rpmTagVal tag);
 
 /** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data type + return type, RPM_NULL_TYPE on not found.
  */
-rpmTagType rpmTagGetType(rpmTag tag);
+rpmTagType rpmTagGetType(rpmTagVal tag);
 
 /** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data type, RPM_NULL_TYPE on not found.
  */
-rpmTagType rpmTagGetTagType(rpmTag tag);
+rpmTagType rpmTagGetTagType(rpmTagVal tag);
 
 /** \ingroup rpmtag
  * Return tag data type from value.
  * @param tag		tag value
  * @return		tag data return type, RPM_NULL_TYPE on not found.
  */
-rpmTagReturnType rpmTagGetReturnType(rpmTag tag);
+rpmTagReturnType rpmTagGetReturnType(rpmTagVal tag);
 
 /** \ingroup rpmtag
  * Return tag data class from value.
  * @param tag		tag value
  * @return		tag data class, RPM_NULL_CLASS on not found.
  */
-rpmTagClass rpmTagGetClass(rpmTag tag);
+rpmTagClass rpmTagGetClass(rpmTagVal tag);
 
 /** \ingroup rpmtag
  * Return tag value from name.
  * @param tagstr	name of tag
  * @return		tag value, -1 on not found
  */
-rpmTag rpmTagGetValue(const char * tagstr);
+rpmTagVal rpmTagGetValue(const char * tagstr);
 
 /** \ingroup rpmtag
  * Return data class of type

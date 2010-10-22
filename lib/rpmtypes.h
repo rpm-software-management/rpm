@@ -27,6 +27,7 @@ typedef struct headerIterator_s * HeaderIterator;
 typedef int32_t		rpm_tag_t;
 typedef uint32_t	rpm_tagtype_t;
 typedef uint32_t	rpm_count_t;
+typedef rpm_tag_t	rpmTagVal;
 
 typedef void *		rpm_data_t;
 typedef const void *	rpm_constdata_t;
