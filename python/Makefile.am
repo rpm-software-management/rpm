@@ -42,7 +42,7 @@ _rpmbmodule_la_SOURCES = rpmbmodule.c rpmsystem-py.h \
 
 _rpmsmodule_la_LDFLAGS = -module -avoid-version -shared
 _rpmsmodule_la_LIBADD = \
-        $(top_builddir)/lib/librpmsign.la \
+        $(top_builddir)/sign/librpmsign.la \
         $(top_builddir)/lib/librpm.la \
         $(top_builddir)/rpmio/librpmio.la \
         @WITH_PYTHON_LIB@

@@ -142,7 +142,7 @@ rpmkeys_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 rpmsign_SOURCES =	rpmsign.c debug.h system.h
 rpmsign_CPPFLAGS =	$(AM_CPPFLAGS)
 rpmsign_LDADD =		libcliutils.la
-rpmsign_LDADD +=	lib/librpmsign.la lib/librpm.la rpmio/librpmio.la
+rpmsign_LDADD +=	sign/librpmsign.la lib/librpm.la rpmio/librpmio.la
 rpmsign_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmbuild_SOURCES =	rpmbuild.c debug.h system.h
