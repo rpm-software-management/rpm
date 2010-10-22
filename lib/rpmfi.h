@@ -419,7 +419,7 @@ typedef rpmFlags rpmfiFlags;
  * @param flags		Flags to control what information is loaded.
  * @return		new file info set
  */
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags);
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfi
  * Return file type from mode_t.

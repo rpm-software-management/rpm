@@ -1118,7 +1118,7 @@ static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
 
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTag tagN, rpmfiFlags flags)
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfi fi = NULL;
     rpm_loff_t *asize = NULL;
