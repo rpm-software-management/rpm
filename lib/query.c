@@ -364,32 +364,6 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	}
 	break;
 
-    case RPMQV_FILEID:
-    {	unsigned char *digest, *t;
-	size_t diglen;
-
-	for (i = 0, s = arg; *s && isxdigit(*s); s++, i++)
-	    {};
-	/* XXX dunno the algorithm yet, just check we're in the ballpark */
-	if (i % 32 != 0 || i < 32 || i > 512) {
-	    rpmlog(RPMLOG_ERR, _("malformed %s: %s\n"), "fileid", arg);
-	    goto exit;
-	}
-
-	diglen = i / 2;
-	digest = t = xcalloc(diglen, sizeof(*digest));
-        for (i = 0, s = arg; i < diglen; i++, t++, s += 2)
-            *t = (rnibble(s[0]) << 4) | rnibble(s[1]);
-
-	mi = rpmtsInitIterator(ts, RPMTAG_FILEDIGESTS, digest, diglen);
-	if (mi == NULL) {
-	    rpmlog(RPMLOG_NOTICE, _("no package matches %s: %s\n"),
-			"fileid", arg);
-	}
-
-	free(digest);
-    }	break;
-
     case RPMQV_TID:
     {	char * end = NULL;
 	rpm_tid_t iid = strtoul(arg, &end, 0);

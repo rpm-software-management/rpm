@@ -69,7 +69,7 @@ rpm \- Менеджер пакетов RPM
 
  [\fB\fIPACKAGE_NAME\fB\fR] [\fB-a,--all\fR] [\fB-f,--file \fIFILE\fB\fR]
  [\fB-g,--group \fIGROUP\fB\fR] {\fB-p,--package \fIPACKAGE_FILE\fB\fR]
- [\fB--fileid \fIMD5\fB\fR] [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
+ [\fB--hdrid \fISHA1\fB\fR] [\fB--pkgid \fIMD5\fB\fR] [\fB--tid \fITID\fB\fR]
  [\fB--querybynumber \fIHDRNUM\fB\fR] [\fB--triggeredby \fIPACKAGE_NAME\fB\fR]
  [\fB--whatprovides \fICAPABILITY\fB\fR] [\fB--whatrequires \fICAPABILITY\fB\fR]
 
@@ -486,10 +486,6 @@ rpm \- Менеджер пакетов RPM
 .TP
 \fB-f, --file \fIFILE\fB\fR
 Выполняет запрос к пакету, владельцу файла \fIFILE\fR.
-.TP
-\fB--fileid \fIMD5\fB\fR
-Выполняет запрос к пакету, который содержит указанный идентификатор файла, 
-т.е. \fIMD5\fR дайджест содержимого файла.
 .TP
 \fB-g, --group \fIGROUP\fB\fR
 Выполняет запрос к пакету с группой \fIGROUP\fR.

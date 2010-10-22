@@ -20,7 +20,6 @@ struct rpmQVKArguments_s rpmQVKArgs;
 #define POPT_DUMP		-1005
 #define POPT_QUERYBYPKGID	-1007
 #define POPT_QUERYBYHDRID	-1008
-#define POPT_QUERYBYFILEID	-1009
 #define POPT_QUERYBYTID		-1010
 
 /* ========== Query/Verify/Signature source args */
@@ -52,8 +51,6 @@ static void rpmQVSourceArgCallback( poptContext con,
     case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID;
 				qva->qva_sourceCount++; break;
     case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID;
-				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYFILEID: qva->qva_source |= RPMQV_FILEID;
 				qva->qva_sourceCount++; break;
     case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID;
 				qva->qva_sourceCount++; break;
@@ -87,8 +84,6 @@ struct poptOption rpmQVSourcePoptTable[] = {
 	N_("query/verify package(s) with package identifier"), "MD5" },
  { "hdrid", '\0', 0, 0, POPT_QUERYBYHDRID,
 	N_("query/verify package(s) with header identifier"), "SHA1" },
- { "fileid", '\0', 0, 0, POPT_QUERYBYFILEID,
-	N_("query/verify package(s) with file identifier"), "MD5" },
 
  { "query", 'q', POPT_ARGFLAG_DOC_HIDDEN, NULL, 'q',
 	N_("rpm query mode"), NULL },

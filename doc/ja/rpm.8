@@ -88,7 +88,6 @@ rpm \- RPM パッケージマネージャ
 .RB [ \-g , \-\-group   " " "\fIGROUP" ]
 .RB [ \-p , \-\-package " " "\fIPACKAGE_FILE" ]
 .br
-.RB [ \-\-fileid        " " "\fIMD5" ]
 .RB [ \-\-hdrid         " " "\fISHA1" ]
 .RB [ \-\-pkgid         " " "\fIMD5" ]
 .RB [ \-\-tid           " " "\fITID" ]
@@ -605,12 +604,6 @@ strftime(3)の "%a %b %d %Y" 書式を使う。
 .BR \-f ", " \-\-file " \fIFILE"
 .I FILE
 を所有するパッケージを検索する。
-.TP
-.BI "\-\-fileid " MD5
-与えられたファイル識別子、
-すなわち
-.I MD5
-ダイジェストを持つファイルを含むパッケージを検索する。
 .TP
 .BR \-g ", " \-\-group " \fIGROUP"
 グループが
