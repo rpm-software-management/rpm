@@ -28,6 +28,7 @@ typedef int32_t		rpm_tag_t;
 typedef uint32_t	rpm_tagtype_t;
 typedef uint32_t	rpm_count_t;
 typedef rpm_tag_t	rpmTagVal;
+typedef rpm_tag_t	rpmDbiTagVal;
 
 typedef void *		rpm_data_t;
 typedef const void *	rpm_constdata_t;

@@ -8,12 +8,6 @@ extern "C" {
 #endif
 
 /**
- * Pseudo-tags used by the rpmdb and rpmgi iterator API's.
- */
-#define	RPMDBI_PACKAGES		0	/* Installed package headers. */
-#define	RPMDBI_LABEL		2	/* Fingerprint search marker. */
-
-/**
  * Header private tags.
  * @note General use tags should start at 1000 (RPM's tag space starts there).
  */
@@ -308,6 +302,26 @@ typedef enum rpmTag_e {
 } rpmTag;
 
 #define	RPMTAG_EXTERNAL_TAG		1000000
+
+/** \ingroup rpmtag
+ * Rpm database index tags.
+ */
+typedef enum rpmDbiTag_e {
+    RPMDBI_PACKAGES		= 0,	/* Installed package headers. */
+    RPMDBI_LABEL		= 2,	/* NEVRA label pseudo index */
+    RPMDBI_NAME			= RPMTAG_NAME,
+    RPMDBI_BASENAMES		= RPMTAG_BASENAMES,
+    RPMDBI_GROUP		= RPMTAG_GROUP,
+    RPMDBI_REQUIRENAME		= RPMTAG_REQUIRENAME,
+    RPMDBI_PROVIDENAME		= RPMTAG_PROVIDENAME,
+    RPMDBI_CONFLICTNAME		= RPMTAG_CONFLICTNAME,
+    RPMDBI_OBSOLETENAME		= RPMTAG_OBSOLETENAME,
+    RPMDBI_TRIGGERNAME		= RPMTAG_TRIGGERNAME,
+    RPMDBI_DIRNAMES		= RPMTAG_DIRNAMES,
+    RPMDBI_INSTALLTID		= RPMTAG_INSTALLTID,
+    RPMDBI_SIGMD5		= RPMTAG_SIGMD5,
+    RPMDBI_SHA1HEADER		= RPMTAG_SHA1HEADER,
+} rpmDbiTag;
 
 /** \ingroup signature
  * Tags found in signature header from package.
