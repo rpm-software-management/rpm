@@ -21,7 +21,7 @@
 struct DIGEST_CTX_s {
     rpmDigestFlags flags;	/*!< Bit(s) to control digest operation. */
     HASHContext *hashctx;	/*!< Internal NSS hash context. */
-    pgpHashAlgo algo;		/*!< Used hash algorithm */
+    int algo;			/*!< Used hash algorithm */
 };
 
 #define DIGESTS_MAX 11
@@ -53,7 +53,7 @@ rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle)
     return NULL;
 }
 
-int rpmDigestBundleAdd(rpmDigestBundle bundle, pgpHashAlgo algo,
+int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
 			rpmDigestFlags flags)
 {
     DIGEST_CTX ctx = NULL;
@@ -90,7 +90,7 @@ int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len)
 }
 
 int rpmDigestBundleFinal(rpmDigestBundle bundle, 
-		pgpHashAlgo algo, void ** datap, size_t * lenp, int asAscii)
+		int algo, void ** datap, size_t * lenp, int asAscii)
 {
     int rc = 0;
     if (bundle && algo >= bundle->index_min && algo <= bundle->index_max) {
@@ -100,7 +100,7 @@ int rpmDigestBundleFinal(rpmDigestBundle bundle,
     return rc;
 }
 
-DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, pgpHashAlgo algo)
+DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, int algo)
 {
     DIGEST_CTX dup = NULL;
     if (bundle && algo >= bundle->index_min && algo <= bundle->index_max) {
@@ -124,7 +124,7 @@ rpmDigestDup(DIGEST_CTX octx)
 }
 
 RPM_GNUC_PURE
-static HASH_HashType getHashType(pgpHashAlgo hashalgo)
+static HASH_HashType getHashType(int hashalgo)
 {
     switch (hashalgo) {
     case PGPHASHALGO_MD5:
@@ -155,13 +155,13 @@ static HASH_HashType getHashType(pgpHashAlgo hashalgo)
 }
 
 size_t
-rpmDigestLength(pgpHashAlgo hashalgo)
+rpmDigestLength(int hashalgo)
 {
     return HASH_ResultLen(getHashType(hashalgo));
 }
 
 DIGEST_CTX
-rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags)
+rpmDigestInit(int hashalgo, rpmDigestFlags flags)
 {
     HASH_HashType type = getHashType(hashalgo);
     HASHContext *hashctx = NULL;

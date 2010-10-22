@@ -1106,7 +1106,7 @@ DIGEST_CTX rpmDigestDup(DIGEST_CTX octx);
  * @param hashalgo	type of digest
  * @return		digest length, zero on invalid algorithm
  */
-size_t rpmDigestLength(pgpHashAlgo hashalgo);
+size_t rpmDigestLength(int hashalgo);
 
 /** \ingroup rpmpgp
  * Initialize digest.
@@ -1115,7 +1115,7 @@ size_t rpmDigestLength(pgpHashAlgo hashalgo);
  * @param flags		bit(s) to control digest operation
  * @return		digest context
  */
-DIGEST_CTX rpmDigestInit(pgpHashAlgo hashalgo, rpmDigestFlags flags);
+DIGEST_CTX rpmDigestInit(int hashalgo, rpmDigestFlags flags);
 
 /** \ingroup rpmpgp
  * Update context with next plain text buffer.
@@ -1161,7 +1161,7 @@ rpmDigestBundle rpmDigestBundleFree(rpmDigestBundle bundle);
  * @param flags		bit(s) to control digest operation
  * @return		0 on success
  */
-int rpmDigestBundleAdd(rpmDigestBundle bundle, pgpHashAlgo algo,
+int rpmDigestBundleAdd(rpmDigestBundle bundle, int algo,
 			rpmDigestFlags flags);
 
 /** \ingroup rpmpgp
@@ -1184,7 +1184,7 @@ int rpmDigestBundleUpdate(rpmDigestBundle bundle, const void *data, size_t len);
  * @return		0 on success
  */
 int rpmDigestBundleFinal(rpmDigestBundle bundle,
-	 pgpHashAlgo algo, void ** datap, size_t * lenp, int asAscii);
+	 int algo, void ** datap, size_t * lenp, int asAscii);
 
 /** \ingroup rpmpgp
  * Duplicate a digest context from a bundle.
@@ -1192,7 +1192,7 @@ int rpmDigestBundleFinal(rpmDigestBundle bundle,
  * @param algo		type of digest to dup
  * @return		duplicated digest context
  */
-DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, pgpHashAlgo algo);
+DIGEST_CTX rpmDigestBundleDupCtx(rpmDigestBundle bundle, int algo);
 
 #ifdef __cplusplus
 }

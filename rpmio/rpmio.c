@@ -1883,7 +1883,7 @@ static const struct FDIO_s fpio_s = {
 };
 static const FDIO_t fpio = &fpio_s ;
 
-void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, rpmDigestFlags flags)
+void fdInitDigest(FD_t fd, int hashalgo, rpmDigestFlags flags)
 {
     if (fd->digests == NULL) {
 	fd->digests = rpmDigestBundleNew();
@@ -1902,10 +1902,8 @@ static void fdUpdateDigests(FD_t fd, const void * buf, size_t buflen)
     }
 }
 
-void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
-		void ** datap,
-		size_t * lenp,
-		int asAscii)
+void fdFiniDigest(FD_t fd, int hashalgo,
+		void ** datap, size_t * lenp, int asAscii)
 {
     if (fd && fd->digests) {
 	fdstat_enter(fd, FDSTAT_DIGEST);

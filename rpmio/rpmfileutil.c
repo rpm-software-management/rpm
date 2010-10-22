@@ -132,7 +132,7 @@ exit:
     return fdno;
 }
 
-int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
+int rpmDoDigest(int algo, const char * fn,int asAscii,
                 unsigned char * digest, rpm_loff_t * fsizep)
 {
     const char * path;

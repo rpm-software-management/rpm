@@ -35,7 +35,7 @@ typedef enum rpmCompressedMagic_e {
  * @retval *fsizep	file size pointer (or NULL)
  * @return		0 on success, 1 on error
  */
-int rpmDoDigest(pgpHashAlgo algo, const char * fn,int asAscii,
+int rpmDoDigest(int algo, const char * fn,int asAscii,
 		  unsigned char * digest, rpm_loff_t * fsizep);
 
 /** \ingroup rpmfileutil

@@ -18,11 +18,11 @@ rpmDigestBundle fdGetBundle(FD_t fd);
 /** \ingroup rpmio
  * Attach digest to fd.
  */
-void fdInitDigest(FD_t fd, pgpHashAlgo hashalgo, rpmDigestFlags flags);
+void fdInitDigest(FD_t fd, int hashalgo, rpmDigestFlags flags);
 
 /** \ingroup rpmio
  */
-void fdFiniDigest(FD_t fd, pgpHashAlgo hashalgo,
+void fdFiniDigest(FD_t fd, int hashalgo,
 		void ** datap,
 		size_t * lenp,
 		int asAscii);
