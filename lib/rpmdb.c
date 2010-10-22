@@ -50,7 +50,6 @@ static rpmTag const dbiTags[] = {
     RPMTAG_INSTALLTID,
     RPMTAG_SIGMD5,
     RPMTAG_SHA1HEADER,
-    RPMTAG_PUBKEYS,
 };
 
 #define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmTag))
@@ -2184,7 +2183,6 @@ exit:
 static int td2key(rpmtd tagdata, DBT *key, int *freedata) 
 {
     const char *str = NULL;
-    uint8_t *bin = NULL;
 
     *freedata = 0; 
     switch (rpmtdType(tagdata)) {
@@ -2212,22 +2210,6 @@ static int td2key(rpmtd tagdata, DBT *key, int *freedata)
     case RPM_STRING_TYPE:
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-	str = rpmtdGetString(tagdata);
-	if (rpmtdTag(tagdata) == RPMTAG_PUBKEYS) {
-	    /* Extract the pubkey id from the base64 blob. */
-	    bin = xmalloc(sizeof(pgpKeyID_t));
-	    int nbin = pgpExtractPubkeyFingerprint(str, bin);
-	    if (nbin <= 0) {
-		free(bin);
-		return 0;
-	    }
-	    key->data = bin;
-	    key->size = nbin;
-	    *freedata = 1;
-	    break;
-	} else {
-	    /* fallthrough */;
-	}
     default:
 	str = rpmtdGetString(tagdata);
 	key->data = (char *) str; /* XXX discards const */
