@@ -868,7 +868,7 @@ AC_PATH_PROG(AUTOM4TE,autom4te,:)
 AC_SUBST([dirstamp],[\${am__leading_dot}dirstamp])
 
 AC_CONFIG_FILES([Makefile
-	rpmio/Makefile lib/Makefile build/Makefile
+	rpmio/Makefile lib/Makefile build/Makefile sign/Makefile
 	po/Makefile.in scripts/Makefile fileattrs/Makefile
 	misc/Makefile 
 	doc/Makefile

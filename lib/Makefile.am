@@ -17,9 +17,8 @@ check_PROGRAMS =
 CLEANFILES =
 EXTRA_DIST = gentagtbl.sh tagtbl.C rpmhash.C rpmhash.H
 EXTRA_PROGRAMS =
-usrlib_LTLIBRARIES =
 
-usrlib_LTLIBRARIES += librpm.la
+usrlib_LTLIBRARIES = librpm.la
 librpm_la_SOURCES = \
 	backend/dbconfig.c backend/db3.c backend/dbi.h \
 	headerutil.c header.c headerfmt.c header_internal.h \
@@ -59,15 +58,6 @@ tagtbl.C: Makefile.am $(srcdir)/rpmtag.h gentagtbl.sh
 		    	     $(srcdir)/rpmtag.h > $@.new && \
 	 mv -f $@.new $@
 BUILT_SOURCES = tagtbl.C
-
-usrlib_LTLIBRARIES += librpmsign.la
-librpmsign_la_SOURCES = rpmgensig.c
-librpmsign_la_LDFLAGS = -version-info 0:0:0
-librpmsign_la_LIBADD = \
-	librpm.la \
-	$(top_builddir)/rpmio/librpmio.la \
-	@WITH_POPT_LIB@ \
-	@LIBINTL@
 
 if WITH_INTERNAL_DB
 # XXX watchout, $(top_builddir)/db3/libdb.la created by this Makefile may surprise

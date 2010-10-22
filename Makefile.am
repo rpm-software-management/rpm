@@ -19,7 +19,7 @@ endif
 if WITH_LUAEXT
 SUBDIRS += luaext
 endif
-SUBDIRS += rpmio lib build scripts fileattrs doc . tests
+SUBDIRS += rpmio lib sign build scripts fileattrs doc . tests
 
 if ENABLE_PYTHON
 SUBDIRS += python
@@ -29,7 +29,7 @@ if ENABLE_PLUGINS
 SUBDIRS += plugins
 endif
 
-DIST_SUBDIRS = po misc luaext rpmio lib build python scripts fileattrs doc tests plugins
+DIST_SUBDIRS = po misc luaext rpmio lib sign build python scripts fileattrs doc tests plugins
 
 pkgconfigdir = $(libdir)/pkgconfig
 
@@ -78,7 +78,7 @@ pkginclude_HEADERS += lib/rpmtypes.h
 pkginclude_HEADERS += lib/rpmvf.h
 pkginclude_HEADERS += lib/rpmplugins.h
 
-pkginclude_HEADERS += lib/rpmsign.h
+pkginclude_HEADERS += sign/rpmsign.h
 
 pkginclude_HEADERS += build/rpmbuild.h
 pkginclude_HEADERS += build/rpmfc.h
