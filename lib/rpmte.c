@@ -513,7 +513,7 @@ fnpyKey rpmteKey(rpmte te)
     return (te != NULL ? te->key : NULL);
 }
 
-rpmds rpmteDS(rpmte te, rpmTag tag)
+rpmds rpmteDS(rpmte te, rpmTagVal tag)
 {
     if (te == NULL)
 	return NULL;
@@ -730,7 +730,7 @@ int rpmteFailed(rpmte te)
     return (te != NULL) ? te->failed : -1;
 }
 
-static int rpmteHaveTransScript(rpmte te, rpmTag tag)
+static int rpmteHaveTransScript(rpmte te, rpmTagVal tag)
 {
     int rc = 0;
     if (tag == RPMTAG_PRETRANS) {

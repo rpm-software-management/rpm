@@ -230,7 +230,7 @@ int rpmteFailed(rpmte te);
  * @param tag		dependency tag
  * @return		dependency tag set
  */
-rpmds rpmteDS(rpmte te, rpmTag tag);
+rpmds rpmteDS(rpmte te, rpmTagVal tag);
 
 /** \ingroup rpmte
  * Retrieve file info tag set from transaction element.
