@@ -270,7 +270,7 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
     size += 2 * sizeof(int32_t);	/* count of index entries */
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
-	rpmTagType type;
+	rpm_tagtype_t type;
 
 	/* Regions go in as is ... */
         if (ENTRY_IS_REGION(entry)) {
@@ -309,7 +309,7 @@ unsigned headerSizeof(Header h, enum hMagic magicp)
  * @param pend		pointer to end of data (or NULL)
  * @return		no. bytes in data, -1 on failure
  */
-static int dataLength(rpmTagType type, rpm_constdata_t p, rpm_count_t count,
+static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend)
 {
     const unsigned char * s = p;
@@ -386,7 +386,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 {
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
-	rpmTagType type;
+	rpm_tagtype_t type;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -478,7 +478,7 @@ static void * doHeaderUnload(Header h,
     int32_t il = 0;
     int32_t dl = 0;
     indexEntry entry; 
-    rpmTagType type;
+    rpm_tagtype_t type;
     int i;
     int drlen, ndribbles;
 
@@ -719,7 +719,7 @@ void * headerUnload(Header h)
  * @return 		header entry
  */
 static
-indexEntry findEntry(Header h, rpmTagVal tag, rpmTagType type)
+indexEntry findEntry(Header h, rpmTagVal tag, rpm_tagtype_t type)
 {
     indexEntry entry;
     struct indexEntry_s key;
@@ -1361,7 +1361,7 @@ int headerGet(Header h, rpmTagVal tag, rpmtd td, headerGetFlags flags)
 
 /**
  */
-static void copyData(rpmTagType type, rpm_data_t dstPtr, 
+static void copyData(rpm_tagtype_t type, rpm_data_t dstPtr, 
 		rpm_constdata_t srcPtr, rpm_count_t cnt, int dataLength)
 {
     switch (type) {
@@ -1395,7 +1395,7 @@ static void copyData(rpmTagType type, rpm_data_t dstPtr,
  * @return 		(malloc'ed) copy of entry data, NULL on error
  */
 static void *
-grabData(rpmTagType type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
+grabData(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t c, int * lengthPtr)
 {
     rpm_data_t data = NULL;
     int length;
