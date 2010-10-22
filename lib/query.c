@@ -478,7 +478,7 @@ static rpmdbMatchIterator initFilterIterator(rpmts ts, ARGV_const_t argv)
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
 
     for (ARGV_const_t arg = argv; arg && *arg != NULL; arg++) {
-	rpmTag tag = RPMTAG_NAME;
+	rpmTagVal tag = RPMTAG_NAME;
 	char a[strlen(*arg)+1], *ae;
 	const char *pat = a;
 
