@@ -117,7 +117,7 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 {
     pgpDig dig = pgpNewDig();
     pgpDigParams sigp = &dig->signature;
-    rpmSigTag sigtag;
+    rpmTagVal sigtag;
     struct rpmtd_s sigtd;
     int rc = 1; /* assume failure */
 
@@ -334,7 +334,7 @@ static int rpmGenSignature(Header sigh, const char * file,
  * @param sigtag	signature tag
  * @return		parsed pgp dig or NULL
  */
-static pgpDig getSig(Header sigh, rpmSigTag sigtag)
+static pgpDig getSig(Header sigh, rpmTagVal sigtag)
 {
     struct rpmtd_s pkt;
     pgpDig dig = NULL;
@@ -359,7 +359,7 @@ static void deleteSigs(Header sigh)
     headerDel(sigh, RPMSIGTAG_PGP5);
 }
 
-static int sameSignature(rpmSigTag sigtag, Header h1, Header h2)
+static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
 {
     pgpDig dig1 = getSig(h1, sigtag);
     pgpDig dig2 = getSig(h2, sigtag);
@@ -408,7 +408,7 @@ static int replaceSignature(Header sigh, const char *sigtarget,
      */
     if (rpmGenSignature(sigh, sigtarget, passPhrase) == 0) {
 	/* Lets see what we got and whether its the same signature as before */
-	rpmSigTag sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
+	rpmTagVal sigtag = headerIsEntry(sigh, RPMSIGTAG_DSA) ?
 					RPMSIGTAG_DSA : RPMSIGTAG_RSA;
 
 	rc = sameSignature(sigtag, sigh, oldsigh);
@@ -515,11 +515,11 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 
 	/* Toss and recalculate header+payload size and digests. */
 	{
-	    rpmSigTag const sigs[] = { 	RPMSIGTAG_SIZE, 
+	    rpmTagVal const sigs[] = { 	RPMSIGTAG_SIZE, 
 					RPMSIGTAG_MD5,
 				  	RPMSIGTAG_SHA1,
 				     };
-	    int nsigs = sizeof(sigs) / sizeof(rpmSigTag);
+	    int nsigs = sizeof(sigs) / sizeof(rpmTagVal);
 	    for (int i = 0; i < nsigs; i++) {
 		(void) headerDel(sigh, sigs[i]);
 		if (rpmGenDigest(sigh, sigtarget, sigs[i]))

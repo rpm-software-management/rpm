@@ -51,7 +51,7 @@ int rpmWriteSignature(FD_t fd, Header h);
  * @param sigTag	type of digest(s) to add
  * @return		0 on success, -1 on failure
  */
-int rpmGenDigest(Header sigh, const char * file, rpmSigTag sigTag);
+int rpmGenDigest(Header sigh, const char * file, rpmTagVal sigTag);
 
 /** \ingroup signature
  * Verify a signature from a package.

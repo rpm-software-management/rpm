@@ -20,7 +20,7 @@
 #include "debug.h"
 
 /* Dumb wrapper around headerPut() for signature header */
-static int sighdrPut(Header h, rpmSigTag tag, rpmTagType type,
+static int sighdrPut(Header h, rpmTagVal tag, rpmTagType type,
                      rpm_data_t p, rpm_count_t c)
 {
     struct rpmtd_s sigtd;
@@ -151,7 +151,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	(void) memcpy(&info, dataEnd, REGION_TAG_COUNT);
 	/* XXX Really old packages have HEADER_IMAGE, not HEADER_SIGNATURES. */
 	if (info.tag == htonl(RPMTAG_HEADERIMAGE)) {
-	    rpmSigTag stag = htonl(RPMTAG_HEADERSIGNATURES);
+	    rpmTagVal stag = htonl(RPMTAG_HEADERSIGNATURES);
 	    info.tag = stag;
 	    memcpy(dataEnd, &stag, sizeof(stag));
 	}
@@ -276,7 +276,7 @@ Header rpmFreeSignature(Header sigh)
     return headerFree(sigh);
 }
 
-static int makeHDRDigest(Header sigh, const char * file, rpmSigTag sigTag)
+static int makeHDRDigest(Header sigh, const char * file, rpmTagVal sigTag)
 {
     Header h = NULL;
     FD_t fd = NULL;
@@ -328,7 +328,7 @@ exit:
     return ret;
 }
 
-int rpmGenDigest(Header sigh, const char * file, rpmSigTag sigTag)
+int rpmGenDigest(Header sigh, const char * file, rpmTagVal sigTag)
 {
     struct stat st;
     uint8_t * pkt = NULL;
