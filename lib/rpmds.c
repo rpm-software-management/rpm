@@ -25,7 +25,7 @@ struct rpmds_s {
     const char ** EVR;		/*!< Epoch-Version-Release. */
     rpmsenseFlags * Flags;	/*!< Bit(s) identifying context/comparison. */
     rpm_color_t * Color;	/*!< Bit(s) calculated from file color(s). */
-    rpmTag tagN;		/*!< Header tag. */
+    rpmTagVal tagN;		/*!< Header tag. */
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
     int i;			/*!< Element index. */
@@ -37,13 +37,13 @@ struct rpmds_s {
 
 static const char ** rpmdsDupArgv(const char ** argv, int argc);
 
-static int dsType(rpmTag tag, 
-		  const char ** Type, rpmTag * tagEVR, rpmTag * tagF)
+static int dsType(rpmTagVal tag, 
+		  const char ** Type, rpmTagVal * tagEVR, rpmTagVal * tagF)
 {
     int rc = 0;
     const char *t = NULL;
-    rpmTag evr = RPMTAG_NOT_FOUND;
-    rpmTag f = RPMTAG_NOT_FOUND;
+    rpmTagVal evr = RPMTAG_NOT_FOUND;
+    rpmTagVal f = RPMTAG_NOT_FOUND;
 
     if (tag == RPMTAG_PROVIDENAME) {
 	t = "Provides";
@@ -90,7 +90,7 @@ rpmds rpmdsLink(rpmds ds)
 
 rpmds rpmdsFree(rpmds ds)
 {
-    rpmTag tagEVR, tagF;
+    rpmTagVal tagEVR, tagF;
 
     if (ds == NULL)
 	return NULL;
@@ -116,9 +116,9 @@ rpmds rpmdsFree(rpmds ds)
     return NULL;
 }
 
-rpmds rpmdsNew(Header h, rpmTag tagN, int flags)
+rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
 {
-    rpmTag tagEVR, tagF;
+    rpmTagVal tagEVR, tagF;
     rpmds ds = NULL;
     const char * Type;
     struct rpmtd_s names;
@@ -204,7 +204,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     return tbuf;
 }
 
-static rpmds singleDS(rpmTag tagN, const char * N, const char * EVR,
+static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
 		      rpmsenseFlags Flags, unsigned int instance)
 {
     rpmds ds = NULL;
@@ -231,7 +231,7 @@ exit:
     return rpmdsLink(ds);
 }
 
-rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
+rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags)
 {
     char *evr = headerGetAsString(h, RPMTAG_EVR);
     rpmds ds = singleDS(tagN, headerGetString(h, RPMTAG_NAME),
@@ -240,7 +240,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags)
     return ds;
 }
 
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
+rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
 {
     return singleDS(tagN, N, EVR, Flags, 0);
 }
@@ -324,9 +324,9 @@ rpmsenseFlags rpmdsFlags(const rpmds ds)
     return Flags;
 }
 
-rpmTag rpmdsTagN(const rpmds ds)
+rpmTagVal rpmdsTagN(const rpmds ds)
 {
-    rpmTag tagN = RPMTAG_NOT_FOUND;
+    rpmTagVal tagN = RPMTAG_NOT_FOUND;
 
     if (ds != NULL)
 	tagN = ds->tagN;

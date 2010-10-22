@@ -102,7 +102,7 @@ rpmds rpmdsFree(rpmds ds);
  * @param flags		unused
  * @return		new dependency set
  */
-rpmds rpmdsNew(Header h, rpmTag tagN, int flags);
+rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags);
 
 /** \ingroup rpmds
  * Return new formatted dependency string.
@@ -119,7 +119,7 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
-rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags);
+rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
  * Create, load and initialize a dependency set of size 1.
@@ -129,7 +129,7 @@ rpmds rpmdsThis(Header h, rpmTag tagN, rpmsenseFlags Flags);
  * @param Flags		comparison flags
  * @return		new dependency set
  */
-rpmds rpmdsSingle(rpmTag tagN, const char * N, const char * EVR, rpmsenseFlags Flags);
+rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
  * Return a new dependency set of size 1 from the current iteration index
@@ -193,7 +193,7 @@ rpmsenseFlags rpmdsFlags(const rpmds ds);
  * @param ds		dependency set
  * @return		current dependency type, 0 on invalid
  */
-rpmTag rpmdsTagN(const rpmds ds);
+rpmTagVal rpmdsTagN(const rpmds ds);
 
 /** \ingroup rpmds
  * Return dependency header instance, ie whether the dependency comes from 
