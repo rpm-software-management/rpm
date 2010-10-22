@@ -878,7 +878,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     rpmStringSet baseNames = rpmStringSetCreate(fileCount, 
 					hashFunctionString, strcmp, NULL);
 
-    mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMTAG_BASENAMES, NULL, 0);
+    mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMDBI_BASENAMES, NULL, 0);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1063,7 +1063,7 @@ static rpmps checkProblems(rpmts ts)
 
 	if (!(probFilter & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
 		ensureOlder(p, h);
 	    mi = rpmdbFreeIterator(mi);
@@ -1071,7 +1071,7 @@ static rpmps checkProblems(rpmts ts)
 
 	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG)) {
 	    Header h;
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(p));

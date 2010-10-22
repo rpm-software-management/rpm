@@ -591,7 +591,7 @@ static rpmRC runTriggers(rpmpsm psm)
 	int countCorrection = psm->countCorrection;
 
 	psm->countCorrection = 0;
-	mi = rpmtsInitIterator(ts, RPMTAG_TRIGGERNAME, N, 0);
+	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
 	    nerrors += handleOneTrigger(psm, h, triggeredH, numPackage, NULL);
 	mi = rpmdbFreeIterator(mi);
@@ -631,7 +631,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 
 	    if (triggersRun[triggerIndices[i]] != 0) continue;
 	
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, trigName, 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, trigName, 0);
 
 	    while((sourceH = rpmdbNextIterator(mi)) != NULL) {
 		nerrors += handleOneTrigger(psm, sourceH, h,
@@ -726,7 +726,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
-	    mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(psm->te), 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(psm->te), 0);
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 			rpmteE(psm->te));
 	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,

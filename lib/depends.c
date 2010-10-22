@@ -87,7 +87,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 }
 
 /* Return rpmdb iterator with removals pruned out */
-static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmTag tag, const char * key)
+static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag, const char * key)
 {
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, tag, key, 0);
     tsMembers tsmem = rpmtsMembers(ts);
@@ -103,7 +103,7 @@ static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 				rpmte p, rpm_color_t hcolor, Header h)
 {
     Header oh;
-    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMTAG_NAME, rpmteN(p), 0);
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 	/* Ignore colored packages not in our rainbow. */
@@ -137,7 +137,7 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 	if (rstreq(rpmteN(p), Name))
 	    continue;
 
-	mi = rpmtsPrunedIterator(ts, RPMTAG_NAME, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, Name);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
@@ -347,7 +347,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 
     /* See if a filename dependency is a real file in some package */
     if (Name[0] == '/') {
-	mi = rpmtsPrunedIterator(ts, RPMTAG_BASENAMES, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_BASENAMES, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmdsNotify(dep, "(db files)", rc);
 	    break;
@@ -357,7 +357,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 
     /* Otherwise look in provides no matter what the dependency looks like */
     if (h == NULL) {
-	mi = rpmtsPrunedIterator(ts, RPMTAG_PROVIDENAME, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_PROVIDENAME, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, "(db provides)", rc);

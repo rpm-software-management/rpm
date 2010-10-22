@@ -353,7 +353,7 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
 	/* Filter out timestamp differences of shared files */
 	if (rc == 0 && (verifyResult & RPMVERIFY_MTIME)) {
 	    rpmdbMatchIterator mi;
-	    mi = rpmtsInitIterator(ts, RPMTAG_BASENAMES, rpmfiFN(fi), 0);
+	    mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, rpmfiFN(fi), 0);
 	    if (rpmdbGetIteratorCount(mi) > 1) 
 		verifyResult &= ~RPMVERIFY_MTIME;
 	    rpmdbFreeIterator(mi);

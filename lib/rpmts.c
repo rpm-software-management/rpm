@@ -302,7 +302,7 @@ static int loadKeyringFromDB(rpmts ts)
     int nkeys = 0;
 
     rpmlog(RPMLOG_DEBUG, "loading keyring from rpmdb\n");
-    mi = rpmtsInitIterator(ts, RPMTAG_NAME, "gpg-pubkey", 0);
+    mi = rpmtsInitIterator(ts, RPMDBI_NAME, "gpg-pubkey", 0);
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	struct rpmtd_s pubkeys;
 	const char *key;

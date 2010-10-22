@@ -359,7 +359,7 @@ static int checkFreshenStatus(rpmts ts, struct rpmEIU * eiu)
     Header oldH = NULL;
 
     if (name != NULL)
-        mi = rpmtsInitIterator(ts, RPMTAG_NAME, name, 0);
+        mi = rpmtsInitIterator(ts, RPMDBI_NAME, name, 0);
     if (rpmtsColor(ts) && arch)
 	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
 
