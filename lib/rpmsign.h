@@ -18,7 +18,7 @@ struct rpmSignArgs {
  * Sign a package
  * @param path		path to package
  * @param args		signing parameters (or NULL for defaults)
- * @param passphrase	passphrase for the signing key
+ * @param passPhrase	passphrase for the signing key
  * @return		0 on success
  */
 int rpmPkgSign(const char *path,

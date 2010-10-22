@@ -76,8 +76,7 @@ rpmSpec rpmSpecParse(const char *specFile, rpmSpecFlags flags,
 
 /** \ingroup rpmbuild
  * Return the headers of the SRPM that would be built from the spec file
- *
- * @param specFile	path to spec file
+ * @param spec		path to spec file
  * @return		Header
  */
 Header rpmSpecSourceHeader(rpmSpec spec);
