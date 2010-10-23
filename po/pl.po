@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-10-22 15:01+0300\n"
-"PO-Revision-Date: 2010-10-04 11:32+0200\n"
+"PO-Revision-Date: 2010-10-23 12:05+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
 "Language: pl\n"
@@ -2986,7 +2986,7 @@ msgstr "iterator tablicy użyty na tablicach o różnych rozmiarach"
 #: lib/rpmdb.c:124
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
-msgstr ""
+msgstr "Tworzenie %d brakujących indeksów, proszę czekać...\n"
 
 #: lib/rpmdb.c:185
 #, c-format
@@ -3037,9 +3037,9 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: pobrano uszkodzony nagłówek #%u - pomijanie.\n"
 
 #: lib/rpmdb.c:2275
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
-msgstr "błąd(%d) podczas otrzymywania wpisów \"%s\" z indeksu %s\n"
+msgstr "błąd(%d:%s) podczas pobierania następnego klucza z indeksu %s\n"
 
 #: lib/rpmdb.c:2363
 #, c-format
@@ -3151,7 +3151,7 @@ msgstr "wyłącznej"
 #: lib/backend/db3.c:576
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
-msgstr ""
+msgstr "nieprawidłowy typ indeksu %x w %s/%s\n"
 
 #: lib/backend/dbconfig.c:144
 #, c-format
@@ -3478,12 +3478,3 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "query/verify package(s) with file identifier"
-#~ msgstr "odpytanie/sprawdzenie pakietów z identyfikatorem pliku"
-
-#~ msgid "query a spec file"
-#~ msgstr "odpytanie pliku spec"
-
-#~ msgid "<spec>"
-#~ msgstr "<spec>"
