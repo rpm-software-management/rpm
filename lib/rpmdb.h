@@ -220,63 +220,63 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
 
 /** \ingroup rpmdb
- * Get a key iterator for an index
+ * Get an iterator for an index
  * @param db		rpm database
  * @param rpmtag	the index to iterate over
- * @return		the key iterator
+ * @return		the index iterator
  */
-rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmDbiTagVal rpmtag);
+rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag);
 
 /** \ingroup rpmdb
  * Get the next key - must be called before getting the first key
- * @param ki		key iterator
+ * @param ii		index iterator
  * @return 		0 on success; != 0 on error or end of index
  */
-int rpmdbKeyIteratorNext(rpmdbKeyIterator ki);
+int rpmdbIndexIteratorNext(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
  * Get current key
- * @param ki            key iterator
+ * @param ii            index iterator
  * @return		pointer to key content. Keys are not zero terminated!
  */
-const void * rpmdbKeyIteratorKey(rpmdbKeyIterator ki);
+const void * rpmdbIndexIteratorKey(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
  * Get length of key
- * @param ki            key iterator
+ * @param ii            index iterator
  * @return 		length of key
  */
-size_t rpmdbKeyIteratorKeySize(rpmdbKeyIterator ki);
+size_t rpmdbIndexIteratorKeySize(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
  * Get number of entries for current key
- * @param ki            key iterator
+ * @param ii            index iterator
  * @return		number of entries. -1 on error.
  */
-int rpmdbKeyIteratorNumPkgs(rpmdbKeyIterator ki);
+int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
  * Get package offset of entry
- * @param ki            key iterator
+ * @param ii            index iterator
  * @param nr		number of the entry
  * @return		db offset of pkg
  */
-int rpmdbKeyIteratorPkgOffset(rpmdbKeyIterator ki, int nr);
+int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, int nr);
 
 /** \ingroup rpmdb
  * Get tag number of entry
- * @param ki            key iterator
+ * @param ii            index iterator
  * @param nr		number of the entry
  * @return		number of tag within the package
  */
-int rpmdbKeyIteratorTagNum(rpmdbKeyIterator ki, int nr);
+int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, int nr);
 
 /** \ingroup rpmdb
- * Free key iterator
- * @param ki            key iterator
+ * Free index iterator
+ * @param ii            index iterator
  * return 		NULL
  */
-rpmdbKeyIterator rpmdbKeyIteratorFree(rpmdbKeyIterator ki);
+rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii);
 
 
 #ifdef __cplusplus

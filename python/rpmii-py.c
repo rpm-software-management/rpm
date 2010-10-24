@@ -2,20 +2,20 @@
 
 #include <rpm/rpmdb.h>
 
-#include "rpmki-py.h"
+#include "rpmii-py.h"
 #include "header-py.h"
 
 #include "debug.h"
 
 /** \ingroup python
- * \class Rpmki
- * \brief A python rpm.ki key iterator object represents the keys of a
+ * \class Rpmii
+ * \brief A python rpm.ii key iterator object represents the keys of a
  *	database index.
  *
- * The rpm.ki class conains the following methods:
+ * The rpm.ii class conains the following methods:
  * - next() -> key		Return the next key.
  *
- * To obtain a rpm.ki object to query the database used by a transaction,
+ * To obtain a rpm.ii object to query the database used by a transaction,
  * the ts.dbKeys(tag) method is used.
  *
  * Here's an example that prints the name of all installed packages:
@@ -30,63 +30,63 @@
  */
 
 /** \ingroup python
- * \name Class: Rpmki
+ * \name Class: Rpmii
  */
 
-struct rpmkiObject_s {
+struct rpmiiObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     PyObject *ref;		/* for db/ts refcounting */
-    rpmdbKeyIterator ki;
+    rpmdbIndexIterator ii;
 };
 
 static PyObject *
-rpmki_iternext(rpmkiObject * s)
+rpmii_iternext(rpmiiObject * s)
 {
-    if (s->ki == NULL || (rpmdbKeyIteratorNext(s->ki)) != 0) {
-	s->ki = rpmdbKeyIteratorFree(s->ki);
+    if (s->ii == NULL || (rpmdbIndexIteratorNext(s->ii)) != 0) {
+	s->ii = rpmdbIndexIteratorFree(s->ii);
 	return NULL;
     }
-    return PyString_FromStringAndSize(rpmdbKeyIteratorKey(s->ki),
-                                      rpmdbKeyIteratorKeySize(s->ki));
+    return PyString_FromStringAndSize(rpmdbIndexIteratorKey(s->ii),
+                                      rpmdbIndexIteratorKeySize(s->ii));
 };
 
 static PyObject *
-rpmki_offsets(rpmkiObject * s)
+rpmii_offsets(rpmiiObject * s)
 {
-    int entries = rpmdbKeyIteratorNumPkgs(s->ki);
+    int entries = rpmdbIndexIteratorNumPkgs(s->ii);
     PyObject * list = PyList_New(0);
     PyObject * tuple;
     for (int i = 0; i < entries; i++) {
         tuple = PyTuple_New(2);
         PyTuple_SET_ITEM(tuple, 0,
-                         PyInt_FromLong(rpmdbKeyIteratorPkgOffset(s->ki, i)));
+                         PyInt_FromLong(rpmdbIndexIteratorPkgOffset(s->ii, i)));
         PyTuple_SET_ITEM(tuple, 1,
-                         PyInt_FromLong(rpmdbKeyIteratorTagNum(s->ki, i)));
+                         PyInt_FromLong(rpmdbIndexIteratorTagNum(s->ii, i)));
         PyList_Append(list, tuple);
     }
     return list;
 }
 
-static struct PyMethodDef rpmki_methods[] = {
-    {"offsets",    (PyCFunction) rpmki_offsets,       METH_NOARGS,
+static struct PyMethodDef rpmii_methods[] = {
+    {"offsets",    (PyCFunction) rpmii_offsets,       METH_NOARGS,
      NULL },
     {NULL,		NULL}		/* sentinel */
 };
 
-static void rpmki_dealloc(rpmkiObject * s)
+static void rpmii_dealloc(rpmiiObject * s)
 {
-    s->ki = rpmdbKeyIteratorFree(s->ki);
+    s->ii = rpmdbIndexIteratorFree(s->ii);
     Py_DECREF(s->ref);
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static int rpmki_bool(rpmkiObject *s)
+static int rpmii_bool(rpmiiObject *s)
 {
-    return (s->ki != NULL);
+    return (s->ii != NULL);
 }
 
-static PyNumberMethods rpmki_as_number = {
+static PyNumberMethods rpmii_as_number = {
 	0, /* nb_add */
 	0, /* nb_subtract */
 	0, /* nb_multiply */
@@ -97,24 +97,24 @@ static PyNumberMethods rpmki_as_number = {
 	0, /* nb_negative */
 	0, /* nb_positive */
 	0, /* nb_absolute */
-	(inquiry)rpmki_bool, /* nb_bool/nonzero */
+	(inquiry)rpmii_bool, /* nb_bool/nonzero */
 };
 
-static char rpmki_doc[] =
+static char rpmii_doc[] =
 "";
 
-PyTypeObject rpmki_Type = {
+PyTypeObject rpmii_Type = {
 	PyVarObject_HEAD_INIT(&PyType_Type, 0)
-	"rpm.ki",			/* tp_name */
-	sizeof(rpmkiObject),		/* tp_size */
+	"rpm.ii",			/* tp_name */
+	sizeof(rpmiiObject),		/* tp_size */
 	0,				/* tp_itemsize */
-	(destructor) rpmki_dealloc, 	/* tp_dealloc */
+	(destructor) rpmii_dealloc, 	/* tp_dealloc */
 	0,				/* tp_print */
 	(getattrfunc)0, 		/* tp_getattr */
 	0,				/* tp_setattr */
 	0,				/* tp_compare */
 	0,				/* tp_repr */
-	&rpmki_as_number,		/* tp_as_number */
+	&rpmii_as_number,		/* tp_as_number */
 	0,				/* tp_as_sequence */
 	0,				/* tp_as_mapping */
 	0,				/* tp_hash */
@@ -124,14 +124,14 @@ PyTypeObject rpmki_Type = {
 	PyObject_GenericSetAttr,	/* tp_setattro */
 	0,				/* tp_as_buffer */
 	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,	/* tp_flags */
-	rpmki_doc,			/* tp_doc */
+	rpmii_doc,			/* tp_doc */
 	0,				/* tp_traverse */
 	0,				/* tp_clear */
 	0,				/* tp_richcompare */
 	0,				/* tp_weaklistoffset */
 	PyObject_SelfIter,		/* tp_iter */
-	(iternextfunc) rpmki_iternext,	/* tp_iternext */
-	rpmki_methods,			/* tp_methods */
+	(iternextfunc) rpmii_iternext,	/* tp_iternext */
+	rpmii_methods,			/* tp_methods */
 	0,				/* tp_members */
 	0,				/* tp_getset */
 	0,				/* tp_base */
@@ -146,13 +146,13 @@ PyTypeObject rpmki_Type = {
 	0,				/* tp_is_gc */
 };
 
-PyObject * rpmki_Wrap(PyTypeObject *subtype, rpmdbKeyIterator ki, PyObject *s)
+PyObject * rpmii_Wrap(PyTypeObject *subtype, rpmdbIndexIterator ii, PyObject *s)
 {
-    rpmkiObject * kio = (rpmkiObject *)subtype->tp_alloc(subtype, 0);
-    if (kio == NULL) return NULL;
+    rpmiiObject * iio = (rpmiiObject *)subtype->tp_alloc(subtype, 0);
+    if (iio == NULL) return NULL;
 
-    kio->ki = ki;
-    kio->ref = s;
-    Py_INCREF(kio->ref);
-    return (PyObject *) kio;
+    iio->ii = ii;
+    iio->ref = s;
+    Py_INCREF(iio->ref);
+    return (PyObject *) iio;
 }

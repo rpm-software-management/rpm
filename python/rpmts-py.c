@@ -12,7 +12,7 @@
 #include "rpmkeyring-py.h"
 #include "rpmfi-py.h"	/* XXX for rpmfiNew */
 #include "rpmmi-py.h"
-#include "rpmki-py.h"
+#include "rpmii-py.h"
 #include "rpmps-py.h"
 #include "rpmte-py.h"
 
@@ -630,7 +630,7 @@ exit:
     return mio;
 }
 static PyObject *
-rpmts_Keys(rpmtsObject * s, PyObject * args, PyObject * kwds)
+rpmts_index(rpmtsObject * s, PyObject * args, PyObject * kwds)
 {
     rpmDbiTagVal tag;
     PyObject *mio = NULL;
@@ -649,12 +649,12 @@ rpmts_Keys(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	}
     }
 
-    rpmdbKeyIterator ki = rpmdbKeyIteratorInit(rpmtsGetRdb(s->ts), tag);
-    if (ki == NULL) {
+    rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(s->ts), tag);
+    if (ii == NULL) {
         PyErr_SetString(PyExc_KeyError, "No index for this tag");
         return NULL;
     }
-    mio = rpmki_Wrap(&rpmki_Type, ki, (PyObject*)s);
+    mio = rpmii_Wrap(&rpmii_Type, ii, (PyObject*)s);
 
 exit:
     return mio;
@@ -712,8 +712,8 @@ static struct PyMethodDef rpmts_methods[] = {
  {"dbMatch",	(PyCFunction) rpmts_Match,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbMatch([TagN, [key]]) -> mi\n\
 - Create a match iterator for the default transaction rpmdb.\n" },
- {"dbKeys",     (PyCFunction) rpmts_Keys,	METH_VARARGS|METH_KEYWORDS,
-"ts.dbKeys(TagN) -> ki\n\
+ {"dbIndex",     (PyCFunction) rpmts_index,	METH_VARARGS|METH_KEYWORDS,
+"ts.dbIndex(TagN) -> ii\n\
 -Create a key iterator for the default transaction rpmdb.\n" },
     {NULL,		NULL}		/* sentinel */
 };

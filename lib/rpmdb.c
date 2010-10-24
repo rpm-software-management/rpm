@@ -510,19 +510,19 @@ struct rpmdbMatchIterator_s {
 
 };
 
-struct rpmdbKeyIterator_s {
-    rpmdbKeyIterator	ki_next;
-    rpmdb		ki_db;
-    dbiIndex		ki_dbi;
-    rpmDbiTagVal	ki_rpmtag;
-    DBC *		ki_dbc;
-    DBT			ki_key;
-    dbiIndexSet		ki_set;
+struct rpmdbIndexIterator_s {
+    rpmdbIndexIterator	ii_next;
+    rpmdb		ii_db;
+    dbiIndex		ii_dbi;
+    rpmDbiTag		ii_rpmtag;
+    DBC *		ii_dbc;
+    DBT			ii_key;
+    dbiIndexSet		ii_set;
 };
 
 static rpmdb rpmdbRock;
 static rpmdbMatchIterator rpmmiRock;
-static rpmdbKeyIterator rpmkiRock;
+static rpmdbIndexIterator rpmiiRock;
 
 int rpmdbCheckTerminate(int terminate)
 {
@@ -2241,12 +2241,12 @@ static int td2key(rpmtd tagdata, DBT *key, int *freedata)
     return 1;
 }
 /*
- * rpmdbKeyIterator
+ * rpmdbIndexIterator
  */
 
-rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmDbiTagVal rpmtag)
+rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 {
-    rpmdbKeyIterator ki;
+    rpmdbIndexIterator ii;
     dbiIndex dbi = NULL;
     int rc = 0;
 
@@ -2260,103 +2260,103 @@ rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmDbiTagVal rpmtag)
 	return NULL;
 
     /* Chain cursors for teardown on abnormal exit. */
-    ki = xcalloc(1, sizeof(*ki));
-    ki->ki_next = rpmkiRock;
-    rpmkiRock = ki;
+    ii = xcalloc(1, sizeof(*ii));
+    ii->ii_next = rpmiiRock;
+    rpmiiRock = ii;
 
-    ki->ki_db = rpmdbLink(db);
-    ki->ki_rpmtag = rpmtag;
-    ki->ki_dbi = dbi;
-    ki->ki_set = NULL;
+    ii->ii_db = rpmdbLink(db);
+    ii->ii_rpmtag = rpmtag;
+    ii->ii_dbi = dbi;
+    ii->ii_set = NULL;
 
-    return ki;
+    return ii;
 }
 
-int rpmdbKeyIteratorNext(rpmdbKeyIterator ki)
+int rpmdbIndexIteratorNext(rpmdbIndexIterator ii)
 {
     int rc, xx;
     DBT data;
 
-    if (ki == NULL)
+    if (ii == NULL)
 	return 1;
 
-    if (ki->ki_dbc == NULL)
-        xx = dbiCopen(ki->ki_dbi, &ki->ki_dbc, 0);
+    if (ii->ii_dbc == NULL)
+        xx = dbiCopen(ii->ii_dbi, &ii->ii_dbc, 0);
 
     memset(&data, 0, sizeof(data));
-    rc = dbiGet(ki->ki_dbi, ki->ki_dbc, &ki->ki_key, &data, DB_NEXT);
+    rc = dbiGet(ii->ii_dbi, ii->ii_dbc, &ii->ii_key, &data, DB_NEXT);
 
     if (rc != 0 && rc != DB_NOTFOUND) {
         rpmlog(RPMLOG_ERR,
                _("error(%d:%s) getting next key from %s index\n"),
-               rc, db_strerror(rc), rpmTagGetName(ki->ki_rpmtag));
+               rc, db_strerror(rc), rpmTagGetName(ii->ii_rpmtag));
     }
-    ki->ki_set = dbiFreeIndexSet(ki->ki_set);
-    (void) dbt2set(ki->ki_dbi, &data, &ki->ki_set);
+    ii->ii_set = dbiFreeIndexSet(ii->ii_set);
+    (void) dbt2set(ii->ii_dbi, &data, &ii->ii_set);
 
     return rc;
 }
 
-const void * rpmdbKeyIteratorKey(rpmdbKeyIterator ki)
+const void * rpmdbIndexIteratorKey(rpmdbIndexIterator ii)
 {
-    if (ki == NULL) return NULL;
-    return ki->ki_key.data;
+    if (ii == NULL) return NULL;
+    return ii->ii_key.data;
 }
 
-size_t rpmdbKeyIteratorKeySize(rpmdbKeyIterator ki)
+size_t rpmdbIndexIteratorKeySize(rpmdbIndexIterator ii)
 {
-    if (ki == NULL) return (size_t) 0;
-    return (size_t)(ki->ki_key.size);
+    if (ii == NULL) return (size_t) 0;
+    return (size_t)(ii->ii_key.size);
 }
 
-int rpmdbKeyIteratorNumPkgs(rpmdbKeyIterator ki)
+int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii)
 {
-    return (ki && ki->ki_set) ? dbiIndexSetCount(ki->ki_set) : 0;
+    return (ii && ii->ii_set) ? dbiIndexSetCount(ii->ii_set) : 0;
 }
 
-int rpmdbKeyIteratorPkgOffset(rpmdbKeyIterator ki, int nr)
+int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, int nr)
 {
-    if (!ki || !ki->ki_set)
+    if (!ii || !ii->ii_set)
         return -1;
-    if (dbiIndexSetCount(ki->ki_set) <= nr)
+    if (dbiIndexSetCount(ii->ii_set) <= nr)
         return -1;
-    return dbiIndexRecordOffset(ki->ki_set, nr);
+    return dbiIndexRecordOffset(ii->ii_set, nr);
 }
 
-int rpmdbKeyIteratorTagNum(rpmdbKeyIterator ki, int nr)
+int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, int nr)
 {
-    if (!ki || !ki->ki_set)
+    if (!ii || !ii->ii_set)
         return -1;
-    if (dbiIndexSetCount(ki->ki_set) <= nr)
+    if (dbiIndexSetCount(ii->ii_set) <= nr)
         return -1;
-    return dbiIndexRecordFileNumber(ki->ki_set, nr);
+    return dbiIndexRecordFileNumber(ii->ii_set, nr);
 }
 
-rpmdbKeyIterator rpmdbKeyIteratorFree(rpmdbKeyIterator ki)
+rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
 {
-    rpmdbKeyIterator * prev, next;
+    rpmdbIndexIterator * prev, next;
     int xx;
 
-    if (ki == NULL)
-        return ki;
+    if (ii == NULL)
+        return ii;
 
-    prev = &rpmkiRock;
-    while ((next = *prev) != NULL && next != ki)
-        prev = &next->ki_next;
+    prev = &rpmiiRock;
+    while ((next = *prev) != NULL && next != ii)
+        prev = &next->ii_next;
     if (next) {
-        *prev = next->ki_next;
-        next->ki_next = NULL;
+        *prev = next->ii_next;
+        next->ii_next = NULL;
     }
 
-    if (ki->ki_dbc)
-        xx = dbiCclose(ki->ki_dbi, ki->ki_dbc, 0);
-    ki->ki_dbc = NULL;
-    ki->ki_dbi = NULL;
-    ki->ki_db = rpmdbUnlink(ki->ki_db);
-    ki->ki_set = dbiFreeIndexSet(ki->ki_set);
+    if (ii->ii_dbc)
+        xx = dbiCclose(ii->ii_dbi, ii->ii_dbc, 0);
+    ii->ii_dbc = NULL;
+    ii->ii_dbi = NULL;
+    ii->ii_db = rpmdbUnlink(ii->ii_db);
+    ii->ii_set = dbiFreeIndexSet(ii->ii_set);
 
-    ki = _free(ki);
-    return ki;
+    ii = _free(ii);
+    return ii;
 }
 
 
