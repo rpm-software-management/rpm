@@ -249,6 +249,29 @@ const void * rpmdbKeyIteratorKey(rpmdbKeyIterator ki);
 size_t rpmdbKeyIteratorKeySize(rpmdbKeyIterator ki);
 
 /** \ingroup rpmdb
+ * Get number of entries for current key
+ * @param ki            key iterator
+ * @return		number of entries. -1 on error.
+ */
+int rpmdbKeyIteratorNumPkgs(rpmdbKeyIterator ki);
+
+/** \ingroup rpmdb
+ * Get package offset of entry
+ * @param ki            key iterator
+ * @param nr		number of the entry
+ * @return		db offset of pkg
+ */
+int rpmdbKeyIteratorPkgOffset(rpmdbKeyIterator ki, int nr);
+
+/** \ingroup rpmdb
+ * Get tag number of entry
+ * @param ki            key iterator
+ * @param nr		number of the entry
+ * @return		number of tag within the package
+ */
+int rpmdbKeyIteratorTagNum(rpmdbKeyIterator ki, int nr);
+
+/** \ingroup rpmdb
  * Free key iterator
  * @param ki            key iterator
  * return 		NULL

@@ -517,6 +517,7 @@ struct rpmdbKeyIterator_s {
     rpmDbiTagVal	ki_rpmtag;
     DBC *		ki_dbc;
     DBT			ki_key;
+    dbiIndexSet		ki_set;
 };
 
 static rpmdb rpmdbRock;
@@ -2266,6 +2267,7 @@ rpmdbKeyIterator rpmdbKeyIteratorInit(rpmdb db, rpmDbiTagVal rpmtag)
     ki->ki_db = rpmdbLink(db);
     ki->ki_rpmtag = rpmtag;
     ki->ki_dbi = dbi;
+    ki->ki_set = NULL;
 
     return ki;
 }
@@ -2282,7 +2284,6 @@ int rpmdbKeyIteratorNext(rpmdbKeyIterator ki)
         xx = dbiCopen(ki->ki_dbi, &ki->ki_dbc, 0);
 
     memset(&data, 0, sizeof(data));
-    data.flags = DB_DBT_PARTIAL;
     rc = dbiGet(ki->ki_dbi, ki->ki_dbc, &ki->ki_key, &data, DB_NEXT);
 
     if (rc != 0 && rc != DB_NOTFOUND) {
@@ -2290,6 +2291,9 @@ int rpmdbKeyIteratorNext(rpmdbKeyIterator ki)
                _("error(%d:%s) getting next key from %s index\n"),
                rc, db_strerror(rc), rpmTagGetName(ki->ki_rpmtag));
     }
+    ki->ki_set = dbiFreeIndexSet(ki->ki_set);
+    (void) dbt2set(ki->ki_dbi, &data, &ki->ki_set);
+
     return rc;
 }
 
@@ -2305,6 +2309,28 @@ size_t rpmdbKeyIteratorKeySize(rpmdbKeyIterator ki)
     return (size_t)(ki->ki_key.size);
 }
 
+int rpmdbKeyIteratorNumPkgs(rpmdbKeyIterator ki)
+{
+    return (ki && ki->ki_set) ? dbiIndexSetCount(ki->ki_set) : 0;
+}
+
+int rpmdbKeyIteratorPkgOffset(rpmdbKeyIterator ki, int nr)
+{
+    if (!ki || !ki->ki_set)
+        return -1;
+    if (dbiIndexSetCount(ki->ki_set) <= nr)
+        return -1;
+    return dbiIndexRecordOffset(ki->ki_set, nr);
+}
+
+int rpmdbKeyIteratorTagNum(rpmdbKeyIterator ki, int nr)
+{
+    if (!ki || !ki->ki_set)
+        return -1;
+    if (dbiIndexSetCount(ki->ki_set) <= nr)
+        return -1;
+    return dbiIndexRecordFileNumber(ki->ki_set, nr);
+}
 
 rpmdbKeyIterator rpmdbKeyIteratorFree(rpmdbKeyIterator ki)
 {
@@ -2325,8 +2351,9 @@ rpmdbKeyIterator rpmdbKeyIteratorFree(rpmdbKeyIterator ki)
     if (ki->ki_dbc)
         xx = dbiCclose(ki->ki_dbi, ki->ki_dbc, 0);
     ki->ki_dbc = NULL;
-    ki->ki_dbi = NULL; /* ??? */
+    ki->ki_dbi = NULL;
     ki->ki_db = rpmdbUnlink(ki->ki_db);
+    ki->ki_set = dbiFreeIndexSet(ki->ki_set);
 
     ki = _free(ki);
     return ki;

@@ -51,7 +51,26 @@ rpmki_iternext(rpmkiObject * s)
                                       rpmdbKeyIteratorKeySize(s->ki));
 };
 
+static PyObject *
+rpmki_offsets(rpmkiObject * s)
+{
+    int entries = rpmdbKeyIteratorNumPkgs(s->ki);
+    PyObject * list = PyList_New(0);
+    PyObject * tuple;
+    for (int i = 0; i < entries; i++) {
+        tuple = PyTuple_New(2);
+        PyTuple_SET_ITEM(tuple, 0,
+                         PyInt_FromLong(rpmdbKeyIteratorPkgOffset(s->ki, i)));
+        PyTuple_SET_ITEM(tuple, 1,
+                         PyInt_FromLong(rpmdbKeyIteratorTagNum(s->ki, i)));
+        PyList_Append(list, tuple);
+    }
+    return list;
+}
+
 static struct PyMethodDef rpmki_methods[] = {
+    {"offsets",    (PyCFunction) rpmki_offsets,       METH_NOARGS,
+     NULL },
     {NULL,		NULL}		/* sentinel */
 };
 
