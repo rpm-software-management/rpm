@@ -224,7 +224,6 @@ static inline int addRelation(rpmts ts,
 			      rpmds requires)
 {
     rpmte q;
-    ARGV_const_t qcolls;
     rpmsenseFlags dsflags;
 
     dsflags = rpmdsFlags(requires);
@@ -245,19 +244,38 @@ static inline int addRelation(rpmts ts,
 
     addSingleRelation(p, q, dsflags);
 
-    /* If q is a member of any grouped collections, make sure p requires
-     * all packages that are also in those collections */
-    for (qcolls = rpmteCollections(q); qcolls && *qcolls; qcolls++) {
+    return 0;
+}
+
+/*
+ * Collections might have special ordering requirements. Notably
+ * sepolicy collection requires having all the bits in the collection
+ * close to each other. We try to ensure this by creating a strongly
+ * connected component of such "grouped" collections, by introducing 
+ * an artificial relation loop across the all its members.
+ */
+static int addCollRelations(rpmal al, rpmte p, ARGV_t *seenColls)
+{
+    ARGV_const_t qcolls;
+
+    for (qcolls = rpmteCollections(p); qcolls && *qcolls; qcolls++) {
 	char * flags;
+	if (argvSearch(*seenColls, *qcolls, NULL))
+	    continue;
+
 	flags = rstrscat(NULL, "%{__collection_", *qcolls, "_flags}", NULL);
 	if (rpmExpandNumeric(flags) & 0x1) {
 	    rpmte *tes = rpmalAllInCollection(al, *qcolls);
 	    for (rpmte *te = tes; te && *te; te++) {
-		addSingleRelation(p, *te, RPMSENSE_SCRIPT_PRE);
+		rpmte next = (*(te + 1) != NULL) ? *(te + 1) : *tes;
+		addSingleRelation(*te, next, RPMSENSE_ANY);
 	    }
 	    _free(tes);
 	}
 	free(flags);
+
+	argvAdd(seenColls, *qcolls);
+	argvSort(*seenColls, NULL);
     }
 
     return 0;
@@ -606,6 +624,7 @@ int rpmtsOrder(rpmts ts)
     scc SCCs;
     int nelem = rpmtsNElements(ts);
     tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
+    ARGV_t seenColls = NULL;
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
@@ -633,7 +652,11 @@ int rpmtsOrder(rpmts ts)
 	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, al, p, requires);
 	}
+
+	addCollRelations(al, p, &seenColls);
     }
+
+    seenColls = argvFree(seenColls);
     pi = rpmtsiFree(pi);
 
     newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
