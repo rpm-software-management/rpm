@@ -1086,6 +1086,7 @@ done \
 %__collection_font	%{__plugindir}/exec.so /usr/bin/fc-cache
 %__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
 %__collection_sepolicy		%{__plugindir}/sepolicy.so
+%__collection_sepolicy_flags	1
 
 # \endverbatim
 #*/

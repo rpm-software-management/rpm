@@ -245,15 +245,19 @@ static inline int addRelation(rpmts ts,
 
     addSingleRelation(p, q, dsflags);
 
-    /* If q is a member of any collections, make sure p requires all packages
-     * that are also in those collections */
+    /* If q is a member of any grouped collections, make sure p requires
+     * all packages that are also in those collections */
     for (qcolls = rpmteCollections(q); qcolls && *qcolls; qcolls++) {
-	rpmte *te;
-	rpmte *tes = rpmalAllInCollection(al, *qcolls);
-	for (te = tes; te && *te; te++) {
-	    addSingleRelation(p, *te, RPMSENSE_SCRIPT_PRE);
+	char * flags;
+	flags = rstrscat(NULL, "%{__collection_", *qcolls, "_flags}", NULL);
+	if (rpmExpandNumeric(flags) & 0x1) {
+	    rpmte *tes = rpmalAllInCollection(al, *qcolls);
+	    for (rpmte *te = tes; te && *te; te++) {
+		addSingleRelation(p, *te, RPMSENSE_SCRIPT_PRE);
+	    }
+	    _free(tes);
 	}
-	_free(tes);
+	free(flags);
     }
 
     return 0;
