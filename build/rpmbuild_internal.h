@@ -3,6 +3,7 @@
 
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmutil.h>
+#include "build/rpmbuild_misc.h"
 
 struct TriggerFileEntry {
     int index;

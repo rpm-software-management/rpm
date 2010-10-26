@@ -76,6 +76,48 @@ gid_t getGidS(const char * gname);
 RPM_GNUC_INTERNAL
 void handleComments(char * s);
 
+/** \ingroup rpmstring
+ */
+typedef struct StringBufRec *StringBuf;
+
+/** \ingroup rpmstring
+ */
+RPM_GNUC_INTERNAL
+StringBuf newStringBuf(void);
+
+/** \ingroup rpmstring
+ */
+RPM_GNUC_INTERNAL
+StringBuf freeStringBuf( StringBuf sb);
+
+/** \ingroup rpmstring
+ */
+RPM_GNUC_INTERNAL
+void truncStringBuf(StringBuf sb);
+
+/** \ingroup rpmstring
+ */
+RPM_GNUC_INTERNAL
+char * getStringBuf(StringBuf sb);
+
+/** \ingroup rpmstring
+ */
+RPM_GNUC_INTERNAL
+void stripTrailingBlanksStringBuf(StringBuf sb);
+
+/** \ingroup rpmstring
+ */
+#define appendStringBuf(sb, s)     appendStringBufAux(sb, s, 0)
+
+/** \ingroup rpmstring
+ */
+#define appendLineStringBuf(sb, s) appendStringBufAux(sb, s, 1)
+
+/** \ingroup rpmstring
+ */
+RPM_GNUC_INTERNAL
+void appendStringBufAux(StringBuf sb, const char * s, int nl);
+
 /** \ingroup rpmbuild
  * Parse an unsigned number.
  * @param		line from spec file

@@ -180,42 +180,6 @@ size_t rstrlcpy(char *dest, const char *src, size_t n);
  */
 char * stripTrailingChar(char * s, char c);
 
-/** \ingroup rpmstring
- */
-typedef struct StringBufRec *StringBuf;
-
-/** \ingroup rpmstring
- */
-StringBuf newStringBuf(void);
-
-/** \ingroup rpmstring
- */
-StringBuf freeStringBuf( StringBuf sb);
-
-/** \ingroup rpmstring
- */
-void truncStringBuf(StringBuf sb);
-
-/** \ingroup rpmstring
- */
-char * getStringBuf(StringBuf sb);
-
-/** \ingroup rpmstring
- */
-void stripTrailingBlanksStringBuf(StringBuf sb);
-
-/** \ingroup rpmstring
- */
-#define appendStringBuf(sb, s)     appendStringBufAux(sb, s, 0)
-
-/** \ingroup rpmstring
- */
-#define appendLineStringBuf(sb, s) appendStringBufAux(sb, s, 1)
-
-/** \ingroup rpmstring
- */
-void appendStringBufAux(StringBuf sb, const char * s, int nl);
-
 #ifdef __cplusplus
 }
 #endif
