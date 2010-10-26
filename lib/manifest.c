@@ -6,7 +6,7 @@
 
 #include <rpm/rpmlog.h>
 #include <rpm/rpmfileutil.h>
-#include <rpm/rpmstring.h>
+#include <rpm/argv.h>
 
 #include "lib/manifest.h"
 
@@ -61,7 +61,7 @@ char * rpmPermsString(int mode)
 /**@todo Infinite loops through manifest files exist, operator error for now. */
 rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 {
-    StringBuf sb = newStringBuf();
+    ARGV_t sb = NULL;
     char * s = NULL;
     char * se;
     int ac = 0;
@@ -101,13 +101,11 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 	}
 
 	/* Concatenate next line in buffer. */
-	*se++ = ' ';
 	*se = '\0';
-	appendStringBuf(sb, s);
+	argvAdd(&sb, s);
     }
 
-    if (s == NULL)		/* XXX always true */
-	s = getStringBuf(sb);
+    s = argvJoin(sb, " ");
 
     if (!(s && *s)) {
 	rpmrc = RPMRC_NOTFOUND;
@@ -169,7 +167,8 @@ exit:
 	   av[i] = _free(av[i]);
 	av = _free(av);
     }
-    sb = freeStringBuf(sb);
+    argvFree(sb);
+    free(s);
     /* FIX: *argvPtr may be NULL. */
     return rpmrc;
 }
