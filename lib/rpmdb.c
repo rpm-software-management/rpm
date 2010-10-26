@@ -2003,6 +2003,42 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
     return 0;
 }
 
+rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
+{
+    rpmdbMatchIterator mi = NULL;
+
+    if (rpmdbOpenIndex(db, dbitag, 0) == NULL)
+	return NULL;
+
+    mi = xcalloc(1, sizeof(*mi));
+    mi->mi_keyp = NULL;
+    mi->mi_keylen = 0;
+    mi->mi_set = NULL;
+    mi->mi_db = rpmdbLink(db);
+    mi->mi_rpmtag = dbitag;
+
+    mi->mi_dbc = NULL;
+    mi->mi_setx = 0;
+    mi->mi_h = NULL;
+    mi->mi_sorted = 0;
+    mi->mi_cflags = 0;
+    mi->mi_modified = 0;
+    mi->mi_prevoffset = 0;
+    mi->mi_offset = 0;
+    mi->mi_filenum = 0;
+    mi->mi_nre = 0;
+    mi->mi_re = NULL;
+
+    mi->mi_ts = NULL;
+    mi->mi_hdrchk = NULL;
+
+    /* Chain cursors for teardown on abnormal exit. */
+    mi->mi_next = rpmmiRock;
+    rpmmiRock = mi;
+
+    return mi;
+};
+
 rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 		const void * keyp, size_t keylen)
 {
@@ -2139,31 +2175,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	}
     }
 
-    mi = xcalloc(1, sizeof(*mi));
+    mi = rpmdbNewIterator(db, rpmtag);
     mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
     mi->mi_set = set;
-    mi->mi_db = rpmdbLink(db);
-    mi->mi_rpmtag = rpmtag;
-
-    /* Chain cursors for teardown on abnormal exit. */
-    mi->mi_next = rpmmiRock;
-    rpmmiRock = mi;
-
-    mi->mi_dbc = NULL;
-    mi->mi_setx = 0;
-    mi->mi_h = NULL;
-    mi->mi_sorted = 0;
-    mi->mi_cflags = 0;
-    mi->mi_modified = 0;
-    mi->mi_prevoffset = 0;
-    mi->mi_offset = 0;
-    mi->mi_filenum = 0;
-    mi->mi_nre = 0;
-    mi->mi_re = NULL;
-
-    mi->mi_ts = NULL;
-    mi->mi_hdrchk = NULL;
 
     if (rpmtag != RPMDBI_PACKAGES && keyp == NULL) {
         rpmdbSortIterator(mi);

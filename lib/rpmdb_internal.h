@@ -75,6 +75,16 @@ void rpmdbSortIterator(rpmdbMatchIterator mi);
  */
 int rpmdbPruneIterator(rpmdbMatchIterator mi, intHash hdrNums);
 
+/** \ingroup rpmdb
+ * Create a new, empty match iterator (for purposes of extending it
+ * through other means)
+ * @param db		rpm database
+ * @param dbitag	database index tag
+ * @return		empty match iterator
+ */
+RPM_GNUC_INTERNAL
+rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
+
 #ifndef __APPLE__
 /**
  *  * Mergesort, same arguments as qsort(2).

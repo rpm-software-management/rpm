@@ -878,7 +878,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     rpmStringSet baseNames = rpmStringSetCreate(fileCount, 
 					hashFunctionString, strcmp, NULL);
 
-    mi = rpmdbInitIterator(rpmtsGetRdb(ts), RPMDBI_BASENAMES, NULL, 0);
+    mi = rpmdbNewIterator(rpmtsGetRdb(ts), RPMDBI_BASENAMES);
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
