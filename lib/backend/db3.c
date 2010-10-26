@@ -67,7 +67,7 @@ static int db3_fsync_disable(int fd)
     return 0;
 }
 
-#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
+#if ((DB_VERSION_MAJOR >= 5) || (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5))
 /*
  * dbenv->failchk() callback method for determining is the given pid/tid 
  * is alive. We only care about pid's though. 
@@ -130,7 +130,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     dbenv->set_errfile(dbenv, rpmdb->db_errfile);
     dbenv->set_errpfx(dbenv, rpmdb->db_errpfx);
 
-#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
+#if ((DB_VERSION_MAJOR >= 5) || (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5))
     /* 
      * These enable automatic stale lock removal. 
      * thread_count 8 is some kind of "magic minimum" value...
@@ -179,7 +179,7 @@ static int db_init(dbiIndex dbi, const char * dbhome, DB_ENV ** dbenvp)
     if (rc)
 	goto errxit;
 
-#if (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5)
+#if ((DB_VERSION_MAJOR >= 5) || (DB_VERSION_MAJOR >= 4 && DB_VERSION_MINOR >= 5))
     /* stale lock removal */
     rc = dbenv->failchk(dbenv, 0);
     rc = cvtdberr(dbi, "dbenv->failchk", rc, _debug);
