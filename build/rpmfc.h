@@ -8,7 +8,6 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/argv.h>	/* for ARGV_t */
-#include <rpm/rpmstring.h>	/* for StringBuf */
 #include <rpm/rpmspec.h>	/* for Package */
 
 #ifdef __cplusplus
@@ -43,16 +42,6 @@ typedef	rpmFlags FCOLOR_t;
 /** \ingroup rpmfc
  */
 typedef const struct rpmfcTokens_s * rpmfcToken;
-
-/** \ingroup rpmfc
- * Return helper output.
- * @param av		helper argv (with possible macros)
- * @param sb_stdin	helper input
- * @retval *sb_stdoutp	helper output
- * @param failnonzero	IS non-zero helper exit status a failure?
- */
-int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero);
 
 /** \ingroup rpmfc
  * Print results of file classification.

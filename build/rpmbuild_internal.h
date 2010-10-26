@@ -377,6 +377,17 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 RPM_GNUC_INTERNAL
 rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg);
 
+/** \ingroup rpmfc
+ * Return helper output.
+ * @param av		helper argv (with possible macros)
+ * @param sb_stdin	helper input
+ * @retval *sb_stdoutp	helper output
+ * @param failnonzero	IS non-zero helper exit status a failure?
+ */
+RPM_GNUC_INTERNAL
+int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
+		int failnonzero);
+
 /** \ingroup rpmbuild
  * Post-build processing for policies in binary package(s).
  * @param spec		spec file control structure
