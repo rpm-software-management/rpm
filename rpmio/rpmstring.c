@@ -11,14 +11,6 @@
 #include "debug.h"
 
 
-char * stripTrailingChar(char * s, char c)
-{
-    char * t;
-    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
-	*t = '\0';
-    return s;
-}
-
 int rstrcasecmp(const char * s1, const char * s2)
 {
   const char * p1 = s1;

@@ -119,6 +119,14 @@ static void sortRelocs(rpmRelocation *relocations, int numRelocations)
     }
 }
 
+static char * stripTrailingChar(char * s, char c)
+{
+    char * t;
+    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
+	*t = '\0';
+    return s;
+}
+
 static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
 {
     int i;

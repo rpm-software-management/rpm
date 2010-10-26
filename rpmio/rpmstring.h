@@ -172,14 +172,6 @@ char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
  */
 size_t rstrlcpy(char *dest, const char *src, size_t n);
 
-/** \ingroup rpmstring
- * Remove occurences of trailing character from string.
- * @param s		string
- * @param c		character to strip
- * @return 		string
- */
-char * stripTrailingChar(char * s, char c);
-
 #ifdef __cplusplus
 }
 #endif
