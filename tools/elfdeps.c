@@ -49,6 +49,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    if (def == NULL)
 		break;
 	    auxoffset = offset + def->vd_aux;
+	    offset += def->vd_next;
 
 	    for (int j = def->vd_cnt; --j >= 0; ) {
 		GElf_Verdaux aux_mem, * aux;
