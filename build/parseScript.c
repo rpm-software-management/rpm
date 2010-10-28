@@ -65,7 +65,7 @@ int parseScript(rpmSpec spec, int parsePart)
     /*  -p "<sh> <args>..."                */
     /*  -f <file>                          */
 
-    char *p;
+    const char *p;
     const char **progArgv = NULL;
     int progArgc;
     const char *partname = NULL;
@@ -187,15 +187,15 @@ int parseScript(rpmSpec spec, int parsePart)
 
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
 	/* break line into two */
-	p = strstr(spec->line, "--");
-	if (!p) {
+	char *s = strstr(spec->line, "--");
+	if (!s) {
 	    rpmlog(RPMLOG_ERR, _("line %d: triggers must have --: %s\n"),
 		     spec->lineNum, spec->line);
 	    return PART_ERROR;
 	}
 
-	*p = '\0';
-	reqargs = xstrdup(p + 2);
+	*s = '\0';
+	reqargs = xstrdup(s + 2);
     }
     
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
