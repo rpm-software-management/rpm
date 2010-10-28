@@ -73,42 +73,31 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
     
     switch (what) {
     case RPMBUILD_PREP:
-	name = "%prep";
-	sb = spec->prep;
 	mTemplate = "%{__spec_prep_template}";
 	mPost = "%{__spec_prep_post}";
 	mCmd = "%{__spec_prep_cmd}";
 	break;
     case RPMBUILD_BUILD:
-	name = "%build";
-	sb = spec->build;
 	mTemplate = "%{__spec_build_template}";
 	mPost = "%{__spec_build_post}";
 	mCmd = "%{__spec_build_cmd}";
 	break;
     case RPMBUILD_INSTALL:
-	name = "%install";
-	sb = spec->install;
 	mTemplate = "%{__spec_install_template}";
 	mPost = "%{__spec_install_post}";
 	mCmd = "%{__spec_install_cmd}";
 	break;
     case RPMBUILD_CHECK:
-	name = "%check";
-	sb = spec->check;
 	mTemplate = "%{__spec_check_template}";
 	mPost = "%{__spec_check_post}";
 	mCmd = "%{__spec_check_cmd}";
 	break;
     case RPMBUILD_CLEAN:
-	name = "%clean";
-	sb = spec->clean;
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
 	break;
     case RPMBUILD_RMBUILD:
-	name = "--clean";
 	mTemplate = "%{__spec_clean_template}";
 	mPost = "%{__spec_clean_post}";
 	mCmd = "%{__spec_clean_cmd}";
@@ -120,8 +109,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
 	mCmd = "%{___build_cmd}";
 	break;
     }
-    if (name == NULL)	/* XXX shouldn't happen */
-	name = "???";
 
     if ((what != RPMBUILD_RMBUILD) && sb == NULL) {
 	rc = RPMRC_OK;
@@ -238,19 +225,19 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL));
 
 	if ((what & RPMBUILD_PREP) &&
-	    (rc = doScript(spec, RPMBUILD_PREP, NULL, NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_PREP, "%prep", spec->prep, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_BUILD) &&
-	    (rc = doScript(spec, RPMBUILD_BUILD, NULL, NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_BUILD, "%build", spec->build, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_INSTALL) &&
-	    (rc = doScript(spec, RPMBUILD_INSTALL, NULL, NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install", spec->install, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_CHECK) &&
-	    (rc = doScript(spec, RPMBUILD_CHECK, NULL, NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_CHECK, "%check", spec->check, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
@@ -276,11 +263,11 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 	
 	if ((what & RPMBUILD_CLEAN) &&
-	    (rc = doScript(spec, RPMBUILD_CLEAN, NULL, NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_CLEAN, "%clean", spec->clean, test)))
 		goto exit;
 
 	if ((what & RPMBUILD_RMBUILD) &&
-	    (rc = doScript(spec, RPMBUILD_RMBUILD, NULL, NULL, test)))
+	    (rc = doScript(spec, RPMBUILD_RMBUILD, "--clean", NULL, test)))
 		goto exit;
     }
 
