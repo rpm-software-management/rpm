@@ -111,16 +111,16 @@ exit:
  * @param sb		changelog strings
  * @return		RPMRC_OK on success
  */
-static rpmRC addChangelog(Header h, StringBuf sb)
+static rpmRC addChangelog(Header h, ARGV_const_t sb)
 {
-    char *s;
+    char *s, *sp;
     int i;
     time_t time;
     time_t lastTime = 0;
     time_t trimtime = rpmExpandNumeric("%{?_changelog_trimtime}");
     char *date, *name, *text, *next;
 
-    s = getStringBuf(sb);
+    s = sp = argvJoin(sb, "");
 
     /* skip space */
     SKIPSPACE(s);
@@ -205,6 +205,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 	
 	s = next;
     }
+    free(sp);
 
     return RPMRC_OK;
 }
@@ -212,7 +213,7 @@ static rpmRC addChangelog(Header h, StringBuf sb)
 int parseChangelog(rpmSpec spec)
 {
     int nextPart, rc, res = PART_ERROR;
-    StringBuf sb = newStringBuf();
+    ARGV_t sb = NULL;
     
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
@@ -223,7 +224,7 @@ int parseChangelog(rpmSpec spec)
     }
     
     while (! (nextPart = isPart(spec->line))) {
-	appendStringBuf(sb, spec->line);
+	argvAdd(&sb, spec->line);
 	if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
@@ -238,7 +239,7 @@ int parseChangelog(rpmSpec spec)
     res = nextPart;
 
 exit:
-    sb = freeStringBuf(sb);
+    argvFree(sb);
 
     return res;
 }
