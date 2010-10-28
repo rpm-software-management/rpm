@@ -9,7 +9,7 @@
 #include "debug.h"
 
 
-int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart)
+int parseBuildInstallClean(rpmSpec spec, int parsePart)
 {
     int nextPart, rc, res = PART_ERROR;
     StringBuf *sbp = NULL;

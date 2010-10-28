@@ -61,7 +61,7 @@ static const struct PartRec {
     {0, 0, 0}
 };
 
-rpmParseState isPart(const char *line)
+int isPart(const char *line)
 {
     const struct PartRec *p;
 
@@ -520,7 +520,7 @@ static void addTargets(Package Pkgs)
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 			 const char *buildRoot, int recursing)
 {
-    rpmParseState parsePart = PART_PREAMBLE;
+    int parsePart = PART_PREAMBLE;
     int initialPackage = 1;
     rpmSpec spec;
     

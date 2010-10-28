@@ -210,7 +210,7 @@ int readLine(rpmSpec spec, int strip);
  * @return		next parser state
  */
 RPM_GNUC_INTERNAL
-rpmParseState isPart(const char * line)	;
+int isPart(const char * line)	;
 
 /** \ingroup rpmbuild
  * Parse %%build/%%install/%%clean section(s) of a spec file.
@@ -219,7 +219,7 @@ rpmParseState isPart(const char * line)	;
  * @return		>= 0 next rpmParseState, < 0 on error
  */
 RPM_GNUC_INTERNAL
-int parseBuildInstallClean(rpmSpec spec, rpmParseState parsePart);
+int parseBuildInstallClean(rpmSpec spec, int parsePart);
 
 /** \ingroup rpmbuild
  * Parse %%changelog section of a spec file.
