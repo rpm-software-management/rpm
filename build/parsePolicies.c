@@ -64,15 +64,13 @@ int parsePolicies(rpmSpec spec)
 	goto exit;
     }
 
-    pkg->policyList = newStringBuf();
-
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else if (rc < 0) {
 	goto exit;
     } else {
 	while (!(nextPart = isPart(spec->line))) {
-	    appendLineStringBuf(pkg->policyList, spec->line);
+	    argvAdd(&(pkg->policyList), spec->line);
 	    if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;

@@ -129,9 +129,9 @@ struct Package_s {
 
     struct TriggerFileEntry * triggerFiles;
 
-    StringBuf fileFile;
-    StringBuf fileList;		/* If NULL, package will not be written */
-    StringBuf policyList;
+    ARGV_t fileFile;
+    ARGV_t fileList;		/* If NULL, package will not be written */
+    ARGV_t policyList;
 
     Package next;
 };

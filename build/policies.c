@@ -221,8 +221,6 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
     uint32_t flags = 0;
     poptContext optCon = NULL;
 
-    ARGV_t policies = NULL;
-    ARGV_t pol;
     rpmRC rc = RPMRC_FAIL;
 
     struct poptOption optionsTable[] = {
@@ -236,10 +234,9 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
 	goto exit;
     }
 
-    argvSplit(&policies, getStringBuf(pkg->policyList), "\n");
-    for (pol = policies; *pol != NULL; pol++) {
+    for (ARGV_const_t pol = pkg->policyList; *pol != NULL; pol++) {
 	ModuleRec mod;
-	char *line = *pol;
+	const char *line = *pol;
 	const char **argv = NULL;
 	int argc = 0;
 	int err;
@@ -288,7 +285,6 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
     rc = RPMRC_OK;
 
   exit:
-    argvFree(policies);
 
     return rc;
 }

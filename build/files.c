@@ -1709,8 +1709,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 				 Package pkg, int installSpecialDoc, int test)
 {
     struct FileList_s fl;
-    char *s, **fp;
-    ARGV_t files = NULL;
     const char *fileName;
     char buf[BUFSIZ];
     struct AttrRec_s arbuf;
@@ -1722,11 +1720,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     if (pkg->fileFile) {
 	char *ffn;
-	ARGV_t filelists = NULL;
 	FILE *fd;
 
-	argvSplit(&filelists, getStringBuf(pkg->fileFile), "\n");
-	for (fp = filelists; *fp != NULL; fp++) {
+	for (ARGV_const_t fp = pkg->fileFile; *fp != NULL; fp++) {
 	    if (**fp == '/') {
 		ffn = rpmGetPath(*fp, NULL);
 	    } else {
@@ -1749,11 +1745,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 		    fclose(fd);
 		    return RPMRC_FAIL;
 		}
-		appendStringBuf(pkg->fileList, buf);
+		argvAdd(&(pkg->fileList), buf);
 	    }
 	    (void) fclose(fd);
 	}
-	argvFree(filelists);
     }
     
     /* Init the file list structure */
@@ -1803,11 +1798,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.fileListRecsAlloced = 0;
     fl.fileListRecsUsed = 0;
 
-    s = getStringBuf(pkg->fileList);
-    argvSplit(&files, s, "\n");
-
-    for (fp = files; *fp != NULL; fp++) {
-	s = *fp;
+    for (ARGV_const_t fp = pkg->fileList; *fp != NULL; fp++) {
+	const char *s = *fp;
 	SKIPSPACE(s);
 	if (*s == '\0')
 	    continue;
@@ -1907,8 +1899,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	specialDoc = _free(specialDoc);
     }
     
-    argvFree(files);
-
     if (fl.processingFailed)
 	goto exit;
 

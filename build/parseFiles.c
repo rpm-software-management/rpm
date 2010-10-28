@@ -67,8 +67,7 @@ int parseFiles(rpmSpec spec)
     for (arg=1; arg<argc; arg++) {
 	if (rstreq(argv[arg], "-f") && argv[arg+1]) {
 	    char *file = rpmGetPath(argv[arg+1], NULL);
-	    if (!pkg->fileFile) pkg->fileFile = newStringBuf();
-	    appendLineStringBuf(pkg->fileFile, file);
+	    argvAdd(&(pkg->fileFile), file);
 	    free(file);
 	}
     }
@@ -79,7 +78,7 @@ int parseFiles(rpmSpec spec)
 	goto exit;
     } else {
 	while (! (nextPart = isPart(spec->line))) {
-	    appendStringBuf(pkg->fileList, spec->line);
+	    argvAdd(&(pkg->fileList), spec->line);
 	    if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
 		break;

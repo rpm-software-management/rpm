@@ -99,7 +99,8 @@ Package newPackage(rpmSpec spec)
     p->header = headerNew();
     p->autoProv = 1;
     p->autoReq = 1;
-    p->fileList = newStringBuf();
+    p->fileList = argvNew();
+    p->fileFile = NULL;
     p->policyList = NULL;
 
     if (spec->packages == NULL) {
@@ -128,9 +129,9 @@ static Package freePackage(Package pkg)
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
-    pkg->fileList = freeStringBuf(pkg->fileList);
-    pkg->fileFile = freeStringBuf(pkg->fileFile);
-    pkg->policyList = freeStringBuf(pkg->policyList);
+    pkg->fileList = argvFree(pkg->fileList);
+    pkg->fileFile = argvFree(pkg->fileFile);
+    pkg->policyList = argvFree(pkg->policyList);
     if (pkg->cpioList) {
 	rpmfi fi = pkg->cpioList;
 	pkg->cpioList = NULL;
