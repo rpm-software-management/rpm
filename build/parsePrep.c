@@ -489,8 +489,6 @@ exit:
 int parsePrep(rpmSpec spec)
 {
     int nextPart, res, rc;
-    StringBuf sb;
-    char **lines;
     ARGV_t saveLines = NULL;
 
     if (spec->prep != NULL) {
@@ -507,12 +505,10 @@ int parsePrep(rpmSpec spec)
 	return PART_ERROR;
     }
     
-    sb = newStringBuf();
-    
     while (! (nextPart = isPart(spec->line))) {
 	/* Need to expand the macros inline.  That way we  */
 	/* can give good line number information on error. */
-	appendStringBuf(sb, spec->line);
+	argvAdd(&saveLines, spec->line);
 	if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
 	    nextPart = PART_NONE;
 	    break;
@@ -521,15 +517,14 @@ int parsePrep(rpmSpec spec)
 	}
     }
 
-    saveLines = argvSplitString(getStringBuf(sb), "\n", ARGV_NONE);
-    for (lines = saveLines; *lines; lines++) {
+    for (ARGV_const_t lines = saveLines; *lines; lines++) {
 	res = 0;
 	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
 	} else if (rstreqn(*lines, "%patch", sizeof("%patch")-1)) {
 	    res = doPatchMacro(spec, *lines);
 	} else {
-	    appendLineStringBuf(spec->prep, *lines);
+	    appendStringBuf(spec->prep, *lines);
 	}
 	if (res && !(spec->flags & RPMSPEC_FORCE)) {
 	    /* fixup from RPMRC_FAIL do*Macro() codes for now */
@@ -541,7 +536,6 @@ int parsePrep(rpmSpec spec)
 
 exit:
     argvFree(saveLines);
-    sb = freeStringBuf(sb);
 
     return nextPart;
 }
