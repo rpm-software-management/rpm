@@ -1950,10 +1950,8 @@ static void genSourceRpmName(rpmSpec spec)
 rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 {
     struct Source *srcPtr;
-    StringBuf sourceFiles;
     int x, isSpec = 1;
     struct FileList_s fl;
-    char *s, **fp;
     ARGV_t files = NULL;
     Package pkg;
     static char *_srcdefattr;
@@ -1965,15 +1963,14 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    _srcdefattr = _free(_srcdefattr);
 	oneshot = 1;
     }
-    sourceFiles = newStringBuf();
 
     genSourceRpmName(spec);
     /* Construct the file list and source entries */
-    appendLineStringBuf(sourceFiles, spec->specFile);
+    argvAdd(&files, spec->specFile);
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
 	char * sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
-	appendLineStringBuf(sourceFiles, sfn);
+	argvAdd(&files, sfn);
 	sfn = _free(sfn);
     }
 
@@ -1982,7 +1979,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    char * sfn;
 	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
-	    appendLineStringBuf(sourceFiles, sfn);
+	    argvAdd(&files, sfn);
 	    sfn = _free(sfn);
 	}
     }
@@ -2002,17 +1999,13 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     fl.pkgFlags = pkgFlags;
     fl.buildRoot = NULL;
 
-    s = getStringBuf(sourceFiles);
-    argvSplit(&files, s, "\n");
-
     /* The first source file is the spec file */
     x = 0;
-    for (fp = files; *fp != NULL; fp++) {
-	const char *diskPath;
+    for (ARGV_const_t fp = files; *fp != NULL; fp++) {
+	const char *diskPath = *fp;
 	char *tmp;
 	FileListRec flp;
 
-	diskPath = *fp;
 	SKIPSPACE(diskPath);
 	if (! *diskPath)
 	    continue;
@@ -2071,7 +2064,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 			spec->sourceHeader, 1);
     }
 
-    sourceFiles = freeStringBuf(sourceFiles);
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     freeAttrRec(&fl.def_ar);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
