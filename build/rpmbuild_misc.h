@@ -98,7 +98,7 @@ void truncStringBuf(StringBuf sb);
 /** \ingroup rpmstring
  */
 RPM_GNUC_INTERNAL
-char * getStringBuf(StringBuf sb);
+const char * getStringBuf(StringBuf sb);
 
 /** \ingroup rpmstring
  */

@@ -57,7 +57,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
     sb->tail[0] = '\0';
 }
 
-char * getStringBuf(StringBuf sb)
+const char * getStringBuf(StringBuf sb)
 {
     return (sb != NULL) ? sb->buf : NULL;
 }
