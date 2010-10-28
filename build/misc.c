@@ -59,7 +59,7 @@ void stripTrailingBlanksStringBuf(StringBuf sb)
 
 char * getStringBuf(StringBuf sb)
 {
-    return sb->buf;
+    return (sb != NULL) ? sb->buf : NULL;
 }
 
 void appendStringBufAux(StringBuf sb, const char *s, int nl)
