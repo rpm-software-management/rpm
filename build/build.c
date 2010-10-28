@@ -49,7 +49,8 @@ exit:
 /*
  * @todo Single use by %%doc in files.c prevents static.
  */
-rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb, int test)
+rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
+		const char *sb, int test)
 {
     const char * rootDir = spec->rootDir;
     char *scriptName = NULL;
@@ -146,7 +147,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name, StringBuf sb,
 	if (spec->buildSubdir)
 	    fprintf(fp, "rm -rf '%s'\n", spec->buildSubdir);
     } else if (sb != NULL)
-	fprintf(fp, "%s", getStringBuf(sb));
+	fprintf(fp, "%s", sb);
 
     (void) fputs(buildPost, fp);
     
@@ -225,19 +226,23 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 	int didBuild = (what & (RPMBUILD_PREP|RPMBUILD_BUILD|RPMBUILD_INSTALL));
 
 	if ((what & RPMBUILD_PREP) &&
-	    (rc = doScript(spec, RPMBUILD_PREP, "%prep", spec->prep, test)))
+	    (rc = doScript(spec, RPMBUILD_PREP, "%prep",
+			   getStringBuf(spec->prep), test)))
 		goto exit;
 
 	if ((what & RPMBUILD_BUILD) &&
-	    (rc = doScript(spec, RPMBUILD_BUILD, "%build", spec->build, test)))
+	    (rc = doScript(spec, RPMBUILD_BUILD, "%build",
+			   getStringBuf(spec->build), test)))
 		goto exit;
 
 	if ((what & RPMBUILD_INSTALL) &&
-	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install", spec->install, test)))
+	    (rc = doScript(spec, RPMBUILD_INSTALL, "%install",
+			   getStringBuf(spec->install), test)))
 		goto exit;
 
 	if ((what & RPMBUILD_CHECK) &&
-	    (rc = doScript(spec, RPMBUILD_CHECK, "%check", spec->check, test)))
+	    (rc = doScript(spec, RPMBUILD_CHECK, "%check",
+			   getStringBuf(spec->check), test)))
 		goto exit;
 
 	if ((what & RPMBUILD_PACKAGESOURCE) &&
@@ -263,7 +268,8 @@ static rpmRC buildSpec(BTA_t buildArgs, rpmSpec spec, int what)
 		goto exit;
 	
 	if ((what & RPMBUILD_CLEAN) &&
-	    (rc = doScript(spec, RPMBUILD_CLEAN, "%clean", spec->clean, test)))
+	    (rc = doScript(spec, RPMBUILD_CLEAN, "%clean",
+			   getStringBuf(spec->clean), test)))
 		goto exit;
 
 	if ((what & RPMBUILD_RMBUILD) &&

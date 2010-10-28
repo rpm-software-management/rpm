@@ -335,7 +335,7 @@ int parseExpressionBoolean(rpmSpec spec, const char * expr);
  */
 RPM_GNUC_INTERNAL
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char * name,
-		StringBuf sb, int test);
+		const char * sb, int test);
 
 /** \ingroup rpmbuild
  * Find sub-package control structure by name.

@@ -1867,7 +1867,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
 	    rpmRC rc;
 
-	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc", pkg->specialDoc, test);
+	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc",
+			  getStringBuf(pkg->specialDoc), test);
 	    if (rc != RPMRC_OK && _missing_doc_files_terminate_build)
 		fl.processingFailed = 1;
 	}
