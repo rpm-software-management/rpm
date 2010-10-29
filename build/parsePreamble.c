@@ -600,9 +600,9 @@ if (multiToken) { \
  * @param whitelist	string of permitted characters
  * @return		RPMRC_OK if OK
  */
-rpmRC rpmCharCheck(rpmSpec spec, char *field, size_t fsize, const char *whitelist)
+rpmRC rpmCharCheck(rpmSpec spec, const char *field, size_t fsize, const char *whitelist)
 {
-    char *ch, *stop = &field[fsize];
+    const char *ch, *stop = &field[fsize];
 
     for (ch=field; *ch && ch < stop; ch++) {
 	if (risalnum(*ch) || strchr(whitelist, *ch)) continue;
