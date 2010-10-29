@@ -1,0 +1,299 @@
+.TH "RPMINSTALL" "8" "29 June 2010" "Red Hat, Inc."
+.SH NAME
+rpminstall \- RPM Package Manager
+.SH SYNOPSIS
+
+.SS "INSTALLING, UPGRADING, AND REMOVING PACKAGES:"
+.PP
+
+\fBrpminstall\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
+\fBrpminstall\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
+\fBrpminstall\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+
+\fBrpminstall\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR]
+    [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI\ ...\fR
+
+.SS "install-options"
+.PP
+
+ [\fB--aid\fR] [\fB--allfiles\fR] [\fB--badreloc\fR] [\fB--excludepath \fIOLDPATH\fB\fR]
+ [\fB--excludedocs\fR] [\fB--force\fR] [\fB-h,--hash\fR]
+ [\fB--ignoresize\fR] [\fB--ignorearch\fR] [\fB--ignoreos\fR]
+ [\fB--includedocs\fR] [\fB--justdb\fR] [\fB--nodeps\fR]
+ [\fB--nodigest\fR] [\fB--nosignature\fR] [\fB--nosuggest\fR]
+ [\fB--noorder\fR] [\fB--noscripts\fR] [\fB--notriggers\fR]
+ [\fB--oldpackage\fR] [\fB--percent\fR] [\fB--prefix \fINEWPATH\fB\fR]
+ [\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR]
+ [\fB--replacefiles\fR] [\fB--replacepkgs\fR]
+ [\fB--test\fR]
+
+.SH "DESCRIPTION"
+
+.SS "INSTALL AND UPGRADE OPTIONS"
+.PP
+In these options, \fIPACKAGE_FILE\fR can be either \fBrpm\fR binary
+file or ASCII package manifest (see \fBPACKAGE SELECTION OPTIONS\fR), and
+may be specified as an
+\fBftp\fR or
+\fBhttp\fR URL,
+in which case the package will be downloaded before being
+installed. See \fBFTP/HTTP OPTIONS\fR
+for information on \fBrpm\fR's internal
+\fBftp\fR and
+\fBhttp\fR
+client support.
+.PP
+The general form of an rpm install command is 
+.PP
+\fBrpm\fR {\fB-i|--install\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+.PP
+This installs a new package.
+.PP
+The general form of an rpm upgrade command is 
+.PP
+\fBrpm\fR {\fB-U|--upgrade\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+.PP
+This upgrades or installs the package currently installed
+to a newer version.  This is the same as install, except
+all other version(s) of the package are removed after the
+new package is installed.
+.PP
+\fBrpm\fR {\fB-F|--freshen\fR} [\fBinstall-options\fR] \fB\fIPACKAGE_FILE\fB\fR\fI ...\fR
+.PP
+This will upgrade packages, but only ones for which an earlier version is
+installed.
+.PP
+.TP
+\fB--aid\fR
+Add suggested packages to the transaction set when needed.
+.TP
+\fB--allfiles\fR
+Installs or upgrades all the missingok files in the package,
+regardless if they exist.
+.TP
+\fB--badreloc\fR
+Used with \fB--relocate\fR, permit relocations on
+all file paths, not just those \fIOLDPATH\fR's
+included in the binary package relocation hint(s).
+.TP
+\fB--excludepath \fIOLDPATH\fB\fR
+Don't install files whose name begins with
+\fIOLDPATH\fR.
+.TP
+\fB--excludedocs\fR
+Don't install any files which are marked as documentation
+(which includes man pages and texinfo documents).
+.TP
+\fB--force\fR
+Same as using
+\fB--replacepkgs\fR,
+\fB--replacefiles\fR, and
+\fB--oldpackage\fR.
+.TP
+\fB-h, --hash\fR
+Print 50 hash marks as the package archive is unpacked.
+Use with \fB-v|--verbose\fR for a nicer display.
+.TP
+\fB--ignoresize\fR
+Don't check mount file systems for sufficient disk space before
+installing this package.
+.TP
+\fB--ignorearch\fR
+Allow installation or upgrading even if the architectures
+of the binary package and host don't match.
+.TP
+\fB--ignoreos\fR
+Allow installation or upgrading even if the operating
+systems of the binary package and host don't match.
+.TP
+\fB--includedocs\fR
+Install documentation files. This is the default behavior.
+.TP
+\fB--justdb\fR
+Update only the database, not the filesystem.
+.TP
+\fB--nodigest\fR
+Don't verify package or header digests when reading.
+.TP
+\fB--nomanifest\fR
+Don't process non-package files as manifests.
+.TP
+\fB--nosignature\fR
+Don't verify package or header signatures when reading.
+.TP
+\fB--nodeps\fR
+Don't do a dependency check before installing or upgrading
+a package.
+.TP
+\fB--nosuggest\fR
+Don't suggest package(s) that provide a missing dependency.
+.TP
+\fB--noorder\fR
+Don't reorder the packages for an install. The list of
+packages would normally be reordered to satisfy dependencies.
+.TP
+\fB--noscripts\fR
+.TP
+\fB--nopre\fR
+.TP
+\fB--nopost\fR
+.TP
+\fB--nopreun\fR
+.TP
+\fB--nopostun\fR
+Don't execute the scriptlet of the same name.
+The \fB--noscripts\fR option is equivalent to
+
+\fB--nopre\fR
+\fB--nopost\fR
+\fB--nopreun\fR
+\fB--nopostun\fR
+
+and turns off the execution of the corresponding
+\fB%pre\fR,
+\fB%post\fR,
+\fB%preun\fR, and
+\fB%postun\fR
+scriptlet(s).
+.TP
+\fB--notriggers\fR
+.TP
+\fB--notriggerin\fR
+.TP
+\fB--notriggerun\fR
+.TP
+\fB--notriggerpostun\fR
+Don't execute any trigger scriptlet of the named type.
+The \fB--notriggers\fR option is equivalent to
+
+\fB--notriggerin\fR
+\fB--notriggerun\fR
+\fB--notriggerpostun\fR
+
+and turns off execution of the corresponding
+\fB%triggerin\fR,
+\fB%triggerun\fR, and
+\fB%triggerpostun\fR
+scriptlet(s).
+.TP
+\fB--oldpackage\fR
+Allow an upgrade to replace a newer package with an older one.
+.TP
+\fB--percent\fR
+Print percentages as files are unpacked from the package archive.
+This is intended to make \fBrpm\fR easy to run from
+other tools.
+.TP
+\fB--prefix \fINEWPATH\fB\fR
+For relocatable binary packages, translate all file paths that
+start with the installation prefix in the package relocation hint(s)
+to \fINEWPATH\fR.
+.TP
+\fB--relocate \fIOLDPATH\fB=\fINEWPATH\fB\fR
+For relocatable binary packages, translate all file paths
+that start with \fIOLDPATH\fR in the
+package relocation hint(s) to \fINEWPATH\fR.
+This option can be used repeatedly if several
+\fIOLDPATH\fR's in the package are to
+be relocated.
+.TP
+\fB--replacefiles\fR
+Install the packages even if they replace files from other,
+already installed, packages.
+.TP
+\fB--replacepkgs\fR
+Install the packages even if some of them are already installed
+on this system.
+.TP
+\fB--test\fR
+Do not install the package, simply check for and report
+potential conflicts.
+.SS "ERASE OPTIONS"
+.PP
+The general form of an rpm erase command is 
+.PP
+
+\fBrpm\fR {\fB-e|--erase\fR} [\fB--allmatches\fR] [\fB--nodeps\fR] [\fB--noscripts\fR] [\fB--notriggers\fR] [\fB--test\fR] \fB\fIPACKAGE_NAME\fB\fR\fI ...\fR
+
+.PP
+The following options may also be used:
+.TP
+\fB--allmatches\fR
+Remove all versions of the package which match
+\fIPACKAGE_NAME\fR. Normally an
+error is issued if \fIPACKAGE_NAME\fR
+matches multiple packages.
+.TP
+\fB--nodeps\fR
+Don't check dependencies before uninstalling the packages.
+.TP
+\fB--noscripts\fR
+.TP
+\fB--nopreun\fR
+.TP
+\fB--nopostun\fR
+Don't execute the scriptlet of the same name.
+The \fB--noscripts\fR option during package erase is
+equivalent to
+
+\fB--nopreun\fR
+\fB--nopostun\fR
+
+and turns off the execution of the corresponding
+\fB%preun\fR, and
+\fB%postun\fR
+scriptlet(s).
+.TP
+\fB--notriggers\fR
+.TP
+\fB--notriggerun\fR
+.TP
+\fB--notriggerpostun\fR
+Don't execute any trigger scriptlet of the named type.
+The \fB--notriggers\fR option is equivalent to
+
+\fB--notriggerun\fR
+\fB--notriggerpostun\fR
+
+and turns off execution of the corresponding
+\fB%triggerun\fR, and
+\fB%triggerpostun\fR
+scriptlet(s).
+.TP
+\fB--test\fR
+Don't really uninstall anything, just go through the motions.
+Useful in conjunction with the \fB-vv\fR option
+for debugging.
+
+.SH "SEE ALSO"
+
+.nf
+\fBpopt\fR(3),
+\fBrpm\fR(8),
+\fBrpmdb\fR(8),
+\fBrpmkeys\fR(8),
+\fBrpmsign\fR(8),
+\fBrpmquery\fR(8),
+\fBrpmverify\fR(8),
+\fBrpm2cpio\fR(8),
+\fBrpmbuild\fR(8),
+\fBrpmspec\fR(8),
+.fi
+
+\fBrpm --help\fR - as rpm supports customizing the options via popt aliases 
+it's impossible to guarantee that what's described in the manual matches 
+what's available.
+
+
+\fBhttp://www.rpm.org/ <URL:http://www.rpm.org/>
+\fR
+.SH "AUTHORS"
+
+.nf
+Marc Ewing <marc@redhat.com>
+Jeff Johnson <jbj@redhat.com>
+Erik Troan <ewt@redhat.com>
+Panu Matilainen <pmatilai@redhat.com>
+.fi
