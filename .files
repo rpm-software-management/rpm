@@ -1,7 +1,0 @@
-build.c
-checksig.c
-rpm.c
-ftp.c
-install.c
-verify.c
-url.c
