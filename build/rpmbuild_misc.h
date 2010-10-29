@@ -93,11 +93,6 @@ StringBuf freeStringBuf( StringBuf sb);
 /** \ingroup rpmstring
  */
 RPM_GNUC_INTERNAL
-void truncStringBuf(StringBuf sb);
-
-/** \ingroup rpmstring
- */
-RPM_GNUC_INTERNAL
 const char * getStringBuf(StringBuf sb);
 
 /** \ingroup rpmstring

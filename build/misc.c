@@ -39,13 +39,6 @@ StringBuf freeStringBuf(StringBuf sb)
     return sb;
 }
 
-void truncStringBuf(StringBuf sb)
-{
-    sb->buf[0] = '\0';
-    sb->tail = sb->buf;
-    sb->free = sb->allocated;
-}
-
 void stripTrailingBlanksStringBuf(StringBuf sb)
 {
     while (sb->free != sb->allocated) {
