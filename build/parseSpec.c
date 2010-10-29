@@ -275,15 +275,6 @@ retry:
 	ofi->readPtr = ofi->readBuf;
 	ofi->lineNum++;
 	spec->lineNum = ofi->lineNum;
-	if (spec->sl) {
-	    speclines sl = spec->sl;
-	    if (sl->sl_nlines == sl->sl_nalloc) {
-		sl->sl_nalloc += 100;
-		sl->sl_lines = (char **) xrealloc(sl->sl_lines, 
-			sl->sl_nalloc * sizeof(*(sl->sl_lines)));
-	    }
-	    sl->sl_lines[sl->sl_nlines++] = xstrdup(ofi->readBuf);
-	}
     }
     return 0;
 }

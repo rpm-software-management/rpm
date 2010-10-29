@@ -585,30 +585,6 @@ exit:
     return rc;
 }
 
-spectag stashSt(rpmSpec spec, Header h, rpmTagVal tag, const char * lang)
-{
-    spectag t = NULL;
-
-    if (spec->st) {
-	spectags st = spec->st;
-	if (st->st_ntags == st->st_nalloc) {
-	    st->st_nalloc += 10;
-	    st->st_t = xrealloc(st->st_t, st->st_nalloc * sizeof(*(st->st_t)));
-	}
-	t = st->st_t + st->st_ntags++;
-	t->t_tag = tag;
-	t->t_startx = spec->lineNum - 1;
-	t->t_nlines = 1;
-	t->t_lang = xstrdup(lang);
-	t->t_msgid = NULL;
-	if (!(t->t_lang && !rstreq(t->t_lang, RPMBUILD_DEFAULT_LANG))) {
-	    rasprintf(&t->t_msgid, "%s(%s)", 
-		      headerGetString(h, RPMTAG_NAME), rpmTagGetName(tag));
-	}
-    }
-    return t;
-}
-
 #define SINGLE_TOKEN_ONLY \
 if (multiToken) { \
     rpmlog(RPMLOG_ERR, _("line %d: Tag takes single token only: %s\n"), \
@@ -708,7 +684,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	break;
     case RPMTAG_GROUP:
     case RPMTAG_SUMMARY:
-	(void) stashSt(spec, pkg->header, tag, lang);
     case RPMTAG_DISTRIBUTION:
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:

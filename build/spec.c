@@ -159,43 +159,11 @@ static Package freePackages(Package packages)
     return NULL;
 }
 
-/**
- */
-static inline speclines freeSl(speclines sl)
-{
-    int i;
-    if (sl == NULL) return NULL;
-    for (i = 0; i < sl->sl_nlines; i++)
-	sl->sl_lines[i] = _free(sl->sl_lines[i]);
-    sl->sl_lines = _free(sl->sl_lines);
-    _free(sl);
-    return NULL;
-}
-
-/**
- */
-static inline spectags freeSt(spectags st)
-{
-    int i;
-    if (st == NULL) return NULL;
-    for (i = 0; i < st->st_ntags; i++) {
-	spectag t = st->st_t + i;
-	t->t_lang = _free(t->t_lang);
-	t->t_msgid = _free(t->t_msgid);
-    }
-    st->st_t = _free(st->st_t);
-    _free(st);
-    return NULL;
-}
-
 rpmSpec newSpec(void)
 {
     rpmSpec spec = xcalloc(1, sizeof(*spec));
     
     spec->specFile = NULL;
-
-    spec->sl = NULL;
-    spec->st = NULL;
 
     spec->fileStack = NULL;
     spec->lbuf[0] = '\0';
@@ -254,9 +222,6 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 {
 
     if (spec == NULL) return NULL;
-
-    spec->sl = freeSl(spec->sl);
-    spec->st = freeSt(spec->st);
 
     spec->prep = freeStringBuf(spec->prep);
     spec->build = freeStringBuf(spec->build);

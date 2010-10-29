@@ -22,7 +22,6 @@ int parseDescription(rpmSpec spec)
     const char *name = NULL;
     const char *lang = RPMBUILD_DEFAULT_LANG;
     poptContext optCon = NULL;
-    spectag t = NULL;
     struct poptOption optionsTable[] = {
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n', NULL, NULL},
 	{ NULL, 'l', POPT_ARG_STRING, &lang, 'l', NULL, NULL},
@@ -78,8 +77,6 @@ int parseDescription(rpmSpec spec)
     }
 #endif
 
-    t = stashSt(spec, pkg->header, RPMTAG_DESCRIPTION, lang);
-    
     sb = newStringBuf();
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
@@ -90,7 +87,6 @@ int parseDescription(rpmSpec spec)
     } else {
 	while (! (nextPart = isPart(spec->line))) {
 	    appendLineStringBuf(sb, spec->line);
-	    if (t) t->t_nlines++;
 	    if ((rc =
 		readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
 		nextPart = PART_NONE;
