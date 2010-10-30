@@ -23,7 +23,7 @@ typedef struct ReadLevelEntry {
  */
 struct Source {
     char * fullSource;
-    char * source;     /* Pointer into fullSource */
+    const char * source;     /* Pointer into fullSource */
     int flags;
     uint32_t num;
 struct Source * next;
