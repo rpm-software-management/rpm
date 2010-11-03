@@ -2272,41 +2272,40 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
     return ii;
 }
 
-int rpmdbIndexIteratorNext(rpmdbIndexIterator ii)
+int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen)
 {
     int rc, xx;
     DBT data;
 
     if (ii == NULL)
-	return 1;
+	return -1;
 
     if (ii->ii_dbc == NULL)
         xx = dbiCopen(ii->ii_dbi, &ii->ii_dbc, 0);
 
+    /* free old data */
+    ii->ii_set = dbiFreeIndexSet(ii->ii_set);
+
     memset(&data, 0, sizeof(data));
     rc = dbiGet(ii->ii_dbi, ii->ii_dbc, &ii->ii_key, &data, DB_NEXT);
 
-    if (rc != 0 && rc != DB_NOTFOUND) {
-        rpmlog(RPMLOG_ERR,
-               _("error(%d:%s) getting next key from %s index\n"),
-               rc, db_strerror(rc), rpmTagGetName(ii->ii_rpmtag));
+    if (rc != 0) { 
+        *key = NULL;
+        *keylen = 0;
+
+        if (rc != DB_NOTFOUND) {
+            rpmlog(RPMLOG_ERR,
+                   _("error(%d:%s) getting next key from %s index\n"),
+                   rc, db_strerror(rc), rpmTagGetName(ii->ii_rpmtag));
+        }
+        return -1;
     }
-    ii->ii_set = dbiFreeIndexSet(ii->ii_set);
+
     (void) dbt2set(ii->ii_dbi, &data, &ii->ii_set);
+    *key = ii->ii_key.data;
+    *keylen = ii->ii_key.size;
 
-    return rc;
-}
-
-const void * rpmdbIndexIteratorKey(rpmdbIndexIterator ii)
-{
-    if (ii == NULL) return NULL;
-    return ii->ii_key.data;
-}
-
-size_t rpmdbIndexIteratorKeySize(rpmdbIndexIterator ii)
-{
-    if (ii == NULL) return (size_t) 0;
-    return (size_t)(ii->ii_key.size);
+    return 0;
 }
 
 unsigned int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii)

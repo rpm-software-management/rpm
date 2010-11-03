@@ -228,25 +228,14 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag);
 
 /** \ingroup rpmdb
- * Get the next key - must be called before getting the first key
+ * Get the next key - Warning! Keys are not zero terminated!
+ * Binary tags may even contain zero bytes
  * @param ii		index iterator
+ * @param key		adress to save the pointer to the key
+ * @param keylen	adress to save the length of the key to
  * @return 		0 on success; != 0 on error or end of index
  */
-int rpmdbIndexIteratorNext(rpmdbIndexIterator ii);
-
-/** \ingroup rpmdb
- * Get current key
- * @param ii            index iterator
- * @return		pointer to key content. Keys are not zero terminated!
- */
-const void * rpmdbIndexIteratorKey(rpmdbIndexIterator ii);
-
-/** \ingroup rpmdb
- * Get length of key
- * @param ii            index iterator
- * @return 		length of key
- */
-size_t rpmdbIndexIteratorKeySize(rpmdbIndexIterator ii);
+int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen);
 
 /** \ingroup rpmdb
  * Get number of entries for current key

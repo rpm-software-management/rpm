@@ -43,12 +43,13 @@ struct rpmiiObject_s {
 static PyObject *
 rpmii_iternext(rpmiiObject * s)
 {
-    if (s->ii == NULL || (rpmdbIndexIteratorNext(s->ii)) != 0) {
+    char * key;
+    size_t keylen;
+    if (s->ii == NULL || (rpmdbIndexIteratorNext(s->ii, (const void**)&key, &keylen)) != 0) {
 	s->ii = rpmdbIndexIteratorFree(s->ii);
 	return NULL;
     }
-    return PyString_FromStringAndSize(rpmdbIndexIteratorKey(s->ii),
-                                      rpmdbIndexIteratorKeySize(s->ii));
+    return PyString_FromStringAndSize(key, keylen);
 };
 
 static PyObject *
