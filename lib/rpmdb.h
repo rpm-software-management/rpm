@@ -251,9 +251,9 @@ size_t rpmdbIndexIteratorKeySize(rpmdbIndexIterator ii);
 /** \ingroup rpmdb
  * Get number of entries for current key
  * @param ii            index iterator
- * @return		number of entries. -1 on error.
+ * @return		number of entries. 0 on error.
  */
-int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii);
+unsigned int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii);
 
 /** \ingroup rpmdb
  * Get package offset of entry
@@ -261,7 +261,7 @@ int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii);
  * @param nr		number of the entry
  * @return		db offset of pkg
  */
-int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, int nr);
+unsigned int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, unsigned int nr);
 
 /** \ingroup rpmdb
  * Get tag number of entry
@@ -269,7 +269,7 @@ int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, int nr);
  * @param nr		number of the entry
  * @return		number of tag within the package
  */
-int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, int nr);
+unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr);
 
 /** \ingroup rpmdb
  * Free index iterator

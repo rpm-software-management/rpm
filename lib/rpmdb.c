@@ -2309,26 +2309,26 @@ size_t rpmdbIndexIteratorKeySize(rpmdbIndexIterator ii)
     return (size_t)(ii->ii_key.size);
 }
 
-int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii)
+unsigned int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii)
 {
     return (ii && ii->ii_set) ? dbiIndexSetCount(ii->ii_set) : 0;
 }
 
-int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, int nr)
+unsigned int rpmdbIndexIteratorPkgOffset(rpmdbIndexIterator ii, unsigned int nr)
 {
     if (!ii || !ii->ii_set)
-        return -1;
+        return 0;
     if (dbiIndexSetCount(ii->ii_set) <= nr)
-        return -1;
+        return 0;
     return dbiIndexRecordOffset(ii->ii_set, nr);
 }
 
-int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, int nr)
+unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr)
 {
     if (!ii || !ii->ii_set)
-        return -1;
+        return 0;
     if (dbiIndexSetCount(ii->ii_set) <= nr)
-        return -1;
+        return 0;
     return dbiIndexRecordFileNumber(ii->ii_set, nr);
 }
 
