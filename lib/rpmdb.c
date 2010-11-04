@@ -750,19 +750,12 @@ static rpmdb newRpmdb(const char * root, const char * home,
 }
 
 static int openDatabase(const char * prefix,
-		const char * dbpath,
-		int _dbapi, rpmdb *dbp,
+		const char * dbpath, rpmdb *dbp,
 		int mode, int perms, int flags)
 {
     rpmdb db;
     int rc, xx;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
-
-    /* Insure that _dbapi has one of -1, 1, 2, or 3 */
-    if (_dbapi < -1 || _dbapi > 4)
-	_dbapi = -1;
-    if (_dbapi == 0)
-	_dbapi = 1;
 
     if (dbp)
 	*dbp = NULL;
@@ -772,8 +765,6 @@ static int openDatabase(const char * prefix,
     db = newRpmdb(prefix, dbpath, mode, perms, flags);
     if (db == NULL)
 	return 1;
-
-    db->db_api = _dbapi;
 
     /* Try to ensure db home exists, error out if we cant even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
@@ -816,17 +807,15 @@ rpmdb rpmdbLink(rpmdb db)
 /* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
-    return openDatabase(prefix, NULL, _dbapi, dbp, mode, perms, 0);
+    return openDatabase(prefix, NULL, dbp, mode, perms, 0);
 }
 
 int rpmdbInit (const char * prefix, int perms)
 {
     rpmdb db = NULL;
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
     int rc;
 
-    rc = openDatabase(prefix, NULL, _dbapi, &db, (O_CREAT | O_RDWR), perms, 0);
+    rc = openDatabase(prefix, NULL, &db, (O_CREAT | O_RDWR), perms, 0);
     if (db != NULL) {
 	int xx;
 	xx = rpmdbOpenAll(db);
@@ -841,11 +830,9 @@ int rpmdbInit (const char * prefix, int perms)
 int rpmdbVerify(const char * prefix)
 {
     rpmdb db = NULL;
-    int _dbapi = rpmExpandNumeric("%{_dbapi}");
     int rc = 0;
 
-    rc = openDatabase(prefix, NULL, _dbapi, &db, O_RDONLY, 0644,
-			RPMDB_FLAG_VERIFYONLY);
+    rc = openDatabase(prefix, NULL, &db, O_RDONLY, 0644, RPMDB_FLAG_VERIFYONLY);
 
     if (db != NULL) {
 	int xx;
@@ -2969,14 +2956,14 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     rpmlog(RPMLOG_DEBUG, "opening old database with dbapi %d\n",
 		_dbapi);
-    if (openDatabase(prefix, dbpath, _dbapi, &olddb, O_RDONLY, 0644, 0)) {
+    if (openDatabase(prefix, dbpath, &olddb, O_RDONLY, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
     _dbapi = olddb->db_api;
     rpmlog(RPMLOG_DEBUG, "opening new database with dbapi %d\n",
 		_dbapi_rebuild);
-    if (openDatabase(prefix, newdbpath, _dbapi_rebuild, &newdb,
+    if (openDatabase(prefix, newdbpath, &newdb,
 		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
 	rc = 1;
 	goto exit;
