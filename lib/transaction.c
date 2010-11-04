@@ -692,8 +692,6 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
     rpm_color_t FColor;
     int noConfigs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONFIGS);
     int noDocs = (rpmtsFlags(ts) & RPMTRANS_FLAG_NODOCS);
-    const char * dn, * bn;
-    size_t dnlen, bnlen;
     int * drc;
     char * dff;
     int dc;
@@ -710,17 +708,11 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
     dff = xcalloc(dc, sizeof(*dff));
 
     fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0)
-    {
+    while ((i = rpmfiNext(fi)) >= 0) {
 	char ** nsp;
 	const char *flangs;
 
-	bn = rpmfiBN(fi);
-	bnlen = strlen(bn);
 	ix = rpmfiDX(fi);
-	dn = rpmfiDN(fi);
-	dnlen = strlen(dn);
-
 	drc[ix]++;
 
 	/* Don't bother with skipped files */
@@ -795,6 +787,8 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 
     /* Skip (now empty) directories that had skipped files. */
     for (j = 0; j < dc; j++) {
+	const char * dn, * bn;
+	size_t dnlen, bnlen;
 
 	if (drc[j]) continue;	/* dir still has files. */
 	if (!dff[j]) continue;	/* dir was not emptied here. */
