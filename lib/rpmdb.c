@@ -2852,8 +2852,7 @@ static int rpmdbRemoveDatabase(const char * prefix,
 }
 
 static int rpmdbMoveDatabase(const char * prefix,
-		const char * olddbpath, int _olddbapi,
-		const char * newdbpath, int _newdbapi)
+			     const char * olddbpath, const char * newdbpath)
 {
     int i;
     struct stat st;
@@ -2863,59 +2862,50 @@ static int rpmdbMoveDatabase(const char * prefix,
     sigset_t sigMask;
 
     blockSignals(&sigMask);
-    switch (_olddbapi) {
-    case 4:
-        /* Fall through */
-    case 3:
-	for (i = 0; i < dbiTagsMax; i++) {
-	    rpmDbiTag rpmtag = dbiTags[i];
-	    const char *base = rpmTagGetName(rpmtag);
-	    char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
-	    char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
+    for (i = 0; i < dbiTagsMax; i++) {
+	rpmDbiTag rpmtag = dbiTags[i];
+	const char *base = rpmTagGetName(rpmtag);
+	char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
+	char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
 
-	    if (access(src, F_OK) != 0)
+	if (access(src, F_OK) != 0)
+	    goto cont;
+
+	/*
+	 * Restore uid/gid/mode/mtime/security context if possible.
+	 */
+	if (stat(dest, &st) < 0)
+	    if (stat(src, &st) < 0)
 		goto cont;
 
-	    /*
-	     * Restore uid/gid/mode/mtime/security context if possible.
-	     */
-	    if (stat(dest, &st) < 0)
-		if (stat(src, &st) < 0)
-		    goto cont;
-
-	    if ((xx = rename(src, dest)) != 0) {
-		rc = 1;
-		goto cont;
-	    }
-	    xx = chown(dest, st.st_uid, st.st_gid);
-	    xx = chmod(dest, (st.st_mode & 07777));
-	    {	struct utimbuf stamp;
-		stamp.actime = st.st_atime;
-		stamp.modtime = st.st_mtime;
-		xx = utime(dest, &stamp);
-	    }
-
-	    if (selinux) {
-		security_context_t scon = NULL;
-		if (matchpathcon(dest, st.st_mode, &scon) != -1) {
-		    (void) setfilecon(dest, scon);
-		    freecon(scon);
-		}
-	    }
-		
-cont:
-	    free(src);
-	    free(dest);
+	if ((xx = rename(src, dest)) != 0) {
+	    rc = 1;
+	    goto cont;
+	}
+	xx = chown(dest, st.st_uid, st.st_gid);
+	xx = chmod(dest, (st.st_mode & 07777));
+	{	struct utimbuf stamp;
+	    stamp.actime = st.st_atime;
+	    stamp.modtime = st.st_mtime;
+	    xx = utime(dest, &stamp);
 	}
 
-	cleanDbenv(prefix, olddbpath);
-	cleanDbenv(prefix, newdbpath);
-	break;
-    case 2:
-    case 1:
-    case 0:
-	break;
+	if (selinux) {
+	    security_context_t scon = NULL;
+	    if (matchpathcon(dest, st.st_mode, &scon) != -1) {
+		(void) setfilecon(dest, scon);
+		freecon(scon);
+	    }
+	}
+	    
+cont:
+	free(src);
+	free(dest);
     }
+
+    cleanDbenv(prefix, olddbpath);
+    cleanDbenv(prefix, newdbpath);
+
     unblockSignals(&sigMask);
 
     if (selinux) {
@@ -3057,7 +3047,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
-	if (rpmdbMoveDatabase(prefix, newdbpath, _dbapi_rebuild, dbpath, _dbapi)) {
+	if (rpmdbMoveDatabase(prefix, newdbpath, dbpath)) {
 	    rpmlog(RPMLOG_ERR, _("failed to replace old database with new "
 			"database!\n"));
 	    rpmlog(RPMLOG_ERR, _("replace files in %s with files from %s "
