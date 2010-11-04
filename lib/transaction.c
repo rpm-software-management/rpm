@@ -794,14 +794,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
     }
 
     /* Skip (now empty) directories that had skipped files. */
-#ifndef	NOTYET
-    if (fi != NULL)	/* XXX can't happen */
-    for (j = 0; j < dc; j++)
-#else
-    if ((fi = rpmfiInitD(fi)) != NULL)
-    while (j = rpmfiNextD(fi) >= 0)
-#endif
-    {
+    for (j = 0; j < dc; j++) {
 
 	if (drc[j]) continue;	/* dir still has files. */
 	if (!dff[j]) continue;	/* dir was not emptied here. */
