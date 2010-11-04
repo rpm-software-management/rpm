@@ -2819,30 +2819,20 @@ static int cleanDbenv(const char *prefix, const char *dbpath)
     return rc;
 }
 
-static int rpmdbRemoveDatabase(const char * prefix,
-		const char * dbpath, int _dbapi)
+static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
 { 
     int i;
     char *path;
     int xx;
 
-    switch (_dbapi) {
-    case 4:
-    case 3:
-	for (i = 0; i < dbiTagsMax; i++) {
-	    const char * base = rpmTagGetName(dbiTags[i]);
-	    path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
-	    if (access(path, F_OK) == 0)
-	    	xx = unlink(path);
-	    free(path);
-	}
-	cleanDbenv(prefix, dbpath);
-	break;
-    case 2:
-    case 1:
-    case 0:
-	break;
+    for (i = 0; i < dbiTagsMax; i++) {
+	const char * base = rpmTagGetName(dbiTags[i]);
+	path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
+	if (access(path, F_OK) == 0)
+	    xx = unlink(path);
+	free(path);
     }
+    cleanDbenv(prefix, dbpath);
 
     path = rpmGetPath(prefix, "/", dbpath, NULL);
     xx = rmdir(path);
@@ -3043,7 +3033,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 		_("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	xx = rpmdbRemoveDatabase(prefix, newdbpath, _dbapi_rebuild);
+	xx = rpmdbRemoveDatabase(prefix, newdbpath);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
