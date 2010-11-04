@@ -23,7 +23,7 @@ static const char * _errpfx = "rpmdb";
 static int dbapi_err(rpmdb rdb, const char * msg, int error, int printit)
 {
     if (printit && error) {
-	int db_api = rdb->db_api;
+	int db_api = rdb->db_ver;
 	if (msg)
 	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
 		db_api, error, msg, db_strerror(error));

@@ -26,7 +26,7 @@ struct rpmdb_s {
     int		db_flags;
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
-    int		db_api;		/*!< Berkeley API type */
+    int		db_ver;		/*!< Berkeley DB version */
     unsigned char * db_bits;	/*!< package instance bit mask. */
     int		db_nbits;	/*!< no. of bits in mask. */
     rpmdb	db_next;

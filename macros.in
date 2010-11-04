@@ -538,15 +538,6 @@ print (t)\
 # "Packages" should have shared/exclusive fcntl(2) lock using "lockdbfd".
 %_dbi_config_Packages		%{?_dbi_config} lockdbfd
 
-# XXX legacy configuration.
-# Choose db interface:
-#	3	native db3 interface.
-#
-# There are two macros so that --rebuilddb can convert db1 -> db3.
-#
-%_dbapi			3
-%_dbapi_rebuild		3
-
 #==============================================================================
 # ---- GPG/PGP/PGP5 signature macros.
 #	Macro(s) to hold the arguments passed to GPG/PGP for package

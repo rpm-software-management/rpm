@@ -155,7 +155,6 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 {
     int dbix;
     dbiIndex dbi = NULL;
-    int _dbapi, _dbapi_rebuild, _dbapi_wanted;
     int rc = 0;
 
     if (db == NULL)
@@ -172,19 +171,6 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
     if ((dbi = db->_dbi[dbix]) != NULL)
 	return dbi;
 
-    _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
-    if (_dbapi_rebuild < 1 || _dbapi_rebuild > 4)
-	_dbapi_rebuild = 4;
-    _dbapi_wanted = (db->db_flags & RPMDB_FLAG_REBUILD) ?
-		    _dbapi_rebuild : db->db_api;
-    if (_dbapi == -1) {
-	_dbapi = 5;
-    }
-
-    if (_dbapi != 5) {
-	rpmlog(RPMLOG_ERR, _("dbiOpen: dbapi %d not available\n"), _dbapi);
-	return NULL;
-    }
     errno = 0;
     dbi = NULL;
     rc = dbiOpen(db, rpmtag, &dbi, flags);
@@ -193,7 +179,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	static int _printed[32];
 	if (!_printed[dbix & 0x1f]++)
 	    rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
-		   rpmTagGetName(rpmtag), _dbapi,
+		   rpmTagGetName(rpmtag), db->db_ver,
 		   (rc > 0 ? strerror(rc) : ""), rc);
     } else {
 	db->_dbi[dbix] = dbi;
@@ -744,7 +730,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->_dbi = xcalloc(dbiTagsMax, sizeof(*db->_dbi));
-    db->db_api = -1; /* hmm... */
+    db->db_ver = DB_VERSION_MAJOR; /* XXX just to put something in messages */
     db->nrefs = 0;
     return rpmdbLink(db);
 }
@@ -2787,7 +2773,6 @@ exit:
  * rm -f <prefix>/<dbpath>/__db.???
  * Environment files not existing is not an error, failure to unlink is,
  * return zero on success.
- * Only useful for BDB, dbapi 3 and 4.  
  * TODO/FIX: push this down to db3.c where it belongs
  */
 static int cleanDbenv(const char *prefix, const char *dbpath)
@@ -2905,13 +2890,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     int failed = 0;
     int removedir = 0;
     int rc = 0, xx;
-    int _dbapi;
-    int _dbapi_rebuild;
-
-    if (prefix == NULL) prefix = "/";
-
-    _dbapi = rpmExpandNumeric("%{_dbapi}");
-    _dbapi_rebuild = rpmExpandNumeric("%{_dbapi_rebuild}");
 
     tfn = rpmGetPath("%{?_dbpath}", NULL);
     if (rstreq(tfn, "")) {
@@ -2954,23 +2932,18 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     removedir = 1;
 
-    rpmlog(RPMLOG_DEBUG, "opening old database with dbapi %d\n",
-		_dbapi);
+    rpmlog(RPMLOG_DEBUG, "opening old database\n");
     if (openDatabase(prefix, dbpath, &olddb, O_RDONLY, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
-    _dbapi = olddb->db_api;
-    rpmlog(RPMLOG_DEBUG, "opening new database with dbapi %d\n",
-		_dbapi_rebuild);
+    rpmlog(RPMLOG_DEBUG, "opening new database\n");
     if (openDatabase(prefix, newdbpath, &newdb,
 		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
 	rc = 1;
 	goto exit;
     }
 
-    _dbapi_rebuild = newdb->db_api;
-    
     {	Header h = NULL;
 	rpmdbMatchIterator mi;
 #define	_RECNUM	rpmdbGetIteratorOffset(mi)
