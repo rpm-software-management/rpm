@@ -2228,8 +2228,8 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 
     (void) rpmdbCheckSignals();
 
-    rc = dbiOpen(db, rpmtag, &dbi, 0);
-    if (rc || dbi == NULL)
+    dbi = rpmdbOpenIndex(db, rpmtag, 0);
+    if (dbi == NULL)
 	return NULL;
 
     /* Chain cursors for teardown on abnormal exit. */
