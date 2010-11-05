@@ -897,7 +897,7 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 };
 
 
-int rpmdsRpmlib(rpmds * dsp, void * tblp)
+int rpmdsRpmlib(rpmds * dsp, const void * tblp)
 {
     const struct rpmlibProvides_s * rltblp = tblp;
     const struct rpmlibProvides_s * rlp;

@@ -322,7 +322,7 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
  * @param tblp		rpmlib provides table (NULL uses internal table)
  * @return		0 on success
  */
-int rpmdsRpmlib(rpmds * dsp, void * tblp);
+int rpmdsRpmlib(rpmds * dsp, const void * tblp);
 
 #ifdef __cplusplus
 }
