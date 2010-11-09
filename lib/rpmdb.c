@@ -2908,7 +2908,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rpmlog(RPMLOG_DEBUG, "rebuilding database %s into %s\n",
 	rootdbpath, newrootdbpath);
 
-    rpmlog(RPMLOG_DEBUG, "creating directory %s\n", newrootdbpath);
     if (mkdir(newrootdbpath, 0755)) {
 	rpmlog(RPMLOG_ERR, _("failed to create directory %s: %s\n"),
 	      newrootdbpath, strerror(errno));
@@ -2917,12 +2916,10 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     removedir = 1;
 
-    rpmlog(RPMLOG_DEBUG, "opening old database\n");
     if (openDatabase(prefix, dbpath, &olddb, O_RDONLY, 0644, 0)) {
 	rc = 1;
 	goto exit;
     }
-    rpmlog(RPMLOG_DEBUG, "opening new database\n");
     if (openDatabase(prefix, newdbpath, &newdb,
 		     (O_RDWR | O_CREAT), 0644, RPMDB_FLAG_REBUILD)) {
 	rc = 1;
@@ -2995,7 +2992,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
 exit:
     if (removedir && !(rc == 0 && nocleanup)) {
-	rpmlog(RPMLOG_DEBUG, "removing directory %s\n", newrootdbpath);
 	if (rmdir(newrootdbpath))
 	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
