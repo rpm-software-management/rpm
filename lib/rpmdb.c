@@ -2221,7 +2221,6 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 {
     rpmdbIndexIterator ii;
     dbiIndex dbi = NULL;
-    int rc = 0;
 
     if (db == NULL)
 	return NULL;
