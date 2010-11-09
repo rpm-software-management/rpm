@@ -147,9 +147,6 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("skip files with leading component <path> "),
 	N_("<path>") },
 
- { "fileconflicts", '\0', POPT_BIT_CLR, &rpmIArgs.probFilter,
-	(RPMPROB_FILTER_REPLACEOLDFILES | RPMPROB_FILTER_REPLACENEWFILES),
-	N_("detect file conflicts between packages"), NULL},
  { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
 	N_("short hand for --replacepkgs --replacefiles"), NULL},
 
