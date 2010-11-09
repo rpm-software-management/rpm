@@ -109,7 +109,8 @@ struct poptOption rpmInstallPoptTable[] = {
  { NULL, '\0', POPT_ARG_CALLBACK | POPT_CBFLAG_INC_DATA | POPT_CBFLAG_CONTINUE,
 	installArgCallback, 0, NULL, NULL },
 
- { "aid", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
+ { "aid", '\0', POPT_BIT_SET | POPT_ARGFLAG_DOC_HIDDEN, 
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_ADDINDEPS,
 	N_("add suggested packages to transaction"), NULL },
 
  { "allfiles", '\0', POPT_BIT_SET,
@@ -195,8 +196,8 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("do not reorder package installation to satisfy dependencies"),
 	NULL},
 
- { "nosuggest", '\0', POPT_BIT_SET, &rpmIArgs.transFlags,
-	RPMTRANS_FLAG_NOSUGGEST,
+ { "nosuggest", '\0', POPT_BIT_SET | POPT_ARGFLAG_DOC_HIDDEN,
+	&rpmIArgs.transFlags, RPMTRANS_FLAG_NOSUGGEST,
 	N_("do not suggest missing dependency resolution(s)"), NULL},
 
  { "noscripts", '\0', 0, NULL, RPMCLI_POPT_NOSCRIPTS,
