@@ -3007,8 +3007,8 @@ exit:
 	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
-    newrootdbpath = _free(newrootdbpath);
-    rootdbpath = _free(rootdbpath);
+    free(newrootdbpath);
+    free(rootdbpath);
 
     return rc;
 }
