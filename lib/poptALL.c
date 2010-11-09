@@ -22,6 +22,7 @@ const char *__progname;
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
 #define POPT_PREDEFINE		-996
+#define POPT_DBPATH		-995
 
 static int _debug = 0;
 
@@ -119,6 +120,10 @@ static void rpmcliAllArgCallback( poptContext con,
 	    val = _free(val);
 	}
 	break;
+    case POPT_DBPATH:
+	rpmcliConfigured();
+	addMacro(NULL, "_dbpath", NULL, arg, RMIL_CMDLINE);
+	break;
     case POPT_SHOWVERSION:
 	printVersion(stdout);
 	exit(EXIT_SUCCESS);
@@ -183,6 +188,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &rpmcliRootDir, 0,
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
+ { "dbpath", '\0', POPT_ARG_STRING, 0, POPT_DBPATH,
+	N_("use database in DIRECTORY"),
+	N_("DIRECTORY") },
 
  { "querytags", '\0', 0, 0, POPT_QUERYTAGS,
         N_("display known query tags"), NULL },
