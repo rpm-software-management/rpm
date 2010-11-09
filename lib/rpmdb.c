@@ -2915,13 +2915,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rpmlog(RPMLOG_DEBUG, "rebuilding database %s into %s\n",
 	rootdbpath, newrootdbpath);
 
-    if (!access(newrootdbpath, F_OK)) {
-	rpmlog(RPMLOG_ERR, _("temporary database %s already exists\n"),
-	      newrootdbpath);
-	rc = 1;
-	goto exit;
-    }
-
     rpmlog(RPMLOG_DEBUG, "creating directory %s\n", newrootdbpath);
     if (mkdir(newrootdbpath, 0755)) {
 	rpmlog(RPMLOG_ERR, _("failed to create directory %s: %s\n"),
