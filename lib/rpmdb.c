@@ -2884,33 +2884,26 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     rpmdb newdb;
     char * newdbpath = NULL;
     char * newrootdbpath = NULL;
-    char * tfn;
     int nocleanup = 1;
     int failed = 0;
     int removedir = 0;
     int rc = 0, xx;
 
-    tfn = rpmGetPath("%{?_dbpath}", NULL);
-    if (rstreq(tfn, "")) {
+    dbpath = rpmGetPath("%{?_dbpath}", NULL);
+    if (rstreq(dbpath, "")) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set"));
 	rc = 1;
 	goto exit;
     }
-    dbpath = rootdbpath = rpmGetPath(prefix, tfn, NULL);
-    if (!rstreq(prefix, "/"))
-	dbpath += strlen(prefix) - 1;
-    tfn = _free(tfn);
+    rootdbpath = rpmGetPath(prefix, dbpath, NULL);
 
-    tfn = rpmGetPath("%{?_dbpath_rebuild}", NULL);
-    if (rstreq(tfn, "") || rstreq(tfn, dbpath)) {
-	tfn = _free(tfn);
-	rasprintf(&tfn, "%srebuilddb.%d", dbpath, (int) getpid());
+    newdbpath = rpmGetPath("%{?_dbpath_rebuild}", NULL);
+    if (rstreq(newdbpath, "") || rstreq(newdbpath, dbpath)) {
+	newdbpath = _free(newdbpath);
+	rasprintf(&newdbpath, "%srebuilddb.%d", dbpath, (int) getpid());
 	nocleanup = 0;
     }
-    newdbpath = newrootdbpath = rpmGetPath(prefix, tfn, NULL);
-    if (!rstreq(prefix, "/"))
-	newdbpath += strlen(prefix) - 1;
-    tfn = _free(tfn);
+    newrootdbpath = rpmGetPath(prefix, newdbpath, NULL);
 
     rpmlog(RPMLOG_DEBUG, "rebuilding database %s into %s\n",
 	rootdbpath, newrootdbpath);
@@ -3007,6 +3000,8 @@ exit:
 	    rpmlog(RPMLOG_ERR, _("failed to remove directory %s: %s\n"),
 			newrootdbpath, strerror(errno));
     }
+    free(newdbpath);
+    free(dbpath);
     free(newrootdbpath);
     free(rootdbpath);
 
