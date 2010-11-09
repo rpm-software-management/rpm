@@ -22,9 +22,6 @@ const char *__progname;
 #define POPT_SHOWRC		-998
 #define POPT_QUERYTAGS		-997
 #define POPT_PREDEFINE		-996
-#ifdef  NOTYET
-#define POPT_RCFILE		-995
-#endif
 
 static int _debug = 0;
 
@@ -135,10 +132,6 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmDisplayQueryTags(stdout);
 	exit(EXIT_SUCCESS);
 	break;
-#if defined(POPT_RCFILE)
-    case POPT_RCFILE:		/* XXX FIXME: noop for now */
-	break;
-#endif
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags |= VERIFY_DIGEST;
 	break;
@@ -184,15 +177,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmcliPipeOutput, 0,
 	N_("send stdout to CMD"),
 	N_("CMD") },
-#if !defined(POPT_RCFILE)
  { "rcfile", '\0', POPT_ARG_STRING, &rpmcliRcfile, 0,
 	N_("read <FILE:...> instead of default file(s)"),
 	N_("<FILE:...>") },
-#else
- { "rcfile", '\0', 0, NULL, POPT_RCFILE,	
-	N_("read <FILE:...> instead of default file(s)"),
-	N_("<FILE:...>") },
-#endif
  { "root", 'r', POPT_ARG_STRING|POPT_ARGFLAG_SHOW_DEFAULT, &rpmcliRootDir, 0,
 	N_("use ROOT as top level directory"),
 	N_("ROOT") },
