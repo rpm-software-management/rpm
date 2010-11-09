@@ -53,7 +53,7 @@ rpmii_iternext(rpmiiObject * s)
 };
 
 static PyObject *
-rpmii_offsets(rpmiiObject * s)
+rpmii_instances(rpmiiObject * s)
 {
     int entries = rpmdbIndexIteratorNumPkgs(s->ii);
     PyObject * list = PyList_New(0);
@@ -70,8 +70,7 @@ rpmii_offsets(rpmiiObject * s)
 }
 
 static struct PyMethodDef rpmii_methods[] = {
-    {"offsets",    (PyCFunction) rpmii_offsets,       METH_NOARGS,
-     NULL },
+    {"instances", (PyCFunction) rpmii_instances, METH_NOARGS, NULL},
     {NULL,		NULL}		/* sentinel */
 };
 
