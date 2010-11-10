@@ -2833,7 +2833,7 @@ static int rpmdbMoveDatabase(const char * prefix,
 	    goto cont;
 
 	/*
-	 * Restore uid/gid/mode/mtime/security context if possible.
+	 * Restore uid/gid/mode/security context if possible.
 	 */
 	if (stat(dest, &st) < 0)
 	    if (stat(src, &st) < 0)
@@ -2845,11 +2845,6 @@ static int rpmdbMoveDatabase(const char * prefix,
 	}
 	xx = chown(dest, st.st_uid, st.st_gid);
 	xx = chmod(dest, (st.st_mode & 07777));
-	{	struct utimbuf stamp;
-	    stamp.actime = st.st_atime;
-	    stamp.modtime = st.st_mtime;
-	    xx = utime(dest, &stamp);
-	}
 
 	if (selinux) {
 	    security_context_t scon = NULL;
