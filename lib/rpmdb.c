@@ -67,7 +67,6 @@ typedef struct _dbiIndexSet {
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
 
-static int doOpenAll(rpmdb db);
 static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
@@ -116,7 +115,7 @@ static int buildIndexes(rpmdb db)
     Header h;
     rpmdbMatchIterator mi;
 
-    rc += doOpenAll(db);
+    rc += rpmdbOpenAll(db);
 
     /* If the main db was just created, this is expected - dont whine */
     if (!(dbiFlags(db->_dbi[0]) & DBI_CREATED)) {
@@ -199,6 +198,9 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	    if (!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
 		rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
 		db->db_buildindex++;
+                if (db->db_buildindex == 1) {
+                    buildIndexes(db);
+                }
 	    }
 	}
     }
@@ -611,28 +613,17 @@ const char *rpmdbHome(rpmdb db)
     return dbdir;
 }
 
-static int doOpenAll(rpmdb db)
-{
-    int rc = 0;
-    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
-	dbiIndex dbi = db->_dbi[dbix];
-	if (dbi == NULL) {
-	    rc += (rpmdbOpenIndex(db, dbiTags[dbix], db->db_flags) == NULL);
-	}
-    }
-    return rc;
-}
-
 int rpmdbOpenAll(rpmdb db)
 {
     int rc = 0;
 
     if (db == NULL) return -2;
 
-    rc += doOpenAll(db);
-
-    if (db->db_buildindex) {
-	rc += buildIndexes(db);
+    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
+	dbiIndex dbi = db->_dbi[dbix];
+	if (dbi == NULL) {
+	    rc += (rpmdbOpenIndex(db, dbiTags[dbix], db->db_flags) == NULL);
+	}
     }
     return rc;
 }
@@ -2036,9 +2027,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     dbi = rpmdbOpenIndex(db, rpmtag, 0);
     if (dbi == NULL)
 	return NULL;
-
-    if (db->db_buildindex)
-	buildIndexes(db);
 
     /*
      * Handle label and file name special cases.
