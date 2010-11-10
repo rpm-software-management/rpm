@@ -1,7 +1,7 @@
 # translation of it.po to
 # Copyright (C) 2006 Free Software Foundation, Inc.
-#
-#
+# 
+# 
 # Francesco Tombolini <tombo@adamantio.net>, 2008.
 # Silvio Pierro <perplesso82@gmai.com>,2008.
 # Guido Grazioli <guido.grazioli@gmail.com>, 2010.
@@ -10,13 +10,13 @@ msgstr ""
 "Project-Id-Version: it\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
 "POT-Creation-Date: 2010-10-22 15:01+0300\n"
-"PO-Revision-Date: 2010-10-03 20:56+0200\n"
+"PO-Revision-Date: 2010-11-10 16:56+0200\n"
 "Last-Translator: Guido Grazioli <guido.grazioli@gmail.com>\n"
 "Language-Team: Italian <trans-it@lists.fedoraproject.org>\n"
-"Language: it\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: it\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);X-Generator: KAider 0.1\n"
 
 #: cliutils.c:20 lib/poptI.c:29
@@ -36,11 +36,8 @@ msgstr "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
 
 #: cliutils.c:32
 #, c-format
-msgid ""
-"This program may be freely redistributed under the terms of the GNU GPL\n"
-msgstr ""
-"Questo programma può essere ridistribuito liberamente sotto i termini della "
-"GNU GPL\n"
+msgid "This program may be freely redistributed under the terms of the GNU GPL\n"
+msgstr "Questo programma può essere ridistribuito liberamente sotto i termini della GNU GPL\n"
 
 #: cliutils.c:52
 #, c-format
@@ -110,26 +107,19 @@ msgstr "è possibile specificare solo una modalità principale"
 
 #: rpmqv.c:157
 msgid "only installation, upgrading, rmsource and rmspec may be forced"
-msgstr ""
-"è possibile forzare solo i processi di installazione, aggiornamento, "
-"rmsource e rmspec"
+msgstr "è possibile forzare solo i processi di installazione, aggiornamento, rmsource e rmspec"
 
 #: rpmqv.c:159
 msgid "files may only be relocated during package installation"
-msgstr ""
-"i file possono essere riposizionati solo durante l'installazione del "
-"pacchetto"
+msgstr "i file possono essere riposizionati solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:162
 msgid "cannot use --prefix with --relocate or --excludepath"
 msgstr "impossibile usare --prefix con --relocate o --excludepath"
 
 #: rpmqv.c:165
-msgid ""
-"--relocate and --excludepath may only be used when installing new packages"
-msgstr ""
-"--relocate e --excludepath possono essere usati solo quando si installano "
-"nuovi pacchetti"
+msgid "--relocate and --excludepath may only be used when installing new packages"
+msgstr "--relocate e --excludepath possono essere usati solo quando si installano nuovi pacchetti"
 
 #: rpmqv.c:168
 msgid "--prefix may only be used when installing new packages"
@@ -141,31 +131,23 @@ msgstr "gli argomenti per --prefix devono iniziare con /"
 
 #: rpmqv.c:174
 msgid "--hash (-h) may only be specified during package installation"
-msgstr ""
-"--hash (-h) può essere specificato solo durante l'installazione del pacchetto"
+msgstr "--hash (-h) può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:178
 msgid "--percent may only be specified during package installation"
-msgstr ""
-"--percent può essere specificato solo durante l'installazione del pacchetto"
+msgstr "--percent può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:182
 msgid "--replacepkgs may only be specified during package installation"
-msgstr ""
-"--replacepkgs può essere specificato solo durante l'installazione del "
-"pacchetto"
+msgstr "--replacepkgs può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:186
 msgid "--excludedocs may only be specified during package installation"
-msgstr ""
-"--excludedocs può essere specificato solo durante l'installazione del "
-"pacchetto"
+msgstr "--excludedocs può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:190
 msgid "--includedocs may only be specified during package installation"
-msgstr ""
-"--includedocs può essere specificato solo durante l'installazione del "
-"pacchetto"
+msgstr "--includedocs può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:194
 msgid "only one of --excludedocs and --includedocs may be specified"
@@ -173,76 +155,47 @@ msgstr "è possibile specificare solo uno tra  --excludedocs e --includedocs"
 
 #: rpmqv.c:198
 msgid "--ignorearch may only be specified during package installation"
-msgstr ""
-"--ignorearch può essere specificato solo durante l'installazione del "
-"pacchetto"
+msgstr "--ignorearch può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:202
 msgid "--ignoreos may only be specified during package installation"
-msgstr ""
-"--ignoreos può essere specificato solo durante l'installazione del pacchetto"
+msgstr "--ignoreos può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:207
 msgid "--ignoresize may only be specified during package installation"
-msgstr ""
-"--ignoresize può essere specificato solo durante l'installazione del "
-"pacchetto"
+msgstr "--ignoresize può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:211
 msgid "--allmatches may only be specified during package erasure"
-msgstr ""
-"--allmatches può essere specificato solo durante la rimozione del pacchetto"
+msgstr "--allmatches può essere specificato solo durante la rimozione del pacchetto"
 
 #: rpmqv.c:215
 msgid "--allfiles may only be specified during package installation"
-msgstr ""
-"--allfiles può essere specificato solo durante l'installazione del pacchetto"
+msgstr "--allfiles può essere specificato solo durante l'installazione del pacchetto"
 
 #: rpmqv.c:220
 msgid "--justdb may only be specified during package installation and erasure"
-msgstr ""
-"--justdb può essere specificato solo durante l'installazione e la rimozione "
-"del pacchetto"
+msgstr "--justdb può essere specificato solo durante l'installazione e la rimozione del pacchetto"
 
 #: rpmqv.c:225
-msgid ""
-"script disabling options may only be specified during package installation "
-"and erasure"
-msgstr ""
-"le opzioni per la disabilitazione dello script possono essere specificate "
-"solo durante l'installazione e la rimozione del pacchetto"
+msgid "script disabling options may only be specified during package installation and erasure"
+msgstr "le opzioni per la disabilitazione dello script possono essere specificate solo durante l'installazione e la rimozione del pacchetto"
 
 #: rpmqv.c:230
-msgid ""
-"trigger disabling options may only be specified during package installation "
-"and erasure"
-msgstr ""
-"le opzioni di disabilitazione dell'attivazione possono essere specificate "
-"solo durante l'installazione e la rimozione del pacchetto"
+msgid "trigger disabling options may only be specified during package installation and erasure"
+msgstr "le opzioni di disabilitazione dell'attivazione possono essere specificate solo durante l'installazione e la rimozione del pacchetto"
 
 #: rpmqv.c:234
-msgid ""
-"--nodeps may only be specified during package building, rebuilding, "
-"recompilation, installation,erasure, and verification"
-msgstr ""
-"--nodeps può essere specificato solo durante la creazione, ricreazione, "
-"ricompilazione, installazione, eliminazione e verifica del pacchetto"
+msgid "--nodeps may only be specified during package building, rebuilding, recompilation, installation,erasure, and verification"
+msgstr "--nodeps può essere specificato solo durante la creazione, ricreazione, ricompilazione, installazione, eliminazione e verifica del pacchetto"
 
 #: rpmqv.c:239
-msgid ""
-"--test may only be specified during package installation, erasure, and "
-"building"
-msgstr ""
-"--test può essere specificato solo durante l'installazione, rimozione e "
-"creazione del pacchetto"
+msgid "--test may only be specified during package installation, erasure, and building"
+msgstr "--test può essere specificato solo durante l'installazione, rimozione e creazione del pacchetto"
 
 #: rpmqv.c:244
-msgid ""
-"--root (-r) may only be specified during installation, erasure, querying, "
-"and database rebuilds"
-msgstr ""
-"--root (-r) può essere specificato solo durante l'installazione, la "
-"rimozione, l'interrogazione e nei processi di ricreazione del database"
+msgid "--root (-r) may only be specified during installation, erasure, querying, and database rebuilds"
+msgstr "--root (-r) può essere specificato solo durante l'installazione, la rimozione, l'interrogazione e nei processi di ricreazione del database"
 
 #: rpmqv.c:249 rpmbuild.c:547
 msgid "arguments to --root (-r) must begin with a /"
@@ -272,9 +225,7 @@ msgstr "buildroot è già specificato, ignora %s\n"
 #: rpmbuild.c:119
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
-msgstr ""
-"compila attraverso %prep (scompatta i sorgenti e applica le patch) da "
-"<specfile>"
+msgstr "compila attraverso %prep (scompatta i sorgenti e applica le patch) da <specfile>"
 
 #: rpmbuild.c:120 rpmbuild.c:123 rpmbuild.c:126 rpmbuild.c:129 rpmbuild.c:132
 #: rpmbuild.c:135 rpmbuild.c:138
@@ -287,8 +238,7 @@ msgstr "compila attraverso %build (%prep, e poi compila) da <specfile>"
 
 #: rpmbuild.c:125
 msgid "build through %install (%prep, %build, then install) from <specfile>"
-msgstr ""
-"compila attraverso %install (%prep, %build, e poi installa) da <specfile>"
+msgstr "compila attraverso %install (%prep, %build, e poi installa) da <specfile>"
 
 #: rpmbuild.c:128
 #, c-format
@@ -310,9 +260,7 @@ msgstr "compila solo il pacchetto sorgente da <specfile>"
 #: rpmbuild.c:141
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
-msgstr ""
-"compila attraverso %prep (scompatta i sorgenti ed applica le patch) da "
-"<tarball>"
+msgstr "compila attraverso %prep (scompatta i sorgenti ed applica le patch) da <tarball>"
 
 #: rpmbuild.c:142 rpmbuild.c:145 rpmbuild.c:148 rpmbuild.c:151 rpmbuild.c:154
 #: rpmbuild.c:157 rpmbuild.c:160
@@ -353,10 +301,8 @@ msgid "<source package>"
 msgstr "<source package>"
 
 #: rpmbuild.c:166
-msgid ""
-"build through %install (%prep, %build, then install) from <source package>"
-msgstr ""
-"compila attraverso %install (%prep, %build, poi installa) da <source package>"
+msgid "build through %install (%prep, %build, then install) from <source package>"
+msgstr "compila attraverso %install (%prep, %build, poi installa) da <source package>"
 
 #: rpmbuild.c:170
 msgid "override build root"
@@ -383,11 +329,8 @@ msgid "do not verify build dependencies"
 msgstr "non verificare le dipendenze di compilazione"
 
 #: rpmbuild.c:182
-#, fuzzy
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
-msgstr ""
-"genera l'intestazione/i del pacchetto compatibile con il packaging (legacy) "
-"rpm[23]"
+msgstr "genera pacchetti con intestazioni compatibili con rpm v3 (legacy)"
 
 #: rpmbuild.c:186
 msgid "do not accept i18N msgstr's from specfile"
@@ -411,9 +354,7 @@ msgstr "annulla la piattaforma target"
 
 #: rpmbuild.c:211
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
-msgstr ""
-"Opzioni di compilazione 'Build' con [ <specfile> | <tarball> | <source "
-"package> ]:"
+msgstr "Opzioni di compilazione 'Build' con [ <specfile> | <tarball> | <source package> ]:"
 
 #: rpmbuild.c:231
 msgid "Failed build dependencies:\n"
@@ -470,9 +411,7 @@ msgstr "inizializza database"
 
 #: rpmdb.c:26
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
-"ricompila gli elenchi invertiti del database dalle intestazioni dei "
-"pacchetti installati"
+msgstr "ricompila gli elenchi invertiti del database dalle intestazioni dei pacchetti installati"
 
 #: rpmdb.c:29
 msgid "verify database files"
@@ -488,16 +427,15 @@ msgstr "importa una armored public key"
 
 #: rpmkeys.c:30 rpmkeys.c:32
 msgid "list keys from RPM keyring"
-msgstr ""
+msgstr "elenca le chiavi del keyring RPM"
 
 #: rpmkeys.c:55 rpmsign.c:137
 msgid "no arguments given"
 msgstr "non è stato specificato alcun argomento"
 
 #: rpmsign.c:27
-#, fuzzy
 msgid "sign package(s)"
-msgstr "installa i pacchetto/i"
+msgstr "firma i pacchetti"
 
 #: rpmsign.c:29
 msgid "sign package(s) (identical to --addsign)"
@@ -1045,9 +983,9 @@ msgid "line %d: Error parsing %%files: %s\n"
 msgstr "riga %d: Errore nell'analisi dei %%files: %s\n"
 
 #: build/parsePolicies.c:32
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Error parsing %%policies: %s\n"
-msgstr "riga %d: Errore nell'analisi dei %%files: %s\n"
+msgstr "riga %d: Errore nel parsing di %%policies: %s\n"
 
 #: build/parsePreamble.c:155
 #, c-format
@@ -1275,11 +1213,8 @@ msgstr "riga %d: secondo %%prep\n"
 
 #: build/parseReqs.c:109
 #, c-format
-msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
-msgstr ""
-"riga %d: I token della dipendenza devono iniziare con i caratteri alfa-"
-"numerici, '_' o '/': %s\n"
+msgid "line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+msgstr "riga %d: I token della dipendenza devono iniziare con i caratteri alfa-numerici, '_' o '/': %s\n"
 
 #: build/parseReqs.c:136
 #, c-format
@@ -1363,8 +1298,7 @@ msgstr "istruzione %%include malformata\n"
 
 #: build/parseSpec.c:633
 msgid "No compatible architectures found for build\n"
-msgstr ""
-"Non è stata trovata alcuna architettura compatibile per la compilazione\n"
+msgstr "Non è stata trovata alcuna architettura compatibile per la compilazione\n"
 
 #: build/parseSpec.c:667
 #, c-format
@@ -1374,69 +1308,66 @@ msgstr "Il pacchetto non possiede alcuna %%description: %s\n"
 #: build/policies.c:86
 #, c-format
 msgid "Policy module '%s' duplicated with overlapping types\n"
-msgstr ""
+msgstr "Modulo di policy '%s' duplicato con tipi in overlapping\n"
 
 #: build/policies.c:92
 #, c-format
 msgid "Base modules '%s' and '%s' have overlapping types\n"
-msgstr ""
+msgstr "Moduli base '%s' e '%s' hanno tipi in overlapping\n"
 
 #: build/policies.c:100
-#, fuzzy
 msgid "Failed to get policies from header\n"
-msgstr "Impossibile leggere il file spec da %s\n"
+msgstr "Impossibile leggere le policies dall'intestazione\n"
 
 #: build/policies.c:153
 #, c-format
 msgid "%%semodule requires a file path\n"
-msgstr ""
+msgstr "%%semodule richiede un percorso file\n"
 
 #: build/policies.c:162
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read  policy file: %s\n"
-msgstr "Impossibile leggere il file spec da %s\n"
+msgstr "Impossibile leggere il file policy: %s\n"
 
 #: build/policies.c:169
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to encode policy file: %s\n"
-msgstr "Impossibile leggere il file spec da %s\n"
+msgstr "Impossibile codificare il file policy: %s\n"
 
 #: build/policies.c:186
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to determine a policy name: %s\n"
-msgstr "Impossibile aprire tar pipe: %m\n"
+msgstr "Impossibile determinare il nome della policy: %s\n"
 
 #: build/policies.c:198
 #, c-format
-msgid ""
-"'%s' type given with other types in %%semodule %s. Compacting types to "
-"'%s'.\n"
-msgstr ""
+msgid "'%s' type given with other types in %%semodule %s. Compacting types to '%s'.\n"
+msgstr "Tipo '%s' impostato con altri tipi in %%semodule %s. Compattazione dei tipi in '%s'.\n"
 
 #: build/policies.c:248
-#, fuzzy, c-format
+#, c-format
 msgid "Error parsing %s: %s\n"
-msgstr "Errore nell'analisi del %%setup: %s\n"
+msgstr "Errore nel parsing di %s: %s\n"
 
 #: build/policies.c:254
-#, fuzzy, c-format
+#, c-format
 msgid "Expecting %%semodule tag: %s\n"
-msgstr "Esecuzione(%s) in corso: %s\n"
+msgstr "Atteso tag %%semodule: %s\n"
 
 #: build/policies.c:264
-#, fuzzy, c-format
+#, c-format
 msgid "Missing module path in line: %s\n"
-msgstr "%s mancante in %s %s\n"
+msgstr "Percorso del modulo mancante alla linea: %s\n"
 
 #: build/policies.c:270
-#, fuzzy, c-format
+#, c-format
 msgid "Too many arguments in line: %s\n"
-msgstr "Troppi argomenti sulla riga dati di %s:%d\n"
+msgstr "Troppi argomenti alla linea: %s\n"
 
 #: build/policies.c:309
-#, fuzzy, c-format
+#, c-format
 msgid "Processing policies: %s\n"
-msgstr "Elaborazione file: %s\n"
+msgstr "Elaborazione policies: %s\n"
 
 #: build/rpmfc.c:75
 #, c-format
@@ -1464,14 +1395,14 @@ msgid "Couldn't fork %s: %s\n"
 msgstr "Impossibile biforcare %s: %s\n"
 
 #: build/rpmfc.c:306
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed: %x\n"
-msgstr "%s fallito: %s\n"
+msgstr "%s fallito: %x\n"
 
 #: build/rpmfc.c:310
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write all data to %s: %s\n"
-msgstr "salvataggio di tutti i dati su %s fallito\n"
+msgstr "impossibile salvare tutti i dati su %s: %s\n"
 
 #: build/rpmfc.c:785
 #, c-format
@@ -1643,8 +1574,7 @@ msgstr "il gruppo %s non esiste - utilizzazione utente root\n"
 #: lib/fsm.c:1355
 #, c-format
 msgid "archive file %s was not found in header file list\n"
-msgstr ""
-"file archive %s non è stato trovato nell'elenco dei file di intestazione\n"
+msgstr "file archive %s non è stato trovato nell'elenco dei file di intestazione\n"
 
 #: lib/fsm.c:1796 lib/fsm.c:1943
 #, c-format
@@ -1887,17 +1817,11 @@ msgstr "aggiungere i pacchetti suggeriti alla transazione"
 
 #: lib/poptI.c:117
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
-"installare tutti i file, anche le configurazioni che possono altrimenti "
-"essere saltate"
+msgstr "installare tutti i file, anche le configurazioni che possono altrimenti essere saltate"
 
 #: lib/poptI.c:121
-msgid ""
-"remove all packages which match <package> (normally an error is generated if "
-"<package> specified multiple packages)"
-msgstr ""
-"rimuovere tutti i pacchetti corrispondenti a <package> (normalmente viene "
-"generato un errore se con <package> vengono specificati pacchetti multipli)"
+msgid "remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"
+msgstr "rimuovere tutti i pacchetti corrispondenti a <package> (normalmente viene generato un errore se con <package> vengono specificati pacchetti multipli)"
 
 #: lib/poptI.c:127 lib/poptI.c:206
 msgid "do not execute package scriptlet(s)"
@@ -1953,8 +1877,7 @@ msgstr "<packagefile>+"
 
 #: lib/poptI.c:161
 msgid "print hash marks as package installs (good with -v)"
-msgstr ""
-"mostra i caratteri hash durante l'installazione del pacchetto (utile con -v)"
+msgstr "mostra i caratteri hash durante l'installazione del pacchetto (utile con -v)"
 
 #: lib/poptI.c:164
 msgid "don't verify package architecture"
@@ -1998,8 +1921,7 @@ msgstr "non installare contesti di sicurezza dei file"
 
 #: lib/poptI.c:198
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
-"non riordinare l'installazione dei pacchetti per soddisfare le dipendenze"
+msgstr "non riordinare l'installazione dei pacchetti per soddisfare le dipendenze"
 
 #: lib/poptI.c:203
 msgid "do not suggest missing dependency resolution(s)"
@@ -2054,12 +1976,8 @@ msgid "do not perform any collection actions"
 msgstr "non eseguire azioni sulle collezioni"
 
 #: lib/poptI.c:242
-msgid ""
-"upgrade to an old version of the package (--force on upgrades does this "
-"automatically)"
-msgstr ""
-"aggiorna ad una versione più vecchia del pacchetto (sugli aggiornamenti --"
-"force esegue questa operazione automaticamente)"
+msgid "upgrade to an old version of the package (--force on upgrades does this automatically)"
+msgstr "aggiorna ad una versione più vecchia del pacchetto (sugli aggiornamenti --force esegue questa operazione automaticamente)"
 
 #: lib/poptI.c:246
 msgid "print percentages as package installs"
@@ -2119,13 +2037,11 @@ msgstr "interrogare/verificare un file del pacchetto"
 
 #: lib/poptQV.c:84
 msgid "query/verify package(s) with package identifier"
-msgstr ""
-"interrogare/verificare il pacchetto/i con un identificatore del pacchetto"
+msgstr "interrogare/verificare il pacchetto/i con un identificatore del pacchetto"
 
 #: lib/poptQV.c:86
 msgid "query/verify package(s) with header identifier"
-msgstr ""
-"interrogare/verificare il pacchetto/i con un identificatore di intestazione"
+msgstr "interrogare/verificare il pacchetto/i con un identificatore di intestazione"
 
 #: lib/poptQV.c:89
 msgid "rpm query mode"
@@ -2137,8 +2053,7 @@ msgstr "interrogare/verificare una istanza dell'intestazione"
 
 #: lib/poptQV.c:93
 msgid "query/verify package(s) from install transaction"
-msgstr ""
-"interrogare/verificare il pacchetto/i dalla transazione di installazione"
+msgstr "interrogare/verificare il pacchetto/i dalla transazione di installazione"
 
 #: lib/poptQV.c:95
 msgid "query the package(s) triggered by the package"
@@ -2313,8 +2228,7 @@ msgstr "il pacchetto non possiede alcun elenco gruppo/proprietario dei file\n"
 
 #: lib/query.c:229
 msgid "package has neither file owner or id lists\n"
-msgstr ""
-"il pacchetto non possiede ne un proprietario del file ne un elenco id\n"
+msgstr "il pacchetto non possiede ne un proprietario del file ne un elenco id\n"
 
 #: lib/query.c:319
 #, c-format
@@ -2399,8 +2313,7 @@ msgstr "%s: headerRead fallito\n"
 #: lib/rpmchecksig.c:125
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
-msgstr ""
-"%s: La regione header immutabile non può essere letta. Pacchetto corrotto?\n"
+msgstr "%s: La regione header immutabile non può essere letta. Pacchetto corrotto?\n"
 
 #: lib/rpmchecksig.c:159
 #, c-format
@@ -2461,14 +2374,11 @@ msgstr "SI"
 
 #: lib/rpmds.c:845
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
-msgstr ""
-"Supporto alla versione per le dipendenze PreReq:, Provides: e Obsoletes:."
+msgstr "Supporto alla versione per le dipendenze PreReq:, Provides: e Obsoletes:."
 
 #: lib/rpmds.c:848
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
-msgstr ""
-"file name conservati come tuple (dirName,baseName,dirIndex), non come "
-"percorsi."
+msgstr "file name conservati come tuple (dirName,baseName,dirIndex), non come percorsi."
 
 #: lib/rpmds.c:852
 msgid "package payload can be compressed using bzip2."
@@ -2488,19 +2398,15 @@ msgstr "il/i file payload del pacchetto presentano un prefisso \"./\""
 
 #: lib/rpmds.c:867
 msgid "package name-version-release is not implicitly provided."
-msgstr ""
-"il nome-versione-release del pacchetto non viene implicitamente fornito."
+msgstr "il nome-versione-release del pacchetto non viene implicitamente fornito."
 
 #: lib/rpmds.c:870
 msgid "header tags are always sorted after being loaded."
-msgstr ""
-"i tag delle intestazioni vengono sempre ordinate dopo il loro caricamento."
+msgstr "i tag delle intestazioni vengono sempre ordinate dopo il loro caricamento."
 
 #: lib/rpmds.c:873
 msgid "the scriptlet interpreter can use arguments from header."
-msgstr ""
-"l'interprete di scriptlet può utilizzare gli argomenti presenti "
-"nell'intestazione."
+msgstr "l'interprete di scriptlet può utilizzare gli argomenti presenti nell'intestazione."
 
 #: lib/rpmds.c:876
 msgid "a hardlink file set may be installed without being complete."
@@ -2508,9 +2414,7 @@ msgstr "un set di file hardlink può essere installato senza che sia completo."
 
 #: lib/rpmds.c:879
 msgid "package scriptlets may access the rpm database while installing."
-msgstr ""
-"le scriptlet del pacchetto potrebbero accedere al database rpm durante "
-"l'installazione."
+msgstr "le scriptlet del pacchetto potrebbero accedere al database rpm durante l'installazione."
 
 #: lib/rpmds.c:883
 msgid "internal support for lua scripts."
@@ -2526,8 +2430,7 @@ msgstr "supporto per le file capabilities POSIX.1e"
 
 #: lib/rpmds.c:895
 msgid "package scriptlets can be expanded at install time."
-msgstr ""
-"le scriptlet del pacchetto possono essere espanse durante l'installazione."
+msgstr "le scriptlet del pacchetto possono essere espanse durante l'installazione."
 
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:292
 #: lib/rpminstall.c:323 tools/rpmgraph.c:93 tools/rpmgraph.c:130
@@ -2634,9 +2537,9 @@ msgid "waiting for %s lock on %s\n"
 msgstr "attesa del lock %s su %s\n"
 
 #: lib/rpmplugins.c:60
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dlopen %s %s\n"
-msgstr "Impossibile aprire %s: %s\n"
+msgstr "Impossibile eseguire dlopen di %s %s\n"
 
 #: lib/rpmplugins.c:67
 #, c-format
@@ -2651,12 +2554,12 @@ msgstr "Impossibile espandere la macro  %%__collection_%s\n"
 #: lib/rpmplugins.c:137 lib/rpmplugins.c:142
 #, c-format
 msgid "Plugin %s not loaded\n"
-msgstr ""
+msgstr "Plugin %s non caricato\n"
 
 #: lib/rpmplugins.c:150
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resolve %s plugin symbol %s: %s\n"
-msgstr "Impossibile risolvere il simbolo %s: %s\n"
+msgstr "Impossibile risolvere nel plugin %s il simbolo %s: %s\n"
 
 #: lib/rpmprob.c:109
 msgid "different"
@@ -2685,34 +2588,27 @@ msgstr "il percorso %s nel pacchetto %s non è riposizionabile"
 #: lib/rpmprob.c:133
 #, c-format
 msgid "file %s conflicts between attempted installs of %s and %s"
-msgstr ""
-"il file %s entra in conflitto durante il tentativo d'installazione di %s e %s"
+msgstr "il file %s entra in conflitto durante il tentativo d'installazione di %s e %s"
 
 #: lib/rpmprob.c:138
 #, c-format
 msgid "file %s from install of %s conflicts with file from package %s"
-msgstr ""
-"il file %s dell'installazione di %s entra in conflitto con il file del "
-"pacchetto %s"
+msgstr "il file %s dell'installazione di %s entra in conflitto con il file del pacchetto %s"
 
 #: lib/rpmprob.c:143
 #, c-format
 msgid "package %s (which is newer than %s) is already installed"
-msgstr ""
-"il pacchetto %s (il quale risulta essere più recente di %s) è già installato"
+msgstr "il pacchetto %s (il quale risulta essere più recente di %s) è già installato"
 
 #: lib/rpmprob.c:148
 #, c-format
 msgid "installing package %s needs %<PRIu64>%cB on the %s filesystem"
-msgstr ""
-"l'installazione del pacchetto %s necessita di %<PRIu64>%cB sul filesystem %s"
+msgstr "l'installazione del pacchetto %s necessita di %<PRIu64>%cB sul filesystem %s"
 
 #: lib/rpmprob.c:158
 #, c-format
 msgid "installing package %s needs %<PRIu64> inodes on the %s filesystem"
-msgstr ""
-"l'installazione del pacchetto %s necessita di %<PRIu64> inode sul filesystem "
-"%s"
+msgstr "l'installazione del pacchetto %s necessita di %<PRIu64> inode sul filesystem %s"
 
 # fix bug 450663
 # (team-it-rev080611)
@@ -2740,9 +2636,7 @@ msgstr "%s reso obsoleto da %s%s"
 #: lib/rpmprob.c:178
 #, c-format
 msgid "unknown error %d encountered while manipulating package %s"
-msgstr ""
-"si è verificato un errore sconosciuto %d durante la manipolazione del "
-"pacchetto %s"
+msgstr "si è verificato un errore sconosciuto %d durante la manipolazione del pacchetto %s"
 
 #: lib/rpmrc.c:186
 #, c-format
@@ -2934,8 +2828,7 @@ msgstr "sigh sigSize(%zd): BAD, fstat(2) fallito\n"
 
 #: lib/signature.c:303
 msgid "Immutable header region could not be read. Corrupted package?\n"
-msgstr ""
-"Impossibile leggere la regione immutabile dell'header. Pacchetto corrotto?\n"
+msgstr "Impossibile leggere la regione immutabile dell'header. Pacchetto corrotto?\n"
 
 #: lib/signature.c:397
 msgid "MD5 digest:"
@@ -3039,7 +2932,7 @@ msgstr "iteratore di array usato con array di dimensioni differenti"
 #: lib/rpmdb.c:124
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
-msgstr ""
+msgstr "Generazione di %d indici mancanti, prego attendere...\n"
 
 #: lib/rpmdb.c:185
 #, c-format
@@ -3090,7 +2983,7 @@ msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: intestazione #%u danneggiata -- viene omessa.\n"
 
 #: lib/rpmdb.c:2275
-#, fuzzy, c-format
+#, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr "errore(%d) durante l'acquisizione dei record \"%s\" dall'indice %s\n"
 
@@ -3200,9 +3093,9 @@ msgid "exclusive"
 msgstr "esclusivo"
 
 #: lib/backend/db3.c:576
-#, fuzzy, c-format
+#, c-format
 msgid "invalid index type %x on %s/%s\n"
-msgstr "indice db verificato       %s/%s\n"
+msgstr "tipo indice %x non valido su %s/%s\n"
 
 #: lib/backend/dbconfig.c:144
 #, c-format
@@ -3225,91 +3118,88 @@ msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s presenta un valore integer troppo grande o troppo piccolo, omesso\n"
 
 #: plugins/sepolicy.c:219
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to decode policy for %s\n"
-msgstr "Impossibile leggere il file spec da %s\n"
+msgstr "Impossibile decodificare la policy per %s\n"
 
 #: plugins/sepolicy.c:226
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create temporary file for %s: %s\n"
 msgstr "Impossibile creare il file temporaneo per %s: %s\n"
 
 #: plugins/sepolicy.c:232
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write %s policy to file %s\n"
-msgstr "Impossibile leggere il file spec da %s\n"
+msgstr "Impossibile scrivere la plicy %s nel file %s\n"
 
 #: plugins/sepolicy.c:304
-#, fuzzy
 msgid "Failed to create semanage handle\n"
-msgstr "tentativo creazione %s fallito: %s\n"
+msgstr "Errore nella creazione dell'handle semanage\n"
 
 #: plugins/sepolicy.c:310
-#, fuzzy
 msgid "Failed to connect to policy handler\n"
-msgstr "Tentativo di connessione al server fallito"
+msgstr "Errore nella connessione all'handler di policy\n"
 
 #: plugins/sepolicy.c:314
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to begin policy transaction: %s\n"
-msgstr "Impossibile aprire %s: %s\n"
+msgstr "Errore nell'inizializzazione della policy transaction: %s\n"
 
 #: plugins/sepolicy.c:345
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove temporary policy file %s: %s\n"
-msgstr "rimozione della directory %s fallita: %s\n"
+msgstr "Impossibile rimuovere il temporaneo %s della policy: %s\n"
 
 #: plugins/sepolicy.c:393
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to install policy module: %s (%s)\n"
-msgstr "Impossibile risolvere il simbolo %s: %s\n"
+msgstr "Impossibile installare il modulo di policy: %s (%s)\n"
 
 #: plugins/sepolicy.c:423
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove policy module: %s\n"
-msgstr "Impossibile risolvere il simbolo: %s\n"
+msgstr "Impossibile rimuovere il modulo di policy: %s\n"
 
 #: plugins/sepolicy.c:447 plugins/sepolicy.c:499
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to fork process: %s\n"
-msgstr "Impossibile aprire %s: %s\n"
+msgstr "Errore durante il fork del processo: %s\n"
 
 #: plugins/sepolicy.c:457 plugins/sepolicy.c:509
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to execute %s: %s\n"
-msgstr "tentativo creazione %s fallito: %s\n"
+msgstr "Impossibile eseguire %s: %s\n"
 
 #: plugins/sepolicy.c:463 plugins/sepolicy.c:515
-#, fuzzy, c-format
+#, c-format
 msgid "%s terminated abnormally\n"
-msgstr "La macro %%%s presenta un corpo incompleto\n"
+msgstr "%s è terminato in modo anomalo\n"
 
 #: plugins/sepolicy.c:467 plugins/sepolicy.c:519
-#, fuzzy, c-format
+#, c-format
 msgid "%s failed with exit code %i\n"
-msgstr "%s: errore durante l'encoding\n"
+msgstr "%s fallito con codice di errore %i\n"
 
 #: plugins/sepolicy.c:474
 msgid "Failed to commit policy changes\n"
-msgstr ""
+msgstr "Errore durante il commit delle modifiche alla policy\n"
 
 #: plugins/sepolicy.c:491
-#, fuzzy
 msgid "Failed to expand restorecon path"
-msgstr "Impossibile espandere la macro  %%__collection_%s\n"
+msgstr "Impossibile espandere il percorso restorecon"
 
 #: plugins/sepolicy.c:570
 msgid "Failed to relabel filesystem. Files may be mislabeled\n"
-msgstr ""
+msgstr "Errore durante il relabel del filesystem. I file potrebbero avere label non corrette\n"
 
 #: plugins/sepolicy.c:574
 msgid "Failed to reload file contexts. Files may be mislabeled\n"
-msgstr ""
+msgstr "Errore nel caricamento dei file context. I file potrebbero avere label non corrette\n"
 
 #: plugins/sepolicy.c:601
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to extract policy from %s\n"
-msgstr "Impossibile leggere il file spec da %s\n"
+msgstr "Impossibile estrarre la policy da %s\n"
 
 #: python/rpmts-py.c:166
 #, c-format
@@ -3372,10 +3262,8 @@ msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opzione %c sconosciuta in %s(%s)\n"
 
 #: rpmio/macro.c:1036
-msgid ""
-"Too many levels of recursion in macro expansion. It is likely caused by "
-"recursive macro declaration.\n"
-msgstr ""
+msgid "Too many levels of recursion in macro expansion. It is likely caused by recursive macro declaration.\n"
+msgstr "Troppo livelli di ricorsione nell'espansione della macro. Si tratta probabilmente di una macro definita ricorsivamente.\n"
 
 #: rpmio/macro.c:1105 rpmio/macro.c:1122
 #, c-format
@@ -3549,8 +3437,7 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "è possibile usare --sign solo durante la compilazione del pacchetto"
 
 #~ msgid "no packages files given for rebuild"
-#~ msgstr ""
-#~ "non è stato specificato alcun file del pacchetto per la ricompilazione"
+#~ msgstr "non è stato specificato alcun file del pacchetto per la ricompilazione"
 
 #~ msgid "no spec files given for build"
 #~ msgstr "non è stato specificato alcun file spec per la compilazione"
@@ -3610,8 +3497,7 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "genera firma"
 
 #~ msgid "%s: was already signed by key ID %s, skipping\n"
-#~ msgstr ""
-#~ "%s: è stato già firmato dall'ID %s della chiave, omissione in corso\n"
+#~ msgstr "%s: è stato già firmato dall'ID %s della chiave, omissione in corso\n"
 
 #~ msgid "Invalid %%_signature spec in macro file\n"
 #~ msgstr "Specifica %%_signature non valida nel file macro\n"
@@ -3680,8 +3566,7 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "debug macchina stato di pacchetto"
 
 #~ msgid "query/verify package(s) from TOP file tree walk"
-#~ msgstr ""
-#~ "interrogare/verificare il pacchetto/i dall'inizio del percorso ad albero"
+#~ msgstr "interrogare/verificare il pacchetto/i dall'inizio del percorso ad albero"
 
 #~ msgid "query/verify package(s) from system HDLIST"
 #~ msgstr "interrogare/verificare il pacchetto/i dal system HDLIST"
@@ -3695,7 +3580,6 @@ msgstr "non verificare firma header+payload"
 #~ msgid "File doesn't match prefix (%s): %s\n"
 #~ msgstr "Il file non corrisponde al prefisso (%s): %s\n"
 
-#, fuzzy
 #~ msgid "Unable to get current dependency name.\n"
 #~ msgstr "Impossibile cambiare directory root: %m\n"
 
@@ -3751,8 +3635,7 @@ msgstr "non verificare firma header+payload"
 #~ "The \"B\" dependency needs an epoch (assuming same epoch as \"A\")\n"
 #~ "\tA = \"%s\"\tB = \"%s\"\n"
 #~ msgstr ""
-#~ "La dipendenza \"B\" necessita di un'epoca (assumendo una stessa epoca di "
-#~ "\"A\")\n"
+#~ "La dipendenza \"B\" necessita di un'epoca (assumendo una stessa epoca di \"A\")\n"
 #~ "\tA = \"%s\"\tB = \"%s\"\n"
 
 #~ msgid "Data type %d not supported\n"
@@ -3819,8 +3702,7 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "cerca le stringhe i18N nel catalogo specfile"
 
 #~ msgid "generate headers compatible with (legacy) rpm[23] packaging"
-#~ msgstr ""
-#~ "ganara le intestazioni compatibili con il (legacy) rpm[23] packaging"
+#~ msgstr "ganara le intestazioni compatibili con il (legacy) rpm[23] packaging"
 
 #~ msgid "cannot create %%%s %s\n"
 #~ msgstr "impossibile creare %%%s %s\n"
@@ -3880,9 +3762,7 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "Errore sconosciuto o inatteso"
 
 #~ msgid "don't update cache database, only print package paths"
-#~ msgstr ""
-#~ "non aggiornare il database della cache, visualizzare solo i percorsi del "
-#~ "pacchetto"
+#~ msgstr "non aggiornare il database della cache, visualizzare solo i percorsi del pacchetto"
 
 #~ msgid "File tree walk options:"
 #~ msgstr "Opzioni navigazione albero dei file:"
@@ -3893,7 +3773,6 @@ msgstr "non verificare firma header+payload"
 #~ msgid "%s: cache operation failed: ec %d.\n"
 #~ msgstr "%s: operazione cache fallita: ec %d.\n"
 
-#, fuzzy
 #~ msgid "(encoding failed)"
 #~ msgstr "exec fallito\n"
 
@@ -3909,7 +3788,6 @@ msgstr "non verificare firma header+payload"
 #~ msgid "Cannot read %s, HOME is too large.\n"
 #~ msgstr "Impossibile leggere %s, HOME è troppo grande.\n"
 
-#, fuzzy
 #~ msgid "getcwd failed: %m\n"
 #~ msgstr "%s rmdir di %s fallito: %s\n"
 
@@ -3922,7 +3800,6 @@ msgstr "non verificare firma header+payload"
 #~ msgid "line %d: Need arg to %%patch -z: %s\n"
 #~ msgstr "riga %d: Arg necessario per %%patch -z: %s\n"
 
-#, fuzzy
 #~ msgid "line %d: Bad arg to %%patch -F: %s\n"
 #~ msgstr "riga %d: Arg errato per %%patch -p: %s\n"
 
@@ -3947,7 +3824,6 @@ msgstr "non verificare firma header+payload"
 #~ msgid "skip %%readme files"
 #~ msgstr "salta file %%readme"
 
-#, fuzzy
 #~ msgid "URL helper failed: %s (%d)\n"
 #~ msgstr "lettura fallita: %s (%d)\n"
 
@@ -3958,8 +3834,7 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "argomento data/ora di rollback malformato"
 
 #~ msgid "save erased package files by renaming into sub-directory"
-#~ msgstr ""
-#~ "salva i file del pacchetto rimosso rinominandoli in una sotto-directory"
+#~ msgstr "salva i file del pacchetto rimosso rinominandoli in una sotto-directory"
 
 #~ msgid "save erased package files by repackaging"
 #~ msgstr "salva i file del pacchetto rimosso rieseguendo il packaging"
@@ -3988,59 +3863,45 @@ msgstr "non verificare firma header+payload"
 #~ msgid "Rollback packages (+%d/-%d) to %-24.24s (0x%08x):\n"
 #~ msgstr "Rollback dei pacchetti (+%d/-%d) fino a %-24.24s (0x%08x):\n"
 
-#, fuzzy
 #~ msgid "\tRemoving %s:\n"
 #~ msgstr "Ripristino di %s\n"
 
-#, fuzzy
 #~ msgid "Failure reading repackaged package!\n"
 #~ msgstr "errore durante la lettura dell'intestazione dal pacchetto\n"
 
 #~ msgid "========== recording tsort relations\n"
 #~ msgstr "========== registrazione relazioni tsort\n"
 
-#, fuzzy
-#~ msgid ""
-#~ "========== tsorting packages (order, #predecessors, #succesors, tree, "
-#~ "depth, breadth)\n"
-#~ msgstr ""
-#~ "========== tsorting dei pacchetti (ordine, #predecessori, #successori, "
-#~ "albero, profondità)\n"
+#~ msgid "========== tsorting packages (order, #predecessors, #succesors, tree, depth, breadth)\n"
+#~ msgstr "========== tsorting dei pacchetti (ordine, #predecessori, #successori, albero, profondità)\n"
 
-#, fuzzy
 #~ msgid "========== successors only (%d bytes)\n"
 #~ msgstr "========== solo successori (in ordine di presentazione)\n"
 
 #~ msgid "========== continuing tsort ...\n"
 #~ msgstr "========== continuazione tsort ...\n"
 
-#, fuzzy
 #~ msgid "%5d 0x%04x %s %s\n"
 #~ msgstr "File%5d: %07o %s.%s\t %s\n"
 
-#, fuzzy
 #~ msgid "========== Directories not explicitly included in package:\n"
 #~ msgstr "========== Directory non incluse in modo specifico nel pacchetto:\n"
 
 #~ msgid "%10d %s\n"
 #~ msgstr "%10d %s\n"
 
-#, fuzzy
 #~ msgid "%s directory created with perms %04o, no context.\n"
 #~ msgstr "Directory %s creata con permessi %04o.\n"
 
-#, fuzzy
 #~ msgid "%s directory created with perms %04o, context %s.\n"
 #~ msgstr "Directory %s creata con permessi %04o.\n"
 
-#, fuzzy
 #~ msgid "adding %d args from manifest.\n"
 #~ msgstr "aggiunta di voci %d all'indice %s.\n"
 
 #~ msgid "disable use of libio(3) API"
 #~ msgstr "disabilita l'uso di libio(3) API"
 
-#, fuzzy
 #~ msgid "%s: %s(%s-%s-%s.%s) running <lua> scriptlet.\n"
 #~ msgstr "%s: esecuzione scriptlet %s in corso\n"
 
@@ -4077,18 +3938,15 @@ msgstr "non verificare firma header+payload"
 #~ msgid "relocating directory %s to %s\n"
 #~ msgstr "riposizionamento directory %s su %s\n"
 
-#, fuzzy
 #~ msgid "Adding goal: %s\n"
 #~ msgstr "Ricerca di %s in corso: %s\n"
 
 #~ msgid " ... as %s\n"
 #~ msgstr " ... come %s\n"
 
-#, fuzzy
 #~ msgid "\tadded source package [%d]\n"
 #~ msgstr "<source package>"
 
-#, fuzzy
 #~ msgid "\tadded binary package [%d]\n"
 #~ msgstr "installazione pacchetti binari in corso\n"
 
@@ -4098,23 +3956,18 @@ msgstr "non verificare firma header+payload"
 #~ msgid "installing binary packages\n"
 #~ msgstr "installazione pacchetti binari in corso\n"
 
-#, fuzzy
 #~ msgid "Adding: %s\n"
 #~ msgstr "riga: %s\n"
 
-#, fuzzy
 #~ msgid "Suggesting: %s\n"
 #~ msgstr "Ripristino di %s\n"
 
-#, fuzzy
 #~ msgid "mounted filesystems:\n"
 #~ msgstr "acquisizione elenco dei filesystem montati in corso\n"
 
-#, fuzzy
 #~ msgid "\tAllocating space for %d entries\n"
 #~ msgstr "riposizionamento di %s su %s\n"
 
-#, fuzzy
 #~ msgid "Expected size: %12d = lead(%d)+sigs(%zd)+pad(%zd)+data(%zd)\n"
 #~ msgstr "Dimensione prevista: %12d = lead(%d)+sigs(%d)+pad(%d)+data(%d)\n"
 
@@ -4139,15 +3992,12 @@ msgstr "non verificare firma header+payload"
 #~ msgid "excluding directory %s\n"
 #~ msgstr "esclusione directory %s in corso\n"
 
-#, fuzzy
 #~ msgid "\tRepackaged package not found!.\n"
 #~ msgstr "pacchetto sorgente atteso, trovato binario\n"
 
-#, fuzzy
 #~ msgid "\tRepackaged Package was %s...\n"
 #~ msgstr "nessun pacchetto corrisponde a %s: %s\n"
 
-#, fuzzy
 #~ msgid "sanity checking %d elements\n"
 #~ msgstr "controllo correttezza degli elementi %d\n"
 
@@ -4208,11 +4058,9 @@ msgstr "non verificare firma header+payload"
 #~ msgid "removing directory %s\n"
 #~ msgstr "rimozione %s della directory in corso\n"
 
-#, fuzzy
 #~ msgid "closed   sql db         %s\n"
 #~ msgstr "chiuso   indice db       %s/%s\n"
 
-#, fuzzy
 #~ msgid "opening  sql db         %s (%s) mode=0x%x\n"
 #~ msgstr "apertura indice db in corso       %s/%s %s modalità=0x%x\n"
 
@@ -4223,15 +4071,10 @@ msgstr "non verificare firma header+payload"
 #~ msgstr "Impossibile salvare intestazione finale\n"
 
 #~ msgid "packaging version 1 is not supported by this version of RPM\n"
-#~ msgstr ""
-#~ "il packaging della versione 1 non è supportato su questa versione di RPM\n"
+#~ msgstr "il packaging della versione 1 non è supportato su questa versione di RPM\n"
 
-#~ msgid ""
-#~ "only packaging with major numbers <= 4 is supported by this version of "
-#~ "RPM\n"
-#~ msgstr ""
-#~ "solo il packaging con numeri maggiori <= 4 viene supportato su questa "
-#~ "versione di RPM\n"
+#~ msgid "only packaging with major numbers <= 4 is supported by this version of RPM\n"
+#~ msgstr "solo il packaging con numeri maggiori <= 4 viene supportato su questa versione di RPM\n"
 
 #~ msgid "%s: Can't sign v1 packaging\n"
 #~ msgstr "%s: Impossibile firmare il packaging v1\n"
