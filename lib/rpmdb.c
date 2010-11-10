@@ -127,6 +127,8 @@ static int buildIndexes(rpmdb db)
     /* Don't call us again */
     db->db_buildindex = 0;
 
+    dbSetFSync(db->db_dbenv, 0);
+
     mi = rpmdbInitIterator(db, RPMDBI_PACKAGES, NULL, 0);
     while ((h = rpmdbNextIterator(mi))) {
 	unsigned int hdrNum = headerGetInstance(h);
@@ -139,7 +141,7 @@ static int buildIndexes(rpmdb db)
 	}
     }
     rpmdbFreeIterator(mi);
-    
+    dbSetFSync(db->db_dbenv, !db->cfg.db_no_fsync);
     return rc;
 }
 
@@ -192,6 +194,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	    /* If primary got created, we can safely run without fsync */
 	    if ((dbiFlags(dbi) & DBI_CREATED) || db->cfg.db_no_fsync) {
 		rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
+                db->cfg.db_no_fsync = 1;
 		dbSetFSync(db->db_dbenv, 0);
 	    }
 	} else { /* secondary index */
