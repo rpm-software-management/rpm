@@ -2378,7 +2378,6 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 	} else
 	    rc = dbiDel(dbi, dbcursor, &key, &data, 0);
     }
-    xx = dbiSync(dbi, 0);
 
     xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
     xx = dbiSync(dbi, 0);
