@@ -89,7 +89,7 @@ rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
 bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec \
-			rpminstall rpmverify rpmquery
+			rpmverify rpmquery
 
 rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
@@ -108,12 +108,6 @@ rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU -DIAM_RPMQ -DIAM_RPMV
 rpm_LDADD =		libcliutils.la
 rpm_LDADD +=		lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpminstall_SOURCES =	rpmqv.c debug.h system.h
-rpminstall_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMEIU
-rpminstall_LDADD =	libcliutils.la
-rpminstall_LDADD +=	lib/librpm.la rpmio/librpmio.la
-rpminstall_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmquery_SOURCES =	rpmqv.c debug.h system.h
 rpmquery_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMQ
