@@ -208,7 +208,7 @@ struct poptOption rpmVerifyPoptTable[] = {
 
  { "nofiledigest", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
 	N_("don't verify digest of files"), NULL },
- { "nomd5", '\0', 0, NULL, RPMCLI_POPT_NOFILEDIGEST,
+ { "nomd5", '\0', POPT_ARGFLAG_DOC_HIDDEN, NULL, RPMCLI_POPT_NOFILEDIGEST,
 	N_("don't verify digest of files"), NULL },
  { "nosize", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN,
 	&rpmQVKArgs.qva_flags, VERIFY_SIZE,
