@@ -244,7 +244,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     const char * optArg;
     poptContext optCon;
     int rc;
-    const char *ctx;
+    const char *ctx, *execPath;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
@@ -282,7 +282,10 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 	free(poptfile);
     }
     (void) poptReadDefaultConfig(optCon, 1);
-    poptSetExecPath(optCon, rpmConfigDir(), 1);
+
+    if ((execPath = getenv("RPM_POPTEXEC_PATH")) == NULL)
+	execPath = LIBRPMALIAS_EXECPATH;
+    poptSetExecPath(optCon, execPath, 1);
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {

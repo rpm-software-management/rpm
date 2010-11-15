@@ -10,6 +10,7 @@ AM_CPPFLAGS += -DLOCALEDIR="\"$(localedir)\""
 AM_CPPFLAGS += -DSYSCONFDIR="\"$(sysconfdir)\""
 AM_CPPFLAGS += -DLOCALSTATEDIR="\"$(localstatedir)\""
 AM_CPPFLAGS += -DLIBRPMALIAS_FILENAME="\"rpmpopt-${VERSION}\""
+AM_CPPFLAGS += -DLIBRPMALIAS_EXECPATH="\"$(bindir)\""
 
 usrlibdir = $(libdir)
 
