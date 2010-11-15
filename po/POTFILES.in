@@ -9,6 +9,7 @@ rpmbuild.c
 rpmdb.c
 rpmkeys.c
 rpmsign.c
+rpmspec.c
 build/build.c
 build/expression.c
 build/files.c
