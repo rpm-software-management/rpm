@@ -28,10 +28,8 @@ enum modes {
     MODE_UNKNOWN	= 0
 };
 
-#define	MODES_FOR_DBPATH	(MODES_IE | MODES_QV)
 #define	MODES_FOR_NODEPS	(MODES_IE | MODE_VERIFY)
 #define	MODES_FOR_TEST		(MODES_IE)
-#define	MODES_FOR_ROOT		(MODES_IE | MODES_QV)
 
 static int quiet;
 
@@ -237,11 +235,6 @@ int main(int argc, char *argv[])
 	argerror(_("--test may only be specified during package installation, "
 		 "erasure, and building"));
 #endif	/* IAM_RPMEIU */
-
-    if (rpmcliRootDir && rpmcliRootDir[1] && (bigMode & ~MODES_FOR_ROOT))
-	argerror(_("--root (-r) may only be specified during "
-		 "installation, erasure, querying, and "
-		 "database rebuilds"));
 
     if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
 	argerror(_("arguments to --root (-r) must begin with a /"));
