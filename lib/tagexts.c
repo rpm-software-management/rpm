@@ -687,28 +687,6 @@ static int epochnumTag(Header h, rpmtd td, headerGetFlags hgflags)
     return 1;
 }
 
-static int filestatusTag(Header h, rpmtd td, headerGetFlags hgflags)
-{
-    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
-    int fc = rpmfiFC(fi);
-    uint32_t *stats = (fc > 0) ? xcalloc(fc, sizeof(*stats)) : NULL;
-    int ix;
-
-    while ((ix = rpmfiNext(fi)) >= 0) {
-	rpmVerifyAttrs verifyResult = 0;
-	(void) rpmVerifyFile(NULL, fi, &verifyResult, RPMVERIFY_NONE);
-	stats[ix] = verifyResult;
-    }
-    rpmfiFree(fi);
-
-    td->type = RPM_INT32_TYPE;
-    td->count = fc;
-    td->data = stats;
-    td->flags = RPMTD_ALLOCED;
-    
-    return (fc > 0);
-}
-
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -734,7 +712,6 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_HEADERCOLOR,	headercolorTag },
     { RPMTAG_VERBOSE,		verboseTag },
     { RPMTAG_EPOCHNUM,		epochnumTag },
-    { RPMTAG_FILESTATUS,	filestatusTag },
     { 0, 			NULL }
 };
 
