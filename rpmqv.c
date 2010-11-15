@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 #if defined(IAM_RPMEIU)
     if (!( bigMode == MODE_INSTALL ) &&
 (ia->probFilter & (RPMPROB_FILTER_REPLACEPKG | RPMPROB_FILTER_OLDPACKAGE)))
-	argerror(_("only installation, upgrading, rmsource and rmspec may be forced"));
+	argerror(_("only installation and upgrading may be forced"));
     if (bigMode != MODE_INSTALL && (ia->probFilter & RPMPROB_FILTER_FORCERELOCATE))
 	argerror(_("files may only be relocated during package installation"));
 
@@ -228,12 +228,11 @@ int main(int argc, char *argv[])
 
     if (ia->noDeps & (bigMode & ~MODES_FOR_NODEPS))
 	argerror(_("--nodeps may only be specified during package "
-		   "building, rebuilding, recompilation, installation,"
-		   "erasure, and verification"));
+		   "installation, erasure, and verification"));
 
     if ((ia->transFlags & RPMTRANS_FLAG_TEST) && (bigMode & ~MODES_FOR_TEST))
-	argerror(_("--test may only be specified during package installation, "
-		 "erasure, and building"));
+	argerror(_("--test may only be specified during package installation "
+		 "and erasure"));
 #endif	/* IAM_RPMEIU */
 
     if (rpmcliRootDir && rpmcliRootDir[0] != '/') {
