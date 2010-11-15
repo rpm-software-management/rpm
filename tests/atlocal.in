@@ -7,7 +7,8 @@ RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
 
 RPM_CONFIGDIR="${RPMTEST}/@RPMCONFIGDIR@"
-export RPM_CONFIGDIR
+RPM_POPTEXEC_PATH="${RPMTEST}/@usrbindir@"
+export RPM_CONFIGDIR RPM_POPTEXEC_PATH
 
 # Popt looks into $HOME
 HOME="${RPMTEST}"

@@ -144,16 +144,16 @@ rpm	alias --httpport	--define '_httpport !#:+'
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
 
 # Minimally preserve commonly used switches from cli split-up
-rpm	exec --addsign		@BINDIR@/rpmsign --addsign
-rpm	exec --delsign		@BINDIR@/rpmsign --delsign
-rpm	exec --resign		@BINDIR@/rpmsign --resign
-rpm	exec --checksig		@BINDIR@/rpmkeys --checksig
-rpm	exec -K			@BINDIR@/rpmkeys --checksig
-rpm	exec --import		@BINDIR@/rpmkeys --import
-rpm	exec --initdb		@BINDIR@/rpmdb --initdb
-rpm	exec --rebuilddb	@BINDIR@/rpmdb --rebuilddb
-rpm	exec --verifydb		@BINDIR@/rpmdb --verifydb
-rpm	exec --specfile		@BINDIR@/rpmspec -q
+rpm	exec --addsign		rpmsign --addsign
+rpm	exec --delsign		rpmsign --delsign
+rpm	exec --resign		rpmsign --resign
+rpm	exec --checksig		rpmkeys --checksig
+rpm	exec -K			rpmkeys --checksig
+rpm	exec --import		rpmkeys --import
+rpm	exec --initdb		rpmdb --initdb
+rpm	exec --rebuilddb	rpmdb --rebuilddb
+rpm	exec --verifydb		rpmdb --verifydb
+rpm	exec --specfile		rpmspec -q
 
 #==============================================================================
 rpmbuild alias --ftpport		--define '_httpport !#:+'
