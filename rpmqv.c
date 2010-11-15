@@ -3,9 +3,7 @@ const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
-#include <rpm/rpmbuild.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmdb.h>
 #include <rpm/rpmps.h>
 #include <rpm/rpmts.h>
 
