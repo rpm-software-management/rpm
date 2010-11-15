@@ -53,6 +53,7 @@ rpmlua rpmluaNew()
 	{"posix", luaopen_posix},
 	{"rex", luaopen_rex},
 	{"rpm", luaopen_rpm},
+	{"os",	luaopen_rpm_os},
 	{NULL, NULL},
     };
     

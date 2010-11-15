@@ -129,3 +129,16 @@ run rpm \
 [ok
 ])
 AT_CLEANUP
+
+AT_SETUP([lua script exit behavior])
+AT_KEYWORDS([macros lua])
+AT_CHECK([
+run rpm \
+  --eval '%{lua: os.exit()}))}'
+],
+[0],
+[
+],
+[error: lua script failed: [[string "<lua>"]]:1: exit not permitted in this context]
+)
+AT_CLEANUP
