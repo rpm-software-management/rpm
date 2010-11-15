@@ -18,9 +18,7 @@ enum modes {
 
 static int mode = 0;
 
-static struct poptOption optionsTable[] = {
-    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
-	N_("Common options for all rpm modes and executables:"), NULL },
+static struct poptOption keyOptsTable[] = {
     { "checksig", 'K', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_CHECKSIG,
 	N_("verify package signature(s)"), NULL },
     { "import", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTKEY,
@@ -31,6 +29,14 @@ static struct poptOption optionsTable[] = {
     { "list-keys", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_LISTKEY,
 	N_("list keys from RPM keyring"), NULL },
 #endif
+    POPT_TABLEEND
+};
+
+static struct poptOption optionsTable[] = {
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, keyOptsTable, 0,
+	N_("Keyring options:"), NULL },
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options for all rpm modes and executables:"), NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP

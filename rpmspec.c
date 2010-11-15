@@ -20,8 +20,7 @@ static int source = RPMQV_SPECRPMS;
 const char *target = NULL;
 char *queryformat = NULL;
 
-/* the structure describing the options we take and the defaults */
-static struct poptOption optionsTable[] = {
+static struct poptOption specOptsTable[] = {
     { "query", 'q', POPT_ARG_VAL, &mode, MODE_QUERY,
 	N_("query spec file(s)"), NULL },
     { "rpms", 0, POPT_ARG_VAL, &source, RPMQV_SPECRPMS,
@@ -34,6 +33,13 @@ static struct poptOption optionsTable[] = {
 	N_("use the following query format"), "QUERYFORMAT" },
     { "qf", 0, (POPT_ARG_STRING | POPT_ARGFLAG_DOC_HIDDEN), &queryformat, 0,
 	NULL, NULL },
+    POPT_TABLEEND
+};
+
+/* the structure describing the options we take and the defaults */
+static struct poptOption optionsTable[] = {
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, specOptsTable, 0,
+	N_("Spec options:"), NULL },
 
     { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
 	N_("Common options for all rpm modes and executables:"), NULL },

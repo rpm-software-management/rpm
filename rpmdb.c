@@ -17,9 +17,7 @@ enum modes {
 
 static int mode = 0;
 
-static struct poptOption optionsTable[] = {
-    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
-	N_("Common options for all rpm modes and executables:"), NULL },
+static struct poptOption dbOptsTable[] = {
     { "initdb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_INITDB,
 	N_("initialize database"), NULL},
     { "rebuilddb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_REBUILDDB,
@@ -27,6 +25,14 @@ static struct poptOption optionsTable[] = {
 	NULL},
     { "verifydb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_VERIFYDB,
 	N_("verify database files"), NULL},
+    POPT_TABLEEND
+};
+
+static struct poptOption optionsTable[] = {
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, dbOptsTable, 0,
+	N_("Database options:"), NULL },
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options for all rpm modes and executables:"), NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP

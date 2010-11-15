@@ -20,15 +20,21 @@ enum modes {
 
 static int mode = 0;
 
-static struct poptOption optionsTable[] = {
-    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
-	N_("Common options for all rpm modes and executables:"), NULL },
+static struct poptOption signOptsTable[] = {
     { "addsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_ADDSIGN,
 	N_("sign package(s)"), NULL },
     { "resign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_RESIGN,
 	N_("sign package(s) (identical to --addsign)"), NULL },
     { "delsign", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_DELSIGN,
 	N_("delete package signatures"), NULL },
+    POPT_TABLEEND
+};
+
+static struct poptOption optionsTable[] = {
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, signOptsTable, 0,
+	N_("Signature options:"), NULL },
+    { NULL, '\0', POPT_ARG_INCLUDE_TABLE, rpmcliAllPoptTable, 0,
+	N_("Common options for all rpm modes and executables:"), NULL },
 
     POPT_AUTOALIAS
     POPT_AUTOHELP
