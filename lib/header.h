@@ -72,7 +72,7 @@ void headerUnsort(Header h);
  * @param magicp	include size of 8 bytes for (magic, 0)?
  * @return		size of on-disk header
  */
-unsigned int headerSizeof(Header h, enum hMagic magicp);
+unsigned int headerSizeof(Header h, int magicp);
 
 /** \ingroup header
  * Perform simple sanity and range checks on header tag(s).
@@ -128,7 +128,7 @@ Header headerCopyLoad(const void * uh);
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
-Header headerRead(FD_t fd, enum hMagic magicp);
+Header headerRead(FD_t fd, int magicp);
 
 /** \ingroup header
  * Write (with unload) header to file handle.
@@ -137,7 +137,7 @@ Header headerRead(FD_t fd, enum hMagic magicp);
  * @param magicp	prefix write with 8 bytes of (magic, 0)?
  * @return		0 on success, 1 on error
  */
-int headerWrite(FD_t fd, Header h, enum hMagic magicp);
+int headerWrite(FD_t fd, Header h, int magicp);
 
 /** \ingroup header
  * Check if tag is in header.

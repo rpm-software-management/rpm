@@ -248,7 +248,7 @@ void headerUnsort(Header h)
     qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
 }
 
-unsigned headerSizeof(Header h, enum hMagic magicp)
+unsigned headerSizeof(Header h, int magicp)
 {
     indexEntry entry;
     unsigned int size = 0;
@@ -961,7 +961,7 @@ Header headerCopyLoad(const void * uh)
  * @param magicp	read (and verify) 8 bytes of (magic, 0)?
  * @return		header (or NULL on error)
  */
-Header headerRead(FD_t fd, enum hMagic magicp)
+Header headerRead(FD_t fd, int magicp)
 {
     int32_t block[4];
     int32_t reserved;
@@ -1018,7 +1018,7 @@ exit:
     return h;
 }
 
-int headerWrite(FD_t fd, Header h, enum hMagic magicp)
+int headerWrite(FD_t fd, Header h, int magicp)
 {
     ssize_t nb;
     size_t length;
