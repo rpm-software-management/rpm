@@ -434,10 +434,10 @@ typedef enum headerConvOps_e {
 /** \ingroup header
  * Convert header to/from (legacy) data presentation
  * @param h		header
- * @param op		operation
+ * @param op		one of headerConvOps operations
  * @return		1 on success, 0 on failure
  */
-int headerConvert(Header h, headerConvOps op);
+int headerConvert(Header h, int op);
 
 #ifdef __cplusplus
 }

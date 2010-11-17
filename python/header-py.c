@@ -257,7 +257,7 @@ static int hdrContains(hdrObject *s, PyObject *pytag)
 static PyObject *hdrConvert(hdrObject *self, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = {"op", NULL};
-    headerConvOps op = -1;
+    int op = -1;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "i", kwlist, &op)) {
         return NULL;

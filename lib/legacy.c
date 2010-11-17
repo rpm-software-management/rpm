@@ -207,7 +207,7 @@ static void legacyRetrofit(Header h)
     }
 }
 
-int headerConvert(Header h, headerConvOps op)
+int headerConvert(Header h, int op)
 {
     int rc = 1;
 
