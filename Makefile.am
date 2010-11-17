@@ -88,8 +88,7 @@ pkginclude_HEADERS += build/rpmspec.h
 rpmbindir = `echo $(bindir) | $(SED) -e s,usr/bin,bin,`
 rpmbin_PROGRAMS = rpm
 
-bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec \
-			rpmverify rpmquery
+bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
 
 rpmlibexec_PROGRAMS =
 rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
@@ -108,18 +107,6 @@ rpm_CPPFLAGS =		$(AM_CPPFLAGS) -DIAM_RPMEIU -DIAM_RPMQ -DIAM_RPMV
 rpm_LDADD =		libcliutils.la
 rpm_LDADD +=		lib/librpm.la rpmio/librpmio.la
 rpm_LDADD +=		@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpmquery_SOURCES =	rpmqv.c debug.h system.h
-rpmquery_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMQ
-rpmquery_LDADD =	libcliutils.la
-rpmquery_LDADD +=	lib/librpm.la rpmio/librpmio.la
-rpmquery_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
-
-rpmverify_SOURCES =	rpmqv.c debug.h system.h
-rpmverify_CPPFLAGS =	$(AM_CPPFLAGS) -DIAM_RPMV
-rpmverify_LDADD =	libcliutils.la
-rpmverify_LDADD +=	lib/librpm.la rpmio/librpmio.la
-rpmverify_LDADD +=	@WITH_NSS_LIB@ @WITH_POPT_LIB@ @WITH_ZLIB_LIB@
 
 rpmdb_SOURCES =		rpmdb.c debug.h system.h
 rpmdb_CPPFLAGS =	$(AM_CPPFLAGS)
@@ -234,6 +221,12 @@ usrsrcdir = $(prefix)/src
 rpmvardir = $(localstatedir)/lib/rpm
 rpmvar_DATA =
 
+install-exec-hook:
+	@rm -f $(DESTDIR)$(bindir)/rpmquery
+	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmquery
+	@rm -f $(DESTDIR)$(bindir)/rpmverify
+	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
+
 install-data-local:
 	@case "@host_os@" in \
 	solaris*|linux*|darwin*) \
@@ -243,6 +236,8 @@ install-data-local:
 
 # XXX to appease distcheck we need to remove "stuff" here...
 uninstall-local:
+	@rm -f $(DESTDIR)$(bindir)/rpmquery
+	@rm -f $(DESTDIR)$(bindir)/rpmverify
 	@rm -rf $(DESTDIR)$(rpmconfigdir)/platform/
 
 MAINTAINERCLEANFILES = ChangeLog
