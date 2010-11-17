@@ -103,7 +103,6 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
 
     patchcmd = rpmExpand("%{uncompress: ", fn, "} | %{__patch} ", args, NULL);
 
-    free(arg_patch_flags);
     free(arg_fuzz);
     free(arg_dir);
     free(arg_backup);
@@ -121,6 +120,7 @@ static char *doPatch(rpmSpec spec, uint32_t c, int strip, const char *db,
     free(patchcmd);
 
 exit:
+    free(arg_patch_flags);
     free(fn);
     return buf;
 }
