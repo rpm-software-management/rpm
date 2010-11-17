@@ -1452,10 +1452,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 	runTransScripts(ts, PKG_POSTTRANS);
     }
 
+exit:
     /* Finish up... */
     (void) rpmtsFinish(ts);
-
-exit:
     tsprobs = rpmpsFree(tsprobs);
     rpmlockFree(lock);
     return rc;
