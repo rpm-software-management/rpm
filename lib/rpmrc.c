@@ -1606,10 +1606,6 @@ exit:
 
 int rpmReadConfigFiles(const char * file, const char * target)
 {
-    mode_t mode = 0022;
-    /* Reset umask to its default umask(2) value. */
-    mode = umask(mode);
-
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     (void) gethostbyname("localhost");
     (void) rpmInitCrypto();

@@ -54,16 +54,20 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
     var = rpmluavFree(var);
     rpmluaPop(lua);
 
-    /* Lua scripts can change our cwd, save and restore */
+    /* Lua scripts can change our cwd and umask, save and restore */
     cwd = open(".", O_RDONLY);
     if (cwd != -1) {
 	int xx;
+	mode_t oldmask = umask(0);
+	umask(oldmask);
+
 	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname) == 0) {
 	    rc = RPMRC_OK;
 	}
 	/* XXX no way to return error from restore meaningfully atm */
 	xx = fchdir(cwd);
 	close(cwd);
+	umask(oldmask);
     }
 
     rpmluaDelVar(lua, "arg");
