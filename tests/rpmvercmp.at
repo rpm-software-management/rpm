@@ -1,4 +1,31 @@
 #    rpmvercmp.at: rpm version comparison tests
 
+m4_define([RPMVERCMP],[
+AT_SETUP([rpmvercmp($1, $2) = $3])
+AT_KEYWORDS([vercmp])
+AT_CHECK([run rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
+], [])
+AT_CLEANUP
+])
+
 AT_BANNER([RPM version comparison])
 
+RPMVERCMP(1.0, 1.0, 0)
+RPMVERCMP(1.0, 2.0, -1)
+RPMVERCMP(2.0, 2.0.1, -1)
+RPMVERCMP(2.0.1a, 2.0.1, 1)
+RPMVERCMP(5.5p1, 5.5p2, -1)
+RPMVERCMP(5.6p1, 5.5p2, 1)
+RPMVERCMP(10a2, 10b2, -1)
+RPMVERCMP(1.0a, 1.0aa, -1)
+RPMVERCMP(6.0rc1, 6.0, 1)
+RPMVERCMP(6.0.rc1, 6.0, 1)
+RPMVERCMP(10.1.1.0001, 10.1.1.39, -1)
+RPMVERCMP(5.0, 4.999.9, 1)
+RPMVERCMP(2.030, 2.031, -1)
+RPMVERCMP(20101122, 20101121, 1)
+RPMVERCMP(2.0, 2_0, 0)
+
+dnl The results are highly dubious when non-ascii characters are involved,
+dnl these are "obviously" different versions but rpm thinks they're equal
+dnl RPMVERCMP(1.1.α, 1.1.β, 0)
