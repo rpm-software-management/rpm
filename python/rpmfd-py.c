@@ -1,6 +1,7 @@
 
 #include "rpmsystem-py.h"
 #include <rpm/rpmstring.h>
+#include "header-py.h"	/* XXX for utf8FromPyObject() only */
 #include "rpmfd-py.h"
 
 struct rpmfdObject_s {
