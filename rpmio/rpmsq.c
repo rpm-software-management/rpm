@@ -49,9 +49,6 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #include "debug.h"
 
-#define	_RPMSQ_DEBUG	0
-int _rpmsq_debug = _RPMSQ_DEBUG;
-
 static struct rpmsqElem rpmsqRock;
 
 static rpmsq rpmsqQueue = &rpmsqRock;
@@ -68,10 +65,6 @@ static int rpmsqInsert(void * elem, void * prev)
     int ret = -1;
 
     if (sq != NULL) {
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "    Insert(%p): %p\n", ME(), sq);
-#endif
 	ret = sighold(SIGCHLD);
 	if (ret == 0) {
 	    sq->child = 0;
@@ -100,11 +93,6 @@ static int rpmsqRemove(void * elem)
     int ret = -1;
 
     if (elem != NULL) {
-
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
-#endif
 	ret = sighold (SIGCHLD);
 	if (ret == 0) {
 	    remque(elem);
@@ -117,12 +105,6 @@ fprintf(stderr, "    Remove(%p): %p\n", ME(), sq);
 	    if (sq->pipes[1])	ret = close(sq->pipes[1]);
 	    if (sq->pipes[0])	ret = close(sq->pipes[0]);
 	    sq->pipes[0] = sq->pipes[1] = -1;
-#ifdef	NOTYET	/* rpmpsmWait debugging message needs */
-	    sq->reaper = 1;
-	    sq->status = 0;
-	    sq->reaped = 0;
-	    sq->child = 0;
-#endif
 	    ret = sigrelse(SIGCHLD);
 	}
     }
@@ -275,10 +257,6 @@ pid_t rpmsqFork(rpmsq sq)
 
     if (sq->reaper) {
 	xx = rpmsqInsert(sq, NULL);
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
-#endif
 	xx = rpmsqEnable(SIGCHLD, NULL);
     }
 
@@ -317,21 +295,8 @@ fprintf(stderr, "    Enable(%p): %p\n", ME(), sq);
 	xx = read(sq->pipes[0], &yy, sizeof(yy));
 	xx = close(sq->pipes[0]);
 	sq->pipes[0] = sq->pipes[1] = -1;
-
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "     Child(%p): %p child %d\n", ME(), sq, getpid());
-#endif
-
     } else {				/* Parent. */
-
 	sq->child = pid;
-
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "    Parent(%p): %p child %d\n", ME(), sq, sq->child);
-#endif
-
     }
 
 out:
@@ -387,32 +352,17 @@ static int rpmsqWaitUnregister(rpmsq sq)
 
     xx = sigrelse(SIGCHLD);
 
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "      Wake(%p): %p child %d reaper %d ret %d\n", ME(), sq, sq->child, sq->reaper, ret);
-#endif
-
     /* Remove processed SIGCHLD item from queue. */
     xx = rpmsqRemove(sq);
 
     /* Disable SIGCHLD handler on refcount == 0. */
     xx = rpmsqEnable(-SIGCHLD, NULL);
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "   Disable(%p): %p\n", ME(), sq);
-#endif
 
     return ret;
 }
 
 pid_t rpmsqWait(rpmsq sq)
 {
-
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, sq->child, sq->reaper);
-#endif
-
     if (sq->reaper) {
 	(void) rpmsqWaitUnregister(sq);
     } else {
@@ -423,16 +373,7 @@ fprintf(stderr, "      Wait(%p): %p child %d reaper %d\n", ME(), sq, sq->child, 
 	} while (reaped >= 0 && reaped != sq->child);
 	sq->reaped = reaped;
 	sq->status = status;
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "   Waitpid(%p): %p child %d reaped %d\n", ME(), sq, sq->child, sq->reaped);
-#endif
     }
-
-#ifdef _RPMSQ_DEBUG
-if (_rpmsq_debug)
-fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, sq->child, sq->status);
-#endif
 
     return sq->reaped;
 }

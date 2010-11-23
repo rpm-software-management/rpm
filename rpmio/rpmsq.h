@@ -36,8 +36,6 @@ typedef void (*rpmsqAction_t) (int signum, siginfo_t * info, void * context);
 typedef void (*rpmsqAction_t) (int signum);
 #endif
 
-extern int _rpmsq_debug;
-
 /* XXX make this fully opaque? */
 #if defined(_RPMSQ_INTERNAL)
 /**
