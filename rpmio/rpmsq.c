@@ -28,24 +28,8 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #define	DO_LOCK()	pthread_mutex_lock(&rpmsigTbl_lock);
 #define	DO_UNLOCK()	pthread_mutex_unlock(&rpmsigTbl_lock);
-#define	INIT_LOCK()	\
-    {	pthread_mutexattr_t attr; \
-	(void) pthread_mutexattr_init(&attr); \
-	(void) pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE); \
-	(void) pthread_mutex_init (&rpmsigTbl_lock, &attr); \
-	(void) pthread_mutexattr_destroy(&attr); \
-	rpmsigTbl_sigchld->active = 0; \
-    }
 #define	ADD_REF(__tbl)	(__tbl)->active++
 #define	SUB_REF(__tbl)	--(__tbl)->active
-#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr) \
-    (void) pthread_setcanceltype (PTHREAD_CANCEL_ASYNCHRONOUS, (__oldtypeptr));\
-	pthread_cleanup_push((__handler), (__arg));
-#define	CLEANUP_RESET(__execute, __oldtype) \
-    pthread_cleanup_pop(__execute); \
-    (void) pthread_setcanceltype ((__oldtype), &(__oldtype));
-
-#define	SAME_THREAD(_a, _b)	pthread_equal(((pthread_t)_a), ((pthread_t)_b))
 
 #define	ME()	((void *)pthread_self())
 
@@ -53,13 +37,8 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 
 #define	DO_LOCK()
 #define	DO_UNLOCK()
-#define	INIT_LOCK()
 #define	ADD_REF(__tbl)	(0)
 #define	SUB_REF(__tbl)	(0)
-#define	CLEANUP_HANDLER(__handler, __arg, __oldtypeptr)
-#define	CLEANUP_RESET(__execute, __oldtype)
-
-#define	SAME_THREAD(_a, _b)	(42)
 
 #define	ME()	(((void *)getpid()))
 
@@ -456,134 +435,4 @@ fprintf(stderr, "      Fini(%p): %p child %d status 0x%x\n", ME(), sq, sq->child
 #endif
 
     return sq->reaped;
-}
-
-void * rpmsqThread(void * (*start) (void * arg), void * arg)
-{
-    pthread_t pth;
-    int ret;
-
-    ret = pthread_create(&pth, NULL, start, arg);
-    return (ret == 0 ? (void *)pth : NULL);
-}
-
-int rpmsqJoin(void * thread)
-{
-    pthread_t pth = (pthread_t) thread;
-    if (thread == NULL)
-	return EINVAL;
-    return pthread_join(pth, NULL);
-}
-
-int rpmsqThreadEqual(void * thread)
-{
-    pthread_t t1 = (pthread_t) thread;
-    pthread_t t2 = pthread_self();
-    return pthread_equal(t1, t2);
-}
-
-/**
- * SIGCHLD cancellation handler.
- */
-static void
-sigchld_cancel (void *arg)
-{
-    pid_t child = *(pid_t *) arg;
-    pid_t result;
-
-    (void) kill(child, SIGKILL);
-
-    do {
-	result = waitpid(child, NULL, 0);
-    } while (result == (pid_t)-1 && errno == EINTR);
-
-    (void) DO_LOCK ();
-    if (SUB_REF (rpmsigTbl_sigchld) == 0) {
-	(void) rpmsqEnable(-SIGQUIT, NULL);
-	(void) rpmsqEnable(-SIGINT, NULL);
-    }
-    (void) DO_UNLOCK ();
-}
-
-/**
- * Execute a command, returning its status.
- */
-int
-rpmsqExecve (const char ** argv)
-{
-    int oldtype;
-    int status = -1;
-    pid_t pid = 0;
-    pid_t result;
-    sigset_t newMask, oldMask;
-
-#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
-	INIT_LOCK ();
-#endif
-
-    (void) DO_LOCK ();
-    if (ADD_REF (rpmsigTbl_sigchld) == 0) {
-	if (rpmsqEnable(SIGINT, NULL) < 0) {
-	    SUB_REF (rpmsigTbl_sigchld);
-	    goto out;
-	}
-	if (rpmsqEnable(SIGQUIT, NULL) < 0) {
-	    SUB_REF (rpmsigTbl_sigchld);
-	    goto out_restore_sigint;
-	}
-    }
-    (void) DO_UNLOCK ();
-
-    (void) sigemptyset (&newMask);
-    (void) sigaddset (&newMask, SIGCHLD);
-    if (sigprocmask (SIG_BLOCK, &newMask, &oldMask) < 0) {
-	(void) DO_LOCK ();
-	if (SUB_REF (rpmsigTbl_sigchld) == 0)
-	    goto out_restore_sigquit_and_sigint;
-	goto out;
-    }
-
-    CLEANUP_HANDLER(sigchld_cancel, &pid, &oldtype);
-
-    pid = fork ();
-    if (pid < (pid_t) 0) {		/* fork failed.  */
-	goto out;
-    } else if (pid == (pid_t) 0) {	/* Child. */
-
-	/* Restore the signals.  */
-	(void) sigaction (SIGINT, &rpmsigTbl_sigint->oact, NULL);
-	(void) sigaction (SIGQUIT, &rpmsigTbl_sigquit->oact, NULL);
-	(void) sigprocmask (SIG_SETMASK, &oldMask, NULL);
-
-	/* Reset rpmsigTbl lock and refcnt. */
-	INIT_LOCK ();
-
-	(void) execve (argv[0], (char *const *) argv, environ);
-	_exit (127);
-    } else {				/* Parent. */
-	do {
-	    result = waitpid(pid, &status, 0);
-	} while (result == (pid_t)-1 && errno == EINTR);
-	if (result != pid)
-	    status = -1;
-    }
-
-    CLEANUP_RESET(0, oldtype);
-
-    (void) DO_LOCK ();
-    if ((SUB_REF (rpmsigTbl_sigchld) == 0 &&
-        (rpmsqEnable(-SIGINT, NULL) < 0 || rpmsqEnable (-SIGQUIT, NULL) < 0))
-      || sigprocmask (SIG_SETMASK, &oldMask, NULL) != 0)
-    {
-	status = -1;
-    }
-    goto out;
-
-out_restore_sigquit_and_sigint:
-    (void) rpmsqEnable(-SIGQUIT, NULL);
-out_restore_sigint:
-    (void) rpmsqEnable(-SIGINT, NULL);
-out:
-    (void) DO_UNLOCK ();
-    return status;
 }

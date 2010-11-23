@@ -101,33 +101,6 @@ pid_t rpmsqFork(rpmsq sq);
  */
 pid_t rpmsqWait(rpmsq sq);
 
-/** \ingroup rpmsq
- * Call a function in a thread.
- * @param start		function
- * @param arg		function argument
- * @return		thread pointer (NULL on error)
- */
-void * rpmsqThread(void * (*start) (void * arg), void * arg);
-
-/** \ingroup rpmsq
- * Wait for thread to terminate.
- * @param thread	thread
- * @return		0 on success
- */
-int rpmsqJoin(void * thread);
-
-/** \ingroup rpmsq
- * Compare thread with current thread.
- * @param thread	thread
- * @return		0 if not equal
- */
-int rpmsqThreadEqual(void * thread);
-
-/** \ingroup rpmsq
- * Execute a command, returning its status.
- */
-int rpmsqExecve (const char ** argv);
-
 #ifdef __cplusplus
 }
 #endif
