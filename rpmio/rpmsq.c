@@ -11,8 +11,6 @@
 #include <errno.h>
 #include <stdio.h>
 
-#if defined(HAVE_PTHREAD_H)
-
 #include <pthread.h>
 
 /* XXX suggested in bugzilla #159024 */
@@ -32,17 +30,6 @@ static pthread_mutex_t rpmsigTbl_lock = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 #define	SUB_REF(__tbl)	--(__tbl)->active
 
 #define	ME()	((void *)pthread_self())
-
-#else
-
-#define	DO_LOCK()
-#define	DO_UNLOCK()
-#define	ADD_REF(__tbl)	(0)
-#define	SUB_REF(__tbl)	(0)
-
-#define	ME()	(((void *)getpid()))
-
-#endif	/* HAVE_PTHREAD_H */
 
 #define _RPMSQ_INTERNAL
 #include <rpm/rpmsq.h>
