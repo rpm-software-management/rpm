@@ -42,6 +42,17 @@ static PyObject *err_closed(void)
     return NULL;
 }
 
+static FD_t openPath(const char *path, const char *mode, const char *flags)
+{
+    FD_t fd;
+    char *m = rstrscat(NULL, mode, ".", flags, NULL);
+    Py_BEGIN_ALLOW_THREADS
+    fd = Fopen(path, m);
+    Py_END_ALLOW_THREADS;
+    free(m);
+    return fd;
+}
+
 static PyObject *rpmfd_new(PyTypeObject *subtype, 
 			   PyObject *args, PyObject *kwds)
 {
@@ -58,11 +69,21 @@ static PyObject *rpmfd_new(PyTypeObject *subtype,
 	return NULL;
 
     if (PyBytes_Check(fo)) {
-	char *m = rstrscat(NULL, mode, ".", flags, NULL);
-	Py_BEGIN_ALLOW_THREADS 
-	fd = Fopen(PyBytes_AsString(fo), m);
-	Py_END_ALLOW_THREADS 
-	free(m);
+	fd = openPath(PyBytes_AsString(fo), mode, flags);
+    } else if (PyUnicode_Check(fo)) {
+	PyObject *enc = NULL;
+	int rc;
+#if PY_MAJOR_VERSION >= 3
+	rc = PyUnicode_FSConverter(fo, &enc);
+#else
+	rc = utf8FromPyObject(fo, &enc);
+#endif
+	if (rc == 0)
+	    return NULL;
+
+	fd = openPath(PyBytes_AsString(enc), mode, flags);
+	Py_DECREF(enc);
+	    
     } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
 	fd = fdDup(fdno);
     } else {
