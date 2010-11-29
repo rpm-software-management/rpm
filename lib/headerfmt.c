@@ -61,13 +61,22 @@ struct sprintfToken_s {
     } u;
 };
 
+#define HASHTYPE tagCache
+#define HTKEYTYPE rpmTagVal
+#define HTDATATYPE rpmtd
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 /**
  */
 typedef struct headerSprintfArgs_s {
     Header h;
     char * fmt;
     const char * errmsg;
-    rpmtd *cache;
+    tagCache cache;
     sprintfToken format;
     HeaderIterator hi;
     char * val;
@@ -566,14 +575,10 @@ static int parseExpression(headerSprintfArgs hsa, sprintfToken token,
     return 0;
 }
 
-static rpmtd getCached(rpmtd *cache, rpmTagVal tag)
+static rpmtd getCached(tagCache cache, rpmTagVal tag)
 {
-    rpmtd td = NULL;
-
-    if (tag >= RPMTAG_HEADERIMAGE && tag < RPMTAG_FIRSTFREE_TAG && cache[tag]) {
-	td = cache[tag];
-    }
-    return td;
+    rpmtd *res = NULL;
+    return tagCacheGetEntry(cache, tag, &res, NULL, NULL) ? res[0] : NULL;
 }
 
 /**
@@ -595,7 +600,7 @@ static rpmtd getData(headerSprintfArgs hsa, rpmTagVal tag)
 	    rpmtdFree(td);
 	    return NULL;
 	}
-	hsa->cache[tag] = td;
+	tagCacheAddEntry(hsa->cache, tag, td);
     }
 
     return td;
@@ -778,30 +783,20 @@ static char * singleSprintf(headerSprintfArgs hsa, sprintfToken token,
     return (hsa->val + hsa->vallen);
 }
 
-/**
- * Create tag data cache.
- * This allocates much more space than necessary but playing it
- * simple and stupid for now.
- */
-static rpmtd *cacheCreate(void)
+static int tagCmp(rpmTagVal a, rpmTagVal b)
 {
-    rpmtd *cache = xcalloc(RPMTAG_FIRSTFREE_TAG, sizeof(*cache));
-    return cache;
+    return (a != b);
 }
 
-/**
- * Free tag data cache contents and destroy cache.
- */
-static rpmtd *cacheFree(rpmtd *cache)
+static unsigned int tagId(rpmTagVal tag)
 {
-    rpmtd *td = cache;
-    for (int i = 0; i < RPMTAG_FIRSTFREE_TAG; i++, td++) {
-	if (*td) {
-	    rpmtdFreeData(*td);
-	    rpmtdFree(*td);
-	}
-    }
-    free(cache);
+    return tag;
+}
+
+static rpmtd tagFree(rpmtd td)
+{
+    rpmtdFreeData(td);
+    rpmtdFree(td);
     return NULL;
 }
 
@@ -822,7 +817,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (parseFormat(&hsa, hsa.fmt, &hsa.format, &hsa.numTokens, NULL, PARSER_BEGIN))
 	goto exit;
 
-    hsa.cache = cacheCreate();
+    hsa.cache = tagCacheCreate(128, tagId, tagCmp, NULL, tagFree);
     hsa.val = xstrdup("");
 
     tag =
@@ -860,7 +855,7 @@ char * headerFormat(Header h, const char * fmt, errmsg_t * errmsg)
     if (hsa.val != NULL && hsa.vallen < hsa.alloced)
 	hsa.val = xrealloc(hsa.val, hsa.vallen+1);	
 
-    hsa.cache = cacheFree(hsa.cache);
+    hsa.cache = tagCacheFree(hsa.cache);
     hsa.format = freeFormat(hsa.format, hsa.numTokens);
 
 exit:
