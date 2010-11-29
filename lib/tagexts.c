@@ -151,31 +151,6 @@ exit:
 }
 
 /**
- * Retrieve install prefixes.
- * @param h		header
- * @retval td		tag data container
- * @return		1 on success
- */
-static int instprefixTag(Header h, rpmtd td, headerGetFlags hgflags)
-{
-    struct rpmtd_s prefixes;
-    int flags = HEADERGET_MINMEM;
-
-    if (headerGet(h, RPMTAG_INSTALLPREFIX, td, flags)) {
-	return 1;
-    } else if (headerGet(h, RPMTAG_INSTPREFIXES, &prefixes, flags)) {
-	/* only return the first prefix of the array */
-	td->type = RPM_STRING_TYPE;
-	td->data = xstrdup(rpmtdGetString(&prefixes));
-	td->flags = RPMTD_ALLOCED;
-	rpmtdFreeData(&prefixes);
-	return 1;
-    }
-
-    return 0;
-}
-
-/**
  * Retrieve trigger info.
  * @param h		header
  * @retval td		tag data container
@@ -696,7 +671,6 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_ORIGFILENAMES,	origfilenamesTag },
     { RPMTAG_FILEPROVIDE,	fileprovideTag },
     { RPMTAG_FILEREQUIRE,	filerequireTag },
-    { RPMTAG_INSTALLPREFIX,	instprefixTag },
     { RPMTAG_TRIGGERCONDS,	triggercondsTag },
     { RPMTAG_TRIGGERTYPE,	triggertypeTag },
     { RPMTAG_LONGFILESIZES,	longfilesizesTag },
