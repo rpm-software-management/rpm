@@ -36,7 +36,8 @@ struct rpmfc_s {
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
     int tracked;	/*!< Versioned Provides: tracking dependency added? */
-    size_t brlen;	/*!< strlen(spec->buildRoot) */
+    char *buildRoot;	/*!< (Build) root dir */
+    size_t brlen;	/*!< rootDir length */
 
     rpmfcAttr *atypes;	/*!< known file attribute types */
 
@@ -706,6 +707,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++)
 	    rpmfcAttrFree(*attr);
 	rfree(fc->atypes);
+	rfree(fc->buildRoot);
 	fc->fn = argvFree(fc->fn);
 	for (int i = 0; i < fc->nfiles; i++)
 	    argvFree(fc->fattrs[i]);
@@ -725,10 +727,19 @@ rpmfc rpmfcFree(rpmfc fc)
     return NULL;
 }
 
-rpmfc rpmfcNew(void)
+rpmfc rpmfcCreate(const char *buildRoot, rpmFlags flags)
 {
     rpmfc fc = xcalloc(1, sizeof(*fc));
+    if (buildRoot) {
+	fc->buildRoot = xstrdup(buildRoot);
+	fc->brlen = strlen(buildRoot);
+    }
     return fc;
+}
+
+rpmfc rpmfcNew(void)
+{
+    return rpmfcCreate(NULL, 0);
 }
 
 rpmds rpmfcProvides(rpmfc fc)
@@ -1202,11 +1213,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
     av[ac] = NULL;
 
-    fc = rpmfcNew();
+    fc = rpmfcCreate(spec->buildRoot, 0);
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
     fc->tracked = 0;
-    fc->brlen = (spec->buildRoot ? strlen(spec->buildRoot) : 0);
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {
