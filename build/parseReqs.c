@@ -39,6 +39,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
+    const char *emsg = NULL;
     char * N = NULL, * EVR = NULL;
     rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
@@ -105,9 +106,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	 * the spec's encoding so we only check what we can: plain ascii.
 	 */
 	if (isascii(r[0]) && !(risalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
-	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"),
-		     spec->lineNum, spec->line);
+	    emsg = _("Dependency tokens must begin with alpha-numeric, '_' or '/'");
 	    goto exit;
 	}
 
@@ -132,9 +131,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		continue;
 
 	    if (r[0] == '/') {
-		rpmlog(RPMLOG_ERR,
-			 _("line %d: Versioned file name not permitted: %s\n"),
-			 spec->lineNum, spec->line);
+		emsg = _("Versioned file name not permitted");
 		goto exit;
 	    }
 
@@ -163,8 +160,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
-		rpmlog(RPMLOG_ERR, _("line %d: Version required: %s\n"),
-			spec->lineNum, spec->line);
+		emsg = _("Version required");
 		goto exit;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
@@ -175,8 +171,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    EVR = NULL;
 
 	if (addReqProv(h, nametag, N, EVR, Flags, index)) {
-	    rpmlog(RPMLOG_ERR, _("line %d: invalid dependency: %s\n"),
-		   spec->lineNum, spec->line);
+	    emsg = _("invalid dependency");
 	    goto exit;
 	}
 
@@ -187,6 +182,15 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     rc = RPMRC_OK;
 
 exit:
+    if (emsg) {
+	/* Automatic dependencies don't relate to spec lines */
+	if (tagflags & (RPMSENSE_FIND_REQUIRES|RPMSENSE_FIND_PROVIDES)) {
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", emsg, r);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("line %d: %s: %s\n"),
+		   spec->lineNum, emsg, spec->line);
+	}
+    }
     free(N);
     free(EVR);
 
