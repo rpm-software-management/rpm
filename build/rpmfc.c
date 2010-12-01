@@ -172,11 +172,12 @@ static void sigpipe_finish(void)
  * @param writePtr	bytes to feed to script on stdin (or NULL)
  * @param writeBytesLeft no. of bytes to feed to script on stdin
  * @param failNonZero	is script failure an error?
+ * @param buildRoot	buildRoot directory (or NULL)
  * @return		buffered stdout from script, NULL on error
  */     
 static StringBuf getOutputFrom(ARGV_t argv,
                         const char * writePtr, size_t writeBytesLeft,
-                        int failNonZero)
+                        int failNonZero, const char *buildRoot)
 {
     pid_t child, reaped;
     int toProg[2] = { -1, -1 };
@@ -207,6 +208,9 @@ static StringBuf getOutputFrom(ARGV_t argv,
 
 	rpmlog(RPMLOG_DEBUG, "\texecv(%s) pid %d\n",
                         argv[0], (unsigned)getpid());
+
+	if (buildRoot)
+	    setenv("RPM_BUILD_ROOT", buildRoot, 1);
 
 	unsetenv("MALLOC_CHECK_");
 	execvp(argv[0], (char *const *)argv);
@@ -316,7 +320,7 @@ exit:
 }
 
 int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
-		int failnonzero)
+		int failnonzero, const char *buildRoot)
 {
     char * s = NULL;
     ARGV_t xav = NULL;
@@ -356,7 +360,7 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     }
 
     /* Read output from exec'd helper. */
-    sb = getOutputFrom(xav, buf_stdin, buf_stdin_len, failnonzero);
+    sb = getOutputFrom(xav, buf_stdin, buf_stdin_len, failnonzero, buildRoot);
 
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
@@ -442,7 +446,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     sb_stdin = newStringBuf();
     appendLineStringBuf(sb_stdin, fn);
     sb_stdout = NULL;
-    xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0);
+    xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0, fc->buildRoot);
     sb_stdin = freeStringBuf(sb_stdin);
 
     if (xx == 0 && sb_stdout != NULL) {
@@ -1135,7 +1139,8 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	    break;
 	}
 
-	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout, failnonzero) == -1)
+	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
+			failnonzero, spec->buildRoot) == -1)
 	    continue;
 
 	s = rpmExpand(dm->argv[0], NULL);

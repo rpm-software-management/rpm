@@ -2065,7 +2065,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
  * @param fileList	packaged file list
  * @return		-1 if skipped, 0 on OK, 1 on error
  */
-static int checkFiles(StringBuf fileList)
+static int checkFiles(const char *buildRoot, StringBuf fileList)
 {
     static char * const av_ckfile[] = { "%{?__check_files}", NULL };
     StringBuf sb_stdout = NULL;
@@ -2081,7 +2081,7 @@ static int checkFiles(StringBuf fileList)
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
-    rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0);
+    rc = rpmfcExec(av_ckfile, fileList, &sb_stdout, 0, buildRoot);
     if (rc < 0)
 	goto exit;
     
@@ -2144,7 +2144,7 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
      */
     
     
-    if (checkFiles(check_fileList) > 0) {
+    if (checkFiles(spec->buildRoot, check_fileList) > 0) {
 	rc = RPMRC_FAIL;
     }
 exit:
