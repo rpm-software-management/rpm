@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-11-18 13:20+0200\n"
+"POT-Creation-Date: 2010-12-01 17:16+0200\n"
 "PO-Revision-Date: 2001-04-05 23:03GMT\n"
 "Last-Translator: Claus Hindsgaul <claus_h@image.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -17,7 +17,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "fil %s: %s\n"
 
-#: cliutils.c:26 lib/poptALL.c:61
+#: cliutils.c:26 lib/poptALL.c:59
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1270,27 +1270,31 @@ msgid "line %d: second %%prep\n"
 msgstr "linie %d: anden %%prep\n"
 
 #: build/parseReqs.c:109
-#, c-format
-msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+#, fuzzy
+msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 "linie %d: Afhængigheds-symbol skal starte med alfanumerisk, '_' eller '/': "
 "%s\n"
 
-#: build/parseReqs.c:136
-#, c-format
-msgid "line %d: Versioned file name not permitted: %s\n"
+#: build/parseReqs.c:134
+#, fuzzy
+msgid "Versioned file name not permitted"
 msgstr "linie %d: Filnavn med version ikke tilladt: %s\n"
 
-#: build/parseReqs.c:166
-#, c-format
-msgid "line %d: Version required: %s\n"
+#: build/parseReqs.c:163
+#, fuzzy
+msgid "Version required"
 msgstr "linie %d: Version kræves %s\n"
 
-#: build/parseReqs.c:178
-#, fuzzy, c-format
-msgid "line %d: invalid dependency: %s\n"
+#: build/parseReqs.c:174
+#, fuzzy
+msgid "invalid dependency"
 msgstr "linie %d: Ugyldigt tal: %s\n"
+
+#: build/parseReqs.c:190
+#, fuzzy, c-format
+msgid "line %d: %s: %s\n"
+msgstr "linie %d: %s\n"
 
 #: build/parseScript.c:192
 #, c-format
@@ -1436,72 +1440,67 @@ msgstr "For mange parametre på datalinie ved %s:%d\n"
 msgid "Processing policies: %s\n"
 msgstr "Gennemløber filer: %s-%s-%s\n"
 
-#: build/rpmfc.c:75
+#: build/rpmfc.c:76
 #, fuzzy, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "linie %d: Ugyldigt tal: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:192
 #, fuzzy, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: build/rpmfc.c:209
-#, fuzzy, c-format
-msgid "Couldn't chdir to %s: %s\n"
-msgstr "Kunne ikke udføre %s: %s\n"
-
-#: build/rpmfc.c:219
+#: build/rpmfc.c:217
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke udføre %s: %s\n"
 
-#: build/rpmfc.c:224 lib/rpmscript.c:239
+#: build/rpmfc.c:222 lib/rpmscript.c:239
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunne ikke fraspalte ny proces til %s: %s\n"
 
-#: build/rpmfc.c:306
+#: build/rpmfc.c:304
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s mislykkedes\n"
 
-#: build/rpmfc.c:310
+#: build/rpmfc.c:308
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/rpmfc.c:785
+#: build/rpmfc.c:793
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:873
+#: build/rpmfc.c:881
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "gpg kunne ikke skrive signaturen\n"
 
-#: build/rpmfc.c:890
+#: build/rpmfc.c:898
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "åbning af %s mislykkedes %s\n"
 
-#: build/rpmfc.c:897
+#: build/rpmfc.c:905
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "fjernelse af %s mislykkedes: %s\n"
 
-#: build/rpmfc.c:938
+#: build/rpmfc.c:946
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "fjernelse af %s mislykkedes: %s\n"
 
-#: build/rpmfc.c:1138
+#: build/rpmfc.c:1147
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Finder %s: (benytter %s)...\n"
 
-#: build/rpmfc.c:1143 build/rpmfc.c:1152
+#: build/rpmfc.c:1152 build/rpmfc.c:1161
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Kunne ikke finde %s:\n"
@@ -1786,106 +1785,106 @@ msgstr "%s kunne ikke installeres\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:163
+#: lib/poptALL.c:161
 msgid "predefine MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:164 lib/poptALL.c:167
+#: lib/poptALL.c:162 lib/poptALL.c:165
 msgid "'MACRO EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:166
+#: lib/poptALL.c:164
 msgid "define MACRO with value EXPR"
 msgstr ""
 
-#: lib/poptALL.c:169
+#: lib/poptALL.c:167
 #, fuzzy
 msgid "print macro expansion of EXPR"
 msgstr "udlæs makroudvidelse af <udtryk>+"
 
-#: lib/poptALL.c:170
+#: lib/poptALL.c:168
 msgid "'EXPR'"
 msgstr ""
 
-#: lib/poptALL.c:172 lib/poptALL.c:186
+#: lib/poptALL.c:170 lib/poptALL.c:184
 #, fuzzy
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "læs <fil:...> i stedet for standard makrofil(er)"
 
-#: lib/poptALL.c:173 lib/poptALL.c:187
+#: lib/poptALL.c:171 lib/poptALL.c:185
 msgid "<FILE:...>"
 msgstr ""
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:174
 #, fuzzy
 msgid "don't verify package digest(s)"
 msgstr "undlad at tjekke pakkers afhængighedskrav"
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:176
 #, fuzzy
 msgid "don't verify database header(s) when retrieved"
 msgstr "tjek ikke pakkens arkitektur"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:178
 #, fuzzy
 msgid "don't verify package signature(s)"
 msgstr "verificér pakkesignatur"
 
-#: lib/poptALL.c:183
+#: lib/poptALL.c:181
 #, fuzzy
 msgid "send stdout to CMD"
 msgstr "send standard-ud til <kmd>"
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:182
 msgid "CMD"
 msgstr ""
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:187
 #, fuzzy
 msgid "use ROOT as top level directory"
 msgstr "brug <katalog> som topniveau-katalog"
 
-#: lib/poptALL.c:190
+#: lib/poptALL.c:188
 msgid "ROOT"
 msgstr ""
 
-#: lib/poptALL.c:192
+#: lib/poptALL.c:190
 msgid "use database in DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:193
+#: lib/poptALL.c:191
 msgid "DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:196
+#: lib/poptALL.c:194
 msgid "display known query tags"
 msgstr "vis kendte forespørgselsmærker"
 
-#: lib/poptALL.c:198
+#: lib/poptALL.c:196
 msgid "display final rpmrc and macro configuration"
 msgstr "vis den endelige rpmrc og makrokonfiguration"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:198
 msgid "provide less detailed output"
 msgstr "medtag mindre detaljerede oplysninger"
 
-#: lib/poptALL.c:202
+#: lib/poptALL.c:200
 msgid "provide more detailed output"
 msgstr "medtag mere detaljerede oplysninger"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:202
 msgid "print the version of rpm being used"
 msgstr "vis versionen af rpm som benyttes"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:208
 msgid "debug payload file state machine"
 msgstr ""
 
-#: lib/poptALL.c:216
+#: lib/poptALL.c:214
 msgid "debug rpmio I/O"
 msgstr "aflus rpmio I/O"
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:291
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr ""
@@ -3012,63 +3011,63 @@ msgstr "manglende  %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ikke-tilfredsstillede afhængighedskrav for %s-%s-%s: "
 
-#: lib/headerfmt.c:333
+#: lib/headerfmt.c:342
 msgid "missing { after %"
 msgstr "manglende { efter %"
 
-#: lib/headerfmt.c:355
+#: lib/headerfmt.c:364
 msgid "missing } after %{"
 msgstr "manglende } efter %{"
 
-#: lib/headerfmt.c:366
+#: lib/headerfmt.c:375
 msgid "empty tag format"
 msgstr "tomt mærkeformat"
 
-#: lib/headerfmt.c:377
+#: lib/headerfmt.c:386
 msgid "empty tag name"
 msgstr "tomt mærkenavn"
 
-#: lib/headerfmt.c:384
+#: lib/headerfmt.c:393
 msgid "unknown tag"
 msgstr "ukendt mærke"
 
-#: lib/headerfmt.c:404
+#: lib/headerfmt.c:413
 msgid "] expected at end of array"
 msgstr "] forventet ved slutningen af tabel"
 
-#: lib/headerfmt.c:416
+#: lib/headerfmt.c:425
 msgid "unexpected ]"
 msgstr "uventet ]"
 
-#: lib/headerfmt.c:426
+#: lib/headerfmt.c:435
 msgid "unexpected }"
 msgstr "uventet }"
 
-#: lib/headerfmt.c:482
+#: lib/headerfmt.c:491
 msgid "? expected in expression"
 msgstr "? forventet i udtryk"
 
-#: lib/headerfmt.c:489
+#: lib/headerfmt.c:498
 msgid "{ expected after ? in expression"
 msgstr "{ forventet efter ? i udtryk"
 
-#: lib/headerfmt.c:501 lib/headerfmt.c:541
+#: lib/headerfmt.c:510 lib/headerfmt.c:550
 msgid "} expected in expression"
 msgstr "} forventet i udtryk"
 
-#: lib/headerfmt.c:509
+#: lib/headerfmt.c:518
 msgid ": expected following ? subexpression"
 msgstr ": forventet efter ?-underudtryk"
 
-#: lib/headerfmt.c:527
+#: lib/headerfmt.c:536
 msgid "{ expected after : in expression"
 msgstr "{ forventet efter : i udtryk"
 
-#: lib/headerfmt.c:549
+#: lib/headerfmt.c:558
 msgid "| expected at end of expression"
 msgstr "| forventet ved slutningen af udtryk"
 
-#: lib/headerfmt.c:722
+#: lib/headerfmt.c:727
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
@@ -3555,6 +3554,10 @@ msgstr "%s: læs manifest mislykkedes: %s\n"
 #, fuzzy
 msgid "don't verify header+payload signature"
 msgstr "verificér pakkesignatur"
+
+#, fuzzy
+#~ msgid "Couldn't chdir to %s: %s\n"
+#~ msgstr "Kunne ikke udføre %s: %s\n"
 
 #~ msgid ""
 #~ "--nodeps may only be specified during package building, rebuilding, "

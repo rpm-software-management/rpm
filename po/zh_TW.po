@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-11-18 13:20+0200\n"
+"POT-Creation-Date: 2010-12-01 17:16+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "%s：%s\n"
 
-#: cliutils.c:26 lib/poptALL.c:61
+#: cliutils.c:26 lib/poptALL.c:59
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM 版本 %s\n"
@@ -1258,25 +1258,29 @@ msgid "line %d: second %%prep\n"
 msgstr "列 %d：重複的 %%prep\n"
 
 #: build/parseReqs.c:109
-#, c-format
-msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+#, fuzzy
+msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr "列 %d：相依關係的表述必須以數字、「_」或「/」開頭：%s\n"
 
-#: build/parseReqs.c:136
-#, c-format
-msgid "line %d: Versioned file name not permitted: %s\n"
+#: build/parseReqs.c:134
+#, fuzzy
+msgid "Versioned file name not permitted"
 msgstr "列 %d: 不容許標上版本的檔案名稱：%s\n"
 
-#: build/parseReqs.c:166
-#, c-format
-msgid "line %d: Version required: %s\n"
+#: build/parseReqs.c:163
+#, fuzzy
+msgid "Version required"
 msgstr "列 %d：需要版本描述：%s\n"
 
-#: build/parseReqs.c:178
-#, fuzzy, c-format
-msgid "line %d: invalid dependency: %s\n"
+#: build/parseReqs.c:174
+#, fuzzy
+msgid "invalid dependency"
 msgstr "列 %d：錯誤的編號：%s\n"
+
+#: build/parseReqs.c:190
+#, fuzzy, c-format
+msgid "line %d: %s: %s\n"
+msgstr "列 %d：%s\n"
 
 #: build/parseScript.c:192
 #, c-format
@@ -1419,72 +1423,67 @@ msgstr "在資料列的 %s:%d 中有太多引數\n"
 msgid "Processing policies: %s\n"
 msgstr "正在處理檔案：%s-%s-%s\n"
 
-#: build/rpmfc.c:75
+#: build/rpmfc.c:76
 #, fuzzy, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "列 %d：錯誤的編號：%s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:192
 #, fuzzy, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/rpmfc.c:209
-#, fuzzy, c-format
-msgid "Couldn't chdir to %s: %s\n"
-msgstr "無法執行 %s: %s\n"
-
-#: build/rpmfc.c:219
+#: build/rpmfc.c:217
 #, fuzzy, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "無法執行 %s: %s\n"
 
-#: build/rpmfc.c:224 lib/rpmscript.c:239
+#: build/rpmfc.c:222 lib/rpmscript.c:239
 #, fuzzy, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/rpmfc.c:306
+#: build/rpmfc.c:304
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s 失敗：%s\n"
 
-#: build/rpmfc.c:310
+#: build/rpmfc.c:308
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/rpmfc.c:785
+#: build/rpmfc.c:793
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:873
+#: build/rpmfc.c:881
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "寫入簽名時 gpg 失敗\n"
 
-#: build/rpmfc.c:890
+#: build/rpmfc.c:898
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: build/rpmfc.c:897
+#: build/rpmfc.c:905
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: build/rpmfc.c:938
+#: build/rpmfc.c:946
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1138
+#: build/rpmfc.c:1147
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: build/rpmfc.c:1143 build/rpmfc.c:1152
+#: build/rpmfc.c:1152 build/rpmfc.c:1161
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "讀取 %s 失敗: %s。\n"
@@ -1766,99 +1765,99 @@ msgstr "%s 無法安裝\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/poptALL.c:163
+#: lib/poptALL.c:161
 msgid "predefine MACRO with value EXPR"
 msgstr "預先以值 EXPR 定義巨集"
 
-#: lib/poptALL.c:164 lib/poptALL.c:167
+#: lib/poptALL.c:162 lib/poptALL.c:165
 msgid "'MACRO EXPR'"
 msgstr "「巨集 EXPR」"
 
-#: lib/poptALL.c:166
+#: lib/poptALL.c:164
 msgid "define MACRO with value EXPR"
 msgstr "定義巨集附有值 EXPR"
 
-#: lib/poptALL.c:169
+#: lib/poptALL.c:167
 msgid "print macro expansion of EXPR"
 msgstr "印出巨集展開的 EXPR"
 
-#: lib/poptALL.c:170
+#: lib/poptALL.c:168
 msgid "'EXPR'"
 msgstr "「EXPR」"
 
-#: lib/poptALL.c:172 lib/poptALL.c:186
+#: lib/poptALL.c:170 lib/poptALL.c:184
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "讀取 <檔案:…> 以代替預設檔案"
 
-#: lib/poptALL.c:173 lib/poptALL.c:187
+#: lib/poptALL.c:171 lib/poptALL.c:185
 msgid "<FILE:...>"
 msgstr "<檔案:…>"
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:174
 msgid "don't verify package digest(s)"
 msgstr "不校驗套件摘要"
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:176
 msgid "don't verify database header(s) when retrieved"
 msgstr "取回時不驗證資料庫表頭"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:178
 msgid "don't verify package signature(s)"
 msgstr "不校驗套件簽名"
 
-#: lib/poptALL.c:183
+#: lib/poptALL.c:181
 msgid "send stdout to CMD"
 msgstr "發送標準輸出到 CMD"
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:182
 msgid "CMD"
 msgstr "CMD"
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:187
 msgid "use ROOT as top level directory"
 msgstr "使用 ROOT 做為頂層目錄"
 
-#: lib/poptALL.c:190
+#: lib/poptALL.c:188
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:192
+#: lib/poptALL.c:190
 msgid "use database in DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:193
+#: lib/poptALL.c:191
 msgid "DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:196
+#: lib/poptALL.c:194
 msgid "display known query tags"
 msgstr "顯示已知的查詢標記"
 
-#: lib/poptALL.c:198
+#: lib/poptALL.c:196
 msgid "display final rpmrc and macro configuration"
 msgstr "顯示完整的 rpmrc 與巨集定義配置"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:198
 msgid "provide less detailed output"
 msgstr "提供較少的細節輸出"
 
-#: lib/poptALL.c:202
+#: lib/poptALL.c:200
 msgid "provide more detailed output"
 msgstr "提供較多的細節輸出"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:202
 msgid "print the version of rpm being used"
 msgstr "印出正在使用的 rpm 版本資訊"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:208
 msgid "debug payload file state machine"
 msgstr "對酬載檔案狀態機器除錯"
 
-#: lib/poptALL.c:216
+#: lib/poptALL.c:214
 msgid "debug rpmio I/O"
 msgstr "對 rpmio I/O 除錯"
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:291
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: 選項表格 misconfigured(%d)\n"
@@ -2946,63 +2945,63 @@ msgstr "缺少      %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "無法滿足 %s 的相依性："
 
-#: lib/headerfmt.c:333
+#: lib/headerfmt.c:342
 msgid "missing { after %"
 msgstr "% 之後缺少 {"
 
-#: lib/headerfmt.c:355
+#: lib/headerfmt.c:364
 msgid "missing } after %{"
 msgstr "%{ 之後缺少 }"
 
-#: lib/headerfmt.c:366
+#: lib/headerfmt.c:375
 msgid "empty tag format"
 msgstr "清空標記格式"
 
-#: lib/headerfmt.c:377
+#: lib/headerfmt.c:386
 msgid "empty tag name"
 msgstr "清空標記名稱"
 
-#: lib/headerfmt.c:384
+#: lib/headerfmt.c:393
 msgid "unknown tag"
 msgstr "不明的標記"
 
-#: lib/headerfmt.c:404
+#: lib/headerfmt.c:413
 msgid "] expected at end of array"
 msgstr "] 預期在陣列的結束"
 
-#: lib/headerfmt.c:416
+#: lib/headerfmt.c:425
 msgid "unexpected ]"
 msgstr "未預期的 ]"
 
-#: lib/headerfmt.c:426
+#: lib/headerfmt.c:435
 msgid "unexpected }"
 msgstr "未預期的 }"
 
-#: lib/headerfmt.c:482
+#: lib/headerfmt.c:491
 msgid "? expected in expression"
 msgstr "? 預期於運算式中"
 
-#: lib/headerfmt.c:489
+#: lib/headerfmt.c:498
 msgid "{ expected after ? in expression"
 msgstr "{ 預期於運算式中 ? 之後"
 
-#: lib/headerfmt.c:501 lib/headerfmt.c:541
+#: lib/headerfmt.c:510 lib/headerfmt.c:550
 msgid "} expected in expression"
 msgstr "} 預期於運算式中"
 
-#: lib/headerfmt.c:509
+#: lib/headerfmt.c:518
 msgid ": expected following ? subexpression"
 msgstr "： 預期跟著子運算式"
 
-#: lib/headerfmt.c:527
+#: lib/headerfmt.c:536
 msgid "{ expected after : in expression"
 msgstr "{ 預期於運算式中 : 之後"
 
-#: lib/headerfmt.c:549
+#: lib/headerfmt.c:558
 msgid "| expected at end of expression"
 msgstr "| 預期於運算式的結束"
 
-#: lib/headerfmt.c:722
+#: lib/headerfmt.c:727
 msgid "array iterator used with different sized arrays"
 msgstr "用於不同大小陣列的陣列迭代器"
 
@@ -3488,6 +3487,10 @@ msgstr "%s: 讀取清單失敗：%s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "不驗證表頭+酬載簽名"
+
+#, fuzzy
+#~ msgid "Couldn't chdir to %s: %s\n"
+#~ msgstr "無法執行 %s: %s\n"
 
 #~ msgid ""
 #~ "--nodeps may only be specified during package building, rebuilding, "

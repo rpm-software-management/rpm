@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-11-18 13:20+0200\n"
+"POT-Creation-Date: 2010-12-01 17:16+0200\n"
 "PO-Revision-Date: 2009-01-17 17:20+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: cliutils.c:26 lib/poptALL.c:61
+#: cliutils.c:26 lib/poptALL.c:59
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM version %s\n"
@@ -1269,26 +1269,30 @@ msgid "line %d: second %%prep\n"
 msgstr "rad %d: andra %%prep\n"
 
 #: build/parseReqs.c:109
-#, c-format
-msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+#, fuzzy
+msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 "rad %d: Beroenden måste börja alfanumeriskt, med \"_\" eller \"/\": %s\n"
 
-#: build/parseReqs.c:136
-#, c-format
-msgid "line %d: Versioned file name not permitted: %s\n"
+#: build/parseReqs.c:134
+#, fuzzy
+msgid "Versioned file name not permitted"
 msgstr "rad %d: Filnamn med version inte tillåtet: %s\n"
 
-#: build/parseReqs.c:166
-#, c-format
-msgid "line %d: Version required: %s\n"
+#: build/parseReqs.c:163
+#, fuzzy
+msgid "Version required"
 msgstr "rad %d: Version krävs: %s\n"
 
-#: build/parseReqs.c:178
-#, fuzzy, c-format
-msgid "line %d: invalid dependency: %s\n"
+#: build/parseReqs.c:174
+#, fuzzy
+msgid "invalid dependency"
 msgstr "rad %d: Felaktigt nummer: %s\n"
+
+#: build/parseReqs.c:190
+#, fuzzy, c-format
+msgid "line %d: %s: %s\n"
+msgstr "rad %d: %s\n"
 
 #: build/parseScript.c:192
 #, c-format
@@ -1431,72 +1435,67 @@ msgstr "För många argument i datarad vid %s:%d\n"
 msgid "Processing policies: %s\n"
 msgstr "Bearbetar filer: %s-%s-%s\n"
 
-#: build/rpmfc.c:75
+#: build/rpmfc.c:76
 #, fuzzy, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "rad %d: Felaktigt nummer: %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:192
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Kunde inte öppna rör för %s: %m\n"
 
-#: build/rpmfc.c:209
-#, c-format
-msgid "Couldn't chdir to %s: %s\n"
-msgstr "Kunde inte ändra katalog till %s: %s\n"
-
-#: build/rpmfc.c:219
+#: build/rpmfc.c:217
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: build/rpmfc.c:224 lib/rpmscript.c:239
+#: build/rpmfc.c:222 lib/rpmscript.c:239
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunde inte grena (fork) %s: %s\n"
 
-#: build/rpmfc.c:306
+#: build/rpmfc.c:304
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s misslyckades: %s\n"
 
-#: build/rpmfc.c:310
+#: build/rpmfc.c:308
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "misslyckades att skriva all data till %s\n"
 
-#: build/rpmfc.c:785
+#: build/rpmfc.c:793
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konvertering av %s till långt heltal misslyckades.\n"
 
-#: build/rpmfc.c:873
+#: build/rpmfc.c:881
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "gpg kunde inte skriva signatur\n"
 
-#: build/rpmfc.c:890
+#: build/rpmfc.c:898
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) misslyckades: %s\n"
 
-#: build/rpmfc.c:897
+#: build/rpmfc.c:905
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load misslyckades: %s\n"
 
-#: build/rpmfc.c:938
+#: build/rpmfc.c:946
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Igenkänning av filen \"%s\" misslyckades: läge %06o %s\n"
 
-#: build/rpmfc.c:1138
+#: build/rpmfc.c:1147
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Letar efter %s: %s\n"
 
-#: build/rpmfc.c:1143 build/rpmfc.c:1152
+#: build/rpmfc.c:1152 build/rpmfc.c:1161
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Misslyckades med att hitta %s:\n"
@@ -1780,99 +1779,99 @@ msgstr "%s är en delta-RPM och kan inte installeras direkt\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Ej stödd last (%s) i paket %s\n"
 
-#: lib/poptALL.c:163
+#: lib/poptALL.c:161
 msgid "predefine MACRO with value EXPR"
 msgstr "fördefiniera MAKRO till värdet UTTR"
 
-#: lib/poptALL.c:164 lib/poptALL.c:167
+#: lib/poptALL.c:162 lib/poptALL.c:165
 msgid "'MACRO EXPR'"
 msgstr "'MAKRO UTTR'"
 
-#: lib/poptALL.c:166
+#: lib/poptALL.c:164
 msgid "define MACRO with value EXPR"
 msgstr "definiera MAKRO till värdet UTTR"
 
-#: lib/poptALL.c:169
+#: lib/poptALL.c:167
 msgid "print macro expansion of EXPR"
 msgstr "skriv ut makroexpansion av UTTR"
 
-#: lib/poptALL.c:170
+#: lib/poptALL.c:168
 msgid "'EXPR'"
 msgstr "'UTTR'"
 
-#: lib/poptALL.c:172 lib/poptALL.c:186
+#: lib/poptALL.c:170 lib/poptALL.c:184
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "läs <FIL:...> istället för standardfil(er)"
 
-#: lib/poptALL.c:173 lib/poptALL.c:187
+#: lib/poptALL.c:171 lib/poptALL.c:185
 msgid "<FILE:...>"
 msgstr "<FIL:...>"
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:174
 msgid "don't verify package digest(s)"
 msgstr "verifiera inte paketkontrollsummor"
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:176
 msgid "don't verify database header(s) when retrieved"
 msgstr "verifiera inte databashuvuden när de hämtas"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:178
 msgid "don't verify package signature(s)"
 msgstr "verifiera inte paketsignatur(er)"
 
-#: lib/poptALL.c:183
+#: lib/poptALL.c:181
 msgid "send stdout to CMD"
 msgstr "skicka standard ut till KMD"
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:182
 msgid "CMD"
 msgstr "KMD"
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:187
 msgid "use ROOT as top level directory"
 msgstr "använd ROT som toppnivåkatalog"
 
-#: lib/poptALL.c:190
+#: lib/poptALL.c:188
 msgid "ROOT"
 msgstr "ROT"
 
-#: lib/poptALL.c:192
+#: lib/poptALL.c:190
 msgid "use database in DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:193
+#: lib/poptALL.c:191
 msgid "DIRECTORY"
 msgstr ""
 
-#: lib/poptALL.c:196
+#: lib/poptALL.c:194
 msgid "display known query tags"
 msgstr "visa kända frågetaggar"
 
-#: lib/poptALL.c:198
+#: lib/poptALL.c:196
 msgid "display final rpmrc and macro configuration"
 msgstr "visa slutliga rpmrc- och makrokonfigurationer"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:198
 msgid "provide less detailed output"
 msgstr "visa mindre detaljerad utdata"
 
-#: lib/poptALL.c:202
+#: lib/poptALL.c:200
 msgid "provide more detailed output"
 msgstr "visa mer detaljerad utdata"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:202
 msgid "print the version of rpm being used"
 msgstr "visa vilken version av rpm som används"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:208
 msgid "debug payload file state machine"
 msgstr "felsök lastfilstillståndsmaskin"
 
-#: lib/poptALL.c:216
+#: lib/poptALL.c:214
 msgid "debug rpmio I/O"
 msgstr "felsök rpmio I/O"
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:291
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: flaggtabell felkonfigurerad (%d)\n"
@@ -2958,63 +2957,63 @@ msgstr "saknas    %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Ouppfyllda beroenden för %s:\n"
 
-#: lib/headerfmt.c:333
+#: lib/headerfmt.c:342
 msgid "missing { after %"
 msgstr "{ saknas efter %"
 
-#: lib/headerfmt.c:355
+#: lib/headerfmt.c:364
 msgid "missing } after %{"
 msgstr "} saknas efter %{"
 
-#: lib/headerfmt.c:366
+#: lib/headerfmt.c:375
 msgid "empty tag format"
 msgstr "tomt taggformat"
 
-#: lib/headerfmt.c:377
+#: lib/headerfmt.c:386
 msgid "empty tag name"
 msgstr "tomt taggnamn"
 
-#: lib/headerfmt.c:384
+#: lib/headerfmt.c:393
 msgid "unknown tag"
 msgstr "okänd tagg"
 
-#: lib/headerfmt.c:404
+#: lib/headerfmt.c:413
 msgid "] expected at end of array"
 msgstr "] förväntades vid slutet på vektor"
 
-#: lib/headerfmt.c:416
+#: lib/headerfmt.c:425
 msgid "unexpected ]"
 msgstr "oväntad ]"
 
-#: lib/headerfmt.c:426
+#: lib/headerfmt.c:435
 msgid "unexpected }"
 msgstr "oväntad }"
 
-#: lib/headerfmt.c:482
+#: lib/headerfmt.c:491
 msgid "? expected in expression"
 msgstr "? förväntades i uttryck"
 
-#: lib/headerfmt.c:489
+#: lib/headerfmt.c:498
 msgid "{ expected after ? in expression"
 msgstr "{ förväntades efter ? i uttryck"
 
-#: lib/headerfmt.c:501 lib/headerfmt.c:541
+#: lib/headerfmt.c:510 lib/headerfmt.c:550
 msgid "} expected in expression"
 msgstr "} förväntades i uttryck"
 
-#: lib/headerfmt.c:509
+#: lib/headerfmt.c:518
 msgid ": expected following ? subexpression"
 msgstr ": förväntades efter ? i deluttryck"
 
-#: lib/headerfmt.c:527
+#: lib/headerfmt.c:536
 msgid "{ expected after : in expression"
 msgstr "{ förväntades efter : i uttryck"
 
-#: lib/headerfmt.c:549
+#: lib/headerfmt.c:558
 msgid "| expected at end of expression"
 msgstr "| förväntades vid slutet på uttryck"
 
-#: lib/headerfmt.c:722
+#: lib/headerfmt.c:727
 msgid "array iterator used with different sized arrays"
 msgstr "vektoriterator använd med vektor av annan storlek"
 
@@ -3498,6 +3497,9 @@ msgstr "%s: läsning av paketlista misslyckades: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "verifiera inte huvud+lastsignatur"
+
+#~ msgid "Couldn't chdir to %s: %s\n"
+#~ msgstr "Kunde inte ändra katalog till %s: %s\n"
 
 #~ msgid ""
 #~ "--nodeps may only be specified during package building, rebuilding, "

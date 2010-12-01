@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: pl\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-11-18 13:20+0200\n"
+"POT-Creation-Date: 2010-12-01 17:16+0200\n"
 "PO-Revision-Date: 2010-11-19 09:13+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <trans-pl@lists.fedoraproject.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "%s: %s\n"
 msgstr "%s: %s\n"
 
-#: cliutils.c:26 lib/poptALL.c:61
+#: cliutils.c:26 lib/poptALL.c:59
 #, c-format
 msgid "RPM version %s\n"
 msgstr "RPM wersja %s\n"
@@ -1268,27 +1268,31 @@ msgid "line %d: second %%prep\n"
 msgstr "wiersz %d: drugie %%prep\n"
 
 #: build/parseReqs.c:109
-#, c-format
-msgid ""
-"line %d: Dependency tokens must begin with alpha-numeric, '_' or '/': %s\n"
+#, fuzzy
+msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 "wiersz %d: tokeny zależności muszą zaczynać się od znaków alfanumerycznych, "
 "\"_\" lub \"/\": %s\n"
 
-#: build/parseReqs.c:136
-#, c-format
-msgid "line %d: Versioned file name not permitted: %s\n"
+#: build/parseReqs.c:134
+#, fuzzy
+msgid "Versioned file name not permitted"
 msgstr "wiersz %d: wersja w nazwie pliku jest niedozwolona: %s\n"
 
-#: build/parseReqs.c:166
-#, c-format
-msgid "line %d: Version required: %s\n"
+#: build/parseReqs.c:163
+#, fuzzy
+msgid "Version required"
 msgstr "wiersz %d: wersja jest wymagana: %s\n"
 
-#: build/parseReqs.c:178
-#, c-format
-msgid "line %d: invalid dependency: %s\n"
+#: build/parseReqs.c:174
+#, fuzzy
+msgid "invalid dependency"
 msgstr "wiersz %d: nieprawidłowa zależność: %s\n"
+
+#: build/parseReqs.c:190
+#, fuzzy, c-format
+msgid "line %d: %s: %s\n"
+msgstr "wiersz %d: %s\n"
 
 #: build/parseScript.c:192
 #, c-format
@@ -1432,71 +1436,66 @@ msgstr "Za dużo parametrów w wierszu: %s\n"
 msgid "Processing policies: %s\n"
 msgstr "Przetwarzanie polityk: %s\n"
 
-#: build/rpmfc.c:75
+#: build/rpmfc.c:76
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "Ignorowanie nieprawidłowego wyrażenia regularnego %s\n"
 
-#: build/rpmfc.c:191
+#: build/rpmfc.c:192
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Nie można utworzyć potoku dla %s: %m\n"
 
-#: build/rpmfc.c:209
-#, c-format
-msgid "Couldn't chdir to %s: %s\n"
-msgstr "Nie można wykonać chdir do %s: %s\n"
-
-#: build/rpmfc.c:219
+#: build/rpmfc.c:217
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nie można wykonać %s: %s\n"
 
-#: build/rpmfc.c:224 lib/rpmscript.c:239
+#: build/rpmfc.c:222 lib/rpmscript.c:239
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nie można rozdzielić %s: %s\n"
 
-#: build/rpmfc.c:306
+#: build/rpmfc.c:304
 #, c-format
 msgid "%s failed: %x\n"
 msgstr "%s nie powiodło się: %x\n"
 
-#: build/rpmfc.c:310
+#: build/rpmfc.c:308
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "zapisanie wszystkich danych do %s nie powiodło się: %s\n"
 
-#: build/rpmfc.c:785
+#: build/rpmfc.c:793
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Konwersja %s na długą liczbę całkowitą nie powiodła się.\n"
 
-#: build/rpmfc.c:873
+#: build/rpmfc.c:881
 msgid "No file attributes configured\n"
 msgstr "Brak skonfigurowanych atrybutów plików\n"
 
-#: build/rpmfc.c:890
+#: build/rpmfc.c:898
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) nie powiodło się: %s\n"
 
-#: build/rpmfc.c:897
+#: build/rpmfc.c:905
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load nie powiodło się: %s\n"
 
-#: build/rpmfc.c:938
+#: build/rpmfc.c:946
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Rozpoznanie pliku \"%s\" nie powiodło się: tryb %06o %s\n"
 
-#: build/rpmfc.c:1138
+#: build/rpmfc.c:1147
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Wyszukiwanie %s: %s\n"
 
-#: build/rpmfc.c:1143 build/rpmfc.c:1152
+#: build/rpmfc.c:1152 build/rpmfc.c:1161
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Odnalezienie %s nie powiodło się:\n"
@@ -1770,99 +1769,99 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nieobsługiwane dane (%s) w pakiecie %s\n"
 
-#: lib/poptALL.c:163
+#: lib/poptALL.c:161
 msgid "predefine MACRO with value EXPR"
 msgstr "wcześniejsze określenie MAKRA z wartością WYRAŻENIE"
 
-#: lib/poptALL.c:164 lib/poptALL.c:167
+#: lib/poptALL.c:162 lib/poptALL.c:165
 msgid "'MACRO EXPR'"
 msgstr "\"MAKRO WYRAŻENIE\""
 
-#: lib/poptALL.c:166
+#: lib/poptALL.c:164
 msgid "define MACRO with value EXPR"
 msgstr "określenie MAKRA z wartością WYRAŻENIE"
 
-#: lib/poptALL.c:169
+#: lib/poptALL.c:167
 msgid "print macro expansion of EXPR"
 msgstr "wyświetlenie rozwinięcia makr z WYRAŻENIA"
 
-#: lib/poptALL.c:170
+#: lib/poptALL.c:168
 msgid "'EXPR'"
 msgstr "\"WYRAŻENIE\""
 
-#: lib/poptALL.c:172 lib/poptALL.c:186
+#: lib/poptALL.c:170 lib/poptALL.c:184
 msgid "read <FILE:...> instead of default file(s)"
 msgstr "odczytanie <PLIK:...> zamiast domyślnych plików"
 
-#: lib/poptALL.c:173 lib/poptALL.c:187
+#: lib/poptALL.c:171 lib/poptALL.c:185
 msgid "<FILE:...>"
 msgstr "<PLIK:...>"
 
-#: lib/poptALL.c:176
+#: lib/poptALL.c:174
 msgid "don't verify package digest(s)"
 msgstr "bez sprawdzania skrótów pakietów"
 
-#: lib/poptALL.c:178
+#: lib/poptALL.c:176
 msgid "don't verify database header(s) when retrieved"
 msgstr "bez sprawdzania nagłówków bazy danych po pobraniu"
 
-#: lib/poptALL.c:180
+#: lib/poptALL.c:178
 msgid "don't verify package signature(s)"
 msgstr "bez sprawdzania podpisów pakietów"
 
-#: lib/poptALL.c:183
+#: lib/poptALL.c:181
 msgid "send stdout to CMD"
 msgstr "przekazanie standardowego wyjścia do POLECENIA"
 
-#: lib/poptALL.c:184
+#: lib/poptALL.c:182
 msgid "CMD"
 msgstr "POLECENIE"
 
-#: lib/poptALL.c:189
+#: lib/poptALL.c:187
 msgid "use ROOT as top level directory"
 msgstr "użycie ROOTA jako katalogu najwyższego poziomu"
 
-#: lib/poptALL.c:190
+#: lib/poptALL.c:188
 msgid "ROOT"
 msgstr "ROOT"
 
-#: lib/poptALL.c:192
+#: lib/poptALL.c:190
 msgid "use database in DIRECTORY"
 msgstr "użycie bazy danych w KATALOGU"
 
-#: lib/poptALL.c:193
+#: lib/poptALL.c:191
 msgid "DIRECTORY"
 msgstr "KATALOG"
 
-#: lib/poptALL.c:196
+#: lib/poptALL.c:194
 msgid "display known query tags"
 msgstr "wyświetlenie znanych znaczników zapytań"
 
-#: lib/poptALL.c:198
+#: lib/poptALL.c:196
 msgid "display final rpmrc and macro configuration"
 msgstr "wyświetlenie ostatecznej konfiguracji rpmrc i makr"
 
-#: lib/poptALL.c:200
+#: lib/poptALL.c:198
 msgid "provide less detailed output"
 msgstr "użycie mniej szczegółowego wyjścia"
 
-#: lib/poptALL.c:202
+#: lib/poptALL.c:200
 msgid "provide more detailed output"
 msgstr "użycie bardziej szczegółowego wyjścia"
 
-#: lib/poptALL.c:204
+#: lib/poptALL.c:202
 msgid "print the version of rpm being used"
 msgstr "wyświetlenie wersji używanego oprogramowania RPM"
 
-#: lib/poptALL.c:210
+#: lib/poptALL.c:208
 msgid "debug payload file state machine"
 msgstr "debugowanie maszyny stanu danych pliku"
 
-#: lib/poptALL.c:216
+#: lib/poptALL.c:214
 msgid "debug rpmio I/O"
 msgstr "debugowanie wejścia/wyjścia rpmio"
 
-#: lib/poptALL.c:295
+#: lib/poptALL.c:291
 #, c-format
 msgid "%s: option table misconfigured (%d)\n"
 msgstr "%s: tabela opcji jest błędnie skonfigurowana (%d)\n"
@@ -2943,63 +2942,63 @@ msgstr "brak   %c %s"
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespełnione zależności dla %s:\n"
 
-#: lib/headerfmt.c:333
+#: lib/headerfmt.c:342
 msgid "missing { after %"
 msgstr "brak { po %"
 
-#: lib/headerfmt.c:355
+#: lib/headerfmt.c:364
 msgid "missing } after %{"
 msgstr "brak } po %{"
 
-#: lib/headerfmt.c:366
+#: lib/headerfmt.c:375
 msgid "empty tag format"
 msgstr "pusty format znacznika"
 
-#: lib/headerfmt.c:377
+#: lib/headerfmt.c:386
 msgid "empty tag name"
 msgstr "pusta nazwa znacznika"
 
-#: lib/headerfmt.c:384
+#: lib/headerfmt.c:393
 msgid "unknown tag"
 msgstr "nieznany znacznik"
 
-#: lib/headerfmt.c:404
+#: lib/headerfmt.c:413
 msgid "] expected at end of array"
 msgstr "oczekiwano ] na końcu tablicy"
 
-#: lib/headerfmt.c:416
+#: lib/headerfmt.c:425
 msgid "unexpected ]"
 msgstr "nieoczekiwane ]"
 
-#: lib/headerfmt.c:426
+#: lib/headerfmt.c:435
 msgid "unexpected }"
 msgstr "nieoczekiwane }"
 
-#: lib/headerfmt.c:482
+#: lib/headerfmt.c:491
 msgid "? expected in expression"
 msgstr "oczekiwano ? w wyrażeniu"
 
-#: lib/headerfmt.c:489
+#: lib/headerfmt.c:498
 msgid "{ expected after ? in expression"
 msgstr "oczekiwano { po ? w wyrażeniu"
 
-#: lib/headerfmt.c:501 lib/headerfmt.c:541
+#: lib/headerfmt.c:510 lib/headerfmt.c:550
 msgid "} expected in expression"
 msgstr "oczekiwano } w wyrażeniu"
 
-#: lib/headerfmt.c:509
+#: lib/headerfmt.c:518
 msgid ": expected following ? subexpression"
 msgstr "oczekiwano : po podwyrażeniu ?"
 
-#: lib/headerfmt.c:527
+#: lib/headerfmt.c:536
 msgid "{ expected after : in expression"
 msgstr "oczekiwano { po : w wyrażeniu"
 
-#: lib/headerfmt.c:549
+#: lib/headerfmt.c:558
 msgid "| expected at end of expression"
 msgstr "oczekiwano | na końcu wyrażenia"
 
-#: lib/headerfmt.c:722
+#: lib/headerfmt.c:727
 msgid "array iterator used with different sized arrays"
 msgstr "iterator tablicy użyty na tablicach o różnych rozmiarach"
 
@@ -3488,3 +3487,6 @@ msgstr "%s: odczytanie manifestu nie powiodło się: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
+
+#~ msgid "Couldn't chdir to %s: %s\n"
+#~ msgstr "Nie można wykonać chdir do %s: %s\n"
