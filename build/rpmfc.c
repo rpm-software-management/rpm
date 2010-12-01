@@ -167,14 +167,13 @@ static void sigpipe_finish(void)
 /** \ingroup rpmbuild
  * Return output from helper script.
  * @todo Use poll(2) rather than select(2), if available.
- * @param dir		directory to run in (or NULL)
  * @param argv		program and arguments to run
  * @param writePtr	bytes to feed to script on stdin (or NULL)
  * @param writeBytesLeft no. of bytes to feed to script on stdin
  * @param failNonZero	is script failure an error?
  * @return		buffered stdout from script, NULL on error
  */     
-static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
+static StringBuf getOutputFrom(ARGV_t argv,
                         const char * writePtr, size_t writeBytesLeft,
                         int failNonZero)
 {
@@ -205,12 +204,6 @@ static StringBuf getOutputFrom(const char * dir, ARGV_t argv,
 	dup2(fromProg[1], STDOUT_FILENO); /* Make stdout the out pipe */
 	close(fromProg[1]);
 
-	if (dir && chdir(dir)) {
-	    rpmlog(RPMLOG_ERR, _("Couldn't chdir to %s: %s\n"),
-		    dir, strerror(errno));
-	    _exit(EXIT_FAILURE);
-	}
-	
 	rpmlog(RPMLOG_DEBUG, "\texecv(%s) pid %d\n",
                         argv[0], (unsigned)getpid());
 
@@ -362,7 +355,7 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     }
 
     /* Read output from exec'd helper. */
-    sb = getOutputFrom(NULL, xav, buf_stdin, buf_stdin_len, failnonzero);
+    sb = getOutputFrom(xav, buf_stdin, buf_stdin_len, failnonzero);
 
     if (sb_stdoutp != NULL) {
 	*sb_stdoutp = sb;
