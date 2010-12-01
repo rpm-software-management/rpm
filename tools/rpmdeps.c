@@ -82,7 +82,7 @@ char buf[BUFSIZ];
     xx = argvSort(av, NULL);
 
     /* Build file class dictionary. */
-    fc = rpmfcNew();
+    fc = rpmfcCreate(getenv("RPM_BUILD_ROOT"), 0);
     xx = rpmfcClassify(fc, av, NULL);
 
     /* Build file/package dependency dictionary. */
