@@ -18,7 +18,7 @@ librpmio_la_SOURCES = \
 	rpmstring.c rpmfileutil.c \
 	rpmkeyring.c
 
-librpmio_la_LDFLAGS = -version-info 1:0:0
+librpmio_la_LDFLAGS = -version-info 2:0:0
 librpmio_la_LIBADD = \
 	../misc/libmisc.la \
 	@WITH_NSS_LIB@ \
