@@ -125,14 +125,21 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
 
 int rpmtsRebuildDB(rpmts ts)
 {
-    int rc;
-    rpmlock lock = rpmtsAcquireLock(ts);
-    if (!lock) return -1;
-    if (!(ts->vsflags & RPMVSF_NOHDRCHK))
-	rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
-    else
-	rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
-    rpmlockFree(lock);
+    int rc = -1;
+    rpmlock lock = NULL;
+
+    /* Cannot do this on a populated transaction set */
+    if (rpmtsNElements(ts) > 0)
+	return -1;
+
+    lock = rpmtsAcquireLock(ts);
+    if (lock) {
+	if (!(ts->vsflags & RPMVSF_NOHDRCHK))
+	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
+	else
+	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
+	rpmlockFree(lock);
+    }
     return rc;
 }
 
