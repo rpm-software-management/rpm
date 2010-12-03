@@ -14,6 +14,68 @@ extern "C" {
 #endif
 
 /** \ingroup rpmdb
+ * Reference a database instance.
+ * @param db		rpm database
+ * @return		new rpm database reference
+ */
+rpmdb rpmdbLink(rpmdb db);
+
+/** \ingroup rpmdb
+ * Open rpm database.
+ * @param prefix	path to top of install tree
+ * @retval dbp		address of rpm database
+ * @param mode		open(2) flags:  O_RDWR or O_RDONLY (O_CREAT also)
+ * @param perms		database permissions
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbOpen (const char * prefix, rpmdb * dbp, int mode, int perms);
+
+/** \ingroup rpmdb
+ * Initialize database.
+ * @param prefix	path to top of install tree
+ * @param perms		database permissions
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbInit(const char * prefix, int perms);
+
+/** \ingroup rpmdb
+ * Close all database indices and free rpmdb.
+ * @param db		rpm database
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbClose (rpmdb db);
+
+/** \ingroup rpmdb
+ * Sync all database indices.
+ * @param db		rpm database
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbSync (rpmdb db);
+
+/** \ingroup rpmdb
+ * Rebuild database indices from package headers.
+ * @param prefix	path to top of install tree
+ * @param ts		transaction set (or NULL)
+ * @param (*hdrchk)	headerCheck() vector (or NULL)
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbRebuild(const char * prefix, rpmts ts,
+		rpmRC (*hdrchk) (rpmts ts, const void *uh, size_t uc, char ** msg));
+
+/** \ingroup rpmdb
+ * Verify database components.
+ * @param prefix	path to top of install tree
+ * @return		0 on success
+ */
+RPM_GNUC_INTERNAL
+int rpmdbVerify(const char * prefix);
+
+/** \ingroup rpmdb
  * Add package header to rpm database and indices.
  * @param db		rpm database
  * @param h		header
