@@ -646,7 +646,6 @@ static int dbiForeach(dbiIndex *dbis,
     return rc;
 }
 
-/* XXX query.c, rpminstall.c, verify.c */
 int rpmdbClose(rpmdb db)
 {
     rpmdb * prev, next;
@@ -784,7 +783,6 @@ rpmdb rpmdbLink(rpmdb db)
     return db;
 }
 
-/* XXX python/rpmmodule.c */
 int rpmdbOpen (const char * prefix, rpmdb *dbp, int mode, int perms)
 {
     return openDatabase(prefix, NULL, dbp, mode, perms, 0);
@@ -967,7 +965,6 @@ exit:
     return rc;
 }
 
-/* XXX python/upgrade.c, install.c, uninstall.c */
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
     DBC * dbcursor = NULL;
