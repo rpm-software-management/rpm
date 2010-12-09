@@ -1,0 +1,59 @@
+#    rpmpython.at: test rpm python bindings
+#    TODO: conditionalize on python availability
+
+AT_BANNER([Python bindings])
+
+m4_define([RUNPY],[
+cat << EOF > test.py
+import rpm, sys
+def myprint(msg):
+    sys.stdout.write('%s\n' % msg)
+$1
+EOF
+python test.py
+])
+
+m4_define([PY_CHECK],[
+AT_SETUP([$1])
+AT_KEYWORDS([python])
+AT_CHECK([RUNPY([[$2]])], [], [$3], [$4])
+AT_CLEANUP
+])
+
+PY_CHECK([module import],[
+myprint(rpm.__version__)
+],
+[AT_PACKAGE_VERSION]
+)
+
+PY_CHECK([basic header manipulation],[
+h = rpm.hdr()
+h['name'] = 'testpkg'
+h['version'] = '1.0'
+h['release'] = '1'
+h['epoch'] = 5
+h['arch'] = 'noarch'
+myprint(h['nevra'])
+del h['epoch']
+myprint(h['nevra'])
+],
+[testpkg-5:1.0-1.noarch
+testpkg-1.0-1.noarch]
+)
+
+PY_CHECK([reading a package file],[
+ts = rpm.ts()
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')
+myprint(h['arch'])
+],
+[ppc64]
+)
+
+PY_CHECK([add package to transaction],[
+ts = rpm.ts()
+ts.addInstall('${RPMDATA}/RPMS/foo-1.0-1.noarch.rpm', 'u')
+for e in ts:
+    myprint(e.NEVRA())
+],
+[foo-1.0-1.noarch]
+)
