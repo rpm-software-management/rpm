@@ -3,6 +3,10 @@ export LD_LIBRARY_PATH
 PATH="${abs_builddir}/testing@rpmbindir@:${abs_builddir}/testing@usrbindir@:$PATH"
 export PATH
 
+PYLIBDIR=`python -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))"`
+PYTHONPATH="${abs_builddir}/testing${PYLIBDIR}"
+export PYTHONPATH
+
 RPMTEST="${abs_builddir}/testing"
 RPMDATA="${abs_srcdir}/data/"
 
