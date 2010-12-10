@@ -21,9 +21,9 @@
 
 typedef struct rpmfcAttr_s {
     char *name;
-    regex_t *pattern;
+    regex_t *path;
     regex_t *magic;
-    regex_t *pattern_excl;
+    regex_t *path_excl;
     regex_t *magic_excl;
     ARGV_t flags;
 } * rpmfcAttr;
@@ -91,9 +91,9 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
     free(flags);
 
     attr->name = xstrdup(name);
-    attr->pattern = rpmfcAttrReg(name, "pattern");
+    attr->path = rpmfcAttrReg(name, "path");
     attr->magic = rpmfcAttrReg(name, "magic");
-    attr->pattern_excl = rpmfcAttrReg(name, "exclude_pattern");
+    attr->path_excl = rpmfcAttrReg(name, "exclude_path");
     attr->magic_excl = rpmfcAttrReg(name, "exclude_magic");
     
     return attr;
@@ -102,17 +102,17 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
 static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
 {
     if (attr) {
-	if (attr->pattern) {
-	    regfree(attr->pattern);
-	    rfree(attr->pattern);
+	if (attr->path) {
+	    regfree(attr->path);
+	    rfree(attr->path);
 	}
 	if (attr->magic) {
 	    regfree(attr->magic);
 	    rfree(attr->magic);
 	}
-	if (attr->pattern_excl) {
-	    regfree(attr->pattern_excl);
-	    rfree(attr->pattern_excl);
+	if (attr->path_excl) {
+	    regfree(attr->path_excl);
+	    rfree(attr->path_excl);
 	}
 	if (attr->magic_excl) {
 	    regfree(attr->magic_excl);
@@ -597,13 +597,13 @@ static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
 	/* Filter out path and magic exclude-matches */
 	if (regMatch((*attr)->magic_excl, ftype))
 	    continue;
-	if (regMatch((*attr)->pattern_excl, path))
+	if (regMatch((*attr)->path_excl, path))
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
 	if (regMatch((*attr)->magic, ftype))
 	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
-	if (regMatch((*attr)->pattern, path))
+	if (regMatch((*attr)->path, path))
 	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
     }
 }
