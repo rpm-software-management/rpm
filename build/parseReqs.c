@@ -135,18 +135,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		goto exit;
 	    }
 
-	    switch(tagN) {
-	    case RPMTAG_BUILDPREREQ:
-	    case RPMTAG_PREREQ:
-	    case RPMTAG_PROVIDEFLAGS:
-	    case RPMTAG_OBSOLETEFLAGS:
-		/* Add prereq on rpmlib that has versioned dependencies. */
-		if (!rpmExpandNumeric("%{?_noVersionedDependencies}"))
-		    (void) rpmlibNeedsFeature(h, "VersionedDependencies", "3.0.3-1");
-		break;
-	    default:
-		break;
-	    }
 	    Flags |= rc->sense;
 
 	    /* now parse EVR */

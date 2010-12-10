@@ -35,7 +35,6 @@ struct rpmfc_s {
     int ix;		/*!< current file index */
     int skipProv;	/*!< Don't auto-generate Provides:? */
     int skipReq;	/*!< Don't auto-generate Requires:? */
-    int tracked;	/*!< Versioned Provides: tracking dependency added? */
     char *buildRoot;	/*!< (Build) root dir */
     size_t brlen;	/*!< rootDir length */
 
@@ -481,17 +480,6 @@ assert(*s != '\0');
 		i++;
 		EVR = pav[i];
 assert(EVR != NULL);
-	    }
-
-
-	    /* Add tracking dependency for versioned Provides: */
-	    if (!fc->tracked && deptype == 'P' && *EVR != '\0') {
-		ds = rpmdsSingle(RPMTAG_REQUIRENAME,
-			"rpmlib(VersionedDependencies)", "3.0.3-1",
-			RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL));
-		xx = rpmdsMerge(&fc->requires, ds);
-		ds = rpmdsFree(ds);
-		fc->tracked = 1;
 	    }
 
 	    ds = rpmdsSingle(tagN, N, EVR, Flags);
@@ -1221,7 +1209,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     fc = rpmfcCreate(spec->buildRoot, 0);
     fc->skipProv = !pkg->autoProv;
     fc->skipReq = !pkg->autoReq;
-    fc->tracked = 0;
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {
