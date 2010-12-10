@@ -455,6 +455,8 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     rpmsenseFlags dsContext;
     rpmTagVal tagN;
     int pac;
+    regex_t *exclude = NULL;
+    regex_t *exclude_from = NULL;
 
     switch (deptype) {
     default:
@@ -478,8 +480,16 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	break;
     }
 
+    /* If the entire path is filtered out, there's nothing more to do */
+    exclude_from = rpmfcAttrReg(depname, "exclude_from");
+    if (regMatch(exclude_from, fn+fc->brlen))
+	goto exit;
+
     pav = runCmd(nsdep, depname, fc->buildRoot, fn);
     pac = argvCount(pav);
+
+    if (pav)
+	exclude = rpmfcAttrReg(depname, "exclude");
 
     for (int i = 0; i < pac; i++) {
 	rpmds ds = NULL;
@@ -509,17 +519,20 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 
 	ds = rpmdsSingle(tagN, N, EVR, Flags);
 
-	/* Add to package dependencies. */
-	(void) rpmdsMerge(depsp, ds);
-
-	/* Add to file dependencies. */
-	rpmfcAddFileDep(&fc->ddict, fc->ix, ds, deptype);
+	/* Add to package and file dependencies unless filtered */
+	if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
+	    (void) rpmdsMerge(depsp, ds);
+	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds, deptype);
+	}
 
 	ds = rpmdsFree(ds);
     }
 
     argvFree(pav);
 
+exit:
+    regFree(exclude);
+    regFree(exclude_from);
     return 0;
 }
 
