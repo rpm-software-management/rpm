@@ -61,6 +61,20 @@ struct rpmfcTokens_s {
     rpm_color_t colors;
 };  
 
+static int regMatch(regex_t *reg, const char *val)
+{
+    return (reg && regexec(reg, val, 0, NULL, 0) == 0);
+}
+
+static regex_t * regFree(regex_t *reg)
+{
+    if (reg) {
+	regfree(reg);
+	free(reg);
+    }
+    return NULL;
+}
+
 static char *rpmfcAttrMacro(const char *name, const char *attr)
 {
     char *macro = rpmExpand("%{?__", name, "_", attr, "}", NULL);
@@ -102,22 +116,10 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
 static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
 {
     if (attr) {
-	if (attr->path) {
-	    regfree(attr->path);
-	    rfree(attr->path);
-	}
-	if (attr->magic) {
-	    regfree(attr->magic);
-	    rfree(attr->magic);
-	}
-	if (attr->path_excl) {
-	    regfree(attr->path_excl);
-	    rfree(attr->path_excl);
-	}
-	if (attr->magic_excl) {
-	    regfree(attr->magic_excl);
-	    rfree(attr->magic_excl);
-	}
+	regFree(attr->path);
+	regFree(attr->magic);
+	regFree(attr->path_excl);
+	regFree(attr->magic_excl);
 	argvFree(attr->flags);
 	rfree(attr->name);
 	rfree(attr);
@@ -579,11 +581,6 @@ static void argvAddTokens(ARGV_t *argv, const char *tnames)
 	    argvAddUniq(argv, *token);
 	argvFree(tokens);
     }
-}
-
-static int regMatch(regex_t *reg, const char *val)
-{
-    return (reg && regexec(reg, val, 0, NULL, 0) == 0);
 }
 
 static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
