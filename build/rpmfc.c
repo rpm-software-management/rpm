@@ -409,6 +409,34 @@ static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds, char deptype)
     }
 }
 
+static ARGV_t runCmd(const char *nsdep, const char *depname,
+		     const char *buildRoot, const char *fn)
+{
+    ARGV_t output = NULL;
+    char *buf = NULL;
+    char *mname = rstrscat(NULL, "__", nsdep, "_", depname, NULL);
+
+    rasprintf(&buf, "%%{?%s:%%{%s} %%{?%s_opts}}", mname, mname, mname);
+    if (!rstreq(buf, "")) {
+	ARGV_t av = NULL;
+	StringBuf sb_stdout = NULL;
+	StringBuf sb_stdin = newStringBuf();
+	argvAdd(&av, buf);
+
+	appendLineStringBuf(sb_stdin, fn);
+	if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot) == 0) {
+	    argvSplit(&output, getStringBuf(sb_stdout), " \t\n\r");
+	}
+
+	argvFree(av);
+	freeStringBuf(sb_stdin);
+	freeStringBuf(sb_stdout);
+    }
+    free(buf);
+    free(mname);
+    return output;
+}
+
 /**
  * Run per-interpreter dependency helper.
  * @param fc		file classifier
@@ -418,16 +446,13 @@ static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds, char deptype)
  */
 static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 {
+    ARGV_t pav = NULL;
     const char * fn = fc->fn[fc->ix];
-    char *buf = NULL;
-    char *mname = NULL;
-    StringBuf sb_stdout = NULL;
-    StringBuf sb_stdin;
+    const char * depname = NULL;
     rpmds * depsp;
     rpmsenseFlags dsContext;
     rpmTagVal tagN;
-    ARGV_t av = NULL;
-    int xx;
+    int pac;
 
     switch (deptype) {
     default:
@@ -436,7 +461,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     case 'P':
 	if (fc->skipProv)
 	    return 0;
-	mname = rstrscat(NULL, "__", nsdep, "_provides", NULL);
+	depname = "provides";
 	depsp = &fc->provides;
 	dsContext = RPMSENSE_FIND_PROVIDES;
 	tagN = RPMTAG_PROVIDENAME;
@@ -444,72 +469,54 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
     case 'R':
 	if (fc->skipReq)
 	    return 0;
-	mname = rstrscat(NULL, "__", nsdep, "_requires", NULL);
+	depname = "requires";
 	depsp = &fc->requires;
 	dsContext = RPMSENSE_FIND_REQUIRES;
 	tagN = RPMTAG_REQUIRENAME;
 	break;
     }
-    rasprintf(&buf, "%%{?%s:%%{%s} %%{?%s_opts}}", mname, mname, mname);
-    argvAdd(&av, buf);
-    buf = _free(buf);
 
-    sb_stdin = newStringBuf();
-    appendLineStringBuf(sb_stdin, fn);
-    sb_stdout = NULL;
-    xx = rpmfcExec(av, sb_stdin, &sb_stdout, 0, fc->buildRoot);
-    sb_stdin = freeStringBuf(sb_stdin);
+    pav = runCmd(nsdep, depname, fc->buildRoot, fn);
+    pac = argvCount(pav);
 
-    if (xx == 0 && sb_stdout != NULL) {
-	ARGV_t pav = NULL;
-	int pac;
-	xx = argvSplit(&pav, getStringBuf(sb_stdout), " \t\n\r");
-	pac = argvCount(pav);
-	if (pav)
-	for (int i = 0; i < pac; i++) {
-	    rpmds ds = NULL;
-	    const char *N = pav[i];
-	    const char *EVR = "";
-	    rpmsenseFlags Flags = dsContext;
-	    if (pav[i+1] && strchr("=<>", *pav[i+1])) {
-		i++;
-		for (const char *s = pav[i]; *s; s++) {
-		    switch(*s) {
-		    default:
-assert(*s != '\0');
-			break;
-		    case '=':
-			Flags |= RPMSENSE_EQUAL;
-			break;
-		    case '<':
-			Flags |= RPMSENSE_LESS;
-			break;
-		    case '>':
-			Flags |= RPMSENSE_GREATER;
-			break;
-		    }
+    for (int i = 0; i < pac; i++) {
+	rpmds ds = NULL;
+	const char *N = pav[i];
+	const char *EVR = "";
+	rpmsenseFlags Flags = dsContext;
+	if (pav[i+1] && strchr("=<>", *pav[i+1])) {
+	    i++;
+	    for (const char *s = pav[i]; *s; s++) {
+		switch(*s) {
+		default:
+		    break;
+		case '=':
+		    Flags |= RPMSENSE_EQUAL;
+		    break;
+		case '<':
+		    Flags |= RPMSENSE_LESS;
+		    break;
+		case '>':
+		    Flags |= RPMSENSE_GREATER;
+		    break;
 		}
-		i++;
-		EVR = pav[i];
-assert(EVR != NULL);
 	    }
-
-	    ds = rpmdsSingle(tagN, N, EVR, Flags);
-
-	    /* Add to package dependencies. */
-	    xx = rpmdsMerge(depsp, ds);
-
-	    /* Add to file dependencies. */
-	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds, deptype);
-
-	    ds = rpmdsFree(ds);
+	    i++;
+	    EVR = pav[i];
 	}
 
-	pav = argvFree(pav);
+	ds = rpmdsSingle(tagN, N, EVR, Flags);
+
+	/* Add to package dependencies. */
+	(void) rpmdsMerge(depsp, ds);
+
+	/* Add to file dependencies. */
+	rpmfcAddFileDep(&fc->ddict, fc->ix, ds, deptype);
+
+	ds = rpmdsFree(ds);
     }
-    sb_stdout = freeStringBuf(sb_stdout);
-    free(mname);
-    argvFree(av);
+
+    argvFree(pav);
 
     return 0;
 }
