@@ -23,6 +23,8 @@ typedef struct rpmfcAttr_s {
     char *name;
     regex_t *pattern;
     regex_t *magic;
+    regex_t *pattern_excl;
+    regex_t *magic_excl;
     ARGV_t flags;
 } * rpmfcAttr;
 
@@ -91,6 +93,8 @@ static rpmfcAttr rpmfcAttrNew(const char *name)
     attr->name = xstrdup(name);
     attr->pattern = rpmfcAttrReg(name, "pattern");
     attr->magic = rpmfcAttrReg(name, "magic");
+    attr->pattern_excl = rpmfcAttrReg(name, "exclude_pattern");
+    attr->magic_excl = rpmfcAttrReg(name, "exclude_magic");
     
     return attr;
 }
@@ -105,6 +109,14 @@ static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
 	if (attr->magic) {
 	    regfree(attr->magic);
 	    rfree(attr->magic);
+	}
+	if (attr->pattern_excl) {
+	    regfree(attr->pattern_excl);
+	    rfree(attr->pattern_excl);
+	}
+	if (attr->magic_excl) {
+	    regfree(attr->magic_excl);
+	    rfree(attr->magic_excl);
 	}
 	argvFree(attr->flags);
 	rfree(attr->name);
@@ -580,6 +592,12 @@ static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
     for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++) {
 	/* Filter out by file modes if set */
 	if (hasAttr((*attr)->flags, "exeonly") && !is_executable)
+	    continue;
+
+	/* Filter out path and magic exclude-matches */
+	if (regMatch((*attr)->magic_excl, ftype))
+	    continue;
+	if (regMatch((*attr)->pattern_excl, path))
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
