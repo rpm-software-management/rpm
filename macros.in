@@ -488,10 +488,10 @@ print (t)\
 # %__myattr_requires	path + args to requires finder script for <myattr>
 # %__myattr_provides	path + args to provides finder script for <myattr>
 # %__myattr_magic	libmagic classification match regex
-# %__myattr_pattern	path based classification match regex
+# %__myattr_path	path based classification match regex
 # %__myattr_flags	flags to control behavior (just "exeonly" for now)
 # %__myattr_exclude_magic	exclude by magic regex
-# %__myattr_exclude_pattern	exclude by path regex
+# %__myattr_exclude_path	exclude by path regex
 #
 %_fileattrsdir		%{_rpmconfigdir}/fileattrs
 
