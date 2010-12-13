@@ -71,44 +71,6 @@ static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
 
-/* Bit mask macros. */
-typedef	unsigned int __pbm_bits;
-#define	__PBM_NBITS		(8 * sizeof (__pbm_bits))
-#define	__PBM_IX(d)		((d) / __PBM_NBITS)
-#define __PBM_MASK(d)		((__pbm_bits) 1 << (((unsigned)(d)) % __PBM_NBITS))
-typedef struct {
-    __pbm_bits bits[1];
-} pbm_set;
-#define	__PBM_BITS(set)	((set)->bits)
-
-#define	PBM_FREE(s)	_free(s);
-#define PBM_SET(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] |= __PBM_MASK (d))
-#define PBM_CLR(d, s)   (__PBM_BITS (s)[__PBM_IX (d)] &= ~__PBM_MASK (d))
-#define PBM_ISSET(d, s) ((__PBM_BITS (s)[__PBM_IX (d)] & __PBM_MASK (d)) != 0)
-
-#define	PBM_ALLOC(d)	xcalloc(__PBM_IX (d) + 1, sizeof(__pbm_bits))
-
-/**
- * Reallocate a bit map.
- * @retval sp		address of bit map pointer
- * @retval odp		no. of bits in map
- * @param nd		desired no. of bits
- */
-static inline pbm_set * PBM_REALLOC(pbm_set ** sp, int * odp, int nd)
-{
-    int i, nb;
-
-    if (nd > (*odp)) {
-	nd *= 2;
-	nb = __PBM_IX(nd) + 1;
-	*sp = xrealloc(*sp, nb * sizeof(__pbm_bits));
-	for (i = __PBM_IX(*odp) + 1; i < nb; i++)
-	    __PBM_BITS(*sp)[i] = 0;
-	*odp = nd;
-    }
-    return *sp;
-}
-
 static int buildIndexes(rpmdb db)
 {
     int rc = 0;
@@ -143,6 +105,16 @@ static int buildIndexes(rpmdb db)
     rpmdbFreeIterator(mi);
     dbSetFSync(db->db_dbenv, !db->cfg.db_no_fsync);
     return rc;
+}
+
+static int uintCmp(unsigned int a, unsigned int b)
+{
+    return (a != b);
+}
+
+static unsigned int uintId(unsigned int a)
+{
+    return a;
 }
 
 /** \ingroup dbi
@@ -187,9 +159,9 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 	if (dbiType(dbi) == DBI_PRIMARY) {
 	    /* Allocate for current max header instance number + some reserve */
-	    if (!verifyonly && (db->db_bits == NULL)) {
-		db->db_nbits = 1024 + pkgInstance(dbi, 0);
-		db->db_bits = PBM_ALLOC(db->db_nbits);
+	    if (!verifyonly && (db->db_checked == NULL)) {
+		db->db_checked = intHashCreate(1024 + pkgInstance(dbi, 0),
+						uintId, uintCmp, NULL);
 	    }
 	    /* If primary got created, we can safely run without fsync */
 	    if ((dbiFlags(dbi) & DBI_CREATED) || db->cfg.db_no_fsync) {
@@ -668,7 +640,7 @@ int rpmdbClose(rpmdb db)
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_fullpath = _free(db->db_fullpath);
-    db->db_bits = PBM_FREE(db->db_bits);
+    db->db_checked = intHashFree(db->db_checked);
     db->_dbi = _free(db->_dbi);
 
     prev = &rpmdbRock;
@@ -1671,12 +1643,8 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 	return rpmrc;
 
     /* Don't bother re-checking a previously read header. */
-    if (mi->mi_db->db_bits) {
-	pbm_set * set;
-
-	set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-		    &mi->mi_db->db_nbits, mi->mi_offset);
-	if (PBM_ISSET(mi->mi_offset, set))
+    if (mi->mi_db->db_checked) {
+	if (intHashHasEntry(mi->mi_db->db_checked, mi->mi_offset))
 	    rpmrc = RPMRC_OK;
     }
 
@@ -1693,12 +1661,8 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 	msg = _free(msg);
 
 	/* Mark header checked. */
-	if (mi->mi_db && mi->mi_db->db_bits && rpmrc == RPMRC_OK) {
-	    pbm_set * set;
-
-	    set = PBM_REALLOC((pbm_set **)&mi->mi_db->db_bits,
-		    &mi->mi_db->db_nbits, mi->mi_offset);
-	    PBM_SET(mi->mi_offset, set);
+	if (mi->mi_db && mi->mi_db->db_checked && rpmrc == RPMRC_OK) {
+	    intHashAddEntry(mi->mi_db->db_checked, mi->mi_offset);
 	}
     }
     return rpmrc;
