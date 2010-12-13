@@ -65,6 +65,10 @@ int addReqProv(Header h, rpmTagVal tagN,
 	versiontag = RPMTAG_CONFLICTVERSION;
 	flagtag = RPMTAG_CONFLICTFLAGS;
 	break;
+    case RPMTAG_ORDERNAME:
+	versiontag = RPMTAG_ORDERVERSION;
+	flagtag = RPMTAG_ORDERFLAGS;
+	break;
     case RPMTAG_TRIGGERNAME:
 	versiontag = RPMTAG_TRIGGERVERSION;
 	flagtag = RPMTAG_TRIGGERFLAGS;

@@ -61,6 +61,10 @@ static int dsType(rpmTagVal tag,
 	t = "Obsoletes";
 	evr = RPMTAG_OBSOLETEVERSION;
 	f = RPMTAG_OBSOLETEFLAGS;
+    } else if (tag == RPMTAG_ORDERNAME) {
+	t = "Order";
+	evr = RPMTAG_ORDERVERSION;
+	f = RPMTAG_ORDERFLAGS;
     } else if (tag == RPMTAG_TRIGGERNAME) {
 	t = "Trigger";
 	evr = RPMTAG_TRIGGERVERSION;

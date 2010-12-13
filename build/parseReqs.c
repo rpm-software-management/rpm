@@ -61,6 +61,9 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     case RPMTAG_CONFLICTFLAGS:
 	nametag = RPMTAG_CONFLICTNAME;
 	break;
+    case RPMTAG_ORDERFLAGS:
+	nametag = RPMTAG_ORDERNAME;
+	break;
     case RPMTAG_PREREQ:
 	/* XXX map legacy PreReq into Requires(pre,preun) */
 	nametag = RPMTAG_REQUIRENAME;

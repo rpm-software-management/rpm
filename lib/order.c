@@ -647,10 +647,16 @@ int rpmtsOrder(rpmts ts)
 	rpmal al = (rpmteType(p) == TR_REMOVED) ? 
 		   erasedPackages : tsmem->addedPackages;
 	rpmds requires = rpmdsInit(rpmteDS(p, RPMTAG_REQUIRENAME));
+	rpmds order = rpmdsInit(rpmteDS(p, RPMTAG_ORDERNAME));
 
 	while (rpmdsNext(requires) >= 0) {
 	    /* Record next "q <- p" relation (i.e. "p" requires "q"). */
 	    (void) addRelation(ts, al, p, requires);
+	}
+
+	while (rpmdsNext(order) >= 0) {
+	    /* Record next "q <- p" ordering request */
+	    (void) addRelation(ts, al, p, order);
 	}
 
 	addCollRelations(al, p, &seenColls);

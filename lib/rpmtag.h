@@ -296,6 +296,9 @@ typedef enum rpmTag_e {
     RPMTAG_POLICYTYPESINDEXES	= 5032,	/* i[] */
     RPMTAG_POLICYFLAGS		= 5033,	/* i[] */
     RPMTAG_VCS			= 5034, /* s */
+    RPMTAG_ORDERNAME		= 5035,	/* s[] */
+    RPMTAG_ORDERVERSION		= 5036,	/* s[] */
+    RPMTAG_ORDERFLAGS		= 5037,	/* i[] */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
