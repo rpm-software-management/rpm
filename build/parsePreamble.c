@@ -768,6 +768,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	if ((rc = parseNoSource(spec, field, tag)))
 	    return rc;
 	break;
+    case RPMTAG_ORDERFLAGS:
     case RPMTAG_REQUIREFLAGS:
     case RPMTAG_PREREQ:
 	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
@@ -892,6 +893,7 @@ static struct PreambleRec_s const preambleList[] = {
     {RPMTAG_DISTTAG,		0, 0, LEN_AND_STR("disttag")},
     {RPMTAG_BUGURL,		0, 0, LEN_AND_STR("bugurl")},
     {RPMTAG_COLLECTIONS,	0, 0, LEN_AND_STR("collections")},
+    {RPMTAG_ORDERFLAGS,		2, 0, LEN_AND_STR("orderwithrequires")},
     {0, 0, 0, 0}
 };
 

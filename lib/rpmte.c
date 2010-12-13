@@ -45,6 +45,7 @@ struct rpmte_s {
     rpmds requires;		/*!< Requires: dependencies. */
     rpmds conflicts;		/*!< Conflicts: dependencies. */
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
+    rpmds order;		/*!< Order: dependencies. */
     rpmfi fi;			/*!< File information. */
     rpmps probs;		/*!< Problems (relocations) */
     rpmts ts;			/*!< Parent transaction */
@@ -82,6 +83,7 @@ void rpmteCleanDS(rpmte te)
     te->requires = rpmdsFree(te->requires);
     te->conflicts = rpmdsFree(te->conflicts);
     te->obsoletes = rpmdsFree(te->obsoletes);
+    te->order = rpmdsFree(te->order);
 }
 
 static rpmfi getFI(rpmte p, Header h)
@@ -232,6 +234,7 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
     p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
+    p->order = rpmdsNew(h, RPMTAG_ORDERNAME, 0);
 
     p->fs = rpmfsNew(h, p->type);
     p->fi = getFI(p, h);
@@ -532,6 +535,7 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag)
     case RPMTAG_REQUIRENAME:	return te->requires;
     case RPMTAG_CONFLICTNAME:	return te->conflicts;
     case RPMTAG_OBSOLETENAME:	return te->obsoletes;
+    case RPMTAG_ORDERNAME:	return te->order;
     default:			break;
     }
     return NULL;
