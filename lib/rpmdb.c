@@ -158,9 +158,9 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	db->_dbi[dbix] = dbi;
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 	if (dbiType(dbi) == DBI_PRIMARY) {
-	    /* Allocate for current max header instance number + some reserve */
+	    /* Allocate based on max header instance number + some reserve */
 	    if (!verifyonly && (db->db_checked == NULL)) {
-		db->db_checked = intHashCreate(1024 + pkgInstance(dbi, 0),
+		db->db_checked = intHashCreate(1024 + pkgInstance(dbi, 0) / 4,
 						uintId, uintCmp, NULL);
 	    }
 	    /* If primary got created, we can safely run without fsync */
