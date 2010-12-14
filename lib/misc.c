@@ -112,15 +112,6 @@ static char * lastGname = NULL;
 	    endgrent();
 	    grent = getgrnam(thisGname);
 	    if (grent == NULL) {
-		/* XXX The filesystem package needs group/lock w/o getgrnam. */
-		if (rstreq(thisGname, "lock")) {
-		    *gid = lastGid = 54;
-		    return 0;
-		} else
-		if (rstreq(thisGname, "mail")) {
-		    *gid = lastGid = 12;
-		    return 0;
-		} else
 		return -1;
 	    }
 	}
