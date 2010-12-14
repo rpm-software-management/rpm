@@ -25,7 +25,7 @@
 #define	fsmUNSAFE	fsmStage
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath, ... */
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
-#include "lib/misc.h"		/* XXX unameToUid() and gnameToGid() */
+#include "lib/rpmug.h"
 
 #include "debug.h"
 
@@ -736,14 +736,14 @@ static int fsmMapAttrs(FSM_t fsm)
 	uid_t uid = 0;
 	gid_t gid = 0;
 
-	if (user && unameToUid(user, &uid)) {
+	if (user && rpmugUid(user, &uid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
 		    _("user %s does not exist - using root\n"), user);
 	    finalMode &= ~S_ISUID;      /* turn off suid bit */
 	}
 
-	if (group && gnameToGid(group, &gid)) {
+	if (group && rpmugGid(group, &gid)) {
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rpmlog(RPMLOG_WARNING,
 		    _("group %s does not exist - using root\n"), group);

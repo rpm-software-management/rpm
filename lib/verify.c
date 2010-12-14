@@ -21,9 +21,10 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmfileutil.h>
 
-#include "lib/misc.h" 	/* uidToUname(), gnameToGid */
+#include "lib/misc.h"
 #include "lib/rpmchroot.h"
 #include "lib/rpmte_internal.h"	/* rpmteProcess() */
+#include "lib/rpmug.h"
 
 #include "debug.h"
 
@@ -238,14 +239,14 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     }
 
     if (flags & RPMVERIFY_USER) {
-	const char * name = uidToUname(sb.st_uid);
+	const char * name = rpmugUname(sb.st_uid);
 	const char * fuser = rpmfiFUser(fi);
 	if (name == NULL || fuser == NULL || !rstreq(name, fuser))
 	    *res |= RPMVERIFY_USER;
     }
 
     if (flags & RPMVERIFY_GROUP) {
-	const char * name = gidToGname(sb.st_gid);
+	const char * name = rpmugGname(sb.st_gid);
 	const char * fgroup = rpmfiFGroup(fi);
 	if (name == NULL || fgroup == NULL || !rstreq(name, fgroup))
 	    *res |= RPMVERIFY_GROUP;
