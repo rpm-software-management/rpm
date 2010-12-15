@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-12-01 17:16+0200\n"
+"POT-Creation-Date: 2010-12-15 09:45+0200\n"
 "PO-Revision-Date: 2010-09-13 10:11-0300\n"
 "Last-Translator: Taylon <taylon@taylon.eti.br>\n"
 "Language-Team: Brazilian Portuguese <trans-pt_br@lists.fedoraproject.org>\n"
@@ -567,27 +567,27 @@ msgid "Spec options:"
 msgstr "Opções de assinatura:"
 
 # , c-format
-#: build/build.c:121 build/pack.c:405
+#: build/build.c:122 build/pack.c:405
 msgid "Unable to open temp file.\n"
 msgstr "Não foi possível abrir o arquivo temporário.\n"
 
-#: build/build.c:169
+#: build/build.c:170
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Executando (%s): %s\n"
 
-#: build/build.c:175
+#: build/build.c:176
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "A execução de %s falhou (%s): %s\n"
 
 # , c-format
-#: build/build.c:184
+#: build/build.c:185
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Status de saída de %s inválido (%s)\n"
 
-#: build/build.c:290
+#: build/build.c:291
 msgid ""
 "\n"
 "\n"
@@ -646,92 +646,92 @@ msgstr "&& e || não são suportados para strings\n"
 msgid "syntax error in expression\n"
 msgstr "erro de sintaxe na expressão\n"
 
-#: build/files.c:287 build/files.c:480 build/files.c:697
+#: build/files.c:288 build/files.c:481 build/files.c:698
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "\"(\" faltando em %s %s\n"
 
-#: build/files.c:297 build/files.c:633 build/files.c:707 build/files.c:799
+#: build/files.c:298 build/files.c:634 build/files.c:708 build/files.c:800
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "\"(\" faltando em %s(%s\n"
 
 # , c-format
-#: build/files.c:333 build/files.c:656
+#: build/files.c:334 build/files.c:657
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Token de %s inválido: %s\n"
 
-#: build/files.c:442
+#: build/files.c:443
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "%s faltando em %s %s\n"
 
-#: build/files.c:495
+#: build/files.c:496
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "caractere de espaço após %s(): %s\n"
 
 # , c-format
-#: build/files.c:531
+#: build/files.c:532
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Sintaxe inválida: %s(%s)\n"
 
 # , c-format
-#: build/files.c:540
+#: build/files.c:541
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Modo spec inválido: %s(%s)\n"
 
 # , c-format
-#: build/files.c:558
+#: build/files.c:559
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Dirmode spec inválido: %s(%s)\n"
 
-#: build/files.c:732
+#: build/files.c:733
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr "Tamanho de localidade não usual: \"%.*s\" em %%lang(%s)\n"
 
-#: build/files.c:742
+#: build/files.c:743
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr "Localidade %.*s duplicada em %%lang(%s)\n"
 
 # , c-format
-#: build/files.c:814
+#: build/files.c:815
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Capacidade inválida: %s\n"
 
-#: build/files.c:825
+#: build/files.c:826
 msgid "File capability support not built in\n"
 msgstr "Suporte à capacidade de arquivo não embutida\n"
 
-#: build/files.c:879
+#: build/files.c:880
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Apenas um argumento para %%docdir\n"
 
 # , c-format
-#: build/files.c:908
+#: build/files.c:909
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dois arquivos em uma linha: %s\n"
 
-#: build/files.c:921
+#: build/files.c:922
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "O arquivo deve começar com uma \"/\": %s\n"
 
-#: build/files.c:932
+#: build/files.c:933
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Não é possível misturar %%doc especial com outras formas: %s\n"
 
-#: build/files.c:1073
+#: build/files.c:1074
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
@@ -739,97 +739,97 @@ msgstr ""
 "alternativa\n"
 
 # , c-format
-#: build/files.c:1099
+#: build/files.c:1100
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Arquivo listado duas vezes: %s\n"
 
-#: build/files.c:1222
+#: build/files.c:1223
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Ligação simbólica aponta para BuildRoot: %s -> %s\n"
 
-#: build/files.c:1393
+#: build/files.c:1394
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr "Os atributos explícitos do arquivo são necessário no spec para: %s\n"
 
-#: build/files.c:1401
+#: build/files.c:1402
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Arquivo não encontrado: %s\n"
 
-#: build/files.c:1504
+#: build/files.c:1505
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "O arquivo %s é grande demais para a carga útil\n"
 
-#: build/files.c:1598
+#: build/files.c:1599
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: não foi possível carregar a etiqueta desconhecida (%d).\n"
 
 # , c-format
-#: build/files.c:1604
+#: build/files.c:1605
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: falha ao ler a chave pública.\n"
 
-#: build/files.c:1608
+#: build/files.c:1609
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: não é uma chave pública blindada.\n"
 
-#: build/files.c:1617
+#: build/files.c:1618
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: falha ao codificar\n"
 
-#: build/files.c:1656
+#: build/files.c:1657
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "O arquivo precisa da \"/\" inicial: %s\n"
 
 # , c-format
-#: build/files.c:1678
+#: build/files.c:1679
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob não permitido: %s\n"
 
-#: build/files.c:1689 lib/rpminstall.c:419
+#: build/files.c:1690 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "O arquivo não foi encontrado pelo glob: %s\n"
 
 # , c-format
-#: build/files.c:1736
+#: build/files.c:1737
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Não foi possível abrir %%files arquivo %s: %m\n"
 
 # , c-format
-#: build/files.c:1744
+#: build/files.c:1745
 #, c-format
 msgid "line: %s\n"
 msgstr "linha: %s\n"
 
 # , c-format
-#: build/files.c:2020
+#: build/files.c:2021
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Arquivo inválido: %s: %s\n"
 
-#: build/files.c:2042 build/parsePrep.c:32
+#: build/files.c:2043 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Proprietário/grupo inválido: %s\n"
 
-#: build/files.c:2082
+#: build/files.c:2083
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Procurando por arquivos desempacotados: %s\n"
 
-#: build/files.c:2097
+#: build/files.c:2098
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -838,38 +838,14 @@ msgstr ""
 "Arquivo(s) instalado(s) (mas não empacotado(s)) encontrado(s):\n"
 "%s"
 
-#: build/files.c:2122
+#: build/files.c:2123
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Processando arquivos: %s\n"
 
-#: build/files.c:2133
+#: build/files.c:2134
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Binários dependentes de arquitetura no pacote noarch\n"
-
-#: build/names.c:50
-msgid "getUname: too many uid's\n"
-msgstr "getUname: uid's em excesso\n"
-
-#: build/names.c:72
-msgid "getUnameS: too many uid's\n"
-msgstr "getUnameS: uid's em excesso\n"
-
-#: build/names.c:97
-msgid "getUidS: too many uid's\n"
-msgstr "getUidS: uid's em excesso\n"
-
-#: build/names.c:122
-msgid "getGname: too many gid's\n"
-msgstr "getGname: gid's em excesso\n"
-
-#: build/names.c:144
-msgid "getGnameS: too many gid's\n"
-msgstr "getGnameS: gid's em excesso\n"
-
-#: build/names.c:169
-msgid "getGidS: too many gid's\n"
-msgstr "getGidS: gid's em excesso\n"
 
 # , c-format
 #: build/pack.c:83
@@ -1261,124 +1237,124 @@ msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "linha %d: campo Epoch deve ser um número sem sinal: %s\n"
 
 # , c-format
-#: build/parsePreamble.c:775
+#: build/parsePreamble.c:776
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linha %d: %s inválido: qualificadores: %s\n"
 
 # , c-format
-#: build/parsePreamble.c:802
+#: build/parsePreamble.c:803
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linha %d: formato BuildArchitecture inválido: %s\n"
 
-#: build/parsePreamble.c:812
+#: build/parsePreamble.c:813
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "linha %d: Somente subpacotes noarch são suportados: %s\n"
 
-#: build/parsePreamble.c:827
+#: build/parsePreamble.c:828
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Erro interno: tag %d falsa\n"
 
 # , c-format
-#: build/parsePreamble.c:910
+#: build/parsePreamble.c:912
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "linha %d: %s é obsoleto: %s\n"
 
-#: build/parsePreamble.c:973
+#: build/parsePreamble.c:975
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Especificação do pacote inválida: %s\n"
 
-#: build/parsePreamble.c:979
+#: build/parsePreamble.c:981
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "O pacote já existe: %s\n"
 
 # , c-format
-#: build/parsePreamble.c:1010
+#: build/parsePreamble.c:1012
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linha %d: Etiqueta desconhecida: %s\n"
 
-#: build/parsePreamble.c:1042
+#: build/parsePreamble.c:1044
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} não pode ser vazio\n"
 
-#: build/parsePreamble.c:1046
+#: build/parsePreamble.c:1048
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} não pode ser \"/\"\n"
 
 # , c-format
-#: build/parsePrep.c:27
+#: build/parsePrep.c:28
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "Fonte inválida: %s: %s\n"
 
-#: build/parsePrep.c:72
+#: build/parsePrep.c:73
 #, c-format
 msgid "No patch number %u\n"
 msgstr "Nenhum número de patch %u\n"
 
-#: build/parsePrep.c:74
+#: build/parsePrep.c:75
 #, c-format
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr "%%patch não corresponde à etiqueta \"Patch:\"\n"
 
-#: build/parsePrep.c:151
+#: build/parsePrep.c:152
 #, c-format
 msgid "No source number %u\n"
 msgstr "Nenhum número de fonte %u\n"
 
-#: build/parsePrep.c:153
+#: build/parsePrep.c:154
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "Nenhuma etiqueta \"Source:\" no arquivo .spec\n"
 
 # , c-format
-#: build/parsePrep.c:172
+#: build/parsePrep.c:173
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Não foi possível baixar nosource %s: %s\n"
 
-#: build/parsePrep.c:270
+#: build/parsePrep.c:271
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Erro ao analisar %%setup: %s\n"
 
 # , c-format
-#: build/parsePrep.c:281
+#: build/parsePrep.c:282
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linha %d: Argumento inválido para %%setup: %s\n"
 
 # , c-format
-#: build/parsePrep.c:296
+#: build/parsePrep.c:297
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linha %d: Opção inválida %s de %%setup: %s\n"
 
 # , c-format
-#: build/parsePrep.c:455
+#: build/parsePrep.c:456
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:468
+#: build/parsePrep.c:469
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "número da correção %s inválido: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:496
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linha %d: segundo %%prep\n"
 
-#: build/parseReqs.c:109
+#: build/parseReqs.c:112
 #, fuzzy
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
@@ -1386,25 +1362,25 @@ msgstr ""
 "alfanumérico, \"_\" ou \"/\": %s\n"
 
 # , c-format
-#: build/parseReqs.c:134
+#: build/parseReqs.c:137
 #, fuzzy
 msgid "Versioned file name not permitted"
 msgstr "linha %d: Nome de arquivo versionado não permitido: %s\n"
 
 # , c-format
-#: build/parseReqs.c:163
+#: build/parseReqs.c:154
 #, fuzzy
 msgid "Version required"
 msgstr "linha %d: Versão requerida: %s\n"
 
 # , c-format
-#: build/parseReqs.c:174
+#: build/parseReqs.c:165
 #, fuzzy
 msgid "invalid dependency"
 msgstr "linha %d: dependência inválida: %s\n"
 
 # , c-format
-#: build/parseReqs.c:190
+#: build/parseReqs.c:181
 #, fuzzy, c-format
 msgid "line %d: %s: %s\n"
 msgstr "linha %d: %s\n"
@@ -1560,72 +1536,72 @@ msgid "Processing policies: %s\n"
 msgstr "Processando arquivos: %s\n"
 
 # , c-format
-#: build/rpmfc.c:76
+#: build/rpmfc.c:91
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "Ignorar regex inválida %s\n"
 
 # , c-format
-#: build/rpmfc.c:192
+#: build/rpmfc.c:205
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "Não foi possível criar um pipe para %s: %m\n"
 
 # , c-format
-#: build/rpmfc.c:217
+#: build/rpmfc.c:230
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Não foi possível executar %s: %s\n"
 
 # , c-format
-#: build/rpmfc.c:222 lib/rpmscript.c:239
+#: build/rpmfc.c:235 lib/rpmscript.c:239
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Não foi possível bifurcar %s: %s\n"
 
-#: build/rpmfc.c:304
+#: build/rpmfc.c:317
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s falhou: %s\n"
 
 # , c-format
-#: build/rpmfc.c:308
+#: build/rpmfc.c:321
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "falha ao gravar todos os dados em %s\n"
 
-#: build/rpmfc.c:793
+#: build/rpmfc.c:816
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "A conversão de %s para inteiro longo falhou.\n"
 
-#: build/rpmfc.c:881
+#: build/rpmfc.c:904
 msgid "No file attributes configured\n"
 msgstr "Os atributos do arquivo não foram configurados\n"
 
-#: build/rpmfc.c:898
+#: build/rpmfc.c:921
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) falhou: %s\n"
 
-#: build/rpmfc.c:905
+#: build/rpmfc.c:928
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load falhou: %s\n"
 
-#: build/rpmfc.c:946
+#: build/rpmfc.c:969
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Falha no reconhecimento do arquivo \"%s\": modo %06o %s\n"
 
 # , c-format
-#: build/rpmfc.c:1147
+#: build/rpmfc.c:1170
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Localizando %s: %s\n"
 
 # , c-format
-#: build/rpmfc.c:1152 build/rpmfc.c:1161
+#: build/rpmfc.c:1175 build/rpmfc.c:1184
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Falha ao localizar %s:\n"
@@ -2586,79 +2562,79 @@ msgstr "Não foi possível alterar o diretório raiz: %m\n"
 msgid "Unable to restore root directory: %m\n"
 msgstr "Não foi possível restaurar o diretório raiz: %m\n"
 
-#: lib/rpmds.c:399
+#: lib/rpmds.c:403
 msgid "NO "
 msgstr "NÃO "
 
-#: lib/rpmds.c:399
+#: lib/rpmds.c:403
 msgid "YES"
 msgstr "SIM"
 
-#: lib/rpmds.c:845
+#: lib/rpmds.c:849
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "PreReq:, Capacidades: e Obsoletos: as dependências suportam as versões."
 
-#: lib/rpmds.c:848
+#: lib/rpmds.c:852
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "Nome(s) de arquivo(s) armazenados como tuplas (dirName,baseName,dirIndex), "
 "não como um caminho."
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:856
 msgid "package payload can be compressed using bzip2."
 msgstr "a carga útil do pacote pode ser compactada utilizando bzip2."
 
-#: lib/rpmds.c:857
+#: lib/rpmds.c:861
 msgid "package payload can be compressed using xz."
 msgstr "a carga útil do pacote pode ser compactada utilizando o xz."
 
-#: lib/rpmds.c:860
+#: lib/rpmds.c:864
 msgid "package payload can be compressed using lzma."
 msgstr "a carga útil do pacote pode ser compactada utilizando lzma."
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:868
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "o(s) arquivo(s) da carga útil do pacote tem o prefixo \"./\"."
 
-#: lib/rpmds.c:867
+#: lib/rpmds.c:871
 msgid "package name-version-release is not implicitly provided."
 msgstr "o nome-versão-lançamento do pacote não está fornecido implicitamente."
 
-#: lib/rpmds.c:870
+#: lib/rpmds.c:874
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 "As etiquetas de cabeçalho sempre são classificadas após serem carregadas."
 
-#: lib/rpmds.c:873
+#: lib/rpmds.c:877
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "o interpretador do scriptlet pode usar argumentos do cabeçalho."
 
-#: lib/rpmds.c:876
+#: lib/rpmds.c:880
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 "um conjunto de arquivos de ligação absoluta podem ser instalados sem estarem "
 "completos."
 
-#: lib/rpmds.c:879
+#: lib/rpmds.c:883
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "scriptlets de pacotes podem acessar o banco de dados rpm durante a "
 "instalação."
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:887
 msgid "internal support for lua scripts."
 msgstr "suporte interno para scripts lua."
 
-#: lib/rpmds.c:887
+#: lib/rpmds.c:891
 msgid "file digest algorithm is per package configurable"
 msgstr "o algoritmo digest é configurável por pacote"
 
-#: lib/rpmds.c:891
+#: lib/rpmds.c:895
 msgid "support for POSIX.1e file capabilities"
 msgstr "suporte para as capacidades de arquivo do POSIX.1e"
 
-#: lib/rpmds.c:895
+#: lib/rpmds.c:899
 msgid "package scriptlets can be expanded at install time."
 msgstr "scriptlets de pacotes podem ser expandidos durante a instalação."
 
@@ -2985,11 +2961,11 @@ msgstr "o scriptlet %s falhou, status de saída %d\n"
 msgid "Unknown format"
 msgstr "Formato desconhecido"
 
-#: lib/rpmte.c:817
+#: lib/rpmte.c:821
 msgid "install"
 msgstr "instalar"
 
-#: lib/rpmte.c:818
+#: lib/rpmte.c:822
 msgid "erase"
 msgstr "apagar"
 
@@ -2999,28 +2975,28 @@ msgstr "apagar"
 msgid "cannot open Packages database in %s\n"
 msgstr "não foi possível abrir o banco de dados de pacotes em %s\n"
 
-#: lib/rpmts.c:186
+#: lib/rpmts.c:193
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "\"(\" extra no rótulo do pacote: %s\n"
 
-#: lib/rpmts.c:204
+#: lib/rpmts.c:211
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "\"(\" faltando no rótulo do pacote: %s\n"
 
-#: lib/rpmts.c:212
+#: lib/rpmts.c:219
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "\")\" faltando no rótulo do pacote: %s\n"
 
 # , c-format
-#: lib/rpmts.c:283
+#: lib/rpmts.c:290
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: falha na leitura da chave pública.\n"
 
-#: lib/rpmts.c:1027
+#: lib/rpmts.c:1034
 msgid "transaction"
 msgstr "transação"
 
@@ -3101,12 +3077,12 @@ msgid "failed"
 msgstr "falhou"
 
 # , c-format
-#: lib/verify.c:366
+#: lib/verify.c:367
 #, c-format
 msgid "missing   %c %s"
 msgstr "%c %s faltando"
 
-#: lib/verify.c:416
+#: lib/verify.c:417
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Dependências não satisfeitas para %s:\n"
@@ -3171,148 +3147,148 @@ msgstr "| esperado no fim da expressão"
 msgid "array iterator used with different sized arrays"
 msgstr "iterador da matriz utilizado com diferentes tamanhos de matrizes"
 
-#: lib/rpmdb.c:123
+#: lib/rpmdb.c:85
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
 msgstr ""
 
 # , c-format
-#: lib/rpmdb.c:182
+#: lib/rpmdb.c:154
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "não foi possível abrir o índice %s usando o db%d - %s (%d)\n"
 
-#: lib/rpmdb.c:708
+#: lib/rpmdb.c:679
 msgid "no dbpath has been set\n"
 msgstr "nenhum dbpath foi definido\n"
 
 # , c-format
-#: lib/rpmdb.c:891 lib/rpmdb.c:1009 lib/rpmdb.c:1054 lib/rpmdb.c:1916
-#: lib/rpmdb.c:2069 lib/rpmdb.c:2104 lib/rpmdb.c:2666
+#: lib/rpmdb.c:861 lib/rpmdb.c:978 lib/rpmdb.c:1023 lib/rpmdb.c:1877
+#: lib/rpmdb.c:2030 lib/rpmdb.c:2065 lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "erro (%d) ao obter os registros \"%s\" a partir do índice %s\n"
 
-#: lib/rpmdb.c:1241
+#: lib/rpmdb.c:1210
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: ignorando"
 
 # , c-format
-#: lib/rpmdb.c:1251
+#: lib/rpmdb.c:1220
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "erro (%d) ao armazenar o registro #%d em %s\n"
 
 # , c-format
-#: lib/rpmdb.c:1349
+#: lib/rpmdb.c:1318
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: o regexec falhou: %s\n"
 
 # , c-format
-#: lib/rpmdb.c:1530
+#: lib/rpmdb.c:1499
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: o regcomp falhou: %s\n"
 
-#: lib/rpmdb.c:1694
+#: lib/rpmdb.c:1659
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: ignorando"
 
-#: lib/rpmdb.c:1839
+#: lib/rpmdb.c:1800
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: cabeçalho danificado #%u recuperado -- ignorando.\n"
 
 # , c-format
-#: lib/rpmdb.c:2261
+#: lib/rpmdb.c:2222
 #, fuzzy, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr "erro (%d) ao obter os registros \"%s\" a partir do índice %s\n"
 
 # , c-format
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2328
 #, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr "erro(%d) ao adicionar o registro de cabeçalho #%d\n"
 
 # , c-format
-#: lib/rpmdb.c:2377
+#: lib/rpmdb.c:2338
 #, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "erro(%d) ao remover o registro de cabeçalho #%d\n"
 
-#: lib/rpmdb.c:2401
+#: lib/rpmdb.c:2362
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: não foi possível ler o cabeçalho em 0x%x\n"
 
 # , c-format
-#: lib/rpmdb.c:2468
+#: lib/rpmdb.c:2429
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "erro (%d) ao definir registros \"%s\" a partir do índice %s\n"
 
 # , c-format
-#: lib/rpmdb.c:2487
+#: lib/rpmdb.c:2448
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "erro (%d) ao armazenar o registro \"%s\" em %s\n"
 
 # , c-format
-#: lib/rpmdb.c:2497
+#: lib/rpmdb.c:2458
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "erro (%d) ao remover o registro \"%s\" a partir de %s\n"
 
-#: lib/rpmdb.c:2573
+#: lib/rpmdb.c:2534
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "erro (%d) ao alocar nova instância do pacote\n"
 
 # , c-format
-#: lib/rpmdb.c:2682
+#: lib/rpmdb.c:2643
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "erro (%d) ao armazenar o registro %s em %s\n"
 
-#: lib/rpmdb.c:2879
+#: lib/rpmdb.c:2840
 msgid "no dbpath has been set"
 msgstr "nenhum dbpath foi definido"
 
 # , c-format
-#: lib/rpmdb.c:2897
+#: lib/rpmdb.c:2858
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "falha ao criar o diretório %s: %s\n"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2892
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "o cabeçalho #%u do banco de dados é inválido -- ignorando.\n"
 
-#: lib/rpmdb.c:2945
+#: lib/rpmdb.c:2906
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "não é possível adicionar o registro originalmente em %u\n"
 
-#: lib/rpmdb.c:2960
+#: lib/rpmdb.c:2921
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falha ao reconstruir o banco de dados: o banco de dados original permanece "
 "no lugar\n"
 
-#: lib/rpmdb.c:2968
+#: lib/rpmdb.c:2929
 msgid "failed to replace old database with new database!\n"
 msgstr "falha ao substituir o banco de dados velho pela novo!\n"
 
-#: lib/rpmdb.c:2970
+#: lib/rpmdb.c:2931
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "substituir arquivos em %s com arquivos de %s para recuperação"
 
 # , c-format
-#: lib/rpmdb.c:2981
+#: lib/rpmdb.c:2942
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falha ao remover o diretório %s: %s\n"
@@ -3687,6 +3663,24 @@ msgstr "%s: falha na leitura do manifesto: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "não verificar a assinatura do cabeçalho+carga útil"
+
+#~ msgid "getUname: too many uid's\n"
+#~ msgstr "getUname: uid's em excesso\n"
+
+#~ msgid "getUnameS: too many uid's\n"
+#~ msgstr "getUnameS: uid's em excesso\n"
+
+#~ msgid "getUidS: too many uid's\n"
+#~ msgstr "getUidS: uid's em excesso\n"
+
+#~ msgid "getGname: too many gid's\n"
+#~ msgstr "getGname: gid's em excesso\n"
+
+#~ msgid "getGnameS: too many gid's\n"
+#~ msgstr "getGnameS: gid's em excesso\n"
+
+#~ msgid "getGidS: too many gid's\n"
+#~ msgstr "getGidS: gid's em excesso\n"
 
 # , c-format
 #~ msgid "Couldn't chdir to %s: %s\n"

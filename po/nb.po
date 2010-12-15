@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-12-01 17:16+0200\n"
+"POT-Creation-Date: 2010-12-15 09:45+0200\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -522,26 +522,26 @@ msgstr ""
 msgid "Spec options:"
 msgstr ""
 
-#: build/build.c:121 build/pack.c:405
+#: build/build.c:122 build/pack.c:405
 msgid "Unable to open temp file.\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: build/build.c:169
+#: build/build.c:170
 #, c-format
 msgid "Executing(%s): %s\n"
 msgstr "Kjører(%s): %s\n"
 
-#: build/build.c:175
+#: build/build.c:176
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Kjøring av %s feilet (%s): %s\n"
 
-#: build/build.c:184
+#: build/build.c:185
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Ugyldig sluttstatus fra %s (%s)\n"
 
-#: build/build.c:290
+#: build/build.c:291
 msgid ""
 "\n"
 "\n"
@@ -600,213 +600,189 @@ msgstr "&& og || ikke støttet for strenger\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksfeil i uttrykk\n"
 
-#: build/files.c:287 build/files.c:480 build/files.c:697
+#: build/files.c:288 build/files.c:481 build/files.c:698
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: build/files.c:297 build/files.c:633 build/files.c:707 build/files.c:799
+#: build/files.c:298 build/files.c:634 build/files.c:708 build/files.c:800
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Mangler ')' i %s(%s\n"
 
-#: build/files.c:333 build/files.c:656
+#: build/files.c:334 build/files.c:657
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldig %s-tegn: %s\n"
 
-#: build/files.c:442
+#: build/files.c:443
 #, fuzzy, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: build/files.c:495
+#: build/files.c:496
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:531
+#: build/files.c:532
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:540
+#: build/files.c:541
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:558
+#: build/files.c:559
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:732
+#: build/files.c:733
 #, c-format
 msgid "Unusual locale length: \"%.*s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:742
+#: build/files.c:743
 #, c-format
 msgid "Duplicate locale %.*s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:814
+#: build/files.c:815
 #, fuzzy, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Ugyldig %s-tegn: %s\n"
 
-#: build/files.c:825
+#: build/files.c:826
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:879
+#: build/files.c:880
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
-#: build/files.c:908
+#: build/files.c:909
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linje: %s\n"
 
-#: build/files.c:921
+#: build/files.c:922
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filen må begynne med \"/\": %s\n"
 
-#: build/files.c:932
+#: build/files.c:933
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande spesiell %%doc med andre skjema: %s\n"
 
-#: build/files.c:1073
+#: build/files.c:1074
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1099
+#: build/files.c:1100
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil listet to ganger: %s\n"
 
-#: build/files.c:1222
+#: build/files.c:1223
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lenke peker til BuildRoot: %s -> %s\n"
 
-#: build/files.c:1393
+#: build/files.c:1394
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1401
+#: build/files.c:1402
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke funnet: %s\n"
 
-#: build/files.c:1504
+#: build/files.c:1505
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1598
+#: build/files.c:1599
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1604
+#: build/files.c:1605
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead feilet\n"
 
-#: build/files.c:1608
+#: build/files.c:1609
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1617
+#: build/files.c:1618
 #, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s feilet\n"
 
-#: build/files.c:1656
+#: build/files.c:1657
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1678
+#: build/files.c:1679
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "linje %d: Filnavn ikke tillatt: %s\n"
 
-#: build/files.c:1689 lib/rpminstall.c:419
+#: build/files.c:1690 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1736
+#: build/files.c:1737
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: build/files.c:1744
+#: build/files.c:1745
 #, c-format
 msgid "line: %s\n"
 msgstr "Installerer %s\n"
 
-#: build/files.c:2020
+#: build/files.c:2021
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil %s: %s\n"
 
-#: build/files.c:2042 build/parsePrep.c:32
+#: build/files.c:2043 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig eier/gruppe: %s\n"
 
-#: build/files.c:2082
+#: build/files.c:2083
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "ingen pakke utløser %s\n"
 
-#: build/files.c:2097
+#: build/files.c:2098
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2122
+#: build/files.c:2123
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "kan ikke aksessere fil %s\n"
 
-#: build/files.c:2133
+#: build/files.c:2134
 msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
-
-#: build/names.c:50
-msgid "getUname: too many uid's\n"
-msgstr ""
-
-#: build/names.c:72
-msgid "getUnameS: too many uid's\n"
-msgstr ""
-
-#: build/names.c:97
-msgid "getUidS: too many uid's\n"
-msgstr ""
-
-#: build/names.c:122
-msgid "getGname: too many gid's\n"
-msgstr ""
-
-#: build/names.c:144
-msgid "getGnameS: too many gid's\n"
-msgstr ""
-
-#: build/names.c:169
-msgid "getGidS: too many gid's\n"
 msgstr ""
 
 #: build/pack.c:83
@@ -1156,139 +1132,139 @@ msgstr "linje %d: Docdir må begynne med '/': %s\n"
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "linje %d: Epoch/serienummer må være et tall: %s\n"
 
-#: build/parsePreamble.c:775
+#: build/parsePreamble.c:776
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "linje %d: Ugyldig %s: kvalifikatorer: %s\n"
 
-#: build/parsePreamble.c:802
+#: build/parsePreamble.c:803
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "linje %d: Ugyldig BuildArchitecture format: %s\n"
 
-#: build/parsePreamble.c:812
+#: build/parsePreamble.c:813
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:827
+#: build/parsePreamble.c:828
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Intern feil: Ugyldig tag %d\n"
 
-#: build/parsePreamble.c:910
+#: build/parsePreamble.c:912
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "linje %d: Versjon kreves: %s\n"
 
-#: build/parsePreamble.c:973
+#: build/parsePreamble.c:975
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Ugyldig pakkespesifikasjon: %s\n"
 
-#: build/parsePreamble.c:979
+#: build/parsePreamble.c:981
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Pakke eksisterer allerede: %s\n"
 
-#: build/parsePreamble.c:1010
+#: build/parsePreamble.c:1012
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "linje %d: Ukjent tagg: %s\n"
 
-#: build/parsePreamble.c:1042
+#: build/parsePreamble.c:1044
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePreamble.c:1046
+#: build/parsePreamble.c:1048
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot kan ikke være \"/\": %s\n"
 
-#: build/parsePrep.c:27
+#: build/parsePrep.c:28
 #, c-format
 msgid "Bad source: %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: build/parsePrep.c:72
+#: build/parsePrep.c:73
 #, fuzzy, c-format
 msgid "No patch number %u\n"
 msgstr "Ingen patch-nummer %d\n"
 
-#: build/parsePrep.c:74
+#: build/parsePrep.c:75
 #, c-format
 msgid "%%patch without corresponding \"Patch:\" tag\n"
 msgstr ""
 
-#: build/parsePrep.c:151
+#: build/parsePrep.c:152
 #, fuzzy, c-format
 msgid "No source number %u\n"
 msgstr "Ingen kildenummer %d\n"
 
-#: build/parsePrep.c:153
+#: build/parsePrep.c:154
 #, fuzzy
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "kildepakke inneholder ikke en .spec-fil\n"
 
-#: build/parsePrep.c:172
+#: build/parsePrep.c:173
 #, c-format
 msgid "Couldn't download nosource %s: %s\n"
 msgstr "Kunne ikke laste ned ikke-kilde %s: %s\n"
 
-#: build/parsePrep.c:270
+#: build/parsePrep.c:271
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Feil under lesing av %%setup: %s\n"
 
-#: build/parsePrep.c:281
+#: build/parsePrep.c:282
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "linje %d: Ugyldig argument til %%setup: %s\n"
 
-#: build/parsePrep.c:296
+#: build/parsePrep.c:297
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "linje %d: Ugyldig %%setup flagg %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:456
 #, fuzzy, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s\n"
 
-#: build/parsePrep.c:468
+#: build/parsePrep.c:469
 #, fuzzy, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: build/parsePrep.c:495
+#: build/parsePrep.c:496
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "linje %d: %%prep for andre gang\n"
 
-#: build/parseReqs.c:109
+#: build/parseReqs.c:112
 #, fuzzy
 msgid "Dependency tokens must begin with alpha-numeric, '_' or '/'"
 msgstr ""
 "linje %d: Avhengighetstegn må begynne med alfanumerisk tegn, '_' eller '/': "
 "%s\n"
 
-#: build/parseReqs.c:134
+#: build/parseReqs.c:137
 #, fuzzy
 msgid "Versioned file name not permitted"
 msgstr "linje %d: Filnavn med versjon ikke tillatt: %s\n"
 
-#: build/parseReqs.c:163
+#: build/parseReqs.c:154
 #, fuzzy
 msgid "Version required"
 msgstr "linje %d: Versjon kreves: %s\n"
 
-#: build/parseReqs.c:174
+#: build/parseReqs.c:165
 #, fuzzy
 msgid "invalid dependency"
 msgstr "linje %d: Ugyldig nummer: %s\n"
 
-#: build/parseReqs.c:190
+#: build/parseReqs.c:181
 #, fuzzy, c-format
 msgid "line %d: %s: %s\n"
 msgstr "linje %d: %s\n"
@@ -1434,66 +1410,66 @@ msgstr "For mange argumenter i datalinje ved %s:%d\n"
 msgid "Processing policies: %s\n"
 msgstr "kan ikke aksessere fil %s\n"
 
-#: build/rpmfc.c:76
+#: build/rpmfc.c:91
 #, fuzzy, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr "linje %d: Ugyldig nummer: %s\n"
 
-#: build/rpmfc.c:192
+#: build/rpmfc.c:205
 #, fuzzy, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: build/rpmfc.c:217
+#: build/rpmfc.c:230
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunne ikke kjøre %s: %s\n"
 
-#: build/rpmfc.c:222 lib/rpmscript.c:239
+#: build/rpmfc.c:235 lib/rpmscript.c:239
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: build/rpmfc.c:304
+#: build/rpmfc.c:317
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s feilet\n"
 
-#: build/rpmfc.c:308
+#: build/rpmfc.c:321
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/rpmfc.c:793
+#: build/rpmfc.c:816
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:881
+#: build/rpmfc.c:904
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:898
+#: build/rpmfc.c:921
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "feil under åpning av %s: %s\n"
 
-#: build/rpmfc.c:905
+#: build/rpmfc.c:928
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: build/rpmfc.c:946
+#: build/rpmfc.c:969
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: build/rpmfc.c:1147
+#: build/rpmfc.c:1170
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: build/rpmfc.c:1152 build/rpmfc.c:1161
+#: build/rpmfc.c:1175 build/rpmfc.c:1184
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Klarte ikke å finne %s:\n"
@@ -2466,72 +2442,72 @@ msgstr "kunne ikke opprette %s: %s\n"
 msgid "Unable to restore root directory: %m\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/rpmds.c:399
+#: lib/rpmds.c:403
 msgid "NO "
 msgstr "NEI"
 
-#: lib/rpmds.c:399
+#: lib/rpmds.c:403
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:845
+#: lib/rpmds.c:849
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:848
+#: lib/rpmds.c:852
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:856
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:857
+#: lib/rpmds.c:861
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:860
+#: lib/rpmds.c:864
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:868
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:867
+#: lib/rpmds.c:871
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:870
+#: lib/rpmds.c:874
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:873
+#: lib/rpmds.c:877
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:876
+#: lib/rpmds.c:880
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:879
+#: lib/rpmds.c:883
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:887
 #, fuzzy
 msgid "internal support for lua scripts."
 msgstr "- ikke støttet for strenger\n"
 
-#: lib/rpmds.c:887
+#: lib/rpmds.c:891
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:891
+#: lib/rpmds.c:895
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:895
+#: lib/rpmds.c:899
 #, fuzzy
 msgid "package scriptlets can be expanded at install time."
 msgstr "pakke %s er allerede installert"
@@ -2852,12 +2828,12 @@ msgstr "%s: Fwrite feilet: %s\n"
 msgid "Unknown format"
 msgstr "Ukjent filtype"
 
-#: lib/rpmte.c:817
+#: lib/rpmte.c:821
 #, fuzzy
 msgid "install"
 msgstr "ikke installert"
 
-#: lib/rpmte.c:818
+#: lib/rpmte.c:822
 msgid "erase"
 msgstr ""
 
@@ -2866,27 +2842,27 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr "kan ikke åpne pakkedatabase i %s\n"
 
-#: lib/rpmts.c:186
+#: lib/rpmts.c:193
 #, fuzzy, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/rpmts.c:204
+#: lib/rpmts.c:211
 #, fuzzy, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: lib/rpmts.c:212
+#: lib/rpmts.c:219
 #, fuzzy, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "ugyldig pakkenummer: %s\n"
 
-#: lib/rpmts.c:283
+#: lib/rpmts.c:290
 #, fuzzy, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: readLead feilet\n"
 
-#: lib/rpmts.c:1027
+#: lib/rpmts.c:1034
 msgid "transaction"
 msgstr ""
 
@@ -2968,12 +2944,12 @@ msgstr ""
 msgid "failed"
 msgstr "%s feilet\n"
 
-#: lib/verify.c:366
+#: lib/verify.c:367
 #, fuzzy, c-format
 msgid "missing   %c %s"
 msgstr "mangler    %s"
 
-#: lib/verify.c:416
+#: lib/verify.c:417
 #, fuzzy, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "feilede avhengigheter:\n"
@@ -3045,132 +3021,132 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: lib/rpmdb.c:123
+#: lib/rpmdb.c:85
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
 msgstr ""
 
-#: lib/rpmdb.c:182
+#: lib/rpmdb.c:154
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "kan ikke åpne %s-indeks ved bruk av db%d - %s (%d)\n"
 
-#: lib/rpmdb.c:708
+#: lib/rpmdb.c:679
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: lib/rpmdb.c:891 lib/rpmdb.c:1009 lib/rpmdb.c:1054 lib/rpmdb.c:1916
-#: lib/rpmdb.c:2069 lib/rpmdb.c:2104 lib/rpmdb.c:2666
+#: lib/rpmdb.c:861 lib/rpmdb.c:978 lib/rpmdb.c:1023 lib/rpmdb.c:1877
+#: lib/rpmdb.c:2030 lib/rpmdb.c:2065 lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: lib/rpmdb.c:1241
+#: lib/rpmdb.c:1210
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:1251
+#: lib/rpmdb.c:1220
 #, fuzzy, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:1349
+#: lib/rpmdb.c:1318
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: Fseek feilet: %s\n"
 
-#: lib/rpmdb.c:1530
+#: lib/rpmdb.c:1499
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: åpne feilet: %s\n"
 
-#: lib/rpmdb.c:1694
+#: lib/rpmdb.c:1659
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:1839
+#: lib/rpmdb.c:1800
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2261
+#: lib/rpmdb.c:2222
 #, fuzzy, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2328
 #, fuzzy, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2377
+#: lib/rpmdb.c:2338
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2401
+#: lib/rpmdb.c:2362
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:2468
+#: lib/rpmdb.c:2429
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: lib/rpmdb.c:2487
+#: lib/rpmdb.c:2448
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2497
+#: lib/rpmdb.c:2458
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: lib/rpmdb.c:2573
+#: lib/rpmdb.c:2534
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:2682
+#: lib/rpmdb.c:2643
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2879
+#: lib/rpmdb.c:2840
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2897
+#: lib/rpmdb.c:2858
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2892
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2945
+#: lib/rpmdb.c:2906
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: lib/rpmdb.c:2960
+#: lib/rpmdb.c:2921
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2968
+#: lib/rpmdb.c:2929
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2970
+#: lib/rpmdb.c:2931
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2981
+#: lib/rpmdb.c:2942
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
