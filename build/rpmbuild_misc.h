@@ -10,66 +10,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmbuild
- * Destroy uid/gid caches.
- */
-RPM_GNUC_INTERNAL
-void freeNames(void);
-
-/** \ingroup rpmbuild
- * Return cached user name from user id.
- * @todo Implement using hash.
- * @param uid		user id
- * @return		cached user name
- */
-RPM_GNUC_INTERNAL
-const char * getUname(uid_t uid);
-
-/** \ingroup rpmbuild
- * Return cached user name.
- * @todo Implement using hash.
- * @param uname		user name
- * @return		cached user name
- */
-RPM_GNUC_INTERNAL
-const char * getUnameS(const char * uname);
-
-/** \ingroup rpmbuild
- * Return cached user id.
- * @todo Implement using hash.
- * @param uname		user name
- * @return		cached uid
- */
-RPM_GNUC_INTERNAL
-uid_t getUidS(const char * uname);
-
-/** \ingroup rpmbuild
- * Return cached group name from group id.
- * @todo Implement using hash.
- * @param gid		group id
- * @return		cached group name
- */
-RPM_GNUC_INTERNAL
-const char * getGname(gid_t gid);
-
-/** \ingroup rpmbuild
- * Return cached group name.
- * @todo Implement using hash.
- * @param gname		group name
- * @return		cached group name
- */
-RPM_GNUC_INTERNAL
-const char * getGnameS(const char * gname);
-
-/** \ingroup rpmbuild
- * Return cached group id.
- * @todo Implement using hash.
- * @param gname		group name
- * @return		cached gid
- */
-RPM_GNUC_INTERNAL
-gid_t getGidS(const char * gname);
-
-/** \ingroup rpmbuild
  * Truncate comment lines.
  * @param s		skip white space, truncate line at '#'
  */
