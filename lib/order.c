@@ -4,13 +4,10 @@
 
 #include "system.h"
 
-#include <popt.h>
-
 #include <rpm/rpmtag.h>
-#include <rpm/rpmmacro.h>       /* XXX rpmExpand("%{_dependency_whiteout */
+#include <rpm/rpmmacro.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmds.h>
-#include <rpm/rpmfi.h>
 
 #include "lib/rpmte_internal.h"	/* XXX tsortInfo_s */
 #include "lib/rpmts_internal.h"
@@ -50,83 +47,6 @@ struct tsortInfo_s {
                              // (1 for trivial SCCs)
     int      tsi_SccLowlink; // used for SCC detection
 };
-
-struct badDeps_s {
-    char * pname;
-    const char * qname;
-};
-
-static int badDepsInitialized = 0;
-static struct badDeps_s * badDeps = NULL;
-
-/**
- */
-static void freeBadDeps(void)
-{
-    if (badDeps) {
-	struct badDeps_s * bdp;
-	/* bdp->qname is a pointer to pname so doesn't need freeing */
-	for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++)
-	    bdp->pname = _free(bdp->pname);
-	badDeps = _free(badDeps);
-    }
-    badDepsInitialized = 0;
-}
-
-/**
- * Check for dependency relations to be ignored.
- *
- * @param ts		transaction set
- * @param p		successor element (i.e. with Requires: )
- * @param q		predecessor element (i.e. with Provides: )
- * @return		1 if dependency is to be ignored.
- */
-static int ignoreDep(const rpmts ts, const rpmte p, const rpmte q)
-{
-    struct badDeps_s * bdp;
-
-    if (!badDepsInitialized) {
-	char * s = rpmExpand("%{?_dependency_whiteout}", NULL);
-	const char ** av = NULL;
-	int msglvl = (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS)
-			? RPMLOG_WARNING : RPMLOG_DEBUG;
-	int ac = 0;
-	int i;
-
-	if (s != NULL && *s != '\0'
-	&& !(i = poptParseArgvString(s, &ac, (const char ***)&av))
-	&& ac > 0 && av != NULL)
-	{
-	    bdp = badDeps = xcalloc(ac+1, sizeof(*badDeps));
-	    for (i = 0; i < ac; i++, bdp++) {
-		char * pname, * qname;
-
-		if (av[i] == NULL)
-		    break;
-		pname = xstrdup(av[i]);
-		if ((qname = strchr(pname, '>')) != NULL)
-		    *qname++ = '\0';
-		bdp->pname = pname;
-		bdp->qname = qname;
-		rpmlog(msglvl,
-			_("ignore package name relation(s) [%d]\t%s -> %s\n"),
-			i, bdp->pname, (bdp->qname ? bdp->qname : "???"));
-	    }
-	    bdp->pname = NULL;
-	    bdp->qname = NULL;
-	}
-	av = _free(av);
-	s = _free(s);
-	badDepsInitialized++;
-    }
-
-    if (badDeps != NULL)
-    for (bdp = badDeps; bdp->pname != NULL && bdp->qname != NULL; bdp++) {
-	if (rstreq(rpmteN(p), bdp->pname) && rstreq(rpmteN(q), bdp->qname))
-	    return 1;
-    }
-    return 0;
-}
 
 static void rpmTSIFree(tsortInfo tsi)
 {
@@ -236,10 +156,6 @@ static inline int addRelation(rpmts ts,
 
     /* Avoid deps outside this transaction and self dependencies */
     if (q == NULL || q == p)
-	return 0;
-
-    /* Avoid certain dependency relations. */
-    if (ignoreDep(ts, p, q))
 	return 0;
 
     addSingleRelation(p, q, dsflags);
@@ -718,8 +634,6 @@ int rpmtsOrder(rpmts ts)
     tsmem->order = newOrder;
     tsmem->orderAlloced = tsmem->orderCount;
     rc = 0;
-
-    freeBadDeps();
 
     for (int i = 2; SCCs[i].members != NULL; i++) {
 	free(SCCs[i].members);
