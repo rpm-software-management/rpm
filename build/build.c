@@ -12,6 +12,7 @@
 #include <rpm/rpmfileutil.h>
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
+#include "lib/rpmug.h"
 
 #include "debug.h"
 
@@ -290,7 +291,7 @@ exit:
 	rpmlog(RPMLOG_NOTICE, _("\n\nRPM build errors:\n"));
 	rpmlogPrint(NULL);
     }
-    freeNames();
+    rpmugFree();
 
     return rc;
 }
