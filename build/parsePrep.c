@@ -12,6 +12,7 @@
 #include <rpm/rpmfileutil.h>
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
+#include "lib/rpmug.h"
 #include "debug.h"
 
 /**
@@ -28,7 +29,7 @@ static rpmRC checkOwners(const char * urlfn)
 		urlfn, strerror(errno));
 	return RPMRC_FAIL;
     }
-    if (!getUname(sb.st_uid) || !getGname(sb.st_gid)) {
+    if (!rpmugUname(sb.st_uid) || !rpmugGname(sb.st_gid)) {
 	rpmlog(RPMLOG_ERR, _("Bad owner/group: %s\n"), urlfn);
 	return RPMRC_FAIL;
     }

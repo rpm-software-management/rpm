@@ -25,6 +25,7 @@
 #include "misc/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
+#include "lib/rpmug.h"
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
 
@@ -1423,21 +1424,21 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	fileMode |= fl->cur_ar.ar_fmode;
     }
     if (fl->cur_ar.ar_user) {
-	fileUname = getUnameS(fl->cur_ar.ar_user);
+	fileUname = fl->cur_ar.ar_user;
     } else {
-	fileUname = getUname(fileUid);
+	fileUname = rpmugUname(fileUid);
     }
     if (fl->cur_ar.ar_group) {
-	fileGname = getGnameS(fl->cur_ar.ar_group);
+	fileGname = fl->cur_ar.ar_group;
     } else {
-	fileGname = getGname(fileGid);
+	fileGname = rpmugGname(fileGid);
     }
 	
     /* Default user/group to builder's user/group */
     if (fileUname == NULL)
-	fileUname = getUname(getuid());
+	fileUname = rpmugUname(getuid());
     if (fileGname == NULL)
-	fileGname = getGname(getgid());
+	fileGname = rpmugGname(getgid());
     
     /* S_XXX macro must be consistent with type in find call at check-files script */
     if (check_fileList && (S_ISREG(fileMode) || S_ISLNK(fileMode))) {
@@ -2027,14 +2028,14 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->fl_mode |= fl.def_ar.ar_fmode;
 	}
 	if (fl.def_ar.ar_user) {
-	    flp->uname = getUnameS(fl.def_ar.ar_user);
+	    flp->uname = fl.def_ar.ar_user;
 	} else {
-	    flp->uname = getUname(flp->fl_uid);
+	    flp->uname = rpmugUname(flp->fl_uid);
 	}
 	if (fl.def_ar.ar_group) {
-	    flp->gname = getGnameS(fl.def_ar.ar_group);
+	    flp->gname = fl.def_ar.ar_group;
 	} else {
-	    flp->gname = getGname(flp->fl_gid);
+	    flp->gname = rpmugGname(flp->fl_gid);
 	}
 	flp->langs = xstrdup("");
 	
