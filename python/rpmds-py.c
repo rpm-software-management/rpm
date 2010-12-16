@@ -263,6 +263,45 @@ static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
     return 0;
 }
 
+static int depflags(PyObject *o, rpmsenseFlags *senseFlags)
+{
+    int ok = 0;
+    PyObject *str = NULL;
+    rpmsenseFlags flags = RPMSENSE_ANY;
+
+    if (PyInt_Check(o)) {
+	ok = 1;
+	flags = PyInt_AsLong(o);
+    } else if (utf8FromPyObject(o, &str)) {
+	ok = 1;
+	for (const char *s = PyBytes_AsString(str); *s; s++) {
+	    switch (*s) {
+	    case '=':
+		flags |= RPMSENSE_EQUAL;
+		break;
+	    case '<':
+		flags |= RPMSENSE_LESS;
+		break;
+	    case '>':
+		flags |= RPMSENSE_GREATER;
+		break;
+	    default:
+		ok = 0;
+		break;
+	    }
+	}
+	Py_DECREF(str);
+    }
+
+    if (flags == (RPMSENSE_EQUAL|RPMSENSE_LESS|RPMSENSE_GREATER))
+	ok = 0;
+
+    if (ok)
+	*senseFlags = flags;
+
+    return ok;
+}
+
 static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
 {
     PyObject *obj;
@@ -279,8 +318,12 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	const char *name = NULL;
 	const char *evr = NULL;
 	rpmsenseFlags flags = RPMSENSE_ANY;
-	if (PyArg_ParseTuple(obj, "s|is", &name, &flags, &evr)) {
+	/* TODO: if flags are specified, evr should be required too */
+	if (PyArg_ParseTuple(obj, "s|O&s", &name, depflags, &flags, &evr)) {
 	    ds = rpmdsSingle(tagN, name, evr, flags);
+	} else {
+	    PyErr_SetString(PyExc_ValueError, "invalid dependency tuple");
+	    return NULL;
 	}
     } else if (hdrFromPyObject(obj, &h)) {
 	if (tagN == RPMTAG_NEVR) {
