@@ -1463,8 +1463,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
 	flp->cpioPath = xstrdup(cpioPath);
 	flp->diskPath = xstrdup(diskPath);
-	flp->uname = fileUname;
-	flp->gname = fileGname;
+	flp->uname = rpmugStashStr(fileUname);
+	flp->gname = rpmugStashStr(fileGname);
 
 	if (fl->currentLangs && fl->nLangs > 0) {
 	    char * ncl;
@@ -2028,14 +2028,14 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->fl_mode |= fl.def_ar.ar_fmode;
 	}
 	if (fl.def_ar.ar_user) {
-	    flp->uname = fl.def_ar.ar_user;
+	    flp->uname = rpmugStashStr(fl.def_ar.ar_user);
 	} else {
-	    flp->uname = rpmugUname(flp->fl_uid);
+	    flp->uname = rpmugStashStr(rpmugUname(flp->fl_uid));
 	}
 	if (fl.def_ar.ar_group) {
-	    flp->gname = fl.def_ar.ar_group;
+	    flp->gname = rpmugStashStr(fl.def_ar.ar_group);
 	} else {
-	    flp->gname = rpmugGname(flp->fl_gid);
+	    flp->gname = rpmugStashStr(rpmugGname(flp->fl_gid));
 	}
 	flp->langs = xstrdup("");
 	
