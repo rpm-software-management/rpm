@@ -75,8 +75,6 @@ void  HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
 #endif
 );
 
-#ifdef HTDATATYPE
-
 /**
  * Retrieve item from hash table.
  * @param ht            pointer to hash table
@@ -88,10 +86,11 @@ void  HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
  */
 RPM_GNUC_INTERNAL
 int  HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key,
+#ifdef HTDATATYPE
 		HTDATATYPE** data,
 		int * dataCount,
-		HTKEYTYPE* tableKey);
 #endif
+		HTKEYTYPE* tableKey);
 
 /**
  * Check for key in hash table.

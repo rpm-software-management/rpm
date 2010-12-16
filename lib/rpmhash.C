@@ -205,26 +205,26 @@ int HASHPREFIX(HasEntry)(HASHTYPE ht, HTKEYTYPE key)
     if (!(b = HASHPREFIX(findEntry)(ht, key))) return 0; else return 1;
 }
 
+int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key,
 #ifdef HTDATATYPE
-
-int HASHPREFIX(GetEntry)(HASHTYPE ht, HTKEYTYPE key, HTDATATYPE** data,
-	       int * dataCount, HTKEYTYPE* tableKey)
+			 HTDATATYPE** data, int * dataCount,
+#endif
+			 HTKEYTYPE* tableKey)
 {
     Bucket b;
     int rc = ((b = HASHPREFIX(findEntry)(ht, key)) != NULL);
 
+#ifdef HTDATATYPE
     if (data)
 	*data = rc ? b->data : NULL;
     if (dataCount)
 	*dataCount = rc ? b->dataCount : 0;
+#endif
     if (tableKey && rc)
 	*tableKey = b->key;
 
     return rc;
 }
-
-#endif
-
 
 unsigned int HASHPREFIX(NumBuckets)(HASHTYPE ht) {
     return ht->numBuckets;
