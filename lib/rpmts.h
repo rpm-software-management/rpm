@@ -34,7 +34,7 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
     RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
-    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< @todo Document. */
+    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< obsolete, unused */
     RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< obsolete, unused */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< obsolete, unused */
@@ -53,7 +53,7 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPREUN	= (1 << 21),	/*!< from --nopreun */
     RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),	/*!< from --nopostun */
     RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),	/*!< from --notriggerpostun */
-    RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
+    RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),	/*!< obsolete, unused */
     RPMTRANS_FLAG_APPLYONLY	= (1 << 25),	/*!< obsolete, unused */
     RPMTRANS_FLAG_NOCOLLECTIONS	= (1 << 26),	/*!< from --nocollections */
 
