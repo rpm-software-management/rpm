@@ -34,17 +34,9 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOTRIGGERS	= (1 <<  4),	/*!< from --notriggers */
     RPMTRANS_FLAG_NODOCS	= (1 <<  5),	/*!< from --excludedocs */
     RPMTRANS_FLAG_ALLFILES	= (1 <<  6),	/*!< from --allfiles */
-    RPMTRANS_FLAG_KEEPOBSOLETE	= (1 <<  7),	/*!< obsolete, unused */
+    /* bit 7 unused */
     RPMTRANS_FLAG_NOCONTEXTS	= (1 <<  8),	/*!< from --nocontexts */
-    RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< obsolete, unused */
-
-    RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_PKGUNDO	= (1 << 12),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_COMMIT	= (1 << 13),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_UNDO		= (1 << 14),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_REVERSE	= (1 << 15),	/*!< obsolete, unused */
-
+    /* bits 9-15 unused */
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
     RPMTRANS_FLAG_NOPRE		= (1 << 17),	/*!< from --nopre */
     RPMTRANS_FLAG_NOPOST	= (1 << 18),	/*!< from --nopost */
@@ -53,14 +45,11 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPREUN	= (1 << 21),	/*!< from --nopreun */
     RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),	/*!< from --nopostun */
     RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),	/*!< from --notriggerpostun */
-    RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),	/*!< obsolete, unused */
+    /* bits 24-25 unused */
     RPMTRANS_FLAG_NOCOLLECTIONS	= (1 << 26),	/*!< from --nocollections */
-
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOFILEDIGEST	= (1 << 27),	/*!< from --nofiledigest (alias to --nomd5) */
-    RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< obsolete, unused */
-    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< obsolete, unused */
+    /* bits 28-29 unused */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
     RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
 };
@@ -80,6 +69,20 @@ typedef rpmFlags rpmtransFlags;
     RPMTRANS_FLAG_NOTRIGGERUN |	\
     RPMTRANS_FLAG_NOTRIGGERPOSTUN \
   )
+
+/* Avoid unnecessary breakage for stuff referring to these unused flags */
+#define RPMTRANS_FLAG_NOPAYLOAD 0
+#define RPMTRANS_FLAG_APPLYONLY 0
+#define RPMTRANS_FLAG_KEEPOBSOLETE 0
+#define RPMTRANS_FLAG_DIRSTASH 0
+#define RPMTRANS_FLAG_REPACKAGE 0
+#define RPMTRANS_FLAG_PKGCOMMIT 0
+#define RPMTRANS_FLAG_PKGUNDO 0
+#define RPMTRANS_FLAG_COMMIT 0
+#define RPMTRANS_FLAG_UNDO 0
+#define RPMTRANS_FLAG_REVERSE 0
+#define RPMTRANS_FLAG_NOSUGGEST 0
+#define RPMTRANS_FLAG_ADDINDEPS 0
 
 /** \ingroup rpmts
  * Bit(s) to control digest and signature verification.
