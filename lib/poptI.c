@@ -122,11 +122,6 @@ struct poptOption rpmInstallPoptTable[] = {
 	N_("remove all packages which match <package> (normally an error is generated if <package> specified multiple packages)"),
 	NULL},
 
- { "apply", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
-	(_noTransScripts|_noTransTriggers|
-		RPMTRANS_FLAG_APPLYONLY|RPMTRANS_FLAG_PKGCOMMIT),
-	N_("do not execute package scriptlet(s)"), NULL },
-
  { "badreloc", '\0', POPT_BIT_SET,
 	&rpmIArgs.probFilter, RPMPROB_FILTER_FORCERELOCATE,
 	N_("relocate files in non-relocatable package"), NULL},

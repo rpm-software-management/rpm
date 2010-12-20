@@ -36,12 +36,9 @@ typedef enum pkgStage_e {
     PSM_UNDO		=  5,
     PSM_FINI		=  6,
 
-    PSM_PKGCOMMIT	= 10,
-
     PSM_CREATE		= 17,
     PSM_NOTIFY		= 22,
     PSM_DESTROY		= 23,
-    PSM_COMMIT		= 25,
 
     PSM_SCRIPT		= 53,
     PSM_TRIGGERS	= 54,
@@ -840,9 +837,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    xx = Fclose(payload);
 	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 
-	    if (!rc)
-		rc = rpmpsmNext(psm, PSM_COMMIT);
-
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
 	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
@@ -870,7 +864,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    int fc = rpmfiFC(fi);
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)	break;
 
 	    /* XXX Synthesize callbacks for packages with no files. */
 	    if (rpmfiFC(fi) <= 0) {
@@ -916,8 +909,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	     * If this package has already been installed, remove it from
 	     * the database before adding the new one.
 	     */
-	    if (rpmteDBInstance(psm->te) && 
-			!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY)) {
+	    if (rpmteDBInstance(psm->te)) {
 		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 		if (rc) break;
 	    }
@@ -943,8 +935,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		if (rc) break;
 	    }
 
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
-		rc = markReplacedFiles(psm);
+	    rc = markReplacedFiles(psm);
 
 	}
 	if (psm->goal == PKG_ERASE) {
@@ -964,8 +955,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		if (rc) break;
 	    }
 
-	    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY))
-		rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
+	    rc = rpmpsmNext(psm, PSM_RPMDB_REMOVE);
 	}
 	break;
     case PSM_UNDO:
@@ -992,9 +982,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	fi->apath = _free(fi->apath);
 	break;
 
-    case PSM_PKGCOMMIT:
-	break;
-
     case PSM_CREATE:
 	break;
     case PSM_NOTIFY:
@@ -1004,15 +991,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     }	break;
     case PSM_DESTROY:
 	break;
-    case PSM_COMMIT:
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_PKGCOMMIT)) break;
-	if (rpmtsFlags(ts) & RPMTRANS_FLAG_APPLYONLY) break;
-
-	rc = fsmSetup(rpmfiFSM(fi), FSM_PKGCOMMIT, ts, psm->te, fi,
-			NULL, NULL, &psm->failedFile);
-	xx = fsmTeardown(rpmfiFSM(fi));
-	break;
-
     case PSM_SCRIPT:	/* Run current package scriptlets. */
 	rc = runInstScript(psm);
 	break;
