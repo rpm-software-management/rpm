@@ -422,8 +422,7 @@ retry:
 	goto exit;
 
     /* Search for an unsatisfied dependency. */
-    if (adding && !retrying && !(dsflags & RPMSENSE_PRETRANS) &&
-		!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOSUGGEST)) {
+    if (adding && !retrying && !(dsflags & RPMSENSE_PRETRANS)) {
 	int xx = rpmtsSolve(ts, dep);
 	if (xx == 0)
 	    goto exit;

@@ -639,9 +639,6 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
     vsflags = setvsFlags(ia);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
 
-    /* XXX suggest mechanism only meaningful when installing */
-    ia->transFlags |= RPMTRANS_FLAG_NOSUGGEST;
-
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
 #ifdef	NOTYET	/* XXX no callbacks on erase yet */
