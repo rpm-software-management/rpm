@@ -59,8 +59,8 @@ enum rpmtransFlags_e {
 
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOFILEDIGEST	= (1 << 27),	/*!< from --nofiledigest (alias to --nomd5) */
-    RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< from --nosuggest */
-    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< from --aid */
+    RPMTRANS_FLAG_NOSUGGEST	= (1 << 28),	/*!< obsolete, unused */
+    RPMTRANS_FLAG_ADDINDEPS	= (1 << 29),	/*!< obsolete, unused */
     RPMTRANS_FLAG_NOCONFIGS	= (1 << 30),	/*!< from --noconfigs */
     RPMTRANS_FLAG_DEPLOOPS	= (1 << 31)	/*!< from --deploops */
 };
