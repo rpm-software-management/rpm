@@ -34,7 +34,6 @@ typedef enum fileStage_e {
     FSM_PKGINSTALL	= _fd(7),
     FSM_PKGERASE	= _fd(8),
     FSM_PKGBUILD	= _fd(9),
-    FSM_PKGCOMMIT	= _fd(10),
     FSM_PKGUNDO		= _fd(11),
 
     FSM_CREATE	=  _fd(17),
@@ -149,7 +148,6 @@ struct fsm_s {
     int exists;			/*!< Does current file exist on disk? */
     int mkdirsdone;		/*!< Have "orphan" dirs been created? */
     int rc;			/*!< External file stage return code. */
-    int commit;			/*!< Commit synchronously? */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */

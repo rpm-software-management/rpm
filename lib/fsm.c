@@ -579,12 +579,6 @@ static int fsmMkdirs(FSM_t fsm);
 static int fsmCreate(FSM_t fsm)
 {
     int rc;
-    {   rpmts ts = fsmGetTs(fsm);
-#define	_tsmask	(RPMTRANS_FLAG_PKGCOMMIT | RPMTRANS_FLAG_COMMIT)
-        fsm->commit = ((ts && (rpmtsFlags(ts) & _tsmask) &&
-			fsm->goal != FSM_PKGCOMMIT) ? 0 : 1);
-#undef _tsmask
-    }
     fsm->path = _free(fsm->path);
     fsm->opath = _free(fsm->opath);
     fsm->dnlx = _free(fsm->dnlx);
@@ -1661,7 +1655,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	break;
     case FSM_PKGERASE:
-    case FSM_PKGCOMMIT:
 	while (1) {
 	    /* Clean fsm, free'ing memory. */
 	    rc = fsmInit(fsm);
@@ -1915,12 +1908,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    *fsm->failedFile = xstrdup(fsm->path);
 	break;
     case FSM_FINI:
-	if (!fsm->postpone && fsm->commit) {
+	if (!fsm->postpone) {
 	    if (fsm->goal == FSM_PKGINSTALL)
 		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
 			? fsmCommitLinks(fsm) : fsmNext(fsm, FSM_COMMIT));
-	    if (fsm->goal == FSM_PKGCOMMIT)
-		rc = fsmNext(fsm, FSM_COMMIT);
 	    if (fsm->goal == FSM_PKGERASE)
 		rc = fsmNext(fsm, FSM_COMMIT);
 	}
@@ -2069,9 +2060,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	while ((fsm->li = fsm->links) != NULL) {
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
-	    if (fsm->goal == FSM_PKGINSTALL &&
-			fsm->commit && fsm->li->linksLeft)
-	    {
+	    if (fsm->goal == FSM_PKGINSTALL && fsm->li->linksLeft) {
 		for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
 		    if (fsm->li->filex[i] < 0)
 			continue;
@@ -2266,7 +2255,6 @@ static const char * fileStageString(fileStage a) {
     case FSM_PKGINSTALL:return "INSTALL";
     case FSM_PKGERASE:	return "ERASE";
     case FSM_PKGBUILD:	return "BUILD";
-    case FSM_PKGCOMMIT:	return "COMMIT";
     case FSM_PKGUNDO:	return "UNDO";
 
     case FSM_CREATE:	return "create";

@@ -39,10 +39,10 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_DIRSTASH	= (1 <<  9),	/*!< obsolete, unused */
     RPMTRANS_FLAG_REPACKAGE	= (1 << 10),	/*!< obsolete, unused */
 
-    RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),
-    RPMTRANS_FLAG_PKGUNDO	= (1 << 12),
-    RPMTRANS_FLAG_COMMIT	= (1 << 13),
-    RPMTRANS_FLAG_UNDO		= (1 << 14),
+    RPMTRANS_FLAG_PKGCOMMIT	= (1 << 11),	/*!< obsolete, unused */
+    RPMTRANS_FLAG_PKGUNDO	= (1 << 12),	/*!< obsolete, unused */
+    RPMTRANS_FLAG_COMMIT	= (1 << 13),	/*!< obsolete, unused */
+    RPMTRANS_FLAG_UNDO		= (1 << 14),	/*!< obsolete, unused */
     RPMTRANS_FLAG_REVERSE	= (1 << 15),	/*!< obsolete, unused */
 
     RPMTRANS_FLAG_NOTRIGGERPREIN= (1 << 16),	/*!< from --notriggerprein */
@@ -54,7 +54,7 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),	/*!< from --nopostun */
     RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),	/*!< from --notriggerpostun */
     RPMTRANS_FLAG_NOPAYLOAD	= (1 << 24),
-    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),
+    RPMTRANS_FLAG_APPLYONLY	= (1 << 25),	/*!< obsolete, unused */
     RPMTRANS_FLAG_NOCOLLECTIONS	= (1 << 26),	/*!< from --nocollections */
 
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
