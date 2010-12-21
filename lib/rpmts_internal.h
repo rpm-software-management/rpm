@@ -81,6 +81,27 @@ int rpmtsSolve(rpmts ts, rpmds key);
 RPM_GNUC_INTERNAL
 rpmlock rpmtsAcquireLock(rpmts ts);
 
+/** \ingroup rpmts
+ * Get the selabel handle from the transaction set
+ * @param ts		transaction set
+ * @return		rpm selabel handle, or NULL if it hasn't been initialized yet
+ */
+struct selabel_handle * rpmtsSELabelHandle(rpmts ts);
+
+/** \ingroup rpmts
+ * Initialize selabel
+ * @param ts		transaction set
+ * @param path		path to contexts file
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmtsSELabelInit(rpmts ts, const char * path);
+
+/** \ingroup rpmts
+ * Clean up selabel
+ * @param ts		transaction set
+ */
+void rpmtsSELabelFini(rpmts ts);
+
 #ifdef __cplusplus
 }
 #endif

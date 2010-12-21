@@ -14,6 +14,7 @@
 
 #include "rpmio/base64.h"
 #include "lib/rpmte_internal.h"
+#include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() */
 
 rpmPluginHook PLUGIN_HOOKS = \
 	PLUGINHOOK_INIT | \

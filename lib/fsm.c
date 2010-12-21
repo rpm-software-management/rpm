@@ -25,6 +25,7 @@
 #define	fsmUNSAFE	fsmStage
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath, ... */
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
+#include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() only */
 #include "lib/rpmug.h"
 
 #include "debug.h"
