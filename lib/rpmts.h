@@ -390,27 +390,6 @@ FD_t rpmtsScriptFd(rpmts ts);
 void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd);
 
 /** \ingroup rpmts
- * Get the selabel handle from the transaction set
- * @param ts		transaction set
- * @return		rpm selabel handle, or NULL if it hasn't been initialized yet
- */
-struct selabel_handle * rpmtsSELabelHandle(rpmts ts);
-
-/** \ingroup rpmts
- * Initialize selabel
- * @param ts		transaction set
- * @param path		path to contexts file
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-rpmRC rpmtsSELabelInit(rpmts ts, const char * path);
-
-/** \ingroup rpmts
- * Clean up selabel
- * @param ts		transaction set
- */
-void rpmtsSELabelFini(rpmts ts);
-
-/** \ingroup rpmts
  * Get transaction id, i.e. transaction time stamp.
  * @param ts		transaction set
  * @return		transaction id
