@@ -12,8 +12,8 @@
 #include <rpm/rpmts.h>
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmplugins.h>
 
+#include "lib/rpmplugins.h"
 #include "lib/rpmte_internal.h"
 
 #include "debug.h"

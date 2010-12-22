@@ -76,7 +76,6 @@ pkginclude_HEADERS += lib/rpmte.h
 pkginclude_HEADERS += lib/rpmts.h
 pkginclude_HEADERS += lib/rpmtypes.h
 pkginclude_HEADERS += lib/rpmvf.h
-pkginclude_HEADERS += lib/rpmplugins.h
 
 pkginclude_HEADERS += sign/rpmsign.h
 

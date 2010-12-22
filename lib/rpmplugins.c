@@ -7,7 +7,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmts.h>
 
-#include <rpm/rpmplugins.h>
+#include "lib/rpmplugins.h"
 
 #define STR1(x) #x
 #define STR(x) STR1(x)

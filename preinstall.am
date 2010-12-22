@@ -114,10 +114,6 @@ include/rpm/rpmvf.h: lib/rpmvf.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/lib/rpmvf.h include/rpm/rpmvf.h
 BUILT_SOURCES += include/rpm/rpmvf.h
 CLEANFILES += include/rpm/rpmvf.h
-include/rpm/rpmplugins.h: lib/rpmplugins.h include/rpm/$(dirstamp)
-	$(INSTALL_DATA) $(top_srcdir)/lib/rpmplugins.h include/rpm/rpmplugins.h
-BUILT_SOURCES += include/rpm/rpmplugins.h
-CLEANFILES += include/rpm/rpmplugins.h
 include/rpm/rpmsign.h: sign/rpmsign.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/sign/rpmsign.h include/rpm/rpmsign.h
 BUILT_SOURCES += include/rpm/rpmsign.h

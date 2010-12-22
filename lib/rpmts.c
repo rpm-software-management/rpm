@@ -19,11 +19,11 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmte.h>
-#include <rpm/rpmplugins.h>
 
 #include "rpmio/digest.h"
 #include "lib/rpmal.h"
 #include "lib/rpmchroot.h"
+#include "lib/rpmplugins.h"
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"
 #include "lib/misc.h"
