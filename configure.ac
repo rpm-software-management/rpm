@@ -599,6 +599,7 @@ AS_IF([test "$with_selinux" = yes],[
     AC_MSG_ERROR([--with-selinux given, but selinux/label.h not found])
   ])
 
+  dnl FIXME: semanage is only needed for the sepolicy plugin
   AC_CHECK_HEADER([semanage/semanage.h],[
     save_LIBS="$LIBS"
     AC_CHECK_LIB([semanage],[semanage_begin_transaction],[],[
@@ -637,9 +638,11 @@ AS_IF([test "$with_selinux" = yes],[
 
 AS_IF([test "$with_selinux" = yes],[
   AC_DEFINE(WITH_SELINUX, 1, [Build with selinux support?])
-  WITH_SELINUX_LIB="-lselinux -lsemanage"
+  WITH_SELINUX_LIB="-lselinux"
+  WITH_SEMANAGE_LIB="-lsemanage"
 ])
 AC_SUBST(WITH_SELINUX_LIB)
+AC_SUBST(WITH_SEMANAGE_LIB)
 AM_CONDITIONAL(SELINUX,[test "$with_selinux" = yes])
 
 # libcap
