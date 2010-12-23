@@ -680,6 +680,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *fn;
 
+	if (pkg->fileList == NULL)
+	    continue;
+
 	if ((rc = processScriptFiles(spec, pkg)))
 	    return rc;
 	

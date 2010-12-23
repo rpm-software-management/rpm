@@ -2117,6 +2117,10 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	char *nvr;
 	const char *a;
+
+	if (pkg->fileList == NULL)
+	    continue;
+
 	headerPutString(pkg->header, RPMTAG_SOURCERPM, spec->sourceRpmName);
 
 	nvr = headerGetAsString(pkg->header, RPMTAG_NVRA);

@@ -14,3 +14,6 @@ BuildArch:	noarch
 if not posix.access("/var/checkme", "f") then
    error("bad")
 end
+
+%files
+%defattr(-,root,root)

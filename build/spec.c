@@ -99,7 +99,7 @@ Package newPackage(rpmSpec spec)
     p->header = headerNew();
     p->autoProv = 1;
     p->autoReq = 1;
-    p->fileList = argvNew();
+    p->fileList = NULL;
     p->fileFile = NULL;
     p->policyList = NULL;
 
