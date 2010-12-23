@@ -72,6 +72,8 @@ int parseFiles(rpmSpec spec)
 	}
     }
 
+    pkg->fileList = argvNew();
+
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
 	nextPart = PART_NONE;
     } else if (rc < 0) {
