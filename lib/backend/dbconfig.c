@@ -227,7 +227,7 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 	*cfg = staticcfg;	/* structure assignment */
 	/* Throw in some defaults if configuration didn't set any */
 	if (!cfg->db_mmapsize) cfg->db_mmapsize = 16 * 1024 * 1024;
-	if (!cfg->db_cachesize) cfg->db_cachesize = 1 * 1024 * 1024;
+	if (!cfg->db_cachesize) cfg->db_cachesize = 8 * 1024 * 1024;
     }
 
     /* FIX: *(rdbOptions->arg) reachable */
