@@ -122,6 +122,11 @@ static int db_init(rpmdb rdb, const char * dbhome)
     /* By no means necessary but speeds things up a bit */
     if (rdb->db_flags & RPMDB_FLAG_REBUILD)
 	eflags &= ~DB_INIT_CDB;
+    /* XXX Something bizarre with verify... use private environment, no cdb */
+    if (rdb->db_flags & RPMDB_FLAG_VERIFYONLY) {
+	eflags |= DB_PRIVATE;
+	eflags &= ~DB_INIT_CDB;
+    }
 
     rc = db_env_create(&dbenv, 0);
     rc = dbapi_err(rdb, "db_env_create", rc, _debug);
