@@ -23,8 +23,8 @@ static struct poptOption dbOptsTable[] = {
     { "rebuilddb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_REBUILDDB,
 	N_("rebuild database inverted lists from installed package headers"),
 	NULL},
-    { "verifydb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_VERIFYDB,
-	N_("verify database files"), NULL},
+    { "verifydb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR|POPT_ARGFLAG_DOC_HIDDEN),
+	&mode, MODE_VERIFYDB, N_("verify database files"), NULL},
     POPT_TABLEEND
 };
 
