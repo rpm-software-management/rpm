@@ -33,8 +33,15 @@ printed in. To do this, you use the
  \fB--qf|--queryformat\fR \fB\fIQUERYFMT\fB\fR
 
 option, followed by the \fIQUERYFMT\fR format string.
-See \fBrpmquery(8)\fR for details.
+See \fBrpm(8)\fR for details.
 .PP
+
+.SS "SELECT OPTIONS"
+.PP
+ \fB--rpms\fR
+Operate on the binary package header(s).
+ \fB--srpm\fR
+Operate on the source package header(s).
 
 .SH "SEE ALSO"
 .nf
@@ -43,8 +50,6 @@ See \fBrpmquery(8)\fR for details.
 \fBrpmdb\fR(8),
 \fBrpmkeys\fR(8),
 \fBrpmsign\fR(8),
-\fBrpmquery\fR(8),
-\fBrpmverify\fR(8),
 \fBrpm2cpio\fR(8),
 \fBrpmbuild\fR(8),
 .fi
