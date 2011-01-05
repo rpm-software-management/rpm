@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-12-15 09:45+0200\n"
+"POT-Creation-Date: 2011-01-05 10:09+0200\n"
 "PO-Revision-Date: 2010-09-21 01:05+0900\n"
 "Last-Translator: Hajime Taira <htaira@redhat.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -787,12 +787,12 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2123
+#: build/files.c:2127
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
 
-#: build/files.c:2134
+#: build/files.c:2138
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリー\n"
 
@@ -942,12 +942,12 @@ msgstr "「%s」の実行に失敗しました。\n"
 msgid "Package check \"%s\" failed.\n"
 msgstr "パッケージ \"%s\" のチェックに失敗しました。\n"
 
-#: build/pack.c:717
+#: build/pack.c:720
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:734
+#: build/pack.c:737
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1604,50 +1604,45 @@ msgstr "(不明)  "
 msgid "(not a string)"
 msgstr "(文字列でない)"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "ユーザー %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:749
+#: lib/fsm.c:744
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "グループ %s は存在しません - root を使用します\n"
 
-#: lib/fsm.c:1355
+#: lib/fsm.c:1350
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "アーカイブファイル %s がヘッダーファイルリストにありません。\n"
 
-#: lib/fsm.c:1796 lib/fsm.c:1943
+#: lib/fsm.c:1790 lib/fsm.c:1935
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s は %s として保存されました。\n"
 
-#: lib/fsm.c:1970
+#: lib/fsm.c:1962
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s の rmdir に失敗: ディレクトリが空ではありません。\n"
 
-#: lib/fsm.c:1976
+#: lib/fsm.c:1968
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s の rmdir に失敗: %s\n"
 
-#: lib/fsm.c:1990
+#: lib/fsm.c:1982
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s %s の unlink に失敗: %s\n"
 
-#: lib/fsm.c:2012
+#: lib/fsm.c:2004
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s は %s として作成されました。\n"
-
-#: lib/order.c:112
-#, c-format
-msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
-msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
 
 #: lib/package.c:192
 #, c-format
@@ -1863,14 +1858,10 @@ msgid "relocations must have a / following the ="
 msgstr "再配置は = の次に / でなければなりません。"
 
 #: lib/poptI.c:114
-msgid "add suggested packages to transaction"
-msgstr "トランザクションに提案パッケージを追加します。"
-
-#: lib/poptI.c:118
 msgid "install all files, even configurations which might otherwise be skipped"
 msgstr "設定がスキップを指示していても、全ファイルをインストールします。"
 
-#: lib/poptI.c:122
+#: lib/poptI.c:118
 msgid ""
 "remove all packages which match <package> (normally an error is generated if "
 "<package> specified multiple packages)"
@@ -1878,156 +1869,152 @@ msgstr ""
 "<package> と一致するパッケージ全てを削除します(通常は <package> が複数のパッ"
 "ケージを指す場合はエラーになります)"
 
-#: lib/poptI.c:128 lib/poptI.c:204
-msgid "do not execute package scriptlet(s)"
-msgstr "パッケージ指定のスクリプトを実行しません。"
-
-#: lib/poptI.c:132
+#: lib/poptI.c:123
 msgid "relocate files in non-relocatable package"
 msgstr "再配置不可能なパッケージのファイルを再配置します。"
 
-#: lib/poptI.c:136
+#: lib/poptI.c:127
 msgid "print dependency loops as warning"
 msgstr "依存のループを警告として表示します。"
 
-#: lib/poptI.c:140
+#: lib/poptI.c:131
 msgid "erase (uninstall) package"
 msgstr "パッケージを削除 (アンインストール) します。"
 
-#: lib/poptI.c:140
+#: lib/poptI.c:131
 msgid "<package>+"
 msgstr "<package>+"
 
-#: lib/poptI.c:143 lib/poptI.c:180
+#: lib/poptI.c:134 lib/poptI.c:171
 msgid "do not install configuration files"
 msgstr "設定ファイルをインストールしません。"
 
-#: lib/poptI.c:146 lib/poptI.c:185
+#: lib/poptI.c:137 lib/poptI.c:176
 msgid "do not install documentation"
 msgstr "ドキュメントをインストールしません。"
 
-#: lib/poptI.c:148
+#: lib/poptI.c:139
 msgid "skip files with leading component <path> "
 msgstr "パス <path> 中のファイルをスキップします。"
 
-#: lib/poptI.c:149
+#: lib/poptI.c:140
 msgid "<path>"
 msgstr "<path>"
 
-#: lib/poptI.c:152
+#: lib/poptI.c:143
 msgid "short hand for --replacepkgs --replacefiles"
 msgstr "--replacepkgs と --replacefiles を短縮したもの"
 
-#: lib/poptI.c:156
+#: lib/poptI.c:147
 msgid "upgrade package(s) if already installed"
 msgstr "既にインストール済みの場合のみアップグレード"
 
-#: lib/poptI.c:157 lib/poptI.c:173 lib/poptI.c:262
+#: lib/poptI.c:148 lib/poptI.c:164 lib/poptI.c:249
 msgid "<packagefile>+"
 msgstr "<packagefile>+"
 
-#: lib/poptI.c:159
+#: lib/poptI.c:150
 msgid "print hash marks as package installs (good with -v)"
 msgstr ""
 "パッケージをインストールにつれて '#' を表示します (-v と使用すると良い)"
 
-#: lib/poptI.c:162
+#: lib/poptI.c:153
 msgid "don't verify package architecture"
 msgstr "パッケージの対象アーキテクチャを検証しません。"
 
-#: lib/poptI.c:165
+#: lib/poptI.c:156
 msgid "don't verify package operating system"
 msgstr "パッケージ対象 OS の検証を行いません。"
 
-#: lib/poptI.c:168
+#: lib/poptI.c:159
 msgid "don't check disk space before installing"
 msgstr "インストール前のディスク容量チェックを行いません。"
 
-#: lib/poptI.c:170
+#: lib/poptI.c:161
 msgid "install documentation"
 msgstr "ドキュメントをインストールします。"
 
-#: lib/poptI.c:173
+#: lib/poptI.c:164
 msgid "install package(s)"
 msgstr "パッケージをインストールします。"
 
-#: lib/poptI.c:176
+#: lib/poptI.c:167
 msgid "update the database, but do not modify the filesystem"
 msgstr "データベースを更新しますが、ファイルシステムの変更は行いません。"
 
-#: lib/poptI.c:182
+#: lib/poptI.c:173
 msgid "do not verify package dependencies"
 msgstr "パッケージの依存関係の検証を行いません。"
 
-#: lib/poptI.c:188 lib/poptQV.c:210 lib/poptQV.c:212
+#: lib/poptI.c:179 lib/poptQV.c:210 lib/poptQV.c:212
 msgid "don't verify digest of files"
 msgstr "ファイルのダイジェストを検証しません。"
 
-#: lib/poptI.c:190
+#: lib/poptI.c:181
 msgid "don't verify digest of files (obsolete)"
 msgstr "ファイルのダイジェストを検証しません (旧式)。"
 
-#: lib/poptI.c:192
+#: lib/poptI.c:183
 msgid "don't install file security contexts"
 msgstr "ファイルのセキュリティ コンテキストをインストールしません。"
 
-#: lib/poptI.c:196
+#: lib/poptI.c:187
 msgid "do not reorder package installation to satisfy dependencies"
 msgstr "依存性を満たす為のパッケージのインストール順序を変更しません。"
 
-#: lib/poptI.c:201
-msgid "do not suggest missing dependency resolution(s)"
-msgstr "不足する依存関係の解決を提案しません。"
+#: lib/poptI.c:191
+msgid "do not execute package scriptlet(s)"
+msgstr "パッケージ指定のスクリプトを実行しません。"
 
-#: lib/poptI.c:208
+#: lib/poptI.c:195
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
 msgstr "%%pre スクリプトを実行しません。"
 
-#: lib/poptI.c:211
+#: lib/poptI.c:198
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
 msgstr "%%post スクリプトを実行しません。"
 
-#: lib/poptI.c:214
+#: lib/poptI.c:201
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
 msgstr "%%preun スクリプトを実行しません。"
 
-#: lib/poptI.c:217
+#: lib/poptI.c:204
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
 msgstr "%%postun スクリプトを実行しません。"
 
-#: lib/poptI.c:220
+#: lib/poptI.c:207
 msgid "do not execute any scriptlet(s) triggered by this package"
 msgstr "このパッケージによってトリガーされるスクリプトを実行しません。"
 
-#: lib/poptI.c:223
+#: lib/poptI.c:210
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
 msgstr "%%triggerprein スクリプトを実行しません。"
 
-#: lib/poptI.c:226
+#: lib/poptI.c:213
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
 msgstr "%%triggerin スクリプトを実行しません。"
 
-#: lib/poptI.c:229
+#: lib/poptI.c:216
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
 msgstr "%%triggerun スクリプトを実行しません。"
 
-#: lib/poptI.c:232
+#: lib/poptI.c:219
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
 msgstr "%%triggerpostun スクリプトを実行しません。"
 
-#: lib/poptI.c:236
+#: lib/poptI.c:223
 msgid "do not perform any collection actions"
 msgstr "いかなる収集活動も行わないでください。"
 
-#: lib/poptI.c:240
+#: lib/poptI.c:227
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
@@ -2035,39 +2022,39 @@ msgstr ""
 "古いバージョンのパッケージにアップグレードします(アップグレード時の --force "
 "はこれを自動的に行います)"
 
-#: lib/poptI.c:244
+#: lib/poptI.c:231
 msgid "print percentages as package installs"
 msgstr "インストールする際にパーセント表示を行います。"
 
-#: lib/poptI.c:246
+#: lib/poptI.c:233
 msgid "relocate the package to <dir>, if relocatable"
 msgstr "パッケージが再配置可能ならば、 <dir> に再配置します。"
 
-#: lib/poptI.c:247
+#: lib/poptI.c:234
 msgid "<dir>"
 msgstr "<dir>"
 
-#: lib/poptI.c:249
+#: lib/poptI.c:236
 msgid "relocate files from path <old> to <new>"
 msgstr "パス <old> からパス <new> にファイルを再配置させます。"
 
-#: lib/poptI.c:250
+#: lib/poptI.c:237
 msgid "<old>=<new>"
 msgstr "<old>=<new>"
 
-#: lib/poptI.c:253
+#: lib/poptI.c:240
 msgid "ignore file conflicts between packages"
 msgstr "パッケージ間のファイルの競合を無視します。"
 
-#: lib/poptI.c:256
+#: lib/poptI.c:243
 msgid "reinstall if the package is already present"
 msgstr "既に存在するパッケージでも再インストールします。"
 
-#: lib/poptI.c:258
+#: lib/poptI.c:245
 msgid "don't install, but tell if it would work or not"
 msgstr "インストールせずに、テストのみを行います。"
 
-#: lib/poptI.c:261
+#: lib/poptI.c:248
 msgid "upgrade package(s)"
 msgstr "パッケージをアップグレードします。"
 
@@ -2205,34 +2192,34 @@ msgstr "パッケージの依存関係を検証しません。"
 msgid "don't execute verify script(s)"
 msgstr "検証スクリプトを実行しません。"
 
-#: lib/psm.c:215
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr "%s の rpmlib 機能が見つかりません:\n"
 
-#: lib/psm.c:257
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr "ソースパッケージが期待されますが、これはバイナリパッケージです\n"
 
-#: lib/psm.c:310
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr "ソースパッケージに .spec ファイルがありません\n"
 
-#: lib/psm.c:854
+#: lib/psm.c:848
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "アーカイブの伸長に失敗%s%s: %s\n"
 
-#: lib/psm.c:855
+#: lib/psm.c:849
 msgid " on file "
 msgstr ": ファイル "
 
-#: lib/psm.c:977
+#: lib/psm.c:967
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s: ファイル %s で失敗: %s\n"
 
-#: lib/psm.c:980
+#: lib/psm.c:970
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s: 失敗: %s\n"
@@ -2333,7 +2320,7 @@ msgstr "無効なパッケージ番号: %s\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:458 lib/rpminstall.c:665
+#: lib/query.c:458 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2519,7 +2506,7 @@ msgstr "依存性の欠如:\n"
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません: %s\n"
 
-#: lib/rpminstall.c:345 lib/rpminstall.c:727 tools/rpmgraph.c:113
+#: lib/rpminstall.c:345 lib/rpminstall.c:724 tools/rpmgraph.c:113
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
@@ -2549,17 +2536,17 @@ msgstr "ファイル %s の読み込みエラー\n"
 msgid "file %s requires a newer version of RPM\n"
 msgstr "ファイル %s にはより新しいバージョンの RPM が必要です。\n"
 
-#: lib/rpminstall.c:672
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" は複数のパッケージを指定しています:\n"
 
-#: lib/rpminstall.c:711
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s を開けません: %s\n"
 
-#: lib/rpminstall.c:717
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
@@ -3172,90 +3159,90 @@ msgstr "%s には大き/小さ過ぎるlong値があります。スキップし�
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr "%s には大き/小さ過ぎる整数値があります。スキップします\n"
 
-#: plugins/sepolicy.c:219
+#: plugins/sepolicy.c:220
 #, fuzzy, c-format
 msgid "Failed to decode policy for %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
 
-#: plugins/sepolicy.c:226
+#: plugins/sepolicy.c:227
 #, fuzzy, c-format
 msgid "Failed to create temporary file for %s: %s\n"
 msgstr "%s の一次ファイルの作成に失敗しました: %s\n"
 
-#: plugins/sepolicy.c:232
+#: plugins/sepolicy.c:233
 #, fuzzy, c-format
 msgid "Failed to write %s policy to file %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
 
-#: plugins/sepolicy.c:304
+#: plugins/sepolicy.c:305
 #, fuzzy
 msgid "Failed to create semanage handle\n"
 msgstr "%s の作成に失敗しました: %s\n"
 
-#: plugins/sepolicy.c:310
+#: plugins/sepolicy.c:311
 #, fuzzy
 msgid "Failed to connect to policy handler\n"
 msgstr "サーバとの接続に失敗しました。"
 
-#: plugins/sepolicy.c:314
+#: plugins/sepolicy.c:315
 #, fuzzy, c-format
 msgid "Failed to begin policy transaction: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: plugins/sepolicy.c:345
+#: plugins/sepolicy.c:346
 #, fuzzy, c-format
 msgid "Failed to remove temporary policy file %s: %s\n"
 msgstr "ディレクトリー %s の削除に失敗しました: %s\n"
 
-#: plugins/sepolicy.c:393
+#: plugins/sepolicy.c:394
 #, fuzzy, c-format
 msgid "Failed to install policy module: %s (%s)\n"
 msgstr "シンボル %s の解決に失敗: %s\n"
 
-#: plugins/sepolicy.c:423
+#: plugins/sepolicy.c:424
 #, fuzzy, c-format
 msgid "Failed to remove policy module: %s\n"
 msgstr "シンボルの解決に失敗: %s\n"
 
-#: plugins/sepolicy.c:447 plugins/sepolicy.c:499
+#: plugins/sepolicy.c:448 plugins/sepolicy.c:500
 #, fuzzy, c-format
 msgid "Failed to fork process: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: plugins/sepolicy.c:457 plugins/sepolicy.c:509
+#: plugins/sepolicy.c:458 plugins/sepolicy.c:510
 #, fuzzy, c-format
 msgid "Failed to execute %s: %s\n"
 msgstr "%s の作成に失敗しました: %s\n"
 
-#: plugins/sepolicy.c:463 plugins/sepolicy.c:515
+#: plugins/sepolicy.c:464 plugins/sepolicy.c:516
 #, fuzzy, c-format
 msgid "%s terminated abnormally\n"
 msgstr "マクロ %%%s はボディが終端していません。\n"
 
-#: plugins/sepolicy.c:467 plugins/sepolicy.c:519
+#: plugins/sepolicy.c:468 plugins/sepolicy.c:520
 #, fuzzy, c-format
 msgid "%s failed with exit code %i\n"
 msgstr "%s: エンコードに失敗\n"
 
-#: plugins/sepolicy.c:474
+#: plugins/sepolicy.c:475
 msgid "Failed to commit policy changes\n"
 msgstr ""
 
 # ソースコード確認
-#: plugins/sepolicy.c:491
+#: plugins/sepolicy.c:492
 #, fuzzy
 msgid "Failed to expand restorecon path"
 msgstr "%%__collection_%s マクロの拡張に失敗しました。\n"
 
-#: plugins/sepolicy.c:570
+#: plugins/sepolicy.c:571
 msgid "Failed to relabel filesystem. Files may be mislabeled\n"
 msgstr ""
 
-#: plugins/sepolicy.c:574
+#: plugins/sepolicy.c:575
 msgid "Failed to reload file contexts. Files may be mislabeled\n"
 msgstr ""
 
-#: plugins/sepolicy.c:601
+#: plugins/sepolicy.c:602
 #, fuzzy, c-format
 msgid "Failed to extract policy from %s\n"
 msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
@@ -3475,6 +3462,15 @@ msgstr "%s: manifest の読み込みに失敗: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "ヘッダーとペイロード署名を検証しません。"
+
+#~ msgid "ignore package name relation(s) [%d]\t%s -> %s\n"
+#~ msgstr "パッケージ名の関係を無視します [%d]\t%s → %s\n"
+
+#~ msgid "add suggested packages to transaction"
+#~ msgstr "トランザクションに提案パッケージを追加します。"
+
+#~ msgid "do not suggest missing dependency resolution(s)"
+#~ msgstr "不足する依存関係の解決を提案しません。"
 
 #~ msgid "getUname: too many uid's\n"
 #~ msgstr "getUname: uid が多すぎます。\n"
