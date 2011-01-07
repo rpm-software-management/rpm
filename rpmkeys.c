@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
     if (mode != MODE_LISTKEY && args == NULL)
 	argerror(_("no arguments given"));
 
+    rpmtsSetRootDir(ts, rpmcliRootDir);
+
     switch (mode) {
     case MODE_CHECKSIG:
 	ec = rpmcliVerifySignatures(ts, args);
