@@ -177,7 +177,7 @@ rpmbuild alias --sign \
 
 rpmsign alias --key-id  --define '_gpg_name !#:+' \
 	--POPTdesc=$"key id/name to sign with" \
-	--POPargs=$"<id>"
+	--POPTargs=$"<id>"
 rpmsign alias --digest-algo --define '_gpg_digest_algo !#:+' \
 	--POPTdesc=$"override default digest algorithm (eg sha1/sha256)" \
 	--POPTargs=$"<algorithm>"
