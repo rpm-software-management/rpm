@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-12-21 11:52+0200\n"
+"POT-Creation-Date: 2011-01-13 15:32+0200\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -100,7 +100,7 @@ msgstr "neprièakovana oblika poizvedbe"
 msgid "unexpected query source"
 msgstr "neprièakovan izvor poizvedbe"
 
-#: rpmqv.c:142 rpmdb.c:70 rpmkeys.c:75 rpmsign.c:158
+#: rpmqv.c:142 rpmdb.c:70 rpmkeys.c:77 rpmsign.c:158
 msgid "only one major mode may be specified"
 msgstr "izbran sme biti le en glavni naèin"
 
@@ -805,12 +805,12 @@ msgid ""
 "%s"
 msgstr ""
 
-#: build/files.c:2123
+#: build/files.c:2127
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
 
-#: build/files.c:2134
+#: build/files.c:2138
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -964,12 +964,12 @@ msgstr "Izvajanje %s je bilo neuspe¹no (%s): %s"
 msgid "Package check \"%s\" failed.\n"
 msgstr "Preverjanje pristopnega gesla neuspe¹no\n"
 
-#: build/pack.c:717
+#: build/pack.c:720
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Neuspe¹no ustvarjanje izhodne datoteke za paket %s: %s\n"
 
-#: build/pack.c:734
+#: build/pack.c:737
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "ni mo¾no ustvariti %s: %s\n"
@@ -3212,20 +3212,20 @@ msgstr "db%d napaka(%d)"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d napaka(%d)"
 
-#: lib/backend/db3.c:494
+#: lib/backend/db3.c:499
 #, fuzzy, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "ni mo¾no zakleniti z %s datotek %s/%s\n"
 
-#: lib/backend/db3.c:496
+#: lib/backend/db3.c:501
 msgid "shared"
 msgstr "skupno"
 
-#: lib/backend/db3.c:496
+#: lib/backend/db3.c:501
 msgid "exclusive"
 msgstr "izkljuèujoèe"
 
-#: lib/backend/db3.c:576
+#: lib/backend/db3.c:581
 #, fuzzy, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "zaprto  db kazalo       %s/%s\n"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2010-12-21 11:52+0200\n"
+"POT-Creation-Date: 2011-01-13 15:32+0200\n"
 "PO-Revision-Date: 2008-06-14 00:38+0800\n"
 "Last-Translator: Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>\n"
 "Language-Team: Malay <translation-team-ms@lists.sourceforge.net>\n"
@@ -102,7 +102,7 @@ msgstr "Format Objek Embed"
 msgid "unexpected query source"
 msgstr "Fail Sumber 'Ada' (nama perisian)"
 
-#: rpmqv.c:142 rpmdb.c:70 rpmkeys.c:75 rpmsign.c:158
+#: rpmqv.c:142 rpmdb.c:70 rpmkeys.c:77 rpmsign.c:158
 msgid "only one major mode may be specified"
 msgstr ""
 
@@ -780,12 +780,12 @@ msgid ""
 "%s"
 msgstr ""
 
-#: build/files.c:2123
+#: build/files.c:2127
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "&Fail Terbaru"
 
-#: build/files.c:2134
+#: build/files.c:2138
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -936,12 +936,12 @@ msgstr "Sambungan Gagal"
 msgid "Package check \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:717
+#: build/pack.c:720
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr ""
 
-#: build/pack.c:734
+#: build/pack.c:737
 #, fuzzy, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Hasilkan fax"
@@ -3150,20 +3150,20 @@ msgstr "ralat db%d (%d) dari %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "ralat db%d (%d): %s\n"
 
-#: lib/backend/db3.c:494
+#: lib/backend/db3.c:499
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: lib/backend/db3.c:496
+#: lib/backend/db3.c:501
 msgid "shared"
 msgstr "terkongsi"
 
-#: lib/backend/db3.c:496
+#: lib/backend/db3.c:501
 msgid "exclusive"
 msgstr ""
 
-#: lib/backend/db3.c:576
+#: lib/backend/db3.c:581
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
