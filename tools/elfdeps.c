@@ -13,6 +13,7 @@
 #include <rpm/argv.h>
 
 int filter_private = 0;
+int soname_only = 0;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -65,7 +66,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    soname = rstrdup(s);
 		    auxoffset += aux->vda_next;
 		    continue;
-		} else if (soname && !skipPrivate(s)) {
+		} else if (soname && !soname_only && !skipPrivate(s)) {
 		    const char *marker = ei->isElf64 ? "(64bit)" : "";
 		    char *dep = NULL;
 		    rasprintf(&dep, "%s(%s)%s", soname, s, marker);
@@ -108,7 +109,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		if (s == NULL)
 		    break;
 
-		if (ei->isExec && soname && !skipPrivate(s)) {
+		if (ei->isExec && soname && !soname_only && !skipPrivate(s)) {
 		    const char *marker = ei->isElf64 ? "(64bit)" : "";
 		    char *dep = NULL;
 		    rasprintf(&dep, "%s(%s)%s", soname, s, marker);
@@ -234,7 +235,7 @@ static int processFile(const char *fn, int dtype)
      * For DSOs which use the .gnu_hash section and don't have a .hash
      * section, we need to ensure that we have a new enough glibc.
      */
-    if (ei->isExec && ei->gotGNUHASH && !ei->gotHASH) {
+    if (ei->isExec && ei->gotGNUHASH && !ei->gotHASH && !soname_only) {
 	argvAdd(&ei->requires, "rtld(GNU_HASH)");
     }
 
@@ -277,6 +278,7 @@ int main(int argc, char *argv[])
 	{ "provides", 'P', POPT_ARG_VAL, &provides, -1, NULL, NULL },
 	{ "requires", 'R', POPT_ARG_VAL, &requires, -1, NULL, NULL },
 	{ "filter-private", 0, POPT_ARG_VAL, &filter_private, -1, NULL, NULL },
+	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
