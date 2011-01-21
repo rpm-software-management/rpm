@@ -157,6 +157,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
     } else {
 	db->_dbi[dbix] = dbi;
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
+	int rebuild = (db->db_flags & RPMDB_FLAG_REBUILD);
 	if (dbiType(dbi) == DBI_PRIMARY) {
 	    /* Allocate based on max header instance number + some reserve */
 	    if (!verifyonly && (db->db_checked == NULL)) {
@@ -170,7 +171,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 		dbSetFSync(db->db_dbenv, 0);
 	    }
 	} else { /* secondary index */
-	    if (!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
+	    if (!rebuild && !verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
 		rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
 		db->db_buildindex++;
                 if (db->db_buildindex == 1) {
