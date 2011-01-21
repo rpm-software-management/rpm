@@ -171,7 +171,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	free(fstr);
 
 	rc = (dbenv->open)(dbenv, dbhome, eflags, rdb->db_perms);
-	if (rc == EACCES) {
+	if (rc == EACCES || rc == EROFS) {
 	    eflags |= DB_PRIVATE;
 	    retry_open--;
 	} else {
