@@ -16,17 +16,17 @@
  * - next() -> key		Return the next key.
  *
  * To obtain a rpm.ii object to query the database used by a transaction,
- * the ts.dbKeys(tag) method is used.
+ * the ts.dbIndex(tag) method is used.
  *
  * Here's an example that prints the name of all installed packages:
  * \code
  *	import rpm
  *	ts = rpm.TransactionSet()
- *	for name in ts.dbKeys("conflictname"):
+ *	for name in ts.dbIndex("conflictname"):
  *	    print name
  * \endcode
  *
- * ts.dbMatch() can be used to get the packages containing the keys of interest
+ * ts.dbIndex() can be used to get the packages containing the keys of interest
  */
 
 /** \ingroup python
