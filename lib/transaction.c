@@ -246,7 +246,8 @@ static void rpmtsUpdateDSIrpmDBSize(const rpmte p,
     rpm_loff_t headerSize;
     int64_t bneeded;
 
-    if (dsi==NULL) return;
+    /* XXX somehow we can end up here with bsize 0 (RhBug:671056) */
+    if (dsi == NULL || dsi->bsize == 0) return;
 
     headerSize = rpmteHeaderSize(p);
     bneeded = BLOCK_ROUND(headerSize, dsi->bsize);
