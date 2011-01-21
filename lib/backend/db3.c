@@ -51,6 +51,7 @@ static int db_fini(rpmdb rdb, const char * dbhome)
 {
     DB_ENV * dbenv = rdb->db_dbenv;
     int rc;
+    uint32_t eflags = 0;
 
     if (dbenv == NULL)
 	return 0;
@@ -60,12 +61,13 @@ static int db_fini(rpmdb rdb, const char * dbhome)
 	return 0;
     }
 
+    (void) dbenv->get_open_flags(dbenv, &eflags);
     rc = dbenv->close(dbenv, 0);
     rc = dbapi_err(rdb, "dbenv->close", rc, _debug);
 
     rpmlog(RPMLOG_DEBUG, "closed   db environment %s\n", dbhome);
 
-    if (rdb->db_remove_env) {
+    if (!(eflags & DB_PRIVATE) && rdb->db_remove_env) {
 	int xx;
 
 	xx = db_env_create(&dbenv, 0);
