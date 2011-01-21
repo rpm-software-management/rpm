@@ -2048,10 +2048,9 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             /* get all entries from index */
             xx = dbiCopen(dbi, &dbcursor, 0);
 
-            while (rc==0) {
+            while ((rc = dbiGet(dbi, dbcursor, &key, &data, DB_NEXT)) == 0) {
                 dbiIndexSet newset = NULL;
 
-                rc = dbiGet(dbi, dbcursor, &key, &data, DB_NEXT);
                 (void) dbt2set(dbi, &data, &newset);
                 if (set == NULL) {
                     set = newset;
