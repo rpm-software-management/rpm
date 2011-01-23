@@ -178,7 +178,7 @@ sub process_file {
        ) {
       my ($whitespace, $statement, $module, $version) = ($1, $2, $3, $4);
 
-      # we only consider require statements that are flush against
+      # we only consider require statements that are flushed against
       # the left edge. any other require statements give too many
       # false positives, as they are usually inside of an if statement
       # as a fallback module or a rarely used option
