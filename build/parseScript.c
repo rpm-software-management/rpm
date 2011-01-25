@@ -139,7 +139,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	break;
       case PART_POSTTRANS:
 	tag = RPMTAG_POSTTRANS;
-	tagflags = 0;
+	tagflags = RPMSENSE_POSTTRANS;
 	progtag = RPMTAG_POSTTRANSPROG;
 	flagtag = RPMTAG_POSTTRANSFLAGS;
 	partname = "%posttrans";

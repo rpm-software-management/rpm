@@ -27,7 +27,8 @@ enum rpmsenseFlags_e {
     RPMSENSE_LESS	= (1 << 1),
     RPMSENSE_GREATER	= (1 << 2),
     RPMSENSE_EQUAL	= (1 << 3),
-    /* bits 4-5 unused */
+    /* bit 4 unused */
+    RPMSENSE_POSTTRANS	= (1 << 5),	/*!< %posttrans dependency */
     RPMSENSE_PREREQ	= (1 << 6), 	/* legacy prereq dependency */
     RPMSENSE_PRETRANS	= (1 << 7),	/*!< Pre-transaction dependency. */
     RPMSENSE_INTERP	= (1 << 8),	/*!< Interpreter used by scriptlet. */
@@ -70,11 +71,12 @@ typedef rpmFlags rpmsenseFlags;
     RPMSENSE_RPMLIB | \
     RPMSENSE_KEYRING | \
     RPMSENSE_PRETRANS | \
+    RPMSENSE_POSTTRANS | \
     RPMSENSE_PREREQ)
 
 #define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
 #define	_INSTALL_ONLY_MASK \
-    _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_RPMLIB|RPMSENSE_KEYRING|RPMSENSE_PRETRANS)
+    _notpre(RPMSENSE_SCRIPT_PRE|RPMSENSE_SCRIPT_POST|RPMSENSE_RPMLIB|RPMSENSE_KEYRING|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS)
 #define	_ERASE_ONLY_MASK  \
     _notpre(RPMSENSE_SCRIPT_PREUN|RPMSENSE_SCRIPT_POSTUN)
 

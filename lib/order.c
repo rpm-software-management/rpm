@@ -149,7 +149,7 @@ static inline int addRelation(rpmts ts,
     dsflags = rpmdsFlags(requires);
 
     /* Avoid dependendencies which are not relevant for ordering */
-    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS))
+    if (dsflags & (RPMSENSE_RPMLIB|RPMSENSE_CONFIG|RPMSENSE_PRETRANS|RPMSENSE_POSTTRANS))
 	return 0;
 
     q = rpmalSatisfiesDepend(al, requires);
