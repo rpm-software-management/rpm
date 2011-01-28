@@ -1260,7 +1260,12 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 	rpmtsSELabelInit(ts, selinux_file_context_path());
     }
 
-    /* XXX Make sure the database is open RDWR for package install/erase. */
+    /* 
+     * Make sure the database is open RDWR for package install/erase.
+     * Note that we initialize chroot state here even if it's just "/" as
+     * this ensures we can successfully perform open(".") which is
+     * required to reliably restore cwd after Lua scripts.
+     */ 
     if (rpmtsOpenDB(ts, dbmode) || rpmChrootSet(rpmtsRootDir(ts)))
 	return -1;
 

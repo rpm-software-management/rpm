@@ -40,6 +40,7 @@ int rpmChrootSet(const char *rootDir)
 	rootState.rootDir = rstrdup(rootDir);
 	rootState.cwd = open(".", O_RDONLY);
 	if (rootState.cwd < 0) {
+	    rpmlog(RPMLOG_ERR, _("Unable to open current directory: %m\n"));
 	    rc = -1;
 	}
     }
