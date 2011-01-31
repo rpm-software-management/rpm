@@ -534,8 +534,8 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	    if (res != 0) {
 		if (res == 1) {
 		    rpmlog(RPMLOG_WARNING,
-			"%s already contains identical signature, skipping\n",
-			rpm);
+		       _("%s already contains identical signature, skipping\n"),
+		       rpm);
 		    /* Identical signature is not an error */
 		    res = 0;
 		}
