@@ -198,5 +198,5 @@ void rpmugFree(void)
     rpmugGid(NULL, NULL);
     rpmugUname(-1);
     rpmugGname(-1);
-    strCacheFree(strStash);
+    strStash = strCacheFree(strStash);
 }
