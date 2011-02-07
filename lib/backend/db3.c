@@ -39,7 +39,7 @@ static int cvtdberr(dbiIndex dbi, const char * msg, int error, int printit)
     return dbapi_err(dbi->dbi_rpmdb, msg, error, printit);
 }
 
-static void errlog(DB_ENV * env, const char *errpfx, const char *msg)
+static void errlog(const DB_ENV * env, const char *errpfx, const char *msg)
 {
     rpmlog(RPMLOG_ERR, "%s: %s\n", errpfx, msg);
 }
