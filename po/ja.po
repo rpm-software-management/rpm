@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-01-13 15:32+0200\n"
+"POT-Creation-Date: 2011-02-15 15:12+0200\n"
 "PO-Revision-Date: 2010-09-21 01:05+0900\n"
 "Last-Translator: Hajime Taira <htaira@redhat.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -529,7 +529,7 @@ msgstr "以下の問い合わせ書式を使用します。"
 msgid "Spec options:"
 msgstr "署名オプション:"
 
-#: build/build.c:122 build/pack.c:405
+#: build/build.c:122 build/pack.c:408
 msgid "Unable to open temp file.\n"
 msgstr "一時ファイルを開けません。\n"
 
@@ -538,17 +538,17 @@ msgstr "一時ファイルを開けません。\n"
 msgid "Executing(%s): %s\n"
 msgstr "実行中(%s): %s\n"
 
-#: build/build.c:176
+#: build/build.c:177
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "%s の実行に失敗 (%s): %s\n"
 
-#: build/build.c:185
+#: build/build.c:186
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "%s の不正な終了ステータス (%s)\n"
 
-#: build/build.c:291
+#: build/build.c:292
 msgid ""
 "\n"
 "\n"
@@ -866,88 +866,88 @@ msgstr "VerifyScript ファイルを開けませんでした: %s\n"
 msgid "Could not open Trigger script file: %s\n"
 msgstr "TriggerScript ファイルを開けませんでした: %s\n"
 
-#: build/pack.c:369
+#: build/pack.c:371
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "不明なペイロード圧縮: %s\n"
 
-#: build/pack.c:392
+#: build/pack.c:395
 msgid "Unable to create immutable header region.\n"
 msgstr "不変ヘッダー領域を作成できません。\n"
 
-#: build/pack.c:412
+#: build/pack.c:415
 msgid "Unable to write temp header\n"
 msgstr "一時ヘッダーの書き込みができません。\n"
 
-#: build/pack.c:422
+#: build/pack.c:425
 msgid "Bad CSA data\n"
 msgstr "不正な CSA データ\n"
 
-#: build/pack.c:489
+#: build/pack.c:492
 msgid "Unable to reload signature header.\n"
 msgstr "署名ヘッダーの再読み込みができません。\n"
 
-#: build/pack.c:497
+#: build/pack.c:500
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
 
-#: build/pack.c:509
+#: build/pack.c:512
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "パッケージの書き込みに失敗: %s\n"
 
-#: build/pack.c:525
+#: build/pack.c:528
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "sigtarget %s のオープンに失敗: %s\n"
 
-#: build/pack.c:536
+#: build/pack.c:539
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "%s からヘッダー読み込みに失敗: %s\n"
 
-#: build/pack.c:550
+#: build/pack.c:553
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "%s へのヘッダー書き込みに失敗: %s\n"
 
-#: build/pack.c:562
+#: build/pack.c:565
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "%s から Payload 読み込みに失敗: %s\n"
 
-#: build/pack.c:569
+#: build/pack.c:572
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "%s への Payload 書き込みに失敗: %s\n"
 
-#: build/pack.c:606
+#: build/pack.c:609
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "書き込み完了: %s\n"
 
-#: build/pack.c:657
+#: build/pack.c:660
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "「%s」を実行しています:\n"
 
-#: build/pack.c:660
+#: build/pack.c:663
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "「%s」の実行に失敗しました。\n"
 
-#: build/pack.c:664
+#: build/pack.c:667
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "パッケージ \"%s\" のチェックに失敗しました。\n"
 
-#: build/pack.c:720
+#: build/pack.c:723
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "パッケージ %s の出力ファイル名を生成できませんでした: %s\n"
 
-#: build/pack.c:737
+#: build/pack.c:740
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "%s を作成できません: %s\n"
@@ -1045,147 +1045,147 @@ msgstr "%d 行目: 不正な %s 番号: %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d は複数回数指定しています\n"
 
-#: build/parsePreamble.c:400
+#: build/parsePreamble.c:401
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "アーキテクチャは除外されています: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:406
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "アーキテクチャは含まれていません: %s\n"
 
-#: build/parsePreamble.c:410
+#: build/parsePreamble.c:411
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS は除外されています: %s\n"
 
-#: build/parsePreamble.c:415
+#: build/parsePreamble.c:416
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS は含まれていません: %s\n"
 
-#: build/parsePreamble.c:441
+#: build/parsePreamble.c:442
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s フィールドがパッケージ中に必要です: %s\n"
 
-#: build/parsePreamble.c:464
+#: build/parsePreamble.c:465
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "パッケージ中に %s エントリが重複しています: %s\n"
 
-#: build/parsePreamble.c:518
+#: build/parsePreamble.c:519
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "_docdir_fmt が不正です: %s\n"
 
-#: build/parsePreamble.c:546
+#: build/parsePreamble.c:547
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "アイコン %s を開けません: %s\n"
 
-#: build/parsePreamble.c:564
+#: build/parsePreamble.c:565
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "アイコン %s を読むことができません: %s\n"
 
-#: build/parsePreamble.c:577
+#: build/parsePreamble.c:578
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "不明なアイコンタイプ: %s\n"
 
-#: build/parsePreamble.c:590
+#: build/parsePreamble.c:591
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "%d 行目: タグはトークンを 1つしかとりません: %s\n"
 
-#: build/parsePreamble.c:610
+#: build/parsePreamble.c:611
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "%d 行目: 不正な文字 '%c' : %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "%d 行目: 不正な文字 '-' : %s\n"
 
-#: build/parsePreamble.c:619
+#: build/parsePreamble.c:620
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "%d 行目: 不正なシーケンス 「..」 : %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:645
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "%d 行目: 不完全な形のタグ: %s\n"
 
-#: build/parsePreamble.c:652
+#: build/parsePreamble.c:653
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "%d 行目: 空のタグ: %s\n"
 
-#: build/parsePreamble.c:709
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "%d 行目: Prefix は \"/\" で終わってはいけません: %s\n"
 
-#: build/parsePreamble.c:722
+#: build/parsePreamble.c:723
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "%d 行目: Docdir は '/' で始まらなければなりません: %s\n"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:736
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "%d 行目: Epoch フィールドは数字でなければなりません: %s\n"
 
-#: build/parsePreamble.c:776
+#: build/parsePreamble.c:777
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "%d 行目: 不正な修飾子 %s : %s\n"
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:804
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "%d 行目: 不正な BuildArchtecture フォーマット: %s\n"
 
-#: build/parsePreamble.c:813
+#: build/parsePreamble.c:814
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "%d 行目: noarch サブ パッケージでのみサポート: %s\n"
 
-#: build/parsePreamble.c:828
+#: build/parsePreamble.c:829
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "内部エラー: にせのタグ %d\n"
 
-#: build/parsePreamble.c:912
+#: build/parsePreamble.c:913
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "%d 行目: %s は非推奨: %s\n"
 
-#: build/parsePreamble.c:975
+#: build/parsePreamble.c:976
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "不正なパッケージの指定: %s\n"
 
-#: build/parsePreamble.c:981
+#: build/parsePreamble.c:982
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "パッケージは既に存在しています: %s\n"
 
-#: build/parsePreamble.c:1012
+#: build/parsePreamble.c:1013
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "%d 行目: 不明なタグ: %s\n"
 
-#: build/parsePreamble.c:1044
+#: build/parsePreamble.c:1045
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} を空にすることができません\n"
 
-#: build/parsePreamble.c:1048
+#: build/parsePreamble.c:1049
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} を \"\" にすることができません\n"
@@ -1431,7 +1431,7 @@ msgstr "%s のためのパイプ作成ができません: %m\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "%s を実行できませんでした: %s\n"
 
-#: build/rpmfc.c:235 lib/rpmscript.c:239
+#: build/rpmfc.c:235 lib/rpmscript.c:240
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "%s のフォークに失敗しました: %s\n"
@@ -1538,8 +1538,8 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr "パッケージ %s は既に追加されています。 %s と置換します。\n"
 
 #: lib/formats.c:71 lib/formats.c:112 lib/formats.c:202 lib/formats.c:229
-#: lib/formats.c:278 lib/formats.c:300 lib/formats.c:541 lib/formats.c:580
-#: lib/formats.c:619
+#: lib/formats.c:280 lib/formats.c:302 lib/formats.c:543 lib/formats.c:582
+#: lib/formats.c:621
 msgid "(not a number)"
 msgstr "(数字ではありません)"
 
@@ -1552,55 +1552,55 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:338
+#: lib/formats.c:340
 msgid "(not base64)"
 msgstr "(base64 ではありません)"
 
-#: lib/formats.c:350
+#: lib/formats.c:352
 msgid "(invalid type)"
 msgstr "(不正なタイプ)"
 
-#: lib/formats.c:374 lib/formats.c:460
+#: lib/formats.c:376 lib/formats.c:462
 msgid "(not a blob)"
 msgstr "(blob ではありません)"
 
-#: lib/formats.c:413
+#: lib/formats.c:415
 msgid "(invalid xml type)"
 msgstr "(不正な XML タイプ)"
 
-#: lib/formats.c:483
+#: lib/formats.c:485
 msgid "(not an OpenPGP signature)"
 msgstr "(OpenPGP 署名ではありません)"
 
-#: lib/formats.c:586
+#: lib/formats.c:588
 msgid "normal"
 msgstr "通常"
 
-#: lib/formats.c:589
+#: lib/formats.c:591
 msgid "replaced"
 msgstr "置換"
 
-#: lib/formats.c:592
+#: lib/formats.c:594
 msgid "not installed"
 msgstr "未インストール"
 
-#: lib/formats.c:595
+#: lib/formats.c:597
 msgid "net shared"
 msgstr "ネット共有"
 
-#: lib/formats.c:598
+#: lib/formats.c:600
 msgid "wrong color"
 msgstr "間違った色"
 
-#: lib/formats.c:601
+#: lib/formats.c:603
 msgid "missing"
 msgstr "見つかりません"
 
-#: lib/formats.c:604
+#: lib/formats.c:606
 msgid "(unknown)"
 msgstr "(不明)  "
 
-#: lib/formats.c:643
+#: lib/formats.c:645
 msgid "(not a string)"
 msgstr "(文字列でない)"
 
@@ -2392,17 +2392,22 @@ msgstr ")"
 msgid "%s: open failed: %s\n"
 msgstr "%s: オープンに失敗しました: %s\n"
 
-#: lib/rpmchroot.c:58 lib/rpmchroot.c:83
+#: lib/rpmchroot.c:43
+#, fuzzy, c-format
+msgid "Unable to open current directory: %m\n"
+msgstr "ルート ディレクトリーの復元に失敗しました: %m\n"
+
+#: lib/rpmchroot.c:59 lib/rpmchroot.c:84
 #, c-format
 msgid "%s: chroot directory not set\n"
 msgstr "%s: chroot ディレクトリーが設定されていません。\n"
 
-#: lib/rpmchroot.c:69
+#: lib/rpmchroot.c:70
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "ルート ディレクトリーの変更に失敗しました: %m\n"
 
-#: lib/rpmchroot.c:94
+#: lib/rpmchroot.c:95
 #, c-format
 msgid "Unable to restore root directory: %m\n"
 msgstr "ルート ディレクトリーの復元に失敗しました: %m\n"
@@ -2415,66 +2420,66 @@ msgstr "NO "
 msgid "YES"
 msgstr "YES"
 
-#: lib/rpmds.c:849
+#: lib/rpmds.c:861
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 "「PreReq:」「Provides:」「Obsoletes:」の依存関係をサポートしたバージョン。"
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:864
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 "ファイル名が、パスではなく (dirName, baseName, dirIndex) の組で格納されます。"
 
-#: lib/rpmds.c:856
+#: lib/rpmds.c:868
 msgid "package payload can be compressed using bzip2."
 msgstr "パッケージ ペイロードが bzip2 を用いて圧縮できます。"
 
-#: lib/rpmds.c:861
+#: lib/rpmds.c:873
 msgid "package payload can be compressed using xz."
 msgstr "パッケージ ペイロードが xz を用いて圧縮できます。"
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:876
 msgid "package payload can be compressed using lzma."
 msgstr "パッケージ ペイロードが lzma を用いて圧縮できます。"
 
-#: lib/rpmds.c:868
+#: lib/rpmds.c:880
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "パッケージ ペイロード ファイルが「./」接頭語を持っています。"
 
-#: lib/rpmds.c:871
+#: lib/rpmds.c:883
 msgid "package name-version-release is not implicitly provided."
 msgstr "「パッケージ名-バージョン-リリース」が暗黙で提供されません。"
 
-#: lib/rpmds.c:874
+#: lib/rpmds.c:886
 msgid "header tags are always sorted after being loaded."
 msgstr "ヘッダー タグが読み込まれた後、常にソートされます。"
 
-#: lib/rpmds.c:877
+#: lib/rpmds.c:889
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "スクリプト インタプリターがヘッダーから引数を使用できます。"
 
-#: lib/rpmds.c:880
+#: lib/rpmds.c:892
 msgid "a hardlink file set may be installed without being complete."
 msgstr "ハードリンク ファイル群が完全でなくてもインストールできます。"
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:895
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 "インストール中に、パッケージスクリプトが rpm データベースにアクセスできます。"
 
-#: lib/rpmds.c:887
+#: lib/rpmds.c:899
 msgid "internal support for lua scripts."
 msgstr "lua スクリプトの内部サポート。"
 
-#: lib/rpmds.c:891
+#: lib/rpmds.c:903
 msgid "file digest algorithm is per package configurable"
 msgstr "ファイルのダイジェストアルゴリズムはパッケージ毎の設定です"
 
-#: lib/rpmds.c:895
+#: lib/rpmds.c:907
 msgid "support for POSIX.1e file capabilities"
 msgstr "POSIX..1e ファイル ケーパビリティ (capability) のためのサポート"
 
-#: lib/rpmds.c:899
+#: lib/rpmds.c:911
 msgid "package scriptlets can be expanded at install time."
 msgstr "パッケージのスクリプトはインストール時間を長くすることができます。"
 
@@ -2762,31 +2767,31 @@ msgstr "%s に連絡してください。\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s を読み込み用に開けません: %m。\n"
 
-#: lib/rpmscript.c:76
+#: lib/rpmscript.c:77
 msgid "<lua> scriptlet support not built in\n"
 msgstr "<lua> スクリプトは組み込みでサポートしていません\n"
 
-#: lib/rpmscript.c:189
+#: lib/rpmscript.c:190
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
 msgstr "%s の一次ファイルの作成に失敗しました: %s\n"
 
-#: lib/rpmscript.c:226
+#: lib/rpmscript.c:227
 #, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr "ファイル ディスクリプターの複製ができません: %s: %s\n"
 
-#: lib/rpmscript.c:249
+#: lib/rpmscript.c:250
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s スクリプトの実行に失敗しました。waitpid (%d) rc %d: %s\n"
 
-#: lib/rpmscript.c:253
+#: lib/rpmscript.c:254
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
 msgstr "%s スクリプトの実行に失敗しました。シグナル %d\n"
 
-#: lib/rpmscript.c:256
+#: lib/rpmscript.c:257
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr "%s スクリプトの実行に失敗しました。終了ステータス %d\n"
@@ -2902,11 +2907,11 @@ msgstr "署名確認: 異常なパラメータです。\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "署名: 未知(%d)\n"
 
-#: lib/transaction.c:1382
+#: lib/transaction.c:1388
 msgid "skipped"
 msgstr "スキップした"
 
-#: lib/transaction.c:1382
+#: lib/transaction.c:1388
 msgid "failed"
 msgstr "失敗"
 
@@ -2990,40 +2995,40 @@ msgstr ""
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s インデックスを db%d で開けません - %s (%d)\n"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:680
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: lib/rpmdb.c:861 lib/rpmdb.c:978 lib/rpmdb.c:1023 lib/rpmdb.c:1877
-#: lib/rpmdb.c:2030 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: lib/rpmdb.c:1210
+#: lib/rpmdb.c:1211
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: スキップします。"
 
-#: lib/rpmdb.c:1220
+#: lib/rpmdb.c:1221
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: lib/rpmdb.c:1318
+#: lib/rpmdb.c:1319
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: 正規表現に失敗しました: %s\n"
 
-#: lib/rpmdb.c:1499
+#: lib/rpmdb.c:1500
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp に失敗しました: %s\n"
 
-#: lib/rpmdb.c:1659
+#: lib/rpmdb.c:1660
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: スキップします。"
 
-#: lib/rpmdb.c:1800
+#: lib/rpmdb.c:1801
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
@@ -3121,20 +3126,20 @@ msgstr "db%d エラー (%d) (%s において): %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: lib/backend/db3.c:499
+#: lib/backend/db3.c:506
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: lib/backend/db3.c:501
+#: lib/backend/db3.c:508
 msgid "shared"
 msgstr "共有"
 
-#: lib/backend/db3.c:501
+#: lib/backend/db3.c:508
 msgid "exclusive"
 msgstr "排他"
 
-#: lib/backend/db3.c:581
+#: lib/backend/db3.c:588
 #, fuzzy, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "データベースインデックス %s/%s を検証しました。\n"
@@ -3443,6 +3448,11 @@ msgstr "署名を読み込めませんでした。\n"
 #: sign/rpmgensig.c:484 sign/rpmgensig.c:554
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp に失敗しました。\n"
+
+#: sign/rpmgensig.c:537
+#, c-format
+msgid "%s already contains identical signature, skipping\n"
+msgstr ""
 
 #: sign/rpmgensig.c:562
 #, c-format

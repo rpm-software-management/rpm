@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-01-13 15:32+0200\n"
+"POT-Creation-Date: 2011-02-15 15:12+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Jindrich Novy <jnovy@users.sourceforge.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -520,7 +520,7 @@ msgstr "použij následující formát dotazů"
 msgid "Spec options:"
 msgstr "Volby signatury:"
 
-#: build/build.c:122 build/pack.c:405
+#: build/build.c:122 build/pack.c:408
 msgid "Unable to open temp file.\n"
 msgstr "Nelze otevřít dočasný soubor.\n"
 
@@ -529,17 +529,17 @@ msgstr "Nelze otevřít dočasný soubor.\n"
 msgid "Executing(%s): %s\n"
 msgstr "Provádění(%s): %s\n"
 
-#: build/build.c:176
+#: build/build.c:177
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Spuštění %s selhalo (%s): %s\n"
 
-#: build/build.c:185
+#: build/build.c:186
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Špatný návratový kód z %s (%s)\n"
 
-#: build/build.c:291
+#: build/build.c:292
 msgid ""
 "\n"
 "\n"
@@ -855,88 +855,88 @@ msgstr "Nemohu otevřít VerifyScript soubor: %s\n"
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Nemohu otevřít soubor se spuští (trigger): %s\n"
 
-#: build/pack.c:369
+#: build/pack.c:371
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Neznámá komprese payloadu: %s\n"
 
-#: build/pack.c:392
+#: build/pack.c:395
 msgid "Unable to create immutable header region.\n"
 msgstr "Nemohu vytvořit nezměnitelný region hlavičky.\n"
 
-#: build/pack.c:412
+#: build/pack.c:415
 msgid "Unable to write temp header\n"
 msgstr "Nemohu zapsat dočasnou hlavičku\n"
 
-#: build/pack.c:422
+#: build/pack.c:425
 msgid "Bad CSA data\n"
 msgstr "Špatná CSA data\n"
 
-#: build/pack.c:489
+#: build/pack.c:492
 msgid "Unable to reload signature header.\n"
 msgstr "Nemohu znovu přečíst hlavičku podpisu.\n"
 
-#: build/pack.c:497
+#: build/pack.c:500
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Nemohu otevřít %s: %s\n"
 
-#: build/pack.c:509
+#: build/pack.c:512
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nemohu zapsat balíček: %s\n"
 
-#: build/pack.c:525
+#: build/pack.c:528
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Nemohu otevřít cíl pro podepsání %s: %s\n"
 
-#: build/pack.c:536
+#: build/pack.c:539
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Nemohu přečíst hlavičku z %s: %s\n"
 
-#: build/pack.c:550
+#: build/pack.c:553
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Nemohu zapsat hlavičku do %s: %s\n"
 
-#: build/pack.c:562
+#: build/pack.c:565
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Nemohu přečíst payload z %s: %s\n"
 
-#: build/pack.c:569
+#: build/pack.c:572
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Nemohu zapsat payload do %s: %s\n"
 
-#: build/pack.c:606
+#: build/pack.c:609
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapsáno: %s\n"
 
-#: build/pack.c:657
+#: build/pack.c:660
 #, fuzzy, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Provádění(%s): %s\n"
 
-#: build/pack.c:660
+#: build/pack.c:663
 #, fuzzy, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Spuštění %s selhalo (%s): %s\n"
 
-#: build/pack.c:664
+#: build/pack.c:667
 #, fuzzy, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Chybná heslová fráze\n"
 
-#: build/pack.c:720
+#: build/pack.c:723
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nemohu vygenerovat jméno souboru pro balíček %s: %s\n"
 
-#: build/pack.c:737
+#: build/pack.c:740
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nemohu vytvořit %s: %s\n"
@@ -1034,147 +1034,147 @@ msgstr "řádek %d: Špatné číslo %s: %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "\"%s\" specifikuje více balíčků\n"
 
-#: build/parsePreamble.c:400
+#: build/parsePreamble.c:401
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Architektura je vyřazena: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:406
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Architektura není zahrnuta: %s\n"
 
-#: build/parsePreamble.c:410
+#: build/parsePreamble.c:411
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS je vyřazen: %s\n"
 
-#: build/parsePreamble.c:415
+#: build/parsePreamble.c:416
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS není zahrnut: %s\n"
 
-#: build/parsePreamble.c:441
+#: build/parsePreamble.c:442
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "Položka %s musí být v balíčku přítomna: %s\n"
 
-#: build/parsePreamble.c:464
+#: build/parsePreamble.c:465
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Duplikovaná položka %s v balíčku: %s\n"
 
-#: build/parsePreamble.c:518
+#: build/parsePreamble.c:519
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "špatný _docdir_fmt: %s\n"
 
-#: build/parsePreamble.c:546
+#: build/parsePreamble.c:547
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Nemohu otevřít ikonu %s: %s\n"
 
-#: build/parsePreamble.c:564
+#: build/parsePreamble.c:565
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Nemohu přečíst ikonu %s: %s\n"
 
-#: build/parsePreamble.c:577
+#: build/parsePreamble.c:578
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Neznámý typ ikony: %s\n"
 
-#: build/parsePreamble.c:590
+#: build/parsePreamble.c:591
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "řádek %d: Značka má jen jeden token: %s\n"
 
-#: build/parsePreamble.c:610
+#: build/parsePreamble.c:611
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "řádek %d: Nepřípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "řádek %d: Nepřípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:619
+#: build/parsePreamble.c:620
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "řádek %d: Nepřípustný znak '-' v %s: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:645
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "řádek %d: Počkozená značka: %s\n"
 
-#: build/parsePreamble.c:652
+#: build/parsePreamble.c:653
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "řádek %d: Prázdná značka: %s\n"
 
-#: build/parsePreamble.c:709
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "řádek %d: Prefixy nesmí končit znakem \"/\": %s\n"
 
-#: build/parsePreamble.c:722
+#: build/parsePreamble.c:723
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "řádek %d: Docdir musí začínat na '/': %s\n"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:736
 #, fuzzy, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "řádek %d: Položka Epoch musí být číslo: %s\n"
 
-#: build/parsePreamble.c:776
+#: build/parsePreamble.c:777
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "řádek %d: Špatné určení %s: %s\n"
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:804
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "řádek %d: Špatný formát BuildArchitecture: %s\n"
 
-#: build/parsePreamble.c:813
+#: build/parsePreamble.c:814
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:828
+#: build/parsePreamble.c:829
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Interní chyba: Špatná značka: %d\n"
 
-#: build/parsePreamble.c:912
+#: build/parsePreamble.c:913
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "řádek %d: Vyžadována verze: %s\n"
 
-#: build/parsePreamble.c:975
+#: build/parsePreamble.c:976
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Špatná specifikace balíčku: %s\n"
 
-#: build/parsePreamble.c:981
+#: build/parsePreamble.c:982
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Balíček již existuje: %s\n"
 
-#: build/parsePreamble.c:1012
+#: build/parsePreamble.c:1013
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "řádek %d: Neznámá značka: %s\n"
 
-#: build/parsePreamble.c:1044
+#: build/parsePreamble.c:1045
 #, fuzzy, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "BuildRoot nemůže být prázdný\n"
 
-#: build/parsePreamble.c:1048
+#: build/parsePreamble.c:1049
 #, fuzzy, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "BuildRoot nemůže být \"/\"\n"
@@ -1423,7 +1423,7 @@ msgstr "Nemohu vytvořit rouru pro %s: %m\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Nemohu spustit %s: %s\n"
 
-#: build/rpmfc.c:235 lib/rpmscript.c:239
+#: build/rpmfc.c:235 lib/rpmscript.c:240
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nemohu provést fork %s: %s\n"
@@ -1531,8 +1531,8 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr "balíček %s byl již přidán, nahrazuji ho s %s\n"
 
 #: lib/formats.c:71 lib/formats.c:112 lib/formats.c:202 lib/formats.c:229
-#: lib/formats.c:278 lib/formats.c:300 lib/formats.c:541 lib/formats.c:580
-#: lib/formats.c:619
+#: lib/formats.c:280 lib/formats.c:302 lib/formats.c:543 lib/formats.c:582
+#: lib/formats.c:621
 msgid "(not a number)"
 msgstr "(není číslo)"
 
@@ -1545,62 +1545,62 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:338
+#: lib/formats.c:340
 msgid "(not base64)"
 msgstr "(není base64)"
 
-#: lib/formats.c:350
+#: lib/formats.c:352
 msgid "(invalid type)"
 msgstr "(neplatný typ)"
 
-#: lib/formats.c:374 lib/formats.c:460
+#: lib/formats.c:376 lib/formats.c:462
 msgid "(not a blob)"
 msgstr "(není blob)"
 
-#: lib/formats.c:413
+#: lib/formats.c:415
 msgid "(invalid xml type)"
 msgstr "(neplatný typ xml)"
 
-#: lib/formats.c:483
+#: lib/formats.c:485
 msgid "(not an OpenPGP signature)"
 msgstr "(není OpenPGP podpis)"
 
-#: lib/formats.c:586
+#: lib/formats.c:588
 #, fuzzy
 msgid "normal"
 msgstr "normální      "
 
-#: lib/formats.c:589
+#: lib/formats.c:591
 #, fuzzy
 msgid "replaced"
 msgstr "nahrazen      "
 
-#: lib/formats.c:592
+#: lib/formats.c:594
 #, fuzzy
 msgid "not installed"
 msgstr "neinstalován  "
 
-#: lib/formats.c:595
+#: lib/formats.c:597
 #, fuzzy
 msgid "net shared"
 msgstr "sdílen v síti "
 
-#: lib/formats.c:598
+#: lib/formats.c:600
 #, fuzzy
 msgid "wrong color"
 msgstr "špatná barva  "
 
-#: lib/formats.c:601
+#: lib/formats.c:603
 #, fuzzy
 msgid "missing"
 msgstr "chybí     %c %s"
 
-#: lib/formats.c:604
+#: lib/formats.c:606
 #, fuzzy
 msgid "(unknown)"
 msgstr "(neznámý %3d) "
 
-#: lib/formats.c:643
+#: lib/formats.c:645
 #, fuzzy
 msgid "(not a string)"
 msgstr "(není číslo)"
@@ -2393,17 +2393,22 @@ msgstr ")"
 msgid "%s: open failed: %s\n"
 msgstr "%s: otevření selhalo: %s\n"
 
-#: lib/rpmchroot.c:58 lib/rpmchroot.c:83
+#: lib/rpmchroot.c:43
+#, fuzzy, c-format
+msgid "Unable to open current directory: %m\n"
+msgstr "Není možné změnit kořenový adresář: %m\n"
+
+#: lib/rpmchroot.c:59 lib/rpmchroot.c:84
 #, fuzzy, c-format
 msgid "%s: chroot directory not set\n"
 msgstr "%s odstranění %s selhalo: Adresář není prázdný\n"
 
-#: lib/rpmchroot.c:69
+#: lib/rpmchroot.c:70
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Není možné změnit kořenový adresář: %m\n"
 
-#: lib/rpmchroot.c:94
+#: lib/rpmchroot.c:95
 #, fuzzy, c-format
 msgid "Unable to restore root directory: %m\n"
 msgstr "Není možné změnit kořenový adresář: %m\n"
@@ -2416,64 +2421,64 @@ msgstr "NE "
 msgid "YES"
 msgstr "ANO"
 
-#: lib/rpmds.c:849
+#: lib/rpmds.c:861
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, a Obsoletes: verze pro podporu závislostí."
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:864
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "jména souborů uložená jako diName,baseName,dirIndex, ne jako cesta."
 
-#: lib/rpmds.c:856
+#: lib/rpmds.c:868
 msgid "package payload can be compressed using bzip2."
 msgstr "payload balíčku může být komprimován pomocí bzip2."
 
-#: lib/rpmds.c:861
+#: lib/rpmds.c:873
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "payload balíčku může být komprimován pomocí lzma."
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:876
 msgid "package payload can be compressed using lzma."
 msgstr "payload balíčku může být komprimován pomocí lzma."
 
-#: lib/rpmds.c:868
+#: lib/rpmds.c:880
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "soubory payloadu balíčku mají předponu \"./\"."
 
-#: lib/rpmds.c:871
+#: lib/rpmds.c:883
 msgid "package name-version-release is not implicitly provided."
 msgstr "NVR balíčku není implicitně zprostředkována."
 
-#: lib/rpmds.c:874
+#: lib/rpmds.c:886
 msgid "header tags are always sorted after being loaded."
 msgstr "značky hlavičky jsou vždy setřízeny po nahrátí."
 
-#: lib/rpmds.c:877
+#: lib/rpmds.c:889
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "interpret skriptletů může použít argumenty z hlavičky."
 
-#: lib/rpmds.c:880
+#: lib/rpmds.c:892
 msgid "a hardlink file set may be installed without being complete."
 msgstr "hardlinkovaný soubor může být instalován bez toho, aby byl kompletní."
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:895
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "skriptlety balíčku mohou přistupovat k rpm databázi při instalaci."
 
-#: lib/rpmds.c:887
+#: lib/rpmds.c:899
 msgid "internal support for lua scripts."
 msgstr "interní podpora pro lua skripty."
 
-#: lib/rpmds.c:891
+#: lib/rpmds.c:903
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:895
+#: lib/rpmds.c:907
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:899
+#: lib/rpmds.c:911
 #, fuzzy
 msgid "package scriptlets can be expanded at install time."
 msgstr "skriptlety balíčku mohou přistupovat k rpm databázi při instalaci."
@@ -2756,31 +2761,31 @@ msgstr "Prosím kontaktujte %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nemohu otevřít %s pro čtení: %m.\n"
 
-#: lib/rpmscript.c:76
+#: lib/rpmscript.c:77
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
 
-#: lib/rpmscript.c:189
+#: lib/rpmscript.c:190
 #, fuzzy, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
 msgstr "Nemohu vytvořit rouru pro %s: %m\n"
 
-#: lib/rpmscript.c:226
+#: lib/rpmscript.c:227
 #, fuzzy, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr "Nemohu vytvořit rouru pro %s: %m\n"
 
-#: lib/rpmscript.c:249
+#: lib/rpmscript.c:250
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s scriptlet selhal, waitpid(%d) rc %d: %s\n"
 
-#: lib/rpmscript.c:253
+#: lib/rpmscript.c:254
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
 msgstr "%s skriplet selhal, signál %d\n"
 
-#: lib/rpmscript.c:256
+#: lib/rpmscript.c:257
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr "provedení %s skripletu selhalo, návratový kód: %d\n"
@@ -2897,11 +2902,11 @@ msgstr "Skontrolujte podpis: ŠPATNÉ PARAMETRY\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Podpis: NEZNÁMÝ (%d)\n"
 
-#: lib/transaction.c:1382
+#: lib/transaction.c:1388
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1382
+#: lib/transaction.c:1388
 #, fuzzy
 msgid "failed"
 msgstr "%s selhalo\n"
@@ -2986,40 +2991,40 @@ msgstr ""
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "nemohu otevřít %s index pomocí db%d - %s (%d)\n"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:680
 msgid "no dbpath has been set\n"
 msgstr "nebyla nastavena dbpath\n"
 
-#: lib/rpmdb.c:861 lib/rpmdb.c:978 lib/rpmdb.c:1023 lib/rpmdb.c:1877
-#: lib/rpmdb.c:2030 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "chyba(%d) získávání \"%s\" záznamů z %s indexu\n"
 
-#: lib/rpmdb.c:1210
+#: lib/rpmdb.c:1211
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: přeskakuji"
 
-#: lib/rpmdb.c:1220
+#: lib/rpmdb.c:1221
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "chyba(%d) ukládání záznamu #%d do %s\n"
 
-#: lib/rpmdb.c:1318
+#: lib/rpmdb.c:1319
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec selhal: %s\n"
 
-#: lib/rpmdb.c:1499
+#: lib/rpmdb.c:1500
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp selhal: %s\n"
 
-#: lib/rpmdb.c:1659
+#: lib/rpmdb.c:1660
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: přeskakuji"
 
-#: lib/rpmdb.c:1800
+#: lib/rpmdb.c:1801
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: poškozená hlavička #%u získáno -- přeskakuji.\n"
@@ -3116,20 +3121,20 @@ msgstr "db%d chyba(%d) z %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d chyba(%d): %s\n"
 
-#: lib/backend/db3.c:499
+#: lib/backend/db3.c:506
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu získat zámek %s na %s/%s\n"
 
-#: lib/backend/db3.c:501
+#: lib/backend/db3.c:508
 msgid "shared"
 msgstr "sdílen"
 
-#: lib/backend/db3.c:501
+#: lib/backend/db3.c:508
 msgid "exclusive"
 msgstr "exkluzivní"
 
-#: lib/backend/db3.c:581
+#: lib/backend/db3.c:588
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
@@ -3438,6 +3443,11 @@ msgstr "nemohu přečíst podpis\n"
 #: sign/rpmgensig.c:484 sign/rpmgensig.c:554
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp selhal\n"
+
+#: sign/rpmgensig.c:537
+#, c-format
+msgid "%s already contains identical signature, skipping\n"
+msgstr ""
 
 #: sign/rpmgensig.c:562
 #, c-format

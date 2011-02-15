@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-01-13 15:32+0200\n"
+"POT-Creation-Date: 2011-02-15 15:12+0200\n"
 "PO-Revision-Date: 2009-01-17 17:20+0100\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -526,7 +526,7 @@ msgstr "använd följande frågeformat"
 msgid "Spec options:"
 msgstr "Signaturflaggor:"
 
-#: build/build.c:122 build/pack.c:405
+#: build/build.c:122 build/pack.c:408
 msgid "Unable to open temp file.\n"
 msgstr "Kan inte öppna temporär fil.\n"
 
@@ -535,17 +535,17 @@ msgstr "Kan inte öppna temporär fil.\n"
 msgid "Executing(%s): %s\n"
 msgstr "Kör(%s): %s\n"
 
-#: build/build.c:176
+#: build/build.c:177
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
 msgstr "Körning (exec) av %s misslyckades (%s): %s\n"
 
-#: build/build.c:185
+#: build/build.c:186
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
 msgstr "Dålig slutstatus från %s (%s)\n"
 
-#: build/build.c:291
+#: build/build.c:292
 msgid ""
 "\n"
 "\n"
@@ -861,88 +861,88 @@ msgstr "Kunde inte öppna VerifyScript-fil: %s\n"
 msgid "Could not open Trigger script file: %s\n"
 msgstr "Kunde inte öppna Trigger-skriptfil: %s\n"
 
-#: build/pack.c:369
+#: build/pack.c:371
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Okänd lastkomprimering: %s\n"
 
-#: build/pack.c:392
+#: build/pack.c:395
 msgid "Unable to create immutable header region.\n"
 msgstr "Kan inte skapa oföränderlig huvudregion.\n"
 
-#: build/pack.c:412
+#: build/pack.c:415
 msgid "Unable to write temp header\n"
 msgstr "Kan inte skriva temporärhuvud\n"
 
-#: build/pack.c:422
+#: build/pack.c:425
 msgid "Bad CSA data\n"
 msgstr "Felaktig CSA-data\n"
 
-#: build/pack.c:489
+#: build/pack.c:492
 msgid "Unable to reload signature header.\n"
 msgstr "Kan inte läsa om signaturhuvud.\n"
 
-#: build/pack.c:497
+#: build/pack.c:500
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Kunde inte öppna %s: %s\n"
 
-#: build/pack.c:509
+#: build/pack.c:512
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kunde inte skriva paket: %s\n"
 
-#: build/pack.c:525
+#: build/pack.c:528
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Kan inte läsa signaturen %s: %s\n"
 
-#: build/pack.c:536
+#: build/pack.c:539
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Kan inte läsa huvud från %s: %s\n"
 
-#: build/pack.c:550
+#: build/pack.c:553
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Kan inte skriva huvud till %s: %s\n"
 
-#: build/pack.c:562
+#: build/pack.c:565
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Kan inte läsa last från %s: %s\n"
 
-#: build/pack.c:569
+#: build/pack.c:572
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr "Kan inte skriva last till %s: %s\n"
 
-#: build/pack.c:606
+#: build/pack.c:609
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Skrev: %s\n"
 
-#: build/pack.c:657
+#: build/pack.c:660
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Kör \"%s\":\n"
 
-#: build/pack.c:660
+#: build/pack.c:663
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Körning av \"%s\" misslyckades.\n"
 
-#: build/pack.c:664
+#: build/pack.c:667
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Paketkontroll \"%s\" misslyckades.\n"
 
-#: build/pack.c:720
+#: build/pack.c:723
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Kunde inte generera utfilnamn för paketet %s: %s\n"
 
-#: build/pack.c:737
+#: build/pack.c:740
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "kan inte skapa %s: %s\n"
@@ -1040,147 +1040,147 @@ msgstr "rad %d: Felaktigt %s-tal: %s\n"
 msgid "%s %d defined multiple times\n"
 msgstr "%s %d definierat flera gånger\n"
 
-#: build/parsePreamble.c:400
+#: build/parsePreamble.c:401
 #, c-format
 msgid "Architecture is excluded: %s\n"
 msgstr "Arkitekturen är utesluten: %s\n"
 
-#: build/parsePreamble.c:405
+#: build/parsePreamble.c:406
 #, c-format
 msgid "Architecture is not included: %s\n"
 msgstr "Arkitekturen är inte medtagen: %s\n"
 
-#: build/parsePreamble.c:410
+#: build/parsePreamble.c:411
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr "OS är uteslutet: %s\n"
 
-#: build/parsePreamble.c:415
+#: build/parsePreamble.c:416
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr "OS är inte medtaget: %s\n"
 
-#: build/parsePreamble.c:441
+#: build/parsePreamble.c:442
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr "%s-fält måste finnas med i paketet: %s\n"
 
-#: build/parsePreamble.c:464
+#: build/parsePreamble.c:465
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr "Dubbla %s-poster i paketet: %s\n"
 
-#: build/parsePreamble.c:518
+#: build/parsePreamble.c:519
 #, c-format
 msgid "illegal _docdir_fmt: %s\n"
 msgstr "ogiltig _docdir_fmt: %s\n"
 
-#: build/parsePreamble.c:546
+#: build/parsePreamble.c:547
 #, c-format
 msgid "Unable to open icon %s: %s\n"
 msgstr "Kan inte öppna ikon %s: %s\n"
 
-#: build/parsePreamble.c:564
+#: build/parsePreamble.c:565
 #, c-format
 msgid "Unable to read icon %s: %s\n"
 msgstr "Kan inte läsa ikon %s: %s\n"
 
-#: build/parsePreamble.c:577
+#: build/parsePreamble.c:578
 #, c-format
 msgid "Unknown icon type: %s\n"
 msgstr "Okänd ikontyp: %s\n"
 
-#: build/parsePreamble.c:590
+#: build/parsePreamble.c:591
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr "rad %d: Taggen tar endast ett värde: %s\n"
 
-#: build/parsePreamble.c:610
+#: build/parsePreamble.c:611
 #, fuzzy, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s\n"
 
-#: build/parsePreamble.c:613
+#: build/parsePreamble.c:614
 #, fuzzy, c-format
 msgid "line %d: Illegal char in: %s\n"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s\n"
 
-#: build/parsePreamble.c:619
+#: build/parsePreamble.c:620
 #, fuzzy, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr "rad %d: Otillåtet tecken \"-\" i %s: %s\n"
 
-#: build/parsePreamble.c:644
+#: build/parsePreamble.c:645
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr "rad %d: Felaktig tagg: %s\n"
 
-#: build/parsePreamble.c:652
+#: build/parsePreamble.c:653
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr "rad %d: Tom tagg: %s\n"
 
-#: build/parsePreamble.c:709
+#: build/parsePreamble.c:710
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "rad %d: Prefix får inte sluta med \"/\": %s\n"
 
-#: build/parsePreamble.c:722
+#: build/parsePreamble.c:723
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "rad %d: Docdir måste börja med \"/\": %s\n"
 
-#: build/parsePreamble.c:735
+#: build/parsePreamble.c:736
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "rad %d: Epoch-fält måste vara ett teckenlöst tal: %s\n"
 
-#: build/parsePreamble.c:776
+#: build/parsePreamble.c:777
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "rad %d: Felaktigt %s: bestämningar: %s\n"
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:804
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "rad %d: Felaktigt BuildArchitecture-format: %s\n"
 
-#: build/parsePreamble.c:813
+#: build/parsePreamble.c:814
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "rad %d: Endast noarch-underpaket stöds: %s\n"
 
-#: build/parsePreamble.c:828
+#: build/parsePreamble.c:829
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Internt fel: felaktig tagg %d\n"
 
-#: build/parsePreamble.c:912
+#: build/parsePreamble.c:913
 #, fuzzy, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "rad %d: Version krävs: %s\n"
 
-#: build/parsePreamble.c:975
+#: build/parsePreamble.c:976
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Felaktig paketangivelse %s\n"
 
-#: build/parsePreamble.c:981
+#: build/parsePreamble.c:982
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "Paketet existerar redan: %s\n"
 
-#: build/parsePreamble.c:1012
+#: build/parsePreamble.c:1013
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "rad %d: Okänd tagg: %s\n"
 
-#: build/parsePreamble.c:1044
+#: build/parsePreamble.c:1045
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} fick inte vara tom\n"
 
-#: build/parsePreamble.c:1048
+#: build/parsePreamble.c:1049
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{buildroot} kan inte vara \"/\"\n"
@@ -1426,7 +1426,7 @@ msgstr "Kunde inte öppna rör för %s: %m\n"
 msgid "Couldn't exec %s: %s\n"
 msgstr "Kunde inte köra %s: %s\n"
 
-#: build/rpmfc.c:235 lib/rpmscript.c:239
+#: build/rpmfc.c:235 lib/rpmscript.c:240
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr "Kunde inte grena (fork) %s: %s\n"
@@ -1534,8 +1534,8 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s är redan tillagt, ersätter med %s\n"
 
 #: lib/formats.c:71 lib/formats.c:112 lib/formats.c:202 lib/formats.c:229
-#: lib/formats.c:278 lib/formats.c:300 lib/formats.c:541 lib/formats.c:580
-#: lib/formats.c:619
+#: lib/formats.c:280 lib/formats.c:302 lib/formats.c:543 lib/formats.c:582
+#: lib/formats.c:621
 msgid "(not a number)"
 msgstr "(inte ett tal)"
 
@@ -1550,62 +1550,62 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %d %b %Y"
 
-#: lib/formats.c:338
+#: lib/formats.c:340
 msgid "(not base64)"
 msgstr "(inte base64)"
 
-#: lib/formats.c:350
+#: lib/formats.c:352
 msgid "(invalid type)"
 msgstr "(felaktig typ)"
 
-#: lib/formats.c:374 lib/formats.c:460
+#: lib/formats.c:376 lib/formats.c:462
 msgid "(not a blob)"
 msgstr "(inte en klick)"
 
-#: lib/formats.c:413
+#: lib/formats.c:415
 msgid "(invalid xml type)"
 msgstr "(felaktig xml-typ)"
 
-#: lib/formats.c:483
+#: lib/formats.c:485
 msgid "(not an OpenPGP signature)"
 msgstr "(inte en OpenPGP-signatur)"
 
-#: lib/formats.c:586
+#: lib/formats.c:588
 #, fuzzy
 msgid "normal"
 msgstr "normal        "
 
-#: lib/formats.c:589
+#: lib/formats.c:591
 #, fuzzy
 msgid "replaced"
 msgstr "ersatt        "
 
-#: lib/formats.c:592
+#: lib/formats.c:594
 #, fuzzy
 msgid "not installed"
 msgstr "oinstallerat  "
 
-#: lib/formats.c:595
+#: lib/formats.c:597
 #, fuzzy
 msgid "net shared"
 msgstr "nätdelad      "
 
-#: lib/formats.c:598
+#: lib/formats.c:600
 #, fuzzy
 msgid "wrong color"
 msgstr "fel färg      "
 
-#: lib/formats.c:601
+#: lib/formats.c:603
 #, fuzzy
 msgid "missing"
 msgstr "saknas    %c %s"
 
-#: lib/formats.c:604
+#: lib/formats.c:606
 #, fuzzy
 msgid "(unknown)"
 msgstr "(okänd %3d)   "
 
-#: lib/formats.c:643
+#: lib/formats.c:645
 #, fuzzy
 msgid "(not a string)"
 msgstr "(inte ett tal)"
@@ -2397,17 +2397,22 @@ msgstr ")"
 msgid "%s: open failed: %s\n"
 msgstr "%s: open misslyckades: %s\n"
 
-#: lib/rpmchroot.c:58 lib/rpmchroot.c:83
+#: lib/rpmchroot.c:43
+#, fuzzy, c-format
+msgid "Unable to open current directory: %m\n"
+msgstr "Kunde inte ändra rotkatalog: %m\n"
+
+#: lib/rpmchroot.c:59 lib/rpmchroot.c:84
 #, fuzzy, c-format
 msgid "%s: chroot directory not set\n"
 msgstr "%s rmdir av %s misslyckades: Katalogen är inte tom\n"
 
-#: lib/rpmchroot.c:69
+#: lib/rpmchroot.c:70
 #, c-format
 msgid "Unable to change root directory: %m\n"
 msgstr "Kunde inte ändra rotkatalog: %m\n"
 
-#: lib/rpmchroot.c:94
+#: lib/rpmchroot.c:95
 #, fuzzy, c-format
 msgid "Unable to restore root directory: %m\n"
 msgstr "Kunde inte ändra rotkatalog: %m\n"
@@ -2420,65 +2425,65 @@ msgstr "NEJ "
 msgid "YES"
 msgstr "JA"
 
-#: lib/rpmds.c:849
+#: lib/rpmds.c:861
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr "PreReq:, Provides:, and Obsoletes:-beroenden stödjer versioner."
 
-#: lib/rpmds.c:852
+#: lib/rpmds.c:864
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr "filnamn lagrade som (katNamn,basNam,katIndex)-tupel, inte som sökväg."
 
-#: lib/rpmds.c:856
+#: lib/rpmds.c:868
 msgid "package payload can be compressed using bzip2."
 msgstr "paketlasten kan komprimeras med bzip2."
 
-#: lib/rpmds.c:861
+#: lib/rpmds.c:873
 #, fuzzy
 msgid "package payload can be compressed using xz."
 msgstr "paketlasten kan komprimeras med lzma."
 
-#: lib/rpmds.c:864
+#: lib/rpmds.c:876
 msgid "package payload can be compressed using lzma."
 msgstr "paketlasten kan komprimeras med lzma."
 
-#: lib/rpmds.c:868
+#: lib/rpmds.c:880
 msgid "package payload file(s) have \"./\" prefix."
 msgstr "paketlastfiler har \"./\"-prefix."
 
-#: lib/rpmds.c:871
+#: lib/rpmds.c:883
 msgid "package name-version-release is not implicitly provided."
 msgstr "paketets namn-version-utgåva tillhandahålls inte implicit."
 
-#: lib/rpmds.c:874
+#: lib/rpmds.c:886
 msgid "header tags are always sorted after being loaded."
 msgstr "huvudtaggar sorteras alltid efter att ha lästs in."
 
-#: lib/rpmds.c:877
+#: lib/rpmds.c:889
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr "skriptinterpretatorn kan använda argument från huvudet."
 
-#: lib/rpmds.c:880
+#: lib/rpmds.c:892
 msgid "a hardlink file set may be installed without being complete."
 msgstr "en hårdlänkad filuppsättning får installeras utan att vara komplett."
 
-#: lib/rpmds.c:883
+#: lib/rpmds.c:895
 msgid "package scriptlets may access the rpm database while installing."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
 
-#: lib/rpmds.c:887
+#: lib/rpmds.c:899
 msgid "internal support for lua scripts."
 msgstr "internt stöd för lua-skript."
 
-#: lib/rpmds.c:891
+#: lib/rpmds.c:903
 #, fuzzy
 msgid "file digest algorithm is per package configurable"
 msgstr "filkontrollsummealgoritm är konfigurerbar per paket"
 
-#: lib/rpmds.c:895
+#: lib/rpmds.c:907
 msgid "support for POSIX.1e file capabilities"
 msgstr "stöd för filförmågor (capabilities) enligt POSIX.1e"
 
-#: lib/rpmds.c:899
+#: lib/rpmds.c:911
 #, fuzzy
 msgid "package scriptlets can be expanded at install time."
 msgstr "paketskript kan komma åt rpm-databasen under installation."
@@ -2761,31 +2766,31 @@ msgstr "Var god kontakta %s\n"
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kan inte öppna %s för läsning: %m.\n"
 
-#: lib/rpmscript.c:76
+#: lib/rpmscript.c:77
 msgid "<lua> scriptlet support not built in\n"
 msgstr "<lua>-skriptstöd är inte inbyggt\n"
 
-#: lib/rpmscript.c:189
+#: lib/rpmscript.c:190
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
 msgstr "Kunde inte skapa temporärfil för %s: %s\n"
 
-#: lib/rpmscript.c:226
+#: lib/rpmscript.c:227
 #, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr "Kunde inte duplicera filbeskrivare: %s: %s\n"
 
-#: lib/rpmscript.c:249
+#: lib/rpmscript.c:250
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr "%s-skript misslyckades, waitpid(%d) rk %d: %s\n"
 
-#: lib/rpmscript.c:253
+#: lib/rpmscript.c:254
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
 msgstr "%s-skript misslyckades, signal %d\n"
 
-#: lib/rpmscript.c:256
+#: lib/rpmscript.c:257
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr "%s-skript misslyckades, slutstatus %d\n"
@@ -2901,11 +2906,11 @@ msgstr "Verifiera signatur: FELAKTIGA PARAMETRAR\n"
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Signatur: OKÄND (%d)\n"
 
-#: lib/transaction.c:1382
+#: lib/transaction.c:1388
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1382
+#: lib/transaction.c:1388
 #, fuzzy
 msgid "failed"
 msgstr "%s misslyckades\n"
@@ -2990,40 +2995,40 @@ msgstr ""
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "kan inte öppna %s-indexet med db%d - %s (%d)\n"
 
-#: lib/rpmdb.c:679
+#: lib/rpmdb.c:680
 msgid "no dbpath has been set\n"
 msgstr "ingen dbpath har satts\n"
 
-#: lib/rpmdb.c:861 lib/rpmdb.c:978 lib/rpmdb.c:1023 lib/rpmdb.c:1877
-#: lib/rpmdb.c:2030 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "fel(%d) när \"%s\"-poster hämtades från %s-indexet\n"
 
-#: lib/rpmdb.c:1210
+#: lib/rpmdb.c:1211
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: hoppar över"
 
-#: lib/rpmdb.c:1220
+#: lib/rpmdb.c:1221
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "fel(%d) när post nr. %d sparades i %s\n"
 
-#: lib/rpmdb.c:1318
+#: lib/rpmdb.c:1319
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: regexec misslyckades: %s\n"
 
-#: lib/rpmdb.c:1499
+#: lib/rpmdb.c:1500
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp misslyckades: %s\n"
 
-#: lib/rpmdb.c:1659
+#: lib/rpmdb.c:1660
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: hoppar över"
 
-#: lib/rpmdb.c:1800
+#: lib/rpmdb.c:1801
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: skadat huvud nr. %u hämtat -- hoppar över.\n"
@@ -3120,20 +3125,20 @@ msgstr "db%d-fel(%d) från %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d-fel(%d): %s\n"
 
-#: lib/backend/db3.c:499
+#: lib/backend/db3.c:506
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "kan inte få %s lås på %s/%s\n"
 
-#: lib/backend/db3.c:501
+#: lib/backend/db3.c:508
 msgid "shared"
 msgstr "delat"
 
-#: lib/backend/db3.c:501
+#: lib/backend/db3.c:508
 msgid "exclusive"
 msgstr "uteslutande"
 
-#: lib/backend/db3.c:581
+#: lib/backend/db3.c:588
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
@@ -3441,6 +3446,11 @@ msgstr "kan inte läsa signaturen\n"
 #: sign/rpmgensig.c:484 sign/rpmgensig.c:554
 msgid "rpmMkTemp failed\n"
 msgstr "rpmMkTemp misslyckades\n"
+
+#: sign/rpmgensig.c:537
+#, c-format
+msgid "%s already contains identical signature, skipping\n"
+msgstr ""
 
 #: sign/rpmgensig.c:562
 #, c-format
