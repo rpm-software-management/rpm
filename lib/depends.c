@@ -412,9 +412,24 @@ retry:
 	goto exit;
 
     /* Pretrans dependencies can't be satisfied by added packages. */
-    if (!(dsflags & RPMSENSE_PRETRANS) &&
-		rpmalSatisfiesDepend(tsmem->addedPackages, dep) != NULL) {
-	goto exit;
+    if (!(dsflags & RPMSENSE_PRETRANS)) {
+	rpmte match = rpmalSatisfiesDepend(tsmem->addedPackages, dep);
+
+	/*
+	 * Handle definitive matches within the added package set.
+	 * Self-obsoletes and -conflicts fall through here as we need to 
+	 * check for possible other matches in the rpmdb.
+	 */
+	if (match) {
+	    rpmTagVal dtag = rpmdsTagN(dep);
+	    /* Requires match, look no further */
+	    if (dtag == RPMTAG_REQUIRENAME)
+		goto exit;
+
+	    /* Conflicts/obsoletes match on another package, look no further */
+	    if (rpmteDS(match, dtag) != dep)
+		goto exit;
+	}
     }
 
     /* See if the rpmdb provides it */
