@@ -740,8 +740,20 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     if (sense == 0) {
 	sense = rpmvercmp(aV, bV);
-	if (sense == 0 && aR && *aR && bR && *bR)
-	    sense = rpmvercmp(aR, bR);
+	if (sense == 0) {
+	    if (aR && *aR && bR && *bR) {
+		sense = rpmvercmp(aR, bR);
+	    } else {
+		/* always matches if the side with no release has SENSE_EQUAL */
+		if ((aR && *aR && (B->Flags[B->i] & RPMSENSE_EQUAL)) ||
+		    (bR && *bR && (A->Flags[A->i] & RPMSENSE_EQUAL))) {
+		    aEVR = _free(aEVR);
+		    bEVR = _free(bEVR);
+		    result = 1;
+		    goto exit;
+		}
+	    }
+	}
     }
     aEVR = _free(aEVR);
     bEVR = _free(bEVR);
