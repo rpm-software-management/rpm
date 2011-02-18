@@ -8,7 +8,7 @@ build dependencies look just like install dependencies in a spec file with
 "Build" prefixed:
 
 \verbatim
-	BuildPrereqs:
+	BuildPreReq:
 	BuildRequires:
 	BuildConflicts:
 \endverbatim

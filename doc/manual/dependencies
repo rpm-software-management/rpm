@@ -2,7 +2,7 @@
 
 Dependencies provide a way for a package builder to require other
 packages or capabilities to be installed before or simultaneously
-with one another. These can be used to require a python interpretor
+with one another. These can be used to require a python interpreter
 for a python based application for example. RPM ensures dependencies
 are satisfied whenever packages are installed, erased, or upgraded.
 
