@@ -101,4 +101,6 @@ for pine:
 
 \endverbatim
 
+See also the %bcond_with and %bcond_without helper macros and their
+documentation in /usr/lib/rpm/macros.
 */
