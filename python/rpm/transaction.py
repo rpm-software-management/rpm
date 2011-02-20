@@ -45,7 +45,7 @@ class TransactionSet(TransactionSetCore):
             return tuple(keys)
 
     def addInstall(self, item, key, how="u"):
-        if isinstance(item, str):
+        if isinstance(item, basestring):
             f = file(item)
             header = self.hdrFromFdno(f)
             f.close()
@@ -69,7 +69,7 @@ class TransactionSet(TransactionSetCore):
             hdrs = item
         elif isinstance(item, int):
             hdrs = self.dbMatch(rpm.RPMDBI_PACKAGES, item)
-        elif isinstance(item, str):
+        elif isinstance(item, basestring):
             hdrs = self.dbMatch(rpm.RPMDBI_LABEL, item)
         else:
             raise TypeError("invalid type %s" % type(item))
