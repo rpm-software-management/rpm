@@ -2331,7 +2331,6 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 	DBT data;
 
 	memset(&data, 0, sizeof(data));
-	xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
 	rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
 	if (rc) {
 	    rpmlog(RPMLOG_ERR,
