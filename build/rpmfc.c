@@ -272,12 +272,6 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	    break;
 	}
 
-	/* Child exited, we're done */
-	if (FD_ISSET(sigpipe, &ibits)) {
-	    while (read(sigpipe, buf, sizeof(buf)) > 0) {};
-	    break;
-	}
-
 	/* Write data to child */
 	if (writeBytesLeft > 0 && FD_ISSET(toProg[1], &obits)) {
 	    size_t nb = (1024 < writeBytesLeft) ? 1024 : writeBytesLeft;
@@ -293,11 +287,20 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	
 	/* Read when we get data back from the child */
 	if (FD_ISSET(fromProg[0], &ibits)) {
-	    int nbr;
-	    while ((nbr = read(fromProg[0], buf, sizeof(buf)-1)) > 0) {
-		buf[nbr] = '\0';
-		appendStringBuf(readBuff, buf);
+	    int nbr = read(fromProg[0], buf, sizeof(buf)-1);
+	    if (nbr < 0 && errno == EINTR) continue;
+	    if (nbr < 0) {
+		myerrno = errno;
+		break;
 	    }
+	    buf[nbr] = '\0';
+	    appendStringBuf(readBuff, buf);
+	}
+
+	/* Child exited, we're done */
+	if (FD_ISSET(sigpipe, &ibits)) {
+	    while (read(sigpipe, buf, sizeof(buf)) > 0) {};
+	    break;
 	}
     }
 
