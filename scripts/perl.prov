@@ -166,7 +166,7 @@ sub process_file {
 
       if (m/\$Revision: (\d+[.0-9]+)/) {
         $version = $1;
-      } elsif (m/['"]?(\d+[.0-9]+)['"]?/) {
+      } elsif (m/=\s*['"]?(\d+[._0-9]+)['"]?/) {
 
         # look for a static number hard coded in the script
 
