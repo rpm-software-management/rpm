@@ -8,8 +8,8 @@ do
 	exit 1
     fi
 
-    plaintext=`mktemp /tmp/tgpg-$$.XXXXXX`
-    detached=`mktemp /tmp/tgpg-$$.XXXXXX`
+    plaintext=`mktemp ${TMPDIR:-/tmp}/tgpg-$$.XXXXXX`
+    detached=`mktemp ${TMPDIR:-/tmp}/tgpg-$$.XXXXXX`
 
 # --- Extract detached signature
     rpm -qp -vv --qf '%{siggpg:armor}' $pkg > $detached
