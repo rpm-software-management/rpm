@@ -232,7 +232,7 @@ fi
 
 
 
-provides_tmp=/tmp/provides.$$
+provides_tmp=${TMPDIR:-/tmp}/provides.$$
 if test -f $provides_tmp ; then
 	echo "$provides_tmp already exists.  Exiting."
 	exit 11
@@ -247,7 +247,7 @@ do
 	find $d -type f -print 2>/dev/null | grep -E -v \'$ignore_dirs\' | $find_provides >> $provides_tmp
 done
 
-sum_tmp=/tmp/sum.$$
+sum_tmp=${TMPDIR:-/tmp}/sum.$$
 if test -f $sum_tmp ; then
 	echo "$sum_tmp already exists.  Exiting."
 	exit 11
@@ -347,13 +347,13 @@ cat <<_EIEIO_
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH
 
-sum_current_tmp=/tmp/rpm.sum.current.\$\$
+sum_current_tmp=\${TMPDIR:-/tmp}/rpm.sum.current.\$\$
 if test -f \$sum_current_tmp ; then
 	echo "\$sum_current_tmp already exists.  Exiting."
 	exit 11
 fi
 
-sum_package_tmp=/tmp/rpm.sum.package.\$\$
+sum_package_tmp=\${TMPDIR:-/tmp}/rpm.sum.package.\$\$
 if test -f \$sum_package_tmp ; then
 	echo "\$sum_package_tmp already exists.  Exiting."
 	exit 11

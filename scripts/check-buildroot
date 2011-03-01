@@ -22,7 +22,7 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
         exit 0
 fi
 
-tmp=$(mktemp /tmp/cbr.XXXXXX)
+tmp=$(mktemp ${TMPDIR:-/tmp}/cbr.XXXXXX)
 trap "rm -f $tmp" EXIT
 
 find "$RPM_BUILD_ROOT" \! \( \
