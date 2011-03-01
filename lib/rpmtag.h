@@ -299,6 +299,8 @@ typedef enum rpmTag_e {
     RPMTAG_ORDERNAME		= 5035,	/* s[] */
     RPMTAG_ORDERVERSION		= 5036,	/* s[] */
     RPMTAG_ORDERFLAGS		= 5037,	/* i[] */
+    RPMTAG_MSSFMANIFEST		= 5038, /* s[] reservation (unimplemented) */
+    RPMTAG_MSSFDOMAIN		= 5039, /* s[] reservation (unimplemented) */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
