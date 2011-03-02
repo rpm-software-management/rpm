@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-02-15 15:12+0200\n"
+"POT-Creation-Date: 2011-03-02 08:46+0200\n"
 "PO-Revision-Date: 2001-06-27 12:24+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <no@li.org>\n"
@@ -1430,46 +1430,46 @@ msgstr "Kunne ikke kjøre %s: %s\n"
 msgid "Couldn't fork %s: %s\n"
 msgstr "klarte ikke å åpne %s: %s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:320
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s feilet\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:324
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "kunne ikke skrive alle data til %s\n"
 
-#: build/rpmfc.c:816
+#: build/rpmfc.c:819
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:904
+#: build/rpmfc.c:907
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:921
+#: build/rpmfc.c:924
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "feil under åpning av %s: %s\n"
 
-#: build/rpmfc.c:928
+#: build/rpmfc.c:931
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: build/rpmfc.c:969
+#: build/rpmfc.c:972
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: build/rpmfc.c:1170
+#: build/rpmfc.c:1173
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: build/rpmfc.c:1175 build/rpmfc.c:1184
+#: build/rpmfc.c:1178 build/rpmfc.c:1187
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Klarte ikke å finne %s:\n"
@@ -3027,7 +3027,7 @@ msgid "no dbpath has been set\n"
 msgstr ""
 
 #: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
-#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2626
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
@@ -3070,74 +3070,74 @@ msgstr "feil(%d) under fjerning av post %s fra %s\n"
 msgid "error(%d) adding header #%d record\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2338
+#: lib/rpmdb.c:2337
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2362
+#: lib/rpmdb.c:2361
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2428
 #, fuzzy, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2447
 #, fuzzy, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2458
+#: lib/rpmdb.c:2457
 #, fuzzy, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "feil(%d) under fjerning av post %s fra %s\n"
 
-#: lib/rpmdb.c:2534
+#: lib/rpmdb.c:2533
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:2643
+#: lib/rpmdb.c:2642
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "feil(%d) under lagring av post %s til %s\n"
 
-#: lib/rpmdb.c:2840
+#: lib/rpmdb.c:2839
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2858
+#: lib/rpmdb.c:2857
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "kunne ikke opprette %s: %s\n"
 
-#: lib/rpmdb.c:2892
+#: lib/rpmdb.c:2891
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2906
+#: lib/rpmdb.c:2905
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: lib/rpmdb.c:2921
+#: lib/rpmdb.c:2920
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2929
+#: lib/rpmdb.c:2928
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2930
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2942
+#: lib/rpmdb.c:2941
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3152,20 +3152,20 @@ msgstr ""
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: lib/backend/db3.c:506
+#: lib/backend/db3.c:508
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "shared"
 msgstr ""
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "exclusive"
 msgstr ""
 
-#: lib/backend/db3.c:588
+#: lib/backend/db3.c:590
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""

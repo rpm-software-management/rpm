@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-02-15 15:12+0200\n"
+"POT-Creation-Date: 2011-03-02 08:46+0200\n"
 "PO-Revision-Date: 2009-01-11 01:27+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
@@ -1455,47 +1455,47 @@ msgstr "Konnte %s nicht ausführen: %s\n"
 msgid "Couldn't fork %s: %s\n"
 msgstr "Konnte fork %s nicht ausführen: %s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:320
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:324
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "Konnte nicht all Daten nach %s schreiben\n"
 
-#: build/rpmfc.c:816
+#: build/rpmfc.c:819
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Umwandlung von %s in einen langen Integer fehlgeschlagen.\n"
 
-#: build/rpmfc.c:904
+#: build/rpmfc.c:907
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "GPG konnte die Signatur nicht schreiben\n"
 
-#: build/rpmfc.c:921
+#: build/rpmfc.c:924
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:928
+#: build/rpmfc.c:931
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load fehlgeschlagen: %s\n"
 
-#: build/rpmfc.c:969
+#: build/rpmfc.c:972
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Erkennung der Datei \"%s\" fehlgeschlagen: Modus %06o %s\n"
 
-#: build/rpmfc.c:1170
+#: build/rpmfc.c:1173
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Finde %s: %s\n"
 
-#: build/rpmfc.c:1175 build/rpmfc.c:1184
+#: build/rpmfc.c:1178 build/rpmfc.c:1187
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Fehlgeschlagenes zu finden %s:\n"
@@ -3035,7 +3035,7 @@ msgid "no dbpath has been set\n"
 msgstr "Kein Datenbank-Pfad wurde gesetzt\n"
 
 #: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
-#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2626
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "Fehler(%d) beim Lesen \"%s\"-Einträgen des %s-Indexes\n"
@@ -3078,75 +3078,75 @@ msgstr "Fehler(%d) beim Lesen \"%s\"-Einträgen des %s-Indexes\n"
 msgid "error(%d) adding header #%d record\n"
 msgstr "Fehler(%d) beim Markieren des Header-Eintrags #%d zur %s Entfernung\n"
 
-#: lib/rpmdb.c:2338
+#: lib/rpmdb.c:2337
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "Fehler(%d) beim Markieren des Header-Eintrags #%d zur %s Entfernung\n"
 
-#: lib/rpmdb.c:2362
+#: lib/rpmdb.c:2361
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: Kann den Header bei 0x%x nicht lesen\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2428
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "Fehler(%d) beim Setzen von \"%s\"-Einträgen des %s-Indexes\n"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2447
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "Fehler(%d) beim Speichern des Eintrags \"%s\" in %s\n"
 
-#: lib/rpmdb.c:2458
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "Fehler(%d) beim Entfernen des Eintrags \"%s\" aus %s\n"
 
-#: lib/rpmdb.c:2534
+#: lib/rpmdb.c:2533
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "Fehler(%d) beim Reservieren einer neuen Paket-Instanz\n"
 
-#: lib/rpmdb.c:2643
+#: lib/rpmdb.c:2642
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "Fehler(%d) beim Speichern des Eintrags %s in %s\n"
 
-#: lib/rpmdb.c:2840
+#: lib/rpmdb.c:2839
 msgid "no dbpath has been set"
 msgstr "Kein Datenbank-Pfad wurde gesetzt"
 
-#: lib/rpmdb.c:2858
+#: lib/rpmdb.c:2857
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "Erzeugen des Verzeichnises %s fehlgeschlagen: %s\n"
 
-#: lib/rpmdb.c:2892
+#: lib/rpmdb.c:2891
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "Header #%u in der Datenbank ist ungültig -- überspringe.\n"
 
-#: lib/rpmdb.c:2906
+#: lib/rpmdb.c:2905
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "Kann ursprünglichen Eintrag %u nicht hinzufügen\n"
 
-#: lib/rpmdb.c:2921
+#: lib/rpmdb.c:2920
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "Neu bauen der Datenbank fehlgeschlagen: Datenbank verbleibt entsprechend\n"
 
-#: lib/rpmdb.c:2929
+#: lib/rpmdb.c:2928
 msgid "failed to replace old database with new database!\n"
 msgstr "Konnte die alte Datenbank nicht durch die neue ersetzen!\n"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2930
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "Ersetze Dateien in %s mit Dateien aus %s für eine Wiederherstellung"
 
-#: lib/rpmdb.c:2942
+#: lib/rpmdb.c:2941
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "Entfernen des Verzeichnisses %s fehlgeschlagen: %s\n"
@@ -3161,20 +3161,20 @@ msgstr "db%d-Fehler (%d) von %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d-Fehler (%d): %s\n"
 
-#: lib/backend/db3.c:506
+#: lib/backend/db3.c:508
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "Keine %s-Sperre auf %s/%s\n"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "shared"
 msgstr "verteilt"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "exclusive"
 msgstr "exklusiv"
 
-#: lib/backend/db3.c:588
+#: lib/backend/db3.c:590
 #, fuzzy, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "Verified DB-Index       %s/%s\n"

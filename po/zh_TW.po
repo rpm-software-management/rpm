@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-02-15 15:12+0200\n"
+"POT-Creation-Date: 2011-03-02 08:46+0200\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1419,47 +1419,47 @@ msgstr "無法執行 %s: %s\n"
 msgid "Couldn't fork %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:320
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s 失敗：%s\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:324
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "無法寫入酬載到 %s: %s\n"
 
-#: build/rpmfc.c:816
+#: build/rpmfc.c:819
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:904
+#: build/rpmfc.c:907
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "寫入簽名時 gpg 失敗\n"
 
-#: build/rpmfc.c:921
+#: build/rpmfc.c:924
 #, fuzzy, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
 
-#: build/rpmfc.c:928
+#: build/rpmfc.c:931
 #, fuzzy, c-format
 msgid "magic_load failed: %s\n"
 msgstr "%s 移除目錄 %s 失敗：%s\n"
 
-#: build/rpmfc.c:969
+#: build/rpmfc.c:972
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1170
+#: build/rpmfc.c:1173
 #, fuzzy, c-format
 msgid "Finding  %s: %s\n"
 msgstr "檔案 %s: %s\n"
 
-#: build/rpmfc.c:1175 build/rpmfc.c:1184
+#: build/rpmfc.c:1178 build/rpmfc.c:1187
 #, fuzzy, c-format
 msgid "Failed to find %s:\n"
 msgstr "讀取 %s 失敗: %s。\n"
@@ -2988,7 +2988,7 @@ msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
 #: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
-#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2626
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
@@ -3031,74 +3031,74 @@ msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 msgid "error(%d) adding header #%d record\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2338
+#: lib/rpmdb.c:2337
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2362
+#: lib/rpmdb.c:2361
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2428
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引設定 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2447
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2458
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄 \"%2$s\" 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2534
+#: lib/rpmdb.c:2533
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "配置新套件實體時產生錯誤(%d)\n"
 
-#: lib/rpmdb.c:2643
+#: lib/rpmdb.c:2642
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "儲存記錄 %2$s 於 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2840
+#: lib/rpmdb.c:2839
 msgid "no dbpath has been set"
 msgstr "沒有 dbpath 已被設定"
 
-#: lib/rpmdb.c:2858
+#: lib/rpmdb.c:2857
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: lib/rpmdb.c:2892
+#: lib/rpmdb.c:2891
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2906
+#: lib/rpmdb.c:2905
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本在 %u 的記錄\n"
 
-#: lib/rpmdb.c:2921
+#: lib/rpmdb.c:2920
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: lib/rpmdb.c:2929
+#: lib/rpmdb.c:2928
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2930
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "以 %2$s 的檔案取代 %1$s 中的檔案來回復"
 
-#: lib/rpmdb.c:2942
+#: lib/rpmdb.c:2941
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
@@ -3113,20 +3113,20 @@ msgstr "資料庫%d 錯誤(%d) 來自 %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "資料庫%d 錯誤(%d): %s\n"
 
-#: lib/backend/db3.c:506
+#: lib/backend/db3.c:508
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 鎖定於 %s/%s\n"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "shared"
 msgstr "共享"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "exclusive"
 msgstr "互斥"
 
-#: lib/backend/db3.c:588
+#: lib/backend/db3.c:590
 #, fuzzy, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "已驗證資料庫索引       %s/%s\n"

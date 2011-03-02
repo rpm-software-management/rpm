@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-02-15 15:12+0200\n"
+"POT-Creation-Date: 2011-03-02 08:46+0200\n"
 "PO-Revision-Date: 2001-07-24 10:02+0100\n"
 "Last-Translator: Jindrich Novy <jnovy@users.sourceforge.net>\n"
 "Language-Team: Czech <cs@li.org>\n"
@@ -1428,47 +1428,47 @@ msgstr "Nemohu spustit %s: %s\n"
 msgid "Couldn't fork %s: %s\n"
 msgstr "Nemohu provést fork %s: %s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:320
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "%s selhalo: %s\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:324
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "Nemohu zapsat všechna data do %s\n"
 
-#: build/rpmfc.c:816
+#: build/rpmfc.c:819
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:904
+#: build/rpmfc.c:907
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "gpg selhal při zápisu podpisu\n"
 
-#: build/rpmfc.c:921
+#: build/rpmfc.c:924
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "magic_open(0x%x) selhalo: %s\n"
 
-#: build/rpmfc.c:928
+#: build/rpmfc.c:931
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "magic_load selhal: %s\n"
 
-#: build/rpmfc.c:969
+#: build/rpmfc.c:972
 #, fuzzy, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "magic_file(ms, \"%s\") selhal: mód %06o %s\n"
 
-#: build/rpmfc.c:1170
+#: build/rpmfc.c:1173
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "Hledám   %s: %s\n"
 
-#: build/rpmfc.c:1175 build/rpmfc.c:1184
+#: build/rpmfc.c:1178 build/rpmfc.c:1187
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Selhalo vyhledání %s:\n"
@@ -2996,7 +2996,7 @@ msgid "no dbpath has been set\n"
 msgstr "nebyla nastavena dbpath\n"
 
 #: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
-#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2626
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "chyba(%d) získávání \"%s\" záznamů z %s indexu\n"
@@ -3039,74 +3039,74 @@ msgstr "chyba(%d) získávání \"%s\" záznamů z %s indexu\n"
 msgid "error(%d) adding header #%d record\n"
 msgstr "chyba(%d) při nastavování hlavičky #%d záznamu pro %s odstranění\n"
 
-#: lib/rpmdb.c:2338
+#: lib/rpmdb.c:2337
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "chyba(%d) při nastavování hlavičky #%d záznamu pro %s odstranění\n"
 
-#: lib/rpmdb.c:2362
+#: lib/rpmdb.c:2361
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: nemohu číst hlavičku na 0x%x\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2428
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "chyba(%d) nastavování \"%s\" záznamů z %s indexu\n"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2447
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "chyba(%d) při ukládání záznamu \"%s\" do %s\n"
 
-#: lib/rpmdb.c:2458
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "chyba(%d) v odstraňování \"%s\" z %s\n"
 
-#: lib/rpmdb.c:2534
+#: lib/rpmdb.c:2533
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "chyba(%d) při alokaci nové instance balíčku\n"
 
-#: lib/rpmdb.c:2643
+#: lib/rpmdb.c:2642
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "chyba(%d) při ukládání záznamu %s do %s\n"
 
-#: lib/rpmdb.c:2840
+#: lib/rpmdb.c:2839
 msgid "no dbpath has been set"
 msgstr "žádný dbpath nebyl nastaven"
 
-#: lib/rpmdb.c:2858
+#: lib/rpmdb.c:2857
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "selhání při vytváření adresáře %s: %s\n"
 
-#: lib/rpmdb.c:2892
+#: lib/rpmdb.c:2891
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "hlavička #%u v databázi je špatná -- přeskakuji.\n"
 
-#: lib/rpmdb.c:2906
+#: lib/rpmdb.c:2905
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "nemohu přidat záznam původně na %u\n"
 
-#: lib/rpmdb.c:2921
+#: lib/rpmdb.c:2920
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "selhalo znovusestavení databáze: původní databáze zůstává na místě\n"
 
-#: lib/rpmdb.c:2929
+#: lib/rpmdb.c:2928
 msgid "failed to replace old database with new database!\n"
 msgstr "selhalo nahrazení staré databáze novou databází!\n"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2930
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "nahraď soubory v %s soubory z %s k obnovení"
 
-#: lib/rpmdb.c:2942
+#: lib/rpmdb.c:2941
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "selhalo odstranění adresáře %s: %s\n"
@@ -3121,20 +3121,20 @@ msgstr "db%d chyba(%d) z %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d chyba(%d): %s\n"
 
-#: lib/backend/db3.c:506
+#: lib/backend/db3.c:508
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "nemohu získat zámek %s na %s/%s\n"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "shared"
 msgstr "sdílen"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "exclusive"
 msgstr "exkluzivní"
 
-#: lib/backend/db3.c:588
+#: lib/backend/db3.c:590
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""

@@ -22,7 +22,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-02-15 15:12+0200\n"
+"POT-Creation-Date: 2011-03-02 08:46+0200\n"
 "PO-Revision-Date: 2009-04-25 17:36+0100\n"
 "Last-Translator: Agustí Grau <fedora@softcatala.org>\n"
 "Language-Team: Catalan <fedora@softcatala.net>\n"
@@ -1481,47 +1481,47 @@ msgstr "No s'ha pogut executar %s: %s\n"
 msgid "Couldn't fork %s: %s\n"
 msgstr "No s'ha pogut crear el procés fill de «%s»: %s\n"
 
-#: build/rpmfc.c:317
+#: build/rpmfc.c:320
 #, fuzzy, c-format
 msgid "%s failed: %x\n"
 msgstr "ha fallat %s: %s\n"
 
-#: build/rpmfc.c:321
+#: build/rpmfc.c:324
 #, fuzzy, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr "ha fallat en escriure totes les dades a %s\n"
 
-#: build/rpmfc.c:816
+#: build/rpmfc.c:819
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr "Ha fallat la conversió de %s a enter gran.\n"
 
-#: build/rpmfc.c:904
+#: build/rpmfc.c:907
 #, fuzzy
 msgid "No file attributes configured\n"
 msgstr "el gpg no ha escrit la signatura\n"
 
-#: build/rpmfc.c:921
+#: build/rpmfc.c:924
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr "Ha fallat magic_open(0x%x): %s\n"
 
-#: build/rpmfc.c:928
+#: build/rpmfc.c:931
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr "Ha fallat magic_load: %s\n"
 
-#: build/rpmfc.c:969
+#: build/rpmfc.c:972
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr "Ha fallat el reconeixement del fitxer \"%s\": mode %06o %s\n"
 
-#: build/rpmfc.c:1170
+#: build/rpmfc.c:1173
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr "S'està cercant %s: %s\n"
 
-#: build/rpmfc.c:1175 build/rpmfc.c:1184
+#: build/rpmfc.c:1178 build/rpmfc.c:1187
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr "Ha fallat la cerca de %s:\n"
@@ -3072,7 +3072,7 @@ msgid "no dbpath has been set\n"
 msgstr "no s'ha establert cap dbpath\n"
 
 #: lib/rpmdb.c:862 lib/rpmdb.c:979 lib/rpmdb.c:1024 lib/rpmdb.c:1878
-#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2627
+#: lib/rpmdb.c:2031 lib/rpmdb.c:2065 lib/rpmdb.c:2626
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "s'ha produït un error (%d) en obtenir «%s» registres de l'índex %s\n"
@@ -3117,78 +3117,78 @@ msgstr ""
 "error(%d) en establir el registre de la capçalera #%d per a la supressió de "
 "%s\n"
 
-#: lib/rpmdb.c:2338
+#: lib/rpmdb.c:2337
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr ""
 "error(%d) en establir el registre de la capçalera #%d per a la supressió de "
 "%s\n"
 
-#: lib/rpmdb.c:2362
+#: lib/rpmdb.c:2361
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: no s'ha pogut llegir la capçalera a 0x%x\n"
 
-#: lib/rpmdb.c:2429
+#: lib/rpmdb.c:2428
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "error(%d) en establir els registres «%s» de l'índex %s\n"
 
-#: lib/rpmdb.c:2448
+#: lib/rpmdb.c:2447
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "error(%d) en emmagatzemar el registre «%s» en %s\n"
 
-#: lib/rpmdb.c:2458
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "error(%d) en suprimir el registre «%s» de %s\n"
 
-#: lib/rpmdb.c:2534
+#: lib/rpmdb.c:2533
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "error(%d) en assignar la instància de nou paquet\n"
 
-#: lib/rpmdb.c:2643
+#: lib/rpmdb.c:2642
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "error(%d) en emmagatzemar el registre %s a %s\n"
 
-#: lib/rpmdb.c:2840
+#: lib/rpmdb.c:2839
 msgid "no dbpath has been set"
 msgstr "no s'ha establert el dbpath"
 
-#: lib/rpmdb.c:2858
+#: lib/rpmdb.c:2857
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "ha fallat en crear el directori %s: %s\n"
 
-#: lib/rpmdb.c:2892
+#: lib/rpmdb.c:2891
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "la capçalera #%u de la base de dades és incorrecta -- s'ignorarà.\n"
 
-#: lib/rpmdb.c:2906
+#: lib/rpmdb.c:2905
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "no es pot afegir el registre originalment a %u\n"
 
-#: lib/rpmdb.c:2921
+#: lib/rpmdb.c:2920
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "no s'ha pogut remuntar la base de dades: es continua fent servir la base de "
 "dades original\n"
 
-#: lib/rpmdb.c:2929
+#: lib/rpmdb.c:2928
 msgid "failed to replace old database with new database!\n"
 msgstr "no s'ha pogut reemplaçar la base de dades antiga amb la nova\n"
 
-#: lib/rpmdb.c:2931
+#: lib/rpmdb.c:2930
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "reemplaçeu els fitxers a %s amb fitxers de %s per a recuperar-ho"
 
-#: lib/rpmdb.c:2942
+#: lib/rpmdb.c:2941
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "no s'ha pogut suprimir el directori %s: %s\n"
@@ -3203,20 +3203,20 @@ msgstr "db%d error(%d) de %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d error(%d): %s\n"
 
-#: lib/backend/db3.c:506
+#: lib/backend/db3.c:508
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no es pot obtenir el blocatge %s a %s/%s\n"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "shared"
 msgstr "compartit"
 
-#: lib/backend/db3.c:508
+#: lib/backend/db3.c:510
 msgid "exclusive"
 msgstr "exclusiu"
 
-#: lib/backend/db3.c:588
+#: lib/backend/db3.c:590
 #, fuzzy, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "verificat índex de bd       %s/%s\n"
