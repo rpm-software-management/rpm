@@ -141,7 +141,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	goto errxit;
 
     dbenv->set_alloc(dbenv, rmalloc, rrealloc, NULL);
-    dbenv->set_errcall(dbenv, errlog);
+    dbenv->set_errcall(dbenv, NULL);
     dbenv->set_errpfx(dbenv, _errpfx);
 
     /* 
@@ -188,6 +188,8 @@ static int db_init(rpmdb rdb, const char * dbhome)
     rc = dbapi_err(rdb, "dbenv->open", rc, _debug);
     if (rc)
 	goto errxit;
+
+    dbenv->set_errcall(dbenv, errlog);
 
     /* stale lock removal */
     rc = dbenv->failchk(dbenv, 0);
