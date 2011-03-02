@@ -579,7 +579,7 @@ static int fsmMkdirs(FSM_t fsm);
 
 static int fsmCreate(FSM_t fsm)
 {
-    int rc;
+    int rc = 0;
     fsm->path = _free(fsm->path);
     fsm->opath = _free(fsm->opath);
     fsm->dnlx = _free(fsm->dnlx);
