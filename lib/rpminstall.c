@@ -564,13 +564,6 @@ restart:
 	    eiu->numFailed++;
 	    goto exit;
 	    break;
-	case 2:
-	    rpmlog(RPMLOG_ERR,
-			    _("file %s requires a newer version of RPM\n"),
-			    *eiu->fnp);
-	    eiu->numFailed++;
-	    goto exit;
-	    break;
 	default:
 	    eiu->numFailed++;
 	    goto exit;
