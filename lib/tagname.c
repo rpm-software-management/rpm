@@ -121,10 +121,9 @@ static const char * _tagName(rpmTagVal tag)
     const char *name = "(unknown)";
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
-    int xx;
 
     if (_rpmTags.byValue == NULL)
-	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+	tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -173,10 +172,9 @@ static rpmTagType _tagType(rpmTagVal tag)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
-    int xx;
 
     if (_rpmTags.byValue == NULL)
-	xx = tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+	tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
     if (_rpmTags.byValue) {
 	l = 0;
 	u = _rpmTags.byValueSize;
@@ -208,13 +206,12 @@ static rpmTagVal _tagValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
-    int xx;
 
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
 
     if (_rpmTags.byName == NULL)
-	xx = tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
+	tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
     if (_rpmTags.byName == NULL)
 	return RPMTAG_NOT_FOUND;
 
