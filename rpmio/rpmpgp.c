@@ -1077,7 +1077,6 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 {
     unsigned int val = *pkt;
     size_t plen, hlen;
-    pgpTag tag;
     const uint8_t *se, *h;
     DIGEST_CTX ctx;
     int rc = -1;	/* assume failure. */
@@ -1086,10 +1085,8 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 	return rc;
 
     if (val & 0x40) {
-	tag = (val & 0x3f);
 	plen = pgpLen(pkt+1, &hlen);
     } else {
-	tag = (val >> 2) & 0xf;
 	plen = (1 << (val & 0x3));
 	hlen = pgpGrab(pkt+1, plen);
     }
