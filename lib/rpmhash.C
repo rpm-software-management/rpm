@@ -108,20 +108,20 @@ void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
 #endif
 )
 {
-    unsigned int hash;
-    Bucket b;
-    Bucket * b_addr;
-
-    hash = ht->fn(key) % ht->numBuckets;
-    b = ht->buckets[hash];
-    b_addr = ht->buckets + hash;
+    unsigned int hash = ht->fn(key) % ht->numBuckets;
+    Bucket b = ht->buckets[hash];
+#ifdef HTDATATYPE
+    Bucket * b_addr = ht->buckets + hash;
+#endif
 
     if (b == NULL) {
 	ht->bucketCount += 1;
     }
 
     while (b && ht->eq(b->key, key)) {
+#ifdef HTDATATYPE
 	b_addr = &(b->next);
+#endif
 	b = b->next;
     }
 
