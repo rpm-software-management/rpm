@@ -132,7 +132,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     Header h;
     int * offsets;
     unsigned int prev;
-    int num, xx;
+    int num;
 
     if (!replaced)
 	return RPMRC_OK;
@@ -158,8 +158,8 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
     }
 
     mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
-    xx = rpmdbAppendIterator(mi, offsets, num);
-    xx = rpmdbSetIteratorRewrite(mi, 1);
+    rpmdbAppendIterator(mi, offsets, num);
+    rpmdbSetIteratorRewrite(mi, 1);
 
     sfi = replaced;
     while ((h = rpmdbNextIterator(mi)) != NULL) {
@@ -182,7 +182,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;
-		    xx = rpmdbSetIteratorModified(mi, modified);
+		    rpmdbSetIteratorModified(mi, modified);
 		}
 		num++;
 	    }
