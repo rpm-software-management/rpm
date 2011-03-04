@@ -237,7 +237,6 @@ rpmcliFini(poptContext optCon)
 poptContext
 rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 {
-    const char * optArg;
     poptContext optCon;
     int rc;
     const char *ctx, *execPath;
@@ -285,15 +284,9 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
 
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
-	optArg = poptGetOptArg(optCon);
-	switch (rc) {
-	default:
-	    fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
+	fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
 		__progname, rc);
-	    exit(EXIT_FAILURE);
-
-	    break;
-        }
+	exit(EXIT_FAILURE);
     }
 
     if (rc < -1) {
