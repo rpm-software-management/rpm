@@ -182,6 +182,13 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 
     pid = waitpid(child, &status, 0);
 
+    if (pid == -1) {
+	rpmlog(RPMLOG_ERR, _("Error executing scriptlet %s (%s)\n"),
+		 scriptName, name);
+	rc = RPMRC_FAIL;
+	goto exit;
+    }
+
     if (!WIFEXITED(status) || WEXITSTATUS(status)) {
 	rpmlog(RPMLOG_ERR, _("Bad exit status from %s (%s)\n"),
 		 scriptName, name);
