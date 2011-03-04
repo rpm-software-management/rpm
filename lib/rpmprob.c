@@ -108,43 +108,40 @@ char * rpmProblemString(rpmProblem prob)
     const char * altNEVR = (prob->altNEVR ? prob->altNEVR : "? ?altNEVR?");
     const char * str1 = (prob->str1 ? prob->str1 : N_("different"));
     char * buf = NULL;
-    int rc;
 
     switch (prob->type) {
     case RPMPROB_BADARCH:
-	rc = rasprintf(&buf, _("package %s is intended for a %s architecture"),
+	rasprintf(&buf, _("package %s is intended for a %s architecture"),
 		pkgNEVR, str1);
 	break;
     case RPMPROB_BADOS:
-	rc = rasprintf(&buf,
-		_("package %s is intended for a %s operating system"),
+	rasprintf(&buf, _("package %s is intended for a %s operating system"),
 		pkgNEVR, str1);
 	break;
     case RPMPROB_PKG_INSTALLED:
-	rc = rasprintf(&buf, _("package %s is already installed"),
-		pkgNEVR);
+	rasprintf(&buf, _("package %s is already installed"), pkgNEVR);
 	break;
     case RPMPROB_BADRELOCATE:
-	rc = rasprintf(&buf, _("path %s in package %s is not relocatable"),
+	rasprintf(&buf, _("path %s in package %s is not relocatable"),
 		str1, pkgNEVR);
 	break;
     case RPMPROB_NEW_FILE_CONFLICT:
-	rc = rasprintf(&buf, 
+	rasprintf(&buf, 
 		_("file %s conflicts between attempted installs of %s and %s"),
 		str1, pkgNEVR, altNEVR);
 	break;
     case RPMPROB_FILE_CONFLICT:
-	rc = rasprintf(&buf,
+	rasprintf(&buf,
 	    _("file %s from install of %s conflicts with file from package %s"),
 		str1, pkgNEVR, altNEVR);
 	break;
     case RPMPROB_OLDPACKAGE:
-	rc = rasprintf(&buf,
+	rasprintf(&buf,
 		_("package %s (which is newer than %s) is already installed"),
 		altNEVR, pkgNEVR);
 	break;
     case RPMPROB_DISKSPACE:
-	rc = rasprintf(&buf,
+	rasprintf(&buf,
 	    _("installing package %s needs %" PRIu64 "%cB on the %s filesystem"),
 		pkgNEVR,
 		prob->num1 > (1024*1024)
@@ -154,27 +151,24 @@ char * rpmProblemString(rpmProblem prob)
 		str1);
 	break;
     case RPMPROB_DISKNODES:
-	rc = rasprintf(&buf,
+	rasprintf(&buf,
 	    _("installing package %s needs %" PRIu64 " inodes on the %s filesystem"),
 		pkgNEVR, prob->num1, str1);
 	break;
     case RPMPROB_REQUIRES:
-	rc = rasprintf(&buf, _("%s is needed by %s%s"),
-		prob->str1,
-		(prob->num1 ? _("(installed) ") : ""), altNEVR);
+	rasprintf(&buf, _("%s is needed by %s%s"),
+		  prob->str1, (prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
     case RPMPROB_CONFLICT:
-	rc = rasprintf(&buf, _("%s conflicts with %s%s"),
-		prob->str1,
-		(prob->num1 ? _("(installed) ") : ""), altNEVR);
+	rasprintf(&buf, _("%s conflicts with %s%s"),
+		  prob->str1, (prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
     case RPMPROB_OBSOLETES:
-	rc = rasprintf(&buf, _("%s is obsoleted by %s%s"),
-		prob->str1,
-		(prob->num1 ? _("(installed) ") : ""), altNEVR);
+	rasprintf(&buf, _("%s is obsoleted by %s%s"),
+		  prob->str1, (prob->num1 ? _("(installed) ") : ""), altNEVR);
 	break;
     default:
-	rc = rasprintf(&buf,
+	rasprintf(&buf,
 		_("unknown error %d encountered while manipulating package %s"),
 		prob->type, pkgNEVR);
 	break;
