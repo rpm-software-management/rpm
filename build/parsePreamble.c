@@ -57,16 +57,21 @@ static const rpmTagVal requiredTags[] = {
 
 /**
  */
-static void addOrAppendListEntry(Header h, rpmTagVal tag, const char * line)
+static rpmRC addOrAppendListEntry(Header h, rpmTagVal tag, const char * line)
 {
     int xx;
     int argc;
     const char **argv;
 
-    xx = poptParseArgvString(line, &argc, &argv);
+    if ((xx = poptParseArgvString(line, &argc, &argv))) {
+	rpmlog(RPMLOG_ERR, _("Error parsing tag field: %s\n"), poptStrerror(xx));
+	return RPMRC_FAIL;
+    }
     if (argc) 
 	headerPutStringArray(h, tag, argv, argc);
     argv = _free(argv);
+
+    return RPMRC_OK;
 }
 
 /* Parse a simple part line that only take -n <pkg> or <pkg> */
@@ -635,7 +640,6 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     int multiToken = 0;
     rpmsenseFlags tagflags = RPMSENSE_ANY;
     int rc;
-    int xx;
     
     if (field == NULL) return RPMRC_FAIL;	/* XXX can't happen */
     /* Find the start of the "field" and strip trailing space */
@@ -701,8 +705,8 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_PREFIXES: {
 	struct rpmtd_s td;
 	const char *str;
-	addOrAppendListEntry(pkg->header, tag, field);
-	xx = headerGet(pkg->header, tag, &td, HEADERGET_MINMEM);
+	if (addOrAppendListEntry(pkg->header, tag, field) != RPMRC_OK ||
+	    !headerGet(pkg->header, tag, &td, HEADERGET_MINMEM)) return RPMRC_FAIL;
 	while ((str = rpmtdNextString(&td))) {
 	    size_t len = strlen(str);
 	    if (len > 1 && str[len-1] == '/') {
@@ -794,7 +798,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_EXCLUSIVEARCH:
     case RPMTAG_EXCLUDEOS:
     case RPMTAG_EXCLUSIVEOS:
-	addOrAppendListEntry(spec->buildRestrictions, tag, field);
+	if (addOrAppendListEntry(spec->buildRestrictions, tag, field) != RPMRC_OK) return RPMRC_FAIL;
 	break;
     case RPMTAG_BUILDARCHS: {
 	int BACount;
@@ -823,7 +827,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	break;
     }
     case RPMTAG_COLLECTIONS:
-	addOrAppendListEntry(pkg->header, tag, field);
+	if (addOrAppendListEntry(pkg->header, tag, field) != RPMRC_OK) return RPMRC_FAIL;
 	break;
     default:
 	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
