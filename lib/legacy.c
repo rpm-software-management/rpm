@@ -26,7 +26,7 @@ static void compressFilelist(Header h)
     const char ** baseNames;
     uint32_t * dirIndexes;
     rpm_count_t count;
-    int xx, i;
+    int i;
     int dirIndex = -1;
 
     /*
@@ -36,7 +36,7 @@ static void compressFilelist(Header h)
      */
 
     if (headerIsEntry(h, RPMTAG_DIRNAMES)) {
-	xx = headerDel(h, RPMTAG_OLDFILENAMES);
+	headerDel(h, RPMTAG_OLDFILENAMES);
 	return;		/* Already converted. */
     }
 
@@ -112,7 +112,7 @@ exit:
     free(baseNames);
     free(dirIndexes);
 
-    xx = headerDel(h, RPMTAG_OLDFILENAMES);
+    headerDel(h, RPMTAG_OLDFILENAMES);
 }
 
 static void expandFilelist(Header h)
