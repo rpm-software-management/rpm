@@ -917,17 +917,17 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp)
 {
     const struct rpmlibProvides_s * rltblp = tblp;
     const struct rpmlibProvides_s * rlp;
-    int xx;
+    int rc = 0;
 
     if (rltblp == NULL)
 	rltblp = rpmlibProvides;
 
-    for (rlp = rltblp; rlp->featureName != NULL; rlp++) {
+    for (rlp = rltblp; rlp->featureName != NULL && rc == 0; rlp++) {
 	rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
-	xx = rpmdsMerge(dsp, ds);
+	rc = rpmdsMerge(dsp, ds);
 	ds = rpmdsFree(ds);
     }
-    return 0;
+    return rc;
 }
 
