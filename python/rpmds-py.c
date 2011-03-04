@@ -174,10 +174,9 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
 static PyObject * rpmds_Rpmlib(rpmdsObject * s)
 {
     rpmds ds = NULL;
-    int xx;
 
     /* XXX check return code, permit arg (NULL uses system default). */
-    xx = rpmdsRpmlib(&ds, NULL);
+    rpmdsRpmlib(&ds, NULL);
 
     return rpmds_Wrap(&rpmds_Type, ds);
 }
