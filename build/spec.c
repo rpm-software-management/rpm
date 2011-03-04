@@ -399,7 +399,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 {
     rpmSpec spec = NULL;
     int res = 1;
-    int xx;
 
     if (qva->qva_showPackage == NULL)
 	goto exit;
@@ -411,12 +410,12 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	goto exit;
     }
 
-    res = 0;
     if (qva->qva_source == RPMQV_SPECRPMS) {
+	res = 0;
 	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next)
-	    xx = qva->qva_showPackage(qva, ts, pkg->header);
+	    res += qva->qva_showPackage(qva, ts, pkg->header);
     } else {
-	xx = qva->qva_showPackage(qva, ts, spec->sourceHeader);
+	res = qva->qva_showPackage(qva, ts, spec->sourceHeader);
     }
 
 exit:
