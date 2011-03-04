@@ -324,7 +324,7 @@ static uint64_t countFiles(rpmts ts)
  * @param reportConflicts
  */
 /* XXX only ts->{probs,rpmdb} modified */
-static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
+static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 				   Header otherHeader, rpmfi otherFi,
 				   int beingRemoved)
 {
@@ -333,7 +333,7 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
     int isCfgFile = ((rpmfiFFlags(otherFi) | rpmfiFFlags(fi)) & RPMFILE_CONFIG);
 
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
-	return 0;
+	return;
 
     if (rpmfiCompare(otherFi, fi)) {
 	rpm_color_t tscolor = rpmtsColor(ts);
@@ -377,8 +377,6 @@ static int handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	rpmfsSetAction(fs, fx, action);
     }
     rpmfiSetFReplacedSize(fi, rpmfiFSize(otherFi));
-
-    return 0;
 }
 
 /**
@@ -912,7 +910,6 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
     rpmfs fs;
     rpmfi otherFi=NULL;
     int j;
-    int xx;
     unsigned int fileNum;
     const char * oldDir;
 
@@ -994,7 +991,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 		    }
 		    rpmfiSetFX(fi, recs[j].fileno);
 		    rpmfiSetFX(otherFi, fileNum);
-		    xx = handleInstInstalledFile(ts, p, fi, h, otherFi, beingRemoved);
+		    handleInstInstalledFile(ts, p, fi, h, otherFi, beingRemoved);
 		    break;
 		case TR_REMOVED:
 		    if (!beingRemoved) {
