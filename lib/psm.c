@@ -813,9 +813,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    /* XXX Synthesize callbacks for packages with no files. */
 	    if (rpmfiFC(fi) <= 0) {
-		void * ptr;
-		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_START, 0, 100);
-		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
+		rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_START, 0, 100);
+		rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
 		break;
 	    }
 
@@ -867,9 +866,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    /* XXX Synthesize callbacks for packages with no files. */
 	    if (rpmfiFC(fi) <= 0) {
-		void * ptr;
-		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_START, 0, 100);
-		ptr = rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_STOP, 0, 100);
+		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_START, 0, 100);
+		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_STOP, 0, 100);
 		break;
 	    }
 
@@ -985,10 +983,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_CREATE:
 	break;
     case PSM_NOTIFY:
-    {	void * ptr;
-/* FIX: psm->te may be NULL */
-	ptr = rpmtsNotify(ts, psm->te, psm->what, psm->amount, psm->total);
-    }	break;
+	rpmtsNotify(ts, psm->te, psm->what, psm->amount, psm->total);
+	break;
     case PSM_DESTROY:
 	break;
     case PSM_SCRIPT:	/* Run current package scriptlets. */
