@@ -724,16 +724,16 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(psm->te), 0);
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
+	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
 			rpmteE(psm->te));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
+	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
 			rpmteV(psm->te));
-	    xx = rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
+	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
 			rpmteR(psm->te));
 	    if (tscolor) {
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
+		rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
 			rpmteA(psm->te));
-		xx = rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
+		rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
 			rpmteO(psm->te));
 	    }
 
@@ -833,14 +833,14 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    xx = fsmTeardown(rpmfiFSM(fi));
 
 	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
-	    xx = Fclose(payload);
+	    Fclose(payload);
 	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
 	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
 	    psm->total = psm->amount;
-	    xx = rpmpsmNext(psm, PSM_NOTIFY);
+	    rpmpsmNext(psm, PSM_NOTIFY);
 
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
@@ -854,7 +854,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		psm->what = RPMCALLBACK_UNPACK_ERROR;
 		psm->amount = 0;
 		psm->total = 0;
-		xx = rpmpsmNext(psm, PSM_NOTIFY);
+		rpmpsmNext(psm, PSM_NOTIFY);
 
 		break;
 	    }
@@ -874,7 +874,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->what = RPMCALLBACK_UNINST_START;
 	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
-	    xx = rpmpsmNext(psm, PSM_NOTIFY);
+	    rpmpsmNext(psm, PSM_NOTIFY);
 
 	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGERASE, ts, psm->te, fi,
 			NULL, NULL, &psm->failedFile);
@@ -883,7 +883,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
 	    psm->total = fc;
-	    xx = rpmpsmNext(psm, PSM_NOTIFY);
+	    rpmpsmNext(psm, PSM_NOTIFY);
 
 	}
 	break;
@@ -972,7 +972,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->what = RPMCALLBACK_CPIO_ERROR;
 	    psm->amount = 0;
 	    psm->total = 0;
-	    xx = rpmpsmNext(psm, PSM_NOTIFY);
+	    rpmpsmNext(psm, PSM_NOTIFY);
 	}
 
 	psm->failedFile = _free(psm->failedFile);
