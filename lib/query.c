@@ -38,7 +38,6 @@ static void printFileInfo(const char * name,
     time_t when = mtime;  /* important if sizeof(int32_t) ! sizeof(time_t) */
     struct tm * tm;
     static time_t now;
-    static struct tm nowtm;
     char * perms = rpmPermsString(mode);
     char *link = NULL;
 
@@ -46,7 +45,6 @@ static void printFileInfo(const char * name,
     if (now == 0) {
 	now = time(NULL);
 	tm = localtime(&now);
-	if (tm) nowtm = *tm;	/* structure assignment */
     }
 
     rstrlcpy(ownerfield, owner, sizeof(ownerfield));
