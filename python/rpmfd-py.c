@@ -195,7 +195,7 @@ static PyObject *rpmfd_seek(rpmfdObject *s, PyObject *args, PyObject *kwds)
     Py_BEGIN_ALLOW_THREADS
     rc = Fseek(s->fd, offset, whence);
     Py_END_ALLOW_THREADS
-    if (Ferror(s->fd)) {
+    if (rc < 0 || Ferror(s->fd)) {
 	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
 	return NULL;
     }
