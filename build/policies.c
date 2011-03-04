@@ -291,11 +291,11 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
 
 rpmRC processBinaryPolicies(rpmSpec spec, int test)
 {
-    Package pkg;
     rpmRC rc = RPMRC_OK;
+#if WITH_SELINUX
+    Package pkg;
     char *nvr;
 
-#if WITH_SELINUX
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
 	if (pkg->policyList == NULL) {
 	    continue;
