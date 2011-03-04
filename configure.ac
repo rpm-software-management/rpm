@@ -314,10 +314,12 @@ case "$with_external_db" in
 yes )
   AC_CHECK_HEADERS([db.h],[
     AC_PREPROC_IFELSE([
+      AC_LANG_SOURCE([
 	#include <db.h>
 	#if ((DB_VERSION_MAJOR < 4) || (DB_VERSION_MAJOR == 4 && DB_VERSION_MINOR < 5))
 	#error Berkeley DB too old
 	#endif
+      ])
     ],[ WITH_DB_LIB=-ldb ], 
       [ AC_MSG_ERROR([Berkeley DB version >= 4.5 required])
     ])
