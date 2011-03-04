@@ -161,7 +161,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
     rpmdbMatchIterator mi = NULL;
     const char * arch = NULL;
     char *tmp = NULL;
-    int xx;
 
     if (ts == NULL)
 	return NULL;
@@ -237,7 +236,7 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 
     /* Select specified arch only. */
     if (arch != NULL)
-	xx = rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
+	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
 
 exit:
     free(tmp);
