@@ -1646,7 +1646,7 @@ int rpmShowRC(FILE * fp)
 {
     const struct rpmOption *opt;
     rpmds ds = NULL;
-    int i, xx;
+    int i;
     machEquivTable equivTable;
 
     /* the caller may set the build arch which should be printed here */
@@ -1694,7 +1694,7 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "\n");
 
     fprintf(fp, "Features supported by rpmlib:\n");
-    xx = rpmdsRpmlib(&ds, NULL);
+    rpmdsRpmlib(&ds, NULL);
     ds = rpmdsInit(ds);
     while (rpmdsNext(ds) >= 0) {
         const char * DNEVR = rpmdsDNEVR(ds);
