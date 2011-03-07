@@ -713,7 +713,7 @@ static struct PyMethodDef rpmts_methods[] = {
 - Create a match iterator for the default transaction rpmdb.\n" },
  {"dbIndex",     (PyCFunction) rpmts_index,	METH_VARARGS|METH_KEYWORDS,
 "ts.dbIndex(TagN) -> ii\n\
--Create a key iterator for the default transaction rpmdb.\n" },
+- Create a key iterator for the default transaction rpmdb.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
