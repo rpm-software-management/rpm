@@ -150,33 +150,26 @@ static Header rpmgiLoadReadHeader(rpmgi gi)
  */
 static void rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 {
-    const char * arg;
-    int ac = 0;
-    int xx;
+    if (argv == NULL) return;
 
     /* XXX Expand globs only if requested */
     if ((gi->flags & RPMGI_NOGLOB)) {
-	if (argv != NULL) {
-	    while (argv[ac] != NULL)
-		ac++;
-	    xx = argvAppend(&gi->argv, argv);
+	argvAppend(&gi->argv, argv);
+    } else {
+	const char * arg;
+	while ((arg = *argv++) != NULL) {
+	    char * t = rpmEscapeSpaces(arg);
+	    char ** av = NULL;
+
+	    if (rpmGlob(t, NULL, &av) == 0) {
+		argvAppend(&gi->argv, av);
+		argvFree(av);
+	    }
+	    free(t);
 	}
-	gi->argc = ac;
-	return;
     }
+    gi->argc = argvCount(gi->argv);
 
-    if (argv != NULL)
-    while ((arg = *argv++) != NULL) {
-	char * t = rpmEscapeSpaces(arg);
-	char ** av = NULL;
-
-	xx = rpmGlob(t, &ac, &av);
-	xx = argvAppend(&gi->argv, av);
-	gi->argc += ac;
-	av = argvFree(av);
-	t = _free(t);
-	ac = 0;
-    }
     return;
 }
 
