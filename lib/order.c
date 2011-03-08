@@ -351,8 +351,9 @@ static scc detectSCCs(tsortInfo orderInfo, int nelem, int debugloops)
 	int msglvl = debugloops ?  RPMLOG_WARNING : RPMLOG_DEBUG;
 	rpmlog(msglvl, "%i Strongly Connected Components\n", sd.sccCnt-2);
 	for (int i = 2; i < sd.sccCnt; i++) {
-	    rpmlog(msglvl, "SCC #%i: requires %i packages\n",
-		   i, SCCs[i].count);
+	    rpmlog(msglvl, "SCC #%i: %i members (%i external dependencies)\n",
+			   i-1, SCCs[i].size, SCCs[i].count);
+
 	    /* loop over members */
 	    for (int j = 0; j < SCCs[i].size; j++) {
 		tsortInfo member = SCCs[i].members[j];
