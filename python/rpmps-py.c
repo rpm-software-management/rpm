@@ -2,8 +2,6 @@
 
 #include "rpmps-py.h"
 
-#include "debug.h"
-
 struct rpmProblemObject_s {
     PyObject_HEAD
     PyObject *md_dict;

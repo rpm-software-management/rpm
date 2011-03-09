@@ -11,8 +11,6 @@
 #include "rpmfi-py.h"
 #include "rpmtd-py.h"
 
-#include "debug.h"
-
 /** \ingroup python
  * \class Rpm
  * \brief START HERE / RPM base module for the Python API

@@ -4,8 +4,6 @@
 
 #include "rpmmacro-py.h"
 
-#include "debug.h"
-
 PyObject *
 rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {

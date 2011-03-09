@@ -15,10 +15,7 @@
 #include "rpmii-py.h"
 #include "rpmps-py.h"
 #include "rpmte-py.h"
-
 #include "rpmts-py.h"
-
-#include "debug.h"
 
 /** \ingroup python
  * \name Class: Rpmts

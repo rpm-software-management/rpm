@@ -5,8 +5,6 @@
 #include "rpmii-py.h"
 #include "header-py.h"
 
-#include "debug.h"
-
 /** \ingroup python
  * \class Rpmii
  * \brief A python rpm.ii key iterator object represents the keys of a

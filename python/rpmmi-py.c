@@ -5,8 +5,6 @@
 #include "rpmmi-py.h"
 #include "header-py.h"
 
-#include "debug.h"
-
 /** \ingroup python
  * \class Rpmmi
  * \brief A python rpm.mi match iterator object represents the result of a

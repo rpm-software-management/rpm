@@ -2,8 +2,6 @@
 
 #include <rpm/rpmsign.h>
 
-#include "debug.h"
-
 static char rpms__doc__[] =
 "";
 

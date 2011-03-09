@@ -6,8 +6,6 @@
 #include "header-py.h"
 #include "rpmfi-py.h"
 
-#include "debug.h"
-
 struct rpmfiObject_s {
     PyObject_HEAD
     PyObject *md_dict;		/*!< to look like PyModuleObject */

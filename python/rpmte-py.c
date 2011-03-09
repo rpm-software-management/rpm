@@ -6,9 +6,6 @@
 #include "rpmte-py.h"
 #include "rpmps-py.h"
 
-#include "debug.h"
-
-
 /** \ingroup python
  * \name Class: Rpmte
  * \class Rpmte

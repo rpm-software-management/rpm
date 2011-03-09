@@ -2,8 +2,6 @@
 
 #include "spec-py.h"
 
-#include "debug.h"
-
 static char rpmb__doc__[] =
 "";
 
