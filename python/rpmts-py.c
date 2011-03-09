@@ -160,7 +160,7 @@ static void die(PyObject *cb)
     if ((r = PyObject_Repr(cb)) != NULL) { 
 	pyfn = PyBytes_AsString(r);
     }
-    fprintf(stderr, _("error: python callback %s failed, aborting!\n"), 
+    fprintf(stderr, "FATAL ERROR: python callback %s failed, aborting!\n", 
 	    	      pyfn ? pyfn : "???");
     rpmdbCheckTerminate(1);
     exit(EXIT_FAILURE);
