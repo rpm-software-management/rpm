@@ -70,11 +70,21 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
      */
     switch (rpmfiFState(fi)) {
     case RPMFILE_STATE_NETSHARED:
-    case RPMFILE_STATE_REPLACED:
     case RPMFILE_STATE_NOTINSTALLED:
-    case RPMFILE_STATE_WRONGCOLOR:
     case RPMFILE_STATE_MISSING:
 	return 0;
+	break;
+    case RPMFILE_STATE_REPLACED:
+	/* For replaced files we can only verify if it exists at all */
+	flags = RPMVERIFY_LSTATFAIL;
+	break;
+    case RPMFILE_STATE_WRONGCOLOR:
+	/*
+	 * Files with wrong color are supposed to share some attributes
+	 * with the actually installed file - verify what we can.
+	 */
+	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE |
+		   RPMVERIFY_MTIME | RPMVERIFY_RDEV);
 	break;
     case RPMFILE_STATE_NORMAL:
 	break;
