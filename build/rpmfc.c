@@ -347,7 +347,6 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     StringBuf sb = NULL;
     const char * buf_stdin = NULL;
     size_t buf_stdin_len = 0;
-    int xx;
 
     if (sb_stdoutp)
 	*sb_stdoutp = NULL;
@@ -359,17 +358,15 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     if (!(s && *s))
 	goto exit;
 
-    /* Parse args buried within expanded exacutable. */
-    pac = 0;
-    xx = poptParseArgvString(s, &pac, (const char ***)&pav);
-    if (!(xx == 0 && pac > 0 && pav != NULL))
+    /* Parse args buried within expanded executable. */
+    if (!(poptParseArgvString(s, &pac, (const char ***)&pav) == 0 && pac > 0 && pav != NULL))
 	goto exit;
 
     /* Build argv, appending args to the executable args. */
     xav = NULL;
-    xx = argvAppend(&xav, pav);
+    argvAppend(&xav, pav);
     if (av[1])
-	xx = rpmfcExpandAppend(&xav, av + 1);
+	rpmfcExpandAppend(&xav, av + 1);
 
     if (sb_stdin != NULL) {
 	buf_stdin = getStringBuf(sb_stdin);
