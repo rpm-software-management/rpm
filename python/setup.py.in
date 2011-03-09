@@ -1,0 +1,55 @@
+#!/usr/bin/env python
+
+from distutils.core import setup, Extension
+import subprocess
+from glob import glob
+
+def pkgconfig(what):
+    out = []
+    cmd = 'pkg-config %s %s' % (what, '@PACKAGE_NAME@')
+    pcout = subprocess.check_output(cmd.split()).decode()
+    for token in pcout.split():
+        out.append(token[2:])
+    return out
+
+def mksources(names):
+    srcs = []
+    for n in names:
+        srcs.extend(glob('%s*.c' % n))
+    return srcs
+
+cflags = ['-std=c99']
+
+rpmmod = Extension('rpm._rpm',
+                   sources = mksources([
+                                'header', 'rpmds', 'rpmfd', 'rpmfi', 'rpmii',
+                                'rpmkeyring', 'rpmmacro', 'rpmmi', 'rpmps',
+                                'rpmtd', 'rpmte', 'rpmts', 'rpmmodule',
+                             ]),
+                   include_dirs = pkgconfig('--cflags'),
+                   libraries = pkgconfig('--libs'),
+                   extra_compile_args = cflags
+                  )
+
+rpmbuild_mod = Extension('rpm._rpmb',
+                   sources = mksources(['rpmbmodule', 'spec']),
+                   include_dirs = pkgconfig('--cflags'),
+                   libraries = pkgconfig('--libs') + ['rpmbuild'],
+                   extra_compile_args = cflags
+                  )
+
+rpmsign_mod = Extension('rpm._rpms',
+                   sources = mksources(['rpmbmodule']),
+                   include_dirs = pkgconfig('--cflags'),
+                   libraries = pkgconfig('--libs') + ['rpmsign'],
+                   extra_compile_args = cflags
+                  )
+
+setup(name='@PACKAGE_NAME@-python',
+      version='@VERSION@',
+      description='Python bindings for @PACKAGE_NAME@',
+      maintainer_email='@PACKAGE_BUGREPORT@',
+      url='http://www.rpm.org/',
+      packages = ['@PACKAGE_NAME@'],
+      ext_modules= [rpmmod, rpmbuild_mod, rpmsign_mod]
+     )
