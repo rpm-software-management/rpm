@@ -47,7 +47,7 @@ rpmii_iternext(rpmiiObject * s)
 	s->ii = rpmdbIndexIteratorFree(s->ii);
 	return NULL;
     }
-    return PyString_FromStringAndSize(key, keylen);
+    return PyBytes_FromStringAndSize(key, keylen);
 };
 
 static PyObject *
