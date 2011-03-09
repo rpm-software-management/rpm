@@ -173,7 +173,7 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
     }
 
     rc = PyBytes_FromStringAndSize(buf, len);
-    buf = _free(buf);
+    free(buf);
 
     return rc;
 }
@@ -234,7 +234,7 @@ static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
     }
 
     result = Py_BuildValue("s", r);
-    r = _free(r);
+    free(r);
 
     return result;
 }
