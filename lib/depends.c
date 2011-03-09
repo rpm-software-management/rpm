@@ -345,12 +345,25 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 	return rc;
     }
 
-    /* See if a filename dependency is a real file in some package */
+    /*
+     * See if a filename dependency is a real file in some package,
+     * taking file state into account: replaced, wrong colored and
+     * not installed files can not satisfy a dependency.
+     */
     if (Name[0] == '/') {
 	mi = rpmtsPrunedIterator(ts, RPMDBI_BASENAMES, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    rpmdsNotify(dep, "(db files)", rc);
-	    break;
+	    int fs = RPMFILE_STATE_MISSING;
+	    struct rpmtd_s states;
+	    if (headerGet(h, RPMTAG_FILESTATES, &states, HEADERGET_MINMEM)) {
+		rpmtdSetIndex(&states, rpmdbGetIteratorFileNum(mi));
+		fs = rpmtdGetNumber(&states);
+		rpmtdFreeData(&states);
+	    }
+	    if (fs == RPMFILE_STATE_NORMAL || fs == RPMFILE_STATE_NETSHARED) {
+		rpmdsNotify(dep, "(db files)", rc);
+		break;
+	    }
 	}
 	rpmdbFreeIterator(mi);
     }
