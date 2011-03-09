@@ -2,9 +2,8 @@
 
 EXTRA_DIST = rpm/__init__.py rpm/transaction.py
 
-AM_CPPFLAGS = -I$(top_builddir) -I$(top_srcdir) -I$(top_builddir)/include/
+AM_CPPFLAGS = -I$(top_builddir)/include/
 AM_CPPFLAGS += -I$(top_srcdir)/python
-AM_CPPFLAGS += -I$(top_srcdir)/misc
 AM_CPPFLAGS += -I@WITH_PYTHON_INCLUDE@
 
 pkgpyexec_LTLIBRARIES = _rpmmodule.la _rpmbmodule.la _rpmsmodule.la

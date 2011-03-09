@@ -1,5 +1,7 @@
 #include "rpmsystem-py.h"
 
+#include <fcntl.h>
+
 #include <rpm/rpmlib.h>	/* rpmReadPackageFile, headerCheck */
 #include <rpm/rpmtag.h>
 #include <rpm/rpmpgp.h>
