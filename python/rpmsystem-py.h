@@ -24,11 +24,11 @@ typedef Py_ssize_t (*lenfunc)(PyObject *);
 #endif
 
 #if ((PY_MAJOR_VERSION << 8) | (PY_MINOR_VERSION << 0)) < 0x0206
-#define PyXBytes_Check PyString_Check
-#define PyXBytes_FromString PyString_FromString
-#define PyXBytes_FromStringAndSize PyString_FromStringAndSize
-#define PyXBytes_Size PyString_Size
-#define PyXBytes_AsString PyString_AsString
+#define PyBytes_Check PyString_Check
+#define PyBytes_FromString PyString_FromString
+#define PyBytes_FromStringAndSize PyString_FromStringAndSize
+#define PyBytes_Size PyString_Size
+#define PyBytes_AsString PyString_AsString
 #endif
 
 /* For Python 3, use the PyLong type throughout in place of PyInt */
