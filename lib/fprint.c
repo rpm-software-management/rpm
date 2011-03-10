@@ -29,7 +29,7 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fingerPrintCache fpc;
 
     fpc = xmalloc(sizeof(*fpc));
-    fpc->ht = rpmFpEntryHashCreate(sizeHint, hashFunctionString, strcmp,
+    fpc->ht = rpmFpEntryHashCreate(sizeHint, rstrhash, strcmp,
 				   (rpmFpEntryHashFreeKey)free,
 				   (rpmFpEntryHashFreeData)free);
     return fpc;
@@ -195,8 +195,8 @@ unsigned int fpHashFunction(const fingerPrint * fp)
     unsigned int hash = 0;
     int j;
 
-    hash = hashFunctionString(fp->baseName);
-    if (fp->subDir) hash ^= hashFunctionString(fp->subDir);
+    hash = rstrhash(fp->baseName);
+    if (fp->subDir) hash ^= rstrhash(fp->subDir);
 
     hash ^= ((unsigned)fp->entry->dev);
     for (j=0; j<4; j++) hash ^= ((fp->entry->ino >> (8*j)) & 0xFF) << ((3-j)*8);

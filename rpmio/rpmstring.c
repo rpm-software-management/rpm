@@ -189,3 +189,20 @@ size_t rstrlcpy(char *dest, const char *src, size_t n)
 
     return s - src - 1; /* count does not include NUL */
 }
+
+unsigned int rstrhash(const char * string)
+{
+    /* Jenkins One-at-a-time hash */
+    unsigned int hash = 0xe4721b68;
+
+    while (*string != '\0') {
+      hash += *string;
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
+      string++;
+    }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
+    return hash;
+}

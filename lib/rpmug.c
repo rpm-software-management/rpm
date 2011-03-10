@@ -23,7 +23,7 @@ const char * rpmugStashStr(const char *str)
     const char *ret = NULL;
     if (str) {
 	if (strStash == NULL) {
-	    strStash = strCacheCreate(64, hashFunctionString, strcmp,
+	    strStash = strCacheCreate(64, rstrhash, strcmp,
 				      (strCacheFreeKey)rfree);
 	}
 	

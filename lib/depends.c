@@ -530,7 +530,7 @@ int rpmtsCheck(rpmts ts)
     }
 
     /* XXX FIXME: figure some kind of heuristic for the cache size */
-    dcache = depCacheCreate(5001, hashFunctionString, strcmp,
+    dcache = depCacheCreate(5001, rstrhash, strcmp,
 				     (depCacheFreeKey)rfree, NULL);
 
     /*

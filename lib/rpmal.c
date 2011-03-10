@@ -121,7 +121,7 @@ rpmal rpmalFree(rpmal al)
 }
 
 static unsigned int fileHash(struct fileNameEntry_s file){
-    return hashFunctionString(file.dirName) ^ hashFunctionString(file.baseName);
+    return rstrhash(file.dirName) ^ rstrhash(file.baseName);
 }
 
 static int fileCompare(struct fileNameEntry_s one, struct fileNameEntry_s two) {
@@ -240,7 +240,7 @@ static void rpmalMakeIndex(rpmal al)
 	    fileCnt += rpmfiFC(alp->fi);
     }
 
-    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128, hashFunctionString,
+    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128, rstrhash,
 					       strcmp, NULL, NULL);
     al->fileHash = rpmalFileHashCreate(fileCnt/4+128, fileHash, fileCompare,
 				       NULL, NULL);

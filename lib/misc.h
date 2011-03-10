@@ -24,9 +24,6 @@ char * rpmVerifyString(uint32_t verifyResult, const char *pad);
 RPM_GNUC_INTERNAL
 char * rpmFFlagsString(uint32_t fflags, const char *pad);
 
-RPM_GNUC_INTERNAL
-unsigned int hashFunctionString(const char * string);
-
 typedef char * (*headerTagFormatFunction) (rpmtd td, char * formatPrefix);
 typedef int (*headerTagTagFunction) (Header h, rpmtd td, headerGetFlags hgflags);
 

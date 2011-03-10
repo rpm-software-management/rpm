@@ -172,6 +172,14 @@ char *rstrscat(char **dest, const char *arg, ...) RPM_GNUC_NULL_TERMINATED;
  */
 size_t rstrlcpy(char *dest, const char *src, size_t n);
 
+/** \ingroup rpmstring
+ * String hashing function
+ * @param string	string to hash
+ * @return		hash id
+ */
+RPM_GNUC_PURE
+unsigned int rstrhash(const char * string);
+
 #ifdef __cplusplus
 }
 #endif
