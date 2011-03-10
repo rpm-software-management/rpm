@@ -443,43 +443,21 @@ static ARGV_t runCmd(const char *nsdep, const char *depname,
 /**
  * Run per-interpreter dependency helper.
  * @param fc		file classifier
- * @param deptype	'P' == Provides:, 'R' == Requires:, helper
  * @param nsdep		class name for interpreter (e.g. "perl")
- * @return		0 on success
+ * @param depname	"provides" or "requires"
+ * @param depsp		fc->provides or fc->requires
+ * @param dsContext	RPMSENSE_FIND_PROVIDES or RPMSENSE_FIND_REQUIRES
+ * @param tagN		RPMTAG_PROVIDENAME or RPMTAG_REQUIRENAME
+ * @return		0
  */
-static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
+static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
+		       rpmds *depsp, rpmsenseFlags dsContext, rpmTagVal tagN)
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[fc->ix];
-    const char * depname = NULL;
-    rpmds * depsp;
-    rpmsenseFlags dsContext;
-    rpmTagVal tagN;
     int pac;
     regex_t *exclude = NULL;
     regex_t *exclude_from = NULL;
-
-    switch (deptype) {
-    default:
-	return -1;
-	break;
-    case 'P':
-	if (fc->skipProv)
-	    return 0;
-	depname = "provides";
-	depsp = &fc->provides;
-	dsContext = RPMSENSE_FIND_PROVIDES;
-	tagN = RPMTAG_PROVIDENAME;
-	break;
-    case 'R':
-	if (fc->skipReq)
-	    return 0;
-	depname = "requires";
-	depsp = &fc->requires;
-	dsContext = RPMSENSE_FIND_REQUIRES;
-	tagN = RPMTAG_REQUIRENAME;
-	break;
-    }
 
     /* If the entire path is filtered out, there's nothing more to do */
     exclude_from = rpmfcAttrReg(depname, "exclude_from");
@@ -523,7 +501,7 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 	/* Add to package and file dependencies unless filtered */
 	if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
 	    (void) rpmdsMerge(depsp, ds);
-	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds, deptype);
+	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds, tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	}
 
 	ds = rpmdsFree(ds);
@@ -534,6 +512,38 @@ static int rpmfcHelper(rpmfc fc, unsigned char deptype, const char * nsdep)
 exit:
     regFree(exclude);
     regFree(exclude_from);
+    return 0;
+}
+
+/**
+ * Run per-interpreter Provides: dependency helper.
+ * @param fc		file classifier
+ * @param nsdep		class name for interpreter (e.g. "perl")
+ * @return		0
+ */
+static int rpmfcHelperProvides(rpmfc fc, const char * nsdep)
+{
+    if (fc->skipProv)
+	return 0;
+
+    rpmfcHelper(fc, nsdep, "provides", &fc->provides, RPMSENSE_FIND_PROVIDES, RPMTAG_PROVIDENAME);
+
+    return 0;
+}
+
+/**
+ * Run per-interpreter Requires: dependency helper.
+ * @param fc		file classifier
+ * @param nsdep		class name for interpreter (e.g. "perl")
+ * @return		0
+ */
+static int rpmfcHelperRequires(rpmfc fc, const char * nsdep)
+{
+    if (fc->skipReq)
+	return 0;
+
+    rpmfcHelper(fc, nsdep, "requires", &fc->requires, RPMSENSE_FIND_REQUIRES, RPMTAG_REQUIRENAME);
+
     return 0;
 }
 
@@ -795,13 +805,12 @@ rpmRC rpmfcApply(rpmfc fc)
     int dix;
     int ix;
     int i;
-    int xx = 0;
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn != NULL && fc->fn[fc->ix] != NULL; fc->ix++) {
 	for (ARGV_t fattr = fc->fattrs[fc->ix]; fattr && *fattr; fattr++) {
-	    xx += rpmfcHelper(fc, 'P', *fattr);
-	    xx += rpmfcHelper(fc, 'R', *fattr);
+	    rpmfcHelperProvides(fc, *fattr);
+	    rpmfcHelperRequires(fc, *fattr);
 	}
     }
 
@@ -846,20 +855,15 @@ rpmRC rpmfcApply(rpmfc fc)
 	    break;
 	}
 
-/* XXX assertion incorrect while generating -debuginfo deps. */
-#if 0
-assert(dix >= 0);
-#else
 	if (dix < 0)
 	    continue;
-#endif
 
 	val = (deptype << 24) | (dix & 0x00ffffff);
-	xx = argiAdd(&fc->ddictx, -1, val);
+	argiAdd(&fc->ddictx, -1, val);
 
 	if (previx != ix) {
 	    previx = ix;
-	    xx = argiAdd(&fc->fddictx, ix, argiCount(fc->ddictx)-1);
+	    argiAdd(&fc->fddictx, ix, argiCount(fc->ddictx)-1);
 	}
 	if (fc->fddictn && fc->fddictn->vals)
 	    fc->fddictn->vals[ix]++;
