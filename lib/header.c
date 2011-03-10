@@ -101,7 +101,9 @@ static const size_t headerMaxbytes = (32*1024*1024);
 #define	ENTRY_IN_REGION(_e)	((_e)->info.offset < 0)
 
 /* Convert a 64bit value to network byte order. */
-static uint64_t htonll( uint64_t n ) {
+RPM_GNUC_CONST
+static uint64_t htonll(uint64_t n)
+{
     uint32_t *i = (uint32_t*)&n;
     uint32_t b = i[0];
     i[0] = htonl(i[1]);
