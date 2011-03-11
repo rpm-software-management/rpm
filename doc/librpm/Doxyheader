@@ -20,9 +20,9 @@
  */
 /** \defgroup	rpmps	Problem Set API.
  */
-/** \defgroup	rpmkeyring	RPM keyring API.
+/** \defgroup	rpmprob	Problem Element API.
  */
-/** \defgroup	rpmgi	Generalized Iterator API.
+/** \defgroup	rpmkeyring	RPM keyring API.
  */
 /** \defgroup	rpmmacro	Macro API.
  */
