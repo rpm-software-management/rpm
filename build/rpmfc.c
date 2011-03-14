@@ -897,13 +897,18 @@ static int initAttrs(rpmfc fc)
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
     ARGV_t fcav = NULL;
-    int xx;
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
     magic_t ms = NULL;
     rpmRC rc = RPMRC_FAIL;
 
-    if (fc == NULL || argv == NULL)
-	return RPMRC_OK; /* XXX looks very wrong */
+    if (fc == NULL) {
+	rpmlog(RPMLOG_ERR, _("Empty file classifier\n"));
+	goto exit;
+    }
+
+    /* It is OK when we have no files to classify. */
+    if (argv == NULL)
+	return RPMRC_OK;
 
     if (initAttrs(fc) < 1) {
 	rpmlog(RPMLOG_ERR, _("No file attributes configured\n"));
@@ -914,12 +919,12 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
 
     /* Initialize the per-file dictionary indices. */
-    xx = argiAdd(&fc->fddictx, fc->nfiles-1, 0);
-    xx = argiAdd(&fc->fddictn, fc->nfiles-1, 0);
+    argiAdd(&fc->fddictx, fc->nfiles-1, 0);
+    argiAdd(&fc->fddictn, fc->nfiles-1, 0);
 
     /* Build (sorted) file class dictionary. */
-    xx = argvAdd(&fc->cdict, "");
-    xx = argvAdd(&fc->cdict, "directory");
+    argvAdd(&fc->cdict, "");
+    argvAdd(&fc->cdict, "directory");
 
     ms = magic_open(msflags);
     if (ms == NULL) {
@@ -928,8 +933,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	goto exit;
     }
 
-    xx = magic_load(ms, NULL);
-    if (xx == -1) {
+    if (magic_load(ms, NULL) == -1) {
 	rpmlog(RPMLOG_ERR, _("magic_load failed: %s\n"), magic_error(ms));
 	goto exit;
     }
@@ -985,10 +989,10 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, ftype);
 
 	/* Save the path. */
-	xx = argvAdd(&fc->fn, s);
+	argvAdd(&fc->fn, s);
 
 	/* Save the file type string. */
-	xx = argvAdd(&fcav, ftype);
+	argvAdd(&fcav, ftype);
 
 	/* Add (filtered) file coloring */
 	fcolor |= rpmfcColor(ftype);
@@ -996,7 +1000,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Add attributes based on file type and/or path */
 	rpmfcAttributes(fc, ftype, s);
 
-	xx = argiAdd(&fc->fcolor, fc->ix, fcolor);
+	argiAdd(&fc->fcolor, fc->ix, fcolor);
 
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
 	    argvAddUniq(&fc->cdict, ftype);
@@ -1008,10 +1012,10 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	const char *se = fcav[fc->ix];
 	ARGV_t dav = argvSearch(fc->cdict, se, NULL);
 	if (dav) {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
+	    argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
 	    fc->fknown++;
 	} else {
-	    xx = argiAdd(&fc->fcdictx, fc->ix, 0);
+	    argiAdd(&fc->fcdictx, fc->ix, 0);
 	    fc->fwhite++;
 	}
     }
@@ -1301,7 +1305,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     /* Add per-file colors(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECOLORS, fc->fcolor)) {
 	rpm_color_t *fcolor;
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
 	while ((fcolor = rpmtdNextUint32(&td))) {
 	    *fcolor &= 0x0f;
@@ -1316,7 +1319,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Add per-file classes(#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILECLASS, fc->fcdictx)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
@@ -1346,24 +1348,21 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Add dependency dictionary(#dependencies) */
     if (rpmtdFromArgi(&td, RPMTAG_DEPENDSDICT, fc->ddictx)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     /* Add per-file dependency (start,number) pairs (#files) */
     if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSX, fc->fddictx)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     if (rpmtdFromArgi(&td, RPMTAG_FILEDEPENDSN, fc->fddictn)) {
-	assert(rpmtdType(&td) == RPM_INT32_TYPE);
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
     printDeps(pkg->header);
 
-if (fc != NULL && _rpmfc_debug) {
+if (_rpmfc_debug) {
 char *msg = NULL;
 rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 rpmfcPrint(msg, fc, NULL);
