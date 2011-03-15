@@ -38,26 +38,26 @@ typedef struct cpioSourceArchive_s {
 static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
 		const char * fmodeMacro)
 {
-    rpmts ts = rpmtsCreate();
+    rpmts ts = NULL;
     rpmfi fi = csa->cpioList;
     rpmte te = NULL;
     rpmfs fs = NULL;
     char *failedFile = NULL;
     FD_t cfd;
     rpmRC rc = RPMRC_OK;
-    int xx, i;
+    int i;
+    char *fmode = rpmExpand(fmodeMacro, NULL);
 
-    {	char *fmode = rpmExpand(fmodeMacro, NULL);
-	if (!(fmode && fmode[0] == 'w'))
-	    fmode = xstrdup("w9.gzdio");
-	(void) Fflush(fdo);
-	cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-	fmode = _free(fmode);
-    }
+    if (!(fmode && fmode[0] == 'w'))
+	fmode = xstrdup("w9.gzdio");
+    (void) Fflush(fdo);
+    cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
+    fmode = _free(fmode);
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
     /* make up a transaction element for passing to fsm */
+    ts = rpmtsCreate();
     rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
     te = rpmtsElement(ts, 0);
     fs = rpmteGetFileStates(te);
@@ -70,23 +70,20 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
 	    rpmfsSetAction(fs, i, FA_COPYOUT);
     }
 
-    xx = fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, te, fi, cfd,
-		&csa->cpioArchiveSize, &failedFile);
-    if (xx)
+    if (fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, te, fi, cfd,
+		&csa->cpioArchiveSize, &failedFile))
 	rc = RPMRC_FAIL;
-    (void) Fclose(cfd);
-    xx = fsmTeardown(rpmfiFSM(fi));
-    if (rc == RPMRC_OK && xx) rc = RPMRC_FAIL;
 
-    if (rc) {
+    (void) Fclose(cfd);
+
+    if (fsmTeardown(rpmfiFSM(fi)) || rc == RPMRC_FAIL) {
 	if (failedFile)
-	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
-		failedFile, cpioStrerror(rc));
+	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s\n"), failedFile);
 	else
-	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
-		cpioStrerror(rc));
-      rc = RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("create archive failed\n"));
+	rc = RPMRC_FAIL;
     }
+
     rpmtsEmpty(ts);
 
     failedFile = _free(failedFile);
