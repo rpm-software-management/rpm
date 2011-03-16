@@ -96,6 +96,7 @@ rpmRC rpmReadPackageManifest(FD_t fd, int * argcPtr, char *** argvPtr)
 
 	/* Sanity checks: skip obviously binary lines and dash (for stdin) */
 	if (*s < 32 || rstreq(s, "-")) {
+	    s = NULL;
 	    rpmrc = RPMRC_NOTFOUND;
 	    goto exit;
 	}
