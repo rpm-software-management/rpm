@@ -124,6 +124,7 @@ static int doSign(poptContext optCon)
     }
 
 exit:
+    free(passPhrase);
     free(name);
     return rc;
 }
