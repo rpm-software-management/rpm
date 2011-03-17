@@ -535,7 +535,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
-	    return se;
+	    goto exit;
 	}
 	s++;	/* XXX skip { */
 	strncpy(b, s, (se - s));
@@ -573,7 +573,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	    rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has unterminated body\n"), n);
 	    se = s;	/* XXX W2DO? */
-	    return se;
+	    goto exit;
 	}
 
 	/* Trim trailing blanks/newlines */
@@ -591,7 +591,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     if (!((c = *n) && (risalpha(c) || c == '_') && (ne - n) > 2)) {
 	rpmlog(RPMLOG_ERR,
 		_("Macro %%%s has illegal name (%%define)\n"), n);
-	return se;
+	goto exit;
     }
 
     /* Options must be terminated with ')' */
