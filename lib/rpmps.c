@@ -132,7 +132,7 @@ void rpmpsAppendProblem(rpmps ps, rpmProblem prob)
 	else
 	    ps->numProblemsAlloced = 2;
 	ps->probs = xrealloc(ps->probs,
-			ps->numProblemsAlloced * sizeof(ps->probs));
+			ps->numProblemsAlloced * sizeof(*ps->probs));
     }
 
     ps->probs[ps->numProblems] = rpmProblemLink(prob);

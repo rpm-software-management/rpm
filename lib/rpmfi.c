@@ -52,7 +52,7 @@ static scidx_t strcachePut(strcache cache, const char *str)
 	/* blow up on index wraparound */
 	assert((scidx_t)(cache->num + 1) > cache->num);
 	cache->uniq = xrealloc(cache->uniq, 
-				sizeof(cache->uniq) * (cache->num+1));
+				sizeof(*cache->uniq) * (cache->num+1));
 	cache->uniq[cache->num] = xstrdup(str);
 	ret = cache->num;
 	cache->num++;
