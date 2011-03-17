@@ -152,6 +152,7 @@ char *rstrscat(char **dest, const char *arg, ...)
         memmove(p, s, size);
         p += size;
     }
+    va_end(ap);
     *p = '\0';
 
     if ( dest ) {
