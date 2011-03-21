@@ -752,41 +752,30 @@ host_os_major=`echo "${host_os}" | sed 's/\..*$//'`
 host_os_noversion=`echo "${host_os}" | sed 's/[0-9]*\..*$//'`
 changequote([, ])
 
-rm -f ./find-provides
-if test -f ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${host_os_exact}.prov ; then
-	echo "using ${srcdir}/autodeps/${host_os_exact}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${host_os_exact}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${host_os_major}.prov ; then
-	echo "using ${srcdir}/autodeps/${host_os_major}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${host_os_major}.prov ./find-provides
-elif test -f ${srcdir}/autodeps/${host_os_noversion}.prov ; then
-	echo "using ${srcdir}/autodeps/${host_os_noversion}.prov for automatic provides generation"
-    ln -s ${srcdir}/autodeps/${host_os_noversion}.prov ./find-provides
-else
-    echo "*** no default provides information is available for ${host_os_noversion}"
-    ln -s ${srcdir}/autodeps/none ./find-provides
-fi
+for provscript in ${host_cpu}-${host_os_exact}.prov ${host_os_exact}.prov ${host_os_major}.prov ${host_os_noversion}.prov none ; do {
+    if test -f ${srcdir}/autodeps/${provscript} ; then
+       if [[ ${provscript} == none ]] ; then
+           echo "*** no default provides information is available for ${host_os_noversion}"
+       else
+           echo "using ${srcdir}/autodeps/${provscript} for automatic provides generation"
+       fi
+       ln -sf ${provscript} ${srcdir}/autodeps/find-provides
+       break
+    fi
+}; done
 
-rm -f ./find-requires
-if test -f ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${host_cpu}-${host_os_exact}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${host_os_exact}.req ; then
-	echo "using ${srcdir}/autodeps/${host_os_exact}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${host_os_exact}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${host_os_major}.req ; then
-	echo "using ${srcdir}/autodeps/${host_os_major}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${host_os_major}.req ./find-requires
-elif test -f ${srcdir}/autodeps/${host_os_noversion}.req ; then
-	echo "using ${srcdir}/autodeps/${host_os_noversion}.req for automatic requires generation"
-    ln -s ${srcdir}/autodeps/${host_os_noversion}.req ./find-requires
-else
-    echo "*** no default requires information is available for ${host_os_noversion}"
-    ln -s ${srcdir}/autodeps/none ./find-requires
-fi
+
+for reqscript in ${host_cpu}-${host_os_exact}.req ${host_os_exact}.req ${host_os_major}.req ${host_os_noversion}.req none ; do {
+    if test -f ${srcdir}/autodeps/${reqscript} ; then
+       if [[ ${reqscript} == none ]] ; then
+           echo "*** no default requires information is available for ${host_os_noversion}"
+       else
+	  echo "using ${srcdir}/autodeps/${reqscript} for automatic requires generation"
+       fi
+       ln -sf ${reqscript} ./autodeps/find-requires
+       break
+    fi
+} done
 
 dnl Determine the canonical arch-vendor-os for the host machine
 case "${host_cpu}" in

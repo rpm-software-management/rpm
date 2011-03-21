@@ -90,10 +90,11 @@ rpmbin_PROGRAMS = rpm
 bin_PROGRAMS =		rpm2cpio rpmbuild rpmdb rpmkeys rpmsign rpmspec
 
 rpmlibexec_PROGRAMS =
-rpmconfig_SCRIPTS =	find-provides find-requires mkinstalldirs \
+rpmconfig_SCRIPTS =	autodeps/find-provides autodeps/find-requires \
+			mkinstalldirs \
 			config.guess config.sub
-DISTCLEANFILES = find-provides
-DISTCLEANFILES += find-requires
+DISTCLEANFILES = autodeps/find-provides
+DISTCLEANFILES += autodeps/find-requires
 
 noinst_LTLIBRARIES = 		libcliutils.la
 libcliutils_la_SOURCES = 	cliutils.h cliutils.c
