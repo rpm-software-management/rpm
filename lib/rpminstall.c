@@ -313,10 +313,8 @@ static int tryReadManifest(struct rpmEIU * eiu)
     return rc;
 }
 
-static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
+static int tryReadHeader(rpmts ts, struct rpmEIU * eiu)
 {
-   rpmVSFlags tvsflags;
-
    /* Try to read the header from a package file. */
    FD_t fd = Fopen(*eiu->fnp, "r.ufdio");
    if (fd == NULL || Ferror(fd)) {
@@ -331,9 +329,7 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
    }
 
    /* Read the header, verifying signatures (if present). */
-   tvsflags = rpmtsSetVSFlags(ts, vsflags);
    eiu->rpmrc = rpmReadPackageFile(ts, fd, *eiu->fnp, &eiu->h);
-   tvsflags = rpmtsSetVSFlags(ts, tvsflags);
    Fclose(fd);
    fd = NULL;
    
@@ -497,7 +493,7 @@ restart:
 	rpmlog(RPMLOG_DEBUG, "============== %s\n", *eiu->fnp);
 	(void) urlPath(*eiu->fnp, &fileName);
 
-	if (tryReadHeader(ts, eiu, vsflags) == RPMRC_FAIL)
+	if (tryReadHeader(ts, eiu) == RPMRC_FAIL)
 	    continue;
 
 	if (eiu->rpmrc == RPMRC_NOTFOUND) {
