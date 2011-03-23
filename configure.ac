@@ -205,8 +205,6 @@ AC_CHECK_FUNC(gethostname, [], [
     AC_CHECK_LIB(nsl, gethostname)
 ])
 
-AC_CHECK_HEADERS(poll.h)
-
 AC_CHECK_HEADERS(pthread.h)
 
 AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
@@ -216,15 +214,7 @@ AC_CHECK_LIB(pthread, pthread_mutex_trylock, [], [
   ])
 ])
 
-AC_SEARCH_LIBS(aio_read, [c rt aio posix4])
 AC_SEARCH_LIBS(dlopen, [dl])
-
-dnl Temporary hack for MiNT.  Some functions (writev, snprintf) are
-dnl not in the libc but in libport (for political reasons).  This check
-dnl can hopefully be removed soon.  Please use the default action
-dnl for this macro (not LIBS=...), otherwise the check for dbopen
-dnl will fail.
-AC_CHECK_LIB(port, writev)
 
 #=================
 # Check for libelf library. Prefer external, otherwise none.
@@ -347,9 +337,8 @@ AC_HEADER_MAJOR
 AC_HEADER_DIRENT
 
 AC_CHECK_HEADERS(limits.h)
-AC_CHECK_HEADERS(fcntl.h getopt.h memory.h)
+AC_CHECK_HEADERS(fcntl.h getopt.h)
 
-AC_CHECK_HEADERS(sys/ipc.h)
 AC_CHECK_HEADERS(sys/utsname.h)
 
 AC_CHECK_HEADERS(sys/systemcfg.h)
