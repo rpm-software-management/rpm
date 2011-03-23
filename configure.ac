@@ -354,7 +354,6 @@ AC_CHECK_HEADERS(sys/utsname.h)
 
 AC_CHECK_HEADERS(sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/param.h)
-AC_CHECK_HEADERS(mcheck.h)
 
 AC_CHECK_HEADERS(glob.h)
 
@@ -488,7 +487,6 @@ AC_TYPE_SIZE_T
 dnl Checks for library functions.
 AC_FUNC_MMAP
 
-AC_CHECK_FUNCS(mtrace)
 AC_CHECK_FUNCS(putenv)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)

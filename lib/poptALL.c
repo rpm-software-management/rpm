@@ -6,10 +6,6 @@
 #include "system.h"
 const char *__progname;
 
-#if HAVE_MCHECK_H
-#include <mcheck.h>
-#endif
-
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>		/* rpmEVR, rpmReadConfigFiles etc */
 #include <rpm/rpmlog.h>
@@ -227,10 +223,6 @@ rpmcliFini(poptContext optCon)
     rpmFreeRpmrc();
     rpmlogClose();
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
-
     return NULL;
 }
 
@@ -241,9 +233,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     int rc;
     const char *ctx, *execPath;
 
-#if HAVE_MCHECK_H && HAVE_MTRACE
-    mtrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
-#endif
     setprogname(argv[0]);       /* Retrofit glibc __progname */
 
     /* XXX glibc churn sanity */
