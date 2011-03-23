@@ -224,7 +224,6 @@ struct rpmEIU {
     int numRPMS;
     int numSRPMS;
     char ** sourceURL;
-    int isSource;
     int argc;
     char ** argv;
     rpmRelocation * relocations;
@@ -504,9 +503,7 @@ restart:
 	    }
 	}
 
-	eiu->isSource = headerIsSource(h);
-
-	if (eiu->isSource) {
+	if (headerIsSource(h)) {
 	    rpmlog(RPMLOG_DEBUG, "\tadded source package [%d]\n",
 		eiu->numSRPMS);
 	    eiu->sourceURL = xrealloc(eiu->sourceURL,
