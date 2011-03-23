@@ -20,22 +20,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmio
- * Hide libio API lossage.
- * The libio interface changed after glibc-2.1.3 to pass the seek offset
- * argument as a pointer rather than as an off_t. The snarl below defines
- * typedefs to isolate the lossage.
- */
-#if defined(__GLIBC__) && \
-	(__GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 2))
-#define USE_COOKIE_SEEK_POINTER 1
-typedef _IO_off64_t 	_libio_off_t;
-typedef _libio_off_t *	_libio_pos_t;
-#else
-typedef off_t 		_libio_off_t;
-typedef off_t 		_libio_pos_t;
-#endif
-
-/** \ingroup rpmio
  */
 typedef const struct FDIO_s * FDIO_t;
 
@@ -62,7 +46,7 @@ ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd);
 /** \ingroup rpmio
  * fseek(3) clone.
  */
-int Fseek(FD_t fd, _libio_off_t offset, int whence);
+int Fseek(FD_t fd, off_t offset, int whence);
 
 /** \ingroup rpmio
  * ftell(3) clone.

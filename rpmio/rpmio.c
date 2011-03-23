@@ -16,10 +16,6 @@
 
 #include "debug.h"
 
-#if HAVE_LIBIO_H && defined(_G_IO_IO_FILE_VERSION)
-#define	_USE_LIBIO	1
-#endif
-
 typedef struct _FDSTACK_s {
     FDIO_t		io;
     void *		fp;
@@ -154,20 +150,12 @@ static void * iotFileno(FD_t fd, FDIO_t iot)
 
 #define	UFDONLY(fd)	/* assert(fdGetIo(fd) == ufdio) */
 
-/**
- */
-#if _USE_LIBIO
-static int noLibio = 0;
-#else
-static int noLibio = 1;
-#endif
-
 /** \ingroup rpmio
  * \name RPMIO Vectors.
  */
 typedef ssize_t (*fdio_read_function_t) (void *cookie, void *buf, size_t nbytes);
 typedef ssize_t (*fdio_write_function_t) (void *cookie, const void *buf, size_t nbytes);
-typedef int (*fdio_seek_function_t) (void *cookie, _libio_pos_t pos, int whence);
+typedef int (*fdio_seek_function_t) (void *cookie, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (void *cookie);
 typedef FD_t (*fdio_ref_function_t) ( void * cookie);
 typedef FD_t (*fdio_deref_function_t) (FD_t fd);
@@ -349,7 +337,7 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
     return fd;
 }
 
-static int fdSeekNot(void * cookie, _libio_pos_t pos,  int whence)
+static int fdSeekNot(void * cookie, off_t pos,  int whence)
 {
     return -2;
 }
@@ -464,13 +452,9 @@ DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)cou
     return rc;
 }
 
-static int fdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int fdSeek(void * cookie, off_t pos, int whence)
 {
-#ifdef USE_COOKIE_SEEK_POINTER
-    _IO_off64_t p = *pos;
-#else
     off_t p = pos;
-#endif
     FD_t fd = c2f(cookie);
     off_t rc;
 
@@ -769,13 +753,9 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 }
 
 /* XXX zlib-1.0.4 has not */
-static int gzdSeek(void * cookie, _libio_pos_t pos, int whence)
+static int gzdSeek(void * cookie, off_t pos, int whence)
 {
-#ifdef USE_COOKIE_SEEK_POINTER
-    _IO_off64_t p = *pos;
-#else
     off_t p = pos;
-#endif
     int rc;
 #if HAVE_GZSEEK
     FD_t fd = c2f(cookie);
@@ -1423,14 +1403,9 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
     return rc;
 }
 
-int Fseek(FD_t fd, _libio_off_t offset, int whence) {
+int Fseek(FD_t fd, off_t offset, int whence) {
     fdio_seek_function_t _seek;
-#ifdef USE_COOKIE_SEEK_POINTER
-    _IO_off64_t o64 = offset;
-    _libio_pos_t pos = &o64;
-#else
-    _libio_pos_t pos = offset;
-#endif
+    off_t pos = offset;
 
     long int rc;
 
@@ -1561,13 +1536,6 @@ static void cvtfmode (const char *m,
 	*f = flags;
 }
 
-#if _USE_LIBIO
-#if defined(__GLIBC__) && __GLIBC__ == 2 && __GLIBC_MINOR__ == 0
-/* XXX retrofit glibc-2.1.x typedef on glibc-2.0.x systems */
-typedef _IO_cookie_io_functions_t cookie_io_functions_t;
-#endif
-#endif
-
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
     char stdio[20], other[20], zstdio[20];
@@ -1616,18 +1584,16 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	    iof = ufdio;
 	} else if (rstreq(end, "fpio")) {
 	    iof = fpio;
-	    if (noLibio) {
-		int fdno = Fileno(fd);
-		FILE * fp = fdopen(fdno, stdio);
+	    int fdno = Fileno(fd);
+	    FILE * fp = fdopen(fdno, stdio);
 if (_rpmio_debug)
 fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
-		if (fp == NULL)
-		    return NULL;
-		/* XXX gzdio/bzdio use fp for private data */
-		if (fdGetFp(fd) == NULL)
-		    fdSetFp(fd, fp);
-		fdPush(fd, fpio, fp, fdno);	/* Push fpio onto stack */
-	    }
+	    if (fp == NULL)
+		return NULL;
+	    /* XXX gzdio/bzdio use fp for private data */
+	    if (fdGetFp(fd) == NULL)
+		fdSetFp(fd, fp);
+	    fdPush(fd, fpio, fp, fdno);	/* Push fpio onto stack */
 	}
     } else if (other[0] != '\0') {
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
@@ -1639,29 +1605,6 @@ fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
     }
     if (iof == NULL)
 	return fd;
-
-    if (!noLibio) {
-	FILE * fp = NULL;
-
-#if _USE_LIBIO
-	{   cookie_io_functions_t ciof;
-	    ciof.read = (cookie_read_function_t *) iof->read;
-	    ciof.write = (cookie_write_function_t *) iof->write;
-	    ciof.seek = iof->seek;
-	    ciof.close = iof->close;
-	    fp = fopencookie(fd, stdio, ciof);
-DBGIO(fd, (stderr, "==> fopencookie(%p,\"%s\",*%p) returns fp %p\n", fd, stdio, iof, fp));
-	}
-#endif
-
-	if (fp) {
-	    /* XXX gzdio/bzdio use fp for private data */
-	    if (fdGetFp(fd) == NULL)
-		fdSetFp(fd, fp);
-	    fdPush(fd, fpio, fp, fileno(fp));	/* Push fpio onto stack */
-	    fd = fdLink(fd);
-	}
-    }
 
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fd;

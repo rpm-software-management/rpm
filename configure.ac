@@ -354,7 +354,6 @@ AC_CHECK_HEADERS(sys/utsname.h)
 
 AC_CHECK_HEADERS(sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/param.h)
-AC_CHECK_HEADERS(libio.h)
 AC_CHECK_HEADERS(mcheck.h)
 
 AC_CHECK_HEADERS(glob.h)

@@ -696,7 +696,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     rpmRC rc = RPMRC_OK;
-    int saveerrno;
     int xx;
 
     switch (stage) {
@@ -832,9 +831,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 			fdOp(payload, FDSTAT_DIGEST));
 	    xx = fsmTeardown(rpmfiFSM(fi));
 
-	    saveerrno = errno; /* XXX FIXME: Fclose with libio destroys errno */
 	    Fclose(payload);
-	    errno = saveerrno; /* XXX FIXME: Fclose with libio destroys errno */
 
 	    /* XXX make sure progress is closed out */
 	    psm->what = RPMCALLBACK_INST_PROGRESS;
