@@ -214,7 +214,6 @@ static void setNotifyFlag(struct rpmInstallArguments_s * ia,
 }
 
 struct rpmEIU {
-    Header h;
     int numFailed;
     int numPkgs;
     char ** pkgURL;
@@ -313,7 +312,7 @@ static int tryReadManifest(struct rpmEIU * eiu)
     return rc;
 }
 
-static int tryReadHeader(rpmts ts, struct rpmEIU * eiu)
+static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, Header * hdrp)
 {
    /* Try to read the header from a package file. */
    FD_t fd = Fopen(*eiu->fnp, "r.ufdio");
@@ -329,7 +328,7 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu)
    }
 
    /* Read the header, verifying signatures (if present). */
-   eiu->rpmrc = rpmReadPackageFile(ts, fd, *eiu->fnp, &eiu->h);
+   eiu->rpmrc = rpmReadPackageFile(ts, fd, *eiu->fnp, hdrp);
    Fclose(fd);
    fd = NULL;
    
@@ -488,12 +487,13 @@ restart:
 	 *eiu->fnp != NULL;
 	 eiu->fnp++, eiu->prevx++)
     {
+	Header h = NULL;
 	const char * fileName;
 
 	rpmlog(RPMLOG_DEBUG, "============== %s\n", *eiu->fnp);
 	(void) urlPath(*eiu->fnp, &fileName);
 
-	if (tryReadHeader(ts, eiu) == RPMRC_FAIL)
+	if (tryReadHeader(ts, eiu, &h) == RPMRC_FAIL)
 	    continue;
 
 	if (eiu->rpmrc == RPMRC_NOTFOUND) {
@@ -504,7 +504,7 @@ restart:
 	    }
 	}
 
-	eiu->isSource = headerIsSource(eiu->h);
+	eiu->isSource = headerIsSource(h);
 
 	if (eiu->isSource) {
 	    rpmlog(RPMLOG_DEBUG, "\tadded source package [%d]\n",
@@ -521,30 +521,29 @@ restart:
 	if (eiu->relocations) {
 	    struct rpmtd_s prefixes;
 
-	    headerGet(eiu->h, RPMTAG_PREFIXES, &prefixes, HEADERGET_DEFAULT);
+	    headerGet(h, RPMTAG_PREFIXES, &prefixes, HEADERGET_DEFAULT);
 	    if (rpmtdCount(&prefixes) == 1) {
 		eiu->relocations->oldPath = xstrdup(rpmtdGetString(&prefixes));
 		rpmtdFreeData(&prefixes);
 	    } else {
 		rpmlog(RPMLOG_ERR, _("package %s is not relocatable\n"),
-		       headerGetString(eiu->h, RPMTAG_NAME));
+		       headerGetString(h, RPMTAG_NAME));
 		eiu->numFailed++;
 		goto exit;
 	    }
 	}
 
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN)
-	    if (checkFreshenStatus(ts, eiu->h) != 1) {
-		eiu->h = headerFree(eiu->h);
+	    if (checkFreshenStatus(ts, h) != 1) {
+		headerFree(h);
 	        continue;
 	    }
 
-	rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
+	rc = rpmtsAddInstallElement(ts, h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
 			relocations);
 
-	/* XXX reference held by transaction set */
-	eiu->h = headerFree(eiu->h);
+	headerFree(h);
 	if (eiu->relocations)
 	    eiu->relocations->oldPath = _free(eiu->relocations->oldPath);
 
