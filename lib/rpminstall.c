@@ -351,11 +351,11 @@ static int tryReadHeader(rpmts ts, struct rpmEIU * eiu, rpmVSFlags vsflags)
 
 
 /* On --freshen, verify package is installed and newer */
-static int checkFreshenStatus(rpmts ts, struct rpmEIU * eiu)
+static int checkFreshenStatus(rpmts ts, Header h)
 {
     rpmdbMatchIterator mi = NULL;
-    const char * name = headerGetString(eiu->h, RPMTAG_NAME);
-    const char *arch = headerGetString(eiu->h, RPMTAG_ARCH);
+    const char * name = headerGetString(h, RPMTAG_NAME);
+    const char *arch = headerGetString(h, RPMTAG_ARCH);
     Header oldH = NULL;
 
     if (name != NULL)
@@ -365,15 +365,12 @@ static int checkFreshenStatus(rpmts ts, struct rpmEIU * eiu)
 
     while ((oldH = rpmdbNextIterator(mi)) != NULL) {
 	/* Package is newer than those currently installed. */
-        if (rpmVersionCompare(oldH, eiu->h) < 0)
+        if (rpmVersionCompare(oldH, h) < 0)
 	    break;
     }
 
     mi = rpmdbFreeIterator(mi);
-    if (oldH == NULL) {
-        eiu->h = headerFree(eiu->h);
-    }
-   return (oldH != NULL);
+    return (oldH != NULL);
 }
 
 /** @todo Generalize --freshen policies. */
@@ -541,8 +538,10 @@ restart:
 	}
 
 	if (ia->installInterfaceFlags & INSTALL_FRESHEN)
-	    if (checkFreshenStatus(ts, eiu) != 1)
+	    if (checkFreshenStatus(ts, eiu->h) != 1) {
+		eiu->h = headerFree(eiu->h);
 	        continue;
+	    }
 
 	rc = rpmtsAddInstallElement(ts, eiu->h, (fnpyKey)fileName,
 			(ia->installInterfaceFlags & INSTALL_UPGRADE) != 0,
