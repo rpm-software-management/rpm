@@ -639,7 +639,7 @@ static const FDIO_t ufdio = &ufdio_s ;
 
 ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
 {
-    return ufdio->read(fd, bufptr, length);
+    return Fread(bufptr, 1, length, fd);
 }
 
 /* =============================================================== */

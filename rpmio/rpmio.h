@@ -125,7 +125,7 @@ int ufdCopy(FD_t sfd, FD_t tfd);
 /**
  * XXX the name is misleading, this is a legacy wrapper that ensures 
  * only S_ISREG() files are read, nothing to do with timed... 
- * TODO: get this out of the API
+ * TODO: get this out of the API, should go out in the next soname bump
  */
 ssize_t timedRead(FD_t fd, void * bufptr, size_t length);
 

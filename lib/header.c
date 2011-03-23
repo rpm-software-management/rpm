@@ -980,8 +980,7 @@ Header headerRead(FD_t fd, int magicp)
     if (magicp == HEADER_MAGIC_YES)
 	i += 2;
 
-    /* FIX: cast? */
-    if (timedRead(fd, (char *)block, i*sizeof(*block)) != (i * sizeof(*block)))
+    if (Fread(block, 1, i*sizeof(*block), fd) != i*sizeof(*block))
 	goto exit;
 
     i = 0;
@@ -1007,8 +1006,7 @@ Header headerRead(FD_t fd, int magicp)
     ei[1] = htonl(dl);
     len -= sizeof(il) + sizeof(dl);
 
-    /* FIX: cast? */
-    if (timedRead(fd, (char *)&ei[2], len) != len)
+    if (Fread((char *)&ei[2], 1, len, fd) != len)
 	goto exit;
     
     h = headerLoad(ei);

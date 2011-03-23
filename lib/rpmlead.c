@@ -116,8 +116,7 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead lead)
 {
     assert(lead != NULL);
     memset(lead, 0, sizeof(*lead));
-    /* FIX: remove timed read */
-    if (timedRead(fd, (char *)lead, sizeof(*lead)) != sizeof(*lead)) {
+    if (Fread(lead, 1, sizeof(*lead), fd) != sizeof(*lead)) {
 	if (Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("read failed: %s (%d)\n"),
 			Fstrerror(fd), errno);

@@ -468,7 +468,7 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 	*msg = NULL;
 
     memset(block, 0, sizeof(block));
-    if ((xx = timedRead(fd, (char *)block, sizeof(block))) != sizeof(block)) {
+    if ((xx = Fread(block, 1, sizeof(block), fd)) != sizeof(block)) {
 	rasprintf(&buf, 
 		_("hdr size(%d): BAD, read returned %d\n"), (int)sizeof(block), xx);
 	goto exit;
@@ -494,7 +494,7 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
     ei = xmalloc(uc);
     ei[0] = block[2];
     ei[1] = block[3];
-    if ((xx = timedRead(fd, (char *)&ei[2], nb)) != nb) {
+    if ((xx = Fread((char *)&ei[2], 1, nb, fd)) != nb) {
 	rasprintf(&buf, _("hdr blob(%zd): BAD, read returned %d\n"), nb, xx);
 	goto exit;
     }
