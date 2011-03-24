@@ -966,34 +966,32 @@ Header headerCopyLoad(const void * uh)
 Header headerRead(FD_t fd, int magicp)
 {
     int32_t block[4];
-    int32_t reserved;
     int32_t * ei = NULL;
     int32_t il;
     int32_t dl;
-    int32_t magic;
     Header h = NULL;
     size_t len;
-    int i;
-
-    memset(block, 0, sizeof(block));
-    i = 2;
-    if (magicp == HEADER_MAGIC_YES)
-	i += 2;
-
-    if (Fread(block, 1, i*sizeof(*block), fd) != i*sizeof(*block))
-	goto exit;
-
-    i = 0;
 
     if (magicp == HEADER_MAGIC_YES) {
-	magic = block[i++];
+	int32_t magic;
+
+	if (Fread(block, 1, 4*sizeof(*block), fd) != 4*sizeof(*block))
+	    goto exit;
+
+	magic = block[0];
+
 	if (memcmp(&magic, rpm_header_magic, sizeof(magic)))
 	    goto exit;
-	reserved = block[i++];
+
+	il = ntohl(block[2]);
+	dl = ntohl(block[3]);
+    } else {
+	if (Fread(block, 1, 2*sizeof(*block), fd) != 2*sizeof(*block))
+	    goto exit;
+
+	il = ntohl(block[0]);
+	dl = ntohl(block[1]);
     }
-    
-    il = ntohl(block[i]);	i++;
-    dl = ntohl(block[i]);	i++;
 
     len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo_s)) + dl;
 
