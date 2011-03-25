@@ -438,7 +438,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
     const char * dbhome = rpmdbHome(rdb);
     DB * db = dbi->dbi_db;
     int _printit;
-    int rc = 0, xx;
+    int rc = 0;
 
     flags = 0;	/* XXX unused */
 
@@ -453,7 +453,7 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
 		dbhome, dbi->dbi_file);
     }
 
-    xx = db_fini(rdb, dbhome ? dbhome : "");
+    db_fini(rdb, dbhome ? dbhome : "");
 
     dbi->dbi_db = NULL;
 
@@ -560,7 +560,7 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 	    break;
 
 	if (rc == 0 && db != NULL) {
-	    int _printit, xx;
+	    int _printit;
 	    char *dbfs = prDbiOpenFlags(oflags, 0);
 	    rpmlog(RPMLOG_DEBUG, "opening  db index       %s/%s %s mode=0x%x\n",
 		    dbhome, dbi->dbi_file, dbfs, rdb->db_mode);
@@ -581,7 +581,7 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
 	    /* XXX return rc == errno without printing */
 	    _printit = (rc > 0 ? 0 : _debug);
-	    xx = cvtdberr(dbi, "db->open", rc, _printit);
+	    rc = cvtdberr(dbi, "db->open", rc, _printit);
 
 	    /* Validate the index type is something we can support */
 	    if ((rc == 0) && (dbtype == DB_UNKNOWN)) {
