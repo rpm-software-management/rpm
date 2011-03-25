@@ -65,18 +65,6 @@
     %{__os_install_post}\
 %{nil}
 
-@redhat@#---------------------------------------------------------------------
-@redhat@#	Expanded at end of %prep
-@redhat@#
-@redhat@%_fixperms	%{__chmod} -Rf @FIXPERMS@
-@redhat@#---------------------------------------------------------------------
-@redhat@#	Always use %defattr(-,root,root) in %files (added in rpm-4.0.4)
-@redhat@#
-@redhat@#%files(n:f:)	%%files%{?-f: -f %{-f*}}%{?-n: -n %{-n*}} %{?1}\
-@redhat@#%defattr(-,root,root,-)\
-@redhat@#%{nil}
-
-
 @apple@#---------------------------------------------------------------------
 @apple@#	Apple Darwin vendor specific macros
 @apple@#
