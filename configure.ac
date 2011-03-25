@@ -802,19 +802,14 @@ esac
 case "${host_os_noversion}" in
 mint)		RPMCANONARCH=m68kmint ;;
 esac
+
+dnl permit overriding build_vendor for "canonical rpm vendor"
 RPMCANONVENDOR="$build_vendor"
-case "${build_vendor}" in
-unknown|pc|ibm|redhat|pld|mandrake|conectiva|lvr|yellowdog|caos|suse)
-	test -f /etc/redhat-release &&		RPMCANONVENDOR=redhat
-	test -f /etc/SuSE-release &&		RPMCANONVENDOR=suse
-	test -f /etc/pld-release &&		RPMCANONVENDOR=pld
-	test -f /etc/mandrake-release &&	RPMCANONVENDOR=mandrake
-	test -f /etc/conectiva-release &&	RPMCANONVENDOR=conectiva
-	test -f /etc/lvr-release &&		RPMCANONVENDOR=lvr
-	test -f /etc/yellowdog-release &&	RPMCANONVENDOR=yellowdog
-	test -f /etc/caos-release &&		RPMCANONVENDOR=caos
-	;;
-esac
+AC_ARG_WITH([vendor], 
+  AS_HELP_STRING([--with-vendor=VENDOR], [specify rpm vendor name]),
+  [RPMCANONVENDOR=$withval])
+AC_DEFINE_UNQUOTED([RPMCANONVENDOR],["${RPMCANONVENDOR}"],[canonical vendor])
+	   
 RPMCANONOS="$host_os_noversion"
 RPMCANONGNU="$host_os_gnu"
 AC_SUBST(RPMCANONCOLOR)
@@ -822,7 +817,6 @@ AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 AC_SUBST(RPMCANONGNU)
-AC_DEFINE_UNQUOTED([RPMCANONVENDOR],["${RPMCANONVENDOR}"],[canonical vendor])
 
 if test X"$prefix" = XNONE ; then
     usrprefix="$ac_default_prefix"
