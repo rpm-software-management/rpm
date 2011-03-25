@@ -108,29 +108,6 @@ for SUBST in $SUBSTS ; do
 	;;
   esac
 
-  case $VENDOR in
-  yellowdog)
-    VENDORSED='-e s,^@yellowdog@,,'
-    ;;
-  pld)
-    VENDORSED='-e s,^@pld@,,'
-    RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e "s/ -g/ /"`"
-    ;;
-  mandrake)
-    VENDORSED='-e s,^@mandrake@,,'
-    RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e s/i386/i686/`"
-    ;;
-  conectiva)
-    VENDORSED='-e s,^@conectiva@,,'
-    ;;
-  redhat)
-    VENDORSED='-e s,^@redhat@,,'
-    ;;
-  apple)
-    VENDORSED='-e s,^@apple@,,'
-    ;;
-  esac
-
   CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
 
   cat $PLATFORM \
@@ -142,7 +119,7 @@ for SUBST in $SUBSTS ; do
 	-e '/\${\w*:-/!s,\${,%{_,' \
 	-e "s,@ISANAME@,$ISANAME," \
 	-e "s,@ISABITS@,$ISABITS," \
-	$VENDORSED \
+	-e "s,^@${VENDOR}@,," \
   | grep -v '^@' \
   > ${PPD}/macros
 
