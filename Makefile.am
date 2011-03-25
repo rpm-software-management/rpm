@@ -228,7 +228,10 @@ install-exec-hook:
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
 
 install-data-local:
-	DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" $(SHELL) $(top_srcdir)/installplatform rpmrc macros platform
+	DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" \
+		$(SHELL) $(top_srcdir)/installplatform \
+			rpmrc platform \
+			$(RPMCANONVENDOR) $(RPMCANONOS) $(RPMCANONGNU)
 	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 
 # XXX to appease distcheck we need to remove "stuff" here...

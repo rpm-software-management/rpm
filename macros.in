@@ -585,13 +585,6 @@ print (t)\
 # XXX	Note: escaped %% for use in headerSprintf()
 %_build_name_fmt	%%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.rpm
 
-#	The default transaction color. This value is a set of bits to
-#	determine file and dependency affinity for this arch.
-#		0	uncolored (i.e. use only arch as install hint)
-#		1	Elf32 permitted
-#		2	Elf64 permitted
-%_transaction_color	@RPMCANONCOLOR@
-
 #	Verify digest/signature flags for various rpm modes:
 #	0x30300 (_RPMVSF_NODIGESTS)    --nohdrchk      if set, don't check digest(s)
 #	0xc0c00 (_RPMVSF_NOSIGNATURES) --nosignature   if set, don't check signature(s)
@@ -634,22 +627,6 @@ print (t)\
 #
 # Default path to the file used for transaction fcntl lock.
 %_rpmlock_path	%{_dbpath}/.rpm.lock
-
-#==============================================================================
-# ---- per-platform macros.
-#	Macros that are specific to an individual platform. The values here
-#	will be used if the per-platform macro file does not exist..
-#
-%_arch			@RPMCANONARCH@
-%_build_arch		@RPMCANONARCH@
-%_vendor		@RPMCANONVENDOR@
-%_os			@RPMCANONOS@
-%_gnu			@RPMCANONGNU@
-%_target_platform	%{_target_cpu}-%{_vendor}-%{_target_os}%{?_gnu}
-
-#
-# Define a generic value for optflags. Normally overridden by per-target macros.
-%optflags		-O2
 
 #
 # ISA dependency marker, none for noarch and name-bitness for others

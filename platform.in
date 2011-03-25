@@ -4,6 +4,7 @@
 # ---- per-platform macros.
 #
 %_arch			@RPMCANONARCH@
+%_build_arch		@RPMCANONARCH@
 %_vendor		@RPMCANONVENDOR@
 %_os			@RPMCANONOS@
 %_gnu			@RPMRC_GNU@
@@ -13,6 +14,13 @@
 %__isa_name		@ISANAME@
 %__isa_bits		@ISABITS@
 %__isa			%{__isa_name}-%{__isa_bits}
+
+# The default transaction color. This value is a set of bits to
+# determine file and dependency affinity for this arch.
+#	0	uncolored (i.e. use only arch as install hint)
+#	1	Elf32 permitted
+#	2	Elf64 permitted
+%_transaction_color	@RPMCANONCOLOR@
 
 #==============================================================================
 # ---- configure macros.

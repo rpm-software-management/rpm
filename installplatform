@@ -5,18 +5,12 @@ pkglibdir="${pkglibdir:-/usr/lib/rpm}"
 platformdir="${pkglibdir}/platform"
 
 RPMRC="${1:-rpmrc}"
-MACROS="${2:-macros}"
-PLATFORM="${3:-platform}"
+PLATFORM="${2:-platform}"
+VENDOR="${3}"
+OS="${4}"
+RPMRC_GNU="${5}"
 
-RPM="./rpm --rcfile=$RPMRC --macros=$MACROS"
-
-canonarch_sed='s_i.86_i386_;s_pentium[34]_i386_;s_athlon_i386_;s_sparc[^-]*_sparc_;s_alpha[^-]*_alpha_;s_arm[^-]*_arm_;s_\(powerpc\|ppc\)[^-]*_ppc_;s,\(ia32e\|amd64\),x86_64,;s_sh4a_sh4_'
-arch="`$RPM --eval '%{_arch}'|sed -e "$canonarch_sed"`"
-VENDOR="`$RPM --eval '%{_vendor}'`"
-OS="`$RPM --eval '%{_os}'`"
-RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
-
-for ARCH in `grep ^arch_canon $RPMRC | cut -d: -f2`; do
+for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   RPMRC_OPTFLAGS="`sed -n 's/^optflags: '$ARCH' //p' $RPMRC`"
   RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
   case $RPMRC_OPTFLAGS in
@@ -37,59 +31,91 @@ for ARCH in `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   # consult various arch folks for correct names etc.
   ISANAME=
   ISABITS=
+  CANONARCH=
+  CANONCOLOR=
+  FILTER=cat
   case "${ARCH}" in
     sparc64*) 
 	ISANAME=sparc
 	ISABITS=64
+	CANONARCH=sparc64
+	CANONCOLOR=3
 	;;
     sparc*) 
 	ISANAME=sparc
 	ISABITS=32
+	CANONARCH=sparc
+	CANONCOLOR=0
 	;;
     s390)
 	ISANAME=s390
 	ISABITS=32
+	CANONARCH=s390
+	CANONCOLOR=0
 	;;
     s390x)
 	ISANAME=s390
 	ISABITS=64
+	CANONARCH=s390x
+	CANONCOLOR=3
 	;;
     ppc64*)
 	ISANAME=ppc
 	ISABITS=64
+	CANONARCH=ppc64
+	CANONCOLOR=3
 	;;
     ppc*)
 	ISANAME=ppc
 	ISABITS=32
+	CANONARCH=ppc
+	CANONCOLOR=0
 	;;
     i?86|pentium?|athlon|geode)
 	ISANAME=x86
 	ISABITS=32
+	CANONARCH=i386
+	CANONCOLOR=0
 	;;
     x86_64|amd64|ia32e)
 	ISANAME=x86
 	ISABITS=64
+	CANONARCH=x86_64
+	CANONCOLOR=3
 	;;
     ia64)
 	ISANAME=ia
 	ISABITS=64
+	CANONARCH=ia64
+	CANONCOLOR=2
 	;;
     sh*)
 	ISANAME=sh
 	ISABITS=32
+	CANONARCH=${ARCH}
+	CANONCOLOR=0
 	;;
     arm*)
 	ISANAME=`echo ${ARCH} | sed "s/^\([^-]*\)-.*/\1/"`
 	ISABITS=32
+	CANONARCH=arm
+	CANONCOLOR=0
 	;;
     alpha*)
 	ISANAME=alpha
 	ISABITS=64
+	CANONARCH=alpha
+	CANONCOLOR=0
+	;;
+    noarch)
+	CANONARCH=noarch
+	CANONCOLOR=0
+	FILTER="grep -v -E '^(%optflag|%__isa)'"
 	;;
   esac
 
   # skip architectures for which we dont have full config parameters
-  [ -z "$ISANAME" ] && continue
+  [ -z "$CANONARCH" ] && continue
 
   CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
 
@@ -98,7 +124,8 @@ for ARCH in `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 
   cat $PLATFORM \
   | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
-	-e "s,$arch,$CANONARCH," \
+	-e "s,@RPMCANONARCH@,$CANONARCH,g" \
+	-e "s,@RPMCANONCOLOR@,$CANONCOLOR," \
 	-e "s,@RPMRC_GNU@,$RPMRC_GNU," \
 	-e "s,@LIB@,$LIB," \
 	-e "s,@ARCH_INSTALL_POST@,$ARCH_INSTALL_POST," \
@@ -107,12 +134,7 @@ for ARCH in `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	-e "s,@ISABITS@,$ISABITS," \
 	-e "s,^@${VENDOR}@,," \
   | grep -v '^@' \
+  | ${FILTER} \
   > ${PPD}/macros
 
 done
-
-{ cd ${DESTDIR}/${platformdir}
-  [ -L noarch-${OS} ] && rm -f noarch-${OS} 2>/dev/null
-  mkdir -p noarch-${OS}
-  sed -e "/^%_arch/s,${arch},noarch," ${arch}-${OS}/macros | grep -v '^%optflags' | grep -v "^%__isa" > noarch-${OS}/macros
-}

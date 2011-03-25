@@ -777,32 +777,6 @@ for reqscript in ${host_cpu}-${host_os_exact}.req ${host_os_exact}.req ${host_os
     fi
 } done
 
-dnl Determine the canonical arch-vendor-os for the host machine
-case "${host_cpu}" in
-*86)		RPMCANONCOLOR=0; RPMCANONARCH=i386 ;;
-ia32e*)		RPMCANONCOLOR=3; RPMCANONARCH=ia32e ;;
-amd64*)		RPMCANONCOLOR=3; RPMCANONARCH=amd64 ;;
-x86_64*)	RPMCANONCOLOR=3; RPMCANONARCH=x86_64 ;;
-alpha*)		RPMCANONCOLOR=0; RPMCANONARCH=alpha ;;
-sparc64*)	RPMCANONCOLOR=3; RPMCANONARCH=sparc64 ;;
-sparc*)		RPMCANONCOLOR=3; RPMCANONARCH=sparc ;;
-ia64*)		RPMCANONCOLOR=2; RPMCANONARCH=ia64 ;;
-s390x*)		RPMCANONCOLOR=3; RPMCANONARCH=s390x ;;
-s390*)		RPMCANONCOLOR=0; RPMCANONARCH=s390 ;;
-powerpc64*|ppc64*)	RPMCANONCOLOR=3; RPMCANONARCH=ppc64 ;;
-powerpc*|ppc*)	RPMCANONCOLOR=0; RPMCANONARCH=ppc ;;
-arm*)		RPMCANONCOLOR=0; RPMCANONARCH=arm ;;
-mipsel*)	RPMCANONCOLOR=0; RPMCANONARCH=mipsel ;;
-mips*)		RPMCANONCOLOR=0; RPMCANONARCH=mips ;;
-m68k*)		RPMCANONCOLOR=0; RPMCANONARCH=m68k ;;
-sh3*)		RPMCANONCOLOR=0; RPMCANONARCH=sh3 ;;
-sh4*)		RPMCANONCOLOR=0; RPMCANONARCH=sh4 ;;
-*)		RPMCANONCOLOR=0; RPMCANONARCH=unknown ;;
-esac
-case "${host_os_noversion}" in
-mint)		RPMCANONARCH=m68kmint ;;
-esac
-
 dnl permit overriding build_vendor for "canonical rpm vendor"
 RPMCANONVENDOR="$build_vendor"
 AC_ARG_WITH([vendor], 
@@ -812,8 +786,6 @@ AC_DEFINE_UNQUOTED([RPMCANONVENDOR],["${RPMCANONVENDOR}"],[canonical vendor])
 	   
 RPMCANONOS="$host_os_noversion"
 RPMCANONGNU="$host_os_gnu"
-AC_SUBST(RPMCANONCOLOR)
-AC_SUBST(RPMCANONARCH)
 AC_SUBST(RPMCANONVENDOR)
 AC_SUBST(RPMCANONOS)
 AC_SUBST(RPMCANONGNU)
