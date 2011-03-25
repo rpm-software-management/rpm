@@ -677,8 +677,6 @@ int fsmTeardown(FSM_t fsm)
 static int fsmMapFContext(FSM_t fsm)
 {
     rpmts ts = fsmGetTs(fsm);
-    struct stat * st;
-    st = &fsm->sb;
 
     /*
      * Find file security context (if not disabled).
@@ -687,7 +685,7 @@ static int fsmMapFContext(FSM_t fsm)
     if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && rpmtsSELabelHandle(ts)) {
 	security_context_t scon = NULL;
 
-	if (selabel_lookup_raw(rpmtsSELabelHandle(ts), &scon, fsm->path, st->st_mode) == 0 && scon != NULL) {
+	if (selabel_lookup_raw(rpmtsSELabelHandle(ts), &scon, fsm->path, fsm->sb.st_mode) == 0 && scon != NULL) {
 	    fsm->fcontext = scon;
 	}
     }
