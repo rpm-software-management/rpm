@@ -16,27 +16,7 @@ VENDOR="`$RPM --eval '%{_vendor}'`"
 OS="`$RPM --eval '%{_os}'`"
 RPMRC_GNU="`$RPM --eval '%{_gnu}'`"
 
-case "$arch" in
-  i[3456]86|pentium[34]|athlon|geode) SUBSTS='s_i386_i386_ s_i386_i486_ s_i386_i586_ s_i386_i686_ s_i386_pentium3_ s_i386_pentium4_ s_i386_athlon_ s_i386_geode_' ;;
-  alpha*) SUBSTS='s_alpha_alpha_ s_alpha_alphaev5_ s_alpha_alphaev56_ s_alpha_alphapca56_ s_alpha_alphaev6_ s_alpha_alphaev67_' ;;
-  arm*) SUBSTS='s_arm_arm_ s_arm_armv3l_ s_arm_armv4l_ s_arm_armv4tl_ s_arm_armv5tel_ s_arm_armv5tejl_ s_arm_armv6l_ s_arm_armv7l_' ;;
-  sh4*) SUBSTS='s_sh4_sh4_ s_sh4_sh4a_' ;;
-  sparc*) SUBSTS='s_sparc\(64\|64v\|v9v\|v9\)_sparc_ s_sparc64_sparcv9_;s_sparc\([^v]\|$\)_sparcv9\1_ s_sparcv9_sparc64_;s_sparc\([^6]\|$\)_sparc64\1_' ;;
-  powerpc*|ppc*) SUBSTS='s_ppc64_ppc_ s_ppc\([^6ip]\|$\)_ppc64\1_ s_ppc\([^6ip]\|$\)_ppciseries_ s_ppc\([^6ip]\|$\)_ppcpseries_ s_ppc\([^6ip]\|$\)_ppc64iseries_ s_ppc\([^6ip]\|$\)_ppc64pseries_' ;;
-  s390*) SUBSTS='s_s390x_s390_ s_s390\([^x]\|$\)_s390x\1_' ;;
-  x86_64|amd64|ia32e) SUBSTS='s,x86_64,x86_64, s,x86_64,ia32e, s,x86_64,amd64, s,x86_64,i386, s,x86_64,i486, s,x86_64,i586, s,x86_64,i686, s,x86_64,pentium3, s,x86_64,pentium4, s,x86_64,athlon, s,x86_64,geode,' ;;
-  *) SUBSTS=y___ ;;
-esac
-
-for SUBST in $SUBSTS ; do
-  ARCH=`echo $arch | sed -e $SUBST`
-  TARGET_PLATFORM=`echo $target_platform | sed -e $SUBST`
-  TARGET=`echo $target | sed -e $SUBST`
-
-  PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
-
-  [ -d $PPD ] || mkdir -p $PPD
-
+for ARCH in `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   RPMRC_OPTFLAGS="`sed -n 's/^optflags: '$ARCH' //p' $RPMRC`"
   RPMRC_OPTFLAGS="`echo $RPMRC_OPTFLAGS | sed -e 's, ,\ ,g'`"
   case $RPMRC_OPTFLAGS in
@@ -108,7 +88,13 @@ for SUBST in $SUBSTS ; do
 	;;
   esac
 
+  # skip architectures for which we dont have full config parameters
+  [ -z "$ISANAME" ] && continue
+
   CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
+
+  PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
+  [ -d $PPD ] || mkdir -p $PPD
 
   cat $PLATFORM \
   | sed -e "s,@RPMRC_OPTFLAGS@,$RPMRC_OPTFLAGS," \
