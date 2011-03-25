@@ -228,10 +228,7 @@ install-exec-hook:
 	@LN_S@ ../../bin/rpm $(DESTDIR)$(bindir)/rpmverify
 
 install-data-local:
-	@case "@host_os@" in \
-	solaris*|linux*|darwin*) \
-	   DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" $(SHELL) $(top_srcdir)/installplatform rpmrc macros platform ;; \
-	esac
+	DESTDIR="$(DESTDIR)" pkglibdir="$(rpmconfigdir)" $(SHELL) $(top_srcdir)/installplatform rpmrc macros platform
 	@$(MKDIR_P) $(DESTDIR)$(localstatedir)/tmp
 
 # XXX to appease distcheck we need to remove "stuff" here...
