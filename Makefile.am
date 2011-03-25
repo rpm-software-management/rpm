@@ -159,10 +159,6 @@ elfdeps_LDADD +=	@WITH_LIBELF_LIB@ @WITH_POPT_LIB@
 endif
 endif
 
-rpmlibexec_PROGRAMS +=	javadeps
-javadeps_SOURCES =	tools/javadeps.c
-javadeps_LDADD =
-
 rpmlibexec_PROGRAMS +=	rpmdeps
 rpmdeps_SOURCES =	tools/rpmdeps.c
 rpmdeps_LDADD =		lib/librpm.la rpmio/librpmio.la build/librpmbuild.la @WITH_POPT_LIB@
