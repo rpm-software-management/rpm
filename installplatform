@@ -19,13 +19,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   esac
 
   ARCH_INSTALL_POST='%{nil}'
-  case "${ARCH}-${OS}" in
-    sparc64*-linux) LIB=lib64 ;;
-    s390x-linux) LIB=lib64 ;;
-    ppc64-linux|powerpc64-linux) LIB=lib64 ;;
-    x86_64-linux|amd64-linux|ia32e-linux) LIB=lib64 ;;
-    *) LIB=lib;;
-  esac
+  LIB=lib
 
   # XXX FIXME: incomplete and quite likely wrong too in places,
   # consult various arch folks for correct names etc.
@@ -118,6 +112,10 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   [ -z "$CANONARCH" ] && continue
 
   CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
+
+  if [ "$OS" = "linux" ] && [ "$CANONCOLOR" = 3 ]; then
+      LIB=${LIB}64
+  fi
 
   PPD="${DESTDIR}/${platformdir}/${ARCH}-${OS}"
   [ -d $PPD ] || mkdir -p $PPD
