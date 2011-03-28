@@ -7,8 +7,8 @@ EXTRA_DIST = \
 
 AM_CPPFLAGS = -I$(top_builddir) -I$(top_builddir)/include -I.
 
-libluaext_la_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_POSIX
-libluaext_la_LIBADD = @WITH_LUA_LIB@
+libluaext_la_CPPFLAGS = $(AM_CPPFLAGS) -DWITH_POSIX @LUA_CFLAGS@
+libluaext_la_LIBADD = @LUA_LIBS@
 libluaext_la_SOURCES = \
 		lposix.h \
 		lposix.c \
