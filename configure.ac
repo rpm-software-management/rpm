@@ -13,6 +13,8 @@ AC_USE_SYSTEM_EXTENSIONS
 
 AC_DISABLE_STATIC
 
+PKG_PROG_PKG_CONFIG
+
 dnl Checks for programs.
 AC_PROG_CXX
 AC_PROG_AWK
@@ -692,28 +694,19 @@ AS_IF([test "$with_acl" = yes],[
 AC_SUBST(WITH_ACL_LIB)
 AM_CONDITIONAL(ACL,[test "$with_acl" = yes])
 
-WITH_LUA_LIB=
-WITH_LUA_INCLUDE=
-AC_ARG_WITH(lua, [AS_HELP_STRING([--with-lua],[build with lua support])],,[with_lua=yes])
-AS_IF([test "$with_lua" = yes],[
-  AC_CHECK_HEADER([lua.h],[
-    AC_CHECK_LIB(lua,[luaL_openlibs],[with_lua=yes],[
-      AC_MSG_ERROR([--with-lua given, but liblua not found])
-    ], 
-    [-lm])
-  ],[
-      AC_MSG_ERROR([--with-lua given, but lua.h not found])
-  ])
-])
+AC_ARG_WITH([lua], [AS_HELP_STRING([--with-lua], [build with lua support])],
+            [],
+            [with_lua=yes])
 
-AS_IF([test "$with_lua" = yes],[
-  AC_DEFINE(WITH_LUA, 1, [Build with lua support?])
-  WITH_LUA_INCLUDE=
-  WITH_LUA_LIB="-llua -lm" 
+AS_IF([test "$with_lua" != no],[
+  PKG_CHECK_MODULES([LUA],
+    [lua >= 5.1],
+    [AC_DEFINE(WITH_LUA, 1, [Build with lua support?])],
+    [AC_MSG_ERROR([lua not present (--without-lua to disable)])])
+  AC_SUBST(LUA_CFLAGS)
+  AC_SUBST(LUA_LIBS)
 ])
-AC_SUBST(WITH_LUA_LIB)
-AC_SUBST(WITH_LUA_INCLUDE)
-AM_CONDITIONAL(WITH_LUAEXT,[test "$with_lua" = yes])
+AM_CONDITIONAL(WITH_LUA,[test "$with_lua" = yes])
 
 AC_ARG_ENABLE(plugins, [AS_HELP_STRING([--disable-plugins],[build without plugin support])],,[enable_plugins=yes])
 AS_IF([test "$enable_plugins" = yes],[

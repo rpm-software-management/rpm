@@ -16,7 +16,7 @@ SUBDIRS = po misc
 if WITH_INTERNAL_DB
 SUBDIRS += db3
 endif
-if WITH_LUAEXT
+if WITH_LUA
 SUBDIRS += luaext
 endif
 SUBDIRS += rpmio lib sign build scripts fileattrs doc . tests

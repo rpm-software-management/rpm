@@ -35,7 +35,7 @@ librpm_la_SOURCES = \
 	rpmvercmp.c signature.c signature.h transaction.c \
 	verify.c rpmlock.c rpmlock.h misc.h \
 	rpmscript.h rpmscript.c legacy.c merge.c \
-	rpmliblua.c rpmliblua.h rpmchroot.c rpmchroot.h \
+	rpmchroot.c rpmchroot.h \
 	rpmplugins.c rpmplugins.h rpmug.c rpmug.h
 
 librpm_la_LDFLAGS = -version-info 2:0:0
@@ -47,6 +47,12 @@ librpm_la_LIBADD = \
 	@WITH_CAP_LIB@ \
 	@WITH_ACL_LIB@ \
 	@LIBINTL@
+
+if WITH_LUA
+AM_CPPFLAGS += @LUA_CFLAGS@
+librpm_la_LIBADD += @LUA_LIBS@
+librpm_la_SOURCES += rpmliblua.c rpmliblua.h
+endif
 
 if WITH_INTERNAL_DB
 librpm_la_LIBADD += $(libdb_la)
