@@ -775,6 +775,19 @@ exit:
     return result;
 }
 
+int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote)
+{
+    /* Get provides information from header */
+    rpmds provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, 0));
+    int result = 0;
+
+    rpmdsSetIx(provides,ix);
+    result = rpmdsCompare(provides, req);
+
+    provides = rpmdsFree(provides);
+    return result;
+}
+
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
     rpmds provides = NULL;

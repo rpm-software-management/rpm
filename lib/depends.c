@@ -150,7 +150,7 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 	     * If no obsoletes version info is available, match all names.
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
-		     || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
+                || rpmdsMatchesDep(oh, rpmdbGetIteratorFileNum(mi), obsoletes, _rpmds_nopromote)) {
 		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
@@ -372,7 +372,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     if (h == NULL) {
 	mi = rpmtsPrunedIterator(ts, RPMDBI_PROVIDENAME, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    if (rpmdsAnyMatchesDep(h, dep, _rpmds_nopromote)) {
+	    if (rpmdsMatchesDep(h, rpmdbGetIteratorFileNum(mi), dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, "(db provides)", rc);
 		break;
 	    }

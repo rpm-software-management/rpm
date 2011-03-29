@@ -310,6 +310,16 @@ int rpmdsCompare(const rpmds A, const rpmds B);
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote);
 
 /** \ingroup rpmds
+ * Compare package provides dependencies from header with a single dependency.
+ * @param h		header
+ * @param ix            index in header provides
+ * @param req		dependency set
+ * @param nopromote	Don't promote Epoch: in comparison?
+ * @return		1 if any dependency overlaps, 0 otherwise
+ */
+int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
+
+/** \ingroup rpmds
  * Compare package name-version-release from header with a single dependency.
  * @param h		header
  * @param req		dependency set
