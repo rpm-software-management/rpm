@@ -793,36 +793,14 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     rpmds provides = NULL;
     int result = 0;
 
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (req->EVR == NULL || req->Flags == NULL)
-	return 1;
-
-    if (!(req->Flags[req->i] & RPMSENSE_SENSEMASK) || !req->EVR[req->i] || *req->EVR[req->i] == '\0')
-	return 1;
-
     /* Get provides information from header */
     provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, 0));
     if (provides == NULL)
 	goto exit;	/* XXX should never happen */
-    if (nopromote)
-	(void) rpmdsSetNoPromote(provides, nopromote);
 
-    /*
-     * Rpm prior to 3.0.3 did not have versioned provides.
-     * If no provides version info is available, match any/all requires
-     * with same name.
-     */
-    if (provides->EVR == NULL) {
-	result = 1;
-	goto exit;
-    }
+    (void) rpmdsSetNoPromote(provides, nopromote);
 
-    result = 0;
     while (rpmdsNext(provides) >= 0) {
-
-	/* Filter out provides that came along for the ride. */
-	if (!rstreq(provides->N[provides->i], req->N[req->i]))
-	    continue;
 
 	result = rpmdsCompare(provides, req);
 
@@ -842,17 +820,9 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
     rpmds pkg;
     int rc = 1;	/* XXX assume match, names already match here */
 
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (req->EVR == NULL || req->Flags == NULL)
-	return rc;
-
-    if (!((req->Flags[req->i] & RPMSENSE_SENSEMASK) && req->EVR[req->i] && *req->EVR[req->i]))
-	return rc;
-
     /* Get package information from header */
     pkg = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    if (nopromote)
-	rpmdsSetNoPromote(pkg, nopromote);
+    rpmdsSetNoPromote(pkg, nopromote);
     rc = rpmdsCompare(pkg, req);
     rpmdsFree(pkg);
 
