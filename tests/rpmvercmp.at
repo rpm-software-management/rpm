@@ -3,7 +3,7 @@
 m4_define([RPMVERCMP],[
 AT_SETUP([rpmvercmp($1, $2) = $3])
 AT_KEYWORDS([vercmp])
-AT_CHECK([run rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
+AT_CHECK([runroot rpm --eval '%{lua: print(rpm.vercmp("$1", "$2"))}'], [0], [$3
 ], [])
 AT_CLEANUP
 ])

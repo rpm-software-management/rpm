@@ -86,11 +86,11 @@ AT_CHECK([
 junk="${RPMTEST}/not_an.rpm"
 cat << EOF > "${junk}"
 no_such.file
-not_an.rpm
+not_pkg.rpm
 EOF
 
-run rpm \
-  -Uvv "${junk}"
+runroot rpm \
+  -Uvv /not_an.rpm
 ],
 [2],
 [ignore],
