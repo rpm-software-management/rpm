@@ -85,6 +85,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	rm -rf testing
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
+	cp -r data/ testing/
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
