@@ -16,7 +16,6 @@ Provides: hi
 Conflicts: goodbye
 Obsoletes: howdy
 Prefix: /usr
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %description
 Simple rpm demonstration.

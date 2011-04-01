@@ -9,7 +9,7 @@ Provides: hi
 Conflicts: goodbye
 Obsoletes: howdy
 BuildArch: noarch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 %description
 Simple rpm demonstration.
