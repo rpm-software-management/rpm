@@ -24,7 +24,7 @@ RPM_XFAIL=${RPM_XFAIL-1}
 
 function run()
 {
-    "$@" --define "_topdir ${TOPDIR}"
+    "$@" --define "_topdir ${TOPDIR}" --dbpath="${RPMTEST}/var/lib/rpm/"
 }
 
 function runroot()
