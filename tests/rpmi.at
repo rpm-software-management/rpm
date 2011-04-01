@@ -25,8 +25,8 @@ AT_KEYWORDS([install])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-run rpm \
-  -U "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+runroot rpm \
+  -U /data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
 [ignore],
@@ -40,8 +40,8 @@ AT_KEYWORDS([install])
 AT_CHECK([
 rm -rf ${TOPDIR}
 
-run rpm \
-  -i "${abs_srcdir}"/data/SRPMS/hello-1.0-1.src.rpm
+runroot rpm \
+  -i /data/SRPMS/hello-1.0-1.src.rpm
 ],
 [0],
 [ignore],
@@ -54,7 +54,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i <nonexistent file>])
 AT_KEYWORDS([install])
 AT_CHECK([
-run rpm \
+runroot rpm \
   -i no_such_file
 ],
 [1],
@@ -72,8 +72,8 @@ no_such.file
 not_an.rpm
 EOF
 
-run rpm \
-  -Uvv --nomanifest "${junk}"
+runroot rpm \
+  -Uvv --nomanifest /textfile
 ],
 [1],
 [ignore],
