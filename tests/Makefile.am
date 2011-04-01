@@ -86,6 +86,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r data/ testing/
+	for prog in gzip cat patch tar sh chmod; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
