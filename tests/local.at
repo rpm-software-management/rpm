@@ -1,9 +1,7 @@
 AT_TESTED([rpm rpmbuild rpmquery])
 
 m4_define([RPMDB_INIT],[[
-run rpm \
-  --root="${abs_builddir}"/testing \
-  --initdb
+runroot rpm --initdb
 ]])
 
 m4_define([RPMDB_CLEAR],[[
