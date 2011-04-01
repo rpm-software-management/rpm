@@ -8,6 +8,7 @@ AT_SETUP([rpm -U to package with file conflict])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 for p in "one" "two"; do
@@ -31,6 +32,7 @@ AT_SETUP([rpm -U two packages with a conflicting file])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -U \
   "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
@@ -47,6 +49,7 @@ AT_SETUP([rpm -U package with shareable file])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 for p in "one" "two"; do
@@ -70,6 +73,7 @@ AT_SETUP([rpm -U two packages with shareable file])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -U \
   "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
@@ -87,6 +91,7 @@ AT_SETUP([rpm -U replacing directory with symlink])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
 
@@ -114,6 +119,7 @@ AT_SETUP([rpm -U replacing symlink with directory])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -rf "${RPMTEST}"/usr/{share,lib}/symlinktest*
 

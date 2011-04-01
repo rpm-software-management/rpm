@@ -8,6 +8,7 @@ AT_SETUP([missing dependency])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -30,6 +31,7 @@ AT_SETUP([cross-depending packages])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -55,6 +57,7 @@ AT_SETUP([unsatisfied versioned require])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -82,6 +85,7 @@ AT_SETUP([satisfied versioned require])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -107,6 +111,7 @@ AT_SETUP([versioned conflict in transaction])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -133,6 +138,7 @@ AT_SETUP([versioned conflict in database])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -159,6 +165,7 @@ AT_SETUP([erase to break dependencies])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \

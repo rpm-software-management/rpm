@@ -8,6 +8,7 @@ AT_SETUP([dependency problems])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 run rpmbuild --quiet -bb \
@@ -32,6 +33,7 @@ AT_SETUP([files with no problems])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 tpkg="hello-1.0-1.i386.rpm"
 cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
@@ -49,6 +51,7 @@ AT_SETUP([files with no problems in verbose mode])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 tpkg="hello-1.0-1.i386.rpm"
 cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
@@ -69,6 +72,7 @@ AT_SETUP([verify files with problems present])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 tpkg="hello-1.0-1.i386.rpm"
 cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
@@ -93,6 +97,7 @@ AT_SETUP([verifyscript failure])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 rm -rf "${TOPDIR}"
 run rpmbuild --quiet -bb "${RPMDATA}"/SPECS/verifyscript.spec
@@ -109,6 +114,7 @@ AT_SETUP([verifyscript success])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 rm -rf "${TOPDIR}"
 run rpmbuild --quiet -bb "${RPMDATA}"/SPECS/verifyscript.spec

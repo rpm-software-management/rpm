@@ -102,6 +102,7 @@ AT_CLEANUP
 AT_SETUP([rpm -U upgrade to newer])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
@@ -124,6 +125,7 @@ AT_CLEANUP
 AT_SETUP([rpm -U upgrade to older])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
@@ -138,6 +140,7 @@ AT_CLEANUP
 AT_SETUP([rpm -U --oldpackage downgrade])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
@@ -153,6 +156,7 @@ AT_CLEANUP
 AT_SETUP([rpm -U two versions of same package])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -U \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
@@ -169,6 +173,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i two versions of same package])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -i \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
@@ -187,6 +192,7 @@ AT_CLEANUP
 AT_SETUP([rpm -i identical versions of same package])
 AT_CHECK([
 RPMDB_CLEAR
+RPMDB_INIT
 
 runroot rpm -i \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
