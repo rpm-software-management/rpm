@@ -37,24 +37,6 @@ AT_CLEANUP
 
 
 # ------------------------------
-AT_SETUP([rpm --version])
-AT_KEYWORDS([basic])
-AT_CHECK([run rpm --version],[0],
-[RPM version AT_PACKAGE_VERSION
-])
-AT_CLEANUP
-
-
-# ------------------------------
-AT_SETUP([rpm --version])
-AT_KEYWORDS([basic])
-AT_CHECK([run rpm --version],[0],
-[RPM version AT_PACKAGE_VERSION
-])
-AT_CLEANUP
-
-
-# ------------------------------
 AT_SETUP([rpm --showrc])
 AT_KEYWORDS([basic])
 AT_CHECK([run rpm --showrc],[0],
