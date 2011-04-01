@@ -6,7 +6,7 @@ AT_BANNER([RPM macros])
 AT_SETUP([simple rpm --eval])
 AT_KEYWORDS([macros])
 AT_CHECK([
-run rpm --define "this that" --eval '%{this}'
+runroot rpm --define "this that" --eval '%{this}'
 ],
 [0],
 [that
@@ -16,7 +16,7 @@ AT_CLEANUP
 AT_SETUP([simple true conditional rpm --eval])
 AT_KEYWORDS([macros])
 AT_CHECK([
-run rpm --define "this that" --eval '%{?this}'
+runroot rpm --define "this that" --eval '%{?this}'
 ],
 [0],
 [that
@@ -26,7 +26,7 @@ AT_CLEANUP
 AT_SETUP([simple false conditional rpm --eval])
 AT_KEYWORDS([macros])
 AT_CHECK([
-run rpm --define "this that" --eval '%{?that}'
+runroot rpm --define "this that" --eval '%{?that}'
 ],
 [0],
 [
@@ -36,24 +36,20 @@ AT_CLEANUP
 AT_SETUP([uncompress macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
-(cd ${RPMDATA}/SOURCES/ &&
-  run rpm \
+runroot rpm \
     --define "__gzip /my/bin/gzip" \
-    --eval "%{uncompress:hello-2.0.tar.gz}"
-)
+    --eval "%{uncompress:/data/SOURCES/hello-2.0.tar.gz}"
 ],
 [0],
-[/my/bin/gzip -dc hello-2.0.tar.gz
+[/my/bin/gzip -dc /data/SOURCES/hello-2.0.tar.gz
 ])
 AT_CLEANUP
 
 AT_SETUP([basename macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
-(cd ${RPMDATA}/SOURCES/ &&
-  run rpm \
-    --eval "%{basename:${RPMDATA}/SOURCES/hello-2.0.tar.gz}"
-)
+runroot rpm \
+    --eval "%{basename:/data/SOURCES/hello-2.0.tar.gz}"
 ],
 [0],
 [hello-2.0.tar.gz
@@ -63,10 +59,8 @@ AT_CLEANUP
 AT_SETUP([suffix macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
-(cd ${RPMDATA}/SOURCES/ &&
-  run rpm \
-    --eval "%{suffix:${RPMDATA}/SOURCES/hello-2.0.tar.gz}"
-)
+runroot rpm \
+    --eval "%{suffix:/data/SOURCES/hello-2.0.tar.gz}"
 ],
 [0],
 [gz
@@ -76,10 +70,8 @@ AT_CLEANUP
 AT_SETUP([url2path macro])
 AT_KEYWORDS([macros])
 AT_CHECK([
-(cd ${RPMDATA}/SOURCES/ &&
-  run rpm \
+runroot rpm \
     --eval "%{url2path:http://hello.org/releases/hello-2.0.tar.gz}"
-)
 ],
 [0],
 [/releases/hello-2.0.tar.gz
@@ -89,10 +81,8 @@ AT_CLEANUP
 AT_SETUP([shell expansion])
 AT_KEYWORDS([macros])
 AT_CHECK([
-(cd ${RPMDATA}/SOURCES/ &&
-  run rpm \
+runroot rpm \
     --eval "%(echo foo)"
-)
 ],
 [0],
 [foo
@@ -102,7 +92,7 @@ AT_CLEANUP
 AT_SETUP([simple lua --eval])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
-run rpm --eval '%{lua:print(5*5)}'
+runroot rpm --eval '%{lua:print(5*5)}'
 ],
 [0],
 [25
@@ -112,7 +102,7 @@ AT_CLEANUP
 AT_SETUP([lua rpm extensions])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
-run rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
+runroot rpm --eval '%{lua: rpm.define("foo bar") print(rpm.expand("%{foo}"))}'
 ],
 [0],
 [bar
@@ -122,7 +112,7 @@ AT_CLEANUP
 AT_SETUP([lua posix extensions])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
-run rpm \
+runroot rpm \
   --eval '%{lua: posix.putenv("LUATEST=ok") print(posix.getenv("LUATEST"))}'
 ],
 [0],
@@ -133,7 +123,7 @@ AT_CLEANUP
 AT_SETUP([lua script exit behavior])
 AT_KEYWORDS([macros lua])
 AT_CHECK([
-run rpm \
+runroot rpm \
   --eval '%{lua: os.exit()}))}'
 ],
 [0],
