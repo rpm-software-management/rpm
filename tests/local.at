@@ -11,6 +11,8 @@ rm -rf "${abs_builddir}"/testing`run rpm --eval '%_dbpath'`/*
 m4_define([RPMPY_RUN],[
 cat << EOF > test.py
 import rpm, sys
+dbpath=rpm.expandMacro('%_dbpath')
+rpm.addMacro('_dbpath', '${abs_builddir}/testing%s' % dbpath)
 def myprint(msg = ''):
     sys.stdout.write('%s\n' % msg)
 $1
