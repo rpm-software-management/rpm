@@ -30,7 +30,6 @@ function run()
 function runroot()
 {
     (cd ${RPMTEST} && \
-     mkdir -p etc && touch etc/mtab &&
-     FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir ${TOPDIR}"
+     FAKECHROOT_BASE="${RPMTEST}" fakechroot "$@" --define "_topdir /build"
     )
 }
