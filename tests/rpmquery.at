@@ -144,7 +144,7 @@ tpkg="hello-1.0-1.ppc64.rpm"
 cp "${RPMDATA}/RPMS/$tpkg" "${RPMTEST}"
 
 runroot rpm \
-  --noscripts --nodeps --ignorearch --relocate=/usr="${abs_builddir}"/testing/check \
+  --noscripts --nodeps --ignorearch --relocate=/usr=/check \
   -i "${tpkg}"
 ],
 [0])
@@ -158,18 +158,16 @@ runroot rpm \
 ],
 [ignore])
 
-cat > expout << _ATEOF
-${abs_builddir}/testing/check/local/bin/hello
-${abs_builddir}/testing/check/share/doc/hello-1.0
-${abs_builddir}/testing/check/share/doc/hello-1.0/FAQ
-_ATEOF
 
 AT_CHECK([
 runroot rpm \
   -ql hello
 ],
 [0],
-[expout],
+[/check/local/bin/hello
+/check/share/doc/hello-1.0
+/check/share/doc/hello-1.0/FAQ
+],
 [ignore])
 
 AT_CLEANUP
