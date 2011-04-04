@@ -19,7 +19,7 @@ endif
 if WITH_LUA
 SUBDIRS += luaext
 endif
-SUBDIRS += rpmio lib sign build scripts fileattrs doc . tests
+SUBDIRS += rpmio lib sign build scripts fileattrs doc .
 
 if ENABLE_PYTHON
 SUBDIRS += python
@@ -27,6 +27,10 @@ endif
 
 if ENABLE_PLUGINS
 SUBDIRS += plugins
+endif
+
+if HAVE_FAKECHROOT
+SUBDIRS += tests
 endif
 
 DIST_SUBDIRS = po misc luaext rpmio lib sign build python scripts fileattrs doc tests plugins
