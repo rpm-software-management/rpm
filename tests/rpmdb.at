@@ -127,10 +127,10 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-run rpmbuild --quiet -bb \
+runroot rpmbuild --quiet -bb \
         --define "pkg status" \
 	--define "filedata same_stuff" \
-          ${RPMDATA}/SPECS/conflicttest.spec
+          /data/SPECS/conflicttest.spec
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
 runroot rpm -qls conflictstatus
@@ -150,8 +150,8 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-run rpmbuild --quiet -bb \
-          ${RPMDATA}/SPECS/flangtest.spec
+runroot rpmbuild --quiet -bb \
+          /data/SPECS/flangtest.spec
 
 runroot rpm -U --define "_install_langs de:fi" "${TOPDIR}"/RPMS/noarch/flangtest-1.0-1.noarch.rpm
 runroot rpm -qls flangtest
@@ -176,10 +176,10 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -f "${RPMTEST}"/usr/share/my.version
 
-run rpmbuild --quiet -bb \
+runroot rpmbuild --quiet -bb \
         --define "pkg status" \
 	--define "filedata same_stuff" \
-          ${RPMDATA}/SPECS/conflicttest.spec
+          /data/SPECS/conflicttest.spec
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
 test -f "${RPMTEST}"/usr/share/my.version
@@ -199,10 +199,10 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 rm -f "${RPMTEST}"/usr/share/my.version
 
-run rpmbuild --quiet -bb \
+runroot rpmbuild --quiet -bb \
         --define "pkg status" \
 	--define "filedata same_stuff" \
-          ${RPMDATA}/SPECS/conflicttest.spec
+          /data/SPECS/conflicttest.spec
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
 runroot rpm -e conflictstatus
