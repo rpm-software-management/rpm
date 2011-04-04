@@ -412,8 +412,10 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 
     if (qva->qva_source == RPMQV_SPECRPMS) {
 	res = 0;
-	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next)
+	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+	    if (pkg->fileList == NULL) continue;
 	    res += qva->qva_showPackage(qva, ts, pkg->header);
+	}
     } else {
 	res = qva->qva_showPackage(qva, ts, spec->sourceHeader);
     }
