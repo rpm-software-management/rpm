@@ -106,9 +106,9 @@ RPMDB_INIT
 rm -rf "${TOPDIR}"
 
 for v in "1.0" "2.0"; do
-    run rpmbuild --quiet -bb \
+    runroot rpmbuild --quiet -bb \
         --define "ver $v" \
-          ${RPMDATA}/SPECS/versiontest.spec
+          /data/SPECS/versiontest.spec
 done
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm

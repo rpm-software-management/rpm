@@ -11,10 +11,10 @@ RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
 
-run rpmbuild --quiet -bb \
+runroot rpmbuild --quiet -bb \
 	--define "pkg one" \
 	--define "reqs deptest-two" \
-	  ${RPMDATA}/SPECS/deptest.spec
+	  /data/SPECS/deptest.spec
 
 runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
 runroot rpm -Va
@@ -94,7 +94,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 rm -rf "${TOPDIR}"
-run rpmbuild --quiet -bb "${RPMDATA}"/SPECS/verifyscript.spec
+runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
 runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 rm -f "${RPMTEST}"/var/checkme
 runroot rpm -V --nodeps verifyscript
@@ -111,7 +111,7 @@ RPMDB_CLEAR
 RPMDB_INIT
 
 rm -rf "${TOPDIR}"
-run rpmbuild --quiet -bb "${RPMDATA}"/SPECS/verifyscript.spec
+runroot rpmbuild --quiet -bb /data/SPECS/verifyscript.spec
 runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/verifyscript-1.0-1.noarch.rpm
 touch "${RPMTEST}"/var/checkme
 runroot rpm -V --nodeps verifyscript
