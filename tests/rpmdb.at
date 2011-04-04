@@ -55,11 +55,8 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="foo-1.0-1.noarch.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
-
 runroot rpm -i \
-  "${tpkg}"
+  /data/RPMS/foo-1.0-1.noarch.rpm
 ],
 [0])
 
@@ -74,8 +71,7 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="foo-1.0-1.noarch.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
+tpkg="/data/RPMS/foo-1.0-1.noarch.rpm"
 
 runroot rpm -i "${tpkg}" && runroot rpm -U --replacepkgs "${tpkg}"
 ],
@@ -93,12 +89,9 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="hello-1.0-1.i386.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
-
 runroot rpm -i \
   --noscripts --nodeps --ignorearch --relocate=/usr=/check \
-  "${tpkg}"
+  /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [0])
 
@@ -115,12 +108,9 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="hello-1.0-1.ppc64.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
-
 runroot rpm -i \
   --noscripts --nodeps --ignorearch --relocate=/usr=/check \
-  "${tpkg}"
+  /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0],
 [ignore],

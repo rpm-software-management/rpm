@@ -35,10 +35,8 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="hello-1.0-1.i386.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
-
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos "${tpkg}"
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm -Va --nodeps --nouser --nogroup
 ],
 [0],
@@ -53,10 +51,8 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="hello-1.0-1.i386.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
-
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos "${tpkg}"
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.i386.rpm
 runroot rpm -Vva --nodeps --nouser --nogroup
 ],
 [0],
@@ -74,10 +70,8 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="hello-1.0-1.i386.rpm"
-cp "${RPMDATA}/RPMS/${tpkg}" "${RPMTEST}"
-
-runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos "${tpkg}"
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.i386.rpm
 rm -f "${RPMTEST}"/usr/share/doc/hello-1.0/FAQ
 chmod u-x "${RPMTEST}"/usr/local/bin/hello
 dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \

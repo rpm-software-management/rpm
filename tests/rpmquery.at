@@ -140,12 +140,9 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-tpkg="hello-1.0-1.ppc64.rpm"
-cp "${RPMDATA}/RPMS/$tpkg" "${RPMTEST}"
-
 runroot rpm \
   --noscripts --nodeps --ignorearch --relocate=/usr=/check \
-  -i "${tpkg}"
+  -i /data/RPMS/hello-1.0-1.ppc64.rpm
 ],
 [0])
 
