@@ -86,10 +86,11 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r data/ testing/
-	mkdir testing/{dev,etc}
+	mkdir testing/{dev,etc,magic,tmp}
 	for node in stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
-	for prog in gzip cat patch tar sh chmod rm mkdir; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
+	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file mktemp cut sort diff; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
+	(cd testing/magic && file -C)
 
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
