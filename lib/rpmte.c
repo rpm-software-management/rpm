@@ -291,7 +291,6 @@ rpmte rpmteFree(rpmte te)
 	rpmfsFree(te->fs);
 	rpmpsFree(te->probs);
 	rpmteCleanDS(te);
-	rpmtsFree(te->ts);
 
 	argvFree(te->collections);
 	argvFree(te->lastInCollectionsAny);
@@ -308,7 +307,7 @@ rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
 	       rpmRelocation * relocs)
 {
     rpmte p = xcalloc(1, sizeof(*p));
-    p->ts = rpmtsLink(ts);
+    p->ts = ts;
     p->type = type;
     addTE(p, h, key, relocs);
     switch (type) {
