@@ -261,8 +261,8 @@ sub process_file {
 
       ($module =~ m/\.ph$/) && next;
 
-      # use base qw(Foo) dependencies
-      if ($statement eq "use" && $module eq "base") {
+      # use base|parent qw(Foo) dependencies
+      if ($statement eq "use" && ($module eq "base" || $module eq "parent")) {
         add_require($module, undef);
         if ($version =~ /^qw\s*[(\/'"]\s*([^)\/"']+?)\s*[)\/"']/) {
           add_require($_, undef) for split(' ', $1);
