@@ -654,12 +654,14 @@ int rpmdbClose(rpmdb db)
 
     db = _free(db);
 
+    if (rpmdbRock == NULL) {
+	(void) rpmsqEnable(-SIGHUP, NULL);
+	(void) rpmsqEnable(-SIGINT, NULL);
+	(void) rpmsqEnable(-SIGTERM, NULL);
+	(void) rpmsqEnable(-SIGQUIT, NULL);
+	(void) rpmsqEnable(-SIGPIPE, NULL);
+    }
 exit:
-    (void) rpmsqEnable(-SIGHUP,	NULL);
-    (void) rpmsqEnable(-SIGINT,	NULL);
-    (void) rpmsqEnable(-SIGTERM,NULL);
-    (void) rpmsqEnable(-SIGQUIT,NULL);
-    (void) rpmsqEnable(-SIGPIPE,NULL);
     return rc;
 }
 
@@ -721,11 +723,13 @@ static int openDatabase(const char * prefix,
     /* Try to ensure db home exists, error out if we cant even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
-	(void) rpmsqEnable(SIGHUP, NULL);
-	(void) rpmsqEnable(SIGINT, NULL);
-	(void) rpmsqEnable(SIGTERM,NULL);
-	(void) rpmsqEnable(SIGQUIT,NULL);
-	(void) rpmsqEnable(SIGPIPE,NULL);
+	if (rpmdbRock == NULL) {
+	    (void) rpmsqEnable(SIGHUP, NULL);
+	    (void) rpmsqEnable(SIGINT, NULL);
+	    (void) rpmsqEnable(SIGTERM, NULL);
+	    (void) rpmsqEnable(SIGQUIT, NULL);
+	    (void) rpmsqEnable(SIGPIPE, NULL);
+	}
 
 	/* Just the primary Packages database opened here */
 	rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, db->db_flags) != NULL) ? 0 : -2;
