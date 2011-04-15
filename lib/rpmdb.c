@@ -1276,8 +1276,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     mi->mi_set = dbiFreeIndexSet(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
-    /* XXX rpmdbUnlink() should be rpmdbFree() but no such call exists... */
-    mi->mi_db = rpmdbUnlink(mi->mi_db);
+    rpmdbClose(mi->mi_db);
     mi->mi_ts = rpmtsFree(mi->mi_ts);
 
     mi = _free(mi);
@@ -2279,7 +2278,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
         xx = dbiCclose(ii->ii_dbi, ii->ii_dbc, 0);
     ii->ii_dbc = NULL;
     ii->ii_dbi = NULL;
-    ii->ii_db = rpmdbUnlink(ii->ii_db);
+    rpmdbClose(ii->ii_db);
     ii->ii_set = dbiFreeIndexSet(ii->ii_set);
 
     ii = _free(ii);
