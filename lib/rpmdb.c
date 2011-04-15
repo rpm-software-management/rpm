@@ -509,11 +509,18 @@ int rpmdbCheckTerminate(int terminate)
     if (terminating) {
 	rpmdb db;
 	rpmdbMatchIterator mi;
+	rpmdbIndexIterator ii;
 
 	while ((mi = rpmmiRock) != NULL) {
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
 	    mi = rpmdbFreeIterator(mi);
+	}
+
+	while ((ii = rpmiiRock) != NULL) {
+	    rpmiiRock = ii->ii_next;
+	    ii->ii_next = NULL;
+	    ii = rpmdbIndexIteratorFree(ii);
 	}
 
 	while ((db = rpmdbRock) != NULL) {
