@@ -50,7 +50,6 @@ main(int argc, char *argv[])
     rpmfc fc;
     int ac = 0;
     int ec = 1;
-    int xx;
 char buf[BUFSIZ];
 
     if ((progname = strrchr(argv[0], '/')) != NULL)
@@ -73,20 +72,19 @@ char buf[BUFSIZ];
 	    be = b + strlen(buf) - 1;
 	    while (strchr("\r\n", *be) != NULL)
 		*be-- = '\0';
-	    xx = argvAdd(&av, b);
+	    argvAdd(&av, b);
 	}
 	ac = argvCount(av);
     }
 
     /* Make sure file names are sorted. */
-    xx = argvSort(av, NULL);
+    argvSort(av, NULL);
 
-    /* Build file class dictionary. */
+
+    /* Build file/package class and dependency dictionaries. */
     fc = rpmfcCreate(getenv("RPM_BUILD_ROOT"), 0);
-    xx = rpmfcClassify(fc, av, NULL);
-
-    /* Build file/package dependency dictionary. */
-    xx = rpmfcApply(fc);
+    if (rpmfcClassify(fc, av, NULL) || rpmfcApply(fc))
+	goto exit;
 
 if (_rpmfc_debug) {
 rpmfcPrint(buf, fc, NULL);
