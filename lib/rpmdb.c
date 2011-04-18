@@ -2752,24 +2752,23 @@ static int cleanDbenv(const char *prefix, const char *dbpath)
 
 static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
 { 
-    int i;
     char *path;
-    int xx;
+    int xx = 0;
 
-    for (i = 0; i < dbiTagsMax; i++) {
+    for (int i = 0; i < dbiTagsMax; i++) {
 	const char * base = rpmTagGetName(dbiTags[i]);
 	path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
 	if (access(path, F_OK) == 0)
-	    xx = unlink(path);
+	    xx += unlink(path);
 	free(path);
     }
     cleanDbenv(prefix, dbpath);
 
     path = rpmGetPath(prefix, "/", dbpath, NULL);
-    xx = rmdir(path);
+    xx += rmdir(path);
     free(path);
 
-    return 0;
+    return (xx != 0);
 }
 
 static int rpmdbMoveDatabase(const char * prefix,
