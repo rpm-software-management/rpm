@@ -2841,7 +2841,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     int nocleanup = 1;
     int failed = 0;
     int removedir = 0;
-    int rc = 0, xx;
+    int rc = 0;
 
     dbpath = rpmGetPath("%{?_dbpath}", NULL);
     if (rstreq(dbpath, "")) {
@@ -2921,15 +2921,15 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     }
 
-    xx = rpmdbClose(olddb);
-    xx = rpmdbClose(newdb);
+    rpmdbClose(olddb);
+    rpmdbClose(newdb);
 
     if (failed) {
 	rpmlog(RPMLOG_WARNING, 
 		_("failed to rebuild database: original database "
 		"remains in place\n"));
 
-	xx = rpmdbRemoveDatabase(prefix, newdbpath);
+	rpmdbRemoveDatabase(prefix, newdbpath);
 	rc = 1;
 	goto exit;
     } else if (!nocleanup) {
