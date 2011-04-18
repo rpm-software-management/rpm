@@ -97,8 +97,8 @@ int urlGetFile(const char * url, const char * dest)
     char *cmd = NULL;
     const char *target = NULL;
     char *urlhelper = NULL;
-    int rc;
-    pid_t pid, wait;
+    int status;
+    pid_t pid;
 
     urlhelper = rpmExpand("%{?_urlhelper}", NULL);
 
@@ -119,9 +119,8 @@ int urlGetFile(const char * url, const char * dest)
         execvp(argv[0], argv);
         exit(127); /* exit with 127 for compatibility with bash(1) */
     }
-    wait = waitpid(pid, &rc, 0);
-    cmd = _free(cmd);
+    free(cmd);
 
-    return rc;
-
+    return ((waitpid(pid, &status, 0) != -1) &&
+	    WIFEXITED(status) && (WEXITSTATUS(status) == 0)) ? 0 : -1;
 }

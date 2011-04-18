@@ -41,7 +41,7 @@ urltype	urlPath(const char * url, const char ** pathp);
  * Copy data from URL to local file.
  * @param url		url string of source
  * @param dest		file name of destination
- * @return		0 on success, otherwise FTPERR_* code
+ * @return		0 on success, -1 on error
  */
 int urlGetFile(const char * url, const char * dest);
 
