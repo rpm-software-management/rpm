@@ -715,7 +715,7 @@ static int openDatabase(const char * prefix,
 		int mode, int perms, int flags)
 {
     rpmdb db;
-    int rc, xx;
+    int rc;
     int justCheck = flags & RPMDB_FLAG_JUSTCHECK;
 
     if (dbp)
@@ -743,7 +743,7 @@ static int openDatabase(const char * prefix,
     }
 
     if (rc || justCheck || dbp == NULL)
-	xx = rpmdbClose(db);
+	rpmdbClose(db);
     else {
 	db->db_next = rpmdbRock;
 	rpmdbRock = db;
