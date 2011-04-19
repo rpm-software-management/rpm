@@ -1289,7 +1289,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     (void) rpmdbCheckSignals();
 
-    return mi;
+    return NULL;
 }
 
 unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
@@ -2269,7 +2269,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     rpmdbIndexIterator * prev, next;
 
     if (ii == NULL)
-        return ii;
+        return NULL;
 
     prev = &rpmiiRock;
     while ((next = *prev) != NULL && next != ii)
@@ -2287,11 +2287,8 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     ii->ii_set = dbiFreeIndexSet(ii->ii_set);
 
     ii = _free(ii);
-    return ii;
+    return NULL;
 }
-
-
-
 
 static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 {
