@@ -6,9 +6,11 @@
 #include "system.h"
 
 #include <ctype.h>
+#include <errno.h>
 
 #include <rpm/header.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmurl.h>
 #include <rpm/rpmfileutil.h>
 #include "rpmio/rpmlua.h"
 #include "build/rpmbuild_internal.h"
@@ -252,6 +254,7 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
     p->flags = flag;
     p->source = strrchr(p->fullSource, '/');
     if (p->source) {
+	if ((buf = strrchr(p->source,'='))) p->source = buf;
 	p->source++;
     } else {
 	p->source = p->fullSource;
@@ -269,6 +272,28 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 
     if (tag != RPMTAG_ICON) {
 	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
+	struct stat st;
+
+	/* try to download source/patch if it's missing */
+	if (lstat(body, &st) != 0 && errno == ENOENT && !rpmExpandNumeric("%{_disable_source_fetch}")) {
+	    char *url = NULL;
+	    if (urlIsURL(p->fullSource) != URL_IS_UNKNOWN) {
+		url = rstrdup(p->fullSource);
+	    } else {
+		url = rpmExpand("%{_default_source_url}", NULL);
+		rstrcat(&url, p->source);
+		if (*url == '%') url = _free(url);
+	    }
+	    if (url) {
+		rpmlog(RPMLOG_WARNING, _("Downloading %s to %s\n"), url, body);
+		if (urlGetFile(url, body) != 0) {
+		    free(url);
+		    rpmlog(RPMLOG_ERR, _("Couldn't download %s\n"), p->fullSource);
+		    return RPMRC_FAIL;
+		}
+		free(url);
+	    }
+	}
 
 	rasprintf(&buf, "%s%d",
 		(flag & RPMBUILD_ISPATCH) ? "PATCH" : "SOURCE", num);

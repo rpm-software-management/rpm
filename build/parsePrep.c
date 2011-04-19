@@ -158,26 +158,6 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
-#ifdef AUTOFETCH_NOT	/* XXX don't expect this code to be enabled */
-    /* XXX
-     * XXX If nosource file doesn't exist, try to fetch from url.
-     * XXX TODO: add a "--fetch" enabler.
-     */
-    if (sp->flags & RPMTAG_NOSOURCE && autofetchnosource) {
-	struct stat st;
-	int rc;
-	if (lstat(fn, &st) != 0 && errno == ENOENT &&
-	    urlIsUrl(sp->fullSource) != URL_IS_UNKNOWN) {
-	    if ((rc = urlGetFile(sp->fullSource, fn)) != 0) {
-		rpmlog(RPMLOG_ERR,
-			_("Couldn't download nosource %s: %s\n"),
-			sp->fullSource);
-		return NULL;
-	    }
-	}
-    }
-#endif
-
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!(spec->flags & RPMSPEC_FORCE) && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
 	fn = _free(fn);
