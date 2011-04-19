@@ -857,7 +857,6 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     rpmtsi pi;  rpmte p;
     rpmfi fi;
     rpmdbMatchIterator mi;
-    int xx;
     int oc = 0;
     const char * baseName;
 
@@ -883,7 +882,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	    keylen = strlen(baseName);
 	    if (keylen == 0)
 		keylen++;	/* XXX "/" fixup. */
-	    xx = rpmdbExtendIterator(mi, baseName, keylen);
+	    rpmdbExtendIterator(mi, baseName, keylen);
 	    rpmStringSetAddEntry(baseNames, baseName);
 	 }
     }
