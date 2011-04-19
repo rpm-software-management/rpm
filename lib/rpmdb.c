@@ -1248,7 +1248,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
     rpmdbMatchIterator * prev, next;
     dbiIndex dbi;
-    int xx;
     int i;
 
     if (mi == NULL)
@@ -1264,10 +1263,10 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     dbi = rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0);
 
-    xx = miFreeHeader(mi, dbi);
+    miFreeHeader(mi, dbi);
 
     if (mi->mi_dbc)
-	xx = dbiCclose(dbi, mi->mi_dbc, 0);
+	dbiCclose(dbi, mi->mi_dbc, 0);
     mi->mi_dbc = NULL;
 
     if (mi->mi_re != NULL)
