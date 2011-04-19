@@ -58,15 +58,17 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
     /* XXX TODO: use cwd from chroot state to save unnecessary open here */
     cwd = open(".", O_RDONLY);
     if (cwd != -1) {
-	int xx;
 	mode_t oldmask = umask(0);
 	umask(oldmask);
 
 	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname) == 0) {
 	    rc = RPMRC_OK;
 	}
-	/* XXX no way to return error from restore meaningfully atm */
-	xx = fchdir(cwd);
+	/* This failing would be fatal, return something different for it... */
+	if (fchdir(cwd)) {
+	    rpmlog(RPMLOG_ERR, _("Unable to restore current directory: %m"));
+	    rc = RPMRC_NOTFOUND;
+	}
 	close(cwd);
 	umask(oldmask);
     }
