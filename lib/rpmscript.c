@@ -279,11 +279,11 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
 
 exit:
     if (out)
-	xx = Fclose(out);	/* XXX dup'd STDOUT_FILENO */
+	Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
     if (script) {
 	if (!rpmIsDebug())
-	    xx = unlink(fn);
+	    unlink(fn);
 	fn = _free(fn);
     }
     return rc;
