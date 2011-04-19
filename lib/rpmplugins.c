@@ -52,7 +52,6 @@ rpmPlugins rpmpluginsNew(rpmts ts)
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 		    const char *opts)
 {
-    rpmPluginHook *supportedHooks;
     char *error;
 
     void *handle = dlopen(path, RTLD_LAZY);
@@ -62,7 +61,7 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
     }
 
     /* make sure the plugin has the supported hooks flag */
-    supportedHooks = (rpmPluginHook *) dlsym(handle, STR(PLUGIN_HOOKS));
+    (void) dlsym(handle, STR(PLUGIN_HOOKS));
     if ((error = dlerror()) != NULL) {
 	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
 	       STR(PLUGIN_HOOKS), error);
