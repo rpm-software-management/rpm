@@ -270,7 +270,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     HeaderIterator hi = NULL;
     char * msg = NULL;
     int res = 1; /* assume failure */
-    int xx;
     rpmRC rc;
     int failed = 0;
     int nodigests = !(flags & VERIFY_DIGEST);
@@ -317,9 +316,13 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     /* XXX RSA needs the hash_algo, so decode early. */
     if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP ||
 		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
-	xx = headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT);
-	xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
-	rpmtdFreeData(&sigtd);
+	int xx = -1;
+	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
+	    xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
+	    rpmtdFreeData(&sigtd);
+	}
+	if (xx) goto exit;
+	    
 	/* XXX assume same hash_algo in header-only and header+payload */
 	rpmDigestBundleAdd(plbundle, sigp->hash_algo, RPMDIGEST_NONE);
 	rpmDigestBundleAdd(hdrbundle, sigp->hash_algo, RPMDIGEST_NONE);
