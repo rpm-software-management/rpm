@@ -199,7 +199,7 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
 {
     FD_t out = NULL;
     char * fn = NULL;
-    int xx;
+    pid_t pid;
     rpmRC rc = RPMRC_FAIL;
     struct rpmsqElem sq;
 
@@ -244,26 +244,25 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
 	goto exit;
     }
 
-    xx = rpmsqFork(&sq);
-    if (sq.child == 0) {
+    pid = rpmsqFork(&sq);
+    if (pid == (pid_t) -1) {
+	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
+		sname, strerror(errno));
+	goto exit;
+    } else if (pid == 0) {/* Child */
 	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
 	       sname, *argvp[0], (unsigned)getpid());
 	doScriptExec(selinux, *argvp, prefixes, scriptFd, out);
     }
 
-    if (sq.child == (pid_t)-1) {
-	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"), sname, strerror(errno));
-	goto exit;
-    }
-
     rpmsqWait(&sq);
 
     rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
-	   sname, (unsigned)sq.child, (unsigned)sq.reaped, sq.status);
+	   sname, (unsigned)pid, (unsigned)sq.reaped, sq.status);
 
     if (sq.reaped < 0) {
 	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sname, sq.child, sq.reaped, strerror(errno));
+		 sname, pid, sq.reaped, strerror(errno));
     } else if (!WIFEXITED(sq.status) || WEXITSTATUS(sq.status)) {
       	if (WIFSIGNALED(sq.status)) {
 	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
