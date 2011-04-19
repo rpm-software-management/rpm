@@ -166,6 +166,30 @@ static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
     _exit(127); /* exit 127 for compatibility with bash(1) */
 }
 
+static char * writeScript(const char *cmd, const char *script)
+{
+    char *fn = NULL;
+    size_t slen = strlen(script);
+    int ok = 0;
+    FD_t fd = rpmMkTempFile("/", &fn);
+
+    if (Ferror(fd))
+	goto exit;
+
+    if (rpmIsDebug() && (rstreq(cmd, "/bin/sh") || rstreq(cmd, "/bin/bash"))) {
+	static const char set_x[] = "set -x\n";
+	/* Assume failures will be caught by the write below */
+	Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
+    }
+
+    ok = (Fwrite(script, sizeof(script[0]), slen, fd) == slen);
+
+exit:
+    if (!ok) fn = _free(fn);
+    Fclose(fd);
+    return fn;
+}
+
 /**
  * Run an external script.
  */
@@ -185,22 +209,13 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
     rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
 
     if (script) {
-	FD_t fd = rpmMkTempFile("/", &fn);
-	if (fd == NULL || Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("Couldn't create temporary file for %s: %s\n"),
+	fn = writeScript(*argvp[0], script);
+	if (fn == NULL) {
+	    rpmlog(RPMLOG_ERR,
+		   _("Couldn't create temporary file for %s: %s\n"),
 		   sname, strerror(errno));
 	    goto exit;
 	}
-
-	if (rpmIsDebug() &&
-	    (rstreq(*argvp[0], "/bin/sh") || rstreq(*argvp[0], "/bin/bash")))
-	{
-	    static const char set_x[] = "set -x\n";
-	    xx = Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
-	}
-
-	xx = Fwrite(script, sizeof(script[0]), strlen(script), fd);
-	xx = Fclose(fd);
 
 	argvAdd(argvp, fn);
 	if (arg1 >= 0) {
