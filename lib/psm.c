@@ -684,6 +684,25 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
     return psm;
 }
 
+static int runFsm(rpmpsm psm, FD_t payload)
+{
+    int sc, ec;
+
+    sc = fsmSetup(rpmfiFSM(psm->fi),
+		  (psm->goal == PKG_INSTALL) ? FSM_PKGINSTALL : FSM_PKGERASE,
+		  psm->ts, psm->te, psm->fi, payload, NULL, &psm->failedFile);
+    if (psm->goal == PKG_INSTALL) {
+	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
+		 fdOp(payload, FDSTAT_READ));
+	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
+		 fdOp(payload, FDSTAT_DIGEST));
+    }
+    ec = fsmTeardown(rpmfiFSM(psm->fi));
+
+    /* Return the relevant code: if setup failed, teardown doesn't matter */
+    return (sc ? sc : ec);
+}
+
 static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 {
     psm->nstage = nstage;
@@ -696,7 +715,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     rpmRC rc = RPMRC_OK;
-    int xx;
 
     switch (stage) {
     case PSM_UNKNOWN:
@@ -807,6 +825,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_PROCESS:
 	if (psm->goal == PKG_INSTALL) {
 	    FD_t payload = NULL;
+	    int fsmrc;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 
@@ -823,13 +842,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		break;
 	    }
 
-	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGINSTALL, ts, psm->te, fi,
-			payload, NULL, &psm->failedFile);
-	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_UNCOMPRESS),
-			fdOp(payload, FDSTAT_READ));
-	    (void) rpmswAdd(rpmtsOp(ts, RPMTS_OP_DIGEST),
-			fdOp(payload, FDSTAT_DIGEST));
-	    xx = fsmTeardown(rpmfiFSM(fi));
+	    fsmrc = runFsm(psm, payload);
 
 	    Fclose(payload);
 
@@ -839,12 +852,12 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->total = psm->amount;
 	    rpmpsmNext(psm, PSM_NOTIFY);
 
-	    if (rc) {
+	    if (fsmrc) {
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
 			(psm->failedFile != NULL ? psm->failedFile : ""),
-			cpioStrerror(rc));
+			cpioStrerror(fsmrc));
 		rc = RPMRC_FAIL;
 
 		/* XXX notify callback on error. */
@@ -873,9 +886,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->total = fc;
 	    rpmpsmNext(psm, PSM_NOTIFY);
 
-	    rc = fsmSetup(rpmfiFSM(fi), FSM_PKGERASE, ts, psm->te, fi,
-			NULL, NULL, &psm->failedFile);
-	    xx = fsmTeardown(rpmfiFSM(fi));
+	    /* XXX should't we log errors from here? */
+	    rc = runFsm(psm, NULL) ? RPMRC_FAIL : RPMRC_OK;
 
 	    psm->what = RPMCALLBACK_UNINST_STOP;
 	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
