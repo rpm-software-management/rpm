@@ -2267,7 +2267,6 @@ unsigned int rpmdbIndexIteratorTagNum(rpmdbIndexIterator ii, unsigned int nr)
 rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
 {
     rpmdbIndexIterator * prev, next;
-    int xx;
 
     if (ii == NULL)
         return ii;
@@ -2281,7 +2280,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     }
 
     if (ii->ii_dbc)
-        xx = dbiCclose(ii->ii_dbi, ii->ii_dbc, 0);
+        dbiCclose(ii->ii_dbi, ii->ii_dbc, 0);
     ii->ii_dbc = NULL;
     ii->ii_dbi = NULL;
     rpmdbClose(ii->ii_db);
