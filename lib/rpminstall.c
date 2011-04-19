@@ -377,6 +377,9 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     int rc;
     int i;
 
+    vsflags = setvsFlags(ia);
+    ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
+
     if (fileArgv == NULL) goto exit;
 
     rpmcliPackagesTotal = 0;
@@ -384,9 +387,6 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
     relocations = ia->relocations;
-
-    vsflags = setvsFlags(ia);
-    ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
 
     setNotifyFlag(ia, ts); 
 
@@ -606,6 +606,7 @@ exit:
     free(eiu);
 
     rpmtsEmpty(ts);
+    rpmtsSetVSFlags(ts, ovsflags);
 
     return rc;
 }
@@ -676,6 +677,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
     numFailed = rpmcliTransaction(ts, ia, numPackages);
 exit:
     rpmtsEmpty(ts);
+    rpmtsSetVSFlags(ts, ovsflags);
 
     return numFailed;
 }
