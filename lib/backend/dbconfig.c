@@ -14,8 +14,8 @@
 #include "lib/rpmdb_internal.h"
 #include "debug.h"
 
-static struct _dbiIndex staticdbi;
-static struct _dbConfig staticcfg;
+static struct dbiIndex_s staticdbi;
+static struct dbConfig_s staticcfg;
 static int db_eflags;
 
 /** \ingroup dbi
@@ -223,7 +223,7 @@ dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
 
     /* XXX FIXME: Get environment configuration out of here! */
     if (rdb->db_dbenv == NULL) {
-	struct _dbConfig * cfg = &rdb->cfg;
+	struct dbConfig_s * cfg = &rdb->cfg;
 	*cfg = staticcfg;	/* structure assignment */
 	/* Throw in some defaults if configuration didn't set any */
 	if (!cfg->db_mmapsize) cfg->db_mmapsize = 16 * 1024 * 1024;

@@ -7,9 +7,9 @@ enum rpmdbFlags {
     RPMDB_FLAG_VERIFYONLY	= (1 << 2),
 };
 
-typedef struct _dbiIndex * dbiIndex;
+typedef struct dbiIndex_s * dbiIndex;
 
-struct _dbConfig {
+struct dbConfig_s {
     int	db_mmapsize;	/*!< (10Mb) */
     int	db_cachesize;	/*!< (128Kb) */
     int	db_verbose;
@@ -45,7 +45,7 @@ struct rpmdb_s {
 
     /* dbenv and related parameters */
     void * db_dbenv;		/*!< Berkeley DB_ENV handle. */
-    struct _dbConfig cfg;
+    struct dbConfig_s cfg;
     int db_remove_env;
 
     struct rpmop_s db_getops;
@@ -70,7 +70,7 @@ enum dbiFlags_e {
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db functionality).
  */
-struct _dbiIndex {
+struct dbiIndex_s {
     const char * dbi_file;	/*!< file component of path */
 
     int	dbi_oflags;		/*!< db->open flags */

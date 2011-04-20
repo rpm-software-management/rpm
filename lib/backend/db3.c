@@ -117,7 +117,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
     DB_ENV *dbenv = NULL;
     int rc, xx;
     int retry_open = 2;
-    struct _dbConfig * cfg = &rdb->cfg;
+    struct dbConfig_s * cfg = &rdb->cfg;
     /* This is our setup, thou shall not have other setups before us */
     uint32_t eflags = (DB_CREATE|DB_INIT_MPOOL|DB_INIT_CDB);
 
