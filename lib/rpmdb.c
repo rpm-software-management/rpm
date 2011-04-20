@@ -2006,8 +2006,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 
             if (isLabel) {
 		dbc = dbiCursorInit(dbi, 0);
-                //rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
-                dbiFindByLabel(db, dbi, dbc, &key, &data, keyp, &set);
+                rc = dbiFindByLabel(db, dbi, dbc, &key, &data, keyp, &set);
                 dbc = dbiCursorFree(dbc);
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
