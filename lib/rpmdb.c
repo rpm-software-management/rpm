@@ -951,12 +951,11 @@ exit:
 
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
-    DBC * dbcursor = NULL;
+    dbiCursor dbc;
     DBT key, data; 
     dbiIndex dbi;
     rpmDbiTag dbtag = RPMDBI_NAME;
     int rc;
-    int xx;
 
     if (db == NULL)
 	return 0;
@@ -971,10 +970,9 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     key.data = (void *) name;
     key.size = strlen(name);
 
-    xx = dbiCopen(dbi, &dbcursor, 0);
-    rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
+    dbc = dbiCursorInit(dbi, 0);
+    rc = dbiCursorGet(dbc, &key, &data, DB_SET);
+    dbc = dbiCursorFree(dbc);
 
     if (rc == 0) {		/* success */
 	dbiIndexSet matches = NULL;
@@ -2310,7 +2308,7 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
     union _dbswap mi_offset;
     int rc = 0;
     int xx;
-    DBC * dbcursor = NULL;
+    dbiCursor dbc;
     DBT key;
 
     if (dbi == NULL || hdrNum == 0)
@@ -2318,7 +2316,7 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 
     memset(&key, 0, sizeof(key));
 
-    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
 
     mi_offset.ui = hdrNum;
     if (dbiByteSwapped(dbi) == 1)
@@ -2327,7 +2325,7 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
     key.size = sizeof(mi_offset.ui);
 
     if (hdr) {
-	rc = dbiPut(dbi, dbcursor, &key, hdr, DB_KEYLAST);
+	rc = dbiCursorPut(dbc, &key, hdr, DB_KEYLAST);
 	if (rc) {
 	    rpmlog(RPMLOG_ERR,
 		   _("error(%d) adding header #%d record\n"), rc, hdrNum);
@@ -2336,15 +2334,15 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 	DBT data;
 
 	memset(&data, 0, sizeof(data));
-	rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
 	if (rc) {
 	    rpmlog(RPMLOG_ERR,
 		   _("error(%d) removing header #%d record\n"), rc, hdrNum);
 	} else
-	    rc = dbiDel(dbi, dbcursor, &key, &data, 0);
+	    rc = dbiCursorDel(dbc, &key, &data, 0);
     }
 
-    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
+    dbiCursorFree(dbc);
     xx = dbiSync(dbi, 0);
 
     return rc;
@@ -2382,7 +2380,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     if (ret == 0) {
 	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = 0 };
 	int rc = 0;
-	DBC * dbcursor = NULL;
+	dbiCursor dbc = NULL;
 	DBT key, data;
 
 	memset(&key, 0, sizeof(key));
@@ -2399,7 +2397,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 		continue;
 
-	    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+	    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
 
 	    logAddRemove(dbiName(dbi), 1, &tagdata);
 	    while (rpmtdNext(&tagdata) >= 0) {
@@ -2423,7 +2421,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
  		 * */
 		set = NULL;
 
-		rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+		rc = dbiCursorGet(dbc, &key, &data, DB_SET);
 		if (rc == 0) {			/* success */
 		    (void) dbt2set(dbi, &data, &set);
 		} else if (rc == DB_NOTFOUND) {	/* not found */
@@ -2446,7 +2444,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
 		if (set->count > 0) {
 		    (void) set2dbt(dbi, &data, set);
-		    rc = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
+		    rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
 		    if (rc) {
 			rpmlog(RPMLOG_ERR,
 				_("error(%d) storing record \"%s\" into %s\n"),
@@ -2456,7 +2454,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 		    data.data = _free(data.data);
 		    data.size = 0;
 		} else {
-		    rc = dbiDel(dbi, dbcursor, &key, &data, 0);
+		    rc = dbiCursorDel(dbc, &key, &data, 0);
 		    if (rc) {
 			rpmlog(RPMLOG_ERR,
 				_("error(%d) removing record \"%s\" from %s\n"),
@@ -2471,9 +2469,7 @@ cont:
 		}
 	    }
 
-	    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-	    dbcursor = NULL;
-
+	    dbc = dbiCursorFree(dbc);
 	    xx = dbiSync(dbi, 0);
 
 	    rpmtdFreeData(&tagdata);
@@ -2494,7 +2490,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
     unsigned int hdrNum = 0;
 
     if (dbi != NULL && dbiType(dbi) == DBI_PRIMARY) {
-	DBC * dbcursor = NULL;
+	dbiCursor dbc;
 	DBT key, data;
 	unsigned int firstkey = 0;
 	union _dbswap mi_offset;
@@ -2503,12 +2499,12 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
-	ret = dbiCopen(dbi, &dbcursor, alloc ? DB_WRITECURSOR : 0);
+	dbc = dbiCursorInit(dbi, alloc ? DB_WRITECURSOR : 0);
 
 	/* Key 0 holds the current largest instance, fetch it */
 	key.data = &firstkey;
 	key.size = sizeof(firstkey);
-	ret = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+	ret = dbiCursorGet(dbc, &key, &data, DB_SET);
 
 	if (ret == 0 && data.data) {
 	    memcpy(&mi_offset, data.data, sizeof(mi_offset.ui));
@@ -2531,7 +2527,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 	    }
 
 	    /* Unless we manage to insert the new instance number, we failed */
-	    ret = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
+	    ret = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
 	    if (ret) {
 		hdrNum = 0;
 		rpmlog(RPMLOG_ERR,
@@ -2540,7 +2536,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 
 	    ret = dbiSync(dbi, 0);
 	}
-	ret = dbiCclose(dbi, dbcursor, 0);
+	dbiCursorFree(dbc);
     }
     
     return hdrNum;
@@ -2551,7 +2547,7 @@ static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 {
     int xx, i, rc = 0;
     struct rpmtd_s tagdata, reqflags;
-    DBC * dbcursor = NULL;
+    dbiCursor dbc = NULL;
 
     switch (rpmtag) {
     case RPMTAG_REQUIRENAME:
@@ -2572,7 +2568,7 @@ static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 	tagdata.count = 1;
     }
 
-    xx = dbiCopen(dbi, &dbcursor, DB_WRITECURSOR);
+    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
 
     logAddRemove(dbiName(dbi), 0, &tagdata);
     while ((i = rpmtdNext(&tagdata)) >= 0) {
@@ -2621,7 +2617,7 @@ static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 
 	set = NULL;
 
-	rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
 	if (rc == 0) {			/* success */
 	/* With duplicates, cursor is positioned, discard the record. */
 	    if (!dbi->dbi_permit_dups)
@@ -2640,7 +2636,7 @@ static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 	(void) dbiAppendSet(set, &rec, 1, sizeof(rec), 0);
 
 	(void) set2dbt(dbi, &data, set);
-	rc = dbiPut(dbi, dbcursor, &key, &data, DB_KEYLAST);
+	rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
 
 	if (rc) {
 	    rpmlog(RPMLOG_ERR,
@@ -2657,9 +2653,7 @@ cont:
 	}
     }
 
-    xx = dbiCclose(dbi, dbcursor, DB_WRITECURSOR);
-    dbcursor = NULL;
-
+    dbiCursorFree(dbc);
     xx = dbiSync(dbi, 0);
 
 exit:
