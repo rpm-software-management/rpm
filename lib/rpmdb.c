@@ -839,7 +839,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     rpmDbiTag dbtag = RPMDBI_BASENAMES;
     unsigned int i;
     int rc = -2; /* assume error */
-    int xx;
 
     *matches = NULL;
     if (filespec == NULL) return rc; /* nothing alloced yet */
@@ -916,7 +915,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 		    .hdrNum = dbiIndexRecordOffset(allMatches, i),
 		    .tagNum = dbiIndexRecordFileNumber(allMatches, i),
 		};
-		xx = dbiAppendSet(*matches, &rec, 1, sizeof(rec), 0);
+		dbiAppendSet(*matches, &rec, 1, sizeof(rec), 0);
 	    }
 
 	    prevoff = offset;
