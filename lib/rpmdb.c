@@ -458,7 +458,7 @@ struct rpmdbMatchIterator_s {
     rpmdb		mi_db;
     rpmDbiTagVal	mi_rpmtag;
     dbiIndexSet		mi_set;
-    DBC *		mi_dbc;
+    dbiCursor		mi_dbc;
     int			mi_setx;
     Header		mi_h;
     int			mi_sorted;
@@ -479,7 +479,7 @@ struct rpmdbIndexIterator_s {
     rpmdb		ii_db;
     dbiIndex		ii_dbi;
     rpmDbiTag		ii_rpmtag;
-    DBC *		ii_dbc;
+    dbiCursor		ii_dbc;
     DBT			ii_key;
     dbiIndexSet		ii_set;
 };
@@ -835,7 +835,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     fingerPrintCache fpc = NULL;
     fingerPrint fp1;
     dbiIndex dbi = NULL;
-    DBC * dbcursor;
     dbiIndexSet allMatches = NULL;
     rpmDbiTag dbtag = RPMDBI_BASENAMES;
     unsigned int i;
@@ -859,15 +858,14 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 
     dbi = rpmdbOpenIndex(db, dbtag, 0);
     if (dbi != NULL) {
-	dbcursor = NULL;
-	xx = dbiCopen(dbi, &dbcursor, 0);
+	dbiCursor dbc = dbiCursorInit(dbi, 0);
 
 	key->data = (void *) baseName;
 	key->size = strlen(baseName);
 	if (key->size == 0) 
 	    key->size++;	/* XXX "/" fixup. */
 
-	rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+	rc = dbiCursorGet(dbc, key, data, DB_SET);
 	if (rc > 0) {
 	    rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
@@ -877,8 +875,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	if (rc == 0)
 	    (void) dbt2set(dbi, data, &allMatches);
 
-	xx = dbiCclose(dbi, dbcursor, 0);
-	dbcursor = NULL;
+	dbiCursorFree(dbc);
     } else
 	rc = -2;
 
@@ -1006,7 +1003,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, DBC * dbcursor,
+static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, dbiCursor dbc,
 		DBT * key, DBT * data,
 		const char * name,
 		const char * version,
@@ -1020,7 +1017,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, DBC * dbcursor,
     key->data = (void *) name;
     key->size = strlen(name);
 
-    rc = dbiGet(dbi, dbcursor, key, data, DB_SET);
+    rc = dbiCursorGet(dbc, key, data, DB_SET);
 
     if (rc == 0) {		/* success */
 	(void) dbt2set(dbi, data, matches);
@@ -1094,7 +1091,7 @@ exit:
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, DBC * dbcursor,
+static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
 		DBT * key, DBT * data, const char * arg, dbiIndexSet * matches)
 {
     const char * release;
@@ -1107,7 +1104,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, DBC * dbcursor,
     if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
 
     /* did they give us just a name? */
-    rc = dbiFindMatches(db, dbi, dbcursor, key, data, arg, NULL, NULL, matches);
+    rc = dbiFindMatches(db, dbi, dbc, key, data, arg, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND) return rc;
 
     /* FIX: double indirection */
@@ -1140,7 +1137,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, DBC * dbcursor,
     }
 
     *s = '\0';
-    rc = dbiFindMatches(db, dbi, dbcursor, key, data,
+    rc = dbiFindMatches(db, dbi, dbc, key, data,
 			localarg, s + 1, NULL, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
@@ -1174,7 +1171,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, DBC * dbcursor,
 
     *s = '\0';
    	/* FIX: *matches may be NULL. */
-    rc = dbiFindMatches(db, dbi, dbcursor, key, data,
+    rc = dbiFindMatches(db, dbi, dbc, key, data,
 			localarg, s + 1, release, matches);
 exit:
     free(localarg);
@@ -1224,7 +1221,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 	if (data.data != NULL && rpmrc != RPMRC_FAIL) {
 	    (void) blockSignals(&signalMask);
-	    rc = dbiPut(dbi, mi->mi_dbc, &key, &data, DB_KEYLAST);
+	    rc = dbiCursorPut(mi->mi_dbc, &key, &data, DB_KEYLAST);
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
 			_("error(%d) storing record #%d into %s\n"),
@@ -1263,9 +1260,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 
     miFreeHeader(mi, dbi);
 
-    if (mi->mi_dbc)
-	dbiCclose(dbi, mi->mi_dbc, 0);
-    mi->mi_dbc = NULL;
+    mi->mi_dbc = dbiCursorFree(mi->mi_dbc);
 
     if (mi->mi_re != NULL)
     for (i = 0; i < mi->mi_nre; i++) {
@@ -1702,7 +1697,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
      * marked with DB_WRITECURSOR as well.
      */
     if (mi->mi_dbc == NULL)
-	xx = dbiCopen(dbi, &mi->mi_dbc, mi->mi_cflags);
+	mi->mi_dbc = dbiCursorInit(dbi, mi->mi_cflags);
 
     memset(&key, 0, sizeof(key));
     memset(&data, 0, sizeof(data));
@@ -1733,8 +1728,8 @@ top:
 #if !defined(_USE_COPY_LOAD)
 	    data.flags |= DB_DBT_MALLOC;
 #endif
-	    rc = dbiGet(dbi, mi->mi_dbc, &key, &data,
-			(key.data == NULL ? DB_NEXT : DB_SET));
+	    rc = dbiCursorGet(mi->mi_dbc, &key, &data,
+			      (key.data == NULL ? DB_NEXT : DB_SET));
 	    data.flags = 0;
 	    keyp = key.data;
 	    keylen = key.size;
@@ -1775,7 +1770,7 @@ top:
 #if !defined(_USE_COPY_LOAD)
 	data.flags |= DB_DBT_MALLOC;
 #endif
-	rc = dbiGet(dbi, mi->mi_dbc, &key, &data, DB_SET);
+	rc = dbiCursorGet(mi->mi_dbc, &key, &data, DB_SET);
 	data.flags = 0;
 	keyp = key.data;
 	keylen = key.size;
@@ -1853,12 +1848,11 @@ void rpmdbSortIterator(rpmdbMatchIterator mi)
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const void * keyp, size_t keylen)
 {
-    DBC * dbcursor;
+    dbiCursor dbc;
     DBT data, key;
     dbiIndex dbi = NULL;
     dbiIndexSet set;
     int rc;
-    int xx;
 
     if (mi == NULL || keyp == NULL)
 	return 1;
@@ -1868,16 +1862,13 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
     key.data = (void *) keyp;
     key.size = keylen ? keylen : strlen(keyp);
 
-    dbcursor = mi->mi_dbc;
-
     dbi = rpmdbOpenIndex(mi->mi_db, mi->mi_rpmtag, 0);
     if (dbi == NULL)
 	return 1;
 
-    xx = dbiCopen(dbi, &dbcursor, 0);
-    rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
-    xx = dbiCclose(dbi, dbcursor, 0);
-    dbcursor = NULL;
+    dbc = dbiCursorInit(dbi, 0);
+    rc = dbiCursorGet(dbc, &key, &data, DB_SET);
+    dbc = dbiCursorFree(dbc);
 
     if (rc) {			/* error/not found */
 	if (rc != DB_NOTFOUND)
@@ -2006,9 +1997,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
      */
     if (rpmtag != RPMDBI_PACKAGES) {
 	DBT key, data;
-	DBC * dbcursor = NULL;
+	dbiCursor dbc = NULL;
 	int rc = 0;
-	int xx;
 
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
@@ -2016,14 +2006,14 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
         if (keyp) {
 
             if (isLabel) {
-                xx = dbiCopen(dbi, &dbcursor, 0);
-                rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
-                xx = dbiCclose(dbi, dbcursor, 0);
-                dbcursor = NULL;
+		dbc = dbiCursorInit(dbi, 0);
+                //rc = dbiFindByLabel(db, dbi, dbcursor, &key, &data, keyp, &set);
+                dbiFindByLabel(db, dbi, dbc, &key, &data, keyp, &set);
+                dbc = dbiCursorFree(dbc);
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
             } else {
-                xx = dbiCopen(dbi, &dbcursor, 0);
+		dbc = dbiCursorInit(dbi, 0);
 
                 key.data = (void *) keyp;
                 key.size = keylen;
@@ -2032,7 +2022,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
                 if (key.data && key.size == 0)
                     key.size++;	/* XXX "/" fixup. */
 
-                rc = dbiGet(dbi, dbcursor, &key, &data, DB_SET);
+                rc = dbiCursorGet(dbc, &key, &data, DB_SET);
                 if (rc > 0) {
                     rpmlog(RPMLOG_ERR,
                            _("error(%d) getting \"%s\" records from %s index\n"),
@@ -2044,8 +2034,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
                 if (rc == 0)
                     (void) dbt2set(dbi, &data, &set);
 
-                xx = dbiCclose(dbi, dbcursor, 0);
-                dbcursor = NULL;
+		dbc = dbiCursorFree(dbc);
             }
             if (rc)	{	/* error/not found */
                 set = dbiFreeIndexSet(set);
@@ -2053,9 +2042,9 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             }
 	} else {
             /* get all entries from index */
-            xx = dbiCopen(dbi, &dbcursor, 0);
+	    dbc = dbiCursorInit(dbi, 0);
 
-            while ((rc = dbiGet(dbi, dbcursor, &key, &data, DB_NEXT)) == 0) {
+            while ((rc = dbiCursorGet(dbc, &key, &data, DB_NEXT)) == 0) {
                 dbiIndexSet newset = NULL;
 
                 (void) dbt2set(dbi, &data, &newset);
@@ -2073,8 +2062,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
                        rc, (key.data ? (char *)key.data : "???"), dbiName(dbi));
             }
 
-            xx = dbiCclose(dbi, dbcursor, 0);
-            dbcursor = NULL;
+	    dbc = dbiCursorFree(dbc);
 
             if (rc != DB_NOTFOUND)	{	/* error */
                 set = dbiFreeIndexSet(set);
@@ -2205,20 +2193,20 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 
 int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen)
 {
-    int rc, xx;
+    int rc;
     DBT data;
 
     if (ii == NULL)
 	return -1;
 
     if (ii->ii_dbc == NULL)
-        xx = dbiCopen(ii->ii_dbi, &ii->ii_dbc, 0);
+	ii->ii_dbc = dbiCursorInit(ii->ii_dbi, 0);
 
     /* free old data */
     ii->ii_set = dbiFreeIndexSet(ii->ii_set);
 
     memset(&data, 0, sizeof(data));
-    rc = dbiGet(ii->ii_dbi, ii->ii_dbc, &ii->ii_key, &data, DB_NEXT);
+    rc = dbiCursorGet(ii->ii_dbc, &ii->ii_key, &data, DB_NEXT);
 
     if (rc != 0) { 
         *key = NULL;
@@ -2277,9 +2265,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
         next->ii_next = NULL;
     }
 
-    if (ii->ii_dbc)
-        dbiCclose(ii->ii_dbi, ii->ii_dbc, 0);
-    ii->ii_dbc = NULL;
+    ii->ii_dbc = dbiCursorFree(ii->ii_dbc);
     ii->ii_dbi = NULL;
     rpmdbClose(ii->ii_db);
     ii->ii_set = dbiFreeIndexSet(ii->ii_set);
