@@ -233,64 +233,45 @@ int dbiSync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-static int dbiCclose(dbiIndex dbi, DBC * dbcursor,
-		unsigned int flags)
-{
-    int rc = -2;
-
-    /* XXX dbiCopen error pathways come through here. */
-    if (dbcursor != NULL) {
-	rc = dbcursor->c_close(dbcursor);
-	rc = cvtdberr(dbi, "dbcursor->c_close", rc, _debug);
-    }
-    return rc;
-}
-
-static int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
-{
-    DB * db = dbi->dbi_db;
-    DBC * dbcursor = NULL;
-    int flags;
-    int rc;
-    uint32_t eflags = db_envflags(db);
-    
-   /* XXX DB_WRITECURSOR cannot be used with sunrpc dbenv. */
-    assert(db != NULL);
-    if ((dbiflags & DB_WRITECURSOR) &&
-	(eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
-    {
-	flags = DB_WRITECURSOR;
-    } else
-	flags = 0;
-
-    rc = db->cursor(db, NULL, &dbcursor, flags);
-    rc = cvtdberr(dbi, "db->cursor", rc, _debug);
-
-    if (dbcp)
-	*dbcp = dbcursor;
-    else
-	(void) dbiCclose(dbi, dbcursor, 0);
-
-    return rc;
-}
-
 dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 {
     dbiCursor dbc = NULL;
-    DBC * cursor = NULL;
+    
+    if (dbi && dbi->dbi_db) {
+	DB * db = dbi->dbi_db;
+	DBC * cursor;
+	int cflags;
+	int rc;
+	uint32_t eflags = db_envflags(db);
+	
+       /* DB_WRITECURSOR requires CDB and writable db */
+	if ((flags & DB_WRITECURSOR) &&
+	    (eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
+	{
+	    cflags = DB_WRITECURSOR;
+	} else
+	    cflags = 0;
 
-    if (dbi && dbiCopen(dbi, &cursor, flags) == 0) {
-	dbc = xcalloc(1, sizeof(*dbc));
-	dbc->cursor = cursor;
-	dbc->dbi = dbi;
+	rc = db->cursor(db, NULL, &cursor, cflags);
+	rc = cvtdberr(dbi, "db->cursor", rc, _debug);
+
+	if (rc == 0) {
+	    dbc = xcalloc(1, sizeof(*dbc));
+	    dbc->cursor = cursor;
+	    dbc->dbi = dbi;
+	}
     }
+
     return dbc;
 }
 
 dbiCursor dbiCursorFree(dbiCursor dbc)
 {
     if (dbc) {
-	dbiCclose(dbc->dbi, dbc->cursor, 0);
+	DBC * cursor = dbc->cursor;
+	int rc = cursor->c_close(cursor);
+	cvtdberr(dbc->dbi, "dbcursor->c_close", rc, _debug);
+	free(dbc);
     }
     return NULL;
 }
