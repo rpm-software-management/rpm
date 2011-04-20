@@ -132,79 +132,6 @@ char * prDbiOpenFlags(int dbflags, int print_dbenv_flags);
 RPM_GNUC_INTERNAL
 int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags);
 
-
-/* FIX: vector annotations */
-/** \ingroup dbi
- * Open a database cursor.
- * @param dbi		index database handle
- * @retval dbcp		returned database cursor
- * @param flags		DB_WRITECURSOR if writing, or 0
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int flags);
-
-/** \ingroup dbi
- * Close a database cursor.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @param flags		(unused)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiCclose(dbiIndex dbi, DBC * dbcursor, unsigned int flags);
-
-/** \ingroup dbi
- * Delete (key,data) pair(s) from index database.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->del)
- * @param key		delete key value/length/flags
- * @param data		delete data value/length/flags
- * @param flags		(unused)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-	   unsigned int flags);
-
-/** \ingroup dbi
- * Retrieve (key,data) pair from index database.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->get)
- * @param key		retrieve key value/length/flags
- * @param data		retrieve data value/length/flags
- * @param flags		(unused)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-	   unsigned int flags);
-
-/** \ingroup dbi
- * Store (key,data) pair in index database.
- * @param dbi		index database handle
- * @param dbcursor	database cursor (NULL will use db->put)
- * @param key		store key value/length/flags
- * @param data		store data value/length/flags
- * @param flags		(unused)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-	   unsigned int flags);
-
-/** \ingroup dbi
- * Retrieve count of (possible) duplicate items.
- * @param dbi		index database handle
- * @param dbcursor	database cursor
- * @param countp	address of count
- * @param flags		(unused)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiCount(dbiIndex dbi, DBC * dbcursor, unsigned int * countp,
-	     unsigned int flags);
-
 /** \ingroup dbi
  * Close index database.
  * @param dbi		index database handle
@@ -264,21 +191,61 @@ int dbiFlags(dbiIndex dbi);
 RPM_GNUC_INTERNAL
 const char * dbiName(dbiIndex dbi);
 
+/** \ingroup dbi
+ * Open a database cursor.
+ * @param dbi		index database handle
+ * @param flags		DB_WRITECURSOR if writing, or 0
+ * @return		database cursor handle
+ */
 RPM_GNUC_INTERNAL
 dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags);
 
+/** \ingroup dbi
+ * Destroy a database cursor handle
+ * @param dbc		database cursor handle
+ * @return		NULL always
+ */
 RPM_GNUC_INTERNAL
 dbiCursor dbiCursorFree(dbiCursor dbc);
 
+/** \ingroup dbi
+ * Store (key,data) pair in index database.
+ * @param dbcursor	database cursor handle
+ * @param key		store key value/length/flags
+ * @param data		store data value/length/flags
+ * @param flags		flags
+ * @return		0 on success
+ */
 RPM_GNUC_INTERNAL
 int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
 
+/** \ingroup dbi
+ * Retrieve (key,data) pair from index database.
+ * @param dbc		database cursor handle
+ * @param key		retrieve key value/length/flags
+ * @param data		retrieve data value/length/flags
+ * @param flags		flags
+ * @return		0 on success
+ */
 RPM_GNUC_INTERNAL
 int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
 
+/** \ingroup dbi
+ * Delete (key,data) pair(s) from index database.
+ * @param dbc		database cursor handle
+ * @param key		delete key value/length/flags
+ * @param data		delete data value/length/flags
+ * @param flags		flags
+ * @return		0 on success
+ */
 RPM_GNUC_INTERNAL
 int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
 
+/** \ingroup dbi
+ * Retrieve count of (possible) duplicate items.
+ * @param dbcursor	database cursor
+ * @return		number of duplicates
+ */
 RPM_GNUC_INTERNAL
 unsigned int dbiCursorCount(dbiCursor dbc);
 

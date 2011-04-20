@@ -233,7 +233,7 @@ int dbiSync(dbiIndex dbi, unsigned int flags)
     return rc;
 }
 
-int dbiCclose(dbiIndex dbi, DBC * dbcursor,
+static int dbiCclose(dbiIndex dbi, DBC * dbcursor,
 		unsigned int flags)
 {
     int rc = -2;
@@ -246,7 +246,7 @@ int dbiCclose(dbiIndex dbi, DBC * dbcursor,
     return rc;
 }
 
-int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
+static int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
 {
     DB * db = dbi->dbi_db;
     DBC * dbcursor = NULL;
@@ -275,7 +275,7 @@ int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
 }
 
 /* Store (key,data) pair in index database. */
-int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+static int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
 {
     int rc = EINVAL;
@@ -294,7 +294,7 @@ int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     return rc;
 }
 
-int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+static int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	   unsigned int flags)
 {
     int rc = EINVAL;
@@ -322,7 +322,7 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 }
 
 /* Retrieve (key,data) pair from index database. */
-int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
+static int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
 {
     int rc = EINVAL;
@@ -345,7 +345,7 @@ int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
     return rc;
 }
 
-int dbiCount(dbiIndex dbi, DBC * dbcursor,
+static int dbiCount(dbiIndex dbi, DBC * dbcursor,
 	     unsigned int * countp,
 	     unsigned int flags)
 {
