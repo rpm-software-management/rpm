@@ -8,6 +8,7 @@ enum rpmdbFlags {
 };
 
 typedef struct dbiIndex_s * dbiIndex;
+typedef struct dbiCursor_s * dbiCursor;
 
 struct dbConfig_s {
     int	db_mmapsize;	/*!< (10Mb) */
@@ -262,6 +263,24 @@ int dbiFlags(dbiIndex dbi);
  */
 RPM_GNUC_INTERNAL
 const char * dbiName(dbiIndex dbi);
+
+RPM_GNUC_INTERNAL
+dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags);
+
+RPM_GNUC_INTERNAL
+dbiCursor dbiCursorFree(dbiCursor dbc);
+
+RPM_GNUC_INTERNAL
+int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
+
+RPM_GNUC_INTERNAL
+int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
+
+RPM_GNUC_INTERNAL
+int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
+
+RPM_GNUC_INTERNAL
+unsigned int dbiCursorCount(dbiCursor dbc);
 
 #ifdef __cplusplus
 }

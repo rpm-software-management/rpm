@@ -20,6 +20,11 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 static const char * _errpfx = "rpmdb";
 
+struct dbiCursor_s {
+    dbiIndex dbi;
+    DBC *cursor;
+};
+
 static int dbapi_err(rpmdb rdb, const char * msg, int error, int printit)
 {
     if (printit && error) {
@@ -269,7 +274,6 @@ int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
     return rc;
 }
 
-
 /* Store (key,data) pair in index database. */
 int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
@@ -355,6 +359,49 @@ int dbiCount(dbiIndex dbi, DBC * dbcursor,
     if (countp) *countp = count;
 
     return rc;
+}
+
+dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
+{
+    dbiCursor dbc = NULL;
+    DBC * cursor = NULL;
+
+    if (dbi && dbiCopen(dbi, &cursor, flags) == 0) {
+	dbc = xcalloc(1, sizeof(*dbc));
+	dbc->cursor = cursor;
+	dbc->dbi = dbi;
+    }
+    return dbc;
+}
+
+dbiCursor dbiCursorFree(dbiCursor dbc)
+{
+    if (dbc) {
+	dbiCclose(dbc->dbi, dbc->cursor, 0);
+    }
+    return NULL;
+}
+
+int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
+{
+    return dbiPut(dbc->dbi, dbc->cursor, key, data, flags);
+}
+
+int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
+{
+    return dbiGet(dbc->dbi, dbc->cursor, key, data, flags);
+}
+
+int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
+{
+    return dbiDel(dbc->dbi, dbc->cursor, key, data, flags);
+}
+
+unsigned int dbiCursorCount(dbiCursor dbc)
+{
+    db_recno_t count = 0;
+    dbiCount(dbc->dbi, dbc->cursor, &count, 0);
+    return count;
 }
 
 int dbiByteSwapped(dbiIndex dbi)
