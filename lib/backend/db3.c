@@ -274,40 +274,32 @@ int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
 int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
 {
-    DB * db = dbi->dbi_db;
-    int rc;
+    int rc = EINVAL;
 
     assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-    assert(db != NULL);
 
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
-    if (dbcursor == NULL) {
-	rc = db->put(db, NULL, key, data, 0);
-	rc = cvtdberr(dbi, "db->put", rc, _debug);
-    } else {
+    if (dbcursor) {
+	rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
+
 	rc = dbcursor->c_put(dbcursor, key, data, DB_KEYLAST);
 	rc = cvtdberr(dbi, "dbcursor->c_put", rc, _debug);
+
+	rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
     }
 
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
     return rc;
 }
 
 int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	   unsigned int flags)
 {
-    DB * db = dbi->dbi_db;
-    int rc;
+    int rc = EINVAL;
 
-    assert(db != NULL);
     assert(key->data != NULL && key->size > 0);
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
 
-    if (dbcursor == NULL) {
-	rc = db->del(db, NULL, key, flags);
-	rc = cvtdberr(dbi, "db->del", rc, _debug);
-    } else {
+    if (dbcursor) {
 	int _printit;
+	rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
 
 	/* XXX TODO: insure that cursor is positioned with duplicates */
 	rc = dbcursor->c_get(dbcursor, key, data, DB_SET);
@@ -319,9 +311,9 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 	    rc = dbcursor->c_del(dbcursor, flags);
 	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
 	}
+	rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
     }
 
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
     return rc;
 }
 
@@ -329,30 +321,23 @@ int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
 		unsigned int flags)
 {
-
-    DB * db = dbi->dbi_db;
-    int _printit;
-    int rc;
+    int rc = EINVAL;
 
     assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-    (void) rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
 
-    assert(db != NULL);
-    if (dbcursor == NULL) {
-	/* XXX duplicates require cursors. */
-	rc = db->get(db, NULL, key, data, 0);
-	/* XXX DB_NOTFOUND can be returned */
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "db->get", rc, _printit);
-    } else {
+    if (dbcursor) {
+	int _printit;
+	rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
+
 	/* XXX db4 does DB_FIRST on uninitialized cursor */
 	rc = dbcursor->c_get(dbcursor, key, data, flags);
 	/* XXX DB_NOTFOUND can be returned */
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
+
+	rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
     }
 
-    (void) rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
     return rc;
 }
 
