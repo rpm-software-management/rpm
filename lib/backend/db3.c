@@ -279,10 +279,10 @@ dbiCursor dbiCursorFree(dbiCursor dbc)
 int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
     int rc = EINVAL;
+    int sane = (key->data != NULL && key->size > 0 &&
+		data->data != NULL && data->size > 0);
 
-    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-
-    if (dbc) {
+    if (dbc && sane) {
 	DBC * cursor = dbc->cursor;
 	rpmdb rdb = dbc->dbi->dbi_rpmdb;
 	rpmswEnter(&rdb->db_putops, (ssize_t) 0);
@@ -298,10 +298,9 @@ int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
     int rc = EINVAL;
+    int sane = ((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
 
-    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-
-    if (dbc) {
+    if (dbc && sane) {
 	DBC * cursor = dbc->cursor;
 	rpmdb rdb = dbc->dbi->dbi_rpmdb;
 	int _printit;
@@ -321,10 +320,9 @@ int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
     int rc = EINVAL;
+    int sane = (key->data != NULL && key->size > 0);
 
-    assert(key->data != NULL && key->size > 0);
-
-    if (dbc) {
+    if (dbc && sane) {
 	DBC * cursor = dbc->cursor;
 	int _printit;
 	rpmdb rdb = dbc->dbi->dbi_rpmdb;
