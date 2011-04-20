@@ -274,93 +274,6 @@ static int dbiCopen(dbiIndex dbi, DBC ** dbcp, unsigned int dbiflags)
     return rc;
 }
 
-/* Store (key,data) pair in index database. */
-static int dbiPut(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc = EINVAL;
-
-    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
-
-    if (dbcursor) {
-	rpmswEnter(&dbi->dbi_rpmdb->db_putops, (ssize_t) 0);
-
-	rc = dbcursor->c_put(dbcursor, key, data, DB_KEYLAST);
-	rc = cvtdberr(dbi, "dbcursor->c_put", rc, _debug);
-
-	rpmswExit(&dbi->dbi_rpmdb->db_putops, (ssize_t) data->size);
-    }
-
-    return rc;
-}
-
-static int dbiDel(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-	   unsigned int flags)
-{
-    int rc = EINVAL;
-
-    assert(key->data != NULL && key->size > 0);
-
-    if (dbcursor) {
-	int _printit;
-	rpmswEnter(&dbi->dbi_rpmdb->db_delops, 0);
-
-	/* XXX TODO: insure that cursor is positioned with duplicates */
-	rc = dbcursor->c_get(dbcursor, key, data, DB_SET);
-	/* XXX DB_NOTFOUND can be returned */
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
-
-	if (rc == 0) {
-	    rc = dbcursor->c_del(dbcursor, flags);
-	    rc = cvtdberr(dbi, "dbcursor->c_del", rc, _debug);
-	}
-	rpmswExit(&dbi->dbi_rpmdb->db_delops, data->size);
-    }
-
-    return rc;
-}
-
-/* Retrieve (key,data) pair from index database. */
-static int dbiGet(dbiIndex dbi, DBC * dbcursor, DBT * key, DBT * data,
-		unsigned int flags)
-{
-    int rc = EINVAL;
-
-    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
-
-    if (dbcursor) {
-	int _printit;
-	rpmswEnter(&dbi->dbi_rpmdb->db_getops, 0);
-
-	/* XXX db4 does DB_FIRST on uninitialized cursor */
-	rc = dbcursor->c_get(dbcursor, key, data, flags);
-	/* XXX DB_NOTFOUND can be returned */
-	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
-	rc = cvtdberr(dbi, "dbcursor->c_get", rc, _printit);
-
-	rpmswExit(&dbi->dbi_rpmdb->db_getops, data->size);
-    }
-
-    return rc;
-}
-
-static int dbiCount(dbiIndex dbi, DBC * dbcursor,
-	     unsigned int * countp,
-	     unsigned int flags)
-{
-    db_recno_t count = 0;
-    int rc = 0;
-
-    flags = 0;
-    rc = dbcursor->c_count(dbcursor, &count, flags);
-    rc = cvtdberr(dbi, "dbcursor->c_count", rc, _debug);
-    if (rc) return rc;
-    if (countp) *countp = count;
-
-    return rc;
-}
-
 dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 {
     dbiCursor dbc = NULL;
@@ -384,23 +297,81 @@ dbiCursor dbiCursorFree(dbiCursor dbc)
 
 int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
-    return dbiPut(dbc->dbi, dbc->cursor, key, data, flags);
+    int rc = EINVAL;
+
+    assert(key->data != NULL && key->size > 0 && data->data != NULL && data->size > 0);
+
+    if (dbc) {
+	DBC * cursor = dbc->cursor;
+	rpmdb rdb = dbc->dbi->dbi_rpmdb;
+	rpmswEnter(&rdb->db_putops, (ssize_t) 0);
+
+	rc = cursor->c_put(cursor, key, data, DB_KEYLAST);
+	rc = cvtdberr(dbc->dbi, "dbcursor->c_put", rc, _debug);
+
+	rpmswExit(&rdb->db_putops, (ssize_t) data->size);
+    }
+    return rc;
 }
 
 int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
-    return dbiGet(dbc->dbi, dbc->cursor, key, data, flags);
+    int rc = EINVAL;
+
+    assert((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
+
+    if (dbc) {
+	DBC * cursor = dbc->cursor;
+	rpmdb rdb = dbc->dbi->dbi_rpmdb;
+	int _printit;
+	rpmswEnter(&rdb->db_getops, 0);
+
+	/* XXX db4 does DB_FIRST on uninitialized cursor */
+	rc = cursor->c_get(cursor, key, data, flags);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbc->dbi, "dbcursor->c_get", rc, _printit);
+
+	rpmswExit(&rdb->db_getops, data->size);
+    }
+    return rc;
 }
 
 int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
-    return dbiDel(dbc->dbi, dbc->cursor, key, data, flags);
+    int rc = EINVAL;
+
+    assert(key->data != NULL && key->size > 0);
+
+    if (dbc) {
+	DBC * cursor = dbc->cursor;
+	int _printit;
+	rpmdb rdb = dbc->dbi->dbi_rpmdb;
+	rpmswEnter(&rdb->db_delops, 0);
+
+	/* XXX TODO: insure that cursor is positioned with duplicates */
+	rc = cursor->c_get(cursor, key, data, DB_SET);
+	/* XXX DB_NOTFOUND can be returned */
+	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
+	rc = cvtdberr(dbc->dbi, "dbcursor->c_get", rc, _printit);
+
+	if (rc == 0) {
+	    rc = cursor->c_del(cursor, flags);
+	    rc = cvtdberr(dbc->dbi, "dbcursor->c_del", rc, _debug);
+	}
+	rpmswExit(&rdb->db_delops, data->size);
+    }
+    return rc;
 }
 
 unsigned int dbiCursorCount(dbiCursor dbc)
 {
     db_recno_t count = 0;
-    dbiCount(dbc->dbi, dbc->cursor, &count, 0);
+    if (dbc) {
+	DBC * cursor = dbc->cursor;
+	int rc = cursor->c_count(cursor, &count, 0);
+	cvtdberr(dbc->dbi, "dbcursor->c_count", rc, _debug);
+    }
     return count;
 }
 
