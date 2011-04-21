@@ -435,7 +435,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     Header sigh = NULL;
     char * msg;
     int res = -1; /* assume failure */
-    int xx;
     rpmRC rc;
     struct rpmtd_s utd;
 
@@ -476,7 +475,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     }
     msg = _free(msg);
 
-    /* ASSERT: ofd == NULL && sigtarget == NULL */
     ofd = rpmMkTempFile(NULL, &sigtarget);
     if (ofd == NULL || Ferror(ofd)) {
 	rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
@@ -486,7 +484,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     if (copyFile(&fd, rpm, &ofd, sigtarget))
 	goto exit;
     /* Both fd and ofd are now closed. sigtarget contains tempfile name. */
-    /* ASSERT: fd == NULL && ofd == NULL */
 
     /* Dump the immutable region (if present). */
     if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
@@ -569,22 +566,14 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     }
 
     /* Append the header and archive from the temp file */
-    /* ASSERT: fd == NULL && ofd != NULL */
-    if (copyFile(&fd, sigtarget, &ofd, trpm))
-	goto exit;
-    /* Both fd and ofd are now closed. */
-    /* ASSERT: fd == NULL && ofd == NULL */
-
-    /* Move final target into place, restore file permissions. */
-    {
+    if (copyFile(&fd, sigtarget, &ofd, trpm) == 0) {
 	struct stat st;
-	xx = stat(rpm, &st);
-	xx = unlink(rpm);
-	xx = rename(trpm, rpm);
-	xx = chmod(rpm, st.st_mode);
-    }
 
-    res = 0;
+	/* Move final target into place, restore file permissions. */
+	if (stat(rpm, &st) == 0 && unlink(rpm) == 0 &&
+		    rename(trpm, rpm) == 0 && chmod(rpm, st.st_mode) == 0)
+	    res = 0;
+    }
 
 exit:
     if (fd)	(void) closeFile(&fd);
@@ -594,7 +583,7 @@ exit:
 
     /* Clean up intermediate target */
     if (sigtarget) {
-	xx = unlink(sigtarget);
+	unlink(sigtarget);
 	sigtarget = _free(sigtarget);
     }
     if (trpm) {
