@@ -1196,7 +1196,6 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	DBT key, data;
 	sigset_t signalMask;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
-	int xx;
 
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
@@ -1226,7 +1225,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 			_("error(%d) storing record #%d into %s\n"),
 			rc, mi->mi_prevoffset, dbiName(dbi));
 	    }
-	    xx = dbiSync(dbi, 0);
+	    dbiSync(dbi, 0);
 	    (void) unblockSignals(&signalMask);
 	}
 	data.data = _free(data.data);
@@ -2291,7 +2290,6 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 {
     union _dbswap mi_offset;
     int rc = 0;
-    int xx;
     dbiCursor dbc;
     DBT key;
 
@@ -2327,7 +2325,7 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
     }
 
     dbiCursorFree(dbc);
-    xx = dbiSync(dbi, 0);
+    dbiSync(dbi, 0);
 
     return rc;
 }
@@ -2372,7 +2370,6 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    rpmDbiTag rpmtag = dbiTags[dbix];
-	    int xx = 0;
 	    struct rpmtd_s tagdata;
 
 	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
@@ -2454,7 +2451,7 @@ cont:
 	    }
 
 	    dbc = dbiCursorFree(dbc);
-	    xx = dbiSync(dbi, 0);
+	    dbiSync(dbi, 0);
 
 	    rpmtdFreeData(&tagdata);
 	}
@@ -2518,7 +2515,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 		    _("error(%d) allocating new package instance\n"), ret);
 	    }
 
-	    ret = dbiSync(dbi, 0);
+	    dbiSync(dbi, 0);
 	}
 	dbiCursorFree(dbc);
     }
@@ -2529,7 +2526,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 /* Add data to secondary index */
 static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    int xx, i, rc = 0;
+    int i, rc = 0;
     struct rpmtd_s tagdata, reqflags;
     dbiCursor dbc = NULL;
 
@@ -2638,7 +2635,7 @@ cont:
     }
 
     dbiCursorFree(dbc);
-    xx = dbiSync(dbi, 0);
+    dbiSync(dbi, 0);
 
 exit:
     rpmtdFreeData(&tagdata);
