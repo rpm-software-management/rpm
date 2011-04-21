@@ -1679,7 +1679,6 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     void * keyp;
     size_t keylen;
     int rc;
-    int xx;
 
     if (mi == NULL)
 	return NULL;
@@ -1779,7 +1778,7 @@ top:
     }
 
     /* Rewrite current header (if necessary) and unlink. */
-    xx = miFreeHeader(mi, dbi);
+    miFreeHeader(mi, dbi);
 
     /* Is this the end of the iteration? */
     if (uh == NULL)
