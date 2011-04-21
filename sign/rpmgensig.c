@@ -436,155 +436,152 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     char * msg;
     int res = -1; /* assume failure */
     int xx;
-    
-    {
-    	rpmRC rc;
-	struct rpmtd_s utd;
+    rpmRC rc;
+    struct rpmtd_s utd;
 
-	fprintf(stdout, "%s:\n", rpm);
+    fprintf(stdout, "%s:\n", rpm);
 
-	if (manageFile(&fd, rpm, O_RDONLY))
-	    goto exit;
+    if (manageFile(&fd, rpm, O_RDONLY))
+	goto exit;
 
-	lead = rpmLeadNew();
+    lead = rpmLeadNew();
 
-	if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
-	    const char *lmsg = NULL;
-	    rc = rpmLeadCheck(lead, &lmsg);
-	    if (rc != RPMRC_OK) 
-		rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, lmsg);
-	}
+    if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
+	const char *lmsg = NULL;
+	rc = rpmLeadCheck(lead, &lmsg);
+	if (rc != RPMRC_OK) 
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, lmsg);
+    }
 
-	if (rc != RPMRC_OK) {
-	    lead = rpmLeadFree(lead);
-	    goto exit;
-	}
-
-	msg = NULL;
-	rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
-	switch (rc) {
-	default:
-	    rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
-			(msg && *msg ? msg : "\n"));
-	    msg = _free(msg);
-	    goto exit;
-	    break;
-	case RPMRC_OK:
-	    if (sigh == NULL) {
-		rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), rpm);
-		goto exit;
-	    }
-	    break;
-	}
-	msg = _free(msg);
-
-	/* ASSERT: ofd == NULL && sigtarget == NULL */
-	ofd = rpmMkTempFile(NULL, &sigtarget);
-	if (ofd == NULL || Ferror(ofd)) {
-	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
-	    goto exit;
-	}
-	/* Write the header and archive to a temp file */
-	if (copyFile(&fd, rpm, &ofd, sigtarget))
-	    goto exit;
-	/* Both fd and ofd are now closed. sigtarget contains tempfile name. */
-	/* ASSERT: fd == NULL && ofd == NULL */
-
-	/* Dump the immutable region (if present). */
-	if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
-	    struct rpmtd_s copytd;
-	    Header nh = headerNew();
-	    Header oh = headerCopyLoad(utd.data);
-	    HeaderIterator hi = headerInitIterator(oh);
-	    while (headerNext(hi, &copytd)) {
-		if (copytd.data)
-		    xx = headerPut(nh, &copytd, HEADERPUT_DEFAULT);
-		rpmtdFreeData(&copytd);
-	    }
-	    hi = headerFreeIterator(hi);
-	    oh = headerFree(oh);
-
-	    sigh = headerFree(sigh);
-	    sigh = headerLink(nh);
-	    nh = headerFree(nh);
-	}
-
-	/* Eliminate broken digest values. */
-	xx = headerDel(sigh, RPMSIGTAG_BADSHA1_1);
-	xx = headerDel(sigh, RPMSIGTAG_BADSHA1_2);
-
-	/* Toss and recalculate header+payload size and digests. */
-	{
-	    rpmTagVal const sigs[] = { 	RPMSIGTAG_SIZE, 
-					RPMSIGTAG_MD5,
-				  	RPMSIGTAG_SHA1,
-				     };
-	    int nsigs = sizeof(sigs) / sizeof(rpmTagVal);
-	    for (int i = 0; i < nsigs; i++) {
-		(void) headerDel(sigh, sigs[i]);
-		if (rpmGenDigest(sigh, sigtarget, sigs[i]))
-		    goto exit;
-	    }
-	}
-
-	if (deleting) {	/* Nuke all the signature tags. */
-	    deleteSigs(sigh);
-	} else {
-	    res = replaceSignature(sigh, sigtarget, passPhrase);
-	    if (res != 0) {
-		if (res == 1) {
-		    rpmlog(RPMLOG_WARNING,
-		       _("%s already contains identical signature, skipping\n"),
-		       rpm);
-		    /* Identical signature is not an error */
-		    res = 0;
-		}
-		goto exit;
-	    }
-	}
-
-	/* Reallocate the signature into one contiguous region. */
-	sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
-	if (sigh == NULL)	/* XXX can't happen */
-	    goto exit;
-
-	rasprintf(&trpm, "%s.XXXXXX", rpm);
-	ofd = rpmMkTemp(trpm);
-	if (ofd == NULL || Ferror(ofd)) {
-	    rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
-	    goto exit;
-	}
-
-	/* Write the lead/signature of the output rpm */
-	rc = rpmLeadWrite(ofd, lead);
+    if (rc != RPMRC_OK) {
 	lead = rpmLeadFree(lead);
-	if (rc != RPMRC_OK) {
-	    rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
-		Fstrerror(ofd));
+	goto exit;
+    }
+
+    msg = NULL;
+    rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
+    switch (rc) {
+    default:
+	rpmlog(RPMLOG_ERR, _("%s: rpmReadSignature failed: %s"), rpm,
+		    (msg && *msg ? msg : "\n"));
+	msg = _free(msg);
+	goto exit;
+	break;
+    case RPMRC_OK:
+	if (sigh == NULL) {
+	    rpmlog(RPMLOG_ERR, _("%s: No signature available\n"), rpm);
 	    goto exit;
 	}
+	break;
+    }
+    msg = _free(msg);
 
-	if (rpmWriteSignature(ofd, sigh)) {
-	    rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), trpm,
-		Fstrerror(ofd));
+    /* ASSERT: ofd == NULL && sigtarget == NULL */
+    ofd = rpmMkTempFile(NULL, &sigtarget);
+    if (ofd == NULL || Ferror(ofd)) {
+	rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
+	goto exit;
+    }
+    /* Write the header and archive to a temp file */
+    if (copyFile(&fd, rpm, &ofd, sigtarget))
+	goto exit;
+    /* Both fd and ofd are now closed. sigtarget contains tempfile name. */
+    /* ASSERT: fd == NULL && ofd == NULL */
+
+    /* Dump the immutable region (if present). */
+    if (headerGet(sigh, RPMTAG_HEADERSIGNATURES, &utd, HEADERGET_DEFAULT)) {
+	struct rpmtd_s copytd;
+	Header nh = headerNew();
+	Header oh = headerCopyLoad(utd.data);
+	HeaderIterator hi = headerInitIterator(oh);
+	while (headerNext(hi, &copytd)) {
+	    if (copytd.data)
+		xx = headerPut(nh, &copytd, HEADERPUT_DEFAULT);
+	    rpmtdFreeData(&copytd);
+	}
+	hi = headerFreeIterator(hi);
+	oh = headerFree(oh);
+
+	sigh = headerFree(sigh);
+	sigh = headerLink(nh);
+	nh = headerFree(nh);
+    }
+
+    /* Eliminate broken digest values. */
+    xx = headerDel(sigh, RPMSIGTAG_BADSHA1_1);
+    xx = headerDel(sigh, RPMSIGTAG_BADSHA1_2);
+
+    /* Toss and recalculate header+payload size and digests. */
+    {
+	rpmTagVal const sigs[] = { 	RPMSIGTAG_SIZE, 
+				    RPMSIGTAG_MD5,
+				    RPMSIGTAG_SHA1,
+				 };
+	int nsigs = sizeof(sigs) / sizeof(rpmTagVal);
+	for (int i = 0; i < nsigs; i++) {
+	    (void) headerDel(sigh, sigs[i]);
+	    if (rpmGenDigest(sigh, sigtarget, sigs[i]))
+		goto exit;
+	}
+    }
+
+    if (deleting) {	/* Nuke all the signature tags. */
+	deleteSigs(sigh);
+    } else {
+	res = replaceSignature(sigh, sigtarget, passPhrase);
+	if (res != 0) {
+	    if (res == 1) {
+		rpmlog(RPMLOG_WARNING,
+		   _("%s already contains identical signature, skipping\n"),
+		   rpm);
+		/* Identical signature is not an error */
+		res = 0;
+	    }
 	    goto exit;
 	}
+    }
 
-	/* Append the header and archive from the temp file */
-	/* ASSERT: fd == NULL && ofd != NULL */
-	if (copyFile(&fd, sigtarget, &ofd, trpm))
-	    goto exit;
-	/* Both fd and ofd are now closed. */
-	/* ASSERT: fd == NULL && ofd == NULL */
+    /* Reallocate the signature into one contiguous region. */
+    sigh = headerReload(sigh, RPMTAG_HEADERSIGNATURES);
+    if (sigh == NULL)	/* XXX can't happen */
+	goto exit;
 
-	/* Move final target into place, restore file permissions. */
-	{
-	    struct stat st;
-	    xx = stat(rpm, &st);
-	    xx = unlink(rpm);
-	    xx = rename(trpm, rpm);
-	    xx = chmod(rpm, st.st_mode);
-	}
+    rasprintf(&trpm, "%s.XXXXXX", rpm);
+    ofd = rpmMkTemp(trpm);
+    if (ofd == NULL || Ferror(ofd)) {
+	rpmlog(RPMLOG_ERR, _("rpmMkTemp failed\n"));
+	goto exit;
+    }
+
+    /* Write the lead/signature of the output rpm */
+    rc = rpmLeadWrite(ofd, lead);
+    lead = rpmLeadFree(lead);
+    if (rc != RPMRC_OK) {
+	rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
+	    Fstrerror(ofd));
+	goto exit;
+    }
+
+    if (rpmWriteSignature(ofd, sigh)) {
+	rpmlog(RPMLOG_ERR, _("%s: rpmWriteSignature failed: %s\n"), trpm,
+	    Fstrerror(ofd));
+	goto exit;
+    }
+
+    /* Append the header and archive from the temp file */
+    /* ASSERT: fd == NULL && ofd != NULL */
+    if (copyFile(&fd, sigtarget, &ofd, trpm))
+	goto exit;
+    /* Both fd and ofd are now closed. */
+    /* ASSERT: fd == NULL && ofd == NULL */
+
+    /* Move final target into place, restore file permissions. */
+    {
+	struct stat st;
+	xx = stat(rpm, &st);
+	xx = unlink(rpm);
+	xx = rename(trpm, rpm);
+	xx = chmod(rpm, st.st_mode);
     }
 
     res = 0;
