@@ -496,7 +496,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 	HeaderIterator hi = headerInitIterator(oh);
 	while (headerNext(hi, &copytd)) {
 	    if (copytd.data)
-		xx = headerPut(nh, &copytd, HEADERPUT_DEFAULT);
+		headerPut(nh, &copytd, HEADERPUT_DEFAULT);
 	    rpmtdFreeData(&copytd);
 	}
 	hi = headerFreeIterator(hi);
@@ -508,8 +508,8 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     }
 
     /* Eliminate broken digest values. */
-    xx = headerDel(sigh, RPMSIGTAG_BADSHA1_1);
-    xx = headerDel(sigh, RPMSIGTAG_BADSHA1_2);
+    headerDel(sigh, RPMSIGTAG_BADSHA1_1);
+    headerDel(sigh, RPMSIGTAG_BADSHA1_2);
 
     /* Toss and recalculate header+payload size and digests. */
     {
