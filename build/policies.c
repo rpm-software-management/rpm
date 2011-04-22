@@ -16,6 +16,7 @@
 
 #include "debug.h"
 
+#if WITH_SELINUX
 typedef struct ModuleRec_s {
     char *path;
     char *data;
@@ -288,6 +289,7 @@ static rpmRC processPolicies(rpmSpec spec, Package pkg, int test)
 
     return rc;
 }
+#endif
 
 rpmRC processBinaryPolicies(rpmSpec spec, int test)
 {
