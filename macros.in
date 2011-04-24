@@ -47,6 +47,7 @@
 %__id_u			%{__id} -u
 %__install		@__INSTALL@
 %__ln_s			@LN_S@
+%__lrzip		@__LRZIP@
 %__lzip			@__LZIP@
 # Deprecated, use %__xz instead.
 %__lzma			%__xz --format=lzma
