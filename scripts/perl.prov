@@ -162,8 +162,8 @@ sub process_file {
       # '$Revision' this often causes bizarre strings and is the most
       # common method of non static numbering.
 
-      if (m/(\$Revision: (\d+[.0-9]+))/) {
-        $version = $2;
+      if (m/\$Revision: (\d+[.0-9]+)/) {
+        $version = $1;
       } elsif (m/['"]?(\d+[.0-9]+)['"]?/) {
 
         # look for a static number hard coded in the script
