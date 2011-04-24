@@ -962,6 +962,9 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	case COMPRESSED_LZIP:
 	    sprintf(be, "%%__lzip -dc %s", b);
 	    break;
+	case COMPRESSED_LRZIP:
+	    sprintf(be, "%%__lrzip -dqo- %s", b);
+	    break;
 	}
 	b = be;
     } else if (STREQ("getenv", f, fn)) {
