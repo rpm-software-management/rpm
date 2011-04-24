@@ -159,7 +159,7 @@ sub process_file {
     if ($package && m/^\s*(our\s+)?\$(\Q$package\E::)?VERSION\s*=\s+/) {
 
       # first see if the version string contains the string
-      # '$Revision' this often causes bizzare strings and is the most
+      # '$Revision' this often causes bizarre strings and is the most
       # common method of non static numbering.
 
       if (m/(\$Revision: (\d+[.0-9]+))/) {
