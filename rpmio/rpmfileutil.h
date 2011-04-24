@@ -23,7 +23,8 @@ typedef enum rpmCompressedMagic_e {
     COMPRESSED_BZIP2		= 2,	/*!< bzip2 can handle */
     COMPRESSED_ZIP		= 3,	/*!< unzip can handle */
     COMPRESSED_LZMA		= 4,	/*!< lzma can handle */
-    COMPRESSED_XZ		= 5	/*!< xz can handle */
+    COMPRESSED_XZ		= 5,	/*!< xz can handle */
+    COMPRESSED_LZIP		= 6	/*!< lzip can handle */
 } rpmCompressedMagic;
 
 /** \ingroup rpmfileutil

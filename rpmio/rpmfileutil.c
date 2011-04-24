@@ -369,6 +369,9 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
 	       (magic[4] == 0x5a) && (magic[5] == 0x00)) {
 	/* new style xz (lzma) with magic */
 	*compressed = COMPRESSED_XZ;
+    } else if ((magic[0] == 'L') && (magic[1] == 'Z') &&
+	       (magic[2] == 'I') && (magic[3] == 'P')) {
+	*compressed = COMPRESSED_LZIP;
     } else if (((magic[0] == 0037) && (magic[1] == 0213)) || /* gzip */
 	((magic[0] == 0037) && (magic[1] == 0236)) ||	/* old gzip */
 	((magic[0] == 0037) && (magic[1] == 0036)) ||	/* pack */
