@@ -360,8 +360,9 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
 
     if ((magic[0] == 'B') && (magic[1] == 'Z')) {
 	*compressed = COMPRESSED_BZIP2;
-    } else if ((magic[0] == 0120) && (magic[1] == 0113) &&
-	 (magic[2] == 0003) && (magic[3] == 0004)) {	/* pkzip */
+    } else if ((magic[0] == 'P') && (magic[1] == 'K') &&
+	 (((magic[2] == 3) && (magic[3] == 4)) ||
+	  ((magic[2] == '0') && (magic[3] == '0')))) {	/* pkzip */
 	*compressed = COMPRESSED_ZIP;
     } else if ((magic[0] == 0xfd) && (magic[1] == 0x37) &&
 	       (magic[2] == 0x7a) && (magic[3] == 0x58) &&
