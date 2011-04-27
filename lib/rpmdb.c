@@ -1093,14 +1093,15 @@ exit:
 static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
 		DBT * key, DBT * data, const char * arg, dbiIndexSet * matches)
 {
+    size_t arglen = (arg != NULL) ? strlen(arg) : 0;
+    char localarg[arglen+1];
     const char * release;
-    char * localarg;
     char * s;
     char c;
     int brackets;
     rpmRC rc;
  
-    if (arg == NULL || strlen(arg) == 0) return RPMRC_NOTFOUND;
+    if (arglen == 0) return RPMRC_NOTFOUND;
 
     /* did they give us just a name? */
     rc = dbiFindMatches(db, dbi, dbc, key, data, arg, NULL, NULL, matches);
@@ -1110,7 +1111,6 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
     *matches = dbiFreeIndexSet(*matches);
 
     /* maybe a name and a release */
-    localarg = xmalloc(strlen(arg) + 1);
     s = stpcpy(localarg, arg);
 
     c = '\0';
@@ -1173,7 +1173,6 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
     rc = dbiFindMatches(db, dbi, dbc, key, data,
 			localarg, s + 1, release, matches);
 exit:
-    free(localarg);
     return rc;
 }
 
