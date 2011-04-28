@@ -233,23 +233,17 @@ static int findTag(headerSprintfArgs hsa, sprintfToken token, const char * name)
     stag->fmt = NULL;
     stag->tag = RPMTAG_NOT_FOUND;
 
-    if (rstreq(tagname, "*")) {
-	stag->tag = -2;
-	goto bingo;
-    }
+    if (!rstreq(tagname, "*")) {
+	if (rstreqn("RPMTAG_", tagname, sizeof("RPMTAG_")-1)) {
+	    tagname += sizeof("RPMTAG");
+	}
 
-    if (rstreqn("RPMTAG_", tagname, sizeof("RPMTAG_")-1)) {
-	tagname += sizeof("RPMTAG");
-    }
+	/* Search tag names. */
+	stag->tag = rpmTagGetValue(tagname);
+	if (stag->tag == RPMTAG_NOT_FOUND) return 1;
 
-    /* Search tag names. */
-    stag->tag = rpmTagGetValue(tagname);
-    if (stag->tag != RPMTAG_NOT_FOUND)
-	goto bingo;
+    } else stag->tag = -2;
 
-    return 1;
-
-bingo:
     /* Search extensions for specific format. */
     if (stag->type != NULL)
 	stag->fmt = rpmHeaderFormatFuncByName(stag->type);
