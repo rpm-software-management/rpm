@@ -61,14 +61,6 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return NULL;
 }
 
-/**
- * Return finger print of a file path.
- * @param cache		pointer to fingerprint cache
- * @param dirName	leading directory name of path
- * @param baseName	file name of path
- * @param scareMemory
- * @return pointer to the finger print associated with a file path.
- */
 fingerPrint fpLookup(fingerPrintCache cache,
 		const char * dirName, const char * baseName, int scareMemory)
 {
