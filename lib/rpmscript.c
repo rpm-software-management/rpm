@@ -1,10 +1,10 @@
 #include "system.h"
 
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <errno.h>
 #include <unistd.h>
 
-#define _RPMSQ_INTERNAL
-#include <rpm/rpmsq.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmio.h>
@@ -201,12 +201,9 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
 {
     FD_t out = NULL;
     char * fn = NULL;
-    pid_t pid;
+    pid_t pid, reaped;
+    int status;
     rpmRC rc = RPMRC_FAIL;
-    struct rpmsqElem sq;
-
-    memset(&sq, 0, sizeof(sq));
-    sq.reaper = 1;
 
     rpmlog(RPMLOG_DEBUG, "%s: scriptlet start\n", sname);
 
@@ -246,7 +243,7 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
 	goto exit;
     }
 
-    pid = rpmsqFork(&sq);
+    pid = fork();
     if (pid == (pid_t) -1) {
 	rpmlog(RPMLOG_ERR, _("Couldn't fork %s: %s\n"),
 		sname, strerror(errno));
@@ -257,21 +254,23 @@ static rpmRC runExtScript(int selinux, ARGV_const_t prefixes,
 	doScriptExec(selinux, *argvp, prefixes, scriptFd, out);
     }
 
-    rpmsqWait(&sq);
+    do {
+	reaped = waitpid(pid, &status, 0);
+    } while (reaped == -1 && errno == EINTR);
 
     rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
-	   sname, (unsigned)pid, (unsigned)sq.reaped, sq.status);
+	   sname, (unsigned)pid, (unsigned)reaped, status);
 
-    if (sq.reaped < 0) {
+    if (reaped < 0) {
 	rpmlog(lvl, _("%s scriptlet failed, waitpid(%d) rc %d: %s\n"),
-		 sname, pid, sq.reaped, strerror(errno));
-    } else if (!WIFEXITED(sq.status) || WEXITSTATUS(sq.status)) {
-      	if (WIFSIGNALED(sq.status)) {
+		 sname, pid, reaped, strerror(errno));
+    } else if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+      	if (WIFSIGNALED(status)) {
 	    rpmlog(lvl, _("%s scriptlet failed, signal %d\n"),
-                   sname, WTERMSIG(sq.status));
+                   sname, WTERMSIG(status));
 	} else {
 	    rpmlog(lvl, _("%s scriptlet failed, exit status %d\n"),
-		   sname, WEXITSTATUS(sq.status));
+		   sname, WEXITSTATUS(status));
 	}
     } else {
 	/* if we get this far we're clear */
