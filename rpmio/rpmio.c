@@ -637,11 +637,6 @@ static const struct FDIO_s ufdio_s = {
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
-ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
-{
-    return Fread(bufptr, 1, length, fd);
-}
-
 /* =============================================================== */
 /* Support for GZIP library.
  */
