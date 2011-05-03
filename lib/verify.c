@@ -95,38 +95,23 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 	return 1;
     }
 
-    /*
-     * Not all attributes of non-regular files can be verified.
-     */
-    if (S_ISDIR(sb.st_mode))
-	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-			RPMVERIFY_LINKTO | RPMVERIFY_CAPS);
-    else if (S_ISLNK(sb.st_mode)) {
-	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-			RPMVERIFY_MODE | RPMVERIFY_CAPS);
-    }
-    else if (S_ISFIFO(sb.st_mode))
-	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-			RPMVERIFY_LINKTO | RPMVERIFY_CAPS);
-    else if (S_ISCHR(sb.st_mode))
-	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-			RPMVERIFY_LINKTO | RPMVERIFY_CAPS);
-    else if (S_ISBLK(sb.st_mode))
-	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-			RPMVERIFY_LINKTO | RPMVERIFY_CAPS);
-    else 
+    /* Links have no mode, other types have no linkto */
+    if (S_ISLNK(sb.st_mode))
+	flags &= ~(RPMVERIFY_MODE);
+    else
 	flags &= ~(RPMVERIFY_LINKTO);
 
-    /*
-     * Content checks of %ghost files are meaningless.
-     */
-    if (fileAttrs & RPMFILE_GHOST)
-	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE | RPMVERIFY_MTIME |
-			RPMVERIFY_LINKTO);
+    /* Not all attributes of non-regular files can be verified */
+    if (!S_ISREG(sb.st_mode))
+	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE |
+		   RPMVERIFY_MTIME | RPMVERIFY_CAPS);
 
-    /*
-     * Don't verify any features in omitMask.
-     */
+    /* Content checks of %ghost files are meaningless. */
+    if (fileAttrs & RPMFILE_GHOST)
+	flags &= ~(RPMVERIFY_FILEDIGEST | RPMVERIFY_FILESIZE |
+		   RPMVERIFY_MTIME | RPMVERIFY_LINKTO);
+
+    /* Don't verify any features in omitMask. */
     flags &= ~(omitMask | RPMVERIFY_FAILURES);
 
 
