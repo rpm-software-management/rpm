@@ -165,7 +165,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 						uintId, uintCmp, NULL);
 	    }
 	    /* If primary got created, we can safely run without fsync */
-	    if ((dbiFlags(dbi) & DBI_CREATED) || db->cfg.db_no_fsync) {
+	    if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
 		rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
                 db->cfg.db_no_fsync = 1;
 		dbSetFSync(db->db_dbenv, 0);
