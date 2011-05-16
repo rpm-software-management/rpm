@@ -504,7 +504,7 @@ int parsePrep(rpmSpec spec)
 	}
     }
 
-    for (ARGV_const_t lines = saveLines; *lines; lines++) {
+    for (ARGV_const_t lines = saveLines; lines && *lines; lines++) {
 	res = 0;
 	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
 	    res = doSetupMacro(spec, *lines);
