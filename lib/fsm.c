@@ -1449,6 +1449,11 @@ static int fsmRename(FSM_t fsm)
 static int fsmChown(FSM_t fsm)
 {
     int rc = chown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+    if (rc < 0) {
+	struct stat st;
+	if (lstat(fsm->path, &st) == 0 && st.st_uid == fsm->sb.st_uid && st.st_gid == fsm->sb.st_gid)
+	    rc = 0;
+    }
     if (_fsm_debug && (FSM_CHOWN & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_CHOWN),
 	       fsm->path, (int)fsm->sb.st_uid, (int)fsm->sb.st_gid,
@@ -1461,6 +1466,11 @@ static int fsmLChown(FSM_t fsm)
 {
     int rc = 0;
     rc = lchown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+    if (rc < 0) {
+	struct stat st;
+	if (lstat(fsm->path, &st) == 0 && st.st_uid == fsm->sb.st_uid && st.st_gid == fsm->sb.st_gid)
+	    rc = 0;
+    }
     if (_fsm_debug && (FSM_LCHOWN & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_LCHOWN),
 	       fsm->path, (int)fsm->sb.st_uid, (int)fsm->sb.st_gid,
@@ -1472,6 +1482,11 @@ static int fsmLChown(FSM_t fsm)
 static int fsmChmod(FSM_t fsm)
 {
     int rc = chmod(fsm->path, (fsm->sb.st_mode & 07777));
+    if (rc < 0) {
+	struct stat st;
+	if (lstat(fsm->path, &st) == 0 && (st.st_mode & 07777) == (fsm->sb.st_mode & 07777))
+	    rc = 0;
+    }
     if (_fsm_debug && (FSM_CHMOD & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_CHMOD),
 	       fsm->path, (unsigned)(fsm->sb.st_mode & 07777),
@@ -2033,6 +2048,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
 		    rc = fsmUtime(fsm);
 		    st->st_mtime = mtime;
+		    /* utime error is not critical for directories */
+		    if (rc && S_ISDIR(st->st_mode))
+			rc = 0;
 		}
 #if WITH_CAP
 		if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
