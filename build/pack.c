@@ -79,10 +79,8 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 	rc = RPMRC_FAIL;
     }
 
-    rpmtsEmpty(ts);
-
-    failedFile = _free(failedFile);
-    ts = rpmtsFree(ts);
+    free(failedFile);
+    rpmtsFree(ts);
 
     return rc;
 }
