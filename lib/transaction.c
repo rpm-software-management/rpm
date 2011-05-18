@@ -1398,8 +1398,9 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Force default 022 umask during transaction for consistent results */
     mode_t oldmask = umask(022);
 
-    /* XXX programmer error segfault avoidance. */
+    /* Empty transaction, nothing to do */
     if (rpmtsNElements(ts) <= 0) {
+	rc = 0;
 	goto exit;
     }
 
