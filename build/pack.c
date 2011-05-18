@@ -108,36 +108,45 @@ static rpmRC cpio_copy(FD_t fdo, CSA_t csa)
     return RPMRC_OK;
 }
 
-/**
- */
-static StringBuf addFileToTagAux(rpmSpec spec,
-		const char * file, StringBuf sb)
+static rpmRC addFileToTagAux(rpmSpec spec, const char * file,
+			     Header h, rpmTagVal tag, int append)
 {
+    StringBuf sb = newStringBuf();
     char buf[BUFSIZ];
     char * fn;
     FILE * f;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
     f = fopen(fn, "r");
-    if (f == NULL) {
-	sb = freeStringBuf(sb);
+    if (f == NULL)
 	goto exit;
+
+    if (append) {
+	const char *s = headerGetString(h, tag);
+	if (s) {
+	    appendLineStringBuf(sb, s);
+	    headerDel(h, tag);
+	}
     }
+
     while (fgets(buf, sizeof(buf), f)) {
 	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
 	    rpmlog(RPMLOG_ERR, _("%s: line: %s\n"), fn, buf);
-	    sb = freeStringBuf(sb);
-	    break;
+	    goto exit;
 	}
 	appendStringBuf(sb, buf);
     }
-    (void) fclose(f);
+    headerPutString(h, tag, getStringBuf(sb));
+    rc = RPMRC_OK;
 
 exit:
+    if (f) fclose(f);
     free(fn);
+    freeStringBuf(sb);
 
-    return sb;
+    return rc;
 }
 
 static rpm_time_t * getBuildTime(void)
@@ -167,42 +176,17 @@ static const char * buildHost(void)
     }
     return(hostname);
 }
-/**
- */
-static int addFileToTag(rpmSpec spec, const char * file, Header h, rpmTagVal tag)
+
+static rpmRC addFileToTag(rpmSpec spec, const char * file,
+			  Header h, rpmTagVal tag)
 {
-    StringBuf sb = newStringBuf();
-    const char *s = headerGetString(h, tag);
-
-    if (s) {
-	appendLineStringBuf(sb, s);
-	(void) headerDel(h, tag);
-    }
-
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
-	return 1;
-    
-    headerPutString(h, tag, getStringBuf(sb));
-
-    sb = freeStringBuf(sb);
-    return 0;
+    return addFileToTagAux(spec, file, h, tag, 1);
 }
 
-/**
- */
-static int addFileToArrayTag(rpmSpec spec, const char *file, Header h, rpmTagVal tag)
+static rpmRC addFileToArrayTag(rpmSpec spec, const char *file,
+			       Header h, rpmTagVal tag)
 {
-    StringBuf sb = newStringBuf();
-    const char *s;
-
-    if ((sb = addFileToTagAux(spec, file, sb)) == NULL)
-	return 1;
-
-    s = getStringBuf(sb);
-    headerPutString(h, tag, s);
-
-    sb = freeStringBuf(sb);
-    return 0;
+    return addFileToTagAux(spec, file, h, tag, 0);
 }
 
 /**
