@@ -35,8 +35,7 @@ typedef struct cpioSourceArchive_s {
 /**
  * @todo Create transaction set *much* earlier.
  */
-static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
-		const char * fmodeMacro)
+static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 {
     rpmts ts = NULL;
     rpmfi fi = csa->cpioList;
@@ -46,13 +45,9 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa,
     FD_t cfd;
     rpmRC rc = RPMRC_OK;
     int i;
-    char *fmode = rpmExpand(fmodeMacro, NULL);
 
-    if (!(fmode && fmode[0] == 'w'))
-	fmode = xstrdup("w9.gzdio");
     (void) Fflush(fdo);
-    cfd = Fdopen(fdDup(Fileno(fdo)), fmode);
-    fmode = _free(fmode);
+    cfd = Fdopen(fdDup(Fileno(fdo)), fmodeMacro);
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
@@ -337,8 +332,9 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     else 
 	rpmio_flags = rpmExpand("%{?_binary_payload}", NULL);
 
-    if (!(rpmio_flags && *rpmio_flags)) {
-	rpmio_flags = _free(rpmio_flags);
+    /* If not configured or bogus, fall back to gz */
+    if (rpmio_flags[0] != 'w') {
+	free(rpmio_flags);
 	rpmio_flags = xstrdup("w9.gzdio");
     }
     s = strchr(rpmio_flags, '.');
