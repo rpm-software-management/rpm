@@ -28,7 +28,6 @@
 
 typedef struct cpioSourceArchive_s {
     rpm_loff_t	cpioArchiveSize;
-    FD_t	cpioFdIn;
     rpmfi	cpioList;
 } * CSA_t;
 
@@ -83,29 +82,6 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
     rpmtsFree(ts);
 
     return rc;
-}
-
-/**
- */
-static rpmRC cpio_copy(FD_t fdo, CSA_t csa)
-{
-    char buf[BUFSIZ];
-    size_t nb;
-
-    while((nb = Fread(buf, sizeof(buf[0]), sizeof(buf), csa->cpioFdIn)) > 0) {
-	if (Fwrite(buf, sizeof(buf[0]), nb, fdo) != nb) {
-	    rpmlog(RPMLOG_ERR, _("cpio_copy write failed: %s\n"),
-			Fstrerror(fdo));
-	    return RPMRC_FAIL;
-	}
-	csa->cpioArchiveSize += nb;
-    }
-    if (Ferror(csa->cpioFdIn)) {
-	rpmlog(RPMLOG_ERR, _("cpio_copy read failed: %s\n"),
-		Fstrerror(csa->cpioFdIn));
-	return RPMRC_FAIL;
-    }
-    return RPMRC_OK;
 }
 
 static rpmRC addFileToTag(rpmSpec spec, const char * file,
@@ -346,8 +322,6 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
 	if (csa->cpioList != NULL) {
 	    rc = cpio_doio(fd, h, csa, rpmio_flags);
-	} else if (Fileno(csa->cpioFdIn) >= 0) {
-	    rc = cpio_copy(fd, csa);
 	} else {
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
@@ -677,12 +651,10 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew();
 	csa->cpioList = rpmfiLink(pkg->cpioList);
 
 	rc = writeRPM(&pkg->header, NULL, fn, csa, NULL);
 	csa->cpioList = rpmfiFree(csa->cpioList);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn);
 	if (rc == RPMRC_OK) {
 	    /* Do check each written package if enabled */
 	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", fn, NULL);
@@ -730,7 +702,6 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioFdIn = fdNew();
 	csa->cpioList = rpmfiLink(spec->sourceCpioList); 
 
 	spec->sourcePkgId = NULL;
@@ -742,7 +713,6 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 	}
 
 	csa->cpioList = rpmfiFree(csa->cpioList);
-	csa->cpioFdIn = fdFree(csa->cpioFdIn);
 	pkgcheck = _free(pkgcheck);
 	fn = _free(fn);
     }
