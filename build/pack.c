@@ -108,21 +108,29 @@ static rpmRC cpio_copy(FD_t fdo, CSA_t csa)
     return RPMRC_OK;
 }
 
-static rpmRC addFileToTagAux(rpmSpec spec, const char * file,
-			     Header h, rpmTagVal tag, int append)
+static rpmRC addFileToTag(rpmSpec spec, const char * file,
+			  Header h, rpmTagVal tag, int append)
 {
-    StringBuf sb = newStringBuf();
+    StringBuf sb = NULL;
     char buf[BUFSIZ];
     char * fn;
     FILE * f;
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
+    /* no script file is not an error */
+    if (file == NULL)
+	return RPMRC_OK;
+
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
     f = fopen(fn, "r");
-    if (f == NULL)
+    if (f == NULL) {
+	rpmlog(RPMLOG_ERR,_("Could not open %s file: %s\n"),
+			   rpmTagGetName(tag), file);
 	goto exit;
+    }
 
+    sb = newStringBuf();
     if (append) {
 	const char *s = headerGetString(h, tag);
 	if (s) {
@@ -177,74 +185,22 @@ static const char * buildHost(void)
     return(hostname);
 }
 
-static rpmRC addFileToTag(rpmSpec spec, const char * file,
-			  Header h, rpmTagVal tag)
-{
-    return addFileToTagAux(spec, file, h, tag, 1);
-}
-
-static rpmRC addFileToArrayTag(rpmSpec spec, const char *file,
-			       Header h, rpmTagVal tag)
-{
-    return addFileToTagAux(spec, file, h, tag, 0);
-}
-
-/**
- */
 static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
 {
     struct TriggerFileEntry *p;
     int addflags = 0;
+    rpmRC rc = RPMRC_FAIL;
+    Header h = pkg->header;
     
-    if (pkg->preInFile) {
-	if (addFileToTag(spec, pkg->preInFile, pkg->header, RPMTAG_PREIN)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PreIn file: %s\n"), pkg->preInFile);
-	    return RPMRC_FAIL;
-	}
-    }
-    if (pkg->preUnFile) {
-	if (addFileToTag(spec, pkg->preUnFile, pkg->header, RPMTAG_PREUN)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PreUn file: %s\n"), pkg->preUnFile);
-	    return RPMRC_FAIL;
-	}
-    }
-    if (pkg->preTransFile) {
-	if (addFileToTag(spec, pkg->preTransFile, pkg->header, RPMTAG_PRETRANS)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PreTrans file: %s\n"), pkg->preTransFile);
-	    return RPMRC_FAIL;
-	}
-    }
-    if (pkg->postInFile) {
-	if (addFileToTag(spec, pkg->postInFile, pkg->header, RPMTAG_POSTIN)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PostIn file: %s\n"), pkg->postInFile);
-	    return RPMRC_FAIL;
-	}
-    }
-    if (pkg->postUnFile) {
-	if (addFileToTag(spec, pkg->postUnFile, pkg->header, RPMTAG_POSTUN)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PostUn file: %s\n"), pkg->postUnFile);
-	    return RPMRC_FAIL;
-	}
-    }
-    if (pkg->postTransFile) {
-	if (addFileToTag(spec, pkg->postTransFile, pkg->header, RPMTAG_POSTTRANS)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open PostTrans file: %s\n"), pkg->postTransFile);
-	    return RPMRC_FAIL;
-	}
-    }
-    if (pkg->verifyFile) {
-	if (addFileToTag(spec, pkg->verifyFile, pkg->header,
-			 RPMTAG_VERIFYSCRIPT)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Could not open VerifyScript file: %s\n"), pkg->verifyFile);
-	    return RPMRC_FAIL;
-	}
+    if (addFileToTag(spec, pkg->preInFile, h, RPMTAG_PREIN, 1) ||
+	addFileToTag(spec, pkg->preUnFile, h, RPMTAG_PREUN, 1) ||
+	addFileToTag(spec, pkg->preTransFile, h, RPMTAG_PRETRANS, 1) ||
+	addFileToTag(spec, pkg->postInFile, h, RPMTAG_POSTIN, 1) ||
+	addFileToTag(spec, pkg->postUnFile, h, RPMTAG_POSTUN, 1) ||
+	addFileToTag(spec, pkg->postTransFile, h, RPMTAG_POSTTRANS, 1) ||
+	addFileToTag(spec, pkg->verifyFile, h, RPMTAG_VERIFYSCRIPT, 1))
+    {
+	goto exit;
     }
 
     /* if any trigger has flags, we need to add flags entry for all of them */
@@ -256,30 +212,27 @@ static rpmRC processScriptFiles(rpmSpec spec, Package pkg)
     }
 
     for (p = pkg->triggerFiles; p != NULL; p = p->next) {
-	headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTPROG, p->prog);
+	headerPutString(h, RPMTAG_TRIGGERSCRIPTPROG, p->prog);
 	if (addflags) {
-	    headerPutUint32(pkg->header, RPMTAG_TRIGGERSCRIPTFLAGS,
-			    &p->flags, 1);
+	    headerPutUint32(h, RPMTAG_TRIGGERSCRIPTFLAGS, &p->flags, 1);
 	}
 
 	if (p->script) {
-	    headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTS, p->script);
+	    headerPutString(h, RPMTAG_TRIGGERSCRIPTS, p->script);
 	} else if (p->fileName) {
-	    if (addFileToArrayTag(spec, p->fileName, pkg->header,
-				  RPMTAG_TRIGGERSCRIPTS)) {
-		rpmlog(RPMLOG_ERR,
-			 _("Could not open Trigger script file: %s\n"),
-			 p->fileName);
-		return RPMRC_FAIL;
+	    if (addFileToTag(spec, p->fileName, h, RPMTAG_TRIGGERSCRIPTS, 0)) {
+		goto exit;
 	    }
 	} else {
 	    /* This is dumb.  When the header supports NULL string */
 	    /* this will go away.                                  */
-	    headerPutString(pkg->header, RPMTAG_TRIGGERSCRIPTS, "");
+	    headerPutString(h, RPMTAG_TRIGGERSCRIPTS, "");
 	}
     }
+    rc = RPMRC_OK;
 
-    return RPMRC_OK;
+exit:
+    return rc;
 }
 
 static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
