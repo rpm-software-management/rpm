@@ -422,7 +422,6 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
 	    rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
 	}
     }
-    rpmio_flags = _free(rpmio_flags);
 
     if (rc != RPMRC_OK)
 	goto exit;
@@ -575,6 +574,7 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     rc = RPMRC_OK;
 
 exit:
+    rpmio_flags = _free(rpmio_flags);
     SHA1 = _free(SHA1);
     h = headerFree(h);
 
