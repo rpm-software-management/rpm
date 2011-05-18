@@ -1022,12 +1022,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     char *source = NULL;
 
     /* Handle non-terminated substrings by creating a terminated copy */
-    if (slen > 0) {
-	source = xmalloc(slen + 1);
-	strncpy(source, src, slen);
-	source[slen] = '\0';
-	s = source;
-    }
+    if (!slen)
+	slen = strlen(src);
+    source = xmalloc(slen + 1);
+    strncpy(source, src, slen);
+    source[slen] = '\0';
+    s = source;
 
     if (mb->buf == NULL) {
 	size_t blen = MACROBUFSIZ + strlen(s);
