@@ -211,17 +211,39 @@ exit:
     return rc;
 }
 
+static rpmRC copyPayload(FD_t ifd, const char *ifn, FD_t ofd, const char *ofn)
+{
+    char buf[BUFSIZ];
+    size_t nb;
+    rpmRC rc = RPMRC_OK;
+
+    while ((nb = Fread(buf, 1, sizeof(buf), ifd)) > 0) {
+	if (Fwrite(buf, sizeof(buf[0]), nb, ofd) != nb) {
+	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
+		     ofn, Fstrerror(ofd));
+	    rc = RPMRC_FAIL;
+	    break;
+	}
+    }
+
+    if (nb < 0) {
+	rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
+		 ifn, Fstrerror(ifd));
+	rc = RPMRC_FAIL;
+    }
+
+    return rc;
+}
+
 static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	     CSA_t csa, char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
-    ssize_t count;
     char * sigtarget = NULL;;
     char * rpmio_flags = NULL;
     char * SHA1 = NULL;
     const char *s;
-    char *buf = NULL;
     Header h;
     Header sig = NULL;
     int xx;
@@ -250,6 +272,7 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     }
     s = strchr(rpmio_flags, '.');
     if (s) {
+	char *buf = NULL;
 	const char *compr = NULL;
 	headerPutString(h, RPMTAG_PAYLOADFORMAT, "cpio");
 
@@ -458,25 +481,7 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     }
 	
     /* Write the payload into the package. */
-    buf = xmalloc(BUFSIZ);
-    while ((count = Fread(buf, 1, BUFSIZ, ifd)) > 0) {
-	if (count == -1) {
-	    free(buf);
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Unable to read payload from %s: %s\n"),
-		     sigtarget, Fstrerror(ifd));
-	    goto exit;
-	}
-	if (Fwrite(buf, sizeof(buf[0]), count, fd) != count) {
-	    free(buf);
-	    rc = RPMRC_FAIL;
-	    rpmlog(RPMLOG_ERR, _("Unable to write payload to %s: %s\n"),
-		     fileName, Fstrerror(fd));
-	    goto exit;
-	}
-    }
-    free(buf);
-    rc = RPMRC_OK;
+    rc = copyPayload(ifd, fileName, fd, sigtarget);
 
 exit:
     rpmio_flags = _free(rpmio_flags);
