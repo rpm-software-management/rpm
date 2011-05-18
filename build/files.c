@@ -1733,7 +1733,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    }
 	    fd = fopen(ffn, "r");
 
-	    if (fd == NULL || ferror(fd)) {
+	    if (fd == NULL) {
 		rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), ffn);
 		return RPMRC_FAIL;
 	    }

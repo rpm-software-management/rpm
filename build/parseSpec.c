@@ -240,8 +240,7 @@ retry:
     /* Make sure the current file is open */
     if (ofi->fp == NULL) {
 	ofi->fp = fopen(ofi->fileName, "r");
-	if (ofi->fp == NULL || ferror(ofi->fp)) {
-	    /* XXX Fstrerror */
+	if (ofi->fp == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unable to open %s: %s\n"),
 		     ofi->fileName, strerror(errno));
 	    return PART_ERROR;

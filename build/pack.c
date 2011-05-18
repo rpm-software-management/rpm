@@ -127,7 +127,7 @@ static StringBuf addFileToTagAux(rpmSpec spec,
     fn = rpmGetPath("%{_builddir}/%{?buildsubdir:%{buildsubdir}/}", file, NULL);
 
     f = fopen(fn, "r");
-    if (f == NULL || ferror(f)) {
+    if (f == NULL) {
 	sb = freeStringBuf(sb);
 	goto exit;
     }

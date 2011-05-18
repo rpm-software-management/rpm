@@ -1463,10 +1463,8 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
     char *buf = xmalloc(blen);
     int rc = -1;
 
-    if (fd == NULL || ferror(fd)) {
-	if (fd) (void) fclose(fd);
+    if (fd == NULL)
 	goto exit;
-    }
 
     /* XXX Assume new fangled macro expansion */
     max_macro_depth = 16;

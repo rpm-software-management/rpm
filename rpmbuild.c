@@ -245,7 +245,7 @@ static int isSpecFile(const char * specfile)
     int checking;
 
     f = fopen(specfile, "r");
-    if (f == NULL || ferror(f)) {
+    if (f == NULL) {
 	rpmlog(RPMLOG_ERR, _("Unable to open spec file %s: %s\n"),
 		specfile, strerror(errno));
 	return 0;
