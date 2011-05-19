@@ -629,10 +629,13 @@ static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
-	if (regMatch((*attr)->magic, ftype))
-	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
-	if (regMatch((*attr)->path, path))
-	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
+	if ((*attr)->magic && (*attr)->path && hasAttr((*attr)->flags, "magic_and_path")) {
+	    if (regMatch((*attr)->magic, ftype) && regMatch((*attr)->path, path))
+		argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
+	} else {
+	    if (regMatch((*attr)->magic, ftype) || regMatch((*attr)->path, path))
+		argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
+	}
     }
 }
 
