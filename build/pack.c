@@ -499,14 +499,9 @@ exit:
     }
 
     sig = rpmFreeSignature(sig);
-    if (ifd) {
-	(void) Fclose(ifd);
-	ifd = NULL;
-    }
-    if (fd) {
-	(void) Fclose(fd);
-	fd = NULL;
-    }
+    Fclose(ifd);
+    Fclose(fd);
+
     if (sigtarget) {
 	(void) unlink(sigtarget);
 	sigtarget = _free(sigtarget);
