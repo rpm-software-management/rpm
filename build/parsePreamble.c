@@ -273,9 +273,11 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
     if (tag != RPMTAG_ICON) {
 	char *body = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	struct stat st;
+	int nofetch = (spec->flags & RPMSPEC_FORCE) ||
+		      rpmExpandNumeric("%{_disable_source_fetch}");
 
 	/* try to download source/patch if it's missing */
-	if (lstat(body, &st) != 0 && errno == ENOENT && !rpmExpandNumeric("%{_disable_source_fetch}")) {
+	if (lstat(body, &st) != 0 && errno == ENOENT && !nofetch) {
 	    char *url = NULL;
 	    if (urlIsURL(p->fullSource) != URL_IS_UNKNOWN) {
 		url = rstrdup(p->fullSource);
