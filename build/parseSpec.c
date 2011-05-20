@@ -19,6 +19,7 @@
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
+#define ISMACRO(s,m) (rstreqn((s), (m), sizeof((m))-1) && (risblank((s)[sizeof((m))-1]) || !(s)[sizeof((m))-1]))
 
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
@@ -278,9 +279,25 @@ retry:
     return 0;
 }
 
+#define ARGMATCH(s,token,match) \
+do { \
+    char *os = s; \
+    char *exp = rpmExpand(token, NULL); \
+    while(*s && !risblank(*s)) s++; \
+    while(*s && risblank(*s)) s++; \
+    if (!*s) { \
+	rpmlog(RPMLOG_ERR, _("%s:%d: Argument expected for %s\n"), ofi->fileName, ofi->lineNum, os); \
+	free(exp); \
+	return PART_ERROR; \
+    } \
+    match = matchTok(exp, s); \
+    free(exp); \
+} while (0)
+
+
 int readLine(rpmSpec spec, int strip)
 {
-    char  *s;
+    char *s;
     int match;
     struct ReadLevelEntry *rl;
     OFI_t *ofi = spec->fileStack;
@@ -307,39 +324,28 @@ int readLine(rpmSpec spec, int strip)
     SKIPSPACE(s);
 
     match = -1;
-    if (!spec->readStack->reading && rstreqn("%if", s, sizeof("%if")-1)) {
+    if (!spec->readStack->reading && ISMACRO(s, "%if")) {
 	match = 0;
-    } else if (rstreqn("%ifarch", s, sizeof("%ifarch")-1)) {
-	char *arch = rpmExpand("%{_target_cpu}", NULL);
-	s += 7;
-	match = matchTok(arch, s);
-	arch = _free(arch);
-    } else if (rstreqn("%ifnarch", s, sizeof("%ifnarch")-1)) {
-	char *arch = rpmExpand("%{_target_cpu}", NULL);
-	s += 8;
-	match = !matchTok(arch, s);
-	arch = _free(arch);
-    } else if (rstreqn("%ifos", s, sizeof("%ifos")-1)) {
-	char *os = rpmExpand("%{_target_os}", NULL);
-	s += 5;
-	match = matchTok(os, s);
-	os = _free(os);
-    } else if (rstreqn("%ifnos", s, sizeof("%ifnos")-1)) {
-	char *os = rpmExpand("%{_target_os}", NULL);
-	s += 6;
-	match = !matchTok(os, s);
-	os = _free(os);
-    } else if (rstreqn("%if", s, sizeof("%if")-1)) {
+    } else if (ISMACRO(s, "%ifarch")) {
+	ARGMATCH(s, "%{_target_cpu}", match);
+    } else if (ISMACRO(s, "%ifnarch")) {
+	ARGMATCH(s, "%{_target_cpu}", match);
+	match = !match;
+    } else if (ISMACRO(s, "%ifos")) {
+	ARGMATCH(s, "%{_target_os}", match);
+    } else if (ISMACRO(s, "%ifnos")) {
+	ARGMATCH(s, "%{_target_os}", match);
+	match = !match;
+    } else if (ISMACRO(s, "%if")) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
 	    rpmlog(RPMLOG_ERR,
-			_("%s:%d: parseExpressionBoolean returns %d\n"),
-			ofi->fileName, ofi->lineNum, match);
+			_("%s:%d: bad %%if condition\n"),
+			ofi->fileName, ofi->lineNum);
 	    return PART_ERROR;
 	}
-    } else if (rstreqn("%else", s, sizeof("%else")-1)) {
-	s += 5;
+    } else if (ISMACRO(s, "%else")) {
 	if (! spec->readStack->next) {
 	    /* Got an else with no %if ! */
 	    rpmlog(RPMLOG_ERR,
@@ -350,8 +356,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack->reading =
 	    spec->readStack->next->reading && ! spec->readStack->reading;
 	spec->line[0] = '\0';
-    } else if (rstreqn("%endif", s, sizeof("%endif")-1)) {
-	s += 6;
+    } else if (ISMACRO(s, "%endif")) {
 	if (! spec->readStack->next) {
 	    /* Got an end with no %if ! */
 	    rpmlog(RPMLOG_ERR,
@@ -363,15 +368,10 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (rstreqn("%include", s, sizeof("%include")-1)) {
+    } else if (ISMACRO(s, "%include")) {
 	char *fileName, *endFileName, *p;
 
-	s += 8;
-	fileName = s;
-	if (! risspace(*fileName)) {
-	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
-	    return PART_ERROR;
-	}
+	fileName = s+8;
 	SKIPSPACE(fileName);
 	endFileName = fileName;
 	SKIPNONSPACE(endFileName);
