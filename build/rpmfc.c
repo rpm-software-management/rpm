@@ -472,6 +472,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[fc->ix];
+    char *namespace = rpmfcAttrMacro(nsdep, NULL, "namespace");
     int pac;
     regex_t *exclude = NULL;
     regex_t *exclude_from = NULL;
@@ -513,7 +514,13 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 	    EVR = pav[i];
 	}
 
-	ds = rpmdsSingle(tagN, N, EVR, Flags);
+	if (namespace) {
+	    char *NSN = rpmExpand(namespace, "(", N, ")", NULL);
+	    ds = rpmdsSingle(tagN, NSN, EVR, Flags);
+	    free(NSN);
+	} else {
+	    ds = rpmdsSingle(tagN, N, EVR, Flags);
+	}
 
 	/* Add to package and file dependencies unless filtered */
 	if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
@@ -529,6 +536,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 exit:
     regFree(exclude);
     regFree(exclude_from);
+    free(namespace);
     return 0;
 }
 
