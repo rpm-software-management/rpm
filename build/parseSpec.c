@@ -19,7 +19,8 @@
 
 #define SKIPSPACE(s) { while (*(s) && risspace(*(s))) (s)++; }
 #define SKIPNONSPACE(s) { while (*(s) && !risspace(*(s))) (s)++; }
-#define ISMACRO(s,m) (rstreqn((s), (m), sizeof((m))-1) && (risblank((s)[sizeof((m))-1]) || !(s)[sizeof((m))-1]))
+#define ISMACRO(s,m) (rstreqn((s), (m), sizeof((m))-1) && !risalpha((s)[sizeof((m))-1]))
+#define ISMACROWITHARG(s,m) (rstreqn((s), (m), sizeof((m))-1) && (risblank((s)[sizeof((m))-1]) || !(s)[sizeof((m))-1]))
 
 #define LEN_AND_STR(_tag) (sizeof(_tag)-1), (_tag)
 
@@ -324,19 +325,19 @@ int readLine(rpmSpec spec, int strip)
     SKIPSPACE(s);
 
     match = -1;
-    if (!spec->readStack->reading && ISMACRO(s, "%if")) {
+    if (!spec->readStack->reading && ISMACROWITHARG(s, "%if")) {
 	match = 0;
-    } else if (ISMACRO(s, "%ifarch")) {
+    } else if (ISMACROWITHARG(s, "%ifarch")) {
 	ARGMATCH(s, "%{_target_cpu}", match);
-    } else if (ISMACRO(s, "%ifnarch")) {
+    } else if (ISMACROWITHARG(s, "%ifnarch")) {
 	ARGMATCH(s, "%{_target_cpu}", match);
 	match = !match;
-    } else if (ISMACRO(s, "%ifos")) {
+    } else if (ISMACROWITHARG(s, "%ifos")) {
 	ARGMATCH(s, "%{_target_os}", match);
-    } else if (ISMACRO(s, "%ifnos")) {
+    } else if (ISMACROWITHARG(s, "%ifnos")) {
 	ARGMATCH(s, "%{_target_os}", match);
 	match = !match;
-    } else if (ISMACRO(s, "%if")) {
+    } else if (ISMACROWITHARG(s, "%if")) {
 	s += 3;
         match = parseExpressionBoolean(spec, s);
 	if (match < 0) {
@@ -368,7 +369,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (ISMACRO(s, "%include")) {
+    } else if (ISMACROWITHARG(s, "%include")) {
 	char *fileName, *endFileName, *p;
 
 	fileName = s+8;
