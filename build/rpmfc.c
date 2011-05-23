@@ -19,13 +19,16 @@
 
 #include "debug.h"
 
-typedef struct rpmfcAttr_s {
-    char *name;
+struct matchRule {
     regex_t *path;
     regex_t *magic;
-    regex_t *path_excl;
-    regex_t *magic_excl;
     ARGV_t flags;
+};
+
+typedef struct rpmfcAttr_s {
+    char *name;
+    struct matchRule incl;
+    struct matchRule excl;
 } * rpmfcAttr;
 
 /**
@@ -75,16 +78,29 @@ static regex_t * regFree(regex_t *reg)
     return NULL;
 }
 
-static char *rpmfcAttrMacro(const char *name, const char *attr)
+static void ruleFree(struct matchRule *rule)
 {
-    char *macro = rpmExpand("%{?__", name, "_", attr, "}", NULL);
-    return rstreq(macro, "") ? _free(macro) : macro;
+    regFree(rule->path);
+    regFree(rule->magic);
+    argvFree(rule->flags);
 }
 
-static regex_t *rpmfcAttrReg(const char *name, const char *attr)
+static char *rpmfcAttrMacro(const char *name,
+			    const char *attr_prefix, const char *attr)
+{
+    char *ret;
+    if (attr_prefix && attr_prefix[0] != '\0')
+	ret = rpmExpand("%{?__", name, "_", attr_prefix, "_", attr, "}", NULL);
+    else
+	ret = rpmExpand("%{?__", name, "_", attr, "}", NULL);
+    return rstreq(ret, "") ? _free(ret) : ret;
+}
+
+static regex_t *rpmfcAttrReg(const char *name,
+			     const char *attr_prefix, const char *attr)
 {
     regex_t *reg = NULL;
-    char *pattern = rpmfcAttrMacro(name, attr);
+    char *pattern = rpmfcAttrMacro(name, attr_prefix, attr);
     if (pattern) {
 	reg = xcalloc(1, sizeof(*reg));
 	if (regcomp(reg, pattern, REG_EXTENDED) != 0) { 
@@ -99,28 +115,28 @@ static regex_t *rpmfcAttrReg(const char *name, const char *attr)
 static rpmfcAttr rpmfcAttrNew(const char *name)
 {
     rpmfcAttr attr = xcalloc(1, sizeof(*attr));
-
-    char *flags = rpmfcAttrMacro(name, "flags");
-    attr->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY);
-    free(flags);
+    struct matchRule *rules[] = { &attr->incl, &attr->excl, NULL };
 
     attr->name = xstrdup(name);
-    attr->path = rpmfcAttrReg(name, "path");
-    attr->magic = rpmfcAttrReg(name, "magic");
-    attr->path_excl = rpmfcAttrReg(name, "exclude_path");
-    attr->magic_excl = rpmfcAttrReg(name, "exclude_magic");
-    
+    for (struct matchRule **rule = rules; rule && *rule; rule++) {
+	const char *prefix = (*rule == &attr->incl) ? NULL : "exclude";
+	char *flags = rpmfcAttrMacro(name, prefix, "flags");
+
+	(*rule)->path = rpmfcAttrReg(name, prefix, "path");
+	(*rule)->magic = rpmfcAttrReg(name, prefix, "magic");
+	(*rule)->flags = argvSplitString(flags, ",", ARGV_SKIPEMPTY);
+
+	free(flags);
+    }
+
     return attr;
 }
 
 static rpmfcAttr rpmfcAttrFree(rpmfcAttr attr)
 {
     if (attr) {
-	regFree(attr->path);
-	regFree(attr->magic);
-	regFree(attr->path_excl);
-	regFree(attr->magic_excl);
-	argvFree(attr->flags);
+	ruleFree(&attr->incl);
+	ruleFree(&attr->excl);
 	rfree(attr->name);
 	rfree(attr);
     }
@@ -460,7 +476,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
     regex_t *exclude_from = NULL;
 
     /* If the entire path is filtered out, there's nothing more to do */
-    exclude_from = rpmfcAttrReg(depname, "exclude_from");
+    exclude_from = rpmfcAttrReg(depname, "exclude", "from");
     if (regMatch(exclude_from, fn+fc->brlen))
 	goto exit;
 
@@ -468,7 +484,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
     pac = argvCount(pav);
 
     if (pav)
-	exclude = rpmfcAttrReg(depname, "exclude");
+	exclude = rpmfcAttrReg(depname, NULL, "exclude");
 
     for (int i = 0; i < pac; i++) {
 	rpmds ds = NULL;
@@ -607,6 +623,18 @@ static void argvAddTokens(ARGV_t *argv, const char *tnames)
     }
 }
 
+static int matches(const struct matchRule *rule,
+		   const char *ftype, const char *path, int executable)
+{
+    if (!executable && hasAttr(rule->flags, "exeonly"))
+	return 0;
+    if (rule->magic && rule->path && hasAttr(rule->flags, "magic_and_path")) {
+	return (regMatch(rule->magic, ftype) && regMatch(rule->path, path));
+    } else {
+	return (regMatch(rule->magic, ftype) || regMatch(rule->path, path));
+    }
+}
+
 static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
 {
     const char *path = fullpath + fc->brlen;
@@ -618,24 +646,13 @@ static void rpmfcAttributes(rpmfc fc, const char *ftype, const char *fullpath)
     }
 
     for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++) {
-	/* Filter out by file modes if set */
-	if (hasAttr((*attr)->flags, "exeonly") && !is_executable)
-	    continue;
-
-	/* Filter out path and magic exclude-matches */
-	if (regMatch((*attr)->magic_excl, ftype))
-	    continue;
-	if (regMatch((*attr)->path_excl, path))
+	/* Filter out excludes */
+	if (matches(&(*attr)->excl, ftype, path, is_executable))
 	    continue;
 
 	/* Add attributes on libmagic type & path pattern matches */
-	if ((*attr)->magic && (*attr)->path && hasAttr((*attr)->flags, "magic_and_path")) {
-	    if (regMatch((*attr)->magic, ftype) && regMatch((*attr)->path, path))
-		argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
-	} else {
-	    if (regMatch((*attr)->magic, ftype) || regMatch((*attr)->path, path))
-		argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
-	}
+	if (matches(&(*attr)->incl, ftype, path, is_executable))
+	    argvAddTokens(&fc->fattrs[fc->ix], (*attr)->name);
     }
 }
 
