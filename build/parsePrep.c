@@ -475,7 +475,7 @@ exit:
 
 int parsePrep(rpmSpec spec)
 {
-    int nextPart, res, rc;
+    int nextPart, rc, res = PART_ERROR;
     ARGV_t saveLines = NULL;
 
     if (spec->prep != NULL) {
@@ -505,17 +505,15 @@ int parsePrep(rpmSpec spec)
     }
 
     for (ARGV_const_t lines = saveLines; lines && *lines; lines++) {
-	res = 0;
+	rc = RPMRC_OK;
 	if (rstreqn(*lines, "%setup", sizeof("%setup")-1)) {
-	    res = doSetupMacro(spec, *lines);
+	    rc = doSetupMacro(spec, *lines);
 	} else if (rstreqn(*lines, "%patch", sizeof("%patch")-1)) {
-	    res = doPatchMacro(spec, *lines);
+	    rc = doPatchMacro(spec, *lines);
 	} else {
 	    appendStringBuf(spec->prep, *lines);
 	}
-	if (res && !(spec->flags & RPMSPEC_FORCE)) {
-	    /* fixup from RPMRC_FAIL do*Macro() codes for now */
-	    nextPart = PART_ERROR; 
+	if (rc != RPMRC_OK && !(spec->flags & RPMSPEC_FORCE)) {
 	    goto exit;
 	}
     }
@@ -524,5 +522,5 @@ int parsePrep(rpmSpec spec)
 exit:
     argvFree(saveLines);
 
-    return nextPart;
+    return res;
 }
