@@ -710,9 +710,7 @@ errxit:
 
 void * headerUnload(Header h)
 {
-    size_t length;
-    void * uh = doHeaderUnload(h, &length);
-    return uh;
+    return doHeaderUnload(h, NULL);
 }
 
 /**
@@ -922,8 +920,7 @@ errxit:
 Header headerReload(Header h, rpmTagVal tag)
 {
     Header nh;
-    size_t length;
-    void * uh = doHeaderUnload(h, &length);
+    void * uh = doHeaderUnload(h, NULL);
 
     h = headerFree(h);
     if (uh == NULL)
