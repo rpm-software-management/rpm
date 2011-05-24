@@ -151,7 +151,7 @@ Header headerFree(Header h)
     }
 
     h = _free(h);
-    return h;
+    return NULL;
 }
 
 static Header headerCreate(void *blob, int32_t indexLen)
@@ -703,7 +703,7 @@ static void * doHeaderUnload(Header h,
 
 errxit:
     ei = _free(ei);
-    return (void *) ei;
+    return NULL;
 }
 
 void * headerUnload(Header h)
@@ -914,7 +914,7 @@ errxit:
 	h->index = _free(h->index);
 	h = _free(h);
     }
-    return h;
+    return NULL;
 }
 
 Header headerReload(Header h, rpmTagVal tag)
@@ -1693,7 +1693,7 @@ HeaderIterator headerFreeIterator(HeaderIterator hi)
 	hi->h = headerFree(hi->h);
 	hi = _free(hi);
     }
-    return hi;
+    return NULL;
 }
 
 HeaderIterator headerInitIterator(Header h)
