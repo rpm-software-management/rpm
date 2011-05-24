@@ -31,6 +31,13 @@
 			\
 	    )
 
+struct rpmluapb_s {
+    size_t alloced;
+    size_t used;
+    char *buf;
+    rpmluapb next;
+};
+
 static rpmlua globalLuaState = NULL;
 
 static int luaopen_rpm(lua_State *L);
@@ -124,20 +131,31 @@ void *rpmluaGetData(rpmlua _lua, const char *key)
     return getdata(lua->L, key);
 }
 
-void rpmluaSetPrintBuffer(rpmlua _lua, int flag)
+void rpmluaPushPrintBuffer(rpmlua _lua)
 {
     INITSTATE(_lua, lua);
-    lua->storeprint = flag;
-    free(lua->printbuf);
-    lua->printbuf = NULL;
-    lua->printbufsize = 0;
-    lua->printbufused = 0;
+    rpmluapb prbuf = xcalloc(1, sizeof(*prbuf));
+    prbuf->buf = NULL;
+    prbuf->alloced = 0;
+    prbuf->used = 0;
+    prbuf->next = lua->printbuf;
+
+    lua->printbuf = prbuf;
 }
 
-const char *rpmluaGetPrintBuffer(rpmlua _lua)
+char *rpmluaPopPrintBuffer(rpmlua _lua)
 {
     INITSTATE(_lua, lua);
-    return lua->printbuf;
+    rpmluapb prbuf = lua->printbuf;
+    char *ret = NULL;
+
+    if (prbuf) {
+	ret = prbuf->buf;
+	lua->printbuf = prbuf->next;
+	free(prbuf);
+    }
+    
+    return ret;
 }
 
 static int pushvar(lua_State *L, rpmluavType type, void *value)
@@ -773,16 +791,17 @@ static int rpm_print (lua_State *L)
 	s = lua_tostring(L, -1);  /* get result */
 	if (s == NULL)
 	    return luaL_error(L, "`tostring' must return a string to `print'");
-	if (lua->storeprint) {
+	if (lua->printbuf) {
+	    rpmluapb prbuf = lua->printbuf;
 	    int sl = lua_strlen(L, -1);
-	    if (lua->printbufused+sl+1 > lua->printbufsize) {
-		lua->printbufsize += sl+512;
-		lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
+	    if (prbuf->used+sl+1 > prbuf->alloced) {
+		prbuf->alloced += sl+512;
+		prbuf->buf = xrealloc(prbuf->buf, prbuf->alloced);
 	    }
 	    if (i > 1)
-		lua->printbuf[lua->printbufused++] = '\t';
-	    memcpy(lua->printbuf+lua->printbufused, s, sl+1);
-	    lua->printbufused += sl;
+		prbuf->buf[prbuf->used++] = '\t';
+	    memcpy(prbuf->buf+prbuf->used, s, sl+1);
+	    prbuf->used += sl;
 	} else {
 	    if (i > 1)
 		(void) fputs("\t", stdout);
@@ -790,14 +809,15 @@ static int rpm_print (lua_State *L)
 	}
 	lua_pop(L, 1);  /* pop result */
     }
-    if (!lua->storeprint) {
+    if (!lua->printbuf) {
 	(void) fputs("\n", stdout);
     } else {
-	if (lua->printbufused+1 > lua->printbufsize) {
-	    lua->printbufsize += 512;
-	    lua->printbuf = xrealloc(lua->printbuf, lua->printbufsize);
+	rpmluapb prbuf = lua->printbuf;
+	if (prbuf->used+1 > prbuf->alloced) {
+	    prbuf->alloced += 512;
+	    prbuf->buf = xrealloc(prbuf->buf, prbuf->alloced);
 	}
-	lua->printbuf[lua->printbufused] = '\0';
+	prbuf->buf[prbuf->used] = '\0';
     }
     return 0;
 }

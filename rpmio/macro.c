@@ -1228,17 +1228,17 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		const char *ls = s+sizeof("{lua:")-1;
 		const char *lse = se-sizeof("}")+1;
 		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
-		const char *printbuf;
+		char *printbuf;
 		memcpy(scriptbuf, ls, lse-ls);
 		scriptbuf[lse-ls] = '\0';
-		rpmluaSetPrintBuffer(lua, 1);
+		rpmluaPushPrintBuffer(lua);
 		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
 		    rc = 1;
-		printbuf = rpmluaGetPrintBuffer(lua);
+		printbuf = rpmluaPopPrintBuffer(lua);
 		if (printbuf) {
 		    mbAppendStr(mb, printbuf);
+		    free(printbuf);
 		}
-		rpmluaSetPrintBuffer(lua, 0);
 		free(scriptbuf);
 		s = se;
 		continue;

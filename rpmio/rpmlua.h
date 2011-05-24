@@ -12,13 +12,12 @@ typedef enum rpmluavType_e {
 #include <stdarg.h>
 #include <lua.h>
 
+typedef struct rpmluapb_s * rpmluapb;
+
 struct rpmlua_s {
     lua_State *L;
     size_t pushsize;
-    int storeprint;
-    size_t printbufsize;
-    size_t printbufused;
-    char *printbuf;
+    rpmluapb printbuf;
 };
 
 struct rpmluav_s {
@@ -60,8 +59,8 @@ void rpmluaInteractive(rpmlua lua);
 void *rpmluaGetData(rpmlua lua, const char *key);
 void rpmluaSetData(rpmlua lua, const char *key, const void *data);
 
-const char *rpmluaGetPrintBuffer(rpmlua lua);
-void rpmluaSetPrintBuffer(rpmlua lua, int flag);
+char *rpmluaPopPrintBuffer(rpmlua lua);
+void rpmluaPushPrintBuffer(rpmlua lua);
 
 void rpmluaGetVar(rpmlua lua, rpmluav var);
 void rpmluaSetVar(rpmlua lua, rpmluav var);
