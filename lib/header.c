@@ -130,7 +130,7 @@ Header headerFree(Header h)
     (void) headerUnlink(h);
 
     if (h == NULL || h->nrefs > 0)
-	return NULL;	/* XXX return previous header? */
+	return NULL;
 
     if (h->index) {
 	indexEntry entry = h->index;
@@ -208,8 +208,6 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
     return -1;
 }
 
-/**
- */
 static int indexCmp(const void * avp, const void * bvp)
 {
     indexEntry ap = (indexEntry) avp, bp = (indexEntry) bvp;
@@ -224,8 +222,6 @@ void headerSort(Header h)
     }
 }
 
-/**
- */
 static int offsetCmp(const void * avp, const void * bvp) 
 {
     indexEntry ap = (indexEntry) avp, bp = (indexEntry) bvp;
@@ -241,10 +237,6 @@ static int offsetCmp(const void * avp, const void * bvp)
     return rc;
 }
 
-/** \ingroup header
- * Restore tags in header to original ordering.
- * @param h		header
- */
 void headerUnsort(Header h)
 {
     if (h->flags & HEADERFLAG_SORTED) {
@@ -472,8 +464,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
  * @retval *lengthPtr	no. bytes in unloaded header blob
  * @return		unloaded header blob (NULL on error)
  */
-static void * doHeaderUnload(Header h,
-		size_t * lengthPtr)
+static void * doHeaderUnload(Header h, size_t * lengthPtr)
 {
     int32_t * ei = NULL;
     entryInfo pe;
@@ -956,12 +947,6 @@ Header headerCopyLoad(const void * uh)
     return h;
 }
 
-/** \ingroup header
- * Read (and load) header from file handle.
- * @param fd		file handle
- * @param magicp	read (and verify) 8 bytes of (magic, 0)?
- * @return		header (or NULL on error)
- */
 Header headerRead(FD_t fd, int magicp)
 {
     int32_t block[4];
