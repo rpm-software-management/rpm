@@ -245,7 +245,10 @@ static int offsetCmp(const void * avp, const void * bvp)
  */
 void headerUnsort(Header h)
 {
-    qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
+    if (h->flags & HEADERFLAG_SORTED) {
+	qsort(h->index, h->indexUsed, sizeof(*h->index), offsetCmp);
+	h->flags &= ~HEADERFLAG_SORTED;
+    }
 }
 
 unsigned headerSizeof(Header h, int magicp)
@@ -694,7 +697,6 @@ static void * doHeaderUnload(Header h,
     if (lengthPtr)
 	*lengthPtr = len;
 
-    h->flags &= ~HEADERFLAG_SORTED;
     headerSort(h);
 
     return (void *) ei;
