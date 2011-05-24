@@ -233,7 +233,7 @@ int parseChangelog(rpmSpec spec)
 	}
     }
 
-    if (addChangelog(spec->packages->header, sb)) {
+    if (sb && addChangelog(spec->packages->header, sb)) {
 	goto exit;
     }
     res = nextPart;
