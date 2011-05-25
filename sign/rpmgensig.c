@@ -571,8 +571,12 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 
 	/* Move final target into place, restore file permissions. */
 	if (stat(rpm, &st) == 0 && unlink(rpm) == 0 &&
-		    rename(trpm, rpm) == 0 && chmod(rpm, st.st_mode) == 0)
+		    rename(trpm, rpm) == 0 && chmod(rpm, st.st_mode) == 0) {
 	    res = 0;
+	} else {
+	    rpmlog(RPMLOG_ERR, _("replacing %s failed: %s\n"),
+		   rpm, strerror(errno));
+	}
     }
 
 exit:
