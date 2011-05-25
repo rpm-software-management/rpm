@@ -262,12 +262,13 @@ static int rpmVerifyScript(rpmts ts, Header h)
 
     if (headerIsEntry(h, RPMTAG_VERIFYSCRIPT)) {
 	/* fake up a erasure transaction element */
-	(void) rpmtsAddEraseElement(ts, h, -1);
+	rpmte p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
+	rpmteSetHeader(p, h);
 
-	rc = (rpmteProcess(rpmtsElement(ts, 0), PKG_VERIFY) != RPMRC_OK);
+	rc = (rpmpsmRun(ts, p, PKG_VERIFY) != RPMRC_OK);
 
 	/* clean up our fake transaction bits */
-	rpmtsEmpty(ts);
+	rpmteFree(p);
     }
 
     return rc;
