@@ -1244,8 +1244,8 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOTRIGGERS)
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransTriggers));
 
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)
-	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers));
+    if (rpmtsFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_TEST))
+	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers | RPMTRANS_FLAG_NOCOLLECTIONS));
 
     /* if SELinux isn't enabled, init fails or test run, don't bother... */
     if (!is_selinux_enabled() || (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
