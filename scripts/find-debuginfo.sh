@@ -2,7 +2,7 @@
 #find-debuginfo.sh - automagically generate debug info and file list
 #for inclusion in an rpm spec file.
 #
-# Usage: find-debuginfo.sh [--strict-build-id] [-g]
+# Usage: find-debuginfo.sh [--strict-build-id] [-g] [-r]
 #	 		   [-o debugfiles.list]
 #			   [[-l filelist]... [-p 'pattern'] -o debuginfo.list]
 #			   [builddir]
@@ -10,6 +10,7 @@
 # The -g flag says to use strip -g instead of full strip on DSOs.
 # The --strict-build-id flag says to exit with failure status if
 # any ELF binary processed fails to contain a build-id note.
+# The -r flag says to use eu-strip --reloc-debug-sections.
 #
 # A single -o switch before any -l or -p switches simply renames
 # the primary output file from debugfiles.list to something else.
@@ -24,6 +25,9 @@
 
 # With -g arg, pass it to strip on libraries.
 strip_g=false
+
+# with -r arg, pass --reloc-debug-sections to eu-strip.
+strip_r=false
 
 # Barf on missing build IDs.
 strict=false
@@ -55,6 +59,9 @@ while [ $# -gt 0 ]; do
   -p)
     ptns[$nout]=$2
     shift
+    ;;
+  -r)
+    strip_r=true
     ;;
   *)
     BUILDDIR=$1
@@ -89,10 +96,12 @@ debugdir="${RPM_BUILD_ROOT}/usr/lib/debug"
 strip_to_debug()
 {
   local g=
+  local r=
+  $strip_r && r=--reloc-debug-sections
   $strip_g && case "$(file -bi "$2")" in
   application/x-sharedlib*) g=-g ;;
   esac
-  eu-strip --remove-comment $g -f "$1" "$2" || exit
+  eu-strip --remove-comment $r $g -f "$1" "$2" || exit
   chmod 444 "$1" || exit
 }
 
