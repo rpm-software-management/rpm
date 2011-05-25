@@ -904,15 +904,19 @@ int rpmteProcess(rpmte te, pkgGoal goal)
 	}
     }
 
-    rpmteRunAllCollections(te, PLUGINHOOK_COLL_PRE_REMOVE);
+    if (!scriptstage) {
+	rpmteRunAllCollections(te, PLUGINHOOK_COLL_PRE_REMOVE);
+    }
 
     if (rpmteOpen(te, reset_fi)) {
 	failed = rpmpsmRun(te->ts, te, goal);
 	rpmteClose(te, reset_fi);
     }
     
-    rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ADD);
-    rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ANY);
+    if (!scriptstage) {
+	rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ADD);
+	rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ANY);
+    }
 
     /* XXX should %pretrans failure fail the package install? */
     if (failed && !scriptstage) {
