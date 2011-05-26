@@ -125,6 +125,78 @@ runroot rpm -q --qf "[[%{filestates:fstate} ]]" hello.i686 hello.x86_64
 AT_CLEANUP
 
 # ------------------------------
+# File conflict between colored and non-colored file 1
+AT_SETUP([rpm -U multilib elf vs non-elf file conflict 1])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm \
+  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+],
+[2],
+[],
+[	file /usr/bin/hello conflicts between attempted installs of hello-2.0-1.x86_64 and hello-script-1.0-1.noarch
+])
+AT_CLEANUP
+
+# File conflict between colored and non-colored file 2
+AT_SETUP([rpm -U multilib elf vs non-elf file conflict 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+],
+[1],
+[],
+[	file /usr/bin/hello from install of hello-script-1.0-1.noarch conflicts with file from package hello-2.0-1.x86_64
+])
+AT_CLEANUP
+
+# File conflict between colored and non-colored file 3
+AT_SETUP([rpm -U multilib elf vs non-elf file conflict 3])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+],
+[1],
+[],
+[	file /usr/bin/hello from install of hello-2.0-1.x86_64 conflicts with file from package hello-script-1.0-1.noarch
+])
+AT_CLEANUP
+
+# ------------------------------
 # Replace directory with symlink, this is expected to fail
 AT_SETUP([rpm -U replacing directory with symlink])
 AT_KEYWORDS([install])
