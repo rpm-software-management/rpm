@@ -344,7 +344,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 
 	rConflicts = !(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES));
 	/* Resolve file conflicts to prefer Elf64 (if not forced). */
-	if (tscolor != 0 && FColor != 0 && FColor != oFColor) {
+	if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {
 	    if (oFColor & prefcolor) {
 		rpmfsSetAction(fs, fx, FA_SKIPCOLOR);
 		rConflicts = 0;
