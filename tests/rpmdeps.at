@@ -187,3 +187,59 @@ runroot rpm -e deptest-two
 	deptest-foo >= 2.0 is needed by (installed) deptest-one-1.0-1.noarch
 ])
 AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([erase to break colored file dependency])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg hello" \
+	--define "reqs /usr/bin/hello" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm \
+	/data/RPMS/hello-2.0-1.x86_64.rpm \
+	"${TOPDIR}"/RPMS/noarch/deptest-hello-1.0-1.noarch.rpm
+
+runroot rpm -e hello.x86_64
+],
+[1],
+[],
+[error: Failed dependencies:
+	/usr/bin/hello is needed by (installed) deptest-hello-1.0-1.noarch
+])
+AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([erase on wrong-colored file dependency])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg hello" \
+	--define "reqs /usr/bin/hello" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+	--define "_transaction_color 3" \
+	--define "_prefer_color 2" \
+	/data/RPMS/hello-2.0-1.i686.rpm \
+	/data/RPMS/hello-2.0-1.x86_64.rpm \
+	"${TOPDIR}"/RPMS/noarch/deptest-hello-1.0-1.noarch.rpm
+
+runroot rpm -e hello.i686
+],
+[0],
+[],
+[])
+AT_CLEANUP
