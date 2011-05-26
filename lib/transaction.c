@@ -506,7 +506,7 @@ assert(otherFi != NULL);
 
 		rConflicts = reportConflicts;
 		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
-		if (tscolor != 0) {
+		if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {
 		    if (FColor & prefcolor) {
 			/* ... last file of preferred colour is installed ... */
 			if (!XFA_SKIPPING(rpmfsGetAction(fs, i)))
