@@ -45,6 +45,8 @@ EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
 EXTRA_DIST += data/RPMS/foo-1.0-1.noarch.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.i386.rpm
 EXTRA_DIST += data/RPMS/hello-1.0-1.ppc64.rpm
+EXTRA_DIST += data/RPMS/hello-2.0-1.i686.rpm
+EXTRA_DIST += data/RPMS/hello-2.0-1.x86_64.rpm
 EXTRA_DIST += data/SRPMS/foo-1.0-1.src.rpm
 EXTRA_DIST += data/SRPMS/hello-1.0-1.src.rpm
 

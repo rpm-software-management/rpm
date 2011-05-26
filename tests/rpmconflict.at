@@ -84,6 +84,45 @@ runroot rpm -U \
 [ignore])
 AT_CLEANUP
 
+# ------------------------------
+# File conflict between colored files, prefer 64bit
+AT_SETUP([rpm -U multilib elf conflict, prefer 64bit])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.i686.rpm \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -q --qf "[[%{filestates:fstate} ]]" hello.i686 hello.x86_64
+],
+[0],
+[wrong color normal normal normal normal normal normal normal normal normal ],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# File conflict between colored files, prefer 32bit
+AT_SETUP([rpm -U multilib elf conflict, prefer 32bit])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 1" \
+  /data/RPMS/hello-2.0-1.i686.rpm \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -q --qf "[[%{filestates:fstate} ]]" hello.i686 hello.x86_64
+],
+[0],
+[normal normal normal normal normal wrong color normal normal normal normal ],
+[])
+AT_CLEANUP
 
 # ------------------------------
 # Replace directory with symlink, this is expected to fail
