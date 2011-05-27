@@ -1630,9 +1630,9 @@ static rpmRC processMetadataFile(Package pkg, FileList fl,
 	rc = addFile(fl, fn, NULL);
 
 exit:
-    apkt = _free(apkt);
-    pkt = _free(pkt);
-    fn = _free(fn);
+    free(apkt);
+    free(pkt);
+    free(fn);
     if (rc) {
 	fl->processingFailed = 1;
 	rc = RPMRC_FAIL;
