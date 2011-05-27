@@ -1967,7 +1967,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	char * sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	argvAdd(&files, sfn);
-	sfn = _free(sfn);
+	free(sfn);
     }
 
     for (pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
@@ -1976,7 +1976,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    sfn = rpmGetPath( ((srcPtr->flags & RPMBUILD_ISNO) ? "!" : ""),
 		"%{_sourcedir}/", srcPtr->source, NULL);
 	    argvAdd(&files, sfn);
-	    sfn = _free(sfn);
+	    free(sfn);
 	}
     }
 
@@ -2104,8 +2104,8 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
     }
     
 exit:
-    sb_stdout = freeStringBuf(sb_stdout);
-    s = _free(s);
+    freeStringBuf(sb_stdout);
+    free(s);
     return rc;
 }
 
