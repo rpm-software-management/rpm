@@ -92,8 +92,8 @@ int parseFiles(rpmSpec spec)
     res = nextPart;
 
 exit:
-    argv = _free(argv);
-    optCon = poptFreeContext(optCon);
+    free(argv);
+    poptFreeContext(optCon);
 	
     return res;
 }
