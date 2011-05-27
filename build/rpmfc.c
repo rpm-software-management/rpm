@@ -394,7 +394,6 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
 	goto exit;
 
     /* Build argv, appending args to the executable args. */
-    xav = NULL;
     argvAppend(&xav, pav);
     if (av[1])
 	rpmfcExpandAppend(&xav, av + 1);
@@ -415,10 +414,10 @@ int rpmfcExec(ARGV_const_t av, StringBuf sb_stdin, StringBuf * sb_stdoutp,
     ec = 0;
 
 exit:
-    sb = freeStringBuf(sb);
-    xav = argvFree(xav);
-    pav = _free(pav);	/* XXX popt mallocs in single blob. */
-    s = _free(s);
+    freeStringBuf(sb);
+    argvFree(xav);
+    free(pav);	/* XXX popt mallocs in single blob. */
+    free(s);
     return ec;
 }
 
