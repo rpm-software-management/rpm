@@ -380,10 +380,10 @@ int parseScript(rpmSpec spec, int parsePart)
     
 exit:
     free(reqargs);
-    sb = freeStringBuf(sb);
-    progArgv = _free(progArgv);
-    argv = _free(argv);
-    optCon = poptFreeContext(optCon);
+    freeStringBuf(sb);
+    free(progArgv);
+    free(argv);
+    poptFreeContext(optCon);
     
     return res;
 }
