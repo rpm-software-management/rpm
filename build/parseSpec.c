@@ -445,8 +445,6 @@ static const rpmTagVal sourceTags[] = {
 
 static void initSourceHeader(rpmSpec spec)
 {
-    HeaderIterator hi;
-    struct rpmtd_s td;
     struct Source *srcPtr;
 
     spec->sourceHeader = headerNew();
@@ -454,14 +452,17 @@ static void initSourceHeader(rpmSpec spec)
     headerCopyTags(spec->packages->header, spec->sourceHeader, sourceTags);
 
     /* Add the build restrictions */
-    hi = headerInitIterator(spec->buildRestrictions);
-    while (headerNext(hi, &td)) {
-	if (rpmtdCount(&td) > 0) {
-	    (void) headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+    {
+	HeaderIterator hi = headerInitIterator(spec->buildRestrictions);
+	struct rpmtd_s td;
+	while (headerNext(hi, &td)) {
+	    if (rpmtdCount(&td) > 0) {
+		(void) headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+	    }
+	    rpmtdFreeData(&td);
 	}
-	rpmtdFreeData(&td);
+	headerFreeIterator(hi);
     }
-    hi = headerFreeIterator(hi);
 
     if (spec->BANames && spec->BACount > 0) {
 	headerPutStringArray(spec->sourceHeader, RPMTAG_BUILDARCHS,
