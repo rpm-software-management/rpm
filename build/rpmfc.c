@@ -1168,41 +1168,32 @@ static void printDeps(Header h)
     rpmdsFree(ds);
 }
 
-/**
- */
 static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi fi)
 {
-    StringBuf sb_stdin;
-    StringBuf sb_stdout;
-    DepMsg_t dm;
-    int failnonzero = 0;
+    StringBuf sb_stdin = newStringBuf();
     rpmRC rc = RPMRC_OK;
 
-    /*
-     * Create file manifest buffer to deliver to dependency finder.
-     */
-    sb_stdin = newStringBuf();
+    /* Create file manifest buffer to deliver to dependency finder. */
     fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
     while (rpmfiNext(fi) >= 0)
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
 
-    for (dm = DepMsgs; dm->msg != NULL; dm++) {
+    for (DepMsg_t dm = DepMsgs; dm->msg != NULL; dm++) {
 	rpmTagVal tag = (dm->ftag > 0) ? dm->ftag : dm->ntag;
 	rpmsenseFlags tagflags;
 	char * s = NULL;
+	StringBuf sb_stdout = NULL;
+	int failnonzero = (tag == RPMTAG_PROVIDEFLAGS);
 
 	switch(tag) {
 	case RPMTAG_PROVIDEFLAGS:
 	    if (!pkg->autoProv)
 		continue;
-	    failnonzero = 1;
 	    tagflags = RPMSENSE_FIND_PROVIDES;
 	    break;
 	case RPMTAG_REQUIREFLAGS:
 	    if (!pkg->autoReq)
 		continue;
-	    failnonzero = 0;
 	    tagflags = RPMSENSE_FIND_REQUIRES;
 	    break;
 	default:
@@ -1210,13 +1201,13 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	    break;
 	}
 
+	s = rpmExpand(dm->argv[0], NULL);
+	rpmlog(RPMLOG_NOTICE, _("Finding  %s: %s\n"), dm->msg, s);
+	free(s);
+
 	if (rpmfcExec(dm->argv, sb_stdin, &sb_stdout,
 			failnonzero, spec->buildRoot) == -1)
 	    continue;
-
-	s = rpmExpand(dm->argv[0], NULL);
-	rpmlog(RPMLOG_NOTICE, _("Finding  %s: %s\n"), dm->msg, (s ? s : ""));
-	free(s);
 
 	if (sb_stdout == NULL) {
 	    rc = RPMRC_FAIL;
@@ -1226,7 +1217,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 
 	/* Parse dependencies into header */
 	rc = parseRCPOT(spec, pkg, getStringBuf(sb_stdout), tag, 0, tagflags);
-	sb_stdout = freeStringBuf(sb_stdout);
+	freeStringBuf(sb_stdout);
 
 	if (rc) {
 	    rpmlog(RPMLOG_ERR, _("Failed to find %s:\n"), dm->msg);
@@ -1234,7 +1225,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 	}
     }
 
-    sb_stdin = freeStringBuf(sb_stdin);
+    freeStringBuf(sb_stdin);
 
     return rc;
 }
@@ -1402,9 +1393,9 @@ free(msg);
 }
 exit:
     /* Clean up. */
-    fmode = _free(fmode);
-    fc = rpmfcFree(fc);
-    av = argvFree(av);
+    free(fmode);
+    rpmfcFree(fc);
+    argvFree(av);
 
     return rc;
 }
