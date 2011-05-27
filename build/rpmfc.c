@@ -1246,7 +1246,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     ARGV_t av;
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
-    int genConfigDeps;
+    int genConfigDeps = 0;
     rpmRC rc = RPMRC_OK;
     int idx;
     struct rpmtd_s td;
@@ -1271,15 +1271,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     av = xcalloc(ac+1, sizeof(*av));
     fmode = xcalloc(ac+1, sizeof(*fmode));
 
-    genConfigDeps = 0;
     fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
     while ((idx = rpmfiNext(fi)) >= 0) {
-	rpmfileAttrs fileAttrs;
-
 	/* Does package have any %config files? */
-	fileAttrs = rpmfiFFlags(fi);
-	genConfigDeps |= (fileAttrs & RPMFILE_CONFIG);
+	genConfigDeps |= (rpmfiFFlags(fi) & RPMFILE_CONFIG);
 
 	av[idx] = xstrdup(rpmfiFN(fi));
 	fmode[idx] = rpmfiFMode(fi);
@@ -1360,7 +1355,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add Provides: */
-    if (fc->provides != NULL && rpmdsCount(fc->provides) > 0 && !fc->skipProv) {
+    if (!fc->skipProv) {
 	rpmds pi = rpmdsInit(fc->provides);
 	while (rpmdsNext(pi) >= 0) {
 	    rpmsenseFlags flags = rpmdsFlags(pi);
@@ -1372,7 +1367,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add Requires: */
-    if (fc->requires != NULL && rpmdsCount(fc->requires) > 0 && !fc->skipReq) {
+    if (!fc->skipReq) {
 	rpmds pi = rpmdsInit(fc->requires);
 	while (rpmdsNext(pi) >= 0) {
 	    rpmsenseFlags flags = rpmdsFlags(pi);
