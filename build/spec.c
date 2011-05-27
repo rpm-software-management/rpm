@@ -132,11 +132,7 @@ static Package freePackage(Package pkg)
     pkg->fileList = argvFree(pkg->fileList);
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
-    if (pkg->cpioList) {
-	rpmfi fi = pkg->cpioList;
-	pkg->cpioList = NULL;
-	fi = rpmfiFree(fi);
-    }
+    pkg->cpioList = rpmfiFree(pkg->cpioList);
 
     pkg->specialDoc = freeStringBuf(pkg->specialDoc);
     pkg->specialDocDir = _free(pkg->specialDocDir);
@@ -245,13 +241,8 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     spec->sourceRpmName = _free(spec->sourceRpmName);
     spec->sourcePkgId = _free(spec->sourcePkgId);
     spec->sourceHeader = headerFree(spec->sourceHeader);
+    spec->sourceCpioList = rpmfiFree(spec->sourceCpioList);
 
-    if (spec->sourceCpioList) {
-	rpmfi fi = spec->sourceCpioList;
-	spec->sourceCpioList = NULL;
-	fi = rpmfiFree(fi);
-    }
-    
     spec->buildRestrictions = headerFree(spec->buildRestrictions);
 
     if (!spec->recursing) {
