@@ -638,7 +638,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	    if (spec->BACount >= 1) {
 		rpmSpec nspec = spec->BASpecs[0];
 		spec->BASpecs = _free(spec->BASpecs);
-		spec = rpmSpecFree(spec);
+		rpmSpecFree(spec);
 		spec = nspec;
 	    }
 
@@ -673,7 +673,7 @@ exit:
     return spec;
 
 errxit:
-    spec = rpmSpecFree(spec);
+    rpmSpecFree(spec);
     return NULL;
 }
 
