@@ -484,9 +484,9 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     rc = copyPayload(ifd, fileName, fd, sigtarget);
 
 exit:
-    rpmio_flags = _free(rpmio_flags);
-    SHA1 = _free(SHA1);
-    h = headerFree(h);
+    free(rpmio_flags);
+    free(SHA1);
+    headerFree(h);
 
     /* XXX Fish the pkgid out of the signature header. */
     if (sig != NULL && pkgidp != NULL) {
@@ -498,13 +498,13 @@ exit:
 	}
     }
 
-    sig = rpmFreeSignature(sig);
+    rpmFreeSignature(sig);
     Fclose(ifd);
     Fclose(fd);
 
     if (sigtarget) {
 	(void) unlink(sigtarget);
-	sigtarget = _free(sigtarget);
+	free(sigtarget);
     }
 
     if (rc == RPMRC_OK)
@@ -606,7 +606,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 
     {	char * optflags = rpmExpand("%{optflags}", NULL);
 	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
-	optflags = _free(optflags);
+	free(optflags);
     }
 
 	if (spec->sourcePkgId != NULL) {
@@ -644,9 +644,9 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 			break;
 		    }
 		}
-		dn = _free(dn);
+		free(dn);
 	    }
-	    binRpm = _free(binRpm);
+	    free(binRpm);
 	}
 
 	memset(csa, 0, sizeof(*csa));
@@ -661,11 +661,11 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	    if (pkgcheck[0] != ' ') {
 		rc = checkPackages(pkgcheck);
 	    }
-	    pkgcheck = _free(pkgcheck);
+	    free(pkgcheck);
 	    rstrcat(&pkglist, fn);
 	    rstrcat(&pkglist, " ");
 	}
-	fn = _free(fn);
+	free(fn);
 	if (rc != RPMRC_OK) {
 	    pkglist = _free(pkglist);
 	    return rc;
@@ -678,7 +678,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	if (pkgcheck_set[0] != ' ') {	/* run only if _build_pkgcheck_set is defined */
 	    checkPackages(pkgcheck_set);
 	}
-	pkgcheck_set = _free(pkgcheck_set);
+	free(pkgcheck_set);
 	pkglist = _free(pkglist);
     }
     
@@ -712,9 +712,9 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 	    rc = checkPackages(pkgcheck);
 	}
 
-	csa->cpioList = rpmfiFree(csa->cpioList);
-	pkgcheck = _free(pkgcheck);
-	fn = _free(fn);
+	rpmfiFree(csa->cpioList);
+	free(pkgcheck);
+	free(fn);
     }
     return rc;
 }
