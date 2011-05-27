@@ -670,7 +670,7 @@ static rpmRC rpmPlatform(const char * platform)
 	while (*p && !(*p == '-' || isspace(*p)))
 	    p++;
 	if (*p != '-') {
-	    if (*p != '\0') *p++ = '\0';
+	    if (*p != '\0') *p = '\0';
 	    os = vendor;
 	    vendor = "unknown";
 	} else {
@@ -686,7 +686,7 @@ static rpmRC rpmPlatform(const char * platform)
 		while (*p && !(*p == '-' || isspace(*p)))
 		    p++;
 	    }
-	    if (*p != '\0') *p++ = '\0';
+	    if (*p != '\0') *p = '\0';
 	}
 
 	addMacro(NULL, "_host_cpu", NULL, cpu, -1);
