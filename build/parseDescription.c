@@ -13,7 +13,7 @@
 int parseDescription(rpmSpec spec)
 {
     int nextPart = PART_ERROR;	/* assume error */
-    StringBuf sb;
+    StringBuf sb = NULL;
     int flag = PART_SUBNAME;
     Package pkg;
     int rc, argc;
@@ -104,10 +104,10 @@ int parseDescription(rpmSpec spec)
 			getStringBuf(sb), lang);
     }
     
-    sb = freeStringBuf(sb);
      
 exit:
-    argv = _free(argv);
-    optCon = poptFreeContext(optCon);
+    freeStringBuf(sb);
+    free(argv);
+    poptFreeContext(optCon);
     return nextPart;
 }
