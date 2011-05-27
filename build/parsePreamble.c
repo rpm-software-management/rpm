@@ -657,25 +657,24 @@ rpmRC rpmCharCheck(rpmSpec spec, const char *field, size_t fsize, const char *wh
     return RPMRC_OK;
 }
 
-/**
- */
-static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
+static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 		const char *macro, const char *lang)
 {
     char * field = spec->line;
     char * end;
     int multiToken = 0;
     rpmsenseFlags tagflags = RPMSENSE_ANY;
-    int rc;
+    rpmRC rc = RPMRC_FAIL;
     
-    if (field == NULL) return RPMRC_FAIL;	/* XXX can't happen */
+    if (field == NULL) /* XXX can't happen */
+	goto exit;
     /* Find the start of the "field" and strip trailing space */
     while ((*field) && (*field != ':'))
 	field++;
     if (*field != ':') {
 	rpmlog(RPMLOG_ERR, _("line %d: Malformed tag: %s\n"),
 		 spec->lineNum, spec->line);
-	return RPMRC_FAIL;
+	goto exit;
     }
     field++;
     SKIPSPACE(field);
@@ -683,7 +682,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	/* Empty field */
 	rpmlog(RPMLOG_ERR, _("line %d: Empty tag: %s\n"),
 		 spec->lineNum, spec->line);
-	return RPMRC_FAIL;
+	goto exit;
     }
     end = findLastChar(field);
     *(end+1) = '\0';
@@ -697,13 +696,15 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, strlen(field), ".-_+%{}") != RPMRC_OK) return RPMRC_FAIL;
+	if (rpmCharCheck(spec, field, strlen(field), ".-_+%{}"))
+	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, strlen(field), "._+%{}") != RPMRC_OK) return RPMRC_FAIL;
+	if (rpmCharCheck(spec, field, strlen(field), "._+%{}"))
+	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	break;
     case RPMTAG_URL:
@@ -732,8 +733,9 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_PREFIXES: {
 	struct rpmtd_s td;
 	const char *str;
-	if (addOrAppendListEntry(pkg->header, tag, field) != RPMRC_OK ||
-	    !headerGet(pkg->header, tag, &td, HEADERGET_MINMEM)) return RPMRC_FAIL;
+	if (addOrAppendListEntry(pkg->header, tag, field) ||
+		!headerGet(pkg->header, tag, &td, HEADERGET_MINMEM))
+	   goto exit;
 	while ((str = rpmtdNextString(&td))) {
 	    size_t len = strlen(str);
 	    if (len > 1 && str[len-1] == '/') {
@@ -741,7 +743,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 			 _("line %d: Prefixes must not end with \"/\": %s\n"),
 			 spec->lineNum, spec->line);
 		rpmtdFreeData(&td);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	}
 	rpmtdFreeData(&td);
@@ -753,7 +755,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Docdir must begin with '/': %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	macro = NULL;
 	delMacro(NULL, "_docdir");
@@ -766,7 +768,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Epoch field must be an unsigned number: %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	headerPutUint32(pkg->header, tag, &epoch, 1);
 	break;
@@ -784,33 +786,31 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_SOURCE:
     case RPMTAG_PATCH:
 	macro = NULL;
-	if ((rc = addSource(spec, pkg, field, tag)))
-	    return rc;
+	if (addSource(spec, pkg, field, tag))
+	    goto exit;
 	break;
     case RPMTAG_ICON:
 	SINGLE_TOKEN_ONLY;
-	if ((rc = addSource(spec, pkg, field, tag)))
-	    return rc;
-	if ((rc = readIcon(pkg->header, field)))
-	    return RPMRC_FAIL;
+	if (addSource(spec, pkg, field, tag) || readIcon(pkg->header, field))
+	    goto exit;
 	break;
     case RPMTAG_NOSOURCE:
     case RPMTAG_NOPATCH:
 	spec->noSource = 1;
-	if ((rc = parseNoSource(spec, field, tag)))
-	    return rc;
+	if (parseNoSource(spec, field, tag))
+	    goto exit;
 	break;
     case RPMTAG_ORDERFLAGS:
     case RPMTAG_REQUIREFLAGS:
     case RPMTAG_PREREQ:
-	if ((rc = parseBits(lang, installScriptBits, &tagflags))) {
+	if (parseBits(lang, installScriptBits, &tagflags)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, rpmTagGetName(tag), spec->line);
-	    return rc;
+	    goto exit;
 	}
-	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
-	    return rc;
+	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags))
+	    goto exit;
 	break;
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
@@ -818,23 +818,24 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_CONFLICTFLAGS:
     case RPMTAG_OBSOLETEFLAGS:
     case RPMTAG_PROVIDEFLAGS:
-	if ((rc = parseRCPOT(spec, pkg, field, tag, 0, tagflags)))
-	    return rc;
+	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags))
+	    goto exit;
 	break;
     case RPMTAG_EXCLUDEARCH:
     case RPMTAG_EXCLUSIVEARCH:
     case RPMTAG_EXCLUDEOS:
     case RPMTAG_EXCLUSIVEOS:
-	if (addOrAppendListEntry(spec->buildRestrictions, tag, field) != RPMRC_OK) return RPMRC_FAIL;
+	if (addOrAppendListEntry(spec->buildRestrictions, tag, field))
+	   goto exit;
 	break;
     case RPMTAG_BUILDARCHS: {
 	int BACount;
 	const char **BANames = NULL;
-	if ((rc = poptParseArgvString(field, &BACount, &BANames))) {
+	if (poptParseArgvString(field, &BACount, &BANames)) {
 	    rpmlog(RPMLOG_ERR,
 		     _("line %d: Bad BuildArchitecture format: %s\n"),
 		     spec->lineNum, spec->line);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	if (spec->packages == pkg) {
 	    spec->BACount = BACount;
@@ -845,7 +846,7 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 			 _("line %d: Only noarch subpackages are supported: %s\n"),
 			spec->lineNum, spec->line);
 		BANames = _free(BANames);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	    headerPutString(pkg->header, RPMTAG_ARCH, "noarch");
 	}
@@ -854,17 +855,19 @@ static int handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	break;
     }
     case RPMTAG_COLLECTIONS:
-	if (addOrAppendListEntry(pkg->header, tag, field) != RPMRC_OK) return RPMRC_FAIL;
+	if (addOrAppendListEntry(pkg->header, tag, field))
+	   goto exit;
 	break;
     default:
 	rpmlog(RPMLOG_ERR, _("Internal error: Bogus tag %d\n"), tag);
-	return RPMRC_FAIL;
+	goto exit;
     }
 
     if (macro)
 	addMacro(spec->macros, macro, NULL, field, RMIL_SPEC);
-    
-    return RPMRC_OK;
+    rc = RPMRC_OK;
+exit:
+    return rc;	
 }
 
 /* This table has to be in a peculiar order.  If one tag is the */
