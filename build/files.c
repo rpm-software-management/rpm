@@ -403,7 +403,7 @@ static rpmRC parseForDev(char * buf, FileList fl)
     }
 
     p = pe; SKIPWHITE(p);
-    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe = '\0';
     for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
@@ -419,7 +419,7 @@ static rpmRC parseForDev(char * buf, FileList fl)
     }
 
     p = pe; SKIPWHITE(p);
-    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe = '\0';
     for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
@@ -428,7 +428,6 @@ static rpmRC parseForDev(char * buf, FileList fl)
 	    errstr = "devminor";
 	    goto exit;
 	}
-	pe++;
     } else {
 	errstr = "devminor";
 	goto exit;
@@ -700,7 +699,7 @@ static rpmRC parseForLang(char * buf, FileList fl)
     }
 
     /* Bracket %lang args */
-    *pe++ = ' ';
+    *pe = ' ';
     for (pe = p; *pe && *pe != ')'; pe++)
 	{};
 
