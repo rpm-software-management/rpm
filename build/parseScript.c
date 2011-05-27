@@ -320,7 +320,7 @@ int parseScript(rpmSpec spec, int parsePart)
 	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags);
 
 	/* Generate the trigger tags */
-	if ((rc = parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags)))
+	if (parseRCPOT(spec, pkg, reqargs, reqtag, index, tagflags))
 	    goto exit;
     } else {
 	struct rpmtd_s td;
