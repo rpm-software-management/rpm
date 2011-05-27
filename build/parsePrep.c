@@ -135,9 +135,9 @@ exit:
  */
 static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 {
-    char *fn;
+    char *fn = NULL;
     char *buf = NULL;
-    char *tar;
+    char *tar = NULL;
     const char *taropts = ((rpmIsVerbose() && !quietly) ? "-xvvf" : "-xf");
     struct Source *sp;
     rpmCompressedMagic compressed = COMPRESSED_NOT;
@@ -153,15 +153,14 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	} else {
 	    rpmlog(RPMLOG_ERR, _("No \"Source:\" tag in the spec file\n"));
 	}
-	return NULL;
+	goto exit;
     }
 
     fn = rpmGetPath("%{_sourcedir}/", sp->source, NULL);
 
     /* XXX On non-build parse's, file cannot be stat'd or read */
     if (!(spec->flags & RPMSPEC_FORCE) && (rpmFileIsCompressed(fn, &compressed) || checkOwners(fn))) {
-	fn = _free(fn);
-	return NULL;
+	goto exit;
     }
 
     tar = rpmGetPath("%{__tar}", NULL);
@@ -209,13 +208,14 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 		"  exit $STATUS\n"
 		"fi", zipper, fn);
 	}
-	zipper = _free(zipper);
+	free(zipper);
     } else {
 	rasprintf(&buf, "%s %s %s", tar, taropts, fn);
     }
 
-    fn = _free(fn);
-    tar = _free(tar);
+exit:
+    free(fn);
+    free(tar);
     return buf;
 }
 
