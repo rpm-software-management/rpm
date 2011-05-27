@@ -505,26 +505,18 @@ static rpmRC doReadRC(const char * urlfn)
 		goto exit;
 	    }
 
-	    switch (option->var) {
-	    case RPMVAR_INCLUDE:
+	    if (option->var == RPMVAR_INCLUDE) {
 		s = se;
 		while (*se && !risspace(*se)) se++;
-		if (*se != '\0') *se++ = '\0';
-
-#if 0 /* XXX doesn't seem to do anything useful, only break things... */
-		rpmRebuildTargetVars(NULL, NULL);
-#endif
+		if (*se != '\0') *se = '\0';
 
 		if (doReadRC(s)) {
 		    rpmlog(RPMLOG_ERR, _("cannot open %s at %s:%d: %m\n"),
 			s, fn, linenum);
 		    goto exit;
-		} else {
-		    continue;	/* XXX don't save include value as var/macro */
 		}
-	      	break;
-	    default:
-		break;
+		/* XXX don't save include value as var/macro */
+		continue;
 	    }
 
 	    if (option->archSpecific) {
