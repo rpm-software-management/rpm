@@ -28,7 +28,7 @@ static rpmRC doRmSource(rpmSpec spec)
 	if (! (p->flags & RPMBUILD_ISNO)) {
 	    char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 	    rc = unlink(fn);
-	    fn = _free(fn);
+	    free(fn);
 	    if (rc) goto exit;
 	}
     }
@@ -38,7 +38,7 @@ static rpmRC doRmSource(rpmSpec spec)
 	    if (! (p->flags & RPMBUILD_ISNO)) {
 		char *fn = rpmGetPath("%{_sourcedir}/", p->source, NULL);
 		rc = unlink(fn);
-		fn = _free(fn);
+		free(fn);
 	        if (rc) goto exit;
 	    }
 	}
@@ -200,13 +200,13 @@ exit:
     if (scriptName) {
 	if (rc == RPMRC_OK)
 	    (void) unlink(scriptName);
-	scriptName = _free(scriptName);
+	free(scriptName);
     }
-    argv = _free(argv);
-    buildCmd = _free(buildCmd);
-    buildTemplate = _free(buildTemplate);
-    buildPost = _free(buildPost);
-    buildDir = _free(buildDir);
+    free(argv);
+    free(buildCmd);
+    free(buildTemplate);
+    free(buildPost);
+    free(buildDir);
 
     return rc;
 }
