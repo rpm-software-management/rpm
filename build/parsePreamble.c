@@ -565,9 +565,9 @@ exit:
 static rpmRC readIcon(Header h, const char * file)
 {
     char *fn = NULL;
-    uint8_t *icon;
-    FD_t fd;
-    rpmRC rc = RPMRC_OK;
+    uint8_t *icon = NULL;
+    FD_t fd = NULL;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     off_t size;
     size_t nb, iconsize;
 
@@ -575,17 +575,15 @@ static rpmRC readIcon(Header h, const char * file)
     fn = rpmGetPath("%{_sourcedir}/", file, NULL);
 
     fd = Fopen(fn, "r.ufdio");
-    if (fd == NULL || Ferror(fd)) {
+    if (fd == NULL) {
 	rpmlog(RPMLOG_ERR, _("Unable to open icon %s: %s\n"),
 		fn, Fstrerror(fd));
-	rc = RPMRC_FAIL;
 	goto exit;
     }
     size = fdSize(fd);
     iconsize = (size >= 0 ? size : (8 * BUFSIZ));
     if (iconsize == 0) {
-	(void) Fclose(fd);
-	rc = RPMRC_OK;
+	rc = RPMRC_OK; /* XXX Eh? */
 	goto exit;
     }
 
@@ -596,11 +594,8 @@ static rpmRC readIcon(Header h, const char * file)
     if (Ferror(fd) || (size >= 0 && nb != size)) {
 	rpmlog(RPMLOG_ERR, _("Unable to read icon %s: %s\n"),
 		fn, Fstrerror(fd));
-	rc = RPMRC_FAIL;
-    }
-    (void) Fclose(fd);
-    if (rc != RPMRC_OK)
 	goto exit;
+    }
 
     if (rstreqn((char*)icon, "GIF", sizeof("GIF")-1)) {
 	headerPutBin(h, RPMTAG_GIF, icon, iconsize);
@@ -608,13 +603,14 @@ static rpmRC readIcon(Header h, const char * file)
 	headerPutBin(h, RPMTAG_XPM, icon, iconsize);
     } else {
 	rpmlog(RPMLOG_ERR, _("Unknown icon type: %s\n"), file);
-	rc = RPMRC_FAIL;
 	goto exit;
     }
-    icon = _free(icon);
+    rc = RPMRC_OK;
     
 exit:
-    fn = _free(fn);
+    Fclose(fd);
+    free(fn);
+    free(icon);
     return rc;
 }
 
