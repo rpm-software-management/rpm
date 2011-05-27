@@ -1215,11 +1215,16 @@ static void genCpioListAndHeader(FileList fl,
 	
 	buf[0] = '\0';
 	if (S_ISLNK(flp->fl_mode)) {
-	    buf[readlink(flp->diskPath, buf, BUFSIZ)] = '\0';
-	    if (fl->buildRoot) {
+	    ssize_t llen = readlink(flp->diskPath, buf, BUFSIZ-1);
+	    if (llen == -1) {
+		rpmlog(RPMLOG_ERR, _("reading symlink %s failed: %s\n"),
+			flp->diskPath, strerror(errno));
+		fl->processingFailed = 1;
+	    } else {
+		buf[llen] = '\0';
 		if (buf[0] == '/' && !rstreq(fl->buildRoot, "/") &&
-		    rstreqn(buf, fl->buildRoot, strlen(fl->buildRoot))) {
-		     rpmlog(RPMLOG_ERR,
+			rstreqn(buf, fl->buildRoot, strlen(fl->buildRoot))) {
+		    rpmlog(RPMLOG_ERR,
 				_("Symlink points to BuildRoot: %s -> %s\n"),
 				flp->cpioPath, buf);
 		    fl->processingFailed = 1;
