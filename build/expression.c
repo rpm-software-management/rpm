@@ -73,7 +73,7 @@ static void valueFree( Value v)
   if (v) {
     if (v->type == VALUE_TYPE_STRING)
 	v->data.s = _free(v->data.s);
-    v = _free(v);
+    free(v);
   }
 }
 

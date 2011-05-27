@@ -1329,7 +1329,7 @@ static FileListRec freeFileList(FileListRec fileList,
 	fileList[count].langs = _free(fileList[count].langs);
 	fileList[count].caps = _free(fileList[count].caps);
     }
-    fileList = _free(fileList);
+    free(fileList);
     return NULL;
 }
 
@@ -1855,7 +1855,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	if (fl.isSpecialDoc) {
 	    /* Save this stuff for last */
-	    specialDoc = _free(specialDoc);
+	    free(specialDoc);
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else if (fl.currentFlags & RPMFILE_PUBKEY) {

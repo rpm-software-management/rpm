@@ -430,7 +430,7 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
     {	
 	rpmlead lead = rpmLeadFromHeader(h);
 	rc = rpmLeadWrite(fd, lead);
-	lead = rpmLeadFree(lead);
+	rpmLeadFree(lead);
 	if (rc != RPMRC_OK) {
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Unable to write package: %s\n"),
@@ -470,7 +470,7 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
 #endif
 
 	xx = headerWrite(fd, nh, HEADER_MAGIC_YES);
-	nh = headerFree(nh);
+	headerFree(nh);
 
 	if (xx) {
 	    rc = RPMRC_FAIL;
@@ -620,7 +620,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
 	    char *binRpm, *binDir;
 	    binRpm = headerFormat(pkg->header, binFormat, &errorString);
-	    binFormat = _free(binFormat);
+	    free(binFormat);
 	    if (binRpm == NULL) {
 		rpmlog(RPMLOG_ERR, _("Could not generate output "
 		     "filename for package %s: %s\n"), 

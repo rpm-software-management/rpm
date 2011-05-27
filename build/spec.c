@@ -34,7 +34,7 @@ struct TriggerFileEntry * freeTriggerFiles(struct TriggerFileEntry * p)
 	o->fileName = _free(o->fileName);
 	o->script = _free(o->script);
 	o->prog = _free(o->prog);
-	o = _free(o);
+	free(o);
     }
     return NULL;
 }
@@ -53,7 +53,7 @@ struct Source * freeSources(struct Source * s)
 	r = t;
 	t = t->next;
 	r->fullSource = _free(r->fullSource);
-	r = _free(r);
+	free(r);
     }
     return NULL;
 }
@@ -139,7 +139,7 @@ static Package freePackage(Package pkg)
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
-    pkg = _free(pkg);
+    free(pkg);
     return NULL;
 }
 
@@ -150,7 +150,7 @@ static Package freePackages(Package packages)
     while ((p = packages) != NULL) {
 	packages = p->next;
 	p->next = NULL;
-	p = freePackage(p);
+	freePackage(p);
     }
     return NULL;
 }
@@ -412,6 +412,6 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     }
 
 exit:
-    spec = rpmSpecFree(spec);
+    rpmSpecFree(spec);
     return res;
 }
