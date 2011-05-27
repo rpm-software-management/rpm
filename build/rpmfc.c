@@ -538,7 +538,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds, tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	}
 
-	ds = rpmdsFree(ds);
+	rpmdsFree(ds);
     }
 
     argvFree(pav);
@@ -1243,7 +1243,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
     rpmfi fi = pkg->cpioList;
     rpmfc fc = NULL;
-    rpmds ds;
     ARGV_t av;
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
@@ -1293,9 +1292,10 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {
-	ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, 0);
+	rpmds ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, 0);
 	rpmdsMerge(&fc->provides, ds);
-	ds = rpmdsFree(ds);
+	rpmdsFree(ds);
+
 	headerDel(pkg->header, RPMTAG_PROVIDENAME);
 	headerDel(pkg->header, RPMTAG_PROVIDEVERSION);
 	headerDel(pkg->header, RPMTAG_PROVIDEFLAGS);
@@ -1306,14 +1306,15 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
 			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    rpmdsMerge(&fc->provides, ds);
-	    ds = rpmdsFree(ds);
+	    rpmdsFree(ds);
 	}
     }
 
     if (!fc->skipReq) {
-	ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, 0);
+	rpmds ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, 0);
 	rpmdsMerge(&fc->requires, ds);
-	ds = rpmdsFree(ds);
+	rpmdsFree(ds);
+
 	headerDel(pkg->header, RPMTAG_REQUIRENAME);
 	headerDel(pkg->header, RPMTAG_REQUIREVERSION);
 	headerDel(pkg->header, RPMTAG_REQUIREFLAGS);
@@ -1324,7 +1325,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
 			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    rpmdsMerge(&fc->requires, ds);
-	    ds = rpmdsFree(ds);
+	    rpmdsFree(ds);
 	}
     }
 
