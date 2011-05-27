@@ -882,15 +882,15 @@ rpmRC rpmfcApply(rpmfc fc)
 	switch (deptype) {
 	default:
 	    break;
-	case 'P':	
+	case 'P':
 	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->provides, ds);
-	    ds = rpmdsFree(ds);
+	    rpmdsFree(ds);
 	    break;
 	case 'R':
 	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, N, EVR, Flags);
 	    dix = rpmdsFind(fc->requires, ds);
-	    ds = rpmdsFree(ds);
+	    rpmdsFree(ds);
 	    break;
 	}
 
@@ -1137,7 +1137,7 @@ static void printDeps(Header h)
 
     for (dm = DepMsgs; dm->msg != NULL; dm++) {
 	if (dm->ntag != -1) {
-	    ds = rpmdsFree(ds);
+	    rpmdsFree(ds);
 	    ds = rpmdsNew(h, dm->ntag, 0);
 	}
 	if (dm->ftag == 0)
@@ -1165,7 +1165,7 @@ static void printDeps(Header h)
 	if (bingo)
 	    rpmlog(RPMLOG_NOTICE, "\n");
     }
-    ds = rpmdsFree(ds);
+    rpmdsFree(ds);
 }
 
 /**
