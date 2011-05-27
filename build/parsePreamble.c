@@ -314,11 +314,11 @@ static int addSource(rpmSpec spec, Package pkg, const char *field, rpmTagVal tag
 	    rpmluavSetListMode(var, 1);
 	    rpmluavSetValue(var, RPMLUAV_STRING, body);
 	    rpmluaSetVar(lua, var);
-	    var = rpmluavFree(var);
+	    rpmluavFree(var);
 	    rpmluaPop(lua);
 	}
 #endif
-	body = _free(body);
+	free(body);
     }
     
     return 0;
@@ -451,8 +451,8 @@ static rpmRC checkForValidArchitectures(rpmSpec spec)
     rc = RPMRC_OK;
 
 exit:
-    arch = _free(arch);
-    os = _free(os);
+    free(arch);
+    free(os);
 
     return rc;
 }
@@ -500,7 +500,7 @@ static int checkForDuplicates(Header h, const char * NVR)
 	}
 	lastTag = tag;
     }
-    hi = headerFreeIterator(hi);
+    headerFreeIterator(hi);
 
     return res;
 }
@@ -531,7 +531,7 @@ static void fillOutMainPackage(Header h)
 	    if (val && *val != '%') {
 		headerPutString(h, ot->ot_tag, val);
 	    }
-	    val = _free(val);
+	    free(val);
 	}
     }
 }
