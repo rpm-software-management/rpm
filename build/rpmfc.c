@@ -782,24 +782,25 @@ rpmfc rpmfcFree(rpmfc fc)
     if (fc) {
 	for (rpmfcAttr *attr = fc->atypes; attr && *attr; attr++)
 	    rpmfcAttrFree(*attr);
-	rfree(fc->atypes);
-	rfree(fc->buildRoot);
-	fc->fn = argvFree(fc->fn);
+	free(fc->atypes);
+	free(fc->buildRoot);
+	argvFree(fc->fn);
 	for (int i = 0; i < fc->nfiles; i++)
 	    argvFree(fc->fattrs[i]);
-	fc->fattrs = _free(fc->fattrs);
-	fc->fcolor = argiFree(fc->fcolor);
-	fc->fcdictx = argiFree(fc->fcdictx);
-	fc->fddictx = argiFree(fc->fddictx);
-	fc->fddictn = argiFree(fc->fddictn);
-	fc->cdict = argvFree(fc->cdict);
-	fc->ddict = argvFree(fc->ddict);
-	fc->ddictx = argiFree(fc->ddictx);
+	free(fc->fattrs);
+	argiFree(fc->fcolor);
+	argiFree(fc->fcdictx);
+	argiFree(fc->fddictx);
+	argiFree(fc->fddictn);
+	argvFree(fc->cdict);
+	argvFree(fc->ddict);
+	argiFree(fc->ddictx);
 
-	fc->provides = rpmdsFree(fc->provides);
-	fc->requires = rpmdsFree(fc->requires);
+	rpmdsFree(fc->provides);
+	rpmdsFree(fc->requires);
+	memset(fc, 0, sizeof(*fc)); /* trash and burn */
+	free(fc);
     }
-    fc = _free(fc);
     return NULL;
 }
 
