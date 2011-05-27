@@ -472,7 +472,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 {
     ARGV_t pav = NULL;
     const char * fn = fc->fn[fc->ix];
-    char *namespace = rpmfcAttrMacro(nsdep, NULL, "namespace");
+    char *namespace = NULL;
     int pac;
     regex_t *exclude = NULL;
     regex_t *exclude_from = NULL;
@@ -483,10 +483,12 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 	goto exit;
 
     pav = runCmd(nsdep, depname, fc->buildRoot, fn);
-    pac = argvCount(pav);
+    if (pav == NULL)
+	goto exit;
 
-    if (pav)
-	exclude = rpmfcAttrReg(depname, NULL, "exclude");
+    pac = argvCount(pav);
+    namespace = rpmfcAttrMacro(nsdep, NULL, "namespace");
+    exclude = rpmfcAttrReg(depname, NULL, "exclude");
 
     for (int i = 0; i < pac; i++) {
 	rpmds ds = NULL;
@@ -532,11 +534,11 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
     }
 
     argvFree(pav);
+    regFree(exclude);
+    free(namespace);
 
 exit:
-    regFree(exclude);
     regFree(exclude_from);
-    free(namespace);
     return 0;
 }
 
