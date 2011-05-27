@@ -723,8 +723,9 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_PACKAGER:
 	if (!*lang) {
 	    headerPutString(pkg->header, tag, field);
-	} else if (!((spec->flags & RPMSPEC_NOLANG) && !rstreq(lang, RPMBUILD_DEFAULT_LANG)))
-	    (void) headerAddI18NString(pkg->header, tag, field, lang);
+	} else if (!((spec->flags & RPMSPEC_NOLANG) &&
+		   !rstreq(lang, RPMBUILD_DEFAULT_LANG)))
+	    headerAddI18NString(pkg->header, tag, field, lang);
 	break;
     case RPMTAG_BUILDROOT:
 	/* just silently ignore BuildRoot */
@@ -733,9 +734,9 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_PREFIXES: {
 	struct rpmtd_s td;
 	const char *str;
-	if (addOrAppendListEntry(pkg->header, tag, field) ||
-		!headerGet(pkg->header, tag, &td, HEADERGET_MINMEM))
+	if (addOrAppendListEntry(pkg->header, tag, field))
 	   goto exit;
+	headerGet(pkg->header, tag, &td, HEADERGET_MINMEM);
 	while ((str = rpmtdNextString(&td))) {
 	    size_t len = strlen(str);
 	    if (len > 1 && str[len-1] == '/') {
@@ -752,8 +753,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_DOCDIR:
 	SINGLE_TOKEN_ONLY;
 	if (field[0] != '/') {
-	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Docdir must begin with '/': %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Docdir must begin with '/': %s\n"),
 		     spec->lineNum, spec->line);
 	    goto exit;
 	}
@@ -766,8 +766,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	uint32_t epoch;
 	if (parseUnsignedNum(field, &epoch)) {
 	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Epoch field must be an unsigned number: %s\n"),
-		     spec->lineNum, spec->line);
+		   _("line %d: Epoch field must be an unsigned number: %s\n"),
+		   spec->lineNum, spec->line);
 	    goto exit;
 	}
 	headerPutUint32(pkg->header, tag, &epoch, 1);
@@ -804,8 +804,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_REQUIREFLAGS:
     case RPMTAG_PREREQ:
 	if (parseBits(lang, installScriptBits, &tagflags)) {
-	    rpmlog(RPMLOG_ERR,
-		     _("line %d: Bad %s: qualifiers: %s\n"),
+	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, rpmTagGetName(tag), spec->line);
 	    goto exit;
 	}
@@ -843,8 +842,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	} else {
 	    if (BACount != 1 || !rstreq(BANames[0], "noarch")) {
 		rpmlog(RPMLOG_ERR,
-			 _("line %d: Only noarch subpackages are supported: %s\n"),
-			spec->lineNum, spec->line);
+		     _("line %d: Only noarch subpackages are supported: %s\n"),
+		     spec->lineNum, spec->line);
 		BANames = _free(BANames);
 		goto exit;
 	    }
