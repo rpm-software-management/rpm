@@ -161,6 +161,20 @@ static int rpmfcExpandAppend(ARGV_t * argvp, ARGV_const_t av)
     return 0;
 }
 
+static rpmds rpmdsSingleNS(rpmTagVal tagN, const char *namespace,
+			const char * N, const char * EVR, rpmsenseFlags Flags)
+{
+    rpmds ds = NULL;
+    if (namespace) {
+	char *NSN = rpmExpand(namespace, "(", N, ")", NULL);
+	ds = rpmdsSingle(tagN, NSN, EVR, Flags);
+	free(NSN);
+    } else {
+	ds = rpmdsSingle(tagN, N, EVR, Flags);
+    }
+    return ds;
+}
+
 static int _sigpipe[2] = { -1, -1 };
 
 static void sigpipe_handler(int sig)
@@ -516,13 +530,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 	    EVR = pav[i];
 	}
 
-	if (namespace) {
-	    char *NSN = rpmExpand(namespace, "(", N, ")", NULL);
-	    ds = rpmdsSingle(tagN, NSN, EVR, Flags);
-	    free(NSN);
-	} else {
-	    ds = rpmdsSingle(tagN, N, EVR, Flags);
-	}
+	ds = rpmdsSingleNS(tagN, namespace, N, EVR, Flags);
 
 	/* Add to package and file dependencies unless filtered */
 	if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
@@ -1239,7 +1247,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     ARGV_t av;
     rpm_mode_t * fmode;
     int ac = rpmfiFC(fi);
-    char *buf = NULL;
     int genConfigDeps;
     rpmRC rc = RPMRC_OK;
     int idx;
@@ -1295,10 +1302,9 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
-	    rasprintf(&buf, "config(%s)", rpmdsN(pkg->ds));
-	    ds = rpmdsSingle(RPMTAG_PROVIDENAME, buf, rpmdsEVR(pkg->ds),
-			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
-	    free(buf);
+	    ds = rpmdsSingleNS(RPMTAG_PROVIDENAME, "config",
+			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
+			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    rpmdsMerge(&fc->provides, ds);
 	    ds = rpmdsFree(ds);
 	}
@@ -1314,10 +1320,9 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {
-	    rasprintf(&buf, "config(%s)", rpmdsN(pkg->ds));
-	    ds = rpmdsSingle(RPMTAG_REQUIRENAME, buf, rpmdsEVR(pkg->ds),
-			(RPMSENSE_EQUAL|RPMSENSE_CONFIG));
-	    free(buf);
+	    ds = rpmdsSingleNS(RPMTAG_REQUIRENAME, "config",
+			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
+			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    rpmdsMerge(&fc->requires, ds);
 	    ds = rpmdsFree(ds);
 	}
