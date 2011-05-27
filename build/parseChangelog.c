@@ -80,7 +80,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
     /* year */
     p = pe; SKIPSPACE(p);
     if (*p == '\0') goto exit;
-    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe++ = '\0';
+    pe = p; SKIPNONSPACE(pe); if (*pe != '\0') *pe = '\0';
     time.tm_year = strtol(p, &q, 10);
     if (!(q && *q == '\0')) goto exit;
     if (time.tm_year < 1990 || time.tm_year >= 3000) goto exit;

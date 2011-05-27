@@ -162,7 +162,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	while (from && *from && ch != '\n')
 	    ch = *to++ = *from++;
 	spec->lbufPtr = to;
-	*to++ = '\0';
+	*to = '\0';
 	ofi->readPtr = from;
 
 	/* Check if we need another line before expanding the buffer. */
