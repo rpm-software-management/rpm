@@ -82,7 +82,7 @@ Header headerCopy(Header h)
 	}
 	rpmtdFreeData(&td);
     }
-    hi = headerFreeIterator(hi);
+    headerFreeIterator(hi);
 
     return headerReload(nh, RPMTAG_HEADERIMAGE);
 }

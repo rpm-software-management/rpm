@@ -137,7 +137,7 @@ freeFormat( sprintfToken format, int num)
 	    break;
 	}
     }
-    format = _free(format);
+    free(format);
     return NULL;
 }
 

@@ -695,7 +695,7 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
     return (void *) ei;
 
 errxit:
-    ei = _free(ei);
+    free(ei);
     return NULL;
 }
 
@@ -1022,7 +1022,7 @@ int headerWrite(FD_t fd, Header h, int magicp)
     nb = Fwrite(uh, sizeof(char), length, fd);
 
 exit:
-    uh = _free(uh);
+    free(uh);
     return (nb == length ? 0 : 1);
 }
 

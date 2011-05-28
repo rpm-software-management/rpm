@@ -145,8 +145,8 @@ static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
     rc = 1;
 
 exit:
-    fi = rpmfiFree(fi);
-    ds = rpmdsFree(ds);
+    rpmfiFree(fi);
+    rpmdsFree(ds);
     return rc;
 }
 
@@ -338,7 +338,7 @@ static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
     rc = 1;
 
 exit:
-    fi = rpmfiFree(fi);
+    rpmfiFree(fi);
     return rc; 
 }
 
@@ -431,7 +431,7 @@ static int i18nTag(Header h, rpmTag tag, rpmtd td, headerGetFlags hgflags)
 	    return 1;
     }
 
-    dstring = _free(dstring);
+    free(dstring);
 #endif
 
     rc = headerGet(h, tag, td, HEADERGET_ALLOC);

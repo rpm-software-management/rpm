@@ -274,15 +274,14 @@ static char * deptypeFormat(rpmtd td, char * formatPrefix)
 static char * permsFormat(rpmtd td, char * formatPrefix)
 {
     char * val = NULL;
-    char * buf;
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
+	char *buf = rpmPermsString(rpmtdGetNumber(td));
 	strcat(formatPrefix, "s");
-	buf = rpmPermsString(rpmtdGetNumber(td));
 	rasprintf(&val, formatPrefix, buf);
-	buf = _free(buf);
+	free(buf);
     }
 
     return val;
@@ -522,7 +521,7 @@ static char * pgpsigFormat(rpmtd td, char * formatPrefix)
 	    t = stpcpy(t, tempstr);
 	    free(tempstr);
 
-	    dig = pgpFreeDig(dig);
+	    pgpFreeDig(dig);
 	}
     }
 
@@ -623,7 +622,7 @@ static char * verifyFlags(rpmtd td, char * formatPrefix, const char *pad)
 	strcat(formatPrefix, "s");
 	char *buf = rpmVerifyString(rpmtdGetNumber(td), pad);
 	rasprintf(&val, formatPrefix, buf);
-	buf = _free(buf);
+	free(buf);
     }
     return val;
 }
