@@ -104,14 +104,14 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmcliConfigured();
 	(void) rpmDefineMacro(NULL, t, RMIL_CMDLINE);
 	(void) rpmDefineMacro(rpmCLIMacroContext, t, RMIL_CMDLINE);
-	s = _free(s);
+	free(s);
 	break;
     }
     case 'E':
 	rpmcliConfigured();
 	{   char *val = rpmExpand(arg, NULL);
 	    fprintf(stdout, "%s\n", val);
-	    val = _free(val);
+	    free(val);
 	}
 	break;
     case POPT_DBPATH:

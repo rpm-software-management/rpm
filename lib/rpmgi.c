@@ -50,7 +50,7 @@ static FD_t rpmgiOpen(const char * path, const char * fmode)
 	if (fd != NULL) (void) Fclose(fd);
 	fd = NULL;
     }
-    fn = _free(fn);
+    free(fn);
 
     return fd;
 }

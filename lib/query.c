@@ -233,7 +233,7 @@ int showQueryPackage(QVA_t qva, rpmts ts, Header h)
     rc = 0;
 
 exit:
-    fi = rpmfiFree(fi);
+    rpmfiFree(fi);
     return rc;
 }
 
@@ -407,7 +407,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	} else if (*arg != '/') {
 	    char *curDir = rpmGetCwd();
 	    fn = (char *) rpmGetPath(curDir, "/", arg, NULL);
-	    curDir = _free(curDir);
+	    free(curDir);
 	} else
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
@@ -425,7 +425,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 			_("file %s is not owned by any package\n"), fn);
 	}
 
-	fn = _free(fn);
+	free(fn);
     }	break;
 
     case RPMQV_DBOFFSET:
@@ -508,13 +508,13 @@ int rpmcliArgIter(rpmts ts, QVA_t qva, ARGV_const_t argv)
     case RPMQV_ALL: {
 	rpmdbMatchIterator mi = initFilterIterator(ts, argv);
 	ec = rpmcliShowMatches(qva, ts, mi);
-	mi = rpmdbFreeIterator(mi);
+	rpmdbFreeIterator(mi);
 	break;
     }
     case RPMQV_RPM: {
 	rpmgi gi = rpmgiNew(ts, giFlags, argv);
 	ec = rpmgiShowMatches(qva, ts, gi);
-	gi = rpmgiFree(gi);
+	rpmgiFree(gi);
 	break;
     }
     case RPMQV_SPECRPMS:

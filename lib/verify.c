@@ -420,9 +420,9 @@ static int verifyDependencies(rpmts ts, Header h)
 	    rpmlog(RPMLOG_NOTICE, "\t%s\n", ps);
 	    free(ps);
 	}
-	psi = rpmpsFreeIterator(psi);
+	rpmpsFreeIterator(psi);
     }
-    ps = rpmpsFree(ps);
+    rpmpsFree(ps);
     rpmtsEmpty(ts);
 
     return rc;

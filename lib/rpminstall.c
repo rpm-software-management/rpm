@@ -99,7 +99,6 @@ void * rpmShowProgress(const void * arg,
 			void * data)
 {
     Header h = (Header) arg;
-    char * s;
     int flags = (int) ((long)data);
     void * rc = NULL;
     const char * filename = (const char *)key;
@@ -138,18 +137,18 @@ void * rpmShowProgress(const void * arg,
 	    break;
 	/* @todo Remove headerFormat() on a progress callback. */
 	if (flags & INSTALL_HASH) {
-	    s = headerFormat(h, "%{NAME}", NULL);
+	    char *s = headerFormat(h, "%{NAME}", NULL);
 	    if (isatty (STDOUT_FILENO))
 		fprintf(stdout, "%4d:%-23.23s", rpmcliProgressCurrent + 1, s);
 	    else
 		fprintf(stdout, "%-28.28s", s);
 	    (void) fflush(stdout);
-	    s = _free(s);
+	    free(s);
 	} else {
-	    s = headerFormat(h, "%{NAME}-%{VERSION}-%{RELEASE}", NULL);
+	    char *s = headerFormat(h, "%{NAME}-%{VERSION}-%{RELEASE}", NULL);
 	    fprintf(stdout, "%s\n", s);
 	    (void) fflush(stdout);
-	    s = _free(s);
+	    free(s);
 	}
 	break;
 
@@ -363,7 +362,7 @@ static int checkFreshenStatus(rpmts ts, Header h)
 	    break;
     }
 
-    mi = rpmdbFreeIterator(mi);
+    rpmdbFreeIterator(mi);
     return (oldH != NULL);
 }
 
@@ -668,7 +667,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 		    free(nevra);
 		}
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    rpmdbFreeIterator(mi);
 	}
     }
     free(qfmt);
