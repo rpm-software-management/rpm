@@ -35,20 +35,19 @@ ARGI_t argiFree(ARGI_t argi)
 {
     if (argi) {
 	argi->nvals = 0;
-	argi->vals = _free(argi->vals);
+	free(argi->vals);
+	free(argi);
     }
-    argi = _free(argi);
     return NULL;
 }
 
 ARGV_t argvFree(ARGV_t argv)
 {
-    ARGV_t av;
-    
-    if (argv)
-    for (av = argv; *av; av++)
-	*av = _free(*av);
-    argv = _free(argv);
+    if (argv) {
+	for (ARGV_t av = argv; *av; av++)
+	    free(*av);
+	free(argv);
+    }
     return NULL;
 }
 
