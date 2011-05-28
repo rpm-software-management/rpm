@@ -1708,14 +1708,50 @@ exit:
     return rc;
 }
 
-/**
- */
+static rpmRC readFilesManifest(rpmSpec spec, Package pkg, const char *path)
+{
+    char *fn, buf[BUFSIZ];
+    FILE *fd = NULL;
+    rpmRC rc = RPMRC_FAIL;
+
+    if (*path == '/') {
+	fn = rpmGetPath(path, NULL);
+    } else {
+	fn = rpmGetPath("%{_builddir}/",
+	    (spec->buildSubdir ? spec->buildSubdir : "") , "/", path, NULL);
+    }
+    fd = fopen(fn, "r");
+
+    if (fd == NULL) {
+	rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), fn);
+	goto exit;
+    }
+
+    while (fgets(buf, sizeof(buf), fd)) {
+	handleComments(buf);
+	if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
+	    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
+	    goto exit;
+	}
+	argvAdd(&(pkg->fileList), buf);
+    }
+
+    if (ferror(fd))
+	rpmlog(RPMLOG_ERR, _("Error reading %%files file %s: %m\n"), fn);
+    else
+	rc = RPMRC_OK;
+
+exit:
+    if (fd) fclose(fd);
+    free(fn);
+    return rc;
+}
+
 static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 				 Package pkg, int installSpecialDoc, int test)
 {
     struct FileList_s fl;
     const char *fileName;
-    char buf[BUFSIZ];
     struct AttrRec_s arbuf;
     AttrRec specialDocAttrRec = &arbuf;
     char *specialDoc = NULL;
@@ -1723,39 +1759,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     nullAttrRec(specialDocAttrRec);
     pkg->cpioList = NULL;
 
-    if (pkg->fileFile) {
-	char *ffn;
-	FILE *fd;
-
-	for (ARGV_const_t fp = pkg->fileFile; *fp != NULL; fp++) {
-	    if (**fp == '/') {
-		ffn = rpmGetPath(*fp, NULL);
-	    } else {
-		ffn = rpmGetPath("%{_builddir}/",
-		    (spec->buildSubdir ? spec->buildSubdir : "") ,
-		    "/", *fp, NULL);
-	    }
-	    fd = fopen(ffn, "r");
-
-	    if (fd == NULL) {
-		rpmlog(RPMLOG_ERR, _("Could not open %%files file %s: %m\n"), ffn);
-		return RPMRC_FAIL;
-	    }
-	    ffn = _free(ffn);
-
-	    while (fgets(buf, sizeof(buf), fd)) {
-		handleComments(buf);
-		if (expandMacros(spec, spec->macros, buf, sizeof(buf))) {
-		    rpmlog(RPMLOG_ERR, _("line: %s\n"), buf);
-		    fclose(fd);
-		    return RPMRC_FAIL;
-		}
-		argvAdd(&(pkg->fileList), buf);
-	    }
-	    (void) fclose(fd);
-	}
+    for (ARGV_const_t fp = pkg->fileFile; fp && *fp != NULL; fp++) {
+	if (readFilesManifest(spec, pkg, *fp))
+	    return RPMRC_FAIL;
     }
-    
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
 
@@ -1804,6 +1811,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.fileListRecsUsed = 0;
 
     for (ARGV_const_t fp = pkg->fileList; *fp != NULL; fp++) {
+	char buf[BUFSIZ];
 	const char *s = *fp;
 	SKIPSPACE(s);
 	if (*s == '\0')
