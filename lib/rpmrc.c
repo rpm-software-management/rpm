@@ -938,16 +938,15 @@ static void defaultMachine(const char ** arch,
 
     while (!gotDefaults) {
 	if (!rpmPlatform(platform)) {
-	    char * s;
-	    s = rpmExpand("%{_host_cpu}", NULL);
+	    char * s = rpmExpand("%{_host_cpu}", NULL);
 	    if (s) {
 		rstrlcpy(un.machine, s, sizeof(un.machine));
-		s = _free(s);
+		free(s);
 	    }
 	    s = rpmExpand("%{_host_os}", NULL);
 	    if (s) {
 		rstrlcpy(un.sysname, s, sizeof(un.sysname));
-		s = _free(s);
+		free(s);
 	    }
 	    gotDefaults = 1;
 	    break;
@@ -1463,9 +1462,9 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     if (canontarget)
 	*canontarget = ct;
     else
-	ct = _free(ct);
-    ca = _free(ca);
-    co = _free(co);
+	free(ct);
+    free(ca);
+    free(co);
 }
 
 void rpmFreeRpmrc(void)
@@ -1622,8 +1621,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
     {	char *cpu = rpmExpand("%{_target_cpu}", NULL);
 	char *os = rpmExpand("%{_target_os}", NULL);
 	rpmSetMachine(cpu, os);
-	cpu = _free(cpu);
-	os = _free(os);
+	free(cpu);
+	free(os);
     }
 
 #ifdef WITH_LUA

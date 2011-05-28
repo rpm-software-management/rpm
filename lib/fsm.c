@@ -1291,7 +1291,7 @@ static int fsmMkdirs(FSM_t fsm)
  	    fsm->ldnlen = dnlen;
 	}
     }
-    dnli = dnlFreeIterator(dnli);
+    dnlFreeIterator(dnli);
 
     fsm->path = path;
     st->st_mode = st_mode;		/* XXX restore st->st_mode */
@@ -2015,7 +2015,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
 				(opath ? opath : ""),
 				(fsm->path ? fsm->path : ""));
-		    opath = _free(opath);
+		    free(opath);
 		}
 		fsm->opath = _free(fsm->opath);
 	    }

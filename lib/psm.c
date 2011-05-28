@@ -190,7 +190,7 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	}
 	rpmtdFreeData(&secStates);
     }
-    mi = rpmdbFreeIterator(mi);
+    rpmdbFreeIterator(mi);
     free(offsets);
 
     return RPMRC_OK;
@@ -349,16 +349,16 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	rpmrc = RPMRC_OK;
 
     (void) rpmpsmStage(psm, PSM_FINI);
-    psm = rpmpsmFree(psm);
+    rpmpsmFree(psm);
 
 exit:
     if (specFilePtr && specFile && rpmrc == RPMRC_OK)
 	*specFilePtr = specFile;
     else
-	specFile = _free(specFile);
+	free(specFile);
 
-    if (h != NULL) h = headerFree(h);
-    if (fi != NULL) fi = rpmfiFree(fi);
+    headerFree(h);
+    rpmfiFree(fi);
 
     /* XXX nuke the added package(s). */
     rpmtsClean(ts);
@@ -557,7 +557,7 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     }
 
     rpmtdFreeData(&pfx);
-    trigger = rpmdsFree(trigger);
+    rpmdsFree(trigger);
 
     return rc;
 }
@@ -591,7 +591,7 @@ static rpmRC runTriggers(rpmpsm psm)
 	mi = rpmtsInitIterator(ts, RPMDBI_TRIGGERNAME, N, 0);
 	while((triggeredH = rpmdbNextIterator(mi)) != NULL)
 	    nerrors += handleOneTrigger(psm, h, triggeredH, numPackage, NULL);
-	mi = rpmdbFreeIterator(mi);
+	rpmdbFreeIterator(mi);
 	psm->countCorrection = countCorrection;
 	headerFree(h);
     }
@@ -636,7 +636,7 @@ static rpmRC runImmedTriggers(rpmpsm psm)
 				triggersRun);
 	    }
 
-	    mi = rpmdbFreeIterator(mi);
+	    rpmdbFreeIterator(mi);
 	}
     }
     rpmtdFreeData(&tnames);

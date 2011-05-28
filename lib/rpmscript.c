@@ -135,7 +135,7 @@ static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
 	    path = ipath;
 
 	xx = setenv("PATH", path, 1);
-	ipath = _free(ipath);
+	free(ipath);
     }
 
     for (ARGV_const_t pf = prefixes; pf && *pf; pf++) {
@@ -284,7 +284,7 @@ exit:
     if (script) {
 	if (!rpmIsDebug())
 	    unlink(fn);
-	fn = _free(fn);
+	free(fn);
     }
     return rc;
 }
