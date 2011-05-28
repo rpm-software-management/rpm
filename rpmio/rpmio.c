@@ -490,7 +490,7 @@ static int fdClose( void * cookie)
 
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
-    fd = fdFree(fd);
+    fdFree(fd);
     return rc;
 }
 
@@ -812,7 +812,7 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
     if (rc == 0)
-	fd = fdFree(fd);
+	fdFree(fd);
     return rc;
 }
 
@@ -954,7 +954,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
     if (rc == 0)
-	fd = fdFree(fd);
+	fdFree(fd);
     return rc;
 }
 
@@ -1331,7 +1331,7 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
     if (rc == 0)
-	fd = fdFree(fd);
+	fdFree(fd);
     return rc;
 }
 
@@ -1454,7 +1454,7 @@ int Fclose(FD_t fd)
 	    ec = rc;
 	fdPop(fd);
     }
-    fd = fdFree(fd);
+    fdFree(fd);
     return ec;
 }
 
