@@ -528,9 +528,9 @@ char * rpmGenPath(const char * urlroot, const char * urlmdir,
 
     result = rpmGetPath(url, root, "/", mdir, "/", file, NULL);
 
-    xroot = _free(xroot);
-    xmdir = _free(xmdir);
-    xfile = _free(xfile);
+    free(xroot);
+    free(xmdir);
+    free(xfile);
     free(url);
     return result;
 }
@@ -651,7 +651,7 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	    argvAdd(&argv, globURL);
 	}
 	globfree(&gl);
-	globURL = _free(globURL);
+	free(globURL);
     }
 
     argc = argvCount(argv);
@@ -669,11 +669,11 @@ exit:
 #ifdef ENABLE_NLS	
     if (old_collate) {
 	(void) setlocale(LC_COLLATE, old_collate);
-	old_collate = _free(old_collate);
+	free(old_collate);
     }
     if (old_ctype) {
 	(void) setlocale(LC_CTYPE, old_ctype);
-	old_ctype = _free(old_ctype);
+	free(old_ctype);
     }
 #endif
     av = _free(av);

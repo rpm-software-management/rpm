@@ -1603,7 +1603,7 @@ rpmExpandNumeric(const char *arg)
 	if (!(end && *end == '\0'))
 	    rc = 0;
     }
-    val = _free(val);
+    free(val);
 
     return rc;
 }

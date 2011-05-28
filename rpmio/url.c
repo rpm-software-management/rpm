@@ -111,7 +111,6 @@ int urlGetFile(const char * url, const char * dest)
     /* XXX TODO: sanity checks like target == dest... */
 
     rasprintf(&cmd, "%s %s %s", urlhelper, target, url);
-    urlhelper = _free(urlhelper);
 
     if ((pid = fork()) == 0) {
         ARGV_t argv = NULL;
@@ -120,6 +119,7 @@ int urlGetFile(const char * url, const char * dest)
         exit(127); /* exit with 127 for compatibility with bash(1) */
     }
     free(cmd);
+    free(urlhelper);
 
     return ((waitpid(pid, &status, 0) != -1) &&
 	    WIFEXITED(status) && (WEXITSTATUS(status) == 0)) ? 0 : -1;
