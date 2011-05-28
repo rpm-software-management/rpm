@@ -784,7 +784,7 @@ int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote)
     rpmdsSetIx(provides,ix);
     result = rpmdsCompare(provides, req);
 
-    provides = rpmdsFree(provides);
+    rpmdsFree(provides);
     return result;
 }
 
@@ -810,7 +810,7 @@ int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
     }
 
 exit:
-    provides = rpmdsFree(provides);
+    rpmdsFree(provides);
 
     return result;
 }
@@ -909,7 +909,7 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp)
 	rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
 	rc = rpmdsMerge(dsp, ds);
-	ds = rpmdsFree(ds);
+	rpmdsFree(ds);
     }
     return rc;
 }

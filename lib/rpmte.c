@@ -627,7 +627,7 @@ static Header rpmteDBHeader(rpmte te)
     /* iterator returns weak refs, grab hold of header */
     if ((h = rpmdbNextIterator(mi)))
 	h = headerLink(h);
-    mi = rpmdbFreeIterator(mi);
+    rpmdbFreeIterator(mi);
     return h;
 }
 

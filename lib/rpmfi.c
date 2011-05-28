@@ -783,7 +783,7 @@ static int addPrefixes(Header h, rpmRelocation *relocations, int numRelocations)
     if (numActual) {
 	headerPutStringArray(h, RPMTAG_INSTPREFIXES, actualRelocations, numActual);
     }
-    actualRelocations = _free(actualRelocations);
+    free(actualRelocations);
     return numActual;
 }
 
