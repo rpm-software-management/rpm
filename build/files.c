@@ -2074,15 +2074,11 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
 {
     static char * const av_ckfile[] = { "%{?__check_files}", NULL };
     StringBuf sb_stdout = NULL;
-    char * s;
-    int rc;
+    int rc = -1;
+    char * s = rpmExpand(av_ckfile[0], NULL);
     
-    s = rpmExpand(av_ckfile[0], NULL);
-    if (!(s && *s)) {
-	rc = -1;
+    if (!(s && *s))
 	goto exit;
-    }
-    rc = 0;
 
     rpmlog(RPMLOG_NOTICE, _("Checking for unpackaged file(s): %s\n"), s);
 
@@ -2093,9 +2089,7 @@ static int checkFiles(const char *buildRoot, StringBuf fileList)
     if (sb_stdout) {
 	int _unpackaged_files_terminate_build =
 		rpmExpandNumeric("%{?_unpackaged_files_terminate_build}");
-	const char * t;
-
-	t = getStringBuf(sb_stdout);
+	const char * t = getStringBuf(sb_stdout);
 	if ((*t != '\0') && (*t != '\n')) {
 	    rc = (_unpackaged_files_terminate_build) ? 1 : 0;
 	    rpmlog((rc ? RPMLOG_ERR : RPMLOG_WARNING),
