@@ -94,7 +94,7 @@ void headerMergeLegacySigs(Header h, const Header sigh)
 	    (void) headerPut(h, &td, HEADERPUT_DEFAULT);
 	}
     }
-    hi = headerFreeIterator(hi);
+    headerFreeIterator(hi);
 }
 
 Header headerRegenSigHeader(const Header h, int noArchiveSize)
@@ -139,7 +139,7 @@ Header headerRegenSigHeader(const Header h, int noArchiveSize)
 	if (!headerIsEntry(sigh, td.tag))
 	    (void) headerPut(sigh, &td, HEADERPUT_DEFAULT);
     }
-    hi = headerFreeIterator(hi);
+    headerFreeIterator(hi);
     return sigh;
 }
 
@@ -516,8 +516,8 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 exit:
     if (hdrp && h && rc == RPMRC_OK)
 	*hdrp = headerLink(h);
-    ei = _free(ei);
-    h = headerFree(h);
+    free(ei);
+    headerFree(h);
 
     if (msg != NULL && *msg == NULL && buf != NULL) {
 	*msg = buf;
@@ -798,7 +798,7 @@ rpmRC headerCheckPayloadFormat(Header h) {
                      _("Unsupported payload (%s) in package %s\n"),
                      payloadfmt ? payloadfmt : "none", nevra);
         } 
-        nevra = _free(nevra);
+        free(nevra);
 	rc = RPMRC_FAIL;
     }
     return rc;

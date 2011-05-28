@@ -233,7 +233,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 exit:
     if (sighp && sigh && rc == RPMRC_OK)
 	*sighp = headerLink(sigh);
-    sigh = headerFree(sigh);
+    headerFree(sigh);
     free(ei);
 
     if (msg != NULL) {
@@ -323,7 +323,7 @@ static int makeHDRDigest(Header sigh, const char * file, rpmTagVal sigTag)
 
 exit:
     free(SHA1);
-    h = headerFree(h);
+    headerFree(h);
     if (fd != NULL) (void) Fclose(fd);
     return ret;
 }
