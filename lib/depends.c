@@ -116,7 +116,7 @@ static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 
 	removePackage(ts, oh, p);
     }
-    mi = rpmdbFreeIterator(mi);
+    rpmdbFreeIterator(mi);
 }
 
 /* Add erase elements for obsoleted packages of same color (if any). */
@@ -154,12 +154,12 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
-		ohNEVRA = _free(ohNEVRA);
+		free(ohNEVRA);
 
 		removePackage(ts, oh, p);
 	    }
 	}
-	mi = rpmdbFreeIterator(mi);
+	rpmdbFreeIterator(mi);
     }
 }
 
@@ -506,8 +506,8 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 
 	checkDS(ts, dcache, te, pkgNEVRA, ds, dep, 0);
 
-	ds = rpmdsFree(ds);
-	pkgNEVRA = _free(pkgNEVRA);
+	rpmdsFree(ds);
+	free(pkgNEVRA);
     }
     rpmdbFreeIterator(mi);
 }

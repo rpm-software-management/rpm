@@ -55,13 +55,13 @@ static void rpmTSIFree(tsortInfo tsi)
     while (tsi->tsi_relations != NULL) {
 	rel = tsi->tsi_relations;
 	tsi->tsi_relations = tsi->tsi_relations->rel_next;
-	rel = _free(rel);
+	free(rel);
     }
     while (tsi->tsi_forward_relations != NULL) {
 	rel = tsi->tsi_forward_relations;
 	tsi->tsi_forward_relations = \
 	    tsi->tsi_forward_relations->rel_next;
-	rel = _free(rel);
+	free(rel);
     }
 }
 

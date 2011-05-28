@@ -514,13 +514,13 @@ int rpmdbCheckTerminate(int terminate)
 	while ((mi = rpmmiRock) != NULL) {
 	    rpmmiRock = mi->mi_next;
 	    mi->mi_next = NULL;
-	    mi = rpmdbFreeIterator(mi);
+	    rpmdbFreeIterator(mi);
 	}
 
 	while ((ii = rpmiiRock) != NULL) {
 	    rpmiiRock = ii->ii_next;
 	    ii->ii_next = NULL;
-	    ii = rpmdbIndexIteratorFree(ii);
+	    rpmdbIndexIteratorFree(ii);
 	}
 
 	while ((db = rpmdbRock) != NULL) {
@@ -927,7 +927,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	rpmtdFreeData(&bn);
 	rpmtdFreeData(&dn);
 	rpmtdFreeData(&di);
-	h = headerFree(h);
+	headerFree(h);
     }
 
     fpCacheFree(fpc);
@@ -1061,7 +1061,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, dbiCursor dbc,
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
 	else
 	    (*matches)->recs[i].hdrNum = 0;
-	mi = rpmdbFreeIterator(mi);
+	rpmdbFreeIterator(mi);
     }
 
     if (gotMatches) {
@@ -1467,7 +1467,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
 	    defmode = RPMMIRE_GLOB;
 	else
 	    defmode = RPMMIRE_DEFAULT;
-	t = _free(t);
+	free(t);
      }
 
     if (mi == NULL || pattern == NULL)
@@ -2457,7 +2457,7 @@ cont:
 
     (void) unblockSignals(&signalMask);
 
-    h = headerFree(h);
+    headerFree(h);
 
     /* XXX return ret; */
     return 0;
@@ -2874,7 +2874,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    {	Header nh = (headerIsEntry(h, RPMTAG_HEADERIMAGE)
 				? headerCopy(h) : NULL);
 		rc = rpmdbAdd(newdb, (nh ? nh : h));
-		nh = headerFree(nh);
+		headerFree(nh);
 	    }
 
 	    if (rc) {
@@ -2885,7 +2885,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    }
 	}
 
-	mi = rpmdbFreeIterator(mi);
+	rpmdbFreeIterator(mi);
 
     }
 

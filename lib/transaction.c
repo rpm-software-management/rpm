@@ -310,7 +310,7 @@ static uint64_t countFiles(rpmts ts)
     rpmte p;
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	fc += rpmfiFC(rpmteFI(p));
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
     return fc;
 }
 
@@ -886,7 +886,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	    rpmStringSetAddEntry(baseNames, baseName);
 	 }
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
     rpmStringSetFree(baseNames);
 
     rpmdbSortIterator(mi);
@@ -1015,7 +1015,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	h = newheader;
     }
 
-    mi = rpmdbFreeIterator(mi);
+    rpmdbFreeIterator(mi);
 }
 
 #define badArch(_a) (rpmMachineScore(RPM_MACHTABLE_INSTARCH, (_a)) == 0)
@@ -1071,7 +1071,7 @@ static rpmps checkProblems(rpmts ts)
 	    mi = rpmdbFreeIterator(mi);
 	}
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
     return rpmtsProblems(ts);
 }
 
@@ -1088,7 +1088,7 @@ static int runTransScripts(rpmts ts, pkgGoal goal)
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
 	rpmteProcess(p, goal);
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
     return 0; /* what to do about failures? */
 }
 
@@ -1357,8 +1357,8 @@ static int rpmtsPrepare(rpmts ts)
     pi = rpmtsiFree(pi);
 
 exit:
-    ht = rpmFpHashFree(ht);
-    fpc = fpCacheFree(fpc);
+    rpmFpHashFree(ht);
+    fpCacheFree(fpc);
     rpmtsFreeDSI(ts);
     return rc;
 }
@@ -1386,7 +1386,7 @@ static int rpmtsProcess(rpmts ts)
 	}
 	(void) rpmdbSync(rpmtsGetRdb(ts));
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
     return rc;
 }
 
@@ -1461,7 +1461,7 @@ exit:
     /* Finish up... */
     (void) umask(oldmask);
     (void) rpmtsFinish(ts);
-    tsprobs = rpmpsFree(tsprobs);
+    rpmpsFree(tsprobs);
     rpmlockFree(lock);
     return rc;
 }

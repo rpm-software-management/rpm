@@ -88,9 +88,8 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
     rc = rpmdbOpen(ts->rootDir, &ts->rdb, ts->dbmode, 0644);
     if (rc) {
 	char * dn = rpmGetPath(ts->rootDir, "%{_dbpath}", NULL);
-	rpmlog(RPMLOG_ERR,
-			_("cannot open Packages database in %s\n"), dn);
-	dn = _free(dn);
+	rpmlog(RPMLOG_ERR, _("cannot open Packages database in %s\n"), dn);
+	free(dn);
     }
     return rc;
 }
@@ -499,7 +498,7 @@ rpmps rpmtsProblems(rpmts ts)
 	rpmpsMerge(ps, teprobs);
 	rpmpsFree(teprobs);
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     /* Return NULL on no problems instead of an empty set */
     if (rpmpsNumProblems(ps) == 0) {
@@ -515,7 +514,7 @@ void rpmtsCleanProblems(rpmts ts)
     rpmtsi pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	rpmteCleanProblems(p);
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 }
 
 void rpmtsClean(rpmts ts)
