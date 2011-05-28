@@ -53,9 +53,8 @@ exit:
 rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 		const char *sb, int test)
 {
-    const char * rootDir = spec->rootDir;
     char *scriptName = NULL;
-    char * buildDir = rpmGenPath(rootDir, "%{_builddir}", "");
+    char * buildDir = rpmGenPath(spec->rootDir, "%{_builddir}", "");
     char * buildCmd = NULL;
     char * buildTemplate = NULL;
     char * buildPost = NULL;
@@ -117,7 +116,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	goto exit;
     }
     
-    fd = rpmMkTempFile(rootDir, &scriptName);
+    fd = rpmMkTempFile(spec->rootDir, &scriptName);
     if (fd == NULL || Ferror(fd)) {
 	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
 	rc = RPMRC_FAIL;
@@ -134,8 +133,6 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	goto exit;
     }
     
-    if (*rootDir == '\0') rootDir = "/";
-
     buildTemplate = rpmExpand(mTemplate, NULL);
     buildPost = rpmExpand(mPost, NULL);
 
