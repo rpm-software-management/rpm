@@ -1993,7 +1993,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
      */
     if (rpmtag != RPMDBI_PACKAGES) {
 	DBT key, data;
-	dbiCursor dbc = NULL;
 	int rc = 0;
 
 	memset(&key, 0, sizeof(key));
@@ -2002,13 +2001,13 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
         if (keyp) {
 
             if (isLabel) {
-		dbc = dbiCursorInit(dbi, 0);
+		dbiCursor dbc = dbiCursorInit(dbi, 0);
                 rc = dbiFindByLabel(db, dbi, dbc, &key, &data, keyp, &set);
-                dbc = dbiCursorFree(dbc);
+                dbiCursorFree(dbc);
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
             } else {
-		dbc = dbiCursorInit(dbi, 0);
+		dbiCursor dbc = dbiCursorInit(dbi, 0);
 
                 key.data = (void *) keyp;
                 key.size = keylen;
@@ -2029,7 +2028,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
                 if (rc == 0)
                     (void) dbt2set(dbi, &data, &set);
 
-		dbc = dbiCursorFree(dbc);
+		dbiCursorFree(dbc);
             }
             if (rc)	{	/* error/not found */
                 set = dbiFreeIndexSet(set);
@@ -2037,7 +2036,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             }
 	} else {
             /* get all entries from index */
-	    dbc = dbiCursorInit(dbi, 0);
+	    dbiCursor dbc = dbiCursorInit(dbi, 0);
 
             while ((rc = dbiCursorGet(dbc, &key, &data, DB_NEXT)) == 0) {
                 dbiIndexSet newset = NULL;
@@ -2057,7 +2056,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
                        rc, (key.data ? (char *)key.data : "???"), dbiName(dbi));
             }
 
-	    dbc = dbiCursorFree(dbc);
+	    dbiCursorFree(dbc);
 
             if (rc != DB_NOTFOUND)	{	/* error */
                 set = dbiFreeIndexSet(set);
