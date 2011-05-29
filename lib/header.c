@@ -762,7 +762,7 @@ int headerDel(Header h, rpmTagVal tag)
 	first->length = 0;
 	if (ENTRY_IN_REGION(first))
 	    continue;
-	data = _free(data);
+	free(data);
     }
 
     ne = (first - entry);
@@ -935,14 +935,13 @@ Header headerCopyLoad(const void * uh)
     int32_t dl = ntohl(ei[1]);		/* data length */
     size_t pvlen = sizeof(il) + sizeof(dl) +
 			(il * sizeof(struct entryInfo_s)) + dl;
-    void * nuh = NULL;
     Header h = NULL;
 
     /* Sanity checks on header intro. */
     if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
-	nuh = memcpy(xmalloc(pvlen), uh, pvlen);
+	void * nuh = memcpy(xmalloc(pvlen), uh, pvlen);
 	if ((h = headerLoad(nuh)) == NULL)
-	    nuh = _free(nuh);
+	    free(nuh);
     }
     return h;
 }
@@ -1658,7 +1657,7 @@ int headerMod(Header h, rpmtd td)
     if (ENTRY_IN_REGION(entry)) {
 	entry->info.offset = 0;
     } else
-	oldData = _free(oldData);
+	free(oldData);
 
     return 1;
 }
