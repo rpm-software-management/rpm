@@ -155,7 +155,7 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0);
 
 exit:
-    dig = pgpFreeDig(dig);
+    pgpFreeDig(dig);
     return rc;
 }
 
@@ -310,7 +310,7 @@ exit:
 	(void) unlink(fn);
 	free(fn);
     }
-    h = headerFree(h);
+    headerFree(h);
     if (fd != NULL) (void) Fclose(fd);
     return ret;
 }
@@ -496,12 +496,12 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 		headerPut(nh, &copytd, HEADERPUT_DEFAULT);
 	    rpmtdFreeData(&copytd);
 	}
-	hi = headerFreeIterator(hi);
-	oh = headerFree(oh);
+	headerFreeIterator(hi);
+	headerFree(oh);
 
-	sigh = headerFree(sigh);
+	headerFree(sigh);
 	sigh = headerLink(nh);
-	nh = headerFree(nh);
+	headerFree(nh);
     }
 
     /* Eliminate broken digest values. */
@@ -583,12 +583,12 @@ exit:
     if (fd)	(void) closeFile(&fd);
     if (ofd)	(void) closeFile(&ofd);
 
-    sigh = rpmFreeSignature(sigh);
+    rpmFreeSignature(sigh);
 
     /* Clean up intermediate target */
     if (sigtarget) {
 	unlink(sigtarget);
-	sigtarget = _free(sigtarget);
+	free(sigtarget);
     }
     if (trpm) {
 	(void) unlink(trpm);
