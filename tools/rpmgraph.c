@@ -22,7 +22,6 @@ static rpmVSFlags vsflags = 0;
 static int
 rpmGraph(rpmts ts, struct rpmInstallArguments_s * ia, const char ** fileArgv)
 {
-    rpmps ps;
     char ** pkgURL = NULL;
     char * pkgState = NULL;
     const char ** fnp;
@@ -158,6 +157,7 @@ maybe_manifest:
     if (numFailed > 0) goto exit;
 
     if (!noDeps) {
+	rpmps ps;
 	rc = rpmtsCheck(ts);
 	if (rc) {
 	    numFailed += numPkgs;
@@ -169,7 +169,7 @@ maybe_manifest:
 	    rpmpsPrint(NULL, ps);
 	    numFailed += numPkgs;
 	}
-	ps = rpmpsFree(ps);
+	rpmpsFree(ps);
     }
 
     rc = rpmtsOrder(ts);
@@ -196,7 +196,7 @@ maybe_manifest:
 		fprintf(stdout, "  { rank=max ; \"%s\" }\n", rpmteN(p));
 	    }
 	}
-	pi = rpmtsiFree(pi);
+	rpmtsiFree(pi);
 
 	fprintf(stdout, "}\n");
     }
@@ -250,9 +250,9 @@ main(int argc, char *argv[])
 
     ec = rpmGraph(ts, ia, poptGetArgs(optCon));
 
-    ts = rpmtsFree(ts);
+    rpmtsFree(ts);
 
-    optCon = rpmcliFini(optCon);
+    rpmcliFini(optCon);
 
     return ec;
 }
