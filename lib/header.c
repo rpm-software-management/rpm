@@ -902,8 +902,8 @@ Header headerLoad(void * uh)
 
 errxit:
     if (h) {
-	h->index = _free(h->index);
-	h = _free(h);
+	free(h->index);
+	free(h);
     }
     return NULL;
 }
