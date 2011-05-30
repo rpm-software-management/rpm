@@ -35,10 +35,11 @@ rpmfs rpmfsNew(Header h, rpmElementType type)
 rpmfs rpmfsFree(rpmfs fs)
 {
     if (fs != NULL) {
-	fs->replaced = _free(fs->replaced);
-	fs->states = _free(fs->states);
-	fs->actions = _free(fs->actions);
-	fs = _free(fs);
+	free(fs->replaced);
+	free(fs->states);
+	free(fs->actions);
+	memset(fs, 0, sizeof(*fs)); /* trash and burn */
+	free(fs);
     }
     return NULL;
 }
