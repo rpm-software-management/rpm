@@ -328,9 +328,9 @@ static sepoltrans *sepoltransNew(void)
 	}
 	semanage_handle_destroy(pt->sh);
     }
-    pt = _free(pt);
+    free(pt);
 
-    return pt;
+    return NULL;
 }
 
 static sepoltrans *sepoltransFree(sepoltrans * pt)
