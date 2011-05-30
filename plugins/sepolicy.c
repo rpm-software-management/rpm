@@ -349,9 +349,10 @@ static sepoltrans *sepoltransFree(sepoltrans * pt)
 	semanage_handle_destroy(pt->sh);
     }
 
-    pt->semodulepath = _free(pt->semodulepath);
+    free(pt->semodulepath);
+    memset(pt, 0, sizeof(*pt)); /* trash and burn */
 
-    pt = _free(pt);
+    free(pt);
     return NULL;
 }
 
