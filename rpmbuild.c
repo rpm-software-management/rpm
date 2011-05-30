@@ -511,7 +511,7 @@ static int build(rpmts ts, const char * arg, BTA_t ba, const char * rcfile)
     }
 
 exit:
-    vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    rpmtsSetVSFlags(ts, ovsflags);
     /* Restore original configuration. */
     rpmFreeMacros(NULL);
     rpmFreeRpmrc();

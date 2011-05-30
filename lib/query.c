@@ -564,7 +564,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
 
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
-    vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    rpmtsSetVSFlags(ts, ovsflags);
 
     if (qva->qva_showPackage == showQueryPackage)
 	qva->qva_showPackage = NULL;

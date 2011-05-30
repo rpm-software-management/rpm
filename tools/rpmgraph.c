@@ -102,7 +102,7 @@ restart:
 	/* Read the header, verifying signatures (if present). */
 	ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	rpmrc = rpmReadPackageFile(ts, fd, *fnp, &h);
-	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
+	rpmtsSetVSFlags(ts, ovsflags);
 	Fclose(fd);
 	fd = NULL;
 

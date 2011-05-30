@@ -703,7 +703,7 @@ int rpmInstallSource(rpmts ts, const char * arg,
 		rpmtsSetVSFlags(ts, (specFilePtr) ? (rpmtsVSFlags(ts) | RPMVSF_NEEDPAYLOAD) : rpmtsVSFlags(ts));
 	rpmRC rpmrc = rpmInstallSourcePackage(ts, fd, specFilePtr, cookie);
 	rc = (rpmrc == RPMRC_OK ? 0 : 1);
-	ovsflags = rpmtsSetVSFlags(ts, ovsflags);
+	rpmtsSetVSFlags(ts, ovsflags);
     }
     if (rc != 0) {
 	rpmlog(RPMLOG_ERR, _("%s cannot be installed\n"), arg);

@@ -483,7 +483,7 @@ int rpmcliVerify(rpmts ts, QVA_t qva, char * const * argv)
     rpmtsSetScriptFd(ts, scriptFd);
     ovsflags = rpmtsSetVSFlags(ts, vsflags);
     ec = rpmcliArgIter(ts, qva, argv);
-    vsflags = rpmtsSetVSFlags(ts, ovsflags);
+    rpmtsSetVSFlags(ts, ovsflags);
     rpmtsSetScriptFd(ts, NULL);
 
     if (qva->qva_showPackage == showVerifyPackage)

@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     {   rpmVSFlags vsflags = rpmExpandNumeric("%{_vsflags_rebuilddb}");
 	rpmVSFlags ovsflags = rpmtsSetVSFlags(ts, vsflags);
 	ec = rpmtsRebuildDB(ts);
-	vsflags = rpmtsSetVSFlags(ts, ovsflags);
+	rpmtsSetVSFlags(ts, ovsflags);
     }	break;
     case MODE_VERIFYDB:
 	ec = rpmtsVerifyDB(ts);
