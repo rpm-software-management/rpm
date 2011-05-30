@@ -251,14 +251,11 @@ static rpmRC sepolWritePolicy(const sepol * pol, char **path)
 static rpmRC sepolLoadPolicies(const sepol * pols)
 {
     const sepol *pol;
-    sepoltrans *pt;
     rpmRC rc = RPMRC_FAIL;
+    sepoltrans *pt = sepoltransNew();
 
-    pt = sepoltransNew();
-    if (!pt) {
-	rc = RPMRC_FAIL;
-	goto err;
-    }
+    if (pt == NULL)
+	goto exit;
 
     for (pol = pols; pol; pol = pol->next) {
 	switch (pol->action) {
@@ -274,18 +271,14 @@ static rpmRC sepolLoadPolicies(const sepol * pols)
 	    break;
 	}
 
-	if (rc != RPMRC_OK) {
-	    goto err;
-	}
+	if (rc != RPMRC_OK)
+	    goto exit;
     }
 
     rc = sepoltransCommit(pt);
-    if (rc != RPMRC_OK) {
-	goto err;
-    }
 
-  err:
-    pt = sepoltransFree(pt);
+exit:
+    sepoltransFree(pt);
 
     return rc;
 }
