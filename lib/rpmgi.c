@@ -175,14 +175,13 @@ static void rpmgiGlobArgv(rpmgi gi, ARGV_const_t argv)
 
 rpmgi rpmgiFree(rpmgi gi)
 {
-    if (gi == NULL)
-	return NULL;
+    if (gi != NULL) {
+	rpmtsFree(gi->ts);
+	argvFree(gi->argv);
 
-    gi->ts = rpmtsFree(gi->ts);
-    gi->argv = argvFree(gi->argv);
-
-    memset(gi, 0, sizeof(*gi));		/* XXX trash and burn */
-    gi = _free(gi);
+	memset(gi, 0, sizeof(*gi)); /* XXX trash and burn */
+	free(gi);
+    }
     return NULL;
 }
 
