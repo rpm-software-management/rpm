@@ -89,10 +89,10 @@ int main(int argc, char *argv[])
 	break;
     }
 
-    ts = rpmtsFree(ts);
+    rpmtsFree(ts);
     finishPipe();
 
-    qva->qva_queryFormat = _free(qva->qva_queryFormat);
+    free(qva->qva_queryFormat);
 
     rpmcliFini(optCon);
 

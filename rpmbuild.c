@@ -232,7 +232,7 @@ static int checkSpec(rpmts ts, rpmSpec spec)
 	rpmpsPrint(NULL, ps);
     }
     rc = (ps != NULL);
-    ps = rpmpsFree(ps);
+    rpmpsFree(ps);
     return rc;
 }
 
@@ -627,10 +627,10 @@ int main(int argc, char *argv[])
 	break;
     }
 
-    ts = rpmtsFree(ts);
+    rpmtsFree(ts);
     finishPipe();
-    ba->buildRootOverride = _free(ba->buildRootOverride);
-    build_targets = argvFree(build_targets);
+    free(ba->buildRootOverride);
+    argvFree(build_targets);
 
     rpmcliFini(optCon);
 

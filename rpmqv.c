@@ -332,18 +332,19 @@ int main(int argc, char *argv[])
 	break;
     }
 
-    ts = rpmtsFree(ts);
+    rpmtsFree(ts);
     finishPipe();
 
 #ifdef	IAM_RPMQV
-    qva->qva_queryFormat = _free(qva->qva_queryFormat);
+    free(qva->qva_queryFormat);
 #endif
 
 #ifdef	IAM_RPMEIU
-    if (ia->relocations != NULL)
-    for (i = 0; i < ia->numRelocations; i++)
-	ia->relocations[i].oldPath = _free(ia->relocations[i].oldPath);
-    ia->relocations = _free(ia->relocations);
+    if (ia->relocations != NULL) {
+	for (i = 0; i < ia->numRelocations; i++)
+	    free(ia->relocations[i].oldPath);
+	free(ia->relocations);
+    }
 #endif
 
     rpmcliFini(optCon);
