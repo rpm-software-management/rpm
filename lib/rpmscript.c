@@ -280,7 +280,7 @@ exit:
     if (out)
 	Fclose(out);	/* XXX dup'd STDOUT_FILENO */
 
-    if (script) {
+    if (fn) {
 	if (!rpmIsDebug())
 	    unlink(fn);
 	free(fn);
