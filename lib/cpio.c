@@ -131,6 +131,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     char * end;
     unsigned int major, minor;
     int rc = 0;
+    char * path = NULL;
 
     fsm->wrlen = PHYS_HDR_SIZE;
     rc = fsmNext(fsm, FSM_DREAD);
@@ -163,22 +164,18 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     if (nameSize >= fsm->wrsize)
 	return CPIOERR_BAD_HEADER;
 
-    {	char * t = xmalloc(nameSize + 1);
-	fsm->wrlen = nameSize;
-	rc = fsmNext(fsm, FSM_DREAD);
-	if (!rc && fsm->rdnb != fsm->wrlen)
-	    rc = CPIOERR_BAD_HEADER;
-	if (rc) {
-	    t = _free(t);
-	    fsm->path = NULL;
-	    return rc;
-	}
-	memcpy(t, fsm->wrbuf, fsm->rdnb);
-	t[nameSize] = '\0';
-	fsm->path = t;
-    }
+    fsm->wrlen = nameSize;
+    rc = fsmNext(fsm, FSM_DREAD);
+    if (!rc && fsm->rdnb != fsm->wrlen)
+	rc = CPIOERR_BAD_HEADER;
 
-    return 0;
+    if (!rc) {
+	path = xmalloc(nameSize + 1);
+	memcpy(path, fsm->wrbuf, fsm->rdnb);
+	path[nameSize] = '\0';
+    }
+    fsm->path = path;
+    return rc;
 }
 
 const char * cpioStrerror(int rc)
