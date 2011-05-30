@@ -1037,7 +1037,6 @@ static rpmps checkProblems(rpmts ts)
     /* XXX Only added packages need be checked. */
     rpmlog(RPMLOG_DEBUG, "sanity checking %d elements\n", rpmtsNElements(ts));
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmdbMatchIterator mi;
 
 	if (!(probFilter & RPMPROB_FILTER_IGNOREARCH) && badArch(rpmteA(p)))
 	    rpmteAddProblem(p, RPMPROB_BADARCH, rpmteA(p), NULL, 0);
@@ -1047,14 +1046,16 @@ static rpmps checkProblems(rpmts ts)
 
 	if (!(probFilter & RPMPROB_FILTER_OLDPACKAGE)) {
 	    Header h;
+	    rpmdbMatchIterator mi;
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
 		ensureOlder(p, h);
-	    mi = rpmdbFreeIterator(mi);
+	    rpmdbFreeIterator(mi);
 	}
 
 	if (!(probFilter & RPMPROB_FILTER_REPLACEPKG)) {
 	    Header h;
+	    rpmdbMatchIterator mi;
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(p));
 	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(p));
@@ -1068,7 +1069,7 @@ static rpmps checkProblems(rpmts ts)
 		rpmteAddProblem(p, RPMPROB_PKG_INSTALLED, NULL, NULL,
 				headerGetInstance(h));
 	    }
-	    mi = rpmdbFreeIterator(mi);
+	    rpmdbFreeIterator(mi);
 	}
     }
     rpmtsiFree(pi);
