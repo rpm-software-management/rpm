@@ -27,14 +27,13 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
 #ifdef WITH_LUA
     ARGV_t argv = argvp ? *argvp : NULL;
     rpmlua lua = NULL; /* Global state. */
-    rpmluav var;
+    rpmluav var = rpmluavNew();
     int cwd = -1;
 
     rpmlog(RPMLOG_DEBUG, "%s: running <lua> scriptlet.\n", sname);
 
     /* Create arg variable */
     rpmluaPushTable(lua, "arg");
-    var = rpmluavNew();
     rpmluavSetListMode(var, 1);
     if (argv) {
 	char **p;
@@ -51,7 +50,6 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
 	rpmluavSetValueNum(var, arg2);
 	rpmluaSetVar(lua, var);
     }
-    var = rpmluavFree(var);
     rpmluaPop(lua);
 
     /* Lua scripts can change our cwd and umask, save and restore */
@@ -74,6 +72,7 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
     }
 
     rpmluaDelVar(lua, "arg");
+    rpmluavFree(var);
 
 #else
     rpmlog(lvl, _("<lua> scriptlet support not built in\n"));
