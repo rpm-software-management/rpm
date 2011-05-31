@@ -422,10 +422,8 @@ int dbiClose(dbiIndex dbi, unsigned int flags)
     int _printit;
     int rc = 0;
 
-    flags = 0;	/* XXX unused */
-
     if (db) {
-	rc = db->close(db, 0);
+	rc = db->close(db, flags);
 	/* XXX ignore not found error messages. */
 	_printit = (rc == ENOENT ? 0 : _debug);
 	rc = cvtdberr(dbi, "db->close", rc, _printit);
