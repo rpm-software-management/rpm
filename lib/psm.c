@@ -650,37 +650,22 @@ exit:
 
 static rpmpsm rpmpsmFree(rpmpsm psm)
 {
-    if (psm == NULL)
-	return NULL;
-
-    psm->fi = rpmfiFree(psm->fi);
-#ifdef	NOTYET
-    psm->te = rpmteFree(psm->te);
-#else
-    psm->te = NULL;
-#endif
-    psm->ts = rpmtsFree(psm->ts);
-
-    memset(psm, 0, sizeof(*psm));		/* XXX trash and burn */
-    psm = _free(psm);
-
+    if (psm) {
+	rpmfiFree(psm->fi);
+	rpmtsFree(psm->ts),
+	/* XXX rpmte not refcounted yet */
+	memset(psm, 0, sizeof(*psm)); /* XXX trash and burn */
+    	free(psm);
+    }
     return NULL;
 }
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
-
-    if (ts)	psm->ts = rpmtsLink(ts);
-    if (te) {
-#ifdef	NOTYET
-	psm->te = rpmteLink(te, RPMDBG_M("rpmpsmNew")); 
-#else
-	psm->te = te;
-#endif
-    	psm->fi = rpmfiLink(rpmteFI(te));
-    }
-
+    psm->ts = rpmtsLink(ts);
+    psm->fi = rpmfiLink(rpmteFI(te));
+    psm->te = te; /* XXX rpmte not refcounted yet */
     return psm;
 }
 
