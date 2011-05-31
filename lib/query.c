@@ -42,10 +42,8 @@ static void printFileInfo(const char * name,
     char *link = NULL;
 
     /* On first call, grab snapshot of now */
-    if (now == 0) {
+    if (now == 0)
 	now = time(NULL);
-	tm = localtime(&now);
-    }
 
     rstrlcpy(ownerfield, owner, sizeof(ownerfield));
     rstrlcpy(groupfield, group, sizeof(groupfield));
