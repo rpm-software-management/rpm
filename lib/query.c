@@ -545,7 +545,7 @@ int rpmcliQuery(rpmts ts, QVA_t qva, char * const * argv)
     if (!(qva->qva_flags & _QUERY_FOR_BITS) && qva->qva_queryFormat == NULL) {
 	char * fmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
 	if (fmt == NULL || strlen(fmt) <= 1) {
-	    fmt = _free(fmt);
+	    free(fmt);
 	    fmt = xstrdup("%{nvra}\n");
 	}
 	qva->qva_queryFormat = fmt;
