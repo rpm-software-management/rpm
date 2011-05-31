@@ -76,9 +76,9 @@ static const struct poptOption rdbOptions[] = {
 dbiIndex dbiFree(dbiIndex dbi)
 {
     if (dbi) {
-	dbi = _free(dbi);
+	free(dbi);
     }
-    return dbi;
+    return NULL;
 }
 
 dbiIndex dbiNew(rpmdb rdb, rpmDbiTagVal rpmtag)
