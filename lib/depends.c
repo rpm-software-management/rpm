@@ -561,7 +561,7 @@ int rpmtsCheck(rpmts ts)
 	/* Check package name (not provides!) against installed obsoletes */
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     /*
      * Look at the removed packages and make sure they aren't critical.
@@ -583,7 +583,7 @@ int rpmtsCheck(rpmts ts)
 	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
 	}
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
 exit:
     depCacheFree(dcache);

@@ -1154,7 +1154,7 @@ static int rpmtsSetupCollections(rpmts ts)
 	    }
 	}
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     /* we've looked at all the rpmte's, update the lastInCollectionAny lists */
     for (i = 0; i < numSeenPost; i++) {
@@ -1210,7 +1210,7 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
 
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     /* ===============================================
      * Check fingerprints if they contain symlinks
@@ -1230,7 +1230,7 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     rpmFpHashFree(symlinks);
 }
@@ -1310,7 +1310,7 @@ static int rpmtsPrepare(rpmts ts)
 	    skipEraseFiles(ts, p);
 	}
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     /* Open rpmdb & enter chroot for fingerprinting if necessary */
     if (rpmdbOpenAll(ts->rdb) || rpmChrootIn()) {
@@ -1343,7 +1343,7 @@ static int rpmtsPrepare(rpmts ts)
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, tsmem->orderCount);
 
     /* return from chroot if done earlier */
@@ -1355,7 +1355,7 @@ static int rpmtsPrepare(rpmts ts)
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	rpmteSetFI(p, NULL);
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
 exit:
     rpmFpHashFree(ht);

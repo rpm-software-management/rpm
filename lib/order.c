@@ -557,7 +557,7 @@ int rpmtsOrder(rpmts ts)
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
         rpmalAdd(erasedPackages, p);
     }
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     for (int i = 0; i < nelem; i++) {
 	sortInfo[i].te = tsmem->order[i];
@@ -587,7 +587,7 @@ int rpmtsOrder(rpmts ts)
     }
 
     seenColls = argvFree(seenColls);
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     newOrder = xcalloc(tsmem->orderCount, sizeof(*newOrder));
     SCCs = detectSCCs(sortInfo, nelem, (rpmtsFlags(ts) & RPMTRANS_FLAG_DEPLOOPS));

@@ -529,7 +529,7 @@ void rpmtsClean(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL)
 	rpmteCleanDS(p);
-    pi = rpmtsiFree(pi);
+    rpmtsiFree(pi);
 
     tsmem->addedPackages = rpmalFree(tsmem->addedPackages);
 
