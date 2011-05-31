@@ -691,16 +691,21 @@ pushMacro(rpmMacroEntry * mep,
 static void
 popMacro(rpmMacroEntry * mep)
 {
-	rpmMacroEntry me = (*mep ? *mep : NULL);
+    if (mep && *mep) {
+	rpmMacroEntry me = *mep;
 
-	if (me) {
-		/* XXX cast to workaround const */
-		if ((*mep = me->prev) == NULL)
-			me->name = _free(me->name);
-		me->opts = _free(me->opts);
-		me->body = _free(me->body);
-		me = _free(me);
-	}
+	/* restore previous definition of the macro */
+	*mep = me->prev;
+
+	/* name is shared between entries, only free if last of its kind */
+	if (me->prev == NULL)
+	    free(me->name);
+	free(me->opts);
+	free(me->body);
+
+	memset(me, 0, sizeof(*me)); /* trash and burn */
+	free(me);
+    }
 }
 
 /**
