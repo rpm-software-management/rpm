@@ -1768,8 +1768,6 @@ top:
 #endif
 	rc = dbiCursorGet(mi->mi_dbc, &key, &data, DB_SET);
 	data.flags = 0;
-	keyp = key.data;
-	keylen = key.size;
 	uh = data.data;
 	uhlen = data.size;
 	if (rc)
