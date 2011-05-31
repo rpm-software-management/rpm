@@ -1529,19 +1529,12 @@ rpmFreeMacros(rpmMacroContext mc)
     if (mc == NULL) mc = rpmGlobalMacroContext;
 
     if (mc->macroTable != NULL) {
-	int i;
-	for (i = 0; i < mc->firstFree; i++) {
-	    rpmMacroEntry me;
-	    while ((me = mc->macroTable[i]) != NULL) {
-		/* XXX cast to workaround const */
-		if ((mc->macroTable[i] = me->prev) == NULL)
-		    me->name = _free(me->name);
-		me->opts = _free(me->opts);
-		me->body = _free(me->body);
-		me = _free(me);
+	for (int i = 0; i < mc->firstFree; i++) {
+	    while (mc->macroTable[i] != NULL) {
+		popMacro(&mc->macroTable[i]);
 	    }
 	}
-	mc->macroTable = _free(mc->macroTable);
+	free(mc->macroTable);
     }
     memset(mc, 0, sizeof(*mc));
 }
