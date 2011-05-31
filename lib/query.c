@@ -301,7 +301,6 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 {
     const char * s;
     int i;
-    int provides_checked = 0;
     rpmdbMatchIterator mi = NULL;
 
     (void) rpmdbCheckSignals();
@@ -386,13 +385,13 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 
     case RPMQV_WHATPROVIDES:
 	if (arg[0] != '/') {
-	    provides_checked = 1;
 	    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, arg, 0);
 	    if (mi == NULL) {
 		rpmlog(RPMLOG_NOTICE, _("no package provides %s\n"), arg);
 	    }
 	    break;
 	}
+	/* fallthrough on absolute paths */
     case RPMQV_PATH:
     {   char * fn;
 
@@ -413,7 +412,7 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	(void) rpmCleanPath(fn);
 
 	mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, fn, 0);
-	if (mi == NULL && !provides_checked)
+	if (mi == NULL)
 	    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, fn, 0);
 
 	if (mi == NULL) {
