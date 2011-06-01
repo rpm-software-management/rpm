@@ -429,27 +429,10 @@ static void collectTE(rpm_color_t prefcolor, tsortInfo q,
     q->tsi_SccIdx = 0;
 }
 
-static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
-		       rpmte * newOrder, int * newOrderCount,
-		       scc SCCs, tsortInfo * queue_end)
+static void dijkstra(const struct scc_s *SCC, int sccNr)
 {
-    int sccNr = p_tsi->tsi_SccIdx;
-    const struct scc_s * SCC = SCCs+sccNr;
-    int i;
     int start, end;
     relation rel;
-
-    /* remove p from the outer queue */
-    tsortInfo outer_queue_start = p_tsi->tsi_suc;
-    p_tsi->tsi_suc = NULL;
-
-    /*
-     * Run a multi source Dijkstra's algorithm to find relations
-     * that can be zapped with least danger to pre reqs.
-     * As weight of the edges is always 1 it is not necessary to
-     * sort the vertices by distance as the queue gets them
-     * already in order
-    */
 
     /* can use a simple queue as edge weights are always 1 */
     tsortInfo * queue = xmalloc((SCC->size+1) * sizeof(*queue));
@@ -459,7 +442,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
      * starting points for the Dijkstra algorithm
      */
     start = end = 0;
-    for (i = 0; i < SCC->size; i++) {
+    for (int i = 0; i < SCC->size; i++) {
 	tsortInfo tsi = SCC->members[i];
 	tsi->tsi_SccLowlink = INT_MAX;
 	for (rel=tsi->tsi_forward_relations; rel != NULL; rel=rel->rel_next) {
@@ -476,7 +459,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
     }
 
     if (start == end) { /* no regular prereqs; add self prereqs to queue */
-	for (i = 0; i < SCC->size; i++) {
+	for (int i = 0; i < SCC->size; i++) {
 	    tsortInfo tsi = SCC->members[i];
 	    if (tsi->tsi_SccLowlink != INT_MAX) {
 		queue[end++] = tsi;
@@ -496,8 +479,28 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 	    }
 	}
     }
-    queue = _free(queue);
+    free(queue);
+}
 
+static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
+		       rpmte * newOrder, int * newOrderCount,
+		       scc SCCs, tsortInfo * queue_end)
+{
+    int sccNr = p_tsi->tsi_SccIdx;
+    const struct scc_s * SCC = SCCs+sccNr;
+
+    /* remove p from the outer queue */
+    tsortInfo outer_queue_start = p_tsi->tsi_suc;
+    p_tsi->tsi_suc = NULL;
+
+    /*
+     * Run a multi source Dijkstra's algorithm to find relations
+     * that can be zapped with least danger to pre reqs.
+     * As weight of the edges is always 1 it is not necessary to
+     * sort the vertices by distance as the queue gets them
+     * already in order
+    */
+    dijkstra(SCC, sccNr);
 
     while (1) {
 	tsortInfo best = NULL;
