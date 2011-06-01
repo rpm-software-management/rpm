@@ -226,6 +226,7 @@ rpmcliFini(poptContext optCon)
     rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
     rpmlogClose();
+    rpmcliInitialized = -1;
 
 #if HAVE_MCHECK_H && HAVE_MTRACE
     muntrace();   /* Trace malloc only if MALLOC_TRACE=mtrace-output-file. */
