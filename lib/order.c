@@ -434,7 +434,7 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 		       scc SCCs, tsortInfo * queue_end)
 {
     int sccNr = p_tsi->tsi_SccIdx;
-    struct scc_s SCC = SCCs[sccNr];
+    const struct scc_s * SCC = SCCs+sccNr;
     int i;
     int start, end;
     relation rel;
@@ -452,15 +452,15 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
     */
 
     /* can use a simple queue as edge weights are always 1 */
-    tsortInfo * queue = xmalloc((SCC.size+1) * sizeof(*queue));
+    tsortInfo * queue = xmalloc((SCC->size+1) * sizeof(*queue));
 
     /*
      * Find packages that are prerequired and use them as
      * starting points for the Dijkstra algorithm
      */
     start = end = 0;
-    for (i = 0; i < SCC.size; i++) {
-	tsortInfo tsi = SCC.members[i];
+    for (i = 0; i < SCC->size; i++) {
+	tsortInfo tsi = SCC->members[i];
 	tsi->tsi_SccLowlink = INT_MAX;
 	for (rel=tsi->tsi_forward_relations; rel != NULL; rel=rel->rel_next) {
 	    if (rel->rel_flags && rel->rel_suc->tsi_SccIdx == sccNr) {
@@ -476,8 +476,8 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
     }
 
     if (start == end) { /* no regular prereqs; add self prereqs to queue */
-	for (i = 0; i < SCC.size; i++) {
-	    tsortInfo tsi = SCC.members[i];
+	for (i = 0; i < SCC->size; i++) {
+	    tsortInfo tsi = SCC->members[i];
 	    if (tsi->tsi_SccLowlink != INT_MAX) {
 		queue[end++] = tsi;
 	    }
@@ -505,8 +505,8 @@ static void collectSCC(rpm_color_t prefcolor, tsortInfo p_tsi,
 	int best_score = 0;
 
 	/* select best candidate to start with */
-	for (int i = 0; i < SCC.size; i++) {
-	    tsortInfo tsi = SCC.members[i];
+	for (int i = 0; i < SCC->size; i++) {
+	    tsortInfo tsi = SCC->members[i];
 	    if (tsi->tsi_SccIdx == 0) /* package already collected */
 		continue;
 	    if (tsi->tsi_SccLowlink >= best_score) {
