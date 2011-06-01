@@ -222,6 +222,7 @@ rpmcliFini(poptContext optCon)
     rpmFreeMacros(rpmCLIMacroContext);
     rpmFreeRpmrc();
     rpmlogClose();
+    rpmcliInitialized = -1;
 
     return NULL;
 }
