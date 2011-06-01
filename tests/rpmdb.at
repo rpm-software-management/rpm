@@ -73,9 +73,14 @@ RPMDB_INIT
 
 tpkg="/data/RPMS/foo-1.0-1.noarch.rpm"
 
-runroot rpm -i "${tpkg}" && runroot rpm -U --replacepkgs "${tpkg}"
+runroot rpm -i "${tpkg}" && 
+  runroot rpm -U --replacepkgs "${tpkg}" &&
+  runroot rpm -qa
 ],
-[0])
+[0],
+[foo-1.0-1.noarch
+],
+[])
 
 AT_CLEANUP
 
