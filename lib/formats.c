@@ -455,7 +455,7 @@ static char * xmlFormat(rpmtd td, char * formatPrefix)
  */
 static char * pgpsigFormat(rpmtd td, char * formatPrefix)
 {
-    char * val, * t;
+    char * val = NULL;
 
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
@@ -485,42 +485,28 @@ static char * pgpsigFormat(rpmtd td, char * formatPrefix)
 	} else {
 	    pgpDig dig = pgpNewDig();
 	    pgpDigParams sigp = &dig->signature;
-	    size_t nb = 0;
-	    char *tempstr = NULL;
+	    char dbuf[BUFSIZ];
+	    char *keyid = NULL;
 
 	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
 
-	    val = NULL;
-	again:
-	    nb += 100;
-	    val = t = xrealloc(val, nb + 1);
-
-	    t = stpcpy(t, pgpValString(PGPVAL_PUBKEYALGO, sigp->pubkey_algo));
-	    if (t + 5 >= val + nb)
-		goto again;
-	    *t++ = '/';
-	    t = stpcpy(t, pgpValString(PGPVAL_HASHALGO, sigp->hash_algo));
-	    if (t + strlen (", ") + 1 >= val + nb)
-		goto again;
-
-	    t = stpcpy(t, ", ");
-
-	    /* this is important if sizeof(int32_t) ! sizeof(time_t) */
-	    {	time_t dateint = pgpGrab(sigp->time, sizeof(sigp->time));
-		struct tm * tstruct = localtime(&dateint);
-		if (tstruct)
- 		    (void) strftime(t, (nb - (t - val)), "%c", tstruct);
+	    {	unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
+		time_t date = dateint;
+		struct tm * tms = localtime(&date);
+		if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
+		    snprintf(dbuf, sizeof(dbuf),
+			     _("Invalid date %u\n"), dateint);
+		    dbuf[sizeof(dbuf)-1] = '\0';
+		}
 	    }
-	    t += strlen(t);
-	    if (t + strlen (", Key ID ") + 1 >= val + nb)
-		goto again;
-	    t = stpcpy(t, ", Key ID ");
-	    tempstr = pgpHexStr(sigp->signid, sizeof(sigp->signid));
-	    if (t + strlen (tempstr) > val + nb)
-		goto again;
-	    t = stpcpy(t, tempstr);
-	    free(tempstr);
+	    keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
 
+	    rasprintf(&val, "%s/%s, %s, Key ID %s\n",
+			pgpValString(PGPVAL_PUBKEYALGO, sigp->pubkey_algo),
+			pgpValString(PGPVAL_HASHALGO, sigp->hash_algo),
+			dbuf, keyid);
+
+	    free(keyid);
 	    pgpFreeDig(dig);
 	}
     }
