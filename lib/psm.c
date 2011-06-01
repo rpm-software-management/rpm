@@ -688,6 +688,31 @@ static int runFsm(rpmpsm psm, FD_t payload)
     return (sc ? sc : ec);
 }
 
+/*
+ * --replacepkgs hack: find the header instance we're replacing and
+ * mark it as the db instance of the install element. In PSM_POST,
+ * if an install element already has a db instance, it's removed
+ * before proceeding with the adding the new header to the db.
+ */
+static void markReplacedInstance(rpmts ts, rpmte te)
+{
+    rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(te), 0);
+    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP, rpmteE(te));
+    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP, rpmteV(te));
+    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP, rpmteR(te));
+    /* XXX shouldn't we also do this on colorless transactions? */
+    if (rpmtsColor(ts)) {
+	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP, rpmteA(te));
+	rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP, rpmteO(te));
+    }
+
+    while (rpmdbNextIterator(mi) != NULL) {
+	rpmteSetDBInstance(te, rpmdbGetIteratorOffset(mi));
+	break;
+    }
+    rpmdbFreeIterator(mi);
+}
+
 static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 {
     psm->nstage = nstage;
@@ -697,7 +722,6 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
-    rpm_color_t tscolor = rpmtsColor(ts);
     rpmfi fi = psm->fi;
     rpmRC rc = RPMRC_OK;
 
@@ -720,31 +744,12 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	if (psm->goal == PKG_INSTALL) {
-	    rpmdbMatchIterator mi;
-	    Header oh;
-
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
-	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(psm->te), 0);
-	    rpmdbSetIteratorRE(mi, RPMTAG_EPOCH, RPMMIRE_STRCMP,
-			rpmteE(psm->te));
-	    rpmdbSetIteratorRE(mi, RPMTAG_VERSION, RPMMIRE_STRCMP,
-			rpmteV(psm->te));
-	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_STRCMP,
-			rpmteR(psm->te));
-	    if (tscolor) {
-		rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_STRCMP,
-			rpmteA(psm->te));
-		rpmdbSetIteratorRE(mi, RPMTAG_OS, RPMMIRE_STRCMP,
-			rpmteO(psm->te));
-	    }
+	    /* HACK: reinstall abuses te instance to remove old header */
+	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
+		markReplacedInstance(ts, psm->te);
 
-	    while ((oh = rpmdbNextIterator(mi)) != NULL) {
-		rpmteSetDBInstance(psm->te, rpmdbGetIteratorOffset(mi));
-		oh = NULL;
-		break;
-	    }
-	    mi = rpmdbFreeIterator(mi);
 	    rc = RPMRC_OK;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
@@ -888,6 +893,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpm_count_t fc = rpmfsFC(fs);
 	    rpm_fstate_t * fileStates = rpmfsGetStates(fs);
 	    Header h = rpmteHeader(psm->te);
+	    rpm_color_t tscolor = rpmtsColor(ts);
 
 	    if (fileStates != NULL && fc > 0) {
 		headerPutChar(h, RPMTAG_FILESTATES, fileStates, fc);
