@@ -1,0 +1,5 @@
+%__elfexec_provides		%{_rpmconfigdir}/elfdeps --provides
+%__elfexec_requires		%{_rpmconfigdir}/elfdeps --requires
+%__elfexec_magic		^(setuid,? )?(setgid,? )?(sticky )?ELF (32|64)-bit.*executable
+%__elfexec_flags		exeonly
+%__elfexec_exclude_path		^/usr/lib/debug/

@@ -17,6 +17,7 @@ int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
 int require_interp = 0;
+int assume_exec = 0;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -294,7 +295,7 @@ static int processFile(const char *fn, int dtype)
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
 	ei->marker = mkmarker(ehdr);
     	ei->isDSO = (ehdr->e_type == ET_DYN);
-	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
+	ei->isExec = assume_exec || (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
 	processProgHeaders(ei, ehdr);
 	processSections(ei);
@@ -359,6 +360,7 @@ int main(int argc, char *argv[])
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
+	{ "assume-exec", 0, POPT_ARG_VAL, &assume_exec, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };

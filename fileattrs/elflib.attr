@@ -1,0 +1,4 @@
+%__elflib_provides		%{_rpmconfigdir}/elfdeps  --assume-exec --provides
+%__elflib_requires		%{_rpmconfigdir}/elfdeps  --assume-exec --requires
+%__elflib_magic			^(setuid,? )?(setgid,? )?(sticky )?ELF (32|64)-bit.*shared object
+%__elflib_exclude_path		^/usr/lib/debug/
