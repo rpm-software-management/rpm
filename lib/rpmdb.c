@@ -417,22 +417,26 @@ static int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
 }
 
 /* Count items in index database set. */
-static unsigned int dbiIndexSetCount(dbiIndexSet set) {
+static unsigned int dbiIndexSetCount(dbiIndexSet set)
+{
     return set->count;
 }
 
 /* Return record offset of header from element in index database set. */
-static unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno) {
+static unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
+{
     return set->recs[recno].hdrNum;
 }
 
 /* Return file index from element in index database set. */
-static unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno) {
+static unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
+{
     return set->recs[recno].tagNum;
 }
 
 /* Destroy set of index database items */
-static dbiIndexSet dbiFreeIndexSet(dbiIndexSet set) {
+static dbiIndexSet dbiFreeIndexSet(dbiIndexSet set)
+{
     if (set) {
 	set->recs = _free(set->recs);
 	set = _free(set);
