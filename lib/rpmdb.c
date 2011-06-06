@@ -438,10 +438,11 @@ static unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 static dbiIndexSet dbiFreeIndexSet(dbiIndexSet set)
 {
     if (set) {
-	set->recs = _free(set->recs);
-	set = _free(set);
+	free(set->recs);
+	memset(set, 0, sizeof(*set)); /* trash and burn */
+	free(set);
     }
-    return set;
+    return NULL;
 }
 
 typedef struct miRE_s {
