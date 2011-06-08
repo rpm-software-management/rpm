@@ -445,21 +445,15 @@ static dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
     return NULL;
 }
 
-static int dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
-		       dbiIndexSet *set)
+static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
+			     dbiIndexSet *set)
 {
     int rc = EINVAL;
-    dbiCursor dbc = dbiCursorInit(dbi, 0);
     if (dbc != NULL) {
+	dbiIndex dbi = dbiCursorIndex(dbc);
 	DBT data, key;
 	memset(&data, 0, sizeof(data));
 	memset(&key, 0, sizeof(key));
-
-	if (keyp && keylen == 0) {
-	    keylen = strlen(keyp);
-	    if (keylen == 0)
-		keylen++; /* XXX "/" fixup */
-	}
 
 	key.data = (void *) keyp; /* discards const */
 	key.size = keylen;
@@ -473,6 +467,25 @@ static int dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
 		   _("error(%d) getting \"%s\" records from %s index: %s\n"),
 		   rc, keyp ? keyp : "???", dbiName(dbi), db_strerror(rc));
 	}
+    }
+    return rc;
+}
+
+static int dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
+		       dbiIndexSet *set)
+{
+    int rc = EINVAL;
+    if (dbi != NULL) {
+	dbiCursor dbc = dbiCursorInit(dbi, 0);
+
+	if (keyp && keylen == 0) {
+	    keylen = strlen(keyp);
+	    if (keylen == 0)
+		keylen++; /* XXX "/" fixup */
+	}
+
+	rc = dbiCursorGetToSet(dbc, keyp, keylen, set);
+
 	dbiCursorFree(dbc);
     }
     return rc;
