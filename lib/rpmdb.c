@@ -1997,29 +1997,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, dbi, &key, &data, keyp, &set);
             } else {
-		dbiCursor dbc = dbiCursorInit(dbi, 0);
-
-                key.data = (void *) keyp;
-                key.size = keylen;
-                if (key.data && key.size == 0)
-                    key.size = strlen((char *)key.data);
-                if (key.data && key.size == 0)
-                    key.size++;	/* XXX "/" fixup. */
-
-                rc = dbiCursorGet(dbc, &key, &data, DB_SET);
-                if (rc > 0) {
-                    rpmlog(RPMLOG_ERR,
-                           _("error(%d) getting \"%s\" records from %s index\n"),
-                           rc, (key.data ? (char *)key.data : "???"),
-                           dbiName(dbi));
-                }
-
-                /* Join keys need to be native endian internally. */
-                if (rc == 0)
-                    (void) dbt2set(dbi, &data, &set);
-
-		dbiCursorFree(dbc);
-            }
+		rc = dbiGetToSet(dbi, keyp, keylen, &set);
+	    }
             if (rc)	{	/* error/not found */
                 set = dbiIndexSetFree(set);
                 goto exit;
