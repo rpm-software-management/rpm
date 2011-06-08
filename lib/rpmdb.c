@@ -1857,47 +1857,26 @@ void rpmdbSortIterator(rpmdbMatchIterator mi)
 int rpmdbExtendIterator(rpmdbMatchIterator mi,
 			const void * keyp, size_t keylen)
 {
-    dbiCursor dbc;
-    DBT data, key;
     dbiIndex dbi = NULL;
-    dbiIndexSet set;
-    int rc;
+    dbiIndexSet set = NULL;
+    int rc = 1; /* assume failure */
 
     if (mi == NULL || keyp == NULL)
-	return 1;
-
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-    key.data = (void *) keyp;
-    key.size = keylen ? keylen : strlen(keyp);
+	return rc;
 
     dbi = rpmdbOpenIndex(mi->mi_db, mi->mi_rpmtag, 0);
-    if (dbi == NULL)
-	return 1;
 
-    dbc = dbiCursorInit(dbi, 0);
-    rc = dbiCursorGet(dbc, &key, &data, DB_SET);
-    dbc = dbiCursorFree(dbc);
-
-    if (rc) {			/* error/not found */
-	if (rc != DB_NOTFOUND)
-	    rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, (char*)key.data, dbiName(dbi));
-	return rc;
-    }
-
-    set = NULL;
-    (void) dbt2set(dbi, &data, &set);
-
-    if (mi->mi_set == NULL) {
-	mi->mi_set = set;
-    } else {
-	dbiGrowSet(mi->mi_set, set->count);
-	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
-		set->count * sizeof(*(mi->mi_set->recs)));
-	mi->mi_set->count += set->count;
-	set = dbiIndexSetFree(set);
+    if (dbiGetToSet(dbi, keyp, keylen, &set) == 0) {
+	if (mi->mi_set == NULL) {
+	    mi->mi_set = set;
+	} else {
+	    dbiGrowSet(mi->mi_set, set->count);
+	    memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
+		    set->count * sizeof(*(mi->mi_set->recs)));
+	    mi->mi_set->count += set->count;
+	    dbiIndexSetFree(set);
+	}
+	rc = 0;
     }
 
     return rc;
