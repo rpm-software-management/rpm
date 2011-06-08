@@ -1973,10 +1973,6 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             } else {
 		rc = dbiGetToSet(dbi, keyp, keylen, &set);
 	    }
-            if (rc)	{	/* error/not found */
-                set = dbiIndexSetFree(set);
-                goto exit;
-            }
 	} else {
             /* get all entries from index */
 	    dbiCursor dbc = dbiCursorInit(dbi, 0);
@@ -2000,12 +1996,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             }
 
 	    dbiCursorFree(dbc);
-
-            if (rc != DB_NOTFOUND)	{	/* error */
-                set = dbiIndexSetFree(set);
-                goto exit;
-            }
         }
+
+	if (rc)	{	/* error/not found */
+	    set = dbiIndexSetFree(set);
+	    goto exit;
+	}
     }
 
     /* Copy the retrieval key, byte swapping header instance if necessary. */
