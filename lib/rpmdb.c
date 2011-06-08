@@ -826,22 +826,21 @@ static Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
 /**
  * Find file matches in database.
  * @param db		rpm database
- * @param filespec
+ * @param dbi		index database handle (always RPMDBI_BASENAMES)
  * @param key
  * @param data
- * @param matches
+ * @param filespec
+ * @retval matches
  * @return		0 on success, 1 on not found, -2 on error
  */
-static int rpmdbFindByFile(rpmdb db, const char * filespec,
-		DBT * key, DBT * data, dbiIndexSet * matches)
+static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, DBT * key, DBT * data,
+			   const char *filespec, dbiIndexSet * matches)
 {
     char * dirName = NULL;
     const char * baseName;
     fingerPrintCache fpc = NULL;
     fingerPrint fp1;
-    dbiIndex dbi = NULL;
     dbiIndexSet allMatches = NULL;
-    rpmDbiTag dbtag = RPMDBI_BASENAMES;
     unsigned int i;
     int rc = -2; /* assume error */
 
@@ -860,7 +859,6 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
     if (baseName == NULL)
 	goto exit;
 
-    dbi = rpmdbOpenIndex(db, dbtag, 0);
     if (dbi != NULL) {
 	dbiCursor dbc = dbiCursorInit(dbi, 0);
 
@@ -880,8 +878,7 @@ static int rpmdbFindByFile(rpmdb db, const char * filespec,
 	    (void) dbt2set(dbi, data, &allMatches);
 
 	dbiCursorFree(dbc);
-    } else
-	rc = -2;
+    }
 
     if (rc || allMatches == NULL) goto exit;
 
@@ -2009,7 +2006,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             if (isLabel) {
                 rc = dbiFindByLabel(db, dbi, &key, &data, keyp, &set);
             } else if (rpmtag == RPMDBI_BASENAMES) {
-                rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
+                rc = rpmdbFindByFile(db, dbi, &key, &data, keyp, &set);
             } else {
 		dbiCursor dbc = dbiCursorInit(dbi, 0);
 
