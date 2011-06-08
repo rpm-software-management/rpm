@@ -996,18 +996,14 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 /**
  * Attempt partial matches on name[-version[-release]] strings.
  * @param db		rpmdb handle
- * @param dbi		index database handle (always RPMDBI_NAME)
- * @param dbcursor	index database cursor
- * @param key		search key/length/flags
- * @param data		search data/length/flags
+ * @param dbc		index database cursor
  * @param name		package name
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, dbiCursor dbc,
-		DBT * key, DBT * data,
+static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 		const char * name,
 		const char * version,
 		const char * release,
@@ -1017,22 +1013,12 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, dbiCursor dbc,
     int rc;
     unsigned int i;
 
-    key->data = (void *) name;
-    key->size = strlen(name);
+    rc = dbiCursorGetToSet(dbc, name, strlen(name), matches);
 
-    rc = dbiCursorGet(dbc, key, data, DB_SET);
-
-    if (rc == 0) {		/* success */
-	(void) dbt2set(dbi, data, matches);
-	if (version == NULL && release == NULL)
-	    return RPMRC_OK;
-    } else if (rc == DB_NOTFOUND) {	/* not found */
-	return RPMRC_NOTFOUND;
-    } else {			/* error */
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, (char*)key->data, dbiName(dbi));
-	return RPMRC_FAIL;
+    if (rc != 0) {
+	return (rc == DB_NOTFOUND) ? RPMRC_NOTFOUND : RPMRC_FAIL;
+    } else if (version == NULL && release == NULL) {
+	return RPMRC_OK;
     }
 
     /* Make sure the version and release match. */
@@ -1087,14 +1073,12 @@ exit:
  * @todo Name must be an exact match, as name is a db key.
  * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMDBI_NAME)
- * @param key		search key/length/flags
- * @param data		search data/length/flags
  * @param arg		name[-version[-release]] string
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
-		DBT * key, DBT * data, const char * arg, dbiIndexSet * matches)
+static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
+			    dbiIndexSet * matches)
 {
     size_t arglen = (arg != NULL) ? strlen(arg) : 0;
     char localarg[arglen+1];
@@ -1109,7 +1093,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
 
     dbc = dbiCursorInit(dbi, 0);
     /* did they give us just a name? */
-    rc = dbiFindMatches(db, dbi, dbc, key, data, arg, NULL, NULL, matches);
+    rc = dbiFindMatches(db, dbc, arg, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND)
 	goto exit;
 
@@ -1142,8 +1126,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
     }
 
     *s = '\0';
-    rc = dbiFindMatches(db, dbi, dbc, key, data,
-			localarg, s + 1, NULL, matches);
+    rc = dbiFindMatches(db, dbc, localarg, s + 1, NULL, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
@@ -1176,8 +1159,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
 
     *s = '\0';
    	/* FIX: *matches may be NULL. */
-    rc = dbiFindMatches(db, dbi, dbc, key, data,
-			localarg, s + 1, release, matches);
+    rc = dbiFindMatches(db, dbc, localarg, s + 1, release, matches);
 exit:
     dbiCursorFree(dbc);
     return rc;
@@ -1985,7 +1967,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
         if (keyp) {
 
             if (isLabel) {
-                rc = dbiFindByLabel(db, dbi, &key, &data, keyp, &set);
+                rc = dbiFindByLabel(db, dbi, keyp, &set);
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, dbi, keyp, &set);
             } else {
