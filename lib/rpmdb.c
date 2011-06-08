@@ -1958,11 +1958,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
      * Otherwise, retrieve join keys for secondary lookup.
      */
     if (rpmtag != RPMDBI_PACKAGES) {
-	DBT key, data;
 	int rc = 0;
-
-	memset(&key, 0, sizeof(key));
-	memset(&data, 0, sizeof(data));
 
         if (keyp) {
 
@@ -1976,6 +1972,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	} else {
             /* get all entries from index */
 	    dbiCursor dbc = dbiCursorInit(dbi, 0);
+	    DBT key, data;
+
+	    memset(&key, 0, sizeof(key));
+	    memset(&data, 0, sizeof(data));
 
             while ((rc = dbiCursorGet(dbc, &key, &data, DB_NEXT)) == 0) {
                 dbiIndexSet newset = NULL;
