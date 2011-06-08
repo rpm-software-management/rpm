@@ -435,7 +435,7 @@ static unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
 }
 
 /* Destroy set of index database items */
-static dbiIndexSet dbiFreeIndexSet(dbiIndexSet set)
+static dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
 {
     if (set) {
 	free(set->recs);
@@ -935,14 +935,14 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, DBT * key, DBT * data,
     fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {
-	*matches = dbiFreeIndexSet(*matches);
+	*matches = dbiIndexSetFree(*matches);
 	rc = 1;
     } else {
 	rc = 0;
     }
 
 exit:
-    dbiFreeIndexSet(allMatches);
+    dbiIndexSetFree(allMatches);
     free(dirName);
     return rc;
 }
@@ -977,7 +977,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 	(void) dbt2set(dbi, &data, &matches);
 	if (matches) {
 	    rc = dbiIndexSetCount(matches);
-	    matches = dbiFreeIndexSet(matches);
+	    matches = dbiIndexSetFree(matches);
 	}
     } else if (rc == DB_NOTFOUND) {	/* not found */
 	rc = 0;
@@ -1075,7 +1075,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi, dbiCursor dbc,
 exit:
 /* FIX: double indirection */
     if (rc && matches && *matches)
-	*matches = dbiFreeIndexSet(*matches);
+	*matches = dbiIndexSetFree(*matches);
     return rc;
 }
 
@@ -1112,7 +1112,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
 	goto exit;
 
     /* FIX: double indirection */
-    *matches = dbiFreeIndexSet(*matches);
+    *matches = dbiIndexSetFree(*matches);
 
     /* maybe a name and a release */
     s = stpcpy(localarg, arg);
@@ -1145,7 +1145,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
-    *matches = dbiFreeIndexSet(*matches);
+    *matches = dbiIndexSetFree(*matches);
     
     /* how about name-version-release? */
 
@@ -1275,7 +1275,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     }
     mi->mi_re = _free(mi->mi_re);
 
-    mi->mi_set = dbiFreeIndexSet(mi->mi_set);
+    mi->mi_set = dbiIndexSetFree(mi->mi_set);
     mi->mi_keyp = _free(mi->mi_keyp);
     rpmdbClose(mi->mi_db);
     mi->mi_ts = rpmtsFree(mi->mi_ts);
@@ -1887,7 +1887,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 	memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
 		set->count * sizeof(*(mi->mi_set->recs)));
 	mi->mi_set->count += set->count;
-	set = dbiFreeIndexSet(set);
+	set = dbiIndexSetFree(set);
     }
 
     return rc;
@@ -2032,7 +2032,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 		dbiCursorFree(dbc);
             }
             if (rc)	{	/* error/not found */
-                set = dbiFreeIndexSet(set);
+                set = dbiIndexSetFree(set);
                 goto exit;
             }
 	} else {
@@ -2047,7 +2047,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
                     set = newset;
                 } else {
                     dbiAppendSet(set, newset->recs, newset->count, sizeof(*(set->recs)), 0);
-                    dbiFreeIndexSet(newset);
+                    dbiIndexSetFree(newset);
                 }
             }
 
@@ -2060,7 +2060,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	    dbiCursorFree(dbc);
 
             if (rc != DB_NOTFOUND)	{	/* error */
-                set = dbiFreeIndexSet(set);
+                set = dbiIndexSetFree(set);
                 goto exit;
             }
         }
@@ -2198,7 +2198,7 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
 	ii->ii_dbc = dbiCursorInit(ii->ii_dbi, 0);
 
     /* free old data */
-    ii->ii_set = dbiFreeIndexSet(ii->ii_set);
+    ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
     memset(&data, 0, sizeof(data));
     rc = dbiCursorGet(ii->ii_dbc, &ii->ii_key, &data, DB_NEXT);
@@ -2263,7 +2263,7 @@ rpmdbIndexIterator rpmdbIndexIteratorFree(rpmdbIndexIterator ii)
     ii->ii_dbc = dbiCursorFree(ii->ii_dbc);
     ii->ii_dbi = NULL;
     rpmdbClose(ii->ii_db);
-    ii->ii_set = dbiFreeIndexSet(ii->ii_set);
+    ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
     ii = _free(ii);
     return NULL;
@@ -2417,7 +2417,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
 		/* If nothing was pruned, then don't bother updating. */
 		if (rc) {
-		    set = dbiFreeIndexSet(set);
+		    set = dbiIndexSetFree(set);
 		    goto cont;
 		}
 
@@ -2441,7 +2441,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 			ret += 1;
 		    }
 		}
-		set = dbiFreeIndexSet(set);
+		set = dbiIndexSetFree(set);
 cont:
 		if (freedata) {
 		   free(key.data); 
@@ -2625,7 +2625,7 @@ static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 	}
 	data.data = _free(data.data);
 	data.size = 0;
-	set = dbiFreeIndexSet(set);
+	set = dbiIndexSetFree(set);
 cont:
 	if (freedata) {
 	    free(key.data);
