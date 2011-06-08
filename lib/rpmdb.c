@@ -445,6 +445,39 @@ static dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
     return NULL;
 }
 
+static int dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
+		       dbiIndexSet *set)
+{
+    int rc = EINVAL;
+    dbiCursor dbc = dbiCursorInit(dbi, 0);
+    if (dbc != NULL) {
+	DBT data, key;
+	memset(&data, 0, sizeof(data));
+	memset(&key, 0, sizeof(key));
+
+	if (keyp && keylen == 0) {
+	    keylen = strlen(keyp);
+	    if (keylen == 0)
+		keylen++; /* XXX "/" fixup */
+	}
+
+	key.data = (void *) keyp; /* discards const */
+	key.size = keylen;
+
+	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
+
+	if (rc == 0) {
+	    dbt2set(dbi, &data, set);
+	} else if (rc != DB_NOTFOUND) {
+	    rpmlog(RPMLOG_ERR,
+		   _("error(%d) getting \"%s\" records from %s index: %s\n"),
+		   rc, keyp ? keyp : "???", dbiName(dbi), db_strerror(rc));
+	}
+	dbiCursorFree(dbc);
+    }
+    return rc;
+}
+
 typedef struct miRE_s {
     rpmTagVal		tag;		/*!< header tag */
     rpmMireMode		mode;		/*!< pattern match mode */
