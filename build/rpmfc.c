@@ -320,6 +320,7 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	/* Read when we get data back from the child */
 	if (FD_ISSET(fromProg[0], &ibits)) {
 	    int nbr = read(fromProg[0], buf, sizeof(buf)-1);
+	    if (nbr == 0) break; /* EOF, we're done */
 	    if (nbr < 0 && errno == EINTR) continue;
 	    if (nbr < 0) {
 		myerrno = errno;
@@ -329,10 +330,9 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	    appendStringBuf(readBuff, buf);
 	}
 
-	/* Child exited, we're done */
+	/* Child exited */
 	if (FD_ISSET(sigpipe, &ibits)) {
 	    while (read(sigpipe, buf, sizeof(buf)) > 0) {};
-	    break;
 	}
     }
 
