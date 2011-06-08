@@ -982,43 +982,20 @@ exit:
 
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
-    dbiCursor dbc;
-    DBT key, data; 
-    dbiIndex dbi;
-    rpmDbiTag dbtag = RPMDBI_NAME;
-    int rc;
+    int rc = -1;
+    dbiIndex dbi = rpmdbOpenIndex(db, RPMDBI_NAME, 0);
 
-    if (db == NULL)
-	return 0;
-
-    dbi = rpmdbOpenIndex(db, dbtag, 0);
-    if (dbi == NULL)
-	return 0;
-
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
-    key.data = (void *) name;
-    key.size = strlen(name);
-
-    dbc = dbiCursorInit(dbi, 0);
-    rc = dbiCursorGet(dbc, &key, &data, DB_SET);
-    dbc = dbiCursorFree(dbc);
-
-    if (rc == 0) {		/* success */
+    if (dbi != NULL && name != NULL) {
 	dbiIndexSet matches = NULL;
-	(void) dbt2set(dbi, &data, &matches);
-	if (matches) {
+
+	rc = dbiGetToSet(dbi, name, strlen(name), &matches);
+
+	if (rc == 0) {
 	    rc = dbiIndexSetCount(matches);
-	    matches = dbiIndexSetFree(matches);
+	} else {
+	    rc = (rc == DB_NOTFOUND) ? 0 : -1;
 	}
-    } else if (rc == DB_NOTFOUND) {	/* not found */
-	rc = 0;
-    } else {			/* error */
-	rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, (char*)key.data, dbiName(dbi));
-	rc = -1;
+	dbiIndexSetFree(matches);
     }
 
     return rc;
