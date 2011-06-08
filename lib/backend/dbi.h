@@ -249,6 +249,13 @@ int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
 RPM_GNUC_INTERNAL
 unsigned int dbiCursorCount(dbiCursor dbc);
 
+/** \ingroup dbi
+ * Retrieve underlying index database handle.
+ * @param dbcursor	database cursor
+ * @return		index database handle
+ */
+RPM_GNUC_INTERNAL
+dbiIndex dbiCursorIndex(dbiCursor dbc);
 #ifdef __cplusplus
 }
 #endif

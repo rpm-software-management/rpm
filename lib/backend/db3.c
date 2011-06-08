@@ -354,6 +354,11 @@ unsigned int dbiCursorCount(dbiCursor dbc)
     return count;
 }
 
+dbiIndex dbiCursorIndex(dbiCursor dbc)
+{
+    return (dbc != NULL) ? dbc->dbi : NULL;
+}
+
 int dbiByteSwapped(dbiIndex dbi)
 {
     DB * db = dbi->dbi_db;
