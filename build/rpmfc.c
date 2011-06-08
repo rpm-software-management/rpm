@@ -175,39 +175,6 @@ static rpmds rpmdsSingleNS(rpmTagVal tagN, const char *namespace,
     return ds;
 }
 
-static int _sigpipe[2] = { -1, -1 };
-
-static void sigpipe_handler(int sig)
-{
-    char sigc = sig;
-    /* we can't handle an error here */
-    if (!write(_sigpipe[1], &sigc, 1)) {
-    }
-}
-
-static int sigpipe_init(void)
-{
-    if (pipe(_sigpipe) < 0)
-	return -1;
-    /* Set close on exec and non-blocking (must not get stuck in sighandler) */
-    fcntl(_sigpipe[0], F_SETFL, (fcntl(_sigpipe[0], F_GETFL)|O_NONBLOCK));
-    fcntl(_sigpipe[0], F_SETFD, (fcntl(_sigpipe[0], F_GETFD)|FD_CLOEXEC));
-    fcntl(_sigpipe[1], F_SETFL, (fcntl(_sigpipe[1], F_GETFL)|O_NONBLOCK));
-    fcntl(_sigpipe[1], F_SETFD, (fcntl(_sigpipe[1], F_GETFD)|FD_CLOEXEC));
-    /* XXX SIGPIPE too, but NSPR disables it already, dont mess with it */
-    signal(SIGCHLD, sigpipe_handler); 
-    return _sigpipe[0];
-}
-
-static void sigpipe_finish(void)
-{
-    signal(SIGCHLD, SIG_DFL); 
-    close(_sigpipe[0]);
-    close(_sigpipe[1]);
-    _sigpipe[0] = -1;
-    _sigpipe[1] = -1;
-}
-
 #define max(x,y) ((x) > (y) ? (x) : (y))
 
 /** \ingroup rpmbuild
@@ -230,10 +197,9 @@ static StringBuf getOutputFrom(ARGV_t argv,
     int status;
     StringBuf readBuff;
     int myerrno = 0;
-    int sigpipe = sigpipe_init();
     int ret = 1; /* assume failure */
 
-    if (sigpipe < 0 || pipe(toProg) < 0 || pipe(fromProg) < 0) {
+    if (pipe(toProg) < 0 || pipe(fromProg) < 0) {
 	rpmlog(RPMLOG_ERR, _("Couldn't create pipe for %s: %m\n"), argv[0]);
 	return NULL;
     }
@@ -283,8 +249,6 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	FD_ZERO(&ibits);
 	FD_ZERO(&obits);
 
-	FD_SET(sigpipe, &ibits);
-	nfd = max(nfd, sigpipe);
 	FD_SET(fromProg[0], &ibits);
 	nfd = max(nfd, fromProg[0]);
 
@@ -329,11 +293,6 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	    buf[nbr] = '\0';
 	    appendStringBuf(readBuff, buf);
 	}
-
-	/* Child exited */
-	if (FD_ISSET(sigpipe, &ibits)) {
-	    while (read(sigpipe, buf, sizeof(buf)) > 0) {};
-	}
     }
 
     /* Clean up */
@@ -347,7 +306,6 @@ static StringBuf getOutputFrom(ARGV_t argv,
     rpmlog(RPMLOG_DEBUG, "\twaitpid(%d) rc %d status %x\n",
         (unsigned)child, (unsigned)reaped, status);
 
-    sigpipe_finish();
     if (failNonZero && (!WIFEXITED(status) || WEXITSTATUS(status))) {
 	rpmlog(RPMLOG_ERR, _("%s failed: %x\n"), argv[0], status);
 	goto exit;
