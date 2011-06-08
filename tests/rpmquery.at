@@ -133,7 +133,7 @@ AT_CLEANUP
 # install a package into a local rpmdb
 # * Shall only work with relocation
 # * Use --ignorearch because we don't know the arch
-AT_SETUP([rpm -qil hello])
+AT_SETUP([rpm -q on installed package])
 AT_KEYWORDS([rpmdb install query])
 
 AT_CHECK([
@@ -146,12 +146,19 @@ runroot rpm \
 ],
 [0])
 
+# check common NVRA combinations
 AT_CHECK([
 runroot rpm \
-  -q hello
+  -q hello hello-1.0 hello-1.0-1 \
+     hello.ppc64 hello-1.0.ppc64 hello-1.0-1.ppc64 
 ],
 [0],
 [hello-1.0-1.ppc64
+hello-1.0-1.ppc64
+hello-1.0-1.ppc64
+hello-1.0-1.ppc64
+hello-1.0-1.ppc64
+hello-1.0-1.ppc64
 ],
 [ignore])
 
