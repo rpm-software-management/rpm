@@ -243,7 +243,7 @@ static StringBuf getOutputFrom(ARGV_t argv,
     while (1) {
 	fd_set ibits, obits;
 	int nfd = 0;
-	int rc;
+	ssize_t iorc;
 	char buf[BUFSIZ+1];
 
 	FD_ZERO(&ibits);
@@ -261,9 +261,11 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	    toProg[1] = -1;
 	}
 
-	rc = select(nfd + 1, &ibits, &obits, NULL, NULL);
-	if (rc < 0 && errno == EINTR) continue;
-	if (rc < 0) {
+	do {
+	    iorc = select(nfd + 1, &ibits, &obits, NULL, NULL);
+	} while (iorc == -1 && errno == EINTR);
+
+	if (iorc < 0) {
 	    myerrno = errno;
 	    break;
 	}
@@ -271,26 +273,30 @@ static StringBuf getOutputFrom(ARGV_t argv,
 	/* Write data to child */
 	if (writeBytesLeft > 0 && FD_ISSET(toProg[1], &obits)) {
 	    size_t nb = (1024 < writeBytesLeft) ? 1024 : writeBytesLeft;
-	    int nbw = write(toProg[1], writePtr, nb);
-	    if (nbw < 0 && errno == EINTR) continue;
-	    if (nbw < 0) {
+	    do {
+		iorc = write(toProg[1], writePtr, nb);
+	    } while (iorc == -1 && errno == EINTR);
+
+	    if (iorc < 0) {
 		myerrno = errno;
 		break;
 	    }
-	    writeBytesLeft -= nbw;
-	    writePtr += nbw;
+	    writeBytesLeft -= iorc;
+	    writePtr += iorc;
 	}
 	
 	/* Read when we get data back from the child */
 	if (FD_ISSET(fromProg[0], &ibits)) {
-	    int nbr = read(fromProg[0], buf, sizeof(buf)-1);
-	    if (nbr == 0) break; /* EOF, we're done */
-	    if (nbr < 0 && errno == EINTR) continue;
-	    if (nbr < 0) {
+	    do {
+		iorc = read(fromProg[0], buf, sizeof(buf)-1);
+	    } while (iorc == -1 && errno == EINTR);
+
+	    if (iorc == 0) break; /* EOF, we're done */
+	    if (iorc < 0) {
 		myerrno = errno;
 		break;
 	    }
-	    buf[nbr] = '\0';
+	    buf[iorc] = '\0';
 	    appendStringBuf(readBuff, buf);
 	}
     }
