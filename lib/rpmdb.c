@@ -1088,14 +1088,13 @@ exit:
  * @todo Name must be an exact match, as name is a db key.
  * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMDBI_NAME)
- * @param dbcursor	index database cursor
  * @param key		search key/length/flags
  * @param data		search data/length/flags
  * @param arg		name[-version[-release]] string
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
+static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi,
 		DBT * key, DBT * data, const char * arg, dbiIndexSet * matches)
 {
     size_t arglen = (arg != NULL) ? strlen(arg) : 0;
@@ -1105,12 +1104,15 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
     char c;
     int brackets;
     rpmRC rc;
+    dbiCursor dbc;
  
     if (arglen == 0) return RPMRC_NOTFOUND;
 
+    dbc = dbiCursorInit(dbi, 0);
     /* did they give us just a name? */
     rc = dbiFindMatches(db, dbi, dbc, key, data, arg, NULL, NULL, matches);
-    if (rc != RPMRC_NOTFOUND) return rc;
+    if (rc != RPMRC_NOTFOUND)
+	goto exit;
 
     /* FIX: double indirection */
     *matches = dbiFreeIndexSet(*matches);
@@ -1178,6 +1180,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, dbiCursor dbc,
     rc = dbiFindMatches(db, dbi, dbc, key, data,
 			localarg, s + 1, release, matches);
 exit:
+    dbiCursorFree(dbc);
     return rc;
 }
 
@@ -2004,9 +2007,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
         if (keyp) {
 
             if (isLabel) {
-		dbiCursor dbc = dbiCursorInit(dbi, 0);
-                rc = dbiFindByLabel(db, dbi, dbc, &key, &data, keyp, &set);
-                dbiCursorFree(dbc);
+                rc = dbiFindByLabel(db, dbi, &key, &data, keyp, &set);
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, keyp, &key, &data, &set);
             } else {
