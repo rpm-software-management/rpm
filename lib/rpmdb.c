@@ -449,8 +449,9 @@ static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 			     dbiIndexSet *set)
 {
     int rc = EINVAL;
-    if (dbc != NULL) {
+    if (dbc != NULL && set != NULL) {
 	dbiIndex dbi = dbiCursorIndex(dbc);
+	int cflags = DB_NEXT;
 	DBT data, key;
 	memset(&data, 0, sizeof(data));
 	memset(&key, 0, sizeof(key));
@@ -458,9 +459,10 @@ static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 	if (keyp) {
 	    key.data = (void *) keyp; /* discards const */
 	    key.size = keylen;
+	    cflags = DB_SET;
 	}
 
-	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
+	rc = dbiCursorGet(dbc, &key, &data, cflags);
 
 	if (rc == 0) {
 	    dbt2set(dbi, &data, set);
