@@ -214,7 +214,7 @@ The current index in ds is positioned at overlapping member upon success.\n" },
 	"ds.Rpmlib -> nds       - Return internal rpmlib dependency set.\n"},
  {"Compare",	(PyCFunction)rpmds_Compare,	METH_O,
 	NULL},
- {"Instance",	(PyCFunction)rpmds_Instance,	METH_O,
+ {"Instance",	(PyCFunction)rpmds_Instance,	METH_NOARGS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };
