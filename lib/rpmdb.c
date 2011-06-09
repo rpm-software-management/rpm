@@ -1984,28 +1984,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	} else {
             /* get all entries from index */
 	    dbiCursor dbc = dbiCursorInit(dbi, 0);
-	    DBT key, data;
 
-	    memset(&key, 0, sizeof(key));
-	    memset(&data, 0, sizeof(data));
-
-            while ((rc = dbiCursorGet(dbc, &key, &data, DB_NEXT)) == 0) {
-                dbiIndexSet newset = NULL;
-
-                (void) dbt2set(dbi, &data, &newset);
-                if (set == NULL) {
-                    set = newset;
-                } else {
-                    dbiAppendSet(set, newset->recs, newset->count, sizeof(*(set->recs)), 0);
-                    dbiIndexSetFree(newset);
-                }
-            }
-
-            if (rc != DB_NOTFOUND) {
-                rpmlog(RPMLOG_ERR,
-                       _("error(%d) getting \"%s\" records from %s index\n"),
-                       rc, (key.data ? (char *)key.data : "???"), dbiName(dbi));
-            }
+	    do {
+		rc = dbiCursorGetToSet(dbc, NULL, 0, &set);
+	    } while (rc == 0);
 
 	    dbiCursorFree(dbc);
         }
