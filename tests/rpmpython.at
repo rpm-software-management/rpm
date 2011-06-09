@@ -40,3 +40,75 @@ for e in ts:
 ],
 [foo-1.0-1.noarch]
 )
+
+AT_SETUP([database iterators])
+AT_KEYWORDS([python rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+runroot rpm -i \
+  --justdb --nodeps --ignorearch --ignoreos \
+  /data/RPMS/foo-1.0-1.noarch.rpm \
+  /data/RPMS/hello-2.0-1.i686.rpm
+],
+[0],
+[],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+for h in ts.dbMatch('name'):
+    myprint(h['nevra'])
+],
+[foo-1.0-1.noarch
+hello-2.0-1.i686
+],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+for h in ts.dbMatch('obsoletes'):
+    myprint(h['nevra'])
+],
+[foo-1.0-1.noarch
+],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+for h in ts.dbMatch('provides', 'hi'):
+    myprint(h['nevra'])
+],
+[foo-1.0-1.noarch
+],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+for h in ts.dbMatch('basenames', '/usr/share/doc/hello-2.0/FAQ'):
+    myprint(h['nevra'])
+],
+[hello-2.0-1.i686
+],
+[])
+RPMPY_CHECK([
+ts = rpm.ts()
+for di in ts.dbIndex('obsoletes'):
+    myprint(di)
+],
+[howdy
+],
+[])
+
+RPMPY_CHECK([
+ts = rpm.ts()
+for di in ts.dbIndex('provides'):
+    myprint(di)
+],
+[foo
+hello
+hello(x86-32)
+hi
+],
+[])
+AT_CLEANUP
