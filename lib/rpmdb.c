@@ -475,10 +475,10 @@ static int dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
 		       dbiIndexSet *set)
 {
     int rc = EINVAL;
-    if (dbi != NULL) {
+    if (dbi != NULL && keyp != NULL) {
 	dbiCursor dbc = dbiCursorInit(dbi, 0);
 
-	if (keyp && keylen == 0) {
+	if (keylen == 0) {
 	    keylen = strlen(keyp);
 	    if (keylen == 0)
 		keylen++; /* XXX "/" fixup */
