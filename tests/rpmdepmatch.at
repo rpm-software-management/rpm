@@ -1,7 +1,7 @@
 
 AT_BANNER([RPM dependency matching])
 
-RPMPY_CHECK([provide - require pairs],[
+RPMPY_TEST([provide - require pairs],[
 # ((provides), (requires), match) expected values
 tests = [
     # Different names never match
