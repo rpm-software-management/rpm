@@ -9,6 +9,29 @@ myprint(rpm.__version__)
 [AT_PACKAGE_VERSION]
 )
 
+RPMPY_TEST([macro manipulation],[
+def prexp(m):
+    myprint(rpm.expandMacro('%%{?%s}' % m))
+
+mname = '__no_such_macro_yet'
+prexp(mname)
+rpm.addMacro(mname, '/bin/sh')
+prexp(mname)
+rpm.addMacro(mname, '/bin/false')
+prexp(mname)
+rpm.delMacro(mname)
+prexp(mname)
+rpm.delMacro(mname)
+prexp(mname)
+],
+[
+/bin/sh
+/bin/false
+/bin/sh
+
+],
+[])
+
 RPMPY_TEST([basic header manipulation],[
 h = rpm.hdr()
 h['name'] = 'testpkg'
@@ -112,3 +135,48 @@ hi
 ],
 [])
 AT_CLEANUP
+
+RPMPY_TEST([dependency sets 1],[
+ts = rpm.ts()
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')
+for dep in rpm.ds(h, 'requires'):
+    myprint(dep.DNEVR())
+],
+[R /bin/sh
+R /bin/sh
+R /bin/sh
+R /bin/sh
+R libc.so.6
+R libc.so.6(GLIBC_2.0)
+R rpmlib(CompressedFileNames) <= 3.0.4-1
+R rpmlib(PayloadFilesHavePrefix) <= 4.0-1
+R rtld(GNU_HASH)]
+)
+
+RPMPY_TEST([dependency sets 2],[
+ts = rpm.ts()
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
+ds = rpm.ds(h, 'provides')
+myprint('%d %d' % (ds.Instance(), ds.Count()))
+],
+[0 2
+],
+[])
+
+RPMPY_TEST([file info sets 1],[
+ts = rpm.ts()
+h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-2.0-1.i686.rpm')
+fi = rpm.fi(h)
+myprint(fi.FC())
+for f in fi:
+   myprint('%x: %s' % (fi.FFlags(), fi.FN()))
+],
+[5
+0: /usr/bin/hello
+0: /usr/share/doc/hello-2.0
+2: /usr/share/doc/hello-2.0/COPYING
+2: /usr/share/doc/hello-2.0/FAQ
+2: /usr/share/doc/hello-2.0/README
+],
+[])
+
