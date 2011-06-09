@@ -1989,6 +1989,10 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 		rc = dbiCursorGetToSet(dbc, NULL, 0, &set);
 	    } while (rc == 0);
 
+	    /* If we got some results, not found is not an error */
+	    if (rc == DB_NOTFOUND && set != NULL)
+		rc = 0;
+
 	    dbiCursorFree(dbc);
         }
 
