@@ -455,8 +455,10 @@ static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 	memset(&data, 0, sizeof(data));
 	memset(&key, 0, sizeof(key));
 
-	key.data = (void *) keyp; /* discards const */
-	key.size = keylen;
+	if (keyp) {
+	    key.data = (void *) keyp; /* discards const */
+	    key.size = keylen;
+	}
 
 	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
 
