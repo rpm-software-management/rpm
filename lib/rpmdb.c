@@ -465,7 +465,15 @@ static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 	rc = dbiCursorGet(dbc, &key, &data, cflags);
 
 	if (rc == 0) {
-	    dbt2set(dbi, &data, set);
+	    dbiIndexSet newset = NULL;
+	    dbt2set(dbi, &data, &newset);
+	    if (*set == NULL) {
+		*set = newset;
+	    } else {
+		dbiAppendSet(*set, newset->recs, newset->count,
+			     sizeof(*(newset->recs)), 0);
+		dbiIndexSetFree(newset);
+	    }
 	} else if (rc != DB_NOTFOUND) {
 	    rpmlog(RPMLOG_ERR,
 		   _("error(%d) getting \"%s\" records from %s index: %s\n"),
