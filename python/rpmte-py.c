@@ -117,6 +117,11 @@ rpmte_Parent(rpmteObject * s)
     return Py_BuildValue("i", rpmteParent(s->te));
 }
 
+static PyObject * rpmte_Failed(rpmteObject * s)
+{
+    return Py_BuildValue("i", rpmteFailed(s->te));
+}
+
 static PyObject * rpmte_Problems(rpmteObject * s)
 {
     rpmps ps = rpmteProblems(s->te);
@@ -221,6 +226,8 @@ static struct PyMethodDef rpmte_methods[] = {
 /*    {"DependsOnKey",(PyCFunction)rpmte_DependsOnKey,	METH_NOARGS,
       NULL}, */
     {"DBOffset",(PyCFunction)rpmte_DBOffset,	METH_NOARGS,
+	NULL},
+    {"Failed",	(PyCFunction)rpmte_Failed,	METH_NOARGS,
 	NULL},
     {"Key",	(PyCFunction)rpmte_Key,		METH_NOARGS,
 	NULL},
