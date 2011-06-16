@@ -303,16 +303,26 @@ int readLine(rpmSpec spec, int strip)
     struct ReadLevelEntry *rl;
     OFI_t *ofi = spec->fileStack;
     int rc;
+    int startLine = 0;
 
     if (!restoreFirstChar(spec)) {
     retry:
-	if ((rc = readLineFromOFI(spec, ofi)) != 0)
+	if ((rc = readLineFromOFI(spec, ofi)) != 0) {
+	    if (startLine > 0) {
+		rpmlog(RPMLOG_ERR,
+		    _("line %d: unclosed macro or bad line continuation\n"),
+		    startLine);
+		rc = PART_ERROR;
+	    }
 	    return rc;
+	}
 	ofi = spec->fileStack;
 
 	/* Copy next file line into the spec line buffer */
 	rc = copyNextLineFromOFI(spec, ofi);
 	if (rc > 0) {
+	    if (startLine == 0)
+		startLine = spec->lineNum;
 	    goto retry;
 	} else if (rc < 0) {
 	    return PART_ERROR;
