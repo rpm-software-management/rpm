@@ -306,8 +306,48 @@ static int origfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
     }
     return (td->data != NULL); 
 }
+
+/*
+ * Attempt to generate libmagic-style file class if missing from header:
+ * we can easily generate this for symlinks and other special types.
+ * Always return malloced strings to simplify life in fileclassTag().
+ */
+static char *makeFClass(rpmfi fi)
+{
+    char *fclass = NULL;
+    const char *hc = rpmfiFClass(fi);
+
+    if (hc != NULL && hc[0] != '\0') {
+	fclass = xstrdup(hc);
+    } else {
+	switch (rpmfiFMode(fi) & S_IFMT) {
+	case S_IFBLK:
+	    fclass = xstrdup("block special");
+	    break;
+	case S_IFCHR:
+	    fclass = xstrdup("character special");
+	    break;
+	case S_IFDIR:
+	    fclass = xstrdup("directory");
+	    break;
+	case S_IFIFO:
+	    fclass = xstrdup("fifo (named pipe)");
+	    break;
+	case S_IFSOCK:
+	    fclass = xstrdup("socket");
+	    break;
+	case S_IFLNK:
+	    fclass = rstrscat(NULL, "symbolic link to `",
+			      rpmfiFLink(fi), "'", NULL);
+	    break;
+	}
+    }
+
+    return (fclass != NULL) ? fclass : xstrdup("");
+}
+
 /**
- * Retrieve file classes.
+ * Retrieve/generate file classes.
  * @param h		header
  * @retval td		tag data container
  * @return		1 on success
@@ -315,31 +355,25 @@ static int origfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 static int fileclassTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
     rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
-    char **fclasses;
-    int ix, numfiles;
-    int rc = 0;
+    int numfiles = rpmfiFC(fi);
 
-    numfiles = rpmfiFC(fi);
-    if (numfiles <= 0) {
-	goto exit;
+    if (numfiles > 0) {
+	char **fclasses = xmalloc(numfiles * sizeof(*fclasses));
+	int ix;
+
+	rpmfiInit(fi, 0);
+	while ((ix = rpmfiNext(fi)) >= 0) {
+	    fclasses[ix] = makeFClass(fi);
+	}
+
+	td->data = fclasses;
+	td->count = numfiles;
+	td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
+	td->type = RPM_STRING_ARRAY_TYPE;
     }
 
-    fclasses = xmalloc(numfiles * sizeof(*fclasses));
-    rpmfiInit(fi, 0);
-    while ((ix = rpmfiNext(fi)) >= 0) {
-	const char *fclass = rpmfiFClass(fi);
-	fclasses[ix] = xstrdup(fclass ? fclass : "");
-    }
-
-    td->data = fclasses;
-    td->count = numfiles;
-    td->flags = RPMTD_ALLOCED | RPMTD_PTR_ALLOCED;
-    td->type = RPM_STRING_ARRAY_TYPE;
-    rc = 1;
-
-exit:
     rpmfiFree(fi);
-    return rc; 
+    return (numfiles > 0); 
 }
 
 /**
