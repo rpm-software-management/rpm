@@ -13,6 +13,7 @@ const char *__progname;
 enum modes {
     MODE_UNKNOWN	= 0,
     MODE_QUERY		= (1 <<  0),
+    MODE_PARSE		= (1 <<  1),
 };
 
 static int mode = MODE_UNKNOWN;
@@ -21,6 +22,8 @@ const char *target = NULL;
 char *queryformat = NULL;
 
 static struct poptOption specOptsTable[] = {
+    { "parse", 'P', POPT_ARG_VAL, &mode, MODE_PARSE,
+	N_("parse spec file(s) to stdout"), NULL },
     { "query", 'q', POPT_ARG_VAL, &mode, MODE_QUERY,
 	N_("query spec file(s)"), NULL },
     { "rpms", 0, POPT_ARG_VAL, &source, RPMQV_SPECRPMS,
@@ -80,6 +83,23 @@ int main(int argc, char *argv[])
 	qva->qva_specQuery = rpmspecQuery;
 	ec = rpmcliQuery(ts, qva, (ARGV_const_t) poptGetArgs(optCon));
 	break;
+
+    case MODE_PARSE: {
+	const char * spath;
+	if (!poptPeekArg(optCon))
+	    argerror(_("no arguments given for parse"));
+
+	while ((spath = poptGetArg(optCon)) != NULL) {
+	    rpmSpec spec = rpmSpecParse(spath, 0, NULL);
+	    if (spec == NULL) {
+		ec++;
+		continue;
+	    }
+	    fprintf(stdout, "%s", rpmSpecGetSection(spec, RPMBUILD_NONE));
+	    rpmSpecFree(spec);
+	}
+	break;
+    }
 
     case MODE_UNKNOWN:
 	if (poptPeekArg(optCon) != NULL || argc <= 1 || rpmIsVerbose()) {
