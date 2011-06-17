@@ -1,4 +1,4 @@
-/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009, 2010 Red Hat, Inc.
+/* Copyright (C) 2001, 2002, 2003, 2005, 2007, 2009, 2010, 2011 Red Hat, Inc.
    Written by Alexander Larsson <alexl@redhat.com>, 2002
    Based on code by Jakub Jelinek <jakub@redhat.com>, 2001.
 
@@ -44,6 +44,10 @@
 #include "tools/hashtab.h"
 
 #define DW_TAG_partial_unit 0x3c
+#define DW_FORM_sec_offset 0x17
+#define DW_FORM_exprloc 0x18
+#define DW_FORM_flag_present 0x19
+#define DW_FORM_ref_sig8 0x20
 
 char *base_dir = NULL;
 char *dest_dir = NULL;
@@ -220,6 +224,7 @@ static struct
 #define DEBUG_STR	8
 #define DEBUG_FRAME	9
 #define DEBUG_RANGES	10
+#define DEBUG_TYPES	11
     { ".debug_info", NULL, NULL, 0, 0, 0 },
     { ".debug_abbrev", NULL, NULL, 0, 0, 0 },
     { ".debug_line", NULL, NULL, 0, 0, 0 },
@@ -231,6 +236,7 @@ static struct
     { ".debug_str", NULL, NULL, 0, 0, 0 },
     { ".debug_frame", NULL, NULL, 0, 0, 0 },
     { ".debug_ranges", NULL, NULL, 0, 0, 0 },
+    { ".debug_types", NULL, NULL, 0, 0, 0 },
     { NULL, NULL, NULL, 0, 0, 0 }
   };
 
@@ -323,7 +329,8 @@ no_memory:
 		goto no_memory;
 	    }
 	  form = read_uleb128 (ptr);
-	  if (form == 2 || form > DW_FORM_indirect)
+	  if (form == 2
+	      || (form > DW_FORM_flag_present && form != DW_FORM_ref_sig8))
 	    {
 	      error (0, 0, "%s: Unknown DWARF DW_FORM_%d", dso->filename, form);
 	      htab_delete (h);
@@ -495,7 +502,7 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
     }
 
   value = read_16 (ptr);
-  if (value != 2 && value != 3)
+  if (value != 2 && value != 3 && value != 4)
     {
       error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
 	     value);
@@ -511,8 +518,8 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
       return 1;
     }
 
-  opcode_base = ptr[4];
-  ptr = dir = ptr + 4 + opcode_base;
+  opcode_base = ptr[4 + (value >= 4)];
+  ptr = dir = ptr + 4 + (value >= 4) + opcode_base;
 
   /* dir table: */
   value = 1;
@@ -739,7 +746,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	{
 	  if (t->attr[i].attr == DW_AT_stmt_list)
 	    {
-	      if (form == DW_FORM_data4)
+	      if (form == DW_FORM_data4
+		  || form == DW_FORM_sec_offset)
 		{
 		  list_offs = do_read_32_relocated (ptr);
 		  found_list_offs = 1;
@@ -841,6 +849,8 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      else
 		ptr += 4;
 	      break;
+	    case DW_FORM_flag_present:
+	      break;
 	    case DW_FORM_addr:
 	      ptr += ptr_size;
 	      break;
@@ -855,10 +865,12 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      break;
 	    case DW_FORM_ref4:
 	    case DW_FORM_data4:
+	    case DW_FORM_sec_offset:
 	      ptr += 4;
 	      break;
 	    case DW_FORM_ref8:
 	    case DW_FORM_data8:
+	    case DW_FORM_ref_sig8:
 	      ptr += 8;
 	      break;
 	    case DW_FORM_sdata:
@@ -887,6 +899,7 @@ edit_attributes (DSO *dso, unsigned char *ptr, struct abbrev_tag *t, int phase)
 	      form = DW_FORM_block1;
 	      break;
 	    case DW_FORM_block:
+	    case DW_FORM_exprloc:
 	      len = read_uleb128 (ptr);
 	      form = DW_FORM_block1;
 	      assert (len < UINT_MAX);
@@ -1190,7 +1203,7 @@ edit_dwarf2 (DSO *dso)
 		}
 
 	      cu_version = read_16 (ptr);
-	      if (cu_version != 2 && cu_version != 3)
+	      if (cu_version != 2 && cu_version != 3 && cu_version != 4)
 		{
 		  error (0, 0, "%s: DWARF version %d unhandled", dso->filename,
 			 cu_version);
