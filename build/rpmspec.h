@@ -65,7 +65,11 @@ rpmSourceFlags rpmSpecSrcFlags(rpmSpecSrc src);
 int rpmSpecSrcNum(rpmSpecSrc src);
 const char * rpmSpecSrcFilename(rpmSpecSrc src, int full);
 
-/* Retrieve parsed spec script section (RPMBUILD_PREP, RPMBUILD_BUILD etc) */
+/*
+ * Retrieve parsed spec script section (RPMBUILD_PREP, RPMBUILD_BUILD etc).
+ * As a special case, RPMBUILD_NONE as section returns the entire spec in
+ * preprocessed (macros expanded etc) format.
+ */
 const char * rpmSpecGetSection(rpmSpec spec, int section);
 
 /** \ingroup rpmbuild

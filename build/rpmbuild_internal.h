@@ -75,6 +75,8 @@ struct rpmSpec_s {
     StringBuf check;		/*!< %check scriptlet. */
     StringBuf clean;		/*!< %clean scriptlet. */
 
+    StringBuf parsed;		/*!< parsed spec contents */
+
     Package packages;		/*!< Package list. */
 };
 
