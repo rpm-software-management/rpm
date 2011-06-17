@@ -415,7 +415,7 @@ int readLine(rpmSpec spec, int strip)
     /* Collect parsed line */
     if (spec->parsed == NULL)
 	spec->parsed = newStringBuf();
-    appendLineStringBuf(spec->parsed, spec->line);
+    appendStringBufAux(spec->parsed, spec->line,(strip & STRIP_TRAILINGSPACE));
 
     /* FIX: spec->readStack->next should be dependent */
     return 0;
