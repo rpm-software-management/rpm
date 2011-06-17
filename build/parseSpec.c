@@ -412,6 +412,11 @@ int readLine(rpmSpec spec, int strip)
 	spec->line[0] = '\0';
     }
 
+    /* Collect parsed line */
+    if (spec->parsed == NULL)
+	spec->parsed = newStringBuf();
+    appendLineStringBuf(spec->parsed, spec->line);
+
     /* FIX: spec->readStack->next should be dependent */
     return 0;
 }
