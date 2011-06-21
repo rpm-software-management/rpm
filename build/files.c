@@ -101,7 +101,6 @@ static StringBuf check_fileList = NULL;
 typedef struct FileList_s {
     char * buildRoot;
 
-    int fileCount;
     int processingFailed;
 
     int passedSpecialDoc;
@@ -1513,7 +1512,6 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     fl->fileListRecsUsed++;
-    fl->fileCount++;
 
     return RPMRC_OK;
 }
@@ -1768,7 +1766,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
 
-    fl.fileCount = 0;
     fl.processingFailed = 0;
 
     fl.passedSpecialDoc = 0;
