@@ -103,7 +103,6 @@ typedef struct FileList_s {
 
     int processingFailed;
 
-    int noGlob;
     unsigned devtype;
     unsigned devmajor;
     int devminor;
@@ -428,8 +427,6 @@ static rpmRC parseForDev(char * buf, FileList fl)
 	errstr = "devminor";
 	goto exit;
     }
-
-    fl->noGlob = 1;
 
     rc = RPMRC_OK;
 
@@ -1670,9 +1667,8 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	int argc = 0;
 	int i;
 
-	/* XXX for %dev marker in file manifest only */
-	if (fl->noGlob) {
-	    rpmlog(RPMLOG_ERR, _("Glob not permitted: %s\n"), diskPath);
+	if (fl->devtype) {
+	    rpmlog(RPMLOG_ERR, _("%%dev glob not permitted: %s\n"), diskPath);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
@@ -1767,7 +1763,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.currentFlags = 0;
     fl.currentVerifyFlags = 0;
     
-    fl.noGlob = 0;
     fl.devtype = 0;
     fl.devmajor = 0;
     fl.devminor = 0;
@@ -1814,7 +1809,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.currentSpecdFlags = ((unsigned)fl.defSpecdFlags) >> 8;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 
-	fl.noGlob = 0;
  	fl.devtype = 0;
  	fl.devmajor = 0;
  	fl.devminor = 0;
@@ -1877,7 +1871,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.currentFlags = 0;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
 
-	fl.noGlob = 0;
  	fl.devtype = 0;
  	fl.devmajor = 0;
  	fl.devminor = 0;
