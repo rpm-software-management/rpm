@@ -103,9 +103,6 @@ typedef struct FileList_s {
 
     int processingFailed;
 
-    int passedSpecialDoc;
-    int isSpecialDoc;
-
     int noGlob;
     unsigned devtype;
     unsigned devmajor;
@@ -933,7 +930,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    res = RPMRC_FAIL;
 	} else {
 	    /* XXX FIXME: this is easy to do as macro expansion */
-	    if (! fl->passedSpecialDoc) {
+	    if (pkg->specialDoc == NULL) {
 		char *mkdocdir = rpmExpand("%{__mkdir_p} $DOCDIR", NULL);
 		pkg->specialDoc = newStringBuf();
 		appendStringBuf(pkg->specialDoc, "DOCDIR=$RPM_BUILD_ROOT");
@@ -943,8 +940,6 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		free(mkdocdir);
 
 		*fileName = pkg->specialDocDir;
-		fl->passedSpecialDoc = 1;
-		fl->isSpecialDoc = 1;
 	    }
 
 	    appendStringBuf(pkg->specialDoc, "cp -pr ");
@@ -1768,9 +1763,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     fl.processingFailed = 0;
 
-    fl.passedSpecialDoc = 0;
-    fl.isSpecialDoc = 0;
-
     fl.isDir = 0;
     fl.currentFlags = 0;
     fl.currentVerifyFlags = 0;
@@ -1821,7 +1813,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
 	fl.currentSpecdFlags = ((unsigned)fl.defSpecdFlags) >> 8;
 	fl.currentVerifyFlags = fl.defVerifyFlags;
-	fl.isSpecialDoc = 0;
 
 	fl.noGlob = 0;
  	fl.devtype = 0;
@@ -1857,9 +1848,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	if (fileName == NULL)
 	    continue;
 
-	if (fl.isSpecialDoc) {
+	if (pkg->specialDoc && specialDoc == NULL) {
 	    /* Save this stuff for last */
-	    free(specialDoc);
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
