@@ -1769,7 +1769,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.fileListRecsUsed = 0;
 
     for (ARGV_const_t fp = pkg->fileList; *fp != NULL; fp++) {
-	char buf[BUFSIZ];
+	char buf[strlen(*fp) + 1];
 	const char *s = *fp;
 	SKIPSPACE(s);
 	if (*s == '\0')
