@@ -601,17 +601,25 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	const char * path;
 	int ut = urlPath(av[j], &path);
 	int local = (ut == URL_IS_PATH) || (ut == URL_IS_UNKNOWN);
+	size_t plen = strlen(path);
+	int flags = gflags;
+	int dir_only = (plen > 0 && path[plen-1] == '/');
 	glob_t gl;
 
 	if (!local || (!glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
 	    argvAdd(&argv, av[j]);
 	    continue;
 	}
+
+#ifdef GLOB_ONLYDIR
+	if (dir_only)
+	    flags |= GLOB_ONLYDIR;
+#endif
 	
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
 	
-	rc = glob(av[j], gflags, NULL, &gl);
+	rc = glob(av[j], flags, NULL, &gl);
 	if (rc)
 	    goto exit;
 
@@ -645,6 +653,13 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 
 	for (i = 0; i < gl.gl_pathc; i++) {
 	    const char * globFile = &(gl.gl_pathv[i][0]);
+
+	    if (dir_only) {
+		struct stat sb;
+		if (lstat(gl.gl_pathv[i], &sb) || !S_ISDIR(sb.st_mode))
+		    continue;
+	    }
+		
 	    if (globRoot > globURL && globRoot[-1] == '/')
 		while (*globFile == '/') globFile++;
 	    strcpy(globRoot, globFile);
