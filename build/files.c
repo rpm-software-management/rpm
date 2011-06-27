@@ -1391,8 +1391,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	}
     }
 
-    if ((! fl->isDir) && S_ISDIR(statp->st_mode)) {
-/* FIX: fl->buildRoot may be NULL */
+    /* Don't recurse into explicit %dir, don't double-recurse from fts */
+    if ((fl->isDir != 1) && (statp == &statbuf) && S_ISDIR(statp->st_mode)) {
 	return recurseDir(fl, diskPath);
     }
 
@@ -1498,8 +1498,6 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
     int myFtsOpts = (FTS_COMFOLLOW | FTS_NOCHDIR | FTS_PHYSICAL);
     rpmRC rc = RPMRC_FAIL;
 
-    fl->isDir = 1;  /* Keep it from following myftw() again         */
-
     ftsSet[0] = (char *) diskPath;
     ftsSet[1] = NULL;
     ftsp = Fts_open(ftsSet, myFtsOpts, NULL);
@@ -1531,8 +1529,6 @@ static rpmRC recurseDir(FileList fl, const char * diskPath)
 	    break;
     }
     (void) Fts_close(ftsp);
-
-    fl->isDir = 0;
 
     return rc;
 }
