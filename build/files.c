@@ -1382,8 +1382,11 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		    statp->st_atime = now;
 		    statp->st_mtime = now;
 		    statp->st_ctime = now;
-		} else {	
-		    rpmlog(RPMLOG_ERR, _("File not found: %s\n"), diskPath);
+		} else {
+		    const char *msg = fl->isDir ?
+					    _("Directory not found: %s\n") :
+					    _("File not found: %s\n");
+		    rpmlog(RPMLOG_ERR, msg, diskPath);
 		    fl->processingFailed = 1;
 		    return RPMRC_FAIL;
 		}
@@ -1614,6 +1617,12 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     int doGlob;
     char *diskPath = NULL;
     rpmRC rc = RPMRC_OK;
+    size_t fnlen = strlen(fileName);
+    int trailing_slash = (fnlen > 0 && fileName[fnlen-1] == '/');
+
+    /* XXX differentiate other directories from explicit %dir */
+    if (trailing_slash && !fl->isDir)
+	fl->isDir = -1;
     
     doGlob = glob_pattern_p(fileName, quote);
 
@@ -1633,6 +1642,9 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
      *		/.././../usr/../bin//./sh
      */
     diskPath = rpmGenPath(fl->buildRoot, NULL, fileName);
+    /* Arrange trailing slash on directories */
+    if (fl->isDir)
+	diskPath = rstrcat(&diskPath, "/");
 
     if (doGlob) {
 	ARGV_t argv = NULL;
@@ -1651,7 +1663,10 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    }
 	    argvFree(argv);
 	} else {
-	    rpmlog(RPMLOG_ERR, _("File not found by glob: %s\n"), diskPath);
+	    const char *msg = (fl->isDir) ?
+				_("Directory not found by glob: %s\n") :
+				_("File not found by glob: %s\n");
+	    rpmlog(RPMLOG_ERR, msg, diskPath);
 	    rc = RPMRC_FAIL;
 	    goto exit;
 	}
