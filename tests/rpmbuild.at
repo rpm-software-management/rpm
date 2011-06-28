@@ -86,8 +86,6 @@ AT_CLEANUP
 # ------------------------------
 # %attr/%defattr tests
 AT_SETUP([rpmbuild %attr and %defattr])
-# expected failure on RhBug:681540
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_KEYWORDS([build])
 AT_CHECK([[
 rm -rf ${TOPDIR}

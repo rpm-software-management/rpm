@@ -534,13 +534,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 	}
 	ar->ar_fmode = ui;
     } else {
-	if (ret_ar == &(fl->def_ar)) {
-	    ar->ar_fmodestr = NULL;
-	    ar->ar_fmode = 0;
-	} else {
-	    ar->ar_fmodestr = fl->def_ar.ar_fmodestr;
-	    ar->ar_fmode = fl->def_ar.ar_fmode;
-	}
+	ar->ar_fmodestr = NULL;
     }
 
     if (ar->ar_dmodestr && !isAttrDefault(ar->ar_dmodestr)) {
@@ -552,29 +546,15 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 	}
 	ar->ar_dmode = ui;
     } else {
-	if (ret_ar == &(fl->def_ar)) {
-	    ar->ar_dmodestr = NULL;
-	    ar->ar_dmode = 0;
-	} else {
-	    ar->ar_dmodestr = fl->def_ar.ar_dmodestr;
-	    ar->ar_dmode = fl->def_ar.ar_dmode;
-	}
+	ar->ar_dmodestr = NULL;
     }
 
     if (!(ar->ar_user && !isAttrDefault(ar->ar_user))) {
-	if (ret_ar == &(fl->def_ar)) {
-	    ar->ar_user = NULL;
-	} else {
-	    ar->ar_user = fl->def_ar.ar_user;
-	}
+	ar->ar_user = NULL;
     }
 
     if (!(ar->ar_group && !isAttrDefault(ar->ar_group))) {
-	if (ret_ar == &(fl->def_ar)) {
-	    ar->ar_group = NULL;
-	} else {
-	    ar->ar_group = fl->def_ar.ar_group;
-	}
+	ar->ar_group = NULL;
     }
 
     dupAttrRec(ar, ret_ar);
@@ -1403,20 +1383,33 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     fileUid = statp->st_uid;
     fileGid = statp->st_gid;
 
-    if (S_ISDIR(fileMode) && fl->cur_ar.ar_dmodestr) {
-	fileMode &= S_IFMT;
-	fileMode |= fl->cur_ar.ar_dmode;
-    } else if (fl->cur_ar.ar_fmodestr != NULL) {
+    /* Explicit %attr() always wins */
+    if (fl->cur_ar.ar_fmodestr != NULL) {
 	fileMode &= S_IFMT;
 	fileMode |= fl->cur_ar.ar_fmode;
+    } else {
+	/* ...but %defattr() for directories and files is different */
+	if (S_ISDIR(fileMode)) {
+	    if (fl->def_ar.ar_dmodestr) {
+		fileMode &= S_IFMT;
+		fileMode |= fl->def_ar.ar_dmode;
+	    }
+	} else if (fl->def_ar.ar_fmodestr) {
+	    fileMode &= S_IFMT;
+	    fileMode |= fl->def_ar.ar_fmode;
+	}
     }
     if (fl->cur_ar.ar_user) {
 	fileUname = fl->cur_ar.ar_user;
+    } else if (fl->def_ar.ar_user) {
+	fileUname = fl->def_ar.ar_user;
     } else {
 	fileUname = rpmugUname(fileUid);
     }
     if (fl->cur_ar.ar_group) {
 	fileGname = fl->cur_ar.ar_group;
+    } else if (fl->def_ar.ar_group) {
+	fileGname = fl->def_ar.ar_group;
     } else {
 	fileGname = rpmugGname(fileGid);
     }
@@ -1803,7 +1796,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.currentLangs = argvFree(fl.currentLangs);
 	fl.currentCaps = NULL;
 
-	dupAttrRec(&fl.def_ar, &fl.cur_ar);
+	freeAttrRec(&fl.cur_ar);
 
 	if (parseForVerify(buf, &fl))
 	    continue;
