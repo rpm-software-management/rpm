@@ -82,3 +82,45 @@ run rpmbuild \
 [ignore],
 [ignore])
 AT_CLEANUP
+
+# ------------------------------
+# %attr/%defattr tests
+AT_SETUP([rpmbuild %attr and %defattr])
+# expected failure on RhBug:681540
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_KEYWORDS([build])
+AT_CHECK([[
+rm -rf ${TOPDIR}
+
+runroot rpmbuild \
+  -bb --quiet /data/SPECS/attrtest.spec
+
+runroot rpm -qp --qf \
+  "\n[%{filemodes:perms} %-8{fileusername} %-8{filegroupname} %{filenames}\n]"\
+  "${TOPDIR}"/RPMS/noarch/attrtest-1.0-1.noarch.rpm
+]],
+[0],
+[
+drwx------ root     root     /a/dir
+-r-------- root     root     /a/file
+drwx------ daemon   adm      /b/dir
+-r-------- daemon   adm      /b/file
+drwxr-x--- root     adm      /c/dir
+-rw-r----- daemon   root     /c/file
+drwxr-x--x daemon   bin      /d/dir
+-rw-r--r-- bin      daemon   /d/file
+drwx------ foo      bar      /e/dir
+-r-------- foo      bar      /e/file
+drwxrwx--- bar      foo      /f/dir
+-rw-rw---- bar      foo      /f/file
+drwx------ adm      foo      /g/dir
+-r-------- bar      adm      /g/file
+drwxr-xr-x foo      bar      /h/dir
+-rw-r--r-- foo      bar      /h/file
+drwxr-x--- adm      root     /i/dir
+-rwsr-xr-x root     adm      /i/file
+drwxrwxrwx zoot     zoot     /j/dir
+--w--w--w- zoot     zoot     /j/file
+],
+[])
+AT_CLEANUP

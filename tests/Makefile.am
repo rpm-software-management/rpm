@@ -30,6 +30,7 @@ TESTSUITE_AT += rpmdepmatch.at
 EXTRA_DIST += $(TESTSUITE_AT)
 
 ## testsuite data
+EXTRA_DIST += data/SPECS/attrtest.spec
 EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SPECS/hello-script.spec
 EXTRA_DIST += data/SPECS/foo.spec
