@@ -340,7 +340,7 @@ AM_GNU_GETTEXT([external])
 dnl Checks for header files we can live without.
 AC_HEADER_STDC
 AC_HEADER_MAJOR
-AC_HEADER_DIRENT
+AC_STRUCT_DIRENT_D_TYPE
 
 AC_CHECK_HEADERS(limits.h)
 AC_CHECK_HEADERS(fcntl.h getopt.h)
