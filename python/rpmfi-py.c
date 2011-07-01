@@ -288,26 +288,20 @@ static PyMappingMethods rpmfi_as_mapping = {
 
 static int rpmfi_init(rpmfiObject * s, PyObject *args, PyObject *kwds)
 {
-    s->active = 0;
-    return 0;
-}
-
-static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
-{
-    PyObject * to = NULL;
+    PyObject * to = NULL; /* unused */
     Header h = NULL;
-    rpmfi fi = NULL;
-    rpmTagVal tagN = RPMTAG_BASENAMES;
     int flags = 0;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|Oi:rpmfi_init", kwlist,
 				hdrFromPyObject, &h, &to, &flags))
-	return NULL;
+	return -1;
 
-    fi = rpmfiNew(NULL, h, tagN, flags);
+    rpmfiFree(s->fi);
+    s->fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
+    s->active = 0;
 
-    return rpmfi_Wrap(subtype, fi);
+    return 0;
 }
 
 static char rpmfi_doc[] =
@@ -352,17 +346,10 @@ PyTypeObject rpmfi_Type = {
 	0,				/* tp_dictoffset */
 	(initproc) rpmfi_init,		/* tp_init */
 	0,				/* tp_alloc */
-	(newfunc) rpmfi_new,		/* tp_new */
+	PyType_GenericNew,		/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
-
-/* ---------- */
-
-rpmfi fiFromFi(rpmfiObject * s)
-{
-    return s->fi;
-}
 
 PyObject * rpmfi_Wrap(PyTypeObject *subtype, rpmfi fi)
 {
