@@ -215,36 +215,41 @@ static PyObject *rpmfd_tell(rpmfdObject *s)
 static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "size", NULL };
-    char *buf = NULL;
-    ssize_t reqsize = -1;
-    ssize_t bufsize = 0;
-    ssize_t read = 0;
+    char buf[BUFSIZ];
+    ssize_t chunksize = sizeof(buf);
+    ssize_t left = -1;
+    ssize_t nb = 0;
     PyObject *res = NULL;
     
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|l", kwlist, &reqsize))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|l", kwlist, &left))
 	return NULL;
 
     if (s->fd == NULL) return err_closed();
 
-    /* XXX simple, stupid for now ... and broken for anything large */
-    bufsize = (reqsize < 0) ? fdSize(s->fd) : reqsize;
-    if ((buf = malloc(bufsize+1)) == NULL) {
-	return PyErr_NoMemory();
-    }
-    
-    Py_BEGIN_ALLOW_THREADS 
-    read = Fread(buf, 1, bufsize, s->fd);
-    Py_END_ALLOW_THREADS 
+    /* ConcatAndDel() doesn't work on NULL string, meh */
+    res = PyBytes_FromStringAndSize(NULL, 0);
+    do {
+	if (left >= 0 && left < chunksize)
+	    chunksize = left;
+
+	Py_BEGIN_ALLOW_THREADS 
+	nb = Fread(buf, 1, chunksize, s->fd);
+	Py_END_ALLOW_THREADS 
+
+	if (nb > 0) {
+	    PyObject *tmp = PyBytes_FromStringAndSize(buf, nb);
+	    PyString_ConcatAndDel(&res, tmp);
+	    left -= nb;
+	}
+    } while (nb > 0);
 
     if (Ferror(s->fd)) {
 	PyErr_SetString(PyExc_IOError, Fstrerror(s->fd));
-	goto exit;
+	Py_XDECREF(res);
+	return NULL;
+    } else {
+	return res;
     }
-    res = PyBytes_FromStringAndSize(buf, read);
-
-exit:
-    free(buf);
-    return res;
 }
 
 static PyObject *rpmfd_write(rpmfdObject *s, PyObject *args, PyObject *kwds)
