@@ -254,12 +254,6 @@ static PyMappingMethods rpmds_as_mapping = {
         (objobjargproc)0,		/* mp_ass_subscript */
 };
 
-static int rpmds_init(rpmdsObject * s, PyObject *args, PyObject *kwds)
-{
-    s->active = 0;
-    return 0;
-}
-
 static int depflags(PyObject *o, rpmsenseFlags *senseFlags)
 {
     int ok = 0;
@@ -299,7 +293,7 @@ static int depflags(PyObject *o, rpmsenseFlags *senseFlags)
     return ok;
 }
 
-static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
+static int rpmds_init(rpmdsObject *s, PyObject *args, PyObject *kwds)
 {
     PyObject *obj;
     rpmTagVal tagN = RPMTAG_REQUIRENAME;
@@ -309,7 +303,7 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&:rpmds_new", kwlist, 
 	    	 &obj, tagNumFromPyObject, &tagN))
-	return NULL;
+	return -1;
 
     if (PyTuple_Check(obj)) {
 	const char *name = NULL;
@@ -320,7 +314,7 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	    ds = rpmdsSingle(tagN, name, evr, flags);
 	} else {
 	    PyErr_SetString(PyExc_ValueError, "invalid dependency tuple");
-	    return NULL;
+	    return -1;
 	}
     } else if (hdrFromPyObject(obj, &h)) {
 	if (tagN == RPMTAG_NEVR) {
@@ -330,10 +324,14 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	}
     } else {
 	PyErr_SetString(PyExc_TypeError, "header or tuple expected");
-	return NULL;
+	return -1;
     }
-    
-    return rpmds_Wrap(subtype, ds);
+
+    rpmdsFree(s->ds);
+    s->ds = ds;
+    s->active = 0;
+
+    return 0;
 }
 
 static char rpmds_doc[] =
@@ -378,7 +376,7 @@ PyTypeObject rpmds_Type = {
 	0,				/* tp_dictoffset */
 	(initproc) rpmds_init,		/* tp_init */
 	0,				/* tp_alloc */
-	(newfunc) rpmds_new,		/* tp_new */
+	PyType_GenericNew,		/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
