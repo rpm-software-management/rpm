@@ -726,18 +726,6 @@ static void rpmts_dealloc(rpmtsObject * s)
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
-static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kwds)
-{
-    rpmtsObject * s = (rpmtsObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return NULL;
-
-    s->ts = rpmtsCreate();
-    s->scriptFd = NULL;
-    s->tsi = NULL;
-    s->keyList = PyList_New(0);
-    return (PyObject *) s;
-}
-
 static int rpmts_init(rpmtsObject *s, PyObject *args, PyObject *kwds)
 {
     char * rootDir = "/";
@@ -747,6 +735,16 @@ static int rpmts_init(rpmtsObject *s, PyObject *args, PyObject *kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "|si:rpmts_new", kwlist,
 	    &rootDir, &vsflags))
 	return -1;
+
+    rpmtsiFree(s->tsi);
+    rpmtsFree(s->ts);
+    Py_XDECREF(s->scriptFd);
+    Py_XDECREF(s->keyList);
+    
+    s->ts = rpmtsCreate();
+    s->scriptFd = NULL;
+    s->tsi = NULL;
+    s->keyList = PyList_New(0);
 
     (void) rpmtsSetRootDir(s->ts, rootDir);
     /* XXX: make this use common code with rpmts_SetVSFlags() to check the
@@ -897,7 +895,7 @@ PyTypeObject rpmts_Type = {
 	0,				/* tp_dictoffset */
 	(initproc) rpmts_init,		/* tp_init */
 	0,				/* tp_alloc */
-	(newfunc) rpmts_new,		/* tp_new */
+	PyType_GenericNew,		/* tp_new */
 	0,				/* tp_free */
 	0,				/* tp_is_gc */
 };
