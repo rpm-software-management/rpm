@@ -32,6 +32,30 @@ prexp(mname)
 ],
 [])
 
+RPMPY_TEST([basic rpmio],[
+msg = 'Killroy was here\n'
+data = msg * 10
+# TODO: test other compression types too if built in
+for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
+    fn = 'pyio.%s' % iot
+    fd = rpm.fd(fn, 'w', iot)
+    if fd.write(data) != len(data):
+        myprint('%s write fail' % iot)
+    fd = rpm.fd(fn, 'r', iot)
+    rdata = fd.read()
+    if rdata != data:
+        myprint('%s read fail (got %d bytes)' % (iot, len(rdata), rdata))
+    # compressed io types cant seek
+    if iot == 'ufdio':
+        fd.seek(0)
+    else:
+        fd = rpm.fd(fn, 'r', iot)
+    rdata = fd.read(len(msg))
+    if rdata != msg:
+        myprint('%s sized read fail (got %d bytes)\n%s' % (iot, len(rdata), rdata))
+],
+[])
+
 RPMPY_TEST([basic header manipulation],[
 h = rpm.hdr()
 h['name'] = 'testpkg'
