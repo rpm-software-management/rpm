@@ -54,20 +54,18 @@ static FD_t openPath(const char *path, const char *mode, const char *flags)
     return fd;
 }
 
-static PyObject *rpmfd_new(PyTypeObject *subtype, 
-			   PyObject *args, PyObject *kwds)
+static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "obj", "mode", "flags", NULL };
     char *mode = "r";
     char *flags = "ufdio";
     PyObject *fo = NULL;
-    rpmfdObject *s = NULL;
     FD_t fd = NULL;
     int fdno;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ss", kwlist, 
 				     &fo, &mode, &flags))
-	return NULL;
+	return -1;
 
     if (PyBytes_Check(fo)) {
 	fd = openPath(PyBytes_AsString(fo), mode, flags);
@@ -79,31 +77,25 @@ static PyObject *rpmfd_new(PyTypeObject *subtype,
 #else
 	rc = utf8FromPyObject(fo, &enc);
 #endif
-	if (rc == 0)
-	    return NULL;
-
-	fd = openPath(PyBytes_AsString(enc), mode, flags);
-	Py_DECREF(enc);
-	    
+	if (rc) {
+	    fd = openPath(PyBytes_AsString(enc), mode, flags);
+	    Py_DECREF(enc);
+	}
     } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
 	fd = fdDup(fdno);
     } else {
 	PyErr_SetString(PyExc_TypeError, "path or file object expected");
-	return NULL;
     }
 
-    if (Ferror(fd)) {
+    if (fd != NULL) {
+	/* TODO: remember our filename, mode & flags */
+	Fclose(s->fd); /* in case __init__ was called again */
+	s->fd = fd;
+    } else {
 	PyErr_SetString(PyExc_IOError, Fstrerror(fd));
-	return NULL;
     }
 
-    if ((s = (rpmfdObject *)subtype->tp_alloc(subtype, 0)) == NULL) {
-	Fclose(fd);
-	return NULL;
-    }
-    /* TODO: remember our filename, mode & flags */
-    s->fd = fd;
-    return (PyObject*) s;
+    return (fd == NULL) ? -1 : 0;
 }
 
 static PyObject *do_close(rpmfdObject *s)
@@ -346,9 +338,9 @@ PyTypeObject rpmfd_Type = {
 	0,				/* tp_descr_get */
 	0,				/* tp_descr_set */
 	0,				/* tp_dictoffset */
-	(initproc)0,			/* tp_init */
+	(initproc)rpmfd_init,		/* tp_init */
 	(allocfunc)0,			/* tp_alloc */
-	(newfunc) rpmfd_new,		/* tp_new */
+	PyType_GenericNew,		/* tp_new */
 	(freefunc)0,			/* tp_free */
 	0,				/* tp_is_gc */
 };
