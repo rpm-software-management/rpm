@@ -169,6 +169,15 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 
 }
 
+static PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg) 
+{
+    specPkgObject * s = (specPkgObject *)subtype->tp_alloc(subtype, 0);
+    if (s == NULL) return NULL;
+
+    s->pkg = pkg;
+    return (PyObject *) s;
+}
+
 static PyObject * spec_get_packages(specObject *s, void *closure)
 {
     rpmSpecPkg pkg;
@@ -202,7 +211,7 @@ static PyGetSetDef spec_getseters[] = {
     {NULL}  /* Sentinel */
 };
 
-static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
+static int spec_init(specObject *self, PyObject *args, PyObject *kwds)
 {
     char * kwlist[] = {"specfile", "flags", NULL};
     const char * specfile;
@@ -212,15 +221,17 @@ static PyObject *spec_new(PyTypeObject *subtype, PyObject *args, PyObject *kwds)
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|i:spec_new", kwlist,
 				     &specfile, &flags))
-	return NULL;
+	return -1;
 
     spec = rpmSpecParse(specfile, flags, NULL);
-    if (spec == NULL) {
+    if (spec != NULL) {
+	rpmSpecFree(self->spec);
+	self->spec = spec;
+    } else {
 	PyErr_SetString(PyExc_ValueError, "can't parse specfile\n");
-	return NULL;
     }
 
-    return spec_Wrap(subtype, spec);
+    return (spec == NULL) ? -1 : 0;
 }
 
 static PyObject * spec_doBuild(specObject *self, PyObject *args, PyObject *kwds)
@@ -276,29 +287,10 @@ PyTypeObject spec_Type = {
     0,                         /* tp_descr_get */
     0,                         /* tp_descr_set */
     0,                         /* tp_dictoffset */
-    0,                         /* tp_init */
+    (initproc) spec_init,      /* tp_init */
     0,                         /* tp_alloc */
-    spec_new,                  /* tp_new */
+    PyType_GenericNew,         /* tp_new */
     0,                         /* tp_free */
     0,                         /* tp_is_gc */
 };
-
-PyObject *
-spec_Wrap(PyTypeObject *subtype, rpmSpec spec) 
-{
-    specObject * s = (specObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return NULL;
-
-    s->spec = spec; 
-    return (PyObject *) s;
-}
-
-PyObject * specPkg_Wrap(PyTypeObject *subtype, rpmSpecPkg pkg) 
-{
-    specPkgObject * s = (specPkgObject *)subtype->tp_alloc(subtype, 0);
-    if (s == NULL) return NULL;
-
-    s->pkg = pkg;
-    return (PyObject *) s;
-}
 
