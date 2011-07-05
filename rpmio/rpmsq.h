@@ -8,6 +8,10 @@
 #include <rpm/rpmsw.h>
 #include <signal.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** \ingroup rpmsq
  * Default signal handler prototype.
  * @param signum	signal number
