@@ -146,18 +146,13 @@ static PyObject * hdrKeyList(hdrObject * s)
     return keys;
 }
 
-static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
+static PyObject * hdrAsBytes(hdrObject * s, int legacy)
 {
-    char * buf;
-    PyObject * rc;
-    int len, legacy = 0;
-    Header h;
-    static char *kwlist[] = { "legacyHeader", NULL};
-
-    if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
-	return NULL;
-
-    h = headerLink(s->h);
+    PyObject *res = NULL;
+    char *buf = NULL;
+    size_t len;
+    Header h = headerLink(s->h);
+   
     /* XXX this legacy switch is a hack, needs to be removed. */
     if (legacy) {
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
@@ -169,13 +164,22 @@ static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
 
     if (buf == NULL || len == 0) {
 	PyErr_SetString(pyrpmError, "can't unload bad header\n");
-	return NULL;
+    } else {
+	res = PyBytes_FromStringAndSize(buf, len);
     }
-
-    rc = PyBytes_FromStringAndSize(buf, len);
     free(buf);
+    return res;
+}
 
-    return rc;
+static PyObject * hdrUnload(hdrObject * s, PyObject * args, PyObject *keywords)
+{
+    int legacy = 0;
+    static char *kwlist[] = { "legacyHeader", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, keywords, "|i", kwlist, &legacy))
+	return NULL;
+
+    return hdrAsBytes(s, legacy);
 }
 
 static PyObject * hdrExpandFilelist(hdrObject * s)
@@ -321,6 +325,17 @@ static long hdr_hash(PyObject * h)
     return (long) h;
 }
 
+static PyObject * hdr_reduce(hdrObject *s)
+{
+    PyObject *res = NULL;
+    PyObject *blob = hdrAsBytes(s, 0);
+    if (blob) {
+	res = Py_BuildValue("O(O)", Py_TYPE(s), blob);
+	Py_DECREF(blob);
+    }
+    return res;
+}
+
 static struct PyMethodDef hdr_methods[] = {
     {"keys",		(PyCFunction) hdrKeyList,	METH_NOARGS,
 	NULL },
@@ -347,6 +362,8 @@ static struct PyMethodDef hdr_methods[] = {
     {"dsFromHeader",	(PyCFunction)hdr_dsFromHeader,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
     {"fiFromHeader",	(PyCFunction)hdr_fiFromHeader,	METH_VARARGS|METH_KEYWORDS,
+	NULL},
+    {"__reduce__",	(PyCFunction)hdr_reduce,	METH_NOARGS,
 	NULL},
 
     {NULL,		NULL}		/* sentinel */
