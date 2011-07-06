@@ -623,10 +623,18 @@ static PyObject * hdr_getattro(hdrObject * s, PyObject * n)
 {
     PyObject *res = PyObject_GenericGetAttr((PyObject *) s, n);
     if (res == NULL) {
+	PyObject *type, *value, *traceback;
 	rpmTagVal tag;
+
+	/* Save and restore original exception if it's not a valid tag either */
+	PyErr_Fetch(&type, &value, &traceback);
 	if (tagNumFromPyObject(n, &tag)) {
-	    PyErr_Clear();
+	    Py_XDECREF(type);
+	    Py_XDECREF(value);
+	    Py_XDECREF(traceback);
 	    res = hdrGetTag(s->h, tag);
+	} else {
+	    PyErr_Restore(type, value, traceback);
 	}
     }
     return res;
