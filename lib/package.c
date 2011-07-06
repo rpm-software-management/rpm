@@ -560,16 +560,15 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     if (hdrp) *hdrp = NULL;
 
     rpmtdReset(&sigtd);
-    l = rpmLeadNew();
 
-    if ((rc = rpmLeadRead(fd, l)) == RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, &l)) == RPMRC_OK) {
 	const char * err = NULL;
 	if ((rc = rpmLeadCheck(l, &err)) == RPMRC_FAIL) {
 	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, err);
 	}
 	leadtype = rpmLeadType(l);
+	l = rpmLeadFree(l);
     }
-    l = rpmLeadFree(l);
 
     if (rc != RPMRC_OK)
 	goto exit;

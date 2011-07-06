@@ -430,7 +430,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 {
     FD_t fd = NULL;
     FD_t ofd = NULL;
-    rpmlead lead;
+    rpmlead lead = NULL;
     char *sigtarget = NULL, *trpm = NULL;
     Header sigh = NULL;
     char * msg;
@@ -443,9 +443,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     if (manageFile(&fd, rpm, O_RDONLY))
 	goto exit;
 
-    lead = rpmLeadNew();
-
-    if ((rc = rpmLeadRead(fd, lead)) == RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, &lead)) == RPMRC_OK) {
 	const char *lmsg = NULL;
 	rc = rpmLeadCheck(lead, &lmsg);
 	if (rc != RPMRC_OK) 
@@ -453,7 +451,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     }
 
     if (rc != RPMRC_OK) {
-	lead = rpmLeadFree(lead);
 	goto exit;
     }
 
@@ -552,7 +549,6 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
 
     /* Write the lead/signature of the output rpm */
     rc = rpmLeadWrite(ofd, lead);
-    lead = rpmLeadFree(lead);
     if (rc != RPMRC_OK) {
 	rpmlog(RPMLOG_ERR, _("%s: writeLead failed: %s\n"), trpm,
 	    Fstrerror(ofd));
@@ -584,6 +580,7 @@ exit:
     if (ofd)	(void) closeFile(&ofd);
 
     rpmFreeSignature(sigh);
+    rpmLeadFree(lead);
 
     /* Clean up intermediate target */
     if (sigtarget) {

@@ -21,13 +21,6 @@ extern "C" {
 
 typedef struct rpmlead_s * rpmlead;
 
-
-/** \ingroup lead
- * Initialize a lead structure
- * @return		Pointer to empty lead structure
- */
-rpmlead rpmLeadNew(void);
-
 /** \ingroup lead
  * Initialize a lead structure from header
  * param h		Header
@@ -53,10 +46,10 @@ rpmRC rpmLeadWrite(FD_t fd, rpmlead lead);
 /** \ingroup lead
  * Read lead from file handle.
  * @param fd		file handle
- * @retval lead		package lead
+ * @retval lead		pointer to package lead (malloced)
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
-rpmRC rpmLeadRead(FD_t fd, rpmlead lead);
+rpmRC rpmLeadRead(FD_t fd, rpmlead *lead);
 
 /** \ingroup lead
  * Check lead for compatibility.

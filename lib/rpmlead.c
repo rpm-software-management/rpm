@@ -38,11 +38,6 @@ struct rpmlead_s {
     char reserved[16];      /*!< Pad to 96 bytes -- 8 byte aligned! */
 };
 
-rpmlead rpmLeadNew(void)
-{
-    return xcalloc(1, sizeof(struct rpmlead_s));
-}
-
 rpmlead rpmLeadFromHeader(Header h)
 {
     rpmlead l = NULL;
@@ -55,7 +50,7 @@ rpmlead rpmLeadFromHeader(Header h)
 	rpmGetArchInfo(NULL, &archnum);
 	rpmGetOsInfo(NULL, &osnum);
 
-	l = rpmLeadNew();
+	l = xcalloc(1, sizeof(*l));
 	l->major = 3;
 	l->minor = 0;
 	l->archnum = archnum;
@@ -115,26 +110,35 @@ rpmRC rpmLeadCheck(rpmlead lead, const char **msg)
     return RPMRC_OK;
 }
 
-rpmRC rpmLeadRead(FD_t fd, rpmlead lead)
+rpmRC rpmLeadRead(FD_t fd, rpmlead *lead)
 {
-    assert(lead != NULL);
-    memset(lead, 0, sizeof(*lead));
-    if (Fread(lead, 1, sizeof(*lead), fd) != sizeof(*lead)) {
+    rpmRC rc = RPMRC_OK;
+    rpmlead l = xcalloc(1, sizeof(*l));
+
+    if (Fread(l, 1, sizeof(*l), fd) != sizeof(*l)) {
 	if (Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("read failed: %s (%d)\n"),
 			Fstrerror(fd), errno);
-	    return RPMRC_FAIL;
+	    rc = RPMRC_FAIL;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("not an rpm package\n"));
-	    return RPMRC_NOTFOUND;
+	    rc = RPMRC_NOTFOUND;
 	}
     }
-    lead->type = ntohs(lead->type);
-    lead->archnum = ntohs(lead->archnum);
-    lead->osnum = ntohs(lead->osnum);
-    lead->signature_type = ntohs(lead->signature_type);
 
-    return RPMRC_OK;
+    if (rc == RPMRC_OK) {
+	l->type = ntohs(l->type);
+	l->archnum = ntohs(l->archnum);
+	l->osnum = ntohs(l->osnum);
+	l->signature_type = ntohs(l->signature_type);
+    }
+
+    if (rc || lead == NULL)
+	rpmLeadFree(l);
+    else
+	*lead = l;
+
+    return rc;
 }
 
 int rpmLeadType(rpmlead lead)
