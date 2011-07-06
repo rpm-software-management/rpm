@@ -40,30 +40,34 @@ struct rpmlead_s {
 
 rpmlead rpmLeadNew(void)
 {
-    int archnum, osnum;
-    rpmlead l = xcalloc(1, sizeof(*l));
-
-    rpmGetArchInfo(NULL, &archnum);
-    rpmGetOsInfo(NULL, &osnum);
-
-    l->major = 3;
-    l->minor = 0;
-    l->archnum = archnum;
-    l->osnum = osnum;
-    l->signature_type = RPMSIGTYPE_HEADERSIG;
-    return l;
+    return xcalloc(1, sizeof(struct rpmlead_s));
 }
 
 rpmlead rpmLeadFromHeader(Header h)
 {
-    char * nevr;
-    assert(h != NULL);
-    rpmlead l = rpmLeadNew();
+    rpmlead l = NULL;
 
-    l->type = (headerIsSource(h) ? 1 : 0);
-    nevr = headerGetAsString(h, RPMTAG_NEVR);
-    rstrlcpy(l->name, nevr, sizeof(l->name));
-    free(nevr);
+    if (h != NULL) {
+	int archnum, osnum;
+	char * nevr = headerGetAsString(h, RPMTAG_NEVR);
+
+	/* FIXME: should grab these from header instead (RhBug:717898) */
+	rpmGetArchInfo(NULL, &archnum);
+	rpmGetOsInfo(NULL, &osnum);
+
+	l = rpmLeadNew();
+	l->major = 3;
+	l->minor = 0;
+	l->archnum = archnum;
+	l->osnum = osnum;
+	l->signature_type = RPMSIGTYPE_HEADERSIG;
+	l->type = (headerIsSource(h) ? 1 : 0);
+
+	memcpy(l->magic, lead_magic, sizeof(l->magic));
+	rstrlcpy(l->name, nevr, sizeof(l->name));
+
+	free(nevr);
+    }
 
     return l;
 }
@@ -83,7 +87,6 @@ rpmRC rpmLeadWrite(FD_t fd, rpmlead lead)
 
     memcpy(&l, lead, sizeof(l));
     
-    memcpy(&l.magic, lead_magic, sizeof(l.magic));
     l.type = htons(lead->type);
     l.archnum = htons(lead->archnum);
     l.osnum = htons(lead->osnum);
