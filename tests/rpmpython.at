@@ -81,9 +81,19 @@ h['arch'] = 'noarch'
 myprint(h['nevra'])
 del h['epoch']
 myprint(h['nevra'])
+for a in ['name', 'bugurl', '__class__', '__foo__', ]:
+    try:
+        x = getattr(h, a)
+        myprint(x)
+    except AttributeError, exc:
+        myprint(exc)
 ],
 [testpkg-5:1.0-1.noarch
-testpkg-1.0-1.noarch]
+testpkg-1.0-1.noarch
+testpkg
+None
+<type 'rpm.hdr'>
+'rpm.hdr' object has no attribute '__foo__']
 )
 
 RPMPY_TEST([reading a package file],[
