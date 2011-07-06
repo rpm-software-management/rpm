@@ -69,7 +69,6 @@ rpmlead rpmLeadFromHeader(Header h)
 
 rpmlead rpmLeadFree(rpmlead lead)
 {
-    assert(lead != NULL);
     free(lead);
     return NULL;
 }
@@ -77,20 +76,21 @@ rpmlead rpmLeadFree(rpmlead lead)
 /* The lead needs to be 8 byte aligned */
 rpmRC rpmLeadWrite(FD_t fd, rpmlead lead)
 {
-    struct rpmlead_s l;
-    assert(lead != NULL);
+    rpmRC rc = RPMRC_FAIL;
 
-    memcpy(&l, lead, sizeof(l));
-    
-    l.type = htons(lead->type);
-    l.archnum = htons(lead->archnum);
-    l.osnum = htons(lead->osnum);
-    l.signature_type = htons(lead->signature_type);
+    if (lead != NULL) {
+	struct rpmlead_s l;
+	memcpy(&l, lead, sizeof(l));
 	
-    if (Fwrite(&l, 1, sizeof(l), fd) != sizeof(l))
-	return RPMRC_FAIL;
-
-    return RPMRC_OK;
+	l.type = htons(lead->type);
+	l.archnum = htons(lead->archnum);
+	l.osnum = htons(lead->osnum);
+	l.signature_type = htons(lead->signature_type);
+	    
+	if (Fwrite(&l, 1, sizeof(l), fd) == sizeof(l))
+	    rc = RPMRC_OK;
+    }
+    return rc;
 }
 
 rpmRC rpmLeadCheck(rpmlead lead, const char **msg)
