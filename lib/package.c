@@ -557,6 +557,8 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     DIGEST_CTX ctx = NULL;
 
     if (hdrp) *hdrp = NULL;
+    if (fn == NULL)
+	fn = Fdescr(fd);
 
     rpmtdReset(&sigtd);
 

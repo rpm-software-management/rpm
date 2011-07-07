@@ -235,7 +235,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     struct rpmtd_s filenames;
 
     rpmtdReset(&filenames);
-    rpmrc = rpmReadPackageFile(ts, fd, RPMDBG_M("InstallSourcePackage"), &h);
+    rpmrc = rpmReadPackageFile(ts, fd, NULL, &h);
     switch (rpmrc) {
     case RPMRC_NOTTRUSTED:
     case RPMRC_NOKEY:
