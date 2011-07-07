@@ -65,8 +65,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     const char **argv = NULL;
     FILE * fp = NULL;
 
-    FD_t fd;
-    FD_t xfd;
+    FD_t fd = NULL;
     pid_t pid;
     pid_t child;
     int status;
@@ -117,18 +116,14 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
     }
     
     fd = rpmMkTempFile(spec->rootDir, &scriptName);
-    if (fd == NULL || Ferror(fd)) {
-	rpmlog(RPMLOG_ERR, _("Unable to open temp file.\n"));
+    if (Ferror(fd)) {
+	rpmlog(RPMLOG_ERR, _("Unable to open temp file: %s\n"), Fstrerror(fd));
 	rc = RPMRC_FAIL;
 	goto exit;
     }
 
-    if (fdGetFILE(fd) == NULL)
-	xfd = Fdopen(fd, "w.fpio");
-    else
-	xfd = fd;
-
-    if ((fp = fdGetFILE(xfd)) == NULL) {
+    if ((fp = fdopen(Fileno(fd), "w")) == NULL) {
+	rpmlog(RPMLOG_ERR, _("Unable to open stream: %s\n"), strerror(errno));
 	rc = RPMRC_FAIL;
 	goto exit;
     }
@@ -148,8 +143,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	fprintf(fp, "%s", sb);
 
     (void) fputs(buildPost, fp);
-    
-    (void) Fclose(xfd);
+    (void) fclose(fp);
 
     if (test) {
 	rc = RPMRC_OK;
@@ -194,6 +188,7 @@ rpmRC doScript(rpmSpec spec, rpmBuildFlags what, const char *name,
 	rc = RPMRC_OK;
     
 exit:
+    Fclose(fd);
     if (scriptName) {
 	if (rc == RPMRC_OK)
 	    (void) unlink(scriptName);
