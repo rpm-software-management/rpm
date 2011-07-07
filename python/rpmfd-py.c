@@ -296,8 +296,15 @@ static PyObject *rpmfd_get_closed(rpmfdObject *s)
     return PyBool_FromLong((s->fd == NULL));
 }
 
+static PyObject *rpmfd_get_name(rpmfdObject *s)
+{
+    /* XXX: rpm returns non-paths with [mumble], python files use <mumble> */
+    return Py_BuildValue("s", Fdescr(s->fd));
+}
+
 static PyGetSetDef rpmfd_getseters[] = {
     { "closed", (getter)rpmfd_get_closed, NULL, NULL },
+    { "name", (getter)rpmfd_get_name, NULL, NULL },
     { NULL },
 };
 

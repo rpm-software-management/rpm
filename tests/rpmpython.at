@@ -41,6 +41,8 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
     fd = rpm.fd(fn, 'w', iot)
     if fd.write(data) != len(data):
         myprint('%s write fail' % iot)
+    if fn != fd.name:
+        myprint('bad file name %s' % fd.name)
     fd = rpm.fd(fn, 'r', iot)
     rdata = fd.read()
     if rdata != data:
@@ -50,6 +52,8 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
         fd.seek(0)
     else:
         fd = rpm.fd(fn, 'r', iot)
+    if fn != fd.name:
+        myprint('bad file name %s' % fd.name)
     rdata = fd.read(len(msg))
     if rdata != msg:
         myprint('%s sized read fail (got %d bytes)\n%s' % (iot, len(rdata), rdata))
