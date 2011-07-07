@@ -198,7 +198,7 @@ static const FDIO_t lzdio;
  * Update digest(s) attached to fd.
  */
 static void fdUpdateDigests(FD_t fd, const void * buf, size_t buflen);
-
+static FD_t fdNew(void);
 /**
  */
 int _rpmio_debug = 0;

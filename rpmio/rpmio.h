@@ -114,10 +114,6 @@ FD_t fdLink(void * cookie);
  */
 FD_t fdFree(FD_t fd);
 
-/** \ingroup rpmio
- */
-FD_t fdNew (void);
-
 /**
  */
 int ufdCopy(FD_t sfd, FD_t tfd);
