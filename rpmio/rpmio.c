@@ -48,6 +48,7 @@ struct _FD_s {
     int		syserrno;	/* last system errno encountered */
     const char *errcookie;	/* gzdio/bzdio/ufdio/xzdio: */
 
+    char	*descr;		/* file name (or other description) */
     FDSTAT_t	stats;		/* I/O statistics */
 
     rpmDigestBundle digests;
@@ -159,7 +160,7 @@ typedef int (*fdio_seek_function_t) (void *cookie, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (void *cookie);
 typedef FD_t (*fdio_ref_function_t) ( void * cookie);
 typedef FD_t (*fdio_deref_function_t) (FD_t fd);
-typedef FD_t (*fdio_new_function_t) (void);
+typedef FD_t (*fdio_new_function_t) (const char *descr);
 typedef int (*fdio_fileno_function_t) (void * cookie);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
 typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode);
@@ -198,7 +199,7 @@ static const FDIO_t lzdio;
  * Update digest(s) attached to fd.
  */
 static void fdUpdateDigests(FD_t fd, const void * buf, size_t buflen);
-static FD_t fdNew(void);
+static FD_t fdNew(const char *descr);
 /**
  */
 int _rpmio_debug = 0;
@@ -331,7 +332,7 @@ FD_t fdDup(int fdno)
 
     if ((nfdno = dup(fdno)) < 0)
 	return NULL;
-    fd = fdNew();
+    fd = fdNew(NULL);
     fdSetFdno(fd, nfdno);
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     return fd;
@@ -348,6 +349,40 @@ static int fdFileno(void * cookie)
 {
     FD_t fd = c2f(cookie);
     return (fd != NULL) ? fd->fps[0].fdno : -2;
+}
+
+const char * Fdescr(FD_t fd)
+{
+    if (fd == NULL)
+	return _("[none]");
+
+    /* Lazy lookup if description is not set (eg dupped fd) */
+    if (fd->descr == NULL) {
+	int fdno = fd->fps[fd->nfps].fdno;
+#if defined(__linux__)
+	/* Grab the path from /proc if we can */
+	char *procpath = NULL;
+	char buf[PATH_MAX];
+	ssize_t llen;
+
+	rasprintf(&procpath, "/proc/self/fd/%d", fdno);
+	llen = readlink(procpath, buf, sizeof(buf)-1);
+	free(procpath);
+
+	if (llen >= 1) {
+	    buf[llen] = '\0';
+	    /* Real paths in /proc are always absolute */
+	    if (buf[0] == '/')
+		fd->descr = xstrdup(buf);
+	    else
+		fd->descr = rstrscat(NULL, "[", buf, "]", NULL);
+	}
+#endif
+	/* Still no description, base it on fdno which is always there */
+	if (fd->descr == NULL)
+	    rasprintf(&(fd->descr), "[fd %d]", fdno);
+    }
+    return fd->descr;
 }
 
 FILE * fdGetFILE(FD_t fd)
@@ -376,6 +411,7 @@ FD_t fdFree( FD_t fd)
 	if (fd->digests) {
 	    fd->digests = rpmDigestBundleFree(fd->digests);
 	}
+	free(fd->descr);
 	free(fd);
     }
     return NULL;
@@ -383,7 +419,7 @@ FD_t fdFree( FD_t fd)
 
 /**
  */
-FD_t fdNew(void)
+FD_t fdNew(const char *descr)
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -405,6 +441,7 @@ FD_t fdNew(void)
     fd->errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->digests = NULL;
+    fd->descr = descr ? xstrdup(descr) : NULL;
 
     return fdLink(fd);
 }
@@ -507,7 +544,7 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
 	(void) close(fdno);
 	return NULL;
     }
-    fd = fdNew();
+    fd = fdNew(path);
     fdSetFdno(fd, fdno);
     fd->flags = flags;
 DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
@@ -656,7 +693,7 @@ FD_t gzdOpen(const char * path, const char * fmode)
     gzFile gzfile;
     if ((gzfile = gzopen(path, fmode)) == NULL)
 	return NULL;
-    fd = fdNew();
+    fd = fdNew(path);
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
     
 DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
@@ -852,7 +889,7 @@ static FD_t bzdOpen(const char * path, const char * mode)
     BZFILE *bzfile;;
     if ((bzfile = bzopen(path, mode)) == NULL)
 	return NULL;
-    fd = fdNew();
+    fd = fdNew(path);
     fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
     return fdLink(fd);
 }
@@ -1209,7 +1246,7 @@ static FD_t xzdOpen(const char * path, const char * mode)
     LZFILE *lzfile;
     if ((lzfile = xzopen(path, mode)) == NULL)
 	return NULL;
-    fd = fdNew();
+    fd = fdNew(path);
     fdPop(fd); fdPush(fd, xzdio, lzfile, -1);
     return fdLink(fd);
 }
@@ -1236,7 +1273,7 @@ static FD_t lzdOpen(const char * path, const char * mode)
     LZFILE *lzfile;
     if ((lzfile = lzopen(path, mode)) == NULL)
 	return NULL;
-    fd = fdNew();
+    fd = fdNew(path);
     fdPop(fd); fdPush(fd, xzdio, lzfile, -1);
     return fdLink(fd);
 }

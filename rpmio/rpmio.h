@@ -90,6 +90,11 @@ int Fileno(FD_t fd);
 int Fcntl(FD_t fd, int op, void *lip);
 
 /** \ingroup rpmio
+ * Get informative description (eg file name) from fd for diagnostic output.
+ */
+const char * Fdescr(FD_t fd);
+
+/** \ingroup rpmio
  * \name RPMIO Utilities.
  */
 
