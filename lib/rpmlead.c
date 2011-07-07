@@ -113,9 +113,10 @@ rpmRC rpmLeadCheck(rpmlead lead, const char **msg)
 rpmRC rpmLeadRead(FD_t fd, rpmlead *lead)
 {
     rpmRC rc = RPMRC_OK;
-    rpmlead l = xcalloc(1, sizeof(*l));
+    struct rpmlead_s l;
 
-    if (Fread(l, 1, sizeof(*l), fd) != sizeof(*l)) {
+    memset(&l, 0, sizeof(l));
+    if (Fread(&l, 1, sizeof(l), fd) != sizeof(l)) {
 	if (Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("read failed: %s (%d)\n"),
 			Fstrerror(fd), errno);
@@ -124,19 +125,17 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead *lead)
 	    rpmlog(RPMLOG_ERR, _("not an rpm package\n"));
 	    rc = RPMRC_NOTFOUND;
 	}
+    } else {
+	l.type = ntohs(l.type);
+	l.archnum = ntohs(l.archnum);
+	l.osnum = ntohs(l.osnum);
+	l.signature_type = ntohs(l.signature_type);
     }
 
-    if (rc == RPMRC_OK) {
-	l->type = ntohs(l->type);
-	l->archnum = ntohs(l->archnum);
-	l->osnum = ntohs(l->osnum);
-	l->signature_type = ntohs(l->signature_type);
+    if (lead != NULL && rc == RPMRC_OK) {
+	*lead = xmalloc(sizeof(l));
+	memcpy(*lead, &l, sizeof(l));
     }
-
-    if (rc || lead == NULL)
-	rpmLeadFree(l);
-    else
-	*lead = l;
 
     return rc;
 }
