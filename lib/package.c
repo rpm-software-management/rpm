@@ -546,12 +546,11 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     pgpDig dig = NULL;
     char buf[8*BUFSIZ];
     ssize_t count;
-    rpmlead l = NULL;
     Header sigh = NULL;
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
     Header h = NULL;
-    char * msg;
+    char * msg = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
     int leadtype = -1;
     headerGetFlags hgeflags = HEADERGET_DEFAULT;
@@ -561,20 +560,15 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 
     rpmtdReset(&sigtd);
 
-    if ((rc = rpmLeadRead(fd, &l)) == RPMRC_OK) {
-	const char * err = NULL;
-	if ((rc = rpmLeadCheck(l, &err)) == RPMRC_FAIL) {
-	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, err);
-	}
-	leadtype = rpmLeadType(l);
-	l = rpmLeadFree(l);
+    if ((rc = rpmLeadRead(fd, NULL, &leadtype, &msg)) != RPMRC_OK) {
+	/* Avoid message spew on manifests */
+	if (rc != RPMRC_NOTFOUND) 
+	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
+	free(msg);
+	goto exit;
     }
 
-    if (rc != RPMRC_OK)
-	goto exit;
-
     /* Read the signature header. */
-    msg = NULL;
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
     switch (rc) {
     default:

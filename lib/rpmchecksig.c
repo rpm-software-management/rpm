@@ -268,7 +268,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     pgpDigParams sigp;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
-    rpmlead lead = NULL;
     char * msg = NULL;
     int res = 1; /* assume failure */
     rpmRC rc;
@@ -278,15 +277,9 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     rpmDigestBundle plbundle = rpmDigestBundleNew();
     rpmDigestBundle hdrbundle = rpmDigestBundleNew();
 
-    if ((rc = rpmLeadRead(fd, &lead)) == RPMRC_OK) {
-	const char *lmsg = NULL;
-	rc = rpmLeadCheck(lead, &lmsg);
-	if (rc != RPMRC_OK) 
-	    rpmlog(RPMLOG_ERR, "%s: %s\n", fn, lmsg);
-	lead = rpmLeadFree(lead);
-    }
-
-    if (rc != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, NULL, NULL, &msg)) != RPMRC_OK) {
+	rpmlog(RPMLOG_ERR, "%s: %s\n", fn, msg);
+	free(msg);
 	goto exit;
     }
 

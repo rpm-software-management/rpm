@@ -47,26 +47,11 @@ rpmRC rpmLeadWrite(FD_t fd, rpmlead lead);
  * Read lead from file handle.
  * @param fd		file handle
  * @retval lead		pointer to package lead (malloced)
+ * @retval type		RPMLEAD_BINARY or RPMLEAD_SOURCE on success
+ * @retval emsg		failure message on error (malloced)
  * @return		RPMRC_OK on success, RPMRC_FAIL/RPMRC_NOTFOUND on error
  */
-rpmRC rpmLeadRead(FD_t fd, rpmlead *lead);
-
-/** \ingroup lead
- * Check lead for compatibility.
- * @param lead		Pointer to lead handle
- * @retval fn		Pointer to error message, NULL on success
- * @return		RPMRC_OK on success, 
- * 			RPMRC_NOTFOUND if not an rpm,
- * 			RPMRC_FAIL on invalid/incompatible rpm
- */
-rpmRC rpmLeadCheck(rpmlead lead, const char **msg);
-
-/** \ingroup lead
- * Returen type (source vs binary) of lead
- * @param lead		Pointer to lead handle
- * @return		RPMLEAD_BINARY or RPMLEAD_SOURCE, -1 on invalid
- */
-int rpmLeadType(rpmlead lead);
+rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg);
 
 #ifdef __cplusplus
 }

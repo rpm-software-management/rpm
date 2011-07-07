@@ -93,36 +93,36 @@ rpmRC rpmLeadWrite(FD_t fd, rpmlead lead)
     return rc;
 }
 
-rpmRC rpmLeadCheck(rpmlead lead, const char **msg)
+static rpmRC rpmLeadCheck(rpmlead lead, char **msg)
 {
     if (memcmp(lead->magic, lead_magic, sizeof(lead_magic))) {
-	if (msg) *msg = _("not an rpm package");
+	*msg = xstrdup(_("not an rpm package"));
 	return RPMRC_NOTFOUND;
     }
     if (lead->signature_type != RPMSIGTYPE_HEADERSIG) {
-	if (msg) *msg = _("illegal signature type");
+	*msg = xstrdup(_("illegal signature type"));
 	return RPMRC_FAIL;
     }
     if (lead->major < 3 || lead->major > 4) {
-	if (msg) *msg = _("unsupported RPM package version");
+	*msg = xstrdup(_("unsupported RPM package version"));
 	return RPMRC_FAIL;
     }
     return RPMRC_OK;
 }
 
-rpmRC rpmLeadRead(FD_t fd, rpmlead *lead)
+rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg)
 {
     rpmRC rc = RPMRC_OK;
     struct rpmlead_s l;
+    char *err = NULL;
 
     memset(&l, 0, sizeof(l));
     if (Fread(&l, 1, sizeof(l), fd) != sizeof(l)) {
 	if (Ferror(fd)) {
-	    rpmlog(RPMLOG_ERR, _("read failed: %s (%d)\n"),
-			Fstrerror(fd), errno);
+	    rasprintf(&err, _("read failed: %s (%d)\n"), Fstrerror(fd), errno);
 	    rc = RPMRC_FAIL;
 	} else {
-	    rpmlog(RPMLOG_ERR, _("not an rpm package\n"));
+	    err = xstrdup(_("not an rpm package\n"));
 	    rc = RPMRC_NOTFOUND;
 	}
     } else {
@@ -130,17 +130,22 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead *lead)
 	l.archnum = ntohs(l.archnum);
 	l.osnum = ntohs(l.osnum);
 	l.signature_type = ntohs(l.signature_type);
+	rc = rpmLeadCheck(&l, &err);
     }
 
-    if (lead != NULL && rc == RPMRC_OK) {
-	*lead = xmalloc(sizeof(l));
-	memcpy(*lead, &l, sizeof(l));
+    if (rc == RPMRC_OK) {
+	if (lead != NULL) {
+	    *lead = xmalloc(sizeof(l));
+	    memcpy(*lead, &l, sizeof(l));
+	}
+	if (type != NULL)
+	    *type = l.type;
+    } else {
+	if (emsg != NULL)
+	    *emsg = err;
+	else
+	    free(err);
     }
 
     return rc;
-}
-
-int rpmLeadType(rpmlead lead)
-{
-    return lead ? lead->type : -1;
 }

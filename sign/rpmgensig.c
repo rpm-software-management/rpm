@@ -433,7 +433,7 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     rpmlead lead = NULL;
     char *sigtarget = NULL, *trpm = NULL;
     Header sigh = NULL;
-    char * msg;
+    char * msg = NULL;
     int res = -1; /* assume failure */
     rpmRC rc;
     struct rpmtd_s utd;
@@ -443,18 +443,12 @@ static int rpmSign(const char *rpm, int deleting, const char *passPhrase)
     if (manageFile(&fd, rpm, O_RDONLY))
 	goto exit;
 
-    if ((rc = rpmLeadRead(fd, &lead)) == RPMRC_OK) {
-	const char *lmsg = NULL;
-	rc = rpmLeadCheck(lead, &lmsg);
-	if (rc != RPMRC_OK) 
-	    rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, lmsg);
-    }
-
-    if (rc != RPMRC_OK) {
+    if ((rc = rpmLeadRead(fd, &lead, NULL, &msg)) != RPMRC_OK) {
+	rpmlog(RPMLOG_ERR, "%s: %s\n", rpm, msg);
+	free(msg);
 	goto exit;
     }
 
-    msg = NULL;
     rc = rpmReadSignature(fd, &sigh, RPMSIGTYPE_HEADERSIG, &msg);
     switch (rc) {
     default:
