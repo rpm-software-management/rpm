@@ -43,6 +43,7 @@ for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
         myprint('%s write fail' % iot)
     if fn != fd.name:
         myprint('bad file name %s' % fd.name)
+    fd.flush()
     fd = rpm.fd(fn, 'r', iot)
     rdata = fd.read()
     if rdata != data:
