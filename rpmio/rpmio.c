@@ -231,10 +231,8 @@ static const char * fdbg(FD_t fd)
 	    sprintf(be, "FD %d fp %p", fps->fdno, fps->fp);
 	} else if (fps->io == ufdio) {
 	    sprintf(be, "UFD %d fp %p", fps->fdno, fps->fp);
-#if HAVE_ZLIB_H
 	} else if (fps->io == gzdio) {
 	    sprintf(be, "GZD %p fdno %d", fps->fp, fps->fdno);
-#endif
 #if HAVE_BZLIB_H
 	} else if (fps->io == bzdio) {
 	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
@@ -677,8 +675,6 @@ static const FDIO_t ufdio = &ufdio_s ;
 /* =============================================================== */
 /* Support for GZIP library.
  */
-#ifdef	HAVE_ZLIB_H
-
 #include <zlib.h>
 
 static void * gzdFileno(FD_t fd)
@@ -859,8 +855,6 @@ static const struct FDIO_s gzdio_s = {
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
-#endif	/* HAVE_ZLIB_H */
-
 /* =============================================================== */
 /* Support for BZIP2 library.
  */
@@ -1008,12 +1002,9 @@ static const char * getFdErrstr (FD_t fd)
 {
     const char *errstr = NULL;
 
-#ifdef	HAVE_ZLIB_H
     if (fdGetIo(fd) == gzdio) {
 	errstr = fd->errcookie;
     } else
-#endif	/* HAVE_ZLIB_H */
-
 #ifdef	HAVE_BZLIB_H
     if (fdGetIo(fd) == bzdio) {
 	errstr = fd->errcookie;
@@ -1594,11 +1585,9 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (end && *end) {
 	if (rstreq(end, "fdio")) {
 	    iof = fdio;
-#if HAVE_ZLIB_H
 	} else if (rstreq(end, "gzdio") || rstreq(end, "gzip")) {
 	    iof = gzdio;
 	    fd = gzdFdopen(fd, zstdio);
-#endif
 #if HAVE_BZLIB_H
 	} else if (rstreq(end, "bzdio") || rstreq(end, "bzip2")) {
 	    iof = bzdio;
@@ -1705,10 +1694,8 @@ int Fflush(FD_t fd)
 	return fflush(fdGetFILE(fd));
 
     vh = fdGetFp(fd);
-#if HAVE_ZLIB_H
     if (vh && fdGetIo(fd) == gzdio)
 	return gzdFlush(vh);
-#endif
 #if HAVE_BZLIB_H
     if (vh && fdGetIo(fd) == bzdio)
 	return bzdFlush(vh);
@@ -1747,11 +1734,9 @@ int Ferror(FD_t fd)
 	
 	if (fps->io == fpio) {
 	    ec = ferror(fdGetFILE(fd));
-#if HAVE_ZLIB_H
 	} else if (fps->io == gzdio) {
 	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
-#endif
 #if HAVE_BZLIB_H
 	} else if (fps->io == bzdio) {
 	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
