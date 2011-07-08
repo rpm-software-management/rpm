@@ -188,7 +188,6 @@ struct FDIO_s {
 
 /* forward refs */
 static const FDIO_t fdio;
-static const FDIO_t fpio;
 static const FDIO_t ufdio;
 static const FDIO_t gzdio;
 static const FDIO_t bzdio;
@@ -243,10 +242,6 @@ static const char * fdbg(FD_t fd)
 	} else if (fps->io == lzdio) {
 	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
 #endif
-	} else if (fps->io == fpio) {
-	    sprintf(be, "%s %p(%d) fdno %d",
-		(fps->fdno < 0 ? "LIBIO" : "FP"),
-		fps->fp, fileno(((FILE *)fps->fp)), fps->fdno);
 	} else {
 	    sprintf(be, "??? io %p fp %p fdno %d ???",
 		fps->io, fps->fp, fps->fdno);
@@ -381,11 +376,6 @@ const char * Fdescr(FD_t fd)
 	    rasprintf(&(fd->descr), "[fd %d]", fdno);
     }
     return fd->descr;
-}
-
-static FILE * fdGetFILE(FD_t fd)
-{
-    return ((FILE *)fdGetFp(fd));
 }
 
 /* =============================================================== */
@@ -1396,11 +1386,6 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
     if (fd == NULL)
 	return 0;
 
-    if (fdGetIo(fd) == fpio) {
-	rc = fread(buf, size, nmemb, fdGetFILE(fd));
-	return rc;
-    }
-
     _read = FDIOVEC(fd, read);
 
     rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
@@ -1414,11 +1399,6 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 
     if (fd == NULL)
 	return 0;
-
-    if (fdGetIo(fd) == fpio) {
-	rc = fwrite(buf, size, nmemb, fdGetFILE(fd));
-	return rc;
-    }
 
     _write = FDIOVEC(fd, write);
 
@@ -1435,14 +1415,6 @@ int Fseek(FD_t fd, off_t offset, int whence) {
     if (fd == NULL)
 	return -1;
 
-    if (fdGetIo(fd) == fpio) {
-	FILE *fp;
-
-	fp = fdGetFILE(fd);
-	rc = fseek(fp, offset, whence);
-	return rc;
-    }
-
     _seek = FDIOVEC(fd, seek);
 
     rc = (_seek ? _seek(fd, pos, whence) : -2);
@@ -1458,24 +1430,9 @@ int Fclose(FD_t fd)
 
     fd = fdLink(fd);
     while (fd->nfps >= 0) {
-	FDSTACK_t * fps = &fd->fps[fd->nfps];
-	
-	if (fps->io == fpio) {
-	    FILE *fp;
-	    int fpno;
+	fdio_close_function_t _close = FDIOVEC(fd, close);
+	rc = _close ? _close(fd) : -2;
 
-	    fp = fdGetFILE(fd);
-	    fpno = fileno(fp);
-	    if (fp)
-	    	rc = fclose(fp);
-	    if (fpno == -1) {
-	    	fd = fdFree(fd);
-	    	fdPop(fd);
-	    }
-	} else {
-	    fdio_close_function_t _close = FDIOVEC(fd, close);
-	    rc = _close ? _close(fd) : -2;
-	}
 	if (fd->nfps == 0)
 	    break;
 	if (ec == 0 && rc)
@@ -1603,18 +1560,6 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 #endif
 	} else if (rstreq(end, "ufdio")) {
 	    iof = ufdio;
-	} else if (rstreq(end, "fpio")) {
-	    iof = fpio;
-	    int fdno = Fileno(fd);
-	    FILE * fp = fdopen(fdno, stdio);
-if (_rpmio_debug)
-fprintf(stderr, "*** Fdopen fpio fp %p\n", (void *)fp);
-	    if (fp == NULL)
-		return NULL;
-	    /* XXX gzdio/bzdio use fp for private data */
-	    if (fdGetFp(fd) == NULL)
-		fdSetFp(fd, fp);
-	    fdPush(fd, fpio, fp, fdno);	/* Push fpio onto stack */
 	}
     } else if (other[0] != '\0') {
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
@@ -1690,8 +1635,6 @@ int Fflush(FD_t fd)
 {
     void * vh;
     if (fd == NULL) return -1;
-    if (fdGetIo(fd) == fpio)
-	return fflush(fdGetFILE(fd));
 
     vh = fdGetFp(fd);
     if (vh && fdGetIo(fd) == gzdio)
@@ -1716,7 +1659,7 @@ off_t Ftell(FD_t fd)
     if (fd == NULL) return -1;
     iot = fdGetIo(fd);
     /* this wont work correctly for compressed types */
-    if (iot == fpio || iot == fdio || iot == ufdio) {
+    if (iot == fdio || iot == ufdio) {
 	pos = lseek(Fileno(fd), 0, SEEK_CUR);
     }
 
@@ -1732,9 +1675,7 @@ int Ferror(FD_t fd)
 	FDSTACK_t * fps = &fd->fps[i];
 	int ec;
 	
-	if (fps->io == fpio) {
-	    ec = ferror(fdGetFILE(fd));
-	} else if (fps->io == gzdio) {
+	if (fps->io == gzdio) {
 	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
 #if HAVE_BZLIB_H
@@ -1836,12 +1777,6 @@ exit:
 
     return rc;
 }
-
-static const struct FDIO_s fpio_s = {
-  fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, NULL
-};
-static const FDIO_t fpio = &fpio_s ;
 
 void fdInitDigest(FD_t fd, int hashalgo, rpmDigestFlags flags)
 {
