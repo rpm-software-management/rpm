@@ -336,6 +336,12 @@ static int fdSeekNot(void * cookie, off_t pos,  int whence)
     return -2;
 }
 
+/* Regular fd doesn't have fflush() equivalent but its not an error either */
+static int fdFlush(FD_t fd)
+{
+    return 0;
+}
+
 /** \ingroup rpmio
  */
 static int fdFileno(void * cookie)
@@ -541,7 +547,7 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
 
 static const struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
-  fdOpen, NULL, fdGetFp, NULL
+  fdOpen, NULL, fdGetFp, fdFlush
 };
 static const FDIO_t fdio = &fdio_s ;
 
@@ -658,7 +664,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 
 static const struct FDIO_s ufdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, NULL
+  ufdOpen, NULL, fdGetFp, fdFlush
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
@@ -1633,22 +1639,13 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 
 int Fflush(FD_t fd)
 {
-    void * vh;
-    if (fd == NULL) return -1;
+    int rc = -1;
+    if (fd != NULL) {
+	fdio_fflush_function_t _fflush = FDIOVEC(fd, _fflush);
 
-    vh = fdGetFp(fd);
-    if (vh && fdGetIo(fd) == gzdio)
-	return gzdFlush(vh);
-#if HAVE_BZLIB_H
-    if (vh && fdGetIo(fd) == bzdio)
-	return bzdFlush(vh);
-#endif
-#if HAVE_LZMA_H
-    if (vh && (fdGetIo(fd) == xzdio || fdGetIo(fd) == lzdio))
-	return lzdFlush(vh);
-#endif
-/* FIXME: If we get here, something went wrong above */
-    return 0;
+	rc = (_fflush ? _fflush(fd) : -2);
+    }
+    return rc;
 }
 
 off_t Ftell(FD_t fd)
