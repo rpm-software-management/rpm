@@ -124,7 +124,7 @@ restart:
 
 maybe_manifest:
 	/* Try to read a package manifest. */
-	fd = Fopen(*fnp, "r.fpio");
+	fd = Fopen(*fnp, "r.ufdio");
 	if (fd == NULL || Ferror(fd)) {
 	    rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *fnp,
 			Fstrerror(fd));

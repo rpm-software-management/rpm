@@ -284,7 +284,7 @@ static int tryReadManifest(struct rpmEIU * eiu)
     int rc;
 
     /* Try to read a package manifest. */
-    FD_t fd = Fopen(*eiu->fnp, "r.fpio");
+    FD_t fd = Fopen(*eiu->fnp, "r.ufdio");
     if (fd == NULL || Ferror(fd)) {
         rpmlog(RPMLOG_ERR, _("open of %s failed: %s\n"), *eiu->fnp,
 	       Fstrerror(fd));
