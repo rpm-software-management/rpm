@@ -385,7 +385,7 @@ const char * Fdescr(FD_t fd)
     return fd->descr;
 }
 
-FILE * fdGetFILE(FD_t fd)
+static FILE * fdGetFILE(FD_t fd)
 {
     return ((FILE *)fdGetFp(fd));
 }

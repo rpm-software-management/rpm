@@ -107,11 +107,6 @@ off_t	fdSize(FD_t fd);
 FD_t fdDup(int fdno);
 
 /** \ingroup rpmio
- * Get associated FILE stream from fd (if any)
- */
-FILE * fdGetFILE(FD_t fd);
-
-/** \ingroup rpmio
  */
 FD_t fdLink(void * cookie);
 
