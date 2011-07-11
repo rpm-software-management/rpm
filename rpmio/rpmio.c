@@ -428,9 +428,7 @@ static ssize_t fdRead(void * cookie, void * buf, size_t count)
     FD_t fd = c2f(cookie);
     ssize_t rc;
 
-    fdstat_enter(fd, FDSTAT_READ);
     rc = read(fdFileno(fd), buf, count);
-    fdstat_exit(fd, FDSTAT_READ, rc);
 
     if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
 
@@ -451,9 +449,7 @@ static ssize_t fdWrite(void * cookie, const void * buf, size_t count)
 
     if (count == 0) return 0;
 
-    fdstat_enter(fd, FDSTAT_WRITE);
     rc = write(fdno, buf, count);
-    fdstat_exit(fd, FDSTAT_WRITE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
@@ -469,9 +465,7 @@ static int fdSeek(void * cookie, off_t pos, int whence)
     if (fd == NULL)
 	return -2;
 
-    fdstat_enter(fd, FDSTAT_SEEK);
     rc = lseek(fdFileno(fd), p, whence);
-    fdstat_exit(fd, FDSTAT_SEEK, rc);
 
 DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
 
@@ -491,9 +485,7 @@ static int fdClose( void * cookie)
 
     fdSetFdno(fd, -1);
 
-    fdstat_enter(fd, FDSTAT_CLOSE);
     rc = ((fdno >= 0) ? close(fdno) : -2);
-    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 
 DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
@@ -708,7 +700,6 @@ static ssize_t gzdRead(void * cookie, void * buf, size_t count)
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
-    fdstat_enter(fd, FDSTAT_READ);
     rc = gzread(gzfile, buf, count);
 DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
@@ -719,7 +710,6 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	    fd->errcookie = strerror(fd->syserrno);
 	}
     } else if (rc >= 0) {
-	fdstat_exit(fd, FDSTAT_READ, rc);
 	if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
     }
     return rc;
@@ -736,7 +726,6 @@ static ssize_t gzdWrite(void * cookie, const void * buf, size_t count)
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
-    fdstat_enter(fd, FDSTAT_WRITE);
     rc = gzwrite(gzfile, (void *)buf, count);
 DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
@@ -746,8 +735,6 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 	    fd->syserrno = errno;
 	    fd->errcookie = strerror(fd->syserrno);
 	}
-    } else if (rc > 0) {
-	fdstat_exit(fd, FDSTAT_WRITE, rc);
     }
     return rc;
 }
@@ -766,7 +753,6 @@ static int gzdSeek(void * cookie, off_t pos, int whence)
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
-    fdstat_enter(fd, FDSTAT_SEEK);
     rc = gzseek(gzfile, p, whence);
 DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
@@ -776,8 +762,6 @@ DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whenc
 	    fd->syserrno = errno;
 	    fd->errcookie = strerror(fd->syserrno);
 	}
-    } else if (rc >= 0) {
-	fdstat_exit(fd, FDSTAT_SEEK, rc);
     }
 #else
     rc = -2;
@@ -794,7 +778,6 @@ static int gzdClose( void * cookie)
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
-    fdstat_enter(fd, FDSTAT_CLOSE);
     rc = gzclose(gzfile);
 
     /* XXX TODO: preserve fd if errors */
@@ -807,8 +790,6 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
 		fd->syserrno = errno;
 		fd->errcookie = strerror(fd->syserrno);
 	    }
-	} else if (rc >= 0) {
-	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 	}
     }
 
@@ -912,7 +893,6 @@ static ssize_t bzdRead(void * cookie, void * buf, size_t count)
     ssize_t rc = 0;
 
     bzfile = bzdFileno(fd);
-    fdstat_enter(fd, FDSTAT_READ);
     if (bzfile)
 	rc = bzread(bzfile, buf, count);
     if (rc == -1) {
@@ -920,7 +900,6 @@ static ssize_t bzdRead(void * cookie, void * buf, size_t count)
 	if (bzfile)
 	    fd->errcookie = bzerror(bzfile, &zerror);
     } else if (rc >= 0) {
-	fdstat_exit(fd, FDSTAT_READ, rc);
 	if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
     }
     return rc;
@@ -935,13 +914,10 @@ static ssize_t bzdWrite(void * cookie, const void * buf, size_t count)
     if (fd->digests && count > 0) fdUpdateDigests(fd, buf, count);
 
     bzfile = bzdFileno(fd);
-    fdstat_enter(fd, FDSTAT_WRITE);
     rc = bzwrite(bzfile, (void *)buf, count);
     if (rc == -1) {
 	int zerror = 0;
 	fd->errcookie = bzerror(bzfile, &zerror);
-    } else if (rc > 0) {
-	fdstat_exit(fd, FDSTAT_WRITE, rc);
     }
     return rc;
 }
@@ -955,7 +931,6 @@ static int bzdClose( void * cookie)
     bzfile = bzdFileno(fd);
 
     if (bzfile == NULL) return -2;
-    fdstat_enter(fd, FDSTAT_CLOSE);
     /* FIX: check rc */
     bzclose(bzfile);
     rc = 0;	/* XXX FIXME */
@@ -966,8 +941,6 @@ static int bzdClose( void * cookie)
 	if (rc == -1) {
 	    int zerror = 0;
 	    fd->errcookie = bzerror(bzfile, &zerror);
-	} else if (rc >= 0) {
-	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 	}
     }
 
@@ -1288,13 +1261,11 @@ static ssize_t lzdRead(void * cookie, void * buf, size_t count)
     ssize_t rc = 0;
 
     lzfile = lzdFileno(fd);
-    fdstat_enter(fd, FDSTAT_READ);
     if (lzfile)
 	rc = lzread(lzfile, buf, count);
     if (rc == -1) {
 	fd->errcookie = "Lzma: decoding error";
     } else if (rc >= 0) {
-	fdstat_exit(fd, FDSTAT_READ, rc);
 	if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
     }
     return rc;
@@ -1310,12 +1281,9 @@ static ssize_t lzdWrite(void * cookie, const void * buf, size_t count)
 
     lzfile = lzdFileno(fd);
 
-    fdstat_enter(fd, FDSTAT_WRITE);
     rc = lzwrite(lzfile, (void *)buf, count);
     if (rc < 0) {
 	fd->errcookie = "Lzma: encoding error";
-    } else if (rc > 0) {
-	fdstat_exit(fd, FDSTAT_WRITE, rc);
     }
     return rc;
 }
@@ -1329,7 +1297,6 @@ static int lzdClose(void * cookie)
     lzfile = lzdFileno(fd);
 
     if (lzfile == NULL) return -2;
-    fdstat_enter(fd, FDSTAT_CLOSE);
     rc = lzclose(lzfile);
 
     /* XXX TODO: preserve fd if errors */
@@ -1337,8 +1304,6 @@ static int lzdClose(void * cookie)
     if (fd) {
 	if (rc == -1) {
 	    fd->errcookie = strerror(ferror(lzfile->file));
-	} else if (rc >= 0) {
-	    fdstat_exit(fd, FDSTAT_CLOSE, rc);
 	}
     }
 
@@ -1383,7 +1348,9 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
     if (fd != NULL) {
 	fdio_read_function_t _read = FDIOVEC(fd, read);
 
+	fdstat_enter(fd, FDSTAT_READ);
 	rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+	fdstat_exit(fd, FDSTAT_READ, rc);
     }
     return rc;
 }
@@ -1395,7 +1362,9 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
     if (fd != NULL) {
 	fdio_write_function_t _write = FDIOVEC(fd, write);
 	
+	fdstat_enter(fd, FDSTAT_WRITE);
 	rc = (_write ? _write(fd, buf, size * nmemb) : -2);
+	fdstat_exit(fd, FDSTAT_WRITE, rc);
     }
     return rc;
 }
@@ -1407,7 +1376,9 @@ int Fseek(FD_t fd, off_t offset, int whence)
     if (fd != NULL) {
 	fdio_seek_function_t _seek = FDIOVEC(fd, seek);
 
+	fdstat_enter(fd, FDSTAT_SEEK);
 	rc = (_seek ? _seek(fd, offset, whence) : -2);
+	fdstat_exit(fd, FDSTAT_SEEK, rc);
     }
     return rc;
 }
@@ -1420,6 +1391,7 @@ int Fclose(FD_t fd)
 	return -1;
 
     fd = fdLink(fd);
+    fdstat_enter(fd, FDSTAT_CLOSE);
     while (fd->nfps >= 0) {
 	fdio_close_function_t _close = FDIOVEC(fd, close);
 	rc = _close ? _close(fd) : -2;
@@ -1430,6 +1402,7 @@ int Fclose(FD_t fd)
 	    ec = rc;
 	fdPop(fd);
     }
+    fdstat_exit(fd, FDSTAT_CLOSE, rc);
     fdFree(fd);
     return ec;
 }
