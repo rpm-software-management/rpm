@@ -244,14 +244,12 @@ static const char * fdbg(FD_t fd)
 
 static void fdstat_enter(FD_t fd, fdOpX opx)
 {
-    if (fd == NULL) return;
     if (fd->stats != NULL)
 	(void) rpmswEnter(fdOp(fd, opx), (ssize_t) 0);
 }
 
 static void fdstat_exit(FD_t fd, fdOpX opx, ssize_t rc)
 {
-    if (fd == NULL) return;
     if (rc == -1)
 	fd->syserrno = errno;
     if (fd->stats != NULL)
