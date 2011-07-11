@@ -166,6 +166,7 @@ typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
 typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode);
 typedef void * (*fdio_ffileno_function_t) (FD_t fd);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
+typedef long (*fdio_ftell_function_t) (FD_t);
 
 /** \ingroup rpmio
  */
@@ -184,6 +185,7 @@ struct FDIO_s {
   fdio_fopen_function_t		_fopen;
   fdio_ffileno_function_t	_ffileno;
   fdio_fflush_function_t	_fflush;
+  fdio_ftell_function_t		_ftell;
 };
 
 /* forward refs */
@@ -540,9 +542,14 @@ DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (un
     return fd;
 }
 
+static long fdTell(FD_t fd)
+{
+    return lseek(Fileno(fd), 0, SEEK_CUR);
+}
+
 static const struct FDIO_s fdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
-  fdOpen, NULL, fdGetFp, fdFlush
+  fdOpen, NULL, fdGetFp, fdFlush, fdTell
 };
 static const FDIO_t fdio = &fdio_s ;
 
@@ -659,7 +666,7 @@ DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (un
 
 static const struct FDIO_s ufdio_s = {
   fdRead, fdWrite, fdSeek, fdClose, fdLink, fdFree, fdNew, fdFileno,
-  ufdOpen, NULL, fdGetFp, fdFlush
+  ufdOpen, NULL, fdGetFp, fdFlush, fdTell
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
@@ -842,7 +849,7 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static const struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, fdLink, fdFree, fdNew, fdFileno,
-  NULL, gzdOpen, gzdFileno, gzdFlush
+  NULL, gzdOpen, gzdFileno, gzdFlush, NULL
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
@@ -982,7 +989,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static const struct FDIO_s bzdio_s = {
   bzdRead, bzdWrite, NULL, bzdClose, fdLink, fdFree, fdNew, fdFileno,
-  NULL, bzdOpen, bzdFileno, bzdFlush
+  NULL, bzdOpen, bzdFileno, bzdFlush, NULL
 };
 static const FDIO_t bzdio = &bzdio_s ;
 
@@ -1356,13 +1363,13 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 
 static struct FDIO_s xzdio_s = {
   lzdRead, lzdWrite, NULL, lzdClose, NULL, NULL, NULL, fdFileno,
-  NULL, xzdOpen, lzdFileno, lzdFlush
+  NULL, xzdOpen, lzdFileno, lzdFlush, NULL
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
   lzdRead, lzdWrite, NULL, lzdClose, NULL, NULL, NULL, fdFileno,
-  NULL, lzdOpen, lzdFileno, lzdFlush
+  NULL, lzdOpen, lzdFileno, lzdFlush, NULL
 };
 static const FDIO_t lzdio = &lzdio_s;
 
@@ -1645,16 +1652,12 @@ int Fflush(FD_t fd)
 
 off_t Ftell(FD_t fd)
 {
-    FDIO_t iot;
-    off_t pos = -2; /* assume not implemented */
+    off_t pos = -1;
+    if (fd != NULL) {
+	fdio_ftell_function_t _ftell = FDIOVEC(fd, _ftell);
 
-    if (fd == NULL) return -1;
-    iot = fdGetIo(fd);
-    /* this wont work correctly for compressed types */
-    if (iot == fdio || iot == ufdio) {
-	pos = lseek(Fileno(fd), 0, SEEK_CUR);
+	pos = (_ftell ? _ftell(fd) : -2);
     }
-
     return pos;
 }
 
