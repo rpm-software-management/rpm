@@ -402,36 +402,20 @@ FD_t fdNew(const char *descr)
 
 static ssize_t fdRead(FD_t fd, void * buf, size_t count)
 {
-    ssize_t rc;
-
-    rc = read(fdFileno(fd), buf, count);
-
-    return rc;
+    return read(fdFileno(fd), buf, count);
 }
 
 static ssize_t fdWrite(FD_t fd, const void * buf, size_t count)
 {
-    int fdno = fdFileno(fd);
-    ssize_t rc;
+    if (count == 0)
+	return 0;
 
-    if (count == 0) return 0;
-
-    rc = write(fdno, buf, count);
-
-    return rc;
+    return write(fdFileno(fd), buf, count);
 }
 
 static int fdSeek(FD_t fd, off_t pos, int whence)
 {
-    off_t p = pos;
-    off_t rc;
-
-    if (fd == NULL)
-	return -2;
-
-    rc = lseek(fdFileno(fd), p, whence);
-
-    return rc;
+    return lseek(fdFileno(fd), pos, whence);
 }
 
 static int fdClose(FD_t fd)
