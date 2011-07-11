@@ -39,11 +39,17 @@ data = msg * 10
 for iot in [ 'fpio', 'fdio', 'ufdio', 'gzdio' ]:
     fn = 'pyio.%s' % iot
     fd = rpm.fd(fn, 'w', iot)
+    pos = fd.tell()
+    if pos != -2 and pos != 0:
+        myprint('bad start pos %d' % fd.tell())
     if fd.write(data) != len(data):
         myprint('%s write fail' % iot)
     if fn != fd.name:
         myprint('bad file name %s' % fd.name)
     fd.flush()
+    pos = fd.tell()
+    if pos != -2 and pos != len(data):
+        myprint('bad end pos %d' % fd.tell())
     fd = rpm.fd(fn, 'r', iot)
     rdata = fd.read()
     if rdata != data:
