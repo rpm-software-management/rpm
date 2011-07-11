@@ -331,11 +331,6 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
     return fd;
 }
 
-static int fdSeekNot(void * cookie, off_t pos,  int whence)
-{
-    return -2;
-}
-
 /* Regular fd doesn't have fflush() equivalent but its not an error either */
 static int fdFlush(FD_t fd)
 {
@@ -986,7 +981,7 @@ DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 }
 
 static const struct FDIO_s bzdio_s = {
-  bzdRead, bzdWrite, fdSeekNot, bzdClose, fdLink, fdFree, fdNew, fdFileno,
+  bzdRead, bzdWrite, NULL, bzdClose, fdLink, fdFree, fdNew, fdFileno,
   NULL, bzdOpen, bzdFileno, bzdFlush
 };
 static const FDIO_t bzdio = &bzdio_s ;
@@ -1360,13 +1355,13 @@ DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
 }
 
 static struct FDIO_s xzdio_s = {
-  lzdRead, lzdWrite, fdSeekNot, lzdClose, NULL, NULL, NULL, fdFileno,
+  lzdRead, lzdWrite, NULL, lzdClose, NULL, NULL, NULL, fdFileno,
   NULL, xzdOpen, lzdFileno, lzdFlush
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
-  lzdRead, lzdWrite, fdSeekNot, lzdClose, NULL, NULL, NULL, fdFileno,
+  lzdRead, lzdWrite, NULL, lzdClose, NULL, NULL, NULL, fdFileno,
   NULL, lzdOpen, lzdFileno, lzdFlush
 };
 static const FDIO_t lzdio = &lzdio_s;
