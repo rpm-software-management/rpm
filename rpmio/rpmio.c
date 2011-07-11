@@ -1433,18 +1433,15 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
     return rc;
 }
 
-int Fseek(FD_t fd, off_t offset, int whence) {
-    fdio_seek_function_t _seek;
-    off_t pos = offset;
+int Fseek(FD_t fd, off_t offset, int whence)
+{
+    int rc = -1;
 
-    long int rc;
+    if (fd != NULL) {
+	fdio_seek_function_t _seek = FDIOVEC(fd, seek);
 
-    if (fd == NULL)
-	return -1;
-
-    _seek = FDIOVEC(fd, seek);
-
-    rc = (_seek ? _seek(fd, pos, whence) : -2);
+	rc = (_seek ? _seek(fd, offset, whence) : -2);
+    }
     return rc;
 }
 
