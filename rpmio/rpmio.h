@@ -108,7 +108,7 @@ FD_t fdDup(int fdno);
 
 /** \ingroup rpmio
  */
-FD_t fdLink(void * cookie);
+FD_t fdLink(FD_t fd);
 
 /** \ingroup rpmio
  */

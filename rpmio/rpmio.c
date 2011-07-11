@@ -105,12 +105,6 @@ static void fdPop(FD_t fd)
     fd->nfps--;
 }
 
-static FD_t c2f(void * cookie)
-{
-    FD_t fd = (FD_t) cookie;
-    return (fd && fd->magic == FDMAGIC) ? fd : NULL;
-}
-
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
 {
     if (fd)
@@ -152,14 +146,14 @@ static void * iotFileno(FD_t fd, FDIO_t iot)
 /** \ingroup rpmio
  * \name RPMIO Vectors.
  */
-typedef ssize_t (*fdio_read_function_t) (void *cookie, void *buf, size_t nbytes);
-typedef ssize_t (*fdio_write_function_t) (void *cookie, const void *buf, size_t nbytes);
-typedef int (*fdio_seek_function_t) (void *cookie, off_t pos, int whence);
-typedef int (*fdio_close_function_t) (void *cookie);
-typedef FD_t (*fdio_ref_function_t) ( void * cookie);
+typedef ssize_t (*fdio_read_function_t) (FD_t fd, void *buf, size_t nbytes);
+typedef ssize_t (*fdio_write_function_t) (FD_t fd, const void *buf, size_t nbytes);
+typedef int (*fdio_seek_function_t) (FD_t fd, off_t pos, int whence);
+typedef int (*fdio_close_function_t) (FD_t fd);
+typedef FD_t (*fdio_ref_function_t) (FD_t fd);
 typedef FD_t (*fdio_deref_function_t) (FD_t fd);
 typedef FD_t (*fdio_new_function_t) (const char *descr);
-typedef int (*fdio_fileno_function_t) (void * cookie);
+typedef int (*fdio_fileno_function_t) (FD_t fd);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
 typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode);
 typedef void * (*fdio_ffileno_function_t) (FD_t fd);
@@ -326,9 +320,8 @@ static int fdFlush(FD_t fd)
 
 /** \ingroup rpmio
  */
-static int fdFileno(void * cookie)
+static int fdFileno(FD_t fd)
 {
-    FD_t fd = c2f(cookie);
     return (fd != NULL) ? fd->fps[0].fdno : -2;
 }
 
@@ -368,9 +361,8 @@ const char * Fdescr(FD_t fd)
 
 /* =============================================================== */
 
-FD_t fdLink(void * cookie)
+FD_t fdLink(FD_t fd)
 {
-    FD_t fd = c2f(cookie);
     if (fd)
 	fd->nrefs++;
     return fd;
@@ -423,23 +415,21 @@ FD_t fdNew(const char *descr)
 
 /**
  */
-static ssize_t fdRead(void * cookie, void * buf, size_t count)
+static ssize_t fdRead(FD_t fd, void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     ssize_t rc;
 
     rc = read(fdFileno(fd), buf, count);
 
-DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", fd, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
 
 /**
  */
-static ssize_t fdWrite(void * cookie, const void * buf, size_t count)
+static ssize_t fdWrite(FD_t fd, const void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
     ssize_t rc;
 
@@ -447,15 +437,14 @@ static ssize_t fdWrite(void * cookie, const void * buf, size_t count)
 
     rc = write(fdno, buf, count);
 
-DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", fd, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
 }
 
-static int fdSeek(void * cookie, off_t pos, int whence)
+static int fdSeek(FD_t fd, off_t pos, int whence)
 {
     off_t p = pos;
-    FD_t fd = c2f(cookie);
     off_t rc;
 
     if (fd == NULL)
@@ -463,16 +452,15 @@ static int fdSeek(void * cookie, off_t pos, int whence)
 
     rc = lseek(fdFileno(fd), p, whence);
 
-DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", fd, (long)p, whence, (unsigned long)rc, fdbg(fd)));
 
     return rc;
 }
 
 /**
  */
-static int fdClose( void * cookie)
+static int fdClose(FD_t fd)
 {
-    FD_t fd = c2f(cookie);
     int fdno;
     int rc;
 
@@ -660,9 +648,8 @@ DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ?
     return fdLink(fd);
 }
 
-static FD_t gzdFdopen(void * cookie, const char *fmode)
+static FD_t gzdFdopen(FD_t fd, const char *fmode)
 {
-    FD_t fd = c2f(cookie);
     int fdno;
     gzFile gzfile;
 
@@ -687,9 +674,8 @@ static int gzdFlush(FD_t fd)
 }
 
 /* =============================================================== */
-static ssize_t gzdRead(void * cookie, void * buf, size_t count)
+static ssize_t gzdRead(FD_t fd, void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     gzFile gzfile;
     ssize_t rc;
 
@@ -697,7 +683,7 @@ static ssize_t gzdRead(void * cookie, void * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzread(gzfile, buf, count);
-DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", fd, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -709,9 +695,8 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
     return rc;
 }
 
-static ssize_t gzdWrite(void * cookie, const void * buf, size_t count)
+static ssize_t gzdWrite(FD_t fd, const void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     gzFile gzfile;
     ssize_t rc;
 
@@ -719,7 +704,7 @@ static ssize_t gzdWrite(void * cookie, const void * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzwrite(gzfile, (void *)buf, count);
-DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", fd, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -732,12 +717,11 @@ DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned
 }
 
 /* XXX zlib-1.0.4 has not */
-static int gzdSeek(void * cookie, off_t pos, int whence)
+static int gzdSeek(FD_t fd, off_t pos, int whence)
 {
     off_t p = pos;
     int rc;
 #if HAVE_GZSEEK
-    FD_t fd = c2f(cookie);
     gzFile gzfile;
 
     if (fd == NULL) return -2;
@@ -746,7 +730,7 @@ static int gzdSeek(void * cookie, off_t pos, int whence)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzseek(gzfile, p, whence);
-DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whence, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", fd, (long)p, whence, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -761,9 +745,8 @@ DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", cookie, (long)p, whenc
     return rc;
 }
 
-static int gzdClose( void * cookie)
+static int gzdClose(FD_t fd)
 {
-    FD_t fd = c2f(cookie);
     gzFile gzfile;
     int rc;
 
@@ -775,7 +758,7 @@ static int gzdClose( void * cookie)
     /* XXX TODO: preserve fd if errors */
 
     if (fd) {
-DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", fd, rc, fdbg(fd)));
 	if (rc < 0) {
 	    fd->errcookie = "gzclose error";
 	    if (rc == Z_ERRNO) {
@@ -785,7 +768,7 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", cookie, rc, fdbg(fd)));
 	}
     }
 
-DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
     if (rc == 0)
@@ -854,9 +837,8 @@ static FD_t bzdOpen(const char * path, const char * mode)
     return fdLink(fd);
 }
 
-static FD_t bzdFdopen(void * cookie, const char * fmode)
+static FD_t bzdFdopen(FD_t fd, const char * fmode)
 {
-    FD_t fd = c2f(cookie);
     int fdno;
     BZFILE *bzfile;
 
@@ -878,9 +860,8 @@ static int bzdFlush(FD_t fd)
 }
 
 /* =============================================================== */
-static ssize_t bzdRead(void * cookie, void * buf, size_t count)
+static ssize_t bzdRead(FD_t fd, void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     BZFILE *bzfile;
     ssize_t rc = 0;
 
@@ -895,9 +876,8 @@ static ssize_t bzdRead(void * cookie, void * buf, size_t count)
     return rc;
 }
 
-static ssize_t bzdWrite(void * cookie, const void * buf, size_t count)
+static ssize_t bzdWrite(FD_t fd, const void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     BZFILE *bzfile;
     ssize_t rc;
 
@@ -910,9 +890,8 @@ static ssize_t bzdWrite(void * cookie, const void * buf, size_t count)
     return rc;
 }
 
-static int bzdClose( void * cookie)
+static int bzdClose(FD_t fd)
 {
-    FD_t fd = c2f(cookie);
     BZFILE *bzfile;
     int rc;
 
@@ -932,7 +911,7 @@ static int bzdClose( void * cookie)
 	}
     }
 
-DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
     if (rc == 0)
@@ -1193,9 +1172,8 @@ static FD_t xzdOpen(const char * path, const char * mode)
     return fdLink(fd);
 }
 
-static FD_t xzdFdopen(void * cookie, const char * fmode)
+static FD_t xzdFdopen(FD_t fd, const char * fmode)
 {
-    FD_t fd = c2f(cookie);
     int fdno;
     LZFILE *lzfile;
 
@@ -1220,9 +1198,8 @@ static FD_t lzdOpen(const char * path, const char * mode)
     return fdLink(fd);
 }
 
-static FD_t lzdFdopen(void * cookie, const char * fmode)
+static FD_t lzdFdopen(FD_t fd, const char * fmode)
 {
-    FD_t fd = c2f(cookie);
     int fdno;
     LZFILE *lzfile;
 
@@ -1242,9 +1219,8 @@ static int lzdFlush(FD_t fd)
 }
 
 /* =============================================================== */
-static ssize_t lzdRead(void * cookie, void * buf, size_t count)
+static ssize_t lzdRead(FD_t fd, void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     LZFILE *lzfile;
     ssize_t rc = 0;
 
@@ -1257,9 +1233,8 @@ static ssize_t lzdRead(void * cookie, void * buf, size_t count)
     return rc;
 }
 
-static ssize_t lzdWrite(void * cookie, const void * buf, size_t count)
+static ssize_t lzdWrite(FD_t fd, const void * buf, size_t count)
 {
-    FD_t fd = c2f(cookie);
     LZFILE *lzfile;
     ssize_t rc = 0;
 
@@ -1272,9 +1247,8 @@ static ssize_t lzdWrite(void * cookie, const void * buf, size_t count)
     return rc;
 }
 
-static int lzdClose(void * cookie)
+static int lzdClose(FD_t fd)
 {
-    FD_t fd = c2f(cookie);
     LZFILE *lzfile;
     int rc;
 
@@ -1291,7 +1265,7 @@ static int lzdClose(void * cookie)
 	}
     }
 
-DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, fdbg(fd)));
+DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
     if (rc == 0)
