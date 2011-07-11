@@ -160,8 +160,6 @@ typedef void * (*fdio_ffileno_function_t) (FD_t fd);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
 typedef long (*fdio_ftell_function_t) (FD_t);
 
-/** \ingroup rpmio
- */
 struct FDIO_s {
   fdio_read_function_t		read;
   fdio_write_function_t		write;
@@ -286,7 +284,6 @@ static void fdstat_print(FD_t fd, const char * msg, FILE * fp)
     }
 }
 
-/* =============================================================== */
 off_t fdSize(FD_t fd)
 {
     struct stat sb;
@@ -316,8 +313,6 @@ static int fdFlush(FD_t fd)
     return 0;
 }
 
-/** \ingroup rpmio
- */
 static int fdFileno(FD_t fd)
 {
     return (fd != NULL) ? fd->fps[0].fdno : -2;
@@ -357,8 +352,6 @@ const char * Fdescr(FD_t fd)
     return fd->descr;
 }
 
-/* =============================================================== */
-
 FD_t fdLink(FD_t fd)
 {
     if (fd)
@@ -366,8 +359,6 @@ FD_t fdLink(FD_t fd)
     return fd;
 }
 
-/**
- */
 FD_t fdFree( FD_t fd)
 {
     if (fd) {
@@ -383,8 +374,6 @@ FD_t fdFree( FD_t fd)
     return NULL;
 }
 
-/**
- */
 FD_t fdNew(const char *descr)
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
@@ -411,8 +400,6 @@ FD_t fdNew(const char *descr)
     return fdLink(fd);
 }
 
-/**
- */
 static ssize_t fdRead(FD_t fd, void * buf, size_t count)
 {
     ssize_t rc;
@@ -422,8 +409,6 @@ static ssize_t fdRead(FD_t fd, void * buf, size_t count)
     return rc;
 }
 
-/**
- */
 static ssize_t fdWrite(FD_t fd, const void * buf, size_t count)
 {
     int fdno = fdFileno(fd);
@@ -449,8 +434,6 @@ static int fdSeek(FD_t fd, off_t pos, int whence)
     return rc;
 }
 
-/**
- */
 static int fdClose(FD_t fd)
 {
     int fdno;
@@ -467,8 +450,6 @@ static int fdClose(FD_t fd)
     return rc;
 }
 
-/**
- */
 static FD_t fdOpen(const char *path, int flags, mode_t mode)
 {
     FD_t fd;
@@ -613,8 +594,7 @@ static const struct FDIO_s ufdio_s = {
 static const FDIO_t ufdio = &ufdio_s ;
 
 /* =============================================================== */
-/* Support for GZIP library.
- */
+/* Support for GZIP library.  */
 #include <zlib.h>
 
 static void * gzdFileno(FD_t fd)
@@ -660,7 +640,6 @@ static int gzdFlush(FD_t fd)
     return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
 
-/* =============================================================== */
 static ssize_t gzdRead(FD_t fd, void * buf, size_t count)
 {
     gzFile gzfile;
@@ -786,8 +765,7 @@ static const struct FDIO_s gzdio_s = {
 static const FDIO_t gzdio = &gzdio_s ;
 
 /* =============================================================== */
-/* Support for BZIP2 library.
- */
+/* Support for BZIP2 library.  */
 #if HAVE_BZLIB_H
 
 #include <bzlib.h>
@@ -840,7 +818,6 @@ static int bzdFlush(FD_t fd)
     return bzflush(bzdFileno(fd));
 }
 
-/* =============================================================== */
 static ssize_t bzdRead(FD_t fd, void * buf, size_t count)
 {
     BZFILE *bzfile;
@@ -906,7 +883,6 @@ static const FDIO_t bzdio = &bzdio_s ;
 
 #endif	/* HAVE_BZLIB_H */
 
-/* =============================================================== */
 static const char * getFdErrstr (FD_t fd)
 {
     const char *errstr = NULL;
@@ -932,8 +908,7 @@ static const char * getFdErrstr (FD_t fd)
 }
 
 /* =============================================================== */
-/* Support for LZMA library.
- */
+/* Support for LZMA library.  */
 
 #ifdef HAVE_LZMA_H
 
@@ -1121,8 +1096,6 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
     }
 }
 
-/* =============================================================== */
-
 static void * lzdFileno(FD_t fd)
 {
     void * rc = NULL;
@@ -1197,7 +1170,6 @@ static int lzdFlush(FD_t fd)
     return lzflush(lzdFileno(fd));
 }
 
-/* =============================================================== */
 static ssize_t lzdRead(FD_t fd, void * buf, size_t count)
 {
     LZFILE *lzfile;
