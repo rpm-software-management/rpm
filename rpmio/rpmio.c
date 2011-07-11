@@ -847,9 +847,31 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", cookie, (unsigned long)rc, f
     return rc;
 }
 
+static off_t gzdTell(FD_t fd)
+{
+    off_t pos = -1;
+    gzFile gzfile = gzdFileno(fd);
+
+    if (gzfile != NULL) {
+#if HAVE_GZSEEK
+	pos = gztell(gzfile);
+	if (pos < 0) {
+	    int zerror = 0;
+	    fd->errcookie = gzerror(gzfile, &zerror);
+	    if (zerror == Z_ERRNO) {
+		fd->syserrno = errno;
+		fd->errcookie = strerror(fd->syserrno);
+	    }
+	}
+#else
+	pos = -2;
+#endif    
+    }
+    return pos;
+}
 static const struct FDIO_s gzdio_s = {
   gzdRead, gzdWrite, gzdSeek, gzdClose, fdLink, fdFree, fdNew, fdFileno,
-  NULL, gzdOpen, gzdFileno, gzdFlush, NULL
+  NULL, gzdOpen, gzdFileno, gzdFlush, gzdTell
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
