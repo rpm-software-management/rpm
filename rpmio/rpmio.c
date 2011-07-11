@@ -1409,30 +1409,27 @@ const char *Fstrerror(FD_t fd)
 #define	FDIOVEC(_fd, _vec)	\
   ((fdGetIo(_fd) && fdGetIo(_fd)->_vec) ? fdGetIo(_fd)->_vec : NULL)
 
-ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd) {
-    fdio_read_function_t _read;
-    int rc;
+ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
+{
+    ssize_t rc = -1;
 
-    if (fd == NULL)
-	return 0;
+    if (fd != NULL) {
+	fdio_read_function_t _read = FDIOVEC(fd, read);
 
-    _read = FDIOVEC(fd, read);
-
-    rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+	rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+    }
     return rc;
 }
 
 ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 {
-    fdio_write_function_t _write;
-    int rc;
+    ssize_t rc = -1;
 
-    if (fd == NULL)
-	return 0;
-
-    _write = FDIOVEC(fd, write);
-
-    rc = (_write ? _write(fd, buf, size * nmemb) : -2);
+    if (fd != NULL) {
+	fdio_write_function_t _write = FDIOVEC(fd, write);
+	
+	rc = (_write ? _write(fd, buf, size * nmemb) : -2);
+    }
     return rc;
 }
 
