@@ -421,8 +421,6 @@ static ssize_t fdRead(FD_t fd, void * buf, size_t count)
 
     rc = read(fdFileno(fd), buf, count);
 
-DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", fd, buf, (long)count, (long)rc, fdbg(fd)));
-
     return rc;
 }
 
@@ -437,8 +435,6 @@ static ssize_t fdWrite(FD_t fd, const void * buf, size_t count)
 
     rc = write(fdno, buf, count);
 
-DBGIO(fd, (stderr, "==>\tfdWrite(%p,%p,%ld) rc %ld %s\n", fd, buf, (long)count, (long)rc, fdbg(fd)));
-
     return rc;
 }
 
@@ -451,8 +447,6 @@ static int fdSeek(FD_t fd, off_t pos, int whence)
 	return -2;
 
     rc = lseek(fdFileno(fd), p, whence);
-
-DBGIO(fd, (stderr, "==>\tfdSeek(%p,%ld,%d) rc %lx %s\n", fd, (long)p, whence, (unsigned long)rc, fdbg(fd)));
 
     return rc;
 }
@@ -470,8 +464,6 @@ static int fdClose(FD_t fd)
     fdSetFdno(fd, -1);
 
     rc = ((fdno >= 0) ? close(fdno) : -2);
-
-DBGIO(fd, (stderr, "==>\tfdClose(%p) rc %lx %s\n", (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
 
     fdFree(fd);
     return rc;
@@ -493,7 +485,6 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
     fd = fdNew(path);
     fdSetFdno(fd, fdno);
     fd->flags = flags;
-DBGIO(fd, (stderr, "==>\tfdOpen(\"%s\",%x,0%o) %s\n", path, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     return fd;
 }
 
@@ -614,7 +605,6 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	(void) fdClose(fd);
 	return NULL;
     }
-DBGIO(fd, (stderr, "==>\tufdOpen(\"%s\",%x,0%o) %s\n", url, (unsigned)flags, (unsigned)mode, fdbg(fd)));
     return fd;
 }
 
@@ -644,7 +634,6 @@ FD_t gzdOpen(const char * path, const char * fmode)
     fd = fdNew(path);
     fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
     
-DBGIO(fd, (stderr, "==>\tgzdOpen(\"%s\", \"%s\") fd %p %s\n", path, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fdLink(fd);
 }
 
@@ -683,7 +672,6 @@ static ssize_t gzdRead(FD_t fd, void * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzread(gzfile, buf, count);
-DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", fd, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -704,7 +692,6 @@ static ssize_t gzdWrite(FD_t fd, const void * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzwrite(gzfile, (void *)buf, count);
-DBGIO(fd, (stderr, "==>\tgzdWrite(%p,%p,%u) rc %lx %s\n", fd, buf, (unsigned)count, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -730,7 +717,6 @@ static int gzdSeek(FD_t fd, off_t pos, int whence)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzseek(gzfile, p, whence);
-DBGIO(fd, (stderr, "==>\tgzdSeek(%p,%ld,%d) rc %lx %s\n", fd, (long)p, whence, (unsigned long)rc, fdbg(fd)));
     if (rc < 0) {
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
@@ -758,7 +744,6 @@ static int gzdClose(FD_t fd)
     /* XXX TODO: preserve fd if errors */
 
     if (fd) {
-DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", fd, rc, fdbg(fd)));
 	if (rc < 0) {
 	    fd->errcookie = "gzclose error";
 	    if (rc == Z_ERRNO) {
@@ -767,8 +752,6 @@ DBGIO(fd, (stderr, "==>\tgzdClose(%p) zerror %d %s\n", fd, rc, fdbg(fd)));
 	    }
 	}
     }
-
-DBGIO(fd, (stderr, "==>\tgzdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
     if (rc == 0)
@@ -910,8 +893,6 @@ static int bzdClose(FD_t fd)
 	    fd->errcookie = bzerror(bzfile, &zerror);
 	}
     }
-
-DBGIO(fd, (stderr, "==>\tbzdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
     if (rc == 0)
@@ -1265,8 +1246,6 @@ static int lzdClose(FD_t fd)
 	}
     }
 
-DBGIO(fd, (stderr, "==>\tlzdClose(%p) rc %lx %s\n", fd, (unsigned long)rc, fdbg(fd)));
-
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
     if (rc == 0)
 	fdFree(fd);
@@ -1313,6 +1292,10 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 	if (fd->digests && rc > 0)
 	    fdUpdateDigests(fd, buf, rc);
     }
+
+    DBGIO(fd, (stderr, "==>\tFread(%p,%p,%ld) rc %ld %s\n",
+	  fd, buf, (long)size * nmemb, (long)rc, fdbg(fd)));
+
     return rc;
 }
 
@@ -1330,6 +1313,10 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 	if (fd->digests && rc > 0)
 	    fdUpdateDigests(fd, buf, rc);
     }
+
+    DBGIO(fd, (stderr, "==>\tFwrite(%p,%p,%ld) rc %ld %s\n",
+	  fd, buf, (long)size * nmemb, (long)rc, fdbg(fd)));
+
     return rc;
 }
 
@@ -1344,6 +1331,10 @@ int Fseek(FD_t fd, off_t offset, int whence)
 	rc = (_seek ? _seek(fd, offset, whence) : -2);
 	fdstat_exit(fd, FDSTAT_SEEK, rc);
     }
+
+    DBGIO(fd, (stderr, "==>\tFseek(%p,%ld,%d) rc %lx %s\n",
+	  fd, (long)offset, whence, (unsigned long)rc, fdbg(fd)));
+
     return rc;
 }
 
@@ -1367,6 +1358,9 @@ int Fclose(FD_t fd)
 	fdPop(fd);
     }
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
+    DBGIO(fd, (stderr, "==>\tFclose(%p) rc %lx %s\n",
+	  (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
+
     fdFree(fd);
     return ec;
 }
@@ -1556,6 +1550,10 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 
     if (fd)
 	fd = Fdopen(fd, fmode);
+
+    DBGIO(fd, (stderr, "==>\tFopen(\"%s\",%x,0%o) %s\n",
+	  path, (unsigned)flags, (unsigned)fmode, fdbg(fd)));
+
     return fd;
 }
 
