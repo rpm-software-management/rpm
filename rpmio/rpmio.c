@@ -430,8 +430,6 @@ static ssize_t fdRead(void * cookie, void * buf, size_t count)
 
     rc = read(fdFileno(fd), buf, count);
 
-    if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
-
 DBGIO(fd, (stderr, "==>\tfdRead(%p,%p,%ld) rc %ld %s\n", cookie, buf, (long)count, (long)rc, fdbg(fd)));
 
     return rc;
@@ -444,8 +442,6 @@ static ssize_t fdWrite(void * cookie, const void * buf, size_t count)
     FD_t fd = c2f(cookie);
     int fdno = fdFileno(fd);
     ssize_t rc;
-
-    if (fd->digests && count > 0) fdUpdateDigests(fd, buf, count);
 
     if (count == 0) return 0;
 
@@ -709,8 +705,6 @@ DBGIO(fd, (stderr, "==>\tgzdRead(%p,%p,%u) rc %lx %s\n", cookie, buf, (unsigned)
 	    fd->syserrno = errno;
 	    fd->errcookie = strerror(fd->syserrno);
 	}
-    } else if (rc >= 0) {
-	if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
     }
     return rc;
 }
@@ -720,8 +714,6 @@ static ssize_t gzdWrite(void * cookie, const void * buf, size_t count)
     FD_t fd = c2f(cookie);
     gzFile gzfile;
     ssize_t rc;
-
-    if (fd->digests && count > 0) fdUpdateDigests(fd, buf, count);
 
     gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
@@ -899,8 +891,6 @@ static ssize_t bzdRead(void * cookie, void * buf, size_t count)
 	int zerror = 0;
 	if (bzfile)
 	    fd->errcookie = bzerror(bzfile, &zerror);
-    } else if (rc >= 0) {
-	if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
     }
     return rc;
 }
@@ -910,8 +900,6 @@ static ssize_t bzdWrite(void * cookie, const void * buf, size_t count)
     FD_t fd = c2f(cookie);
     BZFILE *bzfile;
     ssize_t rc;
-
-    if (fd->digests && count > 0) fdUpdateDigests(fd, buf, count);
 
     bzfile = bzdFileno(fd);
     rc = bzwrite(bzfile, (void *)buf, count);
@@ -1265,8 +1253,6 @@ static ssize_t lzdRead(void * cookie, void * buf, size_t count)
 	rc = lzread(lzfile, buf, count);
     if (rc == -1) {
 	fd->errcookie = "Lzma: decoding error";
-    } else if (rc >= 0) {
-	if (fd->digests && rc > 0) fdUpdateDigests(fd, buf, rc);
     }
     return rc;
 }
@@ -1276,8 +1262,6 @@ static ssize_t lzdWrite(void * cookie, const void * buf, size_t count)
     FD_t fd = c2f(cookie);
     LZFILE *lzfile;
     ssize_t rc = 0;
-
-    if (fd->digests && count > 0) fdUpdateDigests(fd, buf, count);
 
     lzfile = lzdFileno(fd);
 
@@ -1351,6 +1335,9 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 	fdstat_enter(fd, FDSTAT_READ);
 	rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
 	fdstat_exit(fd, FDSTAT_READ, rc);
+
+	if (fd->digests && rc > 0)
+	    fdUpdateDigests(fd, buf, rc);
     }
     return rc;
 }
@@ -1365,6 +1352,9 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 	fdstat_enter(fd, FDSTAT_WRITE);
 	rc = (_write ? _write(fd, buf, size * nmemb) : -2);
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
+
+	if (fd->digests && rc > 0)
+	    fdUpdateDigests(fd, buf, rc);
     }
     return rc;
 }
