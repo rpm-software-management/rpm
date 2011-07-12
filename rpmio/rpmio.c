@@ -1506,7 +1506,7 @@ fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
 	fd = Fdopen(fd, fmode);
 
     DBGIO(fd, (stderr, "==>\tFopen(\"%s\",%x,0%o) %s\n",
-	  path, (unsigned)flags, (unsigned)fmode, fdbg(fd)));
+	  path, (unsigned)flags, (unsigned)perms, fdbg(fd)));
 
     return fd;
 }
