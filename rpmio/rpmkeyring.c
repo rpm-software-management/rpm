@@ -173,18 +173,24 @@ pgpDig rpmPubkeyDig(rpmPubkey key)
     pgpDig dig = NULL;
     static unsigned char zeros[] = 
 	{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    int rc;
     if (key == NULL)
 	return NULL;
 
     dig = pgpNewDig();
-    if (pgpPrtPkts(key->pkt, key->pktlen, dig, 0) == 0) {
+    rc = pgpPrtPkts(key->pkt, key->pktlen, dig, 0);
+    if (rc == 0) {
 	pgpDigParams pubp = &dig->pubkey;
 	if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
 		!memcmp(pubp->time, zeros, sizeof(pubp->time)) ||
 		pubp->userid == NULL) {
-	    dig = pgpFreeDig(dig);
+	    rc = -1;
 	}
     }
+
+    if (rc)
+	dig = pgpFreeDig(dig);
+
     return dig;
 }
 
@@ -212,9 +218,9 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 
 	if ((key = rpmKeyringFindKeyid(keyring, &needle))) {
 	    /* Retrieve parameters from pubkey packet(s) */
-	    (void) pgpPrtPkts(key->pkt, key->pktlen, sig, 0);
+	    int pktrc = pgpPrtPkts(key->pkt, key->pktlen, sig, 0);
 	    /* Do the parameters match the signature? */
-	    if (sigp->pubkey_algo == pubp->pubkey_algo &&
+	    if (pktrc == 0 && sigp->pubkey_algo == pubp->pubkey_algo &&
 		memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) == 0) {
 		res = RPMRC_OK;
 	    }
