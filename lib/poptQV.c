@@ -29,6 +29,7 @@ static void rpmQVSourceArgCallback( poptContext con,
 		const void * data)
 {
     QVA_t qva = &rpmQVKArgs;
+    rpmQVSources sources = qva->qva_source;;
 
     switch (opt->val) {
     case 'q':	/* from --query, -q */
@@ -38,28 +39,21 @@ static void rpmQVSourceArgCallback( poptContext con,
 	    qva->qva_mode = opt->val;
 	}
 	break;
-    case 'a': qva->qva_source |= RPMQV_ALL; qva->qva_sourceCount++; break;
-    case 'f': qva->qva_source |= RPMQV_PATH; qva->qva_sourceCount++; break;
-    case 'g': qva->qva_source |= RPMQV_GROUP; qva->qva_sourceCount++; break;
-    case 'p': qva->qva_source |= RPMQV_RPM; qva->qva_sourceCount++; break;
-    case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; 
-				qva->qva_sourceCount++; break;
-    case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; 
-				qva->qva_sourceCount++; break;
-    case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY;
-				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID;
-				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID;
-				qva->qva_sourceCount++; break;
-    case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID;
-				qva->qva_sourceCount++; break;
-
-    case POPT_QUERYBYNUMBER:
-	qva->qva_source |= RPMQV_DBOFFSET; 
-	qva->qva_sourceCount++;
-	break;
+    case 'a': qva->qva_source |= RPMQV_ALL; break;
+    case 'f': qva->qva_source |= RPMQV_PATH; break;
+    case 'g': qva->qva_source |= RPMQV_GROUP; break;
+    case 'p': qva->qva_source |= RPMQV_RPM; break;
+    case POPT_WHATPROVIDES: qva->qva_source |= RPMQV_WHATPROVIDES; break;
+    case POPT_WHATREQUIRES: qva->qva_source |= RPMQV_WHATREQUIRES; break;
+    case POPT_TRIGGEREDBY: qva->qva_source |= RPMQV_TRIGGEREDBY; break;
+    case POPT_QUERYBYPKGID: qva->qva_source |= RPMQV_PKGID; break;
+    case POPT_QUERYBYHDRID: qva->qva_source |= RPMQV_HDRID; break;
+    case POPT_QUERYBYTID: qva->qva_source |= RPMQV_TID; break;
+    case POPT_QUERYBYNUMBER: qva->qva_source |= RPMQV_DBOFFSET; break;
     }
+
+    if (sources != qva->qva_source)
+	qva->qva_sourceCount++;
 }
 
 /**
