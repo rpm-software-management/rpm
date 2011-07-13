@@ -834,6 +834,10 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 {
     size_t i;
 
+    /* XXX we can't handle more than one key in a packet, error out */
+    if (_dig && _dig->keydata)
+	return NULL;
+
     for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
 	char * mpi;
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
@@ -842,7 +846,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		if (_dig->keydata == NULL) {
 		    _dig->keydata = pgpNewPublicKey(rsaKey);
 		    if (_dig->keydata == NULL)
-			break; /* error abort? */
+			return NULL;
 		}
 		switch (i) {
 		case 0:		/* n */
@@ -862,7 +866,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		if (_dig->keydata == NULL) {
 		    _dig->keydata = pgpNewPublicKey(dsaKey);
 		    if (_dig->keydata == NULL)
-			break; /* error abort? */
+			return NULL;
 		}
 		switch (i) {
 		case 0:		/* p */
@@ -1002,7 +1006,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 
 	p = ((uint8_t *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
-	rc = 0;
+	rc = (p == NULL);
     }	break;
     case 4:
     {   pgpPktKeyV4 v = (pgpPktKeyV4)h;
@@ -1023,7 +1027,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
 	if (!(tag == PGPTAG_PUBLIC_KEY || tag == PGPTAG_PUBLIC_SUBKEY))
 	    p = pgpPrtSeckeyParams(v->pubkey_algo, p, h, hlen);
-	rc = 0;
+	rc = (p == NULL);
     }	break;
     default:
 	rc = 1;
