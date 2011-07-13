@@ -1044,9 +1044,9 @@ static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
 	fprintf(stderr, " \"%.*s\"", (int)hlen, (const char *)h);
     pgpPrtNL();
     if (_digp) {
-	char * t;
-	_digp->userid = t = memcpy(xmalloc(hlen+1), h, hlen);
-	t[hlen] = '\0';
+	free(_digp->userid);
+	_digp->userid = memcpy(xmalloc(hlen+1), h, hlen);
+	_digp->userid[hlen] = '\0';
     }
     return 0;
 }
