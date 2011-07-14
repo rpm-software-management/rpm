@@ -480,11 +480,9 @@ verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr,
 	goto exit;
     }
 
-    /* Retrieve the matching public key and verify. */
-    res = rpmKeyringLookup(keyring, dig);
-    if (res == RPMRC_OK) {
-	res = pgpVerifySig(dig, hashctx);
-    }
+    /* Call verify even if we dont have a key for a basic sanity check */
+    (void) rpmKeyringLookup(keyring, dig);
+    res = pgpVerifySig(dig, hashctx);
 
 exit:
     sigid = pgpIdentItem(sigp);
