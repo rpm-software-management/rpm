@@ -1396,7 +1396,16 @@ rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
     rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-    if (hash && memcmp(hash, sigp->signhash16, 2) == 0) {
+    if (hash && memcmp(hash, sigp->signhash16, 2) != 0)
+	goto exit;
+
+    /*
+     * If we have a key, verify the signature for real. Otherwise we've
+     * done all we can, return NOKEY to indicate "looks okay but dunno."
+     */
+    if (dig->keydata == NULL) {
+	res = RPMRC_NOKEY;
+    } else {
 	SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
 	SECItem *sig = dig->sigdata;
 
