@@ -120,7 +120,7 @@ static int doSign(poptContext optCon)
 	    rc += rpmPkgSign(arg, NULL, passPhrase);
 	}
     } else {
-	fprintf(stderr, _("Pass phrase check failed\n"));
+	fprintf(stderr, _("Pass phrase check failed or gpg key expired\n"));
     }
 
 exit:
