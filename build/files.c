@@ -1720,11 +1720,13 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 {
     struct FileList_s fl;
     const char *fileName;
-    struct AttrRec_s arbuf;
+    struct AttrRec_s arbuf, def_arbuf;
     AttrRec specialDocAttrRec = &arbuf;
+    AttrRec def_specialDocAttrRec = &def_arbuf;
     char *specialDoc = NULL;
 
     nullAttrRec(specialDocAttrRec);
+    nullAttrRec(def_specialDocAttrRec);
     pkg->cpioList = NULL;
 
     for (ARGV_const_t fp = pkg->fileFile; fp && *fp != NULL; fp++) {
@@ -1819,6 +1821,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    /* Save this stuff for last */
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
+	    dupAttrRec(&fl.def_ar, def_specialDocAttrRec);
 	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
 	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_PUBKEYS);
 	} else {
@@ -1852,7 +1855,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.currentLangs = argvFree(fl.currentLangs);
 
 	dupAttrRec(specialDocAttrRec, &fl.cur_ar);
+	dupAttrRec(def_specialDocAttrRec, &fl.def_ar);
 	freeAttrRec(specialDocAttrRec);
+	freeAttrRec(def_specialDocAttrRec);
 
 	(void) processBinaryFile(pkg, &fl, specialDoc);
 
