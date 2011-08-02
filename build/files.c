@@ -1306,13 +1306,23 @@ static rpmRC recurseDir(FileList fl, const char * diskPath);
 static rpmRC addFile(FileList fl, const char * diskPath,
 		struct stat * statp)
 {
-    const char *cpioPath = diskPath;
+    size_t plen = strlen(diskPath);
+    char buf[plen + 1];
+    const char *cpioPath;
     struct stat statbuf;
     mode_t fileMode;
     uid_t fileUid;
     gid_t fileGid;
     const char *fileUname;
     const char *fileGname;
+
+    /* Strip trailing slash. The special case of '/' path is handled below. */
+    if (plen > 0 && diskPath[plen - 1] == '/') {
+	diskPath = strcpy(buf, diskPath);
+	buf[plen - 1] = '\0';
+    }
+    cpioPath = diskPath;
+	
     
     /* Path may have prepended buildRoot, so locate the original filename. */
     /*
