@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM 4.2.1\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-07-15 12:37+0300\n"
+"POT-Creation-Date: 2011-08-02 12:55+0300\n"
 "PO-Revision-Date: 2003-07-06 01:36+0200\n"
 "Last-Translator: RPM French Translation <rpm-fr@livna.org>\n"
 "Language-Team: RPM French Translation <rpm-fr@livna.org>\n"
@@ -741,92 +741,92 @@ msgstr "%s n'a pu délier %s: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Lien symbolique pointant sur BuildRoot: %s -> %s\n"
 
-#: build/files.c:1378
+#: build/files.c:1388
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1387
+#: build/files.c:1397
 #, fuzzy, c-format
 msgid "Directory not found: %s\n"
 msgstr "Fichier non trouvé: %s\n"
 
-#: build/files.c:1388
+#: build/files.c:1398
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fichier non trouvé: %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1515
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1599
+#: build/files.c:1605
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1605
+#: build/files.c:1611
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: échec de la lecture de la clé publique.\n"
 
-#: build/files.c:1609
+#: build/files.c:1615
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s n'est pas une clé publique blindée.\n"
 
-#: build/files.c:1618
+#: build/files.c:1624
 #, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "La macro %%%s ne peut être expansée\n"
 
-#: build/files.c:1663
+#: build/files.c:1669
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Le fichier non précédé d'un \"/\": %s\n"
 
-#: build/files.c:1688
+#: build/files.c:1694
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Substitution non permise: %s\n"
 
-#: build/files.c:1700
+#: build/files.c:1706
 #, fuzzy, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Fichier non trouvé par la substitution: %s\n"
 
-#: build/files.c:1701 lib/rpminstall.c:419
+#: build/files.c:1707 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fichier non trouvé par la substitution: %s\n"
 
-#: build/files.c:1749
+#: build/files.c:1757
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Ne peut ouvrir le fichier donné à %%files %s: %s\n"
 
-#: build/files.c:1757
+#: build/files.c:1765
 #, c-format
 msgid "line: %s\n"
 msgstr "Ligne: %s\n"
 
-#: build/files.c:2033
+#: build/files.c:2044
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Mauvais fichier: %s: %s\n"
 
-#: build/files.c:2055 build/parsePrep.c:33
+#: build/files.c:2066 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Mauvais possesseur/groupe: %s\n"
 
-#: build/files.c:2095
+#: build/files.c:2106
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Vérification des fichiers non empaquetés: %s\n"
 
-#: build/files.c:2110
+#: build/files.c:2121
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -835,12 +835,12 @@ msgstr ""
 "Fichier(s) installé(s) (mais non empaquetés):\n"
 "%s"
 
-#: build/files.c:2139
+#: build/files.c:2150
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Traitement des fichiers: %s-%s-%s\n"
 
-#: build/files.c:2150
+#: build/files.c:2161
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 

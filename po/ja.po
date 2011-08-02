@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-07-15 12:37+0300\n"
+"POT-Creation-Date: 2011-08-02 12:55+0300\n"
 "PO-Revision-Date: 2010-09-21 01:05+0900\n"
 "Last-Translator: Hajime Taira <htaira@redhat.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -718,92 +718,92 @@ msgstr "%s %s の unlink に失敗: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "シンボリックリンクが BuildRoot を指しています: %s -> %s\n"
 
-#: build/files.c:1378
+#: build/files.c:1388
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr "%s の spec ファイルには明示的なファイル属性が必要です。\n"
 
-#: build/files.c:1387
+#: build/files.c:1397
 #, fuzzy, c-format
 msgid "Directory not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:1388
+#: build/files.c:1398
 #, c-format
 msgid "File not found: %s\n"
 msgstr "ファイルが見つかりません: %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1515
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "ペイロードのためのファイル %s が大きすぎます\n"
 
-#: build/files.c:1599
+#: build/files.c:1605
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: 不明なタグ (%d) を読み込めませんでした。\n"
 
-#: build/files.c:1605
+#: build/files.c:1611
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: 公開鍵の読み込みに失敗しました。\n"
 
-#: build/files.c:1609
+#: build/files.c:1615
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ASCII 形式の公開鍵ではありません。\n"
 
-#: build/files.c:1618
+#: build/files.c:1624
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: エンコードに失敗\n"
 
-#: build/files.c:1663
+#: build/files.c:1669
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "ファイルは先頭に \"/\" が必要です: %s\n"
 
-#: build/files.c:1688
+#: build/files.c:1694
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Glob は許可されていません: %s\n"
 
-#: build/files.c:1700
+#: build/files.c:1706
 #, fuzzy, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:1701 lib/rpminstall.c:419
+#: build/files.c:1707 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
 
-#: build/files.c:1749
+#: build/files.c:1757
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "%%files のファイル %s を開けません: %m\n"
 
-#: build/files.c:1757
+#: build/files.c:1765
 #, c-format
 msgid "line: %s\n"
 msgstr "%s行目: \n"
 
-#: build/files.c:2033
+#: build/files.c:2044
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "不正なファイル: %s: %s\n"
 
-#: build/files.c:2055 build/parsePrep.c:33
+#: build/files.c:2066 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "不正な所有者/グループ: %s\n"
 
-#: build/files.c:2095
+#: build/files.c:2106
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "伸張ファイルの検査中: %s\n"
 
-#: build/files.c:2110
+#: build/files.c:2121
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -812,12 +812,12 @@ msgstr ""
 "インストール済み(ただし未伸張)ファイルが見つかりました:\n"
 "%s"
 
-#: build/files.c:2139
+#: build/files.c:2150
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "ファイルの処理中: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2161
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch パッケージ内にアーキテクチャ依存のバイナリー\n"
 

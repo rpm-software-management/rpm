@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-07-15 12:37+0300\n"
+"POT-Creation-Date: 2011-08-02 12:55+0300\n"
 "PO-Revision-Date: 2009-01-11 01:27+0100\n"
 "Last-Translator: Fabian Affolter <fab@fedoraproject.org>\n"
 "Language-Team: German <fedora-trans-de@redhat.com>\n"
@@ -735,92 +735,92 @@ msgstr "%s trennen von %s fehlgeschlagen: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolischer Link zeigt auf den BuildRoot: %s -> %s\n"
 
-#: build/files.c:1378
+#: build/files.c:1388
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr "Spezifikation fordert ausdrückliche Dateiattribute für: %s\n"
 
-#: build/files.c:1387
+#: build/files.c:1397
 #, fuzzy, c-format
 msgid "Directory not found: %s\n"
 msgstr "Datei nicht gefunden: %s\n"
 
-#: build/files.c:1388
+#: build/files.c:1398
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Datei nicht gefunden: %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1515
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "Datei %s zu gross für Nutzlast\n"
 
-#: build/files.c:1599
+#: build/files.c:1605
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: Kann den unbekannten Tag (%d) nicht laden.\n"
 
-#: build/files.c:1605
+#: build/files.c:1611
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: Lesen des öffentlichen Schlüssels fehlgeschlagen.\n"
 
-#: build/files.c:1609
+#: build/files.c:1615
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: Ist kein gepanzerter öffentlicher Schlüssel.\n"
 
-#: build/files.c:1618
+#: build/files.c:1624
 #, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "Makro %%%s konnte nicht erweitert werden\n"
 
-#: build/files.c:1663
+#: build/files.c:1669
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datei benötigt führenden \"/\": %s\n"
 
-#: build/files.c:1688
+#: build/files.c:1694
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "\"Glob\" hat keine Berechtigung für: %s\n"
 
-#: build/files.c:1700
+#: build/files.c:1706
 #, fuzzy, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Datei von \"glob\" nicht gefunden: %s\n"
 
-#: build/files.c:1701 lib/rpminstall.c:419
+#: build/files.c:1707 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datei von \"glob\" nicht gefunden: %s\n"
 
-#: build/files.c:1749
+#: build/files.c:1757
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Datei %s aus %%files konnte nicht geöffnet: %m\n"
 
-#: build/files.c:1757
+#: build/files.c:1765
 #, c-format
 msgid "line: %s\n"
 msgstr "Zeile: %s\n"
 
-#: build/files.c:2033
+#: build/files.c:2044
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ungültige Datei: %s: %s\n"
 
-#: build/files.c:2055 build/parsePrep.c:33
+#: build/files.c:2066 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ungültiger Eigentümer/Gruppe: %s\n"
 
-#: build/files.c:2095
+#: build/files.c:2106
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Prüfe auf nicht gepackte Datei(en): %s\n"
 
-#: build/files.c:2110
+#: build/files.c:2121
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -829,12 +829,12 @@ msgstr ""
 "Installierte (aber nicht gepackte) Datei(en) gefunden:\n"
 "%s"
 
-#: build/files.c:2139
+#: build/files.c:2150
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Verarbeite Pakete: %s-%s-%s.%s\n"
 
-#: build/files.c:2150
+#: build/files.c:2161
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Architekturabhängige Binärdateien in noarch-Paket\n"
 

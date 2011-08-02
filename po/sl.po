@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.0.3\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-07-15 12:37+0300\n"
+"POT-Creation-Date: 2011-08-02 12:55+0300\n"
 "PO-Revision-Date: 2000-10-08 19:05+0200\n"
 "Last-Translator: Grega Fajdiga <gregor.fajdiga@telemach.net>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -738,104 +738,104 @@ msgstr "odpiranje %s je bilo neuspe¹no: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Simbolna povezava ka¾e na BuildRoot: %s -> %s"
 
-#: build/files.c:1378
+#: build/files.c:1388
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1387
+#: build/files.c:1397
 #, fuzzy, c-format
 msgid "Directory not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1388
+#: build/files.c:1398
 #, fuzzy, c-format
 msgid "File not found: %s\n"
 msgstr "Datoteke ni mogoèe najti: %s"
 
-#: build/files.c:1505
+#: build/files.c:1515
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1599
+#: build/files.c:1605
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1605
+#: build/files.c:1611
 #, fuzzy, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: readLead je bil neuspe¹en\n"
 
-#: build/files.c:1609
+#: build/files.c:1615
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1618
+#: build/files.c:1624
 #, fuzzy, c-format
 msgid "%s: failed to encode\n"
 msgstr "Makro %%%s se ne raz¹iri"
 
-#: build/files.c:1663
+#: build/files.c:1669
 #, fuzzy, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Datoteki manjka uvodni \"/\": %s"
 
-#: build/files.c:1688
+#: build/files.c:1694
 #, fuzzy, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "vrstica %d: Razlièica ni dovoljena: %s"
 
-#: build/files.c:1700
+#: build/files.c:1706
 #, fuzzy, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1701 lib/rpminstall.c:419
+#: build/files.c:1707 lib/rpminstall.c:419
 #, fuzzy, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteke ni mo¾no najti z raz¹iritvijo metaznakov v imenu: %s"
 
-#: build/files.c:1749
+#: build/files.c:1757
 #, fuzzy, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Datoteke %s iz %%files ni mo¾no odpreti: %s"
 
-#: build/files.c:1757
+#: build/files.c:1765
 #, fuzzy, c-format
 msgid "line: %s\n"
 msgstr "vrstica: %s"
 
-#: build/files.c:2033
+#: build/files.c:2044
 #, fuzzy, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Po¹kodovana datoteka: %s: %s"
 
-#: build/files.c:2055 build/parsePrep.c:33
+#: build/files.c:2066 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Neobstojeè lastnik/skupina: %s\n"
 
-#: build/files.c:2095
+#: build/files.c:2106
 #, fuzzy, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "i¹èemo paket %s\n"
 
-#: build/files.c:2110
+#: build/files.c:2121
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2139
+#: build/files.c:2150
 #, fuzzy, c-format
 msgid "Processing files: %s\n"
 msgstr "Obdeloavnje datotek: %s-%s-%s\n"
 
-#: build/files.c:2150
+#: build/files.c:2161
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 

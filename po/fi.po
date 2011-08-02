@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.4.90\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-07-15 12:37+0300\n"
+"POT-Creation-Date: 2011-08-02 12:55+0300\n"
 "PO-Revision-Date: 2008-03-11 11:15+0200\n"
 "Last-Translator: Panu Matilainen <pmatilai@redhat.com>\n"
 "Language-Team: Finnish\n"
@@ -703,92 +703,92 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolinen linkki osoittaa BuildRoot:iin: %s -> %s\n"
 
-#: build/files.c:1378
+#: build/files.c:1388
 #, c-format
 msgid "Explicit file attributes required in spec for: %s\n"
 msgstr ""
 
-#: build/files.c:1387
+#: build/files.c:1397
 #, fuzzy, c-format
 msgid "Directory not found: %s\n"
 msgstr "Tiedostoa ei löytynyt: %s\n"
 
-#: build/files.c:1388
+#: build/files.c:1398
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Tiedostoa ei löytynyt: %s\n"
 
-#: build/files.c:1505
+#: build/files.c:1515
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1599
+#: build/files.c:1605
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1605
+#: build/files.c:1611
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui\n"
 
-#: build/files.c:1609
+#: build/files.c:1615
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: ei ole panssaroitu julkinen avain.\n"
 
-#: build/files.c:1618
+#: build/files.c:1624
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1663
+#: build/files.c:1669
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Tiedosto tarvitsee aloitusmerkin \"/\": %s\n"
 
-#: build/files.c:1688
+#: build/files.c:1694
 #, c-format
 msgid "Glob not permitted: %s\n"
 msgstr "Täydennys ei sallittu: %s\n"
 
-#: build/files.c:1700
+#: build/files.c:1706
 #, fuzzy, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
 
-#: build/files.c:1701 lib/rpminstall.c:419
+#: build/files.c:1707 lib/rpminstall.c:419
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
 
-#: build/files.c:1749
+#: build/files.c:1757
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "%%files tiedostoa %s ei voitu avata: %m\n"
 
-#: build/files.c:1757
+#: build/files.c:1765
 #, c-format
 msgid "line: %s\n"
 msgstr "rivi: %s\n"
 
-#: build/files.c:2033
+#: build/files.c:2044
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Virheellinen tiedosto: %s: %s\n"
 
-#: build/files.c:2055 build/parsePrep.c:33
+#: build/files.c:2066 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Virheellinen omistaja/ryhmä: %s\n"
 
-#: build/files.c:2095
+#: build/files.c:2106
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Tarkistetaan paketoimattomia tiedostoja: %s\n"
 
-#: build/files.c:2110
+#: build/files.c:2121
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -797,12 +797,12 @@ msgstr ""
 "Löytyi asennettuja (mutta paketoimattomia) tiedostoja:\n"
 "%s"
 
-#: build/files.c:2139
+#: build/files.c:2150
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Käsitellään tiedostoja: %s\n"
 
-#: build/files.c:2150
+#: build/files.c:2161
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
