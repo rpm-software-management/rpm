@@ -1396,7 +1396,7 @@ rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
     rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-    if (hash && memcmp(hash, sigp->signhash16, 2) != 0)
+    if (hash == NULL || memcmp(hash, sigp->signhash16, 2) != 0)
 	goto exit;
 
     /*
