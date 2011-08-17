@@ -618,7 +618,7 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
-    char buf[20];
+    char buf[strlen(tag->format) + 3]; /* extra for '%', fmt char and '\0' */
     rpmtd td;
 
     memset(buf, 0, sizeof(buf));
