@@ -331,7 +331,13 @@ static int parseFormat(headerSprintfArgs hsa, char * str,
 	    token->u.tag.justOne = 0;
 
 	    chptr = start;
-	    while (*chptr && *chptr != '{' && *chptr != '%') chptr++;
+	    while (*chptr && *chptr != '{' && *chptr != '%') {
+		if (!risdigit(*chptr) && *chptr != '-') {
+		    hsa->errmsg = _("invalid field width");
+		    goto errxit;
+		}
+		chptr++;
+	    }
 	    if (!*chptr || *chptr == '%') {
 		hsa->errmsg = _("missing { after %");
 		goto errxit;

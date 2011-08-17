@@ -385,3 +385,17 @@ runroot rpm \
 [(not a number)],
 [])
 AT_CLEANUP
+
+# ------------------------------
+AT_SETUP([invalid format width query])
+AT_KEYWORDS([query])
+AT_CHECK([
+runroot rpm \
+  --queryformat="%ss{size}" \
+  -qp /data/RPMS/foo-1.0-1.noarch.rpm
+],
+[0],
+[],
+[error: incorrect format: invalid field width
+])
+AT_CLEANUP
