@@ -32,29 +32,21 @@ struct headerFormatFunc_s {
 /**
  * barebones string representation with no extra formatting
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * stringFormat(rpmtd td, char *formatPrefix)
+static char * stringFormat(rpmtd td)
 {
-    const char *str = NULL;
-    char *val = NULL, *buf = NULL;
+    char *val = NULL;
 
     switch (rpmtdClass(td)) {
 	case RPM_NUMERIC_CLASS:
-	    strcat(formatPrefix, PRIu64);
-	    rasprintf(&val, formatPrefix, rpmtdGetNumber(td));
+	    rasprintf(&val, "%" PRIu64, rpmtdGetNumber(td));
 	    break;
 	case RPM_STRING_CLASS:
-	    str = rpmtdGetString(td);
-	    strcat(formatPrefix, "s");
-	    rasprintf(&val, formatPrefix, str);
+	    val = xstrdup(rpmtdGetString(td));
 	    break;
 	case RPM_BINARY_CLASS:
-	    buf = pgpHexStr(td->data, td->count);
-	    strcat(formatPrefix, "s");
-	    rasprintf(&val, formatPrefix, buf);
-	    free(buf);
+	    val = pgpHexStr(td->data, td->count);
 	    break;
 	default:
 	    val = xstrdup("(unknown type)");
@@ -63,15 +55,14 @@ static char * stringFormat(rpmtd td, char *formatPrefix)
     return val;
 }
 
-static char * numFormat(rpmtd td, char * formatPrefix, char *format)
+static char * numFormat(rpmtd td, const char *format)
 {
     char * val = NULL;
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	strcat(formatPrefix, format);
-	rasprintf(&val, formatPrefix, rpmtdGetNumber(td));
+	rasprintf(&val, format, rpmtdGetNumber(td));
     }
 
     return val;
@@ -79,32 +70,28 @@ static char * numFormat(rpmtd td, char * formatPrefix, char *format)
 /**
  * octalFormat.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * octalFormat(rpmtd td, char * formatPrefix)
+static char * octalFormat(rpmtd td)
 {
-    return numFormat(td, formatPrefix, "o");
+    return numFormat(td, "%o");
 }
 
 /**
  * hexFormat.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * hexFormat(rpmtd td, char * formatPrefix)
+static char * hexFormat(rpmtd td)
 {
-    return numFormat(td, formatPrefix, "x");
+    return numFormat(td, "%x");
 }
 
 /**
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * realDateFormat(rpmtd td, char * formatPrefix,
-		const char * strftimeFormat)
+static char * realDateFormat(rpmtd td, const char * strftimeFormat)
 {
     char * val = NULL;
 
@@ -116,12 +103,11 @@ static char * realDateFormat(rpmtd td, char * formatPrefix,
 	time_t dateint = rpmtdGetNumber(td);
 	tstruct = localtime(&dateint);
 
-	strcat(formatPrefix, "s");
-
+	/* XXX TODO: deal with non-fitting date string correctly */
 	buf[0] = '\0';
 	if (tstruct)
 	    (void) strftime(buf, sizeof(buf) - 1, strftimeFormat, tstruct);
-	rasprintf(&val, formatPrefix, buf);
+	val = xstrdup(buf);
     }
 
     return val;
@@ -130,42 +116,36 @@ static char * realDateFormat(rpmtd td, char * formatPrefix,
 /**
  * Format a date.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * dateFormat(rpmtd td, char * formatPrefix)
+static char * dateFormat(rpmtd td)
 {
-    return realDateFormat(td, formatPrefix, _("%c"));
+    return realDateFormat(td, _("%c"));
 }
 
 /**
  * Format a day.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * dayFormat(rpmtd td, char * formatPrefix)
+static char * dayFormat(rpmtd td)
 {
-    return realDateFormat(td, formatPrefix, _("%a %b %d %Y"));
+    return realDateFormat(td, _("%a %b %d %Y"));
 }
 
 /**
  * Return shell escape formatted data.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * shescapeFormat(rpmtd td, char * formatPrefix)
+static char * shescapeFormat(rpmtd td)
 {
     char * result = NULL, * dst, * src;
 
     if (rpmtdClass(td) == RPM_NUMERIC_CLASS) {
-	strcat(formatPrefix, PRIu64);
-	rasprintf(&result, formatPrefix, rpmtdGetNumber(td));
+	rasprintf(&result, "%" PRIu64, rpmtdGetNumber(td));
     } else {
-	char *buf = NULL;
-	strcat(formatPrefix, "s");
-	rasprintf(&buf, formatPrefix, rpmtdGetString(td));
+	char *buf = xstrdup(rpmtdGetString(td));;
 
 	result = dst = xmalloc(strlen(buf) * 4 + 3);
 	*dst++ = '\'';
@@ -191,10 +171,9 @@ static char * shescapeFormat(rpmtd td, char * formatPrefix)
 /**
  * Identify type of trigger.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * triggertypeFormat(rpmtd td, char * formatPrefix)
+static char * triggertypeFormat(rpmtd td)
 {
     char * val;
 
@@ -219,10 +198,9 @@ static char * triggertypeFormat(rpmtd td, char * formatPrefix)
 /**
  * Identify type of dependency.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * deptypeFormat(rpmtd td, char * formatPrefix)
+static char * deptypeFormat(rpmtd td)
 {
     char *val = NULL;
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
@@ -268,20 +246,16 @@ static char * deptypeFormat(rpmtd td, char * formatPrefix)
 /**
  * Format file permissions for display.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * permsFormat(rpmtd td, char * formatPrefix)
+static char * permsFormat(rpmtd td)
 {
     char * val = NULL;
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	char *buf = rpmPermsString(rpmtdGetNumber(td));
-	strcat(formatPrefix, "s");
-	rasprintf(&val, formatPrefix, buf);
-	free(buf);
+	val = rpmPermsString(rpmtdGetNumber(td));
     }
 
     return val;
@@ -290,20 +264,16 @@ static char * permsFormat(rpmtd td, char * formatPrefix)
 /**
  * Format file flags for display.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * fflagsFormat(rpmtd td, char * formatPrefix)
+static char * fflagsFormat(rpmtd td)
 {
     char * val = NULL;
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	char *buf = rpmFFlagsString(rpmtdGetNumber(td), "");
-	strcat(formatPrefix, "s");
-	rasprintf(&val, formatPrefix, buf);
-	free(buf);
+	val = rpmFFlagsString(rpmtdGetNumber(td), "");
     }
 
     return val;
@@ -313,10 +283,9 @@ static char * fflagsFormat(rpmtd td, char * formatPrefix)
  * Wrap a pubkey in ascii armor for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * armorFormat(rpmtd td, char * formatPrefix)
+static char * armorFormat(rpmtd td)
 {
     const char * enc;
     const unsigned char * s;
@@ -364,22 +333,18 @@ static char * armorFormat(rpmtd td, char * formatPrefix)
  * Encode binary data in base64 for display.
  * @todo Permit selectable display formats (i.e. binary).
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * base64Format(rpmtd td, char * formatPrefix)
+static char * base64Format(rpmtd td)
 {
     char * val = NULL;
 
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	char * enc;
-	if ((enc = b64encode(td->data, td->count, -1)) != NULL) {
-	    strcat(formatPrefix, "s");
-	    rasprintf(&val, formatPrefix, enc ? enc : "");
-	    free(enc);
-	}
+	val = b64encode(td->data, td->count, -1);
+	if (val == NULL)
+	    val = xstrdup("");
     }
 
     return val;
@@ -388,10 +353,9 @@ static char * base64Format(rpmtd td, char * formatPrefix)
 /**
  * Wrap tag data in simple header xml markup.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * xmlFormat(rpmtd td, char * formatPrefix)
+static char * xmlFormat(rpmtd td)
 {
     const char *xtag = NULL;
     char *val = NULL;
@@ -443,17 +407,15 @@ static char * xmlFormat(rpmtd td, char * formatPrefix)
     }
     free(s);
 
-    strcat(formatPrefix, "s");
     return val;
 }
 
 /**
  * Display signature fingerprint and time.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * pgpsigFormat(rpmtd td, char * formatPrefix)
+static char * pgpsigFormat(rpmtd td)
 {
     char * val = NULL;
 
@@ -517,10 +479,9 @@ static char * pgpsigFormat(rpmtd td, char * formatPrefix)
 /**
  * Format dependency flags for display.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * depflagsFormat(rpmtd td, char * formatPrefix)
+static char * depflagsFormat(rpmtd td)
 {
     char * val = NULL;
 
@@ -528,18 +489,14 @@ static char * depflagsFormat(rpmtd td, char * formatPrefix)
 	val = xstrdup(_("(not a number)"));
     } else {
 	uint64_t anint = rpmtdGetNumber(td);
-	char buf[10];
-	buf[0] = '\0';
+	val = xcalloc(4, 1);
 
 	if (anint & RPMSENSE_LESS) 
-	    strcat(buf, "<");
+	    strcat(val, "<");
 	if (anint & RPMSENSE_GREATER)
-	    strcat(buf, ">");
+	    strcat(val, ">");
 	if (anint & RPMSENSE_EQUAL)
-	    strcat(buf, "=");
-
-	strcat(formatPrefix, "s");
-	rasprintf(&val, formatPrefix, buf);
+	    strcat(val, "=");
     }
 
     return val;
@@ -548,18 +505,16 @@ static char * depflagsFormat(rpmtd td, char * formatPrefix)
 /**
  * Return tag container array size.
  * @param td		tag data container
- * @param formatPrefix	sprintf format string
  * @return		formatted string
  */
-static char * arraysizeFormat(rpmtd td, char * formatPrefix)
+static char * arraysizeFormat(rpmtd td)
 {
     char *val = NULL;
-    strcat(formatPrefix, "u");
-    rasprintf(&val, formatPrefix, rpmtdCount(td));
+    rasprintf(&val, "%u", rpmtdCount(td));
     return val;
 }
 
-static char * fstateFormat(rpmtd td, char * formatPrefix)
+static char * fstateFormat(rpmtd td)
 {
     char * val = NULL;
 
@@ -592,38 +547,34 @@ static char * fstateFormat(rpmtd td, char * formatPrefix)
 	    break;
 	}
 	
-	strcat(formatPrefix, "s");
-	rasprintf(&val, formatPrefix, str);
+	val = xstrdup(str);
     }
     return val;
 }
 
-static char * verifyFlags(rpmtd td, char * formatPrefix, const char *pad)
+static char * verifyFlags(rpmtd td, const char *pad)
 {
     char * val = NULL;
 
     if (rpmtdClass(td) != RPM_NUMERIC_CLASS) {
 	val = xstrdup(_("(not a number)"));
     } else {
-	strcat(formatPrefix, "s");
-	char *buf = rpmVerifyString(rpmtdGetNumber(td), pad);
-	rasprintf(&val, formatPrefix, buf);
-	free(buf);
+	val = rpmVerifyString(rpmtdGetNumber(td), pad);
     }
     return val;
 }
 
-static char * vflagsFormat(rpmtd td, char * formatPrefix)
+static char * vflagsFormat(rpmtd td)
 {
-    return verifyFlags(td, formatPrefix, "");
+    return verifyFlags(td, "");
 }
 
-static char * fstatusFormat(rpmtd td, char * formatPrefix)
+static char * fstatusFormat(rpmtd td)
 {
-    return verifyFlags(td, formatPrefix, ".");
+    return verifyFlags(td, ".");
 }
 
-static char * expandFormat(rpmtd td, char * formatPrefix)
+static char * expandFormat(rpmtd td)
 {
     char *val = NULL;
     if (rpmtdClass(td) != RPM_STRING_CLASS) {
@@ -631,7 +582,6 @@ static char * expandFormat(rpmtd td, char * formatPrefix)
     } else {
 	val = rpmExpand(td->data, NULL);
     }
-    strcat(formatPrefix, "s");
     return val;
 }
 

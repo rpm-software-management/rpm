@@ -618,19 +618,27 @@ static char * formatValue(headerSprintfArgs hsa, sprintfTag tag, int element)
     char * val = NULL;
     size_t need = 0;
     char * t, * te;
-    char buf[strlen(tag->format) + 3]; /* extra for '%', fmt char and '\0' */
     rpmtd td;
 
-    memset(buf, 0, sizeof(buf));
     if ((td = getData(hsa, tag->tag))) {
 	td->ix = element; /* Ick, use iterators instead */
-	stpcpy(stpcpy(buf, "%"), tag->format);
-	val = tag->fmt(td, buf);
+	val = tag->fmt(td);
     } else {
-	stpcpy(buf, "%s");
 	val = xstrdup("(none)");
     }
 
+    /* Handle field width + justification formatting if specified */
+    if (tag->format && *tag->format) {
+	char *tval = NULL;
+	/* user string + extra for '%', format char and trailing '\0' */
+	char fmtbuf[strlen(tag->format) + 3];
+
+	sprintf(fmtbuf, "%%%ss", tag->format);
+	rasprintf(&tval, fmtbuf, val);
+	free(val);
+	val = tval;
+    }
+	
     need = strlen(val);
 
     if (val && need > 0) {

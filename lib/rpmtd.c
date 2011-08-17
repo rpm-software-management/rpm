@@ -247,9 +247,7 @@ char *rpmtdFormat(rpmtd td, rpmtdFormats fmt, const char *errmsg)
     char *str = NULL;
 
     if (func) {
-	char fmtbuf[50]; /* yuck, get rid of this */
-	strcpy(fmtbuf, "%");
-	str = func(td, fmtbuf);
+	str = func(td);
     } else {
 	err = _("Unknown format");
     }
