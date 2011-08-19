@@ -36,7 +36,6 @@ struct _FD_s {
     int		nrefs;
     int		flags;
 #define	RPMIO_DEBUG_IO		0x40000000
-#define	RPMIO_DEBUG_REFS	0x20000000
     int		magic;
 #define	FDMAGIC			0x04463138
     int		nfps;
@@ -133,15 +132,6 @@ static void * iotFileno(FD_t fd, FDIO_t iot)
     
     return rc;
 }
-
-#define FDNREFS(fd)	(fd ? ((FD_t)fd)->nrefs : -9)
-
-#define	FDONLY(fd)	assert(fdGetIo(fd) == fdio)
-#define	GZDONLY(fd)	assert(fdGetIo(fd) == gzdio)
-#define	BZDONLY(fd)	assert(fdGetIo(fd) == bzdio)
-#define	LZDONLY(fd)	assert(fdGetIo(fd) == xzdio || fdGetIo(fd) == lzdio)
-
-#define	UFDONLY(fd)	/* assert(fdGetIo(fd) == ufdio) */
 
 /** \ingroup rpmio
  * \name RPMIO Vectors.
