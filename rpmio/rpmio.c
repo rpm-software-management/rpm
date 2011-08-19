@@ -744,16 +744,6 @@ static const FDIO_t gzdio = &gzdio_s ;
 
 #include <bzlib.h>
 
-#ifdef HAVE_BZ2_1_0
-# define bzopen  BZ2_bzopen
-# define bzclose BZ2_bzclose
-# define bzdopen BZ2_bzdopen
-# define bzerror BZ2_bzerror
-# define bzflush BZ2_bzflush
-# define bzread  BZ2_bzread
-# define bzwrite BZ2_bzwrite
-#endif /* HAVE_BZ2_1_0 */
-
 static void * bzdFileno(FD_t fd)
 {
     return iotFileno(fd, bzdio);
@@ -763,7 +753,7 @@ static FD_t bzdOpen(const char * path, const char * mode)
 {
     FD_t fd;
     BZFILE *bzfile;;
-    if ((bzfile = bzopen(path, mode)) == NULL)
+    if ((bzfile = BZ2_bzopen(path, mode)) == NULL)
 	return NULL;
     fd = fdNew(path);
     fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
@@ -779,7 +769,7 @@ static FD_t bzdFdopen(FD_t fd, const char * fmode)
     fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
-    bzfile = bzdopen(fdno, fmode);
+    bzfile = BZ2_bzdopen(fdno, fmode);
     if (bzfile == NULL) return NULL;
 
     fdPush(fd, bzdio, bzfile, fdno);		/* Push bzdio onto stack */
@@ -789,7 +779,7 @@ static FD_t bzdFdopen(FD_t fd, const char * fmode)
 
 static int bzdFlush(FD_t fd)
 {
-    return bzflush(bzdFileno(fd));
+    return BZ2_bzflush(bzdFileno(fd));
 }
 
 static ssize_t bzdRead(FD_t fd, void * buf, size_t count)
@@ -799,11 +789,11 @@ static ssize_t bzdRead(FD_t fd, void * buf, size_t count)
 
     bzfile = bzdFileno(fd);
     if (bzfile)
-	rc = bzread(bzfile, buf, count);
+	rc = BZ2_bzread(bzfile, buf, count);
     if (rc == -1) {
 	int zerror = 0;
 	if (bzfile)
-	    fd->errcookie = bzerror(bzfile, &zerror);
+	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
     }
     return rc;
 }
@@ -814,10 +804,10 @@ static ssize_t bzdWrite(FD_t fd, const void * buf, size_t count)
     ssize_t rc;
 
     bzfile = bzdFileno(fd);
-    rc = bzwrite(bzfile, (void *)buf, count);
+    rc = BZ2_bzwrite(bzfile, (void *)buf, count);
     if (rc == -1) {
 	int zerror = 0;
-	fd->errcookie = bzerror(bzfile, &zerror);
+	fd->errcookie = BZ2_bzerror(bzfile, &zerror);
     }
     return rc;
 }
@@ -831,7 +821,7 @@ static int bzdClose(FD_t fd)
 
     if (bzfile == NULL) return -2;
     /* FIX: check rc */
-    bzclose(bzfile);
+    BZ2_bzclose(bzfile);
     rc = 0;	/* XXX FIXME */
 
     /* XXX TODO: preserve fd if errors */
@@ -839,7 +829,7 @@ static int bzdClose(FD_t fd)
     if (fd) {
 	if (rc == -1) {
 	    int zerror = 0;
-	    fd->errcookie = bzerror(bzfile, &zerror);
+	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
 	}
     }
 

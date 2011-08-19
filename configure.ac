@@ -183,13 +183,7 @@ AC_SUBST(WITH_ZLIB_LIB)
 # Check for bzip2 library.
 
 AC_CHECK_HEADERS([bzlib.h],[
-  AC_CHECK_LIB(bz2, bzread, [WITH_BZ2_LIB=-lbz2],
-  [
-    AC_CHECK_LIB(bz2, BZ2_bzread,[ 
-      WITH_BZ2_LIB="-lbz2"
-      AC_DEFINE(HAVE_BZ2_1_0, 1, [Define as 1 if you bzip2 1.0])
-    ]) 
-  ])
+  AC_CHECK_LIB(bz2, BZ2_bzread, [WITH_BZ2_LIB=-lbz2])
 ])
 AC_SUBST(WITH_BZ2_LIB)
 
