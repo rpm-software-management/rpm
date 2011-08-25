@@ -279,6 +279,14 @@ rpmts_Clean(rpmtsObject * s)
 }
 
 static PyObject *
+rpmts_Clear(rpmtsObject * s)
+{
+    rpmtsEmpty(s->ts);
+
+    Py_RETURN_NONE;
+}
+
+static PyObject *
 rpmts_OpenDB(rpmtsObject * s)
 {
     int dbmode;
@@ -677,6 +685,9 @@ static struct PyMethodDef rpmts_methods[] = {
   Note: The callback may not be None.\n" },
  {"clean",	(PyCFunction) rpmts_Clean,	METH_NOARGS,
 	NULL },
+ {"clear",	(PyCFunction) rpmts_Clear,	METH_NOARGS,
+"ts.clear() -> None\n\
+Remove all elements from the transaction set\n" },
  {"openDB",	(PyCFunction) rpmts_OpenDB,	METH_NOARGS,
 "ts.openDB() -> None\n\
 - Open the default transaction rpmdb.\n\
