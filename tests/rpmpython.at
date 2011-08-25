@@ -120,6 +120,9 @@ ts = rpm.ts()
 ts.addInstall('${RPMDATA}/RPMS/foo-1.0-1.noarch.rpm', 'u')
 for e in ts:
     myprint(e.NEVRA())
+ts.clear()
+for e in ts:
+    myprint(e.NEVRA())
 ],
 [foo-1.0-1.noarch]
 )
