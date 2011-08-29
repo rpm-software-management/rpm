@@ -1948,20 +1948,19 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     dbiIndexSet set = NULL;
     dbiIndex dbi;
     void * mi_keyp = NULL;
-    int isLabel = 0;
+    rpmDbiTagVal dbtag = rpmtag;
 
     if (db == NULL)
 	return NULL;
 
     (void) rpmdbCheckSignals();
 
-    /* XXX HACK to remove rpmdbFindByLabel/findMatches from the API */
+    /* Fixup the physical index for our pseudo indexes */
     if (rpmtag == RPMDBI_LABEL) {
-	rpmtag = RPMDBI_NAME;
-	isLabel = 1;
+	dbtag = RPMDBI_NAME;
     }
 
-    dbi = rpmdbOpenIndex(db, rpmtag, 0);
+    dbi = rpmdbOpenIndex(db, dbtag, 0);
     if (dbi == NULL)
 	return NULL;
 
@@ -1974,7 +1973,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 
         if (keyp) {
 
-            if (isLabel) {
+            if (rpmtag == RPMDBI_LABEL) {
                 rc = dbiFindByLabel(db, dbi, keyp, &set);
             } else if (rpmtag == RPMDBI_BASENAMES) {
                 rc = rpmdbFindByFile(db, dbi, keyp, &set);
@@ -2004,7 +2003,7 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 
     /* Copy the retrieval key, byte swapping header instance if necessary. */
     if (keyp) {
-	switch (rpmtag) {
+	switch (dbtag) {
 	case RPMDBI_PACKAGES:
 	  { union _dbswap *k;
 
@@ -2027,12 +2026,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 	}
     }
 
-    mi = rpmdbNewIterator(db, rpmtag);
+    mi = rpmdbNewIterator(db, dbtag);
     mi->mi_keyp = mi_keyp;
     mi->mi_keylen = keylen;
     mi->mi_set = set;
 
-    if (rpmtag != RPMDBI_PACKAGES && keyp == NULL) {
+    if (dbtag != RPMDBI_PACKAGES && keyp == NULL) {
         rpmdbSortIterator(mi);
     }
 
