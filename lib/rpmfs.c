@@ -49,7 +49,8 @@ rpm_count_t rpmfsFC(rpmfs fs)
     return (fs != NULL) ? fs->fc : 0;
 }
 
-void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
+void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, char rstate,
+			int otherPkg, int otherFileNum)
 {
     if (!fs->replaced) {
 	fs->replaced = xcalloc(3, sizeof(*fs->replaced));
@@ -60,6 +61,7 @@ void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum)
 	fs->replaced = xrealloc(fs->replaced, fs->allocatedReplaced*sizeof(*fs->replaced));
     }
     fs->replaced[fs->numReplaced].pkgFileNum = pkgFileNum;
+    fs->replaced[fs->numReplaced].rstate = rstate;
     fs->replaced[fs->numReplaced].otherPkg = otherPkg;
     fs->replaced[fs->numReplaced].otherFileNum = otherFileNum;
 

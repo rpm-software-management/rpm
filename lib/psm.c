@@ -118,7 +118,8 @@ static void rpmInstallLoadMacros(Header h)
 }
 
 /**
- * Mark files in database shared with this package as "replaced".
+ * Adjust file states in database for files shared with this package:
+ * currently either "replaced" or "wrong color".
  * @param psm		package state machine data
  * @return		0 always
  */
@@ -177,8 +178,8 @@ static rpmRC markReplacedFiles(const rpmpsm psm)
 	    assert(ix != -1);
 
 	    char *state = rpmtdGetChar(&secStates);
-	    if (state && *state != RPMFILE_STATE_REPLACED) {
-		*state = RPMFILE_STATE_REPLACED;
+	    if (state && *state != sfi->rstate) {
+		*state = sfi->rstate;
 		if (modified == 0) {
 		    /* Modified header will be rewritten. */
 		    modified = 1;

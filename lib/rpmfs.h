@@ -16,6 +16,7 @@ struct sharedFileInfo_s {
     int pkgFileNum;
     int otherPkg;
     int otherFileNum;
+    char rstate;
 };
 
 #ifdef __cplusplus
@@ -32,7 +33,8 @@ RPM_GNUC_INTERNAL
 rpm_count_t rpmfsFC(rpmfs fs);
 
 RPM_GNUC_INTERNAL
-void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, int otherPkg, int otherFileNum);
+void rpmfsAddReplaced(rpmfs fs, int pkgFileNum, char rstate,
+			int otherPkg, int otherFileNum);
 
 RPM_GNUC_INTERNAL
 sharedFileInfo rpmfsGetReplaced(rpmfs fs);

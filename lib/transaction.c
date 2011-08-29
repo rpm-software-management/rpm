@@ -341,6 +341,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	rpm_color_t FColor = rpmfiFColor(fi) & tscolor;
 	rpm_color_t oFColor = rpmfiFColor(otherFi) & tscolor;
 	int rConflicts;
+	char rState = RPMFILE_STATE_REPLACED;
 
 	rConflicts = !(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES));
 	/* Resolve file conflicts to prefer Elf64 (if not forced). */
@@ -351,6 +352,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	    } else if (FColor & prefcolor) {
 		rpmfsSetAction(fs, fx, FA_CREATE);
 		rConflicts = 0;
+		rState = RPMFILE_STATE_WRONGCOLOR;
 	    }
 	}
 
@@ -364,7 +366,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 	/* Save file identifier to mark as state REPLACED. */
 	if ( !(isCfgFile || XFA_SKIPPING(rpmfsGetAction(fs, fx))) ) {
 	    if (!beingRemoved)
-		rpmfsAddReplaced(rpmteGetFileStates(p), rpmfiFX(fi),
+		rpmfsAddReplaced(rpmteGetFileStates(p), rpmfiFX(fi), rState,
 				 headerGetInstance(otherHeader),
 				 rpmfiFX(otherFi));
 	}
