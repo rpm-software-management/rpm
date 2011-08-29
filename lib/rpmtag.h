@@ -313,6 +313,7 @@ typedef enum rpmTag_e {
 typedef enum rpmDbiTag_e {
     RPMDBI_PACKAGES		= 0,	/* Installed package headers. */
     RPMDBI_LABEL		= 2,	/* NEVRA label pseudo index */
+    RPMDBI_INSTFILENAMES	= 32,	/* Files with inst. state pseudo idx */
     RPMDBI_NAME			= RPMTAG_NAME,
     RPMDBI_BASENAMES		= RPMTAG_BASENAMES,
     RPMDBI_GROUP		= RPMTAG_GROUP,

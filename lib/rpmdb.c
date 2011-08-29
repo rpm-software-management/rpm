@@ -886,11 +886,12 @@ static Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
  * @param db		rpm database
  * @param dbi		index database handle (always RPMDBI_BASENAMES)
  * @param filespec
+ * @param usestate	take file state into account?
  * @retval matches
  * @return		0 on success, 1 on not found, -2 on error
  */
 static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
-			   dbiIndexSet * matches)
+			   int usestate, dbiIndexSet * matches)
 {
     char * dirName = NULL;
     const char * baseName;
@@ -925,7 +926,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
     i = 0;
     while (i < allMatches->count) {
-	struct rpmtd_s bn, dn, di;
+	struct rpmtd_s bn, dn, di, fs;
 	const char ** baseNames, ** dirNames;
 	uint32_t * dirIndexes;
 	unsigned int offset = dbiIndexRecordOffset(allMatches, i);
@@ -943,18 +944,32 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	baseNames = bn.data;
 	dirNames = dn.data;
 	dirIndexes = di.data;
+	if (usestate)
+	    headerGet(h, RPMTAG_FILESTATES, &fs, HEADERGET_MINMEM);
 
 	do {
 	    fingerPrint fp2;
 	    int num = dbiIndexRecordFileNumber(allMatches, i);
+	    int skip = 0;
 
-	    fp2 = fpLookup(fpc, dirNames[dirIndexes[num]], baseNames[num], 1);
-	    if (FP_EQUAL(fp1, fp2)) {
-		struct dbiIndexItem rec = { 
-		    .hdrNum = dbiIndexRecordOffset(allMatches, i),
-		    .tagNum = dbiIndexRecordFileNumber(allMatches, i),
-		};
-		dbiAppendSet(*matches, &rec, 1, sizeof(rec), 0);
+	    if (usestate) {
+		rpmtdSetIndex(&fs, num);
+		int s = rpmtdGetNumber(&fs); 
+		if (s != RPMFILE_STATE_NORMAL && s != RPMFILE_STATE_NETSHARED) {
+		    skip = 1;
+		}
+	    }
+
+	    if (!skip) {
+		fp2 = fpLookup(fpc, dirNames[dirIndexes[num]],
+				    baseNames[num], 1);
+		if (FP_EQUAL(fp1, fp2)) {
+		    struct dbiIndexItem rec = { 
+			.hdrNum = dbiIndexRecordOffset(allMatches, i),
+			.tagNum = dbiIndexRecordFileNumber(allMatches, i),
+		    };
+		    dbiAppendSet(*matches, &rec, 1, sizeof(rec), 0);
+		}
 	    }
 
 	    prevoff = offset;
@@ -966,6 +981,8 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	rpmtdFreeData(&bn);
 	rpmtdFreeData(&dn);
 	rpmtdFreeData(&di);
+	if (usestate)
+	    rpmtdFreeData(&fs);
 	headerFree(h);
     }
 
@@ -1958,6 +1975,8 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     /* Fixup the physical index for our pseudo indexes */
     if (rpmtag == RPMDBI_LABEL) {
 	dbtag = RPMDBI_NAME;
+    } else if (rpmtag == RPMDBI_INSTFILENAMES) {
+	dbtag = RPMDBI_BASENAMES;
     }
 
     dbi = rpmdbOpenIndex(db, dbtag, 0);
@@ -1976,7 +1995,9 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
             if (rpmtag == RPMDBI_LABEL) {
                 rc = dbiFindByLabel(db, dbi, keyp, &set);
             } else if (rpmtag == RPMDBI_BASENAMES) {
-                rc = rpmdbFindByFile(db, dbi, keyp, &set);
+                rc = rpmdbFindByFile(db, dbi, keyp, 0, &set);
+            } else if (rpmtag == RPMDBI_INSTFILENAMES) {
+                rc = rpmdbFindByFile(db, dbi, keyp, 1, &set);
             } else {
 		rc = dbiGetToSet(dbi, keyp, keylen, &set);
 	    }
