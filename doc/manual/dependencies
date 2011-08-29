@@ -341,7 +341,7 @@ A simple (but possibly not adequate) scheme to achieve this is:
 	Release: <release instance>.<branch>
 \endverbatim
 
-where the release instance is something like YYYMMMDD or some linear
+where the release instance is something like YYYYMMDD or some linear
 record of the number of builds with the current tar file, it is used
 to preserve ordering when necessary.
 
