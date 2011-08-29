@@ -351,19 +351,10 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
      * not installed files can not satisfy a dependency.
      */
     if (Name[0] == '/') {
-	mi = rpmtsPrunedIterator(ts, RPMDBI_BASENAMES, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_INSTFILENAMES, Name);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    int fs = RPMFILE_STATE_MISSING;
-	    struct rpmtd_s states;
-	    if (headerGet(h, RPMTAG_FILESTATES, &states, HEADERGET_MINMEM)) {
-		rpmtdSetIndex(&states, rpmdbGetIteratorFileNum(mi));
-		fs = rpmtdGetNumber(&states);
-		rpmtdFreeData(&states);
-	    }
-	    if (fs == RPMFILE_STATE_NORMAL || fs == RPMFILE_STATE_NETSHARED) {
-		rpmdsNotify(dep, "(db files)", rc);
-		break;
-	    }
+	    rpmdsNotify(dep, "(db files)", rc);
+	    break;
 	}
 	rpmdbFreeIterator(mi);
     }
