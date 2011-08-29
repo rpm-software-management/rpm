@@ -409,7 +409,8 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	    fn = xstrdup(arg);
 	(void) rpmCleanPath(fn);
 
-	mi = rpmtsInitIterator(ts, RPMDBI_BASENAMES, fn, 0);
+	/* XXX Add a switch to enable former BASENAMES behavior? */
+	mi = rpmtsInitIterator(ts, RPMDBI_INSTFILENAMES, fn, 0);
 	if (mi == NULL)
 	    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, fn, 0);
 
