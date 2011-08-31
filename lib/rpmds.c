@@ -209,7 +209,8 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 }
 
 static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
-		      rpmsenseFlags Flags, unsigned int instance)
+		      rpmsenseFlags Flags, unsigned int instance,
+		      rpm_color_t Color)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -230,6 +231,8 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
     ds->Flags = xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
     ds->i = 0;
+    if (Color)
+	rpmdsSetColor(ds, Color);
 
 exit:
     return rpmdsLink(ds);
@@ -239,14 +242,14 @@ rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags)
 {
     char *evr = headerGetAsString(h, RPMTAG_EVR);
     rpmds ds = singleDS(tagN, headerGetString(h, RPMTAG_NAME),
-			evr, Flags, headerGetInstance(h));
+			evr, Flags, headerGetInstance(h), 0);
     free(evr);
     return ds;
 }
 
 rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
 {
-    return singleDS(tagN, N, EVR, Flags, 0);
+    return singleDS(tagN, N, EVR, Flags, 0, 0);
 }
 
 rpmds rpmdsCurrent(rpmds ds)
@@ -254,7 +257,7 @@ rpmds rpmdsCurrent(rpmds ds)
     rpmds cds = NULL;
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
 	cds = singleDS(ds->tagN, ds->N[ds->i], ds->EVR[ds->i],
-		       ds->Flags[ds->i], ds->instance);
+		       ds->Flags[ds->i], ds->instance, rpmdsColor(ds));
     }
     return cds;
 }
