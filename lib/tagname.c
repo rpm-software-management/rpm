@@ -129,6 +129,9 @@ static const char * _tagName(rpmTagVal tag)
     case RPMDBI_PACKAGES:
 	name = "Packages";
 	break;
+    case RPMDBI_INSTFILENAMES:
+	name = "Instfilenames";
+	break;
     /* XXX make sure rpmdb indices are identically named. */
     case RPMTAG_CONFLICTS:
 	name = "Conflictname";
@@ -209,6 +212,8 @@ static rpmTagVal _tagValue(const char * tagstr)
 
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
+    if (!rstrcasecmp(tagstr, "Instfilenames"))
+	return RPMDBI_INSTFILENAMES;
 
     if (_rpmTags.byName == NULL)
 	tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
