@@ -228,7 +228,8 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 }
 
 /* return DSI of the device the rpmdb lives on */
-static rpmDiskSpaceInfo rpmtsDbDSI(const rpmts ts) {
+static rpmDiskSpaceInfo rpmtsDbDSI(const rpmts ts)
+{
     const char *dbhome = rpmdbHome(rpmtsGetRdb(ts));
     struct stat sb;
     int rc;
@@ -241,8 +242,8 @@ static rpmDiskSpaceInfo rpmtsDbDSI(const rpmts ts) {
 }
 
 /* Update DSI for changing size of the rpmdb */
-static void rpmtsUpdateDSIrpmDBSize(const rpmte p,
-				    rpmDiskSpaceInfo dsi) {
+static void rpmtsUpdateDSIrpmDBSize(const rpmte p, rpmDiskSpaceInfo dsi)
+{
     rpm_loff_t headerSize;
     int64_t bneeded;
 
@@ -288,7 +289,8 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
     }
 }
 
-static void rpmtsFreeDSI(rpmts ts){
+static void rpmtsFreeDSI(rpmts ts)
+{
     rpmDiskSpaceInfo dsi;
     if (ts == NULL)
 	return;

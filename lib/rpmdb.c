@@ -1299,15 +1299,18 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     return NULL;
 }
 
-unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi) {
+unsigned int rpmdbGetIteratorOffset(rpmdbMatchIterator mi)
+{
     return (mi ? mi->mi_offset : 0);
 }
 
-unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi) {
+unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi)
+{
     return (mi ? mi->mi_filenum : 0);
 }
 
-int rpmdbGetIteratorCount(rpmdbMatchIterator mi) {
+int rpmdbGetIteratorCount(rpmdbMatchIterator mi)
+{
     return (mi && mi->mi_set ?  mi->mi_set->count : 0);
 }
 

@@ -67,7 +67,8 @@ struct fsmIterator_s {
  * @param fsm		file state machine
  * @return		transaction set
  */
-static rpmts fsmGetTs(const FSM_t fsm) {
+static rpmts fsmGetTs(const FSM_t fsm)
+{
     const FSMI_t iter = fsm->iter;
     return (iter ? iter->ts : NULL);
 }
@@ -2263,7 +2264,8 @@ static const char * fileActionString(rpmFileAction a)
  * @param a		file stage
  * @return		formatted string
  */
-static const char * fileStageString(fileStage a) {
+static const char * fileStageString(fileStage a)
+{
     switch(a) {
     case FSM_UNKNOWN:	return "unknown";
 

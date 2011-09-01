@@ -1626,7 +1626,8 @@ static void at_forkchild(void)
     _new_process = 1;
 }
 
-int rpmInitCrypto(void) {
+int rpmInitCrypto(void)
+{
     int rc = 0;
 
     /* Lazy NSS shutdown for re-initialization after fork() */

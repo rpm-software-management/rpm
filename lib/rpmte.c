@@ -449,7 +449,8 @@ rpm_loff_t rpmtePkgFileSize(rpmte te)
     return (te != NULL ? te->pkgFileSize : 0);
 }
 
-unsigned int rpmteHeaderSize(rpmte te) {
+unsigned int rpmteHeaderSize(rpmte te)
+{
     return (te != NULL ? te->headerSize : 0);
 }
 
@@ -478,7 +479,8 @@ void rpmteSetTSI(rpmte te, tsortInfo tsi)
     te->tsi = tsi;
 }
 
-void rpmteSetDependsOn(rpmte te, rpmte depends) {
+void rpmteSetDependsOn(rpmte te, rpmte depends)
+{
     te->depends = depends;
 }
 
@@ -823,7 +825,8 @@ const char * rpmteTypeString(rpmte te)
     }
 }
 
-rpmfs rpmteGetFileStates(rpmte te) {
+rpmfs rpmteGetFileStates(rpmte te)
+{
     return te->fs;
 }
 

@@ -120,11 +120,13 @@ rpmal rpmalFree(rpmal al)
     return NULL;
 }
 
-static unsigned int fileHash(struct fileNameEntry_s file){
+static unsigned int fileHash(struct fileNameEntry_s file)
+{
     return rstrhash(file.dirName) ^ rstrhash(file.baseName);
 }
 
-static int fileCompare(struct fileNameEntry_s one, struct fileNameEntry_s two) {
+static int fileCompare(struct fileNameEntry_s one, struct fileNameEntry_s two)
+{
     int rc = 0;
     rc = strcmp(one.dirName, two.dirName);
     if (!rc)
@@ -154,7 +156,8 @@ void rpmalDel(rpmal al, rpmte p)
     alp->p = NULL;
 }
 
-static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi){
+static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
+{
     struct fileNameEntry_s fileName;
     struct availableIndexEntry_s fileEntry;
     int i;
@@ -178,7 +181,8 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi){
     }
 }
 
-static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides){
+static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides)
+{
     struct availableIndexEntry_s indexEntry;
     rpm_color_t dscolor;
 

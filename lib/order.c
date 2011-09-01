@@ -258,7 +258,8 @@ typedef struct sccData_s {
     int sccCnt;			/* Number of SCC's found */
 } * sccData;
 
-static void tarjan(sccData sd, tsortInfo tsi) {
+static void tarjan(sccData sd, tsortInfo tsi)
+{
     tsortInfo tsi_q;
     relation rel;
 
