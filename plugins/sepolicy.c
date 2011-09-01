@@ -522,7 +522,7 @@ static rpmRC sepolRelabelFiles(void)
     return rc;
 }
 
-static rpmRC sepolGo()
+static rpmRC sepolGo(void)
 {
     semanage_handle_t *sh;
     int existingPolicy;
