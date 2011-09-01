@@ -571,7 +571,8 @@ int rpmtsCheck(rpmts ts)
 	}
 
 	while (rpmfiNext(fi) >= 0) {
-	    checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
+	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi)))
+		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
 	}
     }
     rpmtsiFree(pi);
