@@ -5,6 +5,7 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmmacro.h>
 
 #include "header-py.h"
 #include "rpmds-py.h"
