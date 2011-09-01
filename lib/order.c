@@ -548,7 +548,8 @@ int rpmtsOrder(rpmts ts)
     rpmte * newOrder;
     int newOrderCount = 0;
     int rc;
-    rpmal erasedPackages = rpmalCreate(5, rpmtsColor(ts), prefcolor);
+    rpmal erasedPackages = rpmalCreate(5, rpmtsFlags(ts),
+					rpmtsColor(ts), prefcolor);
     scc SCCs;
     int nelem = rpmtsNElements(ts);
     tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));

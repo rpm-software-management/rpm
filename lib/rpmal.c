@@ -68,6 +68,7 @@ struct rpmal_s {
     int delta;			/*!< Delta for pkg list reallocation. */
     int size;			/*!< No. of pkgs in list. */
     int alloced;		/*!< No. of pkgs allocated for list. */
+    rpmtransFlags tsflags;	/*!< Transaction control flags. */
     rpm_color_t tscolor;	/*!< Transaction color. */
     rpm_color_t prefcolor;	/*!< Transaction preferred color. */
 };
@@ -82,7 +83,8 @@ static void rpmalFreeIndex(rpmal al)
     al->fileHash = rpmalFileHashFree(al->fileHash);
 }
 
-rpmal rpmalCreate(int delta, rpm_color_t tscolor, rpm_color_t prefcolor)
+rpmal rpmalCreate(int delta, rpmtransFlags tsflags,
+		  rpm_color_t tscolor, rpm_color_t prefcolor)
 {
     rpmal al = xcalloc(1, sizeof(*al));
 
@@ -93,6 +95,7 @@ rpmal rpmalCreate(int delta, rpm_color_t tscolor, rpm_color_t prefcolor)
 
     al->providesHash = NULL;
     al->fileHash = NULL;
+    al->tsflags = tsflags;
     al->tscolor = tscolor;
     al->prefcolor = prefcolor;
 

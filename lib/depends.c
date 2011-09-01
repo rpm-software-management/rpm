@@ -286,7 +286,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     if (tsmem->addedPackages == NULL) {
-	tsmem->addedPackages = rpmalCreate(5, tscolor, rpmtsPrefColor(ts));
+	tsmem->addedPackages = rpmalCreate(5, rpmtsFlags(ts),
+					   tscolor, rpmtsPrefColor(ts));
     }
 
     if (oc >= tsmem->orderAlloced) {

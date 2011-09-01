@@ -7,6 +7,7 @@
  */
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmts.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,12 +18,14 @@ typedef struct rpmal_s * rpmal;
 /**
  * Initialize available packckages, items, and directory list.
  * @param delta		no. of entries to add on each realloc
+ * @param tsflags	transaction control flags
  * @param tscolor	transaction color bits
  * @param prefcolor	preferred color
  * @return al		new available list
  */
 RPM_GNUC_INTERNAL
-rpmal rpmalCreate(int delta, rpm_color_t tscolor, rpm_color_t prefcolor);
+rpmal rpmalCreate(int delta, rpmtransFlags tsflags,
+		  rpm_color_t tscolor, rpm_color_t prefcolor);
 
 /**
  * Free available packages, items, and directory members.
