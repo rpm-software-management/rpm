@@ -510,6 +510,8 @@ static int validData(rpmTagVal tag, rpmTagType type, rpmTagReturnType retype, Py
     } else if (retype == RPM_ARRAY_RETURN_TYPE && PyList_Check(value)) {
 	/* python lists can contain arbitrary objects, validate each item */
 	Py_ssize_t len = PyList_Size(value);
+	if (len == 0)
+	    valid = 0;
 	for (Py_ssize_t i = 0; i < len; i++) {
 	    PyObject *item = PyList_GetItem(value, i);
 	    if (!validItem(tclass, item)) {
