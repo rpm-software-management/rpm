@@ -954,8 +954,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
 	    if (usestate) {
 		rpmtdSetIndex(&fs, num);
-		int s = rpmtdGetNumber(&fs); 
-		if (s != RPMFILE_STATE_NORMAL && s != RPMFILE_STATE_NETSHARED) {
+		if (!RPMFILE_IS_INSTALLED(rpmtdGetNumber(&fs))) {
 		    skip = 1;
 		}
 	    }

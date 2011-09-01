@@ -43,6 +43,8 @@ typedef enum rpmfileState_e {
     RPMFILE_STATE_WRONGCOLOR	= 4
 } rpmfileState;
 
+#define RPMFILE_IS_INSTALLED(_x) ((_x) == RPMFILE_STATE_NORMAL || (_x) == RPMFILE_STATE_NETSHARED)
+
 /**
  * File Attributes.
  */
