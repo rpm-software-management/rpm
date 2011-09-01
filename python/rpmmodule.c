@@ -114,6 +114,22 @@ static PyObject * doLog(PyObject * self, PyObject * args, PyObject *kwds)
     Py_RETURN_NONE;
 }
 
+static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
+{
+    char * target = NULL;
+    char * kwlist[] = { "target", NULL };
+    int rc;
+    
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|s", kwlist, &target))
+        return NULL;
+
+    rpmFreeMacros(NULL);
+    rpmFreeRpmrc();
+    rc = rpmReadConfigFiles(NULL, target) ;
+
+    return PyBool_FromLong(rc == 0);
+}
+
 static PyMethodDef rpmModuleMethods[] = {
     { "addMacro", (PyCFunction) rpmmacro_AddMacro, METH_VARARGS|METH_KEYWORDS,
 	NULL },
@@ -147,6 +163,8 @@ static PyMethodDef rpmModuleMethods[] = {
     { "setEpochPromote", (PyCFunction) setEpochPromote, METH_O,
 	NULL },
     { "setStats", (PyCFunction) setStats, METH_O,
+	NULL },
+    { "reloadConfig", (PyCFunction) reloadConfig, METH_VARARGS|METH_KEYWORDS,
 	NULL },
 
     { NULL }
