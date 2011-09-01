@@ -196,6 +196,7 @@ static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides)
 {
     struct availableIndexEntry_s indexEntry;
     rpm_color_t dscolor;
+    int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
 
     indexEntry.pkgNum = pkgNum;
 
@@ -205,6 +206,10 @@ static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides)
         dscolor = rpmdsColor(provides);
         if (al->tscolor && dscolor && !(al->tscolor & dscolor))
             continue;
+
+	/* Ignore config() provides if the files wont be installed */
+	if (skipconf & (rpmdsFlags(provides) & RPMSENSE_CONFIG))
+	    continue;
 
 	indexEntry.entryIx = rpmdsIx(provides);
 	rpmalProvidesHashAddEntry(al->providesHash, rpmdsN(provides), indexEntry);
