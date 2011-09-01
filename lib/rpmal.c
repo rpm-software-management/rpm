@@ -165,6 +165,8 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
     struct availableIndexEntry_s fileEntry;
     int i;
     rpm_color_t ficolor;
+    int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
+    int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
 
     fileEntry.pkgNum = pkgNum;
 
@@ -174,6 +176,12 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
         ficolor = rpmfiFColor(fi);
         if (al->tscolor && ficolor && !(al->tscolor & ficolor))
             continue;
+
+	/* Ignore files that wont be installed */
+	if (skipdoc && (rpmfiFFlags(fi) & RPMFILE_DOC))
+	    continue;
+	if (skipconf && (rpmfiFFlags(fi) & RPMFILE_CONFIG))
+	    continue;
 
 	fileName.dirName = rpmfiDN(fi);
 	fileName.baseName = rpmfiBN(fi);
