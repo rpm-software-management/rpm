@@ -36,18 +36,18 @@ struct headerTagFunc_s {
  * @retval *fnp		array of file names
  * @retval *fcp		number of files
  */
-static void rpmfiBuildFNames(Header h, rpmTag tagN,
+static void rpmfiBuildFNames(Header h, rpmTag tagN, int withstate,
 	const char *** fnp, rpm_count_t * fcp)
 {
-    const char **baseNames, **dirNames, **fileNames;
+    const char **baseNames, **dirNames, **fileNames, *fileStates;
     uint32_t *dirIndexes;
-    rpm_count_t count;
-    size_t size;
+    rpm_count_t count, retcount;
+    size_t size = 0;
     rpmTag dirNameTag = RPMTAG_DIRNAMES;
     rpmTag dirIndexesTag = RPMTAG_DIRINDEXES;
     char * t;
-    int i;
-    struct rpmtd_s bnames, dnames, dixs;
+    int i, j;
+    struct rpmtd_s bnames, dnames, dixs, fstates;
 
     if (tagN == RPMTAG_ORIGBASENAMES) {
 	dirNameTag = RPMTAG_ORIGDIRNAMES;
@@ -62,33 +62,47 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN,
     (void) headerGet(h, dirNameTag, &dnames, HEADERGET_MINMEM);
     (void) headerGet(h, dirIndexesTag, &dixs, HEADERGET_MINMEM);
 
-    count = rpmtdCount(&bnames);
+    retcount = count = rpmtdCount(&bnames);
     baseNames = bnames.data;
     dirNames = dnames.data;
     dirIndexes = dixs.data;
+
+    if (withstate) {
+	headerGet(h, RPMTAG_FILESTATES, &fstates, HEADERGET_MINMEM);
+	fileStates = fstates.data;
+    }
 
     /*
      * fsm, psm and rpmfi assume the data is stored in a single allocation
      * block, until those assumptions are removed we need to jump through
      * a few hoops here and precalculate sizes etc
      */
-    size = sizeof(*fileNames) * count;
-    for (i = 0; i < count; i++)
+    for (i = 0; i < count; i++) {
+	if (withstate && !RPMFILE_IS_INSTALLED(fileStates[i])) {
+	    retcount--;
+	    continue;
+	}
 	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
+    }
+    size += sizeof(*fileNames) * retcount;
 
     fileNames = xmalloc(size);
-    t = ((char *) fileNames) + (sizeof(*fileNames) * count);
-    for (i = 0; i < count; i++) {
-	fileNames[i] = t;
+    t = ((char *) fileNames) + (sizeof(*fileNames) * retcount);
+    for (i = 0, j = 0; i < count; i++) {
+	if (withstate && !RPMFILE_IS_INSTALLED(fileStates[i]))
+	    continue;
+	fileNames[j++] = t;
 	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
 	*t++ = '\0';
     }
     rpmtdFreeData(&bnames);
     rpmtdFreeData(&dnames);
     rpmtdFreeData(&dixs);
+    if (withstate)
+	rpmtdFreeData(&fstates);
 
     *fnp = fileNames;
-    *fcp = count;
+    *fcp = retcount;
 }
 
 static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
@@ -274,6 +288,22 @@ static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
 }
 
 /**
+ * Retrieve installed file paths.
+ * @param h		header
+ * @retval td		tag data container
+ * @return		1 on success
+ */
+static int instfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, 1,
+		     (const char ***) &(td->data), &(td->count));
+    if (td->data) {
+	td->type = RPM_STRING_ARRAY_TYPE;
+	td->flags = RPMTD_ALLOCED;
+    }
+    return (td->data != NULL); 
+}
+/**
  * Retrieve file paths.
  * @param h		header
  * @retval td		tag data container
@@ -281,7 +311,7 @@ static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
  */
 static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, 
+    rpmfiBuildFNames(h, RPMTAG_BASENAMES, 0,
 		     (const char ***) &(td->data), &(td->count));
     if (td->data) {
 	td->type = RPM_STRING_ARRAY_TYPE;
@@ -298,7 +328,7 @@ static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
  */
 static int origfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    rpmfiBuildFNames(h, RPMTAG_ORIGBASENAMES, 
+    rpmfiBuildFNames(h, RPMTAG_ORIGBASENAMES, 0,
 		     (const char ***) &(td->data), &(td->count));
     if (td->data) {
 	td->type = RPM_STRING_ARRAY_TYPE;
@@ -720,6 +750,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_HEADERCOLOR,	headercolorTag },
     { RPMTAG_VERBOSE,		verboseTag },
     { RPMTAG_EPOCHNUM,		epochnumTag },
+    { RPMTAG_INSTFILENAMES,	instfilenamesTag },
     { 0, 			NULL }
 };
 

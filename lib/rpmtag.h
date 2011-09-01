@@ -301,6 +301,7 @@ typedef enum rpmTag_e {
     RPMTAG_ORDERFLAGS		= 5037,	/* i[] */
     RPMTAG_MSSFMANIFEST		= 5038, /* s[] reservation (unimplemented) */
     RPMTAG_MSSFDOMAIN		= 5039, /* s[] reservation (unimplemented) */
+    RPMTAG_INSTFILENAMES	= 5040, /* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
@@ -313,7 +314,6 @@ typedef enum rpmTag_e {
 typedef enum rpmDbiTag_e {
     RPMDBI_PACKAGES		= 0,	/* Installed package headers. */
     RPMDBI_LABEL		= 2,	/* NEVRA label pseudo index */
-    RPMDBI_INSTFILENAMES	= 32,	/* Files with inst. state pseudo idx */
     RPMDBI_NAME			= RPMTAG_NAME,
     RPMDBI_BASENAMES		= RPMTAG_BASENAMES,
     RPMDBI_GROUP		= RPMTAG_GROUP,
@@ -326,6 +326,7 @@ typedef enum rpmDbiTag_e {
     RPMDBI_INSTALLTID		= RPMTAG_INSTALLTID,
     RPMDBI_SIGMD5		= RPMTAG_SIGMD5,
     RPMDBI_SHA1HEADER		= RPMTAG_SHA1HEADER,
+    RPMDBI_INSTFILENAMES	= RPMTAG_INSTFILENAMES,
 } rpmDbiTag;
 
 /** \ingroup signature
