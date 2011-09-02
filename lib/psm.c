@@ -481,8 +481,8 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
     (void) rpmdsSetNoPromote(trigger, 1);
 
     while ((i = rpmdsNext(trigger)) >= 0) {
-	struct rpmtd_s tscripts, tprogs, tindexes, tflags;
-	headerGetFlags hgflags = HEADERGET_MINMEM;
+	struct rpmtd_s tindexes;
+	uint32_t tix;
 
 	if (!(rpmdsFlags(trigger) & psm->sense))
 	    continue;
@@ -494,51 +494,35 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 	if (!rpmdsAnyMatchesDep(sourceH, trigger, 1))
 	    continue;
 
-	/* XXX FIXME: this leaks memory if scripts or progs retrieve fails */
-	if (!(headerGet(trigH, RPMTAG_TRIGGERINDEX, &tindexes, hgflags) &&
-	      headerGet(trigH, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags) &&
-	      headerGet(trigH, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags))) {
+	if (!headerGet(trigH, RPMTAG_TRIGGERINDEX, &tindexes, HEADERGET_MINMEM))
 	    continue;
-	} else {
-	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
-	    char ** triggerScripts = tscripts.data;
-	    char ** triggerProgs = tprogs.data;
-	    uint32_t * triggerIndices = tindexes.data;
-	    uint32_t * triggerFlags = NULL;
-	    uint32_t ix = triggerIndices[i];
 
-	    headerGet(trigH, RPMTAG_TRIGGERSCRIPTFLAGS, &tflags, hgflags);
-	    triggerFlags = tflags.data;
+	if (rpmtdSetIndex(&tindexes, i) < 0) {
+	    rpmtdFreeData(&tindexes);
+	    continue;
+	}
+
+	tix = rpmtdGetNumber(&tindexes);
+	if (triggersAlreadyRun == NULL || triggersAlreadyRun[tix] == 0) {
+	    int arg1 = rpmdbCountPackages(rpmtsGetRdb(ts), triggerName);
 
 	    if (arg1 < 0) {
 		/* XXX W2DO? fails as "execution of script failed" */
 		rc = RPMRC_FAIL;
 	    } else {
+		rpmScript script = rpmScriptFromTriggerTag(trigH,
+						 triggertag(psm->sense), tix);
 		arg1 += psm->countCorrection;
+		rc = runScript(psm, pfx.data, script, arg1, arg2);
 
-		if (triggersAlreadyRun == NULL || triggersAlreadyRun[ix] == 0) {
-		    rpmScript script;
+		if (triggersAlreadyRun != NULL)
+		    triggersAlreadyRun[tix] = 1;
 
-		    script = rpmScriptNew(trigH, triggertag(psm->sense),
-					  triggerScripts[ix],
-					  triggerFlags ? triggerFlags[ix] : 0);
-
-		    script->args = xcalloc(2, sizeof(*script->args));
-		    script->args[0] = triggerProgs[ix];
-		    script->args[1] = NULL;
-
-		    rc = runScript(psm, pfx.data, script, arg1, arg2);
-		    if (triggersAlreadyRun != NULL)
-			triggersAlreadyRun[ix] = 1;
-
-		    rpmScriptFree(script);
-		}
+		rpmScriptFree(script);
 	    }
 	}
 
 	rpmtdFreeData(&tindexes);
-	rpmtdFreeData(&tscripts);
-	rpmtdFreeData(&tprogs);
 
 	/*
 	 * Each target/source header pair can only result in a single

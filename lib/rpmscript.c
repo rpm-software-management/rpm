@@ -364,8 +364,8 @@ static const char * tag2sln(rpmTagVal tag)
     return "%unknownscript";
 }
 
-rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
-		       rpmscriptFlags flags)
+static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
+			      rpmscriptFlags flags)
 {
     char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
     rpmScript script = xcalloc(1, sizeof(*script));
@@ -387,6 +387,39 @@ rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     }
 
     free(nevra);
+    return script;
+}
+
+rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag, uint32_t ix)
+{
+    rpmScript script = NULL;
+    struct rpmtd_s tscripts, tprogs, tflags;
+    headerGetFlags hgflags = HEADERGET_MINMEM;
+
+    headerGet(h, RPMTAG_TRIGGERSCRIPTS, &tscripts, hgflags);
+    headerGet(h, RPMTAG_TRIGGERSCRIPTPROG, &tprogs, hgflags);
+    headerGet(h, RPMTAG_TRIGGERSCRIPTFLAGS, &tflags, hgflags);
+    
+    if (rpmtdSetIndex(&tscripts, ix) >= 0 && rpmtdSetIndex(&tprogs, ix) >= 0) {
+	rpmscriptFlags sflags = 0;
+	const char *prog = rpmtdGetString(&tprogs);
+
+	if (rpmtdSetIndex(&tflags, ix) >= 0)
+	    sflags = rpmtdGetNumber(&tflags);
+
+	script = rpmScriptNew(h, triggerTag, rpmtdGetString(&tscripts), sflags);
+
+	/* hack up a hge-style NULL-terminated array */
+	script->args = xmalloc(2 * sizeof(*script->args) + strlen(prog) + 1);
+	script->args[0] = (char *)(script->args + 2);
+	script->args[1] = NULL;
+	strcpy(script->args[0], prog);
+    }
+
+    rpmtdFreeData(&tscripts);
+    rpmtdFreeData(&tprogs);
+    rpmtdFreeData(&tflags);
+
     return script;
 }
 

@@ -30,8 +30,7 @@ RPM_GNUC_INTERNAL
 rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag);
 
 RPM_GNUC_INTERNAL
-rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
-		       rpmscriptFlags flags);
+rpmScript rpmScriptFromTriggerTag(Header h, rpmTagVal triggerTag, uint32_t ix);
 
 RPM_GNUC_INTERNAL
 rpmScript rpmScriptFree(rpmScript script);
