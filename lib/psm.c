@@ -408,9 +408,10 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
 		       rpmScript script, int arg1, int arg2)
 {
     rpmRC rc = RPMRC_OK;
-    int warn_only = (script->tag != RPMTAG_PREIN &&
-		     script->tag != RPMTAG_PREUN &&
-		     script->tag != RPMTAG_VERIFYSCRIPT);
+    rpmTagVal stag = rpmScriptTag(script);
+    int warn_only = (stag != RPMTAG_PREIN &&
+		     stag != RPMTAG_PREUN &&
+		     stag != RPMTAG_VERIFYSCRIPT);
     int selinux = !(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_NOCONTEXTS);
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
@@ -427,7 +428,7 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
 	if (warn_only) {
 	    rc = RPMRC_OK;
 	}
-	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, script->tag, rc);
+	rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_ERROR, stag, rc);
     }
 
     return rc;

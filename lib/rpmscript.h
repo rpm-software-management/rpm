@@ -14,14 +14,6 @@ typedef rpmFlags rpmscriptFlags;
 
 typedef struct rpmScript_s * rpmScript;
 
-struct rpmScript_s {
-    rpmTagVal tag;	/* script tag */
-    char **args;	/* scriptlet call arguments */
-    char *body;		/* script body */
-    char *descr;	/* description for logging */
-    rpmscriptFlags flags;	/* flags to control operation */
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,6 +31,8 @@ RPM_GNUC_INTERNAL
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
                    ARGV_const_t prefixes, int warn_only, int selinux);
 
+RPM_GNUC_INTERNAL
+rpmTagVal rpmScriptTag(rpmScript script);
 #ifdef __cplusplus
 }
 #endif

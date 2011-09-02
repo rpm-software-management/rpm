@@ -16,6 +16,14 @@
 
 #include "debug.h"
 
+struct rpmScript_s {
+    rpmTagVal tag;		/* script tag */
+    char **args;		/* scriptlet call arguments */
+    char *body;			/* script body */
+    char *descr;		/* description for logging */
+    rpmscriptFlags flags;	/* flags to control operation */
+};
+
 /**
  * Run internal Lua script.
  */
@@ -451,4 +459,9 @@ rpmScript rpmScriptFree(rpmScript script)
 	free(script);
     }
     return NULL;
+}
+
+rpmTagVal rpmScriptTag(rpmScript script)
+{
+    return (script != NULL) ? script->tag : RPMTAG_NOT_FOUND;
 }
