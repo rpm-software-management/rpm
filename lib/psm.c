@@ -517,31 +517,21 @@ static rpmRC handleOneTrigger(const rpmpsm psm,
 		arg1 += psm->countCorrection;
 
 		if (triggersAlreadyRun == NULL || triggersAlreadyRun[ix] == 0) {
-		    /* XXX TODO add rpmScript API to handle this, ugh */
-		    char *macro = NULL;
-		    char *qformat = NULL;
-		    char *args[2] = { triggerProgs[ix], NULL };
-		    struct rpmScript_s script = {
-			.tag = triggertag(psm->sense),
-			.body = triggerScripts[ix],
-			.flags = triggerFlags ? triggerFlags[ix] : 0,
-			.args = args
-		    };
+		    rpmScript script;
 
-		    if (script.body && (script.flags & RPMSCRIPT_EXPAND)) {
-			macro = rpmExpand(script.body, NULL);
-			script.body = macro;
-		    }
-		    if (script.body && (script.flags & RPMSCRIPT_QFORMAT)) {
-			qformat = headerFormat(trigH, script.body, NULL);
-			script.body = qformat;
-		    }
+		    script = rpmScriptNew(trigH, triggertag(psm->sense),
+					  triggerScripts[ix],
+					  triggerFlags ? triggerFlags[ix] : 0);
 
-		    rc = runScript(psm, pfx.data, &script, arg1, arg2);
+		    script->args = xcalloc(2, sizeof(*script->args));
+		    script->args[0] = triggerProgs[ix];
+		    script->args[1] = NULL;
+
+		    rc = runScript(psm, pfx.data, script, arg1, arg2);
 		    if (triggersAlreadyRun != NULL)
 			triggersAlreadyRun[ix] = 1;
-		    free(macro);
-		    free(qformat);
+
+		    rpmScriptFree(script);
 		}
 	    }
 	}

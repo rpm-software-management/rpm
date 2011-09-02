@@ -364,6 +364,32 @@ static const char * tag2sln(rpmTagVal tag)
     return "%unknownscript";
 }
 
+rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
+		       rpmscriptFlags flags)
+{
+    char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
+    rpmScript script = xcalloc(1, sizeof(*script));
+    script->tag = tag;
+    script->body = (body != NULL) ? xstrdup(body) : NULL;
+    rasprintf(&script->descr, "%s(%s)", tag2sln(tag), nevra);
+
+    /* macros need to be expanded before possible queryformat */
+    if (script->body && (flags & RPMSCRIPT_EXPAND)) {
+	char *body = rpmExpand(script->body, NULL);
+	free(script->body);
+	script->body = body;
+    }
+    if (script->body && (flags & RPMSCRIPT_QFORMAT)) {
+	/* XXX TODO: handle queryformat errors */
+	char *body = headerFormat(h, script->body, NULL);
+	free(script->body);
+	script->body = body;
+    }
+
+    free(nevra);
+    return script;
+}
+
 rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 {
     rpmScript script = NULL;
@@ -371,31 +397,14 @@ rpmScript rpmScriptFromTag(Header h, rpmTagVal scriptTag)
 
     if (headerIsEntry(h, scriptTag) || headerIsEntry(h, progTag)) {
 	struct rpmtd_s prog;
-	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmscriptFlags flags = headerGetNumber(h, getFlagTag(scriptTag));
 
-	script = xcalloc(1, sizeof(*script));
-	script->tag = scriptTag;
-	rasprintf(&script->descr, "%s(%s)", tag2sln(scriptTag), nevra);
-	script->body = headerGetAsString(h, scriptTag);
-
-	/* macros need to be expanded before possible queryformat */
-	if (script->body && (flags & RPMSCRIPT_EXPAND)) {
-	    char *body = rpmExpand(script->body, NULL);
-	    free(script->body);
-	    script->body = body;
-	}
-	if (script->body && (flags & RPMSCRIPT_QFORMAT)) {
-	    /* XXX TODO: handle queryformat errors */
-	    char *body = headerFormat(h, script->body, NULL);
-	    free(script->body);
-	    script->body = body;
-	}
+	script = rpmScriptNew(h, scriptTag,
+			      headerGetString(h, scriptTag),
+			      headerGetNumber(h, getFlagTag(scriptTag)));
 
 	if (headerGet(h, progTag, &prog, (HEADERGET_ALLOC|HEADERGET_ARGV))) {
 	    script->args = prog.data;
 	}
-	free(nevra);
     }
     return script;
 }
