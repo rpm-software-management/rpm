@@ -628,7 +628,8 @@ int main(int argc, char *argv[])
     }
 
     rpmtsFree(ts);
-    finishPipe();
+    if (finishPipe())
+	ec = EXIT_FAILURE;
     free(ba->buildRootOverride);
     argvFree(build_targets);
 

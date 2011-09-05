@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
     }
 
     rpmtsFree(ts);
-    finishPipe();
+    if (finishPipe())
+	ec = EXIT_FAILURE;
 
     free(qva->qva_queryFormat);
 

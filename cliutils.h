@@ -15,6 +15,6 @@ void printUsage(poptContext con, FILE * fp, int flags);
 
 int initPipe(void);
 
-void finishPipe(void);
+int finishPipe(void);
 
 #endif /* _CLIUTIL_H */

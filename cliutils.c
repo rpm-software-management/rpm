@@ -2,6 +2,7 @@
 #if HAVE_MCHECK_H
 #include <mcheck.h>
 #endif
+#include <errno.h>
 #include <sys/wait.h>
 
 #include <rpm/rpmlog.h>
@@ -69,11 +70,20 @@ int initPipe(void)
     return 0;
 }
 
-void finishPipe(void)
+int finishPipe(void)
 {
-    int status;
+    int rc = 0;
     if (pipeChild) {
+	int status;
+	pid_t reaped;
+
 	(void) fclose(stdout);
-	(void) waitpid(pipeChild, &status, 0);
+	do {
+	    reaped = waitpid(pipeChild, &status, 0);
+	} while (reaped == -1 && errno == EINTR);
+	    
+	if (reaped == -1 || !WIFEXITED(status) || WEXITSTATUS(status))
+	    rc = 1;
     }
+    return rc;
 }

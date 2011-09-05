@@ -333,7 +333,8 @@ int main(int argc, char *argv[])
     }
 
     rpmtsFree(ts);
-    finishPipe();
+    if (finishPipe())
+	ec = EXIT_FAILURE;
 
 #ifdef	IAM_RPMQV
     free(qva->qva_queryFormat);
