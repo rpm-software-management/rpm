@@ -726,6 +726,47 @@ static int epochnumTag(Header h, rpmtd td, headerGetFlags hgflags)
     return 1;
 }
 
+static int depnevrsTag(Header h, rpmtd td, headerGetFlags hgflags,
+			rpmTagVal tag)
+{
+    rpmds ds = rpmdsNew(h, tag, 0);
+    int ndeps = rpmdsCount(ds);
+
+    if (ndeps > 0) {
+	char **deps = xmalloc(sizeof(*deps) * ndeps);
+	int i;
+	while ((i = rpmdsNext(ds)) >= 0) {
+	    deps[i] = rpmdsNewDNEVR(NULL, ds);
+	}
+	td->data = deps;
+	td->type = RPM_STRING_ARRAY_TYPE;
+	td->count = ndeps;
+	td->flags |= (RPMTD_ALLOCED | RPMTD_PTR_ALLOCED);
+    }
+    rpmdsFree(ds);
+    return (ndeps > 0);
+}
+
+static int requirenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_REQUIRENAME);
+}
+
+static int providenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_PROVIDENAME);
+}
+
+static int obsoletenevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_OBSOLETENAME);
+}
+
+static int conflictnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    return depnevrsTag(h, td, hgflags, RPMTAG_CONFLICTNAME);
+}
+
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -751,6 +792,10 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_VERBOSE,		verboseTag },
     { RPMTAG_EPOCHNUM,		epochnumTag },
     { RPMTAG_INSTFILENAMES,	instfilenamesTag },
+    { RPMTAG_REQUIRENEVRS,	requirenevrsTag },
+    { RPMTAG_PROVIDENEVRS,	providenevrsTag },
+    { RPMTAG_OBSOLETENEVRS,	obsoletenevrsTag },
+    { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
     { 0, 			NULL }
 };
 

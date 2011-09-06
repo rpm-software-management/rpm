@@ -302,6 +302,10 @@ typedef enum rpmTag_e {
     RPMTAG_MSSFMANIFEST		= 5038, /* s[] reservation (unimplemented) */
     RPMTAG_MSSFDOMAIN		= 5039, /* s[] reservation (unimplemented) */
     RPMTAG_INSTFILENAMES	= 5040, /* s[] extension */
+    RPMTAG_REQUIRENEVRS		= 5041, /* s[] extension */
+    RPMTAG_PROVIDENEVRS		= 5042, /* s[] extension */
+    RPMTAG_OBSOLETENEVRS	= 5043, /* s[] extension */
+    RPMTAG_CONFLICTNEVRS	= 5044, /* s[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
