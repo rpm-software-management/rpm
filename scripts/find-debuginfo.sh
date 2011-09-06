@@ -243,7 +243,7 @@ done || exit
 
 # For each symlink whose target has a .debug file,
 # make a .debug symlink to that file.
-find $RPM_BUILD_ROOT ! -path "${debugdir}/*" -type l -print |
+find "$RPM_BUILD_ROOT" ! -path "${debugdir}/*" -type l -print |
 while read f
 do
   t=$(readlink -m "$f").debug

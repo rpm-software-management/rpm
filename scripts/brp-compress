@@ -5,7 +5,7 @@ if [ -z "$RPM_BUILD_ROOT" -o "$RPM_BUILD_ROOT" = "/" ]; then
 	exit 0
 fi
 
-cd $RPM_BUILD_ROOT
+cd "$RPM_BUILD_ROOT"
 
 # Compress man pages
 COMPRESS="gzip -9 -n"

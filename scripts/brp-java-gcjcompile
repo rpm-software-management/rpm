@@ -17,12 +17,13 @@ cflags="$RPM_OPT_FLAGS -fPIC -findirect-dispatch"
 ldflags="-Wl,-Bsymbolic"
 
 # XXX make it so you can override the list, for mx4j et al.
-for jar in `find $RPM_BUILD_ROOT -type f -name "*.?ar"`; do
+find "$RPM_BUILD_ROOT" -type f -name "*.?ar" | while read jar ; do
     [ `head -c 2 "$jar"` != "PK" ] && continue
 
     [ -d "$RPM_BUILD_ROOT/$libdir" ] || mkdir -p "$RPM_BUILD_ROOT/$libdir"
 
-    lib="$libdir/lib`basename $jar`.so"
+    bnjar=`basename "$jar"`
+    lib="$libdir/lib$bnjar.so"
     [ -f "$RPM_BUILD_ROOT/$lib" ] && continue
 
     # XXX need splits to handle #158308
@@ -32,7 +33,7 @@ for jar in `find $RPM_BUILD_ROOT -type f -name "*.?ar"`; do
 
     [ -d "$RPM_BUILD_ROOT/$dbdir" ] || mkdir -p "$RPM_BUILD_ROOT/$dbdir"
 
-    db="$dbdir/`basename $jar`.db"
+    db="$dbdir/$bnjar.db"
     [ -f "$RPM_BUILD_ROOT/$db" ] && exit 1
     
     $gcj-dbtool -n "$RPM_BUILD_ROOT/$db" 64

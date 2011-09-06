@@ -14,7 +14,7 @@ fi
 
 # Figure out how deep we need to descend.  We could pick an insanely high
 # number and hope it's enough, but somewhere, somebody's sure to run into it.
-depth=`(find $RPM_BUILD_ROOT -type f -name "*.py" -print0 ; echo /) | \
+depth=`(find "$RPM_BUILD_ROOT" -type f -name "*.py" -print0 ; echo /) | \
        xargs -0 -n 1 dirname | sed 's,[^/],,g' | sort -u | tail -n 1 | wc -c`
 if [ -z "$depth" -o "$depth" -le "1" ]; then
 	exit 0
@@ -34,7 +34,7 @@ fi
 # and below /usr/lib/python3.1/, we're targetting /usr/bin/python3.1
 
 shopt -s nullglob
-for python_libdir in $RPM_BUILD_ROOT/usr/lib{,64}/python[0-9].[0-9]/ ;
+for python_libdir in "$RPM_BUILD_ROOT/usr/lib{,64}/python[0-9].[0-9]/" ;
 do
 	python_binary=/usr/bin/$(basename $python_libdir)
 	real_libdir=${python_libdir/$RPM_BUILD_ROOT/}
