@@ -316,6 +316,12 @@ int parseScript(rpmSpec spec, int parsePart)
     /* Trigger script insertion is always delayed in order to */
     /* get the index right.                                   */
     if (tag == RPMTAG_TRIGGERSCRIPTS) {
+	if (progArgc > 1) {
+	    rpmlog(RPMLOG_ERR,
+	      _("line %d: interpreter arguments not allowed in triggers: %s\n"),
+	      spec->lineNum, prog);
+	    goto exit;
+	}
 	/* Add file/index/prog triple to the trigger file list */
 	index = addTriggerIndex(pkg, file, p, progArgv[0], scriptFlags);
 
