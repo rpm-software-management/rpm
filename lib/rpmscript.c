@@ -378,16 +378,17 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
     rpmScript script = xcalloc(1, sizeof(*script));
     script->tag = tag;
+    script->flags = flags;
     script->body = (body != NULL) ? xstrdup(body) : NULL;
     rasprintf(&script->descr, "%s(%s)", tag2sln(tag), nevra);
 
     /* macros need to be expanded before possible queryformat */
-    if (script->body && (flags & RPMSCRIPT_FLAG_EXPAND)) {
+    if (script->body && (script->flags & RPMSCRIPT_FLAG_EXPAND)) {
 	char *body = rpmExpand(script->body, NULL);
 	free(script->body);
 	script->body = body;
     }
-    if (script->body && (flags & RPMSCRIPT_FLAG_QFORMAT)) {
+    if (script->body && (script->flags & RPMSCRIPT_FLAG_QFORMAT)) {
 	/* XXX TODO: handle queryformat errors */
 	char *body = headerFormat(h, script->body, NULL);
 	free(script->body);
