@@ -37,7 +37,9 @@ rpm	alias --scripts --qf '\
 %|POSTTRANSPROG?{ (using %{POSTTRANSPROG})}|:\n%{POSTTRANS}\n}:\
 {%|POSTTRANSPROG?{posttrans program: %{POSTTRANSPROG}\n}|}|\
 \
-%|VERIFYSCRIPT?{verify scriptlet:\n%{VERIFYSCRIPT}\n}|\
+%|VERIFYSCRIPT?{verify scriptlet\
+%|VERIFYSCRIPTPROG?{ (using %{VERIFYSCRIPTPROG}}|:\n%{VERIFYSCRIPT}\n}:\
+{%|VERIFYSCRIPTPROG?{verify program: %{VERIFYSCRIPTPROG}\n}|}|\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
