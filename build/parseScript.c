@@ -90,14 +90,14 @@ int parseScript(rpmSpec spec, int parsePart)
     const char *name = NULL;
     const char *prog = "/bin/sh";
     const char *file = NULL;
-    int expand = 0;
-    int qformat = 0;
     struct poptOption optionsTable[] = {
 	{ NULL, 'p', POPT_ARG_STRING, &prog, 'p',	NULL, NULL},
 	{ NULL, 'n', POPT_ARG_STRING, &name, 'n',	NULL, NULL},
 	{ NULL, 'f', POPT_ARG_STRING, &file, 'f',	NULL, NULL},
-	{ NULL, 'e', POPT_ARG_NONE, &expand, 'e',	NULL, NULL},
-	{ NULL, 'q', POPT_ARG_NONE, &qformat, 'q',	NULL, NULL},
+	{ NULL, 'e', POPT_BIT_SET, &scriptFlags, RPMSCRIPT_FLAG_EXPAND,
+	  NULL, NULL},
+	{ NULL, 'q', POPT_BIT_SET, &scriptFlags, RPMSCRIPT_FLAG_QFORMAT,
+	  NULL, NULL},
 	{ 0, 0, 0, 0, 0,	NULL, NULL}
     };
 
@@ -266,9 +266,6 @@ int parseScript(rpmSpec spec, int parsePart)
 		 spec->lineNum, partname, poptStrerror(rc));
 	goto exit;
     }
-
-    scriptFlags |= expand ? RPMSCRIPT_FLAG_EXPAND : 0;
-    scriptFlags |= qformat ? RPMSCRIPT_FLAG_QFORMAT : 0;
 
     sb = newStringBuf();
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {
