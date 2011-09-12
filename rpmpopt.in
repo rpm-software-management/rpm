@@ -14,32 +14,32 @@
 
 rpm	alias --scripts --qf '\
 %|PRETRANS?{pretrans scriptlet\
-%|PRETRANSPROG?{ (using %{PRETRANSPROG})}|:\n%{PRETRANS}\n}:\
-{%|PRETRANSPROG?{pretrans program: %{PRETRANSPROG}\n}|}|\
+%|PRETRANSPROG?{ (using[ %{PRETRANSPROG}])}|:\n%{PRETRANS}\n}:\
+{%|PRETRANSPROG?{pretrans program:[ %{PRETRANSPROG}]\n}|}|\
 \
 %|PREIN?{preinstall scriptlet\
-%|PREINPROG?{ (using %{PREINPROG})}|:\n%{PREIN}\n}:\
-{%|PREINPROG?{preinstall program: %{PREINPROG}\n}|}|\
+%|PREINPROG?{ (using[ %{PREINPROG}])}|:\n%{PREIN}\n}:\
+{%|PREINPROG?{preinstall program:[ %{PREINPROG}]\n}|}|\
 \
 %|POSTIN?{postinstall scriptlet\
-%|POSTINPROG?{ (using %{POSTINPROG})}|:\n%{POSTIN}\n}:\
-{%|POSTINPROG?{postinstall program: %{POSTINPROG}\n}|}|\
+%|POSTINPROG?{ (using[ %{POSTINPROG}])}|:\n%{POSTIN}\n}:\
+{%|POSTINPROG?{postinstall program:[ %{POSTINPROG}]\n}|}|\
 \
 %|PREUN?{preuninstall scriptlet\
-%|PREUNPROG?{ (using %{PREUNPROG})}|:\n%{PREUN}\n}:\
-{%|PREUNPROG?{preuninstall program: %{PREUNPROG}\n}|}|\
+%|PREUNPROG?{ (using[ %{PREUNPROG}])}|:\n%{PREUN}\n}:\
+{%|PREUNPROG?{preuninstall program:[ %{PREUNPROG}]\n}|}|\
 \
 %|POSTUN?{postuninstall scriptlet\
-%|POSTUNPROG?{ (using %{POSTUNPROG})}|:\n%{POSTUN}\n}:\
-{%|POSTUNPROG?{postuninstall program: %{POSTUNPROG}\n}|}|\
+%|POSTUNPROG?{ (using[ %{POSTUNPROG}])}|:\n%{POSTUN}\n}:\
+{%|POSTUNPROG?{postuninstall program:[ %{POSTUNPROG}]\n}|}|\
 \
 %|POSTTRANS?{posttrans scriptlet\
-%|POSTTRANSPROG?{ (using %{POSTTRANSPROG})}|:\n%{POSTTRANS}\n}:\
-{%|POSTTRANSPROG?{posttrans program: %{POSTTRANSPROG}\n}|}|\
+%|POSTTRANSPROG?{ (using[ %{POSTTRANSPROG}])}|:\n%{POSTTRANS}\n}:\
+{%|POSTTRANSPROG?{posttrans program:[ %{POSTTRANSPROG}]\n}|}|\
 \
 %|VERIFYSCRIPT?{verify scriptlet\
-%|VERIFYSCRIPTPROG?{ (using %{VERIFYSCRIPTPROG}}|:\n%{VERIFYSCRIPT}\n}:\
-{%|VERIFYSCRIPTPROG?{verify program: %{VERIFYSCRIPTPROG}\n}|}|\
+%|VERIFYSCRIPTPROG?{ (using[ %{VERIFYSCRIPTPROG}])}|:\n%{VERIFYSCRIPT}\n}:\
+{%|VERIFYSCRIPTPROG?{verify program:[ %{VERIFYSCRIPTPROG}]\n}|}|\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
