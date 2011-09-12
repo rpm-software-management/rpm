@@ -144,15 +144,15 @@ typedef enum rpmTag_e {
     RPMTAG_CHANGELOGTEXT	= 1082,	/* s[] */
     RPMTAG_BROKENMD5		= 1083, /* internal - obsolete */
     RPMTAG_PREREQ		= 1084, /* internal */
-    RPMTAG_PREINPROG		= 1085,	/* s */
-    RPMTAG_POSTINPROG		= 1086,	/* s */
-    RPMTAG_PREUNPROG		= 1087,	/* s */
-    RPMTAG_POSTUNPROG		= 1088,	/* s */
+    RPMTAG_PREINPROG		= 1085,	/* s[] */
+    RPMTAG_POSTINPROG		= 1086,	/* s[] */
+    RPMTAG_PREUNPROG		= 1087,	/* s[] */
+    RPMTAG_POSTUNPROG		= 1088,	/* s[] */
     RPMTAG_BUILDARCHS		= 1089, /* s[] */
     RPMTAG_OBSOLETENAME		= 1090,	/* s[] */
 #define	RPMTAG_OBSOLETES RPMTAG_OBSOLETENAME	/* s[] */
 #define	RPMTAG_O	RPMTAG_OBSOLETENAME	/* s[] */
-    RPMTAG_VERIFYSCRIPTPROG	= 1091,	/* s */
+    RPMTAG_VERIFYSCRIPTPROG	= 1091,	/* s[] */
     RPMTAG_TRIGGERSCRIPTPROG	= 1092,	/* s[] */
     RPMTAG_DOCDIR		= 1093, /* internal */
     RPMTAG_COOKIE		= 1094,	/* s */
@@ -214,8 +214,8 @@ typedef enum rpmTag_e {
     RPMTAG_POLICIES		= 1150,	/* s[] selinux *.te policy file. */
     RPMTAG_PRETRANS		= 1151,	/* s */
     RPMTAG_POSTTRANS		= 1152,	/* s */
-    RPMTAG_PRETRANSPROG		= 1153,	/* s */
-    RPMTAG_POSTTRANSPROG	= 1154,	/* s */
+    RPMTAG_PRETRANSPROG		= 1153,	/* s[] */
+    RPMTAG_POSTTRANSPROG	= 1154,	/* s[] */
     RPMTAG_DISTTAG		= 1155,	/* s */
     RPMTAG_SUGGESTSNAME		= 1156,	/* s[] extension (unimplemented) */
 #define	RPMTAG_SUGGESTS RPMTAG_SUGGESTSNAME	/* s[] (unimplemented) */
