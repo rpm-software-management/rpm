@@ -5,9 +5,9 @@
 #include <rpm/argv.h>
 
 enum rpmscriptFlags_e {
-    RPMSCRIPT_NONE	= 0,
-    RPMSCRIPT_EXPAND	= (1 << 0),     /* macro expansion */
-    RPMSCRIPT_QFORMAT	= (1 << 1),	/* header queryformat expansion */
+    RPMSCRIPT_FLAG_NONE		= 0,
+    RPMSCRIPT_FLAG_EXPAND	= (1 << 0), /* macro expansion */
+    RPMSCRIPT_FLAG_QFORMAT	= (1 << 1), /* header queryformat expansion */
 };
 
 typedef rpmFlags rpmscriptFlags;

@@ -267,8 +267,8 @@ int parseScript(rpmSpec spec, int parsePart)
 	goto exit;
     }
 
-    scriptFlags |= expand ? RPMSCRIPT_EXPAND : 0;
-    scriptFlags |= qformat ? RPMSCRIPT_QFORMAT : 0;
+    scriptFlags |= expand ? RPMSCRIPT_FLAG_EXPAND : 0;
+    scriptFlags |= qformat ? RPMSCRIPT_FLAG_QFORMAT : 0;
 
     sb = newStringBuf();
     if ((rc = readLine(spec, STRIP_NOTHING)) > 0) {

@@ -382,12 +382,12 @@ static rpmScript rpmScriptNew(Header h, rpmTagVal tag, const char *body,
     rasprintf(&script->descr, "%s(%s)", tag2sln(tag), nevra);
 
     /* macros need to be expanded before possible queryformat */
-    if (script->body && (flags & RPMSCRIPT_EXPAND)) {
+    if (script->body && (flags & RPMSCRIPT_FLAG_EXPAND)) {
 	char *body = rpmExpand(script->body, NULL);
 	free(script->body);
 	script->body = body;
     }
-    if (script->body && (flags & RPMSCRIPT_QFORMAT)) {
+    if (script->body && (flags & RPMSCRIPT_FLAG_QFORMAT)) {
 	/* XXX TODO: handle queryformat errors */
 	char *body = headerFormat(h, script->body, NULL);
 	free(script->body);
