@@ -1,4 +1,5 @@
 .*
+!.tx
 !.gitignore
 /config*
 !configure.ac
