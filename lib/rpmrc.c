@@ -1,9 +1,6 @@
 #include "system.h"
 
 #include <stdarg.h>
-#if defined(__linux__) && defined(__powerpc__)
-#include <setjmp.h>
-#endif
 
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
@@ -897,15 +894,6 @@ static int is_geode()
                 return 1;
         }
     return 0;
-}
-#endif
-
-#if defined(__linux__) && defined(__powerpc__)
-static jmp_buf mfspr_jmpbuf;
-
-static void mfspr_ill(int notused)
-{
-    longjmp(mfspr_jmpbuf, -1);
 }
 #endif
 
