@@ -816,7 +816,7 @@ static int is_athlon(void)
 	return 1;
 }
 
-static int is_pentium3()
+static int is_pentium3(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];
@@ -843,7 +843,7 @@ static int is_pentium3()
     return 0;
 }
 
-static int is_pentium4()
+static int is_pentium4(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];
@@ -871,7 +871,7 @@ static int is_pentium4()
     return 0;
 }
 
-static int is_geode()
+static int is_geode(void)
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];
