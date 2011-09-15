@@ -710,7 +710,7 @@ static int gzdClose(FD_t fd)
     return rc;
 }
 
-static off_t gzdTell(FD_t fd)
+static long gzdTell(FD_t fd)
 {
     off_t pos = -1;
     gzFile gzfile = gzdFileno(fd);
