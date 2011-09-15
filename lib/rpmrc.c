@@ -955,12 +955,6 @@ static void defaultMachine(const char ** arch,
 	if (rc < 0) return;
 
 #if !defined(__linux__)
-#ifdef SNI
-	/* USUALLY un.sysname on sinix does start with the word "SINIX"
-	 * let's be absolutely sure
-	 */
-	strncpy(un.sysname, "SINIX", sizeof(un.sysname));
-#endif
 	if (rstreq(un.sysname, "AIX")) {
 	    strcpy(un.machine, __power_pc() ? "ppc" : "rs6000");
 	    sprintf(un.sysname,"aix%s.%s", un.version, un.release);
@@ -973,22 +967,9 @@ static void defaultMachine(const char ** arch,
 #endif 
 	}
 	else if (rstreq(un.sysname, "SunOS")) {
-	    if (rstreqn(un.release,"4", 1)) /* SunOS 4.x */ {
-		int fd;
-		for (fd = 0;
-		    (un.release[fd] != 0 && (fd < sizeof(un.release)));
-		    fd++) {
-		      if (!risdigit(un.release[fd]) && (un.release[fd] != '.')) {
-			un.release[fd] = 0;
-			break;
-		      }
-		    }
-		    sprintf(un.sysname,"sunos%s",un.release);
-	    }
-
-	    else /* Solaris 2.x: n.x.x becomes n-3.x.x */
-		sprintf(un.sysname, "solaris%1d%s", atoi(un.release)-3,
-			un.release+1+(atoi(un.release)/10));
+	    /* Solaris 2.x: n.x.x becomes n-3.x.x */
+	    sprintf(un.sysname, "solaris%1d%s", atoi(un.release)-3,
+		    un.release+1+(atoi(un.release)/10));
 
 	    /* Solaris on Intel hardware reports i86pc instead of i386
 	     * (at least on 2.6 and 2.8)
@@ -1002,41 +983,6 @@ static void defaultMachine(const char ** arch,
 	else if (rstreq(un.sysname, "OSF1"))
 	    /*make un.sysname look like osf3.2 for example*/
 	    sprintf(un.sysname, "osf%s", strpbrk(un.release, "123456789"));
-	else if (rstreqn(un.sysname, "IP", 2))
-	    un.sysname[2] = '\0';
-	else if (rstreqn(un.sysname, "SINIX", 5)) {
-	    sprintf(un.sysname, "sinix%s",un.release);
-	    if (rstreqn(un.machine, "RM", 2))
-		sprintf(un.machine, "mips");
-	}
-	else if ((rstreqn(un.machine, "34", 2) ||
-		rstreqn(un.machine, "33", 2)) && \
-		rstreqn(un.release, "4.0", 3))
-	{
-	    /* we are on ncr-sysv4 */
-	    char * prelid = NULL;
-	    FD_t fd = Fopen("/etc/.relid", "r.fdio");
-	    int gotit = 0;
-	    if (fd != NULL && !Ferror(fd)) {
-		chptr = xcalloc(1, 256);
-		{   int irelid = Fread(chptr, sizeof(*chptr), 256, fd);
-		    (void) Fclose(fd);
-		    /* example: "112393 RELEASE 020200 Version 01 OS" */
-		    if (irelid > 0) {
-			if ((prelid = strstr(chptr, "RELEASE "))){
-			    prelid += strlen("RELEASE ")+1;
-			    sprintf(un.sysname,"ncr-sysv4.%.*s",1,prelid);
-			    gotit = 1;
-			}
-		    }
-		}
-		chptr = _free (chptr);
-	    }
-	    if (!gotit)	/* parsing /etc/.relid file failed? */
-		strcpy(un.sysname,"ncr-sysv4");
-	    /* wrong, just for now, find out how to look for i586 later*/
-	    strcpy(un.machine,"i486");
-	}
 #endif	/* __linux__ */
 
 	/* get rid of the hyphens in the sysname */
