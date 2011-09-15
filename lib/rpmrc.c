@@ -804,8 +804,6 @@ static int is_athlon(void)
 	
 	cpuid (0, &eax, &ebx, &ecx, &edx);
 
- 	/* If you care about space, you can just check ebx, ecx and edx directly
- 	   instead of forming a string first and then doing a strcmp */
  	memset(vendor, 0, sizeof(vendor));
  	
  	for (i=0; i<4; i++)
@@ -841,18 +839,6 @@ static int is_pentium3()
 	    case 7:	// Pentium III, Pentium III Xeon (model 7)
 	    case 8:	// Pentium III, Pentium III Xeon, Celeron (model 8)
 	    case 9:	// Pentium M
-			/*
-			    Intel recently announced its new technology for mobile platforms,
-			    named Centrino, and presents it as a big advance in mobile PCs.
-			    One of the main part of Centrino consists in a brand new CPU,
-			    the Pentium M, codenamed Banias, that we'll study in this review.
-			    A particularity of this CPU is that it was designed for mobile platform
-			    exclusively, unlike previous mobile CPU (Pentium III-M, Pentium 4-M)
-			    that share the same micro-architecture as their desktop counterparts.
-			    The Pentium M introduces a new micro-architecture, adapted for mobility
-			    constraints, and that is halfway between the Pentium III and the Pentium 4.
-						    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-			*/
 	    case 10:	// Pentium III Xeon (model A)
 	    case 11:	// Pentium III (model B)
 		return 1;
@@ -892,8 +878,6 @@ static int is_geode()
 {
     unsigned int eax, ebx, ecx, edx, family, model;
     char vendor[16];
-    /* If you care about space, you can just check ebx, ecx and edx directly
-       instead of forming a string first and then doing a strcmp */
     memset(vendor, 0, sizeof(vendor));
     
     cpuid(0, &eax, &ebx, &ecx, &edx);
