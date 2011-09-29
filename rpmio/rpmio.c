@@ -1176,7 +1176,9 @@ static int lzdClose(FD_t fd)
 
     if (fd) {
 	if (rc == -1) {
-	    fd->errcookie = strerror(ferror(lzfile->file));
+	    fd->errcookie = "lzclose error";
+	    fd->syserrno = errno;
+	    fd->errcookie = strerror(fd->syserrno);
 	}
     }
 
