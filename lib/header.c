@@ -845,7 +845,7 @@ Header headerLoad(void * uh)
 
 	{   int off = ntohl(pe->offset);
 
-	    if (hdrchkData(off))
+	    if (hdrchkData(off) || hdrchkRange(dl, off))
 		goto errxit;
 	    if (off) {
 		size_t nb = REGION_TAG_COUNT;
