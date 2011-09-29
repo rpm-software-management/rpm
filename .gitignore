@@ -29,8 +29,6 @@ Makefile.in.in
 /doc/librpm.doxy
 /doc/librpm/html
 /elfdeps
-/find-provides
-/find-requires
 /include
 /install-sh
 /javadeps
@@ -61,14 +59,18 @@ Makefile.in.in
 /rpmbuild
 /rpmcache
 /rpmd
+/rpmdb
 /rpmdeps
 /rpmgraph
 /rpmi
 /rpmk
+/rpmkeys
 /rpmpopt-*
 /rpmq
 /rpmrc
+/rpmsign
 /rpmsort
+/rpmspec
 /scripts/macros.perl
 /scripts/macros.php
 /scripts/macros.python
