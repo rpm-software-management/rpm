@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-08-02 12:55+0300\n"
+"POT-Creation-Date: 2011-09-29 15:16+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -3018,122 +3018,122 @@ msgstr ""
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "無法使用資料庫 %2$d- %3$s(%4$d) 開啟 %1$s 索引\n"
 
-#: lib/rpmdb.c:687
+#: lib/rpmdb.c:689
 msgid "no dbpath has been set\n"
 msgstr "沒有 dbpath 已被設定\n"
 
-#: lib/rpmdb.c:869 lib/rpmdb.c:986 lib/rpmdb.c:1031 lib/rpmdb.c:1884
-#: lib/rpmdb.c:2037 lib/rpmdb.c:2071 lib/rpmdb.c:2632
+#: lib/rpmdb.c:873 lib/rpmdb.c:990 lib/rpmdb.c:1035 lib/rpmdb.c:1888
+#: lib/rpmdb.c:2041 lib/rpmdb.c:2075 lib/rpmdb.c:2636
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:1218
+#: lib/rpmdb.c:1222
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader：跳過"
 
-#: lib/rpmdb.c:1228
+#: lib/rpmdb.c:1232
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "儲存記錄 #%2$d 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:1325
+#: lib/rpmdb.c:1329
 #, fuzzy, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s：檢索失敗：%s\n"
 
-#: lib/rpmdb.c:1506
+#: lib/rpmdb.c:1510
 #, fuzzy, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s：開啟失敗：%s\n"
 
-#: lib/rpmdb.c:1666
+#: lib/rpmdb.c:1670
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator：跳過"
 
-#: lib/rpmdb.c:1807
+#: lib/rpmdb.c:1811
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb：已取回損壞的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2228
+#: lib/rpmdb.c:2232
 #, fuzzy, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr "從 %3$s 索引取得 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2338
 #, fuzzy, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2343
+#: lib/rpmdb.c:2347
 #, fuzzy, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "設定用於 %3$s 撤除的表頭 #%2$d 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2371
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: 無法讀取在 0x%x 的表頭\n"
 
-#: lib/rpmdb.c:2434
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "從 %3$s 索引設定 \"%2$s\" 記錄時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2453
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "儲存記錄 \"%2$s\" 進入 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2463
+#: lib/rpmdb.c:2467
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "從 %3$s 移除記錄 \"%2$s\" 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2539
+#: lib/rpmdb.c:2543
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "配置新套件實體時產生錯誤(%d)\n"
 
-#: lib/rpmdb.c:2648
+#: lib/rpmdb.c:2652
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "儲存記錄 %2$s 於 %3$s 時產生錯誤(%1$d)\n"
 
-#: lib/rpmdb.c:2845
+#: lib/rpmdb.c:2849
 msgid "no dbpath has been set"
 msgstr "沒有 dbpath 已被設定"
 
-#: lib/rpmdb.c:2863
+#: lib/rpmdb.c:2867
 #, fuzzy, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"
 
-#: lib/rpmdb.c:2897
+#: lib/rpmdb.c:2901
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "在資料庫中有不當的表頭 #%u -- 跳過。\n"
 
-#: lib/rpmdb.c:2911
+#: lib/rpmdb.c:2915
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "無法加入原本在 %u 的記錄\n"
 
-#: lib/rpmdb.c:2926
+#: lib/rpmdb.c:2930
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "重建資料庫時失敗：原來的資料庫保持原狀\n"
 
-#: lib/rpmdb.c:2934
+#: lib/rpmdb.c:2938
 msgid "failed to replace old database with new database!\n"
 msgstr "以新的資料庫取代舊的資料庫時失敗！\n"
 
-#: lib/rpmdb.c:2936
+#: lib/rpmdb.c:2940
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "以 %2$s 的檔案取代 %1$s 中的檔案來回復"
 
-#: lib/rpmdb.c:2947
+#: lib/rpmdb.c:2951
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "移除目錄時失敗 %s: %s\n"

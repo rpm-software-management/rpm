@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm.rpm-4-7-x.rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-08-02 12:55+0300\n"
+"POT-Creation-Date: 2011-09-29 15:16+0300\n"
 "PO-Revision-Date: 2010-09-13 12:31-0300\n"
 "Last-Translator: Héctor Daniel Cabrera <logan@fedoraproject.org>\n"
 "Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
@@ -3076,125 +3076,125 @@ msgstr ""
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "no se pudo abrir índice %s utilizando db%d - %s (%d)\n"
 
-#: lib/rpmdb.c:687
+#: lib/rpmdb.c:689
 msgid "no dbpath has been set\n"
 msgstr "no se ha establecido dbpath\n"
 
-#: lib/rpmdb.c:869 lib/rpmdb.c:986 lib/rpmdb.c:1031 lib/rpmdb.c:1884
-#: lib/rpmdb.c:2037 lib/rpmdb.c:2071 lib/rpmdb.c:2632
+#: lib/rpmdb.c:873 lib/rpmdb.c:990 lib/rpmdb.c:1035 lib/rpmdb.c:1888
+#: lib/rpmdb.c:2041 lib/rpmdb.c:2075 lib/rpmdb.c:2636
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "error(%d) obteniendo registros \"%s\" del índice %s\n"
 
-#: lib/rpmdb.c:1218
+#: lib/rpmdb.c:1222
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: omitiendo"
 
-#: lib/rpmdb.c:1228
+#: lib/rpmdb.c:1232
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "error(%d) almacenando registro #%d en %s\n"
 
-#: lib/rpmdb.c:1325
+#: lib/rpmdb.c:1329
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s:  regexec falló: %s\n"
 
-#: lib/rpmdb.c:1506
+#: lib/rpmdb.c:1510
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp falló: %s\n"
 
-#: lib/rpmdb.c:1666
+#: lib/rpmdb.c:1670
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: omitiendo"
 
-#: lib/rpmdb.c:1807
+#: lib/rpmdb.c:1811
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr "rpmdb: encabezado dañado #%u recuperada -- omitiendo.\n"
 
-#: lib/rpmdb.c:2228
+#: lib/rpmdb.c:2232
 #, fuzzy, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr "error(%d) obteniendo registros \"%s\" del índice %s\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2338
 #, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr "error(%d) estableciendo registro de encabezado #%d\n"
 
-#: lib/rpmdb.c:2343
+#: lib/rpmdb.c:2347
 #, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "error(%d) eliminando registro de encabezado #%d\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2371
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: no se pudo leer encabezado en 0x%x\n"
 
-#: lib/rpmdb.c:2434
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "error(%d) estableciendo registros \"%s\" desde índice %s\n"
 
-#: lib/rpmdb.c:2453
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "error(%d) almacenando registros \"%s\" en %s\n"
 
-#: lib/rpmdb.c:2463
+#: lib/rpmdb.c:2467
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "error(%d) eliminando registro \"%s\" de %s\n"
 
-#: lib/rpmdb.c:2539
+#: lib/rpmdb.c:2543
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "error(%d) asignando nueva instancia de paquete\n"
 
-#: lib/rpmdb.c:2648
+#: lib/rpmdb.c:2652
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "error(%d) almacenando registro %s en %s\n"
 
-#: lib/rpmdb.c:2845
+#: lib/rpmdb.c:2849
 msgid "no dbpath has been set"
 msgstr "no se ha establecido dbpath"
 
-#: lib/rpmdb.c:2863
+#: lib/rpmdb.c:2867
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "no se pudo crear el directorio %s: %s\n"
 
-#: lib/rpmdb.c:2897
+#: lib/rpmdb.c:2901
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "encabezado #%u erróneo en la base de datos -- omitiendo.\n"
 
-#: lib/rpmdb.c:2911
+#: lib/rpmdb.c:2915
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "no se puede añadir el registro original en %u\n"
 
-#: lib/rpmdb.c:2926
+#: lib/rpmdb.c:2930
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 "falló la reconstrucción de la base de datos: la base de datos original "
 "permanece en su lugar\n"
 
-#: lib/rpmdb.c:2934
+#: lib/rpmdb.c:2938
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 "¡falló el remplazo de la base de datos antigua con la nueva base de datos!\n"
 
-#: lib/rpmdb.c:2936
+#: lib/rpmdb.c:2940
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "reemplazar archivos en %s con los archivos de %s a recuperar"
 
-#: lib/rpmdb.c:2947
+#: lib/rpmdb.c:2951
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "falló la eliminación del directorio %s: %s\n"

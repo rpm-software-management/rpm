@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm-4.8\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-08-02 12:55+0300\n"
+"POT-Creation-Date: 2011-09-29 15:16+0300\n"
 "PO-Revision-Date: 2010-09-21 01:05+0900\n"
 "Last-Translator: Hajime Taira <htaira@redhat.com>\n"
 "Language-Team: Japanese <translation-team-ja@lists.sourceforge.net>\n"
@@ -3030,123 +3030,123 @@ msgstr ""
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr "%s インデックスを db%d で開けません - %s (%d)\n"
 
-#: lib/rpmdb.c:687
+#: lib/rpmdb.c:689
 msgid "no dbpath has been set\n"
 msgstr "dbpath が設定されていません\n"
 
-#: lib/rpmdb.c:869 lib/rpmdb.c:986 lib/rpmdb.c:1031 lib/rpmdb.c:1884
-#: lib/rpmdb.c:2037 lib/rpmdb.c:2071 lib/rpmdb.c:2632
+#: lib/rpmdb.c:873 lib/rpmdb.c:990 lib/rpmdb.c:1035 lib/rpmdb.c:1888
+#: lib/rpmdb.c:2041 lib/rpmdb.c:2075 lib/rpmdb.c:2636
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: lib/rpmdb.c:1218
+#: lib/rpmdb.c:1222
 msgid "miFreeHeader: skipping"
 msgstr "miFreeHeader: スキップします。"
 
-#: lib/rpmdb.c:1228
+#: lib/rpmdb.c:1232
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr "エラー(%d) - レコード #%d を %s に格納時\n"
 
-#: lib/rpmdb.c:1325
+#: lib/rpmdb.c:1329
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr "%s: 正規表現に失敗しました: %s\n"
 
-#: lib/rpmdb.c:1506
+#: lib/rpmdb.c:1510
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr "%s: regcomp に失敗しました: %s\n"
 
-#: lib/rpmdb.c:1666
+#: lib/rpmdb.c:1670
 msgid "rpmdbNextIterator: skipping"
 msgstr "rpmdbNextIterator: スキップします。"
 
-#: lib/rpmdb.c:1807
+#: lib/rpmdb.c:1811
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 "rpmdb: 破損したヘッダーインスタンス #%u を取得しました。スキップします。\n"
 
-#: lib/rpmdb.c:2228
+#: lib/rpmdb.c:2232
 #, fuzzy, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr "エラー(%d) - レコード \"%s\" 取得時 (%s インデックスから)\n"
 
-#: lib/rpmdb.c:2334
+#: lib/rpmdb.c:2338
 #, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr "エラー(%d) - ヘッダー #%d レコードの追加時\n"
 
-#: lib/rpmdb.c:2343
+#: lib/rpmdb.c:2347
 #, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr "エラー(%d) - ヘッダー #%d レコードの削除時\n"
 
-#: lib/rpmdb.c:2367
+#: lib/rpmdb.c:2371
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr "%s: ヘッダーを読むことができません (0x%x)\n"
 
-#: lib/rpmdb.c:2434
+#: lib/rpmdb.c:2438
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr "エラー(%d) - \"%s\" のレコード設定時 (%s インデックスから)\n"
 
-#: lib/rpmdb.c:2453
+#: lib/rpmdb.c:2457
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s に格納時\n"
 
-#: lib/rpmdb.c:2463
+#: lib/rpmdb.c:2467
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr "エラー(%d) - レコード \"%s\" を %s から削除時\n"
 
-#: lib/rpmdb.c:2539
+#: lib/rpmdb.c:2543
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr "エラー(%d) - 新しいパッケージインスタンスの割り当て時\n"
 
-#: lib/rpmdb.c:2648
+#: lib/rpmdb.c:2652
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr "エラー(%d) - レコード %s を %s にストア時\n"
 
-#: lib/rpmdb.c:2845
+#: lib/rpmdb.c:2849
 msgid "no dbpath has been set"
 msgstr "dbpath が設定されていません。"
 
-#: lib/rpmdb.c:2863
+#: lib/rpmdb.c:2867
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr "ディレクトリー %s の作成に失敗しました: %s\n"
 
-#: lib/rpmdb.c:2897
+#: lib/rpmdb.c:2901
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr "データベース中のヘッダー #%u は不正です -- スキップします。\n"
 
-#: lib/rpmdb.c:2911
+#: lib/rpmdb.c:2915
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr "元々 %u にあったレコードを追加できません。\n"
 
-#: lib/rpmdb.c:2926
+#: lib/rpmdb.c:2930
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr "データベースの再構築に失敗: オリジナルのデータベースは残っています。\n"
 
-#: lib/rpmdb.c:2934
+#: lib/rpmdb.c:2938
 msgid "failed to replace old database with new database!\n"
 msgstr "古いデータベースを新しいデータベースで置き換えるのに失敗!\n"
 
-#: lib/rpmdb.c:2936
+#: lib/rpmdb.c:2940
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr "復元するには %s 内のファイルを %s 内のファイルで置き換えて下さい"
 
-#: lib/rpmdb.c:2947
+#: lib/rpmdb.c:2951
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr "ディレクトリー %s の削除に失敗しました: %s\n"
