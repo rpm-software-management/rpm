@@ -381,6 +381,9 @@ static int regionSwab(indexEntry entry, int il, int dl,
 		const unsigned char * dataEnd,
 		int regionid)
 {
+    if ((entry != NULL && regionid >= 0) || (entry == NULL && regionid != 0))
+	return -1;
+
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
 	rpm_tagtype_t type;
