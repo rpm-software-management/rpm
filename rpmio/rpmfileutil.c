@@ -17,6 +17,8 @@
 #include <sys/mman.h>
 #endif
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <errno.h>
 #include <popt.h>
@@ -237,10 +239,14 @@ exit:
 
 FD_t rpmMkTemp(char *templ)
 {
+    mode_t mode;
     int sfd;
     FD_t tfd = NULL;
 
+    mode = umask(0077);
     sfd = mkstemp(templ);
+    umask(mode);
+
     if (sfd < 0) {
 	goto exit;
     }
