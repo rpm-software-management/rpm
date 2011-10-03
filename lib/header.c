@@ -895,6 +895,11 @@ Header headerLoad(void * uh)
 	    h->indexUsed += ne;
 	  }
 	}
+
+	rdlen += REGION_TAG_COUNT;
+	/* XXX should be equality test, but dribbles are sometimes a bit off? */
+	if (rdlen > dl || (rdlen < dl && ril == h->indexUsed))
+	    goto errxit;
     }
 
     h->flags &= ~HEADERFLAG_SORTED;
