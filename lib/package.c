@@ -204,15 +204,13 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     int32_t il = ntohl(ei[0]);
     int32_t dl = ntohl(ei[1]);
     entryInfo pe = (entryInfo) &ei[2];
-    int32_t ildl[2];
-    int32_t pvlen = sizeof(ildl) + (il * sizeof(*pe)) + dl;
+    int32_t pvlen = sizeof(il) + sizeof(dl) + (il * sizeof(*pe)) + dl;
     unsigned char * dataStart = (unsigned char *) (pe + il);
     struct indexEntry_s entry;
     struct entryInfo_s info;
     unsigned const char * b;
     size_t siglen = 0;
     size_t blen;
-    size_t nb;
     int32_t ril = 0;
     unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
@@ -394,6 +392,8 @@ verifyinfo_exit:
     case RPMTAG_SHA1HEADER: {
 	int hashalgo = (info.tag == RPMTAG_SHA1HEADER) ?
 			PGPHASHALGO_SHA1 : dig->signature.hash_algo;
+	size_t nb;
+	int32_t ildl[2];
 	ildl[0] = htonl(ril);
 	ildl[1] = (regionEnd - dataStart);
 	ildl[1] = htonl(ildl[1]);
