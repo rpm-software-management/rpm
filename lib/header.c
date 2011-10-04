@@ -786,7 +786,6 @@ Header headerLoad(void * uh)
     int32_t dl = ntohl(ei[1]);		/* data length */
     size_t pvlen = sizeof(il) + sizeof(dl) +
                (il * sizeof(struct entryInfo_s)) + dl;
-    void * pv = uh;
     Header h = NULL;
     entryInfo pe;
     unsigned char * dataStart;
@@ -798,7 +797,6 @@ Header headerLoad(void * uh)
     if (hdrchkTags(il) || hdrchkData(dl))
 	goto errxit;
 
-    ei = (int32_t *) pv;
     pe = (entryInfo) &ei[2];
     dataStart = (unsigned char *) (pe + il);
     dataEnd = dataStart + dl;
