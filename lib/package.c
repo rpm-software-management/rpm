@@ -364,29 +364,16 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMTAG_SHA1HEADER: {
 	int hashalgo = (info.tag == RPMTAG_SHA1HEADER) ?
 			PGPHASHALGO_SHA1 : dig->signature.hash_algo;
-	size_t nb;
 	int32_t ildl[2];
 	ildl[0] = htonl(ril);
-	ildl[1] = (regionEnd - dataStart);
-	ildl[1] = htonl(ildl[1]);
+	ildl[1] = htonl(regionEnd - dataStart);
 
 	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
 
-	b = (unsigned char *) rpm_header_magic;
-	nb = sizeof(rpm_header_magic);
-        (void) rpmDigestUpdate(ctx, b, nb);
-
-	b = (unsigned char *) ildl;
-	nb = sizeof(ildl);
-        (void) rpmDigestUpdate(ctx, b, nb);
-
-	b = (unsigned char *) pe;
-	nb = (htonl(ildl[0]) * sizeof(*pe));
-        (void) rpmDigestUpdate(ctx, b, nb);
-
-	b = (unsigned char *) dataStart;
-	nb = htonl(ildl[1]);
-        (void) rpmDigestUpdate(ctx, b, nb);
+	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestUpdate(ctx, ildl, sizeof(ildl));
+	rpmDigestUpdate(ctx, pe, (ril * sizeof(*pe)));
+	rpmDigestUpdate(ctx, dataStart, (regionEnd - dataStart));
 	} break;
     default:
 	break;
