@@ -219,6 +219,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     struct rpmtd_s sigtd;
     DIGEST_CTX ctx = NULL;
 
+    rpmtdReset(&sigtd);
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
 	rasprintf(&buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
@@ -337,36 +338,11 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	    break;
 	}
     }
-    rc = RPMRC_NOTFOUND;
 
-exit:
-    /* Return determined RPMRC_OK/RPMRC_FAIL conditions. */
-    if (rc != RPMRC_NOTFOUND) {
-	if (msg) 
-	    *msg = buf;
-	else
-	    free(buf);
-	return rc;
-    }
-
-    /* If no header-only digest/signature, then do simple sanity check. */
+    /* No signature, skip to outro. */
     if (info.tag == 0) {
-	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
-	if (xx != -1) {
-	    rasprintf(&buf,
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		xx+1, entry.info.tag, entry.info.type,
-		entry.info.offset, entry.info.count);
-	    rc = RPMRC_FAIL;
-	} else {
-	    rasprintf(&buf, "Header sanity check: OK\n");
-	    rc = RPMRC_OK;
-	}
-	if (msg) 
-	    *msg = buf;
-	else
-	    free(buf);
-	return rc;
+	rc = RPMRC_NOTFOUND;
+	goto exit;
     }
 
     /* Verify header-only digest/signature. */
@@ -382,7 +358,6 @@ exit:
     case RPMTAG_RSAHEADER:
     case RPMTAG_DSAHEADER:
 	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
-	    pgpFreeDig(dig);
 	    goto exit;
 	}
 	/* fallthrough */
@@ -414,11 +389,26 @@ exit:
         (void) rpmDigestUpdate(ctx, b, nb);
 	} break;
     default:
-	sigtd.data = _free(sigtd.data); /* Hmm...? */
 	break;
     }
 
     rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &buf);
+
+exit:
+    /* If no header-only digest/signature, then do simple sanity check. */
+    if (rc == RPMRC_NOTFOUND) {
+	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
+	if (xx != -1) {
+	    rasprintf(&buf,
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		xx+1, entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
+	    rc = RPMRC_FAIL;
+	} else {
+	    rasprintf(&buf, "Header sanity check: OK\n");
+	    rc = RPMRC_OK;
+	}
+    }
 
     if (msg) 
 	*msg = buf;
