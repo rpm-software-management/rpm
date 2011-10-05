@@ -351,7 +351,6 @@ exit:
 
     /* If no header-only digest/signature, then do simple sanity check. */
     if (info.tag == 0) {
-verifyinfo_exit:
 	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf,
@@ -372,8 +371,6 @@ verifyinfo_exit:
 
     /* Verify header-only digest/signature. */
     dig = pgpNewDig();
-    if (dig == NULL)
-	goto verifyinfo_exit;
 
     sigtd.tag = info.tag;
     sigtd.type = info.type;
