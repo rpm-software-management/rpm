@@ -195,10 +195,136 @@ static rpmRC parsePGP(rpmtd sigtd, const char *type, pgpDig dig)
     return rc;
 }
 
+/*
+ * Argument monster to verify header-only signature/digest if there is
+ * one, otherwisereturn RPMRC_NOTFOUND to signal for plain sanity check.
+ */
+static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
+			     int il, int dl, int ril, int rdl,
+			     entryInfo pe, unsigned char * dataStart,
+			     char **buf)
+{
+    size_t siglen = 0;
+    rpmRC rc = RPMRC_FAIL;
+    pgpDig dig = NULL;
+    struct rpmtd_s sigtd;
+    struct entryInfo_s info, einfo;
+    int hashalgo = 0;
+
+    rpmtdReset(&sigtd);
+    memset(&info, 0, sizeof(info));
+    memset(&einfo, 0, sizeof(einfo));
+
+    /* Find a header-only digest/signature tag. */
+    for (int i = ril; i < il; i++) {
+	if (headerVerifyInfo(1, dl, pe+i, &einfo, 0) != -1) {
+	    rasprintf(buf,
+		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
+		i, einfo.tag, einfo.type,
+		einfo.offset, einfo.count);
+	    goto exit;
+	}
+
+	switch (einfo.tag) {
+	case RPMTAG_SHA1HEADER: {
+	    size_t blen = 0;
+	    unsigned const char * b;
+	    if (vsflags & RPMVSF_NOSHA1HEADER)
+		break;
+	    for (b = dataStart + einfo.offset; *b != '\0'; b++) {
+		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
+		    break;
+		blen++;
+	    }
+	    if (einfo.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
+	    {
+		rasprintf(buf, _("hdr SHA1: BAD, not hex\n"));
+		goto exit;
+	    }
+	    if (info.tag == 0) {
+		info = einfo;	/* structure assignment */
+		siglen = blen + 1;
+	    }
+	    } break;
+	case RPMTAG_RSAHEADER:
+	    if (vsflags & RPMVSF_NORSAHEADER)
+		break;
+	    if (einfo.type != RPM_BIN_TYPE) {
+		rasprintf(buf, _("hdr RSA: BAD, not binary\n"));
+		goto exit;
+	    }
+	    info = einfo;	/* structure assignment */
+	    siglen = info.count;
+	    break;
+	case RPMTAG_DSAHEADER:
+	    if (vsflags & RPMVSF_NODSAHEADER)
+		break;
+	    if (einfo.type != RPM_BIN_TYPE) {
+		rasprintf(buf, _("hdr DSA: BAD, not binary\n"));
+		goto exit;
+	    }
+	    info = einfo;	/* structure assignment */
+	    siglen = info.count;
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    /* No header-only digest/signature found, get outta here */
+    if (info.tag == 0) {
+	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
+    /* This is dumb, pgpDig is only relevant for signatures, not digests */
+    dig = pgpNewDig();
+
+    sigtd.tag = info.tag;
+    sigtd.type = info.type;
+    sigtd.count = info.count;
+    sigtd.data = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
+    sigtd.flags = RPMTD_ALLOCED;
+
+    switch (info.tag) {
+    case RPMTAG_RSAHEADER:
+    case RPMTAG_DSAHEADER:
+	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
+	    goto exit;
+	}
+	hashalgo = dig->signature.hash_algo;
+	break;
+    case RPMTAG_SHA1HEADER:
+	hashalgo = PGPHASHALGO_SHA1;
+	break;
+    default:
+	break;
+    }
+
+    if (hashalgo) {
+	DIGEST_CTX ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
+	int32_t ildl[2] = { htonl(ril), htonl(rdl) };
+
+	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestUpdate(ctx, ildl, sizeof(ildl));
+	rpmDigestUpdate(ctx, pe, (ril * sizeof(*pe)));
+	rpmDigestUpdate(ctx, dataStart, rdl);
+
+	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, buf);
+
+    	rpmDigestFinal(ctx, NULL, NULL, 0);
+    }
+
+exit:
+    rpmtdFreeData(&sigtd);
+    pgpFreeDig(dig);
+
+    return rc;
+}
+
 static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 			  const void * uh, size_t uc, char ** msg)
 {
-    pgpDig dig = NULL;
     char *buf = NULL;
     int32_t * ei = (int32_t *) uh;
     int32_t il = ntohl(ei[0]);
@@ -208,18 +334,10 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     unsigned char * dataStart = (unsigned char *) (pe + il);
     struct indexEntry_s entry;
     struct entryInfo_s info;
-    unsigned const char * b;
-    size_t siglen = 0;
-    size_t blen;
     int32_t ril = 0;
     unsigned char * regionEnd = NULL;
     rpmRC rc = RPMRC_FAIL;	/* assume failure */
-    int xx;
-    int i;
-    struct rpmtd_s sigtd;
-    DIGEST_CTX ctx = NULL;
 
-    rpmtdReset(&sigtd);
     /* Is the blob the right size? */
     if (uc > 0 && pvlen != uc) {
 	rasprintf(&buf, _("blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"),
@@ -231,8 +349,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     memset(&info, 0, sizeof(info));
 
     /* Check (and convert) the 1st tag element. */
-    xx = headerVerifyInfo(1, dl, pe, &entry.info, 0);
-    if (xx != -1) {
+    if (headerVerifyInfo(1, dl, pe, &entry.info, 0) != -1) {
 	rasprintf(&buf, _("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
 		0, entry.info.tag, entry.info.type,
 		entry.info.offset, entry.info.count);
@@ -262,8 +379,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     (void) memcpy(&info, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
 
-    xx = headerVerifyInfo(1, dl, &info, &entry.info, 1);
-    if (xx != -1 ||
+    if (headerVerifyInfo(1, dl, &info, &entry.info, 1) != -1 ||
 	!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
        && entry.info.type == RPM_BIN_TYPE
        && entry.info.count == REGION_TAG_COUNT))
@@ -283,108 +399,15 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    /* Find a header-only digest/signature tag. */
-    for (i = ril; i < il; i++) {
-	xx = headerVerifyInfo(1, dl, pe+i, &entry.info, 0);
-	if (xx != -1) {
-	    rasprintf(&buf,
-		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
-		i, entry.info.tag, entry.info.type,
-		entry.info.offset, entry.info.count);
-	    goto exit;
-	}
-
-	switch (entry.info.tag) {
-	case RPMTAG_SHA1HEADER:
-	    if (vsflags & RPMVSF_NOSHA1HEADER)
-		break;
-	    blen = 0;
-	    for (b = dataStart + entry.info.offset; *b != '\0'; b++) {
-		if (strchr("0123456789abcdefABCDEF", *b) == NULL)
-		    break;
-		blen++;
-	    }
-	    if (entry.info.type != RPM_STRING_TYPE || *b != '\0' || blen != 40)
-	    {
-		rasprintf(&buf, _("hdr SHA1: BAD, not hex\n"));
-		goto exit;
-	    }
-	    if (info.tag == 0) {
-		info = entry.info;	/* structure assignment */
-		siglen = blen + 1;
-	    }
-	    break;
-	case RPMTAG_RSAHEADER:
-	    if (vsflags & RPMVSF_NORSAHEADER)
-		break;
-	    if (entry.info.type != RPM_BIN_TYPE) {
-		rasprintf(&buf, _("hdr RSA: BAD, not binary\n"));
-		goto exit;
-	    }
-	    info = entry.info;	/* structure assignment */
-	    siglen = info.count;
-	    break;
-	case RPMTAG_DSAHEADER:
-	    if (vsflags & RPMVSF_NODSAHEADER)
-		break;
-	    if (entry.info.type != RPM_BIN_TYPE) {
-		rasprintf(&buf, _("hdr DSA: BAD, not binary\n"));
-		goto exit;
-	    }
-	    info = entry.info;	/* structure assignment */
-	    siglen = info.count;
-	    break;
-	default:
-	    break;
-	}
-    }
-
-    /* No signature, skip to outro. */
-    if (info.tag == 0) {
-	rc = RPMRC_NOTFOUND;
-	goto exit;
-    }
-
-    /* Verify header-only digest/signature. */
-    dig = pgpNewDig();
-
-    sigtd.tag = info.tag;
-    sigtd.type = info.type;
-    sigtd.count = info.count;
-    sigtd.data = memcpy(xmalloc(siglen), dataStart + info.offset, siglen);
-    sigtd.flags = RPMTD_ALLOCED;
-
-    switch (info.tag) {
-    case RPMTAG_RSAHEADER:
-    case RPMTAG_DSAHEADER:
-	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
-	    goto exit;
-	}
-	/* fallthrough */
-    case RPMTAG_SHA1HEADER: {
-	int hashalgo = (info.tag == RPMTAG_SHA1HEADER) ?
-			PGPHASHALGO_SHA1 : dig->signature.hash_algo;
-	int32_t ildl[2];
-	ildl[0] = htonl(ril);
-	ildl[1] = htonl(regionEnd - dataStart);
-
-	ctx = rpmDigestInit(hashalgo, RPMDIGEST_NONE);
-
-	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
-	rpmDigestUpdate(ctx, ildl, sizeof(ildl));
-	rpmDigestUpdate(ctx, pe, (ril * sizeof(*pe)));
-	rpmDigestUpdate(ctx, dataStart, (regionEnd - dataStart));
-	} break;
-    default:
-	break;
-    }
-
-    rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &buf);
+    /* Verify header-only digest/signature if there is one we can use. */
+    rc = headerSigVerify(keyring, vsflags,
+			 il, dl, ril, (regionEnd - dataStart),
+			 pe, dataStart, &buf);
 
 exit:
     /* If no header-only digest/signature, then do simple sanity check. */
     if (rc == RPMRC_NOTFOUND) {
-	xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
+	int xx = headerVerifyInfo(ril-1, dl, pe+1, &entry.info, 0);
 	if (xx != -1) {
 	    rasprintf(&buf,
 		_("tag[%d]: BAD, tag %d type %d offset %d count %d\n"),
@@ -402,9 +425,6 @@ exit:
     else
 	free(buf);
 
-    rpmtdFreeData(&sigtd);
-    pgpFreeDig(dig);
-    rpmDigestFinal(ctx, NULL, NULL, 0);
     return rc;
 }
 
