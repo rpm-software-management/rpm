@@ -122,13 +122,6 @@ void rpmFreeRpmrc(void);
  */
 int rpmVersionCompare(Header first, Header second);
 
-/** \ingroup header
- * Check for supported payload format in header.
- * @param h		header to check
- * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
- */
-rpmRC headerCheckPayloadFormat(Header h);
-
 /**  \ingroup header
  * Check header consistency, performing headerGetEntry() the hard way.
  *  

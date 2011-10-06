@@ -715,35 +715,5 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
     return rc;
 }
 
-/**
- * Check for supported payload format in header.
- * @param h		header to check
- * @return		RPMRC_OK if supported, RPMRC_FAIL otherwise
- */
-rpmRC headerCheckPayloadFormat(Header h) {
-    rpmRC rc = RPMRC_OK;
-    const char *payloadfmt = headerGetString(h, RPMTAG_PAYLOADFORMAT);
-    /* 
-     * XXX Ugh, rpm 3.x packages don't have payload format tag. Instead
-     * of blinly allowing, should check somehow (HDRID existence or... ?)
-     */
-    if (!payloadfmt) return rc;
-
-    if (!rstreq(payloadfmt, "cpio")) {
-        char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
-        if (payloadfmt && rstreq(payloadfmt, "drpm")) {
-            rpmlog(RPMLOG_ERR,
-                     _("%s is a Delta RPM and cannot be directly installed\n"),
-                     nevra);
-        } else {
-            rpmlog(RPMLOG_ERR, 
-                     _("Unsupported payload (%s) in package %s\n"),
-                     payloadfmt ? payloadfmt : "none", nevra);
-        } 
-        free(nevra);
-	rc = RPMRC_FAIL;
-    }
-    return rc;
-}
 
 
