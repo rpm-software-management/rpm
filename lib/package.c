@@ -97,52 +97,6 @@ void headerMergeLegacySigs(Header h, const Header sigh)
     headerFreeIterator(hi);
 }
 
-Header headerRegenSigHeader(const Header h, int noArchiveSize)
-{
-    Header sigh = rpmNewSignature();
-    HeaderIterator hi;
-    struct rpmtd_s td;
-
-    for (hi = headerInitIterator(h); headerNext(hi, &td); rpmtdFreeData(&td)) {
-	switch (td.tag) {
-	/* XXX Translate legacy signature tag values. */
-	case RPMTAG_SIGSIZE:
-	    td.tag = RPMSIGTAG_SIZE;
-	    break;
-	case RPMTAG_SIGPGP:
-	    td.tag = RPMSIGTAG_PGP;
-	    break;
-	case RPMTAG_SIGMD5:
-	    td.tag = RPMSIGTAG_MD5;
-	    break;
-	case RPMTAG_SIGGPG:
-	    td.tag = RPMSIGTAG_GPG;
-	    break;
-	case RPMTAG_SIGPGP5:
-	    td.tag = RPMSIGTAG_PGP5;
-	    break;
-	case RPMTAG_ARCHIVESIZE:
-	    /* XXX rpm-4.1 and later has archive size in signature header. */
-	    if (noArchiveSize)
-		continue;
-	    td.tag = RPMSIGTAG_PAYLOADSIZE;
-	    break;
-	case RPMTAG_SHA1HEADER:
-	case RPMTAG_DSAHEADER:
-	case RPMTAG_RSAHEADER:
-	default:
-	    if (!(td.tag >= HEADER_SIGBASE && td.tag < HEADER_TAGBASE))
-		continue;
-	    break;
-	}
-	if (td.data == NULL) continue;	/* XXX can't happen */
-	if (!headerIsEntry(sigh, td.tag))
-	    (void) headerPut(sigh, &td, HEADERPUT_DEFAULT);
-    }
-    headerFreeIterator(hi);
-    return sigh;
-}
-
 /**
  * Remember current key id.
  * @param dig		OpenPGP packet containter

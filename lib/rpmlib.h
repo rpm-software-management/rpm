@@ -43,15 +43,6 @@ extern const int rpmFLAGS;
  */
 void headerMergeLegacySigs(Header h, const Header sigh);
 
-/** \ingroup header
- * Regenerate signature header.
- * @todo Remove headerSort() through headerInitIterator() modifies h.
- * @param h		header
- * @param noArchiveSize	don't copy archive size tag (pre rpm-4.1)
- * @return		regenerated signature header
- */
-Header headerRegenSigHeader(const Header h, int noArchiveSize);
-
 /* ==================================================================== */
 /** \name RPMRC */
 
