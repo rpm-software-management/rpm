@@ -398,7 +398,7 @@ verifyMD5Digest(rpmtd sigtd, DIGEST_CTX md5ctx, char **msg)
     *msg = NULL;
     DIGEST_CTX ctx = rpmDigestDup(md5ctx);
 
-    if (ctx == NULL || sigtd->data == NULL) {
+    if (ctx == NULL) {
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
@@ -438,7 +438,7 @@ verifySHA1Digest(rpmtd sigtd, DIGEST_CTX sha1ctx, char **msg)
     *msg = NULL;
     DIGEST_CTX ctx = rpmDigestDup(sha1ctx);
 
-    if (ctx == NULL || sigtd->data == NULL) {
+    if (ctx == NULL) {
 	rasprintf(msg, "%s %s\n", title, rpmSigString(res));
 	goto exit;
     }
@@ -471,21 +471,15 @@ static rpmRC
 verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr, 
 		char **msg)
 {
-    pgpDigParams sigp = dig ? &dig->signature : NULL;
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char *sigid = NULL;
     *msg = NULL;
-
-    if (hashctx == NULL) {
-	goto exit;
-    }
 
     /* Call verify even if we dont have a key for a basic sanity check */
     (void) rpmKeyringLookup(keyring, dig);
     res = pgpVerifySig(dig, hashctx);
 
-exit:
-    sigid = pgpIdentItem(sigp);
+    sigid = pgpIdentItem(&dig->signature);
     rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
 		rpmSigString(res));
     free(sigid);
