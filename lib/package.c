@@ -277,9 +277,6 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    /* This is dumb, pgpDig is only relevant for signatures, not digests */
-    dig = pgpNewDig();
-
     sigtd.tag = info.tag;
     sigtd.type = info.type;
     sigtd.count = info.count;
@@ -289,6 +286,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
     case RPMTAG_DSAHEADER:
+	dig = pgpNewDig();
 	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
@@ -630,12 +628,6 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    dig = pgpNewDig();
-    if (dig == NULL) {
-	rc = RPMRC_FAIL;
-	goto exit;
-    }
-
     /* Retrieve the tag parameters from the signature header. */
     if (!headerGet(sigh, sigtag, &sigtd, hgeflags)) {
 	rc = RPMRC_FAIL;
@@ -645,6 +637,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
+	dig = pgpNewDig();
 	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
@@ -664,6 +657,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
+	dig = pgpNewDig();
 	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
 	    goto exit;
 	}
