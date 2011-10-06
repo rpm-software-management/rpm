@@ -497,11 +497,10 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
 {
     rpmRC res = RPMRC_NOTFOUND;
     char *msg = NULL;
+    int hdrsig = 0;
 
-    if (sigtd->data == NULL || sigtd->count <= 0 || dig == NULL) {
-	rasprintf(&msg, _("Verify signature: BAD PARAMETERS\n"));
+    if (sigtd->data == NULL || sigtd->count <= 0 || ctx == NULL)
 	goto exit;
-    }
 
     switch (sigtd->tag) {
     case RPMSIGTAG_MD5:
@@ -512,19 +511,26 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
 	break;
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	res = verifySignature(keyring, dig, ctx, 1, &msg);
-	break;
+	hdrsig = 1;
+	/* fallthrough */
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
     case RPMSIGTAG_GPG:
-	res = verifySignature(keyring, dig, ctx, 0, &msg);
+	if (dig != NULL)
+	    res = verifySignature(keyring, dig, ctx, hdrsig, &msg);
 	break;
     default:
-	rasprintf(&msg, _("Signature: UNKNOWN (%d)\n"), sigtd->tag);
 	break;
     }
 
 exit:
+    if (res == RPMRC_NOTFOUND) {
+	rasprintf(&msg,
+		  _("Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"),
+		  sigtd->tag, sigtd->data, sigtd->count, ctx, dig);
+	res = RPMRC_FAIL;
+    }
+
     if (result) {
 	*result = msg;
     } else {
