@@ -503,6 +503,36 @@ static void initSourceHeader(rpmSpec spec)
     }
 }
 
+/* Add extra provides to package.  */
+static void addPackageProvides(Header h)
+{
+    const char *arch, *name;
+    char *evr, *isaprov;
+    rpmsenseFlags pflags = RPMSENSE_EQUAL;
+
+    /* <name> = <evr> provide */
+    name = headerGetString(h, RPMTAG_NAME);
+    arch = headerGetString(h, RPMTAG_ARCH);
+    evr = headerGetAsString(h, RPMTAG_EVR);
+    headerPutString(h, RPMTAG_PROVIDENAME, name);
+    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+
+    /*
+     * <name>(<isa>) = <evr> provide
+     * FIXME: noarch needs special casing for now as BuildArch: noarch doesn't
+     * cause reading in the noarch macros :-/ 
+     */
+    isaprov = rpmExpand(name, "%{?_isa}", NULL);
+    if (!rstreq(arch, "noarch") && !rstreq(name, isaprov)) {
+	headerPutString(h, RPMTAG_PROVIDENAME, isaprov);
+	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
+	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+    }
+    free(isaprov);
+    free(evr);
+}
+
 static void addTargets(Package Pkgs)
 {
     char *platform = rpmExpand("%{_target_platform}", NULL);
@@ -518,6 +548,7 @@ static void addTargets(Package Pkgs)
 	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
+	addPackageProvides(pkg->header);
     }
     free(platform);
     free(arch);
@@ -677,7 +708,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
 	}
     }
 
-    /* Add arch, os and platform for each package */
+    /* Add arch, os and platform, self-provides etc for each package */
     addTargets(spec->packages);
 
     closeSpec(spec);
