@@ -27,7 +27,12 @@ static unsigned int nkeyids = 0;
 static unsigned int nextkeyid  = 0;
 static unsigned int * keyids;
 
-void headerMergeLegacySigs(Header h, const Header sigh)
+/** \ingroup header
+ * Translate and merge legacy signature tags into header.
+ * @param h		header (dest)
+ * @param sigh		signature header (src)
+ */
+static void headerMergeLegacySigs(Header h, Header sigh)
 {
     HeaderIterator hi;
     struct rpmtd_s td;

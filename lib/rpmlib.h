@@ -35,14 +35,6 @@ extern const char * const rpmEVR;
 
 extern const int rpmFLAGS;
 
-/** \ingroup header
- * Translate and merge legacy signature tags into header.
- * @todo Remove headerSort() through headerInitIterator() modifies sig.
- * @param h		header
- * @param sigh		signature header
- */
-void headerMergeLegacySigs(Header h, const Header sigh);
-
 /* ==================================================================== */
 /** \name RPMRC */
 

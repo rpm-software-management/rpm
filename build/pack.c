@@ -465,10 +465,6 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
 	    goto exit;
 	}
 
-#ifdef	NOTYET
-	(void) headerMergeLegacySigs(nh, sig);
-#endif
-
 	xx = headerWrite(fd, nh, HEADER_MAGIC_YES);
 	headerFree(nh);
 
