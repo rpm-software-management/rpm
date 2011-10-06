@@ -538,6 +538,7 @@ static void addTargets(Package Pkgs)
     char *platform = rpmExpand("%{_target_platform}", NULL);
     char *arch = rpmExpand("%{_target_cpu}", NULL);
     char *os = rpmExpand("%{_target_os}", NULL);
+    char *optflags = rpmExpand("%{optflags}", NULL);
 
     for (Package pkg = Pkgs; pkg != NULL; pkg = pkg->next) {
 	headerPutString(pkg->header, RPMTAG_OS, os);
@@ -546,6 +547,7 @@ static void addTargets(Package Pkgs)
 	    headerPutString(pkg->header, RPMTAG_ARCH, arch);
 	}
 	headerPutString(pkg->header, RPMTAG_PLATFORM, platform);
+	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
 	addPackageProvides(pkg->header);
@@ -553,6 +555,7 @@ static void addTargets(Package Pkgs)
     free(platform);
     free(arch);
     free(os);
+    free(optflags);
 }
 
 static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,

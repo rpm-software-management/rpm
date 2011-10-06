@@ -570,11 +570,6 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	headerPutString(pkg->header, RPMTAG_BUILDHOST, buildHost());
 	headerPutUint32(pkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
-    {	char * optflags = rpmExpand("%{optflags}", NULL);
-	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
-	free(optflags);
-    }
-
 	if (spec->sourcePkgId != NULL) {
 	    headerPutBin(pkg->header, RPMTAG_SOURCEPKGID, spec->sourcePkgId,16);
 	}
