@@ -451,13 +451,14 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Sanity check header tags */
-    rc = headerVerify(keyring, vsflags, ei, uc, msg);
+    rc = headerVerify(keyring, vsflags, ei, uc, &buf);
     if (rc != RPMRC_OK)
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
     h = headerLoad(ei);
     if (h == NULL) {
+	free(buf);
 	rasprintf(&buf, _("hdr load: BAD\n"));
 	rc = RPMRC_FAIL;
         goto exit;
