@@ -117,12 +117,15 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     return 0;
 }
 
-/* Return rpmdb iterator with removals pruned out */
-static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag, const char * key)
+/* Return rpmdb iterator with removals optionally pruned out */
+static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
+					      const char * key, int prune)
 {
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, tag, key, 0);
-    tsMembers tsmem = rpmtsMembers(ts);
-    rpmdbPruneIterator(mi, tsmem->removedPackages);
+    if (prune) {
+	tsMembers tsmem = rpmtsMembers(ts);
+	rpmdbPruneIterator(mi, tsmem->removedPackages);
+    }
     return mi;
 }
 
@@ -168,7 +171,7 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 	if (rstreq(rpmteN(p), Name))
 	    continue;
 
-	mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, Name, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    /* Ignore colored packages not in our rainbow. */
@@ -369,9 +372,11 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
     int rc = 0;
+    /* pretrans deps are provided by current packages, don't prune erasures */
+    int prune = (rpmdsFlags(dep) & RPMSENSE_PRETRANS) ? 0 : 1;
 
     /* See if we already looked this up */
-    if (depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
+    if (prune && depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
 	rc = *cachedrc;
 	rpmdsNotify(dep, "(cached)", rc);
 	return rc;
@@ -383,7 +388,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
      * not installed files can not satisfy a dependency.
      */
     if (Name[0] == '/') {
-	mi = rpmtsPrunedIterator(ts, RPMDBI_INSTFILENAMES, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_INSTFILENAMES, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmdsNotify(dep, "(db files)", rc);
 	    break;
@@ -393,7 +398,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 
     /* Otherwise look in provides no matter what the dependency looks like */
     if (h == NULL) {
-	mi = rpmtsPrunedIterator(ts, RPMDBI_PROVIDENAME, Name);
+	mi = rpmtsPrunedIterator(ts, RPMDBI_PROVIDENAME, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmdsMatchesDep(h, rpmdbGetIteratorFileNum(mi), dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, "(db provides)", rc);
@@ -405,7 +410,9 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     rc = (h != NULL) ? 0 : 1;
 
     /* Cache the relatively expensive rpmdb lookup results */
-    depCacheAddEntry(dcache, xstrdup(DNEVR), rc);
+    /* Caching the oddball non-pruned case would mess up other results */
+    if (prune)
+	depCacheAddEntry(dcache, xstrdup(DNEVR), rc);
     return rc;
 }
 
@@ -521,7 +528,7 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 			  rpmTag depTag, const char *dep)
 {
     Header h;
-    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep);
+    rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep, 1);
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
