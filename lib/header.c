@@ -834,11 +834,11 @@ Header headerLoad(void * uh)
 
 	{   int off = ntohl(pe->offset);
 
-	    if (hdrchkData(off) || hdrchkRange(dl, off))
-		goto errxit;
 	    if (off) {
 		size_t nb = REGION_TAG_COUNT;
 		int32_t stei[nb];
+		if (hdrchkRange(dl, (off + nb)))
+		    goto errxit;
 		/* XXX Hmm, why the copy? */
 		memcpy(&stei, dataStart + off, nb);
 		rdl = -ntohl(stei[2]);	/* negative offset */

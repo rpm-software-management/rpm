@@ -138,7 +138,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
        && entry.info.count == REGION_TAG_COUNT)
     {
 
-	if (entry.info.offset >= dl) {
+	/* Is the trailer within the data area? */
+	if (entry.info.offset + REGION_TAG_COUNT > dl) {
 	    rasprintf(&buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry.info.tag, entry.info.type,

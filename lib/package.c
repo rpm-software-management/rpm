@@ -322,8 +322,8 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
     }
 
-    /* Is the offset within the data area? */
-    if (entry.info.offset >= dl) {
+    /* Is the trailer within the data area? */
+    if (entry.info.offset + REGION_TAG_COUNT > dl) {
 	rasprintf(&buf, 
 		_("region offset: BAD, tag %d type %d offset %d count %d\n"),
 		entry.info.tag, entry.info.type,
