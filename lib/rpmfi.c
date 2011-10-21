@@ -661,8 +661,10 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLink(ofi);
 	if (diskWhat == LINK) {
-	    if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+	    ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
+	    if (link_len == -1)
 		return FA_CREATE;	/* assume file has been removed */
+	    buffer[link_len] = '\0';
 	    if (oFLink && rstreq(oFLink, buffer))
 		return FA_CREATE;	/* unmodified config file, replace. */
 	}
@@ -712,8 +714,10 @@ int rpmfiConfigConflict(const rpmfi fi)
 	    return 0;	/* unmodified config file */
     } else /* newWhat == LINK */ {
 	const char * nFLink;
-	if (readlink(fn, buffer, sizeof(buffer) - 1) == -1)
+	ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
+	if (link_len == -1)
 	    return 0;	/* assume file has been removed */
+	buffer[link_len] = '\0';
 	nFLink = rpmfiFLink(fi);
 	if (nFLink && rstreq(nFLink, buffer))
 	    return 0;	/* unmodified config file */
