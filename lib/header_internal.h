@@ -47,7 +47,8 @@ struct indexEntry_s {
  * Sanity check on data size and/or offset and/or count.
  * This check imposes a limit of 16 MB, more than enough.
  */
-#define hdrchkData(_nbytes) ((_nbytes) & 0xff000000)
+#define HEADER_DATA_MAX 0x00ffffff
+#define hdrchkData(_nbytes) ((_nbytes) & (~HEADER_DATA_MAX))
 
 /**
  * Sanity check on data alignment for data type.
