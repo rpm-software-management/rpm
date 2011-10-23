@@ -1373,10 +1373,15 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		    statp->st_mtime = now;
 		    statp->st_ctime = now;
 		} else {
+		    int lvl = RPMLOG_ERR;
 		    const char *msg = fl->isDir ?
 					    _("Directory not found: %s\n") :
 					    _("File not found: %s\n");
-		    rpmlog(RPMLOG_ERR, msg, diskPath);
+		    if (fl->currentFlags & RPMFILE_EXCLUDE) {
+			lvl = RPMLOG_WARNING;
+			rc = RPMRC_OK;
+		    }
+		    rpmlog(lvl, msg, diskPath);
 		    goto exit;
 		}
 	    }
@@ -1670,11 +1675,15 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    }
 	    argvFree(argv);
 	} else {
+	    int lvl = RPMLOG_WARNING;
 	    const char *msg = (fl->isDir) ?
 				_("Directory not found by glob: %s\n") :
 				_("File not found by glob: %s\n");
-	    rpmlog(RPMLOG_ERR, msg, diskPath);
-	    rc = RPMRC_FAIL;
+	    if (!(fl->currentFlags & RPMFILE_EXCLUDE)) {
+		lvl = RPMLOG_ERR;
+		rc = RPMRC_FAIL;
+	    }
+	    rpmlog(lvl, msg, diskPath);
 	    goto exit;
 	}
     } else {
