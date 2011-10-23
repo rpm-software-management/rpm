@@ -1315,6 +1315,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     gid_t fileGid;
     const char *fileUname;
     const char *fileGname;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     /* Strip trailing slash. The special case of '/' path is handled below. */
     if (plen > 0 && diskPath[plen - 1] == '/') {
@@ -1366,8 +1367,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 			statp->st_mode = S_IFREG | (fl->cur_ar.ar_fmode & 0777);
 		    } else {
 			rpmlog(RPMLOG_ERR, _("Explicit file attributes required in spec for: %s\n"), diskPath);
-		    	fl->processingFailed = 1;
-		    	return RPMRC_FAIL;
+			goto exit;
 		    }
 		    statp->st_atime = now;
 		    statp->st_mtime = now;
@@ -1377,8 +1377,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 					    _("Directory not found: %s\n") :
 					    _("File not found: %s\n");
 		    rpmlog(RPMLOG_ERR, msg, diskPath);
-		    fl->processingFailed = 1;
-		    return RPMRC_FAIL;
+		    goto exit;
 		}
 	    }
 	}
@@ -1480,14 +1479,19 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		fl->largeFiles = 1;
 		rpmlog(RPMLOG_ERR, _("File %s too large for payload\n"),
 		       flp->diskPath);
-		return RPMRC_FAIL;
+		goto exit;
 	    }
 	}
     }
 
+    rc = RPMRC_OK;
     fl->fileListRecsUsed++;
 
-    return RPMRC_OK;
+exit:
+    if (rc != RPMRC_OK)
+	fl->processingFailed = 1;
+
+    return rc;
 }
 
 /**
