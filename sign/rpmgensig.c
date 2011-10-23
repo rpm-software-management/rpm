@@ -121,8 +121,10 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     struct rpmtd_s sigtd;
     int rc = 1; /* assume failure */
 
-    if (pgpPrtPkts(pkt, pktlen, dig, 0) != 0)
+    if (pgpPrtPkts(pkt, pktlen, dig, 0) != 0) {
+	rpmlog(RPMLOG_ERR, _("Unsupported PGP signature\n"));
 	goto exit;
+    }
 
     if (rpmDigestLength(sigp->hash_algo) == 0) {
 	rpmlog(RPMLOG_ERR, _("Unsupported PGP hash algorithm %d\n"),
