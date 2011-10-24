@@ -961,27 +961,6 @@ unsigned int pgpGrab(const uint8_t *s, size_t nbytes)
 }
 
 /** \ingroup rpmpgp
- * Return length of an OpenPGP packet.
- * @param s		pointer to packet
- * @retval *lenp	no. of bytes in packet
- * @return		no. of bytes in length prefix
- */
-static inline
-size_t pgpLen(const uint8_t *s, size_t * lenp)
-{
-    if (*s < 192) {
-	(*lenp) = *s++;
-	return 1;
-    } else if (*s < 255) {
-	(*lenp) = ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
-	return 2;
-    } else {
-	(*lenp) = pgpGrab(s+1, (size_t) 4);
-	return 5;
-    }
-}
-
-/** \ingroup rpmpgp
  * Return hex formatted representation of bytes.
  * @param p		bytes
  * @param plen		no. of bytes
