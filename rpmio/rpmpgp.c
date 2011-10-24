@@ -1090,7 +1090,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
     DIGEST_CTX ctx;
     int rc = -1;	/* assume failure. */
 
-    if (!(val & 0x80))
+    if (!(val & 0x80) || pktlen < 2)
 	return rc;
 
     if (val & 0x40) {
@@ -1181,7 +1181,7 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
     int rc = 0;
 
     /* XXX can't deal with these. */
-    if (!(val & 0x80))
+    if (!(val & 0x80) || pleft < 2)
 	return -1;
 
     if (val & 0x40) {
