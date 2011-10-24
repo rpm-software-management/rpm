@@ -420,61 +420,6 @@ size_t pgpLen(const uint8_t *s, size_t * lenp)
     }
 }
 
-/** \ingroup rpmpgp
- * Is buffer at beginning of an OpenPGP packet?
- * @param p		buffer
- * @return		1 if an OpenPGP packet, 0 otherwise
- */
-static inline
-int pgpIsPkt(const uint8_t * p)
-{
-    unsigned int val = *p++;
-    pgpTag tag;
-    int rc;
-
-    /* XXX can't deal with these. */
-    if (!(val & 0x80))
-	return 0;
-
-    if (val & 0x40)
-	tag = (pgpTag)(val & 0x3f);
-    else
-	tag = (pgpTag)((val >> 2) & 0xf);
-
-    switch (tag) {
-    case PGPTAG_MARKER:
-    case PGPTAG_SYMMETRIC_SESSION_KEY:
-    case PGPTAG_ONEPASS_SIGNATURE:
-    case PGPTAG_PUBLIC_KEY:
-    case PGPTAG_SECRET_KEY:
-    case PGPTAG_PUBLIC_SESSION_KEY:
-    case PGPTAG_SIGNATURE:
-    case PGPTAG_COMMENT:
-    case PGPTAG_COMMENT_OLD:
-    case PGPTAG_LITERAL_DATA:
-    case PGPTAG_COMPRESSED_DATA:
-    case PGPTAG_SYMMETRIC_DATA:
-	rc = 1;
-	break;
-    case PGPTAG_PUBLIC_SUBKEY:
-    case PGPTAG_SECRET_SUBKEY:
-    case PGPTAG_USER_ID:
-    case PGPTAG_RESERVED:
-    case PGPTAG_TRUST:
-    case PGPTAG_PHOTOID:
-    case PGPTAG_ENCRYPTED_MDC:
-    case PGPTAG_MDC:
-    case PGPTAG_PRIVATE_60:
-    case PGPTAG_PRIVATE_62:
-    case PGPTAG_CONTROL:
-    default:
-	rc = 0;
-	break;
-    }
-
-    return rc;
-}
-
 #define CRC24_INIT	0xb704ce
 #define CRC24_POLY	0x1864cfb
 
@@ -1478,12 +1423,6 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
     char * t, * te;
     int pstate = 0;
     pgpArmor ec = PGPARMOR_ERR_NO_BEGIN_PGP;	/* XXX assume failure */
-    if (pgpIsPkt(b)) {
-#ifdef NOTYET	/* XXX ASCII Pubkeys only, please. */
-	ec = 0;	/* XXX fish out pkt type. */
-#endif
-	goto exit;
-    }
 
 #define	TOKEQ(_s, _tok)	(rstreqn((_s), (_tok), sizeof(_tok)-1))
 
