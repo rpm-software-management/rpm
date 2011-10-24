@@ -422,46 +422,23 @@ static char * pgpsigFormat(rpmtd td)
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	const uint8_t * pkt = td->data;
-	size_t pktlen = 0;
-	unsigned int v = *pkt;
-	pgpTag tag = 0;
-	size_t plen;
-	size_t hlen = 0;
+	pgpDig dig = pgpNewDig();
+	pgpDigParams sigp = &dig->signature;
 
-	if (v & 0x80) {
-	    if (v & 0x40) {
-		tag = (v & 0x3f);
-		plen = pgpLen(pkt+1, &hlen);
-	    } else {
-		tag = (v >> 2) & 0xf;
-		plen = (1 << (v & 0x3));
-		hlen = pgpGrab(pkt+1, plen);
-	    }
-	
-	    pktlen = 1 + plen + hlen;
-	}
-
-	if (pktlen == 0 || tag != PGPTAG_SIGNATURE) {
+	if (pgpPrtPkts(td->data, td->count, dig, 0) || sigp->version == 0) {
 	    val = xstrdup(_("(not an OpenPGP signature)"));
 	} else {
-	    pgpDig dig = pgpNewDig();
-	    pgpDigParams sigp = &dig->signature;
 	    char dbuf[BUFSIZ];
-	    char *keyid = NULL;
+	    char *keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
+	    unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
+	    time_t date = dateint;
+	    struct tm * tms = localtime(&date);
 
-	    (void) pgpPrtPkts(pkt, pktlen, dig, 0);
-
-	    {	unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
-		time_t date = dateint;
-		struct tm * tms = localtime(&date);
-		if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
-		    snprintf(dbuf, sizeof(dbuf),
-			     _("Invalid date %u\n"), dateint);
-		    dbuf[sizeof(dbuf)-1] = '\0';
-		}
+	    if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
+		snprintf(dbuf, sizeof(dbuf),
+			 _("Invalid date %u\n"), dateint);
+		dbuf[sizeof(dbuf)-1] = '\0';
 	    }
-	    keyid = pgpHexStr(sigp->signid, sizeof(sigp->signid));
 
 	    rasprintf(&val, "%s/%s, %s, Key ID %s\n",
 			pgpValString(PGPVAL_PUBKEYALGO, sigp->pubkey_algo),
@@ -469,8 +446,8 @@ static char * pgpsigFormat(rpmtd td)
 			dbuf, keyid);
 
 	    free(keyid);
-	    pgpFreeDig(dig);
 	}
+	pgpFreeDig(dig);
     }
 
     return val;
