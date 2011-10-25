@@ -1127,12 +1127,16 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
 {
     uint8_t * pkt;
     size_t pktlen;
+    int rc = -1; /* assume failure */
 
-    if (b64decode(b64pkt, (void **)&pkt, &pktlen))
-       return -1;      /* on error */
-    (void) pgpPubkeyFingerprint(pkt, pktlen, keyid);
-    pkt = _free(pkt);
-    return sizeof(keyid);  /* no. of bytes of pubkey signid */
+    if (b64decode(b64pkt, (void **)&pkt, &pktlen) == 0) {
+	if (pgpPubkeyFingerprint(pkt, pktlen, keyid) == 0) {
+	    /* if there ever was a bizarre return code for success... */
+	    rc = sizeof(keyid);
+	}
+	free(pkt);
+    }
+    return rc;
 }
 
 static int pgpPrtPkt(const uint8_t *pkt, size_t pleft, 
