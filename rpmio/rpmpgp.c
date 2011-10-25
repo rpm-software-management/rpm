@@ -435,6 +435,47 @@ size_t pgpLen(const uint8_t *s, size_t slen, size_t * lenp)
     return lenlen;
 }
 
+struct pgpPkt {
+    uint8_t tag;		/* decoded PGP tag */
+    const uint8_t *head;	/* pointer to start of packet (header) */
+    const uint8_t *body;	/* pointer to packet body */
+    size_t blen;		/* length of body in bytes */
+};
+
+static int decodePkt(const uint8_t *p, size_t plen, struct pgpPkt *pkt)
+{
+    int rc = -1; /* assume failure */
+
+    /* Valid PGP packet header must always have two or more bytes in it */
+    if (plen >= 2 && p[0] & 0x80) {
+	size_t lenlen = 0;
+	size_t hlen = 0;
+
+	if (p[0] & 0x40) {
+	    /* New format packet, body length encoding in second byte */
+	    lenlen = pgpLen(p+1, plen-1, &pkt->blen);
+	    pkt->tag = (p[0] & 0x3f);
+	} else {
+	    /* Old format packet, body length encoding in tag byte */
+	    lenlen = (1 << (p[0] & 0x3));
+	    if (plen > lenlen) {
+		pkt->blen = pgpGrab(p+1, lenlen);
+	    }
+	    pkt->tag = (p[0] >> 2) & 0xf;
+	}
+	hlen = lenlen + 1;
+
+	/* Does the packet header and its body fit in our boundaries? */
+	if (lenlen && (hlen + pkt->blen <= plen)) {
+	    pkt->head = p;
+	    pkt->body = pkt->head + hlen;
+	    rc = 0;
+	}
+    }
+
+    return rc;
+}
+
 #define CRC24_INIT	0xb704ce
 #define CRC24_POLY	0x1864cfb
 
@@ -1124,23 +1165,12 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 
 int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 {
-    unsigned int val = *pkt;
-    size_t plen, hlen;
-    int rc = -1;	/* assume failure. */
+    struct pgpPkt p;
 
-    if (!(val & 0x80) || pktlen < 2)
-	return rc;
-
-    if (val & 0x40) {
-	plen = pgpLen(pkt+1, pktlen-1, &hlen);
-    } else {
-	plen = (1 << (val & 0x3));
-	hlen = pgpGrab(pkt+1, plen);
-    }
-    if (plen == 0 || (pktlen > 0 && 1 + plen + hlen > pktlen))
-	return rc;
+    if (decodePkt(pkt, pktlen, &p))
+	return -1;
     
-    return getFingerprint(pkt + 1 + plen, hlen, keyid);
+    return getFingerprint(p.body, p.blen, keyid);
 }
 
 int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
@@ -1162,52 +1192,32 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
 static int pgpPrtPkt(const uint8_t *pkt, size_t pleft, 
 		     pgpDig _dig, pgpDigParams _digp)
 {
-    unsigned int val = *pkt;
-    size_t pktlen;
-    pgpTag tag;
-    size_t plen;
-    const uint8_t *h;
-    size_t hlen = 0;
+    struct pgpPkt p;
     int rc = 0;
 
-    /* XXX can't deal with these. */
-    if (!(val & 0x80) || pleft < 2)
+    if (decodePkt(pkt, pleft, &p))
 	return -1;
 
-    if (val & 0x40) {
-	tag = (val & 0x3f);
-	plen = pgpLen(pkt+1, pleft-1, &hlen);
-    } else {
-	tag = (val >> 2) & 0xf;
-	plen = (1 << (val & 0x3));
-	hlen = pgpGrab(pkt+1, plen);
-    }
-
-    pktlen = 1 + plen + hlen;
-    if (plen == 0 || pktlen > pleft)
-	return -1;
-
-    h = pkt + 1 + plen;
-    switch (tag) {
+    switch (p.tag) {
     case PGPTAG_SIGNATURE:
-	rc = pgpPrtSig(tag, h, hlen, _dig, _digp);
+	rc = pgpPrtSig(p.tag, p.body, p.blen, _dig, _digp);
 	break;
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
 	if (_digp) {
-	    if (!getFingerprint(h, hlen, _digp->signid))
+	    if (!getFingerprint(p.body, p.blen, _digp->signid))
 		_digp->saved |= PGPDIG_SAVED_ID;
 	    else
 		memset(_digp->signid, 0, sizeof(_digp->signid));
 	}
-	rc = pgpPrtKey(tag, h, hlen, _dig, _digp);
+	rc = pgpPrtKey(p.tag, p.body, p.blen, _dig, _digp);
 	break;
     case PGPTAG_USER_ID:
-	rc = pgpPrtUserID(tag, h, hlen, _digp);
+	rc = pgpPrtUserID(p.tag, p.body, p.blen, _digp);
 	break;
     case PGPTAG_COMMENT:
     case PGPTAG_COMMENT_OLD:
-	rc = pgpPrtComment(tag, h, hlen);
+	rc = pgpPrtComment(p.tag, p.body, p.blen);
 	break;
 
     case PGPTAG_PUBLIC_SUBKEY:
@@ -1228,13 +1238,13 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
     case PGPTAG_PRIVATE_62:
     case PGPTAG_CONTROL:
     default:
-	pgpPrtVal("", pgpTagTbl, tag);
-	pgpPrtHex("", h, hlen);
+	pgpPrtVal("", pgpTagTbl, p.tag);
+	pgpPrtHex("", p.body, p.blen);
 	pgpPrtNL();
 	break;
     }
 
-    return (rc ? -1 : pktlen);
+    return (rc ? -1 : (p.body - p.head) + p.blen);
 }
 
 pgpDig pgpNewDig(void)
