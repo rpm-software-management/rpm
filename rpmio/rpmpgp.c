@@ -400,24 +400,39 @@ static SECKEYPublicKey *pgpNewPublicKey(KeyType type)
 }
 
 /** \ingroup rpmpgp
- * Return length of an OpenPGP packet.
- * @param s		pointer to packet
- * @retval *lenp	no. of bytes in packet
- * @return		no. of bytes in length prefix
+ * Decode length from 1, 2, or 5 octet body length encoding, used in
+ * new format packet headers and V4 signature subpackets.
+ * @param s		pointer to length encoding buffer
+ * @param slen		buffer size
+ * @retval *lenp	decoded length
+ * @return		no. of bytes used to encode the length, 0 on error
  */
 static inline
-size_t pgpLen(const uint8_t *s, size_t * lenp)
+size_t pgpLen(const uint8_t *s, size_t slen, size_t * lenp)
 {
+    size_t dlen = 0;
+    size_t lenlen = 0;
+
+    /*
+     * Callers can only ensure we'll always have the first byte, beyond
+     * that the required size is not known until we decode it so we need
+     * to check if we have enough bytes to read the size as we go.
+     */
     if (*s < 192) {
-	(*lenp) = *s++;
-	return 1;
-    } else if (*s < 255) {
-	(*lenp) = ((((unsigned)s[0]) - 192) << 8) + s[1] + 192;
-	return 2;
-    } else {
-	(*lenp) = pgpGrab(s+1, (size_t) 4);
-	return 5;
+	lenlen = 1;
+	dlen = *s;
+    } else if (*s < 255 && slen > 2) {
+	lenlen = 2;
+	dlen = (((s[0]) - 192) << 8) + s[1] + 192;
+    } else if (slen > 5) {
+	lenlen = 5;
+	dlen = pgpGrab(s+1, 4);
     }
+
+    if (lenlen)
+	*lenp = dlen;
+
+    return lenlen;
 }
 
 #define CRC24_INIT	0xb704ce
@@ -453,8 +468,8 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
     size_t plen, i;
 
     while (hlen > 0) {
-	i = pgpLen(p, &plen);
-	if (i + plen > hlen)
+	i = pgpLen(p, hlen, &plen);
+	if (i == 0 || i + plen > hlen)
 	    break;
 
 	p += i;
@@ -1117,12 +1132,12 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
 	return rc;
 
     if (val & 0x40) {
-	plen = pgpLen(pkt+1, &hlen);
+	plen = pgpLen(pkt+1, pktlen-1, &hlen);
     } else {
 	plen = (1 << (val & 0x3));
 	hlen = pgpGrab(pkt+1, plen);
     }
-    if (pktlen > 0 && 1 + plen + hlen > pktlen)
+    if (plen == 0 || (pktlen > 0 && 1 + plen + hlen > pktlen))
 	return rc;
     
     return getFingerprint(pkt + 1 + plen, hlen, keyid);
@@ -1161,7 +1176,7 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
 
     if (val & 0x40) {
 	tag = (val & 0x3f);
-	plen = pgpLen(pkt+1, &hlen);
+	plen = pgpLen(pkt+1, pleft-1, &hlen);
     } else {
 	tag = (val >> 2) & 0xf;
 	plen = (1 << (val & 0x3));
@@ -1169,7 +1184,7 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
     }
 
     pktlen = 1 + plen + hlen;
-    if (pktlen > pleft)
+    if (plen == 0 || pktlen > pleft)
 	return -1;
 
     h = pkt + 1 + plen;
