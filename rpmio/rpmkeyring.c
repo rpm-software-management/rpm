@@ -124,16 +124,20 @@ exit:
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
 {
     rpmPubkey key = NULL;
+    pgpKeyID_t keyid;
     
     if (pkt == NULL || pktlen == 0)
 	goto exit;
 
+    if (pgpPubkeyFingerprint(pkt, pktlen, keyid))
+	goto exit;
+
     key = xcalloc(1, sizeof(*key));
-    pgpPubkeyFingerprint(pkt, pktlen, key->keyid);
     key->pkt = xmalloc(pktlen);
     key->pktlen = pktlen;
     key->nrefs = 0;
     memcpy(key->pkt, pkt, pktlen);
+    memcpy(key->keyid, keyid, sizeof(keyid));
 
 exit:
     return rpmPubkeyLink(key);
