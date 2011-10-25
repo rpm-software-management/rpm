@@ -1048,27 +1048,10 @@ static int pgpPrtComment(pgpTag tag, const uint8_t *h, size_t hlen)
     return 0;
 }
 
-int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
+static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 {
-    unsigned int val = *pkt;
-    size_t plen, hlen;
-    const uint8_t *se, *h;
-    DIGEST_CTX ctx;
-    int rc = -1;	/* assume failure. */
-
-    if (!(val & 0x80) || pktlen < 2)
-	return rc;
-
-    if (val & 0x40) {
-	plen = pgpLen(pkt+1, &hlen);
-    } else {
-	plen = (1 << (val & 0x3));
-	hlen = pgpGrab(pkt+1, plen);
-    }
-    if (pktlen > 0 && 1 + plen + hlen > pktlen)
-	return rc;
-    
-    h = pkt + 1 + plen;
+    int rc = -1; /* assume failure */
+    const uint8_t *se;
 
     switch (h[0]) {
     case 3:
@@ -1086,6 +1069,7 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
       }	break;
     case 4:
       {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
+	DIGEST_CTX ctx;
 	uint8_t * d = NULL;
 	uint8_t in[3];
 	size_t dlen;
@@ -1121,6 +1105,27 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
       }	break;
     }
     return rc;
+}
+
+int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen, pgpKeyID_t keyid)
+{
+    unsigned int val = *pkt;
+    size_t plen, hlen;
+    int rc = -1;	/* assume failure. */
+
+    if (!(val & 0x80) || pktlen < 2)
+	return rc;
+
+    if (val & 0x40) {
+	plen = pgpLen(pkt+1, &hlen);
+    } else {
+	plen = (1 << (val & 0x3));
+	hlen = pgpGrab(pkt+1, plen);
+    }
+    if (pktlen > 0 && 1 + plen + hlen > pktlen)
+	return rc;
+    
+    return getFingerprint(pkt + 1 + plen, hlen, keyid);
 }
 
 int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
@@ -1175,7 +1180,7 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
 	if (_digp) {
-	    if (!pgpPubkeyFingerprint(pkt, pktlen, _digp->signid))
+	    if (!getFingerprint(h, hlen, _digp->signid))
 		_digp->saved |= PGPDIG_SAVED_ID;
 	    else
 		memset(_digp->signid, 0, sizeof(_digp->signid));
