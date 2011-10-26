@@ -902,33 +902,11 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 {
     uint8_t version = *h;
     const uint8_t * p;
-    size_t plen;
     time_t t;
-    int rc;
+    int rc = 1; /* assume failure */
 
+    /* We only permit V4 keys, V3 keys are long long since deprecated */
     switch (version) {
-    case 3:
-    {   pgpPktKeyV3 v = (pgpPktKeyV3)h;
-	pgpPrtVal("V3 ", pgpTagTbl, tag);
-	pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
-	t = pgpGrab(v->time, sizeof(v->time));
-	if (_print)
-	    fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
-	plen = pgpGrab(v->valid, sizeof(v->valid));
-	if (plen != 0)
-	    fprintf(stderr, " valid %zu days", plen);
-	pgpPrtNL();
-
-	if (_digp && _digp->tag == tag) {
-	    _digp->version = v->version;
-	    memcpy(_digp->time, v->time, sizeof(_digp->time));
-	    _digp->pubkey_algo = v->pubkey_algo;
-	}
-
-	p = ((uint8_t *)v) + sizeof(*v);
-	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
-	rc = (p == NULL);
-    }	break;
     case 4:
     {   pgpPktKeyV4 v = (pgpPktKeyV4)h;
 	pgpPrtVal("V4 ", pgpTagTbl, tag);
@@ -948,9 +926,6 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
 	rc = (p == NULL);
     }	break;
-    default:
-	rc = 1;
-	break;
     }
     return rc;
 }
@@ -1001,20 +976,8 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
     int rc = -1; /* assume failure */
     const uint8_t *se;
 
+    /* We only permit V4 keys, V3 keys are long long since deprecated */
     switch (h[0]) {
-    case 3:
-      {	pgpPktKeyV3 v = (pgpPktKeyV3) (h);
-	se = (uint8_t *)(v + 1);
-	switch (v->pubkey_algo) {
-	case PGPPUBKEYALGO_RSA:
-	    se += pgpMpiLen(se);
-	    memmove(keyid, (se-8), 8);
-	    rc = 0;
-	    break;
-	default:	/* TODO: md5 of mpi bodies (i.e. no length) */
-	    break;
-	}
-      }	break;
     case 4:
       {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
 	DIGEST_CTX ctx;
