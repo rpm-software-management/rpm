@@ -192,14 +192,6 @@ static void pgpPrtNL(void)
     fprintf(stderr, "\n");
 }
 
-static void pgpPrtInt(const char *pre, int i)
-{
-    if (!_print) return;
-    if (pre && *pre)
-	fprintf(stderr, "%s", pre);
-    fprintf(stderr, " %d", i);
-}
-
 static void pgpPrtStr(const char *pre, const char *s)
 {
     if (!_print) return;
@@ -801,16 +793,6 @@ static const char * const pgpPublicRSA[] = {
     NULL,
 };
 
-#ifdef NOTYET
-static const char * const pgpSecretRSA[] = {
-    "    d =",
-    "    p =",
-    "    q =",
-    "    u =",
-    NULL,
-};
-#endif
-
 static const char * const pgpPublicDSA[] = {
     "    p =",
     "    q =",
@@ -819,26 +801,12 @@ static const char * const pgpPublicDSA[] = {
     NULL,
 };
 
-#ifdef NOTYET
-static const char * const pgpSecretDSA[] = {
-    "    x =",
-    NULL,
-};
-#endif
-
 static const char * const pgpPublicELGAMAL[] = {
     "    p =",
     "    g =",
     "    y =",
     NULL,
 };
-
-#ifdef NOTYET
-static const char * const pgpSecretELGAMAL[] = {
-    "    x =",
-    NULL,
-};
-#endif
 
 char * pgpHexStr(const uint8_t *p, size_t plen)
 {
@@ -929,80 +897,6 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
     return p;
 }
 
-static const uint8_t * pgpPrtSeckeyParams(uint8_t pubkey_algo,
-		const uint8_t *p, const uint8_t *h, size_t hlen)
-{
-    size_t i;
-
-    switch (*p) {
-    case 0:
-	pgpPrtVal(" ", pgpSymkeyTbl, *p);
-	break;
-    case 255:
-	p++;
-	pgpPrtVal(" ", pgpSymkeyTbl, *p);
-	switch (p[1]) {
-	case 0x00:
-	    pgpPrtVal(" simple ", pgpHashTbl, p[2]);
-	    p += 2;
-	    break;
-	case 0x01:
-	    pgpPrtVal(" salted ", pgpHashTbl, p[2]);
-	    pgpPrtHex("", p+3, 8);
-	    p += 10;
-	    break;
-	case 0x03:
-	    pgpPrtVal(" iterated/salted ", pgpHashTbl, p[2]);
-	    /* FIX: unsigned cast */
-	    i = (16 + (p[11] & 0xf)) << ((p[11] >> 4) + 6);
-	    pgpPrtHex("", p+3, 8);
-	    pgpPrtInt(" iter", i);
-	    p += 11;
-	    break;
-	}
-	break;
-    default:
-	pgpPrtVal(" ", pgpSymkeyTbl, *p);
-	pgpPrtHex(" IV", p+1, 8);
-	p += 8;
-	break;
-    }
-    pgpPrtNL();
-
-    p++;
-
-#ifdef	NOTYET	/* XXX encrypted MPI's need to be handled. */
-    for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
-	char *mpi;
-	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    if (pgpSecretRSA[i] == NULL) break;
-	    pgpPrtStr("", pgpSecretRSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    if (pgpSecretDSA[i] == NULL) break;
-	    pgpPrtStr("", pgpSecretDSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
-	    if (pgpSecretELGAMAL[i] == NULL) break;
-	    pgpPrtStr("", pgpSecretELGAMAL[i]);
-	} else {
-	    if (_print)
-		fprintf(stderr, "%7d", i);
-	}
-	mpi = pgpMpiStr(p);
-	pgpPrtStr("", mpi);
-	free(mpi);
-	pgpPrtNL();
-    }
-#else
-    pgpPrtHex(" secret", p, (hlen - (p - h) - 2));
-    pgpPrtNL();
-    p += (hlen - (p - h) - 2);
-#endif
-    pgpPrtHex(" checksum", p, 2);
-    pgpPrtNL();
-
-    return p;
-}
-
 static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDig _dig, pgpDigParams _digp)
 {
@@ -1052,8 +946,6 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 
 	p = ((uint8_t *)v) + sizeof(*v);
 	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
-	if (!(tag == PGPTAG_PUBLIC_KEY || tag == PGPTAG_PUBLIC_SUBKEY))
-	    p = pgpPrtSeckeyParams(v->pubkey_algo, p, h, hlen);
 	rc = (p == NULL);
     }	break;
     default:
