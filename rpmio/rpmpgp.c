@@ -342,9 +342,13 @@ fprintf(stderr, "*** %s %s\n", pre, pgpHexStr(dest, nbytes));
 /**
  * @return		NULL on error
  */
-static SECItem *pgpMpiItem(PRArenaPool *arena, SECItem *item, const uint8_t *p)
+static SECItem *pgpMpiItem(PRArenaPool *arena, SECItem *item,
+			   const uint8_t *p, const uint8_t *pend)
 {
     size_t nbytes = pgpMpiLen(p)-2;
+
+    if (p + nbytes + 2 > pend)
+	return NULL;
 
     if (item == NULL) {
     	if ((item=SECITEM_AllocItem(arena, item, nbytes)) == NULL)
@@ -626,7 +630,7 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	    {
 		switch (i) {
 		case 0:		/* m**d */
-		    _dig->sigdata = pgpMpiItem(NULL, _dig->sigdata, p);
+		    _dig->sigdata = pgpMpiItem(NULL, _dig->sigdata, p, pend);
 		    if (_dig->sigdata == NULL)
 			return 1;
 		    break;
@@ -828,12 +832,13 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		pgpDig _dig)
 {
     size_t i;
+    const uint8_t *pend = h + hlen;
 
     /* XXX we can't handle more than one key in a packet, error out */
     if (_dig && _dig->keydata)
 	return NULL;
 
-    for (i = 0; p < &h[hlen]; i++, p += pgpMpiLen(p)) {
+    for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
 	char * mpi;
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
 	    if (i >= 2) break;
@@ -845,10 +850,12 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		}
 		switch (i) {
 		case 0:		/* n */
-		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.rsa.modulus, p);
+		    pgpMpiItem(_dig->keydata->arena,
+				&_dig->keydata->u.rsa.modulus, p, pend);
 		    break;
 		case 1:		/* e */
-		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.rsa.publicExponent, p);
+		    pgpMpiItem(_dig->keydata->arena,
+				&_dig->keydata->u.rsa.publicExponent, p, pend);
 		    break;
 		default:
 		    break;
@@ -865,16 +872,20 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		}
 		switch (i) {
 		case 0:		/* p */
-		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.params.prime, p);
+		    pgpMpiItem(_dig->keydata->arena,
+				&_dig->keydata->u.dsa.params.prime, p, pend);
 		    break;
 		case 1:		/* q */
-		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.params.subPrime, p);
+		    pgpMpiItem(_dig->keydata->arena,
+				&_dig->keydata->u.dsa.params.subPrime, p, pend);
 		    break;
 		case 2:		/* g */
-		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.params.base, p);
+		    pgpMpiItem(_dig->keydata->arena,
+				&_dig->keydata->u.dsa.params.base, p, pend);
 		    break;
 		case 3:		/* y */
-		    pgpMpiItem(_dig->keydata->arena, &_dig->keydata->u.dsa.publicValue, p);
+		    pgpMpiItem(_dig->keydata->arena,
+				&_dig->keydata->u.dsa.publicValue, p, pend);
 		    break;
 		default:
 		    break;
