@@ -613,18 +613,26 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		const uint8_t *p, const uint8_t *h, size_t hlen, pgpDig _dig)
 {
     const uint8_t * pend = h + hlen;
-    size_t i;
+    int i, mpis = -1;
     SECItem dsaraw;
     unsigned char dsabuf[2*DSA_SUBPRIME_LEN];
     char *mpi;
+
+    switch (pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:
+	mpis = 1;
+	break;
+    case PGPPUBKEYALGO_DSA:
+	mpis = 2;
+	break;
+    }
 
     dsaraw.type = 0;
     dsaraw.data = dsabuf;
     dsaraw.len = sizeof(dsabuf);
     
-    for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
+    for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    if (i >= 1) break;
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -640,7 +648,6 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    if (i >= 2) break;
 	    if (_dig &&
 	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
 	    {
@@ -670,9 +677,6 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		if (xx) return xx;
 	    }
 	    pgpPrtStr("", pgpSigDSA[i]);
-	} else {
-	    if (_print)
-		fprintf(stderr, "%7zd", i);
 	}
 	mpi = pgpMpiStr(p);
 	pgpPrtStr("", mpi);
@@ -680,7 +684,8 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	pgpPrtNL();
     }
 
-    return 0;
+    /* Does the size and number of MPI's match our expectations? */
+    return (p == pend && i == mpis) ? 0 : 1;
 }
 
 static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
@@ -696,7 +701,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     {   pgpPktSigV3 v = (pgpPktSigV3)h;
 	time_t t;
 
-	if (v->hashlen != 5)
+	if (hlen <= sizeof(*v) || v->hashlen != 5)
 	    return 1;
 
 	pgpPrtVal("V3 ", pgpTagTbl, tag);
@@ -730,6 +735,9 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     }	break;
     case 4:
     {   pgpPktSigV4 v = (pgpPktSigV4)h;
+
+	if (hlen <= sizeof(*v))
+	    return 1;
 
 	pgpPrtVal("V4 ", pgpTagTbl, tag);
 	pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
