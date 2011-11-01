@@ -960,32 +960,6 @@ static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
     return 0;
 }
 
-static int pgpPrtComment(pgpTag tag, const uint8_t *h, size_t hlen)
-{
-    size_t i = hlen;
-
-    pgpPrtVal("", pgpTagTbl, tag);
-    if (_print)
-	fprintf(stderr, " ");
-    while (i > 0) {
-	size_t j;
-	if (*h >= ' ' && *h <= 'z') {
-	    if (_print)
-		fprintf(stderr, "%s", (const char *)h);
-	    j = strlen((const char*)h);
-	    while (h[j] == '\0')
-		j++;
-	} else {
-	    pgpPrtHex("", h, i);
-	    j = i;
-	}
-	i -= j;
-	h += j;
-    }
-    pgpPrtNL();
-    return 0;
-}
-
 static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 {
     int rc = -1; /* assume failure */
@@ -1092,9 +1066,6 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft,
 	break;
     case PGPTAG_COMMENT:
     case PGPTAG_COMMENT_OLD:
-	rc = pgpPrtComment(p.tag, p.body, p.blen);
-	break;
-
     case PGPTAG_PUBLIC_SUBKEY:
     case PGPTAG_SECRET_KEY:
     case PGPTAG_SECRET_SUBKEY:
