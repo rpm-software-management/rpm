@@ -986,42 +986,47 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 {
     int rc = -1; /* assume failure */
     const uint8_t *se;
+    const uint8_t *pend = h + hlen;
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
     switch (h[0]) {
     case 4:
       {	pgpPktKeyV4 v = (pgpPktKeyV4) (h);
-	DIGEST_CTX ctx;
-	uint8_t * d = NULL;
-	uint8_t in[3];
-	size_t dlen;
-	int i;
+	int mpis = -1;
 
-	se = (uint8_t *)(v + 1);
-	switch (v->pubkey_algo) {
-	case PGPPUBKEYALGO_RSA:
-	    for (i = 0; i < 2; i++)
-		se += pgpMpiLen(se);
-	    break;
-	case PGPPUBKEYALGO_DSA:
-	    for (i = 0; i < 4; i++)
-		se += pgpMpiLen(se);
-	    break;
+	/* Packet must be larger than v to have room for the required MPIs */
+	if (hlen > sizeof(*v)) {
+	    switch (v->pubkey_algo) {
+	    case PGPPUBKEYALGO_RSA:
+		mpis = 2;
+		break;
+	    case PGPPUBKEYALGO_DSA:
+		mpis = 4;
+		break;
+	    }
 	}
 
-	ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
-	i = se - h;
-	in[0] = 0x99;
-	in[1] = i >> 8;
-	in[2] = i;
-	(void) rpmDigestUpdate(ctx, in, 3);
-	(void) rpmDigestUpdate(ctx, h, i);
-	(void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
+	se = (uint8_t *)(v + 1);
+	while (se < pend && mpis-- > 0)
+	    se += pgpMpiLen(se);
 
-	if (d) {
-	    memmove(keyid, (d + (dlen-8)), 8);
-	    free(d);
-	    rc = 0;
+	/* Does the size and number of MPI's match our expectations? */
+	if (se == pend && mpis == 0) {
+	    DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	    uint8_t * d = NULL;
+	    size_t dlen;
+	    int i = se - h;
+	    uint8_t in[3] = { 0x99, (i >> 8), i };
+
+	    (void) rpmDigestUpdate(ctx, in, 3);
+	    (void) rpmDigestUpdate(ctx, h, i);
+	    (void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
+
+	    if (d) {
+		memcpy(keyid, (d + (dlen-sizeof(keyid))), sizeof(keyid));
+		free(d);
+		rc = 0;
+	    }
 	}
 
       }	break;
