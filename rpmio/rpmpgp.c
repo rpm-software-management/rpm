@@ -831,17 +831,25 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDig _dig)
 {
-    size_t i;
     const uint8_t *pend = h + hlen;
+    int i, mpis = -1;
 
     /* XXX we can't handle more than one key in a packet, error out */
     if (_dig && _dig->keydata)
 	return NULL;
 
-    for (i = 0; p < pend; i++, p += pgpMpiLen(p)) {
+    switch (pubkey_algo) {
+    case PGPPUBKEYALGO_RSA:
+	mpis = 2;
+	break;
+    case PGPPUBKEYALGO_DSA:
+	mpis = 4;
+	break;
+    }
+
+    for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
 	char * mpi;
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    if (i >= 2) break;
 	    if (_dig) {
 		if (_dig->keydata == NULL) {
 		    _dig->keydata = pgpNewPublicKey(rsaKey);
@@ -863,7 +871,6 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    if (i >= 4) break;
 	    if (_dig) {
 		if (_dig->keydata == NULL) {
 		    _dig->keydata = pgpNewPublicKey(dsaKey);
@@ -892,12 +899,6 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		}
 	    }
 	    pgpPrtStr("", pgpPublicDSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_ELGAMAL_ENCRYPT) {
-	    if (i >= 3) break;
-	    pgpPrtStr("", pgpPublicELGAMAL[i]);
-	} else {
-	    if (_print)
-		fprintf(stderr, "%7zd", i);
 	}
 	mpi = pgpMpiStr(p);
 	pgpPrtStr("", mpi);
@@ -905,40 +906,43 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 	pgpPrtNL();
     }
 
-    return p;
+    /* Does the size and number of MPI's match our expectations? */
+    return (p == pend && i == mpis) ? p : NULL;
 }
 
 static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 		     pgpDig _dig, pgpDigParams _digp)
 {
     uint8_t version = *h;
-    const uint8_t * p;
+    const uint8_t * p = NULL;
     time_t t;
-    int rc = 1; /* assume failure */
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
     switch (version) {
     case 4:
     {   pgpPktKeyV4 v = (pgpPktKeyV4)h;
-	pgpPrtVal("V4 ", pgpTagTbl, tag);
-	pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
-	t = pgpGrab(v->time, sizeof(v->time));
-	if (_print)
-	    fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
-	pgpPrtNL();
 
-	if (_digp && _digp->tag == tag) {
-	    _digp->version = v->version;
-	    memcpy(_digp->time, v->time, sizeof(_digp->time));
-	    _digp->pubkey_algo = v->pubkey_algo;
+	if (hlen > sizeof(*v)) {
+	    pgpPrtVal("V4 ", pgpTagTbl, tag);
+	    pgpPrtVal(" ", pgpPubkeyTbl, v->pubkey_algo);
+	    t = pgpGrab(v->time, sizeof(v->time));
+	    if (_print)
+		fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
+	    pgpPrtNL();
+
+	    if (_digp && _digp->tag == tag) {
+		_digp->version = v->version;
+		memcpy(_digp->time, v->time, sizeof(_digp->time));
+		_digp->pubkey_algo = v->pubkey_algo;
+	    }
+
+	    p = ((uint8_t *)v) + sizeof(*v);
+	    p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
 	}
-
-	p = ((uint8_t *)v) + sizeof(*v);
-	p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _dig);
-	rc = (p == NULL);
     }	break;
     }
-    return rc;
+    /* Sizes not matching up is an error */
+    return (p != (h + hlen));
 }
 
 static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
