@@ -1104,32 +1104,30 @@ pgpDig pgpNewDig(void)
     return dig;
 }
 
+static void pgpCleanDigParams(pgpDigParams digp)
+{
+    if (digp) {
+	free(digp->userid);
+	free(digp->hash);
+	for (int i = 0; i < 4; i++) 
+	    free(digp->params[i]);
+
+	if (digp->data != NULL) {
+	    if (digp->tag == PGPTAG_SIGNATURE) {
+		SECITEM_ZfreeItem(digp->data, PR_TRUE);
+	    } else {
+		SECKEY_DestroyPublicKey(digp->data);
+	    }
+	}
+	memset(digp, 0, sizeof(*digp));
+    }
+}
+
 void pgpCleanDig(pgpDig dig)
 {
     if (dig != NULL) {
-	int i;
-	dig->signature.userid = _free(dig->signature.userid);
-	dig->pubkey.userid = _free(dig->pubkey.userid);
-	dig->signature.hash = _free(dig->signature.hash);
-	dig->pubkey.hash = _free(dig->pubkey.hash);
-	/* FIX: double indirection */
-	for (i = 0; i < 4; i++) {
-	    dig->signature.params[i] = _free(dig->signature.params[i]);
-	    dig->pubkey.params[i] = _free(dig->pubkey.params[i]);
-	}
-
-	memset(&dig->signature, 0, sizeof(dig->signature));
-	memset(&dig->pubkey, 0, sizeof(dig->pubkey));
-
-	if (dig->pubkey.data != NULL) {
-	    SECKEY_DestroyPublicKey(dig->pubkey.data);
-	    dig->pubkey.data = NULL;
-	}
-
-	if (dig->signature.data != NULL) {
-	    SECITEM_ZfreeItem(dig->signature.data, PR_TRUE);
-	    dig->signature.data = NULL;
-	}
+	pgpCleanDigParams(&dig->signature);
+	pgpCleanDigParams(&dig->pubkey);
     }
     return;
 }
