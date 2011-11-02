@@ -32,6 +32,7 @@ struct pgpDigParams_s {
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
 
+    void *data;			/*!< algorithm specific data */
 };
 
 /** \ingroup rpmio
@@ -40,10 +41,6 @@ struct pgpDigParams_s {
 struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
-
-    /* DSA/RSA parameters */
-    SECKEYPublicKey *keydata;
-    SECItem *sigdata;
 };
 
 #endif /* _RPMDIGEST_H */
