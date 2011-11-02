@@ -15,9 +15,6 @@
 
 #include "debug.h"
 
-
-static int _debug = 0;
-
 static int _print = 0;
 
 static int _crypto_initialized = 0;
@@ -310,8 +307,8 @@ int pgpValTok(pgpValTbl vs, const char * s, const char * se)
 /**
  * @return		0 on success
  */
-static int pgpMpiSet(const char * pre, unsigned int lbits,
-		uint8_t *dest, const uint8_t * p, const uint8_t * pend)
+static int pgpMpiSet(unsigned int lbits, uint8_t *dest,
+		     const uint8_t * p, const uint8_t * pend)
 {
     unsigned int mbits = pgpMpiBits(p);
     unsigned int nbits;
@@ -329,12 +326,9 @@ static int pgpMpiSet(const char * pre, unsigned int lbits,
     nbytes = ((nbits + 7) >> 3);
     ix = (nbits - mbits) >> 3;
 
-if (_debug)
-fprintf(stderr, "*** mbits %u nbits %u nbytes %zu ix %u\n", mbits, nbits, nbytes, ix);
-    if (ix > 0) memset(t, '\0', ix);
+    if (ix > 0)
+	memset(t, '\0', ix);
     memcpy(t+ix, p+2, nbytes-ix);
-if (_debug)
-fprintf(stderr, "*** %s %s\n", pre, pgpHexStr(dest, nbytes));
 
     return 0;
 }
@@ -658,10 +652,10 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		case 0:
 		    memset(dsaraw.data, '\0', 2*DSA_SUBPRIME_LEN);
 				/* r */
-		    xx = pgpMpiSet(pgpSigDSA[i], DSA_SUBPRIME_LEN*8, dsaraw.data, p, pend);
+		    xx = pgpMpiSet(DSA_SUBPRIME_LEN*8, dsaraw.data, p, pend);
 		    break;
 		case 1:		/* s */
-		    xx = pgpMpiSet(pgpSigDSA[i], DSA_SUBPRIME_LEN*8, dsaraw.data + DSA_SUBPRIME_LEN, p, pend);
+		    xx = pgpMpiSet(DSA_SUBPRIME_LEN*8, dsaraw.data + DSA_SUBPRIME_LEN, p, pend);
 		    if (sigp->data != NULL)
 		    	SECITEM_FreeItem(sigp->data, PR_FALSE);
 		    else if ((sigp->data=SECITEM_AllocItem(NULL, NULL, 0)) == NULL) {
@@ -753,8 +747,6 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if ((p + plen) > (h + hlen))
 	    return 1;
 
-if (_debug && _print)
-fprintf(stderr, "   hash[%zu] -- %s\n", plen, pgpHexStr(p, plen));
 	if (_digp && _digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
@@ -769,8 +761,6 @@ fprintf(stderr, "   hash[%zu] -- %s\n", plen, pgpHexStr(p, plen));
 	if ((p + plen) > (h + hlen))
 	    return 1;
 
-if (_debug && _print)
-fprintf(stderr, " unhash[%zu] -- %s\n", plen, pgpHexStr(p, plen));
 	if (pgpPrtSubType(p, plen, v->sigtype, _digp))
 	    return 1;
 	p += plen;
