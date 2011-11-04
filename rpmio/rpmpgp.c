@@ -1139,18 +1139,22 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     const uint8_t *p;
     size_t pleft;
     int len;
+    struct pgpDigParams_s tmp;
     pgpDigParams _digp = NULL;
+    unsigned int tag;
 
     if (!(val & 0x80))
 	return -1;
 
     _print = printing;
+    tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
     if (dig != NULL) {
-	pgpTag tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
 	_digp = (tag == PGPTAG_SIGNATURE) ? &dig->signature : &dig->pubkey;
-	_digp->tag = tag;
-    } else
-	_digp = NULL;
+    } else {
+	_digp = &tmp;
+	memset(_digp, 0, sizeof(*_digp));
+    }
+    _digp->tag = tag;
 
     for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
 	len = pgpPrtPkt(p, pleft, _digp);
@@ -1159,6 +1163,10 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 	if (len > pleft)	/* XXX shouldn't happen */
 	    break;
     }
+
+    if (_digp == &tmp)
+	pgpCleanDigParams(_digp);
+
     return 0;
 }
 
