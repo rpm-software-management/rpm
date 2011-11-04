@@ -1135,14 +1135,17 @@ pgpDig pgpFreeDig(pgpDig dig)
 
 int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 {
-    unsigned int val = *pkts;
+    unsigned int val = (pkts != NULL) ? *pkts : 0;
     const uint8_t *p;
     size_t pleft;
     int len;
     pgpDigParams _digp = NULL;
 
+    if (!(val & 0x80))
+	return -1;
+
     _print = printing;
-    if (dig != NULL && (val & 0x80)) {
+    if (dig != NULL) {
 	pgpTag tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
 	_digp = (tag == PGPTAG_SIGNATURE) ? &dig->signature : &dig->pubkey;
 	_digp->tag = tag;
