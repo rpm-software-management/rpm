@@ -1,11 +1,6 @@
 #ifndef _RPMDIGEST_H
 #define _RPMDIGEST_H
 
-#include <nss.h>
-#include <sechash.h>
-#include <keyhi.h>
-#include <cryptohi.h>
-
 #include <rpm/rpmpgp.h>
 #include "rpmio/base64.h"
 
@@ -64,4 +59,26 @@ pgpDigAlg pgpSignatureNew(int algo);
 
 pgpDigAlg pgpDigAlgFree(pgpDigAlg da);
 
+/** \ingroup rpmpgp
+ * Return no. of bits in a multiprecision integer.
+ * @param p		pointer to multiprecision integer
+ * @return		no. of bits
+ */
+static inline
+unsigned int pgpMpiBits(const uint8_t *p)
+{
+    return ((p[0] << 8) | p[1]);
+}
+
+/** \ingroup rpmpgp
+ * Return no. of bytes in a multiprecision integer.
+ * @param p		pointer to multiprecision integer
+ * @return		no. of bytes
+ */
+static inline
+size_t pgpMpiLen(const uint8_t *p)
+{
+    return (2 + ((pgpMpiBits(p)+7)>>3));
+}
+	
 #endif /* _RPMDIGEST_H */
