@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <inttypes.h>
+#include <netinet/in.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>

@@ -5,6 +5,8 @@
 
 #include "system.h"
 
+#include <ctype.h>
+
 #include <rpm/rpmlib.h>			/* RPMSIGTAG & related */
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmcli.h>
