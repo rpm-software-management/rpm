@@ -603,72 +603,83 @@ static const char * const pgpSigDSA[] = {
 #define DSA_SUBPRIME_LEN 20
 #endif
 
+static int pgpSetSigMpiDSA(pgpDigParams pgpsig, int num,
+			   const uint8_t *p, const uint8_t *pend)
+{
+    SECItem *sig = pgpsig->data;
+    int lbits = DSA_SUBPRIME_LEN * 8;
+    int rc = 1; /* assume failure */
+
+    switch (num) {
+    case 0:
+	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, 2*DSA_SUBPRIME_LEN);
+	memset(sig->data, 0, 2 * DSA_SUBPRIME_LEN);
+	rc = pgpMpiSet(lbits, sig->data, p, pend);
+	break;
+    case 1:
+	if (sig && pgpMpiSet(lbits, sig->data+DSA_SUBPRIME_LEN, p, pend) == 0) {
+	    SECItem *signew = SECITEM_AllocItem(NULL, NULL, 0);
+	    if (signew && DSAU_EncodeDerSig(signew, sig) == SECSuccess) {
+		SECITEM_FreeItem(sig, PR_TRUE);
+		pgpsig->data = signew;
+		rc = 0;
+	    }
+	}
+	break;
+    }
+
+    return rc;
+}
+
+static int pgpSetSigMpiRSA(pgpDigParams pgpsig, int num,
+			   const uint8_t *p, const uint8_t *pend)
+{
+    SECItem *sigitem = NULL;
+
+    if (num == 0) {
+       sigitem = pgpMpiItem(NULL, pgpsig->data, p, pend);
+       if (sigitem)
+           pgpsig->data = sigitem;
+    }
+    return (sigitem == NULL);
+}
+
+typedef int (*setmpifunc)(pgpDigParams digp,
+			  int num, const uint8_t *p, const uint8_t *pend);
+
 static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams sigp)
 {
     const uint8_t * pend = h + hlen;
     int i, mpis = -1;
-    SECItem dsaraw;
-    unsigned char dsabuf[2*DSA_SUBPRIME_LEN];
+    const char * const * sigtbl;
     char *mpi;
+    setmpifunc setmpi = NULL;
 
     switch (pubkey_algo) {
     case PGPPUBKEYALGO_RSA:
 	mpis = 1;
+	setmpi = pgpSetSigMpiRSA;
+	sigtbl = pgpSigRSA;
 	break;
     case PGPPUBKEYALGO_DSA:
 	mpis = 2;
+	setmpi = pgpSetSigMpiDSA;
+	sigtbl = pgpSigDSA;
+	break;
+    default:
+	return 1;
 	break;
     }
 
-    dsaraw.type = 0;
-    dsaraw.data = dsabuf;
-    dsaraw.len = sizeof(dsabuf);
-    
     for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
-	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-		switch (i) {
-		case 0:		/* m**d */
-		    sigp->data = pgpMpiItem(NULL, sigp->data, p, pend);
-		    if (sigp->data == NULL)
-			return 1;
-		    break;
-		default:
-		    break;
-		}
-	    }
-	    pgpPrtStr("", pgpSigRSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-		int xx;
-		xx = 0;
-		switch (i) {
-		case 0:
-		    memset(dsaraw.data, '\0', 2*DSA_SUBPRIME_LEN);
-				/* r */
-		    xx = pgpMpiSet(DSA_SUBPRIME_LEN*8, dsaraw.data, p, pend);
-		    break;
-		case 1:		/* s */
-		    xx = pgpMpiSet(DSA_SUBPRIME_LEN*8, dsaraw.data + DSA_SUBPRIME_LEN, p, pend);
-		    if (sigp->data != NULL)
-		    	SECITEM_FreeItem(sigp->data, PR_FALSE);
-		    else if ((sigp->data=SECITEM_AllocItem(NULL, NULL, 0)) == NULL) {
-		        xx = 1;
-		        break;
-		    }
-		    if (DSAU_EncodeDerSig(sigp->data, &dsaraw) != SECSuccess)
-		    	xx = 1;
-		    break;
-		default:
-		    xx = 1;
-		    break;
-		}
-		if (xx) return xx;
-	    }
-	    pgpPrtStr("", pgpSigDSA[i]);
+	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
+	    if (setmpi(sigp, i, p, pend))
+		return 1;
+	    pgpPrtStr("", sigtbl[i]);
 	}
+
 	mpi = pgpMpiStr(p);
 	pgpPrtStr("", mpi);
 	free(mpi);
