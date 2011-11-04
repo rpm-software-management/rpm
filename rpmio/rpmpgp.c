@@ -631,6 +631,35 @@ static int pgpSetSigMpiDSA(pgpDigParams pgpsig, int num,
     return rc;
 }
 
+static int pgpSetKeyMpiDSA(pgpDigParams pgpkey, int num,
+			   const uint8_t *p, const uint8_t *pend)
+{
+    SECItem *mpi = NULL;
+    SECKEYPublicKey *key = pgpkey->data;
+
+    if (key == NULL)
+	key = pgpkey->data = pgpNewPublicKey(dsaKey);
+
+    if (key) {
+	switch (num) {
+	case 0:
+	    mpi = pgpMpiItem(key->arena, &key->u.dsa.params.prime, p, pend);
+	    break;
+	case 1:
+	    mpi = pgpMpiItem(key->arena, &key->u.dsa.params.subPrime, p, pend);
+	    break;
+	case 2:
+	    mpi = pgpMpiItem(key->arena, &key->u.dsa.params.base, p, pend);
+	    break;
+	case 3:
+	    mpi = pgpMpiItem(key->arena, &key->u.dsa.publicValue, p, pend);
+	    break;
+	}
+    }
+
+    return (mpi == NULL);
+}
+
 static int pgpSetSigMpiRSA(pgpDigParams pgpsig, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
@@ -642,6 +671,29 @@ static int pgpSetSigMpiRSA(pgpDigParams pgpsig, int num,
            pgpsig->data = sigitem;
     }
     return (sigitem == NULL);
+}
+
+static int pgpSetKeyMpiRSA(pgpDigParams pgpkey, int num,
+			   const uint8_t *p, const uint8_t *pend)
+{
+    SECItem *kitem = NULL;
+    SECKEYPublicKey *key = pgpkey->data;
+
+    if (key == NULL)
+	key = pgpkey->data = pgpNewPublicKey(rsaKey);
+
+    if (key) {
+	switch (num) {
+	case 0:
+	    kitem = pgpMpiItem(key->arena, &key->u.rsa.modulus, p, pend);
+	    break;
+	case 1:
+	    kitem = pgpMpiItem(key->arena, &key->u.rsa.publicExponent, p, pend);
+	    break;
+	}
+    }
+
+    return (kitem == NULL);
 }
 
 typedef int (*setmpifunc)(pgpDigParams digp,
@@ -839,6 +891,8 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 {
     const uint8_t *pend = h + hlen;
     int i, mpis = -1;
+    const char * const * keytbl;
+    setmpifunc setmpi = NULL;
 
     /* XXX we can't handle more than one key in a packet, error out */
     if (keyp->data)
@@ -847,59 +901,27 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
     switch (pubkey_algo) {
     case PGPPUBKEYALGO_RSA:
 	mpis = 2;
+	setmpi = pgpSetKeyMpiRSA;
+	keytbl = pgpPublicRSA;
 	break;
     case PGPPUBKEYALGO_DSA:
 	mpis = 4;
+	setmpi = pgpSetKeyMpiDSA;
+	keytbl = pgpPublicDSA;
+	break;
+    default:
+	return NULL;
 	break;
     }
 
     for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
 	char * mpi;
-	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    SECKEYPublicKey *key = keyp->data;
-	    if (key == NULL) {
-		key = keyp->data = pgpNewPublicKey(rsaKey);
-		if (key == NULL)
-		    return NULL;
-	    }
-	    switch (i) {
-	    case 0:		/* n */
-		pgpMpiItem(key->arena, &key->u.rsa.modulus, p, pend);
-		break;
-	    case 1:		/* e */
-		pgpMpiItem(key->arena, &key->u.rsa.publicExponent, p, pend);
-		break;
-	    default:
-		break;
-	    }
-	    pgpPrtStr("", pgpPublicRSA[i]);
-	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    SECKEYPublicKey *key = keyp->data;
-	    if (key == NULL) {
-		key = keyp->data = pgpNewPublicKey(dsaKey);
-		if (key == NULL)
-		    return NULL;
-	    }
-	    switch (i) {
-	    case 0:		/* p */
-		pgpMpiItem(key->arena, &key->u.dsa.params.prime, p, pend);
-		break;
-	    case 1:		/* q */
-		pgpMpiItem(key->arena, &key->u.dsa.params.subPrime, p, pend);
-		break;
-	    case 2:		/* g */
-		pgpMpiItem(key->arena, &key->u.dsa.params.base, p, pend);
-		break;
-	    case 3:		/* y */
-		pgpMpiItem(key->arena, &key->u.dsa.publicValue, p, pend);
-		break;
-	    default:
-		break;
-	    }
-	    pgpPrtStr("", pgpPublicDSA[i]);
-	}
+
+	if (setmpi(keyp, i, p, pend))
+	    return NULL;
+
 	mpi = pgpMpiStr(p);
-	pgpPrtStr("", mpi);
+	pgpPrtStr(keytbl[i], mpi);
 	free(mpi);
 	pgpPrtNL();
     }
