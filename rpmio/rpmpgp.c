@@ -189,14 +189,6 @@ static void pgpPrtNL(void)
     fprintf(stderr, "\n");
 }
 
-static void pgpPrtStr(const char *pre, const char *s)
-{
-    if (!_print) return;
-    if (pre && *pre)
-	fprintf(stderr, "%s", pre);
-    fprintf(stderr, " %s", s);
-}
-
 static const char * pgpValStr(pgpValTbl vs, uint8_t val)
 {
     do {
@@ -588,22 +580,11 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
     return (hlen != 0); /* non-zero hlen is an error */
 }
 
-static const char * const pgpSigRSA[] = {
-    " m**d =",
-    NULL,
-};
-
-static const char * const pgpSigDSA[] = {
-    "    r =",
-    "    s =",
-    NULL,
-};
-
 #ifndef DSA_SUBPRIME_LEN
 #define DSA_SUBPRIME_LEN 20
 #endif
 
-static int pgpSetSigMpiDSA(pgpDigParams pgpsig, int num,
+static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
     SECItem *sig = pgpsig->data;
@@ -631,7 +612,7 @@ static int pgpSetSigMpiDSA(pgpDigParams pgpsig, int num,
     return rc;
 }
 
-static int pgpSetKeyMpiDSA(pgpDigParams pgpkey, int num,
+static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
     SECItem *mpi = NULL;
@@ -660,8 +641,8 @@ static int pgpSetKeyMpiDSA(pgpDigParams pgpkey, int num,
     return (mpi == NULL);
 }
 
-static int pgpVerifySigDSA(pgpDigParams pgpkey, pgpDigParams pgpsig,
-			   uint8_t *hash, size_t hashlen)
+static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
+			   uint8_t *hash, size_t hashlen, int hash_algo)
 {
     SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
     SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
@@ -673,7 +654,7 @@ static int pgpVerifySigDSA(pgpDigParams pgpkey, pgpDigParams pgpsig,
     return (rc != SECSuccess);
 }
 
-static int pgpSetSigMpiRSA(pgpDigParams pgpsig, int num,
+static int pgpSetSigMpiRSA(pgpDigAlg pgpsig, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
     SECItem *sigitem = NULL;
@@ -686,7 +667,7 @@ static int pgpSetSigMpiRSA(pgpDigParams pgpsig, int num,
     return (sigitem == NULL);
 }
 
-static int pgpSetKeyMpiRSA(pgpDigParams pgpkey, int num,
+static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
     SECItem *kitem = NULL;
@@ -709,8 +690,8 @@ static int pgpSetKeyMpiRSA(pgpDigParams pgpkey, int num,
     return (kitem == NULL);
 }
 
-static int pgpVerifySigRSA(pgpDigParams pgpkey, pgpDigParams pgpsig,
-			   uint8_t *hash, size_t hashlen)
+static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
+			   uint8_t *hash, size_t hashlen, int hash_algo)
 {
     SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
     SECItem *sig = pgpsig->data;
@@ -720,7 +701,7 @@ static int pgpVerifySigRSA(pgpDigParams pgpkey, pgpDigParams pgpsig,
     SECStatus rc = SECFailure;
     size_t siglen, padlen;
 
-    switch (pgpsig->hash_algo) {
+    switch (hash_algo) {
     case PGPHASHALGO_MD5:
 	sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
 	break;
@@ -765,52 +746,121 @@ static int pgpVerifySigRSA(pgpDigParams pgpkey, pgpDigParams pgpsig,
     return (rc != SECSuccess);
 }
 
-typedef int (*setmpifunc)(pgpDigParams digp,
-			  int num, const uint8_t *p, const uint8_t *pend);
-typedef int (*verifyfunc)(pgpDigParams pgpkey, pgpDigParams pgpsig,
-			  uint8_t *hash, size_t hashlen);
+static void pgpFreeSigRSADSA(pgpDigAlg sa)
+{
+    SECITEM_ZfreeItem(sa->data, PR_TRUE);
+    sa->data = NULL;
+}
+
+static void pgpFreeKeyRSADSA(pgpDigAlg ka)
+{
+    SECKEY_DestroyPublicKey(ka->data);
+    ka->data = NULL;
+}
+
+static int pgpSetMpiNULL(pgpDigAlg pgpkey, int num,
+			 const uint8_t *p, const uint8_t *pend)
+{
+    return 1;
+}
+
+static int pgpVerifyNULL(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
+			 uint8_t *hash, size_t hashlen, int hash_algo)
+{
+    return 1;
+}
+
+pgpDigAlg pgpPubkeyNew(int algo)
+{
+    pgpDigAlg ka = xcalloc(1, sizeof(*ka));;
+
+    switch (algo) {
+    case PGPPUBKEYALGO_RSA:
+	ka->setmpi = pgpSetKeyMpiRSA;
+	ka->free = pgpFreeKeyRSADSA;
+	ka->mpis = 2;
+	break;
+    case PGPPUBKEYALGO_DSA:
+	ka->setmpi = pgpSetKeyMpiDSA;
+	ka->free = pgpFreeKeyRSADSA;
+	ka->mpis = 4;
+	break;
+    default:
+	ka->setmpi = pgpSetMpiNULL;
+	ka->mpis = -1;
+	break;
+    }
+
+    ka->verify = pgpVerifyNULL; /* keys can't be verified */
+
+    return ka;
+}
+
+pgpDigAlg pgpSignatureNew(int algo)
+{
+    pgpDigAlg sa = xcalloc(1, sizeof(*sa));
+
+    switch (algo) {
+    case PGPPUBKEYALGO_RSA:
+	sa->setmpi = pgpSetSigMpiRSA;
+	sa->free = pgpFreeSigRSADSA;
+	sa->verify = pgpVerifySigRSA;
+	sa->mpis = 1;
+	break;
+    case PGPPUBKEYALGO_DSA:
+	sa->setmpi = pgpSetSigMpiDSA;
+	sa->free = pgpFreeSigRSADSA;
+	sa->verify = pgpVerifySigDSA;
+	sa->mpis = 2;
+	break;
+    default:
+	sa->setmpi = pgpSetMpiNULL;
+	sa->verify = pgpVerifyNULL;
+	sa->mpis = -1;
+	break;
+    }
+    return sa;
+}
+
+pgpDigAlg pgpDigAlgFree(pgpDigAlg alg)
+{
+    if (alg) {
+	if (alg->free)
+	    alg->free(alg);
+	free(alg);
+    }
+    return NULL;
+}
 
 static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams sigp)
 {
-    const uint8_t * pend = h + hlen;
-    int i, mpis = -1;
-    const char * const * sigtbl;
-    char *mpi;
-    setmpifunc setmpi = NULL;
+    int rc = 1; /* assume failure */
 
-    switch (pubkey_algo) {
-    case PGPPUBKEYALGO_RSA:
-	mpis = 1;
-	setmpi = pgpSetSigMpiRSA;
-	sigtbl = pgpSigRSA;
-	break;
-    case PGPPUBKEYALGO_DSA:
-	mpis = 2;
-	setmpi = pgpSetSigMpiDSA;
-	sigtbl = pgpSigDSA;
-	break;
-    default:
-	return 1;
-	break;
-    }
+    /* can't handle more than one sig at a time */
+    if (sigp->alg == NULL) {
+	const uint8_t * pend = h + hlen;
+	int i;
+	pgpDigAlg sigalg = pgpSignatureNew(pubkey_algo);
 
-    for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
-	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-	    if (setmpi(sigp, i, p, pend))
-		return 1;
-	    pgpPrtStr("", sigtbl[i]);
+	for (i = 0; p < pend && i < sigalg->mpis; i++, p += pgpMpiLen(p)) {
+	    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
+		if (sigalg->setmpi(sigalg, i, p, pend))
+		    break;
+	    }
 	}
 
-	mpi = pgpMpiStr(p);
-	pgpPrtStr("", mpi);
-	free(mpi);
-	pgpPrtNL();
+	/* Does the size and number of MPI's match our expectations? */
+	if (p == pend && i == sigalg->mpis) {
+	    sigp->alg = sigalg;
+	    rc = 0;
+	} else {
+	    pgpDigAlgFree(sigalg);
+	}
     }
 
-    /* Does the size and number of MPI's match our expectations? */
-    return (p == pend && i == mpis) ? 0 : 1;
+    return rc;
 }
 
 static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
@@ -920,27 +970,6 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
     return rc;
 }
 
-static const char * const pgpPublicRSA[] = {
-    "    n =",
-    "    e =",
-    NULL,
-};
-
-static const char * const pgpPublicDSA[] = {
-    "    p =",
-    "    q =",
-    "    g =",
-    "    y =",
-    NULL,
-};
-
-static const char * const pgpPublicELGAMAL[] = {
-    "    p =",
-    "    g =",
-    "    y =",
-    NULL,
-};
-
 char * pgpHexStr(const uint8_t *p, size_t plen)
 {
     char *t, *str;
@@ -960,45 +989,30 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams keyp)
 {
-    const uint8_t *pend = h + hlen;
-    int i, mpis = -1;
-    const char * const * keytbl;
-    setmpifunc setmpi = NULL;
+    const uint8_t *res = NULL;
 
-    /* XXX we can't handle more than one key in a packet, error out */
-    if (keyp->data)
-	return NULL;
+    /* we can't handle more than one key at a time */
+    if (keyp->alg == NULL) {
+	const uint8_t *pend = h + hlen;
+	int i;
+	pgpDigAlg keyalg = pgpPubkeyNew(pubkey_algo);
 
-    switch (pubkey_algo) {
-    case PGPPUBKEYALGO_RSA:
-	mpis = 2;
-	setmpi = pgpSetKeyMpiRSA;
-	keytbl = pgpPublicRSA;
-	break;
-    case PGPPUBKEYALGO_DSA:
-	mpis = 4;
-	setmpi = pgpSetKeyMpiDSA;
-	keytbl = pgpPublicDSA;
-	break;
-    default:
-	return NULL;
-	break;
+	for (i = 0; p < pend && i < keyalg->mpis; i++, p += pgpMpiLen(p)) {
+	    if (keyalg->setmpi(keyalg, i, p, pend)) {
+		break;
+	    }
+	}
+
+	/* Does the size and number of MPI's match our expectations? */
+	if (p == pend && i == keyalg->mpis) {
+	    res = p;
+	    keyp->alg = keyalg;
+	} else {
+	    pgpDigAlgFree(keyalg);
+	}
     }
 
-    for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
-	char * mpi;
-
-	if (setmpi(keyp, i, p, pend))
-	    return NULL;
-
-	mpi = pgpMpiStr(p);
-	pgpPrtStr(keytbl[i], mpi);
-	free(mpi);
-	pgpPrtNL();
-    }
-
-    /* Does the size and number of MPI's match our expectations? */
-    return (p == pend && i == mpis) ? p : NULL;
+    return res;
 }
 
 static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
@@ -1189,18 +1203,12 @@ pgpDig pgpNewDig(void)
 static void pgpCleanDigParams(pgpDigParams digp)
 {
     if (digp) {
+	pgpDigAlgFree(digp->alg);
 	free(digp->userid);
 	free(digp->hash);
 	for (int i = 0; i < 4; i++) 
 	    free(digp->params[i]);
 
-	if (digp->data != NULL) {
-	    if (digp->tag == PGPTAG_SIGNATURE) {
-		SECITEM_ZfreeItem(digp->data, PR_TRUE);
-	    } else {
-		SECKEY_DestroyPublicKey(digp->data);
-	    }
-	}
 	memset(digp, 0, sizeof(*digp));
     }
 }
@@ -1316,21 +1324,16 @@ rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
      * If we have a key, verify the signature for real. Otherwise we've
      * done all we can, return NOKEY to indicate "looks okay but dunno."
      */
-    if (dig->pubkey.data == NULL) {
+    if (dig->pubkey.alg == NULL) {
 	res = RPMRC_NOKEY;
     } else {
-	verifyfunc vfy = NULL;
-	switch (sigp->pubkey_algo) {
-	case PGPPUBKEYALGO_RSA:
-	    vfy = pgpVerifySigRSA;
-	    break;
-	case PGPPUBKEYALGO_DSA:
-	    vfy = pgpVerifySigDSA;
-	    break;
+	pgpDigAlg sa = dig->signature.alg;
+	pgpDigAlg ka = dig->pubkey.alg;
+	if (sa && sa->verify) {
+	    if (sa->verify(ka, sa, hash, hashlen, sigp->hash_algo) == 0) {
+		res = RPMRC_OK;
+	    }
 	}
-
-	if (vfy && vfy(&dig->pubkey, &dig->signature, hash, hashlen) == 0)
-	    res = RPMRC_OK;
     }
 
 exit:

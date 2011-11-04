@@ -9,6 +9,21 @@
 #include <rpm/rpmpgp.h>
 #include "rpmio/base64.h"
 
+typedef struct pgpDigAlg_s * pgpDigAlg;
+
+typedef int (*setmpifunc)(pgpDigAlg digp,
+                          int num, const uint8_t *p, const uint8_t *pend);
+typedef int (*verifyfunc)(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
+                          uint8_t *hash, size_t hashlen, int hash_algo);
+typedef void (*freefunc)(pgpDigAlg digp);
+
+struct pgpDigAlg_s {
+    setmpifunc setmpi;
+    verifyfunc verify;
+    freefunc free;
+    int mpis;
+    void *data;			/*!< algorithm specific private data */
+};
 
 /** \ingroup rpmio
  * Values parsed from OpenPGP signature/pubkey packet(s).
@@ -32,7 +47,7 @@ struct pgpDigParams_s {
 #define	PGPDIG_SAVED_TIME	(1 << 0)
 #define	PGPDIG_SAVED_ID		(1 << 1)
 
-    void *data;			/*!< algorithm specific data */
+    pgpDigAlg alg;
 };
 
 /** \ingroup rpmio
@@ -42,5 +57,11 @@ struct pgpDig_s {
     struct pgpDigParams_s signature;
     struct pgpDigParams_s pubkey;
 };
+
+pgpDigAlg pgpPubkeyNew(int algo);
+
+pgpDigAlg pgpSignatureNew(int algo);
+
+pgpDigAlg pgpDigAlgFree(pgpDigAlg da);
 
 #endif /* _RPMDIGEST_H */
