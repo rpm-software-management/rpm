@@ -528,7 +528,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 		pgpPrtVal(" ", pgpKeyServerPrefsTbl, p[i]);
 	    break;
 	case PGPSUBTYPE_SIG_CREATE_TIME:
-	    if (_digp && !(_digp->saved & PGPDIG_SAVED_TIME) &&
+	    if (!(_digp->saved & PGPDIG_SAVED_TIME) &&
 		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
 		_digp->saved |= PGPDIG_SAVED_TIME;
@@ -545,7 +545,7 @@ static int pgpPrtSubType(const uint8_t *h, size_t hlen, pgpSigType sigtype,
 	    break;
 
 	case PGPSUBTYPE_ISSUER_KEYID:	/* issuer key ID */
-	    if (_digp && !(_digp->saved & PGPDIG_SAVED_ID) &&
+	    if (!(_digp->saved & PGPDIG_SAVED_ID) &&
 		(sigtype == PGPSIGTYPE_POSITIVE_CERT || sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT || sigtype == PGPSIGTYPE_STANDALONE))
 	    {
 		_digp->saved |= PGPDIG_SAVED_ID;
@@ -628,9 +628,7 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     
     for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    if (sigp &&
-	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
-	    {
+	    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
 		switch (i) {
 		case 0:		/* m**d */
 		    sigp->data = pgpMpiItem(NULL, sigp->data, p, pend);
@@ -643,9 +641,7 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 	    }
 	    pgpPrtStr("", pgpSigRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    if (sigp &&
-	(sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT))
-	    {
+	    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
 		int xx;
 		xx = 0;
 		switch (i) {
@@ -713,7 +709,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtHex(" signhash16", v->signhash16, sizeof(v->signhash16));
 	pgpPrtNL();
 
-	if (_digp && _digp->pubkey_algo == 0) {
+	if (_digp->pubkey_algo == 0) {
 	    _digp->version = v->version;
 	    _digp->hashlen = v->hashlen;
 	    _digp->sigtype = v->sigtype;
@@ -747,7 +743,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	if ((p + plen) > (h + hlen))
 	    return 1;
 
-	if (_digp && _digp->pubkey_algo == 0) {
+	if (_digp->pubkey_algo == 0) {
 	    _digp->hashlen = sizeof(*v) + plen;
 	    _digp->hash = memcpy(xmalloc(_digp->hashlen), v, _digp->hashlen);
 	}
@@ -769,7 +765,7 @@ static int pgpPrtSig(pgpTag tag, const uint8_t *h, size_t hlen,
 	pgpPrtHex(" signhash16", p, 2);
 	pgpPrtNL();
 
-	if (_digp && _digp->pubkey_algo == 0) {
+	if (_digp->pubkey_algo == 0) {
 	    _digp->version = v->version;
 	    _digp->sigtype = v->sigtype;
 	    _digp->pubkey_algo = v->pubkey_algo;
@@ -834,7 +830,7 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
     int i, mpis = -1;
 
     /* XXX we can't handle more than one key in a packet, error out */
-    if (keyp && keyp->data)
+    if (keyp->data)
 	return NULL;
 
     switch (pubkey_algo) {
@@ -849,49 +845,45 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
     for (i = 0; p < pend && i < mpis; i++, p += pgpMpiLen(p)) {
 	char * mpi;
 	if (pubkey_algo == PGPPUBKEYALGO_RSA) {
-	    if (keyp) {
-		SECKEYPublicKey *key = keyp->data;
-		if (key == NULL) {
-		    key = keyp->data = pgpNewPublicKey(rsaKey);
-		    if (key == NULL)
-			return NULL;
-		}
-		switch (i) {
-		case 0:		/* n */
-		    pgpMpiItem(key->arena, &key->u.rsa.modulus, p, pend);
-		    break;
-		case 1:		/* e */
-		    pgpMpiItem(key->arena, &key->u.rsa.publicExponent, p, pend);
-		    break;
-		default:
-		    break;
-		}
+	    SECKEYPublicKey *key = keyp->data;
+	    if (key == NULL) {
+		key = keyp->data = pgpNewPublicKey(rsaKey);
+		if (key == NULL)
+		    return NULL;
+	    }
+	    switch (i) {
+	    case 0:		/* n */
+		pgpMpiItem(key->arena, &key->u.rsa.modulus, p, pend);
+		break;
+	    case 1:		/* e */
+		pgpMpiItem(key->arena, &key->u.rsa.publicExponent, p, pend);
+		break;
+	    default:
+		break;
 	    }
 	    pgpPrtStr("", pgpPublicRSA[i]);
 	} else if (pubkey_algo == PGPPUBKEYALGO_DSA) {
-	    if (keyp) {
-		SECKEYPublicKey *key = keyp->data;
-		if (key == NULL) {
-		    key = keyp->data = pgpNewPublicKey(dsaKey);
-		    if (key == NULL)
-			return NULL;
-		}
-		switch (i) {
-		case 0:		/* p */
-		    pgpMpiItem(key->arena, &key->u.dsa.params.prime, p, pend);
-		    break;
-		case 1:		/* q */
-		    pgpMpiItem(key->arena, &key->u.dsa.params.subPrime, p, pend);
-		    break;
-		case 2:		/* g */
-		    pgpMpiItem(key->arena, &key->u.dsa.params.base, p, pend);
-		    break;
-		case 3:		/* y */
-		    pgpMpiItem(key->arena, &key->u.dsa.publicValue, p, pend);
-		    break;
-		default:
-		    break;
-		}
+	    SECKEYPublicKey *key = keyp->data;
+	    if (key == NULL) {
+		key = keyp->data = pgpNewPublicKey(dsaKey);
+		if (key == NULL)
+		    return NULL;
+	    }
+	    switch (i) {
+	    case 0:		/* p */
+		pgpMpiItem(key->arena, &key->u.dsa.params.prime, p, pend);
+		break;
+	    case 1:		/* q */
+		pgpMpiItem(key->arena, &key->u.dsa.params.subPrime, p, pend);
+		break;
+	    case 2:		/* g */
+		pgpMpiItem(key->arena, &key->u.dsa.params.base, p, pend);
+		break;
+	    case 3:		/* y */
+		pgpMpiItem(key->arena, &key->u.dsa.publicValue, p, pend);
+		break;
+	    default:
+		break;
 	    }
 	    pgpPrtStr("", pgpPublicDSA[i]);
 	}
@@ -925,7 +917,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 		fprintf(stderr, " %-24.24s(0x%08x)", ctime(&t), (unsigned)t);
 	    pgpPrtNL();
 
-	    if (_digp && _digp->tag == tag) {
+	    if (_digp->tag == tag) {
 		_digp->version = v->version;
 		memcpy(_digp->time, v->time, sizeof(_digp->time));
 		_digp->pubkey_algo = v->pubkey_algo;
@@ -947,11 +939,9 @@ static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
     if (_print)
 	fprintf(stderr, " \"%.*s\"", (int)hlen, (const char *)h);
     pgpPrtNL();
-    if (_digp) {
-	free(_digp->userid);
-	_digp->userid = memcpy(xmalloc(hlen+1), h, hlen);
-	_digp->userid[hlen] = '\0';
-    }
+    free(_digp->userid);
+    _digp->userid = memcpy(xmalloc(hlen+1), h, hlen);
+    _digp->userid[hlen] = '\0';
     return 0;
 }
 
@@ -1047,12 +1037,10 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft, pgpDigParams _digp)
 	break;
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
-	if (_digp) {
-	    if (!getFingerprint(p.body, p.blen, _digp->signid))
-		_digp->saved |= PGPDIG_SAVED_ID;
-	    else
-		memset(_digp->signid, 0, sizeof(_digp->signid));
-	}
+	if (!getFingerprint(p.body, p.blen, _digp->signid))
+	    _digp->saved |= PGPDIG_SAVED_ID;
+	else
+	    memset(_digp->signid, 0, sizeof(_digp->signid));
 	rc = pgpPrtKey(p.tag, p.body, p.blen, _digp);
 	break;
     case PGPTAG_USER_ID:
