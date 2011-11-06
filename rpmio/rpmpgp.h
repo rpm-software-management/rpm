@@ -1046,6 +1046,17 @@ pgpDig pgpFreeDig(pgpDig dig);
 
 /** \ingroup rpmpgp
  * Verify a PGP signature.
+ * @param key		public key
+ * @param sig		signature
+ * @param hashctx	digest context
+ * @return 		RPMRC_OK on success 
+ */
+rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx);
+
+/** \ingroup rpmpgp
+ * Verify a PGP signature.
+ * @deprecated		use pgpVerifySignature() instead
+ *
  * @param dig		container
  * @param hashctx	digest context
  * @return 		RPMRC_OK on success 

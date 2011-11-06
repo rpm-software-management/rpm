@@ -479,7 +479,7 @@ verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr,
 
     /* Call verify even if we dont have a key for a basic sanity check */
     (void) rpmKeyringLookup(keyring, dig);
-    res = pgpVerifySig(dig, hashctx);
+    res = pgpVerifySignature(&dig->pubkey, &dig->signature, hashctx);
 
     sigid = pgpIdentItem(&dig->signature);
     rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 

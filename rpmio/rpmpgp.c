@@ -929,26 +929,25 @@ char *pgpIdentItem(pgpDigParams digp)
     return id;
 }
 
-rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
+rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
 {
     DIGEST_CTX ctx = rpmDigestDup(hashctx);
     uint8_t *hash = NULL;
     size_t hashlen = 0;
     rpmRC res = RPMRC_FAIL; /* assume failure */
-    pgpDigParams sigp = dig ? &dig->signature : NULL;
 
-    if (sigp == NULL || ctx == NULL)
+    if (sig == NULL || ctx == NULL)
 	goto exit;
 
-    if (sigp->hash != NULL)
-	rpmDigestUpdate(ctx, sigp->hash, sigp->hashlen);
+    if (sig->hash != NULL)
+	rpmDigestUpdate(ctx, sig->hash, sig->hashlen);
 
-    if (sigp->version == 4) {
+    if (sig->version == 4) {
 	/* V4 trailer is six octets long (rfc4880) */
 	uint8_t trailer[6];
-	uint32_t nb = sigp->hashlen;
+	uint32_t nb = sig->hashlen;
 	nb = htonl(nb);
-	trailer[0] = sigp->version;
+	trailer[0] = sig->version;
 	trailer[1] = 0xff;
 	memcpy(trailer+2, &nb, 4);
 	rpmDigestUpdate(ctx, trailer, sizeof(trailer));
@@ -957,20 +956,20 @@ rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
     rpmDigestFinal(ctx, (void **)&hash, &hashlen, 0);
 
     /* Compare leading 16 bits of digest for quick check. */
-    if (hash == NULL || memcmp(hash, sigp->signhash16, 2) != 0)
+    if (hash == NULL || memcmp(hash, sig->signhash16, 2) != 0)
 	goto exit;
 
     /*
      * If we have a key, verify the signature for real. Otherwise we've
      * done all we can, return NOKEY to indicate "looks okay but dunno."
      */
-    if (dig->pubkey.alg == NULL) {
+    if (key->alg == NULL) {
 	res = RPMRC_NOKEY;
     } else {
-	pgpDigAlg sa = dig->signature.alg;
-	pgpDigAlg ka = dig->pubkey.alg;
+	pgpDigAlg sa = sig->alg;
+	pgpDigAlg ka = key->alg;
 	if (sa && sa->verify) {
-	    if (sa->verify(ka, sa, hash, hashlen, sigp->hash_algo) == 0) {
+	    if (sa->verify(ka, sa, hash, hashlen, sig->hash_algo) == 0) {
 		res = RPMRC_OK;
 	    }
 	}
@@ -980,6 +979,14 @@ exit:
     free(hash);
     return res;
 
+}
+
+rpmRC pgpVerifySig(pgpDig dig, DIGEST_CTX hashctx)
+{
+    if (dig == NULL || hashctx == NULL)
+	return RPMRC_FAIL;
+
+    return pgpVerifySignature(&dig->pubkey, &dig->signature, hashctx);
 }
 
 static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
