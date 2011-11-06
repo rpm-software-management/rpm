@@ -320,7 +320,7 @@ static int decodePkt(const uint8_t *p, size_t plen, struct pgpPkt *pkt)
     int rc = -1; /* assume failure */
 
     /* Valid PGP packet header must always have two or more bytes in it */
-    if (plen >= 2 && p[0] & 0x80) {
+    if (p && plen >= 2 && p[0] & 0x80) {
 	size_t lenlen = 0;
 	size_t hlen = 0;
 
@@ -790,28 +790,24 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
     return rc;
 }
 
-static int pgpPrtPkt(const uint8_t *pkt, size_t pleft, pgpDigParams _digp)
+static int pgpPrtPkt(struct pgpPkt *p, pgpDigParams _digp)
 {
-    struct pgpPkt p;
     int rc = 0;
 
-    if (decodePkt(pkt, pleft, &p))
-	return -1;
-
-    switch (p.tag) {
+    switch (p->tag) {
     case PGPTAG_SIGNATURE:
-	rc = pgpPrtSig(p.tag, p.body, p.blen, _digp);
+	rc = pgpPrtSig(p->tag, p->body, p->blen, _digp);
 	break;
     case PGPTAG_PUBLIC_KEY:
 	/* Get the public key fingerprint. */
-	if (!getFingerprint(p.body, p.blen, _digp->signid))
+	if (!getFingerprint(p->body, p->blen, _digp->signid))
 	    _digp->saved |= PGPDIG_SAVED_ID;
 	else
 	    memset(_digp->signid, 0, sizeof(_digp->signid));
-	rc = pgpPrtKey(p.tag, p.body, p.blen, _digp);
+	rc = pgpPrtKey(p->tag, p->body, p->blen, _digp);
 	break;
     case PGPTAG_USER_ID:
-	rc = pgpPrtUserID(p.tag, p.body, p.blen, _digp);
+	rc = pgpPrtUserID(p->tag, p->body, p->blen, _digp);
 	break;
     case PGPTAG_COMMENT:
     case PGPTAG_COMMENT_OLD:
@@ -833,13 +829,13 @@ static int pgpPrtPkt(const uint8_t *pkt, size_t pleft, pgpDigParams _digp)
     case PGPTAG_PRIVATE_62:
     case PGPTAG_CONTROL:
     default:
-	pgpPrtVal("", pgpTagTbl, p.tag);
-	pgpPrtHex("", p.body, p.blen);
+	pgpPrtVal("", pgpTagTbl, p->tag);
+	pgpPrtHex("", p->body, p->blen);
 	pgpPrtNL();
 	break;
     }
 
-    return (rc ? -1 : (p.body - p.head) + p.blen);
+    return rc;
 }
 
 pgpDig pgpNewDig(void)
@@ -884,39 +880,34 @@ pgpDig pgpFreeDig(pgpDig dig)
 
 int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 {
-    unsigned int val = (pkts != NULL) ? *pkts : 0;
-    const uint8_t *p;
-    size_t pleft;
-    int len;
+    const uint8_t *p = pkts;
+    const uint8_t *pend = pkts + pktlen;
     struct pgpDigParams_s tmp;
     pgpDigParams _digp = NULL;
-    unsigned int tag;
+    struct pgpPkt pkt;
 
-    if (!(val & 0x80))
+    if (decodePkt(pkts, pktlen, &pkt))
 	return -1;
 
     _print = printing;
-    tag = (val & 0x40) ? (val & 0x3f) : ((val >> 2) & 0xf);
     if (dig != NULL) {
-	_digp = (tag == PGPTAG_SIGNATURE) ? &dig->signature : &dig->pubkey;
+	_digp = (pkt.tag == PGPTAG_SIGNATURE) ? &dig->signature : &dig->pubkey;
     } else {
 	_digp = &tmp;
 	memset(_digp, 0, sizeof(*_digp));
     }
-    _digp->tag = tag;
+    _digp->tag = pkt.tag;
 
-    for (p = pkts, pleft = pktlen; p < (pkts + pktlen); p += len, pleft -= len) {
-	len = pgpPrtPkt(p, pleft, _digp);
-        if (len <= 0)
-	    return len;
-	if (len > pleft)	/* XXX shouldn't happen */
+    while (p < pend) {
+	if (decodePkt(p, (pend - p), &pkt) || pgpPrtPkt(&pkt, _digp))
 	    break;
+	p += (pkt.body - pkt.head) + pkt.blen;
     }
 
     if (_digp == &tmp)
 	pgpCleanDigParams(_digp);
 
-    return 0;
+    return (p == pend) ? 0 : -1;
 }
 
 char *pgpIdentItem(pgpDigParams digp)
