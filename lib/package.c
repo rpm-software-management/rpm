@@ -107,13 +107,12 @@ static void headerMergeLegacySigs(Header h, Header sigh)
  * @param dig		OpenPGP packet containter
  * @return		0 if new keyid, otherwise 1
  */
-static int stashKeyid(pgpDig dig)
+static int stashKeyid(pgpDigParams sigp)
 {
-    pgpDigParams sigp = dig ? &dig->signature : NULL;
     unsigned int keyid;
     int i;
 
-    if (dig == NULL || sigp == NULL)
+    if (sigp == NULL)
 	return 0;
 
     keyid = pgpGrab(sigp->signid+4, 4);
@@ -649,7 +648,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (stashKeyid(dig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+    {	int lvl = (stashKeyid(&dig->signature) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s", fn, msg);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
