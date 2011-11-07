@@ -634,11 +634,11 @@ char * pgpHexStr(const uint8_t *p, size_t plen)
     return str;
 }
 
-static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
+static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		const uint8_t *p, const uint8_t *h, size_t hlen,
 		pgpDigParams keyp)
 {
-    const uint8_t *res = NULL;
+    int rc = 1;
 
     /* we can't handle more than one key at a time */
     if (keyp->alg == NULL) {
@@ -654,14 +654,14 @@ static const uint8_t * pgpPrtPubkeyParams(uint8_t pubkey_algo,
 
 	/* Does the size and number of MPI's match our expectations? */
 	if (p == pend && i == keyalg->mpis) {
-	    res = p;
+	    rc = 0;
 	    keyp->alg = keyalg;
 	} else {
 	    pgpDigAlgFree(keyalg);
 	}
     }
 
-    return res;
+    return rc;
 }
 
 static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
@@ -670,6 +670,7 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
     uint8_t version = *h;
     const uint8_t * p = NULL;
     time_t t;
+    int rc = 1;
 
     /* We only permit V4 keys, V3 keys are long long since deprecated */
     switch (version) {
@@ -691,12 +692,11 @@ static int pgpPrtKey(pgpTag tag, const uint8_t *h, size_t hlen,
 	    }
 
 	    p = ((uint8_t *)v) + sizeof(*v);
-	    p = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _digp);
+	    rc = pgpPrtPubkeyParams(v->pubkey_algo, p, h, hlen, _digp);
 	}
     }	break;
     }
-    /* Sizes not matching up is an error */
-    return (p != (h + hlen));
+    return rc;
 }
 
 static int pgpPrtUserID(pgpTag tag, const uint8_t *h, size_t hlen,
