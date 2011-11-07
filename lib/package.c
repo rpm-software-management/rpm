@@ -142,9 +142,12 @@ pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
 {
     int debug = (_print_pkts & rpmIsDebug());
     pgpDig dig = pgpNewDig();
-    pgpDigParams sig = &dig->signature;
+    pgpDigParams sig = NULL;
 
-    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0)) {
+    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0))
+	sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
+
+    if (sig) {
 	*digp = dig;
     } else {
 	if (type && fn) {
@@ -155,7 +158,6 @@ pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
 		   _("skipping %s with unverifiable signature\n"), type);
 	}
 	pgpFreeDig(dig);
-	sig = NULL;
     }
     return sig;
 }
