@@ -147,23 +147,6 @@ exit:
     return rc;
 }
 
-/* Parse the parameters from the OpenPGP packets that will be needed. */
-/* XXX TODO: unify with similar parsePGP() in package.c */
-static rpmRC parsePGP(rpmtd sigtd, const char *fn, pgpDig dig)
-{
-    rpmRC rc = RPMRC_FAIL;
-    int debug = (_print_pkts & rpmIsDebug());
-    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0) &&
-	 (dig->signature.version == 3 || dig->signature.version == 4)) {
-	rc = RPMRC_OK;
-    } else {
-	rpmlog(RPMLOG_ERR,
-	    _("skipping package %s with unverifiable V%u signature\n"), fn,
-	    dig->signature.version);
-    }
-    return rc;
-}
-
 /* 
  * Figure best available signature. 
  * XXX TODO: Similar detection in rpmReadPackageFile(), unify these.
@@ -267,7 +250,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     struct rpmtd_s sigtd;
     rpmTagVal sigtag;
     pgpDig dig = NULL;
-    pgpDigParams sigp;
+    pgpDigParams sig = NULL;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
     char * msg = NULL;
@@ -305,22 +288,18 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     /* Grab a hint of what needs doing to avoid duplication. */
     sigtag = bestSig(sigh, nosignatures, nodigests);
 
-    dig = pgpNewDig();
-    sigp = &dig->signature;
-
     /* XXX RSA needs the hash_algo, so decode early. */
     if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP ||
 		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
-	int xx = -1;
 	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
-	    xx = pgpPrtPkts(sigtd.data, sigtd.count, dig, 0);
+	    sig = parsePGPSig(&sigtd, "package", fn, &dig);
 	    rpmtdFreeData(&sigtd);
 	}
-	if (xx) goto exit;
+	if (sig == NULL) goto exit;
 	    
 	/* XXX assume same hash_algo in header-only and header+payload */
-	rpmDigestBundleAdd(plbundle, sigp->hash_algo, RPMDIGEST_NONE);
-	rpmDigestBundleAdd(hdrbundle, sigp->hash_algo, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(plbundle, sig->hash_algo, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(hdrbundle, sig->hash_algo, RPMDIGEST_NONE);
     }
 
     if (headerIsEntry(sigh, RPMSIGTAG_PGP) ||
@@ -363,11 +342,11 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	case RPMSIGTAG_DSA:
 	    if (nosignatures)
 		 continue;
-	    if (parsePGP(&sigtd, fn, dig) != RPMRC_OK) {
+	    sig = parsePGPSig(&sigtd, "package", fn, &dig);
+	    if (sig == NULL)
 		goto exit;
-	    }
 	    ctx = rpmDigestBundleDupCtx(havekey ? plbundle : hdrbundle,
-					dig->signature.hash_algo);
+					sig->hash_algo);
 	    break;
 	case RPMSIGTAG_SHA1:
 	    if (nodigests)

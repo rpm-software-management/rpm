@@ -137,19 +137,23 @@ static int stashKeyid(pgpDigParams sigp)
     return 0;
 }
 
-/* Parse the parameters from the OpenPGP packets that will be needed. */
-static pgpDigParams parsePGP(rpmtd sigtd, const char *type, pgpDig *digp)
+pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
+			 pgpDig *digp)
 {
     int debug = (_print_pkts & rpmIsDebug());
     pgpDig dig = pgpNewDig();
     pgpDigParams sig = &dig->signature;
 
-    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0) &&
-	 (sig->version == 3 || sig->version == 4)) {
+    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0)) {
 	*digp = dig;
     } else {
-	rpmlog(RPMLOG_ERR, _("skipping %s with unverifiable V%u signature\n"),
-			    type, sig->version);
+	if (fn) {
+	    rpmlog(RPMLOG_ERR,
+		   _("skipping %s %s with unverifiable signature\n"), type, fn);
+	} else {
+	    rpmlog(RPMLOG_ERR,
+		   _("skipping %s with unverifiable signature\n"), type);
+	}
 	pgpFreeDig(dig);
 	sig = NULL;
     }
@@ -248,7 +252,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
     case RPMTAG_DSAHEADER:
-	sig = parsePGP(&sigtd, "header", &dig);
+	sig = parsePGPSig(&sigtd, "header", NULL, &dig);
 	if (sig == NULL)
 	    goto exit;
 	hashalgo = sig->hash_algo;
@@ -600,7 +604,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	sig = parsePGP(&sigtd, "package", &dig);
+	sig = parsePGPSig(&sigtd, "package", fn, &dig);
 	if (sig == NULL)
 	    goto exit;
 	/* fallthrough */
@@ -619,7 +623,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	sig = parsePGP(&sigtd, "package", &dig);
+	sig = parsePGPSig(&sigtd, "package", fn, &dig);
 	if (sig == NULL)
 	    goto exit;
 	/* fallthrough */
