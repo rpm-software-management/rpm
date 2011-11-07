@@ -116,12 +116,15 @@ exit:
 static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 {
     pgpDig dig = pgpNewDig();
-    pgpDigParams sigp = &dig->signature;
+    pgpDigParams sigp = NULL;
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
     int rc = 1; /* assume failure */
 
-    if (pgpPrtPkts(pkt, pktlen, dig, 0) != 0) {
+    if (pgpPrtPkts(pkt, pktlen, dig, 0) == 0)
+	sigp = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
+
+    if (sigp == NULL) {
 	rpmlog(RPMLOG_ERR, _("Unsupported PGP signature\n"));
 	goto exit;
     }
@@ -336,20 +339,24 @@ static int rpmGenSignature(Header sigh, const char * file,
  * @param sigtag	signature tag
  * @return		parsed pgp dig or NULL
  */
-static pgpDig getSig(Header sigh, rpmTagVal sigtag)
+static pgpDigParams getSig(Header sigh, rpmTagVal sigtag, pgpDig *digp)
 {
     struct rpmtd_s pkt;
-    pgpDig dig = NULL;
+    pgpDigParams sig = NULL;
 
     if (headerGet(sigh, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
-	dig = pgpNewDig();
+	pgpDig dig = pgpNewDig();
 
-	if (pgpPrtPkts(pkt.data, pkt.count, dig, 0) != 0) {
-	    dig = pgpFreeDig(dig);
-	}
+	if (pgpPrtPkts(pkt.data, pkt.count, dig, 0) == 0)
+	    sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
+
+	if (sig == NULL)
+	    pgpFreeDig(dig);
+	else
+	    *digp = dig;
 	rpmtdFreeData(&pkt);
     }
-    return dig;
+    return sig;
 }
 
 static void deleteSigs(Header sigh)
@@ -363,14 +370,14 @@ static void deleteSigs(Header sigh)
 
 static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
 {
-    pgpDig dig1 = getSig(h1, sigtag);
-    pgpDig dig2 = getSig(h2, sigtag);
+    pgpDig dig1 = NULL;
+    pgpDig dig2 = NULL;
+    pgpDigParams sig1 = getSig(h1, sigtag, &dig1);
+    pgpDigParams sig2 = getSig(h2, sigtag, &dig2);
     int rc = 0; /* assume different, eg if either signature doesn't exist */
 
     /* XXX This part really belongs to rpmpgp.[ch] */
-    if (dig1 && dig2) {
-	pgpDigParams sig1 = &dig1->signature;
-	pgpDigParams sig2 = &dig2->signature;
+    if (sig1 && sig2) {
 
 	/* XXX Should we compare something else too? */
 	if (sig1->hash_algo != sig2->hash_algo)
