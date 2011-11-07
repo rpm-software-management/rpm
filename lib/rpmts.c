@@ -373,9 +373,10 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
 	goto exit;
     if ((dig = rpmPubkeyDig(key)) == NULL)
 	goto exit;
+    if ((pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY)) == NULL)
+	goto exit;
 
     /* Build header elements. */
-    pubp = &dig->pubkey;
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
     r = pgpHexStr(pubp->time, sizeof(pubp->time));
 
