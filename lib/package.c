@@ -138,19 +138,22 @@ static int stashKeyid(pgpDigParams sigp)
 }
 
 /* Parse the parameters from the OpenPGP packets that will be needed. */
-static rpmRC parsePGP(rpmtd sigtd, const char *type, pgpDig dig)
+static pgpDigParams parsePGP(rpmtd sigtd, const char *type, pgpDig *digp)
 {
-    rpmRC rc = RPMRC_FAIL;
     int debug = (_print_pkts & rpmIsDebug());
+    pgpDig dig = pgpNewDig();
+    pgpDigParams sig = &dig->signature;
+
     if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0) &&
-	 (dig->signature.version == 3 || dig->signature.version == 4)) {
-	rc = RPMRC_OK;
+	 (sig->version == 3 || sig->version == 4)) {
+	*digp = dig;
     } else {
-	rpmlog(RPMLOG_ERR,
-	    _("skipping %s with unverifiable V%u signature\n"), type,
-	    dig->signature.version);
+	rpmlog(RPMLOG_ERR, _("skipping %s with unverifiable V%u signature\n"),
+			    type, sig->version);
+	pgpFreeDig(dig);
+	sig = NULL;
     }
-    return rc;
+    return sig;
 }
 
 /*
@@ -165,6 +168,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     size_t siglen = 0;
     rpmRC rc = RPMRC_FAIL;
     pgpDig dig = NULL;
+    pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
     struct entryInfo_s info, einfo;
     int hashalgo = 0;
@@ -244,11 +248,10 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
     case RPMTAG_DSAHEADER:
-	dig = pgpNewDig();
-	if ((rc = parsePGP(&sigtd, "header", dig)) != RPMRC_OK) {
+	sig = parsePGP(&sigtd, "header", &dig);
+	if (sig == NULL)
 	    goto exit;
-	}
-	hashalgo = dig->signature.hash_algo;
+	hashalgo = sig->hash_algo;
 	break;
     case RPMTAG_SHA1HEADER:
 	hashalgo = PGPHASHALGO_SHA1;
@@ -495,6 +498,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 			FD_t fd, const char * fn, Header * hdrp)
 {
     pgpDig dig = NULL;
+    pgpDigParams sig = NULL;
     char buf[8*BUFSIZ];
     ssize_t count;
     Header sigh = NULL;
@@ -596,15 +600,14 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	dig = pgpNewDig();
-	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
+	sig = parsePGP(&sigtd, "package", &dig);
+	if (sig == NULL)
 	    goto exit;
-	}
 	/* fallthrough */
     case RPMSIGTAG_SHA1:
     {	struct rpmtd_s utd;
 	int hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
-			PGPHASHALGO_SHA1 : dig->signature.hash_algo;
+			PGPHASHALGO_SHA1 : sig->hash_algo;
 
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
@@ -616,10 +619,9 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	dig = pgpNewDig();
-	if ((rc = parsePGP(&sigtd, "package", dig)) != RPMRC_OK) {
+	sig = parsePGP(&sigtd, "package", &dig);
+	if (sig == NULL)
 	    goto exit;
-	}
 	/* fallthrough */
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
@@ -632,7 +634,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	}
 
 	ctx = rpmDigestBundleDupCtx(fdGetBundle(fd), (sigtag == RPMSIGTAG_MD5) ?
-				    PGPHASHALGO_MD5 : dig->signature.hash_algo);
+				    PGPHASHALGO_MD5 : sig->hash_algo);
 	break;
     default:
 	break;
@@ -648,7 +650,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMRC_NOTTRUSTED:	/* Signature is OK, but key is not trusted. */
     case RPMRC_NOKEY:		/* Public key is unavailable. */
 	/* XXX Print NOKEY/NOTTRUSTED warning only once. */
-    {	int lvl = (stashKeyid(&dig->signature) ? RPMLOG_DEBUG : RPMLOG_WARNING);
+    {	int lvl = (stashKeyid(sig) ? RPMLOG_DEBUG : RPMLOG_WARNING);
 	rpmlog(lvl, "%s: %s", fn, msg);
     }	break;
     case RPMRC_NOTFOUND:	/* Signature is unknown type. */
