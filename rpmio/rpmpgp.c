@@ -873,6 +873,22 @@ pgpDig pgpFreeDig(pgpDig dig)
     return dig;
 }
 
+pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype)
+{
+    pgpDigParams params = NULL;
+    if (dig) {
+	switch (pkttype) {
+	case PGPTAG_SIGNATURE:
+	    params = &dig->signature;
+	    break;
+	case PGPTAG_PUBLIC_KEY:
+	    params = &dig->pubkey;
+	    break;
+	}
+    }
+    return params;
+}
+
 int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 {
     const uint8_t *p = pkts;

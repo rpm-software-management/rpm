@@ -1045,6 +1045,14 @@ void pgpCleanDig(pgpDig dig);
 pgpDig pgpFreeDig(pgpDig dig);
 
 /** \ingroup rpmpgp
+ * Retrieve parameters for parsed OpenPGP packet(s).
+ * @param dig		container
+ * @param pkttype	type of params to retrieve (signature / pubkey)
+ * @return		pointer to OpenPGP parameters, NULL on error/not found
+ */
+pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype);
+
+/** \ingroup rpmpgp
  * Verify a PGP signature.
  * @param key		public key
  * @param sig		signature
