@@ -372,33 +372,13 @@ static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
 {
     pgpDig dig1 = NULL;
     pgpDig dig2 = NULL;
-    pgpDigParams sig1 = getSig(h1, sigtag, &dig1);
-    pgpDigParams sig2 = getSig(h2, sigtag, &dig2);
-    int rc = 0; /* assume different, eg if either signature doesn't exist */
 
-    /* XXX This part really belongs to rpmpgp.[ch] */
-    if (sig1 && sig2) {
+    int rc = pgpDigParamsCmp(getSig(h1, sigtag, &dig1),
+			     getSig(h2, sigtag, &dig2));
 
-	/* XXX Should we compare something else too? */
-	if (sig1->hash_algo != sig2->hash_algo)
-	    goto exit;
-	if (sig1->pubkey_algo != sig2->pubkey_algo)
-	    goto exit;
-	if (sig1->version != sig2->version)
-	    goto exit;
-	if (sig1->sigtype != sig2->sigtype)
-	    goto exit;
-	if (memcmp(sig1->signid, sig2->signid, sizeof(sig1->signid)) != 0)
-	    goto exit;
-
-	/* Parameters match, assume same signature */
-	rc = 1;
-    }
-
-exit:
     pgpFreeDig(dig1);
     pgpFreeDig(dig2);
-    return rc;
+    return (rc == 0);
 }
 
 static int replaceSignature(Header sigh, const char *sigtarget,

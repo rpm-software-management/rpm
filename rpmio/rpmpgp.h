@@ -1053,6 +1053,14 @@ pgpDig pgpFreeDig(pgpDig dig);
 pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype);
 
 /** \ingroup rpmpgp
+ * Compare OpenPGP packet parameters
+ * param p1		1st parameter container
+ * param p2		2nd parameter container
+ * return		1 if the parameters differ, 0 otherwise
+ */
+int pgpDigParamsCmp(pgpDigParams p1, pgpDigParams p2);
+
+/** \ingroup rpmpgp
  * Verify a PGP signature.
  * @param key		public key
  * @param sig		signature
