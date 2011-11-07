@@ -184,8 +184,8 @@ pgpDig rpmPubkeyDig(rpmPubkey key)
     dig = pgpNewDig();
     rc = pgpPrtPkts(key->pkt, key->pktlen, dig, 0);
     if (rc == 0) {
-	pgpDigParams pubp = &dig->pubkey;
-	if (!memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
+	pgpDigParams pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
+	if (!pubp || !memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
 		!memcmp(pubp->time, zeros, sizeof(pubp->time)) ||
 		pubp->userid == NULL) {
 	    rc = -1;
@@ -211,10 +211,9 @@ char * rpmPubkeyBase64(rpmPubkey key)
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 {
     rpmRC res = RPMRC_NOKEY;
+    pgpDigParams sigp = pgpDigGetParams(sig, PGPTAG_SIGNATURE);
 
-    if (keyring && sig) {
-	pgpDigParams sigp = &sig->signature;
-	pgpDigParams pubp = &sig->pubkey;
+    if (keyring && sigp) {
 	struct rpmPubkey_s needle, *key;
 	needle.pkt = NULL;
 	needle.pktlen = 0;
@@ -223,8 +222,9 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 	if ((key = rpmKeyringFindKeyid(keyring, &needle))) {
 	    /* Retrieve parameters from pubkey packet(s) */
 	    int pktrc = pgpPrtPkts(key->pkt, key->pktlen, sig, 0);
+	    pgpDigParams pubp = pgpDigGetParams(sig, PGPTAG_PUBLIC_KEY);
 	    /* Do the parameters match the signature? */
-	    if (pktrc == 0 && sigp->pubkey_algo == pubp->pubkey_algo &&
+	    if (pubp && pktrc == 0 && sigp->pubkey_algo == pubp->pubkey_algo &&
 		memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) == 0) {
 		res = RPMRC_OK;
 	    }
