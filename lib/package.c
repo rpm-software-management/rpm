@@ -177,7 +177,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
     struct entryInfo_s info, einfo;
-    int hashalgo = 0;
+    unsigned int hashalgo = 0;
 
     rpmtdReset(&sigtd);
     memset(&info, 0, sizeof(info));
@@ -257,7 +257,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	sig = parsePGPSig(&sigtd, "header", NULL, &dig);
 	if (sig == NULL)
 	    goto exit;
-	hashalgo = sig->hash_algo;
+	hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
 	break;
     case RPMTAG_SHA1HEADER:
 	hashalgo = PGPHASHALGO_SHA1;
@@ -612,8 +612,9 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	/* fallthrough */
     case RPMSIGTAG_SHA1:
     {	struct rpmtd_s utd;
-	int hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
-			PGPHASHALGO_SHA1 : sig->hash_algo;
+	unsigned int hashalgo = (sigtag == RPMSIGTAG_SHA1) ?
+				PGPHASHALGO_SHA1 :
+				pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
 
 	if (!headerGet(h, RPMTAG_HEADERIMMUTABLE, &utd, hgeflags))
 	    break;
@@ -639,8 +640,9 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
 	    goto exit;
 	}
 
-	ctx = rpmDigestBundleDupCtx(fdGetBundle(fd), (sigtag == RPMSIGTAG_MD5) ?
-				    PGPHASHALGO_MD5 : sig->hash_algo);
+	ctx = rpmDigestBundleDupCtx(fdGetBundle(fd),(sigtag == RPMSIGTAG_MD5) ?
+				    PGPHASHALGO_MD5 :
+				    pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));
 	break;
     default:
 	break;

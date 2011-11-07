@@ -434,6 +434,8 @@ static char * pgpsigFormat(rpmtd td)
 	    unsigned int dateint = pgpGrab(sigp->time, sizeof(sigp->time));
 	    time_t date = dateint;
 	    struct tm * tms = localtime(&date);
+	    unsigned int key_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
+	    unsigned int hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
 
 	    if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
 		snprintf(dbuf, sizeof(dbuf),
@@ -442,8 +444,8 @@ static char * pgpsigFormat(rpmtd td)
 	    }
 
 	    rasprintf(&val, "%s/%s, %s, Key ID %s\n",
-			pgpValString(PGPVAL_PUBKEYALGO, sigp->pubkey_algo),
-			pgpValString(PGPVAL_HASHALGO, sigp->hash_algo),
+			pgpValString(PGPVAL_PUBKEYALGO, key_algo),
+			pgpValString(PGPVAL_HASHALGO, hash_algo),
 			dbuf, keyid);
 
 	    free(keyid);

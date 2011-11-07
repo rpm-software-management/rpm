@@ -13,7 +13,6 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmkeyring.h>
 
-#include "rpmio/digest.h"
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 #include "lib/header_internal.h"

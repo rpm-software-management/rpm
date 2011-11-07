@@ -17,7 +17,6 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmkeyring.h>
 
-#include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h" 	/* fdSetBundle() */
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
@@ -291,6 +290,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     /* XXX RSA needs the hash_algo, so decode early. */
     if (sigtag == RPMSIGTAG_RSA || sigtag == RPMSIGTAG_PGP ||
 		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
+	unsigned int hashalgo;
 	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
 	    sig = parsePGPSig(&sigtd, "package", fn, &dig);
 	    rpmtdFreeData(&sigtd);
@@ -298,8 +298,9 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	if (sig == NULL) goto exit;
 	    
 	/* XXX assume same hash_algo in header-only and header+payload */
-	rpmDigestBundleAdd(plbundle, sig->hash_algo, RPMDIGEST_NONE);
-	rpmDigestBundleAdd(hdrbundle, sig->hash_algo, RPMDIGEST_NONE);
+	hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
+	rpmDigestBundleAdd(plbundle, hashalgo, RPMDIGEST_NONE);
+	rpmDigestBundleAdd(hdrbundle, hashalgo, RPMDIGEST_NONE);
     }
 
     if (headerIsEntry(sigh, RPMSIGTAG_PGP) ||
@@ -346,7 +347,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	    if (sig == NULL)
 		goto exit;
 	    ctx = rpmDigestBundleDupCtx(havekey ? plbundle : hdrbundle,
-					sig->hash_algo);
+					pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));
 	    break;
 	case RPMSIGTAG_SHA1:
 	    if (nodigests)

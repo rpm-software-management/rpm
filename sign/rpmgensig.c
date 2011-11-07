@@ -17,7 +17,6 @@
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
-#include "rpmio/digest.h"
 #include "lib/rpmlead.h"
 #include "lib/signature.h"
 
@@ -120,6 +119,8 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
     int rc = 1; /* assume failure */
+    unsigned int hash_algo;
+    unsigned int pubkey_algo;
 
     if (pgpPrtPkts(pkt, pktlen, dig, 0) == 0)
 	sigp = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
@@ -129,13 +130,14 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 	goto exit;
     }
 
-    if (rpmDigestLength(sigp->hash_algo) == 0) {
-	rpmlog(RPMLOG_ERR, _("Unsupported PGP hash algorithm %d\n"),
-	       sigp->hash_algo);
+    hash_algo = pgpDigParamsAlgo(sigp, PGPVAL_HASHALGO);
+    if (rpmDigestLength(hash_algo) == 0) {
+	rpmlog(RPMLOG_ERR, _("Unsupported PGP hash algorithm %u\n"), hash_algo);
 	goto exit;
     }
 
-    switch (sigp->pubkey_algo) {
+    pubkey_algo = pgpDigParamsAlgo(sigp, PGPVAL_PUBKEYALGO);
+    switch (pubkey_algo) {
     case PGPPUBKEYALGO_DSA:
 	sigtag = ishdr ? RPMSIGTAG_DSA : RPMSIGTAG_GPG;
 	break;
@@ -143,8 +145,8 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 	sigtag = ishdr ? RPMSIGTAG_RSA : RPMSIGTAG_PGP;
 	break;
     default:
-	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %d\n"),
-		sigp->pubkey_algo);
+	rpmlog(RPMLOG_ERR, _("Unsupported PGP pubkey algorithm %u\n"),
+		pubkey_algo);
 	goto exit;
 	break;
     }
