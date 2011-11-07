@@ -17,6 +17,14 @@
 
 static int _print = 0;
 
+/** \ingroup rpmio
+ * Container for values parsed from an OpenPGP signature and public key.
+ */
+struct pgpDig_s {
+    struct pgpDigParams_s signature;
+    struct pgpDigParams_s pubkey;
+};
+
 typedef const struct pgpValTbl_s {
     int val;
     char const * const str;

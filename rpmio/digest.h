@@ -45,14 +45,6 @@ struct pgpDigParams_s {
     pgpDigAlg alg;
 };
 
-/** \ingroup rpmio
- * Container for values parsed from an OpenPGP signature and public key.
- */
-struct pgpDig_s {
-    struct pgpDigParams_s signature;
-    struct pgpDigParams_s pubkey;
-};
-
 pgpDigAlg pgpPubkeyNew(int algo);
 
 pgpDigAlg pgpSignatureNew(int algo);
