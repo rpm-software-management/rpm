@@ -476,15 +476,19 @@ verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr,
     rpmRC res = RPMRC_FAIL; /* assume failure */
     char *sigid = NULL;
     *msg = NULL;
+    pgpDigParams sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
+    pgpDigParams pub = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
 
     /* Call verify even if we dont have a key for a basic sanity check */
-    (void) rpmKeyringLookup(keyring, dig);
-    res = pgpVerifySignature(&dig->pubkey, &dig->signature, hashctx);
+    if (sig) {
+	(void) rpmKeyringLookup(keyring, dig);
+	res = pgpVerifySignature(pub, sig, hashctx);
 
-    sigid = pgpIdentItem(&dig->signature);
-    rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
-		rpmSigString(res));
-    free(sigid);
+	sigid = pgpIdentItem(sig);
+	rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
+		    rpmSigString(res));
+	free(sigid);
+    }
     return res;
 }
 
