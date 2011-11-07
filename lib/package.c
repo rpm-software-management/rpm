@@ -147,10 +147,10 @@ pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
     if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0)) {
 	*digp = dig;
     } else {
-	if (fn) {
+	if (type && fn) {
 	    rpmlog(RPMLOG_ERR,
 		   _("skipping %s %s with unverifiable signature\n"), type, fn);
-	} else {
+	} else if (type) {
 	    rpmlog(RPMLOG_ERR,
 		   _("skipping %s with unverifiable signature\n"), type);
 	}

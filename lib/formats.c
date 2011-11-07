@@ -16,6 +16,7 @@
 #include "rpmio/digest.h"
 #include "lib/manifest.h"
 #include "lib/misc.h"
+#include "lib/signature.h"
 
 #include "debug.h"
 
@@ -422,10 +423,10 @@ static char * pgpsigFormat(rpmtd td)
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	pgpDig dig = pgpNewDig();
-	pgpDigParams sigp = &dig->signature;
+	pgpDig dig = NULL;
+	pgpDigParams sigp = parsePGPSig(td, NULL, NULL, &dig);
 
-	if (pgpPrtPkts(td->data, td->count, dig, 0) || sigp->version == 0) {
+	if (sigp == NULL) {
 	    val = xstrdup(_("(not an OpenPGP signature)"));
 	} else {
 	    char dbuf[BUFSIZ];
@@ -446,8 +447,8 @@ static char * pgpsigFormat(rpmtd td)
 			dbuf, keyid);
 
 	    free(keyid);
+	    pgpFreeDig(dig);
 	}
-	pgpFreeDig(dig);
     }
 
     return val;
