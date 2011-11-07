@@ -26,7 +26,6 @@ struct pgpDigAlg_s {
 struct pgpDigParams_s {
     char * userid;
     uint8_t * hash;
-    char * params[4];
     uint8_t tag;
 
     uint8_t version;		/*!< version number. */

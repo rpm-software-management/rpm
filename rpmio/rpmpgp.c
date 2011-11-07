@@ -854,9 +854,6 @@ static void pgpCleanDigParams(pgpDigParams digp)
 	pgpDigAlgFree(digp->alg);
 	free(digp->userid);
 	free(digp->hash);
-	for (int i = 0; i < 4; i++) 
-	    free(digp->params[i]);
-
 	memset(digp, 0, sizeof(*digp));
     }
 }
