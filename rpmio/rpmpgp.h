@@ -1061,6 +1061,14 @@ pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype);
 int pgpDigParamsCmp(pgpDigParams p1, pgpDigParams p2);
 
 /** \ingroup rpmpgp
+ * Retrieve OpenPGP algorithm parameters
+ * param digp		parameter container
+ * param algotype	PGPVAL_HASHALGO / PGPVAL_PUBKEYALGO
+ * return		algorithm value, 0 on error
+ */
+unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype);
+
+/** \ingroup rpmpgp
  * Verify a PGP signature.
  * @param key		public key
  * @param sig		signature

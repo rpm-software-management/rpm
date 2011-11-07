@@ -920,6 +920,22 @@ exit:
     return rc;
 }
 
+unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype)
+{
+    unsigned int algo = 0; /* assume failure */
+    if (digp) {
+	switch (algotype) {
+	case PGPVAL_PUBKEYALGO:
+	    algo = digp->pubkey_algo;
+	    break;
+	case PGPVAL_HASHALGO:
+	    algo = digp->hash_algo;
+	    break;
+	}
+    }
+    return algo;
+}
+
 int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 {
     const uint8_t *p = pkts;
