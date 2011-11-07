@@ -486,28 +486,26 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
 		pgpDigParams sigp)
 {
     int rc = 1; /* assume failure */
+    const uint8_t * pend = h + hlen;
+    int i;
+    pgpDigAlg sigalg = pgpSignatureNew(pubkey_algo);
 
-    /* can't handle more than one sig at a time */
-    if (sigp->alg == NULL) {
-	const uint8_t * pend = h + hlen;
-	int i;
-	pgpDigAlg sigalg = pgpSignatureNew(pubkey_algo);
-
-	for (i = 0; p < pend && i < sigalg->mpis; i++, p += pgpMpiLen(p)) {
-	    if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-		if (sigalg->setmpi(sigalg, i, p, pend))
-		    break;
-	    }
-	}
-
-	/* Does the size and number of MPI's match our expectations? */
-	if (p == pend && i == sigalg->mpis) {
-	    sigp->alg = sigalg;
-	    rc = 0;
-	} else {
-	    pgpDigAlgFree(sigalg);
+    for (i = 0; p < pend && i < sigalg->mpis; i++, p += pgpMpiLen(p)) {
+	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
+	    if (sigalg->setmpi(sigalg, i, p, pend))
+		break;
 	}
     }
+
+    /* Does the size and number of MPI's match our expectations? */
+    if (p == pend && i == sigalg->mpis)
+	rc = 0;
+    
+    /* We can't handle more than one sig at a time */
+    if (rc == 0 && sigp->alg == NULL && sigp->tag == PGPTAG_SIGNATURE)
+	sigp->alg = sigalg;
+    else
+	pgpDigAlgFree(sigalg);
 
     return rc;
 }
@@ -639,27 +637,24 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
 		pgpDigParams keyp)
 {
     int rc = 1;
+    const uint8_t *pend = h + hlen;
+    int i;
+    pgpDigAlg keyalg = pgpPubkeyNew(pubkey_algo);
 
-    /* we can't handle more than one key at a time */
-    if (keyp->alg == NULL) {
-	const uint8_t *pend = h + hlen;
-	int i;
-	pgpDigAlg keyalg = pgpPubkeyNew(pubkey_algo);
-
-	for (i = 0; p < pend && i < keyalg->mpis; i++, p += pgpMpiLen(p)) {
-	    if (keyalg->setmpi(keyalg, i, p, pend)) {
-		break;
-	    }
-	}
-
-	/* Does the size and number of MPI's match our expectations? */
-	if (p == pend && i == keyalg->mpis) {
-	    rc = 0;
-	    keyp->alg = keyalg;
-	} else {
-	    pgpDigAlgFree(keyalg);
-	}
+    for (i = 0; p < pend && i < keyalg->mpis; i++, p += pgpMpiLen(p)) {
+	if (keyalg->setmpi(keyalg, i, p, pend))
+	    break;
     }
+
+    /* Does the size and number of MPI's match our expectations? */
+    if (p == pend && i == keyalg->mpis)
+	rc = 0;
+
+    /* We can't handle more than one key at a time */
+    if (rc == 0 && keyp->alg == NULL && keyp->tag == PGPTAG_PUBLIC_KEY)
+	keyp->alg = keyalg;
+    else
+	pgpDigAlgFree(keyalg);
 
     return rc;
 }
