@@ -1142,9 +1142,9 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
 	    if (c != '[') brackets = 0;
 	    break;
 	}
-	c = *s;
-	if (!brackets && *s == '-')
+	if (!brackets && c && *s == '-')
 	    break;
+	c = *s;
     }
 
    	/* FIX: *matches may be NULL. */
@@ -1175,9 +1175,9 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
 	    if (c != '[') brackets = 0;
 	    break;
 	}
-	c = *s;
-	if (!brackets && *s == '-')
+	if (!brackets && c && *s == '-')
 	    break;
+	c = *s;
     }
 
     if (s == localarg) {

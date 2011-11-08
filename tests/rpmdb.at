@@ -44,6 +44,45 @@ runroot rpm \
 [0])
 AT_CLEANUP
 
+# ------------------------------
+# Run rpm -q <package> where <package> exists in the db.
+AT_SETUP([rpm -q foo])
+AT_KEYWORDS([rpmdb query])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -i \
+  /data/RPMS/foo-1.0-1.noarch.rpm
+
+runroot rpm -q foo
+
+],
+[0],
+[foo-1.0-1.noarch
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Run rpm -q <package>- where <package> exists in the db.
+AT_SETUP([rpm -q foo-])
+AT_KEYWORDS([rpmdb query])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -i \
+  /data/RPMS/foo-1.0-1.noarch.rpm
+
+runroot rpm -q foo-
+
+],
+[1],
+[package foo- is not installed
+],
+[])
+AT_CLEANUP
 
 # ------------------------------
 # install a noarch package into a local rpmdb without --relocate and --nodeps
