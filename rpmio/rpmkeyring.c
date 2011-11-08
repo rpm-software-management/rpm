@@ -224,8 +224,10 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 	    int pktrc = pgpPrtPkts(key->pkt, key->pktlen, sig, 0);
 	    pgpDigParams pubp = pgpDigGetParams(sig, PGPTAG_PUBLIC_KEY);
 	    /* Do the parameters match the signature? */
-	    if (pubp && pktrc == 0 && pgpDigParamsCmp(sigp, pubp) == 0)
+	    if (pubp && pktrc == 0 && sigp->pubkey_algo == pubp->pubkey_algo &&
+		memcmp(sigp->signid, pubp->signid, sizeof(sigp->signid)) == 0) {
 		res = RPMRC_OK;
+	    }
 	}
     }
 
