@@ -1018,9 +1018,7 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
      * If we have a key, verify the signature for real. Otherwise we've
      * done all we can, return NOKEY to indicate "looks okay but dunno."
      */
-    if (key->alg == NULL) {
-	res = RPMRC_NOKEY;
-    } else {
+    if (key && key->alg) {
 	pgpDigAlg sa = sig->alg;
 	pgpDigAlg ka = key->alg;
 	if (sa && sa->verify) {
@@ -1028,6 +1026,8 @@ rpmRC pgpVerifySignature(pgpDigParams key, pgpDigParams sig, DIGEST_CTX hashctx)
 		res = RPMRC_OK;
 	    }
 	}
+    } else {
+	res = RPMRC_NOKEY;
     }
 
 exit:
