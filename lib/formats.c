@@ -423,10 +423,9 @@ static char * pgpsigFormat(rpmtd td)
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	pgpDig dig = NULL;
-	pgpDigParams sigp = parsePGPSig(td, NULL, NULL, &dig);
+	pgpDigParams sigp = NULL;
 
-	if (sigp == NULL) {
+	if (pgpPrtParams(td->data, td->count, PGPTAG_SIGNATURE, &sigp)) {
 	    val = xstrdup(_("(not an OpenPGP signature)"));
 	} else {
 	    char dbuf[BUFSIZ];
@@ -449,7 +448,7 @@ static char * pgpsigFormat(rpmtd td)
 			dbuf, keyid);
 
 	    free(keyid);
-	    pgpFreeDig(dig);
+	    pgpDigParamsFree(sigp);
 	}
     }
 
