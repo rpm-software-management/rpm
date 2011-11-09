@@ -848,7 +848,7 @@ pgpDig pgpNewDig(void)
     return dig;
 }
 
-static pgpDigParams pgpDigParamsFree(pgpDigParams digp)
+pgpDigParams pgpDigParamsFree(pgpDigParams digp)
 {
     if (digp) {
 	pgpDigAlgFree(digp->alg);
@@ -936,7 +936,8 @@ unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype)
     return algo;
 }
 
-int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
+int pgpPrtParams(const uint8_t * pkts, size_t pktlen, unsigned int pkttype,
+		 pgpDigParams * ret)
 {
     const uint8_t *p = pkts;
     const uint8_t *pend = pkts + pktlen;
@@ -944,15 +945,17 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
     struct pgpPkt pkt;
     int rc = -1; /* assume failure */
 
-    _print = printing;
-
     while (p < pend) {
 	if (decodePkt(p, (pend - p), &pkt))
 	    break;
 
 	if (digp == NULL) {
-	    digp = xcalloc(1, sizeof(*digp));
-	    digp->tag = pkt.tag;
+	    if (pkttype && pkt.tag != pkttype) {
+		break;
+	    } else {
+		digp = xcalloc(1, sizeof(*digp));
+		digp->tag = pkt.tag;
+	    }
 	}
 
 	if (pgpPrtPkt(&pkt, digp))
@@ -960,7 +963,25 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 
 	p += (pkt.body - pkt.head) + pkt.blen;
     }
+
     rc = (digp && (p == pend)) ? 0 : -1;
+
+    if (ret && rc == 0) {
+	*ret = digp;
+    } else {
+	pgpDigParamsFree(digp);
+    }
+    return rc;
+}
+
+int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
+{
+    int rc;
+    pgpDigParams digp = NULL;
+
+    _print = printing;
+
+    rc = pgpPrtParams(pkts, pktlen, 0, &digp);
 
     if (dig && rc == 0) {
 	if (digp->tag == PGPTAG_SIGNATURE) {

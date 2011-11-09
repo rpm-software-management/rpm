@@ -989,6 +989,17 @@ int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid);
 
 /** \ingroup rpmpgp
+ * Parse a OpenPGP packet(s).
+ * @param pkts		OpenPGP packet(s)
+ * @param pktlen	OpenPGP packet(s) length (no. of bytes)
+ * @param pkttype	Expected packet type (signature/key) or 0 for any
+ * @retval ret		signature/pubkey packet parameters on success (alloced)
+ * @return		-1 on error, 0 on success
+ */
+int pgpPrtParams(const uint8_t *pkts, size_t pktlen, unsigned int pkttype,
+		 pgpDigParams * ret);
+
+/** \ingroup rpmpgp
  * Print/parse a OpenPGP packet(s).
  * @param pkts		OpenPGP packet(s)
  * @param pktlen	OpenPGP packet(s) length (no. of bytes)
@@ -1067,6 +1078,13 @@ int pgpDigParamsCmp(pgpDigParams p1, pgpDigParams p2);
  * return		algorithm value, 0 on error
  */
 unsigned int pgpDigParamsAlgo(pgpDigParams digp, unsigned int algotype);
+
+/** \ingroup rpmpgp
+ * Destroy parsed OpenPGP packet parameter(s).
+ * @param digp		parameter container
+ * @return		NULL always
+ */
+pgpDigParams pgpDigParamsFree(pgpDigParams digp);
 
 /** \ingroup rpmpgp
  * Verify a PGP signature.
