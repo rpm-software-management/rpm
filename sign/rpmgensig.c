@@ -114,7 +114,6 @@ exit:
  */
 static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
 {
-    pgpDig dig = pgpNewDig();
     pgpDigParams sigp = NULL;
     rpmTagVal sigtag;
     struct rpmtd_s sigtd;
@@ -122,10 +121,7 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     unsigned int hash_algo;
     unsigned int pubkey_algo;
 
-    if (pgpPrtPkts(pkt, pktlen, dig, 0) == 0)
-	sigp = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
-
-    if (sigp == NULL) {
+    if (pgpPrtParams(pkt, pktlen, PGPTAG_SIGNATURE, &sigp)) {
 	rpmlog(RPMLOG_ERR, _("Unsupported PGP signature\n"));
 	goto exit;
     }
@@ -162,7 +158,7 @@ static int putSignature(Header sigh, int ishdr, uint8_t *pkt, size_t pktlen)
     rc = (headerPut(sigh, &sigtd, HEADERPUT_DEFAULT) == 0);
 
 exit:
-    pgpFreeDig(dig);
+    pgpDigParamsFree(sigp);
     return rc;
 }
 
@@ -341,21 +337,13 @@ static int rpmGenSignature(Header sigh, const char * file,
  * @param sigtag	signature tag
  * @return		parsed pgp dig or NULL
  */
-static pgpDigParams getSig(Header sigh, rpmTagVal sigtag, pgpDig *digp)
+static pgpDigParams getSig(Header sigh, rpmTagVal sigtag)
 {
     struct rpmtd_s pkt;
     pgpDigParams sig = NULL;
 
     if (headerGet(sigh, sigtag, &pkt, HEADERGET_DEFAULT) && pkt.data != NULL) {
-	pgpDig dig = pgpNewDig();
-
-	if (pgpPrtPkts(pkt.data, pkt.count, dig, 0) == 0)
-	    sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
-
-	if (sig == NULL)
-	    pgpFreeDig(dig);
-	else
-	    *digp = dig;
+	pgpPrtParams(pkt.data, pkt.count, PGPTAG_SIGNATURE, &sig);
 	rpmtdFreeData(&pkt);
     }
     return sig;
@@ -372,14 +360,13 @@ static void deleteSigs(Header sigh)
 
 static int sameSignature(rpmTagVal sigtag, Header h1, Header h2)
 {
-    pgpDig dig1 = NULL;
-    pgpDig dig2 = NULL;
+    pgpDigParams sig1 = getSig(h1, sigtag);
+    pgpDigParams sig2 = getSig(h2, sigtag);;
 
-    int rc = pgpDigParamsCmp(getSig(h1, sigtag, &dig1),
-			     getSig(h2, sigtag, &dig2));
+    int rc = pgpDigParamsCmp(sig1, sig2);
 
-    pgpFreeDig(dig1);
-    pgpFreeDig(dig2);
+    pgpDigParamsFree(sig1);
+    pgpDigParamsFree(sig2);
     return (rc == 0);
 }
 
