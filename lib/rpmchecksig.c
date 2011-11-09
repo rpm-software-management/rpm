@@ -364,7 +364,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	    break;
 	}
 
-	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &result);
+	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &result);
 	rpmDigestFinal(ctx, NULL, NULL, 0);
 
 	formatResult(sigtd.tag, rc, result, havekey, 

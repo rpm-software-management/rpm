@@ -58,12 +58,13 @@ int rpmGenDigest(Header sigh, const char * file, rpmTagVal sigTag);
  *
  * @param keyring	keyring handle
  * @param sigtd		signature tag data container
- * @param dig		signature/pubkey parameters
+ * @param sig		signature/pubkey parameters
  * @retval result	detailed text result of signature verification
  * 			(malloc'd)
  * @return		result of signature verification
  */
-rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, char ** result);
+rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
+			 DIGEST_CTX ctx, char ** result);
 
 /** \ingroup signature
  * Destroy signature header from package.

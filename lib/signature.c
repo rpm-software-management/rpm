@@ -462,37 +462,29 @@ exit:
 /**
  * Verify DSA/RSA signature.
  * @param keyring	pubkey keyring
- * @param dig		OpenPGP container
+ * @param sig		OpenPGP signature parameters
  * @param hashctx	digest context
  * @param isHdr		header-only signature?
  * @retval msg		verbose success/failure text
  * @return 		RPMRC_OK on success
  */
 static rpmRC
-verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr, 
-		char **msg)
+verifySignature(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX hashctx,
+		int isHdr, char **msg)
 {
-    rpmRC res = RPMRC_FAIL; /* assume failure */
-    char *sigid = NULL;
-    *msg = NULL;
-    pgpDigParams sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
 
-    /* Call verify even if we dont have a key for a basic sanity check */
-    if (sig) {
-	(void) rpmKeyringLookup(keyring, dig);
-	res = pgpVerifySignature(pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY),
-				 sig, hashctx);
+    rpmRC res = rpmKeyringVerifySig(keyring, sig, hashctx);
 
-	sigid = pgpIdentItem(sig);
-	rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
-		    rpmSigString(res));
-	free(sigid);
-    }
+    char *sigid = pgpIdentItem(sig);
+    rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
+		rpmSigString(res));
+    free(sigid);
     return res;
 }
 
 rpmRC
-rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, char ** result)
+rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
+		   DIGEST_CTX ctx, char ** result)
 {
     rpmRC res = RPMRC_NOTFOUND;
     char *msg = NULL;
@@ -515,8 +507,8 @@ rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDig dig, DIGEST_CTX ctx, 
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
     case RPMSIGTAG_GPG:
-	if (dig != NULL)
-	    res = verifySignature(keyring, dig, ctx, hdrsig, &msg);
+	if (sig != NULL)
+	    res = verifySignature(keyring, sig, ctx, hdrsig, &msg);
 	break;
     default:
 	break;
@@ -526,7 +518,7 @@ exit:
     if (res == RPMRC_NOTFOUND) {
 	rasprintf(&msg,
 		  _("Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"),
-		  sigtd->tag, sigtd->data, sigtd->count, ctx, dig);
+		  sigtd->tag, sigtd->data, sigtd->count, ctx, sig);
 	res = RPMRC_FAIL;
     }
 

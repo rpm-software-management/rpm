@@ -275,7 +275,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 	rpmDigestUpdate(ctx, pe, (ril * sizeof(*pe)));
 	rpmDigestUpdate(ctx, dataStart, rdl);
 
-	rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, buf);
+	rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, buf);
 
     	rpmDigestFinal(ctx, NULL, NULL, 0);
     }
@@ -649,7 +649,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /** @todo Implement disable/enable/warn/error/anal policy. */
-    rc = rpmVerifySignature(keyring, &sigtd, dig, ctx, &msg);
+    rc = rpmVerifySignature(keyring, &sigtd, sig, ctx, &msg);
 	
     switch (rc) {
     case RPMRC_OK:		/* Signature is OK. */
