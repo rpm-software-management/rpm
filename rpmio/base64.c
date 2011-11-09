@@ -4,7 +4,7 @@
 #include <arpa/inet.h>
 #include <stdlib.h>
 
-#include "rpmio/base64.h"
+#include <rpm/rpmbase64.h>
 
 
 static char base64_encode_value(char value_in)
@@ -58,7 +58,7 @@ static char *base64_encode_block(const char *plaintext_in, int length_in, char *
 
 #define BASE64_DEFAULT_LINE_LENGTH 64
 
-char *b64encode(const void *data, size_t len, int linelen)
+char *rpmBase64Encode(const void *data, size_t len, int linelen)
 {
 	size_t encodedlen;
 	const char *dataptr = data;
@@ -161,7 +161,7 @@ static size_t base64_decode_block(const char *code_in, const size_t length_in, c
 	return plainchar - plaintext_out;
 }
 
-int b64decode(const char *in, void **out, size_t *outlen)
+int rpmBase64Decode(const char *in, void **out, size_t *outlen)
 {
 	size_t outcnt = 0;
 	const char *inptr = in;
@@ -202,7 +202,7 @@ int b64decode(const char *in, void **out, size_t *outlen)
 #define CRC24_INIT 0xb704ce
 #define CRC24_POLY 0x1864cfb
 
-char *b64crc(const unsigned char *data, size_t len)
+char *rpmBase64CRC(const unsigned char *data, size_t len)
 {
 	uint32_t crc = CRC24_INIT;
 	int i;
@@ -218,7 +218,7 @@ char *b64crc(const unsigned char *data, size_t len)
 	crc = htonl(crc & 0xffffff);
 	data = (unsigned char *)&crc;
 	++data;
-	return b64encode(data, 3, 0);
+	return rpmBase64Encode(data, 3, 0);
 }
 
 #ifdef BASE64_TEST
@@ -233,9 +233,9 @@ int main(int argc, char *argv[])
 	size_t size;
 	int err;
 	printf("Original: %lu\n%s\n", sizeof(tst)-1, tst);
-	encoded = b64encode(tst, sizeof(tst)-1, 64);
+	encoded = rpmBase64Encode(tst, sizeof(tst)-1, 64);
 	printf("Encoded: %lu\n%s\n", strlen(encoded), encoded);
-	if ((err = b64decode(encoded, &decoded, &size)) != 0) {
+	if ((err = rpmBase64Decode(encoded, &decoded, &size)) != 0) {
 		fprintf(stderr, "Error in decode: %d\n", err);
 		return 1;
 	}

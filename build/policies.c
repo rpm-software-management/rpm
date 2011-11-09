@@ -9,10 +9,10 @@
 #include <rpm/argv.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmpol.h>
+#include <rpm/rpmbase64.h>
 
 #include "rpmio/rpmio_internal.h"
 #include "build/rpmbuild_internal.h"
-#include "rpmio/base64.h"
 
 #include "debug.h"
 
@@ -165,7 +165,7 @@ static ModuleRec newModule(const char *path, const char *name,
 	goto err;
     }
 
-    mod->data = b64encode(raw, rawlen, -1);
+    mod->data = rpmBase64Encode(raw, rawlen, -1);
     if (!mod->data) {
 	rpmlog(RPMLOG_ERR, _("Failed to encode policy file: %s\n"),
 	       mod->path);

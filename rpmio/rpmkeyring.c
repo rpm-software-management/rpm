@@ -5,8 +5,8 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmkeyring.h>
+#include <rpm/rpmbase64.h>
 
-#include "rpmio/base64.h"
 #include "rpmio/digest.h"
 
 #include "debug.h"
@@ -210,7 +210,7 @@ char * rpmPubkeyBase64(rpmPubkey key)
     char *enc = NULL;
 
     if (key) {
-	enc = b64encode(key->pkt, key->pktlen, -1);
+	enc = rpmBase64Encode(key->pkt, key->pktlen, -1);
     }
     return enc;
 }

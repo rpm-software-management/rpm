@@ -783,7 +783,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
     size_t pktlen;
     int rc = -1; /* assume failure */
 
-    if (b64decode(b64pkt, (void **)&pkt, &pktlen) == 0) {
+    if (rpmBase64Decode(b64pkt, (void **)&pkt, &pktlen) == 0) {
 	if (pgpPubkeyFingerprint(pkt, pktlen, keyid) == 0) {
 	    /* if there ever was a bizarre return code for success... */
 	    rc = sizeof(keyid);
@@ -1175,7 +1175,7 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 
 	    crcdec = NULL;
 	    crclen = 0;
-	    if (b64decode(crcenc, (void **)&crcdec, &crclen) != 0) {
+	    if (rpmBase64Decode(crcenc, (void **)&crcdec, &crclen) != 0) {
 		ec = PGPARMOR_ERR_CRC_DECODE;
 		goto exit;
 	    }
@@ -1183,7 +1183,7 @@ static pgpArmor decodePkts(uint8_t *b, uint8_t **pkt, size_t *pktlen)
 	    crcdec = _free(crcdec);
 	    dec = NULL;
 	    declen = 0;
-	    if (b64decode(enc, (void **)&dec, &declen) != 0) {
+	    if (rpmBase64Decode(enc, (void **)&dec, &declen) != 0) {
 		ec = PGPARMOR_ERR_BODY_DECODE;
 		goto exit;
 	    }
@@ -1232,8 +1232,8 @@ pgpArmor pgpParsePkts(const char *armor, uint8_t ** pkt, size_t * pktlen)
 char * pgpArmorWrap(int atype, const unsigned char * s, size_t ns)
 {
     char *buf = NULL, *val = NULL;
-    char *enc = b64encode(s, ns, -1);
-    char *crc = b64crc(s, ns);
+    char *enc = rpmBase64Encode(s, ns, -1);
+    char *crc = rpmBase64CRC(s, ns);
     const char *valstr = pgpValStr(pgpArmorTbl, atype);
 
     if (crc != NULL && enc != NULL) {

@@ -19,9 +19,9 @@
 #include <rpm/rpmfc.h>
 #include <rpm/rpmfileutil.h>	/* rpmDoDigest() */
 #include <rpm/rpmlog.h>
+#include <rpm/rpmbase64.h>
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
-#include "rpmio/base64.h"
 #include "misc/fts.h"
 #include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */

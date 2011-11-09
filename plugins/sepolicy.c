@@ -11,8 +11,8 @@
 #include <rpm/rpmpol.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmbase64.h>
 
-#include "rpmio/base64.h"
 #include "lib/rpmte_internal.h"
 #include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() */
 
@@ -216,7 +216,7 @@ static rpmRC sepolWritePolicy(const sepol * pol, char **path)
     size_t policylen;
     rpmRC rc = RPMRC_FAIL;
 
-    if (b64decode(pol->data, (void **) &policy, &policylen) != 0) {
+    if (rpmBase64Decode(pol->data, (void **) &policy, &policylen) != 0) {
 	rpmlog(RPMLOG_ERR, _("Failed to decode policy for %s\n"),
 	       pol->name);
 	goto exit;

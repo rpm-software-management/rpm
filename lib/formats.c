@@ -305,7 +305,7 @@ static char * armorFormat(rpmtd td)
     case RPM_STRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
 	enc = rpmtdGetString(td);
-	if (b64decode(enc, (void **)&bs, &ns))
+	if (rpmBase64Decode(enc, (void **)&bs, &ns))
 	    return xstrdup(_("(not base64)"));
 	s = bs;
 	atype = PGPARMOR_PUBKEY;	/* XXX check pkt for pubkey */
@@ -343,7 +343,7 @@ static char * base64Format(rpmtd td)
     if (rpmtdType(td) != RPM_BIN_TYPE) {
 	val = xstrdup(_("(not a blob)"));
     } else {
-	val = b64encode(td->data, td->count, -1);
+	val = rpmBase64Encode(td->data, td->count, -1);
 	if (val == NULL)
 	    val = xstrdup("");
     }

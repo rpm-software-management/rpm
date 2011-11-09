@@ -2,7 +2,6 @@
 #define _RPMDIGEST_H
 
 #include <rpm/rpmpgp.h>
-#include "rpmio/base64.h"
 
 typedef struct pgpDigAlg_s * pgpDigAlg;
 

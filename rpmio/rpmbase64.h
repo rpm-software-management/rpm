@@ -14,7 +14,7 @@ extern "C" {
  * the returned string is empty when len == 0
  * returns NULL on failures
  */
-char *b64encode(const void *data, size_t len, int linelen);
+char *rpmBase64Encode(const void *data, size_t len, int linelen);
 
 /* decodes from zero terminated base64 encoded string to a newly malloced buffer
  * ignores whitespace characters in the input string
@@ -25,12 +25,12 @@ char *b64encode(const void *data, size_t len, int linelen);
  *  3 - invalid characters on input
  *  4 - malloc failed
  */
-int b64decode(const char *in, void **out, size_t *outlen);
+int rpmBase64Decode(const char *in, void **out, size_t *outlen);
 
 /* counts CRC24 and base64 encodes it in a malloced string
  * returns NULL on failures
  */
-char *b64crc(const unsigned char *data, size_t len);
+char *rpmBase64CRC(const unsigned char *data, size_t len);
 
 #ifdef __cplusplus
 }

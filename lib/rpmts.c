@@ -319,7 +319,7 @@ static int loadKeyringFromDB(rpmts ts)
 	    uint8_t *pkt;
 	    size_t pktlen;
 
-	    if (b64decode(key, (void **) &pkt, &pktlen) == 0) {
+	    if (rpmBase64Decode(key, (void **) &pkt, &pktlen) == 0) {
 		rpmPubkey key = rpmPubkeyNew(pkt, pktlen);
 		if (rpmKeyringAddKey(ts->keyring, key) == 0) {
 		    char *nvr = headerGetAsString(h, RPMTAG_NVR);
