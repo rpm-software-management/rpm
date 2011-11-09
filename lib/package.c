@@ -20,8 +20,6 @@
 
 #include "debug.h"
 
-static int _print_pkts = 0;
-
 static const unsigned int nkeyids_max = 256;
 static unsigned int nkeyids = 0;
 static unsigned int nextkeyid  = 0;
@@ -137,19 +135,12 @@ static int stashKeyid(pgpDigParams sigp)
     return 0;
 }
 
-pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
-			 pgpDig *digp)
+int parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
+		 pgpDigParams *sig)
 {
-    int debug = (_print_pkts & rpmIsDebug());
-    pgpDig dig = pgpNewDig();
-    pgpDigParams sig = NULL;
+    int rc = pgpPrtParams(sigtd->data, sigtd->count, PGPTAG_SIGNATURE, sig);
 
-    if ((pgpPrtPkts(sigtd->data, sigtd->count, dig, debug) == 0))
-	sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
-
-    if (sig) {
-	*digp = dig;
-    } else {
+    if (rc != 0) {
 	if (type && fn) {
 	    rpmlog(RPMLOG_ERR,
 		   _("skipping %s %s with unverifiable signature\n"), type, fn);
@@ -157,9 +148,8 @@ pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
 	    rpmlog(RPMLOG_ERR,
 		   _("skipping %s with unverifiable signature\n"), type);
 	}
-	pgpFreeDig(dig);
     }
-    return sig;
+    return rc;
 }
 
 /*
@@ -173,7 +163,6 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 {
     size_t siglen = 0;
     rpmRC rc = RPMRC_FAIL;
-    pgpDig dig = NULL;
     pgpDigParams sig = NULL;
     struct rpmtd_s sigtd;
     struct entryInfo_s info, einfo;
@@ -254,8 +243,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (info.tag) {
     case RPMTAG_RSAHEADER:
     case RPMTAG_DSAHEADER:
-	sig = parsePGPSig(&sigtd, "header", NULL, &dig);
-	if (sig == NULL)
+	if (parsePGPSig(&sigtd, "header", NULL, &sig))
 	    goto exit;
 	hashalgo = pgpDigParamsAlgo(sig, PGPVAL_HASHALGO);
 	break;
@@ -282,7 +270,7 @@ static rpmRC headerSigVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
 exit:
     rpmtdFreeData(&sigtd);
-    pgpFreeDig(dig);
+    pgpDigParamsFree(sig);
 
     return rc;
 }
@@ -503,7 +491,6 @@ rpmRC rpmReadHeader(rpmts ts, FD_t fd, Header *hdrp, char ** msg)
 static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags, 
 			FD_t fd, const char * fn, Header * hdrp)
 {
-    pgpDig dig = NULL;
     pgpDigParams sig = NULL;
     char buf[8*BUFSIZ];
     ssize_t count;
@@ -606,8 +593,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	sig = parsePGPSig(&sigtd, "package", fn, &dig);
-	if (sig == NULL)
+	if (parsePGPSig(&sigtd, "package", fn, &sig))
 	    goto exit;
 	/* fallthrough */
     case RPMSIGTAG_SHA1:
@@ -626,8 +612,7 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	sig = parsePGPSig(&sigtd, "package", fn, &dig);
-	if (sig == NULL)
+	if (parsePGPSig(&sigtd, "package", fn, &sig))
 	    goto exit;
 	/* fallthrough */
     case RPMSIGTAG_MD5:
@@ -704,7 +689,7 @@ exit:
     rpmtdFreeData(&sigtd);
     rpmDigestFinal(ctx, NULL, NULL, 0);
     h = headerFree(h);
-    pgpFreeDig(dig);
+    pgpDigParamsFree(sig);
     sigh = rpmFreeSignature(sigh);
     return rc;
 }

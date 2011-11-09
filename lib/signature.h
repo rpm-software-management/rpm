@@ -73,10 +73,10 @@ rpmRC rpmVerifySignature(rpmKeyring keyring, rpmtd sigtd, pgpDigParams sig,
  */
 Header rpmFreeSignature(Header h);
 
-/* Parse the parameters from the OpenPGP packets that will be needed. */
+/* Dumb wrapper around pgpPrtParams() to log some error messages on failure */
 RPM_GNUC_INTERNAL
-pgpDigParams parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
-			 pgpDig *digp);
+int parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
+		 pgpDigParams *sig);
 
 #ifdef __cplusplus
 }

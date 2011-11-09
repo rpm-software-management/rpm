@@ -248,7 +248,6 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
     char *untrustedKeys = NULL;
     struct rpmtd_s sigtd;
     rpmTagVal sigtag;
-    pgpDig dig = NULL;
     pgpDigParams sig = NULL;
     Header sigh = NULL;
     HeaderIterator hi = NULL;
@@ -292,7 +291,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 		sigtag == RPMSIGTAG_DSA || sigtag == RPMSIGTAG_GPG) {
 	unsigned int hashalgo;
 	if (headerGet(sigh, sigtag, &sigtd, HEADERGET_DEFAULT)) {
-	    sig = parsePGPSig(&sigtd, "package", fn, &dig);
+	    parsePGPSig(&sigtd, "package", fn, &sig);
 	    rpmtdFreeData(&sigtd);
 	}
 	if (sig == NULL) goto exit;
@@ -332,7 +331,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	    continue;
 
 	/* Clean up parameters from previous sigtag. */
-	pgpCleanDig(dig);
+	sig = pgpDigParamsFree(sig);
 
 	switch (sigtd.tag) {
 	case RPMSIGTAG_GPG:
@@ -343,8 +342,7 @@ static int rpmpkgVerifySigs(rpmKeyring keyring, rpmQueryFlags flags,
 	case RPMSIGTAG_DSA:
 	    if (nosignatures)
 		 continue;
-	    sig = parsePGPSig(&sigtd, "package", fn, &dig);
-	    if (sig == NULL)
+	    if (parsePGPSig(&sigtd, "package", fn, &sig))
 		goto exit;
 	    ctx = rpmDigestBundleDupCtx(havekey ? plbundle : hdrbundle,
 					pgpDigParamsAlgo(sig, PGPVAL_HASHALGO));
@@ -401,7 +399,7 @@ exit:
     fdSetBundle(fd, NULL); /* XXX avoid double-free from fd close */
     sigh = rpmFreeSignature(sigh);
     hi = headerFreeIterator(hi);
-    pgpFreeDig(dig);
+    pgpDigParamsFree(sig);
     return res;
 }
 
