@@ -255,3 +255,21 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 
     return res;
 }
+
+rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (sig && ctx) {
+	pgpDigParams pgpkey = NULL;
+	rpmPubkey key = findbySig(keyring, sig);
+
+	if (key)
+	    pgpkey = key->pgpkey;
+
+	/* We call verify even if key not found for a signature sanity check */
+	rc = pgpVerifySignature(pgpkey, sig, ctx);
+    }
+
+    return rc;
+}

@@ -41,6 +41,15 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key);
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig);
 
 /** \ingroup rpmkeyring
+ * Perform combined keyring lookup and signature verification
+ * @param keyring	keyring handle
+ * @param sig		OpenPGP signature parameters
+ * @param ctx		signature hash context
+ * @return		RPMRC_OK / RPMRC_FAIL / RPMRC_NOKEY
+ */
+rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx);
+
+/** \ingroup rpmkeyring
  * Reference a keyring.
  * @param keyring	keyring handle
  * @return		new keyring reference
