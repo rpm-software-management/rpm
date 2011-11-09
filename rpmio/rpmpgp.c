@@ -21,8 +21,8 @@ static int _print = 0;
  * Container for values parsed from an OpenPGP signature and public key.
  */
 struct pgpDig_s {
-    struct pgpDigParams_s signature;
-    struct pgpDigParams_s pubkey;
+    struct pgpDigParams_s * signature;
+    struct pgpDigParams_s * pubkey;
 };
 
 typedef const struct pgpValTbl_s {
@@ -848,21 +848,24 @@ pgpDig pgpNewDig(void)
     return dig;
 }
 
-static void pgpCleanDigParams(pgpDigParams digp)
+static pgpDigParams pgpDigParamsFree(pgpDigParams digp)
 {
     if (digp) {
 	pgpDigAlgFree(digp->alg);
 	free(digp->userid);
 	free(digp->hash);
 	memset(digp, 0, sizeof(*digp));
+	free(digp);
     }
+    return NULL;
 }
 
 void pgpCleanDig(pgpDig dig)
 {
     if (dig != NULL) {
-	pgpCleanDigParams(&dig->signature);
-	pgpCleanDigParams(&dig->pubkey);
+	pgpDigParamsFree(dig->signature);
+	pgpDigParamsFree(dig->pubkey);
+	memset(dig, 0, sizeof(*dig));
     }
     return;
 }
@@ -884,10 +887,10 @@ pgpDigParams pgpDigGetParams(pgpDig dig, unsigned int pkttype)
     if (dig) {
 	switch (pkttype) {
 	case PGPTAG_SIGNATURE:
-	    params = &dig->signature;
+	    params = dig->signature;
 	    break;
 	case PGPTAG_PUBLIC_KEY:
-	    params = &dig->pubkey;
+	    params = dig->pubkey;
 	    break;
 	}
     }
@@ -937,32 +940,41 @@ int pgpPrtPkts(const uint8_t * pkts, size_t pktlen, pgpDig dig, int printing)
 {
     const uint8_t *p = pkts;
     const uint8_t *pend = pkts + pktlen;
-    struct pgpDigParams_s tmp;
-    pgpDigParams _digp = NULL;
+    pgpDigParams digp = NULL;
     struct pgpPkt pkt;
-
-    if (decodePkt(pkts, pktlen, &pkt))
-	return -1;
+    int rc = -1; /* assume failure */
 
     _print = printing;
-    if (dig != NULL) {
-	_digp = (pkt.tag == PGPTAG_SIGNATURE) ? &dig->signature : &dig->pubkey;
-    } else {
-	_digp = &tmp;
-	memset(_digp, 0, sizeof(*_digp));
-    }
-    _digp->tag = pkt.tag;
 
     while (p < pend) {
-	if (decodePkt(p, (pend - p), &pkt) || pgpPrtPkt(&pkt, _digp))
+	if (decodePkt(p, (pend - p), &pkt))
 	    break;
+
+	if (digp == NULL) {
+	    digp = xcalloc(1, sizeof(*digp));
+	    digp->tag = pkt.tag;
+	}
+
+	if (pgpPrtPkt(&pkt, digp))
+	    break;
+
 	p += (pkt.body - pkt.head) + pkt.blen;
     }
+    rc = (digp && (p == pend)) ? 0 : -1;
 
-    if (_digp == &tmp)
-	pgpCleanDigParams(_digp);
+    if (dig && rc == 0) {
+	if (digp->tag == PGPTAG_SIGNATURE) {
+	    pgpDigParamsFree(dig->signature);
+	    dig->signature = digp;
+	} else {
+	    pgpDigParamsFree(dig->pubkey);
+	    dig->pubkey = digp;
+	}
+    } else {
+	pgpDigParamsFree(digp);
+    }
 
-    return (p == pend) ? 0 : -1;
+    return rc;
 }
 
 char *pgpIdentItem(pgpDigParams digp)
