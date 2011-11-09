@@ -15,6 +15,7 @@ struct rpmPubkey_s {
     uint8_t *pkt;
     size_t pktlen;
     pgpKeyID_t keyid;
+    pgpDigParams pgpkey;
     int nrefs;
 };
 
@@ -124,6 +125,7 @@ exit:
 rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
 {
     rpmPubkey key = NULL;
+    pgpDigParams pgpkey = NULL;
     pgpKeyID_t keyid;
     
     if (pkt == NULL || pktlen == 0)
@@ -132,9 +134,13 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     if (pgpPubkeyFingerprint(pkt, pktlen, keyid))
 	goto exit;
 
+    if (pgpPrtParams(pkt, pktlen, PGPTAG_PUBLIC_KEY, &pgpkey))
+	goto exit;
+
     key = xcalloc(1, sizeof(*key));
     key->pkt = xmalloc(pktlen);
     key->pktlen = pktlen;
+    key->pgpkey = pgpkey;
     key->nrefs = 0;
     memcpy(key->pkt, pkt, pktlen);
     memcpy(key->keyid, keyid, sizeof(keyid));
@@ -151,6 +157,7 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     if (key->nrefs > 1)
 	return rpmPubkeyUnlink(key);
 
+    pgpDigParamsFree(key->pgpkey);
     free(key->pkt);
     free(key);
     return NULL;
