@@ -476,12 +476,12 @@ verifySignature(rpmKeyring keyring, pgpDig dig, DIGEST_CTX hashctx, int isHdr,
     char *sigid = NULL;
     *msg = NULL;
     pgpDigParams sig = pgpDigGetParams(dig, PGPTAG_SIGNATURE);
-    pgpDigParams pub = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
 
     /* Call verify even if we dont have a key for a basic sanity check */
     if (sig) {
 	(void) rpmKeyringLookup(keyring, dig);
-	res = pgpVerifySignature(pub, sig, hashctx);
+	res = pgpVerifySignature(pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY),
+				 sig, hashctx);
 
 	sigid = pgpIdentItem(sig);
 	rasprintf(msg, "%s%s: %s\n", isHdr ? _("Header ") : "", sigid, 
