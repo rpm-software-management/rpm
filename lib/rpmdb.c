@@ -1801,8 +1801,8 @@ top:
 	     */
 	    if (keyp && mi->mi_setx && rc == 0) {
 		memcpy(&mi_offset, keyp, sizeof(mi_offset.ui));
-	    if (dbiByteSwapped(dbi) == 1)
-    		_DBSWAP(mi_offset);
+		if (dbiByteSwapped(dbi) == 1)
+		    _DBSWAP(mi_offset);
 		mi->mi_offset = mi_offset.ui;
 	    }
 
