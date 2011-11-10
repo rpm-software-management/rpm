@@ -13,6 +13,7 @@
 #include <rpm/rpmfileutil.h>		/* rpmtsOpenDB() needs rpmGetPath */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmkeyring.h>
+#include <rpm/rpmbase64.h>
 
 #include <rpm/rpmdb.h>
 #include <rpm/rpmds.h>

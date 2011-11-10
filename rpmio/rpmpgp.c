@@ -9,6 +9,7 @@
 #include <netinet/in.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmbase64.h>
 
 #include "rpmio/digest.h"
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */

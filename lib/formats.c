@@ -12,6 +12,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>
+#include <rpm/rpmbase64.h>
 
 #include "rpmio/digest.h"
 #include "lib/manifest.h"
