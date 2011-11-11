@@ -118,6 +118,31 @@ static unsigned int uintId(unsigned int a)
 }
 
 /** \ingroup dbi
+ * Return (newly allocated) integer of the epoch.
+ * @param s		version string optionally containing epoch number
+ * @retval version	only the version part of s
+ * @return		epoch integer within the [0; UINT32_MAX] interval,
+ *                      or -1 for no epoch
+ */
+static int64_t splitEpoch(const char *s, const char **version)
+{
+    int64_t e;
+    char *end;
+    int saveerrno = errno;
+
+    *version = s;
+    e = strtol(s, &end, 10);
+    if (*end == ':' && e >= 0 && e <= UINT32_MAX) {
+	*version = end + 1;
+    } else {
+	e = -1;
+    }
+
+    errno = saveerrno;
+    return e;
+}
+
+/** \ingroup dbi
  * Return handle for an index database.
  * @param db		rpm database
  * @param rpmtag	rpm tag
@@ -1026,6 +1051,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  * @param db		rpmdb handle
  * @param dbc		index database cursor
  * @param name		package name
+ * @param epoch 	package epoch (-1 for any epoch)
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
  * @retval matches	set of header instances that match
@@ -1033,6 +1059,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  */
 static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 		const char * name,
+		int64_t epoch,
 		const char * version,
 		const char * release,
 		dbiIndexSet * matches)
@@ -1045,7 +1072,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 
     if (rc != 0) {
 	return (rc == DB_NOTFOUND) ? RPMRC_NOTFOUND : RPMRC_FAIL;
-    } else if (version == NULL && release == NULL) {
+    } else if (epoch < 0 && version == NULL && release == NULL) {
 	return RPMRC_OK;
     }
 
@@ -1075,6 +1102,14 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 	}
 
 	h = rpmdbNextIterator(mi);
+
+	if (epoch >= 0 && h) {
+	    struct rpmtd_s td;
+	    headerGet(h, RPMTAG_EPOCH, &td, HEADERGET_MINMEM);
+	    if (epoch != rpmtdGetNumber(&td))
+		h = NULL;
+	    rpmtdFreeData(&td);
+	}
 	if (h)
 	    (*matches)->recs[gotMatches++] = (*matches)->recs[i];
 	else
@@ -1101,7 +1136,7 @@ exit:
  * @todo Name must be an exact match, as name is a db key.
  * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMDBI_NAME)
- * @param arg		name[-version[-release]] string
+ * @param arg		name[-[epoch:]version[-release]] string
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
@@ -1110,25 +1145,27 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
 {
     size_t arglen = (arg != NULL) ? strlen(arg) : 0;
     char localarg[arglen+1];
+    int64_t epoch;
+    const char * version;
     const char * release;
     char * s;
     char c;
     int brackets;
     rpmRC rc;
     dbiCursor dbc;
- 
+
     if (arglen == 0) return RPMRC_NOTFOUND;
 
     dbc = dbiCursorInit(dbi, 0);
     /* did they give us just a name? */
-    rc = dbiFindMatches(db, dbc, arg, NULL, NULL, matches);
+    rc = dbiFindMatches(db, dbc, arg, -1, NULL, NULL, matches);
     if (rc != RPMRC_NOTFOUND)
 	goto exit;
 
     /* FIX: double indirection */
     *matches = dbiIndexSetFree(*matches);
 
-    /* maybe a name and a release */
+    /* maybe a name-[epoch:]version ? */
     s = stpcpy(localarg, arg);
 
     c = '\0';
@@ -1154,13 +1191,15 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
     }
 
     *s = '\0';
-    rc = dbiFindMatches(db, dbc, localarg, s + 1, NULL, matches);
+
+    epoch = splitEpoch(s + 1, &version);
+    rc = dbiFindMatches(db, dbc, localarg, epoch, version, NULL, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
     *matches = dbiIndexSetFree(*matches);
-    
-    /* how about name-version-release? */
+
+    /* how about name-[epoch:]version-release? */
 
     release = s + 1;
 
@@ -1187,7 +1226,8 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
 
     *s = '\0';
    	/* FIX: *matches may be NULL. */
-    rc = dbiFindMatches(db, dbc, localarg, s + 1, release, matches);
+    epoch = splitEpoch(s + 1, &version);
+    rc = dbiFindMatches(db, dbc, localarg, epoch, version, release, matches);
 exit:
     dbiCursorFree(dbc);
     return rc;
