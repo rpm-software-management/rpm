@@ -99,8 +99,14 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 check_DATA = atconfig atlocal $(TESTSUITE)
 check_DATA += testing$(bindir)/rpmbuild
 
+if HAVE_FAKECHROOT
 check-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' $(TESTSUITEFLAGS) ||:
+else
+check-local:
+	echo "you need to have fakechroot installed"
+	exit 1
+endif !HAVE_FAKECHROOT
 
 installcheck-local: $(check_DATA)
 	$(SHELL) '$(TESTSUITE)' AUTOTEST_PATH='$(bindir)' \
