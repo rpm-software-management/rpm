@@ -31,6 +31,16 @@ typedef Py_ssize_t (*lenfunc)(PyObject *);
 #define PyBytes_AsString PyString_AsString
 #endif
 
+#if ((PY_MAJOR_VERSION << 8) | (PY_MINOR_VERSION << 0)) < 0x0207
+#define CAPSULE_BUILD(ptr,name) PyCapsule_New(ptr, name, NULL)
+#define CAPSULE_CHECK(obj) PyCapsule_CheckExact(obj)
+#define CAPSULE_EXTRACT(obj,name) PyCapsule_GetPointer(obj, name)
+#else
+#define CAPSULE_BUILD(ptr,name) PyCObject_FromVoidPtr(ptr, NULL)
+#define CAPSULE_CHECK(obj) PyCObject_Check(obj)
+#define CAPSULE_EXTRACT(obj,name) PyCObject_AsVoidPtr(obj)
+#endif
+
 /* For Python 3, use the PyLong type throughout in place of PyInt */
 #if PY_MAJOR_VERSION >= 3
 #define PyInt_Check PyLong_Check
