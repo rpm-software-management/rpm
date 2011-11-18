@@ -31,7 +31,7 @@ typedef Py_ssize_t (*lenfunc)(PyObject *);
 #define PyBytes_AsString PyString_AsString
 #endif
 
-#if ((PY_MAJOR_VERSION << 8) | (PY_MINOR_VERSION << 0)) < 0x0207
+#if ((PY_MAJOR_VERSION << 8) | (PY_MINOR_VERSION << 0)) >= 0x0207
 #define CAPSULE_BUILD(ptr,name) PyCapsule_New(ptr, name, NULL)
 #define CAPSULE_CHECK(obj) PyCapsule_CheckExact(obj)
 #define CAPSULE_EXTRACT(obj,name) PyCapsule_GetPointer(obj, name)
