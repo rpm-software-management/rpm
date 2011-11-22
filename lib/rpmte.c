@@ -921,8 +921,7 @@ int rpmteProcess(rpmte te, pkgGoal goal)
 	rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ANY);
     }
 
-    /* XXX should %pretrans failure fail the package install? */
-    if (failed && !scriptstage) {
+    if (failed) {
 	failed = rpmteMarkFailed(te);
     }
 

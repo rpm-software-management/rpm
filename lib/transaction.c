@@ -1432,8 +1432,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRE))
      	  || (rpmpsNumProblems(tsprobs)))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
-	if (runTransScripts(ts, PKG_PRETRANS))
-	    goto exit;
+	runTransScripts(ts, PKG_PRETRANS);
     }
     tsprobs = rpmpsFree(tsprobs);
 
