@@ -1088,13 +1088,14 @@ static rpmps checkProblems(rpmts ts)
  */
 static int runTransScripts(rpmts ts, pkgGoal goal) 
 {
+    int rc = 0;
     rpmte p;
     rpmtsi pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmteProcess(p, goal);
+	rc += rpmteProcess(p, goal);
     }
     rpmtsiFree(pi);
-    return 0; /* what to do about failures? */
+    return rc;
 }
 
 static int rpmtsSetupCollections(rpmts ts)
@@ -1431,7 +1432,8 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     if (!((rpmtsFlags(ts) & (RPMTRANS_FLAG_BUILD_PROBS|RPMTRANS_FLAG_NOPRE))
      	  || (rpmpsNumProblems(tsprobs)))) {
 	rpmlog(RPMLOG_DEBUG, "running pre-transaction scripts\n");
-	runTransScripts(ts, PKG_PRETRANS);
+	if (runTransScripts(ts, PKG_PRETRANS))
+	    goto exit;
     }
     tsprobs = rpmpsFree(tsprobs);
 

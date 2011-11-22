@@ -411,6 +411,7 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
     rpmTagVal stag = rpmScriptTag(script);
     int warn_only = (stag != RPMTAG_PREIN &&
 		     stag != RPMTAG_PREUN &&
+		     stag != RPMTAG_PRETRANS &&
 		     stag != RPMTAG_VERIFYSCRIPT);
     int selinux = !(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_NOCONTEXTS);
 
