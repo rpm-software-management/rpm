@@ -357,6 +357,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
     const char * group = "Public Keys";
     const char * license = "pubkey";
     const char * buildhost = "localhost";
+    const char * userid;
     rpmsenseFlags pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
     uint32_t zero = 0;
     pgpDig dig = NULL;
@@ -380,9 +381,10 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
     /* Build header elements. */
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
     r = pgpHexStr(pubp->time, sizeof(pubp->time));
+    userid = pubp->userid ? pubp->userid : "none";
 
     rasprintf(&n, "gpg(%s)", v+8);
-    rasprintf(&u, "gpg(%s)", pubp->userid ? pubp->userid : "none");
+    rasprintf(&u, "gpg(%s)", userid);
     rasprintf(&evr, "%d:%s-%s", pubp->version, v, r);
 
     headerPutString(h, RPMTAG_PUBKEYS, enc);
@@ -397,6 +399,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
     headerPutString(h, RPMTAG_GROUP, group);
     headerPutString(h, RPMTAG_LICENSE, license);
     headerPutString(h, RPMTAG_SUMMARY, u);
+    headerPutString(h, RPMTAG_PACKAGER, userid);
 
     headerPutUint32(h, RPMTAG_SIZE, &zero, 1);
 
