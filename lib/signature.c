@@ -310,6 +310,9 @@ static int makeHDRDigest(Header sigh, const char * file, rpmTagVal sigTag)
 	    (void) rpmDigestUpdate(ctx, utd.data, utd.count);
 	    (void) rpmDigestFinal(ctx, (void **)&SHA1, NULL, 1);
 	    rpmtdFreeData(&utd);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("Cannot sign RPM v3 packages\n"));
+	    goto exit;
 	}
 
 	if (SHA1 == NULL)
