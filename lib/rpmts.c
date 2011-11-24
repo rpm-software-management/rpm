@@ -351,8 +351,9 @@ static void loadKeyring(rpmts ts)
 }
 
 /* Build pubkey header. */
-static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
+static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
 {
+    Header h = headerNew();
     const char * afmt = "%{pubkeys:armor}";
     const char * group = "Public Keys";
     const char * license = "pubkey";
@@ -418,13 +419,11 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
     headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 
-    {   rpm_tid_t tid = rpmtsGetTid(ts);
-	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
-	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-    }
+    *hdrp = headerLink(h);
     rc = 0;
 
 exit:
+    headerFree(h);
     pgpFreeDig(dig);
     free(n);
     free(u);
@@ -439,7 +438,7 @@ exit:
 
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
-    Header h = headerNew();
+    Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     rpmPubkey pubkey = NULL;
     rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
@@ -453,8 +452,13 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
     /* If we dont already have the key, make a persistent record of it */
     if (krc == 0) {
-	if (makePubkeyHeader(ts, pubkey, h) != 0) 
+	rpm_tid_t tid = rpmtsGetTid(ts);
+
+	if (makePubkeyHeader(ts, pubkey, &h) != 0) 
 	    goto exit;
+
+	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
+	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
 
 	/* Add header to database. */
 	if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
