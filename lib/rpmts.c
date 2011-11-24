@@ -419,8 +419,26 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 
-    *hdrp = headerLink(h);
-    rc = 0;
+    /* Reload the lot to immutable region and stomp sha1 digest on it */
+    h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
+    if (h != NULL) {
+	char *sha1 = NULL;
+	const void *blob = headerUnload(h);
+	size_t blen = headerSizeof(h, HEADER_MAGIC_NO);
+
+	/* XXX FIXME: bah, this code is repeated in way too many places */
+	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
+	rpmDigestUpdate(ctx, rpm_header_magic, sizeof(rpm_header_magic));
+	rpmDigestUpdate(ctx, blob, blen);
+	rpmDigestFinal(ctx, (void **)&sha1, NULL, 1);
+
+	if (sha1) {
+	    headerPutString(h, RPMTAG_SHA1HEADER, sha1);
+	    *hdrp = headerLink(h);
+	    rc = 0;
+	}
+	free(sha1);
+    }
 
 exit:
     headerFree(h);
