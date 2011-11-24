@@ -360,6 +360,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
     const char * userid;
     rpmsenseFlags pflags = (RPMSENSE_KEYRING|RPMSENSE_EQUAL);
     uint32_t zero = 0;
+    uint32_t keytime = 0;
     pgpDig dig = NULL;
     pgpDigParams pubp = NULL;
     char * d = NULL;
@@ -382,6 +383,7 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
     v = pgpHexStr(pubp->signid, sizeof(pubp->signid)); 
     r = pgpHexStr(pubp->time, sizeof(pubp->time));
     userid = pubp->userid ? pubp->userid : "none";
+    keytime = pgpGrab(pubp->time, sizeof(pubp->time));
 
     rasprintf(&n, "gpg(%s)", v+8);
     rasprintf(&u, "gpg(%s)", userid);
@@ -413,12 +415,12 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header h)
 
     headerPutString(h, RPMTAG_RPMVERSION, RPMVERSION);
     headerPutString(h, RPMTAG_BUILDHOST, buildhost);
+    headerPutUint32(h, RPMTAG_BUILDTIME, &keytime, 1);
     headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 
     {   rpm_tid_t tid = rpmtsGetTid(ts);
 	headerPutUint32(h, RPMTAG_INSTALLTIME, &tid, 1);
 	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
-	headerPutUint32(h, RPMTAG_BUILDTIME, &tid, 1);
     }
     rc = 0;
 
