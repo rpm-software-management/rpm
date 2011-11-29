@@ -300,11 +300,13 @@ unsigned headerSizeof(Header h, int magicp)
 /* Bounded header string (array) size calculation, return -1 on error */
 static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
 {
+    const char *start = str;
     const char *s;
 
-    for (s = str; s < end; s++) {
-	if ((*s == '\0') && (--c == 0))
+    while ((s = memchr(start, '\0', end-start))) {
+	if (--c == 0 || s > end)
 	    break;
+	start = s + 1;
     }
     return (c > 0) ? -1 : (s - str + 1);
 }
