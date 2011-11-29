@@ -245,6 +245,18 @@ void headerUnsort(Header h)
     }
 }
 
+static inline unsigned int alignDiff(rpm_tagtype_t type, unsigned int alignsize)
+{
+    int typesize = typeSizes[type];
+
+    if (typesize > 1) {
+	unsigned int diff = typesize - (alignsize % typesize);
+	if (diff != typesize)
+	    return diff;
+    }
+    return 0;
+}
+
 unsigned headerSizeof(Header h, int magicp)
 {
     indexEntry entry;
@@ -267,8 +279,6 @@ unsigned headerSizeof(Header h, int magicp)
     size += 2 * sizeof(int32_t);	/* count of index entries */
 
     for (i = 0, entry = h->index; i < h->indexUsed; i++, entry++) {
-	rpm_tagtype_t type;
-
 	/* Regions go in as is ... */
         if (ENTRY_IS_REGION(entry)) {
 	    size += entry->length;
@@ -283,13 +293,7 @@ unsigned headerSizeof(Header h, int magicp)
 	    continue;
 
 	/* Alignment */
-	type = entry->info.type;
-	if (typeSizes[type] > 1) {
-	    unsigned diff = typeSizes[type] - (size % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
-		size += diff;
-	    }
-	}
+	size += alignDiff(entry->info.type, size);
 
 	size += sizeof(struct entryInfo_s) + entry->length;
     }
@@ -389,7 +393,6 @@ static int regionSwab(indexEntry entry, int il, int dl,
 
     for (; il > 0; il--, pe++) {
 	struct indexEntry_s ie;
-	rpm_tagtype_t type;
 
 	ie.info.tag = ntohl(pe->tag);
 	ie.info.type = ntohl(pe->type);
@@ -422,13 +425,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
 	}
 
 	/* Alignment */
-	type = ie.info.type;
-	if (typeSizes[type] > 1) {
-	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
-		dl += diff;
-	    }
-	}
+	dl += alignDiff(ie.info.type, dl);
 
 	/* Perform endian conversions */
 	switch (ntohl(pe->type)) {
@@ -476,11 +473,10 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
     entryInfo pe;
     char * dataStart;
     char * te;
-    unsigned len;
+    unsigned len, diff;
     int32_t il = 0;
     int32_t dl = 0;
     indexEntry entry; 
-    rpm_tagtype_t type;
     int i;
     int drlen, ndribbles;
 
@@ -509,13 +505,10 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
 		    continue;
 
 		/* Alignment */
-		type = entry->info.type;
-		if (typeSizes[type] > 1) {
-		    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
-		    if (diff != typeSizes[type]) {
-			drlen += diff;
-			dl += diff;
-		    }
+		diff = alignDiff(entry->info.type, dl);
+		if (diff) {
+		    drlen += diff;
+		    dl += diff;    
 		}
 
 		ndribbles++;
@@ -533,13 +526,7 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
 	    continue;
 
 	/* Alignment */
-	type = entry->info.type;
-	if (typeSizes[type] > 1) {
-	    unsigned diff = typeSizes[type] - (dl % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
-		dl += diff;
-	    }
-	}
+	dl += alignDiff(entry->info.type, dl);
 
 	il++;
 	dl += entry->length;
@@ -563,6 +550,7 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
 	unsigned char *t;
 	int count;
 	int rdlen;
+	unsigned int diff;
 
 	if (entry->data == NULL || entry->length <= 0)
 	    continue;
@@ -635,14 +623,10 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
 	    continue;
 
 	/* Alignment */
-	type = entry->info.type;
-	if (typeSizes[type] > 1) {
-	    unsigned diff;
-	    diff = typeSizes[type] - ((te - dataStart) % typeSizes[type]);
-	    if (diff != typeSizes[type]) {
-		memset(te, 0, diff);
-		te += diff;
-	    }
+	diff = alignDiff(entry->info.type, (te - dataStart));
+	if (diff) {
+	    memset(te, 0, diff);
+	    te += diff;
 	}
 
 	pe->offset = htonl(te - dataStart);
