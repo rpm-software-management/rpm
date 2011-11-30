@@ -135,6 +135,7 @@ Header headerCopyLoad(const void * uh);
 
 enum headerImportFlags_e {
     HEADERIMPORT_COPY		= (1 << 0), /* Make copy of blob on import? */
+    HEADERIMPORT_FAST		= (1 << 1), /* Faster but less safe? */
 };
 
 typedef rpmFlags headerImportFlags;
