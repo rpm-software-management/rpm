@@ -150,7 +150,7 @@ static PyObject * hdrAsBytes(hdrObject * s, int legacy)
 {
     PyObject *res = NULL;
     char *buf = NULL;
-    size_t len;
+    unsigned int len;
     Header h = headerLink(s->h);
    
     /* XXX this legacy switch is a hack, needs to be removed. */
@@ -158,8 +158,7 @@ static PyObject * hdrAsBytes(hdrObject * s, int legacy)
 	h = headerCopy(s->h);	/* XXX strip region tags, etc */
 	headerFree(s->h);
     }
-    len = headerSizeof(h, HEADER_MAGIC_NO);
-    buf = headerUnload(h);
+    buf = headerExport(h, &len);
     h = headerFree(h);
 
     if (buf == NULL || len == 0) {

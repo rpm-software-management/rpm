@@ -1257,8 +1257,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	memset(&data, 0, sizeof(data));
 	key.data = (void *) &mi->mi_prevoffset;
 	key.size = sizeof(mi->mi_prevoffset);
-	data.data = headerUnload(mi->mi_h);
-	data.size = headerSizeof(mi->mi_h, HEADER_MAGIC_NO);
+	data.data = headerExport(mi->mi_h, &data.size);
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
@@ -2652,8 +2651,7 @@ int rpmdbAdd(rpmdb db, Header h)
 
     memset(&hdr, 0, sizeof(hdr));
 
-    hdr.size = headerSizeof(h, HEADER_MAGIC_NO);
-    hdr.data = headerUnload(h);
+    hdr.data = headerExport(h, &hdr.size);
     hdrOk = (hdr.data != NULL && hdr.size > 0);
     
     if (!hdrOk) {

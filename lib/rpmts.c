@@ -423,8 +423,8 @@ static int makePubkeyHeader(rpmts ts, rpmPubkey key, Header * hdrp)
     h = headerReload(h, RPMTAG_HEADERIMMUTABLE);
     if (h != NULL) {
 	char *sha1 = NULL;
-	const void *blob = headerUnload(h);
-	size_t blen = headerSizeof(h, HEADER_MAGIC_NO);
+	unsigned int blen = 0;
+	const void *blob = headerExport(h, &blen);
 
 	/* XXX FIXME: bah, this code is repeated in way too many places */
 	DIGEST_CTX ctx = rpmDigestInit(PGPHASHALGO_SHA1, RPMDIGEST_NONE);
