@@ -110,6 +110,7 @@ Header headerCopy(Header h);
 
 /** \ingroup header
  * Convert header to in-memory representation.
+ * @deprecated		Use headerImport() instead
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
@@ -117,10 +118,26 @@ Header headerLoad(void * uh);
 
 /** \ingroup header
  * Make a copy and convert header to in-memory representation.
+ * @deprecated		Use headerImport() instead
  * @param uh		on-disk header blob (i.e. with offsets)
  * @return		header
  */
 Header headerCopyLoad(const void * uh);
+
+enum headerImportFlags_e {
+    HEADERIMPORT_COPY		= (1 << 0), /* Make copy of blob on import? */
+};
+
+typedef rpmFlags headerImportFlags;
+
+/** \ingroup header
+ * Import header to in-memory representation.
+ * @param blob		on-disk header blob (i.e. with offsets)
+ * @param bsize		on-disk header blob size in bytes (0 if unknown)
+ * @param flags		flags to control operation
+ * @return		header
+ */
+Header headerImport(void *blob, unsigned int bsize, headerImportFlags flags);
 
 /** \ingroup header
  * Read (and load) header from file handle.

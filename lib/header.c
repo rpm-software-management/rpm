@@ -154,11 +154,11 @@ Header headerFree(Header h)
     return NULL;
 }
 
-static Header headerCreate(void *blob, int32_t indexLen)
+static Header headerCreate(void *blob, unsigned int pvlen, int32_t indexLen)
 {
     Header h = xcalloc(1, sizeof(*h));
-    h->blob = blob;
     if (blob) {
+	h->blob = (pvlen > 0) ? memcpy(xmalloc(pvlen), blob, pvlen) : blob;
 	h->indexAlloced = indexLen + 1;
 	h->indexUsed = indexLen;
     } else {
@@ -178,7 +178,7 @@ static Header headerCreate(void *blob, int32_t indexLen)
 
 Header headerNew(void)
 {
-    return headerCreate(NULL, 0);
+    return headerCreate(NULL, 0, 0);
 }
 
 int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
@@ -766,13 +766,13 @@ int headerDel(Header h, rpmTagVal tag)
     return 0;
 }
 
-Header headerLoad(void * uh)
+Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 {
-    int32_t * ei = (int32_t *) uh;
+    const int32_t * ei = (int32_t *) blob;
     int32_t il = ntohl(ei[0]);		/* index length */
     int32_t dl = ntohl(ei[1]);		/* data length */
-    size_t pvlen = sizeof(il) + sizeof(dl) +
-               (il * sizeof(struct entryInfo_s)) + dl;
+    unsigned int pvlen = sizeof(il) + sizeof(dl) +
+		    (il * sizeof(struct entryInfo_s)) + dl;;
     Header h = NULL;
     entryInfo pe;
     unsigned char * dataStart;
@@ -781,14 +781,17 @@ Header headerLoad(void * uh)
     int rdlen;
 
     /* Sanity checks on header intro. */
-    if (hdrchkTags(il) || hdrchkData(dl))
+    if (bsize && bsize != pvlen)
+	goto errxit;
+    if (hdrchkTags(il) || hdrchkData(dl) || pvlen >= headerMaxbytes)
 	goto errxit;
 
+    h = headerCreate(blob, (flags & HEADERIMPORT_COPY) ? pvlen : 0, il);
+
+    ei = h->blob; /* In case we had to copy */
     pe = (entryInfo) &ei[2];
     dataStart = (unsigned char *) (pe + il);
     dataEnd = dataStart + dl;
-
-    h = headerCreate(uh, il);
 
     entry = h->index;
     if (!(htonl(pe->tag) < RPMTAG_HEADERI18NTABLE)) {
@@ -894,6 +897,8 @@ Header headerLoad(void * uh)
 
 errxit:
     if (h) {
+	if (flags & HEADERIMPORT_COPY)
+	    free(h->blob);
 	free(h->index);
 	free(h);
     }
@@ -920,22 +925,15 @@ Header headerReload(Header h, rpmTagVal tag)
     return nh;
 }
 
+Header headerLoad(void * uh)
+{
+    return headerImport(uh, 0, 0);
+}
+
 Header headerCopyLoad(const void * uh)
 {
-    int32_t * ei = (int32_t *) uh;
-    int32_t il = ntohl(ei[0]);		/* index length */
-    int32_t dl = ntohl(ei[1]);		/* data length */
-    size_t pvlen = sizeof(il) + sizeof(dl) +
-			(il * sizeof(struct entryInfo_s)) + dl;
-    Header h = NULL;
-
-    /* Sanity checks on header intro. */
-    if (!(hdrchkTags(il) || hdrchkData(dl)) && pvlen < headerMaxbytes) {
-	void * nuh = memcpy(xmalloc(pvlen), uh, pvlen);
-	if ((h = headerLoad(nuh)) == NULL)
-	    free(nuh);
-    }
-    return h;
+    /* Discards const but that's ok as we'll take a copy */
+    return headerImport((void *)uh, 0, HEADERIMPORT_COPY);
 }
 
 Header headerRead(FD_t fd, int magicp)
