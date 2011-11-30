@@ -461,13 +461,7 @@ static int regionSwab(indexEntry entry, int il, int dl,
     return dl;
 }
 
-/** \ingroup header
- * doHeaderUnload.
- * @param h		header
- * @retval *lengthPtr	no. bytes in unloaded header blob
- * @return		unloaded header blob (NULL on error)
- */
-static void * doHeaderUnload(Header h, size_t * lengthPtr)
+void * headerExport(Header h, unsigned int *bsize)
 {
     int32_t * ei = NULL;
     entryInfo pe;
@@ -677,8 +671,8 @@ static void * doHeaderUnload(Header h, size_t * lengthPtr)
     if ((((char *)ei)+len) != te)
 	goto errxit;
 
-    if (lengthPtr)
-	*lengthPtr = len;
+    if (bsize)
+	*bsize = len;
 
     headerSort(h);
 
@@ -691,7 +685,7 @@ errxit:
 
 void * headerUnload(Header h)
 {
-    return doHeaderUnload(h, NULL);
+    return headerExport(h, NULL);
 }
 
 /**
@@ -908,8 +902,8 @@ errxit:
 Header headerReload(Header h, rpmTagVal tag)
 {
     Header nh;
-    size_t uc = 0;
-    void * uh = doHeaderUnload(h, &uc);
+    unsigned int uc = 0;
+    void * uh = headerExport(h, &uc);
 
     h = headerFree(h);
     if (uh == NULL)
@@ -993,10 +987,10 @@ exit:
 int headerWrite(FD_t fd, Header h, int magicp)
 {
     ssize_t nb;
-    size_t length;
+    unsigned int length;
     void * uh;
 
-    uh = doHeaderUnload(h, &length);
+    uh = headerExport(h, &length);
     if (uh == NULL)
 	return 1;
     switch (magicp) {

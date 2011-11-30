@@ -87,10 +87,19 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate);
 
 /** \ingroup header
  * Convert header to on-disk representation.
+ * @deprecated		Use headerExport() instead
  * @param h		header (with pointers)
  * @return		on-disk header blob (i.e. with offsets)
  */
 void * headerUnload(Header h);
+
+/** \ingroup header
+ * Export header to on-disk representation.
+ * @param h		header (with pointers)
+ * @retval bsize	on-disk header blob size in bytes
+ * @return		on-disk header blob (i.e. with offsets)
+ */
+void * headerExport(Header h, unsigned int * bsize);
 
 /** \ingroup header
  * Convert header to on-disk representation, and then reload.
