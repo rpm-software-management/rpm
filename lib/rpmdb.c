@@ -1720,7 +1720,7 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 	msg = _free(msg);
 
 	/* Mark header checked. */
-	if (mi->mi_db && mi->mi_db->db_checked && rpmrc == RPMRC_OK) {
+	if (mi->mi_db && mi->mi_db->db_checked && rpmrc != RPMRC_FAIL) {
 	    intHashAddEntry(mi->mi_db->db_checked, mi->mi_offset);
 	}
     }
