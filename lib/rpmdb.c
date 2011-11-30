@@ -1737,7 +1737,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     void * keyp;
     size_t keylen;
     int rc;
-    headerImportFlags importFlags = 0;
+    headerImportFlags importFlags = HEADERIMPORT_FAST;
 
     if (mi == NULL)
 	return NULL;
