@@ -2682,6 +2682,10 @@ int rpmdbAdd(rpmdb db, Header h)
     /* If everthing ok, mark header as installed now */
     if (ret == 0) {
 	headerSetInstance(h, hdrNum);
+	/* Purge our verification cache on added public keys */
+	if (db->db_checked && headerIsEntry(h, RPMTAG_PUBKEYS)) {
+	    intHashEmpty(db->db_checked);
+	}
     }
 
 exit:
