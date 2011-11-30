@@ -68,7 +68,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     int32_t dl;
     int32_t * ei = NULL;
     entryInfo pe;
-    size_t nb;
+    unsigned int nb, uc;
     int32_t ril = 0;
     struct indexEntry_s entry;
     struct entryInfo_s info;
@@ -112,7 +112,8 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     memset(&info, 0, sizeof(info));
 
     nb = (il * sizeof(struct entryInfo_s)) + dl;
-    ei = xmalloc(sizeof(il) + sizeof(dl) + nb);
+    uc = sizeof(il) + sizeof(dl) + nb;
+    ei = xmalloc(uc);
     ei[0] = block[2];
     ei[1] = block[3];
     pe = (entryInfo) &ei[2];
@@ -194,7 +195,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     }
 
     /* OK, blob looks sane, load the header. */
-    sigh = headerLoad(ei);
+    sigh = headerImport(ei, uc, 0);
     if (sigh == NULL) {
 	rasprintf(&buf, _("sigh load: BAD\n"));
 	goto exit;

@@ -908,12 +908,13 @@ errxit:
 Header headerReload(Header h, rpmTagVal tag)
 {
     Header nh;
-    void * uh = doHeaderUnload(h, NULL);
+    size_t uc = 0;
+    void * uh = doHeaderUnload(h, &uc);
 
     h = headerFree(h);
     if (uh == NULL)
 	return NULL;
-    nh = headerLoad(uh);
+    nh = headerImport(uh, uc, 0);
     if (nh == NULL) {
 	uh = _free(uh);
 	return NULL;
@@ -943,7 +944,7 @@ Header headerRead(FD_t fd, int magicp)
     int32_t il;
     int32_t dl;
     Header h = NULL;
-    size_t len;
+    unsigned int len, blen;
 
     if (magicp == HEADER_MAGIC_YES) {
 	int32_t magic;
@@ -966,7 +967,8 @@ Header headerRead(FD_t fd, int magicp)
 	dl = ntohl(block[1]);
     }
 
-    len = sizeof(il) + sizeof(dl) + (il * sizeof(struct entryInfo_s)) + dl;
+    blen = (il * sizeof(struct entryInfo_s)) + dl;
+    len = sizeof(il) + sizeof(dl) + blen;
 
     /* Sanity checks on header intro. */
     if (hdrchkTags(il) || hdrchkData(dl) || len > headerMaxbytes)
@@ -975,12 +977,11 @@ Header headerRead(FD_t fd, int magicp)
     ei = xmalloc(len);
     ei[0] = htonl(il);
     ei[1] = htonl(dl);
-    len -= sizeof(il) + sizeof(dl);
 
-    if (Fread((char *)&ei[2], 1, len, fd) != len)
+    if (Fread((char *)&ei[2], 1, blen, fd) != blen)
 	goto exit;
     
-    h = headerLoad(ei);
+    h = headerImport(ei, len, 0);
 
 exit:
     if (h == NULL && ei != NULL) {

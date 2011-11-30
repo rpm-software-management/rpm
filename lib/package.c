@@ -452,7 +452,7 @@ static rpmRC rpmpkgReadHeader(rpmKeyring keyring, rpmVSFlags vsflags,
 	goto exit;
 
     /* OK, blob looks sane, load the header. */
-    h = headerLoad(ei);
+    h = headerImport(ei, uc, 0);
     if (h == NULL) {
 	free(buf);
 	rasprintf(&buf, _("hdr load: BAD\n"));

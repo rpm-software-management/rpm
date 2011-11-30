@@ -1733,11 +1733,12 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi;
     void * uh;
-    size_t uhlen;
+    unsigned int uhlen;
     DBT key, data;
     void * keyp;
     size_t keylen;
     int rc;
+    headerImportFlags importFlags = 0;
 
     if (mi == NULL)
 	return NULL;
@@ -1746,6 +1747,9 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (dbi == NULL)
 	return NULL;
 
+#if defined(_USE_COPY_LOAD)
+    importFlags |= HEADERIMPORT_COPY;
+#endif
     /*
      * Cursors are per-iterator, not per-dbi, so get a cursor for the
      * iterator on 1st call. If the iteration is to rewrite headers, and the
@@ -1847,11 +1851,7 @@ top:
     }
 
     /* Did the header blob load correctly? */
-#if !defined(_USE_COPY_LOAD)
-    mi->mi_h = headerLoad(uh);
-#else
-    mi->mi_h = headerCopyLoad(uh);
-#endif
+    mi->mi_h = headerImport(uh, uhlen, importFlags);
     if (mi->mi_h == NULL || !headerIsEntry(mi->mi_h, RPMTAG_NAME)) {
 	rpmlog(RPMLOG_ERR,
 		_("rpmdb: damaged header #%u retrieved -- skipping.\n"),
