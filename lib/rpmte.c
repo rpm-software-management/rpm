@@ -240,10 +240,10 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->fi = getFI(p, h);
 
     /* See if we have pre/posttrans scripts. */
-    p->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) &&
+    p->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) ||
 			 headerIsEntry(h, RPMTAG_PRETRANSPROG)) ?
 			RPMTE_HAVE_PRETRANS : 0;
-    p->transscripts |= (headerIsEntry(h, RPMTAG_POSTTRANS) &&
+    p->transscripts |= (headerIsEntry(h, RPMTAG_POSTTRANS) ||
 			 headerIsEntry(h, RPMTAG_POSTTRANSPROG)) ?
 			RPMTE_HAVE_POSTTRANS : 0;
 
