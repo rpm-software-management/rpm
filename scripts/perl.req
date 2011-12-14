@@ -120,8 +120,9 @@ sub process_file {
     if ( m/^.*\Wq[qxwr]?\s*([{([#|\/])[^})\]#|\/]*$/ && ! m/^\s*(require|use)\s/ ) {
       $tag = $1;
       $tag =~ tr/{\(\[\#|\//})]#|\//;
+      $tag = quotemeta($tag);
       while (<FILE>) {
-        ( $_ =~ m/\}/ ) && last;
+        ( $_ =~ m/$tag/ ) && last;
       }
     }
 
