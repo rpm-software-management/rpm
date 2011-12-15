@@ -439,11 +439,11 @@ static char * pgpsigFormat(rpmtd td)
 
 	    if (!(tms && strftime(dbuf, sizeof(dbuf), "%c", tms) > 0)) {
 		snprintf(dbuf, sizeof(dbuf),
-			 _("Invalid date %u\n"), dateint);
+			 _("Invalid date %u"), dateint);
 		dbuf[sizeof(dbuf)-1] = '\0';
 	    }
 
-	    rasprintf(&val, "%s/%s, %s, Key ID %s\n",
+	    rasprintf(&val, "%s/%s, %s, Key ID %s",
 			pgpValString(PGPVAL_PUBKEYALGO, key_algo),
 			pgpValString(PGPVAL_HASHALGO, hash_algo),
 			dbuf, keyid);
