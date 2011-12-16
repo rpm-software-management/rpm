@@ -295,8 +295,7 @@ static PyObject * hdrWrite(hdrObject *s, PyObject *args, PyObject *kwds)
  */
 static PyObject * hdr_fiFromHeader(PyObject * s, PyObject * args, PyObject * kwds)
 {
-    return PyObject_Call((PyObject *) &rpmfi_Type,
-			 Py_BuildValue("(O)", s), NULL);
+    return PyObject_CallFunctionObjArgs((PyObject *) &rpmfi_Type, s, NULL);
 }
 
 /* Backwards compatibility. Flags argument is just a dummy and discarded. */
@@ -309,14 +308,14 @@ static PyObject * hdr_dsFromHeader(PyObject * s, PyObject * args, PyObject * kwd
             tagNumFromPyObject, &tag, &flags))
         return NULL;
 
-    return PyObject_Call((PyObject *) &rpmds_Type,
-			 Py_BuildValue("(Oi)", s, tag), NULL);
+    return PyObject_CallFunction((PyObject *) &rpmds_Type,
+                                 "(Oi)", s, tag);
 }
 
 static PyObject * hdr_dsOfHeader(PyObject * s)
 {
-    return PyObject_Call((PyObject *) &rpmds_Type,
-			Py_BuildValue("(Oi)", s, RPMTAG_NEVR), NULL);
+    return PyObject_CallFunction((PyObject *) &rpmds_Type,
+                                 "(Oi)", s, RPMTAG_NEVR);
 }
 
 static long hdr_hash(PyObject * h)

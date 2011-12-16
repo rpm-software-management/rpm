@@ -23,8 +23,8 @@ int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop)
 	Py_INCREF(obj);
 	fdo = (rpmfdObject *) obj;
     } else {
-	fdo = (rpmfdObject *) PyObject_Call((PyObject *)&rpmfd_Type,
-			    		    Py_BuildValue("(O)", obj), NULL);
+	fdo = (rpmfdObject *) PyObject_CallFunctionObjArgs((PyObject *)&rpmfd_Type,
+                                                           obj, NULL);
     }
     if (fdo == NULL) return 0;
 
