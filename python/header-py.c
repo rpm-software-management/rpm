@@ -132,12 +132,23 @@ struct hdrObject_s {
 
 static PyObject * hdrKeyList(hdrObject * s)
 {
-    PyObject * keys = PyList_New(0);
-    HeaderIterator hi = headerInitIterator(s->h);
+    PyObject * keys;
+    HeaderIterator hi;
     rpmTagVal tag;
 
+    keys = PyList_New(0);
+    if (!keys) {
+        return NULL;
+    }
+
+    hi = headerInitIterator(s->h);
     while ((tag = headerNextTag(hi)) != RPMTAG_NOT_FOUND) {
 	PyObject *to = PyInt_FromLong(tag);
+        if (!to) {
+            headerFreeIterator(hi);
+            Py_DECREF(keys);
+            return NULL;
+        }
 	PyList_Append(keys, to);
 	Py_DECREF(to);
     }

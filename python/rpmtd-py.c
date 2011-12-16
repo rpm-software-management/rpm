@@ -44,8 +44,15 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     
     if (array) {
 	res = PyList_New(0);
+        if (!res) {
+            return NULL;
+        }
 	while (rpmtdNext(td) >= 0) {
 	    PyObject *item = rpmtd_ItemAsPyobj(td, tclass);
+            if (!item) {
+                Py_DECREF(res);
+                return NULL;
+            }
 	    PyList_Append(res, item);
 	    Py_DECREF(item);
 	}

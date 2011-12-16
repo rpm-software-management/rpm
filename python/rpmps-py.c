@@ -125,12 +125,24 @@ PyObject *rpmprob_Wrap(PyTypeObject *subtype, rpmProblem prob)
 
 PyObject *rpmps_AsList(rpmps ps)
 {
-    PyObject *problems = PyList_New(0);
-    rpmpsi psi = rpmpsInitIterator(ps);
+    PyObject *problems;
+    rpmpsi psi;
     rpmProblem prob;
+
+    problems = PyList_New(0);
+    if (!problems) {
+        return NULL;
+    }
+
+    psi = rpmpsInitIterator(ps);
 
     while ((prob = rpmpsiNext(psi))) {
         PyObject *pyprob = rpmprob_Wrap(&rpmProblem_Type, prob);
+        if (!pyprob) {
+            Py_DECREF(problems);
+            rpmpsFreeIterator(psi);
+            return NULL;
+        }
         PyList_Append(problems, pyprob);
         Py_DECREF(pyprob);
     }

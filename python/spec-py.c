@@ -151,8 +151,13 @@ static PyObject * spec_get_clean(specObject * s, void *closure)
 
 static PyObject * spec_get_sources(specObject *s, void *closure)
 {
-    PyObject *sourceList = PyList_New(0);
+    PyObject *sourceList;
     rpmSpecSrc source;
+
+    sourceList = PyList_New(0);
+    if (!sourceList) {
+        return NULL;
+    }
 
     rpmSpecSrcIter iter = rpmSpecSrcIterInit(s->spec);
     while ((source = rpmSpecSrcIterNext(iter)) != NULL) {
@@ -160,6 +165,10 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 				rpmSpecSrcFilename(source, 1),
 				rpmSpecSrcNum(source),
 				rpmSpecSrcFlags(source)); 
+        if (!srcUrl) {
+            Py_DECREF(sourceList);
+            return NULL;
+        }
 	PyList_Append(sourceList, srcUrl);
 	Py_DECREF(srcUrl);
     } 
@@ -172,11 +181,23 @@ static PyObject * spec_get_sources(specObject *s, void *closure)
 static PyObject * spec_get_packages(specObject *s, void *closure)
 {
     rpmSpecPkg pkg;
-    PyObject *pkgList = PyList_New(0);
-    rpmSpecPkgIter iter = rpmSpecPkgIterInit(s->spec);
+    PyObject *pkgList;
+    rpmSpecPkgIter iter;
+
+    pkgList = PyList_New(0);
+    if (!pkgList) {
+        return NULL;
+    }
+
+    iter = rpmSpecPkgIterInit(s->spec);
 
     while ((pkg = rpmSpecPkgIterNext(iter)) != NULL) {
 	PyObject *po = specPkg_Wrap(&specPkg_Type, pkg);
+        if (!po) {
+            rpmSpecPkgIterFree(iter);
+            Py_DECREF(pkgList);
+            return NULL;
+        }
 	PyList_Append(pkgList, po);
 	Py_DECREF(po);
     }
