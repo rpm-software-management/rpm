@@ -7,7 +7,7 @@
 PyObject *
 rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
-    char * name, * val;
+    const char * name, * val;
     char * kwlist[] = {"name", "value", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "ss:AddMacro", kwlist,
@@ -22,7 +22,7 @@ rpmmacro_AddMacro(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject *
 rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
-    char * name;
+    const char * name;
     char * kwlist[] = {"name", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s:DelMacro", kwlist, &name))
@@ -36,7 +36,7 @@ rpmmacro_DelMacro(PyObject * self, PyObject * args, PyObject * kwds)
 PyObject * 
 rpmmacro_ExpandMacro(PyObject * self, PyObject * args, PyObject * kwds)
 {
-    char *macro;
+    const char *macro;
     PyObject *res;
     int num = 0;
     char * kwlist[] = {"macro", "numeric", NULL};

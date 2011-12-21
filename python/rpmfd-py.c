@@ -57,8 +57,8 @@ static FD_t openPath(const char *path, const char *mode, const char *flags)
 static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "obj", "mode", "flags", NULL };
-    char *mode = "r";
-    char *flags = "ufdio";
+    const char *mode = "r";
+    const char *flags = "ufdio";
     PyObject *fo = NULL;
     FD_t fd = NULL;
     int fdno;

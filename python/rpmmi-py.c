@@ -99,7 +99,7 @@ static PyObject *
 rpmmi_Pattern(rpmmiObject * s, PyObject * args, PyObject * kwds)
 {
     int type;
-    char * pattern;
+    const char * pattern;
     rpmTagVal tag;
     char * kwlist[] = {"tag", "type", "patern", NULL};
 

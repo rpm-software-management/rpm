@@ -751,7 +751,7 @@ static PyObject * rpmts_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
 static int rpmts_init(rpmtsObject *s, PyObject *args, PyObject *kwds)
 {
-    char * rootDir = "/";
+    const char * rootDir = "/";
     rpmVSFlags vsflags = rpmExpandNumeric("%{?__vsflags}");
     char * kwlist[] = {"rootdir", "vsflags", 0};
 

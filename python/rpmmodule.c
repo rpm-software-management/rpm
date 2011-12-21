@@ -28,7 +28,7 @@ PyObject * pyrpmError;
 
 static PyObject * archScore(PyObject * self, PyObject * arg)
 {
-    char * arch;
+    const char * arch;
 
     if (!PyArg_Parse(arg, "s", &arch))
 	return NULL;
@@ -117,7 +117,7 @@ static PyObject * doLog(PyObject * self, PyObject * args, PyObject *kwds)
 
 static PyObject * reloadConfig(PyObject * self, PyObject * args, PyObject *kwds)
 {
-    char * target = NULL;
+    const char * target = NULL;
     char * kwlist[] = { "target", NULL };
     int rc;
     

@@ -232,7 +232,7 @@ static PyObject * hdrFullFilelist(hdrObject * s)
 
 static PyObject * hdrFormat(hdrObject * s, PyObject * args, PyObject * kwds)
 {
-    char * fmt;
+    const char * fmt;
     char * r;
     errmsg_t err;
     PyObject * result;
@@ -859,7 +859,7 @@ static int compare_values(const char *str1, const char *str2)
 
 PyObject * labelCompare (PyObject * self, PyObject * args)
 {
-    char *v1, *r1, *v2, *r2;
+    const char *v1, *r1, *v2, *r2;
     const char *e1, *e2;
     int rc;
 
