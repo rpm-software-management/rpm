@@ -92,10 +92,9 @@ struct selabel_handle * rpmtsSELabelHandle(rpmts ts);
  * Initialize selabel
  * @param ts		transaction set
  * @param open_status   if the func should open selinux status or just check it
- * @param path		path to contexts file
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmtsSELabelInit(rpmts ts, int open_status, const char * path);
+rpmRC rpmtsSELabelInit(rpmts ts, int open_status);
 
 /** \ingroup rpmts
  * Clean up selabel

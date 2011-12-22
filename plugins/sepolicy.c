@@ -556,7 +556,7 @@ static rpmRC sepolGo(void)
     /* re-init selinux and re-read the files contexts, since things may have changed */
     selinux_reset_config();
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	if (rpmtsSELabelInit(ts, 0, selinux_file_context_path()) == RPMRC_OK) {
+	if (rpmtsSELabelInit(ts, 0) == RPMRC_OK) {
 	    /* if this was the first time installing policy, every package before
 	     * policy was installed will be mislabeled (e.g. semodule). So, relabel
 	     * the entire filesystem if this is the case */

@@ -1261,7 +1261,7 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
 	rpmlog(RPMLOG_DEBUG, "Selinux disabled.\n");
     } else {
-	if (rpmtsSELabelInit(ts, 1, selinux_file_context_path())) {
+	if (rpmtsSELabelInit(ts, 1)) {
 	    rpmlog(RPMLOG_WARNING, "Failed to open SELinux handle.\n");
 	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
 	}
@@ -1390,7 +1390,7 @@ static int rpmtsProcess(rpmts ts)
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
 
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	    rpmtsSELabelInit(ts, 0, selinux_file_context_path());
+	    rpmtsSELabelInit(ts, 0);
 	}
 
 	failed = rpmteProcess(p, rpmteType(p));

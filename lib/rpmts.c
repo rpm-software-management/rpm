@@ -738,9 +738,11 @@ struct selabel_handle * rpmtsSELabelHandle(rpmts ts)
     return NULL;
 }
 
-rpmRC rpmtsSELabelInit(rpmts ts, int open_status, const char *path)
+rpmRC rpmtsSELabelInit(rpmts ts, int open_status)
 {
 #if WITH_SELINUX
+    const char * path = selinux_file_context_path();
+
     if (ts == NULL || path == NULL) {
 	return RPMRC_FAIL;
     }
