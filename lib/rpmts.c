@@ -738,11 +738,20 @@ struct selabel_handle * rpmtsSELabelHandle(rpmts ts)
     return NULL;
 }
 
-rpmRC rpmtsSELabelInit(rpmts ts, const char *path)
+rpmRC rpmtsSELabelInit(rpmts ts, int open_status, const char *path)
 {
 #if WITH_SELINUX
     if (ts == NULL || path == NULL) {
 	return RPMRC_FAIL;
+    }
+
+    if (open_status) {
+	selinux_status_close();
+	if (selinux_status_open(0) < 0) {
+	    return RPMRC_FAIL;
+	}
+    } else if (!selinux_status_updated() && ts->selabelHandle) {
+	return RPMRC_OK;
     }
 
     struct selinux_opt opts[] = {
@@ -750,7 +759,7 @@ rpmRC rpmtsSELabelInit(rpmts ts, const char *path)
     };
 
     if (ts->selabelHandle) {
-	rpmtsSELabelFini(ts);
+	rpmtsSELabelFini(ts, 0);
     }
     ts->selabelHandle = selabel_open(SELABEL_CTX_FILE, opts, 1);
 
@@ -761,12 +770,15 @@ rpmRC rpmtsSELabelInit(rpmts ts, const char *path)
     return RPMRC_OK;
 }
 
-void rpmtsSELabelFini(rpmts ts)
+void rpmtsSELabelFini(rpmts ts, int close_status)
 {
 #if WITH_SELINUX
     if (ts && ts->selabelHandle) {
 	selabel_close(ts->selabelHandle);
 	ts->selabelHandle = NULL;
+    }
+    if (close_status) {
+	selinux_status_close();
     }
 #endif
 }

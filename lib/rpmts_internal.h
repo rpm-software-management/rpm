@@ -70,7 +70,7 @@ struct rpmts_s {
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
 RPM_GNUC_INTERNAL
 tsMembers rpmtsMembers(rpmts ts);
 
@@ -91,16 +91,18 @@ struct selabel_handle * rpmtsSELabelHandle(rpmts ts);
 /** \ingroup rpmts
  * Initialize selabel
  * @param ts		transaction set
+ * @param open_status   if the func should open selinux status or just check it
  * @param path		path to contexts file
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmtsSELabelInit(rpmts ts, const char * path);
+rpmRC rpmtsSELabelInit(rpmts ts, int open_status, const char * path);
 
 /** \ingroup rpmts
  * Clean up selabel
  * @param ts		transaction set
+ * @param close_status  whether we should close selinux status
  */
-void rpmtsSELabelFini(rpmts ts);
+void rpmtsSELabelFini(rpmts ts, int close_status);
 
 #ifdef __cplusplus
 }

@@ -79,6 +79,7 @@ char * stpncpy(char * dest, const char * src, size_t n);
 #if WITH_SELINUX
 #include <selinux/selinux.h>
 #include <selinux/label.h>
+#include <selinux/avc.h>
 #else
 typedef	char * security_context_t;
 
