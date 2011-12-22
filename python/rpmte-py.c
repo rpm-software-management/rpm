@@ -46,83 +46,83 @@ struct rpmteObject_s {
 };
 
 static PyObject *
-rpmte_TEType(rpmteObject * s)
+rpmte_TEType(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmteType(s->te));
 }
 
 static PyObject *
-rpmte_N(rpmteObject * s)
+rpmte_N(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteN(s->te));
 }
 
 static PyObject *
-rpmte_E(rpmteObject * s)
+rpmte_E(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteE(s->te));
 }
 
 static PyObject *
-rpmte_V(rpmteObject * s)
+rpmte_V(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteV(s->te));
 }
 
 static PyObject *
-rpmte_R(rpmteObject * s)
+rpmte_R(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteR(s->te));
 }
 
 static PyObject *
-rpmte_A(rpmteObject * s)
+rpmte_A(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteA(s->te));
 }
 
 static PyObject *
-rpmte_O(rpmteObject * s)
+rpmte_O(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteO(s->te));
 }
 
 static PyObject *
-rpmte_NEVR(rpmteObject * s)
+rpmte_NEVR(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteNEVR(s->te));
 }
 
 static PyObject *
-rpmte_NEVRA(rpmteObject * s)
+rpmte_NEVRA(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("s", rpmteNEVRA(s->te));
 }
 
 static PyObject *
-rpmte_Color(rpmteObject * s)
+rpmte_Color(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmteColor(s->te));
 }
 
 static PyObject *
-rpmte_PkgFileSize(rpmteObject * s)
+rpmte_PkgFileSize(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("L", rpmtePkgFileSize(s->te));
 }
 
 static PyObject *
-rpmte_Parent(rpmteObject * s)
+rpmte_Parent(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmteParent(s->te));
 }
 
-static PyObject * rpmte_Failed(rpmteObject * s)
+static PyObject * rpmte_Failed(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmteFailed(s->te));
 }
 
-static PyObject * rpmte_Problems(rpmteObject * s)
+static PyObject * rpmte_Problems(rpmteObject * s, PyObject * unused)
 {
     rpmps ps = rpmteProblems(s->te);
     PyObject *problems = rpmps_AsList(ps);
@@ -132,20 +132,20 @@ static PyObject * rpmte_Problems(rpmteObject * s)
 
 /*
 static PyObject *
-rpmte_DependsOnKey(rpmteObject * s)
+rpmte_DependsOnKey(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmteDependsOnKey(s->te));
 }
 */
 
 static PyObject *
-rpmte_DBOffset(rpmteObject * s)
+rpmte_DBOffset(rpmteObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmteDBOffset(s->te));
 }
 
 static PyObject *
-rpmte_Key(rpmteObject * s)
+rpmte_Key(rpmteObject * s, PyObject * unused)
 {
     PyObject * Key;
 

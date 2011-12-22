@@ -78,7 +78,7 @@ rpmmi_iternext(rpmmiObject * s)
 }
 
 static PyObject *
-rpmmi_Instance(rpmmiObject * s)
+rpmmi_Instance(rpmmiObject * s, PyObject * unused)
 {
     int rc = 0;
 
@@ -89,7 +89,7 @@ rpmmi_Instance(rpmmiObject * s)
 }
 
 static PyObject *
-rpmmi_Count(rpmmiObject * s)
+rpmmi_Count(rpmmiObject * s, PyObject * unused)
 {
     DEPRECATED_METHOD("use len(mi) instead");
     return Py_BuildValue("i", PyMapping_Size((PyObject *)s));
