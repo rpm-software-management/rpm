@@ -29,8 +29,8 @@ int rpmfdFromPyObject(PyObject *obj, rpmfdObject **fdop)
     if (fdo == NULL) return 0;
 
     if (Ferror(fdo->fd)) {
-	Py_DECREF(fdo);
 	PyErr_SetString(PyExc_IOError, Fstrerror(fdo->fd));
+	Py_DECREF(fdo);
 	return 0;
     }
     *fdop = fdo;
