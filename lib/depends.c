@@ -178,17 +178,18 @@ static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 	if ((Name = rpmdsN(obsoletes)) == NULL)
 	    continue;	/* XXX can't happen */
 
-	/* XXX avoid self-obsoleting packages. */
-	if (rstreq(rpmteN(p), Name))
-	    continue;
-
 	mi = rpmtsPrunedIterator(ts, RPMDBI_NAME, Name, 1);
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
-	    /* Ignore colored packages not in our rainbow. */
-	    if (skipColor(tscolor, hcolor, 
-			  headerGetNumber(oh, RPMTAG_HEADERCOLOR)))
+	    const char *oarch = headerGetString(oh, RPMTAG_ARCH);
+
+	    /* avoid self-obsoleting packages */
+	    if (rstreq(rpmteN(p), Name) && rstreq(rpmteA(p), oarch)) {
+		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
+		rpmlog(RPMLOG_DEBUG, "  Not obsoleting: %s\n", ohNEVRA);
+		free(ohNEVRA);
 		continue;
+	    }
 
 	    /*
 	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
