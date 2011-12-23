@@ -129,8 +129,19 @@ static rpmdbMatchIterator rpmtsPrunedIterator(rpmts ts, rpmDbiTagVal tag,
     return mi;
 }
 
-#define skipColor(_tscolor, _color, _ocolor) \
-	((_tscolor) && (_color) && (_ocolor) && !((_color) & (_ocolor)))
+/**
+ * Decides whether to skip a package upgrade/obsoletion on TE color.
+ *
+ * @param tscolor	color of this transaction
+ * @param color 	color of this transaction element
+ * @param ocolor 	header color of the upgraded/obsoleted package
+ *
+ * @return		non-zero if the package should be skipped
+ */
+static int skipColor(rpm_color_t tscolor, rpm_color_t color, rpm_color_t ocolor)
+{
+    return tscolor && color && ocolor && !(color & ocolor);
+}
 
 /* Add erase elements for older packages of same color (if any). */
 static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
