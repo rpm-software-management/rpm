@@ -4,8 +4,6 @@
 
 #include "system.h"
 
-#include <rpm/rpmcli.h>		/* XXX rpmcliPackagesTotal */
-
 #include <rpm/rpmlib.h>		/* rpmVersionCompare, rpmlib provides */
 #include <rpm/rpmtag.h>
 #include <rpm/rpmlog.h>
@@ -347,7 +345,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     tsmem->order[oc] = p;
     if (oc == tsmem->orderCount) {
 	tsmem->orderCount++;
-	rpmcliPackagesTotal++;
     }
     
     rpmalAdd(tsmem->addedPackages, p);

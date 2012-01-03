@@ -167,6 +167,7 @@ void * rpmShowProgress(const void * arg,
 	rpmcliHashesCurrent = 0;
 	rpmcliProgressTotal = 1;
 	rpmcliProgressCurrent = 0;
+	rpmcliPackagesTotal = total;
 	if (!(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH)
@@ -380,8 +381,6 @@ int rpmInstall(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_t fileArgv)
     ovsflags = rpmtsSetVSFlags(ts, (vsflags | RPMVSF_NEEDPAYLOAD));
 
     if (fileArgv == NULL) goto exit;
-
-    rpmcliPackagesTotal = 0;
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
