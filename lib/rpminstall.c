@@ -196,6 +196,10 @@ void * rpmShowProgress(const void * arg,
 	break;
     case RPMCALLBACK_SCRIPT_ERROR:
 	break;
+    case RPMCALLBACK_SCRIPT_START:
+	break;
+    case RPMCALLBACK_SCRIPT_STOP:
+	break;
     case RPMCALLBACK_UNKNOWN:
     default:
 	break;

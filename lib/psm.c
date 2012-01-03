@@ -407,18 +407,27 @@ static rpmTagVal triggertag(rpmsenseFlags sense)
 static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes, 
 		       rpmScript script, int arg1, int arg2)
 {
-    rpmRC rc = RPMRC_OK;
+    rpmRC stoprc, rc = RPMRC_OK;
     rpmTagVal stag = rpmScriptTag(script);
+    FD_t sfd = NULL;
     int warn_only = (stag != RPMTAG_PREIN &&
 		     stag != RPMTAG_PREUN &&
 		     stag != RPMTAG_PRETRANS &&
 		     stag != RPMTAG_VERIFYSCRIPT);
     int selinux = !(rpmtsFlags(psm->ts) & RPMTRANS_FLAG_NOCONTEXTS);
 
+    sfd = rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_START, stag, 0);
+    if (sfd == NULL)
+	sfd = rpmtsScriptFd(psm->ts);
+
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
-    rc = rpmScriptRun(script, arg1, arg2, rpmtsScriptFd(psm->ts),
+    rc = rpmScriptRun(script, arg1, arg2, sfd,
 		      prefixes, warn_only, selinux);
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
+
+    /* Map warn-only errors to "notfound" for script stop callback */
+    stoprc = (rc != RPMRC_OK && warn_only) ? RPMRC_NOTFOUND : rc;
+    rpmtsNotify(psm->ts, psm->te, RPMCALLBACK_SCRIPT_STOP, stag, stoprc);
 
     /* 
      * Notify callback for all errors. "total" abused for warning/error,
