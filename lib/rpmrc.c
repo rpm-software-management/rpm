@@ -110,6 +110,7 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 /* XXX get rid of this stuff... */
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 #define RPMVAR_OPTFLAGS                 3
+#define RPMVAR_ARCHCOLOR                42
 #define RPMVAR_INCLUDE                  43
 #define RPMVAR_MACROFILES               49
 
@@ -119,6 +120,7 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 /* The order of the flags is archSpecific, macroize, localize */
 
 static const struct rpmOption optionTable[] = {
+    { "archcolor",		RPMVAR_ARCHCOLOR,               1, 0, 0 },
     { "include",		RPMVAR_INCLUDE,			0, 0, 2 },
     { "macrofiles",		RPMVAR_MACROFILES,		0, 0, 1 },
     { "optflags",		RPMVAR_OPTFLAGS,		1, 1, 0 },
@@ -1285,6 +1287,28 @@ static void getMachineInfo(int type, const char ** name,
 void rpmGetArchInfo(const char ** name, int * num)
 {
     getMachineInfo(ARCH, name, num);
+}
+
+int rpmGetArchColor(const char *arch)
+{
+    const char *color;
+    char *e;
+    int color_i;
+
+    arch = lookupInDefaultTable(arch,
+				tables[currTables[ARCH]].defaults,
+				tables[currTables[ARCH]].defaultsLength);
+    color = rpmGetVarArch(RPMVAR_ARCHCOLOR, arch);
+    if (color == NULL) {
+	return -1;
+    }
+
+    color_i = strtol(color, &e, 10);
+    if (!(e && *e == '\0')) {
+	return -1;
+    }
+
+    return color_i;
 }
 
 void rpmGetOsInfo(const char ** name, int * num)

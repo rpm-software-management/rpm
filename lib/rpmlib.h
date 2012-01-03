@@ -69,6 +69,13 @@ void rpmGetArchInfo( const char ** name,
 		int * num);
 
 /** \ingroup rpmrc
+ * Return color for an arch
+ * @param arch		name of an architecture
+ * @return color        color of arch, -1 if the arch couldn't be determined
+ */
+int rpmGetArchColor(const char *arch);
+
+/** \ingroup rpmrc
  * Return current os name and/or number.
  * @todo Generalize to extract os component from target_platform macro.
  * @retval name		address of os name (or NULL)

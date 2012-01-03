@@ -83,6 +83,39 @@ optflags: sh4 -O2 -g -mieee
 optflags: sh4a -O2 -g -mieee
 
 #############################################################
+# Architecture colors
+
+archcolor: noarch 0
+archcolor: i386 1
+archcolor: alpha 2
+archcolor: sparc 1
+archcolor: sparc64 2
+archcolor: sparcv9 2
+archcolor: ppc 1
+archcolor: ppc64 2
+
+archcolor: armv3l 1
+archcolor: armv4b 1
+archcolor: armv4l 1
+archcolor: armv4tl 1
+archcolor: armv5tel 1
+archcolor: armv5tejl 1
+archcolor: armv6l 1
+archcolor: armv7l 1
+
+archcolor: m68kmint 1
+
+archcolor: s390 1
+archcolor: s390x 2
+
+archcolor: ia64 2
+
+archcolor: x86_64 2
+
+archcolor: sh3 1
+archcolor: sh4 1
+
+#############################################################
 # Canonical arch names and numbers
 
 arch_canon:	athlon:	athlon	1
