@@ -17,11 +17,11 @@
 #include "lib/manifest.h"
 #include "debug.h"
 
-int rpmcliPackagesTotal = 0;
-int rpmcliHashesCurrent = 0;
-int rpmcliHashesTotal = 0;
-int rpmcliProgressCurrent = 0;
-int rpmcliProgressTotal = 0;
+static int rpmcliPackagesTotal = 0;
+static int rpmcliHashesCurrent = 0;
+static int rpmcliHashesTotal = 0;
+static int rpmcliProgressCurrent = 0;
+static int rpmcliProgressTotal = 0;
 
 /**
  * Print a CLI progress bar.

@@ -293,12 +293,6 @@ typedef rpmFlags rpmInstallFlags;
 #define UNINSTALL_NODEPS INSTALL_NODEPS
 #define UNINSTALL_ALLMATCHES INSTALL_ALLMATCHES
 
-extern int rpmcliPackagesTotal;
-extern int rpmcliHashesCurrent;
-extern int rpmcliHashesTotal;
-extern int rpmcliProgressCurrent;
-extern int rpmcliProgressTotal;
-
 /** \ingroup rpmcli
  * The rpm CLI generic transaction callback handler.
  * @todo Remove headerFormat() from the progress callback.
