@@ -69,7 +69,6 @@ struct rpmOption {
     char * name;
     int var;
     int archSpecific;
-int required;
     int macroize;
     int localize;
 };
@@ -117,12 +116,12 @@ static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
 #define RPMVAR_NUM                      55      /* number of RPMVAR entries */
 
 /* this *must* be kept in alphabetical order */
-/* The order of the flags is archSpecific, required, macroize, localize */
+/* The order of the flags is archSpecific, macroize, localize */
 
 static const struct rpmOption optionTable[] = {
-    { "include",		RPMVAR_INCLUDE,			0, 1,	0, 2 },
-    { "macrofiles",		RPMVAR_MACROFILES,		0, 0,	0, 1 },
-    { "optflags",		RPMVAR_OPTFLAGS,		1, 0,	1, 0 },
+    { "include",		RPMVAR_INCLUDE,			0, 0, 2 },
+    { "macrofiles",		RPMVAR_MACROFILES,		0, 0, 1 },
+    { "optflags",		RPMVAR_OPTFLAGS,		1, 1, 0 },
 };
 
 static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable);
