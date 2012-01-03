@@ -72,7 +72,6 @@ struct rpmOption {
 int required;
     int macroize;
     int localize;
-struct rpmOptionValue * value;
 };
 
 typedef struct defaultEntry_s {
