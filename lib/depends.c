@@ -193,7 +193,7 @@ static void addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 	     * If no obsoletes version info is available, match all names.
 	     */
 	    if (rpmdsEVR(obsoletes) == NULL
-                || rpmdsAnyMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
+		|| rpmdsNVRMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
 		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
