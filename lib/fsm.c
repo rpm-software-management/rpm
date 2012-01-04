@@ -626,7 +626,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->digestalgo = rpmfiDigestAlgo(fi);
 
-    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
+    if (fsm->goal == FSM_PKGINSTALL) {
 	fsm->archivePos = 0;
 	rpmtsNotify(ts, te, RPMCALLBACK_INST_START,
 		    fsm->archivePos, fi->archiveSize);
@@ -1709,9 +1709,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 	    }
 
-	    /* Notify on success. */
-	    (void) fsmNext(fsm, FSM_NOTIFY);
-
 	    if (fsmNext(fsm, FSM_FINI))
 		break;
 	}
@@ -1892,7 +1889,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	rc = fsmMakeLinks(fsm);
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
-	if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
+	if (fsm->goal == FSM_PKGINSTALL) {
 	    rpmts ts = fsmGetTs(fsm);
 	    rpmte te = fsmGetTe(fsm);
 	    rpmfi fi = fsmGetFi(fsm);
