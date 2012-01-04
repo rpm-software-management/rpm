@@ -837,11 +837,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		rc = RPMRC_FAIL;
 
 		/* XXX notify callback on error. */
-		psm->what = RPMCALLBACK_UNPACK_ERROR;
-		psm->amount = 0;
-		psm->total = 0;
-		rpmpsmNext(psm, PSM_NOTIFY);
-
+		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNPACK_ERROR, 0, 0);
 		break;
 	    }
 	}
@@ -955,10 +951,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 			psm->goalName, cpioStrerror(rc));
 
 	    /* XXX notify callback on error. */
-	    psm->what = RPMCALLBACK_CPIO_ERROR;
-	    psm->amount = 0;
-	    psm->total = 0;
-	    rpmpsmNext(psm, PSM_NOTIFY);
+	    rpmtsNotify(ts, psm->te, RPMCALLBACK_CPIO_ERROR, 0, 0);
 	}
 
 	psm->failedFile = _free(psm->failedFile);
