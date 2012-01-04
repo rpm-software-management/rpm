@@ -142,7 +142,7 @@ static int skipColor(rpm_color_t tscolor, rpm_color_t color, rpm_color_t ocolor)
 }
 
 /* Add erase elements for older packages of same color (if any). */
-static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
+static void addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
 				rpmte p, rpm_color_t hcolor, Header h)
 {
     Header oh;
@@ -163,8 +163,7 @@ static void addUpgradeErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
 }
 
 /* Add erase elements for obsoleted packages of same color (if any). */
-static void addObsoleteErasures(rpmts ts, tsMembers tsmem, rpm_color_t tscolor,
-				rpmte p, rpm_color_t hcolor)
+static void addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 {
     rpmds obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
     Header oh;
@@ -360,8 +359,8 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     /* Add erasure elements for old versions and obsoletions */
-    addUpgradeErasures(ts, tsmem, tscolor, p, rpmteColor(p), h);
-    addObsoleteErasures(ts, tsmem, tscolor, p, rpmteColor(p));
+    addUpgradeErasures(ts, tscolor, p, rpmteColor(p), h);
+    addObsoleteErasures(ts, tscolor, p);
 
 exit:
     return ec;
