@@ -166,6 +166,12 @@ will be used for dependency checks and any scriptlet(s) (e.g.
 \fB%prep\fR if building, a package)
 will be run after a chroot(2) to
 \fIDIRECTORY\fR.
+.TP
+\fB-D, --define='\fIMACRO EXPR\fB'\fR
+Defines \fIMACRO\fR with value \fIEXPR\fR.
+.TP
+\fB-E, --eval='\fIEXPR\fB'\fR
+Prints macro expansion of \fIEXPR\fR.
 .SS "INSTALL AND UPGRADE OPTIONS"
 .PP
 In these options, \fIPACKAGE_FILE\fR can be either \fBrpm\fR binary
