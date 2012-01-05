@@ -225,6 +225,8 @@ int fsmTeardown(FSM_t fsm);
 RPM_GNUC_INTERNAL
 int fsmNext(FSM_t fsm, fileStage nstage);
 
+RPM_GNUC_INTERNAL
+void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount);
 #ifdef __cplusplus
 }
 #endif

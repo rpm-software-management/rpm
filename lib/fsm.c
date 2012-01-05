@@ -627,12 +627,6 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->digestalgo = rpmfiDigestAlgo(fi);
     fsm->psm = psm;
 
-    if (fsm->goal == FSM_PKGINSTALL) {
-	fsm->archivePos = 0;
-	rpmtsNotify(ts, te, RPMCALLBACK_INST_START,
-		    fsm->archivePos, fi->archiveSize);
-    }
-
     fsm->archiveSize = archiveSize;
     if (fsm->archiveSize)
 	*fsm->archiveSize = 0;
@@ -1891,14 +1885,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
 	if (fsm->goal == FSM_PKGINSTALL) {
-	    rpmts ts = fsmGetTs(fsm);
-	    rpmte te = fsmGetTe(fsm);
-	    rpmfi fi = fsmGetFi(fsm);
-	    if (fsm->cpioPos > fsm->archivePos) {
-		fsm->archivePos = fsm->cpioPos;
-		rpmtsNotify(ts, te, RPMCALLBACK_INST_PROGRESS,
-			fsm->archivePos, fi->archiveSize);
-	    }
+	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, fsm->cpioPos);
 	}
 	break;
     case FSM_UNDO:

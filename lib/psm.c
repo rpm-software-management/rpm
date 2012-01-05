@@ -37,7 +37,6 @@ typedef enum pkgStage_e {
     PSM_FINI		=  6,
 
     PSM_CREATE		= 17,
-    PSM_NOTIFY		= 22,
     PSM_DESTROY		= 23,
 
     PSM_SCRIPT		= 53,
@@ -655,6 +654,25 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
     return psm;
 }
 
+void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
+{
+    if (psm) {
+	int changed = 0;
+	if (amount > psm->amount) {
+	    psm->amount = amount;
+	    changed = 1;
+	}
+	if (what && what != psm->what) {
+	    psm->what = what;
+	    changed = 1;
+	}
+	if (changed) {
+	   rpmtsNotify(psm->ts, psm->te, psm->what, psm->amount, psm->total);
+	}
+    }
+}
+
+
 static int runFsm(rpmpsm psm, FD_t payload)
 {
     int sc, ec;
@@ -733,6 +751,9 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PKG_INSTALL) {
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
+	    psm->amount = 0;
+	    psm->total = fi->archiveSize ? fi->archiveSize : 100;
+
 	    /* HACK: reinstall abuses te instance to remove old header */
 	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
 		markReplacedInstance(ts, psm->te);
@@ -756,6 +777,9 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 	if (psm->goal == PKG_ERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;
+
+	    psm->amount = 0;
+	    psm->total = rpmfiFC(fi) ? rpmfiFC(fi) : 100;
 	}
 	break;
     case PSM_PRE:
@@ -801,33 +825,29 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_PROCESS:
 	if (psm->goal == PKG_INSTALL) {
-	    FD_t payload = NULL;
-	    int fsmrc;
+	    int fsmrc = 0;
 
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 
-	    /* XXX Synthesize callbacks for packages with no files. */
-	    if (rpmfiFC(fi) <= 0) {
-		rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_START, 0, 100);
-		rpmtsNotify(ts, psm->te, RPMCALLBACK_INST_PROGRESS, 100, 100);
-		break;
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
+	    /* make sure first progress call gets made */
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
+
+	    if (rpmfiFC(fi) > 0) {
+		FD_t payload = rpmtePayload(psm->te);
+		if (payload == NULL) {
+		    rc = RPMRC_FAIL;
+		    break;
+		}
+
+		fsmrc = runFsm(psm, payload);
+
+		Fclose(payload);
 	    }
 
-	    payload = rpmtePayload(psm->te);
-	    if (payload == NULL) {
-		rc = RPMRC_FAIL;
-		break;
-	    }
-
-	    fsmrc = runFsm(psm, payload);
-
-	    Fclose(payload);
-
-	    /* XXX make sure progress is closed out */
-	    psm->what = RPMCALLBACK_INST_PROGRESS;
-	    psm->amount = (fi->archiveSize ? fi->archiveSize : 100);
-	    psm->total = psm->amount;
-	    rpmpsmNext(psm, PSM_NOTIFY);
+	    /* XXX make sure progress reaches 100% */
+	    rpmpsmNotify(psm, 0, psm->total);
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
 
 	    if (fsmrc) {
 		rpmlog(RPMLOG_ERR,
@@ -843,30 +863,20 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 	}
 	if (psm->goal == PKG_ERASE) {
-	    int fc = rpmfiFC(fi);
-
 	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
 
-	    /* XXX Synthesize callbacks for packages with no files. */
-	    if (rpmfiFC(fi) <= 0) {
-		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_START, 0, 100);
-		rpmtsNotify(ts, psm->te, RPMCALLBACK_UNINST_STOP, 0, 100);
-		break;
-	    }
-
-	    psm->what = RPMCALLBACK_UNINST_START;
-	    psm->amount = fc;		/* XXX W2DO? looks wrong. */
-	    psm->total = fc;
-	    rpmpsmNext(psm, PSM_NOTIFY);
+	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_START, 0);
+	    /* make sure first progress call gets made */
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
 
 	    /* XXX should't we log errors from here? */
-	    rc = runFsm(psm, NULL) ? RPMRC_FAIL : RPMRC_OK;
+	    if (rpmfiFC(fi) > 0) {
+		rc = runFsm(psm, NULL) ? RPMRC_FAIL : RPMRC_OK;
+	    }
 
-	    psm->what = RPMCALLBACK_UNINST_STOP;
-	    psm->amount = 0;		/* XXX W2DO? looks wrong. */
-	    psm->total = fc;
-	    rpmpsmNext(psm, PSM_NOTIFY);
-
+	    /* XXX make sure progress reaches 100% */
+	    rpmpsmNotify(psm, 0, psm->total);
+	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
 	}
 	break;
     case PSM_POST:
@@ -961,9 +971,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
 
     case PSM_CREATE:
-	break;
-    case PSM_NOTIFY:
-	rpmtsNotify(ts, psm->te, psm->what, psm->amount, psm->total);
 	break;
     case PSM_DESTROY:
 	break;
