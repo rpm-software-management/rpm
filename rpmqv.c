@@ -166,13 +166,13 @@ int main(int argc, char *argv[])
     if (ia->prefix && ia->prefix[0] != '/') 
 	argerror(_("arguments to --prefix must begin with a /"));
 
-    if (bigMode != MODE_INSTALL && (ia->installInterfaceFlags & INSTALL_HASH))
+    if (!(bigMode & MODES_IE) && (ia->installInterfaceFlags & INSTALL_HASH))
 	argerror(_("--hash (-h) may only be specified during package "
-			"installation"));
+			"installation and erasure"));
 
-    if (bigMode != MODE_INSTALL && (ia->installInterfaceFlags & INSTALL_PERCENT))
+    if (!(bigMode & MODES_IE) && (ia->installInterfaceFlags & INSTALL_PERCENT))
 	argerror(_("--percent may only be specified during package "
-			"installation"));
+			"installation and erasure"));
 
     if (bigMode != MODE_INSTALL && (ia->probFilter & RPMPROB_FILTER_REPLACEPKG))
 	argerror(_("--replacepkgs may only be specified during package "
