@@ -1677,6 +1677,9 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Rename/erase next item. */
 	    if (fsmNext(fsm, FSM_FINI))
 		break;
+
+	    /* Notify on success. */
+	    (void) fsmNext(fsm, FSM_NOTIFY);
 	}
 	break;
     case FSM_PKGBUILD:
@@ -1886,6 +1889,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
     case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
 	if (fsm->goal == FSM_PKGINSTALL) {
 	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, fsm->cpioPos);
+	} else if (fsm->goal == FSM_PKGERASE) {
+	    /* On erase we're iterating backwards, fixup for progress */
+	    rpm_loff_t amount = (fsm->ix >= 0) ?
+				rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
+	    rpmpsmNotify(fsm->psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
 	break;
     case FSM_UNDO:
