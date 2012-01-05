@@ -104,6 +104,7 @@ typedef rpmFlags cpioMapFlags;
 
 typedef struct fsmIterator_s * FSMI_t;
 typedef struct fsm_s * FSM_t;
+typedef struct rpmpsm_s * rpmpsm;
 
 typedef struct hardLink_s * hardLink_t;
 
@@ -163,6 +164,8 @@ struct fsm_s {
     fileStage nstage;		/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
+
+    rpmpsm psm;			/*!< "parent" package state machine */
 };
 
 #ifdef __cplusplus
@@ -192,6 +195,7 @@ FSM_t freeFSM(FSM_t fsm);
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param cfd
+ * @param psm		owner psm (or NULL)
  * @retval archiveSize	pointer to archive size
  * @retval failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
@@ -201,6 +205,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmte te,
 		rpmfi fi,
 		FD_t cfd,
+		rpmpsm psm,
 		rpm_loff_t * archiveSize,
 		char ** failedFile);
 

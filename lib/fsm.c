@@ -613,7 +613,7 @@ static int fsmCreate(FSM_t fsm)
 }
 
 int fsmSetup(FSM_t fsm, fileStage goal,
-		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+		rpmts ts, rpmte te, rpmfi fi, FD_t cfd, rpmpsm psm,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
     int rc, ec = 0;
@@ -625,6 +625,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->cpioPos = 0;
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->digestalgo = rpmfiDigestAlgo(fi);
+    fsm->psm = psm;
 
     if (fsm->goal == FSM_PKGINSTALL) {
 	fsm->archivePos = 0;

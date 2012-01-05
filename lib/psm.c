@@ -49,7 +49,7 @@ typedef enum pkgStage_e {
 
 } pkgStage;
 
-typedef struct rpmpsm_s {
+struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
     rpmfi fi;			/*!< transaction element file info */
@@ -68,7 +68,7 @@ typedef struct rpmpsm_s {
     pkgStage nstage;		/*!< Next psm stage. */
 
     int nrefs;			/*!< Reference count. */
-} * rpmpsm;
+};
 
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te);
 static rpmpsm rpmpsmFree(rpmpsm psm);
@@ -661,7 +661,8 @@ static int runFsm(rpmpsm psm, FD_t payload)
 
     sc = fsmSetup(rpmfiFSM(psm->fi),
 		  (psm->goal == PKG_INSTALL) ? FSM_PKGINSTALL : FSM_PKGERASE,
-		  psm->ts, psm->te, psm->fi, payload, NULL, &psm->failedFile);
+		  psm->ts, psm->te, psm->fi, payload, psm,
+		  NULL, &psm->failedFile);
     if (psm->goal == PKG_INSTALL) {
 	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
 		 fdOp(payload, FDSTAT_READ));
