@@ -103,6 +103,7 @@ void * rpmShowProgress(const void * arg,
     void * rc = NULL;
     const char * filename = (const char *)key;
     static FD_t fd = NULL;
+    static int state = -1;
 
     switch (what) {
     case RPMCALLBACK_INST_OPEN_FILE:
@@ -132,6 +133,19 @@ void * rpmShowProgress(const void * arg,
 	break;
 
     case RPMCALLBACK_INST_START:
+    case RPMCALLBACK_UNINST_START:
+	if (state != what) {
+	    state = what;
+	    if (flags & INSTALL_HASH) {
+		if (what == RPMCALLBACK_INST_START) {
+		    fprintf(stdout, "Updating / installing...\n");
+		} else {
+		    fprintf(stdout, "Cleaning up / removing...\n");
+		}
+		fflush(stdout);
+	    }
+	}
+		
 	rpmcliHashesCurrent = 0;
 	if (h == NULL || !(flags & INSTALL_LABEL))
 	    break;
@@ -157,6 +171,7 @@ void * rpmShowProgress(const void * arg,
 
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
+    case RPMCALLBACK_UNINST_PROGRESS:
 	if (flags & INSTALL_PERCENT)
 	    fprintf(stdout, "%%%% %f\n", (double) (total
 				? ((((float) amount) / total) * 100)
@@ -171,12 +186,13 @@ void * rpmShowProgress(const void * arg,
 	rpmcliProgressTotal = 1;
 	rpmcliProgressCurrent = 0;
 	rpmcliPackagesTotal = total;
+	state = what;
 	if (!(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH)
 	    fprintf(stdout, "%-28s", _("Preparing..."));
 	else
-	    fprintf(stdout, "%s\n", _("Preparing packages for installation..."));
+	    fprintf(stdout, "%s\n", _("Preparing packages..."));
 	(void) fflush(stdout);
 	break;
 
@@ -187,10 +203,6 @@ void * rpmShowProgress(const void * arg,
 	rpmcliProgressCurrent = 0;
 	break;
 
-    case RPMCALLBACK_UNINST_PROGRESS:
-	break;
-    case RPMCALLBACK_UNINST_START:
-	break;
     case RPMCALLBACK_UNINST_STOP:
 	break;
     case RPMCALLBACK_UNPACK_ERROR:
@@ -631,9 +643,7 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
     (void) rpmtsSetFlags(ts, ia->transFlags);
 
-#ifdef	NOTYET	/* XXX no callbacks on erase yet */
     setNotifyFlag(ia, ts);
-#endif
 
     qfmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
     for (arg = argv; *arg; arg++) {
