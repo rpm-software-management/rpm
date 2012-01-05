@@ -30,6 +30,7 @@ typedef enum rpmCallbackType_e {
     RPMCALLBACK_SCRIPT_ERROR	= (1 << 15),
     RPMCALLBACK_SCRIPT_START	= (1 << 16),
     RPMCALLBACK_SCRIPT_STOP	= (1 << 17),
+    RPMCALLBACK_INST_STOP	= (1 << 18),
 } rpmCallbackType;
 
 /**

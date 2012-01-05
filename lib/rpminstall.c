@@ -152,6 +152,9 @@ void * rpmShowProgress(const void * arg,
 	}
 	break;
 
+    case RPMCALLBACK_INST_STOP:
+	break;
+
     case RPMCALLBACK_TRANS_PROGRESS:
     case RPMCALLBACK_INST_PROGRESS:
 	if (flags & INSTALL_PERCENT)
