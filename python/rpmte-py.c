@@ -147,13 +147,11 @@ rpmte_DBOffset(rpmteObject * s, PyObject * unused)
 static PyObject *
 rpmte_Key(rpmteObject * s, PyObject * unused)
 {
-    PyObject * Key;
-
     /* XXX how to insure this is a PyObject??? */
-    Key = (PyObject *) rpmteKey(s->te);
+    PyObject * Key = (PyObject *) rpmteKey(s->te);
     if (Key == NULL)
-      Key = Py_None;
-	Py_INCREF(Key);
+	Key = Py_None;
+    Py_INCREF(Key);
     return Key;
 }
 
