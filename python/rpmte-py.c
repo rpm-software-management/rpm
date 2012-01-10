@@ -114,7 +114,11 @@ rpmte_PkgFileSize(rpmteObject * s, PyObject * unused)
 static PyObject *
 rpmte_Parent(rpmteObject * s, PyObject * unused)
 {
-    return Py_BuildValue("i", rpmteParent(s->te));
+    rpmte parent = rpmteParent(s->te);
+    if (parent)
+	return rpmte_Wrap(&rpmte_Type, parent);
+
+    Py_RETURN_NONE;
 }
 
 static PyObject * rpmte_Failed(rpmteObject * s, PyObject * unused)
