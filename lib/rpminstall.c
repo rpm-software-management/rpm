@@ -138,9 +138,9 @@ void * rpmShowProgress(const void * arg,
 	    state = what;
 	    if (flags & INSTALL_HASH) {
 		if (what == RPMCALLBACK_INST_START) {
-		    fprintf(stdout, "Updating / installing...\n");
+		    fprintf(stdout, _("Updating / installing...\n"));
 		} else {
-		    fprintf(stdout, "Cleaning up / removing...\n");
+		    fprintf(stdout, _("Cleaning up / removing...\n"));
 		}
 		fflush(stdout);
 	    }
