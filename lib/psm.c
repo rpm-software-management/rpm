@@ -823,13 +823,11 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	if (psm->goal == PKG_INSTALL) {
 	    int fsmrc = 0;
 
-	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
 	    /* make sure first progress call gets made */
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
 
-	    if (rpmfiFC(fi) > 0) {
+	    if (rpmfiFC(fi) > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
 		FD_t payload = rpmtePayload(psm->te);
 		if (payload == NULL) {
 		    rc = RPMRC_FAIL;
@@ -866,7 +864,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
 
 	    /* XXX should't we log errors from here? */
-	    if (rpmfiFC(fi) > 0) {
+	    if (rpmfiFC(fi) > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
 		rc = runFsm(psm, NULL) ? RPMRC_FAIL : RPMRC_OK;
 	    }
 
