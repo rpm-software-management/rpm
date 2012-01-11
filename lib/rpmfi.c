@@ -1127,7 +1127,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     rpmfi fi = NULL;
     rpm_loff_t *asize = NULL;
     unsigned char * t;
-    int isBuild, isSource;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
@@ -1151,11 +1150,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     fi->archiveSize = asize ? *asize : 0;
     rpmtdFreeData(&td);
     
-    /* Archive size is not set when this gets called from build */
-    isBuild = (asize == NULL);
-    isSource = headerIsSource(h);
-    if (isBuild) fi->fiflags |= RPMFI_ISBUILD;
-    if (isSource) fi->fiflags |= RPMFI_ISSOURCE;
+    if (headerIsSource(h)) fi->fiflags |= RPMFI_ISSOURCE;
 
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
     fi->fc = rpmtdCount(&td);

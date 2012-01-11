@@ -1235,6 +1235,9 @@ static void genCpioListAndHeader(FileList fl,
     const char *fn;
     char *a, **apath;
 
+    /* Used to be guess... err, determined in rpmfiNew but lets be explicit */
+    flags |= RPMFI_ISBUILD;
+
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
     fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
