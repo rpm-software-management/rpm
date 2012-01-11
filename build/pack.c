@@ -42,8 +42,7 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
     rpmfs fs = NULL;
     char *failedFile = NULL;
     FD_t cfd;
-    rpmRC rc = RPMRC_OK;
-    int i;
+    int i, fsmrc;
 
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmodeMacro);
@@ -64,24 +63,21 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 	    rpmfsSetAction(fs, i, FA_COPYOUT);
     }
 
-    if (fsmSetup(rpmfiFSM(fi), FSM_PKGBUILD, ts, te, fi, cfd, NULL,
-		&csa->cpioArchiveSize, &failedFile))
-	rc = RPMRC_FAIL;
+    fsmrc = rpmfsmRun(FSM_PKGBUILD, ts, te, fi, cfd, NULL,
+		      &csa->cpioArchiveSize, &failedFile);
 
-    (void) Fclose(cfd);
-
-    if (fsmTeardown(rpmfiFSM(fi)) || rc == RPMRC_FAIL) {
+    if (fsmrc) {
 	if (failedFile)
 	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s\n"), failedFile);
 	else
 	    rpmlog(RPMLOG_ERR, _("create archive failed\n"));
-	rc = RPMRC_FAIL;
     }
 
     free(failedFile);
+    Fclose(cfd);
     rpmtsFree(ts);
 
-    return rc;
+    return (fsmrc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 static rpmRC addFileToTag(rpmSpec spec, const char * file,

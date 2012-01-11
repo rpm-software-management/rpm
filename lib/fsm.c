@@ -551,30 +551,6 @@ static hardLink_t freeHardLink(hardLink_t li)
     return NULL;
 }
 
-FSM_t newFSM(cpioMapFlags mapflags)
-{
-    FSM_t fsm = xcalloc(1, sizeof(*fsm));
-    fsm->mapFlags = mapflags;
-    return fsm;
-}
-
-FSM_t freeFSM(FSM_t fsm)
-{
-    if (fsm) {
-	fsm->path = _free(fsm->path);
-	while ((fsm->li = fsm->links) != NULL) {
-	    fsm->links = fsm->li->next;
-	    fsm->li->next = NULL;
-	    fsm->li = freeHardLink(fsm->li);
-	}
-	fsm->dnlx = _free(fsm->dnlx);
-	fsm->ldn = _free(fsm->ldn);
-	fsm->iter = mapFreeIterator(fsm->iter);
-	_free(fsm);
-    }
-    return NULL;
-}
-
 /* forward declaration*/
 static int fsmMkdirs(FSM_t fsm);
 
@@ -612,11 +588,12 @@ static int fsmCreate(FSM_t fsm)
     return rc;
 }
 
-int fsmSetup(FSM_t fsm, fileStage goal,
+static int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi, FD_t cfd, rpmpsm psm,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
     int rc, ec = 0;
+    int isSrc = rpmteIsSource(te);
 
     fsm->goal = goal;
     if (cfd != NULL) {
@@ -626,6 +603,18 @@ int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->digestalgo = rpmfiDigestAlgo(fi);
     fsm->psm = psm;
+
+    fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+    if (goal == FSM_PKGBUILD) {
+	fsm->mapFlags |= CPIO_MAP_TYPE;
+	if (isSrc) {
+	    fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
+	}
+    } else {
+	if (!isSrc) {
+	    fsm->mapFlags |= CPIO_SBIT_CHECK;
+	}
+    }
 
     fsm->archiveSize = archiveSize;
     if (fsm->archiveSize)
@@ -654,7 +643,7 @@ int fsmSetup(FSM_t fsm, fileStage goal,
    return ec;
 }
 
-int fsmTeardown(FSM_t fsm)
+static int fsmTeardown(FSM_t fsm)
 {
     int rc = fsm->rc;
 
@@ -667,6 +656,15 @@ int fsmTeardown(FSM_t fsm)
 	fsm->cfd = NULL;
     }
     fsm->failedFile = NULL;
+
+    fsm->path = _free(fsm->path);
+    while ((fsm->li = fsm->links) != NULL) {
+	fsm->links = fsm->li->next;
+	fsm->li->next = NULL;
+	fsm->li = freeHardLink(fsm->li);
+    }
+    fsm->dnlx = _free(fsm->dnlx);
+    fsm->ldn = _free(fsm->ldn);
     return rc;
 }
 
@@ -2320,4 +2318,19 @@ static const char * fileStageString(fileStage a)
 
     default:		return "???";
     }
+}
+
+int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile)
+{
+    struct fsm_s fsm;
+    int sc = 0;
+    int ec = 0;
+
+    memset(&fsm, 0, sizeof(fsm));
+    sc = fsmSetup(&fsm, goal, ts, te, fi, cfd, psm, archiveSize, failedFile);
+    ec = fsmTeardown(&fsm);
+
+    /* Return the relevant code: if setup failed, teardown doesn't matter */
+    return (sc ? sc : ec);
 }

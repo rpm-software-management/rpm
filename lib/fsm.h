@@ -173,24 +173,7 @@ extern "C" {
 #endif
 
 /**
- * Create file state machine instance.
- * @param mapflags	CPIO map flags to use
- * @return		file state machine
- */
-RPM_GNUC_INTERNAL
-FSM_t newFSM(cpioMapFlags mapflags);
-
-/**
- * Destroy file state machine instance.
- * @param fsm		file state machine
- * @return		always NULL
- */
-RPM_GNUC_INTERNAL
-FSM_t freeFSM(FSM_t fsm);
-
-/**
- * Load external data into file state machine.
- * @param fsm		file state machine
+ * Execute a file state machine goal
  * @param goal
  * @param ts		transaction set
  * @param fi		transaction element file info
@@ -200,21 +183,8 @@ FSM_t freeFSM(FSM_t fsm);
  * @retval failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
  */
-int fsmSetup(FSM_t fsm, fileStage goal,
-		rpmts ts,
-		rpmte te,
-		rpmfi fi,
-		FD_t cfd,
-		rpmpsm psm,
-		rpm_loff_t * archiveSize,
-		char ** failedFile);
-
-/**
- * Clean file state machine.
- * @param fsm		file state machine
- * @return		0 on success
- */
-int fsmTeardown(FSM_t fsm);
+int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile);
 
 /**
  * File state machine driver.

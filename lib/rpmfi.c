@@ -15,7 +15,6 @@
 #include "lib/rpmfi_internal.h"
 #include "lib/rpmte_internal.h"	/* relocations */
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
-#include "lib/fsm.h"	/* XXX newFSM() */
 
 #include "debug.h"
 
@@ -1085,8 +1084,6 @@ rpmfi rpmfiFree(rpmfi fi)
 	}
     }
 
-    fi->fsm = freeFSM(fi->fsm);
-
     fi->fn = _free(fi->fn);
     fi->apath = _free(fi->apath);
 
@@ -1277,28 +1274,6 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 	fi->fps = xcalloc(fi->fc, sizeof(*fi->fps));
     }
     fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
-}
-
-FSM_t rpmfiFSM(rpmfi fi)
-{
-    if (fi != NULL && fi->fsm == NULL) {
-    	cpioMapFlags mapflags;
-	/* Figure out mapflags: 
-	 * - path, mode, uid and gid are used by everything
-	 * - all binary packages get SBIT_CHECK set
-	 * - if archive size is not known, we're only building this package,
-	 *   different rules apply 
-	 */
-	mapflags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-	if (fi->fiflags & RPMFI_ISBUILD) {
-	    mapflags |= CPIO_MAP_TYPE;
-	    if (fi->fiflags & RPMFI_ISSOURCE) mapflags |= CPIO_FOLLOW_SYMLINKS;
-	} else {
-	    if (!(fi->fiflags & RPMFI_ISSOURCE)) mapflags |= CPIO_SBIT_CHECK;
-	}
-	fi->fsm = newFSM(mapflags);
-    }
-    return (fi != NULL) ? fi->fsm : NULL;
 }
 
 /* 

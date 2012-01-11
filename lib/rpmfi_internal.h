@@ -3,7 +3,6 @@
 
 #include <rpm/header.h>
 #include <rpm/rpmfi.h>
-#include "lib/fsm.h"		/* for FSM_t */
 #include "lib/fprint.h"
 
 /* 
@@ -72,7 +71,6 @@ struct rpmfi_s {
     char * fn;			/*!< File name buffer. */
 
     char ** apath;
-    FSM_t fsm;			/*!< File state machine data. */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     int magic;
     int nrefs;		/*!< Reference count. */
@@ -159,9 +157,6 @@ rpm_loff_t rpmfiFReplacedSize(rpmfi fi);
 
 RPM_GNUC_INTERNAL
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
-
-/* XXX can't be internal as build code needs this */
-FSM_t rpmfiFSM(rpmfi fi);
 
 #ifdef __cplusplus
 }

@@ -675,10 +675,9 @@ void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
 
 static int runFsm(rpmpsm psm, FD_t payload)
 {
-    int sc, ec;
+    int rc;
 
-    sc = fsmSetup(rpmfiFSM(psm->fi),
-		  (psm->goal == PKG_INSTALL) ? FSM_PKGINSTALL : FSM_PKGERASE,
+    rc = rpmfsmRun((psm->goal == PKG_INSTALL) ? FSM_PKGINSTALL : FSM_PKGERASE,
 		  psm->ts, psm->te, psm->fi, payload, psm,
 		  NULL, &psm->failedFile);
     if (psm->goal == PKG_INSTALL) {
@@ -687,10 +686,8 @@ static int runFsm(rpmpsm psm, FD_t payload)
 	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
 		 fdOp(payload, FDSTAT_DIGEST));
     }
-    ec = fsmTeardown(rpmfiFSM(psm->fi));
 
-    /* Return the relevant code: if setup failed, teardown doesn't matter */
-    return (sc ? sc : ec);
+    return rc;
 }
 
 /*
