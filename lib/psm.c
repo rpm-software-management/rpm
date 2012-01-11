@@ -758,10 +758,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
 		markReplacedInstance(ts, psm->te);
 
-	    rc = RPMRC_OK;
-
-	    if (rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)	break;
-	
 	    if (rpmfiFC(fi) > 0) {
 		struct rpmtd_s filenames;
 		rpmTag ftag = RPMTAG_FILENAMES;
