@@ -672,24 +672,6 @@ void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount)
     }
 }
 
-
-static int runFsm(rpmpsm psm, FD_t payload)
-{
-    int rc;
-
-    rc = rpmfsmRun((psm->goal == PKG_INSTALL) ? FSM_PKGINSTALL : FSM_PKGERASE,
-		  psm->ts, psm->te, psm->fi, payload, psm,
-		  NULL, &psm->failedFile);
-    if (psm->goal == PKG_INSTALL) {
-	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
-		 fdOp(payload, FDSTAT_READ));
-	rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
-		 fdOp(payload, FDSTAT_DIGEST));
-    }
-
-    return rc;
-}
-
 /*
  * --replacepkgs hack: find the header instance we're replacing and
  * mark it as the db instance of the install element. In PSM_POST,
@@ -834,7 +816,13 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		    break;
 		}
 
-		fsmrc = runFsm(psm, payload);
+		fsmrc = rpmfsmRun(FSM_PKGINSTALL, psm->ts, psm->te, psm->fi,
+				  payload, psm, NULL, &psm->failedFile);
+
+		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
+			 fdOp(payload, FDSTAT_READ));
+		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_DIGEST),
+			 fdOp(payload, FDSTAT_DIGEST));
 
 		Fclose(payload);
 	    }
@@ -865,7 +853,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    /* XXX should't we log errors from here? */
 	    if (rpmfiFC(fi) > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
-		rc = runFsm(psm, NULL) ? RPMRC_FAIL : RPMRC_OK;
+		rc = rpmfsmRun(FSM_PKGERASE, psm->ts, psm->te, psm->fi,
+				  NULL, psm, NULL, &psm->failedFile);
 	    }
 
 	    /* XXX make sure progress reaches 100% */
