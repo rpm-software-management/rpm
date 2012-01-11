@@ -749,10 +749,14 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	}
 
 	if (psm->goal == PKG_INSTALL) {
+	    Header h = rpmteHeader(psm->te);
 	    psm->scriptArg = psm->npkgs_installed + 1;
 
 	    psm->amount = 0;
-	    psm->total = fi->archiveSize ? fi->archiveSize : 100;
+	    psm->total = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
+	    /* fake up something for packages with no files */
+	    if (psm->total == 0)
+		psm->total = 100;
 
 	    /* HACK: reinstall abuses te instance to remove old header */
 	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
@@ -761,15 +765,14 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (rpmfiFC(fi) > 0) {
 		struct rpmtd_s filenames;
 		rpmTag ftag = RPMTAG_FILENAMES;
-		Header h = rpmteHeader(psm->te);
 	
 		if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 		    ftag = RPMTAG_ORIGFILENAMES;
 		}
 		headerGet(h, ftag, &filenames, HEADERGET_EXT);
 		fi->apath = filenames.data; /* Ick.. */
-		headerFree(h);
 	    }
+	    headerFree(h);
 	}
 	if (psm->goal == PKG_ERASE) {
 	    psm->scriptArg = psm->npkgs_installed - 1;

@@ -71,7 +71,6 @@ struct rpmfi_s {
 
     char * fn;			/*!< File name buffer. */
 
-    rpm_loff_t archiveSize;
     char ** apath;
     FSM_t fsm;			/*!< File state machine data. */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */

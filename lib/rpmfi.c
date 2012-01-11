@@ -1125,7 +1125,6 @@ static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfi fi = NULL;
-    rpm_loff_t *asize = NULL;
     unsigned char * t;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
@@ -1143,13 +1142,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     fi->fiflags = flags;
     fi->scareFlags = scareFlags;
 
-    if (headerGet(h, RPMTAG_LONGARCHIVESIZE, &td, HEADERGET_EXT)) {
-	asize = rpmtdGetUint64(&td);
-    }
-    /* 0 means unknown */
-    fi->archiveSize = asize ? *asize : 0;
-    rpmtdFreeData(&td);
-    
     if (headerIsSource(h)) fi->fiflags |= RPMFI_ISSOURCE;
 
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
