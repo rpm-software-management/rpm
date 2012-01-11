@@ -1139,8 +1139,6 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     fi->fiflags = flags;
     fi->scareFlags = scareFlags;
 
-    if (headerIsSource(h)) fi->fiflags |= RPMFI_ISSOURCE;
-
     _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
     fi->fc = rpmtdCount(&td);
     if (fi->fc == 0) {

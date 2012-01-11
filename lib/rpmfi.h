@@ -391,8 +391,6 @@ enum rpmfiFlags_e {
     RPMFI_NOFILECOLORS		= (1 << 15),
     RPMFI_NOFILEVERIFYFLAGS	= (1 << 16),
     RPMFI_NOFILEFLAGS		= (1 << 17),
-    RPMFI_ISBUILD		= (1 << 30), 	/* internal */
-    RPMFI_ISSOURCE		= (1 << 31), 	/* internal */
 };
 
 typedef rpmFlags rpmfiFlags;
