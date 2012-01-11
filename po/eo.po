@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-09-14 08:04+0000\n"
-"Last-Translator: zooplah <zooplah@gmail.com>\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2011-12-02 10:24+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Esperanto (http://www.transifex.net/projects/p/rpm/team/eo/)\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
@@ -134,12 +134,19 @@ msgid "arguments to --prefix must begin with a /"
 msgstr "parametroj de --prefix devas komenciĝi per /"
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "oni povas specifi la parametron --hash (-h) nur dum pako-instalado"
+#, fuzzy
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
+msgstr ""
+"oni povas specifi la parametron --hash (-h) nur dum instalado kaj forviŝado "
+"de pako"
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
-msgstr "oni povas specifi la parametron --percent nur dum pako-instalado"
+#, fuzzy
+msgid "--percent may only be specified during package installation and erasure"
+msgstr ""
+"oni povas specifi la parametron --hash (-h) nur dum instalado kaj forviŝado "
+"de pako"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -771,7 +778,7 @@ msgstr "Amaso %%dev ne permesata:%s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Dosierujo ne trovita laŭ amaso: %s\n"
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Dosiero ne trovita laŭ amaso: %s\n"
@@ -1538,22 +1545,22 @@ msgstr "Arkivo-dosiero ne en kapo"
 msgid " failed - "
 msgstr " malsukcesis - "
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s estas Pera RPM kaj ne estas rekte instalebla\n"
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Ne komprenata ŝarĝo (%s) en pako %s\n"
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "pako %s jam aldoniĝis, preterlasanta %s\n"
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pako %s jam aldoniĝis, anstataŭigante per %s\n"
@@ -1594,8 +1601,8 @@ msgid "(not an OpenPGP signature)"
 msgstr "(ne OpenPGP-pretendo)"
 
 #: lib/formats.c:442
-#, c-format
-msgid "Invalid date %u\n"
+#, fuzzy, c-format
+msgid "Invalid date %u"
 msgstr "Nevalida dato %u\n"
 
 #: lib/formats.c:508
@@ -1630,55 +1637,55 @@ msgstr "(nekonata)"
 msgid "(not a string)"
 msgstr "(ne ĉeno)"
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "uzanto %s ne ekzistas - mi uzos la ĉefuzanton\n"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupo %s ne ekzistas - uzos la ĉefgrupon\n"
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "pakita dosiero %s ne troviĝis en la kapo-dosiero listo\n"
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s konservita kiel %s\n"
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir de %s malsukcesis: Dosierujo ne vaka\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir de %s malsukcesis: %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s malligado de %s malsukcesis: %s\n"
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s kreita kiel %s\n"
 
 #: lib/package.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr "preterlasanta %s-on kun nekonstatebla pretendo V%u\n"
+msgstr ""
 
 #: lib/package.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr "preterlasanta %s-on kun nekonstatebla pretendo V%u\n"
+msgstr ""
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
 #, c-format
@@ -2211,34 +2218,34 @@ msgstr "ne konstatu pako-dependaĵojn"
 msgid "don't execute verify script(s)"
 msgstr "ne plenumigu konstato-programo(j)n"
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr "Mankantaj trajtoj en rpmlib por %s:\n"
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr "fontoteksta pako atendita, plenumebla trovita\n"
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr "fontoteksta pako enhavas neniun spec-dosieron\n"
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "Elpakado de arkivo malsukcesis%s%s: %s\n"
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr " ĉe dosiero"
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s malsukcesis ĉe dosiero %s: %s\n"
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s malsukcesis: %s\n"
@@ -2339,7 +2346,7 @@ msgstr "nevalida pako-numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "ne eblas legi rikordon %u\n"
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pako %s ne estas instalita\n"
@@ -2493,8 +2500,8 @@ msgstr "rego de kapabloj de dosieroj laŭ POSIX.1e"
 msgid "package scriptlets can be expanded at install time."
 msgstr "pako-programetoj eblas etendiĝi dum insntalado."
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "malfermo de %s malsukcesis: %s\n"
@@ -2504,59 +2511,70 @@ msgstr "malfermo de %s malsukcesis: %s\n"
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: ne rpm-pako (aŭ pako-manifesto)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, fuzzy, c-format
+msgid "Updating / installing...\n"
+msgstr "Pretiganta pakojn por instali ilin..."
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "Pretiganta..."
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
-msgstr "Pretiganta pakojn por instali ilin..."
+#: lib/rpminstall.c:195
+#, fuzzy
+msgid "Preparing packages..."
+msgstr "Pretiganta..."
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Malhavaj dependaĵoj:\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: ne rpm-pako (aŭ pako-manifesto): %s\n"
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ne eblas instaliĝi\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Riceviĝas %s\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "transigo de %s malsukcesis - preterlasanta\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pako %s ne estas relokebla\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "eraro dum legi dosieron %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" specifas plurajn pakojn:\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ne eblas malfermiĝi %s: %s\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliĝas %s\n"
@@ -2690,77 +2708,77 @@ msgstr "%s malaktualiĝas per %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "nekonata eraro %d okazis dum manipuli pakon %s"
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "manka dua ':' ĉe %s:%d\n"
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "manka platforma nomo ĉe %s:%d\n"
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Nefinita datuma linio ĉe %s:%d\n"
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Tro da parametroj en datuma linio je %s:%d\n"
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Fuŝa platforma/operaciuma numero: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Nefinita apriora linio ĉe %s:%d\n"
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Tro da parametrojn ĉe apriora linio ĉe %s:%d\n"
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "manka ':' (trovita 0x%02x) ĉe %s:%d\n"
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "manka parametro por %s ĉe %s:%d\n"
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "%s ne malfermeblas ĉe %s:%d: %m\n"
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "manka platformo por %s ĉe %s:%d\n"
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "Fuŝa elekto '%s' ĉe %s:%d\n"
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nekonata operaciumo: %s\n"
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Bonvolu kontakti %s\n"
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "%s ne malfermeblas por legiĝi: %m.\n"
@@ -2888,9 +2906,8 @@ msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Neŝanĝebla kapa regiono ne eblas legiĝi. Ĉu koruptita pako?\n"
 
 #: lib/signature.c:315
-#, fuzzy
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "parametro ne estas RPM-pako\n"
+msgstr ""
 
 #: lib/signature.c:402
 msgid "MD5 digest:"
@@ -2905,9 +2922,9 @@ msgid "Header "
 msgstr "Kapo"
 
 #: lib/signature.c:524
-#, fuzzy, c-format
+#, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
-msgstr "Konstati pretendon: FUŜA PARAMETROJ\n"
+msgstr ""
 
 #: lib/transaction.c:1390
 msgid "skipped"
@@ -3422,19 +3439,18 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush malsukcesis: %s\n"
 
 #: sign/rpmgensig.c:125
-#, fuzzy
 msgid "Unsupported PGP signature\n"
-msgstr " Ne konata PGP-diesa algoritmo %d\n"
+msgstr ""
 
 #: sign/rpmgensig.c:131
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr " Ne konata PGP-diesa algoritmo %d\n"
+msgstr ""
 
 #: sign/rpmgensig.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr "Ne komprenata algoritmo %d de publika PGP-ŝlosilo\n"
+msgstr ""
 
 #: sign/rpmgensig.c:174
 #, c-format
@@ -3487,11 +3503,8 @@ msgstr "%s: legi manifeston malsukcesis: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "ne konstatu pretendojn de kapo+ŝarĝo"
 
-#~ msgid "skipping package %s with unverifiable V%u signature\n"
-#~ msgstr "preterlasanta pakon %s kun nekonstatebla pretendo V%u\n"
+#~ msgid "--hash (-h) may only be specified during package installation"
+#~ msgstr "oni povas specifi la parametron --hash (-h) nur dum pako-instalado"
 
-#~ msgid "Signature: UNKNOWN (%d)\n"
-#~ msgstr "Pretendo: NEKONATA (%d)\n"
-
-#~ msgid "Failed to register fork handler: %m\n"
-#~ msgstr "Malsukcesis registri forko-traktilon: %m\n"
+#~ msgid "--percent may only be specified during package installation"
+#~ msgstr "oni povas specifi la parametron --percent nur dum pako-instalado"

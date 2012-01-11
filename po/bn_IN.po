@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-09-13 12:46+0000\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2011-12-02 10:24+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Bengali (India) (http://www.transifex.net/projects/p/rpm/team/"
 "bn_IN/)\n"
@@ -131,11 +131,12 @@ msgid "arguments to --prefix must begin with a /"
 msgstr ""
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
 msgstr ""
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
+msgid "--percent may only be specified during package installation and erasure"
 msgstr ""
 
 #: rpmqv.c:178
@@ -753,7 +754,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
@@ -1515,22 +1516,22 @@ msgstr ""
 msgid " failed - "
 msgstr ""
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr ""
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
@@ -1572,7 +1573,7 @@ msgstr ""
 
 #: lib/formats.c:442
 #, c-format
-msgid "Invalid date %u\n"
+msgid "Invalid date %u"
 msgstr ""
 
 #: lib/formats.c:508
@@ -1607,42 +1608,42 @@ msgstr ""
 msgid "(not a string)"
 msgstr ""
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr ""
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr ""
@@ -2184,34 +2185,34 @@ msgstr ""
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr ""
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr ""
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr ""
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr ""
@@ -2312,7 +2313,7 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr ""
@@ -2464,8 +2465,8 @@ msgstr ""
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr ""
@@ -2475,59 +2476,69 @@ msgstr ""
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr ""
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, c-format
+msgid "Updating / installing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr ""
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
+#: lib/rpminstall.c:195
+msgid "Preparing packages..."
 msgstr ""
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr ""
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr ""
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr ""
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr ""
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr ""
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr ""
@@ -2661,77 +2672,77 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr ""
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""

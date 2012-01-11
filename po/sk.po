@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-12-01 14:23+0000\n"
-"Last-Translator: kyberdev <kyberdev@gmail.com>\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2011-12-02 10:24+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Slovak (http://www.transifex.net/projects/p/rpm/team/sk/)\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
@@ -133,12 +133,15 @@ msgid "arguments to --prefix must begin with a /"
 msgstr "argumenty pre --prefix musia začínať znakom /"
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) môže byť použitý iba počas inštalácie balíka"
+#, fuzzy
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
+msgstr "-- test môže byť špecifikovaný iba počas inštalácie a mazania balíčka"
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
-msgstr "--percent môže byť použité iba počas inštalácie balíka"
+#, fuzzy
+msgid "--percent may only be specified during package installation and erasure"
+msgstr "-- test môže byť špecifikovaný iba počas inštalácie a mazania balíčka"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -773,7 +776,7 @@ msgstr "%%dev glob nie je povolený: %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Priečinok nebol nájdený globom: %s\n"
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Súbor nenájdený globom: %s\n"
@@ -1538,22 +1541,22 @@ msgstr "Súbor z archívu nie je v hlavičke"
 msgid " failed - "
 msgstr " zlyhalo - "
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s je Delta RPM a nemôže byž priamo inštalovaný\n"
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodporovaný payload (%s) v balíčku %s\n"
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "balíček %s už bol pridaný, %s sa preskakuje\n"
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíček %s už bol pridaný, nahradzuje sa s %s\n"
@@ -1594,8 +1597,8 @@ msgid "(not an OpenPGP signature)"
 msgstr "(nie je OpenPGP podpis)"
 
 #: lib/formats.c:442
-#, c-format
-msgid "Invalid date %u\n"
+#, fuzzy, c-format
+msgid "Invalid date %u"
 msgstr "Neplatný dátum %u\n"
 
 #: lib/formats.c:508
@@ -1630,55 +1633,55 @@ msgstr "(neznámy)"
 msgid "(not a string)"
 msgstr "(nie je reťazec)"
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "používateľ %s neexistuje - použije sa root\n"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "skupina %s neexistuje - použije sa root\n"
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "súbor z archívu %s nebol nájdený v zozname súborov v hlavičke\n"
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s uložený ako %s\n"
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s zlyhalo: Priečinok nie je prázdny\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s zlyhalo: %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s zlyhalo: %s\n"
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s vytvorený ako %s\n"
 
 #: lib/package.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr "preskakuje sa %s s neoveriteľným V%u podpisom\n"
+msgstr ""
 
 #: lib/package.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr "preskakuje sa %s s neoveriteľným V%u podpisom\n"
+msgstr ""
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
 #, c-format
@@ -2213,34 +2216,34 @@ msgstr "nekontrolovať závislosti balíčka"
 msgid "don't execute verify script(s)"
 msgstr "nespúšťať kontrolné skripty"
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr "Chýbajúce funkcie rpmlib pre %s:\n"
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr "očakáva sa balíček so zdrojovým kódom, nájdený bol binárny\n"
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr "balíček so zdrojovými kódmi neobsahuje .spec súbor\n"
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "rozbaľovanie archívu zlyhalo %s%s: %s\n"
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr " pre súbor "
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s zlyhal na súbore %s: %s\n"
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s zlyhalo: %s\n"
@@ -2341,7 +2344,7 @@ msgstr "chybné číslo balíku: %s\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %u nie je možné čítať\n"
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nainštalovaný\n"
@@ -2494,8 +2497,8 @@ msgstr "podpora pre schopnosti súboru POSIX.1e"
 msgid "package scriptlets can be expanded at install time."
 msgstr "skriptlety balíčka môžu byť rozbalené počas inštalácie."
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo: %s\n"
@@ -2505,59 +2508,70 @@ msgstr "otvorenie %s zlyhalo: %s\n"
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: nie je balíček rpm (alebo balíček manifestu)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, fuzzy, c-format
+msgid "Updating / installing...\n"
+msgstr "Pripravujú sa balíčky pre inštaláciu..."
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "Pripravuje sa..."
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
-msgstr "Pripravujú sa balíčky pre inštaláciu..."
+#: lib/rpminstall.c:195
+#, fuzzy
+msgid "Preparing packages..."
+msgstr "Pripravuje sa..."
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Zlyhané závislosti:\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nie je balíček rpm (alebo balíček manifestu): %s\n"
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je možné nainštalovať\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prenáša sa %s\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "preskakuje sa %s - transfer zlyhal\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "balíček %s nie je premiestniteľný\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pri čítaní zo súboru %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" špecifikuje viacero balíčkov:\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je možné otvoriť %s: %s\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr "Inštaluje sa %s\n"
@@ -2692,77 +2706,77 @@ msgstr "%s je zastaraný %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznáma chyba %d vznikla pri manipulácii s balíčkom %s"
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "chýba druhá ':' na %s:%d\n"
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "chýba názov architektúry na %s:%d\n"
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Neúplný dátový riadok na %s:%d\n"
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Príliž veľa argumentov na dátovom riadku na %s:%d\n"
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Zlé číslo architektúry alebo operačného systému: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Neúplný predvolený riadok na %s:%d\n"
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Príliž veľa argumentov v predvolenom riadku na %s:%d\n"
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "chýbajúce ':' (nájdené 0x%02x) na %s:%d\n"
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "chýba argument pre %s na %s:%d\n"
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "nie je možné otvoriť %s na %s:%d: %m\n"
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "chýba architektúra pre %s na %s:%d\n"
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "zlá možnosť '%s' na %s:%d\n"
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámy systém: %s\n"
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Prosím kontaktujte %s\n"
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nie je možné otvoriť %s pre čítanie: %m.\n"
@@ -2890,9 +2904,8 @@ msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Nezmeniteľná oblasť hlavičky nemôže byť čítaná. Poškodený balíček?\n"
 
 #: lib/signature.c:315
-#, fuzzy
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "argument nie je RPM balík\n"
+msgstr ""
 
 #: lib/signature.c:402
 msgid "MD5 digest:"
@@ -2907,9 +2920,9 @@ msgid "Header "
 msgstr "Hlavička"
 
 #: lib/signature.c:524
-#, fuzzy, c-format
+#, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
-msgstr "Skontrolujte podpis: CHYBNÉ PARAMETRE\n"
+msgstr ""
 
 #: lib/transaction.c:1390
 msgid "skipped"
@@ -3423,19 +3436,18 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush zlyhal: %s\n"
 
 #: sign/rpmgensig.c:125
-#, fuzzy
 msgid "Unsupported PGP signature\n"
-msgstr "Nepodporovaný algoritmus %d PGP hashu\n"
+msgstr ""
 
 #: sign/rpmgensig.c:131
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr "Nepodporovaný algoritmus %d PGP hashu\n"
+msgstr ""
 
 #: sign/rpmgensig.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr "nepodporovaný algoritmus %d verejného kľúča PGP\n"
+msgstr ""
 
 #: sign/rpmgensig.c:174
 #, c-format
@@ -3488,11 +3500,8 @@ msgstr "%s: čítanie zoznamu zlyhalo: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "neoverovať podpis hlavičky a payloadu"
 
-#~ msgid "skipping package %s with unverifiable V%u signature\n"
-#~ msgstr "preskakuje sa balíček %s s neoveriteľným V%u podpisom\n"
+#~ msgid "--hash (-h) may only be specified during package installation"
+#~ msgstr "--hash (-h) môže byť použitý iba počas inštalácie balíka"
 
-#~ msgid "Signature: UNKNOWN (%d)\n"
-#~ msgstr "Podpis: NEZNÁMY (%d)\n"
-
-#~ msgid "Failed to register fork handler: %m\n"
-#~ msgstr "Zlyhala registrácia forku obsluhy: %m\n"
+#~ msgid "--percent may only be specified during package installation"
+#~ msgstr "--percent môže byť použité iba počas inštalácie balíka"

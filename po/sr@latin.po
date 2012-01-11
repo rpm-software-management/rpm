@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-09-13 12:46+0000\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2011-12-02 10:24+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: sr@latin\n"
@@ -133,12 +133,15 @@ msgid "arguments to --prefix must begin with a /"
 msgstr "argumenti za --prefix moraju početi znakom /"
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
+#, fuzzy
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
 msgstr "--hash (-h) može biti navedena samo tokom instalacije paketa"
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
-msgstr "--percent može biti navedena samo tokom instalacije paketa"
+#, fuzzy
+msgid "--percent may only be specified during package installation and erasure"
+msgstr "--justdb može biti navedena samo tokom instalacije i brisanja paketa"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -767,7 +770,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronađena poklapanjem: %s\n"
@@ -1531,22 +1534,22 @@ msgstr "Datoteka arhive nije u zaglavlju"
 msgid " failed - "
 msgstr " neuspelo - "
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s je Delta RPM i ne može se direktno instalirati\n"
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodržan teret (%s) u paketu %s\n"
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paket %s je već dodat, preskačem %s\n"
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paket %s je već dodat, zamenjujem sa %s\n"
@@ -1587,9 +1590,9 @@ msgid "(not an OpenPGP signature)"
 msgstr "(nije OpenPGP potpis)"
 
 #: lib/formats.c:442
-#, c-format
-msgid "Invalid date %u\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Invalid date %u"
+msgstr "Neispravan %s znak: %s\n"
 
 #: lib/formats.c:508
 msgid "normal"
@@ -1623,55 +1626,55 @@ msgstr ""
 msgid "(not a string)"
 msgstr ""
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "korisnik %s ne postoji - koristim root\n"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s ne postoji - koristim root\n"
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "datoteka arhive %s nije pronađena u zaglavlju spiska datoteka\n"
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sačuvano kao %s\n"
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir %s nije uspelo: Direktorijum nije prazan\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir %s nije uspelo: %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink %s nije uspelo: %s\n"
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s napravljeno kao %s\n"
 
 #: lib/package.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr "preskačem paket %s sa nepotvrđenim V%u potpisom\n"
+msgstr ""
 
 #: lib/package.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr "preskačem paket %s sa nepotvrđenim V%u potpisom\n"
+msgstr ""
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
 #, c-format
@@ -2206,34 +2209,34 @@ msgstr "nemoj proveravati zavisnosti paketa"
 msgid "don't execute verify script(s)"
 msgstr "nemoj izvršiti skriptu(e) provere"
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr ""
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr "očekivan je izvorni paket, pronađen je binarni\n"
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr "izvorni paket ne sadrži .spec datoteku\n"
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "raspakivanje arhive nije uspelo %s%s: %s\n"
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr " na datoteci "
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s nije uspelo kod datoteke %s: %s\n"
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s nije uspelo: %s\n"
@@ -2334,7 +2337,7 @@ msgstr "neispravan broj paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -2489,8 +2492,8 @@ msgstr "podrška za POSIX.1e mogućnosti datoteka"
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvaranje %s nije uspelo: %s\n"
@@ -2500,59 +2503,70 @@ msgstr "otvaranje %s nije uspelo: %s\n"
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: nije rpm paket (ili manifest paketa)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, fuzzy, c-format
+msgid "Updating / installing...\n"
+msgstr "Pripremam pakete za instalaciju..."
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "Pripremam..."
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
-msgstr "Pripremam pakete za instalaciju..."
+#: lib/rpminstall.c:195
+#, fuzzy
+msgid "Preparing packages..."
+msgstr "Pripremam..."
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Neuspele zavisnosti:\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nije rpm paket (ili manifest paketa): %s\n"
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s se ne može instalirati\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "preskačem %s - neuspeo prenos\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s se ne može premeštati\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "greška pri čitanju iz datoteke %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "„%s“ određuje više paketa:\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ne mogu da otvorim %s: %s\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"
@@ -2687,77 +2701,77 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "nepoznata greška %d se desila u toku rukovanja paketom %s"
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "nedostaje drugo „:“ kod %s:%d\n"
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "nedostaje ime arhitekture na %s:%d\n"
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Nepotpun red podataka na %s:%d\n"
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Previše argumenata u redu podataka na %s:%d\n"
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Loš broj arhitekture/os-a: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Nepotpun podrazumevani red na %s:%d\n"
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Premalo argumenata u podrazumevanom redu na %s:%d\n"
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "nedostaje „:“ (pronađeno 0x%02x) kod %s:%d\n"
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "nedostaje argument za %s na %s:%d\n"
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "ne mogu da otvorim %s na %s:%d: %m\n"
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "nedostaje arhitektura za %s na %s:%d\n"
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "loša opcija „%s“ kod %s:%d\n"
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nepoznati sistem: %s\n"
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Molim vas kontaktirajte %s\n"
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Ne mogu da otvorim %s za čitanje: %m.\n"
@@ -2885,9 +2899,8 @@ msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Nepromenjiva regija zaglavlja se ne može iščitati. Oštećen paket?\n"
 
 #: lib/signature.c:315
-#, fuzzy
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "argument nije RPM paket\n"
+msgstr ""
 
 #: lib/signature.c:402
 msgid "MD5 digest:"
@@ -2902,9 +2915,9 @@ msgid "Header "
 msgstr "Zaglavlje "
 
 #: lib/signature.c:524
-#, fuzzy, c-format
+#, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
-msgstr "Potvrdi potpis: LOŠI PARAMETRI\n"
+msgstr ""
 
 #: lib/transaction.c:1390
 msgid "skipped"
@@ -3416,9 +3429,8 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush nije uspelo: %s\n"
 
 #: sign/rpmgensig.c:125
-#, fuzzy
 msgid "Unsupported PGP signature\n"
-msgstr "(nije OpenPGP potpis)"
+msgstr ""
 
 #: sign/rpmgensig.c:131
 #, c-format
@@ -3481,5 +3493,5 @@ msgstr "%s: neuspelo čitanje manifesta: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "nemoj proveravati potpis zaglavlja+tovara"
 
-#~ msgid "Signature: UNKNOWN (%d)\n"
-#~ msgstr "Potpis: NEPOZNAT (%d)\n"
+#~ msgid "--percent may only be specified during package installation"
+#~ msgstr "--percent može biti navedena samo tokom instalacije paketa"

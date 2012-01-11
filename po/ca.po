@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-09-13 12:45+0000\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2011-12-02 10:24+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: ca\n"
@@ -136,15 +136,19 @@ msgid "arguments to --prefix must begin with a /"
 msgstr "els arguments a --prefix han de començar amb una /"
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
+#, fuzzy
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
 msgstr ""
 "només es pot especificar l'opció --hash (-h) durant la instal·lació d'un "
 "paquet"
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
+#, fuzzy
+msgid "--percent may only be specified during package installation and erasure"
 msgstr ""
-"només es pot especificar l'opció --percent durant la instal·lació d'un paquet"
+"només es pot especificar l'opció --justdb durant la instal·lació i supressió "
+"d'un paquet"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -796,7 +800,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "El glob no ha trobat el fitxer: %s\n"
@@ -1561,22 +1565,22 @@ msgstr "El fitxer de l'arxiu no és a la capçalera"
 msgid " failed - "
 msgstr " ha fallat - "
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s és un Delta RPM i no es pot instal·lar directament\n"
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Les dades (%s) no estan disponibles al paquet %s\n"
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "el paquet %s ja s'ha afegit, s'està ignorant %s\n"
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "el paquet %s ja es va afegir, s'està reemplaçant per %s\n"
@@ -1617,9 +1621,9 @@ msgid "(not an OpenPGP signature)"
 msgstr "(no és una signatura d'OpenPGP)"
 
 #: lib/formats.c:442
-#, c-format
-msgid "Invalid date %u\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Invalid date %u"
+msgstr "L'element %s no és vàlid: %s\n"
 
 #: lib/formats.c:508
 msgid "normal"
@@ -1653,56 +1657,56 @@ msgstr ""
 msgid "(not a string)"
 msgstr ""
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "l'usuari %s no existeix - usant el root\n"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "el grup %s no existeix - s'està usant el root\n"
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 "no s'ha trobat el fitxer d'arxiu %s a la llista de fitxers de capçalera\n"
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s desat com a %s\n"
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s ha fallat la supressió del directori %s:  el directori no és buit\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s ha fallat la supressió del directori %s: %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s la supressió de %s ha fallat: %s \n"
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s creat com a %s\n"
 
 #: lib/package.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr "s'està ometent %s amb una firma V%u no verificable\n"
+msgstr ""
 
 #: lib/package.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr "s'està ometent %s amb una firma V%u no verificable\n"
+msgstr ""
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
 #, c-format
@@ -2244,34 +2248,34 @@ msgstr "no comprovis les relacions de dependència del paquet"
 msgid "don't execute verify script(s)"
 msgstr "no executis els scripts de verificació"
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr ""
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr "s'espera un paquet de codi font, però s'ha trobat un de binari\n"
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr "el paquet font no conté un fitxer .spec\n"
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "ha fallat el desempaquetat de l'arxiu%s%s: %s\n"
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr " al fitxer "
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "ha fallat %s al fitxer %s: %s\n"
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "ha fallat %s: %s\n"
@@ -2372,7 +2376,7 @@ msgstr "número de paquet invàlid: %s\n"
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "no s'ha instal·lat el paquet %s\n"
@@ -2534,8 +2538,8 @@ msgstr "suport per a capacitats de fitxer POSIX.1e"
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "ha fallat l'apertura de %s: %s\n"
@@ -2545,59 +2549,70 @@ msgstr "ha fallat l'apertura de %s: %s\n"
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: no és un paquet rpm (o un manifest de paquet)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, fuzzy, c-format
+msgid "Updating / installing...\n"
+msgstr "S'està preparant els paquets per a la instal·lació..."
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "S'està preparant..."
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
-msgstr "S'està preparant els paquets per a la instal·lació..."
+#: lib/rpminstall.c:195
+#, fuzzy
+msgid "Preparing packages..."
+msgstr "S'està preparant..."
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Dependències fallides:\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: no és un paquet rpm (o un manifest de paquet): %s\n"
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "no es pot instal·lar %s\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "S'està obtenint %s\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "S'està ometent %s - ha fallat la transferència\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "el paquet %s no és reubicable\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "s'ha produït un error en llegir del fitxer %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" especifica múltiples paquets:\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "no es pot obrir %s: %s\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr "S'està instal·lant %s\n"
@@ -2736,77 +2751,77 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "error desconegut %d en manipular el paquet %s"
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "falten el segon ':' a %s:%d\n"
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "falta el nom d'arquitectura a %s:%d\n"
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Línia de dades incompleta a %s:%d\n"
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Massa arguments a la línia de dades a %s:%d\n"
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Número d'arquitectura/S.O. incorrecte: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Línia per defecte incorrecta a %s:%d\n"
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Massa arguments a la línia per defecte a %s:%d\n"
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "manca ':' (trobat a 0x%02x) a %s:%d\n"
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "manca un argument per a %s a %s:%d\n"
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "no s'ha pogut obrir %s a %s:%d: %m\n"
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "falta l'arquitecutra per a %s a %s:%d\n"
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "opció incorrecte '%s' a %s:%d\n"
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Sistema desconegut: %s\n"
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr "contacteu amb %s\n"
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "No s'ha pogut obrir %s per a lectura: %m.\n"
@@ -2937,9 +2952,8 @@ msgstr ""
 "paquet sigui corrupte\n"
 
 #: lib/signature.c:315
-#, fuzzy
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "l'argument no és un paquet RPM\n"
+msgstr ""
 
 #: lib/signature.c:402
 msgid "MD5 digest:"
@@ -2954,9 +2968,9 @@ msgid "Header "
 msgstr "Capçalera "
 
 #: lib/signature.c:524
-#, fuzzy, c-format
+#, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
-msgstr "Verifiqueu la signatura: paràmetres dolents\n"
+msgstr ""
 
 #: lib/transaction.c:1390
 msgid "skipped"
@@ -3469,9 +3483,8 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: ha fallat l'Fflush: %s\n"
 
 #: sign/rpmgensig.c:125
-#, fuzzy
 msgid "Unsupported PGP signature\n"
-msgstr "(no és una signatura d'OpenPGP)"
+msgstr ""
 
 #: sign/rpmgensig.c:131
 #, c-format
@@ -3534,8 +3547,7 @@ msgstr "%s: ha fallat la lectura del manifest: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "no verifiquis la signatura de la capçalera i les dades"
 
-#~ msgid "skipping package %s with unverifiable V%u signature\n"
-#~ msgstr "s'està ignorant el paquet %s amb signatura no verificable V%u\n"
-
-#~ msgid "Signature: UNKNOWN (%d)\n"
-#~ msgstr "Signatura: desconeguda (%d)\n"
+#~ msgid "--percent may only be specified during package installation"
+#~ msgstr ""
+#~ "només es pot especificar l'opció --percent durant la instal·lació d'un "
+#~ "paquet"

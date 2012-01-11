@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-09-13 12:45+0000\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2011-12-02 10:24+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fi\n"
@@ -132,12 +132,16 @@ msgid "arguments to --prefix must begin with a /"
 msgstr "--prefix parametrien pitää alkaa /-merkillä"
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
+#, fuzzy
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
 msgstr "--hash (-h): voidaan käyttää vain paketteja asennettaessa"
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
-msgstr "--percent: voidaan käyttää vain paketteja asennettaessa"
+#, fuzzy
+msgid "--percent may only be specified during package installation and erasure"
+msgstr ""
+"--justdb: voidaan käyttää vain paketteja asennettaessa tai poistettaessa"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -763,7 +767,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Tiedostoa ei löytynyt täydennyksellä: %s\n"
@@ -1527,22 +1531,22 @@ msgstr ""
 msgid " failed - "
 msgstr " epäonnistui - "
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s on Delta RPM eikä sitä voida suoraan asentaa\n"
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Tuntematon kuorma (%s) paketissa %s\n"
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paketti %s on jo lisätty, ohitetaan %s\n"
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paketti %s oli jo lisätty, korvataan %s:lla\n"
@@ -1583,9 +1587,9 @@ msgid "(not an OpenPGP signature)"
 msgstr "(ei ole OpenPGP-allekirjoitus)"
 
 #: lib/formats.c:442
-#, c-format
-msgid "Invalid date %u\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "Invalid date %u"
+msgstr "Virheellinen %s merkki: %s\n"
 
 #: lib/formats.c:508
 msgid "normal"
@@ -1619,55 +1623,55 @@ msgstr "(tuntematon)"
 msgid "(not a string)"
 msgstr "(ei ole merkkijono)"
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "käyttäjää %s ei ole olemassa, käytetään käyttäjää root\n"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "ryhmää %s ei ole olemassa, käytetään ryhmää root\n"
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s talletettiin %s:nä\n"
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s %s rmdir epäonnistui - hakemisto ei ole tyhjä\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s %s:n rmdir epäonnistui: %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr ""
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s luotu %s:na\n"
 
 #: lib/package.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr "ohitetaan %s jonka V%u allekirjoitusta ei voida varmentaa\n"
+msgstr ""
 
 #: lib/package.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr "ohitetaan %s jonka V%u allekirjoitusta ei voida varmentaa\n"
+msgstr ""
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
 #, c-format
@@ -2201,34 +2205,34 @@ msgstr "älä tarkista paketin riippuvuuksia"
 msgid "don't execute verify script(s)"
 msgstr "älä suorita tarkistusskriptejä"
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr ""
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "arkiston %s%s purkaminen epäonnistui: %s\n"
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr " tiedostolle "
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "%s epäonnistui tiedostolle %s: %s\n"
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "%s epäonnistui: %s\n"
@@ -2329,7 +2333,7 @@ msgstr "virheellinen paketin numero: %s\n"
 msgid "record %u could not be read\n"
 msgstr "tietuetta %u ei voitu lukea\n"
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paketti %s ei ole asennettu\n"
@@ -2481,8 +2485,8 @@ msgstr ""
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s:n avaus ei onnistunut: %s\n"
@@ -2492,59 +2496,70 @@ msgstr "%s:n avaus ei onnistunut: %s\n"
 msgid "%s: not an rpm package (or package manifest)\n"
 msgstr "%s: ei ole rpm paketti (tai pakettilista)\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, fuzzy, c-format
+msgid "Updating / installing...\n"
+msgstr "Valmistellaan paketteja asennukseen..."
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "Valmistellaan..."
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
-msgstr "Valmistellaan paketteja asennukseen..."
+#: lib/rpminstall.c:195
+#, fuzzy
+msgid "Preparing packages..."
+msgstr "Valmistellaan..."
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Puuttuvia riippuvuuksia:\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: ei ole rpm paketti (tai pakettilista): %s\n"
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s:ää ei voida asentaa\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Haetaan %s\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "ohitetaan %s - siirto epäonnistui\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paketti %s ei ole uudelleensijoitettava\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "virhe luettaessa tiedostosta %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" määrittää useita paketteja:\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "virhe: en voi avata %s: %s\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr "Asennetaan %s\n"
@@ -2680,77 +2695,77 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "tuntematon virhe %d käsitellessä pakettia %s"
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "toinen ':' puuttuu, %s:%d\n"
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "puuttuva arkkitehtuurin nimi, %s:%d\n"
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Epätäydellinen datarivi, %s:%d\n"
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Liian monta parametriä datarivillä %s:%d\n"
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Virheellinen arkkitehtuuri/käyttöjärjestelmä numero: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Epätäydellinen oletusrivi, %s:%d\n"
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Liian monta parametriä oletusrivillä %s:%d\n"
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "puuttuva ':' (löydettiin 0x%02x): %s:%d\n"
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "puuttuva argumentti %s:lle: %s:%d\n"
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "en voi avata %s:aa %s:%d:ssä: %m\n"
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Tuntematon järjestelmä: %s\n"
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Ota yhteyttä %s\n"
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "En voi avata %s luettavaksi: %m.\n"
@@ -2878,9 +2893,8 @@ msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
 #: lib/signature.c:315
-#, fuzzy
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "parametri ei ole RPM paketti\n"
+msgstr ""
 
 #: lib/signature.c:402
 msgid "MD5 digest:"
@@ -3408,9 +3422,8 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s: Fflush epäonnistui: %s\n"
 
 #: sign/rpmgensig.c:125
-#, fuzzy
 msgid "Unsupported PGP signature\n"
-msgstr "(ei ole OpenPGP-allekirjoitus)"
+msgstr ""
 
 #: sign/rpmgensig.c:131
 #, c-format
@@ -3473,5 +3486,5 @@ msgstr "%s: pakettilistan luku epäonnistui: %s\n"
 msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
 
-#~ msgid "skipping package %s with unverifiable V%u signature\n"
-#~ msgstr "ohitetaan paketti %s jonka V%u allekirjoitusta ei voida varmentaa\n"
+#~ msgid "--percent may only be specified during package installation"
+#~ msgstr "--percent: voidaan käyttää vain paketteja asennettaessa"

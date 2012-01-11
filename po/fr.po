@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>, 2011.
+# Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>, 2011, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-12-02 12:25+0200\n"
-"PO-Revision-Date: 2011-11-19 16:29+0000\n"
-"Last-Translator: shaiton <shaiton@fedoraproject.org>\n"
+"POT-Creation-Date: 2012-01-11 09:00+0200\n"
+"PO-Revision-Date: 2012-01-06 22:27+0000\n"
+"Last-Translator: Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>\n"
 "Language-Team: French (http://www.transifex.net/projects/p/rpm/team/fr/)\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
@@ -135,12 +135,17 @@ msgid "arguments to --prefix must begin with a /"
 msgstr "les arguments de --prefix doivent commencer par un /"
 
 #: rpmqv.c:170
-msgid "--hash (-h) may only be specified during package installation"
-msgstr "--hash (-h) ne peut être utilisé qu'à l'installation de paquet"
+#, fuzzy
+msgid ""
+"--hash (-h) may only be specified during package installation and erasure"
+msgstr ""
+"--test ne peut être utilisé qu'à l'installation/la désinstallation de paquet"
 
 #: rpmqv.c:174
-msgid "--percent may only be specified during package installation"
-msgstr "--percent ne peut être utilisé qu'à l'installation de paquet"
+#, fuzzy
+msgid "--percent may only be specified during package installation and erasure"
+msgstr ""
+"--test ne peut être utilisé qu'à l'installation/la désinstallation de paquet"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -791,7 +796,7 @@ msgstr "globale %%dev non autorisée : %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Répertoire introuvable par glob : %s\n"
 
-#: build/files.c:1681 lib/rpminstall.c:409
+#: build/files.c:1681 lib/rpminstall.c:427
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Fichier non trouvé par la substitution : %s\n"
@@ -1563,22 +1568,22 @@ msgstr "L'entête ne contient pas le fichier archive"
 msgid " failed - "
 msgstr " échec - "
 
-#: lib/depends.c:70
+#: lib/depends.c:68
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s est un Delta RPM et ne peut être installé directement\n"
 
-#: lib/depends.c:74
+#: lib/depends.c:72
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Charge (%s) non pris en charge dans le paquet %s\n"
 
-#: lib/depends.c:278
+#: lib/depends.c:287
 #, c-format
 msgid "package %s was already added, skipping %s\n"
-msgstr "le paquet %s a déjà été rajouté, replacé par %s\n"
+msgstr "le paquet %s a déjà été rajouté, %s ignoré\n"
 
-#: lib/depends.c:279
+#: lib/depends.c:288
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "le paquet %s a déjà été rajouté, replacé par %s\n"
@@ -1619,8 +1624,8 @@ msgid "(not an OpenPGP signature)"
 msgstr "(pas une signature OpenPGP)"
 
 #: lib/formats.c:442
-#, c-format
-msgid "Invalid date %u\n"
+#, fuzzy, c-format
+msgid "Invalid date %u"
 msgstr "Date invalide %u\n"
 
 #: lib/formats.c:508
@@ -1655,55 +1660,55 @@ msgstr "(inconnu)"
 msgid "(not a string)"
 msgstr "(pas une chaîne)"
 
-#: lib/fsm.c:735
+#: lib/fsm.c:730
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "utilisateur %s inexistant - utilisation de root\n"
 
-#: lib/fsm.c:742
+#: lib/fsm.c:737
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "groupe %s inexistant - utilisation de root\n"
 
-#: lib/fsm.c:1348
+#: lib/fsm.c:1343
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "l'archive %s n'était pas dans la liste de fichiers d'entêtes\n"
 
-#: lib/fsm.c:1803 lib/fsm.c:1947
+#: lib/fsm.c:1798 lib/fsm.c:1940
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s sauvé en tant que %s\n"
 
-#: lib/fsm.c:1974
+#: lib/fsm.c:1967
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s échec du rmdir sur %s : répertoire non-vide\n"
 
-#: lib/fsm.c:1980
+#: lib/fsm.c:1973
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s échec du rmdir sur %s : %s\n"
 
-#: lib/fsm.c:1994
+#: lib/fsm.c:1987
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s n'a pu délier %s : %s\n"
 
-#: lib/fsm.c:2016
+#: lib/fsm.c:2009
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s créé en tant que %s\n"
 
 #: lib/package.c:146
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr "saut du paquet %s avec la signature invérifiable V%u\n"
+msgstr "%s ignoré %s avec signature invérifiable\n"
 
 #: lib/package.c:149
-#, fuzzy, c-format
+#, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr "saut du paquet %s avec la signature invérifiable V%u\n"
+msgstr "%s ignoré avec signature invérifiable\n"
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
 #, c-format
@@ -2247,34 +2252,34 @@ msgstr "ne pas vérifier les dépendances du paquet"
 msgid "don't execute verify script(s)"
 msgstr "ne pas exécuter le(s) script(s) de vérification"
 
-#: lib/psm.c:213
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr "Éléments rpmlib manquants pour %s:\n"
 
-#: lib/psm.c:255
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr "paquet source attendu, paquet binaire trouvé\n"
 
-#: lib/psm.c:308
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr "le paquet source ne contient pas de fichier .spec\n"
 
-#: lib/psm.c:824
+#: lib/psm.c:854
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr "échec du déballage de l'archive %s%s : %s\n"
 
-#: lib/psm.c:825
+#: lib/psm.c:855
 msgid " on file "
 msgstr " dans fichier "
 
-#: lib/psm.c:942
+#: lib/psm.c:958
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "échec de %s sur le fichier %s : %s\n"
 
-#: lib/psm.c:945
+#: lib/psm.c:961
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "échec %s : %s\n"
@@ -2376,7 +2381,7 @@ msgstr "numéro de paquet invalide : %s\n"
 msgid "record %u could not be read\n"
 msgstr "l'enregistrement %u n'a pas pu être lu\n"
 
-#: lib/query.c:454 lib/rpminstall.c:646
+#: lib/query.c:454 lib/rpminstall.c:662
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "le paquet %s n'est pas installé\n"
@@ -2537,8 +2542,8 @@ msgstr "prise en charge des capacités du fichier POSIX.1e"
 msgid "package scriptlets can be expanded at install time."
 msgstr "les scriptlets du paquet peut être étendu lors de l'installation."
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:114 lib/rpminstall.c:289
-#: lib/rpminstall.c:318 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
+#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "échec de l'ouverture de %s: %s\n"
@@ -2550,59 +2555,70 @@ msgstr ""
 "%s: n'est pas un paquet rpm (ni une liste de paquet)\n"
 "\n"
 
-#: lib/rpminstall.c:173
+#: lib/rpminstall.c:141
+#, fuzzy, c-format
+msgid "Updating / installing...\n"
+msgstr "Préparation des paquets pour l'installation..."
+
+#: lib/rpminstall.c:143
+#, c-format
+msgid "Cleaning up / removing...\n"
+msgstr ""
+
+#: lib/rpminstall.c:193
 msgid "Preparing..."
 msgstr "Préparation...              "
 
-#: lib/rpminstall.c:175
-msgid "Preparing packages for installation..."
-msgstr "Préparation des paquets pour l'installation..."
+#: lib/rpminstall.c:195
+#, fuzzy
+msgid "Preparing packages..."
+msgstr "Préparation...              "
 
-#: lib/rpminstall.c:251 tools/rpmgraph.c:168
+#: lib/rpminstall.c:271 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Dépendances requises:\n"
 
-#: lib/rpminstall.c:302
+#: lib/rpminstall.c:322
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s : n'est pas un paquet rpm (ni une liste de paquet) : %s\n"
 
-#: lib/rpminstall.c:338 lib/rpminstall.c:709 tools/rpmgraph.c:112
+#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s ne peut être installé\n"
 
-#: lib/rpminstall.c:447
+#: lib/rpminstall.c:465
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Récupération de %s\n"
 
-#: lib/rpminstall.c:459
+#: lib/rpminstall.c:477
 #, c-format
 msgid "skipping %s - transfer failed\n"
-msgstr "sauter %s - échec du transfert\n"
+msgstr "%s ignoré - échec du transfert\n"
 
-#: lib/rpminstall.c:525
+#: lib/rpminstall.c:543
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "le paquet %s n'est pas localisable\n"
 
-#: lib/rpminstall.c:553
+#: lib/rpminstall.c:571
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "erreur en lisant %s\n"
 
-#: lib/rpminstall.c:653
+#: lib/rpminstall.c:669
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "« %s » spécifie plusieurs paquets\n"
 
-#: lib/rpminstall.c:693
+#: lib/rpminstall.c:709
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "impossible d'ouvrir %s : %s\n"
 
-#: lib/rpminstall.c:699
+#: lib/rpminstall.c:715
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installation de %s\n"
@@ -2743,77 +2759,77 @@ msgstr "%s est rendu obsolète par %s%s"
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "erreur %d inconnue rencontrée en manipulant le paquet %s"
 
-#: lib/rpmrc.c:183
+#: lib/rpmrc.c:181
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "il manque un second ':' à %s : %d\n"
 
-#: lib/rpmrc.c:186
+#: lib/rpmrc.c:184
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "architecture manquante à %s : %d\n"
 
-#: lib/rpmrc.c:331
+#: lib/rpmrc.c:329
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Ligne de données incomplète à %s : %d\n"
 
-#: lib/rpmrc.c:336
+#: lib/rpmrc.c:334
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Trop d'arguments dans la ligne de données à %s :%d\n"
 
-#: lib/rpmrc.c:343
+#: lib/rpmrc.c:341
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Mauvais numéro d'arch/OS : %s (%s : %d)\n"
 
-#: lib/rpmrc.c:374
+#: lib/rpmrc.c:372
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "valeur par défaut incomplète à la ligne %s : %d\n"
 
-#: lib/rpmrc.c:379
+#: lib/rpmrc.c:377
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Trop d'arguments pour la valeur par défaut de la ligne %s : %d\n"
 
-#: lib/rpmrc.c:483
+#: lib/rpmrc.c:481
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "':' manquant (trouvé 0x%02x) à %s : %d\n"
 
-#: lib/rpmrc.c:500 lib/rpmrc.c:532
+#: lib/rpmrc.c:498 lib/rpmrc.c:530
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "argument manquant pour %s à %s : %d\n"
 
-#: lib/rpmrc.c:511
+#: lib/rpmrc.c:509
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "Impossible d'ouvrir %s à %s : %d : %m\n"
 
-#: lib/rpmrc.c:524
+#: lib/rpmrc.c:522
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "architecture manquante pour %s à %s : %d\n"
 
-#: lib/rpmrc.c:591
+#: lib/rpmrc.c:589
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "mauvaise option '%s' à %s : %d\n"
 
-#: lib/rpmrc.c:1281
+#: lib/rpmrc.c:1279
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "système inconnu : %s\n"
 
-#: lib/rpmrc.c:1282
+#: lib/rpmrc.c:1280
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Contactez %s\n"
 
-#: lib/rpmrc.c:1501
+#: lib/rpmrc.c:1499
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
@@ -2943,9 +2959,8 @@ msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "La région d'entête immuable ne peut pas être lu. Paquet corrompu?\n"
 
 #: lib/signature.c:315
-#, fuzzy
 msgid "Cannot sign RPM v3 packages\n"
-msgstr "l'argument n'est pas un paquet RPM\n"
+msgstr "Ne peut signer les paquets RPM v3\n"
 
 #: lib/signature.c:402
 msgid "MD5 digest:"
@@ -2960,9 +2975,9 @@ msgid "Header "
 msgstr "Entête "
 
 #: lib/signature.c:524
-#, fuzzy, c-format
+#, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
-msgstr "Vérification de signature : MAUVAIS PARAMETRES\n"
+msgstr "Vérification de signature: MAUVAIS PARAMETRES (%d %p %d %p %p)\n"
 
 #: lib/transaction.c:1390
 msgid "skipped"
@@ -3067,7 +3082,7 @@ msgstr "aucun dbpath n'a été fourni\n"
 
 #: lib/rpmdb.c:1270
 msgid "miFreeHeader: skipping"
-msgstr "miFreeHeader : sauté"
+msgstr "miFreeHeader : ignoré"
 
 #: lib/rpmdb.c:1280
 #, c-format
@@ -3086,12 +3101,12 @@ msgstr "%s : regcomp a échoué :%s\n"
 
 #: lib/rpmdb.c:1718
 msgid "rpmdbNextIterator: skipping"
-msgstr "rpmdbNextIterator : on saute"
+msgstr "rpmdbNextIterator : ignoré"
 
 #: lib/rpmdb.c:1856
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
-msgstr "rpmdb : l'entête nº%u endommagé a été téléchargé -- ignoré.\n"
+msgstr "rpmdb : l'entête #%u endommagée a été récupérée -- ignoré.\n"
 
 #: lib/rpmdb.c:2209
 #, c-format
@@ -3155,7 +3170,7 @@ msgstr "Impossible de créer le répertoire %s : %s\n"
 #: lib/rpmdb.c:2868
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
-msgstr "l'entête nº%u dans la base de données n'est pas bon -- ignoré.\n"
+msgstr "l'entête #%u dans la base de données n'est pas bon -- ignoré.\n"
 
 #: lib/rpmdb.c:2882
 #, c-format
@@ -3482,19 +3497,18 @@ msgid "%s: Fflush failed: %s\n"
 msgstr "%s : Fflush échoué : %s\n"
 
 #: sign/rpmgensig.c:125
-#, fuzzy
 msgid "Unsupported PGP signature\n"
-msgstr "algorithme %d de hachage PGP non pris en charge\n"
+msgstr "Signature PGP non supportée\n"
 
 #: sign/rpmgensig.c:131
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr "algorithme %d de hachage PGP non pris en charge\n"
+msgstr "Algorithme %u de hashage PGP non supporté\n"
 
 #: sign/rpmgensig.c:144
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr "algorithme %d de clé publique PGP non pris en charge\n"
+msgstr "Algorithme %u clé publique PGP non supporté\n"
 
 #: sign/rpmgensig.c:174
 #, c-format
@@ -3547,11 +3561,8 @@ msgstr "%s : échec de la lecture de la liste de paquetages : %s\n"
 msgid "don't verify header+payload signature"
 msgstr "ne pas vérifier la signature de l'entête+charge_utile"
 
-#~ msgid "skipping package %s with unverifiable V%u signature\n"
-#~ msgstr "sauter le paquet %s avec la signature de V%u invérifiables\n"
+#~ msgid "--hash (-h) may only be specified during package installation"
+#~ msgstr "--hash (-h) ne peut être utilisé qu'à l'installation de paquet"
 
-#~ msgid "Signature: UNKNOWN (%d)\n"
-#~ msgstr "Signature : INCONNUE (%d)\n"
-
-#~ msgid "Failed to register fork handler: %m\n"
-#~ msgstr "Impossible d'enregistrer fork handler : %m\n"
+#~ msgid "--percent may only be specified during package installation"
+#~ msgstr "--percent ne peut être utilisé qu'à l'installation de paquet"
