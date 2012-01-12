@@ -102,7 +102,7 @@ rpm	alias --triggerscripts --qf '\
 rpm	alias --triggers --triggerscripts \
 	--POPTdesc=$"list trigger scriptlets from package(s)"
 
-rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NAME}-%{VERSION}-%{RELEASE} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
+rpm	alias --last --qf '%|INSTALLTIME?{%{INSTALLTIME}}:{000000000}| %{NVRA} %|INSTALLTIME?{%{INSTALLTIME:date}}:{(not installed)}|\n' \
 	--pipe "sort -r -n | sed 's,^[0-9]\+ ,,' | awk '{printf(\"%-45s %-s\n\", $1, substr($0,length($1)+2))}' " \
 	--POPTdesc=$"list package(s) by install time, most recent first"
 
