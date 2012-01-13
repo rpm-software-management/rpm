@@ -143,7 +143,6 @@ struct fsm_s {
     int postpone;		/*!< Skip remaining stages? */
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */
-    int mkdirsdone;		/*!< Have "orphan" dirs been created? */
     int rc;			/*!< External file stage return code. */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */

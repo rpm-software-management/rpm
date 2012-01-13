@@ -570,7 +570,6 @@ static int fsmCreate(FSM_t fsm)
         fsm->wrbuf = fsm->wrb = xmalloc(fsm->wrsize);
     }
 
-    fsm->mkdirsdone = 0;
     fsm->ix = -1;
     fsm->links = NULL;
     fsm->li = NULL;
@@ -579,7 +578,6 @@ static int fsmCreate(FSM_t fsm)
     /* Detect and create directories not explicitly in package. */
     if (fsm->goal == FSM_PKGINSTALL) {
         rc = fsmMkdirs(fsm);
-        if (!rc) fsm->mkdirsdone = 1;
     }
     return rc;
 }
