@@ -1205,11 +1205,9 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
  */
 static int fsmMkdirs(FSM_t fsm)
 {
-    struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * path = fsm->path;
     const char *dpath;
-    mode_t st_mode = st->st_mode;
     DNLI_t dnli = dnlInitIterator(fsm, 0);
     int dc = dnlCount(dnli);
     int rc = 0;
@@ -1267,14 +1265,14 @@ static int fsmMkdirs(FSM_t fsm)
 		dnlx[dc] = (te - dn);
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
-		st->st_mode = S_IFDIR | (_dirPerms & 07777);
-		rc = fsmMkdir(fsm->path, st->st_mode);
+		mode_t mode = S_IFDIR | (_dirPerms & 07777);
+		rc = fsmMkdir(fsm->path, mode);
 		if (!rc) {
-		    rc = fsmSetSELabel(fsm->sehandle, fsm->path, st->st_mode);
+		    rc = fsmSetSELabel(fsm->sehandle, fsm->path, mode);
 
 		    rpmlog(RPMLOG_DEBUG,
 			    "%s directory created with perms %04o\n",
-			    fsm->path, (unsigned)(st->st_mode & 07777));
+			    fsm->path, (unsigned)(mode & 07777));
 		}
 		*te = '/';
 	    }
@@ -1298,7 +1296,6 @@ static int fsmMkdirs(FSM_t fsm)
     free(ldn);
 
     fsm->path = path;
-    st->st_mode = st_mode;		/* XXX restore st->st_mode */
     return rc;
 }
 
