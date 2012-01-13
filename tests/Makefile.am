@@ -94,6 +94,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	for node in stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file mktemp cut sort diff; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
+	for d in /proc /sys /selinux /etc/selinux; do [ -d $${d} ] && ln -s $${d} testing/$${d}; done
 	(cd testing/magic && file -C)
 
 check_DATA = atconfig atlocal $(TESTSUITE)
