@@ -1135,12 +1135,12 @@ static int fsmCommitLinks(FSM_t fsm)
     return rc;
 }
 
-static int fsmRmdir(FSM_t fsm)
+static int fsmRmdir(const char *path)
 {
-    int rc = rmdir(fsm->path);
+    int rc = rmdir(path);
     if (_fsm_debug && (FSM_RMDIR & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", fileStageString(FSM_RMDIR),
-	       fsm->path, (rc < 0 ? strerror(errno) : ""));
+	       path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
 	switch (errno) {
 	case ENOENT:        rc = CPIOERR_ENOENT;    break;
@@ -1367,15 +1367,15 @@ static int fsmInit(FSM_t fsm)
 
 }
 
-static int fsmUnlink(FSM_t fsm)
+static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
 {
     int rc = 0;
-    if (fsm->mapFlags & CPIO_SBIT_CHECK)
-        removeSBITS(fsm->path);
-    rc = unlink(fsm->path);
+    if (mapFlags & CPIO_SBIT_CHECK)
+        removeSBITS(path);
+    rc = unlink(path);
     if (_fsm_debug && (FSM_UNLINK & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", fileStageString(FSM_UNLINK),
-	       fsm->path, (rc < 0 ? strerror(errno) : ""));
+	       path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
 	rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
     return rc;
@@ -1490,7 +1490,7 @@ static int fsmVerify(FSM_t fsm)
         fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
         rc = fsmRename(fsm);
         if (!rc)
-            (void) fsmUnlink(fsm);
+            (void) fsmUnlink(fsm->path, fsm->mapFlags);
         else
             rc = CPIOERR_UNLINK_FAILED;
         _free(fsm->path);
@@ -1524,7 +1524,7 @@ static int fsmVerify(FSM_t fsm)
     }
     /* XXX shouldn't do this with commit/undo. */
     rc = 0;
-    if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm);
+    if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm->path, fsm->mapFlags);
     if (rc == 0)	rc = CPIOERR_ENOENT;
     return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 }
@@ -1860,9 +1860,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    /* XXX only erase if temp fn w suffix is in use */
 	    if (fsm->suffix) {
 		if (S_ISDIR(st->st_mode)) {
-		    (void) fsmRmdir(fsm);
+		    (void) fsmRmdir(fsm->path);
 		} else {
-		    (void) fsmUnlink(fsm);
+		    (void) fsmUnlink(fsm->path, fsm->mapFlags);
 		}
 	    }
 	    errno = saveerrno;
@@ -1909,7 +1909,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (fsm->action == FA_ERASE) {
 		rpmte te = fsmGetTe(fsm);
 		if (S_ISDIR(st->st_mode)) {
-		    rc = fsmRmdir(fsm);
+		    rc = fsmRmdir(fsm->path);
 		    if (!rc) break;
 		    switch (rc) {
 		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
@@ -1932,7 +1932,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 			break;
 		    }
 		} else {
-		    rc = fsmUnlink(fsm);
+		    rc = fsmUnlink(fsm->path, fsm->mapFlags);
 		    if (!rc) break;
 		    switch (rc) {
 		    case CPIOERR_ENOENT:
