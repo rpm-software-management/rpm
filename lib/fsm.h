@@ -138,8 +138,7 @@ struct fsm_s {
     const char * subdir;	/*!< Current file sub-directory. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
-    const char * suffix;	/*!< Current file suffix. */
-    char sufbuf[64];	/* XXX eliminate */
+    char * suffix;		/*!< Current file suffix. */
     int postpone;		/*!< Skip remaining stages? */
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */

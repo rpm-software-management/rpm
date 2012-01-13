@@ -617,9 +617,8 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
 
-    memset(fsm->sufbuf, 0, sizeof(fsm->sufbuf));
     if (fsm->goal == FSM_PKGINSTALL) {
-	sprintf(fsm->sufbuf, ";%08x", (unsigned)rpmtsGetTid(ts));
+	rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
     }
 
     ec = fsm->rc = 0;
@@ -651,6 +650,7 @@ static int fsmTeardown(FSM_t fsm)
     fsm->failedFile = NULL;
 
     fsm->path = _free(fsm->path);
+    fsm->suffix = _free(fsm->suffix);
     while ((fsm->li = fsm->links) != NULL) {
 	fsm->links = fsm->li->next;
 	fsm->li->next = NULL;
@@ -1314,7 +1314,6 @@ static int fsmInit(FSM_t fsm)
     fsm->postpone = 0;
     fsm->diskchecked = fsm->exists = 0;
     fsm->subdir = NULL;
-    fsm->suffix = (fsm->sufbuf[0] != '\0' ? fsm->sufbuf : NULL);
     fsm->action = FA_UNKNOWN;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
@@ -1895,7 +1894,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    break;
 	if (fsm->goal == FSM_PKGINSTALL) {
 	    /* XXX only erase if temp fn w suffix is in use */
-	    if (fsm->sufbuf[0] != '\0') {
+	    if (fsm->suffix) {
 		if (S_ISDIR(st->st_mode)) {
 		    (void) fsmRmdir(fsm);
 		} else {
