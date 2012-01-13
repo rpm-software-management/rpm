@@ -830,19 +830,22 @@ exit:
     return rc;
 }
 
-static int fsmReadLink(FSM_t fsm)
+static int fsmReadLink(const char *path,
+		       char *buf, size_t bufsize, size_t *linklen)
 {
-    int rc;
-    /* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-    rc = readlink(fsm->path, fsm->rdbuf, fsm->rdsize - 1);
-    if (_fsm_debug && (FSM_READLINK & FSM_SYSCALL))
-        rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n", fileStageString(FSM_READLINK),
-               fsm->path, (int)(fsm->rdsize -1), (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_READLINK_FAILED;
-    else {
-        fsm->rdnb = rc;
-        fsm->rdbuf[fsm->rdnb] = '\0';
-        rc = 0;
+    ssize_t llen = readlink(path, buf, bufsize - 1);
+    int rc = CPIOERR_READLINK_FAILED;
+
+    if (_fsm_debug && (FSM_READLINK & FSM_SYSCALL)) {
+        rpmlog(RPMLOG_DEBUG, " %8s (%s, rdbuf, %d) %s\n",
+	       fileStageString(FSM_READLINK),
+               path, (int)(bufsize -1), (llen < 0 ? strerror(errno) : ""));
+    }
+
+    if (llen >= 0) {
+	buf[llen] = '\0';
+	rc = 0;
+	*linklen = llen;
     }
     return rc;
 }
@@ -873,7 +876,7 @@ static int writeFile(FSM_t fsm, int writeData)
 	 * I don't think that's a specified standard.
 	 */
 	/* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-	rc = fsmReadLink(fsm);
+	rc = fsmReadLink(fsm->path, fsm->rdbuf, fsm->rdsize, &fsm->rdnb);
 	if (rc) goto exit;
 	st->st_size = fsm->rdnb;
 	rstrcat(&symbuf, fsm->rdbuf);	/* XXX save readlink return. */
@@ -1507,7 +1510,7 @@ static int fsmVerify(FSM_t fsm)
     } else if (S_ISLNK(st->st_mode)) {
         if (S_ISLNK(ost->st_mode)) {
             /* XXX NUL terminated result in fsm->rdbuf, len in fsm->rdnb. */
-            rc = fsmReadLink(fsm);
+            rc = fsmReadLink(fsm->path, fsm->rdbuf, fsm->rdsize, &fsm->rdnb);
             errno = saveerrno;
             if (rc) return rc;
             if (rstreq(fsm->opath, fsm->rdbuf))	return 0;
