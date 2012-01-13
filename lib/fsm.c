@@ -1381,27 +1381,25 @@ static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
     return rc;
 }
 
-static int fsmRename(FSM_t fsm)
+static int fsmRename(const char *opath, const char *path,
+		     cpioMapFlags mapFlags)
 {
-    if (fsm->mapFlags & CPIO_SBIT_CHECK)
-        removeSBITS(fsm->path);
-    int rc = rename(fsm->opath, fsm->path);
+    if (mapFlags & CPIO_SBIT_CHECK)
+        removeSBITS(path);
+    int rc = rename(opath, path);
 #if defined(ETXTBSY) && defined(__HPUX__)
+    /* XXX HP-UX (and other os'es) don't permit rename to busy files. */
     if (rc && errno == ETXTBSY) {
-	char *path = NULL;
-	rstrscat(&path, fsm->path, "-RPMDELETE", NULL);
-	/*
-	 * XXX HP-UX (and other os'es) don't permit rename to busy
-	 * XXX files.
-	 */
-	rc = rename(fsm->path, path);
-	if (!rc) rc = rename(fsm->opath, fsm->path);
-	free(path);
+	char *rmpath = NULL;
+	rstrscat(&rmpath, path, "-RPMDELETE", NULL);
+	rc = rename(path, rmpath);
+	if (!rc) rc = rename(opath, path);
+	free(rmpath);
     }
 #endif
     if (_fsm_debug && (FSM_RENAME & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_RENAME),
-	       fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
+	       opath, path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
     return rc;
 }
@@ -1488,7 +1486,7 @@ static int fsmVerify(FSM_t fsm)
          */
         fsm->opath = fsm->path;
         fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
-        rc = fsmRename(fsm);
+        rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
         if (!rc)
             (void) fsmUnlink(fsm->path, fsm->mapFlags);
         else
@@ -1749,7 +1747,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		char * opath = fsm->opath;
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-		rc = fsmRename(fsm);
+		rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
 		if (!rc)
 		    rpmlog(RPMLOG_WARNING,
 			_("%s saved as %s\n"),
@@ -1892,7 +1890,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    char * path = fsm->path;
 	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
 	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-	    rc = fsmRename(fsm);
+	    rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
 	    if (!rc) {
 		rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
 				(fsm->opath ? fsm->opath : ""),
@@ -1958,7 +1956,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
-		rc = fsmRename(fsm);
+		rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
 		if (!rc && fsm->nsuffix) {
 		    char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
