@@ -552,7 +552,7 @@ static hardLink_t freeHardLink(hardLink_t li)
 }
 
 /* forward declaration*/
-static int fsmMkdirs(FSM_t fsm);
+static int fsmMkdirs(DNLI_t dnli, struct selabel_handle *sehandle);
 
 static int fsmCreate(FSM_t fsm)
 {
@@ -576,8 +576,11 @@ static int fsmCreate(FSM_t fsm)
     errno = 0;	/* XXX get rid of EBADF */
 
     /* Detect and create directories not explicitly in package. */
+    /* XXX This seems like a strange place to do this... */
     if (fsm->goal == FSM_PKGINSTALL) {
-        rc = fsmMkdirs(fsm);
+	DNLI_t dnli = dnlInitIterator(fsm, 0);
+	rc = fsmMkdirs(dnli, fsm->sehandle);
+	dnlFreeIterator(dnli);	
     }
     return rc;
 }
@@ -1200,15 +1203,14 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
 
 /**
  * Create (if necessary) directories not explicitly included in package.
- * @param fsm		file state machine data
+ * @param dnli		file state machine data
+ * @param sehandle	selinux label handle (bah)
  * @return		0 on success
  */
-static int fsmMkdirs(FSM_t fsm)
+static int fsmMkdirs(DNLI_t dnli, struct selabel_handle *sehandle)
 {
-    struct stat * ost = &fsm->osb;
-    char * path = fsm->path;
+    struct stat sb;
     const char *dpath;
-    DNLI_t dnli = dnlInitIterator(fsm, 0);
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
@@ -1235,7 +1237,6 @@ static int fsmMkdirs(FSM_t fsm)
 
 	/* Copy as we need to modify the string */
 	(void) stpcpy(dn, dpath);
-	fsm->path = dn;
 
 	/* Assume '/' directory exists, "mkdir -p" for others if non-existent */
 	for (i = 1, te = dn + 1; *te != '\0'; te++, i++) {
@@ -1246,8 +1247,7 @@ static int fsmMkdirs(FSM_t fsm)
 
 	    /* Already validated? */
 	    if (i < ldnlen &&
-		(ldn[i] == '/' || ldn[i] == '\0') &&
-		rstreqn(fsm->path, ldn, i))
+		(ldn[i] == '/' || ldn[i] == '\0') && rstreqn(dn, ldn, i))
 	    {
 		*te = '/';
 		/* Move pre-existing path marker forward. */
@@ -1256,23 +1256,23 @@ static int fsmMkdirs(FSM_t fsm)
 	    }
 
 	    /* Validate next component of path. */
-	    rc = fsmStat(fsm->path, 1, &fsm->osb); /* lstat */
+	    rc = fsmStat(dn, 1, &sb); /* lstat */
 	    *te = '/';
 
 	    /* Directory already exists? */
-	    if (rc == 0 && S_ISDIR(ost->st_mode)) {
+	    if (rc == 0 && S_ISDIR(sb.st_mode)) {
 		/* Move pre-existing path marker forward. */
 		dnlx[dc] = (te - dn);
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
 		mode_t mode = S_IFDIR | (_dirPerms & 07777);
-		rc = fsmMkdir(fsm->path, mode);
+		rc = fsmMkdir(dn, mode);
 		if (!rc) {
-		    rc = fsmSetSELabel(fsm->sehandle, fsm->path, mode);
+		    rc = fsmSetSELabel(sehandle, dn, mode);
 
 		    rpmlog(RPMLOG_DEBUG,
 			    "%s directory created with perms %04o\n",
-			    fsm->path, (unsigned)(mode & 07777));
+			    dn, (unsigned)(mode & 07777));
 		}
 		*te = '/';
 	    }
@@ -1287,15 +1287,13 @@ static int fsmMkdirs(FSM_t fsm)
 	    ldn = xrealloc(ldn, ldnalloc);
 	}
 	if (ldn != NULL) { /* XXX can't happen */
-	    strcpy(ldn, fsm->path);
+	    strcpy(ldn, dn);
 	    ldnlen = dnlen;
 	}
     }
-    dnlFreeIterator(dnli);
     free(dnlx);
     free(ldn);
 
-    fsm->path = path;
     return rc;
 }
 
