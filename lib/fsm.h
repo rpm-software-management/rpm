@@ -135,7 +135,6 @@ struct fsm_s {
     rpm_loff_t archivePos;	/*!< Current archive position. */
     rpm_loff_t cpioPos;
     char ** failedFile;		/*!< First file name that failed. */
-    const char * subdir;	/*!< Current file sub-directory. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
     char * suffix;		/*!< Current file suffix. */

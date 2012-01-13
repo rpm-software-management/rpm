@@ -452,7 +452,7 @@ static int fsmMapPath(FSM_t fsm)
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    const struct stat * st = &fsm->sb;
 	    fsm->path = _free(fsm->path);
-	    fsm->path = fsmFsPath(fsm, st, fsm->subdir,
+	    fsm->path = fsmFsPath(fsm, st, NULL,
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
 	}
     }
@@ -1313,7 +1313,6 @@ static int fsmInit(FSM_t fsm)
     fsm->path = _free(fsm->path);
     fsm->postpone = 0;
     fsm->diskchecked = fsm->exists = 0;
-    fsm->subdir = NULL;
     fsm->action = FA_UNKNOWN;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
@@ -1991,9 +1990,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
 	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
 	    /* Rename temporary to final file name. */
-	    if (!S_ISDIR(st->st_mode) &&
-		(fsm->subdir || fsm->suffix || fsm->nsuffix))
-	    {
+	    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
 		fsm->opath = fsm->path;
 		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
 		rc = fsmRename(fsm);
