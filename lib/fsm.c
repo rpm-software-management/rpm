@@ -1151,12 +1151,12 @@ static int fsmRmdir(const char *path)
     return rc;
 }
 
-static int fsmMkdir(FSM_t fsm)
+static int fsmMkdir(const char *path, mode_t mode)
 {
-    int rc = mkdir(fsm->path, (fsm->sb.st_mode & 07777));
+    int rc = mkdir(path, (mode & 07777));
     if (_fsm_debug && (FSM_MKDIR & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_MKDIR),
-	       fsm->path, (unsigned)(fsm->sb.st_mode & 07777),
+	       path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
     return rc;
@@ -1232,7 +1232,7 @@ static int fsmMkdirs(FSM_t fsm)
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
 		st->st_mode = S_IFDIR | (_dirPerms & 07777);
-		rc = fsmMkdir(fsm);
+		rc = fsmMkdir(fsm->path, st->st_mode);
 		if (!rc) {
 		    rc = fsmSetSELabel(fsm->sehandle, fsm->path, st->st_mode);
 
@@ -1768,7 +1768,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
 		st->st_mode |=  00700;
-		rc = fsmMkdir(fsm);
+		rc = fsmMkdir(fsm->path, st->st_mode);
 		st->st_mode = st_mode;		/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
