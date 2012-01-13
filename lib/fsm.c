@@ -1400,6 +1400,20 @@ static int fsmInit(FSM_t fsm)
 
 }
 
+static int fsmSymlink(const char *opath, const char *path)
+{
+    int rc = symlink(opath, path);
+
+    if (_fsm_debug && (FSM_SYMLINK & FSM_SYSCALL)) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_SYMLINK),
+	       opath, path, (rc < 0 ? strerror(errno) : ""));
+    }
+
+    if (rc < 0)
+	rc = CPIOERR_SYMLINK_FAILED;
+    return rc;
+}
+
 static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
 {
     int rc = 0;
@@ -1819,11 +1833,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    fsm->opath = fsm->wrbuf;
 	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
-		rc = symlink(fsm->opath, fsm->path);
-		if (_fsm_debug && (FSM_SYMLINK & FSM_SYSCALL))
-		    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_SYMLINK),
-			   fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-		if (rc < 0)	rc = CPIOERR_SYMLINK_FAILED;
+		rc = fsmSymlink(fsm->opath, fsm->path);
 	    }
 	    fsm->opath = opath;		/* XXX restore fsm->path */
 	} else if (S_ISFIFO(st->st_mode)) {
