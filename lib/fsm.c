@@ -1903,20 +1903,14 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->osuffix && fsm->diskchecked &&
 	  (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
 	{
-	    char * opath = fsm->opath;
-	    char * path = fsm->path;
-	    fsm->opath = fsmFsPath(fsm, st, NULL, NULL);
-	    fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-	    rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
+	    char * opath = fsmFsPath(fsm, st, NULL, NULL);
+	    char * path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
+	    rc = fsmRename(opath, path, fsm->mapFlags);
 	    if (!rc) {
-		rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
-				(fsm->opath ? fsm->opath : ""),
-				(fsm->path ? fsm->path : ""));
+		rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
 	    }
-	    fsm->path = _free(fsm->path);
-	    fsm->path = path;
-	    fsm->opath = _free(fsm->opath);
-	    fsm->opath = opath;
+	    free(path);
+	    free(opath);
 	}
 
 	/* Remove erased files. */
