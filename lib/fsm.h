@@ -140,10 +140,6 @@ struct fsm_s {
     const char * nsuffix;	/*!< New, created, file suffix. */
     const char * suffix;	/*!< Current file suffix. */
     char sufbuf[64];	/* XXX eliminate */
-    short * dnlx;		/*!< Last dirpath verified indexes. */
-    char * ldn;			/*!< Last dirpath verified. */
-    int ldnlen;			/*!< Last dirpath current length. */
-    int ldnalloc;		/*!< Last dirpath allocated length. */
     int postpone;		/*!< Skip remaining stages? */
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */

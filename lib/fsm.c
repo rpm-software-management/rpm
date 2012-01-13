@@ -559,10 +559,6 @@ static int fsmCreate(FSM_t fsm)
     int rc = 0;
     fsm->path = _free(fsm->path);
     fsm->opath = _free(fsm->opath);
-    fsm->dnlx = _free(fsm->dnlx);
-
-    fsm->ldn = _free(fsm->ldn);
-    fsm->ldnalloc = fsm->ldnlen = 0;
 
     fsm->rdsize = fsm->wrsize = 0;
     fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
@@ -663,8 +659,6 @@ static int fsmTeardown(FSM_t fsm)
 	fsm->li->next = NULL;
 	fsm->li = freeHardLink(fsm->li);
     }
-    fsm->dnlx = _free(fsm->dnlx);
-    fsm->ldn = _free(fsm->ldn);
     return rc;
 }
 
@@ -1191,22 +1185,27 @@ static int fsmMkdirs(FSM_t fsm)
     int dc = dnlCount(dnli);
     int rc = 0;
     int i;
+    int ldnlen = 0;
+    int ldnalloc = 0;
+    char * ldn = NULL;
+    short * dnlx = NULL; 
     rpmts ts = fsmGetTs(fsm);
     security_context_t scon = NULL;
 
-    fsm->dnlx = (dc ? xcalloc(dc, sizeof(*fsm->dnlx)) : NULL);
-    if (fsm->dnlx != NULL)
+    dnlx = (dc ? xcalloc(dc, sizeof(*dnlx)) : NULL);
+
+    if (dnlx != NULL)
     while ((dpath = dnlNextIterator(dnli)) != NULL) {
 	size_t dnlen = strlen(dpath);
 	char * te, dn[dnlen+1];
 
 	dc = dnlIndex(dnli);
 	if (dc < 0) continue;
-	fsm->dnlx[dc] = dnlen;
+	dnlx[dc] = dnlen;
 	if (dnlen <= 1)
 	    continue;
 
-	if (dnlen <= fsm->ldnlen && rstreq(dpath, fsm->ldn))
+	if (dnlen <= ldnlen && rstreq(dpath, ldn))
 	    continue;
 
 	/* Copy as we need to modify the string */
@@ -1221,13 +1220,13 @@ static int fsmMkdirs(FSM_t fsm)
 	    *te = '\0';
 
 	    /* Already validated? */
-	    if (i < fsm->ldnlen &&
-		(fsm->ldn[i] == '/' || fsm->ldn[i] == '\0') &&
-		rstreqn(fsm->path, fsm->ldn, i))
+	    if (i < ldnlen &&
+		(ldn[i] == '/' || ldn[i] == '\0') &&
+		rstreqn(fsm->path, ldn, i))
 	    {
 		*te = '/';
 		/* Move pre-existing path marker forward. */
-		fsm->dnlx[dc] = (te - dn);
+		dnlx[dc] = (te - dn);
 		continue;
 	    }
 
@@ -1238,7 +1237,7 @@ static int fsmMkdirs(FSM_t fsm)
 	    /* Directory already exists? */
 	    if (rc == 0 && S_ISDIR(ost->st_mode)) {
 		/* Move pre-existing path marker forward. */
-		fsm->dnlx[dc] = (te - dn);
+		dnlx[dc] = (te - dn);
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
 		st->st_mode = S_IFDIR | (_dirPerms & 07777);
@@ -1275,21 +1274,21 @@ static int fsmMkdirs(FSM_t fsm)
 	if (rc) break;
 
 	/* Save last validated path. */
-/* FIX: ldn/path annotations ? */
-	if (fsm->ldnalloc < (dnlen + 1)) {
-	    fsm->ldnalloc = dnlen + 100;
-	    fsm->ldn = xrealloc(fsm->ldn, fsm->ldnalloc);
+	if (ldnalloc < (dnlen + 1)) {
+	    ldnalloc = dnlen + 100;
+	    ldn = xrealloc(ldn, ldnalloc);
 	}
-	if (fsm->ldn != NULL) {	/* XXX can't happen */
-	    strcpy(fsm->ldn, fsm->path);
- 	    fsm->ldnlen = dnlen;
+	if (ldn != NULL) { /* XXX can't happen */
+	    strcpy(ldn, fsm->path);
+	    ldnlen = dnlen;
 	}
     }
     dnlFreeIterator(dnli);
+    free(dnlx);
+    free(ldn);
 
     fsm->path = path;
     st->st_mode = st_mode;		/* XXX restore st->st_mode */
-/* FIX: ldn/path annotations ? */
     return rc;
 }
 
@@ -2090,8 +2089,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
             }
 	    fsm->li = freeHardLink(fsm->li);
 	}
-	fsm->ldn = _free(fsm->ldn);
-	fsm->ldnalloc = fsm->ldnlen = 0;
 	fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
 	fsm->wrbuf = fsm->wrb = _free(fsm->wrb);
 	break;
