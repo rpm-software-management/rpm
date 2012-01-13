@@ -1989,7 +1989,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())
-		    rc = fsmLChown(fsm, fsm->sb.st_uid, fsm->sb.st_gid);
+		    rc = fsmLChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
 	    } else {
 		rpmfi fi = fsmGetFi(fsm);
 		if (!rc && !getuid())
