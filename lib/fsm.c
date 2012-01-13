@@ -1165,6 +1165,22 @@ static int fsmMkdir(const char *path, mode_t mode)
     return rc;
 }
 
+static int fsmMkfifo(const char *path, mode_t mode)
+{
+    int rc = mkfifo(path, (mode & 07777));
+
+    if (_fsm_debug && (FSM_MKFIFO & FSM_SYSCALL)) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n",
+	       fileStageString(FSM_MKFIFO), path, (unsigned)(mode & 07777),
+	       (rc < 0 ? strerror(errno) : ""));
+    }
+
+    if (rc < 0)
+	rc = CPIOERR_MKFIFO_FAILED;
+
+    return rc;
+}
+
 /**
  * Create (if necessary) directories not explicitly included in package.
  * @param fsm		file state machine data
@@ -1804,14 +1820,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
 		st->st_mode = 0000;		/* XXX abuse st->st_mode */
-
-		rc = mkfifo(fsm->path, (st->st_mode & 07777));
-		if (_fsm_debug && (FSM_MKFIFO & FSM_SYSCALL))
-		    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_MKFIFO),
-			   fsm->path, (unsigned)(st->st_mode & 07777),
-			   (rc < 0 ? strerror(errno) : ""));
-		if (rc < 0)	rc = CPIOERR_MKFIFO_FAILED;
-
+		rc = fsmMkfifo(fsm->path, st->st_mode);
 		st->st_mode = st_mode;	/* XXX restore st->st_mode */
 	    }
 	} else if (S_ISCHR(st->st_mode) ||
