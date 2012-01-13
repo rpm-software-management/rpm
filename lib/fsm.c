@@ -1455,17 +1455,16 @@ static int fsmChmod(const char *path, mode_t mode)
     return rc;
 }
 
-static int fsmUtime(FSM_t fsm)
+static int fsmUtime(const char *path, time_t mtime)
 {
     int rc = 0;
     struct utimbuf stamp;
-    stamp.actime = fsm->sb.st_mtime;
-    stamp.modtime = fsm->sb.st_mtime;
-    rc = utime(fsm->path, &stamp);
+    stamp.actime = mtime;
+    stamp.modtime = mtime;
+    rc = utime(path, &stamp);
     if (_fsm_debug && (FSM_UTIME & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", fileStageString(FSM_UTIME),
-	       fsm->path, (unsigned)fsm->sb.st_mtime,
-	       (rc < 0 ? strerror(errno) : ""));
+	       path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
     return rc;
 }
@@ -1983,7 +1982,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
 		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
-		    rc = fsmUtime(fsm);
+		    rc = fsmUtime(fsm->path, st->st_mtime);
 		    st->st_mtime = mtime;
 		    /* utime error is not critical for directories */
 		    if (rc && S_ISDIR(st->st_mode))
