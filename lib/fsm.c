@@ -1181,6 +1181,23 @@ static int fsmMkfifo(const char *path, mode_t mode)
     return rc;
 }
 
+static int fsmMknod(const char *path, mode_t mode, dev_t dev)
+{
+    /* FIX: check S_IFIFO or dev != 0 */
+    int rc = mknod(path, (mode & ~07777), dev);
+
+    if (_fsm_debug && (FSM_MKNOD & FSM_SYSCALL)) {
+	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n",
+	       fileStageString(FSM_MKNOD), path, (unsigned)(mode & ~07777),
+	       (unsigned)dev, (rc < 0 ? strerror(errno) : ""));
+    }
+
+    if (rc < 0)
+	rc = CPIOERR_MKNOD_FAILED;
+
+    return rc;
+}
+
 /**
  * Create (if necessary) directories not explicitly included in package.
  * @param fsm		file state machine data
@@ -1829,14 +1846,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	{
 	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
-		/* FIX: check S_IFIFO or dev != 0 */
-		rc = mknod(fsm->path, (fsm->sb.st_mode & ~07777), fsm->sb.st_rdev);
-		if (_fsm_debug && (FSM_MKNOD & FSM_SYSCALL))
-		    rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n", fileStageString(FSM_MKNOD),
-			   fsm->path, (unsigned)(fsm->sb.st_mode & ~07777),
-			   (unsigned)fsm->sb.st_rdev,
-			   (rc < 0 ? strerror(errno) : ""));
-		if (rc < 0)	rc = CPIOERR_MKNOD_FAILED;
+		rc = fsmMknod(fsm->path, fsm->sb.st_mode, fsm->sb.st_rdev);
 	    }
 	} else {
 	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
