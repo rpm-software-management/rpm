@@ -1014,21 +1014,22 @@ static int writeLinkedFile(FSM_t fsm)
     return ec;
 }
 
-static int fsmStat(FSM_t fsm, int dolstat)
+static int fsmStat(const char *path, int dolstat, struct stat *sb)
 {
     int rc;
     if (dolstat){
-	rc = lstat(fsm->path, &fsm->osb);
+	rc = lstat(path, sb);
     } else {
-        rc = stat(fsm->path, &fsm->osb);
+        rc = stat(path, sb);
     }
     if (_fsm_debug && (FSM_STAT & FSM_SYSCALL) && rc && errno != ENOENT)
         rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n",
                fileStageString(dolstat ? FSM_LSTAT : FSM_STAT),
-               fsm->path, (rc < 0 ? strerror(errno) : ""));
+               path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0) {
         rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
-        memset(&fsm->osb, 0, sizeof(fsm->osb));	/* XXX s390x hackery */
+	/* WTH is this, and is it really needed, still? */
+        memset(sb, 0, sizeof(*sb));	/* XXX s390x hackery */
     }
     return rc;
 }
@@ -1221,7 +1222,7 @@ static int fsmMkdirs(FSM_t fsm)
 	    }
 
 	    /* Validate next component of path. */
-	    rc = fsmStat(fsm, 1); /* lstat */
+	    rc = fsmStat(fsm->path, 1, &fsm->osb); /* lstat */
 	    *te = '/';
 
 	    /* Directory already exists? */
@@ -1334,7 +1335,8 @@ static int fsmInit(FSM_t fsm)
     if (fsm->path != NULL &&
 	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(fsm->sb.st_mode)))
     {
-	rc = fsmStat(fsm, (!(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS)));
+	int dolstat = !(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS);
+	rc = fsmStat(fsm->path, dolstat, &fsm->osb);
 	if (rc == CPIOERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
@@ -1498,7 +1500,7 @@ static int fsmVerify(FSM_t fsm)
     } else if (S_ISDIR(st->st_mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
         if (S_ISLNK(ost->st_mode)) {
-            rc = fsmStat(fsm, 0);
+            rc = fsmStat(fsm->path, 0, &fsm->osb);
             if (rc == CPIOERR_ENOENT) rc = 0;
             if (rc) return rc;
             errno = saveerrno;
