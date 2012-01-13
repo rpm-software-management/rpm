@@ -688,21 +688,20 @@ static int fsmSetSELabel(struct selabel_handle *sehandle,
     return rc ? CPIOERR_LSETFCON_FAILED : 0;
 }
 
-#if WITH_CAP
-static int fsmMapFCaps(FSM_t fsm)
+static int fsmSetFCaps(const char *path, const char *captxt)
 {
-    rpmfi fi = fsmGetFi(fsm);
-    const char *captxt = rpmfiFCapsIndex(fi, fsm->ix);
-    fsm->fcaps = NULL;
+    int rc = 0;
+#if WITH_CAP
     if (captxt && *captxt != '\0') {
 	cap_t fcaps = cap_from_text(captxt);
-	if (fcaps) {
-	   fsm->fcaps = fcaps;
+	if (fcaps == NULL || cap_set_file(path, fcaps) != 0) {
+	    rc = CPIOERR_SETCAP_FAILED;
 	}
+	cap_free(fcaps);
     } 
-    return 0;
-}
 #endif
+    return rc;
+}
 
 /**
  * Map file stat(2) info.
@@ -1472,17 +1471,6 @@ static int fsmUtime(FSM_t fsm)
     return rc;
 }
 
-#if WITH_CAP
-static int fsmSetcap(FSM_t fsm)
-{
-    int rc = cap_set_file(fsm->path, fsm->fcaps);
-    if (rc < 0) {
-	rc = CPIOERR_SETCAP_FAILED;
-    }
-    return rc;
-}
-#endif /* WITH_CAP */
-
 static int fsmVerify(FSM_t fsm)
 {
     int rc;
@@ -1988,13 +1976,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		if (!rc && !getuid())
 		    rc = fsmLChown(fsm);
 	    } else {
+		rpmfi fi = fsmGetFi(fsm);
 		if (!rc && !getuid())
 		    rc = fsmChown(fsm);
 		if (!rc)
 		    rc = fsmChmod(fsm);
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
-		    rpmfi fi = fsmGetFi(fsm);
 		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
 		    rc = fsmUtime(fsm);
 		    st->st_mtime = mtime;
@@ -2002,16 +1990,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    if (rc && S_ISDIR(st->st_mode))
 			rc = 0;
 		}
-#if WITH_CAP
+		/* Set file capabilities (if enabled) */
 		if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
-		    rc = fsmMapFCaps(fsm);
-		    if (!rc && fsm->fcaps) {
-			rc = fsmSetcap(fsm);
-			cap_free(fsm->fcaps);
-		    }
-		    fsm->fcaps = NULL;
+		    rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, fsm->ix));
 		}
-#endif /* WITH_CAP */
 	    }
 	}
 

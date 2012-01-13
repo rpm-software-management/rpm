@@ -147,7 +147,6 @@ struct fsm_s {
     const char * baseName;	/*!< File base name. */
     const unsigned char * digest;	/*!< Binary digest (NULL disables). */
     struct selabel_handle *sehandle;	/*!< SELinux label handle (if any). */
-    void *fcaps;		/*!< File capabilities */
     pgpHashAlgo digestalgo;	/*!< File digest algorithm */
     
     unsigned fflags;		/*!< File flags. */
