@@ -146,7 +146,7 @@ struct fsm_s {
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
     const unsigned char * digest;	/*!< Binary digest (NULL disables). */
-    security_context_t fcontext;/*!< File security context (NULL disables). */
+    struct selabel_handle *sehandle;	/*!< SELinux label handle (if any). */
     void *fcaps;		/*!< File capabilities */
     pgpHashAlgo digestalgo;	/*!< File digest algorithm */
     

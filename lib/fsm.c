@@ -597,6 +597,7 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->digestalgo = rpmfiDigestAlgo(fi);
     fsm->psm = psm;
+    fsm->sehandle = rpmtsSELabelHandle(ts);
 
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
     if (goal == FSM_PKGBUILD) {
@@ -659,22 +660,32 @@ static int fsmTeardown(FSM_t fsm)
     return rc;
 }
 
-static int fsmMapFContext(FSM_t fsm)
+/* Find and set file security context */
+static int fsmSetSELabel(struct selabel_handle *sehandle,
+			 const char *path, mode_t mode)
 {
-    rpmts ts = fsmGetTs(fsm);
-
-    /*
-     * Find file security context (if not disabled).
-     */
-    fsm->fcontext = NULL;
-    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && rpmtsSELabelHandle(ts)) {
+    int rc = 0;
+#if WITH_SELINUX
+    if (sehandle) {
 	security_context_t scon = NULL;
 
-	if (selabel_lookup_raw(rpmtsSELabelHandle(ts), &scon, fsm->path, fsm->sb.st_mode) == 0 && scon != NULL) {
-	    fsm->fcontext = scon;
+	if (selabel_lookup_raw(sehandle, &scon, path, mode) == 0) {
+	    rc = lsetfilecon(path, scon);
+
+	    if (_fsm_debug && (FSM_LSETFCON & FSM_SYSCALL)) {
+		rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n",
+			fileStageString(FSM_LSETFCON), path, scon,
+			(rc < 0 ? strerror(errno) : ""));
+	    }
+
+	    if (rc < 0 && errno == EOPNOTSUPP)
+		rc = 0;
 	}
+
+	freecon(scon);
     }
-    return 0;
+#endif
+    return rc ? CPIOERR_LSETFCON_FAILED : 0;
 }
 
 #if WITH_CAP
@@ -1140,21 +1151,6 @@ static int fsmRmdir(FSM_t fsm)
     return rc;
 }
 
-static int fsmLsetfcon(FSM_t fsm)
-{
-    int rc = 0;
-    if (fsm->fcontext == NULL || *fsm->fcontext == '\0'
-	|| rstreq(fsm->fcontext, "<<none>>"))
-	return rc;
-    rc = lsetfilecon(fsm->path, (security_context_t)fsm->fcontext);
-    if (_fsm_debug && (FSM_LSETFCON & FSM_SYSCALL))
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_LSETFCON),
-	       fsm->path, fsm->fcontext,
-	       (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0) rc = (errno == EOPNOTSUPP ? 0 : CPIOERR_LSETFCON_FAILED);
-    return rc;
-}
-
 static int fsmMkdir(FSM_t fsm)
 {
     int rc = mkdir(fsm->path, (fsm->sb.st_mode & 07777));
@@ -1186,8 +1182,6 @@ static int fsmMkdirs(FSM_t fsm)
     int ldnalloc = 0;
     char * ldn = NULL;
     short * dnlx = NULL; 
-    rpmts ts = fsmGetTs(fsm);
-    security_context_t scon = NULL;
 
     dnlx = (dc ? xcalloc(dc, sizeof(*dnlx)) : NULL);
 
@@ -1240,28 +1234,11 @@ static int fsmMkdirs(FSM_t fsm)
 		st->st_mode = S_IFDIR | (_dirPerms & 07777);
 		rc = fsmMkdir(fsm);
 		if (!rc) {
-		    /* XXX FIXME? only new dir will have context set. */
-		    /* Get file security context from patterns. */
-		    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) && rpmtsSELabelHandle(ts)) {
-			if (selabel_lookup_raw(rpmtsSELabelHandle(ts), &scon, fsm->path, st->st_mode) == 0 &&
-			    scon != NULL) {
-            		    fsm->fcontext = scon;
-			    rc = fsmLsetfcon(fsm);
-			}
-		    }
+		    rc = fsmSetSELabel(fsm->sehandle, fsm->path, st->st_mode);
 
-		    if (fsm->fcontext == NULL)
-			rpmlog(RPMLOG_DEBUG,
-			    "%s directory created with perms %04o, no context.\n",
+		    rpmlog(RPMLOG_DEBUG,
+			    "%s directory created with perms %04o\n",
 			    fsm->path, (unsigned)(st->st_mode & 07777));
-		    else {
-			rpmlog(RPMLOG_DEBUG,
-			    "%s directory created with perms %04o, context %s.\n",
-			    fsm->path, (unsigned)(st->st_mode & 07777),
-			    fsm->fcontext);
-			freecon(fsm->fcontext);
-		    }
-		    fsm->fcontext = NULL;
 		}
 		*te = '/';
 	    }
@@ -2003,16 +1980,9 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		}
 		fsm->opath = _free(fsm->opath);
 	    }
-	    /*
-	     * Set file security context (if not disabled).
-	     */
+	    /* Set file security context (if enabled) */
 	    if (!rc && !getuid()) {
-		rc = fsmMapFContext(fsm);
-		if (!rc) {
-		    rc = fsmLsetfcon(fsm);
-		    freecon(fsm->fcontext);	
-		}
-		fsm->fcontext = NULL;
+		rc = fsmSetSELabel(fsm->sehandle, fsm->path, fsm->sb.st_mode);
 	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())
