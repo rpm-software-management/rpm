@@ -1407,50 +1407,49 @@ static int fsmRename(const char *opath, const char *path,
 }
 
 
-static int fsmChown(FSM_t fsm)
+static int fsmChown(const char *path, uid_t uid, gid_t gid)
 {
-    int rc = chown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+    int rc = chown(path, uid, gid);
     if (rc < 0) {
 	struct stat st;
-	if (lstat(fsm->path, &st) == 0 && st.st_uid == fsm->sb.st_uid && st.st_gid == fsm->sb.st_gid)
+	if (lstat(path, &st) == 0 && st.st_uid == uid && st.st_gid == gid)
 	    rc = 0;
     }
     if (_fsm_debug && (FSM_CHOWN & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_CHOWN),
-	       fsm->path, (int)fsm->sb.st_uid, (int)fsm->sb.st_gid,
+	       path, (int)uid, (int)gid,
 	       (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
     return rc;
 }
 
-static int fsmLChown(FSM_t fsm)
+static int fsmLChown(const char *path, uid_t uid, gid_t gid)
 {
-    int rc = 0;
-    rc = lchown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+    int rc = lchown(path, uid, gid);
     if (rc < 0) {
 	struct stat st;
-	if (lstat(fsm->path, &st) == 0 && st.st_uid == fsm->sb.st_uid && st.st_gid == fsm->sb.st_gid)
+	if (lstat(path, &st) == 0 && st.st_uid == uid && st.st_gid == gid)
 	    rc = 0;
     }
     if (_fsm_debug && (FSM_LCHOWN & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_LCHOWN),
-	       fsm->path, (int)fsm->sb.st_uid, (int)fsm->sb.st_gid,
+	       path, (int)uid, (int)gid,
 	       (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
     return rc;
 }
 
-static int fsmChmod(FSM_t fsm)
+static int fsmChmod(const char *path, mode_t mode)
 {
-    int rc = chmod(fsm->path, (fsm->sb.st_mode & 07777));
+    int rc = chmod(path, (mode & 07777));
     if (rc < 0) {
 	struct stat st;
-	if (lstat(fsm->path, &st) == 0 && (st.st_mode & 07777) == (fsm->sb.st_mode & 07777))
+	if (lstat(path, &st) == 0 && (st.st_mode & 07777) == (mode & 07777))
 	    rc = 0;
     }
     if (_fsm_debug && (FSM_CHMOD & FSM_SYSCALL))
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_CHMOD),
-	       fsm->path, (unsigned)(fsm->sb.st_mode & 07777),
+	       path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
     return rc;
@@ -1974,13 +1973,13 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	    if (S_ISLNK(st->st_mode)) {
 		if (!rc && !getuid())
-		    rc = fsmLChown(fsm);
+		    rc = fsmLChown(fsm, fsm->sb.st_uid, fsm->sb.st_gid);
 	    } else {
 		rpmfi fi = fsmGetFi(fsm);
 		if (!rc && !getuid())
-		    rc = fsmChown(fsm);
+		    rc = fsmChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
 		if (!rc)
-		    rc = fsmChmod(fsm);
+		    rc = fsmChmod(fsm->path, fsm->sb.st_mode);
 		if (!rc) {
 		    time_t mtime = st->st_mtime;
 		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
