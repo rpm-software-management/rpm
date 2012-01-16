@@ -1998,10 +1998,7 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		if (!rc)
 		    rc = fsmChmod(fsm->path, fsm->sb.st_mode);
 		if (!rc) {
-		    time_t mtime = st->st_mtime;
-		    st->st_mtime = rpmfiFMtimeIndex(fi, fsm->ix);
-		    rc = fsmUtime(fsm->path, st->st_mtime);
-		    st->st_mtime = mtime;
+		    rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, fsm->ix));
 		    /* utime error is not critical for directories */
 		    if (rc && S_ISDIR(st->st_mode))
 			rc = 0;
