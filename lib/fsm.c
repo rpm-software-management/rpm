@@ -1806,13 +1806,12 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (!(rc == CPIOERR_ENOENT)) return rc;
 	    rc = expandRegular(fsm);
 	} else if (S_ISDIR(st->st_mode)) {
-	    mode_t st_mode = st->st_mode;
 	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
-		st->st_mode &= ~07777; 		/* XXX abuse st->st_mode */
-		st->st_mode |=  00700;
-		rc = fsmMkdir(fsm->path, st->st_mode);
-		st->st_mode = st_mode;		/* XXX restore st->st_mode */
+		mode_t mode = st->st_mode;
+		mode &= ~07777;
+		mode |=  00700;
+		rc = fsmMkdir(fsm->path, mode);
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
 	    char * opath = fsm->opath;
