@@ -1549,7 +1549,8 @@ static int fsmVerify(FSM_t fsm)
             rc = fsmReadLink(fsm->path, fsm->rdbuf, fsm->rdsize, &fsm->rdnb);
             errno = saveerrno;
             if (rc) return rc;
-            if (rstreq(fsm->opath, fsm->rdbuf))	return 0;
+	    /* XXX FSM_PROCESS puts link target to wrbuf. */
+            if (rstreq(fsm->wrbuf, fsm->rdbuf))	return 0;
         }
     } else if (S_ISFIFO(st->st_mode)) {
         if (S_ISFIFO(ost->st_mode)) return 0;
@@ -1806,8 +1807,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmMkdir(fsm->path, mode);
 	    }
 	} else if (S_ISLNK(st->st_mode)) {
-	    char * opath = fsm->opath;
-
 	    if ((st->st_size + 1) > fsm->rdsize) {
 		rc = CPIOERR_HDR_SIZE;
 		break;
@@ -1820,13 +1819,11 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    if (rc) break;
 
 	    fsm->wrbuf[st->st_size] = '\0';
-	    /* XXX symlink(fsm->opath, fsm->path) */
-	    fsm->opath = fsm->wrbuf;
+	    /* XXX fsmVerify() assumes link target in fsm->wrbuf */
 	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
-		rc = fsmSymlink(fsm->opath, fsm->path);
+		rc = fsmSymlink(fsm->wrbuf, fsm->path);
 	    }
-	    fsm->opath = opath;		/* XXX restore fsm->path */
 	} else if (S_ISFIFO(st->st_mode)) {
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
 	    rc = fsmVerify(fsm);
