@@ -1525,20 +1525,16 @@ static int fsmVerify(FSM_t fsm)
         return CPIOERR_ENOENT;
     }
     if (S_ISREG(st->st_mode)) {
-        /*
-         * XXX HP-UX (and other os'es) don't permit unlink on busy
-         * XXX files.
-         */
-        fsm->opath = fsm->path;
-        fsm->path = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
-        rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
-        if (!rc)
-            (void) fsmUnlink(fsm->path, fsm->mapFlags);
-        else
-            rc = CPIOERR_UNLINK_FAILED;
-        _free(fsm->path);
-        fsm->path = fsm->opath;
-        fsm->opath = NULL;
+	/* HP-UX (and other os'es) don't permit unlink on busy files. */
+	char *rmpath = rstrscat(NULL, fsm->path, "-RPMDELETE", NULL);
+	rc = fsmRename(fsm->path, rmpath, fsm->mapFlags);
+	/* XXX shouldn't we take unlink return code here? */
+	if (!rc)
+	    (void) fsmUnlink(rmpath, fsm->mapFlags);
+	else
+	    rc = CPIOERR_UNLINK_FAILED;
+	free(rmpath);
+	fsm->opath = NULL; /* XXX is this needed now? */
         return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
     } else if (S_ISDIR(st->st_mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
