@@ -1050,7 +1050,7 @@ static int fsmVerify(FSM_t fsm);
 static int fsmMakeLinks(FSM_t fsm)
 {
     char * path = fsm->path;
-    char * opath = fsm->opath;
+    char * opath = NULL;
     const char * nsuffix = fsm->nsuffix;
     int iterIndex = fsm->ix;
     int ec = 0;
@@ -1058,13 +1058,12 @@ static int fsmMakeLinks(FSM_t fsm)
     int i;
 
     fsm->path = NULL;
-    fsm->opath = NULL;
     fsm->nsuffix = NULL;
     fsm->ix = -1;
 
     fsm->ix = fsm->li->filex[fsm->li->createdPath];
     rc = fsmMapPath(fsm);
-    fsm->opath = fsm->path;
+    opath = fsm->path;
     fsm->path = NULL;
     for (i = 0; i < fsm->li->nlink; i++) {
 	if (fsm->li->filex[i] < 0) continue;
@@ -1079,11 +1078,11 @@ static int fsmMakeLinks(FSM_t fsm)
 	if (!rc) continue;
 	if (!(rc == CPIOERR_ENOENT)) break;
 
-	/* XXX link(fsm->opath, fsm->path) */
-	rc = link(fsm->opath, fsm->path);
+	/* XXX link(opath, fsm->path) */
+	rc = link(opath, fsm->path);
 	if (_fsm_debug && (FSM_LINK & FSM_SYSCALL))
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_LINK),
-		fsm->opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
+		opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
 
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
@@ -1094,12 +1093,11 @@ static int fsmMakeLinks(FSM_t fsm)
 	fsm->li->linksLeft--;
     }
     fsm->path = _free(fsm->path);
-    fsm->opath = _free(fsm->opath);
+    free(opath);
 
     fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->path = path;
-    fsm->opath = opath;
     return ec;
 }
 
