@@ -1837,13 +1837,10 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    }
 	    fsm->opath = opath;		/* XXX restore fsm->path */
 	} else if (S_ISFIFO(st->st_mode)) {
-	    mode_t st_mode = st->st_mode;
 	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
 	    rc = fsmVerify(fsm);
 	    if (rc == CPIOERR_ENOENT) {
-		st->st_mode = 0000;		/* XXX abuse st->st_mode */
-		rc = fsmMkfifo(fsm->path, st->st_mode);
-		st->st_mode = st_mode;	/* XXX restore st->st_mode */
+		rc = fsmMkfifo(fsm->path, 0000);
 	    }
 	} else if (S_ISCHR(st->st_mode) ||
 		   S_ISBLK(st->st_mode) ||
