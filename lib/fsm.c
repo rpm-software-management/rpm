@@ -1965,17 +1965,17 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
 	    /* Rename temporary to final file name. */
 	    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
-		fsm->opath = fsm->path;
-		fsm->path = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
-		rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
+		char *npath = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
+		rc = fsmRename(fsm->path, npath, fsm->mapFlags);
 		if (!rc && fsm->nsuffix) {
 		    char * opath = fsmFsPath(fsm, st, NULL, NULL);
 		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-				(opath ? opath : ""),
-				(fsm->path ? fsm->path : ""));
+			   opath, npath);
 		    free(opath);
 		}
-		fsm->opath = _free(fsm->opath);
+		free(fsm->path);
+		fsm->path = npath;
+		fsm->opath = NULL; /* XXX is this needed now? */
 	    }
 	    /* Set file security context (if enabled) */
 	    if (!rc && !getuid()) {
