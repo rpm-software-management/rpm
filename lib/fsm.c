@@ -1789,18 +1789,16 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	    rc = fsmVerify(fsm);
 
 	    if (rc == 0 && fsm->osuffix) {
-		char * opath = fsm->opath;
-		fsm->opath = fsm->path;
-		fsm->path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-		rc = fsmRename(fsm->opath, fsm->path, fsm->mapFlags);
+		char * spath = fsmFsPath(fsm, st, NULL, fsm->osuffix);
+		rc = fsmRename(fsm->path, spath, fsm->mapFlags);
 		if (!rc)
-		    rpmlog(RPMLOG_WARNING,
-			_("%s saved as %s\n"),
-				(fsm->opath ? fsm->opath : ""),
-				(fsm->path ? fsm->path : ""));
-		fsm->path = _free(fsm->path);
-		fsm->opath = opath;
+		    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
+			   fsm->path, spath);
+		free(spath);
 	    }
+
+	    if (fsm->osuffix)
+		free(fsm->path);
 
 	    fsm->path = path;
 	    if (!(rc == CPIOERR_ENOENT)) return rc;
