@@ -558,7 +558,6 @@ static int fsmCreate(FSM_t fsm)
 {
     int rc = 0;
     fsm->path = _free(fsm->path);
-    fsm->opath = _free(fsm->opath);
 
     fsm->rdsize = fsm->wrsize = 0;
     fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
@@ -862,7 +861,6 @@ static int fsmReadLink(const char *path,
 static int writeFile(FSM_t fsm, int writeData)
 {
     char * path = fsm->path;
-    char * opath = fsm->opath;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
@@ -972,7 +970,6 @@ static int writeFile(FSM_t fsm, int writeData)
 exit:
     if (fsm->rfd != NULL)
 	(void) fsmNext(fsm, FSM_RCLOSE);
-    fsm->opath = opath;
     fsm->path = path;
     free(symbuf);
     return rc;
@@ -1532,7 +1529,6 @@ static int fsmVerify(FSM_t fsm)
 	else
 	    rc = CPIOERR_UNLINK_FAILED;
 	free(rmpath);
-	fsm->opath = NULL; /* XXX is this needed now? */
         return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
     } else if (S_ISDIR(st->st_mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
@@ -1886,7 +1882,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		rc = fsmNext(fsm, FSM_COMMIT);
 	}
 	fsm->path = _free(fsm->path);
-	fsm->opath = _free(fsm->opath);
 	memset(st, 0, sizeof(*st));
 	memset(ost, 0, sizeof(*ost));
 	break;
@@ -1967,7 +1962,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		}
 		free(fsm->path);
 		fsm->path = npath;
-		fsm->opath = NULL; /* XXX is this needed now? */
 	    }
 	    /* Set file security context (if enabled) */
 	    if (!rc && !getuid()) {
