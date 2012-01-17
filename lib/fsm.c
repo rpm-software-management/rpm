@@ -1032,6 +1032,39 @@ static int writeLinkedFile(FSM_t fsm)
     return ec;
 }
 
+static int writeLinks(FSM_t fsm)
+{
+    int j, rc = 0;
+    nlink_t i, nlink;
+
+    while ((fsm->li = fsm->links) != NULL) {
+	fsm->links = fsm->li->next;
+	fsm->li->next = NULL;
+
+	/* Re-calculate link count for archive header. */
+	for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
+	    if (fsm->li->filex[i] < 0)
+		continue;
+	    nlink++;
+	    if (j == -1) j = i;
+	}
+	/* XXX force the contents out as well. */
+	if (j != 0) {
+	    fsm->li->filex[0] = fsm->li->filex[j];
+	    fsm->li->filex[j] = -1;
+	}
+	fsm->li->sb.st_nlink = nlink;
+
+	fsm->sb = fsm->li->sb;	/* structure assignment */
+	fsm->osb = fsm->sb;	/* structure assignment */
+
+	if (!rc) rc = writeLinkedFile(fsm);
+
+	fsm->li = freeHardLink(fsm->li);
+    }
+    return rc;
+}
+
 static int fsmStat(const char *path, int dolstat, struct stat *sb)
 {
     int rc;
@@ -1718,35 +1751,8 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	/* Flush partial sets of hard linked files. */
-	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) {
-	    nlink_t i, nlink;
-	    int j;
-	    while ((fsm->li = fsm->links) != NULL) {
-		fsm->links = fsm->li->next;
-		fsm->li->next = NULL;
-
-		/* Re-calculate link count for archive header. */
-		for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
-		    if (fsm->li->filex[i] < 0)
-			continue;
-		    nlink++;
-		    if (j == -1) j = i;
-		}
-		/* XXX force the contents out as well. */
-		if (j != 0) {
-		    fsm->li->filex[0] = fsm->li->filex[j];
-		    fsm->li->filex[j] = -1;
-		}
-		fsm->li->sb.st_nlink = nlink;
-
-		fsm->sb = fsm->li->sb;	/* structure assignment */
-		fsm->osb = fsm->sb;	/* structure assignment */
-
-		if (!rc) rc = writeLinkedFile(fsm);
-
-		fsm->li = freeHardLink(fsm->li);
-	    }
-	}
+	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) 
+	    rc = writeLinks(fsm);
 
 	if (!rc)
 	    rc = cpioTrailerWrite(fsm);
