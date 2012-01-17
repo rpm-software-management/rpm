@@ -1627,10 +1627,6 @@ static int fsmVerify(FSM_t fsm)
  */
 static int fsmStage(FSM_t fsm, fileStage stage)
 {
-#ifdef	UNUSED
-    fileStage prevStage = fsm->stage;
-    const char * const prev = fileStageString(prevStage);
-#endif
     static int modulo = 4;
     const char * const cur = fileStageString(stage);
     struct stat * st = &fsm->sb;
