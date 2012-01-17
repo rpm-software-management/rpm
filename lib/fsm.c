@@ -1751,8 +1751,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	/* Flush partial sets of hard linked files. */
-	if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) 
-	    rc = writeLinks(fsm);
+	rc = writeLinks(fsm);
 
 	if (!rc)
 	    rc = cpioTrailerWrite(fsm);
@@ -1768,24 +1767,8 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	if (fsm->goal == FSM_PKGBUILD) {
 	    if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
 		break;
-	    if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-		hardLink_t li, prev;
-
-if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
-		rc = writeLinkedFile(fsm);
-		if (rc) break;	/* W2DO? */
-
-		for (li = fsm->links, prev = NULL; li; prev = li, li = li->next)
-		     if (li == fsm->li)
-			break;
-
-		if (prev == NULL)
-		    fsm->links = fsm->li->next;
-		else
-		    prev->next = fsm->li->next;
-		fsm->li->next = NULL;
-		fsm->li = freeHardLink(fsm->li);
-	    } else {
+	    /* Hardlinks are handled later */
+	    if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
 		rc = writeFile(fsm, 1);
 	    }
 	    break;
@@ -2040,11 +2023,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 		    break;
 		}
 	    }
-	    if (fsm->goal == FSM_PKGBUILD &&
-		(fsm->mapFlags & CPIO_ALL_HARDLINKS))
-	    {
-		rc = CPIOERR_MISSING_HARDLINK;
-            }
 	    fsm->li = freeHardLink(fsm->li);
 	}
 	fsm->rdbuf = fsm->rdb = _free(fsm->rdb);
