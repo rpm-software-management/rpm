@@ -73,10 +73,6 @@ typedef enum fileStage_e {
     FSM_HWRITE	=  _fd(71),
     FSM_DREAD	=  _fs(72),
     FSM_DWRITE	=  _fs(73),
-
-    FSM_WOPEN	=  _fs(132),
-    FSM_WRITE	=  _fs(133),
-    FSM_WCLOSE	=  _fs(134)
 } fileStage;
 #undef	_fv
 #undef	_fi
@@ -115,7 +111,6 @@ struct fsm_s {
     char * rdb;			/*!<  read: Buffer allocated. */
     size_t rdsize;		/*!<  read: Buffer allocated size. */
     size_t rdnb;		/*!<  read: Number of bytes returned. */
-    FD_t wfd;			/*!< write: File handle. */
     char * wrbuf;		/*!< write: Buffer. */
     char * wrb;			/*!< write: Buffer allocated. */
     size_t wrsize;		/*!< write: Buffer allocated size. */

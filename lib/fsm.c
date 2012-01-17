@@ -763,15 +763,18 @@ static int fsmMapAttrs(FSM_t fsm)
  */
 static int expandRegular(FSM_t fsm)
 {
+    FD_t wfd = NULL;
     const struct stat * st = &fsm->sb;
     rpm_loff_t left = st->st_size;
     const unsigned char * fidigest = NULL;
     pgpHashAlgo digestalgo = 0;
     int rc = 0;
 
-    rc = fsmNext(fsm, FSM_WOPEN);
-    if (rc)
+    wfd = Fopen(fsm->path, "w.ufdio");
+    if (Ferror(wfd)) {
+	rc = CPIOERR_OPEN_FAILED;
 	goto exit;
+    }
 
     if (!(rpmtsFlags(fsmGetTs(fsm)) & RPMTRANS_FLAG_NOFILEDIGEST)) {
 	rpmfi fi = fsmGetFi(fsm);
@@ -780,7 +783,7 @@ static int expandRegular(FSM_t fsm)
     }
 
     if (st->st_size > 0 && fidigest)
-	fdInitDigest(fsm->wfd, digestalgo, 0);
+	fdInitDigest(wfd, digestalgo, 0);
 
     while (left) {
 
@@ -789,9 +792,11 @@ static int expandRegular(FSM_t fsm)
 	if (rc)
 	    goto exit;
 
-	rc = fsmNext(fsm, FSM_WRITE);
-	if (rc)
+	fsm->wrnb = Fwrite(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->rdnb, wfd);
+	if (fsm->rdnb != fsm->wrnb || Ferror(wfd)) {
+	    rc = CPIOERR_WRITE_FAILED;
 	    goto exit;
+	}
 
 	left -= fsm->wrnb;
 
@@ -803,8 +808,8 @@ static int expandRegular(FSM_t fsm)
     if (st->st_size > 0 && fidigest) {
 	void * digest = NULL;
 
-	(void) Fflush(fsm->wfd);
-	fdFiniDigest(fsm->wfd, digestalgo, &digest, NULL, 0);
+	(void) Fflush(wfd);
+	fdFiniDigest(wfd, digestalgo, &digest, NULL, 0);
 
 	if (digest != NULL && fidigest != NULL) {
 	    size_t diglen = rpmDigestLength(digestalgo);
@@ -817,7 +822,13 @@ static int expandRegular(FSM_t fsm)
     }
 
 exit:
-    (void) fsmNext(fsm, FSM_WCLOSE);
+    if (wfd) {
+	int myerrno = errno;
+	rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
+		 fdOp(wfd, FDSTAT_DIGEST));
+	Fclose(wfd);
+	errno = myerrno;
+    }
     return rc;
 }
 
@@ -2091,36 +2102,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->wrnb > 0)
 	    fsm->cpioPos += fsm->wrnb;
 	break;
-    case FSM_WOPEN:
-	fsm->wfd = Fopen(fsm->path, "w.ufdio");
-	if (fsm->wfd == NULL || Ferror(fsm->wfd)) {
-	    if (fsm->wfd != NULL)	(void) fsmNext(fsm, FSM_WCLOSE);
-	    fsm->wfd = NULL;
-	    rc = CPIOERR_OPEN_FAILED;
-	}
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"w\") wfd %p wrbuf %p\n", cur,
-		fsm->path, fsm->wfd, fsm->wrbuf);
-	break;
-    case FSM_WRITE:
-	fsm->wrnb = Fwrite(fsm->wrbuf, sizeof(*fsm->wrbuf), fsm->rdnb, fsm->wfd);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (wrbuf, %d, wfd)\twrnb %d\n",
-		cur, (int)fsm->rdnb, (int)fsm->wrnb);
-	if (fsm->rdnb != fsm->wrnb || Ferror(fsm->wfd))
-	    rc = CPIOERR_WRITE_FAILED;
-	break;
-    case FSM_WCLOSE:
-	if (fsm->wfd != NULL) {
-	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->wfd);
-	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-			fdOp(fsm->wfd, FDSTAT_DIGEST));
-	    (void) Fclose(fsm->wfd);
-	    errno = saveerrno;
-	}
-	fsm->wfd = NULL;
-	break;
 
     default:
 	break;
@@ -2214,10 +2195,6 @@ static const char * fileStageString(fileStage a)
     case FSM_HWRITE:	return "hwrite";
     case FSM_DREAD:	return "Fread";
     case FSM_DWRITE:	return "Fwrite";
-
-    case FSM_WOPEN:	return "Fopen";
-    case FSM_WRITE:	return "Fwrite";
-    case FSM_WCLOSE:	return "Fclose";
 
     default:		return "???";
     }
