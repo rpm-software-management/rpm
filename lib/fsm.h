@@ -144,9 +144,7 @@ struct fsm_s {
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
-    const unsigned char * digest;	/*!< Binary digest (NULL disables). */
     struct selabel_handle *sehandle;	/*!< SELinux label handle (if any). */
-    pgpHashAlgo digestalgo;	/*!< File digest algorithm */
     
     unsigned fflags;		/*!< File flags. */
     rpmFileAction action;	/*!< File disposition. */

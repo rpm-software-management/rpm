@@ -597,7 +597,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     }
     fsm->cpioPos = 0;
     fsm->iter = mapInitIterator(ts, te, fi);
-    fsm->digestalgo = rpmfiDigestAlgo(fi);
     fsm->psm = psm;
     fsm->sehandle = rpmtsSELabelHandle(ts);
 
@@ -753,18 +752,6 @@ static int fsmMapAttrs(FSM_t fsm)
 	    st->st_uid = uid;
 	if (fsm->mapFlags & CPIO_MAP_GID)
 	    st->st_gid = gid;
-
-	{   rpmts ts = fsmGetTs(fsm);
-
-	    /*
-	     * Set file digest (if not disabled).
-	     */
-	    if (ts != NULL && !(rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST)) {
-		fsm->digest = rpmfiFDigestIndex(fi, i, NULL, NULL);
-	    } else {
-		fsm->digest = NULL;
-	    }
-	}
     }
     return 0;
 }
@@ -778,14 +765,22 @@ static int expandRegular(FSM_t fsm)
 {
     const struct stat * st = &fsm->sb;
     rpm_loff_t left = st->st_size;
+    const unsigned char * fidigest = NULL;
+    pgpHashAlgo digestalgo = 0;
     int rc = 0;
 
     rc = fsmNext(fsm, FSM_WOPEN);
     if (rc)
 	goto exit;
 
-    if (st->st_size > 0 && fsm->digest != NULL)
-	fdInitDigest(fsm->wfd, fsm->digestalgo, 0);
+    if (!(rpmtsFlags(fsmGetTs(fsm)) & RPMTRANS_FLAG_NOFILEDIGEST)) {
+	rpmfi fi = fsmGetFi(fsm);
+	digestalgo = rpmfiDigestAlgo(fi);
+	fidigest = rpmfiFDigestIndex(fi, fsm->ix, NULL, NULL);
+    }
+
+    if (st->st_size > 0 && fidigest)
+	fdInitDigest(fsm->wfd, digestalgo, 0);
 
     while (left) {
 
@@ -805,26 +800,20 @@ static int expandRegular(FSM_t fsm)
 	    (void) fsmNext(fsm, FSM_NOTIFY);
     }
 
-    if (st->st_size > 0 && fsm->digest) {
+    if (st->st_size > 0 && fidigest) {
 	void * digest = NULL;
-	int asAscii = (fsm->digest == NULL ? 1 : 0);
 
 	(void) Fflush(fsm->wfd);
-	fdFiniDigest(fsm->wfd, fsm->digestalgo, &digest, NULL, asAscii);
+	fdFiniDigest(fsm->wfd, digestalgo, &digest, NULL, 0);
 
-	if (digest == NULL) {
-	    rc = CPIOERR_DIGEST_MISMATCH;
-	    goto exit;
-	}
-
-	if (fsm->digest != NULL) {
-	    size_t diglen = rpmDigestLength(fsm->digestalgo);
-	    if (memcmp(digest, fsm->digest, diglen))
+	if (digest != NULL && fidigest != NULL) {
+	    size_t diglen = rpmDigestLength(digestalgo);
+	    if (memcmp(digest, fidigest, diglen))
 		rc = CPIOERR_DIGEST_MISMATCH;
 	} else {
 	    rc = CPIOERR_DIGEST_MISMATCH;
 	}
-	digest = _free(digest);
+	free(digest);
     }
 
 exit:
