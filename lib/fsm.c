@@ -849,6 +849,7 @@ static int fsmReadLink(const char *path,
  */
 static int writeFile(FSM_t fsm, int writeData)
 {
+    FD_t rfd = NULL;
     char * path = fsm->path;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
@@ -887,6 +888,7 @@ static int writeFile(FSM_t fsm, int writeData)
     if (rc) goto exit;
 
     if (writeData && S_ISREG(st->st_mode)) {
+	size_t rdlen;
 #ifdef HAVE_MMAP
 	char * rdbuf = NULL;
 	void * mapped = MAP_FAILED;
@@ -894,17 +896,20 @@ static int writeFile(FSM_t fsm, int writeData)
 	int xx;
 #endif
 
-	rc = fsmNext(fsm, FSM_ROPEN);
-	if (rc) goto exit;
-
+	rfd = Fopen(fsm->path, "r.ufdio");
+	if (Ferror(rfd)) {
+	    rc = CPIOERR_OPEN_FAILED;
+	    goto exit;
+	}
+	
 	/* XXX unbuffered mmap generates *lots* of fdio debugging */
 #ifdef HAVE_MMAP
 	nmapped = 0;
-	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(fsm->rfd), 0);
+	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(rfd), 0);
 	if (mapped != MAP_FAILED) {
 	    rdbuf = fsm->rdbuf;
 	    fsm->rdbuf = (char *) mapped;
-	    fsm->rdlen = nmapped = st->st_size;
+	    rdlen = nmapped = st->st_size;
 #if defined(MADV_DONTNEED)
 	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
 #endif
@@ -920,9 +925,13 @@ static int writeFile(FSM_t fsm, int writeData)
 	  } else
 #endif
 	  {
-	    fsm->rdlen = (left > fsm->rdsize ? fsm->rdsize : left),
-	    rc = fsmNext(fsm, FSM_READ);
-	    if (rc) goto exit;
+	    rdlen = (left > fsm->rdsize ? fsm->rdsize : left),
+
+	    fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), rdlen, rfd);
+	    if (fsm->rdnb != rdlen || Ferror(rfd)) {
+		rc = CPIOERR_READ_FAILED;
+		goto exit;
+	    }
 	  }
 
 	    /* XXX DWRITE uses rdnb for I/O length. */
@@ -957,8 +966,14 @@ static int writeFile(FSM_t fsm, int writeData)
     rc = 0;
 
 exit:
-    if (fsm->rfd != NULL)
-	(void) fsmNext(fsm, FSM_RCLOSE);
+    if (rfd) {
+	/* preserve any prior errno across close */
+	int myerrno = errno;
+	rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
+		 fdOp(rfd, FDSTAT_DIGEST));
+	Fclose(rfd);
+	errno = myerrno;
+    }
     fsm->path = path;
     free(symbuf);
     return rc;
@@ -2076,38 +2091,6 @@ if (!(fsm->mapFlags & CPIO_ALL_HARDLINKS)) break;
 	if (fsm->wrnb > 0)
 	    fsm->cpioPos += fsm->wrnb;
 	break;
-
-    case FSM_ROPEN:
-	fsm->rfd = Fopen(fsm->path, "r.ufdio");
-	if (fsm->rfd == NULL || Ferror(fsm->rfd)) {
-	    if (fsm->rfd != NULL)	(void) fsmNext(fsm, FSM_RCLOSE);
-	    fsm->rfd = NULL;
-	    rc = CPIOERR_OPEN_FAILED;
-	    break;
-	}
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (%s, \"r\") rfd %p rdbuf %p\n", cur,
-		fsm->path, fsm->rfd, fsm->rdbuf);
-	break;
-    case FSM_READ:
-	fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), fsm->rdlen, fsm->rfd);
-	if (_fsm_debug && (stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s (rdbuf, %d, rfd)\trdnb %d\n",
-		cur, (int)fsm->rdlen, (int)fsm->rdnb);
-	if (fsm->rdnb != fsm->rdlen || Ferror(fsm->rfd))
-	    rc = CPIOERR_READ_FAILED;
-	break;
-    case FSM_RCLOSE:
-	if (fsm->rfd != NULL) {
-	    if (_fsm_debug && (stage & FSM_SYSCALL))
-		rpmlog(RPMLOG_DEBUG, " %8s (%p)\n", cur, fsm->rfd);
-	    (void) rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-			fdOp(fsm->rfd, FDSTAT_DIGEST));
-	    (void) Fclose(fsm->rfd);
-	    errno = saveerrno;
-	}
-	fsm->rfd = NULL;
-	break;
     case FSM_WOPEN:
 	fsm->wfd = Fopen(fsm->path, "w.ufdio");
 	if (fsm->wfd == NULL || Ferror(fsm->wfd)) {
@@ -2232,9 +2215,6 @@ static const char * fileStageString(fileStage a)
     case FSM_DREAD:	return "Fread";
     case FSM_DWRITE:	return "Fwrite";
 
-    case FSM_ROPEN:	return "Fopen";
-    case FSM_READ:	return "Fread";
-    case FSM_RCLOSE:	return "Fclose";
     case FSM_WOPEN:	return "Fopen";
     case FSM_WRITE:	return "Fwrite";
     case FSM_WCLOSE:	return "Fclose";

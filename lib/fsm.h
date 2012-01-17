@@ -74,9 +74,6 @@ typedef enum fileStage_e {
     FSM_DREAD	=  _fs(72),
     FSM_DWRITE	=  _fs(73),
 
-    FSM_ROPEN	=  _fs(129),
-    FSM_READ	=  _fs(130),
-    FSM_RCLOSE	=  _fs(131),
     FSM_WOPEN	=  _fs(132),
     FSM_WRITE	=  _fs(133),
     FSM_WCLOSE	=  _fs(134)
@@ -114,11 +111,9 @@ typedef struct hardLink_s * hardLink_t;
 struct fsm_s {
     char * path;		/*!< Current file name. */
     FD_t cfd;			/*!< Payload file handle. */
-    FD_t rfd;			/*!<  read: File handle. */
     char * rdbuf;		/*!<  read: Buffer. */
     char * rdb;			/*!<  read: Buffer allocated. */
     size_t rdsize;		/*!<  read: Buffer allocated size. */
-    size_t rdlen;		/*!<  read: Number of bytes requested.*/
     size_t rdnb;		/*!<  read: Number of bytes returned. */
     FD_t wfd;			/*!< write: File handle. */
     char * wrbuf;		/*!< write: Buffer. */
