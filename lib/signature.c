@@ -134,11 +134,17 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     }
 
     /* Is there an immutable header region tag? */
-    if (entry.info.tag == RPMTAG_HEADERSIGNATURES
-       && entry.info.type == RPM_BIN_TYPE
-       && entry.info.count == REGION_TAG_COUNT)
-    {
-
+    if (entry.info.tag == RPMTAG_HEADERSIGNATURES) {
+	/* Is the region tag sane? */
+	if (!(entry.info.type == REGION_TAG_TYPE &&
+	      entry.info.count == REGION_TAG_COUNT)) {
+	    rasprintf(&buf,
+		_("region tag: BAD, tag %d type %d offset %d count %d\n"),
+		entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
+	    goto exit;
+	}
+	
 	/* Is the trailer within the data area? */
 	if (entry.info.offset + REGION_TAG_COUNT > dl) {
 	    rasprintf(&buf, 
@@ -162,7 +168,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	xx = headerVerifyInfo(1, dl, &info, &entry.info, 1);
 	if (xx != -1 ||
 	    !((entry.info.tag == RPMTAG_HEADERSIGNATURES || entry.info.tag == RPMTAG_HEADERIMAGE)
-	   && entry.info.type == RPM_BIN_TYPE
+	   && entry.info.type == REGION_TAG_TYPE
 	   && entry.info.count == REGION_TAG_COUNT))
 	{
 	    rasprintf(&buf,

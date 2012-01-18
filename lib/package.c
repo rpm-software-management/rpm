@@ -310,11 +310,18 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     }
 
     /* Is there an immutable header region tag? */
-    if (!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
-       && entry.info.type == RPM_BIN_TYPE
-       && entry.info.count == REGION_TAG_COUNT))
-    {
+    if (!(entry.info.tag == RPMTAG_HEADERIMMUTABLE)) {
 	rc = RPMRC_NOTFOUND;
+	goto exit;
+    }
+
+    /* Is the region tag sane? */
+    if (!(entry.info.type == REGION_TAG_TYPE &&
+	  entry.info.count == REGION_TAG_COUNT)) {
+	rasprintf(&buf,
+		_("region tag: BAD, tag %d type %d offset %d count %d\n"),
+		entry.info.tag, entry.info.type,
+		entry.info.offset, entry.info.count);
 	goto exit;
     }
 
@@ -334,7 +341,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
 
     if (headerVerifyInfo(1, dl, &info, &entry.info, 1) != -1 ||
 	!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
-       && entry.info.type == RPM_BIN_TYPE
+       && entry.info.type == REGION_TAG_TYPE
        && entry.info.count == REGION_TAG_COUNT))
     {
 	rasprintf(&buf, 
