@@ -828,10 +828,13 @@ Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 
 	entry->info.type = htonl(pe->type);
 	entry->info.count = htonl(pe->count);
+	entry->info.tag = htonl(pe->tag);
 
-	if (hdrchkType(entry->info.type))
+	if (!ENTRY_IS_REGION(entry))
 	    goto errxit;
-	if (hdrchkTags(entry->info.count))
+	if (entry->info.type != REGION_TAG_TYPE)
+	    goto errxit;
+	if (entry->info.count != REGION_TAG_COUNT)
 	    goto errxit;
 
 	{   int off = ntohl(pe->offset);
@@ -847,7 +850,6 @@ Header headerImport(void * blob, unsigned int bsize, headerImportFlags flags)
 		ril = rdl/sizeof(*pe);
 		if (hdrchkTags(ril) || hdrchkData(rdl))
 		    goto errxit;
-		entry->info.tag = htonl(pe->tag);
 	    } else {
 		ril = il;
 		rdl = (ril * sizeof(struct entryInfo_s));
