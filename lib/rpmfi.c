@@ -1121,17 +1121,13 @@ static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
-    rpmfi fi = NULL;
+    rpmfi fi = xcalloc(1, sizeof(*fi)); 
     unsigned char * t;
     struct rpmtd_s fdigests, digalgo;
     struct rpmtd_s td;
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
     headerGetFlags defFlags = HEADERGET_ALLOC;
-
-    fi = xcalloc(1, sizeof(*fi));
-    if (fi == NULL)	/* XXX can't happen */
-	goto exit;
 
     fi->magic = RPMFIMAGIC;
     fi->i = -1;
