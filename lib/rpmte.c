@@ -199,18 +199,27 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
  * @param key		(TR_ADDED) package retrieval key (e.g. file name)
  * @param relocs	(TR_ADDED) package file relocations
  */
-static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
+static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 {
     struct rpmtd_s colls;
+    int rc = 1; /* assume failure */
 
     p->name = headerGetAsString(h, RPMTAG_NAME);
     p->version = headerGetAsString(h, RPMTAG_VERSION);
     p->release = headerGetAsString(h, RPMTAG_RELEASE);
 
+    /* name, version and release are required in all packages */
+    if (p->name == NULL || p->version == NULL || p->release == NULL)
+	goto exit;
+
     p->epoch = headerGetAsString(h, RPMTAG_EPOCH);
 
     p->arch = headerGetAsString(h, RPMTAG_ARCH);
     p->os = headerGetAsString(h, RPMTAG_OS);
+
+    /* gpg-pubkey's dont have os or arch (sigh), for others they are required */
+    if (!rstreq(p->name, "gpg-pubkey") && (p->arch == NULL || p->os == NULL))
+	goto exit;
 
     p->isSource = headerIsSource(h);
     
@@ -239,6 +248,10 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->fs = rpmfsNew(h, p->type);
     p->fi = getFI(p, h);
 
+    /* Packages with no files return an empty file info set, NULL is an error */
+    if (p->fi == NULL)
+	goto exit;
+
     /* See if we have pre/posttrans scripts. */
     p->transscripts |= (headerIsEntry(h, RPMTAG_PRETRANS) ||
 			 headerIsEntry(h, RPMTAG_PRETRANSPROG)) ?
@@ -266,7 +279,10 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     if (p->type == TR_ADDED)
 	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
 
-    return;
+    rc = 0;
+
+exit:
+    return rc;
 }
 
 rpmte rpmteFree(rpmte te)
@@ -313,7 +329,11 @@ rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
     rpmte p = xcalloc(1, sizeof(*p));
     p->ts = ts;
     p->type = type;
-    addTE(p, h, key, relocs);
+
+    if (addTE(p, h, key, relocs)) {
+	rpmteFree(p);
+	return NULL;
+    }
 
     return p;
 }
