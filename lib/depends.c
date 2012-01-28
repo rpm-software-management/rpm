@@ -99,6 +99,10 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
         return 0;
     }
 
+    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
+    if (p == NULL)
+	return 1;
+
     intHashAddEntry(tsmem->removedPackages, dboffset);
 
     if (tsmem->orderCount >= tsmem->orderAlloced) {
@@ -106,7 +110,6 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
 	tsmem->order = xrealloc(tsmem->order, sizeof(*tsmem->order) * tsmem->orderAlloced);
     }
 
-    p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
     rpmteSetDependsOn(p, depends);
 
     tsmem->order[tsmem->orderCount] = p;
@@ -142,11 +145,12 @@ static int skipColor(rpm_color_t tscolor, rpm_color_t color, rpm_color_t ocolor)
 }
 
 /* Add erase elements for older packages of same color (if any). */
-static void addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
+static int addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
 				rpmte p, rpm_color_t hcolor, Header h)
 {
     Header oh;
     rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
+    int rc = 0;
 
     while((oh = rpmdbNextIterator(mi)) != NULL) {
 	/* Ignore colored packages not in our rainbow. */
@@ -157,18 +161,23 @@ static void addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
 	if (rpmVersionCompare(h, oh) == 0)
 	    continue;
 
-	removePackage(ts, oh, p);
+	if (removePackage(ts, oh, p)) {
+	    rc = 1;
+	    break;
+	}
     }
     rpmdbFreeIterator(mi);
+    return rc;
 }
 
 /* Add erase elements for obsoleted packages of same color (if any). */
-static void addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
+static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 {
     rpmds obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
     Header oh;
+    int rc = 0;
 
-    while (rpmdsNext(obsoletes) >= 0) {
+    while (rpmdsNext(obsoletes) >= 0 && rc == 0) {
 	const char * Name;
 	rpmdbMatchIterator mi = NULL;
 
@@ -199,11 +208,15 @@ static void addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
 		free(ohNEVRA);
 
-		removePackage(ts, oh, p);
+		if (removePackage(ts, oh, p)) {
+		    rc = 1;
+		    break;
+		}
 	    }
 	}
 	rpmdbFreeIterator(mi);
     }
+    return rc;
 }
 
 /*
@@ -359,6 +372,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
 
     /* Add erasure elements for old versions and obsoletions */
+    /* XXX TODO: If either of these fails, we'd need to undo all additions */
     addUpgradeErasures(ts, tscolor, p, rpmteColor(p), h);
     addObsoleteErasures(ts, tscolor, p);
 
