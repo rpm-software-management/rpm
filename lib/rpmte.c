@@ -262,6 +262,10 @@ static void addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 
     rpmteColorDS(p, RPMTAG_PROVIDENAME);
     rpmteColorDS(p, RPMTAG_REQUIRENAME);
+
+    if (p->type == TR_ADDED)
+	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
+
     return;
 }
 
@@ -310,14 +314,6 @@ rpmte rpmteNew(rpmts ts, Header h, rpmElementType type, fnpyKey key,
     p->ts = ts;
     p->type = type;
     addTE(p, h, key, relocs);
-    switch (type) {
-    case TR_ADDED:
-	p->pkgFileSize = headerGetNumber(h, RPMTAG_LONGSIGSIZE) + 96 + 256;
-	break;
-    case TR_REMOVED:
-	/* nothing to do */
-	break;
-    }
 
     return p;
 }
