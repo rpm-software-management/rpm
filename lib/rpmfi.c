@@ -1144,6 +1144,17 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
     fi->dc = rpmtdCount(&td);
     _hgfi(h, RPMTAG_DIRINDEXES, &td, scareFlags, fi->dil);
+
+    /* Is our filename triplet sane? */
+    if (fi->dc == 0 || fi->dc > fi->fc || rpmtdCount(&td) != fi->fc)
+	goto errxit;
+
+    for (rpm_count_t i = 0; i < fi->fc; i++) {
+	if (fi->dil[i] >= fi->fc)
+	    goto errxit;
+    }
+
+    /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
 	_hgfi(h, RPMTAG_FILEMODES, &td, scareFlags, fi->fmodes);
     if (!(flags & RPMFI_NOFILEFLAGS))
@@ -1238,6 +1249,10 @@ exit:
 
     /* FIX: rpmfi null annotations */
     return rpmfiLink(fi);
+
+errxit:
+    rpmfiFree(fi);
+    return NULL;
 }
 
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)
