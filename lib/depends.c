@@ -338,6 +338,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    goto exit;
     }
 
+    p = rpmteNew(ts, h, TR_ADDED, key, relocs);
+    if (p == NULL) {
+	ec = 1;
+	goto exit;
+    }
+
     /* Check binary packages for redundancies in the set */
     if (!isSource) {
 	oc = findPos(ts, tscolor, h, upgrade);
@@ -347,6 +353,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    tsmem->order[oc] = rpmteFree(tsmem->order[oc]);
 	/* If newer NEVR was already added, we're done */
 	} else if (oc < 0) {
+	    p = rpmteFree(p);
 	    goto exit;
 	}
     }
@@ -362,7 +369,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 			tsmem->orderAlloced * sizeof(*tsmem->order));
     }
 
-    p = rpmteNew(ts, h, TR_ADDED, key, relocs);
 
     tsmem->order[oc] = p;
     if (oc == tsmem->orderCount) {
