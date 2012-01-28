@@ -328,6 +328,16 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	goto exit;
     }
 
+    /* Source packages are never "upgraded" */
+    if (isSource)
+	upgrade = 0;
+
+    /* Do lazy (readonly?) open of rpm database for upgrades. */
+    if (upgrade && rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
+	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
+	    goto exit;
+    }
+
     /* Check binary packages for redundancies in the set */
     if (!isSource) {
 	oc = findPos(ts, tscolor, h, upgrade);
@@ -361,20 +371,12 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     
     rpmalAdd(tsmem->addedPackages, p);
 
-    /* If not upgrading or a source package, then we're done. */
-    if (!(upgrade & 0x1) || isSource)
-	goto exit;
-
-    /* Do lazy (readonly?) open of rpm database. */
-    if (rpmtsGetRdb(ts) == NULL && rpmtsGetDBMode(ts) != -1) {
-	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
-	    goto exit;
-    }
-
-    /* Add erasure elements for old versions and obsoletions */
+    /* Add erasure elements for old versions and obsoletions on upgrades */
     /* XXX TODO: If either of these fails, we'd need to undo all additions */
-    addUpgradeErasures(ts, tscolor, p, rpmteColor(p), h);
-    addObsoleteErasures(ts, tscolor, p);
+    if (upgrade) {
+	addUpgradeErasures(ts, tscolor, p, rpmteColor(p), h);
+	addObsoleteErasures(ts, tscolor, p);
+    }
 
 exit:
     return ec;
