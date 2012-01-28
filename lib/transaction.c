@@ -990,6 +990,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 		switch (rpmteType(p)) {
 		case TR_ADDED:
 		    if (!otherFi) {
+			/* XXX What to do if this fails? */
 		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 		    }
 		    rpmfiSetFX(fi, recs[j].fileno);

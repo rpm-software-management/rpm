@@ -322,7 +322,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
     h = headerFree(h);
 
-    if (fi == NULL) {	/* XXX can't happen */
+    if (fi == NULL) {
 	goto exit;
     }
     fi->apath = filenames.data; /* Ick */

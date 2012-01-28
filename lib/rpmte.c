@@ -676,6 +676,7 @@ static Header rpmteFDHeader(rpmte te)
 
 static int rpmteOpen(rpmte te, int reload_fi)
 {
+    int rc = 0; /* assume failure */
     Header h = NULL;
     if (te == NULL || te->ts == NULL || rpmteFailed(te))
 	goto exit;
@@ -694,13 +695,16 @@ static int rpmteOpen(rpmte te, int reload_fi)
 	if (reload_fi) {
 	    te->fi = getFI(te, h);
 	}
+
+	/* This can fail if we get a different, bad header from callback */
+	rc = (te->fi != NULL);
 	
 	rpmteSetHeader(te, h);
 	headerFree(h);
     }
 
 exit:
-    return (h != NULL);
+    return rc;
 }
 
 static int rpmteClose(rpmte te, int reset_fi)

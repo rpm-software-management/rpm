@@ -307,6 +307,11 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 
     fi = rpmfiNew(NULL, h, tagN, flags);
 
+    if (fi == NULL) {
+	PyErr_SetString(PyExc_ValueError, "invalid file data in header");
+	return NULL;
+    }
+
     return rpmfi_Wrap(subtype, fi);
 }
 

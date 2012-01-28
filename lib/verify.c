@@ -339,6 +339,9 @@ static int verifyHeader(rpmts ts, Header h, rpmVerifyAttrs omitMask, int ghosts)
     int ec = 0;		/* assume no problems */
     rpmfi fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_FLAGS_VERIFY);
 
+    if (fi == NULL)
+	return 1;
+
     rpmfiInit(fi, 0);
     while (rpmfiNext(fi) >= 0) {
 	rpmfileAttrs fileAttrs = rpmfiFFlags(fi);
