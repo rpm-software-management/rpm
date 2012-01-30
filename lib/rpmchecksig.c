@@ -111,10 +111,11 @@ static int readFile(FD_t fd, const char * fn,
     ssize_t count;
     int rc = 1;
     Header h = NULL;
+    char *msg = NULL;
 
     /* Read the header from the package. */
-    if ((h = headerRead(fd, HEADER_MAGIC_YES)) == NULL) {
-	rpmlog(RPMLOG_ERR, _("%s: headerRead failed\n"), fn);
+    if (rpmReadHeader(NULL, fd, &h, &msg) != RPMRC_OK) {
+	rpmlog(RPMLOG_ERR, _("%s: headerRead failed: %s\n"), fn, msg);
 	goto exit;
     }
 
@@ -142,6 +143,7 @@ static int readFile(FD_t fd, const char * fn,
     rc = 0;
 
 exit:
+    free(msg);
     headerFree(h);
     return rc;
 }
