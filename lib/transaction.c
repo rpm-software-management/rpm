@@ -1361,12 +1361,14 @@ static int rpmtsPrepare(rpmts ts)
     if (rpmChrootOut())
 	rc = -1;
 
-    /* File info sets, fp caches etc not needed beyond here, free 'em up. */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	rpmteSetFI(p, NULL);
+    /* On actual transaction, file info sets are not needed after this */
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))) {
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	    rpmteSetFI(p, NULL);
+	}
+	rpmtsiFree(pi);
     }
-    rpmtsiFree(pi);
 
 exit:
     rpmFpHashFree(ht);
