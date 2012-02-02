@@ -2838,7 +2838,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
     }
     removedir = 1;
 
-    if (openDatabase(prefix, dbpath, &olddb, O_RDONLY, 0644, 0)) {
+    if (openDatabase(prefix, dbpath, &olddb,
+		     O_RDONLY, 0644, RPMDB_FLAG_REBUILD)) {
 	rc = 1;
 	goto exit;
     }

@@ -131,11 +131,13 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	return 0;
     }
 
-    /* By no means necessary but speeds things up a bit */
-    if (rdb->db_flags & RPMDB_FLAG_REBUILD)
-	eflags &= ~DB_INIT_CDB;
-    /* XXX Something bizarre with verify... use private environment, no cdb */
-    if (rdb->db_flags & RPMDB_FLAG_VERIFYONLY) {
+    /*
+     * Both verify and rebuild are rather special, if for different reasons:
+     * On rebuild we dont want to be affected by eg paniced environment, and
+     * CDB only slows things down there. Verify is a quirky beast unlike
+     * anything else in BDB, and does not like shared env or CDB.
+     */
+    if (rdb->db_flags & (RPMDB_FLAG_VERIFYONLY|RPMDB_FLAG_REBUILD)) {
 	eflags |= DB_PRIVATE;
 	eflags &= ~DB_INIT_CDB;
     }
