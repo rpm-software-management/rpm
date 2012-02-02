@@ -698,15 +698,12 @@ rpmRC rpmReadPackageFile(rpmts ts, FD_t fd, const char * fn, Header * hdrp)
 {
     rpmRC rc;
     rpmVSFlags vsflags = rpmtsVSFlags(ts);
-    rpmKeyring keyring = 0;
-
-    if ((vsflags & _RPMVSF_NOSIGNATURES) != _RPMVSF_NOSIGNATURES)
-	keyring = rpmtsGetKeyring(ts, 1);
+    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
 
     rc = rpmpkgRead(keyring, vsflags, fd, fn, hdrp);
 
-    if (keyring)
-	rpmKeyringFree(keyring);
+    rpmKeyringFree(keyring);
+
     return rc;
 }
 

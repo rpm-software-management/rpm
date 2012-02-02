@@ -341,11 +341,14 @@ static int loadKeyringFromDB(rpmts ts)
 
 static void loadKeyring(rpmts ts)
 {
-    ts->keyring = rpmKeyringNew();
-    if (loadKeyringFromFiles(ts) == 0) {
-	if (loadKeyringFromDB(ts) > 0) {
-	    /* XXX make this a warning someday... */
-	    rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
+    /* Never load the keyring if signature checking is disabled */
+    if ((rpmtsVSFlags(ts) & _RPMVSF_NOSIGNATURES) != _RPMVSF_NOSIGNATURES) {
+	ts->keyring = rpmKeyringNew();
+	if (loadKeyringFromFiles(ts) == 0) {
+	    if (loadKeyringFromDB(ts) > 0) {
+		/* XXX make this a warning someday... */
+		rpmlog(RPMLOG_DEBUG, "Using legacy gpg-pubkey(s) from rpmdb\n");
+	    }
 	}
     }
 }
