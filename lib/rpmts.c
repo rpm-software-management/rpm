@@ -258,11 +258,7 @@ rpmKeyring rpmtsGetKeyring(rpmts ts, int autoload)
 
 int rpmtsSetKeyring(rpmts ts, rpmKeyring keyring)
 {
-    /*
-     * Should we permit switching keyring on the fly? For now, require
-     * rpmdb isn't open yet (fairly arbitrary limitation)...
-     */
-    if (ts == NULL || rpmtsGetRdb(ts) != NULL)
+    if (ts == NULL)
 	return -1;
 
     rpmKeyringFree(ts->keyring);
