@@ -478,10 +478,12 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 	headerPutUint32(h, RPMTAG_INSTALLTID, &tid, 1);
 
 	/* Add header to database. */
-	if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-	    goto exit;
-	if (rpmdbAdd(rpmtsGetRdb(ts), h) != 0)
-	    goto exit;
+	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
+	    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
+		goto exit;
+	    if (rpmdbAdd(rpmtsGetRdb(ts), h) != 0)
+		goto exit;
+	}
     }
     rc = RPMRC_OK;
 
