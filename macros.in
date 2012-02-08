@@ -535,7 +535,7 @@ print (t)\
 #
 
 # Misc BDB tuning options
-%__dbi_other			mp_mmapsize=128Mb mp_size=64Mb
+%__dbi_other			mp_mmapsize=128Mb mp_size=1Mb
 
 %_dbi_config			%{?__dbi_other}
 
