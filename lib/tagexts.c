@@ -767,6 +767,27 @@ static int conflictnevrsTag(Header h, rpmtd td, headerGetFlags hgflags)
     return depnevrsTag(h, td, hgflags, RPMTAG_CONFLICTNAME);
 }
 
+static int filenlinksTag(Header h, rpmtd td, headerGetFlags hgflags)
+{
+    rpmfi fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, RPMFI_NOHEADER);
+    rpm_count_t fc = rpmfiFC(fi);
+
+    if (fc > 0) {
+	uint32_t *nlinks = xmalloc(fc * sizeof(*nlinks));
+	int ix;
+	while ((ix = rpmfiNext(fi)) >= 0) {
+	    nlinks[ix] = rpmfiFNlink(fi);
+	}
+	td->data = nlinks;
+	td->type = RPM_INT32_TYPE;
+	td->count = fc;
+	td->flags = RPMTD_ALLOCED;
+    }
+
+    rpmfiFree(fi);
+    return (fc > 0);
+}
+
 static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_GROUP,		groupTag },
     { RPMTAG_DESCRIPTION,	descriptionTag },
@@ -796,6 +817,7 @@ static const struct headerTagFunc_s rpmHeaderTagExtensions[] = {
     { RPMTAG_PROVIDENEVRS,	providenevrsTag },
     { RPMTAG_OBSOLETENEVRS,	obsoletenevrsTag },
     { RPMTAG_CONFLICTNEVRS,	conflictnevrsTag },
+    { RPMTAG_FILENLINKS,	filenlinksTag },
     { 0, 			NULL }
 };
 

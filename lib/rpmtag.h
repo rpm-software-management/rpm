@@ -306,6 +306,7 @@ typedef enum rpmTag_e {
     RPMTAG_PROVIDENEVRS		= 5042, /* s[] extension */
     RPMTAG_OBSOLETENEVRS	= 5043, /* s[] extension */
     RPMTAG_CONFLICTNEVRS	= 5044, /* s[] extension */
+    RPMTAG_FILENLINKS		= 5045,	/* i[] extension */
 
     RPMTAG_FIRSTFREE_TAG	/*!< internal */
 } rpmTag;
