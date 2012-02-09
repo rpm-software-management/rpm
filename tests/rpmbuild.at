@@ -137,7 +137,7 @@ runroot rpmbuild \
 
 runroot rpm -i "${TOPDIR}"/RPMS/noarch/hlinktest-1.0-1.noarch.rpm
 
-runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]" hlinktest
+runroot rpm -q --qf "[[%{filenlinks} %{filenames}\n]]%{longsize}\n" hlinktest
 runroot rpm -V --nouser --nogroup hlinktest
 ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 
@@ -148,6 +148,7 @@ ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 4 /foo/hello-bar
 4 /foo/hello-foo
 4 /foo/hello-world
+78
 1
 ],
 [])
