@@ -716,6 +716,7 @@ static int fsmMapAttrs(FSM_t fsm)
 
     /* this check is pretty moot,  rpmfi accessors check array bounds etc */
     if (fi && i >= 0 && i < rpmfiFC(fi)) {
+	ino_t finalInode = rpmfiFInodeIndex(fi, i);
 	mode_t finalMode = rpmfiFModeIndex(fi, i);
 	dev_t finalRdev = rpmfiFRdevIndex(fi, i);
 	time_t finalMtime = rpmfiFMtimeIndex(fi, i);
@@ -745,6 +746,7 @@ static int fsmMapAttrs(FSM_t fsm)
 	    if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
 	    && st->st_nlink == 0)
 		st->st_nlink = 1;
+	    st->st_ino = finalInode;
 	    st->st_rdev = finalRdev;
 	    st->st_mtime = finalMtime;
 	}

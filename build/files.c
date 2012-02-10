@@ -986,10 +986,11 @@ static int checkHardLinks(FileList fl)
     return 0;
 }
 
-static int seenHardLink(FileList fl, FileListRec flp)
+static int seenHardLink(FileList fl, FileListRec flp, rpm_ino_t *fileid)
 {
     for (FileListRec ilp = fl->fileList; ilp < flp; ilp++) {
 	if (isHardLink(flp, ilp)) {
+	    *fileid = ilp - fl->fileList;
 	    return 1;
 	}
     }
@@ -1017,6 +1018,7 @@ static void genCpioListAndHeader(FileList fl,
     int i;
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
+    dev_t brdev = 0;
 
     /*
      * See if non-md5 file digest algorithm is requested. If not
@@ -1045,6 +1047,8 @@ static void genCpioListAndHeader(FileList fl,
     }
 
     for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
+	rpm_ino_t fileid = flp - fl->fileList;
+
  	/* Merge duplicate entries. */
 	while (i < (fl->fileListRecsUsed - 1) &&
 	    rstreq(flp->cpioPath, flp[1].cpioPath)) {
@@ -1099,6 +1103,17 @@ static void genCpioListAndHeader(FileList fl,
 	/* Skip files that were marked with %exclude. */
 	if (flp->flags & RPMFILE_EXCLUDE) continue;
 
+	if (brdev == 0 && flp->fl_dev != 0)
+	    brdev = flp->fl_dev;
+	/*
+	 * We could handle this quite easily but it can't happen without
+	 * some very dirty tricks, so just error out for now...
+	 */
+	if (brdev && flp->fl_dev && brdev != flp->fl_dev) {
+	    rpmlog(RPMLOG_ERR, _("buildroot spans across filesystems\n"));
+	    fl->processingFailed = 1;
+	}
+
 	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
 	apathlen += (strlen(flp->cpioPath) - skipLen + (_addDotSlash ? 3 : 1));
 
@@ -1130,7 +1145,7 @@ static void genCpioListAndHeader(FileList fl,
 	}
 	/* Excludes and dupes have been filtered out by now. */
 	if (S_ISREG(flp->fl_mode)) {
-	    if (flp->fl_nlink == 1 || !seenHardLink(fl, flp)) {
+	    if (flp->fl_nlink == 1 || !seenHardLink(fl, flp, &fileid)) {
 		totalFileSize += flp->fl_size;
 	    }
 	}
@@ -1156,7 +1171,13 @@ static void genCpioListAndHeader(FileList fl,
 	    headerPutUint32(h, RPMTAG_FILEDEVICES, &rdev, 1);
 	}
 
-	{   rpm_ino_t rino = (rpm_ino_t) flp->fl_ino;
+	/*
+	 * To allow rpmbuild to work on filesystems with 64bit inodes numbers,
+	 * remap them into 32bit integers based on filelist index, just
+	 * preserving semantics for determining hardlinks.
+	 * Start at 1 as inode zero as that could be considered as an error.
+	 */
+	{   rpm_ino_t rino = fileid + 1;
 	    headerPutUint32(h, RPMTAG_FILEINODES, &rino, 1);
 	}
 	
