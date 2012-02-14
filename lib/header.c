@@ -199,7 +199,7 @@ int headerVerifyInfo(int il, int dl, const void * pev, void * iv, int negate)
 	    return i;
 	if (hdrchkAlign(info->type, info->offset))
 	    return i;
-	if (!negate && hdrchkRange(dl, info->offset))
+	if (hdrchkRange(dl, info->offset))
 	    return i;
 	if (hdrchkData(info->count))
 	    return i;
