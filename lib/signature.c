@@ -165,7 +165,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	}
 	dataEnd += REGION_TAG_COUNT;
 
-	xx = headerVerifyInfo(1, dl, &info, &entry.info, 1);
+	xx = headerVerifyInfo(1, il * sizeof(*pe), &info, &entry.info, 1);
 	if (xx != -1 ||
 	    !((entry.info.tag == RPMTAG_HEADERSIGNATURES || entry.info.tag == RPMTAG_HEADERIMAGE)
 	   && entry.info.type == REGION_TAG_TYPE
