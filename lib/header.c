@@ -1310,6 +1310,9 @@ static int intGetTdEntry(Header h, rpmtd td, headerGetFlags flags)
 	}
     }
 
+    if (rc == 0)
+	td->flags |= RPMTD_INVALID;
+
     /* XXX 1 on success */
     return ((rc == 1) ? 1 : 0);
 }
