@@ -481,9 +481,13 @@ static PyObject * hdrGetTag(Header h, rpmTagVal tag)
     PyObject *res = NULL;
     struct rpmtd_s td;
 
-    /* rpmtd_AsPyobj() knows how to handle empty containers and all */
     (void) headerGet(h, tag, &td, HEADERGET_EXT);
-    res = rpmtd_AsPyobj(&td);
+    if (rpmtdGetFlags(&td) & RPMTD_INVALID) {
+	PyErr_SetString(pyrpmError, "invalid header data");
+    } else {
+	/* rpmtd_AsPyobj() knows how to handle empty containers and all */
+	res = rpmtd_AsPyobj(&td);
+    }
     rpmtdFreeData(&td);
     return res;
 }
