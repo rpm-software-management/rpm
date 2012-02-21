@@ -39,14 +39,13 @@ struct headerTagFunc_s {
  */
 static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
 {
-    const char **baseNames, **dirNames, **fileNames;
+    const char **baseNames, **dirNames;
     const char *fileStates = NULL;
     uint32_t *dirIndexes;
-    rpm_count_t count, retcount;
+    rpm_count_t count, retcount, dncount;
     size_t size = 0;
     rpmTag dirNameTag = RPMTAG_DIRNAMES;
     rpmTag dirIndexesTag = RPMTAG_DIRINDEXES;
-    char * t;
     int i, j;
     int rc = 0; /* assume failure */
     struct rpmtd_s bnames, dnames, dixs, fstates;
@@ -64,16 +63,27 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
     (void) headerGet(h, dirIndexesTag, &dixs, HEADERGET_MINMEM);
 
     retcount = count = rpmtdCount(&bnames);
-    baseNames = bnames.data;
-    dirNames = dnames.data;
-    dirIndexes = dixs.data;
+    dncount = rpmtdCount(&dnames);
+
+    /* Basic sanity checking for our interrelated tags  */
+    if (rpmtdCount(&dixs) != count || dncount < 1 || dncount > count)
+	td->flags |= RPMTD_INVALID;
 
     if (withstate) {
 	/* no recorded states means no installed files */
-	if (!headerGet(h, RPMTAG_FILESTATES, &fstates, HEADERGET_MINMEM)) {
+	if (!headerGet(h, RPMTAG_FILESTATES, &fstates, HEADERGET_MINMEM))
 	    goto exit;
+	if (rpmtdCount(&fstates) != count)
+	    td->flags |= RPMTD_INVALID;
 	fileStates = fstates.data;
     }
+
+    if (td->flags & RPMTD_INVALID)
+	goto exit;
+
+    baseNames = bnames.data;
+    dirNames = dnames.data;
+    dirIndexes = dixs.data;
 
     /*
      * fsm, psm and rpmfi assume the data is stored in a single allocation
@@ -85,25 +95,31 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
 	    retcount--;
 	    continue;
 	}
+	/* Sanity check  directory indexes are within bounds */
+	if (dirIndexes[i] >= dncount) {
+	    td->flags |= RPMTD_INVALID;
+	    break;
+	}
 	size += strlen(baseNames[i]) + strlen(dirNames[dirIndexes[i]]) + 1;
     }
-    size += sizeof(*fileNames) * retcount;
 
-    fileNames = xmalloc(size);
-    t = ((char *) fileNames) + (sizeof(*fileNames) * retcount);
-    for (i = 0, j = 0; i < count; i++) {
-	if (fileStates && !RPMFILE_IS_INSTALLED(fileStates[i]))
-	    continue;
-	fileNames[j++] = t;
-	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
-	*t++ = '\0';
+    if (!(td->flags & RPMTD_INVALID)) {
+	char **fileNames = xmalloc(size + (sizeof(*fileNames) * retcount));
+	char *t = ((char *) fileNames) + (sizeof(*fileNames) * retcount);
+	for (i = 0, j = 0; i < count; i++) {
+	    if (fileStates && !RPMFILE_IS_INSTALLED(fileStates[i]))
+		continue;
+	    fileNames[j++] = t;
+	    t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
+	    *t++ = '\0';
+	}
+
+	td->data = fileNames;
+	td->count = retcount;
+	td->type = RPM_STRING_ARRAY_TYPE;
+	td->flags |= RPMTD_ALLOCED;
+	rc = 1;
     }
-
-    td->data = fileNames;
-    td->count = retcount;
-    td->type = RPM_STRING_ARRAY_TYPE;
-    td->flags |= RPMTD_ALLOCED;
-    rc = 1;
 
 exit:
     rpmtdFreeData(&bnames);
