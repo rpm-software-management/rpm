@@ -39,7 +39,8 @@ struct headerTagFunc_s {
  */
 static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
 {
-    const char **baseNames, **dirNames, **fileNames, *fileStates;
+    const char **baseNames, **dirNames, **fileNames;
+    const char *fileStates = NULL;
     uint32_t *dirIndexes;
     rpm_count_t count, retcount;
     size_t size = 0;
@@ -47,6 +48,7 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
     rpmTag dirIndexesTag = RPMTAG_DIRINDEXES;
     char * t;
     int i, j;
+    int rc = 0; /* assume failure */
     struct rpmtd_s bnames, dnames, dixs, fstates;
 
     if (tagN == RPMTAG_ORIGBASENAMES) {
@@ -67,7 +69,9 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
     dirIndexes = dixs.data;
 
     if (withstate) {
-	headerGet(h, RPMTAG_FILESTATES, &fstates, HEADERGET_MINMEM);
+	/* no recorded states means no installed files */
+	if (!headerGet(h, RPMTAG_FILESTATES, &fstates, HEADERGET_MINMEM)) {
+	    goto exit;
 	fileStates = fstates.data;
     }
 
@@ -77,7 +81,7 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
      * a few hoops here and precalculate sizes etc
      */
     for (i = 0; i < count; i++) {
-	if (withstate && !RPMFILE_IS_INSTALLED(fileStates[i])) {
+	if (fileStates && !RPMFILE_IS_INSTALLED(fileStates[i])) {
 	    retcount--;
 	    continue;
 	}
@@ -88,24 +92,28 @@ static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
     fileNames = xmalloc(size);
     t = ((char *) fileNames) + (sizeof(*fileNames) * retcount);
     for (i = 0, j = 0; i < count; i++) {
-	if (withstate && !RPMFILE_IS_INSTALLED(fileStates[i]))
+	if (fileStates && !RPMFILE_IS_INSTALLED(fileStates[i]))
 	    continue;
 	fileNames[j++] = t;
 	t = stpcpy( stpcpy(t, dirNames[dirIndexes[i]]), baseNames[i]);
 	*t++ = '\0';
     }
-    rpmtdFreeData(&bnames);
-    rpmtdFreeData(&dnames);
-    rpmtdFreeData(&dixs);
-    if (withstate)
-	rpmtdFreeData(&fstates);
 
     td->data = fileNames;
     td->count = retcount;
     td->type = RPM_STRING_ARRAY_TYPE;
     td->flags |= RPMTD_ALLOCED;
+    rc = 1;
 
-    return 1;
+exit:
+    rpmtdFreeData(&bnames);
+    rpmtdFreeData(&dnames);
+    rpmtdFreeData(&dixs);
+    /* only safe if the headerGet() on file states was actually called */
+    if (fileStates)
+	rpmtdFreeData(&fstates);
+
+    return rc;
 }
 
 static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
