@@ -107,6 +107,25 @@ None
 'rpm.hdr' object has no attribute '__foo__']
 )
 
+RPMPY_TEST([invalid header data],[
+h1 = rpm.hdr()
+h1['basenames'] = ['bing', 'bang', 'bong']
+h1['dirnames'] = ['/opt/', '/flopt/']
+h1['dirindexes'] = [ 1, 0, 3 ]
+h2 = rpm.hdr()
+h2['basenames'] = ['bing', 'bang', 'bong']
+h2['dirnames'] = ['/opt/', '/flopt/']
+h2['dirindexes'] = [ 0, 0, 1 ]
+for h in [h1, h2]:
+    try:
+        myprint(','.join(h['filenames']))
+    except rpm.error, exc:
+        myprint(exc)
+],
+[invalid header data
+/opt/bing,/opt/bang,/flopt/bong]
+)
+
 RPMPY_TEST([reading a package file],[
 ts = rpm.ts()
 h = ts.hdrFromFdno('${RPMDATA}/RPMS/hello-1.0-1.ppc64.rpm')
