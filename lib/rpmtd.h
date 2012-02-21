@@ -87,6 +87,13 @@ rpmTagType rpmtdType(rpmtd td);
 rpmTagClass rpmtdClass(rpmtd td);
 
 /** \ingroup rpmtd
+ * Retrieve flags of the container (allocation details etc)
+ * @param td		Tag data container
+ * @return		Container flags
+ */
+rpmtdFlags rpmtdGetFlags(rpmtd td);
+
+/** \ingroup rpmtd
  * Retrieve current iteration index of the container.
  * @param td		Tag data container
  * @return		Iteration index (or -1 if not iterating)
