@@ -33,11 +33,11 @@ struct headerTagFunc_s {
  * 
  * @param h		header
  * @param tagN		RPMTAG_BASENAMES | PMTAG_ORIGBASENAMES
- * @retval *fnp		array of file names
- * @retval *fcp		number of files
+ * @param withstate	take file state into account?
+ * @retval td		tag data container
+ * @return		1 on success
  */
-static void rpmfiBuildFNames(Header h, rpmTag tagN, int withstate,
-	const char *** fnp, rpm_count_t * fcp)
+static int fnTag(Header h, rpmTag tagN, int withstate, rpmtd td)
 {
     const char **baseNames, **dirNames, **fileNames, *fileStates;
     uint32_t *dirIndexes;
@@ -55,10 +55,9 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN, int withstate,
     }
 
     if (!headerGet(h, tagN, &bnames, HEADERGET_MINMEM)) {
-	*fnp = NULL;
-	*fcp = 0;
-	return;		/* no file list */
+	return 0;		/* no file list */
     }
+
     (void) headerGet(h, dirNameTag, &dnames, HEADERGET_MINMEM);
     (void) headerGet(h, dirIndexesTag, &dixs, HEADERGET_MINMEM);
 
@@ -101,8 +100,12 @@ static void rpmfiBuildFNames(Header h, rpmTag tagN, int withstate,
     if (withstate)
 	rpmtdFreeData(&fstates);
 
-    *fnp = fileNames;
-    *fcp = retcount;
+    td->data = fileNames;
+    td->count = retcount;
+    td->type = RPM_STRING_ARRAY_TYPE;
+    td->flags |= RPMTD_ALLOCED;
+
+    return 1;
 }
 
 static int filedepTag(Header h, rpmTag tagN, rpmtd td, headerGetFlags hgflags)
@@ -295,13 +298,7 @@ static int triggertypeTag(Header h, rpmtd td, headerGetFlags hgflags)
  */
 static int instfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, 1,
-		     (const char ***) &(td->data), &(td->count));
-    if (td->data) {
-	td->type = RPM_STRING_ARRAY_TYPE;
-	td->flags = RPMTD_ALLOCED;
-    }
-    return (td->data != NULL); 
+    return fnTag(h, RPMTAG_BASENAMES, 1, td);
 }
 /**
  * Retrieve file paths.
@@ -311,13 +308,7 @@ static int instfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
  */
 static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    rpmfiBuildFNames(h, RPMTAG_BASENAMES, 0,
-		     (const char ***) &(td->data), &(td->count));
-    if (td->data) {
-	td->type = RPM_STRING_ARRAY_TYPE;
-	td->flags = RPMTD_ALLOCED;
-    }
-    return (td->data != NULL); 
+    return fnTag(h, RPMTAG_BASENAMES, 0, td);
 }
 
 /**
@@ -328,13 +319,7 @@ static int filenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
  */
 static int origfilenamesTag(Header h, rpmtd td, headerGetFlags hgflags)
 {
-    rpmfiBuildFNames(h, RPMTAG_ORIGBASENAMES, 0,
-		     (const char ***) &(td->data), &(td->count));
-    if (td->data) {
-	td->type = RPM_STRING_ARRAY_TYPE;
-	td->flags = RPMTD_ALLOCED;
-    }
-    return (td->data != NULL); 
+    return fnTag(h, RPMTAG_ORIGBASENAMES, 0, td);
 }
 
 /*
