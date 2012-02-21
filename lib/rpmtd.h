@@ -14,6 +14,7 @@ enum rpmtdFlags_e {
     RPMTD_PTR_ALLOCED	= (1 << 1),	/* were array pointers allocated? */
     RPMTD_IMMUTABLE	= (1 << 2),	/* header data or modifiable? */
     RPMTD_ARGV		= (1 << 3),	/* string array is NULL-terminated? */
+    RPMTD_INVALID	= (1 << 4),	/* invalid data (in header) */
 };
 
 typedef rpmFlags rpmtdFlags;
