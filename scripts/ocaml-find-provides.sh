@@ -32,7 +32,7 @@ done
 files=`sed "s/['\"]/\\\&/g"`
 
 # Get list of .cmi, .cmo and .cma files.
-files=`echo $files | tr [:blank:] '\n' | grep '\.cm[ioa]$'`
+files=`echo $files | tr '[:blank:]' '\n' | grep '\.cm[ioa]$'`
 
 if [ -z "$files" ]; then exit 0; fi
 

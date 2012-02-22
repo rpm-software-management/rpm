@@ -34,10 +34,10 @@ done
 files=`sed "s/['\"]/\\\&/g"`
 
 # Use ordinary find-requires first.
-# echo $files | tr [:blank:] '\n' | /usr/lib/rpm/find-requires
+# echo $files | tr '[:blank:]' '\n' | /usr/lib/rpm/find-requires
 
 # Get list of .cmi, .cmo and .cma files.
-files=`echo $files | tr [:blank:] '\n' | grep '\.cm[ioa]$'`
+files=`echo $files | tr '[:blank:]' '\n' | grep '\.cm[ioa]$'`
 
 if [ -z "$files" ]; then exit 0; fi
 
