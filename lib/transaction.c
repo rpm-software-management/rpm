@@ -1315,17 +1315,18 @@ static int rpmtsPrepare(rpmts ts)
 	   needs on each partition for this package. */
 	handleOverlappedFiles(ts, ht, p, fi);
 
-	/*
-	 * Try to estimate space needed for rpmdb growth: guess that the
-	 * db grows 4 times the header size (indexes and all).
-	 */
-	if (dbhome) {
-	    int64_t hsize = rpmteHeaderSize(p) * 4;
-	    rpmtsUpdateDSI(ts, dbstat.st_dev, dbhome, hsize, 0, 0, FA_CREATE);
-	}
-
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {
+	    /*
+	     * Try to estimate space needed for rpmdb growth: guess that the
+	     * db grows 4 times the header size (indexes and all).
+	     */
+	    if (dbhome) {
+		int64_t hsize = rpmteHeaderSize(p) * 4;
+		rpmtsUpdateDSI(ts, dbstat.st_dev, dbhome,
+			       hsize, 0, 0, FA_CREATE);
+	    }
+
 	    rpmtsCheckDSIProblems(ts, p);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
