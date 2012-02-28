@@ -79,7 +79,7 @@ dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \
 runroot rpm -Va --nodeps --nouser --nogroup
 ],
 [1],
-[5..T...M.    /usr/local/bin/hello
+[.M5....T.    /usr/local/bin/hello
 missing   d /usr/share/doc/hello-1.0/FAQ
 ],
 [])
