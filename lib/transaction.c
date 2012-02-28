@@ -227,46 +227,11 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
     if (dsi->ineeded < dsi->oineeded) dsi->oineeded = dsi->ineeded;
 }
 
-/* return DSI of the device the rpmdb lives on */
-static rpmDiskSpaceInfo rpmtsDbDSI(const rpmts ts)
-{
-    const char *dbhome = rpmdbHome(rpmtsGetRdb(ts));
-    struct stat sb;
-    int rc;
-
-    rc = stat(dbhome, &sb);
-    if (rc) {
-	return NULL;
-    }
-    return rpmtsGetDSI(ts, sb.st_dev, dbhome);
-}
-
-/* Update DSI for changing size of the rpmdb */
-static void rpmtsUpdateDSIrpmDBSize(const rpmte p, rpmDiskSpaceInfo dsi)
-{
-    rpm_loff_t headerSize;
-    int64_t bneeded;
-
-    /* XXX somehow we can end up here with bsize 0 (RhBug:671056) */
-    if (dsi == NULL || dsi->bsize == 0) return;
-
-    headerSize = rpmteHeaderSize(p);
-    bneeded = BLOCK_ROUND(headerSize, dsi->bsize);
-    /* REMOVE doesn't neccessarily shrink the database */
-    if (rpmteType(p) == TR_ADDED) {
-	/* guessing that db grows 4 times more than the header size */
-	dsi->bneeded += (bneeded * 4);
-    }
-}
-
-
 static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 {
     rpmDiskSpaceInfo dsi = ts->dsi;
 
     if (dsi == NULL || !dsi->bsize)
-	return;
-    if (rpmfiFC(rpmteFI(te)) <= 0)
 	return;
 
     for (; dsi->bsize; dsi++) {
@@ -1302,11 +1267,12 @@ static int rpmtsPrepare(rpmts ts)
     rpmfi fi;
     int rc = 0;
     uint64_t fileCount = countFiles(ts);
+    const char *dbhome = NULL;
+    struct stat dbstat;
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
-    rpmDiskSpaceInfo dsi;
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 
@@ -1334,7 +1300,10 @@ static int rpmtsPrepare(rpmts ts)
     /* check against files in the rpmdb */
     checkInstalledFiles(ts, fileCount, ht, fpc);
 
-    dsi = rpmtsDbDSI(ts);
+    dbhome = rpmdbHome(rpmtsGetRdb(ts));
+    /* If we can't stat, ignore db growth. Probably not right but... */
+    if (dbhome && stat(dbhome, &dbstat))
+	dbhome = NULL;
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
@@ -1346,7 +1315,14 @@ static int rpmtsPrepare(rpmts ts)
 	   needs on each partition for this package. */
 	handleOverlappedFiles(ts, ht, p, fi);
 
-	rpmtsUpdateDSIrpmDBSize(p, dsi);
+	/*
+	 * Try to estimate space needed for rpmdb growth: guess that the
+	 * db grows 4 times the header size (indexes and all).
+	 */
+	if (dbhome) {
+	    int64_t hsize = rpmteHeaderSize(p) * 4;
+	    rpmtsUpdateDSI(ts, dbstat.st_dev, dbhome, hsize, 0, 0, FA_CREATE);
+	}
 
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {
