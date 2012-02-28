@@ -379,7 +379,7 @@ int readLine(rpmSpec spec, int strip)
 	spec->readStack = spec->readStack->next;
 	free(rl);
 	spec->line[0] = '\0';
-    } else if (ISMACROWITHARG(s, "%include")) {
+    } else if (spec->readStack->reading && ISMACROWITHARG(s, "%include")) {
 	char *fileName, *endFileName, *p;
 
 	fileName = s+8;
