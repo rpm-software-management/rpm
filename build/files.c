@@ -1018,7 +1018,6 @@ static void genCpioListAndHeader(FileList fl,
     int i;
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
-    dev_t brdev = 0;
 
     /*
      * See if non-md5 file digest algorithm is requested. If not
@@ -1103,17 +1102,6 @@ static void genCpioListAndHeader(FileList fl,
 	/* Skip files that were marked with %exclude. */
 	if (flp->flags & RPMFILE_EXCLUDE) continue;
 
-	if (brdev == 0 && flp->fl_dev != 0)
-	    brdev = flp->fl_dev;
-	/*
-	 * We could handle this quite easily but it can't happen without
-	 * some very dirty tricks, so just error out for now...
-	 */
-	if (brdev && flp->fl_dev && brdev != flp->fl_dev) {
-	    rpmlog(RPMLOG_ERR, _("buildroot spans across filesystems\n"));
-	    fl->processingFailed = 1;
-	}
-
 	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
 	apathlen += (strlen(flp->cpioPath) - skipLen + (_addDotSlash ? 3 : 1));
 
@@ -1167,18 +1155,18 @@ static void genCpioListAndHeader(FileList fl,
 	    headerPutUint16(h, RPMTAG_FILERDEVS, &rrdev, 1);
 	}
 	
-	{   rpm_dev_t rdev = (rpm_dev_t) flp->fl_dev;
-	    headerPutUint32(h, RPMTAG_FILEDEVICES, &rdev, 1);
-	}
-
 	/*
 	 * To allow rpmbuild to work on filesystems with 64bit inodes numbers,
 	 * remap them into 32bit integers based on filelist index, just
 	 * preserving semantics for determining hardlinks.
 	 * Start at 1 as inode zero as that could be considered as an error.
+	 * Since we flatten all the inodes to appear within a single fs,
+	 * we also need to flatten the devices.
 	 */
 	{   rpm_ino_t rino = fileid + 1;
+	    rpm_dev_t rdev = flp->fl_dev ? 1 : 0;
 	    headerPutUint32(h, RPMTAG_FILEINODES, &rino, 1);
+	    headerPutUint32(h, RPMTAG_FILEDEVICES, &rdev, 1);
 	}
 	
 	headerPutString(h, RPMTAG_FILELANGS, flp->langs);
