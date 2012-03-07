@@ -1588,7 +1588,7 @@ main (int argc, char *argv[])
 	  if (strcmp (name, ".stab") == 0)
 	    {
 	      fprintf (stderr, "Stabs debuginfo not supported: %s\n", file);
-	      exit (1);
+	      break;
 	    }
 	  if (strcmp (name, ".debug_info") == 0)
 	    edit_dwarf2 (dso);
