@@ -387,6 +387,12 @@ package or when debugging this package.\
 %_binaries_in_noarch_packages_terminate_build	1
 
 #
+# Should rpm try to download missing sources at build-time?
+# Enabling this is dangerous as long as rpm has no means to validate
+# the integrity of the download with a digest or signature.
+%_disable_source_fetch 1
+
+#
 # Program to call for each successfully built and written binary package.
 # The package name is passed to the program as a command-line argument.
 #
