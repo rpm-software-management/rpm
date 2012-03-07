@@ -407,7 +407,14 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
     if (qva->qva_source == RPMQV_SPECRPMS) {
 	res = 0;
 	for (Package pkg = spec->packages; pkg != NULL; pkg = pkg->next) {
+#if 0
+	    /*
+	     * XXX FIXME: whether to show all or just the packages that
+	     * would be built needs to be made caller specifiable, for now
+	     * revert to "traditional" behavior as existing tools rely on this.
+	     */
 	    if (pkg->fileList == NULL) continue;
+#endif
 	    res += qva->qva_showPackage(qva, ts, pkg->header);
 	}
     } else {
