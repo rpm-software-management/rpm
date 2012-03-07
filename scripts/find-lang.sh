@@ -107,6 +107,14 @@ s:%lang(C) ::
 
 find "$TOP_DIR" -type d|sed '
 s:'"$TOP_DIR"'::
+'"$NO_ALL_NAME$GNOME"'s:\(.*/share/help/\)\([^/_]\+\)\(/'"$NAME"'\)$:%lang(\2) %doc \1\2\3/:
+'"$ALL_NAME$GNOME"'s:\(.*/share/help/\)\([^/_]\+\)\(/[a-zA-Z0-9.\_\-]\+\)$:%lang(\2) %doc \1\2\3/:
+s:^\([^%].*\)::
+s:%lang(C) ::
+/^$/d' >> $MO_NAME
+
+find "$TOP_DIR" -type d|sed '
+s:'"$TOP_DIR"'::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'$\):%dir \1:
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'/[a-zA-Z0-9.\_\-]/.\+\)::
 '"$NO_ALL_NAME$GNOME"'s:\(.*/gnome/help/'"$NAME"'\/\)\([^/_]\+\):%lang(\2) \1\2:
