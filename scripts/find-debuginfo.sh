@@ -136,6 +136,23 @@ debug_link()
   link_relative "$t" "$l" "$RPM_BUILD_ROOT"
 }
 
+# Provide .2, .3, ... symlinks to all filename instances of this build-id.
+make_id_dup_link()
+{
+  local id="$1" file="$2" idfile
+
+  local n=1
+  while true; do
+    idfile=".build-id/${id:0:2}/${id:2}.$n"
+    [ $# -eq 3 ] && idfile="${idfile}$3"
+    if [ ! -L "$RPM_BUILD_ROOT/usr/lib/debug/$idfile" ]; then
+      break
+    fi
+    n=$[$n+1]
+  done
+  debug_link "$file" "/$idfile"
+}
+
 # Make a build-id symlink for id $1 with suffix $3 to file $2.
 make_id_link()
 {
@@ -148,6 +165,8 @@ make_id_link()
     debug_link "$file" "/$idfile"
     return
   fi
+
+  make_id_dup_link "$@"
 
   [ $# -eq 3 ] && return 0
 
@@ -197,6 +216,9 @@ while read nlinks inum f; do
   if [ $nlinks -gt 1 ]; then
     eval linked=\$linked_$inum
     if [ -n "$linked" ]; then
+      eval id=\$linkedid_$inum
+      make_id_dup_link "$id" "$dn/$(basename $f)"
+      make_id_dup_link "$id" "/usr/lib/debug$dn/$bn" .debug
       link=$debugfn
       get_debugfn "$linked"
       echo "hard linked $link to $debugfn"
@@ -211,6 +233,9 @@ while read nlinks inum f; do
   echo "extracting debug info from $f"
   id=$(/usr/lib/rpm/debugedit -b "$RPM_BUILD_DIR" -d /usr/src/debug \
 			      -i -l "$SOURCEFILE" "$f") || exit
+  if [ $nlinks -gt 1 ]; then
+    eval linkedid_$inum=\$id
+  fi
   if [ -z "$id" ]; then
     echo >&2 "*** ${strict_error}: No build ID note found in $f"
     $strict && exit 2
