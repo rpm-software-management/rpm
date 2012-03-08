@@ -43,18 +43,18 @@ PyObject *rpmtd_AsPyobj(rpmtd td)
     }
     
     if (array) {
-	res = PyList_New(0);
+	int ix;
+	res = PyList_New(rpmtdCount(td));
         if (!res) {
             return NULL;
         }
-	while (rpmtdNext(td) >= 0) {
+	while ((ix = rpmtdNext(td)) >= 0) {
 	    PyObject *item = rpmtd_ItemAsPyobj(td, tclass);
             if (!item) {
                 Py_DECREF(res);
                 return NULL;
             }
-	    PyList_Append(res, item);
-	    Py_DECREF(item);
+	    PyList_SET_ITEM(res, ix, item);
 	}
     } else {
 	res = rpmtd_ItemAsPyobj(td, tclass);
