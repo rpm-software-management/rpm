@@ -6,6 +6,8 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_INIT_AUTOMAKE([1.10 foreign tar-ustar dist-bzip2 subdir-objects nostdinc])
+dnl Allow silent build on automake versions that support it
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
 
 AC_CONFIG_TESTDIR(tests)
 
