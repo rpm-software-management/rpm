@@ -367,10 +367,6 @@ static int buildForTarget(rpmts ts, const char * arg, BTA_t ba)
     int justRm = ((buildAmount & ~(RPMBUILD_RMSOURCE|RPMBUILD_RMSPEC)) == 0);
     rpmSpecFlags specFlags = spec_flags;
 
-#ifndef	DYING
-    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
-#endif
-
     if (ba->buildRootOverride)
 	buildRootURL = rpmGenPath(NULL, ba->buildRootOverride, NULL);
 
