@@ -100,15 +100,6 @@ int rpmMachineScore(int type, const char * name);
 int rpmShowRC(FILE * fp);
 
 /** \ingroup rpmrc
- * @deprecated Use addMacro to set _target_* macros.
- * @todo Eliminate from API.
- # @note Only used by build code.
- * @param archTable
- * @param osTable
- */
-void rpmSetTables(int archTable, int osTable);
-
-/** \ingroup rpmrc
  * Destroy rpmrc arch/os compatibility tables.
  * @todo Eliminate from API.
  */

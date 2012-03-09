@@ -1155,7 +1155,7 @@ static void rpmSetVarArch(int var, const char * val, const char * arch)
     next->arch = (arch ? xstrdup(arch) : NULL);
 }
 
-void rpmSetTables(int archTable, int osTable)
+static void rpmSetTables(int archTable, int osTable)
 {
     const char * arch, * os;
 
