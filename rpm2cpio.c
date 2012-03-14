@@ -18,6 +18,7 @@ int main(int argc, char *argv[])
     Header h;
     char * rpmio_flags = NULL;
     int rc;
+    off_t payload_size;
     FD_t gzdi;
     
     setprogname(argv[0]);	/* Retrofit glibc __progname */
@@ -69,9 +70,10 @@ int main(int argc, char *argv[])
 	break;
     }
 
-    /* Retrieve type of payload compression. */
+    /* Retrieve payload size and compression type. */
     {	const char *compr = headerGetString(h, RPMTAG_PAYLOADCOMPRESSOR);
 	rpmio_flags = rstrscat(NULL, "r.", compr ? compr : "gzip", NULL);
+	payload_size = headerGetNumber(h, RPMTAG_LONGARCHIVESIZE);
     }
 
     gzdi = Fdopen(fdi, rpmio_flags);	/* XXX gzdi == fdi */
@@ -82,8 +84,8 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 
-    rc = ufdCopy(gzdi, fdo);
-    rc = (rc <= 0) ? EXIT_FAILURE : EXIT_SUCCESS;
+    rc = (ufdCopy(gzdi, fdo) == payload_size) ? EXIT_SUCCESS : EXIT_FAILURE;
+
     Fclose(fdo);
 
     Fclose(gzdi);	/* XXX gzdi == fdi */
