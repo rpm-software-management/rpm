@@ -588,7 +588,7 @@ void rpmluaInteractive(rpmlua _lua)
 /* ------------------------------------------------------------------ */
 /* Lua API */
 
-static int rpm_rpmBase64Encode(lua_State *L)
+static int rpm_b64encode(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
     size_t len = lua_strlen(L, 1);
@@ -603,7 +603,7 @@ static int rpm_rpmBase64Encode(lua_State *L)
     return 1;
 }
 
-static int rpm_rpmBase64Decode(lua_State *L)
+static int rpm_b64decode(lua_State *L)
 {
     const char *str = luaL_checkstring(L, 1);
     if (str) {
@@ -823,8 +823,8 @@ static int rpm_print (lua_State *L)
 }
 
 static const luaL_reg rpmlib[] = {
-    {"rpmBase64Encode", rpm_rpmBase64Encode},
-    {"rpmBase64Decode", rpm_rpmBase64Decode},
+    {"b64encode", rpm_b64encode},
+    {"b64decode", rpm_b64decode},
     {"expand", rpm_expand},
     {"define", rpm_define},
     {"register", rpm_register},
