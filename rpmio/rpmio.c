@@ -452,36 +452,30 @@ static const struct FDIO_s fdio_s = {
 };
 static const FDIO_t fdio = &fdio_s ;
 
-int ufdCopy(FD_t sfd, FD_t tfd)
+off_t ufdCopy(FD_t sfd, FD_t tfd)
 {
     char buf[BUFSIZ];
-    int itemsRead;
-    int itemsCopied = 0;
-    int rc = 0;
+    ssize_t rdbytes, wrbytes;
+    off_t total = 0;
 
     while (1) {
-	rc = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
-	if (rc < 0)
-	    break;
-	else if (rc == 0) {
-	    rc = itemsCopied;
-	    break;
-	}
-	itemsRead = rc;
-	rc = Fwrite(buf, sizeof(buf[0]), itemsRead, tfd);
-	if (rc < 0)
-	    break;
- 	if (rc != itemsRead) {
-	    rc = -1;
-	    break;
-	}
+	rdbytes = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
 
-	itemsCopied += itemsRead;
+	if (rdbytes > 0) {
+	    wrbytes = Fwrite(buf, sizeof(buf[0]), rdbytes, tfd);
+	    if (wrbytes != rdbytes) {
+		total = -1;
+		break;
+	    }
+	    total += wrbytes;
+	} else {
+	    if (rdbytes < 0)
+		total = -1;
+	    break;
+	}
     }
 
-    DBGIO(sfd, (stderr, "++ copied %d bytes\n", itemsCopied));
-
-    return rc;
+    return total;
 }
 
 /*

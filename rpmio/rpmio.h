@@ -116,7 +116,7 @@ FD_t fdFree(FD_t fd);
 
 /**
  */
-int ufdCopy(FD_t sfd, FD_t tfd);
+off_t ufdCopy(FD_t sfd, FD_t tfd);
 
 /** \ingroup rpmio
  * Identify per-desciptor I/O operation statistics.
