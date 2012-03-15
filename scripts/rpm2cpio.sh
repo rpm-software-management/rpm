@@ -34,5 +34,5 @@ case "$comp" in
     "$gz"*)   dd if="$pkg" ibs=$o skip=1 2>/dev/null | gunzip ;;
     "$xz"*)   dd if="$pkg" ibs=$o skip=1 2>/dev/null | xzcat ;;
     "$lzma"*) dd if="$pkg" ibs=$o skip=1 2>/dev/null | unlzma ;;
-    *)        echo "Unrecognized rpm file: $pkg"; return 1 ;;
+    *)        echo "Unrecognized rpm file: $pkg"; exit 1 ;;
 esac
