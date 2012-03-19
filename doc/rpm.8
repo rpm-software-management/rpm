@@ -591,7 +591,7 @@ Dump file information as follows (implies \fB-l\fR):
 .RS
 
 .nf
-path size mtime filedigest mode owner group isconfig isdoc rdev symlink
+path size mtime digest mode owner group isconfig isdoc rdev symlink
 	
 .fi
 .RE
@@ -641,7 +641,7 @@ The general form of an rpm verify command is
 Verifying a package compares information about the installed files in
 the package with information about the files taken from the package
 metadata stored in the rpm database.  Among other things, verifying
-compares the size, MD5 sum, permissions, type, owner and group of
+compares the size, digest, permissions, type, owner and group of
 each file.  Any discrepancies are displayed.
 Files that were not installed from the package, for example,
 documentation files excluded on installation using the
@@ -710,7 +710,7 @@ the corresponding \fB--verify\fR test:
 .nf
 \fBS\fR file \fBS\fRize differs
 \fBM\fR \fBM\fRode differs (includes permissions and file type)
-\fB5\fR MD\fB5\fR sum differs
+\fB5\fR digest (formerly MD\fB5\fR sum) differs
 \fBD\fR \fBD\fRevice major/minor number mismatch
 \fBL\fR read\fBL\fRink(2) path mismatch
 \fBU\fR \fBU\fRser ownership differs
