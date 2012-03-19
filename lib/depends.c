@@ -398,6 +398,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 {
     const char * Name = rpmdsN(dep);
     const char * DNEVR = rpmdsDNEVR(dep);
+    rpmTagVal deptag = rpmdsTagN(dep);
     int *cachedrc = NULL;
     rpmdbMatchIterator mi = NULL;
     Header h = NULL;
@@ -417,7 +418,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
      * taking file state into account: replaced, wrong colored and
      * not installed files can not satisfy a dependency.
      */
-    if (Name[0] == '/') {
+    if (deptag != RPMTAG_OBSOLETENAME && Name[0] == '/') {
 	mi = rpmtsPrunedIterator(ts, RPMDBI_INSTFILENAMES, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    rpmdsNotify(dep, "(db files)", rc);
@@ -428,7 +429,12 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 
     /* Otherwise look in provides no matter what the dependency looks like */
     if (h == NULL) {
-	mi = rpmtsPrunedIterator(ts, RPMDBI_PROVIDENAME, Name, prune);
+	/* Obsoletes use just name alone, everything else uses provides */
+	rpmTagVal dbtag = RPMDBI_PROVIDENAME;
+	if (deptag == RPMDBI_OBSOLETENAME)
+	    dbtag = RPMDBI_NAME;
+
+	mi = rpmtsPrunedIterator(ts, dbtag, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    if (rpmdsMatchesDep(h, rpmdbGetIteratorFileNum(mi), dep, _rpmds_nopromote)) {
 		rpmdsNotify(dep, "(db provides)", rc);
