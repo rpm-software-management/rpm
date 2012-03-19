@@ -33,7 +33,7 @@ static void printHash(const rpm_loff_t amount, const rpm_loff_t total)
 {
     int hashesNeeded;
 
-    rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 44 : 50);
+    rpmcliHashesTotal = (isatty (STDOUT_FILENO) ? 34 : 40);
 
     if (rpmcliHashesCurrent != rpmcliHashesTotal) {
 	float pct = (total ? (((float) amount) / total) : 1.0);
@@ -153,9 +153,9 @@ void * rpmShowProgress(const void * arg,
 	if (flags & INSTALL_HASH) {
 	    char *s = headerFormat(h, "%{NAME}", NULL);
 	    if (isatty (STDOUT_FILENO))
-		fprintf(stdout, "%4d:%-23.23s", rpmcliProgressCurrent + 1, s);
+		fprintf(stdout, "%4d:%-33.33s", rpmcliProgressCurrent + 1, s);
 	    else
-		fprintf(stdout, "%-28.28s", s);
+		fprintf(stdout, "%-38.38s", s);
 	    (void) fflush(stdout);
 	    free(s);
 	} else {
@@ -190,7 +190,7 @@ void * rpmShowProgress(const void * arg,
 	if (!(flags & INSTALL_LABEL))
 	    break;
 	if (flags & INSTALL_HASH)
-	    fprintf(stdout, "%-28s", _("Preparing..."));
+	    fprintf(stdout, "%-38s", _("Preparing..."));
 	else
 	    fprintf(stdout, "%s\n", _("Preparing packages..."));
 	(void) fflush(stdout);
