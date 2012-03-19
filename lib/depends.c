@@ -614,6 +614,8 @@ int rpmtsCheck(rpmts ts)
 		NULL, tscolor);
 	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_CONFLICTNAME),
 		NULL, tscolor);
+	checkDS(ts, dcache, p, rpmteNEVRA(p), rpmteDS(p, RPMTAG_OBSOLETENAME),
+		NULL, tscolor);
 
 	/* Check provides against conflicts in installed packages. */
 	while (rpmdsNext(provides) >= 0) {
