@@ -10,9 +10,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-07 15:01+0200\n"
-"PO-Revision-Date: 2012-02-19 07:09+0000\n"
-"Last-Translator: Hajime Taira <htaira@redhat.com>\n"
+"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Japanese (http://www.transifex.net/projects/p/rpm/language/"
 "ja/)\n"
 "Language: ja\n"
@@ -52,17 +52,17 @@ msgstr "--pipe でのパイプ作成に失敗: %m\n"
 msgid "exec failed\n"
 msgstr "実行失敗\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引数は RPM パッケージではありません。\n"
 
-#: rpm2cpio.c:67
+#: rpm2cpio.c:68
 #, c-format
 msgid "error reading header from package\n"
 msgstr "パッケージのヘッダー読み込み中にエラー\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "ペイロードを再度開けません: %s\n"
@@ -211,7 +211,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test はパッケージのインストール時および削除時のみ指定できます。"
 
-#: rpmqv.c:239 rpmbuild.c:547
+#: rpmqv.c:239 rpmbuild.c:543
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) の引数は / から始まらなければなりません。"
 
@@ -396,27 +396,27 @@ msgstr "%s から spec ファイルの読み込みに失敗しました。\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "%s を %s に名前を変更できませんでした: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:413
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s に失敗しました: %m\n"
 
-#: rpmbuild.c:421
+#: rpmbuild.c:417
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s は通常ファイルではありません。\n"
 
-#: rpmbuild.c:428
+#: rpmbuild.c:424
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "ファイル %s は spec ファイルではないようです。\n"
 
-#: rpmbuild.c:494
+#: rpmbuild.c:490
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "ビルド対象プラットフォーム: %s\n"
 
-#: rpmbuild.c:502
+#: rpmbuild.c:498
 #, c-format
 msgid "Building for target %s\n"
 msgstr "ターゲット %s 用にビルド中\n"
@@ -777,7 +777,7 @@ msgstr "%%dev グロブは許可されません: %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "ディレクトリーがグロブにより見つかりませんでした: %s\n"
 
-#: build/files.c:1693 lib/rpminstall.c:427
+#: build/files.c:1693 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "ファイルが見つかりません (by glob): %s\n"
@@ -2349,7 +2349,7 @@ msgstr "無効なパッケージ番号: %s\n"
 msgid "record %u could not be read\n"
 msgstr "レコード %u は読み込めませんでした\n"
 
-#: lib/query.c:454 lib/rpminstall.c:662
+#: lib/query.c:454 lib/rpminstall.c:661
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "パッケージ %s はインストールされていません。\n"
@@ -2506,8 +2506,8 @@ msgstr "POSIX..1e ファイル ケーパビリティ (capability) のための�
 msgid "package scriptlets can be expanded at install time."
 msgstr "パッケージのスクリプトはインストール時間を長くすることができます。"
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
-#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
+#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "%s のオープンに失敗: %s\n"
@@ -2527,59 +2527,59 @@ msgstr "更新中 / インストール中...\n"
 msgid "Cleaning up / removing...\n"
 msgstr "整理中 / 削除中...\n"
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "準備しています..."
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:194
 msgid "Preparing packages..."
 msgstr "パッケージの準備中..."
 
-#: lib/rpminstall.c:271 tools/rpmgraph.c:168
+#: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "依存性の欠如:\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: RPM パッケージ(またはパッケージのリスト)ではありません: %s\n"
 
-#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s をインストールできません。\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:464
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "%s を取得中\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:476
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "%s をスキップします - 転送に失敗しました\n"
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:542
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "パッケージ %s は再配置できません。\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "ファイル %s の読み込みエラー\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:668
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" は複数のパッケージを指定しています:\n"
 
-#: lib/rpminstall.c:709
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "%s を開けません: %s\n"
 
-#: lib/rpminstall.c:715
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "%s をインストール中です。\n"
@@ -3517,6 +3517,3 @@ msgstr "%s: manifest の読み込みに失敗: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "ヘッダーとペイロード署名を検証しません。"
-
-#~ msgid "buildroot spans across filesystems\n"
-#~ msgstr "buildroot がファイルシステムをまたがります\n"

@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-07 15:01+0200\n"
-"PO-Revision-Date: 2012-02-10 14:07+0000\n"
-"Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
+"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Polish (http://www.transifex.net/projects/p/rpm/language/"
 "pl/)\n"
 "Language: pl\n"
@@ -57,17 +57,17 @@ msgstr "utworzenie potoku dla --pipe się nie powiodło: %m\n"
 msgid "exec failed\n"
 msgstr "wykonanie się nie powiodło\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "parametr nie jest pakietem RPM\n"
 
-#: rpm2cpio.c:67
+#: rpm2cpio.c:68
 #, c-format
 msgid "error reading header from package\n"
 msgstr "błąd podczas odczytywania nagłówka z pakietu\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "nie można ponownie otworzyć danych: %s\n"
@@ -217,7 +217,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test można podać tylko podczas instalacji i usuwania pakietów"
 
-#: rpmqv.c:239 rpmbuild.c:547
+#: rpmqv.c:239 rpmbuild.c:543
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry dla --root (-r) muszą zaczynać się od /"
 
@@ -408,27 +408,27 @@ msgstr "Odczytanie pliku spec z %s się nie powiodło\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Zmiana nazwy %s na %s się nie powiodła: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:413
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "wykonanie stat na %s się nie powiodło: %m\n"
 
-#: rpmbuild.c:421
+#: rpmbuild.c:417
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Plik %s nie jest zwykłym plikiem.\n"
 
-#: rpmbuild.c:428
+#: rpmbuild.c:424
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Plik %s nie wygląda na plik spec.\n"
 
-#: rpmbuild.c:494
+#: rpmbuild.c:490
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform docelowych: %s\n"
 
-#: rpmbuild.c:502
+#: rpmbuild.c:498
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
@@ -787,7 +787,7 @@ msgstr "Wyrażenie regularne %%dev nie jest dozwolone: %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Katalog nie został odnaleziony przez wyrażenie regularne: %s\n"
 
-#: build/files.c:1693 lib/rpminstall.c:427
+#: build/files.c:1693 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie odnaleziono pliku przez wyrażenie regularne: %s\n"
@@ -2360,7 +2360,7 @@ msgstr "nieprawidłowy numer pakietu: %s\n"
 msgid "record %u could not be read\n"
 msgstr "nie można odczytać wpisu %u\n"
 
-#: lib/query.c:454 lib/rpminstall.c:662
+#: lib/query.c:454 lib/rpminstall.c:661
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "pakiet %s nie jest zainstalowany\n"
@@ -2516,8 +2516,8 @@ msgstr "obsługa możliwości plików POSIX.1e"
 msgid "package scriptlets can be expanded at install time."
 msgstr "skrypty pakietu mogą być rozszerzane w czasie instalacji."
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
-#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
+#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otwarcie %s się nie powiodło: %s\n"
@@ -2537,59 +2537,59 @@ msgstr "Aktualizowanie/instalowanie...\n"
 msgid "Cleaning up / removing...\n"
 msgstr "Czyszczenie/usuwanie...\n"
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Przygotowywanie..."
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:194
 msgid "Preparing packages..."
 msgstr "Przygotowywanie pakietów..."
 
-#: lib/rpminstall.c:271 tools/rpmgraph.c:168
+#: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Niespełnione zależności:\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nie jest pakietem RPM (ani manifestem pakietu): %s\n"
 
-#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie może zostać zainstalowany\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:464
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pobieranie %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:476
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "pomijanie %s - przesłanie się nie powiodło\n"
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:542
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "pakiet %s nie jest przesuwalny\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "błąd podczas odczytywania z pliku %s\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:668
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" podaje wiele pakietów:\n"
 
-#: lib/rpminstall.c:709
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie można otworzyć %s: %s\n"
 
-#: lib/rpminstall.c:715
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instalowanie %s\n"
@@ -3520,6 +3520,3 @@ msgstr "%s: odczytanie manifestu się nie powiodło: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
-
-#~ msgid "buildroot spans across filesystems\n"
-#~ msgstr "buildroot rozciąga się na wiele systemów plików\n"

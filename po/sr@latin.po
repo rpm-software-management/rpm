@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-07 15:01+0200\n"
-"PO-Revision-Date: 2012-02-10 12:19+0000\n"
+"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: sr@latin\n"
@@ -49,17 +49,17 @@ msgstr "neuspelo pravljenje cevi za --pipe: %m\n"
 msgid "exec failed\n"
 msgstr "neuspelo izvršavanje\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argument nije RPM paket\n"
 
-#: rpm2cpio.c:67
+#: rpm2cpio.c:68
 #, c-format
 msgid "error reading header from package\n"
 msgstr "greška pri čitanju zaglavlja iz paketa\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "ne mogu da ponovo otvorim tovar: %s\n"
@@ -207,7 +207,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:239 rpmbuild.c:547
+#: rpmqv.c:239 rpmbuild.c:543
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenti za --root (-r) moraju početi znakom /"
 
@@ -394,27 +394,27 @@ msgstr "Neuspelo čitanje datoteke specifikacije iz %s\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Neuspela promena imena %s u %s: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:413
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat nije uspeo %s: %m\n"
 
-#: rpmbuild.c:421
+#: rpmbuild.c:417
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Datoteka %s nije obična datoteka.\n"
 
-#: rpmbuild.c:428
+#: rpmbuild.c:424
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Datoteka %s ne liči na datoteku specifikacije.\n"
 
-#: rpmbuild.c:494
+#: rpmbuild.c:490
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Pravim ciljne platforme: %s\n"
 
-#: rpmbuild.c:502
+#: rpmbuild.c:498
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Pravim za cilj %s\n"
@@ -772,7 +772,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1693 lib/rpminstall.c:427
+#: build/files.c:1693 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Datoteka nije pronađena poklapanjem: %s\n"
@@ -2339,7 +2339,7 @@ msgstr "neispravan broj paketa: %s\n"
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:454 lib/rpminstall.c:662
+#: lib/query.c:454 lib/rpminstall.c:661
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "paket %s nije instaliran\n"
@@ -2494,8 +2494,8 @@ msgstr "podrška za POSIX.1e mogućnosti datoteka"
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
-#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
+#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvaranje %s nije uspelo: %s\n"
@@ -2515,59 +2515,59 @@ msgstr ""
 msgid "Cleaning up / removing...\n"
 msgstr ""
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Pripremam..."
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:194
 msgid "Preparing packages..."
 msgstr ""
 
-#: lib/rpminstall.c:271 tools/rpmgraph.c:168
+#: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Neuspele zavisnosti:\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nije rpm paket (ili manifest paketa): %s\n"
 
-#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s se ne može instalirati\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:464
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Pribavljam %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:476
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "preskačem %s - neuspeo prenos\n"
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:542
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "paket %s se ne može premeštati\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "greška pri čitanju iz datoteke %s\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:668
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "„%s“ određuje više paketa:\n"
 
-#: lib/rpminstall.c:709
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "ne mogu da otvorim %s: %s\n"
 
-#: lib/rpminstall.c:715
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Instaliram %s\n"

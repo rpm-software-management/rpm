@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-07 15:01+0200\n"
-"PO-Revision-Date: 2012-02-19 08:15+0000\n"
-"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
+"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.net/projects/p/rpm/"
 "language/zh_TW/)\n"
 "Language: zh_TW\n"
@@ -51,17 +51,17 @@ msgstr ""
 msgid "exec failed\n"
 msgstr "執行失敗\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "引數不是 RPM 套件\n"
 
-#: rpm2cpio.c:67
+#: rpm2cpio.c:68
 #, c-format
 msgid "error reading header from package\n"
 msgstr "讀取套件的表頭資訊時發生錯誤\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "無法重新開啟酬載：%s\n"
@@ -203,7 +203,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:239 rpmbuild.c:547
+#: rpmqv.c:239 rpmbuild.c:543
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 的引數必須以「/」開頭"
 
@@ -387,27 +387,27 @@ msgstr "無法從 %s 讀取規格檔\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "無法將 %s 重新命名為 %s：%m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:413
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "無法檢視 %s 的狀態：%m\n"
 
-#: rpmbuild.c:421
+#: rpmbuild.c:417
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "%s 不是通常的檔案。\n"
 
-#: rpmbuild.c:428
+#: rpmbuild.c:424
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "%s 似乎不是規格檔。\n"
 
-#: rpmbuild.c:494
+#: rpmbuild.c:490
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "建置目標平台：%s\n"
 
-#: rpmbuild.c:502
+#: rpmbuild.c:498
 #, c-format
 msgid "Building for target %s\n"
 msgstr "建置目標 %s\n"
@@ -763,7 +763,7 @@ msgstr ""
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1693 lib/rpminstall.c:427
+#: build/files.c:1693 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "透過 glob 解析找不到檔案：%s\n"
@@ -2326,7 +2326,7 @@ msgstr "無效的套件編號：%s\n"
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:454 lib/rpminstall.c:662
+#: lib/query.c:454 lib/rpminstall.c:661
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "套件 %s 尚未安裝\n"
@@ -2478,8 +2478,8 @@ msgstr ""
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
-#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
+#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "開啟 %s 失敗：%s\n"
@@ -2499,59 +2499,59 @@ msgstr ""
 msgid "Cleaning up / removing...\n"
 msgstr ""
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "正在準備…"
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:194
 msgid "Preparing packages..."
 msgstr ""
 
-#: lib/rpminstall.c:271 tools/rpmgraph.c:168
+#: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "相依關係失敗：\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s：不是 rpm 套件 (或套件 manifest)：%s\n"
 
-#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:464
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "正在擷取 %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:476
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr ""
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:542
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "套件 %s 不能重新分配位置\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "讀取檔案 %s 時發生錯誤\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:668
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "「%s」指定多個套件：\n"
 
-#: lib/rpminstall.c:709
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "無法開啟 %s：%s\n"
 
-#: lib/rpminstall.c:715
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "正在安裝 %s\n"

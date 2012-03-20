@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-07 15:01+0200\n"
-"PO-Revision-Date: 2012-02-12 10:14+0000\n"
-"Last-Translator: Guido Grazioli <guido.grazioli@gmail.com>\n"
+"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Italian (http://www.transifex.net/projects/p/rpm/language/"
 "it/)\n"
 "Language: it\n"
@@ -52,17 +52,17 @@ msgstr "creazione di una pipe per --pipe fallita: %m\n"
 msgid "exec failed\n"
 msgstr "exec fallito\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "l'argomento non è un pacchetto RPM\n"
 
-#: rpm2cpio.c:67
+#: rpm2cpio.c:68
 #, c-format
 msgid "error reading header from package\n"
 msgstr "errore durante la lettura dell'intestazione dal pacchetto\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "impossibile riaprire il payload: %s\n"
@@ -234,7 +234,7 @@ msgstr ""
 "--test può essere specificato solamente per l'installazione e l'eliminazione "
 "di pacchetti"
 
-#: rpmqv.c:239 rpmbuild.c:547
+#: rpmqv.c:239 rpmbuild.c:543
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "gli argomenti per --root (-r) devono iniziare con /"
 
@@ -424,27 +424,27 @@ msgstr "Impossibile leggere il file spec da %s\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Impossibile rinominare %s in %s: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:413
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "impossibile eseguire lo stat di %s: %m\n"
 
-#: rpmbuild.c:421
+#: rpmbuild.c:417
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Il file %s non è un file regolare.\n"
 
-#: rpmbuild.c:428
+#: rpmbuild.c:424
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Il file %s non sembra essere uno specfile.\n"
 
-#: rpmbuild.c:494
+#: rpmbuild.c:490
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Creazione piattaforme target in corso: %s\n"
 
-#: rpmbuild.c:502
+#: rpmbuild.c:498
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Creazione per il target %s in corso\n"
@@ -804,7 +804,7 @@ msgstr "glob %%dev non consentito: %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Directory non trovata per il glob: %s\n"
 
-#: build/files.c:1693 lib/rpminstall.c:427
+#: build/files.c:1693 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "File non trovato dal glob: %s\n"
@@ -2382,7 +2382,7 @@ msgstr "numero del pacchetto non valido: %s\n"
 msgid "record %u could not be read\n"
 msgstr "il record %u non può essere letto\n"
 
-#: lib/query.c:454 lib/rpminstall.c:662
+#: lib/query.c:454 lib/rpminstall.c:661
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "il pacchetto %s non è stato installato\n"
@@ -2545,8 +2545,8 @@ msgid "package scriptlets can be expanded at install time."
 msgstr ""
 "le scriptlet del pacchetto possono essere espanse durante l'installazione."
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
-#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
+#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "apertura di %s fallita: %s\n"
@@ -2566,59 +2566,59 @@ msgstr "Aggiornamento / installazinone...\n"
 msgid "Cleaning up / removing...\n"
 msgstr "Pulizia / rimozione...\n"
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Preparazione in corso..."
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:194
 msgid "Preparing packages..."
 msgstr "Preparazione dei pacchetti..."
 
-#: lib/rpminstall.c:271 tools/rpmgraph.c:168
+#: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Dipendenze fallite:\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: non è un pacchetto rpm (o un manifest del pacchetto): %s\n"
 
-#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s non può essere installato\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:464
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Ripristino di %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:476
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "omissione di %s - trasferimento fallito\n"
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:542
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "il pacchetto %s non è riposizionabile\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "errore di lettura dal file %s\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:668
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" specifica pacchetti multipli:\n"
 
-#: lib/rpminstall.c:709
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "impossibile aprire %s: %s\n"
 
-#: lib/rpminstall.c:715
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Installazione di %s in corso\n"
@@ -3557,6 +3557,3 @@ msgstr "%s: lettura manifesto fallita: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "non verificare firma header+payload"
-
-#~ msgid "buildroot spans across filesystems\n"
-#~ msgstr "la buildroot si trova su un altro filesystem\n"

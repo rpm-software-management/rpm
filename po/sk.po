@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-07 15:01+0200\n"
-"PO-Revision-Date: 2012-02-10 12:19+0000\n"
+"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Slovak (http://www.transifex.net/projects/p/rpm/language/"
 "sk/)\n"
@@ -50,17 +50,17 @@ msgstr "vytvorenie rúry pre --pipe zlyhalo: %m\n"
 msgid "exec failed\n"
 msgstr "vykonanie zlyhalo\n"
 
-#: rpm2cpio.c:62
+#: rpm2cpio.c:63
 #, c-format
 msgid "argument is not an RPM package\n"
 msgstr "argument nie je RPM balík\n"
 
-#: rpm2cpio.c:67
+#: rpm2cpio.c:68
 #, c-format
 msgid "error reading header from package\n"
 msgstr "chyba pri čítaní hlavičky balíka\n"
 
-#: rpm2cpio.c:81
+#: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
 msgstr "nie je možné znova otvoriť payload: %s\n"
@@ -210,7 +210,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr "-- test môže byť špecifikovaný iba počas inštalácie a mazania balíčka"
 
-#: rpmqv.c:239 rpmbuild.c:547
+#: rpmqv.c:239 rpmbuild.c:543
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "argumenty pre --root (-r) musia začínať znakom /"
 
@@ -403,27 +403,27 @@ msgstr "Nie je možné čítať spec súbor z %s\n"
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Nie je možné premenovať %s na %s: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:413
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "nie je možné zistiť stav %s: %m\n"
 
-#: rpmbuild.c:421
+#: rpmbuild.c:417
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Súbor %s nie je obyčajný súbor.\n"
 
-#: rpmbuild.c:428
+#: rpmbuild.c:424
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Súbor %s nevyzerá ako spec súbor.\n"
 
-#: rpmbuild.c:494
+#: rpmbuild.c:490
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Zostavujú sa cieľové platformy: %s\n"
 
-#: rpmbuild.c:502
+#: rpmbuild.c:498
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Zostavuje sa pre cieľ %s\n"
@@ -779,7 +779,7 @@ msgstr "%%dev glob nie je povolený: %s\n"
 msgid "Directory not found by glob: %s\n"
 msgstr "Priečinok nebol nájdený globom: %s\n"
 
-#: build/files.c:1693 lib/rpminstall.c:427
+#: build/files.c:1693 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Súbor nenájdený globom: %s\n"
@@ -2347,7 +2347,7 @@ msgstr "chybné číslo balíku: %s\n"
 msgid "record %u could not be read\n"
 msgstr "záznam %u nie je možné čítať\n"
 
-#: lib/query.c:454 lib/rpminstall.c:662
+#: lib/query.c:454 lib/rpminstall.c:661
 #, c-format
 msgid "package %s is not installed\n"
 msgstr "balík %s nie je nainštalovaný\n"
@@ -2500,8 +2500,8 @@ msgstr "podpora pre schopnosti súboru POSIX.1e"
 msgid "package scriptlets can be expanded at install time."
 msgstr "skriptlety balíčka môžu byť rozbalené počas inštalácie."
 
-#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:309
-#: lib/rpminstall.c:338 tools/rpmgraph.c:92 tools/rpmgraph.c:129
+#: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
+#: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
 msgstr "otvorenie %s zlyhalo: %s\n"
@@ -2521,59 +2521,59 @@ msgstr ""
 msgid "Cleaning up / removing...\n"
 msgstr ""
 
-#: lib/rpminstall.c:193
+#: lib/rpminstall.c:192
 msgid "Preparing..."
 msgstr "Pripravuje sa..."
 
-#: lib/rpminstall.c:195
+#: lib/rpminstall.c:194
 msgid "Preparing packages..."
 msgstr ""
 
-#: lib/rpminstall.c:271 tools/rpmgraph.c:168
+#: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
 msgstr "Zlyhané závislosti:\n"
 
-#: lib/rpminstall.c:322
+#: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
 msgstr "%s: nie je balíček rpm (alebo balíček manifestu): %s\n"
 
-#: lib/rpminstall.c:358 lib/rpminstall.c:725 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
 msgstr "%s nie je možné nainštalovať\n"
 
-#: lib/rpminstall.c:465
+#: lib/rpminstall.c:464
 #, c-format
 msgid "Retrieving %s\n"
 msgstr "Prenáša sa %s\n"
 
-#: lib/rpminstall.c:477
+#: lib/rpminstall.c:476
 #, c-format
 msgid "skipping %s - transfer failed\n"
 msgstr "preskakuje sa %s - transfer zlyhal\n"
 
-#: lib/rpminstall.c:543
+#: lib/rpminstall.c:542
 #, c-format
 msgid "package %s is not relocatable\n"
 msgstr "balíček %s nie je premiestniteľný\n"
 
-#: lib/rpminstall.c:571
+#: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
 msgstr "chyba pri čítaní zo súboru %s\n"
 
-#: lib/rpminstall.c:669
+#: lib/rpminstall.c:668
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr "\"%s\" špecifikuje viacero balíčkov:\n"
 
-#: lib/rpminstall.c:709
+#: lib/rpminstall.c:708
 #, c-format
 msgid "cannot open %s: %s\n"
 msgstr "nie je možné otvoriť %s: %s\n"
 
-#: lib/rpminstall.c:715
+#: lib/rpminstall.c:714
 #, c-format
 msgid "Installing %s\n"
 msgstr "Inštaluje sa %s\n"
