@@ -693,11 +693,12 @@ static int rpmteOpen(rpmte te, int reload_fi)
     }
     if (h != NULL) {
 	if (reload_fi) {
+	    /* This can fail if we get a different, bad header from callback */
 	    te->fi = getFI(te, h);
+	    rc = (te->fi != NULL);
+	} else {
+	    rc = 1;
 	}
-
-	/* This can fail if we get a different, bad header from callback */
-	rc = (te->fi != NULL);
 	
 	rpmteSetHeader(te, h);
 	headerFree(h);
