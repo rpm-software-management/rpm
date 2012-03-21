@@ -1,0 +1,39 @@
+#    rpmscript.at: rpm scriptlet tests
+
+AT_BANNER([RPM scriptlets])
+
+# ------------------------------
+# 
+AT_SETUP([basic scripts and arguments])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/fakeshell.spec
+runroot rpmbuild --quiet -bb --define "rel 1" /data/SPECS/scripts.spec
+runroot rpmbuild --quiet -bb --define "rel 2" /data/SPECS/scripts.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/fakeshell-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/scripts-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/scripts-1.0-2.noarch.rpm
+runroot rpm -e scripts
+],
+[0],
+[scripts-1.0-1 PRETRANS 0
+scripts-1.0-1 PRE 1
+scripts-1.0-1 POST 1
+scripts-1.0-1 POSTTRANS 0
+scripts-1.0-2 PRETRANS 0
+scripts-1.0-2 PRE 2
+scripts-1.0-2 POST 2
+scripts-1.0-1 PREUN 1
+scripts-1.0-1 POSTUN 1
+scripts-1.0-2 POSTTRANS 0
+scripts-1.0-2 PREUN 0
+scripts-1.0-2 POSTUN 0
+],
+[])
+AT_CLEANUP
+
