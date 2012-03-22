@@ -757,7 +757,7 @@ static int getFingerprint(const uint8_t *h, size_t hlen, pgpKeyID_t keyid)
 	    (void) rpmDigestFinal(ctx, (void **)&d, &dlen, 0);
 
 	    if (d) {
-		memcpy(keyid, (d + (dlen-sizeof(keyid))), sizeof(keyid));
+		memcpy(keyid, (d + (dlen-8)), 8);
 		free(d);
 		rc = 0;
 	    }
@@ -787,7 +787,7 @@ int pgpExtractPubkeyFingerprint(const char * b64pkt, pgpKeyID_t keyid)
     if (rpmBase64Decode(b64pkt, (void **)&pkt, &pktlen) == 0) {
 	if (pgpPubkeyFingerprint(pkt, pktlen, keyid) == 0) {
 	    /* if there ever was a bizarre return code for success... */
-	    rc = sizeof(keyid);
+	    rc = 8;
 	}
 	free(pkt);
     }
