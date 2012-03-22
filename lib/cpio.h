@@ -12,8 +12,6 @@
  *
  */
 
-#include "lib/fsm.h"
-
 /** \ingroup payload
  * @note CPIO_CHECK_ERRNO bit is set only if errno is valid.
  */
@@ -88,17 +86,23 @@ struct cpioCrcPhysicalHeader {
 
 #define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
 
+typedef struct rpmcpio_s * rpmcpio_t;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
- * Write cpio trailer.
- * @retval fsm		file path and stat info
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int cpioTrailerWrite(FSM_t fsm);
+ * Create CPIO file object
+ * @param fd		file
+ * @param mode		XXX
+ * @return CPIO object
+ **/
+rpmcpio_t rpmcpioOpen(FD_t fd, char mode);
+
+int rpmcpioClose(rpmcpio_t cpio);
+
+off_t rpmcpioTell(rpmcpio_t cpio);
 
 /**
  * Write cpio header.
@@ -107,7 +111,9 @@ int cpioTrailerWrite(FSM_t fsm);
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int cpioHeaderWrite(FSM_t fsm, struct stat * st);
+int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st);
+
+ssize_t rpmcpioWrite(rpmcpio_t cpio, void * buf, size_t size);
 
 /**
  * Read cpio header.
@@ -116,7 +122,9 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st);
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int cpioHeaderRead(FSM_t fsm, struct stat * st);
+int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st);
+
+ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);
 
 /** \ingroup payload
  * Return formatted error message on payload handling failure.
@@ -124,7 +132,7 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st);
  * @return		formatted error string
  */
 /* XXX should be RPM_GNUC_INTERNAL too but build/pack.c uses */
-const char * cpioStrerror(int rc);
+const char * rpmcpioStrerror(int rc);
 
 #ifdef __cplusplus
 }

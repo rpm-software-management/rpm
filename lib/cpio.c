@@ -27,6 +27,32 @@
 #include "debug.h"
 
 
+struct rpmcpio_s {
+    FD_t fd;
+    char mode;
+    off_t offset;
+    off_t fileend;
+};
+
+rpmcpio_t rpmcpioOpen(FD_t fd, char mode)
+{
+    if ((mode & O_ACCMODE) != O_RDONLY &&
+        (mode & O_ACCMODE) != O_WRONLY)
+        return NULL;
+
+    rpmcpio_t cpio = xcalloc(1, sizeof(*cpio));
+    cpio->fd = fd;
+    cpio->mode = mode;
+    cpio->offset = 0;
+    return cpio;
+}
+
+off_t rpmcpioTell(rpmcpio_t cpio)
+{
+    return cpio->offset;
+}
+
+
 /**
  * Convert string to unsigned integer (with buffer size check).
  * @param str		input string
@@ -52,6 +78,39 @@ static unsigned long strntoul(const char *str,char **endptr, int base, size_t nu
     return ret;
 }
 
+
+static int rpmcpioWritePad(rpmcpio_t cpio, ssize_t modulo)
+{
+    char buf[modulo];
+    ssize_t left, writen;
+    memset(buf, 0, modulo);
+    left = (modulo - ((cpio->offset) % modulo)) % modulo;
+    if (left <= 0)
+        return 0;
+    writen = Fwrite(&buf, left, 1, cpio->fd);
+    if (writen != left) {
+        return CPIOERR_WRITE_FAILED;
+    }
+    cpio->offset += writen;
+    return 0;
+}
+
+static int rpmcpioReadPad(rpmcpio_t cpio)
+{
+    ssize_t modulo = 4;
+    char buf[4];
+    ssize_t left, read;
+    left = (modulo - (cpio->offset % modulo)) % modulo;
+    if (left <= 0)
+        return 0;
+    read = Fread(&buf, left, 1, cpio->fd);
+    cpio->offset += read;
+    if (read != left) {
+        return CPIOERR_READ_FAILED;
+    }
+    return 0;
+}
+
 #define GET_NUM_FIELD(phys, log) \
 	\
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
@@ -62,39 +121,66 @@ static unsigned long strntoul(const char *str,char **endptr, int base, size_t nu
 	\
 	memcpy(phys, space, 8) \
 
-int cpioTrailerWrite(FSM_t fsm)
+static int rpmcpioTrailerWrite(rpmcpio_t cpio)
 {
-    struct cpioCrcPhysicalHeader * hdr =
-	(struct cpioCrcPhysicalHeader *)fsm->rdbuf;
+    struct cpioCrcPhysicalHeader hdr;
     int rc;
+    size_t writen;
 
-    memset(hdr, '0', PHYS_HDR_SIZE);
-    memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
-    memcpy(hdr->nlink, "00000001", 8);
-    memcpy(hdr->namesize, "0000000b", 8);
-    memcpy(fsm->rdbuf + PHYS_HDR_SIZE, CPIO_TRAILER, sizeof(CPIO_TRAILER));
+    if (cpio->fileend != cpio->offset) {
+        return CPIOERR_WRITE_FAILED;
+    }
 
-    /* XXX DWRITE uses rdnb for I/O length. */
-    fsm->rdnb = PHYS_HDR_SIZE + sizeof(CPIO_TRAILER);
-    rc = fsmNext(fsm, FSM_DWRITE);
+    rc = rpmcpioWritePad(cpio, 4);
+    if (rc)
+        return rc;
+
+    memset(&hdr, '0', PHYS_HDR_SIZE);
+    memcpy(&hdr.magic, CPIO_NEWC_MAGIC, sizeof(hdr.magic));
+    memcpy(&hdr.nlink, "00000001", 8);
+    memcpy(&hdr.namesize, "0000000b", 8);
+    writen = Fwrite(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
+    cpio->offset += writen;
+    if (writen != PHYS_HDR_SIZE) {
+        return CPIOERR_WRITE_FAILED;
+    }
+    writen = Fwrite(&CPIO_TRAILER, sizeof(CPIO_TRAILER), 1, cpio->fd);
+    cpio->offset += writen;
+    if (writen != sizeof(CPIO_TRAILER)) {
+        return CPIOERR_WRITE_FAILED;
+    }
 
     /*
-     * GNU cpio pads to 512 bytes here, but we don't. This may matter for
-     * tape device(s) and/or concatenated cpio archives. <shrug>
+     * XXX GNU cpio pads to 512 bytes. This may matter for
+     * tape device(s) and/or concatenated cpio archives.
      */
-    if (!rc)
-	rc = fsmNext(fsm, FSM_PAD);
+
+    rc = rpmcpioWritePad(cpio, 4);
 
     return rc;
 }
 
-int cpioHeaderWrite(FSM_t fsm, struct stat * st)
+int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
 {
-    struct cpioCrcPhysicalHeader * hdr = (struct cpioCrcPhysicalHeader *)fsm->rdbuf;
+    struct cpioCrcPhysicalHeader hdr_s;
+    struct cpioCrcPhysicalHeader * hdr = &hdr_s;
     char field[64];
-    size_t len;
+    size_t len, writen;
     dev_t dev;
     int rc = 0;
+
+    if ((cpio->mode & O_ACCMODE) != O_WRONLY) {
+        return CPIOERR_WRITE_FAILED;
+    }
+
+    if (cpio->fileend != cpio->offset) {
+        return CPIOERR_WRITE_FAILED;
+    }
+
+    rc = rpmcpioWritePad(cpio, 4);
+    if (rc) {
+        return rc;
+    }
 
     memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     SET_NUM_FIELD(hdr->inode, st->st_ino, field);
@@ -110,40 +196,88 @@ int cpioHeaderWrite(FSM_t fsm, struct stat * st)
     dev = major(st->st_rdev); SET_NUM_FIELD(hdr->rdevMajor, dev, field);
     dev = minor(st->st_rdev); SET_NUM_FIELD(hdr->rdevMinor, dev, field);
 
-    len = strlen(fsm->path) + 1; SET_NUM_FIELD(hdr->namesize, len, field);
-    memcpy(hdr->checksum, "00000000", 8);
-    memcpy(fsm->rdbuf + PHYS_HDR_SIZE, fsm->path, len);
+    len = strlen(path) + 1;
+    SET_NUM_FIELD(hdr->namesize, len, field);
 
-    /* XXX DWRITE uses rdnb for I/O length. */
-    fsm->rdnb = PHYS_HDR_SIZE + len;
-    rc = fsmNext(fsm, FSM_DWRITE);
-    if (!rc && fsm->rdnb != fsm->wrnb)
-	rc = CPIOERR_WRITE_FAILED;
-    if (!rc)
-	rc = fsmNext(fsm, FSM_PAD);
+    memcpy(hdr->checksum, "00000000", 8);
+
+    writen = Fwrite(hdr, PHYS_HDR_SIZE, 1, cpio->fd);
+    cpio->offset += writen;
+    if (writen != PHYS_HDR_SIZE) {
+        return CPIOERR_WRITE_FAILED;
+    }
+
+    writen = Fwrite(path, len, 1, cpio->fd);
+    cpio->offset += writen;
+    if (writen != len) {
+        return CPIOERR_WRITE_FAILED;
+    }
+
+    rc = rpmcpioWritePad(cpio, 4);
+
+    cpio->fileend = cpio->offset + st->st_size;
+
     return rc;
 }
 
-int cpioHeaderRead(FSM_t fsm, struct stat * st)
+ssize_t rpmcpioWrite(rpmcpio_t cpio, void * buf, size_t size)
+{
+    size_t writen, left;
+
+    if ((cpio->mode & O_ACCMODE) != O_WRONLY) {
+        return CPIOERR_WRITE_FAILED;
+    }
+
+    // Do not write beyond file length
+    left = cpio->fileend - cpio->offset;
+    size = size > left ? left : size;
+    writen = Fwrite(buf, size, 1, cpio->fd);
+    cpio->offset += writen;
+    return writen;
+}
+
+
+int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st)
 {
     struct cpioCrcPhysicalHeader hdr;
     int nameSize;
     char * end;
     unsigned int major, minor;
     int rc = 0;
-    char * path = NULL;
+    ssize_t read;
 
-    fsm->wrlen = PHYS_HDR_SIZE;
-    rc = fsmNext(fsm, FSM_DREAD);
-    if (!rc && fsm->rdnb != fsm->wrlen)
-	rc = CPIOERR_READ_FAILED;
+    if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
+        return CPIOERR_READ_FAILED;
+    }
+
+    /* Move to next file */
+    if (cpio->fileend != cpio->offset) {
+        //if (Fseek(cpio->fd, cpio->fileend-cpio->offset, SEEK_CUR)) 
+        {
+            /* XXX try using Fseek() - which is currently broken */
+            char buf[8*BUFSIZ];
+            while (cpio->fileend != cpio->offset) {
+                read = cpio->fileend - cpio->offset > 8*BUFSIZ ? 8*BUFSIZ : cpio->fileend - cpio->offset;
+                if (rpmcpioRead(cpio, &buf, read) != read) {
+                    return CPIOERR_READ_FAILED;
+                }
+            }
+            //} else { /* seek worked */
+            //cpio->offset = cpio->fileend;
+        }
+    }
+    rc = rpmcpioReadPad(cpio);
     if (rc) return rc;
-    memcpy(&hdr, fsm->wrbuf, fsm->rdnb);
+
+    read = Fread(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
+    cpio->offset += read;
+    if (read != PHYS_HDR_SIZE)
+	return CPIOERR_READ_FAILED;
 
     if (strncmp(CPIO_CRC_MAGIC, hdr.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
-	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1))
+	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1)) {
 	return CPIOERR_BAD_MAGIC;
-
+    }
     GET_NUM_FIELD(hdr.inode, st->st_ino);
     GET_NUM_FIELD(hdr.mode, st->st_mode);
     GET_NUM_FIELD(hdr.uid, st->st_uid);
@@ -161,24 +295,47 @@ int cpioHeaderRead(FSM_t fsm, struct stat * st)
     st->st_rdev = makedev(major, minor);
 
     GET_NUM_FIELD(hdr.namesize, nameSize);
-    if (nameSize >= fsm->wrsize)
-	return CPIOERR_BAD_HEADER;
 
-    fsm->wrlen = nameSize;
-    rc = fsmNext(fsm, FSM_DREAD);
-    if (!rc && fsm->rdnb != fsm->wrlen)
-	rc = CPIOERR_BAD_HEADER;
-
-    if (!rc) {
-	path = xmalloc(nameSize + 1);
-	memcpy(path, fsm->wrbuf, fsm->rdnb);
-	path[nameSize] = '\0';
+    *path = xmalloc(nameSize + 1);
+    read = Fread(*path, nameSize, 1, cpio->fd);
+    (*path)[nameSize] = '\0';
+    cpio->offset += read;
+    if (read != nameSize ) {
+        return CPIOERR_BAD_HEADER;
     }
-    fsm->path = path;
+
+    rc = rpmcpioReadPad(cpio);
+    cpio->fileend = cpio->offset + st->st_size;
+
     return rc;
 }
 
-const char * cpioStrerror(int rc)
+ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size)
+{
+    size_t read, left;
+
+    if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
+        return CPIOERR_READ_FAILED;
+    }
+
+    left = cpio->fileend - cpio->offset;
+    size = size > left ? left : size;
+    read = Fread(buf, size, 1, cpio->fd);
+    cpio->offset += read;
+    return read;
+}
+
+int rpmcpioClose(rpmcpio_t cpio)
+{
+    int rc = 0;
+    if ((cpio->mode & O_ACCMODE) == O_WRONLY) {
+        rc = rpmcpioTrailerWrite(cpio);
+    }
+    _free(cpio);
+    return rc;
+}
+
+const char * rpmcpioStrerror(int rc)
 {
     static char msg[256];
     const char *s;

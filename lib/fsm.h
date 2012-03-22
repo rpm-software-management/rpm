@@ -7,6 +7,7 @@
  */
 
 #include <rpm/rpmfi.h>
+#include "cpio.h"
 
 extern int _fsm_debug;
 
@@ -106,22 +107,14 @@ typedef struct hardLink_s * hardLink_t;
 struct fsm_s {
     char * path;		/*!< Current file name. */
     FD_t cfd;			/*!< Payload file handle. */
-    char * rdbuf;		/*!<  read: Buffer. */
-    char * rdb;			/*!<  read: Buffer allocated. */
-    size_t rdsize;		/*!<  read: Buffer allocated size. */
-    size_t rdnb;		/*!<  read: Number of bytes returned. */
-    char * wrbuf;		/*!< write: Buffer. */
-    char * wrb;			/*!< write: Buffer allocated. */
-    size_t wrsize;		/*!< write: Buffer allocated size. */
-    size_t wrlen;		/*!< write: Number of bytes requested.*/
-    size_t wrnb;		/*!< write: Number of bytes returned. */
+    rpmcpio_t archive;		/*!< cpio archive */
+    char * buf;			/*!<  read: Buffer. */
+    size_t bufsize;		/*!<  read: Buffer allocated size. */
     FSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
     hardLink_t links;		/*!< Pending hard linked file(s). */
     hardLink_t li;		/*!< Current hard linked file(s). */
     rpm_loff_t * archiveSize;	/*!< Pointer to archive size. */
-    rpm_loff_t archivePos;	/*!< Current archive position. */
-    rpm_loff_t cpioPos;
     char ** failedFile;		/*!< First file name that failed. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
