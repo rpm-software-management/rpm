@@ -301,16 +301,27 @@ unsigned headerSizeof(Header h, int magicp)
     return size;
 }
 
-/* Bounded header string (array) size calculation, return -1 on error */
+/*
+ * Header string (array) size calculation, bounded if end is non-NULL.
+ * Return length (including \0 termination) on success, -1 on error.
+ */
 static inline int strtaglen(const char *str, rpm_count_t c, const char *end)
 {
     const char *start = str;
     const char *s;
 
-    while ((s = memchr(start, '\0', end-start))) {
-	if (--c == 0 || s > end)
-	    break;
-	start = s + 1;
+    if (end) {
+	while ((s = memchr(start, '\0', end-start))) {
+	    if (--c == 0 || s > end)
+		break;
+	    start = s + 1;
+	}
+    } else {
+	while ((s = strchr(start, '\0'))) {
+	    if (--c == 0)
+		break;
+	    start = s + 1;
+	}
     }
     return (c > 0) ? -1 : (s - str + 1);
 }
@@ -328,8 +339,7 @@ static int dataLength(rpm_tagtype_t type, rpm_constdata_t p, rpm_count_t count,
 			 int onDisk, rpm_constdata_t pend)
 {
     const char * s = p;
-    /* Not all callers supply data end, avoid falling over edge of the world */
-    const char * se = pend ? pend : s + HEADER_DATA_MAX;
+    const char * se = pend;
     int length = 0;
 
     switch (type) {
