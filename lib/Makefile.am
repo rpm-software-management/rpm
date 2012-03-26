@@ -82,29 +82,6 @@ CLEANFILES += $(libdb_la)
 
 rpmlibexec_PROGRAMS =
 
-rpmlibexec_PROGRAMS += rpmdb_archive
-rpmdb_archive_SOURCES =
-rpmdb_archive_LDADD = \
-	$(top_builddir)/db3/db_archive.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_checkpoint
-rpmdb_checkpoint_SOURCES =
-rpmdb_checkpoint_LDADD = \
-	$(top_builddir)/db3/db_checkpoint.o \
-	$(top_builddir)/db3/util_log.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_deadlock
-rpmdb_deadlock_SOURCES =
-rpmdb_deadlock_LDADD = \
-	$(top_builddir)/db3/db_deadlock.o \
-	$(top_builddir)/db3/util_log.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
 rpmlibexec_PROGRAMS += rpmdb_dump
 rpmdb_dump_SOURCES =
 rpmdb_dump_LDADD = \
@@ -118,22 +95,6 @@ rpmdb_load_SOURCES =
 rpmdb_load_LDADD = \
 	$(top_builddir)/db3/db_load.o \
 	$(top_builddir)/db3/util_cache.o \
-	$(top_builddir)/db3/util_sig.o \
-	librpm.la
-
-rpmlibexec_PROGRAMS += rpmdb_printlog
-rpmdb_printlog_SOURCES =
-rpmdb_printlog_LDADD = \
-	$(top_builddir)/db3/db_printlog.o \
-	$(top_builddir)/db3/btree_autop.o \
-	$(top_builddir)/db3/crdel_autop.o \
-	$(top_builddir)/db3/db_autop.o \
-	$(top_builddir)/db3/dbreg_autop.o \
-	$(top_builddir)/db3/fileops_autop.o \
-	$(top_builddir)/db3/hash_autop.o \
-	$(top_builddir)/db3/qam_autop.o \
-	$(top_builddir)/db3/rep_autop.o \
-	$(top_builddir)/db3/txn_autop.o \
 	$(top_builddir)/db3/util_sig.o \
 	librpm.la
 
