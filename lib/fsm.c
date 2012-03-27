@@ -1023,8 +1023,6 @@ exit:
     }
     fsm->path = path;
     free(symbuf);
-    if (rc)
-        printf(rpmcpioStrerror(rc));
     return rc;
 }
 
