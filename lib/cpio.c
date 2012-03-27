@@ -252,20 +252,16 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st)
 
     /* Move to next file */
     if (cpio->fileend != cpio->offset) {
-        //if (Fseek(cpio->fd, cpio->fileend-cpio->offset, SEEK_CUR)) 
-        {
-            /* XXX try using Fseek() - which is currently broken */
-            char buf[8*BUFSIZ];
-            while (cpio->fileend != cpio->offset) {
-                read = cpio->fileend - cpio->offset > 8*BUFSIZ ? 8*BUFSIZ : cpio->fileend - cpio->offset;
-                if (rpmcpioRead(cpio, &buf, read) != read) {
-                    return CPIOERR_READ_FAILED;
-                }
+        /* XXX try using Fseek() - which is currently broken */
+        char buf[8*BUFSIZ];
+        while (cpio->fileend != cpio->offset) {
+            read = cpio->fileend - cpio->offset > 8*BUFSIZ ? 8*BUFSIZ : cpio->fileend - cpio->offset;
+            if (rpmcpioRead(cpio, &buf, read) != read) {
+                return CPIOERR_READ_FAILED;
             }
-            //} else { /* seek worked */
-            //cpio->offset = cpio->fileend;
         }
     }
+
     rc = rpmcpioReadPad(cpio);
     if (rc) return rc;
 
