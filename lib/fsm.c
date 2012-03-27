@@ -1405,8 +1405,13 @@ static int fsmInit(FSM_t fsm)
     fsm->nsuffix = NULL;
 
     if (fsm->goal == FSM_PKGINSTALL) {
-	/* Read next header from payload, checking for end-of-payload. */
-	rc = fsmUNSAFE(fsm, FSM_NEXT);
+	/* Read next payload header. */
+        rc = rpmcpioHeaderRead(fsm->archive, &(fsm->path), &(fsm->sb));
+	if (rc) return rc;
+	if (rstreq(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
+	    fsm->path = _free(fsm->path);
+	    rc = CPIOERR_HDR_TRAILER;
+	}
     }
     if (rc) return rc;
 
@@ -2052,17 +2057,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	fsm->buf = _free(fsm->buf);
         fsm->bufsize = 0;
-	break;
-    case FSM_NEXT:
-	if (!rc) {
-            _free(fsm->path);
-	    rc = rpmcpioHeaderRead(fsm->archive, &(fsm->path), st);	/* Read next payload header. */
-        }
-	if (rc) break;
-	if (rstreq(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
-	    fsm->path = _free(fsm->path);
-	    rc = CPIOERR_HDR_TRAILER;
-	}
 	break;
     default:
 	break;
