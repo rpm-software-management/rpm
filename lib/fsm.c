@@ -1403,6 +1403,8 @@ static int fsmInit(FSM_t fsm)
     fsm->action = FA_UNKNOWN;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
+    memset(&(fsm->sb), 0, sizeof(fsm->sb));
+    memset(&(fsm->osb), 0, sizeof(fsm->sb));
 
     if (fsm->goal == FSM_PKGINSTALL) {
 	/* Read next payload header. */
@@ -1671,7 +1673,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 {
     const char * const cur = fileStageString(stage);
     struct stat * st = &fsm->sb;
-    struct stat * ost = &fsm->osb;
     int saveerrno = errno;
     int rc = fsm->rc;
 
@@ -1732,7 +1733,10 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Notify on success. */
 	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
 
-	    rc = fsmNext(fsm, FSM_FINI);
+            if (!fsm->postpone) {
+		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
+			? fsmCommitLinks(fsm) : fsmNext(fsm, FSM_COMMIT));
+            }
 	    if (rc) {
 		break;
 	    }
@@ -1749,9 +1753,12 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 	    }
 
-	    /* Rename/erase next item. */
-	    if (fsmNext(fsm, FSM_FINI))
-		break;
+            if (!fsm->postpone) {
+                /* Rename/erase item. */
+		rc = fsmNext(fsm, FSM_COMMIT);
+            }
+
+            if (rc) break;
 
 	    /* Notify on success. */
 	    /* On erase we're iterating backwards, fixup for progress */
@@ -1784,9 +1791,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		(void) fsmNext(fsm, FSM_UNDO);
 		break;
 	    }
-
-	    if (fsmNext(fsm, FSM_FINI))
-		break;
 	}
 
 	/* Flush partial sets of hard linked files. */
@@ -1899,18 +1903,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	if (fsm->failedFile && *fsm->failedFile == NULL)
 	    *fsm->failedFile = xstrdup(fsm->path);
-	break;
-    case FSM_FINI:
-	if (!fsm->postpone) {
-	    if (fsm->goal == FSM_PKGINSTALL)
-		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-			? fsmCommitLinks(fsm) : fsmNext(fsm, FSM_COMMIT));
-	    if (fsm->goal == FSM_PKGERASE)
-		rc = fsmNext(fsm, FSM_COMMIT);
-	}
-	fsm->path = _free(fsm->path);
-	memset(st, 0, sizeof(*st));
-	memset(ost, 0, sizeof(*ost));
 	break;
     case FSM_COMMIT:
 	/* Rename pre-existing modified or unmanaged file. */
