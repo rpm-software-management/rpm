@@ -842,7 +842,7 @@ static int expandRegular(FSM_t fsm)
 
 	/* don't call this with fileSize == fileComplete */
 	if (!rc && left)
-	    (void) fsmNext(fsm, FSM_NOTIFY);
+	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
     }
 
     if (st->st_size > 0 && fidigest) {
@@ -1730,7 +1730,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    }
 
 	    /* Notify on success. */
-	    (void) fsmNext(fsm, FSM_NOTIFY);
+	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
 
 	    rc = fsmNext(fsm, FSM_FINI);
 	    if (rc) {
@@ -1754,7 +1754,10 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 
 	    /* Notify on success. */
-	    (void) fsmNext(fsm, FSM_NOTIFY);
+	    /* On erase we're iterating backwards, fixup for progress */
+	    rpm_loff_t amount = (fsm->ix >= 0) ?
+				rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
+	    rpmpsmNotify(fsm->psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
 	break;
     case FSM_PKGBUILD:
@@ -1879,16 +1882,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	break;
     case FSM_POST:
-	break;
-    case FSM_NOTIFY:		/* XXX move from fsm to psm -> tsm */
-	if (fsm->goal == FSM_PKGINSTALL) {
-	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
-	} else if (fsm->goal == FSM_PKGERASE) {
-	    /* On erase we're iterating backwards, fixup for progress */
-	    rpm_loff_t amount = (fsm->ix >= 0) ?
-				rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
-	    rpmpsmNotify(fsm->psm, RPMCALLBACK_UNINST_PROGRESS, amount);
-	}
 	break;
     case FSM_UNDO:
 	if (fsm->postpone)
@@ -2024,8 +2017,11 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 
 	/* Notify on success. */
-	if (!rc)		rc = fsmNext(fsm, FSM_NOTIFY);
-	else if (fsm->failedFile && *fsm->failedFile == NULL) {
+	if (!rc) {
+            if (fsm->goal == FSM_PKGINSTALL) {
+                rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
+            }
+        } else if (fsm->failedFile && *fsm->failedFile == NULL) {
 	    *fsm->failedFile = fsm->path;
 	    fsm->path = NULL;
 	}
