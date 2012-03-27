@@ -678,8 +678,34 @@ static int fsmTeardown(FSM_t fsm)
 {
     int rc = fsm->rc;
 
-    if (!rc)
-	rc = fsmUNSAFE(fsm, FSM_DESTROY);
+
+    if (!rc) {
+        /* Check for hard links missing from payload. */
+        while ((fsm->li = fsm->links) != NULL) {
+            fsm->links = fsm->li->next;
+            fsm->li->next = NULL;
+            if (fsm->goal == FSM_PKGINSTALL && fsm->li->linksLeft) {
+                for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
+                    if (fsm->li->filex[i] < 0)
+                        continue;
+                    rc = CPIOERR_MISSING_HARDLINK;
+                    if (fsm->failedFile && *fsm->failedFile == NULL) {
+                        fsm->ix = fsm->li->filex[i];
+                        if (!fsmMapPath(fsm)) {
+                            /* Out-of-sync hardlinks handled as sub-state */
+                            *fsm->failedFile = fsm->path;
+                            fsm->path = NULL;
+                        }
+                    }
+                    break;
+                }
+            }
+            fsm->li = freeHardLink(fsm->li);
+        }
+    }
+
+    fsm->buf = _free(fsm->buf);
+    fsm->bufsize = 0;
 
     rc = rpmcpioClose(fsm->archive) || rc;
 
@@ -2017,34 +2043,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    *fsm->failedFile = fsm->path;
 	    fsm->path = NULL;
 	}
-	break;
-    case FSM_DESTROY:
-	fsm->path = _free(fsm->path);
-
-	/* Check for hard links missing from payload. */
-	while ((fsm->li = fsm->links) != NULL) {
-	    fsm->links = fsm->li->next;
-	    fsm->li->next = NULL;
-	    if (fsm->goal == FSM_PKGINSTALL && fsm->li->linksLeft) {
-		for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
-		    if (fsm->li->filex[i] < 0)
-			continue;
-		    rc = CPIOERR_MISSING_HARDLINK;
-		    if (fsm->failedFile && *fsm->failedFile == NULL) {
-			fsm->ix = fsm->li->filex[i];
-			if (!fsmMapPath(fsm)) {
-	    		    /* Out-of-sync hardlinks handled as sub-state */
-			    *fsm->failedFile = fsm->path;
-			    fsm->path = NULL;
-			}
-		    }
-		    break;
-		}
-	    }
-	    fsm->li = freeHardLink(fsm->li);
-	}
-	fsm->buf = _free(fsm->buf);
-        fsm->bufsize = 0;
 	break;
     default:
 	break;
