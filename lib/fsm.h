@@ -101,44 +101,6 @@ typedef struct rpmpsm_s * rpmpsm;
 
 typedef struct hardLink_s * hardLink_t;
 
-/** \ingroup payload
- * File name and stat information.
- */
-struct fsm_s {
-    char * path;		/*!< Current file name. */
-    FD_t cfd;			/*!< Payload file handle. */
-    rpmcpio_t archive;		/*!< cpio archive */
-    char * buf;			/*!<  read: Buffer. */
-    size_t bufsize;		/*!<  read: Buffer allocated size. */
-    FSMI_t iter;		/*!< File iterator. */
-    int ix;			/*!< Current file iterator index. */
-    hardLink_t links;		/*!< Pending hard linked file(s). */
-    hardLink_t li;		/*!< Current hard linked file(s). */
-    rpm_loff_t * archiveSize;	/*!< Pointer to archive size. */
-    char ** failedFile;		/*!< First file name that failed. */
-    const char * osuffix;	/*!< Old, preserved, file suffix. */
-    const char * nsuffix;	/*!< New, created, file suffix. */
-    char * suffix;		/*!< Current file suffix. */
-    int postpone;		/*!< Skip remaining stages? */
-    int diskchecked;		/*!< Has stat(2) been performed? */
-    int exists;			/*!< Does current file exist on disk? */
-    int rc;			/*!< External file stage return code. */
-    cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
-    const char * dirName;	/*!< File directory name. */
-    const char * baseName;	/*!< File base name. */
-    struct selabel_handle *sehandle;	/*!< SELinux label handle (if any). */
-    
-    unsigned fflags;		/*!< File flags. */
-    rpmFileAction action;	/*!< File disposition. */
-    fileStage goal;		/*!< Package state machine goal. */
-    fileStage stage;		/*!< External file stage. */
-    fileStage nstage;		/*!< Next file stage. */
-    struct stat sb;		/*!< Current file stat(2) info. */
-    struct stat osb;		/*!< Original file stat(2) info. */
-
-    rpmpsm psm;			/*!< "parent" package state machine */
-};
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -156,15 +118,6 @@ extern "C" {
  */
 int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile);
-
-/**
- * File state machine driver.
- * @param fsm		file state machine
- * @param nstage		next stage
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int fsmNext(FSM_t fsm, fileStage nstage);
 
 RPM_GNUC_INTERNAL
 void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount);
