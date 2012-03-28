@@ -1208,6 +1208,8 @@ static int fsmMakeLinks(FSM_t fsm)
     return ec;
 }
 
+static int fsmCommit(FSM_t fsm);
+
 /** \ingroup payload
  * Commit hard linked file set atomically.
  * @param fsm		file state machine data
@@ -1236,7 +1238,7 @@ static int fsmCommitLinks(FSM_t fsm)
 	fsm->ix = fsm->li->filex[i];
 	rc = fsmMapPath(fsm);
 	if (!XFA_SKIPPING(fsm->action))
-	    rc = fsmNext(fsm, FSM_COMMIT);
+	    rc = fsmCommit(fsm);
 	fsm->path = _free(fsm->path);
 	fsm->li->filex[i] = -1;
     }
@@ -1681,13 +1683,86 @@ static int fsmVerify(FSM_t fsm)
     return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 }
 
-/********************************************************************/
-
 #define	IS_DEV_LOG(_x)	\
 	((_x) != NULL && strlen(_x) >= (sizeof("/dev/log")-1) && \
 	rstreqn((_x), "/dev/log", sizeof("/dev/log")-1) && \
 	((_x)[sizeof("/dev/log")-1] == '\0' || \
 	 (_x)[sizeof("/dev/log")-1] == ';'))
+
+
+static int fsmCommit(FSM_t fsm)
+{
+    int rc = fsm->rc;
+    struct stat * st = &fsm->sb;
+
+    /* Rename pre-existing modified or unmanaged file. */
+    if (fsm->osuffix && fsm->diskchecked &&
+        (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
+    {
+        char * opath = fsmFsPath(fsm, st, NULL, NULL);
+        char * path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
+        rc = fsmRename(opath, path, fsm->mapFlags);
+        if (!rc) {
+            rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
+        }
+        free(path);
+        free(opath);
+    }
+
+    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
+    if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
+        /* Rename temporary to final file name. */
+        if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
+            char *npath = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
+            rc = fsmRename(fsm->path, npath, fsm->mapFlags);
+            if (!rc && fsm->nsuffix) {
+                char * opath = fsmFsPath(fsm, st, NULL, NULL);
+                rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
+                       opath, npath);
+                free(opath);
+            }
+            free(fsm->path);
+            fsm->path = npath;
+        }
+        /* Set file security context (if enabled) */
+        if (!rc && !getuid()) {
+            rc = fsmSetSELabel(fsm->sehandle, fsm->path, fsm->sb.st_mode);
+        }
+        if (S_ISLNK(st->st_mode)) {
+            if (!rc && !getuid())
+                rc = fsmLChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+        } else {
+            rpmfi fi = fsmGetFi(fsm);
+            if (!rc && !getuid())
+                rc = fsmChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+            if (!rc)
+                rc = fsmChmod(fsm->path, fsm->sb.st_mode);
+            if (!rc) {
+                rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, fsm->ix));
+                /* utime error is not critical for directories */
+                if (rc && S_ISDIR(st->st_mode))
+                    rc = 0;
+            }
+            /* Set file capabilities (if enabled) */
+            if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
+                rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, fsm->ix));
+            }
+        }
+    }
+
+    /* Notify on success. */
+    if (!rc) {
+        if (fsm->goal == FSM_PKGINSTALL) {
+            rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
+        }
+    } else if (fsm->failedFile && *fsm->failedFile == NULL) {
+        *fsm->failedFile = fsm->path;
+        fsm->path = NULL;
+    }
+    return rc;
+}
+
+/********************************************************************/
 
 /**
  * File state machine driver.
@@ -1761,7 +1836,7 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
             if (!fsm->postpone) {
 		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-			? fsmCommitLinks(fsm) : fsmNext(fsm, FSM_COMMIT));
+			? fsmCommitLinks(fsm) : fsmCommit(fsm));
             }
 	    if (rc) {
 		break;
@@ -1965,72 +2040,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	}
 	if (fsm->failedFile && *fsm->failedFile == NULL)
 	    *fsm->failedFile = xstrdup(fsm->path);
-	break;
-    case FSM_COMMIT:
-	/* Rename pre-existing modified or unmanaged file. */
-	if (fsm->osuffix && fsm->diskchecked &&
-	  (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
-	{
-	    char * opath = fsmFsPath(fsm, st, NULL, NULL);
-	    char * path = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-	    rc = fsmRename(opath, path, fsm->mapFlags);
-	    if (!rc) {
-		rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
-	    }
-	    free(path);
-	    free(opath);
-	}
-
-	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
-	if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
-	    /* Rename temporary to final file name. */
-	    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
-		char *npath = fsmFsPath(fsm, st, NULL, fsm->nsuffix);
-		rc = fsmRename(fsm->path, npath, fsm->mapFlags);
-		if (!rc && fsm->nsuffix) {
-		    char * opath = fsmFsPath(fsm, st, NULL, NULL);
-		    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-			   opath, npath);
-		    free(opath);
-		}
-		free(fsm->path);
-		fsm->path = npath;
-	    }
-	    /* Set file security context (if enabled) */
-	    if (!rc && !getuid()) {
-		rc = fsmSetSELabel(fsm->sehandle, fsm->path, fsm->sb.st_mode);
-	    }
-	    if (S_ISLNK(st->st_mode)) {
-		if (!rc && !getuid())
-		    rc = fsmLChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
-	    } else {
-		rpmfi fi = fsmGetFi(fsm);
-		if (!rc && !getuid())
-		    rc = fsmChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
-		if (!rc)
-		    rc = fsmChmod(fsm->path, fsm->sb.st_mode);
-		if (!rc) {
-		    rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, fsm->ix));
-		    /* utime error is not critical for directories */
-		    if (rc && S_ISDIR(st->st_mode))
-			rc = 0;
-		}
-		/* Set file capabilities (if enabled) */
-		if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
-		    rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, fsm->ix));
-		}
-	    }
-	}
-
-	/* Notify on success. */
-	if (!rc) {
-            if (fsm->goal == FSM_PKGINSTALL) {
-                rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
-            }
-        } else if (fsm->failedFile && *fsm->failedFile == NULL) {
-	    *fsm->failedFile = fsm->path;
-	    fsm->path = NULL;
-	}
 	break;
     default:
 	break;
