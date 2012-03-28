@@ -1823,8 +1823,75 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 	    }
 
-	    /* Extract file from archive. */
-	    rc = fsmNext(fsm, FSM_PROCESS);
+            if (!fsm->postpone) {
+                if (S_ISREG(st->st_mode)) {
+                    char * path = fsm->path;
+                    if (fsm->osuffix)
+                        fsm->path = fsmFsPath(fsm, st, NULL, NULL);
+                    rc = fsmVerify(fsm);
+
+                    if (rc == 0 && fsm->osuffix) {
+                        char * spath = fsmFsPath(fsm, st, NULL, fsm->osuffix);
+                        rc = fsmRename(fsm->path, spath, fsm->mapFlags);
+                        if (!rc)
+                            rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
+                                   fsm->path, spath);
+                        free(spath);
+                    }
+
+                    if (fsm->osuffix)
+                        free(fsm->path);
+
+                    fsm->path = path;
+                    if (!(rc == CPIOERR_ENOENT)) return rc;
+                    rc = expandRegular(fsm);
+                } else if (S_ISDIR(st->st_mode)) {
+                    rc = fsmVerify(fsm);
+                    if (rc == CPIOERR_ENOENT) {
+                        mode_t mode = st->st_mode;
+                        mode &= ~07777;
+                        mode |=  00700;
+                        rc = fsmMkdir(fsm->path, mode);
+                    }
+                } else if (S_ISLNK(st->st_mode)) {
+                    if ((st->st_size + 1) > fsm->bufsize) {
+                        rc = CPIOERR_HDR_SIZE;
+                    } else if (rpmcpioRead(fsm->archive, fsm->buf, st->st_size) != st->st_size) {
+                        rc = CPIOERR_READ_FAILED;
+                    } else {
+
+                        fsm->buf[st->st_size] = '\0';
+                        /* fsmVerify() assumes link target in fsm->buf */
+                        rc = fsmVerify(fsm);
+                        if (rc == CPIOERR_ENOENT) {
+                            rc = fsmSymlink(fsm->buf, fsm->path);
+                        }
+                    }
+                } else if (S_ISFIFO(st->st_mode)) {
+                    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
+                    rc = fsmVerify(fsm);
+                    if (rc == CPIOERR_ENOENT) {
+                        rc = fsmMkfifo(fsm->path, 0000);
+                    }
+                } else if (S_ISCHR(st->st_mode) ||
+                           S_ISBLK(st->st_mode) ||
+                           S_ISSOCK(st->st_mode))
+                {
+                    rc = fsmVerify(fsm);
+                    if (rc == CPIOERR_ENOENT) {
+                        rc = fsmMknod(fsm->path, fsm->sb.st_mode, fsm->sb.st_rdev);
+                    }
+                } else {
+                    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
+                    if (!IS_DEV_LOG(fsm->path))
+                        rc = CPIOERR_UNKNOWN_FILETYPE;
+                }
+                if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
+                    fsm->li->createdPath = fsm->li->linkIndex;
+                    rc = fsmMakeLinks(fsm);
+                }
+            }
+
 	    if (rc) {
 		(void) fsmNext(fsm, FSM_UNDO);
 		break;
@@ -1942,84 +2009,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	/* Flush partial sets of hard linked files. */
 	rc = writeLinks(fsm);
 
-	break;
-    case FSM_PROCESS:
-	if (fsm->postpone) {
-	    break;
-	}
-
-	if (fsm->goal != FSM_PKGINSTALL)
-	    break;
-
-	if (S_ISREG(st->st_mode)) {
-	    char * path = fsm->path;
-	    if (fsm->osuffix)
-		fsm->path = fsmFsPath(fsm, st, NULL, NULL);
-	    rc = fsmVerify(fsm);
-
-	    if (rc == 0 && fsm->osuffix) {
-		char * spath = fsmFsPath(fsm, st, NULL, fsm->osuffix);
-		rc = fsmRename(fsm->path, spath, fsm->mapFlags);
-		if (!rc)
-		    rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
-			   fsm->path, spath);
-		free(spath);
-	    }
-
-	    if (fsm->osuffix)
-		free(fsm->path);
-
-	    fsm->path = path;
-	    if (!(rc == CPIOERR_ENOENT)) return rc;
-	    rc = expandRegular(fsm);
-	} else if (S_ISDIR(st->st_mode)) {
-	    rc = fsmVerify(fsm);
-	    if (rc == CPIOERR_ENOENT) {
-		mode_t mode = st->st_mode;
-		mode &= ~07777;
-		mode |=  00700;
-		rc = fsmMkdir(fsm->path, mode);
-	    }
-	} else if (S_ISLNK(st->st_mode)) {
-	    if ((st->st_size + 1) > fsm->bufsize) {
-		rc = CPIOERR_HDR_SIZE;
-		break;
-	    }
-
-	    if (rpmcpioRead(fsm->archive, fsm->buf, st->st_size) != st->st_size) {
-		rc = CPIOERR_READ_FAILED;
-                break;
-            }
-
-	    fsm->buf[st->st_size] = '\0';
-	    /* fsmVerify() assumes link target in fsm->buf */
-	    rc = fsmVerify(fsm);
-	    if (rc == CPIOERR_ENOENT) {
-		rc = fsmSymlink(fsm->buf, fsm->path);
-	    }
-	} else if (S_ISFIFO(st->st_mode)) {
-	    /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
-	    rc = fsmVerify(fsm);
-	    if (rc == CPIOERR_ENOENT) {
-		rc = fsmMkfifo(fsm->path, 0000);
-	    }
-	} else if (S_ISCHR(st->st_mode) ||
-		   S_ISBLK(st->st_mode) ||
-    S_ISSOCK(st->st_mode))
-	{
-	    rc = fsmVerify(fsm);
-	    if (rc == CPIOERR_ENOENT) {
-		rc = fsmMknod(fsm->path, fsm->sb.st_mode, fsm->sb.st_rdev);
-	    }
-	} else {
-	    /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-	    if (!IS_DEV_LOG(fsm->path))
-		rc = CPIOERR_UNKNOWN_FILETYPE;
-	}
-	if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-	    fsm->li->createdPath = fsm->li->linkIndex;
-	    rc = fsmMakeLinks(fsm);
-	}
 	break;
     case FSM_POST:
 	break;
