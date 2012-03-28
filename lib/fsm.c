@@ -1819,7 +1819,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Exit on error. */
 	    if (rc) {
 		fsm->postpone = 1;
-		(void) fsmNext(fsm, FSM_UNDO);
 		break;
 	    }
 
@@ -1893,7 +1892,20 @@ static int fsmStage(FSM_t fsm, fileStage stage)
             }
 
 	    if (rc) {
-		(void) fsmNext(fsm, FSM_UNDO);
+                if (!fsm->postpone) {
+                    /* XXX only erase if temp fn w suffix is in use */
+                    if (fsm->suffix) {
+                        if (S_ISDIR(st->st_mode)) {
+                            (void) fsmRmdir(fsm->path);
+                        } else {
+                            (void) fsmUnlink(fsm->path, fsm->mapFlags);
+                        }
+                    }
+                    errno = saveerrno;
+                    if (fsm->failedFile && *fsm->failedFile == NULL)
+                        *fsm->failedFile = xstrdup(fsm->path);
+                }
+
 		break;
 	    }
 
@@ -1988,7 +2000,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    /* Exit on error. */
 	    if (rc) {
 		fsm->postpone = 1;
-		(void) fsmNext(fsm, FSM_UNDO);
 		break;
 	    }
 
@@ -2001,7 +2012,11 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    }
 
 	    if (rc) {
-		(void) fsmNext(fsm, FSM_UNDO);
+                if (!fsm->postpone) {
+                    if (fsm->failedFile && *fsm->failedFile == NULL)
+                        *fsm->failedFile = xstrdup(fsm->path);
+                }
+
 		break;
 	    }
 	}
@@ -2011,23 +2026,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 
 	break;
     case FSM_POST:
-	break;
-    case FSM_UNDO:
-	if (fsm->postpone)
-	    break;
-	if (fsm->goal == FSM_PKGINSTALL) {
-	    /* XXX only erase if temp fn w suffix is in use */
-	    if (fsm->suffix) {
-		if (S_ISDIR(st->st_mode)) {
-		    (void) fsmRmdir(fsm->path);
-		} else {
-		    (void) fsmUnlink(fsm->path, fsm->mapFlags);
-		}
-	    }
-	    errno = saveerrno;
-	}
-	if (fsm->failedFile && *fsm->failedFile == NULL)
-	    *fsm->failedFile = xstrdup(fsm->path);
 	break;
     default:
 	break;
