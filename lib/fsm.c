@@ -1851,8 +1851,14 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 	    }
 
-	    /* Copy file into archive. */
-	    rc = fsmNext(fsm, FSM_PROCESS);
+	    if (fsm->postpone || fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+		continue;
+	    /* Hardlinks are handled later */
+	    if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
+                /* Copy file into archive. */
+		rc = writeFile(fsm, 1);
+	    }
+
 	    if (rc) {
 		(void) fsmNext(fsm, FSM_UNDO);
 		break;
@@ -1865,16 +1871,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	break;
     case FSM_PROCESS:
 	if (fsm->postpone) {
-	    break;
-	}
-
-	if (fsm->goal == FSM_PKGBUILD) {
-	    if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
-		break;
-	    /* Hardlinks are handled later */
-	    if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
-		rc = writeFile(fsm, 1);
-	    }
 	    break;
 	}
 
