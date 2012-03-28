@@ -1677,8 +1677,7 @@ static int fsmVerify(FSM_t fsm)
         if (S_ISSOCK(ost->st_mode)) return 0;
     }
     /* XXX shouldn't do this with commit/undo. */
-    rc = 0;
-    if (fsm->stage == FSM_PROCESS) rc = fsmUnlink(fsm->path, fsm->mapFlags);
+    rc = fsmUnlink(fsm->path, fsm->mapFlags);
     if (rc == 0)	rc = CPIOERR_ENOENT;
     return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
 }
