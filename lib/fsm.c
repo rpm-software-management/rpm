@@ -1779,10 +1779,50 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 		break;
 	    }
 
-            if (!fsm->postpone) {
-                /* Rename/erase item. */
-		rc = fsmNext(fsm, FSM_COMMIT);
-            }
+            /* Remove erased files. */
+	    if (!fsm->postpone && fsm->action == FA_ERASE) {
+		rpmte te = fsmGetTe(fsm);
+		if (S_ISDIR(st->st_mode)) {
+		    rc = fsmRmdir(fsm->path);
+		    if (!rc) break;
+		    switch (rc) {
+		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
+		    case CPIOERR_ENOTEMPTY:
+	/* XXX make sure that build side permits %missingok on directories. */
+			if (fsm->fflags & RPMFILE_MISSINGOK)
+			    break;
+
+			/* XXX common error message. */
+			rpmlog(
+			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+			    _("%s rmdir of %s failed: Directory not empty\n"),
+				rpmteTypeString(te), fsm->path);
+			break;
+		    default:
+			rpmlog(
+			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+				_("%s rmdir of %s failed: %s\n"),
+				rpmteTypeString(te), fsm->path, strerror(errno));
+			break;
+		    }
+		} else {
+		    rc = fsmUnlink(fsm->path, fsm->mapFlags);
+		    if (!rc) break;
+		    switch (rc) {
+		    case CPIOERR_ENOENT:
+			if (fsm->fflags & RPMFILE_MISSINGOK)
+			    break;
+		    default:
+			rpmlog(
+			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+				_("%s unlink of %s failed: %s\n"),
+				rpmteTypeString(te), fsm->path, strerror(errno));
+			break;
+		    }
+		}
+	    }
+	    /* XXX Failure to remove is not (yet) cause for failure. */
+	    if (!strict_erasures) rc = 0;
 
             if (rc) break;
 
@@ -1943,54 +1983,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    }
 	    free(path);
 	    free(opath);
-	}
-
-	/* Remove erased files. */
-	if (fsm->goal == FSM_PKGERASE) {
-	    if (fsm->action == FA_ERASE) {
-		rpmte te = fsmGetTe(fsm);
-		if (S_ISDIR(st->st_mode)) {
-		    rc = fsmRmdir(fsm->path);
-		    if (!rc) break;
-		    switch (rc) {
-		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
-		    case CPIOERR_ENOTEMPTY:
-	/* XXX make sure that build side permits %missingok on directories. */
-			if (fsm->fflags & RPMFILE_MISSINGOK)
-			    break;
-
-			/* XXX common error message. */
-			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-			    _("%s rmdir of %s failed: Directory not empty\n"), 
-				rpmteTypeString(te), fsm->path);
-			break;
-		    default:
-			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-				_("%s rmdir of %s failed: %s\n"),
-				rpmteTypeString(te), fsm->path, strerror(errno));
-			break;
-		    }
-		} else {
-		    rc = fsmUnlink(fsm->path, fsm->mapFlags);
-		    if (!rc) break;
-		    switch (rc) {
-		    case CPIOERR_ENOENT:
-			if (fsm->fflags & RPMFILE_MISSINGOK)
-			    break;
-		    default:
-			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-				_("%s unlink of %s failed: %s\n"),
-				rpmteTypeString(te), fsm->path, strerror(errno));
-			break;
-		    }
-		}
-	    }
-	    /* XXX Failure to remove is not (yet) cause for failure. */
-	    if (!strict_erasures) rc = 0;
-	    break;
 	}
 
 	/* XXX Special case /dev/log, which shouldn't be packaged anyways */
