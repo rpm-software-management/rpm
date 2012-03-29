@@ -63,7 +63,7 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 	    rpmfsSetAction(fs, i, FA_COPYOUT);
     }
 
-    fsmrc = rpmfsmRun(FSM_PKGBUILD, ts, te, fi, cfd, NULL,
+    fsmrc = rpmPackageFilesArchive(ts, te, fi, cfd,
 		      &csa->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {

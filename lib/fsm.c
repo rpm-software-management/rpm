@@ -1801,45 +1801,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     switch (stage) {
     case FSM_UNKNOWN:
 	break;
-    case FSM_PKGBUILD:
-	while (1) {
-
-	    rc = fsmInit(fsm);
-
-	    /* Exit on end-of-payload. */
-	    if (rc == CPIOERR_HDR_TRAILER) {
-		rc = 0;
-		break;
-	    }
-
-	    /* Exit on error. */
-	    if (rc) {
-		fsm->postpone = 1;
-		break;
-	    }
-
-	    if (fsm->postpone || fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
-		continue;
-	    /* Hardlinks are handled later */
-	    if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
-                /* Copy file into archive. */
-		rc = writeFile(fsm, 1);
-	    }
-
-	    if (rc) {
-                if (!fsm->postpone) {
-                    if (fsm->failedFile && *fsm->failedFile == NULL)
-                        *fsm->failedFile = xstrdup(fsm->path);
-                }
-
-		break;
-	    }
-	}
-
-	/* Flush partial sets of hard linked files. */
-	rc = writeLinks(fsm);
-
-	break;
     case FSM_POST:
 	break;
     default:
@@ -2177,3 +2138,57 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 }
 
 
+int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+              rpm_loff_t * archiveSize, char ** failedFile)
+{
+    struct fsm_s fsm_;
+    FSM_t fsm = &fsm_;
+    int rc = 0;
+    int ec = 0;
+
+    memset(fsm, 0, sizeof(*fsm));
+    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, NULL, archiveSize, failedFile);
+
+    while (!rc) {
+
+        rc = fsmInit(fsm);
+
+        /* Exit on end-of-payload. */
+        if (rc == CPIOERR_HDR_TRAILER) {
+            rc = 0;
+            break;
+        }
+
+        /* Exit on error. */
+        if (rc) {
+            fsm->postpone = 1;
+            break;
+        }
+
+        if (fsm->postpone || fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+            continue;
+        /* Hardlinks are handled later */
+        if (!(S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)) {
+            /* Copy file into archive. */
+            rc = writeFile(fsm, 1);
+        }
+
+        if (rc) {
+            if (!fsm->postpone) {
+                if (fsm->failedFile && *fsm->failedFile == NULL)
+                    *fsm->failedFile = xstrdup(fsm->path);
+            }
+
+            break;
+        }
+    }
+
+    /* Flush partial sets of hard linked files. */
+    if (!rc)
+        rc = writeLinks(fsm);
+
+    ec = fsmTeardown(fsm);
+
+    /* Return the relevant code: if setup failed, teardown doesn't matter */
+    return (rc ? rc : ec);
+}
