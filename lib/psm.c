@@ -853,8 +853,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    /* XXX should't we log errors from here? */
 	    if (rpmfiFC(fi) > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
-		rc = rpmfsmRun(FSM_PKGERASE, psm->ts, psm->te, psm->fi,
-				  NULL, psm, NULL, &psm->failedFile);
+		rc = rpmPackageFilesRemove(psm->ts, psm->te, psm->fi,
+				  psm, &psm->failedFile);
 	    }
 
 	    /* XXX make sure progress reaches 100% */

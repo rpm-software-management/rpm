@@ -1801,71 +1801,6 @@ static int fsmStage(FSM_t fsm, fileStage stage)
     switch (stage) {
     case FSM_UNKNOWN:
 	break;
-    case FSM_PKGERASE:
-	while (1) {
-	    /* Clean fsm, free'ing memory. */
-	    rc = fsmInit(fsm);
-
-	    /* Exit on end-of-payload. */
-	    if (rc == CPIOERR_HDR_TRAILER) {
-		rc = 0;
-		break;
-	    }
-
-            /* Remove erased files. */
-	    if (!fsm->postpone && fsm->action == FA_ERASE) {
-		rpmte te = fsmGetTe(fsm);
-		if (S_ISDIR(st->st_mode)) {
-		    rc = fsmRmdir(fsm->path);
-		    if (!rc) break;
-		    switch (rc) {
-		    case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
-		    case CPIOERR_ENOTEMPTY:
-	/* XXX make sure that build side permits %missingok on directories. */
-			if (fsm->fflags & RPMFILE_MISSINGOK)
-			    break;
-
-			/* XXX common error message. */
-			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-			    _("%s rmdir of %s failed: Directory not empty\n"),
-				rpmteTypeString(te), fsm->path);
-			break;
-		    default:
-			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-				_("%s rmdir of %s failed: %s\n"),
-				rpmteTypeString(te), fsm->path, strerror(errno));
-			break;
-		    }
-		} else {
-		    rc = fsmUnlink(fsm->path, fsm->mapFlags);
-		    if (!rc) break;
-		    switch (rc) {
-		    case CPIOERR_ENOENT:
-			if (fsm->fflags & RPMFILE_MISSINGOK)
-			    break;
-		    default:
-			rpmlog(
-			    (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-				_("%s unlink of %s failed: %s\n"),
-				rpmteTypeString(te), fsm->path, strerror(errno));
-			break;
-		    }
-		}
-	    }
-	    /* XXX Failure to remove is not (yet) cause for failure. */
-	    if (!strict_erasures) rc = 0;
-
-            if (rc) break;
-
-	    /* Notify on success. */
-	    /* On erase we're iterating backwards, fixup for progress */
-	    rpm_loff_t amount = (fsm->ix >= 0) ?
-				rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
-	    rpmpsmNotify(fsm->psm, RPMCALLBACK_UNINST_PROGRESS, amount);
-	}
-	break;
     case FSM_PKGBUILD:
 	while (1) {
 
@@ -2158,4 +2093,87 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     /* Return the relevant code: if setup failed, teardown doesn't matter */
     return (rc ? rc : ec);
 }
+
+
+int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
+              rpmpsm psm, char ** failedFile)
+{
+    struct fsm_s fsm_;
+    FSM_t fsm = &fsm_;
+    int rc = 0;
+    int ec = 0;
+
+    memset(fsm, 0, sizeof(*fsm));
+    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, psm, NULL, failedFile);
+
+    while (!rc) {
+        /* Clean fsm, free'ing memory. */
+        rc = fsmInit(fsm);
+
+        /* Exit on end-of-payload. */
+        if (rc == CPIOERR_HDR_TRAILER) {
+            rc = 0;
+            break;
+        }
+
+        /* Remove erased files. */
+        if (!fsm->postpone && fsm->action == FA_ERASE) {
+            rpmte te = fsmGetTe(fsm);
+            if (S_ISDIR(fsm->sb.st_mode)) {
+                rc = fsmRmdir(fsm->path);
+                if (!rc) break;
+                switch (rc) {
+                case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
+                case CPIOERR_ENOTEMPTY:
+                    /* XXX make sure that build side permits %missingok on directories. */
+                    if (fsm->fflags & RPMFILE_MISSINGOK)
+                        break;
+
+                    /* XXX common error message. */
+                    rpmlog(
+                        (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+                        _("%s rmdir of %s failed: Directory not empty\n"),
+                        rpmteTypeString(te), fsm->path);
+                    break;
+                default:
+                    rpmlog(
+                        (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+                        _("%s rmdir of %s failed: %s\n"),
+                        rpmteTypeString(te), fsm->path, strerror(errno));
+                    break;
+                }
+            } else {
+                rc = fsmUnlink(fsm->path, fsm->mapFlags);
+                if (!rc) break;
+                switch (rc) {
+                case CPIOERR_ENOENT:
+                    if (fsm->fflags & RPMFILE_MISSINGOK)
+                        break;
+                default:
+                    rpmlog(
+                        (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
+                        _("%s unlink of %s failed: %s\n"),
+                        rpmteTypeString(te), fsm->path, strerror(errno));
+                    break;
+                }
+            }
+        }
+        /* XXX Failure to remove is not (yet) cause for failure. */
+        if (!strict_erasures) rc = 0;
+
+        if (rc) break;
+
+        /* Notify on success. */
+        /* On erase we're iterating backwards, fixup for progress */
+        rpm_loff_t amount = (fsm->ix >= 0) ?
+            rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
+        rpmpsmNotify(fsm->psm, RPMCALLBACK_UNINST_PROGRESS, amount);
+    }
+
+    ec = fsmTeardown(fsm);
+
+    /* Return the relevant code: if setup failed, teardown doesn't matter */
+    return (rc ? rc : ec);
+}
+
 
