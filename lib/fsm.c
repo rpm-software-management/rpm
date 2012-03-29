@@ -664,12 +664,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     rc = fsmCreate(fsm);
     if (rc && !ec) ec = rc;
 
-    rc = fsmUNSAFE(fsm, fsm->goal);
-    if (rc && !ec) ec = rc;
-
-    if (fsm->archiveSize && ec == 0)
-	*fsm->archiveSize = rpmcpioTell(fsm->archive);
-
 /* FIX: *fsm->failedFile may be NULL */
    return ec;
 }
@@ -678,6 +672,8 @@ static int fsmTeardown(FSM_t fsm)
 {
     int rc = fsm->rc;
 
+    if (fsm->archiveSize && rc == 0)
+	*fsm->archiveSize = rpmcpioTell(fsm->archive);
 
     if (!rc) {
         /* Check for hard links missing from payload. */
@@ -2127,14 +2123,17 @@ static const char * fileStageString(fileStage a)
 int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile)
 {
-    struct fsm_s fsm;
-    int sc = 0;
+    struct fsm_s fsm_;
+    FSM_t fsm = &fsm_;
+    int rc = 0;
     int ec = 0;
 
-    memset(&fsm, 0, sizeof(fsm));
-    sc = fsmSetup(&fsm, goal, ts, te, fi, cfd, psm, archiveSize, failedFile);
-    ec = fsmTeardown(&fsm);
+    memset(fsm, 0, sizeof(*fsm));
+    rc = fsmSetup(fsm, goal, ts, te, fi, cfd, psm, archiveSize, failedFile);
+    if (!rc)
+        rc = fsmUNSAFE(fsm, fsm->goal);
+    ec = fsmTeardown(fsm);
 
-    /* Return the relevant code: if setup failed, teardown doesn't matter */
-    return (sc ? sc : ec);
+    /* Return the relevant code: if setup or the fsm failed, teardown doesn't matter */
+    return (rc ? rc : ec);
 }
