@@ -106,8 +106,7 @@ extern "C" {
 #endif
 
 /**
- * Execute a file state machine goal
- * @param goal
+ * Execute a file actions for package
  * @param ts		transaction set
  * @param fi		transaction element file info
  * @param cfd
@@ -116,8 +115,6 @@ extern "C" {
  * @retval failedFile	pointer to first file name that failed (malloced)
  * @return		0 on success
  */
-int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
-	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile);
 
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile);

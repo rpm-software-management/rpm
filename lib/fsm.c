@@ -92,8 +92,6 @@ struct fsm_s {
     unsigned fflags;		/*!< File flags. */
     rpmFileAction action;	/*!< File disposition. */
     fileStage goal;		/*!< Package state machine goal. */
-    fileStage stage;		/*!< External file stage. */
-    fileStage nstage;		/*!< Next file stage. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
 
@@ -143,7 +141,6 @@ static rpmte fsmGetTe(const FSM_t fsm)
  */ 
 static const char * fileStageString(fileStage a);
 static const char * fileActionString(rpmFileAction a);
-static int fsmStage(FSM_t fsm, fileStage stage);
 
 /** \ingroup payload
  * Build path to file from file info, ornamented with subdir and suffix.
@@ -425,12 +422,6 @@ const char * dnlNextIterator(DNLI_t dnli)
 	dnli->isave = i;
     }
     return dn;
-}
-
-static int fsmNext(FSM_t fsm, fileStage nstage)
-{
-    fsm->nstage = nstage;
-    return fsmStage(fsm, fsm->nstage);
 }
 
 /**
@@ -1757,62 +1748,6 @@ static int fsmCommit(FSM_t fsm)
     return rc;
 }
 
-/********************************************************************/
-
-/**
- * File state machine driver.
- * @param fsm		file state machine
- * @param stage		next stage
- * @return		0 on success
- */
-static int fsmStage(FSM_t fsm, fileStage stage)
-{
-    const char * const cur = fileStageString(stage);
-    struct stat * st = &fsm->sb;
-    int saveerrno = errno;
-    int rc = fsm->rc;
-
-#define	_fafilter(_a)	\
-    (!((_a) == FA_CREATE || (_a) == FA_ERASE || (_a) == FA_COPYIN || (_a) == FA_COPYOUT) \
-	? fileActionString(_a) : "")
-
-    if (stage & FSM_DEAD) {
-	/* do nothing */
-    } else if (stage & FSM_INTERNAL) {
-	if (_fsm_debug && !(stage & FSM_SYSCALL))
-	    rpmlog(RPMLOG_DEBUG, " %8s %06o%3d (%4d,%4d)%10d %s %s\n",
-		cur,
-		(unsigned)st->st_mode, (int)st->st_nlink,
-		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
-		(fsm->path ? fsm->path : ""),
-		_fafilter(fsm->action));
-    } else {
-	fsm->stage = stage;
-	if (_fsm_debug || !(stage & FSM_VERBOSE))
-	    rpmlog(RPMLOG_DEBUG, "%-8s  %06o%3d (%4d,%4d)%10d %s %s\n",
-		cur,
-		(unsigned)st->st_mode, (int)st->st_nlink,
-		(int)st->st_uid, (int)st->st_gid, (int)st->st_size,
-		(fsm->path ? fsm->path : ""),
-		_fafilter(fsm->action));
-    }
-#undef	_fafilter
-
-    switch (stage) {
-    case FSM_UNKNOWN:
-	break;
-    case FSM_POST:
-	break;
-    default:
-	break;
-    }
-
-    if (!(stage & FSM_INTERNAL)) {
-	fsm->rc = (rc == CPIOERR_HDR_TRAILER ? 0 : rc);
-    }
-    return rc;
-}
-
 /**
  * Return formatted string representation of file disposition.
  * @param a		file dispostion
@@ -1899,25 +1834,6 @@ static const char * fileStageString(fileStage a)
     default:		return "???";
     }
 }
-
-int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
-	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile)
-{
-    struct fsm_s fsm_;
-    FSM_t fsm = &fsm_;
-    int rc = 0;
-    int ec = 0;
-
-    memset(fsm, 0, sizeof(*fsm));
-    rc = fsmSetup(fsm, goal, ts, te, fi, cfd, psm, archiveSize, failedFile);
-    if (!rc)
-        rc = fsmUNSAFE(fsm, fsm->goal);
-    ec = fsmTeardown(fsm);
-
-    /* Return the relevant code: if setup or the fsm failed, teardown doesn't matter */
-    return (rc ? rc : ec);
-}
-
 
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
