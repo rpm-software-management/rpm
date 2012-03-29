@@ -60,11 +60,19 @@ main(int argc, char *argv[])
     if (optCon == NULL)
 	goto exit;
 
-    while (fgets(buf, sizeof(buf), stdin) != NULL) {
-	char *be = buf + strlen(buf) - 1;
-	while (strchr("\r\n", *be) != NULL)
-	    *be-- = '\0';
-	argvAdd(&av, buf);
+    /* normally files get passed through stdin but also accept files as args */
+    if (poptPeekArg(optCon)) {
+	const char *arg;
+	while ((arg = poptGetArg(optCon)) != NULL) {
+	    argvAdd(&av, arg);
+	}
+    } else {
+	while (fgets(buf, sizeof(buf), stdin) != NULL) {
+	    char *be = buf + strlen(buf) - 1;
+	    while (strchr("\r\n", *be) != NULL)
+		*be-- = '\0';
+	    argvAdd(&av, buf);
+	}
     }
     /* Make sure file names are sorted. */
     argvSort(av, NULL);
