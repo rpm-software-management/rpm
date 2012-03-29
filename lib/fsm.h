@@ -119,6 +119,9 @@ extern "C" {
 int rpmfsmRun(fileStage goal, rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	      rpmpsm psm, rpm_loff_t * archiveSize, char ** failedFile);
 
+int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+              rpmpsm psm, char ** failedFile);
+
 RPM_GNUC_INTERNAL
 void rpmpsmNotify(rpmpsm psm, int what, rpm_loff_t amount);
 #ifdef __cplusplus

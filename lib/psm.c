@@ -816,8 +816,8 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		    break;
 		}
 
-		fsmrc = rpmfsmRun(FSM_PKGINSTALL, psm->ts, psm->te, psm->fi,
-				  payload, psm, NULL, &psm->failedFile);
+		fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->fi,
+				  payload, psm, &psm->failedFile);
 
 		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
 			 fdOp(payload, FDSTAT_READ));
