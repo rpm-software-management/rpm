@@ -27,11 +27,40 @@
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
 #include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() only */
 #include "lib/rpmug.h"
+#include "lib/cpio.h"
 
 #include "debug.h"
 
 #define	_FSM_DEBUG	0
 int _fsm_debug = _FSM_DEBUG;
+
+extern int _fsm_debug;
+
+/** \ingroup payload
+ */
+enum cpioMapFlags_e {
+    CPIO_MAP_PATH	= (1 << 0),
+    CPIO_MAP_MODE	= (1 << 1),
+    CPIO_MAP_UID	= (1 << 2),
+    CPIO_MAP_GID	= (1 << 3),
+    CPIO_FOLLOW_SYMLINKS= (1 << 4), /*!< only for building. */
+    CPIO_MAP_ABSOLUTE	= (1 << 5),
+    CPIO_MAP_ADDDOT	= (1 << 6),
+    CPIO_MAP_TYPE	= (1 << 8),  /*!< only for building. */
+    CPIO_SBIT_CHECK	= (1 << 9)
+};
+typedef rpmFlags cpioMapFlags;
+
+typedef struct fsmIterator_s * FSMI_t;
+typedef struct fsm_s * FSM_t;
+
+typedef struct hardLink_s * hardLink_t;
+
+typedef enum fileStage_e {
+    FSM_PKGINSTALL,
+    FSM_PKGERASE,
+    FSM_PKGBUILD,
+} fileStage;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
 static int strict_erasures = 0;
