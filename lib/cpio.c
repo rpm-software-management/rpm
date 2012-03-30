@@ -17,12 +17,12 @@
 #include <sys/types.h> /* already included from system.h */
 #endif
 #include <errno.h>
+#include <string.h>
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
 
 #include "lib/cpio.h"
-#include "lib/fsm.h"
 
 #include "debug.h"
 
