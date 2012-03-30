@@ -725,7 +725,7 @@ static int fsmSetSELabel(struct selabel_handle *sehandle,
 	if (selabel_lookup_raw(sehandle, &scon, path, mode) == 0) {
 	    rc = lsetfilecon(path, scon);
 
-	    if (_fsm_debug && (FSM_LSETFCON & FSM_SYSCALL)) {
+	    if (_fsm_debug) {
 		rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n",
 			fileStageString(FSM_LSETFCON), path, scon,
 			(rc < 0 ? strerror(errno) : ""));
@@ -892,7 +892,7 @@ static int fsmReadLink(const char *path,
     ssize_t llen = readlink(path, buf, bufsize - 1);
     int rc = CPIOERR_READLINK_FAILED;
 
-    if (_fsm_debug && (FSM_READLINK & FSM_SYSCALL)) {
+    if (_fsm_debug) {
         rpmlog(RPMLOG_DEBUG, " %8s (%s, buf, %d) %s\n",
 	       fileStageString(FSM_READLINK),
                path, (int)(bufsize -1), (llen < 0 ? strerror(errno) : ""));
@@ -1122,7 +1122,7 @@ static int fsmStat(const char *path, int dolstat, struct stat *sb)
     } else {
         rc = stat(path, sb);
     }
-    if (_fsm_debug && (FSM_STAT & FSM_SYSCALL) && rc && errno != ENOENT)
+    if (_fsm_debug && rc && errno != ENOENT)
         rpmlog(RPMLOG_DEBUG, " %8s (%s, ost) %s\n",
                fileStageString(dolstat ? FSM_LSTAT : FSM_STAT),
                path, (rc < 0 ? strerror(errno) : ""));
@@ -1174,7 +1174,7 @@ static int fsmMakeLinks(FSM_t fsm)
 
 	/* XXX link(opath, fsm->path) */
 	rc = link(opath, fsm->path);
-	if (_fsm_debug && (FSM_LINK & FSM_SYSCALL))
+	if (_fsm_debug)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_LINK),
 		opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
@@ -1239,7 +1239,7 @@ static int fsmCommitLinks(FSM_t fsm)
 static int fsmRmdir(const char *path)
 {
     int rc = rmdir(path);
-    if (_fsm_debug && (FSM_RMDIR & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", fileStageString(FSM_RMDIR),
 	       path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
@@ -1254,7 +1254,7 @@ static int fsmRmdir(const char *path)
 static int fsmMkdir(const char *path, mode_t mode)
 {
     int rc = mkdir(path, (mode & 07777));
-    if (_fsm_debug && (FSM_MKDIR & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_MKDIR),
 	       path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
@@ -1266,7 +1266,7 @@ static int fsmMkfifo(const char *path, mode_t mode)
 {
     int rc = mkfifo(path, (mode & 07777));
 
-    if (_fsm_debug && (FSM_MKFIFO & FSM_SYSCALL)) {
+    if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n",
 	       fileStageString(FSM_MKFIFO), path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
@@ -1283,7 +1283,7 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
     /* FIX: check S_IFIFO or dev != 0 */
     int rc = mknod(path, (mode & ~07777), dev);
 
-    if (_fsm_debug && (FSM_MKNOD & FSM_SYSCALL)) {
+    if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%o, 0x%x) %s\n",
 	       fileStageString(FSM_MKNOD), path, (unsigned)(mode & ~07777),
 	       (unsigned)dev, (rc < 0 ? strerror(errno) : ""));
@@ -1505,7 +1505,7 @@ static int fsmSymlink(const char *opath, const char *path)
 {
     int rc = symlink(opath, path);
 
-    if (_fsm_debug && (FSM_SYMLINK & FSM_SYSCALL)) {
+    if (_fsm_debug) {
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_SYMLINK),
 	       opath, path, (rc < 0 ? strerror(errno) : ""));
     }
@@ -1521,7 +1521,7 @@ static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
     if (mapFlags & CPIO_SBIT_CHECK)
         removeSBITS(path);
     rc = unlink(path);
-    if (_fsm_debug && (FSM_UNLINK & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", fileStageString(FSM_UNLINK),
 	       path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
@@ -1545,7 +1545,7 @@ static int fsmRename(const char *opath, const char *path,
 	free(rmpath);
     }
 #endif
-    if (_fsm_debug && (FSM_RENAME & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", fileStageString(FSM_RENAME),
 	       opath, path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
@@ -1561,7 +1561,7 @@ static int fsmChown(const char *path, uid_t uid, gid_t gid)
 	if (lstat(path, &st) == 0 && st.st_uid == uid && st.st_gid == gid)
 	    rc = 0;
     }
-    if (_fsm_debug && (FSM_CHOWN & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_CHOWN),
 	       path, (int)uid, (int)gid,
 	       (rc < 0 ? strerror(errno) : ""));
@@ -1577,7 +1577,7 @@ static int fsmLChown(const char *path, uid_t uid, gid_t gid)
 	if (lstat(path, &st) == 0 && st.st_uid == uid && st.st_gid == gid)
 	    rc = 0;
     }
-    if (_fsm_debug && (FSM_LCHOWN & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", fileStageString(FSM_LCHOWN),
 	       path, (int)uid, (int)gid,
 	       (rc < 0 ? strerror(errno) : ""));
@@ -1593,7 +1593,7 @@ static int fsmChmod(const char *path, mode_t mode)
 	if (lstat(path, &st) == 0 && (st.st_mode & 07777) == (mode & 07777))
 	    rc = 0;
     }
-    if (_fsm_debug && (FSM_CHMOD & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", fileStageString(FSM_CHMOD),
 	       path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
@@ -1608,7 +1608,7 @@ static int fsmUtime(const char *path, time_t mtime)
     stamp.actime = mtime;
     stamp.modtime = mtime;
     rc = utime(path, &stamp);
-    if (_fsm_debug && (FSM_UTIME & FSM_SYSCALL))
+    if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", fileStageString(FSM_UTIME),
 	       path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
