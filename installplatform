@@ -111,8 +111,6 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   # skip architectures for which we dont have full config parameters
   [ -z "$CANONARCH" ] && continue
 
-  CANONARCH="`echo $ARCH|sed -e "$canonarch_sed"`"
-
   if [ "$OS" = "linux" ] && [ "$CANONCOLOR" = 3 ]; then
       LIB=${LIB}64
   fi
