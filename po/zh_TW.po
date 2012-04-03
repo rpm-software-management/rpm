@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm 4.4.2\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-09-29 15:16+0300\n"
+"POT-Creation-Date: 2012-04-03 16:37+0300\n"
 "PO-Revision-Date: 2007-05-05 10:52+0800\n"
 "Last-Translator: Wei-Lun Chao <chaoweilun@gmail.com>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -1676,92 +1676,97 @@ msgstr ""
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob 大小(%d):不當的， 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:237 lib/package.c:292 lib/package.c:360 lib/signature.c:129
+#: lib/package.c:237 lib/package.c:299 lib/package.c:367 lib/signature.c:129
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "標記[%d]:不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/package.c:255 lib/signature.c:143
+#: lib/package.c:253 lib/signature.c:141
+#, fuzzy, c-format
+msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
+msgstr "區域結尾：不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
+
+#: lib/package.c:262 lib/signature.c:150
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "區域偏移：不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/package.c:273 lib/signature.c:167
+#: lib/package.c:280 lib/signature.c:174
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "區域結尾：不當的，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/package.c:283 lib/signature.c:177
+#: lib/package.c:290 lib/signature.c:184
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "區域大小：不當的， ril(%d)> il(%d)\n"
 
-#: lib/package.c:310
+#: lib/package.c:317
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: 不當的，不是十六進位\n"
 
-#: lib/package.c:322
+#: lib/package.c:329
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "hdr RSA：不適當，不是二進位\n"
 
-#: lib/package.c:332
+#: lib/package.c:339
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA：不當的，不是二進位\n"
 
-#: lib/package.c:473
+#: lib/package.c:480
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr 大小(%d):不當的，讀取回傳 %d\n"
 
-#: lib/package.c:477
+#: lib/package.c:484
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic：不當的\n"
 
-#: lib/package.c:482
+#: lib/package.c:489
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr 標記：不當的，號碼的標記(%d)發信匣的範圍\n"
 
-#: lib/package.c:488
+#: lib/package.c:495
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr 資料：不當的，號碼的位元組(%d)發信匣的範圍\n"
 
-#: lib/package.c:498
+#: lib/package.c:505
 #, fuzzy, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "hdr blob(%d):不當的，讀取回傳 %d\n"
 
-#: lib/package.c:510
+#: lib/package.c:517
 msgid "hdr load: BAD\n"
 msgstr "hdr 載入：不當的\n"
 
-#: lib/package.c:582 lib/rpmchecksig.c:296 sign/rpmgensig.c:464
+#: lib/package.c:589 lib/rpmchecksig.c:296 sign/rpmgensig.c:464
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s：rpmReadSignature 失敗：%s"
 
-#: lib/package.c:589 lib/rpmchecksig.c:303 sign/rpmgensig.c:471
+#: lib/package.c:596 lib/rpmchecksig.c:303 sign/rpmgensig.c:471
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s：未發現簽名\n"
 
-#: lib/package.c:631
+#: lib/package.c:638
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s:：headerRead 失敗：%s"
 
-#: lib/package.c:686 lib/rpmchecksig.c:137 sign/rpmgensig.c:94
+#: lib/package.c:693 lib/rpmchecksig.c:137 sign/rpmgensig.c:94
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread 失敗：%s\n"
 
-#: lib/package.c:794
+#: lib/package.c:801
 #, fuzzy, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s 無法安裝\n"
 
-#: lib/package.c:798
+#: lib/package.c:805
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
@@ -2883,48 +2888,48 @@ msgstr "sigh 資料：不當，號碼的  位元組(%d)發信匣的範圍\n"
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sigh 萬用字元解析(%d):不當，讀取回傳 %d\n"
 
-#: lib/signature.c:188
+#: lib/signature.c:195
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh 標記[%d]:不當，標記 %d 型態 %d 偏移 %d 計數 %d\n"
 
-#: lib/signature.c:198
+#: lib/signature.c:205
 msgid "sigh load: BAD\n"
 msgstr "sigh 載入：不當\n"
 
-#: lib/signature.c:211
+#: lib/signature.c:218
 #, fuzzy, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "sigh 填充(%d):不當，讀取 %d 位元組\n"
 
-#: lib/signature.c:227
+#: lib/signature.c:234
 #, fuzzy, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%d):不當，fstat(2)失敗\n"
 
-#: lib/signature.c:303
+#: lib/signature.c:310
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/signature.c:397
+#: lib/signature.c:404
 #, fuzzy
 msgid "MD5 digest:"
 msgstr "MD 5 摘要："
 
-#: lib/signature.c:436
+#: lib/signature.c:443
 #, fuzzy
 msgid "Header SHA1 digest:"
 msgstr "表頭 SHA1 摘要："
 
-#: lib/signature.c:489
+#: lib/signature.c:496
 msgid "Header "
 msgstr "表頭 "
 
-#: lib/signature.c:502
+#: lib/signature.c:509
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "驗證簽名：不當的參數\n"
 
-#: lib/signature.c:523
+#: lib/signature.c:530
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "簽名：不明 (%d)\n"

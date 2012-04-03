@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2011-09-29 15:16+0300\n"
+"POT-Creation-Date: 2012-04-03 16:37+0300\n"
 "PO-Revision-Date: 2009-04-06 22:38+0100\n"
 "Last-Translator: Miloš Komarčević <kmilos@gmail.com>\n"
 "Language-Team: Serbian (sr) <fedora-trans-sr@redhat.com>\n"
@@ -1691,92 +1691,97 @@ msgstr "preskačem paket %s sa nepotvrđenim V%u potpisom\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob veličina (%d): LOŠE, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:237 lib/package.c:292 lib/package.c:360 lib/signature.c:129
+#: lib/package.c:237 lib/package.c:299 lib/package.c:367 lib/signature.c:129
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "oznaka[%d]: LOŠE, oznaka %d vrsta %d pomeraj %d broj %d\n"
 
-#: lib/package.c:255 lib/signature.c:143
+#: lib/package.c:253 lib/signature.c:141
+#, fuzzy, c-format
+msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
+msgstr "repni region: LOŠE, oznaka %d vrsta %d pomeraj %d broj %d\n"
+
+#: lib/package.c:262 lib/signature.c:150
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "pomeraj regiona: LOŠE, oznaka %d vrsta %d pomeraj %d broj %d\n"
 
-#: lib/package.c:273 lib/signature.c:167
+#: lib/package.c:280 lib/signature.c:174
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "repni region: LOŠE, oznaka %d vrsta %d pomeraj %d broj %d\n"
 
-#: lib/package.c:283 lib/signature.c:177
+#: lib/package.c:290 lib/signature.c:184
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "veličina regiona: LOŠE, ril(%d) > il(%d)\n"
 
-#: lib/package.c:310
+#: lib/package.c:317
 msgid "hdr SHA1: BAD, not hex\n"
 msgstr "hdr SHA1: LOŠE, nije heksadekadno\n"
 
-#: lib/package.c:322
+#: lib/package.c:329
 msgid "hdr RSA: BAD, not binary\n"
 msgstr "hdr RSA: LOŠE, nije binarno\n"
 
-#: lib/package.c:332
+#: lib/package.c:339
 msgid "hdr DSA: BAD, not binary\n"
 msgstr "hdr DSA: LOŠE, nije binarno\n"
 
-#: lib/package.c:473
+#: lib/package.c:480
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr size(%d): LOŠE, čitam vraćeno %d\n"
 
-#: lib/package.c:477
+#: lib/package.c:484
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: LOŠE\n"
 
-#: lib/package.c:482
+#: lib/package.c:489
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr tags: LOŠE, broj oznaka(%d) je van dometa\n"
 
-#: lib/package.c:488
+#: lib/package.c:495
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr data: LOŠE, broj bajtova(%d) je van dometa\n"
 
-#: lib/package.c:498
+#: lib/package.c:505
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "hdr blob(%zd): LOŠE, čitam vraćeno %d\n"
 
-#: lib/package.c:510
+#: lib/package.c:517
 msgid "hdr load: BAD\n"
 msgstr "hdr load: LOŠE\n"
 
-#: lib/package.c:582 lib/rpmchecksig.c:296 sign/rpmgensig.c:464
+#: lib/package.c:589 lib/rpmchecksig.c:296 sign/rpmgensig.c:464
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature nije uspelo: %s"
 
-#: lib/package.c:589 lib/rpmchecksig.c:303 sign/rpmgensig.c:471
+#: lib/package.c:596 lib/rpmchecksig.c:303 sign/rpmgensig.c:471
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Nema potpisa na raspolaganju\n"
 
-#: lib/package.c:631
+#: lib/package.c:638
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead nije uspelo: %s"
 
-#: lib/package.c:686 lib/rpmchecksig.c:137 sign/rpmgensig.c:94
+#: lib/package.c:693 lib/rpmchecksig.c:137 sign/rpmgensig.c:94
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread nije uspelo: %s\n"
 
-#: lib/package.c:794
+#: lib/package.c:801
 #, c-format
 msgid "%s is a Delta RPM and cannot be directly installed\n"
 msgstr "%s je Delta RPM i ne može se direktno instalirati\n"
 
-#: lib/package.c:798
+#: lib/package.c:805
 #, c-format
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodržan teret (%s) u paketu %s\n"
@@ -2903,46 +2908,46 @@ msgstr "sigh podaci: LOŠE, broj  bajtova(%d) je van dometa\n"
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sigh blob(%d): LOŠE, čitanje vraćeno %d\n"
 
-#: lib/signature.c:188
+#: lib/signature.c:195
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh oznaka[%d]: LOŠE, oznaka %d vrsta %d pomeraj %d broj %d\n"
 
-#: lib/signature.c:198
+#: lib/signature.c:205
 msgid "sigh load: BAD\n"
 msgstr "sigh učitavanje: LOŠE\n"
 
-#: lib/signature.c:211
+#: lib/signature.c:218
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "sigh podloška(%zd): LOŠE, čitam %zd bajtova\n"
 
-#: lib/signature.c:227
+#: lib/signature.c:234
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%zd): LOŠE, fstat(2) nije uspeo\n"
 
-#: lib/signature.c:303
+#: lib/signature.c:310
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Nepromenjiva regija zaglavlja se ne može iščitati. Oštećen paket?\n"
 
-#: lib/signature.c:397
+#: lib/signature.c:404
 msgid "MD5 digest:"
 msgstr "MD5 sažetak:"
 
-#: lib/signature.c:436
+#: lib/signature.c:443
 msgid "Header SHA1 digest:"
 msgstr "SHA1 sažetak zaglavlja:"
 
-#: lib/signature.c:489
+#: lib/signature.c:496
 msgid "Header "
 msgstr "Zaglavlje "
 
-#: lib/signature.c:502
+#: lib/signature.c:509
 msgid "Verify signature: BAD PARAMETERS\n"
 msgstr "Potvrdi potpis: LOŠI PARAMETRI\n"
 
-#: lib/signature.c:523
+#: lib/signature.c:530
 #, c-format
 msgid "Signature: UNKNOWN (%d)\n"
 msgstr "Potpis: NEPOZNAT (%d)\n"
