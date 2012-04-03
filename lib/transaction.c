@@ -415,7 +415,7 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	 */
 
 	/* Locate this overlapped file in the set of added/removed packages. */
-	for (j = 0; j < numRecs && recs[j].p != p; j++)
+	for (j = 0; j < numRecs && !(recs[j].p == p && recs[j].fileno == i); j++)
 	    {};
 
 	/* Find what the previous disposition of this file was. */
