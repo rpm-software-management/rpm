@@ -270,7 +270,7 @@ static rpmRC headerVerify(rpmKeyring keyring, rpmVSFlags vsflags,
     (void) memcpy(&info, regionEnd, REGION_TAG_COUNT);
     regionEnd += REGION_TAG_COUNT;
 
-    xx = headerVerifyInfo(1, dl, &info, &entry.info, 1);
+    xx = headerVerifyInfo(1, il * sizeof(*pe), &info, &entry.info, 1);
     if (xx != -1 ||
 	!(entry.info.tag == RPMTAG_HEADERIMMUTABLE
        && entry.info.type == REGION_TAG_TYPE
