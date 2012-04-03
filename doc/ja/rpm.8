@@ -922,15 +922,15 @@ rpm の電子書名の一般的な形式は:
 表示できる。
 .PP
 .nf
-.B "rpm \-qa gpg-publey*"
+.B "rpm \-qa gpg-pubkey*"
 .fi
 (訳注: 多くの場合 "*" はシェルによってメタ文字として解釈されるので、
-実際には rpm \-qa "gpg-publey*" のようにクォーティングする必要がある)
+実際には rpm \-qa "gpg-pubkey*" のようにクォーティングする必要がある)
 .PP
 取り込んだ、特定の公開鍵に関する詳細は検索によって表示することができる。
 Red Hat の GPG/DSA 鍵に関する情報は:
 .PP
-.B "rpm \-qi gpg-publey-db42a60e"
+.B "rpm \-qi gpg-pubkey-db42a60e"
 .PP
 最後に、パッケージでそうできるように、取り込んだ公開鍵を削除することができる。
 以下は Red Hat の GPG/DSA 鍵を削除する。
