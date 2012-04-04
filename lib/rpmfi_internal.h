@@ -61,7 +61,6 @@ struct rpmfi_s {
     rpm_count_t fc;		/*!< No. of files. */
 
     rpmfiFlags fiflags;		/*!< file info set control flags */
-    headerGetFlags scareFlags;	/*!< headerGet flags wrt scareMem */
 
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
 
