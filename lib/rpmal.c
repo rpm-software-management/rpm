@@ -324,6 +324,7 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     const char * name;
     availableIndexEntry result;
     int resultCnt;
+    int obsolete;
 
     availablePackage alp;
     int rc;
@@ -334,7 +335,8 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     if (al->providesHash == NULL && al->fileHash == NULL)
 	rpmalMakeIndex(al);
 
-    if (*name == '/') {
+    obsolete = (rpmdsTagN(ds) == RPMTAG_OBSOLETENAME);
+    if (!obsolete && *name == '/') {
 	/* First, look for files "contained" in package ... */
 	ret = rpmalAllFileSatisfiesDepend(al, ds);
 	if (ret != NULL && *ret != NULL)
@@ -355,6 +357,11 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	if (alp->p == NULL) // deleted
 	    continue;
 	(void) rpmdsSetIx(alp->provides, result[i].entryIx);
+
+	/* Obsoletes are on package name, filter out other provide matches */
+	if (obsolete && !rstreq(rpmdsN(alp->provides), rpmteN(alp->p)))
+	    continue;
+
 	rc = 0;
 	if (rpmdsIx(alp->provides) >= 0)
 	    rc = rpmdsCompare(alp->provides, ds);
