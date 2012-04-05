@@ -91,7 +91,6 @@ EXTRA_DIST += atlocal.in
 # Hack: Abusing testing$(bindir)/rpmbuild as stamp file
 testing$(bindir)/rpmbuild: ../rpmbuild
 	rm -rf testing
-	# Arrange unified /bin vs $(bindir) to keep things simple
 	mkdir -p testing/$(bindir)
 	ln -s ./$(bindir) testing/bin
 	(cd ${top_builddir} && \
