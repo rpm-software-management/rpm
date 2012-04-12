@@ -539,8 +539,9 @@ assert(otherFi != NULL);
 		const unsigned char *digest;
 		if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
 		    unsigned char fdigest[diglen];
-		    if (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
-			memcmp(digest, fdigest, diglen)) {
+		    int modified = (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
+				    memcmp(digest, fdigest, diglen));
+		    if (modified) {
 			rpmfsSetAction(fs, i, FA_BACKUP);
 			break;
 		    }
