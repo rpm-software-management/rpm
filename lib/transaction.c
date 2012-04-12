@@ -414,7 +414,12 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	 *
 	 */
 
-	/* Locate this overlapped file in the set of added/removed packages. */
+	/*
+	 * Locate this overlapped file in the set of added/removed packages,
+	 * including the package owning it: a package can have self-conflicting
+	 * files when directory symlinks are present. Don't compare a file
+	 * with itself though...
+	 */
 	for (j = 0; j < numRecs && !(recs[j].p == p && recs[j].fileno == i); j++)
 	    {};
 
