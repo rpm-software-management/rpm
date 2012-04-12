@@ -159,10 +159,10 @@ RPM_GNUC_INTERNAL
 int rpmfiConfigConflictIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
-void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
+void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL
-rpm_loff_t rpmfiFReplacedSize(rpmfi fi);
+rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
