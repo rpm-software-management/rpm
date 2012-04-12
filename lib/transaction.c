@@ -355,7 +355,6 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi,
 static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 {
     rpm_loff_t fixupSize = 0;
-    const char * fn;
     int i, j;
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t prefcolor = rpmtsPrefColor(ts);
@@ -377,7 +376,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 	    continue;
 
-	fn = rpmfiFN(fi);
 	fiFps = rpmfiFpsIndex(fi, i);
 	FFlags = rpmfiFFlags(fi);
 	FMode = rpmfiFMode(fi);
@@ -493,6 +491,7 @@ assert(otherFi != NULL);
 		    done = 1;
 		}
 		if (rConflicts) {
+		    const char *fn = rpmfiFN(fi);
 		    rpmteAddProblem(p, RPMPROB_NEW_FILE_CONFLICT,
 				    rpmteNEVRA(otherTe), fn, 0);
 		}
@@ -539,6 +538,7 @@ assert(otherFi != NULL);
 		const unsigned char *digest;
 		if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
 		    unsigned char fdigest[diglen];
+		    const char *fn = rpmfiFN(fi);
 		    int modified = (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
 				    memcmp(digest, fdigest, diglen));
 		    if (modified) {
