@@ -1239,23 +1239,23 @@ errxit:
     return NULL;
 }
 
-void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize)
+void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize)
 {
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->replacedSizes == NULL) {
 	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
 	}
 	/* XXX watch out, replacedSizes is not rpm_loff_t (yet) */
-	fi->replacedSizes[fi->i] = (rpm_off_t) newsize;
+	fi->replacedSizes[ix] = (rpm_off_t) newsize;
     }
 }
 
-rpm_loff_t rpmfiFReplacedSize(rpmfi fi)
+rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix)
 {
     rpm_loff_t rsize = 0;
-    if (fi != NULL && fi->i >= 0 && fi->i < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->replacedSizes) {
-	    rsize = fi->replacedSizes[fi->i];
+	    rsize = fi->replacedSizes[ix];
 	}
     }
     return rsize;
