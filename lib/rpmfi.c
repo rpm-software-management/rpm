@@ -540,19 +540,19 @@ rpmFileTypes rpmfiWhatis(rpm_mode_t mode)
     return REG;
 }
 
-int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
+int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
 {
-    rpmFileTypes awhat = rpmfiWhatis(rpmfiFMode(afi));
-    rpmFileTypes bwhat = rpmfiWhatis(rpmfiFMode(bfi));
+    rpmFileTypes awhat = rpmfiWhatis(rpmfiFModeIndex(afi, aix));
+    rpmFileTypes bwhat = rpmfiWhatis(rpmfiFModeIndex(bfi, bix));
 
-    if ((rpmfiFFlags(afi) & RPMFILE_GHOST) ||
-	(rpmfiFFlags(bfi) & RPMFILE_GHOST)) return 0;
+    if ((rpmfiFFlagsIndex(afi, aix) & RPMFILE_GHOST) ||
+	(rpmfiFFlagsIndex(bfi, bix) & RPMFILE_GHOST)) return 0;
 
     if (awhat != bwhat) return 1;
 
     if (awhat == LINK) {
-	const char * alink = rpmfiFLink(afi);
-	const char * blink = rpmfiFLink(bfi);
+	const char * alink = rpmfiFLinkIndex(afi, aix);
+	const char * blink = rpmfiFLinkIndex(bfi, bix);
 	if (alink == blink) return 0;
 	if (alink == NULL) return 1;
 	if (blink == NULL) return -1;
@@ -560,8 +560,9 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     } else if (awhat == REG) {
 	size_t adiglen, bdiglen;
 	int aalgo, balgo;
-	const unsigned char * adigest = rpmfiFDigest(afi, &aalgo, &adiglen);
-	const unsigned char * bdigest = rpmfiFDigest(bfi, &balgo, &bdiglen);
+	const unsigned char * adigest, * bdigest;
+	adigest = rpmfiFDigestIndex(afi, aix, &aalgo, &adiglen);
+	bdigest = rpmfiFDigestIndex(bfi, bix, &balgo, &bdiglen);
 	if (adigest == bdigest) return 0;
 	if (adigest == NULL) return 1;
 	if (bdigest == NULL) return -1;
@@ -573,10 +574,11 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
     return 0;
 }
 
-rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
+				   int skipMissing)
 {
-    const char * fn = rpmfiFN(nfi);
-    rpmfileAttrs newFlags = rpmfiFFlags(nfi);
+    const char * fn = rpmfiFNIndex(nfi, nix);
+    rpmfileAttrs newFlags = rpmfiFFlagsIndex(nfi, nix);
     char buffer[1024];
     rpmFileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
@@ -597,8 +599,8 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     }
 
     diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
-    dbWhat = rpmfiWhatis(rpmfiFMode(ofi));
-    newWhat = rpmfiWhatis(rpmfiFMode(nfi));
+    dbWhat = rpmfiWhatis(rpmfiFModeIndex(ofi, oix));
+    newWhat = rpmfiWhatis(rpmfiFModeIndex(nfi, nix));
 
     /*
      * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
@@ -625,7 +627,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	int oalgo, nalgo;
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
-	odigest = rpmfiFDigest(ofi, &oalgo, &odiglen);
+	odigest = rpmfiFDigestIndex(ofi, oix, &oalgo, &odiglen);
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(oalgo, fn, 0, 
 		(unsigned char *)buffer, NULL))
@@ -633,7 +635,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	    if (odigest && !memcmp(odigest, buffer, odiglen))
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	}
-	ndigest = rpmfiFDigest(nfi, &nalgo, &ndiglen);
+	ndigest = rpmfiFDigestIndex(nfi, nix, &nalgo, &ndiglen);
 	/* Can't compare different hash types, backup to avoid data loss */
 	if (oalgo != nalgo || odiglen != ndiglen)
 	    return save;
@@ -641,7 +643,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	    return FA_SKIP;	/* identical file, don't bother. */
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
-	oFLink = rpmfiFLink(ofi);
+	oFLink = rpmfiFLinkIndex(ofi, oix);
 	if (diskWhat == LINK) {
 	    ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
 	    if (link_len == -1)
@@ -650,7 +652,7 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 	    if (oFLink && rstreq(oFLink, buffer))
 		return FA_CREATE;	/* unmodified config file, replace. */
 	}
-	nFLink = rpmfiFLink(nfi);
+	nFLink = rpmfiFLinkIndex(nfi, nix);
 	if (oFLink && nFLink && rstreq(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
     }
@@ -664,10 +666,10 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
     return save;
 }
 
-int rpmfiConfigConflict(const rpmfi fi)
+int rpmfiConfigConflictIndex(rpmfi fi, int ix)
 {
-    const char * fn = rpmfiFN(fi);
-    rpmfileAttrs flags = rpmfiFFlags(fi);
+    const char * fn = rpmfiFNIndex(fi, ix);
+    rpmfileAttrs flags = rpmfiFFlagsIndex(fi, ix);
     char buffer[1024];
     rpmFileTypes newWhat, diskWhat;
     struct stat sb;
@@ -677,7 +679,7 @@ int rpmfiConfigConflict(const rpmfi fi)
     }
 
     diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
-    newWhat = rpmfiWhatis(rpmfiFMode(fi));
+    newWhat = rpmfiWhatis(rpmfiFModeIndex(fi, ix));
 
     if (newWhat != LINK && newWhat != REG)
 	return 1;
@@ -689,7 +691,7 @@ int rpmfiConfigConflict(const rpmfi fi)
     if (newWhat == REG) {
 	int algo;
 	size_t diglen;
-	const unsigned char *ndigest = rpmfiFDigest(fi, &algo, &diglen);
+	const unsigned char *ndigest = rpmfiFDigestIndex(fi,ix, &algo, &diglen);
 	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
 	    return 0;	/* assume file has been removed */
 	if (ndigest && !memcmp(ndigest, buffer, diglen))
@@ -700,7 +702,7 @@ int rpmfiConfigConflict(const rpmfi fi)
 	if (link_len == -1)
 	    return 0;	/* assume file has been removed */
 	buffer[link_len] = '\0';
-	nFLink = rpmfiFLink(fi);
+	nFLink = rpmfiFLinkIndex(fi, ix);
 	if (nFLink && rstreq(nFLink, buffer))
 	    return 0;	/* unmodified config file */
     }
@@ -1314,4 +1316,21 @@ const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 {
     return rpmfiFDependsIndex(fi,  fi ? fi->i : -1, fddictp);
+}
+
+int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
+{
+    return rpmfiCompareIndex(afi, afi ? afi->i : -1, bfi, bfi ? bfi->i : -1);
+}
+
+rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
+{
+    return rpmfiDecideFateIndex(ofi, ofi ? ofi->i : -1,
+				nfi, nfi ? nfi->i : -1,
+				skipMissing);
+}
+
+int rpmfiConfigConflict(const rpmfi fi)
+{
+    return rpmfiConfigConflictIndex(fi, fi ? fi->i : -1);
 }
