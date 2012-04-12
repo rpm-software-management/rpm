@@ -149,6 +149,16 @@ RPM_GNUC_INTERNAL
 struct fingerPrint_s *rpmfiFpsIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
+rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
+                                   int skipMissing);
+
+RPM_GNUC_INTERNAL
+int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix);
+
+RPM_GNUC_INTERNAL
+int rpmfiConfigConflictIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
 void rpmfiSetFReplacedSize(rpmfi fi, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL
