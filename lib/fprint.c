@@ -238,7 +238,7 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 
     struct rpmffi_s * recs;
     int numRecs;
-    int i, fiFX;
+    int i;
     fingerPrint *fp = rpmfiFpsIndex(fi, filenr);
     int symlinkcount = 0;
     struct rpmffi_s ffi = { p, filenr};
@@ -268,17 +268,9 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 		    &recs, &numRecs, NULL);
 
 	 for (i=0; i<numRecs; i++) {
-	      rpmfi foundfi;
-	      int filenr;
-	      char const *linktarget;
+	      rpmfi foundfi = rpmteFI(recs[i].p);
+	      char const *linktarget = rpmfiFLinkIndex(foundfi, recs[i].fileno);
 	      char *link;
-
-	      foundfi =  rpmteFI(recs[i].p);
-	      fiFX = rpmfiFX(foundfi);
-
-	      filenr = recs[i].fileno;
-	      rpmfiSetFX(foundfi, filenr);
-	      linktarget = rpmfiFLink(foundfi);
 
 	      if (linktarget && *linktarget != '\0') {
 		   /* this "directory" is a symlink */
@@ -322,7 +314,6 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 		   break;
 
 	      }
-	      rpmfiSetFX(foundfi, fiFX);
 	 }
 	 if (symlinkcount>50) {
 	      // found too many symlinks in the path
