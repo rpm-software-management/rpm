@@ -180,30 +180,13 @@ const char * rpmfiDNIndex(rpmfi fi, int jx)
     return DN;
 }
 
-const char * rpmfiFNIndex(rpmfi fi, int ix)
+char * rpmfiFNIndex(rpmfi fi, int ix)
 {
-    const char * FN = "";
-
+    char *fn = NULL;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	char * t;
-	if (fi->fn == NULL) {
-	    size_t dnlmax = 0, bnlmax = 0, len;
-	    for (int i = 0; i < fi->dc; i++) {
-		if ((len = strlen(fi->dnl[i])) > dnlmax)
-		    dnlmax = len;
-	    }
-	    for (int i = 0; i < fi->fc; i++) {
-		if ((len = strlen(fi->bnl[i])) > bnlmax)
-		    bnlmax = len;
-	    }
-	    fi->fn = xmalloc(dnlmax + bnlmax + 1);
-	}
-	FN = t = fi->fn;
-	*t = '\0';
-	t = stpcpy(t, fi->dnl[fi->dil[ix]]);
-	t = stpcpy(t, fi->bnl[ix]);
+	fn = rstrscat(NULL, fi->dnl[fi->dil[ix]], fi->bnl[ix], NULL);
     }
-    return FN;
+    return fn;
 }
 
 rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix)
@@ -1294,7 +1277,6 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 
 RPMFI_ITERFUNC(const char *, BN, i)
 RPMFI_ITERFUNC(const char *, DN, j)
-RPMFI_ITERFUNC(const char *, FN, i)
 RPMFI_ITERFUNC(const char *, FLink, i)
 RPMFI_ITERFUNC(const char *, FUser, i)
 RPMFI_ITERFUNC(const char *, FGroup, i)
@@ -1311,6 +1293,18 @@ RPMFI_ITERFUNC(rpm_ino_t, FInode, i)
 RPMFI_ITERFUNC(rpm_loff_t, FSize, i)
 RPMFI_ITERFUNC(rpm_color_t, FColor, i)
 RPMFI_ITERFUNC(uint32_t, FNlink, i)
+
+const char * rpmfiFN(rpmfi fi)
+{
+    const char *fn = ""; /* preserve behavior on errors */
+    if (fi != NULL) {
+	free(fi->fn);
+	fi->fn = rpmfiFNIndex(fi, fi->i);
+	if (fi->fn != NULL)
+	    fn = fi->fn;
+    }
+    return fn;
+}
 
 const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 {
