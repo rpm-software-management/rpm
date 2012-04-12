@@ -527,13 +527,10 @@ assert(otherFi != NULL);
 		break;
 	    if (rpmfiFState(fi) != RPMFILE_STATE_NORMAL)
 		break;
-	    if (!(S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG))) {
-		rpmfsSetAction(fs, i, FA_ERASE);
-		break;
-	    }
 		
-	    /* Here is a pre-existing modified config file that needs saving. */
-	    {	int algo = 0;
+	    /* Pre-existing modified config files need to be saved. */
+	    if (S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG)) {
+	    	int algo = 0;
 		size_t diglen = 0;
 		const unsigned char *digest;
 		if ((digest = rpmfiFDigest(fi, &algo, &diglen))) {
@@ -547,6 +544,8 @@ assert(otherFi != NULL);
 		    }
 		}
 	    }
+	
+	    /* Otherwise, we can just erase. */
 	    rpmfsSetAction(fs, i, FA_ERASE);
 	    break;
 	}
