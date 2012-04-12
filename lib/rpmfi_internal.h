@@ -89,7 +89,7 @@ RPM_GNUC_INTERNAL
 const char * rpmfiDNIndex(rpmfi fi, int jx);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFNIndex(rpmfi fi, int ix);
+char * rpmfiFNIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
 rpmVerifyAttrs rpmfiVFlagsIndex(rpmfi fi, int ix);
