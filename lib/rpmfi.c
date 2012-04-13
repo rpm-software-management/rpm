@@ -576,6 +576,9 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
 	/* can't meaningfully compare different hash types */
 	if (aalgo != balgo || adiglen != bdiglen) return -1;
 	return memcmp(adigest, bdigest, adiglen);
+    } else if (awhat == CDEV || awhat == BDEV) {
+	if (rpmfiFRdevIndex(afi, aix) != rpmfiFRdevIndex(bfi, bix))
+	    return 1;
     }
 
     return 0;
