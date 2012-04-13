@@ -542,13 +542,20 @@ rpmFileTypes rpmfiWhatis(rpm_mode_t mode)
 
 int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
 {
-    rpmFileTypes awhat = rpmfiWhatis(rpmfiFModeIndex(afi, aix));
-    rpmFileTypes bwhat = rpmfiWhatis(rpmfiFModeIndex(bfi, bix));
+    mode_t amode = rpmfiFModeIndex(afi, aix);
+    mode_t bmode = rpmfiFModeIndex(bfi, bix);
+    rpmFileTypes awhat = rpmfiWhatis(amode);
+    rpmFileTypes bwhat = rpmfiWhatis(bmode);
 
     if ((rpmfiFFlagsIndex(afi, aix) & RPMFILE_GHOST) ||
 	(rpmfiFFlagsIndex(bfi, bix) & RPMFILE_GHOST)) return 0;
 
-    if (awhat != bwhat) return 1;
+    if (amode != bmode) return 1;
+
+    if (!rstreq(rpmfiFUserIndex(afi, aix), rpmfiFUserIndex(bfi, bix)))
+	return 1;
+    if (!rstreq(rpmfiFGroupIndex(afi, aix), rpmfiFGroupIndex(bfi, bix)))
+	return 1;
 
     if (awhat == LINK) {
 	const char * alink = rpmfiFLinkIndex(afi, aix);
