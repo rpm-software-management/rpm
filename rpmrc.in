@@ -48,6 +48,7 @@ optflags: ppc32dy4 -O2 -g -fsigned-char
 optflags: ppciseries -O2 -g -fsigned-char
 optflags: ppcpseries -O2 -g -fsigned-char
 optflags: ppc64 -O2 -g -fsigned-char
+optflags: ppc64p7 -O3 -mtune=power7 -mcpu=power7 -g -fsigned-char
 
 optflags: parisc -O2 -g -mpa-risc-1-0
 optflags: hppa1.0 -O2 -g -mpa-risc-1-0
@@ -190,6 +191,7 @@ arch_canon:	s390x: s390x	15
 arch_canon:	ppc64:	ppc64	16
 arch_canon:    ppc64pseries: ppc64pseries  16
 arch_canon:    ppc64iseries: ppc64iseries  16
+arch_canon:    ppc64p7: ppc64p7  16
 
 arch_canon:	sh: sh		17
 arch_canon:	sh3: sh3	17
@@ -272,6 +274,7 @@ buildarchtranslate: ppciseries: ppc
 buildarchtranslate: ppcpseries: ppc
 buildarchtranslate: ppc64iseries: ppc64
 buildarchtranslate: ppc64pseries: ppc64
+buildarchtranslate: ppc64p7: ppc64
 
 buildarchtranslate: armv3l: armv3l
 buildarchtranslate: armv4b: armv4b
@@ -340,6 +343,7 @@ arch_compat: ppc: rs6000
 arch_compat: rs6000: noarch fat
 arch_compat: ppc64pseries: ppc64
 arch_compat: ppc64iseries: ppc64
+arch_compat: ppc64p7: ppc64
 
 arch_compat: sun4c: sparc
 arch_compat: sun4d: sparc
@@ -461,6 +465,7 @@ buildarch_compat: ppc: noarch fat
 buildarch_compat: ppc64: noarch fat
 buildarch_compat: ppc64pseries: ppc64
 buildarch_compat: ppc64iseries: ppc64
+buildarch_compat: ppc64p7: ppc64
 
 buildarch_compat: mips: noarch
 buildarch_compat: mipsel: noarch

@@ -1090,6 +1090,14 @@ static void defaultMachine(const char ** arch,
 	}
 #	endif	/* sparc*-linux */
 
+#	if defined(__linux__) && defined(__powerpc__)
+	{
+            int powerlvl;
+            if (sscanf(rpmat.platform, "power%d", &powerlvl) == 1 && powerlvl > 6)
+                strcpy(un.machine, "ppc64p7");
+        }
+#	endif	/* ppc64*-linux */
+
 #	if defined(__GNUC__) && defined(__alpha__)
 	{
 	    unsigned long amask, implver;
