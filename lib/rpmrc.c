@@ -2,6 +2,12 @@
 
 #include <stdarg.h>
 
+#if defined(__linux__)
+#include <elf.h>
+#include <link.h>
+#endif
+
+
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
@@ -72,6 +78,11 @@ struct rpmOption {
     int macroize;
     int localize;
 };
+
+static struct rpmat_s {
+    const char *platform;
+    uint64_t hwcap;
+} rpmat;
 
 typedef struct defaultEntry_s {
     char * name;
@@ -897,6 +908,46 @@ static int is_geode(void)
 }
 #endif
 
+
+#if defined(__linux__)
+/**
+ * Populate rpmat structure with parsed info from /proc/self/auxv
+ */
+static void parse_auxv(void)
+{
+    static int oneshot = 1;
+
+    if (oneshot) {
+	rpmat.platform = "";
+	int fd = open("/proc/self/auxv", O_RDONLY);
+
+	if (fd == -1) {
+	    rpmlog(RPMLOG_WARNING,
+		   _("Failed to read auxiliary vector, /proc not mounted?\n"));
+            return;
+	} else {
+	    ElfW(auxv_t) auxv;
+	    while (read(fd, &auxv, sizeof(auxv)) == sizeof(auxv)) {
+                switch (auxv.a_type)
+                {
+                    case AT_NULL:
+                        break;
+                    case AT_PLATFORM:
+                        rpmat.platform = strdup((char *) auxv.a_un.a_val);
+                        break;
+                    case AT_HWCAP:
+                        rpmat.hwcap = auxv.a_un.a_val;
+                        break;
+                }
+	    }
+	    close(fd);
+	}
+	oneshot = 0; /* only try once even if it fails */
+    }
+    return;
+}
+#endif
+
 /**
  */
 static void defaultMachine(const char ** arch,
@@ -907,6 +958,11 @@ static void defaultMachine(const char ** arch,
     char * chptr;
     canonEntry canon;
     int rc;
+
+#if defined(__linux__)
+    /* Populate rpmat struct with hw info */
+    parse_auxv();
+#endif
 
     while (!gotDefaults) {
 	if (!rpmPlatform(platform)) {
