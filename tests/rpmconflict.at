@@ -85,6 +85,44 @@ runroot rpm -U \
 AT_CLEANUP
 
 # ------------------------------
+# (Build and) install package with identical basename in different directories
+AT_SETUP([rpm -U with non-conflicting identical basenames])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
+rm -rf "${RPMTEST}"/opt/mydir
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# (Build and) install package with a self-conflict due to directory symlinks
+AT_SETUP([rpm -U with conflicting identical basenames])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
+rm -rf "${RPMTEST}"/opt/mydir
+mkdir -p "${RPMTEST}"/opt/mydir/one
+ln -s one "${RPMTEST}"/opt/mydir/two
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
+],
+[1],
+[],
+[	file /opt/mydir/two/somefile conflicts between attempted installs of selfconflict-1.0-1.noarch and selfconflict-1.0-1.noarch
+])
+AT_CLEANUP
+# ------------------------------
 # File conflict between colored files, prefer 64bit
 AT_SETUP([rpm -U multilib elf conflict, prefer 64bit])
 AT_KEYWORDS([install])
