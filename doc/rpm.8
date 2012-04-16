@@ -67,7 +67,7 @@ rpm \- RPM Package Manager
 
  [\fB--changelog\fR] [\fB-c,--configfiles\fR] [\fB--conflicts\fR]
  [\fB-d,--docfiles\fR] [\fB--dump\fR] [\fB--filesbypkg\fR] [\fB-i,--info\fR]
- [\fB--last\fR] [\fB-l,--list\fR] [\fB--provides\fR]
+ [\fB--last\fR] [\fB-l,--list\fR] [\fB--obsoletes\fR] [\fB--provides\fR]
  [\fB--qf,--queryformat \fIQUERYFMT\fB\fR] [\fB-R,--requires\fR]
  [\fB--scripts\fR] [\fB-s,--state\fR] [\fB--triggers,--triggerscripts\fR]
 
@@ -609,6 +609,9 @@ packages are at the top.
 .TP
 \fB-l, --list\fR
 List files in package.
+.TP
+\fB--obsoletes\fR
+List packages this package obsoletes.
 .TP
 \fB--provides\fR
 List capabilities this package provides.
