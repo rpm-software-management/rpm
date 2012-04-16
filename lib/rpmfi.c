@@ -545,7 +545,6 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
     mode_t amode = rpmfiFModeIndex(afi, aix);
     mode_t bmode = rpmfiFModeIndex(bfi, bix);
     rpmFileTypes awhat = rpmfiWhatis(amode);
-    rpmFileTypes bwhat = rpmfiWhatis(bmode);
 
     if ((rpmfiFFlagsIndex(afi, aix) & RPMFILE_GHOST) ||
 	(rpmfiFFlagsIndex(bfi, bix) & RPMFILE_GHOST)) return 0;
