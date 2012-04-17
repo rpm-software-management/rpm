@@ -596,7 +596,7 @@ static hardLink_t freeHardLink(hardLink_t li)
 }
 
 static int fsmSetup(FSM_t fsm, fileStage goal,
-		rpmts ts, rpmte te, rpmfi fi, FD_t cfd, rpmpsm psm,
+		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
     int rc = 0;
@@ -1736,7 +1736,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, psm, NULL, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, NULL, failedFile);
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1892,7 +1892,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, psm, NULL, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, NULL, failedFile);
 
     while (!rc) {
         /* Clean fsm, free'ing memory. */
@@ -1971,7 +1971,7 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, NULL, archiveSize, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, archiveSize, failedFile);
 
     while (!rc) {
 	fsmReset(fsm);
