@@ -314,20 +314,6 @@ static DNLI_t dnlFreeIterator(DNLI_t dnli)
 }
 
 /** \ingroup payload
- */
-static inline int dnlCount(const DNLI_t dnli)
-{
-    return (dnli ? rpmfiDC(dnli->fi) : 0);
-}
-
-/** \ingroup payload
- */
-static inline int dnlIndex(const DNLI_t dnli)
-{
-    return (dnli ? dnli->isave : -1);
-}
-
-/** \ingroup payload
  * Create directory name iterator.
  * @param fi		file info set
  * @param fs		file state set
@@ -1290,7 +1276,7 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle)
     DNLI_t dnli = dnlInitIterator(fi, fs, 0);
     struct stat sb;
     const char *dpath;
-    int dc = dnlCount(dnli);
+    int dc = rpmfiDC(fi);
     int rc = 0;
     int i;
     int ldnlen = 0;
@@ -1305,7 +1291,7 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle)
 	size_t dnlen = strlen(dpath);
 	char * te, dn[dnlen+1];
 
-	dc = dnlIndex(dnli);
+	dc = dnli->isave;
 	if (dc < 0) continue;
 	dnlx[dc] = dnlen;
 	if (dnlen <= 1)
