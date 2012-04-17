@@ -123,8 +123,6 @@ struct fsm_s {
     fileStage goal;		/*!< Package state machine goal. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
-
-    rpmpsm psm;			/*!< "parent" package state machine */
 };
 
 
@@ -651,7 +649,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
 	fsm->cfd = fdLink(cfd);
     }
     fsm->iter = mapInitIterator(ts, te, fi);
-    fsm->psm = psm;
     fsm->sehandle = rpmtsSELabelHandle(ts);
 
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -843,7 +840,7 @@ static int fsmMapAttrs(FSM_t fsm)
  * @param fsm		file state machine data
  * @return		0 on success
  */
-static int expandRegular(FSM_t fsm)
+static int expandRegular(FSM_t fsm, rpmpsm psm)
 {
     FD_t wfd = NULL;
     const struct stat * st = &fsm->sb;
@@ -883,7 +880,7 @@ static int expandRegular(FSM_t fsm)
 
 	/* don't call this with fileSize == fileComplete */
 	if (!rc && left)
-	    rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
     }
 
     if (st->st_size > 0 && fidigest) {
@@ -1847,7 +1844,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
                 fsm->path = path;
                 if (!(rc == CPIOERR_ENOENT)) return rc;
-                rc = expandRegular(fsm);
+                rc = expandRegular(fsm, psm);
             } else if (S_ISDIR(st->st_mode)) {
                 rc = fsmVerify(fsm);
                 if (rc == CPIOERR_ENOENT) {
@@ -1914,7 +1911,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         }
 
         /* Notify on success. */
-        rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
+        rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
 
         if (!fsm->postpone) {
             rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
@@ -1999,7 +1996,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         /* On erase we're iterating backwards, fixup for progress */
         rpm_loff_t amount = (fsm->ix >= 0) ?
             rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
-        rpmpsmNotify(fsm->psm, RPMCALLBACK_UNINST_PROGRESS, amount);
+        rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
     }
 
     ec = fsmTeardown(fsm);
