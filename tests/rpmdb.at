@@ -218,41 +218,36 @@ AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
-rm -f "${RPMTEST}"/usr/share/my.version
+rm -rf "${RPMTEST}"/opt/mydir
 
-runroot rpmbuild --quiet -bb \
-        --define "pkg status" \
-	--define "filedata same_stuff" \
-          /data/SPECS/conflicttest.spec
-
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
-test -f "${RPMTEST}"/usr/share/my.version
+runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
+find "${RPMTEST}"/opt | wc -l
 ],
 [0],
-[],
+[6
+],
 [])
 AT_CLEANUP
 
 # ------------------------------
-# Install, erase and verify files removed from disk
+# Install, erase and oerify files removed from disk
+# Note /opt is not owned by the pkg so it gets left behind
 AT_SETUP([rpm -e and verify files removed])
 AT_KEYWORDS([install rpmdb])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 rm -rf "${TOPDIR}"
-rm -f "${RPMTEST}"/usr/share/my.version
+rm -rf "${RPMTEST}"/opt/mydir
 
-runroot rpmbuild --quiet -bb \
-        --define "pkg status" \
-	--define "filedata same_stuff" \
-          /data/SPECS/conflicttest.spec
-
-runroot rpm -U "${TOPDIR}"/RPMS/noarch/conflictstatus-1.0-1.noarch.rpm
-runroot rpm -e conflictstatus
-test -f "${RPMTEST}"/usr/share/my.version
+runroot rpmbuild --quiet -bb /data/SPECS/selfconflict.spec
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
+runroot rpm -e selfconflict
+find "${RPMTEST}"/opt | wc -l
 ],
-[1],
-[],
+[0],
+[1
+],
 [])
 AT_CLEANUP
