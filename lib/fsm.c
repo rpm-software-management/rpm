@@ -1764,12 +1764,7 @@ static int fsmCommit(FSM_t fsm)
         }
     }
 
-    /* Notify on success. */
-    if (!rc) {
-        if (fsm->goal == FSM_PKGINSTALL) {
-            rpmpsmNotify(fsm->psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
-        }
-    } else if (fsm->failedFile && *fsm->failedFile == NULL) {
+    if (rc && fsm->failedFile && *fsm->failedFile == NULL) {
         *fsm->failedFile = fsm->path;
         fsm->path = NULL;
     }
