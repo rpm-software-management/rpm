@@ -599,33 +599,14 @@ static hardLink_t freeHardLink(hardLink_t li)
 /* forward declaration*/
 static int fsmMkdirs(DNLI_t dnli, struct selabel_handle *sehandle);
 
-static int fsmCreate(FSM_t fsm)
-{
-    int rc = 0;
-    fsm->path = _free(fsm->path);
-
-    fsm->buf = _free(fsm->buf);
-    fsm->bufsize = 0;
-    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
-        fsm->bufsize = 8 * BUFSIZ;
-        fsm->buf = xmalloc(fsm->bufsize);
-    }
-
-    fsm->ix = -1;
-    fsm->links = NULL;
-    fsm->li = NULL;
-    errno = 0;	/* XXX get rid of EBADF */
-
-    return rc;
-}
-
 static int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi, FD_t cfd, rpmpsm psm,
 		rpm_loff_t * archiveSize, char ** failedFile)
 {
-    int rc, ec = 0;
+    int rc = 0;
     int isSrc = rpmteIsSource(te);
 
+    fsm->ix = -1;
     fsm->goal = goal;
     if (cfd != NULL) {
 	fsm->cfd = fdLink(cfd);
@@ -647,6 +628,11 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
         fsm->archive = rpmcpioOpen(cfd, O_RDONLY);
     }
 
+    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
+        fsm->bufsize = 8 * BUFSIZ;
+        fsm->buf = xmalloc(fsm->bufsize);
+    }
+
     fsm->archiveSize = archiveSize;
     if (fsm->archiveSize)
 	*fsm->archiveSize = 0;
@@ -654,12 +640,10 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
 
-    ec = fsm->rc = 0;
-    rc = fsmCreate(fsm);
-    if (rc && !ec) ec = rc;
+    if (cfd != NULL && fsm->archive == NULL)
+	rc = 1;
 
-/* FIX: *fsm->failedFile may be NULL */
-   return ec;
+    return rc;
 }
 
 static int fsmTeardown(FSM_t fsm)
