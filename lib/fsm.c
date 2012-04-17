@@ -329,14 +329,13 @@ static inline int dnlIndex(const DNLI_t dnli)
 
 /** \ingroup payload
  * Create directory name iterator.
- * @param fsm		file state machine data
+ * @param fi		file info set
+ * @param fs		file state set
  * @param reverse	traverse directory names in reverse order?
  * @return		directory name iterator
  */
-static DNLI_t dnlInitIterator(const FSM_t fsm, int reverse)
+static DNLI_t dnlInitIterator(rpmfi fi, rpmfs fs, int reverse)
 {
-    rpmfi fi = fsmGetFi(fsm);
-    rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
     DNLI_t dnli;
     int i, j;
     int dc;
@@ -595,9 +594,6 @@ static hardLink_t freeHardLink(hardLink_t li)
     }
     return NULL;
 }
-
-/* forward declaration*/
-static int fsmMkdirs(DNLI_t dnli, struct selabel_handle *sehandle);
 
 static int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi, FD_t cfd, rpmpsm psm,
@@ -1288,8 +1284,9 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
  * @param sehandle	selinux label handle (bah)
  * @return		0 on success
  */
-static int fsmMkdirs(DNLI_t dnli, struct selabel_handle *sehandle)
+static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle)
 {
+    DNLI_t dnli = dnlInitIterator(fi, fs, 0);
     struct stat sb;
     const char *dpath;
     int dc = dnlCount(dnli);
@@ -1374,6 +1371,7 @@ static int fsmMkdirs(DNLI_t dnli, struct selabel_handle *sehandle)
     }
     free(dnlx);
     free(ldn);
+    dnlFreeIterator(dnli);
 
     return rc;
 }
@@ -1775,9 +1773,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	DNLI_t dnli = dnlInitIterator(fsm, 0);
-	rc = fsmMkdirs(dnli, fsm->sehandle);
-	dnlFreeIterator(dnli);	
+	rc = fsmMkdirs(fi, rpmteGetFileStates(te), fsm->sehandle);
     }
 
     while (!rc) {
