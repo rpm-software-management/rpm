@@ -602,6 +602,7 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     int rc = 0;
     int isSrc = rpmteIsSource(te);
 
+    memset(fsm, 0, sizeof(*fsm));
     fsm->ix = -1;
     fsm->goal = goal;
     if (cfd != NULL) {
@@ -1764,8 +1765,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-
-    memset(fsm, 0, sizeof(*fsm));
     rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, psm, NULL, failedFile);
 
     /* transaction id used for temporary path suffix while installing */
@@ -1906,7 +1905,6 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     int rc = 0;
     int ec = 0;
 
-    memset(fsm, 0, sizeof(*fsm));
     rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, psm, NULL, failedFile);
 
     while (!rc) {
@@ -1983,7 +1981,6 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-    memset(fsm, 0, sizeof(*fsm));
     rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, NULL, archiveSize, failedFile);
 
     while (!rc) {
