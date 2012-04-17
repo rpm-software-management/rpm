@@ -1410,27 +1410,6 @@ static int fsmInit(FSM_t fsm)
 {
     int rc = 0;
 
-    /* Identify mapping index. */
-    fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
-	       ? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
-
-    /* Detect end-of-loop and/or mapping error. */
-    if (fsm->ix < 0) {
-	if (fsm->goal == FSM_PKGINSTALL) {
-#if 0
-	    rpmlog(RPMLOG_WARNING,
-		   _("archive file %s was not found in header file list\n"),
-		   fsm->path);
-#endif
-	    if (fsm->failedFile && *fsm->failedFile == NULL)
-		*fsm->failedFile = xstrdup(fsm->path);
-	    rc = CPIOERR_UNMAPPED_FILE;
-	} else {
-	    rc = CPIOERR_HDR_TRAILER;
-	}
-	return rc;
-    }
-
     /* On non-install, mode must be known so that dirs don't get suffix. */
     if (fsm->goal != FSM_PKGINSTALL) {
 	rpmfi fi = fsmGetFi(fsm);
@@ -1780,6 +1759,17 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
 	if (rc) break;
 
+	/* Identify mapping index. */
+	fsm->ix = mapFind(fsm->iter, fsm->path);
+
+	/* Mapping error */
+	if (fsm->ix < 0) {
+	    if (fsm->failedFile && *fsm->failedFile == NULL)
+		*fsm->failedFile = xstrdup(fsm->path);
+	    rc = CPIOERR_UNMAPPED_FILE;
+	    break;
+	}
+
         rc = fsmInit(fsm);
 
         /* Exit on error. */
@@ -1908,13 +1898,14 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
-        rc = fsmInit(fsm);
+	/* Identify mapping index. */
+	fsm->ix = mapNextIterator(fsm->iter);
 
         /* Exit on end-of-payload. */
-        if (rc == CPIOERR_HDR_TRAILER) {
-            rc = 0;
+        if (fsm->ix < 0)
             break;
-        }
+
+        rc = fsmInit(fsm);
 
         /* Remove erased files. */
         if (!fsm->postpone && fsm->action == FA_ERASE) {
@@ -1985,13 +1976,14 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     while (!rc) {
 	fsmReset(fsm);
 
-        rc = fsmInit(fsm);
+	/* Identify mapping index. */
+	fsm->ix = mapNextIterator(fsm->iter);
 
         /* Exit on end-of-payload. */
-        if (rc == CPIOERR_HDR_TRAILER) {
-            rc = 0;
+        if (fsm->ix < 0)
             break;
-        }
+
+        rc = fsmInit(fsm);
 
         /* Exit on error. */
         if (rc) {
