@@ -654,10 +654,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
 
-    if (fsm->goal == FSM_PKGINSTALL) {
-	rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
-    }
-
     ec = fsm->rc = 0;
     rc = fsmCreate(fsm);
     if (rc && !ec) ec = rc;
@@ -1789,6 +1785,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
     memset(fsm, 0, sizeof(*fsm));
     rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, psm, NULL, failedFile);
+
+    /* transaction id used for temporary path suffix while installing */
+    rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
