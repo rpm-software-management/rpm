@@ -1960,44 +1960,39 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 
         /* Remove erased files. */
         if (!fsm->postpone && fsm->action == FA_ERASE) {
-            rpmte te = fsmGetTe(fsm);
+	    int missingok = (fsm->fflags & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
+
             if (S_ISDIR(fsm->sb.st_mode)) {
                 rc = fsmRmdir(fsm->path);
-                if (!rc) continue;
-                switch (rc) {
-                case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
-                case CPIOERR_ENOTEMPTY:
-                    /* XXX make sure that build side permits %missingok on directories. */
-                    if (fsm->fflags & RPMFILE_MISSINGOK)
-                        break;
-
-                    /* XXX common error message. */
-                    rpmlog(
-                        (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-                        _("%s rmdir of %s failed: Directory not empty\n"),
-                        rpmteTypeString(te), fsm->path);
-                    break;
-                default:
-                    rpmlog(
-                        (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-                        _("%s rmdir of %s failed: %s\n"),
-                        rpmteTypeString(te), fsm->path, strerror(errno));
-                    break;
-                }
             } else {
                 rc = fsmUnlink(fsm->path, fsm->mapFlags);
-                if (!rc) continue;
-                switch (rc) {
-                case CPIOERR_ENOENT:
-                    if (fsm->fflags & RPMFILE_MISSINGOK)
-                        break;
-                default:
-                    rpmlog(
-                        (strict_erasures ? RPMLOG_ERR : RPMLOG_DEBUG),
-                        _("%s unlink of %s failed: %s\n"),
-                        rpmteTypeString(te), fsm->path, strerror(errno));
-                    break;
-                }
+	    }
+
+	    /*
+	     * Missing %ghost or %missingok entries are not errors.
+	     * XXX: Are non-existent files ever an actual error here? Afterall
+	     * that's exactly what we're trying to accomplish here,
+	     * and complaining about job already done seems like kinderkarten
+	     * level "But it was MY turn!" whining...
+	     */
+	    if (rc == CPIOERR_ENOENT && missingok) {
+		rc = 0;
+	    }
+
+	    /*
+	     * Dont whine on non-empty directories for now. We might be able
+	     * to track at least some of the expected failures though,
+	     * such as when we knowingly left config file backups etc behind.
+	     */
+	    if (rc == CPIOERR_ENOTEMPTY) {
+		rc = 0;
+	    }
+
+	    if (rc) {
+		int lvl = strict_erasures ? RPMLOG_ERR : RPMLOG_WARNING;
+		rpmlog(lvl, _("%s %s: remove failed: %s\n"),
+			S_ISDIR(fsm->sb.st_mode) ? _("directory") : _("file"),
+			fsm->path, strerror(errno));
             }
         }
         /* XXX Failure to remove is not (yet) cause for failure. */
