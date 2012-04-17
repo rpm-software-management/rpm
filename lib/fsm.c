@@ -169,22 +169,19 @@ static rpmte fsmGetTe(const FSM_t fsm)
 static const char * fileActionString(rpmFileAction a);
 
 /** \ingroup payload
- * Build path to file from file info, ornamented with subdir and suffix.
+ * Build path to file from file info, optionally ornamented with suffix.
  * @param fsm		file state machine data
  * @param isDir		directory or regular path?
- * @param subdir	subdir to use (NULL disables)
  * @param suffix	suffix to use (NULL disables)
  * @retval		path to file (malloced)
  */
 static char * fsmFsPath(const FSM_t fsm, int isDir,
-			const char * subdir, const char * suffix)
+			const char * suffix)
 {
     char * s = NULL;
 
     if (fsm) {
-	s = rstrscat(NULL, fsm->dirName,
-			   (!isDir && subdir) ? subdir : "",
-			   fsm->baseName,
+	s = rstrscat(NULL, fsm->dirName, fsm->baseName,
 			   (!isDir && suffix) ? suffix : "",
 			   NULL);
     }
@@ -504,7 +501,7 @@ static int fsmMapPath(FSM_t fsm)
 
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    fsm->path = _free(fsm->path);
-	    fsm->path = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode), NULL,
+	    fsm->path = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode),
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
 	}
     }
@@ -1707,8 +1704,8 @@ static int fsmCommit(FSM_t fsm)
         (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
     {
 	int isDir = S_ISDIR(st->st_mode);
-        char * opath = fsmFsPath(fsm, isDir, NULL, NULL);
-        char * path = fsmFsPath(fsm, isDir, NULL, fsm->osuffix);
+        char * opath = fsmFsPath(fsm, isDir, NULL);
+        char * path = fsmFsPath(fsm, isDir, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
         if (!rc) {
             rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
@@ -1721,10 +1718,10 @@ static int fsmCommit(FSM_t fsm)
     if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
         /* Rename temporary to final file name. */
         if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
-            char *npath = fsmFsPath(fsm, 0, NULL, fsm->nsuffix);
+            char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
             rc = fsmRename(fsm->path, npath, fsm->mapFlags);
             if (!rc && fsm->nsuffix) {
-                char * opath = fsmFsPath(fsm, 0, NULL, NULL);
+                char * opath = fsmFsPath(fsm, 0, NULL);
                 rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
                        opath, npath);
                 free(opath);
@@ -1824,11 +1821,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             if (S_ISREG(st->st_mode)) {
                 char * path = fsm->path;
                 if (fsm->osuffix)
-                    fsm->path = fsmFsPath(fsm, 0, NULL, NULL);
+                    fsm->path = fsmFsPath(fsm, 0, NULL);
                 rc = fsmVerify(fsm);
 
                 if (rc == 0 && fsm->osuffix) {
-                    char * spath = fsmFsPath(fsm, 0, NULL, fsm->osuffix);
+                    char * spath = fsmFsPath(fsm, 0, fsm->osuffix);
                     rc = fsmRename(fsm->path, spath, fsm->mapFlags);
                     if (!rc)
                         rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
