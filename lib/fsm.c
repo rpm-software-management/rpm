@@ -96,7 +96,6 @@ struct fsmIterator_s {
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    rpmcpio_t archive;		/*!< cpio archive */
     char * buf;			/*!<  read: Buffer. */
     size_t bufsize;		/*!<  read: Buffer allocated size. */
     FSMI_t iter;		/*!< File iterator. */
@@ -580,7 +579,7 @@ static hardLink_t freeHardLink(hardLink_t li)
 }
 
 static int fsmSetup(FSM_t fsm, fileStage goal,
-		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+		rpmts ts, rpmte te, rpmfi fi,
 		char ** failedFile)
 {
     int rc = 0;
@@ -598,12 +597,10 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
 	if (isSrc) {
 	    fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
 	}
-        fsm->archive = rpmcpioOpen(cfd, O_WRONLY);
     } else {
 	if (!isSrc) {
 	    fsm->mapFlags |= CPIO_SBIT_CHECK;
 	}
-        fsm->archive = rpmcpioOpen(cfd, O_RDONLY);
     }
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
@@ -614,9 +611,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     fsm->failedFile = failedFile;
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
-
-    if (cfd != NULL && fsm->archive == NULL)
-	rc = 1;
 
     return rc;
 }
@@ -652,8 +646,6 @@ static int fsmTeardown(FSM_t fsm)
 
     fsm->buf = _free(fsm->buf);
     fsm->bufsize = 0;
-
-    rc = rpmcpioClose(fsm->archive) || rc;
 
     fsm->iter = mapFreeIterator(fsm->iter);
     fsm->failedFile = NULL;
@@ -768,9 +760,10 @@ static int fsmMapAttrs(FSM_t fsm)
 /** \ingroup payload
  * Create file from payload stream.
  * @param fsm		file state machine data
+ * @param archive	payload archive
  * @return		0 on success
  */
-static int expandRegular(FSM_t fsm, rpmpsm psm)
+static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive)
 {
     FD_t wfd = NULL;
     const struct stat * st = &fsm->sb;
@@ -797,7 +790,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm)
     while (left) {
         size_t len;
 	len = (left > fsm->bufsize ? fsm->bufsize : left);
-        if (rpmcpioRead(fsm->archive, fsm->buf, len) != len) {
+        if (rpmcpioRead(archive, fsm->buf, len) != len) {
             rc = CPIOERR_READ_FAILED;
 	    goto exit;
         }
@@ -810,7 +803,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm)
 
 	/* don't call this with fileSize == fileComplete */
 	if (!rc && left)
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
     }
 
     if (st->st_size > 0 && fidigest) {
@@ -865,9 +858,10 @@ static int fsmReadLink(const char *path,
  * Write next item to payload stream.
  * @param fsm		file state machine data
  * @param writeData	should data be written?
+ * @param archive	payload archive
  * @return		0 on success
  */
-static int writeFile(FSM_t fsm, int writeData)
+static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
 {
     FD_t rfd = NULL;
     char * path = fsm->path;
@@ -902,7 +896,7 @@ static int writeFile(FSM_t fsm, int writeData)
 					 rpmfiBNIndex(fi, fsm->ix)));
     }
 
-    rc = rpmcpioHeaderWrite(fsm->archive, fsm->path, st);
+    rc = rpmcpioHeaderWrite(archive, fsm->path, st);
     _free(fsm->path);
     fsm->path = path;
 
@@ -954,7 +948,7 @@ static int writeFile(FSM_t fsm, int writeData)
               }
 	  }
 
-          if (rpmcpioWrite(fsm->archive, fsm->buf, len) != len) {
+          if (rpmcpioWrite(archive, fsm->buf, len) != len) {
               rc = CPIOERR_WRITE_FAILED;
               goto exit;
           }
@@ -974,7 +968,7 @@ static int writeFile(FSM_t fsm, int writeData)
 
     } else if (writeData && S_ISLNK(st->st_mode)) {
         size_t len = strlen(symbuf);
-        if (rpmcpioWrite(fsm->archive, symbuf, len) != len) {
+        if (rpmcpioWrite(archive, symbuf, len) != len) {
             rc = CPIOERR_WRITE_FAILED;
             goto exit;
         }
@@ -997,9 +991,10 @@ exit:
 /** \ingroup payload
  * Write set of linked files to payload stream.
  * @param fsm		file state machine data
+ * @param archive	payload archive
  * @return		0 on success
  */
-static int writeLinkedFile(FSM_t fsm)
+static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -1020,7 +1015,7 @@ static int writeLinkedFile(FSM_t fsm)
 	rc = fsmMapPath(fsm);
 
 	/* Write data after last link. */
-	rc = writeFile(fsm, (i == 0));
+	rc = writeFile(fsm, (i == 0), archive);
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
 	    *fsm->failedFile = xstrdup(fsm->path);
@@ -1036,7 +1031,7 @@ static int writeLinkedFile(FSM_t fsm)
     return ec;
 }
 
-static int writeLinks(FSM_t fsm)
+static int writeLinks(FSM_t fsm, rpmcpio_t archive)
 {
     int j, rc = 0;
     nlink_t i, nlink;
@@ -1062,7 +1057,7 @@ static int writeLinks(FSM_t fsm)
 	fsm->sb = fsm->li->sb;	/* structure assignment */
 	fsm->osb = fsm->sb;	/* structure assignment */
 
-	if (!rc) rc = writeLinkedFile(fsm);
+	if (!rc) rc = writeLinkedFile(fsm, archive);
 
 	fsm->li = freeHardLink(fsm->li);
     }
@@ -1699,6 +1694,7 @@ static const char * fileActionString(rpmFileAction a)
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
+    rpmcpio_t archive = NULL;
     struct fsm_s fsm_;
     FSM_t fsm = &fsm_;
     struct stat * st = &fsm->sb;
@@ -1707,7 +1703,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, failedFile);
+
+    if (!rc)
+        archive = rpmcpioOpen(cfd, O_RDONLY);
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1722,7 +1721,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	fsmReset(fsm);
 
 	/* Read next payload header. */
-        rc = rpmcpioHeaderRead(fsm->archive, &(fsm->path), &(fsm->sb));
+        rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb));
 
 	/* Detect and exit on end-of-payload. */
 	if (!rc && rstreq(fsm->path, CPIO_TRAILER))
@@ -1770,7 +1769,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
                 fsm->path = path;
                 if (!(rc == CPIOERR_ENOENT)) return rc;
-                rc = expandRegular(fsm, psm);
+                rc = expandRegular(fsm, psm, archive);
             } else if (S_ISDIR(st->st_mode)) {
                 rc = fsmVerify(fsm);
                 if (rc == CPIOERR_ENOENT) {
@@ -1782,7 +1781,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             } else if (S_ISLNK(st->st_mode)) {
                 if ((st->st_size + 1) > fsm->bufsize) {
                     rc = CPIOERR_HDR_SIZE;
-                } else if (rpmcpioRead(fsm->archive, fsm->buf, st->st_size) != st->st_size) {
+                } else if (rpmcpioRead(archive, fsm->buf, st->st_size) != st->st_size) {
                     rc = CPIOERR_READ_FAILED;
                 } else {
 
@@ -1837,7 +1836,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         }
 
         /* Notify on success. */
-        rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(fsm->archive));
+        rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
 
         if (!fsm->postpone) {
             rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
@@ -1848,7 +1847,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         }
     }
 
-    ec = fsmTeardown(fsm);
+    ec = rpmcpioClose(archive);
+    fsmTeardown(fsm);
 
     /* Return the relevant code: if setup failed, teardown doesn't matter */
     return (rc ? rc : ec);
@@ -1863,7 +1863,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, failedFile);
 
     while (!rc) {
         /* Clean fsm, free'ing memory. */
@@ -1937,12 +1937,15 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
+    rpmcpio_t archive = NULL;
     struct fsm_s fsm_;
     FSM_t fsm = &fsm_;
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, failedFile);
+    if (!rc)
+        archive = rpmcpioOpen(cfd, O_WRONLY);
 
     while (!rc) {
 	fsmReset(fsm);
@@ -1967,7 +1970,7 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         /* Hardlinks are handled later */
         if (!(S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)) {
             /* Copy file into archive. */
-            rc = writeFile(fsm, 1);
+            rc = writeFile(fsm, 1, archive);
         }
 
         if (rc) {
@@ -1982,12 +1985,13 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
     /* Flush partial sets of hard linked files. */
     if (!rc)
-        rc = writeLinks(fsm);
+        rc = writeLinks(fsm, archive);
 
     if (archiveSize)
-	*archiveSize = (rc == 0) ? rpmcpioTell(fsm->archive) : 0;
+	*archiveSize = (rc == 0) ? rpmcpioTell(archive) : 0;
 
-    ec = fsmTeardown(fsm);
+    ec = rpmcpioClose(archive);
+    fsmTeardown(fsm);
 
     /* Return the relevant code: if setup failed, teardown doesn't matter */
     return (rc ? rc : ec);
