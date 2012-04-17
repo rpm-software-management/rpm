@@ -1963,7 +1963,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
             rpmte te = fsmGetTe(fsm);
             if (S_ISDIR(fsm->sb.st_mode)) {
                 rc = fsmRmdir(fsm->path);
-                if (!rc) break;
+                if (!rc) continue;
                 switch (rc) {
                 case CPIOERR_ENOENT: /* XXX rmdir("/") linux 2.2.x kernel hack */
                 case CPIOERR_ENOTEMPTY:
@@ -1986,7 +1986,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
                 }
             } else {
                 rc = fsmUnlink(fsm->path, fsm->mapFlags);
-                if (!rc) break;
+                if (!rc) continue;
                 switch (rc) {
                 case CPIOERR_ENOENT:
                     if (fsm->fflags & RPMFILE_MISSINGOK)
