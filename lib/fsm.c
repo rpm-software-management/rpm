@@ -103,7 +103,6 @@ struct fsm_s {
     int ix;			/*!< Current file iterator index. */
     hardLink_t links;		/*!< Pending hard linked file(s). */
     hardLink_t li;		/*!< Current hard linked file(s). */
-    rpm_loff_t * archiveSize;	/*!< Pointer to archive size. */
     char ** failedFile;		/*!< First file name that failed. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
@@ -582,7 +581,7 @@ static hardLink_t freeHardLink(hardLink_t li)
 
 static int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
-		rpm_loff_t * archiveSize, char ** failedFile)
+		char ** failedFile)
 {
     int rc = 0;
     int isSrc = rpmteIsSource(te);
@@ -612,9 +611,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
         fsm->buf = xmalloc(fsm->bufsize);
     }
 
-    fsm->archiveSize = archiveSize;
-    if (fsm->archiveSize)
-	*fsm->archiveSize = 0;
     fsm->failedFile = failedFile;
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
@@ -628,9 +624,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
 static int fsmTeardown(FSM_t fsm)
 {
     int rc = fsm->rc;
-
-    if (fsm->archiveSize && rc == 0)
-	*fsm->archiveSize = rpmcpioTell(fsm->archive);
 
     if (!rc) {
         /* Check for hard links missing from payload. */
@@ -1714,7 +1707,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, NULL, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, failedFile);
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1870,7 +1863,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, NULL, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, NULL, failedFile);
 
     while (!rc) {
         /* Clean fsm, free'ing memory. */
@@ -1949,7 +1942,7 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int ec = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, archiveSize, failedFile);
+    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, failedFile);
 
     while (!rc) {
 	fsmReset(fsm);
@@ -1990,6 +1983,9 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     /* Flush partial sets of hard linked files. */
     if (!rc)
         rc = writeLinks(fsm);
+
+    if (archiveSize)
+	*archiveSize = (rc == 0) ? rpmcpioTell(fsm->archive) : 0;
 
     ec = fsmTeardown(fsm);
 
