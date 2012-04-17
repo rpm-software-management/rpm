@@ -1410,17 +1410,6 @@ static int fsmInit(FSM_t fsm)
 {
     int rc = 0;
 
-    if (fsm->goal == FSM_PKGINSTALL) {
-	/* Read next payload header. */
-        rc = rpmcpioHeaderRead(fsm->archive, &(fsm->path), &(fsm->sb));
-	if (rc) return rc;
-	if (rstreq(fsm->path, CPIO_TRAILER)) { /* Detect end-of-payload. */
-	    fsm->path = _free(fsm->path);
-	    rc = CPIOERR_HDR_TRAILER;
-	}
-    }
-    if (rc) return rc;
-
     /* Identify mapping index. */
     fsm->ix = ((fsm->goal == FSM_PKGINSTALL)
 	       ? mapFind(fsm->iter, fsm->path) : mapNextIterator(fsm->iter));
@@ -1782,14 +1771,16 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
-	/* Read next archive header. */
-        rc = fsmInit(fsm);
+	/* Read next payload header. */
+        rc = rpmcpioHeaderRead(fsm->archive, &(fsm->path), &(fsm->sb));
 
-        /* Exit on end-of-payload. */
-        if (rc == CPIOERR_HDR_TRAILER) {
-            rc = 0;
-            break;
-        }
+	/* Detect and exit on end-of-payload. */
+	if (!rc && rstreq(fsm->path, CPIO_TRAILER))
+	    break;
+
+	if (rc) break;
+
+        rc = fsmInit(fsm);
 
         /* Exit on error. */
         if (rc) {
