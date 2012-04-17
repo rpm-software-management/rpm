@@ -178,14 +178,10 @@ static const char * fileActionString(rpmFileAction a);
 static char * fsmFsPath(const FSM_t fsm, int isDir,
 			const char * suffix)
 {
-    char * s = NULL;
-
-    if (fsm) {
-	s = rstrscat(NULL, fsm->dirName, fsm->baseName,
-			   (!isDir && suffix) ? suffix : "",
-			   NULL);
-    }
-    return s;
+    return rstrscat(NULL,
+		    fsm->dirName, fsm->baseName,
+		    (!isDir && suffix) ? suffix : "",
+		    NULL);
 }
 
 /** \ingroup payload
