@@ -616,13 +616,6 @@ static int fsmCreate(FSM_t fsm)
     fsm->li = NULL;
     errno = 0;	/* XXX get rid of EBADF */
 
-    /* Detect and create directories not explicitly in package. */
-    /* XXX This seems like a strange place to do this... */
-    if (fsm->goal == FSM_PKGINSTALL) {
-	DNLI_t dnli = dnlInitIterator(fsm, 0);
-	rc = fsmMkdirs(dnli, fsm->sehandle);
-	dnlFreeIterator(dnli);	
-    }
     return rc;
 }
 
@@ -1796,6 +1789,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
     memset(fsm, 0, sizeof(*fsm));
     rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, cfd, psm, NULL, failedFile);
+
+    /* Detect and create directories not explicitly in package. */
+    if (!rc) {
+	DNLI_t dnli = dnlInitIterator(fsm, 0);
+	rc = fsmMkdirs(dnli, fsm->sehandle);
+	dnlFreeIterator(dnli);	
+    }
 
     while (!rc) {
         /* Clean fsm, free'ing memory. Read next archive header. */
