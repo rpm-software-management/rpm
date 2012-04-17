@@ -1394,10 +1394,8 @@ static void removeSBITS(const char *path)
 
 /********************************************************************/
 
-static int fsmInit(FSM_t fsm)
+static void fsmReset(FSM_t fsm)
 {
-    int rc = 0;
-
     fsm->path = _free(fsm->path);
     fsm->postpone = 0;
     fsm->diskchecked = fsm->exists = 0;
@@ -1406,6 +1404,11 @@ static int fsmInit(FSM_t fsm)
     fsm->nsuffix = NULL;
     memset(&(fsm->sb), 0, sizeof(fsm->sb));
     memset(&(fsm->osb), 0, sizeof(fsm->sb));
+}
+
+static int fsmInit(FSM_t fsm)
+{
+    int rc = 0;
 
     if (fsm->goal == FSM_PKGINSTALL) {
 	/* Read next payload header. */
@@ -1776,7 +1779,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     }
 
     while (!rc) {
-        /* Clean fsm, free'ing memory. Read next archive header. */
+        /* Clean fsm, free'ing memory. */
+	fsmReset(fsm);
+
+	/* Read next archive header. */
         rc = fsmInit(fsm);
 
         /* Exit on end-of-payload. */
@@ -1909,6 +1915,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 
     while (!rc) {
         /* Clean fsm, free'ing memory. */
+	fsmReset(fsm);
+
         rc = fsmInit(fsm);
 
         /* Exit on end-of-payload. */
@@ -1984,6 +1992,7 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, cfd, NULL, archiveSize, failedFile);
 
     while (!rc) {
+	fsmReset(fsm);
 
         rc = fsmInit(fsm);
 
