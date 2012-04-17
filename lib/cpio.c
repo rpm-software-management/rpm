@@ -41,7 +41,7 @@ rpmcpio_t rpmcpioOpen(FD_t fd, char mode)
         return NULL;
 
     rpmcpio_t cpio = xcalloc(1, sizeof(*cpio));
-    cpio->fd = fd;
+    cpio->fd = fdLink(fd);
     cpio->mode = mode;
     cpio->offset = 0;
     return cpio;
@@ -327,6 +327,7 @@ int rpmcpioClose(rpmcpio_t cpio)
     if ((cpio->mode & O_ACCMODE) == O_WRONLY) {
         rc = rpmcpioTrailerWrite(cpio);
     }
+    fdFree(cpio->fd);
     _free(cpio);
     return rc;
 }

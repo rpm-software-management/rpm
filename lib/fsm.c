@@ -96,7 +96,6 @@ struct fsmIterator_s {
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
-    FD_t cfd;			/*!< Payload file handle. */
     rpmcpio_t archive;		/*!< cpio archive */
     char * buf;			/*!<  read: Buffer. */
     size_t bufsize;		/*!<  read: Buffer allocated size. */
@@ -591,9 +590,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     memset(fsm, 0, sizeof(*fsm));
     fsm->ix = -1;
     fsm->goal = goal;
-    if (cfd != NULL) {
-	fsm->cfd = fdLink(cfd);
-    }
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->sehandle = rpmtsSELabelHandle(ts);
 
@@ -667,10 +663,6 @@ static int fsmTeardown(FSM_t fsm)
     rc = rpmcpioClose(fsm->archive) || rc;
 
     fsm->iter = mapFreeIterator(fsm->iter);
-    if (fsm->cfd != NULL) {
-	fsm->cfd = fdFree(fsm->cfd);
-	fsm->cfd = NULL;
-    }
     fsm->failedFile = NULL;
 
     fsm->path = _free(fsm->path);
