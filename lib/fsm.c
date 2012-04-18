@@ -606,14 +606,12 @@ static int checkHardLinks(FSM_t fsm)
     return rc;
 }
 
-static int fsmSetup(FSM_t fsm, fileStage goal,
-		rpmts ts, rpmte te, rpmfi fi,
-		char ** failedFile)
+static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi,
+		    char ** failedFile)
 {
-    int rc = 0;
+    FSM_t fsm = xcalloc(1, sizeof(*fsm));
     int isSrc = rpmteIsSource(te);
 
-    memset(fsm, 0, sizeof(*fsm));
     fsm->ix = -1;
     fsm->goal = goal;
     fsm->iter = mapInitIterator(ts, te, fi);
@@ -640,13 +638,11 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
     if (fsm->failedFile)
 	*fsm->failedFile = NULL;
 
-    return rc;
+    return fsm;
 }
 
-static int fsmTeardown(FSM_t fsm)
+static FSM_t fsmFree(FSM_t fsm)
 {
-    int rc = 0;
-
     fsm->buf = _free(fsm->buf);
     fsm->bufsize = 0;
 
@@ -660,7 +656,8 @@ static int fsmTeardown(FSM_t fsm)
 	fsm->li->next = NULL;
 	fsm->li = freeHardLink(fsm->li);
     }
-    return rc;
+    free(fsm);
+    return NULL;
 }
 
 /* Find and set file security context */
@@ -1697,15 +1694,11 @@ static const char * fileActionString(rpmFileAction a)
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
+    FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
     rpmcpio_t archive = NULL;
-    struct fsm_s fsm_;
-    FSM_t fsm = &fsm_;
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
-
     int rc = 0;
-
-    rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, failedFile);
 
     if (!rc)
         archive = rpmcpioOpen(cfd, O_RDONLY);
@@ -1856,7 +1849,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
     /* No need to bother with close errors on read */
     rpmcpioFree(archive);
-    fsmTeardown(fsm);
+    fsmFree(fsm);
 
     return rc;
 }
@@ -1865,11 +1858,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
               rpmpsm psm, char ** failedFile)
 {
-    struct fsm_s fsm_;
-    FSM_t fsm = &fsm_;
+    FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
     int rc = 0;
-
-    rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, failedFile);
 
     while (!rc) {
         /* Clean fsm, free'ing memory. */
@@ -1933,7 +1923,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
     }
 
-    fsmTeardown(fsm);
+    fsmFree(fsm);
 
     return rc;
 }
@@ -1942,12 +1932,10 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
+    FSM_t fsm = fsmNew(FSM_PKGBUILD, ts, te, fi, failedFile);;
     rpmcpio_t archive = NULL;
-    struct fsm_s fsm_;
-    FSM_t fsm = &fsm_;
     int rc = 0;
 
-    rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, failedFile);
     if (!rc)
         archive = rpmcpioOpen(cfd, O_WRONLY);
 
@@ -1999,7 +1987,7 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	*archiveSize = (rc == 0) ? rpmcpioTell(archive) : 0;
 
     rpmcpioFree(archive);
-    fsmTeardown(fsm);
+    fsmFree(fsm);
 
     return rc;
 }
