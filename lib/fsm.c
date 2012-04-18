@@ -1723,8 +1723,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb));
 
 	/* Detect and exit on end-of-payload. */
-	if (!rc && rstreq(fsm->path, CPIO_TRAILER))
+	if (rc == CPIOERR_HDR_TRAILER) {
+	    rc = 0;
 	    break;
+	}
 
 	if (rc) break;
 

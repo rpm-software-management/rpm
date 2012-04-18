@@ -21,6 +21,7 @@
 
 #include <rpm/rpmio.h>
 #include <rpm/rpmlog.h>
+#include <rpm/rpmstring.h>
 
 #include "lib/cpio.h"
 
@@ -302,6 +303,9 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st)
 
     rc = rpmcpioReadPad(cpio);
     cpio->fileend = cpio->offset + st->st_size;
+
+    if (!rc && rstreq(*path, CPIO_TRAILER))
+	rc = CPIOERR_HDR_TRAILER;
 
     return rc;
 }
