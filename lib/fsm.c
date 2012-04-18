@@ -1695,13 +1695,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
-    rpmcpio_t archive = NULL;
+    rpmcpio_t archive = rpmcpioOpen(cfd, O_RDONLY);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
     int rc = 0;
 
-    if (!rc)
-        archive = rpmcpioOpen(cfd, O_RDONLY);
+    if (archive == NULL)
+	rc = CPIOERR_INTERNAL;
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1933,11 +1933,11 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
     FSM_t fsm = fsmNew(FSM_PKGBUILD, ts, te, fi, failedFile);;
-    rpmcpio_t archive = NULL;
+    rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
     int rc = 0;
 
-    if (!rc)
-        archive = rpmcpioOpen(cfd, O_WRONLY);
+    if (archive == NULL)
+	rc = CPIOERR_INTERNAL;
 
     while (!rc) {
 	fsmReset(fsm);
