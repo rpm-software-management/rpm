@@ -577,6 +577,35 @@ static hardLink_t freeHardLink(hardLink_t li)
     return NULL;
 }
 
+/* Check for hard links missing from payload, also freeing the data (eh?) */
+static int checkHardLinks(FSM_t fsm)
+{
+    int rc = 0;
+
+    while ((fsm->li = fsm->links) != NULL) {
+	fsm->links = fsm->li->next;
+	fsm->li->next = NULL;
+	if (fsm->li->linksLeft) {
+	    for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
+		if (fsm->li->filex[i] < 0)
+		    continue;
+		rc = CPIOERR_MISSING_HARDLINK;
+		if (fsm->failedFile && *fsm->failedFile == NULL) {
+		    fsm->ix = fsm->li->filex[i];
+		    if (!fsmMapPath(fsm)) {
+			/* Out-of-sync hardlinks handled as sub-state */
+			*fsm->failedFile = fsm->path;
+			fsm->path = NULL;
+		    }
+		}
+		break;
+	    }
+	}
+	fsm->li = freeHardLink(fsm->li);
+    }
+    return rc;
+}
+
 static int fsmSetup(FSM_t fsm, fileStage goal,
 		rpmts ts, rpmte te, rpmfi fi,
 		char ** failedFile)
@@ -617,31 +646,6 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
 static int fsmTeardown(FSM_t fsm)
 {
     int rc = 0;
-
-    if (!rc) {
-        /* Check for hard links missing from payload. */
-        while ((fsm->li = fsm->links) != NULL) {
-            fsm->links = fsm->li->next;
-            fsm->li->next = NULL;
-            if (fsm->goal == FSM_PKGINSTALL && fsm->li->linksLeft) {
-                for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
-                    if (fsm->li->filex[i] < 0)
-                        continue;
-                    rc = CPIOERR_MISSING_HARDLINK;
-                    if (fsm->failedFile && *fsm->failedFile == NULL) {
-                        fsm->ix = fsm->li->filex[i];
-                        if (!fsmMapPath(fsm)) {
-                            /* Out-of-sync hardlinks handled as sub-state */
-                            *fsm->failedFile = fsm->path;
-                            fsm->path = NULL;
-                        }
-                    }
-                    break;
-                }
-            }
-            fsm->li = freeHardLink(fsm->li);
-        }
-    }
 
     fsm->buf = _free(fsm->buf);
     fsm->bufsize = 0;
@@ -1846,6 +1850,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             break;
         }
     }
+
+    if (!rc)
+	rc = checkHardLinks(fsm);
 
     /* No need to bother with close errors on read */
     rpmcpioFree(archive);
