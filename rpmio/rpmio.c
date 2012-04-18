@@ -353,7 +353,7 @@ FD_t fdFree( FD_t fd)
 {
     if (fd) {
 	if (--fd->nrefs > 0)
-	    return fd;
+	    return NULL;
 	fd->stats = _free(fd->stats);
 	if (fd->digests) {
 	    fd->digests = rpmDigestBundleFree(fd->digests);
