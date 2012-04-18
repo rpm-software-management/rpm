@@ -104,6 +104,8 @@ int rpmcpioClose(rpmcpio_t cpio);
 
 off_t rpmcpioTell(rpmcpio_t cpio);
 
+rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
+
 /**
  * Write cpio header.
  * @retval fsm		file path and stat info

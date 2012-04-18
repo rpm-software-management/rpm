@@ -1701,7 +1701,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int saveerrno = errno;
 
     int rc = 0;
-    int ec = 0;
 
     rc = fsmSetup(fsm, FSM_PKGINSTALL, ts, te, fi, failedFile);
 
@@ -1847,11 +1846,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         }
     }
 
-    ec = rpmcpioClose(archive);
+    /* No need to bother with close errors on read */
+    rpmcpioFree(archive);
     fsmTeardown(fsm);
 
-    /* Return the relevant code: if setup failed, teardown doesn't matter */
-    return (rc ? rc : ec);
+    return rc;
 }
 
 
@@ -1861,7 +1860,6 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     struct fsm_s fsm_;
     FSM_t fsm = &fsm_;
     int rc = 0;
-    int ec = 0;
 
     rc = fsmSetup(fsm, FSM_PKGERASE, ts, te, fi, failedFile);
 
@@ -1927,10 +1925,9 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
     }
 
-    ec = fsmTeardown(fsm);
+    fsmTeardown(fsm);
 
-    /* Return the relevant code: if setup failed, teardown doesn't matter */
-    return (rc ? rc : ec);
+    return rc;
 }
 
 
@@ -1941,7 +1938,6 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     struct fsm_s fsm_;
     FSM_t fsm = &fsm_;
     int rc = 0;
-    int ec = 0;
 
     rc = fsmSetup(fsm, FSM_PKGBUILD, ts, te, fi, failedFile);
     if (!rc)
@@ -1987,12 +1983,15 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     if (!rc)
         rc = writeLinks(fsm, archive);
 
+    /* Finish the payload stream */
+    if (!rc)
+	rc = rpmcpioClose(archive);
+
     if (archiveSize)
 	*archiveSize = (rc == 0) ? rpmcpioTell(archive) : 0;
 
-    ec = rpmcpioClose(archive);
+    rpmcpioFree(archive);
     fsmTeardown(fsm);
 
-    /* Return the relevant code: if setup failed, teardown doesn't matter */
-    return (rc ? rc : ec);
+    return rc;
 }

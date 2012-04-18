@@ -327,9 +327,18 @@ int rpmcpioClose(rpmcpio_t cpio)
     if ((cpio->mode & O_ACCMODE) == O_WRONLY) {
         rc = rpmcpioTrailerWrite(cpio);
     }
-    fdFree(cpio->fd);
-    _free(cpio);
+    cpio->fd = fdFree(cpio->fd);
     return rc;
+}
+
+rpmcpio_t rpmcpioFree(rpmcpio_t cpio)
+{
+    if (cpio) {
+	if (cpio->fd)
+	    (void) rpmcpioClose(cpio);
+	free(cpio);
+    }
+    return NULL;
 }
 
 const char * rpmcpioStrerror(int rc)
