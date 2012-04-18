@@ -109,7 +109,6 @@ struct fsm_s {
     int postpone;		/*!< Skip remaining stages? */
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */
-    int rc;			/*!< External file stage return code. */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
@@ -617,7 +616,7 @@ static int fsmSetup(FSM_t fsm, fileStage goal,
 
 static int fsmTeardown(FSM_t fsm)
 {
-    int rc = fsm->rc;
+    int rc = 0;
 
     if (!rc) {
         /* Check for hard links missing from payload. */
@@ -1601,7 +1600,7 @@ static int fsmVerify(FSM_t fsm)
 
 static int fsmCommit(FSM_t fsm)
 {
-    int rc = fsm->rc;
+    int rc = 0;
     struct stat * st = &fsm->sb;
 
     /* Rename pre-existing modified or unmanaged file. */
