@@ -12,20 +12,101 @@ AT_BANNER([RPM version comparison])
 
 RPMVERCMP(1.0, 1.0, 0)
 RPMVERCMP(1.0, 2.0, -1)
-RPMVERCMP(2.0, 2.0.1, -1)
-RPMVERCMP(2.0.1a, 2.0.1, 1)
-RPMVERCMP(5.5p1, 5.5p2, -1)
-RPMVERCMP(5.6p1, 5.5p2, 1)
-RPMVERCMP(10a2, 10b2, -1)
-RPMVERCMP(1.0a, 1.0aa, -1)
-RPMVERCMP(6.0rc1, 6.0, 1)
-RPMVERCMP(6.0.rc1, 6.0, 1)
-RPMVERCMP(10.1.1.0001, 10.1.1.39, -1)
-RPMVERCMP(5.0, 4.999.9, 1)
-RPMVERCMP(2.030, 2.031, -1)
-RPMVERCMP(20101122, 20101121, 1)
-RPMVERCMP(2.0, 2_0, 0)
+RPMVERCMP(2.0, 1.0, 1)
 
-dnl The results are highly dubious when non-ascii characters are involved,
-dnl these are "obviously" different versions but rpm thinks they're equal
+RPMVERCMP(2.0.1, 2.0.1, 0)
+RPMVERCMP(2.0, 2.0.1, -1)
+RPMVERCMP(2.0.1, 2.0, 1)
+
+RPMVERCMP(2.0.1a, 2.0.1a, 0)
+RPMVERCMP(2.0.1a, 2.0.1, 1)
+RPMVERCMP(2.0.1, 2.0.1a, -1)
+
+RPMVERCMP(5.5p1, 5.5p1, 0)
+RPMVERCMP(5.5p1, 5.5p2, -1)
+RPMVERCMP(5.5p2, 5.5p1, 1)
+
+RPMVERCMP(5.5p10, 5.5p10, 0)
+RPMVERCMP(5.5p1, 5.5p10, -1)
+RPMVERCMP(5.5p10, 5.5p1, 1)
+
+RPMVERCMP(10xyz, 10.1xyz, -1)
+RPMVERCMP(10.1xyz, 10xyz, 1)
+
+RPMVERCMP(xyz10, xyz10, 0)
+RPMVERCMP(xyz10, xyz10.1, -1)
+RPMVERCMP(xyz10.1, xyz10, 1)
+
+RPMVERCMP(xyz.4, xyz.4, 0)
+RPMVERCMP(xyz.4, 8, -1)
+RPMVERCMP(8, xyz.4, 1)
+RPMVERCMP(xyz.4, 2, -1)
+RPMVERCMP(2, xyz.4, 1)
+
+RPMVERCMP(5.5p2, 5.6p1, -1)
+RPMVERCMP(5.6p1, 5.5p2, 1)
+
+RPMVERCMP(5.6p1, 6.5p1, -1)
+RPMVERCMP(6.5p1, 5.6p1, 1)
+
+RPMVERCMP(6.0.rc1, 6.0, 1)
+RPMVERCMP(6.0, 6.0.rc1, -1)
+
+RPMVERCMP(10b2, 10a1, 1)
+RPMVERCMP(10a2, 10b2, -1)
+
+RPMVERCMP(1.0aa, 1.0aa, 0)
+RPMVERCMP(1.0a, 1.0aa, -1)
+RPMVERCMP(1.0aa, 1.0a, 1)
+
+RPMVERCMP(10.0001, 10.0001, 0)
+RPMVERCMP(10.0001, 10.1, 0)
+RPMVERCMP(10.1, 10.0001, 0)
+RPMVERCMP(10.0001, 10.0039, -1)
+RPMVERCMP(10.0039, 10.0001, 1)
+
+RPMVERCMP(4.999.9, 5.0, -1)
+RPMVERCMP(5.0, 4.999.9, 1)
+
+RPMVERCMP(20101121, 20101121, 0)
+RPMVERCMP(20101121, 20101122, -1)
+RPMVERCMP(20101122, 20101121, 1)
+
+RPMVERCMP(2_0, 2_0, 0)
+RPMVERCMP(2.0, 2_0, 0)
+RPMVERCMP(2_0, 2.0, 0)
+
+dnl RhBug:178798 case
+RPMVERCMP(a, a, 0)
+RPMVERCMP(a+, a+, 0)
+RPMVERCMP(a+, a_, 0)
+RPMVERCMP(a_, a+, 0)
+RPMVERCMP(+a, +a, 0)
+RPMVERCMP(+a, _a, 0)
+RPMVERCMP(_a, +a, 0)
+RPMVERCMP(+_, +_, 0)
+RPMVERCMP(_+, +_, 0)
+RPMVERCMP(_+, _+, 0)
+RPMVERCMP(+, _, 0)
+RPMVERCMP(_, +, 0)
+
+dnl These are included here to document current, arguably buggy behaviors
+dnl for reference purposes and for easy checking against  unintended
+dnl behavior changes.
+dnl
+dnl AT_BANNER([RPM version comparison oddities])
+dnl RhBug:811992 case
+dnl RPMVERCMP(1b.fc17, 1b.fc17, 0)
+dnl RPMVERCMP(1b.fc17, 1.fc17, -1)
+dnl RPMVERCMP(1.fc17, 1b.fc17, 1)
+dnl RPMVERCMP(1g.fc17, 1g.fc17, 0)
+dnl RPMVERCMP(1g.fc17, 1.fc17, 1)
+dnl RPMVERCMP(1.fc17, 1g.fc17, -1)
+
+dnl Non-ascii characters are considered equal so these are all the same, eh...
+dnl RPMVERCMP(1.1.α, 1.1.α, 0)
 dnl RPMVERCMP(1.1.α, 1.1.β, 0)
+dnl RPMVERCMP(1.1.β, 1.1.α, 0)
+dnl RPMVERCMP(1.1.αα, 1.1.α, 0)
+dnl RPMVERCMP(1.1.α, 1.1.ββ, 0)
+dnl RPMVERCMP(1.1.ββ, 1.1.αα, 0)
