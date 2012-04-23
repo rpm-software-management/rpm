@@ -156,7 +156,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    }
 	    EVR = xmalloc((ve-v) + 1);
 	    rstrlcpy(EVR, v, (ve-v) + 1);
-	    if (rpmCharCheck(spec, EVR, ve-v, ".-_+:%{}")) goto exit;
+	    if (rpmCharCheck(spec, EVR, ve-v, ".-_+:%{}~")) goto exit;
 	    re = ve;	/* ==> next token after EVR string starts here */
 	} else
 	    EVR = NULL;
