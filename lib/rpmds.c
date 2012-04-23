@@ -895,6 +895,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(ScriptletExpansion)",    "4.9.0-1",
 	(		RPMSENSE_EQUAL),
     N_("package scriptlets can be expanded at install time.") },
+    { "rpmlib(TildeInVersions)",    "4.10.0-1",
+	(		RPMSENSE_EQUAL),
+    N_("dependency comparison supports versions with tilde.") },
     { NULL,				NULL, 0,	NULL }
 };
 

@@ -32,9 +32,18 @@ int rpmvercmp(const char * a, const char * b)
     two = str2;
 
     /* loop through each version segment of str1 and str2 and compare them */
-    while (*one && *two) {
-	while (*one && !risalnum(*one)) one++;
-	while (*two && !risalnum(*two)) two++;
+    while (*one || *two) {
+	while (*one && !risalnum(*one) && *one != '~') one++;
+	while (*two && !risalnum(*two) && *two != '~') two++;
+
+	/* handle the tilde separator, it sorts before everthing else */
+	if (*one == '~' || *two == '~') {
+	    if (*one != '~') return 1;
+	    if (*two != '~') return -1;
+	    one++;
+	    two++;
+	    continue;
+	}
 
 	/* If we ran to the end of either, we are finished with the loop */
 	if (!(*one && *two)) break;

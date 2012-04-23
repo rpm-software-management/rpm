@@ -231,6 +231,42 @@ static rpmRC copyPayload(FD_t ifd, const char *ifn, FD_t ofd, const char *ofn)
     return rc;
 }
 
+static int depContainsTilde(Header h, rpmTagVal tagEVR)
+{
+    struct rpmtd_s evrs;
+    const char *evr = NULL;
+
+    if (headerGet(h, tagEVR, &evrs, HEADERGET_MINMEM)) {
+	while ((evr = rpmtdNextString(&evrs)) != NULL)
+	    if (strchr(evr, '~'))
+		break;
+	rpmtdFreeData(&evrs);
+    }
+    return evr != NULL;
+}
+
+static rpmTagVal depevrtags[] = {
+    RPMTAG_PROVIDEVERSION,
+    RPMTAG_REQUIREVERSION,
+    RPMTAG_OBSOLETEVERSION,
+    RPMTAG_CONFLICTVERSION,
+    RPMTAG_ORDERVERSION,
+    RPMTAG_TRIGGERVERSION,
+    RPMTAG_SUGGESTSVERSION,
+    RPMTAG_ENHANCESVERSION,
+    0
+};
+
+static int haveTildeDep(Header h)
+{
+    int i;
+
+    for (i = 0; depevrtags[i] != 0; i++)
+	if (depContainsTilde(h, depevrtags[i]))
+	    return 1;
+    return 0;
+}
+
 static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileName,
 	     CSA_t csa, char **cookie)
 {
@@ -304,6 +340,10 @@ static rpmRC writeRPM(Header *hdrp, unsigned char ** pkgidp, const char *fileNam
 	headerPutString(h, RPMTAG_PAYLOADFLAGS, buf+1);
 	free(buf);
     }
+
+    /* check if the package has a dependency with a '~' */
+    if (haveTildeDep(h))
+	(void) rpmlibNeedsFeature(h, "TildeInVersions", "4.10.0-1");
 
     /* Create and add the cookie */
     if (cookie) {

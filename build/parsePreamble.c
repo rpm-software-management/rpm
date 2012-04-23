@@ -699,7 +699,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, strlen(field), "._+%{}"))
+	if (rpmCharCheck(spec, field, strlen(field), "._+%{}~"))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	break;
