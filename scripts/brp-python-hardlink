@@ -10,8 +10,8 @@ fi
 find "$RPM_BUILD_ROOT" -type f -name "*.pyc" | while read pyc ; do
        pyo="${pyc%c}o"
        if [ -f "$pyo" ] ; then
-               csha="$(sha1sum -b $pyc | cut -d' ' -f 1)" && \
-               osha="$(sha1sum -b $pyo | cut -d' ' -f 1)" && \
+               csha="$(sha1sum -b "$pyc" | cut -d' ' -f 1)" && \
+               osha="$(sha1sum -b "$pyo" | cut -d' ' -f 1)" && \
                if [ "$csha" = "$osha" ] ; then
                        ln -f "$pyc" "$pyo"
                fi
