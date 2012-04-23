@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"POT-Creation-Date: 2012-04-23 11:47+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -858,82 +858,82 @@ msgstr "Nemohu zapsat payload do %s: %s\n"
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Nemohu přečíst payload z %s: %s\n"
 
-#: build/pack.c:294
+#: build/pack.c:330
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Neznámá komprese payloadu: %s\n"
 
-#: build/pack.c:318
+#: build/pack.c:358
 msgid "Unable to create immutable header region.\n"
 msgstr "Nemohu vytvořit nezměnitelný region hlavičky.\n"
 
-#: build/pack.c:331
+#: build/pack.c:371
 msgid "Unable to open temp file.\n"
 msgstr "Nelze otevřít dočasný soubor.\n"
 
-#: build/pack.c:338
+#: build/pack.c:378
 msgid "Unable to write temp header\n"
 msgstr "Nemohu zapsat dočasnou hlavičku\n"
 
-#: build/pack.c:346
+#: build/pack.c:386
 msgid "Bad CSA data\n"
 msgstr "Špatná CSA data\n"
 
-#: build/pack.c:412
+#: build/pack.c:452
 msgid "Unable to reload signature header.\n"
 msgstr "Nemohu znovu přečíst hlavičku podpisu.\n"
 
-#: build/pack.c:420
+#: build/pack.c:460
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Nemohu otevřít %s: %s\n"
 
-#: build/pack.c:432
+#: build/pack.c:472
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Nemohu zapsat balíček: %s\n"
 
-#: build/pack.c:448
+#: build/pack.c:488
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Nemohu otevřít cíl pro podepsání %s: %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:499
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Nemohu přečíst hlavičku z %s: %s\n"
 
-#: build/pack.c:469
+#: build/pack.c:509
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Nemohu zapsat hlavičku do %s: %s\n"
 
-#: build/pack.c:503
+#: build/pack.c:543
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Zapsáno: %s\n"
 
-#: build/pack.c:522
+#: build/pack.c:562
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr ""
 
-#: build/pack.c:525
+#: build/pack.c:565
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:529
+#: build/pack.c:569
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:578
+#: build/pack.c:618
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Nemohu vygenerovat jméno souboru pro balíček %s: %s\n"
 
-#: build/pack.c:595
+#: build/pack.c:635
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "nemohu vytvořit %s: %s\n"
@@ -1677,7 +1677,7 @@ msgstr ""
 msgid "skipping %s with unverifiable signature\n"
 msgstr ""
 
-#: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
+#: lib/package.c:179 lib/package.c:306 lib/package.c:373 lib/signature.c:130
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "značka[%d]: ŠPATNÁ, značka %d typ %d offset %d počet %d\n"
@@ -1699,65 +1699,70 @@ msgstr "hdr DSA: ŠPATNÁ, není binární\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "velikost blobu(%d): ŠPATNÁ, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:324 lib/signature.c:145
+#: lib/package.c:322 lib/signature.c:142
+#, fuzzy, c-format
+msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
+msgstr "trailer regionu: ŠPATNÝ, značka %d typ %d offset %d počet %d\n"
+
+#: lib/package.c:331 lib/signature.c:151
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "offset regionu: ŠPATNÝ, značka %d typ %d offset %d počet %d\n"
 
-#: lib/package.c:341 lib/signature.c:169
+#: lib/package.c:348 lib/signature.c:175
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "trailer regionu: ŠPATNÝ, značka %d typ %d offset %d počet %d\n"
 
-#: lib/package.c:351 lib/signature.c:179
+#: lib/package.c:358 lib/signature.c:185
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "velikost regionu: ŠPATNÁ, ril(%d) > il(%d)\n"
 
-#: lib/package.c:420
+#: lib/package.c:427
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr velikost (%d): ŠPATNÁ, čtení vrátilo %d\n"
 
-#: lib/package.c:424
+#: lib/package.c:431
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: ŠPATNÝ\n"
 
-#: lib/package.c:429
+#: lib/package.c:436
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr značky: ŠPATNÉ, počet značek (%d) mimo rozsah\n"
 
-#: lib/package.c:435
+#: lib/package.c:442
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr data: ŠPATNÁ, bajtů (%d) mimo rozsah\n"
 
-#: lib/package.c:445
+#: lib/package.c:452
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "hdr blob(%zd): ŠPATNÝ, čtení vrátilo %d\n"
 
-#: lib/package.c:458
+#: lib/package.c:465
 msgid "hdr load: BAD\n"
 msgstr "nahrátí hdr: ŠPATNÉ\n"
 
-#: lib/package.c:525 lib/rpmchecksig.c:274 sign/rpmgensig.c:433
+#: lib/package.c:532 lib/rpmchecksig.c:274 sign/rpmgensig.c:433
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature selhalo: %s"
 
-#: lib/package.c:532 lib/rpmchecksig.c:281 sign/rpmgensig.c:440
+#: lib/package.c:539 lib/rpmchecksig.c:281 sign/rpmgensig.c:440
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Žádný podpis k dispozici\n"
 
-#: lib/package.c:574
+#: lib/package.c:581
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead selhal: %s"
 
-#: lib/package.c:622 lib/rpmchecksig.c:139 sign/rpmgensig.c:93
+#: lib/package.c:629 lib/rpmchecksig.c:139 sign/rpmgensig.c:93
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread selhalo: %s\n"
@@ -2490,6 +2495,10 @@ msgstr ""
 msgid "package scriptlets can be expanded at install time."
 msgstr ""
 
+#: lib/rpmds.c:900
+msgid "dependency comparison supports versions with tilde."
+msgstr ""
+
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
 #: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
@@ -2697,77 +2706,81 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "neznámá chyba %d vznikla při manipulaci s balíčkem %s"
 
-#: lib/rpmrc.c:181
+#: lib/rpmrc.c:192
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "chybí druhé ':' na %s:%d\n"
 
-#: lib/rpmrc.c:184
+#: lib/rpmrc.c:195
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "chybí jméno architektury na %s:%d\n"
 
-#: lib/rpmrc.c:329
+#: lib/rpmrc.c:340
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Neúplný datový řádek %s:%d\n"
 
-#: lib/rpmrc.c:334
+#: lib/rpmrc.c:345
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Příliš mnoho argumentů na datovém řádku na %s:%d\n"
 
-#: lib/rpmrc.c:341
+#: lib/rpmrc.c:352
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Špatné číslo architektury nebo operačního systému: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:372
+#: lib/rpmrc.c:383
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Neúplný implicitní řádek na %s:%d\n"
 
-#: lib/rpmrc.c:377
+#: lib/rpmrc.c:388
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Příliš mnoho argumentů v implicitním řádku na %s:%d\n"
 
-#: lib/rpmrc.c:481
+#: lib/rpmrc.c:492
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "chybějící ':' (nalezeno 0x%02x) na %s:%d\n"
 
-#: lib/rpmrc.c:498 lib/rpmrc.c:530
+#: lib/rpmrc.c:509 lib/rpmrc.c:541
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "chybí argument pro %s na %s:%d\n"
 
-#: lib/rpmrc.c:509
+#: lib/rpmrc.c:520
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "nemohu otevřít %s na %s:%d: %m\n"
 
-#: lib/rpmrc.c:522
+#: lib/rpmrc.c:533
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "chybí arcitektura pro %s na %s:%d\n"
 
-#: lib/rpmrc.c:589
+#: lib/rpmrc.c:600
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "špatný parametr'%s' na %s:%d\n"
 
-#: lib/rpmrc.c:1279
+#: lib/rpmrc.c:924
+msgid "Failed to read auxiliary vector, /proc not mounted?\n"
+msgstr ""
+
+#: lib/rpmrc.c:1343
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Neznámý systém: %s\n"
 
-#: lib/rpmrc.c:1280
+#: lib/rpmrc.c:1344
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Prosím kontaktujte %s\n"
 
-#: lib/rpmrc.c:1499
+#: lib/rpmrc.c:1563
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nemohu otevřít %s pro čtení: %m.\n"
@@ -2810,11 +2823,11 @@ msgstr "provedení %s skripletu selhalo, návratový kód: %d\n"
 msgid "Unknown format"
 msgstr ""
 
-#: lib/rpmte.c:842
+#: lib/rpmte.c:843
 msgid "install"
 msgstr ""
 
-#: lib/rpmte.c:843
+#: lib/rpmte.c:844
 msgid "erase"
 msgstr ""
 
@@ -2871,55 +2884,55 @@ msgstr "sigh data: ŠPATNÁ, počet bajtů(%d) mimo rozsah\n"
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sigh blob(%d): ŠPATNÝ, čtení vrátilo %d\n"
 
-#: lib/signature.c:190
+#: lib/signature.c:196
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh značka[%d]: šPATNÝ, značka %d typ %d offset %d počet %d\n"
 
-#: lib/signature.c:200
+#: lib/signature.c:206
 msgid "sigh load: BAD\n"
 msgstr "sigh nahání: šPATNÉ\n"
 
-#: lib/signature.c:213
+#: lib/signature.c:219
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "sigh zarovnání(%zd): ŠPATNÉ, čtení %zd bajtů\n"
 
-#: lib/signature.c:229
+#: lib/signature.c:235
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%zd): ŠPATNÁ, fstat(2) selhal\n"
 
-#: lib/signature.c:305
+#: lib/signature.c:311
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Nezměnitelná oblast hlavičky nemůže být čtena. Poškozený balíček?\n"
 
-#: lib/signature.c:315
+#: lib/signature.c:321
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
 
-#: lib/signature.c:402
+#: lib/signature.c:408
 msgid "MD5 digest:"
 msgstr "MD5 digest:"
 
-#: lib/signature.c:441
+#: lib/signature.c:447
 msgid "Header SHA1 digest:"
 msgstr "SHA1 digest v hlavičce:"
 
-#: lib/signature.c:483
+#: lib/signature.c:489
 msgid "Header "
 msgstr "Hlavička "
 
-#: lib/signature.c:524
+#: lib/signature.c:530
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1379
+#: lib/transaction.c:1383
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1379
+#: lib/transaction.c:1383
 msgid "failed"
 msgstr ""
 

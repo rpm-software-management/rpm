@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-20 09:59+0200\n"
+"POT-Creation-Date: 2012-04-23 11:47+0300\n"
 "PO-Revision-Date: 2012-03-08 10:36+0000\n"
 "Last-Translator: Roman Spirgi <bigant@fedoraproject.org>\n"
 "Language-Team: German (http://www.transifex.net/projects/p/rpm/language/"
@@ -883,82 +883,82 @@ msgstr "Konnte Nutzdaten nicht nach %s schreiben: %s\n"
 msgid "Unable to read payload from %s: %s\n"
 msgstr "Konnte Nutzdaten von %s nicht lesen: %s\n"
 
-#: build/pack.c:294
+#: build/pack.c:330
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr "Unbekannte Nutzdaten.Kompression: %s\n"
 
-#: build/pack.c:318
+#: build/pack.c:358
 msgid "Unable to create immutable header region.\n"
 msgstr "Konnte keine unveränderliche Header-Region erstellen.\n"
 
-#: build/pack.c:331
+#: build/pack.c:371
 msgid "Unable to open temp file.\n"
 msgstr "Kann temporäre Datei nicht öffnen.\n"
 
-#: build/pack.c:338
+#: build/pack.c:378
 msgid "Unable to write temp header\n"
 msgstr "Kann den temporären Header nicht schreiben\n"
 
-#: build/pack.c:346
+#: build/pack.c:386
 msgid "Bad CSA data\n"
 msgstr "Ungültige CSA-Daten\n"
 
-#: build/pack.c:412
+#: build/pack.c:452
 msgid "Unable to reload signature header.\n"
 msgstr "Kann den Header der Signatur nicht erneut laden.\n"
 
-#: build/pack.c:420
+#: build/pack.c:460
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "Konnte %s nicht öffnen: %s\n"
 
-#: build/pack.c:432
+#: build/pack.c:472
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "Kann das Paket nicht schreiben: %s\n"
 
-#: build/pack.c:448
+#: build/pack.c:488
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr "Konnte Signatur-Ziel %s nicht öffnen: %s\n"
 
-#: build/pack.c:459
+#: build/pack.c:499
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr "Konnte Header von %s nicht lesen: %s\n"
 
-#: build/pack.c:469
+#: build/pack.c:509
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr "Konnte Header nicht nach %s schreiben: %s\n"
 
-#: build/pack.c:503
+#: build/pack.c:543
 #, c-format
 msgid "Wrote: %s\n"
 msgstr "Erstellt: %s\n"
 
-#: build/pack.c:522
+#: build/pack.c:562
 #, c-format
 msgid "Executing \"%s\":\n"
 msgstr "Ausschluss \"%s\":\n"
 
-#: build/pack.c:525
+#: build/pack.c:565
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
 msgstr "Ausschluss von \"%s\" fehlgeschlagen.\n"
 
-#: build/pack.c:529
+#: build/pack.c:569
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr "Paket-Prüfung \"%s\" fehlgeschlagen.\n"
 
-#: build/pack.c:578
+#: build/pack.c:618
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
 msgstr "Konnte den Dateinamen für das Paket %s nicht generieren: %s\n"
 
-#: build/pack.c:595
+#: build/pack.c:635
 #, c-format
 msgid "cannot create %s: %s\n"
 msgstr "Kann Datei %s nicht erstellen: %s\n"
@@ -1707,7 +1707,7 @@ msgstr ""
 msgid "skipping %s with unverifiable signature\n"
 msgstr ""
 
-#: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
+#: lib/package.c:179 lib/package.c:306 lib/package.c:373 lib/signature.c:130
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "Tag[%d]: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Count %d\n"
@@ -1729,65 +1729,70 @@ msgstr "hdr DSA: UNGÜLTIG, nicht binär\n"
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "Blob-Grösse(%d): UNGÜLTIG, 8 + 16 * il(%d) + dl(%d)\n"
 
-#: lib/package.c:324 lib/signature.c:145
+#: lib/package.c:322 lib/signature.c:142
+#, fuzzy, c-format
+msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
+msgstr "Regionstrailer: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Zähler %d\n"
+
+#: lib/package.c:331 lib/signature.c:151
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr "Regionsoffset: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Zähler %d\n"
 
-#: lib/package.c:341 lib/signature.c:169
+#: lib/package.c:348 lib/signature.c:175
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr "Regionstrailer: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Zähler %d\n"
 
-#: lib/package.c:351 lib/signature.c:179
+#: lib/package.c:358 lib/signature.c:185
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr "Regionsgrösse: UNGÜLTIG, ril(%d) > il(%d)\n"
 
-#: lib/package.c:420
+#: lib/package.c:427
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr "hdr Grösse(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
-#: lib/package.c:424
+#: lib/package.c:431
 msgid "hdr magic: BAD\n"
 msgstr "hdr magic: UNGÜLTIG\n"
 
-#: lib/package.c:429
+#: lib/package.c:436
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr "hdr Tags: UNGÜLTIG, Nummer der Tags (%d) ausserhalb des Bereichs\n"
 
-#: lib/package.c:435
+#: lib/package.c:442
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr "hdr Tags: UNGÜLTIG, Nummer der Bytes (%d) ausserhalb des Bereichs\n"
 
-#: lib/package.c:445
+#: lib/package.c:452
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr "hdr Blob(%zd): UNGÜLTIG, lesen lieferte %d zurück\n"
 
-#: lib/package.c:458
+#: lib/package.c:465
 msgid "hdr load: BAD\n"
 msgstr "hdr Load: UNGÜLTIG\n"
 
-#: lib/package.c:525 lib/rpmchecksig.c:274 sign/rpmgensig.c:433
+#: lib/package.c:532 lib/rpmchecksig.c:274 sign/rpmgensig.c:433
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr "%s: rpmReadSignature fehlgeschlagen: %s"
 
-#: lib/package.c:532 lib/rpmchecksig.c:281 sign/rpmgensig.c:440
+#: lib/package.c:539 lib/rpmchecksig.c:281 sign/rpmgensig.c:440
 #, c-format
 msgid "%s: No signature available\n"
 msgstr "%s: Keine Signatur verfügbar\n"
 
-#: lib/package.c:574
+#: lib/package.c:581
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr "%s: headerRead fehlgeschlagen: %s"
 
-#: lib/package.c:622 lib/rpmchecksig.c:139 sign/rpmgensig.c:93
+#: lib/package.c:629 lib/rpmchecksig.c:139 sign/rpmgensig.c:93
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr "%s: Fread fehlgeschlagen: %s\n"
@@ -2532,6 +2537,10 @@ msgstr "Unterstützung für POSIX.1e-Dateifähigkeiten"
 msgid "package scriptlets can be expanded at install time."
 msgstr "Paket-Scriptlets können während der Installation entpackt werden."
 
+#: lib/rpmds.c:900
+msgid "dependency comparison supports versions with tilde."
+msgstr ""
+
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
 #: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
@@ -2746,77 +2755,81 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr "Unbekannter Fehler %d trat während dem Verarbeiten des Pakets %s auf"
 
-#: lib/rpmrc.c:181
+#: lib/rpmrc.c:192
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr "Fehlender zweiter ':' bei %s:%d\n"
 
-#: lib/rpmrc.c:184
+#: lib/rpmrc.c:195
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr "Fehlender Architektur-Name bei %s:%d\n"
 
-#: lib/rpmrc.c:329
+#: lib/rpmrc.c:340
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr "Unvollständige Datenzeile bei %s:%d\n"
 
-#: lib/rpmrc.c:334
+#: lib/rpmrc.c:345
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr "Zu viele Argumente in der Datenzeile bei %s:%d\n"
 
-#: lib/rpmrc.c:341
+#: lib/rpmrc.c:352
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr "Ungültige Architektur/Betriebssystem-Nummer: %s (%s:%d)\n"
 
-#: lib/rpmrc.c:372
+#: lib/rpmrc.c:383
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr "Unvollständige Standardzeile bei %s:%d\n"
 
-#: lib/rpmrc.c:377
+#: lib/rpmrc.c:388
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr "Zu viele Argumente in der Standardzeile bei %s:%d\n"
 
-#: lib/rpmrc.c:481
+#: lib/rpmrc.c:492
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr "Fehlender ':' (0x%02x gefunden) bei %s:%d\n"
 
-#: lib/rpmrc.c:498 lib/rpmrc.c:530
+#: lib/rpmrc.c:509 lib/rpmrc.c:541
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr "Fehlendes Argument für %s bei %s:%d\n"
 
-#: lib/rpmrc.c:509
+#: lib/rpmrc.c:520
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr "Kann %s bei %s:%d nicht öffnen: %m\n"
 
-#: lib/rpmrc.c:522
+#: lib/rpmrc.c:533
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr "Fehlende Architektur für %s bei %s:%d\n"
 
-#: lib/rpmrc.c:589
+#: lib/rpmrc.c:600
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr "Ungültige Option '%s' bei %s:%d\n"
 
-#: lib/rpmrc.c:1279
+#: lib/rpmrc.c:924
+msgid "Failed to read auxiliary vector, /proc not mounted?\n"
+msgstr ""
+
+#: lib/rpmrc.c:1343
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Unbekanntes System: %s\n"
 
-#: lib/rpmrc.c:1280
+#: lib/rpmrc.c:1344
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Bitte (in Englisch) %s kontaktieren\n"
 
-#: lib/rpmrc.c:1499
+#: lib/rpmrc.c:1563
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Kann %s nicht zum Lesen öffnen: %m.\n"
@@ -2859,11 +2872,11 @@ msgstr "%s Scriptlet fehlgeschlagen, Beenden-Status %d\n"
 msgid "Unknown format"
 msgstr "Unbekanntes Format"
 
-#: lib/rpmte.c:842
+#: lib/rpmte.c:843
 msgid "install"
 msgstr "installieren"
 
-#: lib/rpmte.c:843
+#: lib/rpmte.c:844
 msgid "erase"
 msgstr "löschen"
 
@@ -2920,55 +2933,55 @@ msgstr "sigh-Daten: UNGÜLTIG, Nummer der Bytes (%d) ausserhalb des Bereichs\n"
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr "sigh-Blob(%d): UNGÜLTIG, lesen lieferte %d zurück\n"
 
-#: lib/signature.c:190
+#: lib/signature.c:196
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr "sigh-Tag[%d]: UNGÜLTIG, Tag %d, Typ %d, Offset %d, Zähler %d\n"
 
-#: lib/signature.c:200
+#: lib/signature.c:206
 msgid "sigh load: BAD\n"
 msgstr "sigh-Load: UNGÜLTIG\n"
 
-#: lib/signature.c:213
+#: lib/signature.c:219
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr "sigh-Pad(%zd): UNGÜLTIG, lese %zd Byte\n"
 
-#: lib/signature.c:229
+#: lib/signature.c:235
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr "sigh sigSize(%zd): UNGÜLTIG, fstat(2) fehlgeschlagen\n"
 
-#: lib/signature.c:305
+#: lib/signature.c:311
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr "Immuner Header-Bereich konnte nicht gelesen werden. Korruptes Paket?\n"
 
-#: lib/signature.c:315
+#: lib/signature.c:321
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
 
-#: lib/signature.c:402
+#: lib/signature.c:408
 msgid "MD5 digest:"
 msgstr "MD5-Kurzfassung: "
 
-#: lib/signature.c:441
+#: lib/signature.c:447
 msgid "Header SHA1 digest:"
 msgstr "SHA1-Kurzfassung des Headers: "
 
-#: lib/signature.c:483
+#: lib/signature.c:489
 msgid "Header "
 msgstr "Header "
 
-#: lib/signature.c:524
+#: lib/signature.c:530
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1379
+#: lib/transaction.c:1383
 msgid "skipped"
 msgstr "übersprungen"
 
-#: lib/transaction.c:1379
+#: lib/transaction.c:1383
 msgid "failed"
 msgstr "fehlgeschlagen"
 
