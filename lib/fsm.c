@@ -83,7 +83,6 @@ struct hardLink_s {
  * Iterator across package file info, forward on install, backward on erase.
  */
 struct fsmIterator_s {
-    rpmts ts;			/*!< transaction set. */
     rpmfs fs;			/*!< file state info. */
     rpmfi fi;			/*!< transaction element file info. */
     int reverse;		/*!< reversed traversal? */
@@ -121,17 +120,6 @@ struct fsm_s {
     struct stat osb;		/*!< Original file stat(2) info. */
 };
 
-
-/**
- * Retrieve transaction set from file state machine iterator.
- * @param fsm		file state machine
- * @return		transaction set
- */
-static rpmts fsmGetTs(const FSM_t fsm)
-{
-    const FSMI_t iter = fsm->iter;
-    return (iter ? iter->ts : NULL);
-}
 
 /**
  * Retrieve transaction element file info from file state machine iterator.
@@ -188,7 +176,6 @@ static char * fsmFsPath(const FSM_t fsm, int isDir,
 static FSMI_t mapFreeIterator(FSMI_t iter)
 {
     if (iter) {
-	iter->ts = rpmtsFree(iter->ts);
 	iter->fs = NULL; /* rpmfs is not refcounted */
 	iter->fi = rpmfiFree(iter->fi);
 	free(iter);
@@ -198,17 +185,15 @@ static FSMI_t mapFreeIterator(FSMI_t iter)
 
 /** \ingroup payload
  * Create file info iterator.
- * @param ts		transaction set
  * @param fi		transaction element file info
  * @return		file info iterator
  */
 static FSMI_t 
-mapInitIterator(rpmts ts, rpmfs fs, rpmfi fi, int reverse)
+mapInitIterator(rpmfs fs, rpmfi fi, int reverse)
 {
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
-    iter->ts = rpmtsLink(ts);
     iter->fs = fs; /* rpmfs is not refcounted */
     iter->fi = rpmfiLink(fi);
     iter->reverse = reverse;
@@ -594,14 +579,13 @@ static int checkHardLinks(FSM_t fsm)
     return rc;
 }
 
-static FSM_t fsmNew(fileStage goal, rpmts ts, rpmfs fs, rpmfi fi,
-		    char ** failedFile)
+static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
     fsm->ix = -1;
     fsm->goal = goal;
-    fsm->iter = mapInitIterator(ts, fs, fi, (goal == FSM_PKGERASE));
+    fsm->iter = mapInitIterator(fs, fi, (goal == FSM_PKGERASE));
 
     /* common flags for all modes */
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -740,7 +724,7 @@ static int fsmMapAttrs(FSM_t fsm)
  * @param archive	payload archive
  * @return		0 on success
  */
-static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive)
+static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive, int nodigest)
 {
     FD_t wfd = NULL;
     const struct stat * st = &fsm->sb;
@@ -755,7 +739,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive)
 	goto exit;
     }
 
-    if (!(rpmtsFlags(fsmGetTs(fsm)) & RPMTRANS_FLAG_NOFILEDIGEST)) {
+    if (!nodigest) {
 	rpmfi fi = fsmGetFi(fsm);
 	digestalgo = rpmfiDigestAlgo(fi);
 	fidigest = rpmfiFDigestIndex(fi, fsm->ix, NULL, NULL);
@@ -1686,11 +1670,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
-    FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, fs, fi, failedFile);
+    FSM_t fsm = fsmNew(FSM_PKGINSTALL, fs, fi, failedFile);
     rpmcpio_t archive = rpmcpioOpen(cfd, O_RDONLY);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
     int rc = 0;
+    int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST);
 
     if (!rpmteIsSource(te))
 	fsm->mapFlags |= CPIO_SBIT_CHECK;
@@ -1764,7 +1749,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
                 fsm->path = path;
                 if (!(rc == CPIOERR_ENOENT)) return rc;
-                rc = expandRegular(fsm, psm, archive);
+                rc = expandRegular(fsm, psm, archive, nodigest);
             } else if (S_ISDIR(st->st_mode)) {
                 rc = fsmVerify(fsm);
                 if (rc == CPIOERR_ENOENT) {
@@ -1857,7 +1842,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
-    FSM_t fsm = fsmNew(FSM_PKGERASE, ts, fs, fi, failedFile);
+    FSM_t fsm = fsmNew(FSM_PKGERASE, fs, fi, failedFile);
     int rc = 0;
 
     if (!rpmteIsSource(te))
@@ -1935,7 +1920,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
     rpmfs fs = rpmfsNew(rpmfiFC(fi), 0);;
-    FSM_t fsm = fsmNew(FSM_PKGBUILD, NULL, fs, fi, failedFile);;
+    FSM_t fsm = fsmNew(FSM_PKGBUILD, fs, fi, failedFile);;
     rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
     int rc = 0;
 
