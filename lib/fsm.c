@@ -804,8 +804,6 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive)
 exit:
     if (wfd) {
 	int myerrno = errno;
-	rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-		 fdOp(wfd, FDSTAT_DIGEST));
 	Fclose(wfd);
 	errno = myerrno;
     }
@@ -956,8 +954,6 @@ exit:
     if (rfd) {
 	/* preserve any prior errno across close */
 	int myerrno = errno;
-	rpmswAdd(rpmtsOp(fsmGetTs(fsm), RPMTS_OP_DIGEST),
-		 fdOp(rfd, FDSTAT_DIGEST));
 	Fclose(rfd);
 	errno = myerrno;
     }
