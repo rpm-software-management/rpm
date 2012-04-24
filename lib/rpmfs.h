@@ -2,7 +2,6 @@
 #define _RPMFS_H
 
 #include <rpm/rpmfi.h>
-#include <rpm/rpmte.h>
 
 /** \ingroup rpmfs
  * Transaction element file states.
@@ -24,7 +23,7 @@ extern "C" {
 #endif
 
 RPM_GNUC_INTERNAL
-rpmfs rpmfsNew(Header h, rpmElementType type);
+rpmfs rpmfsNew(rpm_count_t fc, int initState);
 
 RPM_GNUC_INTERNAL
 rpmfs rpmfsFree(rpmfs fs);

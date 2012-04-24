@@ -201,7 +201,7 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
  */
 static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 {
-    struct rpmtd_s colls;
+    struct rpmtd_s colls, bnames;
     int rc = 1; /* assume failure */
 
     p->name = headerGetAsString(h, RPMTAG_NAME);
@@ -245,7 +245,11 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
     p->order = rpmdsNew(h, RPMTAG_ORDERNAME, 0);
 
-    p->fs = rpmfsNew(h, p->type);
+    /* Relocation needs to know file count before rpmfiNew() */
+    headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);
+    p->fs = rpmfsNew(rpmtdCount(&bnames), (p->type == TR_ADDED));
+    rpmtdFreeData(&bnames);
+
     p->fi = getFI(p, h);
 
     /* Packages with no files return an empty file info set, NULL is an error */
