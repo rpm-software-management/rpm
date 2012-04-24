@@ -15,10 +15,7 @@
 #include <rpm/rpmlog.h>
 
 #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
-#include "lib/cpio.h"
 #include "lib/fsm.h"
-#include "lib/rpmfi_internal.h"		/* rpmfiFSM() */
-#include "lib/rpmte_internal.h"		/* rpmfs */
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "build/rpmbuild_internal.h"
@@ -39,10 +36,9 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
     rpmts ts = NULL;
     rpmfi fi = csa->cpioList;
     rpmte te = NULL;
-    rpmfs fs = NULL;
     char *failedFile = NULL;
     FD_t cfd;
-    int i, fsmrc;
+    int fsmrc;
 
     (void) Fflush(fdo);
     cfd = Fdopen(fdDup(Fileno(fdo)), fmodeMacro);
@@ -53,15 +49,6 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
     ts = rpmtsCreate();
     rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
     te = rpmtsElement(ts, 0);
-    fs = rpmteGetFileStates(te);
-
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
-	if (rpmfiFFlags(fi) & RPMFILE_GHOST)
-	    rpmfsSetAction(fs, i, FA_SKIP);
-	else
-	    rpmfsSetAction(fs, i, FA_COPYOUT);
-    }
 
     fsmrc = rpmPackageFilesArchive(ts, te, fi, cfd,
 		      &csa->cpioArchiveSize, &failedFile);

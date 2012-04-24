@@ -1947,9 +1947,19 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
     int rc = 0;
 
-    if (archive == NULL)
+    if (archive == NULL) {
 	rc = CPIOERR_INTERNAL;
+    } else {
+	rpmfs fs = rpmteGetFileStates(te);
+	int ghost, i, fc = rpmfiFC(fi);
 
+	/* XXX Is this actually still needed? */
+	for (i = 0; i < fc; i++) {
+	    ghost = (rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST);
+	    rpmfsSetAction(fs, i, ghost ? FA_SKIP : FA_COPYOUT);
+	}
+    }
+	    
     while (!rc) {
 	fsmReset(fsm);
 
