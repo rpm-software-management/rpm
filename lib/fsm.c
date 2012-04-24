@@ -447,25 +447,23 @@ static int fsmMapPath(FSM_t fsm)
 	fsm->dirName = rpmfiDNIndex(fi, rpmfiDIIndex(fi, i));
 	fsm->baseName = rpmfiBNIndex(fi, i);
 
-        if (rpmteType(te) == TR_ADDED) {
-            switch (fsm->action) {
-            case FA_ALTNAME:
-                if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-                    fsm->nsuffix = SUFFIX_RPMNEW;
-                break;
-            case FA_SAVE:
-                if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
-                    fsm->osuffix = SUFFIX_RPMSAVE;
-                break;
-            default:
-                break;
-            }
-        }
-
-        if (fsm->action == FA_BACKUP && !(fsm->fflags & RPMFILE_GHOST)) {
-            /* XXX Don't if %ghost file. */
-            fsm->osuffix = (rpmteType(te) == TR_ADDED) ? SUFFIX_RPMORIG : SUFFIX_RPMSAVE;
-        }
+	/* Never create backup for %ghost files. */
+	if (fsm->goal != FSM_PKGBUILD && !(fsm->fflags & RPMFILE_GHOST)) {
+	    switch (fsm->action) {
+	    case FA_ALTNAME:
+		fsm->nsuffix = SUFFIX_RPMNEW;
+		break;
+	    case FA_SAVE:
+		fsm->osuffix = SUFFIX_RPMSAVE;
+		break;
+	    case FA_BACKUP:
+		fsm->osuffix = (fsm->goal == FSM_PKGINSTALL) ?
+				SUFFIX_RPMORIG : SUFFIX_RPMSAVE;
+		break;
+	    default:
+		break;
+	    }
+	}
 
 	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
 	    fsm->path = _free(fsm->path);
