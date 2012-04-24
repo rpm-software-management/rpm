@@ -449,15 +449,6 @@ static int fsmMapPath(FSM_t fsm)
 
         if (rpmteType(te) == TR_ADDED) {
             switch (fsm->action) {
-            case FA_SKIPNSTATE:
-		rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
-                break;
-            case FA_SKIPNETSHARED:
-		rpmfsSetState(fs, i, RPMFILE_STATE_NETSHARED);
-                break;
-            case FA_SKIPCOLOR:
-		rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
-                break;
             case FA_ALTNAME:
                 if (!(fsm->fflags & RPMFILE_GHOST)) /* XXX Don't if %ghost file. */
                     fsm->nsuffix = SUFFIX_RPMNEW;
@@ -1691,6 +1682,24 @@ static const char * fileActionString(rpmFileAction a)
     }
 }
 
+/* Remember any non-regular file state for recording in the rpmdb */
+static void setFileState(rpmfs fs, int i, rpmFileAction action)
+{
+    switch (action) {
+    case FA_SKIPNSTATE:
+	rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
+	break;
+    case FA_SKIPNETSHARED:
+	rpmfsSetState(fs, i, RPMFILE_STATE_NETSHARED);
+	break;
+    case FA_SKIPCOLOR:
+	rpmfsSetState(fs, i, RPMFILE_STATE_WRONGCOLOR);
+	break;
+    default:
+	break;
+    }
+}
+
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
@@ -1744,6 +1753,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             fsm->postpone = 1;
             break;
         }
+
+	setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
 
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
