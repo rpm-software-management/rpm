@@ -84,7 +84,7 @@ struct hardLink_s {
  */
 struct fsmIterator_s {
     rpmts ts;			/*!< transaction set. */
-    rpmte te;			/*!< transaction element. */
+    rpmfs fs;			/*!< file state info. */
     rpmfi fi;			/*!< transaction element file info. */
     int reverse;		/*!< reversed traversal? */
     int isave;			/*!< last returned iterator index. */
@@ -144,10 +144,10 @@ static rpmfi fsmGetFi(const FSM_t fsm)
     return (iter ? iter->fi : NULL);
 }
 
-static rpmte fsmGetTe(const FSM_t fsm)
+static rpmfs fsmGetFs(const FSM_t fsm)
 {
     const FSMI_t iter = fsm->iter;
-    return (iter ? iter->te : NULL);
+    return (iter ? iter->fs : NULL);
 }
 
 #define	SUFFIX_RPMORIG	".rpmorig"
@@ -189,7 +189,7 @@ static FSMI_t mapFreeIterator(FSMI_t iter)
 {
     if (iter) {
 	iter->ts = rpmtsFree(iter->ts);
-	iter->te = NULL; /* XXX rpmte is not refcounted yet */
+	iter->fs = NULL; /* rpmfs is not refcounted */
 	iter->fi = rpmfiFree(iter->fi);
 	free(iter);
     }
@@ -203,15 +203,15 @@ static FSMI_t mapFreeIterator(FSMI_t iter)
  * @return		file info iterator
  */
 static FSMI_t 
-mapInitIterator(rpmts ts, rpmte te, rpmfi fi)
+mapInitIterator(rpmts ts, rpmfs fs, rpmfi fi, int reverse)
 {
     FSMI_t iter = NULL;
 
     iter = xcalloc(1, sizeof(*iter));
     iter->ts = rpmtsLink(ts);
-    iter->te = te; /* XXX rpmte is not refcounted yet */
+    iter->fs = fs; /* rpmfs is not refcounted */
     iter->fi = rpmfiLink(fi);
-    iter->reverse = (rpmteType(te) == TR_REMOVED);
+    iter->reverse = reverse;
     iter->i = (iter->reverse ? (rpmfiFC(fi) - 1) : 0);
     iter->isave = iter->i;
     return iter;
@@ -437,8 +437,7 @@ static int fsmMapPath(FSM_t fsm)
 
     i = fsm->ix;
     if (fi && i >= 0 && i < rpmfiFC(fi)) {
-	rpmte te = fsmGetTe(fsm);
-	rpmfs fs = rpmteGetFileStates(te);
+	rpmfs fs = fsmGetFs(fsm);
 	/* XXX these should use rpmfiFFlags() etc */
 	fsm->action = rpmfsGetAction(fs, i);
 	fsm->fflags = rpmfiFFlagsIndex(fi, i);
@@ -529,7 +528,7 @@ static int saveHardLink(FSM_t fsm)
 	return 1;
 
     /* Here come the bits, time to choose a non-skipped file name. */
-    {	rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
+    {	rpmfs fs = fsmGetFs(fsm);
 
 	for (j = fsm->li->linksLeft - 1; j >= 0; j--) {
 	    ix = fsm->li->filex[j];
@@ -595,14 +594,14 @@ static int checkHardLinks(FSM_t fsm)
     return rc;
 }
 
-static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi,
+static FSM_t fsmNew(fileStage goal, rpmts ts, rpmfs fs, rpmfi fi,
 		    char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
     fsm->ix = -1;
     fsm->goal = goal;
-    fsm->iter = mapInitIterator(ts, te, fi);
+    fsm->iter = mapInitIterator(ts, fs, fi, (goal == FSM_PKGERASE));
     fsm->sehandle = rpmtsSELabelHandle(ts);
 
     /* common flags for all modes */
@@ -1691,7 +1690,8 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
-    FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
+    rpmfs fs = rpmteGetFileStates(te);
+    FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, fs, fi, failedFile);
     rpmcpio_t archive = rpmcpioOpen(cfd, O_RDONLY);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
@@ -1860,7 +1860,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
               rpmpsm psm, char ** failedFile)
 {
-    FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
+    rpmfs fs = rpmteGetFileStates(te);
+    FSM_t fsm = fsmNew(FSM_PKGERASE, ts, fs, fi, failedFile);
     int rc = 0;
 
     if (!rpmteIsSource(te))
@@ -1937,7 +1938,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
-    FSM_t fsm = fsmNew(FSM_PKGBUILD, ts, te, fi, failedFile);;
+    rpmfs fs = rpmteGetFileStates(te);
+    FSM_t fsm = fsmNew(FSM_PKGBUILD, ts, fs, fi, failedFile);;
     rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
     int rc = 0;
 
@@ -1948,7 +1950,6 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     if (archive == NULL) {
 	rc = CPIOERR_INTERNAL;
     } else {
-	rpmfs fs = rpmteGetFileStates(te);
 	int ghost, i, fc = rpmfiFC(fi);
 
 	/* XXX Is this actually still needed? */
