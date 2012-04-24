@@ -1935,16 +1935,16 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 }
 
 
-int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
-    rpmfs fs = rpmteGetFileStates(te);
-    FSM_t fsm = fsmNew(FSM_PKGBUILD, ts, fs, fi, failedFile);;
+    rpmfs fs = rpmfsNew(rpmfiFC(fi), 0);;
+    FSM_t fsm = fsmNew(FSM_PKGBUILD, NULL, fs, fi, failedFile);;
     rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
     int rc = 0;
 
     fsm->mapFlags |= CPIO_MAP_TYPE;
-    if (rpmteIsSource(te)) 
+    if (isSrc) 
 	fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
 
     if (archive == NULL) {
@@ -2007,6 +2007,7 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	*archiveSize = (rc == 0) ? rpmcpioTell(archive) : 0;
 
     rpmcpioFree(archive);
+    rpmfsFree(fs);
     fsmFree(fsm);
 
     return rc;

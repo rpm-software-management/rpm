@@ -31,7 +31,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
               rpmpsm psm, char ** failedFile);
 
-int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile);
 
 RPM_GNUC_INTERNAL

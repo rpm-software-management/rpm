@@ -10,7 +10,6 @@
 #include <time.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
-#include <rpm/rpmts.h>
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmlog.h>
 
@@ -33,9 +32,6 @@ typedef struct cpioSourceArchive_s {
  */
 static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 {
-    rpmts ts = NULL;
-    rpmfi fi = csa->cpioList;
-    rpmte te = NULL;
     char *failedFile = NULL;
     FD_t cfd;
     int fsmrc;
@@ -45,12 +41,7 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    /* make up a transaction element for passing to fsm */
-    ts = rpmtsCreate();
-    rpmtsAddInstallElement(ts, h, NULL, 0, NULL);
-    te = rpmtsElement(ts, 0);
-
-    fsmrc = rpmPackageFilesArchive(ts, te, fi, cfd,
+    fsmrc = rpmPackageFilesArchive(csa->cpioList, headerIsSource(h), cfd,
 		      &csa->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {
@@ -62,7 +53,6 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 
     free(failedFile);
     Fclose(cfd);
-    rpmtsFree(ts);
 
     return (fsmrc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
