@@ -599,24 +599,14 @@ static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi,
 		    char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
-    int isSrc = rpmteIsSource(te);
 
     fsm->ix = -1;
     fsm->goal = goal;
     fsm->iter = mapInitIterator(ts, te, fi);
     fsm->sehandle = rpmtsSELabelHandle(ts);
 
+    /* common flags for all modes */
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
-    if (goal == FSM_PKGBUILD) {
-	fsm->mapFlags |= CPIO_MAP_TYPE;
-	if (isSrc) {
-	    fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
-	}
-    } else {
-	if (!isSrc) {
-	    fsm->mapFlags |= CPIO_SBIT_CHECK;
-	}
-    }
 
     if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
         fsm->bufsize = 8 * BUFSIZ;
@@ -1707,6 +1697,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int saveerrno = errno;
     int rc = 0;
 
+    if (!rpmteIsSource(te))
+	fsm->mapFlags |= CPIO_SBIT_CHECK;
+
     if (archive == NULL)
 	rc = CPIOERR_INTERNAL;
 
@@ -1870,6 +1863,9 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
     int rc = 0;
 
+    if (!rpmteIsSource(te))
+	fsm->mapFlags |= CPIO_SBIT_CHECK;
+
     while (!rc) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
@@ -1944,6 +1940,10 @@ int rpmPackageFilesArchive(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     FSM_t fsm = fsmNew(FSM_PKGBUILD, ts, te, fi, failedFile);;
     rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
     int rc = 0;
+
+    fsm->mapFlags |= CPIO_MAP_TYPE;
+    if (rpmteIsSource(te)) 
+	fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
 
     if (archive == NULL) {
 	rc = CPIOERR_INTERNAL;
