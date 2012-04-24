@@ -602,7 +602,6 @@ static FSM_t fsmNew(fileStage goal, rpmts ts, rpmfs fs, rpmfi fi,
     fsm->ix = -1;
     fsm->goal = goal;
     fsm->iter = mapInitIterator(ts, fs, fi, (goal == FSM_PKGERASE));
-    fsm->sehandle = rpmtsSELabelHandle(ts);
 
     /* common flags for all modes */
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -1699,6 +1698,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     if (archive == NULL)
 	rc = CPIOERR_INTERNAL;
 
+    fsm->sehandle = rpmtsSELabelHandle(ts);
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
 
