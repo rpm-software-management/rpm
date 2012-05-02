@@ -431,45 +431,8 @@ package or when debugging this package.\
 # Filter GLIBC_PRIVATE Provides: and Requires:
 %_filter_GLIBC_PRIVATE			0
 
-# Desired selinux policy tree
-%__policy_tree	%{expand:%%global __policy_tree %{lua:\
-t="targeted"\
-f = io.open("/etc/selinux/config")\
-if f then\
-  for l in f:lines() do\
-    if "SELINUXTYPE=" == string.sub(l,0,12) then t=string.sub(l,13); end\
-  end\
-  f:close()\
-end\
-print (t)\
-}}%{__policy_tree}
-
-# Path to selinux file context patterns.
-%__file_context_path /etc/selinux/%{__policy_tree}/contexts/files/file_contexts
-
 # Directories whose contents should be considered as documentation.
 %__docdir_path %{_datadir}/doc:%{_datadir}/man:%{_datadir}/info:%{_datadir}/gtk-doc/html:%{?_docdir}:%{?_mandir}:%{?_infodir}:%{?_javadocdir}:/usr/doc:/usr/man:/usr/info:/usr/X11R6/man
-
-#
-# Path to selinux file context patterns used to add
-# RPMTAG_FILECONTEXTS to packages when building.
-#
-# Undefined, missing or %{nil} will disable.
-%_build_file_context_path	%{nil}
-
-#
-# Path to selinux file context patterns used to set
-# (or override package content) file contexts when installing.
-#
-# Undefined, missing or %{nil} will use package content (if available).
-%_install_file_context_path 	%{__file_context_path}
-
-#
-# Path to selinux file context patterns used to verify
-# file contexts on file system.
-#
-# Undefined, missing or %{nil} will use package content (if available).
-%_verify_file_context_path 	%{__file_context_path}
 
 #
 # Path to scripts to autogenerate package dependencies,
