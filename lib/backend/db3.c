@@ -177,7 +177,8 @@ static int db_init(rpmdb rdb, const char * dbhome)
 
     /*
      * Actually open the environment. Fall back to private environment
-     * if we dont have permission to join/create shared environment.
+     * if we dont have permission to join/create shared environment or
+     * system doesn't support it..
      */
     while (retry_open) {
 	char *fstr = prDbiOpenFlags(eflags, 1);
@@ -185,7 +186,7 @@ static int db_init(rpmdb rdb, const char * dbhome)
 	free(fstr);
 
 	rc = (dbenv->open)(dbenv, dbhome, eflags, rdb->db_perms);
-	if (rc == EACCES || rc == EROFS) {
+	if ((rc == EACCES || rc == EROFS || rc == EINVAL) && errno == rc) {
 	    eflags |= DB_PRIVATE;
 	    retry_open--;
 	} else {
