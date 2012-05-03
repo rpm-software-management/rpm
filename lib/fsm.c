@@ -469,9 +469,10 @@ static int saveHardLink(FSM_t fsm)
     int rc = 0;
     int ix = -1;
     int j;
+    hardLink_t *tailp;
 
     /* Find hard link set. */
-    for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
+    for (tailp = &fsm->links; (fsm->li = *tailp) != NULL; tailp = &fsm->li->next) {
 	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
 	    break;
     }
@@ -494,8 +495,7 @@ static int saveHardLink(FSM_t fsm)
 	if (fsm->goal == FSM_PKGINSTALL)
 	    fsm->li->linksLeft = 0;
 
-	fsm->li->next = fsm->links;
-	fsm->links = fsm->li;
+	*tailp = fsm->li;	/* append to tail of linked list */
     }
 
     if (fsm->goal == FSM_PKGBUILD) --fsm->li->linksLeft;
