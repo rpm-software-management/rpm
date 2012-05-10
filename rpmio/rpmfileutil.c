@@ -388,6 +388,10 @@ int rpmFileIsCompressed(const char * file, rpmCompressedMagic * compressed)
 	((magic[0] == 0037) && (magic[1] == 0235))	/* compress */
 	) {
 	*compressed = COMPRESSED_OTHER;
+    } else if ((magic[0] == '7') && (magic[1] == 'z') &&
+               (magic[2] == 0xbc) && (magic[3] == 0xaf) &&
+               (magic[4] == 0x27) && (magic[5] == 0x1c)) {
+	*compressed = COMPRESSED_7ZIP;
     } else if (rpmFileHasSuffix(file, ".lzma")) {
 	*compressed = COMPRESSED_LZMA;
     }
