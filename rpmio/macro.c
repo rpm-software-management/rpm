@@ -442,6 +442,7 @@ static void mbAppend(MacroBuf mb, char c)
 	mb->nb += MACROBUFSIZ;
     }
     mb->buf[mb->tpos++] = c;
+    mb->buf[mb->tpos] = '\0';
     mb->nb--;
 }
 
@@ -452,7 +453,7 @@ static void mbAppendStr(MacroBuf mb, const char *str)
 	mb->buf = xrealloc(mb->buf, mb->tpos + mb->nb + MACROBUFSIZ + len + 1);
 	mb->nb += MACROBUFSIZ + len;
     }
-    memcpy(mb->buf+mb->tpos, str, len);
+    memcpy(mb->buf+mb->tpos, str, len + 1);
     mb->tpos += len;
     mb->nb -= len;
 }
