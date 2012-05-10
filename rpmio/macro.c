@@ -438,7 +438,7 @@ expandThis(MacroBuf mb, const char * src, size_t slen, char **target)
 static void mbAppend(MacroBuf mb, char c)
 {
     if (mb->nb < 1) {
-	mb->buf = xrealloc(mb->buf, mb->tpos + mb->nb + MACROBUFSIZ);
+	mb->buf = xrealloc(mb->buf, mb->tpos + MACROBUFSIZ + 1);
 	mb->nb += MACROBUFSIZ;
     }
     mb->buf[mb->tpos++] = c;
@@ -449,7 +449,7 @@ static void mbAppendStr(MacroBuf mb, const char *str)
 {
     size_t len = strlen(str);
     if (len > mb->nb) {
-	mb->buf = xrealloc(mb->buf, mb->tpos + mb->nb + MACROBUFSIZ + len);
+	mb->buf = xrealloc(mb->buf, mb->tpos + mb->nb + MACROBUFSIZ + len + 1);
 	mb->nb += MACROBUFSIZ + len;
     }
     memcpy(mb->buf+mb->tpos, str, len);
