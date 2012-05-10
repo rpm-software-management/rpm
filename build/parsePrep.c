@@ -193,6 +193,10 @@ static char *doUntar(rpmSpec spec, uint32_t c, int quietly)
 	case COMPRESSED_LRZIP:
 	    t = "%{__lrzip} -dqo-";
 	    break;
+	case COMPRESSED_7ZIP:
+	    t = "%{__7zip} x";
+	    needtar = 0;
+	    break;
 	}
 	zipper = rpmGetPath(t, NULL);
 	if (needtar) {

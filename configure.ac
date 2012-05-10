@@ -91,6 +91,7 @@ fi
 dnl
 dnl Find some common programs
 dnl
+AC_PATH_PROG(__7ZIP, 7zip, /usr/bin/7za, $MYPATH)
 AC_PATH_PROG(__BZIP2, bzip2, /usr/bin/bzip2, $MYPATH)
 AC_PATH_PROG(__CAT, cat, /bin/cat, $MYPATH)
 AC_PATH_PROG(__CHGRP, chgrp, /bin/chgrp, $MYPATH)
