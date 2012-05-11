@@ -388,8 +388,9 @@ int readLine(rpmSpec spec, int strip)
 	SKIPNONSPACE(endFileName);
 	p = endFileName;
 	SKIPSPACE(p);
-	if (*p != '\0') {
-	    rpmlog(RPMLOG_ERR, _("malformed %%include statement\n"));
+	if (*fileName == '\0' || *p != '\0') {
+	    rpmlog(RPMLOG_ERR, _("%s:%d: malformed %%include statement\n"),
+				ofi->fileName, ofi->lineNum);
 	    return PART_ERROR;
 	}
 	*endFileName = '\0';
