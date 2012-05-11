@@ -109,31 +109,20 @@ void handleComments(char *s)
 	*s = '\0';
 }
 
-static struct OpenFileInfo * newOpenFileInfo(void)
+/* Push a file to spec's file stack, return the newly pushed entry */
+static OFI_t * pushOFI(rpmSpec spec, const char *fn)
 {
-    struct OpenFileInfo *ofi;
+    OFI_t *ofi = xcalloc(1, sizeof(*ofi));
 
-    ofi = xmalloc(sizeof(*ofi));
     ofi->fp = NULL;
-    ofi->fileName = NULL;
+    ofi->fileName = xstrdup(fn);
     ofi->lineNum = 0;
     ofi->readBuf[0] = '\0';
     ofi->readPtr = NULL;
-    ofi->next = NULL;
-
-    return ofi;
-}
-
-/**
- */
-static void forceIncludeFile(rpmSpec spec, const char * fileName)
-{
-    OFI_t * ofi;
-
-    ofi = newOpenFileInfo();
-    ofi->fileName = xstrdup(fileName);
     ofi->next = spec->fileStack;
+
     spec->fileStack = ofi;
+    return spec->fileStack;
 }
 
 static int restoreFirstChar(rpmSpec spec)
@@ -394,9 +383,7 @@ int readLine(rpmSpec spec, int strip)
 	}
 	*endFileName = '\0';
 
-	forceIncludeFile(spec, fileName);
-
-	ofi = spec->fileStack;
+	ofi = pushOFI(spec, fileName);
 	goto retry;
     }
 
@@ -569,8 +556,7 @@ static rpmSpec parseSpec(const char *specFile, rpmSpecFlags flags,
     spec = newSpec();
 
     spec->specFile = rpmGetPath(specFile, NULL);
-    spec->fileStack = newOpenFileInfo();
-    spec->fileStack->fileName = xstrdup(spec->specFile);
+    pushOFI(spec, spec->specFile);
     /* If buildRoot not specified, use default %{buildroot} */
     if (buildRoot) {
 	spec->buildRoot = xstrdup(buildRoot);
