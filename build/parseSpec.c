@@ -125,6 +125,21 @@ static OFI_t * pushOFI(rpmSpec spec, const char *fn)
     return spec->fileStack;
 }
 
+/* Pop from spec's file stack */
+static OFI_t * popOFI(rpmSpec spec)
+{
+    if (spec->fileStack) {
+	OFI_t * ofi = spec->fileStack;
+
+	spec->fileStack = ofi->next;
+	if (ofi->fp)
+	    fclose(ofi->fp);
+	free(ofi->fileName);
+	free(ofi);
+    }
+    return spec->fileStack;
+}
+
 static int restoreFirstChar(rpmSpec spec)
 {
     /* Restore 1st char in (possible) next line */
@@ -249,13 +264,9 @@ retry:
 	    }
 
 	    /* remove this file from the stack */
-	    spec->fileStack = ofi->next;
-	    fclose(ofi->fp);
-	    free(ofi->fileName);
-	    free(ofi);
+	    ofi = popOFI(spec);
 
 	    /* only on last file do we signal EOF to caller */
-	    ofi = spec->fileStack;
 	    if (ofi == NULL)
 		return 1;
 
@@ -410,15 +421,7 @@ int readLine(rpmSpec spec, int strip)
 
 void closeSpec(rpmSpec spec)
 {
-    OFI_t *ofi;
-
-    while (spec->fileStack) {
-	ofi = spec->fileStack;
-	spec->fileStack = spec->fileStack->next;
-	if (ofi->fp) (void) fclose(ofi->fp);
-	free(ofi->fileName);
-	free(ofi);
-    }
+    while (popOFI(spec)) {};
 }
 
 static const rpmTagVal sourceTags[] = {
