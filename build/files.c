@@ -670,10 +670,10 @@ exit:
 /**
  * Parse %lang from file manifest.
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForLang(char * buf, FileList fl)
+static rpmRC parseForLang(char * buf, FileEntry cur)
 {
     char *p, *pe, *q = NULL;
     const char *name;
@@ -712,7 +712,7 @@ static rpmRC parseForLang(char * buf, FileList fl)
 	pe = p;
 	SKIPNONWHITE(pe);
 
-	if (addLang(&(fl->cur.langs), p, (pe-p), q))
+	if (addLang(&(cur->langs), p, (pe-p), q))
 	    goto exit;
 
 	if (*pe == ',') pe++;	/* skip , if present */
@@ -1793,7 +1793,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    parseForAttr(buf, &fl.cur, &fl.def) ||
 	    parseForDev(buf, &fl.cur) ||
 	    parseForConfig(buf, &fl.cur) ||
-	    parseForLang(buf, &fl) ||
+	    parseForLang(buf, &fl.cur) ||
 	    parseForCaps(buf, &fl) ||
 	    parseForSimple(spec, pkg, buf, &fl, &fileName))
 	{
