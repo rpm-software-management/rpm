@@ -103,6 +103,12 @@ typedef struct FileEntry_s {
 
     ARGV_t langs;
     char *caps;
+
+    /* these are only ever relevant for current entry */
+    unsigned devtype;
+    unsigned devmajor;
+    int devminor;
+    int isDir;
 } * FileEntry;
 
 /**
@@ -126,11 +132,6 @@ typedef struct FileList_s {
 
     /* current file-entry state */
     struct FileEntry_s cur;
-
-    unsigned devtype;
-    unsigned devmajor;
-    int devminor;
-    int isDir;
 } * FileList;
 
 /**
@@ -394,9 +395,9 @@ static rpmRC parseForDev(char * buf, FileList fl)
     p = q; SKIPWHITE(p);
     pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
     if (*p == 'b')
-	fl->devtype = 'b';
+	fl->cur.devtype = 'b';
     else if (*p == 'c')
-	fl->devtype = 'c';
+	fl->cur.devtype = 'c';
     else {
 	errstr = "devtype";
 	goto exit;
@@ -407,8 +408,8 @@ static rpmRC parseForDev(char * buf, FileList fl)
     for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
-	fl->devmajor = atoi(p);
-	if (!(fl->devmajor >= 0 && fl->devmajor < 256)) {
+	fl->cur.devmajor = atoi(p);
+	if (!(fl->cur.devmajor >= 0 && fl->cur.devmajor < 256)) {
 	    errstr = "devmajor";
 	    goto exit;
 	}
@@ -423,8 +424,8 @@ static rpmRC parseForDev(char * buf, FileList fl)
     for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
-	fl->devminor = atoi(p);
-	if (!(fl->devminor >= 0 && fl->devminor < 256)) {
+	fl->cur.devminor = atoi(p);
+	if (!(fl->cur.devminor >= 0 && fl->cur.devminor < 256)) {
 	    errstr = "devminor";
 	    goto exit;
 	}
@@ -859,7 +860,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		continue;
 	    if (!vfa->flag) {
 		if (rstreq(s, "%dir"))
-		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
+		    fl->cur.isDir = 1;	/* XXX why not RPMFILE_DIR? */
 	    } else {
 		if (vfa->neg)
 		    fl->cur.attrFlags &= ~vfa->flag;
@@ -1365,13 +1366,13 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	time_t now = time(NULL);
 	statp = &statbuf;
 	memset(statp, 0, sizeof(*statp));
-	if (fl->devtype) {
+	if (fl->cur.devtype) {
 	    /* XXX hack up a stat structure for a %dev(...) directive. */
 	    statp->st_nlink = 1;
 	    statp->st_rdev =
-		((fl->devmajor & 0xff) << 8) | (fl->devminor & 0xff);
+		((fl->cur.devmajor & 0xff) << 8) | (fl->cur.devminor & 0xff);
 	    statp->st_dev = statp->st_rdev;
-	    statp->st_mode = (fl->devtype == 'b' ? S_IFBLK : S_IFCHR);
+	    statp->st_mode = (fl->cur.devtype == 'b' ? S_IFBLK : S_IFCHR);
 	    statp->st_mode |= (fl->cur.ar.ar_fmode & 0777);
 	    statp->st_atime = now;
 	    statp->st_mtime = now;
@@ -1392,7 +1393,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		    statp->st_ctime = now;
 		} else {
 		    int lvl = RPMLOG_ERR;
-		    const char *msg = fl->isDir ?
+		    const char *msg = fl->cur.isDir ?
 					    _("Directory not found: %s\n") :
 					    _("File not found: %s\n");
 		    if (fl->cur.attrFlags & RPMFILE_EXCLUDE) {
@@ -1407,7 +1408,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     /* Don't recurse into explicit %dir, don't double-recurse from fts */
-    if ((fl->isDir != 1) && (statp == &statbuf) && S_ISDIR(statp->st_mode)) {
+    if ((fl->cur.isDir != 1) && (statp == &statbuf) && S_ISDIR(statp->st_mode)) {
 	return recurseDir(fl, diskPath);
     }
 
@@ -1651,8 +1652,8 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     int trailing_slash = (fnlen > 0 && fileName[fnlen-1] == '/');
 
     /* XXX differentiate other directories from explicit %dir */
-    if (trailing_slash && !fl->isDir)
-	fl->isDir = -1;
+    if (trailing_slash && !fl->cur.isDir)
+	fl->cur.isDir = -1;
     
     doGlob = glob_pattern_p(fileName, quote);
 
@@ -1673,7 +1674,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
      */
     diskPath = rpmGenPath(fl->buildRoot, NULL, fileName);
     /* Arrange trailing slash on directories */
-    if (fl->isDir)
+    if (fl->cur.isDir)
 	diskPath = rstrcat(&diskPath, "/");
 
     if (doGlob) {
@@ -1681,7 +1682,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	int argc = 0;
 	int i;
 
-	if (fl->devtype) {
+	if (fl->cur.devtype) {
 	    rpmlog(RPMLOG_ERR, _("%%dev glob not permitted: %s\n"), diskPath);
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -1694,7 +1695,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    argvFree(argv);
 	} else {
 	    int lvl = RPMLOG_WARNING;
-	    const char *msg = (fl->isDir) ?
+	    const char *msg = (fl->cur.isDir) ?
 				_("Directory not found by glob: %s\n") :
 				_("File not found by glob: %s\n");
 	    if (!(fl->cur.attrFlags & RPMFILE_EXCLUDE)) {
@@ -1782,13 +1783,13 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     fl.processingFailed = 0;
 
-    fl.isDir = 0;
+    fl.cur.isDir = 0;
     fl.cur.attrFlags = 0;
     fl.cur.verifyFlags = 0;
     
-    fl.devtype = 0;
-    fl.devmajor = 0;
-    fl.devminor = 0;
+    fl.cur.devtype = 0;
+    fl.cur.devmajor = 0;
+    fl.cur.devminor = 0;
 
     nullAttrRec(&fl.cur.ar);
     nullAttrRec(&fl.def.ar);
@@ -1825,15 +1826,15 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	rstrlcpy(buf, s, sizeof(buf));
 	
 	/* Reset for a new line in %files */
-	fl.isDir = 0;
+	fl.cur.isDir = 0;
 	fl.cur.attrFlags = 0;
 	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
 	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
 	fl.cur.verifyFlags = fl.def.verifyFlags;
 
- 	fl.devtype = 0;
- 	fl.devmajor = 0;
- 	fl.devminor = 0;
+ 	fl.cur.devtype = 0;
+ 	fl.cur.devmajor = 0;
+ 	fl.cur.devminor = 0;
 
 	/* XXX should reset to %deflang value */
 	fl.cur.langs = argvFree(fl.cur.langs);
@@ -1884,13 +1885,13 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	}
 
 	/* Reset for %doc */
-	fl.isDir = 0;
+	fl.cur.isDir = 0;
 	fl.cur.attrFlags = 0;
 	fl.cur.verifyFlags = fl.def.verifyFlags;
 
- 	fl.devtype = 0;
- 	fl.devmajor = 0;
- 	fl.devminor = 0;
+ 	fl.cur.devtype = 0;
+ 	fl.cur.devmajor = 0;
+ 	fl.cur.devminor = 0;
 
 	/* XXX should reset to %deflang value */
 	fl.cur.langs = argvFree(fl.cur.langs);
