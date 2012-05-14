@@ -188,6 +188,14 @@ static void dumpAttrRec(const char * msg, AttrRec ar)
 }
 #endif
 
+static void FileEntryFree(FileEntry entry)
+{
+    freeAttrRec(&(entry->ar));
+    argvFree(entry->langs);
+    free(entry->caps);
+    memset(entry, 0, sizeof(*entry));
+}
+
 /**
  * strtokWithQuotes.
  * @param s
@@ -1801,21 +1809,11 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	rstrlcpy(buf, s, sizeof(buf));
 	
 	/* Reset for a new line in %files */
-	fl.cur.isDir = 0;
-	fl.cur.attrFlags = 0;
+	FileEntryFree(&fl.cur);
+
 	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
 	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
 	fl.cur.verifyFlags = fl.def.verifyFlags;
-
- 	fl.cur.devtype = 0;
- 	fl.cur.devmajor = 0;
- 	fl.cur.devminor = 0;
-
-	/* XXX should reset to %deflang value */
-	fl.cur.langs = argvFree(fl.cur.langs);
-	fl.cur.caps = NULL;
-
-	freeAttrRec(&fl.cur.ar);
 
 	if (parseForVerify(buf, &fl))
 	    continue;
@@ -1860,16 +1858,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	}
 
 	/* Reset for %doc */
-	fl.cur.isDir = 0;
-	fl.cur.attrFlags = 0;
+	FileEntryFree(&fl.cur);
+
 	fl.cur.verifyFlags = fl.def.verifyFlags;
-
- 	fl.cur.devtype = 0;
- 	fl.cur.devmajor = 0;
- 	fl.cur.devminor = 0;
-
-	/* XXX should reset to %deflang value */
-	fl.cur.langs = argvFree(fl.cur.langs);
 
 	dupAttrRec(specialDocAttrRec, &fl.cur.ar);
 	dupAttrRec(def_specialDocAttrRec, &fl.def.ar);
@@ -1896,11 +1887,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 exit:
     fl.buildRoot = _free(fl.buildRoot);
 
-    freeAttrRec(&fl.cur.ar);
-    freeAttrRec(&fl.def.ar);
+    FileEntryFree(&fl.cur);
+    FileEntryFree(&fl.def);
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
-    argvFree(fl.cur.langs);
     argvFree(fl.docDirs);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
