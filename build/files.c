@@ -95,6 +95,12 @@ static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
 /* list of files */
 static StringBuf check_fileList = NULL;
 
+typedef struct FileEntry_s {
+    rpmfileAttrs attrFlags;
+    specfFlags specdFlags;
+    rpmVerifyFlags verifyFlags;
+} * FileEntry;
+
 /**
  * Package file tree walk data.
  */
@@ -112,20 +118,18 @@ typedef struct FileList_s {
     int fileListRecsUsed;
 
     /* active defaults */
+    struct FileEntry_s def;
     struct AttrRec_s def_ar;
-    specfFlags defSpecdFlags;
-    rpmVerifyFlags defVerifyFlags;
 
     /* current file-entry state */
+    struct FileEntry_s cur;
+    struct AttrRec_s cur_ar;
+
     unsigned devtype;
     unsigned devmajor;
     int devminor;
     int isDir;
 
-    rpmfileAttrs currentFlags;
-    specfFlags currentSpecdFlags;
-    rpmVerifyFlags currentVerifyFlags;
-    struct AttrRec_s cur_ar;
     ARGV_t currentLangs;
     char *currentCaps;
 } * FileList;
@@ -268,11 +272,11 @@ static rpmRC parseForVerify(char * buf, FileList fl)
     rpmRC rc = RPMRC_FAIL;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {
-	resultVerify = &(fl->currentVerifyFlags);
-	specdFlags = &fl->currentSpecdFlags;
+	resultVerify = &(fl->cur.verifyFlags);
+	specdFlags = &fl->cur.specdFlags;
     } else if ((p = strstr(buf, (name = "%defverify"))) != NULL) {
-	resultVerify = &(fl->defVerifyFlags);
-	specdFlags = &fl->defSpecdFlags;
+	resultVerify = &(fl->def.verifyFlags);
+	specdFlags = &fl->def.specdFlags;
     } else
 	return RPMRC_OK;
 
@@ -459,10 +463,10 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
 	ret_ar = &(fl->cur_ar);
-	specdFlags = &fl->currentSpecdFlags;
+	specdFlags = &fl->cur.specdFlags;
     } else if ((p = strstr(buf, (name = "%defattr"))) != NULL) {
 	ret_ar = &(fl->def_ar);
-	specdFlags = &fl->defSpecdFlags;
+	specdFlags = &fl->def.specdFlags;
     } else
 	return RPMRC_OK;
 
@@ -590,7 +594,7 @@ static rpmRC parseForConfig(char * buf, FileList fl)
     if ((p = strstr(buf, (name = "%config"))) == NULL)
 	return RPMRC_OK;
 
-    fl->currentFlags |= RPMFILE_CONFIG;
+    fl->cur.attrFlags |= RPMFILE_CONFIG;
 
     /* Erase "%config" token. */
     for (pe = p; (pe-p) < strlen(name); pe++)
@@ -624,9 +628,9 @@ static rpmRC parseForConfig(char * buf, FileList fl)
 	if (*pe != '\0')
 	    *pe++ = '\0';
 	if (rstreq(p, "missingok")) {
-	    fl->currentFlags |= RPMFILE_MISSINGOK;
+	    fl->cur.attrFlags |= RPMFILE_MISSINGOK;
 	} else if (rstreq(p, "noreplace")) {
-	    fl->currentFlags |= RPMFILE_NOREPLACE;
+	    fl->cur.attrFlags |= RPMFILE_NOREPLACE;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
 	    goto exit;
@@ -859,9 +863,9 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 		    fl->isDir = 1;	/* XXX why not RPMFILE_DIR? */
 	    } else {
 		if (vfa->neg)
-		    fl->currentFlags &= ~vfa->flag;
+		    fl->cur.attrFlags &= ~vfa->flag;
 		else
-		    fl->currentFlags |= vfa->flag;
+		    fl->cur.attrFlags |= vfa->flag;
 	    }
 	    break;
 	}
@@ -876,10 +880,10 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	}
 
 	if (*s != '/') {
-	    if (fl->currentFlags & RPMFILE_DOC) {
+	    if (fl->cur.attrFlags & RPMFILE_DOC) {
 		rstrscat(&specialDocBuf, " ", s, NULL);
 	    } else
-	    if (fl->currentFlags & RPMFILE_PUBKEY)
+	    if (fl->cur.attrFlags & RPMFILE_PUBKEY)
 	    {
 		*fileName = s;
 	    } else {
@@ -893,7 +897,7 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
     }
 
     if (specialDocBuf) {
-	if (*fileName || (fl->currentFlags & ~(RPMFILE_DOC))) {
+	if (*fileName || (fl->cur.attrFlags & ~(RPMFILE_DOC))) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Can't mix special %%doc with other forms: %s\n"),
 		     (*fileName ? *fileName : ""));
@@ -1374,7 +1378,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
 	} else {
-	    int is_ghost = fl->currentFlags & RPMFILE_GHOST;
+	    int is_ghost = fl->cur.attrFlags & RPMFILE_GHOST;
 	
 	    if (lstat(diskPath, statp)) {
 		if (is_ghost) {	/* the file is %ghost missing from build root, assume regular file */
@@ -1392,7 +1396,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		    const char *msg = fl->isDir ?
 					    _("Directory not found: %s\n") :
 					    _("File not found: %s\n");
-		    if (fl->currentFlags & RPMFILE_EXCLUDE) {
+		    if (fl->cur.attrFlags & RPMFILE_EXCLUDE) {
 			lvl = RPMLOG_WARNING;
 			rc = RPMRC_OK;
 		    }
@@ -1486,9 +1490,9 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    flp->caps = xstrdup("");
 	}
 
-	flp->flags = fl->currentFlags;
-	flp->specdFlags = fl->currentSpecdFlags;
-	flp->verifyFlags = fl->currentVerifyFlags;
+	flp->flags = fl->cur.attrFlags;
+	flp->specdFlags = fl->cur.specdFlags;
+	flp->verifyFlags = fl->cur.verifyFlags;
 
 	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode)) {
 	    /*
@@ -1694,7 +1698,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
 	    const char *msg = (fl->isDir) ?
 				_("Directory not found by glob: %s\n") :
 				_("File not found by glob: %s\n");
-	    if (!(fl->currentFlags & RPMFILE_EXCLUDE)) {
+	    if (!(fl->cur.attrFlags & RPMFILE_EXCLUDE)) {
 		lvl = RPMLOG_ERR;
 		rc = RPMRC_FAIL;
 	    }
@@ -1780,8 +1784,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.processingFailed = 0;
 
     fl.isDir = 0;
-    fl.currentFlags = 0;
-    fl.currentVerifyFlags = 0;
+    fl.cur.attrFlags = 0;
+    fl.cur.verifyFlags = 0;
     
     fl.devtype = 0;
     fl.devmajor = 0;
@@ -1791,13 +1795,13 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     nullAttrRec(&fl.def_ar);
     dupAttrRec(&root_ar, &fl.def_ar);	/* XXX assume %defattr(-,root,root) */
 
-    fl.defVerifyFlags = RPMVERIFY_ALL;
+    fl.def.verifyFlags = RPMVERIFY_ALL;
     fl.currentLangs = NULL;
     fl.haveCaps = 0;
     fl.currentCaps = NULL;
 
-    fl.currentSpecdFlags = 0;
-    fl.defSpecdFlags = 0;
+    fl.cur.specdFlags = 0;
+    fl.def.specdFlags = 0;
 
     fl.largeFiles = 0;
     fl.pkgFlags = pkgFlags;
@@ -1823,10 +1827,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	
 	/* Reset for a new line in %files */
 	fl.isDir = 0;
-	fl.currentFlags = 0;
+	fl.cur.attrFlags = 0;
 	/* turn explicit flags into %def'd ones (gosh this is hacky...) */
-	fl.currentSpecdFlags = ((unsigned)fl.defSpecdFlags) >> 8;
-	fl.currentVerifyFlags = fl.defVerifyFlags;
+	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
+	fl.cur.verifyFlags = fl.def.verifyFlags;
 
  	fl.devtype = 0;
  	fl.devmajor = 0;
@@ -1860,7 +1864,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    specialDoc = xstrdup(fileName);
 	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
 	    dupAttrRec(&fl.def_ar, def_specialDocAttrRec);
-	} else if (fl.currentFlags & RPMFILE_PUBKEY) {
+	} else if (fl.cur.attrFlags & RPMFILE_PUBKEY) {
 	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_PUBKEYS);
 	} else {
 	    (void) processBinaryFile(pkg, &fl, fileName);
@@ -1882,8 +1886,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	/* Reset for %doc */
 	fl.isDir = 0;
-	fl.currentFlags = 0;
-	fl.currentVerifyFlags = fl.defVerifyFlags;
+	fl.cur.attrFlags = 0;
+	fl.cur.verifyFlags = fl.def.verifyFlags;
 
  	fl.devtype = 0;
  	fl.devmajor = 0;
