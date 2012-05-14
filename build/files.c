@@ -447,25 +447,24 @@ exit:
 /**
  * Parse %attr and %defattr from file manifest.
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
+ * @param def		default file entry data
  * @return		0 on success
  */
-static rpmRC parseForAttr(char * buf, FileList fl)
+static rpmRC parseForAttr(char * buf, FileEntry cur, FileEntry def)
 {
     const char *name;
     char *p, *pe, *q = NULL;
     int x;
     struct AttrRec_s arbuf;
-    AttrRec ar = &arbuf, ret_ar;
-    specfFlags * specdFlags;
+    AttrRec ar = &arbuf;
     rpmRC rc = RPMRC_FAIL;
+    FileEntry entry = NULL;
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
-	ret_ar = &(fl->cur.ar);
-	specdFlags = &fl->cur.specdFlags;
+	entry = cur;
     } else if ((p = strstr(buf, (name = "%defattr"))) != NULL) {
-	ret_ar = &(fl->def.ar);
-	specdFlags = &fl->def.specdFlags;
+	entry = def;
     } else
 	return RPMRC_OK;
 
@@ -484,7 +483,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
     for (p = pe; *pe && *pe != ')'; pe++)
 	{};
 
-    if (ret_ar == &(fl->def.ar)) {	/* %defattr */
+    if (entry == def) {	/* %defattr */
 	char *r = pe;
 	r++;
 	SKIPSPACE(r);
@@ -519,7 +518,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 	ar->ar_group = p;
 	p = pe; SKIPWHITE(p);
     }
-    if (*p != '\0' && ret_ar == &(fl->def.ar)) {	/* %defattr */
+    if (*p != '\0' && entry == def) {	/* %defattr */
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_dmodestr = p;
 	p = pe; SKIPWHITE(p);
@@ -563,10 +562,10 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 	ar->ar_group = NULL;
     }
 
-    dupAttrRec(ar, ret_ar);
+    dupAttrRec(ar, &(entry->ar));
 
     /* XXX fix all this */
-    *specdFlags |= SPECD_UID | SPECD_GID | SPECD_FILEMODE | SPECD_DIRMODE;
+    entry->specdFlags |= SPECD_UID | SPECD_GID | SPECD_FILEMODE | SPECD_DIRMODE;
     rc = RPMRC_OK;
 
 exit:
@@ -1791,7 +1790,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.cur.verifyFlags = fl.def.verifyFlags;
 
 	if (parseForVerify(buf, &fl.cur, &fl.def) ||
-	    parseForAttr(buf, &fl) ||
+	    parseForAttr(buf, &fl.cur, &fl.def) ||
 	    parseForDev(buf, &fl) ||
 	    parseForConfig(buf, &fl) ||
 	    parseForLang(buf, &fl) ||
@@ -1921,7 +1920,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr) {
 	char *a = rstrscat(NULL, "%defattr ", _srcdefattr, NULL);
-	parseForAttr(a, &fl);
+	parseForAttr(a, NULL, &fl.def);
 	free(a);
     }
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
