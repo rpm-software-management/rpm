@@ -1781,41 +1781,16 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
 
-    fl.processingFailed = 0;
-
-    fl.cur.isDir = 0;
-    fl.cur.attrFlags = 0;
-    fl.cur.verifyFlags = 0;
-    
-    fl.cur.devtype = 0;
-    fl.cur.devmajor = 0;
-    fl.cur.devminor = 0;
-
-    nullAttrRec(&fl.cur.ar);
-    nullAttrRec(&fl.def.ar);
     dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
-
     fl.def.verifyFlags = RPMVERIFY_ALL;
-    fl.cur.langs = NULL;
-    fl.haveCaps = 0;
-    fl.cur.caps = NULL;
 
-    fl.cur.specdFlags = 0;
-    fl.def.specdFlags = 0;
-
-    fl.largeFiles = 0;
     fl.pkgFlags = pkgFlags;
 
-    fl.docDirs = NULL;
     {	char *docs = rpmGetPath("%{?__docdir_path}", NULL);
 	argvSplit(&fl.docDirs, docs, ":");
 	free(docs);
     }
     
-    fl.fileList = NULL;
-    fl.fileListRecsAlloced = 0;
-    fl.fileListRecsUsed = 0;
-
     for (ARGV_const_t fp = pkg->fileList; *fp != NULL; fp++) {
 	char buf[strlen(*fp) + 1];
 	const char *s = *fp;
@@ -1987,10 +1962,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	free(a);
     }
     fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
-    fl.processingFailed = 0;
-    fl.fileListRecsUsed = 0;
     fl.pkgFlags = pkgFlags;
-    fl.buildRoot = NULL;
 
     /* The first source file is the spec file */
     x = 0;
