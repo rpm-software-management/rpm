@@ -577,10 +577,10 @@ exit:
 /**
  * Parse %config from file manifest.
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForConfig(char * buf, FileList fl)
+static rpmRC parseForConfig(char * buf, FileEntry cur)
 {
     char *p, *pe, *q = NULL;
     const char *name;
@@ -589,7 +589,7 @@ static rpmRC parseForConfig(char * buf, FileList fl)
     if ((p = strstr(buf, (name = "%config"))) == NULL)
 	return RPMRC_OK;
 
-    fl->cur.attrFlags |= RPMFILE_CONFIG;
+    cur->attrFlags |= RPMFILE_CONFIG;
 
     /* Erase "%config" token. */
     for (pe = p; (pe-p) < strlen(name); pe++)
@@ -623,9 +623,9 @@ static rpmRC parseForConfig(char * buf, FileList fl)
 	if (*pe != '\0')
 	    *pe++ = '\0';
 	if (rstreq(p, "missingok")) {
-	    fl->cur.attrFlags |= RPMFILE_MISSINGOK;
+	    cur->attrFlags |= RPMFILE_MISSINGOK;
 	} else if (rstreq(p, "noreplace")) {
-	    fl->cur.attrFlags |= RPMFILE_NOREPLACE;
+	    cur->attrFlags |= RPMFILE_NOREPLACE;
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
 	    goto exit;
@@ -1792,7 +1792,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	if (parseForVerify(buf, &fl.cur, &fl.def) ||
 	    parseForAttr(buf, &fl.cur, &fl.def) ||
 	    parseForDev(buf, &fl.cur) ||
-	    parseForConfig(buf, &fl) ||
+	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl) ||
 	    parseForCaps(buf, &fl) ||
 	    parseForSimple(spec, pkg, buf, &fl, &fileName))
