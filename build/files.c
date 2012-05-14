@@ -730,10 +730,10 @@ exit:
 /**
  * Parse %caps from file manifest.
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForCaps(char * buf, FileList fl)
+static rpmRC parseForCaps(char * buf, FileEntry cur)
 {
     char *p, *pe, *q = NULL;
     const char *name;
@@ -775,8 +775,7 @@ static rpmRC parseForCaps(char * buf, FileList fl)
 	}
 	/* run our string through cap_to_text() to get libcap presentation */
 	captxt = cap_to_text(fcaps, NULL);
-	fl->cur.caps = xstrdup(captxt);
-	fl->haveCaps = 1;
+	cur->caps = xstrdup(captxt);
 	cap_free(captxt);
 	cap_free(fcaps);
     }
@@ -1794,7 +1793,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    parseForDev(buf, &fl.cur) ||
 	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl.cur) ||
-	    parseForCaps(buf, &fl) ||
+	    parseForCaps(buf, &fl.cur) ||
 	    parseForSimple(spec, pkg, buf, &fl, &fileName))
 	{
 	    fl.processingFailed = 1;
@@ -1803,6 +1802,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	if (fileName == NULL)
 	    continue;
+
+	if (fl.cur.caps)
+	    fl.haveCaps = 1;
 
 	if (pkg->specialDoc && specialDoc == NULL) {
 	    /* Save this stuff for last */
