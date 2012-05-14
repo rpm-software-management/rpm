@@ -266,25 +266,23 @@ static VFA_t const verifyAttrs[] = {
 /**
  * Parse %verify and %defverify from file manifest.
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
+ * @param def		default file entry data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForVerify(char * buf, FileList fl)
+static rpmRC parseForVerify(char * buf, FileEntry cur, FileEntry def)
 {
     char *p, *pe, *q = NULL;
     const char *name;
-    rpmVerifyFlags *resultVerify;
-    int negated;
-    rpmVerifyFlags verifyFlags;
-    specfFlags * specdFlags;
+    int negated = 0;
+    rpmVerifyFlags verifyFlags = RPMVERIFY_NONE;
     rpmRC rc = RPMRC_FAIL;
+    FileEntry entry = NULL;
 
     if ((p = strstr(buf, (name = "%verify"))) != NULL) {
-	resultVerify = &(fl->cur.verifyFlags);
-	specdFlags = &fl->cur.specdFlags;
+	entry = cur;
     } else if ((p = strstr(buf, (name = "%defverify"))) != NULL) {
-	resultVerify = &(fl->def.verifyFlags);
-	specdFlags = &fl->def.specdFlags;
+	entry = def;
     } else
 	return RPMRC_OK;
 
@@ -314,9 +312,6 @@ static rpmRC parseForVerify(char * buf, FileList fl)
     while (p <= pe)
 	*p++ = ' ';
 
-    negated = 0;
-    verifyFlags = RPMVERIFY_NONE;
-
     for (p = q; *p != '\0'; p = pe) {
 	SKIPWHITE(p);
 	if (*p == '\0')
@@ -345,8 +340,8 @@ static rpmRC parseForVerify(char * buf, FileList fl)
 	}
     }
 
-    *resultVerify = negated ? ~(verifyFlags) : verifyFlags;
-    *specdFlags |= SPECD_VERIFY;
+    entry->verifyFlags = negated ? ~(verifyFlags) : verifyFlags;
+    entry->specdFlags |= SPECD_VERIFY;
     rc = RPMRC_OK;
 
 exit:
@@ -1795,7 +1790,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
 	fl.cur.verifyFlags = fl.def.verifyFlags;
 
-	if (parseForVerify(buf, &fl) ||
+	if (parseForVerify(buf, &fl.cur, &fl.def) ||
 	    parseForAttr(buf, &fl) ||
 	    parseForDev(buf, &fl) ||
 	    parseForConfig(buf, &fl) ||
