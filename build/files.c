@@ -99,6 +99,7 @@ typedef struct FileEntry_s {
     rpmfileAttrs attrFlags;
     specfFlags specdFlags;
     rpmVerifyFlags verifyFlags;
+    struct AttrRec_s ar;
 } * FileEntry;
 
 /**
@@ -119,11 +120,9 @@ typedef struct FileList_s {
 
     /* active defaults */
     struct FileEntry_s def;
-    struct AttrRec_s def_ar;
 
     /* current file-entry state */
     struct FileEntry_s cur;
-    struct AttrRec_s cur_ar;
 
     unsigned devtype;
     unsigned devmajor;
@@ -462,10 +461,10 @@ static rpmRC parseForAttr(char * buf, FileList fl)
     rpmRC rc = RPMRC_FAIL;
 
     if ((p = strstr(buf, (name = "%attr"))) != NULL) {
-	ret_ar = &(fl->cur_ar);
+	ret_ar = &(fl->cur.ar);
 	specdFlags = &fl->cur.specdFlags;
     } else if ((p = strstr(buf, (name = "%defattr"))) != NULL) {
-	ret_ar = &(fl->def_ar);
+	ret_ar = &(fl->def.ar);
 	specdFlags = &fl->def.specdFlags;
     } else
 	return RPMRC_OK;
@@ -485,7 +484,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
     for (p = pe; *pe && *pe != ')'; pe++)
 	{};
 
-    if (ret_ar == &(fl->def_ar)) {	/* %defattr */
+    if (ret_ar == &(fl->def.ar)) {	/* %defattr */
 	char *r = pe;
 	r++;
 	SKIPSPACE(r);
@@ -520,7 +519,7 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 	ar->ar_group = p;
 	p = pe; SKIPWHITE(p);
     }
-    if (*p != '\0' && ret_ar == &(fl->def_ar)) {	/* %defattr */
+    if (*p != '\0' && ret_ar == &(fl->def.ar)) {	/* %defattr */
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_dmodestr = p;
 	p = pe; SKIPWHITE(p);
@@ -1373,7 +1372,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		((fl->devmajor & 0xff) << 8) | (fl->devminor & 0xff);
 	    statp->st_dev = statp->st_rdev;
 	    statp->st_mode = (fl->devtype == 'b' ? S_IFBLK : S_IFCHR);
-	    statp->st_mode |= (fl->cur_ar.ar_fmode & 0777);
+	    statp->st_mode |= (fl->cur.ar.ar_fmode & 0777);
 	    statp->st_atime = now;
 	    statp->st_mtime = now;
 	    statp->st_ctime = now;
@@ -1382,8 +1381,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	
 	    if (lstat(diskPath, statp)) {
 		if (is_ghost) {	/* the file is %ghost missing from build root, assume regular file */
-		    if (fl->cur_ar.ar_fmodestr != NULL) {
-			statp->st_mode = S_IFREG | (fl->cur_ar.ar_fmode & 0777);
+		    if (fl->cur.ar.ar_fmodestr != NULL) {
+			statp->st_mode = S_IFREG | (fl->cur.ar.ar_fmode & 0777);
 		    } else {
 			rpmlog(RPMLOG_ERR, _("Explicit file attributes required in spec for: %s\n"), diskPath);
 			goto exit;
@@ -1417,32 +1416,32 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     fileGid = statp->st_gid;
 
     /* Explicit %attr() always wins */
-    if (fl->cur_ar.ar_fmodestr != NULL) {
+    if (fl->cur.ar.ar_fmodestr != NULL) {
 	fileMode &= S_IFMT;
-	fileMode |= fl->cur_ar.ar_fmode;
+	fileMode |= fl->cur.ar.ar_fmode;
     } else {
 	/* ...but %defattr() for directories and files is different */
 	if (S_ISDIR(fileMode)) {
-	    if (fl->def_ar.ar_dmodestr) {
+	    if (fl->def.ar.ar_dmodestr) {
 		fileMode &= S_IFMT;
-		fileMode |= fl->def_ar.ar_dmode;
+		fileMode |= fl->def.ar.ar_dmode;
 	    }
-	} else if (fl->def_ar.ar_fmodestr) {
+	} else if (fl->def.ar.ar_fmodestr) {
 	    fileMode &= S_IFMT;
-	    fileMode |= fl->def_ar.ar_fmode;
+	    fileMode |= fl->def.ar.ar_fmode;
 	}
     }
-    if (fl->cur_ar.ar_user) {
-	fileUname = fl->cur_ar.ar_user;
-    } else if (fl->def_ar.ar_user) {
-	fileUname = fl->def_ar.ar_user;
+    if (fl->cur.ar.ar_user) {
+	fileUname = fl->cur.ar.ar_user;
+    } else if (fl->def.ar.ar_user) {
+	fileUname = fl->def.ar.ar_user;
     } else {
 	fileUname = rpmugUname(fileUid);
     }
-    if (fl->cur_ar.ar_group) {
-	fileGname = fl->cur_ar.ar_group;
-    } else if (fl->def_ar.ar_group) {
-	fileGname = fl->def_ar.ar_group;
+    if (fl->cur.ar.ar_group) {
+	fileGname = fl->cur.ar.ar_group;
+    } else if (fl->def.ar.ar_group) {
+	fileGname = fl->def.ar.ar_group;
     } else {
 	fileGname = rpmugGname(fileGid);
     }
@@ -1791,9 +1790,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.devmajor = 0;
     fl.devminor = 0;
 
-    nullAttrRec(&fl.cur_ar);
-    nullAttrRec(&fl.def_ar);
-    dupAttrRec(&root_ar, &fl.def_ar);	/* XXX assume %defattr(-,root,root) */
+    nullAttrRec(&fl.cur.ar);
+    nullAttrRec(&fl.def.ar);
+    dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
 
     fl.def.verifyFlags = RPMVERIFY_ALL;
     fl.currentLangs = NULL;
@@ -1840,7 +1839,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.currentLangs = argvFree(fl.currentLangs);
 	fl.currentCaps = NULL;
 
-	freeAttrRec(&fl.cur_ar);
+	freeAttrRec(&fl.cur.ar);
 
 	if (parseForVerify(buf, &fl))
 	    continue;
@@ -1862,8 +1861,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	if (pkg->specialDoc && specialDoc == NULL) {
 	    /* Save this stuff for last */
 	    specialDoc = xstrdup(fileName);
-	    dupAttrRec(&fl.cur_ar, specialDocAttrRec);
-	    dupAttrRec(&fl.def_ar, def_specialDocAttrRec);
+	    dupAttrRec(&fl.cur.ar, specialDocAttrRec);
+	    dupAttrRec(&fl.def.ar, def_specialDocAttrRec);
 	} else if (fl.cur.attrFlags & RPMFILE_PUBKEY) {
 	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_PUBKEYS);
 	} else {
@@ -1896,8 +1895,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	/* XXX should reset to %deflang value */
 	fl.currentLangs = argvFree(fl.currentLangs);
 
-	dupAttrRec(specialDocAttrRec, &fl.cur_ar);
-	dupAttrRec(def_specialDocAttrRec, &fl.def_ar);
+	dupAttrRec(specialDocAttrRec, &fl.cur.ar);
+	dupAttrRec(def_specialDocAttrRec, &fl.def.ar);
 	freeAttrRec(specialDocAttrRec);
 	freeAttrRec(def_specialDocAttrRec);
 
@@ -1921,8 +1920,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 exit:
     fl.buildRoot = _free(fl.buildRoot);
 
-    freeAttrRec(&fl.cur_ar);
-    freeAttrRec(&fl.def_ar);
+    freeAttrRec(&fl.cur.ar);
+    freeAttrRec(&fl.def.ar);
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     argvFree(fl.currentLangs);
@@ -2024,17 +2023,17 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    fl.processingFailed = 1;
 	}
 
-	if (fl.def_ar.ar_fmodestr) {
+	if (fl.def.ar.ar_fmodestr) {
 	    flp->fl_mode &= S_IFMT;
-	    flp->fl_mode |= fl.def_ar.ar_fmode;
+	    flp->fl_mode |= fl.def.ar.ar_fmode;
 	}
-	if (fl.def_ar.ar_user) {
-	    flp->uname = rpmugStashStr(fl.def_ar.ar_user);
+	if (fl.def.ar.ar_user) {
+	    flp->uname = rpmugStashStr(fl.def.ar.ar_user);
 	} else {
 	    flp->uname = rpmugStashStr(rpmugUname(flp->fl_uid));
 	}
-	if (fl.def_ar.ar_group) {
-	    flp->gname = rpmugStashStr(fl.def_ar.ar_group);
+	if (fl.def.ar.ar_group) {
+	    flp->gname = rpmugStashStr(fl.def.ar.ar_group);
 	} else {
 	    flp->gname = rpmugStashStr(rpmugGname(flp->fl_gid));
 	}
@@ -2062,7 +2061,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     }
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
-    freeAttrRec(&fl.def_ar);
+    freeAttrRec(&fl.def.ar);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
