@@ -355,10 +355,10 @@ exit:
 /**
  * Parse %dev from file manifest.
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForDev(char * buf, FileList fl)
+static rpmRC parseForDev(char * buf, FileEntry cur)
 {
     const char * name;
     const char * errstr = NULL;
@@ -395,9 +395,9 @@ static rpmRC parseForDev(char * buf, FileList fl)
     p = q; SKIPWHITE(p);
     pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
     if (*p == 'b')
-	fl->cur.devtype = 'b';
+	cur->devtype = 'b';
     else if (*p == 'c')
-	fl->cur.devtype = 'c';
+	cur->devtype = 'c';
     else {
 	errstr = "devtype";
 	goto exit;
@@ -408,8 +408,8 @@ static rpmRC parseForDev(char * buf, FileList fl)
     for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
-	fl->cur.devmajor = atoi(p);
-	if (!(fl->cur.devmajor >= 0 && fl->cur.devmajor < 256)) {
+	cur->devmajor = atoi(p);
+	if (!(cur->devmajor >= 0 && cur->devmajor < 256)) {
 	    errstr = "devmajor";
 	    goto exit;
 	}
@@ -424,8 +424,8 @@ static rpmRC parseForDev(char * buf, FileList fl)
     for (pe = p; *pe && risdigit(*pe); pe++)
 	{} ;
     if (*pe == '\0') {
-	fl->cur.devminor = atoi(p);
-	if (!(fl->cur.devminor >= 0 && fl->cur.devminor < 256)) {
+	cur->devminor = atoi(p);
+	if (!(cur->devminor >= 0 && cur->devminor < 256)) {
 	    errstr = "devminor";
 	    goto exit;
 	}
@@ -1791,7 +1791,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	if (parseForVerify(buf, &fl.cur, &fl.def) ||
 	    parseForAttr(buf, &fl.cur, &fl.def) ||
-	    parseForDev(buf, &fl) ||
+	    parseForDev(buf, &fl.cur) ||
 	    parseForConfig(buf, &fl) ||
 	    parseForLang(buf, &fl) ||
 	    parseForCaps(buf, &fl) ||
