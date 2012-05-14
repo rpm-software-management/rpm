@@ -351,9 +351,6 @@ static rpmRC parseForVerify(char * buf, FileList fl)
 
 exit:
     free(q);
-    if (rc != RPMRC_OK) {
-	fl->processingFailed = 1;
-    }
 
     return rc;
 }
@@ -447,7 +444,6 @@ static rpmRC parseForDev(char * buf, FileList fl)
 exit:
     if (rc) {
 	rpmlog(RPMLOG_ERR, _("Missing %s in %s %s\n"), errstr, name, p);
-	fl->processingFailed = 1;
     }
     free(q);
     return rc;
@@ -580,9 +576,6 @@ static rpmRC parseForAttr(char * buf, FileList fl)
 
 exit:
     free(q);
-    if (rc != RPMRC_OK) {
-	fl->processingFailed = 1;
-    }
     
     return rc;
 }
@@ -648,9 +641,6 @@ static rpmRC parseForConfig(char * buf, FileList fl)
     
 exit:
     free(q);
-    if (rc != RPMRC_OK) {
-	fl->processingFailed = 1;
-    }
 
     return rc;
 }
@@ -739,9 +729,6 @@ static rpmRC parseForLang(char * buf, FileList fl)
 
 exit:
     free(q);
-    if (rc != RPMRC_OK) {
-	fl->processingFailed = 1;
-    }
 
     return rc;
 }
@@ -808,9 +795,6 @@ static rpmRC parseForCaps(char * buf, FileList fl)
     
 exit:
     free(q);
-    if (rc != RPMRC_OK) {
-	fl->processingFailed = 1;
-    }
 
     return rc;
 }
@@ -929,10 +913,6 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 	    appendLineStringBuf(pkg->specialDoc, " $DOCDIR");
 	}
 	free(specialDocBuf);
-    }
-
-    if (res != RPMRC_OK) {
-	fl->processingFailed = 1;
     }
 
     return res;
@@ -1815,20 +1795,18 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
 	fl.cur.verifyFlags = fl.def.verifyFlags;
 
-	if (parseForVerify(buf, &fl))
+	if (parseForVerify(buf, &fl) ||
+	    parseForAttr(buf, &fl) ||
+	    parseForDev(buf, &fl) ||
+	    parseForConfig(buf, &fl) ||
+	    parseForLang(buf, &fl) ||
+	    parseForCaps(buf, &fl) ||
+	    parseForSimple(spec, pkg, buf, &fl, &fileName))
+	{
+	    fl.processingFailed = 1;
 	    continue;
-	if (parseForAttr(buf, &fl))
-	    continue;
-	if (parseForDev(buf, &fl))
-	    continue;
-	if (parseForConfig(buf, &fl))
-	    continue;
-	if (parseForLang(buf, &fl))
-	    continue;
-	if (parseForCaps(buf, &fl))
-	    continue;
-	if (parseForSimple(spec, pkg, buf, &fl, &fileName))
-	    continue;
+	}
+
 	if (fileName == NULL)
 	    continue;
 
