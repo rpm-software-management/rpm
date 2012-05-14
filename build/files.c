@@ -99,32 +99,35 @@ static StringBuf check_fileList = NULL;
  * Package file tree walk data.
  */
 typedef struct FileList_s {
+    /* global filelist state */
     char * buildRoot;
-
     int processingFailed;
+    int haveCaps;
+    int largeFiles;
+    ARGV_t docDirs;
+    rpmBuildPkgFlags pkgFlags;
 
+    FileListRec fileList;
+    int fileListRecsAlloced;
+    int fileListRecsUsed;
+
+    /* active defaults */
+    struct AttrRec_s def_ar;
+    specfFlags defSpecdFlags;
+    rpmVerifyFlags defVerifyFlags;
+
+    /* current file-entry state */
     unsigned devtype;
     unsigned devmajor;
     int devminor;
-    
     int isDir;
-    rpmBuildPkgFlags pkgFlags;
+
     rpmfileAttrs currentFlags;
     specfFlags currentSpecdFlags;
     rpmVerifyFlags currentVerifyFlags;
     struct AttrRec_s cur_ar;
-    struct AttrRec_s def_ar;
-    specfFlags defSpecdFlags;
-    rpmVerifyFlags defVerifyFlags;
     ARGV_t currentLangs;
-    int haveCaps;
     char *currentCaps;
-    ARGV_t docDirs;
-    
-    FileListRec fileList;
-    int fileListRecsAlloced;
-    int fileListRecsUsed;
-    int largeFiles;
 } * FileList;
 
 /**
