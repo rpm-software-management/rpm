@@ -100,6 +100,9 @@ typedef struct FileEntry_s {
     specfFlags specdFlags;
     rpmVerifyFlags verifyFlags;
     struct AttrRec_s ar;
+
+    ARGV_t langs;
+    char *caps;
 } * FileEntry;
 
 /**
@@ -128,9 +131,6 @@ typedef struct FileList_s {
     unsigned devmajor;
     int devminor;
     int isDir;
-
-    ARGV_t currentLangs;
-    char *currentCaps;
 } * FileList;
 
 /**
@@ -719,7 +719,7 @@ static rpmRC parseForLang(char * buf, FileList fl)
 	pe = p;
 	SKIPNONWHITE(pe);
 
-	if (addLang(&(fl->currentLangs), p, (pe-p), q))
+	if (addLang(&(fl->cur.langs), p, (pe-p), q))
 	    goto exit;
 
 	if (*pe == ',') pe++;	/* skip , if present */
@@ -785,7 +785,7 @@ static rpmRC parseForCaps(char * buf, FileList fl)
 	}
 	/* run our string through cap_to_text() to get libcap presentation */
 	captxt = cap_to_text(fcaps, NULL);
-	fl->currentCaps = xstrdup(captxt);
+	fl->cur.caps = xstrdup(captxt);
 	fl->haveCaps = 1;
 	cap_free(captxt);
 	cap_free(fcaps);
@@ -1477,14 +1477,14 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->uname = rpmugStashStr(fileUname);
 	flp->gname = rpmugStashStr(fileGname);
 
-	if (fl->currentLangs) {
-	    flp->langs = argvJoin(fl->currentLangs, "|");
+	if (fl->cur.langs) {
+	    flp->langs = argvJoin(fl->cur.langs, "|");
 	} else {
 	    flp->langs = xstrdup("");
 	}
 
-	if (fl->currentCaps) {
-	    flp->caps = fl->currentCaps;
+	if (fl->cur.caps) {
+	    flp->caps = fl->cur.caps;
 	} else {
 	    flp->caps = xstrdup("");
 	}
@@ -1795,9 +1795,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
 
     fl.def.verifyFlags = RPMVERIFY_ALL;
-    fl.currentLangs = NULL;
+    fl.cur.langs = NULL;
     fl.haveCaps = 0;
-    fl.currentCaps = NULL;
+    fl.cur.caps = NULL;
 
     fl.cur.specdFlags = 0;
     fl.def.specdFlags = 0;
@@ -1836,8 +1836,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
  	fl.devminor = 0;
 
 	/* XXX should reset to %deflang value */
-	fl.currentLangs = argvFree(fl.currentLangs);
-	fl.currentCaps = NULL;
+	fl.cur.langs = argvFree(fl.cur.langs);
+	fl.cur.caps = NULL;
 
 	freeAttrRec(&fl.cur.ar);
 
@@ -1893,7 +1893,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
  	fl.devminor = 0;
 
 	/* XXX should reset to %deflang value */
-	fl.currentLangs = argvFree(fl.currentLangs);
+	fl.cur.langs = argvFree(fl.cur.langs);
 
 	dupAttrRec(specialDocAttrRec, &fl.cur.ar);
 	dupAttrRec(def_specialDocAttrRec, &fl.def.ar);
@@ -1924,7 +1924,7 @@ exit:
     freeAttrRec(&fl.def.ar);
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
-    argvFree(fl.currentLangs);
+    argvFree(fl.cur.langs);
     argvFree(fl.docDirs);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
