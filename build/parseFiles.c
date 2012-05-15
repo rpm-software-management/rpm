@@ -26,6 +26,9 @@ int parseFiles(rpmSpec spec)
 	{ 0, 0, 0, 0, 0, NULL, NULL}
     };
 
+    /* XXX unmask %license while parsing %files */
+    addMacro(spec->macros, "license", NULL, "%%license", RMIL_SPEC);
+
     if ((rc = poptParseArgvString(spec->line, &argc, &argv))) {
 	rpmlog(RPMLOG_ERR, _("line %d: Error parsing %%files: %s\n"),
 		 spec->lineNum, poptStrerror(rc));
@@ -92,6 +95,7 @@ int parseFiles(rpmSpec spec)
     res = nextPart;
 
 exit:
+    delMacro(NULL, "license");
     free(argv);
     poptFreeContext(optCon);
 	
