@@ -806,14 +806,13 @@ static VFA_t virtualFileAttributes[] = {
 
 /**
  * Parse simple attributes (e.g. %dir) from file manifest.
- * @param spec
  * @param pkg
  * @param buf		current spec file line
  * @param fl		package file tree walk data
  * @retval *fileName	file name
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
+static rpmRC parseForSimple(Package pkg, char * buf,
 			  FileList fl, const char ** fileName)
 {
     char *s, *t;
@@ -1794,7 +1793,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl.cur) ||
 	    parseForCaps(buf, &fl.cur) ||
-	    parseForSimple(spec, pkg, buf, &fl, &fileName))
+	    parseForSimple(pkg, buf, &fl, &fileName))
 	{
 	    fl.processingFailed = 1;
 	    continue;
