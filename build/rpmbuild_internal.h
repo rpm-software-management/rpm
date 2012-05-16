@@ -101,8 +101,6 @@ struct Package_s {
     char * postTransFile;	/*!< %posttrans scriptlet. */
     char * verifyFile;	/*!< %verifyscript scriptlet. */
 
-    char *specialDocDir;
-
     struct TriggerFileEntry * triggerFiles;
 
     ARGV_t fileFile;

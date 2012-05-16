@@ -1691,6 +1691,30 @@ exit:
     return rc;
 }
 
+static char * getSpecialDocDir(Header h)
+{
+    const char *errstr, *docdir_fmt = "%{NAME}-%{VERSION}";
+    char *fmt_macro, *fmt; 
+    char *res = NULL;
+
+    fmt_macro = rpmExpand("%{?_docdir_fmt}", NULL);
+    if (fmt_macro && strlen(fmt_macro) > 0) {
+	docdir_fmt = fmt_macro;
+    }
+
+    fmt = headerFormat(h, docdir_fmt, &errstr);
+
+    if (fmt) {
+	res = rpmGetPath("%{_docdir}/", fmt, NULL);
+    } else {
+	rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
+    }
+
+    free(fmt);
+    free(fmt_macro);
+    return res;
+}
+
 static rpmRC processSpecialDocs(rpmSpec spec, const char *docDir,
 				ARGV_const_t docs, int install, int test)
 {
@@ -1827,22 +1851,24 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     /* Now process special doc, if there is one */
     if (specialDoc) {
-	if (processSpecialDocs(spec, pkg->specialDocDir, specialDoc,
-			       installSpecialDoc, test)) {
+	char *docDir = getSpecialDocDir(pkg->header);
+	if (docDir == NULL || processSpecialDocs(spec, docDir, specialDoc,
+						 installSpecialDoc, test)) {
 	    fl.processingFailed = 1;
+	} else {
+	    /* Reset for %doc */
+	    FileEntryFree(&fl.cur);
+
+	    fl.cur.verifyFlags = fl.def.verifyFlags;
+
+	    dupAttrRec(specialDocAttrRec, &fl.cur.ar);
+	    dupAttrRec(def_specialDocAttrRec, &fl.def.ar);
+	    freeAttrRec(specialDocAttrRec);
+	    freeAttrRec(def_specialDocAttrRec);
+
+	    (void) processBinaryFile(pkg, &fl, docDir);
 	}
-
-	/* Reset for %doc */
-	FileEntryFree(&fl.cur);
-
-	fl.cur.verifyFlags = fl.def.verifyFlags;
-
-	dupAttrRec(specialDocAttrRec, &fl.cur.ar);
-	dupAttrRec(def_specialDocAttrRec, &fl.def.ar);
-	freeAttrRec(specialDocAttrRec);
-	freeAttrRec(def_specialDocAttrRec);
-
-	(void) processBinaryFile(pkg, &fl, pkg->specialDocDir);
+	free(docDir);
     }
     
     if (fl.processingFailed)

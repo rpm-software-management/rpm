@@ -134,7 +134,6 @@ static Package freePackage(Package pkg)
     pkg->policyList = argvFree(pkg->policyList);
     pkg->cpioList = rpmfiFree(pkg->cpioList);
 
-    pkg->specialDocDir = _free(pkg->specialDocDir);
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
