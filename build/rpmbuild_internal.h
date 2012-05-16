@@ -101,7 +101,6 @@ struct Package_s {
     char * postTransFile;	/*!< %posttrans scriptlet. */
     char * verifyFile;	/*!< %verifyscript scriptlet. */
 
-    StringBuf specialDoc;
     char *specialDocDir;
 
     struct TriggerFileEntry * triggerFiles;

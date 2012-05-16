@@ -59,6 +59,7 @@ enum parseAttrs_e {
     RPMFILE_EXCLUDE	= (1 << 16),	/*!< from %%exclude */
     RPMFILE_DOCDIR	= (1 << 17),	/*!< from %%docdir */
     RPMFILE_DIR		= (1 << 18),	/*!< from %%dir */
+    RPMFILE_SPECIALDOC	= (1 << 19),	/*!< from special %%doc */
 };
 
 /* bits up to 15 (for now) reserved for exported rpmfileAttrs */
@@ -817,21 +818,16 @@ static VFA_t virtualFileAttributes[] = {
 
 /**
  * Parse simple attributes (e.g. %dir) from file manifest.
- * @param pkg
  * @param buf		current spec file line
  * @param cur		current file entry data
- * @retval *fileName	file name
+ * @retval *fileNames	file names
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForSimple(Package pkg, char * buf,
-			    FileEntry cur, const char ** fileName)
+static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
     char *s, *t;
-    rpmRC res;
-    char *specialDocBuf = NULL;
-
-    *fileName = NULL;
-    res = RPMRC_OK;
+    rpmRC res = RPMRC_OK;
+    int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC);
 
     t = buf;
     while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
@@ -849,54 +845,18 @@ static rpmRC parseForSimple(Package pkg, char * buf,
 	if (vfa->attribute != NULL)
 	    continue;
 
-	if (*fileName) {
-	    /* We already got a file -- error */
-	    rpmlog(RPMLOG_ERR, _("Two files on one line: %s\n"), *fileName);
-	    res = RPMRC_FAIL;
-	}
-
+	/* normally paths need to be absolute */
 	if (*s != '/') {
-	    if (cur->attrFlags & RPMFILE_DOC) {
-		rstrscat(&specialDocBuf, " ", s, NULL);
-	    } else
-	    if (cur->attrFlags & RPMFILE_PUBKEY)
-	    {
-		*fileName = s;
-	    } else {
-		/* not in %doc, does not begin with / -- error */
+	   if (!(cur->attrFlags & allow_relative)) {
 		rpmlog(RPMLOG_ERR, _("File must begin with \"/\": %s\n"), s);
 		res = RPMRC_FAIL;
+		continue;
 	    }
-	} else {
-	    *fileName = s;
+	    /* non-absolute %doc paths are "special docs" */
+	    if (cur->attrFlags & RPMFILE_DOC)
+		cur->attrFlags |= RPMFILE_SPECIALDOC;
 	}
-    }
-
-    if (specialDocBuf) {
-	if (*fileName || (cur->attrFlags & ~(RPMFILE_DOC))) {
-	    rpmlog(RPMLOG_ERR,
-		     _("Can't mix special %%doc with other forms: %s\n"),
-		     (*fileName ? *fileName : ""));
-	    res = RPMRC_FAIL;
-	} else {
-	    /* XXX FIXME: this is easy to do as macro expansion */
-	    if (pkg->specialDoc == NULL) {
-		char *mkdocdir = rpmExpand("%{__mkdir_p} $DOCDIR", NULL);
-		pkg->specialDoc = newStringBuf();
-		appendStringBuf(pkg->specialDoc, "DOCDIR=$RPM_BUILD_ROOT");
-		appendLineStringBuf(pkg->specialDoc, pkg->specialDocDir);
-		appendLineStringBuf(pkg->specialDoc, "export DOCDIR");
-		appendLineStringBuf(pkg->specialDoc, mkdocdir);
-		free(mkdocdir);
-
-		*fileName = pkg->specialDocDir;
-	    }
-
-	    appendStringBuf(pkg->specialDoc, "cp -pr ");
-	    appendStringBuf(pkg->specialDoc, specialDocBuf);
-	    appendLineStringBuf(pkg->specialDoc, " $DOCDIR");
-	}
-	free(specialDocBuf);
+	argvAdd(fileNames, s);
     }
 
     return res;
@@ -1731,15 +1691,46 @@ exit:
     return rc;
 }
 
+static rpmRC processSpecialDocs(rpmSpec spec, const char *docDir,
+				ARGV_const_t docs, int install, int test)
+{
+    rpmRC rc = RPMRC_OK;
+    int strict = rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
+    char *mkdocdir = rpmExpand("%{__mkdir_p} $DOCDIR", NULL);
+    StringBuf docScript = newStringBuf();
+
+    appendStringBuf(docScript, "DOCDIR=$RPM_BUILD_ROOT");
+    appendLineStringBuf(docScript, docDir);
+    appendLineStringBuf(docScript, "export DOCDIR");
+    appendLineStringBuf(docScript, mkdocdir);
+
+    for (ARGV_const_t fn = docs; fn && *fn; fn++) {
+	appendStringBuf(docScript, "cp -pr ");
+	appendStringBuf(docScript, *fn);
+	appendLineStringBuf(docScript, " $DOCDIR");
+    }
+
+    if (install) {
+	rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc",
+		      getStringBuf(docScript), test);
+    }
+
+    freeStringBuf(docScript);
+    free(mkdocdir);
+
+    return strict ? rc : RPMRC_OK;
+}
+				
+
 static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 				 Package pkg, int installSpecialDoc, int test)
 {
     struct FileList_s fl;
-    const char *fileName;
+    ARGV_t fileNames = NULL;
     struct AttrRec_s arbuf, def_arbuf;
     AttrRec specialDocAttrRec = &arbuf;
     AttrRec def_specialDocAttrRec = &def_arbuf;
-    char *specialDoc = NULL;
+    ARGV_t specialDoc = NULL;
 
     nullAttrRec(specialDocAttrRec);
     nullAttrRec(def_specialDocAttrRec);
@@ -1771,7 +1762,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	SKIPSPACE(s);
 	if (*s == '\0')
 	    continue;
-	fileName = NULL;
+	fileNames = argvFree(fileNames);
 	rstrlcpy(buf, s, sizeof(buf));
 	
 	/* Reset for a new line in %files */
@@ -1787,49 +1778,58 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl.cur) ||
 	    parseForCaps(buf, &fl.cur) ||
-	    parseForSimple(pkg, buf, &fl.cur, &fileName))
+	    parseForSimple(buf, &fl.cur, &fileNames))
 	{
 	    fl.processingFailed = 1;
 	    continue;
 	}
 
-	if (fileName == NULL)
-	    continue;
+	for (ARGV_const_t fn = fileNames; fn && *fn; fn++) {
+	    if (fl.cur.attrFlags & RPMFILE_SPECIALDOC) {
+		int oa = (fl.cur.attrFlags & ~(RPMFILE_DOC|RPMFILE_SPECIALDOC));
+		if (oa || **fn == '/') {
+		    rpmlog(RPMLOG_ERR,
+		       _("Can't mix special %%doc with other forms: %s\n"),*fn);
+		    fl.processingFailed = 1;
+		    continue;
+		}
 
-	if (fl.cur.attrFlags & RPMFILE_DOCDIR) {
-	    argvAdd(&(fl.docDirs), fileName);
-	    continue;
+		/* save attributes on first special doc for later use */
+		if (specialDoc == NULL) {
+		    dupAttrRec(&fl.cur.ar, specialDocAttrRec);
+		    dupAttrRec(&fl.def.ar, def_specialDocAttrRec);
+		}
+		argvAdd(&specialDoc, *fn);
+		continue;
+	    }
+
+	    /* this is now an artificial limitation */
+	    if (fn != fileNames) {
+		rpmlog(RPMLOG_ERR, _("More than one file on a line: %s\n"),*fn);
+		fl.processingFailed = 1;
+		continue;
+	    }
+
+	    if (fl.cur.attrFlags & RPMFILE_DOCDIR) {
+		argvAdd(&(fl.docDirs), *fn);
+	    } else if (fl.cur.attrFlags & RPMFILE_PUBKEY) {
+		(void) processMetadataFile(pkg, &fl, *fn, RPMTAG_PUBKEYS);
+	    } else {
+		if (fl.cur.attrFlags & RPMFILE_DIR)
+		    fl.cur.isDir = 1;
+		(void) processBinaryFile(pkg, &fl, *fn);
+	    }
 	}
-
-	if (fl.cur.attrFlags & RPMFILE_DIR)
-	    fl.cur.isDir = 1;
 
 	if (fl.cur.caps)
 	    fl.haveCaps = 1;
-
-	if (pkg->specialDoc && specialDoc == NULL) {
-	    /* Save this stuff for last */
-	    specialDoc = xstrdup(fileName);
-	    dupAttrRec(&fl.cur.ar, specialDocAttrRec);
-	    dupAttrRec(&fl.def.ar, def_specialDocAttrRec);
-	} else if (fl.cur.attrFlags & RPMFILE_PUBKEY) {
-	    (void) processMetadataFile(pkg, &fl, fileName, RPMTAG_PUBKEYS);
-	} else {
-	    (void) processBinaryFile(pkg, &fl, fileName);
-	}
     }
 
     /* Now process special doc, if there is one */
     if (specialDoc) {
-	if (installSpecialDoc) {
-	    int _missing_doc_files_terminate_build =
-		    rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
-	    rpmRC rc;
-
-	    rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc",
-			  getStringBuf(pkg->specialDoc), test);
-	    if (rc != RPMRC_OK && _missing_doc_files_terminate_build)
-		fl.processingFailed = 1;
+	if (processSpecialDocs(spec, pkg->specialDocDir, specialDoc,
+			       installSpecialDoc, test)) {
+	    fl.processingFailed = 1;
 	}
 
 	/* Reset for %doc */
@@ -1842,9 +1842,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	freeAttrRec(specialDocAttrRec);
 	freeAttrRec(def_specialDocAttrRec);
 
-	(void) processBinaryFile(pkg, &fl, specialDoc);
-
-	specialDoc = _free(specialDoc);
+	(void) processBinaryFile(pkg, &fl, pkg->specialDocDir);
     }
     
     if (fl.processingFailed)
@@ -1867,6 +1865,7 @@ exit:
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     argvFree(fl.docDirs);
+    argvFree(specialDoc);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
