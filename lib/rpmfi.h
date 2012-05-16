@@ -46,7 +46,7 @@ typedef enum rpmfileState_e {
 #define RPMFILE_IS_INSTALLED(_x) ((_x) == RPMFILE_STATE_NORMAL || (_x) == RPMFILE_STATE_NETSHARED)
 
 /**
- * File Attributes.
+ * Exported File Attributes (ie RPMTAG_FILEFLAGS)
  */
 enum rpmfileAttrs_e {
     RPMFILE_NONE	= 0,
@@ -59,8 +59,7 @@ enum rpmfileAttrs_e {
     RPMFILE_GHOST	= (1 <<  6),	/*!< from %%ghost */
     RPMFILE_LICENSE	= (1 <<  7),	/*!< from %%license */
     RPMFILE_README	= (1 <<  8),	/*!< from %%readme */
-    RPMFILE_EXCLUDE	= (1 <<  9),	/*!< from %%exclude, internal */
-    RPMFILE_UNPATCHED	= (1 << 10),	/*!< placeholder (SuSE) */
+    /* bits 9-10 unused */
     RPMFILE_PUBKEY	= (1 << 11),	/*!< from %%pubkey */
 };
 

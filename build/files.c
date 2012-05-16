@@ -54,6 +54,14 @@ enum specfFlags_e {
 
 typedef rpmFlags specfFlags;
 
+/* internal %files parsing state attributes */
+enum parseAttrs_e {
+    RPMFILE_EXCLUDE	= (1 << 16),	/*!< from %%exclude */
+};
+
+/* bits up to 15 (for now) reserved for exported rpmfileAttrs */
+#define PARSEATTR_MASK 0x0000ffff
+
 /**
  */
 typedef struct FileListRec_s {
@@ -1199,6 +1207,8 @@ static void genCpioListAndHeader(FileList fl,
 	/* XXX Should directories have %doc/%config attributes? (#14531) */
 	if (S_ISDIR(flp->fl_mode))
 	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
+	/* Strip internal parse data */
+	flp->flags &= PARSEATTR_MASK;
 
 	headerPutUint32(h, RPMTAG_FILEFLAGS, &(flp->flags) ,1);
     }
