@@ -840,13 +840,10 @@ static rpmRC parseForSimple(Package pkg, char * buf,
 
     	/* Set flags for virtual file attributes */
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
-	    if (!rstreq(s, vfa->attribute))
-		continue;
-	    if (vfa->neg)
-		fl->cur.attrFlags &= ~vfa->flag;
-	    else
+	    if (rstreq(s, vfa->attribute)) {
 		fl->cur.attrFlags |= vfa->flag;
-	    break;
+		break;
+	    }
 	}
 	/* if we got an attribute, continue with next token */
 	if (vfa->attribute != NULL)
