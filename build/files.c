@@ -819,12 +819,12 @@ static VFA_t virtualFileAttributes[] = {
  * Parse simple attributes (e.g. %dir) from file manifest.
  * @param pkg
  * @param buf		current spec file line
- * @param fl		package file tree walk data
+ * @param cur		current file entry data
  * @retval *fileName	file name
  * @return		RPMRC_OK on success
  */
 static rpmRC parseForSimple(Package pkg, char * buf,
-			  FileList fl, const char ** fileName)
+			    FileEntry cur, const char ** fileName)
 {
     char *s, *t;
     rpmRC res;
@@ -841,7 +841,7 @@ static rpmRC parseForSimple(Package pkg, char * buf,
     	/* Set flags for virtual file attributes */
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
 	    if (rstreq(s, vfa->attribute)) {
-		fl->cur.attrFlags |= vfa->flag;
+		cur->attrFlags |= vfa->flag;
 		break;
 	    }
 	}
@@ -856,10 +856,10 @@ static rpmRC parseForSimple(Package pkg, char * buf,
 	}
 
 	if (*s != '/') {
-	    if (fl->cur.attrFlags & RPMFILE_DOC) {
+	    if (cur->attrFlags & RPMFILE_DOC) {
 		rstrscat(&specialDocBuf, " ", s, NULL);
 	    } else
-	    if (fl->cur.attrFlags & RPMFILE_PUBKEY)
+	    if (cur->attrFlags & RPMFILE_PUBKEY)
 	    {
 		*fileName = s;
 	    } else {
@@ -873,7 +873,7 @@ static rpmRC parseForSimple(Package pkg, char * buf,
     }
 
     if (specialDocBuf) {
-	if (*fileName || (fl->cur.attrFlags & ~(RPMFILE_DOC))) {
+	if (*fileName || (cur->attrFlags & ~(RPMFILE_DOC))) {
 	    rpmlog(RPMLOG_ERR,
 		     _("Can't mix special %%doc with other forms: %s\n"),
 		     (*fileName ? *fileName : ""));
@@ -1787,7 +1787,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl.cur) ||
 	    parseForCaps(buf, &fl.cur) ||
-	    parseForSimple(pkg, buf, &fl, &fileName))
+	    parseForSimple(pkg, buf, &fl.cur, &fileName))
 	{
 	    fl.processingFailed = 1;
 	    continue;
