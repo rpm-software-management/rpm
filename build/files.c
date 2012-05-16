@@ -58,6 +58,7 @@ typedef rpmFlags specfFlags;
 enum parseAttrs_e {
     RPMFILE_EXCLUDE	= (1 << 16),	/*!< from %%exclude */
     RPMFILE_DOCDIR	= (1 << 17),	/*!< from %%docdir */
+    RPMFILE_DIR		= (1 << 18),	/*!< from %%dir */
 };
 
 /* bits up to 15 (for now) reserved for exported rpmfileAttrs */
@@ -803,7 +804,7 @@ exit:
 /**
  */
 static VFA_t virtualFileAttributes[] = {
-	{ "%dir",	0,	0 },	/* XXX why not RPMFILE_DIR? */
+	{ "%dir",	0,	RPMFILE_DIR },
 	{ "%docdir",	0,	RPMFILE_DOCDIR },
 	{ "%doc",	0,	RPMFILE_DOC },
 	{ "%ghost",	0,	RPMFILE_GHOST },
@@ -841,15 +842,10 @@ static rpmRC parseForSimple(Package pkg, char * buf,
 	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
 	    if (!rstreq(s, vfa->attribute))
 		continue;
-	    if (!vfa->flag) {
-		if (rstreq(s, "%dir"))
-		    fl->cur.isDir = 1;	/* XXX why not RPMFILE_DIR? */
-	    } else {
-		if (vfa->neg)
-		    fl->cur.attrFlags &= ~vfa->flag;
-		else
-		    fl->cur.attrFlags |= vfa->flag;
-	    }
+	    if (vfa->neg)
+		fl->cur.attrFlags &= ~vfa->flag;
+	    else
+		fl->cur.attrFlags |= vfa->flag;
 	    break;
 	}
 	/* if we got an attribute, continue with next token */
@@ -1807,6 +1803,9 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    argvAdd(&(fl.docDirs), fileName);
 	    continue;
 	}
+
+	if (fl.cur.attrFlags & RPMFILE_DIR)
+	    fl.cur.isDir = 1;
 
 	if (fl.cur.caps)
 	    fl.haveCaps = 1;
