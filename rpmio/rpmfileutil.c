@@ -36,6 +36,47 @@
 
 static const char *rpm_config_dir = NULL;
 
+static int is_prelinked(int fdno)
+{
+    int prelinked = 0;
+#if HAVE_GELF_H && HAVE_LIBELF
+    Elf *elf = NULL;
+    Elf_Scn *scn = NULL;
+    Elf_Data *data = NULL;
+    GElf_Ehdr ehdr;
+    GElf_Shdr shdr;
+    GElf_Dyn dyn;
+
+    (void) elf_version(EV_CURRENT);
+
+    if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL ||
+	       elf_kind(elf) != ELF_K_ELF || gelf_getehdr(elf, &ehdr) == NULL ||
+	       !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
+	goto exit;
+
+    while (!prelinked && (scn = elf_nextscn(elf, scn)) != NULL) {
+	(void) gelf_getshdr(scn, &shdr);
+	if (shdr.sh_type != SHT_DYNAMIC)
+	    continue;
+	while (!prelinked && (data = elf_getdata (scn, data)) != NULL) {
+	    int maxndx = data->d_size / shdr.sh_entsize;
+
+            for (int ndx = 0; ndx < maxndx; ++ndx) {
+		(void) gelf_getdyn (data, ndx, &dyn);
+		if (!(dyn.d_tag == DT_GNU_PRELINKED || dyn.d_tag == DT_GNU_LIBLIST))
+		    continue;
+		prelinked = 1;
+		break;
+	    }
+	}
+    }
+
+exit:
+    if (elf) (void) elf_end(elf);
+#endif
+    return prelinked;
+}
+
 static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
 {
     static const char * cmd = NULL;
@@ -63,43 +104,7 @@ static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
     if (!(cmd && *cmd))
 	return fdno;
 
-#if HAVE_GELF_H && HAVE_LIBELF
- {  Elf *elf = NULL;
-    Elf_Scn *scn = NULL;
-    Elf_Data *data = NULL;
-    GElf_Ehdr ehdr;
-    GElf_Shdr shdr;
-    GElf_Dyn dyn;
-    int bingo;
-
-    (void) elf_version(EV_CURRENT);
-
-    if ((elf = elf_begin (fdno, ELF_C_READ, NULL)) == NULL
-     || elf_kind(elf) != ELF_K_ELF
-     || gelf_getehdr(elf, &ehdr) == NULL
-     || !(ehdr.e_type == ET_DYN || ehdr.e_type == ET_EXEC))
-	goto exit;
-
-    bingo = 0;
-    while (!bingo && (scn = elf_nextscn(elf, scn)) != NULL) {
-	(void) gelf_getshdr(scn, &shdr);
-	if (shdr.sh_type != SHT_DYNAMIC)
-	    continue;
-	while (!bingo && (data = elf_getdata (scn, data)) != NULL) {
-	    int maxndx = data->d_size / shdr.sh_entsize;
-	    int ndx;
-
-            for (ndx = 0; ndx < maxndx; ++ndx) {
-		(void) gelf_getdyn (data, ndx, &dyn);
-		if (!(dyn.d_tag == DT_GNU_PRELINKED || dyn.d_tag == DT_GNU_LIBLIST))
-		    continue;
-		bingo = 1;
-		break;
-	    }
-	}
-    }
-
-    if (pidp != NULL && bingo) {
+    if (pidp != NULL && is_prelinked(fdno)) {
 	int pipes[2];
 	pid_t pid;
 	int xx;
@@ -125,11 +130,6 @@ static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
 	fdno = pipes[0];
 	xx = close(pipes[1]);
     }
-
-exit:
-    if (elf) (void) elf_end(elf);
- }
-#endif
 
     return fdno;
 }
