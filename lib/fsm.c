@@ -1377,6 +1377,13 @@ static int fsmInit(FSM_t fsm)
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
 	    fsm->postpone = saveHardLink(fsm);
     }
+
+    rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
+	   fileActionString(fsm->action), (int)fsm->sb.st_mode,
+	   (int)fsm->sb.st_nlink, (int)fsm->sb.st_uid,
+	   (int)fsm->sb.st_gid, (int)fsm->sb.st_size,
+	    (fsm->path ? fsm->path : ""));
+
     return rc;
 
 }
