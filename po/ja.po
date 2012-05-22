@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-04-23 11:47+0300\n"
+"POT-Creation-Date: 2012-05-22 13:56+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Japanese (http://www.transifex.net/projects/p/rpm/language/"
@@ -1221,32 +1221,32 @@ msgstr "ソース番号 %u はありません\n"
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "spec ファイルに「Source:」タグがありません\n"
 
-#: build/parsePrep.c:257
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup の構文解析エラー: %s\n"
 
-#: build/parsePrep.c:268
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 行目: %%setup への不正な引数: %s\n"
 
-#: build/parsePrep.c:283
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 行目: 不正な %%setup オプション %s: %s\n"
 
-#: build/parsePrep.c:442
+#: build/parsePrep.c:446
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:459
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "無効なパッケージ番号 %s: %s\n"
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:486
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 行目: ふたつ目の %%prep\n"
@@ -3179,20 +3179,20 @@ msgstr "db%d エラー (%d) (%s において): %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d エラー (%d): %s\n"
 
-#: lib/backend/db3.c:495
+#: lib/backend/db3.c:496
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%sロックを獲得できません (%s/%s)\n"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "shared"
 msgstr "共有"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "exclusive"
 msgstr "排他"
 
-#: lib/backend/db3.c:577
+#: lib/backend/db3.c:578
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "不正なインデックス形式 %x が %s/%s にあります\n"
@@ -3360,7 +3360,7 @@ msgstr "マクロ %%%s (%s) はレベル %d 未満で使用されませんでし
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "不明なオプション %c (%s(%s)中に)\n"
 
-#: rpmio/macro.c:1047
+#: rpmio/macro.c:1050
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3368,12 +3368,12 @@ msgstr ""
 "マクロ展開の再帰呼び出しが深すぎます。これは再帰的マクロ定義が原因で発生して"
 "いる可能性があります。\n"
 
-#: rpmio/macro.c:1116 rpmio/macro.c:1133
+#: rpmio/macro.c:1119 rpmio/macro.c:1136
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "終端されていない %c: %s\n"
 
-#: rpmio/macro.c:1174
+#: rpmio/macro.c:1177
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "%% の後ろに構文解析できないマクロが続いています。\n"
@@ -3393,7 +3393,7 @@ msgstr "ファイル %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "ファイル %s は %u バイトより小さくなっています。\n"
 
-#: rpmio/rpmfileutil.c:761
+#: rpmio/rpmfileutil.c:765
 msgid "failed to create directory"
 msgstr "ディレクトリーの作成に失敗しました"
 

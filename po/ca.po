@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-04-23 11:47+0300\n"
+"POT-Creation-Date: 2012-05-22 13:56+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1242,32 +1242,32 @@ msgstr "No existeix la font número %u\n"
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "Falta l'etiqueta \"Source:\" en el fitxer d'especificacions\n"
 
-#: build/parsePrep.c:257
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Hi ha hagut un error en analitzar %%setup: %s\n"
 
-#: build/parsePrep.c:268
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "línia %d: l'argument a %%setup és incorrecte: %s\n"
 
-#: build/parsePrep.c:283
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "línia %d: l'opció de %%setup %s és incorrecta: %s\n"
 
-#: build/parsePrep.c:442
+#: build/parsePrep.c:446
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:459
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "El número de pedaç %s no és vàlid: %s\n"
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:486
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "línia %d: segon %%prep\n"
@@ -3211,20 +3211,20 @@ msgstr "db%d error(%d) de %s: %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d error(%d): %s\n"
 
-#: lib/backend/db3.c:495
+#: lib/backend/db3.c:496
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "no es pot obtenir el blocatge %s a %s/%s\n"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "shared"
 msgstr "compartit"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "exclusive"
 msgstr "exclusiu"
 
-#: lib/backend/db3.c:577
+#: lib/backend/db3.c:578
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
@@ -3389,18 +3389,18 @@ msgstr "La macro %%%s (%s) no s'ha emprat sota el nivell %d\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Opció desconeguda %c a %s(%s)\n"
 
-#: rpmio/macro.c:1047
+#: rpmio/macro.c:1050
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1116 rpmio/macro.c:1133
+#: rpmio/macro.c:1119 rpmio/macro.c:1136
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c sense terminar: %s\n"
 
-#: rpmio/macro.c:1174
+#: rpmio/macro.c:1177
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Un %% precedeix una macro que no es pot analitzar\n"
@@ -3420,7 +3420,7 @@ msgstr "Fitxer %s: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "El fitxer %s fa menys de %u bytes\n"
 
-#: rpmio/rpmfileutil.c:761
+#: rpmio/rpmfileutil.c:765
 msgid "failed to create directory"
 msgstr "no s'ha pogut crear el directori"
 

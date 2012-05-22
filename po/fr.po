@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-04-23 11:47+0300\n"
+"POT-Creation-Date: 2012-05-22 13:56+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: French (http://www.transifex.net/projects/p/rpm/language/"
@@ -1241,32 +1241,32 @@ msgstr "Pas de numéro de source %u\n"
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "Pas de tag « Source: » dans le fichier spec\n"
 
-#: build/parsePrep.c:257
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "Erreur d'analyse syntaxique du %%setup : %s\n"
 
-#: build/parsePrep.c:268
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "ligne %d : mauvais argument à %%setup : %s\n"
 
-#: build/parsePrep.c:283
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "ligne %d : mauvaise option à %%setup %s : %s\n"
 
-#: build/parsePrep.c:442
+#: build/parsePrep.c:446
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s : %s : %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:459
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "Numéro du patch invalide %s :%s\n"
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:486
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "ligne %d : deuxième %%prep\n"
@@ -3222,20 +3222,20 @@ msgstr "erreur db%d(%d) de %s : %s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "erreur db%d(%d) : %s\n"
 
-#: lib/backend/db3.c:495
+#: lib/backend/db3.c:496
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "impossible d'avoir le verrou %s sur %s/%s\n"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "shared"
 msgstr "partagé"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "exclusive"
 msgstr "exclusif"
 
-#: lib/backend/db3.c:577
+#: lib/backend/db3.c:578
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr "type d'index %x invalide sur %s/%s\n"
@@ -3403,7 +3403,7 @@ msgstr "La macro %%%s (%s) n'est plus utilisée en dessous du niveau %d\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "Option inconnue %c dans %s(%s)\n"
 
-#: rpmio/macro.c:1047
+#: rpmio/macro.c:1050
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
@@ -3411,12 +3411,12 @@ msgstr ""
 "Trop de niveaux de récursivité dans l'expansion de la macro. Il est "
 "probablement causée par une déclaration de macro récursive.\n"
 
-#: rpmio/macro.c:1116 rpmio/macro.c:1133
+#: rpmio/macro.c:1119 rpmio/macro.c:1136
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c non terminé: %s\n"
 
-#: rpmio/macro.c:1174
+#: rpmio/macro.c:1177
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Un %% est suivi d'une macro in-analysable\n"
@@ -3436,7 +3436,7 @@ msgstr "Fichier %s : %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Le fichier %s est plus petit que %u octets\n"
 
-#: rpmio/rpmfileutil.c:761
+#: rpmio/rpmfileutil.c:765
 msgid "failed to create directory"
 msgstr "échec de création du répertoire"
 

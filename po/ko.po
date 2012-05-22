@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-04-23 11:47+0300\n"
+"POT-Creation-Date: 2012-05-22 13:56+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1208,32 +1208,32 @@ msgstr ""
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr ""
 
-#: build/parsePrep.c:257
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "%%setup에서 오류 발생: %s\n"
 
-#: build/parsePrep.c:268
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 인수가 있습니다: %s\n"
 
-#: build/parsePrep.c:283
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "%d 번째 행: %%setup에 잘못된 %s 옵션: %s\n"
 
-#: build/parsePrep.c:442
+#: build/parsePrep.c:446
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:459
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:486
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "%d 번째 행: 두번째 %%prep\n"
@@ -3156,20 +3156,20 @@ msgstr "%3$s의 db%1$d 오류(%2$d): %4$s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d 오류(%d): %s\n"
 
-#: lib/backend/db3.c:495
+#: lib/backend/db3.c:496
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "%2$s/%3$s의 잠금된(lock) %1$s(을)를 얻을 수 없습니다\n"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "shared"
 msgstr "공유됨"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "exclusive"
 msgstr "폐쇄적(exclusive)"
 
-#: lib/backend/db3.c:577
+#: lib/backend/db3.c:578
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
@@ -3333,18 +3333,18 @@ msgstr "매크로 %%%s (%s)는 레벨 %d 이하에서는 사용할 수 없습니
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "%2$s(%3$s)에 알 수 없는 옵션 %1$c(이)가 있습니다\n"
 
-#: rpmio/macro.c:1047
+#: rpmio/macro.c:1050
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1116 rpmio/macro.c:1133
+#: rpmio/macro.c:1119 rpmio/macro.c:1136
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "%c(이)가 종료되지 않음: %s\n"
 
-#: rpmio/macro.c:1174
+#: rpmio/macro.c:1177
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "'%%' 다음에 처리할 수 없는(unparseable) 매크로가 있습니다\n"
@@ -3364,7 +3364,7 @@ msgstr "%s 파일: %s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "%s 파일이 %u 바이트 보다 적습니다\n"
 
-#: rpmio/rpmfileutil.c:761
+#: rpmio/rpmfileutil.c:765
 msgid "failed to create directory"
 msgstr ""
 

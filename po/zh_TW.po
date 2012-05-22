@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-04-23 11:47+0300\n"
+"POT-Creation-Date: 2012-05-22 13:56+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.net/projects/p/rpm/"
@@ -1207,32 +1207,32 @@ msgstr "沒有源碼編號 %u\n"
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr "規格檔內無「Source:」標籤\n"
 
-#: build/parsePrep.c:257
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr "解析 %%setup 時發生錯誤：%s\n"
 
-#: build/parsePrep.c:268
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr "列 %d：%%setup 中出現不良引數：%s\n"
 
-#: build/parsePrep.c:283
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr "列 %d：不良 %%setup 選項 %s：%s\n"
 
-#: build/parsePrep.c:442
+#: build/parsePrep.c:446
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr "%s: %s: %s\n"
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:459
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr "無效的修補編號 %s：%s\n"
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:486
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr "列 %d：第二個 %%prep\n"
@@ -3142,20 +3142,20 @@ msgstr "db%d 錯誤(%d) 來自 %s：%s\n"
 msgid "db%d error(%d): %s\n"
 msgstr "db%d 錯誤(%d)：%s\n"
 
-#: lib/backend/db3.c:495
+#: lib/backend/db3.c:496
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr "無法取得 %s 於 %s/%s 的鎖定\n"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "shared"
 msgstr "已共享"
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:498
 msgid "exclusive"
 msgstr "排他"
 
-#: lib/backend/db3.c:577
+#: lib/backend/db3.c:578
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
@@ -3319,18 +3319,18 @@ msgstr "巨集 %%%s (%s) 在層級 %d 之下未被使用\n"
 msgid "Unknown option %c in %s(%s)\n"
 msgstr "在 %2$s(%3$s) 中有未知的選項 %1$c\n"
 
-#: rpmio/macro.c:1047
+#: rpmio/macro.c:1050
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1116 rpmio/macro.c:1133
+#: rpmio/macro.c:1119 rpmio/macro.c:1136
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr "未終結的 %c：%s\n"
 
-#: rpmio/macro.c:1174
+#: rpmio/macro.c:1177
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "在無法解析的巨集之後跟著一個 %%\n"
@@ -3350,7 +3350,7 @@ msgstr "檔案 %s：%s\n"
 msgid "File %s is smaller than %u bytes\n"
 msgstr "檔案 %s 小於 %u 位元組\n"
 
-#: rpmio/rpmfileutil.c:761
+#: rpmio/rpmfileutil.c:765
 msgid "failed to create directory"
 msgstr "無法建立目錄"
 
