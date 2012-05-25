@@ -106,6 +106,13 @@ static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
 /* list of files */
 static StringBuf check_fileList = NULL;
 
+typedef struct specialDir_s {
+    char * dirname;
+    ARGV_t files;
+    struct AttrRec_s ar;
+    struct AttrRec_s def_ar;
+} * specialDir;
+
 typedef struct FileEntry_s {
     rpmfileAttrs attrFlags;
     specfFlags specdFlags;
@@ -1717,34 +1724,63 @@ static char * getSpecialDocDir(Header h)
     return res;
 }
 
-static rpmRC processSpecialDocs(rpmSpec spec, const char *docDir,
-				ARGV_const_t docs, int install, int test)
+static specialDir specialDirNew(Header h, AttrRec ar, AttrRec def_ar)
 {
-    rpmRC rc = RPMRC_OK;
-    int strict = rpmExpandNumeric("%{?_missing_doc_files_terminate_build}");
+    specialDir sd = xcalloc(1, sizeof(*sd));
+    dupAttrRec(ar, &(sd->ar));
+    dupAttrRec(def_ar, &(sd->def_ar));
+    sd->dirname = getSpecialDocDir(h);
+    return sd;
+}
+
+static specialDir specialDirFree(specialDir sd)
+{
+    if (sd) {
+	argvFree(sd->files);
+	freeAttrRec(&(sd->ar));
+	freeAttrRec(&(sd->def_ar));
+	free(sd->dirname);
+	free(sd);
+    }
+    return NULL;
+}
+
+static void processSpecialDocs(rpmSpec spec, Package pkg, FileList fl,
+				specialDir sd, int install, int test)
+{
     char *mkdocdir = rpmExpand("%{__mkdir_p} $DOCDIR", NULL);
     StringBuf docScript = newStringBuf();
 
     appendStringBuf(docScript, "DOCDIR=$RPM_BUILD_ROOT");
-    appendLineStringBuf(docScript, docDir);
+    appendLineStringBuf(docScript, sd->dirname);
     appendLineStringBuf(docScript, "export DOCDIR");
     appendLineStringBuf(docScript, mkdocdir);
 
-    for (ARGV_const_t fn = docs; fn && *fn; fn++) {
+    for (ARGV_const_t fn = sd->files; fn && *fn; fn++) {
 	appendStringBuf(docScript, "cp -pr ");
 	appendStringBuf(docScript, *fn);
 	appendLineStringBuf(docScript, " $DOCDIR");
     }
 
     if (install) {
-	rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc",
-		      getStringBuf(docScript), test);
+	rpmRC rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc",
+			    getStringBuf(docScript), test);
+
+	if (rc && rpmExpandNumeric("%{?_missing_doc_files_terminate_build}"))
+	    fl->processingFailed = 1;
     }
+
+    /* Reset for %doc */
+    FileEntryFree(&fl->cur);
+
+    fl->cur.verifyFlags = fl->def.verifyFlags;
+    dupAttrRec(&(sd->ar), &(fl->cur.ar));
+    dupAttrRec(&(sd->def_ar), &(fl->def.ar));
+
+    (void) processBinaryFile(pkg, fl, sd->dirname);
 
     freeStringBuf(docScript);
     free(mkdocdir);
-
-    return strict ? rc : RPMRC_OK;
 }
 				
 
@@ -1753,13 +1789,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 {
     struct FileList_s fl;
     ARGV_t fileNames = NULL;
-    struct AttrRec_s arbuf, def_arbuf;
-    AttrRec specialDocAttrRec = &arbuf;
-    AttrRec def_specialDocAttrRec = &def_arbuf;
-    ARGV_t specialDoc = NULL;
+    specialDir specialDoc = NULL;
 
-    nullAttrRec(specialDocAttrRec);
-    nullAttrRec(def_specialDocAttrRec);
     pkg->cpioList = NULL;
 
     for (ARGV_const_t fp = pkg->fileFile; fp && *fp != NULL; fp++) {
@@ -1822,10 +1853,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 		/* save attributes on first special doc for later use */
 		if (specialDoc == NULL) {
-		    dupAttrRec(&fl.cur.ar, specialDocAttrRec);
-		    dupAttrRec(&fl.def.ar, def_specialDocAttrRec);
+		    specialDoc = specialDirNew(pkg->header,
+					       &fl.cur.ar, &fl.def.ar);
 		}
-		argvAdd(&specialDoc, *fn);
+		argvAdd(&specialDoc->files, *fn);
 		continue;
 	    }
 
@@ -1852,26 +1883,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     }
 
     /* Now process special doc, if there is one */
-    if (specialDoc) {
-	char *docDir = getSpecialDocDir(pkg->header);
-	if (processSpecialDocs(spec, docDir, specialDoc,
-			       installSpecialDoc, test)) {
-	    fl.processingFailed = 1;
-	} else {
-	    /* Reset for %doc */
-	    FileEntryFree(&fl.cur);
-
-	    fl.cur.verifyFlags = fl.def.verifyFlags;
-
-	    dupAttrRec(specialDocAttrRec, &fl.cur.ar);
-	    dupAttrRec(def_specialDocAttrRec, &fl.def.ar);
-	    freeAttrRec(specialDocAttrRec);
-	    freeAttrRec(def_specialDocAttrRec);
-
-	    (void) processBinaryFile(pkg, &fl, docDir);
-	}
-	free(docDir);
-    }
+    if (specialDoc)
+	processSpecialDocs(spec, pkg, &fl, specialDoc, installSpecialDoc, test);
     
     if (fl.processingFailed)
 	goto exit;
@@ -1893,7 +1906,7 @@ exit:
 
     fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
     argvFree(fl.docDirs);
-    argvFree(specialDoc);
+    specialDirFree(specialDoc);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
