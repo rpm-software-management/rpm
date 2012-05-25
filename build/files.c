@@ -1693,22 +1693,24 @@ exit:
 
 static char * getSpecialDocDir(Header h)
 {
-    const char *errstr, *docdir_fmt = "%{NAME}-%{VERSION}";
-    char *fmt_macro, *fmt; 
+    const char *errstr = NULL;
+    const char *fmt_default = "%{NAME}-%{VERSION}";
+    char *fmt_macro = rpmExpand("%{?_docdir_fmt}", NULL);
+    char *fmt = NULL; 
     char *res = NULL;
 
-    fmt_macro = rpmExpand("%{?_docdir_fmt}", NULL);
     if (fmt_macro && strlen(fmt_macro) > 0) {
-	docdir_fmt = fmt_macro;
+	fmt = headerFormat(h, fmt_macro, &errstr);
+	if (errstr) {
+	    rpmlog(RPMLOG_WARNING, _("illegal _docdir_fmt %s: %s\n"),
+		   fmt_macro, errstr);
+	}
     }
 
-    fmt = headerFormat(h, docdir_fmt, &errstr);
+    if (fmt == NULL)
+	fmt = headerFormat(h, fmt_default, &errstr);
 
-    if (fmt) {
-	res = rpmGetPath("%{_docdir}/", fmt, NULL);
-    } else {
-	rpmlog(RPMLOG_ERR, _("illegal _docdir_fmt: %s\n"), errstr);
-    }
+    res = rpmGetPath("%{_docdir}/", fmt, NULL);
 
     free(fmt);
     free(fmt_macro);
@@ -1852,8 +1854,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     /* Now process special doc, if there is one */
     if (specialDoc) {
 	char *docDir = getSpecialDocDir(pkg->header);
-	if (docDir == NULL || processSpecialDocs(spec, docDir, specialDoc,
-						 installSpecialDoc, test)) {
+	if (processSpecialDocs(spec, docDir, specialDoc,
+			       installSpecialDoc, test)) {
 	    fl.processingFailed = 1;
 	} else {
 	    /* Reset for %doc */
