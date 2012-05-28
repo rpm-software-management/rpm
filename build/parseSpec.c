@@ -453,6 +453,9 @@ static void initSourceHeader(rpmSpec spec)
 {
     struct Source *srcPtr;
 
+    if (spec->sourceHeader)
+	return;
+
     spec->sourceHeader = headerNew();
     /* Only specific tags are added to the source package header */
     headerCopyTags(spec->packages->header, spec->sourceHeader, sourceTags);
