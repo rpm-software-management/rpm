@@ -261,24 +261,23 @@ static char *strtokWithQuotes(char *s, const char *delim)
  */
 typedef const struct VFA {
     const char * attribute;
-    int neg; /* XXX unused */
     int	flag;
 } VFA_t;
 
 /**
  */
 static VFA_t const verifyAttrs[] = {
-    { "md5",		0,	RPMVERIFY_FILEDIGEST },
-    { "filedigest",	0,	RPMVERIFY_FILEDIGEST },
-    { "size",		0,	RPMVERIFY_FILESIZE },
-    { "link",		0,	RPMVERIFY_LINKTO },
-    { "user",		0,	RPMVERIFY_USER },
-    { "group",		0,	RPMVERIFY_GROUP },
-    { "mtime",		0,	RPMVERIFY_MTIME },
-    { "mode",		0,	RPMVERIFY_MODE },
-    { "rdev",		0,	RPMVERIFY_RDEV },
-    { "caps",		0,	RPMVERIFY_CAPS },
-    { NULL, 0,	0 }
+    { "md5",		RPMVERIFY_FILEDIGEST },
+    { "filedigest",	RPMVERIFY_FILEDIGEST },
+    { "size",		RPMVERIFY_FILESIZE },
+    { "link",		RPMVERIFY_LINKTO },
+    { "user",		RPMVERIFY_USER },
+    { "group",		RPMVERIFY_GROUP },
+    { "mtime",		RPMVERIFY_MTIME },
+    { "mode",		RPMVERIFY_MODE },
+    { "rdev",		RPMVERIFY_RDEV },
+    { "caps",		RPMVERIFY_CAPS },
+    { NULL, 0 }
 };
 
 /**
@@ -811,16 +810,16 @@ exit:
 }
 /**
  */
-static VFA_t virtualFileAttributes[] = {
-	{ "%dir",	0,	RPMFILE_DIR },
-	{ "%docdir",	0,	RPMFILE_DOCDIR },
-	{ "%doc",	0,	RPMFILE_DOC },
-	{ "%ghost",	0,	RPMFILE_GHOST },
-	{ "%exclude",	0,	RPMFILE_EXCLUDE },
-	{ "%readme",	0,	RPMFILE_README },
-	{ "%license",	0,	RPMFILE_LICENSE },
-	{ "%pubkey",	0,	RPMFILE_PUBKEY },
-	{ NULL, 0, 0 }
+static VFA_t const virtualFileAttributes[] = {
+    { "%dir",		RPMFILE_DIR },
+    { "%docdir",	RPMFILE_DOCDIR },
+    { "%doc",		RPMFILE_DOC },
+    { "%ghost",		RPMFILE_GHOST },
+    { "%exclude",	RPMFILE_EXCLUDE },
+    { "%readme",	RPMFILE_README },
+    { "%license",	RPMFILE_LICENSE },
+    { "%pubkey",	RPMFILE_PUBKEY },
+    { NULL, 0 }
 };
 
 /**
