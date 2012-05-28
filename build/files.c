@@ -1241,18 +1241,15 @@ static void genCpioListAndHeader(FileList fl,
     }
 }
 
-/**
- */
-static FileListRec freeFileList(FileListRec fileList,
-			int count)
+static FileRecords FileRecordsFree(FileRecords files)
 {
-    while (count--) {
-	fileList[count].diskPath = _free(fileList[count].diskPath);
-	fileList[count].cpioPath = _free(fileList[count].cpioPath);
-	fileList[count].langs = _free(fileList[count].langs);
-	fileList[count].caps = _free(fileList[count].caps);
+    for (int i = 0; i < files->used; i++) {
+	free(files->recs[i].diskPath);
+	free(files->recs[i].cpioPath);
+	free(files->recs[i].langs);
+	free(files->recs[i].caps);
     }
-    free(fileList);
+    free(files->recs);
     return NULL;
 }
 
@@ -1907,7 +1904,7 @@ exit:
     FileEntryFree(&fl.cur);
     FileEntryFree(&fl.def);
 
-    fl.files.recs = freeFileList(fl.files.recs, fl.files.used);
+    FileRecordsFree(&fl.files);
     argvFree(fl.docDirs);
     specialDirFree(specialDoc);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
@@ -2041,7 +2038,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	}
     }
 
-    fl.files.recs = freeFileList(fl.files.recs, fl.files.used);
+    FileRecordsFree(&fl.files);
     freeAttrRec(&fl.def.ar);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
