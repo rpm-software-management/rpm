@@ -883,17 +883,16 @@ static int compareFileListRecs(const void * ap, const void * bp)
 
 /**
  * Test if file is located in a %docdir.
- * @param fl		package file tree walk data
+ * @param docDirs	doc dirs
  * @param fileName	file path
  * @return		1 if doc file, 0 if not
  */
-static int isDoc(FileList fl, const char * fileName)	
+static int isDoc(ARGV_const_t docDirs, const char * fileName)	
 {
     size_t k, l;
-    ARGV_const_t dd;
 
     k = strlen(fileName);
-    for (dd = fl->docDirs; *dd; dd++) {
+    for (ARGV_const_t dd = docDirs; *dd; dd++) {
 	l = strlen(*dd);
 	if (l < k && rstreqn(fileName, *dd, l) && fileName[l] == '/')
 	    return 1;
@@ -1156,7 +1155,7 @@ static void genCpioListAndHeader(FileList fl,
 	}
 	headerPutUint32(h, RPMTAG_FILEVERIFYFLAGS, &(flp->verifyFlags),1);
 	
-	if (!isSrc && isDoc(fl, flp->cpioPath))
+	if (!isSrc && isDoc(fl->docDirs, flp->cpioPath))
 	    flp->flags |= RPMFILE_DOC;
 	/* XXX Should directories have %doc/%config attributes? (#14531) */
 	if (S_ISDIR(flp->fl_mode))
