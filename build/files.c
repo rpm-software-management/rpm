@@ -596,6 +596,12 @@ exit:
     return rc;
 }
 
+static VFA_t const configAttrs[] = {
+    { "missingok",	RPMFILE_MISSINGOK },
+    { "noreplace",	RPMFILE_NOREPLACE },
+    { NULL, 0 }
+};
+
 /**
  * Parse %config from file manifest.
  * @param buf		current spec file line
@@ -644,11 +650,7 @@ static rpmRC parseForConfig(char * buf, FileEntry cur)
 	SKIPNONWHITE(pe);
 	if (*pe != '\0')
 	    *pe++ = '\0';
-	if (rstreq(p, "missingok")) {
-	    cur->attrFlags |= RPMFILE_MISSINGOK;
-	} else if (rstreq(p, "noreplace")) {
-	    cur->attrFlags |= RPMFILE_NOREPLACE;
-	} else {
+	if (!vfaMatch(configAttrs, p, &(cur->attrFlags))) {
 	    rpmlog(RPMLOG_ERR, _("Invalid %s token: %s\n"), name, p);
 	    goto exit;
 	}
