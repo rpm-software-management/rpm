@@ -59,7 +59,7 @@ enum parseAttrs_e {
     RPMFILE_EXCLUDE	= (1 << 16),	/*!< from %%exclude */
     RPMFILE_DOCDIR	= (1 << 17),	/*!< from %%docdir */
     RPMFILE_DIR		= (1 << 18),	/*!< from %%dir */
-    RPMFILE_SPECIALDOC	= (1 << 19),	/*!< from special %%doc */
+    RPMFILE_SPECIALDIR	= (1 << 19),	/*!< from special %%doc */
 };
 
 /* bits up to 15 (for now) reserved for exported rpmfileAttrs */
@@ -862,9 +862,9 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 		res = RPMRC_FAIL;
 		continue;
 	    }
-	    /* non-absolute %doc paths are "special docs" */
+	    /* non-absolute %doc paths are special */
 	    if (cur->attrFlags & RPMFILE_DOC)
-		cur->attrFlags |= RPMFILE_SPECIALDOC;
+		cur->attrFlags |= RPMFILE_SPECIALDIR;
 	}
 	argvAdd(fileNames, s);
     }
@@ -1852,8 +1852,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	}
 
 	for (ARGV_const_t fn = fileNames; fn && *fn; fn++) {
-	    if (fl.cur.attrFlags & RPMFILE_SPECIALDOC) {
-		int oa = (fl.cur.attrFlags & ~(RPMFILE_DOC|RPMFILE_SPECIALDOC));
+	    if (fl.cur.attrFlags & RPMFILE_SPECIALDIR) {
+		int oa = (fl.cur.attrFlags & ~(RPMFILE_DOC|RPMFILE_SPECIALDIR));
 		if (oa || **fn == '/') {
 		    rpmlog(RPMLOG_ERR,
 		       _("Can't mix special %%doc with other forms: %s\n"),*fn);
