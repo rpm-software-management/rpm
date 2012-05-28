@@ -129,6 +129,12 @@ typedef struct FileEntry_s {
     int isDir;
 } * FileEntry;
 
+typedef struct FileRecords_s {
+    FileListRec recs;
+    int alloced;
+    int used;
+} * FileRecords;
+
 /**
  * Package file tree walk data.
  */
@@ -141,9 +147,8 @@ typedef struct FileList_s {
     ARGV_t docDirs;
     rpmBuildPkgFlags pkgFlags;
 
-    FileListRec fileList;
-    int fileListRecsAlloced;
-    int fileListRecsUsed;
+    /* actual file records */
+    struct FileRecords_s files;
 
     /* active defaults */
     struct FileEntry_s def;
@@ -915,13 +920,13 @@ static int checkHardLinks(FileList fl)
     FileListRec ilp, jlp;
     int i, j;
 
-    for (i = 0;  i < fl->fileListRecsUsed; i++) {
-	ilp = fl->fileList + i;
+    for (i = 0;  i < fl->files.used; i++) {
+	ilp = fl->files.recs + i;
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
 
-	for (j = i + 1; j < fl->fileListRecsUsed; j++) {
-	    jlp = fl->fileList + j;
+	for (j = i + 1; j < fl->files.used; j++) {
+	    jlp = fl->files.recs + j;
 	    if (isHardLink(ilp, jlp)) {
 		return 1;
 	    }
@@ -932,9 +937,9 @@ static int checkHardLinks(FileList fl)
 
 static int seenHardLink(FileList fl, FileListRec flp, rpm_ino_t *fileid)
 {
-    for (FileListRec ilp = fl->fileList; ilp < flp; ilp++) {
+    for (FileListRec ilp = fl->files.recs; ilp < flp; ilp++) {
 	if (isHardLink(flp, ilp)) {
-	    *fileid = ilp - fl->fileList;
+	    *fileid = ilp - fl->files.recs;
 	    return 1;
 	}
     }
@@ -981,19 +986,19 @@ static void genCpioListAndHeader(FileList fl,
     }
     
     /* Sort the big list */
-    qsort(fl->fileList, fl->fileListRecsUsed,
-	  sizeof(*(fl->fileList)), compareFileListRecs);
+    qsort(fl->files.recs, fl->files.used,
+	  sizeof(*(fl->files.recs)), compareFileListRecs);
     
     /* Generate the header. */
     if (! isSrc) {
 	skipLen = 1;
     }
 
-    for (i = 0, flp = fl->fileList; i < fl->fileListRecsUsed; i++, flp++) {
-	rpm_ino_t fileid = flp - fl->fileList;
+    for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
+	rpm_ino_t fileid = flp - fl->files.recs;
 
  	/* Merge duplicate entries. */
-	while (i < (fl->fileListRecsUsed - 1) &&
+	while (i < (fl->files.used - 1) &&
 	    rstreq(flp->cpioPath, flp[1].cpioPath)) {
 
 	    /* Two entries for the same file found, merge the entries. */
@@ -1399,13 +1404,13 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     /* Add to the file list */
-    if (fl->fileListRecsUsed == fl->fileListRecsAlloced) {
-	fl->fileListRecsAlloced += 128;
-	fl->fileList = xrealloc(fl->fileList,
-			fl->fileListRecsAlloced * sizeof(*(fl->fileList)));
+    if (fl->files.used == fl->files.alloced) {
+	fl->files.alloced += 128;
+	fl->files.recs = xrealloc(fl->files.recs,
+			fl->files.alloced * sizeof(*(fl->files.recs)));
     }
 	    
-    {	FileListRec flp = &fl->fileList[fl->fileListRecsUsed];
+    {	FileListRec flp = &fl->files.recs[fl->files.used];
 
 	flp->fl_st = *statp;	/* structure assignment */
 	flp->fl_mode = fileMode;
@@ -1448,7 +1453,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     rc = RPMRC_OK;
-    fl->fileListRecsUsed++;
+    fl->files.used++;
 
 exit:
     if (rc != RPMRC_OK)
@@ -1902,7 +1907,7 @@ exit:
     FileEntryFree(&fl.cur);
     FileEntryFree(&fl.def);
 
-    fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+    fl.files.recs = freeFileList(fl.files.recs, fl.files.used);
     argvFree(fl.docDirs);
     specialDirFree(specialDoc);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
@@ -1964,7 +1969,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	parseForAttr(a, NULL, &fl.def);
 	free(a);
     }
-    fl.fileList = xcalloc((spec->numSources + 1), sizeof(*fl.fileList));
+    fl.files.recs = xcalloc((spec->numSources + 1), sizeof(*fl.files.recs));
     fl.pkgFlags = pkgFlags;
 
     /* The first source file is the spec file */
@@ -1978,7 +1983,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	if (! *diskPath)
 	    continue;
 
-	flp = &fl.fileList[x];
+	flp = &fl.files.recs[x];
 
 	flp->flags = isSpec ? RPMFILE_SPECFILE : 0;
 	/* files with leading ! are no source files */
@@ -2023,7 +2028,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	isSpec = 0;
 	x++;
     }
-    fl.fileListRecsUsed = x;
+    fl.files.used = x;
     argvFree(files);
 
     if (! fl.processingFailed) {
@@ -2036,7 +2041,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	}
     }
 
-    fl.fileList = freeFileList(fl.fileList, fl.fileListRecsUsed);
+    fl.files.recs = freeFileList(fl.files.recs, fl.files.used);
     freeAttrRec(&fl.def.ar);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
