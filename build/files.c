@@ -911,21 +911,21 @@ static int isHardLink(FileListRec flp, FileListRec tlp)
 /**
  * Verify that file attributes scope over hardlinks correctly.
  * If partial hardlink sets are possible, then add tracking dependency.
- * @param fl		package file tree walk data
+ * @param fl		package file records
  * @return		1 if partial hardlink sets can exist, 0 otherwise.
  */
-static int checkHardLinks(FileList fl)
+static int checkHardLinks(FileRecords files)
 {
     FileListRec ilp, jlp;
     int i, j;
 
-    for (i = 0;  i < fl->files.used; i++) {
-	ilp = fl->files.recs + i;
+    for (i = 0;  i < files->used; i++) {
+	ilp = files->recs + i;
 	if (!(S_ISREG(ilp->fl_mode) && ilp->fl_nlink > 1))
 	    continue;
 
-	for (j = i + 1; j < fl->files.used; j++) {
-	    jlp = fl->files.recs + j;
+	for (j = i + 1; j < files->used; j++) {
+	    jlp = files->recs + j;
 	    if (isHardLink(ilp, jlp)) {
 		return 1;
 	    }
@@ -934,11 +934,11 @@ static int checkHardLinks(FileList fl)
     return 0;
 }
 
-static int seenHardLink(FileList fl, FileListRec flp, rpm_ino_t *fileid)
+static int seenHardLink(FileRecords files, FileListRec flp, rpm_ino_t *fileid)
 {
-    for (FileListRec ilp = fl->files.recs; ilp < flp; ilp++) {
+    for (FileListRec ilp = files->recs; ilp < flp; ilp++) {
 	if (isHardLink(flp, ilp)) {
-	    *fileid = ilp - fl->files.recs;
+	    *fileid = ilp - files->recs;
 	    return 1;
 	}
     }
@@ -1081,7 +1081,7 @@ static void genCpioListAndHeader(FileList fl,
 	}
 	/* Excludes and dupes have been filtered out by now. */
 	if (S_ISREG(flp->fl_mode)) {
-	    if (flp->fl_nlink == 1 || !seenHardLink(fl, flp, &fileid)) {
+	    if (flp->fl_nlink == 1 || !seenHardLink(&fl->files, flp, &fileid)) {
 		totalFileSize += flp->fl_size;
 	    }
 	}
@@ -1889,7 +1889,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	goto exit;
 
     /* Verify that file attributes scope over hardlinks correctly. */
-    if (checkHardLinks(&fl))
+    if (checkHardLinks(&fl.files))
 	(void) rpmlibNeedsFeature(pkg->header,
 			"PartialHardlinkSets", "4.0.4-1");
 
