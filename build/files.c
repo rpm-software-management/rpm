@@ -111,6 +111,7 @@ typedef struct specialDir_s {
     ARGV_t files;
     struct AttrRec_s ar;
     struct AttrRec_s def_ar;
+    rpmFlags sdtype;
 } * specialDir;
 
 typedef struct FileEntry_s {
@@ -845,7 +846,7 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 {
     char *s, *t;
     rpmRC res = RPMRC_OK;
-    int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC);
+    int allow_relative = (RPMFILE_PUBKEY|RPMFILE_DOC|RPMFILE_LICENSE);
 
     t = buf;
     while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
@@ -862,8 +863,8 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 		res = RPMRC_FAIL;
 		continue;
 	    }
-	    /* non-absolute %doc paths are special */
-	    if (cur->attrFlags & RPMFILE_DOC)
+	    /* non-absolute %doc and %license paths are special */
+	    if (cur->attrFlags & (RPMFILE_DOC | RPMFILE_LICENSE))
 		cur->attrFlags |= RPMFILE_SPECIALDIR;
 	}
 	argvAdd(fileNames, s);
@@ -1708,9 +1709,10 @@ exit:
     return rc;
 }
 
-static char * getSpecialDocDir(Header h)
+static char * getSpecialDocDir(Header h, rpmFlags sdtype)
 {
     const char *errstr = NULL;
+    const char *dirtype = (sdtype == RPMFILE_DOC) ? "docdir" : "licensedir";
     const char *fmt_default = "%{NAME}-%{VERSION}";
     char *fmt_macro = rpmExpand("%{?_docdir_fmt}", NULL);
     char *fmt = NULL; 
@@ -1727,19 +1729,21 @@ static char * getSpecialDocDir(Header h)
     if (fmt == NULL)
 	fmt = headerFormat(h, fmt_default, &errstr);
 
-    res = rpmGetPath("%{_docdir}/", fmt, NULL);
+    res = rpmGetPath("%{_", dirtype, "}/", fmt, NULL);
 
     free(fmt);
     free(fmt_macro);
     return res;
 }
 
-static specialDir specialDirNew(Header h, AttrRec ar, AttrRec def_ar)
+static specialDir specialDirNew(Header h, rpmFlags sdtype,
+				AttrRec ar, AttrRec def_ar)
 {
     specialDir sd = xcalloc(1, sizeof(*sd));
     dupAttrRec(ar, &(sd->ar));
     dupAttrRec(def_ar, &(sd->def_ar));
-    sd->dirname = getSpecialDocDir(h);
+    sd->dirname = getSpecialDocDir(h, sdtype);
+    sd->sdtype = sdtype;
     return sd;
 }
 
@@ -1755,25 +1759,30 @@ static specialDir specialDirFree(specialDir sd)
     return NULL;
 }
 
-static void processSpecialDocs(rpmSpec spec, Package pkg, FileList fl,
+static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 				specialDir sd, int install, int test)
 {
-    char *mkdocdir = rpmExpand("%{__mkdir_p} $DOCDIR", NULL);
+    const char *sdenv = (sd->sdtype == RPMFILE_DOC) ? "DOCDIR" : "LICENSEDIR";
+    const char *sdname = (sd->sdtype == RPMFILE_DOC) ? "%doc" : "%license";
+    char *mkdocdir = rpmExpand("%{__mkdir_p} $", sdenv, NULL);
     StringBuf docScript = newStringBuf();
 
-    appendStringBuf(docScript, "DOCDIR=$RPM_BUILD_ROOT");
+    appendStringBuf(docScript, sdenv);
+    appendStringBuf(docScript, "=$RPM_BUILD_ROOT");
     appendLineStringBuf(docScript, sd->dirname);
-    appendLineStringBuf(docScript, "export DOCDIR");
+    appendStringBuf(docScript, "export ");
+    appendLineStringBuf(docScript, sdenv);
     appendLineStringBuf(docScript, mkdocdir);
 
     for (ARGV_const_t fn = sd->files; fn && *fn; fn++) {
 	appendStringBuf(docScript, "cp -pr ");
 	appendStringBuf(docScript, *fn);
-	appendLineStringBuf(docScript, " $DOCDIR");
+	appendStringBuf(docScript, " $");
+	appendLineStringBuf(docScript, sdenv);
     }
 
     if (install) {
-	rpmRC rc = doScript(spec, RPMBUILD_STRINGBUF, "%doc",
+	rpmRC rc = doScript(spec, RPMBUILD_STRINGBUF, sdname,
 			    getStringBuf(docScript), test);
 
 	if (rc && rpmExpandNumeric("%{?_missing_doc_files_terminate_build}"))
@@ -1800,6 +1809,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     struct FileList_s fl;
     ARGV_t fileNames = NULL;
     specialDir specialDoc = NULL;
+    specialDir specialLic = NULL;
 
     pkg->cpioList = NULL;
 
@@ -1853,20 +1863,28 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	for (ARGV_const_t fn = fileNames; fn && *fn; fn++) {
 	    if (fl.cur.attrFlags & RPMFILE_SPECIALDIR) {
-		int oa = (fl.cur.attrFlags & ~(RPMFILE_DOC|RPMFILE_SPECIALDIR));
-		if (oa || **fn == '/') {
+		rpmFlags oattrs = (fl.cur.attrFlags & ~RPMFILE_SPECIALDIR);
+		specialDir *sdp = NULL;
+		if (oattrs == RPMFILE_DOC) {
+		    sdp = &specialDoc;
+		} else if (oattrs == RPMFILE_LICENSE) {
+		    sdp = &specialLic;
+		}
+
+		if (sdp == NULL || **fn == '/') {
 		    rpmlog(RPMLOG_ERR,
-		       _("Can't mix special %%doc with other forms: %s\n"),*fn);
+			   _("Can't mix special %s with other forms: %s\n"),
+			   (oattrs & RPMFILE_DOC) ? "%doc" : "%license", *fn);
 		    fl.processingFailed = 1;
 		    continue;
 		}
 
-		/* save attributes on first special doc for later use */
-		if (specialDoc == NULL) {
-		    specialDoc = specialDirNew(pkg->header,
-					       &fl.cur.ar, &fl.def.ar);
+		/* save attributes on first special doc/license for later use */
+		if (*sdp == NULL) {
+		    *sdp = specialDirNew(pkg->header, oattrs,
+					 &fl.cur.ar, &fl.def.ar);
 		}
-		argvAdd(&specialDoc->files, *fn);
+		argvAdd(&(*sdp)->files, *fn);
 		continue;
 	    }
 
@@ -1892,9 +1910,11 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	    fl.haveCaps = 1;
     }
 
-    /* Now process special doc, if there is one */
+    /* Now process special docs and licenses if present */
     if (specialDoc)
-	processSpecialDocs(spec, pkg, &fl, specialDoc, installSpecialDoc, test);
+	processSpecialDir(spec, pkg, &fl, specialDoc, installSpecialDoc, test);
+    if (specialLic)
+	processSpecialDir(spec, pkg, &fl, specialLic, installSpecialDoc, test);
     
     if (fl.processingFailed)
 	goto exit;
@@ -1909,6 +1929,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 exit:
     FileListFree(&fl);
     specialDirFree(specialDoc);
+    specialDirFree(specialLic);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 

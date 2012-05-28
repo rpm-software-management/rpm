@@ -197,6 +197,7 @@ package or when debugging this package.\
 %{nil}
 
 %_defaultdocdir		%{_datadir}/doc
+%_defaultlicensedir	%{_datadir}/licenses
 
 #	The path to the gzip executable (legacy, use %{__gzip} instead).
 %_gzipbin		%{__gzip}
