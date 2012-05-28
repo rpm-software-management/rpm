@@ -280,6 +280,19 @@ static VFA_t const verifyAttrs[] = {
     { NULL, 0 }
 };
 
+static rpmFlags vfaMatch(VFA_t *attrs, const char *token, rpmFlags *flags)
+{
+    VFA_t *vfa;
+
+    for (vfa = attrs; vfa->attribute != NULL; vfa++) {
+	if (rstreq(token, vfa->attribute)) {
+	    *flags |= vfa->flag;
+	    break;
+	}
+    }
+    return vfa->flag;
+}
+
 /**
  * Parse %verify and %defverify from file manifest.
  * @param buf		current spec file line
@@ -338,16 +351,8 @@ static rpmRC parseForVerify(char * buf, FileEntry cur, FileEntry def)
 	if (*pe != '\0')
 	    *pe++ = '\0';
 
-	{   VFA_t *vfa;
-	    for (vfa = verifyAttrs; vfa->attribute != NULL; vfa++) {
-		if (!rstreq(p, vfa->attribute))
-		    continue;
-		verifyFlags |= vfa->flag;
-		break;
-	    }
-	    if (vfa->attribute)
-		continue;
-	}
+	if (vfaMatch(verifyAttrs, p, &verifyFlags))
+	    continue;
 
 	if (rstreq(p, "not")) {
 	    negated ^= 1;
@@ -810,7 +815,7 @@ exit:
 }
 /**
  */
-static VFA_t const virtualFileAttributes[] = {
+static VFA_t const virtualAttrs[] = {
     { "%dir",		RPMFILE_DIR },
     { "%docdir",	RPMFILE_DOCDIR },
     { "%doc",		RPMFILE_DOC },
@@ -837,18 +842,10 @@ static rpmRC parseForSimple(char * buf, FileEntry cur, ARGV_t * fileNames)
 
     t = buf;
     while ((s = strtokWithQuotes(t, " \t\n")) != NULL) {
-    	VFA_t *vfa;
 	t = NULL;
 
     	/* Set flags for virtual file attributes */
-	for (vfa = virtualFileAttributes; vfa->attribute != NULL; vfa++) {
-	    if (rstreq(s, vfa->attribute)) {
-		cur->attrFlags |= vfa->flag;
-		break;
-	    }
-	}
-	/* if we got an attribute, continue with next token */
-	if (vfa->attribute != NULL)
+	if (vfaMatch(virtualAttrs, s, &(cur->attrFlags)))
 	    continue;
 
 	/* normally paths need to be absolute */
