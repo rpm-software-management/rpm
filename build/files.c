@@ -1925,7 +1925,6 @@ static void genSourceRpmName(rpmSpec spec)
 rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 {
     struct Source *srcPtr;
-    int x, isSpec = 1;
     struct FileList_s fl;
     ARGV_t files = NULL;
     Package pkg;
@@ -1968,11 +1967,10 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	parseForAttr(a, NULL, &fl.def);
 	free(a);
     }
-    fl.files.recs = xcalloc((spec->numSources + 1), sizeof(*fl.files.recs));
+    fl.files.alloced = spec->numSources + 1;
+    fl.files.recs = xcalloc(fl.files.alloced, sizeof(*fl.files.recs));
     fl.pkgFlags = pkgFlags;
 
-    /* The first source file is the spec file */
-    x = 0;
     for (ARGV_const_t fp = files; *fp != NULL; fp++) {
 	const char *diskPath = *fp;
 	char *tmp;
@@ -1982,9 +1980,10 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	if (! *diskPath)
 	    continue;
 
-	flp = &fl.files.recs[x];
+	flp = &fl.files.recs[fl.files.used];
 
-	flp->flags = isSpec ? RPMFILE_SPECFILE : 0;
+	/* The first source file is the spec file */
+	flp->flags = (fl.files.used == 0) ? RPMFILE_SPECFILE : 0;
 	/* files with leading ! are no source files */
 	if (*diskPath == '!') {
 	    flp->flags |= RPMFILE_GHOST;
@@ -2024,10 +2023,8 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    fl.processingFailed = 1;
 	}
 
-	isSpec = 0;
-	x++;
+	fl.files.used++;
     }
-    fl.files.used = x;
     argvFree(files);
 
     if (! fl.processingFailed) {
