@@ -1198,8 +1198,10 @@ static void genCpioListAndHeader(FileList fl,
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
     fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
 
-    if (fi == NULL)
+    if (fi == NULL) {
+	fl->processingFailed = 1;
 	return;
+    }
 
     /* 
      * Grab the real filenames from ORIGFILENAMES and put into OLDFILENAMES,
@@ -1903,8 +1905,6 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 			"PartialHardlinkSets", "4.0.4-1");
 
     genCpioListAndHeader(&fl, &pkg->cpioList, pkg->header, 0);
-    if (pkg->cpioList == NULL)
-	fl.processingFailed = 1;
 
 exit:
     FileListFree(&fl);
@@ -2031,9 +2031,6 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	if (spec->sourceHeader != NULL) {
 	    genCpioListAndHeader(&fl, &spec->sourceCpioList,
 			spec->sourceHeader, 1);
-	    if (spec->sourceCpioList == NULL) {
-		fl.processingFailed = 1;
-	    }
 	}
     }
 
