@@ -1252,6 +1252,15 @@ static FileRecords FileRecordsFree(FileRecords files)
     return NULL;
 }
 
+static void FileListFree(FileList fl)
+{
+    FileEntryFree(&(fl->cur));
+    FileEntryFree(&(fl->def));
+    FileRecordsFree(&(fl->files));
+    free(fl->buildRoot);
+    argvFree(fl->docDirs);
+}
+
 /* forward ref */
 static rpmRC recurseDir(FileList fl, const char * diskPath);
 
@@ -1898,13 +1907,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.processingFailed = 1;
 
 exit:
-    fl.buildRoot = _free(fl.buildRoot);
-
-    FileEntryFree(&fl.cur);
-    FileEntryFree(&fl.def);
-
-    FileRecordsFree(&fl.files);
-    argvFree(fl.docDirs);
+    FileListFree(&fl);
     specialDirFree(specialDoc);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
@@ -2037,8 +2040,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	}
     }
 
-    FileRecordsFree(&fl.files);
-    freeAttrRec(&fl.def.ar);
+    FileListFree(&fl);
     return fl.processingFailed ? RPMRC_FAIL : RPMRC_OK;
 }
 
