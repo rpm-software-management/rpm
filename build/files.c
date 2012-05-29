@@ -302,24 +302,19 @@ static rpmFlags vfaMatch(VFA_t *attrs, const char *token, rpmFlags *flags)
 /**
  * Parse %verify and %defverify from file manifest.
  * @param buf		current spec file line
- * @param cur		current file entry data
- * @param def		default file entry data
+ * @param def		parse for %defverify or %verify?
+ * @param entry		file entry data (current or default)
  * @return		RPMRC_OK on success
  */
-static rpmRC parseForVerify(char * buf, FileEntry cur, FileEntry def)
+static rpmRC parseForVerify(char * buf, int def, FileEntry entry)
 {
     char *p, *pe, *q = NULL;
-    const char *name;
+    const char *name = def ? "%defverify" : "%verify";
     int negated = 0;
     rpmVerifyFlags verifyFlags = RPMVERIFY_NONE;
     rpmRC rc = RPMRC_FAIL;
-    FileEntry entry = NULL;
 
-    if ((p = strstr(buf, (name = "%verify"))) != NULL) {
-	entry = cur;
-    } else if ((p = strstr(buf, (name = "%defverify"))) != NULL) {
-	entry = def;
-    } else
+    if ((p = strstr(buf, name)) == NULL)
 	return RPMRC_OK;
 
     for (pe = p; (pe-p) < strlen(name); pe++)
@@ -475,25 +470,20 @@ exit:
 /**
  * Parse %attr and %defattr from file manifest.
  * @param buf		current spec file line
- * @param cur		current file entry data
- * @param def		default file entry data
+ * @param def		parse for %defattr or %attr?
+ * @param entry		file entry data (current / default)
  * @return		0 on success
  */
-static rpmRC parseForAttr(char * buf, FileEntry cur, FileEntry def)
+static rpmRC parseForAttr(char * buf, int def, FileEntry entry)
 {
-    const char *name;
+    const char *name = def ? "%defattr" : "%attr";
     char *p, *pe, *q = NULL;
     int x;
     struct AttrRec_s arbuf;
     AttrRec ar = &arbuf;
     rpmRC rc = RPMRC_FAIL;
-    FileEntry entry = NULL;
 
-    if ((p = strstr(buf, (name = "%attr"))) != NULL) {
-	entry = cur;
-    } else if ((p = strstr(buf, (name = "%defattr"))) != NULL) {
-	entry = def;
-    } else
+    if ((p = strstr(buf, name)) == NULL)
 	return RPMRC_OK;
 
     for (pe = p; (pe-p) < strlen(name); pe++)
@@ -511,7 +501,7 @@ static rpmRC parseForAttr(char * buf, FileEntry cur, FileEntry def)
     for (p = pe; *pe && *pe != ')'; pe++)
 	{};
 
-    if (entry == def) {	/* %defattr */
+    if (def) {	/* %defattr */
 	char *r = pe;
 	r++;
 	SKIPSPACE(r);
@@ -546,7 +536,7 @@ static rpmRC parseForAttr(char * buf, FileEntry cur, FileEntry def)
 	ar->ar_group = p;
 	p = pe; SKIPWHITE(p);
     }
-    if (*p != '\0' && entry == def) {	/* %defattr */
+    if (*p != '\0' && def) {	/* %defattr */
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
 	ar->ar_dmodestr = p;
 	p = pe; SKIPWHITE(p);
@@ -1849,8 +1839,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	fl.cur.specdFlags = ((unsigned)fl.def.specdFlags) >> 8;
 	fl.cur.verifyFlags = fl.def.verifyFlags;
 
-	if (parseForVerify(buf, &fl.cur, &fl.def) ||
-	    parseForAttr(buf, &fl.cur, &fl.def) ||
+	if (parseForVerify(buf, 0, &fl.cur) ||
+	    parseForVerify(buf, 1, &fl.def) ||
+	    parseForAttr(buf, 0, &fl.cur) ||
+	    parseForAttr(buf, 1, &fl.def) ||
 	    parseForDev(buf, &fl.cur) ||
 	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl.cur) ||
@@ -1985,7 +1977,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     memset(&fl, 0, sizeof(fl));
     if (_srcdefattr) {
 	char *a = rstrscat(NULL, "%defattr ", _srcdefattr, NULL);
-	parseForAttr(a, NULL, &fl.def);
+	parseForAttr(a, 1, &fl.def);
 	free(a);
     }
     fl.files.alloced = spec->numSources + 1;
