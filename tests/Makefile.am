@@ -35,6 +35,7 @@ EXTRA_DIST += data/SPECS/attrtest.spec
 EXTRA_DIST += data/SPECS/hello.spec
 EXTRA_DIST += data/SPECS/hello-script.spec
 EXTRA_DIST += data/SPECS/foo.spec
+EXTRA_DIST += data/SPECS/globtest.spec
 EXTRA_DIST += data/SPECS/versiontest.spec
 EXTRA_DIST += data/SPECS/conflicttest.spec
 EXTRA_DIST += data/SPECS/configtest.spec

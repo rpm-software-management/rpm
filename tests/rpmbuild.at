@@ -153,3 +153,35 @@ ls -i "${RPMTEST}"/foo/hello* | awk {'print $1'} | sort -u | wc -l
 ],
 [])
 AT_CLEANUP
+
+AT_SETUP([rpmbuild glob])
+AT_KEYWORDS([build])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf ${TOPDIR}
+
+runroot rpmbuild -bb --quiet /data/SPECS/globtest.spec
+runroot rpm -qp \
+	--qf "[[%{filemodes:perms} %{filenames}\n]]" \
+	"${TOPDIR}"/RPMS/noarch/globtest-1.0-1.noarch.rpm
+],
+[0],
+[-rw-r--r-- /opt/globtest/baf
+drwxr-xr-x /opt/globtest/bang
+-rw-r--r-- /opt/globtest/bif
+drwxr-xr-x /opt/globtest/bing
+drwxr-xr-x /opt/globtest/bong
+drwxr-xr-x /opt/globtest/foo
+-rw-r--r-- /opt/globtest/foo/one
+-rw-r--r-- /opt/globtest/foo/three
+-rw-r--r-- /opt/globtest/foo/two
+lrwxrwxrwx /opt/globtest/linkbad
+lrwxrwxrwx /opt/globtest/linkgood
+-rw-r--r-- /opt/globtest/weird%name
+-rw-r--r-- /opt/globtest/zab
+-rw-r--r-- /opt/globtest/zeb
+-rw-r--r-- /opt/globtest/zib
+],
+[])
+AT_CLEANUP
