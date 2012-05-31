@@ -276,14 +276,6 @@ glob(const char *pattern, int flags,
 
     /* Find the filename.  */
     filename = strrchr(pattern, '/');
-#if defined __MSDOS__ || defined WINDOWS32
-    /* The case of "d:pattern".  Since `:' is not allowed in
-       file names, we can safely assume that wherever it
-       happens in pattern, it signals the filename part.  This
-       is so we could some day support patterns like "[a-z]:foo".  */
-    if (filename == NULL)
-	filename = strchr(pattern, ':');
-#endif				/* __MSDOS__ || WINDOWS32 */
     if (filename == NULL) {
 	/* This can mean two things: a simple name or "~name".  The latter
 	   case is nothing but a notation for a directory.  */
@@ -297,11 +289,7 @@ glob(const char *pattern, int flags,
 	    filename = NULL;
 	} else {
 	    filename = pattern;
-#ifdef _AMIGA
-	    dirname = "";
-#else
 	    dirname = ".";
-#endif
 	    dirlen = 0;
 	}
     } else if (filename == pattern) {
@@ -312,37 +300,13 @@ glob(const char *pattern, int flags,
     } else {
 	char *newp;
 	dirlen = filename - pattern;
-#if defined __MSDOS__ || defined WINDOWS32
-	if (*filename == ':'
-	    || (filename > pattern + 1 && filename[-1] == ':')) {
-	    char *drive_spec;
-
-	    ++dirlen;
-	    drive_spec = (char *) __alloca(dirlen + 1);
-	    *((char *) mempcpy(drive_spec, pattern, dirlen)) = '\0';
-	    /* For now, disallow wildcards in the drive spec, to
-	       prevent infinite recursion in glob.  */
-	    if (__glob_pattern_p(drive_spec, !(flags & GLOB_NOESCAPE)))
-		return GLOB_NOMATCH;
-	    /* If this is "d:pattern", we need to copy `:' to DIRNAME
-	       as well.  If it's "d:/pattern", don't remove the slash
-	       from "d:/", since "d:" and "d:/" are not the same. */
-	}
-#endif
 	newp = (char *) __alloca(dirlen + 1);
 	*((char *) mempcpy(newp, pattern, dirlen)) = '\0';
 	dirname = newp;
 	++filename;
 
-	if (filename[0] == '\0'
-#if defined __MSDOS__ || defined WINDOWS32
-	    && dirname[dirlen - 1] != ':'
-	    && (dirlen < 3 || dirname[dirlen - 2] != ':'
-		|| dirname[dirlen - 1] != '/')
-#endif
-	    && dirlen > 1)
+	if (filename[0] == '\0' && dirlen > 1) {
 	    /* "pattern/".  Expand "pattern", appending slashes.  */
-	{
 	    int val = glob(dirname, flags | GLOB_MARK, errfunc, pglob);
 	    if (val == 0)
 		pglob->gl_flags = ((pglob->gl_flags & ~GLOB_MARK)
@@ -358,19 +322,10 @@ glob(const char *pattern, int flags,
 
     oldcount = pglob->gl_pathc;
 
-#ifndef VMS
     if ((flags & (GLOB_TILDE | GLOB_TILDE_CHECK)) && dirname[0] == '~') {
 	if (dirname[1] == '\0' || dirname[1] == '/') {
 	    /* Look up home directory.  */
 	    const char *home_dir = getenv("HOME");
-#ifdef _AMIGA
-	    if (home_dir == NULL || home_dir[0] == '\0')
-		home_dir = "SYS:";
-#else
-#ifdef WINDOWS32
-	    if (home_dir == NULL || home_dir[0] == '\0')
-		home_dir = "c:/users/default";	/* poor default */
-#else
 	    if (home_dir == NULL || home_dir[0] == '\0') {
 		int success;
 		char *name;
@@ -388,8 +343,6 @@ glob(const char *pattern, int flags,
 		else
 		    home_dir = "~";	/* No luck.  */
 	    }
-#endif				/* WINDOWS32 */
-#endif
 	    /* Now construct the full directory.  */
 	    if (dirname[1] == '\0')
 		dirname = home_dir;
@@ -402,7 +355,6 @@ glob(const char *pattern, int flags,
 		dirname = newp;
 	    }
 	}
-#if !defined _AMIGA && !defined WINDOWS32
 	else {
 	    char *end_name = strchr(dirname, '/');
 	    const char *user_name;
@@ -441,9 +393,7 @@ glob(const char *pattern, int flags,
 		   home directory.  */
 		return GLOB_NOMATCH;
 	}
-#endif				/* Not Amiga && not WINDOWS32.  */
     }
-#endif				/* Not VMS.  */
 
     /* Now test whether we looked for "~" or "~NAME".  In this case we
        can give the answer now.  */
@@ -701,29 +651,11 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 {
     register size_t i;
     size_t dirlen = strlen(dirname);
-#if defined __MSDOS__ || defined WINDOWS32
-    int sep_char = '/';
-#define DIRSEP_CHAR sep_char
-#else
-#define DIRSEP_CHAR '/'
-#endif
 
     if (dirlen == 1 && dirname[0] == '/')
 	/* DIRNAME is just "/", so normal prepending would get us "//foo".
 	   We want "/foo" instead, so don't prepend any chars from DIRNAME.  */
 	dirlen = 0;
-#if defined __MSDOS__ || defined WINDOWS32
-    else if (dirlen > 1) {
-	if (dirname[dirlen - 1] == '/')
-	    /* DIRNAME is "d:/".  Don't prepend the slash from DIRNAME.  */
-	    --dirlen;
-	else if (dirname[dirlen - 1] == ':') {
-	    /* DIRNAME is "d:".  Use `:' instead of `/'.  */
-	    --dirlen;
-	    sep_char = ':';
-	}
-    }
-#endif
 
     for (i = 0; i < n; ++i) {
 	size_t eltlen = strlen(array[i]) + 1;
@@ -735,7 +667,7 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 	}
 	{
 	    char *endp = (char *) mempcpy(new, dirname, dirlen);
-	    *endp++ = DIRSEP_CHAR;
+	    *endp++ = '/';
 	    mempcpy(endp, array[i], eltlen);
 	}
 	free(array[i]);
@@ -845,13 +777,8 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 		nfound = 0;
 		meta = 0;
 	    } else {
-		int fnm_flags = ((!(flags & GLOB_PERIOD) ? FNM_PERIOD : 0)
-				 | ((flags & GLOB_NOESCAPE) ? FNM_NOESCAPE
-				    : 0)
-#if defined _AMIGA || defined VMS
-				 | FNM_CASEFOLD
-#endif
-		    );
+		int fnm_flags = ((!(flags & GLOB_PERIOD) ? FNM_PERIOD : 0) |
+				 ((flags & GLOB_NOESCAPE) ? FNM_NOESCAPE : 0));
 		nfound = 0;
 		flags |= GLOB_MAGCHAR;
 
