@@ -194,16 +194,7 @@ glob(const char *pattern, int flags,
 	    const char *next;
 	    const char *rest;
 	    size_t rest_len;
-#ifdef __GNUC__
 	    char onealt[strlen(pattern) - 1];
-#else
-	    char *onealt = (char *) xmalloc(strlen(pattern) - 1);
-	    if (onealt == NULL) {
-		if (!(flags & GLOB_APPEND))
-		    globfree(pglob);
-		return GLOB_NOSPACE;
-	    }
-#endif
 
 	    /* We know the prefix for all sub-patterns.  */
 #ifdef HAVE_MEMPCPY
@@ -218,9 +209,6 @@ glob(const char *pattern, int flags,
 	    next = next_brace_sub(begin + 1);
 	    if (next == NULL) {
 		/* It is an illegal expression.  */
-#ifndef __GNUC__
-		free(onealt);
-#endif
 		return glob(pattern, flags & ~GLOB_BRACE, errfunc, pglob);
 	    }
 
@@ -230,9 +218,6 @@ glob(const char *pattern, int flags,
 		rest = next_brace_sub(rest + 1);
 		if (rest == NULL) {
 		    /* It is an illegal expression.  */
-#ifndef __GNUC__
-		    free(onealt);
-#endif
 		    return glob(pattern, flags & ~GLOB_BRACE, errfunc,
 				pglob);
 		}
@@ -273,9 +258,6 @@ glob(const char *pattern, int flags,
 
 		/* If we got an error, return it.  */
 		if (result && result != GLOB_NOMATCH) {
-#ifndef __GNUC__
-		    free(onealt);
-#endif
 		    if (!(flags & GLOB_APPEND))
 			globfree(pglob);
 		    return result;
@@ -289,10 +271,6 @@ glob(const char *pattern, int flags,
 		next = next_brace_sub(p);
 		assert(next != NULL);
 	    }
-
-#ifndef __GNUC__
-	    free(onealt);
-#endif
 
 	    if (pglob->gl_pathc != firstc)
 		/* We found some entries.  */
