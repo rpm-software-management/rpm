@@ -30,47 +30,6 @@
 #include <assert.h>
 #include <sys/stat.h>		/* S_ISDIR */
 
-#undef	__ptr_t
-#if defined __cplusplus || (defined __STDC__ && __STDC__) || defined WINDOWS32
-#if !defined __GLIBC__ || !defined __P || !defined __PMT
-#undef __P
-#undef __PMT
-#define __P(protos)	protos
-#define __PMT(protos)	protos
-#if !defined __GNUC__ || __GNUC__ < 2
-#undef __const
-#define __const const
-#endif
-#endif
-#define __ptr_t	void *
-#else				/* Not C++ or ANSI C.  */
-#undef	__P
-#undef __PMT
-#define __P(protos)	()
-#define __PMT(protos)	()
-#undef	__const
-#define __const
-#define __ptr_t	char *
-#endif				/* C++ or ANSI C.  */
-
-/* We need `size_t' for the following definitions.  */
-#if !defined(__size_t) && !defined(_BSD_SIZE_T_DEFINED_)
-#if defined __GNUC__ && __GNUC__ >= 2
-typedef __SIZE_TYPE__ __size_t;
-#ifdef _XOPEN_SOURCE
-typedef __SIZE_TYPE__ size_t;
-#endif
-#else
-/* This is a guess.  */
-typedef unsigned long int __size_t;
-#endif
-#else
-/* The GNU CC stddef.h version defines __size_t as empty.  We need a real
-   definition.  */
-#undef __size_t
-#define __size_t size_t
-#endif
-
 /* Bits set in the FLAGS argument to `glob'.  */
 #define	GLOB_ERR	(1 << 0)	/* Return on read errors.  */
 #define	GLOB_MARK	(1 << 1)	/* Append a slash to each name.  */
@@ -113,41 +72,21 @@ typedef unsigned long int __size_t;
 #endif
 
 /* Structure describing a globbing run.  */
-#if !defined _AMIGA && !defined VMS	/* Buggy compiler.   */
-struct stat;
-#endif
 typedef struct {
-    __size_t gl_pathc;		/* Count of paths matched by the pattern.  */
+    size_t gl_pathc;		/* Count of paths matched by the pattern.  */
     char **gl_pathv;		/* List of matched pathnames.  */
-    __size_t gl_offs;		/* Slots to reserve in `gl_pathv'.  */
+    size_t gl_offs;		/* Slots to reserve in `gl_pathv'.  */
     int gl_flags;		/* Set to FLAGS, maybe | GLOB_MAGCHAR.  */
 
     /* If the GLOB_ALTDIRFUNC flag is set, the following functions
        are used instead of the normal file access functions.  */
-    void (*gl_closedir) __PMT((void *));
-    struct dirent *(*gl_readdir) __PMT((void *));
-     __ptr_t(*gl_opendir) __PMT((__const char *));
-    int (*gl_lstat) __PMT((__const char *, struct stat *));
-    int (*gl_stat) __PMT((__const char *, struct stat *));
+    void (*gl_closedir)(void *);
+    struct dirent *(*gl_readdir)(void *);
+    void *(*gl_opendir)(const char *);
+    int (*gl_lstat)(const char *, struct stat *);
+    int (*gl_stat)(const char *, struct stat *);
 } glob_t;
 
-#ifdef _LARGEFILE64_SOURCE
-struct stat64;
-typedef struct {
-    __size_t gl_pathc;
-    char **gl_pathv;
-    __size_t gl_offs;
-    int gl_flags;
-
-    /* If the GLOB_ALTDIRFUNC flag is set, the following functions
-       are used instead of the normal file access functions.  */
-    void (*gl_closedir) __PMT((void *));
-    struct dirent64 *(*gl_readdir) __PMT((void *));
-     __ptr_t(*gl_opendir) __PMT((__const char *));
-    int (*gl_lstat) __PMT((__const char *, struct stat64 *));
-    int (*gl_stat) __PMT((__const char *, struct stat64 *));
-} glob64_t;
-#endif
 #define	__alloca	alloca
 #define	__stat		stat
 #define	NAMLEN(_d)	NLENGTH(_d)
@@ -177,13 +116,13 @@ typedef struct {
 #define GLOB_INTERFACE_VERSION 1
 
 static void globfree(glob_t * pglob);
-static inline const char *next_brace_sub __P((const char *begin));
-static int glob_in_dir __P((const char *pattern, const char *directory,
+static inline const char *next_brace_sub(const char *begin);
+static int glob_in_dir(const char *pattern, const char *directory,
 			    int flags,
 			    int (*errfunc) (const char *, int),
-			    glob_t * pglob));
-static int prefix_array __P((const char *prefix, char **array, size_t n));
-static int collated_compare __P((const __ptr_t, const __ptr_t));
+			    glob_t * pglob);
+static int prefix_array(const char *prefix, char **array, size_t n);
+static int collated_compare(const void *, const void *);
 
 
 /* Find the end of the sub-pattern in a brace expression.  We define
@@ -231,7 +170,7 @@ static int __glob_pattern_p(const char *pattern, int quote);
    Otherwise, `glob' returns zero.  */
 static int
 glob(const char *pattern, int flags,
-     int (*errfunc) __P((const char *, int)), glob_t * pglob)
+     int (*errfunc)(const char *, int), glob_t * pglob)
 {
     const char *filename;
     const char *dirname;
@@ -862,7 +801,7 @@ glob(const char *pattern, int flags,
 	if ((flags & GLOB_DOOFFS) && pglob->gl_offs > oldcount)
 	    non_sort = pglob->gl_offs;
 
-	qsort((__ptr_t) & pglob->gl_pathv[non_sort],
+	qsort(& pglob->gl_pathv[non_sort],
 	      pglob->gl_pathc - non_sort,
 	      sizeof(char *), collated_compare);
     }
@@ -878,14 +817,14 @@ static void globfree(glob_t * pglob)
 	register int i;
 	for (i = 0; i < pglob->gl_pathc; ++i)
 	    if (pglob->gl_pathv[i] != NULL)
-		free((__ptr_t) pglob->gl_pathv[i]);
-	free((__ptr_t) pglob->gl_pathv);
+		free(pglob->gl_pathv[i]);
+	free(pglob->gl_pathv);
     }
 }
 
 
 /* Do a collated comparison of A and B.  */
-static int collated_compare(const __ptr_t a, const __ptr_t b)
+static int collated_compare(const void * a, const void * b)
 {
     const char *const s1 = *(const char *const *const) a;
     const char *const s2 = *(const char *const *const) b;
@@ -937,7 +876,7 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 	char *new = (char *) xmalloc(dirlen + 1 + eltlen);
 	if (new == NULL) {
 	    while (i > 0)
-		free((__ptr_t) array[--i]);
+		free(array[--i]);
 	    return 1;
 	}
 #ifdef HAVE_MEMPCPY
@@ -951,7 +890,7 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 	new[dirlen] = DIRSEP_CHAR;
 	memcpy(&new[dirlen + 1], array[i], eltlen);
 #endif
-	free((__ptr_t) array[i]);
+	free(array[i]);
 	array[i] = new;
     }
 
@@ -995,9 +934,9 @@ static int __glob_pattern_p(const char *pattern, int quote)
    The GLOB_APPEND flag is assumed to be set (always appends).  */
 static int
 glob_in_dir(const char *pattern, const char *directory, int flags,
-	    int (*errfunc) __P((const char *, int)), glob_t * pglob)
+	    int (*errfunc)(const char *, int), glob_t * pglob)
 {
-    __ptr_t stream = NULL;
+    void * stream = NULL;
 
     struct globlink {
 	struct globlink *next;
@@ -1055,7 +994,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	} else {
 	    stream = ((flags & GLOB_ALTDIRFUNC)
 		      ? (*pglob->gl_opendir) (directory)
-		      : (__ptr_t) opendir(directory));
+		      : opendir(directory));
 	    if (stream == NULL) {
 		if (errno != ENOTDIR
 		    && ((errfunc != NULL && (*errfunc) (directory, errno))
@@ -1103,10 +1042,10 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 			if (new->name == NULL)
 			    goto memory_error;
 #ifdef HAVE_MEMPCPY
-			*((char *) mempcpy((__ptr_t) new->name, name, len))
+			*((char *) mempcpy(new->name, name, len))
 			    = '\0';
 #else
-			memcpy((__ptr_t) new->name, name, len);
+			memcpy(new->name, name, len);
 			new->name[len] = '\0';
 #endif
 			new->next = names;
@@ -1177,7 +1116,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
     }
     while (names != NULL) {
 	if (names->name != NULL)
-	    free((__ptr_t) names->name);
+	    free(names->name);
 	names = names->next;
     }
     return GLOB_NOSPACE;
