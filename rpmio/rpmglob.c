@@ -468,17 +468,7 @@ glob(const char *pattern, int flags,
 		while (pglob->gl_pathc < pglob->gl_offs)
 		    pglob->gl_pathv[pglob->gl_pathc++] = NULL;
 
-#if defined HAVE_STRDUP || defined _LIBC
 	    pglob->gl_pathv[pglob->gl_pathc] = xstrdup(dirname);
-#else
-	    {
-		size_t len = strlen(dirname) + 1;
-		char *dircopy = xmalloc(len);
-		if (dircopy != NULL)
-		    pglob->gl_pathv[pglob->gl_pathc] =
-			memcpy(dircopy, dirname, len);
-	    }
-#endif
 	    if (pglob->gl_pathv[pglob->gl_pathc] == NULL) {
 		free(pglob->gl_pathv);
 		return GLOB_NOSPACE;
