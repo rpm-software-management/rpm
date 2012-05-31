@@ -40,8 +40,6 @@
 #define	GLOB_NOESCAPE	(1 << 6)	/* Backslashes don't quote metacharacters.  */
 #define	GLOB_PERIOD	(1 << 7)	/* Leading `.' can be matched by metachars.  */
 
-#if (!defined _POSIX_C_SOURCE || _POSIX_C_SOURCE < 2 || defined _BSD_SOURCE \
-     || defined _GNU_SOURCE)
 #define GLOB_MAGCHAR	 (1 << 8)	/* Set in gl_flags if any metachars seen.  */
 #define GLOB_ALTDIRFUNC (1 << 9)	/* Use gl_opendir et al functions.  */
 #define GLOB_BRACE	 (1 << 10)	/* Expand "{a,b}" to "a" "b".  */
@@ -54,22 +52,12 @@
 			 GLOB_NOESCAPE|GLOB_NOCHECK|GLOB_APPEND|     \
 			 GLOB_PERIOD|GLOB_ALTDIRFUNC|GLOB_BRACE|     \
 			 GLOB_NOMAGIC|GLOB_TILDE|GLOB_ONLYDIR|GLOB_TILDE_CHECK)
-#else
-#define __GLOB_FLAGS	(GLOB_ERR|GLOB_MARK|GLOB_NOSORT|GLOB_DOOFFS| \
-			 GLOB_NOESCAPE|GLOB_NOCHECK|GLOB_APPEND|     \
-			 GLOB_PERIOD)
-#endif
 
 /* Error returns from `glob'.  */
 #define	GLOB_NOSPACE	1	/* Ran out of memory.  */
 #define	GLOB_ABORTED	2	/* Read error.  */
 #define	GLOB_NOMATCH	3	/* No matches found.  */
 #define GLOB_NOSYS	4	/* Not implemented.  */
-#ifdef _GNU_SOURCE
-/* Previous versions of this file defined GLOB_ABEND instead of
-   GLOB_ABORTED.  Provide a compatibility definition here.  */
-#define GLOB_ABEND GLOB_ABORTED
-#endif
 
 /* Structure describing a globbing run.  */
 typedef struct {
@@ -936,10 +924,8 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	    continue;
 	}
 
-#ifdef GLOB_ONLYDIR
 	if (dir_only)
 	    flags |= GLOB_ONLYDIR;
-#endif
 	
 	gl.gl_pathc = 0;
 	gl.gl_pathv = NULL;
