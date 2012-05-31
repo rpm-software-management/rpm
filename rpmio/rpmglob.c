@@ -511,22 +511,7 @@ glob(const char *pattern, int flags,
 	   For each name we found, call glob_in_dir on it and FILENAME,
 	   appending the results to PGLOB.  */
 	for (i = 0; i < dirs.gl_pathc; ++i) {
-	    int old_pathc;
-
-#ifdef	SHELL
-	    {
-		/* Make globbing interruptible in the bash shell. */
-		extern int interrupt_state;
-
-		if (interrupt_state) {
-		    globfree(&dirs);
-		    globfree(&files);
-		    return GLOB_ABORTED;
-		}
-	    }
-#endif				/* SHELL.  */
-
-	    old_pathc = pglob->gl_pathc;
+	    int old_pathc = pglob->gl_pathc;
 	    status = glob_in_dir(filename, dirs.gl_pathv[i],
 				 ((flags | GLOB_APPEND)
 				  & ~(GLOB_NOCHECK | GLOB_ERR)),
