@@ -397,8 +397,6 @@ glob(const char *pattern, int flags,
 				      ((flags & GLOB_DOOFFS) ?
 				       pglob->gl_offs : 0) +
 				      1 + 1) * sizeof(char *));
-	    if (pglob->gl_pathv == NULL)
-		return GLOB_NOSPACE;
 
 	    if (flags & GLOB_DOOFFS)
 		while (pglob->gl_pathc < pglob->gl_offs)
@@ -493,10 +491,6 @@ glob(const char *pattern, int flags,
 					   pglob->gl_offs : 0) +
 					  dirs.gl_pathc + 1) *
 					 sizeof(char *));
-		if (pglob->gl_pathv == NULL) {
-		    globfree(&dirs);
-		    return GLOB_NOSPACE;
-		}
 
 		if (flags & GLOB_DOOFFS)
 		    while (pglob->gl_pathc < pglob->gl_offs)
@@ -517,11 +511,6 @@ glob(const char *pattern, int flags,
 		    pglob->gl_pathv[pglob->gl_pathc] = xmalloc(dir_len + 1
 							       +
 							       filename_len);
-		    if (pglob->gl_pathv[pglob->gl_pathc] == NULL) {
-			globfree(&dirs);
-			globfree(pglob);
-			return GLOB_NOSPACE;
-		    }
 		    mempcpy(mempcpy
 			    (mempcpy
 			     (pglob->gl_pathv[pglob->gl_pathc], dir,
@@ -536,8 +525,7 @@ glob(const char *pattern, int flags,
 		new_pathv = (char **) xrealloc(pglob->gl_pathv,
 					       ((pglob->gl_pathc + 1)
 						* sizeof(char *)));
-		if (new_pathv != NULL)
-		    pglob->gl_pathv = new_pathv;
+		pglob->gl_pathv = new_pathv;
 	    } else
 		return GLOB_NOMATCH;
 	}
@@ -575,10 +563,6 @@ glob(const char *pattern, int flags,
 		&& S_ISDIR(st.st_mode)) {
 		size_t len = strlen(pglob->gl_pathv[i]) + 2;
 		char *new = xrealloc(pglob->gl_pathv[i], len);
-		if (new == NULL) {
-		    globfree(pglob);
-		    return GLOB_NOSPACE;
-		}
 		strcpy(&new[len - 2], "/");
 		pglob->gl_pathv[i] = new;
 	    }
@@ -646,11 +630,6 @@ static int prefix_array(const char *dirname, char **array, size_t n)
     for (i = 0; i < n; ++i) {
 	size_t eltlen = strlen(array[i]) + 1;
 	char *new = (char *) xmalloc(dirlen + 1 + eltlen);
-	if (new == NULL) {
-	    while (i > 0)
-		free(array[--i]);
-	    return 1;
-	}
 	{
 	    char *endp = (char *) mempcpy(new, dirname, dirlen);
 	    *endp++ = '/';
@@ -745,8 +724,6 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	       "*a/".  */
 	    names = (struct globlink *) alloca(sizeof(struct globlink));
 	    names->name = (char *) xmalloc(1);
-	    if (names->name == NULL)
-		goto memory_error;
 	    names->name[0] = '\0';
 	    names->next = NULL;
 	    nfound = 1;
@@ -794,8 +771,6 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 			    alloca(sizeof(struct globlink));
 			len = NAMLEN(d);
 			new->name = (char *) xmalloc(len + 1);
-			if (new->name == NULL)
-			    goto memory_error;
 			*((char *) mempcpy(new->name, name, len))
 			    = '\0';
 			new->next = names;
@@ -813,8 +788,6 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	names = (struct globlink *) alloca(sizeof(struct globlink));
 	names->next = NULL;
 	names->name = (char *) xmalloc(len + 1);
-	if (names->name == NULL)
-	    goto memory_error;
 	*((char *) mempcpy(names->name, pattern, len)) = '\0';
     }
 
@@ -825,8 +798,6 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 				  ((flags & GLOB_DOOFFS) ? pglob->
 				   gl_offs : 0) + nfound +
 				  1) * sizeof(char *));
-	if (pglob->gl_pathv == NULL)
-	    goto memory_error;
 
 	if (flags & GLOB_DOOFFS)
 	    while (pglob->gl_pathc < pglob->gl_offs)
@@ -849,22 +820,6 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
     __set_errno(save);
 
     return nfound == 0 ? GLOB_NOMATCH : 0;
-
-  memory_error:
-    {
-	int save = errno;
-	if (flags & GLOB_ALTDIRFUNC)
-	    (*pglob->gl_closedir) (stream);
-	else
-	    closedir((DIR *) stream);
-	__set_errno(save);
-    }
-    while (names != NULL) {
-	if (names->name != NULL)
-	    free(names->name);
-	names = names->next;
-    }
-    return GLOB_NOSPACE;
 }
 
 /* librpmio exported interfaces */
