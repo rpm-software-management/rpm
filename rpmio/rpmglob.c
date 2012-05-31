@@ -75,8 +75,6 @@ typedef struct {
     int (*gl_stat)(const char *, struct stat *);
 } glob_t;
 
-#define	__alloca	alloca
-#define	__stat		stat
 #define	NAMLEN(_d)	NLENGTH(_d)
 
 #if (defined POSIX || defined WINDOWS32) && !defined __GNU_LIBRARY__
@@ -288,7 +286,7 @@ glob(const char *pattern, int flags,
     } else {
 	char *newp;
 	dirlen = filename - pattern;
-	newp = (char *) __alloca(dirlen + 1);
+	newp = (char *) alloca(dirlen + 1);
 	*((char *) mempcpy(newp, pattern, dirlen)) = '\0';
 	dirname = newp;
 	++filename;
@@ -337,7 +335,7 @@ glob(const char *pattern, int flags,
 	    else {
 		char *newp;
 		size_t home_len = strlen(home_dir);
-		newp = (char *) __alloca(home_len + dirlen);
+		newp = (char *) alloca(home_len + dirlen);
 		mempcpy(mempcpy(newp, home_dir, home_len),
 			&dirname[1], dirlen);
 		dirname = newp;
@@ -352,7 +350,7 @@ glob(const char *pattern, int flags,
 		user_name = dirname + 1;
 	    else {
 		char *newp;
-		newp = (char *) __alloca(end_name - dirname);
+		newp = (char *) alloca(end_name - dirname);
 		*((char *) mempcpy(newp, dirname + 1, end_name - dirname))
 		    = '\0';
 		user_name = newp;
@@ -372,7 +370,7 @@ glob(const char *pattern, int flags,
 		char *newp;
 		size_t home_len = strlen(home_dir);
 		size_t rest_len = end_name == NULL ? 0 : strlen(end_name);
-		newp = (char *) __alloca(home_len + rest_len + 1);
+		newp = (char *) alloca(home_len + rest_len + 1);
 		*((char *) mempcpy(mempcpy(newp, home_dir, home_len),
 				   end_name, rest_len)) = '\0';
 		dirname = newp;
@@ -392,7 +390,7 @@ glob(const char *pattern, int flags,
 	if ((flags & GLOB_NOCHECK)
 	    || (((flags & GLOB_ALTDIRFUNC)
 		 ? (*pglob->gl_stat) (dirname, &st)
-		 : __stat(dirname, &st)) == 0 && S_ISDIR(st.st_mode))) {
+		 : stat(dirname, &st)) == 0 && S_ISDIR(st.st_mode))) {
 	    pglob->gl_pathv
 		= (char **) xrealloc(pglob->gl_pathv,
 				     (pglob->gl_pathc +
@@ -510,7 +508,7 @@ glob(const char *pattern, int flags,
 
 		    /* First check whether this really is a directory.  */
 		    if (((flags & GLOB_ALTDIRFUNC)
-			 ? (*pglob->gl_stat) (dir, &st) : __stat(dir,
+			 ? (*pglob->gl_stat) (dir, &st) : stat(dir,
 								 &st)) != 0
 			|| !S_ISDIR(st.st_mode))
 			/* No directory, ignore this entry.  */
@@ -573,7 +571,7 @@ glob(const char *pattern, int flags,
 	for (i = oldcount; i < pglob->gl_pathc; ++i)
 	    if (((flags & GLOB_ALTDIRFUNC)
 		 ? (*pglob->gl_stat) (pglob->gl_pathv[i], &st)
-		 : __stat(pglob->gl_pathv[i], &st)) == 0
+		 : stat(pglob->gl_pathv[i], &st)) == 0
 		&& S_ISDIR(st.st_mode)) {
 		size_t len = strlen(pglob->gl_pathv[i]) + 2;
 		char *new = xrealloc(pglob->gl_pathv[i], len);
@@ -728,13 +726,13 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	    struct stat st;
 	    size_t patlen = strlen(pattern);
 	    size_t dirlen = strlen(directory);
-	    char *fullname = (char *) __alloca(dirlen + 1 + patlen + 1);
+	    char *fullname = (char *) alloca(dirlen + 1 + patlen + 1);
 
 	    mempcpy(mempcpy(mempcpy(fullname, directory, dirlen),
 			    "/", 1), pattern, patlen + 1);
 	    if (((flags & GLOB_ALTDIRFUNC)
 		 ? (*pglob->gl_stat) (fullname, &st)
-		 : __stat(fullname, &st)) == 0)
+		 : stat(fullname, &st)) == 0)
 		/* We found this file to be existing.  Now tell the rest
 		   of the function to copy this name into the result.  */
 		flags |= GLOB_NOCHECK;
@@ -745,7 +743,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	if (pattern[0] == '\0') {
 	    /* This is a special case for matching directories like in
 	       "*a/".  */
-	    names = (struct globlink *) __alloca(sizeof(struct globlink));
+	    names = (struct globlink *) alloca(sizeof(struct globlink));
 	    names->name = (char *) xmalloc(1);
 	    if (names->name == NULL)
 		goto memory_error;
@@ -793,7 +791,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 
 		    if (fnmatch(pattern, name, fnm_flags) == 0) {
 			struct globlink *new = (struct globlink *)
-			    __alloca(sizeof(struct globlink));
+			    alloca(sizeof(struct globlink));
 			len = NAMLEN(d);
 			new->name = (char *) xmalloc(len + 1);
 			if (new->name == NULL)
@@ -812,7 +810,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
     if (nfound == 0 && (flags & GLOB_NOCHECK)) {
 	size_t len = strlen(pattern);
 	nfound = 1;
-	names = (struct globlink *) __alloca(sizeof(struct globlink));
+	names = (struct globlink *) alloca(sizeof(struct globlink));
 	names->next = NULL;
 	names->name = (char *) xmalloc(len + 1);
 	if (names->name == NULL)
