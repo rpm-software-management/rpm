@@ -374,46 +374,10 @@ glob(const char *pattern, int flags,
 	    if (home_dir == NULL || home_dir[0] == '\0') {
 		int success;
 		char *name;
-#if defined HAVE_GETLOGIN_R || defined _LIBC
-		size_t buflen = sysconf(_SC_LOGIN_NAME_MAX) + 1;
-
-		if (buflen == 0)
-		    /* `sysconf' does not support _SC_LOGIN_NAME_MAX.  Try
-		       a moderate value.  */
-		    buflen = 20;
-		name = (char *) __alloca(buflen);
-
-		success = getlogin_r(name, buflen) >= 0;
-#else
 		success = (name = getlogin()) != NULL;
-#endif
 		if (success) {
 		    struct passwd *p;
-#if defined HAVE_GETPWNAM_R || defined _LIBC
-		    size_t pwbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
-		    char *pwtmpbuf;
-		    struct passwd pwbuf;
-		    int save = errno;
-
-		    if (pwbuflen == -1)
-			/* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.
-			   Try a moderate value.  */
-			pwbuflen = 1024;
-		    pwtmpbuf = (char *) __alloca(pwbuflen);
-
-		    while (getpwnam_r(name, &pwbuf, pwtmpbuf, pwbuflen, &p)
-			   != 0) {
-			if (errno != ERANGE) {
-			    p = NULL;
-			    break;
-			}
-			pwbuflen *= 2;
-			pwtmpbuf = (char *) __alloca(pwbuflen);
-			__set_errno(save);
-		    }
-#else
 		    p = getpwnam(name);
-#endif
 		    if (p != NULL)
 			home_dir = p->pw_dir;
 		}
@@ -457,31 +421,7 @@ glob(const char *pattern, int flags,
 	    /* Look up specific user's home directory.  */
 	    {
 		struct passwd *p;
-#if defined HAVE_GETPWNAM_R || defined _LIBC
-		size_t buflen = sysconf(_SC_GETPW_R_SIZE_MAX);
-		char *pwtmpbuf;
-		struct passwd pwbuf;
-		int save = errno;
-
-		if (buflen == -1)
-		    /* `sysconf' does not support _SC_GETPW_R_SIZE_MAX.  Try a
-		       moderate value.  */
-		    buflen = 1024;
-		pwtmpbuf = (char *) __alloca(buflen);
-
-		while (getpwnam_r(user_name, &pwbuf, pwtmpbuf, buflen, &p)
-		       != 0) {
-		    if (errno != ERANGE) {
-			p = NULL;
-			break;
-		    }
-		    buflen *= 2;
-		    pwtmpbuf = __alloca(buflen);
-		    __set_errno(save);
-		}
-#else
 		p = getpwnam(user_name);
-#endif
 		if (p != NULL)
 		    home_dir = p->pw_dir;
 		else
