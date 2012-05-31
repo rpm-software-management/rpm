@@ -110,10 +110,12 @@ static int glob_in_dir(const char *pattern, const char *directory,
 static int prefix_array(const char *prefix, char **array, size_t n);
 static int collated_compare(const void *, const void *);
 
+#ifndef HAVE_MEMPCPY
 static void * mempcpy(void *dest, const void *src, size_t n)
 {
     return (char *) memcpy(dest, src, n) + n;
 }
+#endif
 
 /* Find the end of the sub-pattern in a brace expression.  We define
    this as an inline function if the compiler permits.  */
