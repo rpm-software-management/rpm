@@ -347,8 +347,6 @@ AC_CHECK_HEADERS(sys/utsname.h)
 AC_CHECK_HEADERS(sys/systemcfg.h)
 AC_CHECK_HEADERS(sys/param.h)
 
-AC_CHECK_HEADERS(glob.h)
-
 dnl statfs portability fiddles.
 dnl
 dnl We should really emulate/steal sections of the statfs and struct statfs
@@ -489,15 +487,6 @@ AC_CHECK_FUNCS(
    [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown],
    [], [AC_MSG_ERROR([function required by rpm])])
 
-dnl XXX Glob *is* broken on linux with libc5, solaris and possibly aix when
-dnl %files gets something like
-dnl	/usr/*/locale/*/LC_MESSAGES/*.mo
-dnl (Note: more than one asterisk in glob pattern.)
-dnl
-dnl XXX Glob is "fixed" in glibc-2.3.3-61, but the cost is that
-dnl dangling symlinks are no longer globbed. Always use the internal glob.
-AC_DEFINE(USE_GNU_GLOB, 1, [Use the included glob.c?])
-AC_LIBOBJ(glob)
 AC_LIBOBJ(fnmatch)
 
 dnl check if python is requested

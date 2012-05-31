@@ -14,9 +14,5 @@
 #include "misc/stpncpy.c"
 #endif
 
-#if defined(USE_GNU_GLOB)
 #include "misc/fnmatch.h"
 #include "misc/fnmatch.c"
-#include "misc/glob.h"
-#include "misc/glob.c"
-#endif
