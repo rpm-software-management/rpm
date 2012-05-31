@@ -54,7 +54,7 @@ int rpmGlob(const char * patterns, int * argcPtr, ARGV_t * argvPtr)
 	int dir_only = (plen > 0 && path[plen-1] == '/');
 	glob_t gl;
 
-	if (!local || (!glob_pattern_p(av[j], 0) && strchr(path, '~') == NULL)) {
+	if (!local || (!rpmIsGlob(av[j], 0) && strchr(path, '~') == NULL)) {
 	    argvAdd(&argv, av[j]);
 	    continue;
 	}
@@ -146,3 +146,7 @@ exit:
     return rc;
 }
 
+int rpmIsGlob(const char * pattern, int quote)
+{
+    return glob_pattern_p(pattern, quote);
+}

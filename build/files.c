@@ -1597,7 +1597,7 @@ static rpmRC processBinaryFile(Package pkg, FileList fl, const char * fileName)
     if (trailing_slash && !fl->cur.isDir)
 	fl->cur.isDir = -1;
     
-    doGlob = glob_pattern_p(fileName, quote);
+    doGlob = rpmIsGlob(fileName, quote);
 
     /* Check that file starts with leading "/" */
     if (*fileName != '/') {
