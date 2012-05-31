@@ -124,6 +124,10 @@ static int glob_in_dir(const char *pattern, const char *directory,
 static int prefix_array(const char *prefix, char **array, size_t n);
 static int collated_compare(const void *, const void *);
 
+static void * mempcpy(void *dest, const void *src, size_t n)
+{
+    return (char *) memcpy(dest, src, n) + n;
+}
 
 /* Find the end of the sub-pattern in a brace expression.  We define
    this as an inline function if the compiler permits.  */
@@ -197,12 +201,7 @@ glob(const char *pattern, int flags,
 	    char onealt[strlen(pattern) - 1];
 
 	    /* We know the prefix for all sub-patterns.  */
-#ifdef HAVE_MEMPCPY
 	    alt_start = mempcpy(onealt, pattern, begin - pattern);
-#else
-	    memcpy(onealt, pattern, begin - pattern);
-	    alt_start = &onealt[begin - pattern];
-#endif
 
 	    /* Find the first sub-pattern and at the same time find the
 	       rest after the closing brace.  */
@@ -245,12 +244,7 @@ glob(const char *pattern, int flags,
 		int result;
 
 		/* Construct the new glob expression.  */
-#ifdef HAVE_MEMPCPY
 		mempcpy(mempcpy(alt_start, p, next - p), rest, rest_len);
-#else
-		memcpy(alt_start, p, next - p);
-		memcpy(&alt_start[next - p], rest, rest_len);
-#endif
 
 		result = glob(onealt,
 			      ((flags & ~(GLOB_NOCHECK | GLOB_NOMAGIC))
@@ -325,12 +319,7 @@ glob(const char *pattern, int flags,
 
 	    ++dirlen;
 	    drive_spec = (char *) __alloca(dirlen + 1);
-#ifdef HAVE_MEMPCPY
 	    *((char *) mempcpy(drive_spec, pattern, dirlen)) = '\0';
-#else
-	    memcpy(drive_spec, pattern, dirlen);
-	    drive_spec[dirlen] = '\0';
-#endif
 	    /* For now, disallow wildcards in the drive spec, to
 	       prevent infinite recursion in glob.  */
 	    if (__glob_pattern_p(drive_spec, !(flags & GLOB_NOESCAPE)))
@@ -341,12 +330,7 @@ glob(const char *pattern, int flags,
 	}
 #endif
 	newp = (char *) __alloca(dirlen + 1);
-#ifdef HAVE_MEMPCPY
 	*((char *) mempcpy(newp, pattern, dirlen)) = '\0';
-#else
-	memcpy(newp, pattern, dirlen);
-	newp[dirlen] = '\0';
-#endif
 	dirname = newp;
 	++filename;
 
@@ -449,13 +433,8 @@ glob(const char *pattern, int flags,
 		char *newp;
 		size_t home_len = strlen(home_dir);
 		newp = (char *) __alloca(home_len + dirlen);
-#ifdef HAVE_MEMPCPY
 		mempcpy(mempcpy(newp, home_dir, home_len),
 			&dirname[1], dirlen);
-#else
-		memcpy(newp, home_dir, home_len);
-		memcpy(&newp[home_len], &dirname[1], dirlen);
-#endif
 		dirname = newp;
 	    }
 	}
@@ -470,13 +449,8 @@ glob(const char *pattern, int flags,
 	    else {
 		char *newp;
 		newp = (char *) __alloca(end_name - dirname);
-#ifdef HAVE_MEMPCPY
 		*((char *) mempcpy(newp, dirname + 1, end_name - dirname))
 		    = '\0';
-#else
-		memcpy(newp, dirname + 1, end_name - dirname);
-		newp[end_name - dirname - 1] = '\0';
-#endif
 		user_name = newp;
 	    }
 
@@ -519,14 +493,8 @@ glob(const char *pattern, int flags,
 		size_t home_len = strlen(home_dir);
 		size_t rest_len = end_name == NULL ? 0 : strlen(end_name);
 		newp = (char *) __alloca(home_len + rest_len + 1);
-#ifdef HAVE_MEMPCPY
 		*((char *) mempcpy(mempcpy(newp, home_dir, home_len),
 				   end_name, rest_len)) = '\0';
-#else
-		memcpy(newp, home_dir, home_len);
-		memcpy(&newp[home_len], end_name, rest_len);
-		newp[home_len + rest_len] = '\0';
-#endif
 		dirname = newp;
 	    } else if (flags & GLOB_TILDE_CHECK)
 		/* We have to regard it as an error if we cannot find the
@@ -703,17 +671,10 @@ glob(const char *pattern, int flags,
 			globfree(pglob);
 			return GLOB_NOSPACE;
 		    }
-#ifdef HAVE_MEMPCPY
 		    mempcpy(mempcpy
 			    (mempcpy
 			     (pglob->gl_pathv[pglob->gl_pathc], dir,
 			      dir_len), "/", 1), filename, filename_len);
-#else
-		    memcpy(pglob->gl_pathv[pglob->gl_pathc], dir, dir_len);
-		    pglob->gl_pathv[pglob->gl_pathc][dir_len] = '/';
-		    memcpy(&pglob->gl_pathv[pglob->gl_pathc][dir_len + 1],
-			   filename, filename_len);
-#endif
 		    ++pglob->gl_pathc;
 		}
 
@@ -857,17 +818,11 @@ static int prefix_array(const char *dirname, char **array, size_t n)
 		free(array[--i]);
 	    return 1;
 	}
-#ifdef HAVE_MEMPCPY
 	{
 	    char *endp = (char *) mempcpy(new, dirname, dirlen);
 	    *endp++ = DIRSEP_CHAR;
 	    mempcpy(endp, array[i], eltlen);
 	}
-#else
-	memcpy(new, dirname, dirlen);
-	new[dirlen] = DIRSEP_CHAR;
-	memcpy(&new[dirlen + 1], array[i], eltlen);
-#endif
 	free(array[i]);
 	array[i] = new;
     }
@@ -940,14 +895,8 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	    size_t dirlen = strlen(directory);
 	    char *fullname = (char *) __alloca(dirlen + 1 + patlen + 1);
 
-#ifdef HAVE_MEMPCPY
 	    mempcpy(mempcpy(mempcpy(fullname, directory, dirlen),
 			    "/", 1), pattern, patlen + 1);
-#else
-	    memcpy(fullname, directory, dirlen);
-	    fullname[dirlen] = '/';
-	    memcpy(&fullname[dirlen + 1], pattern, patlen + 1);
-#endif
 	    if (((flags & GLOB_ALTDIRFUNC)
 		 ? (*pglob->gl_stat) (fullname, &st)
 		 : __stat(fullname, &st)) == 0)
@@ -1019,13 +968,8 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 			new->name = (char *) xmalloc(len + 1);
 			if (new->name == NULL)
 			    goto memory_error;
-#ifdef HAVE_MEMPCPY
 			*((char *) mempcpy(new->name, name, len))
 			    = '\0';
-#else
-			memcpy(new->name, name, len);
-			new->name[len] = '\0';
-#endif
 			new->next = names;
 			names = new;
 			++nfound;
@@ -1043,12 +987,7 @@ glob_in_dir(const char *pattern, const char *directory, int flags,
 	names->name = (char *) xmalloc(len + 1);
 	if (names->name == NULL)
 	    goto memory_error;
-#ifdef HAVE_MEMPCPY
 	*((char *) mempcpy(names->name, pattern, len)) = '\0';
-#else
-	memcpy(names->name, pattern, len);
-	names->name[len] = '\0';
-#endif
     }
 
     if (nfound != 0) {
