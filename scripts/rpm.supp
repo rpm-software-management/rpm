@@ -1,0 +1,34 @@
+# This is a valgrind suppression file for rpm.
+# Rpm now processes /proc/self/auxv on Linux, but valgrind does not
+# like that (see https://bugs.kde.org/show_bug.cgi?id=253519). To
+# avoid the related false positives from valgrind, use this with
+# 'valgrind --suppressions=rpm.supp [...]' when using it on rpm.
+
+{
+   defaultMachine_strdup
+   Memcheck:Addr1
+   fun:__GI_strlen
+   fun:strdup
+   fun:defaultMachine
+}
+
+{
+   defaultMachine_memcpy1
+   Memcheck:Addr1
+   fun:__GI_memcpy
+   fun:defaultMachine
+}
+
+{
+   defaultMachine_memcpy2
+   Memcheck:Addr2
+   fun:__GI_memcpy
+   fun:defaultMachine
+}
+
+{
+   defaultMachine_memcpy4
+   Memcheck:Addr4
+   fun:__GI_memcpy
+   fun:defaultMachine
+}
