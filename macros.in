@@ -68,6 +68,8 @@
 %__ssh			@__SSH@
 %__tar			@__TAR@
 %__unzip		@__UNZIP@
+%__git			@__GIT@
+%__hg			@__HG@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -1021,6 +1023,60 @@ done \
 %__collection_java	%{__plugindir}/exec.so /usr/bin/rebuild-gcj-db
 %__collection_sepolicy		%{__plugindir}/sepolicy.so
 %__collection_sepolicy_flags	1
+
+#------------------------------------------------------------------------------
+# Macros for further automated spec %setup and patch application
+
+# default to plain patch
+%__scm patch
+# meh, figure something saner
+%__scm_author rpm-build <rpm-build>
+
+# Plain patch (-m is unused)
+%__scm_apply_patch(qp:m:)\
+%{__patch} %{-p:-p%{-p*}} %{-q:-s}
+
+# Mercurial (aka hg)
+%__scm_setup_hg(q)\
+%{__hg} init %{-q} .\
+%{__hg} add %{-q} .\
+%{__hg} commit %{-q} --user "%{__scm_author}" -m "%{name}-%{version} base"
+
+%__scm_apply_hg(qp:m:)\
+%{__hg} import - %{-p:-p%{-p*}} %{-q} -m %{-m*} --user "%{__scm_author}"
+
+# Git
+%__scm_setup_git(q)\
+%{__git} init %{-q}\
+%{__git} add .\
+%{__git} commit %{-q} -a\\\
+	--author "%{__scm_author}" -m "%{name}-%{version} base"
+
+%__scm_apply_git(qp:m:)\
+%{__git} apply %{-p:-p%{-p*}} -\
+%{__git} commit %{-q} -a -m %{-m*} --author "%{__scm_author}"
+
+# Single patch application
+%apply_patch(qp:m:)\
+%{uncompress:%{1}} | %{expand:%__scm_apply_%{__scm} %{-q} %{-p:-p%{-p*}} %{-m:-m%{-m*}}}
+
+# Automatically apply all patches
+%autopatch(vp:)\
+%{lua:\
+for i, p in ipairs(patches) do\
+    print(rpm.expand("%apply_patch -m %{basename:"..p.."}  "..rpm.expand("%{!-v:-q} %{-p:-p%{-p*}} ")..p.."\\n"))\
+end}
+
+# One macro to (optionally) do it all.
+# -S<scm name>	Sets the used patch application style, eg '-S git' enables
+#           	usage of git repository and per-patch commits.
+# -A		Automatically apply all patches
+# -p<num>	Use -p<num> for patch application	
+%autosetup(a:b:cDn:TvAS:p:)\
+%setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
+%{-S:%global __scm %{-S*}}\
+%{-S:%{expand:%__scm_setup_%{-S*} %{!-v:-q}}}\
+%{-A:%autopatch %{-v} %{-p:-p%{-p*}}}
 
 # \endverbatim
 #*/
