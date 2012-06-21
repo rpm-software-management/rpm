@@ -221,7 +221,11 @@ errxit:
 
 void dbSetFSync(void *dbenv, int enable)
 {
+#ifdef HAVE_FDATASYNC
     db_env_set_func_fsync(enable ? fdatasync : fsync_disable);
+#else
+    db_env_set_func_fsync(enable ? fsync : fsync_disable);
+#endif
 }
 
 int dbiSync(dbiIndex dbi, unsigned int flags)

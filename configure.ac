@@ -479,6 +479,7 @@ AC_FUNC_MMAP
 
 AC_CHECK_FUNCS(putenv)
 AC_CHECK_FUNCS(mempcpy)
+AC_CHECK_FUNCS(fdatasync)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
