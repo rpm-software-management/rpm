@@ -70,6 +70,8 @@
 %__unzip		@__UNZIP@
 %__git			@__GIT@
 %__hg			@__HG@
+%__bzr			@__BZR@
+%__quilt		@__QUILT@
 
 #==============================================================================
 # ---- Build system path macros.
@@ -1033,6 +1035,7 @@ done \
 %__scm_author rpm-build <rpm-build>
 
 # Plain patch (-m is unused)
+%__scm_setup_patch(q) %{nil}
 %__scm_apply_patch(qp:m:)\
 %{__patch} %{-p:-p%{-p*}} %{-q:-s}
 
@@ -1055,6 +1058,23 @@ done \
 %__scm_apply_git(qp:m:)\
 %{__git} apply %{-p:-p%{-p*}} -\
 %{__git} commit %{-q} -a -m %{-m*} --author "%{__scm_author}"
+
+# Quilt
+%__scm_setup_quilt(q) %{nil}
+%__scm_apply_quilt(qp:m:)\
+%{__quilt} import %{-p:-p%{-p*}} %{1} && %{__quilt} push
+
+# Bzr
+%__scm_setup_bzr(q)\
+%{__bzr} whoami "%{__scm_author}"\
+%{__bzr} init %{-q}\
+%{__bzr} add .\
+%{__bzr} commit %{-q} -m "%{name}-%{version} base"
+
+# bzr doesn't seem to have its own command to apply patches?
+%__scm_apply_bzr(qp:m:)\
+%{__patch} %{-p:-p%{-p*}} %{-q:-s}\
+%{__bzr} commit %{-q} -m %{-m*}
 
 # Single patch application
 %apply_patch(qp:m:)\

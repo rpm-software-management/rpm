@@ -144,6 +144,8 @@ AC_PATH_PROG(__STRIP, strip, /usr/bin/strip, $MYPATH)
 
 AC_PATH_PROG(__GIT, git, /usr/bin/git, $MYPATH)
 AC_PATH_PROG(__HG, hg, /usr/bin/hg, $MYPATH)
+AC_PATH_PROG(__BZR, bzr, /usr/bin/bzr, $MYPATH)
+AC_PATH_PROG(__QUILT, quilt, /usr/bin/quilt, $MYPATH)
 
 AC_PATH_PROG(__FAKECHROOT, fakechroot, no, $MYPATH)
 AM_CONDITIONAL(HAVE_FAKECHROOT, [test "$__FAKECHROOT" != "no"])
