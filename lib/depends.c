@@ -431,13 +431,13 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     if (h == NULL) {
 	/* Obsoletes use just name alone, everything else uses provides */
 	rpmTagVal dbtag = RPMDBI_PROVIDENAME;
-	if (deptag == RPMDBI_OBSOLETENAME)
+	if (deptag == RPMTAG_OBSOLETENAME)
 	    dbtag = RPMDBI_NAME;
 
 	mi = rpmtsPrunedIterator(ts, dbtag, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    int match;
-	    if (deptag == RPMDBI_OBSOLETENAME) {
+	    if (deptag == RPMTAG_OBSOLETENAME) {
 		match = rpmdsNVRMatchesDep(h, dep, _rpmds_nopromote);
 	    } else {
 		match = rpmdsMatchesDep(h, rpmdbGetIteratorFileNum(mi), dep,
