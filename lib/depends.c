@@ -437,7 +437,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 	mi = rpmtsPrunedIterator(ts, dbtag, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
 	    int match;
-	    if (dbtag == RPMDBI_OBSOLETENAME) {
+	    if (deptag == RPMDBI_OBSOLETENAME) {
 		match = rpmdsNVRMatchesDep(h, dep, _rpmds_nopromote);
 	    } else {
 		match = rpmdsMatchesDep(h, rpmdbGetIteratorFileNum(mi), dep,
