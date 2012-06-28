@@ -998,6 +998,10 @@ done \
 # arch macro for all supported Alpha processors
 %alpha	alpha alphaev56 alphaev6 alphaev67
 
+#------------------------------------------------------------------------------
+# arch macro for all supported PowerPC 64 processors
+%power64	ppc64 ppc64p7
+
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
 #
