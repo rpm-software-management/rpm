@@ -1093,8 +1093,11 @@ static void defaultMachine(const char ** arch,
 #	if defined(__linux__) && defined(__powerpc__)
 	{
             int powerlvl;
-            if (sscanf(rpmat.platform, "power%d", &powerlvl) == 1 && powerlvl > 6)
+            if (!rstreq(un.machine, "ppc") &&
+		    sscanf(rpmat.platform, "power%d", &powerlvl) == 1 &&
+		    powerlvl > 6) {
                 strcpy(un.machine, "ppc64p7");
+	    }
         }
 #	endif	/* ppc64*-linux */
 
