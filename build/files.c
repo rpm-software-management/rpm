@@ -1057,11 +1057,7 @@ static void genCpioListAndHeader(FileList fl,
 	headerPutString(h, RPMTAG_FILEUSERNAME, flp->uname);
 	headerPutString(h, RPMTAG_FILEGROUPNAME, flp->gname);
 
-	/*
- 	 * Only use 64bit filesizes if file sizes require it. 
- 	 * This is basically no-op for now as we error out in addFile() if 
- 	 * any individual file size exceeds the cpio limit.
- 	 */
+	/* Only use 64bit filesizes tag if required. */
 	if (fl->largeFiles) {
 	    rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
 	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
@@ -1437,15 +1433,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	flp->verifyFlags = fl->cur.verifyFlags;
 
 	if (!(flp->flags & RPMFILE_EXCLUDE) && S_ISREG(flp->fl_mode)) {
-	    /*
-	     * XXX Simple and stupid check for now, this needs to be per-payload
-	     * format check once we have other payloads than good 'ole cpio.
-	     */
-	    if ((rpm_loff_t) flp->fl_size >= CPIO_FILESIZE_MAX) {
+	    if (flp->fl_size >= UINT32_MAX) {
 		fl->largeFiles = 1;
-		rpmlog(RPMLOG_ERR, _("File %s too large for payload\n"),
-		       flp->diskPath);
-		goto exit;
 	    }
 	}
     }

@@ -178,6 +178,10 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
         return CPIOERR_WRITE_FAILED;
     }
 
+    if (st->st_size >= CPIO_FILESIZE_MAX) {
+	return CPIOERR_FILE_SIZE;
+    }
+
     rc = rpmcpioWritePad(cpio, 4);
     if (rc) {
         return rc;
@@ -385,6 +389,7 @@ const char * rpmcpioStrerror(int rc)
     case CPIOERR_SETCAP_FAILED: s = "cap_set_file";	break;
 
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
+    case CPIOERR_FILE_SIZE:	s = _("File too large for archive");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
     case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link(s)"); break;
     case CPIOERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
