@@ -7,9 +7,6 @@
 
 #include <utime.h>
 #include <errno.h>
-#if defined(HAVE_MMAP)
-#include <sys/mman.h>
-#endif
 #if WITH_CAP
 #include <sys/capability.h>
 #endif
@@ -864,12 +861,6 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
 
     if (writeData && S_ISREG(st->st_mode)) {
 	size_t len;
-#ifdef HAVE_MMAP
-	char * buf = NULL;
-	void * mapped = MAP_FAILED;
-	size_t nmapped;
-	int xx;
-#endif
 
 	rfd = Fopen(fsm->path, "r.ufdio");
 	if (Ferror(rfd)) {
@@ -877,28 +868,9 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
 	    goto exit;
 	}
 	
-	/* XXX unbuffered mmap generates *lots* of fdio debugging */
-#ifdef HAVE_MMAP
-	nmapped = 0;
-	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(rfd), 0);
-	if (mapped != MAP_FAILED) {
-	    buf = fsm->buf;
-	    fsm->buf = (char *) mapped;
-	    len = nmapped = st->st_size;
-#if defined(MADV_DONTNEED)
-	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
-#endif
-	}
-#endif
-
 	left = st->st_size;
 
 	while (left) {
-#ifdef HAVE_MMAP
-	  if (mapped != MAP_FAILED) {
-	    len = nmapped;
-	  } else
-#endif
 	  {
               len = (left > fsm->bufsize ? fsm->bufsize : left);
               if (Fread(fsm->buf, sizeof(*fsm->buf), len, rfd) != len || Ferror(rfd)) {
@@ -913,17 +885,6 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
           }
           left -= len;
 	}
-
-#ifdef HAVE_MMAP
-	if (mapped != MAP_FAILED) {
-	    xx = msync(mapped, nmapped, MS_ASYNC);
-#if defined(MADV_DONTNEED)
-	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
-#endif
-	    xx = munmap(mapped, nmapped);
-	    fsm->buf = buf;
-	}
-#endif
 
     } else if (writeData && S_ISLNK(st->st_mode)) {
         size_t len = strlen(symbuf);

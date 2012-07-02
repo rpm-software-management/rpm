@@ -13,10 +13,6 @@
 
 #endif
 
-#if defined(HAVE_MMAP)
-#include <sys/mman.h>
-#endif
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
@@ -154,43 +150,9 @@ int rpmDoDigest(int algo, const char * fn,int asAscii,
 	goto exit;
     }
 
-    /* file to large (32 MB), do not mmap file */
-    if (fsize > (size_t) 32*1024*1024)
-      if (ut == URL_IS_PATH || ut == URL_IS_UNKNOWN)
-	ut = URL_IS_DASH; /* force fd io */
-
     switch(ut) {
     case URL_IS_PATH:
     case URL_IS_UNKNOWN:
-#ifdef HAVE_MMAP
-      if (pid == 0) {
-	int xx;
-	DIGEST_CTX ctx;
-	void * mapped;
-
-	if (fsize) {
-	    mapped = mmap(NULL, fsize, PROT_READ, MAP_SHARED, fdno, 0);
-	    if (mapped == MAP_FAILED) {
-		xx = close(fdno);
-		rc = 1;
-		break;
-	    }
-
-#ifdef	MADV_SEQUENTIAL
-	    xx = madvise(mapped, fsize, MADV_SEQUENTIAL);
-#endif
-	}
-
-	ctx = rpmDigestInit(algo, RPMDIGEST_NONE);
-	if (fsize)
-	    xx = rpmDigestUpdate(ctx, mapped, fsize);
-	xx = rpmDigestFinal(ctx, (void **)&dig, &diglen, asAscii);
-	if (fsize)
-	    xx = munmap(mapped, fsize);
-	xx = close(fdno);
-	break;
-      }
-#endif
     case URL_IS_HTTPS:
     case URL_IS_HTTP:
     case URL_IS_FTP:
