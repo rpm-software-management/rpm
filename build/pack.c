@@ -15,6 +15,7 @@
 
 #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
 #include "lib/fsm.h"
+#include "lib/cpio.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "build/rpmbuild_internal.h"
@@ -46,9 +47,11 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 
     if (fsmrc) {
 	if (failedFile)
-	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s\n"), failedFile);
+	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
+		   failedFile, rpmcpioStrerror(fsmrc));
 	else
-	    rpmlog(RPMLOG_ERR, _("create archive failed\n"));
+	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
+		   rpmcpioStrerror(fsmrc));
     }
 
     free(failedFile);
