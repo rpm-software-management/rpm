@@ -871,21 +871,18 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
 	left = st->st_size;
 
 	while (left) {
-	  {
-              len = (left > fsm->bufsize ? fsm->bufsize : left);
-              if (Fread(fsm->buf, sizeof(*fsm->buf), len, rfd) != len || Ferror(rfd)) {
-                  rc = CPIOERR_READ_FAILED;
-                  goto exit;
-              }
-	  }
+	    len = (left > fsm->bufsize ? fsm->bufsize : left);
+	    if (Fread(fsm->buf, sizeof(*fsm->buf), len, rfd) != len || Ferror(rfd)) {
+		rc = CPIOERR_READ_FAILED;
+		goto exit;
+	    }
 
-          if (rpmcpioWrite(archive, fsm->buf, len) != len) {
-              rc = CPIOERR_WRITE_FAILED;
-              goto exit;
-          }
-          left -= len;
+	    if (rpmcpioWrite(archive, fsm->buf, len) != len) {
+		rc = CPIOERR_WRITE_FAILED;
+		goto exit;
+	    }
+	    left -= len;
 	}
-
     } else if (writeData && S_ISLNK(st->st_mode)) {
         size_t len = strlen(symbuf);
         if (rpmcpioWrite(archive, symbuf, len) != len) {
