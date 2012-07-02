@@ -477,8 +477,6 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 
 dnl Checks for library functions.
-AC_FUNC_MMAP
-
 AC_CHECK_FUNCS(putenv)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)

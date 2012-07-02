@@ -7,9 +7,6 @@
 
 #include <utime.h>
 #include <errno.h>
-#if defined(HAVE_MMAP)
-#include <sys/mman.h>
-#endif
 #if WITH_CAP
 #include <sys/capability.h>
 #endif
@@ -902,12 +899,6 @@ static int writeFile(FSM_t fsm, int writeData)
 
     if (writeData && S_ISREG(st->st_mode)) {
 	size_t rdlen;
-#ifdef HAVE_MMAP
-	char * rdbuf = NULL;
-	void * mapped = MAP_FAILED;
-	size_t nmapped;
-	int xx;
-#endif
 
 	rfd = Fopen(fsm->path, "r.ufdio");
 	if (Ferror(rfd)) {
@@ -915,29 +906,9 @@ static int writeFile(FSM_t fsm, int writeData)
 	    goto exit;
 	}
 	
-	/* XXX unbuffered mmap generates *lots* of fdio debugging */
-#ifdef HAVE_MMAP
-	nmapped = 0;
-	mapped = mmap(NULL, st->st_size, PROT_READ, MAP_SHARED, Fileno(rfd), 0);
-	if (mapped != MAP_FAILED) {
-	    rdbuf = fsm->rdbuf;
-	    fsm->rdbuf = (char *) mapped;
-	    rdlen = nmapped = st->st_size;
-#if defined(MADV_DONTNEED)
-	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
-#endif
-	}
-#endif
-
 	left = st->st_size;
 
 	while (left) {
-#ifdef HAVE_MMAP
-	  if (mapped != MAP_FAILED) {
-	    fsm->rdnb = nmapped;
-	  } else
-#endif
-	  {
 	    rdlen = (left > fsm->rdsize ? fsm->rdsize : left),
 
 	    fsm->rdnb = Fread(fsm->rdbuf, sizeof(*fsm->rdbuf), rdlen, rfd);
@@ -945,7 +916,6 @@ static int writeFile(FSM_t fsm, int writeData)
 		rc = CPIOERR_READ_FAILED;
 		goto exit;
 	    }
-	  }
 
 	    /* XXX DWRITE uses rdnb for I/O length. */
 	    rc = fsmNext(fsm, FSM_DWRITE);
@@ -953,18 +923,6 @@ static int writeFile(FSM_t fsm, int writeData)
 
 	    left -= fsm->wrnb;
 	}
-
-#ifdef HAVE_MMAP
-	if (mapped != MAP_FAILED) {
-	    xx = msync(mapped, nmapped, MS_ASYNC);
-#if defined(MADV_DONTNEED)
-	    xx = madvise(mapped, nmapped, MADV_DONTNEED);
-#endif
-	    xx = munmap(mapped, nmapped);
-	    fsm->rdbuf = rdbuf;
-	}
-#endif
-
     } else if (writeData && S_ISLNK(st->st_mode)) {
 	/* XXX DWRITE uses rdnb for I/O length. */
 	strcpy(fsm->rdbuf, symbuf);	/* XXX restore readlink buffer. */
