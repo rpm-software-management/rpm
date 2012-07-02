@@ -2002,6 +2002,9 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    rpmlog(RPMLOG_ERR, _("Bad file: %s: %s\n"),
 		diskPath, strerror(errno));
 	    fl.processingFailed = 1;
+	} else {
+	    if (S_ISREG(flp->fl_mode) && flp->fl_size >= UINT32_MAX)
+		fl.largeFiles = 1;
 	}
 
 	if (fl.def.ar.ar_fmodestr) {
