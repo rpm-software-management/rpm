@@ -382,14 +382,14 @@ static rpmdbMatchIterator initQueryIterator(QVA_t qva, rpmts ts, const char * ar
 	break;
 
     case RPMQV_WHATPROVIDES:
-	if (arg[0] != '/') {
+	if (arg[0] != '/' && arg[0] != '.') {
 	    mi = rpmtsInitIterator(ts, RPMDBI_PROVIDENAME, arg, 0);
 	    if (mi == NULL) {
 		rpmlog(RPMLOG_NOTICE, _("no package provides %s\n"), arg);
 	    }
 	    break;
 	}
-	/* fallthrough on absolute paths */
+	/* fallthrough on absolute and relative paths */
     case RPMQV_PATH:
     {   char * fn;
 
