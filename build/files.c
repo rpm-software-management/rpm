@@ -240,6 +240,7 @@ static VFA_t const verifyAttrs[] = {
     { "size",		0,	RPMVERIFY_FILESIZE },
     { "link",		0,	RPMVERIFY_LINKTO },
     { "user",		0,	RPMVERIFY_USER },
+    { "owner",		0,	RPMVERIFY_USER },
     { "group",		0,	RPMVERIFY_GROUP },
     { "mtime",		0,	RPMVERIFY_MTIME },
     { "mode",		0,	RPMVERIFY_MODE },
