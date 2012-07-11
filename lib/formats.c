@@ -233,6 +233,10 @@ static char * deptypeFormat(rpmtd td)
 	    argvAdd(&sdeps, "pretrans");
 	if (item & RPMSENSE_POSTTRANS)
 	    argvAdd(&sdeps, "posttrans");
+	if (item & RPMSENSE_CONFIG)
+	    argvAdd(&sdeps, "config");
+	if (item & RPMSENSE_MISSINGOK)
+	    argvAdd(&sdeps, "missingok");
 
 	if (sdeps) {
 	    val = argvJoin(sdeps, ",");
