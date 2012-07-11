@@ -1094,13 +1094,13 @@ end}
 # One macro to (optionally) do it all.
 # -S<scm name>	Sets the used patch application style, eg '-S git' enables
 #           	usage of git repository and per-patch commits.
-# -A		Automatically apply all patches
+# -N		Disable automatic patch application
 # -p<num>	Use -p<num> for patch application	
-%autosetup(a:b:cDn:TvAS:p:)\
+%autosetup(a:b:cDn:TvNS:p:)\
 %setup %{-a} %{-b} %{-c} %{-D} %{-n} %{-T} %{!-v:-q}\
 %{-S:%global __scm %{-S*}}\
 %{-S:%{expand:%__scm_setup_%{-S*} %{!-v:-q}}}\
-%{-A:%autopatch %{-v} %{-p:-p%{-p*}}}
+%{!-N:%autopatch %{-v} %{-p:-p%{-p*}}}
 
 # \endverbatim
 #*/
