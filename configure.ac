@@ -43,7 +43,7 @@ if test "$GCC" = yes; then
     old_cflags=$CFLAGS
     echo
     for flag in $cflags_to_try; do
-        CFLAGS="$CFLAGS $flag"
+        CFLAGS="$CFLAGS $flag -Werror"
         AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[]], [[return 0;]])],[
                 echo "   $flag"
                 RPMCFLAGS="$RPMCFLAGS $flag"
