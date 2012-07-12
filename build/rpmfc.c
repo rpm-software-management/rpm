@@ -1198,8 +1198,8 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
     rpmfi fi = pkg->cpioList;
     rpmfc fc = NULL;
-    ARGV_t av;
-    rpm_mode_t * fmode;
+    ARGV_t av = NULL;
+    rpm_mode_t * fmode = NULL;
     int ac = rpmfiFC(fi);
     int genConfigDeps = 0;
     rpmRC rc = RPMRC_OK;
@@ -1208,18 +1208,17 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Skip packages with no files. */
     if (ac <= 0)
-	return rc;
+	goto exit;
 
     /* Skip packages that have dependency generation disabled. */
     if (! (pkg->autoReq || pkg->autoProv))
-	return rc;
+	goto exit;
 
     /* If new-fangled dependency generation is disabled ... */
     if (!rpmExpandNumeric("%{?_use_internal_dependency_generator}")) {
 	/* ... then generate dependencies using %{__find_requires} et al. */
 	rc = rpmfcGenerateDependsHelper(spec, pkg, fi);
-	printDeps(pkg->header);
-	return rc;
+	goto exit;
     }
 
     /* Extract absolute file paths in argv format. */
@@ -1347,7 +1346,6 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
     }
 
-    printDeps(pkg->header);
 
 if (_rpmfc_debug) {
 char *msg = NULL;
@@ -1356,6 +1354,8 @@ rpmfcPrint(msg, fc, NULL);
 free(msg);
 }
 exit:
+    printDeps(pkg->header);
+
     /* Clean up. */
     free(fmode);
     rpmfcFree(fc);
