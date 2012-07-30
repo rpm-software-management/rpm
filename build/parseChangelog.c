@@ -22,6 +22,14 @@ static void addChangelogEntry(Header h, time_t time, const char *name, const cha
     headerPutString(h, RPMTAG_CHANGELOGTEXT, text);
 }
 
+static int sameDate(const struct tm *ot, const struct tm *nt)
+{
+    return (ot->tm_year == nt->tm_year &&
+	    ot->tm_mon == nt->tm_mon &&
+	    ot->tm_mday == nt->tm_mday &&
+	    ot->tm_wday == nt->tm_wday);
+}
+
 /**
  * Parse date string to seconds.
  * @param datestr	date string (e.g. 'Wed Jan 1 1997')
@@ -31,7 +39,7 @@ static void addChangelogEntry(Header h, time_t time, const char *name, const cha
 static int dateToTimet(const char * datestr, time_t * secs)
 {
     int rc = -1; /* assume failure */
-    struct tm time;
+    struct tm time, ntime;
     const char * const * idx;
     char *p, *pe, *q, *date, *tz;
     
@@ -44,6 +52,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
 	{ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
     
     memset(&time, 0, sizeof(time));
+    memset(&ntime, 0, sizeof(ntime));
 
     date = xstrdup(datestr);
     pe = date;
@@ -55,6 +64,7 @@ static int dateToTimet(const char * datestr, time_t * secs)
     for (idx = days; *idx && !rstreq(*idx, p); idx++)
 	{};
     if (*idx == NULL) goto exit;
+    time.tm_wday = idx - days;
 
     /* month */
     p = pe; SKIPSPACE(p);
@@ -90,13 +100,15 @@ static int dateToTimet(const char * datestr, time_t * secs)
     tz = getenv("TZ");
     if (tz) tz = xstrdup(tz);
     setenv("TZ", "UTC", 1);
-    *secs = mktime(&time);
+    ntime = time; /* struct assignment */
+    *secs = mktime(&ntime);
     unsetenv("TZ");
     if (tz) {
 	setenv("TZ", tz, 1);
 	free(tz);
     }
     if (*secs == -1) goto exit;
+    if (!sameDate(&time, &ntime)) goto exit;
 
     rc = 0;
 
