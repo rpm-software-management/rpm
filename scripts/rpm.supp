@@ -7,28 +7,32 @@
 {
    defaultMachine_strdup
    Memcheck:Addr1
-   fun:__GI_strlen
+   ...
    fun:strdup
+   ...
    fun:defaultMachine
 }
 
 {
    defaultMachine_memcpy1
    Memcheck:Addr1
-   fun:__GI_memcpy
+   fun:*memcpy
+   ...
    fun:defaultMachine
 }
 
 {
    defaultMachine_memcpy2
    Memcheck:Addr2
-   fun:__GI_memcpy
+   fun:*memcpy
+   ...
    fun:defaultMachine
 }
 
 {
    defaultMachine_memcpy4
    Memcheck:Addr4
-   fun:__GI_memcpy
+   fun:*memcpy
+   ...
    fun:defaultMachine
 }
