@@ -29,7 +29,7 @@ typedef struct OpenFileInfo {
     FILE *fp;
     int lineNum;
     char readBuf[BUFSIZ];
-    char * readPtr;
+    const char * readPtr;
     struct OpenFileInfo * next;
 } OFI_t;
 
@@ -154,15 +154,12 @@ static int restoreFirstChar(rpmSpec spec)
 /* Return zero on success, 1 if we need to read more and -1 on errors. */
 static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 {
-    char ch;
-
     /* Expand next line from file into line buffer */
     if (!(spec->nextline && *spec->nextline)) {
 	int pc = 0, bc = 0, nc = 0;
-	char *from, *to, *p;
-	to = spec->lbuf + spec->lbufOff;
-	from = ofi->readPtr;
-	ch = ' ';
+	const char *from = ofi->readPtr;
+	char *to = spec->lbuf + spec->lbufOff;
+	char ch = ' ';
 	while (from && *from && ch != '\n')
 	    ch = *to++ = *from++;
 	spec->lbufOff = to - spec->lbuf;
@@ -170,7 +167,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	ofi->readPtr = from;
 
 	/* Check if we need another line before expanding the buffer. */
-	for (p = spec->lbuf; *p; p++) {
+	for (const char *p = spec->lbuf; *p; p++) {
 	    switch (*p) {
 		case '\\':
 		    switch (*(p+1)) {
