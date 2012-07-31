@@ -42,7 +42,7 @@ struct rpmSpec_s {
 
     struct OpenFileInfo * fileStack;
     char lbuf[10*BUFSIZ];
-    char *lbufPtr;
+    size_t lbufOff;
     char nextpeekc;
     char * nextline;
     char * line;

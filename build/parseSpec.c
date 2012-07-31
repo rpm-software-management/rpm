@@ -160,12 +160,12 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
     if (!(spec->nextline && *spec->nextline)) {
 	int pc = 0, bc = 0, nc = 0;
 	char *from, *to, *p;
-	to = spec->lbufPtr ? spec->lbufPtr : spec->lbuf;
+	to = spec->lbuf + spec->lbufOff;
 	from = ofi->readPtr;
 	ch = ' ';
 	while (from && *from && ch != '\n')
 	    ch = *to++ = *from++;
-	spec->lbufPtr = to;
+	spec->lbufOff = to - spec->lbuf;
 	*to = '\0';
 	ofi->readPtr = from;
 
@@ -199,7 +199,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 	    spec->nextline = "";
 	    return 1;
 	}
-	spec->lbufPtr = spec->lbuf;
+	spec->lbufOff = 0;
 
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&
