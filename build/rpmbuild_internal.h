@@ -16,6 +16,7 @@ struct TriggerFileEntry {
 
 typedef struct ReadLevelEntry {
     int reading;
+    int lineNum;
     struct ReadLevelEntry * next;
 } RLE_t;
 

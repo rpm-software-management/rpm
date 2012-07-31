@@ -255,7 +255,8 @@ retry:
 	if (!fgets(ofi->readBuf, BUFSIZ, ofi->fp)) {
 	    /* EOF */
 	    if (spec->readStack->next) {
-		rpmlog(RPMLOG_ERR, _("Unclosed %%if\n"));
+		rpmlog(RPMLOG_ERR, _("line %d: Unclosed %%if\n"),
+			spec->readStack->lineNum);
 	        return PART_ERROR;
 	    }
 
@@ -404,6 +405,7 @@ int readLine(rpmSpec spec, int strip)
 	rl = xmalloc(sizeof(*rl));
 	rl->reading = spec->readStack->reading && match;
 	rl->next = spec->readStack;
+	rl->lineNum = ofi->lineNum;
 	spec->readStack = rl;
 	spec->line[0] = '\0';
     }
