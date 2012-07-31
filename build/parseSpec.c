@@ -158,12 +158,17 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
     if (!(spec->nextline && *spec->nextline)) {
 	int pc = 0, bc = 0, nc = 0;
 	const char *from = ofi->readPtr;
-	char *to = spec->lbuf + spec->lbufOff;
 	char ch = ' ';
-	while (from && *from && ch != '\n')
-	    ch = *to++ = *from++;
-	spec->lbufOff = to - spec->lbuf;
-	*to = '\0';
+	while (from && *from && ch != '\n') {
+	    ch = spec->lbuf[spec->lbufOff] = *from;
+	    spec->lbufOff++; from++;
+
+	    if (spec->lbufOff >= spec->lbufSize) {
+		spec->lbufSize += BUFSIZ;
+		spec->lbuf = realloc(spec->lbuf, spec->lbufSize);
+	    }
+	}
+	spec->lbuf[spec->lbufOff] = '\0';
 	ofi->readPtr = from;
 
 	/* Check if we need another line before expanding the buffer. */
