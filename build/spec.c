@@ -160,6 +160,8 @@ rpmSpec newSpec(void)
     spec->specFile = NULL;
 
     spec->fileStack = NULL;
+    spec->lbufSize = BUFSIZ * 10;
+    spec->lbuf = xmalloc(spec->lbufSize);
     spec->lbuf[0] = '\0';
     spec->line = spec->lbuf;
     spec->nextline = NULL;
@@ -237,6 +239,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 	rl->next = NULL;
 	free(rl);
     }
+    spec->lbuf = _free(spec->lbuf);
     
     spec->sourceRpmName = _free(spec->sourceRpmName);
     spec->sourcePkgId = _free(spec->sourcePkgId);

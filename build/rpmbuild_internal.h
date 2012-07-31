@@ -41,7 +41,8 @@ struct rpmSpec_s {
     const char * rootDir;
 
     struct OpenFileInfo * fileStack;
-    char lbuf[10*BUFSIZ];
+    char *lbuf;
+    size_t lbufSize;
     size_t lbufOff;
     char nextpeekc;
     char * nextline;

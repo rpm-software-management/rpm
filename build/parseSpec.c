@@ -203,7 +203,7 @@ static int copyNextLineFromOFI(rpmSpec spec, OFI_t *ofi)
 
 	/* Don't expand macros (eg. %define) in false branch of %if clause */
 	if (spec->readStack->reading &&
-	    expandMacros(spec, spec->macros, spec->lbuf, sizeof(spec->lbuf))) {
+	    expandMacros(spec, spec->macros, spec->lbuf, spec->lbufSize)) {
 		rpmlog(RPMLOG_ERR, _("line %d: %s\n"),
 			spec->lineNum, spec->lbuf);
 		return -1;
