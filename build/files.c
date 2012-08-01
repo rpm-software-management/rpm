@@ -1254,6 +1254,30 @@ static void FileListFree(FileList fl)
 /* forward ref */
 static rpmRC recurseDir(FileList fl, const char * diskPath);
 
+/* Hack up a stat structure for a %dev or non-existing %ghost */
+static struct stat * fakeStat(FileEntry cur, struct stat * statp)
+{
+    time_t now = time(NULL);
+
+    if (cur->devtype) {
+	statp->st_rdev = ((cur->devmajor & 0xff) << 8) | (cur->devminor & 0xff);
+	statp->st_dev = statp->st_rdev;
+	statp->st_mode = (cur->devtype == 'b' ? S_IFBLK : S_IFCHR);
+    } else {
+	/* non-existing %ghost file or directory */
+	statp->st_mode = cur->isDir ? S_IFDIR : S_IFREG;
+	/* can't recurse into non-existing directory */
+	if (cur->isDir)
+	    cur->isDir = 1;
+    }
+    statp->st_mode |= (cur->ar.ar_fmode & 0777);
+    statp->st_atime = now;
+    statp->st_mtime = now;
+    statp->st_ctime = now;
+    statp->st_nlink = 1;
+    return statp;
+}
+
 /**
  * Add a file to the package manifest.
  * @param fl		package file tree walk data
@@ -1301,48 +1325,32 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     if (*cpioPath == '\0')
 	cpioPath = "/";
 
+    /*
+     * Unless recursing, we dont have stat() info at hand. Handle the
+     * various cases, preserving historical behavior wrt %dev():
+     * - for %dev() entries we fake it up whether the file exists or not
+     * - otherwise try to grab the data by lstat()
+     * - %ghost entries might not exist, fake it up
+     */
     if (statp == NULL) {
-	time_t now = time(NULL);
-	statp = &statbuf;
-	memset(statp, 0, sizeof(*statp));
+	memset(&statbuf, 0, sizeof(statbuf));
+
 	if (fl->cur.devtype) {
-	    /* XXX hack up a stat structure for a %dev(...) directive. */
-	    statp->st_nlink = 1;
-	    statp->st_rdev =
-		((fl->cur.devmajor & 0xff) << 8) | (fl->cur.devminor & 0xff);
-	    statp->st_dev = statp->st_rdev;
-	    statp->st_mode = (fl->cur.devtype == 'b' ? S_IFBLK : S_IFCHR);
-	    statp->st_mode |= (fl->cur.ar.ar_fmode & 0777);
-	    statp->st_atime = now;
-	    statp->st_mtime = now;
-	    statp->st_ctime = now;
+	    statp = fakeStat(&(fl->cur), &statbuf);
+	} else if (lstat(diskPath, &statbuf) == 0) {
+	    statp = &statbuf;
+	} else if (fl->cur.attrFlags & RPMFILE_GHOST) {
+	    statp = fakeStat(&(fl->cur), &statbuf);
 	} else {
-	    int is_ghost = fl->cur.attrFlags & RPMFILE_GHOST;
-	
-	    if (lstat(diskPath, statp)) {
-		if (is_ghost) {
-		    /* non-existing %ghost file or directory */
-		    statp->st_mode = fl->cur.isDir ? S_IFDIR : S_IFREG;
-		    statp->st_mode |= (fl->cur.ar.ar_fmode & 0777);
-		    statp->st_atime = now;
-		    statp->st_mtime = now;
-		    statp->st_ctime = now;
-		    /* can't recurse into non-existing directory */
-		    if (fl->cur.isDir)
-			fl->cur.isDir = 1;
-		} else {
-		    int lvl = RPMLOG_ERR;
-		    const char *msg = fl->cur.isDir ?
-					    _("Directory not found: %s\n") :
-					    _("File not found: %s\n");
-		    if (fl->cur.attrFlags & RPMFILE_EXCLUDE) {
-			lvl = RPMLOG_WARNING;
-			rc = RPMRC_OK;
-		    }
-		    rpmlog(lvl, msg, diskPath);
-		    goto exit;
-		}
+	    int lvl = RPMLOG_ERR;
+	    const char *msg = fl->cur.isDir ? _("Directory not found: %s\n") :
+					      _("File not found: %s\n");
+	    if (fl->cur.attrFlags & RPMFILE_EXCLUDE) {
+		lvl = RPMLOG_WARNING;
+		rc = RPMRC_OK;
 	    }
+	    rpmlog(lvl, msg, diskPath);
+	    goto exit;
 	}
     }
 
