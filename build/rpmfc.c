@@ -954,7 +954,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	case S_IFBLK:	ftype = "block special";	break;
 	case S_IFIFO:	ftype = "fifo (named pipe)";	break;
 	case S_IFSOCK:	ftype = "socket";		break;
-	case S_IFDIR:
+	case S_IFDIR:	ftype = "directory";		break;
 	case S_IFLNK:
 	case S_IFREG:
 	default:
