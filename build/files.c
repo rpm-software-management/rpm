@@ -1320,16 +1320,16 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	    int is_ghost = fl->cur.attrFlags & RPMFILE_GHOST;
 	
 	    if (lstat(diskPath, statp)) {
-		if (is_ghost) {	/* the file is %ghost missing from build root, assume regular file */
-		    if (fl->cur.ar.ar_fmodestr != NULL) {
-			statp->st_mode = S_IFREG | (fl->cur.ar.ar_fmode & 0777);
-		    } else {
-			rpmlog(RPMLOG_ERR, _("Explicit file attributes required in spec for: %s\n"), diskPath);
-			goto exit;
-		    }
+		if (is_ghost) {
+		    /* non-existing %ghost file or directory */
+		    statp->st_mode = fl->cur.isDir ? S_IFDIR : S_IFREG;
+		    statp->st_mode |= (fl->cur.ar.ar_fmode & 0777);
 		    statp->st_atime = now;
 		    statp->st_mtime = now;
 		    statp->st_ctime = now;
+		    /* can't recurse into non-existing directory */
+		    if (fl->cur.isDir)
+			fl->cur.isDir = 1;
 		} else {
 		    int lvl = RPMLOG_ERR;
 		    const char *msg = fl->cur.isDir ?
