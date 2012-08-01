@@ -128,6 +128,7 @@ exit:
  */
 static rpmRC addChangelog(Header h, ARGV_const_t sb)
 {
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     char *s, *sp;
     int i;
     time_t time;
@@ -142,9 +143,8 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 
     while (*s != '\0') {
 	if (*s != '*') {
-	    rpmlog(RPMLOG_ERR,
-			_("%%changelog entries must start with *\n"));
-	    return RPMRC_FAIL;
+	    rpmlog(RPMLOG_ERR, _("%%changelog entries must start with *\n"));
+	    goto exit;
 	}
 
 	/* find end of line */
@@ -152,7 +152,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	while(*s && *s != '\n') s++;
 	if (! *s) {
 	    rpmlog(RPMLOG_ERR, _("incomplete %%changelog entry\n"));
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	*s = '\0';
 	text = s + 1;
@@ -167,12 +167,12 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	SKIPSPACE(date);
 	if (dateToTimet(date, &time)) {
 	    rpmlog(RPMLOG_ERR, _("bad date in %%changelog: %s\n"), date);
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	if (lastTime && lastTime < time) {
 	    rpmlog(RPMLOG_ERR,
 		     _("%%changelog not in descending chronological order\n"));
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	lastTime = time;
 
@@ -180,7 +180,7 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	SKIPSPACE(s);
 	if (! *s) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	/* name */
@@ -191,14 +191,14 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	}
 	if (s == name) {
 	    rpmlog(RPMLOG_ERR, _("missing name in %%changelog\n"));
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 
 	/* text */
 	SKIPSPACE(text);
 	if (! *text) {
 	    rpmlog(RPMLOG_ERR, _("no description in %%changelog\n"));
-	    return RPMRC_FAIL;
+	    goto exit;
 	}
 	    
 	/* find the next leading '*' (or eos) */
@@ -220,9 +220,12 @@ static rpmRC addChangelog(Header h, ARGV_const_t sb)
 	
 	s = next;
     }
+    rc = RPMRC_OK;
+
+exit:
     free(sp);
 
-    return RPMRC_OK;
+    return rc;
 }
 
 int parseChangelog(rpmSpec spec)
