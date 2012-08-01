@@ -108,7 +108,10 @@ static int dateToTimet(const char * datestr, time_t * secs)
 	free(tz);
     }
     if (*secs == -1) goto exit;
-    if (!sameDate(&time, &ntime)) goto exit;
+
+    /* XXX Turn this into a hard error in a release or two */
+    if (!sameDate(&time, &ntime))
+	rpmlog(RPMLOG_WARNING, _("bogus date in %%changelog: %s\n"), datestr);
 
     rc = 0;
 
