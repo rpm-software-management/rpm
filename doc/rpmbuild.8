@@ -33,6 +33,7 @@ rpmbuild \- Build RPM Package(s)
 
  [\fB--buildroot \fIDIRECTORY\fB\fR] [\fB--clean\fR] [\fB--nobuild\fR]
  [\fB--rmsource\fR] [\fB--rmspec\fR] [\fB--short-circuit\fR]
+ [\fB--noclean\fR] [\fB--nocheck\fR]
  [\fB--target \fIPLATFORM\fB\fR]
 
 .SH "DESCRIPTION"
@@ -156,6 +157,12 @@ Remove the build tree after the packages are made.
 .TP
 \fB--nobuild\fR
 Do not execute any build stages. Useful for testing out spec files.
+.TP
+\fB--noclean\fR
+Do not execute %clean build stage even if present in spec.
+.TP
+\fB--nocheck\fR
+Do not execute %check build stage even if present in spec.
 .TP
 \fB--nodeps\fR
 Do not verify build dependencies.
