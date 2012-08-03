@@ -534,8 +534,14 @@ retry:
     }
 
 unsatisfied:
-    rc = 1;	/* dependency is unsatisfied */
-    rpmdsNotify(dep, NULL, rc);
+    if (dsflags & RPMSENSE_MISSINGOK) {
+	/* note the result, but missingok deps are never unsatisfied */
+	rpmdsNotify(dep, "(missingok)", 1);
+    } else {
+	/* dependency is unsatisfied */
+	rc = 1;
+	rpmdsNotify(dep, NULL, rc);
+    }
 
 exit:
     return rc;
