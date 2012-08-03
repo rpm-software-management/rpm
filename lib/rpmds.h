@@ -72,7 +72,8 @@ typedef rpmFlags rpmsenseFlags;
     RPMSENSE_KEYRING | \
     RPMSENSE_PRETRANS | \
     RPMSENSE_POSTTRANS | \
-    RPMSENSE_PREREQ)
+    RPMSENSE_PREREQ | \
+    RPMSENSE_MISSINGOK)
 
 #define	_notpre(_x)		((_x) & ~RPMSENSE_PREREQ)
 #define	_INSTALL_ONLY_MASK \
