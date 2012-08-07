@@ -206,3 +206,36 @@ runroot rpm -q versiontest
 AT_CLEANUP
 
 # TODO: the same with epoch vs no epoch
+
+AT_SETUP([rpm -U with invalid --relocate])
+AT_KEYWORDS([install relocate])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+
+runroot rpm -U --test --ignoreos --relocate /usr=/opt \
+  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+],
+[1],
+[],
+[	path /usr in package hello-script-1.0-1.noarch is not relocatable
+])
+AT_CLEANUP
+
+AT_SETUP([rpm -U --badreloc with invalid --relocate])
+AT_KEYWORDS([install relocate])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb /data/SPECS/hello-script.spec
+
+runroot rpm -U --test --ignoreos --badreloc --relocate /usr=/opt \
+  "${TOPDIR}"/RPMS/noarch/hello-script-1.0-1.noarch.rpm
+],
+[0],
+[],
+[])
+AT_CLEANUP
