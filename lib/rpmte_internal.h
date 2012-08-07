@@ -67,6 +67,9 @@ void rpmteAddDepProblem(rpmte te, const char * pkgNEVR, rpmds ds,
 		        fnpyKey * suggestedKeys);
 
 RPM_GNUC_INTERNAL
+void rpmteAddRelocProblems(rpmte te);
+
+RPM_GNUC_INTERNAL
 const char * rpmteTypeString(rpmte te);
 
 RPM_GNUC_INTERNAL

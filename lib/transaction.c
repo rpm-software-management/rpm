@@ -1045,6 +1045,9 @@ static rpmps checkProblems(rpmts ts)
 	    }
 	    rpmdbFreeIterator(mi);
 	}
+
+	if (!(probFilter & RPMPROB_FILTER_FORCERELOCATE))
+	    rpmteAddRelocProblems(p);
     }
     rpmtsiFree(pi);
     return rpmtsProblems(ts);
