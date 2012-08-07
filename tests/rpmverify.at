@@ -64,7 +64,7 @@ runroot rpm -Vva --nodeps --nouser --nogroup
 AT_CLEANUP
 
 # Test file verify after mutilating the files a bit.
-AT_SETUP([verify files with problems present])
+AT_SETUP([verify from db, with problems present])
 AT_KEYWORDS([verify])
 AT_CHECK([
 RPMDB_CLEAR
@@ -77,6 +77,28 @@ chmod u-x "${RPMTEST}"/usr/local/bin/hello
 dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \
    conv=notrunc bs=1 seek=5 count=6 2> /dev/null
 runroot rpm -Va --nodeps --nouser --nogroup
+],
+[1],
+[.M5....T.    /usr/local/bin/hello
+missing   d /usr/share/doc/hello-1.0/FAQ
+],
+[])
+AT_CLEANUP
+
+# Test file verify from original package after mutilating the files a bit.
+AT_SETUP([verify from package, with problems present])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --nodeps --noscripts --ignorearch --ignoreos \
+	/data/RPMS/hello-1.0-1.i386.rpm
+rm -f "${RPMTEST}"/usr/share/doc/hello-1.0/FAQ
+chmod u-x "${RPMTEST}"/usr/local/bin/hello
+dd if=/dev/zero of="${RPMTEST}"/usr/local/bin/hello \
+   conv=notrunc bs=1 seek=5 count=6 2> /dev/null
+runroot rpm -Vp --nodeps --nouser --nogroup /data/RPMS/hello-1.0-1.i386.rpm
 ],
 [1],
 [.M5....T.    /usr/local/bin/hello
