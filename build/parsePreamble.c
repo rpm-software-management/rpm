@@ -778,9 +778,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 		     spec->lineNum, rpmTagGetName(tag), spec->line);
 	    goto exit;
 	}
-	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags))
-	    goto exit;
-	break;
+	/* fallthrough */
     case RPMTAG_PREREQ:
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
