@@ -57,6 +57,7 @@ struct rpmte_s {
     fnpyKey key;		/*!< (TR_ADDED) Retrieval key. */
     rpmRelocation * relocs;	/*!< (TR_ADDED) Payload file relocations. */
     int nrelocs;		/*!< (TR_ADDED) No. of relocations. */
+    uint8_t *badrelocs;		/*!< (TR_ADDED) Bad relocations (or NULL) */
     FD_t fd;			/*!< (TR_ADDED) Payload file descriptor. */
 
 #define RPMTE_HAVE_PRETRANS	(1 << 0)
@@ -178,8 +179,9 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
 	    }
 
 	    if (!valid) {
-		rpmteAddProblem(p, RPMPROB_BADRELOCATE, NULL,
-				p->relocs[i].oldPath, 0);
+		if (p->badrelocs == NULL)
+		    p->badrelocs = xcalloc(p->nrelocs, sizeof(*p->badrelocs));
+		p->badrelocs[i] = 1;
 	    }
 	} else {
 	    p->relocs[i].newPath = NULL;
@@ -228,6 +230,7 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 
     p->nrelocs = 0;
     p->relocs = NULL;
+    p->badrelocs = NULL;
     if (relocs != NULL)
 	buildRelocs(p, h, relocs);
 
@@ -298,6 +301,7 @@ rpmte rpmteFree(rpmte te)
 		free(te->relocs[i].newPath);
 	    }
 	    free(te->relocs);
+	    free(te->badrelocs);
 	}
 
 	free(te->os);
@@ -838,6 +842,18 @@ void rpmteAddDepProblem(rpmte te, const char * altNEVR, rpmds ds,
 	}
 
 	appendProblem(te, type, key, altNEVR, DNEVR+2, rpmdsInstance(ds));
+    }
+}
+
+void rpmteAddRelocProblems(rpmte te)
+{
+    if (te && te->badrelocs) {
+	for (int i = 0; i < te->nrelocs; i++) {
+	    if (te->badrelocs[i]) {
+		rpmteAddProblem(te, RPMPROB_BADRELOCATE, NULL,
+				te->relocs[i].oldPath, 0);
+	    }
+	}
     }
 }
 
