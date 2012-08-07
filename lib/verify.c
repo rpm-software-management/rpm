@@ -71,7 +71,6 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
     switch (rpmfiFState(fi)) {
     case RPMFILE_STATE_NETSHARED:
     case RPMFILE_STATE_NOTINSTALLED:
-    case RPMFILE_STATE_MISSING:
 	return 0;
 	break;
     case RPMFILE_STATE_REPLACED:
@@ -87,6 +86,8 @@ int rpmVerifyFile(const rpmts ts, const rpmfi fi,
 		   RPMVERIFY_MTIME | RPMVERIFY_RDEV);
 	break;
     case RPMFILE_STATE_NORMAL:
+    /* File from a non-installed package, try to verify nevertheless */
+    case RPMFILE_STATE_MISSING:
 	break;
     }
 
