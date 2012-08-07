@@ -97,6 +97,7 @@ arch_canon:	i386:	i386	1
 arch_canon:	x86_64:	x86_64	1
 arch_canon:	amd64:	amd64	1
 arch_canon:	ia32e:	ia32e	1
+arch_canon:	em64t:	em64t	1
 
 arch_canon:	alpha:	alpha	2
 arch_canon:	alphaev5: alphaev5	2
@@ -355,9 +356,9 @@ arch_compat: s390x: s390 noarch
 
 arch_compat: ia64: noarch
 
-arch_compat: x86_64: amd64 athlon noarch
-arch_compat: amd64: x86_64 athlon noarch
-arch_compat: ia32e: x86_64 athlon noarch
+arch_compat: x86_64: amd64 em64t athlon noarch
+arch_compat: amd64: x86_64 em64t athlon noarch
+arch_compat: ia32e: x86_64 em64t athlon noarch
 
 arch_compat: sh3: noarch
 arch_compat: sh4: noarch
