@@ -774,7 +774,6 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	break;
     case RPMTAG_ORDERFLAGS:
     case RPMTAG_REQUIREFLAGS:
-    case RPMTAG_PREREQ:
 	if (parseBits(lang, installScriptBits, &tagflags)) {
 	    rpmlog(RPMLOG_ERR, _("line %d: Bad %s: qualifiers: %s\n"),
 		     spec->lineNum, rpmTagGetName(tag), spec->line);
@@ -783,6 +782,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	if (parseRCPOT(spec, pkg, field, tag, 0, tagflags))
 	    goto exit;
 	break;
+    case RPMTAG_PREREQ:
     case RPMTAG_BUILDPREREQ:
     case RPMTAG_BUILDREQUIRES:
     case RPMTAG_BUILDCONFLICTS:
