@@ -259,14 +259,7 @@ retry:
     /* Make sure we have something in the read buffer */
     if (!(ofi->readPtr && *(ofi->readPtr))) {
 	if (!fgets(ofi->readBuf, BUFSIZ, ofi->fp)) {
-	    /* EOF */
-	    if (spec->readStack->next) {
-		rpmlog(RPMLOG_ERR, _("line %d: Unclosed %%if\n"),
-			spec->readStack->lineNum);
-	        return PART_ERROR;
-	    }
-
-	    /* remove this file from the stack */
+	    /* EOF, remove this file from the stack */
 	    ofi = popOFI(spec);
 
 	    /* only on last file do we signal EOF to caller */
@@ -311,7 +304,11 @@ int readLine(rpmSpec spec, int strip)
     if (!restoreFirstChar(spec)) {
     retry:
 	if ((rc = readLineFromOFI(spec, ofi)) != 0) {
-	    if (startLine > 0) {
+	    if (spec->readStack->next) {
+		rpmlog(RPMLOG_ERR, _("line %d: Unclosed %%if\n"),
+			spec->readStack->lineNum);
+		rc = PART_ERROR;
+	    } else if (startLine > 0) {
 		rpmlog(RPMLOG_ERR,
 		    _("line %d: unclosed macro or bad line continuation\n"),
 		    startLine);
