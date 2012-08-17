@@ -142,3 +142,32 @@ runroot rpm -V --nodeps verifyscript
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# shared file timestamp behavior
+AT_SETUP([shared file timestamp behavior])
+AT_KEYWORDS([verify])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+# create packages sharing a file but with different timestamp
+for p in "one" "two"; do
+    runroot rpmbuild --quiet -bb \
+        --define "pkg $p" \
+	--define "filedata same_stuff" \
+          /data/SPECS/conflicttest.spec
+    sleep 1
+done
+
+# first instance of a shared file is the one that actually gets created,
+# force the order so we know what to expect as these dont depend on each other
+runroot rpm -U --noorder "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+runroot rpm -e conflicttwo
+runroot rpm -Va --nouser --nogroup
+],
+[0],
+[],
+[])
+AT_CLEANUP
