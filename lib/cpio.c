@@ -335,7 +335,8 @@ int rpmcpioClose(rpmcpio_t cpio)
     if ((cpio->mode & O_ACCMODE) == O_WRONLY) {
         rc = rpmcpioTrailerWrite(cpio);
     }
-    cpio->fd = fdFree(cpio->fd);
+    fdFree(cpio->fd);
+    cpio->fd = NULL;
     return rc;
 }
 
