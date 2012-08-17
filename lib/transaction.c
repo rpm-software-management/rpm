@@ -500,6 +500,12 @@ assert(otherFi != NULL);
 				    rpmteNEVRA(otherTe), fn, 0);
 		    free(fn);
 		}
+	    } else {
+		/* Skip create on all but the first instance of a shared file */
+		if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN) {
+		    rpmfsSetAction(fs, i, FA_SKIP);
+		    done = 1;
+		}
 	    }
 
 	    /* Try to get the disk accounting correct even if a conflict. */
