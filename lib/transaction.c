@@ -508,6 +508,10 @@ assert(otherFi != NULL);
 		}
 	    }
 
+	    /* Skipped files dont need fixup size or backups, %config or not */
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+		break;
+
 	    /* Try to get the disk accounting correct even if a conflict. */
 	    fixupSize = rpmfiFSizeIndex(otherFi, otherFileNum);
 

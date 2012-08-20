@@ -542,7 +542,6 @@ AT_CLEANUP
 # Shared config(noreplace) variants of the more interesting cases
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg.
-# Creating *two* backups makes no sense, but that's what currently happens.
 AT_SETUP([upgrade changing, modified shared config(noreplace) 1])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -581,8 +580,7 @@ otherstuff
 otherstuff
 foo-2.0
 ],
-[warning: /etc/my.conf created as /etc/my.conf.rpmnew
-warning: /etc/my.conf created as /etc/my.conf.rpmnew]
+[warning: /etc/my.conf created as /etc/my.conf.rpmnew]
 )
 AT_CLEANUP
 
