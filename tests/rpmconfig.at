@@ -9,8 +9,9 @@ AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
 rm -rf "${TOPDIR}"
-rm -rf "${RPMTEST}/etc/my.conf"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -20,10 +21,15 @@ for v in "1.0" "2.0"; do
 done
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
 ],
 [0],
-)
+[foo
+foo
+],
+[])
 AT_CLEANUP
 #
 # ------------------------------
@@ -33,8 +39,9 @@ AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
 rm -rf "${TOPDIR}"
-rm -rf "${RPMTEST}/etc/my.conf"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -44,11 +51,18 @@ for v in "1.0" "2.0"; do
 done
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
-echo "otherstuff" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
 ],
 [0],
-)
+[foo
+otherstuff
+otherstuff
+],
+[])
 AT_CLEANUP
 
 # ------------------------------
@@ -58,8 +72,9 @@ AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
 rm -rf "${TOPDIR}"
-rm -rf "${RPMTEST}/etc/my.conf"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -69,10 +84,15 @@ for v in "1.0" "2.0"; do
 done
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
 ],
 [0],
-)
+[foo-1.0
+foo-2.0
+],
+[])
 AT_CLEANUP
 
 # ------------------------------
@@ -82,8 +102,9 @@ AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
 rm -rf "${TOPDIR}"
-rm -rf "${RPMTEST}/etc/my.conf"
 
 for v in "1.0" "2.0"; do
     runroot rpmbuild --quiet -bb \
@@ -93,11 +114,17 @@ for v in "1.0" "2.0"; do
 done
 
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
 echo "otherstuff" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
 ],
 [0],
-[ignore],
+[foo-1.0
+otherstuff
+foo-2.0
+],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
 AT_CLEANUP
