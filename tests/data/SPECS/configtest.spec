@@ -1,4 +1,4 @@
-Name:		configtest
+Name:		configtest%{?sub:-%{sub}}
 Version:	%{ver}
 Release:	1
 Summary:	Testing config file behavior
@@ -20,4 +20,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%config %{_sysconfdir}/my.conf
+%config%{?noreplace:(noreplace)} %{_sysconfdir}/my.conf
