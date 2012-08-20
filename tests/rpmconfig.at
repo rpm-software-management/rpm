@@ -119,11 +119,13 @@ echo "otherstuff" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
+cat "${cf}.rpmsave"
 ],
 [0],
 [foo-1.0
 otherstuff
 foo-2.0
+otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
@@ -288,11 +290,13 @@ echo "otherstuff" > "${RPMTEST}"/etc/my.conf
 cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
+cat "${cf}.rpmnew"
 ],
 [0],
 [foo-1.0
 otherstuff
 otherstuff
+foo-2.0
 ],
 [warning: /etc/my.conf created as /etc/my.conf.rpmnew]
 )
@@ -481,11 +485,13 @@ runroot rpm -U \
     "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
     "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
+cat "${cf}.rpmsave"
 ],
 [0],
 [foo-1.0
 otherstuff
 foo-2.0
+otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
@@ -567,11 +573,13 @@ runroot rpm -U \
     "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
     "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
 cat "${cf}"
+cat "${cf}.rpmnew"
 ],
 [0],
 [foo-1.0
 otherstuff
 otherstuff
+foo-2.0
 ],
 [warning: /etc/my.conf created as /etc/my.conf.rpmnew
 warning: /etc/my.conf created as /etc/my.conf.rpmnew]
