@@ -97,7 +97,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg
-AT_SETUP([rpm -U to package with modified config file])
+AT_SETUP([rpm -U to package with modified config file 1])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -123,6 +123,41 @@ cat "${cf}"
 [0],
 [foo-1.0
 otherstuff
+foo-2.0
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config file matches the content from new package. Creating a 
+# backup makes no sense in this case, but that's what currently happens.
+AT_SETUP([rpm -U to package with modified config file 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
 foo-2.0
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
