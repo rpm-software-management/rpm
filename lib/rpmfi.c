@@ -638,8 +638,7 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	const unsigned char * odigest, * ndigest;
 	odigest = rpmfiFDigestIndex(ofi, oix, &oalgo, &odiglen);
 	if (diskWhat == REG) {
-	    if (rpmDoDigest(oalgo, fn, 0, 
-		(unsigned char *)buffer, NULL))
+	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
 	    if (odigest && !memcmp(odigest, buffer, odiglen))
 	        return FA_CREATE;	/* unmodified config file, replace. */
