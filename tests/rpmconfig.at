@@ -4,7 +4,7 @@ AT_BANNER([RPM config file behavior])
 
 # ------------------------------
 # (Build and) upgrade package with config file, no backup here
-AT_SETUP([rpm -U to package with unchanged config file])
+AT_SETUP([upgrade unchanged config])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -34,7 +34,7 @@ AT_CLEANUP
 #
 # ------------------------------
 # Upgrade package with locally modified config file, unchanged in pkg
-AT_SETUP([rpm -U to package with locally modified config file])
+AT_SETUP([upgrade modified config])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -67,7 +67,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Upgrade package with unmodified config file, changed in pkg
-AT_SETUP([rpm -U to package with unchanged config file])
+AT_SETUP([upgrade changing config])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -97,7 +97,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg
-AT_SETUP([rpm -U to package with modified config file 1])
+AT_SETUP([upgrade changing, modified config 1])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -132,7 +132,7 @@ AT_CLEANUP
 # ------------------------------
 # Modified config file matches the content from new package. Creating a 
 # backup makes no sense in this case, but that's what currently happens.
-AT_SETUP([rpm -U to package with modified config file 2])
+AT_SETUP([upgrade changing, modified config 2])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
