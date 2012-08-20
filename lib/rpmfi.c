@@ -637,13 +637,19 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
 	odigest = rpmfiFDigestIndex(ofi, oix, &oalgo, &odiglen);
+	ndigest = rpmfiFDigestIndex(nfi, nix, &nalgo, &ndiglen);
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
 	    if (odigest && !memcmp(odigest, buffer, odiglen))
 	        return FA_CREATE;	/* unmodified config file, replace. */
+	    /* hash algo changed in new, recalculate digest */
+	    if (oalgo != nalgo)
+		if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
+		    return FA_CREATE;	/* assume file has been removed */
+	    if (ndigest && !memcmp(ndigest, buffer, ndiglen))
+	        return FA_CREATE;	/* file identical in new, replace. */
 	}
-	ndigest = rpmfiFDigestIndex(nfi, nix, &nalgo, &ndiglen);
 	/* Can't compare different hash types, backup to avoid data loss */
 	if (oalgo != nalgo || odiglen != ndiglen)
 	    return save;
