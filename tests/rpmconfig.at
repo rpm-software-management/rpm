@@ -333,3 +333,290 @@ foo-2.0
 [warning: /etc/my.conf created as /etc/my.conf.rpmnew]
 )
 AT_CLEANUP
+
+# Shared config file variants of the same cases
+# ------------------------------
+# (Build and) upgrade package with config file, no backup here
+AT_SETUP([upgrade unchanged shared config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo
+foo
+],
+[])
+
+AT_CLEANUP
+#
+# ------------------------------
+# Upgrade package with locally modified config file, unchanged in pkg
+AT_SETUP([upgrade modified shared config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo
+otherstuff
+otherstuff
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with unmodified config file, changed in pkg
+AT_SETUP([upgrade changing shared config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with locally modified config file, changed in pkg
+AT_SETUP([upgrade changing, modified shared config 1])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo-1.0
+otherstuff
+foo-2.0
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config file matches the content from new package. Creating a 
+# backup makes no sense in this case, but that's what currently happens.
+AT_SETUP([upgrade changing, modified shared config 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+foo-2.0
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# Shared config(noreplace) variants of the more interesting cases
+# ------------------------------
+# Upgrade package with locally modified config file, changed in pkg.
+# Creating *two* backups makes no sense, but that's what currently happens.
+AT_SETUP([upgrade changing, modified shared config(noreplace) 1])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "noreplace 1" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo-1.0
+otherstuff
+otherstuff
+],
+[warning: /etc/my.conf created as /etc/my.conf.rpmnew
+warning: /etc/my.conf created as /etc/my.conf.rpmnew]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config file matches the content from new package. Creating a 
+# backup makes no sense in this case, but that's what currently happens.
+AT_SETUP([upgrade changing, modified shared config(noreplace) 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "noreplace 1" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+cat "${cf}"
+echo "foo-2.0" > "${RPMTEST}"/etc/my.conf
+cat "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+foo-2.0
+],
+[warning: /etc/my.conf created as /etc/my.conf.rpmnew]
+)
+AT_CLEANUP
