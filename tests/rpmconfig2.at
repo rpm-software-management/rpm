@@ -1,0 +1,769 @@
+#    rpmvercmp.at: rpm config link behavior tests
+
+AT_BANNER([RPM config symlink behavior])
+
+# Install over existing config file
+# Broken, no backup taken
+AT_SETUP([install config on existiting symlink])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+
+ln -s "otherstuff" "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -e configtest
+readlink "${cf}.rpmorig"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmorig]
+)
+AT_CLEANUP
+
+# Install over existing identical config link, no backup needed
+AT_SETUP([install config on existiting identical link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+
+ln -s "foo" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -e configtest
+test ! -L "${cf}"
+],
+[0],
+[foo
+foo
+],
+[])
+AT_CLEANUP
+
+# Erase unmodified config link, no backup here
+AT_SETUP([erase unchanged config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -e configtest
+test ! -L "${cf}"
+],
+[0],
+[foo
+],
+[])
+AT_CLEANUP
+
+# Erase modified config link
+# Broken, no backup taken
+AT_SETUP([erase changed config link])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+runroot rpm -e configtest
+readlink "${cf}.rpmsave"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# ------------------------------
+# (Build and) upgrade package with config link, no backup here
+AT_SETUP([upgrade unchanged config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo
+foo
+],
+[])
+AT_CLEANUP
+
+#
+# ------------------------------
+# Upgrade package with modified config link, unchanged in pkg. No backup.
+AT_SETUP([upgrade modified config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo
+otherstuff
+otherstuff
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with unmodified config link, changed in pkg
+AT_SETUP([upgrade changing config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with locally modified config link, changed in pkg
+# Broken, no backup taken
+AT_SETUP([upgrade changing, modified config link 1])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+readlink "${cf}.rpmsave"
+],
+[0],
+[foo-1.0
+otherstuff
+foo-2.0
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config link matches the content from new package.
+AT_SETUP([upgrade changing, modified config link 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+	--define "filetype link" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "foo-2.0" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# config(noreplace) variants of the same cases.
+#
+# ------------------------------
+# (Build and) upgrade package with config file, no backup here
+AT_SETUP([upgrade unchanged config(noreplace) link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+	--define "filetype link" \
+	--define "noreplace 1" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo
+foo
+],
+[])
+AT_CLEANUP
+
+#
+# ------------------------------
+# Upgrade package with locally modified config file, unchanged in pkg
+AT_SETUP([upgrade modified config(noreplace) link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo" \
+	--define "filetype link" \
+	--define "noreplace 1" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo
+otherstuff
+otherstuff
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with unmodified config file, changed in pkg
+AT_SETUP([upgrade changing config(noreplace) link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+	--define "filetype link" \
+	--define "noreplace 1" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with locally modified config file, changed in pkg
+AT_SETUP([upgrade changing, modified config(noreplace) link 1])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+	--define "filetype link" \
+	--define "noreplace 1" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+readlink "${cf}.rpmnew"
+],
+[0],
+[foo-1.0
+otherstuff
+otherstuff
+foo-2.0
+],
+[warning: /etc/my.conf created as /etc/my.conf.rpmnew]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config link matches the content from new package.
+# Broken, unwanted backup taken.
+AT_SETUP([upgrade changing, modified config(noreplace) link 2])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in "1.0" "2.0"; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver $v" \
+	--define "filedata foo-$v" \
+	--define "filetype link" \
+	--define "noreplace 1" \
+          /data/SPECS/configtest.spec
+done
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "foo-2.0" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+test ! -L "${cf}.rpmnew"
+],
+[0],
+[foo-1.0
+foo-2.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# Shared config link variants of the same cases
+# ------------------------------
+# (Build and) upgrade package with config file, no backup here
+AT_SETUP([upgrade unchanged shared config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo" \
+	    --define "filetype link" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo
+foo
+],
+[])
+
+AT_CLEANUP
+#
+# ------------------------------
+# Upgrade package with locally modified config file, unchanged in pkg
+AT_SETUP([upgrade modified shared config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo" \
+	    --define "filetype link" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo
+otherstuff
+otherstuff
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with unmodified config file, changed in pkg
+AT_SETUP([upgrade changing shared config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "filetype link" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# Upgrade package with locally modified config file, changed in pkg
+# Broken, no backup taken
+AT_SETUP([upgrade changing, modified shared config link 1])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "filetype link" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+readlink "${cf}.rpmsave"
+],
+[0],
+[foo-1.0
+otherstuff
+foo-2.0
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config link matches the content from new package.
+AT_SETUP([upgrade changing, modified shared config link 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "filetype link" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "foo-2.0" "${cf}"
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+],
+[0],
+[foo-1.0
+foo-2.0
+foo-2.0
+],
+[])
+AT_CLEANUP
+
+# Shared config(noreplace) variants of the more interesting cases
+# ------------------------------
+# Upgrade package with locally modified config file, changed in pkg.
+AT_SETUP([upgrade changing, modified shared config(noreplace) link 1])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "filetype link" \
+	    --define "noreplace 1" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+readlink "${cf}.rpmnew"
+],
+[0],
+[foo-1.0
+otherstuff
+otherstuff
+foo-2.0
+],
+[warning: /etc/my.conf created as /etc/my.conf.rpmnew]
+)
+AT_CLEANUP
+
+# ------------------------------
+# Modified config link matches the content from new package.
+# Broken, unwanted backup taken
+AT_SETUP([upgrade changing, modified shared config(noreplace) link 2])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for s in "A" "B"; do
+    for v in "1.0" "2.0"; do
+        runroot rpmbuild --quiet -bb \
+            --define "sub $s" \
+            --define "ver $v" \
+	    --define "filedata foo-$v" \
+	    --define "filetype link" \
+	    --define "noreplace 1" \
+              /data/SPECS/configtest.spec
+    done
+done
+
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "foo-2.0" "${cf}"
+readlink "${cf}"
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/configtest-A-2.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/configtest-B-2.0-1.noarch.rpm
+readlink "${cf}"
+test ! -L "${cf}.rpmnew"
+],
+[0],
+[foo-1.0
+foo-2.0
+foo-2.0
+],
+[])
+AT_CLEANUP

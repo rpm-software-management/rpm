@@ -24,6 +24,7 @@ TESTSUITE_AT += rpmvercmp.at
 TESTSUITE_AT += rpmdeps.at
 TESTSUITE_AT += rpmconflict.at
 TESTSUITE_AT += rpmconfig.at
+TESTSUITE_AT += rpmconfig2.at
 TESTSUITE_AT += rpmmacro.at
 TESTSUITE_AT += rpmpython.at
 TESTSUITE_AT += rpmdepmatch.at
