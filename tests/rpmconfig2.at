@@ -435,10 +435,8 @@ AT_CLEANUP
 
 # ------------------------------
 # Modified config link matches the content from new package.
-# Broken, unwanted backup taken.
 AT_SETUP([upgrade changing, modified config(noreplace) link 2])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -725,9 +723,7 @@ AT_CLEANUP
 
 # ------------------------------
 # Modified config link matches the content from new package.
-# Broken, unwanted backup taken
 AT_SETUP([upgrade changing, modified shared config(noreplace) link 2])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR

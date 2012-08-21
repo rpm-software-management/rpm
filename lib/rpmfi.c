@@ -664,8 +664,10 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	}
 	
 	/* ...but otherwise a backup will be needed */
-    } else /* dbWhat == LINK */ {
+    } else if (dbWhat == LINK) {
 	const char * oFLink, * nFLink;
+
+	/* See if the link on disk is identical to the one in old pkg */
 	oFLink = rpmfiFLinkIndex(ofi, oix);
 	if (diskWhat == LINK) {
 	    ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
@@ -675,9 +677,19 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	    if (oFLink && rstreq(oFLink, buffer))
 		return FA_CREATE;	/* unmodified config file, replace. */
 	}
+
+	/* See if the link on disk is identical to the one in new pkg */
 	nFLink = rpmfiFLinkIndex(nfi, nix);
-	if (oFLink && nFLink && rstreq(oFLink, nFLink))
+	if (diskWhat == LINK && newWhat == LINK) {
+	    if (nFLink && rstreq(nFLink, buffer))
+		return FA_CREATE;	/* unmodified config file, replace. */
+	}
+
+	/* If link is identical in old and new pkg, let it be */
+	if (newWhat == LINK && oFLink && nFLink && rstreq(oFLink, nFLink))
 	    return FA_SKIP;	/* identical file, don't bother. */
+
+	/* ...but otherwise a backup will be needed */
     }
 
     /*
