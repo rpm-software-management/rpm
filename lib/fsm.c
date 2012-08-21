@@ -1521,12 +1521,13 @@ static int fsmVerify(FSM_t fsm)
 	 (_x)[sizeof("/dev/log")-1] == ';'))
 
 
-static int fsmCommit(FSM_t fsm)
+
+/* Rename pre-existing modified or unmanaged file. */
+static int fsmBackup(FSM_t fsm)
 {
     int rc = 0;
     struct stat * st = &fsm->sb;
 
-    /* Rename pre-existing modified or unmanaged file. */
     if (fsm->osuffix && fsm->diskchecked &&
         (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
     {
@@ -1540,6 +1541,15 @@ static int fsmCommit(FSM_t fsm)
         free(path);
         free(opath);
     }
+    return rc;
+}
+
+static int fsmCommit(FSM_t fsm)
+{
+    int rc = 0;
+    struct stat * st = &fsm->sb;
+
+    rc = fsmBackup(fsm);	
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
     if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
@@ -1825,6 +1835,9 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
             break;
 
         rc = fsmInit(fsm);
+
+	if (!fsm->postpone)
+	    rc = fsmBackup(fsm);
 
         /* Remove erased files. */
         if (!fsm->postpone && fsm->action == FA_ERASE) {
