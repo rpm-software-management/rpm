@@ -641,19 +641,19 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
-	    if (odigest && !memcmp(odigest, buffer, odiglen))
+	    if (odigest && memcmp(odigest, buffer, odiglen) == 0)
 	        return FA_CREATE;	/* unmodified config file, replace. */
 	    /* hash algo changed in new, recalculate digest */
 	    if (oalgo != nalgo)
 		if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
 		    return FA_CREATE;	/* assume file has been removed */
-	    if (ndigest && !memcmp(ndigest, buffer, ndiglen))
+	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0)
 	        return FA_CREATE;	/* file identical in new, replace. */
 	}
 	/* Can't compare different hash types, backup to avoid data loss */
 	if (oalgo != nalgo || odiglen != ndiglen)
 	    return save;
-	if (odigest && ndigest && !memcmp(odigest, ndigest, odiglen))
+	if (odigest && ndigest && memcmp(odigest, ndigest, odiglen) == 0)
 	    return FA_SKIP;	/* identical file, don't bother. */
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
@@ -708,7 +708,7 @@ int rpmfiConfigConflictIndex(rpmfi fi, int ix)
 	const unsigned char *ndigest = rpmfiFDigestIndex(fi,ix, &algo, &diglen);
 	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
 	    return 0;	/* assume file has been removed */
-	if (ndigest && !memcmp(ndigest, buffer, diglen))
+	if (ndigest && memcmp(ndigest, buffer, diglen) == 0)
 	    return 0;	/* unmodified config file */
     } else /* newWhat == LINK */ {
 	const char * nFLink;
