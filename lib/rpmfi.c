@@ -636,13 +636,19 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	int oalgo, nalgo;
 	size_t odiglen, ndiglen;
 	const unsigned char * odigest, * ndigest;
+
+	/* See if the file on disk is identical to the one in old pkg */
 	odigest = rpmfiFDigestIndex(ofi, oix, &oalgo, &odiglen);
-	ndigest = rpmfiFDigestIndex(nfi, nix, &nalgo, &ndiglen);
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
 	        return FA_CREATE;	/* assume file has been removed */
 	    if (odigest && memcmp(odigest, buffer, odiglen) == 0)
 	        return FA_CREATE;	/* unmodified config file, replace. */
+	}
+
+	/* See if the file on disk is identical to the one in new pkg */
+	ndigest = rpmfiFDigestIndex(nfi, nix, &nalgo, &ndiglen);
+	if (diskWhat == REG && newWhat == REG) {
 	    /* hash algo changed in new, recalculate digest */
 	    if (oalgo != nalgo)
 		if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
@@ -650,11 +656,14 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0)
 	        return FA_CREATE;	/* file identical in new, replace. */
 	}
-	/* Can't compare different hash types, backup to avoid data loss */
-	if (oalgo != nalgo || odiglen != ndiglen)
-	    return save;
-	if (odigest && ndigest && memcmp(odigest, ndigest, odiglen) == 0)
-	    return FA_SKIP;	/* identical file, don't bother. */
+
+	/* If file can be determined identical in old and new pkg, let it be */
+	if (newWhat == REG && oalgo == nalgo && odiglen == ndiglen) {
+	    if (odigest && ndigest && memcmp(odigest, ndigest, odiglen) == 0)
+		return FA_SKIP; /* identical file, dont bother */
+	}
+	
+	/* ...but otherwise a backup will be needed */
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLinkIndex(ofi, oix);
