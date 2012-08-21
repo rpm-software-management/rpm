@@ -2,6 +2,178 @@
 
 AT_BANNER([RPM config file behavior])
 
+# Install over existing config file
+AT_SETUP([install config on existiting file])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+echo "otherstuff" > "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e configtest
+cat "${cf}.rpmorig"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmorig]
+)
+AT_CLEANUP
+
+# Install over existing config file
+AT_SETUP([install config(noreplace) on existiting file])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+echo "otherstuff" > "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e configtest
+cat "${cf}.rpmorig"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmorig]
+)
+AT_CLEANUP
+
+# Install over existing identical config file, no backup needed
+AT_SETUP([install config on existiting identical file])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+echo "foo" > "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e configtest
+test ! -f "${cf}"
+],
+[0],
+[foo
+],
+[])
+AT_CLEANUP
+
+# Erase unmodified config file, no backup here
+AT_SETUP([erase unchanged config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e configtest
+test ! -f "${cf}"
+],
+[0],
+[foo
+],
+[])
+AT_CLEANUP
+
+# Erase modified config file
+AT_SETUP([erase changed config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+runroot rpm -e configtest
+cat "${cf}.rpmsave"
+test ! -f "${cf}"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# Erase modified config(noreplace) file
+AT_SETUP([erase changed config(noreplace)])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -f "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filedata foo" \
+	--define "noreplace 1" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+runroot rpm -e configtest
+cat "${cf}.rpmsave"
+test ! -f "${cf}"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
 # ------------------------------
 # (Build and) upgrade package with config file, no backup here
 AT_SETUP([upgrade unchanged config])
