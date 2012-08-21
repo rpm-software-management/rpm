@@ -1,3 +1,5 @@
+%{!?filetype: %global filetype file}
+
 Name:		configtest%{?sub:-%{sub}}
 Version:	%{ver}
 Release:	1
@@ -13,11 +15,21 @@ BuildArch:	noarch
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}
-echo "%{filedata}" > $RPM_BUILD_ROOT/%{_sysconfdir}/my.conf
+case %{filetype} in
+file)
+    echo "%{filedata}" > $RPM_BUILD_ROOT/%{_sysconfdir}/my.conf
+    ;;
+link)
+    ln -s "%{filedata}" $RPM_BUILD_ROOT/%{_sysconfdir}/my.conf
+    ;;
+dir)
+    mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/my.conf
+    ;;
+esac
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%config%{?noreplace:(noreplace)} %{_sysconfdir}/my.conf
+%{!?noconfig:%config%{?noreplace:(noreplace)}} %{_sysconfdir}/my.conf
