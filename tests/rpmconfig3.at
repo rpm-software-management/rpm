@@ -1,0 +1,326 @@
+#    rpmconfig2.at: rpm config symlink behavior tests
+
+AT_BANNER([RPM config filetype changes])
+
+# non-modified config changes to non-config and back, no backups
+AT_SETUP([upgrade config to/from non-config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata bar" \
+	--define "noconfig 1" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo
+bar
+foo
+],
+[])
+AT_CLEANUP
+
+# modified config changes to non-config and back, back up on first upgrade
+AT_SETUP([upgrade modified config to/from non-config 1])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata bar" \
+	--define "noconfig 1" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
+cat "${cf}.rpmsave"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo
+otherstuff
+bar
+otherstuff
+foo
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# modified config changes to identical non-config and back, no backups
+AT_SETUP([upgrade modified config to/from non-config 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata bar" \
+	--define "noconfig 1" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "bar" > "${cf}"
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo
+bar
+bar
+foo
+],
+[])
+AT_CLEANUP
+
+# non-modified config file changes to config symlink and back, no backups
+AT_SETUP([upgrade config to/from config link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata bar" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+],
+[0],
+[foo
+bar
+foo
+],
+[])
+AT_CLEANUP
+
+# Modified config changes to config symlink
+# Broken, no backup taken
+AT_SETUP([upgrade modified config to config link])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata bar" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+readlink "${cf}"
+cat "${cf}.rpmsave"
+],
+[0],
+[foo
+otherstuff
+bar
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# Modified config link changes to config file
+# Broken, no backup taken
+AT_SETUP([upgrade modified config link to config])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata bar" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+readlink "${cf}"
+ln -sf "otherstuff" "${cf}"
+readlink "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
+readlink "${cf}.rpmsave"
+],
+[0],
+[foo
+otherstuff
+bar
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# Non-modified config file changes to directory and back
+# Seems broken, unwanted backup of the directory (directory renamed) taken
+# when changing back from directory to file. OTOH what if the directory
+# is not empty?
+AT_SETUP([upgrade config to/from directory])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+test -d "${cf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+test ! -d "${cf}.rpmsave"
+],
+[0],
+[foo
+foo
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
+# Modified config changes to directory
+# Broken, no backup taken
+AT_SETUP([upgrade modified config to directory])
+AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/configtest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/configtest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+echo "otherstuff" > "${cf}"
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+test -d "${cf}"
+cat "${cf}.rpmsave"
+],
+[0],
+[foo
+otherstuff
+],
+[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
+)
+AT_CLEANUP
+
