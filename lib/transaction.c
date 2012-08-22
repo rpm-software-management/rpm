@@ -544,21 +544,9 @@ assert(otherFi != NULL);
 		break;
 		
 	    /* Pre-existing modified config files need to be saved. */
-	    if (S_ISREG(FMode) && (FFlags & RPMFILE_CONFIG)) {
-	    	int algo = 0;
-		size_t diglen = 0;
-		const unsigned char *digest;
-		if ((digest = rpmfiFDigestIndex(fi, i, &algo, &diglen))) {
-		    unsigned char fdigest[diglen];
-		    char *fn = rpmfiFNIndex(fi, i);
-		    int modified = (!rpmDoDigest(algo, fn, 0, fdigest, NULL) &&
-				    memcmp(digest, fdigest, diglen));
-		    free(fn);
-		    if (modified) {
-			rpmfsSetAction(fs, i, FA_BACKUP);
-			break;
-		    }
-		}
+	    if (rpmfiConfigConflictIndex(fi, i)) {
+		rpmfsSetAction(fs, i, FA_BACKUP);
+		break;
 	    }
 	
 	    /* Otherwise, we can just erase. */
