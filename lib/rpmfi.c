@@ -703,24 +703,33 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 
 int rpmfiConfigConflictIndex(rpmfi fi, int ix)
 {
-    const char * fn = rpmfiFNIndex(fi, ix);
+    char * fn = NULL;
     rpmfileAttrs flags = rpmfiFFlagsIndex(fi, ix);
     char buffer[1024];
     rpmFileTypes newWhat, diskWhat;
     struct stat sb;
+    int rc = 0;
 
-    if (!(flags & RPMFILE_CONFIG) || lstat(fn, &sb)) {
+    if (!(flags & RPMFILE_CONFIG))
 	return 0;
-    }
 
-    diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
+    /* Only links and regular files can be %config, this is kinda moot */
+    /* XXX: Why are we returning 1 here? */
     newWhat = rpmfiWhatis(rpmfiFModeIndex(fi, ix));
-
     if (newWhat != LINK && newWhat != REG)
 	return 1;
 
-    if (diskWhat != newWhat)
-	return 1;
+    /* If it's not on disk, there's nothing to be saved */
+    fn = rpmfiFNIndex(fi, ix);
+    if (lstat(fn, &sb))
+	goto exit;
+
+    /* Files of different types obviously are not identical */
+    diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
+    if (diskWhat != newWhat) {
+	rc = 1;
+	goto exit;
+    }
     
     memset(buffer, 0, sizeof(buffer));
     if (newWhat == REG) {
@@ -728,21 +737,25 @@ int rpmfiConfigConflictIndex(rpmfi fi, int ix)
 	size_t diglen;
 	const unsigned char *ndigest = rpmfiFDigestIndex(fi,ix, &algo, &diglen);
 	if (rpmDoDigest(algo, fn, 0, (unsigned char *)buffer, NULL))
-	    return 0;	/* assume file has been removed */
+	    goto exit;	/* assume file has been removed */
 	if (ndigest && memcmp(ndigest, buffer, diglen) == 0)
-	    return 0;	/* unmodified config file */
+	    goto exit;	/* unmodified config file */
     } else /* newWhat == LINK */ {
 	const char * nFLink;
 	ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
 	if (link_len == -1)
-	    return 0;	/* assume file has been removed */
+	    goto exit;	/* assume file has been removed */
 	buffer[link_len] = '\0';
 	nFLink = rpmfiFLinkIndex(fi, ix);
 	if (nFLink && rstreq(nFLink, buffer))
-	    return 0;	/* unmodified config file */
+	    goto exit;	/* unmodified config file */
     }
 
-    return 1;
+    rc = 1;
+
+exit:
+    free(fn);
+    return rc;
 }
 
 static char **duparray(char ** src, int size)
