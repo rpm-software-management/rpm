@@ -198,6 +198,7 @@ cat "${cf}.rpmsave"
 [foo
 otherstuff
 bar
+otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
@@ -239,6 +240,7 @@ readlink "${cf}.rpmsave"
 [foo
 otherstuff
 bar
+otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
@@ -318,6 +320,7 @@ cat "${cf}.rpmsave"
 ],
 [0],
 [foo
+otherstuff
 otherstuff
 ],
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
