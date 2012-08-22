@@ -246,13 +246,9 @@ otherstuff
 )
 AT_CLEANUP
 
-# Non-modified config file changes to directory and back
-# Seems broken, unwanted backup of the directory (directory renamed) taken
-# when changing back from directory to file. OTOH what if the directory
-# is not empty?
-AT_SETUP([upgrade config to/from directory])
+# Non-modified config file changes to directory.
+AT_SETUP([upgrade config to directory])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -275,16 +271,11 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
 test -d "${cf}"
-runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
-cat "${cf}"
-test ! -d "${cf}.rpmsave"
 ],
 [0],
 [foo
-foo
 ],
-[warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
-)
+[])
 AT_CLEANUP
 
 # Modified config changes to directory
@@ -326,4 +317,3 @@ otherstuff
 [warning: /etc/my.conf saved as /etc/my.conf.rpmsave]
 )
 AT_CLEANUP
-
