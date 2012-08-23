@@ -1533,7 +1533,7 @@ static int fsmBackup(FSM_t fsm)
     {
 	int isDir = S_ISDIR(st->st_mode);
         char * opath = fsmFsPath(fsm, isDir, NULL);
-        char * path = fsmFsPath(fsm, isDir, fsm->osuffix);
+        char * path = fsmFsPath(fsm, 0, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
         if (!rc) {
             rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
