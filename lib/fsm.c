@@ -1705,24 +1705,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
-                char * path = fsm->path;
-                if (fsm->osuffix)
-                    fsm->path = fsmFsPath(fsm, 0, NULL);
                 rc = fsmVerify(fsm);
-
-                if (rc == 0 && fsm->osuffix) {
-                    char * spath = fsmFsPath(fsm, 0, fsm->osuffix);
-                    rc = fsmRename(fsm->path, spath, fsm->mapFlags);
-                    if (!rc)
-                        rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"),
-                               fsm->path, spath);
-                    free(spath);
-                }
-
-                if (fsm->osuffix)
-                    free(fsm->path);
-
-                fsm->path = path;
                 if (!(rc == CPIOERR_ENOENT)) return rc;
                 rc = expandRegular(fsm, psm, archive, nodigest);
             } else if (S_ISDIR(st->st_mode)) {
