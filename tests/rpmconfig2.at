@@ -3,10 +3,8 @@
 AT_BANNER([RPM config symlink behavior])
 
 # Install over existing config file
-# Broken, no backup taken
 AT_SETUP([install config on existiting symlink])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -220,10 +218,8 @@ AT_CLEANUP
 
 # ------------------------------
 # Upgrade package with locally modified config link, changed in pkg
-# Broken, no backup taken
 AT_SETUP([upgrade changing, modified config link 1])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -588,10 +584,8 @@ AT_CLEANUP
 
 # ------------------------------
 # Upgrade package with locally modified config file, changed in pkg
-# Broken, no backup taken
 AT_SETUP([upgrade changing, modified shared config link 1])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT

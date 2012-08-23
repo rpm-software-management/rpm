@@ -1526,13 +1526,9 @@ static int fsmVerify(FSM_t fsm)
 static int fsmBackup(FSM_t fsm)
 {
     int rc = 0;
-    struct stat * st = &fsm->sb;
 
-    if (fsm->osuffix && fsm->diskchecked &&
-        (fsm->exists || (fsm->goal == FSM_PKGINSTALL && S_ISREG(st->st_mode))))
-    {
-	int isDir = S_ISDIR(st->st_mode);
-        char * opath = fsmFsPath(fsm, isDir, NULL);
+    if (fsm->action == FA_SAVE || fsm->action == FA_BACKUP) {
+        char * opath = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode), NULL);
         char * path = fsmFsPath(fsm, 0, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
         if (!rc) {
