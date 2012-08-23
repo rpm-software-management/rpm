@@ -163,10 +163,8 @@ foo
 AT_CLEANUP
 
 # Modified config changes to config symlink
-# Broken, no backup taken
 AT_SETUP([upgrade modified config to config link])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -205,9 +203,7 @@ otherstuff
 AT_CLEANUP
 
 # Modified config link changes to config file
-# Broken, no backup taken
 AT_SETUP([upgrade modified config link to config])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -279,10 +275,8 @@ test -d "${cf}"
 AT_CLEANUP
 
 # Modified config changes to directory
-# Broken, no backup taken
 AT_SETUP([upgrade modified config to directory])
 AT_KEYWORDS([install])
-AT_XFAIL_IF([test $RPM_XFAIL -gt 0])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT

@@ -612,22 +612,6 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
     newWhat = rpmfiWhatis(rpmfiFModeIndex(nfi, nix));
 
     /*
-     * RPM >= 2.3.10 shouldn't create config directories -- we'll ignore
-     * them in older packages as well.
-     */
-    if (newWhat == XDIR)
-	return FA_CREATE;
-
-    if (diskWhat != newWhat && dbWhat != REG && dbWhat != LINK)
-	return save;
-    else if (newWhat != dbWhat && diskWhat != dbWhat)
-	return save;
-    else if (dbWhat != newWhat)
-	return FA_CREATE;
-    else if (dbWhat != LINK && dbWhat != REG)
-	return FA_CREATE;
-
-    /*
      * This order matters - we'd prefer to CREATE the file if at all
      * possible in case something else (like the timestamp) has changed.
      */
@@ -690,6 +674,9 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	    return FA_SKIP;	/* identical file, don't bother. */
 
 	/* ...but otherwise a backup will be needed */
+    } else {
+	/* Other file types cannot be %config, go ahead and create it */
+	return FA_CREATE;
     }
 
     /*
