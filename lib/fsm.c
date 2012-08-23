@@ -1533,6 +1533,7 @@ static int fsmBackup(FSM_t fsm)
         rc = fsmRename(opath, path, fsm->mapFlags);
         if (!rc) {
             rpmlog(RPMLOG_WARNING, _("%s saved as %s\n"), opath, path);
+            fsm->exists = 0; /* it doesn't exist anymore... */
         }
         free(path);
         free(opath);
@@ -1545,10 +1546,11 @@ static int fsmCommit(FSM_t fsm)
     int rc = 0;
     struct stat * st = &fsm->sb;
 
-    rc = fsmBackup(fsm);	
-
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
     if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
+	/* Backup on-disk file if needed. Directories are handled earlier */
+	if (!S_ISDIR(st->st_mode))
+	    rc = fsmBackup(fsm);
         /* Rename temporary to final file name. */
         if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
             char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
@@ -1705,6 +1707,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
                 if (!(rc == CPIOERR_ENOENT)) return rc;
                 rc = expandRegular(fsm, psm, archive, nodigest);
             } else if (S_ISDIR(st->st_mode)) {
+		/* Directories replacing something need early backup */
+                rc = fsmBackup(fsm);
                 rc = fsmVerify(fsm);
                 if (rc == CPIOERR_ENOENT) {
                     mode_t mode = st->st_mode;
