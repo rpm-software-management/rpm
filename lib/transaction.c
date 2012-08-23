@@ -370,7 +370,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	rpmfi otherFi;
 	rpmte otherTe;
 	rpmfileAttrs FFlags;
-	rpm_mode_t FMode;
 	struct rpmffi_s * recs;
 	int numRecs;
 
@@ -379,7 +378,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 
 	fiFps = rpmfiFpsIndex(fi, i);
 	FFlags = rpmfiFFlagsIndex(fi, i);
-	FMode = rpmfiFModeIndex(fi, i);
 	FColor = rpmfiFColorIndex(fi, i);
 	FColor &= tscolor;
 
