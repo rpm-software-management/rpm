@@ -281,6 +281,33 @@ static uint64_t countFiles(rpmts ts)
     return fc;
 }
 
+static int handleRemovalConflict(rpmfi fi, int fx, rpmfi ofi, int ofx)
+{
+    int rConflicts = 0; /* Removed files don't conflict, normally */
+    rpmFileTypes ft = rpmfiWhatis(rpmfiFModeIndex(fi, fx));
+    rpmFileTypes oft = rpmfiWhatis(rpmfiFModeIndex(ofi, ofx));
+    struct stat sb;
+
+    if (oft == XDIR) {
+	/* We can't handle directory changing to anything else */
+	if (ft != XDIR)
+	    rConflicts = 1;
+    }
+
+    /*
+     * ...but if the conflicting item is either not on disk, or has
+     * already been changed to the new type, we should be ok afterall.
+     */
+    if (rConflicts) {
+	char *fn = rpmfiFNIndex(fi, fx);
+	if (lstat(fn, &sb) || rpmfiWhatis(sb.st_mode) == ft)
+	    rConflicts = 0;
+	free(fn);
+    }
+
+    return rConflicts;
+}
+
 /**
  * handleInstInstalledFiles.
  * @param ts		transaction set
@@ -309,9 +336,21 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
 	int rConflicts = 1;
 	char rState = RPMFILE_STATE_REPLACED;
 
-	/* Conflicts on to-be-removed files aren't normally an issue */
-	if (beingRemoved)
-	    rConflicts = 0;
+	/*
+	 * There are some removal conflicts we can't handle. However
+	 * if the package has a %pretrans scriptlet, it might be able to
+	 * fix the conflict. Let it through on test-transaction to allow
+	 * eg yum to get past it, if the conflict is present on the actual
+	 * transaction we'll abort. Behaving differently on test is nasty,
+	 * but its still better than barfing in middle of large transaction.
+	 */
+	if (beingRemoved) {
+	    rConflicts = handleRemovalConflict(fi, fx, otherFi, ofx);
+	    if (rConflicts && rpmteHaveTransScript(p, RPMTAG_PRETRANS)) {
+		if (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)
+		    rConflicts = 0;
+	    }
+	}
 
 	/* Resolve file conflicts to prefer Elf64 (if not forced). */
 	if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {

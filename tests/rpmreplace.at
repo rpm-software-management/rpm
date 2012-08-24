@@ -362,7 +362,6 @@ test -d "${tf}"
 AT_CLEANUP
 
 AT_SETUP([upgrade empty directory to regular file])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -424,7 +423,6 @@ test -L "${tf}" && test -d "${tf}"
 AT_CLEANUP
 
 AT_SETUP([upgrade empty directory to broken link])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -454,7 +452,6 @@ test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noar
 AT_CLEANUP
 
 AT_SETUP([upgrade empty directory to file link])
-AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
