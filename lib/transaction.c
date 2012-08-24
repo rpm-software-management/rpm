@@ -306,10 +306,13 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
 	rpm_color_t prefcolor = rpmtsPrefColor(ts);
 	rpm_color_t FColor = rpmfiFColorIndex(fi, fx) & tscolor;
 	rpm_color_t oFColor = rpmfiFColorIndex(otherFi, ofx) & tscolor;
-	int rConflicts;
+	int rConflicts = 1;
 	char rState = RPMFILE_STATE_REPLACED;
 
-	rConflicts = !(beingRemoved || (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES));
+	/* Conflicts on to-be-removed files aren't normally an issue */
+	if (beingRemoved)
+	    rConflicts = 0;
+
 	/* Resolve file conflicts to prefer Elf64 (if not forced). */
 	if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {
 	    if (oFColor & prefcolor) {
@@ -321,6 +324,10 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
 		rState = RPMFILE_STATE_WRONGCOLOR;
 	    }
 	}
+
+	/* Somebody used The Force, lets shut up... */
+	if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEOLDFILES)
+	    rConflicts = 0;
 
 	if (rConflicts) {
 	    char *altNEVR = headerGetAsString(otherHeader, RPMTAG_NEVRA);
