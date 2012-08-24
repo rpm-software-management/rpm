@@ -259,9 +259,7 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
 AT_CLEANUP
 
 # ------------------------------
-# Replace symlink with a directory - the upgrade succeeds but leaves an
-# orphan directory that the symlink now points to. Should verify the
-# result more carefully...
+# Replace symlink with a directory
 AT_SETUP([rpm -U replacing symlink with directory])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -278,7 +276,8 @@ runroot rpmbuild --quiet -bb \
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-1.noarch.rpm
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
 ],
-[0],
+[2],
 [],
-[])
+[	file /usr/share/symlinktest from install of symlinktest-1.0-2.noarch conflicts with file from package symlinktest-1.0-1.noarch
+])
 AT_CLEANUP

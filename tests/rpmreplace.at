@@ -301,7 +301,6 @@ test -d "${tf}"
 [])
 AT_CLEANUP
 
-# XXX: this "succeeds" but with bogus results
 AT_SETUP([upgrade directory link to directory])
 AT_KEYWORDS([install])
 AT_CHECK([
@@ -325,12 +324,12 @@ runroot rpmbuild --quiet -bb \
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
 readlink "${tf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
-test -d "${tf}"
 ],
-[0],
+[2],
 [zoo
 ],
-[])
+[	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
+])
 AT_CLEANUP
 
 AT_SETUP([upgrade empty directory to empty directory])

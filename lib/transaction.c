@@ -287,11 +287,19 @@ static int handleRemovalConflict(rpmfi fi, int fx, rpmfi ofi, int ofx)
     rpmFileTypes ft = rpmfiWhatis(rpmfiFModeIndex(fi, fx));
     rpmFileTypes oft = rpmfiWhatis(rpmfiFModeIndex(ofi, ofx));
     struct stat sb;
+    char *fn = NULL;
 
     if (oft == XDIR) {
 	/* We can't handle directory changing to anything else */
 	if (ft != XDIR)
 	    rConflicts = 1;
+    } else if (oft == LINK) {
+	/* We can't correctly handle directory symlink changing to directory */
+	if (ft == XDIR) {
+	    fn = rpmfiFNIndex(fi, fx);
+	    if (stat(fn, &sb) == 0 && S_ISDIR(sb.st_mode))
+		rConflicts = 1;
+	}
     }
 
     /*
@@ -299,12 +307,13 @@ static int handleRemovalConflict(rpmfi fi, int fx, rpmfi ofi, int ofx)
      * already been changed to the new type, we should be ok afterall.
      */
     if (rConflicts) {
-	char *fn = rpmfiFNIndex(fi, fx);
+	if (fn == NULL)
+	    fn = rpmfiFNIndex(fi, fx);
 	if (lstat(fn, &sb) || rpmfiWhatis(sb.st_mode) == ft)
 	    rConflicts = 0;
-	free(fn);
     }
 
+    free(fn);
     return rConflicts;
 }
 
