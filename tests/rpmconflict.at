@@ -235,9 +235,10 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
 AT_CLEANUP
 
 # ------------------------------
-# Replace directory with symlink, this is expected to fail
+# Removal conflict on directory -> symlink change
 AT_SETUP([rpm -U replacing directory with symlink])
 AT_KEYWORDS([install])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
@@ -252,11 +253,9 @@ runroot rpmbuild --quiet -bb \
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-1.noarch.rpm
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
 ],
-[1],
+[2],
 [],
-[error: unpacking of archive failed on file /usr/share/symlinktest: cpio: rename failed - Is a directory
-error: symlinktest-1.0-2.noarch: install failed
-error: symlinktest-1.0-1.noarch: erase skipped
+[	file /usr/share/symlinktest from install of symlinktest-1.0-2.noarch conflicts with file from package symlinktest-1.0-1.noarch
 ])
 AT_CLEANUP
 

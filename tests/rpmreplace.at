@@ -1,0 +1,575 @@
+
+AT_BANNER([RPM file replacement])
+
+AT_SETUP([upgrade to/from regular file])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${tf}" "${tf}".rpm*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata bar" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+cat "${tf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+],
+[0],
+[foo
+bar
+foo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade regular file to/from broken link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata stuff" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+],
+[0],
+[foo
+stuff
+foo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade regular file to/from file link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U --oldpackage "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+],
+[0],
+[foo
+goo
+foo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade broken link to broken link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata stiff" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata stuff" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+],
+[0],
+[stiff
+stuff
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade file link to file link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+],
+[0],
+[goo
+goo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade directory link to directory link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata zoo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata zoo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+],
+[0],
+[zoo
+zoo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade regular file to directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype file" \
+	--define "filedata foo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+cat "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -d "${tf}"
+],
+[0],
+[foo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade broken link to directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata other" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -d "${tf}"
+],
+[0],
+[other
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade file link to directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -d "${tf}"
+],
+[0],
+[goo
+],
+[])
+AT_CLEANUP
+
+# XXX: this "succeeds" but with bogus results
+AT_SETUP([upgrade directory link to directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype link" \
+	--define "filedata zoo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+readlink "${tf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -d "${tf}"
+],
+[0],
+[zoo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade empty directory to empty directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -d "${tf}"
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade empty directory to regular file])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype file" \
+	--define "filedata woot" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+],
+[2],
+[],
+[	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([upgrade locally symlinked directory])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype datadir" \
+	--define "filedata README1" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype datadir" \
+	--define "filedata README2" \
+          /data/SPECS/replacetest.spec
+
+mkdir "${RPMTEST}"/opt/f00f
+ln -s f00f "${RPMTEST}"/opt/foo
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -L "${tf}" && test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+test -L "${tf}" && test -d "${tf}"
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade empty directory to broken link])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata woot" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+],
+[2],
+[],
+[	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([upgrade empty directory to file link])
+AT_XFAIL_IF([test $RPM_XFAIL -ne 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata woot" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+],
+[2],
+[],
+[	file /opt/foo from install of replacetest-2.0-1.noarch conflicts with file from package replacetest-1.0-1.noarch
+])
+AT_CLEANUP
+
+AT_SETUP([upgrade removed empty directory to file link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && rmdir "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+],
+[0],
+[goo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade replaced empty directory to file link])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && rmdir "${tf}" && ln -sf goo "${tf}" && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+],
+[0],
+[goo
+],
+[])
+AT_CLEANUP
+
+AT_SETUP([upgrade empty directory to file link with pretrans])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+tf="${RPMTEST}"/opt/foo
+rm -rf "${RPMTEST}"/opt/*
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 1.0" \
+	--define "filetype dir" \
+          /data/SPECS/replacetest.spec
+
+runroot rpmbuild --quiet -bb \
+        --define "ver 2.0" \
+	--define "filetype link" \
+	--define "filedata goo" \
+	--define "fixit posix.rmdir('/opt/foo')" \
+          /data/SPECS/replacetest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-1.0-1.noarch.rpm
+test -d "${tf}" && runroot rpm -U --test "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm && runroot rpm -U "${TOPDIR}"/RPMS/noarch/replacetest-2.0-1.noarch.rpm
+readlink "${tf}"
+],
+[0],
+[goo
+],
+[])
+AT_CLEANUP
