@@ -50,6 +50,7 @@ EXTRA_DIST += data/SPECS/verifyscript.spec
 EXTRA_DIST += data/SPECS/fakeshell.spec
 EXTRA_DIST += data/SPECS/scripts.spec
 EXTRA_DIST += data/SPECS/selfconflict.spec
+EXTRA_DIST += data/SPECS/replacetest.spec
 EXTRA_DIST += data/SOURCES/hello-1.0-modernize.patch
 EXTRA_DIST += data/SOURCES/hello-1.0.tar.gz
 EXTRA_DIST += data/SOURCES/hello-2.0.tar.gz
