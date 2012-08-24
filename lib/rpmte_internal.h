@@ -78,6 +78,9 @@ tsortInfo rpmteTSI(rpmte te);
 RPM_GNUC_INTERNAL
 void rpmteSetTSI(rpmte te, tsortInfo tsi);
 
+RPM_GNUC_INTERNAL
+int rpmteHaveTransScript(rpmte te, rpmTagVal tag);
+
 /* XXX should be internal too but build code needs for now... */
 rpmfs rpmteGetFileStates(rpmte te);
 

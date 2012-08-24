@@ -772,7 +772,7 @@ int rpmteFailed(rpmte te)
     return (te != NULL) ? te->failed : -1;
 }
 
-static int rpmteHaveTransScript(rpmte te, rpmTagVal tag)
+int rpmteHaveTransScript(rpmte te, rpmTagVal tag)
 {
     int rc = 0;
     if (tag == RPMTAG_PRETRANS) {
