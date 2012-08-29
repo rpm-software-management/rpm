@@ -503,9 +503,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 
 	switch (rpmteType(p)) {
 	case TR_ADDED:
-	  {
-	    int done = 0;
-
 	    if (otherPkgNum < 0) {
 		/* XXX is this test still necessary? */
 		rpmFileAction action;
@@ -543,7 +540,6 @@ assert(otherFi != NULL);
 			rpmfsSetAction(fs, i, FA_SKIPCOLOR);
 			rConflicts = 0;
 		    }
-		    done = 1;
 		}
 		if (rConflicts && reportConflicts) {
 		    char *fn = rpmfiFNIndex(fi, i);
@@ -553,10 +549,8 @@ assert(otherFi != NULL);
 		}
 	    } else {
 		/* Skip create on all but the first instance of a shared file */
-		if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN) {
+		if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN)
 		    rpmfsSetAction(fs, i, FA_SKIP);
-		    done = 1;
-		}
 	    }
 
 	    /* Skipped files dont need fixup size or backups, %config or not */
@@ -572,10 +566,11 @@ assert(otherFi != NULL);
 		action = (FFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SKIP;
 		rpmfsSetAction(fs, i, action);
 	    } else {
-		if (!done)
+		/* If not decided yet, create it */
+		if (rpmfsGetAction(fs, i) == FA_UNKNOWN)
 		    rpmfsSetAction(fs, i, FA_CREATE);
 	    }
-	  } break;
+	    break;
 
 	case TR_REMOVED:
 	    if (otherPkgNum >= 0) {
