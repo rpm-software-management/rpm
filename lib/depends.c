@@ -45,7 +45,7 @@ static rpmds rpmlibP = NULL;
 #define HTKEYTYPE unsigned int
 #include "rpmhash.C"
 #undef HASHTYPE
-#undef HASHKEYTYPE
+#undef HTKEYTYPE
 
 /**
  * Check for supported payload format in header.
