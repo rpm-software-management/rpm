@@ -36,6 +36,17 @@
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
 #include "debug.h"
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE dbChk
+#define HTKEYTYPE unsigned int
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 static rpmDbiTag const dbiTags[] = {
     RPMDBI_PACKAGES,
     RPMDBI_NAME,
@@ -186,7 +197,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	if (dbiType(dbi) == DBI_PRIMARY) {
 	    /* Allocate based on max header instance number + some reserve */
 	    if (!verifyonly && (db->db_checked == NULL)) {
-		db->db_checked = intHashCreate(1024 + pkgInstance(dbi, 0) / 4,
+		db->db_checked = dbChkCreate(1024 + pkgInstance(dbi, 0) / 4,
 						uintId, uintCmp, NULL);
 	    }
 	    /* If primary got created, we can safely run without fsync */
@@ -736,7 +747,7 @@ int rpmdbClose(rpmdb db)
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_fullpath = _free(db->db_fullpath);
-    db->db_checked = intHashFree(db->db_checked);
+    db->db_checked = dbChkFree(db->db_checked);
     db->_dbi = _free(db->_dbi);
 
     prev = &rpmdbRock;
@@ -1703,7 +1714,7 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 
     /* Don't bother re-checking a previously read header. */
     if (mi->mi_db->db_checked) {
-	if (intHashHasEntry(mi->mi_db->db_checked, mi->mi_offset))
+	if (dbChkHasEntry(mi->mi_db->db_checked, mi->mi_offset))
 	    rpmrc = RPMRC_OK;
     }
 
@@ -1721,7 +1732,7 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 
 	/* Mark header checked. */
 	if (mi->mi_db && mi->mi_db->db_checked && rpmrc != RPMRC_FAIL) {
-	    intHashAddEntry(mi->mi_db->db_checked, mi->mi_offset);
+	    dbChkAddEntry(mi->mi_db->db_checked, mi->mi_offset);
 	}
     }
     return rpmrc;
@@ -2684,7 +2695,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	headerSetInstance(h, hdrNum);
 	/* Purge our verification cache on added public keys */
 	if (db->db_checked && headerIsEntry(h, RPMTAG_PUBKEYS)) {
-	    intHashEmpty(db->db_checked);
+	    dbChkEmpty(db->db_checked);
 	}
     }
 

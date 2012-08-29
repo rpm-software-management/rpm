@@ -37,7 +37,7 @@ struct rpmdb_s {
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
     int		db_ver;		/*!< Berkeley DB version */
-    intHash	db_checked;	/*!< headerCheck()'ed package instances */
+    struct dbChk_s * db_checked;/*!< headerCheck()'ed package instances */
     rpmdb	db_next;
     int		db_opens;
     int		db_ndbi;	/*!< No. of tag indices. */
