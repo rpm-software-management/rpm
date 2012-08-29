@@ -124,7 +124,7 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/selfconflict-1.0-1.noarch.rpm
 AT_CLEANUP
 # ------------------------------
 # File conflict between colored files, prefer 64bit
-AT_SETUP([multilib elf conflict, prefer 64bit])
+AT_SETUP([multilib elf conflict, prefer 64bit 1])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -135,16 +135,72 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_prefer_color 2" \
   /data/RPMS/hello-2.0-1.i686.rpm \
   /data/RPMS/hello-2.0-1.x86_64.rpm
-runroot rpm -q --qf "[[%{filestates:fstate} ]]" hello.i686 hello.x86_64
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686 hello.x86_64
 ],
 [0],
-[wrong color normal normal normal normal normal normal normal normal normal ],
+[wrong color,normal,normal,normal,normal,
+normal,normal,normal,normal,normal,
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# File conflict between colored files, prefer 64bit
+AT_SETUP([multilib elf conflict, prefer 64bit 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686 hello.x86_64
+],
+[0],
+[normal,normal,normal,normal,normal,
+wrong color,normal,normal,normal,normal,
+normal,normal,normal,normal,normal,
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# File conflict between colored files, prefer 64bit
+AT_SETUP([multilib elf conflict, prefer 64bit 3])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.x86_64
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 2" \
+  /data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686 hello.x86_64
+],
+[0],
+[normal,normal,normal,normal,normal,
+wrong color,normal,normal,normal,normal,
+normal,normal,normal,normal,normal,
+],
 [])
 AT_CLEANUP
 
 # ------------------------------
 # File conflict between colored files, prefer 32bit
-AT_SETUP([multilib elf conflict, prefer 32bit])
+AT_SETUP([multilib elf conflict, prefer 32bit 1])
 AT_KEYWORDS([install])
 AT_CHECK([
 RPMDB_CLEAR
@@ -155,10 +211,66 @@ runroot rpm -U --ignoreos --ignorearch --nodeps \
   --define "_prefer_color 1" \
   /data/RPMS/hello-2.0-1.i686.rpm \
   /data/RPMS/hello-2.0-1.x86_64.rpm
-runroot rpm -q --qf "[[%{filestates:fstate} ]]" hello.i686 hello.x86_64
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686 hello.x86_64
 ],
 [0],
-[normal normal normal normal normal wrong color normal normal normal normal ],
+[normal,normal,normal,normal,normal,
+wrong color,normal,normal,normal,normal,
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# File conflict between colored files, prefer 32bit
+AT_SETUP([multilib elf conflict, prefer 32bit 2])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 1" \
+  /data/RPMS/hello-2.0-1.i686.rpm 
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 1" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm 
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686 hello.x86_64
+],
+[0],
+[normal,normal,normal,normal,normal,
+normal,normal,normal,normal,normal,
+wrong color,normal,normal,normal,normal,
+],
+[])
+AT_CLEANUP
+
+# ------------------------------
+# File conflict between colored files, prefer 32bit
+AT_SETUP([multilib elf conflict, prefer 32bit 3])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 1" \
+  /data/RPMS/hello-2.0-1.x86_64.rpm 
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.x86_64
+runroot rpm -U --ignoreos --ignorearch --nodeps \
+  --define "_transaction_color 3" \
+  --define "_prefer_color 1" \
+  /data/RPMS/hello-2.0-1.i686.rpm 
+runroot rpm -q --qf "[[%{filestates:fstate},]]\n" hello.i686 hello.x86_64
+],
+[0],
+[normal,normal,normal,normal,normal,
+normal,normal,normal,normal,normal,
+wrong color,normal,normal,normal,normal,
+],
 [])
 AT_CLEANUP
 
