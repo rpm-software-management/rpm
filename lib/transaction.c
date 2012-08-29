@@ -417,6 +417,7 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
     rpmfs fs = rpmteGetFileStates(p);
     rpmfs otherFs;
     rpm_count_t fc = rpmfiFC(fi);
+    int reportConflicts = !(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
 
     for (i = 0; i < fc; i++) {
 	rpm_color_t oFColor, FColor;
@@ -503,8 +504,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	  {
-	    int reportConflicts =
-		!(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
 	    int done = 0;
 
 	    if (otherPkgNum < 0) {
@@ -526,9 +525,8 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
 	    if (rpmfiCompareIndex(otherFi, otherFileNum, fi, i)) {
-		int rConflicts;
+		int rConflicts = 1;
 
-		rConflicts = reportConflicts;
 		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
 		if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {
 		    if (FColor & prefcolor) {
@@ -547,7 +545,7 @@ assert(otherFi != NULL);
 		    }
 		    done = 1;
 		}
-		if (rConflicts) {
+		if (rConflicts && reportConflicts) {
 		    char *fn = rpmfiFNIndex(fi, i);
 		    rpmteAddProblem(p, RPMPROB_NEW_FILE_CONFLICT,
 				    rpmteNEVRA(otherTe), fn, 0);
