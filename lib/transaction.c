@@ -317,6 +317,45 @@ static int handleRemovalConflict(rpmfi fi, int fx, rpmfi ofi, int ofx)
     return rConflicts;
 }
 
+/*
+ * Elf files can be "colored", and if enabled in the transaction, the
+ * color can be used to resolve conflicts between elf-64bit and elf-32bit
+ * files to the hosts preferred type, by default 64bit. The non-preferred
+ * type is overwritten or never installed at all and thus the conflict
+ * magically disappears. This is infamously nasty "rpm magic" and entirely
+ * unnecessary with careful packaging.
+ */
+static int handleColorConflict(rpmts ts,
+			       rpmfs fs, rpmfi fi, int fx,
+			       rpmfs ofs, rpmfi ofi, int ofx)
+{
+    int rConflicts = 1;
+    rpm_color_t tscolor = rpmtsColor(ts);
+
+    if (tscolor != 0) {
+	rpm_color_t fcolor = rpmfiFColorIndex(fi, fx) & tscolor;
+	rpm_color_t ofcolor = rpmfiFColorIndex(ofi, ofx) & tscolor;
+
+	if (fcolor != 0 && ofcolor != 0 && fcolor != ofcolor) {
+	    rpm_color_t prefcolor = rpmtsPrefColor(ts);
+
+	    if (fcolor & prefcolor) {
+		if (ofs && !XFA_SKIPPING(rpmfsGetAction(fs, fx)))
+		    rpmfsSetAction(ofs, ofx, FA_SKIPCOLOR);
+		rpmfsSetAction(fs, fx, FA_CREATE);
+		rConflicts = 0;
+	    } else if (ofcolor & prefcolor) {
+		if (ofs && XFA_SKIPPING(rpmfsGetAction(fs, fx)))
+		    rpmfsSetAction(ofs, ofx, FA_CREATE);
+		rpmfsSetAction(fs, fx, FA_SKIPCOLOR);
+		rConflicts = 0;
+	    }
+	}
+    }
+
+    return rConflicts;
+}
+
 /**
  * handleInstInstalledFiles.
  * @param ts		transaction set
@@ -338,10 +377,6 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
 	return;
 
     if (rpmfiCompareIndex(otherFi, ofx, fi, fx)) {
-	rpm_color_t tscolor = rpmtsColor(ts);
-	rpm_color_t prefcolor = rpmtsPrefColor(ts);
-	rpm_color_t FColor = rpmfiFColorIndex(fi, fx) & tscolor;
-	rpm_color_t oFColor = rpmfiFColorIndex(otherFi, ofx) & tscolor;
 	int rConflicts = 1;
 	char rState = RPMFILE_STATE_REPLACED;
 
@@ -361,16 +396,13 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
 	    }
 	}
 
-	/* Resolve file conflicts to prefer Elf64 (if not forced). */
-	if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {
-	    if (oFColor & prefcolor) {
-		rpmfsSetAction(fs, fx, FA_SKIPCOLOR);
-		rConflicts = 0;
-	    } else if (FColor & prefcolor) {
-		rpmfsSetAction(fs, fx, FA_CREATE);
-		rConflicts = 0;
+	if (rConflicts) {
+	    /* If enabled, resolve colored conflicts to preferred type */
+	    rConflicts = handleColorConflict(ts, fs, fi, fx,
+					     NULL, otherFi, ofx);
+	    /* If resolved, we need to adjust in-rpmdb state too */
+	    if (rConflicts == 0 && rpmfsGetAction(fs, fx) == FA_CREATE)
 		rState = RPMFILE_STATE_WRONGCOLOR;
-	    }
 	}
 
 	/* Somebody used The Force, lets shut up... */
@@ -412,15 +444,12 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 {
     rpm_loff_t fixupSize = 0;
     int i, j;
-    rpm_color_t tscolor = rpmtsColor(ts);
-    rpm_color_t prefcolor = rpmtsPrefColor(ts);
     rpmfs fs = rpmteGetFileStates(p);
     rpmfs otherFs;
     rpm_count_t fc = rpmfiFC(fi);
     int reportConflicts = !(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
 
     for (i = 0; i < fc; i++) {
-	rpm_color_t oFColor, FColor;
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
 	rpmfi otherFi;
@@ -434,8 +463,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 
 	fiFps = rpmfiFpsIndex(fi, i);
 	FFlags = rpmfiFFlagsIndex(fi, i);
-	FColor = rpmfiFColorIndex(fi, i);
-	FColor &= tscolor;
 
 	fixupSize = 0;
 
@@ -498,9 +525,6 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 		break;
 	}
 
-	oFColor = rpmfiFColorIndex(otherFi, otherFileNum);
-	oFColor &= tscolor;
-
 	switch (rpmteType(p)) {
 	case TR_ADDED:
 	    if (otherPkgNum < 0) {
@@ -522,25 +546,12 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
 	    if (rpmfiCompareIndex(otherFi, otherFileNum, fi, i)) {
-		int rConflicts = 1;
+		int rConflicts;
 
-		/* Resolve file conflicts to prefer Elf64 (if not forced) ... */
-		if (tscolor != 0 && FColor != 0 && oFColor != 0 && FColor != oFColor) {
-		    if (FColor & prefcolor) {
-			/* ... last file of preferred colour is installed ... */
-			if (!XFA_SKIPPING(rpmfsGetAction(fs, i)))
-			    rpmfsSetAction(otherFs, otherFileNum, FA_SKIPCOLOR);
-			rpmfsSetAction(fs, i, FA_CREATE);
-			rConflicts = 0;
-		    } else
-		    if (oFColor & prefcolor) {
-			/* ... first file of preferred colour is installed ... */
-			if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
-			    rpmfsSetAction(otherFs, otherFileNum, FA_CREATE);
-			rpmfsSetAction(fs, i, FA_SKIPCOLOR);
-			rConflicts = 0;
-		    }
-		}
+		/* If enabled, resolve colored conflicts to preferred type */
+		rConflicts = handleColorConflict(ts, fs, fi, i,
+						otherFs, otherFi, otherFileNum);
+
 		if (rConflicts && reportConflicts) {
 		    char *fn = rpmfiFNIndex(fi, i);
 		    rpmteAddProblem(p, RPMPROB_NEW_FILE_CONFLICT,
