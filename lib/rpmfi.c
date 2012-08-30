@@ -586,12 +586,13 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
 rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 				   int skipMissing)
 {
-    const char * fn = rpmfiFNIndex(nfi, nix);
+    char * fn = rpmfiFNIndex(nfi, nix);
     rpmfileAttrs newFlags = rpmfiFFlagsIndex(nfi, nix);
     char buffer[1024];
     rpmFileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
+    int action = FA_CREATE; /* assume we can create */
 
     if (lstat(fn, &sb)) {
 	/*
@@ -601,9 +602,10 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	if (skipMissing && (newFlags & RPMFILE_MISSINGOK)) {
 	    rpmlog(RPMLOG_DEBUG, "%s skipped due to missingok flag\n",
 			fn);
-	    return FA_SKIP;
+	    action = FA_SKIP;
+	    goto exit;
 	} else {
-	    return FA_CREATE;
+	    goto exit;
 	}
     }
 
@@ -614,6 +616,8 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
     /*
      * This order matters - we'd prefer to CREATE the file if at all
      * possible in case something else (like the timestamp) has changed.
+     * Only regular files and symlinks might need a backup, everything
+     * else falls through here with FA_CREATE.
      */
     memset(buffer, 0, sizeof(buffer));
     if (dbWhat == REG) {
@@ -625,9 +629,9 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	odigest = rpmfiFDigestIndex(ofi, oix, &oalgo, &odiglen);
 	if (diskWhat == REG) {
 	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
-	        return FA_CREATE;	/* assume file has been removed */
+	        goto exit;	/* assume file has been removed */
 	    if (odigest && memcmp(odigest, buffer, odiglen) == 0)
-	        return FA_CREATE;	/* unmodified config file, replace. */
+	        goto exit;	/* unmodified config file, replace. */
 	}
 
 	/* See if the file on disk is identical to the one in new pkg */
@@ -636,18 +640,21 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	    /* hash algo changed in new, recalculate digest */
 	    if (oalgo != nalgo)
 		if (rpmDoDigest(nalgo, fn, 0, (unsigned char *)buffer, NULL))
-		    return FA_CREATE;	/* assume file has been removed */
+		    goto exit;		/* assume file has been removed */
 	    if (ndigest && memcmp(ndigest, buffer, ndiglen) == 0)
-	        return FA_CREATE;	/* file identical in new, replace. */
+	        goto exit;		/* file identical in new, replace. */
 	}
 
 	/* If file can be determined identical in old and new pkg, let it be */
 	if (newWhat == REG && oalgo == nalgo && odiglen == ndiglen) {
-	    if (odigest && ndigest && memcmp(odigest, ndigest, odiglen) == 0)
-		return FA_SKIP; /* identical file, dont bother */
+	    if (odigest && ndigest && memcmp(odigest, ndigest, odiglen) == 0) {
+		action = FA_SKIP; /* identical file, dont bother */
+		goto exit;
+	    }
 	}
 	
 	/* ...but otherwise a backup will be needed */
+	action = save;
     } else if (dbWhat == LINK) {
 	const char * oFLink, * nFLink;
 
@@ -656,36 +663,32 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	if (diskWhat == LINK) {
 	    ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
 	    if (link_len == -1)
-		return FA_CREATE;	/* assume file has been removed */
+		goto exit;		/* assume file has been removed */
 	    buffer[link_len] = '\0';
 	    if (oFLink && rstreq(oFLink, buffer))
-		return FA_CREATE;	/* unmodified config file, replace. */
+		goto exit;		/* unmodified config file, replace. */
 	}
 
 	/* See if the link on disk is identical to the one in new pkg */
 	nFLink = rpmfiFLinkIndex(nfi, nix);
 	if (diskWhat == LINK && newWhat == LINK) {
 	    if (nFLink && rstreq(nFLink, buffer))
-		return FA_CREATE;	/* unmodified config file, replace. */
+		goto exit;		/* unmodified config file, replace. */
 	}
 
 	/* If link is identical in old and new pkg, let it be */
-	if (newWhat == LINK && oFLink && nFLink && rstreq(oFLink, nFLink))
-	    return FA_SKIP;	/* identical file, don't bother. */
+	if (newWhat == LINK && oFLink && nFLink && rstreq(oFLink, nFLink)) {
+	    action = FA_SKIP;		/* identical file, don't bother. */
+	    goto exit;
+	}
 
 	/* ...but otherwise a backup will be needed */
-    } else {
-	/* Other file types cannot be %config, go ahead and create it */
-	return FA_CREATE;
+	action = save;
     }
 
-    /*
-     * The config file on the disk has been modified, but
-     * the ones in the two packages are different. It would
-     * be nice if RPM was smart enough to at least try and
-     * merge the difference ala CVS, but...
-     */
-    return save;
+exit:
+    free(fn);
+    return action;
 }
 
 int rpmfiConfigConflictIndex(rpmfi fi, int ix)
