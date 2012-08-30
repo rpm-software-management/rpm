@@ -937,15 +937,12 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
     rpmte p;
     rpmfi fi;
     rpmfs fs;
-    rpmfi otherFi=NULL;
     int j;
     unsigned int fileNum;
     const char * oldDir;
 
     rpmdbMatchIterator mi;
     Header h, newheader;
-
-    int beingRemoved;
 
     rpmlog(RPMLOG_DEBUG, "computing file dispositions\n");
 
@@ -967,10 +964,17 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	struct rpmtd_s bnames, dnames, dindexes, ostates;
 	fingerPrint fp;
 	unsigned int installedPkg;
+	int beingRemoved = 0;
+	rpmfi otherFi = NULL;
+	rpmte *removedPkg = NULL;
 
 	/* Is this package being removed? */
 	installedPkg = rpmdbGetIteratorOffset(mi);
-	beingRemoved = removedHashHasEntry(tsmem->removedPackages, installedPkg);
+	if (removedHashGetEntry(tsmem->removedPackages, installedPkg,
+				&removedPkg, NULL, NULL)) {
+	    beingRemoved = 1;
+	    otherFi = rpmfiLink(rpmteFI(removedPkg[0]));
+	}
 
 	h = headerLink(h);
 	headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);
