@@ -594,6 +594,12 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
     int action = FA_CREATE; /* assume we can create */
 
+    /* If the new file is a ghost, leave whatever might be on disk alone. */
+    if (newFlags & RPMFILE_GHOST) {
+	action = FA_SKIP;
+	goto exit;
+    }
+
     if (lstat(fn, &sb)) {
 	/*
 	 * The file doesn't exist on the disk. Create it unless the new
