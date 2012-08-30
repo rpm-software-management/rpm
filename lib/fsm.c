@@ -1527,7 +1527,8 @@ static int fsmBackup(FSM_t fsm)
 {
     int rc = 0;
 
-    if (fsm->action == FA_SAVE || fsm->action == FA_BACKUP) {
+    /* FIXME: %ghost can have backup action but no suffix */
+    if ((fsm->action == FA_SAVE || fsm->action == FA_BACKUP) && fsm->osuffix) {
         char * opath = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode), NULL);
         char * path = fsmFsPath(fsm, 0, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
