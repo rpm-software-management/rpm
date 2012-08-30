@@ -977,10 +977,13 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	}
 
 	h = headerLink(h);
-	headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);
-	headerGet(h, RPMTAG_DIRNAMES, &dnames, hgflags);
-	headerGet(h, RPMTAG_DIRINDEXES, &dindexes, hgflags);
-	headerGet(h, RPMTAG_FILESTATES, &ostates, hgflags);
+	/* For packages being removed we can use its rpmfi to avoid all this */
+	if (!beingRemoved) {
+	    headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);
+	    headerGet(h, RPMTAG_DIRNAMES, &dnames, hgflags);
+	    headerGet(h, RPMTAG_DIRINDEXES, &dindexes, hgflags);
+	    headerGet(h, RPMTAG_FILESTATES, &ostates, hgflags);
+	}
 
 	oldDir = NULL;
 	/* loop over all interesting files in that package */
@@ -992,13 +995,18 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	    const char * baseName;
 
 	    fileNum = rpmdbGetIteratorFileNum(mi);
-	    rpmtdSetIndex(&bnames, fileNum);
-	    rpmtdSetIndex(&dindexes, fileNum);
-	    rpmtdSetIndex(&dnames, *rpmtdGetUint32(&dindexes));
-	    rpmtdSetIndex(&ostates, fileNum);
+	    if (!beingRemoved) {
+		rpmtdSetIndex(&bnames, fileNum);
+		rpmtdSetIndex(&dindexes, fileNum);
+		rpmtdSetIndex(&dnames, *rpmtdGetUint32(&dindexes));
+		rpmtdSetIndex(&ostates, fileNum);
 
-	    dirName = rpmtdGetString(&dnames);
-	    baseName = rpmtdGetString(&bnames);
+		dirName = rpmtdGetString(&dnames);
+		baseName = rpmtdGetString(&bnames);
+	    } else {
+		dirName = rpmfiDNIndex(otherFi, rpmfiDIIndex(otherFi, fileNum));
+		baseName = rpmfiBNIndex(otherFi, fileNum);
+	    }
 
 	    /* lookup finger print for this file */
 	    if ( dirName == oldDir) {
@@ -1040,10 +1048,12 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	} while (newheader==h);
 
 	otherFi = rpmfiFree(otherFi);
-	rpmtdFreeData(&ostates);
-	rpmtdFreeData(&bnames);
-	rpmtdFreeData(&dnames);
-	rpmtdFreeData(&dindexes);
+	if (!beingRemoved) {
+	    rpmtdFreeData(&ostates);
+	    rpmtdFreeData(&bnames);
+	    rpmtdFreeData(&dnames);
+	    rpmtdFreeData(&dindexes);
+	}
 	headerFree(h);
 	h = newheader;
     }
