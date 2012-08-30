@@ -970,7 +970,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 
 	/* Is this package being removed? */
 	installedPkg = rpmdbGetIteratorOffset(mi);
-	beingRemoved = intHashHasEntry(tsmem->removedPackages, installedPkg);
+	beingRemoved = removedHashHasEntry(tsmem->removedPackages, installedPkg);
 
 	h = headerLink(h);
 	headerGet(h, RPMTAG_BASENAMES, &bnames, hgflags);

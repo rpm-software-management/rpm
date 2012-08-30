@@ -41,11 +41,13 @@ static rpmds rpmlibP = NULL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-#define HASHTYPE intHash
+#define HASHTYPE removedHash
 #define HTKEYTYPE unsigned int
+#define HTDATATYPE struct rpmte_s *
 #include "rpmhash.C"
 #undef HASHTYPE
 #undef HTKEYTYPE
+#undef HTDATATYPE
 
 /**
  * Check for supported payload format in header.
@@ -95,7 +97,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (dboffset == 0) return 1;
 
     /* Filter out duplicate erasures. */
-    if (intHashHasEntry(tsmem->removedPackages, dboffset)) {
+    if (removedHashHasEntry(tsmem->removedPackages, dboffset)) {
         return 0;
     }
 
@@ -103,7 +105,7 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (p == NULL)
 	return 1;
 
-    intHashAddEntry(tsmem->removedPackages, dboffset);
+    removedHashAddEntry(tsmem->removedPackages, dboffset, p);
 
     if (tsmem->orderCount >= tsmem->orderAlloced) {
 	tsmem->orderAlloced += (tsmem->orderCount - tsmem->orderAlloced) + tsmem->delta;

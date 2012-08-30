@@ -17,15 +17,6 @@ struct dbConfig_s {
     int	db_no_fsync;	/*!< no-op fsync for db */
 };
 
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-#define HASHTYPE intHash
-#define HTKEYTYPE unsigned int
-#include "lib/rpmhash.H"
-#undef HASHTYPE
-#undef HTKEYTYPE
-
 /** \ingroup rpmdb
  * Describes the collection of index databases used by rpm.
  */

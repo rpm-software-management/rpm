@@ -13,6 +13,17 @@
 extern "C" {
 #endif
 
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE removedHash
+#define HTKEYTYPE unsigned int
+#define HTDATATYPE struct rpmte_s *
+#include "rpmhash.H"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 /** \ingroup rpmdb
  * Reference a database instance.
  * @param db		rpm database
@@ -125,7 +136,7 @@ void rpmdbSortIterator(rpmdbMatchIterator mi);
  * @param hdrNums	hash of package instances
  * @return		0 on success, 1 on failure (bad args)
  */
-int rpmdbPruneIterator(rpmdbMatchIterator mi, intHash hdrNums);
+int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums);
 
 /** \ingroup rpmdb
  * Create a new, empty match iterator (for purposes of extending it

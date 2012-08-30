@@ -591,7 +591,7 @@ void rpmtsEmpty(rpmts ts)
     }
 
     tsmem->orderCount = 0;
-    intHashEmpty(tsmem->removedPackages);
+    removedHashEmpty(tsmem->removedPackages);
     return;
 }
 
@@ -640,7 +640,7 @@ rpmts rpmtsFree(rpmts ts)
 
     (void) rpmtsCloseDB(ts);
 
-    tsmem->removedPackages = intHashFree(tsmem->removedPackages);
+    tsmem->removedPackages = removedHashFree(tsmem->removedPackages);
     tsmem->order = _free(tsmem->order);
     ts->members = _free(ts->members);
 
@@ -983,7 +983,7 @@ rpmts rpmtsCreate(void)
     tsmem = xcalloc(1, sizeof(*ts->members));
     tsmem->delta = 5;
     tsmem->addedPackages = NULL;
-    tsmem->removedPackages = intHashCreate(128, uintId, uintCmp, NULL);
+    tsmem->removedPackages = removedHashCreate(128, uintId, uintCmp, NULL, NULL);
     tsmem->orderAlloced = 0;
     tsmem->orderCount = 0;
     tsmem->order = NULL;
