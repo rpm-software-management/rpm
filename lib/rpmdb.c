@@ -41,6 +41,7 @@
 #undef HTDATATYPE
 #define HASHTYPE dbChk
 #define HTKEYTYPE unsigned int
+#define HTDATATYPE rpmRC
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
 #undef HASHTYPE
@@ -198,7 +199,7 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	    /* Allocate based on max header instance number + some reserve */
 	    if (!verifyonly && (db->db_checked == NULL)) {
 		db->db_checked = dbChkCreate(1024 + pkgInstance(dbi, 0) / 4,
-						uintId, uintCmp, NULL);
+						uintId, uintCmp, NULL, NULL);
 	    }
 	    /* If primary got created, we can safely run without fsync */
 	    if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
@@ -1714,8 +1715,11 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 
     /* Don't bother re-checking a previously read header. */
     if (mi->mi_db->db_checked) {
-	if (dbChkHasEntry(mi->mi_db->db_checked, mi->mi_offset))
-	    rpmrc = RPMRC_OK;
+	rpmRC *res;
+	if (dbChkGetEntry(mi->mi_db->db_checked, mi->mi_offset,
+			  &res, NULL, NULL)) {
+	    rpmrc = res[0];
+	}
     }
 
     /* If blob is unchecked, check blob import consistency now. */
@@ -1731,8 +1735,8 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 	msg = _free(msg);
 
 	/* Mark header checked. */
-	if (mi->mi_db && mi->mi_db->db_checked && rpmrc != RPMRC_FAIL) {
-	    dbChkAddEntry(mi->mi_db->db_checked, mi->mi_offset);
+	if (mi->mi_db && mi->mi_db->db_checked) {
+	    dbChkAddEntry(mi->mi_db->db_checked, mi->mi_offset, rpmrc);
 	}
     }
     return rpmrc;
