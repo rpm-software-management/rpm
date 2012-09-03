@@ -699,12 +699,14 @@ static void skipEraseFiles(const rpmts ts, rpmte p)
      * Net shared paths are not relative to the current root (though
      * they do need to take package relocations into account).
      */
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0)
-    {
-	nsp = matchNetsharedpath(ts, fi);
-	if (nsp && *nsp) {
-	    rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
+    if (ts->netsharedPaths) {
+	fi = rpmfiInit(fi, 0);
+	while ((i = rpmfiNext(fi)) >= 0)
+	{
+	    nsp = matchNetsharedpath(ts, fi);
+	    if (nsp && *nsp) {
+		rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
+	    }
 	}
     }
 }
@@ -763,11 +765,13 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 	 * Net shared paths are not relative to the current root (though
 	 * they do need to take package relocations into account).
 	 */
-	nsp = matchNetsharedpath(ts, fi);
-	if (nsp && *nsp) {
-	    drc[ix]--;	dff[ix] = 1;
-	    rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
-	    continue;
+	if (ts->netsharedPaths) {
+	    nsp = matchNetsharedpath(ts, fi);
+	    if (nsp && *nsp) {
+		drc[ix]--;	dff[ix] = 1;
+		rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
+		continue;
+	    }
 	}
 
 	/*
