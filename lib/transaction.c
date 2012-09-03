@@ -1226,8 +1226,9 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 {
     rpmtsi pi;
     rpmte p;
+    rpmfs fs;
     rpmfi fi;
-    int i;
+    int i, fc;
 
     rpmFpHash symlinks = rpmFpHashCreate(fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
 
@@ -1240,21 +1241,22 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	rpmfiFpLookup(fi, fpc);
+	fs = rpmteGetFileStates(p);
+	fc = rpmfsFC(fs);
 	/* collect symbolic links */
- 	fi = rpmfiInit(fi, 0);
-	while ((i = rpmfiNext(fi)) >= 0) {
+	for (i = 0; i < fc; i++) {
 	    struct rpmffi_s ffi;
 	    char const *linktarget;
-	    linktarget = rpmfiFLink(fi);
-	    if (!(linktarget && *linktarget != '\0'))
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
-	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
+	    linktarget = rpmfiFLinkIndex(fi, i);
+	    if (!(linktarget && *linktarget != '\0'))
 		continue;
 	    ffi.p = p;
 	    ffi.fileno = i;
 	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
 	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), rpmfiFC(fi));
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 
     }
     rpmtsiFree(pi);
@@ -1268,10 +1270,11 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
 	(void) rpmdbCheckSignals();
 
-	fi = rpmfiInit(rpmteFI(p), 0);
+	fs = rpmteGetFileStates(p);
+	fc = rpmfsFC(fs);
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	while ((i = rpmfiNext(fi)) >= 0) {
-	    if (XFA_SKIPPING(rpmfsGetAction(rpmteGetFileStates(p), i)))
+	for (i = 0; i < fc; i++) {
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
 	    fpLookupSubdir(symlinks, ht, fpc, p, i);
 	}
