@@ -15,15 +15,15 @@
 /*       -1: b is newer than a */
 int rpmvercmp(const char * a, const char * b)
 {
+    /* easy comparison to see if versions are identical */
+    if (rstreq(a, b)) return 0;
+
     char oldch1, oldch2;
     char abuf[strlen(a)+1], bbuf[strlen(b)+1];
     char *str1 = abuf, *str2 = bbuf;
     char * one, * two;
     int rc;
     int isnum;
-
-    /* easy comparison to see if versions are identical */
-    if (rstreq(a, b)) return 0;
 
     strcpy(str1, a);
     strcpy(str2, b);
@@ -82,6 +82,7 @@ int rpmvercmp(const char * a, const char * b)
 	if (two == str2) return (isnum ? 1 : -1);
 
 	if (isnum) {
+	    size_t onelen, twolen;
 	    /* this used to be done by converting the digit segments */
 	    /* to ints using atoi() - it's changed because long  */
 	    /* digit segments can overflow an int - this should fix that. */
@@ -91,8 +92,10 @@ int rpmvercmp(const char * a, const char * b)
 	    while (*two == '0') two++;
 
 	    /* whichever number has more digits wins */
-	    if (strlen(one) > strlen(two)) return 1;
-	    if (strlen(two) > strlen(one)) return -1;
+	    onelen = strlen(one);
+	    twolen = strlen(two);
+	    if (onelen > twolen) return 1;
+	    if (twolen > onelen) return -1;
 	}
 
 	/* strcmp will return which one is greater - even if the two */
