@@ -969,7 +969,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
     while (h != NULL) {
 	headerGetFlags hgflags = HEADERGET_MINMEM;
 	struct rpmtd_s bnames, dnames, dindexes, ostates;
-	fingerPrint fp;
+	fingerPrint fp, *fpp;
 	unsigned int installedPkg;
 	int beingRemoved = 0;
 	rpmfi otherFi = NULL;
@@ -1001,6 +1001,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	    const char * dirName;
 	    const char * baseName;
 
+	    /* lookup finger print for this file */
 	    fileNum = rpmdbGetIteratorFileNum(mi);
 	    if (!beingRemoved) {
 		rpmtdSetIndex(&bnames, fileNum);
@@ -1010,21 +1011,21 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 
 		dirName = rpmtdGetString(&dnames);
 		baseName = rpmtdGetString(&bnames);
+
+		if (dirName == oldDir) {
+		    /* directory is the same as last round */
+		    fp.baseName = baseName;
+		} else {
+		    fp = fpLookup(fpc, dirName, baseName, 1);
+		    oldDir = dirName;
+		}
+		fpp = &fp;
 	    } else {
-		dirName = rpmfiDNIndex(otherFi, rpmfiDIIndex(otherFi, fileNum));
-		baseName = rpmfiBNIndex(otherFi, fileNum);
+		fpp = rpmfiFpsIndex(otherFi, fileNum);
 	    }
 
-	    /* lookup finger print for this file */
-	    if ( dirName == oldDir) {
-	        /* directory is the same as last round */
-	        fp.baseName = baseName;
-	    } else {
-	        fp = fpLookup(fpc, dirName, baseName, 1);
-		oldDir = dirName;
-	    }
 	    /* search for files in the transaction with same finger print */
-	    gotRecs = rpmFpHashGetEntry(ht, &fp, &recs, &numRecs, NULL);
+	    gotRecs = rpmFpHashGetEntry(ht, fpp, &recs, &numRecs, NULL);
 
 	    for (j=0; (j<numRecs)&&gotRecs; j++) {
 	        p = recs[j].p;
