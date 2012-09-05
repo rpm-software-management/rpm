@@ -407,12 +407,16 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     int rc = 0;
     /* pretrans deps are provided by current packages, don't prune erasures */
     int prune = (rpmdsFlags(dep) & RPMSENSE_PRETRANS) ? 0 : 1;
+    unsigned int keyhash = 0;
 
     /* See if we already looked this up */
-    if (prune && depCacheGetEntry(dcache, DNEVR, &cachedrc, NULL, NULL)) {
-	rc = *cachedrc;
-	rpmdsNotify(dep, "(cached)", rc);
-	return rc;
+    if (prune) {
+	keyhash = depCacheKeyHash(dcache, DNEVR);
+	if (depCacheGetHEntry(dcache, DNEVR, keyhash, &cachedrc, NULL, NULL)) {
+	    rc = *cachedrc;
+	    rpmdsNotify(dep, "(cached)", rc);
+	    return rc;
+	}
     }
 
     /*
@@ -457,7 +461,7 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     /* Cache the relatively expensive rpmdb lookup results */
     /* Caching the oddball non-pruned case would mess up other results */
     if (prune)
-	depCacheAddEntry(dcache, xstrdup(DNEVR), rc);
+	depCacheAddHEntry(dcache, xstrdup(DNEVR), keyhash, rc);
     return rc;
 }
 
