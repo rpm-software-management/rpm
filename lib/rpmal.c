@@ -167,6 +167,8 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
     rpm_color_t ficolor;
     int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
     int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
+    const char *prevDir = NULL;
+    unsigned int dirHash, fnHash;
 
     fileEntry.pkgNum = pkgNum;
 
@@ -186,9 +188,16 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
 	fileName.dirName = rpmfiDN(fi);
 	fileName.baseName = rpmfiBN(fi);
 
+	/* Avoid rehash on dirname when directory remains the same */
+	if (fileName.dirName != prevDir) {
+	    dirHash = rstrhash(fileName.dirName);
+	    prevDir = fileName.dirName;
+	}
+	fnHash = dirHash ^ rstrhash(fileName.baseName);
+
 	fileEntry.entryIx = i;
 
-	rpmalFileHashAddEntry(al->fileHash, fileName, fileEntry);
+	rpmalFileHashAddHEntry(al->fileHash, fileName, fnHash, fileEntry);
     }
 }
 
