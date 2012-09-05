@@ -48,15 +48,16 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
  * Find directory name entry in cache.
  * @param cache		pointer to fingerprint cache
  * @param dirName	string to locate in cache
+ * @param dirHash	precalculated string hash
  * @return pointer to directory name entry (or NULL if not found).
  */
 static const struct fprintCacheEntry_s * cacheContainsDirectory(
 			    fingerPrintCache cache,
-			    const char * dirName)
+			    const char * dirName, unsigned int dirHash)
 {
     const struct fprintCacheEntry_s ** data;
 
-    if (rpmFpEntryHashGetEntry(cache->ht, dirName, &data, NULL, NULL))
+    if (rpmFpEntryHashGetHEntry(cache->ht, dirName, dirHash, &data, NULL, NULL))
 	return data[0];
     return NULL;
 }
@@ -131,11 +132,12 @@ fingerPrint fpLookup(fingerPrintCache cache,
     }
 
     while (1) {
+	/* buf contents change through end ptr, requiring rehash on each loop */
 	const char *fpDir = (*buf != '\0') ? buf : "/";
+	unsigned int fpHash = rpmFpEntryHashKeyHash(cache->ht, fpDir);
 
 	/* as we're stating paths here, we want to follow symlinks */
-
-	cacheHit = cacheContainsDirectory(cache, fpDir);
+	cacheHit = cacheContainsDirectory(cache, fpDir, fpHash);
 	if (cacheHit != NULL) {
 	    fp.entry = cacheHit;
 	} else if (!stat(fpDir, &sb)) {
@@ -146,7 +148,8 @@ fingerPrint fpLookup(fingerPrintCache cache,
 	    newEntry->dirName = xstrdup(fpDir);
 	    fp.entry = newEntry;
 
-	    rpmFpEntryHashAddEntry(cache->ht, newEntry->dirName, fp.entry);
+	    rpmFpEntryHashAddHEntry(cache->ht,
+				    newEntry->dirName, fpHash, fp.entry);
 	}
 
         if (fp.entry) {
