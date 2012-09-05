@@ -909,15 +909,18 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	fi = rpmfiInit(rpmteFI(p), 0);
 	while (rpmfiNext(fi) >= 0) {
 	    size_t keylen;
+	    unsigned int keyhash;
 	    baseName = rpmfiBN(fi);
-	    if (rpmStringSetHasEntry(baseNames, baseName))
+
+	    keyhash = rpmStringSetKeyHash(baseNames, baseName);
+	    if (rpmStringSetHasHEntry(baseNames, baseName, keyhash))
 		continue;
 
 	    keylen = strlen(baseName);
 	    if (keylen == 0)
 		keylen++;	/* XXX "/" fixup. */
 	    rpmdbExtendIterator(mi, baseName, keylen);
-	    rpmStringSetAddEntry(baseNames, baseName);
+	    rpmStringSetAddHEntry(baseNames, baseName, keyhash);
 	 }
     }
     rpmtsiFree(pi);
