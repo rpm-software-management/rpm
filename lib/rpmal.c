@@ -168,7 +168,7 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
     int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
     int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
     const char *prevDir = NULL;
-    unsigned int dirHash, fnHash;
+    unsigned int dirHash = 0, fnHash;
 
     fileEntry.pkgNum = pkgNum;
 
