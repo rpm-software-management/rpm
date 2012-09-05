@@ -63,6 +63,14 @@ RPM_GNUC_INTERNAL
 void HASHPREFIX(Empty)(HASHTYPE ht);
 
 /**
+ * Calculate hash for key.
+ * @param @ht		pointer to hash table
+ * @param @key		key
+ */
+RPM_GNUC_INTERNAL
+unsigned int HASHPREFIX(KeyHash)(HASHTYPE ht, HTKEYTYPE key);
+
+/**
  * Add item to hash table.
  * @param ht            pointer to hash table
  * @param key           key

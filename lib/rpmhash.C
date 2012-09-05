@@ -102,6 +102,11 @@ static void HASHPREFIX(Resize)(HASHTYPE ht, int numBuckets) {
     ht->numBuckets = numBuckets;
 }
 
+unsigned int HASHPREFIX(KeyHash)(HASHTYPE ht, HTKEYTYPE key)
+{
+    return ht->fn(key);
+}
+
 void HASHPREFIX(AddEntry)(HASHTYPE ht, HTKEYTYPE key
 #ifdef HTDATATYPE
 , HTDATATYPE data
