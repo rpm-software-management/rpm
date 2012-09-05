@@ -131,18 +131,19 @@ fingerPrint fpLookup(fingerPrintCache cache,
     }
 
     while (1) {
+	const char *fpDir = (*buf != '\0') ? buf : "/";
 
 	/* as we're stating paths here, we want to follow symlinks */
 
-	cacheHit = cacheContainsDirectory(cache, (*buf != '\0' ? buf : "/"));
+	cacheHit = cacheContainsDirectory(cache, fpDir);
 	if (cacheHit != NULL) {
 	    fp.entry = cacheHit;
-	} else if (!stat((*buf != '\0' ? buf : "/"), &sb)) {
+	} else if (!stat(fpDir, &sb)) {
 	    struct fprintCacheEntry_s * newEntry = xmalloc(sizeof(* newEntry));
 
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
-	    newEntry->dirName = xstrdup((*buf != '\0' ? buf : "/"));
+	    newEntry->dirName = xstrdup(fpDir);
 	    fp.entry = newEntry;
 
 	    rpmFpEntryHashAddEntry(cache->ht, newEntry->dirName, fp.entry);
