@@ -1059,13 +1059,14 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 }
 
 /**
- * Attempt partial matches on name[-version[-release]] strings.
+ * Attempt partial matches on name[-version[-release]][.arch] strings.
  * @param db		rpmdb handle
  * @param dbc		index database cursor
  * @param name		package name
  * @param epoch 	package epoch (-1 for any epoch)
  * @param version	package version (can be a pattern)
  * @param release	package release (can be a pattern)
+ * @param arch		package arch (can be a pattern)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
@@ -1074,6 +1075,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 		int64_t epoch,
 		const char * version,
 		const char * release,
+		const char * arch,
 		dbiIndexSet * matches)
 {
     unsigned int gotMatches = 0;
@@ -1084,7 +1086,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 
     if (rc != 0) {
 	return (rc == DB_NOTFOUND) ? RPMRC_NOTFOUND : RPMRC_FAIL;
-    } else if (epoch < 0 && version == NULL && release == NULL) {
+    } else if (epoch < 0 && version == NULL && release == NULL && arch == NULL) {
 	return RPMRC_OK;
     }
 
@@ -1108,6 +1110,12 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 	}
 	if (release &&
 	    rpmdbSetIteratorRE(mi, RPMTAG_RELEASE, RPMMIRE_DEFAULT, release))
+	{
+	    rc = RPMRC_FAIL;
+	    goto exit;
+	}
+	if (arch &&
+	    rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch))
 	{
 	    rc = RPMRC_FAIL;
 	    goto exit;
@@ -1149,13 +1157,15 @@ exit:
  * @param db		rpmdb handle
  * @param dbi		index database handle (always RPMDBI_NAME)
  * @param arg		name[-[epoch:]version[-release]] string
+ * @param arglen	length of arg
+ * @param arch		possible arch string (or NULL)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
+static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
+			    const char * arg, size_t arglen, const char *arch,
 			    dbiIndexSet * matches)
 {
-    size_t arglen = (arg != NULL) ? strlen(arg) : 0;
     char localarg[arglen+1];
     int64_t epoch;
     const char * version;
@@ -1168,9 +1178,12 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
 
     if (arglen == 0) return RPMRC_NOTFOUND;
 
+    strncpy(localarg, arg, arglen);
+    localarg[arglen] = '\0';
+
     dbc = dbiCursorInit(dbi, 0);
     /* did they give us just a name? */
-    rc = dbiFindMatches(db, dbc, arg, -1, NULL, NULL, matches);
+    rc = dbiFindMatches(db, dbc, localarg, -1, NULL, NULL, arch, matches);
     if (rc != RPMRC_NOTFOUND)
 	goto exit;
 
@@ -1178,7 +1191,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
     *matches = dbiIndexSetFree(*matches);
 
     /* maybe a name-[epoch:]version ? */
-    s = stpcpy(localarg, arg);
+    s = localarg + arglen;
 
     c = '\0';
     brackets = 0;
@@ -1205,7 +1218,7 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
     *s = '\0';
 
     epoch = splitEpoch(s + 1, &version);
-    rc = dbiFindMatches(db, dbc, localarg, epoch, version, NULL, matches);
+    rc = dbiFindMatches(db, dbc, localarg, epoch, version, NULL, arch, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
@@ -1239,9 +1252,23 @@ static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * arg,
     *s = '\0';
    	/* FIX: *matches may be NULL. */
     epoch = splitEpoch(s + 1, &version);
-    rc = dbiFindMatches(db, dbc, localarg, epoch, version, release, matches);
+    rc = dbiFindMatches(db, dbc, localarg, epoch, version, release, arch, matches);
 exit:
     dbiCursorFree(dbc);
+    return rc;
+}
+
+static rpmRC dbiFindByLabel(rpmdb db, dbiIndex dbi, const char * label,
+			    dbiIndexSet * matches)
+{
+    const char *arch = NULL;
+    /* First, try with label as it is */
+    rpmRC rc = dbiFindByLabelArch(db, dbi, label, strlen(label), NULL, matches);
+
+    /* If not found, retry with possible .arch specifier if there is one */
+    if (rc == RPMRC_NOTFOUND && (arch = strrchr(label, '.')))
+	rc = dbiFindByLabelArch(db, dbi, label, arch-label, arch+1, matches);
+
     return rc;
 }
 

@@ -171,8 +171,8 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
     if (ts->rdb == NULL && rpmtsOpenDB(ts, ts->dbmode))
 	return NULL;
 
-    /* Parse out "N(EVR).A" tokens from a label key. */
-    if (rpmtag == RPMDBI_LABEL && keyp != NULL) {
+    /* Parse out "N(EVR)" tokens from a label key if present */
+    if (rpmtag == RPMDBI_LABEL && keyp != NULL && strchr(keyp, '(')) {
 	const char *se, *s = keyp;
 	char *t;
 	size_t slen = strlen(s);
@@ -219,13 +219,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 	    goto exit;
 	}
 	*t = '\0';
-	t = (char *) keyp;
-	t = strrchr(t, '.');
-	/* Is this a valid ".arch" suffix? */
-	if (t != NULL && rpmIsKnownArch(t+1)) {
-	   *t++ = '\0';
-	   arch = t;
-	}
     }
 
     mi = rpmdbInitIterator(ts->rdb, rpmtag, keyp, keylen);
