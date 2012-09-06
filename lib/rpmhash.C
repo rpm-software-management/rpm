@@ -4,6 +4,7 @@
  */
 
 #include "system.h"
+#include <stdio.h>
 #include "debug.h"
 
 #define Bucket JOIN(HASHTYPE,Buket)
