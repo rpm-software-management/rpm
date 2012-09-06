@@ -646,16 +646,9 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 
     qfmt = rpmExpand("%{?_query_all_fmt}\n", NULL);
     for (arg = argv; *arg; arg++) {
-	rpmdbMatchIterator mi;
-	int matches = 0;
+	rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
+	int matches = rpmdbGetIteratorCount(mi);
 	int erasing = 1;
-
-	/* Iterator count isn't reliable with labels, count manually... */
-	mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
-	while (rpmdbNextIterator(mi) != NULL) {
-	    matches++;
-	}
-	rpmdbFreeIterator(mi);
 
 	if (! matches) {
 	    rpmlog(RPMLOG_ERR, _("package %s is not installed\n"), *arg);
@@ -671,7 +664,6 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 		erasing = 0;
 	    }
 
-	    mi = rpmtsInitIterator(ts, RPMDBI_LABEL, *arg, 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL) {
 		if (erasing) {
 		    (void) rpmtsAddEraseElement(ts, h, -1);
@@ -682,8 +674,8 @@ int rpmErase(rpmts ts, struct rpmInstallArguments_s * ia, ARGV_const_t argv)
 		    free(nevra);
 		}
 	    }
-	    rpmdbFreeIterator(mi);
 	}
+	rpmdbFreeIterator(mi);
     }
     free(qfmt);
 
