@@ -1016,7 +1016,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 		    /* directory is the same as last round */
 		    fp.baseName = baseName;
 		} else {
-		    fp = fpLookup(fpc, dirName, baseName, 1);
+		    fpLookup(fpc, dirName, baseName, 1, &fp);
 		    oldDir = dirName;
 		}
 		fpp = &fp;

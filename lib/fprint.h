@@ -110,11 +110,13 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache);
  * @param dirName	leading directory name of file path
  * @param baseName	base name of file path
  * @param scareMemory
- * @return pointer to the finger print associated with a file path.
+ * @retval fp		pointer of fingerprint struct to fill out
+ * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-fingerPrint fpLookup(fingerPrintCache cache, const char * dirName, 
-			const char * baseName, int scareMemory);
+int fpLookup(fingerPrintCache cache,
+	     const char * dirName, const char * baseName, int scareMemory,
+	     fingerPrint *fp);
 
 /**
  * Return hash value for a finger print.

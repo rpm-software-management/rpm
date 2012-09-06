@@ -959,7 +959,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
     *matches = xcalloc(1, sizeof(**matches));
     fpc = fpCacheCreate(allMatches->count);
-    fp1 = fpLookup(fpc, dirName, baseName, 1);
+    fpLookup(fpc, dirName, baseName, 1, &fp1);
 
     i = 0;
     while (i < allMatches->count) {
@@ -997,8 +997,8 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	    }
 
 	    if (!skip) {
-		fp2 = fpLookup(fpc, dirNames[dirIndexes[num]],
-				    baseNames[num], 1);
+		fpLookup(fpc,
+			 dirNames[dirIndexes[num]], baseNames[num], 1, &fp2);
 		if (FP_EQUAL(fp1, fp2)) {
 		    struct dbiIndexItem rec = { 
 			.hdrNum = dbiIndexRecordOffset(allMatches, i),

@@ -62,14 +62,14 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return NULL;
 }
 
-fingerPrint fpLookup(fingerPrintCache cache,
-		const char * dirName, const char * baseName, int scareMemory)
+int fpLookup(fingerPrintCache cache,
+	     const char * dirName, const char * baseName, int scareMemory,
+	     fingerPrint *fp)
 {
     char dir[PATH_MAX];
     const char * cleanDirName;
     size_t cdnl;
     char * end;		    /* points to the '\0' at the end of "buf" */
-    fingerPrint fp;
     struct stat sb;
     char *buf = NULL;
     char *cdnbuf = NULL;
@@ -117,9 +117,8 @@ fingerPrint fpLookup(fingerPrintCache cache,
 	    cdnl = end - dir;
 	}
     }
-    fp.entry = NULL;
-    fp.subDir = NULL;
-    fp.baseName = NULL;
+
+    memset(fp, 0, sizeof(*fp));
     if (cleanDirName == NULL) goto exit; /* XXX can't happen */
 
     buf = xstrdup(cleanDirName);
@@ -139,31 +138,30 @@ fingerPrint fpLookup(fingerPrintCache cache,
 	/* as we're stating paths here, we want to follow symlinks */
 	cacheHit = cacheContainsDirectory(cache, fpDir, fpHash);
 	if (cacheHit != NULL) {
-	    fp.entry = cacheHit;
+	    fp->entry = cacheHit;
 	} else if (!stat(fpDir, &sb)) {
 	    struct fprintCacheEntry_s * newEntry = xmalloc(sizeof(* newEntry));
 
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
 	    newEntry->dirName = xstrdup(fpDir);
-	    fp.entry = newEntry;
+	    fp->entry = newEntry;
 
 	    rpmFpEntryHashAddHEntry(cache->ht,
-				    newEntry->dirName, fpHash, fp.entry);
+				    newEntry->dirName, fpHash, fp->entry);
 	}
 
-        if (fp.entry) {
-	    fp.subDir = cleanDirName + (end - buf);
-	    if (fp.subDir[0] == '/' && fp.subDir[1] != '\0')
-		fp.subDir++;
-	    if (fp.subDir[0] == '\0' ||
+        if (fp->entry) {
+	    fp->subDir = cleanDirName + (end - buf);
+	    if (fp->subDir[0] == '/' && fp->subDir[1] != '\0')
+		fp->subDir++;
+	    if (fp->subDir[0] == '\0' ||
 	    /* XXX don't bother saving '/' as subdir */
-	       (fp.subDir[0] == '/' && fp.subDir[1] == '\0'))
-		fp.subDir = NULL;
-	    fp.baseName = baseName;
-	    if (!scareMemory && fp.subDir != NULL)
-		fp.subDir = xstrdup(fp.subDir);
-	/* FIX: fp.entry.{dirName,dev,ino} undef @*/
+	       (fp->subDir[0] == '/' && fp->subDir[1] == '\0'))
+		fp->subDir = NULL;
+	    fp->baseName = baseName;
+	    if (!scareMemory && fp->subDir != NULL)
+		fp->subDir = xstrdup(fp->subDir);
 	    goto exit;
 	}
 
@@ -182,8 +180,8 @@ fingerPrint fpLookup(fingerPrintCache cache,
 exit:
     free(buf);
     free(cdnbuf);
-    /* FIX: fp.entry.{dirName,dev,ino} undef @*/
-    return fp;
+    /* XXX TODO: failure from eg realpath() should be returned and handled */
+    return 0;
 }
 
 unsigned int fpHashFunction(const fingerPrint * fp)
@@ -227,8 +225,8 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	    fpList[i].subDir = fpList[i - 1].subDir;
 	    fpList[i].baseName = baseNames[i];
 	} else {
-	    fpList[i] = fpLookup(cache, dirNames[dirIndexes[i]], baseNames[i],
-				 1);
+	    fpLookup(cache,
+		     dirNames[dirIndexes[i]], baseNames[i], 1, &fpList[i]);
 	}
     }
 }
@@ -290,7 +288,7 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 			rstrscat(&link, endbasename+1, "/", NULL);
 		   }
 
-		   *fp = fpLookup(fpc, link, fp->baseName, 0);
+		   fpLookup(fpc, link, fp->baseName, 0, fp);
 
 		   free(link);
 		   free(currentsubdir);
