@@ -23,12 +23,12 @@ struct rpmfi_s {
     int j;			/*!< Current directory index. */
 
     Header h;			/*!< Header for file info set (or NULL) */
+    rpmstrPool pool;		/*!< String pool of this file info set */
 
     const char ** bnl;		/*!< Base name(s) (from header) */
     const char ** dnl;		/*!< Directory name(s) (from header) */
 
-    strcache flinkcache;	/*!< File link cache */
-    scidx_t * flinks;		/*!< Index to file link(s) cache */
+    rpmsid * flinks;		/*!< Index to file link(s) (pool) */
 
     uint32_t * dil;		/*!< Directory indice(s) (from header) */
     rpm_flag_t * fflags;	/*!< File flag(s) (from header) */

@@ -278,7 +278,7 @@ const char * rpmfiFLinkIndex(rpmfi fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->flinks != NULL)
-	    flink = strcacheGet(fi->flinkcache, fi->flinks[ix]);
+	    flink = rpmstrPoolStr(fi->pool, fi->flinks[ix]);
     }
     return flink;
 }
@@ -1076,7 +1076,6 @@ rpmfi rpmfiFree(rpmfi fi)
 	fi->bnl = _free(fi->bnl);
 	fi->dnl = _free(fi->dnl);
 
-	fi->flinkcache = strcacheFree(fi->flinkcache);
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
@@ -1089,6 +1088,8 @@ rpmfi rpmfiFree(rpmfi fi)
 
 	fi->fstates = _free(fi->fstates);
 	fi->fps = _free(fi->fps);
+
+	fi->pool = rpmstrPoolFree(fi->pool);
 
 	/* these point to header memory if KEEPHEADER is used, dont free */
 	if (!(fi->fiflags & RPMFI_KEEPHEADER) && fi->h == NULL) {
@@ -1199,6 +1200,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     /* XXX: ensure the global misc. pool exists */
     if (miscpool == NULL)
 	miscpool = rpmstrPoolCreate();
+    fi->pool = rpmstrPoolCreate();
 
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
@@ -1231,10 +1233,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILECAPS))
 	_hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
-    if (!(flags & RPMFI_NOFILELINKTOS)) {
-	fi->flinkcache = strcacheNew();
-	fi->flinks = cacheTag(fi->flinkcache, h, RPMTAG_FILELINKTOS);
-    }
+    if (!(flags & RPMFI_NOFILELINKTOS))
+	fi->flinks = tag2pool(fi->pool, h, RPMTAG_FILELINKTOS);
     /* FILELANGS are only interesting when installing */
     if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
 	fi->flangs = tag2pool(miscpool, h, RPMTAG_FILELANGS);
@@ -1284,6 +1284,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 
     /* lazily alloced from rpmfiFN() */
     fi->fn = NULL;
+
+    rpmstrPoolFreeze(fi->pool);
 
 exit:
 
