@@ -77,6 +77,9 @@ typedef void * rpmCallbackData;
 typedef struct rpmPubkey_s * rpmPubkey;
 typedef struct rpmKeyring_s * rpmKeyring;
 
+typedef uint32_t rpmsid;
+typedef struct rpmstrPool_s * rpmstrPool;
+
 typedef struct rpmPlugins_s * rpmPlugins;
 
 typedef struct rpmgi_s * rpmgi;

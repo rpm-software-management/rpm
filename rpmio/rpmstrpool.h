@@ -1,8 +1,7 @@
 #ifndef _RPMSTRPOOL_H
 #define _RPMSTRPOOL_H
 
-typedef uint32_t rpmsid;
-typedef struct rpmstrPool_s * rpmstrPool;
+#include <rpm/rpmtypes.h>
 
 #ifdef __cplusplus
 extern "C" {
