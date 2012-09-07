@@ -21,68 +21,6 @@
 /* pool for widely common, "static" stuff like langs and user/group names */
 static rpmstrPool miscpool = NULL;
 
-/*
- * Simple and stupid string "cache."
- * Store each unique string just once, retrieve by index value. 
- * For data where number of unique names is typically very low,
- * the dumb linear lookup appears to be fast enough and hash table seems
- * like an overkill.
- */
-struct strcache_s {
-    char **uniq;
-    scidx_t num;
-};
-
-static scidx_t strcachePut(strcache cache, const char *str)
-{
-    int found = 0;
-    scidx_t ret;
-
-    for (scidx_t i = 0; i < cache->num; i++) {
-	if (rstreq(str, cache->uniq[i])) {
-	    ret = i;
-	    found = 1;
-	    break;
-	}
-    }
-    if (!found) {
-	/* blow up on index wraparound */
-	assert((scidx_t)(cache->num + 1) > cache->num);
-	cache->uniq = xrealloc(cache->uniq, 
-				sizeof(*cache->uniq) * (cache->num+1));
-	cache->uniq[cache->num] = xstrdup(str);
-	ret = cache->num;
-	cache->num++;
-    }
-    return ret;
-}
-
-static const char *strcacheGet(strcache cache, scidx_t idx)
-{
-    const char *name = NULL;
-    if (idx >= 0 && idx < cache->num && cache->uniq != NULL)
-	name = cache->uniq[idx];
-    return name;
-}
-    
-static strcache strcacheNew(void)
-{
-    strcache cache = xcalloc(1, sizeof(*cache));
-    return cache;
-}
-
-static strcache strcacheFree(strcache cache)
-{
-    if (cache != NULL) {
-	for (scidx_t i = 0; i < cache->num; i++) {
-	    free(cache->uniq[i]);
-	}
-	cache->uniq = _free(cache->uniq);
-	free(cache);
-    }
-    return NULL;
-} 
-
 static rpmfi rpmfiUnlink(rpmfi fi)
 {
     if (fi)
@@ -1123,23 +1061,6 @@ rpmfi rpmfiFree(rpmfi fi)
     fi = _free(fi);
 
     return NULL;
-}
-
-/* Helper to push header tag data into a string cache */
-static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
-{
-    scidx_t *idx = NULL;
-    struct rpmtd_s td;
-    if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
-       idx = xmalloc(sizeof(*idx) * rpmtdCount(&td));
-       int i = 0;
-       const char *str;
-       while ((str = rpmtdNextString(&td))) {
-	   idx[i++] = strcachePut(cache, str);
-       }
-       rpmtdFreeData(&td);
-    }
-    return idx;
 }
 
 static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)

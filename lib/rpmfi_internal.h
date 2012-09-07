@@ -6,13 +6,6 @@
 #include <rpm/rpmstrpool.h>
 #include "lib/fprint.h"
 
-/* 
- * This limits maximum unique strings (user + group names) from packages to 
- * 65535, should be plenty but easy to bump if ever needed.
- */
-typedef uint16_t scidx_t;
-typedef struct strcache_s *strcache;
-
 #define	RPMFIMAGIC	0x09697923
 
 /**
