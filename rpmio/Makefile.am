@@ -15,7 +15,7 @@ librpmio_la_SOURCES = \
 	rpmpgp.c rpmsq.c rpmsw.c url.c \
 	rpmio_internal.h rpmhook.h \
 	rpmstring.c rpmfileutil.c rpmglob.c \
-	rpmkeyring.c
+	rpmkeyring.c rpmstrpool.c
 
 librpmio_la_SOURCES += digest_nss.c
 

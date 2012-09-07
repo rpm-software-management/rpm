@@ -30,6 +30,10 @@ include/rpm/rpmstring.h: rpmio/rpmstring.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmstring.h include/rpm/rpmstring.h
 BUILT_SOURCES += include/rpm/rpmstring.h
 CLEANFILES += include/rpm/rpmstring.h
+include/rpm/rpmstrpool.h: rpmio/rpmstrpool.h include/rpm/$(dirstamp)
+	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmstrpool.h include/rpm/rpmstrpool.h
+BUILT_SOURCES += include/rpm/rpmstrpool.h
+CLEANFILES += include/rpm/rpmstrpool.h
 include/rpm/rpmsw.h: rpmio/rpmsw.h include/rpm/$(dirstamp)
 	$(INSTALL_DATA) $(top_srcdir)/rpmio/rpmsw.h include/rpm/rpmsw.h
 BUILT_SOURCES += include/rpm/rpmsw.h
