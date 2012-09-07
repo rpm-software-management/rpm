@@ -3,6 +3,7 @@
 
 #include <rpm/header.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstrpool.h>
 #include "lib/fprint.h"
 
 /* 
@@ -28,7 +29,6 @@ struct rpmfi_s {
 
     strcache flinkcache;	/*!< File link cache */
     scidx_t * flinks;		/*!< Index to file link(s) cache */
-    scidx_t * flangs;		/*!< Index to file lang(s) cache */
 
     uint32_t * dil;		/*!< Directory indice(s) (from header) */
     rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
@@ -38,8 +38,9 @@ struct rpmfi_s {
     rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */
     rpm_ino_t * finodes;	/*!< File inodes(s) (from header) */
 
-    scidx_t *fuser;		/*!< Index to file owner(s) cache */
-    scidx_t *fgroup;		/*!< Index to file group(s) cache */
+    rpmsid * fuser;		/*!< Index to file owner(s) (misc pool) */
+    rpmsid * fgroup;		/*!< Index to file group(s) (misc pool) */
+    rpmsid * flangs;		/*!< Index to file lang(s) (misc pool) */
 
     char * fstates;		/*!< File state(s) (from header) */
 

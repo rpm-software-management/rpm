@@ -18,6 +18,9 @@
 
 #include "debug.h"
 
+/* pool for widely common, "static" stuff like langs and user/group names */
+static rpmstrPool miscpool = NULL;
+
 /*
  * Simple and stupid string "cache."
  * Store each unique string just once, retrieve by index value. 
@@ -29,11 +32,6 @@ struct strcache_s {
     char **uniq;
     scidx_t num;
 };
-
-static struct strcache_s _ugcache = { NULL, 0 };
-static strcache ugcache = &_ugcache;
-static struct strcache_s _langcache = { NULL, 0 };
-static strcache langcache = &_langcache;
 
 static scidx_t strcachePut(strcache cache, const char *str)
 {
@@ -412,7 +410,7 @@ const char * rpmfiFUserIndex(rpmfi fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fuser != NULL)
-	    fuser = strcacheGet(ugcache, fi->fuser[ix]);
+	    fuser = rpmstrPoolStr(miscpool, fi->fuser[ix]);
     }
     return fuser;
 }
@@ -423,7 +421,7 @@ const char * rpmfiFGroupIndex(rpmfi fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fgroup != NULL)
-	    fgroup = strcacheGet(ugcache, fi->fgroup[ix]);
+	    fgroup = rpmstrPoolStr(miscpool, fi->fgroup[ix]);
     }
     return fgroup;
 }
@@ -441,7 +439,7 @@ const char * rpmfiFLangsIndex(rpmfi fi, int ix)
 {
     const char *flangs = NULL;
     if (fi != NULL && fi->flangs != NULL && ix >= 0 && ix < fi->fc) {
-	flangs = strcacheGet(langcache, fi->flangs[ix]);
+	flangs = rpmstrPoolStr(miscpool, fi->flangs[ix]);
     }
     return flangs;
 }
@@ -1143,6 +1141,23 @@ static scidx_t *cacheTag(strcache cache, Header h, rpmTag tag)
     return idx;
 }
 
+static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
+{
+    rpmsid *sids = NULL;
+    struct rpmtd_s td;
+    if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
+       int i = 0;
+       const char *str;
+
+       sids = xmalloc(sizeof(*sids) * rpmtdCount(&td));
+       while ((str = rpmtdNextString(&td))) {
+	   sids[i++] = rpmstrPoolId(pool, str, 1);
+       }
+       rpmtdFreeData(&td);
+    }
+    return sids;
+}
+
 #define _hgfi(_h, _tag, _td, _flags, _data) \
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
@@ -1181,6 +1196,10 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	    goto errxit;
     }
 
+    /* XXX: ensure the global misc. pool exists */
+    if (miscpool == NULL)
+	miscpool = rpmstrPoolCreate();
+
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
 	_hgfi(h, RPMTAG_FILEMODES, &td, scareFlags, fi->fmodes);
@@ -1218,7 +1237,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     }
     /* FILELANGS are only interesting when installing */
     if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
-	fi->flangs = cacheTag(langcache, h, RPMTAG_FILELANGS);
+	fi->flangs = tag2pool(miscpool, h, RPMTAG_FILELANGS);
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
@@ -1259,9 +1278,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
     if (!(flags & RPMFI_NOFILEUSER)) 
-	fi->fuser = cacheTag(ugcache, h, RPMTAG_FILEUSERNAME);
+	fi->fuser = tag2pool(miscpool, h, RPMTAG_FILEUSERNAME);
     if (!(flags & RPMFI_NOFILEGROUP)) 
-	fi->fgroup = cacheTag(ugcache, h, RPMTAG_FILEGROUPNAME);
+	fi->fgroup = tag2pool(miscpool, h, RPMTAG_FILEGROUPNAME);
 
     /* lazily alloced from rpmfiFN() */
     fi->fn = NULL;
