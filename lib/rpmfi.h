@@ -421,6 +421,16 @@ typedef rpmFlags rpmfiFlags;
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfi
+ * Create and load a file info set.
+ * @param pool		shared string pool (or NULL for private pool)
+ * @param h		header
+ * @param tagN		unused
+ * @param flags		Flags to control what information is loaded.
+ * @return		new file info set
+ */
+rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
+
+/** \ingroup rpmfi
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
  * @return		file type

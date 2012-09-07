@@ -1084,7 +1084,7 @@ static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
 
-rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
+rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfi fi = xcalloc(1, sizeof(*fi)); 
     unsigned char * t;
@@ -1121,7 +1121,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     /* XXX: ensure the global misc. pool exists */
     if (miscpool == NULL)
 	miscpool = rpmstrPoolCreate();
-    fi->pool = rpmstrPoolCreate();
+    /* private or shared pool? */
+    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
 
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
@@ -1206,7 +1207,9 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     /* lazily alloced from rpmfiFN() */
     fi->fn = NULL;
 
-    rpmstrPoolFreeze(fi->pool);
+    /* only freeze private pool */
+    if (fi->pool != pool)
+	rpmstrPoolFreeze(fi->pool);
 
 exit:
 
@@ -1220,6 +1223,11 @@ exit:
 errxit:
     rpmfiFree(fi);
     return NULL;
+}
+
+rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
+{
+    return rpmfiNewPool(NULL, h, tagN, flags);
 }
 
 void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize)
