@@ -1063,19 +1063,23 @@ rpmfi rpmfiFree(rpmfi fi)
     return NULL;
 }
 
+static rpmsid * td2pool(rpmstrPool pool, rpmtd td)
+{
+    rpmsid *sids = xmalloc(sizeof(*sids) * rpmtdCount(td));
+    const char *str;
+    int i = 0;
+    while ((str = rpmtdNextString(td)))
+	sids[i++] = rpmstrPoolId(pool, str, 1);
+    return sids;
+}
+
 static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
 {
     rpmsid *sids = NULL;
     struct rpmtd_s td;
     if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
-       int i = 0;
-       const char *str;
-
-       sids = xmalloc(sizeof(*sids) * rpmtdCount(&td));
-       while ((str = rpmtdNextString(&td))) {
-	   sids[i++] = rpmstrPoolId(pool, str, 1);
-       }
-       rpmtdFreeData(&td);
+	sids = td2pool(pool, &td);
+	rpmtdFreeData(&td);
     }
     return sids;
 }
