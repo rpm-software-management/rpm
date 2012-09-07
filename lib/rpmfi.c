@@ -432,7 +432,7 @@ const char * rpmfiFCapsIndex(rpmfi fi, int ix)
 {
     const char *fcaps = NULL;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	fcaps = fi->fcapcache ? strcacheGet(fi->fcapcache, fi->fcaps[ix]) : "";
+	fcaps = fi->fcaps ? fi->fcaps[ix] : "";
     }
     return fcaps;
 }
@@ -1082,7 +1082,6 @@ rpmfi rpmfiFree(rpmfi fi)
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
 	fi->digests = _free(fi->digests);
-	fi->fcapcache = strcacheFree(fi->fcapcache);
 	fi->fcaps = _free(fi->fcaps);
 
 	fi->cdict = _free(fi->cdict);
@@ -1210,10 +1209,8 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     if (!(flags & RPMFI_NOFILESTATES))
 	_hgfi(h, RPMTAG_FILESTATES, &td, defFlags, fi->fstates);
 
-    if (!(flags & RPMFI_NOFILECAPS) && headerIsEntry(h, RPMTAG_FILECAPS)) {
-	fi->fcapcache = strcacheNew();
-	fi->fcaps = cacheTag(fi->fcapcache, h, RPMTAG_FILECAPS);
-    }
+    if (!(flags & RPMFI_NOFILECAPS))
+	_hgfi(h, RPMTAG_FILECAPS, &td, defFlags, fi->fcaps);
 
     if (!(flags & RPMFI_NOFILELINKTOS)) {
 	fi->flinkcache = strcacheNew();
