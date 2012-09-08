@@ -1088,45 +1088,11 @@ static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
 
-rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
+static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags,
+			 headerGetFlags defFlags, headerGetFlags scareFlags)
 {
-    rpmfi fi = xcalloc(1, sizeof(*fi)); 
+    struct rpmtd_s fdigests, digalgo, td;
     unsigned char * t;
-    struct rpmtd_s fdigests, digalgo;
-    struct rpmtd_s td;
-    headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
-				HEADERGET_MINMEM : HEADERGET_ALLOC;
-    headerGetFlags defFlags = HEADERGET_ALLOC;
-
-    fi->magic = RPMFIMAGIC;
-    fi->i = -1;
-
-    fi->fiflags = flags;
-
-    _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
-    fi->fc = rpmtdCount(&td);
-    if (fi->fc == 0) {
-	goto exit;
-    }
-
-    _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
-    fi->dc = rpmtdCount(&td);
-    _hgfi(h, RPMTAG_DIRINDEXES, &td, scareFlags, fi->dil);
-
-    /* Is our filename triplet sane? */
-    if (fi->dc == 0 || fi->dc > fi->fc || rpmtdCount(&td) != fi->fc)
-	goto errxit;
-
-    for (rpm_count_t i = 0; i < fi->fc; i++) {
-	if (fi->dil[i] >= fi->fc)
-	    goto errxit;
-    }
-
-    /* XXX: ensure the global misc. pool exists */
-    if (miscpool == NULL)
-	miscpool = rpmstrPoolCreate();
-    /* private or shared pool? */
-    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
 
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
@@ -1207,6 +1173,52 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	fi->fuser = tag2pool(miscpool, h, RPMTAG_FILEUSERNAME);
     if (!(flags & RPMFI_NOFILEGROUP)) 
 	fi->fgroup = tag2pool(miscpool, h, RPMTAG_FILEGROUPNAME);
+
+    /* TODO: validate and return a real error */
+    return 0;
+}
+
+rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
+{
+    rpmfi fi = xcalloc(1, sizeof(*fi)); 
+    struct rpmtd_s td;
+    headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
+				HEADERGET_MINMEM : HEADERGET_ALLOC;
+    headerGetFlags defFlags = HEADERGET_ALLOC;
+
+    fi->magic = RPMFIMAGIC;
+    fi->i = -1;
+
+    fi->fiflags = flags;
+
+    _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
+    fi->fc = rpmtdCount(&td);
+    if (fi->fc == 0) {
+	goto exit;
+    }
+
+    _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
+    fi->dc = rpmtdCount(&td);
+    _hgfi(h, RPMTAG_DIRINDEXES, &td, scareFlags, fi->dil);
+
+    /* Is our filename triplet sane? */
+    if (fi->dc == 0 || fi->dc > fi->fc || rpmtdCount(&td) != fi->fc)
+	goto errxit;
+
+    for (rpm_count_t i = 0; i < fi->fc; i++) {
+	if (fi->dil[i] >= fi->fc)
+	    goto errxit;
+    }
+
+    /* private or shared pool? */
+    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
+
+    /* XXX: ensure the global misc. pool exists */
+    if (miscpool == NULL)
+	miscpool = rpmstrPoolCreate();
+
+    if (rpmfiPopulate(fi, h, flags, defFlags, scareFlags))
+	goto errxit;
 
     /* lazily alloced from rpmfiFN() */
     fi->fn = NULL;
