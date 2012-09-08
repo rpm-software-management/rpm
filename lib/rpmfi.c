@@ -1013,6 +1013,7 @@ rpmfi rpmfiFree(rpmfi fi)
     if (fi->fc > 0) {
 	fi->bnl = _free(fi->bnl);
 	fi->dnl = _free(fi->dnl);
+	fi->dil = _free(fi->dil);
 
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
@@ -1038,7 +1039,6 @@ rpmfi rpmfiFree(rpmfi fi)
 	    fi->fsizes = _free(fi->fsizes);
 	    fi->frdevs = _free(fi->frdevs);
 	    fi->finodes = _free(fi->finodes);
-	    fi->dil = _free(fi->dil);
 
 	    fi->fcolors = _free(fi->fcolors);
 	    fi->fcdictx = _free(fi->fcdictx);
@@ -1199,7 +1199,7 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 
     _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
     fi->dc = rpmtdCount(&td);
-    _hgfi(h, RPMTAG_DIRINDEXES, &td, scareFlags, fi->dil);
+    _hgfi(h, RPMTAG_DIRINDEXES, &td, defFlags, fi->dil);
 
     /* Is our filename triplet sane? */
     if (fi->dc == 0 || fi->dc > fi->fc || rpmtdCount(&td) != fi->fc)
