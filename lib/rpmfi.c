@@ -1088,9 +1088,11 @@ static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
 
-static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags,
-			 headerGetFlags defFlags, headerGetFlags scareFlags)
+static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 {
+    headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
+				HEADERGET_MINMEM : HEADERGET_ALLOC;
+    headerGetFlags defFlags = HEADERGET_ALLOC;
     struct rpmtd_s fdigests, digalgo, td;
     unsigned char * t;
 
@@ -1182,24 +1184,21 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfi fi = xcalloc(1, sizeof(*fi)); 
     struct rpmtd_s td;
-    headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
-				HEADERGET_MINMEM : HEADERGET_ALLOC;
-    headerGetFlags defFlags = HEADERGET_ALLOC;
 
     fi->magic = RPMFIMAGIC;
     fi->i = -1;
 
     fi->fiflags = flags;
 
-    _hgfi(h, RPMTAG_BASENAMES, &td, defFlags, fi->bnl);
+    _hgfi(h, RPMTAG_BASENAMES, &td, HEADERGET_ALLOC, fi->bnl);
     fi->fc = rpmtdCount(&td);
     if (fi->fc == 0) {
 	goto exit;
     }
 
-    _hgfi(h, RPMTAG_DIRNAMES, &td, defFlags, fi->dnl);
+    _hgfi(h, RPMTAG_DIRNAMES, &td, HEADERGET_ALLOC, fi->dnl);
     fi->dc = rpmtdCount(&td);
-    _hgfi(h, RPMTAG_DIRINDEXES, &td, defFlags, fi->dil);
+    _hgfi(h, RPMTAG_DIRINDEXES, &td, HEADERGET_ALLOC, fi->dil);
 
     /* Is our filename triplet sane? */
     if (fi->dc == 0 || fi->dc > fi->fc || rpmtdCount(&td) != fi->fc)
@@ -1217,7 +1216,7 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
     if (miscpool == NULL)
 	miscpool = rpmstrPoolCreate();
 
-    if (rpmfiPopulate(fi, h, flags, defFlags, scareFlags))
+    if (rpmfiPopulate(fi, h, flags))
 	goto errxit;
 
     /* lazily alloced from rpmfiFN() */
