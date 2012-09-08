@@ -1084,6 +1084,28 @@ static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
     return sids;
 }
 
+/* validate a indexed tag data triplet (such as file bn/dn/dx) */
+static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
+{
+    int sane = 0;
+    uint32_t xc = rpmtdCount(xd);
+    uint32_t yc = rpmtdCount(yd);
+    uint32_t zc = rpmtdCount(zd);
+
+    /* check that the amount of data in each is sane */
+    if (xc > 0 && yc > 0 && yc <= xc && zc == xc) {
+	uint32_t * i;
+	/* ...and that the indexes are within bounds */
+	while ((i = rpmtdNextUint32(zd))) {
+	    if (*i >= yc)
+		break;
+	}
+	/* unless the loop runs to finish, the data is broken */
+	sane = (i == NULL);
+    }
+    return sane;
+}
+
 #define _hgfi(_h, _tag, _td, _flags, _data) \
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
@@ -1095,6 +1117,10 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
     headerGetFlags defFlags = HEADERGET_ALLOC;
     struct rpmtd_s fdigests, digalgo, td;
     unsigned char * t;
+
+    /* XXX: ensure the global misc. pool exists */
+    if (miscpool == NULL)
+	miscpool = rpmstrPoolCreate();
 
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
@@ -1183,61 +1209,50 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfi fi = xcalloc(1, sizeof(*fi)); 
-    struct rpmtd_s td;
+    struct rpmtd_s bn, dn, dx;
 
     fi->magic = RPMFIMAGIC;
     fi->i = -1;
-
     fi->fiflags = flags;
 
-    _hgfi(h, RPMTAG_BASENAMES, &td, HEADERGET_ALLOC, fi->bnl);
-    fi->fc = rpmtdCount(&td);
-    if (fi->fc == 0) {
-	goto exit;
+    /*
+     * Grab and validate file triplet data. Headers with no files simply
+     * fall through here and an empty file set is returned.
+     */
+    if (headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_ALLOC)) {
+	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_ALLOC);
+	headerGet(h, RPMTAG_DIRINDEXES, &dx, HEADERGET_ALLOC);
+
+	if (indexSane(&bn, &dn, &dx)) {
+	    /* private or shared pool? */
+	    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) :
+					rpmstrPoolCreate();
+
+	    /* init the file triplet data, stealing from td's (pooh...) */
+	    fi->fc = rpmtdCount(&bn);
+	    fi->dc = rpmtdCount(&dn);
+	    fi->bnl = bn.data;
+	    fi->dnl = dn.data;
+	    fi->dil = dx.data;
+
+	    /* populate the rest of the stuff */
+	    rpmfiPopulate(fi, h, flags);
+
+	    /* freeze the pool to save memory, but only if private pool */
+	    if (fi->pool != pool)
+		rpmstrPoolFreeze(fi->pool);
+
+	    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
+	} else {
+	    /* broken data, free and return NULL */
+	    rpmtdFreeData(&bn);
+	    rpmtdFreeData(&dn);
+	    rpmtdFreeData(&dx);
+	    fi = _free(fi);
+	}
     }
 
-    _hgfi(h, RPMTAG_DIRNAMES, &td, HEADERGET_ALLOC, fi->dnl);
-    fi->dc = rpmtdCount(&td);
-    _hgfi(h, RPMTAG_DIRINDEXES, &td, HEADERGET_ALLOC, fi->dil);
-
-    /* Is our filename triplet sane? */
-    if (fi->dc == 0 || fi->dc > fi->fc || rpmtdCount(&td) != fi->fc)
-	goto errxit;
-
-    for (rpm_count_t i = 0; i < fi->fc; i++) {
-	if (fi->dil[i] >= fi->fc)
-	    goto errxit;
-    }
-
-    /* private or shared pool? */
-    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
-
-    /* XXX: ensure the global misc. pool exists */
-    if (miscpool == NULL)
-	miscpool = rpmstrPoolCreate();
-
-    if (rpmfiPopulate(fi, h, flags))
-	goto errxit;
-
-    /* lazily alloced from rpmfiFN() */
-    fi->fn = NULL;
-
-    /* only freeze private pool */
-    if (fi->pool != pool)
-	rpmstrPoolFreeze(fi->pool);
-
-exit:
-
-    if (fi != NULL) {
-	fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
-    }
-
-    /* FIX: rpmfi null annotations */
     return rpmfiLink(fi);
-
-errxit:
-    rpmfiFree(fi);
-    return NULL;
 }
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
