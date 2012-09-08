@@ -211,8 +211,9 @@ int fpEqual(const fingerPrint * k1, const fingerPrint * k2)
 
 }
 
-void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const uint32_t * dirIndexes, 
+void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
+		  rpmsid * dirNames, rpmsid * baseNames,
+		  const uint32_t * dirIndexes, 
 		  int fileCount, fingerPrint * fpList)
 {
     int i;
@@ -223,10 +224,12 @@ void fpLookupList(fingerPrintCache cache, const char ** dirNames,
 	if (i > 0 && dirIndexes[i - 1] == dirIndexes[i]) {
 	    fpList[i].entry = fpList[i - 1].entry;
 	    fpList[i].subDir = fpList[i - 1].subDir;
-	    fpList[i].baseName = baseNames[i];
+	    fpList[i].baseName = rpmstrPoolStr(pool, baseNames[i]);
 	} else {
 	    fpLookup(cache,
-		     dirNames[dirIndexes[i]], baseNames[i], 1, &fpList[i]);
+		     rpmstrPoolStr(pool, dirNames[dirIndexes[i]]),
+		     rpmstrPoolStr(pool, baseNames[i]),
+		     1, &fpList[i]);
 	}
     }
 }

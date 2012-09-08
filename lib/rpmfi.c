@@ -99,8 +99,8 @@ const char * rpmfiBNIndex(rpmfi fi, int ix)
     const char * BN = NULL;
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	if (fi->bnl != NULL)
-	    BN = fi->bnl[ix];
+	if (fi->bnid != NULL)
+	    BN = rpmstrPoolStr(fi->pool, fi->bnid[ix]);
     }
     return BN;
 }
@@ -110,8 +110,8 @@ const char * rpmfiDNIndex(rpmfi fi, int jx)
     const char * DN = NULL;
 
     if (fi != NULL && jx >= 0 && jx < fi->dc) {
-	if (fi->dnl != NULL)
-	    DN = fi->dnl[jx];
+	if (fi->dnid != NULL)
+	    DN = rpmstrPoolStr(fi->pool, fi->dnid[jx]);
     }
     return DN;
 }
@@ -120,7 +120,8 @@ char * rpmfiFNIndex(rpmfi fi, int ix)
 {
     char *fn = NULL;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	fn = rstrscat(NULL, fi->dnl[fi->dil[ix]], fi->bnl[ix], NULL);
+	fn = rstrscat(NULL, rpmstrPoolStr(fi->pool, fi->dnid[fi->dil[ix]]),
+			    rpmstrPoolStr(fi->pool, fi->bnid[ix]), NULL);
     }
     return fn;
 }
@@ -1011,8 +1012,8 @@ rpmfi rpmfiFree(rpmfi fi)
 	return rpmfiUnlink(fi);
 
     if (fi->fc > 0) {
-	fi->bnl = _free(fi->bnl);
-	fi->dnl = _free(fi->dnl);
+	fi->bnid = _free(fi->bnid);
+	fi->dnid = _free(fi->dnid);
 	fi->dil = _free(fi->dil);
 
 	fi->flinks = _free(fi->flinks);
@@ -1219,8 +1220,8 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
      * Grab and validate file triplet data. Headers with no files simply
      * fall through here and an empty file set is returned.
      */
-    if (headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_ALLOC)) {
-	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_ALLOC);
+    if (headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_MINMEM)) {
+	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_MINMEM);
 	headerGet(h, RPMTAG_DIRINDEXES, &dx, HEADERGET_ALLOC);
 
 	if (indexSane(&bn, &dn, &dx)) {
@@ -1228,12 +1229,14 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) :
 					rpmstrPoolCreate();
 
-	    /* init the file triplet data, stealing from td's (pooh...) */
+	    /* init the file triplet data */
 	    fi->fc = rpmtdCount(&bn);
 	    fi->dc = rpmtdCount(&dn);
-	    fi->bnl = bn.data;
-	    fi->dnl = dn.data;
+	    fi->bnid = td2pool(fi->pool, &bn);
+	    fi->dnid = td2pool(fi->pool, &dn);
+	    /* steal index data from the td (pooh...) */
 	    fi->dil = dx.data;
+	    dx.data = NULL;
 
 	    /* populate the rest of the stuff */
 	    rpmfiPopulate(fi, h, flags);
@@ -1245,11 +1248,11 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
 	} else {
 	    /* broken data, free and return NULL */
-	    rpmtdFreeData(&bn);
-	    rpmtdFreeData(&dn);
-	    rpmtdFreeData(&dx);
 	    fi = _free(fi);
 	}
+	rpmtdFreeData(&bn);
+	rpmtdFreeData(&dn);
+	rpmtdFreeData(&dx);
     }
 
     return rpmfiLink(fi);
@@ -1287,7 +1290,7 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
     if (fi->fc > 0 && fi->fps == NULL) {
 	fi->fps = xcalloc(fi->fc, sizeof(*fi->fps));
     }
-    fpLookupList(fpc, fi->dnl, fi->bnl, fi->dil, fi->fc, fi->fps);
+    fpLookupList(fpc, fi->pool, fi->dnid, fi->bnid, fi->dil, fi->fc, fi->fps);
 }
 
 /* 

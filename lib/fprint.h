@@ -141,6 +141,7 @@ int fpEqual(const fingerPrint * key1, const fingerPrint * key2);
  * Return finger prints of an array of file paths.
  * @warning: scareMemory is assumed!
  * @param cache		pointer to fingerprint cache
+ * @param pool		pointer to file name pool
  * @param dirNames	directory names
  * @param baseNames	file base names
  * @param dirIndexes	index into dirNames for each baseNames
@@ -148,8 +149,9 @@ int fpEqual(const fingerPrint * key1, const fingerPrint * key2);
  * @retval fpList	pointer to array of finger prints
  */
 RPM_GNUC_INTERNAL
-void fpLookupList(fingerPrintCache cache, const char ** dirNames, 
-		  const char ** baseNames, const uint32_t * dirIndexes, 
+void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
+		  rpmsid * dirNames, rpmsid * baseNames,
+		  const uint32_t * dirIndexes, 
 		  int fileCount, fingerPrint * fpList);
 
 /**

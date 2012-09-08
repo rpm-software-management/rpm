@@ -18,8 +18,8 @@ struct rpmfi_s {
     Header h;			/*!< Header for file info set (or NULL) */
     rpmstrPool pool;		/*!< String pool of this file info set */
 
-    const char ** bnl;		/*!< Base name(s) (from header) */
-    const char ** dnl;		/*!< Directory name(s) (from header) */
+    rpmsid * bnid;		/*!< Index to base name(s) (pool) */
+    rpmsid * dnid;		/*!< Index to directory name(s) (pool) */
 
     rpmsid * flinks;		/*!< Index to file link(s) (pool) */
 
