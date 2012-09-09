@@ -14,6 +14,8 @@
 
 #define STRDATA_CHUNK 65536
 #define STROFFS_CHUNK 2048
+/* XXX this is ridiculously small... */
+#define STRHASH_INITSIZE 5
 
 struct rpmstrPool_s {
     size_t * offs;		/* offsets into data area */
@@ -29,7 +31,7 @@ struct rpmstrPool_s {
 rpmstrPool rpmstrPoolCreate(void)
 {
     rpmstrPool pool = xcalloc(1, sizeof(*pool));
-    pool->hash = strHashCreate(5, rstrhash, strcmp, NULL, NULL);
+    pool->hash = strHashCreate(STRHASH_INITSIZE, rstrhash, strcmp, NULL, NULL);
     pool->nrefs = 1;
     return pool;
 }
@@ -71,8 +73,10 @@ void rpmstrPoolFreeze(rpmstrPool pool)
 void rpmstrPoolUnfreeze(rpmstrPool pool)
 {
     if (pool) {
-	pool->hash = strHashCreate((pool->offs_size / 2) - 1,
-				   rstrhash, strcmp, NULL, NULL);
+	int sizehint = (pool->offs_size / 2) - 1;
+	if (sizehint < STRHASH_INITSIZE)
+	    sizehint = STRHASH_INITSIZE;
+	pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
 	for (int i = 1; i < pool->offs_size; i++) {
 	    strHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
 	}
@@ -93,10 +97,16 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 
 	pool->data = xrealloc(pool->data, alloced);
 	pool->data_alloced = alloced;
+
+	/* ouch, need to rehash the whole lot as key addresses change */
+	if (pool->offs_size > 0) {
+	    pool->hash = strHashFree(pool->hash);
+	    rpmstrPoolUnfreeze(pool);
+	}
     }
 
     pool->offs_size += 1;
-    if (pool->offs_alloced < pool->offs_size) {
+    if (pool->offs_alloced <= pool->offs_size) {
 	pool->offs_alloced += STROFFS_CHUNK;
 	pool->offs = xrealloc(pool->offs,
 			      pool->offs_alloced * sizeof(*pool->offs));
