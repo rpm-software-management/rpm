@@ -72,7 +72,7 @@ void rpmstrPoolFreeze(rpmstrPool pool)
 
 void rpmstrPoolUnfreeze(rpmstrPool pool)
 {
-    if (pool) {
+    if (pool && pool->hash == NULL) {
 	int sizehint = (pool->offs_size / 2) - 1;
 	if (sizehint < STRHASH_INITSIZE)
 	    sizehint = STRHASH_INITSIZE;
