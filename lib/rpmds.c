@@ -166,23 +166,26 @@ exit:
 
 char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 {
+    const char * N = rpmdsN(ds);
+    const char * EVR = rpmdsEVR(ds);
+    rpmsenseFlags Flags = rpmdsFlags(ds);
     char * tbuf, * t;
     size_t nb;
 
     nb = 0;
     if (dspfx)	nb += strlen(dspfx) + 1;
-    if (ds->N[ds->i])	nb += strlen(ds->N[ds->i]);
+    if (N)	nb += strlen(N);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
+    if (Flags & RPMSENSE_SENSEMASK) {
 	if (nb)	nb++;
-	if (ds->Flags[ds->i] & RPMSENSE_LESS)	nb++;
-	if (ds->Flags[ds->i] & RPMSENSE_GREATER) nb++;
-	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	nb++;
+	if (Flags & RPMSENSE_LESS)	nb++;
+	if (Flags & RPMSENSE_GREATER) nb++;
+	if (Flags & RPMSENSE_EQUAL)	nb++;
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
+    if (EVR && *EVR) {
 	if (nb)	nb++;
-	nb += strlen(ds->EVR[ds->i]);
+	nb += strlen(EVR);
     }
 
     t = tbuf = xmalloc(nb + 1);
@@ -190,19 +193,19 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
 	t = stpcpy(t, dspfx);
 	*t++ = ' ';
     }
-    if (ds->N[ds->i])
-	t = stpcpy(t, ds->N[ds->i]);
+    if (N)
+	t = stpcpy(t, N);
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (ds->Flags != NULL && (ds->Flags[ds->i] & RPMSENSE_SENSEMASK)) {
+    if (Flags & RPMSENSE_SENSEMASK) {
 	if (t != tbuf)	*t++ = ' ';
-	if (ds->Flags[ds->i] & RPMSENSE_LESS)	*t++ = '<';
-	if (ds->Flags[ds->i] & RPMSENSE_GREATER) *t++ = '>';
-	if (ds->Flags[ds->i] & RPMSENSE_EQUAL)	*t++ = '=';
+	if (Flags & RPMSENSE_LESS)	*t++ = '<';
+	if (Flags & RPMSENSE_GREATER) *t++ = '>';
+	if (Flags & RPMSENSE_EQUAL)	*t++ = '=';
     }
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (ds->EVR != NULL && ds->EVR[ds->i] && *ds->EVR[ds->i]) {
+    if (EVR && *EVR) {
 	if (t != tbuf)	*t++ = ' ';
-	t = stpcpy(t, ds->EVR[ds->i]);
+	t = stpcpy(t, EVR);
     }
     *t = '\0';
     return tbuf;
