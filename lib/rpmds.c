@@ -477,14 +477,15 @@ static rpmds rpmdsDup(const rpmds ods)
     ds->N = memcpy(xmalloc(nb), ods->N, nb);
     
     /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-assert(ods->EVR != NULL);
-assert(ods->Flags != NULL);
+    if (ods->EVR) {
+	nb = ds->Count * sizeof(*ds->EVR);
+	ds->EVR = memcpy(xmalloc(nb), ods->EVR, nb);
+    }
 
-    nb = ds->Count * sizeof(*ds->EVR);
-    ds->EVR = memcpy(xmalloc(nb), ods->EVR, nb);
-
-    nb = (ds->Count * sizeof(*ds->Flags));
-    ds->Flags = memcpy(xmalloc(nb), ods->Flags, nb);
+    if (ods->Flags) {
+	nb = ds->Count * sizeof(*ds->Flags);
+	ds->Flags = memcpy(xmalloc(nb), ods->Flags, nb);
+    }
 
     return rpmdsLink(ds);
 
