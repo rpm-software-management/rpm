@@ -78,6 +78,30 @@ static int dsType(rpmTagVal tag,
     return rc;
 }    
 
+static const char * rpmdsNIndex(rpmds ds, int i)
+{
+    const char * N = NULL;
+    if (i >= 0 && i < ds->Count && ds->N != NULL)
+	N = ds->N[i];
+    return N;
+}
+
+static const char * rpmdsEVRIndex(rpmds ds, int i)
+{
+    const char * EVR = NULL;
+    if (i >= 0 && i < ds->Count && ds->EVR != NULL)
+	EVR = ds->EVR[i];
+    return EVR;
+}
+
+static rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
+{
+    rpmsenseFlags Flags = 0;
+    if (i >= 0 && i < ds->Count && ds->Flags != NULL)
+	Flags = ds->Flags[i];
+    return Flags;
+}
+
 static rpmds rpmdsUnlink(rpmds ds)
 {
     if (ds)
@@ -303,35 +327,17 @@ const char * rpmdsDNEVR(const rpmds ds)
 
 const char * rpmdsN(const rpmds ds)
 {
-    const char * N = NULL;
-
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->N != NULL)
-	    N = ds->N[ds->i];
-    }
-    return N;
+    return (ds != NULL) ? rpmdsNIndex(ds, ds->i) : NULL;
 }
 
 const char * rpmdsEVR(const rpmds ds)
 {
-    const char * EVR = NULL;
-
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->EVR != NULL)
-	    EVR = ds->EVR[ds->i];
-    }
-    return EVR;
+    return (ds != NULL) ? rpmdsEVRIndex(ds, ds->i) : NULL;
 }
 
 rpmsenseFlags rpmdsFlags(const rpmds ds)
 {
-    rpmsenseFlags Flags = 0;
-
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->Flags != NULL)
-	    Flags = ds->Flags[ds->i];
-    }
-    return Flags;
+    return (ds != NULL) ? rpmdsFlagsIndex(ds, ds->i) : 0;
 }
 
 rpmTagVal rpmdsTagN(const rpmds ds)
