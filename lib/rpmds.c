@@ -145,6 +145,23 @@ rpmds rpmdsFree(rpmds ds)
     return NULL;
 }
 
+static rpmds rpmdsCreate(rpmstrPool pool,
+		  rpmTagVal tagN, const char * Type, int Count,
+		  unsigned int instance)
+{
+    rpmds ds = xcalloc(1, sizeof(*ds));
+
+    ds->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
+    ds->tagN = tagN;
+    ds->Type = Type;
+    ds->Count = Count;
+    ds->instance = instance;
+    ds->nopromote = _rpmds_nopromote;
+    ds->i = -1;
+
+    return rpmdsLink(ds);
+}
+
 rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
 {
     rpmTagVal tagEVR, tagF;
@@ -157,17 +174,10 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
     if (headerGet(h, tagN, &names, HEADERGET_MINMEM)) {
 	struct rpmtd_s evr, flags; 
 
-	ds = xcalloc(1, sizeof(*ds));
-	ds->pool = rpmstrPoolCreate();
-	ds->Type = Type;
-	ds->i = -1;
-	ds->DNEVR = NULL;
-	ds->tagN = tagN;
-	ds->N = rpmtdToPool(&names, ds->pool);
-	ds->Count = rpmtdCount(&names);
-	ds->nopromote = _rpmds_nopromote;
-	ds->instance = headerGetInstance(h);
+	ds = rpmdsCreate(NULL, tagN, Type,
+			 rpmtdCount(&names), headerGetInstance(h));
 
+	ds->N = rpmtdToPool(&names, ds->pool);
 	headerGet(h, tagEVR, &evr, HEADERGET_MINMEM);
 	ds->EVR = rpmtdToPool(&evr, ds->pool);
 	headerGet(h, tagF, &flags, HEADERGET_ALLOC);
@@ -187,8 +197,6 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
 
 	/* freeze the pool to save memory and lock strings in place */
 	rpmstrPoolFreeze(ds->pool);
-
-	ds = rpmdsLink(ds);
     }
 
 exit:
@@ -259,13 +267,7 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
     if (dsType(tagN, &Type, NULL, NULL))
 	goto exit;
 
-    ds = xcalloc(1, sizeof(*ds));
-    ds->pool = rpmstrPoolCreate();
-    ds->Type = Type;
-    ds->tagN = tagN;
-    ds->Count = 1;
-    ds->nopromote = _rpmds_nopromote;
-    ds->instance = instance;
+    ds = rpmdsCreate(NULL, tagN, Type, 1, instance);
 
     ds->N = singleSid(ds->pool, N);
     ds->EVR = singleSid(ds->pool, EVR);
@@ -277,7 +279,7 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
 	rpmdsSetColor(ds, Color);
 
 exit:
-    return rpmdsLink(ds);
+    return ds;
 }
 
 rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags)
@@ -461,13 +463,10 @@ rpmds rpmdsInit(rpmds ds)
 
 static rpmds rpmdsDup(const rpmds ods)
 {
-    rpmds ds = xcalloc(1, sizeof(*ds));
+    rpmds ds = rpmdsCreate(ods->pool, ods->tagN, ods->Type,
+			   ods->Count, ods->instance);
     size_t nb;
-
-    ds->pool = rpmstrPoolLink(ods->pool);
-    ds->Type = ods->Type;
-    ds->tagN = ods->tagN;
-    ds->Count = ods->Count;
+    
     ds->i = ods->i;
     ds->l = ods->l;
     ds->u = ods->u;
@@ -487,7 +486,7 @@ static rpmds rpmdsDup(const rpmds ods)
 	ds->Flags = memcpy(xmalloc(nb), ods->Flags, nb);
     }
 
-    return rpmdsLink(ds);
+    return ds;
 
 }
 
