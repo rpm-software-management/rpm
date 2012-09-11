@@ -494,6 +494,10 @@ assert(ods->Flags != NULL);
 int rpmdsFind(rpmds ds, const rpmds ods)
 {
     int comparison;
+    const char *N, *ON = rpmdsN(ods);
+    const char *EVR, *OEVR = rpmdsEVR(ods);
+    rpmsenseFlags Flags, OFlags = rpmdsFlags(ods);
+    int rc = -1; /* assume not found */
 
     if (ds == NULL || ods == NULL)
 	return -1;
@@ -503,22 +507,28 @@ int rpmdsFind(rpmds ds, const rpmds ods)
     while (ds->l < ds->u) {
 	ds->i = (ds->l + ds->u) / 2;
 
-	comparison = strcmp(ods->N[ods->i], ds->N[ds->i]);
+	N = rpmdsN(ds);
+	EVR = rpmdsEVR(ds);
+	Flags = rpmdsFlags(ds);
+
+	comparison = strcmp(ON, N);
 
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-	if (comparison == 0 && ods->EVR && ds->EVR)
-	    comparison = strcmp(ods->EVR[ods->i], ds->EVR[ds->i]);
-	if (comparison == 0 && ods->Flags && ds->Flags)
-	    comparison = (ods->Flags[ods->i] - ds->Flags[ds->i]);
+	if (comparison == 0 && OEVR && EVR)
+	    comparison = strcmp(OEVR, EVR);
+	if (comparison == 0 && OFlags && Flags)
+	    comparison = OFlags - Flags;
 
 	if (comparison < 0)
 	    ds->u = ds->i;
 	else if (comparison > 0)
 	    ds->l = ds->i + 1;
-	else
-	    return ds->i;
+	else {
+	    rc = ds->i;
+	    break;
+	}
     }
-    return -1;
+    return rc;
 }
 
 int rpmdsMerge(rpmds * dsp, rpmds ods)
