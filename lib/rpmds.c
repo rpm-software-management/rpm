@@ -616,6 +616,7 @@ int rpmdsSearch(rpmds ds, rpmds ods)
 {
     int comparison;
     int i, l, u;
+    const char *ON = rpmdsN(ods);
 
     if (ds == NULL || ods == NULL)
 	return -1;
@@ -627,7 +628,7 @@ int rpmdsSearch(rpmds ds, rpmds ods)
     while (l < u) {
 	i = (l + u) / 2;
 
-	comparison = strcmp(ods->N[ods->i], ds->N[i]);
+	comparison = strcmp(ON, rpmdsNIndex(ds, i));
 
 	if (comparison < 0)
 	    u = i;
@@ -635,16 +636,16 @@ int rpmdsSearch(rpmds ds, rpmds ods)
 	    l = i + 1;
 	else {
 	    /* Set l to 1st member of set that contains N. */
-	    if (!rstreq(ods->N[ods->i], ds->N[l]))
+	    if (!rstreq(ON, rpmdsNIndex(ds, l)))
 		l = i;
-	    while (l > 0 && rstreq(ods->N[ods->i], ds->N[l-1]))
+	    while (l > 0 && rstreq(ON, rpmdsNIndex(ds, l-1)))
 		l--;
 	    /* Set u to 1st member of set that does not contain N. */
-	    if (u >= ds->Count || !rstreq(ods->N[ods->i], ds->N[u]))
+	    if (u >= ds->Count || !rstreq(ON, rpmdsNIndex(ds, u)))
 		u = i;
 	    while (++u < ds->Count) {
-		if (!rstreq(ods->N[ods->i], ds->N[u]))
-		    /*@innerbreak@*/ break;
+		if (!rstreq(ON, rpmdsNIndex(ds, u)))
+		    break;
 	    }
 	    break;
 	}
