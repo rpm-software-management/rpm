@@ -259,8 +259,8 @@ rpmds rpmdsCurrent(rpmds ds)
 {
     rpmds cds = NULL;
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	cds = singleDS(ds->tagN, ds->N[ds->i], ds->EVR[ds->i],
-		       ds->Flags[ds->i], ds->instance, rpmdsColor(ds));
+	cds = singleDS(ds->tagN, rpmdsN(ds), rpmdsEVR(ds),
+		       rpmdsFlags(ds), ds->instance, rpmdsColor(ds));
     }
     return cds;
 }
