@@ -550,12 +550,19 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     if (ds == NULL)
 	return -1;
 
+    /* Ensure EVR and Flags exist */
+    if (ds->EVR == NULL)
+	ds->EVR = xcalloc(ds->Count, sizeof(*ds->EVR));
+    if (ds->Flags == NULL)
+	ds->Flags = xcalloc(ds->Count, sizeof(*ds->Flags));
+
     /*
      * Add new entries.
      */
     save = ods->i;
     ods = rpmdsInit(ods);
     while (rpmdsNext(ods) >= 0) {
+	const char *OEVR;
 	/*
 	 * If this entry is already present, don't bother.
 	 */
@@ -573,16 +580,13 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	}
 	ds->N[ds->u] = rpmstrPoolId(ds->pool, rpmdsN(ods), 1);
 
-	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-assert(ods->EVR != NULL);
-assert(ods->Flags != NULL);
-
 	ds->EVR = xrealloc(ds->EVR, (ds->Count+1) * sizeof(*ds->EVR));
 	if (ds->u < ds->Count) {
 	    memmove(ds->EVR + ds->u + 1, ds->EVR + ds->u,
 		    (ds->Count - ds->u) * sizeof(*ds->EVR));
 	}
-	ds->EVR[ds->u] = rpmstrPoolId(ds->pool, rpmdsEVR(ods), 1);
+	OEVR = rpmdsEVR(ods);
+	ds->EVR[ds->u] = rpmstrPoolId(ds->pool, OEVR ? OEVR : "", 1);
 
 	ds->Flags = xrealloc(ds->Flags, (ds->Count+1) * sizeof(*ds->Flags));
 	if (ds->u < ds->Count) {
