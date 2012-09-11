@@ -957,6 +957,8 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp)
 	rc = rpmdsMerge(dsp, ds);
 	rpmdsFree(ds);
     }
+    if (*dsp)
+	rpmstrPoolFreeze((*dsp)->pool);
     return rc;
 }
 
