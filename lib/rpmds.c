@@ -699,11 +699,13 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 {
     char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
+    const char *AEVR, *BEVR;
+    rpmsenseFlags AFlags, BFlags;
     int result;
     int sense;
 
     /* Different names don't overlap. */
-    if (!rstreq(A->N[A->i], B->N[B->i])) {
+    if (!rstreq(rpmdsN(A), rpmdsN(B))) {
 	result = 0;
 	goto exit;
     }
@@ -715,21 +717,25 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     }
 
     /* Same name. If either A or B is an existence test, always overlap. */
-    if (!((A->Flags[A->i] & RPMSENSE_SENSEMASK) && (B->Flags[B->i] & RPMSENSE_SENSEMASK))) {
+    AFlags = rpmdsFlags(A);
+    BFlags = rpmdsFlags(B);
+    if (!((AFlags & RPMSENSE_SENSEMASK) && (BFlags & RPMSENSE_SENSEMASK))) {
 	result = 1;
 	goto exit;
     }
 
     /* If either EVR is non-existent or empty, always overlap. */
-    if (!(A->EVR[A->i] && *A->EVR[A->i] && B->EVR[B->i] && *B->EVR[B->i])) {
+    AEVR = rpmdsEVR(A);
+    BEVR = rpmdsEVR(B);
+    if (!(AEVR && *AEVR && BEVR && *BEVR)) {
 	result = 1;
 	goto exit;
     }
 
     /* Both AEVR and BEVR exist. */
-    aEVR = xstrdup(A->EVR[A->i]);
+    aEVR = xstrdup(AEVR);
     parseEVR(aEVR, &aE, &aV, &aR);
-    bEVR = xstrdup(B->EVR[B->i]);
+    bEVR = xstrdup(BEVR);
     parseEVR(bEVR, &bE, &bV, &bR);
 
     /* Compare {A,B} [epoch:]version[-release] */
@@ -751,8 +757,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 		sense = rpmvercmp(aR, bR);
 	    } else {
 		/* always matches if the side with no release has SENSE_EQUAL */
-		if ((aR && *aR && (B->Flags[B->i] & RPMSENSE_EQUAL)) ||
-		    (bR && *bR && (A->Flags[A->i] & RPMSENSE_EQUAL))) {
+		if ((aR && *aR && (BFlags & RPMSENSE_EQUAL)) ||
+		    (bR && *bR && (AFlags & RPMSENSE_EQUAL))) {
 		    aEVR = _free(aEVR);
 		    bEVR = _free(bEVR);
 		    result = 1;
@@ -766,14 +772,14 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
     /* Detect overlap of {A,B} range. */
     result = 0;
-    if (sense < 0 && ((A->Flags[A->i] & RPMSENSE_GREATER) || (B->Flags[B->i] & RPMSENSE_LESS))) {
+    if (sense < 0 && ((AFlags & RPMSENSE_GREATER) || (BFlags & RPMSENSE_LESS))) {
 	result = 1;
-    } else if (sense > 0 && ((A->Flags[A->i] & RPMSENSE_LESS) || (B->Flags[B->i] & RPMSENSE_GREATER))) {
+    } else if (sense > 0 && ((AFlags & RPMSENSE_LESS) || (BFlags & RPMSENSE_GREATER))) {
 	result = 1;
     } else if (sense == 0 &&
-	(((A->Flags[A->i] & RPMSENSE_EQUAL) && (B->Flags[B->i] & RPMSENSE_EQUAL)) ||
-	 ((A->Flags[A->i] & RPMSENSE_LESS) && (B->Flags[B->i] & RPMSENSE_LESS)) ||
-	 ((A->Flags[A->i] & RPMSENSE_GREATER) && (B->Flags[B->i] & RPMSENSE_GREATER)))) {
+	(((AFlags & RPMSENSE_EQUAL) && (BFlags & RPMSENSE_EQUAL)) ||
+	 ((AFlags & RPMSENSE_LESS) && (BFlags & RPMSENSE_LESS)) ||
+	 ((AFlags & RPMSENSE_GREATER) && (BFlags & RPMSENSE_GREATER)))) {
 	result = 1;
     }
 
