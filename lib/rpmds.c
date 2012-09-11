@@ -250,16 +250,9 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
     return tbuf;
 }
 
-static rpmsid * singleSid(rpmstrPool pool, const char *str)
-{
-    rpmsid * sids = xmalloc(1 * sizeof(*sids));
-    sids[0] = rpmstrPoolId(pool, str ? str : "", 1);
-    return sids;
-}
-
-static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
-		      rpmsenseFlags Flags, unsigned int instance,
-		      rpm_color_t Color)
+static rpmds singleDSPool(rpmstrPool pool, rpmTagVal tagN,
+			  rpmsid N, rpmsid EVR, rpmsenseFlags Flags,
+			  unsigned int instance, rpm_color_t Color)
 {
     rpmds ds = NULL;
     const char * Type;
@@ -267,11 +260,12 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
     if (dsType(tagN, &Type, NULL, NULL))
 	goto exit;
 
-    ds = rpmdsCreate(NULL, tagN, Type, 1, instance);
+    ds = rpmdsCreate(pool, tagN, Type, 1, instance);
 
-    ds->N = singleSid(ds->pool, N);
-    ds->EVR = singleSid(ds->pool, EVR);
-
+    ds->N = xmalloc(1 * sizeof(*ds->N));
+    ds->N[0] = N;
+    ds->EVR = xmalloc(1 * sizeof(*ds->EVR));
+    ds->EVR[0] = EVR;
     ds->Flags = xmalloc(sizeof(*ds->Flags));
     ds->Flags[0] = Flags;
     ds->i = 0;
@@ -279,6 +273,26 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
 	rpmdsSetColor(ds, Color);
 
 exit:
+    return ds;
+}
+
+static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
+		      rpmsenseFlags Flags, unsigned int instance,
+		      rpm_color_t Color)
+{
+    /* pre-create private pool to feed N and EVR into */
+    rpmstrPool pool = rpmstrPoolCreate();
+    rpmds ds = singleDSPool(pool, tagN,
+			    rpmstrPoolId(pool, N ? N : "", 1),
+			    rpmstrPoolId(pool, EVR ? EVR : "", 1),
+			    Flags, instance, Color);
+
+    /* freeze the pool on success to save memory */
+    if (ds != NULL)
+	rpmstrPoolFreeze(ds->pool);
+
+    /* free or unlink: ds now owns the reference */
+    rpmstrPoolFree(pool);
     return ds;
 }
 
@@ -300,8 +314,9 @@ rpmds rpmdsCurrent(rpmds ds)
 {
     rpmds cds = NULL;
     if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	cds = singleDS(ds->tagN, rpmdsN(ds), rpmdsEVR(ds),
-		       rpmdsFlags(ds), ds->instance, rpmdsColor(ds));
+	/* Using parent's pool so we can just use the same id's */
+	cds = singleDSPool(ds->pool, ds->tagN, ds->N[ds->i], ds->EVR[ds->i],
+			   rpmdsFlags(ds), ds->instance, rpmdsColor(ds));
     }
     return cds;
 }
