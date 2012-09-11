@@ -695,55 +695,24 @@ void parseEVR(char * evr,
     if (rp) *rp = release;
 }
 
-int rpmdsCompare(const rpmds A, const rpmds B)
+static inline int rpmdsCompareEVR(const char *AEVR, uint32_t AFlags,
+				  const char *BEVR, uint32_t BFlags,
+				  int nopromote)
 {
-    char *aEVR, *bEVR;
     const char *aE, *aV, *aR, *bE, *bV, *bR;
-    const char *AEVR, *BEVR;
-    rpmsenseFlags AFlags, BFlags;
-    int result;
-    int sense;
+    char *aEVR = xstrdup(AEVR);
+    char *bEVR = xstrdup(BEVR);
+    int sense = 0;
+    int result = 0;
 
-    /* Different names don't overlap. */
-    if (!rstreq(rpmdsN(A), rpmdsN(B))) {
-	result = 0;
-	goto exit;
-    }
-
-    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
-    if (!(A->EVR && A->Flags && B->EVR && B->Flags)) {
-	result = 1;
-	goto exit;
-    }
-
-    /* Same name. If either A or B is an existence test, always overlap. */
-    AFlags = rpmdsFlags(A);
-    BFlags = rpmdsFlags(B);
-    if (!((AFlags & RPMSENSE_SENSEMASK) && (BFlags & RPMSENSE_SENSEMASK))) {
-	result = 1;
-	goto exit;
-    }
-
-    /* If either EVR is non-existent or empty, always overlap. */
-    AEVR = rpmdsEVR(A);
-    BEVR = rpmdsEVR(B);
-    if (!(AEVR && *AEVR && BEVR && *BEVR)) {
-	result = 1;
-	goto exit;
-    }
-
-    /* Both AEVR and BEVR exist. */
-    aEVR = xstrdup(AEVR);
     parseEVR(aEVR, &aE, &aV, &aR);
-    bEVR = xstrdup(BEVR);
     parseEVR(bEVR, &bE, &bV, &bR);
 
     /* Compare {A,B} [epoch:]version[-release] */
-    sense = 0;
     if (aE && *aE && bE && *bE)
 	sense = rpmvercmp(aE, bE);
     else if (aE && *aE && atol(aE) > 0) {
-	if (!B->nopromote) {
+	if (!nopromote) {
 	    sense = 0;
 	} else
 	    sense = 1;
@@ -767,11 +736,8 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	    }
 	}
     }
-    aEVR = _free(aEVR);
-    bEVR = _free(bEVR);
 
     /* Detect overlap of {A,B} range. */
-    result = 0;
     if (sense < 0 && ((AFlags & RPMSENSE_GREATER) || (BFlags & RPMSENSE_LESS))) {
 	result = 1;
     } else if (sense > 0 && ((AFlags & RPMSENSE_LESS) || (BFlags & RPMSENSE_GREATER))) {
@@ -781,6 +747,48 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 	 ((AFlags & RPMSENSE_LESS) && (BFlags & RPMSENSE_LESS)) ||
 	 ((AFlags & RPMSENSE_GREATER) && (BFlags & RPMSENSE_GREATER)))) {
 	result = 1;
+    }
+
+exit:
+    free(aEVR);
+    free(bEVR);
+    return result;
+}
+
+int rpmdsCompare(const rpmds A, const rpmds B)
+{
+    const char *AEVR, *BEVR;
+    rpmsenseFlags AFlags, BFlags;
+    int result;
+
+    /* Different names don't overlap. */
+    if (!rstreq(rpmdsN(A), rpmdsN(B))) {
+	result = 0;
+	goto exit;
+    }
+
+    /* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
+    if (!(A->EVR && A->Flags && B->EVR && B->Flags)) {
+	result = 1;
+	goto exit;
+    }
+
+    /* Same name. If either A or B is an existence test, always overlap. */
+    AFlags = rpmdsFlags(A);
+    BFlags = rpmdsFlags(B);
+    if (!((AFlags & RPMSENSE_SENSEMASK) && (BFlags & RPMSENSE_SENSEMASK))) {
+	result = 1;
+	goto exit;
+    }
+
+    AEVR = rpmdsEVR(A);
+    BEVR = rpmdsEVR(B);
+    if (!(AEVR && *AEVR && BEVR && *BEVR)) {
+	/* If either EVR is non-existent or empty, always overlap. */
+	result = 1;
+    } else {
+	/* Both AEVR and BEVR exist, compare [epoch:]version[-release]. */
+	result = rpmdsCompareEVR(AEVR, AFlags, BEVR, BFlags, B->nopromote);
     }
 
 exit:
