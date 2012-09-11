@@ -195,8 +195,9 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 	rpmtdFreeData(&names);
 	rpmtdFreeData(&evr);
 
-	/* freeze the pool to save memory and lock strings in place */
-	rpmstrPoolFreeze(ds->pool);
+	/* freeze the pool to save memory, but only if private pool */
+	if (ds->pool != pool)
+	    rpmstrPoolFreeze(ds->pool);
     }
 
 exit:
