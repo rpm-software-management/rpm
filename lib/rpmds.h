@@ -98,6 +98,7 @@ rpmds rpmdsLink(rpmds ds);
  * @return		NULL always
  */
 rpmds rpmdsFree(rpmds ds);
+
 /** \ingroup rpmds
  * Create and load a dependency set.
  * @param h		header
@@ -106,6 +107,16 @@ rpmds rpmdsFree(rpmds ds);
  * @return		new dependency set
  */
 rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags);
+
+/** \ingroup rpmds
+ * Create and load a dependency set.
+ * @param pool		shared string pool (or NULL for private pool)
+ * @param h		header
+ * @param tagN		type of dependency
+ * @param flags		unused
+ * @return		new dependency set
+ */
+rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags);
 
 /** \ingroup rpmds
  * Return new formatted dependency string.

@@ -162,7 +162,7 @@ static rpmds rpmdsCreate(rpmstrPool pool,
     return rpmdsLink(ds);
 }
 
-rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
+rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 {
     rpmTagVal tagEVR, tagF;
     rpmds ds = NULL;
@@ -174,7 +174,7 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
     if (headerGet(h, tagN, &names, HEADERGET_MINMEM)) {
 	struct rpmtd_s evr, flags; 
 
-	ds = rpmdsCreate(NULL, tagN, Type,
+	ds = rpmdsCreate(pool, tagN, Type,
 			 rpmtdCount(&names), headerGetInstance(h));
 
 	ds->N = rpmtdToPool(&names, ds->pool);
@@ -201,6 +201,11 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
 
 exit:
     return ds;
+}
+
+rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
+{
+    return rpmdsNewPool(NULL, h, tagN, flags);
 }
 
 char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds)
