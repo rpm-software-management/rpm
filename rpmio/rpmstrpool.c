@@ -125,12 +125,12 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
 {
     rpmsid sid = 0;
 
-    if (pool && s) {
+    if (pool && pool->hash && s) {
 	unsigned int hash = strHashKeyHash(pool->hash, s);
 	rpmsid *sids;
 	if (strHashGetHEntry(pool->hash, s, hash, &sids, NULL, NULL)) {
 	    sid = sids[0];
-	} else if (create && pool->hash) {
+	} else if (create) {
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
 	}
     }
