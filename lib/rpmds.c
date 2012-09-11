@@ -175,9 +175,11 @@ rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags)
 	/* ensure rpmlib() requires always have RPMSENSE_RPMLIB flag set */
 	if (tagN == RPMTAG_REQUIRENAME && ds->Flags) {
 	    for (int i = 0; i < ds->Count; i++) {
-		if (!(ds->Flags[i] & RPMSENSE_RPMLIB) &&
-			rstreqn(ds->N[i], "rpmlib(", sizeof("rpmlib(")-1))
-		    ds->Flags[i] |= RPMSENSE_RPMLIB;
+		if (!(rpmdsFlagsIndex(ds, i) & RPMSENSE_RPMLIB)) {
+		    const char *N = rpmdsNIndex(ds, i);
+		    if (rstreqn(N, "rpmlib(", sizeof("rpmlib(")-1))
+			ds->Flags[i] |= RPMSENSE_RPMLIB;
+		}
 	    }
 	}
 
