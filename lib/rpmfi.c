@@ -1064,22 +1064,12 @@ rpmfi rpmfiFree(rpmfi fi)
     return NULL;
 }
 
-static rpmsid * td2pool(rpmstrPool pool, rpmtd td)
-{
-    rpmsid *sids = xmalloc(sizeof(*sids) * rpmtdCount(td));
-    const char *str;
-    int i = 0;
-    while ((str = rpmtdNextString(td)))
-	sids[i++] = rpmstrPoolId(pool, str, 1);
-    return sids;
-}
-
 static rpmsid * tag2pool(rpmstrPool pool, Header h, rpmTag tag)
 {
     rpmsid *sids = NULL;
     struct rpmtd_s td;
     if (headerGet(h, tag, &td, HEADERGET_MINMEM)) {
-	sids = td2pool(pool, &td);
+	sids = rpmtdToPool(&td, pool);
 	rpmtdFreeData(&td);
     }
     return sids;
@@ -1232,8 +1222,8 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	    /* init the file triplet data */
 	    fi->fc = rpmtdCount(&bn);
 	    fi->dc = rpmtdCount(&dn);
-	    fi->bnid = td2pool(fi->pool, &bn);
-	    fi->dnid = td2pool(fi->pool, &dn);
+	    fi->bnid = rpmtdToPool(&bn, fi->pool);
+	    fi->dnid = rpmtdToPool(&dn, fi->pool);
 	    /* steal index data from the td (pooh...) */
 	    fi->dil = dx.data;
 	    dx.data = NULL;

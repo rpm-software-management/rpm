@@ -3,6 +3,7 @@
 #include <rpm/rpmtd.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
+#include <rpm/rpmstrpool.h>
 #include "lib/misc.h"		/* format function prototypes */
 
 #include "debug.h"
@@ -443,4 +444,22 @@ rpmtd rpmtdDup(rpmtd td)
     }
 
     return newtd;
+}
+
+rpmsid * rpmtdToPool(rpmtd td, rpmstrPool pool)
+{
+    rpmsid *sids = NULL;
+
+    if (pool && td) {
+	const char **strings = td->data;
+	switch (td->type) {
+	case RPM_STRING_ARRAY_TYPE:
+	case RPM_I18NSTRING_TYPE:
+	    sids = xmalloc(td->count * sizeof(*sids));
+	    for (rpm_count_t i = 0; i < td->count; i++)
+		sids[i] = rpmstrPoolId(pool, strings[i], 1);
+	    break;
+	}
+    }
+    return sids;
 }
