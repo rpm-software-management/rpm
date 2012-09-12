@@ -182,6 +182,20 @@ int rpmdsSetIx(rpmds ds, int ix);
 const char * rpmdsDNEVR(const rpmds ds);
 
 /** \ingroup rpmds
+ * Return current dependency name pool id.
+ * @param ds            dependency set
+ * @return              current dependency name id, 0 on invalid
+ */
+rpmsid rpmdsNId(rpmds ds);
+
+/** \ingroup rpmds
+ * Return current dependency epoch-version-release pool id.
+ * @param ds            dependency set
+ * @return              current dependency EVR id, 0 on invalid
+ */
+rpmsid rpmdsEVRId(rpmds ds);
+
+/** \ingroup rpmds
  * Return current dependency name.
  * @param ds		dependency set
  * @return		current dependency name, NULL on invalid

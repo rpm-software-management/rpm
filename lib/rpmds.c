@@ -78,6 +78,21 @@ static int dsType(rpmTagVal tag,
     return rc;
 }    
 
+static rpmsid rpmdsNIdIndex(rpmds ds, int i)
+{
+    rpmsid id = 0;
+    if (i >= 0 && i < ds->Count && ds->N != NULL)
+	id = ds->N[i];
+    return id;
+}
+
+static rpmsid rpmdsEVRIdIndex(rpmds ds, int i)
+{
+    rpmsid id = 0;
+    if (i >= 0 && i < ds->Count && ds->EVR != NULL)
+	id = ds->EVR[i];
+    return id;
+}
 static const char * rpmdsNIndex(rpmds ds, int i)
 {
     const char * N = NULL;
@@ -361,6 +376,16 @@ const char * rpmdsDNEVR(const rpmds ds)
 	DNEVR = ds->DNEVR;
     }
     return DNEVR;
+}
+
+rpmsid rpmdsNId(rpmds ds)
+{
+    return (ds != NULL) ? rpmdsNIdIndex(ds, ds->i) : 0;
+}
+
+rpmsid rpmdsEVRId(rpmds ds)
+{
+    return (ds != NULL) ? rpmdsEVRIdIndex(ds, ds->i) : 0;
 }
 
 const char * rpmdsN(const rpmds ds)
