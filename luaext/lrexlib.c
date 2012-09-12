@@ -169,7 +169,7 @@ static int rex_gc (lua_State *L)
   return 0;
 }
 
-static const luaL_reg rexmeta[] = {
+static const luaL_Reg rexmeta[] = {
   {"match",   rex_match},
   {"gmatch",  rex_gmatch},
   {"__gc",    rex_gc},
@@ -305,7 +305,7 @@ static const luaL_reg pcremeta[] = {
 
 /* Open the library */
 
-static const luaL_reg rexlib[] = {
+static const luaL_Reg rexlib[] = {
 #ifdef WITH_POSIX
   {"newPOSIX", rex_comp},
 #endif

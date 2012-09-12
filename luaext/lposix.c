@@ -810,7 +810,7 @@ static int Pmkstemp(lua_State *L)
 	return 2;
 }
 
-static const luaL_reg R[] =
+static const luaL_Reg R[] =
 {
 	{"access",		Paccess},
 	{"chdir",		Pchdir},
@@ -874,15 +874,19 @@ static int exit_override(lua_State *L)
     exit(luaL_optint(L, 1, EXIT_SUCCESS));
 }
 
-static const luaL_reg os_overrides[] =
+static const luaL_Reg os_overrides[] =
 {
     {"exit",    exit_override},
     {NULL,      NULL}
 };
 
+#ifndef lua_pushglobaltable
+#define lua_pushglobaltable(L) lua_pushvalue(L, LUA_GLOBALSINDEX)
+#endif
+
 int luaopen_rpm_os(lua_State *L)
 {
-    lua_pushvalue(L, LUA_GLOBALSINDEX);
+    lua_pushglobaltable(L);
     luaL_openlib(L, "os", os_overrides, 0);
     return 0;
 }
