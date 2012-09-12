@@ -146,7 +146,7 @@ rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create)
 const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid)
 {
     const char *s = NULL;
-    if (pool && sid <= pool->offs_size)
+    if (pool && sid > 0 && sid <= pool->offs_size)
 	s = pool->data + pool->offs[sid];
     return s;
 }
