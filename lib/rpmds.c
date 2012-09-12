@@ -968,3 +968,7 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp)
     return rc;
 }
 
+rpmstrPool rpmdsPool(rpmds ds)
+{
+    return (ds != NULL) ? ds->pool : NULL;
+}

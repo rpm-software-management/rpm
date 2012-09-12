@@ -1348,3 +1348,8 @@ int rpmfiConfigConflict(const rpmfi fi)
 {
     return rpmfiConfigConflictIndex(fi, fi ? fi->i : -1);
 }
+
+rpmstrPool rpmfiPool(rpmfi fi)
+{
+    return (fi != NULL) ? fi->pool : NULL;
+}

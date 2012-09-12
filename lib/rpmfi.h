@@ -461,6 +461,13 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
  */
 int rpmfiConfigConflict(const rpmfi fi);
 
+/** \ingroup rpmfi
+ * Return file info set string pool handle
+ * @param fi		file info
+ * @return		string pool handle (weak reference)
+ */
+rpmstrPool rpmfiPool(rpmfi fi);
+
 #ifdef __cplusplus
 }
 #endif

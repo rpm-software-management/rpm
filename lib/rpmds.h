@@ -348,6 +348,13 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
  */
 int rpmdsRpmlib(rpmds * dsp, const void * tblp);
 
+/** \ingroup rpmds
+ * Return dependency set string pool handle
+ * @param fi		dependency set
+ * @return		string pool handle (weak reference)
+ */
+rpmstrPool rpmdsPool(rpmds ds);
+
 #ifdef __cplusplus
 }
 #endif
