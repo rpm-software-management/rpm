@@ -60,7 +60,7 @@ rpmstrPool rpmstrPoolLink(rpmstrPool pool)
 
 void rpmstrPoolFreeze(rpmstrPool pool)
 {
-    if (pool) {
+    if (pool && pool->hash) {
 	pool->hash = strHashFree(pool->hash);
 	pool->data_alloced = pool->data_size;
 	pool->data = xrealloc(pool->data, pool->data_alloced);
