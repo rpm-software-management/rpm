@@ -99,7 +99,7 @@ static rpmfi getFI(rpmte p, Header h)
 	    rpmRelocateFileList(p->relocs, p->nrelocs, p->fs, h);
 	}
     }
-    return rpmfiNew(NULL, h, RPMTAG_BASENAMES, fiflags);
+    return rpmfiNewPool(rpmtsPool(p->ts), h, RPMTAG_BASENAMES, fiflags);
 }
 
 /* stupid bubble sort, but it's probably faster here */
@@ -203,6 +203,7 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
  */
 static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
 {
+    rpmstrPool tspool = rpmtsPool(p->ts);
     struct rpmtd_s colls, bnames;
     int rc = 1; /* assume failure */
 
@@ -241,12 +242,13 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->pkgFileSize = 0;
     p->headerSize = headerSizeof(h, HEADER_MAGIC_NO);
 
+    /* XXX thisds not in global pool yet, but not strictly needed either */
     p->thisds = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    p->provides = rpmdsNew(h, RPMTAG_PROVIDENAME, 0);
-    p->requires = rpmdsNew(h, RPMTAG_REQUIRENAME, 0);
-    p->conflicts = rpmdsNew(h, RPMTAG_CONFLICTNAME, 0);
-    p->obsoletes = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
-    p->order = rpmdsNew(h, RPMTAG_ORDERNAME, 0);
+    p->provides = rpmdsNewPool(tspool, h, RPMTAG_PROVIDENAME, 0);
+    p->requires = rpmdsNewPool(tspool, h, RPMTAG_REQUIRENAME, 0);
+    p->conflicts = rpmdsNewPool(tspool, h, RPMTAG_CONFLICTNAME, 0);
+    p->obsoletes = rpmdsNewPool(tspool, h, RPMTAG_OBSOLETENAME, 0);
+    p->order = rpmdsNewPool(tspool, h, RPMTAG_ORDERNAME, 0);
 
     /* Relocation needs to know file count before rpmfiNew() */
     headerGet(h, RPMTAG_BASENAMES, &bnames, HEADERGET_MINMEM);

@@ -101,6 +101,10 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
         return 0;
     }
 
+    /* Ensure pool is writable */
+    if (tsmem->addedPackages != NULL)
+	rpmstrPoolUnfreeze(tsmem->pool);
+
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
     if (p == NULL)
 	return 1;
@@ -320,6 +324,9 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
 	rpmte p;
 	rpmtsi pi;
 
+	/* Required for now to lock string pointers in memory */
+	rpmstrPoolFreeze(rpmtsPool(ts));
+
 	al = rpmalCreate((rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
 				rpmtsColor(ts), rpmtsPrefColor(ts));
 	pi = rpmtsiInit(ts);
@@ -355,6 +362,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
 	    goto exit;
     }
+
+    /* Ensure pool is writable */
+    if (tsmem->addedPackages != NULL)
+	rpmstrPoolUnfreeze(tsmem->pool);
 
     p = rpmteNew(ts, h, TR_ADDED, key, relocs);
     if (p == NULL) {

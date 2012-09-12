@@ -2,6 +2,7 @@
 #define _RPMTS_INTERNAL_H
 
 #include <rpm/rpmts.h>
+#include <rpm/rpmstrpool.h>
 
 #include "lib/rpmal.h"		/* XXX availablePackage */
 #include "lib/fprint.h"
@@ -11,6 +12,7 @@ typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 
 /* Transaction set elements information */
 typedef struct tsMembers_s {
+    rpmstrPool pool;		/*!< Global string pool */
     removedHash removedPackages;	/*!< Set of packages being removed. */
     rpmal addedPackages;	/*!< Set of packages being installed. */
 

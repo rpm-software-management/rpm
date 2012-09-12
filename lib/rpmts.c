@@ -584,6 +584,8 @@ void rpmtsEmpty(rpmts ts)
     }
 
     tsmem->orderCount = 0;
+    /* XXX emptying would be sufficient... */
+    tsmem->pool = rpmstrPoolFree(tsmem->pool);
     removedHashEmpty(tsmem->removedPackages);
     return;
 }
@@ -927,6 +929,12 @@ tsMembers rpmtsMembers(rpmts ts)
     return (ts != NULL) ? ts->members : NULL;
 }
 
+rpmstrPool rpmtsPool(rpmts ts)
+{
+    tsMembers tsmem = rpmtsMembers(ts);
+    return (tsmem != NULL) ? tsmem->pool : NULL;
+}
+
 rpmts rpmtsCreate(void)
 {
     rpmts ts;
@@ -974,6 +982,7 @@ rpmts rpmtsCreate(void)
     }
 
     tsmem = xcalloc(1, sizeof(*ts->members));
+    tsmem->pool = NULL;
     tsmem->delta = 5;
     tsmem->addedPackages = NULL;
     tsmem->removedPackages = removedHashCreate(128, uintId, uintCmp, NULL, NULL);

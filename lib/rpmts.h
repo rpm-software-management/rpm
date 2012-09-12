@@ -527,6 +527,13 @@ int rpmtsSetNotifyCallback(rpmts ts,
 rpmts rpmtsCreate(void);
 
 /** \ingroup rpmts
+ * Return transaction global string pool handle
+ * @param ts		transaction set
+ * @return		string pool handle (weak ref)
+ */
+rpmstrPool rpmtsPool(rpmts ts);
+
+/** \ingroup rpmts
  * Add package to be installed to transaction set.
  *
  * The transaction set is checked for duplicate package names.

@@ -1475,6 +1475,7 @@ static int rpmtsProcess(rpmts ts)
 int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = -1; /* assume failure */
+    tsMembers tsmem = rpmtsMembers(ts);
     rpmlock lock = NULL;
     rpmps tsprobs = NULL;
     /* Force default 022 umask during transaction for consistent results */
@@ -1521,7 +1522,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
      /* If unfiltered problems exist, free memory and return. */
     if ((rpmtsFlags(ts) & RPMTRANS_FLAG_BUILD_PROBS) || (rpmpsNumProblems(tsprobs))) {
-	tsMembers tsmem = rpmtsMembers(ts);
 	rc = tsmem->orderCount;
 	goto exit;
     }
@@ -1529,6 +1529,14 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
     /* Free up memory taken by problem sets */
     tsprobs = rpmpsFree(tsprobs);
     rpmtsCleanProblems(ts);
+
+    /*
+     * Free up the global string pool unless we expect it to be needed
+     * again. During the transaction, private pools will be used for
+     * rpmfi's etc.
+     */
+    if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS)))
+	tsmem->pool = rpmstrPoolFree(tsmem->pool);
 
     /* Actually install and remove packages, get final exit code */
     rc = rpmtsProcess(ts) ? -1 : 0;
