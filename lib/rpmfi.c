@@ -1253,7 +1253,7 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 
 	    /* freeze the pool to save memory, but only if private pool */
 	    if (fi->pool != pool)
-		rpmstrPoolFreeze(fi->pool);
+		rpmstrPoolFreeze(fi->pool, 0);
 
 	    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
 	} else {

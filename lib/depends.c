@@ -330,7 +330,7 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
 	rpmstrPool tspool = rpmtsPool(ts);
 
 	/* Required for now to lock string pointers in memory */
-	rpmstrPoolFreeze(tspool);
+	rpmstrPoolFreeze(tspool, 1);
 
 	al = rpmalCreate(tspool, (rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
 				rpmtsColor(ts), rpmtsPrefColor(ts));

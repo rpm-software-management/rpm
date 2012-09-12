@@ -212,7 +212,7 @@ rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags)
 
 	/* freeze the pool to save memory, but only if private pool */
 	if (ds->pool != pool)
-	    rpmstrPoolFreeze(ds->pool);
+	    rpmstrPoolFreeze(ds->pool, 0);
     }
 
 exit:
@@ -310,7 +310,7 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
 
     /* freeze the pool on success to save memory */
     if (ds != NULL)
-	rpmstrPoolFreeze(ds->pool);
+	rpmstrPoolFreeze(ds->pool, 0);
 
     /* free or unlink: ds now owns the reference */
     rpmstrPoolFree(pool);
@@ -989,7 +989,7 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp)
 	rpmdsFree(ds);
     }
     if (*dsp)
-	rpmstrPoolFreeze((*dsp)->pool);
+	rpmstrPoolFreeze((*dsp)->pool, 0);
     return rc;
 }
 

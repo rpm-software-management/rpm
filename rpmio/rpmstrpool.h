@@ -18,8 +18,8 @@ rpmstrPool rpmstrPoolFree(rpmstrPool sidpool);
 /* reference a string pool */
 rpmstrPool rpmstrPoolLink(rpmstrPool sidpool);
 
-/* freeze pool to free memory */
-void rpmstrPoolFreeze(rpmstrPool sidpool);
+/* freeze pool to free memory (keephash required for string -> id lookups) */
+void rpmstrPoolFreeze(rpmstrPool sidpool, int keephash);
 
 /* unfreeze pool (ie recreate hash table) */
 void rpmstrPoolUnfreeze(rpmstrPool sidpool);

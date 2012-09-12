@@ -25,6 +25,7 @@ struct rpmstrPool_s {
     size_t data_size;		/* string data area size */
     size_t data_alloced;	/* string data area allocation size */
     strHash hash;		/* string -> sid hash table */
+    int frozen;			/* are new id additions allowed? */
     int nrefs;			/* refcount */
 };
 
@@ -58,28 +59,38 @@ rpmstrPool rpmstrPoolLink(rpmstrPool pool)
     return pool;
 }
 
-void rpmstrPoolFreeze(rpmstrPool pool)
+void rpmstrPoolFreeze(rpmstrPool pool, int keephash)
 {
-    if (pool && pool->hash) {
-	pool->hash = strHashFree(pool->hash);
-	pool->data_alloced = pool->data_size;
-	pool->data = xrealloc(pool->data, pool->data_alloced);
-	pool->offs_alloced = pool->offs_size + 1;
-	pool->offs = xrealloc(pool->offs,
-			      pool->offs_alloced * sizeof(*pool->offs));
+    if (pool && !pool->frozen) {
+	/*
+	 * realloc() might require rehashing even when downsizing,
+	 * dont bother unless we're also discarding the hash.
+	 */
+	if (!keephash) {
+	    pool->hash = strHashFree(pool->hash);
+	    pool->data_alloced = pool->data_size;
+	    pool->data = xrealloc(pool->data, pool->data_alloced);
+	    pool->offs_alloced = pool->offs_size + 1;
+	    pool->offs = xrealloc(pool->offs,
+				  pool->offs_alloced * sizeof(*pool->offs));
+	}
+	pool->frozen = 1;
     }
 }
 
 void rpmstrPoolUnfreeze(rpmstrPool pool)
 {
-    if (pool && pool->hash == NULL) {
-	int sizehint = (pool->offs_size / 2) - 1;
-	if (sizehint < STRHASH_INITSIZE)
-	    sizehint = STRHASH_INITSIZE;
-	pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
-	for (int i = 1; i < pool->offs_size; i++) {
-	    strHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
+    if (pool) {
+	if (pool->hash == NULL) {
+	    int sizehint = (pool->offs_size / 2) - 1;
+	    if (sizehint < STRHASH_INITSIZE)
+		sizehint = STRHASH_INITSIZE;
+	    pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
+	    for (int i = 1; i < pool->offs_size; i++) {
+		strHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
+	    }
 	}
+	pool->frozen = 0;
     }
 }
 
@@ -130,7 +141,7 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
 	rpmsid *sids;
 	if (strHashGetHEntry(pool->hash, s, hash, &sids, NULL, NULL)) {
 	    sid = sids[0];
-	} else if (create) {
+	} else if (create && !pool->frozen) {
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
 	}
     }
