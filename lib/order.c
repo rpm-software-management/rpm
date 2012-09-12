@@ -548,8 +548,7 @@ int rpmtsOrder(rpmts ts)
     rpmte * newOrder;
     int newOrderCount = 0;
     int rc;
-    rpmal erasedPackages = rpmalCreate(5, rpmtsFlags(ts),
-					rpmtsColor(ts), prefcolor);
+    rpmal erasedPackages;
     scc SCCs;
     int nelem = rpmtsNElements(ts);
     tsortInfo sortInfo = xcalloc(nelem, sizeof(struct tsortInfo_s));
@@ -558,11 +557,7 @@ int rpmtsOrder(rpmts ts)
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
     /* Create erased package index. */
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
-        rpmalAdd(erasedPackages, p);
-    }
-    rpmtsiFree(pi);
+    erasedPackages = rpmtsCreateAl(ts, TR_REMOVED);
 
     for (int i = 0; i < nelem; i++) {
 	sortInfo[i].te = tsmem->order[i];

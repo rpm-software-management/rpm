@@ -313,6 +313,22 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
     return oc;
 }
 
+rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
+{
+    rpmal al = NULL;
+    if (ts) {
+	rpmte p;
+	rpmtsi pi;
+
+	al = rpmalCreate((rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
+				rpmtsColor(ts), rpmtsPrefColor(ts));
+	pi = rpmtsiInit(ts);
+	while ((p = rpmtsiNext(pi, types)))
+	    rpmalAdd(al, p);
+	rpmtsiFree(pi);
+    }
+    return al;
+}
 
 int rpmtsAddInstallElement(rpmts ts, Header h,
 			fnpyKey key, int upgrade, rpmRelocation * relocs)
