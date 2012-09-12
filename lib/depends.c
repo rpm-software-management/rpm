@@ -327,11 +327,12 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
     if (ts) {
 	rpmte p;
 	rpmtsi pi;
+	rpmstrPool tspool = rpmtsPool(ts);
 
 	/* Required for now to lock string pointers in memory */
-	rpmstrPoolFreeze(rpmtsPool(ts));
+	rpmstrPoolFreeze(tspool);
 
-	al = rpmalCreate((rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
+	al = rpmalCreate(tspool, (rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
 				rpmtsColor(ts), rpmtsPrefColor(ts));
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, types)))

@@ -8,6 +8,7 @@
 #include <rpm/rpmds.h>
 #include <rpm/rpmte.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstrpool.h>
 
 #include "lib/rpmal.h"
 #include "lib/misc.h"
@@ -62,6 +63,7 @@ struct fileNameEntry_s {
  * Set of available packages, items, and directories.
  */
 struct rpmal_s {
+    rpmstrPool pool;		/*!< String pool */
     availablePackage list;	/*!< Set of packages. */
     rpmalProvidesHash providesHash;
     rpmalFileHash fileHash;
@@ -83,11 +85,12 @@ static void rpmalFreeIndex(rpmal al)
     al->fileHash = rpmalFileHashFree(al->fileHash);
 }
 
-rpmal rpmalCreate(int delta, rpmtransFlags tsflags,
+rpmal rpmalCreate(rpmstrPool pool, int delta, rpmtransFlags tsflags,
 		  rpm_color_t tscolor, rpm_color_t prefcolor)
 {
     rpmal al = xcalloc(1, sizeof(*al));
 
+    al->pool = rpmstrPoolLink(pool);
     al->delta = delta;
     al->size = 0;
     al->alloced = al->delta;
@@ -115,6 +118,7 @@ rpmal rpmalFree(rpmal al)
 	alp->provides = rpmdsFree(alp->provides);
 	alp->fi = rpmfiFree(alp->fi);
     }
+    al->pool = rpmstrPoolFree(al->pool);
     al->list = _free(al->list);
     al->alloced = 0;
 

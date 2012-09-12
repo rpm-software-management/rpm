@@ -17,6 +17,7 @@ typedef struct rpmal_s * rpmal;
 
 /**
  * Initialize available packckages, items, and directory list.
+ * @param pool		shared string pool with base, dir and dependency names
  * @param delta		no. of entries to add on each realloc
  * @param tsflags	transaction control flags
  * @param tscolor	transaction color bits
@@ -24,7 +25,7 @@ typedef struct rpmal_s * rpmal;
  * @return al		new available list
  */
 RPM_GNUC_INTERNAL
-rpmal rpmalCreate(int delta, rpmtransFlags tsflags,
+rpmal rpmalCreate(rpmstrPool pool, int delta, rpmtransFlags tsflags,
 		  rpm_color_t tscolor, rpm_color_t prefcolor);
 
 /**
