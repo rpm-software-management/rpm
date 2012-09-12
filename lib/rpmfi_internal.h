@@ -76,6 +76,12 @@ RPM_GNUC_INTERNAL
 int rpmfiDIIndex(rpmfi fi, int dx);
 
 RPM_GNUC_INTERNAL
+rpmsid rpmfiBNIdIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpmsid rpmfiDNIdIndex(rpmfi fi, int jx);
+
+RPM_GNUC_INTERNAL
 const char * rpmfiBNIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL

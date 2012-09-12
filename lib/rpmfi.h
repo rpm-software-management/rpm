@@ -148,6 +148,20 @@ int rpmfiDX(rpmfi fi);
 int rpmfiSetDX(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
+ * Return current base name pool id from file info set.
+ * @param fi		file info set
+ * @return		current base name id, 0 on invalid
+ */
+rpmsid rpmfiBNId(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current directory name pool id from file info set.
+ * @param fi		file info set
+ * @return		current base name id, 0 on invalid
+ */
+rpmsid rpmfiDNId(rpmfi fi);
+
+/** \ingroup rpmfi
  * Return current base name from file info set.
  * @param fi		file info set
  * @return		current base name, NULL on invalid

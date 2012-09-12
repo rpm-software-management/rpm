@@ -94,6 +94,26 @@ int rpmfiDIIndex(rpmfi fi, int dx)
     return j;
 }
 
+rpmsid rpmfiBNIdIndex(rpmfi fi, int ix)
+{
+    rpmsid id = 0;
+    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+	if (fi->bnid != NULL)
+	    id = fi->bnid[ix];
+    }
+    return id;
+}
+
+rpmsid rpmfiDNIdIndex(rpmfi fi, int jx)
+{
+    rpmsid id = 0;
+    if (fi != NULL && jx >= 0 && jx < fi->fc) {
+	if (fi->dnid != NULL)
+	    id = fi->dnid[jx];
+    }
+    return id;
+}
+
 const char * rpmfiBNIndex(rpmfi fi, int ix)
 {
     const char * BN = NULL;
@@ -1291,6 +1311,8 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 #define RPMFI_ITERFUNC(TYPE, NAME, IXV) \
     TYPE rpmfi ## NAME(rpmfi fi) { return rpmfi ## NAME ## Index(fi, fi ? fi->IXV : -1); }
 
+RPMFI_ITERFUNC(rpmsid, BNId, i)
+RPMFI_ITERFUNC(rpmsid, DNId, j)
 RPMFI_ITERFUNC(const char *, BN, i)
 RPMFI_ITERFUNC(const char *, DN, j)
 RPMFI_ITERFUNC(const char *, FLink, i)
