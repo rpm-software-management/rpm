@@ -90,6 +90,9 @@ rpmal rpmalCreate(rpmstrPool pool, int delta, rpmtransFlags tsflags,
 {
     rpmal al = xcalloc(1, sizeof(*al));
 
+    /* transition time safe-guard */
+    assert(pool != NULL);
+
     al->pool = rpmstrPoolLink(pool);
     al->delta = delta;
     al->size = 0;
@@ -246,6 +249,22 @@ void rpmalAdd(rpmal al, rpmte p)
 
     alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME));
     alp->fi = rpmfiLink(rpmteFI(p));
+
+    /*
+     * Transition-time safe-guard to catch private-pool uses.
+     * File sets with no files have NULL pool, that's fine. But WTF is up
+     * with the provides: every single package should have at least its
+     * own name as a provide, and thus never NULL, and normal use matches
+     * this expectation. However the test-suite is tripping up on NULL
+     * NULL pool from NULL alp->provides in numerous cases?
+     */
+    {
+	rpmstrPool fipool = rpmfiPool(alp->fi);
+	rpmstrPool dspool = rpmdsPool(alp->provides);
+	
+	assert(fipool == NULL || fipool == al->pool);
+	assert(dspool == NULL || dspool == al->pool);
+    }
 
     if (al->providesHash != NULL) { // index is already created
 	rpmalAddProvides(al, pkgNum, alp->provides);
