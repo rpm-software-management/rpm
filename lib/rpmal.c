@@ -37,8 +37,8 @@ typedef struct availableIndexEntry_s {
 } * availableIndexEntry;
 
 struct fileNameEntry_s {
-    const char * dirName;
-    const char * baseName;
+    rpmsid dirName;
+    rpmsid baseName;
 };
 
 #undef HASHTYPE
@@ -142,15 +142,14 @@ static int sidCmp(rpmsid a, rpmsid b)
 
 static unsigned int fileHash(struct fileNameEntry_s file)
 {
-    return rstrhash(file.dirName) ^ rstrhash(file.baseName);
+    return file.dirName ^ file.baseName;
 }
 
 static int fileCompare(struct fileNameEntry_s one, struct fileNameEntry_s two)
 {
-    int rc = 0;
-    rc = strcmp(one.dirName, two.dirName);
+    int rc = (one.dirName != two.dirName);;
     if (!rc)
-	rc = strcmp(one.baseName, two.baseName);
+	rc = (one.baseName != two.baseName);
     return rc;
 }
 
@@ -184,8 +183,6 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
     rpm_color_t ficolor;
     int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
     int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
-    const char *prevDir = NULL;
-    unsigned int dirHash = 0, fnHash;
 
     fileEntry.pkgNum = pkgNum;
 
@@ -202,19 +199,12 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
 	if (skipconf && (rpmfiFFlags(fi) & RPMFILE_CONFIG))
 	    continue;
 
-	fileName.dirName = rpmfiDN(fi);
-	fileName.baseName = rpmfiBN(fi);
-
-	/* Avoid rehash on dirname when directory remains the same */
-	if (fileName.dirName != prevDir) {
-	    dirHash = rstrhash(fileName.dirName);
-	    prevDir = fileName.dirName;
-	}
-	fnHash = dirHash ^ rstrhash(fileName.baseName);
+	fileName.dirName = rpmfiDNId(fi);
+	fileName.baseName = rpmfiBNId(fi);
 
 	fileEntry.entryIx = i;
 
-	rpmalFileHashAddHEntry(al->fileHash, fileName, fnHash, fileEntry);
+	rpmalFileHashAddEntry(al->fileHash, fileName, fileEntry);
     }
 }
 
@@ -316,7 +306,8 @@ static void rpmalMakeIndex(rpmal al)
 
 static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 {
-    const char *fileName = rpmdsN(ds);
+    rpmsid fnId = rpmdsNId(ds);
+    const char *fileName = rpmstrPoolStr(al->pool, fnId);
     const char *slash; 
     rpmte * ret = NULL;
 
@@ -329,12 +320,13 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 	int resultCnt = 0;
 	size_t bnStart = (slash - fileName) + 1;
 	char dirName[bnStart + 1];
-	struct fileNameEntry_s fne = {
-	    .baseName = fileName + bnStart,
-	    .dirName = dirName,
-	};
+	struct fileNameEntry_s fne;
+
 	strncpy(dirName, fileName, bnStart);
 	dirName[bnStart] = '\0';
+
+	fne.baseName = rpmstrPoolId(al->pool, fileName + bnStart, 0);
+	fne.dirName = rpmstrPoolId(al->pool, dirName, 0);
 
 	rpmalFileHashGetEntry(al->fileHash, fne, &result, &resultCnt, NULL);
 
