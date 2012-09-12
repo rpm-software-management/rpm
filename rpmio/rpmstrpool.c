@@ -100,6 +100,7 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
     size_t ssize = slen + 1;
 
     if (ssize > pool->data_alloced - pool->data_size) {
+	const char * prev_data = pool->data;
 	size_t need = pool->data_size + ssize;
 	size_t alloced = pool->data_alloced;
 
@@ -109,8 +110,8 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 	pool->data = xrealloc(pool->data, alloced);
 	pool->data_alloced = alloced;
 
-	/* ouch, need to rehash the whole lot as key addresses change */
-	if (pool->offs_size > 0) {
+	/* ouch, need to rehash the whole lot if key addresses change */
+	if (pool->offs_size > 0 && pool->data != prev_data) {
 	    pool->hash = strHashFree(pool->hash);
 	    rpmstrPoolUnfreeze(pool);
 	}
