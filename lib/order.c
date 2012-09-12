@@ -556,6 +556,10 @@ int rpmtsOrder(rpmts ts)
 
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_ORDER), 0);
 
+    /* Create installed package index if not already done */
+    if (tsmem->addedPackages == NULL)
+	tsmem->addedPackages = rpmtsCreateAl(ts, TR_ADDED);
+
     /* Create erased package index. */
     erasedPackages = rpmtsCreateAl(ts, TR_REMOVED);
 
