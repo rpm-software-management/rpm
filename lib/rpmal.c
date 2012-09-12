@@ -45,7 +45,7 @@ struct fileNameEntry_s {
 #undef HTKEYTYPE
 #undef HTDATATYPE
 #define HASHTYPE rpmalProvidesHash
-#define HTKEYTYPE const char *
+#define HTKEYTYPE rpmsid
 #define HTDATATYPE struct availableIndexEntry_s
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
@@ -128,6 +128,16 @@ rpmal rpmalFree(rpmal al)
     rpmalFreeIndex(al);
     al = _free(al);
     return NULL;
+}
+
+static unsigned int sidHash(rpmsid sid)
+{
+    return sid;
+}
+
+static int sidCmp(rpmsid a, rpmsid b)
+{
+    return (a != b);
 }
 
 static unsigned int fileHash(struct fileNameEntry_s file)
@@ -228,7 +238,7 @@ static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides)
 	    continue;
 
 	indexEntry.entryIx = rpmdsIx(provides);
-	rpmalProvidesHashAddEntry(al->providesHash, rpmdsN(provides), indexEntry);
+	rpmalProvidesHashAddEntry(al->providesHash, rpmdsNId(provides), indexEntry);
     }
 }
 
@@ -292,8 +302,8 @@ static void rpmalMakeIndex(rpmal al)
 	    fileCnt += rpmfiFC(alp->fi);
     }
 
-    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128, rstrhash,
-					       strcmp, NULL, NULL);
+    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128, sidHash,
+					       sidCmp, NULL, NULL);
     al->fileHash = rpmalFileHashCreate(fileCnt/4+128, fileHash, fileCompare,
 				       NULL, NULL);
 
@@ -353,7 +363,8 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     rpmte * ret = NULL;
     int i, found;
-    const char * name;
+    rpmsid nameId;
+    const char *name;
     availableIndexEntry result;
     int resultCnt;
     int obsolete;
@@ -361,13 +372,14 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     availablePackage alp;
     int rc;
 
-    if (al == NULL || ds == NULL || (name = rpmdsN(ds)) == NULL)
+    if (al == NULL || ds == NULL || (nameId = rpmdsNId(ds)) == 0)
 	return ret;
 
     if (al->providesHash == NULL && al->fileHash == NULL)
 	rpmalMakeIndex(al);
 
     obsolete = (rpmdsTagN(ds) == RPMTAG_OBSOLETENAME);
+    name = rpmstrPoolStr(al->pool, nameId);
     if (!obsolete && *name == '/') {
 	/* First, look for files "contained" in package ... */
 	ret = rpmalAllFileSatisfiesDepend(al, ds);
@@ -377,7 +389,7 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	ret = _free(ret);
     }
 
-    rpmalProvidesHashGetEntry(al->providesHash, name, &result,
+    rpmalProvidesHashGetEntry(al->providesHash, nameId, &result,
 			      &resultCnt, NULL);
 
     if (resultCnt==0) return NULL;
