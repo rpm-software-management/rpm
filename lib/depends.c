@@ -329,9 +329,6 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
 	rpmtsi pi;
 	rpmstrPool tspool = rpmtsPool(ts);
 
-	/* Required for now to lock string pointers in memory */
-	rpmstrPoolFreeze(tspool, 1);
-
 	al = rpmalCreate(tspool, (rpmtsNElements(ts) / 4) + 1, rpmtsFlags(ts),
 				rpmtsColor(ts), rpmtsPrefColor(ts));
 	pi = rpmtsiInit(ts);
@@ -629,10 +626,11 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 {
     Header h;
     rpmdbMatchIterator mi = rpmtsPrunedIterator(ts, depTag, dep, 1);
+    rpmstrPool pool = rpmtsPool(ts);
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
 	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmds ds = rpmdsNew(h, depTag, 0);
+	rpmds ds = rpmdsNewPool(pool, h, depTag, 0);
 
 	checkDS(ts, dcache, te, pkgNEVRA, ds, dep, 0);
 

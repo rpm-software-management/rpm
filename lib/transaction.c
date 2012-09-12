@@ -1357,6 +1357,9 @@ static int rpmtsPrepare(rpmts ts)
     const char *dbhome = NULL;
     struct stat dbstat;
 
+    /* Required for now to lock string pointers in memory */
+    rpmstrPoolFreeze(tsmem->pool, 1);
+
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
     rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
 			     NULL, NULL);
