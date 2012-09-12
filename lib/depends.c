@@ -101,6 +101,10 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
         return 0;
     }
 
+    /* Ensure our pool exists before adding elements */
+    if (tsmem->pool == NULL)
+	tsmem->pool = rpmstrPoolCreate();
+
     /* Ensure pool is writable */
     if (tsmem->addedPackages != NULL)
 	rpmstrPoolUnfreeze(tsmem->pool);
@@ -362,6 +366,10 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	if ((ec = rpmtsOpenDB(ts, rpmtsGetDBMode(ts))) != 0)
 	    goto exit;
     }
+
+    /* Ensure our pool exists before adding elements */
+    if (tsmem->pool == NULL)
+	tsmem->pool = rpmstrPoolCreate();
 
     /* Ensure pool is writable */
     if (tsmem->addedPackages != NULL)
