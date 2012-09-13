@@ -985,7 +985,6 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	    headerGet(h, RPMTAG_FILESTATES, &fs, HEADERGET_MINMEM);
 
 	do {
-	    fingerPrint fp2;
 	    int num = dbiIndexRecordFileNumber(allMatches, i);
 	    int skip = 0;
 
@@ -997,9 +996,8 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	    }
 
 	    if (!skip) {
-		fpLookup(fpc,
-			 dirNames[dirIndexes[num]], baseNames[num], 1, &fp2);
-		if (FP_EQUAL(fp1, fp2)) {
+		const char *dirName = dirNames[dirIndexes[num]];
+		if (fpLookupEquals(fpc, &fp1, dirName, baseNames[num])) {
 		    struct dbiIndexItem rec = { 
 			.hdrNum = dbiIndexRecordOffset(allMatches, i),
 			.tagNum = dbiIndexRecordFileNumber(allMatches, i),

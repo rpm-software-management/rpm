@@ -85,6 +85,11 @@ int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
 RPM_GNUC_INTERNAL
 void fpCachePopulate(fingerPrintCache cache, rpmts ts, int fileCount);
 
+/* compare an existing fingerprint with a looked-up fingerprint for db/bn */
+RPM_GNUC_INTERNAL
+int fpLookupEquals(fingerPrintCache cache, fingerPrint * fp,
+	           const char * dirName, const char * baseName);
+
 /**
  * Return finger print of a file path.
  * @param cache		pointer to fingerprint cache

@@ -241,6 +241,14 @@ int fpEqual(const fingerPrint * k1, const fingerPrint * k2)
 
 }
 
+int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
+	           const char * dirName, const char * baseName)
+{
+    struct fingerPrint_s ofp;
+    fpLookup(cache, dirName, baseName, 1, &ofp);
+    return FP_EQUAL(*fp, ofp);
+}
+
 void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 		  rpmsid * dirNames, rpmsid * baseNames,
 		  const uint32_t * dirIndexes, 
