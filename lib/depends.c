@@ -180,6 +180,7 @@ static int addUpgradeErasures(rpmts ts, rpm_color_t tscolor,
 /* Add erase elements for obsoleted packages of same color (if any). */
 static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 {
+    rpmstrPool tspool = rpmtsPool(ts);
     rpmds obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
     Header oh;
     int rc = 0;
@@ -195,6 +196,7 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 
 	while((oh = rpmdbNextIterator(mi)) != NULL) {
 	    const char *oarch = headerGetString(oh, RPMTAG_ARCH);
+	    int match;
 
 	    /* avoid self-obsoleting packages */
 	    if (rstreq(rpmteN(p), Name) && rstreq(rpmteA(p), oarch)) {
@@ -208,8 +210,12 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 	     * Rpm prior to 3.0.3 does not have versioned obsoletes.
 	     * If no obsoletes version info is available, match all names.
 	     */
-	    if (rpmdsEVR(obsoletes) == NULL
-		|| rpmdsNVRMatchesDep(oh, obsoletes, _rpmds_nopromote)) {
+	    match = (rpmdsEVR(obsoletes) == NULL);
+	    if (!match)
+		match = rpmdsMatches(tspool, oh, -1, obsoletes, 1,
+					 _rpmds_nopromote);
+
+	    if (match) {
 		char * ohNEVRA = headerGetAsString(oh, RPMTAG_NEVRA);
 		rpmlog(RPMLOG_DEBUG, "  Obsoletes: %s\t\terases %s\n",
 			rpmdsDNEVR(obsoletes)+2, ohNEVRA);
@@ -478,20 +484,21 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 
     /* Otherwise look in provides no matter what the dependency looks like */
     if (h == NULL) {
+	rpmstrPool tspool = rpmtsPool(ts);
 	/* Obsoletes use just name alone, everything else uses provides */
 	rpmTagVal dbtag = RPMDBI_PROVIDENAME;
-	if (deptag == RPMTAG_OBSOLETENAME)
+	int selfevr = 0;
+	if (deptag == RPMTAG_OBSOLETENAME) {
 	    dbtag = RPMDBI_NAME;
+	    selfevr = 1;
+	}
 
 	mi = rpmtsPrunedIterator(ts, dbtag, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
-	    int match;
-	    if (deptag == RPMTAG_OBSOLETENAME) {
-		match = rpmdsNVRMatchesDep(h, dep, _rpmds_nopromote);
-	    } else {
-		match = rpmdsMatchesDep(h, rpmdbGetIteratorFileNum(mi), dep,
+	    /* Provide-indexes can't be used with nevr-only matching */
+	    int prix = (selfevr) ? -1 : rpmdbGetIteratorFileNum(mi);
+	    int match = rpmdsMatches(tspool, h, prix, dep, selfevr,
 					_rpmds_nopromote);
-	    }
 	    if (match) {
 		rpmdsNotify(dep, "(db provides)", rc);
 		break;
