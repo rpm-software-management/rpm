@@ -377,6 +377,18 @@ int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
  */
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
 
+/** \ingroup rpmds
+ * Swiss army knife dependency matching function.
+ * @param pool		string pool (or NULL for private pool)
+ * @param h		header
+ * @param prix		index to provides (or -1 or any)
+ * @param req		dependency set
+ * @param selfevr	only look at package EVR?
+ * @param nopromote	dont promote epoch in comparison?
+ * @return		1 if dependency overlaps, 0 otherwise
+ */
+int rpmdsMatches(rpmstrPool pool, Header h, int prix,
+		 rpmds req, int selfevr, int nopromote);
 /**
  * Load rpmlib provides into a dependency set.
  * @retval *dsp		(loaded) depedency set

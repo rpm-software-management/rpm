@@ -858,58 +858,56 @@ exit:
     return result;
 }
 
-int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote)
+int rpmdsMatches(rpmstrPool pool, Header h, int prix,
+		 rpmds req, int selfevr, int nopromote)
 {
-    /* Get provides information from header */
-    rpmds provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, 0));
+    rpmds provides;
+    rpmTagVal tag = RPMTAG_PROVIDENAME;
     int result = 0;
 
-    rpmdsSetIx(provides,ix);
-    result = rpmdsCompare(provides, req);
+    /* Get provides information from header */
+    if (selfevr)
+	provides = rpmdsThisPool(pool, h, tag, RPMSENSE_EQUAL);
+    else
+	provides = rpmdsNewPool(pool, h, tag, 0);
+
+    rpmdsSetNoPromote(provides, nopromote);
+
+    /*
+     * For a self-provide and indexed provide, we only need one comparison.
+     * Otherwise loop through the provides until match or end.
+     */
+    if (prix >= 0 || selfevr) {
+	if (prix >= 0)
+	    rpmdsSetIx(provides, prix);
+	result = rpmdsCompare(provides, req);
+    } else {
+	provides = rpmdsInit(provides);
+	while (rpmdsNext(provides) >= 0) {
+	    result = rpmdsCompare(provides, req);
+	    /* If this provide matches the require, we're done. */
+	    if (result)
+		break;
+	}
+    }
 
     rpmdsFree(provides);
     return result;
+}
+
+int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote)
+{
+    return rpmdsMatches(NULL, h, ix, req, 0, nopromote);
 }
 
 int rpmdsAnyMatchesDep (const Header h, const rpmds req, int nopromote)
 {
-    rpmds provides = NULL;
-    int result = 0;
-
-    /* Get provides information from header */
-    provides = rpmdsInit(rpmdsNew(h, RPMTAG_PROVIDENAME, 0));
-    if (provides == NULL)
-	goto exit;	/* XXX should never happen */
-
-    (void) rpmdsSetNoPromote(provides, nopromote);
-
-    while (rpmdsNext(provides) >= 0) {
-
-	result = rpmdsCompare(provides, req);
-
-	/* If this provide matches the require, we're done. */
-	if (result)
-	    break;
-    }
-
-exit:
-    rpmdsFree(provides);
-
-    return result;
+    return rpmdsMatches(NULL, h, -1, req, 0, nopromote);
 }
 
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote)
 {
-    rpmds pkg;
-    int rc = 1;	/* XXX assume match, names already match here */
-
-    /* Get package information from header */
-    pkg = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
-    rpmdsSetNoPromote(pkg, nopromote);
-    rc = rpmdsCompare(pkg, req);
-    rpmdsFree(pkg);
-
-    return rc;
+    return rpmdsMatches(NULL, h, -1, req, 1, nopromote);
 }
 
 /**
