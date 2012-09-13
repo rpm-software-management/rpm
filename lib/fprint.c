@@ -24,6 +24,13 @@
 #define HTDATATYPE const struct fprintCacheEntry_s *
 #include "lib/rpmhash.C"
 
+/**
+ * Finger print cache.
+ */
+struct fprintCache_s {
+    rpmFpEntryHash ht;			/*!< hashed by dirName */
+};
+
 fingerPrintCache fpCacheCreate(int sizeHint)
 {
     fingerPrintCache fpc;

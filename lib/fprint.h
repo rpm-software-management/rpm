@@ -49,13 +49,6 @@ struct fprintCacheEntry_s {
     ino_t ino;				/*!< stat(2) inode number */
 };
 
-/**
- * Finger print cache.
- */
-struct fprintCache_s {
-    rpmFpEntryHash ht;			/*!< hashed by dirName */
-};
-
 /* Create new hash table data type */
 
 struct rpmffi_s {
