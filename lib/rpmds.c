@@ -301,19 +301,14 @@ static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
 		      rpmsenseFlags Flags, unsigned int instance,
 		      rpm_color_t Color)
 {
-    /* pre-create private pool to feed N and EVR into */
-    rpmstrPool pool = rpmstrPoolCreate();
-    rpmds ds = singleDSPool(pool, tagN,
-			    rpmstrPoolId(pool, N ? N : "", 1),
-			    rpmstrPoolId(pool, EVR ? EVR : "", 1),
-			    Flags, instance, Color);
-
-    /* freeze the pool on success to save memory */
-    if (ds != NULL)
+    rpmds ds = singleDSPool(NULL, tagN, 0, 0, Flags, instance, Color);
+    if (ds) {
+	/* now that we have a pool, we can insert our N & EVR strings */
+	ds->N[0] = rpmstrPoolId(ds->pool, N ? N : "", 1);
+	ds->EVR[0] = rpmstrPoolId(ds->pool, EVR ? EVR : "", 1);
+	/* freeze the pool to save memory */
 	rpmstrPoolFreeze(ds->pool, 0);
-
-    /* free or unlink: ds now owns the reference */
-    rpmstrPoolFree(pool);
+    }
     return ds;
 }
 
