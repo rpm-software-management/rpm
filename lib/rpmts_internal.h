@@ -16,6 +16,7 @@ typedef struct tsMembers_s {
     removedHash removedPackages;	/*!< Set of packages being removed. */
     rpmal addedPackages;	/*!< Set of packages being installed. */
 
+    rpmds rpmlib;		/*!< rpmlib() dependency set. */
     rpmte * order;		/*!< Packages sorted by dependencies. */
     int orderCount;		/*!< No. of transaction elements. */
     int orderAlloced;		/*!< No. of allocated transaction elements. */

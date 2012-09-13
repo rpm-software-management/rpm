@@ -25,9 +25,6 @@ const char * const rpmEVR = VERSION;
 
 const int rpmFLAGS = RPMSENSE_EQUAL;
 
-/* rpmlib provides */
-static rpmds rpmlibP = NULL;
-
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
@@ -534,11 +531,10 @@ retry:
      * Check those dependencies now.
      */
     if (dsflags & RPMSENSE_RPMLIB) {
-	static int oneshot = -1;
-	if (oneshot) 
-	    oneshot = rpmdsRpmlib(&rpmlibP, NULL);
+	if (tsmem->rpmlib == NULL)
+	    rpmdsRpmlib(&(tsmem->rpmlib), NULL);
 	
-	if (rpmlibP != NULL && rpmdsSearch(rpmlibP, dep) >= 0) {
+	if (tsmem->rpmlib != NULL && rpmdsSearch(tsmem->rpmlib, dep) >= 0) {
 	    rpmdsNotify(dep, "(rpmlib provides)", rc);
 	    goto exit;
 	}

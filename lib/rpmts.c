@@ -555,6 +555,7 @@ void rpmtsClean(rpmts ts)
     rpmtsiFree(pi);
 
     tsmem->addedPackages = rpmalFree(tsmem->addedPackages);
+    tsmem->rpmlib = rpmdsFree(tsmem->rpmlib);
 
     rpmtsCleanProblems(ts);
 }
