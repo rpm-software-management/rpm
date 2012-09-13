@@ -532,7 +532,7 @@ retry:
      */
     if (dsflags & RPMSENSE_RPMLIB) {
 	if (tsmem->rpmlib == NULL)
-	    rpmdsRpmlib(&(tsmem->rpmlib), NULL);
+	    rpmdsRpmlibPool(tsmem->pool, &(tsmem->rpmlib), NULL);
 	
 	if (tsmem->rpmlib != NULL && rpmdsSearch(tsmem->rpmlib, dep) >= 0) {
 	    rpmdsNotify(dep, "(rpmlib provides)", rc);
