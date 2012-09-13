@@ -621,16 +621,18 @@ assert(otherFi != NULL);
 
 /**
  * Ensure that current package is newer than installed package.
+ * @param tspool	transaction string pool
  * @param p		current transaction element
  * @param h		installed header
  * @param ps		problem set
  */
-static void ensureOlder(const rpmte p, const Header h)
+static void ensureOlder(rpmstrPool tspool, const rpmte p, const Header h)
 {
     rpmsenseFlags reqFlags = (RPMSENSE_LESS | RPMSENSE_EQUAL);
     rpmds req;
 
-    req = rpmdsSingle(RPMTAG_REQUIRENAME, rpmteN(p), rpmteEVR(p), reqFlags);
+    req = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+			  rpmteN(p), rpmteEVR(p), reqFlags);
     if (rpmdsNVRMatchesDep(h, req, _rpmds_nopromote) == 0) {
 	char * altNEVR = headerGetAsString(h, RPMTAG_NEVRA);
 	rpmteAddProblem(p, RPMPROB_OLDPACKAGE, altNEVR, NULL,
@@ -1081,6 +1083,7 @@ static rpmps checkProblems(rpmts ts)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmprobFilterFlags probFilter = rpmtsFilterFlags(ts);
+    rpmstrPool tspool = rpmtsPool(ts);
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
 
@@ -1100,7 +1103,7 @@ static rpmps checkProblems(rpmts ts)
 	    rpmdbMatchIterator mi;
 	    mi = rpmtsInitIterator(ts, RPMDBI_NAME, rpmteN(p), 0);
 	    while ((h = rpmdbNextIterator(mi)) != NULL)
-		ensureOlder(p, h);
+		ensureOlder(tspool, p, h);
 	    rpmdbFreeIterator(mi);
 	}
 
