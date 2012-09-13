@@ -97,6 +97,10 @@ fingerPrintCache fpCacheCreate(int sizeHint);
 RPM_GNUC_INTERNAL
 fingerPrintCache fpCacheFree(fingerPrintCache cache);
 
+RPM_GNUC_INTERNAL
+int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
+		   struct rpmffi_s ** recs, int * numRecs);
+
 /**
  * Return finger print of a file path.
  * @param cache		pointer to fingerprint cache
@@ -157,7 +161,7 @@ void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
  * @param filenr        the number of the file we are dealing with
  */
 RPM_GNUC_INTERNAL
-void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, rpmte p, int filenr);
+void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr);
 
 
 #ifdef __cplusplus

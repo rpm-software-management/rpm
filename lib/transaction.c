@@ -440,7 +440,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
  * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
-static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
+static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi fi)
 {
     rpm_loff_t fixupSize = 0;
     int i, j;
@@ -472,7 +472,7 @@ static void handleOverlappedFiles(rpmts ts, rpmFpHash ht, rpmte p, rpmfi fi)
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	(void) rpmFpHashGetEntry(ht, fiFps, &recs, &numRecs, NULL);
+	fpCacheGetByFp(fpc, fiFps, &recs, &numRecs);
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -940,7 +940,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
  * @param fpc		global finger print cache
  */
 static
-void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrintCache fpc)
+void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpmte p;
@@ -1027,7 +1027,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrint
 	    }
 
 	    /* search for files in the transaction with same finger print */
-	    gotRecs = rpmFpHashGetEntry(ht, fpp, &recs, &numRecs, NULL);
+	    gotRecs = fpCacheGetByFp(fpc, fpp, &recs, &numRecs);
 
 	    for (j=0; (j<numRecs)&&gotRecs; j++) {
 	        p = recs[j].p;
@@ -1233,7 +1233,7 @@ static int rpmtsSetupCollections(rpmts ts)
 }
 
 /* Add fingerprint for each file not skipped. */
-static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPrintCache fpc)
+static void addFingerprints(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 {
     rpmtsi pi;
     rpmte p;
@@ -1287,7 +1287,7 @@ static void addFingerprints(rpmts ts, uint64_t fileCount, rpmFpHash ht, fingerPr
 	for (i = 0; i < fc; i++) {
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
-	    fpLookupSubdir(symlinks, ht, fpc, p, i);
+	    fpLookupSubdir(symlinks, fpc, p, i);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
     }
@@ -1364,8 +1364,6 @@ static int rpmtsPrepare(rpmts ts)
     rpmstrPoolFreeze(tsmem->pool, 1);
 
     fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
-    rpmFpHash ht = rpmFpHashCreate(fileCount/2+1, fpHashFunction, fpEqual,
-			     NULL, NULL);
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 
@@ -1389,9 +1387,9 @@ static int rpmtsPrepare(rpmts ts)
     }
     
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, tsmem->orderCount);
-    addFingerprints(ts, fileCount, ht, fpc);
+    addFingerprints(ts, fileCount, fpc);
     /* check against files in the rpmdb */
-    checkInstalledFiles(ts, fileCount, ht, fpc);
+    checkInstalledFiles(ts, fileCount, fpc);
 
     dbhome = rpmdbHome(rpmtsGetRdb(ts));
     /* If we can't stat, ignore db growth. Probably not right but... */
@@ -1406,7 +1404,7 @@ static int rpmtsPrepare(rpmts ts)
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* check files in ts against each other and update disk space
 	   needs on each partition for this package. */
-	handleOverlappedFiles(ts, ht, p, fi);
+	handleOverlappedFiles(ts, fpc, p, fi);
 
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {
@@ -1441,7 +1439,6 @@ static int rpmtsPrepare(rpmts ts)
     }
 
 exit:
-    rpmFpHashFree(ht);
     fpCacheFree(fpc);
     rpmtsFreeDSI(ts);
     return rc;

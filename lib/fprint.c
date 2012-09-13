@@ -29,16 +29,19 @@
  */
 struct fprintCache_s {
     rpmFpEntryHash ht;			/*!< hashed by dirName */
+    rpmFpHash fp;			/*!< hashed by fingerprint */
 };
 
 fingerPrintCache fpCacheCreate(int sizeHint)
 {
     fingerPrintCache fpc;
 
-    fpc = xmalloc(sizeof(*fpc));
+    fpc = xcalloc(1, sizeof(*fpc));
     fpc->ht = rpmFpEntryHashCreate(sizeHint, rstrhash, strcmp,
 				   (rpmFpEntryHashFreeKey)free,
 				   (rpmFpEntryHashFreeData)free);
+    fpc->fp = rpmFpHashCreate(sizeHint, fpHashFunction, fpEqual,
+				  NULL, NULL);
     return fpc;
 }
 
@@ -46,6 +49,7 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
 {
     if (cache) {
 	cache->ht = rpmFpEntryHashFree(cache->ht);
+	cache->fp = rpmFpHashFree(cache->fp);
 	free(cache);
     }
     return NULL;
@@ -241,7 +245,7 @@ void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
     }
 }
 
-void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, rpmte p, int filenr)
+void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr)
 {
     rpmfi fi = rpmteFI(p);
     struct fingerPrint_s current_fp;
@@ -256,7 +260,7 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
     struct rpmffi_s ffi = { p, filenr};
 
     if (fp->subDir == NULL) {
-	 rpmFpHashAddEntry(fphash, fp, ffi);
+	 rpmFpHashAddEntry(fpc->fp, fp, ffi);
 	 return;
     }
 
@@ -309,7 +313,7 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 		   current_fp = *fp;
 		   if (fp->subDir == NULL) {
 		     /* directory exists - no need to look for symlinks */
-		     rpmFpHashAddEntry(fphash, fp, ffi);
+		     rpmFpHashAddEntry(fpc->fp, fp, ffi);
 		     return;
 		   }
 		   lensubDir = strlen(fp->subDir);
@@ -355,6 +359,12 @@ void fpLookupSubdir(rpmFpHash symlinks, rpmFpHash fphash, fingerPrintCache fpc, 
 
     }
     free(currentsubdir);
-    rpmFpHashAddEntry(fphash, fp, ffi);
+    rpmFpHashAddEntry(fpc->fp, fp, ffi);
 
+}
+
+int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
+		   struct rpmffi_s ** recs, int * numRecs)
+{
+    return rpmFpHashGetEntry(cache->fp, fp, recs, numRecs, NULL);
 }
