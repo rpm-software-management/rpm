@@ -982,7 +982,7 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
 };
 
 
-int rpmdsRpmlib(rpmds * dsp, const void * tblp)
+int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp)
 {
     const struct rpmlibProvides_s * rltblp = tblp;
     const struct rpmlibProvides_s * rlp;
@@ -992,14 +992,20 @@ int rpmdsRpmlib(rpmds * dsp, const void * tblp)
 	rltblp = rpmlibProvides;
 
     for (rlp = rltblp; rlp->featureName != NULL && rc == 0; rlp++) {
-	rpmds ds = rpmdsSingle(RPMTAG_PROVIDENAME, rlp->featureName,
+	rpmds ds = rpmdsSinglePool(pool, RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
 	rc = rpmdsMerge(dsp, ds);
 	rpmdsFree(ds);
     }
-    if (*dsp)
+    /* freeze the pool to save memory, but only if private pool */
+    if (*dsp && (*dsp)->pool != pool)
 	rpmstrPoolFreeze((*dsp)->pool, 0);
     return rc;
+}
+
+int rpmdsRpmlib(rpmds * dsp, const void * tblp)
+{
+    return rpmdsRpmlibPool(NULL, dsp, tblp);
 }
 
 rpmstrPool rpmdsPool(rpmds ds)

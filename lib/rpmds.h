@@ -385,6 +385,15 @@ int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
  */
 int rpmdsRpmlib(rpmds * dsp, const void * tblp);
 
+/**
+ * Load rpmlib provides into a dependency set.
+ * @param pool		shared string pool (or NULL for private pool)
+ * @retval *dsp		(loaded) depedency set
+ * @param tblp		rpmlib provides table (NULL uses internal table)
+ * @return		0 on success
+ */
+int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
+
 /** \ingroup rpmds
  * Return dependency set string pool handle
  * @param fi		dependency set
