@@ -1298,9 +1298,9 @@ rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix)
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 {
     if (fi->fc > 0 && fi->fps == NULL) {
-	fi->fps = xcalloc(fi->fc, sizeof(*fi->fps));
+	fi->fps = fpLookupList(fpc, fi->pool,
+			       fi->dnid, fi->bnid, fi->dil, fi->fc);
     }
-    fpLookupList(fpc, fi->pool, fi->dnid, fi->bnid, fi->dil, fi->fc, fi->fps);
 }
 
 /* 

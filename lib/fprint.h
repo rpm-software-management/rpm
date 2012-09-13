@@ -123,13 +123,12 @@ int fpEqual(const fingerPrint * key1, const fingerPrint * key2);
  * @param baseNames	file base names
  * @param dirIndexes	index into dirNames for each baseNames
  * @param fileCount	number of file entries
- * @retval fpList	pointer to array of finger prints
+ * @return		pointer to array of finger prints
  */
 RPM_GNUC_INTERNAL
-void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
-		  rpmsid * dirNames, rpmsid * baseNames,
-		  const uint32_t * dirIndexes, 
-		  int fileCount, fingerPrint * fpList);
+fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
+			   rpmsid * dirNames, rpmsid * baseNames,
+			   const uint32_t * dirIndexes, int fileCount);
 
 #ifdef __cplusplus
 }

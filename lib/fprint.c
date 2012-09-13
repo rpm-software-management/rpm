@@ -249,27 +249,29 @@ int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
     return FP_EQUAL(*fp, ofp);
 }
 
-void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
+fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 		  rpmsid * dirNames, rpmsid * baseNames,
 		  const uint32_t * dirIndexes, 
-		  int fileCount, fingerPrint * fpList)
+		  int fileCount)
 {
+    fingerPrint * fps = xmalloc(fileCount * sizeof(*fps));
     int i;
 
     for (i = 0; i < fileCount; i++) {
 	/* If this is in the same directory as the last file, don't bother
 	   redoing all of this work */
 	if (i > 0 && dirIndexes[i - 1] == dirIndexes[i]) {
-	    fpList[i].entry = fpList[i - 1].entry;
-	    fpList[i].subDir = fpList[i - 1].subDir;
-	    fpList[i].baseName = rpmstrPoolStr(pool, baseNames[i]);
+	    fps[i].entry = fps[i - 1].entry;
+	    fps[i].subDir = fps[i - 1].subDir;
+	    fps[i].baseName = rpmstrPoolStr(pool, baseNames[i]);
 	} else {
 	    fpLookup(cache,
 		     rpmstrPoolStr(pool, dirNames[dirIndexes[i]]),
 		     rpmstrPoolStr(pool, baseNames[i]),
-		     1, &fpList[i]);
+		     1, &fps[i]);
 	}
     }
+    return fps;
 }
 
 /* Check file for to be installed symlinks in their path and correct their fp */
