@@ -243,7 +243,7 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->headerSize = headerSizeof(h, HEADER_MAGIC_NO);
 
     /* XXX thisds not in global pool yet, but not strictly needed either */
-    p->thisds = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+    p->thisds = rpmdsThisPool(tspool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
     p->provides = rpmdsNewPool(tspool, h, RPMTAG_PROVIDENAME, 0);
     p->requires = rpmdsNewPool(tspool, h, RPMTAG_REQUIRENAME, 0);
     p->conflicts = rpmdsNewPool(tspool, h, RPMTAG_CONFLICTNAME, 0);
