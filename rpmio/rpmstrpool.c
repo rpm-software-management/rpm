@@ -173,3 +173,12 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
     }
     return slen;
 }
+
+int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
+		    rpmstrPool poolB, rpmsid sidB)
+{
+    if (poolA == poolB)
+	return (sidA == sidB);
+    else
+	return rstreq(rpmstrPoolStr(poolA, sidA), rpmstrPoolStr(poolB, sidB));
+}

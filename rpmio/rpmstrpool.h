@@ -36,6 +36,10 @@ const char * rpmstrPoolStr(rpmstrPool sidpool, rpmsid sid);
 /* get a strings length by its id (in constant time) */
 size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid);
 
+/* pool string equality comparison (constant time if within same pool) */
+int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
+                    rpmstrPool poolB, rpmsid sidB);
+
 #ifdef __cplusplus
 }
 #endif
