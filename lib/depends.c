@@ -240,10 +240,14 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
     const char * arch = headerGetString(h, RPMTAG_ARCH);
     const char * os = headerGetString(h, RPMTAG_OS);
     rpmte p;
-    rpmds oldChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    rpmds newChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
-    rpmds sameChk = rpmdsThis(h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
-    rpmds obsChk = rpmdsNew(h, RPMTAG_OBSOLETENAME, 0);
+    rpmstrPool tspool = rpmtsPool(ts);
+    rpmds oldChk = rpmdsThisPool(tspool,
+				 h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
+    rpmds newChk = rpmdsThisPool(tspool,
+				 h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
+    rpmds sameChk = rpmdsThisPool(tspool,
+				  h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
+    rpmds obsChk = rpmdsNewPool(tspool, h, RPMTAG_OBSOLETENAME, 0);
     rpmtsi pi = rpmtsiInit(ts);
 
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
