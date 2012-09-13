@@ -136,6 +136,17 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
 rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
+ * Create, load and initialize a dependency for this header. 
+ * @param pool		string pool (or NULL for private pool)
+ * @param h		header
+ * @param tagN		type of dependency
+ * @param Flags		comparison flags
+ * @return		new dependency set
+ */
+rpmds rpmdsThisPool(rpmstrPool pool,
+		    Header h, rpmTagVal tagN, rpmsenseFlags Flags);
+
+/** \ingroup rpmds
  * Create, load and initialize a dependency set of size 1.
  * @param tagN		type of dependency
  * @param N		name
@@ -144,6 +155,18 @@ rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags);
  * @return		new dependency set
  */
 rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags);
+
+/** \ingroup rpmds
+ * Create, load and initialize a dependency set of size 1.
+ * @param pool		string pool (or NULL for private pool)
+ * @param tagN		type of dependency
+ * @param N		name
+ * @param EVR		epoch:version-release
+ * @param Flags		comparison flags
+ * @return		new dependency set
+ */
+rpmds rpmdsSinglePool(rpmstrPool pool, rpmTagVal tagN,
+		      const char * N, const char * EVR, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
  * Return a new dependency set of size 1 from the current iteration index

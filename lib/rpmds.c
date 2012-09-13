@@ -297,33 +297,47 @@ exit:
     return ds;
 }
 
-static rpmds singleDS(rpmTagVal tagN, const char * N, const char * EVR,
+static rpmds singleDS(rpmstrPool pool, rpmTagVal tagN,
+		      const char * N, const char * EVR,
 		      rpmsenseFlags Flags, unsigned int instance,
 		      rpm_color_t Color)
 {
-    rpmds ds = singleDSPool(NULL, tagN, 0, 0, Flags, instance, Color);
+    rpmds ds = singleDSPool(pool, tagN, 0, 0, Flags, instance, Color);
     if (ds) {
 	/* now that we have a pool, we can insert our N & EVR strings */
 	ds->N[0] = rpmstrPoolId(ds->pool, N ? N : "", 1);
 	ds->EVR[0] = rpmstrPoolId(ds->pool, EVR ? EVR : "", 1);
-	/* freeze the pool to save memory */
-	rpmstrPoolFreeze(ds->pool, 0);
+	/* freeze the pool to save memory, but only if private pool */
+	if (ds->pool != pool)
+	    rpmstrPoolFreeze(ds->pool, 0);
     }
     return ds;
 }
 
-rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags)
+rpmds rpmdsThisPool(rpmstrPool pool,
+		    Header h, rpmTagVal tagN, rpmsenseFlags Flags)
 {
     char *evr = headerGetAsString(h, RPMTAG_EVR);
-    rpmds ds = singleDS(tagN, headerGetString(h, RPMTAG_NAME),
+    rpmds ds = singleDS(pool, tagN, headerGetString(h, RPMTAG_NAME),
 			evr, Flags, headerGetInstance(h), 0);
     free(evr);
     return ds;
 }
 
+rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags)
+{
+    return rpmdsThisPool(NULL, h, tagN, Flags);
+}
+
+rpmds rpmdsSinglePool(rpmstrPool pool,rpmTagVal tagN,
+		      const char * N, const char * EVR, rpmsenseFlags Flags)
+{
+    return singleDS(pool, tagN, N, EVR, Flags, 0, 0);
+}
+
 rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags)
 {
-    return singleDS(tagN, N, EVR, Flags, 0, 0);
+    return rpmdsSinglePool(NULL, tagN, N, EVR, Flags);
 }
 
 rpmds rpmdsCurrent(rpmds ds)
