@@ -7,6 +7,7 @@
 #include "lib/rpmal.h"		/* XXX availablePackage */
 #include "lib/fprint.h"
 #include "lib/rpmlock.h"
+#include "lib/rpmdb_internal.h"
 
 typedef struct diskspaceInfo_s * rpmDiskSpaceInfo;
 

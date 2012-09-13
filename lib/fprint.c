@@ -17,15 +17,27 @@
 #include <libgen.h>
 
 /* Create new hash table type rpmFpEntryHash */
-#include "lib/rpmhash.C"
-
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
 #define HASHTYPE rpmFpEntryHash
 #define HTKEYTYPE const char *
 #define HTDATATYPE const struct fprintCacheEntry_s *
+#include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+
+/* Create by-fingerprint hash table */
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE rpmFpHash
+#define HTKEYTYPE const fingerPrint *
+#define HTDATATYPE struct rpmffi_s
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
 
 /**
  * Finger print cache.
@@ -196,7 +208,13 @@ exit:
     return 0;
 }
 
-unsigned int fpHashFunction(const fingerPrint * fp)
+/**
+ * Return hash value for a finger print.
+ * Hash based on dev and inode only!
+ * @param key		pointer to finger print entry
+ * @return hash value
+ */
+static unsigned int fpHashFunction(const fingerPrint * fp)
 {
     unsigned int hash = 0;
     int j;
@@ -246,7 +264,8 @@ void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
     }
 }
 
-void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr)
+/* Check file for to be installed symlinks in their path and correct their fp */
+static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr)
 {
     rpmfi fi = rpmteFI(p);
     struct fingerPrint_s current_fp;

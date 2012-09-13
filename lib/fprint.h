@@ -6,9 +6,7 @@
  * Identify a file name path by a unique "finger print".
  */
 
-#include <rpm/header.h>
-#include <rpm/rpmte.h>
-#include "lib/rpmdb_internal.h"
+#include <rpm/rpmtypes.h>
 
 /**
  */
@@ -31,12 +29,6 @@ const char * subDir;
 const char * baseName;	/*!< file base name */
 };
 
-/* Create new hash table data type */
-#define HASHTYPE rpmFpEntryHash
-#define HTKEYTYPE const char *
-#define HTDATATYPE const struct fprintCacheEntry_s *
-#include "lib/rpmhash.H"
-
 /**
  * Finger print cache entry.
  * This is really a directory and symlink cache. We don't differentiate between
@@ -49,21 +41,10 @@ struct fprintCacheEntry_s {
     ino_t ino;				/*!< stat(2) inode number */
 };
 
-/* Create new hash table data type */
-
 struct rpmffi_s {
   rpmte p;
   int   fileno;
 };
-
-#undef HASHTYPE
-#undef HTKEYTYPE
-#undef HTDATATYPE
-
-#define HASHTYPE rpmFpHash
-#define HTKEYTYPE const fingerPrint *
-#define HTDATATYPE struct rpmffi_s
-#include "lib/rpmhash.H"
 
 /** */
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
@@ -119,15 +100,6 @@ int fpLookup(fingerPrintCache cache,
 	     fingerPrint *fp);
 
 /**
- * Return hash value for a finger print.
- * Hash based on dev and inode only!
- * @param key		pointer to finger print entry
- * @return hash value
- */
-RPM_GNUC_INTERNAL
-unsigned int fpHashFunction(const fingerPrint * key);
-
-/**
  * Compare two finger print entries.
  * This routine is exactly equivalent to the FP_EQUAL macro.
  * @param key1		finger print 1
@@ -153,19 +125,6 @@ void fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 		  rpmsid * dirNames, rpmsid * baseNames,
 		  const uint32_t * dirIndexes, 
 		  int fileCount, fingerPrint * fpList);
-
-/**
- * Check file for to be installed symlinks in their path,
- *  correct their fingerprint and add it to newht.
- * @param ht            hash table containing all files fingerprints
- * @param newht         hash table to add the corrected fingerprints
- * @param fpc           fingerprint cache
- * @param fi            file iterator of the package
- * @param filenr        the number of the file we are dealing with
- */
-RPM_GNUC_INTERNAL
-void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr);
-
 
 #ifdef __cplusplus
 }
