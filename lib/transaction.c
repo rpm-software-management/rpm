@@ -1232,70 +1232,6 @@ static int rpmtsSetupCollections(rpmts ts)
     return 0;
 }
 
-/* Add fingerprint for each file not skipped. */
-static void addFingerprints(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
-{
-    rpmtsi pi;
-    rpmte p;
-    rpmfs fs;
-    rpmfi fi;
-    int i, fc;
-
-    rpmFpHash symlinks = rpmFpHashCreate(fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
-
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	(void) rpmdbCheckSignals();
-
-	if ((fi = rpmteFI(p)) == NULL)
-	    continue;	/* XXX can't happen */
-
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	rpmfiFpLookup(fi, fpc);
-	fs = rpmteGetFileStates(p);
-	fc = rpmfsFC(fs);
-	/* collect symbolic links */
-	for (i = 0; i < fc; i++) {
-	    struct rpmffi_s ffi;
-	    char const *linktarget;
-	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
-		continue;
-	    linktarget = rpmfiFLinkIndex(fi, i);
-	    if (!(linktarget && *linktarget != '\0'))
-		continue;
-	    ffi.p = p;
-	    ffi.fileno = i;
-	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
-
-    }
-    rpmtsiFree(pi);
-
-    /* ===============================================
-     * Check fingerprints if they contain symlinks
-     * and add them to the hash table
-     */
-
-    pi = rpmtsiInit(ts);
-    while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	(void) rpmdbCheckSignals();
-
-	fs = rpmteGetFileStates(p);
-	fc = rpmfsFC(fs);
-	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	for (i = 0; i < fc; i++) {
-	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
-		continue;
-	    fpLookupSubdir(symlinks, fpc, p, i);
-	}
-	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-    }
-    rpmtsiFree(pi);
-
-    rpmFpHashFree(symlinks);
-}
-
 static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 {
     rpm_tid_t tid = (rpm_tid_t) time(NULL);
@@ -1387,7 +1323,8 @@ static int rpmtsPrepare(rpmts ts)
     }
     
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_START, 6, tsmem->orderCount);
-    addFingerprints(ts, fileCount, fpc);
+    /* Add fingerprint for each file not skipped. */
+    fpCachePopulate(fpc, ts, fileCount);
     /* check against files in the rpmdb */
     checkInstalledFiles(ts, fileCount, fpc);
 

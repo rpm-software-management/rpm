@@ -101,6 +101,9 @@ RPM_GNUC_INTERNAL
 int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
 		   struct rpmffi_s ** recs, int * numRecs);
 
+RPM_GNUC_INTERNAL
+void fpCachePopulate(fingerPrintCache cache, rpmts ts, int fileCount);
+
 /**
  * Return finger print of a file path.
  * @param cache		pointer to fingerprint cache

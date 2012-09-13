@@ -5,9 +5,12 @@
 #include "system.h"
 
 #include <rpm/rpmfileutil.h>	/* for rpmCleanPath */
+#include <rpm/rpmts.h>
+#include <rpm/rpmdb.h>
 
 #include "lib/rpmdb_internal.h"
 #include "lib/rpmfi_internal.h"
+#include "lib/rpmte_internal.h"
 #include "lib/fprint.h"
 #include "lib/misc.h"
 #include "debug.h"
@@ -40,8 +43,6 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fpc->ht = rpmFpEntryHashCreate(sizeHint, rstrhash, strcmp,
 				   (rpmFpEntryHashFreeKey)free,
 				   (rpmFpEntryHashFreeData)free);
-    fpc->fp = rpmFpHashCreate(sizeHint, fpHashFunction, fpEqual,
-				  NULL, NULL);
     return fpc;
 }
 
@@ -368,3 +369,71 @@ int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
 {
     return rpmFpHashGetEntry(cache->fp, fp, recs, numRecs, NULL);
 }
+
+void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
+{
+    rpmtsi pi;
+    rpmte p;
+    rpmfs fs;
+    rpmfi fi;
+    int i, fc;
+
+    if (fpc->fp == NULL)
+	fpc->fp = rpmFpHashCreate(fileCount/2 + 10001, fpHashFunction, fpEqual,
+				  NULL, NULL);
+
+    rpmFpHash symlinks = rpmFpHashCreate(fileCount/16+16, fpHashFunction, fpEqual, NULL, NULL);
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	(void) rpmdbCheckSignals();
+
+	if ((fi = rpmteFI(p)) == NULL)
+	    continue;	/* XXX can't happen */
+
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	rpmfiFpLookup(fi, fpc);
+	fs = rpmteGetFileStates(p);
+	fc = rpmfsFC(fs);
+	/* collect symbolic links */
+	for (i = 0; i < fc; i++) {
+	    struct rpmffi_s ffi;
+	    char const *linktarget;
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+		continue;
+	    linktarget = rpmfiFLinkIndex(fi, i);
+	    if (!(linktarget && *linktarget != '\0'))
+		continue;
+	    ffi.p = p;
+	    ffi.fileno = i;
+	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
+
+    }
+    rpmtsiFree(pi);
+
+    /* ===============================================
+     * Check fingerprints if they contain symlinks
+     * and add them to the hash table
+     */
+
+    pi = rpmtsiInit(ts);
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	(void) rpmdbCheckSignals();
+
+	fs = rpmteGetFileStates(p);
+	fc = rpmfsFC(fs);
+	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	for (i = 0; i < fc; i++) {
+	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
+		continue;
+	    fpLookupSubdir(symlinks, fpc, p, i);
+	}
+	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+    }
+    rpmtsiFree(pi);
+
+    rpmFpHashFree(symlinks);
+}
+
