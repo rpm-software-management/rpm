@@ -933,7 +933,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     char * dirName = NULL;
     const char * baseName;
     fingerPrintCache fpc = NULL;
-    fingerPrint fp1;
+    fingerPrint * fp1 = NULL;
     dbiIndexSet allMatches = NULL;
     unsigned int i;
     int rc = -2; /* assume error */
@@ -997,7 +997,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
 	    if (!skip) {
 		const char *dirName = dirNames[dirIndexes[num]];
-		if (fpLookupEquals(fpc, &fp1, dirName, baseNames[num])) {
+		if (fpLookupEquals(fpc, fp1, dirName, baseNames[num])) {
 		    struct dbiIndexItem rec = { 
 			.hdrNum = dbiIndexRecordOffset(allMatches, i),
 			.tagNum = dbiIndexRecordFileNumber(allMatches, i),
@@ -1020,6 +1020,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	headerFree(h);
     }
 
+    free(fp1);
     fpCacheFree(fpc);
 
     if ((*matches)->count == 0) {

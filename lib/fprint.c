@@ -108,7 +108,7 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return NULL;
 }
 
-int fpLookup(fingerPrintCache cache,
+static int doLookup(fingerPrintCache cache,
 	     const char * dirName, const char * baseName, int scareMemory,
 	     fingerPrint *fp)
 {
@@ -230,6 +230,15 @@ exit:
     return 0;
 }
 
+int fpLookup(fingerPrintCache cache,
+             const char * dirName, const char * baseName, int scareMemory,
+             fingerPrint **fp)
+{
+    if (*fp == NULL)
+	*fp = xcalloc(1, sizeof(**fp));
+    return doLookup(cache, dirName, baseName, scareMemory, *fp);
+}
+
 /**
  * Return hash value for a finger print.
  * Hash based on dev and inode only!
@@ -277,7 +286,7 @@ int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
 	          const char * dirName, const char * baseName)
 {
     struct fingerPrint_s ofp;
-    fpLookup(cache, dirName, baseName, 1, &ofp);
+    doLookup(cache, dirName, baseName, 1, &ofp);
     return FP_EQUAL(*fp, ofp);
 }
 
@@ -297,7 +306,7 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 	    fps[i].subDir = fps[i - 1].subDir;
 	    fps[i].baseName = rpmstrPoolStr(pool, baseNames[i]);
 	} else {
-	    fpLookup(cache,
+	    doLookup(cache,
 		     rpmstrPoolStr(pool, dirNames[dirIndexes[i]]),
 		     rpmstrPoolStr(pool, baseNames[i]),
 		     1, &fps[i]);
@@ -364,7 +373,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 			rstrscat(&link, endbasename+1, "/", NULL);
 		   }
 
-		   fpLookup(fpc, link, fp->baseName, 0, fp);
+		   doLookup(fpc, link, fp->baseName, 0, fp);
 
 		   free(link);
 		   free(currentsubdir);

@@ -84,7 +84,7 @@ dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp);
 RPM_GNUC_INTERNAL
 int fpLookup(fingerPrintCache cache,
 	     const char * dirName, const char * baseName, int scareMemory,
-	     fingerPrint *fp);
+	     fingerPrint **fp);
 
 /**
  * Compare two finger print entries.

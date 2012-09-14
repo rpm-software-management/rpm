@@ -971,7 +971,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
     while (h != NULL) {
 	headerGetFlags hgflags = HEADERGET_MINMEM;
 	struct rpmtd_s bnames, dnames, dindexes, ostates;
-	fingerPrint fp, *fpp;
+	fingerPrint *fpp = NULL;
 	unsigned int installedPkg;
 	int beingRemoved = 0;
 	rpmfi otherFi = NULL;
@@ -1014,14 +1014,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		dirName = rpmtdGetString(&dnames);
 		baseName = rpmtdGetString(&bnames);
 
-		if (dirName == oldDir) {
-		    /* directory is the same as last round */
-		    fp.baseName = baseName;
-		} else {
-		    fpLookup(fpc, dirName, baseName, 1, &fp);
-		    oldDir = dirName;
-		}
-		fpp = &fp;
+		fpLookup(fpc, dirName, baseName, 1, &fpp);
 	    } else {
 		fpp = rpmfiFpsIndex(otherFi, fileNum);
 	    }
@@ -1063,6 +1056,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	    rpmtdFreeData(&bnames);
 	    rpmtdFreeData(&dnames);
 	    rpmtdFreeData(&dindexes);
+	    free(fpp);
 	}
 	headerFree(h);
 	h = newheader;
