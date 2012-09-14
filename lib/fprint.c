@@ -324,6 +324,13 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
     fingerPrint * fps = xmalloc(fileCount * sizeof(*fps));
     int i;
 
+    /*
+     * We could handle different pools easily enough, but there should be
+     * no need for that. Make sure we catch any oddball cases there might be
+     * lurking about.
+     */
+    assert(cache->pool == pool);
+
     for (i = 0; i < fileCount; i++) {
 	/* If this is in the same directory as the last file, don't bother
 	   redoing all of this work */
@@ -331,14 +338,10 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 	    const char *bn;
 	    fps[i].entry = fps[i - 1].entry;
 	    fps[i].subDirId = fps[i - 1].subDirId;
-	    /* XXX need to copy the string while pools are different */
-	    bn = rpmstrPoolStr(pool, baseNames[i]);
-	    fps[i].baseNameId = rpmstrPoolId(cache->pool, bn, 1);
+	    /* XXX if the pools are different, copy would be needed */
+	    fps[i].baseNameId = baseNames[i];
 	} else {
-	    doLookup(cache,
-		     rpmstrPoolStr(pool, dirNames[dirIndexes[i]]),
-		     rpmstrPoolStr(pool, baseNames[i]),
-		     &fps[i]);
+	    doLookupId(cache, dirNames[dirIndexes[i]], baseNames[i], &fps[i]);
 	}
     }
     return fps;
