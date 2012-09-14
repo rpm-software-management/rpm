@@ -21,7 +21,7 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 #define HASHTYPE rpmFpEntryHash
-#define HTKEYTYPE const char *
+#define HTKEYTYPE rpmsid
 #define HTDATATYPE const struct fprintCacheEntry_s *
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
@@ -39,6 +39,16 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+static unsigned int sidHash(rpmsid sid)
+{
+    return sid;
+}
+
+static int sidCmp(rpmsid a, rpmsid b)
+{
+    return (a != b);
+}
+
 /**
  * Finger print cache entry.
  * This is really a directory and symlink cache. We don't differentiate between
@@ -46,7 +56,7 @@
  * installs of a system w/o actually mounting filesystems.
  */
 struct fprintCacheEntry_s {
-    const char * dirName;		/*!< path to existing directory */
+    rpmsid dirId;			/*!< path to existing directory */
     dev_t dev;				/*!< stat(2) device number */
     ino_t ino;				/*!< stat(2) inode number */
 };
@@ -87,9 +97,8 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fingerPrintCache fpc;
 
     fpc = xcalloc(1, sizeof(*fpc));
-    fpc->ht = rpmFpEntryHashCreate(sizeHint, rstrhash, strcmp,
-				   (rpmFpEntryHashFreeKey)free,
-				   (rpmFpEntryHashFreeData)free);
+    fpc->ht = rpmFpEntryHashCreate(sizeHint, sidHash, sidCmp,
+				   NULL, (rpmFpEntryHashFreeData)free);
     fpc->pool = rpmstrPoolCreate();
     return fpc;
 }
@@ -108,17 +117,15 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
 /**
  * Find directory name entry in cache.
  * @param cache		pointer to fingerprint cache
- * @param dirName	string to locate in cache
- * @param dirHash	precalculated string hash
+ * @param dirId		string id to locate in cache
  * @return pointer to directory name entry (or NULL if not found).
  */
 static const struct fprintCacheEntry_s * cacheContainsDirectory(
-			    fingerPrintCache cache,
-			    const char * dirName, unsigned int dirHash)
+			    fingerPrintCache cache, rpmsid dirId)
 {
     const struct fprintCacheEntry_s ** data;
 
-    if (rpmFpEntryHashGetHEntry(cache->ht, dirName, dirHash, &data, NULL, NULL))
+    if (rpmFpEntryHashGetEntry(cache->ht, dirId, &data, NULL, NULL))
 	return data[0];
     return NULL;
 }
@@ -194,10 +201,10 @@ static int doLookup(fingerPrintCache cache,
     while (1) {
 	/* buf contents change through end ptr, requiring rehash on each loop */
 	const char *fpDir = (*buf != '\0') ? buf : "/";
-	unsigned int fpHash = rpmFpEntryHashKeyHash(cache->ht, fpDir);
+	rpmsid fpId = rpmstrPoolId(cache->pool, fpDir, 1);
 
 	/* as we're stating paths here, we want to follow symlinks */
-	cacheHit = cacheContainsDirectory(cache, fpDir, fpHash);
+	cacheHit = cacheContainsDirectory(cache, fpId);
 	if (cacheHit != NULL) {
 	    fp->entry = cacheHit;
 	} else if (!stat(fpDir, &sb)) {
@@ -205,11 +212,10 @@ static int doLookup(fingerPrintCache cache,
 
 	    newEntry->ino = sb.st_ino;
 	    newEntry->dev = sb.st_dev;
-	    newEntry->dirName = xstrdup(fpDir);
+	    newEntry->dirId = fpId;
 	    fp->entry = newEntry;
 
-	    rpmFpEntryHashAddHEntry(cache->ht,
-				    newEntry->dirName, fpHash, fp->entry);
+	    rpmFpEntryHashAddEntry(cache->ht, fpId, fp->entry);
 	}
 
         if (fp->entry) {
@@ -289,7 +295,10 @@ int fpEqual(const fingerPrint * k1, const fingerPrint * k2)
 
 const char * fpEntryDir(fingerPrintCache cache, fingerPrint *fp)
 {
-    return (fp && fp->entry) ? fp->entry->dirName : NULL;
+    const char * dn = NULL;
+    if (fp && fp->entry)
+	dn = rpmstrPoolStr(cache->pool, fp->entry->dirId);
+    return dn;
 }
 
 dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp)
@@ -378,7 +387,9 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 		   /* this "directory" is a symlink */
 		   link = NULL;
 		   if (*linktarget != '/') {
-			rstrscat(&link, current_fp.entry->dirName,
+			const char *dn;
+			dn = rpmstrPoolStr(fpc->pool, current_fp.entry->dirId);
+			rstrscat(&link, dn,
 				 current_fp.subDir ? "/" : "",
 				 current_fp.subDir ? current_fp.subDir : "",
 				 "/", NULL);
