@@ -66,13 +66,12 @@ dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp);
  * @param cache		pointer to fingerprint cache
  * @param dirName	leading directory name of file path
  * @param baseName	base name of file path
- * @param scareMemory
  * @retval fp		pointer of fingerprint struct to fill out
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
 int fpLookup(fingerPrintCache cache,
-	     const char * dirName, const char * baseName, int scareMemory,
+	     const char * dirName, const char * baseName,
 	     fingerPrint **fp);
 
 /**
@@ -87,7 +86,6 @@ int fpEqual(const fingerPrint * key1, const fingerPrint * key2);
 
 /**
  * Return finger prints of an array of file paths.
- * @warning: scareMemory is assumed!
  * @param cache		pointer to fingerprint cache
  * @param pool		pointer to file name pool
  * @param dirNames	directory names

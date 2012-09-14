@@ -244,7 +244,7 @@ exit:
 }
 
 int fpLookup(fingerPrintCache cache,
-             const char * dirName, const char * baseName, int scareMemory,
+             const char * dirName, const char * baseName,
              fingerPrint **fp)
 {
     if (*fp == NULL)

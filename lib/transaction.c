@@ -1012,7 +1012,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		dirName = rpmtdGetString(&dnames);
 		baseName = rpmtdGetString(&bnames);
 
-		fpLookup(fpc, dirName, baseName, 1, &fpp);
+		fpLookup(fpc, dirName, baseName, &fpp);
 		fpIx = 0;
 	    } else {
 		fpp = rpmfiFps(otherFi);
