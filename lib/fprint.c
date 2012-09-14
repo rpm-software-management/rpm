@@ -79,6 +79,7 @@ struct fingerPrint_s {
 struct fprintCache_s {
     rpmFpEntryHash ht;			/*!< hashed by dirName */
     rpmFpHash fp;			/*!< hashed by fingerprint */
+    rpmstrPool pool;			/*!< string pool */
 };
 
 fingerPrintCache fpCacheCreate(int sizeHint)
@@ -89,6 +90,7 @@ fingerPrintCache fpCacheCreate(int sizeHint)
     fpc->ht = rpmFpEntryHashCreate(sizeHint, rstrhash, strcmp,
 				   (rpmFpEntryHashFreeKey)free,
 				   (rpmFpEntryHashFreeData)free);
+    fpc->pool = rpmstrPoolCreate();
     return fpc;
 }
 
@@ -97,6 +99,7 @@ fingerPrintCache fpCacheFree(fingerPrintCache cache)
     if (cache) {
 	cache->ht = rpmFpEntryHashFree(cache->ht);
 	cache->fp = rpmFpHashFree(cache->fp);
+	cache->pool = rpmstrPoolFree(cache->pool);
 	free(cache);
     }
     return NULL;
