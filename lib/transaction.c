@@ -1293,7 +1293,7 @@ static int rpmtsPrepare(rpmts ts)
     /* Required for now to lock string pointers in memory */
     rpmstrPoolFreeze(tsmem->pool, 1);
 
-    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001);
+    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001, NULL);
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 

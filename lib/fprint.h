@@ -29,10 +29,11 @@ extern "C" {
 /**
  * Create finger print cache.
  * @param sizeHint	number of elements expected
+ * @param pool		string pool (or NULL for private)
  * @return pointer to initialized fingerprint cache
  */
 RPM_GNUC_INTERNAL
-fingerPrintCache fpCacheCreate(int sizeHint);
+fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool);
 
 /**
  * Destroy finger print cache.

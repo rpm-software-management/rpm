@@ -90,14 +90,14 @@ struct fprintCache_s {
     rpmstrPool pool;			/*!< string pool */
 };
 
-fingerPrintCache fpCacheCreate(int sizeHint)
+fingerPrintCache fpCacheCreate(int sizeHint, rpmstrPool pool)
 {
     fingerPrintCache fpc;
 
     fpc = xcalloc(1, sizeof(*fpc));
     fpc->ht = rpmFpEntryHashCreate(sizeHint, sidHash, sidCmp,
 				   NULL, (rpmFpEntryHashFreeData)free);
-    fpc->pool = rpmstrPoolCreate();
+    fpc->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
     return fpc;
 }
 

@@ -958,7 +958,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     if (rc || allMatches == NULL) goto exit;
 
     *matches = xcalloc(1, sizeof(**matches));
-    fpc = fpCacheCreate(allMatches->count);
+    fpc = fpCacheCreate(allMatches->count, NULL);
     fpLookup(fpc, dirName, baseName, &fp1);
 
     i = 0;
