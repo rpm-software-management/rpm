@@ -51,6 +51,18 @@ struct fprintCacheEntry_s {
     ino_t ino;				/*!< stat(2) inode number */
 };
 
+/**
+ * Associates a trailing sub-directory and final base name with an existing
+ * directory finger print.
+ */
+struct fingerPrint_s {
+    /*! directory finger print entry (the directory path is stat(2)-able */
+    const struct fprintCacheEntry_s * entry;
+    /*! trailing sub-directory path (directories that are not stat(2)-able */
+    const char * subDir;
+    const char * baseName;	/*!< file base name */
+};
+
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
 
 #define FP_EQUAL(a, b) ( \
@@ -326,7 +338,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
     struct rpmffi_s * recs;
     int numRecs;
     int i;
-    fingerPrint *fp = rpmfiFpsIndex(fi, filenr);
+    fingerPrint *fp = rpmfiFps(fi) + filenr;
     int symlinkcount = 0;
     struct rpmffi_s ffi = { p, filenr};
 
@@ -434,10 +446,14 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 
 }
 
-int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
-		   struct rpmffi_s ** recs, int * numRecs)
+fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
+			     struct fingerPrint_s * fp, int ix,
+			     struct rpmffi_s ** recs, int * numRecs)
 {
-    return rpmFpHashGetEntry(cache->fp, fp, recs, numRecs, NULL);
+    if (rpmFpHashGetEntry(cache->fp, fp + ix, recs, numRecs, NULL))
+	return fp + ix;
+    else
+	return NULL;
 }
 
 void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
@@ -456,6 +472,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	fingerPrint *fpList;
 	(void) rpmdbCheckSignals();
 
 	if ((fi = rpmteFI(p)) == NULL)
@@ -465,6 +482,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	rpmfiFpLookup(fi, fpc);
 	fs = rpmteGetFileStates(p);
 	fc = rpmfsFC(fs);
+	fpList = rpmfiFps(fi);
 	/* collect symbolic links */
 	for (i = 0; i < fc; i++) {
 	    struct rpmffi_s ffi;
@@ -476,7 +494,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 		continue;
 	    ffi.p = p;
 	    ffi.fileno = i;
-	    rpmFpHashAddEntry(symlinks, rpmfiFpsIndex(fi, i), ffi);
+	    rpmFpHashAddEntry(symlinks, fpList + i, ffi);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
 

@@ -448,6 +448,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
     rpmfs otherFs;
     rpm_count_t fc = rpmfiFC(fi);
     int reportConflicts = !(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
+    fingerPrint * fpList = rpmfiFps(fi);
 
     for (i = 0; i < fc; i++) {
 	struct fingerPrint_s * fiFps;
@@ -461,7 +462,6 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 	    continue;
 
-	fiFps = rpmfiFpsIndex(fi, i);
 	FFlags = rpmfiFFlagsIndex(fi, i);
 
 	fixupSize = 0;
@@ -472,7 +472,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	 * will be installed and removed so the records for an overlapped
 	 * files will be sorted in exactly the same order.
 	 */
-	fpCacheGetByFp(fpc, fiFps, &recs, &numRecs);
+	fiFps = fpCacheGetByFp(fpc, fpList, i, &recs, &numRecs);
 
 	/*
 	 * If this package is being added, look only at other packages
@@ -948,7 +948,6 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
     rpmfs fs;
     int j;
     unsigned int fileNum;
-    const char * oldDir;
 
     rpmdbMatchIterator mi;
     Header h, newheader;
@@ -994,10 +993,9 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	    headerGet(h, RPMTAG_FILESTATES, &ostates, hgflags);
 	}
 
-	oldDir = NULL;
 	/* loop over all interesting files in that package */
 	do {
-	    int gotRecs;
+	    int fpIx;
 	    struct rpmffi_s * recs;
 	    int numRecs;
 	    const char * dirName;
@@ -1015,14 +1013,16 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		baseName = rpmtdGetString(&bnames);
 
 		fpLookup(fpc, dirName, baseName, 1, &fpp);
+		fpIx = 0;
 	    } else {
-		fpp = rpmfiFpsIndex(otherFi, fileNum);
+		fpp = rpmfiFps(otherFi);
+		fpIx = fileNum;
 	    }
 
 	    /* search for files in the transaction with same finger print */
-	    gotRecs = fpCacheGetByFp(fpc, fpp, &recs, &numRecs);
+	    fpCacheGetByFp(fpc, fpp, fpIx, &recs, &numRecs);
 
-	    for (j=0; (j<numRecs)&&gotRecs; j++) {
+	    for (j = 0; j < numRecs; j++) {
 	        p = recs[j].p;
 		fi = rpmteFI(p);
 		fs = rpmteGetFileStates(p);

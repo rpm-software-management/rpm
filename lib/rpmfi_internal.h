@@ -145,7 +145,7 @@ RPM_GNUC_INTERNAL
 const char * rpmfiFCapsIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
-struct fingerPrint_s *rpmfiFpsIndex(rpmfi fi, int ix);
+struct fingerPrint_s *rpmfiFps(rpmfi fi);
 
 RPM_GNUC_INTERNAL
 rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,

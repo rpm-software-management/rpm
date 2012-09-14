@@ -17,18 +17,6 @@ typedef struct fprintCache_s * fingerPrintCache;
  */
 typedef struct fingerPrint_s fingerPrint;
 
-/**
- * Associates a trailing sub-directory and final base name with an existing
- * directory finger print.
- */
-struct fingerPrint_s {
-/*! directory finger print entry (the directory path is stat(2)-able */
-    const struct fprintCacheEntry_s * entry;
-/*! trailing sub-directory path (directories that are not stat(2)-able */
-const char * subDir;
-const char * baseName;	/*!< file base name */
-};
-
 struct rpmffi_s {
   rpmte p;
   int   fileno;
@@ -55,8 +43,9 @@ RPM_GNUC_INTERNAL
 fingerPrintCache fpCacheFree(fingerPrintCache cache);
 
 RPM_GNUC_INTERNAL
-int fpCacheGetByFp(fingerPrintCache cache, struct fingerPrint_s * fp,
-		   struct rpmffi_s ** recs, int * numRecs);
+fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
+			     struct fingerPrint_s * fp, int ix,
+			     struct rpmffi_s ** recs, int * numRecs);
 
 RPM_GNUC_INTERNAL
 void fpCachePopulate(fingerPrintCache cache, rpmts ts, int fileCount);

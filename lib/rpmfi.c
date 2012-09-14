@@ -403,13 +403,9 @@ const char * rpmfiFLangsIndex(rpmfi fi, int ix)
     return flangs;
 }
 
-struct fingerPrint_s *rpmfiFpsIndex(rpmfi fi, int ix)
+struct fingerPrint_s *rpmfiFps(rpmfi fi)
 {
-    struct fingerPrint_s * fps = NULL;
-    if (fi != NULL && fi->fps != NULL && ix >= 0 && ix < fi->fc) {
-	fps = fi->fps + ix;
-    }
-    return fps;
+    return (fi != NULL) ? fi->fps : NULL;
 }
 
 int rpmfiNext(rpmfi fi)
