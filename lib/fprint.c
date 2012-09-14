@@ -128,8 +128,8 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return NULL;
 }
 
-static int doLookup(fingerPrintCache cache,
-	     const char * dirName, const char * baseName,
+static int doLookupId(fingerPrintCache cache,
+	     rpmsid dirNameId, rpmsid baseNameId,
 	     fingerPrint *fp)
 {
     char dir[PATH_MAX];
@@ -140,6 +140,7 @@ static int doLookup(fingerPrintCache cache,
     char *buf = NULL;
     char *cdnbuf = NULL;
     const struct fprintCacheEntry_s * cacheHit;
+    const char * dirName = rpmstrPoolStr(cache->pool, dirNameId);
 
     /* XXX WATCHOUT: fp.subDir is set below from relocated dirName arg */
     cleanDirName = dirName;
@@ -218,7 +219,7 @@ static int doLookup(fingerPrintCache cache,
 	    /* XXX don't bother saving '/' as subdir */
 	       (subDir[0] == '/' && subDir[1] == '\0'))
 		subDir = NULL;
-	    fp->baseNameId = rpmstrPoolId(cache->pool, baseName, 1);
+	    fp->baseNameId = baseNameId;
 	    if (subDir != NULL)
 		fp->subDirId = rpmstrPoolId(cache->pool, subDir, 1);
 	    goto exit;
@@ -241,6 +242,15 @@ exit:
     free(cdnbuf);
     /* XXX TODO: failure from eg realpath() should be returned and handled */
     return 0;
+}
+
+static int doLookup(fingerPrintCache cache,
+		    const char * dirName, const char * baseName,
+		    fingerPrint *fp)
+{
+    rpmsid dirNameId = rpmstrPoolId(cache->pool, dirName, 1);
+    rpmsid baseNameId = rpmstrPoolId(cache->pool, baseName, 1);
+    return doLookupId(cache, dirNameId, baseNameId, fp);
 }
 
 int fpLookup(fingerPrintCache cache,
