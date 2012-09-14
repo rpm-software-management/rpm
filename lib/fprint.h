@@ -29,18 +29,6 @@ const char * subDir;
 const char * baseName;	/*!< file base name */
 };
 
-/**
- * Finger print cache entry.
- * This is really a directory and symlink cache. We don't differentiate between
- * the two. We can prepopulate it, which allows us to easily conduct "fake"
- * installs of a system w/o actually mounting filesystems.
- */
-struct fprintCacheEntry_s {
-    const char * dirName;		/*!< path to existing directory */
-    dev_t dev;				/*!< stat(2) device number */
-    ino_t ino;				/*!< stat(2) inode number */
-};
-
 struct rpmffi_s {
   rpmte p;
   int   fileno;
@@ -77,6 +65,12 @@ void fpCachePopulate(fingerPrintCache cache, rpmts ts, int fileCount);
 RPM_GNUC_INTERNAL
 int fpLookupEquals(fingerPrintCache cache, fingerPrint * fp,
 	           const char * dirName, const char * baseName);
+
+RPM_GNUC_INTERNAL
+const char *fpEntryDir(fingerPrintCache cache, fingerPrint *fp);
+
+RPM_GNUC_INTERNAL
+dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp);
 
 /**
  * Return finger print of a file path.

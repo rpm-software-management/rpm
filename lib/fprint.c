@@ -39,6 +39,18 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+/**
+ * Finger print cache entry.
+ * This is really a directory and symlink cache. We don't differentiate between
+ * the two. We can prepopulate it, which allows us to easily conduct "fake"
+ * installs of a system w/o actually mounting filesystems.
+ */
+struct fprintCacheEntry_s {
+    const char * dirName;		/*!< path to existing directory */
+    dev_t dev;				/*!< stat(2) device number */
+    ino_t ino;				/*!< stat(2) inode number */
+};
+
 #define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
 
 #define FP_EQUAL(a, b) ( \
@@ -251,8 +263,18 @@ int fpEqual(const fingerPrint * k1, const fingerPrint * k2)
 
 }
 
+const char * fpEntryDir(fingerPrintCache cache, fingerPrint *fp)
+{
+    return (fp && fp->entry) ? fp->entry->dirName : NULL;
+}
+
+dev_t fpEntryDev(fingerPrintCache cache, fingerPrint *fp)
+{
+    return (fp && fp->entry) ? fp->entry->dev : 0;
+}
+
 int fpLookupEquals(fingerPrintCache cache, fingerPrint *fp,
-	           const char * dirName, const char * baseName)
+	          const char * dirName, const char * baseName)
 {
     struct fingerPrint_s ofp;
     fpLookup(cache, dirName, baseName, 1, &ofp);

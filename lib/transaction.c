@@ -612,7 +612,7 @@ assert(otherFi != NULL);
 	}
 
 	/* Update disk space info for a file. */
-	rpmtsUpdateDSI(ts, fiFps->entry->dev, fiFps->entry->dirName,
+	rpmtsUpdateDSI(ts, fpEntryDev(fpc, fiFps), fpEntryDir(fpc, fiFps),
 		       rpmfiFSizeIndex(fi, i), rpmfiFReplacedSizeIndex(fi, i),
 		       fixupSize, rpmfsGetAction(fs, i));
 
