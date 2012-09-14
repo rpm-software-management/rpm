@@ -335,7 +335,6 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 	/* If this is in the same directory as the last file, don't bother
 	   redoing all of this work */
 	if (i > 0 && dirIndexes[i - 1] == dirIndexes[i]) {
-	    const char *bn;
 	    fps[i].entry = fps[i - 1].entry;
 	    fps[i].subDirId = fps[i - 1].subDirId;
 	    /* XXX if the pools are different, copy would be needed */
