@@ -39,6 +39,16 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+#define	FP_ENTRY_EQUAL(a, b) (((a)->dev == (b)->dev) && ((a)->ino == (b)->ino))
+
+#define FP_EQUAL(a, b) ( \
+	FP_ENTRY_EQUAL((a).entry, (b).entry) && \
+	!strcmp((a).baseName, (b).baseName) && ( \
+	    ((a).subDir == (b).subDir) || \
+	    ((a).subDir && (b).subDir && !strcmp((a).subDir, (b).subDir)) \
+	) \
+    )
+
 /**
  * Finger print cache.
  */
