@@ -875,9 +875,19 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 #undef HTDATATYPE
 
 #define HASHTYPE rpmStringSet
-#define HTKEYTYPE const char *
+#define HTKEYTYPE rpmsid
 #include "lib/rpmhash.H"
 #include "lib/rpmhash.C"
+
+static unsigned int sidHash(rpmsid sid)
+{
+    return sid;
+}
+
+static int sidCmp(rpmsid a, rpmsid b)
+{
+    return (a != b);
+}
 
 /* Get a rpmdbMatchIterator containing all files in
  * the rpmdb that share the basename with one from
@@ -895,9 +905,10 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     rpmdbMatchIterator mi;
     int oc = 0;
     const char * baseName;
+    rpmsid baseNameId;
 
     rpmStringSet baseNames = rpmStringSetCreate(fileCount, 
-					rstrhash, strcmp, NULL);
+					sidHash, sidCmp, NULL);
 
     mi = rpmdbNewIterator(rpmtsGetRdb(ts), RPMDBI_BASENAMES);
 
@@ -911,18 +922,18 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	fi = rpmfiInit(rpmteFI(p), 0);
 	while (rpmfiNext(fi) >= 0) {
 	    size_t keylen;
-	    unsigned int keyhash;
-	    baseName = rpmfiBN(fi);
 
-	    keyhash = rpmStringSetKeyHash(baseNames, baseName);
-	    if (rpmStringSetHasHEntry(baseNames, baseName, keyhash))
+	    baseNameId = rpmfiBNId(fi);
+
+	    if (rpmStringSetHasEntry(baseNames, baseNameId))
 		continue;
 
-	    keylen = strlen(baseName);
+	    keylen = rpmstrPoolStrlen(tsmem->pool, baseNameId);
+	    baseName = rpmstrPoolStr(tsmem->pool, baseNameId);
 	    if (keylen == 0)
 		keylen++;	/* XXX "/" fixup. */
 	    rpmdbExtendIterator(mi, baseName, keylen);
-	    rpmStringSetAddHEntry(baseNames, baseName, keyhash);
+	    rpmStringSetAddEntry(baseNames, baseNameId);
 	 }
     }
     rpmtsiFree(pi);
