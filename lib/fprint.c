@@ -133,22 +133,18 @@ static int doLookupId(fingerPrintCache cache,
 	     fingerPrint *fp)
 {
     char dir[PATH_MAX];
-    const char * cleanDirName;
-    size_t cdnl;
     char * end;		    /* points to the '\0' at the end of "buf" */
     struct stat sb;
     char *buf = NULL;
     char *cdnbuf = NULL;
     const struct fprintCacheEntry_s * cacheHit;
     const char * dirName = rpmstrPoolStr(cache->pool, dirNameId);
-
-    /* XXX WATCHOUT: fp.subDir is set below from relocated dirName arg */
-    cleanDirName = dirName;
-    cdnl = strlen(cleanDirName);
+    size_t cdnl = rpmstrPoolStrlen(cache->pool, dirNameId);;
+    const char * cleanDirName = dirName;
 
     if (*cleanDirName == '/') {
+	char trailingslash = (dirName[cdnl-1] == '/');
 	cdnbuf = xstrdup(dirName);
-	char trailingslash = (cdnbuf[strlen(cdnbuf)-1] == '/');
 	cdnbuf = rpmCleanPath(cdnbuf);
 	if (trailingslash) {
 	    cdnbuf = rstrcat(&cdnbuf, "/");
