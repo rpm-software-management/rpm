@@ -1290,10 +1290,7 @@ static int rpmtsPrepare(rpmts ts)
     const char *dbhome = NULL;
     struct stat dbstat;
 
-    /* Required for now to lock string pointers in memory */
-    rpmstrPoolFreeze(tsmem->pool, 1);
-
-    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001, NULL);
+    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001, tsmem->pool);
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 
