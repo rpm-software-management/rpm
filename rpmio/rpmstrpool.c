@@ -82,7 +82,7 @@ void rpmstrPoolUnfreeze(rpmstrPool pool)
 {
     if (pool) {
 	if (pool->hash == NULL) {
-	    int sizehint = (pool->offs_size / 2) - 1;
+	    int sizehint = pool->offs_size * 2;
 	    if (sizehint < STRHASH_INITSIZE)
 		sizehint = STRHASH_INITSIZE;
 	    pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
