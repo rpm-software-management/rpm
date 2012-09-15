@@ -29,10 +29,27 @@ struct rpmstrPool_s {
     int nrefs;			/* refcount */
 };
 
+static void rpmstrPoolRehash(rpmstrPool pool)
+{
+    int sizehint;
+
+    if (pool->offs_size < STRHASH_INITSIZE)
+	sizehint = STRHASH_INITSIZE;
+    else
+	sizehint = pool->offs_size * 2;
+
+    if (pool->hash)
+	pool->hash = strHashFree(pool->hash);
+
+    pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
+    for (int i = 1; i < pool->offs_size; i++)
+	strHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
+}
+
 rpmstrPool rpmstrPoolCreate(void)
 {
     rpmstrPool pool = xcalloc(1, sizeof(*pool));
-    pool->hash = strHashCreate(STRHASH_INITSIZE, rstrhash, strcmp, NULL, NULL);
+    rpmstrPoolRehash(pool);
     pool->nrefs = 1;
     return pool;
 }
@@ -82,13 +99,7 @@ void rpmstrPoolUnfreeze(rpmstrPool pool)
 {
     if (pool) {
 	if (pool->hash == NULL) {
-	    int sizehint = pool->offs_size * 2;
-	    if (sizehint < STRHASH_INITSIZE)
-		sizehint = STRHASH_INITSIZE;
-	    pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
-	    for (int i = 1; i < pool->offs_size; i++) {
-		strHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
-	    }
+	    rpmstrPoolRehash(pool);
 	}
 	pool->frozen = 0;
     }
@@ -112,8 +123,7 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 
 	/* ouch, need to rehash the whole lot if key addresses change */
 	if (pool->offs_size > 0 && pool->data != prev_data) {
-	    pool->hash = strHashFree(pool->hash);
-	    rpmstrPoolUnfreeze(pool);
+	    rpmstrPoolRehash(pool);
 	}
     }
 
