@@ -680,12 +680,15 @@ exit:
 	    headerPutString(h, RPMTAG_SOURCERPM, "(none)");
 	}
 	/* 
-         * Convert legacy headers on the fly. Not having "new" style compressed
-         * filenames is close enough estimate for legacy indication... 
+         * Convert legacy headers on the fly. Not having immutable region
+         * equals a truly ancient package, do full retrofit. OTOH newer
+         * packages might have been built with --nodirtokens, test and handle
+         * the non-compressed filelist case separately.
          */
-	if (!headerIsEntry(h, RPMTAG_DIRNAMES)) {
+	if (!headerIsEntry(h, RPMTAG_HEADERIMMUTABLE))
 	    headerConvert(h, HEADERCONV_RETROFIT_V3);
-	}
+	else if (headerIsEntry(h, RPMTAG_OLDFILENAMES))
+	    headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 	
 	/* Append (and remap) signature tags to the metadata. */
 	headerMergeLegacySigs(h, sigh);
