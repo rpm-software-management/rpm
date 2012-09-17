@@ -19,7 +19,7 @@ typedef struct poolHashBucket_s * poolHashBucket;
 struct poolHashBucket_s {
     poolHashBucket next;
     const char * key;
-    rpmsid data[1];
+    rpmsid data;
 };
 
 struct poolHash_s {
@@ -100,7 +100,7 @@ static void poolHashAddHEntry(poolHash ht, const char * key, unsigned int keyHas
 	ht->keyCount += 1;
 	b = xmalloc(sizeof(*b));
 	b->key = key;
-	b->data[0] = data;
+	b->data = data;
 	b->next = ht->buckets[hash];
 	ht->buckets[hash] = b;
 
@@ -148,15 +148,11 @@ static poolHash poolHashFree(poolHash ht)
     return NULL;
 }
 
-static int poolHashGetHEntry(poolHash ht, const char * key, unsigned int keyHash, rpmsid** data)
+static rpmsid poolHashGetHEntry(poolHash ht, const char * key, unsigned int keyHash)
 {
-    poolHashBucket b;
-    int rc = ((b = poolHashfindEntry(ht, key, keyHash)) != NULL);
+    poolHashBucket b = poolHashfindEntry(ht, key, keyHash);
 
-    if (data)
-	*data = rc ? b->data : NULL;
-
-    return rc;
+    return (b == NULL) ? 0 : b->data;
 }
 
 static void poolHashPrintStats(poolHash ht)
@@ -316,10 +312,8 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
 
     if (pool && pool->hash && s) {
 	unsigned int hash = poolHashKeyHash(pool->hash, s);
-	rpmsid *sids;
-	if (poolHashGetHEntry(pool->hash, s, hash, &sids)) {
-	    sid = sids[0];
-	} else if (create && !pool->frozen) {
+	sid = poolHashGetHEntry(pool->hash, s, hash);
+	if (sid == 0 && create && !pool->frozen) {
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
 	}
     }
