@@ -19,7 +19,6 @@ typedef struct poolHashBucket_s * poolHashBucket;
 struct poolHashBucket_s {
     poolHashBucket next;
     const char * key;
-    int dataCount;
     rpmsid data[1];
 };
 
@@ -30,7 +29,6 @@ struct poolHash_s {
     poolHashHashEqualityType eq;
     int bucketCount;
     int keyCount;
-    int dataCount;
 };
 
 static
@@ -53,7 +51,6 @@ static poolHash poolHashCreate(int numBuckets,
     ht = xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets;
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
-    ht->dataCount = 0;
 
     ht->fn = fn;
     ht->eq = eq;
@@ -90,14 +87,12 @@ static void poolHashAddHEntry(poolHash ht, const char * key, unsigned int keyHas
 {
     unsigned int hash = keyHash % ht->numBuckets;
     poolHashBucket b = ht->buckets[hash];
-    poolHashBucket * b_addr = ht->buckets + hash;
 
     if (b == NULL) {
 	ht->bucketCount += 1;
     }
 
     while (b && ht->eq(b->key, key)) {
-	b_addr = &(b->next);
 	b = b->next;
     }
 
@@ -105,19 +100,13 @@ static void poolHashAddHEntry(poolHash ht, const char * key, unsigned int keyHas
 	ht->keyCount += 1;
 	b = xmalloc(sizeof(*b));
 	b->key = key;
-	b->dataCount = 1;
 	b->data[0] = data;
 	b->next = ht->buckets[hash];
 	ht->buckets[hash] = b;
-    } else {
-	b = *b_addr = xrealloc(b,
-			    sizeof(*b) + sizeof(b->data[0]) * (b->dataCount));
-	b->data[b->dataCount++] = data;
-    }
-    ht->dataCount += 1;
 
-    if (ht->keyCount > ht->numBuckets) {
-	poolHashResize(ht, ht->numBuckets * 2);
+	if (ht->keyCount > ht->numBuckets) {
+	    poolHashResize(ht, ht->numBuckets * 2);
+	}
     }
 }
 
@@ -146,7 +135,6 @@ static void poolHashEmpty( poolHash ht)
     }
     ht->bucketCount = 0;
     ht->keyCount = 0;
-    ht->dataCount = 0;
 }
 
 static poolHash poolHashFree(poolHash ht)
@@ -160,18 +148,13 @@ static poolHash poolHashFree(poolHash ht)
     return NULL;
 }
 
-static int poolHashGetHEntry(poolHash ht, const char * key, unsigned int keyHash,
-    rpmsid** data, int * dataCount, const char ** tableKey)
+static int poolHashGetHEntry(poolHash ht, const char * key, unsigned int keyHash, rpmsid** data)
 {
     poolHashBucket b;
     int rc = ((b = poolHashfindEntry(ht, key, keyHash)) != NULL);
 
     if (data)
 	*data = rc ? b->data : NULL;
-    if (dataCount)
-	*dataCount = rc ? b->dataCount : 0;
-    if (tableKey && rc)
-	*tableKey = b->key;
 
     return rc;
 }
@@ -181,14 +164,13 @@ static void poolHashPrintStats(poolHash ht)
     int i;
     poolHashBucket bucket;
 
-    int hashcnt=0, bucketcnt=0, datacnt=0;
+    int hashcnt=0, bucketcnt=0;
     int maxbuckets=0;
 
     for (i=0; i<ht->numBuckets; i++) {
         int buckets = 0;
         for (bucket=ht->buckets[i]; bucket; bucket=bucket->next){
 	    buckets++;
-	    datacnt += bucket->dataCount;
 	}
 	if (maxbuckets < buckets) maxbuckets = buckets;
 	if (buckets) hashcnt++;
@@ -197,7 +179,6 @@ static void poolHashPrintStats(poolHash ht)
     fprintf(stderr, "Hashsize: %i\n", ht->numBuckets);
     fprintf(stderr, "Hashbuckets: %i\n", hashcnt);
     fprintf(stderr, "Keys: %i\n", bucketcnt);
-    fprintf(stderr, "Values: %i\n", datacnt);
     fprintf(stderr, "Max Keys/Bucket: %i\n", maxbuckets);
 }
 
@@ -336,7 +317,7 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
     if (pool && pool->hash && s) {
 	unsigned int hash = poolHashKeyHash(pool->hash, s);
 	rpmsid *sids;
-	if (poolHashGetHEntry(pool->hash, s, hash, &sids, NULL, NULL)) {
+	if (poolHashGetHEntry(pool->hash, s, hash, &sids)) {
 	    sid = sids[0];
 	} else if (create && !pool->frozen) {
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
