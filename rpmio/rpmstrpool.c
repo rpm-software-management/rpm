@@ -14,8 +14,6 @@ static int pool_debug = 0;
 typedef struct poolHash_s * poolHash;
 typedef unsigned int (*poolHashHashFunctionType) (const char * string);
 typedef int (*poolHashHashEqualityType) (const char * key1, const char * key2);
-typedef const char * (*poolHashFreeKey) (const char *);
-typedef rpmsid (*poolHashFreeData) (rpmsid);
 typedef struct poolHashBucket_s * poolHashBucket;
 
 struct poolHashBucket_s {
@@ -30,12 +28,9 @@ struct poolHash_s {
     poolHashBucket * buckets;
     poolHashHashFunctionType fn;
     poolHashHashEqualityType eq;
-    poolHashFreeKey freeKey;
     int bucketCount;
     int keyCount;
     int dataCount;
-    poolHashFreeData freeData;
-
 };
 
 static
@@ -51,17 +46,13 @@ poolHashBucket poolHashfindEntry(poolHash ht, const char * key, unsigned int key
 }
 
 static poolHash poolHashCreate(int numBuckets,
-		   poolHashHashFunctionType fn, poolHashHashEqualityType eq,
-		   poolHashFreeKey freeKey, poolHashFreeData freeData)
+		   poolHashHashFunctionType fn, poolHashHashEqualityType eq)
 {
     poolHash ht;
 
     ht = xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets;
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
-    ht->freeKey = freeKey;
-
-    ht->freeData = freeData;
     ht->dataCount = 0;
 
     ht->fn = fn;
@@ -150,15 +141,6 @@ static void poolHashEmpty( poolHash ht)
 
 	do {
 	    n = b->next;
-	    if (ht->freeKey)
-		b->key = ht->freeKey(b->key);
-
-	     if (ht->freeData) {
-		int j;
-		for (j=0; j < b->dataCount; j++ ) {
-		    b->data[j] = ht->freeData(b->data[j]);
-		}
-	    }
 	    b = _free(b);
 	} while ((b = n) != NULL);
     }
@@ -243,7 +225,7 @@ static void rpmstrPoolRehash(rpmstrPool pool)
     if (pool->hash)
 	pool->hash = poolHashFree(pool->hash);
 
-    pool->hash = poolHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
+    pool->hash = poolHashCreate(sizehint, rstrhash, strcmp);
     for (int i = 1; i < pool->offs_size; i++)
 	poolHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
 }
