@@ -27,18 +27,6 @@ struct poolHash_s {
     int keyCount;
 };
 
-static
-poolHashBucket poolHashfindEntry(poolHash ht, const char * key, unsigned int keyHash)
-{
-    unsigned int hash = keyHash % ht->numBuckets;
-    poolHashBucket b = ht->buckets[hash];
-
-    while (b && strcmp(b->key, key))
-	b = b->next;
-
-    return b;
-}
-
 static poolHash poolHashCreate(int numBuckets)
 {
     poolHash ht;
@@ -137,7 +125,11 @@ static poolHash poolHashFree(poolHash ht)
 
 static rpmsid poolHashGetHEntry(poolHash ht, const char * key, unsigned int keyHash)
 {
-    poolHashBucket b = poolHashfindEntry(ht, key, keyHash);
+    unsigned int hash = keyHash % ht->numBuckets;
+    poolHashBucket b = ht->buckets[hash];
+
+    while (b && strcmp(b->key, key))
+	b = b->next;
 
     return (b == NULL) ? 0 : b->data;
 }
