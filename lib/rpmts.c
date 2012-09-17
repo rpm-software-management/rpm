@@ -458,8 +458,14 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     Header h = NULL;
     rpmRC rc = RPMRC_FAIL;		/* assume failure */
     rpmPubkey pubkey = NULL;
-    rpmKeyring keyring = rpmtsGetKeyring(ts, 1);
+    rpmVSFlags oflags = rpmtsVSFlags(ts);
+    rpmKeyring keyring;
     int krc;
+
+    /* XXX keyring wont load if sigcheck disabled, force it temporarily */
+    rpmtsSetVSFlags(ts, (oflags & ~_RPMVSF_NOSIGNATURES));
+    keyring = rpmtsGetKeyring(ts, 1);
+    rpmtsSetVSFlags(ts, oflags);
 
     if ((pubkey = rpmPubkeyNew(pkt, pktlen)) == NULL)
 	goto exit;
