@@ -12,8 +12,6 @@
 static int pool_debug = 0;
 
 typedef struct poolHash_s * poolHash;
-typedef unsigned int (*poolHashHashFunctionType) (const char * string);
-typedef int (*poolHashHashEqualityType) (const char * key1, const char * key2);
 typedef struct poolHashBucket_s * poolHashBucket;
 
 struct poolHashBucket_s {
@@ -25,8 +23,6 @@ struct poolHashBucket_s {
 struct poolHash_s {
     int numBuckets;
     poolHashBucket * buckets;
-    poolHashHashFunctionType fn;
-    poolHashHashEqualityType eq;
     int bucketCount;
     int keyCount;
 };
@@ -37,23 +33,19 @@ poolHashBucket poolHashfindEntry(poolHash ht, const char * key, unsigned int key
     unsigned int hash = keyHash % ht->numBuckets;
     poolHashBucket b = ht->buckets[hash];
 
-    while (b && ht->eq(b->key, key))
+    while (b && strcmp(b->key, key))
 	b = b->next;
 
     return b;
 }
 
-static poolHash poolHashCreate(int numBuckets,
-		   poolHashHashFunctionType fn, poolHashHashEqualityType eq)
+static poolHash poolHashCreate(int numBuckets)
 {
     poolHash ht;
 
     ht = xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets;
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
-
-    ht->fn = fn;
-    ht->eq = eq;
     ht->bucketCount = ht->keyCount = 0;
     return ht;
 }
@@ -66,7 +58,7 @@ static void poolHashResize(poolHash ht, int numBuckets)
 	poolHashBucket b = ht->buckets[i];
 	poolHashBucket nextB;
 	while (b != NULL) {
-	    unsigned int hash = ht->fn(b->key) % numBuckets;
+	    unsigned int hash = rstrhash(b->key) % numBuckets;
 	    nextB = b->next;
 	    b->next = buckets[hash];
 	    buckets[hash] = b;
@@ -78,11 +70,6 @@ static void poolHashResize(poolHash ht, int numBuckets)
     ht->numBuckets = numBuckets;
 }
 
-static unsigned int poolHashKeyHash(poolHash ht, const char * key)
-{
-    return ht->fn(key);
-}
-
 static void poolHashAddHEntry(poolHash ht, const char * key, unsigned int keyHash, rpmsid data)
 {
     unsigned int hash = keyHash % ht->numBuckets;
@@ -92,7 +79,7 @@ static void poolHashAddHEntry(poolHash ht, const char * key, unsigned int keyHas
 	ht->bucketCount += 1;
     }
 
-    while (b && ht->eq(b->key, key)) {
+    while (b && strcmp(b->key, key)) {
 	b = b->next;
     }
 
@@ -112,7 +99,7 @@ static void poolHashAddHEntry(poolHash ht, const char * key, unsigned int keyHas
 
 static void poolHashAddEntry(poolHash ht, const char * key, rpmsid data)
 {
-    poolHashAddHEntry(ht, key, ht->fn(key), data);
+    poolHashAddHEntry(ht, key, rstrhash(key), data);
 }
 
 static void poolHashEmpty( poolHash ht)
@@ -202,7 +189,7 @@ static void rpmstrPoolRehash(rpmstrPool pool)
     if (pool->hash)
 	pool->hash = poolHashFree(pool->hash);
 
-    pool->hash = poolHashCreate(sizehint, rstrhash, strcmp);
+    pool->hash = poolHashCreate(sizehint);
     for (int i = 1; i < pool->offs_size; i++)
 	poolHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
 }
@@ -311,7 +298,7 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
     rpmsid sid = 0;
 
     if (pool && pool->hash && s) {
-	unsigned int hash = poolHashKeyHash(pool->hash, s);
+	unsigned int hash = rstrhash(s);
 	sid = poolHashGetHEntry(pool->hash, s, hash);
 	if (sid == 0 && create && !pool->frozen) {
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
