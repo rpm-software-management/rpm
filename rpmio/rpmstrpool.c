@@ -27,6 +27,18 @@ struct poolHash_s {
     int keyCount;
 };
 
+struct rpmstrPool_s {
+    size_t * offs;		/* offsets into data area */
+    rpmsid offs_size;		/* largest offset index */;
+    rpmsid offs_alloced;	/* offsets allocation size */
+    char * data;		/* string data area */
+    size_t data_size;		/* string data area size */
+    size_t data_alloced;	/* string data area allocation size */
+    poolHash hash;		/* string -> sid hash table */
+    int frozen;			/* are new id additions allowed? */
+    int nrefs;			/* refcount */
+};
+
 static poolHash poolHashCreate(int numBuckets)
 {
     poolHash ht;
@@ -156,18 +168,6 @@ static void poolHashPrintStats(poolHash ht)
     fprintf(stderr, "Keys: %i\n", bucketcnt);
     fprintf(stderr, "Max Keys/Bucket: %i\n", maxbuckets);
 }
-
-struct rpmstrPool_s {
-    size_t * offs;		/* offsets into data area */
-    rpmsid offs_size;		/* largest offset index */;
-    rpmsid offs_alloced;	/* offsets allocation size */
-    char * data;		/* string data area */
-    size_t data_size;		/* string data area size */
-    size_t data_alloced;	/* string data area allocation size */
-    poolHash hash;		/* string -> sid hash table */
-    int frozen;			/* are new id additions allowed? */
-    int nrefs;			/* refcount */
-};
 
 static void rpmstrPoolRehash(rpmstrPool pool)
 {
