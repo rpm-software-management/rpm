@@ -3,7 +3,7 @@
 #include <rpm/rpmstrpool.h>
 #include "debug.h"
 
-#define HASHTYPE strHash
+#define HASHTYPE poolHash
 #define HTKEYTYPE const char *
 #define HTDATATYPE rpmsid
 #include "lib/rpmhash.H"
@@ -24,7 +24,7 @@ struct rpmstrPool_s {
     char * data;		/* string data area */
     size_t data_size;		/* string data area size */
     size_t data_alloced;	/* string data area allocation size */
-    strHash hash;		/* string -> sid hash table */
+    poolHash hash;		/* string -> sid hash table */
     int frozen;			/* are new id additions allowed? */
     int nrefs;			/* refcount */
 };
@@ -39,11 +39,11 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 	sizehint = pool->offs_size * 2;
 
     if (pool->hash)
-	pool->hash = strHashFree(pool->hash);
+	pool->hash = poolHashFree(pool->hash);
 
-    pool->hash = strHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
+    pool->hash = poolHashCreate(sizehint, rstrhash, strcmp, NULL, NULL);
     for (int i = 1; i < pool->offs_size; i++)
-	strHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
+	poolHashAddEntry(pool->hash, rpmstrPoolStr(pool, i), i);
 }
 
 rpmstrPool rpmstrPoolCreate(void)
@@ -60,7 +60,7 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 	if (pool->nrefs > 1) {
 	    pool->nrefs--;
 	} else {
-	    strHashFree(pool->hash);
+	    poolHashFree(pool->hash);
 	    free(pool->offs);
 	    free(pool->data);
 	    free(pool);
@@ -84,7 +84,7 @@ void rpmstrPoolFreeze(rpmstrPool pool, int keephash)
 	 * dont bother unless we're also discarding the hash.
 	 */
 	if (!keephash) {
-	    pool->hash = strHashFree(pool->hash);
+	    pool->hash = poolHashFree(pool->hash);
 	    pool->data_alloced = pool->data_size;
 	    pool->data = xrealloc(pool->data, pool->data_alloced);
 	    pool->offs_alloced = pool->offs_size + 1;
@@ -138,7 +138,7 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
     pool->offs[pool->offs_size] = pool->data_size;
     pool->data_size += ssize;
 
-    strHashAddHEntry(pool->hash, t, hash, pool->offs_size);
+    poolHashAddHEntry(pool->hash, t, hash, pool->offs_size);
 
     return pool->offs_size;
 }
@@ -148,9 +148,9 @@ rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
     rpmsid sid = 0;
 
     if (pool && pool->hash && s) {
-	unsigned int hash = strHashKeyHash(pool->hash, s);
+	unsigned int hash = poolHashKeyHash(pool->hash, s);
 	rpmsid *sids;
-	if (strHashGetHEntry(pool->hash, s, hash, &sids, NULL, NULL)) {
+	if (poolHashGetHEntry(pool->hash, s, hash, &sids, NULL, NULL)) {
 	    sid = sids[0];
 	} else if (create && !pool->frozen) {
 	    sid = rpmstrPoolPut(pool, s, slen, hash);
