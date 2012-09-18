@@ -132,7 +132,6 @@ static int doLookupId(fingerPrintCache cache,
 	     rpmsid dirNameId, rpmsid baseNameId,
 	     fingerPrint *fp)
 {
-    char dir[PATH_MAX];
     char * end;		    /* points to the '\0' at the end of "buf" */
     struct stat sb;
     char *buf = NULL;
@@ -160,18 +159,21 @@ static int doLookupId(fingerPrintCache cache,
 
 	/* if the current directory doesn't exist, we might fail. 
 	   oh well. likewise if it's too long.  */
-	dir[0] = '\0';
-	if (realpath(".", dir) != NULL) {
-	    end = dir + strlen(dir);
+
+	/* XXX we should let realpath() allocate if it can */
+	cdnbuf = xmalloc(PATH_MAX);
+	cdnbuf[0] = '\0';
+	if (realpath(".", cdnbuf) != NULL) {
+	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
-	    end = stpncpy(end, cleanDirName, sizeof(dir) - (end - dir));
+	    end = stpncpy(end, cleanDirName, sizeof(cdnbuf) - (end - cdnbuf));
 	    *end = '\0';
-	    (void)rpmCleanPath(dir); /* XXX possible /../ from concatenation */
-	    end = dir + strlen(dir);
+	    (void)rpmCleanPath(cdnbuf); /* XXX possible /../ from concatenation */
+	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    *end = '\0';
-	    cleanDirName = dir;
-	    cdnl = end - dir;
+	    cleanDirName = cdnbuf;
+	    cdnl = end - cdnbuf;
 	}
     }
 
