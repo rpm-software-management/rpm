@@ -166,7 +166,7 @@ static int doLookupId(fingerPrintCache cache,
 	if (realpath(".", cdnbuf) != NULL) {
 	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
-	    end = stpncpy(end, dirName, sizeof(cdnbuf) - (end - cdnbuf));
+	    end = stpncpy(end, dirName, PATH_MAX - (end - cdnbuf));
 	    *end = '\0';
 	    (void)rpmCleanPath(cdnbuf); /* XXX possible /../ from concatenation */
 	    end = cdnbuf + strlen(cdnbuf);
