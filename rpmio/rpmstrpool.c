@@ -7,22 +7,20 @@
 #define STRDATA_CHUNK 65536
 #define STROFFS_CHUNK 2048
 /* XXX this is ridiculously small... */
-#define STRHASH_INITSIZE 5
+#define STRHASH_INITSIZE 1024
 
 static int pool_debug = 0;
 
 typedef struct poolHash_s * poolHash;
-typedef struct poolHashBucket_s * poolHashBucket;
+typedef struct poolHashBucket_s poolHashBucket;
 
 struct poolHashBucket_s {
-    poolHashBucket next;
     rpmsid keyid;
 };
 
 struct poolHash_s {
     int numBuckets;
     poolHashBucket * buckets;
-    int bucketCount;
     int keyCount;
 };
 
@@ -93,6 +91,11 @@ unsigned int rstrhash(const char * string)
     return rstrlenhash(string, NULL);
 }
 
+static inline unsigned int hashbucket(unsigned int hash, unsigned int number)
+{
+    return hash + number*number;
+}
+
 static poolHash poolHashCreate(int numBuckets)
 {
     poolHash ht;
@@ -100,7 +103,7 @@ static poolHash poolHashCreate(int numBuckets)
     ht = xmalloc(sizeof(*ht));
     ht->numBuckets = numBuckets;
     ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
-    ht->bucketCount = ht->keyCount = 0;
+    ht->keyCount = 0;
     return ht;
 }
 
@@ -110,18 +113,17 @@ static void poolHashResize(rpmstrPool pool, int numBuckets)
     poolHashBucket * buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
 
     for (int i=0; i<ht->numBuckets; i++) {
-	poolHashBucket b = ht->buckets[i];
-	poolHashBucket nextB;
-	while (b != NULL) {
-	    unsigned int keyHash = rstrhash(rpmstrPoolStr(pool, b->keyid));
-	    unsigned int hash = keyHash % numBuckets;
-	    nextB = b->next;
-	    b->next = buckets[hash];
-	    buckets[hash] = b;
-	    b = nextB;
-	}
+        if (!ht->buckets[i].keyid) continue;
+        unsigned int keyHash = rstrhash(rpmstrPoolStr(pool, ht->buckets[i].keyid));
+        for (unsigned int j=0;;j++) {
+            unsigned int hash = hashbucket(keyHash, j) % numBuckets;
+            if (!buckets[hash].keyid) {
+                buckets[hash].keyid = ht->buckets[i].keyid;
+                break;
+            }
+        }
     }
-    free(ht->buckets);
+    free((void *)(ht->buckets));
     ht->buckets = buckets;
     ht->numBuckets = numBuckets;
 }
@@ -129,27 +131,21 @@ static void poolHashResize(rpmstrPool pool, int numBuckets)
 static void poolHashAddHEntry(rpmstrPool pool, const char * key, unsigned int keyHash, rpmsid keyid)
 {
     poolHash ht = pool->hash;
-    unsigned int hash = keyHash % ht->numBuckets;
-    poolHashBucket b = ht->buckets[hash];
 
-    if (b == NULL) {
-	ht->bucketCount += 1;
+    /* keep load factor inbetween 0.25 and 0.5 */
+    if (2*(ht->keyCount) > ht->numBuckets) {
+        poolHashResize(pool, ht->numBuckets * 2);
     }
 
-    while (b && strcmp(rpmstrPoolStr(pool, b->keyid), key)) {
-	b = b->next;
-    }
-
-    if (b == NULL) {
-	ht->keyCount += 1;
-	b = xmalloc(sizeof(*b));
-	b->keyid = keyid;
-	b->next = ht->buckets[hash];
-	ht->buckets[hash] = b;
-
-	if (ht->keyCount > ht->numBuckets) {
-	    poolHashResize(pool, ht->numBuckets * 2);
-	}
+    for (unsigned int i=0;;i++) {
+        unsigned int hash = hashbucket(keyHash, i) % ht->numBuckets;
+        if (!ht->buckets[hash].keyid) {
+            ht->buckets[hash].keyid = keyid;
+            ht->keyCount++;
+            break;
+        } else if (!strcmp(rpmstrPoolStr(pool, ht->buckets[hash].keyid), key)) {
+            return;
+        }
     }
 }
 
@@ -160,23 +156,13 @@ static void poolHashAddEntry(rpmstrPool pool, const char * key, rpmsid keyid)
 
 static void poolHashEmpty( poolHash ht)
 {
-    poolHashBucket b, n;
-    int i;
+    unsigned int i;
 
-    if (ht->bucketCount == 0) return;
+    if (ht->keyCount == 0) return;
 
     for (i = 0; i < ht->numBuckets; i++) {
-	b = ht->buckets[i];
-	if (b == NULL)
-	    continue;
-	ht->buckets[i] = NULL;
-
-	do {
-	    n = b->next;
-	    b = _free(b);
-	} while ((b = n) != NULL);
+	ht->buckets[i].keyid = 0;
     }
-    ht->bucketCount = 0;
     ht->keyCount = 0;
 }
 
@@ -191,27 +177,28 @@ static poolHash poolHashFree(poolHash ht)
     return NULL;
 }
 
-static void poolHashPrintStats(poolHash ht)
+static void poolHashPrintStats(rpmstrPool pool)
 {
+    poolHash ht = pool->hash;
     int i;
-    poolHashBucket bucket;
-
-    int hashcnt=0, bucketcnt=0;
-    int maxbuckets=0;
+    int collisions = 0;
+    int maxcollisions = 0;
 
     for (i=0; i<ht->numBuckets; i++) {
-        int buckets = 0;
-        for (bucket=ht->buckets[i]; bucket; bucket=bucket->next){
-	    buckets++;
-	}
-	if (maxbuckets < buckets) maxbuckets = buckets;
-	if (buckets) hashcnt++;
-	bucketcnt += buckets;
+        unsigned int keyHash = rstrhash(rpmstrPoolStr(pool, ht->buckets[i].keyid));
+        for (unsigned int j=0;;j++) {
+            unsigned int hash = hashbucket(keyHash, i) % ht->numBuckets;
+            if (hash==i) {
+                collisions += j;
+                maxcollisions = maxcollisions > j ? maxcollisions : j;
+                break;
+            }
+        }
     }
     fprintf(stderr, "Hashsize: %i\n", ht->numBuckets);
-    fprintf(stderr, "Hashbuckets: %i\n", hashcnt);
-    fprintf(stderr, "Keys: %i\n", bucketcnt);
-    fprintf(stderr, "Max Keys/Bucket: %i\n", maxbuckets);
+    fprintf(stderr, "Keys: %i\n", ht->keyCount);
+    fprintf(stderr, "Collisions: %i\n", collisions);
+    fprintf(stderr, "Max collisions: %i\n", maxcollisions);
 }
 
 static void rpmstrPoolRehash(rpmstrPool pool)
@@ -246,7 +233,7 @@ rpmstrPool rpmstrPoolFree(rpmstrPool pool)
 	    pool->nrefs--;
 	} else {
 	    if (pool_debug)
-		poolHashPrintStats(pool->hash);
+		poolHashPrintStats(pool);
 	    poolHashFree(pool->hash);
 	    free(pool->offs);
 	    free(pool->data);
@@ -329,18 +316,21 @@ static rpmsid rpmstrPoolGet(rpmstrPool pool, const char * key, size_t keylen,
 			    unsigned int keyHash)
 {
     poolHash ht = pool->hash;
-    unsigned int hash = keyHash % ht->numBuckets;
-    poolHashBucket b;
     const char * s;
 
-    for (b = ht->buckets[hash]; b != NULL; b = b->next) {
-	s = rpmstrPoolStr(pool, b->keyid);
+
+    for (unsigned int i=0;; i++) {
+        unsigned int hash = hashbucket(keyHash, i) % ht->numBuckets;
+
+        if (!ht->buckets[hash].keyid) {
+            return 0;
+        }
+
+	s = rpmstrPoolStr(pool, ht->buckets[hash].keyid);
 	/* pool string could be longer than keylen, require exact matche */
 	if (strncmp(s, key, keylen) == 0 && s[keylen] == '\0')
-	    break;
+	    return ht->buckets[hash].keyid;
     }
-
-    return (b == NULL) ? 0 : b->keyid;
 }
 
 static inline rpmsid strn2id(rpmstrPool pool, const char *s, size_t slen,
