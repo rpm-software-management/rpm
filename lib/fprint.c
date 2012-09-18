@@ -139,17 +139,17 @@ static int doLookupId(fingerPrintCache cache,
     const struct fprintCacheEntry_s * cacheHit;
     const char * dirName = rpmstrPoolStr(cache->pool, dirNameId);
     size_t cdnl = rpmstrPoolStrlen(cache->pool, dirNameId);;
-    const char * cleanDirName = dirName;
+    const char * cdn = NULL; /* cleaned directory path */
 
-    if (*cleanDirName == '/') {
+    if (*dirName == '/') {
 	char trailingslash = (dirName[cdnl-1] == '/');
 	cdnbuf = xstrdup(dirName);
 	cdnbuf = rpmCleanPath(cdnbuf);
 	if (trailingslash) {
 	    cdnbuf = rstrcat(&cdnbuf, "/");
 	}
-	cleanDirName = cdnbuf;
-	cdnl = strlen(cleanDirName);
+	cdn = cdnbuf;
+	cdnl = strlen(cdn);
     } else {
 	/* Using realpath on the arg isn't correct if the arg is a symlink,
 	 * especially if the symlink is a dangling link.  What we 
@@ -166,21 +166,21 @@ static int doLookupId(fingerPrintCache cache,
 	if (realpath(".", cdnbuf) != NULL) {
 	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
-	    end = stpncpy(end, cleanDirName, sizeof(cdnbuf) - (end - cdnbuf));
+	    end = stpncpy(end, dirName, sizeof(cdnbuf) - (end - cdnbuf));
 	    *end = '\0';
 	    (void)rpmCleanPath(cdnbuf); /* XXX possible /../ from concatenation */
 	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    *end = '\0';
-	    cleanDirName = cdnbuf;
+	    cdn = cdnbuf;
 	    cdnl = end - cdnbuf;
 	}
     }
 
     memset(fp, 0, sizeof(*fp));
-    if (cleanDirName == NULL) goto exit; /* XXX can't happen */
+    if (cdn == NULL) goto exit; /* XXX only if realpath() above fails */
 
-    buf = xstrdup(cleanDirName);
+    buf = xstrdup(cdn);
     end = buf + cdnl;
 
     /* no need to pay attention to that extra little / at the end of dirName */
@@ -210,7 +210,7 @@ static int doLookupId(fingerPrintCache cache,
 	}
 
         if (fp->entry) {
-	    const char * subDir = cleanDirName + (end - buf);
+	    const char * subDir = cdn + (end - buf);
 	    if (subDir[0] == '/' && subDir[1] != '\0')
 		subDir++;
 	    if (subDir[0] == '\0' ||
