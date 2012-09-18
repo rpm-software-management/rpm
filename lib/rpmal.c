@@ -304,10 +304,8 @@ static void rpmalMakeIndex(rpmal al)
     }
 }
 
-static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
+static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
 {
-    rpmsid fnId = rpmdsNId(ds);
-    const char *fileName = rpmstrPoolStr(al->pool, fnId);
     const char *slash; 
     rpmte * ret = NULL;
 
@@ -368,7 +366,7 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     name = rpmstrPoolStr(al->pool, nameId);
     if (!obsolete && *name == '/') {
 	/* First, look for files "contained" in package ... */
-	ret = rpmalAllFileSatisfiesDepend(al, ds);
+	ret = rpmalAllFileSatisfiesDepend(al, name);
 	if (ret != NULL && *ret != NULL) {
 	    rpmdsNotify(ds, "(added files)", 0);
 	    return ret;
