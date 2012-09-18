@@ -251,7 +251,7 @@ void rpmstrPoolUnfreeze(rpmstrPool pool)
 
 static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigned int hash)
 {
-    const char *t = NULL;
+    char *t = NULL;
     size_t ssize = slen + 1;
 
     if (ssize > pool->data_alloced - pool->data_size) {
@@ -272,7 +272,8 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 			      pool->offs_alloced * sizeof(*pool->offs));
     }
 
-    t = memcpy(pool->data + pool->data_size, s, ssize);
+    t = memcpy(pool->data + pool->data_size, s, slen);
+    t[slen] = '\0';
     pool->offs[pool->offs_size] = pool->data_size;
     pool->data_size += ssize;
 
