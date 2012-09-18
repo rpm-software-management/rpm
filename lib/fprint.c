@@ -140,14 +140,14 @@ static int doLookupId(fingerPrintCache cache,
     const char * dirName = rpmstrPoolStr(cache->pool, dirNameId);
     size_t cdnl = rpmstrPoolStrlen(cache->pool, dirNameId);;
     const char * cdn = NULL; /* cleaned directory path */
+    const char *rootDir = "/";
 
     if (*dirName == '/') {
-	char trailingslash = (dirName[cdnl-1] == '/');
 	cdnbuf = xstrdup(dirName);
 	cdnbuf = rpmCleanPath(cdnbuf);
-	if (trailingslash) {
+	/* leave my trailing slashes along you b**** */
+	if (cdnl > 1)
 	    cdnbuf = rstrcat(&cdnbuf, "/");
-	}
 	cdn = cdnbuf;
 	cdnl = strlen(cdn);
     } else {
@@ -183,15 +183,9 @@ static int doLookupId(fingerPrintCache cache,
     buf = xstrdup(cdn);
     end = buf + cdnl;
 
-    /* no need to pay attention to that extra little / at the end of dirName */
-    if (buf[1] && end[-1] == '/') {
-	end--;
-	*end = '\0';
-    }
-
     while (1) {
 	/* buf contents change through end ptr, requiring rehash on each loop */
-	const char *fpDir = (*buf != '\0') ? buf : "/";
+	const char *fpDir = (*buf != '\0') ? buf : rootDir;
 	rpmsid fpId = rpmstrPoolId(cache->pool, fpDir, 1);
 
 	/* as we're stating paths here, we want to follow symlinks */
@@ -224,14 +218,11 @@ static int doLookupId(fingerPrintCache cache,
 	}
 
         /* stat of '/' just failed! */
-	if (end == buf + 1)
+	if (fpDir == rootDir)
 	    abort();
 
 	end--;
-	while ((end > buf) && *end != '/') end--;
-	if (end == buf)	    /* back to stat'ing just '/' */
-	    end++;
-
+	while ((end > buf) && *(end-1) != '/') end--;
 	*end = '\0';
     }
 
