@@ -204,12 +204,9 @@ static int doLookupId(fingerPrintCache cache,
 	}
 
         if (fp->entry) {
-	    const char * subDir = cdn + (end - buf);
-	    if (subDir[0] == '/' && subDir[1] != '\0')
-		subDir++;
-	    if (subDir[0] == '\0' ||
+	    const char * subDir = cdn + (end - buf) - 1;
 	    /* XXX don't bother saving '/' as subdir */
-	       (subDir[0] == '/' && subDir[1] == '\0'))
+	    if (subDir[0] == '\0' || (subDir[0] == '/' && subDir[1] == '\0'))
 		subDir = NULL;
 	    fp->baseNameId = baseNameId;
 	    if (subDir != NULL)
@@ -394,7 +391,6 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 						   current_fp.subDirId);
 			}
 			rstrscat(&link, dn,
-				 subDir ? "/" : "",
 				 subDir ? subDir : "",
 				 "/", NULL);
 		   }
