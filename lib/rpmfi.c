@@ -1293,7 +1293,10 @@ rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix)
 
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
 {
-    if (fi->fc > 0 && fi->fps == NULL) {
+    /* This can get called twice (eg yum), scratch former results and redo */
+    if (fi->fc > 0) {
+	if (fi->fps)
+	    free(fi->fps);
 	fi->fps = fpLookupList(fpc, fi->pool,
 			       fi->dnid, fi->bnid, fi->dil, fi->fc);
     }
