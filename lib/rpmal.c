@@ -335,8 +335,6 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 		if (alp->p == NULL) // deleted
 		    continue;
 
-		rpmdsNotify(ds, "(added files)", 0);
-
 		ret[found] = alp->p;
 		found++;
 	    }
@@ -371,8 +369,10 @@ static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     if (!obsolete && *name == '/') {
 	/* First, look for files "contained" in package ... */
 	ret = rpmalAllFileSatisfiesDepend(al, ds);
-	if (ret != NULL && *ret != NULL)
+	if (ret != NULL && *ret != NULL) {
+	    rpmdsNotify(ds, "(added files)", 0);
 	    return ret;
+	}
 	/* ... then, look for files "provided" by package. */
 	ret = _free(ret);
     }
