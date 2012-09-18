@@ -191,18 +191,6 @@ static poolHash poolHashFree(poolHash ht)
     return NULL;
 }
 
-static rpmsid poolHashGetHEntry(rpmstrPool pool, const char * key, unsigned int keyHash)
-{
-    poolHash ht = pool->hash;
-    unsigned int hash = keyHash % ht->numBuckets;
-    poolHashBucket b = ht->buckets[hash];
-
-    while (b && strcmp(rpmstrPoolStr(pool, b->keyid), key))
-	b = b->next;
-
-    return (b == NULL) ? 0 : b->keyid;
-}
-
 static void poolHashPrintStats(poolHash ht)
 {
     int i;
@@ -337,24 +325,58 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
     return pool->offs_size;
 }
 
+static rpmsid rpmstrPoolGet(rpmstrPool pool, const char * key, size_t keylen,
+			    unsigned int keyHash)
+{
+    poolHash ht = pool->hash;
+    unsigned int hash = keyHash % ht->numBuckets;
+    poolHashBucket b;
+    const char * s;
+
+    for (b = ht->buckets[hash]; b != NULL; b = b->next) {
+	s = rpmstrPoolStr(pool, b->keyid);
+	/* pool string could be longer than keylen, require exact matche */
+	if (strncmp(s, key, keylen) == 0 && s[keylen] == '\0')
+	    break;
+    }
+
+    return (b == NULL) ? 0 : b->keyid;
+}
+
+static inline rpmsid strn2id(rpmstrPool pool, const char *s, size_t slen,
+			     unsigned int hash, int create)
+{
+    rpmsid sid = 0;
+
+    if (pool && pool->hash) {
+	sid = rpmstrPoolGet(pool, s, slen, hash);
+	if (sid == 0 && create && !pool->frozen)
+	    sid = rpmstrPoolPut(pool, s, slen, hash);
+    }
+    return sid;
+}
+
 rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create)
 {
     rpmsid sid = 0;
 
-    if (pool && pool->hash && s) {
-	unsigned int hash = rstrhash(s);
-	sid = poolHashGetHEntry(pool, s, hash);
-	if (sid == 0 && create && !pool->frozen) {
-	    sid = rpmstrPoolPut(pool, s, slen, hash);
-	}
+    if (s != NULL) {
+	unsigned int hash = rstrnhash(s, slen);
+	sid = strn2id(pool, s, slen, hash, create);
     }
-
     return sid;
 }
 
 rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create)
 {
-    return rpmstrPoolIdn(pool, s, strlen(s), create);
+    rpmsid sid = 0;
+
+    if (s != NULL) {
+	size_t slen;
+	unsigned int hash = rstrlenhash(s, &slen);
+	sid = strn2id(pool, s, slen, hash, create);
+    }
+    return sid;
 }
 
 const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid)
