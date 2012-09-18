@@ -38,6 +38,34 @@ struct rpmstrPool_s {
     int nrefs;			/* refcount */
 };
 
+/* calculate hash and string length on at once */
+static inline unsigned int rstrlenhash(const char * str, size_t * len)
+{
+    /* Jenkins One-at-a-time hash */
+    unsigned int hash = 0xe4721b68;
+    const char * s = str;
+
+    while (*s != '\0') {
+      hash += *s;
+      hash += (hash << 10);
+      hash ^= (hash >> 6);
+      s++;
+    }
+    hash += (hash << 3);
+    hash ^= (hash >> 11);
+    hash += (hash << 15);
+
+    if (len)
+	*len = (s - str);
+
+    return hash;
+}
+
+unsigned int rstrhash(const char * string)
+{
+    return rstrlenhash(string, NULL);
+}
+
 static poolHash poolHashCreate(int numBuckets)
 {
     poolHash ht;
