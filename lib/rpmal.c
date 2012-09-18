@@ -319,14 +319,10 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const rpmds ds)
 	availableIndexEntry result;
 	int resultCnt = 0;
 	size_t bnStart = (slash - fileName) + 1;
-	char dirName[bnStart + 1];
 	struct fileNameEntry_s fne;
 
-	strncpy(dirName, fileName, bnStart);
-	dirName[bnStart] = '\0';
-
 	fne.baseName = rpmstrPoolId(al->pool, fileName + bnStart, 0);
-	fne.dirName = rpmstrPoolId(al->pool, dirName, 0);
+	fne.dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 0);
 
 	rpmalFileHashGetEntry(al->fileHash, fne, &result, &resultCnt, NULL);
 
