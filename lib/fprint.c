@@ -128,19 +128,11 @@ static const struct fprintCacheEntry_s * cacheContainsDirectory(
     return NULL;
 }
 
-static int doLookupId(fingerPrintCache cache,
-	     rpmsid dirNameId, rpmsid baseNameId,
-	     fingerPrint *fp)
+static char * canonDir(rpmstrPool pool, rpmsid dirNameId)
 {
-    char * end;		    /* points to the '\0' at the end of "buf" */
-    struct stat sb;
-    char *buf = NULL;
+    const char * dirName = rpmstrPoolStr(pool, dirNameId);
+    size_t cdnl = rpmstrPoolStrlen(pool, dirNameId);;
     char *cdnbuf = NULL;
-    const struct fprintCacheEntry_s * cacheHit;
-    const char * dirName = rpmstrPoolStr(cache->pool, dirNameId);
-    size_t cdnl = rpmstrPoolStrlen(cache->pool, dirNameId);;
-    const char * cdn = NULL; /* cleaned directory path */
-    const char *rootDir = "/";
 
     if (*dirName == '/') {
 	cdnbuf = xstrdup(dirName);
@@ -148,8 +140,6 @@ static int doLookupId(fingerPrintCache cache,
 	/* leave my trailing slashes along you b**** */
 	if (cdnl > 1)
 	    cdnbuf = rstrcat(&cdnbuf, "/");
-	cdn = cdnbuf;
-	cdnl = strlen(cdn);
     } else {
 	/* Using realpath on the arg isn't correct if the arg is a symlink,
 	 * especially if the symlink is a dangling link.  What we 
@@ -164,7 +154,7 @@ static int doLookupId(fingerPrintCache cache,
 	cdnbuf = xmalloc(PATH_MAX);
 	cdnbuf[0] = '\0';
 	if (realpath(".", cdnbuf) != NULL) {
-	    end = cdnbuf + strlen(cdnbuf);
+	    char *end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    end = stpncpy(end, dirName, PATH_MAX - (end - cdnbuf));
 	    *end = '\0';
@@ -172,14 +162,30 @@ static int doLookupId(fingerPrintCache cache,
 	    end = cdnbuf + strlen(cdnbuf);
 	    if (end[-1] != '/')	*end++ = '/';
 	    *end = '\0';
-	    cdn = cdnbuf;
-	    cdnl = end - cdnbuf;
+	} else {
+	    cdnbuf = _free(cdnbuf);
 	}
     }
+    return cdnbuf;
+}
+
+
+static int doLookupId(fingerPrintCache cache,
+	     rpmsid dirNameId, rpmsid baseNameId,
+	     fingerPrint *fp)
+{
+    char * end;		    /* points to the '\0' at the end of "buf" */
+    struct stat sb;
+    char *buf = NULL;
+    const struct fprintCacheEntry_s * cacheHit;
+    char *cdn = canonDir(cache->pool, dirNameId);
+    const char *rootDir = "/";
+    size_t cdnl;
 
     memset(fp, 0, sizeof(*fp));
     if (cdn == NULL) goto exit; /* XXX only if realpath() above fails */
 
+    cdnl = strlen(cdn);
     buf = xstrdup(cdn);
     end = buf + cdnl;
 
@@ -225,7 +231,7 @@ static int doLookupId(fingerPrintCache cache,
 
 exit:
     free(buf);
-    free(cdnbuf);
+    free(cdn);
     /* XXX TODO: failure from eg realpath() should be returned and handled */
     return 0;
 }
