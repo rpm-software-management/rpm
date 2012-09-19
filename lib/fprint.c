@@ -174,31 +174,24 @@ static int doLookupId(fingerPrintCache cache,
 	     rpmsid dirNameId, rpmsid baseNameId,
 	     fingerPrint *fp)
 {
-    char * end;		    /* points to the '\0' at the end of "buf" */
     struct stat sb;
-    char *buf = NULL;
     const struct fprintCacheEntry_s * cacheHit;
     char *cdn = canonDir(cache->pool, dirNameId);
-    const char *rootDir = "/";
-    size_t cdnl;
-
-    memset(fp, 0, sizeof(*fp));
+    rpmsid fpId;
+    size_t fpLen;
+    
     if (cdn == NULL) goto exit; /* XXX only if realpath() above fails */
 
-    cdnl = strlen(cdn);
-    buf = xstrdup(cdn);
-    end = buf + cdnl;
+    memset(fp, 0, sizeof(*fp));
+    fpId = rpmstrPoolId(cache->pool, cdn, 1);
+    fpLen = rpmstrPoolStrlen(cache->pool, fpId);;
 
     while (1) {
-	/* buf contents change through end ptr, requiring rehash on each loop */
-	const char *fpDir = (*buf != '\0') ? buf : rootDir;
-	rpmsid fpId = rpmstrPoolId(cache->pool, fpDir, 1);
-
 	/* as we're stating paths here, we want to follow symlinks */
 	cacheHit = cacheContainsDirectory(cache, fpId);
 	if (cacheHit != NULL) {
 	    fp->entry = cacheHit;
-	} else if (!stat(fpDir, &sb)) {
+	} else if (!stat(rpmstrPoolStr(cache->pool, fpId), &sb)) {
 	    struct fprintCacheEntry_s * newEntry = xmalloc(sizeof(* newEntry));
 
 	    newEntry->ino = sb.st_ino;
@@ -210,7 +203,7 @@ static int doLookupId(fingerPrintCache cache,
 	}
 
         if (fp->entry) {
-	    const char * subDir = cdn + (end - buf) - 1;
+	    const char * subDir = cdn + fpLen - 1;
 	    /* XXX don't bother saving '/' as subdir */
 	    if (subDir[0] == '\0' || (subDir[0] == '/' && subDir[1] == '\0'))
 		subDir = NULL;
@@ -221,16 +214,17 @@ static int doLookupId(fingerPrintCache cache,
 	}
 
         /* stat of '/' just failed! */
-	if (fpDir == rootDir)
+	if (fpLen == 1)
 	    abort();
 
-	end--;
-	while ((end > buf) && *(end-1) != '/') end--;
-	*end = '\0';
+	/* Find the parent directory and its id for the next round */
+	fpLen--;
+	while (fpLen > 1 && cdn[fpLen-1] != '/')
+	    fpLen--;
+	fpId = rpmstrPoolIdn(cache->pool, cdn, fpLen, 1);
     }
 
 exit:
-    free(buf);
     free(cdn);
     /* XXX TODO: failure from eg realpath() should be returned and handled */
     return 0;
