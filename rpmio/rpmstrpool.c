@@ -392,7 +392,7 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
     size_t slen = 0;
     if (pool && sid <= pool->offs_size) {
 	size_t end = (sid < pool->offs_size) ? pool->offs[sid + 1] :
-					       pool->offs_size;
+					       pool->data_size;
 	slen = end - pool->offs[sid] - 1;
     }
     return slen;
