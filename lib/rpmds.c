@@ -825,7 +825,7 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     int result;
 
     /* Different names don't overlap. */
-    if (!rstreq(rpmdsN(A), rpmdsN(B))) {
+    if (!rpmstrPoolStreq(A->pool, rpmdsNId(A), B->pool, rpmdsNId(B))) {
 	result = 0;
 	goto exit;
     }
