@@ -190,8 +190,66 @@ versiontest-2.0-1.noarch
 ],
 [warning: package versiontest-2.0-1.noarch was already added, skipping versiontest-1.0-1.noarch
 ])
-
 AT_CLEANUP
+
+# Test upgrade of obsoleted package in same transaction
+AT_SETUP([rpm -U obsoleted package 1])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "obs deptest-two" \
+	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	/data/SPECS/deptest.spec
+
+
+runroot rpm -Uv \
+  "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -q deptest-one
+],
+[0],
+[Preparing packages...
+deptest-one-1.0-1.noarch
+deptest-one-1.0-1.noarch
+],
+[warning: package deptest-two-1.0-1.noarch was already added, replacing with deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
+
+# Test upgrade of obsoleted package in same transaction
+AT_SETUP([rpm -U obsoleted package 2])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "obs deptest-two" \
+	/data/SPECS/deptest.spec
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	/data/SPECS/deptest.spec
+
+
+runroot rpm -Uv \
+  "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -q deptest-one
+],
+[0],
+[Preparing packages...
+deptest-one-1.0-1.noarch
+deptest-one-1.0-1.noarch
+],
+[warning: package deptest-one-1.0-1.noarch was already added, skipping deptest-two-1.0-1.noarch
+])
+AT_CLEANUP
+
 # Test install of two different versions in same transaction
 AT_SETUP([rpm -i two versions of same package])
 AT_CHECK([

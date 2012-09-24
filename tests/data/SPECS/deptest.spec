@@ -9,6 +9,7 @@ BuildArch:	noarch
 %{?reqs:Requires: %{reqs}}
 %{?provs:Provides: %{provs}}
 %{?cfls:Conflicts: %{cfls}}
+%{?obs:Obsoletes: %{obs}}
 
 %description
 %{summary}
