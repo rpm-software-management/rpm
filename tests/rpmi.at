@@ -153,22 +153,45 @@ runroot rpm -q versiontest
 AT_CLEANUP
 
 # Test upgrade of different versions in same transaction
-AT_SETUP([rpm -U two versions of same package])
+AT_SETUP([rpm -U two versions of same package 1])
 AT_CHECK([
 RPMDB_CLEAR
 RPMDB_INIT
 
-runroot rpm -U \
+runroot rpm -Uv \
   "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm \
   "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm
 runroot rpm -q versiontest
 ],
 [0],
-[versiontest-2.0-1.noarch
+[Preparing packages...
+versiontest-2.0-1.noarch
+versiontest-2.0-1.noarch
 ],
-[])
+[warning: package versiontest-1.0-1.noarch was already added, replacing with versiontest-2.0-1.noarch
+])
 AT_CLEANUP
 
+# Test upgrade of different versions in same transaction
+AT_SETUP([rpm -U two versions of same package 2])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -Uv \
+  "${TOPDIR}"/RPMS/noarch/versiontest-2.0-1.noarch.rpm \
+  "${TOPDIR}"/RPMS/noarch/versiontest-1.0-1.noarch.rpm
+runroot rpm -q versiontest
+],
+[0],
+[Preparing packages...
+versiontest-2.0-1.noarch
+versiontest-2.0-1.noarch
+],
+[warning: package versiontest-2.0-1.noarch was already added, skipping versiontest-1.0-1.noarch
+])
+
+AT_CLEANUP
 # Test install of two different versions in same transaction
 AT_SETUP([rpm -i two versions of same package])
 AT_CHECK([
