@@ -412,21 +412,11 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	tsmem->orderCount++;
     }
     
-    /*
-     * XXX Instant rpmal addition disabled at least for now to ease
-     * string -> pool id transition. Instead we need to nuke the entire
-     * added rpmal if it exists when adding new packages.
-     */
-#if 0
     if (tsmem->addedPackages == NULL) {
-	tsmem->addedPackages = rpmalCreate(5, rpmtsFlags(ts),
+	tsmem->addedPackages = rpmalCreate(tsmem->pool, 5, rpmtsFlags(ts),
 					   tscolor, rpmtsPrefColor(ts));
     }
     rpmalAdd(tsmem->addedPackages, p);
-#else
-    if (tsmem->addedPackages != NULL)
-	tsmem->addedPackages = rpmalFree(tsmem->addedPackages);
-#endif
 
     /* Add erasure elements for old versions and obsoletions on upgrades */
     /* XXX TODO: If either of these fails, we'd need to undo all additions */
@@ -649,7 +639,6 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
 
 int rpmtsCheck(rpmts ts)
 {
-    tsMembers tsmem = rpmtsMembers(ts);
     rpm_color_t tscolor = rpmtsColor(ts);
     rpmtsi pi = NULL; rpmte p;
     int closeatexit = 0;
@@ -664,9 +653,6 @@ int rpmtsCheck(rpmts ts)
 	    goto exit;
 	closeatexit = 1;
     }
-
-    if (tsmem->addedPackages == NULL)
-	tsmem->addedPackages = rpmtsCreateAl(ts, TR_ADDED);
 
     /* XXX FIXME: figure some kind of heuristic for the cache size */
     dcache = depCacheCreate(5001, rstrhash, strcmp,
