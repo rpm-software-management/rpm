@@ -48,7 +48,7 @@ struct rpmfc_s {
 
     char ** fn;		/*!< (no. files) file names */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
-    ARGI_t fcolor;	/*!< (no. files) file colors */
+    rpm_color_t *fcolor;/*!< (no. files) file colors */
     ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
@@ -680,13 +680,12 @@ nrequires = rpmdsCount(fc->requires);
     for (fx = 0; fx < fc->nfiles; fx++) {
 assert(fx < fc->fcdictx->nvals);
 	cx = fc->fcdictx->vals[fx];
-assert(fx < fc->fcolor->nvals);
-	fcolor = fc->fcolor->vals[fx];
+	fcolor = fc->fcolor[fx];
 	ARGV_t fattrs = fc->fattrs[fx];
 
 	fprintf(fp, "%3d %s", fx, fc->fn[fx]);
 	if (fcolor != RPMFC_BLACK)
-		fprintf(fp, "\t0x%x", fc->fcolor->vals[fx]);
+		fprintf(fp, "\t0x%x", fc->fcolor[fx]);
 	else
 		fprintf(fp, "\t%s", rpmstrPoolStr(fc->cdict, cx));
 	if (fattrs) {
@@ -755,7 +754,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	}
 	free(fc->fn);
 	free(fc->fattrs);
-	argiFree(fc->fcolor);
+	free(fc->fcolor);
 	argiFree(fc->fcdictx);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
@@ -923,6 +922,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->nfiles = argvCount(argv);
     fc->fn = xcalloc(fc->nfiles, sizeof(*fc->fn));
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
+    fc->fcolor = xcalloc(fc->nfiles, sizeof(*fc->fcolor));
 
     /* Initialize the per-file dictionary indices. */
     argiAdd(&fc->fddictx, fc->nfiles-1, 0);
@@ -1004,7 +1004,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Add attributes based on file type and/or path */
 	rpmfcAttributes(fc, ftype, s);
 
-	argiAdd(&fc->fcolor, fc->ix, fcolor);
+	fc->fcolor[fc->ix] = fcolor;
 
 	/* Add to file class dictionary and index array */
 	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE)) {
@@ -1283,15 +1283,11 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	goto exit;
 
     /* Add per-file colors(#files) */
-    if (rpmtdFromArgi(&td, RPMTAG_FILECOLORS, fc->fcolor)) {
-	rpm_color_t *fcolor;
-	/* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
-	while ((fcolor = rpmtdNextUint32(&td))) {
-	    *fcolor &= 0x0f;
-	}
-	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-    }
-
+    /* XXX Make sure only primary (i.e. Elf32/Elf64) colors are added. */
+    for (int i = 0; i < fc->nfiles; i++)
+	fc->fcolor[i] &= 0x0f;
+    headerPutUint32(pkg->header, RPMTAG_FILECOLORS, fc->fcolor, fc->nfiles);
+    
     /* Add classes(#classes) */
     for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->cdict); id++) {
 	headerPutString(pkg->header, RPMTAG_CLASSDICT,
