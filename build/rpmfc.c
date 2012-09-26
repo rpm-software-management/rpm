@@ -816,6 +816,8 @@ rpmRC rpmfcApply(rpmfc fc)
 	    rpmfcHelperRequires(fc, *fattr);
 	}
     }
+    /* No more additions after this, freeze pool to minimize memory use */
+    rpmstrPoolFreeze(fc->ddict, 0);
 
     /* Generate per-file indices into package dependencies. */
     nddict = rpmstrPoolNumStr(fc->ddict);
@@ -1019,6 +1021,8 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     rc = RPMRC_OK;
 
 exit:
+    /* No more additions after this, freeze pool to minimize memory use */
+    rpmstrPoolFreeze(fc->cdict, 0);
     if (ms != NULL)
 	magic_close(ms);
 
