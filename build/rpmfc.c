@@ -46,7 +46,7 @@ struct rpmfc_s {
 
     rpmfcAttr *atypes;	/*!< known file attribute types */
 
-    ARGV_t fn;		/*!< (no. files) file names */
+    char ** fn;		/*!< (no. files) file names */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     ARGI_t fcolor;	/*!< (no. files) file colors */
     ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
@@ -749,9 +749,11 @@ rpmfc rpmfcFree(rpmfc fc)
 	    rpmfcAttrFree(*attr);
 	free(fc->atypes);
 	free(fc->buildRoot);
-	argvFree(fc->fn);
-	for (int i = 0; i < fc->nfiles; i++)
+	for (int i = 0; i < fc->nfiles; i++) {
+	    free(fc->fn[i]);
 	    argvFree(fc->fattrs[i]);
+	}
+	free(fc->fn);
 	free(fc->fattrs);
 	argiFree(fc->fcolor);
 	argiFree(fc->fcdictx);
@@ -811,7 +813,7 @@ rpmRC rpmfcApply(rpmfc fc)
     int ix;
 
     /* Generate package and per-file dependencies. */
-    for (fc->ix = 0; fc->fn != NULL && fc->fn[fc->ix] != NULL; fc->ix++) {
+    for (fc->ix = 0; fc->ix < fc->nfiles && fc->fn[fc->ix] != NULL; fc->ix++) {
 	for (ARGV_t fattr = fc->fattrs[fc->ix]; fattr && *fattr; fattr++) {
 	    rpmfcHelperProvides(fc, *fattr);
 	    rpmfcHelperRequires(fc, *fattr);
@@ -919,6 +921,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     }
 
     fc->nfiles = argvCount(argv);
+    fc->fn = xcalloc(fc->nfiles, sizeof(*fc->fn));
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
 
     /* Initialize the per-file dictionary indices. */
@@ -993,7 +996,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	rpmlog(RPMLOG_DEBUG, "%s: %s\n", s, ftype);
 
 	/* Save the path. */
-	argvAdd(&fc->fn, s);
+	fc->fn[fc->ix] = xstrdup(s);
 
 	/* Add (filtered) file coloring */
 	fcolor |= rpmfcColor(ftype);
