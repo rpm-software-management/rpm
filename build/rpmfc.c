@@ -14,6 +14,7 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmds.h>
 #include <rpm/rpmfi.h>
+#include <rpm/rpmstrpool.h>
 
 #include "build/rpmbuild_internal.h"
 
@@ -51,9 +52,9 @@ struct rpmfc_s {
     ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
-    ARGV_t cdict;	/*!< (no. classes) file class dictionary */
     ARGV_t ddict;	/*!< (no. dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
+    rpmstrPool cdict;	/*!< file class dictionary */
 
     rpmds provides;	/*!< (no. provides) package provides */
     rpmds requires;	/*!< (no. requires) package requires */
@@ -687,7 +688,7 @@ assert(fx < fc->fcolor->nvals);
 	if (fcolor != RPMFC_BLACK)
 		fprintf(fp, "\t0x%x", fc->fcolor->vals[fx]);
 	else
-		fprintf(fp, "\t%s", fc->cdict[cx]);
+		fprintf(fp, "\t%s", rpmstrPoolStr(fc->cdict, cx));
 	if (fattrs) {
 	    char *attrs = argvJoin(fattrs, ",");
 	    fprintf(fp, " [%s]", attrs);
@@ -756,9 +757,10 @@ rpmfc rpmfcFree(rpmfc fc)
 	argiFree(fc->fcdictx);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
-	argvFree(fc->cdict);
 	argvFree(fc->ddict);
 	argiFree(fc->ddictx);
+
+	rpmstrPoolFree(fc->cdict);
 
 	rpmdsFree(fc->provides);
 	rpmdsFree(fc->requires);
@@ -899,7 +901,6 @@ static int initAttrs(rpmfc fc)
 
 rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 {
-    ARGV_t fcav = NULL;
     int msflags = MAGIC_CHECK | MAGIC_COMPRESS | MAGIC_NO_CHECK_TOKENS;
     magic_t ms = NULL;
     rpmRC rc = RPMRC_FAIL;
@@ -926,8 +927,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     argiAdd(&fc->fddictn, fc->nfiles-1, 0);
 
     /* Build (sorted) file class dictionary. */
-    argvAdd(&fc->cdict, "");
-    argvAdd(&fc->cdict, "directory");
+    fc->cdict = rpmstrPoolCreate();
 
     ms = magic_open(msflags);
     if (ms == NULL) {
@@ -942,6 +942,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     }
 
     for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
+	rpmsid ftypeId;
 	const char * ftype;
 	const char * s = argv[fc->ix];
 	size_t slen = strlen(s);
@@ -994,9 +995,6 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	/* Save the path. */
 	argvAdd(&fc->fn, s);
 
-	/* Save the file type string. */
-	argvAdd(&fcav, ftype);
-
 	/* Add (filtered) file coloring */
 	fcolor |= rpmfcColor(ftype);
 
@@ -1005,27 +1003,20 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
 	argiAdd(&fc->fcolor, fc->ix, fcolor);
 
-	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE))
-	    argvAddUniq(&fc->cdict, ftype);
-    }
-
-    /* Build per-file class index array. */
-    fc->fknown = 0;
-    for (fc->ix = 0; fc->ix < fc->nfiles; fc->ix++) {
-	const char *se = fcav[fc->ix];
-	ARGV_t dav = argvSearch(fc->cdict, se, NULL);
-	if (dav) {
-	    argiAdd(&fc->fcdictx, fc->ix, (dav - fc->cdict));
+	/* Add to file class dictionary and index array */
+	if (fcolor != RPMFC_WHITE && (fcolor & RPMFC_INCLUDE)) {
+	    ftypeId = rpmstrPoolId(fc->cdict, ftype, 1);
 	    fc->fknown++;
 	} else {
-	    argiAdd(&fc->fcdictx, fc->ix, 0);
+	    ftypeId = rpmstrPoolId(fc->cdict, "", 1);
 	    fc->fwhite++;
 	}
+	/* Pool id's start from 1, for headers we want it from 0 */
+	argiAdd(&fc->fcdictx, fc->ix, ftypeId - 1);
     }
     rc = RPMRC_OK;
 
 exit:
-    fcav = argvFree(fcav);
     if (ms != NULL)
 	magic_close(ms);
 
@@ -1299,8 +1290,9 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add classes(#classes) */
-    if (rpmtdFromArgv(&td, RPMTAG_CLASSDICT, fc->cdict)) {
-	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
+    for (rpmsid id = 1; id <= rpmstrPoolNumStr(fc->cdict); id++) {
+	headerPutString(pkg->header, RPMTAG_CLASSDICT,
+			rpmstrPoolStr(fc->cdict, id));
     }
 
     /* Add per-file classes(#files) */
@@ -1350,7 +1342,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     if (_rpmfc_debug) {
 	char *msg = NULL;
 	rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]",
-		  fc->nfiles, argvCount(fc->cdict),
+		  fc->nfiles, rpmstrPoolNumStr(fc->cdict),
 		  ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
 	rpmfcPrint(msg, fc, NULL);
 	free(msg);
