@@ -396,3 +396,8 @@ int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
     else
 	return rstreq(rpmstrPoolStr(poolA, sidA), rpmstrPoolStr(poolB, sidB));
 }
+
+rpmsid rpmstrPoolNumStr(rpmstrPool pool)
+{
+    return (pool != NULL) ? pool->offs_size : 0;
+}

@@ -40,6 +40,9 @@ size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid);
 int rpmstrPoolStreq(rpmstrPool poolA, rpmsid sidA,
                     rpmstrPool poolB, rpmsid sidB);
 
+/* get number of unique strings in pool */
+rpmsid rpmstrPoolNumStr(rpmstrPool pool);
+
 #ifdef __cplusplus
 }
 #endif
