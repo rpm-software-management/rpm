@@ -1347,12 +1347,14 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
 
-if (_rpmfc_debug) {
-char *msg = NULL;
-rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]", fc->nfiles, argvCount(fc->cdict), ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
-rpmfcPrint(msg, fc, NULL);
-free(msg);
-}
+    if (_rpmfc_debug) {
+	char *msg = NULL;
+	rasprintf(&msg, "final: files %d cdict[%d] %d%% ddictx[%d]",
+		  fc->nfiles, argvCount(fc->cdict),
+		  ((100 * fc->fknown)/fc->nfiles), argiCount(fc->ddictx));
+	rpmfcPrint(msg, fc, NULL);
+	free(msg);
+    }
 exit:
     printDeps(pkg->header);
 
