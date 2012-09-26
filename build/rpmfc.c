@@ -49,7 +49,7 @@ struct rpmfc_s {
     char ** fn;		/*!< (no. files) file names */
     ARGV_t *fattrs;	/*!< (no. files) file attribute tokens */
     rpm_color_t *fcolor;/*!< (no. files) file colors */
-    ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
+    rpmsid *fcdictx;	/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
@@ -661,7 +661,6 @@ void rpmfcPrint(const char * msg, rpmfc fc, FILE * fp)
 {
     rpm_color_t fcolor;
     int ndx;
-    int cx;
     int dx;
     int fx;
 
@@ -678,8 +677,7 @@ nrequires = rpmdsCount(fc->requires);
 
     if (fc)
     for (fx = 0; fx < fc->nfiles; fx++) {
-assert(fx < fc->fcdictx->nvals);
-	cx = fc->fcdictx->vals[fx];
+	rpmsid cx = fc->fcdictx[fx] + 1; /* id's are one off */
 	fcolor = fc->fcolor[fx];
 	ARGV_t fattrs = fc->fattrs[fx];
 
@@ -755,7 +753,7 @@ rpmfc rpmfcFree(rpmfc fc)
 	free(fc->fn);
 	free(fc->fattrs);
 	free(fc->fcolor);
-	argiFree(fc->fcdictx);
+	free(fc->fcdictx);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
 	argiFree(fc->ddictx);
@@ -923,6 +921,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
     fc->fn = xcalloc(fc->nfiles, sizeof(*fc->fn));
     fc->fattrs = xcalloc(fc->nfiles, sizeof(*fc->fattrs));
     fc->fcolor = xcalloc(fc->nfiles, sizeof(*fc->fcolor));
+    fc->fcdictx = xcalloc(fc->nfiles, sizeof(*fc->fcdictx));
 
     /* Initialize the per-file dictionary indices. */
     argiAdd(&fc->fddictx, fc->nfiles-1, 0);
@@ -1015,7 +1014,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 	    fc->fwhite++;
 	}
 	/* Pool id's start from 1, for headers we want it from 0 */
-	argiAdd(&fc->fcdictx, fc->ix, ftypeId - 1);
+	fc->fcdictx[fc->ix] = ftypeId - 1;
     }
     rc = RPMRC_OK;
 
@@ -1295,9 +1294,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     /* Add per-file classes(#files) */
-    if (rpmtdFromArgi(&td, RPMTAG_FILECLASS, fc->fcdictx)) {
-	headerPut(pkg->header, &td, HEADERPUT_DEFAULT);
-    }
+    headerPutUint32(pkg->header, RPMTAG_FILECLASS, fc->fcdictx, fc->nfiles);
 
     /* Add Provides: */
     if (!fc->skipProv) {
