@@ -52,9 +52,9 @@ struct rpmfc_s {
     ARGI_t fcdictx;	/*!< (no. files) file class dictionary indices */
     ARGI_t fddictx;	/*!< (no. files) file depends dictionary start */
     ARGI_t fddictn;	/*!< (no. files) file depends dictionary no. entries */
-    ARGV_t ddict;	/*!< (no. dependencies) file depends dictionary */
     ARGI_t ddictx;	/*!< (no. dependencies) file->dependency mapping */
     rpmstrPool cdict;	/*!< file class dictionary */
+    rpmstrPool ddict;	/*!< file depends dictionary */
 
     rpmds provides;	/*!< (no. provides) package provides */
     rpmds requires;	/*!< (no. requires) package requires */
@@ -396,13 +396,13 @@ static void argvAddUniq(ARGV_t * argvp, const char * key)
 
 #define hasAttr(_a, _n) (argvSearch((_a), (_n), NULL) != NULL)
 
-static void rpmfcAddFileDep(ARGV_t * argvp, int ix, rpmds ds, char deptype)
+static void rpmfcAddFileDep(rpmstrPool ddict, int ix, rpmds ds, char deptype)
 {
     if (ds) {
 	char *key = NULL;
 	rasprintf(&key, "%08d%c %s %s 0x%08x", ix, deptype,
 		  rpmdsN(ds), rpmdsEVR(ds), rpmdsFlags(ds));
-	argvAddUniq(argvp, key);
+	rpmstrPoolId(ddict, key, 1);
 	free(key);
     }
 }
@@ -499,7 +499,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 	/* Add to package and file dependencies unless filtered */
 	if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
 	    (void) rpmdsMerge(depsp, ds);
-	    rpmfcAddFileDep(&fc->ddict, fc->ix, ds, tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
+	    rpmfcAddFileDep(fc->ddict, fc->ix, ds, tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	}
 
 	rpmdsFree(ds);
@@ -757,9 +757,9 @@ rpmfc rpmfcFree(rpmfc fc)
 	argiFree(fc->fcdictx);
 	argiFree(fc->fddictx);
 	argiFree(fc->fddictn);
-	argvFree(fc->ddict);
 	argiFree(fc->ddictx);
 
+	rpmstrPoolFree(fc->ddict);
 	rpmstrPoolFree(fc->cdict);
 
 	rpmdsFree(fc->provides);
@@ -809,7 +809,6 @@ rpmRC rpmfcApply(rpmfc fc)
     unsigned int val;
     int dix;
     int ix;
-    int i;
 
     /* Generate package and per-file dependencies. */
     for (fc->ix = 0; fc->fn != NULL && fc->fn[fc->ix] != NULL; fc->ix++) {
@@ -820,10 +819,10 @@ rpmRC rpmfcApply(rpmfc fc)
     }
 
     /* Generate per-file indices into package dependencies. */
-    nddict = argvCount(fc->ddict);
+    nddict = rpmstrPoolNumStr(fc->ddict);
     previx = -1;
-    for (i = 0; i < nddict; i++) {
-	s = fc->ddict[i];
+    for (rpmsid id = 1; id <= nddict; id++) {
+	s = rpmstrPoolStr(fc->ddict, id);
 
 	/* Parse out (file#,deptype,N,EVR,Flags) */
 	ix = strtol(s, &se, 10);
@@ -928,6 +927,7 @@ rpmRC rpmfcClassify(rpmfc fc, ARGV_t argv, rpm_mode_t * fmode)
 
     /* Build (sorted) file class dictionary. */
     fc->cdict = rpmstrPoolCreate();
+    fc->ddict = rpmstrPoolCreate();
 
     ms = magic_open(msflags);
     if (ms == NULL) {
