@@ -13,25 +13,25 @@ extern "C" {
 rpmstrPool rpmstrPoolCreate(void);
 
 /* destroy a string pool (refcounted) */
-rpmstrPool rpmstrPoolFree(rpmstrPool sidpool);
+rpmstrPool rpmstrPoolFree(rpmstrPool pool);
 
 /* reference a string pool */
-rpmstrPool rpmstrPoolLink(rpmstrPool sidpool);
+rpmstrPool rpmstrPoolLink(rpmstrPool pool);
 
 /* freeze pool to free memory (keephash required for string -> id lookups) */
-void rpmstrPoolFreeze(rpmstrPool sidpool, int keephash);
+void rpmstrPoolFreeze(rpmstrPool pool, int keephash);
 
 /* unfreeze pool (ie recreate hash table) */
-void rpmstrPoolUnfreeze(rpmstrPool sidpool);
+void rpmstrPoolUnfreeze(rpmstrPool pool);
 
 /* get the id of a string, optionally storing if not already present */
-rpmsid rpmstrPoolId(rpmstrPool sidpool, const char *s, int create);
+rpmsid rpmstrPoolId(rpmstrPool pool, const char *s, int create);
 
 /* get the id of a string + length, optionally storing if not already present */
-rpmsid rpmstrPoolIdn(rpmstrPool sidpool, const char *s, size_t slen, int create);
+rpmsid rpmstrPoolIdn(rpmstrPool pool, const char *s, size_t slen, int create);
 
 /* get a string by its id */
-const char * rpmstrPoolStr(rpmstrPool sidpool, rpmsid sid);
+const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid);
 
 /* get a strings length by its id (in constant time) */
 size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid);
