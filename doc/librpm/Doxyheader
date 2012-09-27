@@ -52,5 +52,7 @@
  */
 /** \defgroup	rpmstring	String Manipulation API.
  */
+/** \defgroup	rpmstrpool	String Pool API.
+ */
 /** \defgroup	rpmargv	Argument Manipulation API.
  */
