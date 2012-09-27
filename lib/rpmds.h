@@ -408,7 +408,7 @@ int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
 
 /** \ingroup rpmds
  * Return dependency set string pool handle
- * @param fi		dependency set
+ * @param ds		dependency set
  * @return		string pool handle (weak reference)
  */
 rpmstrPool rpmdsPool(rpmds ds);
