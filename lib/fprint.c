@@ -337,7 +337,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 {
     rpmfi fi = rpmteFI(p);
     struct fingerPrint_s current_fp;
-    char *endsubdir, *endbasename, *currentsubdir;
+    const char *endsubdir, *endbasename, *currentsubdir;
     size_t lensubDir;
 
     struct rpmffi_s * recs;
@@ -352,22 +352,21 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	 return;
     }
 
-    currentsubdir = xstrdup(rpmstrPoolStr(fpc->pool, fp->subDirId));
-    lensubDir = strlen(currentsubdir);
+    currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
+    lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
     current_fp = *fp;
 
     /* Set baseName to the upper most dir */
-    current_fp.baseNameId = rpmstrPoolId(fpc->pool, currentsubdir, 1);
-    endbasename = currentsubdir;
-    while (*endbasename != '/' && endbasename < currentsubdir + lensubDir - 1)
+    endbasename = currentsubdir + 1;
+    while (*endbasename != '/' && endbasename < currentsubdir + lensubDir)
 	 endbasename++;
-    *endbasename = '\0';
-
+    current_fp.baseNameId = rpmstrPoolIdn(fpc->pool, currentsubdir + 1,
+					  endbasename - currentsubdir - 1, 1);
     /* no subDir for now */
     current_fp.subDirId = 0;
     endsubdir = NULL;
 
-    while (endbasename < currentsubdir + lensubDir - 1) {
+    while (endbasename < currentsubdir + lensubDir) {
 	 char found;
 	 found = 0;
 
@@ -403,7 +402,6 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 		   doLookup(fpc, link, bn, fp);
 
 		   free(link);
-		   free(currentsubdir);
 		   symlinkcount++;
 
 		   /* setup current_fp for the new path */
@@ -414,21 +412,21 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 		     rpmFpHashAddEntry(fpc->fp, fp, ffi);
 		     return;
 		   }
-		   currentsubdir = xstrdup(rpmstrPoolStr(fpc->pool,
-							 fp->subDirId));
-		   lensubDir = strlen(currentsubdir);
+		   currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
+		   lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
 		   /* no subDir for now */
 		   current_fp.subDirId = 0;
 		   endsubdir = NULL;
 
 		   /* Set baseName to the upper most dir */
-		   current_fp.baseNameId = rpmstrPoolId(fpc->pool,
-							currentsubdir, 1);
-		   endbasename = currentsubdir;
+		   endbasename = currentsubdir + 1;
 		   while (*endbasename != '/' &&
-			  endbasename < currentsubdir + lensubDir - 1)
+			  endbasename < currentsubdir + lensubDir)
 			endbasename++;
-		   *endbasename = '\0';
+		   current_fp.baseNameId = rpmstrPoolIdn(fpc->pool,
+						currentsubdir + 1,
+						endbasename - currentsubdir - 1,
+						1);
 		   break;
 
 	      }
@@ -444,23 +442,19 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	      continue; // restart loop after symlink
 	 }
 
-	 if (current_fp.subDirId == 0) {
-              /* after first round set former baseName as subDir */
-	      current_fp.subDirId = rpmstrPoolId(fpc->pool, currentsubdir, 1);
-	 } else {
-	      *endsubdir = '/'; // rejoin the former baseName with subDir
-	 }
+	  /* Set former baseName as subDir */
+	 current_fp.subDirId = rpmstrPoolIdn(fpc->pool, currentsubdir,
+					     endbasename - currentsubdir + 1, 1);
 	 endsubdir = endbasename;
 
 	 /* set baseName to the next lower dir */
 	 endbasename++;
 	 while (*endbasename != '\0' && *endbasename != '/')
 	      endbasename++;
-	 *endbasename = '\0';
-	 current_fp.baseNameId = rpmstrPoolId(fpc->pool, endsubdir+1, 1);
+	 current_fp.baseNameId = rpmstrPoolIdn(fpc->pool, endsubdir + 1,
+					       endbasename - endsubdir - 1, 1);
 
     }
-    free(currentsubdir);
     rpmFpHashAddEntry(fpc->fp, fp, ffi);
 
 }
