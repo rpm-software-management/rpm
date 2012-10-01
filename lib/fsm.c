@@ -405,18 +405,17 @@ const char * dnlNextIterator(DNLI_t dnli)
 /**
  * Map next file path and action.
  * @param fsm		file state machine
+ * @param i		file index
  */
-static int fsmMapPath(FSM_t fsm)
+static int fsmMapPath(FSM_t fsm, int i)
 {
     rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
     int rc = 0;
-    int i;
 
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
     fsm->action = FA_UNKNOWN;
 
-    i = fsm->ix;
     if (fi && i >= 0 && i < rpmfiFC(fi)) {
 	rpmfs fs = fsmGetFs(fsm);
 	/* XXX these should use rpmfiFFlags() etc */
@@ -530,7 +529,7 @@ static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 	*linkSet = li;
     fsm->path = _free(fsm->path);
     fsm->ix = ix;
-    rc = fsmMapPath(fsm);
+    rc = fsmMapPath(fsm, fsm->ix);
     return rc;
 }
 
@@ -564,7 +563,7 @@ static int checkHardLinks(FSM_t fsm)
 		rc = CPIOERR_MISSING_HARDLINK;
 		if (fsm->failedFile && *fsm->failedFile == NULL) {
 		    fsm->ix = ix;
-		    if (!fsmMapPath(fsm)) {
+		    if (!fsmMapPath(fsm, ix)) {
 			/* Out-of-sync hardlinks handled as sub-state */
 			*fsm->failedFile = fsm->path;
 			fsm->path = NULL;
@@ -932,7 +931,7 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
 	if (li->filex[i] < 0) continue;
 
 	fsm->ix = li->filex[i];
-	rc = fsmMapPath(fsm);
+	rc = fsmMapPath(fsm, li->filex[i]);
 
 	/* Write data after last link. */
 	rc = writeFile(fsm, (i == 0), archive, li->filex[i]);
@@ -1022,7 +1021,7 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     fsm->ix = -1;
 
     fsm->ix = li->filex[li->createdPath];
-    rc = fsmMapPath(fsm);
+    rc = fsmMapPath(fsm, li->filex[li->createdPath]);
     opath = fsm->path;
     fsm->path = NULL;
     for (i = 0; i < li->nlink; i++) {
@@ -1031,7 +1030,7 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
 
 	fsm->ix = li->filex[i];
 	fsm->path = _free(fsm->path);
-	rc = fsmMapPath(fsm);
+	rc = fsmMapPath(fsm, li->filex[i]);
 	if (XFA_SKIPPING(fsm->action)) continue;
 
 	rc = fsmVerify(fsm);
@@ -1090,7 +1089,7 @@ static int fsmCommitLinks(FSM_t fsm)
     for (i = 0; i < li->nlink; i++) {
 	if (li->filex[i] < 0) continue;
 	fsm->ix = li->filex[i];
-	rc = fsmMapPath(fsm);
+	rc = fsmMapPath(fsm, li->filex[i]);
 	if (!XFA_SKIPPING(fsm->action))
 	    rc = fsmCommit(fsm, li->filex[i]);
 	fsm->path = _free(fsm->path);
@@ -1300,7 +1299,7 @@ static int fsmInit(FSM_t fsm)
     }
 
     /* Generate file path. */
-    rc = fsmMapPath(fsm);
+    rc = fsmMapPath(fsm, fsm->ix);
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
