@@ -553,10 +553,10 @@ static int checkHardLinks(FSM_t fsm)
     int rc = 0;
     rpmfs fs = fsmGetFs(fsm);
 
-    for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
-	if (fsm->li->linksLeft) {
-	    for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
-		int ix = fsm->li->filex[i];
+    for (hardLink_t li = fsm->links; li != NULL; li = li->next) {
+	if (li->linksLeft) {
+	    for (nlink_t i = 0 ; i < li->linksLeft; i++) {
+		int ix = li->filex[i];
 		if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
 		    continue;
 		rc = CPIOERR_MISSING_HARDLINK;
