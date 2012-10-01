@@ -1001,9 +1001,10 @@ static int fsmVerify(FSM_t fsm);
 /** \ingroup payload
  * Create pending hard links to existing file.
  * @param fsm		file state machine data
+ * @param li		hard link
  * @return		0 on success
  */
-static int fsmMakeLinks(FSM_t fsm)
+static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
 {
     char * path = fsm->path;
     char * opath = NULL;
@@ -1017,15 +1018,15 @@ static int fsmMakeLinks(FSM_t fsm)
     fsm->nsuffix = NULL;
     fsm->ix = -1;
 
-    fsm->ix = fsm->li->filex[fsm->li->createdPath];
+    fsm->ix = li->filex[li->createdPath];
     rc = fsmMapPath(fsm);
     opath = fsm->path;
     fsm->path = NULL;
-    for (i = 0; i < fsm->li->nlink; i++) {
-	if (fsm->li->filex[i] < 0) continue;
-	if (fsm->li->createdPath == i) continue;
+    for (i = 0; i < li->nlink; i++) {
+	if (li->filex[i] < 0) continue;
+	if (li->createdPath == i) continue;
 
-	fsm->ix = fsm->li->filex[i];
+	fsm->ix = li->filex[i];
 	fsm->path = _free(fsm->path);
 	rc = fsmMapPath(fsm);
 	if (XFA_SKIPPING(fsm->action)) continue;
@@ -1046,7 +1047,7 @@ static int fsmMakeLinks(FSM_t fsm)
 	    *fsm->failedFile = xstrdup(fsm->path);
 	}
 
-	fsm->li->linksLeft--;
+	li->linksLeft--;
     }
     fsm->path = _free(fsm->path);
     free(opath);
@@ -1748,7 +1749,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             }
             if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
                 fsm->li->createdPath = fsm->li->linkIndex;
-                rc = fsmMakeLinks(fsm);
+                rc = fsmMakeLinks(fsm, fsm->li);
             }
         }
 
