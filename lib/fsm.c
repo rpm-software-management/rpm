@@ -818,9 +818,10 @@ static int fsmReadLink(const char *path,
  * @param fsm		file state machine data
  * @param writeData	should data be written?
  * @param archive	payload archive
+ * @param ix		file index
  * @return		0 on success
  */
-static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
+static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
 {
     FD_t rfd = NULL;
     char * path = fsm->path;
@@ -851,8 +852,8 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive)
 				   fsm->dirName, fsm->baseName, NULL);
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
 	rpmfi fi = fsmGetFi(fsm);
-	fsm->path = xstrdup((fi->apath ? fi->apath[fsm->ix] : 
-					 rpmfiBNIndex(fi, fsm->ix)));
+	fsm->path = xstrdup((fi->apath ? fi->apath[ix] : 
+					 rpmfiBNIndex(fi, ix)));
     }
 
     rc = rpmcpioHeaderWrite(archive, fsm->path, st);
@@ -934,7 +935,7 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
 	rc = fsmMapPath(fsm);
 
 	/* Write data after last link. */
-	rc = writeFile(fsm, (i == 0), archive);
+	rc = writeFile(fsm, (i == 0), archive, li->filex[i]);
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
 	    *fsm->failedFile = xstrdup(fsm->path);
@@ -1929,7 +1930,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
         /* Hardlinks are handled later */
         if (!(S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)) {
             /* Copy file into archive. */
-            rc = writeFile(fsm, 1, archive);
+            rc = writeFile(fsm, 1, archive, fsm->ix);
         }
 
         if (rc) {
