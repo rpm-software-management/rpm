@@ -547,15 +547,13 @@ static hardLink_t freeHardLink(hardLink_t li)
     return NULL;
 }
 
-/* Check for hard links missing from payload, also freeing the data (eh?) */
+/* Check for hard links missing from payload */
 static int checkHardLinks(FSM_t fsm)
 {
     int rc = 0;
     rpmfs fs = fsmGetFs(fsm);
 
-    while ((fsm->li = fsm->links) != NULL) {
-	fsm->links = fsm->li->next;
-	fsm->li->next = NULL;
+    for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
 	if (fsm->li->linksLeft) {
 	    for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
 		int ix = fsm->li->filex[i];
@@ -573,7 +571,6 @@ static int checkHardLinks(FSM_t fsm)
 		break;
 	    }
 	}
-	fsm->li = freeHardLink(fsm->li);
     }
     return rc;
 }
@@ -953,10 +950,7 @@ static int writeLinks(FSM_t fsm, rpmcpio_t archive)
     int j, rc = 0;
     nlink_t i, nlink;
 
-    while ((fsm->li = fsm->links) != NULL) {
-	fsm->links = fsm->li->next;
-	fsm->li->next = NULL;
-
+    for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
 	/* Re-calculate link count for archive header. */
 	for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
 	    if (fsm->li->filex[i] < 0)
@@ -975,8 +969,6 @@ static int writeLinks(FSM_t fsm, rpmcpio_t archive)
 	fsm->osb = fsm->sb;	/* structure assignment */
 
 	if (!rc) rc = writeLinkedFile(fsm, archive);
-
-	fsm->li = freeHardLink(fsm->li);
     }
     return rc;
 }
