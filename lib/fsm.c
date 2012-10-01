@@ -908,9 +908,10 @@ exit:
  * Write set of linked files to payload stream.
  * @param fsm		file state machine data
  * @param archive	payload archive
+ * @param li		link to write
  * @return		0 on success
  */
-static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive)
+static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -923,11 +924,11 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive)
     fsm->nsuffix = NULL;
     fsm->ix = -1;
 
-    for (i = fsm->li->nlink - 1; i >= 0; i--) {
+    for (i = li->nlink - 1; i >= 0; i--) {
 
-	if (fsm->li->filex[i] < 0) continue;
+	if (li->filex[i] < 0) continue;
 
-	fsm->ix = fsm->li->filex[i];
+	fsm->ix = li->filex[i];
 	rc = fsmMapPath(fsm);
 
 	/* Write data after last link. */
@@ -938,7 +939,7 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive)
 	}
 
 	fsm->path = _free(fsm->path);
-	fsm->li->filex[i] = -1;
+	li->filex[i] = -1;
     }
 
     fsm->ix = iterIndex;
@@ -952,25 +953,25 @@ static int writeLinks(FSM_t fsm, rpmcpio_t archive)
     int j, rc = 0;
     nlink_t i, nlink;
 
-    for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
+    for (hardLink_t li = fsm->links; li; li = li->next) {
 	/* Re-calculate link count for archive header. */
-	for (j = -1, nlink = 0, i = 0; i < fsm->li->nlink; i++) {
-	    if (fsm->li->filex[i] < 0)
+	for (j = -1, nlink = 0, i = 0; i < li->nlink; i++) {
+	    if (li->filex[i] < 0)
 		continue;
 	    nlink++;
 	    if (j == -1) j = i;
 	}
 	/* XXX force the contents out as well. */
 	if (j != 0) {
-	    fsm->li->filex[0] = fsm->li->filex[j];
-	    fsm->li->filex[j] = -1;
+	    li->filex[0] = li->filex[j];
+	    li->filex[j] = -1;
 	}
-	fsm->li->sb.st_nlink = nlink;
+	li->sb.st_nlink = nlink;
 
-	fsm->sb = fsm->li->sb;	/* structure assignment */
+	fsm->sb = li->sb;	/* structure assignment */
 	fsm->osb = fsm->sb;	/* structure assignment */
 
-	if (!rc) rc = writeLinkedFile(fsm, archive);
+	if (!rc) rc = writeLinkedFile(fsm, archive, li);
     }
     return rc;
 }
