@@ -562,7 +562,6 @@ static int checkHardLinks(FSM_t fsm)
 		    continue;
 		rc = CPIOERR_MISSING_HARDLINK;
 		if (fsm->failedFile && *fsm->failedFile == NULL) {
-		    fsm->ix = ix;
 		    if (!fsmMapPath(fsm, ix)) {
 			/* Out-of-sync hardlinks handled as sub-state */
 			*fsm->failedFile = fsm->path;
@@ -917,20 +916,17 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
-    int iterIndex = fsm->ix;
     int ec = 0;
     int rc;
     int i;
 
     fsm->path = NULL;
     fsm->nsuffix = NULL;
-    fsm->ix = -1;
 
     for (i = li->nlink - 1; i >= 0; i--) {
 
 	if (li->filex[i] < 0) continue;
 
-	fsm->ix = li->filex[i];
 	rc = fsmMapPath(fsm, li->filex[i]);
 
 	/* Write data after last link. */
@@ -944,7 +940,6 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
 	li->filex[i] = -1;
     }
 
-    fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->path = path;
     return ec;
@@ -1011,16 +1006,13 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     char * path = fsm->path;
     char * opath = NULL;
     const char * nsuffix = fsm->nsuffix;
-    int iterIndex = fsm->ix;
     int ec = 0;
     int rc;
     int i;
 
     fsm->path = NULL;
     fsm->nsuffix = NULL;
-    fsm->ix = -1;
 
-    fsm->ix = li->filex[li->createdPath];
     rc = fsmMapPath(fsm, li->filex[li->createdPath]);
     opath = fsm->path;
     fsm->path = NULL;
@@ -1028,7 +1020,6 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
 	if (li->filex[i] < 0) continue;
 	if (li->createdPath == i) continue;
 
-	fsm->ix = li->filex[i];
 	fsm->path = _free(fsm->path);
 	rc = fsmMapPath(fsm, li->filex[i]);
 	if (XFA_SKIPPING(fsm->action)) continue;
@@ -1054,7 +1045,6 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     fsm->path = _free(fsm->path);
     free(opath);
 
-    fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->path = path;
     return ec;
@@ -1071,7 +1061,6 @@ static int fsmCommitLinks(FSM_t fsm)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
-    int iterIndex = fsm->ix;
     struct stat * st = &fsm->sb;
     int rc = 0;
     nlink_t i;
@@ -1079,7 +1068,6 @@ static int fsmCommitLinks(FSM_t fsm)
 
     fsm->path = NULL;
     fsm->nsuffix = NULL;
-    fsm->ix = -1;
 
     for (li = fsm->links; li != NULL; li = li->next) {
 	if (li->sb.st_ino == st->st_ino && li->sb.st_dev == st->st_dev)
@@ -1088,7 +1076,6 @@ static int fsmCommitLinks(FSM_t fsm)
 
     for (i = 0; i < li->nlink; i++) {
 	if (li->filex[i] < 0) continue;
-	fsm->ix = li->filex[i];
 	rc = fsmMapPath(fsm, li->filex[i]);
 	if (!XFA_SKIPPING(fsm->action))
 	    rc = fsmCommit(fsm, li->filex[i]);
@@ -1096,7 +1083,6 @@ static int fsmCommitLinks(FSM_t fsm)
 	li->filex[i] = -1;
     }
 
-    fsm->ix = iterIndex;
     fsm->nsuffix = nsuffix;
     fsm->path = path;
     return rc;
