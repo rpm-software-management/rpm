@@ -551,17 +551,19 @@ static hardLink_t freeHardLink(hardLink_t li)
 static int checkHardLinks(FSM_t fsm)
 {
     int rc = 0;
+    rpmfs fs = fsmGetFs(fsm);
 
     while ((fsm->li = fsm->links) != NULL) {
 	fsm->links = fsm->li->next;
 	fsm->li->next = NULL;
 	if (fsm->li->linksLeft) {
 	    for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
-		if (fsm->li->filex[i] < 0)
+		int ix = fsm->li->filex[i];
+		if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
 		    continue;
 		rc = CPIOERR_MISSING_HARDLINK;
 		if (fsm->failedFile && *fsm->failedFile == NULL) {
-		    fsm->ix = fsm->li->filex[i];
+		    fsm->ix = ix;
 		    if (!fsmMapPath(fsm)) {
 			/* Out-of-sync hardlinks handled as sub-state */
 			*fsm->failedFile = fsm->path;
