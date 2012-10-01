@@ -466,54 +466,54 @@ static int saveHardLink(FSM_t fsm)
     int rc = 0;
     int ix = -1;
     int j;
-    hardLink_t *tailp;
+    hardLink_t *tailp, li;
 
     /* Find hard link set. */
-    for (tailp = &fsm->links; (fsm->li = *tailp) != NULL; tailp = &fsm->li->next) {
-	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
+    for (tailp = &fsm->links; (li = *tailp) != NULL; tailp = &li->next) {
+	if (li->sb.st_ino == st->st_ino && li->sb.st_dev == st->st_dev)
 	    break;
     }
 
     /* New hard link encountered, add new link to set. */
-    if (fsm->li == NULL) {
-	fsm->li = xcalloc(1, sizeof(*fsm->li));
-	fsm->li->next = NULL;
-	fsm->li->sb = *st;	/* structure assignment */
-	fsm->li->nlink = st->st_nlink;
-	fsm->li->linkIndex = fsm->ix;
-	fsm->li->createdPath = -1;
+    if (li == NULL) {
+	li = xcalloc(1, sizeof(*li));
+	li->next = NULL;
+	li->sb = *st;	/* structure assignment */
+	li->nlink = st->st_nlink;
+	li->linkIndex = fsm->ix;
+	li->createdPath = -1;
 
-	fsm->li->filex = xcalloc(st->st_nlink, sizeof(fsm->li->filex[0]));
-	memset(fsm->li->filex, -1, (st->st_nlink * sizeof(fsm->li->filex[0])));
-	fsm->li->nsuffix = xcalloc(st->st_nlink, sizeof(*fsm->li->nsuffix));
+	li->filex = xcalloc(st->st_nlink, sizeof(li->filex[0]));
+	memset(li->filex, -1, (st->st_nlink * sizeof(li->filex[0])));
+	li->nsuffix = xcalloc(st->st_nlink, sizeof(*li->nsuffix));
 
 	if (fsm->goal == FSM_PKGBUILD)
-	    fsm->li->linksLeft = st->st_nlink;
+	    li->linksLeft = st->st_nlink;
 	if (fsm->goal == FSM_PKGINSTALL)
-	    fsm->li->linksLeft = 0;
+	    li->linksLeft = 0;
 
-	*tailp = fsm->li;	/* append to tail of linked list */
+	*tailp = li;	/* append to tail of linked list */
     }
 
-    if (fsm->goal == FSM_PKGBUILD) --fsm->li->linksLeft;
-    fsm->li->filex[fsm->li->linksLeft] = fsm->ix;
-    fsm->li->nsuffix[fsm->li->linksLeft] = fsm->nsuffix;
-    if (fsm->goal == FSM_PKGINSTALL) fsm->li->linksLeft++;
+    if (fsm->goal == FSM_PKGBUILD) --li->linksLeft;
+    li->filex[li->linksLeft] = fsm->ix;
+    li->nsuffix[li->linksLeft] = fsm->nsuffix;
+    if (fsm->goal == FSM_PKGINSTALL) li->linksLeft++;
 
     if (fsm->goal == FSM_PKGBUILD)
-	return (fsm->li->linksLeft > 0);
+	return (li->linksLeft > 0);
 
     if (fsm->goal != FSM_PKGINSTALL)
 	return 0;
 
-    if (!(st->st_size || fsm->li->linksLeft == st->st_nlink))
+    if (!(st->st_size || li->linksLeft == st->st_nlink))
 	return 1;
 
     /* Here come the bits, time to choose a non-skipped file name. */
     {	rpmfs fs = fsmGetFs(fsm);
 
-	for (j = fsm->li->linksLeft - 1; j >= 0; j--) {
-	    ix = fsm->li->filex[j];
+	for (j = li->linksLeft - 1; j >= 0; j--) {
+	    ix = li->filex[j];
 	    if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
 		continue;
 	    break;
@@ -525,9 +525,10 @@ static int saveHardLink(FSM_t fsm)
 	return 1;	/* XXX W2DO? */
 
     /* Save the non-skipped file name and map index. */
-    fsm->li->linkIndex = j;
+    li->linkIndex = j;
     fsm->path = _free(fsm->path);
     fsm->ix = ix;
+    fsm->li = li;
     rc = fsmMapPath(fsm);
     return rc;
 }
