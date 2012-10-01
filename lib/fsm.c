@@ -600,6 +600,7 @@ static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
 
 static FSM_t fsmFree(FSM_t fsm)
 {
+    hardLink_t li;
     fsm->buf = _free(fsm->buf);
     fsm->bufsize = 0;
 
@@ -608,10 +609,11 @@ static FSM_t fsmFree(FSM_t fsm)
 
     fsm->path = _free(fsm->path);
     fsm->suffix = _free(fsm->suffix);
-    while ((fsm->li = fsm->links) != NULL) {
-	fsm->links = fsm->li->next;
-	fsm->li->next = NULL;
-	fsm->li = freeHardLink(fsm->li);
+
+    while ((li = fsm->links) != NULL) {
+	fsm->links = li->next;
+	li->next = NULL;
+	freeHardLink(li);
     }
     free(fsm);
     return NULL;
