@@ -97,7 +97,6 @@ struct fsm_s {
     FSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
     hardLink_t links;		/*!< Pending hard linked file(s). */
-    hardLink_t li;		/*!< Current hard linked file(s). */
     char ** failedFile;		/*!< First file name that failed. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
     const char * nsuffix;	/*!< New, created, file suffix. */
@@ -458,9 +457,10 @@ static int fsmMapPath(FSM_t fsm)
 /** \ingroup payload
  * Save hard link in chain.
  * @param fsm		file state machine data
+ * @retval linkSet	hard link set when complete
  * @return		Is chain only partially filled?
  */
-static int saveHardLink(FSM_t fsm)
+static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 {
     struct stat * st = &fsm->sb;
     int rc = 0;
@@ -526,9 +526,10 @@ static int saveHardLink(FSM_t fsm)
 
     /* Save the non-skipped file name and map index. */
     li->linkIndex = j;
+    if (linkSet)
+	*linkSet = li;
     fsm->path = _free(fsm->path);
     fsm->ix = ix;
-    fsm->li = li;
     rc = fsmMapPath(fsm);
     return rc;
 }
@@ -1662,6 +1663,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     }
 
     while (!rc) {
+	hardLink_t li = NULL;
+
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
@@ -1696,7 +1699,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         }
 
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-	    fsm->postpone = saveHardLink(fsm);
+	    fsm->postpone = saveHardLink(fsm, &li);
 
 	setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
 
@@ -1748,9 +1751,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
                 if (!IS_DEV_LOG(fsm->path))
                     rc = CPIOERR_UNKNOWN_FILETYPE;
             }
-            if (S_ISREG(st->st_mode) && st->st_nlink > 1) {
-                fsm->li->createdPath = fsm->li->linkIndex;
-                rc = fsmMakeLinks(fsm, fsm->li);
+            if (li != NULL) {
+                li->createdPath = li->linkIndex;
+                rc = fsmMakeLinks(fsm, li);
             }
         }
 
@@ -1919,7 +1922,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
         }
 
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-	    fsm->postpone = saveHardLink(fsm);
+	    fsm->postpone = saveHardLink(fsm, NULL);
 
         if (fsm->postpone || fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
             continue;
