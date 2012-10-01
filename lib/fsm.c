@@ -1061,7 +1061,7 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     return ec;
 }
 
-static int fsmCommit(FSM_t fsm);
+static int fsmCommit(FSM_t fsm, int ix);
 
 /** \ingroup payload
  * Commit hard linked file set atomically.
@@ -1092,7 +1092,7 @@ static int fsmCommitLinks(FSM_t fsm)
 	fsm->ix = li->filex[i];
 	rc = fsmMapPath(fsm);
 	if (!XFA_SKIPPING(fsm->action))
-	    rc = fsmCommit(fsm);
+	    rc = fsmCommit(fsm, li->filex[i]);
 	fsm->path = _free(fsm->path);
 	li->filex[i] = -1;
     }
@@ -1539,7 +1539,7 @@ static int fsmBackup(FSM_t fsm)
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm)
+static int fsmCommit(FSM_t fsm, int ix)
 {
     int rc = 0;
     struct stat * st = &fsm->sb;
@@ -1576,14 +1576,14 @@ static int fsmCommit(FSM_t fsm)
             if (!rc)
                 rc = fsmChmod(fsm->path, fsm->sb.st_mode);
             if (!rc) {
-                rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, fsm->ix));
+                rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, ix));
                 /* utime error is not critical for directories */
                 if (rc && S_ISDIR(st->st_mode))
                     rc = 0;
             }
             /* Set file capabilities (if enabled) */
             if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
-                rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, fsm->ix));
+                rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
             }
         }
     }
@@ -1781,7 +1781,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
         if (!fsm->postpone) {
             rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-                  ? fsmCommitLinks(fsm) : fsmCommit(fsm));
+                  ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix));
         }
         if (rc) {
             break;
