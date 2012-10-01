@@ -1324,11 +1324,6 @@ static int fsmInit(FSM_t fsm)
     if (rc) return rc;
 
     fsm->postpone = XFA_SKIPPING(fsm->action);
-    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
-	/* FIX: saveHardLink can modify fsm */
-	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-	    fsm->postpone = saveHardLink(fsm);
-    }
 
     rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
 	   fileActionString(fsm->action), (int)fsm->sb.st_mode,
@@ -1694,6 +1689,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             break;
         }
 
+	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
+	    fsm->postpone = saveHardLink(fsm);
+
 	setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
 
         if (!fsm->postpone) {
@@ -1913,6 +1911,9 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
             fsm->postpone = 1;
             break;
         }
+
+	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
+	    fsm->postpone = saveHardLink(fsm);
 
         if (fsm->postpone || fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
             continue;
