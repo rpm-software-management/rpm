@@ -1072,24 +1072,25 @@ static int fsmCommitLinks(FSM_t fsm)
     struct stat * st = &fsm->sb;
     int rc = 0;
     nlink_t i;
+    hardLink_t li;
 
     fsm->path = NULL;
     fsm->nsuffix = NULL;
     fsm->ix = -1;
 
-    for (fsm->li = fsm->links; fsm->li; fsm->li = fsm->li->next) {
-	if (fsm->li->sb.st_ino == st->st_ino && fsm->li->sb.st_dev == st->st_dev)
+    for (li = fsm->links; li != NULL; li = li->next) {
+	if (li->sb.st_ino == st->st_ino && li->sb.st_dev == st->st_dev)
 	    break;
     }
 
-    for (i = 0; i < fsm->li->nlink; i++) {
-	if (fsm->li->filex[i] < 0) continue;
-	fsm->ix = fsm->li->filex[i];
+    for (i = 0; i < li->nlink; i++) {
+	if (li->filex[i] < 0) continue;
+	fsm->ix = li->filex[i];
 	rc = fsmMapPath(fsm);
 	if (!XFA_SKIPPING(fsm->action))
 	    rc = fsmCommit(fsm);
 	fsm->path = _free(fsm->path);
-	fsm->li->filex[i] = -1;
+	li->filex[i] = -1;
     }
 
     fsm->ix = iterIndex;
