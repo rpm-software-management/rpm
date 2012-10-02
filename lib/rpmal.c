@@ -402,7 +402,11 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	    found++;
 	}
     }
-    ret[found] = NULL;
+
+    if (found)
+	ret[found] = NULL;
+    else
+	ret = _free(ret);
 
     return ret;
 }
