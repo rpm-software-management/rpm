@@ -236,21 +236,23 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
  * Check for previously added versions and obsoletions.
  * Return index where to place this element, or -1 to skip.
  */
-static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
+static int findPos(rpmts ts, rpm_color_t tscolor, rpmte te, int upgrade)
 {
     int oc;
     int obsolete = 0;
-    const char * arch = headerGetString(h, RPMTAG_ARCH);
-    const char * os = headerGetString(h, RPMTAG_OS);
+    const char * name = rpmteN(te);
+    const char * evr = rpmteEVR(te);
+    const char * arch = rpmteA(te);
+    const char * os = rpmteO(te);
     rpmte p;
     rpmstrPool tspool = rpmtsPool(ts);
-    rpmds oldChk = rpmdsThisPool(tspool,
-				 h, RPMTAG_REQUIRENAME, (RPMSENSE_LESS));
-    rpmds newChk = rpmdsThisPool(tspool,
-				 h, RPMTAG_REQUIRENAME, (RPMSENSE_GREATER));
-    rpmds sameChk = rpmdsThisPool(tspool,
-				  h, RPMTAG_REQUIRENAME, (RPMSENSE_EQUAL));
-    rpmds obsChk = rpmdsNewPool(tspool, h, RPMTAG_OBSOLETENAME, 0);
+    rpmds oldChk = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+				   name, evr, (RPMSENSE_LESS));
+    rpmds newChk = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+				   name, evr, (RPMSENSE_GREATER));
+    rpmds sameChk = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+				    name, evr, (RPMSENSE_EQUAL));
+    rpmds obsChk = rpmteDS(te, RPMTAG_OBSOLETENAME);
     rpmtsi pi = rpmtsiInit(ts);
 
     /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
@@ -312,19 +314,16 @@ static int findPos(rpmts ts, rpm_color_t tscolor, Header h, int upgrade)
 
     /* If we broke out of the loop early we've something to say */
     if (p != NULL && rpmIsVerbose()) {
-	char *nevra = headerGetAsString(h, RPMTAG_NEVRA);
 	const char *msg = (oc < 0) ?
 		    _("package %s was already added, skipping %s\n") :
 		    _("package %s was already added, replacing with %s\n");
-	rpmlog(RPMLOG_WARNING, msg, rpmteNEVRA(p), nevra);
-	free(nevra);
+	rpmlog(RPMLOG_WARNING, msg, rpmteNEVRA(p), rpmteNEVRA(te));
     }
 
     rpmtsiFree(pi);
     rpmdsFree(oldChk);
     rpmdsFree(newChk);
     rpmdsFree(sameChk);
-    rpmdsFree(obsChk);
     return oc;
 }
 
@@ -388,7 +387,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 
     /* Check binary packages for redundancies in the set */
     if (!isSource) {
-	oc = findPos(ts, tscolor, h, upgrade);
+	oc = findPos(ts, tscolor, p, upgrade);
 	/* If we're replacing a previously added element, free the old one */
 	if (oc >= 0 && oc < tsmem->orderCount) {
 	    rpmalDel(tsmem->addedPackages, tsmem->order[oc]);
