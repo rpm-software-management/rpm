@@ -343,7 +343,7 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
     return ret;
 }
 
-static rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
+rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     rpmte * ret = NULL;
     int i, found;
