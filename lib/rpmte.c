@@ -94,7 +94,7 @@ static rpmfi getFI(rpmte p, Header h)
 				      (RPMFI_NOHEADER | RPMFI_FLAGS_ERASE);
 
     /* relocate stuff in header if necessary */
-    if (rpmteType(p) == TR_ADDED && rpmfsFC(p->fs) > 0) {
+    if (rpmteType(p) == TR_ADDED && rpmfsFC(p->fs) > 0 && p->nrelocs) {
 	if (!headerIsSource(h) && !headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
 	    rpmRelocateFileList(p->relocs, p->nrelocs, p->fs, h);
 	}
