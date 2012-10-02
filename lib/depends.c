@@ -233,98 +233,148 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 }
 
 /*
+ * rpmal doesn't (yet) know about obsoletes within the set, so we have
+ * no choice but to walk through all the elements. In theory there could
+ * be more than one obsoleting package, but we only care whether this
+ * has been obsoleted by *something* or not.
+ */
+static rpmte checkObsoleted(rpmts ts, rpmds thisds)
+{
+    rpmtsi pi = rpmtsiInit(ts);
+    rpmte p;
+    int match = 0;
+
+    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
+	rpmds obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
+
+	while (rpmdsNext(obsoletes) >= 0) {
+	    if (rpmdsCompare(obsoletes, thisds)) {
+		match = 1;
+		break;
+	    }
+	}
+	if (match)
+	    break;
+    }
+    rpmtsiFree(pi);
+    return p;
+}
+
+/*
+ * Filtered rpmal lookup: on colored transactions there can be more
+ * than one identical NEVR but different arch, this must be allowed.
+ * Only a single element needs to be considred as there can only ever
+ * be one previous element to be replaced.
+ */
+static rpmte checkAdded(rpmal addedPackages, rpm_color_t tscolor,
+			rpmte te, rpmds ds)
+{
+    rpmte p = NULL;
+    rpmte *matches = NULL;
+
+    matches = rpmalAllSatisfiesDepend(addedPackages, ds);
+    if (matches) {
+	const char * arch = rpmteA(te);
+	const char * os = rpmteO(te);
+
+	for (rpmte *m = matches; m && *m; m++) {
+	    if (tscolor) {
+		const char * parch = rpmteA(*m);
+		const char * pos = rpmteO(*m);
+
+		if (arch == NULL || parch == NULL || os == NULL || pos == NULL)
+		    continue;
+		if (!rstreq(arch, parch) || !rstreq(os, pos))
+		    continue;
+	    }
+	    p = *m;
+	    break;
+  	}
+	free(matches);
+    }
+    return p;
+}
+
+/*
  * Check for previously added versions and obsoletions.
  * Return index where to place this element, or -1 to skip.
+ * XXX OBSOLETENAME is a bit of a hack, but gives us what
+ * we want from rpmal: we're only interested in added package
+ * names here, not their provides.
  */
 static int findPos(rpmts ts, rpm_color_t tscolor, rpmte te, int upgrade)
 {
-    int oc;
-    int obsolete = 0;
+    tsMembers tsmem = rpmtsMembers(ts);
+    int oc = tsmem->orderCount;
+    int skip = 0;
     const char * name = rpmteN(te);
     const char * evr = rpmteEVR(te);
-    const char * arch = rpmteA(te);
-    const char * os = rpmteO(te);
     rpmte p;
     rpmstrPool tspool = rpmtsPool(ts);
-    rpmds oldChk = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+    rpmds oldChk = rpmdsSinglePool(tspool, RPMTAG_OBSOLETENAME,
 				   name, evr, (RPMSENSE_LESS));
-    rpmds newChk = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+    rpmds newChk = rpmdsSinglePool(tspool, RPMTAG_OBSOLETENAME,
 				   name, evr, (RPMSENSE_GREATER));
-    rpmds sameChk = rpmdsSinglePool(tspool, RPMTAG_REQUIRENAME,
+    rpmds sameChk = rpmdsSinglePool(tspool, RPMTAG_OBSOLETENAME,
 				    name, evr, (RPMSENSE_EQUAL));
     rpmds obsChk = rpmteDS(te, RPMTAG_OBSOLETENAME);
-    rpmtsi pi = rpmtsiInit(ts);
 
-    /* XXX can't use rpmtsiNext() filter or oc will have wrong value. */
-    for (oc = 0; (p = rpmtsiNext(pi, 0)) != NULL; oc++) {
-	rpmds thisds, obsoletes;
+    /* If obsoleting package has already been added, skip this. */
+    if ((p = checkObsoleted(ts, rpmteDS(te, RPMTAG_NAME)))) {
+	skip = 1;
+	goto exit;
+    }
 
-	/* Only added binary packages need checking */
-	if (rpmteType(p) == TR_REMOVED || rpmteIsSource(p))
-	    continue;
-
-	/* Skip packages obsoleted by already added packages */
-	obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
-	while (rpmdsNext(obsoletes) >= 0) {
-	    if (rpmdsCompare(obsoletes, sameChk)) {
-		obsolete = 1;
-		oc = -1;
-		break;
-	    }
-	}
-
-	/* Replace already added obsoleted packages by obsoleting package */
-	thisds = rpmteDS(p, RPMTAG_NAME);
-	rpmdsInit(obsChk);
-	while (rpmdsNext(obsChk) >= 0) {
-	    if (rpmdsCompare(obsChk, thisds)) {
-		obsolete = 1;
-		break;
-	    }
-	}
-
-	if (obsolete)
-	    break;
-
-	if (tscolor) {
-	    const char * parch = rpmteA(p);
-	    const char * pos = rpmteO(p);
-
-	    if (arch == NULL || parch == NULL || os == NULL || pos == NULL)
-		continue;
-	    if (!rstreq(arch, parch) || !rstreq(os, pos))
-		continue;
-	}
-
-	/* 
-	 * Always skip identical NEVR. 
- 	 * On upgrade, if newer NEVR was previously added, skip adding older.
- 	 */
-	if (rpmdsCompare(sameChk, thisds) ||
-		(upgrade && rpmdsCompare(newChk, thisds))) {
-	    oc = -1;
-	    break;;
-	}
-
- 	/* On upgrade, if older NEVR was previously added, replace with new */
-	if (upgrade && rpmdsCompare(oldChk, thisds) != 0) {
-	    break;
+    /* If obsoleted package has already been added, replace with this. */
+    rpmdsInit(obsChk);
+    while (rpmdsNext(obsChk) >= 0) {
+	/* XXX Obsoletes are not colored */
+	if ((p = checkAdded(tsmem->addedPackages, 0, te, obsChk))) {
+	    goto exit;
 	}
     }
 
-    /* If we broke out of the loop early we've something to say */
+    /* If same NEVR has already been added, skip this. */
+    if ((p = checkAdded(tsmem->addedPackages, tscolor, te, sameChk))) {
+	skip = 1;
+	goto exit;
+    }
+
+    /* On upgrades... */
+    if (upgrade) {
+	/* ...if newer NEVR has already been added, skip this. */
+	if ((p = checkAdded(tsmem->addedPackages, tscolor, te, newChk))) {
+	    skip = 1;
+	    goto exit;
+	}
+
+	/* ...if older NEVR has already been added, replace with this. */
+	if ((p = checkAdded(tsmem->addedPackages, tscolor, te, oldChk))) {
+	    goto exit;
+	}
+    }
+
+exit:
+    /* If we found a previous element we've something to say */
     if (p != NULL && rpmIsVerbose()) {
-	const char *msg = (oc < 0) ?
+	const char *msg = skip ?
 		    _("package %s was already added, skipping %s\n") :
 		    _("package %s was already added, replacing with %s\n");
 	rpmlog(RPMLOG_WARNING, msg, rpmteNEVRA(p), rpmteNEVRA(te));
     }
 
-    rpmtsiFree(pi);
+    /* If replacing a previous element, find out where it is. Pooh. */
+    if (!skip && p != NULL) {
+	for (oc = 0; oc < tsmem->orderCount; oc++) {
+	    if (p == tsmem->order[oc])
+		break;
+	}
+    }
+
     rpmdsFree(oldChk);
     rpmdsFree(newChk);
     rpmdsFree(sameChk);
-    return oc;
+    return (skip) ? -1 : oc;
 }
 
 rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types)
