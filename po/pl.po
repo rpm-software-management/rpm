@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-05-22 13:56+0300\n"
+"POT-Creation-Date: 2012-10-03 11:36+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Polish (http://www.transifex.net/projects/p/rpm/language/"
@@ -88,7 +88,7 @@ msgstr "Opcje sprawdzania (z -V lub --verify):"
 msgid "Install/Upgrade/Erase options:"
 msgstr "Opcje instalacji/aktualizacji/usuwania:"
 
-#: rpmqv.c:64 rpmbuild.c:217 rpmdb.c:35 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
+#: rpmqv.c:64 rpmbuild.c:223 rpmdb.c:35 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
 #: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr "Wspólne opcje dla wszystkich trybów i plików binarnych RPM:"
@@ -217,7 +217,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test można podać tylko podczas instalacji i usuwania pakietów"
 
-#: rpmqv.c:239 rpmbuild.c:543
+#: rpmqv.c:239 rpmbuild.c:549
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "parametry dla --root (-r) muszą zaczynać się od /"
 
@@ -237,198 +237,208 @@ msgstr "nie podano parametrów dla zapytania"
 msgid "no arguments given for verify"
 msgstr "nie podano parametrów dla sprawdzenia"
 
-#: rpmbuild.c:98
+#: rpmbuild.c:99
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "buildroot został już podany, ignorowanie %s\n"
 
-#: rpmbuild.c:119
+#: rpmbuild.c:120
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "zbudowanie przez %prep (rozpakowanie źródeł i nałożenie łat) z <pliku_spec>"
 
-#: rpmbuild.c:120 rpmbuild.c:123 rpmbuild.c:126 rpmbuild.c:129 rpmbuild.c:132
-#: rpmbuild.c:135 rpmbuild.c:138
+#: rpmbuild.c:121 rpmbuild.c:124 rpmbuild.c:127 rpmbuild.c:130 rpmbuild.c:133
+#: rpmbuild.c:136 rpmbuild.c:139
 msgid "<specfile>"
 msgstr "<plik_spec>"
 
-#: rpmbuild.c:122
+#: rpmbuild.c:123
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "zbudowanie przez %build (%prep i skompilowanie) z <pliku_spec>"
 
-#: rpmbuild.c:125
+#: rpmbuild.c:126
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 "zbudowanie przez %install (%prep, %build i zainstalowanie) z <pliku_spec>"
 
-#: rpmbuild.c:128
+#: rpmbuild.c:129
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "sprawdzenie sekcji %files z <pliku_spec>"
 
-#: rpmbuild.c:131
+#: rpmbuild.c:132
 msgid "build source and binary packages from <specfile>"
 msgstr "zbudowanie pakietu źródłowego i binarnego z <pliku_spec>"
 
-#: rpmbuild.c:134
+#: rpmbuild.c:135
 msgid "build binary package only from <specfile>"
 msgstr "zbudowanie tylko pakietu binarnego z <pliku_spec>"
 
-#: rpmbuild.c:137
+#: rpmbuild.c:138
 msgid "build source package only from <specfile>"
 msgstr "zbudowanie tylko pakietu źródłowego z <pliku_spec>"
 
-#: rpmbuild.c:141
+#: rpmbuild.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "zbudowanie przez %prep (rozpakowanie źródeł i nałożenie łat) z <pliku_tar>"
 
-#: rpmbuild.c:142 rpmbuild.c:145 rpmbuild.c:148 rpmbuild.c:151 rpmbuild.c:154
-#: rpmbuild.c:157 rpmbuild.c:160
+#: rpmbuild.c:143 rpmbuild.c:146 rpmbuild.c:149 rpmbuild.c:152 rpmbuild.c:155
+#: rpmbuild.c:158 rpmbuild.c:161
 msgid "<tarball>"
 msgstr "<plik_tar>"
 
-#: rpmbuild.c:144
+#: rpmbuild.c:145
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "zbudowanie przez %build (%prep oraz skompilowanie) z <pliku_tar>"
 
-#: rpmbuild.c:147
+#: rpmbuild.c:148
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 "zbudowanie przez %install (%prep, %build i zainstalowanie) z <pliku_tar>"
 
-#: rpmbuild.c:150
+#: rpmbuild.c:151
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "sprawdzenie sekcji %files z <pliku_tar>"
 
-#: rpmbuild.c:153
+#: rpmbuild.c:154
 msgid "build source and binary packages from <tarball>"
 msgstr "zbudowanie pakietu źródłowego i binarnego z <pliku_tar>"
 
-#: rpmbuild.c:156
+#: rpmbuild.c:157
 msgid "build binary package only from <tarball>"
 msgstr "zbudowanie tylko pakietu binarnego z <pliku_tar>"
 
-#: rpmbuild.c:159
+#: rpmbuild.c:160
 msgid "build source package only from <tarball>"
 msgstr "zbudowanie tylko pakietu źródłowego z <pliku_tar>"
 
-#: rpmbuild.c:163
+#: rpmbuild.c:164
 msgid "build binary package from <source package>"
 msgstr "zbudowanie pakietu binarnego z <pakietu_źródłowego>"
 
-#: rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:165 rpmbuild.c:168
 msgid "<source package>"
 msgstr "<pakiet_źródłowy>"
 
-#: rpmbuild.c:166
+#: rpmbuild.c:167
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 "zbudowanie przez %install (%prep, %build i zainstalowanie) z "
 "<pakietu_źródłowego>"
 
-#: rpmbuild.c:170
+#: rpmbuild.c:171
 msgid "override build root"
 msgstr "zastąpienie build root"
 
-#: rpmbuild.c:172
+#: rpmbuild.c:173
 msgid "remove build tree when done"
 msgstr "usunięcie drzewa budowania po ukończeniu"
 
-#: rpmbuild.c:174
+#: rpmbuild.c:175
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "zignorowanie dyrektywy ExcludeArch: z pliku spec"
 
-#: rpmbuild.c:176
+#: rpmbuild.c:177
 msgid "debug file state machine"
 msgstr "debugowanie maszyny stanów plików"
 
-#: rpmbuild.c:178
+#: rpmbuild.c:179
 msgid "do not execute any stages of the build"
 msgstr "bez wykonania żadnych etapów budowania"
 
-#: rpmbuild.c:180
+#: rpmbuild.c:181
 msgid "do not verify build dependencies"
 msgstr "bez sprawdzania zależności budowania"
 
-#: rpmbuild.c:182
+#: rpmbuild.c:183
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr ""
 "utworzenie nagłówków pakietu zgodnych z (przestarzałymi) pakietami RPM v3"
 
-#: rpmbuild.c:186
+#: rpmbuild.c:187
+#, fuzzy, c-format
+msgid "do not execute %clean stage of the build"
+msgstr "bez wykonania żadnych etapów budowania"
+
+#: rpmbuild.c:189
+#, fuzzy, c-format
+msgid "do not execute %check stage of the build"
+msgstr "bez wykonania żadnych etapów budowania"
+
+#: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "bez akceptowania wpisów msgstr i18n z pliku spec"
 
-#: rpmbuild.c:188
+#: rpmbuild.c:194
 msgid "remove sources when done"
 msgstr "usunięcie źródeł po ukończeniu"
 
-#: rpmbuild.c:190
+#: rpmbuild.c:196
 msgid "remove specfile when done"
 msgstr "usunięcie pliku spec po ukończeniu"
 
-#: rpmbuild.c:192
+#: rpmbuild.c:198
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "przejście od razu do podanego etapu (tylko dla c,i)"
 
-#: rpmbuild.c:194 rpmspec.c:34
+#: rpmbuild.c:200 rpmspec.c:34
 msgid "override target platform"
 msgstr "zastąpienie platformy docelowej"
 
-#: rpmbuild.c:211
+#: rpmbuild.c:217
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "Opcje budowania z [ <plik_spec> | <plik_tar> | <pakiet_źródłowy> ]:"
 
-#: rpmbuild.c:231
+#: rpmbuild.c:237
 msgid "Failed build dependencies:\n"
 msgstr "Niespełnione zależności budowania:\n"
 
-#: rpmbuild.c:249
+#: rpmbuild.c:255
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Nie można otworzyć pliku spec %s: %s\n"
 
-#: rpmbuild.c:311
+#: rpmbuild.c:317
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Otwarcie potoku tar się nie powiodło: %m\n"
 
-#: rpmbuild.c:330
+#: rpmbuild.c:336
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Odczytanie pliku spec z %s się nie powiodło\n"
 
-#: rpmbuild.c:342
+#: rpmbuild.c:348
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Zmiana nazwy %s na %s się nie powiodła: %m\n"
 
-#: rpmbuild.c:413
+#: rpmbuild.c:419
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "wykonanie stat na %s się nie powiodło: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:423
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Plik %s nie jest zwykłym plikiem.\n"
 
-#: rpmbuild.c:424
+#: rpmbuild.c:430
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Plik %s nie wygląda na plik spec.\n"
 
-#: rpmbuild.c:490
+#: rpmbuild.c:496
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Budowanie dla platform docelowych: %s\n"
 
-#: rpmbuild.c:498
+#: rpmbuild.c:504
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Budowanie dla %s\n"
@@ -633,196 +643,191 @@ msgstr "&& i || nie są obsługiwane dla ciągów\n"
 msgid "syntax error in expression\n"
 msgstr "błąd składni w wyrażeniu\n"
 
-#: build/files.c:282 build/files.c:472 build/files.c:690
+#: build/files.c:283 build/files.c:473 build/files.c:691
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Brak \"(\" w %s %s\n"
 
-#: build/files.c:292 build/files.c:605 build/files.c:700 build/files.c:762
+#: build/files.c:293 build/files.c:606 build/files.c:701 build/files.c:763
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Brak \")\" w %s(%s\n"
 
-#: build/files.c:328 build/files.c:628
+#: build/files.c:329 build/files.c:629
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Nieprawidłowy token %s: %s\n"
 
-#: build/files.c:434
+#: build/files.c:435
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr "Brak %s w %s %s\n"
 
-#: build/files.c:487
+#: build/files.c:488
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr "Brak białego znaku po %s(): %s\n"
 
-#: build/files.c:523
+#: build/files.c:524
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr "Błędna składnia: %s(%s)\n"
 
-#: build/files.c:532
+#: build/files.c:533
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr "Błędny tryb spec: %s(%s)\n"
 
-#: build/files.c:544
+#: build/files.c:545
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr "Błędny tryb katalogu spec: %s(%s)\n"
 
-#: build/files.c:652
+#: build/files.c:653
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
 msgstr "Niezwykła długość lokalizacji: \"%s\" w %%lang(%s)\n"
 
-#: build/files.c:659
+#: build/files.c:660
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr "Podwójna lokalizacja %s w %%lang(%s)\n"
 
-#: build/files.c:777
+#: build/files.c:778
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr "Nieprawidłowa możliwość: %s\n"
 
-#: build/files.c:788
+#: build/files.c:789
 msgid "File capability support not built in\n"
 msgstr "Obsługa możliwości plików nie jest wbudowana\n"
 
-#: build/files.c:842
+#: build/files.c:843
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr "Tylko jeden parametr dla %%docdir\n"
 
-#: build/files.c:871
+#: build/files.c:872
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "Dwa pliki w jednym wierszu: %s\n"
 
-#: build/files.c:884
+#: build/files.c:885
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Plik musi zaczynać się od \"/\": %s\n"
 
-#: build/files.c:895
+#: build/files.c:896
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Nie można mieszać specjalnego %%doc z innymi formami: %s\n"
 
-#: build/files.c:1034
+#: build/files.c:1035
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr "Nieznany algorytm skrótu pliku %u, używanie w zamian MD5\n"
 
-#: build/files.c:1062
+#: build/files.c:1063
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Plik podany dwukrotnie: %s\n"
 
-#: build/files.c:1188
+#: build/files.c:1189
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr "odczytanie dowiązania symbolicznego %s się nie powiodło: %s\n"
 
-#: build/files.c:1196
+#: build/files.c:1197
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Dowiązanie symboliczne wskazuje na BuildRoot: %s -> %s\n"
 
-#: build/files.c:1381
-#, c-format
-msgid "Explicit file attributes required in spec for: %s\n"
-msgstr "Wymagane są bezpośrednie atrybuty plików w spec dla: %s\n"
-
-#: build/files.c:1390
+#: build/files.c:1391
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr "Nie odnaleziono katalogu: %s\n"
 
-#: build/files.c:1391
+#: build/files.c:1392
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Nie odnaleziono pliku: %s\n"
 
-#: build/files.c:1497
+#: build/files.c:1498
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr "Plik %s jest za duży dla danych\n"
 
-#: build/files.c:1591
+#: build/files.c:1592
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr "%s: nie można wczytać nieznanego znacznika (%d).\n"
 
-#: build/files.c:1597
+#: build/files.c:1598
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr "%s: odczytanie klucza publicznego się nie powiodło.\n"
 
-#: build/files.c:1601
+#: build/files.c:1602
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr "%s: nie jest opakowanym kluczem publicznym.\n"
 
-#: build/files.c:1610
+#: build/files.c:1611
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr "%s: odkodowanie się nie powiodło\n"
 
-#: build/files.c:1655
+#: build/files.c:1656
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr "Plik musi zaczynać się od \"/\": %s\n"
 
-#: build/files.c:1679
+#: build/files.c:1680
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr "Wyrażenie regularne %%dev nie jest dozwolone: %s\n"
 
-#: build/files.c:1692
+#: build/files.c:1693
 #, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr "Katalog nie został odnaleziony przez wyrażenie regularne: %s\n"
 
-#: build/files.c:1693 lib/rpminstall.c:426
+#: build/files.c:1694 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr "Nie odnaleziono pliku przez wyrażenie regularne: %s\n"
 
-#: build/files.c:1729
+#: build/files.c:1730
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr "Nie można otworzyć pliku %s dla %%files: %m\n"
 
-#: build/files.c:1736
+#: build/files.c:1737
 #, c-format
 msgid "line: %s\n"
 msgstr "wiersz: %s\n"
 
-#: build/files.c:1743
+#: build/files.c:1744
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr "Błąd podczas odczytywania %%files pliku %s: %m\n"
 
-#: build/files.c:2015
+#: build/files.c:2016
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Błędny plik: %s: %s\n"
 
-#: build/files.c:2037 build/parsePrep.c:33
+#: build/files.c:2038 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Błędny właściciel/grupa: %s\n"
 
-#: build/files.c:2077
+#: build/files.c:2078
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Sprawdzanie niespakietowanych plików: %s\n"
 
-#: build/files.c:2090
+#: build/files.c:2091
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -831,12 +836,12 @@ msgstr ""
 "Odnaleziono zainstalowane (ale niespakietowane) pliki:\n"
 "%s"
 
-#: build/files.c:2119
+#: build/files.c:2120
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Przetwarzanie plików: %s\n"
 
-#: build/files.c:2130
+#: build/files.c:2131
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Pliki binarne zależne od architektury w pakiecie noarch\n"
 
@@ -1330,46 +1335,46 @@ msgstr "wiersz %d: %s\n"
 msgid "Unable to open %s: %s\n"
 msgstr "Nie można otworzyć %s: %s\n"
 
-#: build/parseSpec.c:258
-#, c-format
-msgid "Unclosed %%if\n"
-msgstr "Niezamknięte %%if\n"
-
-#: build/parseSpec.c:290
+#: build/parseSpec.c:284
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
 msgstr "%s:%d: oczekiwano parametru dla %s\n"
 
-#: build/parseSpec.c:313
+#: build/parseSpec.c:306
+#, fuzzy, c-format
+msgid "line %d: Unclosed %%if\n"
+msgstr "Niezamknięte %%if\n"
+
+#: build/parseSpec.c:311
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr "wiersz %d: niezamknięte makro lub błędna kontynuacja wiersza\n"
 
-#: build/parseSpec.c:355
+#: build/parseSpec.c:353
 #, c-format
 msgid "%s:%d: bad %%if condition\n"
 msgstr "%s:%d: błędny warunek %%if\n"
 
-#: build/parseSpec.c:363
+#: build/parseSpec.c:361
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: napotkano %%else bez %%if\n"
 
-#: build/parseSpec.c:374
+#: build/parseSpec.c:372
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: napotkano %%endif bez %%if\n"
 
-#: build/parseSpec.c:392
+#: build/parseSpec.c:390
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "błędnie sformowany wpis %%include\n"
 
-#: build/parseSpec.c:674
+#: build/parseSpec.c:676
 msgid "No compatible architectures found for build\n"
 msgstr "Nie odnaleziono zgodnych architektur do zbudowania\n"
 
-#: build/parseSpec.c:708
+#: build/parseSpec.c:710
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakiet nie posiada %%description: %s\n"
@@ -1578,8 +1583,8 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr "pakiet %s został już dodany, zastępowanie %s\n"
 
 #: lib/formats.c:65 lib/formats.c:101 lib/formats.c:183 lib/formats.c:209
-#: lib/formats.c:258 lib/formats.c:276 lib/formats.c:469 lib/formats.c:502
-#: lib/formats.c:540
+#: lib/formats.c:262 lib/formats.c:280 lib/formats.c:473 lib/formats.c:506
+#: lib/formats.c:544
 msgid "(not a number)"
 msgstr "(nie jest liczbą)"
 
@@ -1592,99 +1597,99 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:310
+#: lib/formats.c:314
 msgid "(not base64)"
 msgstr "(nie jest base64)"
 
-#: lib/formats.c:322
+#: lib/formats.c:326
 msgid "(invalid type)"
 msgstr "(nieprawidłowy typ)"
 
-#: lib/formats.c:345 lib/formats.c:425
+#: lib/formats.c:349 lib/formats.c:429
 msgid "(not a blob)"
 msgstr "(nie jest \"blob\")"
 
-#: lib/formats.c:380
+#: lib/formats.c:384
 msgid "(invalid xml type)"
 msgstr "(nieprawidłowy typ XML)"
 
-#: lib/formats.c:430
+#: lib/formats.c:434
 msgid "(not an OpenPGP signature)"
 msgstr "(nie jest podpisem OpenPGP)"
 
-#: lib/formats.c:442
+#: lib/formats.c:446
 #, c-format
 msgid "Invalid date %u"
 msgstr "Nieprawidłowa data %u"
 
-#: lib/formats.c:508
+#: lib/formats.c:512
 msgid "normal"
 msgstr "zwykły"
 
-#: lib/formats.c:511
+#: lib/formats.c:515
 msgid "replaced"
 msgstr "zastąpiony"
 
-#: lib/formats.c:514
+#: lib/formats.c:518
 msgid "not installed"
 msgstr "niezainstalowany"
 
-#: lib/formats.c:517
+#: lib/formats.c:521
 msgid "net shared"
 msgstr "udostępniony w sieci"
 
-#: lib/formats.c:520
+#: lib/formats.c:524
 msgid "wrong color"
 msgstr "błędny kolor"
 
-#: lib/formats.c:523
+#: lib/formats.c:527
 msgid "missing"
 msgstr "brak"
 
-#: lib/formats.c:526
+#: lib/formats.c:530
 msgid "(unknown)"
 msgstr "(nieznany)"
 
-#: lib/formats.c:561
+#: lib/formats.c:565
 msgid "(not a string)"
 msgstr "(nie jest ciągiem)"
 
-#: lib/fsm.c:731
+#: lib/fsm.c:728
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "użytkownik %s nie istnieje - używanie roota\n"
 
-#: lib/fsm.c:738
+#: lib/fsm.c:735
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "grupa %s nie istnieje - używanie roota\n"
 
-#: lib/fsm.c:1388
+#: lib/fsm.c:1346
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr "nie odnaleziono pliku archiwum %s na liście plików w nagłówku\n"
 
-#: lib/fsm.c:1788 lib/fsm.c:1899
+#: lib/fsm.c:1746 lib/fsm.c:1857
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s zapisano jako %s\n"
 
-#: lib/fsm.c:1922
+#: lib/fsm.c:1880
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "wykonanie %s rmdir na %s się nie powiodło: katalog nie jest pusty\n"
 
-#: lib/fsm.c:1928
+#: lib/fsm.c:1886
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "wykonanie %s rmdir na %s się nie powiodło: %s\n"
 
-#: lib/fsm.c:1942
+#: lib/fsm.c:1900
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "wykonanie %s unlink na %s się nie powiodło: %s\n"
 
-#: lib/fsm.c:1961
+#: lib/fsm.c:1919
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s utworzono jako %s\n"
@@ -2796,17 +2801,17 @@ msgstr "błędna opcja \"%s\" w %s:%d\n"
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1343
+#: lib/rpmrc.c:1346
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr "Nieznany system: %s\n"
 
-#: lib/rpmrc.c:1344
+#: lib/rpmrc.c:1347
 #, c-format
 msgid "Please contact %s\n"
 msgstr "Proszę skontaktować się z %s\n"
 
-#: lib/rpmrc.c:1563
+#: lib/rpmrc.c:1566
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "Nie można otworzyć %s do odczytania: %m.\n"
@@ -2849,11 +2854,11 @@ msgstr "Skrypt %s się nie powiódł, stan wyjścia %d\n"
 msgid "Unknown format"
 msgstr "Nieznany format"
 
-#: lib/rpmte.c:843
+#: lib/rpmte.c:859
 msgid "install"
 msgstr "instalacja"
 
-#: lib/rpmte.c:844
+#: lib/rpmte.c:860
 msgid "erase"
 msgstr "usunięcie"
 
@@ -2882,7 +2887,7 @@ msgstr "brak \")\" w etykiecie pakietu: %s\n"
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: odczytanie klucza publicznego się nie powiodło.\n"
 
-#: lib/rpmts.c:1076
+#: lib/rpmts.c:1082
 msgid "transaction"
 msgstr "transakcji"
 
@@ -2954,20 +2959,20 @@ msgstr "Nagłówek "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "Sprawdzanie podpisu: BŁĘDNE PARAMETRY (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1383
+#: lib/transaction.c:1392
 msgid "skipped"
 msgstr "pominięto"
 
-#: lib/transaction.c:1383
+#: lib/transaction.c:1392
 msgid "failed"
 msgstr "nie powiodło się"
 
-#: lib/verify.c:371
+#: lib/verify.c:372
 #, c-format
 msgid "missing   %c %s"
 msgstr "brak   %c %s"
 
-#: lib/verify.c:421
+#: lib/verify.c:422
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr "Niespełnione zależności dla %s:\n"
@@ -3381,22 +3386,22 @@ msgstr "Niezakończone %c: %s\n"
 msgid "A %% is followed by an unparseable macro\n"
 msgstr "Makro niemożliwe do przetworzenia po %%\n"
 
-#: rpmio/rpmfileutil.c:283
+#: rpmio/rpmfileutil.c:245
 #, c-format
 msgid "error creating temporary file %s: %m\n"
 msgstr "błąd podczas tworzenia pliku tymczasowego %s: %m\n"
 
-#: rpmio/rpmfileutil.c:348 rpmio/rpmfileutil.c:354
+#: rpmio/rpmfileutil.c:310 rpmio/rpmfileutil.c:316
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Plik %s: %s\n"
 
-#: rpmio/rpmfileutil.c:357
+#: rpmio/rpmfileutil.c:319
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Plik %s jest mniejszy niż %u bajtów\n"
 
-#: rpmio/rpmfileutil.c:765
+#: rpmio/rpmfileutil.c:727
 msgid "failed to create directory"
 msgstr "utworzenie katalogu się nie powiodło"
 
@@ -3533,3 +3538,6 @@ msgstr "%s: odczytanie manifestu się nie powiodło: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "bez sprawdzania podpisu nagłówka+danych"
+
+#~ msgid "Explicit file attributes required in spec for: %s\n"
+#~ msgstr "Wymagane są bezpośrednie atrybuty plików w spec dla: %s\n"

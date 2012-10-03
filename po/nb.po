@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-05-22 13:56+0300\n"
+"POT-Creation-Date: 2012-10-03 11:36+0300\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,7 +79,7 @@ msgstr ""
 msgid "Install/Upgrade/Erase options:"
 msgstr ""
 
-#: rpmqv.c:64 rpmbuild.c:217 rpmdb.c:35 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
+#: rpmqv.c:64 rpmbuild.c:223 rpmdb.c:35 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
 #: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr ""
@@ -205,7 +205,7 @@ msgstr ""
 msgid "--test may only be specified during package installation and erasure"
 msgstr ""
 
-#: rpmqv.c:239 rpmbuild.c:543
+#: rpmqv.c:239 rpmbuild.c:549
 msgid "arguments to --root (-r) must begin with a /"
 msgstr ""
 
@@ -225,193 +225,203 @@ msgstr "ingen argumenter oppgitt for spørring"
 msgid "no arguments given for verify"
 msgstr "ingen argumenter oppgitt for verifisering"
 
-#: rpmbuild.c:98
+#: rpmbuild.c:99
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "Feil under lesing av spec fil fra %s\n"
 
-#: rpmbuild.c:119
+#: rpmbuild.c:120
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr ""
 "bygg gjennom %prep (pakk ut kildekoden og legg til patcher) fra <specfil>"
 
-#: rpmbuild.c:120 rpmbuild.c:123 rpmbuild.c:126 rpmbuild.c:129 rpmbuild.c:132
-#: rpmbuild.c:135 rpmbuild.c:138
+#: rpmbuild.c:121 rpmbuild.c:124 rpmbuild.c:127 rpmbuild.c:130 rpmbuild.c:133
+#: rpmbuild.c:136 rpmbuild.c:139
 msgid "<specfile>"
 msgstr "<specfil>"
 
-#: rpmbuild.c:122
+#: rpmbuild.c:123
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr ""
 
-#: rpmbuild.c:125
+#: rpmbuild.c:126
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr ""
 
-#: rpmbuild.c:128
+#: rpmbuild.c:129
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr ""
 
-#: rpmbuild.c:131
+#: rpmbuild.c:132
 msgid "build source and binary packages from <specfile>"
 msgstr "bygg kilde- og binærpakker fra <specfil>"
 
-#: rpmbuild.c:134
+#: rpmbuild.c:135
 msgid "build binary package only from <specfile>"
 msgstr "spør pakke som eier <fil>"
 
-#: rpmbuild.c:137
+#: rpmbuild.c:138
 msgid "build source package only from <specfile>"
 msgstr ""
 
-#: rpmbuild.c:141
+#: rpmbuild.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr ""
 "bygg gjennom %prep (pakk ut kildekoden og legg til patcher) fra <tarball>"
 
-#: rpmbuild.c:142 rpmbuild.c:145 rpmbuild.c:148 rpmbuild.c:151 rpmbuild.c:154
-#: rpmbuild.c:157 rpmbuild.c:160
+#: rpmbuild.c:143 rpmbuild.c:146 rpmbuild.c:149 rpmbuild.c:152 rpmbuild.c:155
+#: rpmbuild.c:158 rpmbuild.c:161
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: rpmbuild.c:144
+#: rpmbuild.c:145
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr ""
 
-#: rpmbuild.c:147
+#: rpmbuild.c:148
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr ""
 
-#: rpmbuild.c:150
+#: rpmbuild.c:151
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "verifiser %files seksjon fra <tarball>"
 
-#: rpmbuild.c:153
+#: rpmbuild.c:154
 msgid "build source and binary packages from <tarball>"
 msgstr "bygg kilde- og binærpakker fra <tarball>"
 
-#: rpmbuild.c:156
+#: rpmbuild.c:157
 msgid "build binary package only from <tarball>"
 msgstr ""
 
-#: rpmbuild.c:159
+#: rpmbuild.c:160
 msgid "build source package only from <tarball>"
 msgstr ""
 
-#: rpmbuild.c:163
+#: rpmbuild.c:164
 msgid "build binary package from <source package>"
 msgstr "bygg binær-pakke fra <kildepakke>"
 
-#: rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:165 rpmbuild.c:168
 msgid "<source package>"
 msgstr "<kildepakke>"
 
-#: rpmbuild.c:166
+#: rpmbuild.c:167
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr ""
 
-#: rpmbuild.c:170
+#: rpmbuild.c:171
 msgid "override build root"
 msgstr ""
 
-#: rpmbuild.c:172
+#: rpmbuild.c:173
 msgid "remove build tree when done"
 msgstr "fjern byggtreet når ferdig"
 
-#: rpmbuild.c:174
+#: rpmbuild.c:175
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr ""
 
-#: rpmbuild.c:176
+#: rpmbuild.c:177
 msgid "debug file state machine"
 msgstr ""
 
-#: rpmbuild.c:178
+#: rpmbuild.c:179
 msgid "do not execute any stages of the build"
 msgstr ""
 
-#: rpmbuild.c:180
+#: rpmbuild.c:181
 msgid "do not verify build dependencies"
 msgstr ""
 
-#: rpmbuild.c:182
+#: rpmbuild.c:183
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr ""
 
-#: rpmbuild.c:186
+#: rpmbuild.c:187
+#, fuzzy, c-format
+msgid "do not execute %clean stage of the build"
+msgstr "ikke kjør %%preun skriptlet (hvis noen)"
+
+#: rpmbuild.c:189
+#, fuzzy, c-format
+msgid "do not execute %check stage of the build"
+msgstr "ikke kjør pakkespesifikke skriptlet"
+
+#: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
 msgstr ""
 
-#: rpmbuild.c:188
+#: rpmbuild.c:194
 msgid "remove sources when done"
 msgstr "fjern kildekoden når ferdig"
 
-#: rpmbuild.c:190
+#: rpmbuild.c:196
 msgid "remove specfile when done"
 msgstr ""
 
-#: rpmbuild.c:192
+#: rpmbuild.c:198
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "hopp rett til spesifisert steg (kun for c,i)"
 
-#: rpmbuild.c:194 rpmspec.c:34
+#: rpmbuild.c:200 rpmspec.c:34
 msgid "override target platform"
 msgstr ""
 
-#: rpmbuild.c:211
+#: rpmbuild.c:217
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr ""
 
-#: rpmbuild.c:231
+#: rpmbuild.c:237
 msgid "Failed build dependencies:\n"
 msgstr ""
 
-#: rpmbuild.c:249
+#: rpmbuild.c:255
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "Kunne ikke åpne spec fil %s: %s\n"
 
-#: rpmbuild.c:311
+#: rpmbuild.c:317
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "Kunne ikke åpne tar-rør: %m\n"
 
-#: rpmbuild.c:330
+#: rpmbuild.c:336
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "Feil under lesing av spec-fil fra %s\n"
 
-#: rpmbuild.c:342
+#: rpmbuild.c:348
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "Feil under endring av navn fra %s til %s: %m\n"
 
-#: rpmbuild.c:413
+#: rpmbuild.c:419
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "kunne ikke kjøre stat på %s: %m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:423
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "Fil %s er ikke en vanlig fil.\n"
 
-#: rpmbuild.c:424
+#: rpmbuild.c:430
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "Fil %s ser ikke ut til å være en spec-fil.\n"
 
-#: rpmbuild.c:490
+#: rpmbuild.c:496
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "Bygger målplattformene: %s\n"
 
-#: rpmbuild.c:498
+#: rpmbuild.c:504
 #, c-format
 msgid "Building for target %s\n"
 msgstr "Bygger for mål %s\n"
@@ -613,208 +623,203 @@ msgstr "&& og || ikke støttet for strenger\n"
 msgid "syntax error in expression\n"
 msgstr "syntaksfeil i uttrykk\n"
 
-#: build/files.c:282 build/files.c:472 build/files.c:690
+#: build/files.c:283 build/files.c:473 build/files.c:691
 #, c-format
 msgid "Missing '(' in %s %s\n"
 msgstr "Mangler '(' i %s %s\n"
 
-#: build/files.c:292 build/files.c:605 build/files.c:700 build/files.c:762
+#: build/files.c:293 build/files.c:606 build/files.c:701 build/files.c:763
 #, c-format
 msgid "Missing ')' in %s(%s\n"
 msgstr "Mangler ')' i %s(%s\n"
 
-#: build/files.c:328 build/files.c:628
+#: build/files.c:329 build/files.c:629
 #, c-format
 msgid "Invalid %s token: %s\n"
 msgstr "Ugyldig %s-tegn: %s\n"
 
-#: build/files.c:434
+#: build/files.c:435
 #, c-format
 msgid "Missing %s in %s %s\n"
 msgstr ""
 
-#: build/files.c:487
+#: build/files.c:488
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
 msgstr ""
 
-#: build/files.c:523
+#: build/files.c:524
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:532
+#: build/files.c:533
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:544
+#: build/files.c:545
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
 msgstr ""
 
-#: build/files.c:652
+#: build/files.c:653
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:659
+#: build/files.c:660
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
 msgstr ""
 
-#: build/files.c:777
+#: build/files.c:778
 #, c-format
 msgid "Invalid capability: %s\n"
 msgstr ""
 
-#: build/files.c:788
+#: build/files.c:789
 msgid "File capability support not built in\n"
 msgstr ""
 
-#: build/files.c:842
+#: build/files.c:843
 #, c-format
 msgid "Only one arg for %%docdir\n"
 msgstr ""
 
-#: build/files.c:871
+#: build/files.c:872
 #, c-format
 msgid "Two files on one line: %s\n"
 msgstr "To filer på én linje: %s\n"
 
-#: build/files.c:884
+#: build/files.c:885
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr "Filen må begynne med \"/\": %s\n"
 
-#: build/files.c:895
+#: build/files.c:896
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr "Kan ikke blande spesiell %%doc med andre skjema: %s\n"
 
-#: build/files.c:1034
+#: build/files.c:1035
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1062
+#: build/files.c:1063
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr "Fil listet to ganger: %s\n"
 
-#: build/files.c:1188
+#: build/files.c:1189
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr ""
 
-#: build/files.c:1196
+#: build/files.c:1197
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr "Symbolsk lenke peker til BuildRoot: %s -> %s\n"
 
-#: build/files.c:1381
-#, c-format
-msgid "Explicit file attributes required in spec for: %s\n"
-msgstr ""
-
-#: build/files.c:1390
+#: build/files.c:1391
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1391
+#: build/files.c:1392
 #, c-format
 msgid "File not found: %s\n"
 msgstr "Fil ikke funnet: %s\n"
 
-#: build/files.c:1497
+#: build/files.c:1498
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1591
+#: build/files.c:1592
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1597
+#: build/files.c:1598
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr ""
 
-#: build/files.c:1601
+#: build/files.c:1602
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1610
+#: build/files.c:1611
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1655
+#: build/files.c:1656
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1679
+#: build/files.c:1680
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1692
+#: build/files.c:1693
 #, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1693 lib/rpminstall.c:426
+#: build/files.c:1694 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1729
+#: build/files.c:1730
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:1736
+#: build/files.c:1737
 #, c-format
 msgid "line: %s\n"
 msgstr "Installerer %s\n"
 
-#: build/files.c:1743
+#: build/files.c:1744
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:2015
+#: build/files.c:2016
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil %s: %s\n"
 
-#: build/files.c:2037 build/parsePrep.c:33
+#: build/files.c:2038 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig eier/gruppe: %s\n"
 
-#: build/files.c:2077
+#: build/files.c:2078
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2090
+#: build/files.c:2091
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2119
+#: build/files.c:2120
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:2130
+#: build/files.c:2131
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -1305,46 +1310,46 @@ msgstr "linje %d: %s\n"
 msgid "Unable to open %s: %s\n"
 msgstr "Kan ikke åpne %s: %s\n"
 
-#: build/parseSpec.c:258
-#, c-format
-msgid "Unclosed %%if\n"
-msgstr "Åpen %%if\n"
-
-#: build/parseSpec.c:290
+#: build/parseSpec.c:284
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
 msgstr ""
 
-#: build/parseSpec.c:313
+#: build/parseSpec.c:306
+#, fuzzy, c-format
+msgid "line %d: Unclosed %%if\n"
+msgstr "Åpen %%if\n"
+
+#: build/parseSpec.c:311
 #, c-format
 msgid "line %d: unclosed macro or bad line continuation\n"
 msgstr ""
 
-#: build/parseSpec.c:355
+#: build/parseSpec.c:353
 #, c-format
 msgid "%s:%d: bad %%if condition\n"
 msgstr ""
 
-#: build/parseSpec.c:363
+#: build/parseSpec.c:361
 #, c-format
 msgid "%s:%d: Got a %%else with no %%if\n"
 msgstr "%s:%d: %%else uten %%if\n"
 
-#: build/parseSpec.c:374
+#: build/parseSpec.c:372
 #, c-format
 msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif uten %%if\n"
 
-#: build/parseSpec.c:392
+#: build/parseSpec.c:390
 #, c-format
 msgid "malformed %%include statement\n"
 msgstr "ugyldig %%include utsagn\n"
 
-#: build/parseSpec.c:674
+#: build/parseSpec.c:676
 msgid "No compatible architectures found for build\n"
 msgstr "Ingen kompatible arkitekturer funnet for bygging\n"
 
-#: build/parseSpec.c:708
+#: build/parseSpec.c:710
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr "Pakken har ingen %%description: %s\n"
@@ -1550,8 +1555,8 @@ msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
 #: lib/formats.c:65 lib/formats.c:101 lib/formats.c:183 lib/formats.c:209
-#: lib/formats.c:258 lib/formats.c:276 lib/formats.c:469 lib/formats.c:502
-#: lib/formats.c:540
+#: lib/formats.c:262 lib/formats.c:280 lib/formats.c:473 lib/formats.c:506
+#: lib/formats.c:544
 msgid "(not a number)"
 msgstr ""
 
@@ -1564,99 +1569,99 @@ msgstr ""
 msgid "%a %b %d %Y"
 msgstr ""
 
-#: lib/formats.c:310
+#: lib/formats.c:314
 msgid "(not base64)"
 msgstr ""
 
-#: lib/formats.c:322
+#: lib/formats.c:326
 msgid "(invalid type)"
 msgstr ""
 
-#: lib/formats.c:345 lib/formats.c:425
+#: lib/formats.c:349 lib/formats.c:429
 msgid "(not a blob)"
 msgstr ""
 
-#: lib/formats.c:380
+#: lib/formats.c:384
 msgid "(invalid xml type)"
 msgstr ""
 
-#: lib/formats.c:430
+#: lib/formats.c:434
 msgid "(not an OpenPGP signature)"
 msgstr ""
 
-#: lib/formats.c:442
+#: lib/formats.c:446
 #, c-format
 msgid "Invalid date %u"
 msgstr ""
 
-#: lib/formats.c:508
+#: lib/formats.c:512
 msgid "normal"
 msgstr ""
 
-#: lib/formats.c:511
+#: lib/formats.c:515
 msgid "replaced"
 msgstr ""
 
-#: lib/formats.c:514
+#: lib/formats.c:518
 msgid "not installed"
 msgstr ""
 
-#: lib/formats.c:517
+#: lib/formats.c:521
 msgid "net shared"
 msgstr ""
 
-#: lib/formats.c:520
+#: lib/formats.c:524
 msgid "wrong color"
 msgstr ""
 
-#: lib/formats.c:523
+#: lib/formats.c:527
 msgid "missing"
 msgstr ""
 
-#: lib/formats.c:526
+#: lib/formats.c:530
 msgid "(unknown)"
 msgstr ""
 
-#: lib/formats.c:561
+#: lib/formats.c:565
 msgid "(not a string)"
 msgstr ""
 
-#: lib/fsm.c:731
+#: lib/fsm.c:728
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:738
+#: lib/fsm.c:735
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr ""
 
-#: lib/fsm.c:1388
+#: lib/fsm.c:1346
 #, c-format
 msgid "archive file %s was not found in header file list\n"
 msgstr ""
 
-#: lib/fsm.c:1788 lib/fsm.c:1899
+#: lib/fsm.c:1746 lib/fsm.c:1857
 #, c-format
 msgid "%s saved as %s\n"
 msgstr "%s lagret som %s\n"
 
-#: lib/fsm.c:1922
+#: lib/fsm.c:1880
 #, c-format
 msgid "%s rmdir of %s failed: Directory not empty\n"
 msgstr "%s rmdir av %s feilet: Katalogen er ikke tom\n"
 
-#: lib/fsm.c:1928
+#: lib/fsm.c:1886
 #, c-format
 msgid "%s rmdir of %s failed: %s\n"
 msgstr "%s rmdir av %s feilet: %s\n"
 
-#: lib/fsm.c:1942
+#: lib/fsm.c:1900
 #, c-format
 msgid "%s unlink of %s failed: %s\n"
 msgstr "%s unlink av %s feilet: %s\n"
 
-#: lib/fsm.c:1961
+#: lib/fsm.c:1919
 #, c-format
 msgid "%s created as %s\n"
 msgstr "%s opprettet som %s\n"
@@ -2762,17 +2767,17 @@ msgstr "ugyldig flagg '%s' ved %s:%d\n"
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
 msgstr ""
 
-#: lib/rpmrc.c:1343
+#: lib/rpmrc.c:1346
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1344
+#: lib/rpmrc.c:1347
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1563
+#: lib/rpmrc.c:1566
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
@@ -2815,11 +2820,11 @@ msgstr ""
 msgid "Unknown format"
 msgstr ""
 
-#: lib/rpmte.c:843
+#: lib/rpmte.c:859
 msgid "install"
 msgstr ""
 
-#: lib/rpmte.c:844
+#: lib/rpmte.c:860
 msgid "erase"
 msgstr ""
 
@@ -2848,7 +2853,7 @@ msgstr ""
 msgid "%s: reading of public key failed.\n"
 msgstr ""
 
-#: lib/rpmts.c:1076
+#: lib/rpmts.c:1082
 msgid "transaction"
 msgstr ""
 
@@ -2920,20 +2925,20 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1383
+#: lib/transaction.c:1392
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1383
+#: lib/transaction.c:1392
 msgid "failed"
 msgstr ""
 
-#: lib/verify.c:371
+#: lib/verify.c:372
 #, c-format
 msgid "missing   %c %s"
 msgstr ""
 
-#: lib/verify.c:421
+#: lib/verify.c:422
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""
@@ -3339,22 +3344,22 @@ msgstr ""
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/rpmfileutil.c:283
+#: rpmio/rpmfileutil.c:245
 #, c-format
 msgid "error creating temporary file %s: %m\n"
 msgstr ""
 
-#: rpmio/rpmfileutil.c:348 rpmio/rpmfileutil.c:354
+#: rpmio/rpmfileutil.c:310 rpmio/rpmfileutil.c:316
 #, c-format
 msgid "File %s: %s\n"
 msgstr "Fil %s: %s\n"
 
-#: rpmio/rpmfileutil.c:357
+#: rpmio/rpmfileutil.c:319
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
 msgstr "Fil %s er mindre enn %u bytes\n"
 
-#: rpmio/rpmfileutil.c:765
+#: rpmio/rpmfileutil.c:727
 msgid "failed to create directory"
 msgstr ""
 

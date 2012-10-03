@@ -38,7 +38,7 @@ librpm_la_SOURCES = \
 	rpmchroot.c rpmchroot.h \
 	rpmplugins.c rpmplugins.h rpmug.c rpmug.h
 
-librpm_la_LDFLAGS = -version-info 3:0:0
+librpm_la_LDFLAGS = -version-info 3:1:0
 
 librpm_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
