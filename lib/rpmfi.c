@@ -586,12 +586,13 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
 rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 				   int skipMissing)
 {
-    const char * fn = rpmfiFNIndex(nfi, nix);
+    char * fn = rpmfiFNIndex(nfi, nix);
     rpmfileAttrs newFlags = rpmfiFFlagsIndex(nfi, nix);
     char buffer[1024];
     rpmFileTypes dbWhat, newWhat, diskWhat;
     struct stat sb;
     int save = (newFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SAVE;
+    int action = FA_CREATE; /* assume we can create */
 
     if (lstat(fn, &sb)) {
 	/*
@@ -601,10 +602,9 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	if (skipMissing && (newFlags & RPMFILE_MISSINGOK)) {
 	    rpmlog(RPMLOG_DEBUG, "%s skipped due to missingok flag\n",
 			fn);
-	    return FA_SKIP;
-	} else {
-	    return FA_CREATE;
+	    action = FA_SKIP;
 	}
+	goto exit;
     }
 
     diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
@@ -616,16 +616,19 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
      * them in older packages as well.
      */
     if (newWhat == XDIR)
-	return FA_CREATE;
+	goto exit;
 
-    if (diskWhat != newWhat && dbWhat != REG && dbWhat != LINK)
-	return save;
-    else if (newWhat != dbWhat && diskWhat != dbWhat)
-	return save;
-    else if (dbWhat != newWhat)
-	return FA_CREATE;
-    else if (dbWhat != LINK && dbWhat != REG)
-	return FA_CREATE;
+    if (diskWhat != newWhat && dbWhat != REG && dbWhat != LINK) {
+	action = save;
+	goto exit;
+    } else if (newWhat != dbWhat && diskWhat != dbWhat) {
+	action = save;
+	goto exit;
+    } else if (dbWhat != newWhat) {
+	goto exit;
+    } else if (dbWhat != LINK && dbWhat != REG) {
+	goto exit;
+    }
 
     /*
      * This order matters - we'd prefer to CREATE the file if at all
@@ -638,41 +641,46 @@ rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
 	const unsigned char * odigest, * ndigest;
 	odigest = rpmfiFDigestIndex(ofi, oix, &oalgo, &odiglen);
 	if (diskWhat == REG) {
-	    if (rpmDoDigest(oalgo, fn, 0, 
-		(unsigned char *)buffer, NULL))
-	        return FA_CREATE;	/* assume file has been removed */
+	    if (rpmDoDigest(oalgo, fn, 0, (unsigned char *)buffer, NULL))
+	        goto exit;	/* assume file has been removed */
 	    if (odigest && !memcmp(odigest, buffer, odiglen))
-	        return FA_CREATE;	/* unmodified config file, replace. */
+	        goto exit;	/* unmodified config file, replace. */
 	}
 	ndigest = rpmfiFDigestIndex(nfi, nix, &nalgo, &ndiglen);
 	/* Can't compare different hash types, backup to avoid data loss */
-	if (oalgo != nalgo || odiglen != ndiglen)
-	    return save;
-	if (odigest && ndigest && !memcmp(odigest, ndigest, odiglen))
-	    return FA_SKIP;	/* identical file, don't bother. */
+	if (oalgo != nalgo || odiglen != ndiglen) {
+	    action = save;
+	    goto exit;
+	}
+	if (odigest && ndigest && !memcmp(odigest, ndigest, odiglen)) {
+	    action = FA_SKIP;	/* identical file, don't bother. */
+	    goto exit;
+	}
+	/* ... but otherwise backup will be needed */
+	action = save;
     } else /* dbWhat == LINK */ {
 	const char * oFLink, * nFLink;
 	oFLink = rpmfiFLinkIndex(ofi, oix);
 	if (diskWhat == LINK) {
 	    ssize_t link_len = readlink(fn, buffer, sizeof(buffer) - 1);
 	    if (link_len == -1)
-		return FA_CREATE;	/* assume file has been removed */
+		goto exit;	/* assume file has been removed */
 	    buffer[link_len] = '\0';
 	    if (oFLink && rstreq(oFLink, buffer))
-		return FA_CREATE;	/* unmodified config file, replace. */
+		goto exit;	/* unmodified config file, replace. */
 	}
 	nFLink = rpmfiFLinkIndex(nfi, nix);
-	if (oFLink && nFLink && rstreq(oFLink, nFLink))
-	    return FA_SKIP;	/* identical file, don't bother. */
+	if (oFLink && nFLink && rstreq(oFLink, nFLink)) {
+	    action = FA_SKIP;	/* identical file, don't bother. */
+	    goto exit;
+	}
+	/* ... but otherwise backup will be needed */
+	action = save;
     }
 
-    /*
-     * The config file on the disk has been modified, but
-     * the ones in the two packages are different. It would
-     * be nice if RPM was smart enough to at least try and
-     * merge the difference ala CVS, but...
-     */
-    return save;
+exit:
+    free(fn);
+    return action;
 }
 
 int rpmfiConfigConflictIndex(rpmfi fi, int ix)
