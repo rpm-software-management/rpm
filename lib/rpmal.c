@@ -266,41 +266,48 @@ void rpmalAdd(rpmal al, rpmte p)
 	assert(dspool == NULL || dspool == al->pool);
     }
 
-    if (al->providesHash != NULL) { // index is already created
+    /* Try to be lazy as delayed hash creation is cheaper */
+    if (al->providesHash != NULL)
 	rpmalAddProvides(al, pkgNum, alp->provides);
+    if (al->fileHash != NULL)
 	rpmalAddFiles(al, pkgNum, alp->fi);
-    }
 
     assert(((rpmalNum)(alp - al->list)) == pkgNum);
 }
 
-static void rpmalMakeIndex(rpmal al)
+static void rpmalMakeFileIndex(rpmal al)
 {
     availablePackage alp;
-    int i;
-    int providesCnt = 0;
-    int fileCnt = 0;
+    int i, fileCnt = 0;
 
-    if (al == NULL || al->list == NULL) return;
-    if (al->providesHash != NULL || al->fileHash != NULL)
-	return;
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	if (alp->provides != NULL)
-	    providesCnt += rpmdsCount(alp->provides);
 	if (alp->fi != NULL)
 	    fileCnt += rpmfiFC(alp->fi);
     }
+    al->fileHash = rpmalFileHashCreate(fileCnt/4+128,
+				       fileHash, fileCompare, NULL, NULL);
+    for (i = 0; i < al->size; i++) {
+	alp = al->list + i;
+	rpmalAddFiles(al, i, alp->fi);
+    }
+}
 
-    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128, sidHash,
-					       sidCmp, NULL, NULL);
-    al->fileHash = rpmalFileHashCreate(fileCnt/4+128, fileHash, fileCompare,
-				       NULL, NULL);
+static void rpmalMakeProvidesIndex(rpmal al)
+{
+    availablePackage alp;
+    int i, providesCnt = 0;
 
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
+	providesCnt += rpmdsCount(alp->provides);
+    }
+
+    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128,
+					       sidHash, sidCmp, NULL, NULL);
+    for (i = 0; i < al->size; i++) {
+	alp = al->list + i;
 	rpmalAddProvides(al, i, alp->provides);
-	rpmalAddFiles(al, i, alp->fi);
     }
 }
 
@@ -321,6 +328,9 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
 
 	fne.baseName = rpmstrPoolId(al->pool, fileName + bnStart, 0);
 	fne.dirName = rpmstrPoolIdn(al->pool, fileName, bnStart, 0);
+
+	if (al->fileHash == NULL)
+	    rpmalMakeFileIndex(al);
 
 	rpmalFileHashGetEntry(al->fileHash, fne, &result, &resultCnt, NULL);
 
@@ -359,9 +369,6 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     if (al == NULL || ds == NULL || (nameId = rpmdsNId(ds)) == 0)
 	return ret;
 
-    if (al->providesHash == NULL && al->fileHash == NULL)
-	rpmalMakeIndex(al);
-
     obsolete = (rpmdsTagN(ds) == RPMTAG_OBSOLETENAME);
     name = rpmstrPoolStr(al->pool, nameId);
     if (!obsolete && *name == '/') {
@@ -374,6 +381,9 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	/* ... then, look for files "provided" by package. */
 	ret = _free(ret);
     }
+
+    if (al->providesHash == NULL)
+	rpmalMakeProvidesIndex(al);
 
     rpmalProvidesHashGetEntry(al->providesHash, nameId, &result,
 			      &resultCnt, NULL);
