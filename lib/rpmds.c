@@ -117,6 +117,13 @@ static rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
     return Flags;
 }
 
+static rpm_color_t rpmdsColorIndex(rpmds ds, int i)
+{
+    rpm_color_t Color = 0;
+    if (i >= 0 && i < ds->Count && ds->Color != NULL)
+	Color = ds->Color[i];
+    return Color;
+}
 static rpmds rpmdsUnlink(rpmds ds)
 {
     if (ds)
@@ -448,13 +455,7 @@ int rpmdsSetNoPromote(rpmds ds, int nopromote)
 
 rpm_color_t rpmdsColor(const rpmds ds)
 {
-    rpm_color_t Color = 0;
-
-    if (ds != NULL && ds->i >= 0 && ds->i < ds->Count) {
-	if (ds->Color != NULL)
-	    Color = ds->Color[ds->i];
-    }
-    return Color;
+    return (ds != NULL) ? rpmdsColorIndex(ds, ds->i) : 0;
 }
 
 rpm_color_t rpmdsSetColor(const rpmds ds, rpm_color_t color)
@@ -818,14 +819,15 @@ exit:
     return result;
 }
 
-int rpmdsCompare(const rpmds A, const rpmds B)
+static int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix)
 {
     const char *AEVR, *BEVR;
     rpmsenseFlags AFlags, BFlags;
     int result;
 
     /* Different names don't overlap. */
-    if (!rpmstrPoolStreq(A->pool, rpmdsNId(A), B->pool, rpmdsNId(B))) {
+    if (!rpmstrPoolStreq(A->pool, rpmdsNIdIndex(A, aix),
+			 B->pool, rpmdsNIdIndex(B, bix))) {
 	result = 0;
 	goto exit;
     }
@@ -837,15 +839,15 @@ int rpmdsCompare(const rpmds A, const rpmds B)
     }
 
     /* Same name. If either A or B is an existence test, always overlap. */
-    AFlags = rpmdsFlags(A);
-    BFlags = rpmdsFlags(B);
+    AFlags = rpmdsFlagsIndex(A, aix);
+    BFlags = rpmdsFlagsIndex(B, bix);
     if (!((AFlags & RPMSENSE_SENSEMASK) && (BFlags & RPMSENSE_SENSEMASK))) {
 	result = 1;
 	goto exit;
     }
 
-    AEVR = rpmdsEVR(A);
-    BEVR = rpmdsEVR(B);
+    AEVR = rpmdsEVRIndex(A, aix);
+    BEVR = rpmdsEVRIndex(B, bix);
     if (!(AEVR && *AEVR && BEVR && *BEVR)) {
 	/* If either EVR is non-existent or empty, always overlap. */
 	result = 1;
@@ -856,6 +858,11 @@ int rpmdsCompare(const rpmds A, const rpmds B)
 
 exit:
     return result;
+}
+
+int rpmdsCompare(const rpmds A, const rpmds B)
+{
+    return rpmdsCompareIndex(A, A->i, B, B->i);
 }
 
 int rpmdsMatches(rpmstrPool pool, Header h, int prix,
