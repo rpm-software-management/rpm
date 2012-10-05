@@ -45,7 +45,7 @@ struct fileNameEntry_s {
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
-#define HASHTYPE rpmalProvidesHash
+#define HASHTYPE rpmalDepHash
 #define HTKEYTYPE rpmsid
 #define HTDATATYPE struct availableIndexEntry_s
 #include "lib/rpmhash.H"
@@ -66,7 +66,7 @@ struct fileNameEntry_s {
 struct rpmal_s {
     rpmstrPool pool;		/*!< String pool */
     availablePackage list;	/*!< Set of packages. */
-    rpmalProvidesHash providesHash;
+    rpmalDepHash providesHash;
     rpmalFileHash fileHash;
     int delta;			/*!< Delta for pkg list reallocation. */
     int size;			/*!< No. of pkgs in list. */
@@ -82,7 +82,7 @@ struct rpmal_s {
  */
 static void rpmalFreeIndex(rpmal al)
 {
-    al->providesHash = rpmalProvidesHashFree(al->providesHash);
+    al->providesHash = rpmalDepHashFree(al->providesHash);
     al->fileHash = rpmalFileHashFree(al->fileHash);
 }
 
@@ -228,7 +228,7 @@ static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides)
 	    continue;
 
 	indexEntry.entryIx = i;;
-	rpmalProvidesHashAddEntry(al->providesHash,
+	rpmalDepHashAddEntry(al->providesHash,
 				  rpmdsNIdIndex(provides, i), indexEntry);
     }
 }
@@ -304,7 +304,7 @@ static void rpmalMakeProvidesIndex(rpmal al)
 	providesCnt += rpmdsCount(alp->provides);
     }
 
-    al->providesHash = rpmalProvidesHashCreate(providesCnt/4+128,
+    al->providesHash = rpmalDepHashCreate(providesCnt/4+128,
 					       sidHash, sidCmp, NULL, NULL);
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
@@ -386,7 +386,7 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
     if (al->providesHash == NULL)
 	rpmalMakeProvidesIndex(al);
 
-    rpmalProvidesHashGetEntry(al->providesHash, nameId, &result,
+    rpmalDepHashGetEntry(al->providesHash, nameId, &result,
 			      &resultCnt, NULL);
 
     if (resultCnt==0) return NULL;
