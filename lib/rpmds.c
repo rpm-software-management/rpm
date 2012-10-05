@@ -7,8 +7,9 @@
 #include <rpm/rpmlib.h>		/* rpmvercmp */
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
-#include <rpm/rpmds.h>
 #include <rpm/rpmstrpool.h>
+
+#include "lib/rpmds_internal.h"
 
 #include "debug.h"
 
@@ -78,7 +79,7 @@ static int dsType(rpmTagVal tag,
     return rc;
 }    
 
-static rpmsid rpmdsNIdIndex(rpmds ds, int i)
+rpmsid rpmdsNIdIndex(rpmds ds, int i)
 {
     rpmsid id = 0;
     if (i >= 0 && i < ds->Count && ds->N != NULL)
@@ -86,14 +87,14 @@ static rpmsid rpmdsNIdIndex(rpmds ds, int i)
     return id;
 }
 
-static rpmsid rpmdsEVRIdIndex(rpmds ds, int i)
+rpmsid rpmdsEVRIdIndex(rpmds ds, int i)
 {
     rpmsid id = 0;
     if (i >= 0 && i < ds->Count && ds->EVR != NULL)
 	id = ds->EVR[i];
     return id;
 }
-static const char * rpmdsNIndex(rpmds ds, int i)
+const char * rpmdsNIndex(rpmds ds, int i)
 {
     const char * N = NULL;
     if (i >= 0 && i < ds->Count && ds->N != NULL)
@@ -101,7 +102,7 @@ static const char * rpmdsNIndex(rpmds ds, int i)
     return N;
 }
 
-static const char * rpmdsEVRIndex(rpmds ds, int i)
+const char * rpmdsEVRIndex(rpmds ds, int i)
 {
     const char * EVR = NULL;
     if (i >= 0 && i < ds->Count && ds->EVR != NULL)
@@ -109,7 +110,7 @@ static const char * rpmdsEVRIndex(rpmds ds, int i)
     return EVR;
 }
 
-static rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
+rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
 {
     rpmsenseFlags Flags = 0;
     if (i >= 0 && i < ds->Count && ds->Flags != NULL)
@@ -117,7 +118,7 @@ static rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
     return Flags;
 }
 
-static rpm_color_t rpmdsColorIndex(rpmds ds, int i)
+rpm_color_t rpmdsColorIndex(rpmds ds, int i)
 {
     rpm_color_t Color = 0;
     if (i >= 0 && i < ds->Count && ds->Color != NULL)
@@ -819,7 +820,7 @@ exit:
     return result;
 }
 
-static int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix)
+int rpmdsCompareIndex(rpmds A, int aix, rpmds B, int bix)
 {
     const char *AEVR, *BEVR;
     rpmsenseFlags AFlags, BFlags;
