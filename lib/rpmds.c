@@ -82,7 +82,7 @@ static int dsType(rpmTagVal tag,
 rpmsid rpmdsNIdIndex(rpmds ds, int i)
 {
     rpmsid id = 0;
-    if (i >= 0 && i < ds->Count && ds->N != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Count && ds->N != NULL)
 	id = ds->N[i];
     return id;
 }
@@ -90,14 +90,14 @@ rpmsid rpmdsNIdIndex(rpmds ds, int i)
 rpmsid rpmdsEVRIdIndex(rpmds ds, int i)
 {
     rpmsid id = 0;
-    if (i >= 0 && i < ds->Count && ds->EVR != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Count && ds->EVR != NULL)
 	id = ds->EVR[i];
     return id;
 }
 const char * rpmdsNIndex(rpmds ds, int i)
 {
     const char * N = NULL;
-    if (i >= 0 && i < ds->Count && ds->N != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Count && ds->N != NULL)
 	N = rpmstrPoolStr(ds->pool, ds->N[i]);
     return N;
 }
@@ -105,7 +105,7 @@ const char * rpmdsNIndex(rpmds ds, int i)
 const char * rpmdsEVRIndex(rpmds ds, int i)
 {
     const char * EVR = NULL;
-    if (i >= 0 && i < ds->Count && ds->EVR != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Count && ds->EVR != NULL)
 	EVR = rpmstrPoolStr(ds->pool, ds->EVR[i]);
     return EVR;
 }
@@ -113,7 +113,7 @@ const char * rpmdsEVRIndex(rpmds ds, int i)
 rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
 {
     rpmsenseFlags Flags = 0;
-    if (i >= 0 && i < ds->Count && ds->Flags != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Count && ds->Flags != NULL)
 	Flags = ds->Flags[i];
     return Flags;
 }
@@ -121,7 +121,7 @@ rpmsenseFlags rpmdsFlagsIndex(rpmds ds, int i)
 rpm_color_t rpmdsColorIndex(rpmds ds, int i)
 {
     rpm_color_t Color = 0;
-    if (i >= 0 && i < ds->Count && ds->Color != NULL)
+    if (ds != NULL && i >= 0 && i < ds->Count && ds->Color != NULL)
 	Color = ds->Color[i];
     return Color;
 }
