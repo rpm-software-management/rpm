@@ -13,6 +13,7 @@
 #include "lib/misc.h"
 #include "lib/rpmte_internal.h"
 #include "lib/rpmds_internal.h"
+#include "lib/rpmfi_internal.h"
 
 #include "debug.h"
 
@@ -179,28 +180,27 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
 {
     struct fileNameEntry_s fileName;
     struct availableIndexEntry_s fileEntry;
-    int i;
+    int fc = rpmfiFC(fi);
     rpm_color_t ficolor;
     int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
     int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
 
     fileEntry.pkgNum = pkgNum;
 
-    fi = rpmfiInit(fi, 0);
-    while ((i = rpmfiNext(fi)) >= 0) {
+    for (int i = 0; i < fc; i++) {
 	/* Ignore colored provides not in our rainbow. */
-        ficolor = rpmfiFColor(fi);
+        ficolor = rpmfiFColorIndex(fi, i);
         if (al->tscolor && ficolor && !(al->tscolor & ficolor))
             continue;
 
 	/* Ignore files that wont be installed */
-	if (skipdoc && (rpmfiFFlags(fi) & RPMFILE_DOC))
+	if (skipdoc && (rpmfiFFlagsIndex(fi, i) & RPMFILE_DOC))
 	    continue;
-	if (skipconf && (rpmfiFFlags(fi) & RPMFILE_CONFIG))
+	if (skipconf && (rpmfiFFlagsIndex(fi, i) & RPMFILE_CONFIG))
 	    continue;
 
-	fileName.dirName = rpmfiDNId(fi);
-	fileName.baseName = rpmfiBNId(fi);
+	fileName.dirName = rpmfiDNIdIndex(fi, rpmfiDIIndex(fi, i));
+	fileName.baseName = rpmfiBNIdIndex(fi, i);
 
 	fileEntry.entryIx = i;
 
