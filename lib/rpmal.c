@@ -5,7 +5,6 @@
 #include "system.h"
 
 
-#include <rpm/rpmds.h>
 #include <rpm/rpmte.h>
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
@@ -13,6 +12,7 @@
 #include "lib/rpmal.h"
 #include "lib/misc.h"
 #include "lib/rpmte_internal.h"
+#include "lib/rpmds_internal.h"
 
 #include "debug.h"
 
@@ -213,22 +213,23 @@ static void rpmalAddProvides(rpmal al, rpmalNum pkgNum, rpmds provides)
     struct availableIndexEntry_s indexEntry;
     rpm_color_t dscolor;
     int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
+    int dc = rpmdsCount(provides);
 
     indexEntry.pkgNum = pkgNum;
 
-    if (rpmdsInit(provides) != NULL)
-    while (rpmdsNext(provides) >= 0) {
+    for (int i = 0; i < dc; i++) {
         /* Ignore colored provides not in our rainbow. */
-        dscolor = rpmdsColor(provides);
+        dscolor = rpmdsColorIndex(provides, i);
         if (al->tscolor && dscolor && !(al->tscolor & dscolor))
             continue;
 
 	/* Ignore config() provides if the files wont be installed */
-	if (skipconf & (rpmdsFlags(provides) & RPMSENSE_CONFIG))
+	if (skipconf & (rpmdsFlagsIndex(provides, i) & RPMSENSE_CONFIG))
 	    continue;
 
-	indexEntry.entryIx = rpmdsIx(provides);
-	rpmalProvidesHashAddEntry(al->providesHash, rpmdsNId(provides), indexEntry);
+	indexEntry.entryIx = i;;
+	rpmalProvidesHashAddEntry(al->providesHash,
+				  rpmdsNIdIndex(provides, i), indexEntry);
     }
 }
 
