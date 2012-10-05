@@ -233,30 +233,20 @@ static int addObsoleteErasures(rpmts ts, rpm_color_t tscolor, rpmte p)
 }
 
 /*
- * rpmal doesn't (yet) know about obsoletes within the set, so we have
- * no choice but to walk through all the elements. In theory there could
+ * Lookup obsoletions in the added set. In theory there could
  * be more than one obsoleting package, but we only care whether this
  * has been obsoleted by *something* or not.
  */
-static rpmte checkObsoleted(rpmts ts, rpmds thisds)
+static rpmte checkObsoleted(rpmal addedPackages, rpmds thisds)
 {
-    rpmtsi pi = rpmtsiInit(ts);
-    rpmte p;
-    int match = 0;
+    rpmte p = NULL;
+    rpmte *matches = NULL;
 
-    while ((p = rpmtsiNext(pi, TR_ADDED)) != NULL) {
-	rpmds obsoletes = rpmdsInit(rpmteDS(p, RPMTAG_OBSOLETENAME));
-
-	while (rpmdsNext(obsoletes) >= 0) {
-	    if (rpmdsCompare(obsoletes, thisds)) {
-		match = 1;
-		break;
-	    }
-	}
-	if (match)
-	    break;
+    matches = rpmalAllObsoletes(addedPackages, thisds);
+    if (matches) {
+	p = matches[0];
+	free(matches);
     }
-    rpmtsiFree(pi);
     return p;
 }
 
@@ -320,7 +310,7 @@ static int findPos(rpmts ts, rpm_color_t tscolor, rpmte te, int upgrade)
     rpmds obsChk = rpmteDS(te, RPMTAG_OBSOLETENAME);
 
     /* If obsoleting package has already been added, skip this. */
-    if ((p = checkObsoleted(ts, rpmteDS(te, RPMTAG_NAME)))) {
+    if ((p = checkObsoleted(tsmem->addedPackages, rpmteDS(te, RPMTAG_NAME)))) {
 	skip = 1;
 	goto exit;
     }
