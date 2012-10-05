@@ -357,7 +357,7 @@ static rpmte * rpmalAllFileSatisfiesDepend(const rpmal al, const char *fileName)
 rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 {
     rpmte * ret = NULL;
-    int i, found;
+    int i, ix, found;
     rpmsid nameId;
     const char *name;
     availableIndexEntry result;
@@ -397,15 +397,13 @@ rpmte * rpmalAllSatisfiesDepend(const rpmal al, const rpmds ds)
 	alp = al->list + result[i].pkgNum;
 	if (alp->p == NULL) // deleted
 	    continue;
-	(void) rpmdsSetIx(alp->provides, result[i].entryIx);
+	ix = result[i].entryIx;
 
 	/* Obsoletes are on package name, filter out other provide matches */
-	if (obsolete && !rstreq(rpmdsN(alp->provides), rpmteN(alp->p)))
+	if (obsolete && !rstreq(rpmdsNIndex(alp->provides, ix), rpmteN(alp->p)))
 	    continue;
 
-	rc = 0;
-	if (rpmdsIx(alp->provides) >= 0)
-	    rc = rpmdsCompare(alp->provides, ds);
+	rc = rpmdsCompareIndex(alp->provides, ix, ds, rpmdsIx(ds));
 
 	if (rc) {
 	    rpmdsNotify(ds, "(added provide)", 0);
