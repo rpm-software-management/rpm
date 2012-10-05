@@ -53,6 +53,15 @@ RPM_GNUC_INTERNAL
 void rpmalAdd(rpmal al, rpmte p);
 
 /**
+ * Lookup all obsoleters for a dependency in the available list
+ * @param al		available list
+ * @param ds		dependency set
+ * @return		obsoleting packages for ds, NULL if none
+ */
+RPM_GNUC_INTERNAL
+rpmte * rpmalAllObsoletes(const rpmal al, const rpmds ds);
+
+/**
  * Lookup all providers for a dependency in the available list
  * @param al		available list
  * @param ds		dependency set
