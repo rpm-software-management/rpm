@@ -659,7 +659,8 @@ int rpmfiConfigConflictIndex(rpmfi fi, int ix)
     struct stat sb;
     int rc = 0;
 
-    if (!(flags & RPMFILE_CONFIG))
+    /* Non-configs and ghosts are not config conflicts.  */
+    if (!(flags & RPMFILE_CONFIG) || (flags & RPMFILE_GHOST))
 	return 0;
 
     /* Only links and regular files can be %config, this is kinda moot */
