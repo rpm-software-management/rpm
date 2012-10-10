@@ -1964,12 +1964,14 @@ static int fsmStage(FSM_t fsm, fileStage stage)
 	    fsm->links = fsm->li->next;
 	    fsm->li->next = NULL;
 	    if (fsm->goal == FSM_PKGINSTALL && fsm->li->linksLeft) {
+		rpmfs fs = rpmteGetFileStates(fsmGetTe(fsm));
 		for (nlink_t i = 0 ; i < fsm->li->linksLeft; i++) {
-		    if (fsm->li->filex[i] < 0)
+		    int ix = fsm->li->filex[i];
+		    if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
 			continue;
 		    rc = CPIOERR_MISSING_HARDLINK;
 		    if (fsm->failedFile && *fsm->failedFile == NULL) {
-			fsm->ix = fsm->li->filex[i];
+			fsm->ix = ix;
 			if (!fsmMapPath(fsm)) {
 	    		    /* Out-of-sync hardlinks handled as sub-state */
 			    *fsm->failedFile = fsm->path;
