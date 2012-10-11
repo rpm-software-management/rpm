@@ -104,7 +104,7 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
     noarch)
 	CANONARCH=noarch
 	CANONCOLOR=0
-	FILTER="grep -v -E '^(%optflag|%__isa)'"
+	FILTER="grep -v -E ^(%optflag|%__isa)"
 	;;
   esac
 
