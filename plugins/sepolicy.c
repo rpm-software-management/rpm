@@ -1,7 +1,5 @@
 #include "plugin.h"
 
-#if WITH_SELINUX
-
 #include <errno.h>
 #include <selinux/selinux.h>
 #include <semanage/semanage.h>
@@ -623,52 +621,35 @@ static rpmRC sepolAddTE(rpmte te)
     return RPMRC_OK;
 }
 
-#endif	/* WITH_SELINUX */
 
 
 rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opts)
 {
-#if WITH_SELINUX
     ts = _ts;
     name = strdup(_name);
     policiesHead = policiesTail = NULL;
-#endif
     return RPMRC_OK;
 }
 
 rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
 {
-#if WITH_SELINUX
     _free(name);
     ts = NULL;
     policiesHead = policiesTail = sepolFree(policiesHead);
-#endif
     return RPMRC_OK;
 }
 
 rpmRC PLUGINHOOK_OPENTE_FUNC(rpmte te)
 {
-    rpmRC rc = RPMRC_OK;
-#if WITH_SELINUX
-    rc = sepolAddTE(te);
-#endif
-    return rc;
+    return sepolAddTE(te);
 }
 
 rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(void)
 {
-    rpmRC rc = RPMRC_OK;
-#if WITH_SELINUX
-    rc = sepolGo();
-#endif
-    return rc;
+    return sepolGo();
 }
 
 rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void)
 {
-    rpmRC rc = RPMRC_OK;
-#if WITH_SELINUX
-    rc = sepolGo();
-#endif
-    return rc;
+    return sepolGo();
 }
