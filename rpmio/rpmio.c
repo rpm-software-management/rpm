@@ -765,7 +765,22 @@ static const FDIO_t ufdio = &ufdio_s ;
 
 ssize_t timedRead(FD_t fd, void * bufptr, size_t length)
 {
-    return ufdio->read(fd, bufptr, length);
+    ssize_t already_read =0;
+    ssize_t read = 0;
+    char * cbuf = (char *)(bufptr);
+    while (already_read < length) {
+        read = ufdio->read(fd, cbuf+already_read, length-already_read);
+        if (read == 0) {
+            break;
+        } else if (read < 0) {
+            if (errno == EAGAIN || errno == EINTR || errno == EWOULDBLOCK)
+                continue;
+            return read;
+        } else {
+            already_read += read;
+        }
+    }
+    return already_read;
 }
 
 /* =============================================================== */
