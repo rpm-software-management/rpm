@@ -29,7 +29,7 @@ rpmScript rpmScriptFree(rpmScript script);
 
 RPM_GNUC_INTERNAL
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
-                   ARGV_const_t prefixes, int warn_only, int selinux);
+                   ARGV_const_t prefixes, int warn_only, int selinux, rpmPlugins plugins);
 
 RPM_GNUC_INTERNAL
 rpmTagVal rpmScriptTag(rpmScript script);

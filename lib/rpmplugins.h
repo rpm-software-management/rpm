@@ -11,10 +11,19 @@ extern "C" {
 
 #define PLUGINHOOK_INIT_FUNC			pluginhook_init
 #define PLUGINHOOK_CLEANUP_FUNC			pluginhook_cleanup
+
 #define PLUGINHOOK_OPENTE_FUNC			pluginhook_opente
 #define PLUGINHOOK_COLL_POST_ADD_FUNC		pluginhook_coll_post_add
 #define PLUGINHOOK_COLL_POST_ANY_FUNC		pluginhook_coll_post_any
 #define PLUGINHOOK_COLL_PRE_REMOVE_FUNC		pluginhook_coll_pre_remove
+
+#define PLUGINHOOK_TSM_PRE_FUNC        pluginhook_tsm_pre
+#define PLUGINHOOK_TSM_POST_FUNC        pluginhook_tsm_post
+
+#define PLUGINHOOK_PSM_PRE_FUNC        pluginhook_psm_pre
+#define PLUGINHOOK_PSM_POST_FUNC        pluginhook_psm_post
+ 
+#define PLUGINHOOK_SCRIPT_SETUP_FUNC    pluginhook_script_setup
 
 enum rpmPluginHook_e {
     PLUGINHOOK_NONE		= 0,
@@ -23,7 +32,12 @@ enum rpmPluginHook_e {
     PLUGINHOOK_OPENTE		= 1 << 2,
     PLUGINHOOK_COLL_POST_ADD	= 1 << 3,
     PLUGINHOOK_COLL_POST_ANY	= 1 << 4,
-    PLUGINHOOK_COLL_PRE_REMOVE	= 1 << 5
+    PLUGINHOOK_COLL_PRE_REMOVE	= 1 << 5,
+    PLUGINHOOK_TSM_PRE         = 1 << 6,
+    PLUGINHOOK_TSM_POST        = 1 << 7,
+    PLUGINHOOK_PSM_PRE         = 1 << 8,
+    PLUGINHOOK_PSM_POST        = 1 << 9,
+    PLUGINHOOK_SCRIPT_SETUP    = 1 << 10
 };
 
 typedef rpmFlags rpmPluginHook;
@@ -53,12 +67,13 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins);
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path, const char *opts);
 
 /** \ingroup rpmplugins
- * Add and open a collection plugin
+ * Add and open a rpm plugin
  * @param plugins	plugins structure to add a collection plugin to
- * @param name		name of collection to open
+ * @param type     type of plugin
+ * @param name		name of plugin
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmpluginsAddCollectionPlugin(rpmPlugins plugins, const char *name);
+rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name);
 
 /** \ingroup rpmplugins
  * Determine if a plugin has been added already
@@ -118,6 +133,46 @@ rpmRC rpmpluginsCallCollectionPostAny(rpmPlugins plugins, const char *name);
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name);
+
+/** \ingroup rpmplugins
+ * Call the pre transaction plugin hook
+ * @param plugins	plugins structure
+ * @param ts		processed transaction
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts);
+
+/** \ingroup rpmplugins
+ * Call the post transaction plugin hook
+ * @param plugins	plugins structure
+ * @param ts		processed transaction
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts);
+
+/** \ingroup rpmplugins
+ * Call the pre transaction element plugin hook
+ * @param plugins	plugins structure
+ * @param te		processed transaction element
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
+
+/** \ingroup rpmplugins
+ * Call the post transaction element plugin hook
+ * @param plugins	plugins structure
+ * @param te		processed transaction element
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te);
+
+/** \ingroup rpmplugins
+ * Call the script setup plugin hook
+ * @param plugins	plugins structure
+ * @param path		script path
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallScriptSetup(rpmPlugins plugins, char* path);
 
 #ifdef __cplusplus
 }

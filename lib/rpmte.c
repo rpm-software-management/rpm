@@ -889,7 +889,7 @@ rpmRC rpmteSetupCollectionPlugins(rpmte te)
     rpmteOpen(te, 0);
     for (; colls && *colls; colls++) {
 	if (!rpmpluginsPluginAdded(plugins, *colls)) {
-	    rc = rpmpluginsAddCollectionPlugin(plugins, *colls);
+	    rc = rpmpluginsAddPlugin(plugins, "collection", *colls);
 	    if (rc != RPMRC_OK) {
 		break;
 	    }
