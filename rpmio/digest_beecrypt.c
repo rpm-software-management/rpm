@@ -306,17 +306,6 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num,
     return rc;
 }
 
-static inline unsigned char nibble(char c)
-{
-    if (c >= '0' && c <= '9')
-        return (c - '0');
-    if (c >= 'A' && c <= 'F')
-        return (c - 'A') + 10;
-    if (c >= 'a' && c <= 'f')
-        return (c - 'a') + 10;
-    return 0;
-}
-
 static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, size_t hashlen, int hash_algo)
 {
     struct pgpDigKeyRSA_s *key = pgpkey->data;
@@ -367,7 +356,7 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
 	    return 1;
 	*bp++ = 0;
 	for (; *prefix; prefix += 2)
-	    *bp++ = (nibble(prefix[0]) << 4) | nibble(prefix[1]);
+	    *bp++ = (rnibble(prefix[0]) << 4) | rnibble(prefix[1]);
         memcpy(bp, hash, hashlen);
         mpnzero(&rsahm);
         (void) mpnsetbin(&rsahm, buf, nb);
