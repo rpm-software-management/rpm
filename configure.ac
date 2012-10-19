@@ -243,12 +243,43 @@ AC_CHECK_HEADERS([dwarf.h], [
 AM_CONDITIONAL(LIBDWARF,[test "$WITH_LIBDWARF" = yes])
 
 #=================
+# Check for beecrypt library if requested.
+AC_ARG_WITH(beecrypt, [  --with-beecrypt         build with beecrypt support ],,[with_beecrypt=yes])
+AC_ARG_WITH(internal_beecrypt, [  --with-internal-beecrypt build with internal beecrypt library ],,[with_internal_beecrypt=yes])
+AM_CONDITIONAL([WITH_INTERNAL_BEECRYPT],[test "$with_internal_beecrypt" = yes])
+if test "$with_internal_beecrypt" = yes ; then
+  with_beecrypt=yes
+fi
+AM_CONDITIONAL([WITH_BEECRYPT],[test "$with_beecrypt" = yes])
+
+WITH_BEECRYPT_INCLUDE=
+WITH_BEECRYPT_LIB=
+if test "$with_beecrypt" = yes ; then
+  AC_DEFINE(WITH_BEECRYPT, 1, [Build with beecrypt instead of nss3 support?])
+  if test "$with_internal_beecrypt" = yes ; then
+    WITH_BEECRYPT_INCLUDE="-I\$(top_srcdir)/beecrypt"
+    AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
+  else
+    AC_CHECK_LIB(beecrypt, mpfprintln, [
+      WITH_BEECRYPT_LIB="-lbeecrypt"
+    ],[
+      AC_MSG_ERROR([missing required library 'beecrypt']) 
+    ])
+    AC_CHECK_HEADER([beecrypt/api.h], [AC_DEFINE(HAVE_BEECRYPT_API_H, 1, [Define to 1 if you have the <beecrypt/api.h> header file.])
+    ])
+  fi
+fi
+AC_SUBST(WITH_BEECRYPT_LIB)
+AC_SUBST(WITH_BEECRYPT_INCLUDE)
+
+#=================
 # Check for NSS library.
 # We need nss.h from NSS which needs nspr.h. Unfortunately both glibc and NSS 
 # have a header named nss.h... so make extra check for NSS's sechash.h 
 # which we use too and hopefully is slightly more unique to NSS.
 WITH_NSS_INCLUDE=
 WITH_NSS_LIB=
+if test "$with_beecrypt" != yes ; then
 AC_CHECK_HEADERS([nspr.h nss.h sechash.h], [], [
   AC_MSG_ERROR([missing required NSPR / NSS header])
 ])
@@ -257,6 +288,7 @@ AC_CHECK_LIB(nss3, NSS_NoDB_Init, [
 ], [
   AC_MSG_ERROR([missing required NSS library 'nss3'])
 ])
+fi
 AC_SUBST(WITH_NSS_INCLUDE)
 AC_SUBST(WITH_NSS_LIB)
 
