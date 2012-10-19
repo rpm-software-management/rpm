@@ -680,6 +680,12 @@ int rpmfiConfigConflictIndex(rpmfi fi, int ix)
 	rc = 1;
 	goto exit;
     }
+
+    /* Files of different sizes obviously are not identical */
+    if (rpmfiFSizeIndex(fi, ix) != sb.st_size) {
+	rc = 1;
+	goto exit;
+    }
     
     memset(buffer, 0, sizeof(buffer));
     if (newWhat == REG) {
