@@ -504,6 +504,11 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
 
     if (amode != bmode) return 1;
 
+    if (awhat == LINK || awhat == REG) {
+	if (rpmfiFSizeIndex(afi, aix) != rpmfiFSizeIndex(bfi, bix))
+	    return 1;
+    }
+
     if (!rstreq(rpmfiFUserIndex(afi, aix), rpmfiFUserIndex(bfi, bix)))
 	return 1;
     if (!rstreq(rpmfiFGroupIndex(afi, aix), rpmfiFGroupIndex(bfi, bix)))
