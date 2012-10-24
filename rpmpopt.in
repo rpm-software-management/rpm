@@ -174,7 +174,7 @@ rpmbuild alias --buildpolicy --define '__os_install_post %{_rpmconfigdir}/brp-!#
 	--POPTargs=$"<policy>"
 # Minimally preserve rpmbuild's --sign functionality
 rpmbuild alias --sign \
-	--pipe "grep '.*: .*\.rpm$'|cut -d: -f2|xargs rpm --addsign" \
+	--pipe "grep '.*: .*\.rpm$'|cut -d: -f2|xargs -r rpm --addsign" \
 	--POPTdesc=$"generate GPG signature"
 
 rpmsign alias --key-id  --define '_gpg_name !#:+' \
