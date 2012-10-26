@@ -102,10 +102,6 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
     if (tsmem->pool == NULL)
 	tsmem->pool = rpmstrPoolCreate();
 
-    /* Ensure pool is writable */
-    if (tsmem->addedPackages != NULL)
-	rpmstrPoolUnfreeze(tsmem->pool);
-
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
     if (p == NULL)
 	return 1;
@@ -414,10 +410,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     /* Ensure our pool exists before adding elements */
     if (tsmem->pool == NULL)
 	tsmem->pool = rpmstrPoolCreate();
-
-    /* Ensure pool is writable */
-    if (tsmem->addedPackages != NULL)
-	rpmstrPoolUnfreeze(tsmem->pool);
 
     p = rpmteNew(ts, h, TR_ADDED, key, relocs);
     if (p == NULL) {
