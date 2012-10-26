@@ -18,9 +18,6 @@
 
 #include "debug.h"
 
-/* pool for widely common, "static" stuff like langs and user/group names */
-static rpmstrPool miscpool = NULL;
-
 static rpmfi rpmfiUnlink(rpmfi fi)
 {
     if (fi)
@@ -369,7 +366,7 @@ const char * rpmfiFUserIndex(rpmfi fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fuser != NULL)
-	    fuser = rpmstrPoolStr(miscpool, fi->fuser[ix]);
+	    fuser = rpmstrPoolStr(fi->pool, fi->fuser[ix]);
     }
     return fuser;
 }
@@ -380,7 +377,7 @@ const char * rpmfiFGroupIndex(rpmfi fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fgroup != NULL)
-	    fgroup = rpmstrPoolStr(miscpool, fi->fgroup[ix]);
+	    fgroup = rpmstrPoolStr(fi->pool, fi->fgroup[ix]);
     }
     return fgroup;
 }
@@ -398,7 +395,7 @@ const char * rpmfiFLangsIndex(rpmfi fi, int ix)
 {
     const char *flangs = NULL;
     if (fi != NULL && fi->flangs != NULL && ix >= 0 && ix < fi->fc) {
-	flangs = rpmstrPoolStr(miscpool, fi->flangs[ix]);
+	flangs = rpmstrPoolStr(fi->pool, fi->flangs[ix]);
     }
     return flangs;
 }
@@ -1137,10 +1134,6 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
     struct rpmtd_s fdigests, digalgo, td;
     unsigned char * t;
 
-    /* XXX: ensure the global misc. pool exists */
-    if (miscpool == NULL)
-	miscpool = rpmstrPoolCreate();
-
     /* XXX TODO: all these should be sanity checked, ugh... */
     if (!(flags & RPMFI_NOFILEMODES))
 	_hgfi(h, RPMTAG_FILEMODES, &td, scareFlags, fi->fmodes);
@@ -1176,7 +1169,7 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 	fi->flinks = tag2pool(fi->pool, h, RPMTAG_FILELINKTOS);
     /* FILELANGS are only interesting when installing */
     if ((headerGetInstance(h) == 0) && !(flags & RPMFI_NOFILELANGS))
-	fi->flangs = tag2pool(miscpool, h, RPMTAG_FILELANGS);
+	fi->flangs = tag2pool(fi->pool, h, RPMTAG_FILELANGS);
 
     /* See if the package has non-md5 file digests */
     fi->digestalgo = PGPHASHALGO_MD5;
@@ -1217,9 +1210,9 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
 
     if (!(flags & RPMFI_NOFILEUSER)) 
-	fi->fuser = tag2pool(miscpool, h, RPMTAG_FILEUSERNAME);
+	fi->fuser = tag2pool(fi->pool, h, RPMTAG_FILEUSERNAME);
     if (!(flags & RPMFI_NOFILEGROUP)) 
-	fi->fgroup = tag2pool(miscpool, h, RPMTAG_FILEGROUPNAME);
+	fi->fgroup = tag2pool(fi->pool, h, RPMTAG_FILEGROUPNAME);
 
     /* TODO: validate and return a real error */
     return 0;
