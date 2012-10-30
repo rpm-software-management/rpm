@@ -86,7 +86,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	goto exit;
 
     memset(block, 0, sizeof(block));
-    if ((xx = Fread(block, 1, sizeof(block), fd)) != sizeof(block)) {
+    if ((xx = Freadall(fd, block, sizeof(block))) != sizeof(block)) {
 	rasprintf(&buf, _("sigh size(%d): BAD, read returned %d\n"), 
 		  (int)sizeof(block), xx);
 	goto exit;
@@ -118,7 +118,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
     ei[1] = block[3];
     pe = (entryInfo) &ei[2];
     dataStart = (unsigned char *) (pe + il);
-    if ((xx = Fread(pe, 1, nb, fd)) != nb) {
+    if ((xx = Freadall(fd, pe, nb)) != nb) {
 	rasprintf(&buf,
 		  _("sigh blob(%d): BAD, read returned %d\n"), (int)nb, xx);
 	goto exit;
@@ -214,7 +214,7 @@ rpmRC rpmReadSignature(FD_t fd, Header * sighp, sigType sig_type, char ** msg)
 	rpm_loff_t archSize = 0;
 
 	/* Position at beginning of header. */
-	if (pad && (trc = Fread(block, 1, pad, fd)) != pad) {
+	if (pad && (trc = Freadall(fd, block, pad)) != pad) {
 	    rasprintf(&buf,
 		      _("sigh pad(%zd): BAD, read %zd bytes\n"), pad, trc);
 	    goto exit;
