@@ -1216,7 +1216,9 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 	fdio_read_function_t _read = FDIOVEC(fd, read);
 
 	fdstat_enter(fd, FDSTAT_READ);
-	rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+	do {
+	    rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+	} while (rc == -1 && errno == EINTR);
 	fdstat_exit(fd, FDSTAT_READ, rc);
 
 	if (fd->digests && rc > 0)
@@ -1237,7 +1239,9 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 	fdio_write_function_t _write = FDIOVEC(fd, write);
 	
 	fdstat_enter(fd, FDSTAT_WRITE);
-	rc = (_write ? _write(fd, buf, size * nmemb) : -2);
+	do {
+	    rc = (_write ? _write(fd, buf, size * nmemb) : -2);
+	} while (rc == -1 && errno == EINTR);
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
 
 	if (fd->digests && rc > 0)
