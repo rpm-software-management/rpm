@@ -72,6 +72,9 @@ extern "C" {
 RPM_GNUC_INTERNAL
 void headerSetInstance(Header h, unsigned int instance);
 
+/* Package IO helper to consolidate partial read and error handling */
+RPM_GNUC_INTERNAL
+ssize_t Freadall(FD_t fd, void * buf, ssize_t size);
 #ifdef __cplusplus
 }   
 #endif

@@ -964,7 +964,7 @@ Header headerRead(FD_t fd, int magicp)
     if (magicp == HEADER_MAGIC_YES) {
 	int32_t magic;
 
-	if (Fread(block, 1, 4*sizeof(*block), fd) != 4*sizeof(*block))
+	if (Freadall(fd, block, 4*sizeof(*block)) != 4*sizeof(*block))
 	    goto exit;
 
 	magic = block[0];
@@ -975,7 +975,7 @@ Header headerRead(FD_t fd, int magicp)
 	il = ntohl(block[2]);
 	dl = ntohl(block[3]);
     } else {
-	if (Fread(block, 1, 2*sizeof(*block), fd) != 2*sizeof(*block))
+	if (Freadall(fd, block, 2*sizeof(*block)) != 2*sizeof(*block))
 	    goto exit;
 
 	il = ntohl(block[0]);
@@ -993,7 +993,7 @@ Header headerRead(FD_t fd, int magicp)
     ei[0] = htonl(il);
     ei[1] = htonl(dl);
 
-    if (Fread((char *)&ei[2], 1, blen, fd) != blen)
+    if (Freadall(fd, (char *)&ei[2], blen) != blen)
 	goto exit;
     
     h = headerImport(ei, len, 0);
@@ -1746,4 +1746,30 @@ void headerSetInstance(Header h, unsigned int instance)
 {
     h->instance = instance;
 }    
+
+#define RETRY_ERROR(_err) \
+    ((_err) == EINTR || (_err) == EAGAIN || (_err) == EWOULDBLOCK)
+
+ssize_t Freadall(FD_t fd, void * buf, ssize_t size)
+{
+    ssize_t total = 0;
+    ssize_t nb = 0;
+    char * bufp = buf;
+
+    while (total < size) {
+	nb = Fread(bufp, 1, size - total, fd);
+
+	if (nb == 0 || (nb < 0 && !RETRY_ERROR(errno))) {
+	    total = nb;
+	    break;
+	}
+
+	if (nb > 0) {
+	    bufp += nb;
+	    total += nb;
+	}
+    }
+
+    return total;
+}
 

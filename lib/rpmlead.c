@@ -12,6 +12,7 @@
 #include <rpm/rpmstring.h>
 
 #include "lib/signature.h"
+#include "lib/header_internal.h"	/* Freadall() */
 #include "lib/rpmlead.h"
 
 #include "debug.h"
@@ -117,7 +118,7 @@ rpmRC rpmLeadRead(FD_t fd, rpmlead *lead, int *type, char **emsg)
     char *err = NULL;
 
     memset(&l, 0, sizeof(l));
-    if (Fread(&l, 1, sizeof(l), fd) != sizeof(l)) {
+    if (Freadall(fd, &l, sizeof(l)) != sizeof(l)) {
 	if (Ferror(fd)) {
 	    rasprintf(&err, _("read failed: %s (%d)\n"), Fstrerror(fd), errno);
 	    rc = RPMRC_FAIL;
