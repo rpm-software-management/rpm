@@ -14,6 +14,10 @@
 static int _crypto_initialized = 0;
 static int _new_process = 1;
 
+#if HAVE_NSS_INITCONTEXT
+static NSSInitContext * _nss_ctx = NULL;
+#endif
+
 /**
  * MD5/SHA1 digest private data.
  */
@@ -41,9 +45,22 @@ int rpmInitCrypto(void)
 	rpmFreeCrypto();
     }
 
-    /* Initialize NSS if not already done */
+    /*
+     * Initialize NSS if not already done.
+     * NSS prior to 3.12.5 only supports a global context which can cause
+     * trouble when an API user wants to use NSS for their own purposes, use
+     * a private context if possible.
+     */
     if (!_crypto_initialized) {
+#if HAVE_NSS_INITCONTEXT
+	PRUint32 flags = (NSS_INIT_READONLY|NSS_INIT_NOCERTDB|
+			  NSS_INIT_NOMODDB|NSS_INIT_FORCEOPEN|
+			  NSS_INIT_NOROOTINIT|NSS_INIT_OPTIMIZESPACE);
+	_nss_ctx = NSS_InitContext(NULL, NULL, NULL, NULL, NULL, flags);
+	if (_nss_ctx == NULL) {
+#else
 	if (NSS_NoDB_Init(NULL) != SECSuccess) {
+#endif
 	    rc = -1;
 	} else {
 	    _crypto_initialized = 1;
@@ -64,7 +81,12 @@ int rpmFreeCrypto(void)
 {
     int rc = 0;
     if (_crypto_initialized) {
+#if HAVE_NSS_INITCONTEXT
+	rc = (NSS_ShutdownContext(_nss_ctx) != SECSuccess);
+	_nss_ctx = NULL;
+#else
 	rc = (NSS_Shutdown() != SECSuccess);
+#endif
     	_crypto_initialized = 0;
     }
     return rc;
