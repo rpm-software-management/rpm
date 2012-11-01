@@ -919,13 +919,10 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
 	    b = buf;
 	else
 	    b++;
-#if NOTYET
-    /* XXX watchout for conflict with %dir */
     } else if (STREQ("dirname", f, fn)) {
 	if ((b = strrchr(buf, '/')) != NULL)
 	    *b = '\0';
 	b = buf;
-#endif
     } else if (STREQ("suffix", f, fn)) {
 	if ((b = strrchr(buf, '.')) != NULL)
 	    b++;
@@ -1256,6 +1253,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 
 	/* XXX necessary but clunky */
 	if (STREQ("basename", f, fn) ||
+	    STREQ("dirname", f, fn) ||
 	    STREQ("suffix", f, fn) ||
 	    STREQ("expand", f, fn) ||
 	    STREQ("verbose", f, fn) ||
