@@ -187,15 +187,15 @@
 %debug_package \
 %ifnarch noarch\
 %global __debug_package 1\
-%package debug\
+%package debuginfo\
 Summary: Debug information for package %{name}\
 Group: Development/Debug\
 AutoReqProv: 0\
-%description debug\
+%description debuginfo\
 This package provides debug information for package %{name}.\
 Debug information is useful when developing applications that use this\
 package or when debugging this package.\
-%files debug -f debugfiles.list\
+%files debuginfo -f debugfiles.list\
 %defattr(-,root,root)\
 %endif\
 %{nil}
