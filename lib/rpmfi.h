@@ -148,20 +148,6 @@ int rpmfiDX(rpmfi fi);
 int rpmfiSetDX(rpmfi fi, int dx);
 
 /** \ingroup rpmfi
- * Return current base name pool id from file info set.
- * @param fi		file info set
- * @return		current base name id, 0 on invalid
- */
-rpmsid rpmfiBNId(rpmfi fi);
-
-/** \ingroup rpmfi
- * Return current directory name pool id from file info set.
- * @param fi		file info set
- * @return		current base name id, 0 on invalid
- */
-rpmsid rpmfiDNId(rpmfi fi);
-
-/** \ingroup rpmfi
  * Return current base name from file info set.
  * @param fi		file info set
  * @return		current base name, NULL on invalid
@@ -435,16 +421,6 @@ typedef rpmFlags rpmfiFlags;
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
 /** \ingroup rpmfi
- * Create and load a file info set.
- * @param pool		shared string pool (or NULL for private pool)
- * @param h		header
- * @param tagN		unused
- * @param flags		Flags to control what information is loaded.
- * @return		new file info set
- */
-rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
-
-/** \ingroup rpmfi
  * Return file type from mode_t.
  * @param mode		file mode bits (from header)
  * @return		file type
@@ -474,13 +450,6 @@ rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
  * @return		1 if config file and file on disk conflicts
  */
 int rpmfiConfigConflict(const rpmfi fi);
-
-/** \ingroup rpmfi
- * Return file info set string pool handle
- * @param fi		file info
- * @return		string pool handle (weak reference)
- */
-rpmstrPool rpmfiPool(rpmfi fi);
 
 #ifdef __cplusplus
 }

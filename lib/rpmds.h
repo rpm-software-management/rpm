@@ -109,16 +109,6 @@ rpmds rpmdsFree(rpmds ds);
 rpmds rpmdsNew(Header h, rpmTagVal tagN, int flags);
 
 /** \ingroup rpmds
- * Create and load a dependency set.
- * @param pool		shared string pool (or NULL for private pool)
- * @param h		header
- * @param tagN		type of dependency
- * @param flags		unused
- * @return		new dependency set
- */
-rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags);
-
-/** \ingroup rpmds
  * Return new formatted dependency string.
  * @param dspfx		formatted dependency string prefix
  * @param ds		dependency set
@@ -136,17 +126,6 @@ char * rpmdsNewDNEVR(const char * dspfx, const rpmds ds);
 rpmds rpmdsThis(Header h, rpmTagVal tagN, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
- * Create, load and initialize a dependency for this header. 
- * @param pool		string pool (or NULL for private pool)
- * @param h		header
- * @param tagN		type of dependency
- * @param Flags		comparison flags
- * @return		new dependency set
- */
-rpmds rpmdsThisPool(rpmstrPool pool,
-		    Header h, rpmTagVal tagN, rpmsenseFlags Flags);
-
-/** \ingroup rpmds
  * Create, load and initialize a dependency set of size 1.
  * @param tagN		type of dependency
  * @param N		name
@@ -155,18 +134,6 @@ rpmds rpmdsThisPool(rpmstrPool pool,
  * @return		new dependency set
  */
 rpmds rpmdsSingle(rpmTagVal tagN, const char * N, const char * EVR, rpmsenseFlags Flags);
-
-/** \ingroup rpmds
- * Create, load and initialize a dependency set of size 1.
- * @param pool		string pool (or NULL for private pool)
- * @param tagN		type of dependency
- * @param N		name
- * @param EVR		epoch:version-release
- * @param Flags		comparison flags
- * @return		new dependency set
- */
-rpmds rpmdsSinglePool(rpmstrPool pool, rpmTagVal tagN,
-		      const char * N, const char * EVR, rpmsenseFlags Flags);
 
 /** \ingroup rpmds
  * Return a new dependency set of size 1 from the current iteration index
@@ -203,20 +170,6 @@ int rpmdsSetIx(rpmds ds, int ix);
  * @return		current dependency DNEVR, NULL on invalid
  */
 const char * rpmdsDNEVR(const rpmds ds);
-
-/** \ingroup rpmds
- * Return current dependency name pool id.
- * @param ds            dependency set
- * @return              current dependency name id, 0 on invalid
- */
-rpmsid rpmdsNId(rpmds ds);
-
-/** \ingroup rpmds
- * Return current dependency epoch-version-release pool id.
- * @param ds            dependency set
- * @return              current dependency EVR id, 0 on invalid
- */
-rpmsid rpmdsEVRId(rpmds ds);
 
 /** \ingroup rpmds
  * Return current dependency name.
@@ -377,18 +330,6 @@ int rpmdsMatchesDep (const Header h, int ix, const rpmds req, int nopromote);
  */
 int rpmdsNVRMatchesDep(const Header h, const rpmds req, int nopromote);
 
-/** \ingroup rpmds
- * Swiss army knife dependency matching function.
- * @param pool		string pool (or NULL for private pool)
- * @param h		header
- * @param prix		index to provides (or -1 or any)
- * @param req		dependency set
- * @param selfevr	only look at package EVR?
- * @param nopromote	dont promote epoch in comparison?
- * @return		1 if dependency overlaps, 0 otherwise
- */
-int rpmdsMatches(rpmstrPool pool, Header h, int prix,
-		 rpmds req, int selfevr, int nopromote);
 /**
  * Load rpmlib provides into a dependency set.
  * @retval *dsp		(loaded) depedency set
@@ -396,22 +337,6 @@ int rpmdsMatches(rpmstrPool pool, Header h, int prix,
  * @return		0 on success
  */
 int rpmdsRpmlib(rpmds * dsp, const void * tblp);
-
-/**
- * Load rpmlib provides into a dependency set.
- * @param pool		shared string pool (or NULL for private pool)
- * @retval *dsp		(loaded) depedency set
- * @param tblp		rpmlib provides table (NULL uses internal table)
- * @return		0 on success
- */
-int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
-
-/** \ingroup rpmds
- * Return dependency set string pool handle
- * @param ds		dependency set
- * @return		string pool handle (weak reference)
- */
-rpmstrPool rpmdsPool(rpmds ds);
 
 #ifdef __cplusplus
 }

@@ -72,6 +72,41 @@ struct rpmfi_s {
 extern "C" {
 #endif
 
+/** \ingroup rpmfi
+ * Create and load a file info set.
+ * @param pool		shared string pool (or NULL for private pool)
+ * @param h		header
+ * @param tagN		unused
+ * @param flags		Flags to control what information is loaded.
+ * @return		new file info set
+ */
+RPM_GNUC_INTERNAL
+rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
+
+/** \ingroup rpmfi
+ * Return file info set string pool handle
+ * @param fi		file info
+ * @return		string pool handle (weak reference)
+ */
+RPM_GNUC_INTERNAL
+rpmstrPool rpmfiPool(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current base name pool id from file info set.
+ * @param fi		file info set
+ * @return		current base name id, 0 on invalid
+ */
+RPM_GNUC_INTERNAL
+rpmsid rpmfiBNId(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current directory name pool id from file info set.
+ * @param fi		file info set
+ * @return		current base name id, 0 on invalid
+ */
+RPM_GNUC_INTERNAL
+rpmsid rpmfiDNId(rpmfi fi);
+
 RPM_GNUC_INTERNAL
 int rpmfiDIIndex(rpmfi fi, int dx);
 

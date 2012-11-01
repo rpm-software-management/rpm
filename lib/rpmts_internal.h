@@ -75,6 +75,14 @@ struct rpmts_s {
 extern "C" {
 #endif
 
+/** \ingroup rpmts
+ * Return transaction global string pool handle
+ * @param ts		transaction set
+ * @return		string pool handle (weak ref)
+ */
+RPM_GNUC_INTERNAL
+rpmstrPool rpmtsPool(rpmts ts);
+
 RPM_GNUC_INTERNAL
 tsMembers rpmtsMembers(rpmts ts);
 

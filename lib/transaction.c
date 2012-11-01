@@ -16,6 +16,7 @@
 #include "lib/misc.h"
 #include "lib/rpmchroot.h"
 #include "lib/rpmlock.h"
+#include "lib/rpmds_internal.h"
 #include "lib/rpmfi_internal.h"	/* only internal apis */
 #include "lib/rpmte_internal.h"	/* only internal apis */
 #include "lib/rpmts_internal.h"

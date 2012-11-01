@@ -15,6 +15,10 @@
 
 #include "lib/rpmplugins.h"
 #include "lib/rpmte_internal.h"
+/* strpool-related interfaces */
+#include "lib/rpmfi_internal.h"
+#include "lib/rpmds_internal.h"
+#include "lib/rpmts_internal.h"
 
 #include "debug.h"
 
