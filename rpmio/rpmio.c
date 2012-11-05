@@ -1374,7 +1374,7 @@ static void cvtfmode (const char *m,
 
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
-    char stdio[20], other[20], zstdio[20];
+    char stdio[20], other[20], zstdio[40];
     const char *end = NULL;
     FDIO_t iof = NULL;
     FD_t fd = ofd;
@@ -1389,8 +1389,8 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     if (stdio[0] == '\0')
 	return NULL;
     zstdio[0] = '\0';
-    strncat(zstdio, stdio, sizeof(zstdio) - strlen(zstdio));
-    strncat(zstdio, other, sizeof(zstdio) - strlen(zstdio));
+    strncat(zstdio, stdio, sizeof(zstdio) - strlen(zstdio) - 1);
+    strncat(zstdio, other, sizeof(zstdio) - strlen(zstdio) - 1);
 
     if (end == NULL && other[0] == '\0')
 	return fd;
