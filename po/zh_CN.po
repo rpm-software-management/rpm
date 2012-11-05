@@ -7,20 +7,21 @@
 #   <dongfengweixiao@gmail.com>, 2012.
 #   <lovenemesis@gmail.com>, 2012.
 # Mike Ma <zhtx10@gmail.com>, 2011.
+#   <qinghao1@foxmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-03-20 09:59+0200\n"
-"PO-Revision-Date: 2012-03-08 15:13+0000\n"
-"Last-Translator: Alick Zhao <alick9188@gmail.com>\n"
-"Language-Team: Chinese (China) (http://www.transifex.net/projects/p/rpm/"
+"POT-Creation-Date: 2012-11-05 10:07+0200\n"
+"PO-Revision-Date: 2012-08-23 03:39+0000\n"
+"Last-Translator: Christopher Meng <cickumqt@gmail.com>\n"
+"Language-Team: Chinese (China) (http://www.transifex.com/projects/p/rpm/"
 "language/zh_CN/)\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=1; plural=0\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -35,7 +36,7 @@ msgstr "RPM 版本 %s\n"
 #: cliutils.c:32
 #, c-format
 msgid "Copyright (C) 1998-2002 - Red Hat, Inc.\n"
-msgstr "版权所有 (R) 1998-2002 - 红帽公司\n"
+msgstr "版权所有 (C) 1998-2002 - 红帽公司。\n"
 
 #: cliutils.c:33
 #, c-format
@@ -84,7 +85,7 @@ msgstr "验证选项（用 -V 或 --verify）："
 msgid "Install/Upgrade/Erase options:"
 msgstr "安装/升级/擦除选项："
 
-#: rpmqv.c:64 rpmbuild.c:217 rpmdb.c:35 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
+#: rpmqv.c:64 rpmbuild.c:223 rpmdb.c:35 rpmkeys.c:42 rpmsign.c:37 rpmspec.c:48
 #: tools/rpmdeps.c:32 tools/rpmgraph.c:222
 msgid "Common options for all rpm modes and executables:"
 msgstr "所有 rpm 模式和可执行文件的通用选项："
@@ -205,7 +206,7 @@ msgstr "--nodeps 只能在软件包安装、擦除和检验时指定"
 msgid "--test may only be specified during package installation and erasure"
 msgstr "--test 只能在软件包安装和擦除时指定"
 
-#: rpmqv.c:239 rpmbuild.c:543
+#: rpmqv.c:239 rpmbuild.c:549
 msgid "arguments to --root (-r) must begin with a /"
 msgstr "--root (-r) 的参数必须以 / 开头"
 
@@ -225,191 +226,201 @@ msgstr "未给出要查询的参数"
 msgid "no arguments given for verify"
 msgstr "未给出要检验的参数"
 
-#: rpmbuild.c:98
+#: rpmbuild.c:99
 #, c-format
 msgid "buildroot already specified, ignoring %s\n"
 msgstr "buildroot 已经指定，忽略 %s\n"
 
-#: rpmbuild.c:119
+#: rpmbuild.c:120
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <specfile>"
 msgstr "依据 <specfile> 从 %prep (解压缩源代码并应用补丁) 开始构建"
 
-#: rpmbuild.c:120 rpmbuild.c:123 rpmbuild.c:126 rpmbuild.c:129 rpmbuild.c:132
-#: rpmbuild.c:135 rpmbuild.c:138
+#: rpmbuild.c:121 rpmbuild.c:124 rpmbuild.c:127 rpmbuild.c:130 rpmbuild.c:133
+#: rpmbuild.c:136 rpmbuild.c:139
 msgid "<specfile>"
 msgstr "<specfile>"
 
-#: rpmbuild.c:122
+#: rpmbuild.c:123
 msgid "build through %build (%prep, then compile) from <specfile>"
 msgstr "依据 <specfile> 从 %build (%prep 之后编译) 开始构建"
 
-#: rpmbuild.c:125
+#: rpmbuild.c:126
 msgid "build through %install (%prep, %build, then install) from <specfile>"
 msgstr "依据 <specfile> 从 %install (%prep、%build 后安装) 开始构建"
 
-#: rpmbuild.c:128
+#: rpmbuild.c:129
 #, c-format
 msgid "verify %files section from <specfile>"
 msgstr "依据 <specfile> 检验 %files 区域"
 
-#: rpmbuild.c:131
+#: rpmbuild.c:132
 msgid "build source and binary packages from <specfile>"
 msgstr "依据 <specfile> 构建源代码和二进制软件包"
 
-#: rpmbuild.c:134
+#: rpmbuild.c:135
 msgid "build binary package only from <specfile>"
 msgstr "依据 <specfile> 构建二进制软件包"
 
-#: rpmbuild.c:137
+#: rpmbuild.c:138
 msgid "build source package only from <specfile>"
 msgstr "依据 <specfile> 构建源代码软件包"
 
-#: rpmbuild.c:141
+#: rpmbuild.c:142
 #, c-format
 msgid "build through %prep (unpack sources and apply patches) from <tarball>"
 msgstr "依据 <tarball> 从 %prep (解压源代码并应用补丁)开始构建"
 
-#: rpmbuild.c:142 rpmbuild.c:145 rpmbuild.c:148 rpmbuild.c:151 rpmbuild.c:154
-#: rpmbuild.c:157 rpmbuild.c:160
+#: rpmbuild.c:143 rpmbuild.c:146 rpmbuild.c:149 rpmbuild.c:152 rpmbuild.c:155
+#: rpmbuild.c:158 rpmbuild.c:161
 msgid "<tarball>"
 msgstr "<tarball>"
 
-#: rpmbuild.c:144
+#: rpmbuild.c:145
 msgid "build through %build (%prep, then compile) from <tarball>"
 msgstr "依据 <tarball> 从 %build (%prep，之后编译)开始构建"
 
-#: rpmbuild.c:147
+#: rpmbuild.c:148
 msgid "build through %install (%prep, %build, then install) from <tarball>"
 msgstr "依据 <tarball> 从 %install (%prep、%build 然后安装)开始构建"
 
-#: rpmbuild.c:150
+#: rpmbuild.c:151
 #, c-format
 msgid "verify %files section from <tarball>"
 msgstr "依据 <tarball> 检验 %files 区域"
 
-#: rpmbuild.c:153
+#: rpmbuild.c:154
 msgid "build source and binary packages from <tarball>"
 msgstr "依据 <tarball> 构建源代码和二进制软件包"
 
-#: rpmbuild.c:156
+#: rpmbuild.c:157
 msgid "build binary package only from <tarball>"
 msgstr "依据 <tarball> 构建二进制软件包"
 
-#: rpmbuild.c:159
+#: rpmbuild.c:160
 msgid "build source package only from <tarball>"
 msgstr "依据 <tarball> 构建源代码软件包"
 
-#: rpmbuild.c:163
+#: rpmbuild.c:164
 msgid "build binary package from <source package>"
 msgstr "依据 <source package> 构建二进制软件包"
 
-#: rpmbuild.c:164 rpmbuild.c:167
+#: rpmbuild.c:165 rpmbuild.c:168
 msgid "<source package>"
 msgstr "<source package>"
 
-#: rpmbuild.c:166
+#: rpmbuild.c:167
 msgid ""
 "build through %install (%prep, %build, then install) from <source package>"
 msgstr "依据 <source package> 从 %install (%prep、%build 然后安装)开始构建"
 
-#: rpmbuild.c:170
+#: rpmbuild.c:171
 msgid "override build root"
 msgstr "重载构建根路径"
 
-#: rpmbuild.c:172
+#: rpmbuild.c:173
 msgid "remove build tree when done"
 msgstr "完成后移除构建树"
 
-#: rpmbuild.c:174
+#: rpmbuild.c:175
 msgid "ignore ExcludeArch: directives from spec file"
 msgstr "忽略 spec 文件中的 ExcludeArch 规则"
 
-#: rpmbuild.c:176
+#: rpmbuild.c:177
 msgid "debug file state machine"
 msgstr "除错文件状态机"
 
-#: rpmbuild.c:178
+#: rpmbuild.c:179
 msgid "do not execute any stages of the build"
 msgstr "不执行任何构建步骤 "
 
-#: rpmbuild.c:180
+#: rpmbuild.c:181
 msgid "do not verify build dependencies"
 msgstr "不检验构建依赖"
 
-#: rpmbuild.c:182
+#: rpmbuild.c:183
 msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr "生成和 rpm v3 包管理(旧版本)兼容的软件包头"
 
-#: rpmbuild.c:186
+#: rpmbuild.c:187
+#, fuzzy, c-format
+msgid "do not execute %clean stage of the build"
+msgstr "不执行任何构建步骤 "
+
+#: rpmbuild.c:189
+#, fuzzy, c-format
+msgid "do not execute %check stage of the build"
+msgstr "不执行任何构建步骤 "
+
+#: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
 msgstr "不接受来自 specfile 的 i18N 字符串信息"
 
-#: rpmbuild.c:188
+#: rpmbuild.c:194
 msgid "remove sources when done"
 msgstr "完成时移除源代码"
 
-#: rpmbuild.c:190
+#: rpmbuild.c:196
 msgid "remove specfile when done"
 msgstr "完成时移除 specfile"
 
-#: rpmbuild.c:192
+#: rpmbuild.c:198
 msgid "skip straight to specified stage (only for c,i)"
 msgstr "直接跳转到指定步骤 (仅限 c,i)"
 
-#: rpmbuild.c:194 rpmspec.c:34
+#: rpmbuild.c:200 rpmspec.c:34
 msgid "override target platform"
 msgstr "重载目标平台"
 
-#: rpmbuild.c:211
+#: rpmbuild.c:217
 msgid "Build options with [ <specfile> | <tarball> | <source package> ]:"
 msgstr "适用于 [ <specfile> | <tarball> | <source package> ] 的构建选项："
 
-#: rpmbuild.c:231
+#: rpmbuild.c:237
 msgid "Failed build dependencies:\n"
 msgstr "构建依赖失败：\n"
 
-#: rpmbuild.c:249
+#: rpmbuild.c:255
 #, c-format
 msgid "Unable to open spec file %s: %s\n"
 msgstr "无法打开 spec 文件 %s: %s\n"
 
-#: rpmbuild.c:311
+#: rpmbuild.c:317
 #, c-format
 msgid "Failed to open tar pipe: %m\n"
 msgstr "打开 tar 管道失败: %m\n"
 
-#: rpmbuild.c:330
+#: rpmbuild.c:336
 #, c-format
 msgid "Failed to read spec file from %s\n"
 msgstr "从 %s 读取 spec 文件失败\n"
 
-#: rpmbuild.c:342
+#: rpmbuild.c:348
 #, c-format
 msgid "Failed to rename %s to %s: %m\n"
 msgstr "重命名 %s 为 %s 时失败：%m\n"
 
-#: rpmbuild.c:413
+#: rpmbuild.c:419
 #, c-format
 msgid "failed to stat %s: %m\n"
 msgstr "stat %s 失败：%m\n"
 
-#: rpmbuild.c:417
+#: rpmbuild.c:423
 #, c-format
 msgid "File %s is not a regular file.\n"
 msgstr "文件 %s 不是常规文件。\n"
 
-#: rpmbuild.c:424
+#: rpmbuild.c:430
 #, c-format
 msgid "File %s does not appear to be a specfile.\n"
 msgstr "文件 %s 不像是 spec 文件。\n"
 
-#: rpmbuild.c:490
+#: rpmbuild.c:496
 #, c-format
 msgid "Building target platforms: %s\n"
 msgstr "构建目标平台：%s\n"
 
-#: rpmbuild.c:498
+#: rpmbuild.c:504
 #, c-format
 msgid "Building for target %s\n"
 msgstr "为目标%s构建\n"
@@ -420,7 +431,7 @@ msgstr "初始化数据库"
 
 #: rpmdb.c:24
 msgid "rebuild database inverted lists from installed package headers"
-msgstr ""
+msgstr "从已安装软件包包头重建数据库反向列表"
 
 #: rpmdb.c:27
 msgid "verify database files"
@@ -436,11 +447,11 @@ msgstr "校验软件包签名"
 
 #: rpmkeys.c:26
 msgid "import an armored public key"
-msgstr ""
+msgstr "导入带装甲的(armored)公钥"
 
 #: rpmkeys.c:28
 msgid "don't import, but tell if it would work or not"
-msgstr ""
+msgstr "不导入，但判断下是否能用"
 
 #: rpmkeys.c:31 rpmkeys.c:33
 msgid "list keys from RPM keyring"
@@ -478,41 +489,41 @@ msgstr "无法exec %s: %s\n"
 #: rpmsign.c:108
 #, c-format
 msgid "You must set \"%%_gpg_name\" in your macro file\n"
-msgstr ""
+msgstr "你必须在你的宏文件中设置 \"%%_gpg_name\" \n"
 
 #: rpmsign.c:113
 msgid "Enter pass phrase: "
-msgstr ""
+msgstr "输入密码："
 
 #: rpmsign.c:117
 #, c-format
 msgid "Pass phrase is good.\n"
-msgstr ""
+msgstr "密码正确。\n"
 
 #: rpmsign.c:123
 #, c-format
 msgid "Pass phrase check failed or gpg key expired\n"
-msgstr ""
+msgstr "密码检查失败或者 gpg 密钥过期\n"
 
 #: rpmspec.c:26
 msgid "parse spec file(s) to stdout"
-msgstr ""
+msgstr "解析 spec 文件到标准输出"
 
 #: rpmspec.c:28
 msgid "query spec file(s)"
-msgstr ""
+msgstr "查询 spec 文件"
 
 #: rpmspec.c:30
 msgid "operate on binary rpms generated by spec (default)"
-msgstr ""
+msgstr "操纵 spec 生成的二进制 rpm 包(缺省值)"
 
 #: rpmspec.c:32
 msgid "operate on source rpm generated by spec"
-msgstr ""
+msgstr "操纵 spec 生成的源 rpm 包"
 
 #: rpmspec.c:36 lib/poptQV.c:189
 msgid "use the following query format"
-msgstr ""
+msgstr "使用这种格式打印信息"
 
 #: rpmspec.c:45
 msgid "Spec options:"
@@ -540,17 +551,17 @@ msgstr "执行(%s): %s\n"
 #: build/build.c:168
 #, c-format
 msgid "Exec of %s failed (%s): %s\n"
-msgstr ""
+msgstr "执行 %s 失败(%s): %s\n"
 
 #: build/build.c:177
 #, c-format
 msgid "Error executing scriptlet %s (%s)\n"
-msgstr ""
+msgstr "执行脚本 %s (%s)失败\n"
 
 #: build/build.c:184
 #, c-format
 msgid "Bad exit status from %s (%s)\n"
-msgstr ""
+msgstr "%s (%s) 退出状态不好\n"
 
 #: build/build.c:291
 msgid ""
@@ -564,403 +575,406 @@ msgstr ""
 
 #: build/expression.c:216
 msgid "syntax error while parsing ==\n"
-msgstr ""
+msgstr "== 语法解析错误\n"
 
 #: build/expression.c:246
 msgid "syntax error while parsing &&\n"
-msgstr ""
+msgstr "&& 语法解析错误\n"
 
 #: build/expression.c:255
 msgid "syntax error while parsing ||\n"
-msgstr ""
+msgstr "|| 语法解析错误\n"
 
 #: build/expression.c:305
 msgid "parse error in expression\n"
-msgstr ""
+msgstr "表达式解析错误\n"
 
 #: build/expression.c:337
 msgid "unmatched (\n"
-msgstr ""
+msgstr "不匹配的 (\n"
 
 #: build/expression.c:369
 msgid "- only on numbers\n"
-msgstr ""
+msgstr "- 只用于数字\n"
 
 #: build/expression.c:385
 msgid "! only on numbers\n"
-msgstr ""
+msgstr "! 只用于数字\n"
 
 #: build/expression.c:427 build/expression.c:475 build/expression.c:533
 #: build/expression.c:625
 msgid "types must match\n"
-msgstr ""
+msgstr "类型必须匹配\n"
 
 #: build/expression.c:440
 msgid "* / not suported for strings\n"
-msgstr ""
+msgstr "* / 不支持字符串\n"
 
 #: build/expression.c:491
 msgid "- not suported for strings\n"
-msgstr ""
+msgstr "- 不支持字符串\n"
 
 #: build/expression.c:638
 msgid "&& and || not suported for strings\n"
-msgstr ""
+msgstr "&& 和 || 不支持字符串\n"
 
 #: build/expression.c:671
 msgid "syntax error in expression\n"
-msgstr ""
+msgstr "表达式语法错误\n"
 
-#: build/files.c:282 build/files.c:472 build/files.c:690
+#: build/files.c:327 build/files.c:496 build/files.c:710
 #, c-format
 msgid "Missing '(' in %s %s\n"
-msgstr ""
+msgstr "%s %s 中丢失 '(' \n"
 
-#: build/files.c:292 build/files.c:605 build/files.c:700 build/files.c:762
+#: build/files.c:337 build/files.c:632 build/files.c:720 build/files.c:779
 #, c-format
 msgid "Missing ')' in %s(%s\n"
-msgstr ""
+msgstr "%s(%s 中丢失 ')'\n"
 
-#: build/files.c:328 build/files.c:628
+#: build/files.c:362 build/files.c:651
 #, c-format
 msgid "Invalid %s token: %s\n"
-msgstr ""
+msgstr "无效的 %s 令牌：%s\n"
 
-#: build/files.c:434
+#: build/files.c:465
 #, c-format
 msgid "Missing %s in %s %s\n"
-msgstr "丢失 %s %s 的 %s\n"
+msgstr "%2$s %3$s 中丢失 %1$s\n"
 
-#: build/files.c:487
+#: build/files.c:511
 #, c-format
 msgid "Non-white space follows %s(): %s\n"
-msgstr ""
+msgstr "%s() 后有非空白字符：%s\n"
 
-#: build/files.c:523
+#: build/files.c:547
 #, c-format
 msgid "Bad syntax: %s(%s)\n"
-msgstr ""
+msgstr "语法错误：%s(%s)\n"
 
-#: build/files.c:532
+#: build/files.c:556
 #, c-format
 msgid "Bad mode spec: %s(%s)\n"
-msgstr ""
+msgstr "spec 文件权限不好：%s(%s)\n"
 
-#: build/files.c:544
+#: build/files.c:568
 #, c-format
 msgid "Bad dirmode spec: %s(%s)\n"
-msgstr ""
+msgstr "spec 目录权限不好：%s(%s)\n"
 
-#: build/files.c:652
+#: build/files.c:672
 #, c-format
 msgid "Unusual locale length: \"%s\" in %%lang(%s)\n"
-msgstr ""
+msgstr "异常的 locale 长度：\"%s\" 在%%lang(%s) 中\n"
 
-#: build/files.c:659
+#: build/files.c:679
 #, c-format
 msgid "Duplicate locale %s in %%lang(%s)\n"
-msgstr ""
+msgstr "重复的 locale %s 在%%lang(%s) 中\n"
 
-#: build/files.c:777
+#: build/files.c:794
 #, c-format
 msgid "Invalid capability: %s\n"
-msgstr ""
+msgstr "无效的 capability：%s\n"
 
-#: build/files.c:788
+#: build/files.c:804
 msgid "File capability support not built in\n"
-msgstr ""
+msgstr "无内建文件capability 支持\n"
 
-#: build/files.c:842
-#, c-format
-msgid "Only one arg for %%docdir\n"
-msgstr ""
-
-#: build/files.c:871
-#, c-format
-msgid "Two files on one line: %s\n"
-msgstr ""
-
-#: build/files.c:884
+#: build/files.c:853
 #, c-format
 msgid "File must begin with \"/\": %s\n"
-msgstr ""
+msgstr "文件必须以 \"/\" 开头： %s\n"
 
-#: build/files.c:895
-#, c-format
-msgid "Can't mix special %%doc with other forms: %s\n"
-msgstr ""
-
-#: build/files.c:1034
+#: build/files.c:974
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
-msgstr ""
+msgstr "未知的文件摘要算法 %u, 回退到MD5\n"
 
-#: build/files.c:1062
+#: build/files.c:1002
 #, c-format
 msgid "File listed twice: %s\n"
-msgstr ""
+msgstr "被列出两次的文件：%s\n"
 
-#: build/files.c:1188
+#: build/files.c:1124
 #, c-format
 msgid "reading symlink %s failed: %s\n"
-msgstr ""
+msgstr "读取符号连接 %s 失败：%s\n"
 
-#: build/files.c:1196
+#: build/files.c:1132
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
-msgstr ""
+msgstr "符号链接指向了 BuildRoot：%s -> %s\n"
 
-#: build/files.c:1381
-#, c-format
-msgid "Explicit file attributes required in spec for: %s\n"
-msgstr ""
-
-#: build/files.c:1390
+#: build/files.c:1346
 #, c-format
 msgid "Directory not found: %s\n"
-msgstr ""
+msgstr "没有找到目录：%s\n"
 
-#: build/files.c:1391
+#: build/files.c:1347
 #, c-format
 msgid "File not found: %s\n"
-msgstr ""
+msgstr "没有找到文件：%s\n"
 
-#: build/files.c:1497
-#, c-format
-msgid "File %s too large for payload\n"
-msgstr ""
-
-#: build/files.c:1591
+#: build/files.c:1538
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
-msgstr ""
+msgstr "%s: 无法加载未知标签(%d)。\n"
 
-#: build/files.c:1597
+#: build/files.c:1544
 #, c-format
 msgid "%s: public key read failed.\n"
-msgstr ""
+msgstr "%s: 公钥读取失败。\n"
 
-#: build/files.c:1601
+#: build/files.c:1548
 #, c-format
 msgid "%s: not an armored public key.\n"
-msgstr ""
+msgstr "%s: 不是带装甲的(armored)公钥。\n"
 
-#: build/files.c:1610
+#: build/files.c:1557
 #, c-format
 msgid "%s: failed to encode\n"
-msgstr ""
+msgstr "%s：编码失败\n"
 
-#: build/files.c:1655
+#: build/files.c:1602
 #, c-format
 msgid "File needs leading \"/\": %s\n"
-msgstr ""
+msgstr "文件需要 \"/\" 开头：%s\n"
 
-#: build/files.c:1679
+#: build/files.c:1626
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
-msgstr ""
+msgstr "%%dev glob 不被允许：%s\n"
 
-#: build/files.c:1692
+#: build/files.c:1639
 #, c-format
 msgid "Directory not found by glob: %s\n"
-msgstr ""
+msgstr "目录未找到，所用 glob: %s\n"
 
-#: build/files.c:1693 lib/rpminstall.c:426
+#: build/files.c:1640 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
-msgstr ""
+msgstr "文件未找到，所用 glob: %s\n"
 
-#: build/files.c:1729
+#: build/files.c:1676
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
-msgstr ""
+msgstr "无法打开 %%files 文件 %s: %m\n"
 
-#: build/files.c:1736
+#: build/files.c:1683
 #, c-format
 msgid "line: %s\n"
-msgstr ""
+msgstr "行：%s\n"
 
-#: build/files.c:1743
+#: build/files.c:1690
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
+msgstr "读取 %%files 文件 %s 失败：%m\n"
+
+#: build/files.c:1712
+#, c-format
+msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:2015
+#: build/files.c:1866
+#, fuzzy, c-format
+msgid "Can't mix special %s with other forms: %s\n"
+msgstr "不能将特殊的 %%doc 与其他形式混合：%s\n"
+
+#: build/files.c:1883
+#, fuzzy, c-format
+msgid "More than one file on a line: %s\n"
+msgstr "在一行上有两个文件： %s\n"
+
+#: build/files.c:2011
 #, c-format
 msgid "Bad file: %s: %s\n"
-msgstr ""
+msgstr "坏文件：%s: %s\n"
 
-#: build/files.c:2037 build/parsePrep.c:33
+#: build/files.c:2036 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
-msgstr ""
+msgstr "坏的属主/群组：%s\n"
 
-#: build/files.c:2077
+#: build/files.c:2070
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
-msgstr ""
+msgstr "检查未打包文件：%s\n"
 
-#: build/files.c:2090
+#: build/files.c:2083
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
+"发现已安装(但未打包的)文件：\n"
+"%s"
 
-#: build/files.c:2119
+#: build/files.c:2114
 #, c-format
 msgid "Processing files: %s\n"
-msgstr ""
+msgstr "处理文件：%s\n"
 
-#: build/files.c:2130
-msgid "Arch dependent binaries in noarch package\n"
-msgstr ""
-
-#: build/pack.c:71
+#: build/files.c:2127
 #, c-format
-msgid "create archive failed on file %s\n"
+msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/pack.c:73
-msgid "create archive failed\n"
+#: build/files.c:2133
+msgid "Arch dependent binaries in noarch package\n"
+msgstr "noarch 软件包中有架构相关的二进制文件\n"
+
+#: build/pack.c:50
+#, c-format
+msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
-#: build/pack.c:100
+#: build/pack.c:53
+#, fuzzy, c-format
+msgid "create archive failed: %s\n"
+msgstr "%s：读取 manifest 文件失败：%s\n"
+
+#: build/pack.c:80
 #, c-format
 msgid "Could not open %s file: %s\n"
 msgstr ""
 
-#: build/pack.c:116
+#: build/pack.c:96
 #, c-format
 msgid "%s: line: %s\n"
-msgstr ""
+msgstr "%s: 行: %s\n"
 
-#: build/pack.c:154
+#: build/pack.c:134
 #, c-format
 msgid "Could not canonicalize hostname: %s\n"
 msgstr "无法正规化主机名：%s\n"
 
-#: build/pack.c:218
+#: build/pack.c:198
 #, c-format
 msgid "Unable to write payload to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:226
+#: build/pack.c:206
 #, c-format
 msgid "Unable to read payload from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:294
+#: build/pack.c:310
 #, c-format
 msgid "Unknown payload compression: %s\n"
 msgstr ""
 
-#: build/pack.c:318
+#: build/pack.c:338
 msgid "Unable to create immutable header region.\n"
 msgstr ""
 
-#: build/pack.c:331
+#: build/pack.c:351
 msgid "Unable to open temp file.\n"
 msgstr "无法打开临时文件。\n"
 
-#: build/pack.c:338
+#: build/pack.c:358
 msgid "Unable to write temp header\n"
 msgstr "无法写入临时头\n"
 
-#: build/pack.c:346
+#: build/pack.c:366
 msgid "Bad CSA data\n"
-msgstr ""
+msgstr "不合法的CSA数据\n"
 
-#: build/pack.c:412
+#: build/pack.c:432
 msgid "Unable to reload signature header.\n"
-msgstr ""
+msgstr "无法重载签名头。\n"
 
-#: build/pack.c:420
+#: build/pack.c:440
 #, c-format
 msgid "Could not open %s: %s\n"
 msgstr "无法打开%s: %s\n"
 
-#: build/pack.c:432
+#: build/pack.c:452
 #, c-format
 msgid "Unable to write package: %s\n"
 msgstr "无法写入软件包：%s\n"
 
-#: build/pack.c:448
+#: build/pack.c:468
 #, c-format
 msgid "Unable to open sigtarget %s: %s\n"
 msgstr ""
 
-#: build/pack.c:459
+#: build/pack.c:479
 #, c-format
 msgid "Unable to read header from %s: %s\n"
 msgstr ""
 
-#: build/pack.c:469
+#: build/pack.c:489
 #, c-format
 msgid "Unable to write header to %s: %s\n"
 msgstr ""
 
-#: build/pack.c:503
+#: build/pack.c:523
 #, c-format
 msgid "Wrote: %s\n"
-msgstr ""
+msgstr "写道:%s\n"
 
-#: build/pack.c:522
+#: build/pack.c:542
 #, c-format
 msgid "Executing \"%s\":\n"
-msgstr ""
+msgstr "正在执行 \"%s\"：\n"
 
-#: build/pack.c:525
+#: build/pack.c:545
 #, c-format
 msgid "Execution of \"%s\" failed.\n"
-msgstr ""
+msgstr " \"%s\" 执行失败。\n"
 
-#: build/pack.c:529
+#: build/pack.c:549
 #, c-format
 msgid "Package check \"%s\" failed.\n"
 msgstr ""
 
-#: build/pack.c:578
+#: build/pack.c:598
 #, c-format
 msgid "Could not generate output filename for package %s: %s\n"
-msgstr ""
+msgstr "无法为软件包 %s 生成输出文件名: %s\n"
 
-#: build/pack.c:595
+#: build/pack.c:615
 #, c-format
 msgid "cannot create %s: %s\n"
-msgstr ""
+msgstr "无法创建 %s: %s\n"
 
 #: build/parseBuildInstallClean.c:35
 #, c-format
 msgid "line %d: second %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:131
+#: build/parseChangelog.c:114
+#, c-format
+msgid "bogus date in %%changelog: %s\n"
+msgstr ""
+
+#: build/parseChangelog.c:146
 #, c-format
 msgid "%%changelog entries must start with *\n"
 msgstr ""
 
-#: build/parseChangelog.c:139
+#: build/parseChangelog.c:154
 #, c-format
 msgid "incomplete %%changelog entry\n"
 msgstr ""
 
-#: build/parseChangelog.c:154
+#: build/parseChangelog.c:169
 #, c-format
 msgid "bad date in %%changelog: %s\n"
 msgstr ""
 
-#: build/parseChangelog.c:159
+#: build/parseChangelog.c:174
 #, c-format
 msgid "%%changelog not in descending chronological order\n"
 msgstr ""
 
-#: build/parseChangelog.c:167 build/parseChangelog.c:178
+#: build/parseChangelog.c:182 build/parseChangelog.c:193
 #, c-format
 msgid "missing name in %%changelog\n"
 msgstr ""
 
-#: build/parseChangelog.c:185
+#: build/parseChangelog.c:200
 #, c-format
 msgid "no description in %%changelog\n"
 msgstr ""
@@ -970,19 +984,19 @@ msgstr ""
 msgid "line %d: Error parsing %%description: %s\n"
 msgstr ""
 
-#: build/parseDescription.c:45 build/parseFiles.c:43 build/parsePolicies.c:45
+#: build/parseDescription.c:45 build/parseFiles.c:46 build/parsePolicies.c:45
 #: build/parseScript.c:232
 #, c-format
 msgid "line %d: Bad option %s: %s\n"
 msgstr ""
 
-#: build/parseDescription.c:56 build/parseFiles.c:54 build/parsePolicies.c:55
+#: build/parseDescription.c:56 build/parseFiles.c:57 build/parsePolicies.c:55
 #: build/parseScript.c:243
 #, c-format
 msgid "line %d: Too many names: %s\n"
 msgstr ""
 
-#: build/parseDescription.c:64 build/parseFiles.c:62 build/parsePolicies.c:62
+#: build/parseDescription.c:64 build/parseFiles.c:65 build/parsePolicies.c:62
 #: build/parseScript.c:251
 #, c-format
 msgid "line %d: Package does not exist: %s\n"
@@ -993,7 +1007,7 @@ msgstr ""
 msgid "line %d: Second description\n"
 msgstr ""
 
-#: build/parseFiles.c:30
+#: build/parseFiles.c:33
 #, c-format
 msgid "line %d: Error parsing %%files: %s\n"
 msgstr ""
@@ -1038,147 +1052,142 @@ msgstr ""
 msgid "Couldn't download %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:433
+#: build/parsePreamble.c:432
 #, c-format
 msgid "Architecture is excluded: %s\n"
-msgstr ""
+msgstr "系统结构被排除了： %s\n"
 
-#: build/parsePreamble.c:438
+#: build/parsePreamble.c:437
 #, c-format
 msgid "Architecture is not included: %s\n"
-msgstr ""
+msgstr "不包含体系统结构：%s\n"
 
-#: build/parsePreamble.c:443
+#: build/parsePreamble.c:442
 #, c-format
 msgid "OS is excluded: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:448
+#: build/parsePreamble.c:447
 #, c-format
 msgid "OS is not included: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:474
+#: build/parsePreamble.c:473
 #, c-format
 msgid "%s field must be present in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:497
+#: build/parsePreamble.c:496
 #, c-format
 msgid "Duplicate %s entries in package: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:551
-#, c-format
-msgid "illegal _docdir_fmt: %s\n"
-msgstr ""
-
-#: build/parsePreamble.c:579
+#: build/parsePreamble.c:554
 #, c-format
 msgid "Unable to open icon %s: %s\n"
-msgstr ""
+msgstr "无法打开图标 %s：%s\n"
 
-#: build/parsePreamble.c:595
+#: build/parsePreamble.c:570
 #, c-format
 msgid "Unable to read icon %s: %s\n"
-msgstr ""
+msgstr "无法读取图标 %s: %s\n"
 
-#: build/parsePreamble.c:605
+#: build/parsePreamble.c:580
 #, c-format
 msgid "Unknown icon type: %s\n"
-msgstr ""
+msgstr "未知的图标格式：%s\n"
 
-#: build/parsePreamble.c:619
+#: build/parsePreamble.c:594
 #, c-format
 msgid "line %d: Tag takes single token only: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:639
+#: build/parsePreamble.c:614
 #, c-format
 msgid "line %d: Illegal char '%c' in: %s\n"
-msgstr ""
+msgstr "行 %d：非法的字符 '%c' 在: %s 中\n"
 
-#: build/parsePreamble.c:642
+#: build/parsePreamble.c:617
 #, c-format
 msgid "line %d: Illegal char in: %s\n"
-msgstr ""
+msgstr "行 %d：非法的字符在: %s 中\n"
 
-#: build/parsePreamble.c:648
+#: build/parsePreamble.c:623
 #, c-format
 msgid "line %d: Illegal sequence \"..\" in: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:671
+#: build/parsePreamble.c:646
 #, c-format
 msgid "line %d: Malformed tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:679
+#: build/parsePreamble.c:654
 #, c-format
 msgid "line %d: Empty tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:740
+#: build/parsePreamble.c:715
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:752
+#: build/parsePreamble.c:727
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:765
+#: build/parsePreamble.c:740
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:803
+#: build/parsePreamble.c:777
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:831
+#: build/parsePreamble.c:804
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:841
+#: build/parsePreamble.c:814
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:857
+#: build/parsePreamble.c:830
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr ""
 
-#: build/parsePreamble.c:942
+#: build/parsePreamble.c:915
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1005
+#: build/parsePreamble.c:978
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1011
+#: build/parsePreamble.c:984
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1042
+#: build/parsePreamble.c:1015
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr ""
 
-#: build/parsePreamble.c:1074
+#: build/parsePreamble.c:1047
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr ""
 
-#: build/parsePreamble.c:1078
+#: build/parsePreamble.c:1051
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr ""
@@ -1207,32 +1216,32 @@ msgstr ""
 msgid "No \"Source:\" tag in the spec file\n"
 msgstr ""
 
-#: build/parsePrep.c:257
+#: build/parsePrep.c:261
 #, c-format
 msgid "Error parsing %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:268
+#: build/parsePrep.c:272
 #, c-format
 msgid "line %d: Bad arg to %%setup: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:283
+#: build/parsePrep.c:287
 #, c-format
 msgid "line %d: Bad %%setup option %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:442
+#: build/parsePrep.c:446
 #, c-format
 msgid "%s: %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:455
+#: build/parsePrep.c:459
 #, c-format
 msgid "Invalid patch number %s: %s\n"
 msgstr ""
 
-#: build/parsePrep.c:482
+#: build/parsePrep.c:486
 #, c-format
 msgid "line %d: second %%prep\n"
 msgstr ""
@@ -1293,24 +1302,24 @@ msgstr ""
 msgid "line %d: interpreter arguments not allowed in triggers: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:203
+#: build/parseSpec.c:209
 #, c-format
 msgid "line %d: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:246
+#: build/parseSpec.c:252
 #, c-format
 msgid "Unable to open %s: %s\n"
 msgstr ""
 
-#: build/parseSpec.c:258
-#, c-format
-msgid "Unclosed %%if\n"
-msgstr ""
-
-#: build/parseSpec.c:290
+#: build/parseSpec.c:286
 #, c-format
 msgid "%s:%d: Argument expected for %s\n"
+msgstr ""
+
+#: build/parseSpec.c:308
+#, c-format
+msgid "line %d: Unclosed %%if\n"
 msgstr ""
 
 #: build/parseSpec.c:313
@@ -1335,14 +1344,14 @@ msgstr ""
 
 #: build/parseSpec.c:392
 #, c-format
-msgid "malformed %%include statement\n"
+msgid "%s:%d: malformed %%include statement\n"
 msgstr ""
 
-#: build/parseSpec.c:674
+#: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
 msgstr ""
 
-#: build/parseSpec.c:708
+#: build/parseSpec.c:703
 #, c-format
 msgid "Package has no %%description: %s\n"
 msgstr ""
@@ -1413,117 +1422,121 @@ msgstr ""
 msgid "Processing policies: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:107
+#: build/rpmfc.c:108
 #, c-format
 msgid "Ignoring invalid regex %s\n"
 msgstr ""
 
-#: build/rpmfc.c:203
+#: build/rpmfc.c:204
 #, c-format
 msgid "Couldn't create pipe for %s: %m\n"
 msgstr ""
 
-#: build/rpmfc.c:228
+#: build/rpmfc.c:229
 #, c-format
 msgid "Couldn't exec %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:233 lib/rpmscript.c:255
+#: build/rpmfc.c:234 lib/rpmscript.c:255
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:316
+#: build/rpmfc.c:317
 #, c-format
 msgid "%s failed: %x\n"
 msgstr ""
 
-#: build/rpmfc.c:320
+#: build/rpmfc.c:321
 #, c-format
 msgid "failed to write all data to %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:829
+#: build/rpmfc.c:831
 #, c-format
 msgid "Conversion of %s to long integer failed.\n"
 msgstr ""
 
-#: build/rpmfc.c:908
+#: build/rpmfc.c:909
 msgid "Empty file classifier\n"
 msgstr ""
 
-#: build/rpmfc.c:917
+#: build/rpmfc.c:918
 msgid "No file attributes configured\n"
 msgstr ""
 
-#: build/rpmfc.c:934
+#: build/rpmfc.c:938
 #, c-format
 msgid "magic_open(0x%x) failed: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:940
+#: build/rpmfc.c:944
 #, c-format
 msgid "magic_load failed: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:981
+#: build/rpmfc.c:986
 #, c-format
 msgid "Recognition of file \"%s\" failed: mode %06o %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1169
+#: build/rpmfc.c:1166
 #, c-format
 msgid "Finding  %s: %s\n"
 msgstr ""
 
-#: build/rpmfc.c:1178 build/rpmfc.c:1187
+#: build/rpmfc.c:1175 build/rpmfc.c:1184
 #, c-format
 msgid "Failed to find %s:\n"
 msgstr ""
 
-#: build/spec.c:403
+#: build/spec.c:404
 #, c-format
 msgid "query of specfile %s failed, can't parse\n"
-msgstr ""
+msgstr "查询 spec 文件 %s 失败，无法解析\n"
 
-#: lib/cpio.c:192
+#: lib/cpio.c:364
 #, c-format
 msgid "(error 0x%x)"
-msgstr ""
+msgstr "(错误代码 0x%x)"
 
-#: lib/cpio.c:196
+#: lib/cpio.c:368
 msgid "Bad magic"
 msgstr ""
 
-#: lib/cpio.c:197
+#: lib/cpio.c:369
 msgid "Bad/unreadable  header"
-msgstr ""
+msgstr "错误/不可读的  头部"
 
-#: lib/cpio.c:220
+#: lib/cpio.c:392
 msgid "Header size too big"
+msgstr "头部太大"
+
+#: lib/cpio.c:393
+msgid "File too large for archive"
 msgstr ""
 
-#: lib/cpio.c:221
+#: lib/cpio.c:394
 msgid "Unknown file type"
-msgstr ""
+msgstr "未知文件类型"
 
-#: lib/cpio.c:222
+#: lib/cpio.c:395
 msgid "Missing hard link(s)"
 msgstr ""
 
-#: lib/cpio.c:223
+#: lib/cpio.c:396
 msgid "Digest mismatch"
-msgstr ""
+msgstr "摘要不匹配"
 
-#: lib/cpio.c:224
+#: lib/cpio.c:397
 msgid "Internal error"
-msgstr ""
+msgstr "内部错误"
 
-#: lib/cpio.c:225
+#: lib/cpio.c:398
 msgid "Archive file not in header"
 msgstr ""
 
-#: lib/cpio.c:236
+#: lib/cpio.c:409
 msgid " failed - "
 msgstr ""
 
@@ -1537,21 +1550,21 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:300
+#: lib/depends.c:348
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:301
+#: lib/depends.c:349
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
 
 #: lib/formats.c:65 lib/formats.c:101 lib/formats.c:183 lib/formats.c:209
-#: lib/formats.c:258 lib/formats.c:276 lib/formats.c:469 lib/formats.c:502
-#: lib/formats.c:540
+#: lib/formats.c:262 lib/formats.c:280 lib/formats.c:473 lib/formats.c:506
+#: lib/formats.c:544
 msgid "(not a number)"
-msgstr ""
+msgstr "(不是数字)"
 
 #: lib/formats.c:125
 #, c-format
@@ -1562,194 +1575,192 @@ msgstr "%c"
 msgid "%a %b %d %Y"
 msgstr "%a %b %d %Y"
 
-#: lib/formats.c:310
+#: lib/formats.c:314
 msgid "(not base64)"
 msgstr "(非base64)"
 
-#: lib/formats.c:322
+#: lib/formats.c:326
 msgid "(invalid type)"
-msgstr "(非法类型)"
+msgstr "(无效类型)"
 
-#: lib/formats.c:345 lib/formats.c:425
+#: lib/formats.c:349 lib/formats.c:429
 msgid "(not a blob)"
 msgstr "(非blob)"
 
-#: lib/formats.c:380
+#: lib/formats.c:384
 msgid "(invalid xml type)"
-msgstr "(非法xml 类型)"
+msgstr "(无效的xml 类型)"
 
-#: lib/formats.c:430
+#: lib/formats.c:434
 msgid "(not an OpenPGP signature)"
 msgstr "(不是OpenPGP 签名)"
 
-#: lib/formats.c:442
+#: lib/formats.c:446
 #, c-format
 msgid "Invalid date %u"
-msgstr ""
+msgstr "无效日期%u"
 
-#: lib/formats.c:508
+#: lib/formats.c:512
 msgid "normal"
-msgstr ""
+msgstr "正常"
 
-#: lib/formats.c:511
+#: lib/formats.c:515
 msgid "replaced"
-msgstr ""
+msgstr "已被替换"
 
-#: lib/formats.c:514
+#: lib/formats.c:518
 msgid "not installed"
-msgstr ""
+msgstr "未安装"
 
-#: lib/formats.c:517
+#: lib/formats.c:521
 msgid "net shared"
-msgstr ""
+msgstr "网络共享"
 
-#: lib/formats.c:520
+#: lib/formats.c:524
 msgid "wrong color"
-msgstr ""
+msgstr "错误颜色"
 
-#: lib/formats.c:523
+#: lib/formats.c:527
 msgid "missing"
-msgstr ""
+msgstr "丢失"
 
-#: lib/formats.c:526
+#: lib/formats.c:530
 msgid "(unknown)"
-msgstr ""
+msgstr "(未知)"
 
-#: lib/formats.c:561
+#: lib/formats.c:565
 msgid "(not a string)"
-msgstr ""
+msgstr "(不是字符串)"
 
-#: lib/fsm.c:731
+#: lib/fsm.c:689
 #, c-format
 msgid "user %s does not exist - using root\n"
 msgstr "用户%s 不存在 - 使用root\n"
 
-#: lib/fsm.c:738
+#: lib/fsm.c:696
 #, c-format
 msgid "group %s does not exist - using root\n"
 msgstr "群组%s 不存在 - 使用root\n"
 
-#: lib/fsm.c:1388
-#, c-format
-msgid "archive file %s was not found in header file list\n"
-msgstr ""
-
-#: lib/fsm.c:1788 lib/fsm.c:1899
+#: lib/fsm.c:1518
 #, c-format
 msgid "%s saved as %s\n"
 msgstr ""
 
-#: lib/fsm.c:1922
-#, c-format
-msgid "%s rmdir of %s failed: Directory not empty\n"
-msgstr ""
-
-#: lib/fsm.c:1928
-#, c-format
-msgid "%s rmdir of %s failed: %s\n"
-msgstr ""
-
-#: lib/fsm.c:1942
-#, c-format
-msgid "%s unlink of %s failed: %s\n"
-msgstr ""
-
-#: lib/fsm.c:1961
+#: lib/fsm.c:1543
 #, c-format
 msgid "%s created as %s\n"
+msgstr ""
+
+#: lib/fsm.c:1845
+#, fuzzy, c-format
+msgid "%s %s: remove failed: %s\n"
+msgstr "%s: Fwrite 失败: %s\n"
+
+#: lib/fsm.c:1846
+msgid "directory"
+msgstr ""
+
+#: lib/fsm.c:1846
+msgid "file"
 msgstr ""
 
 #: lib/package.c:146
 #, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr ""
+msgstr "跳过 %s %s，签名无法验证\n"
 
 #: lib/package.c:149
 #, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr ""
+msgstr "跳过 %s，签名无法验证\n"
 
-#: lib/package.c:179 lib/package.c:306 lib/package.c:366 lib/signature.c:130
+#: lib/package.c:179 lib/package.c:306 lib/package.c:373 lib/signature.c:130
 #, c-format
 msgid "tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
 #: lib/package.c:198
 msgid "hdr SHA1: BAD, not hex\n"
-msgstr ""
+msgstr "hdr SHA1: 错误，非十六进制\n"
 
 #: lib/package.c:210
 msgid "hdr RSA: BAD, not binary\n"
-msgstr ""
+msgstr "hdr RSA: 错误，非二进制\n"
 
 #: lib/package.c:220
 msgid "hdr DSA: BAD, not binary\n"
-msgstr ""
+msgstr "hdr DSA: 错误，非二进制\n"
 
 #: lib/package.c:296
 #, c-format
 msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr ""
 
-#: lib/package.c:324 lib/signature.c:145
+#: lib/package.c:322 lib/signature.c:142
+#, c-format
+msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
+msgstr ""
+
+#: lib/package.c:331 lib/signature.c:151
 #, c-format
 msgid "region offset: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:341 lib/signature.c:169
+#: lib/package.c:348 lib/signature.c:175
 #, c-format
 msgid "region trailer: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/package.c:351 lib/signature.c:179
+#: lib/package.c:358 lib/signature.c:185
 #, c-format
 msgid "region size: BAD, ril(%d) > il(%d)\n"
 msgstr ""
 
-#: lib/package.c:420
+#: lib/package.c:427
 #, c-format
 msgid "hdr size(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:424
+#: lib/package.c:431
 msgid "hdr magic: BAD\n"
 msgstr ""
 
-#: lib/package.c:429
+#: lib/package.c:436
 #, c-format
 msgid "hdr tags: BAD, no. of tags(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:435
+#: lib/package.c:442
 #, c-format
 msgid "hdr data: BAD, no. of bytes(%d) out of range\n"
 msgstr ""
 
-#: lib/package.c:445
+#: lib/package.c:452
 #, c-format
 msgid "hdr blob(%zd): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/package.c:458
+#: lib/package.c:465
 msgid "hdr load: BAD\n"
 msgstr ""
 
-#: lib/package.c:525 lib/rpmchecksig.c:274 sign/rpmgensig.c:433
+#: lib/package.c:532 lib/rpmchecksig.c:275 sign/rpmgensig.c:433
 #, c-format
 msgid "%s: rpmReadSignature failed: %s"
 msgstr ""
 
-#: lib/package.c:532 lib/rpmchecksig.c:281 sign/rpmgensig.c:440
+#: lib/package.c:539 lib/rpmchecksig.c:282 sign/rpmgensig.c:440
 #, c-format
 msgid "%s: No signature available\n"
 msgstr ""
 
-#: lib/package.c:574
+#: lib/package.c:581
 #, c-format
 msgid "%s: headerRead failed: %s"
 msgstr ""
 
-#: lib/package.c:622 lib/rpmchecksig.c:139 sign/rpmgensig.c:93
+#: lib/package.c:629 lib/rpmchecksig.c:140 sign/rpmgensig.c:93
 #, c-format
 msgid "%s: Fread failed: %s\n"
 msgstr ""
@@ -1764,11 +1775,11 @@ msgstr ""
 
 #: lib/poptALL.c:160
 msgid "define MACRO with value EXPR"
-msgstr ""
+msgstr "定义值为 EXPR 的 MACRO"
 
 #: lib/poptALL.c:163
 msgid "print macro expansion of EXPR"
-msgstr ""
+msgstr "打印 EXPR 的宏展开"
 
 #: lib/poptALL.c:164
 msgid "'EXPR'"
@@ -1776,7 +1787,7 @@ msgstr ""
 
 #: lib/poptALL.c:166 lib/poptALL.c:180
 msgid "read <FILE:...> instead of default file(s)"
-msgstr ""
+msgstr "从文件 <FILE:...> 读取宏，不使用默认文件"
 
 #: lib/poptALL.c:167 lib/poptALL.c:181
 msgid "<FILE:...>"
@@ -1792,7 +1803,7 @@ msgstr ""
 
 #: lib/poptALL.c:174
 msgid "don't verify package signature(s)"
-msgstr ""
+msgstr "不验证软件包签名"
 
 #: lib/poptALL.c:177
 msgid "send stdout to CMD"
@@ -1804,39 +1815,39 @@ msgstr ""
 
 #: lib/poptALL.c:183
 msgid "use ROOT as top level directory"
-msgstr ""
+msgstr "使用 ROOT 作为顶级目录"
 
 #: lib/poptALL.c:184
 msgid "ROOT"
-msgstr ""
+msgstr "ROOT"
 
 #: lib/poptALL.c:186
 msgid "use database in DIRECTORY"
-msgstr ""
+msgstr "使用 DIRECTORY 目录中的数据库"
 
 #: lib/poptALL.c:187
 msgid "DIRECTORY"
-msgstr ""
+msgstr "DIRECTORY"
 
 #: lib/poptALL.c:190
 msgid "display known query tags"
-msgstr ""
+msgstr "显示已知的查询标签"
 
 #: lib/poptALL.c:192
 msgid "display final rpmrc and macro configuration"
-msgstr ""
+msgstr "显示最终的 rpmrc 和宏配置"
 
 #: lib/poptALL.c:194
 msgid "provide less detailed output"
-msgstr ""
+msgstr "提供更少的详细信息输出"
 
 #: lib/poptALL.c:196
 msgid "provide more detailed output"
-msgstr ""
+msgstr "提供更多的详细信息输出"
 
 #: lib/poptALL.c:198
 msgid "print the version of rpm being used"
-msgstr ""
+msgstr "打印使用的 rpm 版本号"
 
 #: lib/poptALL.c:204
 msgid "debug payload file state machine"
@@ -1869,7 +1880,7 @@ msgstr ""
 
 #: lib/poptI.c:114
 msgid "install all files, even configurations which might otherwise be skipped"
-msgstr ""
+msgstr "安装全部文件，包含配置文件，否则配置文件会被跳过。"
 
 #: lib/poptI.c:118
 msgid ""
@@ -1887,7 +1898,7 @@ msgstr ""
 
 #: lib/poptI.c:131
 msgid "erase (uninstall) package"
-msgstr ""
+msgstr "清除 (卸载) 软件包"
 
 #: lib/poptI.c:131
 msgid "<package>+"
@@ -1895,11 +1906,11 @@ msgstr ""
 
 #: lib/poptI.c:134 lib/poptI.c:171
 msgid "do not install configuration files"
-msgstr ""
+msgstr "不安装配置文件"
 
 #: lib/poptI.c:137 lib/poptI.c:176
 msgid "do not install documentation"
-msgstr ""
+msgstr "不安装程序文档"
 
 #: lib/poptI.c:139
 msgid "skip files with leading component <path> "
@@ -1911,11 +1922,11 @@ msgstr ""
 
 #: lib/poptI.c:143
 msgid "short hand for --replacepkgs --replacefiles"
-msgstr ""
+msgstr "--replacepkgs --replacefiles 的缩写"
 
 #: lib/poptI.c:147
 msgid "upgrade package(s) if already installed"
-msgstr ""
+msgstr "如果软件包已经安装，升级软件包"
 
 #: lib/poptI.c:148 lib/poptI.c:164 lib/poptI.c:249
 msgid "<packagefile>+"
@@ -1927,95 +1938,95 @@ msgstr ""
 
 #: lib/poptI.c:153
 msgid "don't verify package architecture"
-msgstr ""
+msgstr "不验证软件包架构"
 
 #: lib/poptI.c:156
 msgid "don't verify package operating system"
-msgstr ""
+msgstr "不验证软件包操作系统"
 
 #: lib/poptI.c:159
 msgid "don't check disk space before installing"
-msgstr ""
+msgstr "在安装前不检查磁盘空间"
 
 #: lib/poptI.c:161
 msgid "install documentation"
-msgstr ""
+msgstr "安装程序文档"
 
 #: lib/poptI.c:164
 msgid "install package(s)"
-msgstr ""
+msgstr "安装软件包"
 
 #: lib/poptI.c:167
 msgid "update the database, but do not modify the filesystem"
-msgstr ""
+msgstr "更新数据库，但不修改文件系统"
 
 #: lib/poptI.c:173
 msgid "do not verify package dependencies"
-msgstr ""
+msgstr "不验证软件包依赖"
 
 #: lib/poptI.c:179 lib/poptQV.c:204 lib/poptQV.c:206
 msgid "don't verify digest of files"
-msgstr ""
+msgstr "不验证文件摘要"
 
 #: lib/poptI.c:181
 msgid "don't verify digest of files (obsolete)"
-msgstr ""
+msgstr "不验证文件摘要(已过时)"
 
 #: lib/poptI.c:183
 msgid "don't install file security contexts"
-msgstr ""
+msgstr "不安装文件的安全上下文"
 
 #: lib/poptI.c:187
 msgid "do not reorder package installation to satisfy dependencies"
-msgstr ""
+msgstr "不对软件包安装重新排序以满足依赖关系"
 
 #: lib/poptI.c:191
 msgid "do not execute package scriptlet(s)"
-msgstr ""
+msgstr "不执行软件包脚本"
 
 #: lib/poptI.c:195
 #, c-format
 msgid "do not execute %%pre scriptlet (if any)"
-msgstr ""
+msgstr "不执行%%pre 脚本(如果有的话)"
 
 #: lib/poptI.c:198
 #, c-format
 msgid "do not execute %%post scriptlet (if any)"
-msgstr ""
+msgstr "不执行%%post 脚本(如果有的话)"
 
 #: lib/poptI.c:201
 #, c-format
 msgid "do not execute %%preun scriptlet (if any)"
-msgstr ""
+msgstr "不执行%%preun 脚本(如果有的话)"
 
 #: lib/poptI.c:204
 #, c-format
 msgid "do not execute %%postun scriptlet (if any)"
-msgstr ""
+msgstr "不执行%%postun 脚本(如果有的话)"
 
 #: lib/poptI.c:207
 msgid "do not execute any scriptlet(s) triggered by this package"
-msgstr ""
+msgstr "不执行本软件包触发的任何脚本"
 
 #: lib/poptI.c:210
 #, c-format
 msgid "do not execute any %%triggerprein scriptlet(s)"
-msgstr ""
+msgstr "不执行任何%%triggerprein 脚本"
 
 #: lib/poptI.c:213
 #, c-format
 msgid "do not execute any %%triggerin scriptlet(s)"
-msgstr ""
+msgstr "不执行任何%%triggerin 脚本"
 
 #: lib/poptI.c:216
 #, c-format
 msgid "do not execute any %%triggerun scriptlet(s)"
-msgstr ""
+msgstr "不执行任何%%triggerun 脚本"
 
 #: lib/poptI.c:219
 #, c-format
 msgid "do not execute any %%triggerpostun scriptlet(s)"
-msgstr ""
+msgstr "不执行任何%%triggerpostun 脚本"
 
 #: lib/poptI.c:223
 msgid "do not perform any collection actions"
@@ -2025,11 +2036,11 @@ msgstr ""
 msgid ""
 "upgrade to an old version of the package (--force on upgrades does this "
 "automatically)"
-msgstr ""
+msgstr "更新到软件包的旧版本(带 --force 自动完成这一功能)"
 
 #: lib/poptI.c:231
 msgid "print percentages as package installs"
-msgstr ""
+msgstr "安装软件包时打印百分比"
 
 #: lib/poptI.c:233
 msgid "relocate the package to <dir>, if relocatable"
@@ -2049,23 +2060,23 @@ msgstr ""
 
 #: lib/poptI.c:240
 msgid "ignore file conflicts between packages"
-msgstr ""
+msgstr "忽略软件包之间的冲突的文件"
 
 #: lib/poptI.c:243
 msgid "reinstall if the package is already present"
-msgstr ""
+msgstr "如果软件包已经有了，重新安装软件包"
 
 #: lib/poptI.c:245
 msgid "don't install, but tell if it would work or not"
-msgstr ""
+msgstr "不真正安装，只是判断下是否能安装"
 
 #: lib/poptI.c:248
 msgid "upgrade package(s)"
-msgstr ""
+msgstr "升级软件包"
 
 #: lib/poptQV.c:67
 msgid "query/verify all packages"
-msgstr ""
+msgstr "查询/验证所有软件包"
 
 #: lib/poptQV.c:69
 msgid "rpm checksig mode"
@@ -2073,15 +2084,15 @@ msgstr ""
 
 #: lib/poptQV.c:71
 msgid "query/verify package(s) owning file"
-msgstr ""
+msgstr "查询/验证文件属于的软件包"
 
 #: lib/poptQV.c:73
 msgid "query/verify package(s) in group"
-msgstr ""
+msgstr "查询/验证组中的软件包"
 
 #: lib/poptQV.c:75
 msgid "query/verify a package file"
-msgstr ""
+msgstr "查询/验证一个软件包"
 
 #: lib/poptQV.c:78
 msgid "query/verify package(s) with package identifier"
@@ -2125,76 +2136,76 @@ msgstr ""
 
 #: lib/poptQV.c:100
 msgid "do not process non-package files as manifests"
-msgstr ""
+msgstr "不把非软件包文件作为清单处理"
 
 #: lib/poptQV.c:171
 msgid "list all configuration files"
-msgstr ""
+msgstr "列出所有配置文件"
 
 #: lib/poptQV.c:173
 msgid "list all documentation files"
-msgstr ""
+msgstr "列出所有程序文档"
 
 #: lib/poptQV.c:175
 msgid "dump basic file information"
-msgstr ""
+msgstr "转储基本文件信息"
 
 #: lib/poptQV.c:179
 msgid "list files in package"
-msgstr ""
+msgstr "列出包中的文件"
 
 #: lib/poptQV.c:184
 #, c-format
 msgid "skip %%ghost files"
-msgstr ""
+msgstr "跳过%%ghost 文件"
 
 #: lib/poptQV.c:191
 msgid "display the states of the listed files"
-msgstr ""
+msgstr "显示列出文件的状态"
 
 #: lib/poptQV.c:209
 msgid "don't verify size of files"
-msgstr ""
+msgstr "不验证文件大小"
 
 #: lib/poptQV.c:212
 msgid "don't verify symlink path of files"
-msgstr ""
+msgstr "不验证符号连接路径"
 
 #: lib/poptQV.c:215
 msgid "don't verify owner of files"
-msgstr ""
+msgstr "不验证文件所有者"
 
 #: lib/poptQV.c:218
 msgid "don't verify group of files"
-msgstr ""
+msgstr "不验证文件组信息"
 
 #: lib/poptQV.c:221
 msgid "don't verify modification time of files"
-msgstr ""
+msgstr "不验证文件修改时间"
 
 #: lib/poptQV.c:224 lib/poptQV.c:227
 msgid "don't verify mode of files"
-msgstr ""
+msgstr "不验证文件模式"
 
 #: lib/poptQV.c:230
 msgid "don't verify capabilities of files"
-msgstr ""
+msgstr "不验证文件兼容性"
 
 #: lib/poptQV.c:233
 msgid "don't verify file security contexts"
-msgstr ""
+msgstr "不验证文件安全上下文"
 
 #: lib/poptQV.c:235
 msgid "don't verify files in package"
-msgstr ""
+msgstr "不验证软件包中文件"
 
 #: lib/poptQV.c:237 tools/rpmgraph.c:218
 msgid "don't verify package dependencies"
-msgstr ""
+msgstr "不验证包依赖"
 
 #: lib/poptQV.c:240 lib/poptQV.c:243
 msgid "don't execute verify script(s)"
-msgstr ""
+msgstr "不执行验证脚本"
 
 #: lib/psm.c:212
 #, c-format
@@ -2203,11 +2214,11 @@ msgstr ""
 
 #: lib/psm.c:254
 msgid "source package expected, binary found\n"
-msgstr ""
+msgstr "期望源代码包，但找到二进制包\n"
 
 #: lib/psm.c:307
 msgid "source package contains no .spec file\n"
-msgstr ""
+msgstr "源代码包中没有找到 .spec 文件\n"
 
 #: lib/psm.c:836
 #, c-format
@@ -2231,40 +2242,40 @@ msgstr ""
 #: lib/query.c:111
 #, c-format
 msgid "incorrect format: %s\n"
-msgstr ""
+msgstr "不正确的格式：%s\n"
 
 #: lib/query.c:123
 msgid "(contains no files)\n"
-msgstr ""
+msgstr "(没有包含文件)\n"
 
 #: lib/query.c:156
 msgid "normal        "
-msgstr ""
+msgstr "正常"
 
 #: lib/query.c:159
 msgid "replaced      "
-msgstr ""
+msgstr "替换"
 
 #: lib/query.c:162
 msgid "not installed "
-msgstr ""
+msgstr "未安装"
 
 #: lib/query.c:165
 msgid "net shared    "
-msgstr ""
+msgstr "网络共享"
 
 #: lib/query.c:168
 msgid "wrong color   "
-msgstr ""
+msgstr "不对的颜色"
 
 #: lib/query.c:171
 msgid "(no state)    "
-msgstr ""
+msgstr "(无状态)    "
 
 #: lib/query.c:174
 #, c-format
 msgid "(unknown %3d) "
-msgstr ""
+msgstr "(未知 %3d) "
 
 #: lib/query.c:194
 msgid "package has not file owner/group lists\n"
@@ -2277,7 +2288,7 @@ msgstr ""
 #: lib/query.c:314
 #, c-format
 msgid "group %s does not contain any packages\n"
-msgstr ""
+msgstr "没有找到属于 %s 组的软件包\n"
 
 #: lib/query.c:321
 #, c-format
@@ -2287,7 +2298,7 @@ msgstr ""
 #: lib/query.c:332 lib/query.c:351 lib/query.c:367
 #, c-format
 msgid "malformed %s: %s\n"
-msgstr ""
+msgstr "格式不对 %s：%s\n"
 
 #: lib/query.c:342 lib/query.c:357 lib/query.c:372
 #, c-format
@@ -2302,17 +2313,17 @@ msgstr ""
 #: lib/query.c:388
 #, c-format
 msgid "no package provides %s\n"
-msgstr ""
+msgstr "没有包提供 %s\n"
 
 #: lib/query.c:420
 #, c-format
 msgid "file %s: %s\n"
-msgstr ""
+msgstr "文件 %s：%s\n"
 
 #: lib/query.c:423
 #, c-format
 msgid "file %s is not owned by any package\n"
-msgstr ""
+msgstr "文件 %s 不属于任何包\n"
 
 #: lib/query.c:434
 #, c-format
@@ -2324,10 +2335,10 @@ msgstr ""
 msgid "record %u could not be read\n"
 msgstr ""
 
-#: lib/query.c:454 lib/rpminstall.c:661
+#: lib/query.c:454 lib/rpminstall.c:654
 #, c-format
 msgid "package %s is not installed\n"
-msgstr ""
+msgstr "未安装软件包 %s \n"
 
 #: lib/query.c:488
 #, c-format
@@ -2344,46 +2355,46 @@ msgstr ""
 msgid "%s: key %d not an armored public key.\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:92
+#: lib/rpmchecksig.c:93
 #, c-format
 msgid "%s: import read failed(%d).\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:118
+#: lib/rpmchecksig.c:119
 #, c-format
 msgid "%s: headerRead failed: %s\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:127
+#: lib/rpmchecksig.c:128
 #, c-format
 msgid "%s: Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/rpmchecksig.c:385
+#: lib/rpmchecksig.c:386
 msgid "NOT OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:385
+#: lib/rpmchecksig.c:386
 msgid "OK"
 msgstr ""
 
-#: lib/rpmchecksig.c:387
+#: lib/rpmchecksig.c:388
 msgid " (MISSING KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:389
+#: lib/rpmchecksig.c:390
 msgid ") "
 msgstr ""
 
-#: lib/rpmchecksig.c:390
+#: lib/rpmchecksig.c:391
 msgid " (UNTRUSTED KEYS:"
 msgstr ""
 
-#: lib/rpmchecksig.c:392
+#: lib/rpmchecksig.c:393
 msgid ")"
 msgstr ""
 
-#: lib/rpmchecksig.c:432 sign/rpmgensig.c:53
+#: lib/rpmchecksig.c:433 sign/rpmgensig.c:53
 #, c-format
 msgid "%s: open failed: %s\n"
 msgstr ""
@@ -2408,84 +2419,88 @@ msgstr ""
 msgid "Unable to restore root directory: %m\n"
 msgstr ""
 
-#: lib/rpmds.c:406
+#: lib/rpmds.c:489
 msgid "NO "
 msgstr ""
 
-#: lib/rpmds.c:406
+#: lib/rpmds.c:489
 msgid "YES"
 msgstr ""
 
-#: lib/rpmds.c:847
+#: lib/rpmds.c:933
 msgid "PreReq:, Provides:, and Obsoletes: dependencies support versions."
 msgstr ""
 
-#: lib/rpmds.c:850
+#: lib/rpmds.c:936
 msgid "file name(s) stored as (dirName,baseName,dirIndex) tuple, not as path."
 msgstr ""
 
-#: lib/rpmds.c:854
+#: lib/rpmds.c:940
 msgid "package payload can be compressed using bzip2."
 msgstr ""
 
-#: lib/rpmds.c:859
+#: lib/rpmds.c:945
 msgid "package payload can be compressed using xz."
 msgstr ""
 
-#: lib/rpmds.c:862
+#: lib/rpmds.c:948
 msgid "package payload can be compressed using lzma."
 msgstr ""
 
-#: lib/rpmds.c:866
+#: lib/rpmds.c:952
 msgid "package payload file(s) have \"./\" prefix."
 msgstr ""
 
-#: lib/rpmds.c:869
+#: lib/rpmds.c:955
 msgid "package name-version-release is not implicitly provided."
 msgstr ""
 
-#: lib/rpmds.c:872
+#: lib/rpmds.c:958
 msgid "header tags are always sorted after being loaded."
 msgstr ""
 
-#: lib/rpmds.c:875
+#: lib/rpmds.c:961
 msgid "the scriptlet interpreter can use arguments from header."
 msgstr ""
 
-#: lib/rpmds.c:878
+#: lib/rpmds.c:964
 msgid "a hardlink file set may be installed without being complete."
 msgstr ""
 
-#: lib/rpmds.c:881
+#: lib/rpmds.c:967
 msgid "package scriptlets may access the rpm database while installing."
 msgstr ""
 
-#: lib/rpmds.c:885
+#: lib/rpmds.c:971
 msgid "internal support for lua scripts."
 msgstr ""
 
-#: lib/rpmds.c:889
+#: lib/rpmds.c:975
 msgid "file digest algorithm is per package configurable"
 msgstr ""
 
-#: lib/rpmds.c:893
+#: lib/rpmds.c:979
 msgid "support for POSIX.1e file capabilities"
 msgstr ""
 
-#: lib/rpmds.c:897
+#: lib/rpmds.c:983
 msgid "package scriptlets can be expanded at install time."
+msgstr ""
+
+#: lib/rpmds.c:986
+msgid "dependency comparison supports versions with tilde."
 msgstr ""
 
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
 #: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
 #, c-format
 msgid "open of %s failed: %s\n"
-msgstr ""
+msgstr "打开 %s 失败： %s\n"
 
 #: lib/rpmgi.c:136
 #, c-format
 msgid "%s: not an rpm package (or package manifest)\n"
-msgstr ""
+msgstr "%s: 不是 rpm 软件包 (或者没有 manifest 文件)\n"
 
 #: lib/rpminstall.c:141
 #, c-format
@@ -2503,7 +2518,7 @@ msgstr "准备中..."
 
 #: lib/rpminstall.c:194
 msgid "Preparing packages..."
-msgstr ""
+msgstr "软件包准备中..."
 
 #: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
@@ -2512,12 +2527,12 @@ msgstr ""
 #: lib/rpminstall.c:321
 #, c-format
 msgid "%s: not an rpm package (or package manifest): %s\n"
-msgstr ""
+msgstr "%s: 不是 rpm 软件包 (或者没有manifest)：%s\n"
 
-#: lib/rpminstall.c:357 lib/rpminstall.c:724 tools/rpmgraph.c:112
+#: lib/rpminstall.c:357 lib/rpminstall.c:716 tools/rpmgraph.c:112
 #, c-format
 msgid "%s cannot be installed\n"
-msgstr ""
+msgstr "不能安装 %s \n"
 
 #: lib/rpminstall.c:464
 #, c-format
@@ -2537,43 +2552,43 @@ msgstr ""
 #: lib/rpminstall.c:570
 #, c-format
 msgid "error reading from file %s\n"
-msgstr ""
+msgstr "文件 %s 读取错误\n"
 
-#: lib/rpminstall.c:668
+#: lib/rpminstall.c:661
 #, c-format
 msgid "\"%s\" specifies multiple packages:\n"
 msgstr ""
 
-#: lib/rpminstall.c:708
+#: lib/rpminstall.c:700
 #, c-format
 msgid "cannot open %s: %s\n"
-msgstr ""
+msgstr "无法打开 %s：%s\n"
 
-#: lib/rpminstall.c:714
+#: lib/rpminstall.c:706
 #, c-format
 msgid "Installing %s\n"
-msgstr ""
+msgstr "正在安装 %s\n"
 
-#: lib/rpmlead.c:99
+#: lib/rpmlead.c:100
 msgid "not an rpm package"
-msgstr ""
+msgstr "不是一个 rpm 软件包"
 
-#: lib/rpmlead.c:103
+#: lib/rpmlead.c:104
 msgid "illegal signature type"
-msgstr ""
+msgstr "非法的签名类型"
 
-#: lib/rpmlead.c:107
+#: lib/rpmlead.c:108
 msgid "unsupported RPM package version"
-msgstr ""
+msgstr "不支持的 RPM 软件包版本"
 
-#: lib/rpmlead.c:122
+#: lib/rpmlead.c:123
 #, c-format
 msgid "read failed: %s (%d)\n"
-msgstr ""
+msgstr "读取失败：%s (%d)\n"
 
-#: lib/rpmlead.c:125
+#: lib/rpmlead.c:126
 msgid "not an rpm package\n"
-msgstr ""
+msgstr "是不一个 rpm 包\n"
 
 #: lib/rpmlock.c:102 lib/rpmlock.c:109
 #, c-format
@@ -2683,77 +2698,81 @@ msgstr ""
 msgid "unknown error %d encountered while manipulating package %s"
 msgstr ""
 
-#: lib/rpmrc.c:181
+#: lib/rpmrc.c:194
 #, c-format
 msgid "missing second ':' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:184
+#: lib/rpmrc.c:197
 #, c-format
 msgid "missing architecture name at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:329
+#: lib/rpmrc.c:342
 #, c-format
 msgid "Incomplete data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:334
+#: lib/rpmrc.c:347
 #, c-format
 msgid "Too many args in data line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:341
+#: lib/rpmrc.c:354
 #, c-format
 msgid "Bad arch/os number: %s (%s:%d)\n"
 msgstr ""
 
-#: lib/rpmrc.c:372
+#: lib/rpmrc.c:385
 #, c-format
 msgid "Incomplete default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:377
+#: lib/rpmrc.c:390
 #, c-format
 msgid "Too many args in default line at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:481
+#: lib/rpmrc.c:494
 #, c-format
 msgid "missing ':' (found 0x%02x) at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:498 lib/rpmrc.c:530
+#: lib/rpmrc.c:511 lib/rpmrc.c:543
 #, c-format
 msgid "missing argument for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:509
+#: lib/rpmrc.c:522
 #, c-format
 msgid "cannot open %s at %s:%d: %m\n"
 msgstr ""
 
-#: lib/rpmrc.c:522
+#: lib/rpmrc.c:535
 #, c-format
 msgid "missing architecture for %s at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:589
+#: lib/rpmrc.c:602
 #, c-format
 msgid "bad option '%s' at %s:%d\n"
 msgstr ""
 
-#: lib/rpmrc.c:1279
+#: lib/rpmrc.c:926
+msgid "Failed to read auxiliary vector, /proc not mounted?\n"
+msgstr ""
+
+#: lib/rpmrc.c:1348
 #, c-format
 msgid "Unknown system: %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1280
+#: lib/rpmrc.c:1349
 #, c-format
 msgid "Please contact %s\n"
 msgstr ""
 
-#: lib/rpmrc.c:1499
+#: lib/rpmrc.c:1590
 #, c-format
 msgid "Unable to open %s for reading: %m.\n"
 msgstr ""
@@ -2792,15 +2811,15 @@ msgstr ""
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr ""
 
-#: lib/rpmtd.c:257
+#: lib/rpmtd.c:258
 msgid "Unknown format"
 msgstr ""
 
-#: lib/rpmte.c:842
+#: lib/rpmte.c:868
 msgid "install"
 msgstr ""
 
-#: lib/rpmte.c:843
+#: lib/rpmte.c:869
 msgid "erase"
 msgstr ""
 
@@ -2824,12 +2843,12 @@ msgstr ""
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:285
+#: lib/rpmts.c:278
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr ""
 
-#: lib/rpmts.c:1076
+#: lib/rpmts.c:1085
 msgid "transaction"
 msgstr ""
 
@@ -2857,64 +2876,64 @@ msgstr ""
 msgid "sigh blob(%d): BAD, read returned %d\n"
 msgstr ""
 
-#: lib/signature.c:190
+#: lib/signature.c:196
 #, c-format
 msgid "sigh tag[%d]: BAD, tag %d type %d offset %d count %d\n"
 msgstr ""
 
-#: lib/signature.c:200
+#: lib/signature.c:206
 msgid "sigh load: BAD\n"
 msgstr ""
 
-#: lib/signature.c:213
+#: lib/signature.c:219
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
 msgstr ""
 
-#: lib/signature.c:229
+#: lib/signature.c:235
 #, c-format
 msgid "sigh sigSize(%zd): BAD, fstat(2) failed\n"
 msgstr ""
 
-#: lib/signature.c:305
+#: lib/signature.c:311
 msgid "Immutable header region could not be read. Corrupted package?\n"
 msgstr ""
 
-#: lib/signature.c:315
+#: lib/signature.c:321
 msgid "Cannot sign RPM v3 packages\n"
 msgstr ""
 
-#: lib/signature.c:402
+#: lib/signature.c:408
 msgid "MD5 digest:"
 msgstr ""
 
-#: lib/signature.c:441
+#: lib/signature.c:447
 msgid "Header SHA1 digest:"
 msgstr ""
 
-#: lib/signature.c:483
+#: lib/signature.c:489
 msgid "Header "
 msgstr ""
 
-#: lib/signature.c:524
+#: lib/signature.c:530
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1379
+#: lib/transaction.c:1409
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1379
+#: lib/transaction.c:1409
 msgid "failed"
 msgstr ""
 
-#: lib/verify.c:371
+#: lib/verify.c:372
 #, c-format
 msgid "missing   %c %s"
 msgstr ""
 
-#: lib/verify.c:421
+#: lib/verify.c:422
 #, c-format
 msgid "Unsatisfied dependencies for %s:\n"
 msgstr ""
@@ -2983,136 +3002,136 @@ msgstr ""
 msgid "array iterator used with different sized arrays"
 msgstr ""
 
-#: lib/rpmdb.c:85
+#: lib/rpmdb.c:97
 #, c-format
 msgid "Generating %d missing index(es), please wait...\n"
 msgstr ""
 
-#: lib/rpmdb.c:179
+#: lib/rpmdb.c:191
 #, c-format
 msgid "cannot open %s index using db%d - %s (%d)\n"
 msgstr ""
 
-#: lib/rpmdb.c:504
+#: lib/rpmdb.c:516
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:777
+#: lib/rpmdb.c:789
 msgid "no dbpath has been set\n"
 msgstr ""
 
-#: lib/rpmdb.c:1270
+#: lib/rpmdb.c:1308
 msgid "miFreeHeader: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:1280
+#: lib/rpmdb.c:1318
 #, c-format
 msgid "error(%d) storing record #%d into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1377
+#: lib/rpmdb.c:1415
 #, c-format
 msgid "%s: regexec failed: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1558
+#: lib/rpmdb.c:1596
 #, c-format
 msgid "%s: regcomp failed: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:1718
+#: lib/rpmdb.c:1759
 msgid "rpmdbNextIterator: skipping"
 msgstr ""
 
-#: lib/rpmdb.c:1856
+#: lib/rpmdb.c:1897
 #, c-format
 msgid "rpmdb: damaged header #%u retrieved -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2209
+#: lib/rpmdb.c:2250
 #, c-format
 msgid "error(%d:%s) getting next key from %s index\n"
 msgstr ""
 
-#: lib/rpmdb.c:2308
+#: lib/rpmdb.c:2349
 #, c-format
 msgid "error(%d) adding header #%d record\n"
 msgstr ""
 
-#: lib/rpmdb.c:2317
+#: lib/rpmdb.c:2358
 #, c-format
 msgid "error(%d) removing header #%d record\n"
 msgstr ""
 
-#: lib/rpmdb.c:2341
+#: lib/rpmdb.c:2382
 #, c-format
 msgid "%s: cannot read header at 0x%x\n"
 msgstr ""
 
-#: lib/rpmdb.c:2407
+#: lib/rpmdb.c:2448
 #, c-format
 msgid "error(%d) setting \"%s\" records from %s index\n"
 msgstr ""
 
-#: lib/rpmdb.c:2426
+#: lib/rpmdb.c:2467
 #, c-format
 msgid "error(%d) storing record \"%s\" into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2436
+#: lib/rpmdb.c:2477
 #, c-format
 msgid "error(%d) removing record \"%s\" from %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2510
+#: lib/rpmdb.c:2551
 #, c-format
 msgid "error(%d) allocating new package instance\n"
 msgstr ""
 
-#: lib/rpmdb.c:2603
+#: lib/rpmdb.c:2644
 #, c-format
 msgid "error(%d) getting \"%s\" records from %s index\n"
 msgstr ""
 
-#: lib/rpmdb.c:2619
+#: lib/rpmdb.c:2660
 #, c-format
 msgid "error(%d) storing record %s into %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2816
+#: lib/rpmdb.c:2857
 msgid "no dbpath has been set"
 msgstr ""
 
-#: lib/rpmdb.c:2834
+#: lib/rpmdb.c:2875
 #, c-format
 msgid "failed to create directory %s: %s\n"
 msgstr ""
 
-#: lib/rpmdb.c:2869
+#: lib/rpmdb.c:2910
 #, c-format
 msgid "header #%u in the database is bad -- skipping.\n"
 msgstr ""
 
-#: lib/rpmdb.c:2883
+#: lib/rpmdb.c:2924
 #, c-format
 msgid "cannot add record originally at %u\n"
 msgstr ""
 
-#: lib/rpmdb.c:2898
+#: lib/rpmdb.c:2939
 msgid "failed to rebuild database: original database remains in place\n"
 msgstr ""
 
-#: lib/rpmdb.c:2906
+#: lib/rpmdb.c:2947
 msgid "failed to replace old database with new database!\n"
 msgstr ""
 
-#: lib/rpmdb.c:2908
+#: lib/rpmdb.c:2949
 #, c-format
 msgid "replace files in %s with files from %s to recover"
 msgstr ""
 
-#: lib/rpmdb.c:2919
+#: lib/rpmdb.c:2960
 #, c-format
 msgid "failed to remove directory %s: %s\n"
 msgstr ""
@@ -3127,20 +3146,20 @@ msgstr ""
 msgid "db%d error(%d): %s\n"
 msgstr ""
 
-#: lib/backend/db3.c:495
+#: lib/backend/db3.c:500
 #, c-format
 msgid "cannot get %s lock on %s/%s\n"
 msgstr ""
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:502
 msgid "shared"
 msgstr ""
 
-#: lib/backend/db3.c:497
+#: lib/backend/db3.c:502
 msgid "exclusive"
 msgstr ""
 
-#: lib/backend/db3.c:577
+#: lib/backend/db3.c:582
 #, c-format
 msgid "invalid index type %x on %s/%s\n"
 msgstr ""
@@ -3165,86 +3184,86 @@ msgstr ""
 msgid "%s has too large or too small integer value, skipped\n"
 msgstr ""
 
-#: plugins/sepolicy.c:220
+#: plugins/sepolicy.c:218
 #, c-format
 msgid "Failed to decode policy for %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:227
+#: plugins/sepolicy.c:225
 #, c-format
 msgid "Failed to create temporary file for %s: %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:233
+#: plugins/sepolicy.c:231
 #, c-format
 msgid "Failed to write %s policy to file %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:298
+#: plugins/sepolicy.c:296
 msgid "Failed to create semanage handle\n"
 msgstr ""
 
-#: plugins/sepolicy.c:304
+#: plugins/sepolicy.c:302
 msgid "Failed to connect to policy handler\n"
 msgstr ""
 
-#: plugins/sepolicy.c:308
+#: plugins/sepolicy.c:306
 #, c-format
 msgid "Failed to begin policy transaction: %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:339
+#: plugins/sepolicy.c:337
 #, c-format
 msgid "Failed to remove temporary policy file %s: %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:388
+#: plugins/sepolicy.c:386
 #, c-format
 msgid "Failed to install policy module: %s (%s)\n"
 msgstr ""
 
-#: plugins/sepolicy.c:418
+#: plugins/sepolicy.c:416
 #, c-format
 msgid "Failed to remove policy module: %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:442 plugins/sepolicy.c:494
+#: plugins/sepolicy.c:440 plugins/sepolicy.c:492
 #, c-format
 msgid "Failed to fork process: %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:452 plugins/sepolicy.c:504
+#: plugins/sepolicy.c:450 plugins/sepolicy.c:502
 #, c-format
 msgid "Failed to execute %s: %s\n"
 msgstr ""
 
-#: plugins/sepolicy.c:458 plugins/sepolicy.c:510
+#: plugins/sepolicy.c:456 plugins/sepolicy.c:508
 #, c-format
 msgid "%s terminated abnormally\n"
 msgstr ""
 
-#: plugins/sepolicy.c:462 plugins/sepolicy.c:514
+#: plugins/sepolicy.c:460 plugins/sepolicy.c:512
 #, c-format
 msgid "%s failed with exit code %i\n"
 msgstr ""
 
-#: plugins/sepolicy.c:469
+#: plugins/sepolicy.c:467
 msgid "Failed to commit policy changes\n"
 msgstr ""
 
-#: plugins/sepolicy.c:486
+#: plugins/sepolicy.c:484
 msgid "Failed to expand restorecon path"
 msgstr ""
 
-#: plugins/sepolicy.c:565
+#: plugins/sepolicy.c:563
 msgid "Failed to relabel filesystem. Files may be mislabeled\n"
 msgstr ""
 
-#: plugins/sepolicy.c:569
+#: plugins/sepolicy.c:567
 msgid "Failed to reload file contexts. Files may be mislabeled\n"
 msgstr ""
 
-#: plugins/sepolicy.c:596
+#: plugins/sepolicy.c:594
 #, c-format
 msgid "Failed to extract policy from %s\n"
 msgstr ""
@@ -3264,130 +3283,130 @@ msgstr ""
 msgid "%3d<%*s(empty)\n"
 msgstr ""
 
-#: rpmio/macro.c:536 rpmio/macro.c:574
+#: rpmio/macro.c:537 rpmio/macro.c:575
 #, c-format
 msgid "Macro %%%s has unterminated body\n"
 msgstr ""
 
-#: rpmio/macro.c:593
+#: rpmio/macro.c:594
 #, c-format
 msgid "Macro %%%s has illegal name (%%define)\n"
 msgstr ""
 
-#: rpmio/macro.c:599
+#: rpmio/macro.c:600
 #, c-format
 msgid "Macro %%%s has unterminated opts\n"
 msgstr ""
 
-#: rpmio/macro.c:604
+#: rpmio/macro.c:605
 #, c-format
 msgid "Macro %%%s has empty body\n"
 msgstr ""
 
-#: rpmio/macro.c:610
+#: rpmio/macro.c:611
 #, c-format
 msgid "Macro %%%s failed to expand\n"
 msgstr ""
 
-#: rpmio/macro.c:648
+#: rpmio/macro.c:649
 #, c-format
 msgid "Macro %%%s has illegal name (%%undefine)\n"
 msgstr ""
 
-#: rpmio/macro.c:742
+#: rpmio/macro.c:743
 #, c-format
 msgid "Macro %%%s (%s) was not used below level %d\n"
 msgstr ""
 
-#: rpmio/macro.c:824
+#: rpmio/macro.c:825
 #, c-format
 msgid "Unknown option %c in %s(%s)\n"
 msgstr ""
 
-#: rpmio/macro.c:1047
+#: rpmio/macro.c:1048
 msgid ""
 "Too many levels of recursion in macro expansion. It is likely caused by "
 "recursive macro declaration.\n"
 msgstr ""
 
-#: rpmio/macro.c:1116 rpmio/macro.c:1133
+#: rpmio/macro.c:1117 rpmio/macro.c:1134
 #, c-format
 msgid "Unterminated %c: %s\n"
 msgstr ""
 
-#: rpmio/macro.c:1174
+#: rpmio/macro.c:1175
 #, c-format
 msgid "A %% is followed by an unparseable macro\n"
 msgstr ""
 
-#: rpmio/rpmfileutil.c:283
+#: rpmio/rpmfileutil.c:245
 #, c-format
 msgid "error creating temporary file %s: %m\n"
-msgstr ""
+msgstr "临时文件创建失败 %s：%m\n"
 
-#: rpmio/rpmfileutil.c:348 rpmio/rpmfileutil.c:354
+#: rpmio/rpmfileutil.c:310 rpmio/rpmfileutil.c:316
 #, c-format
 msgid "File %s: %s\n"
-msgstr ""
+msgstr "文件 %s：%s\n"
 
-#: rpmio/rpmfileutil.c:357
+#: rpmio/rpmfileutil.c:319
 #, c-format
 msgid "File %s is smaller than %u bytes\n"
-msgstr ""
+msgstr "文件 %s 小于 %u 字节\n"
 
-#: rpmio/rpmfileutil.c:761
+#: rpmio/rpmfileutil.c:587
 msgid "failed to create directory"
-msgstr ""
+msgstr "创建目录失败"
 
-#: rpmio/rpmlua.c:480
+#: rpmio/rpmlua.c:506
 #, c-format
 msgid "invalid syntax in lua scriptlet: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:496
+#: rpmio/rpmlua.c:522
 #, c-format
 msgid "invalid syntax in lua script: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:501 rpmio/rpmlua.c:520
+#: rpmio/rpmlua.c:527 rpmio/rpmlua.c:546
 #, c-format
 msgid "lua script failed: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:515
+#: rpmio/rpmlua.c:541
 #, c-format
 msgid "invalid syntax in lua file: %s\n"
 msgstr ""
 
-#: rpmio/rpmlua.c:683
+#: rpmio/rpmlua.c:709
 #, c-format
 msgid "lua hook failed: %s\n"
 msgstr ""
 
 #: rpmio/rpmio.c:314
 msgid "[none]"
-msgstr ""
+msgstr "[无]"
 
 #: rpmio/rpmlog.c:37
 msgid "(no error)"
-msgstr ""
+msgstr "(没有错误)"
 
 #: rpmio/rpmlog.c:148 rpmio/rpmlog.c:149 rpmio/rpmlog.c:150
 msgid "fatal error: "
-msgstr ""
+msgstr "致命错误："
 
 #: rpmio/rpmlog.c:151
 msgid "error: "
-msgstr ""
+msgstr "错误："
 
 #: rpmio/rpmlog.c:152
 msgid "warning: "
-msgstr ""
+msgstr "警告："
 
 #: rpmio/rpmmalloc.c:25
 #, c-format
 msgid "memory alloc (%u bytes) returned NULL.\n"
-msgstr ""
+msgstr "内在分配 (%u 字节) 返回 NULL。\n"
 
 #: rpmio/rpmpgp.c:1008
 #, c-format
@@ -3396,31 +3415,31 @@ msgstr ""
 
 #: rpmio/rpmpgp.c:1016
 msgid "(none)"
-msgstr ""
+msgstr "(无)"
 
 #: sign/rpmgensig.c:87
 #, c-format
 msgid "%s: Fwrite failed: %s\n"
-msgstr ""
+msgstr "%s: Fwrite 失败: %s\n"
 
 #: sign/rpmgensig.c:97
 #, c-format
 msgid "%s: Fflush failed: %s\n"
-msgstr ""
+msgstr "%s: Fflush 失败：%s\n"
 
 #: sign/rpmgensig.c:125
 msgid "Unsupported PGP signature\n"
-msgstr ""
+msgstr "不支持的 PGP 签名\n"
 
 #: sign/rpmgensig.c:131
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr ""
+msgstr "不支持的 PGP hash 算法 %u\n"
 
 #: sign/rpmgensig.c:144
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr ""
+msgstr "不支持的 PGP 公钥算法 %u\n"
 
 #: sign/rpmgensig.c:174
 #, c-format
@@ -3438,7 +3457,7 @@ msgstr ""
 
 #: sign/rpmgensig.c:263
 msgid "unable to read the signature\n"
-msgstr ""
+msgstr "无法读取签名\n"
 
 #: sign/rpmgensig.c:449 sign/rpmgensig.c:518
 msgid "rpmMkTemp failed\n"
@@ -3462,13 +3481,19 @@ msgstr ""
 #: sign/rpmgensig.c:545
 #, c-format
 msgid "replacing %s failed: %s\n"
-msgstr ""
+msgstr "替换 %s 失败：%s\n"
 
 #: tools/rpmgraph.c:142
 #, c-format
 msgid "%s: read manifest failed: %s\n"
-msgstr ""
+msgstr "%s：读取 manifest 文件失败：%s\n"
 
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr ""
+
+#~ msgid "Only one arg for %%docdir\n"
+#~ msgstr "%%docdir 只有一个参数\n"
+
+#~ msgid "Explicit file attributes required in spec for: %s\n"
+#~ msgstr "spec 中需要显氏指定文件属性：%s\n"
