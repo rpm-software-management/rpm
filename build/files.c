@@ -2122,7 +2122,8 @@ rpmRC processBinaryFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	header_color = headerGetNumber(pkg->header, RPMTAG_HEADERCOLOR);
 	if (!rstreq(a, "noarch")) {
 	    arch_color = rpmGetArchColor(a);
-	    if (arch_color > 0 && !(arch_color & header_color)) {
+	    if (arch_color > 0 && header_color > 0 &&
+					!(arch_color & header_color)) {
 		rpmlog(RPMLOG_WARNING,
 		       _("Binaries arch (%d) not matching the package arch (%d).\n"),
 		       header_color, arch_color);
