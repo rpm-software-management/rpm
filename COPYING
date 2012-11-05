@@ -13,7 +13,7 @@ the RPM library (commonly called librpm) without forcing such applications
 to be distributed under the GPL. 
 
 Any questions regarding the licensing of RPM should be addressed to
-marc@redhat.com and ewt@redhat.com.
+rpm-maint@lists.rpm.org
 
 ---------------------------------------------------------------------------
 
