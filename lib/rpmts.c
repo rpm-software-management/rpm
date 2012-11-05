@@ -764,7 +764,7 @@ rpmRC rpmtsSELabelInit(rpmts ts, int open_status)
     }
 
     struct selinux_opt opts[] = {
-	{SELABEL_OPT_PATH, path}
+	{ .type = SELABEL_OPT_PATH, .value = path}
     };
 
     if (ts->selabelHandle) {
