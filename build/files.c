@@ -1147,7 +1147,7 @@ static void genCpioListAndHeader(FileList fl,
 	    flp->flags |= RPMFILE_DOC;
 	/* XXX Should directories have %doc/%config attributes? (#14531) */
 	if (S_ISDIR(flp->fl_mode))
-	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC);
+	    flp->flags &= ~(RPMFILE_CONFIG|RPMFILE_DOC|RPMFILE_LICENSE);
 	/* Strip internal parse data */
 	flp->flags &= PARSEATTR_MASK;
 
@@ -1780,6 +1780,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     /* Reset for %doc */
     FileEntryFree(&fl->cur);
 
+    fl->cur.attrFlags |= sd->sdtype;
     fl->cur.verifyFlags = fl->def.verifyFlags;
     dupAttrRec(&(sd->ar), &(fl->cur.ar));
     dupAttrRec(&(sd->def_ar), &(fl->def.ar));
