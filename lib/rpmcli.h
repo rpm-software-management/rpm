@@ -123,14 +123,15 @@ enum rpmQueryFlags_e {
     QUERY_FOR_STATE	= (1 << 24),	/*!< query:  from --state */
     QUERY_FOR_DOCS	= (1 << 25),	/*!< query:  from --docfiles */
     QUERY_FOR_CONFIG	= (1 << 26),	/*!< query:  from --configfiles */
-    QUERY_FOR_DUMPFILES	= (1 << 27)	/*!< query:  from --dump */
+    QUERY_FOR_DUMPFILES	= (1 << 27),	/*!< query:  from --dump */
+    QUERY_FOR_LICENSE	= (1 << 28)	/*!< query:  from --licensefiles */
 };
 
 typedef rpmFlags rpmQueryFlags;
 
 #define	_QUERY_FOR_BITS	\
    (QUERY_FOR_LIST|QUERY_FOR_STATE|QUERY_FOR_DOCS|QUERY_FOR_CONFIG|\
-    QUERY_FOR_DUMPFILES)
+    QUERY_FOR_LICENSE|QUERY_FOR_DUMPFILES)
 
 /** \ingroup rpmcli
  * Bit(s) from common command line options.

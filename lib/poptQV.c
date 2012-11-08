@@ -114,6 +114,7 @@ static void queryArgCallback(poptContext con,
     switch (opt->val) {
     case 'c': qva->qva_flags |= QUERY_FOR_CONFIG | QUERY_FOR_LIST; break;
     case 'd': qva->qva_flags |= QUERY_FOR_DOCS | QUERY_FOR_LIST; break;
+    case 'L': qva->qva_flags |= QUERY_FOR_LICENSE | QUERY_FOR_LIST; break;
     case 'l': qva->qva_flags |= QUERY_FOR_LIST; break;
     case 's': qva->qva_flags |= QUERY_FOR_STATE | QUERY_FOR_LIST;
 	break;
@@ -171,6 +172,8 @@ struct poptOption rpmQueryPoptTable[] = {
 	N_("list all configuration files"), NULL },
  { "docfiles", 'd', 0, 0, 'd',
 	N_("list all documentation files"), NULL },
+ { "licensefiles", 'L', 0, 0, 'L',
+	N_("list all license files"), NULL },
  { "dump", '\0', 0, 0, POPT_DUMP,
 	N_("dump basic file information"), NULL },
  { NULL, 'i', POPT_ARGFLAG_DOC_HIDDEN, 0, 'i',
