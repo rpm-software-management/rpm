@@ -1431,9 +1431,9 @@ static rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
     plugin = strtok(plugins, delims);
     while(plugin != NULL) {
 	rpmlog(RPMLOG_DEBUG, "plugin is %s\n", plugin);
-	if (!rpmpluginsPluginAdded(ts->plugins, (const char*)plugin)) {
+	if (!rpmpluginsPluginAdded(ts->plugins, plugin)) {
 	    if (rpmpluginsAddPlugin(ts->plugins, "transaction",
-				    (const char*)plugin) == RPMRC_FAIL) {
+				    plugin) == RPMRC_FAIL) {
 		/* any configured plugin failing to load is a failure */
 		rc = RPMRC_FAIL;
 	    }
