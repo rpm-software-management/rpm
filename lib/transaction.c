@@ -205,11 +205,6 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 	dsi->bneeded += bneeded;
 	break;
 
-    /*
-     * FIXME: If two packages share a file (same md5sum), and
-     * that file is being replaced on disk, will dsi->bneeded get
-     * adjusted twice? Quite probably!
-     */
     case FA_CREATE:
 	dsi->bneeded += bneeded;
 	dsi->ineeded++;
