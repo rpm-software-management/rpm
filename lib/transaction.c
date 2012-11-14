@@ -210,6 +210,11 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
 	    dsi->bdelta += BLOCK_ROUND(prevSize, dsi->bsize);
 	    dsi->idelta++;
 	}
+	if (fixupSize) {
+	    dsi->bdelta += BLOCK_ROUND(fixupSize, dsi->bsize);
+	    dsi->idelta++;
+	}
+
 	break;
 
     case FA_ERASE:
@@ -220,9 +225,6 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
     default:
 	break;
     }
-
-    if (fixupSize)
-	dsi->bneeded -= BLOCK_ROUND(fixupSize, dsi->bsize);
 
     /* adjust bookkeeping when requirements shrink */
     if (dsi->bneeded < dsi->obneeded) dsi->obneeded = dsi->bneeded;
