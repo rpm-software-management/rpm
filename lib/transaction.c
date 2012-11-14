@@ -55,6 +55,8 @@ struct diskspaceInfo_s {
     int64_t iavail;	/*!< No. of inodes available. */
     int64_t obneeded;	/*!< Bookkeeping to avoid duplicate reports */
     int64_t oineeded;	/*!< Bookkeeping to avoid duplicate reports */
+    int64_t bdelta;	/*!< Delta for temporary space need on updates */
+    int64_t idelta;	/*!< Delta for temporary inode need on updates */
 };
 
 /* Adjust for root only reserved space. On linux e2fs, this is 5%. */
@@ -210,7 +212,11 @@ static void rpmtsUpdateDSI(const rpmts ts, dev_t dev, const char *dirName,
      */
     case FA_CREATE:
 	dsi->bneeded += bneeded;
-	dsi->bneeded -= BLOCK_ROUND(prevSize, dsi->bsize);
+	dsi->ineeded++;
+	if (prevSize) {
+	    dsi->bdelta += BLOCK_ROUND(prevSize, dsi->bsize);
+	    dsi->idelta++;
+	}
 	break;
 
     case FA_ERASE:
@@ -254,6 +260,12 @@ static void rpmtsCheckDSIProblems(const rpmts ts, const rpmte te)
 		dsi->oineeded = dsi->ineeded;
 	    }
 	}
+
+	/* Adjust for temporary -> final disk consumption */
+	dsi->bneeded -= dsi->bdelta;
+	dsi->bdelta = 0;
+	dsi->ineeded -= dsi->idelta;
+	dsi->idelta = 0;
     }
 }
 
