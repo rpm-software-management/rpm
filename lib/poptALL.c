@@ -19,6 +19,7 @@ const char *__progname;
 #define POPT_QUERYTAGS		-997
 #define POPT_PREDEFINE		-996
 #define POPT_DBPATH		-995
+#define POPT_UNDEFINE		-994
 
 static int _debug = 0;
 
@@ -107,6 +108,12 @@ static void rpmcliAllArgCallback( poptContext con,
 	free(s);
 	break;
     }
+    case POPT_UNDEFINE:
+	rpmcliConfigured();
+	if (*arg == '%')
+	    arg++;
+	delMacro(NULL, arg);
+	break;
     case 'E':
 	rpmcliConfigured();
 	{   char *val = rpmExpand(arg, NULL);
@@ -159,6 +166,9 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "define", 'D', POPT_ARG_STRING, 0, 'D',
 	N_("define MACRO with value EXPR"),
 	N_("'MACRO EXPR'") },
+ { "undefine", '\0', POPT_ARG_STRING, 0, POPT_UNDEFINE,
+	N_("undefine MACRO"),
+	N_("MACRO") },
  { "eval", 'E', POPT_ARG_STRING, 0, 'E',
 	N_("print macro expansion of EXPR"),
 	N_("'EXPR'") },
