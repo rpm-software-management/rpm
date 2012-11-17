@@ -216,7 +216,6 @@ static void FileEntryFree(FileEntry entry)
 {
     freeAttrRec(&(entry->ar));
     argvFree(entry->langs);
-    free(entry->caps);
     memset(entry, 0, sizeof(*entry));
 }
 
