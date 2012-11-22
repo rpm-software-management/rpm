@@ -29,7 +29,7 @@ struct rpmScript_s {
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
+static rpmRC runLuaScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
@@ -69,9 +69,18 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
 	mode_t oldmask = umask(0);
 	umask(oldmask);
 
+    /* Run script pre hook for all plugins */
+    if (rpmpluginsCallScriptPre(plugins, sname, SCRIPT_TYPE_INTERNAL) == RPMRC_FAIL) {
+        return rc; /* do not execute the lua script if plugin indicates to do so */
+    }
+
 	if (chdir("/") == 0 && rpmluaRunScript(lua, script, sname) == 0) {
 	    rc = RPMRC_OK;
 	}
+
+    /* Run script post hook for all plugins */
+    rpmpluginsCallScriptPost(plugins, sname, SCRIPT_TYPE_INTERNAL, rc);
+
 	/* This failing would be fatal, return something different for it... */
 	if (fchdir(cwd)) {
 	    rpmlog(RPMLOG_ERR, _("Unable to restore current directory: %m"));
@@ -171,9 +180,9 @@ static void doScriptExec(rpmPlugins plugins, int selinux, ARGV_const_t argv, ARG
 	}
 
 	if (xx == 0) {
-	    /* Run script setup hook for all plugins */
-	    if (rpmpluginsCallScriptSetup(plugins, argv[0]) != RPMRC_FAIL) {
-		xx = execv(argv[0], argv);
+        /* Run script pre hook for all plugins */
+        if (rpmpluginsCallScriptPre(plugins, argv[0], SCRIPT_TYPE_EXTERNAL) != RPMRC_FAIL) {
+            xx = execv(argv[0], argv);
 	    }
 	}
     }
@@ -270,6 +279,9 @@ static rpmRC runExtScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes
 	reaped = waitpid(pid, &status, 0);
     } while (reaped == -1 && errno == EINTR);
 
+    /* Run script post hook for all plugins */
+    rpmpluginsCallScriptPost(plugins, *argvp[0], SCRIPT_TYPE_EXTERNAL, status);
+
     rpmlog(RPMLOG_DEBUG, "%s: waitpid(%d) rc %d status %x\n",
 	   sname, (unsigned)pid, (unsigned)reaped, status);
 
@@ -318,7 +330,7 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     }
 
     if (rstreq(args[0], "<lua>")) {
-	rc = runLuaScript(selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	rc = runLuaScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
     } else {
 	rc = runExtScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
     }

@@ -23,7 +23,8 @@ extern "C" {
 #define PLUGINHOOK_PSM_PRE_FUNC        pluginhook_psm_pre
 #define PLUGINHOOK_PSM_POST_FUNC        pluginhook_psm_post
  
-#define PLUGINHOOK_SCRIPT_SETUP_FUNC    pluginhook_script_setup
+#define PLUGINHOOK_SCRIPT_PRE_FUNC    pluginhook_script_pre
+#define PLUGINHOOK_SCRIPT_POST_FUNC    pluginhook_script_post
 
 enum rpmPluginHook_e {
     PLUGINHOOK_NONE		= 0,
@@ -37,8 +38,16 @@ enum rpmPluginHook_e {
     PLUGINHOOK_TSM_POST        = 1 << 7,
     PLUGINHOOK_PSM_PRE         = 1 << 8,
     PLUGINHOOK_PSM_POST        = 1 << 9,
-    PLUGINHOOK_SCRIPT_SETUP    = 1 << 10
+    PLUGINHOOK_SCRIPT_PRE    = 1 << 10,
+    PLUGINHOOK_SCRIPT_POST    = 1 << 11
 };
+
+/* indicates if a script is internal rpm script or external one */
+typedef enum rpmScriptType_e {
+    SCRIPT_TYPE_NONE    = 0,
+    SCRIPT_TYPE_INTERNAL    = 1 << 0, 
+    SCRIPT_TYPE_EXTERNAL    = 1 << 1
+} rpmScriptType;
 
 typedef rpmFlags rpmPluginHook;
 
@@ -167,12 +176,23 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
 rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te);
 
 /** \ingroup rpmplugins
- * Call the script setup plugin hook
+ * Call the pre script setup plugin hook
  * @param plugins	plugins structure
- * @param path		script path
+ * @param path		script path or name depending on script type
+ * @param type		type of the script, see rpmScriptType
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmpluginsCallScriptSetup(rpmPlugins plugins, char* path);
+rpmRC rpmpluginsCallScriptPre(rpmPlugins plugins, const char* path, int type);
+
+/** \ingroup rpmplugins
+ * Call the post script setup plugin hook
+ * @param plugins	plugins structure
+ * @param path		script path or name depending on script type
+ * @param type		type of the script, see rpmScriptType
+ * @param res		script execution result code
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallScriptPost(rpmPlugins plugins, const char* path, int type, int res);
 
 #ifdef __cplusplus
 }

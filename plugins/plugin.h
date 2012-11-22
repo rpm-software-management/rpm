@@ -26,4 +26,5 @@ rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te);
 rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmte te);
 
 /*per script plugin hooks */
-rpmRC PLUGINHOOK_SCRIPT_SETUP_FUNC(char* path);
+rpmRC PLUGINHOOK_SCRIPT_PRE_FUNC(const char* path, int type);
+rpmRC PLUGINHOOK_SCRIPT_POST_FUNC(const char* path, int type, int res);
