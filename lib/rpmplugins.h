@@ -22,8 +22,10 @@ extern "C" {
 
 #define PLUGINHOOK_PSM_PRE_FUNC        pluginhook_psm_pre
 #define PLUGINHOOK_PSM_POST_FUNC        pluginhook_psm_post
- 
-#define PLUGINHOOK_SCRIPT_SETUP_FUNC    pluginhook_script_setup
+
+#define PLUGINHOOK_SCRIPTLET_PRE_FUNC    pluginhook_scriptlet_pre
+#define PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC    pluginhook_scriptlet_fork_post
+#define PLUGINHOOK_SCRIPTLET_POST_FUNC    pluginhook_scriptlet_post
 
 enum rpmPluginHook_e {
     PLUGINHOOK_NONE		= 0,
@@ -37,8 +39,17 @@ enum rpmPluginHook_e {
     PLUGINHOOK_TSM_POST        = 1 << 7,
     PLUGINHOOK_PSM_PRE         = 1 << 8,
     PLUGINHOOK_PSM_POST        = 1 << 9,
-    PLUGINHOOK_SCRIPT_SETUP    = 1 << 10
+    PLUGINHOOK_SCRIPTLET_PRE    = 1 << 10,
+    PLUGINHOOK_SCRIPTLET_FORK_POST    = 1 << 11,
+    PLUGINHOOK_SCRIPTLET_POST    = 1 << 12
 };
+
+/* indicates the way the scriptlet is executed */
+typedef enum rpmScriptletExecutionFlow_e {
+    RPMSCRIPTLET_NONE    = 0,
+    RPMSCRIPTLET_FORK    = 1 << 0, 
+    RPMSCRIPTLET_EXEC    = 1 << 1
+} rpmScriptletExecutionFlow;
 
 typedef rpmFlags rpmPluginHook;
 
@@ -167,12 +178,32 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
 rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te);
 
 /** \ingroup rpmplugins
- * Call the script setup plugin hook
+ * Call the pre scriptlet execution plugin hook
  * @param plugins	plugins structure
- * @param path		script path
+ * @param s_name	scriptlet name
+ * @param type		indicates the scriptlet execution flow, see rpmScriptletExecutionFlow
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmpluginsCallScriptSetup(rpmPlugins plugins, char* path);
+rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int type);
+
+/** \ingroup rpmplugins
+ * Call the post fork scriptlet plugin hook.
+ * @param plugins	plugins structure
+ * @param path		scriptlet path
+ * @param type		indicates the scriptlet execution flow, see rpmScriptletExecutionFlow
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int type);
+
+/** \ingroup rpmplugins
+ * Call the post scriptlet execution plugin hook
+ * @param plugins	plugins structure
+ * @param s_name	scriptlet name
+ * @param type		indicates the scriptlet execution flow, see rpmScriptletExecutionFlow
+ * @param res		scriptlet execution result code
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int type, int res);
 
 #ifdef __cplusplus
 }

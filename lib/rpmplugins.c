@@ -264,17 +264,51 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te)
     return rc;
 }
 
-rpmRC rpmpluginsCallScriptSetup(rpmPlugins plugins, char* path)
+rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int type)
 {
-    rpmRC (*hookFunc)(char*);
+    rpmRC (*hookFunc)(const char*, int);
     int i;
     rpmRC rc = RPMRC_OK;
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
 	name = plugins->names[i];
-	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPT_SETUP);
-	if (hookFunc(path) == RPMRC_FAIL)
+	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPTLET_PRE);
+	if (hookFunc(s_name, type) == RPMRC_FAIL)
+	    rc = RPMRC_FAIL;
+    }
+
+    return rc;
+}
+
+rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int type)
+{
+    rpmRC (*hookFunc)(const char*, int);
+    int i;
+    rpmRC rc = RPMRC_OK;
+    const char *name = NULL;
+
+    for (i = 0; i < plugins->count; i++) {
+	name = plugins->names[i];
+	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPTLET_FORK_POST);
+	if (hookFunc(path, type) == RPMRC_FAIL)
+	    rc = RPMRC_FAIL;
+    }
+
+    return rc;
+}
+
+rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int type, int res)
+{
+    rpmRC (*hookFunc)(const char*, int, int);
+    int i;
+    rpmRC rc = RPMRC_OK;
+    const char *name = NULL;
+
+    for (i = 0; i < plugins->count; i++) {
+	name = plugins->names[i];
+	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPTLET_POST);
+	if (hookFunc(s_name, type, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 

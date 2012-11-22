@@ -29,7 +29,7 @@ struct rpmScript_s {
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
+static rpmRC runLuaScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
@@ -93,7 +93,7 @@ static rpmRC runLuaScript(int selinux, ARGV_const_t prefixes,
 
 static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
-static void doScriptExec(rpmPlugins plugins, int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
+static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
     int pipes[2];
@@ -171,10 +171,7 @@ static void doScriptExec(rpmPlugins plugins, int selinux, ARGV_const_t argv, ARG
 	}
 
 	if (xx == 0) {
-	    /* Run script setup hook for all plugins */
-	    if (rpmpluginsCallScriptSetup(plugins, argv[0]) != RPMRC_FAIL) {
-		xx = execv(argv[0], argv);
-	    }
+	    xx = execv(argv[0], argv);
 	}
     }
     _exit(127); /* exit 127 for compatibility with bash(1) */
@@ -263,7 +260,13 @@ static rpmRC runExtScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes
     } else if (pid == 0) {/* Child */
 	rpmlog(RPMLOG_DEBUG, "%s: execv(%s) pid %d\n",
 	       sname, *argvp[0], (unsigned)getpid());
-	doScriptExec(plugins, selinux, *argvp, prefixes, scriptFd, out);
+
+	/* Run scriptlet post fork hook for all plugins */
+	if (rpmpluginsCallScriptletForkPost(plugins, *argvp[0], RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC) != RPMRC_FAIL) {
+	    doScriptExec(selinux, *argvp, prefixes, scriptFd, out);
+	} else {
+	    _exit(126); /* exit 126 for compatibility with bash(1) */
+	}
     }
 
     do {
@@ -307,6 +310,7 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     ARGV_t args = NULL;
     rpmlogLvl lvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
     rpmRC rc;
+    int script_type = RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC;
 
     if (script == NULL) return RPMRC_OK;
 
@@ -316,12 +320,24 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
     } else {
 	argvAdd(&args, "/bin/sh");
     }
+    
+    if (rstreq(args[0], "<lua>"))
+	script_type = RPMSCRIPTLET_NONE;
 
-    if (rstreq(args[0], "<lua>")) {
-	rc = runLuaScript(selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
-    } else {
-	rc = runExtScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+    /* Run scriptlet pre hook for all plugins */
+    rc = rpmpluginsCallScriptletPre(plugins, script->descr, script_type);
+
+    if (rc != RPMRC_FAIL) {
+	if (script_type & RPMSCRIPTLET_EXEC) {
+	    rc = runExtScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	} else {
+	    rc = runLuaScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	}
     }
+
+    /* Run scriptlet post hook for all plugins */
+    rpmpluginsCallScriptletPost(plugins, script->descr, script_type, rc);
+
     argvFree(args);
 
     return rc;
