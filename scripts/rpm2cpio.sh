@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Prevent gawk >= 4.0.x from getting funny ideas wrt UTF in printf()
+LANG=C
+
 pkg=$1
 if [ "$pkg" = "" -o ! -e "$pkg" ]; then
     echo "no package supplied" 1>&2
