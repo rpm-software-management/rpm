@@ -10,6 +10,7 @@
 
 #include "system.h"
 #include <netdb.h>
+#include <errno.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmstring.h>
 #include "lib/header_internal.h"
