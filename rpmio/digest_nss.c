@@ -302,18 +302,24 @@ static SECKEYPublicKey *pgpNewPublicKey(KeyType type)
 #ifndef DSA1_SUBPRIME_LEN
 #define DSA1_SUBPRIME_LEN DSA_SUBPRIME_LEN
 #endif
+#ifndef DSA1_SIGNATURE_LEN
+#define DSA1_SIGNATURE_LEN DSA_SIGNATURE_LEN
+#endif
+#ifndef DSA1_Q_BITS
+#define DSA1_Q_BITS DSA_Q_BITS
+#endif
 
 static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
     SECItem *sig = pgpsig->data;
-    int lbits = DSA1_SUBPRIME_LEN * 8;
+    int lbits = DSA1_Q_BITS;
     int rc = 1; /* assume failure */
 
     switch (num) {
     case 0:
-	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, 2*DSA1_SUBPRIME_LEN);
-	memset(sig->data, 0, 2 * DSA1_SUBPRIME_LEN);
+	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, DSA1_SIGNATURE_LEN);
+	memset(sig->data, 0, DSA1_SIGNATURE_LEN);
 	rc = pgpMpiSet(lbits, sig->data, p, pend);
 	break;
     case 1:
