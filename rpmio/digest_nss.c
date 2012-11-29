@@ -5,6 +5,7 @@
 #include <sechash.h>
 #include <keyhi.h>
 #include <cryptohi.h>
+#include <blapit.h>
 
 #include <rpm/rpmlog.h>
 #include "rpmio/digest.h"
@@ -297,25 +298,26 @@ static SECKEYPublicKey *pgpNewPublicKey(KeyType type)
     return key;
 }
 
-#ifndef DSA_SUBPRIME_LEN
-#define DSA_SUBPRIME_LEN 20
+/* compatibility with nss < 3.14 */
+#ifndef DSA1_SUBPRIME_LEN
+#define DSA1_SUBPRIME_LEN DSA_SUBPRIME_LEN
 #endif
 
 static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num,
 			   const uint8_t *p, const uint8_t *pend)
 {
     SECItem *sig = pgpsig->data;
-    int lbits = DSA_SUBPRIME_LEN * 8;
+    int lbits = DSA1_SUBPRIME_LEN * 8;
     int rc = 1; /* assume failure */
 
     switch (num) {
     case 0:
-	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, 2*DSA_SUBPRIME_LEN);
-	memset(sig->data, 0, 2 * DSA_SUBPRIME_LEN);
+	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, 2*DSA1_SUBPRIME_LEN);
+	memset(sig->data, 0, 2 * DSA1_SUBPRIME_LEN);
 	rc = pgpMpiSet(lbits, sig->data, p, pend);
 	break;
     case 1:
-	if (sig && pgpMpiSet(lbits, sig->data+DSA_SUBPRIME_LEN, p, pend) == 0) {
+	if (sig && pgpMpiSet(lbits, sig->data+DSA1_SUBPRIME_LEN, p, pend) == 0) {
 	    SECItem *signew = SECITEM_AllocItem(NULL, NULL, 0);
 	    if (signew && DSAU_EncodeDerSig(signew, sig) == SECSuccess) {
 		SECITEM_FreeItem(sig, PR_TRUE);
