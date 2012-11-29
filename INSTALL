@@ -9,7 +9,7 @@ The libmagic (aka file) library for file type detection (used by rpmbuild).
 The source for the file utility + library is available from
     ftp://ftp.astron.com/pub/file/
 
-The NSS library for encryption, and NSPR library which NSS uses. 
+The NSS >= 3.12 library for encryption, and NSPR library which NSS uses. 
 Both NSPR and NSS libraries and headers need to be installed during RPM
 compilation. As NSPR and NSS typically install their headers outside
 the regular include search path, you need to tell configure about this,

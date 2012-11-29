@@ -283,14 +283,14 @@ if test "$with_beecrypt" != yes ; then
 AC_CHECK_HEADERS([nspr.h nss.h sechash.h], [], [
   AC_MSG_ERROR([missing required NSPR / NSS header])
 ])
-AC_CHECK_LIB(nss3, NSS_NoDB_Init, [
+AC_CHECK_LIB(nss3, VFY_VerifyDigestDirect, [
   WITH_NSS_LIB=-lnss3
   AC_CHECK_LIB(nss3, NSS_InitContext, [
     AC_DEFINE(HAVE_NSS_INITCONTEXT, 1, [Define to 1 if NSS has NSS_InitContext])
     AC_SUBST(HAVE_NSS_INITCONTEXT, [1])
   ])
 ], [
-  AC_MSG_ERROR([missing required NSS library 'nss3'])
+  AC_MSG_ERROR([required NSS library 'nss3' missing or too old])
 ])
 fi
 AC_SUBST(WITH_NSS_INCLUDE)
