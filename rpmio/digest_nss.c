@@ -220,6 +220,21 @@ int rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
     return 0;
 }
 
+RPM_GNUC_PURE
+static SECOidTag getHashAlg(unsigned int hashalgo)
+{
+    switch (hashalgo) {
+    case PGPHASHALGO_MD5:	return SEC_OID_MD5;
+    case PGPHASHALGO_MD2:	return SEC_OID_MD2;
+    case PGPHASHALGO_SHA1:	return SEC_OID_SHA1;
+    case PGPHASHALGO_SHA224:	return SEC_OID_SHA224;
+    case PGPHASHALGO_SHA256:	return SEC_OID_SHA256;
+    case PGPHASHALGO_SHA384:	return SEC_OID_SHA384;
+    case PGPHASHALGO_SHA512:	return SEC_OID_SHA512;
+    }
+    return SEC_OID_UNKNOWN;
+}
+
 static int pgpMpiSet(unsigned int lbits, uint8_t *dest,
 		     const uint8_t * p, const uint8_t * pend)
 {
@@ -370,11 +385,15 @@ static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
 			   uint8_t *hash, size_t hashlen, int hash_algo)
 {
     SECItem digest = { .type = siBuffer, .data = hash, .len = hashlen };
-    SECOidTag sigalg = SEC_OID_ANSIX9_DSA_SIGNATURE_WITH_SHA1_DIGEST;
+    SECOidTag encAlg = SEC_OID_ANSIX9_DSA_SIGNATURE;
+    SECOidTag hashAlg = getHashAlg(hash_algo);
     SECStatus rc;
 
-    /* XXX VFY_VerifyDigest() is deprecated in NSS 3.12 */ 
-    rc = VFY_VerifyDigest(&digest, pgpkey->data, pgpsig->data, sigalg, NULL);
+    if (hashAlg == SEC_OID_UNKNOWN)
+	return 1;
+
+    rc = VFY_VerifyDigestDirect(&digest, pgpkey->data, pgpsig->data,
+				encAlg, hashAlg, NULL);
 
     return (rc != SECSuccess);
 }
@@ -422,33 +441,13 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
     SECItem *sig = pgpsig->data;
     SECKEYPublicKey *key = pgpkey->data;
     SECItem *padded = NULL;
-    SECOidTag sigalg;
+    SECOidTag encAlg = SEC_OID_PKCS1_RSA_ENCRYPTION;
+    SECOidTag hashAlg = getHashAlg(hash_algo);
     SECStatus rc = SECFailure;
     size_t siglen, padlen;
 
-    switch (hash_algo) {
-    case PGPHASHALGO_MD5:
-	sigalg = SEC_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_MD2:
-	sigalg = SEC_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA1:
-	sigalg = SEC_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA256:
-	sigalg = SEC_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA384:
-	 sigalg = SEC_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION;
-	break;
-    case PGPHASHALGO_SHA512:
-	sigalg = SEC_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION;
-	break;
-    default:
-	return 1; /* dont bother with unknown hash types */
-	break;
-    }
+    if (hashAlg == SEC_OID_UNKNOWN)
+	return 1;
 
     /* Zero-pad signature to expected size if necessary */
     siglen = SECKEY_SignatureLen(key);
@@ -462,8 +461,7 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
 	sig = padded;
     }
 
-    /* XXX VFY_VerifyDigest() is deprecated in NSS 3.12 */ 
-    rc = VFY_VerifyDigest(&digest, key, sig, sigalg, NULL);
+    rc = VFY_VerifyDigestDirect(&digest, key, sig, encAlg, hashAlg, NULL);
 
     if (padded)
 	SECITEM_ZfreeItem(padded, PR_TRUE);
