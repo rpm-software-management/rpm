@@ -213,9 +213,9 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
     return rc;
 }
 
-rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts)
+rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
 {
-    rpmRC (*hookFunc)(rpmts);
+    rpmRC (*hookFunc)(rpmts, int);
     int i;
     rpmRC rc = RPMRC_OK;
     const char *name = NULL;
@@ -223,7 +223,7 @@ rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts)
     for (i = 0; i < plugins->count; i++) {
 	name = plugins->names[i];
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_TSM_POST);
-	if (hookFunc(ts) == RPMRC_FAIL)
+	if (hookFunc(ts, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 
@@ -247,9 +247,9 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
     return rc;
 }
 
-rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te)
+rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
 {
-    rpmRC (*hookFunc)(rpmte);
+    rpmRC (*hookFunc)(rpmte, int);
     int i;
     rpmRC rc = RPMRC_OK;
     const char *name = NULL;
@@ -257,7 +257,7 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te)
     for (i = 0; i < plugins->count; i++) {
 	name = plugins->names[i];
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_PSM_POST);
-	if (hookFunc(te) == RPMRC_FAIL)
+	if (hookFunc(te, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 

@@ -1037,21 +1037,22 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	case PKG_INSTALL:
 	case PKG_ERASE:
 	    /* Run pre transaction element hook for all plugins */
-	    if (rpmpluginsCallPsmPre(ts->plugins, te) == RPMRC_FAIL)
-		break;
-	    op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
-	    rpmswEnter(rpmtsOp(psm->ts, op), 0);
+	    if (rpmpluginsCallPsmPre(ts->plugins, te) != RPMRC_FAIL) {
 
-	    rc = rpmpsmNext(psm, PSM_INIT);
-	    if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
-	    if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
-	    if (!rc) rc = rpmpsmNext(psm, PSM_POST);
-	    (void) rpmpsmNext(psm, PSM_FINI);
+		op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
+		rpmswEnter(rpmtsOp(psm->ts, op), 0);
 
-	    rpmswExit(rpmtsOp(psm->ts, op), 0);
+		rc = rpmpsmNext(psm, PSM_INIT);
+		if (!rc) rc = rpmpsmNext(psm, PSM_PRE);
+		if (!rc) rc = rpmpsmNext(psm, PSM_PROCESS);
+		if (!rc) rc = rpmpsmNext(psm, PSM_POST);
+		(void) rpmpsmNext(psm, PSM_FINI);
+
+		rpmswExit(rpmtsOp(psm->ts, op), 0);
+	    }
+
 	    /* Run post transaction element hook for all plugins */
-	    if (!rc) rc = rpmpluginsCallPsmPost(ts->plugins, te);
-
+	    rpmpluginsCallPsmPost(ts->plugins, te, rc);
 	    break;
 	case PKG_PRETRANS:
 	case PKG_POSTTRANS:

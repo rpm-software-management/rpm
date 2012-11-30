@@ -19,11 +19,11 @@ rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void);
 
 /* per transaction plugin hooks */
 rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts);
-rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts);
+rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res);
 
 /* per transaction element plugin hooks */
 rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te);
-rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmte te);
+rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmte te, int res);
 
 /*per scriptlet plugin hooks */
 rpmRC PLUGINHOOK_SCRIPTLET_PRE_FUNC(const char *s_name, int type);

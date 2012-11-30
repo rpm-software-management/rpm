@@ -157,9 +157,10 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts);
  * Call the post transaction plugin hook
  * @param plugins	plugins structure
  * @param ts		processed transaction
+ * @param res		transaction result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts);
+rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res);
 
 /** \ingroup rpmplugins
  * Call the pre transaction element plugin hook
@@ -173,9 +174,10 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te);
  * Call the post transaction element plugin hook
  * @param plugins	plugins structure
  * @param te		processed transaction element
+ * @param res		transaction element result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
-rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te);
+rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res);
 
 /** \ingroup rpmplugins
  * Call the pre scriptlet execution plugin hook
