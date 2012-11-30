@@ -43,7 +43,7 @@ rpm	alias --scripts --qf '\
 ' \
 	--POPTdesc=$"list install/erase scriptlets from package(s)"
 
-rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7.7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
+rpm	alias --setperms -q --qf '[\[ -L %{FILENAMES:shescape} \] || chmod %7{FILEMODES:octal} %{FILENAMES:shescape}\n]' \
 		   --pipe "grep -v \(none\) | grep '^. -L ' | sed 's/chmod .../chmod /' | sh" \
 	--POPTdesc=$"set permissions of files in a package"
 
