@@ -113,7 +113,9 @@ static HASH_HashType getHashType(int hashalgo)
     case PGPHASHALGO_MD5:	return HASH_AlgMD5;
     case PGPHASHALGO_MD2:	return HASH_AlgMD2;
     case PGPHASHALGO_SHA1:	return HASH_AlgSHA1;
+#ifdef SHA224_LENGTH
     case PGPHASHALGO_SHA224:	return HASH_AlgSHA224;
+#endif
     case PGPHASHALGO_SHA256:	return HASH_AlgSHA256;
     case PGPHASHALGO_SHA384:	return HASH_AlgSHA384;
     case PGPHASHALGO_SHA512:	return HASH_AlgSHA512;
@@ -211,7 +213,9 @@ static SECOidTag getHashAlg(unsigned int hashalgo)
     case PGPHASHALGO_MD5:	return SEC_OID_MD5;
     case PGPHASHALGO_MD2:	return SEC_OID_MD2;
     case PGPHASHALGO_SHA1:	return SEC_OID_SHA1;
+#ifdef SHA224_LENGTH
     case PGPHASHALGO_SHA224:	return SEC_OID_SHA224;
+#endif
     case PGPHASHALGO_SHA256:	return SEC_OID_SHA256;
     case PGPHASHALGO_SHA384:	return SEC_OID_SHA384;
     case PGPHASHALGO_SHA512:	return SEC_OID_SHA512;
