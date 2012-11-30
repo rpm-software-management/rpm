@@ -110,31 +110,15 @@ RPM_GNUC_PURE
 static HASH_HashType getHashType(int hashalgo)
 {
     switch (hashalgo) {
-    case PGPHASHALGO_MD5:
-	return HASH_AlgMD5;
-	break;
-    case PGPHASHALGO_MD2:
-	return HASH_AlgMD2;
-	break;
-    case PGPHASHALGO_SHA1:
-	return HASH_AlgSHA1;
-	break;
-    case PGPHASHALGO_SHA256:
-	return HASH_AlgSHA256;
-	break;
-    case PGPHASHALGO_SHA384:
-	return HASH_AlgSHA384;
-	break;
-    case PGPHASHALGO_SHA512:
-	return HASH_AlgSHA512;
-	break;
-    case PGPHASHALGO_RIPEMD160:
-    case PGPHASHALGO_TIGER192:
-    case PGPHASHALGO_HAVAL_5_160:
-    default:
-	return HASH_AlgNULL;
-	break;
+    case PGPHASHALGO_MD5:	return HASH_AlgMD5;
+    case PGPHASHALGO_MD2:	return HASH_AlgMD2;
+    case PGPHASHALGO_SHA1:	return HASH_AlgSHA1;
+    case PGPHASHALGO_SHA224:	return HASH_AlgSHA224;
+    case PGPHASHALGO_SHA256:	return HASH_AlgSHA256;
+    case PGPHASHALGO_SHA384:	return HASH_AlgSHA384;
+    case PGPHASHALGO_SHA512:	return HASH_AlgSHA512;
     }
+    return HASH_AlgNULL;
 }
 
 size_t rpmDigestLength(int hashalgo)
