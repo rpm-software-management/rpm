@@ -322,8 +322,10 @@ static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num,
     switch (num) {
     case 0:
 	sig = pgpsig->data = SECITEM_AllocItem(NULL, NULL, DSA1_SIGNATURE_LEN);
-	memset(sig->data, 0, DSA1_SIGNATURE_LEN);
-	rc = pgpMpiSet(lbits, sig->data, p, pend);
+	if (sig) {
+	    memset(sig->data, 0, DSA1_SIGNATURE_LEN);
+	    rc = pgpMpiSet(lbits, sig->data, p, pend);
+	}
 	break;
     case 1:
 	if (sig && pgpMpiSet(lbits, sig->data+DSA1_SUBPRIME_LEN, p, pend) == 0) {
