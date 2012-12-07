@@ -600,8 +600,10 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     switch (sigtag) {
     case RPMSIGTAG_RSA:
     case RPMSIGTAG_DSA:
-	if (parsePGPSig(&sigtd, "package", fn, &sig))
+	if (parsePGPSig(&sigtd, "package", fn, &sig)) {
+	    rc = RPMRC_FAIL;
 	    goto exit;
+	}
 	/* fallthrough */
     case RPMSIGTAG_SHA1:
     {	struct rpmtd_s utd;
@@ -619,8 +621,10 @@ static rpmRC rpmpkgRead(rpmKeyring keyring, rpmVSFlags vsflags,
     case RPMSIGTAG_GPG:
     case RPMSIGTAG_PGP5:	/* XXX legacy */
     case RPMSIGTAG_PGP:
-	if (parsePGPSig(&sigtd, "package", fn, &sig))
+	if (parsePGPSig(&sigtd, "package", fn, &sig)) {
+	    rc = RPMRC_FAIL;
 	    goto exit;
+	}
 	/* fallthrough */
     case RPMSIGTAG_MD5:
 	/* Legacy signatures need the compressed payload in the digest too. */
