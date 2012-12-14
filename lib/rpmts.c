@@ -159,7 +159,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
-    const char * arch = NULL;
     char *tmp = NULL;
 
     if (ts == NULL)
@@ -226,10 +225,6 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
     /* Verify header signature/digest during retrieve (if not disabled). */
     if (mi && !(ts->vsflags & RPMVSF_NOHDRCHK))
 	(void) rpmdbSetHdrChk(mi, ts, headerCheck);
-
-    /* Select specified arch only. */
-    if (arch != NULL)
-	rpmdbSetIteratorRE(mi, RPMTAG_ARCH, RPMMIRE_DEFAULT, arch);
 
 exit:
     free(tmp);
