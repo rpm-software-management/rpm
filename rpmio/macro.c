@@ -822,7 +822,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	char *name = NULL, *body = NULL;
 	if (c == '?' || strchr(opts, c) == NULL) {
 	    rpmlog(RPMLOG_ERR, _("Unknown option %c in %s(%s)\n"),
-			(char)c, me->name, opts);
+			(char)optopt, me->name, opts);
 	    goto exit;
 	}
 
