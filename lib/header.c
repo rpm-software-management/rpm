@@ -1406,7 +1406,7 @@ static int intAddEntry(Header h, rpmtd td)
 {
     indexEntry entry;
     rpm_data_t data;
-    int length;
+    int length = 0;
 
     /* Count must always be >= 1 for headerAddEntry. */
     if (td->count <= 0)
@@ -1417,9 +1417,8 @@ static int intAddEntry(Header h, rpmtd td)
     if (hdrchkData(td->count))
 	return 0;
 
-    length = 0;
     data = grabData(td->type, td->data, td->count, &length);
-    if (data == NULL || length <= 0)
+    if (data == NULL)
 	return 0;
 
     /* Allocate more index space if necessary */
@@ -1639,16 +1638,15 @@ int headerMod(Header h, rpmtd td)
     indexEntry entry;
     rpm_data_t oldData;
     rpm_data_t data;
-    int length;
+    int length = 0;
 
     /* First find the tag */
     entry = findEntry(h, td->tag, td->type);
     if (!entry)
 	return 0;
 
-    length = 0;
     data = grabData(td->type, td->data, td->count, &length);
-    if (data == NULL || length <= 0)
+    if (data == NULL)
 	return 0;
 
     /* make sure entry points to the first occurence of this tag */
