@@ -586,7 +586,7 @@ void rpmtsEmpty(rpmts ts)
     }
 
     tsmem->orderCount = 0;
-    /* XXX emptying would be sufficient... */
+    /* The pool cannot be emptied, there might be references to its contents */
     tsmem->pool = rpmstrPoolFree(tsmem->pool);
     removedHashEmpty(tsmem->removedPackages);
     return;
@@ -934,7 +934,14 @@ tsMembers rpmtsMembers(rpmts ts)
 rpmstrPool rpmtsPool(rpmts ts)
 {
     tsMembers tsmem = rpmtsMembers(ts);
-    return (tsmem != NULL) ? tsmem->pool : NULL;
+    rpmstrPool tspool = NULL;
+
+    if (tsmem) {
+	if (tsmem->pool == NULL)
+	    tsmem->pool = rpmstrPoolCreate();
+	tspool = tsmem->pool;
+    }
+    return tspool;
 }
 
 rpmts rpmtsCreate(void)
