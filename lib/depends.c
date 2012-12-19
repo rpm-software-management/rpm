@@ -99,10 +99,6 @@ static int removePackage(rpmts ts, Header h, rpmte depends)
         return 0;
     }
 
-    /* Ensure our pool exists before adding elements */
-    if (tsmem->pool == NULL)
-	tsmem->pool = rpmstrPoolCreate();
-
     p = rpmteNew(ts, h, TR_REMOVED, NULL, NULL);
     if (p == NULL)
 	return 1;
@@ -408,10 +404,6 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
 	    goto exit;
     }
 
-    /* Ensure our pool exists before adding elements */
-    if (tsmem->pool == NULL)
-	tsmem->pool = rpmstrPoolCreate();
-
     p = rpmteNew(ts, h, TR_ADDED, key, relocs);
     if (p == NULL) {
 	ec = 1;
@@ -445,7 +437,7 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     }
     
     if (tsmem->addedPackages == NULL) {
-	tsmem->addedPackages = rpmalCreate(tsmem->pool, 5, rpmtsFlags(ts),
+	tsmem->addedPackages = rpmalCreate(rpmtsPool(ts), 5, rpmtsFlags(ts),
 					   tscolor, rpmtsPrefColor(ts));
     }
     rpmalAdd(tsmem->addedPackages, p);
@@ -561,7 +553,7 @@ retry:
      */
     if (dsflags & RPMSENSE_RPMLIB) {
 	if (tsmem->rpmlib == NULL)
-	    rpmdsRpmlibPool(tsmem->pool, &(tsmem->rpmlib), NULL);
+	    rpmdsRpmlibPool(rpmtsPool(ts), &(tsmem->rpmlib), NULL);
 	
 	if (tsmem->rpmlib != NULL && rpmdsSearch(tsmem->rpmlib, dep) >= 0) {
 	    rpmdsNotify(dep, "(rpmlib provides)", rc);

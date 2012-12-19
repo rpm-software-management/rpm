@@ -912,6 +912,7 @@ static
 rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 {
     tsMembers tsmem = rpmtsMembers(ts);
+    rpmstrPool tspool = rpmtsPool(ts);
     rpmtsi pi;  rpmte p;
     rpmfi fi;
     rpmdbMatchIterator mi;
@@ -940,8 +941,8 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	    if (rpmStringSetHasEntry(baseNames, baseNameId))
 		continue;
 
-	    keylen = rpmstrPoolStrlen(tsmem->pool, baseNameId);
-	    baseName = rpmstrPoolStr(tsmem->pool, baseNameId);
+	    keylen = rpmstrPoolStrlen(tspool, baseNameId);
+	    baseName = rpmstrPoolStr(tspool, baseNameId);
 	    if (keylen == 0)
 		keylen++;	/* XXX "/" fixup. */
 	    rpmdbExtendIterator(mi, baseName, keylen);
@@ -1313,7 +1314,7 @@ static int rpmtsPrepare(rpmts ts)
     const char *dbhome = NULL;
     struct stat dbstat;
 
-    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001, tsmem->pool);
+    fingerPrintCache fpc = fpCacheCreate(fileCount/2 + 10001, rpmtsPool(ts));
 
     rpmlog(RPMLOG_DEBUG, "computing %" PRIu64 " file fingerprints\n", fileCount);
 

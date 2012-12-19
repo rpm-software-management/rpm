@@ -76,7 +76,7 @@ extern "C" {
 #endif
 
 /** \ingroup rpmts
- * Return transaction global string pool handle
+ * Return transaction global string pool handle, creating the pool if needed.
  * @param ts		transaction set
  * @return		string pool handle (weak ref)
  */
