@@ -24,7 +24,7 @@ typedef struct elfInfo_s {
     int gotDEBUG;
     int gotHASH;
     int gotGNUHASH;
-    int gotSONAME;
+    char *soname;
     const char *marker;		/* elf class marker or NULL */
 
     ARGV_t requires;
@@ -152,7 +152,6 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
     Elf_Data *data = NULL;
     while ((data = elf_getdata(scn, data)) != NULL) {
 	for (int i = 0; i < (shdr->sh_size / shdr->sh_entsize); i++) {
-	    ARGV_t *deptype = NULL;
 	    const char *s = NULL;
 	    GElf_Dyn dyn_mem, *dyn;
 
@@ -171,22 +170,17 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		ei->gotDEBUG = 1;
 		break;
 	    case DT_SONAME:
-		ei->gotSONAME = 1;
 		s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		deptype = &ei->provides;
+		if (s)
+		    ei->soname = rstrdup(s);
 		break;
 	    case DT_NEEDED:
 		if (ei->isExec) {
 		    s = elf_strptr(ei->elf, shdr->sh_link, dyn->d_un.d_val);
-		    deptype = &ei->requires;
+		    if (s)
+			addDep(&ei->requires, s, NULL, ei->marker);
 		}
 		break;
-	    default:
-		break;
-	    }
-
-	    if (s && deptype) {
-		addDep(deptype, s, NULL, ei->marker);
 	    }
 	}
     }
@@ -254,10 +248,18 @@ static int processFile(const char *fn, int dtype)
 	argvAdd(&ei->requires, "rtld(GNU_HASH)");
     }
 
-    /* For DSO's, provide the basename of the file if DT_SONAME not found. */
-    if (ei->isDSO && !ei->gotDEBUG && !ei->gotSONAME && fake_soname) {
-	const char *bn = strrchr(fn, '/');
-	addDep(&ei->provides, bn ? bn + 1 : fn, NULL, ei->marker);
+    /*
+     * For DSOs, add DT_SONAME as provide. If its missing, we can fake
+     * it from the basename if requested. The bizarre looking DT_DEBUG
+     * check is used to avoid adding basename provides for PIE executables.
+     */
+    if (ei->isDSO && !ei->gotDEBUG) {
+	if (!ei->soname && fake_soname) {
+	    const char *bn = strrchr(fn, '/');
+	    ei->soname = rstrdup(bn ? bn + 1 : fn);
+	}
+	if (ei->soname)
+	    addDep(&ei->provides, ei->soname, NULL, ei->marker);
     }
 
     rc = 0;
@@ -271,6 +273,7 @@ exit:
     if (ei) {
 	argvFree(ei->provides);
 	argvFree(ei->requires);
+	free(ei->soname);
     	if (ei->elf) elf_end(ei->elf);
 	rfree(ei);
     }
