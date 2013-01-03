@@ -19,12 +19,12 @@ typedef struct elfInfo_s {
     Elf *elf;
 
     int isDSO;
-    int isElf64;		/* is 64bit marker needed in dependencies */
     int isExec;			/* requires are only added to executables */
     int gotDEBUG;
     int gotHASH;
     int gotGNUHASH;
     int gotSONAME;
+    const char *marker;		/* elf class marker or NULL */
 
     ARGV_t requires;
     ARGV_t provides;
@@ -33,6 +33,18 @@ typedef struct elfInfo_s {
 static int skipPrivate(const char *s)
 { 
     return (filter_private && rstreq(s, "GLIBC_PRIVATE"));
+}
+
+static void addDep(ARGV_t *deps,
+		   const char *soname, const char *ver, const char *marker)
+{
+    char *dep = NULL;
+    if (ver || marker) {
+	rasprintf(&dep,
+		  "%s(%s)%s", soname, ver ? ver : "", marker ? marker : "");
+    }
+    argvAdd(deps, dep ? dep : soname);
+    free(dep);
 }
 
 static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
@@ -67,11 +79,7 @@ static void processVerDef(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    auxoffset += aux->vda_next;
 		    continue;
 		} else if (soname && !soname_only && !skipPrivate(s)) {
-		    const char *marker = ei->isElf64 ? "(64bit)" : "";
-		    char *dep = NULL;
-		    rasprintf(&dep, "%s(%s)%s", soname, s, marker);
-		    argvAdd(&ei->provides, dep);
-		    rfree(dep);
+		    addDep(&ei->provides, soname, s, ei->marker);
 		}
 	    }
 		    
@@ -110,11 +118,7 @@ static void processVerNeed(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 		    break;
 
 		if (ei->isExec && soname && !soname_only && !skipPrivate(s)) {
-		    const char *marker = ei->isElf64 ? "(64bit)" : "";
-		    char *dep = NULL;
-		    rasprintf(&dep, "%s(%s)%s", soname, s, marker);
-		    argvAdd(&ei->requires, dep);
-		    rfree(dep);
+		    addDep(&ei->requires, soname, s, ei->marker);
 		}
 		auxoffset += aux->vna_next;
 	    }
@@ -163,10 +167,7 @@ static void processDynamic(Elf_Scn *scn, GElf_Shdr *shdr, elfInfo *ei)
 	    }
 
 	    if (s && deptype) {
-		const char *marker = ei->isElf64 ? "()(64bit)" : "";
-		char *dep = rstrscat(NULL, s, marker, NULL);
-		argvAdd(deptype, dep);
-		rfree(dep);
+		addDep(deptype, s, NULL, ei->marker);
 	    }
 	}
     }
@@ -221,9 +222,8 @@ static int processFile(const char *fn, int dtype)
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
 /* on alpha, everything is 64bit but we dont want the (64bit) markers */
 #if !defined(__alpha__)
-    	ei->isElf64 = (ehdr->e_ident[EI_CLASS] == ELFCLASS64);
-#else
-	ei->isElf64 = 0;
+	if (ehdr->e_ident[EI_CLASS] == ELFCLASS64)
+	    ei->marker = "(64bit)";
 #endif
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
@@ -241,13 +241,8 @@ static int processFile(const char *fn, int dtype)
 
     /* For DSO's, provide the basename of the file if DT_SONAME not found. */
     if (ei->isDSO && !ei->gotDEBUG && !ei->gotSONAME) {
-	const char *marker = ei->isElf64 ? "()(64bit)" : "";
 	const char *bn = strrchr(fn, '/');
-	char *dep;
-	bn = bn ? bn + 1 : fn;
-	dep = rstrscat(NULL, bn, marker, NULL);
-	argvAdd(&ei->provides, dep);
-	rfree(dep);
+	addDep(&ei->provides, bn ? bn + 1 : fn, NULL, ei->marker);
     }
 
     rc = 0;
