@@ -35,6 +35,24 @@ static int skipPrivate(const char *s)
     return (filter_private && rstreq(s, "GLIBC_PRIVATE"));
 }
 
+static const char *mkmarker(GElf_Ehdr *ehdr)
+{
+    const char *marker = NULL;
+
+    if (ehdr->e_ident[EI_CLASS] == ELFCLASS64) {
+	switch (ehdr->e_machine) {
+	case EM_ALPHA:
+	case EM_FAKE_ALPHA:
+	    /* alpha doesn't traditionally have 64bit markers */
+	    break;
+	default:
+	    marker = "(64bit)";
+	    break;
+	}
+    }
+    return marker;
+}
+
 static void addDep(ARGV_t *deps,
 		   const char *soname, const char *ver, const char *marker)
 {
@@ -220,11 +238,7 @@ static int processFile(const char *fn, int dtype)
 	goto exit;
 
     if (ehdr->e_type == ET_DYN || ehdr->e_type == ET_EXEC) {
-/* on alpha, everything is 64bit but we dont want the (64bit) markers */
-#if !defined(__alpha__)
-	if (ehdr->e_ident[EI_CLASS] == ELFCLASS64)
-	    ei->marker = "(64bit)";
-#endif
+	ei->marker = mkmarker(ehdr);
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
