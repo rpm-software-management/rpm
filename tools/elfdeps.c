@@ -14,6 +14,7 @@
 
 int filter_private = 0;
 int soname_only = 0;
+int fake_soname = 0;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -254,7 +255,7 @@ static int processFile(const char *fn, int dtype)
     }
 
     /* For DSO's, provide the basename of the file if DT_SONAME not found. */
-    if (ei->isDSO && !ei->gotDEBUG && !ei->gotSONAME) {
+    if (ei->isDSO && !ei->gotDEBUG && !ei->gotSONAME && fake_soname) {
 	const char *bn = strrchr(fn, '/');
 	addDep(&ei->provides, bn ? bn + 1 : fn, NULL, ei->marker);
     }
@@ -288,6 +289,7 @@ int main(int argc, char *argv[])
 	{ "requires", 'R', POPT_ARG_VAL, &requires, -1, NULL, NULL },
 	{ "filter-private", 0, POPT_ARG_VAL, &filter_private, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
+	{ "fake-soname", 0, POPT_ARG_VAL, &fake_soname, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
