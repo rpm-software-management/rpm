@@ -14,7 +14,7 @@
 
 int filter_private = 0;
 int soname_only = 0;
-int fake_soname = 0;
+int fake_soname = 1;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -292,7 +292,7 @@ int main(int argc, char *argv[])
 	{ "requires", 'R', POPT_ARG_VAL, &requires, -1, NULL, NULL },
 	{ "filter-private", 0, POPT_ARG_VAL, &filter_private, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
-	{ "fake-soname", 0, POPT_ARG_VAL, &fake_soname, -1, NULL, NULL },
+	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
