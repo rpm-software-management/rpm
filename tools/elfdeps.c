@@ -15,6 +15,7 @@
 int filter_private = 0;
 int soname_only = 0;
 int fake_soname = 1;
+int filter_soname = 1;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -34,6 +35,31 @@ typedef struct elfInfo_s {
 static int skipPrivate(const char *s)
 { 
     return (filter_private && rstreq(s, "GLIBC_PRIVATE"));
+}
+
+/*
+ * Rough soname sanity filtering: all sane soname's dependencies need to
+ * contain ".so", and normal linkable libraries start with "lib",
+ * everything else is an exception of some sort. The most notable
+ * and common exception is the dynamic linker itself, which we allow
+ * here, the rest can use --no-filter-soname.
+ */
+static int skipSoname(const char *soname)
+{
+    if (filter_soname) {
+	if (!strstr(soname, ".so"))
+	    return 1;
+
+	if (rstreqn(soname, "ld.", 3) || rstreqn(soname, "ld-", 3))
+	    return 0;
+
+	if (rstreqn(soname, "lib", 3))
+	    return 0;
+	else
+	    return 1;
+    }
+
+    return 0;
 }
 
 static const char *mkmarker(GElf_Ehdr *ehdr)
@@ -58,6 +84,10 @@ static void addDep(ARGV_t *deps,
 		   const char *soname, const char *ver, const char *marker)
 {
     char *dep = NULL;
+
+    if (skipSoname(soname))
+	return;
+
     if (ver || marker) {
 	rasprintf(&dep,
 		  "%s(%s)%s", soname, ver ? ver : "", marker ? marker : "");
@@ -293,6 +323,7 @@ int main(int argc, char *argv[])
 	{ "filter-private", 0, POPT_ARG_VAL, &filter_private, -1, NULL, NULL },
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
+	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
