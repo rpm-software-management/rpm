@@ -338,7 +338,6 @@ exit:
 
 int main(int argc, char *argv[])
 {
-    char fn[BUFSIZ];
     int provides = 0;
     int requires = 0;
     poptContext optCon;
@@ -361,9 +360,18 @@ int main(int argc, char *argv[])
 	exit(EXIT_FAILURE);
     }
 
-    while (fgets(fn, sizeof(fn), stdin) != NULL) {
-	fn[strlen(fn)-1] = '\0';
-	(void) processFile(fn, requires);
+    /* Normally our data comes from stdin, but permit args too */
+    if (poptPeekArg(optCon)) {
+	const char *fn;
+	while ((fn = poptGetArg(optCon)) != NULL) {
+	    (void) processFile(fn, requires);
+	}
+    } else {
+	char fn[BUFSIZ];
+	while (fgets(fn, sizeof(fn), stdin) != NULL) {
+	    fn[strlen(fn)-1] = '\0';
+	    (void) processFile(fn, requires);
+	}
     }
 
     poptFreeContext(optCon);
