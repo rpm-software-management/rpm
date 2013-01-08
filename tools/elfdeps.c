@@ -16,6 +16,7 @@ int filter_private = 0;
 int soname_only = 0;
 int fake_soname = 1;
 int filter_soname = 1;
+int require_interp = 0;
 
 typedef struct elfInfo_s {
     Elf *elf;
@@ -26,6 +27,7 @@ typedef struct elfInfo_s {
     int gotHASH;
     int gotGNUHASH;
     char *soname;
+    char *interp;
     const char *marker;		/* elf class marker or NULL */
 
     ARGV_t requires;
@@ -241,6 +243,24 @@ static void processSections(elfInfo *ei)
     }
 }
 
+static void processProgHeaders(elfInfo *ei, GElf_Ehdr *ehdr)
+{
+    for (size_t i = 0; i < ehdr->e_phnum; i++) {
+	GElf_Phdr mem;
+	GElf_Phdr *phdr = gelf_getphdr(ei->elf, i, &mem);
+
+	if (phdr && phdr->p_type == PT_INTERP) {
+	    size_t maxsize;
+	    char * filedata = elf_rawfile(ei->elf, &maxsize);
+
+	    if (filedata && phdr->p_offset < maxsize) {
+		ei->interp = rstrdup(filedata + phdr->p_offset);
+		break;
+	    }
+	}
+    }
+}
+
 static int processFile(const char *fn, int dtype)
 {
     int rc = 1;
@@ -267,6 +287,7 @@ static int processFile(const char *fn, int dtype)
     	ei->isDSO = (ehdr->e_type == ET_DYN);
 	ei->isExec = (st.st_mode & (S_IXUSR|S_IXGRP|S_IXOTH));
 
+	processProgHeaders(ei, ehdr);
 	processSections(ei);
     }
 
@@ -292,6 +313,10 @@ static int processFile(const char *fn, int dtype)
 	    addDep(&ei->provides, ei->soname, NULL, ei->marker);
     }
 
+    /* If requested and present, add dep for interpreter (ie dynamic linker) */
+    if (ei->interp && require_interp)
+	argvAdd(&ei->requires, ei->interp);
+
     rc = 0;
     /* dump the requested dependencies for this file */
     for (ARGV_t dep = dtype ? ei->requires : ei->provides; dep && *dep; dep++) {
@@ -304,6 +329,7 @@ exit:
 	argvFree(ei->provides);
 	argvFree(ei->requires);
 	free(ei->soname);
+	free(ei->interp);
     	if (ei->elf) elf_end(ei->elf);
 	rfree(ei);
     }
@@ -324,6 +350,7 @@ int main(int argc, char *argv[])
 	{ "soname-only", 0, POPT_ARG_VAL, &soname_only, -1, NULL, NULL },
 	{ "no-fake-soname", 0, POPT_ARG_VAL, &fake_soname, 0, NULL, NULL },
 	{ "no-filter-soname", 0, POPT_ARG_VAL, &filter_soname, 0, NULL, NULL },
+	{ "require-interp", 0, POPT_ARG_VAL, &require_interp, -1, NULL, NULL },
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
