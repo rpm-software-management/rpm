@@ -24,3 +24,10 @@ sepolicy_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmi
 
 plugins_LTLIBRARIES += sepolicy.la
 endif
+
+if DBUS
+block_shutdown_la_SOURCES = block_shutdown.c
+block_shutdown_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
+block_shutdown_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
+plugins_LTLIBRARIES += block_shutdown.la
+endif

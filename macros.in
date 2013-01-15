@@ -1030,6 +1030,9 @@ done \
 %__collection_sepolicy		%{__plugindir}/sepolicy.so
 %__collection_sepolicy_flags	1
 
+# Transaction plugin macros
+%__transaction_block_shutdown	%{__plugindir}/block_shutdown.so
+
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
 
