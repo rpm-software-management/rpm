@@ -1,3 +1,6 @@
+Historic. For more recent changes, look at git history or at
+ChangeLog from tarballs.
+
 4.4.2 -> 4.4.2.1:
 	- remove internal sqlite, zlib, gettext
 	- remove obsolete utilities
