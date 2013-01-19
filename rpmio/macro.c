@@ -515,6 +515,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
     char *b, *be, *ebody = NULL;
     int c;
     int oc = ')';
+    const char *sbody; /* as-is body start */
 
     /* Copy name */
     COPYNAME(ne, s, c);
@@ -530,6 +531,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 
     /* Copy body, skipping over escaped newlines */
     b = be = oe + 1;
+    sbody = s;
     SKIPBLANK(s, c);
     if (c == '{') {	/* XXX permit silent {...} grouping */
 	if ((se = matchchar(s, c, '}')) == NULL) {
@@ -605,6 +607,9 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	rpmlog(RPMLOG_ERR, _("Macro %%%s has empty body\n"), n);
 	goto exit;
     }
+
+    if (!isblank(*sbody) && !(*sbody == '\\' && iseol(sbody[1])))
+	rpmlog(RPMLOG_WARNING, _("Macro %%%s needs whitespace before body\n"), n);
 
     if (expandbody) {
 	if (expandThis(mb, b, 0, &ebody)) {
