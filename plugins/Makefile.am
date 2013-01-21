@@ -26,8 +26,8 @@ plugins_LTLIBRARIES += sepolicy.la
 endif
 
 if DBUS
-block_shutdown_la_SOURCES = block_shutdown.c
-block_shutdown_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
-block_shutdown_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
-plugins_LTLIBRARIES += block_shutdown.la
+systemd_inhibit_la_SOURCES = systemd_inhibit.c
+systemd_inhibit_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
+systemd_inhibit_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
+plugins_LTLIBRARIES += systemd_inhibit.la
 endif
