@@ -90,7 +90,7 @@ int main(int argc, char *argv[])
 	    argerror(_("no arguments given for parse"));
 
 	while ((spath = poptGetArg(optCon)) != NULL) {
-	    rpmSpec spec = rpmSpecParse(spath, 0, NULL);
+	    rpmSpec spec = rpmSpecParse(spath, (RPMSPEC_ANYARCH|RPMSPEC_FORCE), NULL);
 	    if (spec == NULL) {
 		ec++;
 		continue;
