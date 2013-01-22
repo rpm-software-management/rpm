@@ -2,6 +2,7 @@
 #define _PLUGINS_H
 
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmfi.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -27,6 +28,9 @@ extern "C" {
 #define PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC    pluginhook_scriptlet_fork_post
 #define PLUGINHOOK_SCRIPTLET_POST_FUNC    pluginhook_scriptlet_post
 
+#define PLUGINHOOK_FSM_FILE_PRE_FUNC    pluginhook_fsm_file_pre
+#define PLUGINHOOK_FSM_FILE_POST_FUNC    pluginhook_fsm_file_post
+
 enum rpmPluginHook_e {
     PLUGINHOOK_NONE		= 0,
     PLUGINHOOK_INIT		= 1 << 0,
@@ -41,7 +45,9 @@ enum rpmPluginHook_e {
     PLUGINHOOK_PSM_POST        = 1 << 9,
     PLUGINHOOK_SCRIPTLET_PRE    = 1 << 10,
     PLUGINHOOK_SCRIPTLET_FORK_POST    = 1 << 11,
-    PLUGINHOOK_SCRIPTLET_POST    = 1 << 12
+    PLUGINHOOK_SCRIPTLET_POST    = 1 << 12,
+    PLUGINHOOK_FSM_FILE_PRE    = 1 << 13,
+    PLUGINHOOK_FSM_FILE_POST    = 1 << 14
 };
 
 /* indicates the way the scriptlet is executed */
@@ -50,6 +56,13 @@ typedef enum rpmScriptletExecutionFlow_e {
     RPMSCRIPTLET_FORK    = 1 << 0, 
     RPMSCRIPTLET_EXEC    = 1 << 1
 } rpmScriptletExecutionFlow;
+
+/* indicates if a directory is part of rpm package or created by rpm itself */
+typedef enum rpmPluginDirType_e {
+    DIR_TYPE_NONE    = 0,
+    DIR_TYPE_NORMAL    = 1 << 0, 
+    DIR_TYPE_UNOWNED    = 1 << 1
+} rpmPluginDirType;
 
 typedef rpmFlags rpmPluginHook;
 
@@ -206,6 +219,31 @@ rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int 
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int type, int res);
+
+/** \ingroup rpmplugins
+ * Call the fsm file pre plugin hook
+ * @param plugins	plugins structure
+ * @param path		file object path
+ * @param file_mode	file object mode
+ * @param type		file type, see rpmPluginDirType
+ * @param action	fsm action code
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
+                                mode_t file_mode, int type, rpmFileAction a);
+
+/** \ingroup rpmplugins
+ * Call the fsm file post plugin hook
+ * @param plugins	plugins structure
+ * @param path		file object path
+ * @param file_mode	file object mode
+ * @param type		file type, see rpmPluginDirType
+ * @param action	fsm action code
+ * @param res		fsm result code
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
+                                mode_t file_mode, int type, rpmFileAction a, int res);
 
 #ifdef __cplusplus
 }

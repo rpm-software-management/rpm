@@ -23,6 +23,7 @@
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath, ... */
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
 #include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() only */
+#include "lib/rpmplugins.h"	/* rpm plugins hooks */
 #include "lib/rpmug.h"
 #include "lib/cpio.h"
 
@@ -108,6 +109,7 @@ struct fsm_s {
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
     struct selabel_handle *sehandle;	/*!< SELinux label handle (if any). */
+    rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
     unsigned fflags;		/*!< File flags. */
     rpmFileAction action;	/*!< File disposition. */
@@ -1151,9 +1153,11 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
  * Create (if necessary) directories not explicitly included in package.
  * @param dnli		file state machine data
  * @param sehandle	selinux label handle (bah)
+ * @param plugins	rpm plugins handle
+ * @param action	file state machine action
  * @return		0 on success
  */
-static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle)
+static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle, rpmPlugins plugins, rpmFileAction action)
 {
     DNLI_t dnli = dnlInitIterator(fi, fs, 0);
     struct stat sb;
@@ -1213,7 +1217,16 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle)
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
 		mode_t mode = S_IFDIR | (_dirPerms & 07777);
-		rc = fsmMkdir(dn, mode);
+
+		/* Run fsm file pre hook for all plugins */
+		rc = rpmpluginsCallFsmFilePre(plugins, dn, mode, DIR_TYPE_UNOWNED, FA_CREATE);
+
+		if (!rc)
+		    rc = fsmMkdir(dn, mode);
+
+		/* Run fsm file post hook for all plugins */
+		rpmpluginsCallFsmFilePost(plugins, dn, mode, DIR_TYPE_UNOWNED, FA_CREATE, rc);
+
 		if (!rc) {
 		    rc = fsmSetSELabel(sehandle, dn, mode);
 
@@ -1640,12 +1653,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	rc = CPIOERR_INTERNAL;
 
     fsm->sehandle = rpmtsSELabelHandle(ts);
+    fsm->plugins = rpmtsPlugins(ts);
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	rc = fsmMkdirs(fi, rpmteGetFileStates(te), fsm->sehandle);
+	rc = fsmMkdirs(fi, rpmteGetFileStates(te), fsm->sehandle, fsm->plugins, fsm->action);
     }
 
     while (!rc) {
@@ -1682,10 +1696,15 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         if (rc)
             break;
 
-	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-	    fsm->postpone = saveHardLink(fsm, &li);
-
-	setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
+	/* Run fsm file pre hook for all plugins */
+	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action);
+	if (rc) {
+	    fsm->postpone = 1;
+	} else {
+	    if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
+		fsm->postpone = saveHardLink(fsm, &li);
+	    setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
+	}
 
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
@@ -1765,6 +1784,10 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix));
 	    }
 	}
+
+	/* Run fsm file post hook for all plugins */
+	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action, rc);
+
     }
 
     if (!rc)
@@ -1788,6 +1811,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     if (!rpmteIsSource(te))
 	fsm->mapFlags |= CPIO_SBIT_CHECK;
 
+    fsm->plugins = rpmtsPlugins(ts);
+
     while (!rc) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
@@ -1800,6 +1825,9 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
             break;
 
         rc = fsmInit(fsm);
+
+	/* Run fsm file pre hook for all plugins */
+	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action);
 
 	if (!fsm->postpone)
 	    rc = fsmBackup(fsm);
@@ -1841,6 +1869,10 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 			fsm->path, strerror(errno));
             }
         }
+
+	/* Run fsm file post hook for all plugins */
+	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action, rc);
+
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
 
