@@ -1762,10 +1762,13 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
     appendLineStringBuf(docScript, mkdocdir);
 
     for (ARGV_const_t fn = sd->files; fn && *fn; fn++) {
+	/* Quotes would break globs, escape spaces instead */
+	char *efn = rpmEscapeSpaces(*fn);
 	appendStringBuf(docScript, "cp -pr ");
-	appendStringBuf(docScript, *fn);
+	appendStringBuf(docScript, efn);
 	appendStringBuf(docScript, " $");
 	appendLineStringBuf(docScript, sdenv);
+	free(efn);
     }
 
     if (install) {
