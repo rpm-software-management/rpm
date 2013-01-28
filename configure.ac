@@ -521,7 +521,7 @@ AC_CHECK_FUNCS(fdatasync)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
-AC_CHECK_FUNCS(__secure_getenv)
+AC_CHECK_FUNCS([secure_getenv __secure_getenv])
 
 AC_CHECK_FUNCS(
    [mkstemp getcwd basename dirname realpath setenv unsetenv regcomp lchown],

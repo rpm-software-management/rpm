@@ -35,7 +35,9 @@ char * stpcpy(char * dest, const char * src);
 char * stpncpy(char * dest, const char * src, size_t n);
 #endif
 
-#if HAVE___SECURE_GETENV
+#if HAVE_SECURE_GETENV
+#define	getenv(_s)	secure_getenv(_s)
+#elif HAVE___SECURE_GETENV
 #define	getenv(_s)	__secure_getenv(_s)
 #endif
 
