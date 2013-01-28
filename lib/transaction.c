@@ -572,7 +572,8 @@ assert(otherFi != NULL);
 		}
 	    } else {
 		/* Skip create on all but the first instance of a shared file */
-		if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN)
+		rpmFileAction oaction = rpmfsGetAction(otherFs, otherFileNum);
+		if (oaction != FA_UNKNOWN && !XFA_SKIPPING(oaction))
 		    rpmfsSetAction(fs, i, FA_SKIP);
 	    }
 
@@ -759,6 +760,17 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 
 	ix = rpmfiDX(fi);
 	drc[ix]++;
+
+	/*
+	 * Always skip %ghosts on install.
+	 * XXX: Should we skip directory creation if there are only
+	 * %ghosts in it? Traditionally we create the (empty) directory, so
+	 * preserving that behavior for now at least: leave the refcount alone.
+	 */
+	if (rpmfiFFlags(fi) & RPMFILE_GHOST) {
+	    rpmfsSetAction(fs, i, FA_SKIP);
+	    continue;
+	}
 
 	/* Don't bother with skipped files */
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i))) {
