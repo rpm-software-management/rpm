@@ -1077,8 +1077,8 @@ done \
 
 # Bzr
 %__scm_setup_bzr(q)\
-%{__bzr} whoami "%{__scm_author}"\
 %{__bzr} init %{-q}\
+%{__bzr} whoami --branch "%{__scm_author}"\
 %{__bzr} add .\
 %{__bzr} commit %{-q} -m "%{name}-%{version} base"
 
