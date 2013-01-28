@@ -1039,7 +1039,9 @@ done \
 # default to plain patch
 %__scm patch
 # meh, figure something saner
-%__scm_author rpm-build <rpm-build>
+%__scm_username rpm-build
+%__scm_usermail <rpm-build>
+%__scm_author %{__scm_username} %{__scm_usermail}
 
 # Plain patch (-m is unused)
 %__scm_setup_patch(q) %{nil}
