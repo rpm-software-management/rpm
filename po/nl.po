@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: nl\n"
@@ -767,49 +767,49 @@ msgstr ""
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1866
+#: build/files.c:1869
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1883
+#: build/files.c:1886
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr ""
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -819,9 +819,9 @@ msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "lezen mislukt: %s (%d)\n"
+msgstr ""
 
 #: build/pack.c:80
 #, c-format
@@ -1307,9 +1307,9 @@ msgid "%s:%d: Argument expected for %s\n"
 msgstr ""
 
 #: build/parseSpec.c:308
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr "regel %d: %s\n"
+msgstr ""
 
 #: build/parseSpec.c:313
 #, c-format
@@ -1539,12 +1539,12 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
@@ -1642,9 +1642,9 @@ msgid "%s created as %s\n"
 msgstr ""
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "lezen mislukt: %s (%d)\n"
+msgstr ""
 
 #: lib/fsm.c:1846
 msgid "directory"
@@ -2829,27 +2829,27 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "ontbrekende '(' in pakketlabel: %s\n"
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "ontbrekende ')' in pakketlabel: %s\n"
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr ""
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr ""
 
@@ -2921,11 +2921,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr ""
 

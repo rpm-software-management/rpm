@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fi\n"
@@ -346,14 +346,14 @@ msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr ""
 
 #: rpmbuild.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "älä suorita mitään käännöksen vaiheita"
+msgstr ""
 
 #: rpmbuild.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %check stage of the build"
-msgstr "älä suorita mitään käännöksen vaiheita"
+msgstr ""
 
 #: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
@@ -778,32 +778,32 @@ msgstr ""
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1866
+#: build/files.c:1869
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1883
-#, fuzzy, c-format
+#: build/files.c:1886
+#, c-format
 msgid "More than one file on a line: %s\n"
-msgstr "Kaksi tiedostoa yhdellä rivillä %s\n"
+msgstr ""
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Virheellinen tiedosto: %s: %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Virheellinen omistaja/ryhmä: %s\n"
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Tarkistetaan paketoimattomia tiedostoja: %s\n"
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -812,29 +812,29 @@ msgstr ""
 "Löytyi asennettuja (mutta paketoimattomia) tiedostoja:\n"
 "%s"
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Käsitellään tiedostoja: %s\n"
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
 #: build/pack.c:50
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "%s epäonnistui tiedostolle %s: %s\n"
+msgstr ""
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "%s: pakettilistan luku epäonnistui: %s\n"
+msgstr ""
 
 #: build/pack.c:80
 #, c-format
@@ -947,9 +947,9 @@ msgid "line %d: second %s\n"
 msgstr "rivi %d: toinen %s\n"
 
 #: build/parseChangelog.c:114
-#, fuzzy, c-format
+#, c-format
 msgid "bogus date in %%changelog: %s\n"
-msgstr "virheellinen päivämäärä %%changelog:issa: %s\n"
+msgstr ""
 
 #: build/parseChangelog.c:146
 #, c-format
@@ -1320,9 +1320,9 @@ msgid "%s:%d: Argument expected for %s\n"
 msgstr ""
 
 #: build/parseSpec.c:308
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr "Sulkematon %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:313
 #, c-format
@@ -1345,9 +1345,9 @@ msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif ilman %%if:iä\n"
 
 #: build/parseSpec.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "virheellinen %%include-lause\n"
+msgstr ""
 
 #: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
@@ -1552,12 +1552,12 @@ msgstr "%s on Delta RPM eikä sitä voida suoraan asentaa\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Tuntematon kuorma (%s) paketissa %s\n"
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "paketti %s on jo lisätty, ohitetaan %s\n"
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "paketti %s oli jo lisätty, korvataan %s:lla\n"
@@ -1655,18 +1655,17 @@ msgid "%s created as %s\n"
 msgstr "%s luotu %s:na\n"
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "%s: avaus epäonnistui: %s\n"
+msgstr ""
 
 #: lib/fsm.c:1846
 msgid "directory"
 msgstr ""
 
 #: lib/fsm.c:1846
-#, fuzzy
 msgid "file"
-msgstr " tiedostolle "
+msgstr ""
 
 #: lib/package.c:146
 #, c-format
@@ -2851,27 +2850,27 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr "Pakettitietokantaa %s ei voida avata\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: julkisen avaimen luku epäonnistui.\n"
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr ""
 
@@ -2943,11 +2942,11 @@ msgstr "Otsikko "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr "epäonnistui"
 
@@ -3515,9 +3514,3 @@ msgstr "%s: pakettilistan luku epäonnistui: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "älä tarkista otsikon ja kuorman allekirjoitusta"
-
-#~ msgid "%s rmdir of %s failed: Directory not empty\n"
-#~ msgstr "%s %s rmdir epäonnistui - hakemisto ei ole tyhjä\n"
-
-#~ msgid "%s rmdir of %s failed: %s\n"
-#~ msgstr "%s %s:n rmdir epäonnistui: %s\n"

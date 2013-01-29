@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Slovak (http://www.transifex.com/projects/p/rpm/language/"
 "sk/)\n"
@@ -355,14 +355,14 @@ msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr "generovanie hlavičiek balíčka kompatibilné s (legacy) rpm v3 packaging"
 
 #: rpmbuild.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "nevykonať žiadne etapy zostavenia"
+msgstr ""
 
 #: rpmbuild.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %check stage of the build"
-msgstr "nevykonať žiadne etapy zostavenia"
+msgstr ""
 
 #: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
@@ -785,36 +785,36 @@ msgid "Error reading %%files file %s: %m\n"
 msgstr "Chyba čítania %%files súboru %s: %m\n"
 
 #: build/files.c:1711
-#, fuzzy, c-format
+#, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr "neplatný _docdir_fmt: %s\n"
+msgstr ""
 
-#: build/files.c:1866
-#, fuzzy, c-format
+#: build/files.c:1869
+#, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr "Nie je možné miešať špeciálny %%doc s ostatnými formami: %s\n"
+msgstr ""
 
-#: build/files.c:1883
-#, fuzzy, c-format
+#: build/files.c:1886
+#, c-format
 msgid "More than one file on a line: %s\n"
-msgstr "Dva súbory na jednom riadku: %s\n"
+msgstr ""
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Zlý súbor: %s: %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Chybný vlastník/skupina: %s\n"
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Kontrolujú sa nezabalené súbory: %s\n"
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -823,29 +823,29 @@ msgstr ""
 "Nájdené nainštalované (ale nezabalené) súbory:\n"
 "%s"
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Spracovávajú sa súbory: %s\n"
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Binárky závislé na architektúre v bezarchitektúrnom balíčku\n"
 
 #: build/pack.c:50
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "vytvorenie archívu v súbore %s zlyhalo\n"
+msgstr ""
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "vytvorenie archívu zlyhalo\n"
+msgstr ""
 
 #: build/pack.c:80
 #, c-format
@@ -958,9 +958,9 @@ msgid "line %d: second %s\n"
 msgstr "riadok %d: druhý %s\n"
 
 #: build/parseChangelog.c:114
-#, fuzzy, c-format
+#, c-format
 msgid "bogus date in %%changelog: %s\n"
-msgstr "zlý dátum v %%changelog: %s\n"
+msgstr ""
 
 #: build/parseChangelog.c:146
 #, c-format
@@ -1331,9 +1331,9 @@ msgid "%s:%d: Argument expected for %s\n"
 msgstr "%s:%d: Očakávaný argument pre %s\n"
 
 #: build/parseSpec.c:308
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr "Neuzatvorený %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:313
 #, c-format
@@ -1356,9 +1356,9 @@ msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif bez počiatočného %%if\n"
 
 #: build/parseSpec.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "poškodený príkaz %%include\n"
+msgstr ""
 
 #: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
@@ -1527,9 +1527,8 @@ msgid "Header size too big"
 msgstr "Priveľká hlavička"
 
 #: lib/cpio.c:393
-#, fuzzy
 msgid "File too large for archive"
-msgstr "Súbor %s je pre payload príliš veľký\n"
+msgstr ""
 
 #: lib/cpio.c:394
 msgid "Unknown file type"
@@ -1565,12 +1564,12 @@ msgstr "%s je Delta RPM a nemôže byž priamo inštalovaný\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Nepodporovaný payload (%s) v balíčku %s\n"
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "balíček %s už bol pridaný, %s sa preskakuje\n"
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "balíček %s už bol pridaný, nahradzuje sa s %s\n"
@@ -1668,18 +1667,17 @@ msgid "%s created as %s\n"
 msgstr "%s vytvorený ako %s\n"
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "%s: otvorenie zlyhalo: %s\n"
+msgstr ""
 
 #: lib/fsm.c:1846
 msgid "directory"
 msgstr ""
 
 #: lib/fsm.c:1846
-#, fuzzy
 msgid "file"
-msgstr " pre súbor "
+msgstr ""
 
 #: lib/package.c:146
 #, c-format
@@ -1714,9 +1712,9 @@ msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "veľkosť blobu(%d): ZLÁ, 8 + 16 * il(%d) + dl(%d)\n"
 
 #: lib/package.c:322 lib/signature.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
-msgstr "trailer regiónu: ZLÝ, značka %d typ %d offset %d počet %d\n"
+msgstr ""
 
 #: lib/package.c:331 lib/signature.c:151
 #, c-format
@@ -2865,27 +2863,27 @@ msgstr "zmazať"
 msgid "cannot open Packages database in %s\n"
 msgstr "nie je možné otvoriť databázu balíčkov v %s\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "nadbytočná '(' v popise balíčka: %s\n"
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "chýbajúca '(' v popise balíčka: %s\n"
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "chýbajúca ')' v popise balíčka: %s\n"
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: čítanie verejného kľúča zlyhalo.\n"
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr "transakcia"
 
@@ -2957,11 +2955,11 @@ msgstr "Hlavička"
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr "preskočené"
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr "zlyhané"
 
@@ -3532,21 +3530,3 @@ msgstr "%s: čítanie zoznamu zlyhalo: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "neoverovať podpis hlavičky a payloadu"
-
-#~ msgid "Only one arg for %%docdir\n"
-#~ msgstr "Iba jeden parameter pre %%docdir\n"
-
-#~ msgid "Explicit file attributes required in spec for: %s\n"
-#~ msgstr "Podrodbné atribúty súbory sú vyžadované v spec pre: %s\n"
-
-#~ msgid "archive file %s was not found in header file list\n"
-#~ msgstr "súbor z archívu %s nebol nájdený v zozname súborov v hlavičke\n"
-
-#~ msgid "%s rmdir of %s failed: Directory not empty\n"
-#~ msgstr "%s rmdir %s zlyhalo: Priečinok nie je prázdny\n"
-
-#~ msgid "%s rmdir of %s failed: %s\n"
-#~ msgstr "%s rmdir %s zlyhalo: %s\n"
-
-#~ msgid "%s unlink of %s failed: %s\n"
-#~ msgstr "%s unlink %s zlyhalo: %s\n"

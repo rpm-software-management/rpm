@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: da\n"
@@ -340,14 +340,14 @@ msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr ""
 
 #: rpmbuild.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "udfør ingen stadier af opbygningen"
+msgstr ""
 
 #: rpmbuild.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %check stage of the build"
-msgstr "udfør ingen stadier af opbygningen"
+msgstr ""
 
 #: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
@@ -773,61 +773,61 @@ msgstr ""
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1866
-#, fuzzy, c-format
+#: build/files.c:1869
+#, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr "Kan ikke blande special-%%doc med andre former: %s\n"
+msgstr ""
 
-#: build/files.c:1883
-#, fuzzy, c-format
+#: build/files.c:1886
+#, c-format
 msgid "More than one file on a line: %s\n"
-msgstr "To filer på én linie: %s\n"
+msgstr ""
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Ugyldig fil: %s: %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Ugyldig ejer/gruppe: %s\n"
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
 #: build/pack.c:50
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "udpakning af arkiv mislykkedes%s%s: %s\n"
+msgstr ""
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "%s: læs manifest mislykkedes: %s\n"
+msgstr ""
 
 #: build/pack.c:80
 #, c-format
@@ -940,9 +940,9 @@ msgid "line %d: second %s\n"
 msgstr "linie %d: anden %s\n"
 
 #: build/parseChangelog.c:114
-#, fuzzy, c-format
+#, c-format
 msgid "bogus date in %%changelog: %s\n"
-msgstr "ugyldig dato i %%changelog: %s\n"
+msgstr ""
 
 #: build/parseChangelog.c:146
 #, c-format
@@ -1315,9 +1315,9 @@ msgid "%s:%d: Argument expected for %s\n"
 msgstr ""
 
 #: build/parseSpec.c:308
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr "Ikke-lukket %%if\n"
+msgstr ""
 
 #: build/parseSpec.c:313
 #, c-format
@@ -1340,9 +1340,9 @@ msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: Fik et %%endif uden et %%if\n"
 
 #: build/parseSpec.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "forkert udført '%%include'-kommando\n"
+msgstr ""
 
 #: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
@@ -1547,12 +1547,12 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
@@ -1650,18 +1650,17 @@ msgid "%s created as %s\n"
 msgstr "%s oprettet som %s\n"
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "%s: åbning mislykkedes: %s\n"
+msgstr ""
 
 #: lib/fsm.c:1846
 msgid "directory"
 msgstr ""
 
 #: lib/fsm.c:1846
-#, fuzzy
 msgid "file"
-msgstr " for fil "
+msgstr ""
 
 #: lib/package.c:146
 #, c-format
@@ -2849,27 +2848,27 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr "kunne ikke åbne Packages-database i %s\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr ""
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr ""
 
@@ -2941,11 +2940,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr ""
 
@@ -3512,6 +3511,3 @@ msgstr "%s: læs manifest mislykkedes: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Only one arg for %%docdir\n"
-#~ msgstr "Kun et parameter for %%docdir\n"

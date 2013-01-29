@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
+# Keith Bowes <zooplah@gmail.com>, 2013.
 # Keith <zooplah@gmail.com>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-03-07 13:03+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2013-01-13 06:09+0000\n"
+"Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto (http://www.transifex.com/projects/p/rpm/language/"
 "eo/)\n"
 "Language: eo\n"
@@ -137,11 +138,11 @@ msgstr "parametroj de --prefix devas komenciĝi per /"
 #: rpmqv.c:170
 msgid ""
 "--hash (-h) may only be specified during package installation and erasure"
-msgstr ""
+msgstr "--hash (-h) nur eblas dum pakaĵa instalado aŭ forigado"
 
 #: rpmqv.c:174
 msgid "--percent may only be specified during package installation and erasure"
-msgstr ""
+msgstr "--percent nur eblas dum pakaĵa instalado aŭ forigado"
 
 #: rpmqv.c:178
 msgid "--replacepkgs may only be specified during package installation"
@@ -342,7 +343,7 @@ msgstr "senerarigi dosierstatan maŝinon"
 
 #: rpmbuild.c:179
 msgid "do not execute any stages of the build"
-msgstr "ne plenumigu iun ajn stadion de la muntado"
+msgstr "ne plenumigu iun ajn etapon de la muntado"
 
 #: rpmbuild.c:181
 msgid "do not verify build dependencies"
@@ -353,14 +354,14 @@ msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr "generu pako-kapo(j)n kongrua(j)n kun (malmoderna) pakado de rpm 3"
 
 #: rpmbuild.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "ne plenumigu iun ajn stadion de la muntado"
+msgstr "ne plenumigi la etapon %clean por la muntado"
 
 #: rpmbuild.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %check stage of the build"
-msgstr "ne plenumigu iun ajn stadion de la muntado"
+msgstr "ne plenumigi la etapon %check por la muntado"
 
 #: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
@@ -376,7 +377,7 @@ msgstr "forigi spec-dosieron post kiam finita"
 
 #: rpmbuild.c:198
 msgid "skip straight to specified stage (only for c,i)"
-msgstr "preterlasi rekte al specifita stadio (nur por c,i)"
+msgstr "preterlasi rekte al specifita etapo (nur por c,i)"
 
 #: rpmbuild.c:200 rpmspec.c:34
 msgid "override target platform"
@@ -404,7 +405,7 @@ msgstr "Malsukcesis malfermi tar-tubon: %m\n"
 #: rpmbuild.c:336
 #, c-format
 msgid "Failed to read spec file from %s\n"
-msgstr "Malsuksesis legi spec-dosieron je %s\n"
+msgstr "Malsukcesis legi spec-dosieron je %s\n"
 
 #: rpmbuild.c:348
 #, c-format
@@ -462,7 +463,7 @@ msgstr "importu ŝirmitan publikan ŝlosilon"
 
 #: rpmkeys.c:28
 msgid "don't import, but tell if it would work or not"
-msgstr ""
+msgstr "ne importu, sed diru al ĝi se ĝi funkcius aŭ ne"
 
 #: rpmkeys.c:31 rpmkeys.c:33
 msgid "list keys from RPM keyring"
@@ -783,36 +784,36 @@ msgid "Error reading %%files file %s: %m\n"
 msgstr "eraro dum legi dosieron %%files %s: %m\n"
 
 #: build/files.c:1711
-#, fuzzy, c-format
+#, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr "illegal _docdir_fmt: %s\n"
+msgstr "nepermesita _docdir_fmt %s: %s\n"
 
-#: build/files.c:1866
-#, fuzzy, c-format
+#: build/files.c:1869
+#, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr "Ne eblas kunmiksi specialan %%doc kun aliaj formoj: %s\n"
+msgstr "Ne eblas kunmiksi specialan %s-on kun aliaj formoj: %s\n"
 
-#: build/files.c:1883
-#, fuzzy, c-format
+#: build/files.c:1886
+#, c-format
 msgid "More than one file on a line: %s\n"
-msgstr "Du dosieroj en unu linio: %s\n"
+msgstr "Pli ol unu dosiero en linio: %s\n"
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Fuŝa dosiero: %s: %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Fuŝa estro/grupo: %s\n"
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Kontrolanta ne pakita(j)n dosiero(j)n: %s\n"
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -821,29 +822,31 @@ msgstr ""
 "Insalita(j) (sed ne pakita(j) dosiero(j) trovita(j):\n"
 "%s"
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Procedanta dosierojn: %s\n"
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
+"Platformo (%d) de la plenumebla dosiero ne kongruas la pakaĵan platformon "
+"(%d).\n"
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Platformo-dependaj dosieroj en platformo-sendependa pako\n"
 
 #: build/pack.c:50
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "krei arkivon malsukcesis ĉe dosiero %s\n"
+msgstr "kreado de arkivo malsukcesis ĉe dosiero %s: %s\n"
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "krei arkivon malsukcesis\n"
+msgstr "kreado de arkivo malsukcesis: %s\n"
 
 #: build/pack.c:80
 #, c-format
@@ -956,7 +959,7 @@ msgid "line %d: second %s\n"
 msgstr "line %d: dua %s\n"
 
 #: build/parseChangelog.c:114
-#, fuzzy, c-format
+#, c-format
 msgid "bogus date in %%changelog: %s\n"
 msgstr "fuŝa dato en %%changelog: %s\n"
 
@@ -1330,9 +1333,9 @@ msgid "%s:%d: Argument expected for %s\n"
 msgstr "%s: %d: Parametroj anticipitaj por %s\n"
 
 #: build/parseSpec.c:308
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr "Nefermita %%if\n"
+msgstr "linio %d: Nefermita %%if\n"
 
 #: build/parseSpec.c:313
 #, c-format
@@ -1355,9 +1358,9 @@ msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s:%d: %%endif sen %%if\n"
 
 #: build/parseSpec.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "misformita frazo %%include\n"
+msgstr "%s:%d: misformita frazo %%include\n"
 
 #: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
@@ -1527,9 +1530,8 @@ msgid "Header size too big"
 msgstr "Kapo-grando tro granda"
 
 #: lib/cpio.c:393
-#, fuzzy
 msgid "File too large for archive"
-msgstr "Dosiero %s tro granda por ŝarĝo\n"
+msgstr "Dosiero tro granda por arkivo"
 
 #: lib/cpio.c:394
 msgid "Unknown file type"
@@ -1565,12 +1567,12 @@ msgstr "%s estas Pera RPM kaj ne estas rekte instalebla\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Ne komprenata ŝarĝo (%s) en pako %s\n"
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "pako %s jam aldoniĝis, preterlasanta %s\n"
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "pako %s jam aldoniĝis, anstataŭigante per %s\n"
@@ -1613,7 +1615,7 @@ msgstr "(ne OpenPGP-pretendo)"
 #: lib/formats.c:446
 #, c-format
 msgid "Invalid date %u"
-msgstr ""
+msgstr "Nevalida dato %u"
 
 #: lib/formats.c:512
 msgid "normal"
@@ -1668,28 +1670,27 @@ msgid "%s created as %s\n"
 msgstr "%s kreita kiel %s\n"
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "%s: malsukcesis malfermi: %s\n"
+msgstr "%s %s: forigo malsukcesis: %s\n"
 
 #: lib/fsm.c:1846
 msgid "directory"
-msgstr ""
+msgstr "dosierujo"
 
 #: lib/fsm.c:1846
-#, fuzzy
 msgid "file"
-msgstr " ĉe dosiero"
+msgstr "dosiero"
 
 #: lib/package.c:146
 #, c-format
 msgid "skipping %s %s with unverifiable signature\n"
-msgstr ""
+msgstr "preterlasanta %sn %s kun nekonstatebla pretendo\n"
 
 #: lib/package.c:149
 #, c-format
 msgid "skipping %s with unverifiable signature\n"
-msgstr ""
+msgstr "preterlanata je %s kun nekonstatebla pretendo\n"
 
 #: lib/package.c:179 lib/package.c:306 lib/package.c:373 lib/signature.c:130
 #, c-format
@@ -1714,9 +1715,9 @@ msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "amaso-grando (%d): FUŜA, 8 + 16 * il(%d) + dl(%d)\n"
 
 #: lib/package.c:322 lib/signature.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
-msgstr "regiona antaŭaĵo: FUŜA, etikedo %d tipo %d malsameco %d numero %d\n"
+msgstr "regiona etikedo: FUŜA, etikedo %d tipo %d malsameco %d numero %d\n"
 
 #: lib/package.c:331 lib/signature.c:151
 #, c-format
@@ -1961,7 +1962,7 @@ msgstr "<pakodosiero>+"
 
 #: lib/poptI.c:150
 msgid "print hash marks as package installs (good with -v)"
-msgstr "eligu diesojn dum pako-instaladon (bona kun -v)"
+msgstr "eligu kradojn dum pako-instaladon (bona kun -v)"
 
 #: lib/poptI.c:153
 msgid "don't verify package architecture"
@@ -2396,7 +2397,7 @@ msgstr "%s: importa legado malsukcesis (%d).\n"
 #: lib/rpmchecksig.c:119
 #, c-format
 msgid "%s: headerRead failed: %s\n"
-msgstr ""
+msgstr "%s: headerRead malsukcesis: %s\n"
 
 #: lib/rpmchecksig.c:128
 #, c-format
@@ -2524,7 +2525,7 @@ msgstr "pako-programetoj eblas etendiĝi dum insntalado."
 
 #: lib/rpmds.c:986
 msgid "dependency comparison supports versions with tilde."
-msgstr ""
+msgstr "dependaĵa komparo komprenas eldonojn kun tildo."
 
 #: lib/rpmgi.c:49 lib/rpminstall.c:115 lib/rpminstall.c:308
 #: lib/rpminstall.c:337 tools/rpmgraph.c:92 tools/rpmgraph.c:129
@@ -2540,12 +2541,12 @@ msgstr "%s: ne rpm-pako (aŭ pako-manifesto)\n"
 #: lib/rpminstall.c:141
 #, c-format
 msgid "Updating / installing...\n"
-msgstr ""
+msgstr "Ĝisdatiganta / instalanta...\n"
 
 #: lib/rpminstall.c:143
 #, c-format
 msgid "Cleaning up / removing...\n"
-msgstr ""
+msgstr "Forviŝanta / Foriganta...\n"
 
 #: lib/rpminstall.c:192
 msgid "Preparing..."
@@ -2553,7 +2554,7 @@ msgstr "Pretiganta..."
 
 #: lib/rpminstall.c:194
 msgid "Preparing packages..."
-msgstr ""
+msgstr "Pretiganta pakaĵojn..."
 
 #: lib/rpminstall.c:270 tools/rpmgraph.c:168
 msgid "Failed dependencies:\n"
@@ -2795,7 +2796,7 @@ msgstr "Fuŝa elekto '%s' ĉe %s:%d\n"
 
 #: lib/rpmrc.c:927
 msgid "Failed to read auxiliary vector, /proc not mounted?\n"
-msgstr ""
+msgstr "Malsukcesis legi helpan vektoron, ĉu /proc ne surmetita?\n"
 
 #: lib/rpmrc.c:1349
 #, c-format
@@ -2863,27 +2864,27 @@ msgstr "forviŝi"
 msgid "cannot open Packages database in %s\n"
 msgstr "ne eblas malfermi pako-datumbazon en %s\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "aldona '(' en pako-etikedo: %s\n"
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "manka '(' en pako-etikedo: %s\n"
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "manka ')' en pako-etikedo: %s\n"
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: legi la publikan ŝlosilon malsukcesis.\n"
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr "interago"
 
@@ -2923,7 +2924,7 @@ msgstr "suspira ŝarĝo: FUŜA\n"
 #: lib/signature.c:219
 #, c-format
 msgid "sigh pad(%zd): BAD, read %zd bytes\n"
-msgstr "suspira pad(%zd): FUŜA, legi %zd bajtojn\n"
+msgstr "suspira pad(%zd): FUŜA, leginta %zd bajtojn\n"
 
 #: lib/signature.c:235
 #, c-format
@@ -2936,7 +2937,7 @@ msgstr "Neŝanĝebla kapa regiono ne eblas legiĝi. Ĉu koruptita pako?\n"
 
 #: lib/signature.c:321
 msgid "Cannot sign RPM v3 packages\n"
-msgstr ""
+msgstr "Ne povas pretendi pakaĵojn el RPM-v3\n"
 
 #: lib/signature.c:408
 msgid "MD5 digest:"
@@ -2953,13 +2954,13 @@ msgstr "Kapo"
 #: lib/signature.c:530
 #, c-format
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
-msgstr ""
+msgstr "Konstati pretendon: FUŜAJ PARAMETROJ (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr "preterlasita"
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr "malsukcesa"
 
@@ -3441,7 +3442,7 @@ msgstr "eraro: "
 
 #: rpmio/rpmlog.c:152
 msgid "warning: "
-msgstr "averto"
+msgstr "averto: "
 
 #: rpmio/rpmmalloc.c:25
 #, c-format
@@ -3469,17 +3470,17 @@ msgstr "%s: Fflush malsukcesis: %s\n"
 
 #: sign/rpmgensig.c:125
 msgid "Unsupported PGP signature\n"
-msgstr ""
+msgstr "Nekomprenita PGP-pretendo\n"
 
 #: sign/rpmgensig.c:131
 #, c-format
 msgid "Unsupported PGP hash algorithm %u\n"
-msgstr ""
+msgstr "Nekomprenita krampita algoritmo %u de PGP\n"
 
 #: sign/rpmgensig.c:144
 #, c-format
 msgid "Unsupported PGP pubkey algorithm %u\n"
-msgstr ""
+msgstr "Nekomprenita algoritmo publika-ŝlosila %u de PGP\n"
 
 #: sign/rpmgensig.c:174
 #, c-format
@@ -3531,21 +3532,3 @@ msgstr "%s: legi manifeston malsukcesis: %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "ne konstatu pretendojn de kapo+ŝarĝo"
-
-#~ msgid "Only one arg for %%docdir\n"
-#~ msgstr "Nur unu parametro por %%docdir\n"
-
-#~ msgid "Explicit file attributes required in spec for: %s\n"
-#~ msgstr "Malimplicitaj dosieraj atributoj bezonitaj en specifo por: %s\n"
-
-#~ msgid "archive file %s was not found in header file list\n"
-#~ msgstr "pakita dosiero %s ne troviĝis en la kapo-dosiero listo\n"
-
-#~ msgid "%s rmdir of %s failed: Directory not empty\n"
-#~ msgstr "%s rmdir de %s malsukcesis: Dosierujo ne vaka\n"
-
-#~ msgid "%s rmdir of %s failed: %s\n"
-#~ msgstr "%s rmdir de %s malsukcesis: %s\n"
-
-#~ msgid "%s unlink of %s failed: %s\n"
-#~ msgstr "%s malligado de %s malsukcesis: %s\n"

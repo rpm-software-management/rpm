@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-08-23 03:39+0000\n"
-"Last-Translator: Christopher Meng <cickumqt@gmail.com>\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-12-19 11:06+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/rpm/"
 "language/zh_CN/)\n"
 "Language: zh_CN\n"
@@ -343,14 +343,14 @@ msgid "generate package header(s) compatible with (legacy) rpm v3 packaging"
 msgstr "生成和 rpm v3 包管理(旧版本)兼容的软件包头"
 
 #: rpmbuild.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "不执行任何构建步骤 "
+msgstr ""
 
 #: rpmbuild.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %check stage of the build"
-msgstr "不执行任何构建步骤 "
+msgstr ""
 
 #: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
@@ -776,32 +776,32 @@ msgstr "读取 %%files 文件 %s 失败：%m\n"
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1866
-#, fuzzy, c-format
+#: build/files.c:1869
+#, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr "不能将特殊的 %%doc 与其他形式混合：%s\n"
+msgstr ""
 
-#: build/files.c:1883
-#, fuzzy, c-format
+#: build/files.c:1886
+#, c-format
 msgid "More than one file on a line: %s\n"
-msgstr "在一行上有两个文件： %s\n"
+msgstr ""
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "坏文件：%s: %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "坏的属主/群组：%s\n"
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "检查未打包文件：%s\n"
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -810,17 +810,17 @@ msgstr ""
 "发现已安装(但未打包的)文件：\n"
 "%s"
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "处理文件：%s\n"
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "noarch 软件包中有架构相关的二进制文件\n"
 
@@ -830,9 +830,9 @@ msgid "create archive failed on file %s: %s\n"
 msgstr ""
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "%s：读取 manifest 文件失败：%s\n"
+msgstr ""
 
 #: build/pack.c:80
 #, c-format
@@ -1550,12 +1550,12 @@ msgstr ""
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr ""
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr ""
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr ""
@@ -1653,9 +1653,9 @@ msgid "%s created as %s\n"
 msgstr ""
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "%s: Fwrite 失败: %s\n"
+msgstr ""
 
 #: lib/fsm.c:1846
 msgid "directory"
@@ -2841,27 +2841,27 @@ msgstr ""
 msgid "cannot open Packages database in %s\n"
 msgstr ""
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr ""
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr ""
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr ""
 
@@ -2933,11 +2933,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr ""
 
@@ -3504,9 +3504,3 @@ msgstr "%s：读取 manifest 文件失败：%s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr ""
-
-#~ msgid "Only one arg for %%docdir\n"
-#~ msgstr "%%docdir 只有一个参数\n"
-
-#~ msgid "Explicit file attributes required in spec for: %s\n"
-#~ msgstr "spec 中需要显氏指定文件属性：%s\n"

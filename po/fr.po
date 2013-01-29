@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the PACKAGE package.
 #
 # Translators:
-# Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>, 2011, 2012.
+# Mathieu LEFEBVRE Mathdabomb <mathdabomb@gmail.com>, 2011-2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-10 15:20+0200\n"
-"PO-Revision-Date: 2012-03-07 13:03+0000\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: French (http://www.transifex.com/projects/p/rpm/language/"
 "fr/)\n"
@@ -368,14 +368,14 @@ msgstr ""
 "(hérité)"
 
 #: rpmbuild.c:187
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %clean stage of the build"
-msgstr "n'exécuter aucune étape de la construction"
+msgstr ""
 
 #: rpmbuild.c:189
-#, fuzzy, c-format
+#, c-format
 msgid "do not execute %check stage of the build"
-msgstr "n'exécuter aucune étape de la construction"
+msgstr ""
 
 #: rpmbuild.c:192
 msgid "do not accept i18N msgstr's from specfile"
@@ -803,36 +803,36 @@ msgid "Error reading %%files file %s: %m\n"
 msgstr "Erreur de lecture du fichiers %%files %s : %m\n"
 
 #: build/files.c:1711
-#, fuzzy, c-format
+#, c-format
 msgid "illegal _docdir_fmt %s: %s\n"
-msgstr "illegal _docdir_fmt : %s\n"
+msgstr ""
 
-#: build/files.c:1866
-#, fuzzy, c-format
+#: build/files.c:1869
+#, c-format
 msgid "Can't mix special %s with other forms: %s\n"
-msgstr "Ne peut mélanger un %%doc spécial avec d'autre formes : %s\n"
+msgstr ""
 
-#: build/files.c:1883
-#, fuzzy, c-format
+#: build/files.c:1886
+#, c-format
 msgid "More than one file on a line: %s\n"
-msgstr "Deux fichiers sur une seule ligne : %s\n"
+msgstr ""
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "Mauvais fichier : %s : %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr "Mauvais possesseur/groupe : %s\n"
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr "Vérification des fichiers non empaquetés : %s\n"
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
@@ -841,29 +841,29 @@ msgstr ""
 "Fichier(s) installé(s) (mais non empaquetés) :\n"
 "%s"
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr "Traitement des fichiers : %s\n"
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr "Binaires dépendants d'une arch dans un paquet noarch\n"
 
 #: build/pack.c:50
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed on file %s: %s\n"
-msgstr "impossible de créer l'archive %s\n"
+msgstr ""
 
 #: build/pack.c:53
-#, fuzzy, c-format
+#, c-format
 msgid "create archive failed: %s\n"
-msgstr "échec de la création de l'archive\n"
+msgstr ""
 
 #: build/pack.c:80
 #, c-format
@@ -976,9 +976,9 @@ msgid "line %d: second %s\n"
 msgstr "ligne %d : deuxième %s\n"
 
 #: build/parseChangelog.c:114
-#, fuzzy, c-format
+#, c-format
 msgid "bogus date in %%changelog: %s\n"
-msgstr "mauvaise date dans %%changelog : %s\n"
+msgstr ""
 
 #: build/parseChangelog.c:146
 #, c-format
@@ -1352,9 +1352,9 @@ msgid "%s:%d: Argument expected for %s\n"
 msgstr "%s :%d : argument attendu pour %s\n"
 
 #: build/parseSpec.c:308
-#, fuzzy, c-format
+#, c-format
 msgid "line %d: Unclosed %%if\n"
-msgstr "%%if non terminé\n"
+msgstr ""
 
 #: build/parseSpec.c:313
 #, c-format
@@ -1377,9 +1377,9 @@ msgid "%s:%d: Got a %%endif with no %%if\n"
 msgstr "%s : %d : j'ai là un %%endif sans %%if\n"
 
 #: build/parseSpec.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%s:%d: malformed %%include statement\n"
-msgstr "%%include mal-formé\n"
+msgstr ""
 
 #: build/parseSpec.c:669
 msgid "No compatible architectures found for build\n"
@@ -1552,9 +1552,8 @@ msgid "Header size too big"
 msgstr "Entête trop gros"
 
 #: lib/cpio.c:393
-#, fuzzy
 msgid "File too large for archive"
-msgstr "Fichier %s trop grand pour la charge\n"
+msgstr ""
 
 #: lib/cpio.c:394
 msgid "Unknown file type"
@@ -1590,12 +1589,12 @@ msgstr "%s est un Delta RPM et ne peut être installé directement\n"
 msgid "Unsupported payload (%s) in package %s\n"
 msgstr "Charge (%s) non pris en charge dans le paquet %s\n"
 
-#: lib/depends.c:348
+#: lib/depends.c:344
 #, c-format
 msgid "package %s was already added, skipping %s\n"
 msgstr "le paquet %s a déjà été rajouté, %s ignoré\n"
 
-#: lib/depends.c:349
+#: lib/depends.c:345
 #, c-format
 msgid "package %s was already added, replacing with %s\n"
 msgstr "le paquet %s a déjà été rajouté, replacé par %s\n"
@@ -1693,18 +1692,17 @@ msgid "%s created as %s\n"
 msgstr "%s créé en tant que %s\n"
 
 #: lib/fsm.c:1845
-#, fuzzy, c-format
+#, c-format
 msgid "%s %s: remove failed: %s\n"
-msgstr "%s : échec de l'ouverture : %s\n"
+msgstr ""
 
 #: lib/fsm.c:1846
 msgid "directory"
 msgstr ""
 
 #: lib/fsm.c:1846
-#, fuzzy
 msgid "file"
-msgstr " dans fichier "
+msgstr ""
 
 #: lib/package.c:146
 #, c-format
@@ -1741,9 +1739,9 @@ msgid "blob size(%d): BAD, 8 + 16 * il(%d) + dl(%d)\n"
 msgstr "blob size(%d) : ERRONÉE, 8 + 16 * il(%d) + dl(%d)\n"
 
 #: lib/package.c:322 lib/signature.c:142
-#, fuzzy, c-format
+#, c-format
 msgid "region tag: BAD, tag %d type %d offset %d count %d\n"
-msgstr "region trailer : ERRONÉ, tag %d type %d offset %d décompte %d\n"
+msgstr ""
 
 #: lib/package.c:331 lib/signature.c:151
 #, c-format
@@ -2918,27 +2916,27 @@ msgstr "effacer"
 msgid "cannot open Packages database in %s\n"
 msgstr "impossible d'ouvrir la base de données paquet dans %s\n"
 
-#: lib/rpmts.c:192
+#: lib/rpmts.c:191
 #, c-format
 msgid "extra '(' in package label: %s\n"
 msgstr "'(' supplémentaire dans le label du paquet : %s\n"
 
-#: lib/rpmts.c:210
+#: lib/rpmts.c:209
 #, c-format
 msgid "missing '(' in package label: %s\n"
 msgstr "'(' manquante dans le label du paquet : %s\n"
 
-#: lib/rpmts.c:218
+#: lib/rpmts.c:217
 #, c-format
 msgid "missing ')' in package label: %s\n"
 msgstr "')' manquante dans le label du paquet : %s\n"
 
-#: lib/rpmts.c:278
+#: lib/rpmts.c:273
 #, c-format
 msgid "%s: reading of public key failed.\n"
 msgstr "%s: la lecture de la clé publique a échoué.\n"
 
-#: lib/rpmts.c:1085
+#: lib/rpmts.c:1087
 msgid "transaction"
 msgstr "transaction"
 
@@ -3010,11 +3008,11 @@ msgstr "Entête "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "Vérification de signature: MAUVAIS PARAMETRES (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr "sauté"
 
-#: lib/transaction.c:1418
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr "échoué"
 
@@ -3591,21 +3589,3 @@ msgstr "%s : échec de la lecture de la liste de paquetages : %s\n"
 #: tools/rpmgraph.c:220
 msgid "don't verify header+payload signature"
 msgstr "ne pas vérifier la signature de l'entête+charge_utile"
-
-#~ msgid "Only one arg for %%docdir\n"
-#~ msgstr "Un seul argument pour %%docdir\n"
-
-#~ msgid "Explicit file attributes required in spec for: %s\n"
-#~ msgstr "Attributs explicites du fichier requis dans spec pour : %s\n"
-
-#~ msgid "archive file %s was not found in header file list\n"
-#~ msgstr "l'archive %s n'était pas dans la liste de fichiers d'entêtes\n"
-
-#~ msgid "%s rmdir of %s failed: Directory not empty\n"
-#~ msgstr "%s échec du rmdir sur %s : répertoire non-vide\n"
-
-#~ msgid "%s rmdir of %s failed: %s\n"
-#~ msgstr "%s échec du rmdir sur %s : %s\n"
-
-#~ msgid "%s unlink of %s failed: %s\n"
-#~ msgstr "%s n'a pu délier %s : %s\n"

@@ -1,20 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR Free Software Foundation, Inc.
 # This file is distributed under the same license as the PACKAGE package.
-# Thierry Vignaud <thierry.vignaud@gmail.com>, 2012
 #
+# Translators:
+# Thierry Vignaud <thierry.vignaud@gmail.com>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: rpm\n"
+"Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-19 12:48+0200\n"
-"PO-Revision-Date: 2012-12-11 12:48+0100\n"
-"Last-Translator: Thierry Vignaud <thierry.vignaud@gmail.com>\n"
-"Language-Team: br\n"
+"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"PO-Revision-Date: 2012-12-19 10:54+0000\n"
+"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: br\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
@@ -766,49 +768,49 @@ msgstr "Fazi en ur lenn %%files eus ar restr %s : %m\n"
 msgid "illegal _docdir_fmt %s: %s\n"
 msgstr ""
 
-#: build/files.c:1866
+#: build/files.c:1869
 #, c-format
 msgid "Can't mix special %s with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1883
+#: build/files.c:1886
 #, c-format
 msgid "More than one file on a line: %s\n"
 msgstr "Muioc'h evit ur restr war ul linenn : %s\n"
 
-#: build/files.c:2011
+#: build/files.c:2014
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr "N'eo ket ur restr mat : %s : %s\n"
 
-#: build/files.c:2036 build/parsePrep.c:33
+#: build/files.c:2039 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2070
+#: build/files.c:2073
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2083
+#: build/files.c:2086
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2114
+#: build/files.c:2117
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:2128
+#: build/files.c:2131
 #, c-format
 msgid "Binaries arch (%d) not matching the package arch (%d).\n"
 msgstr ""
 
-#: build/files.c:2134
+#: build/files.c:2137
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -1425,7 +1427,7 @@ msgstr ""
 msgid "Couldn't exec %s: %s\n"
 msgstr "N'hell bet bet sevenet %s : %s\n"
 
-#: build/rpmfc.c:234 lib/rpmscript.c:257
+#: build/rpmfc.c:234 lib/rpmscript.c:255
 #, c-format
 msgid "Couldn't fork %s: %s\n"
 msgstr ""
@@ -2207,34 +2209,34 @@ msgstr ""
 msgid "don't execute verify script(s)"
 msgstr ""
 
-#: lib/psm.c:215
+#: lib/psm.c:212
 #, c-format
 msgid "Missing rpmlib features for %s:\n"
 msgstr ""
 
-#: lib/psm.c:257
+#: lib/psm.c:254
 msgid "source package expected, binary found\n"
 msgstr ""
 
-#: lib/psm.c:310
+#: lib/psm.c:307
 msgid "source package contains no .spec file\n"
 msgstr ""
 
-#: lib/psm.c:839
+#: lib/psm.c:836
 #, c-format
 msgid "unpacking of archive failed%s%s: %s\n"
 msgstr ""
 
-#: lib/psm.c:840
+#: lib/psm.c:837
 msgid " on file "
 msgstr " war restr "
 
-#: lib/psm.c:944
+#: lib/psm.c:941
 #, c-format
 msgid "%s failed on file %s: %s\n"
 msgstr "sac'het eo bet %s war ar restr %s : %s\n"
 
-#: lib/psm.c:947
+#: lib/psm.c:944
 #, c-format
 msgid "%s failed: %s\n"
 msgstr "sac'het eo bet %s : %s\n"
@@ -2611,9 +2613,9 @@ msgid "Failed to resolve symbol %s: %s\n"
 msgstr ""
 
 #: lib/rpmplugins.c:87
-#, fuzzy, c-format
-msgid "Failed to expand %%__%s_%s macro\n"
-msgstr "Sac'het eo bet dlopen %s %s\n"
+#, c-format
+msgid "Failed to expand %%__collection_%s macro\n"
+msgstr ""
 
 #: lib/rpmplugins.c:136 lib/rpmplugins.c:141
 #, c-format
@@ -2777,36 +2779,36 @@ msgstr ""
 msgid "Unable to open %s for reading: %m.\n"
 msgstr "N'hell ket bet digoret %s evit lenn : %m.\n"
 
-#: lib/rpmscript.c:77
+#: lib/rpmscript.c:75
 #, c-format
 msgid "Unable to restore current directory: %m"
 msgstr ""
 
-#: lib/rpmscript.c:88
+#: lib/rpmscript.c:86
 msgid "<lua> scriptlet support not built in\n"
 msgstr ""
 
-#: lib/rpmscript.c:223
+#: lib/rpmscript.c:221
 #, c-format
 msgid "Couldn't create temporary file for %s: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:250
+#: lib/rpmscript.c:248
 #, c-format
 msgid "Couldn't duplicate file descriptor: %s: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:280
+#: lib/rpmscript.c:272
 #, c-format
 msgid "%s scriptlet failed, waitpid(%d) rc %d: %s\n"
 msgstr ""
 
-#: lib/rpmscript.c:284
+#: lib/rpmscript.c:276
 #, c-format
 msgid "%s scriptlet failed, signal %d\n"
 msgstr ""
 
-#: lib/rpmscript.c:287
+#: lib/rpmscript.c:279
 #, c-format
 msgid "%s scriptlet failed, exit status %d\n"
 msgstr ""
@@ -2920,11 +2922,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1421
+#: lib/transaction.c:1431
 msgid "skipped"
 msgstr "tremenet en e biou"
 
-#: lib/transaction.c:1421
+#: lib/transaction.c:1431
 msgid "failed"
 msgstr "sac'het"
 
