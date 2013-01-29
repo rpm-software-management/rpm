@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2012-12-07 14:44+0200\n"
+"POT-Creation-Date: 2013-01-29 09:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -682,134 +682,134 @@ msgstr ""
 msgid "Two files on one line: %s\n"
 msgstr ""
 
-#: build/files.c:885
+#: build/files.c:887
 #, c-format
 msgid "File must begin with \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:896
+#: build/files.c:898
 #, c-format
 msgid "Can't mix special %%doc with other forms: %s\n"
 msgstr ""
 
-#: build/files.c:1035
+#: build/files.c:1037
 #, c-format
 msgid "Unknown file digest algorithm %u, falling back to MD5\n"
 msgstr ""
 
-#: build/files.c:1063
+#: build/files.c:1065
 #, c-format
 msgid "File listed twice: %s\n"
 msgstr ""
 
-#: build/files.c:1189
+#: build/files.c:1191
 #, c-format
 msgid "reading symlink %s failed: %s\n"
 msgstr ""
 
-#: build/files.c:1197
+#: build/files.c:1199
 #, c-format
 msgid "Symlink points to BuildRoot: %s -> %s\n"
 msgstr ""
 
-#: build/files.c:1391
+#: build/files.c:1393
 #, c-format
 msgid "Directory not found: %s\n"
 msgstr ""
 
-#: build/files.c:1392
+#: build/files.c:1394
 #, c-format
 msgid "File not found: %s\n"
 msgstr ""
 
-#: build/files.c:1498
+#: build/files.c:1500
 #, c-format
 msgid "File %s too large for payload\n"
 msgstr ""
 
-#: build/files.c:1592
+#: build/files.c:1594
 #, c-format
 msgid "%s: can't load unknown tag (%d).\n"
 msgstr ""
 
-#: build/files.c:1598
+#: build/files.c:1600
 #, c-format
 msgid "%s: public key read failed.\n"
 msgstr ""
 
-#: build/files.c:1602
+#: build/files.c:1604
 #, c-format
 msgid "%s: not an armored public key.\n"
 msgstr ""
 
-#: build/files.c:1611
+#: build/files.c:1613
 #, c-format
 msgid "%s: failed to encode\n"
 msgstr ""
 
-#: build/files.c:1656
+#: build/files.c:1658
 #, c-format
 msgid "File needs leading \"/\": %s\n"
 msgstr ""
 
-#: build/files.c:1680
+#: build/files.c:1682
 #, c-format
 msgid "%%dev glob not permitted: %s\n"
 msgstr ""
 
-#: build/files.c:1693
+#: build/files.c:1695
 #, c-format
 msgid "Directory not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1694 lib/rpminstall.c:426
+#: build/files.c:1696 lib/rpminstall.c:426
 #, c-format
 msgid "File not found by glob: %s\n"
 msgstr ""
 
-#: build/files.c:1730
+#: build/files.c:1732
 #, c-format
 msgid "Could not open %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:1737
+#: build/files.c:1739
 #, c-format
 msgid "line: %s\n"
 msgstr ""
 
-#: build/files.c:1744
+#: build/files.c:1746
 #, c-format
 msgid "Error reading %%files file %s: %m\n"
 msgstr ""
 
-#: build/files.c:2016
+#: build/files.c:2018
 #, c-format
 msgid "Bad file: %s: %s\n"
 msgstr ""
 
-#: build/files.c:2038 build/parsePrep.c:33
+#: build/files.c:2040 build/parsePrep.c:33
 #, c-format
 msgid "Bad owner/group: %s\n"
 msgstr ""
 
-#: build/files.c:2078
+#: build/files.c:2080
 #, c-format
 msgid "Checking for unpackaged file(s): %s\n"
 msgstr ""
 
-#: build/files.c:2091
+#: build/files.c:2093
 #, c-format
 msgid ""
 "Installed (but unpackaged) file(s) found:\n"
 "%s"
 msgstr ""
 
-#: build/files.c:2120
+#: build/files.c:2122
 #, c-format
 msgid "Processing files: %s\n"
 msgstr ""
 
-#: build/files.c:2131
+#: build/files.c:2133
 msgid "Arch dependent binaries in noarch package\n"
 msgstr ""
 
@@ -2919,11 +2919,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1392
+#: lib/transaction.c:1404
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1392
+#: lib/transaction.c:1404
 msgid "failed"
 msgstr ""
 
