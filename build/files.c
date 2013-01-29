@@ -875,7 +875,9 @@ static rpmRC parseForSimple(rpmSpec spec, Package pkg, char * buf,
 
 	if (*s != '/') {
 	    if (fl->currentFlags & RPMFILE_DOC) {
-		rstrscat(&specialDocBuf, " ", s, NULL);
+		char * fn = rpmEscapeSpaces(s);
+		rstrscat(&specialDocBuf, " ", fn, NULL);
+		free(fn);
 	    } else
 	    if (fl->currentFlags & RPMFILE_PUBKEY)
 	    {
