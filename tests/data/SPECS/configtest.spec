@@ -32,4 +32,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{!?noconfig:%config%{?noreplace:(noreplace)}} %{_sysconfdir}/my.conf
+%{?fileattr} %{!?noconfig:%config%{?noreplace:(noreplace)}} %{_sysconfdir}/my.conf
