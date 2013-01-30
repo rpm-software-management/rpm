@@ -504,8 +504,13 @@ assert(otherFi != NULL);
 		/* Skip create on all but the first instance of a shared file */
 		rpmFileAction oaction = rpmfsGetAction(otherFs, otherFileNum);
 		if (oaction != FA_UNKNOWN && !XFA_SKIPPING(oaction)) {
-		    rpmfsSetAction(fs, i, FA_SKIP);
-		    done = 1;
+		    rpmfileAttrs oflags;
+		    /* ...but ghosts aren't really created so... */
+		    oflags = rpmfiFFlagsIndex(otherFi, otherFileNum);
+		    if (!(oflags & RPMFILE_GHOST)) {
+			rpmfsSetAction(fs, i, FA_SKIP);
+			done = 1;
+		    }
 		}
 	    }
 
