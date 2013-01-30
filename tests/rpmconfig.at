@@ -790,3 +790,55 @@ foo-2.0
 ],
 [])
 AT_CLEANUP
+
+---------
+# Test pre-existing and post-install config ghost survival and erasure
+AT_SETUP([install/upgrade/erase ghost config])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+cf="${RPMTEST}"/etc/my.conf
+rm -rf "${cf}" "${cf}".rpm*
+rm -rf "${TOPDIR}"
+
+for v in 1.0 2.0; do
+    runroot rpmbuild --quiet -bb \
+        --define "ver ${v}" \
+        --define "filetype file" \
+        --define "filedata buster" \
+        --define "fileattr %ghost" \
+          /data/SPECS/configtest.spec
+done
+
+# pre-existing config, install, erase
+test ! -f "${cf}" && echo OK1
+echo "keaton" > "${cf}"
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e configtest
+test ! -f "${cf}" && echo OK1
+
+# post-install config, upgrade, erase
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
+test ! -f "${cf}" && echo OK2
+echo "buster" > "${cf}"
+cat "${cf}"
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
+cat "${cf}"
+runroot rpm -e configtest
+test ! -f "${cf}" && echo OK2
+],
+[],
+[OK1
+keaton
+keaton
+OK1
+OK2
+buster
+buster
+OK2
+],
+[])
+AT_CLEANUP
