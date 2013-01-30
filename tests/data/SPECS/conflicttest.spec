@@ -20,4 +20,4 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%{_datadir}/my.version
+%{?fileattr} %{_datadir}/my.version
