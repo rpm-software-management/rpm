@@ -284,3 +284,41 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/symlinktest-1.0-2.noarch.rpm
 [],
 [])
 AT_CLEANUP
+
+# ------------------------------
+# Regular file shared with a ghost, does not conflict
+# Regular file should be created and not removed when the ghost is removed
+AT_SETUP([real file with shared ghost])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+fn="${RPMTEST}"/usr/share/my.version
+rm -rf "${TOPDIR}" "${fn}"
+
+runroot rpmbuild --quiet -bb \
+    --define "pkg one" --define "filedata one" \
+    /data/SPECS/conflicttest.spec
+runroot rpmbuild --quiet -bb \
+    --define "pkg two" --define "filedata two" --define "fileattr %ghost"\
+    /data/SPECS/conflicttest.spec
+
+test ! -f "${fn}" && echo OK
+runroot rpm -U \
+    "${TOPDIR}"/RPMS/noarch/conflictone-1.0-1.noarch.rpm \
+    "${TOPDIR}"/RPMS/noarch/conflicttwo-1.0-1.noarch.rpm
+cat "${fn}"
+runroot rpm -e conflicttwo
+cat "${fn}"
+runroot rpm -e conflictone
+test ! -f "${fn}" && echo OK
+],
+[],
+[OK
+one
+one
+OK
+],
+[])
+AT_CLEANUP
+
