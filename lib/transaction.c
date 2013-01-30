@@ -759,17 +759,6 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 	ix = rpmfiDX(fi);
 	drc[ix]++;
 
-	/*
-	 * Always skip %ghosts on install.
-	 * XXX: Should we skip directory creation if there are only
-	 * %ghosts in it? Traditionally we create the (empty) directory, so
-	 * preserving that behavior for now at least: leave the refcount alone.
-	 */
-	if (rpmfiFFlags(fi) & RPMFILE_GHOST) {
-	    rpmfsSetAction(fs, i, FA_SKIP);
-	    continue;
-	}
-
 	/* Don't bother with skipped files */
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i))) {
 	    drc[ix]--; dff[ix] = 1;
