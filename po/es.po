@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"POT-Creation-Date: 2013-01-31 08:28+0200\n"
 "PO-Revision-Date: 2012-11-11 14:20+0000\n"
 "Last-Translator: Domingo Becker <domingobecker@gmail.com>\n"
 "Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
@@ -3020,11 +3020,11 @@ msgstr "Encabezado"
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "Comprobar firma: PARAMETROS ERRONEOS  (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "skipped"
 msgstr "ignorado"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "failed"
 msgstr "falló"
 

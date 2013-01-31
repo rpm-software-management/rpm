@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"POT-Creation-Date: 2013-01-31 08:28+0200\n"
 "PO-Revision-Date: 2012-11-05 08:10+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Greek (http://www.transifex.com/projects/p/rpm/language/el/)\n"
@@ -2924,11 +2924,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "skipped"
 msgstr ""
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "failed"
 msgstr ""
 

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"POT-Creation-Date: 2013-01-31 08:28+0200\n"
 "PO-Revision-Date: 2013-01-13 06:09+0000\n"
 "Last-Translator: Keith Bowes <zooplah@gmail.com>\n"
 "Language-Team: Esperanto (http://www.transifex.com/projects/p/rpm/language/"
@@ -2956,11 +2956,11 @@ msgstr "Kapo"
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "Konstati pretendon: FUŜAJ PARAMETROJ (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "skipped"
 msgstr "preterlasita"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "failed"
 msgstr "malsukcesa"
 

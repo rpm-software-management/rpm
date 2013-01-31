@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"POT-Creation-Date: 2013-01-31 08:28+0200\n"
 "PO-Revision-Date: 2012-11-05 11:05+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <translation@linux.org.ua>\n"
@@ -2990,11 +2990,11 @@ msgstr "Заголовок "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "Перевірка підпису: ПОМИЛКОВІ ПАРАМЕТРИ (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "skipped"
 msgstr "пропущено"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "failed"
 msgstr "невдача"
 

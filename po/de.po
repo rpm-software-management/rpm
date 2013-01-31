@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 08:22+0200\n"
+"POT-Creation-Date: 2013-01-31 08:28+0200\n"
 "PO-Revision-Date: 2012-12-10 20:59+0000\n"
 "Last-Translator: Roman Spirgi <bigant@fedoraproject.org>\n"
 "Language-Team: German (http://www.transifex.com/projects/p/rpm/language/"
@@ -3006,11 +3006,11 @@ msgstr "Header "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "skipped"
 msgstr "übersprungen"
 
-#: lib/transaction.c:1431
+#: lib/transaction.c:1426
 msgid "failed"
 msgstr "fehlgeschlagen"
 
