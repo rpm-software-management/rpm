@@ -661,8 +661,8 @@ int rpmfiConfigConflictIndex(rpmfi fi, int ix)
     struct stat sb;
     int rc = 0;
 
-    /* Non-configs and ghosts are not config conflicts.  */
-    if (!(flags & RPMFILE_CONFIG) || (flags & RPMFILE_GHOST))
+    /* Non-configs are not config conflicts. */
+    if (!(flags & RPMFILE_CONFIG))
 	return 0;
 
     /* Only links and regular files can be %config, this is kinda moot */
@@ -675,6 +675,19 @@ int rpmfiConfigConflictIndex(rpmfi fi, int ix)
     fn = rpmfiFNIndex(fi, ix);
     if (lstat(fn, &sb))
 	goto exit;
+
+    /*
+     * Preserve legacy behavior: an existing %ghost %config is considered
+     * "modified" but unlike regular %config, its never removed and
+     * never backed up. Whether this actually makes sense is a whole
+     * another question, but this is very long-standing behavior that
+     * people might be depending on. The resulting FA_ALTNAME etc action
+     * is special-cased in FSM to avoid actually creating backups on ghosts.
+     */
+    if (flags & RPMFILE_GHOST) {
+	rc = 1;
+	goto exit;
+    }
 
     /* Files of different types obviously are not identical */
     diskWhat = rpmfiWhatis((rpm_mode_t)sb.st_mode);
