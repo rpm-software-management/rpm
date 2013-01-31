@@ -818,7 +818,8 @@ cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
-test ! -f "${cf}" && echo OK1
+cat "${cf}"
+rm -f "${cf}"
 
 # post-install config, upgrade, erase
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-1.0-1.noarch.rpm
@@ -828,17 +829,17 @@ cat "${cf}"
 runroot rpm -U "${TOPDIR}"/RPMS/noarch/configtest-2.0-1.noarch.rpm
 cat "${cf}"
 runroot rpm -e configtest
-test ! -f "${cf}" && echo OK2
+cat "${cf}"
 ],
 [],
 [OK1
 keaton
 keaton
-OK1
+keaton
 OK2
 buster
 buster
-OK2
+buster
 ],
 [])
 AT_CLEANUP
