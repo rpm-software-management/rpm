@@ -248,7 +248,7 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 	DB * db = dbi->dbi_db;
 	DBC * cursor;
 	int cflags;
-	int rc;
+	int rc = 0;
 	uint32_t eflags = db_envflags(db);
 	
        /* DB_WRITECURSOR requires CDB and writable db */
@@ -259,8 +259,23 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 	} else
 	    cflags = 0;
 
-	rc = db->cursor(db, NULL, &cursor, cflags);
-	rc = cvtdberr(dbi, "db->cursor", rc, _debug);
+	/*
+	 * Check for stale locks which could block writes "forever".
+	 * XXX: Should we also do this on reads? Reads are less likely
+	 *      to get blocked so it seems excessive...
+	 * XXX: On DB_RUNRECOVER, we should abort everything. Now
+	 *      we'll just fail to open a cursor again and again and again.
+	 */
+	if (cflags & DB_WRITECURSOR) {
+	    DB_ENV *dbenv = db->get_env(db);
+	    rc = dbenv->failchk(dbenv, 0);
+	    rc = cvtdberr(dbi, "dbenv->failchk", rc, _debug);
+	}
+
+	if (rc == 0) {
+	    rc = db->cursor(db, NULL, &cursor, cflags);
+	    rc = cvtdberr(dbi, "db->cursor", rc, _debug);
+	}
 
 	if (rc == 0) {
 	    dbc = xcalloc(1, sizeof(*dbc));
