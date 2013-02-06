@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: rpm\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 09:57+0200\n"
+"POT-Creation-Date: 2013-02-06 10:27+0200\n"
 "PO-Revision-Date: 2012-12-11 12:48+0100\n"
 "Last-Translator: Thierry Vignaud <thierry.vignaud@gmail.com>\n"
 "Language-Team: br\n"
@@ -2919,11 +2919,11 @@ msgstr ""
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr ""
 
-#: lib/transaction.c:1404
+#: lib/transaction.c:1398
 msgid "skipped"
 msgstr "tremenet en e biou"
 
-#: lib/transaction.c:1404
+#: lib/transaction.c:1398
 msgid "failed"
 msgstr "sac'het"
 

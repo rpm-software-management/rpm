@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-01-29 09:57+0200\n"
+"POT-Creation-Date: 2013-02-06 10:27+0200\n"
 "PO-Revision-Date: 2012-03-07 13:03+0000\n"
 "Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
 "Language-Team: Japanese (http://www.transifex.net/projects/p/rpm/language/"
@@ -2965,11 +2965,11 @@ msgstr "ヘッダー "
 msgid "Verify signature: BAD PARAMETERS (%d %p %d %p %p)\n"
 msgstr "署名の検証: 不正なパラメーター (%d %p %d %p %p)\n"
 
-#: lib/transaction.c:1404
+#: lib/transaction.c:1398
 msgid "skipped"
 msgstr "スキップした"
 
-#: lib/transaction.c:1404
+#: lib/transaction.c:1398
 msgid "failed"
 msgstr "失敗"
 
