@@ -480,14 +480,16 @@ doShellEscape(MacroBuf mb, const char * cmd, size_t clen)
 	rc = 1;
 	goto exit;
     }
+
+    size_t tpos = mb->tpos;
     while((c = fgetc(shf)) != EOF) {
 	mbAppend(mb, c);
     }
     (void) pclose(shf);
 
-    /* XXX delete trailing \r \n */
-    while (iseol(mb->buf[mb->tpos-1])) {
-	mb->buf[mb->tpos--] = '\0';
+    /* Delete trailing \r \n */
+    while (mb->tpos > tpos && iseol(mb->buf[mb->tpos-1])) {
+	mb->buf[--mb->tpos] = '\0';
 	mb->nb++;
     }
 
