@@ -62,6 +62,7 @@ int rpmInitCrypto(void)
 #else
 	if (NSS_NoDB_Init(NULL) != SECSuccess) {
 #endif
+	    rpmlog(RPMLOG_ERR, _("Failed to initialize NSS library\n"));
 	    rc = -1;
 	} else {
 	    _crypto_initialized = 1;
