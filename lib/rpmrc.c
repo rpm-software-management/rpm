@@ -1607,7 +1607,8 @@ int rpmReadConfigFiles(const char * file, const char * target)
 {
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     (void) gethostbyname("localhost");
-    (void) rpmInitCrypto();
+    if (rpmInitCrypto())
+	return -1;
 
     /* Preset target macros */
    	/* FIX: target can be NULL */
