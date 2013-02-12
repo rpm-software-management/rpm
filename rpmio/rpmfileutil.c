@@ -174,7 +174,7 @@ int rpmDoDigest(int algo, const char * fn,int asAscii,
 	while ((rc = Fread(buf, sizeof(buf[0]), sizeof(buf), fd)) > 0)
 	    fsize += rc;
 	fdFiniDigest(fd, algo, (void **)&dig, &diglen, asAscii);
-	if (Ferror(fd))
+	if (dig == NULL || Ferror(fd))
 	    rc = 1;
 
 	(void) Fclose(fd);
