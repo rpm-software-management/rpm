@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <popt.h>
 #include <ctype.h>
+#include <pthread.h>
 
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmurl.h>
@@ -31,6 +32,7 @@
 #include "debug.h"
 
 static const char *rpm_config_dir = NULL;
+static pthread_once_t configDirSet = PTHREAD_ONCE_INIT;
 
 static int is_prelinked(int fdno)
 {
@@ -599,11 +601,14 @@ int rpmMkdirs(const char *root, const char *pathstr)
     return rc;
 }
 
+static void setConfigDir(void)
+{
+    char *rpmenv = getenv("RPM_CONFIGDIR");
+    rpm_config_dir = rpmenv ? xstrdup(rpmenv) : RPMCONFIGDIR;
+}
+
 const char *rpmConfigDir(void)
 {
-    if (rpm_config_dir == NULL) {
-	char *rpmenv = getenv("RPM_CONFIGDIR");
-	rpm_config_dir = rpmenv ? xstrdup(rpmenv) : RPMCONFIGDIR;
-    }
+    pthread_once(&configDirSet, setConfigDir);
     return rpm_config_dir;
 }
