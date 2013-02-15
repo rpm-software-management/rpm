@@ -20,11 +20,6 @@
 
 #include "debug.h"
 
-static const unsigned int nkeyids_max = 256;
-static unsigned int nkeyids = 0;
-static unsigned int nextkeyid  = 0;
-static unsigned int * keyids;
-
 /** \ingroup header
  * Translate and merge legacy signature tags into header.
  * @param h		header (dest)
@@ -107,6 +102,11 @@ static void headerMergeLegacySigs(Header h, Header sigh)
  */
 static int stashKeyid(pgpDigParams sigp)
 {
+    static const unsigned int nkeyids_max = 256;
+    static unsigned int nkeyids = 0;
+    static unsigned int nextkeyid  = 0;
+    static unsigned int * keyids;
+
     unsigned int keyid;
     int i;
 
