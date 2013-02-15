@@ -109,6 +109,7 @@ static int stashKeyid(pgpDigParams sigp)
 
     unsigned int keyid;
     int i;
+    int seen = 0;
 
     if (sigp == NULL)
 	return 0;
@@ -120,7 +121,8 @@ static int stashKeyid(pgpDigParams sigp)
     if (keyids != NULL)
     for (i = 0; i < nkeyids; i++) {
 	if (keyid == keyids[i])
-	    return 1;
+	    seen = 1;
+	    goto exit;
     }
 
     if (nkeyids < nkeyids_max) {
@@ -132,7 +134,8 @@ static int stashKeyid(pgpDigParams sigp)
     nextkeyid++;
     nextkeyid %= nkeyids_max;
 
-    return 0;
+exit:
+    return seen;
 }
 
 int parsePGPSig(rpmtd sigtd, const char *type, const char *fn,
