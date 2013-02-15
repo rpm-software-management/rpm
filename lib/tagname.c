@@ -4,6 +4,8 @@
 
 #include "system.h"
 
+#include <pthread.h>
+
 #include <rpm/header.h>
 #include <rpm/rpmstring.h>
 #include "debug.h"
@@ -116,14 +118,21 @@ static struct headerTagIndices_s _rpmTags = {
 
 static headerTagIndices const rpmTags = &_rpmTags;
 
+static pthread_once_t tagsLoaded = PTHREAD_ONCE_INIT;
+
+static void loadTags(void)
+{
+    tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+    tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
+}
+
 static const char * _tagName(rpmTagVal tag)
 {
     const char *name = "(unknown)";
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
 
-    if (_rpmTags.byValue == NULL)
-	tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+    pthread_once(&tagsLoaded, loadTags);
 
     switch (tag) {
     case RPMDBI_PACKAGES:
@@ -173,8 +182,8 @@ static rpmTagType _tagType(rpmTagVal tag)
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
 
-    if (_rpmTags.byValue == NULL)
-	tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
+    pthread_once(&tagsLoaded, loadTags);
+
     if (_rpmTags.byValue) {
 	l = 0;
 	u = _rpmTags.byValueSize;
@@ -207,11 +216,11 @@ static rpmTagVal _tagValue(const char * tagstr)
     const struct headerTagTableEntry_s *t;
     int comparison, i, l, u;
 
+    pthread_once(&tagsLoaded, loadTags);
+
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
 
-    if (_rpmTags.byName == NULL)
-	tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
     if (_rpmTags.byName == NULL)
 	return RPMTAG_NOT_FOUND;
 
@@ -295,8 +304,8 @@ int rpmTagGetNames(rpmtd tagnames, int fullname)
     const char **names;
     const char *name;
 
-    if (_rpmTags.byName == NULL)
-	tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
+    pthread_once(&tagsLoaded, loadTags);
+
     if (tagnames == NULL ||_rpmTags.byName == NULL)
 	return 0;
 
