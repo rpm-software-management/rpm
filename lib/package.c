@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <netinet/in.h>
+#include <pthread.h>
 
 #include <rpm/rpmlib.h>			/* XXX RPMSIGTAG, other sig stuff */
 #include <rpm/rpmts.h>
@@ -97,11 +98,13 @@ static void headerMergeLegacySigs(Header h, Header sigh)
 
 /**
  * Remember current key id.
+ * XXX: This s*** needs to die. Hook it into keyring or sumthin...
  * @param dig		OpenPGP packet containter
  * @return		0 if new keyid, otherwise 1
  */
 static int stashKeyid(pgpDigParams sigp)
 {
+    static pthread_mutex_t keyid_lock = PTHREAD_MUTEX_INITIALIZER;
     static const unsigned int nkeyids_max = 256;
     static unsigned int nkeyids = 0;
     static unsigned int nextkeyid  = 0;
@@ -116,6 +119,10 @@ static int stashKeyid(pgpDigParams sigp)
 
     keyid = pgpGrab(sigp->signid+4, 4);
     if (keyid == 0)
+	return 0;
+
+    /* Just pretend we didn't see the keyid if we fail to lock */
+    if (pthread_mutex_lock(&keyid_lock))
 	return 0;
 
     if (keyids != NULL)
@@ -135,6 +142,7 @@ static int stashKeyid(pgpDigParams sigp)
     nextkeyid %= nkeyids_max;
 
 exit:
+    pthread_mutex_unlock(&keyid_lock);
     return seen;
 }
 
