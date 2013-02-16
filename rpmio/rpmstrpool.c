@@ -137,7 +137,7 @@ static void poolHashAddHEntry(rpmstrPool pool, const char * key, unsigned int ke
 {
     poolHash ht = pool->hash;
 
-    /* keep load factor inbetween 0.25 and 0.5 */
+    /* keep load factor between 0.25 and 0.5 */
     if (2*(ht->keyCount) > ht->numBuckets) {
         poolHashResize(pool, ht->numBuckets * 2);
     }

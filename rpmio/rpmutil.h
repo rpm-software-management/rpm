@@ -4,7 +4,7 @@
 #include <unistd.h>
 
 /*
- * Miscellanous utility macros:
+ * Miscellaneous utility macros:
  * - portability wrappers for various gcc extensions like __attribute__()
  * - ...
  *

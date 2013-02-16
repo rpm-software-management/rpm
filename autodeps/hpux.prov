@@ -70,7 +70,7 @@ do
 			FS = " ";
 			RS = "\n";
 
-			# This flag signfies that we have seen the internal name:
+			# This flag signifies that we have seen the internal name:
 			# marker.  Once we see that, we set the flag to 1.  The next
 			# line we read should contain the library internal name, the
 			# SOM equivalent of an soname.  At that point we set the flag

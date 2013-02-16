@@ -438,7 +438,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
 	}
     }
 
-    /* Determine config file dispostion, skipping missing files (if any). */
+    /* Determine config file disposition, skipping missing files (if any). */
     if (isCfgFile) {
 	int skipMissing = ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
 	rpmFileAction action;
@@ -502,7 +502,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	 * that were just installed.
 	 * If both this and the other package are being removed, then each
 	 * file removal from preceding packages needs to be skipped so that
-	 * the file removal occurs only on the last occurence of an overlapped
+	 * the file removal occurs only on the last occurrence of an overlapped
 	 * file in the transaction set.
 	 *
 	 */

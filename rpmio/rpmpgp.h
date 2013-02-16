@@ -974,7 +974,7 @@ char * pgpHexStr(const uint8_t *p, size_t plen);
  * @param pkt		OpenPGP packet (i.e. PGPTAG_PUBLIC_KEY)
  * @param pktlen	OpenPGP packet length (no. of bytes)
  * @retval keyid	public key fingerprint
- * @return		0 on sucess, else -1
+ * @return		0 on success, else -1
  */
 int pgpPubkeyFingerprint(const uint8_t * pkt, size_t pktlen,
 		pgpKeyID_t keyid);

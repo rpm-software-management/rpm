@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # note this works for both a.out and ELF executables
-# it also auto-generates requirment lines for shell scripts
+# it also auto-generates requirement lines for shell scripts
 
 ulimit -c 0
 

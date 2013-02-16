@@ -32,8 +32,8 @@ use Sys::Syslog;
 
 # fqn is "fully qualified name"
 
-# The state of the system is a orderd list (topologically sorted by
-# dependendencies) of fqn's. The list may contain additional RPM flags
+# The state of the system is an ordered list (topologically sorted by
+# dependencies) of fqn's. The list may contain additional RPM flags
 # to be used on a particular list entry.
 
 # we are going to compare two states the actual state of the machine
@@ -59,11 +59,11 @@ Usage:
 		[--help] [--version]
 
 
-Required Aguments:
+Required Arguments:
 
 
 --test		test what an update would change.  Compare the installed 
-		packges with the packages listed in the manifest file.  
+		packages with the packages listed in the manifest file.  
 		This option will show what commands would be executed if 
 		we were to run an update without actually changing anything.
 		When an --update finishes it automatically runs --test 
@@ -80,14 +80,14 @@ Required Aguments:
 		later version number then the previous packages.
 
 --rollback	Rollback a previously installed update.  This command 
-		requires that the pervious manfest file be reinstalled.  All 
+		requires that the previous manifest file be reinstalled.  All 
 		update commands are run in the reverse order from the --update,
 		this ensures that the packages are undone exactly as they were
 		installed.
 
 --force		Ensure that the packages installed on the machine are 
 		exactly those packages listed in the manifest file and that no
-		installed files are currpted.  First each package in the 
+		installed files are corrupted.  First each package in the 
 		manifest file is installed using --force (even if it is already
 		installed) then each package which is installed but not listed
 		in the manifest list is removed from the machine.
@@ -100,15 +100,15 @@ Required Aguments:
 		     manner.
 
 
-Optional Aguments:
+Optional Arguments:
 
 
 --rpm_args	Specify additional arguments to pass to rpm for all package
 		operations.  This option is used by both the update and erase
 		commands.  This option can appear more then once on the
-		command line and the concatination of all options will be sent
-		to rpm.  This option should not be need somtimes it is useful,
-		in an emergency, to install packges with broken dependencies
+		command line and the concatenation of all options will be sent
+		to rpm.  This option should not be need sometimes it is useful,
+		in an emergency, to install packages with broken dependencies
 		or packages with duplicate files.  This is a quick way of 
 		getting the --nodeps and --force and any other needed 
 		arguments to rpm. 
@@ -142,8 +142,8 @@ Optional Aguments:
 This program is used to ensure that the RPM packages installed on a
 system match the list of packages in a manifest.  The package list
 looks like the output of 'rpm -qa' but is required to be in a
-tolological order.  If special flags are needed for particular
-packages (like --nodeps or --force or --oldpackage or --noscriopts or
+topological order.  If special flags are needed for particular
+packages (like --nodeps or --force or --oldpackage or --noscripts or
 --root <dir> or --relocate oldpath=newpath or --rcfile <file>) they
 can be added on the line after package name with a space separating
 the two.  Shell style comments (starting with \# and lasting till the
@@ -153,7 +153,7 @@ file is $MANIFEST_FILE.
 It is expected that most updates will use the --update command with
 --force saved for those rare situations where the machine is known to
 be in a very bad state or there are installed packages which are
-currupted.
+corrupted.
 
 
 
@@ -384,7 +384,7 @@ sub parse_fqn {
 
 sub system3 {
 
-# Lanuch a new child and wait for it to die.  This is like a call to
+# Launch a new child and wait for it to die.  This is like a call to
 # system but we get the stdout and stderr in addition to $?.
 
 # call the function like this 
@@ -394,7 +394,7 @@ sub system3 {
 #     'cmd_vec' => [],
 #     'stdin_str' => '',
 #     'log_cmds'=> '';
-#     'ingore_error' => ''
+#     'ignore_error' => ''
 #      );
 
 # cmd_vec is a command to run in execv format.  It is a list not a
@@ -407,7 +407,7 @@ sub system3 {
 
 # open3 signals all errors through a die so will I.  If the command
 # exits with nonzero wait_status then system3 calls die.  This feature
-# can be turned of fby setting ignore_errors.
+# can be turned of by setting ignore_error.
 
 # the system3 function returns:
 
@@ -422,7 +422,7 @@ sub system3 {
   my ($log_cmds, $ignore_error, $cmd_ref, $stdin) = @_;
 
 #  if ( ! ( (-x $args{'cmd_vec'}->[0]) && (-f $args{'cmd_vec'}->[0]) ) ) {
-#    die ("Command not exectuable: '$args{'cmd_vec'}->[0]',\n");
+#    die ("Command not executable: '$args{'cmd_vec'}->[0]',\n");
 #  }      
   
   my $info ="executing: '@{ $args{'cmd_vec'} }',\n";
@@ -487,7 +487,7 @@ sub system3 {
   # wait for child to die, but keep clearing out stdout and stderr
   # buffers for process so we do not deadlock.  
 
-  # WE seem to be loosing childrens signals occasionally, so actively
+  # WE seem to be losing childrens' signals occasionally, so actively
   # check if the child is alive.
 
   while ($reaped_pid != $child_pid) {    
@@ -597,7 +597,7 @@ sub get_rpm_info {
 
 sub remove_extra_packages {
 
-  # arguments are not used but allowed for symetry with other
+  # arguments are not used but allowed for symmetry with other
   # functions
 
   my(@pkg_list) = @_;
@@ -618,7 +618,7 @@ sub remove_extra_packages {
 
   # We would like to remove all packages in reverse topological order.
   # I have no way of finding out what that order is, so I use a single
-  # command which removes all pacakges.  RPM will figure out the
+  # command which removes all packages.  RPM will figure out the
   # correct order at run time.  This will cause us to reach the
   # command line limit if the list of packages to remove is large
   # enough.
@@ -860,7 +860,7 @@ EOF
 
 
 # check what running with --update would do.  If I were to write a
-# check_rollback_packages the output would be similar but the packge
+# check_rollback_packages the output would be similar but the package
 # update order would be reversed.
 
 sub test_update {
@@ -914,7 +914,7 @@ sub nonblock {
 
 
 sub mkdir_R {
-# a recusive mkdir function
+# a recursive mkdir function
 
   my ($dir, $mode) = @_;
   my @dir = split('/', $dir);
@@ -1128,8 +1128,8 @@ sub set_static_vars {
 
 # This functions sets all the static variables which are often
 # configuration parameters.  Since it only sets variables to static
-# quantites it can not fail at run time. Some of these variables are
-# adjusted by parse_args() but asside from that none of these
+# quantities it can not fail at run time. Some of these variables are
+# adjusted by parse_args() but aside from that none of these
 # variables are ever written to. All global variables are defined here
 # so we have a list of them and a comment of what they are for.
   
@@ -1393,7 +1393,7 @@ sub get_package_list  {
 
 # load the $package_file into memory
 
-# this fucntion must follow get_env() since we need $skip_check to be
+# this function must follow get_env() since we need $skip_check to be
 # respected, if set.
 
   my ($package_file) = @_;
@@ -1446,7 +1446,7 @@ sub get_package_hash  {
 
 # load the $package_file into memory
 
-# this fucntion must follow get_env() since we need $skip_check to be
+# this function must follow get_env() since we need $skip_check to be
 # respected, if set.
 
   my $package_file = @_;

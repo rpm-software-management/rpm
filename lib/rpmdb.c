@@ -827,7 +827,7 @@ static int openDatabase(const char * prefix,
     if (db == NULL)
 	return 1;
 
-    /* Try to ensure db home exists, error out if we cant even create */
+    /* Try to ensure db home exists, error out if we can't even create */
     rc = rpmioMkpath(rpmdbHome(db), 0755, getuid(), getgid());
     if (rc == 0) {
 	if (rpmdbRock == NULL) {
@@ -2720,7 +2720,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	}
     }
 
-    /* If everthing ok, mark header as installed now */
+    /* If everything ok, mark header as installed now */
     if (ret == 0) {
 	headerSetInstance(h, hdrNum);
 	/* Purge our verification cache on added public keys */

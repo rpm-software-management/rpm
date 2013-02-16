@@ -19,7 +19,7 @@
 
 # a simple script to print the proper name for perl libraries.
 
-# To save development time I do not parse the perl grammmar but
+# To save development time I do not parse the perl grammar but
 # instead just lex it looking for what I want.  I take special care to
 # ignore comments and pod's.
 
@@ -65,7 +65,7 @@ foreach $module (sort keys %require) {
     print "perl($module)\n";
   } else {
 
-    # I am not using rpm3.0 so I do not want spaces arround my
+    # I am not using rpm3.0 so I do not want spaces around my
     # operators. Also I will need to change the processing of the
     # $RPM_* variable when I upgrade.
 

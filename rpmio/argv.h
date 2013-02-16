@@ -149,7 +149,7 @@ typedef rpmFlags argvFlags;
 /** \ingroup rpmargv
  * Split a string into an argv array.
  * @param str		string arg to split
- * @param seps		seperator characters
+ * @param seps		separator characters
  * @param flags		flags to control behavior
  * @return		argv array
  */
@@ -159,7 +159,7 @@ ARGV_t argvSplitString(const char * str, const char * seps, argvFlags flags);
  * Split a string into an argv array.
  * @retval *argvp	argv array
  * @param str		string arg to split
- * @param seps		seperator characters
+ * @param seps		separator characters
  * @return		0 always
  */
 int argvSplit(ARGV_t * argvp, const char * str, const char * seps);
@@ -167,7 +167,7 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps);
 /** \ingroup rpmargv
  * Join an argv array into a string.
  * @param *argv		argv array to join
- * @param sep		seperator string to use
+ * @param sep		separator string to use
  * @return		malloc'ed string
  */
 char *argvJoin(ARGV_const_t argv, const char *sep);

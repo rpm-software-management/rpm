@@ -23,15 +23,15 @@ fi
 # .pyc/.pyo files embed a "magic" value, identifying the ABI version of Python
 # bytecode that they are for.
 #
-# The files below RPM_BUILD_ROOT could be targetting multiple versions of
+# The files below RPM_BUILD_ROOT could be targeting multiple versions of
 # python (e.g. a single build that emits several subpackages e.g. a
 # python26-foo subpackage, a python31-foo subpackage etc)
 #
 # Support this by assuming that below each /usr/lib/python$VERSION/, all
 # .pyc/.pyo files are to be compiled for /usr/bin/python$VERSION.
 # 
-# For example, below /usr/lib/python2.6/, we're targetting /usr/bin/python2.6
-# and below /usr/lib/python3.1/, we're targetting /usr/bin/python3.1
+# For example, below /usr/lib/python2.6/, we're targeting /usr/bin/python2.6
+# and below /usr/lib/python3.1/, we're targeting /usr/bin/python3.1
 
 shopt -s nullglob
 for python_libdir in "$RPM_BUILD_ROOT"/usr/lib{,64}/python[0-9].[0-9]/ ;

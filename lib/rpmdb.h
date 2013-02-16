@@ -171,8 +171,8 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag);
  * Get the next key - Warning! Keys are not zero terminated!
  * Binary tags may even contain zero bytes
  * @param ii		index iterator
- * @param key		adress to save the pointer to the key
- * @param keylen	adress to save the length of the key to
+ * @param key		address to save the pointer to the key
+ * @param keylen	address to save the length of the key to
  * @return 		0 on success; != 0 on error or end of index
  */
 int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen);

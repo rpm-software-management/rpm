@@ -606,7 +606,7 @@ static int hdrPutTag(Header h, rpmTagVal tag, PyObject *value)
 	    rc = hdrAppendItem(h, tag, type, item);
 	}
     } else {
-	PyErr_SetString(PyExc_RuntimeError, "cant happen, right?");
+	PyErr_SetString(PyExc_RuntimeError, "can't happen, right?");
     }
 
     return rc;

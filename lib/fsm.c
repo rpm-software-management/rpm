@@ -1582,7 +1582,7 @@ static int fsmCommit(FSM_t fsm, int ix)
 
 /**
  * Return formatted string representation of file disposition.
- * @param a		file dispostion
+ * @param a		file disposition
  * @return		formatted string
  */
 static const char * fileActionString(rpmFileAction a)
@@ -1718,7 +1718,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
                     }
                 }
             } else if (S_ISFIFO(st->st_mode)) {
-                /* This mimics cpio S_ISSOCK() behavior but probably isnt' right */
+                /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
                 rc = fsmVerify(fsm);
                 if (rc == CPIOERR_ENOENT) {
                     rc = fsmMkfifo(fsm->path, 0000);
