@@ -468,7 +468,7 @@ rpmtransFlags rpmtsSetFlags(rpmts ts, rpmtransFlags transFlags);
 rpm_color_t rpmtsColor(rpmts ts);
 
 /** \ingroup rpmts
- * Retrieve prefered file color
+ * Retrieve preferred file color
  * @param ts		transaction set
  * @return		color bits
  */
@@ -483,7 +483,7 @@ rpm_color_t rpmtsPrefColor(rpmts ts);
 rpm_color_t rpmtsSetColor(rpmts ts, rpm_color_t color);
 
 /** \ingroup rpmts
- * Set prefered file color
+ * Set preferred file color
  * @param ts		transaction set
  * @param color		new color bits
  * @return		previous color bits

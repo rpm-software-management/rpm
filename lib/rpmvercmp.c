@@ -36,7 +36,7 @@ int rpmvercmp(const char * a, const char * b)
 	while (*one && !risalnum(*one) && *one != '~') one++;
 	while (*two && !risalnum(*two) && *two != '~') two++;
 
-	/* handle the tilde separator, it sorts before everthing else */
+	/* handle the tilde separator, it sorts before everything else */
 	if (*one == '~' || *two == '~') {
 	    if (*one != '~') return 1;
 	    if (*two != '~') return -1;

@@ -51,7 +51,7 @@ usage="$usage\t[--find_provides '/path/to/find-provides']\n"
 usage="$usage\t[--shlib_dirs 'dirs:which:contain:shared:libs']\n"
 usage="$usage\t[--ignore_dirs 'grep-E|pattern|of|paths|to|ignore']\n"
 
-# these two should be unnessary as the regular dependency analysis
+# these two should be unnecessary as the regular dependency analysis
 # should take care of interpreters as well as shared libraries.
 
 usage="$usage\t[--interp_dirs 'dirs:which:contain:interpreters']\n"
@@ -67,10 +67,10 @@ sum_cmd="xargs cksum"
 date=`date`
 hostname=`uname -n`
 
-# if some subdirectories of the system directories needs to be ignored
+# if some subdirectories of the system directories need to be ignored
 # (eg /usr/local is a subdirectory of /usr but should not be part of
 # the virtual package) then call this script with ignore_dirs set to a
-# valid grep -E pattern which discribes the directories to ignored.
+# valid grep -E pattern which describes the directories to ignore.
 
 PATH=/bin:/usr/bin:/sbin:/usr/sbin:/usr/ucb:/usr/bsd
 export PATH
@@ -207,7 +207,7 @@ do
 done
 
 
-# consistancy checks on the arguments
+# consistency checks on the arguments
 
 if [ ! -f $spec_header ]; then
 	echo "You must pass me the full path to the partial spec file"
@@ -294,7 +294,7 @@ cat $spec_header
 } | sed -e 's/%/%%/g'
 
 #
-# Output the discription of the spec file
+# Output the description of the spec file
 #
 
 cat <<_EIEIO_

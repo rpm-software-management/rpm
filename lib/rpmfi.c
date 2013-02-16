@@ -1017,7 +1017,7 @@ assert(fn != NULL);		/* XXX can't happen */
 	    if (relocations[j].newPath) { /* Relocate the path */
 		char *t = NULL;
 		rstrscat(&t, relocations[j].newPath, (dirNames[i] + len), NULL);
-		/* Unfortunatly rpmCleanPath strips the trailing slash.. */
+		/* Unfortunately rpmCleanPath strips the trailing slash.. */
 		(void) rpmCleanPath(t);
 		rstrcat(&t, "/");
 

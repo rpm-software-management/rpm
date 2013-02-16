@@ -749,7 +749,7 @@ int headerDel(Header h, rpmTagVal tag)
     entry = findEntry(h, tag, RPM_NULL_TYPE);
     if (!entry) return 1;
 
-    /* Make sure entry points to the first occurence of this tag. */
+    /* Make sure entry points to the first occurrence of this tag. */
     while (entry > h->index && (entry - 1)->info.tag == tag)  
 	entry--;
 
@@ -1649,7 +1649,7 @@ int headerMod(Header h, rpmtd td)
     if (data == NULL)
 	return 0;
 
-    /* make sure entry points to the first occurence of this tag */
+    /* make sure entry points to the first occurrence of this tag */
     while (entry > h->index && (entry - 1)->info.tag == td->tag)  
 	entry--;
 

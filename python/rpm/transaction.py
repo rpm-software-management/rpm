@@ -86,7 +86,7 @@ class TransactionSet(TransactionSetCore):
         rc = TransactionSetCore.run(self, callback, data, self._probFilter)
 
         # crazy backwards compatibility goo: None for ok, list of problems
-        # if transaction didnt complete and empty list if it completed
+        # if transaction didn't complete and empty list if it completed
         # with errors
         if rc == 0:
             return None

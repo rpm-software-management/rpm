@@ -206,7 +206,7 @@ int rpmfiDigestAlgo(rpmfi fi);
 /** \ingroup rpmfi
  * Return current file (binary) digest of file info set.
  * @param fi		file info set
- * @retval algo		digest hash algoritm used (pass NULL to ignore)
+ * @retval algo		digest hash algorithm used (pass NULL to ignore)
  * @retval diglen	digest hash length (pass NULL to ignore)
  * @return		current file digest, NULL on invalid
  */
@@ -218,7 +218,7 @@ const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *diglen);
  * memory, this converts the binary data back to hex presentation used in
  * headers. 
  * @param fi		file info set
- * @retval algo		digest hash algoritm used (pass NULL to ignore)
+ * @retval algo		digest hash algorithm used (pass NULL to ignore)
  * @return		current file digest (malloc'ed), NULL on invalid
  */
 char * rpmfiFDigestHex(rpmfi fi, int *algo);
@@ -440,7 +440,7 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
  * @param ofi		old file info
  * @param nfi		new file info
  * @param skipMissing	OK to skip missing files?
- * @return		file dispostion
+ * @return		file disposition
  */
 rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
 

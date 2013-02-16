@@ -96,7 +96,7 @@
  * @return	None
  *
  * - ts.setFlags(transFlags) Set transaction set flags.
- * @param transFlags - bit(s) to controll transaction operations. The
+ * @param transFlags - bit(s) to control transaction operations. The
  *		following values can be logically OR'ed together:
  *	- rpm.RPMTRANS_FLAG_TEST - test mode, do not modify the RPM
  *		database, change any files, or run any package scripts

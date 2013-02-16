@@ -508,7 +508,7 @@
 	- use rpmfiFClass() underneath --fileclass.
 	- use rpmfiFDepends() underneath --fileprovide and --filerequire.
 	- python: add fi.FColor() and fi.FClass() methods.
-	- calculate dependency color and refernces.
+	- calculate dependency color and references.
 	- python: add ds.Color() and ds.Refs() methods.
 	- fix: typo in assertion.
 	- add rpmts/rpmte/rpmfi/rpmds element colors.
@@ -656,7 +656,7 @@
 	- eliminate db1 support.
 	- enable CDB by default.
 	- use DBT_DB_MALLOC to eliminate re-malloc'ing header blobs.
-	- rework most of rpmdb.c prepatory to implementing duplicates.
+	- rework most of rpmdb.c preparatory to implementing duplicates.
 	- fix: 2 memory leaks in headerSprintf.
 	- fix: db mire's access out-of-bounds memory.
 	- plug install mode leaks.
@@ -958,7 +958,7 @@
 	- upgrade to db-3.3.4.
 	- fix: filter duplicate package removals (#35828).
 	- add armv3l arch.
-	- fix: i18n strings need 1 on sucess return code (#41313).
+	- fix: i18n strings need 1 on success return code (#41313).
 	- fix: skip %ghost files when building packages (#38218).
 	- headerFree() returns NULL, _free is C++ safe.
 	- remove all header region assertion failures, return NULL instead.
@@ -1054,7 +1054,7 @@
 	- popthelp.c: don't use stpcpy to avoid portability grief (#47500).
 	- permit alias/exec description/arg text to be set from popt config.
 	- python: rhnLoad/rhnUnload to check header digest.
-	- package version now configureable, default v3.
+	- package version now configurable, default v3.
 	- rename rpm libraries to have version with libtool -release.
 	- fix: -i CLI context broken Yet Again.
 	- unlink all __db.nnn files before 1st db open.
@@ -1095,7 +1095,7 @@
 	- fix: --noscripts is another multimode option.
 	- add tmpdir to configure db3 tmpdir into chroot tree.
 	- permit lazy db opens within chroot.
-	- fix: diddle dbenv path to accomodate backing store reopen in chroot.
+	- fix: diddle dbenv path to accommodate backing store reopen in chroot.
 	- add support for mips (#49283).
 	- add __as, _build_arch, and __cxx macros (#36662, #36663, #49280).
 	- detailed build package error messages.
@@ -1521,7 +1521,7 @@
 	   expand %# just like %{#} (and with same value as shell analogues).
 	   macro defaults for *, 0, and # if no args specified.
 	   getopt on non-linux requires optind to be saved/restored.
-	- fix: don't remove file until last occurence in transaction (#4291).
+	- fix: don't remove file until last occurrence in transaction (#4291).
 	- resuscitate net shared paths (#4330).
 	- fix: macro table cannot contain NULL pointers (#4263).
 	- fix: last char in rpmrc w/o terminating newline lost (#4361).
@@ -1987,7 +1987,7 @@
 	- cpio error codes were poorly defined, causing bad error messages
 	- generates INSTPREFIXES tag properly, and sets RPM_INSTALL_PREFIX
 	  and RPM_INSTALL_PREFIXn environment variables
-	- fixed memory leak in install code which occured when net shared paths
+	- fixed memory leak in install code which occurred when net shared paths
 	  were used
 	- don't pass net shared path to rpmInstallPackage() -- it looks 
 	  directly in the rpmrc entries
@@ -2314,7 +2314,7 @@
 2.3.9 -> 2.3.10:
 	- --allmatches handling in -e broke some cases
 	- new predefined macros: %SOURCEn %PATCHn %SOURCEURLn %PATCHURLn
-	- fix anomoly with %files -f <file> and %doc
+	- fix anomaly with %files -f <file> and %doc
 	- ignore config bit when it's set on directories (which allows
 	  users to replace directories with symlinks)
 	- don't set config bit on directories
@@ -2392,7 +2392,7 @@
 	- array size mismatches in --qf should send error to stderr
 	- tried to make the locale stuff a bit more portable (again)
 	- reworked the owner/group setting on installs to be more generic
-	  (in preperation for getting rid of cpio)
+	  (in preparation for getting rid of cpio)
 	- made verify verify owner and groups by name rather then by id -- if
 	  the symbolic names aren't available use the uids
 	- cleaned up relocateFilelist() and related code thanks to
@@ -2403,7 +2403,7 @@
 	  installs of all things (Jason Salopek pestered me consistently
 	  enough to keep this on the front burner for me)
 	- removed FILEUIDS and FILEGIDS from the header in the database --
-	  we never used it and it jsut wasted room
+	  we never used it and it just wasted room
 	- convert uid/gid lists in v1 headers to symbolic names 
 
 2.3.3 -> 2.3.4:

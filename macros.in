@@ -890,7 +890,7 @@ package or when debugging this package.\
 #       run configure with correct prefix, platform, and CFLAGS.
 #       optionally restore current directory.
 #
-# Based on autogen.sh from GNOME and orginal GNUconfigure
+# Based on autogen.sh from GNOME and original GNUconfigure
 #
 %GNUconfigure(MCs:)      \
   CFLAGS="${CFLAGS:-%optflags}" ; export CFLAGS; \

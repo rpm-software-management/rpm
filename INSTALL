@@ -77,7 +77,7 @@ is available from
 It may be desired to install bzip2, gzip, and xz/lzma so that RPM can use these
 formats.  Gzip is necessary to build packages that contain compressed
 tar balls, these are quite common on the Internet.
-These are availible from
+These are available from
     http://www.gzip.org
     http://www.bzip.org
     http://tukaani.org/xz/
@@ -164,7 +164,7 @@ and then install with:
 Rpm comes with an automated self-test suite. The test-suite relies heavily
 on fakechroot (https://github.com/fakechroot/) and cannot be executed
 without it. Provided that fakechroot was found during configure,
-it can be executed after a succesful build with:
+it can be executed after a successful build with:
 
     make check
 
@@ -186,7 +186,7 @@ with two rpms which can be found in RPMS and SRPMS.
 If you are going to install rpm on machines with OS package managers
 other then rpm, you may choose to install the base rpm package via a
 cpio instead of a tar file.  Instead of running "make tar" during the
-build process, as discribed above, use the base rpm packages to create
+build process, as described above, use the base rpm packages to create
 a cpio.  After the rpms have been created run rpm2cpio on the base rpm
 package, this will give you a cpio package which can then use to
 install rpm on a new system.
@@ -208,13 +208,13 @@ an issue.
 RPM will need to be informed of all the dependencies which were
 satisfied before RPM was installed.  Typically this only refers to
 libraries that are installed by the OS, but may include other
-libraries and packages which are availible at the time RPM is
+libraries and packages which are available at the time RPM is
 installed and will not under RPM control.  Another common example of
 libraries which may need dependency provisions are precompiled
 libraries which are installed by the OS package manager during system
 build time.  The list of dependencies you will wish to load into RPM
 will depend on exactly how you bootstrap RPM onto your system and what
-parts of the sytem you put into packages as well as on the specific OS
+parts of the system you put into packages as well as on the specific OS
 you are using.
 
 The script vpkg-provides.sh can be used to generate a package which
@@ -231,7 +231,7 @@ can use the option:
 
 By default the generated rpm will include a %verifyscript to verify
 checksum of all files traversed has not changed.  This additional
-check can be surpressed with:
+check can be suppressed with:
 
     --no_verify
 

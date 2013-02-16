@@ -55,7 +55,7 @@ while read f
 do
 
 	#
-	# Uncomment the next line for addtional debugging:
+	# Uncomment the next line for additional debugging:
 	# echo "read ->$f<-"
 
 	#

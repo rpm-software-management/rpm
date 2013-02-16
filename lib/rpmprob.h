@@ -43,7 +43,7 @@ typedef enum rpmProblemType_e {
     RPMPROB_BADRELOCATE,/*!< path ... is not relocatable for package ... */
     RPMPROB_REQUIRES,	/*!< package ... has unsatisfied Requires: ... */
     RPMPROB_CONFLICT,	/*!< package ... has unsatisfied Conflicts: ... */
-    RPMPROB_NEW_FILE_CONFLICT, /*!< file ... conflicts between attemped installs of ... */
+    RPMPROB_NEW_FILE_CONFLICT, /*!< file ... conflicts between attempted installs of ... */
     RPMPROB_FILE_CONFLICT,/*!< file ... from install of ... conflicts with file from package ... */
     RPMPROB_OLDPACKAGE,	/*!< package ... (which is newer than ...) is already installed */
     RPMPROB_DISKSPACE,	/*!< installing package ... needs ... on the ... filesystem */
