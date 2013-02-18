@@ -138,6 +138,29 @@ static headerTagTableEntry entryByTag(rpmTagVal tag)
     return entry;
 }
 
+static headerTagTableEntry entryByName(const char *tag)
+{
+    headerTagTableEntry entry = NULL;
+    int i, comparison;
+    int l = 0;
+    int u = _rpmTags.byNameSize;
+
+    while (l < u) {
+	i = (l + u) / 2;
+	comparison = rstrcasecmp(tag, _rpmTags.byName[i]->shortname);
+
+	if (comparison < 0) {
+	    u = i;
+	} else if (comparison > 0) {
+	    l = i + 1;
+	} else {
+	    entry = _rpmTags.byName[i];
+	    break;
+	}
+    }
+    return entry;
+}
+
 const char * rpmTagGetName(rpmTagVal tag)
 {
     const char *name = "(unknown)";
@@ -184,32 +207,18 @@ rpmTagType rpmTagGetType(rpmTagVal tag)
 rpmTagVal rpmTagGetValue(const char * tagstr)
 {
     const struct headerTagTableEntry_s *t;
-    int comparison, i, l, u;
+    rpmTagType tagval = RPMTAG_NOT_FOUND;
 
     pthread_once(&tagsLoaded, loadTags);
 
     if (!rstrcasecmp(tagstr, "Packages"))
 	return RPMDBI_PACKAGES;
 
-    if (_rpmTags.byName == NULL)
-	return RPMTAG_NOT_FOUND;
-
-    l = 0;
-    u = _rpmTags.byNameSize;
-    while (l < u) {
-	i = (l + u) / 2;
-	t = _rpmTags.byName[i];
+    t = entryByName(tagstr);
+    if (t)
+	tagval = t->val;
 	
-	comparison = rstrcasecmp(tagstr, t->shortname);
-
-	if (comparison < 0)
-	    u = i;
-	else if (comparison > 0)
-	    l = i + 1;
-	else
-	    return t->val;
-    }
-    return RPMTAG_NOT_FOUND;
+    return tagval;
 }
 
 rpmTagType rpmTagGetTagType(rpmTagVal tag)
