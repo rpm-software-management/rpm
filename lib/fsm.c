@@ -1758,20 +1758,15 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
                 if (fsm->failedFile && *fsm->failedFile == NULL)
                     *fsm->failedFile = xstrdup(fsm->path);
             }
+        } else {
+	    /* Notify on success. */
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
 
-            break;
-        }
-
-        /* Notify on success. */
-        rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
-
-        if (!fsm->postpone) {
-            rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-                  ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix));
-        }
-        if (rc) {
-            break;
-        }
+	    if (!fsm->postpone) {
+		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
+		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix));
+	    }
+	}
     }
 
     if (!rc)
