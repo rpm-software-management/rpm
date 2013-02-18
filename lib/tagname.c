@@ -111,11 +111,37 @@ static void loadTags(void)
     tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
 }
 
+static headerTagTableEntry entryByTag(rpmTagVal tag)
+{
+    headerTagTableEntry entry = NULL;
+    int i, comparison;
+    int l = 0;
+    int u = _rpmTags.byValueSize;
+
+    while (l < u) {
+	i = (l + u) / 2;
+	comparison = (tag - _rpmTags.byValue[i]->val);
+
+	if (comparison < 0) {
+	    u = i;
+	} else if (comparison > 0) {
+	    l = i + 1;
+	} else {
+	    /* Make sure that the bsearch retrieve is stable. */
+	    while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
+		i--;
+	    }
+	    entry = _rpmTags.byValue[i];
+	    break;
+	}
+    }
+    return entry;
+}
+
 const char * rpmTagGetName(rpmTagVal tag)
 {
     const char *name = "(unknown)";
     const struct headerTagTableEntry_s *t;
-    int comparison, i, l, u;
 
     pthread_once(&tagsLoaded, loadTags);
 
@@ -132,31 +158,9 @@ const char * rpmTagGetName(rpmTagVal tag)
 	break;
 
     default:
-	if (_rpmTags.byValue == NULL)
-	    break;
-	l = 0;
-	u = _rpmTags.byValueSize;
-	while (l < u) {
-	    i = (l + u) / 2;
-	    t = _rpmTags.byValue[i];
-	
-	    comparison = (tag - t->val);
-
-	    if (comparison < 0)
-		u = i;
-	    else if (comparison > 0)
-		l = i + 1;
-	    else {
-		/* Make sure that the bsearch retrieve is stable. */
-		while (i > 0 && tag == _rpmTags.byValue[i-1]->val) {
-		    i--;
-		}
-		t = _rpmTags.byValue[i];
-		if (t->shortname != NULL)
-		    name = t->shortname;
-		break;
-	    }
-	}
+	t = entryByTag(tag);
+	if (t && t->shortname)
+	    name = t->shortname;
 	break;
     }
     return name;
@@ -165,35 +169,16 @@ const char * rpmTagGetName(rpmTagVal tag)
 rpmTagType rpmTagGetType(rpmTagVal tag)
 {
     const struct headerTagTableEntry_s *t;
-    int comparison, i, l, u;
+    rpmTagType tagtype = RPM_NULL_TYPE;
 
     pthread_once(&tagsLoaded, loadTags);
 
-    if (_rpmTags.byValue) {
-	l = 0;
-	u = _rpmTags.byValueSize;
-	while (l < u) {
-	    i = (l + u) / 2;
-	    t = _rpmTags.byValue[i];
-	
-	    comparison = (tag - t->val);
-
-	    if (comparison < 0)
-		u = i;
-	    else if (comparison > 0)
-		l = i + 1;
-	    else {
-		/* Make sure that the bsearch retrieve is stable. */
-		while (i > 0 && t->val == _rpmTags.byValue[i-1]->val) {
-		    i--;
-		}
-		t = _rpmTags.byValue[i];
-		/* XXX this is dumb */
-		return (rpmTagType)(t->type | t->retype);
-	    }
-	}
+    t = entryByTag(tag);
+    if (t) {
+	/* XXX this is dumb */
+	tagtype = (rpmTagType)(t->type | t->retype);
     }
-    return RPM_NULL_TYPE;
+    return tagtype;
 }
 
 rpmTagVal rpmTagGetValue(const char * tagstr)
