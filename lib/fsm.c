@@ -1846,13 +1846,13 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
 
-        if (rc) break;
-
-        /* Notify on success. */
-        /* On erase we're iterating backwards, fixup for progress */
-        rpm_loff_t amount = (fsm->ix >= 0) ?
-            rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
-        rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
+	if (rc == 0) {
+	    /* Notify on success. */
+	    /* On erase we're iterating backwards, fixup for progress */
+	    rpm_loff_t amount = (fsm->ix >= 0) ?
+				rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
+	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
+	}
     }
 
     fsmFree(fsm);
