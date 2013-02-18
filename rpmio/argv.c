@@ -213,12 +213,32 @@ int argvSplit(ARGV_t * argvp, const char * str, const char * seps)
 
 char *argvJoin(ARGV_const_t argv, const char *sep)
 {
+    int argc = 0;
+    size_t argvlen = 0;
     char *dest = NULL;
-    char * const *arg;
 
-    for (arg = argv; arg && *arg; arg++) {
-	rstrscat(&dest, *arg, *(arg+1) ? sep : "", NULL);
-    } 
+    if (argv) {
+	ARGV_const_t arg;
+	for (arg = argv; *arg; arg++)
+	    argvlen += strlen(*arg);
+	argc = arg - argv;
+    }
+
+    if (argc > 0) {
+	size_t seplen = (sep != NULL) ? strlen(sep) : 0;
+	char *p;
+
+	dest = xmalloc(argvlen + (seplen * (argc - 1)) + 1);
+
+	p = stpcpy(dest, argv[0]);
+	for (int i = 1; i < argc; i++) {
+	    if (seplen)
+		p = stpcpy(p, sep);
+	    p = stpcpy(p, argv[i]);
+	}
+	*p = '\0';
+    }
+
     return dest;
 }
     
