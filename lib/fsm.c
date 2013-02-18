@@ -1679,10 +1679,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         rc = fsmInit(fsm);
 
         /* Exit on error. */
-        if (rc) {
-            fsm->postpone = 1;
+        if (rc)
             break;
-        }
 
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
 	    fsm->postpone = saveHardLink(fsm, &li);
@@ -1898,10 +1896,8 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
         rc = fsmInit(fsm);
 
         /* Exit on error. */
-        if (rc) {
-            fsm->postpone = 1;
+        if (rc)
             break;
-        }
 
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
 	    fsm->postpone = saveHardLink(fsm, NULL);
