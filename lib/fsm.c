@@ -1919,8 +1919,6 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
                 if (fsm->failedFile && *fsm->failedFile == NULL)
                     *fsm->failedFile = xstrdup(fsm->path);
             }
-
-            break;
         }
     }
 
