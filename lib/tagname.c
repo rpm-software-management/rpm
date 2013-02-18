@@ -32,16 +32,11 @@ static const int rpmTagTableSize = sizeof(rpmTagTable) / sizeof(rpmTagTable[0]) 
 typedef struct headerTagIndices_s * headerTagIndices;
 
 struct headerTagIndices_s {
-    int (*loadIndex) (headerTagTableEntry ** ipp, int * np,
-                int (*cmp) (const void * avp, const void * bvp));
-                                        /*!< load sorted tag index. */
     headerTagTableEntry * byName;	/*!< header tags sorted by name. */
     int byNameSize;			/*!< no. of entries. */
-    int (*byNameCmp) (const void * avp, const void * bvp);				/*!< compare entries by name. */
     rpmTagVal (*tagValue) (const char * name);	/* return value from name. */
     headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
     int byValueSize;			/*!< no. of entries. */
-    int (*byValueCmp) (const void * avp, const void * bvp);				/*!< compare entries by value. */
     const char * (*tagName) (rpmTagVal value);	/* Return name from value. */
     rpmTagType (*tagType) (rpmTagVal value);	/* Return type from value. */
 };
@@ -111,9 +106,8 @@ static rpmTagType _tagType(rpmTagVal tag);
 static rpmTagVal _tagValue(const char * tagstr);
 
 static struct headerTagIndices_s _rpmTags = {
-    tagLoadIndex,
-    NULL, 0, tagCmpName, _tagValue,
-    NULL, 0, tagCmpValue, _tagName, _tagType,
+    NULL, 0, _tagValue,
+    NULL, 0, _tagName, _tagType,
 };
 
 static headerTagIndices const rpmTags = &_rpmTags;
