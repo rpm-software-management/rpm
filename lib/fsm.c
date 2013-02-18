@@ -1692,8 +1692,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
-                if (!(rc == CPIOERR_ENOENT)) return rc;
-                rc = expandRegular(fsm, psm, archive, nodigest);
+		if (rc == CPIOERR_ENOENT) {
+		    rc = expandRegular(fsm, psm, archive, nodigest);
+		}
             } else if (S_ISDIR(st->st_mode)) {
 		/* Directories replacing something need early backup */
                 rc = fsmBackup(fsm);
