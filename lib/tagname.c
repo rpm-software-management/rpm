@@ -60,39 +60,21 @@ static int tagCmpValue(const void * avp, const void * bvp)
     return ret;
 }
 
-/**
- * Load/sort a tag index.
- * @retval *ipp		tag index
- * @retval *np		no. of tags
- * @param cmp		sort compare routine
- * @return		0 always
- */
-static int tagLoadIndex(headerTagTableEntry ** ipp,
-		int (*cmp) (const void * avp, const void * bvp))
-{
-    headerTagTableEntry tte, *ip;
-    int n = 0;
-
-    ip = xcalloc(rpmTagTableSize, sizeof(*ip));
-    n = 0;
-    for (tte = (headerTagTableEntry)rpmTagTable; tte->name != NULL; tte++) {
-	ip[n] = tte;
-	n++;
-    }
-assert(n == rpmTagTableSize);
-
-    if (n > 1)
-	qsort(ip, n, sizeof(*ip), cmp);
-    *ipp = ip;
-    return 0;
-}
-
 static pthread_once_t tagsLoaded = PTHREAD_ONCE_INIT;
 
+/* Initialize tag by-value and by-name lookup tables */
 static void loadTags(void)
 {
-    tagLoadIndex(&tagsByValue, tagCmpValue);
-    tagLoadIndex(&tagsByName, tagCmpName);
+    tagsByValue = xcalloc(rpmTagTableSize, sizeof(*tagsByValue));
+    tagsByName = xcalloc(rpmTagTableSize, sizeof(*tagsByName));
+
+    for (int i = 0; i < rpmTagTableSize; i++) {
+	tagsByValue[i] = &rpmTagTable[i];
+	tagsByName[i] = &rpmTagTable[i];
+    }
+
+    qsort(tagsByValue, rpmTagTableSize, sizeof(*tagsByValue), tagCmpValue);
+    qsort(tagsByName, rpmTagTableSize, sizeof(*tagsByName), tagCmpName);
 }
 
 static headerTagTableEntry entryByTag(rpmTagVal tag)
