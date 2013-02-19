@@ -820,7 +820,6 @@ static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
 void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations, 
 			 rpmfs fs, Header h)
 {
-    static int _printed = 0;
     char ** baseNames;
     char ** dirNames;
     uint32_t * dirIndexes;
@@ -835,8 +834,7 @@ void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations,
 
     addPrefixes(h, relocations, numRelocations);
 
-    if (!_printed) {
-	_printed = 1;
+    if (rpmIsDebug()) {
 	rpmlog(RPMLOG_DEBUG, "========== relocations\n");
 	for (i = 0; i < numRelocations; i++) {
 	    if (relocations[i].oldPath == NULL) continue; /* XXX can't happen */
