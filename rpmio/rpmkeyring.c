@@ -41,8 +41,8 @@ rpmKeyring rpmKeyringNew(void)
     rpmKeyring keyring = xcalloc(1, sizeof(*keyring));
     keyring->keys = NULL;
     keyring->numkeys = 0;
-    keyring->nrefs = 0;
-    return rpmKeyringLink(keyring);
+    keyring->nrefs = 1;
+    return keyring;
 }
 
 rpmKeyring rpmKeyringFree(rpmKeyring keyring)
@@ -141,12 +141,12 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     key->pkt = xmalloc(pktlen);
     key->pktlen = pktlen;
     key->pgpkey = pgpkey;
-    key->nrefs = 0;
+    key->nrefs = 1;
     memcpy(key->pkt, pkt, pktlen);
     memcpy(key->keyid, keyid, sizeof(keyid));
 
 exit:
-    return rpmPubkeyLink(key);
+    return key;
 }
 
 rpmPubkey rpmPubkeyFree(rpmPubkey key)
