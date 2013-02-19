@@ -19,6 +19,7 @@ struct rpmPubkey_s {
     pgpKeyID_t keyid;
     pgpDigParams pgpkey;
     int nrefs;
+    pthread_rwlock_t lock;
 };
 
 struct rpmKeyring_s {
@@ -144,6 +145,7 @@ rpmPubkey rpmPubkeyNew(const uint8_t *pkt, size_t pktlen)
     key->nrefs = 1;
     memcpy(key->pkt, pkt, pktlen);
     memcpy(key->keyid, keyid, sizeof(keyid));
+    pthread_rwlock_init(&key->lock, NULL);
 
 exit:
     return key;
@@ -154,10 +156,14 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     if (key == NULL)
 	return NULL;
 
+    pthread_rwlock_wrlock(&key->lock);
     if (--key->nrefs == 0) {
 	pgpDigParamsFree(key->pgpkey);
 	free(key->pkt);
+	pthread_rwlock_destroy(&key->lock);
 	free(key);
+    } else {
+	pthread_rwlock_unlock(&key->lock);
     }
     return NULL;
 }
@@ -165,7 +171,9 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
 rpmPubkey rpmPubkeyLink(rpmPubkey key)
 {
     if (key) {
+	pthread_rwlock_wrlock(&key->lock);
 	key->nrefs++;
+	pthread_rwlock_unlock(&key->lock);
     }
     return key;
 }
@@ -180,7 +188,11 @@ pgpDig rpmPubkeyDig(rpmPubkey key)
 	return NULL;
 
     dig = pgpNewDig();
+
+    pthread_rwlock_rdlock(&key->lock);
     rc = pgpPrtPkts(key->pkt, key->pktlen, dig, 0);
+    pthread_rwlock_unlock(&key->lock);
+
     if (rc == 0) {
 	pgpDigParams pubp = pgpDigGetParams(dig, PGPTAG_PUBLIC_KEY);
 	if (!pubp || !memcmp(pubp->signid, zeros, sizeof(pubp->signid)) ||
@@ -201,7 +213,9 @@ char * rpmPubkeyBase64(rpmPubkey key)
     char *enc = NULL;
 
     if (key) {
+	pthread_rwlock_rdlock(&key->lock);
 	enc = rpmBase64Encode(key->pkt, key->pktlen, -1);
+	pthread_rwlock_unlock(&key->lock);
     }
     return enc;
 }
