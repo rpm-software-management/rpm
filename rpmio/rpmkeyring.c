@@ -25,8 +25,6 @@ struct rpmKeyring_s {
     int nrefs;
 };
 
-static rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
-
 static int keyidcmp(const void *k1, const void *k2)
 {
     const struct rpmPubkey_s *key1 = *(const struct rpmPubkey_s **) k1;
@@ -142,12 +140,11 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     if (key == NULL)
 	return NULL;
 
-    if (key->nrefs > 1)
-	return rpmPubkeyUnlink(key);
-
-    pgpDigParamsFree(key->pgpkey);
-    free(key->pkt);
-    free(key);
+    if (--key->nrefs == 0) {
+	pgpDigParamsFree(key->pgpkey);
+	free(key->pkt);
+	free(key);
+    }
     return NULL;
 }
 
@@ -157,14 +154,6 @@ rpmPubkey rpmPubkeyLink(rpmPubkey key)
 	key->nrefs++;
     }
     return key;
-}
-
-static rpmPubkey rpmPubkeyUnlink(rpmPubkey key)
-{
-    if (key) {
-	key->nrefs--;
-    }
-    return NULL;
 }
 
 pgpDig rpmPubkeyDig(rpmPubkey key)
