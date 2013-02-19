@@ -8,8 +8,11 @@
 #include <rpm/rpmlog.h>
 #include "debug.h"
 
-static int nrecs = 0;
-static rpmlogRec recs = NULL;
+typedef struct rpmlogCtx_s * rpmlogCtx;
+struct rpmlogCtx_s {
+    int nrecs;
+    rpmlogRec recs;
+};
 
 struct rpmlogRec_s {
     int		code;		/* unused */
@@ -17,24 +20,50 @@ struct rpmlogRec_s {
     char * message;		/* log message string */
 };
 
+/* Force log context acquisition through a function */
+static rpmlogCtx rpmlogCtxAcquire(int write)
+{
+    static struct rpmlogCtx_s _globalCtx = { 0, NULL };
+    return &_globalCtx;
+}
+
+/* Release log context */
+static rpmlogCtx rpmlogCtxRelease(rpmlogCtx ctx)
+{
+    return NULL;
+}
+
 int rpmlogGetNrecs(void)
 {
+    rpmlogCtx ctx = rpmlogCtxAcquire(0);
+    int nrecs = ctx->nrecs;
+    rpmlogCtxRelease(ctx);
     return nrecs;
 }
 
 int rpmlogCode(void)
 {
-    if (recs != NULL && nrecs > 0)
-	return recs[nrecs-1].code;
-    return -1;
+    int code = -1;
+    rpmlogCtx ctx = rpmlogCtxAcquire(0);
+    
+    if (ctx->recs != NULL && ctx->nrecs > 0)
+	code = ctx->recs[ctx->nrecs-1].code;
+
+    rpmlogCtxRelease(ctx);
+    return code;
 }
 
 
 const char * rpmlogMessage(void)
 {
-    if (recs != NULL && nrecs > 0)
-	return recs[nrecs-1].message;
-    return _("(no error)");
+    const char *msg = _("(no error)");
+    rpmlogCtx ctx = rpmlogCtxAcquire(0);
+
+    if (ctx->recs != NULL && ctx->nrecs > 0)
+	msg = ctx->recs[ctx->nrecs-1].message;
+
+    rpmlogCtxRelease(ctx);
+    return msg;
 }
 
 const char * rpmlogRecMessage(rpmlogRec rec)
@@ -51,30 +80,32 @@ rpmlogLvl rpmlogRecPriority(rpmlogRec rec)
 
 void rpmlogPrint(FILE *f)
 {
-    int i;
+    rpmlogCtx ctx = rpmlogCtxAcquire(0);
 
     if (f == NULL)
 	f = stderr;
 
-    if (recs)
-    for (i = 0; i < nrecs; i++) {
-	rpmlogRec rec = recs + i;
+    for (int i = 0; i < ctx->nrecs; i++) {
+	rpmlogRec rec = ctx->recs + i;
 	if (rec->message && *rec->message)
 	    fprintf(f, "    %s", rec->message);
     }
+
+    rpmlogCtxRelease(ctx);
 }
 
 void rpmlogClose (void)
 {
-    int i;
+    rpmlogCtx ctx = rpmlogCtxAcquire(1);
 
-    if (recs)
-    for (i = 0; i < nrecs; i++) {
-	rpmlogRec rec = recs + i;
+    for (int i = 0; i < ctx->nrecs; i++) {
+	rpmlogRec rec = ctx->recs + i;
 	rec->message = _free(rec->message);
     }
-    recs = _free(recs);
-    nrecs = 0;
+    ctx->recs = _free(ctx->recs);
+    ctx->nrecs = 0;
+
+    rpmlogCtxRelease(ctx);
 }
 
 void rpmlogOpen (const char *ident, int option,
@@ -167,18 +198,20 @@ const char * rpmlogLevelPrefix(rpmlogLvl pri)
 /* FIX: rpmlogMsgPrefix[] may be NULL */
 static void dolog (struct rpmlogRec_s *rec)
 {
+    int saverec = (rec->pri <= RPMLOG_WARNING);
+    rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
     int cbrc = RPMLOG_DEFAULT;
     int needexit = 0;
 
     /* Save copy of all messages at warning (or below == "more important"). */
-    if (rec->pri <= RPMLOG_WARNING) {
-	recs = xrealloc(recs, (nrecs+2) * sizeof(*recs));
-	recs[nrecs].code = rec->code;
-	recs[nrecs].pri = rec->pri;
-	recs[nrecs].message = xstrdup(rec->message);
-	recs[nrecs+1].code = 0;
-	recs[nrecs+1].message = NULL;
-	++nrecs;
+    if (saverec) {
+	ctx->recs = xrealloc(ctx->recs, (ctx->nrecs+2) * sizeof(*ctx->recs));
+	ctx->recs[ctx->nrecs].code = rec->code;
+	ctx->recs[ctx->nrecs].pri = rec->pri;
+	ctx->recs[ctx->nrecs].message = xstrdup(rec->message);
+	ctx->recs[ctx->nrecs+1].code = 0;
+	ctx->recs[ctx->nrecs+1].message = NULL;
+	ctx->nrecs++;
     }
 
     if (_rpmlogCallback) {
@@ -190,6 +223,8 @@ static void dolog (struct rpmlogRec_s *rec)
 	cbrc = rpmlogDefault(rec);
 	needexit += cbrc & RPMLOG_EXIT;
     }
+
+    rpmlogCtxRelease(ctx);
     
     if (needexit)
 	exit(EXIT_FAILURE);
