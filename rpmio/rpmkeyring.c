@@ -1,5 +1,7 @@
 #include "system.h"
 
+#include <pthread.h>
+
 #include <rpm/rpmstring.h>
 #include <rpm/rpmpgp.h>
 #include <rpm/rpmfileutil.h>
@@ -23,6 +25,7 @@ struct rpmKeyring_s {
     struct rpmPubkey_s **keys;
     size_t numkeys;
     int nrefs;
+    pthread_rwlock_t lock;
 };
 
 static int keyidcmp(const void *k1, const void *k2)
@@ -39,6 +42,7 @@ rpmKeyring rpmKeyringNew(void)
     keyring->keys = NULL;
     keyring->numkeys = 0;
     keyring->nrefs = 1;
+    pthread_rwlock_init(&keyring->lock, NULL);
     return keyring;
 }
 
@@ -47,6 +51,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
     if (keyring == NULL)
 	return NULL;
 
+    pthread_rwlock_wrlock(&keyring->lock);
     if (--keyring->nrefs == 0) {
 	if (keyring->keys) {
 	    for (int i = 0; i < keyring->numkeys; i++) {
@@ -54,7 +59,10 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 	    }
 	    free(keyring->keys);
 	}
+	pthread_rwlock_destroy(&keyring->lock);
 	free(keyring);
+    } else {
+	pthread_rwlock_unlock(&keyring->lock);
     }
     return NULL;
 }
@@ -72,7 +80,8 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
     if (keyring == NULL || key == NULL)
 	return -1;
 
-    /* check if we already have this key */
+    /* check if we already have this key, but always wrlock for simplicity */
+    pthread_rwlock_wrlock(&keyring->lock);
     if (!rpmKeyringFindKeyid(keyring, key)) {
 	keyring->keys = xrealloc(keyring->keys,
 				 (keyring->numkeys + 1) * sizeof(rpmPubkey));
@@ -82,6 +91,7 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 		keyidcmp);
 	rc = 0;
     }
+    pthread_rwlock_unlock(&keyring->lock);
 
     return rc;
 }
@@ -89,7 +99,9 @@ int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
 {
     if (keyring) {
+	pthread_rwlock_wrlock(&keyring->lock);
 	keyring->nrefs++;
+	pthread_rwlock_unlock(&keyring->lock);
     }
     return keyring;
 }
@@ -218,6 +230,8 @@ static rpmPubkey findbySig(rpmKeyring keyring, pgpDigParams sig)
 
 rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 {
+    pthread_rwlock_rdlock(&keyring->lock);
+
     rpmRC res = RPMRC_NOKEY;
     pgpDigParams sigp = pgpDigGetParams(sig, PGPTAG_SIGNATURE);
     rpmPubkey key = findbySig(keyring, sigp);
@@ -232,6 +246,7 @@ rpmRC rpmKeyringLookup(rpmKeyring keyring, pgpDig sig)
 	res = RPMRC_OK;
     }
 
+    pthread_rwlock_unlock(&keyring->lock);
     return res;
 }
 
@@ -240,6 +255,8 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
     rpmRC rc = RPMRC_FAIL;
 
     if (sig && ctx) {
+	pthread_rwlock_rdlock(&keyring->lock);
+
 	pgpDigParams pgpkey = NULL;
 	rpmPubkey key = findbySig(keyring, sig);
 
@@ -248,6 +265,8 @@ rpmRC rpmKeyringVerifySig(rpmKeyring keyring, pgpDigParams sig, DIGEST_CTX ctx)
 
 	/* We call verify even if key not found for a signature sanity check */
 	rc = pgpVerifySignature(pgpkey, sig, ctx);
+
+	pthread_rwlock_unlock(&keyring->lock);
     }
 
     return rc;
