@@ -68,20 +68,22 @@ static rpmPubkey rpmKeyringFindKeyid(rpmKeyring keyring, rpmPubkey key)
 
 int rpmKeyringAddKey(rpmKeyring keyring, rpmPubkey key)
 {
+    int rc = 1; /* assume already seen key */
     if (keyring == NULL || key == NULL)
 	return -1;
 
     /* check if we already have this key */
-    if (rpmKeyringFindKeyid(keyring, key)) {
-	return 1;
+    if (!rpmKeyringFindKeyid(keyring, key)) {
+	keyring->keys = xrealloc(keyring->keys,
+				 (keyring->numkeys + 1) * sizeof(rpmPubkey));
+	keyring->keys[keyring->numkeys] = rpmPubkeyLink(key);
+	keyring->numkeys++;
+	qsort(keyring->keys, keyring->numkeys, sizeof(*keyring->keys),
+		keyidcmp);
+	rc = 0;
     }
-    
-    keyring->keys = xrealloc(keyring->keys, (keyring->numkeys + 1) * sizeof(rpmPubkey));
-    keyring->keys[keyring->numkeys] = rpmPubkeyLink(key);
-    keyring->numkeys++;
-    qsort(keyring->keys, keyring->numkeys, sizeof(*keyring->keys), keyidcmp);
 
-    return 0;
+    return rc;
 }
 
 rpmKeyring rpmKeyringLink(rpmKeyring keyring)
