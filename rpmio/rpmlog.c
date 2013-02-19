@@ -14,6 +14,7 @@ struct rpmlogCtx_s {
     rpmlogRec recs;
     rpmlogCallback cbfunc;
     rpmlogCallbackData cbdata;
+    FILE *stdlog;
 };
 
 struct rpmlogRec_s {
@@ -25,7 +26,7 @@ struct rpmlogRec_s {
 /* Force log context acquisition through a function */
 static rpmlogCtx rpmlogCtxAcquire(int write)
 {
-    static struct rpmlogCtx_s _globalCtx = { 0, NULL, NULL, NULL };
+    static struct rpmlogCtx_s _globalCtx = { 0, NULL, NULL, NULL, NULL };
     return &_globalCtx;
 }
 
@@ -141,16 +142,14 @@ rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
     return ocb;
 }
 
-static FILE * _stdlog = NULL;
-
-static int rpmlogDefault(rpmlogRec rec)
+static int rpmlogDefault(rpmlogCtx ctx, rpmlogRec rec)
 {
-    FILE *msgout = (_stdlog ? _stdlog : stderr);
+    FILE *msgout = (ctx->stdlog ? ctx->stdlog : stderr);
 
     switch (rec->pri) {
     case RPMLOG_INFO:
     case RPMLOG_NOTICE:
-        msgout = (_stdlog ? _stdlog : stdout);
+        msgout = (ctx->stdlog ? ctx->stdlog : stdout);
         break;
     case RPMLOG_EMERG:
     case RPMLOG_ALERT:
@@ -173,8 +172,12 @@ static int rpmlogDefault(rpmlogRec rec)
 
 FILE * rpmlogSetFile(FILE * fp)
 {
-    FILE * ofp = _stdlog;
-    _stdlog = fp;
+    rpmlogCtx ctx = rpmlogCtxAcquire(1);
+
+    FILE * ofp = ctx->stdlog;
+    ctx->stdlog = fp;
+
+    rpmlogCtxRelease(ctx);
     return ofp;
 }
 
@@ -223,7 +226,7 @@ static void dolog (struct rpmlogRec_s *rec)
     }
 
     if (cbrc & RPMLOG_DEFAULT) {
-	cbrc = rpmlogDefault(rec);
+	cbrc = rpmlogDefault(ctx, rec);
 	needexit += cbrc & RPMLOG_EXIT;
     }
 
