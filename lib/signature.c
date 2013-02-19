@@ -255,7 +255,7 @@ exit:
 
 int rpmWriteSignature(FD_t fd, Header sigh)
 {
-    static uint8_t buf[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    static const uint8_t zeros[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
     int sigSize, pad;
     int rc;
 
@@ -266,7 +266,7 @@ int rpmWriteSignature(FD_t fd, Header sigh)
     sigSize = headerSizeof(sigh, HEADER_MAGIC_YES);
     pad = (8 - (sigSize % 8)) % 8;
     if (pad) {
-	if (Fwrite(buf, sizeof(buf[0]), pad, fd) != pad)
+	if (Fwrite(zeros, sizeof(zeros[0]), pad, fd) != pad)
 	    rc = 1;
     }
     rpmlog(RPMLOG_DEBUG, "Signature: size(%d)+pad(%d)\n", sigSize, pad);
