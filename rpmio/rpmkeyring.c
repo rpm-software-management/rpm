@@ -60,6 +60,7 @@ rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 	    }
 	    free(keyring->keys);
 	}
+	pthread_rwlock_unlock(&keyring->lock);
 	pthread_rwlock_destroy(&keyring->lock);
 	free(keyring);
     } else {
@@ -160,6 +161,7 @@ rpmPubkey rpmPubkeyFree(rpmPubkey key)
     if (--key->nrefs == 0) {
 	pgpDigParamsFree(key->pgpkey);
 	free(key->pkt);
+	pthread_rwlock_unlock(&keyring->lock);
 	pthread_rwlock_destroy(&key->lock);
 	free(key);
     } else {
