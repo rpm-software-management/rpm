@@ -352,19 +352,14 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio)
 
 char * rpmcpioStrerror(int rc)
 {
-    char msg[256];
-    const char *s;
+    char *msg = NULL;
+    const char *s = NULL;
+    const char *prefix = "cpio";
     int myerrno = errno;
-    size_t l;
 
-    strcpy(msg, "cpio: ");
     switch (rc) {
-    default: {
-	char *t = msg + strlen(msg);
-	sprintf(t, _("(error 0x%x)"), (unsigned)rc);
-	s = NULL;
+    default:
 	break;
-    }
     case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
     case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
 
@@ -400,16 +395,13 @@ char * rpmcpioStrerror(int rc)
     case CPIOERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
     }
 
-    l = sizeof(msg) - strlen(msg) - 1;
     if (s != NULL) {
-	if (l > 0) strncat(msg, s, l);
-	l -= strlen(s);
+	rasprintf(&msg, "%s: %s", prefix, s);
+	if ((rc & CPIOERR_CHECK_ERRNO) && myerrno)
+	    rstrscat(&msg, _(" failed - "), strerror(myerrno), NULL);
+    } else {
+	rasprintf(&msg, _("%s: (error 0x%x)"), prefix, rc);
     }
-    if ((rc & CPIOERR_CHECK_ERRNO) && myerrno) {
-	s = _(" failed - ");
-	if (l > 0) strncat(msg, s, l);
-	l -= strlen(s);
-	if (l > 0) strncat(msg, strerror(myerrno), l);
-    }
-    return xstrdup(msg);
+
+    return msg;
 }
