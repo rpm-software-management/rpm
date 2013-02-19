@@ -12,6 +12,8 @@ typedef struct rpmlogCtx_s * rpmlogCtx;
 struct rpmlogCtx_s {
     int nrecs;
     rpmlogRec recs;
+    rpmlogCallback cbfunc;
+    rpmlogCallbackData cbdata;
 };
 
 struct rpmlogRec_s {
@@ -23,7 +25,7 @@ struct rpmlogRec_s {
 /* Force log context acquisition through a function */
 static rpmlogCtx rpmlogCtxAcquire(int write)
 {
-    static struct rpmlogCtx_s _globalCtx = { 0, NULL };
+    static struct rpmlogCtx_s _globalCtx = { 0, NULL, NULL, NULL };
     return &_globalCtx;
 }
 
@@ -127,14 +129,15 @@ int rpmlogSetMask (int mask)
     return omask;
 }
 
-static rpmlogCallback _rpmlogCallback = NULL;
-static rpmlogCallbackData _rpmlogCallbackData = NULL;
-
 rpmlogCallback rpmlogSetCallback(rpmlogCallback cb, rpmlogCallbackData data)
 {
-    rpmlogCallback ocb = _rpmlogCallback;
-    _rpmlogCallback = cb;
-    _rpmlogCallbackData = data;
+    rpmlogCtx ctx = rpmlogCtxAcquire(1);
+
+    rpmlogCallback ocb = ctx->cbfunc;
+    ctx->cbfunc = cb;
+    ctx->cbdata = data;
+
+    rpmlogCtxRelease(ctx);
     return ocb;
 }
 
@@ -214,8 +217,8 @@ static void dolog (struct rpmlogRec_s *rec)
 	ctx->nrecs++;
     }
 
-    if (_rpmlogCallback) {
-	cbrc = _rpmlogCallback(rec, _rpmlogCallbackData);
+    if (ctx->cbfunc) {
+	cbrc = ctx->cbfunc(rec, ctx->cbdata);
 	needexit += cbrc & RPMLOG_EXIT;
     }
 
