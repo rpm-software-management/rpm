@@ -10,6 +10,7 @@
 
 typedef struct rpmlogCtx_s * rpmlogCtx;
 struct rpmlogCtx_s {
+    unsigned mask;
     int nrecs;
     rpmlogRec recs;
     rpmlogCallback cbfunc;
@@ -26,7 +27,8 @@ struct rpmlogRec_s {
 /* Force log context acquisition through a function */
 static rpmlogCtx rpmlogCtxAcquire(int write)
 {
-    static struct rpmlogCtx_s _globalCtx = { 0, NULL, NULL, NULL, NULL };
+    static struct rpmlogCtx_s _globalCtx = { RPMLOG_UPTO(RPMLOG_NOTICE),
+					     0, NULL, NULL, NULL, NULL };
     return &_globalCtx;
 }
 
@@ -116,17 +118,19 @@ void rpmlogOpen (const char *ident, int option,
 {
 }
 
-static unsigned rpmlogMask = RPMLOG_UPTO( RPMLOG_NOTICE );
-
 #ifdef NOTYET
 static unsigned rpmlogFacility = RPMLOG_USER;
 #endif
 
 int rpmlogSetMask (int mask)
 {
-    int omask = rpmlogMask;
+    rpmlogCtx ctx = rpmlogCtxAcquire(1);
+
+    int omask = ctx->mask;
     if (mask)
-        rpmlogMask = mask;
+        ctx->mask = mask;
+
+    rpmlogCtxRelease(ctx);
     return omask;
 }
 
@@ -242,7 +246,7 @@ void rpmlog (int code, const char *fmt, ...)
 
     rpmlogCtx ctx = rpmlogCtxAcquire(saverec);
 
-    if ((mask & rpmlogMask) == 0)
+    if ((mask & ctx->mask) == 0)
 	goto exit;
 
     va_start(ap, fmt);
