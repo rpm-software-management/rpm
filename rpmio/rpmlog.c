@@ -5,11 +5,13 @@
 #include "system.h"
 #include <stdarg.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <rpm/rpmlog.h>
 #include "debug.h"
 
 typedef struct rpmlogCtx_s * rpmlogCtx;
 struct rpmlogCtx_s {
+    pthread_rwlock_t lock;
     unsigned mask;
     int nrecs;
     rpmlogRec recs;
@@ -27,14 +29,24 @@ struct rpmlogRec_s {
 /* Force log context acquisition through a function */
 static rpmlogCtx rpmlogCtxAcquire(int write)
 {
-    static struct rpmlogCtx_s _globalCtx = { RPMLOG_UPTO(RPMLOG_NOTICE),
+    static struct rpmlogCtx_s _globalCtx = { PTHREAD_RWLOCK_INITIALIZER,
+					     RPMLOG_UPTO(RPMLOG_NOTICE),
 					     0, NULL, NULL, NULL, NULL };
-    return &_globalCtx;
+    rpmlogCtx ctx = &_globalCtx;
+
+    /* XXX: errors should be handled */
+    if (write)
+	pthread_rwlock_wrlock(&ctx->lock);
+    else
+	pthread_rwlock_rdlock(&ctx->lock);
+
+    return ctx;
 }
 
 /* Release log context */
 static rpmlogCtx rpmlogCtxRelease(rpmlogCtx ctx)
 {
+    pthread_rwlock_unlock(&ctx->lock);
     return NULL;
 }
 
@@ -58,7 +70,7 @@ int rpmlogCode(void)
     return code;
 }
 
-
+/* XXX: This is not thread-safe, we should return a malloced copy */
 const char * rpmlogMessage(void)
 {
     const char *msg = _("(no error)");
