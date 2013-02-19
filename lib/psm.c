@@ -835,11 +835,13 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
 
 	    if (fsmrc) {
+		char *emsg = rpmcpioStrerror(fsmrc);
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
 			(psm->failedFile != NULL ? psm->failedFile : ""),
-			rpmcpioStrerror(fsmrc));
+			emsg);
+		free(emsg);
 		rc = RPMRC_FAIL;
 
 		/* XXX notify callback on error. */
@@ -939,13 +941,15 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_FINI:
 	if (rc) {
+	    char *emsg = rpmcpioStrerror(rc);
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),
-			psm->goalName, psm->failedFile, rpmcpioStrerror(rc));
+			psm->goalName, psm->failedFile, emsg);
 	    else
 		rpmlog(RPMLOG_ERR, _("%s failed: %s\n"),
-			psm->goalName, rpmcpioStrerror(rc));
+			psm->goalName, emsg);
+	    free(emsg);
 
 	    /* XXX notify callback on error. */
 	    rpmtsNotify(ts, psm->te, RPMCALLBACK_CPIO_ERROR, 0, 0);

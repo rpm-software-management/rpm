@@ -350,9 +350,9 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio)
     return NULL;
 }
 
-const char * rpmcpioStrerror(int rc)
+char * rpmcpioStrerror(int rc)
 {
-    static char msg[256];
+    char msg[256];
     const char *s;
     int myerrno = errno;
     size_t l;
@@ -411,5 +411,5 @@ const char * rpmcpioStrerror(int rc)
 	l -= strlen(s);
 	if (l > 0) strncat(msg, strerror(myerrno), l);
     }
-    return msg;
+    return xstrdup(msg);
 }

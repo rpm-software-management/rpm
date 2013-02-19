@@ -46,12 +46,13 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
 		      &csa->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {
+	char *emsg = rpmcpioStrerror(fsmrc);
 	if (failedFile)
 	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
-		   failedFile, rpmcpioStrerror(fsmrc));
+		   failedFile, emsg);
 	else
-	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"),
-		   rpmcpioStrerror(fsmrc));
+	    rpmlog(RPMLOG_ERR, _("create archive failed: %s\n"), emsg);
+	free(emsg);
     }
 
     free(failedFile);
