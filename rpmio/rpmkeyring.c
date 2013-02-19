@@ -26,7 +26,6 @@ struct rpmKeyring_s {
 };
 
 static rpmPubkey rpmPubkeyUnlink(rpmPubkey key);
-static rpmKeyring rpmKeyringUnlink(rpmKeyring keyring);
 
 static int keyidcmp(const void *k1, const void *k2)
 {
@@ -47,21 +46,18 @@ rpmKeyring rpmKeyringNew(void)
 
 rpmKeyring rpmKeyringFree(rpmKeyring keyring)
 {
-    if (keyring == NULL) {
+    if (keyring == NULL)
 	return NULL;
-    }
 
-    if (keyring->nrefs > 1) {
-	return rpmKeyringUnlink(keyring);
-    }
-
-    if (keyring->keys) {
-	for (int i = 0; i < keyring->numkeys; i++) {
-	    keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
+    if (--keyring->nrefs == 0) {
+	if (keyring->keys) {
+	    for (int i = 0; i < keyring->numkeys; i++) {
+		keyring->keys[i] = rpmPubkeyFree(keyring->keys[i]);
+	    }
+	    free(keyring->keys);
 	}
-	free(keyring->keys);
+	free(keyring);
     }
-    free(keyring);
     return NULL;
 }
 
@@ -96,14 +92,6 @@ rpmKeyring rpmKeyringLink(rpmKeyring keyring)
 	keyring->nrefs++;
     }
     return keyring;
-}
-
-static rpmKeyring rpmKeyringUnlink(rpmKeyring keyring)
-{
-    if (keyring) {
-	keyring->nrefs--;
-    }
-    return NULL;
 }
 
 rpmPubkey rpmPubkeyRead(const char *filename)
