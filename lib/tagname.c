@@ -33,9 +33,7 @@ typedef struct headerTagIndices_s * headerTagIndices;
 
 struct headerTagIndices_s {
     headerTagTableEntry * byName;	/*!< header tags sorted by name. */
-    int byNameSize;			/*!< no. of entries. */
     headerTagTableEntry * byValue;	/*!< header tags sorted by value. */
-    int byValueSize;			/*!< no. of entries. */
 };
 
 /**
@@ -75,7 +73,7 @@ static int tagCmpValue(const void * avp, const void * bvp)
  * @param cmp		sort compare routine
  * @return		0 always
  */
-static int tagLoadIndex(headerTagTableEntry ** ipp, int * np,
+static int tagLoadIndex(headerTagTableEntry ** ipp,
 		int (*cmp) (const void * avp, const void * bvp))
 {
     headerTagTableEntry tte, *ip;
@@ -92,13 +90,12 @@ assert(n == rpmTagTableSize);
     if (n > 1)
 	qsort(ip, n, sizeof(*ip), cmp);
     *ipp = ip;
-    *np = n;
     return 0;
 }
 
 static struct headerTagIndices_s _rpmTags = {
-    NULL, 0,
-    NULL, 0,
+    NULL,
+    NULL,
 };
 
 static headerTagIndices const rpmTags = &_rpmTags;
@@ -107,8 +104,8 @@ static pthread_once_t tagsLoaded = PTHREAD_ONCE_INIT;
 
 static void loadTags(void)
 {
-    tagLoadIndex(&_rpmTags.byValue, &_rpmTags.byValueSize, tagCmpValue);
-    tagLoadIndex(&_rpmTags.byName, &_rpmTags.byNameSize, tagCmpName);
+    tagLoadIndex(&_rpmTags.byValue, tagCmpValue);
+    tagLoadIndex(&_rpmTags.byName, tagCmpName);
 }
 
 static headerTagTableEntry entryByTag(rpmTagVal tag)
@@ -116,7 +113,7 @@ static headerTagTableEntry entryByTag(rpmTagVal tag)
     headerTagTableEntry entry = NULL;
     int i, comparison;
     int l = 0;
-    int u = _rpmTags.byValueSize;
+    int u = rpmTagTableSize;
 
     while (l < u) {
 	i = (l + u) / 2;
@@ -143,7 +140,7 @@ static headerTagTableEntry entryByName(const char *tag)
     headerTagTableEntry entry = NULL;
     int i, comparison;
     int l = 0;
-    int u = _rpmTags.byNameSize;
+    int u = rpmTagTableSize;
 
     while (l < u) {
 	i = (l + u) / 2;
@@ -274,7 +271,7 @@ int rpmTagGetNames(rpmtd tagnames, int fullname)
 	return 0;
 
     rpmtdReset(tagnames);
-    tagnames->count = _rpmTags.byNameSize;
+    tagnames->count = rpmTagTableSize;
     tagnames->data = names = xmalloc(tagnames->count * sizeof(*names));
     tagnames->type = RPM_STRING_ARRAY_TYPE;
     tagnames->flags = RPMTD_ALLOCED | RPMTD_IMMUTABLE;
