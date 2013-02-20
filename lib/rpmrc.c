@@ -1244,10 +1244,13 @@ static void rpmSetTables(int archTable, int osTable)
 
 int rpmMachineScore(int type, const char * name)
 {
-    machEquivInfo info = NULL;
-    if (name)
-	info = machEquivSearch(&tables[type].equiv, name);
-    return info ? info->score : 0;
+    int score = 0;
+    if (name) {
+	machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
+	if (info)
+	    score = info->score;
+    }
+    return score;
 }
 
 int rpmIsKnownArch(const char *name)
