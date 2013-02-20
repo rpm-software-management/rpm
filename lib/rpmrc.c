@@ -1519,6 +1519,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 
 void rpmFreeRpmrc(void)
 {
+    rpmrcCtx ctx = rpmrcCtxAcquire(1);
     int i, j, k;
 
     if (platpat)
@@ -1592,6 +1593,7 @@ void rpmFreeRpmrc(void)
     rpmLuaFree();
 #endif
 
+    rpmrcCtxRelease(ctx);
     return;
 }
 
