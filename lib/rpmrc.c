@@ -1258,7 +1258,8 @@ int rpmIsKnownArch(const char *name)
     canonEntry canon = lookupInCanonTable(name,
 			tables[RPM_MACHTABLE_INSTARCH].canons,
 			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
-    return (canon != NULL || rstreq(name, "noarch"));
+    int known = (canon != NULL || rstreq(name, "noarch"));
+    return known;
 }
 
 /** \ingroup rpmrc
