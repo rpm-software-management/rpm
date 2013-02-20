@@ -1216,11 +1216,6 @@ const char * rpmGetVarArch(int var, const char * arch)
     return next ? next->value : NULL;
 }
 
-static const char *rpmGetVar(int var)
-{
-    return rpmGetVarArch(var, NULL);
-}
-
 static void rpmSetVarArch(int var, const char * val, const char * arch)
 {
     struct rpmvarValue * next = values + var;
@@ -1740,7 +1735,7 @@ int rpmShowRC(FILE * fp)
 
     fprintf(fp, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	const char *s = rpmGetVar(opt->var);
+	const char *s = rpmGetVarArch(opt->var, NULL);
 	if (s != NULL || rpmIsVerbose())
 	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
