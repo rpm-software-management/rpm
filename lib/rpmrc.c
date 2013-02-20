@@ -1605,17 +1605,20 @@ exit:
 
 int rpmReadConfigFiles(const char * file, const char * target)
 {
+    int rc = -1; /* assume failure */
+
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     (void) gethostbyname("localhost");
     if (rpmInitCrypto())
-	return -1;
+	goto exit;
 
     /* Preset target macros */
    	/* FIX: target can be NULL */
     rpmRebuildTargetVars(&target, NULL);
 
     /* Read the files */
-    if (rpmReadRC(file)) return -1;
+    if (rpmReadRC(file))
+	goto exit;
 
     if (macrofiles != NULL) {
 	char *mf = rpmGetPath(macrofiles, NULL);
@@ -1638,8 +1641,10 @@ int rpmReadConfigFiles(const char * file, const char * target)
     /* Force Lua state initialization */
     rpmLuaInit();
 #endif
+    rc = 0;
 
-    return 0;
+exit:
+    return rc;
 }
 
 int rpmShowRC(FILE * fp)
