@@ -1361,19 +1361,17 @@ int rpmGetArchColor(const char *arch)
 {
     const char *color;
     char *e;
-    int color_i;
+    int color_i = -1; /* assume failure */
 
     arch = lookupInDefaultTable(arch,
 				tables[currTables[ARCH]].defaults,
 				tables[currTables[ARCH]].defaultsLength);
     color = rpmGetVarArch(RPMVAR_ARCHCOLOR, arch);
-    if (color == NULL) {
-	return -1;
-    }
-
-    color_i = strtol(color, &e, 10);
-    if (!(e && *e == '\0')) {
-	return -1;
+    if (color) {
+	color_i = strtol(color, &e, 10);
+	if (!(e && *e == '\0')) {
+	    color_i = -1;
+	}
     }
 
     return color_i;
