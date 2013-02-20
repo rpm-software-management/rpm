@@ -1419,9 +1419,9 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	const char *a = NULL;
 	const char *o = NULL;
 	/* Set build target from rpm arch and os */
-	rpmGetArchInfo(&a, NULL);
+	getMachineInfo(ARCH, &a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
-	rpmGetOsInfo(&o, NULL);
+	getMachineInfo(OS, &o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
 
