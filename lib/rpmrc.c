@@ -41,12 +41,10 @@ static const char * const platform = SYSCONFDIR "/rpm/platform";
 static char ** platpat = NULL;
 static int nplatpat = 0;
 
-typedef char * cptr_t;
-
 typedef struct machCacheEntry_s {
     char * name;
     int count;
-    cptr_t * equivs;
+    char ** equivs;
     int visited;
 } * machCacheEntry;
 
@@ -143,7 +141,7 @@ static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable)
 #define OS	0
 #define ARCH	1
 
-static cptr_t current[2];
+static char *current[2];
 
 static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 
