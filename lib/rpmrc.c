@@ -1,6 +1,7 @@
 #include "system.h"
 
 #include <stdarg.h>
+#include <pthread.h>
 
 #if defined(__linux__)
 #include <elf.h>
@@ -150,6 +151,11 @@ static struct rpmvarValue values[RPMVAR_NUM];
 
 static int defaultsInitialized = 0;
 
+typedef struct rpmrcCtx_s * rpmrcCtx;
+struct rpmrcCtx_s {
+    pthread_rwlock_t lock;
+};
+
 /* prototypes */
 static rpmRC doReadRC(const char * urlfn);
 
@@ -159,6 +165,30 @@ static void rpmSetVarArch(int var, const char * val,
 static void rebuildCompatTables(int type, const char * name);
 
 static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
+
+/* Force context (lock) acquisition through a function */
+static rpmrcCtx rpmrcCtxAcquire(int write)
+{
+    static struct rpmrcCtx_s _globalCtx = {
+	.lock = PTHREAD_RWLOCK_INITIALIZER,
+    };
+    rpmrcCtx ctx = &_globalCtx;
+
+    /* XXX: errors should be handled */
+    if (write)
+	pthread_rwlock_wrlock(&ctx->lock);
+    else
+	pthread_rwlock_rdlock(&ctx->lock);
+
+    return ctx;
+}
+
+/* Release context (lock) */
+static rpmrcCtx rpmrcCtxRelease(rpmrcCtx ctx)
+{
+    pthread_rwlock_unlock(&ctx->lock);
+    return NULL;
+}
 
 static int optionCompare(const void * a, const void * b)
 {
@@ -1246,19 +1276,23 @@ int rpmMachineScore(int type, const char * name)
 {
     int score = 0;
     if (name) {
+	rpmrcCtx ctx = rpmrcCtxAcquire(0);
 	machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
 	if (info)
 	    score = info->score;
+	rpmrcCtxRelease(ctx);
     }
     return score;
 }
 
 int rpmIsKnownArch(const char *name)
 {
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
     canonEntry canon = lookupInCanonTable(name,
 			tables[RPM_MACHTABLE_INSTARCH].canons,
 			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
     int known = (canon != NULL || rstreq(name, "noarch"));
+    rpmrcCtxRelease(ctx);
     return known;
 }
 
@@ -1358,11 +1392,14 @@ static void getMachineInfo(int type, const char ** name,
 
 void rpmGetArchInfo(const char ** name, int * num)
 {
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
     getMachineInfo(ARCH, name, num);
+    rpmrcCtxRelease(ctx);
 }
 
 int rpmGetArchColor(const char *arch)
 {
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
     const char *color;
     char *e;
     int color_i = -1; /* assume failure */
@@ -1377,13 +1414,16 @@ int rpmGetArchColor(const char *arch)
 	    color_i = -1;
 	}
     }
+    rpmrcCtxRelease(ctx);
 
     return color_i;
 }
 
 void rpmGetOsInfo(const char ** name, int * num)
 {
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
     getMachineInfo(OS, name, num);
+    rpmrcCtxRelease(ctx);
 }
 
 static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
@@ -1608,6 +1648,7 @@ exit:
 int rpmReadConfigFiles(const char * file, const char * target)
 {
     int rc = -1; /* assume failure */
+    rpmrcCtx ctx = rpmrcCtxAcquire(1);
 
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
     (void) gethostbyname("localhost");
@@ -1646,11 +1687,14 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rc = 0;
 
 exit:
+    rpmrcCtxRelease(ctx);
     return rc;
 }
 
 int rpmShowRC(FILE * fp)
 {
+    /* Write-context necessary as this calls rpmSetTables(), ugh */
+    rpmrcCtx ctx = rpmrcCtxAcquire(1);
     const struct rpmOption *opt;
     rpmds ds = NULL;
     int i;
@@ -1712,6 +1756,9 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "\n");
 
     rpmDumpMacroTable(NULL, fp);
+
+    /* XXX: Move this earlier eventually... */
+    rpmrcCtxRelease(ctx);
 
     return 0;
 }
