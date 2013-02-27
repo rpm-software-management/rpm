@@ -1052,7 +1052,7 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     return ec;
 }
 
-static int fsmCommit(FSM_t fsm, int ix);
+static int fsmCommit(FSM_t fsm, int ix, int setmeta);
 
 /** \ingroup payload
  * Commit hard linked file set atomically.
@@ -1065,6 +1065,7 @@ static int fsmCommitLinks(FSM_t fsm)
     const char * nsuffix = fsm->nsuffix;
     struct stat * st = &fsm->sb;
     int rc = 0;
+    int setmeta = 1;
     nlink_t i;
     hardLink_t li;
 
@@ -1079,8 +1080,12 @@ static int fsmCommitLinks(FSM_t fsm)
     for (i = 0; i < li->nlink; i++) {
 	if (li->filex[i] < 0) continue;
 	rc = fsmMapPath(fsm, li->filex[i]);
-	if (!XFA_SKIPPING(fsm->action))
-	    rc = fsmCommit(fsm, li->filex[i]);
+	if (!XFA_SKIPPING(fsm->action)) {
+	    rc = fsmCommit(fsm, li->filex[i], setmeta);
+	    /* only the first created link needs permissions etc to be set */
+	    if (!rc)
+		setmeta = 0;
+	}
 	fsm->path = _free(fsm->path);
 	li->filex[i] = -1;
     }
@@ -1537,10 +1542,9 @@ static int fsmBackup(FSM_t fsm)
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, int ix)
+static int fsmCommit(FSM_t fsm, int ix, int setmeta)
 {
     int rc = 0;
-    int setmeta = 1;
     struct stat * st = &fsm->sb;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
@@ -1786,7 +1790,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
 	    if (!fsm->postpone) {
 		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix));
+		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix, 1));
 	    }
 	}
 
