@@ -1540,26 +1540,31 @@ static int fsmBackup(FSM_t fsm)
 static int fsmCommit(FSM_t fsm, int ix)
 {
     int rc = 0;
+    int setmeta = 1;
     struct stat * st = &fsm->sb;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
-    if (!S_ISSOCK(st->st_mode) && !IS_DEV_LOG(fsm->path)) {
-	/* Backup on-disk file if needed. Directories are handled earlier */
-	if (!S_ISDIR(st->st_mode))
-	    rc = fsmBackup(fsm);
-        /* Rename temporary to final file name. */
-        if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
-            char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
-            rc = fsmRename(fsm->path, npath, fsm->mapFlags);
-            if (!rc && fsm->nsuffix) {
-                char * opath = fsmFsPath(fsm, 0, NULL);
-                rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-                       opath, npath);
-                free(opath);
-            }
-            free(fsm->path);
-            fsm->path = npath;
-        }
+    if (S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))
+	return 0;
+
+    /* Backup on-disk file if needed. Directories are handled earlier */
+    if (!S_ISDIR(st->st_mode))
+	rc = fsmBackup(fsm);
+    /* Rename temporary to final file name. */
+    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
+	char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
+	rc = fsmRename(fsm->path, npath, fsm->mapFlags);
+	if (!rc && fsm->nsuffix) {
+	    char * opath = fsmFsPath(fsm, 0, NULL);
+	    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
+		   opath, npath);
+	    free(opath);
+	}
+	free(fsm->path);
+	fsm->path = npath;
+    }
+
+    if (setmeta) {
         /* Set file security context (if enabled) */
         if (!rc && !getuid()) {
             rc = fsmSetSELabel(fsm->sehandle, fsm->path, fsm->sb.st_mode);
