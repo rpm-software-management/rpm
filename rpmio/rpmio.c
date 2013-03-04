@@ -195,29 +195,16 @@ static const char * fdbg(FD_t fd)
     *be++ = '\t';
     for (i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
+	FDIO_t iot = fps->io;
 	if (i != fd->nfps)
 	    *be++ = ' ';
 	*be++ = '|';
 	*be++ = ' ';
-	if (fps->io == fdio) {
-	    sprintf(be, "FD %d fp %p", fps->fdno, fps->fp);
-	} else if (fps->io == ufdio) {
-	    sprintf(be, "UFD %d fp %p", fps->fdno, fps->fp);
-	} else if (fps->io == gzdio) {
-	    sprintf(be, "GZD %p fdno %d", fps->fp, fps->fdno);
-#if HAVE_BZLIB_H
-	} else if (fps->io == bzdio) {
-	    sprintf(be, "BZD %p fdno %d", fps->fp, fps->fdno);
-#endif
-#if HAVE_LZMA_H
-	} else if (fps->io == xzdio) {
-	    sprintf(be, "XZD %p fdno %d", fps->fp, fps->fdno);
-	} else if (fps->io == lzdio) {
-	    sprintf(be, "LZD %p fdno %d", fps->fp, fps->fdno);
-#endif
+	/* plain fd io types dont have _fopen() method */
+	if (iot->_fopen == NULL) {
+	    sprintf(be, "%s %d fp %p", iot->ioname, fps->fdno, fps->fp);
 	} else {
-	    sprintf(be, "??? io %p fp %p fdno %d ???",
-		fps->io, fps->fp, fps->fdno);
+	    sprintf(be, "%s %p fp %d", iot->ioname, fps->fp, fps->fdno);
 	}
 	be += strlen(be);
 	*be = '\0';
