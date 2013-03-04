@@ -1434,7 +1434,7 @@ FD_t Fopen(const char *path, const char *fmode)
     const char *end = NULL;
     mode_t perms = 0666;
     int flags = 0;
-    FD_t fd;
+    FD_t fd = NULL;
 
     if (path == NULL || fmode == NULL)
 	return NULL;
@@ -1445,39 +1445,16 @@ FD_t Fopen(const char *path, const char *fmode)
 	return NULL;
 
     if (end == NULL || rstreq(end, "fdio")) {
-if (_rpmio_debug)
-fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
+	if (_rpmio_debug)
+	    fprintf(stderr, "*** Fopen fdio path %s fmode %s\n", path, fmode);
 	fd = fdOpen(path, flags, perms);
-	if (fdFileno(fd) < 0) {
-	    if (fd) (void) fdClose(fd);
-	    return NULL;
-	}
     } else {
-	/* XXX gzdio and bzdio here too */
-
-	switch (urlIsURL(path)) {
-	case URL_IS_HTTPS:
-	case URL_IS_HTTP:
-	case URL_IS_HKP:
-	case URL_IS_PATH:
-	case URL_IS_DASH:
-	case URL_IS_FTP:
-	case URL_IS_UNKNOWN:
-if (_rpmio_debug)
-fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
-	    fd = ufdOpen(path, flags, perms);
-	    if (fd == NULL || !(fdFileno(fd) >= 0))
-		return fd;
-	    break;
-	default:
-if (_rpmio_debug)
-fprintf(stderr, "*** Fopen WTFO path %s fmode %s\n", path, fmode);
-	    return NULL;
-	    break;
-	}
-
+	if (_rpmio_debug)
+	    fprintf(stderr, "*** Fopen ufdio path %s fmode %s\n", path, fmode);
+	fd = ufdOpen(path, flags, perms);
     }
 
+    /* Open compressed stream if necessary */
     if (fd)
 	fd = Fdopen(fd, fmode);
 
