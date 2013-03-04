@@ -16,11 +16,11 @@
 
 #include "debug.h"
 
-typedef struct _FDSTACK_s {
+typedef struct FDSTACK_s {
     FDIO_t		io;
     void *		fp;
     int			fdno;
-} FDSTACK_t;
+} * FDSTACK_t;
 
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
@@ -39,7 +39,7 @@ struct _FD_s {
     int		magic;
 #define	FDMAGIC			0x04463138
     int		nfps;
-    FDSTACK_t	fps[8];
+    struct FDSTACK_s fps[8];
     int		urlType;	/* ufdio: */
 
     int		syserrno;	/* last system errno encountered */
@@ -123,7 +123,7 @@ static void * iotFileno(FD_t fd, FDIO_t iot)
 	return NULL;
 
     for (int i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t * fps = &fd->fps[i];
+	FDSTACK_t fps = &fd->fps[i];
 	if (fps->io != iot)
 	    continue;
 	rc = fps->fp;
@@ -196,7 +196,7 @@ static const char * fdbg(FD_t fd)
 
     *be++ = '\t';
     for (i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t * fps = &fd->fps[i];
+	FDSTACK_t fps = &fd->fps[i];
 	FDIO_t iot = fps->io;
 	if (i != fd->nfps)
 	    *be++ = ' ';
@@ -1013,7 +1013,7 @@ static void * lzdFileno(FD_t fd)
 	return NULL;
 
     for (int i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t * fps = &fd->fps[i];
+	FDSTACK_t fps = &fd->fps[i];
 	if (fps->io != xzdio && fps->io != lzdio)
 	    continue;
 	rc = fps->fp;
@@ -1441,7 +1441,7 @@ int Ferror(FD_t fd)
 
     if (fd == NULL) return -1;
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
-	FDSTACK_t * fps = &fd->fps[i];
+	FDSTACK_t fps = &fd->fps[i];
 	FDIO_t iot = fps->io;
 	int ec = iot->_ferror(fd);
 
