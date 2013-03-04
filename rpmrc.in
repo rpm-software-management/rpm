@@ -83,6 +83,8 @@ optflags: sh3 -O2 -g
 optflags: sh4 -O2 -g -mieee
 optflags: sh4a -O2 -g -mieee
 
+optflags: aarch64 -O2 -g
+
 #############################################################
 # Architecture colors
 
@@ -115,6 +117,8 @@ archcolor: x86_64 2
 
 archcolor: sh3 1
 archcolor: sh4 1
+
+archcolor: aarch64 2
 
 #############################################################
 # Canonical arch names and numbers
@@ -199,6 +203,7 @@ arch_canon:	sh3: sh3	17
 arch_canon:	sh4: sh4	17
 arch_canon:	sh4a: sh4a	17
 arch_canon:	xtensa: xtensa	18
+arch_canon:	aarch64: aarch64 19
 
 #############################################################
 # Canonical OS names and numbers
@@ -307,6 +312,8 @@ buildarchtranslate: sh3: sh3
 buildarchtranslate: sh4: sh4
 buildarchtranslate: sh4a: sh4
 
+buildarchtranslate: aarch64: aarch64
+
 #############################################################
 # Architecture compatibility
 
@@ -397,6 +404,8 @@ arch_compat: sh3: noarch
 arch_compat: sh4: noarch
 arch_compat: sh4a: sh4
 
+arch_compat: aarch64: noarch
+
 os_compat:   IRIX64: IRIX
 os_compat: solaris2.7: solaris2.3 solaris2.4 solaris2.5 solaris2.6
 os_compat: solaris2.6: solaris2.3 solaris2.4 solaris2.5
@@ -427,6 +436,8 @@ os_compat: bsdi4.0: bsdi
 os_compat: Darwin: MacOSX
 
 buildarch_compat: ia64: noarch
+
+buildarch_compat: aarch64: noarch
 
 buildarch_compat: athlon: i686
 buildarch_compat: geode: i586
