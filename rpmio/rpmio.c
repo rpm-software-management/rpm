@@ -57,6 +57,11 @@ struct _FD_s {
 
 #define DBGIO(_f, _x)   DBG((_f), RPMIO_DEBUG_IO, _x)
 
+static FDSTACK_t fdGetFps(FD_t fd)
+{
+    return (fd != NULL) ? &fd->fps[fd->nfps] : NULL;
+}
+
 static FDIO_t fdGetIo(FD_t fd)
 {
     return (fd != NULL) ? fd->fps[fd->nfps].io : NULL;
@@ -68,12 +73,6 @@ static void fdSetIo(FD_t fd, FDIO_t io)
 	fd->fps[fd->nfps].io = io;
 }
 
-static void fdSetFp(FD_t fd, void * fp)
-{
-    if (fd)
-	fd->fps[fd->nfps].fp = fp;
-}
-
 static void fdSetFdno(FD_t fd, int fdno)
 {
     if (fd) 
@@ -82,20 +81,24 @@ static void fdSetFdno(FD_t fd, int fdno)
 
 static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 {
+    FDSTACK_t fps;
     if (fd == NULL || fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
 	return;
     fd->nfps++;
-    fdSetIo(fd, io);
-    fdSetFp(fd, fp);
-    fdSetFdno(fd, fdno);
+    fps = fdGetFps(fd);
+    fps->io = io;
+    fps->fp = fp;
+    fps->fdno = fdno;
 }
 
 static void fdPop(FD_t fd)
 {
+    FDSTACK_t fps;
     if (fd == NULL || fd->nfps < 0) return;
-    fdSetIo(fd, NULL);
-    fdSetFp(fd, NULL);
-    fdSetFdno(fd, -1);
+    fps = fdGetFps(fd);
+    fps->io = NULL;
+    fps->fp = NULL;
+    fps->fdno = -1;
     fd->nfps--;
 }
 
