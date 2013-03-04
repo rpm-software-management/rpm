@@ -148,6 +148,8 @@ typedef int (*fdio_fflush_function_t) (FD_t fd);
 typedef long (*fdio_ftell_function_t) (FD_t);
 
 struct FDIO_s {
+  const char *			ioname;
+  const char *			name;
   fdio_read_function_t		read;
   fdio_write_function_t		write;
   fdio_seek_function_t		seek;
@@ -440,6 +442,7 @@ static long fdTell(FD_t fd)
 }
 
 static const struct FDIO_s fdio_s = {
+  "fdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
   fdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell
 };
@@ -549,6 +552,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 }
 
 static const struct FDIO_s ufdio_s = {
+  "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
   ufdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell
 };
@@ -720,6 +724,7 @@ static long gzdTell(FD_t fd)
     return pos;
 }
 static const struct FDIO_s gzdio_s = {
+  "gzdio", "gzip",
   gzdRead, gzdWrite, gzdSeek, gzdClose,
   NULL, gzdFdopen, gzdOpen, gzdFileno, gzdFlush, gzdTell
 };
@@ -827,6 +832,7 @@ static int bzdClose(FD_t fd)
 }
 
 static const struct FDIO_s bzdio_s = {
+  "bzdio", "bzip2",
   bzdRead, bzdWrite, NULL, bzdClose,
   NULL, bzdFdopen, bzdOpen, bzdFileno, bzdFlush, NULL
 };
@@ -1176,12 +1182,14 @@ static int lzdClose(FD_t fd)
 }
 
 static struct FDIO_s xzdio_s = {
+  "xzdio", "xz",
   lzdRead, lzdWrite, NULL, lzdClose,
   NULL, xzdFdopen, xzdOpen, lzdFileno, lzdFlush, NULL
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
+  "lzdio", "lzma",
   lzdRead, lzdWrite, NULL, lzdClose,
   NULL, lzdFdopen, lzdOpen, lzdFileno, lzdFlush, NULL
 };
