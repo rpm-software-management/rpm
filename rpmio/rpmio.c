@@ -137,8 +137,8 @@ static void * iotFileno(FD_t fd, FDIO_t iot)
 /** \ingroup rpmio
  * \name RPMIO Vectors.
  */
-typedef ssize_t (*fdio_read_function_t) (FD_t fd, void *buf, size_t nbytes);
-typedef ssize_t (*fdio_write_function_t) (FD_t fd, const void *buf, size_t nbytes);
+typedef ssize_t (*fdio_read_function_t) (FDSTACK_t fps, void *buf, size_t nbytes);
+typedef ssize_t (*fdio_write_function_t) (FDSTACK_t fps, const void *buf, size_t nbytes);
 typedef int (*fdio_seek_function_t) (FD_t fd, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (FD_t fd);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
@@ -394,17 +394,17 @@ FD_t fdNew(const char *descr)
     return fdLink(fd);
 }
 
-static ssize_t fdRead(FD_t fd, void * buf, size_t count)
+static ssize_t fdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    return read(fdFileno(fd), buf, count);
+    return read(fps->fdno, buf, count);
 }
 
-static ssize_t fdWrite(FD_t fd, const void * buf, size_t count)
+static ssize_t fdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
     if (count == 0)
 	return 0;
 
-    return write(fdFileno(fd), buf, count);
+    return write(fps->fdno, buf, count);
 }
 
 static int fdSeek(FD_t fd, off_t pos, int whence)
@@ -601,16 +601,16 @@ static int gzdFlush(FD_t fd)
     return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
 
-static ssize_t gzdRead(FD_t fd, void * buf, size_t count)
+static ssize_t gzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    gzFile gzfile;
+    gzFile gzfile = fps->fp;
     ssize_t rc;
 
-    gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzread(gzfile, buf, count);
     if (rc < 0) {
+	FD_t fd = fps->fd;
 	int zerror = 0;
 	fd->errcookie = gzerror(gzfile, &zerror);
 	if (zerror == Z_ERRNO) {
@@ -621,17 +621,18 @@ static ssize_t gzdRead(FD_t fd, void * buf, size_t count)
     return rc;
 }
 
-static ssize_t gzdWrite(FD_t fd, const void * buf, size_t count)
+static ssize_t gzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
     gzFile gzfile;
     ssize_t rc;
 
-    gzfile = gzdFileno(fd);
+    gzfile = fps->fp;
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzwrite(gzfile, (void *)buf, count);
     if (rc < 0) {
 	int zerror = 0;
+	FD_t fd = fps->fd;
 	fd->errcookie = gzerror(gzfile, &zerror);
 	if (zerror == Z_ERRNO) {
 	    fd->syserrno = errno;
@@ -759,31 +760,32 @@ static int bzdFlush(FD_t fd)
     return BZ2_bzflush(bzdFileno(fd));
 }
 
-static ssize_t bzdRead(FD_t fd, void * buf, size_t count)
+static ssize_t bzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    BZFILE *bzfile;
+    BZFILE *bzfile = fps->fp;
     ssize_t rc = 0;
 
-    bzfile = bzdFileno(fd);
     if (bzfile)
 	rc = BZ2_bzread(bzfile, buf, count);
     if (rc == -1) {
 	int zerror = 0;
-	if (bzfile)
+	if (bzfile) {
+	    FD_t fd = fps->fd;
 	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	}
     }
     return rc;
 }
 
-static ssize_t bzdWrite(FD_t fd, const void * buf, size_t count)
+static ssize_t bzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
-    BZFILE *bzfile;
+    BZFILE *bzfile = fps->fp;
     ssize_t rc;
 
-    bzfile = bzdFileno(fd);
     rc = BZ2_bzwrite(bzfile, (void *)buf, count);
     if (rc == -1) {
 	int zerror = 0;
+	FD_t fd = fps->fd;
 	fd->errcookie = BZ2_bzerror(bzfile, &zerror);
     }
     return rc;
@@ -1056,29 +1058,28 @@ static int lzdFlush(FD_t fd)
     return lzflush(lzdFileno(fd));
 }
 
-static ssize_t lzdRead(FD_t fd, void * buf, size_t count)
+static ssize_t lzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
-    LZFILE *lzfile;
+    LZFILE *lzfile = fps->fp;
     ssize_t rc = 0;
 
-    lzfile = lzdFileno(fd);
     if (lzfile)
 	rc = lzread(lzfile, buf, count);
     if (rc == -1) {
+	FD_t fd = fps->fd;
 	fd->errcookie = "Lzma: decoding error";
     }
     return rc;
 }
 
-static ssize_t lzdWrite(FD_t fd, const void * buf, size_t count)
+static ssize_t lzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 {
-    LZFILE *lzfile;
+    LZFILE *lzfile = fps->fp;
     ssize_t rc = 0;
-
-    lzfile = lzdFileno(fd);
 
     rc = lzwrite(lzfile, (void *)buf, count);
     if (rc < 0) {
+	FD_t fd = fps->fd;
 	fd->errcookie = "Lzma: encoding error";
     }
     return rc;
@@ -1151,10 +1152,11 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 
     if (fd != NULL) {
 	fdio_read_function_t _read = FDIOVEC(fd, read);
+	FDSTACK_t fps = fdGetFps(fd);
 
 	fdstat_enter(fd, FDSTAT_READ);
 	do {
-	    rc = (_read ? (*_read) (fd, buf, size * nmemb) : -2);
+	    rc = (_read ? (*_read) (fps, buf, size * nmemb) : -2);
 	} while (rc == -1 && errno == EINTR);
 	fdstat_exit(fd, FDSTAT_READ, rc);
 
@@ -1174,10 +1176,11 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 
     if (fd != NULL) {
 	fdio_write_function_t _write = FDIOVEC(fd, write);
+	FDSTACK_t fps = fdGetFps(fd);
 	
 	fdstat_enter(fd, FDSTAT_WRITE);
 	do {
-	    rc = (_write ? _write(fd, buf, size * nmemb) : -2);
+	    rc = (_write ? _write(fps, buf, size * nmemb) : -2);
 	} while (rc == -1 && errno == EINTR);
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
 
