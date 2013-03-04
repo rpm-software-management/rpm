@@ -141,7 +141,6 @@ typedef ssize_t (*fdio_write_function_t) (FD_t fd, const void *buf, size_t nbyte
 typedef int (*fdio_seek_function_t) (FD_t fd, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (FD_t fd);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
-typedef FD_t (*fdio_fopen_function_t) (const char * path, const char * fmode);
 typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
 typedef void * (*fdio_ffileno_function_t) (FD_t fd);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
@@ -159,7 +158,6 @@ struct FDIO_s {
 
   fdio_open_function_t		_open;
   fdio_fdopen_function_t	_fdopen;
-  fdio_fopen_function_t		_fopen;
   fdio_ffileno_function_t	_ffileno;
   fdio_fflush_function_t	_fflush;
   fdio_ftell_function_t		_ftell;
@@ -205,7 +203,7 @@ static const char * fdbg(FD_t fd)
 	*be++ = '|';
 	*be++ = ' ';
 	/* plain fd io types dont have _fopen() method */
-	if (iot->_fopen == NULL) {
+	if (iot->_fdopen == NULL) {
 	    sprintf(be, "%s %d fp %p", iot->ioname, fps->fdno, fps->fp);
 	} else {
 	    sprintf(be, "%s %p fp %d", iot->ioname, fps->fp, fps->fdno);
@@ -456,7 +454,7 @@ static long fdTell(FD_t fd)
 static const struct FDIO_s fdio_s = {
   "fdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  fdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr,
+  fdOpen, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr,
 };
 static const FDIO_t fdio = &fdio_s ;
 
@@ -566,7 +564,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 static const struct FDIO_s ufdio_s = {
   "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  ufdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr
+  ufdOpen, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
@@ -577,19 +575,6 @@ static const FDIO_t ufdio = &ufdio_s ;
 static void * gzdFileno(FD_t fd)
 {
     return iotFileno(fd, gzdio);
-}
-
-static
-FD_t gzdOpen(const char * path, const char * fmode)
-{
-    FD_t fd;
-    gzFile gzfile;
-    if ((gzfile = gzopen(path, fmode)) == NULL)
-	return NULL;
-    fd = fdNew(path);
-    fdPop(fd); fdPush(fd, gzdio, gzfile, -1);
-    
-    return fdLink(fd);
 }
 
 static FD_t gzdFdopen(FD_t fd, const char *fmode)
@@ -738,7 +723,7 @@ static long gzdTell(FD_t fd)
 static const struct FDIO_s gzdio_s = {
   "gzdio", "gzip",
   gzdRead, gzdWrite, gzdSeek, gzdClose,
-  NULL, gzdFdopen, gzdOpen, gzdFileno, gzdFlush, gzdTell, zfdError, zfdStrerr
+  NULL, gzdFdopen, gzdFileno, gzdFlush, gzdTell, zfdError, zfdStrerr
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
@@ -751,17 +736,6 @@ static const FDIO_t gzdio = &gzdio_s ;
 static void * bzdFileno(FD_t fd)
 {
     return iotFileno(fd, bzdio);
-}
-
-static FD_t bzdOpen(const char * path, const char * mode)
-{
-    FD_t fd;
-    BZFILE *bzfile;;
-    if ((bzfile = BZ2_bzopen(path, mode)) == NULL)
-	return NULL;
-    fd = fdNew(path);
-    fdPop(fd); fdPush(fd, bzdio, bzfile, -1);
-    return fdLink(fd);
 }
 
 static FD_t bzdFdopen(FD_t fd, const char * fmode)
@@ -846,7 +820,7 @@ static int bzdClose(FD_t fd)
 static const struct FDIO_s bzdio_s = {
   "bzdio", "bzip2",
   bzdRead, bzdWrite, NULL, bzdClose,
-  NULL, bzdFdopen, bzdOpen, bzdFileno, bzdFlush, NULL, zfdError, zfdStrerr
+  NULL, bzdFdopen, bzdFileno, bzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t bzdio = &bzdio_s ;
 
@@ -928,21 +902,11 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd, int x
     return lzfile;
 }
 
-static LZFILE *xzopen(const char *path, const char *mode)
-{
-    return lzopen_internal(path, mode, -1, 1);
-}
-
 static LZFILE *xzdopen(int fd, const char *mode)
 {
     if (fd < 0)
 	return 0;
     return lzopen_internal(0, mode, fd, 1);
-}
-
-static LZFILE *lzopen(const char *path, const char *mode)
-{
-    return lzopen_internal(path, mode, -1, 0);
 }
 
 static LZFILE *lzdopen(int fd, const char *mode)
@@ -1051,17 +1015,6 @@ static void * xzdFileno(FD_t fd)
     return iotFileno(fd, xzdio);
 }
 
-static FD_t xzdOpen(const char * path, const char * mode)
-{
-    FD_t fd;
-    LZFILE *lzfile;
-    if ((lzfile = xzopen(path, mode)) == NULL)
-	return NULL;
-    fd = fdNew(path);
-    fdPop(fd); fdPush(fd, xzdio, lzfile, -1);
-    return fdLink(fd);
-}
-
 static FD_t xzdFdopen(FD_t fd, const char * fmode)
 {
     int fdno;
@@ -1074,17 +1027,6 @@ static FD_t xzdFdopen(FD_t fd, const char * fmode)
     lzfile = xzdopen(fdno, fmode);
     if (lzfile == NULL) return NULL;
     fdPush(fd, xzdio, lzfile, fdno);
-    return fdLink(fd);
-}
-
-static FD_t lzdOpen(const char * path, const char * mode)
-{
-    FD_t fd;
-    LZFILE *lzfile;
-    if ((lzfile = lzopen(path, mode)) == NULL)
-	return NULL;
-    fd = fdNew(path);
-    fdPop(fd); fdPush(fd, lzdio, lzfile, -1);
     return fdLink(fd);
 }
 
@@ -1165,14 +1107,14 @@ static int lzdClose(FD_t fd)
 static struct FDIO_s xzdio_s = {
   "xzdio", "xz",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, xzdFdopen, xzdOpen, xzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
+  NULL, xzdFdopen, xzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
   "lzdio", "lzma",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, lzdFdopen, lzdOpen, lzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
+  NULL, lzdFdopen, lzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t lzdio = &lzdio_s;
 
@@ -1497,7 +1439,7 @@ int Ferror(FD_t fd)
 	int ec = iot->_ferror(fd);
 
 	/* XXX fdio under compressed types always has fdno == -1 */
-	if (iot->_fopen != NULL)
+	if (iot->_fdopen != NULL)
 	    i--;
 
 	if (rc == 0 && ec)
