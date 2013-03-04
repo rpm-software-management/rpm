@@ -68,11 +68,6 @@ static void fdSetIo(FD_t fd, FDIO_t io)
 	fd->fps[fd->nfps].io = io;
 }
 
-static void * fdGetFp(FD_t fd)
-{
-    return (fd != NULL) ? fd->fps[fd->nfps].fp : NULL;
-}
-
 static void fdSetFp(FD_t fd, void * fp)
 {
     if (fd)
@@ -142,7 +137,6 @@ typedef int (*fdio_seek_function_t) (FD_t fd, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (FD_t fd);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
 typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
-typedef void * (*fdio_ffileno_function_t) (FD_t fd);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
 typedef long (*fdio_ftell_function_t) (FD_t);
 typedef int (*fdio_ferror_function_t) (FD_t);
@@ -158,7 +152,6 @@ struct FDIO_s {
 
   fdio_open_function_t		_open;
   fdio_fdopen_function_t	_fdopen;
-  fdio_ffileno_function_t	_ffileno;
   fdio_fflush_function_t	_fflush;
   fdio_ftell_function_t		_ftell;
   fdio_ferror_function_t	_ferror;
@@ -454,7 +447,7 @@ static long fdTell(FD_t fd)
 static const struct FDIO_s fdio_s = {
   "fdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  fdOpen, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr,
+  fdOpen, NULL, fdFlush, fdTell, fdError, fdStrerr,
 };
 static const FDIO_t fdio = &fdio_s ;
 
@@ -564,7 +557,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 static const struct FDIO_s ufdio_s = {
   "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  ufdOpen, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr
+  ufdOpen, NULL, fdFlush, fdTell, fdError, fdStrerr
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
@@ -723,7 +716,7 @@ static long gzdTell(FD_t fd)
 static const struct FDIO_s gzdio_s = {
   "gzdio", "gzip",
   gzdRead, gzdWrite, gzdSeek, gzdClose,
-  NULL, gzdFdopen, gzdFileno, gzdFlush, gzdTell, zfdError, zfdStrerr
+  NULL, gzdFdopen, gzdFlush, gzdTell, zfdError, zfdStrerr
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
@@ -820,7 +813,7 @@ static int bzdClose(FD_t fd)
 static const struct FDIO_s bzdio_s = {
   "bzdio", "bzip2",
   bzdRead, bzdWrite, NULL, bzdClose,
-  NULL, bzdFdopen, bzdFileno, bzdFlush, NULL, zfdError, zfdStrerr
+  NULL, bzdFdopen, bzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t bzdio = &bzdio_s ;
 
@@ -1114,14 +1107,14 @@ static int lzdClose(FD_t fd)
 static struct FDIO_s xzdio_s = {
   "xzdio", "xz",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, xzdFdopen, lzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
+  NULL, xzdFdopen, lzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
   "lzdio", "lzma",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, lzdFdopen, lzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
+  NULL, lzdFdopen, lzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t lzdio = &lzdio_s;
 
