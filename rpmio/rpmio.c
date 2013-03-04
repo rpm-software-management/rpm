@@ -146,6 +146,7 @@ typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
 typedef void * (*fdio_ffileno_function_t) (FD_t fd);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
 typedef long (*fdio_ftell_function_t) (FD_t);
+typedef int (*fdio_ferror_function_t) (FD_t);
 
 struct FDIO_s {
   const char *			ioname;
@@ -161,6 +162,7 @@ struct FDIO_s {
   fdio_ffileno_function_t	_ffileno;
   fdio_fflush_function_t	_fflush;
   fdio_ftell_function_t		_ftell;
+  fdio_ferror_function_t	_ferror;
 };
 
 /* forward refs */
@@ -288,6 +290,17 @@ static int fdFlush(FD_t fd)
 static int fdFileno(FD_t fd)
 {
     return (fd != NULL) ? fd->fps[0].fdno : -2;
+}
+
+static int fdError(FD_t fd)
+{
+    /* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
+    return fdFileno(fd) < 0 ? -1 : 0;
+}
+
+static int zfdError(FD_t fd)
+{
+    return (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
 }
 
 const char * Fdescr(FD_t fd)
@@ -431,7 +444,7 @@ static long fdTell(FD_t fd)
 static const struct FDIO_s fdio_s = {
   "fdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  fdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell
+  fdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError,
 };
 static const FDIO_t fdio = &fdio_s ;
 
@@ -541,7 +554,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 static const struct FDIO_s ufdio_s = {
   "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  ufdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell
+  ufdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError,
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
@@ -713,7 +726,7 @@ static long gzdTell(FD_t fd)
 static const struct FDIO_s gzdio_s = {
   "gzdio", "gzip",
   gzdRead, gzdWrite, gzdSeek, gzdClose,
-  NULL, gzdFdopen, gzdOpen, gzdFileno, gzdFlush, gzdTell
+  NULL, gzdFdopen, gzdOpen, gzdFileno, gzdFlush, gzdTell, zfdError,
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
@@ -821,7 +834,7 @@ static int bzdClose(FD_t fd)
 static const struct FDIO_s bzdio_s = {
   "bzdio", "bzip2",
   bzdRead, bzdWrite, NULL, bzdClose,
-  NULL, bzdFdopen, bzdOpen, bzdFileno, bzdFlush, NULL
+  NULL, bzdFdopen, bzdOpen, bzdFileno, bzdFlush, NULL, zfdError,
 };
 static const FDIO_t bzdio = &bzdio_s ;
 
@@ -1171,14 +1184,14 @@ static int lzdClose(FD_t fd)
 static struct FDIO_s xzdio_s = {
   "xzdio", "xz",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, xzdFdopen, xzdOpen, lzdFileno, lzdFlush, NULL
+  NULL, xzdFdopen, xzdOpen, lzdFileno, lzdFlush, NULL, zfdError,
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
   "lzdio", "lzma",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, lzdFdopen, lzdOpen, lzdFileno, lzdFlush, NULL
+  NULL, lzdFdopen, lzdOpen, lzdFileno, lzdFlush, NULL, zfdError,
 };
 static const FDIO_t lzdio = &lzdio_s;
 
@@ -1504,25 +1517,12 @@ int Ferror(FD_t fd)
     if (fd == NULL) return -1;
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 	FDSTACK_t * fps = &fd->fps[i];
-	int ec;
-	
-	if (fps->io == gzdio) {
-	    ec = (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
-	    i--;	/* XXX fdio under gzdio always has fdno == -1 */
-#if HAVE_BZLIB_H
-	} else if (fps->io == bzdio) {
-	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
-	    i--;	/* XXX fdio under bzdio always has fdno == -1 */
-#endif
-#if HAVE_LZMA_H
-	} else if (fps->io == xzdio || fps->io == lzdio) {
-	    ec = (fd->syserrno  || fd->errcookie != NULL) ? -1 : 0;
-	    i--;	/* XXX fdio under xzdio/lzdio always has fdno == -1 */
-#endif
-	} else {
-	/* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
-	    ec = (fdFileno(fd) < 0 ? -1 : 0);
-	}
+	FDIO_t iot = fps->io;
+	int ec = iot->_ferror(fd);
+
+	/* XXX fdio under compressed types always has fdno == -1 */
+	if (iot->_fopen != NULL)
+	    i--;
 
 	if (rc == 0 && ec)
 	    rc = ec;
