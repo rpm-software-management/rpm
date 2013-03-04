@@ -147,6 +147,7 @@ typedef void * (*fdio_ffileno_function_t) (FD_t fd);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
 typedef long (*fdio_ftell_function_t) (FD_t);
 typedef int (*fdio_ferror_function_t) (FD_t);
+typedef const char * (*fdio_fstrerr_function_t)(FD_t);
 
 struct FDIO_s {
   const char *			ioname;
@@ -163,6 +164,7 @@ struct FDIO_s {
   fdio_fflush_function_t	_fflush;
   fdio_ftell_function_t		_ftell;
   fdio_ferror_function_t	_ferror;
+  fdio_fstrerr_function_t	_fstrerr;
 };
 
 /* forward refs */
@@ -301,6 +303,16 @@ static int fdError(FD_t fd)
 static int zfdError(FD_t fd)
 {
     return (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
+}
+
+static const char * fdStrerr(FD_t fd)
+{
+    return (fd->syserrno != 0) ? strerror(fd->syserrno) : "";
+}
+
+static const char * zfdStrerr(FD_t fd)
+{
+    return fd->errcookie;
 }
 
 const char * Fdescr(FD_t fd)
@@ -444,7 +456,7 @@ static long fdTell(FD_t fd)
 static const struct FDIO_s fdio_s = {
   "fdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  fdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError,
+  fdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr,
 };
 static const FDIO_t fdio = &fdio_s ;
 
@@ -554,7 +566,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 static const struct FDIO_s ufdio_s = {
   "ufdio", NULL,
   fdRead, fdWrite, fdSeek, fdClose,
-  ufdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError,
+  ufdOpen, NULL, NULL, fdGetFp, fdFlush, fdTell, fdError, fdStrerr
 };
 static const FDIO_t ufdio = &ufdio_s ;
 
@@ -726,7 +738,7 @@ static long gzdTell(FD_t fd)
 static const struct FDIO_s gzdio_s = {
   "gzdio", "gzip",
   gzdRead, gzdWrite, gzdSeek, gzdClose,
-  NULL, gzdFdopen, gzdOpen, gzdFileno, gzdFlush, gzdTell, zfdError,
+  NULL, gzdFdopen, gzdOpen, gzdFileno, gzdFlush, gzdTell, zfdError, zfdStrerr
 };
 static const FDIO_t gzdio = &gzdio_s ;
 
@@ -834,35 +846,11 @@ static int bzdClose(FD_t fd)
 static const struct FDIO_s bzdio_s = {
   "bzdio", "bzip2",
   bzdRead, bzdWrite, NULL, bzdClose,
-  NULL, bzdFdopen, bzdOpen, bzdFileno, bzdFlush, NULL, zfdError,
+  NULL, bzdFdopen, bzdOpen, bzdFileno, bzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t bzdio = &bzdio_s ;
 
 #endif	/* HAVE_BZLIB_H */
-
-static const char * getFdErrstr (FD_t fd)
-{
-    const char *errstr = NULL;
-
-    if (fdGetIo(fd) == gzdio) {
-	errstr = fd->errcookie;
-    } else
-#ifdef	HAVE_BZLIB_H
-    if (fdGetIo(fd) == bzdio) {
-	errstr = fd->errcookie;
-    } else
-#endif	/* HAVE_BZLIB_H */
-#ifdef	HAVE_LZMA_H
-    if (fdGetIo(fd) == xzdio || fdGetIo(fd) == lzdio) {
-	errstr = fd->errcookie;
-    } else
-#endif	/* HAVE_LZMA_H */
-    {
-	errstr = (fd->syserrno ? strerror(fd->syserrno) : "");
-    }
-
-    return errstr;
-}
 
 /* =============================================================== */
 /* Support for LZMA library.  */
@@ -1184,14 +1172,14 @@ static int lzdClose(FD_t fd)
 static struct FDIO_s xzdio_s = {
   "xzdio", "xz",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, xzdFdopen, xzdOpen, lzdFileno, lzdFlush, NULL, zfdError,
+  NULL, xzdFdopen, xzdOpen, lzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t xzdio = &xzdio_s;
 
 static struct FDIO_s lzdio_s = {
   "lzdio", "lzma",
   lzdRead, lzdWrite, NULL, lzdClose,
-  NULL, lzdFdopen, lzdOpen, lzdFileno, lzdFlush, NULL, zfdError,
+  NULL, lzdFdopen, lzdOpen, lzdFileno, lzdFlush, NULL, zfdError, zfdStrerr
 };
 static const FDIO_t lzdio = &lzdio_s;
 
@@ -1199,15 +1187,22 @@ static const FDIO_t lzdio = &lzdio_s;
 
 /* =============================================================== */
 
-const char *Fstrerror(FD_t fd)
-{
-    if (fd == NULL)
-	return (errno ? strerror(errno) : "");
-    return getFdErrstr(fd);
-}
-
 #define	FDIOVEC(_fd, _vec)	\
   ((fdGetIo(_fd) && fdGetIo(_fd)->_vec) ? fdGetIo(_fd)->_vec : NULL)
+
+const char *Fstrerror(FD_t fd)
+{
+    const char *err = "";
+
+    if (fd != NULL) {
+	fdio_fstrerr_function_t _fstrerr = FDIOVEC(fd, _fstrerr);
+	if (_fstrerr)
+	    err = _fstrerr(fd);
+    } else if (errno){
+	err = strerror(errno);
+    }
+    return err;
+}
 
 ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
 {
