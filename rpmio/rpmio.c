@@ -1091,7 +1091,7 @@ static FD_t lzdOpen(const char * path, const char * mode)
     if ((lzfile = lzopen(path, mode)) == NULL)
 	return NULL;
     fd = fdNew(path);
-    fdPop(fd); fdPush(fd, xzdio, lzfile, -1);
+    fdPop(fd); fdPush(fd, lzdio, lzfile, -1);
     return fdLink(fd);
 }
 
@@ -1106,7 +1106,7 @@ static FD_t lzdFdopen(FD_t fd, const char * fmode)
     if (fdno < 0) return NULL;
     lzfile = lzdopen(fdno, fmode);
     if (lzfile == NULL) return NULL;
-    fdPush(fd, xzdio, lzfile, fdno);
+    fdPush(fd, lzdio, lzfile, fdno);
     return fdLink(fd);
 }
 
