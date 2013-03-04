@@ -1369,7 +1369,7 @@ FD_t Fdopen(FD_t ofd, const char *fmode)
 {
     char stdio[20], other[20], zstdio[40];
     const char *end = NULL;
-    FDIO_t iof = NULL;
+    fdio_fdopen_function_t openfunc = NULL;
     FD_t fd = ofd;
 
 if (_rpmio_debug)
@@ -1390,36 +1390,32 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 
     if (end && *end) {
 	if (rstreq(end, "fdio")) {
-	    iof = fdio;
+	    openfunc = fdio->_fdopen;
 	} else if (rstreq(end, "gzdio") || rstreq(end, "gzip")) {
-	    iof = gzdio;
-	    fd = gzdFdopen(fd, zstdio);
+	    openfunc = gzdio->_fdopen;
 #if HAVE_BZLIB_H
 	} else if (rstreq(end, "bzdio") || rstreq(end, "bzip2")) {
-	    iof = bzdio;
-	    fd = bzdFdopen(fd, zstdio);
+	    openfunc = bzdio->_fdopen;
 #endif
 #if HAVE_LZMA_H
 	} else if (rstreq(end, "xzdio") || rstreq(end, "xz")) {
-	    iof = xzdio;
-	    fd = xzdFdopen(fd, zstdio);
+	    openfunc = xzdio->_fdopen;
 	} else if (rstreq(end, "lzdio") || rstreq(end, "lzma")) {
-	    iof = lzdio;
-	    fd = lzdFdopen(fd, zstdio);
+	    openfunc = lzdio->_fdopen;
 #endif
 	} else if (rstreq(end, "ufdio")) {
-	    iof = ufdio;
+	    openfunc = ufdio->_fdopen;
 	}
     } else if (other[0] != '\0') {
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
 	    {};
 	if (*end == '\0') {
-	    iof = gzdio;
-	    fd = gzdFdopen(fd, zstdio);
+	    openfunc = gzdio->_fdopen;
 	}
     }
-    if (iof == NULL)
-	return fd;
+
+    if (openfunc)
+	fd = openfunc(fd, zstdio);
 
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fd;
