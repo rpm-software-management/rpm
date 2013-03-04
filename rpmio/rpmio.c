@@ -1368,11 +1368,39 @@ static void cvtfmode (const char *m,
 	*f = flags;
 }
 
+static FDIO_t findIOT(const char *name)
+{
+    static FDIO_t fdio_types[] = {
+	&fdio_s,
+	&ufdio_s,
+	&gzdio_s,
+#if HAVE_BZLIB_H
+	&bzdio_s,
+#endif
+#if HAVE_LZMA_H
+	&xzdio_s,
+	&lzdio_s,
+#endif
+	NULL
+    };
+    FDIO_t iot = NULL;
+
+    for (FDIO_t *t = fdio_types; t && *t; t++) {
+	if (rstreq(name, (*t)->ioname) ||
+		((*t)->name && rstreq(name, (*t)->name))) {
+	    iot = (*t);
+	    break;
+	}
+    }
+
+    return iot;
+}
+
 FD_t Fdopen(FD_t ofd, const char *fmode)
 {
     char stdio[20], other[20], zstdio[40];
     const char *end = NULL;
-    fdio_fdopen_function_t openfunc = NULL;
+    FDIO_t iot = NULL;
     FD_t fd = ofd;
 
 if (_rpmio_debug)
@@ -1392,33 +1420,16 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 	return fd;
 
     if (end && *end) {
-	if (rstreq(end, "fdio")) {
-	    openfunc = fdio->_fdopen;
-	} else if (rstreq(end, "gzdio") || rstreq(end, "gzip")) {
-	    openfunc = gzdio->_fdopen;
-#if HAVE_BZLIB_H
-	} else if (rstreq(end, "bzdio") || rstreq(end, "bzip2")) {
-	    openfunc = bzdio->_fdopen;
-#endif
-#if HAVE_LZMA_H
-	} else if (rstreq(end, "xzdio") || rstreq(end, "xz")) {
-	    openfunc = xzdio->_fdopen;
-	} else if (rstreq(end, "lzdio") || rstreq(end, "lzma")) {
-	    openfunc = lzdio->_fdopen;
-#endif
-	} else if (rstreq(end, "ufdio")) {
-	    openfunc = ufdio->_fdopen;
-	}
+	iot = findIOT(end);
     } else if (other[0] != '\0') {
 	for (end = other; *end && strchr("0123456789fh", *end); end++)
 	    {};
-	if (*end == '\0') {
-	    openfunc = gzdio->_fdopen;
-	}
+	if (*end == '\0')
+	    iot = findIOT("gzdio");
     }
 
-    if (openfunc)
-	fd = openfunc(fd, zstdio);
+    if (iot && iot->_fdopen)
+	fd = iot->_fdopen(fd, zstdio);
 
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fd;
