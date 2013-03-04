@@ -139,12 +139,12 @@ static void * iotFileno(FD_t fd, FDIO_t iot)
  */
 typedef ssize_t (*fdio_read_function_t) (FDSTACK_t fps, void *buf, size_t nbytes);
 typedef ssize_t (*fdio_write_function_t) (FDSTACK_t fps, const void *buf, size_t nbytes);
-typedef int (*fdio_seek_function_t) (FD_t fd, off_t pos, int whence);
+typedef int (*fdio_seek_function_t) (FDSTACK_t fps, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (FD_t fd);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
 typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
 typedef int (*fdio_fflush_function_t) (FD_t fd);
-typedef long (*fdio_ftell_function_t) (FD_t);
+typedef long (*fdio_ftell_function_t) (FDSTACK_t fps);
 typedef int (*fdio_ferror_function_t) (FD_t);
 typedef const char * (*fdio_fstrerr_function_t)(FD_t);
 
@@ -407,9 +407,9 @@ static ssize_t fdWrite(FDSTACK_t fps, const void * buf, size_t count)
     return write(fps->fdno, buf, count);
 }
 
-static int fdSeek(FD_t fd, off_t pos, int whence)
+static int fdSeek(FDSTACK_t fps, off_t pos, int whence)
 {
-    return lseek(fdFileno(fd), pos, whence);
+    return lseek(fps->fdno, pos, whence);
 }
 
 static int fdClose(FD_t fd)
@@ -445,9 +445,9 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
     return fd;
 }
 
-static long fdTell(FD_t fd)
+static long fdTell(FDSTACK_t fps)
 {
-    return lseek(Fileno(fd), 0, SEEK_CUR);
+    return lseek(fps->fdno, 0, SEEK_CUR);
 }
 
 static const struct FDIO_s fdio_s = {
@@ -643,21 +643,19 @@ static ssize_t gzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 }
 
 /* XXX zlib-1.0.4 has not */
-static int gzdSeek(FD_t fd, off_t pos, int whence)
+static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
 {
     off_t p = pos;
     int rc;
 #if HAVE_GZSEEK
-    gzFile gzfile;
+    gzFile gzfile = fps->fp;
 
-    if (fd == NULL) return -2;
-
-    gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzseek(gzfile, p, whence);
     if (rc < 0) {
 	int zerror = 0;
+	FD_t fd = fps->fd;
 	fd->errcookie = gzerror(gzfile, &zerror);
 	if (zerror == Z_ERRNO) {
 	    fd->syserrno = errno;
@@ -698,16 +696,17 @@ static int gzdClose(FD_t fd)
     return rc;
 }
 
-static long gzdTell(FD_t fd)
+static long gzdTell(FDSTACK_t fps)
 {
     off_t pos = -1;
-    gzFile gzfile = gzdFileno(fd);
+    gzFile gzfile = fps->fp;
 
     if (gzfile != NULL) {
 #if HAVE_GZSEEK
 	pos = gztell(gzfile);
 	if (pos < 0) {
 	    int zerror = 0;
+	    FD_t fd = fps->fd;
 	    fd->errcookie = gzerror(gzfile, &zerror);
 	    if (zerror == Z_ERRNO) {
 		fd->syserrno = errno;
@@ -1199,10 +1198,11 @@ int Fseek(FD_t fd, off_t offset, int whence)
     int rc = -1;
 
     if (fd != NULL) {
+	FDSTACK_t fps = fdGetFps(fd);
 	fdio_seek_function_t _seek = FDIOVEC(fd, seek);
 
 	fdstat_enter(fd, FDSTAT_SEEK);
-	rc = (_seek ? _seek(fd, offset, whence) : -2);
+	rc = (_seek ? _seek(fps, offset, whence) : -2);
 	fdstat_exit(fd, FDSTAT_SEEK, rc);
     }
 
@@ -1430,9 +1430,10 @@ off_t Ftell(FD_t fd)
 {
     off_t pos = -1;
     if (fd != NULL) {
+	FDSTACK_t fps = fdGetFps(fd);
 	fdio_ftell_function_t _ftell = FDIOVEC(fd, _ftell);
 
-	pos = (_ftell ? _ftell(fd) : -2);
+	pos = (_ftell ? _ftell(fps) : -2);
     }
     return pos;
 }
