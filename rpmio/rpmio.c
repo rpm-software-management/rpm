@@ -116,34 +116,16 @@ rpmDigestBundle fdGetBundle(FD_t fd)
     return (fd != NULL) ? fd->digests : NULL;
 }
 
-static void * iotFileno(FD_t fd, FDIO_t iot)
-{
-    void * rc = NULL;
-
-    if (fd == NULL)
-	return NULL;
-
-    for (int i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t fps = &fd->fps[i];
-	if (fps->io != iot)
-	    continue;
-	rc = fps->fp;
-	break;
-    }
-    
-    return rc;
-}
-
 /** \ingroup rpmio
  * \name RPMIO Vectors.
  */
 typedef ssize_t (*fdio_read_function_t) (FDSTACK_t fps, void *buf, size_t nbytes);
 typedef ssize_t (*fdio_write_function_t) (FDSTACK_t fps, const void *buf, size_t nbytes);
 typedef int (*fdio_seek_function_t) (FDSTACK_t fps, off_t pos, int whence);
-typedef int (*fdio_close_function_t) (FD_t fd);
+typedef int (*fdio_close_function_t) (FDSTACK_t fps);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
 typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
-typedef int (*fdio_fflush_function_t) (FD_t fd);
+typedef int (*fdio_fflush_function_t) (FDSTACK_t fps);
 typedef long (*fdio_ftell_function_t) (FDSTACK_t fps);
 typedef int (*fdio_ferror_function_t) (FD_t);
 typedef const char * (*fdio_fstrerr_function_t)(FD_t);
@@ -281,7 +263,7 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
 }
 
 /* Regular fd doesn't have fflush() equivalent but its not an error either */
-static int fdFlush(FD_t fd)
+static int fdFlush(FDSTACK_t fps)
 {
     return 0;
 }
@@ -412,19 +394,16 @@ static int fdSeek(FDSTACK_t fps, off_t pos, int whence)
     return lseek(fps->fdno, pos, whence);
 }
 
-static int fdClose(FD_t fd)
+static int fdClose(FDSTACK_t fps)
 {
-    int fdno;
+    int fdno = fps->fdno;
     int rc;
 
-    if (fd == NULL) return -2;
-    fdno = fdFileno(fd);
-
-    fdSetFdno(fd, -1);
+    fps->fdno = -1;
 
     rc = ((fdno >= 0) ? close(fdno) : -2);
 
-    fdFree(fd);
+    fdFree(fps->fd);
     return rc;
 }
 
@@ -548,14 +527,9 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
 	break;
     }
 
-    if (fd == NULL) return NULL;
-
-    fdSetIo(fd, ufdio);
-    fd->urlType = urlType;
-
-    if (Fileno(fd) < 0) {
-	(void) fdClose(fd);
-	return NULL;
+    if (fd != NULL) {
+	fdSetIo(fd, ufdio);
+	fd->urlType = urlType;
     }
     return fd;
 }
@@ -570,11 +544,6 @@ static const FDIO_t ufdio = &ufdio_s ;
 /* =============================================================== */
 /* Support for GZIP library.  */
 #include <zlib.h>
-
-static void * gzdFileno(FD_t fd)
-{
-    return iotFileno(fd, gzdio);
-}
 
 static FD_t gzdFdopen(FD_t fd, const char *fmode)
 {
@@ -593,10 +562,9 @@ static FD_t gzdFdopen(FD_t fd, const char *fmode)
     return fdLink(fd);
 }
 
-static int gzdFlush(FD_t fd)
+static int gzdFlush(FDSTACK_t fps)
 {
-    gzFile gzfile;
-    gzfile = gzdFileno(fd);
+    gzFile gzfile = fps->fp;
     if (gzfile == NULL) return -2;
     return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
@@ -668,12 +636,12 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
     return rc;
 }
 
-static int gzdClose(FD_t fd)
+static int gzdClose(FDSTACK_t fps)
 {
-    gzFile gzfile;
+    FD_t fd = fps->fd;
+    gzFile gzfile = fps->fp;
     int rc;
 
-    gzfile = gzdFileno(fd);
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzclose(gzfile);
@@ -732,11 +700,6 @@ static const FDIO_t gzdio = &gzdio_s ;
 
 #include <bzlib.h>
 
-static void * bzdFileno(FD_t fd)
-{
-    return iotFileno(fd, bzdio);
-}
-
 static FD_t bzdFdopen(FD_t fd, const char * fmode)
 {
     int fdno;
@@ -754,9 +717,9 @@ static FD_t bzdFdopen(FD_t fd, const char * fmode)
     return fdLink(fd);
 }
 
-static int bzdFlush(FD_t fd)
+static int bzdFlush(FDSTACK_t fps)
 {
-    return BZ2_bzflush(bzdFileno(fd));
+    return BZ2_bzflush(fps->fp);
 }
 
 static ssize_t bzdRead(FDSTACK_t fps, void * buf, size_t count)
@@ -790,12 +753,11 @@ static ssize_t bzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     return rc;
 }
 
-static int bzdClose(FD_t fd)
+static int bzdClose(FDSTACK_t fps)
 {
-    BZFILE *bzfile;
+    FD_t fd = fps->fd;
+    BZFILE *bzfile = fps->fp;
     int rc;
-
-    bzfile = bzdFileno(fd);
 
     if (bzfile == NULL) return -2;
     /* FIX: check rc */
@@ -1005,23 +967,6 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
     }
 }
 
-static void * lzdFileno(FD_t fd)
-{
-    void * rc = NULL;
-    
-    if (fd == NULL)
-	return NULL;
-
-    for (int i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t fps = &fd->fps[i];
-	if (fps->io != xzdio && fps->io != lzdio)
-	    continue;
-	rc = fps->fp;
-	break;
-    }
-    return rc;
-}
-
 static FD_t xzdFdopen(FD_t fd, const char * fmode)
 {
     int fdno;
@@ -1052,9 +997,9 @@ static FD_t lzdFdopen(FD_t fd, const char * fmode)
     return fdLink(fd);
 }
 
-static int lzdFlush(FD_t fd)
+static int lzdFlush(FDSTACK_t fps)
 {
-    return lzflush(lzdFileno(fd));
+    return lzflush(fps->fp);
 }
 
 static ssize_t lzdRead(FDSTACK_t fps, void * buf, size_t count)
@@ -1084,12 +1029,11 @@ static ssize_t lzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     return rc;
 }
 
-static int lzdClose(FD_t fd)
+static int lzdClose(FDSTACK_t fps)
 {
-    LZFILE *lzfile;
+    FD_t fd = fps->fd;
+    LZFILE *lzfile = fps->fp;
     int rc;
-
-    lzfile = lzdFileno(fd);
 
     if (lzfile == NULL) return -2;
     rc = lzclose(lzfile);
@@ -1222,8 +1166,9 @@ int Fclose(FD_t fd)
     fd = fdLink(fd);
     fdstat_enter(fd, FDSTAT_CLOSE);
     while (fd->nfps >= 0) {
+	FDSTACK_t fps = fdGetFps(fd);
 	fdio_close_function_t _close = FDIOVEC(fd, close);
-	rc = _close ? _close(fd) : -2;
+	rc = _close ? _close(fps) : -2;
 
 	if (fd->nfps == 0)
 	    break;
@@ -1419,9 +1364,10 @@ int Fflush(FD_t fd)
 {
     int rc = -1;
     if (fd != NULL) {
+	FDSTACK_t fps = fdGetFps(fd);
 	fdio_fflush_function_t _fflush = FDIOVEC(fd, _fflush);
 
-	rc = (_fflush ? _fflush(fd) : -2);
+	rc = (_fflush ? _fflush(fps) : -2);
     }
     return rc;
 }
