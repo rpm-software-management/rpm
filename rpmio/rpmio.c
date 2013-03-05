@@ -628,7 +628,6 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
 
 static int gzdClose(FDSTACK_t fps)
 {
-    FD_t fd = fps->fd;
     gzFile gzfile = fps->fp;
     int rc;
 
@@ -636,17 +635,7 @@ static int gzdClose(FDSTACK_t fps)
 
     rc = gzclose(gzfile);
 
-    if (fd) {
-	if (rc < 0) {
-	    fps->errcookie = "gzclose error";
-	    if (rc == Z_ERRNO) {
-		fps->syserrno = errno;
-		fps->errcookie = strerror(fps->syserrno);
-	    }
-	}
-    }
-
-    return rc;
+    return (rc != 0) ? -1 : 0;
 }
 
 static long gzdTell(FDSTACK_t fps)
@@ -737,23 +726,14 @@ static ssize_t bzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 
 static int bzdClose(FDSTACK_t fps)
 {
-    FD_t fd = fps->fd;
     BZFILE *bzfile = fps->fp;
-    int rc;
 
     if (bzfile == NULL) return -2;
-    /* FIX: check rc */
+
+    /* bzclose() doesn't return errors */
     BZ2_bzclose(bzfile);
-    rc = 0;	/* XXX FIXME */
 
-    if (fd) {
-	if (rc == -1) {
-	    int zerror = 0;
-	    fps->errcookie = BZ2_bzerror(bzfile, &zerror);
-	}
-    }
-
-    return rc;
+    return 0;
 }
 
 static const struct FDIO_s bzdio_s = {
@@ -1006,20 +986,11 @@ static ssize_t lzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 
 static int lzdClose(FDSTACK_t fps)
 {
-    FD_t fd = fps->fd;
     LZFILE *lzfile = fps->fp;
     int rc;
 
     if (lzfile == NULL) return -2;
     rc = lzclose(lzfile);
-
-    if (fd) {
-	if (rc == -1) {
-	    fps->errcookie = "lzclose error";
-	    fps->syserrno = errno;
-	    fps->errcookie = strerror(fps->syserrno);
-	}
-    }
 
     return rc;
 }
