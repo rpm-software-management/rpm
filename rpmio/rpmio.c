@@ -62,11 +62,6 @@ static FDSTACK_t fdGetFps(FD_t fd)
     return (fd != NULL) ? &fd->fps[fd->nfps] : NULL;
 }
 
-static FDIO_t fdGetIo(FD_t fd)
-{
-    return (fd != NULL) ? fd->fps[fd->nfps].io : NULL;
-}
-
 static void fdSetIo(FD_t fd, FDIO_t io)
 {
     if (fd)
@@ -1063,8 +1058,8 @@ static const FDIO_t lzdio = &lzdio_s;
 
 /* =============================================================== */
 
-#define	FDIOVEC(_fd, _vec)	\
-  ((fdGetIo(_fd) && fdGetIo(_fd)->_vec) ? fdGetIo(_fd)->_vec : NULL)
+#define	FDIOVEC(_fps, _vec)	\
+  ((_fps) && (_fps)->io) ? (_fps)->io->_vec : NULL
 
 const char *Fstrerror(FD_t fd)
 {
@@ -1072,7 +1067,7 @@ const char *Fstrerror(FD_t fd)
 
     if (fd != NULL) {
 	FDSTACK_t fps = fdGetFps(fd);
-	fdio_fstrerr_function_t _fstrerr = FDIOVEC(fd, _fstrerr);
+	fdio_fstrerr_function_t _fstrerr = FDIOVEC(fps, _fstrerr);
 	if (_fstrerr)
 	    err = _fstrerr(fps);
     } else if (errno){
@@ -1086,8 +1081,8 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
     ssize_t rc = -1;
 
     if (fd != NULL) {
-	fdio_read_function_t _read = FDIOVEC(fd, read);
 	FDSTACK_t fps = fdGetFps(fd);
+	fdio_read_function_t _read = FDIOVEC(fps, read);
 
 	fdstat_enter(fd, FDSTAT_READ);
 	do {
@@ -1110,8 +1105,8 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
     ssize_t rc = -1;
 
     if (fd != NULL) {
-	fdio_write_function_t _write = FDIOVEC(fd, write);
 	FDSTACK_t fps = fdGetFps(fd);
+	fdio_write_function_t _write = FDIOVEC(fps, write);
 	
 	fdstat_enter(fd, FDSTAT_WRITE);
 	do {
@@ -1135,7 +1130,7 @@ int Fseek(FD_t fd, off_t offset, int whence)
 
     if (fd != NULL) {
 	FDSTACK_t fps = fdGetFps(fd);
-	fdio_seek_function_t _seek = FDIOVEC(fd, seek);
+	fdio_seek_function_t _seek = FDIOVEC(fps, seek);
 
 	fdstat_enter(fd, FDSTAT_SEEK);
 	rc = (_seek ? _seek(fps, offset, whence) : -2);
@@ -1159,7 +1154,7 @@ int Fclose(FD_t fd)
     fdstat_enter(fd, FDSTAT_CLOSE);
     while (fd->nfps >= 0) {
 	FDSTACK_t fps = fdGetFps(fd);
-	fdio_close_function_t _close = FDIOVEC(fd, close);
+	fdio_close_function_t _close = FDIOVEC(fps, close);
 	rc = _close ? _close(fps) : -2;
 
 	if (fd->nfps == 0)
@@ -1357,7 +1352,7 @@ int Fflush(FD_t fd)
     int rc = -1;
     if (fd != NULL) {
 	FDSTACK_t fps = fdGetFps(fd);
-	fdio_fflush_function_t _fflush = FDIOVEC(fd, _fflush);
+	fdio_fflush_function_t _fflush = FDIOVEC(fps, _fflush);
 
 	rc = (_fflush ? _fflush(fps) : -2);
     }
@@ -1369,7 +1364,7 @@ off_t Ftell(FD_t fd)
     off_t pos = -1;
     if (fd != NULL) {
 	FDSTACK_t fps = fdGetFps(fd);
-	fdio_ftell_function_t _ftell = FDIOVEC(fd, _ftell);
+	fdio_ftell_function_t _ftell = FDIOVEC(fps, _ftell);
 
 	pos = (_ftell ? _ftell(fps) : -2);
     }
