@@ -751,7 +751,7 @@ typedef struct lzfile {
 
 } LZFILE;
 
-static LZFILE *lzopen_internal(const char *path, const char *mode, int fd, int xz)
+static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
 {
     int level = 7;	/* Use XZ's default compression level if unspecified */
     int encoding = 0;
@@ -768,10 +768,7 @@ static LZFILE *lzopen_internal(const char *path, const char *mode, int fd, int x
 	else if (*mode >= '1' && *mode <= '9')
 	    level = *mode - '0';
     }
-    if (fd != -1)
-	fp = fdopen(fd, encoding ? "w" : "r");
-    else
-	fp = fopen(path, encoding ? "w" : "r");
+    fp = fdopen(fd, encoding ? "w" : "r");
     if (!fp)
 	return 0;
     lzfile = calloc(1, sizeof(*lzfile));
@@ -807,14 +804,14 @@ static LZFILE *xzdopen(int fd, const char *mode)
 {
     if (fd < 0)
 	return 0;
-    return lzopen_internal(0, mode, fd, 1);
+    return lzopen_internal(mode, fd, 1);
 }
 
 static LZFILE *lzdopen(int fd, const char *mode)
 {
     if (fd < 0)
 	return 0;
-    return lzopen_internal(0, mode, fd, 0);
+    return lzopen_internal(mode, fd, 0);
 }
 
 static int lzflush(LZFILE *lzfile)
