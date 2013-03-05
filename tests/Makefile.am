@@ -101,10 +101,11 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	ln -s ./$(bindir) testing/bin
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
-	cp -r data/ testing/
+	cp -r ${srcdir}/data/ testing/
 	mkdir testing/{dev,etc,magic,tmp}
 	for node in stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
+	ln -s ../$(bindir) testing/usr/bin
 	for prog in gzip cat patch tar sh ln chmod rm mkdir uname grep sed find file mktemp cut sort diff; do p=`which $${prog}`; ln -s $${p} testing/$${p}; done
 	for d in /proc /sys /selinux /etc/selinux; do if [ -d $${d} ]; then ln -s $${d} testing/$${d}; fi; done
 	(cd testing/magic && file -C)
