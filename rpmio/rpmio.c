@@ -16,13 +16,17 @@
 
 #include "debug.h"
 
-typedef struct FDSTACK_s {
+typedef struct FDSTACK_s * FDSTACK_t;
+
+struct FDSTACK_s {
     FDIO_t		io;
     void *		fp;
     int			fdno;
     int			syserrno;	/* last system errno encountered */
     const char 		*errcookie;	/* pointer to custom error string */
-} * FDSTACK_t;
+
+    FDSTACK_t		prev;
+};
 
 /** \ingroup rpmio
  * Cumulative statistics for a descriptor.
@@ -40,8 +44,7 @@ struct _FD_s {
 #define	RPMIO_DEBUG_IO		0x40000000
     int		magic;
 #define	FDMAGIC			0x04463138
-    int		nfps;
-    struct FDSTACK_s fps[8];
+    FDSTACK_t	fps;
     int		urlType;	/* ufdio: */
 
     char	*descr;		/* file name (or other description) */
@@ -58,44 +61,35 @@ struct _FD_s {
 
 static FDSTACK_t fdGetFps(FD_t fd)
 {
-    return (fd != NULL) ? &fd->fps[fd->nfps] : NULL;
-}
-
-static void fdSetIo(FD_t fd, FDIO_t io)
-{
-    if (fd)
-	fd->fps[fd->nfps].io = io;
+    return (fd != NULL) ? fd->fps : NULL;
 }
 
 static void fdSetFdno(FD_t fd, int fdno)
 {
     if (fd) 
-	fd->fps[fd->nfps].fdno = fdno;
+	fd->fps->fdno = fdno;
 }
 
 static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 {
-    FDSTACK_t fps;
-    if (fd == NULL || fd->nfps >= (sizeof(fd->fps)/sizeof(fd->fps[0]) - 1))
-	return;
-    fd->nfps++;
-    fps = fdGetFps(fd);
+    FDSTACK_t fps = xcalloc(1, sizeof(*fps));
     fps->io = io;
     fps->fp = fp;
     fps->fdno = fdno;
+    fps->prev = fd->fps;
+
+    fd->fps = fps;
     fdLink(fd);
 }
 
-static void fdPop(FD_t fd)
+static FDSTACK_t fdPop(FD_t fd)
 {
-    FDSTACK_t fps;
-    if (fd == NULL || fd->nfps < 0) return;
-    fps = fdGetFps(fd);
-    fps->io = NULL;
-    fps->fp = NULL;
-    fps->fdno = -1;
-    fd->nfps--;
+    FDSTACK_t fps = fd->fps;
+    fd->fps = fps->prev;
+    free(fps);
+    fps = fd->fps;
     fdFree(fd);
+    return fps;
 }
 
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
@@ -162,17 +156,15 @@ static const char * fdbg(FD_t fd)
 {
     static char buf[BUFSIZ];
     char *be = buf;
-    int i;
 
     buf[0] = '\0';
     if (fd == NULL)
 	return buf;
 
     *be++ = '\t';
-    for (i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t fps = &fd->fps[i];
+    for (FDSTACK_t fps = fd->fps; fps != NULL; fps = fps->prev) {
 	FDIO_t iot = fps->io;
-	if (i != fd->nfps)
+	if (fps != fd->fps)
 	    *be++ = ' ';
 	*be++ = '|';
 	*be++ = ' ';
@@ -289,7 +281,7 @@ const char * Fdescr(FD_t fd)
 
     /* Lazy lookup if description is not set (eg dupped fd) */
     if (fd->descr == NULL) {
-	int fdno = fd->fps[fd->nfps].fdno;
+	int fdno = fd->fps->fdno;
 #if defined(__linux__)
 	/* Grab the path from /proc if we can */
 	char *procpath = NULL;
@@ -332,6 +324,7 @@ FD_t fdFree( FD_t fd)
 	if (fd->digests) {
 	    fd->digests = rpmDigestBundleFree(fd->digests);
 	}
+	free(fd->fps);
 	free(fd->descr);
 	free(fd);
     }
@@ -341,26 +334,16 @@ FD_t fdFree( FD_t fd)
 static FD_t fdNew(int fdno, const char *descr)
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
-    if (fd == NULL) /* XXX xmalloc never returns NULL */
-	return NULL;
     fd->nrefs = 0;
     fd->flags = 0;
     fd->magic = FDMAGIC;
     fd->urlType = URL_IS_UNKNOWN;
-
-    fd->nfps = 0;
-    memset(fd->fps, 0, sizeof(fd->fps));
-
-    fd->fps[0].io = fdio;
-    fd->fps[0].fp = NULL;
-    fd->fps[0].fdno = fdno;
-    fd->fps[0].syserrno = 0;
-    fd->fps[0].errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->digests = NULL;
     fd->descr = descr ? xstrdup(descr) : NULL;
 
-    return fdLink(fd);
+    fdPush(fd, fdio, NULL, fdno);
+    return fd;
 }
 
 static ssize_t fdRead(FDSTACK_t fps, void * buf, size_t count)
@@ -513,7 +496,7 @@ fprintf(stderr, "*** ufdOpen(%s,0x%x,0%o)\n", url, (unsigned)flags, (unsigned)mo
     }
 
     if (fd != NULL) {
-	fdSetIo(fd, ufdio);
+	fd->fps->io = ufdio;
 	fd->urlType = urlType;
     }
     return fd;
@@ -1057,8 +1040,7 @@ int Fclose(FD_t fd)
 
     fd = fdLink(fd);
     fdstat_enter(fd, FDSTAT_CLOSE);
-    while (fd->nfps >= 0) {
-	FDSTACK_t fps = fdGetFps(fd);
+    for (FDSTACK_t fps = fd->fps; fps != NULL; fps = fdPop(fd)) {
 	fdio_close_function_t _close = FDIOVEC(fps, close);
 	rc = _close ? _close(fps) : -2;
 
@@ -1066,16 +1048,17 @@ int Fclose(FD_t fd)
 	if ((_rpmio_debug || rpmIsDebug()) && fps->fdno == -1)
 	    fdstat_print(fd, fps->io->ioname, stderr);
 
-	fdPop(fd);
-
-	if (fd->nfps == 0)
-	    break;
 	if (ec == 0 && rc)
 	    ec = rc;
+
+	/* Leave freeing the last one after stats */
+	if (fps->prev == NULL)
+	    break;
     }
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
     DBGIO(fd, (stderr, "==>\tFclose(%p) rc %lx %s\n",
 	  (fd ? fd : NULL), (unsigned long)rc, fdbg(fd)));
+    fdPop(fd);
 
     fdFree(fd);
     return ec;
@@ -1284,11 +1267,10 @@ off_t Ftell(FD_t fd)
 
 int Ferror(FD_t fd)
 {
-    int i, rc = 0;
+    int rc = 0;
 
     if (fd == NULL) return -1;
-    for (i = fd->nfps; i >= 0; i--) {
-	FDSTACK_t fps = &fd->fps[i];
+    for (FDSTACK_t fps = fd->fps; fps != NULL; fps = fps->prev) {
 	fdio_ferror_function_t _ferror = FDIOVEC(fps, _ferror);
 	rc = _ferror(fps);
 
@@ -1301,11 +1283,13 @@ DBGIO(fd, (stderr, "==> Ferror(%p) rc %d %s\n", fd, rc, fdbg(fd)));
 
 int Fileno(FD_t fd)
 {
-    int i, rc = -1;
+    int rc = -1;
 
     if (fd == NULL) return -1;
-    for (i = fd->nfps ; rc == -1 && i >= 0; i--) {
-	rc = fd->fps[i].fdno;
+    for (FDSTACK_t fps = fd->fps; fps != NULL; fps = fps->prev) {
+	rc = fps->fdno;
+	if (rc != -1)
+	    break;
     }
     
 DBGIO(fd, (stderr, "==> Fileno(%p) rc %d %s\n", (fd ? fd : NULL), rc, fdbg(fd)));
