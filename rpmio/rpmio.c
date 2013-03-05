@@ -800,25 +800,6 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     return lzfile;
 }
 
-static LZFILE *xzdopen(int fd, const char *mode)
-{
-    if (fd < 0)
-	return 0;
-    return lzopen_internal(mode, fd, 1);
-}
-
-static LZFILE *lzdopen(int fd, const char *mode)
-{
-    if (fd < 0)
-	return 0;
-    return lzopen_internal(mode, fd, 0);
-}
-
-static int lzflush(LZFILE *lzfile)
-{
-    return fflush(lzfile->file);
-}
-
 static int lzclose(LZFILE *lzfile)
 {
     lzma_ret ret;
@@ -905,7 +886,7 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 static FD_t xzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    LZFILE *lzfile = xzdopen(fdno, fmode);
+    LZFILE *lzfile = lzopen_internal(fmode, fdno, 1);
 
     if (lzfile == NULL)
 	return NULL;
@@ -917,7 +898,7 @@ static FD_t xzdFdopen(FD_t fd, int fdno, const char * fmode)
 
 static FD_t lzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    LZFILE *lzfile = lzdopen(fdno, fmode);
+    LZFILE *lzfile = lzopen_internal(fmode, fdno, 0);
 
     if (lzfile == NULL)
 	return NULL;
@@ -929,7 +910,8 @@ static FD_t lzdFdopen(FD_t fd, int fdno, const char * fmode)
 
 static int lzdFlush(FDSTACK_t fps)
 {
-    return lzflush(fps->fp);
+    LZFILE *lzfile = fps->fp;
+    return fflush(lzfile->file);
 }
 
 static ssize_t lzdRead(FDSTACK_t fps, void * buf, size_t count)
