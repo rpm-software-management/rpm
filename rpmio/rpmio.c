@@ -152,7 +152,7 @@ static const FDIO_t lzdio;
  * Update digest(s) attached to fd.
  */
 static void fdUpdateDigests(FD_t fd, const void * buf, size_t buflen);
-static FD_t fdNew(const char *descr);
+static FD_t fdNew(int fdno, const char *descr);
 /**
  */
 int _rpmio_debug = 0;
@@ -252,8 +252,7 @@ FD_t fdDup(int fdno)
 
     if ((nfdno = dup(fdno)) < 0)
 	return NULL;
-    fd = fdNew(NULL);
-    fdSetFdno(fd, nfdno);
+    fd = fdNew(nfdno, NULL);
 DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd)));
     return fd;
 }
@@ -345,7 +344,7 @@ FD_t fdFree( FD_t fd)
     return NULL;
 }
 
-FD_t fdNew(const char *descr)
+static FD_t fdNew(int fdno, const char *descr)
 {
     FD_t fd = xcalloc(1, sizeof(*fd));
     if (fd == NULL) /* XXX xmalloc never returns NULL */
@@ -360,7 +359,7 @@ FD_t fdNew(const char *descr)
 
     fd->fps[0].io = fdio;
     fd->fps[0].fp = NULL;
-    fd->fps[0].fdno = -1;
+    fd->fps[0].fdno = fdno;
     fd->fps[0].syserrno = 0;
     fd->fps[0].errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
@@ -412,8 +411,7 @@ static FD_t fdOpen(const char *path, int flags, mode_t mode)
 	(void) close(fdno);
 	return NULL;
     }
-    fd = fdNew(path);
-    fdSetFdno(fd, fdno);
+    fd = fdNew(fdno, path);
     fd->flags = flags;
     return fd;
 }
