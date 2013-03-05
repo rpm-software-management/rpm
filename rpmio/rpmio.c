@@ -17,7 +17,6 @@
 #include "debug.h"
 
 typedef struct FDSTACK_s {
-    FD_t		fd;	/* parent fd */
     FDIO_t		io;
     void *		fp;
     int			fdno;
@@ -81,7 +80,6 @@ static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
 	return;
     fd->nfps++;
     fps = fdGetFps(fd);
-    fps->fd = fd;
     fps->io = io;
     fps->fp = fp;
     fps->fdno = fdno;
@@ -93,7 +91,6 @@ static void fdPop(FD_t fd)
     FDSTACK_t fps;
     if (fd == NULL || fd->nfps < 0) return;
     fps = fdGetFps(fd);
-    fps->fd = NULL;
     fps->io = NULL;
     fps->fp = NULL;
     fps->fdno = -1;
