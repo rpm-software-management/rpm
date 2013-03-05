@@ -1374,17 +1374,13 @@ int Ferror(FD_t fd)
     int i, rc = 0;
 
     if (fd == NULL) return -1;
-    for (i = fd->nfps; rc == 0 && i >= 0; i--) {
+    for (i = fd->nfps; i >= 0; i--) {
 	FDSTACK_t fps = &fd->fps[i];
-	FDIO_t iot = fps->io;
-	int ec = iot->_ferror(fps);
+	fdio_ferror_function_t _ferror = FDIOVEC(fps, _ferror);
+	rc = _ferror(fps);
 
-	/* XXX fdio under compressed types always has fdno == -1 */
-	if (iot->_fdopen != NULL)
-	    i--;
-
-	if (rc == 0 && ec)
-	    rc = ec;
+	if (rc)
+	    break;
     }
 DBGIO(fd, (stderr, "==> Ferror(%p) rc %d %s\n", fd, rc, fdbg(fd)));
     return rc;
