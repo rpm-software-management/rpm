@@ -532,6 +532,17 @@ static int gzdFlush(FDSTACK_t fps)
     return gzflush(gzfile, Z_SYNC_FLUSH);	/* XXX W2DO? */
 }
 
+static void gzdSetError(FDSTACK_t fps)
+{
+    gzFile gzfile = fps->fp;
+    int zerror = 0;
+    fps->errcookie = gzerror(gzfile, &zerror);
+    if (zerror == Z_ERRNO) {
+	fps->syserrno = errno;
+	fps->errcookie = strerror(fps->syserrno);
+    }
+}
+
 static ssize_t gzdRead(FDSTACK_t fps, void * buf, size_t count)
 {
     gzFile gzfile = fps->fp;
@@ -540,14 +551,8 @@ static ssize_t gzdRead(FDSTACK_t fps, void * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzread(gzfile, buf, count);
-    if (rc < 0) {
-	int zerror = 0;
-	fps->errcookie = gzerror(gzfile, &zerror);
-	if (zerror == Z_ERRNO) {
-	    fps->syserrno = errno;
-	    fps->errcookie = strerror(fps->syserrno);
-	}
-    }
+    if (rc < 0)
+	gzdSetError(fps);
     return rc;
 }
 
@@ -560,14 +565,8 @@ static ssize_t gzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzwrite(gzfile, (void *)buf, count);
-    if (rc < 0) {
-	int zerror = 0;
-	fps->errcookie = gzerror(gzfile, &zerror);
-	if (zerror == Z_ERRNO) {
-	    fps->syserrno = errno;
-	    fps->errcookie = strerror(fps->syserrno);
-	}
-    }
+    if (rc < 0)
+	gzdSetError(fps);
     return rc;
 }
 
@@ -582,14 +581,8 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
     if (gzfile == NULL) return -2;	/* XXX can't happen */
 
     rc = gzseek(gzfile, p, whence);
-    if (rc < 0) {
-	int zerror = 0;
-	fps->errcookie = gzerror(gzfile, &zerror);
-	if (zerror == Z_ERRNO) {
-	    fps->syserrno = errno;
-	    fps->errcookie = strerror(fps->syserrno);
-	}
-    }
+    if (rc < 0)
+	gzdSetError(fps);
 #else
     rc = -2;
 #endif
@@ -616,14 +609,8 @@ static long gzdTell(FDSTACK_t fps)
     if (gzfile != NULL) {
 #if HAVE_GZSEEK
 	pos = gztell(gzfile);
-	if (pos < 0) {
-	    int zerror = 0;
-	    fps->errcookie = gzerror(gzfile, &zerror);
-	    if (zerror == Z_ERRNO) {
-		fps->syserrno = errno;
-		fps->errcookie = strerror(fps->syserrno);
-	    }
-	}
+	if (pos < 0)
+	    gzdSetError(fps);
 #else
 	pos = -2;
 #endif    
