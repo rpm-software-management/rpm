@@ -85,6 +85,7 @@ static void fdPush(FD_t fd, FDIO_t io, void * fp, int fdno)
     fps->io = io;
     fps->fp = fp;
     fps->fdno = fdno;
+    fdLink(fd);
 }
 
 static void fdPop(FD_t fd)
@@ -97,6 +98,7 @@ static void fdPop(FD_t fd)
     fps->fp = NULL;
     fps->fdno = -1;
     fd->nfps--;
+    fdFree(fd);
 }
 
 void fdSetBundle(FD_t fd, rpmDigestBundle bundle)
@@ -396,7 +398,6 @@ static int fdClose(FDSTACK_t fps)
 
     rc = ((fdno >= 0) ? close(fdno) : -2);
 
-    fdFree(fps->fd);
     return rc;
 }
 
@@ -551,7 +552,7 @@ static FD_t gzdFdopen(FD_t fd, const char *fmode)
 
     fdPush(fd, gzdio, gzfile, fdno);		/* Push gzdio onto stack */
 
-    return fdLink(fd);
+    return fd;
 }
 
 static int gzdFlush(FDSTACK_t fps)
@@ -635,8 +636,6 @@ static int gzdClose(FDSTACK_t fps)
 
     rc = gzclose(gzfile);
 
-    /* XXX TODO: preserve fd if errors */
-
     if (fd) {
 	if (rc < 0) {
 	    fps->errcookie = "gzclose error";
@@ -648,8 +647,6 @@ static int gzdClose(FDSTACK_t fps)
     }
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
-    if (rc == 0)
-	fdFree(fd);
     return rc;
 }
 
@@ -702,7 +699,7 @@ static FD_t bzdFdopen(FD_t fd, const char * fmode)
 
     fdPush(fd, bzdio, bzfile, fdno);		/* Push bzdio onto stack */
 
-    return fdLink(fd);
+    return fd;
 }
 
 static int bzdFlush(FDSTACK_t fps)
@@ -750,8 +747,6 @@ static int bzdClose(FDSTACK_t fps)
     BZ2_bzclose(bzfile);
     rc = 0;	/* XXX FIXME */
 
-    /* XXX TODO: preserve fd if errors */
-
     if (fd) {
 	if (rc == -1) {
 	    int zerror = 0;
@@ -760,8 +755,6 @@ static int bzdClose(FDSTACK_t fps)
     }
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
-    if (rc == 0)
-	fdFree(fd);
     return rc;
 }
 
@@ -965,7 +958,7 @@ static FD_t xzdFdopen(FD_t fd, const char * fmode)
     lzfile = xzdopen(fdno, fmode);
     if (lzfile == NULL) return NULL;
     fdPush(fd, xzdio, lzfile, fdno);
-    return fdLink(fd);
+    return fd;
 }
 
 static FD_t lzdFdopen(FD_t fd, const char * fmode)
@@ -980,7 +973,7 @@ static FD_t lzdFdopen(FD_t fd, const char * fmode)
     lzfile = lzdopen(fdno, fmode);
     if (lzfile == NULL) return NULL;
     fdPush(fd, lzdio, lzfile, fdno);
-    return fdLink(fd);
+    return fd;
 }
 
 static int lzdFlush(FDSTACK_t fps)
@@ -1022,8 +1015,6 @@ static int lzdClose(FDSTACK_t fps)
     if (lzfile == NULL) return -2;
     rc = lzclose(lzfile);
 
-    /* XXX TODO: preserve fd if errors */
-
     if (fd) {
 	if (rc == -1) {
 	    fps->errcookie = "lzclose error";
@@ -1033,8 +1024,6 @@ static int lzdClose(FDSTACK_t fps)
     }
 
     if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
-    if (rc == 0)
-	fdFree(fd);
     return rc;
 }
 
@@ -1155,11 +1144,12 @@ int Fclose(FD_t fd)
 	fdio_close_function_t _close = FDIOVEC(fps, close);
 	rc = _close ? _close(fps) : -2;
 
+	fdPop(fd);
+
 	if (fd->nfps == 0)
 	    break;
 	if (ec == 0 && rc)
 	    ec = rc;
-	fdPop(fd);
     }
     fdstat_exit(fd, FDSTAT_CLOSE, rc);
     DBGIO(fd, (stderr, "==>\tFclose(%p) rc %lx %s\n",
