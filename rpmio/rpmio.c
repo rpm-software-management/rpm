@@ -646,7 +646,6 @@ static int gzdClose(FDSTACK_t fps)
 	}
     }
 
-    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "GZDIO", stderr);
     return rc;
 }
 
@@ -754,7 +753,6 @@ static int bzdClose(FDSTACK_t fps)
 	}
     }
 
-    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "BZDIO", stderr);
     return rc;
 }
 
@@ -1023,7 +1021,6 @@ static int lzdClose(FDSTACK_t fps)
 	}
     }
 
-    if (_rpmio_debug || rpmIsDebug()) fdstat_print(fd, "XZDIO", stderr);
     return rc;
 }
 
@@ -1143,6 +1140,10 @@ int Fclose(FD_t fd)
 	FDSTACK_t fps = fdGetFps(fd);
 	fdio_close_function_t _close = FDIOVEC(fps, close);
 	rc = _close ? _close(fps) : -2;
+
+	/* Debugging stats for compresed types */
+	if ((_rpmio_debug || rpmIsDebug()) && fps->fdno == -1)
+	    fdstat_print(fd, fps->io->ioname, stderr);
 
 	fdPop(fd);
 
