@@ -117,7 +117,7 @@ typedef ssize_t (*fdio_write_function_t) (FDSTACK_t fps, const void *buf, size_t
 typedef int (*fdio_seek_function_t) (FDSTACK_t fps, off_t pos, int whence);
 typedef int (*fdio_close_function_t) (FDSTACK_t fps);
 typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode);
-typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
+typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, int fdno, const char * fmode);
 typedef int (*fdio_fflush_function_t) (FDSTACK_t fps);
 typedef long (*fdio_ftell_function_t) (FDSTACK_t fps);
 typedef int (*fdio_ferror_function_t) (FDSTACK_t fps);
@@ -260,11 +260,6 @@ DBGIO(fd, (stderr, "==> fdDup(%d) fd %p %s\n", fdno, (fd ? fd : NULL), fdbg(fd))
 static int fdFlush(FDSTACK_t fps)
 {
     return 0;
-}
-
-static int fdFileno(FD_t fd)
-{
-    return (fd != NULL) ? fd->fps[0].fdno : -2;
 }
 
 static int fdError(FDSTACK_t fps)
@@ -535,13 +530,11 @@ static const FDIO_t ufdio = &ufdio_s ;
 /* Support for GZIP library.  */
 #include <zlib.h>
 
-static FD_t gzdFdopen(FD_t fd, const char *fmode)
+static FD_t gzdFdopen(FD_t fd, int fdno, const char *fmode)
 {
-    int fdno;
     gzFile gzfile;
 
     if (fd == NULL || fmode == NULL) return NULL;
-    fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     gzfile = gzdopen(fdno, fmode);
@@ -670,13 +663,11 @@ static const FDIO_t gzdio = &gzdio_s ;
 
 #include <bzlib.h>
 
-static FD_t bzdFdopen(FD_t fd, const char * fmode)
+static FD_t bzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    int fdno;
     BZFILE *bzfile;
 
     if (fd == NULL || fmode == NULL) return NULL;
-    fdno = fdFileno(fd);
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     bzfile = BZ2_bzdopen(fdno, fmode);
@@ -921,13 +912,11 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
     }
 }
 
-static FD_t xzdFdopen(FD_t fd, const char * fmode)
+static FD_t xzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    int fdno;
     LZFILE *lzfile;
 
     if (fd == NULL || fmode == NULL) return NULL;
-    fdno = fdFileno(fd);
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     lzfile = xzdopen(fdno, fmode);
@@ -936,13 +925,11 @@ static FD_t xzdFdopen(FD_t fd, const char * fmode)
     return fd;
 }
 
-static FD_t lzdFdopen(FD_t fd, const char * fmode)
+static FD_t lzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    int fdno;
     LZFILE *lzfile;
 
     if (fd == NULL || fmode == NULL) return NULL;
-    fdno = fdFileno(fd);
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
     if (fdno < 0) return NULL;
     lzfile = lzdopen(fdno, fmode);
@@ -1235,11 +1222,12 @@ FD_t Fdopen(FD_t ofd, const char *fmode)
     const char *end = NULL;
     FDIO_t iot = NULL;
     FD_t fd = ofd;
+    int fdno = Fileno(ofd);
 
 if (_rpmio_debug)
 fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
 
-    if (fd == NULL || fmode == NULL)
+    if (fd == NULL || fmode == NULL || fdno < 0)
 	return NULL;
 
     cvtfmode(fmode, stdio, sizeof(stdio), other, sizeof(other), &end, NULL);
@@ -1262,7 +1250,7 @@ fprintf(stderr, "*** Fdopen(%p,%s) %s\n", fd, fmode, fdbg(fd));
     }
 
     if (iot && iot->_fdopen)
-	fd = iot->_fdopen(fd, zstdio);
+	fd = iot->_fdopen(fd, fdno, zstdio);
 
 DBGIO(fd, (stderr, "==> Fdopen(%p,\"%s\") returns fd %p %s\n", ofd, fmode, (fd ? fd : NULL), fdbg(fd)));
     return fd;
