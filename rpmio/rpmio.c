@@ -532,16 +532,13 @@ static const FDIO_t ufdio = &ufdio_s ;
 
 static FD_t gzdFdopen(FD_t fd, int fdno, const char *fmode)
 {
-    gzFile gzfile;
+    gzFile gzfile = gzdopen(fdno, fmode);
 
-    if (fd == NULL || fmode == NULL) return NULL;
+    if (gzfile == NULL)
+	return NULL;
+
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
-    if (fdno < 0) return NULL;
-    gzfile = gzdopen(fdno, fmode);
-    if (gzfile == NULL) return NULL;
-
     fdPush(fd, gzdio, gzfile, fdno);		/* Push gzdio onto stack */
-
     return fd;
 }
 
@@ -665,16 +662,13 @@ static const FDIO_t gzdio = &gzdio_s ;
 
 static FD_t bzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    BZFILE *bzfile;
+    BZFILE *bzfile = BZ2_bzdopen(fdno, fmode);
 
-    if (fd == NULL || fmode == NULL) return NULL;
+    if (bzfile == NULL)
+	return NULL;
+
     fdSetFdno(fd, -1);		/* XXX skip the fdio close */
-    if (fdno < 0) return NULL;
-    bzfile = BZ2_bzdopen(fdno, fmode);
-    if (bzfile == NULL) return NULL;
-
     fdPush(fd, bzdio, bzfile, fdno);		/* Push bzdio onto stack */
-
     return fd;
 }
 
@@ -914,26 +908,24 @@ static ssize_t lzwrite(LZFILE *lzfile, void *buf, size_t len)
 
 static FD_t xzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    LZFILE *lzfile;
+    LZFILE *lzfile = xzdopen(fdno, fmode);
 
-    if (fd == NULL || fmode == NULL) return NULL;
+    if (lzfile == NULL)
+	return NULL;
+
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
-    if (fdno < 0) return NULL;
-    lzfile = xzdopen(fdno, fmode);
-    if (lzfile == NULL) return NULL;
     fdPush(fd, xzdio, lzfile, fdno);
     return fd;
 }
 
 static FD_t lzdFdopen(FD_t fd, int fdno, const char * fmode)
 {
-    LZFILE *lzfile;
+    LZFILE *lzfile = lzdopen(fdno, fmode);
 
-    if (fd == NULL || fmode == NULL) return NULL;
+    if (lzfile == NULL)
+	return NULL;
+
     fdSetFdno(fd, -1);          /* XXX skip the fdio close */
-    if (fdno < 0) return NULL;
-    lzfile = lzdopen(fdno, fmode);
-    if (lzfile == NULL) return NULL;
     fdPush(fd, lzdio, lzfile, fdno);
     return fd;
 }
