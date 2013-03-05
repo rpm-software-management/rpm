@@ -770,13 +770,8 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     }
     fp = fdopen(fd, encoding ? "w" : "r");
     if (!fp)
-	return 0;
+	return NULL;
     lzfile = calloc(1, sizeof(*lzfile));
-    if (!lzfile) {
-	fclose(fp);
-	return 0;
-    }
-    
     lzfile->file = fp;
     lzfile->encoding = encoding;
     lzfile->eof = 0;
@@ -795,7 +790,7 @@ static LZFILE *lzopen_internal(const char *mode, int fd, int xz)
     if (ret != LZMA_OK) {
 	fclose(fp);
 	free(lzfile);
-	return 0;
+	return NULL;
     }
     return lzfile;
 }
