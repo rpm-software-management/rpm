@@ -805,7 +805,7 @@ for reqscript in ${host_cpu}-${host_os_exact}.req ${host_os_exact}.req ${host_os
        else
 	  echo "using ${srcdir}/autodeps/${reqscript} for automatic requires generation"
        fi
-       ln -sf ${reqscript} ./autodeps/find-requires
+       ln -sf ${reqscript} ${srcdir}/autodeps/find-requires
        break
     fi
 } done
