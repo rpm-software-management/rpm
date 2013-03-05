@@ -275,8 +275,7 @@ static int fdFileno(FD_t fd)
 
 static int fdError(FD_t fd)
 {
-    /* XXX need to check ufdio/gzdio/bzdio/fdio errors correctly. */
-    return fdFileno(fd) < 0 ? -1 : 0;
+    return fd->syserrno;
 }
 
 static int zfdError(FD_t fd)
@@ -291,7 +290,7 @@ static const char * fdStrerr(FD_t fd)
 
 static const char * zfdStrerr(FD_t fd)
 {
-    return fd->errcookie;
+    return (fd->errcookie != NULL) ? fd->errcookie : "";
 }
 
 const char * Fdescr(FD_t fd)
