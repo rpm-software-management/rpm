@@ -21,6 +21,8 @@ typedef struct FDSTACK_s {
     FDIO_t		io;
     void *		fp;
     int			fdno;
+    int			syserrno;	/* last system errno encountered */
+    const char 		*errcookie;	/* pointer to custom error string */
 } * FDSTACK_t;
 
 /** \ingroup rpmio
@@ -42,9 +44,6 @@ struct _FD_s {
     int		nfps;
     struct FDSTACK_s fps[8];
     int		urlType;	/* ufdio: */
-
-    int		syserrno;	/* last system errno encountered */
-    const char *errcookie;	/* gzdio/bzdio/ufdio/xzdio: */
 
     char	*descr;		/* file name (or other description) */
     FDSTAT_t	stats;		/* I/O statistics */
@@ -127,8 +126,8 @@ typedef FD_t (*fdio_open_function_t) (const char * path, int flags, mode_t mode)
 typedef FD_t (*fdio_fdopen_function_t) (FD_t fd, const char * fmode);
 typedef int (*fdio_fflush_function_t) (FDSTACK_t fps);
 typedef long (*fdio_ftell_function_t) (FDSTACK_t fps);
-typedef int (*fdio_ferror_function_t) (FD_t);
-typedef const char * (*fdio_fstrerr_function_t)(FD_t);
+typedef int (*fdio_ferror_function_t) (FDSTACK_t fps);
+typedef const char * (*fdio_fstrerr_function_t)(FDSTACK_t fps);
 
 struct FDIO_s {
   const char *			ioname;
@@ -203,8 +202,10 @@ static void fdstat_enter(FD_t fd, fdOpX opx)
 
 static void fdstat_exit(FD_t fd, fdOpX opx, ssize_t rc)
 {
-    if (rc == -1)
-	fd->syserrno = errno;
+    if (rc == -1) {
+	FDSTACK_t fps = fdGetFps(fd);
+	fps->syserrno = errno;
+    }
     if (fd->stats != NULL)
 	(void) rpmswExit(fdOp(fd, opx), rc);
 }
@@ -273,24 +274,24 @@ static int fdFileno(FD_t fd)
     return (fd != NULL) ? fd->fps[0].fdno : -2;
 }
 
-static int fdError(FD_t fd)
+static int fdError(FDSTACK_t fps)
 {
-    return fd->syserrno;
+    return fps->syserrno;
 }
 
-static int zfdError(FD_t fd)
+static int zfdError(FDSTACK_t fps)
 {
-    return (fd->syserrno || fd->errcookie != NULL) ? -1 : 0;
+    return (fps->syserrno || fps->errcookie != NULL) ? -1 : 0;
 }
 
-static const char * fdStrerr(FD_t fd)
+static const char * fdStrerr(FDSTACK_t fps)
 {
-    return (fd->syserrno != 0) ? strerror(fd->syserrno) : "";
+    return (fps->syserrno != 0) ? strerror(fps->syserrno) : "";
 }
 
-static const char * zfdStrerr(FD_t fd)
+static const char * zfdStrerr(FDSTACK_t fps)
 {
-    return (fd->errcookie != NULL) ? fd->errcookie : "";
+    return (fps->errcookie != NULL) ? fps->errcookie : "";
 }
 
 const char * Fdescr(FD_t fd)
@@ -365,9 +366,8 @@ FD_t fdNew(const char *descr)
     fd->fps[0].io = fdio;
     fd->fps[0].fp = NULL;
     fd->fps[0].fdno = -1;
-
-    fd->syserrno = 0;
-    fd->errcookie = NULL;
+    fd->fps[0].syserrno = 0;
+    fd->fps[0].errcookie = NULL;
     fd->stats = xcalloc(1, sizeof(*fd->stats));
     fd->digests = NULL;
     fd->descr = descr ? xstrdup(descr) : NULL;
@@ -577,12 +577,11 @@ static ssize_t gzdRead(FDSTACK_t fps, void * buf, size_t count)
 
     rc = gzread(gzfile, buf, count);
     if (rc < 0) {
-	FD_t fd = fps->fd;
 	int zerror = 0;
-	fd->errcookie = gzerror(gzfile, &zerror);
+	fps->errcookie = gzerror(gzfile, &zerror);
 	if (zerror == Z_ERRNO) {
-	    fd->syserrno = errno;
-	    fd->errcookie = strerror(fd->syserrno);
+	    fps->syserrno = errno;
+	    fps->errcookie = strerror(fps->syserrno);
 	}
     }
     return rc;
@@ -599,11 +598,10 @@ static ssize_t gzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     rc = gzwrite(gzfile, (void *)buf, count);
     if (rc < 0) {
 	int zerror = 0;
-	FD_t fd = fps->fd;
-	fd->errcookie = gzerror(gzfile, &zerror);
+	fps->errcookie = gzerror(gzfile, &zerror);
 	if (zerror == Z_ERRNO) {
-	    fd->syserrno = errno;
-	    fd->errcookie = strerror(fd->syserrno);
+	    fps->syserrno = errno;
+	    fps->errcookie = strerror(fps->syserrno);
 	}
     }
     return rc;
@@ -622,11 +620,10 @@ static int gzdSeek(FDSTACK_t fps, off_t pos, int whence)
     rc = gzseek(gzfile, p, whence);
     if (rc < 0) {
 	int zerror = 0;
-	FD_t fd = fps->fd;
-	fd->errcookie = gzerror(gzfile, &zerror);
+	fps->errcookie = gzerror(gzfile, &zerror);
 	if (zerror == Z_ERRNO) {
-	    fd->syserrno = errno;
-	    fd->errcookie = strerror(fd->syserrno);
+	    fps->syserrno = errno;
+	    fps->errcookie = strerror(fps->syserrno);
 	}
     }
 #else
@@ -649,10 +646,10 @@ static int gzdClose(FDSTACK_t fps)
 
     if (fd) {
 	if (rc < 0) {
-	    fd->errcookie = "gzclose error";
+	    fps->errcookie = "gzclose error";
 	    if (rc == Z_ERRNO) {
-		fd->syserrno = errno;
-		fd->errcookie = strerror(fd->syserrno);
+		fps->syserrno = errno;
+		fps->errcookie = strerror(fps->syserrno);
 	    }
 	}
     }
@@ -673,11 +670,10 @@ static long gzdTell(FDSTACK_t fps)
 	pos = gztell(gzfile);
 	if (pos < 0) {
 	    int zerror = 0;
-	    FD_t fd = fps->fd;
-	    fd->errcookie = gzerror(gzfile, &zerror);
+	    fps->errcookie = gzerror(gzfile, &zerror);
 	    if (zerror == Z_ERRNO) {
-		fd->syserrno = errno;
-		fd->errcookie = strerror(fd->syserrno);
+		fps->syserrno = errno;
+		fps->errcookie = strerror(fps->syserrno);
 	    }
 	}
 #else
@@ -731,8 +727,7 @@ static ssize_t bzdRead(FDSTACK_t fps, void * buf, size_t count)
     if (rc == -1) {
 	int zerror = 0;
 	if (bzfile) {
-	    FD_t fd = fps->fd;
-	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	    fps->errcookie = BZ2_bzerror(bzfile, &zerror);
 	}
     }
     return rc;
@@ -746,8 +741,7 @@ static ssize_t bzdWrite(FDSTACK_t fps, const void * buf, size_t count)
     rc = BZ2_bzwrite(bzfile, (void *)buf, count);
     if (rc == -1) {
 	int zerror = 0;
-	FD_t fd = fps->fd;
-	fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	fps->errcookie = BZ2_bzerror(bzfile, &zerror);
     }
     return rc;
 }
@@ -768,7 +762,7 @@ static int bzdClose(FDSTACK_t fps)
     if (fd) {
 	if (rc == -1) {
 	    int zerror = 0;
-	    fd->errcookie = BZ2_bzerror(bzfile, &zerror);
+	    fps->errcookie = BZ2_bzerror(bzfile, &zerror);
 	}
     }
 
@@ -1009,8 +1003,7 @@ static ssize_t lzdRead(FDSTACK_t fps, void * buf, size_t count)
     if (lzfile)
 	rc = lzread(lzfile, buf, count);
     if (rc == -1) {
-	FD_t fd = fps->fd;
-	fd->errcookie = "Lzma: decoding error";
+	fps->errcookie = "Lzma: decoding error";
     }
     return rc;
 }
@@ -1022,8 +1015,7 @@ static ssize_t lzdWrite(FDSTACK_t fps, const void * buf, size_t count)
 
     rc = lzwrite(lzfile, (void *)buf, count);
     if (rc < 0) {
-	FD_t fd = fps->fd;
-	fd->errcookie = "Lzma: encoding error";
+	fps->errcookie = "Lzma: encoding error";
     }
     return rc;
 }
@@ -1041,9 +1033,9 @@ static int lzdClose(FDSTACK_t fps)
 
     if (fd) {
 	if (rc == -1) {
-	    fd->errcookie = "lzclose error";
-	    fd->syserrno = errno;
-	    fd->errcookie = strerror(fd->syserrno);
+	    fps->errcookie = "lzclose error";
+	    fps->syserrno = errno;
+	    fps->errcookie = strerror(fps->syserrno);
 	}
     }
 
@@ -1079,9 +1071,10 @@ const char *Fstrerror(FD_t fd)
     const char *err = "";
 
     if (fd != NULL) {
+	FDSTACK_t fps = fdGetFps(fd);
 	fdio_fstrerr_function_t _fstrerr = FDIOVEC(fd, _fstrerr);
 	if (_fstrerr)
-	    err = _fstrerr(fd);
+	    err = _fstrerr(fps);
     } else if (errno){
 	err = strerror(errno);
     }
@@ -1391,7 +1384,7 @@ int Ferror(FD_t fd)
     for (i = fd->nfps; rc == 0 && i >= 0; i--) {
 	FDSTACK_t fps = &fd->fps[i];
 	FDIO_t iot = fps->io;
-	int ec = iot->_ferror(fd);
+	int ec = iot->_ferror(fps);
 
 	/* XXX fdio under compressed types always has fdno == -1 */
 	if (iot->_fdopen != NULL)
