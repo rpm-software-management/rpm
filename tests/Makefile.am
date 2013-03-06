@@ -102,7 +102,7 @@ testing$(bindir)/rpmbuild: ../rpmbuild
 	(cd ${top_builddir} && \
 	          $(MAKE) DESTDIR=`pwd`/${subdir}/testing install)
 	cp -r ${srcdir}/data/ testing/
-	mkdir testing/{dev,etc,magic,tmp}
+	for d in dev etc magic tmp var; do if [ ! -d testing/$${d} ]; then mkdir testing/$${d}; fi; done
 	for node in stdin stderr stdout null; do ln -s /dev/$${node} testing/dev/$${node}; done
 	for cf in hosts resolv.conf passwd shadow group gshadow mtab fstab; do [ -f /etc/$${cf} ] && ln -s /etc/$${cf} testing/etc/$${cf}; done
 	ln -s ../$(bindir) testing/usr/bin
