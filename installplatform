@@ -6,9 +6,10 @@ platformdir="${pkglibdir}/platform"
 
 RPMRC="${1:-rpmrc}"
 PLATFORM="${2:-platform}"
-VENDOR="${3}"
-OS="${4}"
-RPMRC_GNU="${5}"
+MACROS="${3:-macros}"
+VENDOR="${4}"
+OS="${5}"
+RPMRC_GNU="${6}"
 
 for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   RPMRC_OPTFLAGS="`sed -n 's/^optflags: '$ARCH' //p' $RPMRC`"
@@ -140,3 +141,6 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
   > ${PPD}/macros
 
 done
+
+# gently adjust autoconf variables to rpm macros...
+cat $MACROS | sed -e '/\${\w*:-/!s,\${,%{_,' > ${DESTDIR}/${pkglibdir}/macros
