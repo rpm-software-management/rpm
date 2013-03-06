@@ -1,3 +1,6 @@
+# avoid depending on rpm configuration
+%define _sysconfdir /etc
+
 %{!?filetype: %global filetype file}
 
 Name:		configtest%{?sub:-%{sub}}

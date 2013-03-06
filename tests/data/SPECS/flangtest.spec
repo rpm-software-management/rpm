@@ -1,3 +1,6 @@
+# avoid depending on rpm configuration
+%define _datadir /usr/share
+
 Name:           flangtest 
 Version:        1.0
 Release:        1
