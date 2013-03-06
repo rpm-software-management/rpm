@@ -1,3 +1,6 @@
+# avoid depending on rpm configuration
+%define _datadir /usr/share
+
 Name:		conflict%{pkg}
 Version:	1.0
 Release:	1
