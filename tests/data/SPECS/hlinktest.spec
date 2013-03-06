@@ -12,7 +12,7 @@ rm -rf %{buildroot}
 mkdir -p $RPM_BUILD_ROOT/foo
 cat << EOF >> $RPM_BUILD_ROOT/foo/hello
 #!/bin/sh
-echo $0
+echo %{name}-%{version}
 EOF
 
 cd $RPM_BUILD_ROOT/foo
