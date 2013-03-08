@@ -508,7 +508,9 @@ and information selection.
 .PP
 .TP
 \fB\fIPACKAGE_NAME\fB\fR
-Query installed package named \fIPACKAGE_NAME\fR.
+Query installed package named \fIPACKAGE_NAME\fR. To specify the package more precisely the package name may be followed by the version or version and release
+both separated by a dash or an architecture name separated by a dot. See the output of \fBrpm -qa\fR or \fBrpm -qp \fIPACKAGE_FILE\fB\fR as an example.
+
 .TP
 \fB-a, --all\fR
 Query all installed packages.
