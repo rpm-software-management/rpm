@@ -159,30 +159,31 @@ static int64_t splitEpoch(const char *s, const char **version)
  * @param db		rpm database
  * @param rpmtag	rpm tag
  * @param flags
- * @return		index database handle
+ * @retval dbi		index database handle
+ * @return		0 on success
  */
-static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
+static int rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags,
+			  dbiIndex *dbip)
 {
     int dbix;
     dbiIndex dbi = NULL;
     int rc = 0;
 
     if (db == NULL)
-	return NULL;
+	return -1;
 
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (rpmtag == dbiTags[dbix])
 	    break;
     }
     if (dbix >= dbiTagsMax)
-	return NULL;
+	return -1;
 
     /* Is this index already open ? */
     if ((dbi = db->_dbi[dbix]) != NULL)
-	return dbi;
+	goto exit;
 
     errno = 0;
-    dbi = NULL;
     rc = dbiOpen(db, rpmtag, &dbi, flags);
 
     if (rc) {
@@ -218,7 +219,11 @@ static dbiIndex rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags)
 	}
     }
 
-    return dbi;
+exit:
+    if (rc == 0 && dbip)
+	*dbip = dbi;
+
+    return rc;
 }
 
 union _dbswap {
@@ -703,10 +708,7 @@ int rpmdbOpenAll(rpmdb db)
     if (db == NULL) return -2;
 
     for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
-	dbiIndex dbi = db->_dbi[dbix];
-	if (dbi == NULL) {
-	    rc += (rpmdbOpenIndex(db, dbiTags[dbix], db->db_flags) == NULL);
-	}
+	rc += rpmdbOpenIndex(db, dbiTags[dbix], db->db_flags, &db->_dbi[dbix]);
     }
     return rc;
 }
@@ -839,7 +841,7 @@ static int openDatabase(const char * prefix,
 	}
 
 	/* Just the primary Packages database opened here */
-	rc = (rpmdbOpenIndex(db, RPMDBI_PACKAGES, db->db_flags) != NULL) ? 0 : -2;
+	rc = rpmdbOpenIndex(db, RPMDBI_PACKAGES, db->db_flags, NULL);
     }
 
     if (rc || justCheck || dbp == NULL)
@@ -1039,9 +1041,9 @@ exit:
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
     int rc = -1;
-    dbiIndex dbi = rpmdbOpenIndex(db, RPMDBI_NAME, 0);
+    dbiIndex dbi = NULL;
 
-    if (dbi != NULL && name != NULL) {
+    if (name != NULL && rpmdbOpenIndex(db, RPMDBI_NAME, 0, &dbi) == 0) {
 	dbiIndexSet matches = NULL;
 
 	rc = dbiGetToSet(dbi, name, strlen(name), &matches);
@@ -1333,7 +1335,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 {
     rpmdbMatchIterator * prev, next;
-    dbiIndex dbi;
+    dbiIndex dbi = NULL;
     int i;
 
     if (mi == NULL)
@@ -1347,7 +1349,7 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
 	next->mi_next = NULL;
     }
 
-    dbi = rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0);
+    rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0, &dbi);
 
     miFreeHeader(mi, dbi);
 
@@ -1771,7 +1773,7 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 /* FIX: mi->mi_key.data may be NULL */
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
-    dbiIndex dbi;
+    dbiIndex dbi = NULL;
     void * uh;
     unsigned int uhlen;
     DBT key, data;
@@ -1783,8 +1785,7 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi == NULL)
 	return NULL;
 
-    dbi = rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0);
-    if (dbi == NULL)
+    if (rpmdbOpenIndex(mi->mi_db, RPMDBI_PACKAGES, 0, &dbi))
 	return NULL;
 
 #if defined(_USE_COPY_LOAD)
@@ -1949,9 +1950,9 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
     if (mi == NULL || keyp == NULL)
 	return rc;
 
-    dbi = rpmdbOpenIndex(mi->mi_db, mi->mi_rpmtag, 0);
+    rc = rpmdbOpenIndex(mi->mi_db, mi->mi_rpmtag, 0, &dbi);
 
-    if (dbiGetToSet(dbi, keyp, keylen, &set) == 0) {
+    if (rc == 0 && dbiGetToSet(dbi, keyp, keylen, &set) == 0) {
 	if (mi->mi_set == NULL) {
 	    mi->mi_set = set;
 	} else {
@@ -2008,7 +2009,7 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
 {
     rpmdbMatchIterator mi = NULL;
 
-    if (rpmdbOpenIndex(db, dbitag, 0) == NULL)
+    if (rpmdbOpenIndex(db, dbitag, 0, NULL))
 	return NULL;
 
     mi = xcalloc(1, sizeof(*mi));
@@ -2045,9 +2046,9 @@ static rpmdbMatchIterator pkgdbIterInit(rpmdb db,
 {
     rpmdbMatchIterator mi = NULL;
     rpmDbiTagVal dbtag = RPMDBI_PACKAGES;
-    dbiIndex pkgs = rpmdbOpenIndex(db, dbtag, 0);
+    dbiIndex pkgs = NULL;
 
-    if (pkgs) {
+    if (rpmdbOpenIndex(db, dbtag, 0, &pkgs) == 0) {
 	mi = rpmdbNewIterator(db, dbtag);
 	/* Copy the retrieval key, byte-swap header instance if necessary. */
 	if (keyp) {
@@ -2079,9 +2080,7 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
 	dbtag = RPMDBI_BASENAMES;
     }
 
-    dbi = rpmdbOpenIndex(db, dbtag, 0);
-    
-    if (dbi) {
+    if (rpmdbOpenIndex(db, dbtag, 0, &dbi) == 0) {
 	int rc = 0;
 
         if (keyp) {
@@ -2215,8 +2214,7 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 
     (void) rpmdbCheckSignals();
 
-    dbi = rpmdbOpenIndex(db, rpmtag, 0);
-    if (dbi == NULL)
+    if (rpmdbOpenIndex(db, rpmtag, 0, &dbi))
 	return NULL;
 
     /* Chain cursors for teardown on abnormal exit. */
@@ -2376,7 +2374,7 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 {
-    dbiIndex dbi;
+    dbiIndex dbi = NULL;
     Header h;
     sigset_t signalMask;
     int ret = 0;
@@ -2398,7 +2396,9 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
     (void) blockSignals(&signalMask);
 
-    dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
+    if (rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0, &dbi))
+	return 1;
+
     /* Remove header from primary index */
     ret = updatePackages(dbi, hdrNum, NULL);
 
@@ -2416,7 +2416,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	    rpmDbiTag rpmtag = dbiTags[dbix];
 	    struct rpmtd_s tagdata;
 
-	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
+	    if (rpmdbOpenIndex(db, rpmtag, 0, &dbi))
 		continue;
 
 	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
@@ -2690,7 +2690,7 @@ int rpmdbAdd(rpmdb db, Header h)
 {
     DBT hdr;
     sigset_t signalMask;
-    dbiIndex dbi;
+    dbiIndex dbi = NULL;
     unsigned int hdrNum = 0;
     int ret = 0;
     int hdrOk;
@@ -2710,7 +2710,10 @@ int rpmdbAdd(rpmdb db, Header h)
 
     (void) blockSignals(&signalMask);
 
-    dbi = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0);
+    ret = rpmdbOpenIndex(db, RPMDBI_PACKAGES, 0, &dbi);
+    if (ret)
+	goto exit;
+	
     hdrNum = pkgInstance(dbi, 1);
 
     /* Add header to primary index */
@@ -2721,7 +2724,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
 	    rpmDbiTag rpmtag = dbiTags[dbix];
 
-	    if (!(dbi = rpmdbOpenIndex(db, rpmtag, 0)))
+	    if (rpmdbOpenIndex(db, rpmtag, 0, &dbi))
 		continue;
 
 	    ret += addToIndex(dbi, rpmtag, hdrNum, h);
