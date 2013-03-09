@@ -154,23 +154,45 @@ static int64_t splitEpoch(const char *s, const char **version)
     return e;
 }
 
-/** \ingroup dbi
- * Return handle for an index database.
- * @param db		rpm database
- * @param rpmtag	rpm tag
- * @param flags
- * @retval dbi		index database handle
- * @return		0 on success
- */
-static int rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags,
-			  dbiIndex *dbip)
+static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
 {
-    int dbix;
-    dbiIndex dbi = NULL;
     int rc = 0;
+    dbiIndex dbi = NULL;
 
-    if (db == NULL)
-	return -1;
+    /* Is this it already open ? */
+    if ((dbi = db->_dbi[0]) != NULL)
+	goto exit;
+
+    rc = dbiOpen(db, RPMDBI_PACKAGES, &dbi, flags);
+
+    if (rc == 0) {
+	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
+
+	db->_dbi[0] = dbi;
+	/* Allocate based on max header instance number + some reserve */
+	if (!verifyonly && (db->db_checked == NULL)) {
+	    db->db_checked = dbChkCreate(1024 + pkgInstance(dbi, 0) / 4,
+					    uintId, uintCmp, NULL, NULL);
+	}
+	/* If primary got created, we can safely run without fsync */
+	if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
+	    rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
+	    db->cfg.db_no_fsync = 1;
+	    dbSetFSync(db->db_dbenv, 0);
+	}
+    }
+
+exit:
+    if (rc == 0 && dbip)
+	*dbip = dbi;
+
+    return rc;
+}
+
+static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
+{
+    int dbix, rc = 0;
+    dbiIndex dbi = NULL;
 
     for (dbix = 0; dbix < dbiTagsMax; dbix++) {
 	if (rpmtag == dbiTags[dbix])
@@ -183,38 +205,18 @@ static int rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags,
     if ((dbi = db->_dbi[dbix]) != NULL)
 	goto exit;
 
-    errno = 0;
     rc = dbiOpen(db, rpmtag, &dbi, flags);
 
-    if (rc) {
-	static int _printed[32];
-	if (!_printed[dbix & 0x1f]++)
-	    rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
-		   rpmTagGetName(rpmtag), db->db_ver,
-		   (rc > 0 ? strerror(rc) : ""), rc);
-    } else {
-	db->_dbi[dbix] = dbi;
+    if (rc == 0) {
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 	int rebuild = (db->db_flags & RPMDB_FLAG_REBUILD);
-	if (dbiType(dbi) == DBI_PRIMARY) {
-	    /* Allocate based on max header instance number + some reserve */
-	    if (!verifyonly && (db->db_checked == NULL)) {
-		db->db_checked = dbChkCreate(1024 + pkgInstance(dbi, 0) / 4,
-						uintId, uintCmp, NULL, NULL);
-	    }
-	    /* If primary got created, we can safely run without fsync */
-	    if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
-		rpmlog(RPMLOG_DEBUG, "disabling fsync on database\n");
-                db->cfg.db_no_fsync = 1;
-		dbSetFSync(db->db_dbenv, 0);
-	    }
-	} else { /* secondary index */
-	    if (!rebuild && !verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
-		rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
-		db->db_buildindex++;
-                if (db->db_buildindex == 1) {
-                    buildIndexes(db);
-                }
+
+	db->_dbi[dbix] = dbi;
+	if (!rebuild && !verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
+	    rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
+	    db->db_buildindex++;
+	    if (db->db_buildindex == 1) {
+		buildIndexes(db);
 	    }
 	}
     }
@@ -222,6 +224,35 @@ static int rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags,
 exit:
     if (rc == 0 && dbip)
 	*dbip = dbi;
+    return rc;
+}
+
+/** \ingroup dbi
+ * Return handle for an index database.
+ * @param db		rpm database
+ * @param rpmtag	rpm tag
+ * @param flags
+ * @retval dbi		index database handle
+ * @return		0 on success
+ */
+static int rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags,
+			  dbiIndex *dbip)
+{
+    int rc = 0;
+
+    if (db == NULL)
+	return -1;
+
+    if (rpmtag == RPMDBI_PACKAGES)
+	rc = pkgdbOpen(db, flags, dbip);
+    else
+	rc = indexOpen(db, rpmtag, flags, dbip);
+
+    if (rc) {
+	rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
+		   rpmTagGetName(rpmtag), db->db_ver,
+		   (rc > 0 ? strerror(rc) : ""), rc);
+    }
 
     return rc;
 }
