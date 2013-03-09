@@ -2040,19 +2040,37 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
     return mi;
 };
 
-rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
-		const void * keyp, size_t keylen)
+static rpmdbMatchIterator pkgdbIterInit(rpmdb db,
+				        const void * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
-    dbiIndexSet set = NULL;
-    dbiIndex dbi;
-    void * mi_keyp = NULL;
+    rpmDbiTagVal dbtag = RPMDBI_PACKAGES;
+    dbiIndex pkgs = rpmdbOpenIndex(db, dbtag, 0);
+
+    if (pkgs) {
+	mi = rpmdbNewIterator(db, dbtag);
+	/* Copy the retrieval key, byte-swap header instance if necessary. */
+	if (keyp) {
+	    union _dbswap *k = xmalloc(sizeof(*k));;
+
+	    assert(keylen == sizeof(k->ui));	/* xxx programmer error */
+	    memcpy(k, keyp, keylen);
+	    if (dbiByteSwapped(pkgs) == 1)
+		_DBSWAP(*k);
+	    mi->mi_keyp = k;
+	    mi->mi_keylen = keylen;
+	}
+    }
+    return mi;
+}
+
+static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
+				        const void * keyp, size_t keylen)
+{
+    rpmdbMatchIterator mi = NULL;
     rpmDbiTagVal dbtag = rpmtag;
-
-    if (db == NULL)
-	return NULL;
-
-    (void) rpmdbCheckSignals();
+    dbiIndex dbi = NULL;
+    dbiIndexSet set = NULL;
 
     /* Fixup the physical index for our pseudo indexes */
     if (rpmtag == RPMDBI_LABEL) {
@@ -2062,18 +2080,11 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
     }
 
     dbi = rpmdbOpenIndex(db, dbtag, 0);
-    if (dbi == NULL)
-	return NULL;
-
-    /*
-     * Handle label and file name special cases.
-     * Otherwise, retrieve join keys for secondary lookup.
-     */
-    if (rpmtag != RPMDBI_PACKAGES) {
+    
+    if (dbi) {
 	int rc = 0;
 
         if (keyp) {
-
             if (rpmtag == RPMDBI_LABEL) {
                 rc = dbiFindByLabel(db, dbi, keyp, &set);
             } else if (rpmtag == RPMDBI_BASENAMES) {
@@ -2100,45 +2111,42 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 
 	if (rc)	{	/* error/not found */
 	    set = dbiIndexSetFree(set);
-	    goto exit;
+	} else {
+	    mi = rpmdbNewIterator(db, dbtag);
+	    mi->mi_set = set;
+
+	    /* Copy the retrieval key */
+	    if (keyp) {
+		if (keylen == 0)
+		    keylen = strlen(keyp);
+		char *k = xmalloc(keylen + 1);
+		memcpy(k, keyp, keylen);
+		k[keylen] = '\0';	/* XXX assumes strings */
+		mi->mi_keyp = k;
+		mi->mi_keylen = keylen;
+
+		rpmdbSortIterator(mi);
+	    }
 	}
     }
+    
+    return mi;
+}
 
-    /* Copy the retrieval key, byte swapping header instance if necessary. */
-    if (keyp) {
-	switch (dbtag) {
-	case RPMDBI_PACKAGES:
-	  { union _dbswap *k;
+rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
+		const void * keyp, size_t keylen)
+{
+    rpmdbMatchIterator mi = NULL;
 
-	    assert(keylen == sizeof(k->ui));	/* xxx programmer error */
-	    k = xmalloc(sizeof(*k));
-	    memcpy(k, keyp, keylen);
-	    if (dbiByteSwapped(dbi) == 1)
-		_DBSWAP(*k);
-	    mi_keyp = k;
-	  } break;
-	default:
-	  { char * k;
-	    if (keylen == 0)
-		keylen = strlen(keyp);
-	    k = xmalloc(keylen + 1);
-	    memcpy(k, keyp, keylen);
-	    k[keylen] = '\0';	/* XXX assumes strings */
-	    mi_keyp = k;
-	  } break;
-	}
+    if (db != NULL) {
+	(void) rpmdbCheckSignals();
+
+	if (rpmtag == RPMDBI_PACKAGES)
+	    mi = pkgdbIterInit(db, keyp, keylen);
+	else
+	    mi = indexIterInit(db, rpmtag, keyp, keylen);
     }
 
-    mi = rpmdbNewIterator(db, dbtag);
-    mi->mi_keyp = mi_keyp;
-    mi->mi_keylen = keylen;
-    mi->mi_set = set;
-
-    if (dbtag != RPMDBI_PACKAGES && keyp == NULL) {
-        rpmdbSortIterator(mi);
-    }
-
-exit:
     return mi;
 }
 
