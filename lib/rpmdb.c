@@ -48,24 +48,6 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-static rpmDbiTag const dbiTags[] = {
-    RPMDBI_PACKAGES,
-    RPMDBI_NAME,
-    RPMDBI_BASENAMES,
-    RPMDBI_GROUP,
-    RPMDBI_REQUIRENAME,
-    RPMDBI_PROVIDENAME,
-    RPMDBI_CONFLICTNAME,
-    RPMDBI_OBSOLETENAME,
-    RPMDBI_TRIGGERNAME,
-    RPMDBI_DIRNAMES,
-    RPMDBI_INSTALLTID,
-    RPMDBI_SIGMD5,
-    RPMDBI_SHA1HEADER,
-};
-
-#define dbiTagsMax (sizeof(dbiTags) / sizeof(rpmDbiTag))
-
 /* A single item from an index database (i.e. the "data returned"). */
 struct dbiIndexItem {
     unsigned int hdrNum;		/*!< header instance in db */
@@ -107,10 +89,10 @@ static int buildIndexes(rpmdb db)
     while ((h = rpmdbNextIterator(mi))) {
 	unsigned int hdrNum = headerGetInstance(h);
 	/* Build all secondary indexes which were created on open */
-	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
+	for (int dbix = 1; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi = db->_dbi[dbix];
 	    if (dbi && (dbiFlags(dbi) & DBI_CREATED)) {
-		rc += addToIndex(dbi, dbiTags[dbix], hdrNum, h);
+		rc += addToIndex(dbi, db->db_tags[dbix], hdrNum, h);
 	    }
 	}
     }
@@ -194,11 +176,11 @@ static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
     int dbix, rc = 0;
     dbiIndex dbi = NULL;
 
-    for (dbix = 0; dbix < dbiTagsMax; dbix++) {
-	if (rpmtag == dbiTags[dbix])
+    for (dbix = 0; dbix < db->db_ndbi; dbix++) {
+	if (rpmtag == db->db_tags[dbix])
 	    break;
     }
-    if (dbix >= dbiTagsMax)
+    if (dbix >= db->db_ndbi)
 	return -1;
 
     /* Is this index already open ? */
@@ -738,17 +720,18 @@ int rpmdbOpenAll(rpmdb db)
 
     if (db == NULL) return -2;
 
-    for (int dbix = 0; dbix < dbiTagsMax; dbix++) {
-	rc += rpmdbOpenIndex(db, dbiTags[dbix], db->db_flags, &db->_dbi[dbix]);
+    for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
+	rc += rpmdbOpenIndex(db, db->db_tags[dbix], db->db_flags,
+			     &db->_dbi[dbix]);
     }
     return rc;
 }
 
-static int dbiForeach(dbiIndex *dbis,
+static int dbiForeach(dbiIndex *dbis, int ndbi,
 		  int (*func) (dbiIndex, unsigned int), int del)
 {
     int xx, rc = 0;
-    for (int dbix = dbiTagsMax; --dbix >= 0; ) {
+    for (int dbix = ndbi; --dbix >= 0; ) {
 	if (dbis[dbix] == NULL)
 	    continue;
 	xx = func(dbis[dbix], 0);
@@ -776,7 +759,7 @@ int rpmdbClose(rpmdb db)
     if ((db->db_mode & O_ACCMODE) != O_RDONLY)
 	dbSetFSync(db->db_dbenv, 1);
 
-    rc = dbiForeach(db->_dbi, dbiClose, 1);
+    rc = dbiForeach(db->_dbi, db->db_ndbi, dbiClose, 1);
 
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
@@ -809,7 +792,7 @@ int rpmdbSync(rpmdb db)
 {
     if (db == NULL) return 0;
 
-    return dbiForeach(db->_dbi, dbiSync, 0);
+    return dbiForeach(db->_dbi, db->db_ndbi, dbiSync, 0);
 }
 
 static rpmdb newRpmdb(const char * root, const char * home,
@@ -817,6 +800,22 @@ static rpmdb newRpmdb(const char * root, const char * home,
 {
     rpmdb db = NULL;
     char * db_home = rpmGetPath((home && *home) ? home : "%{_dbpath}", NULL);
+
+    static rpmDbiTag const dbiTags[] = {
+	RPMDBI_PACKAGES,
+	RPMDBI_NAME,
+	RPMDBI_BASENAMES,
+	RPMDBI_GROUP,
+	RPMDBI_REQUIRENAME,
+	RPMDBI_PROVIDENAME,
+	RPMDBI_CONFLICTNAME,
+	RPMDBI_OBSOLETENAME,
+	RPMDBI_TRIGGERNAME,
+	RPMDBI_DIRNAMES,
+	RPMDBI_INSTALLTID,
+	RPMDBI_SIGMD5,
+	RPMDBI_SHA1HEADER,
+    };
 
     if (!(db_home && db_home[0] != '%')) {
 	rpmlog(RPMLOG_ERR, _("no dbpath has been set\n"));
@@ -838,8 +837,8 @@ static rpmdb newRpmdb(const char * root, const char * home,
     /* XXX remove environment after chrooted operations, for now... */
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->db_tags = dbiTags;
-    db->db_ndbi = dbiTagsMax;
-    db->_dbi = xcalloc(dbiTagsMax, sizeof(*db->_dbi));
+    db->db_ndbi = sizeof(dbiTags) / sizeof(rpmDbiTag);
+    db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
     db->db_ver = DB_VERSION_MAJOR; /* XXX just to put something in messages */
     db->nrefs = 0;
     return rpmdbLink(db);
@@ -935,7 +934,7 @@ int rpmdbVerify(const char * prefix)
 	int xx;
 	rc = rpmdbOpenAll(db);
 
-	rc = dbiForeach(db->_dbi, dbiVerify, 0);
+	rc = dbiForeach(db->_dbi, db->db_ndbi, dbiVerify, 0);
 
 	xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
@@ -2445,8 +2444,8 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
-	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
-	    rpmDbiTag rpmtag = dbiTags[dbix];
+	for (int dbix = 1; dbix < db->db_ndbi; dbix++) {
+	    rpmDbiTag rpmtag = db->db_tags[dbix];
 	    struct rpmtd_s tagdata;
 
 	    if (rpmdbOpenIndex(db, rpmtag, 0, &dbi))
@@ -2754,8 +2753,8 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
-	for (int dbix = 1; dbix < dbiTagsMax; dbix++) {
-	    rpmDbiTag rpmtag = dbiTags[dbix];
+	for (int dbix = 1; dbix < db->db_ndbi; dbix++) {
+	    rpmDbiTag rpmtag = db->db_tags[dbix];
 
 	    if (rpmdbOpenIndex(db, rpmtag, 0, &dbi))
 		continue;
