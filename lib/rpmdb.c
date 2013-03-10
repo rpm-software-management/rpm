@@ -74,7 +74,7 @@ static int buildIndexes(rpmdb db)
     rc += rpmdbOpenAll(db);
 
     /* If the main db was just created, this is expected - dont whine */
-    if (!(dbiFlags(db->_dbi[0]) & DBI_CREATED)) {
+    if (!(dbiFlags(db->db_pkgs) & DBI_CREATED)) {
 	rpmlog(RPMLOG_WARNING,
 	       _("Generating %d missing index(es), please wait...\n"),
 	       db->db_buildindex);
@@ -89,8 +89,8 @@ static int buildIndexes(rpmdb db)
     while ((h = rpmdbNextIterator(mi))) {
 	unsigned int hdrNum = headerGetInstance(h);
 	/* Build all secondary indexes which were created on open */
-	for (int dbix = 1; dbix < db->db_ndbi; dbix++) {
-	    dbiIndex dbi = db->_dbi[dbix];
+	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
+	    dbiIndex dbi = db->db_indexes[dbix];
 	    if (dbi && (dbiFlags(dbi) & DBI_CREATED)) {
 		rc += addToIndex(dbi, db->db_tags[dbix], hdrNum, h);
 	    }
@@ -142,7 +142,7 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
     dbiIndex dbi = NULL;
 
     /* Is this it already open ? */
-    if ((dbi = db->_dbi[0]) != NULL)
+    if ((dbi = db->db_pkgs) != NULL)
 	goto exit;
 
     rc = dbiOpen(db, RPMDBI_PACKAGES, &dbi, flags);
@@ -150,7 +150,7 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
     if (rc == 0) {
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 
-	db->_dbi[0] = dbi;
+	db->db_pkgs = dbi;
 	/* Allocate based on max header instance number + some reserve */
 	if (!verifyonly && (db->db_checked == NULL)) {
 	    db->db_checked = dbChkCreate(1024 + pkgInstance(dbi, 0) / 4,
@@ -184,7 +184,7 @@ static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
 	return -1;
 
     /* Is this index already open ? */
-    if ((dbi = db->_dbi[dbix]) != NULL)
+    if ((dbi = db->db_indexes[dbix]) != NULL)
 	goto exit;
 
     rc = dbiOpen(db, rpmtag, &dbi, flags);
@@ -193,7 +193,7 @@ static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 	int rebuild = (db->db_flags & RPMDB_FLAG_REBUILD);
 
-	db->_dbi[dbix] = dbi;
+	db->db_indexes[dbix] = dbi;
 	if (!rebuild && !verifyonly && (dbiFlags(dbi) & DBI_CREATED)) {
 	    rpmlog(RPMLOG_DEBUG, "index %s needs creating\n", dbiName(dbi));
 	    db->db_buildindex++;
@@ -720,9 +720,9 @@ int rpmdbOpenAll(rpmdb db)
 
     if (db == NULL) return -2;
 
+    rc = rpmdbOpenIndex(db, RPMDBI_PACKAGES, db->db_flags, NULL);
     for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
-	rc += rpmdbOpenIndex(db, db->db_tags[dbix], db->db_flags,
-			     &db->_dbi[dbix]);
+	rc += rpmdbOpenIndex(db, db->db_tags[dbix], db->db_flags, NULL);
     }
     return rc;
 }
@@ -759,13 +759,14 @@ int rpmdbClose(rpmdb db)
     if ((db->db_mode & O_ACCMODE) != O_RDONLY)
 	dbSetFSync(db->db_dbenv, 1);
 
-    rc = dbiForeach(db->_dbi, db->db_ndbi, dbiClose, 1);
+    rc = dbiClose(db->db_pkgs, 0);
+    rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiClose, 1);
 
     db->db_root = _free(db->db_root);
     db->db_home = _free(db->db_home);
     db->db_fullpath = _free(db->db_fullpath);
     db->db_checked = dbChkFree(db->db_checked);
-    db->_dbi = _free(db->_dbi);
+    db->db_indexes = _free(db->db_indexes);
 
     prev = &rpmdbRock;
     while ((next = *prev) != NULL && next != db)
@@ -790,9 +791,12 @@ exit:
 
 int rpmdbSync(rpmdb db)
 {
+    int rc;
     if (db == NULL) return 0;
 
-    return dbiForeach(db->_dbi, db->db_ndbi, dbiSync, 0);
+    rc = dbiSync(db->db_pkgs, 0);
+    rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiSync, 0);
+    return rc;
 }
 
 static rpmdb newRpmdb(const char * root, const char * home,
@@ -838,7 +842,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
     db->db_remove_env = (!rstreq(db->db_root, "/") ? 1 : 0);
     db->db_tags = dbiTags;
     db->db_ndbi = sizeof(dbiTags) / sizeof(rpmDbiTag);
-    db->_dbi = xcalloc(db->db_ndbi, sizeof(*db->_dbi));
+    db->db_indexes = xcalloc(db->db_ndbi, sizeof(*db->db_indexes));
     db->db_ver = DB_VERSION_MAJOR; /* XXX just to put something in messages */
     db->nrefs = 0;
     return rpmdbLink(db);
@@ -934,7 +938,7 @@ int rpmdbVerify(const char * prefix)
 	int xx;
 	rc = rpmdbOpenAll(db);
 
-	rc = dbiForeach(db->_dbi, db->db_ndbi, dbiVerify, 0);
+	rc = dbiForeach(db->db_indexes, db->db_ndbi, dbiVerify, 0);
 
 	xx = rpmdbClose(db);
 	if (xx && rc == 0) rc = xx;
@@ -2444,7 +2448,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
-	for (int dbix = 1; dbix < db->db_ndbi; dbix++) {
+	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    rpmDbiTag rpmtag = db->db_tags[dbix];
 	    struct rpmtd_s tagdata;
 
@@ -2753,7 +2757,7 @@ int rpmdbAdd(rpmdb db, Header h)
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
-	for (int dbix = 1; dbix < db->db_ndbi; dbix++) {
+	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    rpmDbiTag rpmtag = db->db_tags[dbix];
 
 	    if (rpmdbOpenIndex(db, rpmtag, 0, &dbi))
@@ -2820,6 +2824,7 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
     /* create a handle but dont actually open */
     rpmdb db = newRpmdb(prefix, dbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
+    xx = unlinkTag(prefix, dbpath, RPMDBI_PACKAGES);
     for (int i = 0; i < db->db_ndbi; i++) {
 	xx += unlinkTag(prefix, dbpath, db->db_tags[i]);
     }
@@ -2886,6 +2891,7 @@ static int rpmdbMoveDatabase(const char * prefix,
     rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
     blockSignals(&sigMask);
+    rc = renameTag(prefix, olddbpath, newdbpath, RPMDBI_PACKAGES);
     for (int i = 0; i < db->db_ndbi; i++) {
 	rc += renameTag(prefix, olddbpath, newdbpath, db->db_tags[i]);
     }
