@@ -141,6 +141,9 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
     int rc = 0;
     dbiIndex dbi = NULL;
 
+    if (db == NULL)
+	return -1;
+
     /* Is this it already open ? */
     if ((dbi = db->db_pkgs) != NULL)
 	goto exit;
@@ -162,6 +165,10 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
 	    db->cfg.db_no_fsync = 1;
 	    dbSetFSync(db->db_dbenv, 0);
 	}
+    } else {
+	rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
+		   rpmTagGetName(RPMDBI_PACKAGES), db->db_ver,
+		   (rc > 0 ? strerror(rc) : ""), rc);
     }
 
 exit:
@@ -175,6 +182,9 @@ static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
 {
     int dbix, rc = 0;
     dbiIndex dbi = NULL;
+
+    if (db == NULL)
+	return -1;
 
     for (dbix = 0; dbix < db->db_ndbi; dbix++) {
 	if (rpmtag == db->db_tags[dbix])
@@ -201,6 +211,10 @@ static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
 		buildIndexes(db);
 	    }
 	}
+    } else {
+	rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
+		   rpmTagGetName(rpmtag), db->db_ver,
+		   (rc > 0 ? strerror(rc) : ""), rc);
     }
 
 exit:
@@ -222,19 +236,10 @@ static int rpmdbOpenIndex(rpmdb db, rpmDbiTagVal rpmtag, int flags,
 {
     int rc = 0;
 
-    if (db == NULL)
-	return -1;
-
     if (rpmtag == RPMDBI_PACKAGES)
 	rc = pkgdbOpen(db, flags, dbip);
     else
 	rc = indexOpen(db, rpmtag, flags, dbip);
-
-    if (rc) {
-	rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
-		   rpmTagGetName(rpmtag), db->db_ver,
-		   (rc > 0 ? strerror(rc) : ""), rc);
-    }
 
     return rc;
 }
