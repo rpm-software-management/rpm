@@ -2833,38 +2833,28 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
     return (xx != 0);
 }
 
-static int rpmdbMoveDatabase(const char * prefix,
-			     const char * olddbpath, const char * newdbpath)
+static int renameTag(const char * prefix,
+		     const char * olddbpath, const char *newdbpath,
+		     rpmTagVal dbtag)
 {
-    int i;
-    struct stat st;
-    int rc = 0;
-    int xx;
+    int xx, rc = 0;
     int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
-    sigset_t sigMask;
-    /* create a handle but dont actually open */
-    rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
+    const char *base = rpmTagGetName(dbtag);
+    char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
+    char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
+    struct stat st;
 
-    blockSignals(&sigMask);
-    for (i = 0; i < db->db_ndbi; i++) {
-	rpmDbiTag rpmtag = db->db_tags[i];
-	const char *base = rpmTagGetName(rpmtag);
-	char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
-	char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
-
-	if (access(src, F_OK) != 0)
-	    goto cont;
-
+    if (access(src, F_OK) == 0) {
 	/*
 	 * Restore uid/gid/mode/security context if possible.
 	 */
 	if (stat(dest, &st) < 0)
 	    if (stat(src, &st) < 0)
-		goto cont;
+		goto exit;
 
 	if ((xx = rename(src, dest)) != 0) {
 	    rc = 1;
-	    goto cont;
+	    goto exit;
 	}
 	xx = chown(dest, st.st_uid, st.st_gid);
 	xx = chmod(dest, (st.st_mode & 07777));
@@ -2876,10 +2866,28 @@ static int rpmdbMoveDatabase(const char * prefix,
 		freecon(scon);
 	    }
 	}
-	    
-cont:
-	free(src);
-	free(dest);
+    }
+
+exit:
+    free(src);
+    free(dest);
+    if (selinux) {
+	(void) matchpathcon_fini();
+    }
+    return rc;
+}
+
+static int rpmdbMoveDatabase(const char * prefix,
+			     const char * olddbpath, const char * newdbpath)
+{
+    int rc = 0;
+    sigset_t sigMask;
+    /* create a handle but dont actually open */
+    rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
+
+    blockSignals(&sigMask);
+    for (int i = 0; i < db->db_ndbi; i++) {
+	rc += renameTag(prefix, olddbpath, newdbpath, db->db_tags[i]);
     }
 
     cleanDbenv(prefix, olddbpath);
@@ -2888,9 +2896,6 @@ cont:
 
     unblockSignals(&sigMask);
 
-    if (selinux) {
-	(void) matchpathcon_fini();
-    }
     return rc;
 }
 
