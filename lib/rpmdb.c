@@ -2807,9 +2807,11 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
 { 
     char *path;
     int xx = 0;
+    /* create a handle but dont actually open */
+    rpmdb db = newRpmdb(prefix, dbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
-    for (int i = 0; i < dbiTagsMax; i++) {
-	const char * base = rpmTagGetName(dbiTags[i]);
+    for (int i = 0; i < db->db_ndbi; i++) {
+	const char * base = rpmTagGetName(db->db_tags[i]);
 	path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
 	if (access(path, F_OK) == 0)
 	    xx += unlink(path);
@@ -2820,6 +2822,7 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
     path = rpmGetPath(prefix, "/", dbpath, NULL);
     xx += rmdir(path);
     free(path);
+    rpmdbClose(db);
 
     return (xx != 0);
 }
@@ -2833,10 +2836,12 @@ static int rpmdbMoveDatabase(const char * prefix,
     int xx;
     int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
     sigset_t sigMask;
+    /* create a handle but dont actually open */
+    rpmdb db = newRpmdb(prefix, newdbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
     blockSignals(&sigMask);
-    for (i = 0; i < dbiTagsMax; i++) {
-	rpmDbiTag rpmtag = dbiTags[i];
+    for (i = 0; i < db->db_ndbi; i++) {
+	rpmDbiTag rpmtag = db->db_tags[i];
 	const char *base = rpmTagGetName(rpmtag);
 	char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
 	char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
@@ -2873,6 +2878,7 @@ cont:
 
     cleanDbenv(prefix, olddbpath);
     cleanDbenv(prefix, newdbpath);
+    rpmdbClose(db);
 
     unblockSignals(&sigMask);
 
