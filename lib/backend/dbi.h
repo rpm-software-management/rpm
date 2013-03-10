@@ -31,6 +31,7 @@ struct rpmdb_s {
     struct dbChk_s * db_checked;/*!< headerCheck()'ed package instances */
     rpmdb	db_next;
     int		db_opens;
+    const rpmDbiTag * db_tags;
     int		db_ndbi;	/*!< No. of tag indices. */
     dbiIndex * _dbi;		/*!< Tag indices. */
     int		db_buildindex;	/*!< Index rebuild indicator */
