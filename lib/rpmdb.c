@@ -2802,6 +2802,17 @@ static int cleanDbenv(const char *prefix, const char *dbpath)
     return rc;
 }
 
+static int unlinkTag(const char * prefix, const char *dbpath, rpmTagVal dbtag)
+{
+    int rc = 0;
+    const char * base = rpmTagGetName(dbtag);
+    char * path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
+    if (access(path, F_OK) == 0)
+	rc = unlink(path);
+    free(path);
+    return rc;
+}
+
 static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
 { 
     char *path;
@@ -2810,11 +2821,7 @@ static int rpmdbRemoveDatabase(const char * prefix, const char * dbpath)
     rpmdb db = newRpmdb(prefix, dbpath, O_RDONLY, 0644, RPMDB_FLAG_REBUILD);
 
     for (int i = 0; i < db->db_ndbi; i++) {
-	const char * base = rpmTagGetName(db->db_tags[i]);
-	path = rpmGetPath(prefix, "/", dbpath, "/", base, NULL);
-	if (access(path, F_OK) == 0)
-	    xx += unlink(path);
-	free(path);
+	xx += unlinkTag(prefix, dbpath, db->db_tags[i]);
     }
     cleanDbenv(prefix, dbpath);
 
