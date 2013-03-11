@@ -15,9 +15,11 @@
 struct rpmlock_s {
     int fd;
     int openmode;
+    char *path;
+    char *descr;
 };
 
-static rpmlock rpmlock_new(const char *lock_path)
+static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 {
     rpmlock lock = (rpmlock) malloc(sizeof(*lock));
 
@@ -37,6 +39,10 @@ static rpmlock rpmlock_new(const char *lock_path)
 	} else {
 	    lock->openmode = RPMLOCK_WRITE | RPMLOCK_READ;
 	}
+	if (lock) {
+	    lock->path = xstrdup(lock_path);
+	    lock->descr = xstrdup(descr);
+	}
     }
     return lock;
 }
@@ -44,6 +50,8 @@ static rpmlock rpmlock_new(const char *lock_path)
 static void rpmlock_free(rpmlock lock)
 {
     if (lock) {
+	free(lock->path);
+	free(lock->descr);
 	(void) close(lock->fd);
 	free(lock);
     }
@@ -91,17 +99,17 @@ static void rpmlock_release(rpmlock lock)
 
 rpmlock rpmlockAcquire(const char *lock_path, const char *descr)
 {
-    rpmlock lock = rpmlock_new(lock_path);
+    rpmlock lock = rpmlock_new(lock_path, descr);
     if (!lock) {
 	rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
 		descr, lock_path, strerror(errno));
     } else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
 	if (lock->openmode & RPMLOCK_WRITE)
 	    rpmlog(RPMLOG_WARNING, _("waiting for %s lock on %s\n"),
-		    descr, lock_path);
+		    lock->descr, lock->path);
 	if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
 	    rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
-		   descr, lock_path, strerror(errno));
+		   lock->descr, lock->path, strerror(errno));
 	    rpmlock_free(lock);
 	    lock = NULL;
 	}
