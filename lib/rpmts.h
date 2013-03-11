@@ -281,6 +281,15 @@ rpmdbMatchIterator rpmtsInitIterator(const rpmts ts, rpmDbiTagVal rpmtag,
 			const void * keyp, size_t keylen);
 
 /** \ingroup rpmts
+ * Import a header into the rpmdb
+ * @param txn		transaction handle
+ * @param h		header
+ * @param flags		(unused)
+ * @return              RPMRC_OK/RPMRC_FAIL
+ */
+rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags);
+
+/** \ingroup rpmts
  * Import public key packet(s).
  * @todo Implicit --update policy for gpg-pubkey headers.
  * @param ts            transaction set

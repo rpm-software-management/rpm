@@ -447,6 +447,18 @@ exit:
     return rc;
 }
 
+rpmRC rpmtsImportHeader(rpmtxn txn, Header h, rpmFlags flags)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (txn && h && rpmtsOpenDB(txn->ts, (O_RDWR|O_CREAT)) == 0) {
+	if (rpmdbAdd(rpmtsGetRdb(txn->ts), h) == 0) {
+	    rc = RPMRC_OK;
+	}
+    }
+    return rc;
+}
+
 rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen)
 {
     Header h = NULL;
