@@ -51,6 +51,7 @@ struct rpmts_s {
 
     char * rootDir;		/*!< Path to top of install tree. */
     char * lockPath;		/*!< Transaction lock path */
+    rpmlock lock;		/*!< Transaction lock file */
     FD_t scriptFd;		/*!< Scriptlet stdout/stderr. */
     rpm_tid_t tid;		/*!< Transaction id. */
 

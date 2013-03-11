@@ -655,6 +655,7 @@ rpmts rpmtsFree(rpmts ts)
     }
     ts->rootDir = _free(ts->rootDir);
     ts->lockPath = _free(ts->lockPath);
+    ts->lock = rpmlockFree(ts->lock);
 
     ts->keyring = rpmKeyringFree(ts->keyring);
     ts->netsharedPaths = argvFree(ts->netsharedPaths);
@@ -1073,7 +1074,6 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types)
 rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 {
     static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
-    rpmlock lock = NULL;
     rpmtxn txn = NULL;
 
     if (ts == NULL)
@@ -1095,11 +1095,13 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
 	free(t);
     }
-    
-    lock = rpmlockNewAcquire(ts->lockPath, _("transaction"));
-    if (lock) {
+
+    if (ts->lock == NULL)
+	ts->lock = rpmlockNew(ts->lockPath, _("transaction"));
+
+    if (rpmlockAcquire(ts->lock)) {
 	txn = xcalloc(1, sizeof(*txn));
-	txn->lock = lock;
+	txn->lock = ts->lock;
 	txn->flags = flags;
 	txn->ts = rpmtsLink(ts);
     }
@@ -1110,7 +1112,7 @@ rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 rpmtxn rpmtxnEnd(rpmtxn txn)
 {
     if (txn) {
-	rpmlockFree(txn->lock);
+	rpmlockRelease(txn->lock);
 	rpmtsFree(txn->ts);
 	free(txn);
     }
