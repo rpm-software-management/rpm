@@ -96,24 +96,40 @@ static void rpmlock_release(rpmlock lock)
 
 
 /* External interface */
-
-rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
+rpmlock rpmlockNew(const char *lock_path, const char *descr)
 {
     rpmlock lock = rpmlock_new(lock_path, descr);
     if (!lock) {
 	rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
 		descr, lock_path, strerror(errno));
-    } else if (!rpmlock_acquire(lock, RPMLOCK_WRITE)) {
-	if (lock->openmode & RPMLOCK_WRITE)
+    }
+    return lock;
+}
+
+int rpmlockAcquire(rpmlock lock)
+{
+    int locked = 0; /* assume failure */
+
+    if (lock) {
+	locked = rpmlock_acquire(lock, RPMLOCK_WRITE);
+	if (!locked && (lock->openmode & RPMLOCK_WRITE)) {
 	    rpmlog(RPMLOG_WARNING, _("waiting for %s lock on %s\n"),
 		    lock->descr, lock->path);
-	if (!rpmlock_acquire(lock, RPMLOCK_WRITE|RPMLOCK_WAIT)) {
+	    locked = rpmlock_acquire(lock, (RPMLOCK_WRITE|RPMLOCK_WAIT));
+	}
+	if (!locked) {
 	    rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
 		   lock->descr, lock->path, strerror(errno));
-	    rpmlock_free(lock);
-	    lock = NULL;
 	}
     }
+    return locked;
+}
+
+rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
+{
+    rpmlock lock = rpmlockNew(lock_path, descr);
+    if (!rpmlockAcquire(lock))
+	lock = rpmlockFree(lock);
     return lock;
 }
 

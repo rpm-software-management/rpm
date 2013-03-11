@@ -16,7 +16,13 @@ extern "C" {
 #endif
 
 RPM_GNUC_INTERNAL
+rpmlock rpmlockNew(const char *lock_path, const char *descr);
+
+RPM_GNUC_INTERNAL
 rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr);
+
+RPM_GNUC_INTERNAL
+int rpmlockAcquire(rpmlock lock);
 
 RPM_GNUC_INTERNAL
 rpmlock rpmlockFree(rpmlock lock);
