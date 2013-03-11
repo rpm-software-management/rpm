@@ -743,7 +743,8 @@ int rpmdbClose(rpmdb db)
     if ((db->db_mode & O_ACCMODE) != O_RDONLY)
 	dbSetFSync(db->db_dbenv, 1);
 
-    rc = dbiClose(db->db_pkgs, 0);
+    if (db->db_pkgs)
+	rc = dbiClose(db->db_pkgs, 0);
     rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiClose, 1);
 
     db->db_root = _free(db->db_root);
