@@ -5,6 +5,12 @@
 
 typedef struct rpmlock_s * rpmlock;
 
+enum {
+    RPMLOCK_READ   = 1 << 0,
+    RPMLOCK_WRITE  = 1 << 1,
+    RPMLOCK_WAIT   = 1 << 2,
+};
+
 #ifdef __cplusplus
 extern "C" {
 #endif

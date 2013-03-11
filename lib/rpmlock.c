@@ -12,12 +12,6 @@
 
 /* Internal interface */
 
-enum {
-    RPMLOCK_READ   = 1 << 0,
-    RPMLOCK_WRITE  = 1 << 1,
-    RPMLOCK_WAIT   = 1 << 2,
-};
-
 struct rpmlock_s {
     int fd;
     int openmode;
