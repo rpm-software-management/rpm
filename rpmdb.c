@@ -2,6 +2,7 @@
 
 #include <popt.h>
 #include <rpm/rpmcli.h>
+#include <rpm/rpmdb.h>
 #include "cliutils.h"
 #include "debug.h"
 
@@ -13,6 +14,8 @@ enum modes {
     MODE_INITDB		= (1 << 0),
     MODE_REBUILDDB	= (1 << 1),
     MODE_VERIFYDB	= (1 << 2),
+    MODE_EXPORTDB	= (1 << 3),
+    MODE_IMPORTDB	= (1 << 4),
 };
 
 static int mode = 0;
@@ -25,6 +28,12 @@ static struct poptOption dbOptsTable[] = {
 	NULL},
     { "verifydb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR|POPT_ARGFLAG_DOC_HIDDEN),
 	&mode, MODE_VERIFYDB, N_("verify database files"), NULL},
+    { "exportdb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_EXPORTDB,
+	N_("export database to stdout header list"),
+	NULL},
+    { "importdb", '\0', (POPT_ARG_VAL|POPT_ARGFLAG_OR), &mode, MODE_IMPORTDB,
+	N_("import database from stdin header list"),
+	NULL},
     POPT_TABLEEND
 };
 
@@ -38,6 +47,47 @@ static struct poptOption optionsTable[] = {
     POPT_AUTOHELP
     POPT_TABLEEND
 };
+
+static int exportDB(rpmts ts)
+{
+    FD_t fd = fdDup(STDOUT_FILENO);
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+    int rc = 0;
+
+    if (txn && fd) {
+	Header h;
+	rpmdbMatchIterator mi = rpmtsInitIterator(ts, RPMDBI_PACKAGES, NULL, 0);
+	while ((h = rpmdbNextIterator(mi))) {
+	    rc += headerWrite(fd, h, HEADER_MAGIC_YES);
+	}
+	rpmdbFreeIterator(mi);
+    } else {
+	rc = -1;
+    }
+    Fclose(fd);
+    rpmtxnEnd(txn);
+    return rc;
+}
+
+/* XXX: only allow this on empty db? */
+static int importDB(rpmts ts)
+{
+    FD_t fd = fdDup(STDIN_FILENO);
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    int rc = 0;
+
+    if (txn && fd) {
+	Header h;
+	while ((h = headerRead(fd, HEADER_MAGIC_YES))) {
+	    rc += rpmtsImportHeader(txn, h, 0);
+	}
+    } else {
+	rc = -1;
+    }
+    rpmtxnEnd(txn);
+    Fclose(fd);
+    return rc;
+}
 
 int main(int argc, char *argv[])
 {
@@ -65,6 +115,12 @@ int main(int argc, char *argv[])
     }	break;
     case MODE_VERIFYDB:
 	ec = rpmtsVerifyDB(ts);
+	break;
+    case MODE_EXPORTDB:
+	ec = exportDB(ts);
+	break;
+    case MODE_IMPORTDB:
+	ec = importDB(ts);
 	break;
     default:
 	argerror(_("only one major mode may be specified"));
