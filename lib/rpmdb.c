@@ -2393,6 +2393,99 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
     return rc;
 }
 
+static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = 0 };
+    struct rpmtd_s tagdata;
+    int rc = 0;
+    dbiCursor dbc = NULL;
+    DBT key, data;
+
+    /* if there's no data there's nothing to do */
+    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
+	return 0;
+
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+
+    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
+
+    logAddRemove(dbiName(dbi), 1, &tagdata);
+    while (rpmtdNext(&tagdata) >= 0) {
+	dbiIndexSet set;
+	int freedata = 0;
+
+	if (!td2key(&tagdata, &key, &freedata)) {
+	    continue;
+	}
+
+	/* XXX
+	 * This is almost right, but, if there are duplicate tag
+	 * values, there will be duplicate attempts to remove
+	 * the header instance. It's faster to just ignore errors
+	 * than to do things correctly.
+	 */
+
+	/* 
+	 * XXX with duplicates, an accurate data value and 
+	 * DB_GET_BOTH is needed. 
+	 * */
+	set = NULL;
+
+	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
+	if (rc == 0) {			/* success */
+	    (void) dbt2set(dbi, &data, &set);
+	} else if (rc == DB_NOTFOUND) {	/* not found */
+	    goto cont;
+	} else {			/* error */
+	    rpmlog(RPMLOG_ERR,
+		_("error(%d) setting \"%s\" records from %s index\n"),
+		rc, (char*)key.data, dbiName(dbi));
+	    rc += 1;
+	    goto cont;
+	}
+
+	rc = dbiPruneSet(set, &rec, 1, sizeof(rec), 1);
+
+	/* If nothing was pruned, then don't bother updating. */
+	if (rc) {
+	    set = dbiIndexSetFree(set);
+	    goto cont;
+	}
+
+	if (set->count > 0) {
+	    (void) set2dbt(dbi, &data, set);
+	    rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
+	    if (rc) {
+		rpmlog(RPMLOG_ERR,
+			_("error(%d) storing record \"%s\" into %s\n"),
+			rc, (char*)key.data, dbiName(dbi));
+		rc += 1;
+	    }
+	    data.data = _free(data.data);
+	    data.size = 0;
+	} else {
+	    rc = dbiCursorDel(dbc, &key, &data, 0);
+	    if (rc) {
+		rpmlog(RPMLOG_ERR,
+			_("error(%d) removing record \"%s\" from %s\n"),
+			rc, (char*)key.data, dbiName(dbi));
+		rc += 1;
+	    }
+	}
+	set = dbiIndexSetFree(set);
+cont:
+	if (freedata) {
+	   free(key.data); 
+	}
+    }
+
+    dbc = dbiCursorFree(dbc);
+    dbiSync(dbi, 0);
+    rpmtdFreeData(&tagdata);
+    return rc;
+}
+
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 {
     dbiIndex dbi = NULL;
@@ -2425,100 +2518,13 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 
     /* Remove associated data from secondary indexes */
     if (ret == 0) {
-	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = 0 };
-	int rc = 0;
-	dbiCursor dbc = NULL;
-	DBT key, data;
-
-	memset(&key, 0, sizeof(key));
-	memset(&data, 0, sizeof(data));
-
 	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    rpmDbiTag rpmtag = db->db_tags[dbix];
-	    struct rpmtd_s tagdata;
 
 	    if (indexOpen(db, rpmtag, 0, &dbi))
 		continue;
 
-	    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
-		continue;
-
-	    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
-
-	    logAddRemove(dbiName(dbi), 1, &tagdata);
-	    while (rpmtdNext(&tagdata) >= 0) {
-		dbiIndexSet set;
-		int freedata = 0;
-
-		if (!td2key(&tagdata, &key, &freedata)) {
-		    continue;
-		}
-
-		/* XXX
-		 * This is almost right, but, if there are duplicate tag
-		 * values, there will be duplicate attempts to remove
-		 * the header instance. It's faster to just ignore errors
-		 * than to do things correctly.
-		 */
-
-		/* 
- 		 * XXX with duplicates, an accurate data value and 
- 		 * DB_GET_BOTH is needed. 
- 		 * */
-		set = NULL;
-
-		rc = dbiCursorGet(dbc, &key, &data, DB_SET);
-		if (rc == 0) {			/* success */
-		    (void) dbt2set(dbi, &data, &set);
-		} else if (rc == DB_NOTFOUND) {	/* not found */
-		    goto cont;
-		} else {			/* error */
-		    rpmlog(RPMLOG_ERR,
-			_("error(%d) setting \"%s\" records from %s index\n"),
-			rc, (char*)key.data, dbiName(dbi));
-		    ret += 1;
-		    goto cont;
-		}
-
-		rc = dbiPruneSet(set, &rec, 1, sizeof(rec), 1);
-
-		/* If nothing was pruned, then don't bother updating. */
-		if (rc) {
-		    set = dbiIndexSetFree(set);
-		    goto cont;
-		}
-
-		if (set->count > 0) {
-		    (void) set2dbt(dbi, &data, set);
-		    rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
-		    if (rc) {
-			rpmlog(RPMLOG_ERR,
-				_("error(%d) storing record \"%s\" into %s\n"),
-				rc, (char*)key.data, dbiName(dbi));
-			ret += 1;
-		    }
-		    data.data = _free(data.data);
-		    data.size = 0;
-		} else {
-		    rc = dbiCursorDel(dbc, &key, &data, 0);
-		    if (rc) {
-			rpmlog(RPMLOG_ERR,
-				_("error(%d) removing record \"%s\" from %s\n"),
-				rc, (char*)key.data, dbiName(dbi));
-			ret += 1;
-		    }
-		}
-		set = dbiIndexSetFree(set);
-cont:
-		if (freedata) {
-		   free(key.data); 
-		}
-	    }
-
-	    dbc = dbiCursorFree(dbc);
-	    dbiSync(dbi, 0);
-
-	    rpmtdFreeData(&tagdata);
+	    ret += indexDel(dbi, rpmtag, hdrNum, h);
 	}
     }
 
