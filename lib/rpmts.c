@@ -1084,6 +1084,6 @@ rpmlock rpmtsAcquireLock(rpmts ts)
 	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
 	free(t);
     }
-    return rpmlockAcquire(ts->lockPath, _("transaction"));
+    return rpmlockNewAcquire(ts->lockPath, _("transaction"));
 }
 

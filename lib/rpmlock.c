@@ -97,7 +97,7 @@ static void rpmlock_release(rpmlock lock)
 
 /* External interface */
 
-rpmlock rpmlockAcquire(const char *lock_path, const char *descr)
+rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
 {
     rpmlock lock = rpmlock_new(lock_path, descr);
     if (!lock) {
