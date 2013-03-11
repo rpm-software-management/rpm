@@ -17,6 +17,7 @@ struct rpmlock_s {
     int openmode;
     char *path;
     char *descr;
+    int fdrefs;
 };
 
 static rpmlock rpmlock_new(const char *lock_path, const char *descr)
@@ -42,6 +43,7 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 	if (lock) {
 	    lock->path = xstrdup(lock_path);
 	    lock->descr = xstrdup(descr);
+	    lock->fdrefs = 1;
 	}
     }
     return lock;
@@ -49,7 +51,7 @@ static rpmlock rpmlock_new(const char *lock_path, const char *descr)
 
 static void rpmlock_free(rpmlock lock)
 {
-    if (lock) {
+    if (--lock->fdrefs == 0) {
 	free(lock->path);
 	free(lock->descr);
 	(void) close(lock->fd);
@@ -60,7 +62,13 @@ static void rpmlock_free(rpmlock lock)
 static int rpmlock_acquire(rpmlock lock, int mode)
 {
     int res = 0;
-    if (lock && (mode & lock->openmode)) {
+
+    if (!(mode & lock->openmode))
+	return res;
+
+    if (lock->fdrefs > 1) {
+	res = 1;
+    } else {
 	struct flock info;
 	int cmd;
 	if (mode & RPMLOCK_WAIT)
@@ -78,12 +86,19 @@ static int rpmlock_acquire(rpmlock lock, int mode)
 	if (fcntl(lock->fd, cmd, &info) != -1)
 	    res = 1;
     }
+
+    lock->fdrefs += res;
+
     return res;
 }
 
 static void rpmlock_release(rpmlock lock)
 {
-    if (lock) {
+    /* if not locked then we must not release */
+    if (lock->fdrefs <= 1)
+	return;
+
+    if (--lock->fdrefs == 1) {
 	struct flock info;
 	info.l_type = F_UNLCK;
 	info.l_whence = SEEK_SET;
@@ -127,7 +142,8 @@ int rpmlockAcquire(rpmlock lock)
 
 void rpmlockRelease(rpmlock lock)
 {
-    rpmlock_release(lock);
+    if (lock)
+	rpmlock_release(lock);
 }
 
 rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
@@ -140,8 +156,10 @@ rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
 
 rpmlock rpmlockFree(rpmlock lock)
 {
-    rpmlock_release(lock); /* Not really needed here. */
-    rpmlock_free(lock);
+    if (lock) {
+	rpmlock_release(lock);
+	rpmlock_free(lock);
+    }
     return NULL;
 }
 
