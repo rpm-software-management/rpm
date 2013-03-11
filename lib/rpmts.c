@@ -39,6 +39,12 @@ struct rpmtsi_s {
     int oc;		/*!< iterator index. */
 };
 
+struct rpmtxn_s {
+    rpmlock lock;	/* transaction lock */
+    rpmtxnFlags flags;	/* transaction flags */
+    rpmts ts;		/* parent transaction set reference */
+};
+
 static void loadKeyring(rpmts ts);
 
 int _rpmts_stats = 0;
@@ -97,11 +103,11 @@ int rpmtsOpenDB(rpmts ts, int dbmode)
 
 int rpmtsInitDB(rpmts ts, int dbmode)
 {
-    rpmlock lock = rpmtsAcquireLock(ts);
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int rc = -1;
-    if (lock)
+    if (txn)
 	    rc = rpmdbInit(ts->rootDir, dbmode);
-    rpmlockFree(lock);
+    rpmtxnEnd(txn);
     return rc;
 }
 
@@ -126,19 +132,19 @@ int rpmtsSetDBMode(rpmts ts, int dbmode)
 int rpmtsRebuildDB(rpmts ts)
 {
     int rc = -1;
-    rpmlock lock = NULL;
+    rpmtxn txn = NULL;
 
     /* Cannot do this on a populated transaction set */
     if (rpmtsNElements(ts) > 0)
 	return -1;
 
-    lock = rpmtsAcquireLock(ts);
-    if (lock) {
+    txn = rpmtxnBegin(ts, RPMTXN_WRITE);
+    if (txn) {
 	if (!(ts->vsflags & RPMVSF_NOHDRCHK))
 	    rc = rpmdbRebuild(ts->rootDir, ts, headerCheck);
 	else
 	    rc = rpmdbRebuild(ts->rootDir, NULL, NULL);
-	rpmlockFree(lock);
+	rpmtxnEnd(txn);
     }
     return rc;
 }
@@ -146,10 +152,10 @@ int rpmtsRebuildDB(rpmts ts)
 int rpmtsVerifyDB(rpmts ts)
 {
     int rc = -1;
-    rpmlock lock = rpmtsAcquireLock(ts);
-    if (lock) {
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_READ);
+    if (txn) {
 	rc = rpmdbVerify(ts->rootDir);
-	rpmlockFree(lock);
+	rpmtxnEnd(txn);
     }
     return rc;
 }
@@ -1064,9 +1070,14 @@ rpmte rpmtsiNext(rpmtsi tsi, rpmElementTypes types)
 }
 
 #define RPMLOCK_PATH LOCALSTATEDIR "/rpm/.rpm.lock"
-rpmlock rpmtsAcquireLock(rpmts ts)
+rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags)
 {
     static const char * const rpmlock_path_default = "%{?_rpmlock_path}";
+    rpmlock lock = NULL;
+    rpmtxn txn = NULL;
+
+    if (ts == NULL)
+	return NULL;
 
     if (ts->lockPath == NULL) {
 	const char *rootDir = rpmtsRootDir(ts);
@@ -1084,6 +1095,24 @@ rpmlock rpmtsAcquireLock(rpmts ts)
 	(void) rpmioMkpath(dirname(t), 0755, getuid(), getgid());
 	free(t);
     }
-    return rpmlockNewAcquire(ts->lockPath, _("transaction"));
+    
+    lock = rpmlockNewAcquire(ts->lockPath, _("transaction"));
+    if (lock) {
+	txn = xcalloc(1, sizeof(*txn));
+	txn->lock = lock;
+	txn->flags = flags;
+	txn->ts = rpmtsLink(ts);
+    }
+    
+    return txn;
 }
 
+rpmtxn rpmtxnEnd(rpmtxn txn)
+{
+    if (txn) {
+	rpmlockFree(txn->lock);
+	rpmtsFree(txn->ts);
+	free(txn);
+    }
+    return NULL;
+}

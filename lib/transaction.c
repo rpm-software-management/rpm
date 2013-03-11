@@ -1467,7 +1467,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 {
     int rc = -1; /* assume failure */
     tsMembers tsmem = rpmtsMembers(ts);
-    rpmlock lock = NULL;
+    rpmtxn txn = NULL;
     rpmps tsprobs = NULL;
     int TsmPreDone = 0; /* TsmPre hook hasn't been called */
     
@@ -1482,7 +1482,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* If we are in test mode, then there's no need for transaction lock. */
     if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	if (!(lock = rpmtsAcquireLock(ts))) {
+	if (!(txn = rpmtxnBegin(ts, RPMTXN_WRITE))) {
 	    goto exit;
 	}
     }
@@ -1559,6 +1559,6 @@ exit:
     (void) umask(oldmask);
     (void) rpmtsFinish(ts);
     rpmpsFree(tsprobs);
-    rpmlockFree(lock);
+    rpmtxnEnd(txn);
     return rc;
 }

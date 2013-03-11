@@ -153,6 +153,12 @@ typedef	enum rpmtsOpX_e {
     RPMTS_OP_MAX		= 17
 } rpmtsOpX;
 
+enum rpmtxnFlags_e {
+    RPMTXN_READ		= (1 << 0),
+    RPMTXN_WRITE	= (1 << 1),
+};
+typedef rpmFlags rpmtxnFlags;
+
 /** \ingroup rpmts
  * Perform dependency resolution on the transaction set.
  *

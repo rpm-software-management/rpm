@@ -93,9 +93,6 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types);
 RPM_GNUC_INTERNAL
 int rpmtsSolve(rpmts ts, rpmds key);
 
-RPM_GNUC_INTERNAL
-rpmlock rpmtsAcquireLock(rpmts ts);
-
 /** \ingroup rpmts
  * Get the selabel handle from the transaction set
  * @param ts		transaction set
@@ -117,6 +114,21 @@ rpmRC rpmtsSELabelInit(rpmts ts, int open_status);
  * @param close_status  whether we should close selinux status
  */
 void rpmtsSELabelFini(rpmts ts, int close_status);
+
+/** \ingroup rpmts
+ * Create a transaction (lock) handle
+ * @param ts		transaction set
+ * @param flags		flags
+ * @return		transaction handle
+ */
+rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags);
+
+/** \ingroup rpmts
+ * Destroy transaction (lock) handle
+ * @param txn		transaction handle
+ * @return		NULL always
+ */
+rpmtxn rpmtxnEnd(rpmtxn txn);
 
 #ifdef __cplusplus
 }
