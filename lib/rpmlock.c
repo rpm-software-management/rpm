@@ -125,6 +125,11 @@ int rpmlockAcquire(rpmlock lock)
     return locked;
 }
 
+void rpmlockRelease(rpmlock lock)
+{
+    rpmlock_release(lock);
+}
+
 rpmlock rpmlockNewAcquire(const char *lock_path, const char *descr)
 {
     rpmlock lock = rpmlockNew(lock_path, descr);

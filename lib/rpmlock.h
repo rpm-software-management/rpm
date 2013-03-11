@@ -25,6 +25,9 @@ RPM_GNUC_INTERNAL
 int rpmlockAcquire(rpmlock lock);
 
 RPM_GNUC_INTERNAL
+void rpmlockRelease(rpmlock lock);
+
+RPM_GNUC_INTERNAL
 rpmlock rpmlockFree(rpmlock lock);
 
 #ifdef __cplusplus
