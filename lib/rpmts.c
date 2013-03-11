@@ -466,7 +466,11 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
     rpmPubkey pubkey = NULL;
     rpmVSFlags oflags = rpmtsVSFlags(ts);
     rpmKeyring keyring;
+    rpmtxn txn = rpmtxnBegin(ts, RPMTXN_WRITE);
     int krc;
+
+    if (txn == NULL)
+	return rc;
 
     /* XXX keyring wont load if sigcheck disabled, force it temporarily */
     rpmtsSetVSFlags(ts, (oflags & ~_RPMVSF_NOSIGNATURES));
@@ -491,10 +495,7 @@ rpmRC rpmtsImportPubkey(const rpmts ts, const unsigned char * pkt, size_t pktlen
 
 	/* Add header to database. */
 	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-	    if (rpmtsOpenDB(ts, (O_RDWR|O_CREAT)))
-		goto exit;
-	    if (rpmdbAdd(rpmtsGetRdb(ts), h) != 0)
-		goto exit;
+	    rc = rpmtsImportHeader(txn, h, 0);
 	}
     }
     rc = RPMRC_OK;
@@ -504,6 +505,7 @@ exit:
     headerFree(h);
     rpmPubkeyFree(pubkey);
     rpmKeyringFree(keyring);
+    rpmtxnEnd(txn);
     return rc;
 }
 
