@@ -61,7 +61,7 @@ typedef struct _dbiIndexSet {
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
 
-static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
+static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
 
@@ -92,7 +92,7 @@ static int buildIndexes(rpmdb db)
 	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
 	    dbiIndex dbi = db->db_indexes[dbix];
 	    if (dbi && (dbiFlags(dbi) & DBI_CREATED)) {
-		rc += addToIndex(dbi, db->db_tags[dbix], hdrNum, h);
+		rc += indexPut(dbi, db->db_tags[dbix], hdrNum, h);
 	    }
 	}
     }
@@ -2589,7 +2589,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 }
 
 /* Add data to secondary index */
-static int addToIndex(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     int i, rc = 0;
     struct rpmtd_s tagdata, reqflags;
@@ -2748,7 +2748,7 @@ int rpmdbAdd(rpmdb db, Header h)
 	    if (indexOpen(db, rpmtag, 0, &dbi))
 		continue;
 
-	    ret += addToIndex(dbi, rpmtag, hdrNum, h);
+	    ret += indexPut(dbi, rpmtag, hdrNum, h);
 	}
     }
 
