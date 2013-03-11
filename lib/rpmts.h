@@ -558,6 +558,21 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
  */
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset);
 
+/** \ingroup rpmts
+ * Create a transaction (lock) handle
+ * @param ts		transaction set
+ * @param flags		flags
+ * @return		transaction handle
+ */
+rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags);
+
+/** \ingroup rpmts
+ * Destroy transaction (lock) handle
+ * @param txn		transaction handle
+ * @return		NULL always
+ */
+rpmtxn rpmtxnEnd(rpmtxn txn);
+
 /** \ingroup rpmte
  * Destroy transaction element iterator.
  * @param tsi		transaction element iterator

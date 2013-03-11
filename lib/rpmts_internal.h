@@ -116,21 +116,6 @@ rpmRC rpmtsSELabelInit(rpmts ts, int open_status);
  */
 void rpmtsSELabelFini(rpmts ts, int close_status);
 
-/** \ingroup rpmts
- * Create a transaction (lock) handle
- * @param ts		transaction set
- * @param flags		flags
- * @return		transaction handle
- */
-rpmtxn rpmtxnBegin(rpmts ts, rpmtxnFlags flags);
-
-/** \ingroup rpmts
- * Destroy transaction (lock) handle
- * @param txn		transaction handle
- * @return		NULL always
- */
-rpmtxn rpmtxnEnd(rpmtxn txn);
-
 #ifdef __cplusplus
 }
 #endif
