@@ -1052,7 +1052,7 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     return ec;
 }
 
-static int fsmCommit(FSM_t fsm, int ix, int setmeta);
+static int fsmCommit(FSM_t fsm, int ix, const struct stat * st, int setmeta);
 
 /** \ingroup payload
  * Commit hard linked file set atomically.
@@ -1081,7 +1081,7 @@ static int fsmCommitLinks(FSM_t fsm)
 	if (li->filex[i] < 0) continue;
 	rc = fsmMapPath(fsm, li->filex[i]);
 	if (!XFA_SKIPPING(fsm->action)) {
-	    rc = fsmCommit(fsm, li->filex[i], setmeta);
+	    rc = fsmCommit(fsm, li->filex[i], st, setmeta);
 	    /* only the first created link needs permissions etc to be set */
 	    if (!rc)
 		setmeta = 0;
@@ -1542,10 +1542,9 @@ static int fsmBackup(FSM_t fsm)
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, int ix, int setmeta)
+static int fsmCommit(FSM_t fsm, int ix, const struct stat * st, int setmeta)
 {
     int rc = 0;
-    const struct stat * st = &fsm->sb;
     char *dest = fsm->path;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
@@ -1795,7 +1794,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
 	    if (!fsm->postpone) {
 		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix, 1));
+		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix, st, 1));
 	    }
 	}
 
