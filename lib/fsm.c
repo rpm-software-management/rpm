@@ -1447,7 +1447,7 @@ static int fsmChmod(const char *path, mode_t mode)
     return rc;
 }
 
-static int fsmUtime(const char *path, time_t mtime)
+static int fsmUtime(const char *path, mode_t mode, time_t mtime)
 {
     int rc = 0;
     struct timeval stamps[2] = {
@@ -1455,7 +1455,8 @@ static int fsmUtime(const char *path, time_t mtime)
 	{ .tv_sec = mtime, .tv_usec = 0 },
     };
 
-    rc = utimes(path, stamps);
+    if (!S_ISLNK(mode))
+	rc = utimes(path, stamps);
     
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", __func__,
@@ -1565,6 +1566,7 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
 
     /* Set permissions, but not for hard links  */
     if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
+	rpmfi fi = fsmGetFi(fsm);
         /* Set file security context (if enabled) */
         if (!rc && !getuid()) {
             rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
@@ -1573,22 +1575,21 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
             if (!rc && !getuid())
                 rc = fsmLChown(fsm->path, st->st_uid, st->st_gid);
         } else {
-            rpmfi fi = fsmGetFi(fsm);
             if (!rc && !getuid())
                 rc = fsmChown(fsm->path, st->st_uid, st->st_gid);
             if (!rc)
                 rc = fsmChmod(fsm->path, st->st_mode);
-            if (!rc) {
-                rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, ix));
-                /* utime error is not critical for directories */
-                if (rc && S_ISDIR(st->st_mode))
-                    rc = 0;
-            }
             /* Set file capabilities (if enabled) */
             if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
                 rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
             }
         }
+	if (!rc) {
+	    rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
+	    /* utime error is not critical for directories */
+	    if (rc && S_ISDIR(st->st_mode))
+		rc = 0;
+            }
     }
 
     /* Rename temporary to final file name if needed. */
