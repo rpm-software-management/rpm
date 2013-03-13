@@ -1052,7 +1052,7 @@ static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
     return ec;
 }
 
-static int fsmCommit(FSM_t fsm, int ix, const struct stat * st, int setmeta);
+static int fsmCommit(FSM_t fsm, int ix, const struct stat * st);
 
 /** \ingroup payload
  * Commit hard linked file set atomically.
@@ -1081,8 +1081,9 @@ static int fsmCommitLinks(FSM_t fsm)
 	if (li->filex[i] < 0) continue;
 	rc = fsmMapPath(fsm, li->filex[i]);
 	if (!XFA_SKIPPING(fsm->action)) {
-	    /* only the first created link needs permissions etc to be set */
-	    rc = fsmCommit(fsm, li->filex[i], st, (link_order == 1));
+	    /* Adjust st_nlink to current number of links on this file */
+	    fsm->sb.st_nlink = link_order;
+	    rc = fsmCommit(fsm, li->filex[i], &fsm->sb);
 	    if (!rc)
 		link_order++;
 	}
@@ -1542,7 +1543,7 @@ static int fsmBackup(FSM_t fsm)
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, int ix, const struct stat * st, int setmeta)
+static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
 {
     int rc = 0;
     char *dest = fsm->path;
@@ -1559,7 +1560,8 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st, int setmeta)
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
 	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
 
-    if (setmeta) {
+    /* Set permissions, but not for hard links  */
+    if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
         /* Set file security context (if enabled) */
         if (!rc && !getuid()) {
             rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
@@ -1794,7 +1796,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
 	    if (!fsm->postpone) {
 		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix, st, 1));
+		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix, st));
 	    }
 	}
 
