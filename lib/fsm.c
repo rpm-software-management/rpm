@@ -623,14 +623,14 @@ static FSM_t fsmFree(FSM_t fsm)
 
 /* Find and set file security context */
 static int fsmSetSELabel(struct selabel_handle *sehandle,
-			 const char *path, mode_t mode)
+			 const char *path, const char *dest, mode_t mode)
 {
     int rc = 0;
 #if WITH_SELINUX
     if (sehandle) {
 	security_context_t scon = NULL;
 
-	if (selabel_lookup_raw(sehandle, &scon, path, mode) == 0) {
+	if (selabel_lookup_raw(sehandle, &scon, dest, mode) == 0) {
 	    rc = lsetfilecon(path, scon);
 
 	    if (_fsm_debug) {
@@ -1233,7 +1233,7 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle, rpmPlu
 		rpmpluginsCallFsmFilePost(plugins, dn, mode, DIR_TYPE_UNOWNED, FA_CREATE, rc);
 
 		if (!rc) {
-		    rc = fsmSetSELabel(sehandle, dn, mode);
+		    rc = fsmSetSELabel(sehandle, dn, dn, mode);
 
 		    rpmlog(RPMLOG_DEBUG,
 			    "%s directory created with perms %04o\n",
@@ -1576,7 +1576,7 @@ static int fsmCommit(FSM_t fsm, int ix, int setmeta)
     if (setmeta) {
         /* Set file security context (if enabled) */
         if (!rc && !getuid()) {
-            rc = fsmSetSELabel(fsm->sehandle, fsm->path, st->st_mode);
+            rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
         }
         if (S_ISLNK(st->st_mode)) {
             if (!rc && !getuid())
