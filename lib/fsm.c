@@ -1455,8 +1455,12 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
 	{ .tv_sec = mtime, .tv_usec = 0 },
     };
 
+#if HAVE_LUTIMES
+    rc = lutimes(path, stamps);
+#else
     if (!S_ISLNK(mode))
 	rc = utimes(path, stamps);
+#endif
     
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", __func__,
