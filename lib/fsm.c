@@ -463,7 +463,7 @@ static int fsmMapPath(FSM_t fsm, int i)
  */
 static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 {
-    struct stat * st = &fsm->sb;
+    const struct stat * st = &fsm->sb;
     int rc = 0;
     int ix = -1;
     int j;
@@ -1063,7 +1063,7 @@ static int fsmCommitLinks(FSM_t fsm)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
-    struct stat * st = &fsm->sb;
+    const struct stat * st = &fsm->sb;
     int rc = 0;
     int setmeta = 1;
     nlink_t i;
@@ -1545,7 +1545,7 @@ static int fsmBackup(FSM_t fsm)
 static int fsmCommit(FSM_t fsm, int ix, int setmeta)
 {
     int rc = 0;
-    struct stat * st = &fsm->sb;
+    const struct stat * st = &fsm->sb;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
     if (S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))
@@ -1571,17 +1571,17 @@ static int fsmCommit(FSM_t fsm, int ix, int setmeta)
     if (setmeta) {
         /* Set file security context (if enabled) */
         if (!rc && !getuid()) {
-            rc = fsmSetSELabel(fsm->sehandle, fsm->path, fsm->sb.st_mode);
+            rc = fsmSetSELabel(fsm->sehandle, fsm->path, st->st_mode);
         }
         if (S_ISLNK(st->st_mode)) {
             if (!rc && !getuid())
-                rc = fsmLChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+                rc = fsmLChown(fsm->path, st->st_uid, st->st_gid);
         } else {
             rpmfi fi = fsmGetFi(fsm);
             if (!rc && !getuid())
-                rc = fsmChown(fsm->path, fsm->sb.st_uid, fsm->sb.st_gid);
+                rc = fsmChown(fsm->path, st->st_uid, st->st_gid);
             if (!rc)
-                rc = fsmChmod(fsm->path, fsm->sb.st_mode);
+                rc = fsmChmod(fsm->path, st->st_mode);
             if (!rc) {
                 rc = fsmUtime(fsm->path, rpmfiFMtimeIndex(fi, ix));
                 /* utime error is not critical for directories */
