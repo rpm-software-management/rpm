@@ -1546,6 +1546,7 @@ static int fsmCommit(FSM_t fsm, int ix, int setmeta)
 {
     int rc = 0;
     const struct stat * st = &fsm->sb;
+    char *dest = fsm->path;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
     if (S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))
@@ -1554,18 +1555,22 @@ static int fsmCommit(FSM_t fsm, int ix, int setmeta)
     /* Backup on-disk file if needed. Directories are handled earlier */
     if (!S_ISDIR(st->st_mode))
 	rc = fsmBackup(fsm);
-    /* Rename temporary to final file name. */
-    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix)) {
-	char *npath = fsmFsPath(fsm, 0, fsm->nsuffix);
-	rc = fsmRename(fsm->path, npath, fsm->mapFlags);
+
+    /* Construct final destination path (nsuffix is usually NULL) */
+    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
+	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
+
+    /* Rename temporary to final file name if needed. */
+    if (dest != fsm->path) {
+	rc = fsmRename(fsm->path, dest, fsm->mapFlags);
 	if (!rc && fsm->nsuffix) {
 	    char * opath = fsmFsPath(fsm, 0, NULL);
 	    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-		   opath, npath);
+		   opath, dest);
 	    free(opath);
 	}
 	free(fsm->path);
-	fsm->path = npath;
+	fsm->path = dest;
     }
 
     if (setmeta) {
