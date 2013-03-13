@@ -1065,7 +1065,7 @@ static int fsmCommitLinks(FSM_t fsm)
     const char * nsuffix = fsm->nsuffix;
     const struct stat * st = &fsm->sb;
     int rc = 0;
-    int setmeta = 1;
+    nlink_t link_order = 1;
     nlink_t i;
     hardLink_t li;
 
@@ -1081,10 +1081,10 @@ static int fsmCommitLinks(FSM_t fsm)
 	if (li->filex[i] < 0) continue;
 	rc = fsmMapPath(fsm, li->filex[i]);
 	if (!XFA_SKIPPING(fsm->action)) {
-	    rc = fsmCommit(fsm, li->filex[i], st, setmeta);
 	    /* only the first created link needs permissions etc to be set */
+	    rc = fsmCommit(fsm, li->filex[i], st, (link_order == 1));
 	    if (!rc)
-		setmeta = 0;
+		link_order++;
 	}
 	fsm->path = _free(fsm->path);
 	li->filex[i] = -1;
