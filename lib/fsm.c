@@ -1450,10 +1450,13 @@ static int fsmChmod(const char *path, mode_t mode)
 static int fsmUtime(const char *path, time_t mtime)
 {
     int rc = 0;
-    struct utimbuf stamp;
-    stamp.actime = mtime;
-    stamp.modtime = mtime;
-    rc = utime(path, &stamp);
+    struct timeval stamps[2] = {
+	{ .tv_sec = mtime, .tv_usec = 0 },
+	{ .tv_sec = mtime, .tv_usec = 0 },
+    };
+
+    rc = utimes(path, stamps);
+    
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", __func__,
 	       path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
