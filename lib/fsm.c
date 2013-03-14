@@ -1581,9 +1581,10 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
         } else {
             if (!rc && !getuid())
                 rc = fsmChown(fsm->path, st->st_uid, st->st_gid);
-            if (!rc)
-                rc = fsmChmod(fsm->path, st->st_mode);
         }
+	if (!rc && !S_ISLNK(st->st_mode)) {
+	    rc = fsmChmod(fsm->path, st->st_mode);
+	}
 	/* Set file capabilities (if enabled) */
 	if (!rc && S_ISREG(st->st_mode) && !getuid()) {
 	    rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
