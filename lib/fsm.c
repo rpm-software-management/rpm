@@ -1450,6 +1450,9 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", __func__,
 	       path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
+    /* ...but utime error is not critical for directories */
+    if (rc && S_ISDIR(mode))
+	rc = 0;
     return rc;
 }
 
@@ -1571,10 +1574,7 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
 	}
 	if (!rc) {
 	    rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
-	    /* utime error is not critical for directories */
-	    if (rc && S_ISDIR(st->st_mode))
-		rc = 0;
-            }
+	}
     }
 
     /* Rename temporary to final file name if needed. */
