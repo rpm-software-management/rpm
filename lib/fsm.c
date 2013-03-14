@@ -1583,11 +1583,11 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
                 rc = fsmChown(fsm->path, st->st_uid, st->st_gid);
             if (!rc)
                 rc = fsmChmod(fsm->path, st->st_mode);
-            /* Set file capabilities (if enabled) */
-            if (!rc && !S_ISDIR(st->st_mode) && !getuid()) {
-                rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
-            }
         }
+	/* Set file capabilities (if enabled) */
+	if (!rc && S_ISREG(st->st_mode) && !getuid()) {
+	    rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
+	}
 	if (!rc) {
 	    rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
 	    /* utime error is not critical for directories */
