@@ -1399,25 +1399,9 @@ static int fsmRename(const char *opath, const char *path,
 }
 
 
-static int fsmChown(const char *path, uid_t uid, gid_t gid)
+static int fsmChown(const char *path, mode_t mode, uid_t uid, gid_t gid)
 {
-    int rc = chown(path, uid, gid);
-    if (rc < 0) {
-	struct stat st;
-	if (lstat(path, &st) == 0 && st.st_uid == uid && st.st_gid == gid)
-	    rc = 0;
-    }
-    if (_fsm_debug)
-	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", __func__,
-	       path, (int)uid, (int)gid,
-	       (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
-    return rc;
-}
-
-static int fsmLChown(const char *path, uid_t uid, gid_t gid)
-{
-    int rc = lchown(path, uid, gid);
+    int rc = S_ISLNK(mode) ? lchown(path, uid, gid) : chown(path, uid, gid);
     if (rc < 0) {
 	struct stat st;
 	if (lstat(path, &st) == 0 && st.st_uid == uid && st.st_gid == gid)
@@ -1575,13 +1559,9 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
         if (!rc && !getuid()) {
             rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
         }
-        if (S_ISLNK(st->st_mode)) {
-            if (!rc && !getuid())
-                rc = fsmLChown(fsm->path, st->st_uid, st->st_gid);
-        } else {
-            if (!rc && !getuid())
-                rc = fsmChown(fsm->path, st->st_uid, st->st_gid);
-        }
+	if (!rc && !getuid()) {
+	    rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
+	}
 	if (!rc && !S_ISLNK(st->st_mode)) {
 	    rc = fsmChmod(fsm->path, st->st_mode);
 	}
