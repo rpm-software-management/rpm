@@ -1621,8 +1621,6 @@ static const char * fileActionString(rpmFileAction a)
     switch (a) {
     case FA_UNKNOWN:	return "unknown";
     case FA_CREATE:	return "create";
-    case FA_COPYOUT:	return "copyout";
-    case FA_COPYIN:	return "copyin";
     case FA_BACKUP:	return "backup";
     case FA_SAVE:	return "save";
     case FA_SKIP:	return "skip";
@@ -1934,7 +1932,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
 	/* XXX Is this actually still needed? */
 	for (i = 0; i < fc; i++) {
 	    ghost = (rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST);
-	    rpmfsSetAction(fs, i, ghost ? FA_SKIP : FA_COPYOUT);
+	    rpmfsSetAction(fs, i, ghost ? FA_SKIP : FA_CREATE);
 	}
     }
 	    
