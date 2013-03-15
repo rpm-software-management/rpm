@@ -1585,10 +1585,6 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
     if (!S_ISDIR(st->st_mode))
 	rc = fsmBackup(fsm);
 
-    /* Set permissions, but not for hard links  */
-    if (!rc && !(S_ISREG(st->st_mode) && st->st_nlink > 1))
-	rc = fsmSetmeta(fsm, ix, st);
-
     /* Construct final destination path (nsuffix is usually NULL) */
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
 	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
@@ -1775,6 +1771,11 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
                 if (!IS_DEV_LOG(fsm->path))
                     rc = CPIOERR_UNKNOWN_FILETYPE;
             }
+	    /* Set permissions, timestamps etc for non-hardlink entries */
+	    if (!rc) {
+		rc = fsmSetmeta(fsm, fsm->ix, st);
+	    }
+
             if (li != NULL) {
                 li->createdPath = li->linkIndex;
                 rc = fsmMakeLinks(fsm, li);
