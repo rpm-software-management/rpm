@@ -1538,6 +1538,40 @@ static int fsmBackup(FSM_t fsm)
     return rc;
 }
 
+static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
+{
+    int rc = 0;
+    char *dest = fsm->path;
+    rpmfi fi = fsmGetFi(fsm);
+
+    /* Construct final destination path (nsuffix is usually NULL) */
+    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
+	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
+
+    /* Set file security context (if enabled) */
+    if (!rc && !getuid()) {
+	rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
+    }
+    if (!rc && !getuid()) {
+	rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
+    }
+    if (!rc && !S_ISLNK(st->st_mode)) {
+	rc = fsmChmod(fsm->path, st->st_mode);
+    }
+    /* Set file capabilities (if enabled) */
+    if (!rc && S_ISREG(st->st_mode) && !getuid()) {
+	rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
+    }
+    if (!rc) {
+	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
+    }
+
+    if (dest != fsm->path)
+	free(dest);
+
+    return rc;
+}
+
 static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
 {
     int rc = 0;
@@ -1551,31 +1585,13 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
     if (!S_ISDIR(st->st_mode))
 	rc = fsmBackup(fsm);
 
+    /* Set permissions, but not for hard links  */
+    if (!rc && !(S_ISREG(st->st_mode) && st->st_nlink > 1))
+	rc = fsmSetmeta(fsm, ix, st);
+
     /* Construct final destination path (nsuffix is usually NULL) */
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
 	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
-
-    /* Set permissions, but not for hard links  */
-    if (!(S_ISREG(st->st_mode) && st->st_nlink > 1)) {
-	rpmfi fi = fsmGetFi(fsm);
-        /* Set file security context (if enabled) */
-        if (!rc && !getuid()) {
-            rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
-        }
-	if (!rc && !getuid()) {
-	    rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
-	}
-	if (!rc && !S_ISLNK(st->st_mode)) {
-	    rc = fsmChmod(fsm->path, st->st_mode);
-	}
-	/* Set file capabilities (if enabled) */
-	if (!rc && S_ISREG(st->st_mode) && !getuid()) {
-	    rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
-	}
-	if (!rc) {
-	    rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
-	}
-    }
 
     /* Rename temporary to final file name if needed. */
     if (!rc && dest != fsm->path) {
