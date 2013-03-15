@@ -645,6 +645,8 @@ package or when debugging this package.\
   export RPM_BUILD_ROOT}\
   %{?_javaclasspath:CLASSPATH=\"%{_javaclasspath}\"\
   export CLASSPATH}\
+  PKG_CONFIG_PATH=\"${PKG_CONFIG_PATH}:%{_libdir}/pkgconfig:%{_datadir}/pkgconfig\"\
+  export PKG_CONFIG_PATH\
   \
   %{verbose:set -x}%{!verbose:exec > /dev/null}\
   umask 022\
