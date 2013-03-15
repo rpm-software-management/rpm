@@ -230,7 +230,7 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, int type, rpmFileAction a);
+                               const struct stat *st, int type, rpmFileAction a);
 
 /** \ingroup rpmplugins
  * Call the fsm file post plugin hook
@@ -243,7 +243,7 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, int type, rpmFileAction a, int res);
+                                const struct stat *st, int type, rpmFileAction a, int res);
 
 #ifdef __cplusplus
 }

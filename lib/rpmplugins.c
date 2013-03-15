@@ -316,9 +316,9 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
 }
 
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, int type, rpmFileAction a)
+                               const struct stat *st, int type, rpmFileAction a)
 {
-    rpmRC (*hookFunc)(const char*, mode_t, int, rpmFileAction);
+    rpmRC (*hookFunc)(const char*, const struct stat *, int, rpmFileAction);
     int i;
     rpmRC rc = RPMRC_OK;
     const char *name = NULL;
@@ -326,7 +326,7 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
     for (i = 0; i < plugins->count; i++) {
 	name = plugins->names[i];
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_FSM_FILE_PRE);
-	if (hookFunc(path, file_mode, type, a) == RPMRC_FAIL)
+	if (hookFunc(path, st, type, a) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 
@@ -334,9 +334,9 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
 }
 
 rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, int type, rpmFileAction a, int res)
+                                const struct stat *st, int type, rpmFileAction a, int res)
 {
-    rpmRC (*hookFunc)(const char*, mode_t, int, rpmFileAction, int);
+    rpmRC (*hookFunc)(const char*, const struct stat *, int, rpmFileAction, int);
     int i;
     rpmRC rc = RPMRC_OK;
     const char *name = NULL;
@@ -344,7 +344,7 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
     for (i = 0; i < plugins->count; i++) {
 	name = plugins->names[i];
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_FSM_FILE_POST);
-	if (hookFunc(path, file_mode, type, a, res) == RPMRC_FAIL)
+	if (hookFunc(path, st, type, a, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
     }
 
