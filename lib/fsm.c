@@ -1575,7 +1575,6 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
 static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
 {
     int rc = 0;
-    char *dest = fsm->path;
 
     /* XXX Special case /dev/log, which shouldn't be packaged anyways */
     if (S_ISSOCK(st->st_mode) && IS_DEV_LOG(fsm->path))
@@ -1585,21 +1584,24 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
     if (!S_ISDIR(st->st_mode))
 	rc = fsmBackup(fsm);
 
-    /* Construct final destination path (nsuffix is usually NULL) */
-    if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
-	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
+    if (!rc) {
+	char *dest = fsm->path;
+	/* Construct final destination path (nsuffix is usually NULL) */
+	if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
+	    dest = fsmFsPath(fsm, 0, fsm->nsuffix);
 
-    /* Rename temporary to final file name if needed. */
-    if (!rc && dest != fsm->path) {
-	rc = fsmRename(fsm->path, dest, fsm->mapFlags);
-	if (!rc && fsm->nsuffix) {
-	    char * opath = fsmFsPath(fsm, 0, NULL);
-	    rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
-		   opath, dest);
-	    free(opath);
+	/* Rename temporary to final file name if needed. */
+	if (dest != fsm->path) {
+	    rc = fsmRename(fsm->path, dest, fsm->mapFlags);
+	    if (!rc && fsm->nsuffix) {
+		char * opath = fsmFsPath(fsm, 0, NULL);
+		rpmlog(RPMLOG_WARNING, _("%s created as %s\n"),
+		       opath, dest);
+		free(opath);
+	    }
+	    free(fsm->path);
+	    fsm->path = dest;
 	}
-	free(fsm->path);
-	fsm->path = dest;
     }
 
     if (rc && fsm->failedFile && *fsm->failedFile == NULL) {
