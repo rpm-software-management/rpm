@@ -948,9 +948,9 @@ static Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
  * @param filespec
  * @param usestate	take file state into account?
  * @retval matches
- * @return		0 on success, 1 on not found, -2 on error
+ * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
+static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 			   int usestate, dbiIndexSet * matches)
 {
     char * dirName = NULL;
@@ -959,7 +959,7 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     fingerPrint * fp1 = NULL;
     dbiIndexSet allMatches = NULL;
     unsigned int i;
-    int rc = -2; /* assume error */
+    rpmRC rc = RPMRC_FAIL; /* assume error */
 
     *matches = NULL;
     if (filespec == NULL) return rc; /* nothing alloced yet */
@@ -1048,9 +1048,9 @@ static int rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
     if ((*matches)->count == 0) {
 	*matches = dbiIndexSetFree(*matches);
-	rc = 1;
+	rc = RPMRC_NOTFOUND;
     } else {
-	rc = 0;
+	rc = RPMRC_OK;
     }
 
 exit:
