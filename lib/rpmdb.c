@@ -1110,11 +1110,13 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 
     rc = dbiCursorGetToSet(dbc, name, strlen(name), matches);
 
-    if (rc != 0) {
-	return (rc == RPMRC_NOTFOUND) ? RPMRC_NOTFOUND : RPMRC_FAIL;
-    } else if (epoch < 0 && version == NULL && release == NULL && arch == NULL) {
-	return RPMRC_OK;
-    }
+    /* No matches on the name, anything else wont match either */
+    if (rc != RPMRC_OK)
+	goto exit;
+    
+    /* If we got matches on name and nothing else was specified, we're done */
+    if (epoch < 0 && version == NULL && release == NULL && arch == NULL)
+	goto exit;
 
     /* Make sure the version and release match. */
     for (i = 0; i < dbiIndexSetCount(*matches); i++) {
