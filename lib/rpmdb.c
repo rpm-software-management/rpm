@@ -484,13 +484,14 @@ static dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
     return NULL;
 }
 
-static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
+static rpmRC dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 			     dbiIndexSet *set)
 {
-    int rc = EINVAL;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     if (dbc != NULL && set != NULL) {
 	dbiIndex dbi = dbiCursorIndex(dbc);
 	int cflags = DB_NEXT;
+	int dbrc;
 	DBT data, key;
 	memset(&data, 0, sizeof(data));
 	memset(&key, 0, sizeof(key));
@@ -501,9 +502,9 @@ static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 	    cflags = DB_SET;
 	}
 
-	rc = dbiCursorGet(dbc, &key, &data, cflags);
+	dbrc = dbiCursorGet(dbc, &key, &data, cflags);
 
-	if (rc == 0) {
+	if (dbrc == 0) {
 	    dbiIndexSet newset = NULL;
 	    dbt2set(dbi, &data, &newset);
 	    if (*set == NULL) {
@@ -513,19 +514,22 @@ static int dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 			     sizeof(*(newset->recs)), 0);
 		dbiIndexSetFree(newset);
 	    }
-	} else if (rc != DB_NOTFOUND) {
+	    rc = RPMRC_OK;
+	} else if (dbrc == DB_NOTFOUND) {
+	    rc = RPMRC_NOTFOUND;
+	} else {
 	    rpmlog(RPMLOG_ERR,
 		   _("error(%d) getting \"%s\" records from %s index: %s\n"),
-		   rc, keyp ? keyp : "???", dbiName(dbi), db_strerror(rc));
+		   dbrc, keyp ? keyp : "???", dbiName(dbi), db_strerror(dbrc));
 	}
     }
     return rc;
 }
 
-static int dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
+static rpmRC dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
 		       dbiIndexSet *set)
 {
-    int rc = EINVAL;
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
     if (dbi != NULL && keyp != NULL) {
 	dbiCursor dbc = dbiCursorInit(dbi, 0);
 
@@ -1061,23 +1065,23 @@ exit:
 
 int rpmdbCountPackages(rpmdb db, const char * name)
 {
-    int rc = -1;
+    int count = -1;
     dbiIndex dbi = NULL;
 
     if (name != NULL && indexOpen(db, RPMDBI_NAME, 0, &dbi) == 0) {
 	dbiIndexSet matches = NULL;
 
-	rc = dbiGetToSet(dbi, name, strlen(name), &matches);
+	rpmRC rc = dbiGetToSet(dbi, name, strlen(name), &matches);
 
-	if (rc == 0) {
-	    rc = dbiIndexSetCount(matches);
+	if (rc == RPMRC_OK) {
+	    count = dbiIndexSetCount(matches);
 	} else {
-	    rc = (rc == DB_NOTFOUND) ? 0 : -1;
+	    count = (rc == RPMRC_NOTFOUND) ? 0 : -1;
 	}
 	dbiIndexSetFree(matches);
     }
 
-    return rc;
+    return count;
 }
 
 /**
@@ -1101,13 +1105,13 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
 		dbiIndexSet * matches)
 {
     unsigned int gotMatches = 0;
-    int rc;
+    rpmRC rc;
     unsigned int i;
 
     rc = dbiCursorGetToSet(dbc, name, strlen(name), matches);
 
     if (rc != 0) {
-	return (rc == DB_NOTFOUND) ? RPMRC_NOTFOUND : RPMRC_FAIL;
+	return (rc == RPMRC_NOTFOUND) ? RPMRC_NOTFOUND : RPMRC_FAIL;
     } else if (epoch < 0 && version == NULL && release == NULL && arch == NULL) {
 	return RPMRC_OK;
     }
@@ -1973,7 +1977,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 
     rc = indexOpen(mi->mi_db, mi->mi_rpmtag, 0, &dbi);
 
-    if (rc == 0 && dbiGetToSet(dbi, keyp, keylen, &set) == 0) {
+    if (rc == 0 && dbiGetToSet(dbi, keyp, keylen, &set) == RPMRC_OK) {
 	if (mi->mi_set == NULL) {
 	    mi->mi_set = set;
 	} else {
@@ -2120,10 +2124,10 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
 
 	    do {
 		rc = dbiCursorGetToSet(dbc, NULL, 0, &set);
-	    } while (rc == 0);
+	    } while (rc == RPMRC_OK);
 
 	    /* If we got some results, not found is not an error */
-	    if (rc == DB_NOTFOUND && set != NULL)
+	    if (rc == RPMRC_NOTFOUND && set != NULL)
 		rc = 0;
 
 	    dbiCursorFree(dbc);
