@@ -52,6 +52,9 @@
 static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
+static int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+		    unsigned char *hdrBlob, unsigned int hdrLen);
+static int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
 
 static int buildIndexes(rpmdb db)
 {
@@ -1185,7 +1188,6 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
-	sigset_t signalMask;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
 	unsigned int hdrLen = 0;
 	unsigned char *hdrBlob = headerExport(mi->mi_h, &hdrLen);
@@ -1204,23 +1206,18 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	}
 
 	if (hdrBlob != NULL && rpmrc != RPMRC_FAIL) {
-	    DBT key, data;
-	    memset(&key, 0, sizeof(key));
-	    memset(&data, 0, sizeof(data));
-	    key.data = (void *) &mi->mi_prevoffset;
-	    key.size = sizeof(mi->mi_prevoffset);
-	    data.data = hdrBlob;
-	    data.size = hdrLen;
+	    sigset_t signalMask;
 
-	    (void) blockSignals(&signalMask);
-	    rc = dbiCursorPut(mi->mi_dbc, &key, &data, DB_KEYLAST);
+	    blockSignals(&signalMask);
+	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
+			  hdrBlob, hdrLen);
+	    unblockSignals(&signalMask);
+
 	    if (rc) {
 		rpmlog(RPMLOG_ERR,
 			_("error(%d) storing record #%d into %s\n"),
 			rc, mi->mi_prevoffset, dbiName(dbi));
 	    }
-	    dbiSync(dbi, 0);
-	    (void) unblockSignals(&signalMask);
 	}
 	free(hdrBlob);
     }
@@ -2251,6 +2248,21 @@ static int updatePackages(dbiIndex dbi, dbiCursor cursor,
     return rc;
 }
 
+static int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+		    unsigned char *hdrBlob, unsigned int hdrLen)
+{
+    DBT hdr;
+    memset(&hdr, 0, sizeof(hdr));
+    hdr.data = hdrBlob;
+    hdr.size = hdrLen;
+    return updatePackages(dbi, dbc, hdrNum, &hdr);
+}
+
+static int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
+{
+    return updatePackages(dbi, dbc, hdrNum, NULL);
+}
+
 static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = 0 };
@@ -2372,7 +2384,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	return 1;
 
     /* Remove header from primary index */
-    ret = updatePackages(dbi, NULL, hdrNum, NULL);
+    ret = pkgdbDel(dbi, NULL, hdrNum);
 
     /* Remove associated data from secondary indexes */
     if (ret == 0) {
@@ -2573,22 +2585,18 @@ exit:
 
 int rpmdbAdd(rpmdb db, Header h)
 {
-    DBT hdr;
     sigset_t signalMask;
     dbiIndex dbi = NULL;
     unsigned int hdrNum = 0;
+    unsigned int hdrLen = 0;
+    unsigned char *hdrBlob = NULL;
     int ret = 0;
-    int hdrOk;
 
     if (db == NULL)
 	return 0;
 
-    memset(&hdr, 0, sizeof(hdr));
-
-    hdr.data = headerExport(h, &hdr.size);
-    hdrOk = (hdr.data != NULL && hdr.size > 0);
-    
-    if (!hdrOk) {
+    hdrBlob = headerExport(h, &hdrLen);
+    if (hdrBlob == NULL || hdrLen == 0) {
 	ret = -1;
 	goto exit;
     }
@@ -2602,7 +2610,7 @@ int rpmdbAdd(rpmdb db, Header h)
     hdrNum = pkgInstance(dbi, 1);
 
     /* Add header to primary index */
-    ret = updatePackages(dbi, NULL, hdrNum, &hdr);
+    ret = pkgdbPut(dbi, NULL, hdrNum, hdrBlob, hdrLen);
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
@@ -2626,7 +2634,7 @@ int rpmdbAdd(rpmdb db, Header h)
     }
 
 exit:
-    free(hdr.data);
+    free(hdrBlob);
     (void) unblockSignals(&signalMask);
 
     return ret;
