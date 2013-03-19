@@ -374,8 +374,7 @@ static rpmRC dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 	    if (*set == NULL) {
 		*set = newset;
 	    } else {
-		dbiIndexSetAppend(*set, newset->recs, newset->count,
-			     sizeof(*(newset->recs)), 0);
+		dbiIndexSetAppendSet(*set, newset, 0);
 		dbiIndexSetFree(newset);
 	    }
 	    rc = RPMRC_OK;
@@ -1837,10 +1836,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 	if (mi->mi_set == NULL) {
 	    mi->mi_set = set;
 	} else {
-	    dbiIndexSetGrow(mi->mi_set, set->count);
-	    memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
-		    set->count * sizeof(*(mi->mi_set->recs)));
-	    mi->mi_set->count += set->count;
+	    dbiIndexSetAppendSet(mi->mi_set, set, 0);
 	    dbiIndexSetFree(set);
 	}
 	rc = 0;

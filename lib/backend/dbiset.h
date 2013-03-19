@@ -32,6 +32,10 @@ void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs);
 RPM_GNUC_INTERNAL
 void dbiIndexSetSort(dbiIndexSet set);
 
+/* Append an index set to another */
+RPM_GNUC_INTERNAL
+int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
+
 /**
  * Append element(s) to set of index database items.
  * @param set		set of index database items

@@ -52,6 +52,21 @@ void dbiIndexSetSort(dbiIndexSet set)
     }
 }
 
+int dbiIndexSetAppendSet(dbiIndexSet dest, dbiIndexSet src, int sortset)
+{
+    if (dest == NULL || src == NULL || src->count == 0)
+	return 1;
+
+    dbiIndexSetGrow(dest, src->count);
+    memcpy(dest->recs + dest->count,
+	   src->recs, src->count * sizeof(*src->recs));
+    dest->count += src->count;
+
+    if (sortset && dest->count > 1)
+	qsort(dest->recs, dest->count, sizeof(*(dest->recs)), hdrNumCmp);
+    return 0;
+}
+
 int dbiIndexSetAppend(dbiIndexSet set, const void * recs,
 	int nrecs, size_t recsize, int sortset)
 {
