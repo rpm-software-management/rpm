@@ -2357,10 +2357,10 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	free(nevra);
     }
 
-    (void) blockSignals(&signalMask);
-
     if (pkgdbOpen(db, 0, &dbi))
 	return 1;
+
+    (void) blockSignals(&signalMask);
 
     /* Remove header from primary index */
     ret = pkgdbDel(dbi, NULL, hdrNum);
@@ -2580,12 +2580,12 @@ int rpmdbAdd(rpmdb db, Header h)
 	goto exit;
     }
 
-    (void) blockSignals(&signalMask);
-
     ret = pkgdbOpen(db, 0, &dbi);
     if (ret)
 	goto exit;
 	
+    (void) blockSignals(&signalMask);
+
     hdrNum = pkgInstance(dbi, 1);
 
     /* Add header to primary index */
@@ -2603,6 +2603,8 @@ int rpmdbAdd(rpmdb db, Header h)
 	}
     }
 
+    (void) unblockSignals(&signalMask);
+
     /* If everything ok, mark header as installed now */
     if (ret == 0) {
 	headerSetInstance(h, hdrNum);
@@ -2614,7 +2616,6 @@ int rpmdbAdd(rpmdb db, Header h)
 
 exit:
     free(hdrBlob);
-    (void) unblockSignals(&signalMask);
 
     return ret;
 }
