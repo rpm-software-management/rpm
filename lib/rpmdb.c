@@ -2201,11 +2201,12 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 }
 
 /* Update primary Packages index. NULL hdr means remove */
-static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
+static int updatePackages(dbiIndex dbi, dbiCursor cursor,
+			  unsigned int hdrNum, DBT *hdr)
 {
     union _dbswap mi_offset;
     int rc = 0;
-    dbiCursor dbc;
+    dbiCursor dbc = cursor;;
     DBT key;
 
     if (dbi == NULL || hdrNum == 0)
@@ -2213,7 +2214,8 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 
     memset(&key, 0, sizeof(key));
 
-    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
+    if (dbc == NULL)
+	dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
 
     mi_offset.ui = hdrNum;
     if (dbiByteSwapped(dbi) == 1)
@@ -2239,7 +2241,9 @@ static int updatePackages(dbiIndex dbi, unsigned int hdrNum, DBT *hdr)
 	    rc = dbiCursorDel(dbc, &key, &data, 0);
     }
 
-    dbiCursorFree(dbc);
+    /* only free the cursor if we created it here */
+    if (dbc != cursor)
+	dbiCursorFree(dbc);
     dbiSync(dbi, 0);
 
     return rc;
@@ -2366,7 +2370,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 	return 1;
 
     /* Remove header from primary index */
-    ret = updatePackages(dbi, hdrNum, NULL);
+    ret = updatePackages(dbi, NULL, hdrNum, NULL);
 
     /* Remove associated data from secondary indexes */
     if (ret == 0) {
@@ -2596,7 +2600,7 @@ int rpmdbAdd(rpmdb db, Header h)
     hdrNum = pkgInstance(dbi, 1);
 
     /* Add header to primary index */
-    ret = updatePackages(dbi, hdrNum, &hdr);
+    ret = updatePackages(dbi, NULL, hdrNum, &hdr);
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
