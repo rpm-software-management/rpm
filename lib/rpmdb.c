@@ -389,7 +389,7 @@ static rpmRC dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
-static rpmRC dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
+static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 		       dbiIndexSet *set)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
@@ -852,7 +852,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
     if (baseName == NULL)
 	goto exit;
 
-    rc = dbiGetToSet(dbi, baseName, 0, &allMatches);
+    rc = indexGet(dbi, baseName, 0, &allMatches);
 
     if (rc || allMatches == NULL) goto exit;
 
@@ -943,7 +943,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
     if (name != NULL && indexOpen(db, RPMDBI_NAME, 0, &dbi) == 0) {
 	dbiIndexSet matches = NULL;
 
-	rpmRC rc = dbiGetToSet(dbi, name, strlen(name), &matches);
+	rpmRC rc = indexGet(dbi, name, strlen(name), &matches);
 
 	if (rc == RPMRC_OK) {
 	    count = dbiIndexSetCount(matches);
@@ -980,7 +980,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
     rpmRC rc;
     unsigned int i;
 
-    rc = dbiGetToSet(dbi, name, strlen(name), matches);
+    rc = indexGet(dbi, name, strlen(name), matches);
 
     /* No matches on the name, anything else wont match either */
     if (rc != RPMRC_OK)
@@ -1838,7 +1838,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 
     rc = indexOpen(mi->mi_db, mi->mi_rpmtag, 0, &dbi);
 
-    if (rc == 0 && dbiGetToSet(dbi, keyp, keylen, &set) == RPMRC_OK) {
+    if (rc == 0 && indexGet(dbi, keyp, keylen, &set) == RPMRC_OK) {
 	if (mi->mi_set == NULL) {
 	    mi->mi_set = set;
 	} else {
@@ -1974,11 +1974,11 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
             } else if (rpmtag == RPMDBI_INSTFILENAMES) {
                 rc = rpmdbFindByFile(db, dbi, keyp, 1, &set);
             } else {
-		rc = dbiGetToSet(dbi, keyp, keylen, &set);
+		rc = indexGet(dbi, keyp, keylen, &set);
 	    }
 	} else {
             /* get all entries from index */
-	    rc = dbiGetToSet(dbi, NULL, 0, &set);
+	    rc = indexGet(dbi, NULL, 0, &set);
         }
 
 	if (rc)	{	/* error/not found */
