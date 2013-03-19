@@ -950,7 +950,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
 /**
  * Attempt partial matches on name[-version[-release]][.arch] strings.
  * @param db		rpmdb handle
- * @param dbc		index database cursor
+ * @param dbi		index database
  * @param name		package name
  * @param epoch 	package epoch (-1 for any epoch)
  * @param version	package version (can be a pattern)
@@ -959,7 +959,7 @@ int rpmdbCountPackages(rpmdb db, const char * name)
  * @retval matches	set of header instances that match
  * @return 		RPMRC_OK on match, RPMRC_NOMATCH or RPMRC_FAIL
  */
-static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
+static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
 		const char * name,
 		int64_t epoch,
 		const char * version,
@@ -971,7 +971,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiCursor dbc,
     rpmRC rc;
     unsigned int i;
 
-    rc = dbiCursorGetToSet(dbc, name, strlen(name), matches);
+    rc = dbiGetToSet(dbi, name, strlen(name), matches);
 
     /* No matches on the name, anything else wont match either */
     if (rc != RPMRC_OK)
@@ -1065,16 +1065,14 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     char c;
     int brackets;
     rpmRC rc;
-    dbiCursor dbc;
 
     if (arglen == 0) return RPMRC_NOTFOUND;
 
     strncpy(localarg, arg, arglen);
     localarg[arglen] = '\0';
 
-    dbc = dbiCursorInit(dbi, 0);
     /* did they give us just a name? */
-    rc = dbiFindMatches(db, dbc, localarg, -1, NULL, NULL, arch, matches);
+    rc = dbiFindMatches(db, dbi, localarg, -1, NULL, NULL, arch, matches);
     if (rc != RPMRC_NOTFOUND)
 	goto exit;
 
@@ -1109,7 +1107,7 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     *s = '\0';
 
     epoch = splitEpoch(s + 1, &version);
-    rc = dbiFindMatches(db, dbc, localarg, epoch, version, NULL, arch, matches);
+    rc = dbiFindMatches(db, dbi, localarg, epoch, version, NULL, arch, matches);
     if (rc != RPMRC_NOTFOUND) goto exit;
 
     /* FIX: double indirection */
@@ -1143,9 +1141,8 @@ static rpmRC dbiFindByLabelArch(rpmdb db, dbiIndex dbi,
     *s = '\0';
    	/* FIX: *matches may be NULL. */
     epoch = splitEpoch(s + 1, &version);
-    rc = dbiFindMatches(db, dbc, localarg, epoch, version, release, arch, matches);
+    rc = dbiFindMatches(db, dbi, localarg, epoch, version, release, arch, matches);
 exit:
-    dbiCursorFree(dbc);
     return rc;
 }
 
