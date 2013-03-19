@@ -437,8 +437,6 @@ typedef struct miRE_s {
 
 struct rpmdbMatchIterator_s {
     rpmdbMatchIterator	mi_next;
-    void *		mi_keyp;
-    size_t		mi_keylen;
     rpmdb		mi_db;
     rpmDbiTagVal	mi_rpmtag;
     dbiIndexSet		mi_set;
@@ -448,6 +446,7 @@ struct rpmdbMatchIterator_s {
     int			mi_sorted;
     int			mi_cflags;
     int			mi_modified;
+    unsigned int	mi_keyoffset;	/* header instance (native endian) */
     unsigned int	mi_prevoffset;	/* header instance (native endian) */
     unsigned int	mi_offset;	/* header instance (native endian) */
     unsigned int	mi_filenum;	/* tag element (native endian) */
@@ -1265,7 +1264,6 @@ rpmdbMatchIterator rpmdbFreeIterator(rpmdbMatchIterator mi)
     mi->mi_re = _free(mi->mi_re);
 
     mi->mi_set = dbiIndexSetFree(mi->mi_set);
-    mi->mi_keyp = _free(mi->mi_keyp);
     rpmdbClose(mi->mi_db);
     mi->mi_ts = rpmtsFree(mi->mi_ts);
 
@@ -1674,9 +1672,6 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     dbiIndex dbi = NULL;
     unsigned char * uh;
     unsigned int uhlen;
-    DBT key, data;
-    void * keyp;
-    size_t keylen;
     int rc;
     headerImportFlags importFlags = HEADERIMPORT_FAST;
 
@@ -1698,9 +1693,6 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
     if (mi->mi_dbc == NULL)
 	mi->mi_dbc = dbiCursorInit(dbi, mi->mi_cflags);
 
-    memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
-
 top:
     uh = NULL;
     uhlen = 0;
@@ -1712,36 +1704,8 @@ top:
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	} else {
-	    union _dbswap mi_offset;
-
-	    key.data = keyp = (void *)mi->mi_keyp;
-	    key.size = keylen = mi->mi_keylen;
-	    data.data = uh;
-	    data.size = uhlen;
-#if !defined(_USE_COPY_LOAD)
-	    data.flags |= DB_DBT_MALLOC;
-#endif
-	    rc = dbiCursorGet(mi->mi_dbc, &key, &data,
-			      (key.data == NULL ? DB_NEXT : DB_SET));
-	    data.flags = 0;
-	    keyp = key.data;
-	    keylen = key.size;
-	    uh = data.data;
-	    uhlen = data.size;
-
-	    /*
-	     * If we got the next key, save the header instance number.
-	     *
-	     * Instance 0 (i.e. mi->mi_setx == 0) is the
-	     * largest header instance in the database, and should be
-	     * skipped.
-	     */
-	    if (keyp && mi->mi_setx && rc == 0) {
-		memcpy(&mi_offset, keyp, sizeof(mi_offset.ui));
-		if (dbiByteSwapped(dbi) == 1)
-		    _DBSWAP(mi_offset);
-		mi->mi_offset = mi_offset.ui;
-	    }
+	    rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_keyoffset,
+			  &uh, &uhlen, &mi->mi_offset);
 
 	    /* Terminate on error or end of keys */
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
@@ -1789,7 +1753,7 @@ top:
      */
     if (mireSkip(mi)) {
 	/* XXX hack, can't restart with Packages locked on single instance. */
-	if (mi->mi_set || mi->mi_keyp == NULL)
+	if (mi->mi_set || mi->mi_keyoffset == 0)
 	    goto top;
 	return NULL;
     }
@@ -1884,8 +1848,6 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
 	return NULL;
 
     mi = xcalloc(1, sizeof(*mi));
-    mi->mi_keyp = NULL;
-    mi->mi_keylen = 0;
     mi->mi_set = NULL;
     mi->mi_db = rpmdbLink(db);
     mi->mi_rpmtag = dbitag;
@@ -1896,6 +1858,7 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
     mi->mi_sorted = 0;
     mi->mi_cflags = 0;
     mi->mi_modified = 0;
+    mi->mi_keyoffset = 0;
     mi->mi_prevoffset = 0;
     mi->mi_offset = 0;
     mi->mi_filenum = 0;
@@ -1921,16 +1884,10 @@ static rpmdbMatchIterator pkgdbIterInit(rpmdb db,
 
     if (pkgdbOpen(db, 0, &pkgs) == 0) {
 	mi = rpmdbNewIterator(db, dbtag);
-	/* Copy the retrieval key, byte-swap header instance if necessary. */
+	/* Copy the retrieval key. */
 	if (keyp) {
-	    union _dbswap *k = xmalloc(sizeof(*k));;
-
-	    assert(keylen == sizeof(k->ui));	/* xxx programmer error */
-	    memcpy(k, keyp, keylen);
-	    if (dbiByteSwapped(pkgs) == 1)
-		_DBSWAP(*k);
-	    mi->mi_keyp = k;
-	    mi->mi_keylen = keylen;
+	    assert(keylen == sizeof(mi->mi_keyoffset)); /* XXX eliminate */
+	    memcpy(&mi->mi_keyoffset, keyp, keylen);
 	}
     }
     return mi;
@@ -1975,16 +1932,7 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
 	    mi = rpmdbNewIterator(db, dbtag);
 	    mi->mi_set = set;
 
-	    /* Copy the retrieval key */
 	    if (keyp) {
-		if (keylen == 0)
-		    keylen = strlen(keyp);
-		char *k = xmalloc(keylen + 1);
-		memcpy(k, keyp, keylen);
-		k[keylen] = '\0';	/* XXX assumes strings */
-		mi->mi_keyp = k;
-		mi->mi_keylen = keylen;
-
 		rpmdbSortIterator(mi);
 	    }
 	}
