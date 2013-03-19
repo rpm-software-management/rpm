@@ -1185,22 +1185,17 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	return 0;
 
     if (dbi && mi->mi_dbc && mi->mi_modified && mi->mi_prevoffset) {
-	DBT key, data;
 	sigset_t signalMask;
 	rpmRC rpmrc = RPMRC_NOTFOUND;
-
-	memset(&key, 0, sizeof(key));
-	memset(&data, 0, sizeof(data));
-	key.data = (void *) &mi->mi_prevoffset;
-	key.size = sizeof(mi->mi_prevoffset);
-	data.data = headerExport(mi->mi_h, &data.size);
+	unsigned int hdrLen = 0;
+	unsigned char *hdrBlob = headerExport(mi->mi_h, &hdrLen);
 
 	/* Check header digest/signature on blob export (if requested). */
 	if (mi->mi_hdrchk && mi->mi_ts) {
 	    char * msg = NULL;
 	    int lvl;
 
-	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, data.data, data.size, &msg);
+	    rpmrc = (*mi->mi_hdrchk) (mi->mi_ts, hdrBlob, hdrLen, &msg);
 	    lvl = (rpmrc == RPMRC_FAIL ? RPMLOG_ERR : RPMLOG_DEBUG);
 	    rpmlog(lvl, "%s h#%8u %s",
 		(rpmrc == RPMRC_FAIL ? _("miFreeHeader: skipping") : "write"),
@@ -1208,7 +1203,15 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    msg = _free(msg);
 	}
 
-	if (data.data != NULL && rpmrc != RPMRC_FAIL) {
+	if (hdrBlob != NULL && rpmrc != RPMRC_FAIL) {
+	    DBT key, data;
+	    memset(&key, 0, sizeof(key));
+	    memset(&data, 0, sizeof(data));
+	    key.data = (void *) &mi->mi_prevoffset;
+	    key.size = sizeof(mi->mi_prevoffset);
+	    data.data = hdrBlob;
+	    data.size = hdrLen;
+
 	    (void) blockSignals(&signalMask);
 	    rc = dbiCursorPut(mi->mi_dbc, &key, &data, DB_KEYLAST);
 	    if (rc) {
@@ -1219,8 +1222,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 	    dbiSync(dbi, 0);
 	    (void) unblockSignals(&signalMask);
 	}
-	data.data = _free(data.data);
-	data.size = 0;
+	free(hdrBlob);
     }
 
     mi->mi_h = headerFree(mi->mi_h);
