@@ -393,16 +393,25 @@ static rpmRC dbiGetToSet(dbiIndex dbi, const char *keyp, size_t keylen,
 		       dbiIndexSet *set)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
-    if (dbi != NULL && keyp != NULL) {
+    if (dbi != NULL) {
 	dbiCursor dbc = dbiCursorInit(dbi, 0);
 
-	if (keylen == 0) {
-	    keylen = strlen(keyp);
-	    if (keylen == 0)
-		keylen++; /* XXX "/" fixup */
-	}
+	if (keyp) {
+	    if (keylen == 0) {
+		keylen = strlen(keyp);
+		if (keylen == 0)
+		    keylen++; /* XXX "/" fixup */
+	    }
+	    rc = dbiCursorGetToSet(dbc, keyp, keylen, set);
+	} else {
+	    do {
+		rc = dbiCursorGetToSet(dbc, NULL, 0, set);
+	    } while (rc == RPMRC_OK);
 
-	rc = dbiCursorGetToSet(dbc, keyp, keylen, set);
+	    /* If we got some results, not found is not an error */
+	    if (rc == RPMRC_NOTFOUND && set != NULL)
+		rc = RPMRC_OK;
+	}
 
 	dbiCursorFree(dbc);
     }
@@ -1969,17 +1978,7 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
 	    }
 	} else {
             /* get all entries from index */
-	    dbiCursor dbc = dbiCursorInit(dbi, 0);
-
-	    do {
-		rc = dbiCursorGetToSet(dbc, NULL, 0, &set);
-	    } while (rc == RPMRC_OK);
-
-	    /* If we got some results, not found is not an error */
-	    if (rc == RPMRC_NOTFOUND && set != NULL)
-		rc = 0;
-
-	    dbiCursorFree(dbc);
+	    rc = dbiGetToSet(dbi, NULL, 0, &set);
         }
 
 	if (rc)	{	/* error/not found */
