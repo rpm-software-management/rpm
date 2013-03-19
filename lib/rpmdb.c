@@ -241,7 +241,7 @@ union _dbswap {
  * Allocate in power of two sizes to avoid memory fragmentation, so
  * realloc is not always needed.
  */
-static inline void dbiGrowSet(dbiIndexSet set, unsigned int nrecs)
+static inline void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs)
 {
     size_t need = (set->count + nrecs) * sizeof(*(set->recs));
     size_t alloced = set->alloced ? set->alloced : 1 << 4;
@@ -279,7 +279,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
     }
 
     set = xcalloc(1, sizeof(*set));
-    dbiGrowSet(set, data->size / itype);
+    dbiIndexSetGrow(set, data->size / itype);
     set->count = data->size / itype;
 
     switch (itype) {
@@ -396,7 +396,7 @@ static int hdrNumCmp(const void * one, const void * two)
  * @param sortset	should resulting set be sorted?
  * @return		0 success, 1 failure (bad args)
  */
-static int dbiAppendSet(dbiIndexSet set, const void * recs,
+static int dbiIndexSetAppend(dbiIndexSet set, const void * recs,
 	int nrecs, size_t recsize, int sortset)
 {
     const char * rptr = recs;
@@ -406,7 +406,7 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
     if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
 	return 1;
 
-    dbiGrowSet(set, nrecs);
+    dbiIndexSetGrow(set, nrecs);
     memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
 
     while (nrecs-- > 0) {
@@ -430,7 +430,7 @@ static int dbiAppendSet(dbiIndexSet set, const void * recs,
  * @param sorted	array is already sorted?
  * @return		0 success, 1 failure (no items found)
  */
-static int dbiPruneSet(dbiIndexSet set, void * recs, int nrecs,
+static int dbiIndexSetPrune(dbiIndexSet set, void * recs, int nrecs,
 		size_t recsize, int sorted)
 {
     unsigned int from;
@@ -510,7 +510,7 @@ static rpmRC dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
 	    if (*set == NULL) {
 		*set = newset;
 	    } else {
-		dbiAppendSet(*set, newset->recs, newset->count,
+		dbiIndexSetAppend(*set, newset->recs, newset->count,
 			     sizeof(*(newset->recs)), 0);
 		dbiIndexSetFree(newset);
 	    }
@@ -1029,7 +1029,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 			.hdrNum = dbiIndexRecordOffset(allMatches, i),
 			.tagNum = dbiIndexRecordFileNumber(allMatches, i),
 		    };
-		    dbiAppendSet(*matches, &rec, 1, sizeof(rec), 0);
+		    dbiIndexSetAppend(*matches, &rec, 1, sizeof(rec), 0);
 		}
 	    }
 
@@ -1983,7 +1983,7 @@ int rpmdbExtendIterator(rpmdbMatchIterator mi,
 	if (mi->mi_set == NULL) {
 	    mi->mi_set = set;
 	} else {
-	    dbiGrowSet(mi->mi_set, set->count);
+	    dbiIndexSetGrow(mi->mi_set, set->count);
 	    memcpy(mi->mi_set->recs + mi->mi_set->count, set->recs,
 		    set->count * sizeof(*(mi->mi_set->recs)));
 	    mi->mi_set->count += set->count;
@@ -2028,7 +2028,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
 
     if (mi->mi_set == NULL)
 	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
-    (void) dbiAppendSet(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
+    (void) dbiIndexSetAppend(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
     return 0;
 }
 
@@ -2451,7 +2451,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    goto cont;
 	}
 
-	rc = dbiPruneSet(set, &rec, 1, sizeof(rec), 1);
+	rc = dbiIndexSetPrune(set, &rec, 1, sizeof(rec), 1);
 
 	/* If nothing was pruned, then don't bother updating. */
 	if (rc) {
@@ -2691,7 +2691,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	if (set == NULL)		/* not found or duplicate */
 	    set = xcalloc(1, sizeof(*set));
 
-	(void) dbiAppendSet(set, &rec, 1, sizeof(rec), 0);
+	(void) dbiIndexSetAppend(set, &rec, 1, sizeof(rec), 0);
 
 	(void) set2dbt(dbi, &data, set);
 	rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
