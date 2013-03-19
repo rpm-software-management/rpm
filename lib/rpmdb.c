@@ -34,6 +34,7 @@
 #include "lib/rpmdb_internal.h"
 #include "lib/fprint.h"
 #include "lib/header_internal.h"	/* XXX for headerSetInstance() */
+#include "lib/backend/dbiset.h"
 #include "debug.h"
 
 #undef HASHTYPE
@@ -47,19 +48,6 @@
 #undef HASHTYPE
 #undef HTKEYTYPE
 #undef HTDATATYPE
-
-/* A single item from an index database (i.e. the "data returned"). */
-struct dbiIndexItem {
-    unsigned int hdrNum;		/*!< header instance in db */
-    unsigned int tagNum;		/*!< tag index in header */
-};
-
-/* Items retrieved from the index database.*/
-typedef struct _dbiIndexSet {
-    struct dbiIndexItem * recs;	/*!< array of records */
-    unsigned int count;			/*!< number of records */
-    size_t alloced;			/*!< alloced size */
-} * dbiIndexSet;
 
 static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
@@ -236,25 +224,6 @@ union _dbswap {
 \
   }
 
-/* 
- * Ensure sufficient memory for nrecs of new records in dbiIndexSet.
- * Allocate in power of two sizes to avoid memory fragmentation, so
- * realloc is not always needed.
- */
-static inline void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs)
-{
-    size_t need = (set->count + nrecs) * sizeof(*(set->recs));
-    size_t alloced = set->alloced ? set->alloced : 1 << 4;
-
-    while (alloced < need)
-	alloced <<= 1;
-
-    if (alloced != set->alloced) {
-	set->recs = xrealloc(set->recs, alloced);
-	set->alloced = alloced;
-    }
-}
-
 /**
  * Convert retrieved data to index set.
  * @param dbi		index database handle
@@ -378,110 +347,6 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     }
 
     return 0;
-}
-
-/* XXX assumes hdrNum is first int in dbiIndexItem */
-static int hdrNumCmp(const void * one, const void * two)
-{
-    const unsigned int * a = one, * b = two;
-    return (*a - *b);
-}
-
-/**
- * Append element(s) to set of index database items.
- * @param set		set of index database items
- * @param recs		array of items to append to set
- * @param nrecs		number of items
- * @param recsize	size of an array item
- * @param sortset	should resulting set be sorted?
- * @return		0 success, 1 failure (bad args)
- */
-static int dbiIndexSetAppend(dbiIndexSet set, const void * recs,
-	int nrecs, size_t recsize, int sortset)
-{
-    const char * rptr = recs;
-    size_t rlen = (recsize < sizeof(*(set->recs)))
-		? recsize : sizeof(*(set->recs));
-
-    if (set == NULL || recs == NULL || nrecs <= 0 || recsize == 0)
-	return 1;
-
-    dbiIndexSetGrow(set, nrecs);
-    memset(set->recs + set->count, 0, nrecs * sizeof(*(set->recs)));
-
-    while (nrecs-- > 0) {
-	memcpy(set->recs + set->count, rptr, rlen);
-	rptr += recsize;
-	set->count++;
-    }
-
-    if (sortset && set->count > 1)
-	qsort(set->recs, set->count, sizeof(*(set->recs)), hdrNumCmp);
-
-    return 0;
-}
-
-/**
- * Remove element(s) from set of index database items.
- * @param set		set of index database items
- * @param recs		array of items to remove from set
- * @param nrecs		number of items
- * @param recsize	size of an array item
- * @param sorted	array is already sorted?
- * @return		0 success, 1 failure (no items found)
- */
-static int dbiIndexSetPrune(dbiIndexSet set, void * recs, int nrecs,
-		size_t recsize, int sorted)
-{
-    unsigned int from;
-    unsigned int to = 0;
-    unsigned int num = set->count;
-    unsigned int numCopied = 0;
-
-    assert(set->count > 0);
-    if (nrecs > 1 && !sorted)
-	qsort(recs, nrecs, recsize, hdrNumCmp);
-
-    for (from = 0; from < num; from++) {
-	if (bsearch(&set->recs[from], recs, nrecs, recsize, hdrNumCmp)) {
-	    set->count--;
-	    continue;
-	}
-	if (from != to)
-	    set->recs[to] = set->recs[from]; /* structure assignment */
-	to++;
-	numCopied++;
-    }
-    return (numCopied == num);
-}
-
-/* Count items in index database set. */
-static unsigned int dbiIndexSetCount(dbiIndexSet set)
-{
-    return set->count;
-}
-
-/* Return record offset of header from element in index database set. */
-static unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
-{
-    return set->recs[recno].hdrNum;
-}
-
-/* Return file index from element in index database set. */
-static unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
-{
-    return set->recs[recno].tagNum;
-}
-
-/* Destroy set of index database items */
-static dbiIndexSet dbiIndexSetFree(dbiIndexSet set)
-{
-    if (set) {
-	free(set->recs);
-	memset(set, 0, sizeof(*set)); /* trash and burn */
-	free(set);
-    }
-    return NULL;
 }
 
 static rpmRC dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
@@ -1951,18 +1816,8 @@ top:
  */
 void rpmdbSortIterator(rpmdbMatchIterator mi)
 {
-    if (mi && mi->mi_set && mi->mi_set->recs && mi->mi_set->count > 0) {
-    /*
-     * mergesort is much (~10x with lots of identical basenames) faster
-     * than pure quicksort, but glibc uses msort_with_tmp() on stack.
-     */
-#if HAVE_MERGESORT
-	mergesort(mi->mi_set->recs, mi->mi_set->count,
-		sizeof(*mi->mi_set->recs), hdrNumCmp);
-#else
-	qsort(mi->mi_set->recs, mi->mi_set->count,
-		sizeof(*mi->mi_set->recs), hdrNumCmp);
-#endif
+    if (mi && mi->mi_set) {
+	dbiIndexSetSort(mi->mi_set);
 	mi->mi_sorted = 1;
     }
 }
