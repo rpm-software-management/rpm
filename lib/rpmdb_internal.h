@@ -148,17 +148,6 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums);
 RPM_GNUC_INTERNAL
 rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag);
 
-#ifndef __APPLE__
-/**
- *  * Mergesort, same arguments as qsort(2).
- *   */
-RPM_GNUC_INTERNAL
-int mergesort(void *base, size_t nmemb, size_t size,
-                int (*cmp) (const void *, const void *));
-#else
-/* mergesort is defined in stdlib.h on Mac OS X */
-#endif /* __APPLE__ */
-
 #ifdef __cplusplus
 }
 #endif
