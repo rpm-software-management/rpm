@@ -3,6 +3,14 @@
 #include "dbiset.h"
 #include "debug.h"
 
+dbiIndexSet dbiIndexSetNew(unsigned int sizehint)
+{
+    dbiIndexSet set = xcalloc(1, sizeof(*set));
+    if (sizehint > 0)
+	dbiIndexSetGrow(set, sizehint);
+    return set;
+}
+
 /* 
  * Ensure sufficient memory for nrecs of new records in dbiIndexSet.
  * Allocate in power of two sizes to avoid memory fragmentation, so

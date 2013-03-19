@@ -20,6 +20,10 @@ typedef struct dbiIndexSet_s {
 extern "C" {
 #endif
 
+/* Create an empty index set, optionally with sizehint reservation for recs */
+RPM_GNUC_INTERNAL
+dbiIndexSet dbiIndexSetNew(unsigned int sizehint);
+
 /* Reserve space for at least nrecs new records */
 RPM_GNUC_INTERNAL
 void dbiIndexSetGrow(dbiIndexSet set, unsigned int nrecs);

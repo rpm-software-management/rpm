@@ -247,8 +247,7 @@ static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
 	return 0;
     }
 
-    set = xcalloc(1, sizeof(*set));
-    dbiIndexSetGrow(set, data->size / itype);
+    set = dbiIndexSetNew(data->size / itype);
     set->count = data->size / itype;
 
     switch (itype) {
@@ -849,7 +848,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 
     if (rc || allMatches == NULL) goto exit;
 
-    *matches = xcalloc(1, sizeof(**matches));
+    *matches = dbiIndexSetNew(0);
     fpc = fpCacheCreate(allMatches->count, NULL);
     fpLookup(fpc, dirName, baseName, &fp1);
 
@@ -1882,7 +1881,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
 	return 1;
 
     if (mi->mi_set == NULL)
-	mi->mi_set = xcalloc(1, sizeof(*mi->mi_set));
+	mi->mi_set = dbiIndexSetNew(nHdrNums);
     (void) dbiIndexSetAppend(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
     return 0;
 }
@@ -2544,7 +2543,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	}
 
 	if (set == NULL)		/* not found or duplicate */
-	    set = xcalloc(1, sizeof(*set));
+	    set = dbiIndexSetNew(0);
 
 	(void) dbiIndexSetAppend(set, &rec, 1, sizeof(rec), 0);
 
