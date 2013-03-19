@@ -55,6 +55,9 @@ static rpmdb rpmdbUnlink(rpmdb db);
 static int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
 		    unsigned char *hdrBlob, unsigned int hdrLen);
 static int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
+static int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+		    unsigned char **hdrBlob, unsigned int *hdrLen,
+		    unsigned int *hdrOffset);
 
 static int buildIndexes(rpmdb db)
 {
@@ -1669,7 +1672,7 @@ static rpmRC miVerifyHeader(rpmdbMatchIterator mi, const void *uh, size_t uhlen)
 Header rpmdbNextIterator(rpmdbMatchIterator mi)
 {
     dbiIndex dbi = NULL;
-    void * uh;
+    unsigned char * uh;
     unsigned int uhlen;
     DBT key, data;
     void * keyp;
@@ -1703,19 +1706,13 @@ top:
     uhlen = 0;
 
     do {
-	union _dbswap mi_offset;
-
 	if (mi->mi_set) {
 	    if (!(mi->mi_setx < mi->mi_set->count))
 		return NULL;
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
-	    mi_offset.ui = mi->mi_offset;
-	    if (dbiByteSwapped(dbi) == 1)
-		_DBSWAP(mi_offset);
-	    keyp = &mi_offset;
-	    keylen = sizeof(mi_offset.ui);
 	} else {
+	    union _dbswap mi_offset;
 
 	    key.data = keyp = (void *)mi->mi_keyp;
 	    key.size = keylen = mi->mi_keylen;
@@ -1761,15 +1758,7 @@ top:
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
-	key.data = keyp;
-	key.size = keylen;
-#if !defined(_USE_COPY_LOAD)
-	data.flags |= DB_DBT_MALLOC;
-#endif
-	rc = dbiCursorGet(mi->mi_dbc, &key, &data, DB_SET);
-	data.flags = 0;
-	uh = data.data;
-	uhlen = data.size;
+	rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_offset, &uh, &uhlen, NULL);
 	if (rc)
 	    return NULL;
     }
@@ -2261,6 +2250,48 @@ static int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
 static int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
     return updatePackages(dbi, dbc, hdrNum, NULL);
+}
+
+static int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+		    unsigned char **hdrBlob, unsigned int *hdrLen,
+		    unsigned int *hdrOffset)
+{
+    DBT key, data;
+    union _dbswap mi_offset;
+    int rc = 0;
+
+    if (dbi == NULL || dbc == NULL)
+	return 1;
+
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+
+    if (hdrNum) {
+	mi_offset.ui = hdrNum;
+	if (dbiByteSwapped(dbi) == 1)
+	    _DBSWAP(mi_offset);
+	key.data = (void *) &mi_offset;
+	key.size = sizeof(mi_offset.ui);
+    }
+
+#if !defined(_USE_COPY_LOAD)
+    data.flags |= DB_DBT_MALLOC;
+#endif
+    rc = dbiCursorGet(dbc, &key, &data, hdrNum ? DB_SET : DB_NEXT);
+    if (rc == 0) {
+	if (hdrBlob)
+	    *hdrBlob = data.data;
+	if (hdrLen)
+	    *hdrLen = data.size;
+	if (hdrOffset) {
+	    memcpy(&mi_offset, key.data, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    *hdrOffset = mi_offset.ui;
+	}
+    }
+
+    return rc;
 }
 
 static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
