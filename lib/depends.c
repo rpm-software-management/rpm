@@ -47,6 +47,13 @@ const int rpmFLAGS = RPMSENSE_EQUAL;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+#define HASHTYPE conflictsCache
+#define HTKEYTYPE const char *
+#include "rpmhash.H"
+#include "rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+
 /**
  * Check for supported payload format in header.
  * @param h		header to check
@@ -668,6 +675,7 @@ int rpmtsCheck(rpmts ts)
     int closeatexit = 0;
     int rc = 0;
     depCache dcache = NULL;
+    conflictsCache confcache = NULL;
     
     (void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
@@ -682,6 +690,27 @@ int rpmtsCheck(rpmts ts)
     dcache = depCacheCreate(5001, rstrhash, strcmp,
 				     (depCacheFreeKey)rfree, NULL);
 
+    confcache = conflictsCacheCreate(257, rstrhash, strcmp,
+				     (depCacheFreeKey)rfree);
+    if (confcache) {
+	rpmdbIndexIterator ii = rpmdbIndexIteratorInit(rpmtsGetRdb(ts), RPMTAG_CONFLICTNAME);
+	if (ii) {
+	    char *key;
+	    size_t keylen;
+	    while ((rpmdbIndexIteratorNext(ii, (const void**)&key, &keylen)) == 0) {
+		char *k;
+		if (!key || keylen == 0 || key[0] != '/')
+		    continue;
+		k = rmalloc(keylen + 1);
+		memcpy(k, key, keylen);
+		k[keylen] = 0;
+		conflictsCacheAddEntry(confcache, k);
+	    }
+	    rpmdbIndexIteratorFree(ii);
+	}
+    }
+
+    
     /*
      * Look at all of the added packages and make sure their dependencies
      * are satisfied.
@@ -711,6 +740,17 @@ int rpmtsCheck(rpmts ts)
 
 	/* Check package name (not provides!) against installed obsoletes */
 	checkInstDeps(ts, dcache, p, RPMTAG_OBSOLETENAME, rpmteN(p));
+
+	/* Check filenames against installed conflicts */
+        if (conflictsCacheNumKeys(confcache)) {
+	    rpmfi fi = rpmfiInit(rpmteFI(p), 0);
+	    while (rpmfiNext(fi) >= 0) {
+		const char *fn = rpmfiFN(fi);
+		if (!conflictsCacheHasEntry(confcache, fn))
+		    continue;
+		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fn);
+	    }
+	}
     }
     rpmtsiFree(pi);
 
@@ -739,6 +779,7 @@ int rpmtsCheck(rpmts ts)
 
 exit:
     depCacheFree(dcache);
+    conflictsCacheFree(confcache);
 
     (void) rpmswExit(rpmtsOp(ts, RPMTS_OP_CHECK), 0);
 
