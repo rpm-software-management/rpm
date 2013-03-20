@@ -1,6 +1,6 @@
 #    rpmconflict.at: rpm file conflict tests
 
-AT_BANNER([RPM file conflicts])
+AT_BANNER([RPM implicit file conflicts])
 
 # ------------------------------
 # (Build and) install conflicting package (should fail)

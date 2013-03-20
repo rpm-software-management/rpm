@@ -159,6 +159,45 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 	deptest-two < 2.0 conflicts with (installed) deptest-one-1.0-1.noarch
 ])
 AT_CLEANUP
+
+# explicit file conflicts
+AT_SETUP([explicit file conflicts])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "cfls /opt/bar" \
+	  /data/SPECS/deptest.spec
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg two" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U --test \
+	"${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm \
+	"${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -e deptest-one
+# XXX FIXME: rpm's problem message for this case is higly bogus.
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -e deptest-two
+],
+[],
+[],
+[error: Failed dependencies:
+	/opt/bar conflicts with deptest-one-1.0-1.noarch
+error: Failed dependencies:
+	/opt/bar conflicts with (installed) deptest-one-1.0-1.noarch
+error: Failed dependencies:
+	/opt/bar conflicts with deptest-one-1.0-1.noarch
+])
+AT_CLEANUP
 # ------------------------------
 # 
 AT_SETUP([erase to break dependencies])
