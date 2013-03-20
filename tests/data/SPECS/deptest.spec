@@ -14,5 +14,10 @@ BuildArch:	noarch
 %description
 %{summary}
 
+%install
+mkdir -p %{buildroot}/opt/
+echo FOO > %{buildroot}/opt/bar
+
 %files
 %defattr(-,root,root,-)
+/opt/bar
