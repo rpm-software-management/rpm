@@ -575,23 +575,31 @@ retry:
 
     /* Pretrans dependencies can't be satisfied by added packages. */
     if (!(dsflags & RPMSENSE_PRETRANS)) {
-	rpmte match = rpmalSatisfiesDepend(tsmem->addedPackages, dep);
+	rpmte *matches = rpmalAllSatisfiesDepend(tsmem->addedPackages, dep);
+	int match = 0;
 
 	/*
 	 * Handle definitive matches within the added package set.
 	 * Self-obsoletes and -conflicts fall through here as we need to 
 	 * check for possible other matches in the rpmdb.
 	 */
-	if (match) {
+	for (rpmte *m = matches; m && *m; m++) {
 	    rpmTagVal dtag = rpmdsTagN(dep);
 	    /* Requires match, look no further */
-	    if (dtag == RPMTAG_REQUIRENAME)
-		goto exit;
+	    if (dtag == RPMTAG_REQUIRENAME) {
+		match = 1;
+		break;
+	    }
 
 	    /* Conflicts/obsoletes match on another package, look no further */
-	    if (rpmteDS(match, dtag) != dep)
-		goto exit;
+	    if (rpmteDS(*m, dtag) != dep) {
+		match = 1;
+		break;
+	    }
 	}
+	free(matches);
+	if (match)
+	    goto exit;
     }
 
     /* See if the rpmdb provides it */
