@@ -17,7 +17,7 @@ runroot rpmbuild --quiet -bb \
 	  /data/SPECS/deptest.spec
 
 runroot rpm -U --nodeps "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
-runroot rpm -Va
+runroot rpm -Va --nofiles
 ],
 [1],
 [Unsatisfied dependencies for deptest-one-1.0-1.noarch:
