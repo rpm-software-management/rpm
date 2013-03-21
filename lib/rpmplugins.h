@@ -57,13 +57,6 @@ typedef enum rpmScriptletExecutionFlow_e {
     RPMSCRIPTLET_EXEC    = 1 << 1
 } rpmScriptletExecutionFlow;
 
-/* indicates if a directory is part of rpm package or created by rpm itself */
-typedef enum rpmPluginDirType_e {
-    DIR_TYPE_NONE    = 0,
-    DIR_TYPE_NORMAL    = 1 << 0, 
-    DIR_TYPE_UNOWNED    = 1 << 1
-} rpmPluginDirType;
-
 typedef rpmFlags rpmPluginHook;
 
 /** \ingroup rpmfi
@@ -245,25 +238,23 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
  * @param plugins	plugins structure
  * @param path		file object path
  * @param file_mode	file object mode
- * @param type		file type, see rpmPluginDirType
- * @param action	fsm action code
+ * @param op		file operation + associated flags
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, int type, rpmFileAction a);
+                                mode_t file_mode, rpmFsmOp op);
 
 /** \ingroup rpmplugins
  * Call the fsm file post plugin hook
  * @param plugins	plugins structure
  * @param path		file object path
  * @param file_mode	file object mode
- * @param type		file type, see rpmPluginDirType
- * @param action	fsm action code
+ * @param op		file operation + associated flags
  * @param res		fsm result code
  * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
  */
 rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
-                                mode_t file_mode, int type, rpmFileAction a, int res);
+                                mode_t file_mode, rpmFsmOp op, int res);
 
 #ifdef __cplusplus
 }

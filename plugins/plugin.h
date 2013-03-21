@@ -32,6 +32,6 @@ rpmRC PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC(const char *path, int type);
 rpmRC PLUGINHOOK_SCRIPTLET_POST_FUNC(const char *s_name, int type, int res);
 
 /*per file plugin hooks */
-rpmRC PLUGINHOOK_FSM_FILE_PRE_FUNC(const char* path, mode_t file_mode, int type, rpmFileAction a);
-rpmRC PLUGINHOOK_FSM_FILE_POST_FUNC(const char* path, mode_t file_mode, int type, rpmFileAction a, int res);
+rpmRC PLUGINHOOK_FSM_FILE_PRE_FUNC(const char* path, mode_t file_mode, rpmFsmOp op);
+rpmRC PLUGINHOOK_FSM_FILE_POST_FUNC(const char* path, mode_t file_mode, rpmFsmOp op, int res);
 

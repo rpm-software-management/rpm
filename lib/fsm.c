@@ -1223,15 +1223,16 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle, rpmPlu
 	    } else if (rc == CPIOERR_ENOENT) {
 		*te = '\0';
 		mode_t mode = S_IFDIR | (_dirPerms & 07777);
+		rpmFsmOp op = (FA_CREATE|FAF_UNOWNED);
 
 		/* Run fsm file pre hook for all plugins */
-		rc = rpmpluginsCallFsmFilePre(plugins, dn, mode, DIR_TYPE_UNOWNED, FA_CREATE);
+		rc = rpmpluginsCallFsmFilePre(plugins, dn, mode, op);
 
 		if (!rc)
 		    rc = fsmMkdir(dn, mode);
 
 		/* Run fsm file post hook for all plugins */
-		rpmpluginsCallFsmFilePost(plugins, dn, mode, DIR_TYPE_UNOWNED, FA_CREATE, rc);
+		rpmpluginsCallFsmFilePost(plugins, dn, mode, op, rc);
 
 		if (!rc) {
 		    rc = fsmSetSELabel(sehandle, dn, dn, mode);
@@ -1713,7 +1714,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             break;
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action);
+	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path,
+				      fsm->sb.st_mode, fsm->action);
 	if (rc) {
 	    fsm->postpone = 1;
 	} else {
@@ -1807,7 +1809,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	}
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action, rc);
+	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path,
+				  fsm->sb.st_mode, fsm->action, rc);
 
     }
 
@@ -1848,7 +1851,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         rc = fsmInit(fsm);
 
 	/* Run fsm file pre hook for all plugins */
-	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action);
+	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path,
+				      fsm->sb.st_mode, fsm->action);
 
 	if (!fsm->postpone)
 	    rc = fsmBackup(fsm);
@@ -1892,7 +1896,8 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
         }
 
 	/* Run fsm file post hook for all plugins */
-	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path, fsm->sb.st_mode, DIR_TYPE_NORMAL, fsm->action, rc);
+	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path,
+				  fsm->sb.st_mode, fsm->action, rc);
 
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
