@@ -2680,7 +2680,6 @@ static int renameTag(const char * prefix,
 		     rpmTagVal dbtag)
 {
     int xx, rc = 0;
-    int selinux = is_selinux_enabled() && (matchpathcon_init(NULL) != -1);
     const char *base = rpmTagGetName(dbtag);
     char *src = rpmGetPath(prefix, "/", olddbpath, "/", base, NULL);
     char *dest = rpmGetPath(prefix, "/", newdbpath, "/", base, NULL);
@@ -2701,21 +2700,12 @@ static int renameTag(const char * prefix,
 	xx = chown(dest, st.st_uid, st.st_gid);
 	xx = chmod(dest, (st.st_mode & 07777));
 
-	if (selinux) {
-	    security_context_t scon = NULL;
-	    if (matchpathcon(dest, st.st_mode, &scon) != -1) {
-		(void) setfilecon(dest, scon);
-		freecon(scon);
-	    }
-	}
+	/* XXX: we should call file prepare plugins here for selinux etc! */
     }
 
 exit:
     free(src);
     free(dest);
-    if (selinux) {
-	(void) matchpathcon_fini();
-    }
     return rc;
 }
 

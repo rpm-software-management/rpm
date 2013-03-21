@@ -108,7 +108,6 @@ struct fsm_s {
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
     const char * dirName;	/*!< File directory name. */
     const char * baseName;	/*!< File base name. */
-    struct selabel_handle *sehandle;	/*!< SELinux label handle (if any). */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
     unsigned fflags;		/*!< File flags. */
@@ -621,34 +620,6 @@ static FSM_t fsmFree(FSM_t fsm)
     return NULL;
 }
 
-/* Find and set file security context */
-static int fsmSetSELabel(struct selabel_handle *sehandle,
-			 const char *path, const char *dest, mode_t mode)
-{
-    int rc = 0;
-#if WITH_SELINUX
-    if (sehandle) {
-	security_context_t scon = NULL;
-
-	if (selabel_lookup_raw(sehandle, &scon, dest, mode) == 0) {
-	    rc = lsetfilecon(path, scon);
-
-	    if (_fsm_debug) {
-		rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n",
-			__func__, path, scon,
-			(rc < 0 ? strerror(errno) : ""));
-	    }
-
-	    if (rc < 0 && errno == EOPNOTSUPP)
-		rc = 0;
-	}
-
-	freecon(scon);
-    }
-#endif
-    return rc ? CPIOERR_LSETFCON_FAILED : 0;
-}
-
 static int fsmSetFCaps(const char *path, const char *captxt)
 {
     int rc = 0;
@@ -1158,12 +1129,11 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
 /**
  * Create (if necessary) directories not explicitly included in package.
  * @param dnli		file state machine data
- * @param sehandle	selinux label handle (bah)
  * @param plugins	rpm plugins handle
  * @param action	file state machine action
  * @return		0 on success
  */
-static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle, rpmPlugins plugins, rpmFileAction action)
+static int fsmMkdirs(rpmfi fi, rpmfs fs, rpmPlugins plugins, rpmFileAction action)
 {
     DNLI_t dnli = dnlInitIterator(fi, fs, 0);
     struct stat sb;
@@ -1240,8 +1210,6 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle, rpmPlu
 		rpmpluginsCallFsmFilePost(plugins, dn, mode, op, rc);
 
 		if (!rc) {
-		    rc = fsmSetSELabel(sehandle, dn, dn, mode);
-
 		    rpmlog(RPMLOG_DEBUG,
 			    "%s directory created with perms %04o\n",
 			    dn, (unsigned)(mode & 07777));
@@ -1554,10 +1522,6 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
 	dest = fsmFsPath(fsm, 0, fsm->nsuffix);
 
-    /* Set file security context (if enabled) */
-    if (!rc && !getuid()) {
-	rc = fsmSetSELabel(fsm->sehandle, fsm->path, dest, st->st_mode);
-    }
     if (!rc && !getuid()) {
 	rc = fsmChown(fsm->path, st->st_mode, st->st_uid, st->st_gid);
     }
@@ -1678,14 +1642,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     if (archive == NULL)
 	rc = CPIOERR_INTERNAL;
 
-    fsm->sehandle = rpmtsSELabelHandle(ts);
     fsm->plugins = rpmtsPlugins(ts);
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	rc = fsmMkdirs(fi, rpmteGetFileStates(te), fsm->sehandle, fsm->plugins, fsm->action);
+	rc = fsmMkdirs(fi, rpmteGetFileStates(te), fsm->plugins, fsm->action);
     }
 
     while (!rc) {

@@ -23,10 +23,11 @@ selinux_la_SOURCES = plugin.h selinux.c
 selinux_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @WITH_SELINUX_LIB@
 plugins_LTLIBRARIES += selinux.la
 
-sepolicy_la_SOURCES = plugin.h sepolicy.c
-sepolicy_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @WITH_SELINUX_LIB@ @WITH_SEMANAGE_LIB@
-
-plugins_LTLIBRARIES += sepolicy.la
+# XXX: merge this into selinux plugin, for now we need to disable
+#      as it relies on in-core selinux knowledge which we no longer have...
+#sepolicy_la_SOURCES = plugin.h sepolicy.c
+#sepolicy_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @WITH_SELINUX_LIB@ @WITH_SEMANAGE_LIB@
+#plugins_LTLIBRARIES += sepolicy.la
 endif
 
 if DBUS

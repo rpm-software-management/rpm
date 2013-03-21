@@ -45,7 +45,6 @@ librpm_la_LDFLAGS = -version-info 4:0:1
 librpm_la_LIBADD = \
 	$(top_builddir)/rpmio/librpmio.la \
 	@WITH_POPT_LIB@ \
-	@WITH_SELINUX_LIB@ \
 	@WITH_CAP_LIB@ \
 	@WITH_ACL_LIB@ \
 	@LIBINTL@

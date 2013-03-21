@@ -94,28 +94,6 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types);
 RPM_GNUC_INTERNAL
 int rpmtsSolve(rpmts ts, rpmds key);
 
-/** \ingroup rpmts
- * Get the selabel handle from the transaction set
- * @param ts		transaction set
- * @return		rpm selabel handle, or NULL if it hasn't been initialized yet
- */
-struct selabel_handle * rpmtsSELabelHandle(rpmts ts);
-
-/** \ingroup rpmts
- * Initialize selabel
- * @param ts		transaction set
- * @param open_status   if the func should open selinux status or just check it
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-rpmRC rpmtsSELabelInit(rpmts ts, int open_status);
-
-/** \ingroup rpmts
- * Clean up selabel
- * @param ts		transaction set
- * @param close_status  whether we should close selinux status
- */
-void rpmtsSELabelFini(rpmts ts, int close_status);
-
 #ifdef __cplusplus
 }
 #endif

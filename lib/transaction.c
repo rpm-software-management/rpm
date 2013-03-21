@@ -1270,20 +1270,6 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_JUSTDB | RPMTRANS_FLAG_TEST))
 	(void) rpmtsSetFlags(ts, (rpmtsFlags(ts) | _noTransScripts | _noTransTriggers | RPMTRANS_FLAG_NOCOLLECTIONS));
 
-    /* if SELinux isn't enabled or it is a test run, don't bother... */
-    if (!is_selinux_enabled() || (rpmtsFlags(ts) & RPMTRANS_FLAG_TEST)) {
-        rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
-    }
-
-    if (rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS) {
-	rpmlog(RPMLOG_DEBUG, "Selinux disabled.\n");
-    } else {
-	if (rpmtsSELabelInit(ts, 1)) {
-	    rpmlog(RPMLOG_WARNING, "Failed to open SELinux handle.\n");
-	    rpmtsSetFlags(ts, (rpmtsFlags(ts) | RPMTRANS_FLAG_NOCONTEXTS));
-	}
-    }
-
     /* 
      * Make sure the database is open RDWR for package install/erase.
      * Note that we initialize chroot state here even if it's just "/" as
@@ -1304,9 +1290,6 @@ static int rpmtsSetup(rpmts ts, rpmprobFilterFlags ignoreSet)
 
 static int rpmtsFinish(rpmts ts)
 {
-    if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	rpmtsSELabelFini(ts, 1);
-    }
     return rpmChrootSet(NULL);
 }
 
@@ -1417,10 +1400,6 @@ static int rpmtsProcess(rpmts ts)
 
 	rpmlog(RPMLOG_DEBUG, "========== +++ %s %s-%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
-
-	if (!(rpmtsFlags(ts) & RPMTRANS_FLAG_NOCONTEXTS)) {
-	    rpmtsSELabelInit(ts, 0);
-	}
 
 	failed = rpmteProcess(p, rpmteType(p));
 	if (failed) {

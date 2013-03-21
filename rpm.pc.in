@@ -12,4 +12,4 @@ URL: http://rpm.org
 # Conflicts:
 Cflags: -I${includedir}
 Libs: -L${libdir} -lrpm -lrpmio
-Libs.private: -lpopt -lrt -lpthread @WITH_SELINUX_LIB@ @WITH_LZMA_LIB@ @WITH_DB_LIB@ @WITH_BZ2_LIB@ @WITH_ZLIB_LIB@ @WITH_NSS_LIB@ @WITH_LUA_LIB@
+Libs.private: -lpopt -lrt -lpthread @WITH_LZMA_LIB@ @WITH_DB_LIB@ @WITH_BZ2_LIB@ @WITH_ZLIB_LIB@ @WITH_NSS_LIB@ @WITH_LUA_LIB@

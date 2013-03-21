@@ -29,7 +29,7 @@ struct rpmScript_s {
 /**
  * Run internal Lua script.
  */
-static rpmRC runLuaScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes,
+static rpmRC runLuaScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
@@ -93,7 +93,7 @@ static rpmRC runLuaScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes
 
 static const char * const SCRIPT_PATH = "PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/X11R6/bin";
 
-static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
+static void doScriptExec(ARGV_const_t argv, ARGV_const_t prefixes,
 			FD_t scriptFd, FD_t out)
 {
     int pipes[2];
@@ -165,11 +165,6 @@ static void doScriptExec(int selinux, ARGV_const_t argv, ARGV_const_t prefixes,
 	/* XXX Don't mtrace into children. */
 	unsetenv("MALLOC_CHECK_");
 
-	/* Permit libselinux to do the scriptlet exec. */
-	if (selinux == 1) {	
-	    xx = rpm_execcon(0, argv[0], argv, environ);
-	}
-
 	if (xx == 0) {
 	    xx = execv(argv[0], argv);
 	}
@@ -204,7 +199,7 @@ exit:
 /**
  * Run an external script.
  */
-static rpmRC runExtScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes,
+static rpmRC runExtScript(rpmPlugins plugins, ARGV_const_t prefixes,
 		   const char *sname, rpmlogLvl lvl, FD_t scriptFd,
 		   ARGV_t * argvp, const char *script, int arg1, int arg2)
 {
@@ -263,7 +258,7 @@ static rpmRC runExtScript(rpmPlugins plugins, int selinux, ARGV_const_t prefixes
 
 	/* Run scriptlet post fork hook for all plugins */
 	if (rpmpluginsCallScriptletForkPost(plugins, *argvp[0], RPMSCRIPTLET_FORK | RPMSCRIPTLET_EXEC) != RPMRC_FAIL) {
-	    doScriptExec(selinux, *argvp, prefixes, scriptFd, out);
+	    doScriptExec(*argvp, prefixes, scriptFd, out);
 	} else {
 	    _exit(126); /* exit 126 for compatibility with bash(1) */
 	}
@@ -305,7 +300,7 @@ exit:
 }
 
 rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
-		   ARGV_const_t prefixes, int warn_only, int selinux, rpmPlugins plugins)
+		   ARGV_const_t prefixes, int warn_only, rpmPlugins plugins)
 {
     ARGV_t args = NULL;
     rpmlogLvl lvl = warn_only ? RPMLOG_WARNING : RPMLOG_ERR;
@@ -329,9 +324,9 @@ rpmRC rpmScriptRun(rpmScript script, int arg1, int arg2, FD_t scriptFd,
 
     if (rc != RPMRC_FAIL) {
 	if (script_type & RPMSCRIPTLET_EXEC) {
-	    rc = runExtScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	    rc = runExtScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
 	} else {
-	    rc = runLuaScript(plugins, selinux, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
+	    rc = runLuaScript(plugins, prefixes, script->descr, lvl, scriptFd, &args, script->body, arg1, arg2);
 	}
     }
 

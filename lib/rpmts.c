@@ -747,63 +747,6 @@ void rpmtsSetScriptFd(rpmts ts, FD_t scriptFd)
     }
 }
 
-struct selabel_handle * rpmtsSELabelHandle(rpmts ts)
-{
-#if WITH_SELINUX
-    if (ts != NULL) {
-	return ts->selabelHandle;
-    }
-#endif
-    return NULL;
-}
-
-rpmRC rpmtsSELabelInit(rpmts ts, int open_status)
-{
-#if WITH_SELINUX
-    const char * path = selinux_file_context_path();
-
-    if (ts == NULL || path == NULL) {
-	return RPMRC_FAIL;
-    }
-
-    if (open_status) {
-	selinux_status_close();
-	if (selinux_status_open(0) < 0) {
-	    return RPMRC_FAIL;
-	}
-    } else if (!selinux_status_updated() && ts->selabelHandle) {
-	return RPMRC_OK;
-    }
-
-    struct selinux_opt opts[] = {
-	{ .type = SELABEL_OPT_PATH, .value = path}
-    };
-
-    if (ts->selabelHandle) {
-	rpmtsSELabelFini(ts, 0);
-    }
-    ts->selabelHandle = selabel_open(SELABEL_CTX_FILE, opts, 1);
-
-    if (!ts->selabelHandle) {
-	return RPMRC_FAIL;
-    }
-#endif
-    return RPMRC_OK;
-}
-
-void rpmtsSELabelFini(rpmts ts, int close_status)
-{
-#if WITH_SELINUX
-    if (ts && ts->selabelHandle) {
-	selabel_close(ts->selabelHandle);
-	ts->selabelHandle = NULL;
-    }
-    if (close_status) {
-	selinux_status_close();
-    }
-#endif
-}
-
 rpm_tid_t rpmtsGetTid(rpmts ts)
 {
     rpm_tid_t tid = (rpm_tid_t)-1;  /* XXX -1 is time(2) error return. */

@@ -78,31 +78,6 @@ char * stpncpy(char * dest, const char * src, size_t n);
 #endif
 #endif
 
-#if WITH_SELINUX
-#include <selinux/selinux.h>
-#include <selinux/label.h>
-#include <selinux/avc.h>
-#else
-typedef	char * security_context_t;
-
-#define	freecon(_c)
-
-#define	setfilecon(_fn, _c)	(-1)
-#define	lsetfilecon(_fn, _c)	(-1)
-
-#define	is_selinux_enabled()	(0)
-
-#define matchpathcon_init(_fn)			(-1)
-#define matchpathcon_fini()			(0)
-#define matchpathcon(_fn, _fm, _c)		(-1)
-
-#define selabel_lookup_raw(_hnd, _scon, _key,_type)	(-1)
-
-#define selinux_file_context_path() (0)
-
-#define rpm_execcon(_v, _fn, _av, _envp)	(0)
-#endif
-
 #include "rpmio/rpmutil.h"
 /* compatibility macros to avoid a mass-renaming all over the codebase */
 #define xmalloc(_size) rmalloc((_size))
