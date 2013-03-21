@@ -66,6 +66,26 @@ typedef enum rpmPluginDirType_e {
 
 typedef rpmFlags rpmPluginHook;
 
+/** \ingroup rpmfi
+ * File disposition flags during package install/erase transaction.
+ * XXX: Move these to rpmfi.h once things stabilize.
+ */
+enum rpmFileActionFlags_e {
+    /* bits 0-15 reserved for actions */
+    FAF_UNOWNED		= (1 << 31)
+};
+typedef rpmFlags rpmFileActionFlags;
+
+/** \ingroup rpmfi
+ * File action and associated flags on install/erase
+ */
+typedef rpmFlags rpmFsmOp;
+
+#define XFA_MASK	0x0000ffff
+#define XFAF_MASK	~(XFA_MASK)
+#define XFO_ACTION(_a)	((_a) & XFA_MASK)	/*!< File op action part */
+#define XFO_FLAGS(_a)	((_a) & XFAF_MASK)	/*!< File op flags part */
+
 /** \ingroup rpmplugins
  * Create a new plugins structure
  * @param ts		transaction set
