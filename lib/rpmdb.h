@@ -178,6 +178,16 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag);
 int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen);
 
 /** \ingroup rpmdb
+ * Get the next key into a tag data container.
+ * Caller is responsible for calling rpmtdFreeData() to freeing the
+ * data returned in keytd once done with it.
+ * @param ii		index iterator
+ * @param keytd		tag container to store the key in
+ * @return 		0 on success; != 0 on error or end of index
+ */
+int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd);
+
+/** \ingroup rpmdb
  * Get number of entries for current key
  * @param ii            index iterator
  * @return		number of entries. 0 on error.

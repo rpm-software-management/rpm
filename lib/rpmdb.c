@@ -2075,6 +2075,52 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
     return 0;
 }
 
+int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
+{
+    size_t keylen = 0;
+    const void * keyp = NULL;
+
+    int rc = rpmdbIndexIteratorNext(ii, &keyp, &keylen);
+
+    if (rc == 0) {
+	rpmTagVal tag = ii->ii_rpmtag;
+	rpmTagClass tagclass = rpmTagGetClass(tag);
+
+	/* Set the common values, overridden below as necessary */
+	keytd->type = rpmTagGetTagType(tag);
+	keytd->tag = tag;
+	keytd->flags = RPMTD_ALLOCED;
+	keytd->count = 1;
+
+	switch (tagclass) {
+	case RPM_STRING_CLASS: {
+	    /*
+	     * XXX: We never return arrays here, so everything is a
+	     * "simple" string. However this can disagree with the
+	     * type of the index tag, eg requires are string arrays.
+	     */
+	    char *key = memcpy(xmalloc(keylen + 1), keyp, keylen);
+	    key[keylen] = '\0';
+	    keytd->data = key;
+	    keytd->type = RPM_STRING_TYPE;
+	    } break;
+	case RPM_BINARY_CLASS:
+	    /* Binary types abuse count for data length */
+	    keytd->count = keylen;
+	    /* fallthrough */
+	case RPM_NUMERIC_CLASS:
+	    keytd->data = memcpy(xmalloc(keylen), keyp, keylen);
+	    break;
+	default:
+	    rpmtdReset(keytd);
+	    rc = -1;
+	    break;
+	}
+    }
+    
+    return rc;
+}
+
 unsigned int rpmdbIndexIteratorNumPkgs(rpmdbIndexIterator ii)
 {
     return (ii && ii->ii_set) ? dbiIndexSetCount(ii->ii_set) : 0;
