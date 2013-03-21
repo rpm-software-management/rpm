@@ -1,7 +1,9 @@
 #include "rpmsystem-py.h"
 
 #include <rpm/rpmdb.h>
+#include <rpm/rpmtd.h>
 
+#include "rpmtd-py.h"
 #include "rpmii-py.h"
 #include "header-py.h"
 
@@ -36,18 +38,25 @@ struct rpmiiObject_s {
     PyObject *md_dict;		/*!< to look like PyModuleObject */
     PyObject *ref;		/* for db/ts refcounting */
     rpmdbIndexIterator ii;
+    rpmtd keytd;
 };
 
 static PyObject *
 rpmii_iternext(rpmiiObject * s)
 {
-    char * key;
-    size_t keylen;
-    if (s->ii == NULL || (rpmdbIndexIteratorNext(s->ii, (const void**)&key, &keylen)) != 0) {
-	s->ii = rpmdbIndexIteratorFree(s->ii);
-	return NULL;
+    PyObject *keyo = NULL;
+
+    if (s->ii != NULL) {
+	if (rpmdbIndexIteratorNextTd(s->ii, s->keytd) == 0) {
+	    /* The keys must never be arrays so rpmtd_AsPyObj() wont work */
+	    keyo = rpmtd_ItemAsPyobj(s->keytd, rpmtdClass(s->keytd));
+	    rpmtdFreeData(s->keytd);
+	} else {
+	    s->ii = rpmdbIndexIteratorFree(s->ii);
+	}
     }
-    return PyBytes_FromStringAndSize(key, keylen);
+
+    return keyo;
 };
 
 static PyObject *
@@ -75,6 +84,7 @@ static struct PyMethodDef rpmii_methods[] = {
 static void rpmii_dealloc(rpmiiObject * s)
 {
     s->ii = rpmdbIndexIteratorFree(s->ii);
+    rpmtdFree(s->keytd);
     Py_DECREF(s->ref);
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
@@ -151,6 +161,7 @@ PyObject * rpmii_Wrap(PyTypeObject *subtype, rpmdbIndexIterator ii, PyObject *s)
 
     iio->ii = ii;
     iio->ref = s;
+    iio->keytd = rpmtdNew();
     Py_INCREF(iio->ref);
     return (PyObject *) iio;
 }
