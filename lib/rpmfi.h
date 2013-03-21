@@ -71,18 +71,18 @@ typedef rpmFlags rpmfileAttrs;
  * File disposition(s) during package install/erase transaction.
  */
 typedef enum rpmFileAction_e {
-    FA_UNKNOWN = 0,	/*!< initial action for file ... */
-    FA_CREATE,		/*!< ... copy in from payload. */
-    FA_COPYIN,		/*!< ... copy in from payload. */
-    FA_COPYOUT,		/*!< ... copy out to payload. */
-    FA_BACKUP,		/*!< ... renamed with ".rpmorig" extension. */
-    FA_SAVE,		/*!< ... renamed with ".rpmsave" extension. */
-    FA_SKIP, 		/*!< ... already replaced, don't remove. */
-    FA_ALTNAME,		/*!< ... create with ".rpmnew" extension. */
-    FA_ERASE,		/*!< ... to be removed. */
-    FA_SKIPNSTATE,	/*!< ... untouched, state "not installed". */
-    FA_SKIPNETSHARED,	/*!< ... untouched, state "netshared". */
-    FA_SKIPCOLOR	/*!< ... untouched, state "wrong color". */
+    FA_UNKNOWN		= 0,	/*!< initial action for file ... */
+    FA_CREATE		= 1,	/*!< ... create from payload. */
+    FA_COPYIN		= 2,	/*!< obsolete, unused. */
+    FA_COPYOUT		= 3,	/*!< obsolete, unused. */
+    FA_BACKUP		= 4,	/*!< ... renamed with ".rpmorig" extension. */
+    FA_SAVE		= 5,	/*!< ... renamed with ".rpmsave" extension. */
+    FA_SKIP		= 6, 	/*!< ... already replaced, don't remove. */
+    FA_ALTNAME		= 7,	/*!< ... create with ".rpmnew" extension. */
+    FA_ERASE		= 8,	/*!< ... to be removed. */
+    FA_SKIPNSTATE	= 9,	/*!< ... untouched, state "not installed". */
+    FA_SKIPNETSHARED	= 10,	/*!< ... untouched, state "netshared". */
+    FA_SKIPCOLOR	= 11,	/*!< ... untouched, state "wrong color". */
 } rpmFileAction;
 
 #define XFA_SKIPPING(_a)	\
