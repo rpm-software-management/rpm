@@ -1,5 +1,6 @@
 #include "system.h"
 #include <string.h>
+#include <stdlib.h>
 #include "dbiset.h"
 #include "debug.h"
 
