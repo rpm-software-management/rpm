@@ -11,7 +11,7 @@
 /*
  * Convert single tag data item to python object of suitable type
  */
-static PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass tclass)
+PyObject * rpmtd_ItemAsPyobj(rpmtd td, rpmTagClass tclass)
 {
     PyObject *res = NULL;
 
