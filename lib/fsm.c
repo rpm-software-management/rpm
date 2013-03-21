@@ -1231,6 +1231,11 @@ static int fsmMkdirs(rpmfi fi, rpmfs fs, struct selabel_handle *sehandle, rpmPlu
 		if (!rc)
 		    rc = fsmMkdir(dn, mode);
 
+		if (!rc) {
+		    rc = rpmpluginsCallFsmFilePrepare(plugins, dn, dn,
+						      mode, op);
+		}
+
 		/* Run fsm file post hook for all plugins */
 		rpmpluginsCallFsmFilePost(plugins, dn, mode, op, rc);
 
@@ -1565,6 +1570,10 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
     }
     if (!rc) {
 	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
+    }
+    if (!rc) {
+	rc = rpmpluginsCallFsmFilePrepare(fsm->plugins, fsm->path, dest,
+					  st->st_mode, fsm->action);
     }
 
     if (dest != fsm->path)

@@ -350,3 +350,22 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
 
     return rc;
 }
+
+rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
+				   const char *path, const char *dest,
+				   mode_t file_mode, rpmFsmOp op)
+{
+    rpmRC (*hookFunc)(const char*, const char *, mode_t, rpmFsmOp);
+    int i;
+    rpmRC rc = RPMRC_OK;
+    const char *name = NULL;
+
+    for (i = 0; i < plugins->count; i++) {
+	name = plugins->names[i];
+	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_FSM_FILE_PREPARE);
+	if (hookFunc(path, dest, file_mode, op) == RPMRC_FAIL)
+	    rc = RPMRC_FAIL;
+    }
+
+    return rc;
+}

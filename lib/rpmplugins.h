@@ -30,6 +30,7 @@ extern "C" {
 
 #define PLUGINHOOK_FSM_FILE_PRE_FUNC    pluginhook_fsm_file_pre
 #define PLUGINHOOK_FSM_FILE_POST_FUNC    pluginhook_fsm_file_post
+#define PLUGINHOOK_FSM_FILE_PREPARE_FUNC	pluginhook_fsm_file_prepare
 
 enum rpmPluginHook_e {
     PLUGINHOOK_NONE		= 0,
@@ -47,7 +48,8 @@ enum rpmPluginHook_e {
     PLUGINHOOK_SCRIPTLET_FORK_POST    = 1 << 11,
     PLUGINHOOK_SCRIPTLET_POST    = 1 << 12,
     PLUGINHOOK_FSM_FILE_PRE    = 1 << 13,
-    PLUGINHOOK_FSM_FILE_POST    = 1 << 14
+    PLUGINHOOK_FSM_FILE_POST    = 1 << 14,
+    PLUGINHOOK_FSM_FILE_PREPARE	= 1 << 15,
 };
 
 /* indicates the way the scriptlet is executed */
@@ -255,6 +257,20 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
  */
 rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
                                 mode_t file_mode, rpmFsmOp op, int res);
+
+/** \ingroup rpmplugins
+ * Call the fsm file prepare plugin hook. Called after setting
+ * permissions etc, but before committing file to destination path.
+ * @param plugins	plugins structure
+ * @param path		file object current path
+ * @param path		file object destination path
+ * @param file_mode	file object mode
+ * @param op		file operation + associated flags
+ * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
+ */
+rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
+                                   const char *path, const char *dest,
+                                   mode_t mode, rpmFsmOp op);
 
 #ifdef __cplusplus
 }
