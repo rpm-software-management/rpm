@@ -1034,6 +1034,7 @@ done \
 
 # Transaction plugin macros
 %__transaction_systemd_inhibit	%{__plugindir}/systemd_inhibit.so
+%__transaction_selinux		%{__plugindir}/selinux.so
 
 #------------------------------------------------------------------------------
 # Macros for further automated spec %setup and patch application
