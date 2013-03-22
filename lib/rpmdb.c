@@ -2015,51 +2015,55 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
 /*
  * Convert current tag data to db key
  * @param tagdata	Tag data container
- * @retval key		DB key struct
- * Return 0 to signal this item should be discarded (ie continue)
+ * @retval keylen	Length of key
+ * @return 		Pointer to key value or NULL to signal skip 
  */
-static int td2key(rpmtd tagdata, DBT *key) 
+static const void * td2key(rpmtd tagdata, unsigned int *keylen) 
 {
+    const void * data = NULL;
+    unsigned int size = 0;
     const char *str = NULL;
 
     switch (rpmtdType(tagdata)) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
-	key->size = sizeof(uint8_t);
-	key->data = rpmtdGetChar(tagdata);
+	size = sizeof(uint8_t);
+	data = rpmtdGetChar(tagdata);
 	break;
     case RPM_INT16_TYPE:
-	key->size = sizeof(uint16_t);
-	key->data = rpmtdGetUint16(tagdata);
+	size = sizeof(uint16_t);
+	data = rpmtdGetUint16(tagdata);
 	break;
     case RPM_INT32_TYPE:
-	key->size = sizeof(uint32_t);
-	key->data = rpmtdGetUint32(tagdata);
+	size = sizeof(uint32_t);
+	data = rpmtdGetUint32(tagdata);
 	break;
     case RPM_INT64_TYPE:
-	key->size = sizeof(uint64_t);
-	key->data = rpmtdGetUint64(tagdata);
+	size = sizeof(uint64_t);
+	data = rpmtdGetUint64(tagdata);
 	break;
     case RPM_BIN_TYPE:
-	key->size = tagdata->count;
-	key->data = tagdata->data;
+	size = tagdata->count;
+	data = tagdata->data;
 	break;
     case RPM_STRING_TYPE:
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
     default:
 	str = rpmtdGetString(tagdata);
-	key->data = (char *) str; /* XXX discards const */
-	key->size = strlen(str);
+	data = (char *) str; /* XXX discards const */
+	size = strlen(str);
 	break;
     }
 
-    if (key->size == 0) 
-	key->size = strlen((char *)key->data);
-    if (key->size == 0) 
-	key->size++;	/* XXX "/" fixup. */
+    if (size == 0) 
+	size = strlen((char *)data);
+    if (size == 0) 
+	size++;	/* XXX "/" fixup. */
+    if (keylen)
+	*keylen = size;
 
-    return 1;
+    return data;
 }
 /*
  * rpmdbIndexIterator
@@ -2346,23 +2350,21 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     struct rpmtd_s tagdata;
     int rc = 0;
     dbiCursor dbc = NULL;
-    DBT key;
 
     /* if there's no data there's nothing to do */
     if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 	return 0;
-
-    memset(&key, 0, sizeof(key));
 
     dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
 
     logAddRemove(dbiName(dbi), 1, &tagdata);
     while (rpmtdNext(&tagdata) >= 0) {
 	dbiIndexSet set = NULL;
+	const void *key = NULL;
+	unsigned int keylen = 0;
 
-	if (!td2key(&tagdata, &key)) {
+	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
-	}
 
 	/* XXX
 	 * This is almost right, but, if there are duplicate tag
@@ -2371,7 +2373,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	 * than to do things correctly.
 	 */
 
-	rc = dbcCursorGet(dbc, key.data, key.size, &set);
+	rc = dbcCursorGet(dbc, key, keylen, &set);
 
 	if (rc) {
 	    if (rc != RPMRC_NOTFOUND) {
@@ -2390,9 +2392,9 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	}
 
 	if (dbiIndexSetCount(set) > 0) {
-	    rc = dbcCursorPut(dbc, key.data, key.size, set);
+	    rc = dbcCursorPut(dbc, key, keylen, set);
 	} else {
-	    rc = dbcCursorDel(dbc, key.data, key.size);
+	    rc = dbcCursorDel(dbc, key, keylen);
 	}
 
 	if (rc) {
@@ -2547,8 +2549,9 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     logAddRemove(dbiName(dbi), 0, &tagdata);
     while ((i = rpmtdNext(&tagdata)) >= 0) {
 	dbiIndexSet set = NULL;
+	const void * key = NULL;
+	unsigned int keylen = 0;
 	int j;
-	DBT key;
 	/* Include the tagNum in all indices (only files use though) */
 	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
 
@@ -2577,13 +2580,10 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    break;
 	}
 
-	memset(&key, 0, sizeof(key));
-
-	if (!td2key(&tagdata, &key)) {
+	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
-	}
 
-	rc = dbcCursorGet(dbc, key.data, key.size, &set);
+	rc = dbcCursorGet(dbc, key, keylen, &set);
 
 	/* Not found means a new key and is not an error. */
 	/* XXX: the error code handling is very very wrong... */
@@ -2597,7 +2597,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
 	(void) dbiIndexSetAppend(set, &rec, 1, sizeof(rec), 0);
 
-	rc = dbcCursorPut(dbc, key.data, key.size, set);
+	rc = dbcCursorPut(dbc, key, keylen, set);
 
 	/* XXX this is very very wrong... */
 	if (rc)
