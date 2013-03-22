@@ -454,7 +454,7 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     if (dbi != NULL) {
-	dbiCursor dbc = dbiCursorInit(dbi, 0);
+	dbiCursor dbc = dbiCursorInit(dbi, DBC_READ);
 
 	if (keyp) {
 	    if (keylen == 0) {
@@ -1655,11 +1655,11 @@ int rpmdbSetIteratorRewrite(rpmdbMatchIterator mi, int rewrite)
     int rc;
     if (mi == NULL)
 	return 0;
-    rc = (mi->mi_cflags & DB_WRITECURSOR) ? 1 : 0;
+    rc = (mi->mi_cflags & DBC_WRITE) ? 1 : 0;
     if (rewrite)
-	mi->mi_cflags |= DB_WRITECURSOR;
+	mi->mi_cflags |= DBC_WRITE;
     else
-	mi->mi_cflags &= ~DB_WRITECURSOR;
+	mi->mi_cflags &= ~DBC_WRITE;
     return rc;
 }
 
@@ -1740,9 +1740,8 @@ Header rpmdbNextIterator(rpmdbMatchIterator mi)
 #endif
     /*
      * Cursors are per-iterator, not per-dbi, so get a cursor for the
-     * iterator on 1st call. If the iteration is to rewrite headers, and the
-     * CDB model is used for the database, then the cursor needs to
-     * marked with DB_WRITECURSOR as well.
+     * iterator on 1st call. If the iteration is to rewrite headers,
+     * then the cursor needs to marked with DBC_WRITE as well.
      */
     if (mi->mi_dbc == NULL)
 	mi->mi_dbc = dbiCursorInit(dbi, mi->mi_cflags);
@@ -2105,7 +2104,7 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
 	return -1;
 
     if (ii->ii_dbc == NULL)
-	ii->ii_dbc = dbiCursorInit(ii->ii_dbi, 0);
+	ii->ii_dbc = dbiCursorInit(ii->ii_dbi, DBC_READ);
 
     /* free old data */
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
@@ -2254,7 +2253,7 @@ static int updatePackages(dbiIndex dbi, dbiCursor cursor,
     memset(&key, 0, sizeof(key));
 
     if (dbc == NULL)
-	dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
+	dbc = dbiCursorInit(dbi, DBC_WRITE);
 
     mi_offset.ui = hdrNum;
     if (dbiByteSwapped(dbi) == 1)
@@ -2356,7 +2355,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 	return 0;
 
-    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
+    dbc = dbiCursorInit(dbi, DBC_WRITE);
 
     logAddRemove(dbiName(dbi), 1, &tagdata);
     while (rpmtdNext(&tagdata) >= 0) {
@@ -2476,7 +2475,7 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 	memset(&key, 0, sizeof(key));
 	memset(&data, 0, sizeof(data));
 
-	dbc = dbiCursorInit(dbi, alloc ? DB_WRITECURSOR : 0);
+	dbc = dbiCursorInit(dbi, alloc ? DBC_WRITE : 0);
 
 	/* Key 0 holds the current largest instance, fetch it */
 	key.data = &firstkey;
@@ -2545,7 +2544,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	tagdata.count = 1;
     }
 
-    dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
+    dbc = dbiCursorInit(dbi, DBC_WRITE);
 
     logAddRemove(dbiName(dbi), 0, &tagdata);
     while ((i = rpmtdNext(&tagdata)) >= 0) {

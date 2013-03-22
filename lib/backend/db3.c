@@ -252,7 +252,7 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 	uint32_t eflags = db_envflags(db);
 	
        /* DB_WRITECURSOR requires CDB and writable db */
-	if ((flags & DB_WRITECURSOR) &&
+	if ((flags & DBC_WRITE) &&
 	    (eflags & DB_INIT_CDB) && !(dbi->dbi_oflags & DB_RDONLY))
 	{
 	    cflags = DB_WRITECURSOR;

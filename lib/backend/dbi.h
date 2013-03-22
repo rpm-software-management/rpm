@@ -61,6 +61,11 @@ enum dbiFlags_e {
     DBI_RDONLY		= (1 << 1),
 };
 
+enum dbcFlags_e {
+    DBC_READ	= 0,
+    DBC_WRITE	= (1 << 0),
+};
+
 /** \ingroup dbi
  * Describes an index database (implemented on Berkeley db functionality).
  */
@@ -186,7 +191,7 @@ const char * dbiName(dbiIndex dbi);
 /** \ingroup dbi
  * Open a database cursor.
  * @param dbi		index database handle
- * @param flags		DB_WRITECURSOR if writing, or 0
+ * @param flags		DBC_WRITE if writing, or 0 (DBC_READ) for reading
  * @return		database cursor handle
  */
 RPM_GNUC_INTERNAL
