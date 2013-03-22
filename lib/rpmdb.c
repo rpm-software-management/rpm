@@ -354,8 +354,8 @@ static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
     return 0;
 }
 
-static rpmRC dbiCursorGetToSet(dbiCursor dbc, const char *keyp, size_t keylen,
-			     dbiIndexSet *set)
+static rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
+			  dbiIndexSet *set)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     if (dbc != NULL && set != NULL) {
@@ -408,10 +408,10 @@ static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 		if (keylen == 0)
 		    keylen++; /* XXX "/" fixup */
 	    }
-	    rc = dbiCursorGetToSet(dbc, keyp, keylen, set);
+	    rc = dbcCursorGet(dbc, keyp, keylen, set);
 	} else {
 	    do {
-		rc = dbiCursorGetToSet(dbc, NULL, 0, set);
+		rc = dbcCursorGet(dbc, NULL, 0, set);
 	    } while (rc == RPMRC_OK);
 
 	    /* If we got some results, not found is not an error */
