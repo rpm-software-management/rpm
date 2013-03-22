@@ -2016,14 +2016,12 @@ rpmdbMatchIterator rpmdbInitIterator(rpmdb db, rpmDbiTagVal rpmtag,
  * Convert current tag data to db key
  * @param tagdata	Tag data container
  * @retval key		DB key struct
- * @retval freedata	Should key.data be freed afterwards
  * Return 0 to signal this item should be discarded (ie continue)
  */
-static int td2key(rpmtd tagdata, DBT *key, int *freedata) 
+static int td2key(rpmtd tagdata, DBT *key) 
 {
     const char *str = NULL;
 
-    *freedata = 0; 
     switch (rpmtdType(tagdata)) {
     case RPM_CHAR_TYPE:
     case RPM_INT8_TYPE:
@@ -2361,9 +2359,8 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     logAddRemove(dbiName(dbi), 1, &tagdata);
     while (rpmtdNext(&tagdata) >= 0) {
 	dbiIndexSet set = NULL;
-	int freedata = 0;
 
-	if (!td2key(&tagdata, &key, &freedata)) {
+	if (!td2key(&tagdata, &key)) {
 	    continue;
 	}
 
@@ -2381,7 +2378,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 		/* XXX this is very very wrong... */
 		rc += 1;
 	    }
-	    goto cont;
+	    continue;
 	}
 
 	rc = dbiIndexSetPrune(set, &rec, 1, sizeof(rec), 1);
@@ -2389,7 +2386,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	/* If nothing was pruned, then don't bother updating. */
 	if (rc) {
 	    set = dbiIndexSetFree(set);
-	    goto cont;
+	    continue;
 	}
 
 	if (dbiIndexSetCount(set) > 0) {
@@ -2403,10 +2400,6 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    rc += 1;
 	}
 	set = dbiIndexSetFree(set);
-cont:
-	if (freedata) {
-	   free(key.data); 
-	}
     }
 
     dbc = dbiCursorFree(dbc);
@@ -2554,7 +2547,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     logAddRemove(dbiName(dbi), 0, &tagdata);
     while ((i = rpmtdNext(&tagdata)) >= 0) {
 	dbiIndexSet set = NULL;
-	int freedata = 0, j;
+	int j;
 	DBT key;
 	/* Include the tagNum in all indices (only files use though) */
 	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
@@ -2586,7 +2579,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
 	memset(&key, 0, sizeof(key));
 
-	if (!td2key(&tagdata, &key, &freedata)) {
+	if (!td2key(&tagdata, &key)) {
 	    continue;
 	}
 
@@ -2596,7 +2589,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	/* XXX: the error code handling is very very wrong... */
 	if (rc && rc != RPMRC_NOTFOUND) {
 	    rc += 1;
-	    goto cont;
+	    continue;
 	}
 
 	if (set == NULL)		/* not found or duplicate */
@@ -2611,10 +2604,6 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    rc += 1;
 
 	set = dbiIndexSetFree(set);
-cont:
-	if (freedata) {
-	    free(key.data);
-	}
     }
 
     dbiCursorFree(dbc);
