@@ -517,7 +517,6 @@ struct rpmdbIndexIterator_s {
     dbiIndex		ii_dbi;
     rpmDbiTag		ii_rpmtag;
     dbiCursor		ii_dbc;
-    DBT			ii_key;
     dbiIndexSet		ii_set;
 };
 
@@ -2098,7 +2097,7 @@ rpmdbIndexIterator rpmdbIndexIteratorInit(rpmdb db, rpmDbiTag rpmtag)
 int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * keylen)
 {
     int rc;
-    DBT data;
+    unsigned int iikeylen = 0; /* argh, size_t vs uint pointer... */
 
     if (ii == NULL)
 	return -1;
@@ -2109,26 +2108,12 @@ int rpmdbIndexIteratorNext(rpmdbIndexIterator ii, const void ** key, size_t * ke
     /* free old data */
     ii->ii_set = dbiIndexSetFree(ii->ii_set);
 
-    memset(&data, 0, sizeof(data));
-    rc = dbiCursorGet(ii->ii_dbc, &ii->ii_key, &data, DB_NEXT);
+    rc = dbcCursorGet(ii->ii_dbc, NULL, 0, &ii->ii_set);
 
-    if (rc != 0) { 
-        *key = NULL;
-        *keylen = 0;
+    *key = dbiCursorKey(ii->ii_dbc, &iikeylen);
+    *keylen = iikeylen;
 
-        if (rc != DB_NOTFOUND) {
-            rpmlog(RPMLOG_ERR,
-                   _("error(%d:%s) getting next key from %s index\n"),
-                   rc, db_strerror(rc), rpmTagGetName(ii->ii_rpmtag));
-        }
-        return -1;
-    }
-
-    (void) dbt2set(ii->ii_dbi, &data, &ii->ii_set);
-    *key = ii->ii_key.data;
-    *keylen = ii->ii_key.size;
-
-    return 0;
+    return (rc == RPMRC_OK) ? 0 : -1;
 }
 
 int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
