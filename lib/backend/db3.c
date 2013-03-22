@@ -22,6 +22,8 @@ static const char * _errpfx = "rpmdb";
 
 struct dbiCursor_s {
     dbiIndex dbi;
+    const void *key;
+    unsigned int keylen;
     DBC *cursor;
 };
 
@@ -334,6 +336,15 @@ int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 	_printit = (rc == DB_NOTFOUND ? 0 : _debug);
 	rc = cvtdberr(dbc->dbi, "dbcursor->c_get", rc, _printit);
 
+	/* Remember the last key fetched */
+	if (rc == 0) {
+	    dbc->key = key->data;
+	    dbc->keylen = key->size;
+	} else {
+	    dbc->key = NULL;
+	    dbc->keylen = 0;
+	}
+
 	rpmswExit(&rdb->db_getops, data->size);
     }
     return rc;
@@ -363,6 +374,17 @@ int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 	rpmswExit(&rdb->db_delops, data->size);
     }
     return rc;
+}
+
+const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen)
+{
+    const void *key = NULL;
+    if (dbc) {
+	key = dbc->key;
+	if (key && keylen)
+	    *keylen = dbc->keylen;
+    }
+    return key;
 }
 
 unsigned int dbiCursorCount(dbiCursor dbc)
