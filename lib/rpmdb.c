@@ -2049,18 +2049,19 @@ static const void * td2key(rpmtd tagdata, unsigned int *keylen)
     case RPM_STRING_TYPE:
     case RPM_I18NSTRING_TYPE:
     case RPM_STRING_ARRAY_TYPE:
-    default:
 	str = rpmtdGetString(tagdata);
-	data = (char *) str; /* XXX discards const */
-	size = strlen(str);
+	if (str) {
+	    size = strlen(str);
+	    if (size == 0)
+		size++; /* fixup for empty strings */
+	    data = str;
+	}
+	break;
+    default:
 	break;
     }
 
-    if (size == 0) 
-	size = strlen((char *)data);
-    if (size == 0) 
-	size++;	/* XXX "/" fixup. */
-    if (keylen)
+    if (data && keylen)
 	*keylen = size;
 
     return data;
