@@ -148,10 +148,9 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
 	int verifyonly = (flags & RPMDB_FLAG_VERIFYONLY);
 
 	db->db_pkgs = dbi;
-	/* Allocate based on max header instance number + some reserve */
+	/* Allocate header checking cache .. based on some random number */
 	if (!verifyonly && (db->db_checked == NULL)) {
-	    db->db_checked = dbChkCreate(1024 + pkgInstance(dbi, 0) / 4,
-					    uintId, uintCmp, NULL, NULL);
+	    db->db_checked = dbChkCreate(567, uintId, uintCmp, NULL, NULL);
 	}
 	/* If primary got created, we can safely run without fsync */
 	if ((!verifyonly && (dbiFlags(dbi) & DBI_CREATED)) || db->cfg.db_no_fsync) {
