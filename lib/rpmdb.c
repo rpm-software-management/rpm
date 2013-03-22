@@ -2566,9 +2566,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
 	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
 	if (rc == 0) {			/* success */
-	/* With duplicates, cursor is positioned, discard the record. */
-	    if (!dbi->dbi_permit_dups)
-		(void) dbt2set(dbi, &data, &set);
+	    (void) dbt2set(dbi, &data, &set);
 	} else if (rc != DB_NOTFOUND) {	/* error */
 	    rpmlog(RPMLOG_ERR,
 		_("error(%d) getting \"%s\" records from %s index\n"),
