@@ -120,7 +120,7 @@ int dbiIndexSetPrune(dbiIndexSet set, void * recs, int nrecs,
 
 unsigned int dbiIndexSetCount(dbiIndexSet set)
 {
-    return set->count;
+    return (set != NULL) ? set->count : 0;
 }
 
 unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
