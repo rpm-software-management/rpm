@@ -395,6 +395,60 @@ static rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
     return rc;
 }
 
+/* Update secondary index. NULL set deletes the key */
+static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
+			 dbiIndexSet set)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (dbc && keyp) {
+	dbiIndex dbi = dbiCursorIndex(dbc);
+	int dbrc;
+	DBT data, key;
+	memset(&key, 0, sizeof(data));
+	memset(&data, 0, sizeof(data));
+
+	key.data = (void *) keyp; /* discards const */
+	key.size = keylen;
+
+	if (set)
+	    set2dbt(dbi, &data, set);
+
+	if (dbiIndexSetCount(set) > 0) {
+	    dbrc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
+	    if (dbrc) {
+		rpmlog(RPMLOG_ERR,
+		       _("error(%d) storing record \"%s\" into %s\n"),
+		       dbrc, (char*)key.data, dbiName(dbi));
+	    }
+	    free(data.data);
+	} else {
+	    dbrc = dbiCursorDel(dbc, &key, &data, 0);
+	    if (dbrc) {
+		rpmlog(RPMLOG_ERR,
+		       _("error(%d) removing record \"%s\" from %s\n"),
+		       dbrc, (char*)key.data, dbiName(dbi));
+	    }
+	}
+
+	if (dbrc == 0)
+	    rc = RPMRC_OK;
+    }
+
+    return rc;
+}
+
+static rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
+			  dbiIndexSet set)
+{
+    return updateIndex(dbc, keyp, keylen, set);
+}
+
+static rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen)
+{
+    return updateIndex(dbc, keyp, keylen, NULL);
+}
+
 static rpmRC indexGet(dbiIndex dbi, const char *keyp, size_t keylen,
 		       dbiIndexSet *set)
 {
@@ -2294,14 +2348,13 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     struct rpmtd_s tagdata;
     int rc = 0;
     dbiCursor dbc = NULL;
-    DBT key, data;
+    DBT key;
 
     /* if there's no data there's nothing to do */
     if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
 	return 0;
 
     memset(&key, 0, sizeof(key));
-    memset(&data, 0, sizeof(data));
 
     dbc = dbiCursorInit(dbi, DB_WRITECURSOR);
 
@@ -2339,25 +2392,15 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    goto cont;
 	}
 
-	if (set->count > 0) {
-	    (void) set2dbt(dbi, &data, set);
-	    rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
-	    if (rc) {
-		rpmlog(RPMLOG_ERR,
-			_("error(%d) storing record \"%s\" into %s\n"),
-			rc, (char*)key.data, dbiName(dbi));
-		rc += 1;
-	    }
-	    data.data = _free(data.data);
-	    data.size = 0;
+	if (dbiIndexSetCount(set) > 0) {
+	    rc = dbcCursorPut(dbc, key.data, key.size, set);
 	} else {
-	    rc = dbiCursorDel(dbc, &key, &data, 0);
-	    if (rc) {
-		rpmlog(RPMLOG_ERR,
-			_("error(%d) removing record \"%s\" from %s\n"),
-			rc, (char*)key.data, dbiName(dbi));
-		rc += 1;
-	    }
+	    rc = dbcCursorDel(dbc, key.data, key.size);
+	}
+
+	if (rc) {
+	    /* XXX this is very very wrong... */
+	    rc += 1;
 	}
 	set = dbiIndexSetFree(set);
 cont:
@@ -2512,7 +2555,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     while ((i = rpmtdNext(&tagdata)) >= 0) {
 	dbiIndexSet set = NULL;
 	int freedata = 0, j;
-	DBT key, data;
+	DBT key;
 	/* Include the tagNum in all indices (only files use though) */
 	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
 
@@ -2542,7 +2585,6 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	}
 
 	memset(&key, 0, sizeof(key));
-	memset(&data, 0, sizeof(data));
 
 	if (!td2key(&tagdata, &key, &freedata)) {
 	    continue;
@@ -2562,17 +2604,12 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
 	(void) dbiIndexSetAppend(set, &rec, 1, sizeof(rec), 0);
 
-	(void) set2dbt(dbi, &data, set);
-	rc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
+	rc = dbcCursorPut(dbc, key.data, key.size, set);
 
-	if (rc) {
-	    rpmlog(RPMLOG_ERR,
-			_("error(%d) storing record %s into %s\n"),
-			rc, (char*)key.data, dbiName(dbi));
+	/* XXX this is very very wrong... */
+	if (rc)
 	    rc += 1;
-	}
-	data.data = _free(data.data);
-	data.size = 0;
+
 	set = dbiIndexSetFree(set);
 cont:
 	if (freedata) {
