@@ -2307,7 +2307,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
     logAddRemove(dbiName(dbi), 1, &tagdata);
     while (rpmtdNext(&tagdata) >= 0) {
-	dbiIndexSet set;
+	dbiIndexSet set = NULL;
 	int freedata = 0;
 
 	if (!td2key(&tagdata, &key, &freedata)) {
@@ -2321,22 +2321,13 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	 * than to do things correctly.
 	 */
 
-	/* 
-	 * XXX with duplicates, an accurate data value and 
-	 * DB_GET_BOTH is needed. 
-	 * */
-	set = NULL;
+	rc = dbcCursorGet(dbc, key.data, key.size, &set);
 
-	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
-	if (rc == 0) {			/* success */
-	    (void) dbt2set(dbi, &data, &set);
-	} else if (rc == DB_NOTFOUND) {	/* not found */
-	    goto cont;
-	} else {			/* error */
-	    rpmlog(RPMLOG_ERR,
-		_("error(%d) setting \"%s\" records from %s index\n"),
-		rc, (char*)key.data, dbiName(dbi));
-	    rc += 1;
+	if (rc) {
+	    if (rc != RPMRC_NOTFOUND) {
+		/* XXX this is very very wrong... */
+		rc += 1;
+	    }
 	    goto cont;
 	}
 
@@ -2519,7 +2510,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
     logAddRemove(dbiName(dbi), 0, &tagdata);
     while ((i = rpmtdNext(&tagdata)) >= 0) {
-	dbiIndexSet set;
+	dbiIndexSet set = NULL;
 	int freedata = 0, j;
 	DBT key, data;
 	/* Include the tagNum in all indices (only files use though) */
@@ -2557,20 +2548,11 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    continue;
 	}
 
-	/*
-	 * XXX with duplicates, an accurate data value and
-	 * DB_GET_BOTH is needed.
-	 */
+	rc = dbcCursorGet(dbc, key.data, key.size, &set);
 
-	set = NULL;
-
-	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
-	if (rc == 0) {			/* success */
-	    (void) dbt2set(dbi, &data, &set);
-	} else if (rc != DB_NOTFOUND) {	/* error */
-	    rpmlog(RPMLOG_ERR,
-		_("error(%d) getting \"%s\" records from %s index\n"),
-		rc, (char*)key.data, dbiName(dbi));
+	/* Not found means a new key and is not an error. */
+	/* XXX: the error code handling is very very wrong... */
+	if (rc && rc != RPMRC_NOTFOUND) {
 	    rc += 1;
 	    goto cont;
 	}
