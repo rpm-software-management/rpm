@@ -38,7 +38,7 @@ struct rpmdb_s {
     int		db_buildindex;	/*!< Index rebuild indicator */
 
     /* dbenv and related parameters */
-    void * db_dbenv;		/*!< Berkeley DB_ENV handle. */
+    void * db_dbenv;		/*!< Backend private handle */
     struct dbConfig_s cfg;
     int db_remove_env;
 
@@ -80,7 +80,7 @@ struct dbiIndex_s {
     rpmdb dbi_rpmdb;		/*!< the parent rpm database */
     dbiIndexType dbi_type;	/*! Type of dbi (primary / index) */
 
-    DB * dbi_db;		/*!< Berkeley DB * handle */
+    void * dbi_db;		/*!< Backend private handle */
 };
 
 #ifdef __cplusplus
