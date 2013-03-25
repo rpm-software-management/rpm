@@ -160,8 +160,8 @@ static int pkgdbOpen(rpmdb db, int flags, dbiIndex *dbip)
 	    dbSetFSync(db->db_dbenv, 0);
 	}
     } else {
-	rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
-		   rpmTagGetName(RPMDBI_PACKAGES), db->db_ver,
+	rpmlog(RPMLOG_ERR, _("cannot open %s index using %s - %s (%d)\n"),
+		   rpmTagGetName(RPMDBI_PACKAGES), db->db_descr,
 		   (rc > 0 ? strerror(rc) : ""), rc);
     }
 
@@ -206,8 +206,8 @@ static int indexOpen(rpmdb db, rpmDbiTagVal rpmtag, int flags, dbiIndex *dbip)
 	    }
 	}
     } else {
-	rpmlog(RPMLOG_ERR, _("cannot open %s index using db%d - %s (%d)\n"),
-		   rpmTagGetName(rpmtag), db->db_ver,
+	rpmlog(RPMLOG_ERR, _("cannot open %s index using %s - %s (%d)\n"),
+		   rpmTagGetName(rpmtag), db->db_descr,
 		   (rc > 0 ? strerror(rc) : ""), rc);
     }
 
@@ -686,6 +686,7 @@ int rpmdbClose(rpmdb db)
     db->db_fullpath = _free(db->db_fullpath);
     db->db_checked = dbChkFree(db->db_checked);
     db->db_indexes = _free(db->db_indexes);
+    db->db_descr = _free(db->db_descr);
 
     prev = &rpmdbRock;
     while ((next = *prev) != NULL && next != db)
@@ -762,7 +763,7 @@ static rpmdb newRpmdb(const char * root, const char * home,
     db->db_tags = dbiTags;
     db->db_ndbi = sizeof(dbiTags) / sizeof(rpmDbiTag);
     db->db_indexes = xcalloc(db->db_ndbi, sizeof(*db->db_indexes));
-    db->db_ver = DB_VERSION_MAJOR; /* XXX just to put something in messages */
+    db->db_descr = xstrdup("unknown db");
     db->nrefs = 0;
     return rpmdbLink(db);
 }

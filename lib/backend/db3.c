@@ -30,13 +30,12 @@ struct dbiCursor_s {
 static int dbapi_err(rpmdb rdb, const char * msg, int error, int printit)
 {
     if (printit && error) {
-	int db_api = rdb->db_ver;
 	if (msg)
-	    rpmlog(RPMLOG_ERR, _("db%d error(%d) from %s: %s\n"),
-		db_api, error, msg, db_strerror(error));
+	    rpmlog(RPMLOG_ERR, _("%s error(%d) from %s: %s\n"),
+		rdb->db_descr, error, msg, db_strerror(error));
 	else
-	    rpmlog(RPMLOG_ERR, _("db%d error(%d): %s\n"),
-		db_api, error, db_strerror(error));
+	    rpmlog(RPMLOG_ERR, _("%s error(%d): %s\n"),
+		rdb->db_descr, error, db_strerror(error));
     }
     return error;
 }
@@ -131,6 +130,10 @@ static int db_init(rpmdb rdb, const char * dbhome)
     if (rdb->db_dbenv != NULL) {
 	rdb->db_opens++;
 	return 0;
+    } else {
+	/* On first call, set backend description to something... */
+	free(rdb->db_descr);
+	rasprintf(&rdb->db_descr, "db%u", DB_VERSION_MAJOR);
     }
 
     /*

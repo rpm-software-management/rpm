@@ -27,7 +27,7 @@ struct rpmdb_s {
     int		db_flags;
     int		db_mode;	/*!< open mode */
     int		db_perms;	/*!< open permissions */
-    int		db_ver;		/*!< Berkeley DB version */
+    char	* db_descr;	/*!< db backend description (for error msgs) */
     struct dbChk_s * db_checked;/*!< headerCheck()'ed package instances */
     rpmdb	db_next;
     int		db_opens;
