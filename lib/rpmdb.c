@@ -53,7 +53,8 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 static unsigned int pkgInstance(dbiIndex dbi, int alloc);
 static rpmdb rpmdbUnlink(rpmdb db);
 static int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
-		    unsigned char *hdrBlob, unsigned int hdrLen);
+		    unsigned char *hdrBlob, unsigned int hdrLen,
+		    unsigned int *hdrOffset);
 static int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
 static int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
 		    unsigned char **hdrBlob, unsigned int *hdrLen,
@@ -1264,7 +1265,7 @@ static int miFreeHeader(rpmdbMatchIterator mi, dbiIndex dbi)
 
 	    blockSignals(&signalMask);
 	    rc = pkgdbPut(dbi, mi->mi_dbc, mi->mi_prevoffset,
-			  hdrBlob, hdrLen);
+			  hdrBlob, hdrLen, NULL);
 	    unblockSignals(&signalMask);
 
 	    if (rc) {
@@ -2224,7 +2225,8 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 
 /* Update primary Packages index. NULL hdr means remove */
 static int updatePackages(dbiIndex dbi, dbiCursor cursor,
-			  unsigned int hdrNum, DBT *hdr)
+			  unsigned int hdrNum, DBT *hdr,
+			  unsigned int *hdrOffset)
 {
     union _dbswap mi_offset;
     int rc = 0;
@@ -2250,6 +2252,9 @@ static int updatePackages(dbiIndex dbi, dbiCursor cursor,
 	if (rc) {
 	    rpmlog(RPMLOG_ERR,
 		   _("error(%d) adding header #%d record\n"), rc, hdrNum);
+	} else {
+	    if (hdrOffset)
+		*hdrOffset = hdrNum;
 	}
     } else {
 	DBT data;
@@ -2272,18 +2277,21 @@ static int updatePackages(dbiIndex dbi, dbiCursor cursor,
 }
 
 static int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
-		    unsigned char *hdrBlob, unsigned int hdrLen)
+		    unsigned char *hdrBlob, unsigned int hdrLen,
+		    unsigned int *hdrOffset)
 {
     DBT hdr;
     memset(&hdr, 0, sizeof(hdr));
     hdr.data = hdrBlob;
     hdr.size = hdrLen;
-    return updatePackages(dbi, dbc, hdrNum, &hdr);
+    if (hdrNum == 0)
+	hdrNum = pkgInstance(dbi, 1);
+    return updatePackages(dbi, dbc, hdrNum, &hdr, hdrOffset);
 }
 
 static int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
 {
-    return updatePackages(dbi, dbc, hdrNum, NULL);
+    return updatePackages(dbi, dbc, hdrNum, NULL, NULL);
 }
 
 static int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
@@ -2622,10 +2630,8 @@ int rpmdbAdd(rpmdb db, Header h)
 	
     (void) blockSignals(&signalMask);
 
-    hdrNum = pkgInstance(dbi, 1);
-
     /* Add header to primary index */
-    ret = pkgdbPut(dbi, NULL, hdrNum, hdrBlob, hdrLen);
+    ret = pkgdbPut(dbi, NULL, 0, hdrBlob, hdrLen, &hdrNum);
 
     /* Add associated data to secondary indexes */
     if (ret == 0) {	
