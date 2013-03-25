@@ -2,7 +2,6 @@
 #define H_RPMDB_INTERNAL
 
 #include <assert.h>
-#include <db.h>
 
 #include <rpm/rpmsw.h>
 #include <rpm/rpmtypes.h>

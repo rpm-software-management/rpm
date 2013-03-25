@@ -8,6 +8,7 @@ static int _debug = 1;	/* XXX if < 0 debugging, > 0 unusual error returns */
 
 #include <errno.h>
 #include <sys/wait.h>
+#include <db.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmmacro.h>
@@ -303,7 +304,7 @@ dbiCursor dbiCursorFree(dbiCursor dbc)
     return NULL;
 }
 
-int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
+static int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
     int rc = EINVAL;
     int sane = (key->data != NULL && key->size > 0 &&
@@ -322,7 +323,7 @@ int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
     return rc;
 }
 
-int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
+static int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
     int rc = EINVAL;
     int sane = ((flags == DB_NEXT) || (key->data != NULL && key->size > 0));
@@ -353,7 +354,7 @@ int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
     return rc;
 }
 
-int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
+static int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags)
 {
     int rc = EINVAL;
     int sane = (key->data != NULL && key->size > 0);
@@ -406,7 +407,7 @@ dbiIndex dbiCursorIndex(dbiCursor dbc)
     return (dbc != NULL) ? dbc->dbi : NULL;
 }
 
-int dbiByteSwapped(dbiIndex dbi)
+static int dbiByteSwapped(dbiIndex dbi)
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
@@ -647,3 +648,407 @@ int dbiOpen(rpmdb rdb, rpmDbiTagVal rpmtag, dbiIndex * dbip, int flags)
 
     return rc;
 }
+
+union _dbswap {
+    unsigned int ui;
+    unsigned char uc[4];
+};
+
+#define	_DBSWAP(_a) \
+\
+  { unsigned char _b, *_c = (_a).uc; \
+    _b = _c[3]; _c[3] = _c[0]; _c[0] = _b; \
+    _b = _c[2]; _c[2] = _c[1]; _c[1] = _b; \
+\
+  }
+
+/**
+ * Convert retrieved data to index set.
+ * @param dbi		index database handle
+ * @param data		retrieved data
+ * @retval setp		(malloc'ed) index set
+ * @return		0 on success
+ */
+static int dbt2set(dbiIndex dbi, DBT * data, dbiIndexSet * setp)
+{
+    int _dbbyteswapped = dbiByteSwapped(dbi);
+    const char * sdbir;
+    dbiIndexSet set;
+    unsigned int i;
+    dbiIndexType itype = dbiType(dbi);
+
+    if (dbi == NULL || data == NULL || setp == NULL)
+	return -1;
+
+    if ((sdbir = data->data) == NULL) {
+	*setp = NULL;
+	return 0;
+    }
+
+    set = dbiIndexSetNew(data->size / itype);
+    set->count = data->size / itype;
+
+    switch (itype) {
+    default:
+    case DBI_SECONDARY:
+	for (i = 0; i < set->count; i++) {
+	    union _dbswap hdrNum, tagNum;
+
+	    memcpy(&hdrNum.ui, sdbir, sizeof(hdrNum.ui));
+	    sdbir += sizeof(hdrNum.ui);
+	    memcpy(&tagNum.ui, sdbir, sizeof(tagNum.ui));
+	    sdbir += sizeof(tagNum.ui);
+	    if (_dbbyteswapped) {
+		_DBSWAP(hdrNum);
+		_DBSWAP(tagNum);
+	    }
+	    set->recs[i].hdrNum = hdrNum.ui;
+	    set->recs[i].tagNum = tagNum.ui;
+	}
+	break;
+    case DBI_PRIMARY:
+	for (i = 0; i < set->count; i++) {
+	    union _dbswap hdrNum;
+
+	    memcpy(&hdrNum.ui, sdbir, sizeof(hdrNum.ui));
+	    sdbir += sizeof(hdrNum.ui);
+	    if (_dbbyteswapped) {
+		_DBSWAP(hdrNum);
+	    }
+	    set->recs[i].hdrNum = hdrNum.ui;
+	    set->recs[i].tagNum = 0;
+	}
+	break;
+    }
+    *setp = set;
+    return 0;
+}
+
+/**
+ * Convert index set to database representation.
+ * @param dbi		index database handle
+ * @param data		retrieved data
+ * @param set		index set
+ * @return		0 on success
+ */
+static int set2dbt(dbiIndex dbi, DBT * data, dbiIndexSet set)
+{
+    int _dbbyteswapped = dbiByteSwapped(dbi);
+    char * tdbir;
+    unsigned int i;
+    dbiIndexType itype = dbiType(dbi);
+
+    if (dbi == NULL || data == NULL || set == NULL)
+	return -1;
+
+    data->size = set->count * itype;
+    if (data->size == 0) {
+	data->data = NULL;
+	return 0;
+    }
+    tdbir = data->data = xmalloc(data->size);
+
+    switch (itype) {
+    default:
+    case DBI_SECONDARY:
+	for (i = 0; i < set->count; i++) {
+	    union _dbswap hdrNum, tagNum;
+
+	    memset(&hdrNum, 0, sizeof(hdrNum));
+	    memset(&tagNum, 0, sizeof(tagNum));
+	    hdrNum.ui = set->recs[i].hdrNum;
+	    tagNum.ui = set->recs[i].tagNum;
+	    if (_dbbyteswapped) {
+		_DBSWAP(hdrNum);
+		_DBSWAP(tagNum);
+	    }
+	    memcpy(tdbir, &hdrNum.ui, sizeof(hdrNum.ui));
+	    tdbir += sizeof(hdrNum.ui);
+	    memcpy(tdbir, &tagNum.ui, sizeof(tagNum.ui));
+	    tdbir += sizeof(tagNum.ui);
+	}
+	break;
+    case DBI_PRIMARY:
+	for (i = 0; i < set->count; i++) {
+	    union _dbswap hdrNum;
+
+	    memset(&hdrNum, 0, sizeof(hdrNum));
+	    hdrNum.ui = set->recs[i].hdrNum;
+	    if (_dbbyteswapped) {
+		_DBSWAP(hdrNum);
+	    }
+	    memcpy(tdbir, &hdrNum.ui, sizeof(hdrNum.ui));
+	    tdbir += sizeof(hdrNum.ui);
+	}
+	break;
+    }
+
+    return 0;
+}
+
+rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
+			  dbiIndexSet *set)
+{
+    rpmRC rc = RPMRC_FAIL; /* assume failure */
+    if (dbc != NULL && set != NULL) {
+	dbiIndex dbi = dbiCursorIndex(dbc);
+	int cflags = DB_NEXT;
+	int dbrc;
+	DBT data, key;
+	memset(&data, 0, sizeof(data));
+	memset(&key, 0, sizeof(key));
+
+	if (keyp) {
+	    key.data = (void *) keyp; /* discards const */
+	    key.size = keylen;
+	    cflags = DB_SET;
+	}
+
+	dbrc = dbiCursorGet(dbc, &key, &data, cflags);
+
+	if (dbrc == 0) {
+	    dbiIndexSet newset = NULL;
+	    dbt2set(dbi, &data, &newset);
+	    if (*set == NULL) {
+		*set = newset;
+	    } else {
+		dbiIndexSetAppendSet(*set, newset, 0);
+		dbiIndexSetFree(newset);
+	    }
+	    rc = RPMRC_OK;
+	} else if (dbrc == DB_NOTFOUND) {
+	    rc = RPMRC_NOTFOUND;
+	} else {
+	    rpmlog(RPMLOG_ERR,
+		   _("error(%d) getting \"%s\" records from %s index: %s\n"),
+		   dbrc, keyp ? keyp : "???", dbiName(dbi), db_strerror(dbrc));
+	}
+    }
+    return rc;
+}
+
+/* Update secondary index. NULL set deletes the key */
+static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
+			 dbiIndexSet set)
+{
+    rpmRC rc = RPMRC_FAIL;
+
+    if (dbc && keyp) {
+	dbiIndex dbi = dbiCursorIndex(dbc);
+	int dbrc;
+	DBT data, key;
+	memset(&key, 0, sizeof(data));
+	memset(&data, 0, sizeof(data));
+
+	key.data = (void *) keyp; /* discards const */
+	key.size = keylen;
+
+	if (set)
+	    set2dbt(dbi, &data, set);
+
+	if (dbiIndexSetCount(set) > 0) {
+	    dbrc = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
+	    if (dbrc) {
+		rpmlog(RPMLOG_ERR,
+		       _("error(%d) storing record \"%s\" into %s\n"),
+		       dbrc, (char*)key.data, dbiName(dbi));
+	    }
+	    free(data.data);
+	} else {
+	    dbrc = dbiCursorDel(dbc, &key, &data, 0);
+	    if (dbrc) {
+		rpmlog(RPMLOG_ERR,
+		       _("error(%d) removing record \"%s\" from %s\n"),
+		       dbrc, (char*)key.data, dbiName(dbi));
+	    }
+	}
+
+	if (dbrc == 0)
+	    rc = RPMRC_OK;
+    }
+
+    return rc;
+}
+
+rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
+		  dbiIndexSet set)
+{
+    return updateIndex(dbc, keyp, keylen, set);
+}
+
+rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen)
+{
+    return updateIndex(dbc, keyp, keylen, NULL);
+}
+
+/* Update primary Packages index. NULL hdr means remove */
+static int updatePackages(dbiIndex dbi, dbiCursor cursor,
+			  unsigned int hdrNum, DBT *hdr,
+			  unsigned int *hdrOffset)
+{
+    union _dbswap mi_offset;
+    int rc = 0;
+    dbiCursor dbc = cursor;;
+    DBT key;
+
+    if (dbi == NULL || hdrNum == 0)
+	return 1;
+
+    memset(&key, 0, sizeof(key));
+
+    if (dbc == NULL)
+	dbc = dbiCursorInit(dbi, DBC_WRITE);
+
+    mi_offset.ui = hdrNum;
+    if (dbiByteSwapped(dbi) == 1)
+	_DBSWAP(mi_offset);
+    key.data = (void *) &mi_offset;
+    key.size = sizeof(mi_offset.ui);
+
+    if (hdr) {
+	rc = dbiCursorPut(dbc, &key, hdr, DB_KEYLAST);
+	if (rc) {
+	    rpmlog(RPMLOG_ERR,
+		   _("error(%d) adding header #%d record\n"), rc, hdrNum);
+	} else {
+	    if (hdrOffset)
+		*hdrOffset = hdrNum;
+	}
+    } else {
+	DBT data;
+
+	memset(&data, 0, sizeof(data));
+	rc = dbiCursorGet(dbc, &key, &data, DB_SET);
+	if (rc) {
+	    rpmlog(RPMLOG_ERR,
+		   _("error(%d) removing header #%d record\n"), rc, hdrNum);
+	} else
+	    rc = dbiCursorDel(dbc, &key, &data, 0);
+    }
+
+    /* only free the cursor if we created it here */
+    if (dbc != cursor)
+	dbiCursorFree(dbc);
+    dbiSync(dbi, 0);
+
+    return rc;
+}
+
+/* Get current header instance number or try to allocate a new one */
+static unsigned int pkgInstance(dbiIndex dbi, int alloc)
+{
+    unsigned int hdrNum = 0;
+
+    if (dbi != NULL && dbiType(dbi) == DBI_PRIMARY) {
+	dbiCursor dbc;
+	DBT key, data;
+	unsigned int firstkey = 0;
+	union _dbswap mi_offset;
+	int ret;
+
+	memset(&key, 0, sizeof(key));
+	memset(&data, 0, sizeof(data));
+
+	dbc = dbiCursorInit(dbi, alloc ? DBC_WRITE : 0);
+
+	/* Key 0 holds the current largest instance, fetch it */
+	key.data = &firstkey;
+	key.size = sizeof(firstkey);
+	ret = dbiCursorGet(dbc, &key, &data, DB_SET);
+
+	if (ret == 0 && data.data) {
+	    memcpy(&mi_offset, data.data, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    hdrNum = mi_offset.ui;
+	}
+
+	if (alloc) {
+	    /* Rather complicated "increment by one", bswapping as needed */
+	    ++hdrNum;
+	    mi_offset.ui = hdrNum;
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    if (ret == 0 && data.data) {
+		memcpy(data.data, &mi_offset, sizeof(mi_offset.ui));
+	    } else {
+		data.data = &mi_offset;
+		data.size = sizeof(mi_offset.ui);
+	    }
+
+	    /* Unless we manage to insert the new instance number, we failed */
+	    ret = dbiCursorPut(dbc, &key, &data, DB_KEYLAST);
+	    if (ret) {
+		hdrNum = 0;
+		rpmlog(RPMLOG_ERR,
+		    _("error(%d) allocating new package instance\n"), ret);
+	    }
+
+	    dbiSync(dbi, 0);
+	}
+	dbiCursorFree(dbc);
+    }
+    
+    return hdrNum;
+}
+
+int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+	     unsigned char *hdrBlob, unsigned int hdrLen,
+	     unsigned int *hdrOffset)
+{
+    DBT hdr;
+    memset(&hdr, 0, sizeof(hdr));
+    hdr.data = hdrBlob;
+    hdr.size = hdrLen;
+    if (hdrNum == 0)
+	hdrNum = pkgInstance(dbi, 1);
+    return updatePackages(dbi, dbc, hdrNum, &hdr, hdrOffset);
+}
+
+int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum)
+{
+    return updatePackages(dbi, dbc, hdrNum, NULL, NULL);
+}
+
+int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+	     unsigned char **hdrBlob, unsigned int *hdrLen,
+	     unsigned int *hdrOffset)
+{
+    DBT key, data;
+    union _dbswap mi_offset;
+    int rc = 0;
+
+    if (dbi == NULL || dbc == NULL)
+	return 1;
+
+    memset(&key, 0, sizeof(key));
+    memset(&data, 0, sizeof(data));
+
+    if (hdrNum) {
+	mi_offset.ui = hdrNum;
+	if (dbiByteSwapped(dbi) == 1)
+	    _DBSWAP(mi_offset);
+	key.data = (void *) &mi_offset;
+	key.size = sizeof(mi_offset.ui);
+    }
+
+#if !defined(_USE_COPY_LOAD)
+    data.flags |= DB_DBT_MALLOC;
+#endif
+    rc = dbiCursorGet(dbc, &key, &data, hdrNum ? DB_SET : DB_NEXT);
+    if (rc == 0) {
+	if (hdrBlob)
+	    *hdrBlob = data.data;
+	if (hdrLen)
+	    *hdrLen = data.size;
+	if (hdrOffset) {
+	    memcpy(&mi_offset, key.data, sizeof(mi_offset.ui));
+	    if (dbiByteSwapped(dbi) == 1)
+		_DBSWAP(mi_offset);
+	    *hdrOffset = mi_offset.ui;
+	}
+    }
+
+    return rc;
+}
+

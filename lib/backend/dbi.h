@@ -1,6 +1,8 @@
 #ifndef _DBI_H
 #define _DBI_H
 
+#include "dbiset.h"
+
 enum rpmdbFlags {
     RPMDB_FLAG_JUSTCHECK	= (1 << 0),
     RPMDB_FLAG_REBUILD		= (1 << 1),
@@ -157,14 +159,6 @@ RPM_GNUC_INTERNAL
 int dbiVerify(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
- * Is database byte swapped?
- * @param dbi		index database handle
- * @return		0 same order, 1 swapped order
- */
-RPM_GNUC_INTERNAL
-int dbiByteSwapped(dbiIndex dbi);
-
-/** \ingroup dbi
  * Type of dbi (primary data / index)
  * @param dbi		index database handle
  * @return		type of dbi
@@ -206,39 +200,6 @@ RPM_GNUC_INTERNAL
 dbiCursor dbiCursorFree(dbiCursor dbc);
 
 /** \ingroup dbi
- * Store (key,data) pair in index database.
- * @param dbcursor	database cursor handle
- * @param key		store key value/length/flags
- * @param data		store data value/length/flags
- * @param flags		flags
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiCursorPut(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
-
-/** \ingroup dbi
- * Retrieve (key,data) pair from index database.
- * @param dbc		database cursor handle
- * @param key		retrieve key value/length/flags
- * @param data		retrieve data value/length/flags
- * @param flags		flags
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiCursorGet(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
-
-/** \ingroup dbi
- * Delete (key,data) pair(s) from index database.
- * @param dbc		database cursor handle
- * @param key		delete key value/length/flags
- * @param data		delete data value/length/flags
- * @param flags		flags
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiCursorDel(dbiCursor dbc, DBT * key, DBT * data, unsigned int flags);
-
-/** \ingroup dbi
  * Retrieve count of (possible) duplicate items.
  * @param dbcursor	database cursor
  * @return		number of duplicates
@@ -256,6 +217,27 @@ const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen);
  */
 RPM_GNUC_INTERNAL
 dbiIndex dbiCursorIndex(dbiCursor dbc);
+
+RPM_GNUC_INTERNAL
+int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
+             unsigned char *hdrBlob, unsigned int hdrLen,
+             unsigned int *hdrOffset);
+RPM_GNUC_INTERNAL
+int pkgdbDel(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum);
+RPM_GNUC_INTERNAL
+int pkgdbGet(dbiIndex dbi, dbiCursor dbc, unsigned int hdrNum,
+             unsigned char **hdrBlob, unsigned int *hdrLen,
+             unsigned int *hdrOffset);
+
+RPM_GNUC_INTERNAL
+rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
+                   dbiIndexSet *set);
+RPM_GNUC_INTERNAL
+rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
+		   dbiIndexSet set);
+RPM_GNUC_INTERNAL
+rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen);
+
 #ifdef __cplusplus
 }
 #endif

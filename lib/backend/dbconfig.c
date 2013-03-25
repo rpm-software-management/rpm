@@ -5,6 +5,7 @@
 #include "system.h"
 
 #include <popt.h>
+#include <db.h>
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmmacro.h>
