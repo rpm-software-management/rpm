@@ -703,7 +703,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	    headerGet(h, RPMTAG_FILESTATES, &fs, HEADERGET_MINMEM);
 
 	do {
-	    int num = dbiIndexRecordFileNumber(allMatches, i);
+	    unsigned int num = dbiIndexRecordFileNumber(allMatches, i);
 	    int skip = 0;
 
 	    if (usestate) {
