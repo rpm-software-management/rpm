@@ -115,12 +115,12 @@ unsigned int dbiIndexSetCount(dbiIndexSet set)
     return (set != NULL) ? set->count : 0;
 }
 
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno)
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno)
 {
     return set->recs[recno].hdrNum;
 }
 
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno)
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno)
 {
     return set->recs[recno].tagNum;
 }

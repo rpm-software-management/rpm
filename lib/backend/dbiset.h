@@ -66,11 +66,11 @@ unsigned int dbiIndexSetCount(dbiIndexSet set);
 
 /* Return record offset of header from element in index database set. */
 RPM_GNUC_INTERNAL
-unsigned int dbiIndexRecordOffset(dbiIndexSet set, int recno);
+unsigned int dbiIndexRecordOffset(dbiIndexSet set, unsigned int recno);
 
 /* Return file index from element in index database set. */
 RPM_GNUC_INTERNAL
-unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, int recno);
+unsigned int dbiIndexRecordFileNumber(dbiIndexSet set, unsigned int recno);
 
 /* Destroy set of index database items */
 RPM_GNUC_INTERNAL
