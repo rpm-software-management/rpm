@@ -45,10 +45,10 @@ void dbiIndexSetSort(dbiIndexSet set)
      * than pure quicksort, but glibc uses msort_with_tmp() on stack.
      */
     if (set && set->recs && set->count > 1) {
-#if defined(__GLIBC__)
-	qsort(set->recs, set->count, sizeof(*set->recs), hdrNumCmp);
-#else
+#if HAVE_MERGESORT
 	mergesort(set->recs, set->count, sizeof(*set->recs), hdrNumCmp);
+#else
+	qsort(set->recs, set->count, sizeof(*set->recs), hdrNumCmp);
 #endif
     }
 }
