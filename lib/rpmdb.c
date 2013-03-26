@@ -1642,15 +1642,16 @@ int rpmdbPruneIterator(rpmdbMatchIterator mi, removedHash hdrNums)
     return 0;
 }
 
-int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums)
+int rpmdbAppendIterator(rpmdbMatchIterator mi,
+			const unsigned int * hdrNums, unsigned int nHdrNums)
 {
-    if (mi == NULL || hdrNums == NULL || nHdrNums <= 0)
+    if (mi == NULL || hdrNums == NULL || nHdrNums == 0)
 	return 1;
 
     if (mi->mi_set == NULL)
 	mi->mi_set = dbiIndexSetNew(nHdrNums);
 
-    for (int i = 0; i < nHdrNums; i++) {
+    for (unsigned int i = 0; i < nHdrNums; i++) {
 	struct dbiIndexItem rec = { .hdrNum = hdrNums[i], .tagNum = 0 };
 	dbiIndexSetAppend(mi->mi_set, &rec, 1, 0);
     }

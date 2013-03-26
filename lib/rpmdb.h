@@ -79,7 +79,7 @@ unsigned int rpmdbGetIteratorFileNum(rpmdbMatchIterator mi);
  * @return		0 on success, 1 on failure (bad args)
  */
 int rpmdbAppendIterator(rpmdbMatchIterator mi,
-		const int * hdrNums, int nHdrNums);
+			const unsigned int * hdrNums, unsigned int nHdrNums);
 
 /** \ingroup rpmdb
  * Add pattern to iterator selector.
