@@ -198,10 +198,12 @@ runroot rpm -i \
 RPMPY_CHECK([
 ts = rpm.ts()
 ix = 0
-for h in ts.dbMatch():
-    if h['name'] == 'hello':
-        ix = h['dbinstance']
-        break
+mi = ts.dbMatch()
+mi.pattern('name', rpm.RPMMIRE_STRCMP, 'hello')
+for h in mi:
+    ix = h['dbinstance']
+    break
+del mi
 for h in ts.dbMatch('packages', ix):
     myprint(h['nevra'])
 ],
