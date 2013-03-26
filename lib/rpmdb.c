@@ -4,8 +4,6 @@
 
 #include "system.h"
 
-#define	_USE_COPY_LOAD	/* XXX don't use DB_DBT_MALLOC (yet) */
-
 #include <sys/file.h>
 #include <utime.h>
 #include <errno.h>

@@ -3,6 +3,9 @@
 
 #include "dbiset.h"
 
+/* XXX: make this backend-specific, eliminate or something... */
+#define	_USE_COPY_LOAD
+
 enum rpmdbFlags {
     RPMDB_FLAG_JUSTCHECK	= (1 << 0),
     RPMDB_FLAG_REBUILD		= (1 << 1),
