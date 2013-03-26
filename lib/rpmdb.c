@@ -720,7 +720,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 			.hdrNum = dbiIndexRecordOffset(allMatches, i),
 			.tagNum = dbiIndexRecordFileNumber(allMatches, i),
 		    };
-		    dbiIndexSetAppend(*matches, &rec, 1, sizeof(rec), 0);
+		    dbiIndexSetAppend(*matches, &rec, 1, 0);
 		}
 	    }
 
@@ -1649,7 +1649,11 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi, const int * hdrNums, int nHdrNums
 
     if (mi->mi_set == NULL)
 	mi->mi_set = dbiIndexSetNew(nHdrNums);
-    (void) dbiIndexSetAppend(mi->mi_set, hdrNums, nHdrNums, sizeof(*hdrNums), 0);
+
+    for (int i = 0; i < nHdrNums; i++) {
+	struct dbiIndexItem rec = { .hdrNum = hdrNums[i], .tagNum = 0 };
+	dbiIndexSetAppend(mi->mi_set, &rec, 1, 0);
+    }
     return 0;
 }
 
@@ -2180,7 +2184,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	if (set == NULL)		/* not found or duplicate */
 	    set = dbiIndexSetNew(0);
 
-	(void) dbiIndexSetAppend(set, &rec, 1, sizeof(rec), 0);
+	(void) dbiIndexSetAppend(set, &rec, 1, 0);
 
 	rc = dbcCursorPut(dbc, key, keylen, set);
 

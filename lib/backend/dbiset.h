@@ -41,13 +41,12 @@ int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
  * @param set		set of index database items
  * @param recs		array of items to append to set
  * @param nrecs		number of items
- * @param recsize	size of an array item
  * @param sortset	should resulting set be sorted?
  * @return		0 success, 1 failure (bad args)
  */
 RPM_GNUC_INTERNAL
-int dbiIndexSetAppend(dbiIndexSet set, const void * recs,
-		      int nrecs, size_t recsize, int sortset);
+int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
+		      int nrecs, int sortset);
 
 /**
  * Remove element(s) from set of index database items.
