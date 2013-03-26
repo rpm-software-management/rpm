@@ -260,7 +260,6 @@ struct rpmdbMatchIterator_s {
     int			mi_sorted;
     int			mi_cflags;
     int			mi_modified;
-    unsigned int	mi_keyoffset;	/* header instance (native endian) */
     unsigned int	mi_prevoffset;	/* header instance (native endian) */
     unsigned int	mi_offset;	/* header instance (native endian) */
     unsigned int	mi_filenum;	/* tag element (native endian) */
@@ -1517,8 +1516,7 @@ top:
 	    mi->mi_offset = dbiIndexRecordOffset(mi->mi_set, mi->mi_setx);
 	    mi->mi_filenum = dbiIndexRecordFileNumber(mi->mi_set, mi->mi_setx);
 	} else {
-	    rc = pkgdbGet(dbi, mi->mi_dbc, mi->mi_keyoffset,
-			  &uh, &uhlen, &mi->mi_offset);
+	    rc = pkgdbGet(dbi, mi->mi_dbc, 0, &uh, &uhlen, &mi->mi_offset);
 
 	    /* Terminate on error or end of keys */
 	    if (rc || (mi->mi_setx && mi->mi_offset == 0))
@@ -1528,10 +1526,8 @@ top:
     } while (mi->mi_offset == 0);
 
     /* If next header is identical, return it now. */
-    if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset) {
-	/* ...but rpmdb record numbers are unique, avoid endless loop */
-	return (mi->mi_rpmtag == RPMDBI_PACKAGES) ? NULL : mi->mi_h;
-    }
+    if (mi->mi_prevoffset && mi->mi_offset == mi->mi_prevoffset)
+	return mi->mi_h;
 
     /* Retrieve next header blob for index iterator. */
     if (uh == NULL) {
@@ -1565,8 +1561,7 @@ top:
      * Skip this header if iterator selector (if any) doesn't match.
      */
     if (mireSkip(mi)) {
-	/* XXX hack, can't restart with Packages locked on single instance. */
-	if (mi->mi_set || mi->mi_keyoffset == 0)
+	if (mi->mi_set)
 	    goto top;
 	return NULL;
     }
@@ -1676,7 +1671,6 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
     mi->mi_sorted = 0;
     mi->mi_cflags = 0;
     mi->mi_modified = 0;
-    mi->mi_keyoffset = 0;
     mi->mi_prevoffset = 0;
     mi->mi_offset = 0;
     mi->mi_filenum = 0;
@@ -1694,22 +1688,20 @@ rpmdbMatchIterator rpmdbNewIterator(rpmdb db, rpmDbiTagVal dbitag)
 };
 
 static rpmdbMatchIterator pkgdbIterInit(rpmdb db,
-				        const void * keyp, size_t keylen)
+				    const unsigned int * keyp, size_t keylen)
 {
     rpmdbMatchIterator mi = NULL;
     rpmDbiTagVal dbtag = RPMDBI_PACKAGES;
     dbiIndex pkgs = NULL;
 
     /* Require a sane keylen if one is specified */
-    if (keyp && keylen != sizeof(mi->mi_keyoffset))
+    if (keyp && keylen != sizeof(*keyp))
 	return NULL;
 
     if (pkgdbOpen(db, 0, &pkgs) == 0) {
 	mi = rpmdbNewIterator(db, dbtag);
-	/* Copy the retrieval key. */
-	if (keyp) {
-	    memcpy(&mi->mi_keyoffset, keyp, keylen);
-	}
+	if (keyp)
+	    rpmdbAppendIterator(mi, keyp, 1);
     }
     return mi;
 }
