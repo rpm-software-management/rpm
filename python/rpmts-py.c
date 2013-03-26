@@ -609,6 +609,10 @@ rpmts_Match(rpmtsObject * s, PyObject * args, PyObject * kwds)
 	    lkey = PyInt_AsLong(Key);
 	    key = (char *)&lkey;
 	    len = sizeof(lkey);
+	} else if (PyLong_Check(Key)) {
+	    lkey = PyLong_AsLong(Key);
+	    key = (char *)&lkey;
+	    len = sizeof(lkey);
 	} else if (utf8FromPyObject(Key, &str)) {
 	    key = PyBytes_AsString(str);
 	    len = PyBytes_Size(str);
