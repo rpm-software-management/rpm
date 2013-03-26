@@ -46,7 +46,7 @@ int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
  */
 RPM_GNUC_INTERNAL
 int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
-		      int nrecs, int sortset);
+		      unsigned int nrecs, int sortset);
 
 /**
  * Remove element(s) from set of index database items.
@@ -58,7 +58,7 @@ int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
  */
 RPM_GNUC_INTERNAL
 int dbiIndexSetPrune(dbiIndexSet set, struct dbiIndexItem * recs,
-		     int nrecs, int sorted);
+		     unsigned int nrecs, int sorted);
 
 /* Count items in index database set. */
 RPM_GNUC_INTERNAL

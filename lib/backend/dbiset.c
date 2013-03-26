@@ -69,9 +69,9 @@ int dbiIndexSetAppendSet(dbiIndexSet dest, dbiIndexSet src, int sortset)
 }
 
 int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
-		      int nrecs, int sortset)
+		      unsigned int nrecs, int sortset)
 {
-    if (set == NULL || recs == NULL || nrecs <= 0)
+    if (set == NULL || recs == NULL || nrecs == 0)
 	return 1;
 
     dbiIndexSetGrow(set, nrecs);
@@ -85,7 +85,7 @@ int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
 }
 
 int dbiIndexSetPrune(dbiIndexSet set, struct dbiIndexItem * recs,
-		     int nrecs, int sorted)
+		     unsigned int nrecs, int sorted)
 {
     unsigned int from;
     unsigned int to = 0;
