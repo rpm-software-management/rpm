@@ -1695,11 +1695,14 @@ static rpmdbMatchIterator pkgdbIterInit(rpmdb db,
     rpmDbiTagVal dbtag = RPMDBI_PACKAGES;
     dbiIndex pkgs = NULL;
 
+    /* Require a sane keylen if one is specified */
+    if (keyp && keylen != sizeof(mi->mi_keyoffset))
+	return NULL;
+
     if (pkgdbOpen(db, 0, &pkgs) == 0) {
 	mi = rpmdbNewIterator(db, dbtag);
 	/* Copy the retrieval key. */
 	if (keyp) {
-	    assert(keylen == sizeof(mi->mi_keyoffset)); /* XXX eliminate */
 	    memcpy(&mi->mi_keyoffset, keyp, keylen);
 	}
     }
