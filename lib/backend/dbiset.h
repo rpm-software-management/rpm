@@ -54,13 +54,12 @@ int dbiIndexSetAppend(dbiIndexSet set, const void * recs,
  * @param set		set of index database items
  * @param recs		array of items to remove from set
  * @param nrecs		number of items
- * @param recsize	size of an array item
  * @param sorted	array is already sorted?
  * @return		0 success, 1 failure (no items found)
  */
 RPM_GNUC_INTERNAL
-int dbiIndexSetPrune(dbiIndexSet set, void * recs, int nrecs,
-		     size_t recsize, int sorted);
+int dbiIndexSetPrune(dbiIndexSet set, struct dbiIndexItem * recs,
+		     int nrecs, int sorted);
 
 /* Count items in index database set. */
 RPM_GNUC_INTERNAL

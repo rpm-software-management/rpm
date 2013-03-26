@@ -93,13 +93,14 @@ int dbiIndexSetAppend(dbiIndexSet set, const void * recs,
     return 0;
 }
 
-int dbiIndexSetPrune(dbiIndexSet set, void * recs, int nrecs,
-		size_t recsize, int sorted)
+int dbiIndexSetPrune(dbiIndexSet set, struct dbiIndexItem * recs,
+		     int nrecs, int sorted)
 {
     unsigned int from;
     unsigned int to = 0;
     unsigned int num = set->count;
     unsigned int numCopied = 0;
+    size_t recsize = sizeof(*recs);
 
     assert(set->count > 0);
     if (nrecs > 1 && !sorted)

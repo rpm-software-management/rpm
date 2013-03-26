@@ -2026,7 +2026,7 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	    continue;
 	}
 
-	rc = dbiIndexSetPrune(set, &rec, 1, sizeof(rec), 1);
+	rc = dbiIndexSetPrune(set, &rec, 1, 1);
 
 	/* If nothing was pruned, then don't bother updating. */
 	if (rc) {
