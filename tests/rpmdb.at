@@ -162,6 +162,30 @@ runroot rpm -i \
 
 AT_CLEANUP
 
+AT_SETUP([rpmdb --rebuilddb])
+AT_KEYWORDS([rpmdb])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+
+runroot rpm -U --noscripts --nodeps --ignorearch \
+  /data/RPMS/hello-1.0-1.i386.rpm
+runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
+runroot rpm -U --noscripts --nodeps --ignorearch \
+  /data/RPMS/hello-2.0-1.i686.rpm
+runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
+runroot rpmdb --rebuilddb
+runroot rpm -qa --qf "%{nevra} %{dbinstance}\n"
+],
+[],
+[hello-1.0-1.i386 1
+hello-2.0-1.i686 2
+hello-2.0-1.i686 1
+],
+[])
+AT_CLEANUP
+
+
 # ------------------------------
 # Install and verify status
 AT_SETUP([rpm -U and verify status])
