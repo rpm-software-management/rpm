@@ -157,7 +157,7 @@ rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest,
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpmFileAction action = XFO_ACTION(op);
 
-    if (!XFA_SKIPPING(action)) {
+    if (sehandle && !XFA_SKIPPING(action)) {
 	security_context_t scon = NULL;
 	if (selabel_lookup_raw(sehandle, &scon, dest, file_mode) == 0) {
 	    int conrc = lsetfilecon(path, scon);
