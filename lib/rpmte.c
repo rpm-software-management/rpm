@@ -904,38 +904,19 @@ rpmRC rpmteSetupCollectionPlugins(rpmte te)
     return rc;
 }
 
-static rpmRC rpmteRunAllCollections(rpmte te, rpmPluginHook hook)
+typedef rpmRC (*collhook_func)(rpmPlugins, const char *);
+
+static rpmRC rpmteRunAllCollections(rpmte te, ARGV_const_t colls,
+				    collhook_func collHook)
 {
-    ARGV_const_t colls;
-    rpmRC(*collHook) (rpmPlugins, const char *);
     rpmRC rc = RPMRC_OK;
 
-    if (rpmtsFlags(te->ts) & RPMTRANS_FLAG_NOCOLLECTIONS) {
-	goto exit;
+    if (!(rpmtsFlags(te->ts) & RPMTRANS_FLAG_NOCOLLECTIONS)) {
+	for (; colls && *colls; colls++) {
+	    rc = collHook(rpmtsPlugins(te->ts), *colls);
+	}
     }
 
-    switch (hook) {
-    case PLUGINHOOK_COLL_POST_ADD:
-	colls = te->lastInCollectionsAdd;
-	collHook = rpmpluginsCallCollectionPostAdd;
-	break;
-    case PLUGINHOOK_COLL_POST_ANY:
-	colls = te->lastInCollectionsAny;
-	collHook = rpmpluginsCallCollectionPostAny;
-	break;
-    case PLUGINHOOK_COLL_PRE_REMOVE:
-	colls = te->firstInCollectionsRemove;
-	collHook = rpmpluginsCallCollectionPreRemove;
-	break;
-    default:
-	goto exit;
-    }
-
-    for (; colls && *colls; colls++) {
-	rc = collHook(rpmtsPlugins(te->ts), *colls);
-    }
-
-  exit:
     return rc;
 }
 
@@ -955,7 +936,8 @@ int rpmteProcess(rpmte te, pkgGoal goal)
     }
 
     if (!scriptstage) {
-	rpmteRunAllCollections(te, PLUGINHOOK_COLL_PRE_REMOVE);
+	rpmteRunAllCollections(te, te->firstInCollectionsRemove,
+			       rpmpluginsCallCollectionPreRemove);
     }
 
     if (rpmteOpen(te, reset_fi)) {
@@ -964,8 +946,10 @@ int rpmteProcess(rpmte te, pkgGoal goal)
     }
     
     if (!scriptstage) {
-	rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ADD);
-	rpmteRunAllCollections(te, PLUGINHOOK_COLL_POST_ANY);
+	rpmteRunAllCollections(te, te->lastInCollectionsAdd,
+			       rpmpluginsCallCollectionPostAdd);
+	rpmteRunAllCollections(te, te->lastInCollectionsAny,
+			       rpmpluginsCallCollectionPostAny);
     }
 
     if (failed) {
