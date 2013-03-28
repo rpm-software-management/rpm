@@ -12,27 +12,32 @@
 #define STR1(x) #x
 #define STR(x) STR1(x)
 
+struct rpmPlugin_s {
+    char *name;
+    void *handle;
+};
+
 struct rpmPlugins_s {
-    void **handles;
-    ARGV_t names;
+    rpmPlugin *plugins;
     int count;
     rpmts ts;
 };
 
 static const char * rpmpluginsGetName(rpmPlugins plugins, int i)
 {
-    return plugins->names[i];
+    return plugins->plugins[i]->name;
 }
 
-static int rpmpluginsGetPluginIndex(rpmPlugins plugins, const char *name)
+static rpmPlugin rpmpluginsGetPlugin(rpmPlugins plugins, const char *name)
 {
     int i;
     for (i = 0; i < plugins->count; i++) {
-	if (rstreq(rpmpluginsGetName(plugins, i), name)) {
-	    return i;
+	rpmPlugin plugin = plugins->plugins[i];
+	if (rstreq(plugin->name, name)) {
+	    return plugin;
 	}
     }
-    return -1;
+    return NULL;
 }
 
 static int rpmpluginsHookIsSupported(void *handle, rpmPluginHook hook)
@@ -44,7 +49,7 @@ static int rpmpluginsHookIsSupported(void *handle, rpmPluginHook hook)
 
 int rpmpluginsPluginAdded(rpmPlugins plugins, const char *name)
 {
-    return (rpmpluginsGetPluginIndex(plugins, name) >= 0);
+    return (rpmpluginsGetPlugin(plugins, name) != NULL);
 }
 
 rpmPlugins rpmpluginsNew(rpmts ts)
@@ -57,6 +62,7 @@ rpmPlugins rpmpluginsNew(rpmts ts)
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 		    const char *opts)
 {
+    rpmPlugin plugin;
     char *error;
 
     void *handle = dlopen(path, RTLD_LAZY);
@@ -73,9 +79,13 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 	return RPMRC_FAIL;
     }
 
-    argvAdd(&plugins->names, name);
-    plugins->handles = xrealloc(plugins->handles, (plugins->count + 1) * sizeof(*plugins->handles));
-    plugins->handles[plugins->count] = handle;
+    plugin = xcalloc(1, sizeof(*plugin));
+    plugin->name = xstrdup(name);
+    plugin->handle = handle;
+    
+    plugins->plugins = xrealloc(plugins->plugins,
+			    (plugins->count + 1) * sizeof(*plugins->plugins));
+    plugins->plugins[plugins->count] = plugin;
     plugins->count++;
 
     return rpmpluginsCallInit(plugins, name, opts);
@@ -119,11 +129,13 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 {
     int i;
     for (i = 0; i < plugins->count; i++) {
+	rpmPlugin plugin = plugins->plugins[i];
 	rpmpluginsCallCleanup(plugins, rpmpluginsGetName(plugins, i));
-	dlclose(plugins->handles[i]);
+	dlclose(plugin->handle);
+	free(plugin->name);
+	free(plugin);
     }
-    plugins->handles = _free(plugins->handles);
-    plugins->names = argvFree(plugins->names);
+    plugins->plugins = _free(plugins->plugins);
     plugins->ts = NULL;
     _free(plugins);
 
@@ -134,14 +146,13 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 /* Common define for all rpmpluginsCall* hook functions */
 #define RPMPLUGINS_SET_HOOK_FUNC(hook) \
 	void *handle = NULL; \
-	int index; \
 	char * error; \
-	index = rpmpluginsGetPluginIndex(plugins, name); \
-	if (index < 0) { \
+	rpmPlugin plugin = rpmpluginsGetPlugin(plugins, name); \
+	if (plugin == NULL) { \
 		rpmlog(RPMLOG_ERR, _("Plugin %s not loaded\n"), name); \
 		return RPMRC_FAIL; \
 	} \
-	handle = plugins->handles[index]; \
+	handle = plugin->handle; \
 	if (!handle) { \
 		rpmlog(RPMLOG_ERR, _("Plugin %s not loaded\n"), name); \
 		return RPMRC_FAIL; \
