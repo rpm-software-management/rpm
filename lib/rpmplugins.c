@@ -163,22 +163,16 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 
 /* Common define for all rpmpluginsCall* hook functions */
 #define RPMPLUGINS_SET_HOOK_FUNC(hook) \
-	void *handle = NULL; \
 	char * error; \
 	rpmPlugin plugin = rpmpluginsGetPlugin(plugins, name); \
-	if (plugin == NULL) { \
+	if (plugin == NULL || plugin->handle == NULL) { \
 		rpmlog(RPMLOG_ERR, _("Plugin %s not loaded\n"), name); \
 		return RPMRC_FAIL; \
 	} \
-	handle = plugin->handle; \
-	if (!handle) { \
-		rpmlog(RPMLOG_ERR, _("Plugin %s not loaded\n"), name); \
-		return RPMRC_FAIL; \
-	} \
-	if (!rpmpluginsHookIsSupported(handle, hook)) { \
+	if (!rpmpluginsHookIsSupported(plugin->handle, hook)) { \
 		return RPMRC_OK; \
 	} \
-	*(void **)(&hookFunc) = dlsym(handle, STR(hook##_FUNC)); \
+	*(void **)(&hookFunc) = dlsym(plugin->handle, STR(hook##_FUNC)); \
 	if ((error = dlerror()) != NULL) { \
 		rpmlog(RPMLOG_ERR, _("Failed to resolve %s plugin symbol %s: %s\n"), name, STR(hook##_FUNC), error); \
 		return RPMRC_FAIL; \
