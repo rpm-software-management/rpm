@@ -19,11 +19,16 @@ struct rpmPlugins_s {
     rpmts ts;
 };
 
+static const char * rpmpluginsGetName(rpmPlugins plugins, int i)
+{
+    return plugins->names[i];
+}
+
 static int rpmpluginsGetPluginIndex(rpmPlugins plugins, const char *name)
 {
     int i;
     for (i = 0; i < plugins->count; i++) {
-	if (rstreq(plugins->names[i], name)) {
+	if (rstreq(rpmpluginsGetName(plugins, i), name)) {
 	    return i;
 	}
     }
@@ -114,7 +119,7 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 {
     int i;
     for (i = 0; i < plugins->count; i++) {
-	rpmpluginsCallCleanup(plugins, plugins->names[i]);
+	rpmpluginsCallCleanup(plugins, rpmpluginsGetName(plugins, i));
 	dlclose(plugins->handles[i]);
     }
     plugins->handles = _free(plugins->handles);
@@ -204,7 +209,7 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_TSM_PRE);
 	if (hookFunc(ts) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -221,7 +226,7 @@ rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_TSM_POST);
 	if (hookFunc(ts, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -238,7 +243,7 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_PSM_PRE);
 	if (hookFunc(te) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -255,7 +260,7 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_PSM_POST);
 	if (hookFunc(te, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -272,7 +277,7 @@ rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int typ
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPTLET_PRE);
 	if (hookFunc(s_name, type) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -289,7 +294,7 @@ rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int 
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPTLET_FORK_POST);
 	if (hookFunc(path, type) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -306,7 +311,7 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_SCRIPTLET_POST);
 	if (hookFunc(s_name, type, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -324,7 +329,7 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_FSM_FILE_PRE);
 	if (hookFunc(path, file_mode, op) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -342,7 +347,7 @@ rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_FSM_FILE_POST);
 	if (hookFunc(path, file_mode, op, res) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
@@ -361,7 +366,7 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
     const char *name = NULL;
 
     for (i = 0; i < plugins->count; i++) {
-	name = plugins->names[i];
+	name = rpmpluginsGetName(plugins, i);
 	RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_FSM_FILE_PREPARE);
 	if (hookFunc(path, dest, file_mode, op) == RPMRC_FAIL)
 	    rc = RPMRC_FAIL;
