@@ -36,3 +36,7 @@ systemd_inhibit_la_CPPFLAGS = $(AM_CPPFLAGS) @DBUS_CFLAGS@
 systemd_inhibit_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @DBUS_LIBS@
 plugins_LTLIBRARIES += systemd_inhibit.la
 endif
+
+syslog_la_SOURCES = plugin.h syslog.c
+syslog_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
+plugins_LTLIBRARIES += syslog.la
