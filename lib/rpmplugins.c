@@ -59,8 +59,7 @@ rpmPlugins rpmpluginsNew(rpmts ts)
     return plugins;
 }
 
-rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
-		    const char *opts)
+static rpmPlugin rpmPluginNew(const char *name, const char *path)
 {
     rpmPlugin plugin;
     char *error;
@@ -68,7 +67,7 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
     void *handle = dlopen(path, RTLD_LAZY);
     if (!handle) {
 	rpmlog(RPMLOG_ERR, _("Failed to dlopen %s %s\n"), path, dlerror());
-	return RPMRC_FAIL;
+	return NULL;
     }
 
     /* make sure the plugin has the supported hooks flag */
@@ -76,12 +75,33 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
     if ((error = dlerror()) != NULL) {
 	rpmlog(RPMLOG_ERR, _("Failed to resolve symbol %s: %s\n"),
 	       STR(PLUGIN_HOOKS), error);
-	return RPMRC_FAIL;
+	return NULL;
     }
 
     plugin = xcalloc(1, sizeof(*plugin));
     plugin->name = xstrdup(name);
     plugin->handle = handle;
+
+    return plugin;
+}
+
+static rpmPlugin rpmPluginFree(rpmPlugin plugin)
+{
+    if (plugin) {
+	dlclose(plugin->handle);
+	free(plugin->name);
+	free(plugin);
+    }
+    return NULL;
+}
+
+rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
+		    const char *opts)
+{
+    rpmPlugin plugin = rpmPluginNew(name, path);;
+
+    if (plugin == NULL)
+	return RPMRC_FAIL;
     
     plugins->plugins = xrealloc(plugins->plugins,
 			    (plugins->count + 1) * sizeof(*plugins->plugins));
@@ -131,9 +151,7 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
 	rpmpluginsCallCleanup(plugins, rpmpluginsGetName(plugins, i));
-	dlclose(plugin->handle);
-	free(plugin->name);
-	free(plugin);
+	rpmPluginFree(plugin);
     }
     plugins->plugins = _free(plugins->plugins);
     plugins->ts = NULL;
