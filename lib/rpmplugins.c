@@ -180,7 +180,7 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 
 rpmRC rpmpluginsCallInit(rpmPlugins plugins, const char *name, const char *opts)
 {
-    rpmRC (*hookFunc)(rpmts, const char *, const char *);
+    plugin_init_func hookFunc;
     rpmPlugin plugin = NULL;
     RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_INIT);
@@ -189,7 +189,7 @@ rpmRC rpmpluginsCallInit(rpmPlugins plugins, const char *name, const char *opts)
 
 rpmRC rpmpluginsCallCleanup(rpmPlugins plugins, const char *name)
 {
-    rpmRC (*hookFunc)(void);
+    plugin_cleanup_func hookFunc;;
     rpmPlugin plugin = NULL;
     RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_CLEANUP);
@@ -198,7 +198,7 @@ rpmRC rpmpluginsCallCleanup(rpmPlugins plugins, const char *name)
 
 rpmRC rpmpluginsCallOpenTE(rpmPlugins plugins, const char *name, rpmte te)
 {
-    rpmRC (*hookFunc)(rpmte);
+    plugin_opente_func hookFunc;
     rpmPlugin plugin = NULL;
     RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_OPENTE);
@@ -207,7 +207,7 @@ rpmRC rpmpluginsCallOpenTE(rpmPlugins plugins, const char *name, rpmte te)
 
 rpmRC rpmpluginsCallCollectionPostAdd(rpmPlugins plugins, const char *name)
 {
-    rpmRC (*hookFunc)(void);
+    plugin_coll_post_add_func hookFunc;
     rpmPlugin plugin = NULL;
     RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_COLL_POST_ADD);
@@ -216,7 +216,7 @@ rpmRC rpmpluginsCallCollectionPostAdd(rpmPlugins plugins, const char *name)
 
 rpmRC rpmpluginsCallCollectionPostAny(rpmPlugins plugins, const char *name)
 {
-    rpmRC (*hookFunc)(void);
+    plugin_coll_post_any_func hookFunc;
     rpmPlugin plugin = NULL;
     RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_COLL_POST_ANY);
@@ -225,7 +225,7 @@ rpmRC rpmpluginsCallCollectionPostAny(rpmPlugins plugins, const char *name)
 
 rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name)
 {
-    rpmRC (*hookFunc)(void);
+    plugin_coll_pre_remove_func hookFunc;
     rpmPlugin plugin = NULL;
     RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(PLUGINHOOK_COLL_PRE_REMOVE);
@@ -234,7 +234,7 @@ rpmRC rpmpluginsCallCollectionPreRemove(rpmPlugins plugins, const char *name)
 
 rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
 {
-    rpmRC (*hookFunc)(rpmts);
+    plugin_tsm_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -250,7 +250,7 @@ rpmRC rpmpluginsCallTsmPre(rpmPlugins plugins, rpmts ts)
 
 rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
 {
-    rpmRC (*hookFunc)(rpmts, int);
+    plugin_tsm_post_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -266,7 +266,7 @@ rpmRC rpmpluginsCallTsmPost(rpmPlugins plugins, rpmts ts, int res)
 
 rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
 {
-    rpmRC (*hookFunc)(rpmte);
+    plugin_psm_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -282,7 +282,7 @@ rpmRC rpmpluginsCallPsmPre(rpmPlugins plugins, rpmte te)
 
 rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
 {
-    rpmRC (*hookFunc)(rpmte, int);
+    plugin_psm_post_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -298,7 +298,7 @@ rpmRC rpmpluginsCallPsmPost(rpmPlugins plugins, rpmte te, int res)
 
 rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int type)
 {
-    rpmRC (*hookFunc)(const char*, int);
+    plugin_scriptlet_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -314,7 +314,7 @@ rpmRC rpmpluginsCallScriptletPre(rpmPlugins plugins, const char *s_name, int typ
 
 rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int type)
 {
-    rpmRC (*hookFunc)(const char*, int);
+    plugin_scriptlet_fork_post_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -330,7 +330,7 @@ rpmRC rpmpluginsCallScriptletForkPost(rpmPlugins plugins, const char *path, int 
 
 rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int type, int res)
 {
-    rpmRC (*hookFunc)(const char*, int, int);
+    plugin_scriptlet_post_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -347,7 +347,7 @@ rpmRC rpmpluginsCallScriptletPost(rpmPlugins plugins, const char *s_name, int ty
 rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
                                 mode_t file_mode, rpmFsmOp op)
 {
-    rpmRC (*hookFunc)(const char*, mode_t, rpmFsmOp);
+    plugin_fsm_file_pre_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -364,7 +364,7 @@ rpmRC rpmpluginsCallFsmFilePre(rpmPlugins plugins, const char* path,
 rpmRC rpmpluginsCallFsmFilePost(rpmPlugins plugins, const char* path,
                                 mode_t file_mode, rpmFsmOp op, int res)
 {
-    rpmRC (*hookFunc)(const char*, mode_t, rpmFsmOp, int);
+    plugin_fsm_file_post_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
@@ -382,7 +382,7 @@ rpmRC rpmpluginsCallFsmFilePrepare(rpmPlugins plugins,
 				   const char *path, const char *dest,
 				   mode_t file_mode, rpmFsmOp op)
 {
-    rpmRC (*hookFunc)(const char*, const char *, mode_t, rpmFsmOp);
+    plugin_fsm_file_prepare_func hookFunc;
     int i;
     rpmRC rc = RPMRC_OK;
 
