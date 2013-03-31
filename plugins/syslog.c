@@ -2,13 +2,6 @@
 
 #include "plugin.h"
 
-rpmPluginHook PLUGIN_HOOKS = (PLUGINHOOK_INIT|
-			      PLUGINHOOK_CLEANUP|
-			      PLUGINHOOK_TSM_PRE|
-			      PLUGINHOOK_TSM_POST|
-			      PLUGINHOOK_PSM_POST|
-			      PLUGINHOOK_SCRIPTLET_POST);
-
 static int logging = 0;
 static unsigned int scriptfail = 0;
 static unsigned int pkgfail = 0;
@@ -95,3 +88,12 @@ rpmRC PLUGINHOOK_SCRIPTLET_POST_FUNC(const char *s_name, int type, int res)
     }
     return RPMRC_OK;
 }
+
+struct rpmPluginHooks_s syslog_hooks = {
+    .init = PLUGINHOOK_INIT_FUNC,
+    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
+    .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
+    .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
+    .psm_post = PLUGINHOOK_PSM_POST_FUNC,
+    .scriptlet_post = PLUGINHOOK_SCRIPTLET_POST_FUNC,
+};

@@ -3,13 +3,6 @@
 #include <rpm/rpmts.h>
 #include "plugin.h"
 
-rpmPluginHook PLUGIN_HOOKS = (
-    PLUGINHOOK_INIT |
-    PLUGINHOOK_CLEANUP |
-    PLUGINHOOK_TSM_PRE |
-    PLUGINHOOK_TSM_POST
-);
-
 static int lock_fd = -1;
 
 rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
@@ -98,3 +91,10 @@ rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
     }
     return RPMRC_OK;
 }
+
+struct rpmPluginHooks_s systemd_inhibit_hooks = {
+    .init = PLUGINHOOK_INIT_FUNC,
+    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
+    .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
+    .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
+};

@@ -11,12 +11,6 @@
 
 #include "debug.h"
 
-rpmPluginHook PLUGIN_HOOKS = (PLUGINHOOK_INIT|PLUGINHOOK_CLEANUP|
-			      PLUGINHOOK_TSM_PRE|PLUGINHOOK_TSM_POST|
-			      PLUGINHOOK_PSM_PRE|
-			      PLUGINHOOK_SCRIPTLET_FORK_POST|
-			      PLUGINHOOK_FSM_FILE_PREPARE);
-
 static struct selabel_handle * sehandle = NULL;
 
 static void sehandle_fini(int close_status)
@@ -177,3 +171,13 @@ rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest,
 
     return rc;
 }
+
+struct rpmPluginHooks_s selinux_hooks = {
+    .init = PLUGINHOOK_INIT_FUNC,
+    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
+    .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
+    .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
+    .psm_pre = PLUGINHOOK_PSM_PRE_FUNC,
+    .scriptlet_fork_post = PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC,
+    .fsm_file_prepare = PLUGINHOOK_FSM_FILE_PREPARE_FUNC,
+};

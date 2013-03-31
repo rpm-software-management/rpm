@@ -5,11 +5,6 @@
 static char * options;
 static char * name;
 
-rpmPluginHook PLUGIN_HOOKS = \
-	PLUGINHOOK_INIT | \
-	PLUGINHOOK_CLEANUP | \
-	PLUGINHOOK_COLL_POST_ANY;
-
 rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
 {
     options = strdup(opts);
@@ -49,3 +44,9 @@ rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)
 
     return rc;
 }
+
+struct rpmPluginHooks_s exec_hooks = {
+    .init = PLUGINHOOK_INIT_FUNC,
+    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
+    .coll_post_any = PLUGINHOOK_COLL_POST_ANY_FUNC,
+};

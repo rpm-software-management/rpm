@@ -8,50 +8,6 @@
 extern "C" {
 #endif
 
-#define PLUGIN_HOOKS	plugin_hooks
-
-#define PLUGINHOOK_INIT_FUNC			pluginhook_init
-#define PLUGINHOOK_CLEANUP_FUNC			pluginhook_cleanup
-
-#define PLUGINHOOK_OPENTE_FUNC			pluginhook_opente
-#define PLUGINHOOK_COLL_POST_ADD_FUNC		pluginhook_coll_post_add
-#define PLUGINHOOK_COLL_POST_ANY_FUNC		pluginhook_coll_post_any
-#define PLUGINHOOK_COLL_PRE_REMOVE_FUNC		pluginhook_coll_pre_remove
-
-#define PLUGINHOOK_TSM_PRE_FUNC        pluginhook_tsm_pre
-#define PLUGINHOOK_TSM_POST_FUNC        pluginhook_tsm_post
-
-#define PLUGINHOOK_PSM_PRE_FUNC        pluginhook_psm_pre
-#define PLUGINHOOK_PSM_POST_FUNC        pluginhook_psm_post
-
-#define PLUGINHOOK_SCRIPTLET_PRE_FUNC    pluginhook_scriptlet_pre
-#define PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC    pluginhook_scriptlet_fork_post
-#define PLUGINHOOK_SCRIPTLET_POST_FUNC    pluginhook_scriptlet_post
-
-#define PLUGINHOOK_FSM_FILE_PRE_FUNC    pluginhook_fsm_file_pre
-#define PLUGINHOOK_FSM_FILE_POST_FUNC    pluginhook_fsm_file_post
-#define PLUGINHOOK_FSM_FILE_PREPARE_FUNC	pluginhook_fsm_file_prepare
-
-enum rpmPluginHook_e {
-    PLUGINHOOK_NONE		= 0,
-    PLUGINHOOK_INIT		= 1 << 0,
-    PLUGINHOOK_CLEANUP		= 1 << 1,
-    PLUGINHOOK_OPENTE		= 1 << 2,
-    PLUGINHOOK_COLL_POST_ADD	= 1 << 3,
-    PLUGINHOOK_COLL_POST_ANY	= 1 << 4,
-    PLUGINHOOK_COLL_PRE_REMOVE	= 1 << 5,
-    PLUGINHOOK_TSM_PRE         = 1 << 6,
-    PLUGINHOOK_TSM_POST        = 1 << 7,
-    PLUGINHOOK_PSM_PRE         = 1 << 8,
-    PLUGINHOOK_PSM_POST        = 1 << 9,
-    PLUGINHOOK_SCRIPTLET_PRE    = 1 << 10,
-    PLUGINHOOK_SCRIPTLET_FORK_POST    = 1 << 11,
-    PLUGINHOOK_SCRIPTLET_POST    = 1 << 12,
-    PLUGINHOOK_FSM_FILE_PRE    = 1 << 13,
-    PLUGINHOOK_FSM_FILE_POST    = 1 << 14,
-    PLUGINHOOK_FSM_FILE_PREPARE	= 1 << 15,
-};
-
 /* indicates the way the scriptlet is executed */
 typedef enum rpmScriptletExecutionFlow_e {
     RPMSCRIPTLET_NONE    = 0,
@@ -59,7 +15,6 @@ typedef enum rpmScriptletExecutionFlow_e {
     RPMSCRIPTLET_EXEC    = 1 << 1
 } rpmScriptletExecutionFlow;
 
-typedef rpmFlags rpmPluginHook;
 
 /** \ingroup rpmfi
  * File disposition flags during package install/erase transaction.
@@ -104,6 +59,32 @@ typedef rpmRC (*plugin_fsm_file_post_func)(const char* path, mode_t file_mode,
 typedef rpmRC (*plugin_fsm_file_prepare_func)(const char* path,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
+
+typedef struct rpmPluginHooks_s * rpmPluginHooks;
+struct rpmPluginHooks_s {
+    /* plugin constructor and destructor hooks */
+    plugin_init_func			init;
+    plugin_cleanup_func			cleanup;
+    /* collection plugin hooks */
+    plugin_opente_func			opente;
+    plugin_coll_post_any_func		coll_post_any;
+    plugin_coll_post_add_func		coll_post_add;
+    plugin_coll_pre_remove_func		coll_pre_remove;
+    /* per transaction plugin hooks */
+    plugin_tsm_pre_func			tsm_pre;
+    plugin_tsm_post_func		tsm_post;
+    /* per transaction element hooks */
+    plugin_psm_pre_func			psm_pre;
+    plugin_psm_post_func		psm_post;
+    /* per scriptlet hooks */
+    plugin_scriptlet_pre_func		scriptlet_pre;
+    plugin_scriptlet_fork_post_func	scriptlet_fork_post;
+    plugin_scriptlet_post_func		scriptlet_post;
+    /* per file hooks */
+    plugin_fsm_file_pre_func		fsm_file_pre;
+    plugin_fsm_file_post_func		fsm_file_post;
+    plugin_fsm_file_prepare_func	fsm_file_prepare;
+};
 
 /** \ingroup rpmplugins
  * Create a new plugins structure

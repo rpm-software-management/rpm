@@ -14,13 +14,6 @@
 #include "lib/rpmte_internal.h"
 #include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() */
 
-rpmPluginHook PLUGIN_HOOKS = \
-	PLUGINHOOK_INIT | \
-	PLUGINHOOK_CLEANUP | \
-	PLUGINHOOK_OPENTE | \
-	PLUGINHOOK_COLL_POST_ADD | \
-	PLUGINHOOK_COLL_PRE_REMOVE;
-
 typedef enum sepolAction {
     SEPOL_ACTION_IGNORE,
     SEPOL_ACTION_INSTALL,
@@ -653,3 +646,12 @@ rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void)
 {
     return sepolGo();
 }
+
+struct rpmPluginHooks_s sepolicy_hooks = {
+    .init = PLUGINHOOK_INIT_FUNC,
+    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
+    .opente = PLUGINHOOK_OPENTE_FUNC,
+    .coll_post_add = PLUGINHOOK_COLL_POST_ADD_FUNC,
+    .coll_pre_remove = PLUGINHOOK_COLL_PRE_REMOVE_FUNC,
+};
+
