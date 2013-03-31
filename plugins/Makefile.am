@@ -15,17 +15,17 @@ pluginsdir = $(libdir)/rpm-plugins
 
 plugins_LTLIBRARIES = exec.la
 
-exec_la_SOURCES = plugin.h exec.c
+exec_la_SOURCES = exec.c
 exec_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 
 if SELINUX
-selinux_la_SOURCES = plugin.h selinux.c
+selinux_la_SOURCES = selinux.c
 selinux_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @WITH_SELINUX_LIB@
 plugins_LTLIBRARIES += selinux.la
 
 # XXX: merge this into selinux plugin, for now we need to disable
 #      as it relies on in-core selinux knowledge which we no longer have...
-#sepolicy_la_SOURCES = plugin.h sepolicy.c
+#sepolicy_la_SOURCES = sepolicy.c
 #sepolicy_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la @WITH_SELINUX_LIB@ @WITH_SEMANAGE_LIB@
 #plugins_LTLIBRARIES += sepolicy.la
 endif
@@ -37,6 +37,6 @@ systemd_inhibit_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/
 plugins_LTLIBRARIES += systemd_inhibit.la
 endif
 
-syslog_la_SOURCES = plugin.h syslog.c
+syslog_la_SOURCES = syslog.c
 syslog_la_LIBADD = $(top_builddir)/lib/librpm.la $(top_builddir)/rpmio/librpmio.la
 plugins_LTLIBRARIES += syslog.la

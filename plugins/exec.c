@@ -1,25 +1,28 @@
-#include "plugin.h"
-
+#include "system.h"
 #include <sys/wait.h>
+#include <rpm/rpmlog.h>
+#include "lib/rpmplugins.h"
+#include "lib/rpmchroot.h"
+#include "debug.h"
 
 static char * options;
 static char * name;
 
-rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
 {
     options = strdup(opts);
     name = strdup(name);
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
 {
     options = _free(options);
     name = _free(name);
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)
+static rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)
 {
     rpmRC rc = RPMRC_FAIL;
 

@@ -7,7 +7,7 @@
 #include <selinux/avc.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include "plugin.h"
+#include "lib/rpmplugins.h"
 
 #include "debug.h"
 
@@ -51,17 +51,17 @@ static rpmRC sehandle_init(int open_status)
     return (sehandle != NULL) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
 {
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
 {
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
+static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -78,7 +78,7 @@ rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
     return rc;
 }
 
-rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int rc)
+static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int rc)
 {
     if (sehandle) {
 	sehandle_fini(1);
@@ -86,7 +86,7 @@ rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int rc)
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te)
+static rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -97,7 +97,7 @@ rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te)
     return rc;
 }
 
-rpmRC PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC(const char *path, int type)
+static rpmRC PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC(const char *path, int type)
 {
     rpmRC rc = RPMRC_FAIL;
     security_context_t mycon = NULL, fcon = NULL, newcon = NULL;
@@ -145,7 +145,7 @@ exit:
     return rc;
 }
 
-rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest,
+static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest,
 				       mode_t file_mode, rpmFsmOp op)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */

@@ -1,5 +1,4 @@
-#include "plugin.h"
-
+#include "system.h"
 #include <errno.h>
 #include <selinux/selinux.h>
 #include <semanage/semanage.h>
@@ -10,9 +9,15 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmbase64.h>
+#include <rpm/rpmts.h>
+#include <rpm/rpmlog.h>
+#include <rpm/header.h>
 
 #include "lib/rpmte_internal.h"
 #include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() */
+#include "lib/rpmchroot.h"
+#include "lib/rpmplugins.h"
+#include "debug.h"
 
 typedef enum sepolAction {
     SEPOL_ACTION_IGNORE,
@@ -616,7 +621,7 @@ static rpmRC sepolAddTE(rpmte te)
 
 
 
-rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opts)
 {
     ts = _ts;
     name = strdup(_name);
@@ -624,7 +629,7 @@ rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opts)
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
 {
     _free(name);
     ts = NULL;
@@ -632,17 +637,17 @@ rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_OPENTE_FUNC(rpmte te)
+static rpmRC PLUGINHOOK_OPENTE_FUNC(rpmte te)
 {
     return sepolAddTE(te);
 }
 
-rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(void)
+static rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(void)
 {
     return sepolGo();
 }
 
-rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void)
+static rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void)
 {
     return sepolGo();
 }

@@ -1,16 +1,16 @@
 #include <dbus/dbus.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include "plugin.h"
+#include "lib/rpmplugins.h"
 
 static int lock_fd = -1;
 
-rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
 {
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
 {
     return RPMRC_OK;
 }
@@ -65,7 +65,7 @@ static int inhibit(void)
     return fd;
 }
 
-rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
+static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
 	return RPMRC_OK;
@@ -82,7 +82,7 @@ rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
     return RPMRC_OK;
 }
 
-rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
+static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
 {
     if (lock_fd >= 0) {
 	close(lock_fd);
