@@ -163,8 +163,12 @@ static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest
 
 	    if (conrc == 0 || (conrc < 0 && errno == EOPNOTSUPP))
 		rc = RPMRC_OK;
+	    freecon(scon);
+	} else {
+	    /* No context for dest is not our headache */
+	    if (errno == ENOENT)
+		rc = RPMRC_OK;
 	}
-	freecon(scon);
     } else {
 	rc = RPMRC_OK;
     }
