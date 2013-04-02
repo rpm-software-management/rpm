@@ -94,17 +94,24 @@ static rpmPlugin rpmPluginFree(rpmPlugin plugin)
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 		    const char *opts)
 {
+    rpmRC rc;
     rpmPlugin plugin = rpmPluginNew(name, path);;
 
     if (plugin == NULL)
 	return RPMRC_FAIL;
     
-    plugins->plugins = xrealloc(plugins->plugins,
-			    (plugins->count + 1) * sizeof(*plugins->plugins));
-    plugins->plugins[plugins->count] = plugin;
-    plugins->count++;
+    rc = rpmpluginsCallInit(plugin, plugins->ts, opts);
 
-    return rpmpluginsCallInit(plugin, plugins->ts, opts);
+    if (rc == RPMRC_OK) {
+	plugins->plugins = xrealloc(plugins->plugins,
+			    (plugins->count + 1) * sizeof(*plugins->plugins));
+	plugins->plugins[plugins->count] = plugin;
+	plugins->count++;
+    } else {
+	rpmPluginFree(plugin);
+    }
+
+    return rc;
 }
 
 rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name)
