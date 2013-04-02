@@ -127,24 +127,6 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
  */
 int rpmpluginsPluginAdded(rpmPlugins plugins, const char *name);
 
-
-/** \ingroup rpmplugins
- * Call the init plugin hook
- * @param plugins	plugins structure
- * @param name		name of plugin
- * @param opts		plugin options
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-rpmRC rpmpluginsCallInit(rpmPlugins plugins, const char *name, const char *opts);
-
-/** \ingroup rpmplugins
- * Call the cleanup plugin hook
- * @param plugins	plugins structure
- * @param name		name of plugin
- * @return		RPMRC_OK on success, RPMRC_FAIL otherwise
- */
-rpmRC rpmpluginsCallCleanup(rpmPlugins plugins, const char *name);
-
 /** \ingroup rpmplugins
  * Call the open te plugin hook
  * @param plugins	plugins structure

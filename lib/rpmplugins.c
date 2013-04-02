@@ -12,6 +12,9 @@
 #define STR1(x) #x
 #define STR(x) STR1(x)
 
+static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts);
+static rpmRC rpmpluginsCallCleanup(rpmPlugin plugin);
+
 struct rpmPlugin_s {
     char *name;
     void *handle;
@@ -101,7 +104,7 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
     plugins->plugins[plugins->count] = plugin;
     plugins->count++;
 
-    return rpmpluginsCallInit(plugins, name, opts);
+    return rpmpluginsCallInit(plugin, plugins->ts, opts);
 }
 
 rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name)
@@ -143,7 +146,7 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
     int i;
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
-	rpmpluginsCallCleanup(plugins, plugin->name);
+	rpmpluginsCallCleanup(plugin);
 	rpmPluginFree(plugin);
     }
     plugins->plugins = _free(plugins->plugins);
@@ -169,24 +172,20 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 		   STR(hook), plugin->name); \
 	}
 
-rpmRC rpmpluginsCallInit(rpmPlugins plugins, const char *name, const char *opts)
+static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts)
 {
     rpmRC rc = RPMRC_OK;
     plugin_init_func hookFunc;
-    rpmPlugin plugin = NULL;
-    RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(init);
     if (hookFunc)
-	rc = hookFunc(plugins->ts, name, opts);
+	rc = hookFunc(ts, plugin->name, opts);
     return rc;
 }
 
-rpmRC rpmpluginsCallCleanup(rpmPlugins plugins, const char *name)
+static rpmRC rpmpluginsCallCleanup(rpmPlugin plugin)
 {
     rpmRC rc = RPMRC_OK;
     plugin_cleanup_func hookFunc;;
-    rpmPlugin plugin = NULL;
-    RPMPLUGINS_GET_PLUGIN(name);
     RPMPLUGINS_SET_HOOK_FUNC(cleanup);
     if (hookFunc)
 	rc = hookFunc();
