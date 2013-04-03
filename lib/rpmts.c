@@ -967,8 +967,6 @@ rpmts rpmtsCreate(void)
     ts->rootDir = NULL;
     ts->keyring = NULL;
 
-    ts->selabelHandle = NULL;
-
     ts->nrefs = 0;
 
     ts->plugins = rpmpluginsNew(ts);
