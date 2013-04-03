@@ -179,14 +179,15 @@ rpmRC rpmpluginsAddPlugin(rpmPlugins plugins, const char *type, const char *name
 
 rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 {
-    int i;
-    for (i = 0; i < plugins->count; i++) {
-	rpmPlugin plugin = plugins->plugins[i];
-	rpmPluginFree(plugin);
+    if (plugins) {
+	for (int i = 0; i < plugins->count; i++) {
+	    rpmPlugin plugin = plugins->plugins[i];
+	    rpmPluginFree(plugin);
+	}
+	plugins->plugins = _free(plugins->plugins);
+	plugins->ts = NULL;
+	_free(plugins);
     }
-    plugins->plugins = _free(plugins->plugins);
-    plugins->ts = NULL;
-    _free(plugins);
 
     return NULL;
 }
