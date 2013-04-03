@@ -1420,17 +1420,19 @@ static rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
     rpmRC rc = RPMRC_OK;
     char *plugins = NULL, *plugin = NULL;
     const char *delims = ",";
+    rpmPlugins tsplugins;
 
     plugins = rpmExpand("%{?__transaction_plugins}", NULL);
     if (!plugins || rstreq(plugins, "")) {
 	goto exit;
     }
 
+    tsplugins = rpmtsPlugins(ts);
     plugin = strtok(plugins, delims);
     while(plugin != NULL) {
 	rpmlog(RPMLOG_DEBUG, "plugin is %s\n", plugin);
-	if (!rpmpluginsPluginAdded(ts->plugins, plugin)) {
-	    if (rpmpluginsAddPlugin(ts->plugins, "transaction",
+	if (!rpmpluginsPluginAdded(tsplugins, plugin)) {
+	    if (rpmpluginsAddPlugin(tsplugins, "transaction",
 				    plugin) == RPMRC_FAIL) {
 		/* any configured plugin failing to load is a failure */
 		rc = RPMRC_FAIL;
@@ -1484,7 +1486,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Run pre transaction hook for all plugins */
     TsmPreDone = 1;
-    if (rpmpluginsCallTsmPre(ts->plugins, ts) == RPMRC_FAIL) {
+    if (rpmpluginsCallTsmPre(rpmtsPlugins(ts), ts) == RPMRC_FAIL) {
 	goto exit;
     }
 
@@ -1534,7 +1536,7 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 exit:
     /* Run post transaction hook for all plugins */
     if (TsmPreDone) /* If TsmPre hook has been called, call the TsmPost hook */
-	rpmpluginsCallTsmPost(ts->plugins, ts, rc);
+	rpmpluginsCallTsmPost(rpmtsPlugins(ts), ts, rc);
 
     /* Finish up... */
     (void) umask(oldmask);

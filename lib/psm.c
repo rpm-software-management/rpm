@@ -23,7 +23,7 @@
 #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
 #include "lib/rpmte_internal.h"	/* XXX internal apis */
 #include "lib/rpmdb_internal.h" /* rpmdbAdd/Remove */
-#include "lib/rpmts_internal.h" /* ts->plugins */
+#include "lib/rpmts_internal.h" /* rpmtsPlugins() etc */
 #include "lib/rpmscript.h"
 
 #include "lib/rpmplugins.h"
@@ -423,7 +423,7 @@ static rpmRC runScript(rpmpsm psm, ARGV_const_t prefixes,
 
     rpmswEnter(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
     rc = rpmScriptRun(script, arg1, arg2, sfd,
-		      prefixes, warn_only, psm->ts->plugins);
+		      prefixes, warn_only, rpmtsPlugins(psm->ts));
     rpmswExit(rpmtsOp(psm->ts, RPMTS_OP_SCRIPTLETS), 0);
 
     /* Map warn-only errors to "notfound" for script stop callback */
@@ -1040,7 +1040,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	case PKG_INSTALL:
 	case PKG_ERASE:
 	    /* Run pre transaction element hook for all plugins */
-	    if (rpmpluginsCallPsmPre(ts->plugins, te) != RPMRC_FAIL) {
+	    if (rpmpluginsCallPsmPre(rpmtsPlugins(ts), te) != RPMRC_FAIL) {
 
 		op = (goal == PKG_INSTALL) ? RPMTS_OP_INSTALL : RPMTS_OP_ERASE;
 		rpmswEnter(rpmtsOp(psm->ts, op), 0);
@@ -1055,7 +1055,7 @@ rpmRC rpmpsmRun(rpmts ts, rpmte te, pkgGoal goal)
 	    }
 
 	    /* Run post transaction element hook for all plugins */
-	    rpmpluginsCallPsmPost(ts->plugins, te, rc);
+	    rpmpluginsCallPsmPost(rpmtsPlugins(ts), te, rc);
 	    break;
 	case PKG_PRETRANS:
 	case PKG_POSTTRANS:
