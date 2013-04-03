@@ -5,16 +5,6 @@
 
 static int lock_fd = -1;
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
-{
-    return RPMRC_OK;
-}
-
-static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
-{
-    return RPMRC_OK;
-}
-
 static int inhibit(void)
 {
     DBusError err;
@@ -93,8 +83,6 @@ static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
 }
 
 struct rpmPluginHooks_s systemd_inhibit_hooks = {
-    .init = PLUGINHOOK_INIT_FUNC,
-    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
     .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
     .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
 };

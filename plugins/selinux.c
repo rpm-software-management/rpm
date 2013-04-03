@@ -51,16 +51,6 @@ static rpmRC sehandle_init(int open_status)
     return (sehandle != NULL) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
-{
-    return RPMRC_OK;
-}
-
-static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
-{
-    return RPMRC_OK;
-}
-
 static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
@@ -177,8 +167,6 @@ static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest
 }
 
 struct rpmPluginHooks_s selinux_hooks = {
-    .init = PLUGINHOOK_INIT_FUNC,
-    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
     .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
     .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
     .psm_pre = PLUGINHOOK_PSM_PRE_FUNC,
