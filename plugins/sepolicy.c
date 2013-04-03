@@ -44,7 +44,6 @@ typedef struct sepoltrans {
 } sepoltrans;
 
 
-static char * name;
 static rpmts ts;
 
 static sepol * policiesHead;
@@ -576,7 +575,7 @@ static rpmRC sepolGo(void)
     return rc;
 }
 
-static rpmRC sepolAddTE(rpmte te)
+static rpmRC sepolAddTE(rpmte te, const char *name)
 {
     sepol *pol;
     sepol *polTail;
@@ -624,21 +623,19 @@ static rpmRC sepolAddTE(rpmte te)
 static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin, rpmts _ts)
 {
     ts = _ts;
-    name = strdup(_name);
     policiesHead = policiesTail = NULL;
     return RPMRC_OK;
 }
 
 static void PLUGINHOOK_CLEANUP_FUNC(rpmPlugin plugin)
 {
-    _free(name);
     ts = NULL;
     policiesHead = policiesTail = sepolFree(policiesHead);
 }
 
 static rpmRC PLUGINHOOK_OPENTE_FUNC(rpmPlugin plugin, rpmte te)
 {
-    return sepolAddTE(te);
+    return sepolAddTE(te, rpmPluginName(plugin));
 }
 
 static rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(rpmPlugin plugin)
