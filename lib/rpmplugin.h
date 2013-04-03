@@ -90,6 +90,20 @@ struct rpmPluginHooks_s {
 extern "C" {
 #endif
 
+/** \ingroup rpmplugin
+ * Return plugin name
+ * @param plugin	plugin handle
+ * @return		plugin name string
+ */
+const char *rpmPluginName(rpmPlugin plugin);
+
+/** \ingroup rpmplugin
+ * Return plugin options
+ * @param plugin	plugin handle
+ * @return		plugin options string (or NULL if none)
+ */
+const char *rpmPluginOpts(rpmPlugin plugin);
+
 #ifdef __cplusplus
 }
 #endif

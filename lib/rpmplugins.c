@@ -98,6 +98,16 @@ static rpmPlugin rpmPluginFree(rpmPlugin plugin)
     return NULL;
 }
 
+const char *rpmPluginName(rpmPlugin plugin)
+{
+    return (plugin != NULL) ? plugin->name : NULL;
+}
+
+const char *rpmPluginOpts(rpmPlugin plugin)
+{
+    return (plugin != NULL) ? plugin->opts : NULL;
+}
+
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 		    const char *opts)
 {
