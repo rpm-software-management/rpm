@@ -16,7 +16,7 @@
 #include "lib/rpmte_internal.h"
 #include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() */
 #include "lib/rpmchroot.h"
-#include "lib/rpmplugins.h"
+#include "lib/rpmplugin.h"
 #include "debug.h"
 
 typedef enum sepolAction {

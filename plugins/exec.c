@@ -1,7 +1,7 @@
 #include "system.h"
 #include <sys/wait.h>
 #include <rpm/rpmlog.h>
-#include "lib/rpmplugins.h"
+#include "lib/rpmplugin.h"
 #include "lib/rpmchroot.h"
 #include "debug.h"
 

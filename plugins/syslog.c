@@ -1,7 +1,7 @@
 #include <syslog.h>
 
 #include <rpm/rpmts.h>
-#include "lib/rpmplugins.h"
+#include "lib/rpmplugin.h"
 
 static int logging = 0;
 static unsigned int scriptfail = 0;

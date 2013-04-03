@@ -1,7 +1,7 @@
 #include <dbus/dbus.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include "lib/rpmplugins.h"
+#include "lib/rpmplugin.h"
 
 static int lock_fd = -1;
 

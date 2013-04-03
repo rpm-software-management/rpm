@@ -7,7 +7,7 @@
 #include <selinux/avc.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmts.h>
-#include "lib/rpmplugins.h"
+#include "lib/rpmplugin.h"
 
 #include "debug.h"
 
