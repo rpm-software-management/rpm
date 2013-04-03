@@ -15,11 +15,10 @@ static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static void PLUGINHOOK_CLEANUP_FUNC(void)
 {
     options = _free(options);
     name = _free(name);
-    return RPMRC_OK;
 }
 
 static rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)

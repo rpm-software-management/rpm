@@ -629,12 +629,11 @@ static rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opt
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static void PLUGINHOOK_CLEANUP_FUNC(void)
 {
     _free(name);
     ts = NULL;
     policiesHead = policiesTail = sepolFree(policiesHead);
-    return RPMRC_OK;
 }
 
 static rpmRC PLUGINHOOK_OPENTE_FUNC(rpmte te)

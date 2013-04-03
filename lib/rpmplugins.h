@@ -39,7 +39,7 @@ typedef rpmFlags rpmFsmOp;
 /* plugin hook typedefs */
 typedef rpmRC (*plugin_init_func)(rpmts ts,
 				 const char * name, const char * opts);
-typedef rpmRC (*plugin_cleanup_func)(void);
+typedef void (*plugin_cleanup_func)(void);
 typedef rpmRC (*plugin_opente_func)(rpmte te);
 typedef rpmRC (*plugin_coll_post_any_func)(void);
 typedef rpmRC (*plugin_coll_post_add_func)(void);

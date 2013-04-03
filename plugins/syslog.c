@@ -16,10 +16,9 @@ static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char * name, const char * opts
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_CLEANUP_FUNC(void)
+static void PLUGINHOOK_CLEANUP_FUNC(void)
 {
     closelog();
-    return RPMRC_OK;
 }
 
 static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)

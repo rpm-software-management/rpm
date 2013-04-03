@@ -13,7 +13,7 @@
 #define STR(x) STR1(x)
 
 static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts);
-static rpmRC rpmpluginsCallCleanup(rpmPlugin plugin);
+static void rpmpluginsCallCleanup(rpmPlugin plugin);
 
 struct rpmPlugin_s {
     char *name;
@@ -189,14 +189,12 @@ static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts)
     return rc;
 }
 
-static rpmRC rpmpluginsCallCleanup(rpmPlugin plugin)
+static void rpmpluginsCallCleanup(rpmPlugin plugin)
 {
-    rpmRC rc = RPMRC_OK;
     plugin_cleanup_func hookFunc;;
     RPMPLUGINS_SET_HOOK_FUNC(cleanup);
     if (hookFunc)
-	rc = hookFunc();
-    return rc;
+	hookFunc();
 }
 
 rpmRC rpmpluginsCallOpenTE(rpmPlugins plugins, const char *name, rpmte te)
