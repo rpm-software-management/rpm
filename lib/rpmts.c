@@ -877,7 +877,14 @@ rpmop rpmtsOp(rpmts ts, rpmtsOpX opx)
 
 rpmPlugins rpmtsPlugins(rpmts ts)
 {
-    return (ts != NULL ? ts->plugins : NULL);
+    rpmPlugins plugins = NULL;
+
+    if (ts != NULL) {
+	if (ts->plugins == NULL)
+	    ts->plugins = rpmpluginsNew(ts);
+	plugins = ts->plugins;
+    }
+    return plugins;
 }
 
 int rpmtsSetNotifyCallback(rpmts ts,
@@ -969,7 +976,7 @@ rpmts rpmtsCreate(void)
 
     ts->nrefs = 0;
 
-    ts->plugins = rpmpluginsNew(ts);
+    ts->plugins = NULL;
 
     return rpmtsLink(ts);
 }
