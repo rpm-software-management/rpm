@@ -110,6 +110,20 @@ const char *rpmPluginName(rpmPlugin plugin);
  */
 const char *rpmPluginOpts(rpmPlugin plugin);
 
+/** \ingroup rpmplugin
+ * Set plugin private data
+ * @param plugin	plugin handle
+ * @param data		pointer to plugin private data
+ */
+void rpmPluginSetData(rpmPlugin plugin, void *data);
+
+/** \ingroup rpmplugin
+ * Get plugin private data
+ * @param plugin	plugin handle
+ * @return 		pointer to plugin private data
+ */
+void * rpmPluginGetData(rpmPlugin plugin);
+
 #ifdef __cplusplus
 }
 #endif

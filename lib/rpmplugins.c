@@ -18,6 +18,7 @@ struct rpmPlugin_s {
     char *name;
     char *opts;
     void *handle;
+    void *priv;
     rpmPluginHooks hooks;
 };
 
@@ -106,6 +107,17 @@ const char *rpmPluginName(rpmPlugin plugin)
 const char *rpmPluginOpts(rpmPlugin plugin)
 {
     return (plugin != NULL) ? plugin->opts : NULL;
+}
+
+void * rpmPluginGetData(rpmPlugin plugin)
+{
+    return (plugin != NULL) ? plugin->priv : NULL;
+}
+
+void rpmPluginSetData(rpmPlugin plugin, void *data)
+{
+    if (plugin)
+	plugin->priv = data;
 }
 
 rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
