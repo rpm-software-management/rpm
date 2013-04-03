@@ -9,8 +9,7 @@ struct logstat {
     unsigned int pkgfail;
 };
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin,
-				rpmts ts, const char * name, const char * opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin, rpmts ts)
 {
     /* XXX make this configurable? */
     const char * log_ident = "[RPM]";

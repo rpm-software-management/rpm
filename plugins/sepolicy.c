@@ -621,8 +621,7 @@ static rpmRC sepolAddTE(rpmte te)
 
 
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin,
-			rpmts _ts, const char *_name, const char *_opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin, rpmts _ts)
 {
     ts = _ts;
     name = strdup(_name);

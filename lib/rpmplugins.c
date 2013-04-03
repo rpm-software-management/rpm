@@ -12,7 +12,7 @@
 #define STR1(x) #x
 #define STR(x) STR1(x)
 
-static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts);
+static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts);
 
 struct rpmPlugin_s {
     char *name;
@@ -129,7 +129,7 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
     if (plugin == NULL)
 	return RPMRC_FAIL;
     
-    rc = rpmpluginsCallInit(plugin, plugins->ts, opts);
+    rc = rpmpluginsCallInit(plugin, plugins->ts);
 
     if (rc == RPMRC_OK) {
 	plugins->plugins = xrealloc(plugins->plugins,
@@ -207,13 +207,13 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
 		   STR(hook), plugin->name); \
 	}
 
-static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts)
+static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
     plugin_init_func hookFunc;
     RPMPLUGINS_SET_HOOK_FUNC(init);
     if (hookFunc)
-	rc = hookFunc(plugin, ts, plugin->name, opts);
+	rc = hookFunc(plugin, ts);
     return rc;
 }
 
