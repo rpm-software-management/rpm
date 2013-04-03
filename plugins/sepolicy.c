@@ -621,7 +621,8 @@ static rpmRC sepolAddTE(rpmte te)
 
 
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin,
+			rpmts _ts, const char *_name, const char *_opts)
 {
     ts = _ts;
     name = strdup(_name);
@@ -629,24 +630,24 @@ static rpmRC PLUGINHOOK_INIT_FUNC(rpmts _ts, const char *_name, const char *_opt
     return RPMRC_OK;
 }
 
-static void PLUGINHOOK_CLEANUP_FUNC(void)
+static void PLUGINHOOK_CLEANUP_FUNC(rpmPlugin plugin)
 {
     _free(name);
     ts = NULL;
     policiesHead = policiesTail = sepolFree(policiesHead);
 }
 
-static rpmRC PLUGINHOOK_OPENTE_FUNC(rpmte te)
+static rpmRC PLUGINHOOK_OPENTE_FUNC(rpmPlugin plugin, rpmte te)
 {
     return sepolAddTE(te);
 }
 
-static rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(void)
+static rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(rpmPlugin plugin)
 {
     return sepolGo();
 }
 
-static rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(void)
+static rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(rpmPlugin plugin)
 {
     return sepolGo();
 }

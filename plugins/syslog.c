@@ -7,7 +7,8 @@ static int logging = 0;
 static unsigned int scriptfail = 0;
 static unsigned int pkgfail = 0;
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char * name, const char * opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin,
+				rpmts ts, const char * name, const char * opts)
 {
     /* XXX make this configurable? */
     const char * log_ident = "[RPM]";
@@ -16,12 +17,12 @@ static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char * name, const char * opts
     return RPMRC_OK;
 }
 
-static void PLUGINHOOK_CLEANUP_FUNC(void)
+static void PLUGINHOOK_CLEANUP_FUNC(rpmPlugin plugin)
 {
     closelog();
 }
 
-static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
+static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
 {
     /* Reset counters */
     scriptfail = 0;
@@ -45,7 +46,7 @@ static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
+static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int res)
 {
     if (logging) {
 	if (pkgfail || scriptfail) {
@@ -60,7 +61,7 @@ static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmte te, int res)
+static rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmPlugin plugin, rpmte te, int res)
 {
     if (logging) {
 	int lvl = LOG_NOTICE;
@@ -80,7 +81,8 @@ static rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmte te, int res)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_SCRIPTLET_POST_FUNC(const char *s_name, int type, int res)
+static rpmRC PLUGINHOOK_SCRIPTLET_POST_FUNC(rpmPlugin plugin,
+					const char *s_name, int type, int res)
 {
     if (logging && res) {
 	syslog(LOG_WARNING, "scriptlet %s failure: %d\n", s_name, res);

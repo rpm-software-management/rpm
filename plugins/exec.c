@@ -8,20 +8,21 @@
 static char * options;
 static char * name;
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmts ts, const char *name, const char *opts)
+static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin,
+				  rpmts ts, const char *name, const char *opts)
 {
     options = strdup(opts);
     name = strdup(name);
     return RPMRC_OK;
 }
 
-static void PLUGINHOOK_CLEANUP_FUNC(void)
+static void PLUGINHOOK_CLEANUP_FUNC(rpmPlugin plugin)
 {
     options = _free(options);
     name = _free(name);
 }
 
-static rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(void)
+static rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(rpmPlugin plugin)
 {
     rpmRC rc = RPMRC_FAIL;
 

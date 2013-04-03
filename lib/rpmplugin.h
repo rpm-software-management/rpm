@@ -37,26 +37,32 @@ typedef rpmFlags rpmFsmOp;
 #define XFO_FLAGS(_a)	((_a) & XFAF_MASK)	/*!< File op flags part */
 
 /* plugin hook typedefs */
-typedef rpmRC (*plugin_init_func)(rpmts ts,
+typedef rpmRC (*plugin_init_func)(rpmPlugin plugin, rpmts ts,
 				 const char * name, const char * opts);
-typedef void (*plugin_cleanup_func)(void);
-typedef rpmRC (*plugin_opente_func)(rpmte te);
-typedef rpmRC (*plugin_coll_post_any_func)(void);
-typedef rpmRC (*plugin_coll_post_add_func)(void);
-typedef rpmRC (*plugin_coll_pre_remove_func)(void);
-typedef rpmRC (*plugin_tsm_pre_func)(rpmts ts);
-typedef rpmRC (*plugin_tsm_post_func)(rpmts ts, int res);
-typedef rpmRC (*plugin_psm_pre_func)(rpmte te);
-typedef rpmRC (*plugin_psm_post_func)(rpmte te, int res);
-typedef rpmRC (*plugin_scriptlet_pre_func)(const char *s_name, int type);
-typedef rpmRC (*plugin_scriptlet_fork_post_func)(const char *path, int type);
-typedef rpmRC (*plugin_scriptlet_post_func)(const char *s_name, int type,
+typedef void (*plugin_cleanup_func)(rpmPlugin plugin);
+typedef rpmRC (*plugin_opente_func)(rpmPlugin plugin, rpmte te);
+typedef rpmRC (*plugin_coll_post_any_func)(rpmPlugin plugin);
+typedef rpmRC (*plugin_coll_post_add_func)(rpmPlugin plugin);
+typedef rpmRC (*plugin_coll_pre_remove_func)(rpmPlugin plugin);
+typedef rpmRC (*plugin_tsm_pre_func)(rpmPlugin plugin, rpmts ts);
+typedef rpmRC (*plugin_tsm_post_func)(rpmPlugin plugin, rpmts ts, int res);
+typedef rpmRC (*plugin_psm_pre_func)(rpmPlugin plugin, rpmte te);
+typedef rpmRC (*plugin_psm_post_func)(rpmPlugin plugin, rpmte te, int res);
+typedef rpmRC (*plugin_scriptlet_pre_func)(rpmPlugin plugin,
+					   const char *s_name, int type);
+typedef rpmRC (*plugin_scriptlet_fork_post_func)(rpmPlugin plugin,
+					         const char *path, int type);
+typedef rpmRC (*plugin_scriptlet_post_func)(rpmPlugin plugin,
+					    const char *s_name, int type,
 					    int res);
-typedef rpmRC (*plugin_fsm_file_pre_func)(const char* path, mode_t file_mode,
+typedef rpmRC (*plugin_fsm_file_pre_func)(rpmPlugin plugin,
+					  const char* path, mode_t file_mode,
 					  rpmFsmOp op);
-typedef rpmRC (*plugin_fsm_file_post_func)(const char* path, mode_t file_mode,
-					  rpmFsmOp op, int res);
-typedef rpmRC (*plugin_fsm_file_prepare_func)(const char* path,
+typedef rpmRC (*plugin_fsm_file_post_func)(rpmPlugin plugin,
+					   const char* path, mode_t file_mode,
+					   rpmFsmOp op, int res);
+typedef rpmRC (*plugin_fsm_file_prepare_func)(rpmPlugin plugin,
+					      const char* path,
 					      const char *dest,
 					      mode_t file_mode, rpmFsmOp op);
 

@@ -51,7 +51,7 @@ static rpmRC sehandle_init(int open_status)
     return (sehandle != NULL) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
+static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -68,7 +68,7 @@ static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
     return rc;
 }
 
-static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int rc)
+static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int rc)
 {
     if (sehandle) {
 	sehandle_fini(1);
@@ -76,7 +76,7 @@ static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int rc)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te)
+static rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmPlugin plugin, rpmte te)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -87,7 +87,8 @@ static rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmte te)
     return rc;
 }
 
-static rpmRC PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC(const char *path, int type)
+static rpmRC PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC(rpmPlugin plugin,
+						 const char *path, int type)
 {
     rpmRC rc = RPMRC_FAIL;
     security_context_t mycon = NULL, fcon = NULL, newcon = NULL;
@@ -135,8 +136,9 @@ exit:
     return rc;
 }
 
-static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(const char *path, const char *dest,
-				       mode_t file_mode, rpmFsmOp op)
+static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(rpmPlugin plugin,
+					const char *path, const char *dest,
+				        mode_t file_mode, rpmFsmOp op)
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     rpmFileAction action = XFO_ACTION(op);

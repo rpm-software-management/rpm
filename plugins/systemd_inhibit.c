@@ -55,7 +55,7 @@ static int inhibit(void)
     return fd;
 }
 
-static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
+static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
 	return RPMRC_OK;
@@ -72,7 +72,7 @@ static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmts ts)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmts ts, int res)
+static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int res)
 {
     if (lock_fd >= 0) {
 	close(lock_fd);
