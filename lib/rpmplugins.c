@@ -16,6 +16,7 @@ static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts);
 
 struct rpmPlugin_s {
     char *name;
+    char *opts;
     void *handle;
     rpmPluginHooks hooks;
 };
@@ -50,7 +51,8 @@ rpmPlugins rpmpluginsNew(rpmts ts)
     return plugins;
 }
 
-static rpmPlugin rpmPluginNew(const char *name, const char *path)
+static rpmPlugin rpmPluginNew(const char *name, const char *path,
+			      const char *opts)
 {
     rpmPlugin plugin = NULL;
     rpmPluginHooks hooks = NULL;
@@ -74,6 +76,8 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path)
 	plugin->name = xstrdup(name);
 	plugin->handle = handle;
 	plugin->hooks = hooks;
+	if (opts)
+	    plugin->opts = xstrdup(opts);
     }
     free(hooks_name);
 
@@ -88,6 +92,7 @@ static rpmPlugin rpmPluginFree(rpmPlugin plugin)
 	    hooks->cleanup();
 	dlclose(plugin->handle);
 	free(plugin->name);
+	free(plugin->opts);
 	free(plugin);
     }
     return NULL;
@@ -97,7 +102,7 @@ rpmRC rpmpluginsAdd(rpmPlugins plugins, const char *name, const char *path,
 		    const char *opts)
 {
     rpmRC rc;
-    rpmPlugin plugin = rpmPluginNew(name, path);;
+    rpmPlugin plugin = rpmPluginNew(name, path, opts);
 
     if (plugin == NULL)
 	return RPMRC_FAIL;
