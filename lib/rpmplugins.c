@@ -13,7 +13,6 @@
 #define STR(x) STR1(x)
 
 static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts);
-static void rpmpluginsCallCleanup(rpmPlugin plugin);
 
 struct rpmPlugin_s {
     char *name;
@@ -84,6 +83,9 @@ static rpmPlugin rpmPluginNew(const char *name, const char *path)
 static rpmPlugin rpmPluginFree(rpmPlugin plugin)
 {
     if (plugin) {
+	rpmPluginHooks hooks = plugin->hooks;
+	if (hooks->cleanup)
+	    hooks->cleanup();
 	dlclose(plugin->handle);
 	free(plugin->name);
 	free(plugin);
@@ -153,7 +155,6 @@ rpmPlugins rpmpluginsFree(rpmPlugins plugins)
     int i;
     for (i = 0; i < plugins->count; i++) {
 	rpmPlugin plugin = plugins->plugins[i];
-	rpmpluginsCallCleanup(plugin);
 	rpmPluginFree(plugin);
     }
     plugins->plugins = _free(plugins->plugins);
@@ -187,14 +188,6 @@ static rpmRC rpmpluginsCallInit(rpmPlugin plugin, rpmts ts, const char *opts)
     if (hookFunc)
 	rc = hookFunc(ts, plugin->name, opts);
     return rc;
-}
-
-static void rpmpluginsCallCleanup(rpmPlugin plugin)
-{
-    plugin_cleanup_func hookFunc;;
-    RPMPLUGINS_SET_HOOK_FUNC(cleanup);
-    if (hookFunc)
-	hookFunc();
 }
 
 rpmRC rpmpluginsCallOpenTE(rpmPlugins plugins, const char *name, rpmte te)
