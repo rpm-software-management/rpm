@@ -92,6 +92,8 @@ rpmal rpmtsCreateAl(rpmts ts, rpmElementTypes types);
 RPM_GNUC_INTERNAL
 int rpmtsSolve(rpmts ts, rpmds key);
 
+RPM_GNUC_INTERNAL
+rpmRC rpmtsSetupTransactionPlugins(rpmts ts);
 #ifdef __cplusplus
 }
 #endif

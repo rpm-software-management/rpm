@@ -395,6 +395,11 @@ int rpmtsAddInstallElement(rpmts ts, Header h,
     int ec = 0;
     int oc = tsmem->orderCount;
 
+    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL) {
+	ec = 1;
+	goto exit;
+    }
+
     /* Check for supported payload format if it's a package */
     if (key && headerCheckPayloadFormat(h) != RPMRC_OK) {
 	ec = 1;
@@ -462,6 +467,8 @@ exit:
 
 int rpmtsAddEraseElement(rpmts ts, Header h, int dboffset)
 {
+    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL)
+	return 1;
     return removePackage(ts, h, NULL);
 }
 

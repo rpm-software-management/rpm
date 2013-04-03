@@ -1415,12 +1415,20 @@ static int rpmtsProcess(rpmts ts)
     return rc;
 }
 
-static rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
+rpmRC rpmtsSetupTransactionPlugins(rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
     char *plugins = NULL, *plugin = NULL;
     const char *delims = ",";
     rpmPlugins tsplugins;
+
+    /*
+     * Assume allocated equals initialized. There are some oddball cases
+     * (verification of non-installed package) where this is not true
+     * currently but that's not a new issue.
+     */
+    if (ts->plugins != NULL)
+	return RPMRC_OK;
 
     plugins = rpmExpand("%{?__transaction_plugins}", NULL);
     if (!plugins || rstreq(plugins, "")) {
@@ -1472,10 +1480,6 @@ int rpmtsRun(rpmts ts, rpmps okProbs, rpmprobFilterFlags ignoreSet)
 
     /* Setup flags and such, open the DB */
     if (rpmtsSetup(ts, ignoreSet)) {
-	goto exit;
-    }
-
-    if (rpmtsSetupTransactionPlugins(ts) == RPMRC_FAIL) {
 	goto exit;
     }
 
