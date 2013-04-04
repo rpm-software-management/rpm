@@ -7,14 +7,22 @@
 #include <lposix.h>
 #include <lrexlib.h>
 
+/* replaced in 5.1 */
 #ifndef lua_open
 #define lua_open()	luaL_newstate()
 #endif
 
+/* defined as lua_objlen in 5.1 */
 #ifndef lua_strlen
 #define lua_strlen(L,i)	lua_rawlen(L, (i))
 #endif
 
+/* deprecated in 5.1, defined as lua_objlen in 5.1 */
+#ifndef luaL_getn
+#define luaL_getn(L,i)	((int)lua_rawlen(L, i))
+#endif
+
+/* define added in 5.2 */
 #ifndef lua_pushglobaltable
 #define lua_pushglobaltable(L)	lua_pushvalue(L, LUA_GLOBALSINDEX)
 #endif
