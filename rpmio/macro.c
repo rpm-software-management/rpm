@@ -37,11 +37,12 @@ extern int optind;
 /*! The structure used to store a macro. */
 struct rpmMacroEntry_s {
     struct rpmMacroEntry_s *prev;/*!< Macro entry stack. */
-    char *name;   	/*!< Macro name. */
-    char *opts;   	/*!< Macro parameters (a la getopt) */
+    const char *name;  	/*!< Macro name. */
+    const char *opts;  	/*!< Macro parameters (a la getopt) */
+    const char *body;	/*!< Macro body. */
     int used;           /*!< No. of expansions. */
     int level;          /*!< Scoping level. */
-    char body[];   	/*!< Macro body. */
+    char arena[];   	/*!< String arena. */
 };
 
 /*! The structure used to store the set of macros in a context. */
@@ -1339,7 +1340,7 @@ addMacro(rpmMacroContext mc,
 	/* entry with shared name */
 	me = xmalloc(mesize);
 	/* copy body */
-	p = me->body;
+	me->body = p = me->arena;
 	if (blen)
 	    memcpy(p, b, blen + 1);
 	else
@@ -1363,7 +1364,7 @@ addMacro(rpmMacroContext mc,
 	size_t nlen = strlen(n);
 	me = xmalloc(mesize + nlen + 1);
 	/* copy body */
-	p = me->body;
+	me->body = p = me->arena;
 	if (blen)
 	    memcpy(p, b, blen + 1);
 	else
