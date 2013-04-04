@@ -58,6 +58,15 @@ static const char *filetype(mode_t m)
 
 typedef int (*Selector)(lua_State *L, int i, const void *data);
 
+/* implemented as luaL_typerror until lua 5.1, dropped in 5.2
+ * (C) 1994-2012 Lua.org, PUC-Rio. MIT license
+ */
+static int typerror (lua_State *L, int narg, const char *tname) {
+	const char *msg = lua_pushfstring(L, "%s expected, got %s",
+					  tname, luaL_typename(L, narg));
+	return luaL_argerror(L, narg, msg);
+}
+
 static int doselection(lua_State *L, int i, const char *const S[], Selector F, const void *data)
 {
 	if (lua_isnone(L, i))
@@ -139,7 +148,7 @@ static uid_t mygetuid(lua_State *L, int i)
 		return (p==NULL) ? -1 : p->pw_uid;
 	}
 	else
-		return luaL_typerror(L, i, "string or number");
+		return typerror(L, i, "string or number");
 }
 
 static gid_t mygetgid(lua_State *L, int i)
@@ -154,7 +163,7 @@ static gid_t mygetgid(lua_State *L, int i)
 		return (g==NULL) ? -1 : g->gr_gid;
 	}
 	else
-		return luaL_typerror(L, i, "string or number");
+		return typerror(L, i, "string or number");
 }
 
 
@@ -573,7 +582,7 @@ static int Pgetpasswd(lua_State *L)		/** getpasswd(name or id) */
 	else if (lua_isstring(L, 1))
 		p = getpwnam(lua_tostring(L, 1));
 	else
-		luaL_typerror(L, 1, "string or number");
+		typerror(L, 1, "string or number");
 	if (p==NULL)
 		lua_pushnil(L);
 	else
@@ -590,7 +599,7 @@ static int Pgetgroup(lua_State *L)		/** getgroup(name or id) */
 	else if (lua_isstring(L, 1))
 		g = getgrnam(lua_tostring(L, 1));
 	else
-		luaL_typerror(L, 1, "string or number");
+		typerror(L, 1, "string or number");
 	if (g==NULL)
 		lua_pushnil(L);
 	else
@@ -709,10 +718,10 @@ static int Puname(lua_State *L)			/** uname([string]) */
 	luaL_buffinit(L, &b);
 	for (s=luaL_optstring(L, 1, "%s %n %r %v %m"); *s; s++)
 		if (*s!='%')
-			luaL_putchar(&b, *s);
+			luaL_addchar(&b, *s);
 		else switch (*++s)
 		{
-			case '%': luaL_putchar(&b, *s); break;
+			case '%': luaL_addchar(&b, *s); break;
 			case 'm': luaL_addstring(&b,u.machine); break;
 			case 'n': luaL_addstring(&b,u.nodename); break;
 			case 'r': luaL_addstring(&b,u.release); break;
