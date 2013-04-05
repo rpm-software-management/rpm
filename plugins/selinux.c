@@ -133,6 +133,10 @@ exit:
     freecon(fcon);
     freecon(mycon);
 
+    /* If selinux is not enforcing, we don't care either */
+    if (rc && security_getenforce() < 1)
+	rc = RPMRC_OK;
+
     return rc;
 }
 
