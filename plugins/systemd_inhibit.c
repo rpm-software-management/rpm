@@ -55,7 +55,7 @@ static int inhibit(void)
     return fd;
 }
 
-static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
+static rpmRC systemd_inhibit_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     if (rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))
 	return RPMRC_OK;
@@ -72,7 +72,7 @@ static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int res)
+static rpmRC systemd_inhibit_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     if (lock_fd >= 0) {
 	close(lock_fd);
@@ -83,6 +83,6 @@ static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int res)
 }
 
 struct rpmPluginHooks_s systemd_inhibit_hooks = {
-    .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
-    .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
+    .tsm_pre = systemd_inhibit_tsm_pre,
+    .tsm_post = systemd_inhibit_tsm_post,
 };

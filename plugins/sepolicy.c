@@ -620,39 +620,39 @@ static rpmRC sepolAddTE(rpmte te, const char *name)
 
 
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin, rpmts _ts)
+static rpmRC sepolicy_init(rpmPlugin plugin, rpmts _ts)
 {
     ts = _ts;
     policiesHead = policiesTail = NULL;
     return RPMRC_OK;
 }
 
-static void PLUGINHOOK_CLEANUP_FUNC(rpmPlugin plugin)
+static void sepolicy_cleanup(rpmPlugin plugin)
 {
     ts = NULL;
     policiesHead = policiesTail = sepolFree(policiesHead);
 }
 
-static rpmRC PLUGINHOOK_OPENTE_FUNC(rpmPlugin plugin, rpmte te)
+static rpmRC sepolicy_opente(rpmPlugin plugin, rpmte te)
 {
     return sepolAddTE(te, rpmPluginName(plugin));
 }
 
-static rpmRC PLUGINHOOK_COLL_POST_ADD_FUNC(rpmPlugin plugin)
+static rpmRC sepolicy_coll_post_add(rpmPlugin plugin)
 {
     return sepolGo();
 }
 
-static rpmRC PLUGINHOOK_COLL_PRE_REMOVE_FUNC(rpmPlugin plugin)
+static rpmRC sepolicy_coll_pre_remove(rpmPlugin plugin)
 {
     return sepolGo();
 }
 
 struct rpmPluginHooks_s sepolicy_hooks = {
-    .init = PLUGINHOOK_INIT_FUNC,
-    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
-    .opente = PLUGINHOOK_OPENTE_FUNC,
-    .coll_post_add = PLUGINHOOK_COLL_POST_ADD_FUNC,
-    .coll_pre_remove = PLUGINHOOK_COLL_PRE_REMOVE_FUNC,
+    .init = sepolicy_init,
+    .cleanup = sepolicy_cleanup,
+    .opente = sepolicy_opente,
+    .coll_post_add = sepolicy_coll_post_add,
+    .coll_pre_remove = sepolicy_coll_pre_remove,
 };
 

@@ -51,7 +51,7 @@ static rpmRC sehandle_init(int open_status)
     return (sehandle != NULL) ? RPMRC_OK : RPMRC_FAIL;
 }
 
-static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
+static rpmRC selinux_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -68,7 +68,7 @@ static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
     return rc;
 }
 
-static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int rc)
+static rpmRC selinux_tsm_post(rpmPlugin plugin, rpmts ts, int rc)
 {
     if (sehandle) {
 	sehandle_fini(1);
@@ -76,7 +76,7 @@ static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int rc)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmPlugin plugin, rpmte te)
+static rpmRC selinux_psm_pre(rpmPlugin plugin, rpmte te)
 {
     rpmRC rc = RPMRC_OK;
 
@@ -87,7 +87,7 @@ static rpmRC PLUGINHOOK_PSM_PRE_FUNC(rpmPlugin plugin, rpmte te)
     return rc;
 }
 
-static rpmRC PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC(rpmPlugin plugin,
+static rpmRC selinux_scriptlet_fork_post(rpmPlugin plugin,
 						 const char *path, int type)
 {
     rpmRC rc = RPMRC_FAIL;
@@ -136,7 +136,7 @@ exit:
     return rc;
 }
 
-static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(rpmPlugin plugin,
+static rpmRC selinux_fsm_file_prepare(rpmPlugin plugin,
 					const char *path, const char *dest,
 				        mode_t file_mode, rpmFsmOp op)
 {
@@ -169,9 +169,9 @@ static rpmRC PLUGINHOOK_FSM_FILE_PREPARE_FUNC(rpmPlugin plugin,
 }
 
 struct rpmPluginHooks_s selinux_hooks = {
-    .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
-    .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
-    .psm_pre = PLUGINHOOK_PSM_PRE_FUNC,
-    .scriptlet_fork_post = PLUGINHOOK_SCRIPTLET_FORK_POST_FUNC,
-    .fsm_file_prepare = PLUGINHOOK_FSM_FILE_PREPARE_FUNC,
+    .tsm_pre = selinux_tsm_pre,
+    .tsm_post = selinux_tsm_post,
+    .psm_pre = selinux_psm_pre,
+    .scriptlet_fork_post = selinux_scriptlet_fork_post,
+    .fsm_file_prepare = selinux_fsm_file_prepare,
 };

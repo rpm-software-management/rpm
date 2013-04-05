@@ -9,7 +9,7 @@ struct logstat {
     unsigned int pkgfail;
 };
 
-static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin, rpmts ts)
+static rpmRC syslog_init(rpmPlugin plugin, rpmts ts)
 {
     /* XXX make this configurable? */
     const char * log_ident = "[RPM]";
@@ -20,14 +20,14 @@ static rpmRC PLUGINHOOK_INIT_FUNC(rpmPlugin plugin, rpmts ts)
     return RPMRC_OK;
 }
 
-static void PLUGINHOOK_CLEANUP_FUNC(rpmPlugin plugin)
+static void syslog_cleanup(rpmPlugin plugin)
 {
     struct logstat * state = rpmPluginGetData(plugin);
     free(state);
     closelog();
 }
 
-static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
+static rpmRC syslog_tsm_pre(rpmPlugin plugin, rpmts ts)
 {
     struct logstat * state = rpmPluginGetData(plugin);
     
@@ -53,7 +53,7 @@ static rpmRC PLUGINHOOK_TSM_PRE_FUNC(rpmPlugin plugin, rpmts ts)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int res)
+static rpmRC syslog_tsm_post(rpmPlugin plugin, rpmts ts, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
 
@@ -70,7 +70,7 @@ static rpmRC PLUGINHOOK_TSM_POST_FUNC(rpmPlugin plugin, rpmts ts, int res)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmPlugin plugin, rpmte te, int res)
+static rpmRC syslog_psm_post(rpmPlugin plugin, rpmte te, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
 
@@ -92,7 +92,7 @@ static rpmRC PLUGINHOOK_PSM_POST_FUNC(rpmPlugin plugin, rpmte te, int res)
     return RPMRC_OK;
 }
 
-static rpmRC PLUGINHOOK_SCRIPTLET_POST_FUNC(rpmPlugin plugin,
+static rpmRC syslog_scriptlet_post(rpmPlugin plugin,
 					const char *s_name, int type, int res)
 {
     struct logstat * state = rpmPluginGetData(plugin);
@@ -105,10 +105,10 @@ static rpmRC PLUGINHOOK_SCRIPTLET_POST_FUNC(rpmPlugin plugin,
 }
 
 struct rpmPluginHooks_s syslog_hooks = {
-    .init = PLUGINHOOK_INIT_FUNC,
-    .cleanup = PLUGINHOOK_CLEANUP_FUNC,
-    .tsm_pre = PLUGINHOOK_TSM_PRE_FUNC,
-    .tsm_post = PLUGINHOOK_TSM_POST_FUNC,
-    .psm_post = PLUGINHOOK_PSM_POST_FUNC,
-    .scriptlet_post = PLUGINHOOK_SCRIPTLET_POST_FUNC,
+    .init = syslog_init,
+    .cleanup = syslog_cleanup,
+    .tsm_pre = syslog_tsm_pre,
+    .tsm_post = syslog_tsm_post,
+    .psm_post = syslog_psm_post,
+    .scriptlet_post = syslog_scriptlet_post,
 };

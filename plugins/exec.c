@@ -5,7 +5,7 @@
 #include "lib/rpmchroot.h"
 #include "debug.h"
 
-static rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(rpmPlugin plugin)
+static rpmRC exec_coll_post_any(rpmPlugin plugin)
 {
     rpmRC rc = RPMRC_FAIL;
     const char *options = rpmPluginOpts(plugin);
@@ -34,5 +34,5 @@ static rpmRC PLUGINHOOK_COLL_POST_ANY_FUNC(rpmPlugin plugin)
 }
 
 struct rpmPluginHooks_s exec_hooks = {
-    .coll_post_any = PLUGINHOOK_COLL_POST_ANY_FUNC,
+    .coll_post_any = exec_coll_post_any,
 };
