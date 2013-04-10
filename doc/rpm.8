@@ -278,6 +278,10 @@ packages would normally be reordered to satisfy dependencies.
 \fB--nopreun\fR
 .TP
 \fB--nopostun\fR
+.TP
+\fB--nopretrans\fR
+.TP
+\fB--noposttrans\fR
 Don't execute the scriptlet of the same name.
 The \fB--noscripts\fR option is equivalent to
 
@@ -285,12 +289,16 @@ The \fB--noscripts\fR option is equivalent to
 \fB--nopost\fR
 \fB--nopreun\fR
 \fB--nopostun\fR
+\fB--nopretrans\fR
+\fB--noposttrans\fR
 
 and turns off the execution of the corresponding
 \fB%pre\fR,
 \fB%post\fR,
-\fB%preun\fR, and
+\fB%preun\fR,
 \fB%postun\fR
+\fB%pretrans\fR, and
+\fB%posttrans\fR
 scriptlet(s).
 .TP
 \fB--notriggers\fR

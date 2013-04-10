@@ -202,6 +202,12 @@ struct poptOption rpmInstallPoptTable[] = {
  { "nopostun", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
 	RPMTRANS_FLAG_NOPOSTUN,
 	N_("do not execute %%postun scriptlet (if any)"), NULL },
+ { "nopretrans", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
+	RPMTRANS_FLAG_NOPRETRANS,
+	N_("do not execute %%pretrans scriptlet (if any)"), NULL },
+ { "noposttrans", '\0', POPT_BIT_SET|POPT_ARGFLAG_DOC_HIDDEN, &rpmIArgs.transFlags,
+	RPMTRANS_FLAG_NOPOSTTRANS,
+	N_("do not execute %%posttrans scriptlet (if any)"), NULL },
 
  { "notriggers", '\0', POPT_BIT_SET, &rpmIArgs.transFlags, _noTransTriggers,
 	N_("do not execute any scriptlet(s) triggered by this package"), NULL},

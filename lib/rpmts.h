@@ -45,7 +45,8 @@ enum rpmtransFlags_e {
     RPMTRANS_FLAG_NOPREUN	= (1 << 21),	/*!< from --nopreun */
     RPMTRANS_FLAG_NOPOSTUN	= (1 << 22),	/*!< from --nopostun */
     RPMTRANS_FLAG_NOTRIGGERPOSTUN = (1 << 23),	/*!< from --notriggerpostun */
-    /* bits 24-25 unused */
+    RPMTRANS_FLAG_NOPRETRANS	= (1 << 24),	/*!< from --nopretrans */
+    RPMTRANS_FLAG_NOPOSTTRANS	= (1 << 25),	/*!< from --noposttrans */
     RPMTRANS_FLAG_NOCOLLECTIONS	= (1 << 26),	/*!< from --nocollections */
     RPMTRANS_FLAG_NOMD5		= (1 << 27),	/*!< from --nomd5 */
     RPMTRANS_FLAG_NOFILEDIGEST	= (1 << 27),	/*!< from --nofiledigest (alias to --nomd5) */
@@ -60,7 +61,9 @@ typedef rpmFlags rpmtransFlags;
   ( RPMTRANS_FLAG_NOPRE |	\
     RPMTRANS_FLAG_NOPOST |	\
     RPMTRANS_FLAG_NOPREUN |	\
-    RPMTRANS_FLAG_NOPOSTUN	\
+    RPMTRANS_FLAG_NOPOSTUN |	\
+    RPMTRANS_FLAG_NOPRETRANS |	\
+    RPMTRANS_FLAG_NOPOSTTRANS \
   )
 
 #define	_noTransTriggers	\
