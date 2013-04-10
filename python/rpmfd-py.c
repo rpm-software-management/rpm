@@ -230,7 +230,7 @@ static PyObject *rpmfd_read(rpmfdObject *s, PyObject *args, PyObject *kwds)
 
 	if (nb > 0) {
 	    PyObject *tmp = PyBytes_FromStringAndSize(buf, nb);
-	    PyString_ConcatAndDel(&res, tmp);
+	    PyBytes_ConcatAndDel(&res, tmp);
 	    left -= nb;
 	}
     } while (nb > 0);
