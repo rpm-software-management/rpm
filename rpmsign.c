@@ -45,29 +45,38 @@ static int checkPassPhrase(const char * passPhrase)
 {
     int passPhrasePipe[2];
     int pid, status;
-    int rc;
+    int rc = -1;
     int xx;
 
     if (passPhrase == NULL)
 	return -1;
 
     passPhrasePipe[0] = passPhrasePipe[1] = 0;
-    xx = pipe(passPhrasePipe);
-    if (!(pid = fork())) {
+    if (pipe(passPhrasePipe))
+	return -1;
+
+    pid = fork();
+    if (pid < 0) {
+	close(passPhrasePipe[0]);
+	close(passPhrasePipe[1]);
+	return -1;
+    }
+
+    if (pid == 0) {
 	char * cmd, * gpg_path;
 	char *const *av;
 	int fdno;
 
-	xx = close(STDIN_FILENO);
-	xx = close(STDOUT_FILENO);
-	xx = close(passPhrasePipe[1]);
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(passPhrasePipe[1]);
 	if ((fdno = open("/dev/null", O_RDONLY)) != STDIN_FILENO) {
 	    xx = dup2(fdno, STDIN_FILENO);
-	    xx = close(fdno);
+	    close(fdno);
 	}
 	if ((fdno = open("/dev/null", O_WRONLY)) != STDOUT_FILENO) {
 	    xx = dup2(fdno, STDOUT_FILENO);
-	    xx = close(fdno);
+	    close(fdno);
 	}
 	xx = dup2(passPhrasePipe[0], 3);
 
@@ -79,22 +88,23 @@ static int checkPassPhrase(const char * passPhrase)
 	
 	cmd = rpmExpand("%{?__gpg_check_password_cmd}", NULL);
 	rc = poptParseArgvString(cmd, NULL, (const char ***)&av);
-	if (!rc)
+	if (xx >= 0 && rc == 0) {
 	    rc = execve(av[0], av+1, environ);
-
-	fprintf(stderr, _("Could not exec %s: %s\n"), "gpg",
-		    strerror(errno));
+	    fprintf(stderr, _("Could not exec %s: %s\n"), "gpg",
+			strerror(errno));
+	}
 	_exit(EXIT_FAILURE);
     }
 
-    xx = close(passPhrasePipe[0]);
+    close(passPhrasePipe[0]);
     xx = write(passPhrasePipe[1], passPhrase, strlen(passPhrase));
     xx = write(passPhrasePipe[1], "\n", 1);
-    xx = close(passPhrasePipe[1]);
+    close(passPhrasePipe[1]);
 
-    (void) waitpid(pid, &status, 0);
+    if (xx >= 0 && waitpid(pid, &status, 0) >= 0)
+	rc = (WIFEXITED(status) && WEXITSTATUS(status) == 0) ? 0 : 1;
 
-    return ((WIFEXITED(status) && WEXITSTATUS(status) == 0)) ? 0 : 1;
+    return rc;
 }
 
 /* TODO: permit overriding macro setup on the command line */
