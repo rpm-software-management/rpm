@@ -103,28 +103,38 @@ static int open_dso(const char * path, pid_t * pidp, rpm_loff_t *fsizep)
     if (pidp != NULL && is_prelinked(fdno)) {
 	int pipes[2];
 	pid_t pid;
-	int xx;
 
-	xx = close(fdno);
+	close(fdno);
 	pipes[0] = pipes[1] = -1;
-	xx = pipe(pipes);
-	if (!(pid = fork())) {
+	if (pipe(pipes) < 0)
+	    return -1;
+
+	pid = fork();
+	if (pid < 0) {
+	    close(pipes[0]);
+	    close(pipes[1]);
+	    return -1;
+	}
+
+	if (pid == 0) {
 	    ARGV_t av, lib;
+	    int dfd;
 	    argvSplit(&av, cmd, " ");
 
-	    xx = close(pipes[0]);
-	    xx = dup2(pipes[1], STDOUT_FILENO);
-	    xx = close(pipes[1]);
-	    if ((lib = argvSearch(av, "library", NULL)) != NULL) {
+	    close(pipes[0]);
+	    dfd = dup2(pipes[1], STDOUT_FILENO);
+	    close(pipes[1]);
+	    if (dfd >= 0 && (lib = argvSearch(av, "library", NULL)) != NULL) {
 		*lib = (char *) path;
 		unsetenv("MALLOC_CHECK_");
-		xx = execve(av[0], av+1, environ);
+		execve(av[0], av+1, environ);
 	    }
-	    _exit(127);
+	    _exit(127); /* not normally reached */
+	} else {
+	    *pidp = pid;
+	    fdno = pipes[0];
+	    close(pipes[1]);
 	}
-	*pidp = pid;
-	fdno = pipes[0];
-	xx = close(pipes[1]);
     }
 
     return fdno;
