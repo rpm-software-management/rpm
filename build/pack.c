@@ -31,7 +31,7 @@ typedef struct cpioSourceArchive_s {
 /**
  * @todo Create transaction set *much* earlier.
  */
-static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
+static rpmRC cpio_doio(FD_t fdo, Package pkg, CSA_t csa, const char * fmodeMacro)
 {
     char *failedFile = NULL;
     FD_t cfd;
@@ -42,8 +42,8 @@ static rpmRC cpio_doio(FD_t fdo, Header h, CSA_t csa, const char * fmodeMacro)
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    fsmrc = rpmPackageFilesArchive(csa->cpioList, headerIsSource(h), cfd,
-		      &csa->cpioArchiveSize, &failedFile);
+    fsmrc = rpmPackageFilesArchive(csa->cpioList, headerIsSource(pkg->header),
+				   cfd, &csa->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {
 	if (failedFile)
@@ -353,7 +353,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
 	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, pkg->header, csa, rpmio_flags);
+	    rc = cpio_doio(fd, pkg, csa, rpmio_flags);
 	} else {
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
