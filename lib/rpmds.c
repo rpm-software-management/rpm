@@ -572,7 +572,7 @@ int rpmdsFind(rpmds ds, const rpmds ods)
 	/* XXX rpm prior to 3.0.2 did not always supply EVR and Flags. */
 	if (comparison == 0 && OEVR && EVR)
 	    comparison = strcmp(OEVR, EVR);
-	if (comparison == 0 && OFlags && Flags)
+	if (comparison == 0)
 	    comparison = OFlags - Flags;
 
 	if (comparison < 0)
