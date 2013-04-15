@@ -54,38 +54,6 @@ enum cpioErrorReturns {
 	CPIOERR_FILE_SIZE	= 33,
 };
 
-/*
- * Size limit for individual files in "new ascii format" cpio archives.
- * The max size of the entire archive is unlimited from cpio POV,
- * but subject to filesystem limitations.
- */
-#define CPIO_FILESIZE_MAX UINT32_MAX
-
-#define CPIO_NEWC_MAGIC	"070701"
-#define CPIO_CRC_MAGIC	"070702"
-#define CPIO_TRAILER	"TRAILER!!!"
-
-/** \ingroup payload
- * Cpio archive header information.
- */
-struct cpioCrcPhysicalHeader {
-    char magic[6];
-    char inode[8];
-    char mode[8];
-    char uid[8];
-    char gid[8];
-    char nlink[8];
-    char mtime[8];
-    char filesize[8];
-    char devMajor[8];
-    char devMinor[8];
-    char rdevMajor[8];
-    char rdevMinor[8];
-    char namesize[8];
-    char checksum[8];			/* ignored !! */
-};
-
-#define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
 
 typedef struct rpmcpio_s * rpmcpio_t;
 
