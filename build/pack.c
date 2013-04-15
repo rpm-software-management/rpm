@@ -660,14 +660,15 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 
 rpmRC packageSources(rpmSpec spec, char **cookie)
 {
+    Package sourcePkg = spec->sourcePackage;
     struct cpioSourceArchive_s csabuf;
     CSA_t csa = &csabuf;
     rpmRC rc;
 
     /* Add some cruft */
-    headerPutString(spec->sourceHeader, RPMTAG_RPMVERSION, VERSION);
-    headerPutString(spec->sourceHeader, RPMTAG_BUILDHOST, buildHost());
-    headerPutUint32(spec->sourceHeader, RPMTAG_BUILDTIME, getBuildTime(), 1);
+    headerPutString(sourcePkg->header, RPMTAG_RPMVERSION, VERSION);
+    headerPutString(sourcePkg->header, RPMTAG_BUILDHOST, buildHost());
+    headerPutUint32(sourcePkg->header, RPMTAG_BUILDTIME, getBuildTime(), 1);
 
     /* XXX this should be %_srpmdir */
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
@@ -675,10 +676,10 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
 
 	memset(csa, 0, sizeof(*csa));
 	csa->cpioArchiveSize = 0;
-	csa->cpioList = rpmfiLink(spec->sourceCpioList); 
+	csa->cpioList = rpmfiLink(sourcePkg->cpioList); 
 
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(&spec->sourceHeader, &spec->sourcePkgId, fn, csa, cookie);
+	rc = writeRPM(&sourcePkg->header, &spec->sourcePkgId, fn, csa, cookie);
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {

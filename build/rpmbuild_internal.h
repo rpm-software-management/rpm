@@ -66,8 +66,7 @@ struct rpmSpec_s {
 
     char * sourceRpmName;
     unsigned char * sourcePkgId;
-    Header sourceHeader;
-    rpmfi sourceCpioList;
+    Package sourcePackage;
 
     rpmMacroContext macros;
 

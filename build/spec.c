@@ -186,8 +186,7 @@ rpmSpec newSpec(void)
 
     spec->sourceRpmName = NULL;
     spec->sourcePkgId = NULL;
-    spec->sourceHeader = NULL;
-    spec->sourceCpioList = NULL;
+    spec->sourcePackage = NULL;
     
     spec->buildRoot = NULL;
     spec->buildSubdir = NULL;
@@ -243,8 +242,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
     
     spec->sourceRpmName = _free(spec->sourceRpmName);
     spec->sourcePkgId = _free(spec->sourcePkgId);
-    spec->sourceHeader = headerFree(spec->sourceHeader);
-    spec->sourceCpioList = rpmfiFree(spec->sourceCpioList);
+    spec->sourcePackage = freePackage(spec->sourcePackage);
 
     spec->buildRestrictions = headerFree(spec->buildRestrictions);
 
@@ -274,7 +272,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 
 Header rpmSpecSourceHeader(rpmSpec spec)
 {
-	return spec->sourceHeader;
+    return (spec && spec->sourcePackage) ? spec->sourcePackage->header : NULL;
 }
 
 rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag)
@@ -419,7 +417,8 @@ int rpmspecQuery(rpmts ts, QVA_t qva, const char * arg)
 	    res += qva->qva_showPackage(qva, ts, pkg->header);
 	}
     } else {
-	res = qva->qva_showPackage(qva, ts, spec->sourceHeader);
+	Package sourcePkg = spec->sourcePackage;
+	res = qva->qva_showPackage(qva, ts, sourcePkg->header);
     }
 
 exit:

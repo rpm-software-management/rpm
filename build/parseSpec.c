@@ -452,14 +452,16 @@ static const rpmTagVal sourceTags[] = {
 
 static void initSourceHeader(rpmSpec spec)
 {
+    Package sourcePkg;
     struct Source *srcPtr;
 
-    if (spec->sourceHeader)
+    if (spec->sourcePackage)
 	return;
 
-    spec->sourceHeader = headerNew();
+    sourcePkg = spec->sourcePackage = xcalloc(1, sizeof(*sourcePkg));
+    sourcePkg->header = headerNew();
     /* Only specific tags are added to the source package header */
-    headerCopyTags(spec->packages->header, spec->sourceHeader, sourceTags);
+    headerCopyTags(spec->packages->header, sourcePkg->header, sourceTags);
 
     /* Add the build restrictions */
     {
@@ -467,7 +469,7 @@ static void initSourceHeader(rpmSpec spec)
 	struct rpmtd_s td;
 	while (headerNext(hi, &td)) {
 	    if (rpmtdCount(&td) > 0) {
-		(void) headerPut(spec->sourceHeader, &td, HEADERPUT_DEFAULT);
+		(void) headerPut(sourcePkg->header, &td, HEADERPUT_DEFAULT);
 	    }
 	    rpmtdFreeData(&td);
 	}
@@ -475,23 +477,23 @@ static void initSourceHeader(rpmSpec spec)
     }
 
     if (spec->BANames && spec->BACount > 0) {
-	headerPutStringArray(spec->sourceHeader, RPMTAG_BUILDARCHS,
+	headerPutStringArray(sourcePkg->header, RPMTAG_BUILDARCHS,
 		  spec->BANames, spec->BACount);
     }
 
     /* Add tags for sources and patches */
     for (srcPtr = spec->sources; srcPtr != NULL; srcPtr = srcPtr->next) {
 	if (srcPtr->flags & RPMBUILD_ISSOURCE) {
-	    headerPutString(spec->sourceHeader, RPMTAG_SOURCE, srcPtr->source);
+	    headerPutString(sourcePkg->header, RPMTAG_SOURCE, srcPtr->source);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerPutUint32(spec->sourceHeader, RPMTAG_NOSOURCE,
+		headerPutUint32(sourcePkg->header, RPMTAG_NOSOURCE,
 				&srcPtr->num, 1);
 	    }
 	}
 	if (srcPtr->flags & RPMBUILD_ISPATCH) {
-	    headerPutString(spec->sourceHeader, RPMTAG_PATCH, srcPtr->source);
+	    headerPutString(sourcePkg->header, RPMTAG_PATCH, srcPtr->source);
 	    if (srcPtr->flags & RPMBUILD_ISNO) {
-		headerPutUint32(spec->sourceHeader, RPMTAG_NOPATCH,
+		headerPutUint32(sourcePkg->header, RPMTAG_NOPATCH,
 				&srcPtr->num, 1);
 	    }
 	}
