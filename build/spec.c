@@ -93,7 +93,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
     return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
-Package newPackage(rpmSpec spec)
+Package newPackage(Package *pkglist)
 {
     Package p = xcalloc(1, sizeof(*p));
     p->header = headerNew();
@@ -103,14 +103,16 @@ Package newPackage(rpmSpec spec)
     p->fileFile = NULL;
     p->policyList = NULL;
 
-    if (spec->packages == NULL) {
-	spec->packages = p;
-    } else {
-	Package pp;
-	/* Always add package to end of list */
-	for (pp = spec->packages; pp->next != NULL; pp = pp->next)
-	    {};
-	pp->next = p;
+    if (pkglist) {
+	if (*pkglist == NULL) {
+	    *pkglist = p;
+	} else {
+	    Package pp;
+	    /* Always add package to end of list */
+	    for (pp = *pkglist; pp->next != NULL; pp = pp->next)
+		{};
+	    pp->next = p;
+	}
     }
     p->next = NULL;
 

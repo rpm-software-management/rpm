@@ -970,7 +970,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     char *NVR = NULL;
     char lang[BUFSIZ];
 
-    pkg = newPackage(spec);
+    pkg = newPackage(&spec->packages);
 	
     if (! initialPackage) {
 	/* There is one option to %package: <pkg> or -n <pkg> */
