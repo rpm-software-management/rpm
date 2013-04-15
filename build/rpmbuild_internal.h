@@ -410,13 +410,13 @@ int addReqProv(Header h, rpmTagVal tagN,
 
 /** \ingroup rpmbuild
  * Add rpmlib feature dependency.
- * @param h		header
+ * @param pkg		package
  * @param feature	rpm feature name (i.e. "rpmlib(Foo)" for feature Foo)
  * @param featureEVR	rpm feature epoch/version/release
  * @return		0 always
  */
 RPM_GNUC_INTERNAL
-int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR);
+int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR);
 
 #ifdef __cplusplus
 }

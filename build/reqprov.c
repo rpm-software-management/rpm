@@ -107,14 +107,14 @@ int addReqProv(Header h, rpmTagVal tagN,
     return 0;
 }
 
-int rpmlibNeedsFeature(Header h, const char * feature, const char * featureEVR)
+int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEVR)
 {
     char *reqname = NULL;
     int res;
 
     rasprintf(&reqname, "rpmlib(%s)", feature);
 
-    res = addReqProv(h, RPMTAG_REQUIRENAME, reqname, featureEVR,
+    res = addReqProv(pkg->header, RPMTAG_REQUIRENAME, reqname, featureEVR,
 		     RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
 
     free(reqname);
