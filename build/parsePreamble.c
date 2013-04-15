@@ -996,6 +996,7 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	headerPutString(pkg->header, RPMTAG_NAME, NVR);
     } else {
 	NVR = xstrdup("(main package)");
+	spec->sourcePackage = newPackage(NULL);
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
