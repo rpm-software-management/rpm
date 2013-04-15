@@ -42,7 +42,7 @@ static int isNewDep(Header h, rpmTagVal nametag,
     return isnew;
 }
 
-int addReqProv(Header h, rpmTagVal tagN,
+int addReqProv(Package pkg, rpmTagVal tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index)
 {
@@ -50,6 +50,7 @@ int addReqProv(Header h, rpmTagVal tagN,
     rpmTagVal flagtag = 0;
     rpmTagVal indextag = 0;
     rpmsenseFlags extra = RPMSENSE_ANY;
+    Header h = pkg->header; /* just a shortcut */
 
     switch (tagN) {
     case RPMTAG_PROVIDENAME:
@@ -114,7 +115,7 @@ int rpmlibNeedsFeature(Package pkg, const char * feature, const char * featureEV
 
     rasprintf(&reqname, "rpmlib(%s)", feature);
 
-    res = addReqProv(pkg->header, RPMTAG_REQUIRENAME, reqname, featureEVR,
+    res = addReqProv(pkg, RPMTAG_REQUIRENAME, reqname, featureEVR,
 		     RPMSENSE_RPMLIB|(RPMSENSE_LESS|RPMSENSE_EQUAL), 0);
 
     free(reqname);

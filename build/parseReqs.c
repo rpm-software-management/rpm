@@ -43,7 +43,6 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     char * N = NULL, * EVR = NULL;
     rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
-    Header h = pkg->header; /* everything except buildrequires go here */
     rpmRC rc = RPMRC_FAIL; /* assume failure */
 
     switch (tagN) {
@@ -89,11 +88,11 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     case RPMTAG_BUILDREQUIRES:
 	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= RPMSENSE_ANY;
-	h = spec->buildRestrictions;
+	pkg = spec->sourcePackage;
 	break;
     case RPMTAG_BUILDCONFLICTS:
 	nametag = RPMTAG_CONFLICTNAME;
-	h = spec->buildRestrictions;
+	pkg = spec->sourcePackage;
 	break;
     }
 
@@ -161,7 +160,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	} else
 	    EVR = NULL;
 
-	if (addReqProv(h, nametag, N, EVR, Flags, index)) {
+	if (addReqProv(pkg, nametag, N, EVR, Flags, index)) {
 	    emsg = _("invalid dependency");
 	    goto exit;
 	}

@@ -279,7 +279,7 @@ Header rpmSpecSourceHeader(rpmSpec spec)
 
 rpmds rpmSpecDS(rpmSpec spec, rpmTagVal tag)
 {
-    return (spec != NULL) ? rpmdsNew(spec->buildRestrictions, tag, 0) : NULL;
+    return (spec != NULL) ? rpmdsNew(spec->sourcePackage->header, tag, 0) : NULL;
 }
 
 rpmps rpmSpecCheckDeps(rpmts ts, rpmSpec spec)
