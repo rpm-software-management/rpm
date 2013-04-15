@@ -88,11 +88,9 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
     case RPMTAG_BUILDREQUIRES:
 	nametag = RPMTAG_REQUIRENAME;
 	tagflags |= RPMSENSE_ANY;
-	pkg = spec->sourcePackage;
 	break;
     case RPMTAG_BUILDCONFLICTS:
 	nametag = RPMTAG_CONFLICTNAME;
-	pkg = spec->sourcePackage;
 	break;
     }
 
