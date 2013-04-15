@@ -1163,15 +1163,15 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 
     if (digestalgo != defaultalgo) {
 	headerPutUint32(h, RPMTAG_FILEDIGESTALGO, &digestalgo, 1);
-	rpmlibNeedsFeature(h, "FileDigests", "4.6.0-1");
+	rpmlibNeedsFeature(pkg, "FileDigests", "4.6.0-1");
     }
 
     if (fl->haveCaps) {
-	rpmlibNeedsFeature(h, "FileCaps", "4.6.1-1");
+	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
     }
 
     if (_addDotSlash)
-	(void) rpmlibNeedsFeature(h, "PayloadFilesHavePrefix", "4.0-1");
+	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
 
   {
     struct rpmtd_s filenames;
@@ -1225,7 +1225,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     if (!(fl->pkgFlags & RPMBUILD_PKG_NODIRTOKENS)) {
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
-	(void) rpmlibNeedsFeature(h, "CompressedFileNames", "3.0.4-1");
+	(void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
     }
 }
 
@@ -1914,8 +1914,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     /* Verify that file attributes scope over hardlinks correctly. */
     if (checkHardLinks(&fl.files))
-	(void) rpmlibNeedsFeature(pkg->header,
-			"PartialHardlinkSets", "4.0.4-1");
+	(void) rpmlibNeedsFeature(pkg, "PartialHardlinkSets", "4.0.4-1");
 
     genCpioListAndHeader(&fl, pkg, 0);
 

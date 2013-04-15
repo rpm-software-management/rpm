@@ -286,15 +286,15 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	} else if (rstreq(s+1, "bzdio")) {
 	    compr = "bzip2";
 	    /* Add prereq on rpm version that understands bzip2 payloads */
-	    (void) rpmlibNeedsFeature(pkg->header, "PayloadIsBzip2", "3.0.5-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsBzip2", "3.0.5-1");
 #endif
 #if HAVE_LZMA_H
 	} else if (rstreq(s+1, "xzdio")) {
 	    compr = "xz";
-	    (void) rpmlibNeedsFeature(pkg->header, "PayloadIsXz", "5.2-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsXz", "5.2-1");
 	} else if (rstreq(s+1, "lzdio")) {
 	    compr = "lzma";
-	    (void) rpmlibNeedsFeature(pkg->header, "PayloadIsLzma", "4.4.6-1");
+	    (void) rpmlibNeedsFeature(pkg, "PayloadIsLzma", "4.4.6-1");
 #endif
 	} else {
 	    rpmlog(RPMLOG_ERR, _("Unknown payload compression: %s\n"),
@@ -313,7 +313,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 
     /* check if the package has a dependency with a '~' */
     if (haveTildeDep(pkg->header))
-	(void) rpmlibNeedsFeature(pkg->header, "TildeInVersions", "4.10.0-1");
+	(void) rpmlibNeedsFeature(pkg, "TildeInVersions", "4.10.0-1");
 
     /* Create and add the cookie */
     if (cookie) {
@@ -572,7 +572,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	}
 
 	if (cheating) {
-	    (void) rpmlibNeedsFeature(pkg->header, "ShortCircuited", "4.9.0-1");
+	    (void) rpmlibNeedsFeature(pkg, "ShortCircuited", "4.9.0-1");
 	}
 	
 	{   char *binFormat = rpmGetPath("%{_rpmfilename}", NULL);
