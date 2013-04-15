@@ -1942,6 +1942,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     struct FileList_s fl;
     ARGV_t files = NULL;
     Package pkg;
+    Package sourcePkg = spec->sourcePackage;
     static char *_srcdefattr;
     static int oneshot;
 
@@ -1972,7 +1973,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	}
     }
 
-    spec->sourceCpioList = NULL;
+    sourcePkg->cpioList = NULL;
 
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
@@ -2045,9 +2046,9 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     argvFree(files);
 
     if (! fl.processingFailed) {
-	if (spec->sourceHeader != NULL) {
-	    genCpioListAndHeader(&fl, &spec->sourceCpioList,
-			spec->sourceHeader, 1);
+	if (sourcePkg->header != NULL) {
+	    genCpioListAndHeader(&fl, &sourcePkg->cpioList,
+			sourcePkg->header, 1);
 	}
     }
 
