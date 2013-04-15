@@ -591,9 +591,12 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 {
     rpmds ds;
     int save;
+    int ocount;
 
     if (dsp == NULL || ods == NULL)
 	return -1;
+
+    ocount = rpmdsCount(*dsp);
 
     /* If not initialized yet, dup the 1st entry. */
     if (*dsp == NULL) {
@@ -656,7 +659,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 
     }
     ods->i = save;
-    return 0;
+    return (ds->Count - ocount);
 }
 
 
@@ -997,7 +1000,7 @@ int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp)
     if (rltblp == NULL)
 	rltblp = rpmlibProvides;
 
-    for (rlp = rltblp; rlp->featureName != NULL && rc == 0; rlp++) {
+    for (rlp = rltblp; rlp->featureName != NULL && rc >= 0; rlp++) {
 	rpmds ds = rpmdsSinglePool(pool, RPMTAG_PROVIDENAME, rlp->featureName,
 			rlp->featureEVR, rlp->featureFlags);
 	rc = rpmdsMerge(dsp, ds);
@@ -1006,7 +1009,7 @@ int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp)
     /* freeze the pool to save memory, but only if private pool */
     if (*dsp && (*dsp)->pool != pool)
 	rpmstrPoolFreeze((*dsp)->pool, 0);
-    return rc;
+    return (rc < 0) ? -1 : 0;
 }
 
 int rpmdsRpmlib(rpmds * dsp, const void * tblp)
