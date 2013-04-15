@@ -452,14 +452,12 @@ static const rpmTagVal sourceTags[] = {
 
 static void initSourceHeader(rpmSpec spec)
 {
-    Package sourcePkg;
+    Package sourcePkg = spec->sourcePackage;
     struct Source *srcPtr;
 
-    if (spec->sourcePackage)
+    if (headerIsEntry(sourcePkg->header, RPMTAG_NAME))
 	return;
 
-    sourcePkg = spec->sourcePackage = xcalloc(1, sizeof(*sourcePkg));
-    sourcePkg->header = headerNew();
     /* Only specific tags are added to the source package header */
     headerCopyTags(spec->packages->header, sourcePkg->header, sourceTags);
 
