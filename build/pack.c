@@ -23,15 +23,10 @@
 
 #include "debug.h"
 
-typedef struct cpioSourceArchive_s {
-    rpm_loff_t	cpioArchiveSize;
-    rpmfi	cpioList;
-} * CSA_t;
-
 /**
  * @todo Create transaction set *much* earlier.
  */
-static rpmRC cpio_doio(FD_t fdo, Package pkg, CSA_t csa, const char * fmodeMacro)
+static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro)
 {
     char *failedFile = NULL;
     FD_t cfd;
@@ -42,8 +37,8 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, CSA_t csa, const char * fmodeMacro
     if (cfd == NULL)
 	return RPMRC_FAIL;
 
-    fsmrc = rpmPackageFilesArchive(csa->cpioList, headerIsSource(pkg->header),
-				   cfd, &csa->cpioArchiveSize, &failedFile);
+    fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
+				   cfd, &pkg->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {
 	if (failedFile)
@@ -248,7 +243,7 @@ static int haveTildeDep(Header h)
 }
 
 static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
-	const char *fileName, CSA_t csa, char **cookie)
+		      const char *fileName, char **cookie)
 {
     FD_t fd = NULL;
     FD_t ifd = NULL;
@@ -352,8 +347,8 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     } else { /* Write the archive and get the size */
 	(void) Fflush(fd);
 	fdFiniDigest(fd, PGPHASHALGO_SHA1, (void **)&SHA1, NULL, 1);
-	if (csa->cpioList != NULL) {
-	    rc = cpio_doio(fd, pkg, csa, rpmio_flags);
+	if (pkg->cpioList != NULL) {
+	    rc = cpio_doio(fd, pkg, rpmio_flags);
 	} else {
 	    rc = RPMRC_FAIL;
 	    rpmlog(RPMLOG_ERR, _("Bad CSA data\n"));
@@ -379,7 +374,7 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
      * older rpm will just bail out with error message on attempt to read
      * such a package.
      */
-    if (csa->cpioArchiveSize < UINT32_MAX) {
+    if (pkg->cpioArchiveSize < UINT32_MAX) {
 	sizetag = RPMSIGTAG_SIZE;
 	payloadtag = RPMSIGTAG_PAYLOADSIZE;
     } else {
@@ -406,12 +401,12 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
 	td.tag = payloadtag;
 	td.count = 1;
 	if (payloadtag == RPMSIGTAG_PAYLOADSIZE) {
-	    rpm_off_t asize = csa->cpioArchiveSize;
+	    rpm_off_t asize = pkg->cpioArchiveSize;
 	    td.type = RPM_INT32_TYPE;
 	    td.data = &asize;
 	    headerPut(sig, &td, HEADERPUT_DEFAULT);
 	} else {
-	    rpm_loff_t asize = csa->cpioArchiveSize;
+	    rpm_loff_t asize = pkg->cpioArchiveSize;
 	    td.type = RPM_INT64_TYPE;
 	    td.data = &asize;
 	    headerPut(sig, &td, HEADERPUT_DEFAULT);
@@ -547,8 +542,6 @@ static rpmRC checkPackages(char *pkgcheck)
 
 rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 {
-    struct cpioSourceArchive_s csabuf;
-    CSA_t csa = &csabuf;
     rpmRC rc;
     const char *errorString;
     Package pkg;
@@ -614,12 +607,7 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 	    free(binRpm);
 	}
 
-	memset(csa, 0, sizeof(*csa));
-	csa->cpioArchiveSize = 0;
-	csa->cpioList = rpmfiLink(pkg->cpioList);
-
-	rc = writeRPM(pkg, NULL, fn, csa, NULL);
-	csa->cpioList = rpmfiFree(csa->cpioList);
+	rc = writeRPM(pkg, NULL, fn, NULL);
 	if (rc == RPMRC_OK) {
 	    /* Do check each written package if enabled */
 	    char *pkgcheck = rpmExpand("%{?_build_pkgcheck} ", fn, NULL);
@@ -653,8 +641,6 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating)
 rpmRC packageSources(rpmSpec spec, char **cookie)
 {
     Package sourcePkg = spec->sourcePackage;
-    struct cpioSourceArchive_s csabuf;
-    CSA_t csa = &csabuf;
     rpmRC rc;
 
     /* Add some cruft */
@@ -666,19 +652,14 @@ rpmRC packageSources(rpmSpec spec, char **cookie)
     {	char *fn = rpmGetPath("%{_srcrpmdir}/", spec->sourceRpmName,NULL);
 	char *pkgcheck = rpmExpand("%{?_build_pkgcheck_srpm} ", fn, NULL);
 
-	memset(csa, 0, sizeof(*csa));
-	csa->cpioArchiveSize = 0;
-	csa->cpioList = rpmfiLink(sourcePkg->cpioList); 
-
 	spec->sourcePkgId = NULL;
-	rc = writeRPM(sourcePkg, &spec->sourcePkgId, fn, csa, cookie);
+	rc = writeRPM(sourcePkg, &spec->sourcePkgId, fn, cookie);
 
 	/* Do check SRPM package if enabled */
 	if (rc == RPMRC_OK && pkgcheck[0] != ' ') {
 	    rc = checkPackages(pkgcheck);
 	}
 
-	rpmfiFree(csa->cpioList);
 	free(pkgcheck);
 	free(fn);
     }
