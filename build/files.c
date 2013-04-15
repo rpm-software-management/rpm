@@ -945,8 +945,7 @@ static int seenHardLink(FileRecords files, FileListRec flp, rpm_ino_t *fileid)
  * @param h
  * @param isSrc
  */
-static void genCpioListAndHeader(FileList fl,
-		rpmfi * fip, Header h, int isSrc)
+static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 {
     int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
     size_t apathlen = 0;
@@ -957,6 +956,7 @@ static void genCpioListAndHeader(FileList fl,
     int i;
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
+    Header h = pkg->header; /* just a shortcut */
 
     /*
      * See if non-md5 file digest algorithm is requested. If not
@@ -1217,7 +1217,7 @@ static void genCpioListAndHeader(FileList fl,
 	a++;		/* skip apath NUL */
     }
     fi->apath = apath;
-    *fip = fi;
+    pkg->cpioList = fi;
     rpmtdFreeData(&filenames);
   }
 
@@ -1917,7 +1917,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 	(void) rpmlibNeedsFeature(pkg->header,
 			"PartialHardlinkSets", "4.0.4-1");
 
-    genCpioListAndHeader(&fl, &pkg->cpioList, pkg->header, 0);
+    genCpioListAndHeader(&fl, pkg, 0);
 
 exit:
     FileListFree(&fl);
@@ -2047,8 +2047,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 
     if (! fl.processingFailed) {
 	if (sourcePkg->header != NULL) {
-	    genCpioListAndHeader(&fl, &sourcePkg->cpioList,
-			sourcePkg->header, 1);
+	    genCpioListAndHeader(&fl, sourcePkg, 1);
 	}
     }
 
