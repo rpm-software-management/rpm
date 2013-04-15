@@ -88,6 +88,7 @@ struct Package_s {
     Header header;
     rpmds ds;			/*!< Requires: N = EVR */
     rpmfi cpioList;
+    rpm_loff_t  cpioArchiveSize;
 
     struct Source * icon;
 
