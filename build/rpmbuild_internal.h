@@ -87,6 +87,12 @@ struct rpmSpec_s {
 struct Package_s {
     Header header;
     rpmds ds;			/*!< Requires: N = EVR */
+    rpmds requires;
+    rpmds provides;
+    rpmds conflicts;
+    rpmds obsoletes;
+    rpmds triggers;
+    rpmds order;
     rpmfi cpioList;
     rpm_loff_t  cpioArchiveSize;
 

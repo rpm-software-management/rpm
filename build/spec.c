@@ -131,6 +131,12 @@ static Package freePackage(Package pkg)
 
     pkg->header = headerFree(pkg->header);
     pkg->ds = rpmdsFree(pkg->ds);
+    pkg->requires = rpmdsFree(pkg->requires);
+    pkg->provides = rpmdsFree(pkg->provides);
+    pkg->conflicts = rpmdsFree(pkg->conflicts);
+    pkg->obsoletes = rpmdsFree(pkg->obsoletes);
+    pkg->triggers = rpmdsFree(pkg->triggers);
+    pkg->order = rpmdsFree(pkg->order);
     pkg->fileList = argvFree(pkg->fileList);
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
