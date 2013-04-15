@@ -394,8 +394,8 @@ RPM_GNUC_INTERNAL
 rpmRC packageSources(rpmSpec spec, char **cookie);
 
 /** \ingroup rpmbuild
- * Add dependency to header, filtering duplicates.
- * @param h		header
+ * Add dependency to package, filtering duplicates.
+ * @param pkg		package
  * @param tagN		tag, identifies type of dependency
  * @param N		(e.g. Requires: foo < 0:1.2-3, "foo")
  * @param EVR		(e.g. Requires: foo < 0:1.2-3, "0:1.2-3")
@@ -404,7 +404,7 @@ rpmRC packageSources(rpmSpec spec, char **cookie);
  * @return		0 on success, 1 on error
  */
 RPM_GNUC_INTERNAL
-int addReqProv(Header h, rpmTagVal tagN,
+int addReqProv(Package pkg, rpmTagVal tagN,
 		const char * N, const char * EVR, rpmsenseFlags Flags,
 		uint32_t index);
 
