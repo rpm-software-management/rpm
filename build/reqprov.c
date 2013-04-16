@@ -11,12 +11,10 @@
 #include "build/rpmbuild_internal.h"
 #include "debug.h"
 
-static int isNewDep(rpmds *dsp, rpmTagVal nametag,
-		  const char *N, const char *EVR, rpmsenseFlags Flags,
+static int isNewDep(rpmds *dsp, rpmds bds,
 		  Header h, rpmTagVal indextag, uint32_t index)
 {
     int isnew = 1;
-    rpmds bds = rpmdsSingle(nametag, N, EVR, Flags);
 
     if (!indextag) {
 	/* With normal deps, we can just merge and see if anything got added */
@@ -40,7 +38,6 @@ static int isNewDep(rpmds *dsp, rpmTagVal nametag,
 	rpmdsMerge(dsp, bds);
     }
 
-    rpmdsFree(bds);
     return isnew;
 }
 
@@ -53,7 +50,7 @@ int addReqProv(Package pkg, rpmTagVal tagN,
     rpmTagVal indextag = 0;
     rpmsenseFlags extra = RPMSENSE_ANY;
     Header h = pkg->header; /* just a shortcut */
-    rpmds *dsp = NULL;
+    rpmds newds, *dsp = NULL;
 
     switch (tagN) {
     case RPMTAG_PROVIDENAME:
@@ -104,8 +101,9 @@ int addReqProv(Package pkg, rpmTagVal tagN,
     if (EVR == NULL)
 	EVR = "";
     
+    newds = rpmdsSingle(tagN, N, EVR, Flags);
     /* Avoid adding duplicate dependencies. */
-    if (isNewDep(dsp, tagN, N, EVR, Flags, h, indextag, index)) {
+    if (isNewDep(dsp, newds, h, indextag, index)) {
 	headerPutString(h, tagN, N);
 	headerPutString(h, versiontag, EVR);
 	headerPutUint32(h, flagtag, &Flags, 1);
@@ -113,6 +111,7 @@ int addReqProv(Package pkg, rpmTagVal tagN,
 	    headerPutUint32(h, indextag, &index, 1);
 	}
     }
+    rpmdsFree(newds);
 
     return 0;
 }
