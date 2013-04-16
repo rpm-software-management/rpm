@@ -85,7 +85,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 	    break;
 	}
     }
-    if (fullName != name)
+    if (fullName == name)
 	free(fullName);
 
     if (pkg)
