@@ -101,7 +101,7 @@ int addReqProv(Package pkg, rpmTagVal tagN,
     if (EVR == NULL)
 	EVR = "";
     
-    newds = rpmdsSingle(tagN, N, EVR, Flags);
+    newds = rpmdsSinglePool(pkg->pool, tagN, N, EVR, Flags);
     /* Avoid adding duplicate dependencies. */
     if (isNewDep(dsp, newds, h, indextag, index)) {
 	headerPutString(h, tagN, N);
