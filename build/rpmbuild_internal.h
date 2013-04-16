@@ -87,7 +87,7 @@ struct rpmSpec_s {
  * The structure used to store values for a package.
  */
 struct Package_s {
-    char * name;
+    rpmsid name;
     rpmstrPool pool;
     Header header;
     rpmds ds;			/*!< Requires: N = EVR */
