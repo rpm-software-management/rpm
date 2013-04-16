@@ -61,6 +61,7 @@ struct Source * freeSources(struct Source * s)
 rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 {
     char *fullName = NULL;
+    rpmsid nameid = 0;
     Package p;
 
     /* "main" package */
@@ -76,10 +77,11 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 		 headerGetString(spec->packages->header, RPMTAG_NAME), name);
 	name = fullName;
     }
+    nameid = rpmstrPoolId(spec->pool, name, 1);
 
     /* Locate package the name */
     for (p = spec->packages; p != NULL; p = p->next) {
-	if (p->name && (rstreq(name, p->name))) {
+	if (p->name && p->name == nameid) {
 	    break;
 	}
     }
@@ -103,7 +105,7 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->pool = rpmstrPoolLink(pool);
 
     if (name)
-	p->name = xstrdup(name);
+	p->name = rpmstrPoolId(p->pool, name, 1);
 
     if (pkglist) {
 	if (*pkglist == NULL) {
@@ -148,7 +150,6 @@ static Package freePackage(Package pkg)
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
     pkg->pool = rpmstrPoolFree(pkg->pool);
 
-    free(pkg->name);
     free(pkg);
     return NULL;
 }
