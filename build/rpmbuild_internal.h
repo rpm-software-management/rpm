@@ -85,6 +85,7 @@ struct rpmSpec_s {
  * The structure used to store values for a package.
  */
 struct Package_s {
+    char * name;
     Header header;
     rpmds ds;			/*!< Requires: N = EVR */
     rpmds requires;
@@ -323,11 +324,12 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 
 /** \ingroup rpmbuild
  * Create and initialize package control structure.
+ * @param name		package name for sub-packages (or NULL)
  * @param pkglist	package list pointer to append to (or NULL)
  * @return		package control structure
  */
 RPM_GNUC_INTERNAL
-Package newPackage(Package * pkglist);
+Package newPackage(const char *name, Package * pkglist);
 
 /** \ingroup rpmbuild
  * Post-build processing for binary package(s).

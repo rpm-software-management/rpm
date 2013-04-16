@@ -60,7 +60,6 @@ struct Source * freeSources(struct Source * s)
 
 rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 {
-    const char *pname;
     char *fullName = NULL;
     Package p;
 
@@ -71,29 +70,28 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
 	return RPMRC_OK;
     }
 
-    /* Construct package name */
+    /* Construct partial package name */
     if (flag == PART_SUBNAME) {
-	pname = headerGetString(spec->packages->header, RPMTAG_NAME);
-	rasprintf(&fullName, "%s-%s", pname, name);
-    } else {
-	fullName = xstrdup(name);
+	rasprintf(&fullName, "%s-%s",
+		 headerGetString(spec->packages->header, RPMTAG_NAME), name);
+	name = fullName;
     }
 
-    /* Locate package with fullName */
+    /* Locate package the name */
     for (p = spec->packages; p != NULL; p = p->next) {
-	pname = headerGetString(p->header, RPMTAG_NAME);
-	if (pname && (rstreq(fullName, pname))) {
+	if (p->name && (rstreq(name, p->name))) {
 	    break;
 	}
     }
-    free(fullName);
+    if (fullName != name)
+	free(fullName);
 
     if (pkg)
 	*pkg = p;
     return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
-Package newPackage(Package *pkglist)
+Package newPackage(const char *name, Package *pkglist)
 {
     Package p = xcalloc(1, sizeof(*p));
     p->header = headerNew();
@@ -102,6 +100,9 @@ Package newPackage(Package *pkglist)
     p->fileList = NULL;
     p->fileFile = NULL;
     p->policyList = NULL;
+
+    if (name)
+	p->name = xstrdup(name);
 
     if (pkglist) {
 	if (*pkglist == NULL) {
@@ -145,6 +146,7 @@ static Package freePackage(Package pkg)
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
 
+    free(pkg->name);
     free(pkg);
     return NULL;
 }

@@ -973,8 +973,6 @@ int parsePreamble(rpmSpec spec, int initialPackage)
     char *NVR = NULL;
     char lang[BUFSIZ];
 
-    pkg = newPackage(&spec->packages);
-	
     if (! initialPackage) {
 	/* There is one option to %package: <pkg> or -n <pkg> */
 	if (parseSimplePart(spec->line, &name, &flag)) {
@@ -996,10 +994,13 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 	} else
 	    NVR = xstrdup(name);
 	free(name);
+	pkg = newPackage(NVR, &spec->packages);
 	headerPutString(pkg->header, RPMTAG_NAME, NVR);
     } else {
 	NVR = xstrdup("(main package)");
-	spec->sourcePackage = newPackage(NULL);
+	pkg = newPackage(NULL, &spec->packages);
+	spec->sourcePackage = newPackage(NULL, NULL);
+	
     }
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
