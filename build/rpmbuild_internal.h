@@ -3,6 +3,7 @@
 
 #include <rpm/rpmbuild.h>
 #include <rpm/rpmutil.h>
+#include <rpm/rpmstrpool.h>
 #include "build/rpmbuild_misc.h"
 
 struct TriggerFileEntry {
@@ -69,6 +70,7 @@ struct rpmSpec_s {
     Package sourcePackage;
 
     rpmMacroContext macros;
+    rpmstrPool pool;
 
     StringBuf prep;		/*!< %prep scriptlet. */
     StringBuf build;		/*!< %build scriptlet. */
@@ -86,6 +88,7 @@ struct rpmSpec_s {
  */
 struct Package_s {
     char * name;
+    rpmstrPool pool;
     Header header;
     rpmds ds;			/*!< Requires: N = EVR */
     rpmds requires;
@@ -325,11 +328,12 @@ rpmRC lookupPackage(rpmSpec spec, const char * name, int flag,
 /** \ingroup rpmbuild
  * Create and initialize package control structure.
  * @param name		package name for sub-packages (or NULL)
+ * @param pool		string pool
  * @param pkglist	package list pointer to append to (or NULL)
  * @return		package control structure
  */
 RPM_GNUC_INTERNAL
-Package newPackage(const char *name, Package * pkglist);
+Package newPackage(const char *name, rpmstrPool pool, Package * pkglist);
 
 /** \ingroup rpmbuild
  * Post-build processing for binary package(s).
