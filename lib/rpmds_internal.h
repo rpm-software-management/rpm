@@ -8,52 +8,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmds
- * Create and load a dependency set.
- * @param pool		shared string pool (or NULL for private pool)
- * @param h		header
- * @param tagN		type of dependency
- * @param flags		unused
- * @return		new dependency set
- */
-RPM_GNUC_INTERNAL
-rpmds rpmdsNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, int flags);
-
-/** \ingroup rpmds
- * Create, load and initialize a dependency for this header. 
- * @param pool		string pool (or NULL for private pool)
- * @param h		header
- * @param tagN		type of dependency
- * @param Flags		comparison flags
- * @return		new dependency set
- */
-RPM_GNUC_INTERNAL
-rpmds rpmdsThisPool(rpmstrPool pool,
-		    Header h, rpmTagVal tagN, rpmsenseFlags Flags);
-
-/** \ingroup rpmds
- * Create, load and initialize a dependency set of size 1.
- * @param pool		string pool (or NULL for private pool)
- * @param tagN		type of dependency
- * @param N		name
- * @param EVR		epoch:version-release
- * @param Flags		comparison flags
- * @return		new dependency set
- */
-RPM_GNUC_INTERNAL
-rpmds rpmdsSinglePool(rpmstrPool pool, rpmTagVal tagN,
-		      const char * N, const char * EVR, rpmsenseFlags Flags);
-
-/**
- * Load rpmlib provides into a dependency set.
- * @param pool		shared string pool (or NULL for private pool)
- * @retval *dsp		(loaded) depedency set
- * @param tblp		rpmlib provides table (NULL uses internal table)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int rpmdsRpmlibPool(rpmstrPool pool, rpmds * dsp, const void * tblp);
-
-/** \ingroup rpmds
  * Swiss army knife dependency matching function.
  * @param pool		string pool (or NULL for private pool)
  * @param h		header
