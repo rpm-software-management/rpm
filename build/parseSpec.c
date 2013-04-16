@@ -499,19 +499,17 @@ static void initSourceHeader(rpmSpec spec)
 }
 
 /* Add extra provides to package.  */
-static void addPackageProvides(Header h)
+static void addPackageProvides(Package pkg)
 {
     const char *arch, *name;
     char *evr, *isaprov;
     rpmsenseFlags pflags = RPMSENSE_EQUAL;
 
     /* <name> = <evr> provide */
-    name = headerGetString(h, RPMTAG_NAME);
-    arch = headerGetString(h, RPMTAG_ARCH);
-    evr = headerGetAsString(h, RPMTAG_EVR);
-    headerPutString(h, RPMTAG_PROVIDENAME, name);
-    headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
-    headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+    name = headerGetString(pkg->header, RPMTAG_NAME);
+    arch = headerGetString(pkg->header, RPMTAG_ARCH);
+    evr = headerGetAsString(pkg->header, RPMTAG_EVR);
+    addReqProv(pkg, RPMTAG_PROVIDENAME, name, evr, pflags, 0);
 
     /*
      * <name>(<isa>) = <evr> provide
@@ -520,9 +518,7 @@ static void addPackageProvides(Header h)
      */
     isaprov = rpmExpand(name, "%{?_isa}", NULL);
     if (!rstreq(arch, "noarch") && !rstreq(name, isaprov)) {
-	headerPutString(h, RPMTAG_PROVIDENAME, isaprov);
-	headerPutString(h, RPMTAG_PROVIDEVERSION, evr);
-	headerPutUint32(h, RPMTAG_PROVIDEFLAGS, &pflags, 1);
+	addReqProv(pkg, RPMTAG_PROVIDENAME, isaprov, evr, pflags, 0);
     }
     free(isaprov);
     free(evr);
@@ -545,7 +541,7 @@ static void addTargets(Package Pkgs)
 	headerPutString(pkg->header, RPMTAG_OPTFLAGS, optflags);
 
 	pkg->ds = rpmdsThis(pkg->header, RPMTAG_REQUIRENAME, RPMSENSE_EQUAL);
-	addPackageProvides(pkg->header);
+	addPackageProvides(pkg);
     }
     free(platform);
     free(arch);
