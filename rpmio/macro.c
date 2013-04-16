@@ -986,7 +986,12 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     int chkexist;
     char *source = NULL;
 
-    /* Handle non-terminated substrings by creating a terminated copy */
+    /*
+     * Always make a (terminated) copy of the source string.
+     * Beware: avoiding the copy when src is known \0-terminated seems like
+     * an obvious opportunity for optimization, but doing that breaks
+     * a special case of macro undefining itself.
+     */
     if (!slen)
 	slen = strlen(src);
     source = xmalloc(slen + 1);
@@ -995,8 +1000,9 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
     s = source;
 
     if (mb->buf == NULL) {
-	size_t blen = MACROBUFSIZ + strlen(s);
-	mb->buf = xcalloc(blen + 1, sizeof(*mb->buf));
+	size_t blen = MACROBUFSIZ + slen;
+	mb->buf = xmalloc(blen + 1);
+	mb->buf[0] = '\0';
 	mb->tpos = 0;
 	mb->nb = blen;
     }
