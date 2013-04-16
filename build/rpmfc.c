@@ -1244,9 +1244,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
     /* Copy (and delete) manually generated dependencies to dictionary. */
     if (!fc->skipProv) {
-	rpmds ds = rpmdsNew(pkg->header, RPMTAG_PROVIDENAME, 0);
-	rpmdsMerge(&fc->provides, ds);
-	rpmdsFree(ds);
+	rpmdsMerge(&fc->provides, pkg->provides);
 
 	headerDel(pkg->header, RPMTAG_PROVIDENAME);
 	headerDel(pkg->header, RPMTAG_PROVIDEVERSION);
@@ -1254,7 +1252,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
 	/* Add config dependency, Provides: config(N) = EVR */
 	if (genConfigDeps) {
-	    ds = rpmdsSingleNS(RPMTAG_PROVIDENAME, "config",
+	    rpmds ds = rpmdsSingleNS(RPMTAG_PROVIDENAME, "config",
 			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
 			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    rpmdsMerge(&fc->provides, ds);
@@ -1263,9 +1261,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
     }
 
     if (!fc->skipReq) {
-	rpmds ds = rpmdsNew(pkg->header, RPMTAG_REQUIRENAME, 0);
-	rpmdsMerge(&fc->requires, ds);
-	rpmdsFree(ds);
+	rpmdsMerge(&fc->requires, pkg->requires);
 
 	headerDel(pkg->header, RPMTAG_REQUIRENAME);
 	headerDel(pkg->header, RPMTAG_REQUIREVERSION);
@@ -1273,7 +1269,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 
 	/* Add config dependency,  Requires: config(N) = EVR */
 	if (genConfigDeps) {
-	    ds = rpmdsSingleNS(RPMTAG_REQUIRENAME, "config",
+	    rpmds ds = rpmdsSingleNS(RPMTAG_REQUIRENAME, "config",
 			       rpmdsN(pkg->ds), rpmdsEVR(pkg->ds),
 			       (RPMSENSE_EQUAL|RPMSENSE_CONFIG));
 	    rpmdsMerge(&fc->requires, ds);
