@@ -91,7 +91,7 @@ rpmRC lookupPackage(rpmSpec spec, const char *name, int flag,Package *pkg)
     return ((p == NULL) ? RPMRC_FAIL : RPMRC_OK);
 }
 
-Package newPackage(const char *name, Package *pkglist)
+Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
 {
     Package p = xcalloc(1, sizeof(*p));
     p->header = headerNew();
@@ -100,6 +100,7 @@ Package newPackage(const char *name, Package *pkglist)
     p->fileList = NULL;
     p->fileFile = NULL;
     p->policyList = NULL;
+    p->pool = rpmstrPoolLink(pool);
 
     if (name)
 	p->name = xstrdup(name);
@@ -145,6 +146,7 @@ static Package freePackage(Package pkg)
 
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);
+    pkg->pool = rpmstrPoolFree(pkg->pool);
 
     free(pkg->name);
     free(pkg);
@@ -210,6 +212,7 @@ rpmSpec newSpec(void)
     spec->flags = RPMSPEC_NONE;
 
     spec->macros = rpmGlobalMacroContext;
+    spec->pool = rpmstrPoolCreate();
     
 #ifdef WITH_LUA
     {
@@ -274,6 +277,7 @@ rpmSpec rpmSpecFree(rpmSpec spec)
 
     spec->sources = freeSources(spec->sources);
     spec->packages = freePackages(spec->packages);
+    spec->pool = rpmstrPoolFree(spec->pool);
     
     spec = _free(spec);
 
