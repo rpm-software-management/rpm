@@ -142,6 +142,7 @@ typedef struct FileRecords_s {
 typedef struct FileList_s {
     /* global filelist state */
     char * buildRoot;
+    size_t buildRootLen;
     int processingFailed;
     int haveCaps;
     int largeFiles;
@@ -1305,6 +1306,10 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
     cpioPath = diskPath;
 	
+    if (strncmp(diskPath, fl->buildRoot, fl->buildRootLen)) {
+	rpmlog(RPMLOG_ERR, _("Path is outside buildroot: %s\n"), diskPath);
+	goto exit;
+    }
     
     /* Path may have prepended buildRoot, so locate the original filename. */
     /*
@@ -1813,6 +1818,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
+    fl.buildRootLen = strlen(fl.buildRoot);
 
     dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
     fl.def.verifyFlags = RPMVERIFY_ALL;
