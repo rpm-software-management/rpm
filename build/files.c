@@ -1127,7 +1127,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	    } else {
 		buf[llen] = '\0';
 		if (buf[0] == '/' && !rstreq(fl->buildRoot, "/") &&
-			rstreqn(buf, fl->buildRoot, strlen(fl->buildRoot))) {
+			rstreqn(buf, fl->buildRoot, fl->buildRootLen)) {
 		    rpmlog(RPMLOG_ERR,
 				_("Symlink points to BuildRoot: %s -> %s\n"),
 				flp->cpioPath, buf);
@@ -1323,7 +1323,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
      *
      */
     if (fl->buildRoot && !rstreq(fl->buildRoot, "/"))
-    	cpioPath += strlen(fl->buildRoot);
+    	cpioPath += fl->buildRootLen;
 
     /* XXX make sure '/' can be packaged also */
     if (*cpioPath == '\0')
