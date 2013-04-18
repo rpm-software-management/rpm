@@ -1628,6 +1628,7 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
 static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
 {
     int rc;
+    rpmfi fi = fsm->iter->fi;
 
     /* Read next payload header. */
     rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb));
@@ -1638,6 +1639,7 @@ static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
 
     /* Identify mapping index. */
     fsm->ix = mapFind(fsm->iter, fsm->path);
+    rpmfiSetFX(fi, fsm->ix);
 
     /* Mapping error */
     if (fsm->ix < 0) {
@@ -1645,6 +1647,7 @@ static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
             *fsm->failedFile = xstrdup(fsm->path);
         rc = CPIOERR_UNMAPPED_FILE;
     }
+
     return rc;
 }
 
