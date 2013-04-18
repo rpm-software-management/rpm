@@ -1625,6 +1625,30 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
     }
 }
 
+static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
+{
+    int rc;
+
+    /* Read next payload header. */
+    rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb));
+
+    if (rc == CPIOERR_HDR_TRAILER) {
+        return rc;
+    }
+
+    /* Identify mapping index. */
+    fsm->ix = mapFind(fsm->iter, fsm->path);
+
+    /* Mapping error */
+    if (fsm->ix < 0) {
+        if (fsm->failedFile && *fsm->failedFile == NULL)
+            *fsm->failedFile = xstrdup(fsm->path);
+        rc = CPIOERR_UNMAPPED_FILE;
+    }
+    return rc;
+}
+
+
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
@@ -1658,7 +1682,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	fsmReset(fsm);
 
 	/* Read next payload header. */
-        rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb));
+        rc = readCpioHeader(fsm, archive);
 
 	/* Detect and exit on end-of-payload. */
 	if (rc == CPIOERR_HDR_TRAILER) {
@@ -1667,17 +1691,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	}
 
 	if (rc) break;
-
-	/* Identify mapping index. */
-	fsm->ix = mapFind(fsm->iter, fsm->path);
-
-	/* Mapping error */
-	if (fsm->ix < 0) {
-	    if (fsm->failedFile && *fsm->failedFile == NULL)
-		*fsm->failedFile = xstrdup(fsm->path);
-	    rc = CPIOERR_UNMAPPED_FILE;
-	    break;
-	}
 
         rc = fsmInit(fsm);
 
