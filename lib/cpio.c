@@ -50,7 +50,7 @@ struct rpmcpio_s {
  * Cpio archive header information.
  */
 struct cpioCrcPhysicalHeader {
-    char magic[6];
+    /* char magic[6]; handled separately */
     char inode[8];
     char mode[8];
     char uid[8];
@@ -66,7 +66,7 @@ struct cpioCrcPhysicalHeader {
     char checksum[8];			/* ignored !! */
 };
 
-#define	PHYS_HDR_SIZE	110		/* Don't depend on sizeof(struct) */
+#define	PHYS_HDR_SIZE	104		/* Don't depend on sizeof(struct) */
 
 rpmcpio_t rpmcpioOpen(FD_t fd, char mode)
 {
@@ -170,9 +170,15 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
         return rc;
 
     memset(&hdr, '0', PHYS_HDR_SIZE);
-    memcpy(&hdr.magic, CPIO_NEWC_MAGIC, sizeof(hdr.magic));
     memcpy(&hdr.nlink, "00000001", 8);
     memcpy(&hdr.namesize, "0000000b", 8);
+
+    writen = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
+    cpio->offset += writen;
+    if (writen != 6) {
+        return CPIOERR_WRITE_FAILED;
+    }
+
     writen = Fwrite(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += writen;
     if (writen != PHYS_HDR_SIZE) {
@@ -220,7 +226,6 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
         return rc;
     }
 
-    memcpy(hdr->magic, CPIO_NEWC_MAGIC, sizeof(hdr->magic));
     SET_NUM_FIELD(hdr->inode, st->st_ino, field);
     SET_NUM_FIELD(hdr->mode, st->st_mode, field);
     SET_NUM_FIELD(hdr->uid, st->st_uid, field);
@@ -238,6 +243,12 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
     SET_NUM_FIELD(hdr->namesize, len, field);
 
     memcpy(hdr->checksum, "00000000", 8);
+
+    writen = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
+    cpio->offset += writen;
+    if (writen != 6) {
+        return CPIOERR_WRITE_FAILED;
+    }
 
     writen = Fwrite(hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += writen;
@@ -283,6 +294,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st)
     unsigned int major, minor;
     int rc = 0;
     ssize_t read;
+    char magic[6];
 
     if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
         return CPIOERR_READ_FAILED;
@@ -303,15 +315,21 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st)
     rc = rpmcpioReadPad(cpio);
     if (rc) return rc;
 
+    read = Fread(&magic, 6, 1, cpio->fd);
+    cpio->offset += read;
+    if (read != 6)
+        return CPIOERR_READ_FAILED;
+
+    if (strncmp(CPIO_CRC_MAGIC, magic, sizeof(CPIO_CRC_MAGIC)-1) &&
+	strncmp(CPIO_NEWC_MAGIC, magic, sizeof(CPIO_NEWC_MAGIC)-1)) {
+	return CPIOERR_BAD_MAGIC;
+    }
+
     read = Fread(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += read;
     if (read != PHYS_HDR_SIZE)
 	return CPIOERR_READ_FAILED;
 
-    if (strncmp(CPIO_CRC_MAGIC, hdr.magic, sizeof(CPIO_CRC_MAGIC)-1) &&
-	strncmp(CPIO_NEWC_MAGIC, hdr.magic, sizeof(CPIO_NEWC_MAGIC)-1)) {
-	return CPIOERR_BAD_MAGIC;
-    }
     GET_NUM_FIELD(hdr.inode, st->st_ino);
     GET_NUM_FIELD(hdr.mode, st->st_mode);
     GET_NUM_FIELD(hdr.uid, st->st_uid);
