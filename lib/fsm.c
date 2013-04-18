@@ -799,6 +799,7 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
     rpm_loff_t left;
+    rpmfi fi = fsmGetFi(fsm);
     int rc = 0;
 
     st->st_size = (writeData ? ost->st_size : 0);
@@ -821,12 +822,15 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
 	fsm->path = rstrscat(NULL, (fsm->mapFlags & CPIO_MAP_ADDDOT) ? "." : "",
 				   fsm->dirName, fsm->baseName, NULL);
     } else if (fsm->mapFlags & CPIO_MAP_PATH) {
-	rpmfi fi = fsmGetFi(fsm);
 	fsm->path = xstrdup((fi->apath ? fi->apath[ix] : 
 					 rpmfiBNIndex(fi, ix)));
     }
 
-    rc = rpmcpioHeaderWrite(archive, fsm->path, st);
+    if (fi->lfsizes) {
+        rc = rpmcpioStrippedHeaderWrite(archive, ix, st->st_size);
+    } else {
+        rc = rpmcpioHeaderWrite(archive, fsm->path, st);
+    }
     _free(fsm->path);
     fsm->path = path;
 
@@ -1625,26 +1629,52 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
 static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
 {
     int rc;
+    int fx = -1;
     rpmfi fi = fsm->iter->fi;
 
     /* Read next payload header. */
-    rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb));
+    rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb), &fx);
 
-    if (rc == CPIOERR_HDR_TRAILER) {
+    if (rc) {
         return rc;
     }
 
-    /* Identify mapping index. */
-    fsm->ix = mapFind(fsm->iter, fsm->path);
-    rpmfiSetFX(fi, fsm->ix);
 
-    /* Mapping error */
-    if (fsm->ix < 0) {
-        if (fsm->failedFile && *fsm->failedFile == NULL)
-            *fsm->failedFile = xstrdup(fsm->path);
-        rc = CPIOERR_UNMAPPED_FILE;
+    if (fx == -1) {
+        /* Identify mapping index. */
+        fsm->ix = mapFind(fsm->iter, fsm->path);
+
+        /* Mapping error */
+        if (fsm->ix < 0) {
+            if (fsm->failedFile && *fsm->failedFile == NULL)
+                *fsm->failedFile = xstrdup(fsm->path);
+            return CPIOERR_UNMAPPED_FILE;
+        }
+    } else {
+        fsm->iter->i = fx;
+        fsm->ix = mapNextIterator(fsm->iter);
+
+	rpmfiSetFX(fi, fx);
+
+	uint32_t numlinks;
+	const int * links;
+	rpm_loff_t fsize = 0;
+	rpm_mode_t mode = rpmfiFMode(fi);
+
+	numlinks = rpmfiFLinks(fi, &links);
+	if (S_ISREG(mode)) {
+	    if (numlinks>1 && links[numlinks-1]!=fx) {
+		fsize = 0;
+	    } else {
+		fsize = rpmfiFSize(fi);
+	    }
+	} else if (S_ISLNK(mode)) {
+	    fsize = rpmfiFSize(fi);
+	}
+	rpmcpioSetExpectedFileSize(archive, fsize);
     }
 
+    rpmfiSetFX(fi, fsm->ix);
     return rc;
 }
 

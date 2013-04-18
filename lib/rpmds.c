@@ -987,6 +987,9 @@ static const struct rpmlibProvides_s rpmlibProvides[] = {
     { "rpmlib(TildeInVersions)",    "4.10.0-1",
 	(		RPMSENSE_EQUAL),
     N_("dependency comparison supports versions with tilde.") },
+    { "rpmlib(LargeFiles)", 	"4.12.0-1",
+	(		RPMSENSE_EQUAL),
+    N_("support files larger than 4GB") },
     { NULL,				NULL, 0,	NULL }
 };
 

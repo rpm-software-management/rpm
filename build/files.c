@@ -1024,7 +1024,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	if (fl->largeFiles) {
 	    rpm_loff_t rsize64 = (rpm_loff_t)flp->fl_size;
 	    headerPutUint64(h, RPMTAG_LONGFILESIZES, &rsize64, 1);
-	    /* XXX TODO: add rpmlib() dependency for large files */
+            (void) rpmlibNeedsFeature(pkg, "LargeFiles", "4.12.0-1");
 	} else {
 	    rpm_off_t rsize32 = (rpm_off_t)flp->fl_size;
 	    headerPutUint32(h, RPMTAG_FILESIZES, &rsize32, 1);

@@ -83,17 +83,33 @@ rpmcpio_t rpmcpioFree(rpmcpio_t cpio);
  */
 RPM_GNUC_INTERNAL
 int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st);
+RPM_GNUC_INTERNAL
+int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize);
 
 ssize_t rpmcpioWrite(rpmcpio_t cpio, void * buf, size_t size);
 
 /**
- * Read cpio header.
+ * Read cpio header. Iff fx is returned as -1 a cpio header was read
+ * and the file meta data is in st. Otherwise a stripped header was read
+ * and the fx is the number of the file in the header/rpmfi. In this case
+ * rpmcpioSetExpectedFileSize() needs to eb called with the file size of the
+ * payload content - with may be zero for hard links, directory or other
+ * special files.
  * @retval fsm		file path and stat info
- * @retval st
+ * @retval st		stat struct to place the file meta data in
+ * @retval fx		number in the header of the file read
  * @return		0 on success
  */
 RPM_GNUC_INTERNAL
-int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st);
+int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st, int * fx);
+/**
+ * Tell the cpio object the expected file size in the payload.
+ * The size must be zero for all but the last of hard linked files,
+ * directories and special files.
+ * This is needed after reading a stripped cpio header! See above.
+ */
+RPM_GNUC_INTERNAL
+void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize);
 
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);
 
