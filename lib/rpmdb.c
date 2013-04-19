@@ -2013,7 +2013,6 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     }
 
     dbc = dbiCursorFree(dbc);
-    dbiSync(dbi, 0);
     rpmtdFreeData(&tagdata);
     return rc;
 }
@@ -2140,7 +2139,6 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     }
 
     dbiCursorFree(dbc);
-    dbiSync(dbi, 0);
 
 exit:
     rpmtdFreeData(&tagdata);

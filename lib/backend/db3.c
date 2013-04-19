@@ -25,6 +25,7 @@ struct dbiCursor_s {
     dbiIndex dbi;
     const void *key;
     unsigned int keylen;
+    int flags;
     DBC *cursor;
 };
 
@@ -287,6 +288,7 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 	    dbc = xcalloc(1, sizeof(*dbc));
 	    dbc->cursor = cursor;
 	    dbc->dbi = dbi;
+	    dbc->flags = flags;
 	}
     }
 
@@ -296,6 +298,9 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags)
 dbiCursor dbiCursorFree(dbiCursor dbc)
 {
     if (dbc) {
+	/* Automatically sync on write-cursor close */
+	if (dbc->flags & DBC_WRITE)
+	    dbiSync(dbc->dbi, 0);
 	DBC * cursor = dbc->cursor;
 	int rc = cursor->c_close(cursor);
 	cvtdberr(dbc->dbi, "dbcursor->c_close", rc, _debug);
@@ -962,7 +967,6 @@ static int updatePackages(dbiIndex dbi, dbiCursor cursor,
     /* only free the cursor if we created it here */
     if (dbc != cursor)
 	dbiCursorFree(dbc);
-    dbiSync(dbi, 0);
 
     return rc;
 }
@@ -1016,8 +1020,6 @@ static unsigned int pkgInstance(dbiIndex dbi, int alloc)
 		rpmlog(RPMLOG_ERR,
 		    _("error(%d) allocating new package instance\n"), ret);
 	    }
-
-	    dbiSync(dbi, 0);
 	}
 	dbiCursorFree(dbc);
     }
