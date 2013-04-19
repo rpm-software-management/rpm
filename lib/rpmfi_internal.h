@@ -65,6 +65,7 @@ struct rpmfi_s {
 
     char ** apath;
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
+    rpm_loff_t * replacedLSizes;/*!< (TR_ADDED) */
     int magic;
     int nrefs;		/*!< Reference count. */
 };

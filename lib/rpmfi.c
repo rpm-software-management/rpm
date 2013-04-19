@@ -1078,6 +1078,7 @@ rpmfi rpmfiFree(rpmfi fi)
 	    fi->fflags = _free(fi->fflags);
 	    fi->vflags = _free(fi->vflags);
 	    fi->fsizes = _free(fi->fsizes);
+	    fi->lfsizes = _free(fi->lfsizes);
 	    fi->frdevs = _free(fi->frdevs);
 	    fi->finodes = _free(fi->finodes);
 
@@ -1094,6 +1095,7 @@ rpmfi rpmfiFree(rpmfi fi)
     fi->apath = _free(fi->apath);
 
     fi->replacedSizes = _free(fi->replacedSizes);
+    fi->replacedLSizes = _free(fi->replacedLSizes);
 
     fi->h = headerFree(fi->h);
 
@@ -1293,11 +1295,23 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize)
 {
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	if (fi->replacedSizes == NULL) {
-	    fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+	/* Switch over to 64 bit variant */
+	if (newsize > UINT32_MAX && fi->replacedLSizes == NULL) {
+	    fi->replacedLSizes = xcalloc(fi->fc, sizeof(*fi->replacedLSizes));
+	    /* copy 32 bit data */
+	    if (fi->replacedSizes) {
+		for (int i=0; i<fi->fc; i++)
+		    fi->replacedLSizes[i] = fi->replacedSizes[i];
+		fi->replacedSizes = _free(fi->replacedSizes);
+	    }
 	}
-	/* XXX watch out, replacedSizes is not rpm_loff_t (yet) */
-	fi->replacedSizes[ix] = (rpm_off_t) newsize;
+	if (fi->replacedLSizes != NULL) {
+	    fi->replacedLSizes[ix] = newsize;
+	} else {
+	    if (fi->replacedSizes == NULL)
+		fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+	    fi->replacedSizes[ix] = (rpm_off_t) newsize;
+	}
     }
 }
 
@@ -1307,6 +1321,8 @@ rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix)
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->replacedSizes) {
 	    rsize = fi->replacedSizes[ix];
+	} else if (fi->replacedLSizes) {
+	    rsize = fi->replacedLSizes[ix];
 	}
     }
     return rsize;
