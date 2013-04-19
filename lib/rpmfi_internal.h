@@ -26,6 +26,7 @@ struct rpmfi_s {
     uint32_t * dil;		/*!< Directory indice(s) (from header) */
     rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
     rpm_off_t * fsizes;		/*!< File size(s) (from header) */
+    rpm_loff_t * lfsizes;	/*!< File size(s) (from header) */
     rpm_time_t * fmtimes;	/*!< File modification time(s) (from header) */
     rpm_mode_t * fmodes;	/*!< File mode(s) (from header) */
     rpm_rdev_t * frdevs;	/*!< File rdev(s) (from header) */

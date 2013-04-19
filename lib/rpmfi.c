@@ -246,6 +246,8 @@ rpm_loff_t rpmfiFSizeIndex(rpmfi fi, int ix)
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	if (fi->fsizes != NULL)
 	    fsize = fi->fsizes[ix];
+	else if (fi->lfsizes != NULL)
+	    fsize = fi->lfsizes[ix];
     }
     return fsize;
 }
@@ -1154,9 +1156,10 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEFLAGS, &td, scareFlags, fi->fflags);
     if (!(flags & RPMFI_NOFILEVERIFYFLAGS))
 	_hgfi(h, RPMTAG_FILEVERIFYFLAGS, &td, scareFlags, fi->vflags);
-    if (!(flags & RPMFI_NOFILESIZES))
+    if (!(flags & RPMFI_NOFILESIZES)) {
 	_hgfi(h, RPMTAG_FILESIZES, &td, scareFlags, fi->fsizes);
-
+	_hgfi(h, RPMTAG_LONGFILESIZES, &td, scareFlags, fi->lfsizes);
+    }
     if (!(flags & RPMFI_NOFILECOLORS))
 	_hgfi(h, RPMTAG_FILECOLORS, &td, scareFlags, fi->fcolors);
 
