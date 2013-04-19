@@ -59,14 +59,6 @@ RPM_GNUC_INTERNAL
 int rpmdbClose (rpmdb db);
 
 /** \ingroup rpmdb
- * Sync all database indices.
- * @param db		rpm database
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int rpmdbSync (rpmdb db);
-
-/** \ingroup rpmdb
  * Rebuild database indices from package headers.
  * @param prefix	path to top of install tree
  * @param ts		transaction set (or NULL)

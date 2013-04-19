@@ -466,16 +466,6 @@ exit:
     return rc;
 }
 
-int rpmdbSync(rpmdb db)
-{
-    int rc;
-    if (db == NULL) return 0;
-
-    rc = dbiSync(db->db_pkgs, 0);
-    rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiSync, 0);
-    return rc;
-}
-
 static rpmdb newRpmdb(const char * root, const char * home,
 		      int mode, int perms, int flags)
 {

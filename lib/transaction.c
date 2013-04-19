@@ -1409,7 +1409,6 @@ static int rpmtsProcess(rpmts ts)
 		   rpmteTypeString(p), failed > 1 ? _("skipped") : _("failed"));
 	    rc++;
 	}
-	(void) rpmdbSync(rpmtsGetRdb(ts));
     }
     rpmtsiFree(pi);
     return rc;
