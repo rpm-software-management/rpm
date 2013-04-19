@@ -237,9 +237,10 @@ rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
                    dbiIndexSet *set);
 RPM_GNUC_INTERNAL
 rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
-		   dbiIndexSet set);
+		   dbiIndexItem rec);
 RPM_GNUC_INTERNAL
-rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen);
+rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
+		   dbiIndexItem rec);
 
 #ifdef __cplusplus
 }

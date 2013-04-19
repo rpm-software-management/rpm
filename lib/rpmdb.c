@@ -1984,9 +1984,9 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 
 static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = 0 };
     struct rpmtd_s tagdata;
     int rc = 0;
+    int i;
     dbiCursor dbc = NULL;
 
     /* if there's no data there's nothing to do */
@@ -1996,50 +1996,20 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
     dbc = dbiCursorInit(dbi, DBC_WRITE);
 
     logAddRemove(dbiName(dbi), 1, &tagdata);
-    while (rpmtdNext(&tagdata) >= 0) {
-	dbiIndexSet set = NULL;
+    while ((i = rpmtdNext(&tagdata)) >= 0) {
+	struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = i };
 	const void *key = NULL;
 	unsigned int keylen = 0;
 
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	/* XXX
-	 * This is almost right, but, if there are duplicate tag
-	 * values, there will be duplicate attempts to remove
-	 * the header instance. It's faster to just ignore errors
-	 * than to do things correctly.
-	 */
-
-	rc = dbcCursorGet(dbc, key, keylen, &set);
-
-	if (rc) {
-	    if (rc != RPMRC_NOTFOUND) {
-		/* XXX this is very very wrong... */
-		rc += 1;
-	    }
-	    continue;
-	}
-
-	rc = dbiIndexSetPrune(set, &rec, 1, 1);
-
-	/* If nothing was pruned, then don't bother updating. */
-	if (rc) {
-	    set = dbiIndexSetFree(set);
-	    continue;
-	}
-
-	if (dbiIndexSetCount(set) > 0) {
-	    rc = dbcCursorPut(dbc, key, keylen, set);
-	} else {
-	    rc = dbcCursorDel(dbc, key, keylen);
-	}
+	rc = dbcCursorDel(dbc, key, keylen, &rec);
 
 	if (rc) {
 	    /* XXX this is very very wrong... */
 	    rc += 1;
 	}
-	set = dbiIndexSetFree(set);
     }
 
     dbc = dbiCursorFree(dbc);
@@ -2128,7 +2098,6 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 
     logAddRemove(dbiName(dbi), 0, &tagdata);
     while ((i = rpmtdNext(&tagdata)) >= 0) {
-	dbiIndexSet set = NULL;
 	const void * key = NULL;
 	unsigned int keylen = 0;
 	int j;
@@ -2163,27 +2132,11 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	rc = dbcCursorGet(dbc, key, keylen, &set);
-
-	/* Not found means a new key and is not an error. */
-	/* XXX: the error code handling is very very wrong... */
-	if (rc && rc != RPMRC_NOTFOUND) {
-	    rc += 1;
-	    continue;
-	}
-
-	if (set == NULL)		/* not found or duplicate */
-	    set = dbiIndexSetNew(0);
-
-	(void) dbiIndexSetAppend(set, &rec, 1, 0);
-
-	rc = dbcCursorPut(dbc, key, keylen, set);
+	rc = dbcCursorPut(dbc, key, keylen, &rec);
 
 	/* XXX this is very very wrong... */
 	if (rc)
 	    rc += 1;
-
-	set = dbiIndexSetFree(set);
     }
 
     dbiCursorFree(dbc);

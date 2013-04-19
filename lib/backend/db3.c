@@ -871,14 +871,47 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
 }
 
 rpmRC dbcCursorPut(dbiCursor dbc, const char *keyp, size_t keylen,
-		  dbiIndexSet set)
+		   dbiIndexItem rec)
 {
-    return updateIndex(dbc, keyp, keylen, set);
+    dbiIndexSet set = NULL;
+    rpmRC rc = dbcCursorGet(dbc, keyp, keylen, &set);
+
+    /* Not found means a new key and is not an error. */
+    if (rc && rc != RPMRC_NOTFOUND)
+	return rc;
+
+    if (set == NULL)
+	set = dbiIndexSetNew(1);
+    dbiIndexSetAppend(set, rec, 1, 0);
+
+    rc = updateIndex(dbc, keyp, keylen, set);
+
+    dbiIndexSetFree(set);
+    return rc;
 }
 
-rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen)
+rpmRC dbcCursorDel(dbiCursor dbc, const char *keyp, size_t keylen,
+		   dbiIndexItem rec)
 {
-    return updateIndex(dbc, keyp, keylen, NULL);
+    dbiIndexSet set = NULL;
+    rpmRC rc = dbcCursorGet(dbc, keyp, keylen, &set);
+    if (rc)
+	return rc;
+
+    if (dbiIndexSetPrune(set, rec, 1, 1)) {
+	/* Nothing was pruned. XXX: Can this actually happen? */
+	rc = RPMRC_OK;
+    } else {
+	/* If there's data left, update data. Otherwise delete the key. */
+	if (dbiIndexSetCount(set) > 0) {
+	    rc = updateIndex(dbc, keyp, keylen, set);
+	} else {
+	    rc = updateIndex(dbc, keyp, keylen, NULL);
+	}
+    };
+    dbiIndexSetFree(set);
+
+    return rc;
 }
 
 /* Update primary Packages index. NULL hdr means remove */
