@@ -196,14 +196,6 @@ dbiCursor dbiCursorFree(dbiCursor dbc);
 RPM_GNUC_INTERNAL
 const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen);
 
-/** \ingroup dbi
- * Retrieve underlying index database handle.
- * @param dbcursor	database cursor
- * @return		index database handle
- */
-RPM_GNUC_INTERNAL
-dbiIndex dbiCursorIndex(dbiCursor dbc);
-
 RPM_GNUC_INTERNAL
 int pkgdbPut(dbiIndex dbi, dbiCursor dbc,  unsigned int hdrNum,
              unsigned char *hdrBlob, unsigned int hdrLen,

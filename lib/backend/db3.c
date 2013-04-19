@@ -396,11 +396,6 @@ const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen)
     return key;
 }
 
-dbiIndex dbiCursorIndex(dbiCursor dbc)
-{
-    return (dbc != NULL) ? dbc->dbi : NULL;
-}
-
 static int dbiByteSwapped(dbiIndex dbi)
 {
     DB * db = dbi->dbi_db;
@@ -785,7 +780,7 @@ rpmRC dbcCursorGet(dbiCursor dbc, const char *keyp, size_t keylen,
 {
     rpmRC rc = RPMRC_FAIL; /* assume failure */
     if (dbc != NULL && set != NULL) {
-	dbiIndex dbi = dbiCursorIndex(dbc);
+	dbiIndex dbi = dbc->dbi;
 	int cflags = DB_NEXT;
 	int dbrc;
 	DBT data, key;
@@ -828,7 +823,7 @@ static rpmRC updateIndex(dbiCursor dbc, const char *keyp, unsigned int keylen,
     rpmRC rc = RPMRC_FAIL;
 
     if (dbc && keyp) {
-	dbiIndex dbi = dbiCursorIndex(dbc);
+	dbiIndex dbi = dbc->dbi;
 	int dbrc;
 	DBT data, key;
 	memset(&key, 0, sizeof(data));
