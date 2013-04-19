@@ -144,15 +144,6 @@ RPM_GNUC_INTERNAL
 int dbiClose(dbiIndex dbi, unsigned int flags);
 
 /** \ingroup dbi
- * Flush pending operations to disk.
- * @param dbi		index database handle
- * @param flags		(unused)
- * @return		0 on success
- */
-RPM_GNUC_INTERNAL
-int dbiSync (dbiIndex dbi, unsigned int flags);
-
-/** \ingroup dbi
  * Verify (and close) index database.
  * @param dbi		index database handle
  * @param flags		(unused)

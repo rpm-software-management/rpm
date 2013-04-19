@@ -235,7 +235,7 @@ void dbSetFSync(void *dbenv, int enable)
 #endif
 }
 
-int dbiSync(dbiIndex dbi, unsigned int flags)
+static int dbiSync(dbiIndex dbi, unsigned int flags)
 {
     DB * db = dbi->dbi_db;
     int rc = 0;
