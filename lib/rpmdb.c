@@ -713,7 +713,7 @@ static rpmRC rpmdbFindByFile(rpmdb db, dbiIndex dbi, const char *filespec,
 	    if (!skip) {
 		const char *dirName = dirNames[dirIndexes[num]];
 		if (fpLookupEquals(fpc, fp1, dirName, baseNames[num])) {
-		    struct dbiIndexItem rec = { 
+		    struct dbiIndexItem_s rec = { 
 			.hdrNum = dbiIndexRecordOffset(allMatches, i),
 			.tagNum = dbiIndexRecordFileNumber(allMatches, i),
 		    };
@@ -1645,7 +1645,7 @@ int rpmdbAppendIterator(rpmdbMatchIterator mi,
 	mi->mi_set = dbiIndexSetNew(nHdrNums);
 
     for (unsigned int i = 0; i < nHdrNums; i++) {
-	struct dbiIndexItem rec = { .hdrNum = hdrNums[i], .tagNum = 0 };
+	struct dbiIndexItem_s rec = { .hdrNum = hdrNums[i], .tagNum = 0 };
 	dbiIndexSetAppend(mi->mi_set, &rec, 1, 0);
     }
     return 0;
@@ -1984,7 +1984,7 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 
 static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = 0 };
+    struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = 0 };
     struct rpmtd_s tagdata;
     int rc = 0;
     dbiCursor dbc = NULL;
@@ -2133,7 +2133,7 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	unsigned int keylen = 0;
 	int j;
 	/* Include the tagNum in all indices (only files use though) */
-	struct dbiIndexItem rec = { .hdrNum = hdrNum, .tagNum = i };
+	struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = i };
 
 	switch (rpmtag) {
 	case RPMTAG_REQUIRENAME: {

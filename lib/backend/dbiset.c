@@ -68,7 +68,7 @@ int dbiIndexSetAppendSet(dbiIndexSet dest, dbiIndexSet src, int sortset)
     return 0;
 }
 
-int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
+int dbiIndexSetAppend(dbiIndexSet set, dbiIndexItem recs,
 		      unsigned int nrecs, int sortset)
 {
     if (set == NULL || recs == NULL || nrecs == 0)
@@ -84,7 +84,7 @@ int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
     return 0;
 }
 
-int dbiIndexSetPrune(dbiIndexSet set, struct dbiIndexItem * recs,
+int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
 		     unsigned int nrecs, int sorted)
 {
     unsigned int from;

@@ -4,14 +4,14 @@
 #include <rpm/rpmutil.h>
 
 /* A single item from an index database (i.e. the "data returned"). */
-struct dbiIndexItem {
+typedef struct dbiIndexItem_s {
     unsigned int hdrNum;		/*!< header instance in db */
     unsigned int tagNum;		/*!< tag index in header */
-};
+} * dbiIndexItem;
 
 /* Items retrieved from the index database.*/
 typedef struct dbiIndexSet_s {
-    struct dbiIndexItem * recs;		/*!< array of records */
+    dbiIndexItem recs;			/*!< array of records */
     unsigned int count;			/*!< number of records */
     size_t alloced;			/*!< alloced size */
 } * dbiIndexSet;
@@ -45,7 +45,7 @@ int dbiIndexSetAppendSet(dbiIndexSet set, dbiIndexSet oset, int sortset);
  * @return		0 success, 1 failure (bad args)
  */
 RPM_GNUC_INTERNAL
-int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
+int dbiIndexSetAppend(dbiIndexSet set, dbiIndexItem recs,
 		      unsigned int nrecs, int sortset);
 
 /**
@@ -57,7 +57,7 @@ int dbiIndexSetAppend(dbiIndexSet set, const struct dbiIndexItem * recs,
  * @return		0 success, 1 failure (no items found)
  */
 RPM_GNUC_INTERNAL
-int dbiIndexSetPrune(dbiIndexSet set, struct dbiIndexItem * recs,
+int dbiIndexSetPrune(dbiIndexSet set, dbiIndexItem recs,
 		     unsigned int nrecs, int sorted);
 
 /* Count items in index database set. */
