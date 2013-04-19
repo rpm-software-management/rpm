@@ -202,14 +202,6 @@ dbiCursor dbiCursorInit(dbiIndex dbi, unsigned int flags);
 RPM_GNUC_INTERNAL
 dbiCursor dbiCursorFree(dbiCursor dbc);
 
-/** \ingroup dbi
- * Retrieve count of (possible) duplicate items.
- * @param dbcursor	database cursor
- * @return		number of duplicates
- */
-RPM_GNUC_INTERNAL
-unsigned int dbiCursorCount(dbiCursor dbc);
-
 RPM_GNUC_INTERNAL
 const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen);
 

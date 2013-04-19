@@ -396,17 +396,6 @@ const void * dbiCursorKey(dbiCursor dbc, unsigned int *keylen)
     return key;
 }
 
-unsigned int dbiCursorCount(dbiCursor dbc)
-{
-    db_recno_t count = 0;
-    if (dbc) {
-	DBC * cursor = dbc->cursor;
-	int rc = cursor->c_count(cursor, &count, 0);
-	cvtdberr(dbc->dbi, "dbcursor->c_count", rc, _debug);
-    }
-    return count;
-}
-
 dbiIndex dbiCursorIndex(dbiCursor dbc)
 {
     return (dbc != NULL) ? dbc->dbi : NULL;
