@@ -1994,17 +1994,12 @@ static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	rc = dbcCursorDel(dbc, key, keylen, &rec);
-
-	if (rc) {
-	    /* XXX this is very very wrong... */
-	    rc += 1;
-	}
+	rc += dbcCursorDel(dbc, key, keylen, &rec);
     }
 
     dbc = dbiCursorFree(dbc);
     rpmtdFreeData(&tagdata);
-    return rc;
+    return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
@@ -2121,18 +2116,14 @@ static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header 
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	rc = dbcCursorPut(dbc, key, keylen, &rec);
-
-	/* XXX this is very very wrong... */
-	if (rc)
-	    rc += 1;
+	rc += dbcCursorPut(dbc, key, keylen, &rec);
     }
 
     dbiCursorFree(dbc);
 
 exit:
     rpmtdFreeData(&tagdata);
-    return rc;
+    return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
 }
 
 int rpmdbAdd(rpmdb db, Header h)
