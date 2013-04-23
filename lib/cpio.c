@@ -336,15 +336,15 @@ ssize_t rpmcpioWrite(rpmcpio_t cpio, void * buf, size_t size)
 }
 
 
-int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st, int * fx)
+int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
 {
     struct cpioCrcPhysicalHeader hdr;
     int nameSize;
     char * end;
-    unsigned int major, minor;
     int rc = 0;
     ssize_t read;
     char magic[6];
+    rpm_loff_t fsize;
 
     if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
         return CPIOERR_READ_FAILED;
@@ -397,22 +397,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st, int * fx)
     if (read != PHYS_HDR_SIZE)
 	return CPIOERR_READ_FAILED;
 
-    GET_NUM_FIELD(hdr.inode, st->st_ino);
-    GET_NUM_FIELD(hdr.mode, st->st_mode);
-    GET_NUM_FIELD(hdr.uid, st->st_uid);
-    GET_NUM_FIELD(hdr.gid, st->st_gid);
-    GET_NUM_FIELD(hdr.nlink, st->st_nlink);
-    GET_NUM_FIELD(hdr.mtime, st->st_mtime);
-    GET_NUM_FIELD(hdr.filesize, st->st_size);
-
-    GET_NUM_FIELD(hdr.devMajor, major);
-    GET_NUM_FIELD(hdr.devMinor, minor);
-    st->st_dev = makedev(major, minor);
-
-    GET_NUM_FIELD(hdr.rdevMajor, major);
-    GET_NUM_FIELD(hdr.rdevMinor, minor);
-    st->st_rdev = makedev(major, minor);
-
+    GET_NUM_FIELD(hdr.filesize, fsize);
     GET_NUM_FIELD(hdr.namesize, nameSize);
 
     *path = xmalloc(nameSize + 1);
@@ -424,7 +409,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, struct stat * st, int * fx)
     }
 
     rc = rpmcpioReadPad(cpio);
-    cpio->fileend = cpio->offset + st->st_size;
+    cpio->fileend = cpio->offset + fsize;
 
     if (!rc && rstreq(*path, CPIO_TRAILER))
 	rc = CPIOERR_HDR_TRAILER;

@@ -1633,7 +1633,7 @@ static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
     rpmfi fi = fsm->iter->fi;
 
     /* Read next payload header. */
-    rc = rpmcpioHeaderRead(archive, &(fsm->path), &(fsm->sb), &fx);
+    rc = rpmcpioHeaderRead(archive, &(fsm->path), &fx);
 
     if (rc) {
         return rc;
