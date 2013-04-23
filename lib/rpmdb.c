@@ -2348,7 +2348,6 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 
     {	Header h = NULL;
 	rpmdbMatchIterator mi;
-#define	_RECNUM	rpmdbGetIteratorOffset(mi)
 
 	mi = rpmdbInitIterator(olddb, RPMDBI_PACKAGES, NULL, 0);
 	if (ts && hdrchk)
@@ -2364,7 +2363,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    {
 		rpmlog(RPMLOG_ERR,
 			_("header #%u in the database is bad -- skipping.\n"),
-			_RECNUM);
+			rpmdbGetIteratorOffset(mi));
 		continue;
 	    }
 
@@ -2376,8 +2375,8 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
 	    }
 
 	    if (rc) {
-		rpmlog(RPMLOG_ERR,
-			_("cannot add record originally at %u\n"), _RECNUM);
+		rpmlog(RPMLOG_ERR, _("cannot add record originally at %u\n"),
+		       rpmdbGetIteratorOffset(mi));
 		failed = 1;
 		break;
 	    }
