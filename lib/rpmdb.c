@@ -47,7 +47,7 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
+static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static rpmdb rpmdbUnlink(rpmdb db);
 
 static int buildIndexes(rpmdb db)
@@ -1972,7 +1972,7 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
     }
 }
 
-static int indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+static rpmRC indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     struct rpmtd_s tagdata;
     int rc = 0;
@@ -2053,7 +2053,7 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
 }
 
 /* Add data to secondary index */
-static int indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
     int i, rc = 0;
     struct rpmtd_s tagdata, reqflags;
