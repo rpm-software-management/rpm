@@ -77,24 +77,12 @@ struct hardLink_s {
 };
 
 /** \ingroup payload
- * Iterator across package file info, forward on install, backward on erase.
- */
-struct fsmIterator_s {
-    rpmfs fs;			/*!< file state info. */
-    rpmfi fi;			/*!< transaction element file info. */
-    int reverse;		/*!< reversed traversal? */
-    int isave;			/*!< last returned iterator index. */
-    int i;			/*!< iterator index. */
-};
-
-/** \ingroup payload
  * File name and stat information.
  */
 struct fsm_s {
     char * path;		/*!< Current file name. */
     char * buf;			/*!<  read: Buffer. */
     size_t bufsize;		/*!<  read: Buffer allocated size. */
-    FSMI_t iter;		/*!< File iterator. */
     int ix;			/*!< Current file iterator index. */
     hardLink_t links;		/*!< Pending hard linked file(s). */
     char ** failedFile;		/*!< First file name that failed. */
@@ -114,25 +102,9 @@ struct fsm_s {
     fileStage goal;		/*!< Package state machine goal. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
+    rpmfi fi;			/*!< File iterator. */
+    rpmfs fs;			/*!< File states. */
 };
-
-
-/**
- * Retrieve transaction element file info from file state machine iterator.
- * @param fsm		file state machine
- * @return		transaction element file info
- */
-static rpmfi fsmGetFi(const FSM_t fsm)
-{
-    const FSMI_t iter = fsm->iter;
-    return (iter ? iter->fi : NULL);
-}
-
-static rpmfs fsmGetFs(const FSM_t fsm)
-{
-    const FSMI_t iter = fsm->iter;
-    return (iter ? iter->fs : NULL);
-}
 
 #define	SUFFIX_RPMORIG	".rpmorig"
 #define	SUFFIX_RPMSAVE	".rpmsave"
@@ -165,61 +137,6 @@ static char * fsmFsPath(const FSM_t fsm, int isDir,
 }
 
 /** \ingroup payload
- * Destroy file info iterator.
- * @param p		file info iterator
- * @retval		NULL always
- */
-static FSMI_t mapFreeIterator(FSMI_t iter)
-{
-    if (iter) {
-	iter->fs = NULL; /* rpmfs is not refcounted */
-	iter->fi = rpmfiFree(iter->fi);
-	free(iter);
-    }
-    return NULL;
-}
-
-/** \ingroup payload
- * Create file info iterator.
- * @param fi		transaction element file info
- * @return		file info iterator
- */
-static FSMI_t 
-mapInitIterator(rpmfs fs, rpmfi fi, int reverse)
-{
-    FSMI_t iter = NULL;
-
-    iter = xcalloc(1, sizeof(*iter));
-    iter->fs = fs; /* rpmfs is not refcounted */
-    iter->fi = rpmfiLink(fi);
-    iter->reverse = reverse;
-    iter->i = (iter->reverse ? (rpmfiFC(fi) - 1) : 0);
-    iter->isave = iter->i;
-    return iter;
-}
-
-/** \ingroup payload
- * Return next index into file info.
- * @param a		file info iterator
- * @return		next index, -1 on termination
- */
-static int mapNextIterator(FSMI_t iter)
-{
-    int i = -1;
-
-    if (iter) {
-	const rpmfi fi = iter->fi;
-	if (iter->reverse) {
-	    if (iter->i >= 0)	i = iter->i--;
-	} else {
-    	    if (iter->i < rpmfiFC(fi))	i = iter->i++;
-	}
-	iter->isave = i;
-    }
-    return i;
-}
-
-/** \ingroup payload
  */
 static int cpioStrCmp(const void * a, const void * b)
 {
@@ -239,30 +156,27 @@ static int cpioStrCmp(const void * a, const void * b)
 
 /** \ingroup payload
  * Locate archive path in file info.
- * @param iter		file info iterator
  * @param fsmPath	archive path
  * @return		index into file info, -1 if archive path was not found
  */
-static int mapFind(FSMI_t iter, const char * fsmPath)
+static void mapFind(FSM_t fsm, const char * fsmPath)
 {
     int ix = -1;
 
-    if (iter) {
-	const rpmfi fi = iter->fi;
-	int fc = rpmfiFC(fi);
-	if (fi && fc > 0 && fi->apath && fsmPath && *fsmPath) {
-	    char ** p = NULL;
+    const rpmfi fi = fsm->fi;
+    int fc = rpmfiFC(fi);
+    if (fi && fc > 0 && fi->apath && fsmPath && *fsmPath) {
+        char ** p = NULL;
 
-	    if (fi->apath != NULL)
-		p = bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
+        if (fi->apath != NULL)
+            p = bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
 			cpioStrCmp);
-	    if (p) {
-		iter->i = p - fi->apath;
-		ix = mapNextIterator(iter);
-	    }
-	}
+        if (p) {
+            ix = (p - fi->apath);
+        }
     }
-    return ix;
+    fsm->ix = ix;
+    rpmfiSetFX(fsm->fi, ix);
 }
 
 /** \ingroup payload
@@ -409,7 +323,7 @@ const char * dnlNextIterator(DNLI_t dnli)
  */
 static int fsmMapPath(FSM_t fsm, int i)
 {
-    rpmfi fi = fsmGetFi(fsm);	/* XXX const except for fstates */
+    rpmfi fi = fsm->fi;
     int rc = 0;
 
     fsm->osuffix = NULL;
@@ -417,7 +331,7 @@ static int fsmMapPath(FSM_t fsm, int i)
     fsm->action = FA_UNKNOWN;
 
     if (fi && i >= 0 && i < rpmfiFC(fi)) {
-	rpmfs fs = fsmGetFs(fsm);
+	rpmfs fs = fsm->fs;
 	/* XXX these should use rpmfiFFlags() etc */
 	fsm->action = rpmfsGetAction(fs, i);
 	fsm->fflags = rpmfiFFlagsIndex(fi, i);
@@ -507,7 +421,7 @@ static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 	return 1;
 
     /* Here come the bits, time to choose a non-skipped file name. */
-    {	rpmfs fs = fsmGetFs(fsm);
+    {	rpmfs fs = fsm->fs;
 
 	for (j = li->linksLeft - 1; j >= 0; j--) {
 	    ix = li->filex[j];
@@ -549,7 +463,7 @@ static hardLink_t freeHardLink(hardLink_t li)
 static int checkHardLinks(FSM_t fsm)
 {
     int rc = 0;
-    rpmfs fs = fsmGetFs(fsm);
+    rpmfs fs = fsm->fs;
 
     for (hardLink_t li = fsm->links; li != NULL; li = li->next) {
 	if (li->linksLeft) {
@@ -578,7 +492,8 @@ static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
 
     fsm->ix = -1;
     fsm->goal = goal;
-    fsm->iter = mapInitIterator(fs, fi, (goal == FSM_PKGERASE));
+    fsm->fi = fi;
+    fsm->fs = fs;
 
     /* common flags for all modes */
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
@@ -601,7 +516,6 @@ static FSM_t fsmFree(FSM_t fsm)
     fsm->buf = _free(fsm->buf);
     fsm->bufsize = 0;
 
-    fsm->iter = mapFreeIterator(fsm->iter);
     fsm->failedFile = NULL;
 
     fsm->path = _free(fsm->path);
@@ -638,7 +552,7 @@ static int fsmSetFCaps(const char *path, const char *captxt)
 static int fsmMapAttrs(FSM_t fsm)
 {
 	struct stat * st = &fsm->sb;
-	rpmfi fi = fsmGetFi(fsm);
+	rpmfi fi = fsm->fi;
 	int i = fsm->ix;
 
 	/* this check is pretty moot,  rpmfi accessors check array bounds etc */
@@ -706,7 +620,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive, int nodigest)
     }
 
     if (!nodigest) {
-	rpmfi fi = fsmGetFi(fsm);
+	rpmfi fi = fsm->fi;
 	digestalgo = rpmfiDigestAlgo(fi);
 	fidigest = rpmfiFDigestIndex(fi, fsm->ix, NULL, NULL);
     }
@@ -795,7 +709,7 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
     rpm_loff_t left;
-    rpmfi fi = fsmGetFi(fsm);
+    rpmfi fi = fsm->fi;
     int rc = 0;
 
     st->st_size = (writeData ? ost->st_size : 0);
@@ -1271,7 +1185,7 @@ static int fsmInit(FSM_t fsm)
     int rc = 0;
 
     /* mode must be known so that dirs don't get suffix. */
-    rpmfi fi = fsmGetFi(fsm);
+    rpmfi fi = fsm->fi;
     fsm->sb.st_mode = rpmfiFModeIndex(fi, fsm->ix);
 
     /* Generate file path. */
@@ -1513,7 +1427,7 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
 {
     int rc = 0;
     char *dest = fsm->path;
-    rpmfi fi = fsmGetFi(fsm);
+    rpmfi fi = fsm->fi;
 
     /* Construct final destination path (nsuffix is usually NULL) */
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
@@ -1626,7 +1540,7 @@ static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
 {
     int rc;
     int fx = -1;
-    rpmfi fi = fsm->iter->fi;
+    rpmfi fi = fsm->fi;
 
     /* Read next payload header. */
     rc = rpmcpioHeaderRead(archive, &(fsm->path), &fx);
@@ -1638,7 +1552,7 @@ static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
 
     if (fx == -1) {
         /* Identify mapping index. */
-        fsm->ix = mapFind(fsm->iter, fsm->path);
+        mapFind(fsm, fsm->path);
 
         /* Mapping error */
         if (fsm->ix < 0) {
@@ -1647,8 +1561,7 @@ static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
             return CPIOERR_UNMAPPED_FILE;
         }
     } else {
-        fsm->iter->i = fx;
-        fsm->ix = mapNextIterator(fsm->iter);
+        fsm->ix = fx;
 
 	rpmfiSetFX(fi, fx);
 
@@ -1848,12 +1761,14 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 
     fsm->plugins = rpmtsPlugins(ts);
 
+    fsm->ix = rpmfiFC(fsm->fi);
+
     while (!rc) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
 	/* Identify mapping index. */
-	fsm->ix = mapNextIterator(fsm->iter);
+	fsm->ix--;
 
         /* Exit on end-of-payload. */
         if (fsm->ix < 0)
@@ -1917,7 +1832,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 	    /* Notify on success. */
 	    /* On erase we're iterating backwards, fixup for progress */
 	    rpm_loff_t amount = (fsm->ix >= 0) ?
-				rpmfiFC(fsmGetFi(fsm)) - fsm->ix : 0;
+				rpmfiFC(fsm->fi) - fsm->ix : 0;
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
     }
@@ -1952,14 +1867,16 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
 	}
     }
 	    
+    fsm->ix = -1;
+
     while (!rc) {
 	fsmReset(fsm);
 
 	/* Identify mapping index. */
-	fsm->ix = mapNextIterator(fsm->iter);
+	fsm->ix++;
 
         /* Exit on end-of-payload. */
-        if (fsm->ix < 0)
+        if (fsm->ix >= rpmfiFC(fsm->fi))
             break;
 
         rc = fsmInit(fsm);
