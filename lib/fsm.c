@@ -68,7 +68,6 @@ static int strict_erasures = 0;
  */
 struct hardLink_s {
     hardLink_t next;
-    const char ** nsuffix;
     int * filex;
     struct stat sb;
     nlink_t nlink;
@@ -485,7 +484,6 @@ static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 
 	li->filex = xcalloc(st->st_nlink, sizeof(li->filex[0]));
 	memset(li->filex, -1, (st->st_nlink * sizeof(li->filex[0])));
-	li->nsuffix = xcalloc(st->st_nlink, sizeof(*li->nsuffix));
 
 	if (fsm->goal == FSM_PKGBUILD)
 	    li->linksLeft = st->st_nlink;
@@ -497,7 +495,6 @@ static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 
     if (fsm->goal == FSM_PKGBUILD) --li->linksLeft;
     li->filex[li->linksLeft] = fsm->ix;
-    li->nsuffix[li->linksLeft] = fsm->nsuffix;
     if (fsm->goal == FSM_PKGINSTALL) li->linksLeft++;
 
     if (fsm->goal == FSM_PKGBUILD)
@@ -542,7 +539,6 @@ static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
 static hardLink_t freeHardLink(hardLink_t li)
 {
     if (li) {
-	li->nsuffix = _free(li->nsuffix);	/* XXX elements are shared */
 	li->filex = _free(li->filex);
 	_free(li);
     }
