@@ -47,6 +47,13 @@
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+typedef rpmRC (*idxfunc)(dbiCursor dbc, const char *keyp, size_t keylen,
+			 dbiIndexItem rec);
+
+static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
+		       unsigned int hdrNum, Header h,
+		       idxfunc idxupdate);
+
 static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h);
 static rpmdb rpmdbUnlink(rpmdb db);
 
@@ -1974,32 +1981,7 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
 
 static rpmRC indexDel(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
 {
-    struct rpmtd_s tagdata;
-    int rc = 0;
-    int i;
-    dbiCursor dbc = NULL;
-
-    /* if there's no data there's nothing to do */
-    if (!headerGet(h, rpmtag, &tagdata, HEADERGET_MINMEM))
-	return 0;
-
-    dbc = dbiCursorInit(dbi, DBC_WRITE);
-
-    logAddRemove(dbiName(dbi), 1, &tagdata);
-    while ((i = rpmtdNext(&tagdata)) >= 0) {
-	struct dbiIndexItem_s rec = { .hdrNum = hdrNum, .tagNum = i };
-	const void *key = NULL;
-	unsigned int keylen = 0;
-
-	if ((key = td2key(&tagdata, &keylen)) == NULL)
-	    continue;
-
-	rc += dbcCursorDel(dbc, key, keylen, &rec);
-    }
-
-    dbc = dbiCursorFree(dbc);
-    rpmtdFreeData(&tagdata);
-    return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
+    return tag2index(dbi, rpmtag, hdrNum, h, dbcCursorDel);
 }
 
 int rpmdbRemove(rpmdb db, unsigned int hdrNum)
@@ -2052,8 +2034,9 @@ int rpmdbRemove(rpmdb db, unsigned int hdrNum)
     return 0;
 }
 
-/* Add data to secondary index */
-static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+static rpmRC tag2index(dbiIndex dbi, rpmTagVal rpmtag,
+		       unsigned int hdrNum, Header h,
+		       idxfunc idxupdate)
 {
     int i, rc = 0;
     struct rpmtd_s tagdata, reqflags;
@@ -2116,7 +2099,7 @@ static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 	if ((key = td2key(&tagdata, &keylen)) == NULL)
 	    continue;
 
-	rc += dbcCursorPut(dbc, key, keylen, &rec);
+	rc += idxupdate(dbc, key, keylen, &rec);
     }
 
     dbiCursorFree(dbc);
@@ -2124,6 +2107,10 @@ static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Heade
 exit:
     rpmtdFreeData(&tagdata);
     return (rc == 0) ? RPMRC_OK : RPMRC_FAIL;
+}
+static rpmRC indexPut(dbiIndex dbi, rpmTagVal rpmtag, unsigned int hdrNum, Header h)
+{
+    return tag2index(dbi, rpmtag, hdrNum, h, dbcCursorPut);
 }
 
 int rpmdbAdd(rpmdb db, Header h)
