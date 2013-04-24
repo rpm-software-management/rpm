@@ -415,33 +415,6 @@ static hardLink_t freeHardLink(hardLink_t li)
     return NULL;
 }
 
-/* Check for hard links missing from payload */
-static int checkHardLinks(FSM_t fsm)
-{
-    int rc = 0;
-    rpmfs fs = fsm->fs;
-
-    for (hardLink_t li = fsm->links; li != NULL; li = li->next) {
-	if (li->linksLeft) {
-	    for (nlink_t i = 0 ; i < li->linksLeft; i++) {
-		int ix = li->filex[i];
-		if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
-		    continue;
-		rc = CPIOERR_MISSING_HARDLINK;
-		if (fsm->failedFile && *fsm->failedFile == NULL) {
-		    if (!fsmMapPath(fsm, ix)) {
-			/* Out-of-sync hardlinks handled as sub-state */
-			*fsm->failedFile = fsm->path;
-			fsm->path = NULL;
-		    }
-		}
-		break;
-	    }
-	}
-    }
-    return rc;
-}
-
 static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
@@ -1434,7 +1407,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST);
-
+    int fc = rpmfiFC(fi);
+    char * found = xcalloc(fc, sizeof(*found));
 
     rc = rpmfiAttachArchive(fi, cfd, O_RDONLY);
 
@@ -1465,6 +1439,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	    rc = 0;
 	    break;
 	}
+	found[fsm->ix] = 1;
 
 	if (rc) break;
 
@@ -1576,10 +1551,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     }
 
     if (!rc)
-	rc = checkHardLinks(fsm);
-
+        for (int i=0; i<fc; i++) {
+	    if (!found[i] && !(rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST))
+		rc = CPIOERR_MISSING_HARDLINK; // XXX other error code
+	}
     /* No need to bother with close errors on read */
     rpmfiArchiveClose(fi);
+    _free(found);
     fsmFree(fsm);
 
     return rc;
