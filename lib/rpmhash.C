@@ -69,8 +69,8 @@ HASHTYPE HASHPREFIX(Create)(int numBuckets,
     HASHTYPE ht;
 
     ht = xmalloc(sizeof(*ht));
-    ht->numBuckets = numBuckets;
-    ht->buckets = xcalloc(numBuckets, sizeof(*ht->buckets));
+    ht->numBuckets = numBuckets > 11 ? numBuckets : 11;
+    ht->buckets = xcalloc(ht->numBuckets, sizeof(*ht->buckets));
     ht->freeKey = freeKey;
 #ifdef HTDATATYPE
     ht->freeData = freeData;
