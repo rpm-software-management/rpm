@@ -1358,6 +1358,12 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	}
     }
 
+    /* Error out when a non-directory is specified as one in spec */
+    if (fl->cur.isDir && !S_ISDIR(statp->st_mode)) {
+	rpmlog(RPMLOG_ERR, _("Not a directory: %s\n"), diskPath);
+	goto exit;
+    }
+
     /* Don't recurse into explicit %dir, don't double-recurse from fts */
     if ((fl->cur.isDir != 1) && (statp == &statbuf) && S_ISDIR(statp->st_mode)) {
 	return recurseDir(fl, diskPath);
