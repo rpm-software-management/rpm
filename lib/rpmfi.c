@@ -499,7 +499,9 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
     if ((rpmfiFFlagsIndex(afi, aix) & RPMFILE_GHOST) ||
 	(rpmfiFFlagsIndex(bfi, bix) & RPMFILE_GHOST)) return 0;
 
-    if (amode != bmode) return 1;
+    /* Mode difference is a conflict, except for symlinks */
+    if ((awhat != LINK && rpmfiWhatis(bmode) != LINK) && amode != bmode)
+	return 1;
 
     if (awhat == LINK || awhat == REG) {
 	if (rpmfiFSizeIndex(afi, aix) != rpmfiFSizeIndex(bfi, bix))
