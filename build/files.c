@@ -1369,8 +1369,14 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
     /* Explicit %attr() always wins */
     if (fl->cur.ar.ar_fmodestr != NULL) {
-	fileMode &= S_IFMT;
-	fileMode |= fl->cur.ar.ar_fmode;
+	if (S_ISLNK(fileMode)) {
+	    rpmlog(RPMLOG_WARNING,
+		   "Explicit %%attr() mode not applicaple to symlink: %s\n",
+		   diskPath);
+	} else {
+	    fileMode &= S_IFMT;
+	    fileMode |= fl->cur.ar.ar_fmode;
+	}
     } else {
 	/* ...but %defattr() for directories and files is different */
 	if (S_ISDIR(fileMode)) {
@@ -1378,7 +1384,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 		fileMode &= S_IFMT;
 		fileMode |= fl->def.ar.ar_dmode;
 	    }
-	} else if (fl->def.ar.ar_fmodestr) {
+	} else if (!S_ISLNK(fileMode) && fl->def.ar.ar_fmodestr) {
 	    fileMode &= S_IFMT;
 	    fileMode |= fl->def.ar.ar_fmode;
 	}
