@@ -533,7 +533,8 @@ int main(int argc, char *argv[])
     int ec = 0;
     poptContext optCon = rpmcliInit(argc, argv, optionsTable);
 
-    if (argc <= 1 || poptPeekArg(optCon) == NULL) {
+    /* Args required only when building, let lone --eval etc through */
+    if (ba->buildAmount && poptPeekArg(optCon) == NULL) {
 	printUsage(optCon, stderr, 0);
 	exit(EXIT_FAILURE);
     }
