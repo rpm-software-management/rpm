@@ -447,6 +447,7 @@ static const rpmTagVal sourceTags[] = {
     RPMTAG_URL,
     RPMTAG_BUGURL,
     RPMTAG_HEADERI18NTABLE,
+    RPMTAG_VCS,
     0
 };
 
