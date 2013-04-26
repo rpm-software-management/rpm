@@ -68,12 +68,9 @@ static int strict_erasures = 0;
  */
 struct hardLink_s {
     hardLink_t next;
-    int * filex;
-    struct stat sb;
-    nlink_t nlink;
-    nlink_t linksLeft;
-    int linkIndex;
-    int createdPath;
+    const int * files; /* hardlinked files in package */
+    int * filex;       /* actually to be installed files */
+    nlink_t nlink;     /* number of to be installed files */
 };
 
 /** \ingroup payload
@@ -324,81 +321,50 @@ static int fsmMapPath(FSM_t fsm, int i)
     return rc;
 }
 
-/** \ingroup payload
- * Save hard link in chain.
- * @param fsm		file state machine data
- * @retval linkSet	hard link set when complete
- * @return		Is chain only partially filled?
- */
-static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
+static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
 {
-    const struct stat * st = &fsm->sb;
-    int rc = 0;
-    int ix = -1;
-    int j;
     hardLink_t *tailp, li;
+
+    /* File containing the content */
+    if (fsm->ix == files[numlinks-1] && !fsm->postpone) {
+        return 0; /* Do not add to the list */
+    }
+    if (fsm->ix != files[numlinks-1] && fsm->postpone) {
+        return 1; /* skip file */
+    }
+
     /* Find hard link set. */
     for (tailp = &fsm->links; (li = *tailp) != NULL; tailp = &li->next) {
-	if (li->sb.st_ino == st->st_ino && li->sb.st_dev == st->st_dev)
+	if (li->files == files)
 	    break;
+    }
+
+    /* File containing the content */
+    if (fsm->ix == files[numlinks-1]) { /* fsm->postpone is set! */
+        if (li == NULL) /* all hardlinks are skipped */
+            return 1;
+
+        /* use last file to write content to */
+        fsm->path = _free(fsm->path);
+        li->nlink--;
+        fsm->ix = li->filex[li->nlink];
+        return fsmMapPath(fsm, fsm->ix);
     }
 
     /* New hard link encountered, add new link to set. */
     if (li == NULL) {
-	li = xcalloc(1, sizeof(*li));
-	li->next = NULL;
-	li->sb = *st;	/* structure assignment */
-	li->nlink = st->st_nlink;
-	li->linkIndex = fsm->ix;
-	li->createdPath = -1;
-
-	li->filex = xcalloc(st->st_nlink, sizeof(li->filex[0]));
-	memset(li->filex, -1, (st->st_nlink * sizeof(li->filex[0])));
-
-	if (fsm->goal == FSM_PKGBUILD)
-	    li->linksLeft = st->st_nlink;
-	if (fsm->goal == FSM_PKGINSTALL)
-	    li->linksLeft = 0;
-
-	*tailp = li;	/* append to tail of linked list */
+        li = xcalloc(1, sizeof(*li));
+        li->next = NULL;
+        li->files = files;
+        li->nlink = 0;
+        li->filex = xcalloc(numlinks, sizeof(li->filex[0]));
+        *tailp = li;
     }
+    li->filex[li->nlink] = fsm->ix;
+    li->nlink++;
 
-    if (fsm->goal == FSM_PKGBUILD) --li->linksLeft;
-    li->filex[li->linksLeft] = fsm->ix;
-    if (fsm->goal == FSM_PKGINSTALL) li->linksLeft++;
-
-    if (fsm->goal == FSM_PKGBUILD)
-	return (li->linksLeft > 0);
-
-    if (fsm->goal != FSM_PKGINSTALL)
-	return 0;
-
-    if (!(li->linksLeft == st->st_nlink))
-	return 1;
-
-    /* Here come the bits, time to choose a non-skipped file name. */
-    {	rpmfs fs = fsm->fs;
-
-	for (j = li->linksLeft - 1; j >= 0; j--) {
-	    ix = li->filex[j];
-	    if (ix < 0 || XFA_SKIPPING(rpmfsGetAction(fs, ix)))
-		continue;
-	    break;
-	}
-    }
-
-    /* Are all links skipped or not encountered yet? */
-    if (ix < 0 || j < 0)
-	return 1;	/* XXX W2DO? */
-
-    /* Save the non-skipped file name and map index. */
-    li->linkIndex = j;
-    if (linkSet)
-	*linkSet = li;
-    fsm->path = _free(fsm->path);
-    fsm->ix = ix;
-    rc = fsmMapPath(fsm, fsm->ix);
-    return rc;
+    /* skip file for now */
+    return 1;
 }
 
 /** \ingroup payload
@@ -652,75 +618,6 @@ exit:
     return rc;
 }
 
-/** \ingroup payload
- * Write set of linked files to payload stream.
- * @param fsm		file state machine data
- * @param archive	payload archive
- * @param li		link to write
- * @return		0 on success
- */
-static int writeLinkedFile(FSM_t fsm, hardLink_t li)
-{
-    char * path = fsm->path;
-    const char * nsuffix = fsm->nsuffix;
-    int ec = 0;
-    int rc;
-    int i;
-
-    fsm->path = NULL;
-    fsm->nsuffix = NULL;
-
-    for (i = li->nlink - 1; i >= 0; i--) {
-
-	if (li->filex[i] < 0) continue;
-
-	rc = fsmMapPath(fsm, li->filex[i]);
-	rpmfiSetFX(fsm->fi, li->filex[i]);
-
-	/* Write data after last link. */
-	rc = writeFile(fsm, (i == 0), li->filex[i]);
-	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
-	    ec = rc;
-	    *fsm->failedFile = xstrdup(fsm->path);
-	}
-
-	fsm->path = _free(fsm->path);
-	li->filex[i] = -1;
-    }
-
-    fsm->nsuffix = nsuffix;
-    fsm->path = path;
-    return ec;
-}
-
-static int writeLinks(FSM_t fsm)
-{
-    int j, rc = 0;
-    nlink_t i, nlink;
-
-    for (hardLink_t li = fsm->links; li; li = li->next) {
-	/* Re-calculate link count for archive header. */
-	for (j = -1, nlink = 0, i = 0; i < li->nlink; i++) {
-	    if (li->filex[i] < 0)
-		continue;
-	    nlink++;
-	    if (j == -1) j = i;
-	}
-	/* XXX force the contents out as well. */
-	if (j != 0) {
-	    li->filex[0] = li->filex[j];
-	    li->filex[j] = -1;
-	}
-	li->sb.st_nlink = nlink;
-
-	fsm->sb = li->sb;	/* structure assignment */
-	fsm->osb = fsm->sb;	/* structure assignment */
-
-	if (!rc) rc = writeLinkedFile(fsm, li);
-    }
-    return rc;
-}
-
 static int fsmStat(const char *path, int dolstat, struct stat *sb)
 {
     int rc;
@@ -749,52 +646,54 @@ static int fsmVerify(FSM_t fsm);
  * @param li		hard link
  * @return		0 on success
  */
-static int fsmMakeLinks(FSM_t fsm, hardLink_t li)
+static int fsmMakeLinks(FSM_t fsm, const int * files)
 {
     char * path = fsm->path;
-    char * opath = NULL;
     const char * nsuffix = fsm->nsuffix;
+    int ix = fsm->ix;
     int ec = 0;
     int rc;
     int i;
+    hardLink_t li;
 
     fsm->path = NULL;
     fsm->nsuffix = NULL;
 
-    rc = fsmMapPath(fsm, li->filex[li->createdPath]);
-    opath = fsm->path;
-    fsm->path = NULL;
-    for (i = 0; i < li->nlink; i++) {
-	if (li->filex[i] < 0) continue;
-	if (li->createdPath == i) continue;
+    /* Find hard link set. */
+    for (li = fsm->links; li != NULL; li = li->next) {
+        if (li->files == files)
+            break;
+    }
 
+    if (li == NULL)
+        return 0;
+
+    for (i = 0; i < li->nlink; i++) {
 	fsm->path = _free(fsm->path);
 	rc = fsmMapPath(fsm, li->filex[i]);
-	if (XFA_SKIPPING(fsm->action)) continue;
 
 	rc = fsmVerify(fsm);
 	if (!rc) continue;
 	if (!(rc == CPIOERR_ENOENT)) break;
 
-	/* XXX link(opath, fsm->path) */
-	rc = link(opath, fsm->path);
+	rc = link(path, fsm->path);
 	if (_fsm_debug)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
-		opath, fsm->path, (rc < 0 ? strerror(errno) : ""));
-	if (rc < 0)	rc = CPIOERR_LINK_FAILED;
+		path, fsm->path, (rc < 0 ? strerror(errno) : ""));
+	if (rc < 0)
+            rc = CPIOERR_LINK_FAILED;
 
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
 	    *fsm->failedFile = xstrdup(fsm->path);
 	}
-
-	li->linksLeft--;
     }
-    fsm->path = _free(fsm->path);
-    free(opath);
+
 
     fsm->nsuffix = nsuffix;
+    fsm->path = _free(fsm->path);
     fsm->path = path;
+    fsmMapPath(fsm, ix);
     return ec;
 }
 
@@ -805,11 +704,10 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st);
  * @param fsm		file state machine data
  * @return		0 on success
  */
-static int fsmCommitLinks(FSM_t fsm)
+static int fsmCommitLinks(FSM_t fsm, const int * files)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
-    const struct stat * st = &fsm->sb;
     int rc = 0;
     nlink_t link_order = 1;
     nlink_t i;
@@ -819,7 +717,7 @@ static int fsmCommitLinks(FSM_t fsm)
     fsm->nsuffix = NULL;
 
     for (li = fsm->links; li != NULL; li = li->next) {
-	if (li->sb.st_ino == st->st_ino && li->sb.st_dev == st->st_dev)
+	if (li->files == files)
 	    break;
     }
 
@@ -1358,6 +1256,47 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
     return rc;
 }
 
+static int writeLinks(FSM_t fsm)
+{
+    int rc = 0;
+    int fc = rpmfiFC(fsm->fi);
+    fsm->ix = 0;
+    for (fsm->ix=0;fsm->ix<fc;fsm->ix++) {
+	fsmReset(fsm);
+        rpmfiSetFX(fsm->fi, fsm->ix);
+        rc = fsmInit(fsm);
+
+        /* Exit on error. */
+        if (rc)
+            break;
+
+        const int * hardlinks;
+        int numHardlinks;
+        numHardlinks = rpmfiFLinks(fsm->fi, &hardlinks);
+
+        if (numHardlinks < 2 || hardlinks[0] != fsm->ix)
+            continue;
+
+        for (int j=0; j<numHardlinks; j++) {
+            /* Copy file into archive. */
+            rc = fsmMapPath(fsm, hardlinks[j]);
+            rpmfiSetFX(fsm->fi, hardlinks[j]);
+
+            /* Write data after last link. */
+            rc = writeFile(fsm, (j == numHardlinks-1), hardlinks[j]);
+            if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
+                *fsm->failedFile = xstrdup(fsm->path);
+            }
+
+            fsm->path = _free(fsm->path);
+        }
+        /* Exit on error. */
+        if (rc)
+            break;
+    }
+    return rc;
+}
+
 /**
  * Return formatted string representation of file disposition.
  * @param a		file disposition
@@ -1408,6 +1347,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST);
     int fc = rpmfiFC(fi);
+    const int * hardlinks;
+    int numHardlinks;
     char * found = xcalloc(fc, sizeof(*found));
 
     rc = rpmfiAttachArchive(fi, cfd, O_RDONLY);
@@ -1425,8 +1366,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     }
 
     while (!rc) {
-	hardLink_t li = NULL;
-
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
@@ -1443,7 +1382,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
 	if (rc) break;
 
-        rc = fsmInit(fsm);
+        rc = fsmInit(fsm); /* Sets fsm->postpone for skipped files */
 
         /* Exit on error. */
         if (rc)
@@ -1455,11 +1394,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	if (rc) {
 	    fsm->postpone = 1;
 	} else {
-	    if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-		fsm->postpone = saveHardLink(fsm, &li);
 	    setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
 	}
 
+        numHardlinks = rpmfiFLinks(fi, &hardlinks);
+        if (numHardlinks > 1) {
+            fsm->postpone = saveHardLink(fsm, numHardlinks, hardlinks);
+        }
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
@@ -1513,10 +1454,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	    if (!rc) {
 		rc = fsmSetmeta(fsm, fsm->ix, st);
 	    }
-
-            if (li != NULL) {
-                li->createdPath = li->linkIndex;
-                rc = fsmMakeLinks(fsm, li);
+            if (numHardlinks > 1) {
+                rc = fsmMakeLinks(fsm, hardlinks);
             }
         }
 
@@ -1539,8 +1478,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!fsm->postpone) {
-		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
-		      ? fsmCommitLinks(fsm) : fsmCommit(fsm, fsm->ix, st));
+                rc = fsmCommit(fsm, fsm->ix, st);
+		if (!rc && numHardlinks > 1)
+                    rc = fsmCommitLinks(fsm, hardlinks);
 	    }
 	}
 
@@ -1703,15 +1643,13 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
 	    continue;
 
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-	    fsm->postpone = saveHardLink(fsm, NULL);
+            continue;
 
         if (fsm->postpone)
             continue;
-        /* Hardlinks are handled later */
-        if (!(S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)) {
-            /* Copy file into archive. */
-            rc = writeFile(fsm, 1, fsm->ix);
-        }
+
+        /* Copy file into archive. */
+        rc = writeFile(fsm, 1, fsm->ix);
 
         if (rc) {
             if (!fsm->postpone) {
