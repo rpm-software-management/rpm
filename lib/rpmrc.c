@@ -1750,6 +1750,9 @@ int rpmShowRC(FILE * fp)
     ds = rpmdsFree(ds);
     fprintf(fp, "\n");
 
+    fprintf(fp, "Macro path: %s\n", macrofiles);
+    fprintf(fp, "\n");
+
     rpmDumpMacroTable(NULL, fp);
 
     /* XXX: Move this earlier eventually... */
