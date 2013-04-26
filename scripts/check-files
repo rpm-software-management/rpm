@@ -6,24 +6,27 @@
 #
 # filon@pld.org.pl
 
-RPM_BUILD_ROOT=$1
+# Get build root
+RPM_BUILD_ROOT="${1}"
 
-if [ ! -d "$RPM_BUILD_ROOT" ] ; then
+# Handle the case where ${RPM_BUILD_ROOT} is undefined, not a directory, etc.
+if [ ! -d "${RPM_BUILD_ROOT}" ] ; then
 	cat > /dev/null
+	if [ -e "${RPM_BUILD_ROOT}" ] ; then
+		echo "Error: \`${RPM_BUILD_ROOT}' is not a directory" 1>&2
+	fi
 	exit 1
 fi
 
-[ "$TMPDIR" ] || TMPDIR=/tmp
-FILES_DISK=`mktemp $TMPDIR/rpmXXXXXX`
-FILES_RPM=`mktemp $TMPDIR/rpmXXXXXX`
+# Create temporary file listing files in the manifest
+[ -n "$TMPDIR" ] || TMPDIR="/tmp"
+FILES_DISK=`mktemp "${TMPDIR}/rpmXXXXXX"`
 
-find "$RPM_BUILD_ROOT" -type f -o -type l | LC_ALL=C sort > $FILES_DISK
-LC_ALL=C sort > $FILES_RPM
+# Ensure temporary file is cleaned up when we exit
+trap "rm -f \"${FILES_DISK}\"" 0 2 3 5 10 13 15
 
-diff -d "$FILES_DISK" "$FILES_RPM" | grep "^< " | cut -c3- | 
-while read f; do
-	echo $f | sed -e "s#^$RPM_BUILD_ROOT#   #g"
-done
+# Find non-directory files in the build root and compare to the manifest.
+# TODO: regex chars in last sed(1) expression should be escaped
+find "${RPM_BUILD_ROOT}" -type f -o -type l | LC_ALL=C sort > "${FILES_DISK}"
+LC_ALL=C sort | diff -d "${FILES_DISK}" - | sed -n 's|^< '"${RPM_BUILD_ROOT}"'\(.*\)$|   \1|gp'
 
-rm -f $FILES_DISK
-rm -f $FILES_RPM
