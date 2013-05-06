@@ -18,6 +18,25 @@
 
 #include "debug.h"
 
+struct hardlinks_s {
+    int nlink;
+    int files[];
+};
+
+typedef struct hardlinks_s * hardlinks_t;
+
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE nlinkHash
+#define HTKEYTYPE int
+#define HTDATATYPE struct hardlinks_s *
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
 static rpmfi rpmfiUnlink(rpmfi fi)
 {
     if (fi)
@@ -331,24 +350,36 @@ uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp)
     return fddictn;
 }
 
-uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix)
+uint32_t rpmfiFLinksIndex(rpmfi fi, int ix, const int ** files)
 {
     uint32_t nlink = 0;
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
-	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
-	if (fi->finodes && fi->finodes[ix] > 0 && fi->frdevs) {
-	    rpm_ino_t finode = fi->finodes[ix];
-	    rpm_rdev_t frdev = fi->frdevs[ix];
-	    int j;
-
-	    for (j = 0; j < fi->fc; j++) {
-		if (fi->frdevs[j] == frdev && fi->finodes[j] == finode)
-		    nlink++;
+	nlink = 1;
+	if (fi->nlinks) {
+	    struct hardlinks_s ** hardlinks = NULL;
+	    nlinkHashGetEntry(fi->nlinks, ix, &hardlinks, NULL, NULL);
+	    if (hardlinks) {
+		nlink = hardlinks[0]->nlink;
+		if (files) {
+		    *files = hardlinks[0]->files;
+		}
+	    } else if (files){
+		*files = NULL;
 	    }
 	}
     }
     return nlink;
+}
+
+uint32_t rpmfiFLinks(rpmfi fi, const int ** files)
+{
+    return rpmfiFLinksIndex(fi, fi ? fi->i : -1, files);
+}
+
+uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix)
+{
+    return rpmfiFLinksIndex(fi, ix, NULL);
 }
 
 rpm_time_t rpmfiFMtimeIndex(rpmfi fi, int ix)
@@ -1101,6 +1132,8 @@ rpmfi rpmfiFree(rpmfi fi)
 
     fi->h = headerFree(fi->h);
 
+    fi->nlinks = nlinkHashFree(fi->nlinks);
+
     (void) rpmfiUnlink(fi);
     memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
     fi = _free(fi);
@@ -1146,6 +1179,114 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
 #define _hgfi(_h, _tag, _td, _flags, _data) \
     if (headerGet((_h), (_tag), (_td), (_flags))) \
 	_data = (td.data)
+
+/*** Hard link handling ***/
+
+struct fileid_s {
+    rpm_dev_t id_dev;
+    rpm_ino_t id_ino;
+};
+
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+#define HASHTYPE fileidHash
+#define HTKEYTYPE struct fileid_s
+#define HTDATATYPE int
+#include "lib/rpmhash.H"
+#include "lib/rpmhash.C"
+#undef HASHTYPE
+#undef HTKEYTYPE
+#undef HTDATATYPE
+
+
+static unsigned int fidHashFunc(struct fileid_s a)
+{
+	return  a.id_ino + (a.id_dev<<16) + (a.id_dev>>16);
+}
+
+static int fidCmp(struct fileid_s a, struct fileid_s b)
+{
+	return  !((a.id_dev == b.id_dev) && (a.id_ino == b.id_ino));
+}
+
+static unsigned int intHash(int a)
+{
+	return a < 0 ? UINT_MAX-a : a;
+}
+
+static int intCmp(int a, int b)
+{
+	return a != b;
+}
+
+static struct hardlinks_s * freeNLinks(struct hardlinks_s * nlinks)
+{
+	nlinks->nlink--;
+	if (!nlinks->nlink) {
+		nlinks = _free(nlinks);
+	}
+	return nlinks;
+}
+
+static void rpmfiBuildNLink(rpmfi fi, Header h)
+{
+	struct fileid_s f_id;
+	fileidHash files;
+	rpm_dev_t * fdevs = NULL;
+	struct rpmtd_s td;
+	int fc = 0;
+
+	if (!fi->finodes)
+	return;
+
+	_hgfi(h, RPMTAG_FILEDEVICES, &td, HEADERGET_ALLOC, fdevs);
+	if (!fdevs)
+	return;
+
+
+	files = fileidHashCreate(rpmfiFC(fi), fidHashFunc, fidCmp,
+				 NULL, NULL);
+	for (int i=0; i < fi->fc; i++) {
+		if (!S_ISREG(rpmfiFModeIndex(fi, i)) ||
+			(rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST) ||
+			fi->finodes[i] <= 0) {
+			continue;
+		}
+		fc++;
+		f_id.id_dev = fdevs[i];
+		f_id.id_ino = fi->finodes[i];
+		fileidHashAddEntry(files, f_id, i);
+	}
+	if (fileidHashNumKeys(files) != fc) {
+	/* Hard links */
+	fi->nlinks = nlinkHashCreate(2*(fi->fc - fileidHashNumKeys(files)),
+					 intHash, intCmp, NULL, freeNLinks);
+	for (int i=0; i < fi->fc; i++) {
+		int fcnt;
+		int * data;
+		if (!S_ISREG(rpmfiFModeIndex(fi, i)) ||
+		(rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST)) {
+		continue;
+		}
+		f_id.id_dev = fdevs[i];
+		f_id.id_ino = fi->finodes[i];
+		fileidHashGetEntry(files, f_id, &data, &fcnt, NULL);
+		if (fcnt > 1 && !nlinkHashHasEntry(fi->nlinks, i)) {
+		struct hardlinks_s * hlinks;
+		hlinks = xmalloc(sizeof(struct hardlinks_s)+
+				 fcnt*sizeof(hlinks->files[0]));
+		hlinks->nlink = fcnt;
+		for (int j=0; j<fcnt; j++) {
+			hlinks->files[j] = data[j];
+			nlinkHashAddEntry(fi->nlinks, data[j], hlinks);
+		}
+		}
+	}
+	}
+	_free(fdevs);
+	files = fileidHashFree(files);
+}
 
 static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 {
@@ -1228,9 +1369,10 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILEMTIMES, &td, scareFlags, fi->fmtimes);
     if (!(flags & RPMFI_NOFILERDEVS))
 	_hgfi(h, RPMTAG_FILERDEVS, &td, scareFlags, fi->frdevs);
-    if (!(flags & RPMFI_NOFILEINODES))
+    if (!(flags & RPMFI_NOFILEINODES)) {
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
-
+	rpmfiBuildNLink(fi, h);
+    }
     if (!(flags & RPMFI_NOFILEUSER)) 
 	fi->fuser = tag2pool(fi->pool, h, RPMTAG_FILEUSERNAME);
     if (!(flags & RPMFI_NOFILEGROUP)) 

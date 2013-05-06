@@ -64,6 +64,7 @@ struct rpmfi_s {
     char * fn;			/*!< File name buffer. */
 
     char ** apath;
+    struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     rpm_loff_t * replacedLSizes;/*!< (TR_ADDED) */
     int magic;
@@ -139,6 +140,9 @@ uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp);
 
 RPM_GNUC_INTERNAL
 uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix);
+
+RPM_GNUC_INTERNAL
+uint32_t rpmfiFLinksIndex(rpmfi fi, int ix, const int ** files);
 
 RPM_GNUC_INTERNAL
 const char * rpmfiFLangsIndex(rpmfi fi, int ix);

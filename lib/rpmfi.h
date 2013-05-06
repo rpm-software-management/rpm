@@ -297,6 +297,16 @@ uint32_t rpmfiFDepends(rpmfi fi,
  */
 uint32_t rpmfiFNlink(rpmfi fi);
 
+
+/** \ingroup rpmfi
+ * Return (calculated) current file nlink count from file info set.
+ * @param fi		file info set
+ * @param files         returns array of file ids hardlinked including ix,
+			NULL for nlink count == 1
+ * @return		current file nlink count, 0 on invalid
+ */
+uint32_t rpmfiFLinks(rpmfi fi, const int ** files);
+
 /** \ingroup rpmfi
  * Return current file modify time from file info set.
  * @param fi		file info set
