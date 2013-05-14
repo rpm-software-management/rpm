@@ -1359,7 +1359,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     }
 
     /* Error out when a non-directory is specified as one in spec */
-    if (fl->cur.isDir && !S_ISDIR(statp->st_mode)) {
+    if (fl->cur.isDir && (statp == &statbuf) && !S_ISDIR(statp->st_mode)) {
 	rpmlog(RPMLOG_ERR, _("Not a directory: %s\n"), diskPath);
 	goto exit;
     }
