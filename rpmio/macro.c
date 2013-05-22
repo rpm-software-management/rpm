@@ -88,6 +88,18 @@ static void popMacro(rpmMacroContext mc, const char * n);
 
 /* =============================================================== */
 
+static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
+{
+    if (mc == NULL)
+	mc = rpmGlobalMacroContext;
+    return mc;
+}
+
+static rpmMacroContext rpmmctxRelease(rpmMacroContext mc)
+{
+    return NULL;
+}
+
 /**
  * Find entry in macro table.
  * @param mc		macro context
@@ -1278,8 +1290,6 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     MacroBuf mb = xcalloc(1, sizeof(*mb));
     int rc = 0;
 
-    if (mc == NULL) mc = rpmGlobalMacroContext;
-
     mb->buf = NULL;
     mb->depth = 0;
     mb->macro_trace = print_macro_trace;
@@ -1299,9 +1309,6 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level)
 {
-    if (mc == NULL)
-	mc = rpmGlobalMacroContext;
-
     /* new entry */
     rpmMacroEntry me;
     /* pointer into me */
@@ -1367,9 +1374,6 @@ static void pushMacro(rpmMacroContext mc,
 
 static void popMacro(rpmMacroContext mc, const char * n)
 {
-    if (mc == NULL)
-	mc = rpmGlobalMacroContext;
-
     size_t pos;
     rpmMacroEntry *mep = findEntry(mc, n, 0, &pos);
     if (mep == NULL)
@@ -1397,7 +1401,12 @@ static void popMacro(rpmMacroContext mc, const char * n)
 int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
 {
     char *target = NULL;
-    int rc = doExpandMacros(mc, sbuf, &target);
+    int rc;
+
+    mc = rpmmctxAcquire(mc);
+    rc = doExpandMacros(mc, sbuf, &target);
+    rpmmctxRelease(mc);
+
     rstrlcpy(sbuf, target, slen);
     free(target);
     return rc;
@@ -1406,7 +1415,7 @@ int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
 void
 rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
 {
-    if (mc == NULL) mc = rpmGlobalMacroContext;
+    mc = rpmmctxAcquire(mc);
     if (fp == NULL) fp = stderr;
     
     fprintf(fp, "========================\n");
@@ -1423,17 +1432,22 @@ rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
     }
     fprintf(fp, _("======================== active %d empty %d\n"),
 		mc->n, 0);
+    rpmmctxRelease(mc);
 }
 
 void addMacro(rpmMacroContext mc,
 	      const char * n, const char * o, const char * b, int level)
 {
+    mc = rpmmctxAcquire(mc);
     pushMacro(mc, n, o, b, level);
+    rpmmctxRelease(mc);
 }
 
 void delMacro(rpmMacroContext mc, const char * n)
 {
+    mc = rpmmctxAcquire(mc);
     popMacro(mc, n);
+    rpmmctxRelease(mc);
 }
 
 int
@@ -1442,8 +1456,9 @@ rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
     MacroBuf mb = xcalloc(1, sizeof(*mb));
 
     /* XXX just enough to get by */
-    mb->mc = (mc ? mc : rpmGlobalMacroContext);
+    mb->mc = rpmmctxAcquire(mc);
     (void) doDefine(mb, macro, level, 0);
+    rpmmctxRelease(mb->mc);
     _free(mb);
     return 0;
 }
@@ -1451,15 +1466,19 @@ rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 void
 rpmLoadMacros(rpmMacroContext mc, int level)
 {
-
+    rpmMacroContext gmc;
     if (mc == NULL || mc == rpmGlobalMacroContext)
 	return;
 
+    gmc = rpmmctxAcquire(NULL);
+    mc = rpmmctxAcquire(mc);
     for (int i = 0; i < mc->n; i++) {
 	rpmMacroEntry me = mc->tab[i];
 	assert(me);
-	pushMacro(NULL, me->name, me->opts, me->body, (level - 1));
+	pushMacro(gmc, me->name, me->opts, me->body, (level - 1));
     }
+    rpmmctxRelease(mc);
+    rpmmctxRelease(gmc);
 }
 
 int
@@ -1472,6 +1491,8 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 
     if (fd == NULL)
 	goto exit;
+
+    mc = rpmmctxAcquire(mc);
 
     /* XXX Assume new fangled macro expansion */
     max_macro_depth = 16;
@@ -1488,6 +1509,8 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 	n++;	/* skip % */
 	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
     }
+    rpmmctxRelease(mc);
+
     rc = fclose(fd);
 
 exit:
@@ -1504,6 +1527,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 	return;
 
     argvSplit(&globs, macrofiles, ":");
+    mc = rpmmctxAcquire(mc);
     for (pattern = globs; *pattern; pattern++) {
 	ARGV_t path, files = NULL;
     
@@ -1523,6 +1547,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 	}
 	argvFree(files);
     }
+    rpmmctxRelease(mc);
     argvFree(globs);
 
     /* Reload cmdline macros */
@@ -1532,13 +1557,13 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 void
 rpmFreeMacros(rpmMacroContext mc)
 {
-    if (mc == NULL)
-	mc = rpmGlobalMacroContext;
+    mc = rpmmctxAcquire(mc);
     while (mc->n > 0) {
 	/* remove from the end to avoid memmove */
 	rpmMacroEntry me = mc->tab[mc->n - 1];
 	popMacro(mc, me->name);
     }
+    rpmmctxRelease(mc);
 }
 
 char * 
@@ -1549,6 +1574,7 @@ rpmExpand(const char *arg, ...)
     char *pe;
     const char *s;
     va_list ap;
+    rpmMacroContext mc;
 
     if (arg == NULL) {
 	ret = xstrdup("");
@@ -1569,7 +1595,9 @@ rpmExpand(const char *arg, ...)
 	pe = stpcpy(pe, s);
     va_end(ap);
 
-    (void) doExpandMacros(NULL, buf, &ret);
+    mc = rpmmctxAcquire(NULL);
+    (void) doExpandMacros(mc, buf, &ret);
+    rpmmctxRelease(mc);
 
     free(buf);
 exit:
