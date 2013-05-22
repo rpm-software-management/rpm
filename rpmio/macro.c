@@ -1396,6 +1396,17 @@ static void popMacro(rpmMacroContext mc, const char * n)
     free(me);
 }
 
+static int defineMacro(rpmMacroContext mc, const char * macro, int level)
+{
+    MacroBuf mb = xcalloc(1, sizeof(*mb));
+
+    /* XXX just enough to get by */
+    mb->mc = mc;
+    (void) doDefine(mb, macro, level, 0);
+    _free(mb);
+    return 0;
+}
+
 /* External interfaces */
 
 int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
@@ -1453,13 +1464,9 @@ void delMacro(rpmMacroContext mc, const char * n)
 int
 rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 {
-    MacroBuf mb = xcalloc(1, sizeof(*mb));
-
-    /* XXX just enough to get by */
-    mb->mc = rpmmctxAcquire(mc);
-    (void) doDefine(mb, macro, level, 0);
-    rpmmctxRelease(mb->mc);
-    _free(mb);
+    mc = rpmmctxAcquire(mc);
+    (void) defineMacro(mc, macro, level);
+    rpmmctxRelease(mc);
     return 0;
 }
 
@@ -1507,7 +1514,7 @@ rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 	if (c != '%')
 		continue;
 	n++;	/* skip % */
-	rc = rpmDefineMacro(mc, n, RMIL_MACROFILES);
+	rc = defineMacro(mc, n, RMIL_MACROFILES);
     }
     rpmmctxRelease(mc);
 
