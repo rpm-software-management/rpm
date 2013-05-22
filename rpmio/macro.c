@@ -1440,6 +1440,15 @@ exit:
     return rc;
 }
 
+static void copyMacros(rpmMacroContext src, rpmMacroContext dst, int level)
+{
+    for (int i = 0; i < src->n; i++) {
+	rpmMacroEntry me = src->tab[i];
+	assert(me);
+	pushMacro(dst, me->name, me->opts, me->body, (level - 1));
+    }
+}
+
 /* External interfaces */
 
 int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
@@ -1512,11 +1521,9 @@ rpmLoadMacros(rpmMacroContext mc, int level)
 
     gmc = rpmmctxAcquire(NULL);
     mc = rpmmctxAcquire(mc);
-    for (int i = 0; i < mc->n; i++) {
-	rpmMacroEntry me = mc->tab[i];
-	assert(me);
-	pushMacro(gmc, me->name, me->opts, me->body, (level - 1));
-    }
+
+    copyMacros(mc, gmc, level);
+
     rpmmctxRelease(mc);
     rpmmctxRelease(gmc);
 }
@@ -1537,6 +1544,7 @@ void
 rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 {
     ARGV_t pattern, globs = NULL;
+    rpmMacroContext climc;
 
     if (macrofiles == NULL)
 	return;
@@ -1562,11 +1570,14 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 	}
 	argvFree(files);
     }
-    rpmmctxRelease(mc);
     argvFree(globs);
 
     /* Reload cmdline macros */
-    rpmLoadMacros(rpmCLIMacroContext, RMIL_CMDLINE);
+    climc = rpmmctxAcquire(rpmCLIMacroContext);
+    copyMacros(climc, mc, RMIL_CMDLINE);
+    rpmmctxRelease(climc);
+
+    rpmmctxRelease(mc);
 }
 
 void
