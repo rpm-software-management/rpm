@@ -4,6 +4,7 @@
 
 #include "system.h"
 #include <stdarg.h>
+#include <pthread.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
@@ -49,6 +50,8 @@ struct rpmMacroEntry_s {
 struct rpmMacroContext_s {
     rpmMacroEntry *tab;  /*!< Macro entry table (array of pointers). */
     int n;      /*!< No. of macros. */
+    pthread_mutex_t lock;
+    pthread_mutexattr_t lockattr;
 };
 
 
@@ -57,6 +60,29 @@ rpmMacroContext rpmGlobalMacroContext = &rpmGlobalMacroContext_s;
 
 static struct rpmMacroContext_s rpmCLIMacroContext_s;
 rpmMacroContext rpmCLIMacroContext = &rpmCLIMacroContext_s;
+
+/*
+ * The macro engine internals do not require recursive mutexes but Lua
+ * macro bindings which can get called from the internals use the external
+ * interfaces which do perform locking. Until that is fixed somehow
+ * we'll just have to settle for recursive mutexes.
+ * Unfortunately POSIX doesn't specify static initializers for recursive
+ * mutexes so we need to have a separate PTHREAD_ONCE initializer just
+ * to initialize the otherwise static macro context mutexes. Pooh.
+ */
+static pthread_once_t locksInitialized = PTHREAD_ONCE_INIT;
+
+static void initLocks(void)
+{
+    rpmMacroContext mcs[] = { rpmGlobalMacroContext, rpmCLIMacroContext, NULL };
+
+    for (rpmMacroContext *mcp = mcs; *mcp; mcp++) {
+	rpmMacroContext mc = *mcp;
+	pthread_mutexattr_init(&mc->lockattr);
+	pthread_mutexattr_settype(&mc->lockattr, PTHREAD_MUTEX_RECURSIVE);
+	pthread_mutex_init(&mc->lock, &mc->lockattr);
+    }
+}
 
 /**
  * Macro expansion state.
@@ -92,11 +118,14 @@ static rpmMacroContext rpmmctxAcquire(rpmMacroContext mc)
 {
     if (mc == NULL)
 	mc = rpmGlobalMacroContext;
+    pthread_once(&locksInitialized, initLocks);
+    pthread_mutex_lock(&mc->lock);
     return mc;
 }
 
 static rpmMacroContext rpmmctxRelease(rpmMacroContext mc)
 {
+    pthread_mutex_unlock(&mc->lock);
     return NULL;
 }
 
