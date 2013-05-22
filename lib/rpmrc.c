@@ -1265,30 +1265,6 @@ static void rpmSetTables(int archTable, int osTable)
     }
 }
 
-int rpmMachineScore(int type, const char * name)
-{
-    int score = 0;
-    if (name) {
-	rpmrcCtx ctx = rpmrcCtxAcquire(0);
-	machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
-	if (info)
-	    score = info->score;
-	rpmrcCtxRelease(ctx);
-    }
-    return score;
-}
-
-int rpmIsKnownArch(const char *name)
-{
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
-    canonEntry canon = lookupInCanonTable(name,
-			tables[RPM_MACHTABLE_INSTARCH].canons,
-			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
-    int known = (canon != NULL || rstreq(name, "noarch"));
-    rpmrcCtxRelease(ctx);
-    return known;
-}
-
 /** \ingroup rpmrc
  * Set current arch/os names.
  * NULL as argument is set to the default value (munged uname())
@@ -1383,42 +1359,6 @@ static void getMachineInfo(int type, const char ** name,
     }
 }
 
-void rpmGetArchInfo(const char ** name, int * num)
-{
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
-    getMachineInfo(ARCH, name, num);
-    rpmrcCtxRelease(ctx);
-}
-
-int rpmGetArchColor(const char *arch)
-{
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
-    const char *color;
-    char *e;
-    int color_i = -1; /* assume failure */
-
-    arch = lookupInDefaultTable(arch,
-				tables[currTables[ARCH]].defaults,
-				tables[currTables[ARCH]].defaultsLength);
-    color = rpmGetVarArch(RPMVAR_ARCHCOLOR, arch);
-    if (color) {
-	color_i = strtol(color, &e, 10);
-	if (!(e && *e == '\0')) {
-	    color_i = -1;
-	}
-    }
-    rpmrcCtxRelease(ctx);
-
-    return color_i;
-}
-
-void rpmGetOsInfo(const char ** name, int * num)
-{
-    rpmrcCtx ctx = rpmrcCtxAcquire(0);
-    getMachineInfo(OS, name, num);
-    rpmrcCtxRelease(ctx);
-}
-
 static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
 {
 
@@ -1510,6 +1450,104 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
     free(co);
 }
 
+/** \ingroup rpmrc
+ * Read rpmrc (and macro) configuration file(s).
+ * @param rcfiles	colon separated files to read (NULL uses default)
+ * @return		RPMRC_OK on success
+ */
+static rpmRC rpmReadRC(const char * rcfiles)
+{
+    ARGV_t p, globs = NULL, files = NULL;
+    rpmRC rc = RPMRC_FAIL;
+
+    if (!defaultsInitialized) {
+	setDefaults();
+	defaultsInitialized = 1;
+    }
+
+    if (rcfiles == NULL)
+	rcfiles = defrcfiles;
+
+    /* Expand any globs in rcfiles. Missing files are ok here. */
+    argvSplit(&globs, rcfiles, ":");
+    for (p = globs; *p; p++) {
+	ARGV_t av = NULL;
+	if (rpmGlob(*p, NULL, &av) == 0) {
+	    argvAppend(&files, av);
+	    argvFree(av);
+	}
+    }
+    argvFree(globs);
+
+    /* Read each file in rcfiles. */
+    for (p = files; p && *p; p++) {
+	/* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
+	if (access(*p, R_OK) != 0) {
+	    if (rcfiles == defrcfiles && p != files)
+		continue;
+	    rpmlog(RPMLOG_ERR, _("Unable to open %s for reading: %m.\n"), *p);
+	    goto exit;
+	    break;
+	} else {
+	    rc = doReadRC(*p);
+	}
+    }
+    rc = RPMRC_OK;
+    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+
+exit:
+    argvFree(files);
+    return rc;
+}
+
+/* External interfaces */
+
+int rpmReadConfigFiles(const char * file, const char * target)
+{
+    int rc = -1; /* assume failure */
+    rpmrcCtx ctx = rpmrcCtxAcquire(1);
+
+    /* Force preloading of dlopen()'ed libraries in case we go chrooting */
+    (void) gethostbyname("localhost");
+    if (rpmInitCrypto())
+	goto exit;
+
+    /* Preset target macros */
+   	/* FIX: target can be NULL */
+    rpmRebuildTargetVars(&target, NULL);
+
+    /* Read the files */
+    if (rpmReadRC(file))
+	goto exit;
+
+    if (macrofiles != NULL) {
+	char *mf = rpmGetPath(macrofiles, NULL);
+	rpmInitMacros(NULL, mf);
+	_free(mf);
+    }
+
+    /* Reset target macros */
+    rpmRebuildTargetVars(&target, NULL);
+
+    /* Finally set target platform */
+    {	char *cpu = rpmExpand("%{_target_cpu}", NULL);
+	char *os = rpmExpand("%{_target_os}", NULL);
+	rpmSetMachine(cpu, os);
+	free(cpu);
+	free(os);
+    }
+
+#ifdef WITH_LUA
+    /* Force Lua state initialization */
+    rpmLuaInit();
+#endif
+    rc = 0;
+
+exit:
+    rpmrcCtxRelease(ctx);
+    return rc;
+}
+
 void rpmFreeRpmrc(void)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire(1);
@@ -1590,102 +1628,6 @@ void rpmFreeRpmrc(void)
     return;
 }
 
-/** \ingroup rpmrc
- * Read rpmrc (and macro) configuration file(s).
- * @param rcfiles	colon separated files to read (NULL uses default)
- * @return		RPMRC_OK on success
- */
-static rpmRC rpmReadRC(const char * rcfiles)
-{
-    ARGV_t p, globs = NULL, files = NULL;
-    rpmRC rc = RPMRC_FAIL;
-
-    if (!defaultsInitialized) {
-	setDefaults();
-	defaultsInitialized = 1;
-    }
-
-    if (rcfiles == NULL)
-	rcfiles = defrcfiles;
-
-    /* Expand any globs in rcfiles. Missing files are ok here. */
-    argvSplit(&globs, rcfiles, ":");
-    for (p = globs; *p; p++) {
-	ARGV_t av = NULL;
-	if (rpmGlob(*p, NULL, &av) == 0) {
-	    argvAppend(&files, av);
-	    argvFree(av);
-	}
-    }
-    argvFree(globs);
-
-    /* Read each file in rcfiles. */
-    for (p = files; p && *p; p++) {
-	/* XXX Only /usr/lib/rpm/rpmrc must exist in default rcfiles list */
-	if (access(*p, R_OK) != 0) {
-	    if (rcfiles == defrcfiles && p != files)
-		continue;
-	    rpmlog(RPMLOG_ERR, _("Unable to open %s for reading: %m.\n"), *p);
-	    goto exit;
-	    break;
-	} else {
-	    rc = doReadRC(*p);
-	}
-    }
-    rc = RPMRC_OK;
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
-
-exit:
-    argvFree(files);
-    return rc;
-}
-
-int rpmReadConfigFiles(const char * file, const char * target)
-{
-    int rc = -1; /* assume failure */
-    rpmrcCtx ctx = rpmrcCtxAcquire(1);
-
-    /* Force preloading of dlopen()'ed libraries in case we go chrooting */
-    (void) gethostbyname("localhost");
-    if (rpmInitCrypto())
-	goto exit;
-
-    /* Preset target macros */
-   	/* FIX: target can be NULL */
-    rpmRebuildTargetVars(&target, NULL);
-
-    /* Read the files */
-    if (rpmReadRC(file))
-	goto exit;
-
-    if (macrofiles != NULL) {
-	char *mf = rpmGetPath(macrofiles, NULL);
-	rpmInitMacros(NULL, mf);
-	_free(mf);
-    }
-
-    /* Reset target macros */
-    rpmRebuildTargetVars(&target, NULL);
-
-    /* Finally set target platform */
-    {	char *cpu = rpmExpand("%{_target_cpu}", NULL);
-	char *os = rpmExpand("%{_target_os}", NULL);
-	rpmSetMachine(cpu, os);
-	free(cpu);
-	free(os);
-    }
-
-#ifdef WITH_LUA
-    /* Force Lua state initialization */
-    rpmLuaInit();
-#endif
-    rc = 0;
-
-exit:
-    rpmrcCtxRelease(ctx);
-    return rc;
-}
-
 int rpmShowRC(FILE * fp)
 {
     /* Write-context necessary as this calls rpmSetTables(), ugh */
@@ -1760,3 +1702,64 @@ int rpmShowRC(FILE * fp)
 
     return 0;
 }
+
+int rpmMachineScore(int type, const char * name)
+{
+    int score = 0;
+    if (name) {
+	rpmrcCtx ctx = rpmrcCtxAcquire(0);
+	machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
+	if (info)
+	    score = info->score;
+	rpmrcCtxRelease(ctx);
+    }
+    return score;
+}
+
+int rpmIsKnownArch(const char *name)
+{
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    canonEntry canon = lookupInCanonTable(name,
+			tables[RPM_MACHTABLE_INSTARCH].canons,
+			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+    int known = (canon != NULL || rstreq(name, "noarch"));
+    rpmrcCtxRelease(ctx);
+    return known;
+}
+
+void rpmGetArchInfo(const char ** name, int * num)
+{
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    getMachineInfo(ARCH, name, num);
+    rpmrcCtxRelease(ctx);
+}
+
+int rpmGetArchColor(const char *arch)
+{
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    const char *color;
+    char *e;
+    int color_i = -1; /* assume failure */
+
+    arch = lookupInDefaultTable(arch,
+				tables[currTables[ARCH]].defaults,
+				tables[currTables[ARCH]].defaultsLength);
+    color = rpmGetVarArch(RPMVAR_ARCHCOLOR, arch);
+    if (color) {
+	color_i = strtol(color, &e, 10);
+	if (!(e && *e == '\0')) {
+	    color_i = -1;
+	}
+    }
+    rpmrcCtxRelease(ctx);
+
+    return color_i;
+}
+
+void rpmGetOsInfo(const char ** name, int * num)
+{
+    rpmrcCtx ctx = rpmrcCtxAcquire(0);
+    getMachineInfo(OS, name, num);
+    rpmrcCtxRelease(ctx);
+}
+
