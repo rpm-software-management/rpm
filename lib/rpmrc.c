@@ -141,14 +141,13 @@ static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable)
 #define OS	0
 #define ARCH	1
 
-static char *current[2];
-
 static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 
 static int defaultsInitialized = 0;
 
 typedef struct rpmrcCtx_s * rpmrcCtx;
 struct rpmrcCtx_s {
+    char *current[2];
     struct rpmvarValue values[RPMVAR_NUM];
     pthread_rwlock_t lock;
 };
@@ -578,7 +577,7 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 
 	    /* Only add macros if appropriate for this arch */
 	    if (option->macroize &&
-	      (arch == NULL || rstreq(arch, current[ARCH]))) {
+	      (arch == NULL || rstreq(arch, ctx->current[ARCH]))) {
 		char *n, *name;
 		n = name = xmalloc(strlen(option->name)+2);
 		if (option->localize)
@@ -1196,7 +1195,7 @@ const char * rpmGetVarArch(rpmrcCtx ctx, int var, const char * arch)
 {
     const struct rpmvarValue * next;
 
-    if (arch == NULL) arch = current[ARCH];
+    if (arch == NULL) arch = ctx->current[ARCH];
 
     if (arch) {
 	next = &ctx->values[var];
@@ -1300,15 +1299,15 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
     }
     if (os == NULL) return;	/* XXX can't happen */
 
-    if (!current[ARCH] || !rstreq(arch, current[ARCH])) {
-	current[ARCH] = _free(current[ARCH]);
-	current[ARCH] = xstrdup(arch);
+    if (!ctx->current[ARCH] || !rstreq(arch, ctx->current[ARCH])) {
+	ctx->current[ARCH] = _free(ctx->current[ARCH]);
+	ctx->current[ARCH] = xstrdup(arch);
 	rebuildCompatTables(ctx, ARCH, host_cpu);
     }
 
-    if (!current[OS] || !rstreq(os, current[OS])) {
+    if (!ctx->current[OS] || !rstreq(os, ctx->current[OS])) {
 	char * t = xstrdup(os);
-	current[OS] = _free(current[OS]);
+	ctx->current[OS] = _free(ctx->current[OS]);
 	/*
 	 * XXX Capitalizing the 'L' is needed to insure that old
 	 * XXX os-from-uname (e.g. "Linux") is compatible with the new
@@ -1319,7 +1318,7 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 	 */
 	if (rstreq(t, "linux"))
 	    *t = 'L';
-	current[OS] = t;
+	ctx->current[OS] = t;
 	
 	rebuildCompatTables(ctx, OS, host_os);
     }
@@ -1341,7 +1340,7 @@ static void getMachineInfo(rpmrcCtx ctx,
     /* use the normal canon tables, even if we're looking up build stuff */
     if (which >= 2) which -= 2;
 
-    canon = lookupInCanonTable(current[type],
+    canon = lookupInCanonTable(ctx->current[type],
 			       tables[which].canons,
 			       tables[which].canonsLength);
 
@@ -1350,10 +1349,11 @@ static void getMachineInfo(rpmrcCtx ctx,
 	if (name) *name = canon->short_name;
     } else {
 	if (num) *num = 255;
-	if (name) *name = current[type];
+	if (name) *name = ctx->current[type];
 
 	if (tables[currTables[type]].hasCanon) {
-	    rpmlog(RPMLOG_WARNING, _("Unknown system: %s\n"), current[type]);
+	    rpmlog(RPMLOG_WARNING, _("Unknown system: %s\n"),
+		   ctx->current[type]);
 	    rpmlog(RPMLOG_WARNING, _("Please contact %s\n"), PACKAGE_BUGREPORT);
 	}
     }
@@ -1615,8 +1615,8 @@ void rpmFreeRpmrc(void)
 	ctx->values[i].value = _free(ctx->values[i].value);
 	ctx->values[i].arch = _free(ctx->values[i].arch);
     }
-    current[OS] = _free(current[OS]);
-    current[ARCH] = _free(current[ARCH]);
+    ctx->current[OS] = _free(ctx->current[OS]);
+    ctx->current[ARCH] = _free(ctx->current[ARCH]);
     defaultsInitialized = 0;
 /* FIX: platpat/current may be NULL */
 
@@ -1641,7 +1641,7 @@ int rpmShowRC(FILE * fp)
 
     /* the caller may set the build arch which should be printed here */
     fprintf(fp, "ARCHITECTURE AND OS:\n");
-    fprintf(fp, "build arch            : %s\n", current[ARCH]);
+    fprintf(fp, "build arch            : %s\n", ctx->current[ARCH]);
 
     fprintf(fp, "compatible build archs:");
     equivTable = &tables[RPM_MACHTABLE_BUILDARCH].equiv;
@@ -1649,7 +1649,7 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    fprintf(fp, "build os              : %s\n", current[OS]);
+    fprintf(fp, "build os              : %s\n", ctx->current[OS]);
 
     fprintf(fp, "compatible build os's :");
     equivTable = &tables[RPM_MACHTABLE_BUILDOS].equiv;
@@ -1660,8 +1660,8 @@ int rpmShowRC(FILE * fp)
     rpmSetTables(ctx, RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
     rpmSetMachine(ctx, NULL, NULL);	/* XXX WTFO? Why bother? */
 
-    fprintf(fp, "install arch          : %s\n", current[ARCH]);
-    fprintf(fp, "install os            : %s\n", current[OS]);
+    fprintf(fp, "install arch          : %s\n", ctx->current[ARCH]);
+    fprintf(fp, "install os            : %s\n", ctx->current[OS]);
 
     fprintf(fp, "compatible archs      :");
     equivTable = &tables[RPM_MACHTABLE_INSTARCH].equiv;
