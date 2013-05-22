@@ -1407,6 +1407,39 @@ static int defineMacro(rpmMacroContext mc, const char * macro, int level)
     return 0;
 }
 
+static int loadMacroFile(rpmMacroContext mc, const char * fn)
+{
+    FILE *fd = fopen(fn, "r");
+    size_t blen = MACROBUFSIZ;
+    char *buf = xmalloc(blen);
+    int rc = -1;
+
+    if (fd == NULL)
+	goto exit;
+
+    /* XXX Assume new fangled macro expansion */
+    max_macro_depth = 16;
+
+    buf[0] = '\0';
+    while(rdcl(buf, blen, fd) != NULL) {
+	char c, *n;
+
+	n = buf;
+	SKIPBLANK(n, c);
+
+	if (c != '%')
+		continue;
+	n++;	/* skip % */
+	rc = defineMacro(mc, n, RMIL_MACROFILES);
+    }
+
+    rc = fclose(fd);
+
+exit:
+    _free(buf);
+    return rc;
+}
+
 /* External interfaces */
 
 int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
@@ -1491,37 +1524,12 @@ rpmLoadMacros(rpmMacroContext mc, int level)
 int
 rpmLoadMacroFile(rpmMacroContext mc, const char * fn)
 {
-    FILE *fd = fopen(fn, "r");
-    size_t blen = MACROBUFSIZ;
-    char *buf = xmalloc(blen);
-    int rc = -1;
-
-    if (fd == NULL)
-	goto exit;
+    int rc;
 
     mc = rpmmctxAcquire(mc);
-
-    /* XXX Assume new fangled macro expansion */
-    max_macro_depth = 16;
-
-    buf[0] = '\0';
-    while(rdcl(buf, blen, fd) != NULL) {
-	char c, *n;
-
-	n = buf;
-	SKIPBLANK(n, c);
-
-	if (c != '%')
-		continue;
-	n++;	/* skip % */
-	rc = defineMacro(mc, n, RMIL_MACROFILES);
-    }
+    rc = loadMacroFile(mc, fn);
     rpmmctxRelease(mc);
 
-    rc = fclose(fd);
-
-exit:
-    _free(buf);
     return rc;
 }
 
@@ -1550,7 +1558,7 @@ rpmInitMacros(rpmMacroContext mc, const char * macrofiles)
 		rpmFileHasSuffix(*path, ".rpmorig")) {
 		continue;
 	    }
-	    (void) rpmLoadMacroFile(mc, *path);
+	    (void) loadMacroFile(mc, *path);
 	}
 	argvFree(files);
     }
