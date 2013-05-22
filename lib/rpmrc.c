@@ -145,12 +145,11 @@ static char *current[2];
 
 static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
 
-static struct rpmvarValue values[RPMVAR_NUM];
-
 static int defaultsInitialized = 0;
 
 typedef struct rpmrcCtx_s * rpmrcCtx;
 struct rpmrcCtx_s {
+    struct rpmvarValue values[RPMVAR_NUM];
     pthread_rwlock_t lock;
 };
 
@@ -1200,14 +1199,14 @@ const char * rpmGetVarArch(rpmrcCtx ctx, int var, const char * arch)
     if (arch == NULL) arch = current[ARCH];
 
     if (arch) {
-	next = &values[var];
+	next = &ctx->values[var];
 	while (next) {
 	    if (next->arch && rstreq(next->arch, arch)) return next->value;
 	    next = next->next;
 	}
     }
 
-    next = values + var;
+    next = ctx->values + var;
     while (next && next->arch) next = next->next;
 
     return next ? next->value : NULL;
@@ -1216,7 +1215,7 @@ const char * rpmGetVarArch(rpmrcCtx ctx, int var, const char * arch)
 static void rpmSetVarArch(rpmrcCtx ctx,
 			  int var, const char * val, const char * arch)
 {
-    struct rpmvarValue * next = values + var;
+    struct rpmvarValue * next = ctx->values + var;
 
     if (next->value) {
 	if (arch) {
@@ -1607,14 +1606,14 @@ void rpmFreeRpmrc(void)
 
     for (i = 0; i < RPMVAR_NUM; i++) {
 	struct rpmvarValue * vp;
-	while ((vp = values[i].next) != NULL) {
-	    values[i].next = vp->next;
+	while ((vp = ctx->values[i].next) != NULL) {
+	    ctx->values[i].next = vp->next;
 	    vp->value = _free(vp->value);
 	    vp->arch = _free(vp->arch);
 	    vp = _free(vp);
 	}
-	values[i].value = _free(values[i].value);
-	values[i].arch = _free(values[i].arch);
+	ctx->values[i].value = _free(ctx->values[i].value);
+	ctx->values[i].arch = _free(ctx->values[i].arch);
     }
     current[OS] = _free(current[OS]);
     current[ARCH] = _free(current[ARCH]);
