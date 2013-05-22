@@ -141,13 +141,12 @@ static const size_t optionTableSize = sizeof(optionTable) / sizeof(*optionTable)
 #define OS	0
 #define ARCH	1
 
-static int currTables[2] = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH };
-
 static int defaultsInitialized = 0;
 
 typedef struct rpmrcCtx_s * rpmrcCtx;
 struct rpmrcCtx_s {
     char *current[2];
+    int currTables[2];
     struct rpmvarValue values[RPMVAR_NUM];
     pthread_rwlock_t lock;
 };
@@ -167,6 +166,7 @@ static rpmrcCtx rpmrcCtxAcquire(int write)
 {
     static struct rpmrcCtx_s _globalCtx = {
 	.lock = PTHREAD_RWLOCK_INITIALIZER,
+	.currTables = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH },
     };
     rpmrcCtx ctx = &_globalCtx;
 
@@ -1252,13 +1252,13 @@ static void rpmSetTables(rpmrcCtx ctx, int archTable, int osTable)
 
     defaultMachine(ctx, &arch, &os);
 
-    if (currTables[ARCH] != archTable) {
-	currTables[ARCH] = archTable;
+    if (ctx->currTables[ARCH] != archTable) {
+	ctx->currTables[ARCH] = archTable;
 	rebuildCompatTables(ctx, ARCH, arch);
     }
 
-    if (currTables[OS] != osTable) {
-	currTables[OS] = osTable;
+    if (ctx->currTables[OS] != osTable) {
+	ctx->currTables[OS] = osTable;
 	rebuildCompatTables(ctx, OS, os);
     }
 }
@@ -1283,19 +1283,19 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 
     if (arch == NULL) {
 	arch = host_cpu;
-	if (tables[currTables[ARCH]].hasTranslate)
+	if (tables[ctx->currTables[ARCH]].hasTranslate)
 	    arch = lookupInDefaultTable(arch,
-			    tables[currTables[ARCH]].defaults,
-			    tables[currTables[ARCH]].defaultsLength);
+			    tables[ctx->currTables[ARCH]].defaults,
+			    tables[ctx->currTables[ARCH]].defaultsLength);
     }
     if (arch == NULL) return;	/* XXX can't happen */
 
     if (os == NULL) {
 	os = host_os;
-	if (tables[currTables[OS]].hasTranslate)
+	if (tables[ctx->currTables[OS]].hasTranslate)
 	    os = lookupInDefaultTable(os,
-			    tables[currTables[OS]].defaults,
-			    tables[currTables[OS]].defaultsLength);
+			    tables[ctx->currTables[OS]].defaults,
+			    tables[ctx->currTables[OS]].defaultsLength);
     }
     if (os == NULL) return;	/* XXX can't happen */
 
@@ -1326,8 +1326,8 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 
 static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 {
-    machFindEquivs(&tables[currTables[type]].cache,
-		   &tables[currTables[type]].equiv,
+    machFindEquivs(&tables[ctx->currTables[type]].cache,
+		   &tables[ctx->currTables[type]].equiv,
 		   name);
 }
 
@@ -1335,7 +1335,7 @@ static void getMachineInfo(rpmrcCtx ctx,
 			   int type, const char ** name, int * num)
 {
     canonEntry canon;
-    int which = currTables[type];
+    int which = ctx->currTables[type];
 
     /* use the normal canon tables, even if we're looking up build stuff */
     if (which >= 2) which -= 2;
@@ -1351,7 +1351,7 @@ static void getMachineInfo(rpmrcCtx ctx,
 	if (num) *num = 255;
 	if (name) *name = ctx->current[type];
 
-	if (tables[currTables[type]].hasCanon) {
+	if (tables[ctx->currTables[type]].hasCanon) {
 	    rpmlog(RPMLOG_WARNING, _("Unknown system: %s\n"),
 		   ctx->current[type]);
 	    rpmlog(RPMLOG_WARNING, _("Please contact %s\n"), PACKAGE_BUGREPORT);
@@ -1744,8 +1744,8 @@ int rpmGetArchColor(const char *arch)
     int color_i = -1; /* assume failure */
 
     arch = lookupInDefaultTable(arch,
-				tables[currTables[ARCH]].defaults,
-				tables[currTables[ARCH]].defaultsLength);
+				tables[ctx->currTables[ARCH]].defaults,
+				tables[ctx->currTables[ARCH]].defaultsLength);
     color = rpmGetVarArch(ctx, RPMVAR_ARCHCOLOR, arch);
     if (color) {
 	color_i = strtol(color, &e, 10);
