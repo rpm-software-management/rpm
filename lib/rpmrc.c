@@ -155,14 +155,14 @@ struct rpmrcCtx_s {
 };
 
 /* prototypes */
-static rpmRC doReadRC(const char * urlfn);
+static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn);
 
-static void rpmSetVarArch(int var, const char * val,
-		const char * arch);
+static void rpmSetVarArch(rpmrcCtx ctx,
+			  int var, const char * val, const char * arch);
 
-static void rebuildCompatTables(int type, const char * name);
+static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name);
 
-static void rpmRebuildTargetVars(const char **target, const char ** canontarget);
+static void rpmRebuildTargetVars(rpmrcCtx ctx, const char **target, const char ** canontarget);
 
 /* Force context (lock) acquisition through a function */
 static rpmrcCtx rpmrcCtxAcquire(int write)
@@ -480,7 +480,7 @@ static void setDefaults(void)
 }
 
 /* FIX: se usage inconsistent, W2DO? */
-static rpmRC doReadRC(const char * urlfn)
+static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 {
     char *s;
     char *se, *next, *buf = NULL, *fn;
@@ -547,7 +547,7 @@ static rpmRC doReadRC(const char * urlfn)
 		while (*se && !risspace(*se)) se++;
 		if (*se != '\0') *se = '\0';
 
-		if (doReadRC(s)) {
+		if (doReadRC(ctx, s)) {
 		    rpmlog(RPMLOG_ERR, _("cannot open %s at %s:%d: %m\n"),
 			s, fn, linenum);
 		    goto exit;
@@ -588,7 +588,7 @@ static rpmRC doReadRC(const char * urlfn)
 		addMacro(NULL, name, NULL, val, RMIL_RPMRC);
 		free(name);
 	    }
-	    rpmSetVarArch(option->var, val, arch);
+	    rpmSetVarArch(ctx, option->var, val, arch);
 	    fn = _free(fn);
 
 	} else {	/* For arch/os compatibilty tables ... */
@@ -646,7 +646,7 @@ exit:
 
 /**
  */
-static rpmRC rpmPlatform(const char * platform)
+static rpmRC rpmPlatform(rpmrcCtx ctx, const char * platform)
 {
     const char *cpu = NULL, *vendor = NULL, *os = NULL, *gnu = NULL;
     uint8_t * b = NULL;
@@ -979,8 +979,7 @@ static void parse_auxv(void)
 
 /**
  */
-static void defaultMachine(const char ** arch,
-		const char ** os)
+static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 {
     static struct utsname un;
     static int gotDefaults = 0;
@@ -994,7 +993,7 @@ static void defaultMachine(const char ** arch,
 #endif
 
     while (!gotDefaults) {
-	if (!rpmPlatform(platform)) {
+	if (!rpmPlatform(ctx, platform)) {
 	    char * s = rpmExpand("%{_host_cpu}", NULL);
 	    if (s) {
 		rstrlcpy(un.machine, s, sizeof(un.machine));
@@ -1194,7 +1193,7 @@ static void defaultMachine(const char ** arch,
 }
 
 static
-const char * rpmGetVarArch(int var, const char * arch)
+const char * rpmGetVarArch(rpmrcCtx ctx, int var, const char * arch)
 {
     const struct rpmvarValue * next;
 
@@ -1214,7 +1213,8 @@ const char * rpmGetVarArch(int var, const char * arch)
     return next ? next->value : NULL;
 }
 
-static void rpmSetVarArch(int var, const char * val, const char * arch)
+static void rpmSetVarArch(rpmrcCtx ctx,
+			  int var, const char * val, const char * arch)
 {
     struct rpmvarValue * next = values + var;
 
@@ -1248,20 +1248,20 @@ static void rpmSetVarArch(int var, const char * val, const char * arch)
     next->arch = (arch ? xstrdup(arch) : NULL);
 }
 
-static void rpmSetTables(int archTable, int osTable)
+static void rpmSetTables(rpmrcCtx ctx, int archTable, int osTable)
 {
     const char * arch, * os;
 
-    defaultMachine(&arch, &os);
+    defaultMachine(ctx, &arch, &os);
 
     if (currTables[ARCH] != archTable) {
 	currTables[ARCH] = archTable;
-	rebuildCompatTables(ARCH, arch);
+	rebuildCompatTables(ctx, ARCH, arch);
     }
 
     if (currTables[OS] != osTable) {
 	currTables[OS] = osTable;
-	rebuildCompatTables(OS, os);
+	rebuildCompatTables(ctx, OS, os);
     }
 }
 
@@ -1272,15 +1272,16 @@ static void rpmSetTables(int archTable, int osTable)
  * @deprecated Use addMacro to set _target_* macros.
  * @todo Eliminate 
  *
+ * @param ctx		rpmrc context
  * @param arch          arch name (or NULL)
  * @param os            os name (or NULL)
  *          */
 
-static void rpmSetMachine(const char * arch, const char * os)
+static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 {
     const char * host_cpu, * host_os;
 
-    defaultMachine(&host_cpu, &host_os);
+    defaultMachine(ctx, &host_cpu, &host_os);
 
     if (arch == NULL) {
 	arch = host_cpu;
@@ -1303,7 +1304,7 @@ static void rpmSetMachine(const char * arch, const char * os)
     if (!current[ARCH] || !rstreq(arch, current[ARCH])) {
 	current[ARCH] = _free(current[ARCH]);
 	current[ARCH] = xstrdup(arch);
-	rebuildCompatTables(ARCH, host_cpu);
+	rebuildCompatTables(ctx, ARCH, host_cpu);
     }
 
     if (!current[OS] || !rstreq(os, current[OS])) {
@@ -1321,19 +1322,19 @@ static void rpmSetMachine(const char * arch, const char * os)
 	    *t = 'L';
 	current[OS] = t;
 	
-	rebuildCompatTables(OS, host_os);
+	rebuildCompatTables(ctx, OS, host_os);
     }
 }
 
-static void rebuildCompatTables(int type, const char * name)
+static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 {
     machFindEquivs(&tables[currTables[type]].cache,
 		   &tables[currTables[type]].equiv,
 		   name);
 }
 
-static void getMachineInfo(int type, const char ** name,
-			int * num)
+static void getMachineInfo(rpmrcCtx ctx,
+			   int type, const char ** name, int * num)
 {
     canonEntry canon;
     int which = currTables[type];
@@ -1359,7 +1360,8 @@ static void getMachineInfo(int type, const char ** name,
     }
 }
 
-static void rpmRebuildTargetVars(const char ** target, const char ** canontarget)
+static void rpmRebuildTargetVars(rpmrcCtx ctx,
+			const char ** target, const char ** canontarget)
 {
 
     char *ca = NULL, *co = NULL, *ct = NULL;
@@ -1367,9 +1369,9 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 
     /* Rebuild the compat table to recalculate the current target arch.  */
 
-    rpmSetMachine(NULL, NULL);
-    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-    rpmSetTables(RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
+    rpmSetMachine(ctx, NULL, NULL);
+    rpmSetTables(ctx, RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+    rpmSetTables(ctx, RPM_MACHTABLE_BUILDARCH, RPM_MACHTABLE_BUILDOS);
 
     if (target && *target) {
 	char *c;
@@ -1394,16 +1396,16 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 	const char *a = NULL;
 	const char *o = NULL;
 	/* Set build target from rpm arch and os */
-	getMachineInfo(ARCH, &a, NULL);
+	getMachineInfo(ctx, ARCH, &a, NULL);
 	ca = (a) ? xstrdup(a) : NULL;
-	getMachineInfo(OS, &o, NULL);
+	getMachineInfo(ctx, OS, &o, NULL);
 	co = (o) ? xstrdup(o) : NULL;
     }
 
     /* If still not set, Set target arch/os from default uname(2) values */
     if (ca == NULL) {
 	const char *a = NULL;
-	defaultMachine(&a, NULL);
+	defaultMachine(ctx, &a, NULL);
 	ca = xstrdup(a ? a : "(arch)");
     }
     for (x = 0; ca[x] != '\0'; x++)
@@ -1411,7 +1413,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 
     if (co == NULL) {
 	const char *o = NULL;
-	defaultMachine(NULL, &o);
+	defaultMachine(ctx, NULL, &o);
 	co = xstrdup(o ? o : "(os)");
     }
     for (x = 0; co[x] != '\0'; x++)
@@ -1435,7 +1437,7 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 /*
  * XXX Make sure that per-arch optflags is initialized correctly.
  */
-  { const char *optflags = rpmGetVarArch(RPMVAR_OPTFLAGS, ca);
+  { const char *optflags = rpmGetVarArch(ctx, RPMVAR_OPTFLAGS, ca);
     if (optflags != NULL) {
 	delMacro(NULL, "optflags");
 	addMacro(NULL, "optflags", NULL, optflags, RMIL_RPMRC);
@@ -1452,10 +1454,11 @@ static void rpmRebuildTargetVars(const char ** target, const char ** canontarget
 
 /** \ingroup rpmrc
  * Read rpmrc (and macro) configuration file(s).
+ * @param ctx		rpmrc context
  * @param rcfiles	colon separated files to read (NULL uses default)
  * @return		RPMRC_OK on success
  */
-static rpmRC rpmReadRC(const char * rcfiles)
+static rpmRC rpmReadRC(rpmrcCtx ctx, const char * rcfiles)
 {
     ARGV_t p, globs = NULL, files = NULL;
     rpmRC rc = RPMRC_FAIL;
@@ -1489,11 +1492,11 @@ static rpmRC rpmReadRC(const char * rcfiles)
 	    goto exit;
 	    break;
 	} else {
-	    rc = doReadRC(*p);
+	    rc = doReadRC(ctx, *p);
 	}
     }
     rc = RPMRC_OK;
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    rpmSetMachine(ctx, NULL, NULL);	/* XXX WTFO? Why bother? */
 
 exit:
     argvFree(files);
@@ -1514,10 +1517,10 @@ int rpmReadConfigFiles(const char * file, const char * target)
 
     /* Preset target macros */
    	/* FIX: target can be NULL */
-    rpmRebuildTargetVars(&target, NULL);
+    rpmRebuildTargetVars(ctx, &target, NULL);
 
     /* Read the files */
-    if (rpmReadRC(file))
+    if (rpmReadRC(ctx, file))
 	goto exit;
 
     if (macrofiles != NULL) {
@@ -1527,12 +1530,12 @@ int rpmReadConfigFiles(const char * file, const char * target)
     }
 
     /* Reset target macros */
-    rpmRebuildTargetVars(&target, NULL);
+    rpmRebuildTargetVars(ctx, &target, NULL);
 
     /* Finally set target platform */
     {	char *cpu = rpmExpand("%{_target_cpu}", NULL);
 	char *os = rpmExpand("%{_target_os}", NULL);
-	rpmSetMachine(cpu, os);
+	rpmSetMachine(ctx, cpu, os);
 	free(cpu);
 	free(os);
     }
@@ -1655,8 +1658,8 @@ int rpmShowRC(FILE * fp)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
-    rpmSetTables(RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
-    rpmSetMachine(NULL, NULL);	/* XXX WTFO? Why bother? */
+    rpmSetTables(ctx, RPM_MACHTABLE_INSTARCH, RPM_MACHTABLE_INSTOS);
+    rpmSetMachine(ctx, NULL, NULL);	/* XXX WTFO? Why bother? */
 
     fprintf(fp, "install arch          : %s\n", current[ARCH]);
     fprintf(fp, "install os            : %s\n", current[OS]);
@@ -1675,7 +1678,7 @@ int rpmShowRC(FILE * fp)
 
     fprintf(fp, "\nRPMRC VALUES:\n");
     for (i = 0, opt = optionTable; i < optionTableSize; i++, opt++) {
-	const char *s = rpmGetVarArch(opt->var, NULL);
+	const char *s = rpmGetVarArch(ctx, opt->var, NULL);
 	if (s != NULL || rpmIsVerbose())
 	    fprintf(fp, "%-21s : %s\n", opt->name, s ? s : "(not set)");
     }
@@ -1730,7 +1733,7 @@ int rpmIsKnownArch(const char *name)
 void rpmGetArchInfo(const char ** name, int * num)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire(0);
-    getMachineInfo(ARCH, name, num);
+    getMachineInfo(ctx, ARCH, name, num);
     rpmrcCtxRelease(ctx);
 }
 
@@ -1744,7 +1747,7 @@ int rpmGetArchColor(const char *arch)
     arch = lookupInDefaultTable(arch,
 				tables[currTables[ARCH]].defaults,
 				tables[currTables[ARCH]].defaultsLength);
-    color = rpmGetVarArch(RPMVAR_ARCHCOLOR, arch);
+    color = rpmGetVarArch(ctx, RPMVAR_ARCHCOLOR, arch);
     if (color) {
 	color_i = strtol(color, &e, 10);
 	if (!(e && *e == '\0')) {
@@ -1759,7 +1762,7 @@ int rpmGetArchColor(const char *arch)
 void rpmGetOsInfo(const char ** name, int * num)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire(0);
-    getMachineInfo(OS, name, num);
+    getMachineInfo(ctx, OS, name, num);
     rpmrcCtxRelease(ctx);
 }
 
