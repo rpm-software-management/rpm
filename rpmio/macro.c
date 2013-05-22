@@ -88,28 +88,6 @@ static void popMacro(rpmMacroContext mc, const char * n);
 
 /* =============================================================== */
 
-void
-rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
-{
-    if (mc == NULL) mc = rpmGlobalMacroContext;
-    if (fp == NULL) fp = stderr;
-    
-    fprintf(fp, "========================\n");
-    for (int i = 0; i < mc->n; i++) {
-	rpmMacroEntry me = mc->tab[i];
-	assert(me);
-	fprintf(fp, "%3d%c %s", me->level,
-		    (me->used > 0 ? '=' : ':'), me->name);
-	if (me->opts && *me->opts)
-		fprintf(fp, "(%s)", me->opts);
-	if (me->body && *me->body)
-		fprintf(fp, "\t%s", me->body);
-	fprintf(fp, "\n");
-    }
-    fprintf(fp, _("======================== active %d empty %d\n"),
-		mc->n, 0);
-}
-
 /**
  * Find entry in macro table.
  * @param mc		macro context
@@ -1318,15 +1296,6 @@ static int doExpandMacros(rpmMacroContext mc, const char *src, char **target)
     return rc;
 }
 
-int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
-{
-    char *target = NULL;
-    int rc = doExpandMacros(mc, sbuf, &target);
-    rstrlcpy(sbuf, target, slen);
-    free(target);
-    return rc;
-}
-
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level)
 {
@@ -1421,6 +1390,39 @@ static void popMacro(rpmMacroContext mc, const char * n)
     }
     /* comes in a single chunk */
     free(me);
+}
+
+/* External interfaces */
+
+int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
+{
+    char *target = NULL;
+    int rc = doExpandMacros(mc, sbuf, &target);
+    rstrlcpy(sbuf, target, slen);
+    free(target);
+    return rc;
+}
+
+void
+rpmDumpMacroTable(rpmMacroContext mc, FILE * fp)
+{
+    if (mc == NULL) mc = rpmGlobalMacroContext;
+    if (fp == NULL) fp = stderr;
+    
+    fprintf(fp, "========================\n");
+    for (int i = 0; i < mc->n; i++) {
+	rpmMacroEntry me = mc->tab[i];
+	assert(me);
+	fprintf(fp, "%3d%c %s", me->level,
+		    (me->used > 0 ? '=' : ':'), me->name);
+	if (me->opts && *me->opts)
+		fprintf(fp, "(%s)", me->opts);
+	if (me->body && *me->body)
+		fprintf(fp, "\t%s", me->body);
+	fprintf(fp, "\n");
+    }
+    fprintf(fp, _("======================== active %d empty %d\n"),
+		mc->n, 0);
 }
 
 void addMacro(rpmMacroContext mc,
