@@ -484,6 +484,10 @@ edit_dwarf2_line (DSO *dso, uint32_t off, char *comp_dir, int phase)
   if (phase != 0)
     return 0;
 
+  /* XXX: RhBug:929365, should we error out instead of ignoring? */
+  if (ptr == NULL)
+    return 0;
+
   ptr += off;
 
   endcu = ptr + 4;
