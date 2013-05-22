@@ -82,6 +82,9 @@ static int print_expand_trace = _PRINT_EXPAND_TRACE;
 
 /* forward ref */
 static int expandMacro(MacroBuf mb, const char *src, size_t slen);
+static void pushMacro(rpmMacroContext mc,
+	const char * n, const char * o, const char * b, int level);
+static void popMacro(rpmMacroContext mc, const char * n);
 
 /* =============================================================== */
 
@@ -550,7 +553,7 @@ doDefine(MacroBuf mb, const char * se, int level, int expandbody)
 	b = ebody;
     }
 
-    addMacro(mb->mc, n, o, b, (level - 1));
+    pushMacro(mb->mc, n, o, b, (level - 1));
 
 exit:
     _free(buf);
@@ -586,7 +589,7 @@ doUndefine(rpmMacroContext mc, const char * se)
 	goto exit;
     }
 
-    delMacro(mc, n);
+    popMacro(mc, n);
 
 exit:
     _free(buf);
@@ -622,7 +625,7 @@ freeArgs(MacroBuf mb)
 	/* compensate if the slot is to go away */
 	if (me->prev == NULL)
 	    i--;
-	delMacro(mc, me->name);
+	popMacro(mc, me->name);
     }
 }
 
@@ -647,7 +650,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 
     /* Copy macro name as argv[0] */
     argvAdd(&argv, me->name);
-    addMacro(mb->mc, "0", NULL, me->name, mb->depth);
+    pushMacro(mb->mc, "0", NULL, me->name, mb->depth);
     
     /* 
      * Make a copy of se up to lastc string that we can pass to argvSplit().
@@ -673,7 +676,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
      * This is the (potential) justification for %{**} ...
     */
     args = argvJoin(argv + 1, " ");
-    addMacro(mb->mc, "**", NULL, args, mb->depth);
+    pushMacro(mb->mc, "**", NULL, args, mb->depth);
     free(args);
 
     /*
@@ -705,13 +708,13 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	} else {
 	    rasprintf(&body, "-%c", c);
 	}
-	addMacro(mb->mc, name, NULL, body, mb->depth);
+	pushMacro(mb->mc, name, NULL, body, mb->depth);
 	free(name);
 	free(body);
 
 	if (optarg) {
 	    rasprintf(&name, "-%c*", c);
-	    addMacro(mb->mc, name, NULL, optarg, mb->depth);
+	    pushMacro(mb->mc, name, NULL, optarg, mb->depth);
 	    free(name);
 	}
     }
@@ -719,7 +722,7 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
     /* Add argument count (remaining non-option items) as macro. */
     {	char *ac = NULL;
     	rasprintf(&ac, "%d", (argc - optind));
-    	addMacro(mb->mc, "#", NULL, ac, mb->depth);
+    	pushMacro(mb->mc, "#", NULL, ac, mb->depth);
 	free(ac);
     }
 
@@ -728,14 +731,14 @@ grabArgs(MacroBuf mb, const rpmMacroEntry me, const char * se,
 	for (c = optind; c < argc; c++) {
 	    char *name = NULL;
 	    rasprintf(&name, "%d", (c - optind + 1));
-	    addMacro(mb->mc, name, NULL, argv[c], mb->depth);
+	    pushMacro(mb->mc, name, NULL, argv[c], mb->depth);
 	    free(name);
 	}
     }
 
     /* Add concatenated unexpanded arguments as yet another macro. */
     args = argvJoin(argv + optind, " ");
-    addMacro(mb->mc, "*", NULL, args ? args : "", mb->depth);
+    pushMacro(mb->mc, "*", NULL, args ? args : "", mb->depth);
     free(args);
 
 exit:
@@ -1260,10 +1263,10 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		if (lastc != NULL) {
 			se = grabArgs(mb, me, fe, lastc);
 		} else {
-			addMacro(mb->mc, "**", NULL, "", mb->depth);
-			addMacro(mb->mc, "*", NULL, "", mb->depth);
-			addMacro(mb->mc, "#", NULL, "0", mb->depth);
-			addMacro(mb->mc, "0", NULL, me->name, mb->depth);
+			pushMacro(mb->mc, "**", NULL, "", mb->depth);
+			pushMacro(mb->mc, "*", NULL, "", mb->depth);
+			pushMacro(mb->mc, "#", NULL, "0", mb->depth);
+			pushMacro(mb->mc, "0", NULL, me->name, mb->depth);
 		}
 	}
 
@@ -1324,8 +1327,7 @@ int expandMacros(void * spec, rpmMacroContext mc, char * sbuf, size_t slen)
     return rc;
 }
 
-void
-addMacro(rpmMacroContext mc,
+static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level)
 {
     if (mc == NULL)
@@ -1394,8 +1396,7 @@ addMacro(rpmMacroContext mc,
     *mep = me;
 }
 
-void
-delMacro(rpmMacroContext mc, const char * n)
+static void popMacro(rpmMacroContext mc, const char * n)
 {
     if (mc == NULL)
 	mc = rpmGlobalMacroContext;
@@ -1422,6 +1423,17 @@ delMacro(rpmMacroContext mc, const char * n)
     free(me);
 }
 
+void addMacro(rpmMacroContext mc,
+	      const char * n, const char * o, const char * b, int level)
+{
+    pushMacro(mc, n, o, b, level);
+}
+
+void delMacro(rpmMacroContext mc, const char * n)
+{
+    popMacro(mc, n);
+}
+
 int
 rpmDefineMacro(rpmMacroContext mc, const char * macro, int level)
 {
@@ -1444,7 +1456,7 @@ rpmLoadMacros(rpmMacroContext mc, int level)
     for (int i = 0; i < mc->n; i++) {
 	rpmMacroEntry me = mc->tab[i];
 	assert(me);
-	addMacro(NULL, me->name, me->opts, me->body, (level - 1));
+	pushMacro(NULL, me->name, me->opts, me->body, (level - 1));
     }
 }
 
@@ -1523,7 +1535,7 @@ rpmFreeMacros(rpmMacroContext mc)
     while (mc->n > 0) {
 	/* remove from the end to avoid memmove */
 	rpmMacroEntry me = mc->tab[mc->n - 1];
-	delMacro(mc, me->name);
+	popMacro(mc, me->name);
     }
 }
 
