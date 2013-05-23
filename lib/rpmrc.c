@@ -26,6 +26,7 @@
 #include <rpm/rpmfileutil.h>
 #include <rpm/rpmstring.h>
 #include <rpm/rpmlog.h>
+#include <rpm/argv.h>
 
 #include "rpmio/rpmlua.h"
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
@@ -38,8 +39,6 @@ static const char * defrcfiles = NULL;
 const char * macrofiles = NULL;
 
 static const char * const platform = SYSCONFDIR "/rpm/platform";
-static char ** platpat = NULL;
-static int nplatpat = 0;
 
 typedef struct machCacheEntry_s {
     char * name;
@@ -138,6 +137,7 @@ static int defaultsInitialized = 0;
 
 typedef struct rpmrcCtx_s * rpmrcCtx;
 struct rpmrcCtx_s {
+    ARGV_t platpat;
     char *current[2];
     int currTables[2];
     struct rpmvarValue values[RPMVAR_NUM];
@@ -678,10 +678,7 @@ static rpmRC rpmPlatform(rpmrcCtx ctx, const char * platform)
 	    while (--t > p && isspace(*t))
 		*t = '\0';
 	    if (t > p) {
-		platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
-		platpat[nplatpat] = xstrdup(p);
-		nplatpat++;
-		platpat[nplatpat] = NULL;
+		argvAdd(&ctx->platpat, p);
 	    }
 	    continue;
 	}
@@ -721,10 +718,10 @@ static rpmRC rpmPlatform(rpmrcCtx ctx, const char * platform)
 	addMacro(NULL, "_host_vendor", NULL, vendor, -1);
 	addMacro(NULL, "_host_os", NULL, os, -1);
 
-	platpat = xrealloc(platpat, (nplatpat + 2) * sizeof(*platpat));
-	platpat[nplatpat] = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}", (gnu && *gnu ? "-" : NULL), gnu, NULL);
-	nplatpat++;
-	platpat[nplatpat] = NULL;
+	char *plat = rpmExpand("%{_host_cpu}-%{_host_vendor}-%{_host_os}",
+				(gnu && *gnu ? "-" : NULL), gnu, NULL);
+	argvAdd(&ctx->platpat, plat);
+	free(plat);
 	
 	init_platform++;
     }
@@ -1556,11 +1553,7 @@ void rpmFreeRpmrc(void)
     rpmrcCtx ctx = rpmrcCtxAcquire(1);
     int i, j, k;
 
-    if (platpat)
-    for (i = 0; i < nplatpat; i++)
-	platpat[i] = _free(platpat[i]);
-    platpat = _free(platpat);
-    nplatpat = 0;
+    ctx->platpat = argvFree(ctx->platpat);
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
 	tableType t;
@@ -1619,7 +1612,6 @@ void rpmFreeRpmrc(void)
     ctx->current[OS] = _free(ctx->current[OS]);
     ctx->current[ARCH] = _free(ctx->current[ARCH]);
     defaultsInitialized = 0;
-/* FIX: platpat/current may be NULL */
 
     /* XXX doesn't really belong here but... */
     rpmFreeCrypto();
