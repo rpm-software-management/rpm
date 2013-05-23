@@ -110,13 +110,6 @@ typedef struct tableType_s {
     int canonsLength;
 } * tableType;
 
-static struct tableType_s tables[RPM_MACHTABLE_COUNT] = {
-    { "arch", 1, 0 },
-    { "os", 1, 0 },
-    { "buildarch", 0, 1 },
-    { "buildos", 0, 1 }
-};
-
 /* XXX get rid of this stuff... */
 /* Stuff for maintaining "variables" like SOURCEDIR, BUILDDIR, etc */
 #define RPMVAR_OPTFLAGS                 3
@@ -148,6 +141,7 @@ struct rpmrcCtx_s {
     char *current[2];
     int currTables[2];
     struct rpmvarValue values[RPMVAR_NUM];
+    struct tableType_s tables[RPM_MACHTABLE_COUNT];
     pthread_rwlock_t lock;
 };
 
@@ -167,6 +161,12 @@ static rpmrcCtx rpmrcCtxAcquire(int write)
     static struct rpmrcCtx_s _globalCtx = {
 	.lock = PTHREAD_RWLOCK_INITIALIZER,
 	.currTables = { RPM_MACHTABLE_INSTOS, RPM_MACHTABLE_INSTARCH },
+	.tables = {
+	    { "arch", 1, 0 },
+	    { "os", 1, 0 },
+	    { "buildarch", 0, 1 },
+	    { "buildos", 0, 1 }
+	},
     };
     rpmrcCtx ctx = &_globalCtx;
 
@@ -596,29 +596,30 @@ static rpmRC doReadRC(rpmrcCtx ctx, const char * urlfn)
 	    gotit = 0;
 
 	    for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
-		if (rstreqn(tables[i].key, s, strlen(tables[i].key)))
+		if (rstreqn(ctx->tables[i].key, s, strlen(ctx->tables[i].key)))
 		    break;
 	    }
 
 	    if (i < RPM_MACHTABLE_COUNT) {
-		const char *rest = s + strlen(tables[i].key);
+		const char *rest = s + strlen(ctx->tables[i].key);
 		if (*rest == '_') rest++;
 
 		if (rstreq(rest, "compat")) {
 		    if (machCompatCacheAdd(se, fn, linenum,
-						&tables[i].cache))
+						&ctx->tables[i].cache))
 			goto exit;
 		    gotit = 1;
-		} else if (tables[i].hasTranslate &&
+		} else if (ctx->tables[i].hasTranslate &&
 			   rstreq(rest, "translate")) {
-		    if (addDefault(&tables[i].defaults,
-				   &tables[i].defaultsLength,
+		    if (addDefault(&ctx->tables[i].defaults,
+				   &ctx->tables[i].defaultsLength,
 				   se, fn, linenum))
 			goto exit;
 		    gotit = 1;
-		} else if (tables[i].hasCanon &&
+		} else if (ctx->tables[i].hasCanon &&
 			   rstreq(rest, "canon")) {
-		    if (addCanon(&tables[i].canons, &tables[i].canonsLength,
+		    if (addCanon(&ctx->tables[i].canons,
+				 &ctx->tables[i].canonsLength,
 				 se, fn, linenum))
 			goto exit;
 		    gotit = 1;
@@ -1172,14 +1173,14 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 
 	/* the uname() result goes through the arch_canon table */
 	canon = lookupInCanonTable(un.machine,
-				   tables[RPM_MACHTABLE_INSTARCH].canons,
-				   tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+			   ctx->tables[RPM_MACHTABLE_INSTARCH].canons,
+			   ctx->tables[RPM_MACHTABLE_INSTARCH].canonsLength);
 	if (canon)
 	    rstrlcpy(un.machine, canon->short_name, sizeof(un.machine));
 
 	canon = lookupInCanonTable(un.sysname,
-				   tables[RPM_MACHTABLE_INSTOS].canons,
-				   tables[RPM_MACHTABLE_INSTOS].canonsLength);
+			   ctx->tables[RPM_MACHTABLE_INSTOS].canons,
+			   ctx->tables[RPM_MACHTABLE_INSTOS].canonsLength);
 	if (canon)
 	    rstrlcpy(un.sysname, canon->short_name, sizeof(un.sysname));
 	gotDefaults = 1;
@@ -1283,19 +1284,19 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 
     if (arch == NULL) {
 	arch = host_cpu;
-	if (tables[ctx->currTables[ARCH]].hasTranslate)
+	if (ctx->tables[ctx->currTables[ARCH]].hasTranslate)
 	    arch = lookupInDefaultTable(arch,
-			    tables[ctx->currTables[ARCH]].defaults,
-			    tables[ctx->currTables[ARCH]].defaultsLength);
+			    ctx->tables[ctx->currTables[ARCH]].defaults,
+			    ctx->tables[ctx->currTables[ARCH]].defaultsLength);
     }
     if (arch == NULL) return;	/* XXX can't happen */
 
     if (os == NULL) {
 	os = host_os;
-	if (tables[ctx->currTables[OS]].hasTranslate)
+	if (ctx->tables[ctx->currTables[OS]].hasTranslate)
 	    os = lookupInDefaultTable(os,
-			    tables[ctx->currTables[OS]].defaults,
-			    tables[ctx->currTables[OS]].defaultsLength);
+			    ctx->tables[ctx->currTables[OS]].defaults,
+			    ctx->tables[ctx->currTables[OS]].defaultsLength);
     }
     if (os == NULL) return;	/* XXX can't happen */
 
@@ -1326,8 +1327,8 @@ static void rpmSetMachine(rpmrcCtx ctx, const char * arch, const char * os)
 
 static void rebuildCompatTables(rpmrcCtx ctx, int type, const char * name)
 {
-    machFindEquivs(&tables[ctx->currTables[type]].cache,
-		   &tables[ctx->currTables[type]].equiv,
+    machFindEquivs(&ctx->tables[ctx->currTables[type]].cache,
+		   &ctx->tables[ctx->currTables[type]].equiv,
 		   name);
 }
 
@@ -1341,8 +1342,8 @@ static void getMachineInfo(rpmrcCtx ctx,
     if (which >= 2) which -= 2;
 
     canon = lookupInCanonTable(ctx->current[type],
-			       tables[which].canons,
-			       tables[which].canonsLength);
+			       ctx->tables[which].canons,
+			       ctx->tables[which].canonsLength);
 
     if (canon) {
 	if (num) *num = canon->num;
@@ -1351,7 +1352,7 @@ static void getMachineInfo(rpmrcCtx ctx,
 	if (num) *num = 255;
 	if (name) *name = ctx->current[type];
 
-	if (tables[ctx->currTables[type]].hasCanon) {
+	if (ctx->tables[ctx->currTables[type]].hasCanon) {
 	    rpmlog(RPMLOG_WARNING, _("Unknown system: %s\n"),
 		   ctx->current[type]);
 	    rpmlog(RPMLOG_WARNING, _("Please contact %s\n"), PACKAGE_BUGREPORT);
@@ -1563,7 +1564,7 @@ void rpmFreeRpmrc(void)
 
     for (i = 0; i < RPM_MACHTABLE_COUNT; i++) {
 	tableType t;
-	t = tables + i;
+	t = ctx->tables + i;
 	if (t->equiv.list) {
 	    for (j = 0; j < t->equiv.count; j++)
 		t->equiv.list[j].name = _free(t->equiv.list[j].name);
@@ -1644,7 +1645,7 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "build arch            : %s\n", ctx->current[ARCH]);
 
     fprintf(fp, "compatible build archs:");
-    equivTable = &tables[RPM_MACHTABLE_BUILDARCH].equiv;
+    equivTable = &ctx->tables[RPM_MACHTABLE_BUILDARCH].equiv;
     for (i = 0; i < equivTable->count; i++)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
@@ -1652,7 +1653,7 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "build os              : %s\n", ctx->current[OS]);
 
     fprintf(fp, "compatible build os's :");
-    equivTable = &tables[RPM_MACHTABLE_BUILDOS].equiv;
+    equivTable = &ctx->tables[RPM_MACHTABLE_BUILDOS].equiv;
     for (i = 0; i < equivTable->count; i++)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
@@ -1664,13 +1665,13 @@ int rpmShowRC(FILE * fp)
     fprintf(fp, "install os            : %s\n", ctx->current[OS]);
 
     fprintf(fp, "compatible archs      :");
-    equivTable = &tables[RPM_MACHTABLE_INSTARCH].equiv;
+    equivTable = &ctx->tables[RPM_MACHTABLE_INSTARCH].equiv;
     for (i = 0; i < equivTable->count; i++)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
 
     fprintf(fp, "compatible os's       :");
-    equivTable = &tables[RPM_MACHTABLE_INSTOS].equiv;
+    equivTable = &ctx->tables[RPM_MACHTABLE_INSTOS].equiv;
     for (i = 0; i < equivTable->count; i++)
 	fprintf(fp," %s", equivTable->list[i].name);
     fprintf(fp, "\n");
@@ -1710,7 +1711,7 @@ int rpmMachineScore(int type, const char * name)
     int score = 0;
     if (name) {
 	rpmrcCtx ctx = rpmrcCtxAcquire(0);
-	machEquivInfo info = machEquivSearch(&tables[type].equiv, name);
+	machEquivInfo info = machEquivSearch(&ctx->tables[type].equiv, name);
 	if (info)
 	    score = info->score;
 	rpmrcCtxRelease(ctx);
@@ -1722,8 +1723,8 @@ int rpmIsKnownArch(const char *name)
 {
     rpmrcCtx ctx = rpmrcCtxAcquire(0);
     canonEntry canon = lookupInCanonTable(name,
-			tables[RPM_MACHTABLE_INSTARCH].canons,
-			tables[RPM_MACHTABLE_INSTARCH].canonsLength);
+			    ctx->tables[RPM_MACHTABLE_INSTARCH].canons,
+			    ctx->tables[RPM_MACHTABLE_INSTARCH].canonsLength);
     int known = (canon != NULL || rstreq(name, "noarch"));
     rpmrcCtxRelease(ctx);
     return known;
@@ -1744,8 +1745,8 @@ int rpmGetArchColor(const char *arch)
     int color_i = -1; /* assume failure */
 
     arch = lookupInDefaultTable(arch,
-				tables[ctx->currTables[ARCH]].defaults,
-				tables[ctx->currTables[ARCH]].defaultsLength);
+			    ctx->tables[ctx->currTables[ARCH]].defaults,
+			    ctx->tables[ctx->currTables[ARCH]].defaultsLength);
     color = rpmGetVarArch(ctx, RPMVAR_ARCHCOLOR, arch);
     if (color) {
 	color_i = strtol(color, &e, 10);
