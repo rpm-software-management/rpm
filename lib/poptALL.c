@@ -20,6 +20,7 @@ const char *__progname;
 #define POPT_PREDEFINE		-996
 #define POPT_DBPATH		-995
 #define POPT_UNDEFINE		-994
+#define POPT_PIPE		-993
 
 static int _debug = 0;
 
@@ -138,6 +139,16 @@ static void rpmcliAllArgCallback( poptContext con,
 	rpmDisplayQueryTags(stdout);
 	exit(EXIT_SUCCESS);
 	break;
+    case POPT_PIPE:
+	if (rpmcliPipeOutput) {
+	    fprintf(stderr,
+		    _("%s: error: more than one --pipe specified "
+		      "(incompatible popt aliases?)\n"), __progname);
+	    exit(EXIT_FAILURE);
+	}
+	rpmcliPipeOutput = xstrdup(arg);
+	break;
+	
     case RPMCLI_POPT_NODIGEST:
 	rpmcliQueryFlags |= VERIFY_DIGEST;
 	break;
@@ -183,7 +194,7 @@ struct poptOption rpmcliAllPoptTable[] = {
  { "nosignature", '\0', 0, 0, RPMCLI_POPT_NOSIGNATURE,
         N_("don't verify package signature(s)"), NULL },
 
- { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, &rpmcliPipeOutput, 0,
+ { "pipe", '\0', POPT_ARG_STRING|POPT_ARGFLAG_DOC_HIDDEN, 0, POPT_PIPE,
 	N_("send stdout to CMD"),
 	N_("CMD") },
  { "rcfile", '\0', POPT_ARG_STRING, &rpmcliRcfile, 0,
