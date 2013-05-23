@@ -38,8 +38,6 @@
 static const char * defrcfiles = NULL;
 const char * macrofiles = NULL;
 
-static const char * const platform = SYSCONFDIR "/rpm/platform";
-
 typedef struct machCacheEntry_s {
     char * name;
     int count;
@@ -977,6 +975,7 @@ static void parse_auxv(void)
  */
 static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 {
+    const char * const platform_path = SYSCONFDIR "/rpm/platform";
     static struct utsname un;
     static int gotDefaults = 0;
     char * chptr;
@@ -989,7 +988,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #endif
 
     while (!gotDefaults) {
-	if (!rpmPlatform(ctx, platform)) {
+	if (!rpmPlatform(ctx, platform_path)) {
 	    char * s = rpmExpand("%{_host_cpu}", NULL);
 	    if (s) {
 		rstrlcpy(un.machine, s, sizeof(un.machine));
