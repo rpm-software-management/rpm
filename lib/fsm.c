@@ -1929,10 +1929,13 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
         if (rc)
             break;
 
+	if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+	    continue;
+
 	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
 	    fsm->postpone = saveHardLink(fsm, NULL);
 
-        if (fsm->postpone || fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+        if (fsm->postpone)
             continue;
         /* Hardlinks are handled later */
         if (!(S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)) {
