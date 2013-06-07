@@ -3,13 +3,14 @@
 # This file is distributed under the same license as the PACKAGE package.
 # 
 # Translators:
+# Muhammad Panji <sumodirjo@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: http://rpm.org/\n"
 "POT-Creation-Date: 2012-11-05 10:07+0200\n"
-"PO-Revision-Date: 2012-11-05 08:10+0000\n"
-"Last-Translator: pmatilai <pmatilai@laiskiainen.org>\n"
+"PO-Revision-Date: 2013-02-17 04:42+0000\n"
+"Last-Translator: Muhammad Panji <sumodirjo@gmail.com>\n"
 "Language-Team: Indonesian (http://www.transifex.com/projects/p/rpm/language/id/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,12 +21,12 @@ msgstr ""
 #: cliutils.c:21 lib/poptI.c:29
 #, c-format
 msgid "%s: %s\n"
-msgstr ""
+msgstr "%s: %s\n"
 
 #: cliutils.c:27 lib/poptALL.c:55
 #, c-format
 msgid "RPM version %s\n"
-msgstr ""
+msgstr "Versi RPM %s\n"
 
 #: cliutils.c:32
 #, c-format
@@ -61,7 +62,7 @@ msgstr ""
 #: rpm2cpio.c:83
 #, c-format
 msgid "cannot re-open payload: %s\n"
-msgstr ""
+msgstr "Tidak dapat membuka ulang payload: %s\n"
 
 #: rpmqv.c:41
 msgid "Query/Verify package selection options:"
