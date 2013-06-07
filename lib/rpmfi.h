@@ -413,6 +413,16 @@ typedef rpmFlags rpmfiFlags;
 
 /** \ingroup rpmfi
  * Create and load a file info set.
+ * @param pool		shared string pool (or NULL for private pool)
+ * @param h		header
+ * @param tagN		unused
+ * @param flags		Flags to control what information is loaded.
+ * @return		new file info set
+ */
+rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
+
+/** \ingroup rpmfi
+ * Create and load a file info set.
  * @param ts		unused
  * @param h		header
  * @param tagN		unused

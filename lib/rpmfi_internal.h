@@ -73,17 +73,6 @@ extern "C" {
 #endif
 
 /** \ingroup rpmfi
- * Create and load a file info set.
- * @param pool		shared string pool (or NULL for private pool)
- * @param h		header
- * @param tagN		unused
- * @param flags		Flags to control what information is loaded.
- * @return		new file info set
- */
-RPM_GNUC_INTERNAL
-rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
-
-/** \ingroup rpmfi
  * Return file info set string pool handle
  * @param fi		file info
  * @return		string pool handle (weak reference)
