@@ -335,7 +335,7 @@ uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix)
 
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	/* XXX rpm-2.3.12 has not RPMTAG_FILEINODES */
-	if (fi->finodes && fi->frdevs) {
+	if (fi->finodes && fi->finodes[ix] > 0 && fi->frdevs) {
 	    rpm_ino_t finode = fi->finodes[ix];
 	    rpm_rdev_t frdev = fi->frdevs[ix];
 	    int j;
