@@ -1187,7 +1187,7 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 	}
 
 #ifdef	WITH_LUA
-	if (STREQ("lua", f, fn)) {
+	if (STREQ("lua", f, fn) && g != NULL) {
 		rpmlua lua = NULL; /* Global state. */
 		const char *ls = s+sizeof("{lua:")-1;
 		const char *lse = se-sizeof("}")+1;
