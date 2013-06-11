@@ -20,7 +20,7 @@ for x in a b c d e f g h i j; do
     chmod 400 $RPM_BUILD_ROOT/${x}/file
 done
 
-%files
+%files -n %{name}
 /a/dir
 /a/file
 
