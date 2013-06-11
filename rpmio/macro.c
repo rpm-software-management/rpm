@@ -780,7 +780,7 @@ doFoo(MacroBuf mb, int negate, const char * f, size_t fn,
     char *b = NULL, *be;
     int c;
 
-    if (g != NULL) {
+    if (g != NULL && gn > 0) {
 	(void) expandThis(mb, g, gn, &buf);
     } else {
 	buf = xmalloc(MACROBUFSIZ + fn + gn);
