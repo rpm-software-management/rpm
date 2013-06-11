@@ -670,6 +670,9 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 	if (rpmCharCheck(spec, field, strlen(field), ".-_+%{}"))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
+	/* Main pkg name is unknown at the start, populate as soon as we can */
+	if (pkg == spec->packages)
+	    pkg->name = rpmstrPoolId(spec->pool, field, 1);
 	break;
     case RPMTAG_VERSION:
     case RPMTAG_RELEASE:
