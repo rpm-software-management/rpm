@@ -1189,12 +1189,11 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 #ifdef	WITH_LUA
 	if (STREQ("lua", f, fn)) {
 		rpmlua lua = NULL; /* Global state. */
-		const char *ls = s+sizeof("{lua:")-1;
-		const char *lse = se-sizeof("}")+1;
-		char *scriptbuf = (char *)xmalloc((lse-ls)+1);
+		char *scriptbuf = xmalloc(gn + 1);
 		char *printbuf;
-		memcpy(scriptbuf, ls, lse-ls);
-		scriptbuf[lse-ls] = '\0';
+		if (g != NULL && gn > 0) 
+		    memcpy(scriptbuf, g, gn);
+		scriptbuf[gn] = '\0';
 		rpmluaPushPrintBuffer(lua);
 		if (rpmluaRunScript(lua, scriptbuf, NULL) == -1)
 		    rc = 1;
