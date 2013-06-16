@@ -1158,6 +1158,10 @@ edit_dwarf2 (DSO *dso)
 		  if (rtype != R_ALPHA_REFLONG)
 		    goto fail;
 		  break;
+		case EM_AARCH64:
+		  if (rtype != R_AARCH64_ABS32)
+		    goto fail;
+		  break;
 		default:
 		fail:
 		  error (1, 0, "%s: Unhandled relocation %d in .debug_info section",
