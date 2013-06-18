@@ -226,6 +226,7 @@ runroot rpm -qls flangtest
 ],
 [0],
 [normal        /usr/share/flangtest/de.txt
+normal        /usr/share/flangtest/empty.txt
 not installed /usr/share/flangtest/en.txt
 normal        /usr/share/flangtest/fi.txt
 normal        /usr/share/flangtest/none.txt

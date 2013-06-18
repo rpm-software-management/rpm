@@ -19,6 +19,7 @@ mkdir -p  $RPM_BUILD_ROOT/%{_datadir}/%{name}
 for f in fi de en pl none; do
     echo "This is $f language" > $RPM_BUILD_ROOT/%{_datadir}/%{name}/$f.txt
 done
+touch $RPM_BUILD_ROOT/%{_datadir}/%{name}/empty.txt
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -30,3 +31,4 @@ rm -rf $RPM_BUILD_ROOT
 %lang(en) %{_datadir}/%{name}/en.txt
 %lang(pl) %{_datadir}/%{name}/pl.txt
 %{_datadir}/%{name}/none.txt
+%{_datadir}/%{name}/empty.txt
