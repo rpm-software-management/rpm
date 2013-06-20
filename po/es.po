@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: RPM\n"
 "Report-Msgid-Bugs-To: rpm-maint@lists.rpm.org\n"
-"POT-Creation-Date: 2013-06-07 12:55+0300\n"
+"POT-Creation-Date: 2013-06-20 10:31+0300\n"
 "PO-Revision-Date: 2012-11-11 14:20+0000\n"
 "Last-Translator: Domingo Becker <domingobecker@gmail.com>\n"
 "Language-Team: Spanish <trans-es@lists.fedoraproject.org>\n"
@@ -1182,67 +1182,67 @@ msgstr "línea %d: Etiqueta mal formada: %s\n"
 msgid "line %d: Empty tag: %s\n"
 msgstr "línea %d: Etiqueta vacía: %s\n"
 
-#: build/parsePreamble.c:715
+#: build/parsePreamble.c:718
 #, c-format
 msgid "line %d: Prefixes must not end with \"/\": %s\n"
 msgstr "línea %d: Los prefijos deben finalizar en \"/\": %s\n"
 
-#: build/parsePreamble.c:727
+#: build/parsePreamble.c:730
 #, c-format
 msgid "line %d: Docdir must begin with '/': %s\n"
 msgstr "línea %d: Docdir debe iniciar con '/': %s\n"
 
-#: build/parsePreamble.c:740
+#: build/parsePreamble.c:743
 #, c-format
 msgid "line %d: Epoch field must be an unsigned number: %s\n"
 msgstr "línea %d: El campo epoch debe ser un número sin signo: %s\n"
 
-#: build/parsePreamble.c:777
+#: build/parsePreamble.c:780
 #, c-format
 msgid "line %d: Bad %s: qualifiers: %s\n"
 msgstr "línea %d: %s erróneo: calificadores: %s\n"
 
-#: build/parsePreamble.c:807
+#: build/parsePreamble.c:810
 #, c-format
 msgid "line %d: Bad BuildArchitecture format: %s\n"
 msgstr "línea %d: Formato BuildArchitecture erróneo: %s\n"
 
-#: build/parsePreamble.c:817
+#: build/parsePreamble.c:820
 #, c-format
 msgid "line %d: Only noarch subpackages are supported: %s\n"
 msgstr "linea %d: Solo existe soporte para subpaquetes sin arquitectura: %s\n"
 
-#: build/parsePreamble.c:833
+#: build/parsePreamble.c:836
 #, c-format
 msgid "Internal error: Bogus tag %d\n"
 msgstr "Error interno: Etiqueta errónea %d\n"
 
-#: build/parsePreamble.c:918
+#: build/parsePreamble.c:921
 #, c-format
 msgid "line %d: %s is deprecated: %s\n"
 msgstr "línea %d: %s se encuentra obsoleta: %s\n"
 
-#: build/parsePreamble.c:979
+#: build/parsePreamble.c:982
 #, c-format
 msgid "Bad package specification: %s\n"
 msgstr "Especificación de paquete errónea: %s\n"
 
-#: build/parsePreamble.c:985
+#: build/parsePreamble.c:988
 #, c-format
 msgid "Package already exists: %s\n"
 msgstr "El paquete ya existe: %s\n"
 
-#: build/parsePreamble.c:1020
+#: build/parsePreamble.c:1023
 #, c-format
 msgid "line %d: Unknown tag: %s\n"
 msgstr "línea %d: Etiqueta desconocida: %s\n"
 
-#: build/parsePreamble.c:1052
+#: build/parsePreamble.c:1055
 #, c-format
 msgid "%%{buildroot} couldn't be empty\n"
 msgstr "%%{buildroot} no puede ser vacío\n"
 
-#: build/parsePreamble.c:1056
+#: build/parsePreamble.c:1059
 #, c-format
 msgid "%%{buildroot} can not be \"/\"\n"
 msgstr "%%{BuildRoot} no puede ser \"/\"\n"
