@@ -623,10 +623,8 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive, int nodigest)
 	rpmfi fi = fsm->fi;
 	digestalgo = rpmfiDigestAlgo(fi);
 	fidigest = rpmfiFDigestIndex(fi, fsm->ix, NULL, NULL);
-    }
-
-    if (st->st_size > 0 && fidigest)
 	fdInitDigest(wfd, digestalgo, 0);
+    }
 
     while (left) {
         size_t len;
@@ -647,7 +645,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive, int nodigest)
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
     }
 
-    if (st->st_size > 0 && fidigest) {
+    if (!nodigest) {
 	void * digest = NULL;
 
 	(void) Fflush(wfd);
