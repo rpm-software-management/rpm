@@ -56,6 +56,18 @@ rpmfi_FN(rpmfiObject * s, PyObject * unused)
 }
 
 static PyObject *
+rpmfi_FindFN(rpmfiObject * s, PyObject * args, PyObject * kwds)
+{
+    char * kwlist[] = {"filename", NULL};
+    PyObject * filename = NULL;
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:FindFN", kwlist,
+                                     &filename))
+        return NULL;
+    return Py_BuildValue("i", rpmfiFindFN(s->fi, PyString_AsString(filename)));
+}
+
+
+static PyObject *
 rpmfi_FFlags(rpmfiObject * s, PyObject * unused)
 {
     return Py_BuildValue("i", rpmfiFFlags(s->fi));
@@ -237,6 +249,8 @@ static struct PyMethodDef rpmfi_methods[] = {
  {"DN",		(PyCFunction)rpmfi_DN,		METH_NOARGS,
 	NULL},
  {"FN",		(PyCFunction)rpmfi_FN,		METH_NOARGS,
+	NULL},
+ {"FindFN",	(PyCFunction)rpmfi_FindFN,	METH_VARARGS|METH_KEYWORDS,
 	NULL},
  {"FFlags",	(PyCFunction)rpmfi_FFlags,	METH_NOARGS,
 	NULL},
