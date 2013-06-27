@@ -806,6 +806,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
     case PSM_PROCESS:
 	if (psm->goal == PKG_INSTALL) {
 	    int fsmrc = 0;
+	    int saved_errno = 0;
 
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_START, 0);
 	    /* make sure first progress call gets made */
@@ -820,6 +821,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 		fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->fi,
 				  payload, psm, &psm->failedFile);
+		saved_errno = errno;
 
 		rpmswAdd(rpmtsOp(psm->ts, RPMTS_OP_UNCOMPRESS),
 			 fdOp(payload, FDSTAT_READ));
@@ -834,7 +836,9 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
 
 	    if (fsmrc) {
-		char *emsg = rpmcpioStrerror(fsmrc);
+		char *emsg;
+		errno = saved_errno;
+		emsg = rpmcpioStrerror(fsmrc);
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
