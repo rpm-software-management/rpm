@@ -20,6 +20,10 @@
 #define __power_pc() 0
 #endif
 
+#ifdef HAVE_GETAUXVAL
+#include <sys/auxv.h>
+#endif
+
 #include <rpm/rpmlib.h>			/* RPM_MACTABLE*, Rc-prototypes */
 #include <rpm/rpmmacro.h>
 #include <rpm/rpmfileutil.h>
@@ -912,13 +916,19 @@ static int is_geode(void)
 
 #if defined(__linux__)
 /**
- * Populate rpmat structure with parsed info from /proc/self/auxv
+ * Populate rpmat structure with auxv values
  */
-static void parse_auxv(void)
+static void read_auxv(void)
 {
     static int oneshot = 1;
 
     if (oneshot) {
+#ifdef HAVE_GETAUXVAL
+	rpmat.platform = (char *) getauxval(AT_PLATFORM);
+	if (!rpmat.platform)
+	    rpmat.platform = "";
+	rpmat.hwcap = getauxval(AT_HWCAP);
+#else
 	rpmat.platform = "";
 	int fd = open("/proc/self/auxv", O_RDONLY);
 
@@ -943,6 +953,7 @@ static void parse_auxv(void)
 	    }
 	    close(fd);
 	}
+#endif
 	oneshot = 0; /* only try once even if it fails */
     }
     return;
@@ -962,7 +973,7 @@ static void defaultMachine(const char ** arch,
 
 #if defined(__linux__)
     /* Populate rpmat struct with hw info */
-    parse_auxv();
+    read_auxv();
 #endif
 
     while (!gotDefaults) {

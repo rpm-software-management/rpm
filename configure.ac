@@ -518,6 +518,7 @@ dnl Checks for library functions.
 AC_CHECK_FUNCS(putenv)
 AC_CHECK_FUNCS(mempcpy)
 AC_CHECK_FUNCS(fdatasync)
+AC_CHECK_FUNCS(getauxval)
 
 AC_REPLACE_FUNCS(stpcpy stpncpy)
 
