@@ -793,7 +793,8 @@ static int addPrefixes(Header h, rpmRelocation *relocations, int numRelocations)
 	headerPutStringArray(h, RPMTAG_INSTPREFIXES, actualRelocations, numActual);
     }
     free(actualRelocations);
-    return numActual;
+    /* When any relocations are present there'll be more work to do */
+    return 1;
 }
 
 static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
@@ -835,7 +836,8 @@ void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations,
     int i, j;
     struct rpmtd_s bnames, dnames, dindexes, fmodes;
 
-    addPrefixes(h, relocations, numRelocations);
+    if (!addPrefixes(h, relocations, numRelocations))
+	return;
 
     if (!_printed) {
 	_printed = 1;
