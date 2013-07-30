@@ -52,7 +52,8 @@ static int skipSoname(const char *soname)
 	if (!strstr(soname, ".so"))
 	    return 1;
 
-	if (rstreqn(soname, "ld.", 3) || rstreqn(soname, "ld-", 3))
+	if (rstreqn(soname, "ld.", 3) || rstreqn(soname, "ld-", 3) ||
+	    rstreqn(soname, "ld64.", 3) || rstreqn(soname, "ld64-", 3))
 	    return 0;
 
 	if (rstreqn(soname, "lib", 3))
