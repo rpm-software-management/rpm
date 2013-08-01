@@ -240,7 +240,7 @@ static struct
     { ".debug_ranges", NULL, NULL, 0, 0, 0 },
     { ".debug_types", NULL, NULL, 0, 0, 0 },
     { ".debug_macro", NULL, NULL, 0, 0, 0 },
-    { ".debug_gdb_script", NULL, NULL, 0, 0, 0 },
+    { ".debug_gdb_scripts", NULL, NULL, 0, 0, 0 },
     { NULL, NULL, NULL, 0, 0, 0 }
   };
 
