@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <netdb.h>
 #include <time.h>
+#include <sys/wait.h>
 
 #include <rpm/rpmlib.h>			/* RPMSIGTAG*, rpmReadPackageFile */
 #include <rpm/rpmfileutil.h>
