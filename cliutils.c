@@ -18,7 +18,7 @@ static pid_t pipeChild = 0;
 RPM_GNUC_NORETURN
 void argerror(const char * desc)
 {
-    fprintf(stderr, _("%s: %s\n"), __progname, desc);
+    fprintf(stderr, _("%s: %s\n"), xgetprogname(), desc);
     exit(EXIT_FAILURE);
 }
 

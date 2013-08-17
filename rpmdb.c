@@ -92,9 +92,13 @@ static int importDB(rpmts ts)
 int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
-    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+    poptContext optCon = NULL;
     rpmts ts = NULL;
-    
+
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
+
+    optCon = rpmcliInit(argc, argv, optionsTable);
+
     if (argc < 2 || poptPeekArg(optCon)) {
 	printUsage(optCon, stderr, 0);
 	goto exit;

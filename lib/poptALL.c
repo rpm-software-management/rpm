@@ -4,7 +4,6 @@
  */
 
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>		/* rpmEVR, rpmReadConfigFiles etc */
@@ -260,14 +259,6 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     int rc;
     const char *ctx, *execPath;
 
-    setprogname(argv[0]);       /* Retrofit glibc __progname */
-
-    /* XXX glibc churn sanity */
-    if (__progname == NULL) {
-	if ((__progname = strrchr(argv[0], '/')) != NULL) __progname++;
-	else __progname = argv[0];
-    }
-
 #if defined(ENABLE_NLS)
     (void) setlocale(LC_ALL, "" );
 
@@ -284,7 +275,7 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     }
 
     /* XXX hack to get popt working from build tree wrt lt-foo names */
-    ctx = rstreqn(__progname, "lt-", 3) ? __progname + 3 : __progname;
+    ctx = rstreqn(xgetprogname(), "lt-", 3) ? xgetprogname() + 3 : xgetprogname();
 
     optCon = poptGetContext(ctx, argc, (const char **)argv, optionsTable, 0);
     {
@@ -301,12 +292,12 @@ rpmcliInit(int argc, char *const argv[], struct poptOption * optionsTable)
     /* Process all options, whine if unknown. */
     while ((rc = poptGetNextOpt(optCon)) > 0) {
 	fprintf(stderr, _("%s: option table misconfigured (%d)\n"),
-		__progname, rc);
+		xgetprogname(), rc);
 	exit(EXIT_FAILURE);
     }
 
     if (rc < -1) {
-	fprintf(stderr, "%s: %s: %s\n", __progname,
+	fprintf(stderr, "%s: %s: %s\n", xgetprogname(),
 		poptBadOption(optCon, POPT_BADOPTION_NOALIAS),
 		poptStrerror(rc));
 	exit(EXIT_FAILURE);

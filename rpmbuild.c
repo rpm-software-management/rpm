@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <errno.h>
 #include <libgen.h>
@@ -596,7 +595,12 @@ int main(int argc, char *argv[])
 
     const char *pkg = NULL;
     int ec = 0;
-    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+
+    poptContext optCon = NULL;
+
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
+
+    optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Args required only when building, let lone --eval etc through */
     if (ba->buildAmount && poptPeekArg(optCon) == NULL) {

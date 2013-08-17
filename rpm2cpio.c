@@ -1,7 +1,6 @@
 /* rpmarchive: spit out the main archive portion of a package */
 
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile .. */
 #include <rpm/rpmtag.h>
@@ -21,7 +20,8 @@ int main(int argc, char *argv[])
     off_t payload_size;
     FD_t gzdi;
     
-    setprogname(argv[0]);	/* Retrofit glibc __progname */
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
+
     rpmReadConfigFiles(NULL, NULL);
     if (argc == 1)
 	fdi = fdDup(STDIN_FILENO);

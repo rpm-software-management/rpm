@@ -110,9 +110,13 @@ exit:
 int main(int argc, char *argv[])
 {
     int ec = EXIT_FAILURE;
-    poptContext optCon = rpmcliInit(argc, argv, optionsTable);
+    poptContext optCon = NULL;
     const char *arg;
     
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
+
+    optCon = rpmcliInit(argc, argv, optionsTable);
+
     if (argc <= 1) {
 	printUsage(optCon, stderr, 0);
 	goto exit;

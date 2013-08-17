@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>		/* rpmReadPackageFile */
@@ -234,6 +233,8 @@ main(int argc, char *argv[])
     struct rpmInstallArguments_s * ia = &rpmIArgs;
     poptContext optCon;
     int ec = 0;
+
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)

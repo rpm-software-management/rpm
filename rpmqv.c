@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmlib.h>			/* RPMSIGTAG, rpmReadPackageFile .. */
@@ -88,12 +87,14 @@ int main(int argc, char *argv[])
     int i;
 #endif
 
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
+
     optCon = rpmcliInit(argc, argv, optionsTable);
 
     /* Set the major mode based on argv[0] */
 #ifdef	IAM_RPMQV
-    if (rstreq(__progname, "rpmquery"))	bigMode = MODE_QUERY;
-    if (rstreq(__progname, "rpmverify")) bigMode = MODE_VERIFY;
+    if (rstreq(xgetprogname(), "rpmquery"))	bigMode = MODE_QUERY;
+    if (rstreq(xgetprogname(), "rpmverify")) bigMode = MODE_VERIFY;
 #endif
 
 #if defined(IAM_RPMQV)

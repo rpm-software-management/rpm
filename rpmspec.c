@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmcli.h>
 #include <rpm/rpmbuild.h>
@@ -59,6 +58,8 @@ int main(int argc, char *argv[])
 
     poptContext optCon;
     int ec = 0;
+
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
 
     optCon = rpmcliInit(argc, argv, optionsTable);
 

@@ -92,20 +92,33 @@ extern int fdatasync(int fildes);
 #define xstrdup(_str) rstrdup((_str))
 #define _free(_ptr) rfree((_ptr))
 
-/* Retrofit glibc __progname */
-#if defined __GLIBC__ && __GLIBC__ >= 2
-#if __GLIBC_MINOR__ >= 1
-#define	__progname	__assert_program_name
+/* To extract program's name: use calls (reimplemented or shipped with system):
+   - void setprogname(const char *pn)
+   - const char *getprogname(void)
+
+   setprogname(*pn) must be the first call in main() in order to set the name
+   as soon as possible. */
+#if defined(__NetBSD__)
+/* `man setprogname' v. May 21, 2011 (NetBSD 6.1) says:
+   Portable programs that wish to use getprogname() should call setprogname()
+   in main(). In some systems (like NetBSD) it can be set only once and it is
+   done before an execution of main() -- therefore calling it again has no
+   effect.
+   
+   Getprogname and setprogname function calls appeared in NetBSD 1.6
+   (released in 2002). So nothing to (re)implement for this platform. */
+# include <stdlib.h> /* Make sure this header is included */
+# define xsetprogname(pn) setprogname(pn)
+# define xgetprogname(pn) getprogname(pn)
+#elif defined(__GLIBC__) /* GNU LIBC ships with (const *char *) __progname */
+# define xsetprogname(pn) /* No need to implement it in GNU LIBC. */
+  extern const char *__progname;
+# define xgetprogname(pn) __progname
+#else /* Reimplement setprogname and getprogname */
+# include "misc/rpmxprogname.h"
+# define xsetprogname(pn) _rpmxsetprogname(pn)
+# define xgetprogname() _rpmxgetprogname()
 #endif
-#define	setprogname(pn)
-#else
-#define	__progname	program_name
-#define	setprogname(pn)	\
-  { if ((__progname = strrchr(pn, '/')) != NULL) __progname++; \
-    else __progname = pn;		\
-  }
-#endif
-extern const char *__progname;
 
 /* Take care of NLS matters.  */
 #if ENABLE_NLS

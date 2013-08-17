@@ -1,3 +1,4 @@
+#include "system.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -367,6 +368,8 @@ int main(int argc, char *argv[])
 	POPT_AUTOHELP 
 	POPT_TABLEEND
     };
+
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
 
     optCon = poptGetContext(argv[0], argc, (const char **) argv, opts, 0);
     if (argc < 2 || poptGetNextOpt(optCon) == 0) {

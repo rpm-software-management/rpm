@@ -1,5 +1,4 @@
 #include "system.h"
-const char *__progname;
 
 #include <rpm/rpmbuild.h>
 #include <rpm/argv.h>
@@ -7,8 +6,6 @@ const char *__progname;
 #include <rpm/rpmfc.h>
 
 #include "debug.h"
-
-char *progname;
 
 static int print_provides;
 
@@ -75,10 +72,7 @@ main(int argc, char *argv[])
     int ec = 1;
     char buf[BUFSIZ];
 
-    if ((progname = strrchr(argv[0], '/')) != NULL)
-	progname++;
-    else
-	progname = argv[0];
+    xsetprogname(argv[0]); /* Portability call -- see system.h */
 
     optCon = rpmcliInit(argc, argv, optionsTable);
     if (optCon == NULL)
