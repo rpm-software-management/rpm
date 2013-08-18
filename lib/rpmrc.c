@@ -1125,6 +1125,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
 #	endif	/* sparc*-linux */
 
 #	if defined(__linux__) && defined(__powerpc__)
+#	if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
 	{
             int powerlvl;
             if (!rstreq(un.machine, "ppc") &&
@@ -1133,6 +1134,7 @@ static void defaultMachine(rpmrcCtx ctx, const char ** arch, const char ** os)
                 strcpy(un.machine, "ppc64p7");
 	    }
         }
+#	endif	/* __ORDER_BIG_ENDIAN__ */
 #	endif	/* ppc64*-linux */
 
 #	if defined(__GNUC__) && defined(__alpha__)
