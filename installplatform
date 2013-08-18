@@ -54,11 +54,17 @@ for ARCH in noarch `grep ^arch_canon $RPMRC | cut -d: -f2`; do
 	CANONARCH=s390x
 	CANONCOLOR=3
 	;;
-    ppc64*)
+    ppc64|ppc64p7)
 	ISANAME=ppc
 	ISABITS=64
 	CANONARCH=ppc64
 	CANONCOLOR=3
+	;;
+    ppc64le)
+	ISANAME=ppc
+        ISABITS=64
+        CANONARCH=ppc64le
+        CANONCOLOR=3
 	;;
     ppc*)
 	ISANAME=ppc
