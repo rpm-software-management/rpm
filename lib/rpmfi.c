@@ -162,6 +162,57 @@ char * rpmfiFNIndex(rpmfi fi, int ix)
     return fn;
 }
 
+int rpmfiFindFN(rpmfi fi, const char * fn)
+{
+    if (fi == NULL || fn == NULL)
+	return -1;
+
+    const rpmsid * bnid = fi->bnid;
+    const rpmsid * dnid = fi->dnid;
+    uint32_t * dil = fi->dil;
+
+    if (fn[0] == '.' && fn[1] == '/') {
+	fn++;
+    }
+
+    /* try binary search */
+
+    int lo = 0;
+    int hi = fi->fc;
+    int mid, cmp;
+    size_t l;
+
+    while (hi > lo) {
+	mid = (hi + lo) / 2 ;
+	l = rpmstrPoolStrlen(fi->pool, dnid[dil[mid]]);
+	cmp = strncmp(rpmstrPoolStr(fi->pool, dnid[dil[mid]]), fn, l);
+	if (!cmp) {
+	    cmp = strcmp(rpmstrPoolStr(fi->pool, bnid[mid]), fn+l);
+	}
+	if (cmp < 0) {
+	    lo = mid+1;
+	} else if (cmp > 0) {
+	    hi = mid;
+	} else {
+	    return mid;
+	}
+    }
+
+    /* not found: try linear search */
+    for (int i=0; i < fi->fc; i++) {
+	l = rpmstrPoolStrlen(fi->pool, dnid[dil[i]]);
+	cmp = strncmp(rpmstrPoolStr(fi->pool, dnid[dil[i]]), fn, l);
+	if (!cmp) {
+	    cmp = strcmp(rpmstrPoolStr(fi->pool, bnid[i]), fn+l);
+	}
+
+	if (!cmp) {
+	    return i;
+	}
+    }
+    return -1;
+}
+
 rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix)
 {
     rpmfileAttrs FFlags = 0;

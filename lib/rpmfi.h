@@ -170,6 +170,15 @@ const char * rpmfiDN(rpmfi fi);
 const char * rpmfiFN(rpmfi fi);
 
 /** \ingroup rpmfi
+ * Return file index of the given file name or -1 if file is not in the rpmfi.
+ * The file name may have "." prefixed but is then interpreted as a global
+ * path without the prefixing "."
+ * @param fi            file info set
+ * @return              file index or -1
+ */
+int rpmfiFindFN(rpmfi fi, const char * fn);
+
+/** \ingroup rpmfi
  * Return current file flags from file info set.
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
