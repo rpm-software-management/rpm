@@ -1126,7 +1126,8 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
     uint32_t zc = rpmtdCount(zd);
 
     /* check that the amount of data in each is sane */
-    if (xc > 0 && yc > 0 && yc <= xc && zc == xc) {
+    /* normally yc <= xc but larger values are not fatal (RhBug:1001553) */
+    if (xc > 0 && yc > 0 && zc == xc) {
 	uint32_t * i;
 	/* ...and that the indexes are within bounds */
 	while ((i = rpmtdNextUint32(zd))) {
