@@ -1130,14 +1130,15 @@ static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd)
     /* check that the amount of data in each is sane */
     /* normally yc <= xc but larger values are not fatal (RhBug:1001553) */
     if (xc > 0 && yc > 0 && zc == xc) {
-	uint32_t * i;
+	uint32_t * i, nvalid = 0;
 	/* ...and that the indexes are within bounds */
 	while ((i = rpmtdNextUint32(zd))) {
 	    if (*i >= yc)
 		break;
+	    nvalid++;
 	}
 	/* unless the loop runs to finish, the data is broken */
-	sane = (i == NULL);
+	sane = (nvalid == zc);
     }
     return sane;
 }
