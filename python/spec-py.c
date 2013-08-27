@@ -144,6 +144,11 @@ static PyObject * spec_get_install(specObject * s, void *closure)
     return getSection(s->spec, RPMBUILD_INSTALL);
 }
 
+static PyObject * spec_get_check(specObject * s, void *closure)
+{
+    return getSection(s->spec, RPMBUILD_CHECK);
+}
+
 static PyObject * spec_get_clean(specObject * s, void *closure) 
 {
     return getSection(s->spec, RPMBUILD_CLEAN);
@@ -217,6 +222,7 @@ static PyGetSetDef spec_getseters[] = {
     {"prep",   (getter) spec_get_prep, NULL, NULL },
     {"build",   (getter) spec_get_build, NULL, NULL },
     {"install",   (getter) spec_get_install, NULL, NULL },
+    {"check",	(getter) spec_get_check, NULL, NULL },
     {"clean",   (getter) spec_get_clean, NULL, NULL },
     {"packages", (getter) spec_get_packages, NULL, NULL },
     {"sourceHeader", (getter) spec_get_source_header, NULL, NULL },
