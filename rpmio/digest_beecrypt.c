@@ -387,6 +387,7 @@ struct pgpDigKeyDSA_s {
     mpbarrett q;
     mpnumber g;
     mpnumber y;
+    int qbytes;
 };
 
 static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
@@ -420,6 +421,7 @@ static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 	rc = 0;
 	break;
     case 1:
+	key->qbytes = pgpMpiLen(p) - 2;
 	mpbsethex(&key->q, pgpMpiHex(p));
 	rc = 0;
 	break;
@@ -442,9 +444,9 @@ static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
     mpnumber hm;
     int rc = 1;
 
-    if (sig && key) {
+    if (sig && key && hashlen >= key->qbytes) {
 	mpnzero(&hm);
-	mpnsetbin(&hm, hash, hashlen);
+	mpnsetbin(&hm, hash, key->qbytes);
 	rc = dsavrfy(&key->p, &key->q, &key->g, &hm, &key->y, &sig->r, &sig->s) == 1 ? 0 : 1;
 	mpnfree(&hm);
     }
