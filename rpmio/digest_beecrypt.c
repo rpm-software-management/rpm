@@ -244,20 +244,6 @@ static int pgpHexSet(int lbits, mpnumber * mpn, const byte * p)
     return 0;
 }
 
-static void pgpFreeSigRSADSA(pgpDigAlg sa)
-{
-    if (sa->data)
-	free(sa->data);
-    sa->data = 0;
-}
-
-static void pgpFreeKeyRSADSA(pgpDigAlg sa)
-{
-    if (sa->data)
-	free(sa->data);
-    sa->data = 0;
-}
-
 
 /****************************** RSA **************************************/
 
@@ -369,6 +355,25 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
     return rc;
 }
 
+static void pgpFreeSigRSA(pgpDigAlg pgpsig)
+{
+    struct pgpDigSigRSA_s *sig = pgpsig->data;
+    if (sig) {
+	mpnfree(&sig->c);
+	pgpsig->data = _free(sig);
+    }
+}
+
+static void pgpFreeKeyRSA(pgpDigAlg pgpkey)
+{
+    struct pgpDigKeyRSA_s *key = pgpkey->data;
+    if (key) {
+	mpbfree(&key->rsa_pk.n);
+	mpnfree(&key->rsa_pk.e);
+	pgpkey->data = _free(key);
+    }
+}
+
 
 /****************************** DSA **************************************/
 
@@ -446,6 +451,31 @@ static int pgpVerifySigDSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
     return rc;
 }
 
+static void pgpFreeSigDSA(pgpDigAlg pgpsig)
+{
+    struct pgpDigSigDSA_s *sig = pgpsig->data;
+    if (sig) {
+	mpnfree(&sig->r);
+	mpnfree(&sig->s);
+	pgpsig->data = _free(sig);
+    }
+}
+
+static void pgpFreeKeyDSA(pgpDigAlg pgpkey)
+{
+    struct pgpDigKeyDSA_s *key = pgpkey->data;
+    if (key) {
+	mpbfree(&key->p);
+	mpbfree(&key->q);
+	mpnfree(&key->g);
+	mpnfree(&key->y);
+	pgpkey->data = _free(key);
+    }
+}
+
+
+/****************************** NULL **************************************/
+
 static int pgpSetMpiNULL(pgpDigAlg pgpkey, int num, const uint8_t *p)
 {
     return 1;
@@ -464,12 +494,12 @@ pgpDigAlg pgpPubkeyNew(int algo)
     switch (algo) {
     case PGPPUBKEYALGO_RSA:
         ka->setmpi = pgpSetKeyMpiRSA;
-        ka->free = pgpFreeKeyRSADSA;
+        ka->free = pgpFreeKeyRSA;
         ka->mpis = 2;
         break;
     case PGPPUBKEYALGO_DSA:
         ka->setmpi = pgpSetKeyMpiDSA;
-        ka->free = pgpFreeKeyRSADSA;
+        ka->free = pgpFreeKeyDSA;
         ka->mpis = 4;
         break;
     default:
@@ -490,13 +520,13 @@ pgpDigAlg pgpSignatureNew(int algo)
     switch (algo) {
     case PGPPUBKEYALGO_RSA:
         sa->setmpi = pgpSetSigMpiRSA;
-        sa->free = pgpFreeSigRSADSA;
+        sa->free = pgpFreeSigRSA;
         sa->verify = pgpVerifySigRSA;
         sa->mpis = 1;
         break;
     case PGPPUBKEYALGO_DSA:
         sa->setmpi = pgpSetSigMpiDSA;
-        sa->free = pgpFreeSigRSADSA;
+        sa->free = pgpFreeSigDSA;
         sa->verify = pgpVerifySigDSA;
         sa->mpis = 2;
         break;
