@@ -5,8 +5,7 @@
 
 typedef struct pgpDigAlg_s * pgpDigAlg;
 
-typedef int (*setmpifunc)(pgpDigAlg digp,
-                          int num, const uint8_t *p, const uint8_t *pend);
+typedef int (*setmpifunc)(pgpDigAlg digp, int num, const uint8_t *p);
 typedef int (*verifyfunc)(pgpDigAlg pgpkey, pgpDigAlg pgpsig,
                           uint8_t *hash, size_t hashlen, int hash_algo);
 typedef void (*freefunc)(pgpDigAlg digp);

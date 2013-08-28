@@ -499,11 +499,15 @@ static int pgpPrtSigParams(pgpTag tag, uint8_t pubkey_algo, uint8_t sigtype,
     int i;
     pgpDigAlg sigalg = pgpSignatureNew(pubkey_algo);
 
-    for (i = 0; p < pend && i < sigalg->mpis; i++, p += pgpMpiLen(p)) {
+    for (i = 0; i < sigalg->mpis && p + 2 <= pend; i++) {
+	int mpil = pgpMpiLen(p);
+	if (p + mpil > pend)
+	    break;
 	if (sigtype == PGPSIGTYPE_BINARY || sigtype == PGPSIGTYPE_TEXT) {
-	    if (sigalg->setmpi(sigalg, i, p, pend))
+	    if (sigalg->setmpi(sigalg, i, p))
 		break;
 	}
+	p += mpil;
     }
 
     /* Does the size and number of MPI's match our expectations? */
@@ -650,9 +654,13 @@ static int pgpPrtPubkeyParams(uint8_t pubkey_algo,
     int i;
     pgpDigAlg keyalg = pgpPubkeyNew(pubkey_algo);
 
-    for (i = 0; p < pend && i < keyalg->mpis; i++, p += pgpMpiLen(p)) {
-	if (keyalg->setmpi(keyalg, i, p, pend))
+    for (i = 0; i < keyalg->mpis && p + 2 <= pend; i++) {
+	int mpil = pgpMpiLen(p);
+	if (p + mpil > pend)
 	    break;
+	if (keyalg->setmpi(keyalg, i, p))
+	    break;
+	p += mpil;
     }
 
     /* Does the size and number of MPI's match our expectations? */
