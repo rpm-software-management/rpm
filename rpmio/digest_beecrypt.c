@@ -281,8 +281,8 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
 	return 1;
     }
 
-    /* Generate RSA modulus parameter. */
-    {   unsigned int nbits = MP_WORDS_TO_BITS(sig->c.size);
+    /* do PKCS#1 block padding */
+    {   unsigned int nbits = MP_WORDS_TO_BITS(key->rsa_pk.n.size);
         unsigned int nb = (nbits + 7) >> 3;
         byte *buf, *bp;
 
