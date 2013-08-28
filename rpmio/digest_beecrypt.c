@@ -198,52 +198,6 @@ int rpmDigestFinal(DIGEST_CTX ctx, void ** datap, size_t *lenp, int asAscii)
     return 0;
 }
 
-/**************************** helpers ************************************/
-
-static inline char * pgpHexCvt(char *t, const byte *s, int nbytes)
-{
-    static char hex[] = "0123456789abcdef";
-    while (nbytes-- > 0) { 
-        unsigned int i;
-        i = *s++;
-        *t++ = hex[ (i >> 4) & 0xf ];
-        *t++ = hex[ (i     ) & 0xf ];
-    }    
-    *t = '\0';
-    return t;
-}
-
-static const char * pgpMpiHex(const byte *p)
-{
-    static char prbuf[2048];
-    char *t = prbuf;
-    int nbytes =  pgpMpiLen(p) - 2;
-    if (nbytes > 1024)
-	return NULL;
-    t = pgpHexCvt(t, p+2, nbytes);
-    return prbuf;
-}
-
-static int pgpHexSet(int lbits, mpnumber * mpn, const byte * p)
-{
-    unsigned int mbits = pgpMpiBits(p);
-    unsigned int nbits;
-    unsigned int nbytes;
-    char *t;
-    unsigned int ix;
-
-    nbits = (lbits > mbits ? lbits : mbits);
-    nbytes = ((nbits + 7) >> 3);
-    t = xmalloc(2*nbytes+1);
-    ix = 2 * ((nbits - mbits) >> 3);
-
-    if (ix > 0) memset(t, (int)'0', ix);
-    strcpy(t+ix, pgpMpiHex(p));
-    (void) mpnsethex(mpn, t);
-    t = _free(t);
-    return 0;
-}
-
 
 /****************************** RSA **************************************/
 
@@ -260,11 +214,13 @@ static int pgpSetSigMpiRSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
     struct pgpDigSigRSA_s *sig = pgpsig->data;
     int rc = 1;
 
+    if (!sig)
+	sig = pgpsig->data = xcalloc(1, sizeof(*sig));
+
     switch (num) {
     case 0:
-	sig = pgpsig->data = xcalloc(1, sizeof(*sig));
-	(void) mpnsethex(&sig->c, pgpMpiHex(p));
-	rc = 0;
+	if (!mpnsetbin(&sig->c, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     }
     return rc;
@@ -277,14 +233,15 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 
     if (!key)
 	key = pgpkey->data = xcalloc(1, sizeof(*key));
+
     switch (num) {
     case 0:
-	(void) mpbsethex(&key->rsa_pk.n, pgpMpiHex(p));
-	rc = 0;
+	if (!mpbsetbin(&key->rsa_pk.n, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     case 1:
-	(void) mpnsethex(&key->rsa_pk.e, pgpMpiHex(p));
-	rc = 0;
+	if (!mpnsetbin(&key->rsa_pk.e, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     }
     return rc;
@@ -395,14 +352,17 @@ static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
     struct pgpDigSigDSA_s *sig = pgpsig->data;
     int rc = 1;
 
+    if (!sig)
+	sig = pgpsig->data = xcalloc(1, sizeof(*sig));
+
     switch (num) {
     case 0:
-	sig = pgpsig->data = xcalloc(1, sizeof(*sig));
-	rc = pgpHexSet(160, &sig->r, p);
+	if (!mpnsetbin(&sig->r, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     case 1:
-	rc = pgpHexSet(160, &sig->s, p);
-	break;
+	if (!mpnsetbin(&sig->s, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
     }
     return rc;
 }
@@ -417,21 +377,21 @@ static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 
     switch (num) {
     case 0:
-	mpbsethex(&key->p, pgpMpiHex(p));
-	rc = 0;
+	if (!mpbsetbin(&key->p, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     case 1:
 	key->qbytes = pgpMpiLen(p) - 2;
-	mpbsethex(&key->q, pgpMpiHex(p));
-	rc = 0;
+	if (!mpbsetbin(&key->q, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     case 2:
-	mpnsethex(&key->g, pgpMpiHex(p));
-	rc = 0;
+	if (!mpnsetbin(&key->g, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     case 3:
-	mpnsethex(&key->y, pgpMpiHex(p));
-	rc = 0;
+	if (!mpnsetbin(&key->y, p + 2, pgpMpiLen(p) - 2))
+	    rc = 0;
 	break;
     }
     return rc;
