@@ -1448,7 +1448,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	}
 
 	if (fl->cur.caps) {
-	    flp->caps = fl->cur.caps;
+	    flp->caps = xstrdup(fl->cur.caps);
 	} else {
 	    flp->caps = xstrdup("");
 	}
