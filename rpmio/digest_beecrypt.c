@@ -213,6 +213,7 @@ struct pgpDigKeyRSA_s {
 static int pgpSetSigMpiRSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 {
     struct pgpDigSigRSA_s *sig = pgpsig->data;
+    int mlen = pgpMpiLen(p) - 2;
     int rc = 1;
 
     if (!sig)
@@ -220,7 +221,7 @@ static int pgpSetSigMpiRSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 
     switch (num) {
     case 0:
-	if (!mpnsetbin(&sig->c, p + 2, pgpMpiLen(p) - 2))
+	if (!mpnsetbin(&sig->c, p + 2, mlen))
 	    rc = 0;
 	break;
     }
@@ -230,6 +231,7 @@ static int pgpSetSigMpiRSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 {
     struct pgpDigKeyRSA_s *key = pgpkey->data;
+    int mlen = pgpMpiLen(p) - 2;
     int rc = 1;
 
     if (!key)
@@ -237,12 +239,12 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 
     switch (num) {
     case 0:
-	key->nbytes = pgpMpiLen(p) - 2;
-	if (!mpbsetbin(&key->rsa_pk.n, p + 2, pgpMpiLen(p) - 2))
+	key->nbytes = mlen;
+	if (!mpbsetbin(&key->rsa_pk.n, p + 2, mlen))
 	    rc = 0;
 	break;
     case 1:
-	if (!mpnsetbin(&key->rsa_pk.e, p + 2, pgpMpiLen(p) - 2))
+	if (!mpnsetbin(&key->rsa_pk.e, p + 2, mlen))
 	    rc = 0;
 	break;
     }
@@ -357,6 +359,7 @@ struct pgpDigKeyDSA_s {
 static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 {
     struct pgpDigSigDSA_s *sig = pgpsig->data;
+    int mlen = pgpMpiLen(p) - 2;
     int rc = 1;
 
     if (!sig)
@@ -364,11 +367,11 @@ static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 
     switch (num) {
     case 0:
-	if (!mpnsetbin(&sig->r, p + 2, pgpMpiLen(p) - 2))
+	if (!mpnsetbin(&sig->r, p + 2, mlen))
 	    rc = 0;
 	break;
     case 1:
-	if (!mpnsetbin(&sig->s, p + 2, pgpMpiLen(p) - 2))
+	if (!mpnsetbin(&sig->s, p + 2, mlen))
 	    rc = 0;
     }
     return rc;
@@ -377,6 +380,7 @@ static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
 static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 {
     struct pgpDigKeyDSA_s *key = pgpkey->data;
+    int mlen = pgpMpiLen(p) - 2;
     int rc = 1;
 
     if (!key)
@@ -384,20 +388,20 @@ static int pgpSetKeyMpiDSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 
     switch (num) {
     case 0:
-	if (!mpbsetbin(&key->p, p + 2, pgpMpiLen(p) - 2))
+	if (!mpbsetbin(&key->p, p + 2, mlen))
 	    rc = 0;
 	break;
     case 1:
-	key->qbytes = pgpMpiLen(p) - 2;
-	if (!mpbsetbin(&key->q, p + 2, pgpMpiLen(p) - 2))
+	key->qbytes = mlen;
+	if (!mpbsetbin(&key->q, p + 2, mlen))
 	    rc = 0;
 	break;
     case 2:
-	if (!mpnsetbin(&key->g, p + 2, pgpMpiLen(p) - 2))
+	if (!mpnsetbin(&key->g, p + 2, mlen))
 	    rc = 0;
 	break;
     case 3:
-	if (!mpnsetbin(&key->y, p + 2, pgpMpiLen(p) - 2))
+	if (!mpnsetbin(&key->y, p + 2, mlen))
 	    rc = 0;
 	break;
     }
