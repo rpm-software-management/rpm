@@ -373,6 +373,7 @@ static int pgpSetSigMpiDSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
     case 1:
 	if (!mpnsetbin(&sig->s, p + 2, mlen))
 	    rc = 0;
+	break;
     }
     return rc;
 }
