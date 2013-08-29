@@ -207,6 +207,7 @@ struct pgpDigSigRSA_s {
 
 struct pgpDigKeyRSA_s {
     rsapk rsa_pk;
+    int nbytes;
 };
 
 static int pgpSetSigMpiRSA(pgpDigAlg pgpsig, int num, const uint8_t *p)
@@ -236,6 +237,7 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 
     switch (num) {
     case 0:
+	key->nbytes = pgpMpiLen(p) - 2;
 	if (!mpbsetbin(&key->rsa_pk.n, p + 2, pgpMpiLen(p) - 2))
 	    rc = 0;
 	break;
@@ -244,6 +246,29 @@ static int pgpSetKeyMpiRSA(pgpDigAlg pgpkey, int num, const uint8_t *p)
 	    rc = 0;
 	break;
     }
+    return rc;
+}
+
+static int pkcs1pad(mpnumber *rsahm, int nbytes, const char *prefix, uint8_t *hash, size_t hashlen)
+{
+    int datalen = strlen(prefix) / 2 + hashlen;
+    byte *buf, *bp;
+    int rc = 1;
+
+    if (nbytes < 4 + datalen)
+	return 1;
+    buf = xmalloc(nbytes);
+    memset(buf, 0xff, nbytes);
+    buf[0] = 0x00;
+    buf[1] = 0x01;
+    bp = buf + nbytes - datalen;
+    bp[-1] = 0;
+    for (; *prefix; prefix += 2)
+	*bp++ = (rnibble(prefix[0]) << 4) | rnibble(prefix[1]);
+    memcpy(bp, hash, hashlen);
+    if (!mpnsetbin(rsahm, buf, nbytes))
+	rc = 0;
+    buf = _free(buf);
     return rc;
 }
 
@@ -281,28 +306,10 @@ static int pgpVerifySigRSA(pgpDigAlg pgpkey, pgpDigAlg pgpsig, uint8_t *hash, si
 	return 1;
     }
 
-    /* do PKCS#1 block padding */
-    {   unsigned int nbits = MP_WORDS_TO_BITS(key->rsa_pk.n.size);
-        unsigned int nb = (nbits + 7) >> 3;
-        byte *buf, *bp;
+    memset(&rsahm, 0, sizeof(rsahm));
+    if (pkcs1pad(&rsahm, key->nbytes, prefix, hash, hashlen) != 0)
+	return 1;
 
-	if (nb < 3)
-	    return 1;
-	buf = xmalloc(nb);
-	memset(buf, 0xff, nb);
-	buf[0] = 0x00;
-	buf[1] = 0x01;
-	bp = buf + nb - strlen(prefix)/2 - hashlen - 1;
-	if (bp < buf)
-	    return 1;
-	*bp++ = 0;
-	for (; *prefix; prefix += 2)
-	    *bp++ = (rnibble(prefix[0]) << 4) | rnibble(prefix[1]);
-        memcpy(bp, hash, hashlen);
-        mpnzero(&rsahm);
-        (void) mpnsetbin(&rsahm, buf, nb);
-        buf = _free(buf);
-    }
 #if HAVE_BEECRYPT_API_H
     rc = rsavrfy(&key->rsa_pk.n, &key->rsa_pk.e, &sig->c, &rsahm) == 1 ? 0 : 1;
 #else
