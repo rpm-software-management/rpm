@@ -148,6 +148,7 @@ typedef struct FileList_s {
     int largeFiles;
     ARGV_t docDirs;
     rpmBuildPkgFlags pkgFlags;
+    rpmstrPool pool;
 
     /* actual file records */
     struct FileRecords_s files;
@@ -1249,6 +1250,7 @@ static void FileListFree(FileList fl)
     FileRecordsFree(&(fl->files));
     free(fl->buildRoot);
     argvFree(fl->docDirs);
+    rpmstrPoolFree(fl->pool);
 }
 
 /* forward ref */
@@ -1828,6 +1830,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
 
+    fl.pool = rpmstrPoolLink(spec->pool);
     /* XXX spec->buildRoot == NULL, then xstrdup("") is returned */
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     fl.buildRootLen = strlen(fl.buildRoot);
@@ -1994,6 +1997,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 
     /* Init the file list structure */
     memset(&fl, 0, sizeof(fl));
+    fl.pool = rpmstrPoolLink(spec->pool);
     if (_srcdefattr) {
 	char *a = rstrscat(NULL, "%defattr ", _srcdefattr, NULL);
 	parseForAttr(a, 1, &fl.def);
