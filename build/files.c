@@ -81,8 +81,8 @@ typedef struct FileListRec_s {
 
     char *diskPath;		/* get file from here       */
     char *cpioPath;		/* filename in cpio archive */
-    const char *uname;
-    const char *gname;
+    rpmsid uname;
+    rpmsid gname;
     unsigned	flags;
     specfFlags	specdFlags;	/* which attributes have been explicitly specified. */
     rpmVerifyFlags verifyFlags;
@@ -1056,8 +1056,10 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	 */
 	headerPutString(h, RPMTAG_OLDFILENAMES, flp->diskPath);
 	headerPutString(h, RPMTAG_ORIGFILENAMES, flp->cpioPath);
-	headerPutString(h, RPMTAG_FILEUSERNAME, flp->uname);
-	headerPutString(h, RPMTAG_FILEGROUPNAME, flp->gname);
+	headerPutString(h, RPMTAG_FILEUSERNAME,
+			rpmstrPoolStr(fl->pool, flp->uname));
+	headerPutString(h, RPMTAG_FILEGROUPNAME,
+			rpmstrPoolStr(fl->pool, flp->gname));
 
 	/* Only use 64bit filesizes tag if required. */
 	if (fl->largeFiles) {
@@ -1440,8 +1442,8 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 
 	flp->cpioPath = xstrdup(cpioPath);
 	flp->diskPath = xstrdup(diskPath);
-	flp->uname = rpmugStashStr(fileUname);
-	flp->gname = rpmugStashStr(fileGname);
+	flp->uname = rpmstrPoolId(fl->pool, fileUname, 1);
+	flp->gname = rpmstrPoolId(fl->pool, fileGname, 1);
 
 	if (fl->cur.langs) {
 	    flp->langs = argvJoin(fl->cur.langs, "|");
@@ -2046,14 +2048,14 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->fl_mode |= fl.def.ar.ar_fmode;
 	}
 	if (fl.def.ar.ar_user) {
-	    flp->uname = rpmugStashStr(fl.def.ar.ar_user);
+	    flp->uname = rpmstrPoolId(fl.pool, fl.def.ar.ar_user, 1);
 	} else {
-	    flp->uname = rpmugStashStr(rpmugUname(flp->fl_uid));
+	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(flp->fl_uid), 1);
 	}
 	if (fl.def.ar.ar_group) {
-	    flp->gname = rpmugStashStr(fl.def.ar.ar_group);
+	    flp->gname = rpmstrPoolId(fl.pool, fl.def.ar.ar_group, 1);
 	} else {
-	    flp->gname = rpmugStashStr(rpmugGname(flp->fl_gid));
+	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(flp->fl_gid), 1);
 	}
 	flp->langs = xstrdup("");
 	
