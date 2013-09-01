@@ -9,32 +9,6 @@
 #include "lib/rpmug.h"
 #include "debug.h"
 
-#define HASHTYPE strCache
-#define HTKEYTYPE const char *
-#include "lib/rpmhash.H"
-#include "lib/rpmhash.C"
-#undef HASHTYPE
-#undef HTKEYTYPE
-
-static strCache strStash = NULL;
-
-const char * rpmugStashStr(const char *str)
-{
-    const char *ret = NULL;
-    if (str) {
-	if (strStash == NULL) {
-	    strStash = strCacheCreate(64, rstrhash, strcmp,
-				      (strCacheFreeKey)rfree);
-	}
-	
-	if (!strCacheGetEntry(strStash, str, &ret)) {
-	    strCacheAddEntry(strStash, xstrdup(str));
-	    (void) strCacheGetEntry(strStash, str, &ret);
-	}
-    }
-    return ret;
-}
-
 /* 
  * These really ought to use hash tables. I just made the
  * guess that most files would be owned by root or the same person/group
@@ -198,5 +172,4 @@ void rpmugFree(void)
     rpmugGid(NULL, NULL);
     rpmugUname(-1);
     rpmugGname(-1);
-    strStash = strCacheFree(strStash);
 }
