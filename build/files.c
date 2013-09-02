@@ -93,15 +93,13 @@ typedef struct FileListRec_s {
 /**
  */
 typedef struct AttrRec_s {
-    char *ar_fmodestr;
-    char *ar_dmodestr;
-    char *ar_user;
-    char *ar_group;
+    rpmsid	ar_fmodestr;
+    rpmsid	ar_dmodestr;
+    rpmsid	ar_user;
+    rpmsid	ar_group;
     mode_t	ar_fmode;
     mode_t	ar_dmode;
 } * AttrRec;
-
-static struct AttrRec_s root_ar = { NULL, NULL, "root", "root", 0, 0 };
 
 /* list of files */
 static StringBuf check_fileList = NULL;
@@ -160,63 +158,20 @@ typedef struct FileList_s {
     struct FileEntry_s cur;
 } * FileList;
 
-/**
- */
 static void nullAttrRec(AttrRec ar)
 {
-    ar->ar_fmodestr = NULL;
-    ar->ar_dmodestr = NULL;
-    ar->ar_user = NULL;
-    ar->ar_group = NULL;
-    ar->ar_fmode = 0;
-    ar->ar_dmode = 0;
+    memset(ar, 0, sizeof(*ar));
 }
 
-/**
- */
-static void freeAttrRec(AttrRec ar)
-{
-    ar->ar_fmodestr = _free(ar->ar_fmodestr);
-    ar->ar_dmodestr = _free(ar->ar_dmodestr);
-    ar->ar_user = _free(ar->ar_user);
-    ar->ar_group = _free(ar->ar_group);
-    /* XXX doesn't free ar (yet) */
-    return;
-}
-
-/**
- */
 static void dupAttrRec(const AttrRec oar, AttrRec nar)
 {
     if (oar == nar)
 	return;
-    freeAttrRec(nar);
-    nar->ar_fmodestr = (oar->ar_fmodestr ? xstrdup(oar->ar_fmodestr) : NULL);
-    nar->ar_dmodestr = (oar->ar_dmodestr ? xstrdup(oar->ar_dmodestr) : NULL);
-    nar->ar_user = (oar->ar_user ? xstrdup(oar->ar_user) : NULL);
-    nar->ar_group = (oar->ar_group ? xstrdup(oar->ar_group) : NULL);
-    nar->ar_fmode = oar->ar_fmode;
-    nar->ar_dmode = oar->ar_dmode;
+    *nar = *oar; /* struct assignment */
 }
-
-#if 0
-/**
- */
-static void dumpAttrRec(const char * msg, AttrRec ar)
-{
-    if (msg)
-	fprintf(stderr, "%s:\t", msg);
-    fprintf(stderr, "(%s, %s, %s, %s)\n",
-	ar->ar_fmodestr,
-	ar->ar_user,
-	ar->ar_group,
-	ar->ar_dmodestr);
-}
-#endif
 
 static void FileEntryFree(FileEntry entry)
 {
-    freeAttrRec(&(entry->ar));
     argvFree(entry->langs);
     memset(entry, 0, sizeof(*entry));
 }
@@ -375,7 +330,11 @@ exit:
     return rc;
 }
 
-#define	isAttrDefault(_ars)	((_ars)[0] == '-' && (_ars)[1] == '\0')
+static int isAttrDefault(rpmstrPool pool, rpmsid arsid)
+{
+    const char *ars = rpmstrPoolStr(pool, arsid);
+    return (ars && ars[0] == '-' && ars[1] == '\0');
+}
 
 /**
  * Parse %dev from file manifest.
@@ -476,7 +435,7 @@ exit:
  * @param entry		file entry data (current / default)
  * @return		0 on success
  */
-static rpmRC parseForAttr(char * buf, int def, FileEntry entry)
+static rpmRC parseForAttr(rpmstrPool pool, char * buf, int def, FileEntry entry)
 {
     const char *name = def ? "%defattr" : "%attr";
     char *p, *pe, *q = NULL;
@@ -525,22 +484,22 @@ static rpmRC parseForAttr(char * buf, int def, FileEntry entry)
     p = q; SKIPWHITE(p);
     if (*p != '\0') {
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
-	ar->ar_fmodestr = p;
+	ar->ar_fmodestr = rpmstrPoolId(pool, p, 1);
 	p = pe; SKIPWHITE(p);
     }
     if (*p != '\0') {
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
-	ar->ar_user = p;
+	ar->ar_user = rpmstrPoolId(pool, p, 1);
 	p = pe; SKIPWHITE(p);
     }
     if (*p != '\0') {
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
-	ar->ar_group = p;
+	ar->ar_group = rpmstrPoolId(pool, p, 1);
 	p = pe; SKIPWHITE(p);
     }
     if (*p != '\0' && def) {	/* %defattr */
 	pe = p; SKIPNONWHITE(pe); if (*pe != '\0') *pe++ = '\0';
-	ar->ar_dmodestr = p;
+	ar->ar_dmodestr = rpmstrPoolId(pool, p, 1);
 	p = pe; SKIPWHITE(p);
     }
 
@@ -550,36 +509,36 @@ static rpmRC parseForAttr(char * buf, int def, FileEntry entry)
     }
 
     /* Do a quick test on the mode argument and adjust for "-" */
-    if (ar->ar_fmodestr && !isAttrDefault(ar->ar_fmodestr)) {
+    if (ar->ar_fmodestr && !isAttrDefault(pool, ar->ar_fmodestr)) {
 	unsigned int ui;
-	x = sscanf(ar->ar_fmodestr, "%o", &ui);
+	x = sscanf(rpmstrPoolStr(pool, ar->ar_fmodestr), "%o", &ui);
 	if ((x == 0) || (ar->ar_fmode & ~MYALLPERMS)) {
 	    rpmlog(RPMLOG_ERR, _("Bad mode spec: %s(%s)\n"), name, q);
 	    goto exit;
 	}
 	ar->ar_fmode = ui;
     } else {
-	ar->ar_fmodestr = NULL;
+	ar->ar_fmodestr = 0;
     }
 
-    if (ar->ar_dmodestr && !isAttrDefault(ar->ar_dmodestr)) {
+    if (ar->ar_dmodestr && !isAttrDefault(pool, ar->ar_dmodestr)) {
 	unsigned int ui;
-	x = sscanf(ar->ar_dmodestr, "%o", &ui);
+	x = sscanf(rpmstrPoolStr(pool, ar->ar_dmodestr), "%o", &ui);
 	if ((x == 0) || (ar->ar_dmode & ~MYALLPERMS)) {
 	    rpmlog(RPMLOG_ERR, _("Bad dirmode spec: %s(%s)\n"), name, q);
 	    goto exit;
 	}
 	ar->ar_dmode = ui;
     } else {
-	ar->ar_dmodestr = NULL;
+	ar->ar_dmodestr = 0;
     }
 
-    if (!(ar->ar_user && !isAttrDefault(ar->ar_user))) {
-	ar->ar_user = NULL;
+    if (!(ar->ar_user && !isAttrDefault(pool, ar->ar_user))) {
+	ar->ar_user = 0;
     }
 
-    if (!(ar->ar_group && !isAttrDefault(ar->ar_group))) {
-	ar->ar_group = NULL;
+    if (!(ar->ar_group && !isAttrDefault(pool, ar->ar_group))) {
+	ar->ar_group = 0;
     }
 
     dupAttrRec(ar, &(entry->ar));
@@ -1378,7 +1337,7 @@ static rpmRC addFile(FileList fl, const char * diskPath,
     fileGid = statp->st_gid;
 
     /* Explicit %attr() always wins */
-    if (fl->cur.ar.ar_fmodestr != NULL) {
+    if (fl->cur.ar.ar_fmodestr) {
 	if (S_ISLNK(fileMode)) {
 	    rpmlog(RPMLOG_WARNING,
 		   "Explicit %%attr() mode not applicaple to symlink: %s\n",
@@ -1400,16 +1359,16 @@ static rpmRC addFile(FileList fl, const char * diskPath,
 	}
     }
     if (fl->cur.ar.ar_user) {
-	fileUname = fl->cur.ar.ar_user;
+	fileUname = rpmstrPoolStr(fl->pool, fl->cur.ar.ar_user);
     } else if (fl->def.ar.ar_user) {
-	fileUname = fl->def.ar.ar_user;
+	fileUname = rpmstrPoolStr(fl->pool, fl->def.ar.ar_user);
     } else {
 	fileUname = rpmugUname(fileUid);
     }
     if (fl->cur.ar.ar_group) {
-	fileGname = fl->cur.ar.ar_group;
+	fileGname = rpmstrPoolStr(fl->pool, fl->cur.ar.ar_group);
     } else if (fl->def.ar.ar_group) {
-	fileGname = fl->def.ar.ar_group;
+	fileGname = rpmstrPoolStr(fl->pool, fl->def.ar.ar_group);
     } else {
 	fileGname = rpmugGname(fileGid);
     }
@@ -1759,8 +1718,6 @@ static specialDir specialDirFree(specialDir sd)
 {
     if (sd) {
 	argvFree(sd->files);
-	freeAttrRec(&(sd->ar));
-	freeAttrRec(&(sd->def_ar));
 	free(sd->dirname);
 	free(sd);
     }
@@ -1818,6 +1775,7 @@ static void processSpecialDir(rpmSpec spec, Package pkg, FileList fl,
 static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 				 Package pkg, int installSpecialDoc, int test)
 {
+    struct AttrRec_s root_ar = { 0, 0, 0, 0, 0, 0 };
     struct FileList_s fl;
     ARGV_t fileNames = NULL;
     specialDir specialDoc = NULL;
@@ -1837,7 +1795,10 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     fl.buildRoot = rpmGenPath(spec->rootDir, spec->buildRoot, NULL);
     fl.buildRootLen = strlen(fl.buildRoot);
 
+    root_ar.ar_user = rpmstrPoolId(fl.pool, "root", 1);
+    root_ar.ar_group = rpmstrPoolId(fl.pool, "root", 1);
     dupAttrRec(&root_ar, &fl.def.ar);	/* XXX assume %defattr(-,root,root) */
+
     fl.def.verifyFlags = RPMVERIFY_ALL;
 
     fl.pkgFlags = pkgFlags;
@@ -1865,8 +1826,8 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
 
 	if (parseForVerify(buf, 0, &fl.cur) ||
 	    parseForVerify(buf, 1, &fl.def) ||
-	    parseForAttr(buf, 0, &fl.cur) ||
-	    parseForAttr(buf, 1, &fl.def) ||
+	    parseForAttr(fl.pool, buf, 0, &fl.cur) ||
+	    parseForAttr(fl.pool, buf, 1, &fl.def) ||
 	    parseForDev(buf, &fl.cur) ||
 	    parseForConfig(buf, &fl.cur) ||
 	    parseForLang(buf, &fl.cur) ||
@@ -2002,7 +1963,7 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
     fl.pool = rpmstrPoolLink(spec->pool);
     if (_srcdefattr) {
 	char *a = rstrscat(NULL, "%defattr ", _srcdefattr, NULL);
-	parseForAttr(a, 1, &fl.def);
+	parseForAttr(fl.pool, a, 1, &fl.def);
 	free(a);
     }
     fl.files.alloced = spec->numSources + 1;
@@ -2048,12 +2009,12 @@ rpmRC processSourceFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags)
 	    flp->fl_mode |= fl.def.ar.ar_fmode;
 	}
 	if (fl.def.ar.ar_user) {
-	    flp->uname = rpmstrPoolId(fl.pool, fl.def.ar.ar_user, 1);
+	    flp->uname = fl.def.ar.ar_user;
 	} else {
 	    flp->uname = rpmstrPoolId(fl.pool, rpmugUname(flp->fl_uid), 1);
 	}
 	if (fl.def.ar.ar_group) {
-	    flp->gname = rpmstrPoolId(fl.pool, fl.def.ar.ar_group, 1);
+	    flp->gname = fl.def.ar.ar_group;
 	} else {
 	    flp->gname = rpmstrPoolId(fl.pool, rpmugGname(flp->fl_gid), 1);
 	}
