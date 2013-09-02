@@ -1903,6 +1903,7 @@ static rpmRC processPackageFiles(rpmSpec spec, rpmBuildPkgFlags pkgFlags,
     genCpioListAndHeader(&fl, pkg, 0);
 
 exit:
+    argvFree(fileNames);
     FileListFree(&fl);
     specialDirFree(specialDoc);
     specialDirFree(specialLic);
