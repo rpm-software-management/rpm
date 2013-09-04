@@ -518,32 +518,30 @@ exit:
  * Run per-interpreter Provides: dependency helper.
  * @param fc		file classifier
  * @param nsdep		class name for interpreter (e.g. "perl")
- * @return		0
+ * @return		0 on success
  */
 static int rpmfcHelperProvides(rpmfc fc, const char * nsdep)
 {
     if (fc->skipProv)
 	return 0;
 
-    rpmfcHelper(fc, nsdep, "provides", &fc->provides, RPMSENSE_FIND_PROVIDES, RPMTAG_PROVIDENAME);
-
-    return 0;
+    return rpmfcHelper(fc, nsdep, "provides", &fc->provides,
+			RPMSENSE_FIND_PROVIDES, RPMTAG_PROVIDENAME);
 }
 
 /**
  * Run per-interpreter Requires: dependency helper.
  * @param fc		file classifier
  * @param nsdep		class name for interpreter (e.g. "perl")
- * @return		0
+ * @return		0 on success
  */
 static int rpmfcHelperRequires(rpmfc fc, const char * nsdep)
 {
     if (fc->skipReq)
 	return 0;
 
-    rpmfcHelper(fc, nsdep, "requires", &fc->requires, RPMSENSE_FIND_REQUIRES, RPMTAG_REQUIRENAME);
-
-    return 0;
+    return rpmfcHelper(fc, nsdep, "requires", &fc->requires,
+			RPMSENSE_FIND_REQUIRES, RPMTAG_REQUIRENAME);
 }
 
 /* Only used for elf coloring and controlling RPMTAG_FILECLASS inclusion now */
