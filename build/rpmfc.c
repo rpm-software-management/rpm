@@ -449,6 +449,7 @@ static const char *parseDep(char **depav, int depac,
 	for (const char *s = depav[1]; *s; s++) {
 	    switch(*s) {
 	    default:
+		err = _("bad operator");
 		break;
 	    case '=':
 		*Flags |= RPMSENSE_EQUAL;
@@ -461,8 +462,10 @@ static const char *parseDep(char **depav, int depac,
 		break;
 	    }
 	}
-	*N = depav[0];
-	*EVR = depav[2];
+	if (!err) {
+	    *N = depav[0];
+	    *EVR = depav[2];
+	}
 	break;
     default:
 	err = _("bad format");
