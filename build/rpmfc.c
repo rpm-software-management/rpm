@@ -423,7 +423,7 @@ static ARGV_t runCmd(const char *nsdep, const char *depname,
 
 	appendLineStringBuf(sb_stdin, fn);
 	if (rpmfcExec(av, sb_stdin, &sb_stdout, 0, buildRoot) == 0) {
-	    argvSplit(&output, getStringBuf(sb_stdout), " \t\n\r");
+	    argvSplit(&output, getStringBuf(sb_stdout), "\n\r");
 	}
 
 	argvFree(av);
@@ -507,17 +507,18 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
     exclude = rpmfcAttrReg(depname, NULL, "exclude");
 
     for (int i = 0; i < pac; i++) {
+	char ** depav = NULL;
+	int xx, depac = 0;
 	const char *N = NULL;
 	const char *EVR = NULL;
 	const char *err = NULL;
 	rpmsenseFlags Flags = dsContext;
 
-	if (pav[i+1] && strchr("=<>", *pav[i+1])) {
-	    err = parseDep(&pav[i], 3, &N, &EVR, &Flags);
-	    i += 2;
-	} else {
-	    err = parseDep(&pav[i], 1, &N, &EVR, &Flags);
-	}
+	if ((xx = poptParseArgvString(pav[i], &depac, (const char ***)&depav)))
+	    err = poptStrerror(xx);
+
+	if (!err)
+	    err = parseDep(depav, depac, &N, &EVR, &Flags);
 
 	if (!err) {
 	    rpmds ds = rpmdsSingleNS(tagN, namespace, N, EVR, Flags);
@@ -529,7 +530,13 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 				tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	    }
 	    rpmdsFree(ds);
+	} else {
+	    rpmlog(RPMLOG_ERR, _("invalid dependency (%s): %s\n"),
+		   err, pav[i]);
+	    rc++;
 	}
+
+	free(depav);
     }
 
     argvFree(pav);
