@@ -435,6 +435,43 @@ static ARGV_t runCmd(const char *nsdep, const char *depname,
     return output;
 }
 
+static const char *parseDep(char **depav, int depac,
+		    const char **N, const char **EVR, rpmsenseFlags *Flags)
+{
+    const char *err = NULL;
+
+    switch (depac) {
+    case 1: /* only a name */
+	*N = depav[0];
+	*EVR = "";
+	break;
+    case 3: /* name, range and version */
+	for (const char *s = depav[1]; *s; s++) {
+	    switch(*s) {
+	    default:
+		break;
+	    case '=':
+		*Flags |= RPMSENSE_EQUAL;
+		break;
+	    case '<':
+		*Flags |= RPMSENSE_LESS;
+		break;
+	    case '>':
+		*Flags |= RPMSENSE_GREATER;
+		break;
+	    }
+	}
+	*N = depav[0];
+	*EVR = depav[2];
+	break;
+    default:
+	err = _("bad format");
+	break;
+    }
+
+    return err;
+}
+
 /**
  * Run per-interpreter dependency helper.
  * @param fc		file classifier
@@ -470,40 +507,29 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
     exclude = rpmfcAttrReg(depname, NULL, "exclude");
 
     for (int i = 0; i < pac; i++) {
-	rpmds ds = NULL;
-	const char *N = pav[i];
-	const char *EVR = "";
+	const char *N = NULL;
+	const char *EVR = NULL;
+	const char *err = NULL;
 	rpmsenseFlags Flags = dsContext;
+
 	if (pav[i+1] && strchr("=<>", *pav[i+1])) {
-	    i++;
-	    for (const char *s = pav[i]; *s; s++) {
-		switch(*s) {
-		default:
-		    break;
-		case '=':
-		    Flags |= RPMSENSE_EQUAL;
-		    break;
-		case '<':
-		    Flags |= RPMSENSE_LESS;
-		    break;
-		case '>':
-		    Flags |= RPMSENSE_GREATER;
-		    break;
-		}
+	    err = parseDep(&pav[i], 3, &N, &EVR, &Flags);
+	    i += 2;
+	} else {
+	    err = parseDep(&pav[i], 1, &N, &EVR, &Flags);
+	}
+
+	if (!err) {
+	    rpmds ds = rpmdsSingleNS(tagN, namespace, N, EVR, Flags);
+
+	    /* Add to package and file dependencies unless filtered */
+	    if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
+		(void) rpmdsMerge(depsp, ds);
+		rpmfcAddFileDep(fc->ddict, fc->ix, ds,
+				tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
 	    }
-	    i++;
-	    EVR = pav[i];
+	    rpmdsFree(ds);
 	}
-
-	ds = rpmdsSingleNS(tagN, namespace, N, EVR, Flags);
-
-	/* Add to package and file dependencies unless filtered */
-	if (regMatch(exclude, rpmdsDNEVR(ds)+2) == 0) {
-	    (void) rpmdsMerge(depsp, ds);
-	    rpmfcAddFileDep(fc->ddict, fc->ix, ds, tagN == RPMTAG_PROVIDENAME ? 'P' : 'R');
-	}
-
-	rpmdsFree(ds);
     }
 
     argvFree(pav);
