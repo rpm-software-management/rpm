@@ -443,7 +443,7 @@ static ARGV_t runCmd(const char *nsdep, const char *depname,
  * @param depsp		fc->provides or fc->requires
  * @param dsContext	RPMSENSE_FIND_PROVIDES or RPMSENSE_FIND_REQUIRES
  * @param tagN		RPMTAG_PROVIDENAME or RPMTAG_REQUIRENAME
- * @return		0
+ * @return		0 on success
  */
 static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 		       rpmds *depsp, rpmsenseFlags dsContext, rpmTagVal tagN)
@@ -452,6 +452,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
     const char * fn = fc->fn[fc->ix];
     char *namespace = NULL;
     int pac;
+    int rc = 0;
     regex_t *exclude = NULL;
     regex_t *exclude_from = NULL;
 
@@ -511,7 +512,7 @@ static int rpmfcHelper(rpmfc fc, const char *nsdep, const char *depname,
 
 exit:
     regFree(exclude_from);
-    return 0;
+    return rc;
 }
 
 /**
