@@ -294,7 +294,9 @@ static int initModule(PyObject *m)
     if (Py_AtExit(rpm_exithook) == -1)
         return 0;
 
-    rpmReadConfigFiles(NULL, NULL);
+    /* failure to initialize rpm (crypto and all) is rather fatal too... */
+    if (rpmReadConfigFiles(NULL, NULL) == -1)
+	return 0;
 
     d = PyModule_GetDict(m);
 
