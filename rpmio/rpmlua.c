@@ -526,6 +526,8 @@ int rpmluaRunScript(rpmlua _lua, const char *script, const char *name)
     int ret = 0;
     if (name == NULL)
 	name = "<lua>";
+    if (script == NULL)
+	script = "";
     if (luaL_loadbuffer(L, script, strlen(script), name) != 0) {
 	rpmlog(RPMLOG_ERR, _("invalid syntax in lua script: %s\n"),
 		 lua_tostring(L, -1));
