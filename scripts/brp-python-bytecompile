@@ -34,7 +34,7 @@ fi
 # and below /usr/lib/python3.1/, we're targeting /usr/bin/python3.1
 
 shopt -s nullglob
-for python_libdir in "$RPM_BUILD_ROOT"/usr/lib{,64}/python[0-9].[0-9]/ ;
+for python_libdir in `find "$RPM_BUILD_ROOT" -type d|grep -E "/usr/lib(64)/python[0-9]\.[0-9]$"`;
 do
 	python_binary=/usr/bin/$(basename $python_libdir)
 	real_libdir=${python_libdir/$RPM_BUILD_ROOT/}
