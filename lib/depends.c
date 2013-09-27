@@ -504,6 +504,12 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
     if (deptag != RPMTAG_OBSOLETENAME && Name[0] == '/') {
 	mi = rpmtsPrunedIterator(ts, RPMDBI_INSTFILENAMES, Name, prune);
 	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	    /* Ignore self-conflicts */
+	    if (deptag == RPMTAG_CONFLICTNAME) {
+		unsigned int instance = headerGetInstance(h);
+		if (instance && instance == rpmdsInstance(dep))
+		    continue;
+	    }
 	    rpmdsNotify(dep, "(db files)", rc);
 	    break;
 	}
@@ -527,6 +533,12 @@ static int rpmdbProvides(rpmts ts, depCache dcache, rpmds dep)
 	    int prix = (selfevr) ? -1 : rpmdbGetIteratorFileNum(mi);
 	    int match = rpmdsMatches(tspool, h, prix, dep, selfevr,
 					_rpmds_nopromote);
+	    /* Ignore self-obsoletes and self-conflicts */
+	    if (match && (deptag == RPMTAG_OBSOLETENAME || deptag == RPMTAG_CONFLICTNAME)) {
+		unsigned int instance = headerGetInstance(h);
+		if (instance && instance == rpmdsInstance(dep))
+		    match = 0;
+	    }
 	    if (match) {
 		rpmdsNotify(dep, "(db provides)", rc);
 		break;
@@ -672,8 +684,18 @@ static void checkInstDeps(rpmts ts, depCache dcache, rpmte te,
     rpmstrPool pool = rpmtsPool(ts);
 
     while ((h = rpmdbNextIterator(mi)) != NULL) {
-	char * pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
-	rpmds ds = rpmdsNewPool(pool, h, depTag, 0);
+	char * pkgNEVRA;
+	rpmds ds;
+
+	/* Ignore self-obsoletes and self-conflicts */
+	if (depTag == RPMTAG_OBSOLETENAME || depTag == RPMTAG_CONFLICTNAME) {
+	    unsigned int instance = headerGetInstance(h);
+	    if (instance && instance == rpmteDBInstance(te))
+		continue;
+	}
+
+	pkgNEVRA = headerGetAsString(h, RPMTAG_NEVRA);
+	ds = rpmdsNewPool(pool, h, depTag, 0);
 
 	checkDS(ts, dcache, te, pkgNEVRA, ds, dep, 0);
 
