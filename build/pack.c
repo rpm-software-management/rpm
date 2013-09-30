@@ -256,7 +256,6 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
     int xx;
     rpmRC rc = RPMRC_OK;
     struct rpmtd_s td;
-    rpmTagVal sizetag;
     rpmTagVal payloadtag;
 
     if (pkgidp)
@@ -376,13 +375,11 @@ static rpmRC writeRPM(Package pkg, unsigned char ** pkgidp,
      * such a package.
      */
     if (pkg->cpioArchiveSize < UINT32_MAX) {
-	sizetag = RPMSIGTAG_SIZE;
 	payloadtag = RPMSIGTAG_PAYLOADSIZE;
     } else {
-	sizetag = RPMSIGTAG_LONGSIZE;
 	payloadtag = RPMSIGTAG_LONGARCHIVESIZE;
     }
-    (void) rpmGenDigest(sig, sigtarget, sizetag);
+    (void) rpmGenDigest(sig, sigtarget, RPMSIGTAG_SIZE);
     (void) rpmGenDigest(sig, sigtarget, RPMSIGTAG_MD5);
 
     if (SHA1) {

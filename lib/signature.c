@@ -347,24 +347,24 @@ int rpmGenDigest(Header sigh, const char * file, rpmTagVal sigTag)
     int ret = -1;	/* assume failure. */
 
     switch (sigTag) {
-    case RPMSIGTAG_SIZE: {
-	rpm_off_t size;
+    case RPMSIGTAG_SIZE:
+    case RPMSIGTAG_LONGSIZE:
 	if (stat(file, &st) != 0)
 	    break;
-	size = st.st_size;
-	if (!sighdrPut(sigh, sigTag, RPM_INT32_TYPE, &size, 1))
-	    break;
-	ret = 0;
-	} break;
-    case RPMSIGTAG_LONGSIZE: {
-	rpm_loff_t size;
-	if (stat(file, &st) != 0)
-	    break;
-	size = st.st_size;
-	if (!sighdrPut(sigh, sigTag, RPM_INT64_TYPE, &size, 1))
-	    break;
-	ret = 0;
-	} break;
+	if (st.st_size>UINT32_MAX || sigTag==RPMSIGTAG_LONGSIZE) {
+	    rpm_loff_t size;
+	    size = st.st_size;
+	    if (!sighdrPut(sigh, RPMSIGTAG_LONGSIZE, RPM_INT64_TYPE, &size, 1))
+		break;
+	    ret = 0;
+	} else {
+	    rpm_off_t size;
+	    size = st.st_size;
+	    if (!sighdrPut(sigh, RPMSIGTAG_SIZE, RPM_INT32_TYPE, &size, 1))
+		break;
+	    ret = 0;
+	}
+	break;
     case RPMSIGTAG_MD5:
 	pktlen = 16;
 	pkt = xcalloc(pktlen, sizeof(*pkt));
