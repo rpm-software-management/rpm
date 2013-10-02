@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Transform appdata xml file into RPM appdata(filename) provides
+#
+# Author: Michael Schroeder <mls@suse.de>
+# Based on other provides scripts from RPM
+
+OLD_IFS="$IFS"
+while read instfile ; do
+	case "$instfile" in
+	*.appdata.xml)
+		echo "appdata()"
+		echo "appdata(${instfile##*/appdata/})"
+		;;
+	esac
+done
+IFS=$OLD_IFS
+
