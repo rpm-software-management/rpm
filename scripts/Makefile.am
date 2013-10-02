@@ -18,7 +18,7 @@ EXTRA_DIST = \
 	find-php-provides find-php-requires \
 	mono-find-requires mono-find-provides \
 	ocaml-find-requires.sh ocaml-find-provides.sh \
-	pkgconfigdeps.sh libtooldeps.sh \
+	pkgconfigdeps.sh libtooldeps.sh appdata.prov \
 	fontconfig.prov desktop-file.prov script.req \
 	macros.perl macros.php macros.python
 

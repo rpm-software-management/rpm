@@ -1,0 +1,2 @@
+%__appdata_provides	%{_rpmconfigdir}/appdata.prov
+%__appdata_path		^%{_datadir}/appdata/.*\\.appdata\\.xml$
