@@ -160,6 +160,27 @@ runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-two-1.0-1.noarch.rpm
 ])
 AT_CLEANUP
 
+AT_SETUP([install and verify self-conflicting package])
+AT_KEYWORDS([install])
+AT_CHECK([
+RPMDB_CLEAR
+RPMDB_INIT
+rm -rf "${TOPDIR}"
+
+runroot rpmbuild --quiet -bb \
+	--define "pkg one" \
+	--define "provs something" \
+	--define "cfls something" \
+	  /data/SPECS/deptest.spec
+
+runroot rpm -U "${TOPDIR}"/RPMS/noarch/deptest-one-1.0-1.noarch.rpm
+runroot rpm -V --nofiles deptest-one
+],
+[0],
+[],
+[])
+AT_CLEANUP
+
 # explicit file conflicts
 AT_SETUP([explicit file conflicts])
 AT_KEYWORDS([install])
