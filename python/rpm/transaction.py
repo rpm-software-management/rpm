@@ -1,7 +1,13 @@
 #!/usr/bin/python
 
+import sys
 import rpm
 from rpm._rpm import ts as TransactionSetCore
+
+if sys.version_info[0] == 3:
+    _string_types = str,
+else:
+    _string_types = basestring,
 
 # TODO: migrate relevant documentation from C-side
 class TransactionSet(TransactionSetCore):
@@ -45,14 +51,14 @@ class TransactionSet(TransactionSetCore):
             return tuple(keys)
 
     def addInstall(self, item, key, how="u"):
-        if isinstance(item, basestring):
-            f = file(item)
+        if isinstance(item, _string_types):
+            f = open(item)
             header = self.hdrFromFdno(f)
             f.close()
-        elif isinstance(item, file):
-            header = self.hdrFromFdno(item)
-        else:
+        elif isinstance(item, rpm.hdr):
             header = item
+        else:
+            header = self.hdrFromFdno(item)
 
         if not how in ['u', 'i']:
             raise ValueError('how argument must be "u" or "i"')
@@ -69,7 +75,7 @@ class TransactionSet(TransactionSetCore):
             hdrs = item
         elif isinstance(item, int):
             hdrs = self.dbMatch(rpm.RPMDBI_PACKAGES, item)
-        elif isinstance(item, basestring):
+        elif isinstance(item, _string_types):
             hdrs = self.dbMatch(rpm.RPMDBI_LABEL, item)
         else:
             raise TypeError("invalid type %s" % type(item))
