@@ -608,14 +608,13 @@ static int fsmReadLink(const char *path,
  * @param ix		file index
  * @return		0 on success
  */
-static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
+static int writeFile(FSM_t fsm, int writeData, int ix)
 {
     FD_t rfd = NULL;
     char * path = fsm->path;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
-    rpm_loff_t left;
     rpmfi fi = fsm->fi;
     int rc = 0;
 
@@ -643,11 +642,8 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
 					 rpmfiBNIndex(fi, ix)));
     }
 
-    if (fi->lfsizes) {
-        rc = rpmcpioStrippedHeaderWrite(archive, ix, st->st_size);
-    } else {
-        rc = rpmcpioHeaderWrite(archive, fsm->path, st);
-    }
+    rc = rpmfiArchiveWriteHeader(fi);
+
     _free(fsm->path);
     fsm->path = path;
 
@@ -655,32 +651,17 @@ static int writeFile(FSM_t fsm, int writeData, rpmcpio_t archive, int ix)
 
 
     if (writeData && S_ISREG(st->st_mode)) {
-	size_t len;
-
 	rfd = Fopen(fsm->path, "r.ufdio");
 	if (Ferror(rfd)) {
 	    rc = CPIOERR_OPEN_FAILED;
 	    goto exit;
 	}
 	
-	left = st->st_size;
+	rc = rpmfiArchiveWriteFile(fi, rfd);
 
-	while (left) {
-	    len = (left > fsm->bufsize ? fsm->bufsize : left);
-	    if (Fread(fsm->buf, sizeof(*fsm->buf), len, rfd) != len || Ferror(rfd)) {
-		rc = CPIOERR_READ_FAILED;
-		goto exit;
-	    }
-
-	    if (rpmcpioWrite(archive, fsm->buf, len) != len) {
-		rc = CPIOERR_WRITE_FAILED;
-		goto exit;
-	    }
-	    left -= len;
-	}
     } else if (writeData && S_ISLNK(st->st_mode)) {
         size_t len = strlen(symbuf);
-        if (rpmcpioWrite(archive, symbuf, len) != len) {
+        if (rpmfiArchiveWrite(fi, symbuf, len) != len) {
             rc = CPIOERR_WRITE_FAILED;
             goto exit;
         }
@@ -705,7 +686,7 @@ exit:
  * @param li		link to write
  * @return		0 on success
  */
-static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
+static int writeLinkedFile(FSM_t fsm, hardLink_t li)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
@@ -721,9 +702,10 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
 	if (li->filex[i] < 0) continue;
 
 	rc = fsmMapPath(fsm, li->filex[i]);
+	rpmfiSetFX(fsm->fi, li->filex[i]);
 
 	/* Write data after last link. */
-	rc = writeFile(fsm, (i == 0), archive, li->filex[i]);
+	rc = writeFile(fsm, (i == 0), li->filex[i]);
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
 	    *fsm->failedFile = xstrdup(fsm->path);
@@ -738,7 +720,7 @@ static int writeLinkedFile(FSM_t fsm, rpmcpio_t archive, hardLink_t li)
     return ec;
 }
 
-static int writeLinks(FSM_t fsm, rpmcpio_t archive)
+static int writeLinks(FSM_t fsm)
 {
     int j, rc = 0;
     nlink_t i, nlink;
@@ -761,7 +743,7 @@ static int writeLinks(FSM_t fsm, rpmcpio_t archive)
 	fsm->sb = li->sb;	/* structure assignment */
 	fsm->osb = fsm->sb;	/* structure assignment */
 
-	if (!rc) rc = writeLinkedFile(fsm, archive, li);
+	if (!rc) rc = writeLinkedFile(fsm, li);
     }
     return rc;
 }
@@ -1703,16 +1685,14 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
 {
     rpmfs fs = rpmfsNew(rpmfiFC(fi), 0);;
     FSM_t fsm = fsmNew(FSM_PKGBUILD, fs, fi, failedFile);;
-    rpmcpio_t archive = rpmcpioOpen(cfd, O_WRONLY);
-    int rc = 0;
+
+    int rc = rpmfiAttachArchive(fi, cfd, O_WRONLY);
 
     fsm->mapFlags |= CPIO_MAP_TYPE;
     if (isSrc) 
 	fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
 
-    if (archive == NULL) {
-	rc = CPIOERR_INTERNAL;
-    } else {
+    if (!rc) {
 	int ghost, i, fc = rpmfiFC(fi);
 
 	/* XXX Is this actually still needed? */
@@ -1729,6 +1709,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
 
 	/* Identify mapping index. */
 	fsm->ix++;
+	rpmfiSetFX(fi, fsm->ix);
 
         /* Exit on end-of-payload. */
         if (fsm->ix >= rpmfiFC(fsm->fi))
@@ -1751,7 +1732,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
         /* Hardlinks are handled later */
         if (!(S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)) {
             /* Copy file into archive. */
-            rc = writeFile(fsm, 1, archive, fsm->ix);
+            rc = writeFile(fsm, 1, fsm->ix);
         }
 
         if (rc) {
@@ -1764,16 +1745,14 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
 
     /* Flush partial sets of hard linked files. */
     if (!rc)
-        rc = writeLinks(fsm, archive);
+	rc = writeLinks(fsm);
+
+    if (archiveSize)
+	*archiveSize = (rc == 0) ? rpmfiArchiveTell(fi) : 0;
 
     /* Finish the payload stream */
     if (!rc)
-	rc = rpmcpioClose(archive);
-
-    if (archiveSize)
-	*archiveSize = (rc == 0) ? rpmcpioTell(archive) : 0;
-
-    rpmcpioFree(archive);
+	rc = rpmfiArchiveClose(fi);
     rpmfsFree(fs);
     fsmFree(fsm);
 
