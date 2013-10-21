@@ -5,6 +5,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
 #include "lib/fprint.h"
+#include "lib/cpio.h"
 
 #define	RPMFIMAGIC	0x09697923
 
@@ -67,6 +68,7 @@ struct rpmfi_s {
     struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     rpm_loff_t * replacedLSizes;/*!< (TR_ADDED) */
+    rpmcpio_t archive;		/*!< Archive with payload */
     int magic;
     int nrefs;		/*!< Reference count. */
 };
@@ -195,6 +197,80 @@ rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix);
 
 RPM_GNUC_INTERNAL
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
+
+/** \ingroup payload
+ * Add payload archive to the file info
+ * @param fi		file info
+ * @param fd		file
+ * @param mode		O_RDONLY or O_WRONLY
+ * @return		> 0 on error
+ */
+int rpmfiAttachArchive(rpmfi fi, FD_t fd, char mode);
+
+/** \ingroup payload
+ * Close payload archive
+ * @param fi		file info
+ * @return		> 0 on error
+ */
+int rpmfiArchiveClose(rpmfi fi);
+
+/** \ingroup payload
+ * Return current position in payload archive
+ * @param fi		file info
+ * @return		position
+ */
+rpm_loff_t rpmfiArchiveTell(rpmfi fi);
+
+/** \ingroup payload
+ * Write archive header for current file
+ * @param fi		file info
+ * @return		> 0 on error
+ */
+int rpmfiArchiveWriteHeader(rpmfi fi);
+
+/** \ingroup payload
+ * Write content into current file in archive
+ * @param fi		file info
+ * @param buf		pointer to content
+ * @prama size		number of bytes to write
+ * @return		bytes actually written
+ */
+size_t rpmfiArchiveWrite(rpmfi fi, void * buf, size_t size);
+
+/** \ingroup payload
+ * Write content from given file into current file in archive
+ * @param fi		file info
+ * @param fd		file descriptor of file to read
+ * @return		> 0 on error
+ */
+int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
+
+/** \ingroup payload
+ * Read next archive header from archive and move fi to the
+ * file found in the archive. Sets rpmfiFX!
+ * @param fi		file info
+ * @return		> 0 on error
+ */
+int rpmfiArchiveNext(rpmfi fi);
+
+
+/** \ingroup payload
+ * Read content from current file in archive
+ * @param fi		file info
+ * @param buf		pointer to buffer
+ * @prama size		number of bytes to read
+ * @return		bytes actually read
+ */
+size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
+
+/** \ingroup payload
+ * Write content from current file in archive to a file
+ * @param fi		file info
+ * @param fd		file descriptor of file to write to
+ * @param nodigest	ommit checksum check if > 0
+ * @return		> 0 on error
+ */
+int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, char nodigest);
 
 #ifdef __cplusplus
 }

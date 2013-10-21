@@ -15,6 +15,8 @@
 #include "lib/rpmfi_internal.h"
 #include "lib/rpmte_internal.h"	/* relocations */
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
+#include "lib/rpmug.h"
+#include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
 
 #include "debug.h"
 
@@ -1607,4 +1609,270 @@ int rpmfiConfigConflict(const rpmfi fi)
 rpmstrPool rpmfiPool(rpmfi fi)
 {
     return (fi != NULL) ? fi->pool : NULL;
+}
+
+/******************************************************/
+/*** Archive handling *********************************/
+/******************************************************/
+
+int rpmfiAttachArchive(rpmfi fi, FD_t fd, char mode)
+{
+    if (fi == NULL || fd == NULL)
+	return -1;
+    fi->archive = rpmcpioOpen(fd, mode);
+    return (fi->archive == NULL);
+}
+
+int rpmfiArchiveClose(rpmfi fi)
+{
+    if (fi == NULL)
+	return -1;
+    int rc = rpmcpioClose(fi->archive);
+    fi->archive = rpmcpioFree(fi->archive);
+    return rc;
+}
+
+rpm_loff_t rpmfiArchiveTell(rpmfi fi)
+{
+    if (fi == NULL || fi->archive == NULL)
+	return 0;
+    return (rpm_loff_t) rpmcpioTell(fi->archive);
+}
+
+int rpmfiArchiveWriteHeader(rpmfi fi)
+{
+    int rc;
+
+    if (fi == NULL)
+	return -1;
+
+    rpm_loff_t fsize = rpmfiFSize(fi);
+    mode_t finalMode = rpmfiFMode(fi);
+
+    const int * hardlinks = NULL;
+    int numHardlinks;
+    numHardlinks = rpmfiFLinks(fi, &hardlinks);
+
+    if (S_ISDIR(finalMode)) {
+	fsize = 0;
+    } else if (S_ISLNK(finalMode)) {
+	fsize = strlen(rpmfiFLink(fi)); // XXX ugly!!!
+    } else {
+	/* Set fsize to 0 for all but the very last hardlinked file */
+	const int * hardlinks = NULL;
+	int numHardlinks;
+	numHardlinks = rpmfiFLinks(fi, &hardlinks);
+	if (numHardlinks > 1 && hardlinks[numHardlinks-1]!=fi->i) {
+	    fsize = 0;
+	}
+    }
+
+    if (fi->lfsizes) {
+	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), fsize);
+    } else {
+	struct stat st;
+	memset(&st, 0, sizeof(st));
+
+	const char *user = rpmfiFUser(fi);
+	const char *group = rpmfiFGroup(fi);
+	uid_t uid = 0;
+	gid_t gid = 0;
+
+	if (user) rpmugUid(user, &uid);
+	if (group) rpmugGid(group, &gid);
+
+	st.st_mode = finalMode;
+	st.st_ino = rpmfiFInode(fi);
+	st.st_rdev = rpmfiFRdev(fi);
+	st.st_mtime = rpmfiFMtime(fi);
+	st.st_nlink = numHardlinks;
+	st.st_uid = uid;
+	st.st_gid = gid;
+	st.st_size = fsize;
+
+	if (fi->apath) {
+	    rc = rpmcpioHeaderWrite(fi->archive, fi->apath[rpmfiFX(fi)], &st);
+	} else {
+	    char * path = rstrscat(NULL, ".", rpmfiDN(fi), rpmfiBN(fi), NULL);
+	    rc = rpmcpioHeaderWrite(fi->archive, path, &st);
+	    free(path);
+	}
+    }
+
+    return rc;
+}
+
+size_t rpmfiArchiveWrite(rpmfi fi, void * buf, size_t size)
+{
+    if (fi == NULL || fi->archive == NULL)
+	return -1;
+    return rpmcpioWrite(fi->archive, buf, size);
+}
+
+int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
+{
+    rpm_loff_t left;
+    int rc = 0;
+    size_t len;
+    char buf[BUFSIZ*4];
+
+    if (fi == NULL || fi->archive == NULL || fd == NULL)
+	return -1;
+
+    left = rpmfiFSize(fi);
+
+    while (left) {
+	len = (left > sizeof(buf) ? sizeof(buf) : left);
+	if (Fread(buf, sizeof(*buf), len, fd) != len || Ferror(fd)) {
+	    rc = CPIOERR_READ_FAILED;
+	    break;
+	}
+
+	if (rpmcpioWrite(fi->archive, buf, len) != len) {
+	    rc = CPIOERR_WRITE_FAILED;
+	    break;
+	}
+	left -= len;
+    }
+    return rc;
+}
+
+
+/** \ingroup payload
+ */
+static int cpioStrCmp(const void * a, const void * b)
+{
+    const char * afn = *(const char **)a;
+    const char * bfn = *(const char **)b;
+
+    /* Match rpm-4.0 payloads with ./ prefixes. */
+    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
+    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
+
+    /* If either path is absolute, make it relative. */
+    if (afn[0] == '/')	afn += 1;
+    if (bfn[0] == '/')	bfn += 1;
+
+    return strcmp(afn, bfn);
+}
+
+
+int rpmfiArchiveNext(rpmfi fi)
+{
+    int rc;
+    int fx = -1;
+    char * path;
+
+    if (fi == NULL || fi->archive == NULL)
+	return -1;
+
+    /* Read next payload header. */
+    rc = rpmcpioHeaderRead(fi->archive, &path, &fx);
+
+    if (rc) {
+	return rc;
+    }
+
+
+    if (fx == -1) {
+	/* Identify mapping index. */
+	int fc = rpmfiFC(fi);
+	if (fi && fc > 0 && fi->apath) {
+	    char ** p = NULL;
+	    if (fi->apath != NULL)
+		p = bsearch(&path, fi->apath, fc, sizeof(path),
+			    cpioStrCmp);
+	    if (p) {
+		fx = (p - fi->apath);
+	    }
+	} else if (fc > 0) {
+	    fx = rpmfiFindFN(fi, path);
+	}
+	free(path);
+	rpmfiSetFX(fi, fx);
+    } else {
+	rpmfiSetFX(fi, fx);
+
+	uint32_t numlinks;
+	const int * links;
+	rpm_loff_t fsize = 0;
+	rpm_mode_t mode = rpmfiFMode(fi);
+
+	numlinks = rpmfiFLinks(fi, &links);
+	if (S_ISREG(mode)) {
+	    if (numlinks>1 && links[numlinks-1]!=fx) {
+		fsize = 0;
+	    } else {
+		fsize = rpmfiFSize(fi);
+	    }
+	} else if (S_ISLNK(mode)) {
+	    fsize = rpmfiFSize(fi);
+	}
+	rpmcpioSetExpectedFileSize(fi->archive, fsize);
+    }
+    /* Mapping error */
+    if (fx < 0) {
+	return CPIOERR_UNMAPPED_FILE;
+    }
+    return 0;
+}
+
+size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
+{
+    if (fi == NULL || fi->archive == NULL)
+	return -1;
+    return rpmcpioRead(fi->archive, buf, size);
+}
+
+int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, char nodigest)
+{
+    if (fi == NULL || fi->archive == NULL || fd == NULL)
+	return -1;
+
+    rpm_loff_t left = rpmfiFSize(fi);
+    const unsigned char * fidigest = NULL;
+    pgpHashAlgo digestalgo = 0;
+    int rc = 0;
+    char buf[BUFSIZ*4];
+
+    if (!nodigest) {
+	digestalgo = rpmfiDigestAlgo(fi);
+	fidigest = rpmfiFDigestIndex(fi, rpmfiFX(fi), NULL, NULL);
+	fdInitDigest(fd, digestalgo, 0);
+    }
+
+    while (left) {
+	size_t len;
+	len = (left > sizeof(buf) ? sizeof(buf) : left);
+	if (rpmcpioRead(fi->archive, buf, len) != len) {
+	    rc = CPIOERR_READ_FAILED;
+	    goto exit;
+	}
+	if ((Fwrite(buf, sizeof(*buf), len, fd) != len) || Ferror(fd)) {
+	    rc = CPIOERR_WRITE_FAILED;
+	    goto exit;
+	}
+
+	left -= len;
+    }
+
+    if (!nodigest) {
+	void * digest = NULL;
+
+	(void) Fflush(fd);
+	fdFiniDigest(fd, digestalgo, &digest, NULL, 0);
+
+	if (digest != NULL && fidigest != NULL) {
+	    size_t diglen = rpmDigestLength(digestalgo);
+	    if (memcmp(digest, fidigest, diglen)) {
+		rc = CPIOERR_DIGEST_MISMATCH;
+	    }
+	} else {
+	    rc = CPIOERR_DIGEST_MISMATCH;
+	}
+	free(digest);
+    }
+
+exit:
+    return rc;
 }
