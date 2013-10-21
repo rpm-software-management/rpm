@@ -1270,11 +1270,9 @@ static int fsmInit(FSM_t fsm)
 {
     int rc = 0;
 
-    /* On non-install, mode must be known so that dirs don't get suffix. */
-    if (fsm->goal != FSM_PKGINSTALL) {
-	rpmfi fi = fsmGetFi(fsm);
-	fsm->sb.st_mode = rpmfiFModeIndex(fi, fsm->ix);
-    }
+    /* mode must be known so that dirs don't get suffix. */
+    rpmfi fi = fsmGetFi(fsm);
+    fsm->sb.st_mode = rpmfiFModeIndex(fi, fsm->ix);
 
     /* Generate file path. */
     rc = fsmMapPath(fsm, fsm->ix);
