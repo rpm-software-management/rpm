@@ -137,49 +137,6 @@ static char * fsmFsPath(const FSM_t fsm, int isDir,
 }
 
 /** \ingroup payload
- */
-static int cpioStrCmp(const void * a, const void * b)
-{
-    const char * afn = *(const char **)a;
-    const char * bfn = *(const char **)b;
-
-    /* Match rpm-4.0 payloads with ./ prefixes. */
-    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
-    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
-
-    /* If either path is absolute, make it relative. */
-    if (afn[0] == '/')	afn += 1;
-    if (bfn[0] == '/')	bfn += 1;
-
-    return strcmp(afn, bfn);
-}
-
-/** \ingroup payload
- * Locate archive path in file info.
- * @param fsmPath	archive path
- * @return		index into file info, -1 if archive path was not found
- */
-static void mapFind(FSM_t fsm, const char * fsmPath)
-{
-    int ix = -1;
-
-    const rpmfi fi = fsm->fi;
-    int fc = rpmfiFC(fi);
-    if (fi && fc > 0 && fi->apath && fsmPath && *fsmPath) {
-        char ** p = NULL;
-
-        if (fi->apath != NULL)
-            p = bsearch(&fsmPath, fi->apath, fc, sizeof(fsmPath),
-			cpioStrCmp);
-        if (p) {
-            ix = (p - fi->apath);
-        }
-    }
-    fsm->ix = ix;
-    rpmfiSetFX(fsm->fi, ix);
-}
-
-/** \ingroup payload
  * Directory name iterator.
  */
 typedef struct dnli_s {
@@ -380,7 +337,6 @@ static int saveHardLink(FSM_t fsm, hardLink_t * linkSet)
     int ix = -1;
     int j;
     hardLink_t *tailp, li;
-
     /* Find hard link set. */
     for (tailp = &fsm->links; (li = *tailp) != NULL; tailp = &li->next) {
 	if (li->sb.st_ino == st->st_ino && li->sb.st_dev == st->st_dev)
@@ -601,16 +557,11 @@ static int fsmMapAttrs(FSM_t fsm)
 /** \ingroup payload
  * Create file from payload stream.
  * @param fsm		file state machine data
- * @param archive	payload archive
  * @return		0 on success
  */
-static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive, int nodigest)
+static int expandRegular(FSM_t fsm, rpmpsm psm, int nodigest)
 {
     FD_t wfd = NULL;
-    const struct stat * st = &fsm->sb;
-    rpm_loff_t left = st->st_size;
-    const unsigned char * fidigest = NULL;
-    pgpHashAlgo digestalgo = 0;
     int rc = 0;
 
     wfd = Fopen(fsm->path, "w.ufdio");
@@ -619,49 +570,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, rpmcpio_t archive, int nodigest)
 	goto exit;
     }
 
-    if (!nodigest) {
-	rpmfi fi = fsm->fi;
-	digestalgo = rpmfiDigestAlgo(fi);
-	fidigest = rpmfiFDigestIndex(fi, fsm->ix, NULL, NULL);
-	fdInitDigest(wfd, digestalgo, 0);
-    }
-
-    while (left) {
-        size_t len;
-	len = (left > fsm->bufsize ? fsm->bufsize : left);
-        if (rpmcpioRead(archive, fsm->buf, len) != len) {
-            rc = CPIOERR_READ_FAILED;
-	    goto exit;
-        }
-	if ((Fwrite(fsm->buf, sizeof(*fsm->buf), len, wfd) != len) || Ferror(wfd)) {
-	    rc = CPIOERR_WRITE_FAILED;
-	    goto exit;
-	}
-
-	left -= len;
-
-	/* don't call this with fileSize == fileComplete */
-	if (!rc && left)
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
-    }
-
-    if (!nodigest) {
-	void * digest = NULL;
-
-	(void) Fflush(wfd);
-	fdFiniDigest(wfd, digestalgo, &digest, NULL, 0);
-
-	if (digest != NULL && fidigest != NULL) {
-	    size_t diglen = rpmDigestLength(digestalgo);
-	    if (memcmp(digest, fidigest, diglen)) {
-		rc = CPIOERR_DIGEST_MISMATCH;
-            }
-	} else {
-	    rc = CPIOERR_DIGEST_MISMATCH;
-	}
-	free(digest);
-    }
-
+    rc = rpmfiArchiveReadToFile(fsm->fi, wfd, nodigest);
 exit:
     if (wfd) {
 	int myerrno = errno;
@@ -1534,74 +1443,21 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
     }
 }
 
-static int readCpioHeader(FSM_t fsm, rpmcpio_t archive)
-{
-    int rc;
-    int fx = -1;
-    rpmfi fi = fsm->fi;
-
-    /* Read next payload header. */
-    rc = rpmcpioHeaderRead(archive, &(fsm->path), &fx);
-
-    if (rc) {
-        return rc;
-    }
-
-
-    if (fx == -1) {
-        /* Identify mapping index. */
-        mapFind(fsm, fsm->path);
-
-        /* Mapping error */
-        if (fsm->ix < 0) {
-            if (fsm->failedFile && *fsm->failedFile == NULL)
-                *fsm->failedFile = xstrdup(fsm->path);
-            return CPIOERR_UNMAPPED_FILE;
-        }
-    } else {
-        fsm->ix = fx;
-
-	rpmfiSetFX(fi, fx);
-
-	uint32_t numlinks;
-	const int * links;
-	rpm_loff_t fsize = 0;
-	rpm_mode_t mode = rpmfiFMode(fi);
-
-	numlinks = rpmfiFLinks(fi, &links);
-	if (S_ISREG(mode)) {
-	    if (numlinks>1 && links[numlinks-1]!=fx) {
-		fsize = 0;
-	    } else {
-		fsize = rpmfiFSize(fi);
-	    }
-	} else if (S_ISLNK(mode)) {
-	    fsize = rpmfiFSize(fi);
-	}
-	rpmcpioSetExpectedFileSize(archive, fsize);
-    }
-
-    rpmfiSetFX(fi, fsm->ix);
-    return rc;
-}
-
-
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, fs, fi, failedFile);
-    rpmcpio_t archive = rpmcpioOpen(cfd, O_RDONLY);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST);
 
+
+    rc = rpmfiAttachArchive(fi, cfd, O_RDONLY);
+
     if (!rpmteIsSource(te))
 	fsm->mapFlags |= CPIO_SBIT_CHECK;
-
-    if (archive == NULL)
-	rc = CPIOERR_INTERNAL;
 
     fsm->plugins = rpmtsPlugins(ts);
     /* transaction id used for temporary path suffix while installing */
@@ -1619,7 +1475,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	fsmReset(fsm);
 
 	/* Read next payload header. */
-        rc = readCpioHeader(fsm, archive);
+	rc = rpmfiArchiveNext(fi);
+	fsm->ix = rpmfiFX(fi);
 
 	/* Detect and exit on end-of-payload. */
 	if (rc == CPIOERR_HDR_TRAILER) {
@@ -1650,7 +1507,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
 		if (rc == CPIOERR_ENOENT) {
-		    rc = expandRegular(fsm, psm, archive, nodigest);
+		    rc = expandRegular(fsm, psm, nodigest);
 		}
             } else if (S_ISDIR(st->st_mode)) {
 		/* Directories replacing something need early backup */
@@ -1665,7 +1522,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             } else if (S_ISLNK(st->st_mode)) {
                 if ((st->st_size + 1) > fsm->bufsize) {
                     rc = CPIOERR_HDR_SIZE;
-                } else if (rpmcpioRead(archive, fsm->buf, st->st_size) != st->st_size) {
+                } else if (rpmfiArchiveRead(fi, fsm->buf, st->st_size) != st->st_size) {
                     rc = CPIOERR_READ_FAILED;
                 } else {
 
@@ -1722,7 +1579,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
             }
         } else {
 	    /* Notify on success. */
-	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmcpioTell(archive));
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!fsm->postpone) {
 		rc = ((S_ISREG(st->st_mode) && st->st_nlink > 1)
@@ -1740,7 +1597,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 	rc = checkHardLinks(fsm);
 
     /* No need to bother with close errors on read */
-    rpmcpioFree(archive);
+    rpmfiArchiveClose(fi);
     fsmFree(fsm);
 
     return rc;
