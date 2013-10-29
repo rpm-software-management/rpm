@@ -146,6 +146,25 @@ rpmfi_FClass(rpmfiObject * s, PyObject * unused)
 }
 
 static PyObject *
+rpmfi_FLinks(rpmfiObject * s, PyObject * unused)
+{
+    uint32_t nlinks;
+    const int * files;
+    PyObject * result;
+
+    nlinks = rpmfiFLinks(s->fi, &files);
+    if (nlinks==1) {
+	return Py_BuildValue("(i)", rpmfiFX(s->fi));
+    }
+
+    result = PyTuple_New(nlinks);
+    for (int i=0; i<nlinks; i++) {
+	PyTuple_SET_ITEM(result,  i, PyInt_FromLong(files[i]));
+    }
+    return result;
+}
+
+static PyObject *
 rpmfi_iternext(rpmfiObject * s)
 {
     PyObject * result = NULL;
@@ -246,6 +265,8 @@ static struct PyMethodDef rpmfi_methods[] = {
  {"FColor",	(PyCFunction)rpmfi_FColor,	METH_NOARGS,
 	NULL},
  {"FClass",	(PyCFunction)rpmfi_FClass,	METH_NOARGS,
+	NULL},
+ {"FLinks",	(PyCFunction)rpmfi_FLinks,	METH_NOARGS,
 	NULL},
  {NULL,		NULL}		/* sentinel */
 };
