@@ -86,7 +86,7 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st);
 RPM_GNUC_INTERNAL
 int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize);
 
-ssize_t rpmcpioWrite(rpmcpio_t cpio, void * buf, size_t size);
+ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size);
 
 /**
  * Read cpio header. Iff fx is returned as -1 a cpio header was read

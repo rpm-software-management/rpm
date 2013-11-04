@@ -319,7 +319,7 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
     return rc;
 }
 
-ssize_t rpmcpioWrite(rpmcpio_t cpio, void * buf, size_t size)
+ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size)
 {
     size_t written, left;
 

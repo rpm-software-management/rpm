@@ -1702,7 +1702,7 @@ int rpmfiArchiveWriteHeader(rpmfi fi)
     return rc;
 }
 
-size_t rpmfiArchiveWrite(rpmfi fi, void * buf, size_t size)
+size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size)
 {
     if (fi == NULL || fi->archive == NULL)
 	return -1;

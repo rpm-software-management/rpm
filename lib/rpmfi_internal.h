@@ -235,7 +235,7 @@ int rpmfiArchiveWriteHeader(rpmfi fi);
  * @prama size		number of bytes to write
  * @return		bytes actually written
  */
-size_t rpmfiArchiveWrite(rpmfi fi, void * buf, size_t size);
+size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
 
 /** \ingroup payload
  * Write content from given file into current file in archive
