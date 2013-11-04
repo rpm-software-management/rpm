@@ -285,9 +285,9 @@ static int fsmMapPath(FSM_t fsm, int i)
     fsm->action = FA_UNKNOWN;
 
     if (fi && i >= 0 && i < rpmfiFC(fi)) {
-	rpmfs fs = fsm->fs;
 	/* XXX these should use rpmfiFFlags() etc */
-	fsm->action = rpmfsGetAction(fs, i);
+	/* Build doesn't have file states */
+	fsm->action = (fsm->fs) ? rpmfsGetAction(fsm->fs, i) : 0;
 	fsm->fflags = rpmfiFFlagsIndex(fi, i);
 
 	/* src rpms have simple base name in payload. */
@@ -1566,8 +1566,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
-    rpmfs fs = rpmfsNew(rpmfiFC(fi), 0);;
-    FSM_t fsm = fsmNew(FSM_PKGBUILD, fs, fi, failedFile);;
+    FSM_t fsm = fsmNew(FSM_PKGBUILD, NULL, fi, failedFile);;
 
     int rc = rpmfiAttachArchive(fi, cfd, O_WRONLY);
 
@@ -1575,16 +1574,6 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
     if (isSrc) 
 	fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
 
-    if (!rc) {
-	int ghost, i, fc = rpmfiFC(fi);
-
-	/* XXX Is this actually still needed? */
-	for (i = 0; i < fc; i++) {
-	    ghost = (rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST);
-	    rpmfsSetAction(fs, i, ghost ? FA_SKIP : FA_CREATE);
-	}
-    }
-	    
     fsm->ix = -1;
 
     while (!rc) {
@@ -1634,7 +1623,6 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
     /* Finish the payload stream */
     if (!rc)
 	rc = rpmfiArchiveClose(fi);
-    rpmfsFree(fs);
     fsmFree(fsm);
 
     return rc;

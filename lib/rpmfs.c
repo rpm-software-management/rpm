@@ -101,7 +101,7 @@ rpm_fstate_t * rpmfsGetStates(rpmfs fs)
 rpmFileAction rpmfsGetAction(rpmfs fs, unsigned int ix)
 {
     rpmFileAction action;
-    if (fs->actions != NULL && ix < fs->fc) {
+    if (fs && fs->actions != NULL && ix < fs->fc) {
 	action = fs->actions[ix];
     } else {
 	action = FA_UNKNOWN;
