@@ -544,10 +544,9 @@ static int fsmReadLink(const char *path,
  * @param fsm		file state machine data
  * @param writeData	should data be written?
  * @param archive	payload archive
- * @param ix		file index
  * @return		0 on success
  */
-static int writeFile(FSM_t fsm, int writeData, int ix)
+static int writeFile(FSM_t fsm, int writeData)
 {
     FD_t rfd = NULL;
     rpmfi fi = fsm->fi;
@@ -1250,7 +1249,7 @@ static int writeLinks(FSM_t fsm)
             rpmfiSetFX(fsm->fi, hardlinks[j]);
 
             /* Write data after last link. */
-            rc = writeFile(fsm, (j == numHardlinks-1), hardlinks[j]);
+            rc = writeFile(fsm, (j == numHardlinks-1));
             if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
                 *fsm->failedFile = xstrdup(fsm->path);
             }
@@ -1616,7 +1615,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
             continue;
 
         /* Copy file into archive. */
-        rc = writeFile(fsm, 1, fsm->ix);
+        rc = writeFile(fsm, 1);
 
         if (rc) {
             if (!fsm->postpone) {
