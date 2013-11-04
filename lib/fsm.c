@@ -541,15 +541,14 @@ static int fsmReadLink(const char *path,
 
 /** \ingroup payload
  * Write next item to payload stream.
- * @param fsm		file state machine data
+ * @param path		on-disk path
+ * @param fi		file info
  * @param writeData	should data be written?
- * @param archive	payload archive
  * @return		0 on success
  */
-static int writeFile(FSM_t fsm, int writeData)
+static int writeFile(const char *path, rpmfi fi, int writeData)
 {
     FD_t rfd = NULL;
-    rpmfi fi = fsm->fi;
     int rc = 0;
 
     rc = rpmfiArchiveWriteHeader(fi);
@@ -557,7 +556,7 @@ static int writeFile(FSM_t fsm, int writeData)
     if (rc) goto exit;
 
     if (writeData && S_ISREG(rpmfiFMode(fi))) {
-	rfd = Fopen(fsm->path, "r.ufdio");
+	rfd = Fopen(path, "r.ufdio");
 	if (Ferror(rfd)) {
 	    rc = CPIOERR_OPEN_FAILED;
 	    goto exit;
@@ -1249,7 +1248,7 @@ static int writeLinks(FSM_t fsm)
             rpmfiSetFX(fsm->fi, hardlinks[j]);
 
             /* Write data after last link. */
-            rc = writeFile(fsm, (j == numHardlinks-1));
+            rc = writeFile(fsm->path, fsm->fi, (j == numHardlinks-1));
             if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
                 *fsm->failedFile = xstrdup(fsm->path);
             }
@@ -1615,7 +1614,7 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
             continue;
 
         /* Copy file into archive. */
-        rc = writeFile(fsm, 1);
+        rc = writeFile(fsm->path, fsm->fi, 1);
 
         if (rc) {
             if (!fsm->postpone) {
