@@ -550,7 +550,6 @@ static int fsmReadLink(const char *path,
 static int writeFile(FSM_t fsm, int writeData, int ix)
 {
     FD_t rfd = NULL;
-    char * path = fsm->path;
     struct stat * st = &fsm->sb;
     struct stat * ost = &fsm->osb;
     char * symbuf = NULL;
@@ -573,21 +572,9 @@ static int writeFile(FSM_t fsm, int writeData, int ix)
 	rstrcat(&symbuf, fsm->buf);	/* XXX save readlink return. */
     }
 
-    if (fsm->mapFlags & CPIO_MAP_ABSOLUTE) {
-	fsm->path = rstrscat(NULL, (fsm->mapFlags & CPIO_MAP_ADDDOT) ? "." : "",
-				   fsm->dirName, fsm->baseName, NULL);
-    } else if (fsm->mapFlags & CPIO_MAP_PATH) {
-	fsm->path = xstrdup((fi->apath ? fi->apath[ix] : 
-					 rpmfiBNIndex(fi, ix)));
-    }
-
     rc = rpmfiArchiveWriteHeader(fi);
 
-    _free(fsm->path);
-    fsm->path = path;
-
     if (rc) goto exit;
-
 
     if (writeData && S_ISREG(st->st_mode)) {
 	rfd = Fopen(fsm->path, "r.ufdio");
@@ -613,7 +600,6 @@ exit:
 	Fclose(rfd);
 	errno = myerrno;
     }
-    fsm->path = path;
     free(symbuf);
     return rc;
 }
