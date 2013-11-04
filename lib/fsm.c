@@ -550,33 +550,14 @@ static int fsmReadLink(const char *path,
 static int writeFile(FSM_t fsm, int writeData, int ix)
 {
     FD_t rfd = NULL;
-    struct stat * st = &fsm->sb;
-    struct stat * ost = &fsm->osb;
-    char * symbuf = NULL;
     rpmfi fi = fsm->fi;
     int rc = 0;
-
-    st->st_size = (writeData ? ost->st_size : 0);
-
-    if (S_ISDIR(st->st_mode)) {
-	st->st_size = 0;
-    } else if (S_ISLNK(st->st_mode)) {
-	/*
-	 * While linux puts the size of a symlink in the st_size field,
-	 * I don't think that's a specified standard.
-	 */
-        size_t linklen;
-	rc = fsmReadLink(fsm->path, fsm->buf, fsm->bufsize, &linklen);
-	if (rc) goto exit;
-	st->st_size = linklen;
-	rstrcat(&symbuf, fsm->buf);	/* XXX save readlink return. */
-    }
 
     rc = rpmfiArchiveWriteHeader(fi);
 
     if (rc) goto exit;
 
-    if (writeData && S_ISREG(st->st_mode)) {
+    if (writeData && S_ISREG(rpmfiFMode(fi))) {
 	rfd = Fopen(fsm->path, "r.ufdio");
 	if (Ferror(rfd)) {
 	    rc = CPIOERR_OPEN_FAILED;
@@ -585,9 +566,10 @@ static int writeFile(FSM_t fsm, int writeData, int ix)
 	
 	rc = rpmfiArchiveWriteFile(fi, rfd);
 
-    } else if (writeData && S_ISLNK(st->st_mode)) {
-        size_t len = strlen(symbuf);
-        if (rpmfiArchiveWrite(fi, symbuf, len) != len) {
+    } else if (writeData && S_ISLNK(rpmfiFMode(fi))) {
+	const char *lnk = rpmfiFLink(fi);
+	size_t len = strlen(lnk);
+        if (rpmfiArchiveWrite(fi, lnk, len) != len) {
             rc = CPIOERR_WRITE_FAILED;
             goto exit;
         }
@@ -600,7 +582,6 @@ exit:
 	Fclose(rfd);
 	errno = myerrno;
     }
-    free(symbuf);
     return rc;
 }
 
