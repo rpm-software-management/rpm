@@ -39,13 +39,22 @@ typedef struct hardlinks_s * hardlinks_t;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
-/**
- * A package filename set.
- */
+
 struct rpmfi_s {
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
+    char * fn;			/*!< File name buffer. */
 
+    rpmfiles files;		/*!< File info set */
+    rpmcpio_t archive;		/*!< Archive with payload */
+    char ** apath;
+    int nrefs;			/*!< Reference count */
+};
+
+/**
+ * A package filename set.
+ */
+struct rpmfiles_s {
     Header h;			/*!< Header for file info set (or NULL) */
     rpmstrPool pool;		/*!< String pool of this file info set */
 
@@ -92,16 +101,26 @@ struct rpmfi_s {
     int digestalgo;		/*!< File digest algorithm */
     unsigned char * digests;	/*!< File digests in binary. */
 
-    char * fn;			/*!< File name buffer. */
-
-    char ** apath;
     struct nlinkHash_s * nlinks;/*!< Files connected by hardlinks */
     rpm_off_t * replacedSizes;	/*!< (TR_ADDED) */
     rpm_loff_t * replacedLSizes;/*!< (TR_ADDED) */
-    rpmcpio_t archive;		/*!< Archive with payload */
     int magic;
     int nrefs;		/*!< Reference count. */
 };
+
+static rpmfiles rpmfilesUnlink(rpmfiles fi)
+{
+    if (fi)
+	fi->nrefs--;
+    return NULL;
+}
+
+static rpmfiles rpmfilesLink(rpmfiles fi)
+{
+    if (fi)
+	fi->nrefs++;
+    return fi;
+}
 
 static rpmfi rpmfiUnlink(rpmfi fi)
 {
@@ -117,14 +136,29 @@ rpmfi rpmfiLink(rpmfi fi)
     return fi;
 }
 
-rpm_count_t rpmfiFC(rpmfi fi)
+rpm_count_t rpmfilesFC(rpmfiles fi)
 {
     return (fi != NULL ? fi->fc : 0);
 }
 
-rpm_count_t rpmfiDC(rpmfi fi)
+rpm_count_t rpmfilesDC(rpmfiles fi)
 {
     return (fi != NULL ? fi->dc : 0);
+}
+
+int rpmfilesDigestAlgo(rpmfiles fi)
+{
+    return (fi != NULL) ? fi->digestalgo : 0;
+}
+
+rpm_count_t rpmfiFC(rpmfi fi)
+{
+    return (fi != NULL ? rpmfilesFC(fi->files) : 0);
+}
+
+rpm_count_t rpmfiDC(rpmfi fi)
+{
+    return (fi != NULL ? rpmfilesDC(fi->files) : 0);
 }
 
 #ifdef	NOTYET
@@ -142,10 +176,10 @@ int rpmfiSetFX(rpmfi fi, int fx)
 {
     int i = -1;
 
-    if (fi != NULL && fx >= 0 && fx < fi->fc) {
+    if (fi != NULL && fx >= 0 && fx < fi->files->fc) {
 	i = fi->i;
 	fi->i = fx;
-	fi->j = fi->dil[fi->i];
+	fi->j = fi->files->dil[fi->i];
     }
     return i;
 }
@@ -159,14 +193,14 @@ int rpmfiSetDX(rpmfi fi, int dx)
 {
     int j = -1;
 
-    if (fi != NULL && dx >= 0 && dx < fi->dc) {
+    if (fi != NULL && dx >= 0 && dx < rpmfiDC(fi)) {
 	j = fi->j;
 	fi->j = dx;
     }
     return j;
 }
 
-int rpmfiDIIndex(rpmfi fi, int dx)
+int rpmfiDIIndex(rpmfiles fi, int dx)
 {
     int j = -1;
     if (fi != NULL && dx >= 0 && dx < fi->fc) {
@@ -176,7 +210,7 @@ int rpmfiDIIndex(rpmfi fi, int dx)
     return j;
 }
 
-rpmsid rpmfiBNIdIndex(rpmfi fi, int ix)
+rpmsid rpmfiBNIdIndex(rpmfiles fi, int ix)
 {
     rpmsid id = 0;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
@@ -186,7 +220,7 @@ rpmsid rpmfiBNIdIndex(rpmfi fi, int ix)
     return id;
 }
 
-rpmsid rpmfiDNIdIndex(rpmfi fi, int jx)
+rpmsid rpmfiDNIdIndex(rpmfiles fi, int jx)
 {
     rpmsid id = 0;
     if (fi != NULL && jx >= 0 && jx < fi->fc) {
@@ -196,7 +230,7 @@ rpmsid rpmfiDNIdIndex(rpmfi fi, int jx)
     return id;
 }
 
-const char * rpmfiBNIndex(rpmfi fi, int ix)
+const char * rpmfiBNIndex(rpmfiles fi, int ix)
 {
     const char * BN = NULL;
 
@@ -207,7 +241,7 @@ const char * rpmfiBNIndex(rpmfi fi, int ix)
     return BN;
 }
 
-const char * rpmfiDNIndex(rpmfi fi, int jx)
+const char * rpmfiDNIndex(rpmfiles fi, int jx)
 {
     const char * DN = NULL;
 
@@ -218,7 +252,7 @@ const char * rpmfiDNIndex(rpmfi fi, int jx)
     return DN;
 }
 
-char * rpmfiFNIndex(rpmfi fi, int ix)
+char * rpmfiFNIndex(rpmfiles fi, int ix)
 {
     char *fn = NULL;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
@@ -233,9 +267,10 @@ int rpmfiFindFN(rpmfi fi, const char * fn)
     if (fi == NULL || fn == NULL)
 	return -1;
 
-    const rpmsid * bnid = fi->bnid;
-    const rpmsid * dnid = fi->dnid;
-    uint32_t * dil = fi->dil;
+    rpmfiles files = fi->files;
+    const rpmsid * bnid = files->bnid;
+    const rpmsid * dnid = files->dnid;
+    uint32_t * dil = files->dil;
 
     if (fn[0] == '.' && fn[1] == '/') {
 	fn++;
@@ -244,16 +279,16 @@ int rpmfiFindFN(rpmfi fi, const char * fn)
     /* try binary search */
 
     int lo = 0;
-    int hi = fi->fc;
+    int hi = files->fc;
     int mid, cmp;
     size_t l;
 
     while (hi > lo) {
 	mid = (hi + lo) / 2 ;
-	l = rpmstrPoolStrlen(fi->pool, dnid[dil[mid]]);
-	cmp = strncmp(rpmstrPoolStr(fi->pool, dnid[dil[mid]]), fn, l);
+	l = rpmstrPoolStrlen(files->pool, dnid[dil[mid]]);
+	cmp = strncmp(rpmstrPoolStr(files->pool, dnid[dil[mid]]), fn, l);
 	if (!cmp) {
-	    cmp = strcmp(rpmstrPoolStr(fi->pool, bnid[mid]), fn+l);
+	    cmp = strcmp(rpmstrPoolStr(files->pool, bnid[mid]), fn+l);
 	}
 	if (cmp < 0) {
 	    lo = mid+1;
@@ -265,11 +300,11 @@ int rpmfiFindFN(rpmfi fi, const char * fn)
     }
 
     /* not found: try linear search */
-    for (int i=0; i < fi->fc; i++) {
-	l = rpmstrPoolStrlen(fi->pool, dnid[dil[i]]);
-	cmp = strncmp(rpmstrPoolStr(fi->pool, dnid[dil[i]]), fn, l);
+    for (int i=0; i < files->fc; i++) {
+	l = rpmstrPoolStrlen(files->pool, dnid[dil[i]]);
+	cmp = strncmp(rpmstrPoolStr(files->pool, dnid[dil[i]]), fn, l);
 	if (!cmp) {
-	    cmp = strcmp(rpmstrPoolStr(fi->pool, bnid[i]), fn+l);
+	    cmp = strcmp(rpmstrPoolStr(files->pool, bnid[i]), fn+l);
 	}
 
 	if (!cmp) {
@@ -279,7 +314,7 @@ int rpmfiFindFN(rpmfi fi, const char * fn)
     return -1;
 }
 
-rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix)
+rpmfileAttrs rpmfiFFlagsIndex(rpmfiles fi, int ix)
 {
     rpmfileAttrs FFlags = 0;
 
@@ -290,7 +325,7 @@ rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix)
     return FFlags;
 }
 
-rpmVerifyAttrs rpmfiVFlagsIndex(rpmfi fi, int ix)
+rpmVerifyAttrs rpmfiVFlagsIndex(rpmfiles fi, int ix)
 {
     rpmVerifyAttrs VFlags = 0;
 
@@ -301,7 +336,7 @@ rpmVerifyAttrs rpmfiVFlagsIndex(rpmfi fi, int ix)
     return VFlags;
 }
 
-rpm_mode_t rpmfiFModeIndex(rpmfi fi, int ix)
+rpm_mode_t rpmfiFModeIndex(rpmfiles fi, int ix)
 {
     rpm_mode_t fmode = 0;
 
@@ -312,7 +347,7 @@ rpm_mode_t rpmfiFModeIndex(rpmfi fi, int ix)
     return fmode;
 }
 
-rpmfileState rpmfiFStateIndex(rpmfi fi, int ix)
+rpmfileState rpmfiFStateIndex(rpmfiles fi, int ix)
 {
     rpmfileState fstate = RPMFILE_STATE_MISSING;
 
@@ -334,10 +369,10 @@ const unsigned char * rpmfiMD5(rpmfi fi)
 
 int rpmfiDigestAlgo(rpmfi fi)
 {
-    return fi ? fi->digestalgo : 0;
+    return fi ? rpmfilesDigestAlgo(fi->files) : 0;
 }
 
-const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, int *algo, size_t *len)
+const unsigned char * rpmfiFDigestIndex(rpmfiles fi, int ix, int *algo, size_t *len)
 {
     const unsigned char *digest = NULL;
 
@@ -364,7 +399,7 @@ char * rpmfiFDigestHex(rpmfi fi, int *algo)
     return fdigest;
 }
 
-const char * rpmfiFLinkIndex(rpmfi fi, int ix)
+const char * rpmfiFLinkIndex(rpmfiles fi, int ix)
 {
     const char * flink = NULL;
 
@@ -375,7 +410,7 @@ const char * rpmfiFLinkIndex(rpmfi fi, int ix)
     return flink;
 }
 
-rpm_loff_t rpmfiFSizeIndex(rpmfi fi, int ix)
+rpm_loff_t rpmfiFSizeIndex(rpmfiles fi, int ix)
 {
     rpm_loff_t fsize = 0;
 
@@ -388,7 +423,7 @@ rpm_loff_t rpmfiFSizeIndex(rpmfi fi, int ix)
     return fsize;
 }
 
-rpm_rdev_t rpmfiFRdevIndex(rpmfi fi, int ix)
+rpm_rdev_t rpmfiFRdevIndex(rpmfiles fi, int ix)
 {
     rpm_rdev_t frdev = 0;
 
@@ -399,7 +434,7 @@ rpm_rdev_t rpmfiFRdevIndex(rpmfi fi, int ix)
     return frdev;
 }
 
-rpm_ino_t rpmfiFInodeIndex(rpmfi fi, int ix)
+rpm_ino_t rpmfiFInodeIndex(rpmfiles fi, int ix)
 {
     rpm_ino_t finode = 0;
 
@@ -414,16 +449,16 @@ rpm_color_t rpmfiColor(rpmfi fi)
 {
     rpm_color_t color = 0;
 
-    if (fi != NULL && fi->fcolors != NULL) {
-	for (int i = 0; i < fi->fc; i++)
-	    color |= fi->fcolors[i];
+    if (fi != NULL && fi->files->fcolors != NULL) {
+	for (int i = 0; i < fi->files->fc; i++)
+	    color |= fi->files->fcolors[i];
 	/* XXX ignore all but lsnibble for now. */
 	color &= 0xf;
     }
     return color;
 }
 
-rpm_color_t rpmfiFColorIndex(rpmfi fi, int ix)
+rpm_color_t rpmfiFColorIndex(rpmfiles fi, int ix)
 {
     rpm_color_t fcolor = 0;
 
@@ -435,7 +470,7 @@ rpm_color_t rpmfiFColorIndex(rpmfi fi, int ix)
     return fcolor;
 }
 
-const char * rpmfiFClassIndex(rpmfi fi, int ix)
+const char * rpmfiFClassIndex(rpmfiles fi, int ix)
 {
     const char * fclass = NULL;
     int cdictx;
@@ -448,7 +483,7 @@ const char * rpmfiFClassIndex(rpmfi fi, int ix)
     return fclass;
 }
 
-uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp)
+uint32_t rpmfiFDependsIndex(rpmfiles fi, int ix, const uint32_t ** fddictp)
 {
     int fddictx = -1;
     int fddictn = 0;
@@ -467,7 +502,7 @@ uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp)
     return fddictn;
 }
 
-uint32_t rpmfiFLinksIndex(rpmfi fi, int ix, const int ** files)
+uint32_t rpmfiFLinksIndex(rpmfiles fi, int ix, const int ** files)
 {
     uint32_t nlink = 0;
 
@@ -491,15 +526,15 @@ uint32_t rpmfiFLinksIndex(rpmfi fi, int ix, const int ** files)
 
 uint32_t rpmfiFLinks(rpmfi fi, const int ** files)
 {
-    return rpmfiFLinksIndex(fi, fi ? fi->i : -1, files);
+    return rpmfiFLinksIndex(fi->files, fi ? fi->i : -1, files);
 }
 
-uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix)
+uint32_t rpmfiFNlinkIndex(rpmfiles fi, int ix)
 {
     return rpmfiFLinksIndex(fi, ix, NULL);
 }
 
-rpm_time_t rpmfiFMtimeIndex(rpmfi fi, int ix)
+rpm_time_t rpmfiFMtimeIndex(rpmfiles fi, int ix)
 {
     rpm_time_t fmtime = 0;
 
@@ -510,7 +545,7 @@ rpm_time_t rpmfiFMtimeIndex(rpmfi fi, int ix)
     return fmtime;
 }
 
-const char * rpmfiFUserIndex(rpmfi fi, int ix)
+const char * rpmfiFUserIndex(rpmfiles fi, int ix)
 {
     const char * fuser = NULL;
 
@@ -521,7 +556,7 @@ const char * rpmfiFUserIndex(rpmfi fi, int ix)
     return fuser;
 }
 
-const char * rpmfiFGroupIndex(rpmfi fi, int ix)
+const char * rpmfiFGroupIndex(rpmfiles fi, int ix)
 {
     const char * fgroup = NULL;
 
@@ -532,7 +567,7 @@ const char * rpmfiFGroupIndex(rpmfi fi, int ix)
     return fgroup;
 }
 
-const char * rpmfiFCapsIndex(rpmfi fi, int ix)
+const char * rpmfiFCapsIndex(rpmfiles fi, int ix)
 {
     const char *fcaps = NULL;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
@@ -541,7 +576,7 @@ const char * rpmfiFCapsIndex(rpmfi fi, int ix)
     return fcaps;
 }
 
-const char * rpmfiFLangsIndex(rpmfi fi, int ix)
+const char * rpmfiFLangsIndex(rpmfiles fi, int ix)
 {
     const char *flangs = NULL;
     if (fi != NULL && fi->flangs != NULL && ix >= 0 && ix < fi->fc) {
@@ -550,7 +585,7 @@ const char * rpmfiFLangsIndex(rpmfi fi, int ix)
     return flangs;
 }
 
-struct fingerPrint_s *rpmfiFps(rpmfi fi)
+struct fingerPrint_s *rpmfiFps(rpmfiles fi)
 {
     return (fi != NULL) ? fi->fps : NULL;
 }
@@ -560,10 +595,11 @@ int rpmfiNext(rpmfi fi)
     int i = -1;
 
     if (fi != NULL && ++fi->i >= 0) {
-	if (fi->i < fi->fc) {
+	rpmfiles files = fi->files;
+	if (fi->i < files->fc) {
 	    i = fi->i;
-	    if (fi->dil != NULL)
-		fi->j = fi->dil[fi->i];
+	    if (files->dil != NULL)
+		fi->j = files->dil[fi->i];
 	} else
 	    fi->i = -1;
     }
@@ -574,7 +610,7 @@ int rpmfiNext(rpmfi fi)
 rpmfi rpmfiInit(rpmfi fi, int fx)
 {
     if (fi != NULL) {
-	if (fx >= 0 && fx < fi->fc) {
+	if (fx >= 0 && fx < fi->files->fc) {
 	    fi->i = fx - 1;
 	    fi->j = -1;
 	}
@@ -588,7 +624,7 @@ int rpmfiNextD(rpmfi fi)
     int j = -1;
 
     if (fi != NULL && ++fi->j >= 0) {
-	if (fi->j < fi->dc)
+	if (fi->j < fi->files->dc)
 	    j = fi->j;
 	else
 	    fi->j = -1;
@@ -600,7 +636,7 @@ int rpmfiNextD(rpmfi fi)
 rpmfi rpmfiInitD(rpmfi fi, int dx)
 {
     if (fi != NULL) {
-	if (dx >= 0 && dx < fi->fc)
+	if (dx >= 0 && dx < fi->files->fc)
 	    fi->j = dx - 1;
 	else
 	    fi = NULL;
@@ -640,7 +676,7 @@ rpmFileTypes rpmfiWhatis(rpm_mode_t mode)
     return REG;
 }
 
-int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
+int rpmfiCompareIndex(rpmfiles afi, int aix, rpmfiles bfi, int bix)
 {
     mode_t amode = rpmfiFModeIndex(afi, aix);
     mode_t bmode = rpmfiFModeIndex(bfi, bix);
@@ -690,7 +726,8 @@ int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix)
     return 0;
 }
 
-rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
+rpmFileAction rpmfiDecideFateIndex(rpmfiles ofi, int oix,
+				   rpmfiles nfi, int nix,
 				   int skipMissing)
 {
     char * fn = rpmfiFNIndex(nfi, nix);
@@ -804,7 +841,7 @@ exit:
     return action;
 }
 
-int rpmfiConfigConflictIndex(rpmfi fi, int ix)
+int rpmfiConfigConflictIndex(rpmfiles fi, int ix)
 {
     char * fn = NULL;
     rpmfileAttrs flags = rpmfiFFlagsIndex(fi, ix);
@@ -1194,12 +1231,12 @@ assert(fn != NULL);		/* XXX can't happen */
     free(fn);
 }
 
-rpmfi rpmfiFree(rpmfi fi)
+static rpmfiles rpmfilesFree(rpmfiles fi)
 {
     if (fi == NULL) return NULL;
 
     if (fi->nrefs > 1)
-	return rpmfiUnlink(fi);
+	return rpmfilesUnlink(fi);
 
     if (fi->fc > 0) {
 	fi->bnid = _free(fi->bnid);
@@ -1241,9 +1278,6 @@ rpmfi rpmfiFree(rpmfi fi)
 	}
     }
 
-    fi->fn = _free(fi->fn);
-    fi->apath = _free(fi->apath);
-
     fi->replacedSizes = _free(fi->replacedSizes);
     fi->replacedLSizes = _free(fi->replacedLSizes);
 
@@ -1251,10 +1285,25 @@ rpmfi rpmfiFree(rpmfi fi)
 
     fi->nlinks = nlinkHashFree(fi->nlinks);
 
-    (void) rpmfiUnlink(fi);
+    (void) rpmfilesUnlink(fi);
     memset(fi, 0, sizeof(*fi));		/* XXX trash and burn */
     fi = _free(fi);
 
+    return NULL;
+}
+
+rpmfi rpmfiFree(rpmfi fi)
+{
+    if (fi == NULL) return NULL;
+
+    if (fi->nrefs > 1)
+	return rpmfiUnlink(fi);
+
+    fi->files = rpmfilesFree(fi->files);
+    fi->fn = _free(fi->fn);
+    fi->apath = _free(fi->apath);
+
+    free(fi);
     return NULL;
 }
 
@@ -1346,7 +1395,7 @@ static struct hardlinks_s * freeNLinks(struct hardlinks_s * nlinks)
 	return nlinks;
 }
 
-static void rpmfiBuildNLink(rpmfi fi, Header h)
+static void rpmfiBuildNLink(rpmfiles fi, Header h)
 {
 	struct fileid_s f_id;
 	fileidHash files;
@@ -1362,8 +1411,7 @@ static void rpmfiBuildNLink(rpmfi fi, Header h)
 	return;
 
 
-	files = fileidHashCreate(rpmfiFC(fi), fidHashFunc, fidCmp,
-				 NULL, NULL);
+	files = fileidHashCreate(fi->fc, fidHashFunc, fidCmp, NULL, NULL);
 	for (int i=0; i < fi->fc; i++) {
 		if (!S_ISREG(rpmfiFModeIndex(fi, i)) ||
 			(rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST) ||
@@ -1405,7 +1453,7 @@ static void rpmfiBuildNLink(rpmfi fi, Header h)
 	files = fileidHashFree(files);
 }
 
-static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
+static int rpmfiPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 {
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
@@ -1499,13 +1547,12 @@ static int rpmfiPopulate(rpmfi fi, Header h, rpmfiFlags flags)
     return 0;
 }
 
-rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
+static rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
-    rpmfi fi = xcalloc(1, sizeof(*fi)); 
+    rpmfiles fi = xcalloc(1, sizeof(*fi)); 
     struct rpmtd_s bn, dn, dx;
 
     fi->magic = RPMFIMAGIC;
-    fi->i = -1;
     fi->fiflags = flags;
 
     /*
@@ -1547,7 +1594,26 @@ rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 	rpmtdFreeData(&dx);
     }
 
-    return rpmfiLink(fi);
+    return rpmfilesLink(fi);
+}
+
+rpmfi rpmfilesIter(rpmfiles files, int flags)
+{
+    rpmfi fi = NULL;
+
+    if (files) {
+	fi = xcalloc(1, sizeof(*fi)); 
+	fi->i = -1;
+	fi->files = files;
+	rpmfiLink(fi);
+    }
+    return fi;
+}
+
+rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
+{
+    rpmfiles files = rpmfilesNew(pool, h, tagN, flags);
+    return rpmfilesIter(files, 0);
 }
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
@@ -1555,7 +1621,7 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
     return rpmfiNewPool(NULL, h, tagN, flags);
 }
 
-void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize)
+void rpmfiSetFReplacedSizeIndex(rpmfiles fi, int ix, rpm_loff_t newsize)
 {
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
 	/* Switch over to 64 bit variant */
@@ -1578,7 +1644,7 @@ void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize)
     }
 }
 
-rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix)
+rpm_loff_t rpmfiFReplacedSizeIndex(rpmfiles fi, int ix)
 {
     rpm_loff_t rsize = 0;
     if (fi != NULL && ix >= 0 && ix < fi->fc) {
@@ -1591,7 +1657,7 @@ rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix)
     return rsize;
 }
 
-void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
+void rpmfiFpLookup(rpmfiles fi, fingerPrintCache fpc)
 {
     /* This can get called twice (eg yum), scratch former results and redo */
     if (fi->fc > 0) {
@@ -1617,7 +1683,7 @@ void rpmfiSetApath(rpmfi fi, char **apath)
  */
 
 #define RPMFI_ITERFUNC(TYPE, NAME, IXV) \
-    TYPE rpmfi ## NAME(rpmfi fi) { return rpmfi ## NAME ## Index(fi, fi ? fi->IXV : -1); }
+    TYPE rpmfi ## NAME(rpmfi fi) { return rpmfi ## NAME ## Index(fi->files, fi ? fi->IXV : -1); }
 
 RPMFI_ITERFUNC(rpmsid, BNId, i)
 RPMFI_ITERFUNC(rpmsid, DNId, j)
@@ -1645,7 +1711,7 @@ const char * rpmfiFN(rpmfi fi)
     const char *fn = ""; /* preserve behavior on errors */
     if (fi != NULL) {
 	free(fi->fn);
-	fi->fn = rpmfiFNIndex(fi, fi->i);
+	fi->fn = rpmfiFNIndex(fi->files, fi->i);
 	if (fi->fn != NULL)
 	    fn = fi->fn;
     }
@@ -1654,34 +1720,39 @@ const char * rpmfiFN(rpmfi fi)
 
 const unsigned char * rpmfiFDigest(rpmfi fi, int *algo, size_t *len)
 {
-    return rpmfiFDigestIndex(fi, fi ? fi->i : -1, algo, len);
+    return rpmfiFDigestIndex(fi->files, fi ? fi->i : -1, algo, len);
 }
 
 uint32_t rpmfiFDepends(rpmfi fi, const uint32_t ** fddictp)
 {
-    return rpmfiFDependsIndex(fi,  fi ? fi->i : -1, fddictp);
+    return rpmfiFDependsIndex(fi->files,  fi ? fi->i : -1, fddictp);
 }
 
 int rpmfiCompare(const rpmfi afi, const rpmfi bfi)
 {
-    return rpmfiCompareIndex(afi, afi ? afi->i : -1, bfi, bfi ? bfi->i : -1);
+    return rpmfiCompareIndex(afi->files, afi ? afi->i : -1, bfi->files, bfi ? bfi->i : -1);
 }
 
 rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing)
 {
-    return rpmfiDecideFateIndex(ofi, ofi ? ofi->i : -1,
-				nfi, nfi ? nfi->i : -1,
+    return rpmfiDecideFateIndex(ofi->files, ofi ? ofi->i : -1,
+				nfi->files, nfi ? nfi->i : -1,
 				skipMissing);
 }
 
 int rpmfiConfigConflict(const rpmfi fi)
 {
-    return rpmfiConfigConflictIndex(fi, fi ? fi->i : -1);
+    return rpmfiConfigConflictIndex(fi->files, fi ? fi->i : -1);
 }
 
 rpmstrPool rpmfiPool(rpmfi fi)
 {
-    return (fi != NULL) ? fi->pool : NULL;
+    return (fi != NULL) ? fi->files->pool : NULL;
+}
+
+rpmfiles rpmfiFiles(rpmfi fi)
+{
+    return (fi != NULL) ? fi->files : NULL;
 }
 
 /******************************************************/
@@ -1721,6 +1792,7 @@ int rpmfiArchiveWriteHeader(rpmfi fi)
 
     rpm_loff_t fsize = rpmfiFSize(fi);
     mode_t finalMode = rpmfiFMode(fi);
+    rpmfiles files = fi->files;
 
     const int * hardlinks = NULL;
     int numHardlinks;
@@ -1740,7 +1812,7 @@ int rpmfiArchiveWriteHeader(rpmfi fi)
 	}
     }
 
-    if (fi->lfsizes) {
+    if (files->lfsizes) {
 	return rpmcpioStrippedHeaderWrite(fi->archive, rpmfiFX(fi), fsize);
     } else {
 	struct stat st;
@@ -1910,7 +1982,7 @@ int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, char nodigest)
 
     if (!nodigest) {
 	digestalgo = rpmfiDigestAlgo(fi);
-	fidigest = rpmfiFDigestIndex(fi, rpmfiFX(fi), NULL, NULL);
+	fidigest = rpmfiFDigestIndex(fi->files, rpmfiFX(fi), NULL, NULL);
 	fdInitDigest(fd, digestalgo, 0);
     }
 

@@ -335,7 +335,7 @@ fingerPrint * fpLookupList(fingerPrintCache cache, rpmstrPool pool,
 /* Check file for to be installed symlinks in their path and correct their fp */
 static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, int filenr)
 {
-    rpmfi fi = rpmteFI(p);
+    rpmfiles fi = rpmteFiles(p);
     struct fingerPrint_s current_fp;
     const char *currentsubdir;
     size_t lensubDir, bnStart, bnEnd;
@@ -373,7 +373,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	 rpmFpHashGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
 
 	 for (i=0; i<numRecs; i++) {
-	      rpmfi foundfi = rpmteFI(recs[i].p);
+	      rpmfiles foundfi = rpmteFiles(recs[i].p);
 	      char const *linktarget = rpmfiFLinkIndex(foundfi, recs[i].fileno);
 	      char *link;
 
@@ -463,7 +463,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
     rpmtsi pi;
     rpmte p;
     rpmfs fs;
-    rpmfi fi;
+    rpmfiles fi;
     int i, fc;
 
     if (fpc->fp == NULL)
@@ -477,7 +477,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	fingerPrint *fpList;
 	(void) rpmdbCheckSignals();
 
-	if ((fi = rpmteFI(p)) == NULL)
+	if ((fi = rpmteFiles(p)) == NULL)
 	    continue;	/* XXX can't happen */
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);

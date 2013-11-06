@@ -295,7 +295,7 @@ static uint64_t countFiles(rpmts ts)
     return fc;
 }
 
-static int handleRemovalConflict(rpmfi fi, int fx, rpmfi ofi, int ofx)
+static int handleRemovalConflict(rpmfiles fi, int fx, rpmfiles ofi, int ofx)
 {
     int rConflicts = 0; /* Removed files don't conflict, normally */
     rpmFileTypes ft = rpmfiWhatis(rpmfiFModeIndex(fi, fx));
@@ -340,8 +340,8 @@ static int handleRemovalConflict(rpmfi fi, int fx, rpmfi ofi, int ofx)
  * unnecessary with careful packaging.
  */
 static int handleColorConflict(rpmts ts,
-			       rpmfs fs, rpmfi fi, int fx,
-			       rpmfs ofs, rpmfi ofi, int ofx)
+			       rpmfs fs, rpmfiles fi, int fx,
+			       rpmfs ofs, rpmfiles ofi, int ofx)
 {
     int rConflicts = 1;
     rpm_color_t tscolor = rpmtsColor(ts);
@@ -380,8 +380,8 @@ static int handleColorConflict(rpmts ts,
  * @param reportConflicts
  */
 /* XXX only ts->{probs,rpmdb} modified */
-static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
-				   Header otherHeader, rpmfi otherFi, int ofx,
+static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx,
+				   Header otherHeader, rpmfiles otherFi, int ofx,
 				   int beingRemoved)
 {
     rpmfs fs = rpmteGetFileStates(p);
@@ -454,20 +454,20 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfi fi, int fx,
  * Update disk space needs on each partition for this package's files.
  */
 /* XXX only ts->{probs,di} modified */
-static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi fi)
+static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfiles fi)
 {
     rpm_loff_t fixupSize = 0;
     int i, j;
     rpmfs fs = rpmteGetFileStates(p);
     rpmfs otherFs;
-    rpm_count_t fc = rpmfiFC(fi);
+    rpm_count_t fc = rpmfilesFC(fi);
     int reportConflicts = !(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
     fingerPrint * fpList = rpmfiFps(fi);
 
     for (i = 0; i < fc; i++) {
 	struct fingerPrint_s * fiFps;
 	int otherPkgNum, otherFileNum;
-	rpmfi otherFi;
+	rpmfiles otherFi;
 	rpmte otherTe;
 	rpmfileAttrs FFlags;
 	struct rpmffi_s * recs;
@@ -526,7 +526,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    otherTe = recs[otherPkgNum].p;
-	    otherFi = rpmteFI(otherTe);
+	    otherFi = rpmteFiles(otherTe);
 	    otherFileNum = recs[otherPkgNum].fileno;
 	    otherFs = rpmteGetFileStates(otherTe);
 
@@ -751,6 +751,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
     int dc;
     int i, j, ix;
     rpmfi fi = rpmteFI(p);
+    rpmfiles files = rpmfiFiles(fi);
     rpmfs fs = rpmteGetFileStates(p);
 
     if (!noDocs)
@@ -850,7 +851,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 	if (!dff[j]) continue;	/* dir was not emptied here. */
 	
 	/* Find parent directory and basename. */
-	dn = rpmfiDNIndex(fi, j); dnlen = strlen(dn) - 1;
+	dn = rpmfiDNIndex(files, j); dnlen = strlen(dn) - 1;
 	bn = dn + dnlen;	bnlen = 0;
 	while (bn > dn && bn[-1] != '/') {
 		bnlen++;
@@ -1048,7 +1049,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		fpLookup(fpc, dirName, baseName, &fpp);
 		fpIx = 0;
 	    } else {
-		fpp = rpmfiFps(otherFi);
+		fpp = rpmfiFps(rpmfiFiles(otherFi));
 		fpIx = fileNum;
 	    }
 
@@ -1067,8 +1068,8 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 			/* XXX What to do if this fails? */
 		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 		    }
-		    handleInstInstalledFile(ts, p, fi, recs[j].fileno,
-					    h, otherFi, fileNum, beingRemoved);
+		    handleInstInstalledFile(ts, p, rpmfiFiles(fi), recs[j].fileno,
+					    h, rpmfiFiles(otherFi), fileNum, beingRemoved);
 		    break;
 		case TR_REMOVED:
 		    if (!beingRemoved) {
@@ -1348,7 +1349,7 @@ static int rpmtsPrepare(rpmts ts)
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* check files in ts against each other and update disk space
 	   needs on each partition for this package. */
-	handleOverlappedFiles(ts, fpc, p, fi);
+	handleOverlappedFiles(ts, fpc, p, rpmfiFiles(fi));
 
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {

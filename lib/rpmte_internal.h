@@ -73,6 +73,9 @@ RPM_GNUC_INTERNAL
 const char * rpmteTypeString(rpmte te);
 
 RPM_GNUC_INTERNAL
+rpmfiles rpmteFiles(rpmte te);
+
+RPM_GNUC_INTERNAL
 tsortInfo rpmteTSI(rpmte te);
 
 RPM_GNUC_INTERNAL

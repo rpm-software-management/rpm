@@ -38,101 +38,112 @@ RPM_GNUC_INTERNAL
 rpmsid rpmfiDNId(rpmfi fi);
 
 RPM_GNUC_INTERNAL
-int rpmfiDIIndex(rpmfi fi, int dx);
+int rpmfiDIIndex(rpmfiles fi, int dx);
 
 RPM_GNUC_INTERNAL
-rpmsid rpmfiBNIdIndex(rpmfi fi, int ix);
+rpmsid rpmfiBNIdIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmsid rpmfiDNIdIndex(rpmfi fi, int jx);
+rpmsid rpmfiDNIdIndex(rpmfiles fi, int jx);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiBNIndex(rpmfi fi, int ix);
+const char * rpmfiBNIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiDNIndex(rpmfi fi, int jx);
+const char * rpmfiDNIndex(rpmfiles fi, int jx);
 
 RPM_GNUC_INTERNAL
-char * rpmfiFNIndex(rpmfi fi, int ix);
+char * rpmfiFNIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmVerifyAttrs rpmfiVFlagsIndex(rpmfi fi, int ix);
+rpmVerifyAttrs rpmfiVFlagsIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmfileState rpmfiFStateIndex(rpmfi fi, int ix);
+rpmfileState rpmfiFStateIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFLinkIndex(rpmfi fi, int ix);
+const char * rpmfiFLinkIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_loff_t rpmfiFSizeIndex(rpmfi fi, int ix);
+rpm_loff_t rpmfiFSizeIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_color_t rpmfiFColorIndex(rpmfi fi, int ix);
+rpm_color_t rpmfiFColorIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFClassIndex(rpmfi fi, int ix);
+const char * rpmfiFClassIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-uint32_t rpmfiFDependsIndex(rpmfi fi, int ix, const uint32_t ** fddictp);
+uint32_t rpmfiFDependsIndex(rpmfiles fi, int ix, const uint32_t ** fddictp);
 
 RPM_GNUC_INTERNAL
-uint32_t rpmfiFNlinkIndex(rpmfi fi, int ix);
+uint32_t rpmfiFNlinkIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-uint32_t rpmfiFLinksIndex(rpmfi fi, int ix, const int ** files);
+uint32_t rpmfiFLinksIndex(rpmfiles fi, int ix, const int ** files);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFLangsIndex(rpmfi fi, int ix);
+const char * rpmfiFLangsIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmfileAttrs rpmfiFFlagsIndex(rpmfi fi, int ix);
+rpmfileAttrs rpmfiFFlagsIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_mode_t rpmfiFModeIndex(rpmfi fi, int ix);
+rpm_mode_t rpmfiFModeIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const unsigned char * rpmfiFDigestIndex(rpmfi fi, int ix, int *algo, size_t *len);
+const unsigned char * rpmfiFDigestIndex(rpmfiles fi, int ix, int *algo, size_t *len);
 
 RPM_GNUC_INTERNAL
-rpm_rdev_t rpmfiFRdevIndex(rpmfi fi, int ix);
+rpm_rdev_t rpmfiFRdevIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_ino_t rpmfiFInodeIndex(rpmfi fi, int ix);
+rpm_ino_t rpmfiFInodeIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_time_t rpmfiFMtimeIndex(rpmfi fi, int ix);
+rpm_time_t rpmfiFMtimeIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFUserIndex(rpmfi fi, int ix);
+const char * rpmfiFUserIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFGroupIndex(rpmfi fi, int ix);
+const char * rpmfiFGroupIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFCapsIndex(rpmfi fi, int ix);
+const char * rpmfiFCapsIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-struct fingerPrint_s *rpmfiFps(rpmfi fi);
+struct fingerPrint_s *rpmfiFps(rpmfiles fi);
 
 RPM_GNUC_INTERNAL
-rpmFileAction rpmfiDecideFateIndex(rpmfi ofi, int oix, rpmfi nfi, int nix,
+rpmFileAction rpmfiDecideFateIndex(rpmfiles ofi, int oix,
+				   rpmfiles nfi, int nix,
                                    int skipMissing);
 
 RPM_GNUC_INTERNAL
-int rpmfiCompareIndex(rpmfi afi, int aix, rpmfi bfi, int bix);
+int rpmfiCompareIndex(rpmfiles afi, int aix, rpmfiles bfi, int bix);
 
 RPM_GNUC_INTERNAL
-int rpmfiConfigConflictIndex(rpmfi fi, int ix);
+int rpmfiConfigConflictIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-void rpmfiSetFReplacedSizeIndex(rpmfi fi, int ix, rpm_loff_t newsize);
+void rpmfiSetFReplacedSizeIndex(rpmfiles fi, int ix, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL
-rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix);
+rpm_loff_t rpmfiFReplacedSizeIndex(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
+void rpmfiFpLookup(rpmfiles fi, fingerPrintCache fpc);
+
+rpmfiles rpmfiFiles(rpmfi fi);
+
+rpm_count_t rpmfilesFC(rpmfiles fi);
+
+rpm_count_t rpmfilesDC(rpmfiles fi);
+
+rpmfi rpmfilesIter(rpmfiles files, int flags);
+
+int rpmfilesDigestAlgo(rpmfiles fi);
 
 /* Temporary ugly kludge to eliminate direct struct rpmfi access... */
 void rpmfiSetApath(rpmfi fi, char **apath);

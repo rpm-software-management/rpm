@@ -181,11 +181,11 @@ void rpmalDel(rpmal al, rpmte p)
     alp->p = NULL;
 }
 
-static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfi fi)
+static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfiles fi)
 {
     struct fileNameEntry_s fileName;
     struct availableIndexEntry_s fileEntry;
-    int fc = rpmfiFC(fi);
+    int fc = rpmfilesFC(fi);
     rpm_color_t ficolor;
     int skipdoc = (al->tsflags & RPMTRANS_FLAG_NODOCS);
     int skipconf = (al->tsflags & RPMTRANS_FLAG_NOCONFIGS);
@@ -299,7 +299,7 @@ void rpmalAdd(rpmal al, rpmte p)
     if (al->obsoletesHash != NULL)
 	rpmalAddObsoletes(al, pkgNum, alp->obsoletes);
     if (al->fileHash != NULL)
-	rpmalAddFiles(al, pkgNum, alp->fi);
+	rpmalAddFiles(al, pkgNum, rpmfiFiles(alp->fi));
 
     assert(((rpmalNum)(alp - al->list)) == pkgNum);
 }
@@ -318,7 +318,7 @@ static void rpmalMakeFileIndex(rpmal al)
 				       fileHash, fileCompare, NULL, NULL);
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	rpmalAddFiles(al, i, alp->fi);
+	rpmalAddFiles(al, i, rpmfiFiles(alp->fi));
     }
 }
 

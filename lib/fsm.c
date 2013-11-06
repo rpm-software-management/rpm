@@ -137,7 +137,7 @@ static char * fsmFsPath(const FSM_t fsm, int isDir,
  * Directory name iterator.
  */
 typedef struct dnli_s {
-    rpmfi fi;
+    rpmfiles fi;
     char * active;
     int reverse;
     int isave;
@@ -165,7 +165,7 @@ static DNLI_t dnlFreeIterator(DNLI_t dnli)
  * @param reverse	traverse directory names in reverse order?
  * @return		directory name iterator
  */
-static DNLI_t dnlInitIterator(rpmfi fi, rpmfs fs, int reverse)
+static DNLI_t dnlInitIterator(rpmfiles fi, rpmfs fs, int reverse)
 {
     DNLI_t dnli;
     int i, j;
@@ -173,7 +173,7 @@ static DNLI_t dnlInitIterator(rpmfi fi, rpmfs fs, int reverse)
 
     if (fi == NULL)
 	return NULL;
-    dc = rpmfiDC(fi);
+    dc = rpmfilesDC(fi);
     dnli = xcalloc(1, sizeof(*dnli));
     dnli->fi = fi;
     dnli->reverse = reverse;
@@ -181,7 +181,7 @@ static DNLI_t dnlInitIterator(rpmfi fi, rpmfs fs, int reverse)
 
     if (dc) {
 	dnli->active = xcalloc(dc, sizeof(*dnli->active));
-	int fc = rpmfiFC(fi);
+	int fc = rpmfilesFC(fi);
 
 	/* Identify parent directories not skipped. */
 	for (i = 0; i < fc; i++)
@@ -252,8 +252,8 @@ const char * dnlNextIterator(DNLI_t dnli)
     const char * dn = NULL;
 
     if (dnli) {
-	rpmfi fi = dnli->fi;
-	int dc = rpmfiDC(fi);
+	rpmfiles fi = dnli->fi;
+	int dc = rpmfilesDC(fi);
 	int i = -1;
 
 	if (dnli->active)
@@ -277,14 +277,14 @@ const char * dnlNextIterator(DNLI_t dnli)
  */
 static int fsmMapPath(FSM_t fsm, int i)
 {
-    rpmfi fi = fsm->fi;
+    rpmfiles fi = rpmfiFiles(fsm->fi);
     int rc = 0;
 
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
     fsm->action = FA_UNKNOWN;
 
-    if (fi && i >= 0 && i < rpmfiFC(fi)) {
+    if (fi && i >= 0 && i < rpmfilesFC(fi)) {
 	/* XXX these should use rpmfiFFlags() etc */
 	/* Build doesn't have file states */
 	fsm->action = (fsm->fs) ? rpmfsGetAction(fsm->fs, i) : 0;
@@ -447,11 +447,11 @@ static int fsmSetFCaps(const char *path, const char *captxt)
 static int fsmMapAttrs(FSM_t fsm)
 {
 	struct stat * st = &fsm->sb;
-	rpmfi fi = fsm->fi;
+	rpmfiles fi = rpmfiFiles(fsm->fi);
 	int i = fsm->ix;
 
 	/* this check is pretty moot,  rpmfi accessors check array bounds etc */
-	if (fi && i >= 0 && i < rpmfiFC(fi)) {
+	if (fi && i >= 0 && i < rpmfilesFC(fi)) {
 		mode_t finalMode = rpmfiFModeIndex(fi, i);
 		const char *user = rpmfiFUserIndex(fi, i);
 		const char *group = rpmfiFGroupIndex(fi, i);
@@ -482,8 +482,8 @@ static int fsmMapAttrs(FSM_t fsm)
 		st->st_ino = rpmfiFInodeIndex(fi, i);
 		st->st_rdev = rpmfiFRdevIndex(fi, i);
 		st->st_mtime = rpmfiFMtimeIndex(fi, i);
-		st->st_size = rpmfiFSize(fi);
-		st->st_nlink = rpmfiFNlink(fi);
+		st->st_size = rpmfiFSizeIndex(fi, i);
+		st->st_nlink = rpmfiFNlinkIndex(fi, i);
 
 		if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
 			&& st->st_nlink == 0) {
@@ -773,7 +773,7 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
  */
 static int fsmMkdirs(rpmfi fi, rpmfs fs, rpmPlugins plugins, rpmFileAction action)
 {
-    DNLI_t dnli = dnlInitIterator(fi, fs, 0);
+    DNLI_t dnli = dnlInitIterator(rpmfiFiles(fi), fs, 0);
     struct stat sb;
     const char *dpath;
     int dc = rpmfiDC(fi);
@@ -910,7 +910,7 @@ static int fsmInit(FSM_t fsm)
     int rc = 0;
 
     /* mode must be known so that dirs don't get suffix. */
-    rpmfi fi = fsm->fi;
+    rpmfiles fi = rpmfiFiles(fsm->fi);
     fsm->sb.st_mode = rpmfiFModeIndex(fi, fsm->ix);
 
     /* Generate file path. */
@@ -1152,7 +1152,7 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
 {
     int rc = 0;
     char *dest = fsm->path;
-    rpmfi fi = fsm->fi;
+    rpmfiles fi = rpmfiFiles(fsm->fi);
 
     /* Construct final destination path (nsuffix is usually NULL) */
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
@@ -1455,11 +1455,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
 
     }
 
-    if (!rc)
+    if (!rc) {
+	rpmfiles files = rpmfiFiles(fi);
         for (int i=0; i<fc; i++) {
-	    if (!found[i] && !(rpmfiFFlagsIndex(fi, i) & RPMFILE_GHOST))
+	    if (!found[i] && !(rpmfiFFlagsIndex(files, i) & RPMFILE_GHOST))
 		rc = CPIOERR_MISSING_HARDLINK; // XXX other error code
 	}
+    }
     /* No need to bother with close errors on read */
     rpmfiArchiveClose(fi);
     _free(found);

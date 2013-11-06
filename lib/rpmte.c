@@ -589,6 +589,11 @@ rpmfi rpmteFI(rpmte te)
     return te->fi; /* XXX take fi reference here? */
 }
 
+rpmfiles rpmteFiles(rpmte te)
+{
+    return rpmfiFiles(rpmteFI(te));
+}
+
 static void rpmteColorDS(rpmte te, rpmTag tag)
 {
     rpmfi fi = rpmteFI(te);
