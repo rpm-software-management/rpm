@@ -198,6 +198,9 @@ rpm_loff_t rpmfiFReplacedSizeIndex(rpmfi fi, int ix);
 RPM_GNUC_INTERNAL
 void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc);
 
+/* Temporary ugly kludge to eliminate direct struct rpmfi access... */
+void rpmfiSetApath(rpmfi fi, char **apath);
+
 /** \ingroup payload
  * Add payload archive to the file info
  * @param fi		file info

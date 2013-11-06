@@ -1538,6 +1538,15 @@ void rpmfiFpLookup(rpmfi fi, fingerPrintCache fpc)
     }
 }
 
+void rpmfiSetApath(rpmfi fi, char **apath)
+{
+    if (fi != NULL) {
+	fi->apath = _free(fi->apath);
+	if (apath) 
+	    fi->apath = apath;
+    }
+}
+
 /* 
  * Generate iterator accessors function wrappers, these do nothing but
  * call the corresponding rpmfiFooIndex(fi, fi->[ij])

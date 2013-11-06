@@ -1179,7 +1179,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	a = stpcpy(a, (fn + skipLen));
 	a++;		/* skip apath NUL */
     }
-    fi->apath = apath;
+    rpmfiSetApath(fi, apath);
     pkg->cpioList = fi;
     rpmtdFreeData(&filenames);
   }

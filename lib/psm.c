@@ -328,7 +328,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (fi == NULL) {
 	goto exit;
     }
-    fi->apath = filenames.data; /* Ick */
+    rpmfiSetApath(fi, filenames.data); /* Ick */
     rpmteSetFI(te, fi);
     fi = rpmfiFree(fi);
 
@@ -751,7 +751,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		    ftag = RPMTAG_ORIGFILENAMES;
 		}
 		headerGet(h, ftag, &filenames, HEADERGET_EXT);
-		fi->apath = filenames.data; /* Ick.. */
+		rpmfiSetApath(fi, filenames.data); /* Ick.. */
 	    }
 	    headerFree(h);
 	}
@@ -960,7 +960,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	psm->failedFile = _free(psm->failedFile);
 
-	fi->apath = _free(fi->apath);
+	rpmfiSetApath(fi, NULL);
 	break;
 
     case PSM_CREATE:
