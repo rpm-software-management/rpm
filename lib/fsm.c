@@ -186,19 +186,19 @@ static DNLI_t dnlInitIterator(rpmfiles fi, rpmfs fs, int reverse)
 	/* Identify parent directories not skipped. */
 	for (i = 0; i < fc; i++)
             if (!XFA_SKIPPING(rpmfsGetAction(fs, i)))
-		dnli->active[rpmfiDIIndex(fi, i)] = 1;
+		dnli->active[rpmfilesDI(fi, i)] = 1;
 
 	/* Exclude parent directories that are explicitly included. */
 	for (i = 0; i < fc; i++) {
 	    int dil;
 	    size_t dnlen, bnlen;
 
-	    if (!S_ISDIR(rpmfiFModeIndex(fi, i)))
+	    if (!S_ISDIR(rpmfilesFMode(fi, i)))
 		continue;
 
-	    dil = rpmfiDIIndex(fi, i);
-	    dnlen = strlen(rpmfiDNIndex(fi, dil));
-	    bnlen = strlen(rpmfiBNIndex(fi, i));
+	    dil = rpmfilesDI(fi, i);
+	    dnlen = strlen(rpmfilesDN(fi, dil));
+	    bnlen = strlen(rpmfilesBN(fi, i));
 
 	    for (j = 0; j < dc; j++) {
 		const char * dnl;
@@ -206,13 +206,13 @@ static DNLI_t dnlInitIterator(rpmfiles fi, rpmfs fs, int reverse)
 
 		if (!dnli->active[j] || j == dil)
 		    continue;
-		dnl = rpmfiDNIndex(fi, j);
+		dnl = rpmfilesDN(fi, j);
 		jlen = strlen(dnl);
 		if (jlen != (dnlen+bnlen+1))
 		    continue;
-		if (!rstreqn(dnl, rpmfiDNIndex(fi, dil), dnlen))
+		if (!rstreqn(dnl, rpmfilesDN(fi, dil), dnlen))
 		    continue;
-		if (!rstreqn(dnl+dnlen, rpmfiBNIndex(fi, i), bnlen))
+		if (!rstreqn(dnl+dnlen, rpmfilesBN(fi, i), bnlen))
 		    continue;
 		if (dnl[dnlen+bnlen] != '/' || dnl[dnlen+bnlen+1] != '\0')
 		    continue;
@@ -232,7 +232,7 @@ static DNLI_t dnlInitIterator(rpmfiles fi, rpmfs fs, int reverse)
 		    rpmlog(RPMLOG_DEBUG,
 	"========== Directories not explicitly included in package:\n");
 		}
-		rpmlog(RPMLOG_DEBUG, "%10d %s\n", i, rpmfiDNIndex(fi, i));
+		rpmlog(RPMLOG_DEBUG, "%10d %s\n", i, rpmfilesDN(fi, i));
 	    }
 	    if (j)
 		rpmlog(RPMLOG_DEBUG, "==========\n");
@@ -262,7 +262,7 @@ const char * dnlNextIterator(DNLI_t dnli)
 	} while (i >= 0 && i < dc && !dnli->active[i]);
 
 	if (i >= 0 && i < dc)
-	    dn = rpmfiDNIndex(fi, i);
+	    dn = rpmfilesDN(fi, i);
 	else
 	    i = -1;
 	dnli->isave = i;
@@ -288,11 +288,11 @@ static int fsmMapPath(FSM_t fsm, int i)
 	/* XXX these should use rpmfiFFlags() etc */
 	/* Build doesn't have file states */
 	fsm->action = (fsm->fs) ? rpmfsGetAction(fsm->fs, i) : 0;
-	fsm->fflags = rpmfiFFlagsIndex(fi, i);
+	fsm->fflags = rpmfilesFFlags(fi, i);
 
 	/* src rpms have simple base name in payload. */
-	fsm->dirName = rpmfiDNIndex(fi, rpmfiDIIndex(fi, i));
-	fsm->baseName = rpmfiBNIndex(fi, i);
+	fsm->dirName = rpmfilesDN(fi, rpmfilesDI(fi, i));
+	fsm->baseName = rpmfilesBN(fi, i);
 
 	/* Never create backup for %ghost files. */
 	if (fsm->goal != FSM_PKGBUILD && !(fsm->fflags & RPMFILE_GHOST)) {
@@ -452,9 +452,9 @@ static int fsmMapAttrs(FSM_t fsm)
 
 	/* this check is pretty moot,  rpmfi accessors check array bounds etc */
 	if (fi && i >= 0 && i < rpmfilesFC(fi)) {
-		mode_t finalMode = rpmfiFModeIndex(fi, i);
-		const char *user = rpmfiFUserIndex(fi, i);
-		const char *group = rpmfiFGroupIndex(fi, i);
+		mode_t finalMode = rpmfilesFMode(fi, i);
+		const char *user = rpmfilesFUser(fi, i);
+		const char *group = rpmfilesFGroup(fi, i);
 		uid_t uid = 0;
 		gid_t gid = 0;
 
@@ -479,11 +479,11 @@ static int fsmMapAttrs(FSM_t fsm)
 
 		st->st_mode = finalMode;
 		st->st_dev = 0;
-		st->st_ino = rpmfiFInodeIndex(fi, i);
-		st->st_rdev = rpmfiFRdevIndex(fi, i);
-		st->st_mtime = rpmfiFMtimeIndex(fi, i);
-		st->st_size = rpmfiFSizeIndex(fi, i);
-		st->st_nlink = rpmfiFNlinkIndex(fi, i);
+		st->st_ino = rpmfilesFInode(fi, i);
+		st->st_rdev = rpmfilesFRdev(fi, i);
+		st->st_mtime = rpmfilesFMtime(fi, i);
+		st->st_size = rpmfilesFSize(fi, i);
+		st->st_nlink = rpmfilesFNlink(fi, i);
 
 		if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
 			&& st->st_nlink == 0) {
@@ -911,7 +911,7 @@ static int fsmInit(FSM_t fsm)
 
     /* mode must be known so that dirs don't get suffix. */
     rpmfiles fi = rpmfiFiles(fsm->fi);
-    fsm->sb.st_mode = rpmfiFModeIndex(fi, fsm->ix);
+    fsm->sb.st_mode = rpmfilesFMode(fi, fsm->ix);
 
     /* Generate file path. */
     rc = fsmMapPath(fsm, fsm->ix);
@@ -1166,10 +1166,10 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
     }
     /* Set file capabilities (if enabled) */
     if (!rc && S_ISREG(st->st_mode) && !getuid()) {
-	rc = fsmSetFCaps(fsm->path, rpmfiFCapsIndex(fi, ix));
+	rc = fsmSetFCaps(fsm->path, rpmfilesFCaps(fi, ix));
     }
     if (!rc) {
-	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtimeIndex(fi, ix));
+	rc = fsmUtime(fsm->path, st->st_mode, rpmfilesFMtime(fi, ix));
     }
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(fsm->plugins, fsm->path, dest,
@@ -1458,7 +1458,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     if (!rc) {
 	rpmfiles files = rpmfiFiles(fi);
         for (int i=0; i<fc; i++) {
-	    if (!found[i] && !(rpmfiFFlagsIndex(files, i) & RPMFILE_GHOST))
+	    if (!found[i] && !(rpmfilesFFlags(files, i) & RPMFILE_GHOST))
 		rc = CPIOERR_MISSING_HARDLINK; // XXX other error code
 	}
     }

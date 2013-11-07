@@ -374,7 +374,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 
 	 for (i=0; i<numRecs; i++) {
 	      rpmfiles foundfi = rpmteFiles(recs[i].p);
-	      char const *linktarget = rpmfiFLinkIndex(foundfi, recs[i].fileno);
+	      char const *linktarget = rpmfilesFLink(foundfi, recs[i].fileno);
 	      char *link;
 
 	      if (linktarget && *linktarget != '\0') {
@@ -491,7 +491,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    char const *linktarget;
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		continue;
-	    linktarget = rpmfiFLinkIndex(fi, i);
+	    linktarget = rpmfilesFLink(fi, i);
 	    if (!(linktarget && *linktarget != '\0'))
 		continue;
 	    ffi.p = p;

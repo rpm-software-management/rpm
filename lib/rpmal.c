@@ -194,18 +194,18 @@ static void rpmalAddFiles(rpmal al, rpmalNum pkgNum, rpmfiles fi)
 
     for (int i = 0; i < fc; i++) {
 	/* Ignore colored provides not in our rainbow. */
-        ficolor = rpmfiFColorIndex(fi, i);
+        ficolor = rpmfilesFColor(fi, i);
         if (al->tscolor && ficolor && !(al->tscolor & ficolor))
             continue;
 
 	/* Ignore files that wont be installed */
-	if (skipdoc && (rpmfiFFlagsIndex(fi, i) & RPMFILE_DOC))
+	if (skipdoc && (rpmfilesFFlags(fi, i) & RPMFILE_DOC))
 	    continue;
-	if (skipconf && (rpmfiFFlagsIndex(fi, i) & RPMFILE_CONFIG))
+	if (skipconf && (rpmfilesFFlags(fi, i) & RPMFILE_CONFIG))
 	    continue;
 
-	fileName.dirName = rpmfiDNIdIndex(fi, rpmfiDIIndex(fi, i));
-	fileName.baseName = rpmfiBNIdIndex(fi, i);
+	fileName.dirName = rpmfilesDNId(fi, rpmfilesDI(fi, i));
+	fileName.baseName = rpmfilesBNId(fi, i);
 
 	fileEntry.entryIx = i;
 

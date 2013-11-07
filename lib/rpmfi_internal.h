@@ -38,99 +38,99 @@ RPM_GNUC_INTERNAL
 rpmsid rpmfiDNId(rpmfi fi);
 
 RPM_GNUC_INTERNAL
-int rpmfiDIIndex(rpmfiles fi, int dx);
+int rpmfilesDI(rpmfiles fi, int dx);
 
 RPM_GNUC_INTERNAL
-rpmsid rpmfiBNIdIndex(rpmfiles fi, int ix);
+rpmsid rpmfilesBNId(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmsid rpmfiDNIdIndex(rpmfiles fi, int jx);
+rpmsid rpmfilesDNId(rpmfiles fi, int jx);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiBNIndex(rpmfiles fi, int ix);
+const char * rpmfilesBN(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiDNIndex(rpmfiles fi, int jx);
+const char * rpmfilesDN(rpmfiles fi, int jx);
 
 RPM_GNUC_INTERNAL
-char * rpmfiFNIndex(rpmfiles fi, int ix);
+char * rpmfilesFN(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmVerifyAttrs rpmfiVFlagsIndex(rpmfiles fi, int ix);
+rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmfileState rpmfiFStateIndex(rpmfiles fi, int ix);
+rpmfileState rpmfilesFState(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFLinkIndex(rpmfiles fi, int ix);
+const char * rpmfilesFLink(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_loff_t rpmfiFSizeIndex(rpmfiles fi, int ix);
+rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_color_t rpmfiFColorIndex(rpmfiles fi, int ix);
+rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFClassIndex(rpmfiles fi, int ix);
+const char * rpmfilesFClass(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-uint32_t rpmfiFDependsIndex(rpmfiles fi, int ix, const uint32_t ** fddictp);
+uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp);
 
 RPM_GNUC_INTERNAL
-uint32_t rpmfiFNlinkIndex(rpmfiles fi, int ix);
+uint32_t rpmfilesFNlink(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-uint32_t rpmfiFLinksIndex(rpmfiles fi, int ix, const int ** files);
+uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFLangsIndex(rpmfiles fi, int ix);
+const char * rpmfilesFLangs(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpmfileAttrs rpmfiFFlagsIndex(rpmfiles fi, int ix);
+rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_mode_t rpmfiFModeIndex(rpmfiles fi, int ix);
+rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const unsigned char * rpmfiFDigestIndex(rpmfiles fi, int ix, int *algo, size_t *len);
+const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *len);
 
 RPM_GNUC_INTERNAL
-rpm_rdev_t rpmfiFRdevIndex(rpmfiles fi, int ix);
+rpm_rdev_t rpmfilesFRdev(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_ino_t rpmfiFInodeIndex(rpmfiles fi, int ix);
+rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-rpm_time_t rpmfiFMtimeIndex(rpmfiles fi, int ix);
+rpm_time_t rpmfilesFMtime(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFUserIndex(rpmfiles fi, int ix);
+const char * rpmfilesFUser(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFGroupIndex(rpmfiles fi, int ix);
+const char * rpmfilesFGroup(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-const char * rpmfiFCapsIndex(rpmfiles fi, int ix);
+const char * rpmfilesFCaps(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
 struct fingerPrint_s *rpmfiFps(rpmfiles fi);
 
 RPM_GNUC_INTERNAL
-rpmFileAction rpmfiDecideFateIndex(rpmfiles ofi, int oix,
+rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
 				   rpmfiles nfi, int nix,
                                    int skipMissing);
 
 RPM_GNUC_INTERNAL
-int rpmfiCompareIndex(rpmfiles afi, int aix, rpmfiles bfi, int bix);
+int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix);
 
 RPM_GNUC_INTERNAL
-int rpmfiConfigConflictIndex(rpmfiles fi, int ix);
+int rpmfilesConfigConflict(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-void rpmfiSetFReplacedSizeIndex(rpmfiles fi, int ix, rpm_loff_t newsize);
+void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize);
 
 RPM_GNUC_INTERNAL
-rpm_loff_t rpmfiFReplacedSizeIndex(rpmfiles fi, int ix);
+rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
 void rpmfiFpLookup(rpmfiles fi, fingerPrintCache fpc);

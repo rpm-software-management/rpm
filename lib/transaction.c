@@ -298,8 +298,8 @@ static uint64_t countFiles(rpmts ts)
 static int handleRemovalConflict(rpmfiles fi, int fx, rpmfiles ofi, int ofx)
 {
     int rConflicts = 0; /* Removed files don't conflict, normally */
-    rpmFileTypes ft = rpmfiWhatis(rpmfiFModeIndex(fi, fx));
-    rpmFileTypes oft = rpmfiWhatis(rpmfiFModeIndex(ofi, ofx));
+    rpmFileTypes ft = rpmfiWhatis(rpmfilesFMode(fi, fx));
+    rpmFileTypes oft = rpmfiWhatis(rpmfilesFMode(ofi, ofx));
     struct stat sb;
     char *fn = NULL;
 
@@ -310,7 +310,7 @@ static int handleRemovalConflict(rpmfiles fi, int fx, rpmfiles ofi, int ofx)
     } else if (oft == LINK) {
 	/* We can't correctly handle directory symlink changing to directory */
 	if (ft == XDIR) {
-	    fn = rpmfiFNIndex(fi, fx);
+	    fn = rpmfilesFN(fi, fx);
 	    if (stat(fn, &sb) == 0 && S_ISDIR(sb.st_mode))
 		rConflicts = 1;
 	}
@@ -322,7 +322,7 @@ static int handleRemovalConflict(rpmfiles fi, int fx, rpmfiles ofi, int ofx)
      */
     if (rConflicts) {
 	if (fn == NULL)
-	    fn = rpmfiFNIndex(fi, fx);
+	    fn = rpmfilesFN(fi, fx);
 	if (lstat(fn, &sb) || rpmfiWhatis(sb.st_mode) == ft)
 	    rConflicts = 0;
     }
@@ -347,8 +347,8 @@ static int handleColorConflict(rpmts ts,
     rpm_color_t tscolor = rpmtsColor(ts);
 
     if (tscolor != 0) {
-	rpm_color_t fcolor = rpmfiFColorIndex(fi, fx) & tscolor;
-	rpm_color_t ofcolor = rpmfiFColorIndex(ofi, ofx) & tscolor;
+	rpm_color_t fcolor = rpmfilesFColor(fi, fx) & tscolor;
+	rpm_color_t ofcolor = rpmfilesFColor(ofi, ofx) & tscolor;
 
 	if (fcolor != 0 && ofcolor != 0 && fcolor != ofcolor) {
 	    rpm_color_t prefcolor = rpmtsPrefColor(ts);
@@ -385,12 +385,12 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 				   int beingRemoved)
 {
     rpmfs fs = rpmteGetFileStates(p);
-    int isCfgFile = ((rpmfiFFlagsIndex(otherFi, ofx) | rpmfiFFlagsIndex(fi, fx)) & RPMFILE_CONFIG);
+    int isCfgFile = ((rpmfilesFFlags(otherFi, ofx) | rpmfilesFFlags(fi, fx)) & RPMFILE_CONFIG);
 
     if (XFA_SKIPPING(rpmfsGetAction(fs, fx)))
 	return;
 
-    if (rpmfiCompareIndex(otherFi, ofx, fi, fx)) {
+    if (rpmfilesCompare(otherFi, ofx, fi, fx)) {
 	int rConflicts = 1;
 	char rState = RPMFILE_STATE_REPLACED;
 
@@ -425,7 +425,7 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
 
 	if (rConflicts) {
 	    char *altNEVR = headerGetAsString(otherHeader, RPMTAG_NEVRA);
-	    char *fn = rpmfiFNIndex(fi, fx);
+	    char *fn = rpmfilesFN(fi, fx);
 	    rpmteAddProblem(p, RPMPROB_FILE_CONFLICT, altNEVR, fn,
 			    headerGetInstance(otherHeader));
 	    free(fn);
@@ -444,10 +444,10 @@ static void handleInstInstalledFile(const rpmts ts, rpmte p, rpmfiles fi, int fx
     if (isCfgFile) {
 	int skipMissing = ((rpmtsFlags(ts) & RPMTRANS_FLAG_ALLFILES) ? 0 : 1);
 	rpmFileAction action;
-	action = rpmfiDecideFateIndex(otherFi, ofx, fi, fx, skipMissing);
+	action = rpmfilesDecideFate(otherFi, ofx, fi, fx, skipMissing);
 	rpmfsSetAction(fs, fx, action);
     }
-    rpmfiSetFReplacedSizeIndex(fi, fx, rpmfiFSizeIndex(otherFi, ofx));
+    rpmfilesSetFReplacedSize(fi, fx, rpmfilesFSize(otherFi, ofx));
 }
 
 /**
@@ -476,7 +476,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 	if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 	    continue;
 
-	FFlags = rpmfiFFlagsIndex(fi, i);
+	FFlags = rpmfilesFFlags(fi, i);
 
 	fixupSize = 0;
 
@@ -546,7 +546,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 		rpmFileAction action;
 		if (rpmfsGetAction(fs, i) != FA_UNKNOWN)
 		    break;
-		if (rpmfiConfigConflictIndex(fi, i)) {
+		if (rpmfilesConfigConflict(fi, i)) {
 		    /* Here is a non-overlapped pre-existing config file. */
 		    action = (FFlags & RPMFILE_NOREPLACE) ?
 			      FA_ALTNAME : FA_BACKUP;
@@ -559,7 +559,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 
 assert(otherFi != NULL);
 	    /* Mark added overlapped non-identical files as a conflict. */
-	    if (rpmfiCompareIndex(otherFi, otherFileNum, fi, i)) {
+	    if (rpmfilesCompare(otherFi, otherFileNum, fi, i)) {
 		int rConflicts;
 
 		/* If enabled, resolve colored conflicts to preferred type */
@@ -567,7 +567,7 @@ assert(otherFi != NULL);
 						otherFs, otherFi, otherFileNum);
 
 		if (rConflicts && reportConflicts) {
-		    char *fn = rpmfiFNIndex(fi, i);
+		    char *fn = rpmfilesFN(fi, i);
 		    rpmteAddProblem(p, RPMPROB_NEW_FILE_CONFLICT,
 				    rpmteNEVRA(otherTe), fn, 0);
 		    free(fn);
@@ -578,7 +578,7 @@ assert(otherFi != NULL);
 		if (oaction != FA_UNKNOWN && !XFA_SKIPPING(oaction)) {
 		    rpmfileAttrs oflags;
 		    /* ...but ghosts aren't really created so... */
-		    oflags = rpmfiFFlagsIndex(otherFi, otherFileNum);
+		    oflags = rpmfilesFFlags(otherFi, otherFileNum);
 		    if (!(oflags & RPMFILE_GHOST)) {
 			rpmfsSetAction(fs, i, FA_SKIP);
 		    }
@@ -590,9 +590,9 @@ assert(otherFi != NULL);
 		break;
 
 	    /* Try to get the disk accounting correct even if a conflict. */
-	    fixupSize = rpmfiFSizeIndex(otherFi, otherFileNum);
+	    fixupSize = rpmfilesFSize(otherFi, otherFileNum);
 
-	    if (rpmfiConfigConflictIndex(fi, i)) {
+	    if (rpmfilesConfigConflict(fi, i)) {
 		/* Here is an overlapped  pre-existing config file. */
 		rpmFileAction action;
 		action = (FFlags & RPMFILE_NOREPLACE) ? FA_ALTNAME : FA_SKIP;
@@ -618,11 +618,11 @@ assert(otherFi != NULL);
 	    }
 	    if (XFA_SKIPPING(rpmfsGetAction(fs, i)))
 		break;
-	    if (rpmfiFStateIndex(fi, i) != RPMFILE_STATE_NORMAL)
+	    if (rpmfilesFState(fi, i) != RPMFILE_STATE_NORMAL)
 		break;
 		
 	    /* Pre-existing modified config files need to be saved. */
-	    if (rpmfiConfigConflictIndex(fi, i)) {
+	    if (rpmfilesConfigConflict(fi, i)) {
 		rpmfsSetAction(fs, i, FA_BACKUP);
 		break;
 	    }
@@ -634,7 +634,7 @@ assert(otherFi != NULL);
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fpEntryDev(fpc, fiFps), fpEntryDir(fpc, fiFps),
-		       rpmfiFSizeIndex(fi, i), rpmfiFReplacedSizeIndex(fi, i),
+		       rpmfilesFSize(fi, i), rpmfilesFReplacedSize(fi, i),
 		       fixupSize, rpmfsGetAction(fs, i));
 
     }
@@ -851,7 +851,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 	if (!dff[j]) continue;	/* dir was not emptied here. */
 	
 	/* Find parent directory and basename. */
-	dn = rpmfiDNIndex(files, j); dnlen = strlen(dn) - 1;
+	dn = rpmfilesDN(files, j); dnlen = strlen(dn) - 1;
 	bn = dn + dnlen;	bnlen = 0;
 	while (bn > dn && bn[-1] != '/') {
 		bnlen++;
