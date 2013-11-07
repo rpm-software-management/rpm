@@ -1597,23 +1597,30 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
     return rpmfilesLink(fi);
 }
 
-rpmfi rpmfilesIter(rpmfiles files, int flags)
+rpmfi initIter(rpmfiles files, int flags, int link)
 {
     rpmfi fi = NULL;
 
     if (files) {
 	fi = xcalloc(1, sizeof(*fi)); 
 	fi->i = -1;
-	fi->files = files;
+	fi->files = link ? rpmfilesLink(files) : files;
 	rpmfiLink(fi);
     }
     return fi;
 }
 
+rpmfi rpmfilesIter(rpmfiles files, int flags)
+{
+    /* standalone iterators need to bump our refcount */
+    return initIter(files, flags, 1);
+}
+
 rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfiles files = rpmfilesNew(pool, h, tagN, flags);
-    return rpmfilesIter(files, 0);
+    /* we already own rpmfiles, avoid extra refcount on it */
+    return initIter(files, 0, 0);
 }
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
