@@ -286,7 +286,7 @@ void rpmalAdd(rpmal al, rpmte p)
      * NULL pool from NULL alp->provides in numerous cases?
      */
     {
-	rpmstrPool fipool = rpmfiPool(alp->fi);
+	rpmstrPool fipool = rpmfilesPool(rpmfiFiles(alp->fi));
 	rpmstrPool dspool = rpmdsPool(alp->provides);
 	
 	assert(fipool == NULL || fipool == al->pool);

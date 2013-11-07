@@ -1745,9 +1745,9 @@ int rpmfiConfigConflict(const rpmfi fi)
     return rpmfiConfigConflictIndex(fi->files, fi ? fi->i : -1);
 }
 
-rpmstrPool rpmfiPool(rpmfi fi)
+rpmstrPool rpmfilesPool(rpmfiles fi)
 {
-    return (fi != NULL) ? fi->files->pool : NULL;
+    return (fi != NULL) ? fi->pool : NULL;
 }
 
 rpmfiles rpmfiFiles(rpmfi fi)

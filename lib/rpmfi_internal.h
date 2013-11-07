@@ -19,7 +19,7 @@ extern "C" {
  * @return		string pool handle (weak reference)
  */
 RPM_GNUC_INTERNAL
-rpmstrPool rpmfiPool(rpmfi fi);
+rpmstrPool rpmfilesPool(rpmfiles fi);
 
 /** \ingroup rpmfi
  * Return current base name pool id from file info set.
