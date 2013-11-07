@@ -3499,7 +3499,7 @@ msgstr "fazi :"
 
 #: rpmio/rpmlog.c:226
 msgid "warning: "
-msgstr "ho evezh : "
+msgstr "hoc'h evezh : "
 
 #: rpmio/rpmmalloc.c:25
 #, c-format
