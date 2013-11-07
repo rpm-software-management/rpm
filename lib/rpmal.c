@@ -27,7 +27,7 @@ struct availablePackage_s {
     rpmte p;                    /*!< transaction member */
     rpmds provides;		/*!< Provides: dependencies. */
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
-    rpmfi fi;			/*!< File info set. */
+    rpmfiles fi;		/*!< File info set. */
 };
 
 /** \ingroup rpmdep
@@ -125,7 +125,7 @@ rpmal rpmalFree(rpmal al)
     for (i = 0; i < al->size; i++, alp++) {
 	alp->obsoletes = rpmdsFree(alp->obsoletes);
 	alp->provides = rpmdsFree(alp->provides);
-	alp->fi = rpmfiFree(alp->fi);
+	alp->fi = rpmfilesFree(alp->fi);
     }
     al->pool = rpmstrPoolFree(al->pool);
     al->list = _free(al->list);
@@ -275,7 +275,7 @@ void rpmalAdd(rpmal al, rpmte p)
 
     alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME));
     alp->obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME));
-    alp->fi = rpmfiLink(rpmteFI(p));
+    alp->fi = rpmfilesLink(rpmteFiles(p));
 
     /*
      * Transition-time safe-guard to catch private-pool uses.
@@ -286,7 +286,7 @@ void rpmalAdd(rpmal al, rpmte p)
      * NULL pool from NULL alp->provides in numerous cases?
      */
     {
-	rpmstrPool fipool = rpmfilesPool(rpmfiFiles(alp->fi));
+	rpmstrPool fipool = rpmfilesPool(alp->fi);
 	rpmstrPool dspool = rpmdsPool(alp->provides);
 	
 	assert(fipool == NULL || fipool == al->pool);
@@ -299,7 +299,7 @@ void rpmalAdd(rpmal al, rpmte p)
     if (al->obsoletesHash != NULL)
 	rpmalAddObsoletes(al, pkgNum, alp->obsoletes);
     if (al->fileHash != NULL)
-	rpmalAddFiles(al, pkgNum, rpmfiFiles(alp->fi));
+	rpmalAddFiles(al, pkgNum, alp->fi);
 
     assert(((rpmalNum)(alp - al->list)) == pkgNum);
 }
@@ -312,13 +312,13 @@ static void rpmalMakeFileIndex(rpmal al)
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
 	if (alp->fi != NULL)
-	    fileCnt += rpmfiFC(alp->fi);
+	    fileCnt += rpmfilesFC(alp->fi);
     }
     al->fileHash = rpmalFileHashCreate(fileCnt/4+128,
 				       fileHash, fileCompare, NULL, NULL);
     for (i = 0; i < al->size; i++) {
 	alp = al->list + i;
-	rpmalAddFiles(al, i, rpmfiFiles(alp->fi));
+	rpmalAddFiles(al, i, alp->fi);
     }
 }
 
