@@ -115,7 +115,7 @@ static rpmfiles rpmfilesUnlink(rpmfiles fi)
     return NULL;
 }
 
-static rpmfiles rpmfilesLink(rpmfiles fi)
+rpmfiles rpmfilesLink(rpmfiles fi)
 {
     if (fi)
 	fi->nrefs++;
@@ -1231,7 +1231,7 @@ assert(fn != NULL);		/* XXX can't happen */
     free(fn);
 }
 
-static rpmfiles rpmfilesFree(rpmfiles fi)
+rpmfiles rpmfilesFree(rpmfiles fi)
 {
     if (fi == NULL) return NULL;
 
@@ -1547,7 +1547,7 @@ static int rpmfiPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
     return 0;
 }
 
-static rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
+rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfiles fi = xcalloc(1, sizeof(*fi)); 
     struct rpmtd_s bn, dn, dx;

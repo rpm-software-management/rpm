@@ -137,6 +137,12 @@ void rpmfiFpLookup(rpmfiles fi, fingerPrintCache fpc);
 
 rpmfiles rpmfiFiles(rpmfi fi);
 
+rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
+
+rpmfiles rpmfilesLink(rpmfiles fi);
+
+rpmfiles rpmfilesFree(rpmfiles fi);
+
 rpm_count_t rpmfilesFC(rpmfiles fi);
 
 rpm_count_t rpmfilesDC(rpmfiles fi);
