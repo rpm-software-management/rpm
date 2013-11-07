@@ -978,7 +978,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 {
     tsMembers tsmem = rpmtsMembers(ts);
     rpmte p;
-    rpmfi fi;
+    rpmfiles fi;
     rpmfs fs;
     int j;
     unsigned int fileNum;
@@ -1007,7 +1007,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	fingerPrint *fpp = NULL;
 	unsigned int installedPkg;
 	int beingRemoved = 0;
-	rpmfi otherFi = NULL;
+	rpmfiles otherFi = NULL;
 	rpmte *removedPkg = NULL;
 
 	/* Is this package being removed? */
@@ -1015,7 +1015,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	if (removedHashGetEntry(tsmem->removedPackages, installedPkg,
 				&removedPkg, NULL, NULL)) {
 	    beingRemoved = 1;
-	    otherFi = rpmfiLink(rpmteFI(removedPkg[0]));
+	    otherFi = rpmfilesLink(rpmteFiles(removedPkg[0]));
 	}
 
 	h = headerLink(h);
@@ -1049,7 +1049,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		fpLookup(fpc, dirName, baseName, &fpp);
 		fpIx = 0;
 	    } else {
-		fpp = rpmfiFps(rpmfiFiles(otherFi));
+		fpp = rpmfiFps(otherFi);
 		fpIx = fileNum;
 	    }
 
@@ -1058,7 +1058,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 
 	    for (j = 0; j < numRecs; j++) {
 	        p = recs[j].p;
-		fi = rpmteFI(p);
+		fi = rpmteFiles(p);
 		fs = rpmteGetFileStates(p);
 
 		/* Determine the fate of each file. */
@@ -1066,10 +1066,10 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		case TR_ADDED:
 		    if (!otherFi) {
 			/* XXX What to do if this fails? */
-		        otherFi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
+		        otherFi = rpmfilesNew(NULL, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
 		    }
-		    handleInstInstalledFile(ts, p, rpmfiFiles(fi), recs[j].fileno,
-					    h, rpmfiFiles(otherFi), fileNum, beingRemoved);
+		    handleInstInstalledFile(ts, p, fi, recs[j].fileno,
+					    h, otherFi, fileNum, beingRemoved);
 		    break;
 		case TR_REMOVED:
 		    if (!beingRemoved) {
@@ -1084,7 +1084,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 
 	} while (newheader==h);
 
-	otherFi = rpmfiFree(otherFi);
+	otherFi = rpmfilesFree(otherFi);
 	if (!beingRemoved) {
 	    rpmtdFreeData(&ostates);
 	    rpmtdFreeData(&bnames);
