@@ -1597,7 +1597,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
     return rpmfilesLink(fi);
 }
 
-rpmfi initIter(rpmfiles files, int flags, int link)
+static rpmfi initIter(rpmfiles files, int flags, int link)
 {
     rpmfi fi = NULL;
 
