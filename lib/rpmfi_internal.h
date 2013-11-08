@@ -147,6 +147,8 @@ rpm_count_t rpmfilesFC(rpmfiles fi);
 
 rpm_count_t rpmfilesDC(rpmfiles fi);
 
+int rpmfilesFindFN(rpmfiles files, const char * fn);
+
 rpmfi rpmfilesIter(rpmfiles files, int flags);
 
 int rpmfilesDigestAlgo(rpmfiles fi);

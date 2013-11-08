@@ -262,12 +262,11 @@ char * rpmfilesFN(rpmfiles fi, int ix)
     return fn;
 }
 
-int rpmfiFindFN(rpmfi fi, const char * fn)
+int rpmfilesFindFN(rpmfiles files, const char * fn)
 {
-    if (fi == NULL || fn == NULL)
+    if (files == NULL || fn == NULL)
 	return -1;
 
-    rpmfiles files = fi->files;
     const rpmsid * bnid = files->bnid;
     const rpmsid * dnid = files->dnid;
     uint32_t * dil = files->dil;
@@ -312,6 +311,16 @@ int rpmfiFindFN(rpmfi fi, const char * fn)
 	}
     }
     return -1;
+}
+
+int rpmfiFindFN(rpmfi fi, const char * fn)
+{
+    int ix = -1;
+
+    if (fi != NULL) {
+	ix = rpmfilesFindFN(fi->files, fn);
+    }
+    return ix;
 }
 
 rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix)
