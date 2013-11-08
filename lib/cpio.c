@@ -400,9 +400,9 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     GET_NUM_FIELD(hdr.filesize, fsize);
     GET_NUM_FIELD(hdr.namesize, nameSize);
 
-    *path = xmalloc(nameSize + 1);
-    read = Fread(*path, nameSize, 1, cpio->fd);
-    (*path)[nameSize] = '\0';
+    char name[nameSize + 1];
+    read = Fread(name, nameSize, 1, cpio->fd);
+    name[nameSize] = '\0';
     cpio->offset += read;
     if (read != nameSize ) {
         return CPIOERR_BAD_HEADER;
@@ -411,8 +411,11 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     rc = rpmcpioReadPad(cpio);
     cpio->fileend = cpio->offset + fsize;
 
-    if (!rc && rstreq(*path, CPIO_TRAILER))
+    if (!rc && rstreq(name, CPIO_TRAILER))
 	rc = CPIOERR_HDR_TRAILER;
+
+    if (!rc && path)
+	*path = xstrdup(name);
 
     return rc;
 }
