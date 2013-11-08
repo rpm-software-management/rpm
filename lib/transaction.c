@@ -526,7 +526,6 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 
 	for (otherPkgNum = j - 1; otherPkgNum >= 0; otherPkgNum--) {
 	    otherTe = recs[otherPkgNum].p;
-	    otherFi = rpmteFiles(otherTe);
 	    otherFileNum = recs[otherPkgNum].fileno;
 	    otherFs = rpmteGetFileStates(otherTe);
 
@@ -535,8 +534,10 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
 		continue;
 
 	    /* XXX Happens iff fingerprint for incomplete package install. */
-	    if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN)
+	    if (rpmfsGetAction(otherFs, otherFileNum) != FA_UNKNOWN) {
+		otherFi = rpmteFiles(otherTe);
 		break;
+	    }
 	}
 
 	switch (rpmteType(p)) {
