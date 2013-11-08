@@ -348,8 +348,8 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
     struct rpmffi_s ffi = { p, filenr};
 
     if (fp->subDirId == 0) {
-	 rpmFpHashAddEntry(fpc->fp, fp, ffi);
-	 return;
+	rpmFpHashAddEntry(fpc->fp, fp, ffi);
+	return;
     }
 
     currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
@@ -364,84 +364,81 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
     current_fp.subDirId = 0;
 
     while (bnEnd < lensubDir) {
-	 char found = 0;
+	char found = 0;
 
-	 current_fp.baseNameId = rpmstrPoolIdn(fpc->pool,
+	current_fp.baseNameId = rpmstrPoolIdn(fpc->pool,
 						currentsubdir + bnStart,
 						bnEnd - bnStart, 1);
 
-	 rpmFpHashGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
+	rpmFpHashGetEntry(symlinks, &current_fp, &recs, &numRecs, NULL);
 
-	 for (i=0; i<numRecs; i++) {
-	      rpmfi foundfi = rpmteFI(recs[i].p);
-	      char const *linktarget = rpmfiFLinkIndex(foundfi, recs[i].fileno);
-	      char *link;
+	for (i = 0; i < numRecs; i++) {
+	    rpmfi foundfi = rpmteFI(recs[i].p);
+	    char const *linktarget = rpmfiFLinkIndex(foundfi, recs[i].fileno);
+	    char *link;
 
-	      if (linktarget && *linktarget != '\0') {
-		   const char *bn;
-		   /* this "directory" is a symlink */
-		   link = NULL;
-		   if (*linktarget != '/') {
-			const char *dn, *subDir = NULL;
-			dn = rpmstrPoolStr(fpc->pool, current_fp.entry->dirId);
-			if (current_fp.subDirId) {
-			    subDir = rpmstrPoolStr(fpc->pool,
-						   current_fp.subDirId);
-			}
-			rstrscat(&link, dn,
-				 subDir ? subDir : "",
-				 "/", NULL);
-		   }
-		   rstrscat(&link, linktarget, "/", NULL);
-		   if (strlen(currentsubdir + bnEnd)) {
-			rstrscat(&link, currentsubdir + bnEnd, NULL);
-		   }
+	    if (linktarget && *linktarget != '\0') {
+		const char *bn;
+		/* this "directory" is a symlink */
+		link = NULL;
+		if (*linktarget != '/') {
+		    const char *dn, *subDir = NULL;
+		    dn = rpmstrPoolStr(fpc->pool, current_fp.entry->dirId);
+		    if (current_fp.subDirId) {
+			subDir = rpmstrPoolStr(fpc->pool, current_fp.subDirId);
+		    }
+		    rstrscat(&link, dn, subDir ? subDir : "", "/", NULL);
+		}
+		rstrscat(&link, linktarget, "/", NULL);
+		if (strlen(currentsubdir + bnEnd)) {
+		    rstrscat(&link, currentsubdir + bnEnd, NULL);
+		}
 
-		   bn = rpmstrPoolStr(fpc->pool, fp->baseNameId);
-		   doLookup(fpc, link, bn, fp);
+		bn = rpmstrPoolStr(fpc->pool, fp->baseNameId);
+		doLookup(fpc, link, bn, fp);
 
-		   free(link);
-		   symlinkcount++;
+		free(link);
+		symlinkcount++;
 
-		   /* setup current_fp for the new path */
-		   found = 1;
-		   current_fp = *fp;
-		   if (fp->subDirId == 0) {
-		     /* directory exists - no need to look for symlinks */
-		     rpmFpHashAddEntry(fpc->fp, fp, ffi);
-		     return;
-		   }
-		   currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
-		   lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
-		   /* no subDir for now */
-		   current_fp.subDirId = 0;
+		/* setup current_fp for the new path */
+		found = 1;
+		current_fp = *fp;
+		if (fp->subDirId == 0) {
+		    /* directory exists - no need to look for symlinks */
+		    rpmFpHashAddEntry(fpc->fp, fp, ffi);
+		    return;
+		}
+		currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
+		lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
+		/* no subDir for now */
+		current_fp.subDirId = 0;
 
-		   /* Set baseName to the upper most dir */
-		   bnStart = bnEnd = 1;
-		   while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
-			bnEnd++;
-		   break;
+		/* Set baseName to the upper most dir */
+		bnStart = bnEnd = 1;
+		while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
+		    bnEnd++;
+		break;
 
-	      }
-	 }
-	 if (symlinkcount>50) {
-	      // found too many symlinks in the path
-	      // most likley a symlink cicle
-	      // giving up
-	      // TODO warning/error
-	      break;
-	 }
-	 if (found) {
-	      continue; // restart loop after symlink
-	 }
+	    }
+	}
+	if (symlinkcount > 50) {
+	    // found too many symlinks in the path
+	    // most likley a symlink cicle
+	    // giving up
+	    // TODO warning/error
+	    break;
+	}
+	if (found) {
+	    continue; // restart loop after symlink
+	}
 
-	  /* Set former baseName as subDir */
-	 bnEnd++;
-	 current_fp.subDirId = rpmstrPoolIdn(fpc->pool, currentsubdir, bnEnd, 1);
+	/* Set former baseName as subDir */
+	bnEnd++;
+	current_fp.subDirId = rpmstrPoolIdn(fpc->pool, currentsubdir, bnEnd, 1);
 
-	 /* set baseName to the next lower dir */
-	 bnStart = bnEnd;
-	 while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
+	/* set baseName to the next lower dir */
+	bnStart = bnEnd;
+	while (bnEnd < lensubDir && currentsubdir[bnEnd] != '/')
 	    bnEnd++;
     }
     rpmFpHashAddEntry(fpc->fp, fp, ffi);
