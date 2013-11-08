@@ -9,6 +9,11 @@
 
 #define	RPMFIMAGIC	0x09697923
 
+typedef enum rpmFileIter_e {
+    RPMFI_ITER_FWD	= 0,
+    RPMFI_ITER_BACK	= 1,
+} rpmFileIter;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -149,7 +154,7 @@ rpm_count_t rpmfilesDC(rpmfiles fi);
 
 int rpmfilesFindFN(rpmfiles files, const char * fn);
 
-rpmfi rpmfilesIter(rpmfiles files, int flags);
+rpmfi rpmfilesIter(rpmfiles files, int itype);
 
 int rpmfilesDigestAlgo(rpmfiles fi);
 

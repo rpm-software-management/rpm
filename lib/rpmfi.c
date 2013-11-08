@@ -39,10 +39,12 @@ typedef struct hardlinks_s * hardlinks_t;
 #undef HTKEYTYPE
 #undef HTDATATYPE
 
+typedef int (*iterfunc)(rpmfi fi);
 
 struct rpmfi_s {
     int i;			/*!< Current file index. */
     int j;			/*!< Current directory index. */
+    iterfunc next;		/*!< Iterator function. */
     char * fn;			/*!< File name buffer. */
 
     rpmfiles files;		/*!< File info set */
@@ -604,18 +606,29 @@ struct fingerPrint_s *rpmfilesFps(rpmfiles fi)
     return (fi != NULL) ? fi->fps : NULL;
 }
 
+static int iterFwd(rpmfi fi)
+{
+    return fi->i + 1;
+}
+
+static int iterBack(rpmfi fi)
+{
+    return fi->i - 1;
+}
+
 int rpmfiNext(rpmfi fi)
 {
     int i = -1;
-
-    if (fi != NULL && ++fi->i >= 0) {
-	if (fi->i < rpmfilesFC(fi->files)) {
-	    i = fi->i;
+    if (fi != NULL) {
+	int next = fi->next(fi);
+	if (next >= 0 && next < rpmfilesFC(fi->files)) {
+	    fi->i = next;
 	    fi->j = rpmfilesDI(fi->files, fi->i);
-	} else
+	} else {
 	    fi->i = -1;
+	}
+	i = fi->i;
     }
-
     return i;
 }
 
@@ -1609,7 +1622,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
     return rpmfilesLink(fi);
 }
 
-static rpmfi initIter(rpmfiles files, int flags, int link)
+static rpmfi initIter(rpmfiles files, int itype, int link)
 {
     rpmfi fi = NULL;
 
@@ -1617,22 +1630,33 @@ static rpmfi initIter(rpmfiles files, int flags, int link)
 	fi = xcalloc(1, sizeof(*fi)); 
 	fi->i = -1;
 	fi->files = link ? rpmfilesLink(files) : files;
+	switch (itype) {
+	case RPMFI_ITER_BACK:
+	    fi->i = rpmfilesFC(fi->files);
+	    fi->next = iterBack;
+	    break;
+	case RPMFI_ITER_FWD:
+	default:
+	    fi->i = -1;
+	    fi->next = iterFwd;
+	    break;
+	};
 	rpmfiLink(fi);
     }
     return fi;
 }
 
-rpmfi rpmfilesIter(rpmfiles files, int flags)
+rpmfi rpmfilesIter(rpmfiles files, int itype)
 {
     /* standalone iterators need to bump our refcount */
-    return initIter(files, flags, 1);
+    return initIter(files, itype, 1);
 }
 
 rpmfi rpmfiNewPool(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfiles files = rpmfilesNew(pool, h, tagN, flags);
     /* we already own rpmfiles, avoid extra refcount on it */
-    return initIter(files, 0, 0);
+    return initIter(files, RPMFI_ITER_FWD, 0);
 }
 
 rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
