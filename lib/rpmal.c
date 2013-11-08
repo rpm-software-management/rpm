@@ -275,7 +275,7 @@ void rpmalAdd(rpmal al, rpmte p)
 
     alp->provides = rpmdsLink(rpmteDS(p, RPMTAG_PROVIDENAME));
     alp->obsoletes = rpmdsLink(rpmteDS(p, RPMTAG_OBSOLETENAME));
-    alp->fi = rpmfilesLink(rpmteFiles(p));
+    alp->fi = rpmteFiles(p);
 
     /*
      * Transition-time safe-guard to catch private-pool uses.

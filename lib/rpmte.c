@@ -591,7 +591,7 @@ rpmfi rpmteFI(rpmte te)
 
 rpmfiles rpmteFiles(rpmte te)
 {
-    return rpmfiFiles(rpmteFI(te));
+    return rpmfilesLink(rpmfiFiles(rpmteFI(te)));
 }
 
 static void rpmteColorDS(rpmte te, rpmTag tag)

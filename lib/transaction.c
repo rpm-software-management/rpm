@@ -632,6 +632,7 @@ assert(otherFi != NULL);
 	    rpmfsSetAction(fs, i, FA_ERASE);
 	    break;
 	}
+	rpmfilesFree(otherFi);
 
 	/* Update disk space info for a file. */
 	rpmtsUpdateDSI(ts, fpEntryDev(fpc, fiFps), fpEntryDir(fpc, fiFps),
@@ -1016,7 +1017,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 	if (removedHashGetEntry(tsmem->removedPackages, installedPkg,
 				&removedPkg, NULL, NULL)) {
 	    beingRemoved = 1;
-	    otherFi = rpmfilesLink(rpmteFiles(removedPkg[0]));
+	    otherFi = rpmteFiles(removedPkg[0]);
 	}
 
 	h = headerLink(h);
@@ -1079,6 +1080,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		    }
 		    break;
 		}
+		rpmfilesFree(fi);
 	    }
 
 	    newheader = rpmdbNextIterator(mi);

@@ -349,7 +349,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 
     if (fp->subDirId == 0) {
 	rpmFpHashAddEntry(fpc->fp, fp, ffi);
-	return;
+	goto exit;
     }
 
     currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
@@ -376,6 +376,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	    rpmfiles foundfi = rpmteFiles(recs[i].p);
 	    char const *linktarget = rpmfilesFLink(foundfi, recs[i].fileno);
 	    char *link;
+	    foundfi = rpmfilesFree(foundfi);
 
 	    if (linktarget && *linktarget != '\0') {
 		const char *bn;
@@ -406,7 +407,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 		if (fp->subDirId == 0) {
 		    /* directory exists - no need to look for symlinks */
 		    rpmFpHashAddEntry(fpc->fp, fp, ffi);
-		    return;
+		    goto exit;
 		}
 		currentsubdir = rpmstrPoolStr(fpc->pool, fp->subDirId);
 		lensubDir = rpmstrPoolStrlen(fpc->pool, fp->subDirId);
@@ -443,6 +444,8 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
     }
     rpmFpHashAddEntry(fpc->fp, fp, ffi);
 
+exit:
+    rpmfilesFree(fi);
 }
 
 fingerPrint * fpCacheGetByFp(fingerPrintCache cache,
@@ -496,7 +499,7 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    rpmFpHashAddEntry(symlinks, fpList + i, ffi);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), fc);
-
+	rpmfilesFree(fi);
     }
     rpmtsiFree(pi);
 
