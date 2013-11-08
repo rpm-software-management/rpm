@@ -176,10 +176,10 @@ int rpmfiSetFX(rpmfi fi, int fx)
 {
     int i = -1;
 
-    if (fi != NULL && fx >= 0 && fx < fi->files->fc) {
+    if (fi != NULL && fx >= 0 && fx < rpmfilesFC(fi->files)) {
 	i = fi->i;
 	fi->i = fx;
-	fi->j = fi->files->dil[fi->i];
+	fi->j = rpmfilesDI(fi->files, fi->i);
     }
     return i;
 }
@@ -600,11 +600,9 @@ int rpmfiNext(rpmfi fi)
     int i = -1;
 
     if (fi != NULL && ++fi->i >= 0) {
-	rpmfiles files = fi->files;
-	if (fi->i < files->fc) {
+	if (fi->i < rpmfilesFC(fi->files)) {
 	    i = fi->i;
-	    if (files->dil != NULL)
-		fi->j = files->dil[fi->i];
+	    fi->j = rpmfilesDI(fi->files, fi->i);
 	} else
 	    fi->i = -1;
     }
@@ -615,7 +613,7 @@ int rpmfiNext(rpmfi fi)
 rpmfi rpmfiInit(rpmfi fi, int fx)
 {
     if (fi != NULL) {
-	if (fx >= 0 && fx < fi->files->fc) {
+	if (fx >= 0 && fx < rpmfilesFC(fi->files)) {
 	    fi->i = fx - 1;
 	    fi->j = -1;
 	}
@@ -629,7 +627,7 @@ int rpmfiNextD(rpmfi fi)
     int j = -1;
 
     if (fi != NULL && ++fi->j >= 0) {
-	if (fi->j < fi->files->dc)
+	if (fi->j < rpmfilesDC(fi->files))
 	    j = fi->j;
 	else
 	    fi->j = -1;
@@ -641,7 +639,7 @@ int rpmfiNextD(rpmfi fi)
 rpmfi rpmfiInitD(rpmfi fi, int dx)
 {
     if (fi != NULL) {
-	if (dx >= 0 && dx < fi->files->fc)
+	if (dx >= 0 && dx < rpmfilesFC(fi->files))
 	    fi->j = dx - 1;
 	else
 	    fi = NULL;
