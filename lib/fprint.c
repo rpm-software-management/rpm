@@ -343,7 +343,7 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
     struct rpmffi_s * recs;
     int numRecs;
     int i;
-    fingerPrint *fp = rpmfiFps(fi) + filenr;
+    fingerPrint *fp = rpmfilesFps(fi) + filenr;
     int symlinkcount = 0;
     struct rpmffi_s ffi = { p, filenr};
 
@@ -481,10 +481,10 @@ void fpCachePopulate(fingerPrintCache fpc, rpmts ts, int fileCount)
 	    continue;	/* XXX can't happen */
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
-	rpmfiFpLookup(fi, fpc);
+	rpmfilesFpLookup(fi, fpc);
 	fs = rpmteGetFileStates(p);
 	fc = rpmfsFC(fs);
-	fpList = rpmfiFps(fi);
+	fpList = rpmfilesFps(fi);
 	/* collect symbolic links */
 	for (i = 0; i < fc; i++) {
 	    struct rpmffi_s ffi;

@@ -113,7 +113,7 @@ RPM_GNUC_INTERNAL
 const char * rpmfilesFCaps(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-struct fingerPrint_s *rpmfiFps(rpmfiles fi);
+struct fingerPrint_s *rpmfilesFps(rpmfiles fi);
 
 RPM_GNUC_INTERNAL
 rpmFileAction rpmfilesDecideFate(rpmfiles ofi, int oix,
@@ -133,7 +133,7 @@ RPM_GNUC_INTERNAL
 rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix);
 
 RPM_GNUC_INTERNAL
-void rpmfiFpLookup(rpmfiles fi, fingerPrintCache fpc);
+void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc);
 
 rpmfiles rpmfiFiles(rpmfi fi);
 

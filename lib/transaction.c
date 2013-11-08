@@ -462,7 +462,7 @@ static void handleOverlappedFiles(rpmts ts, fingerPrintCache fpc, rpmte p, rpmfi
     rpmfs otherFs;
     rpm_count_t fc = rpmfilesFC(fi);
     int reportConflicts = !(rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACENEWFILES);
-    fingerPrint * fpList = rpmfiFps(fi);
+    fingerPrint * fpList = rpmfilesFps(fi);
 
     for (i = 0; i < fc; i++) {
 	struct fingerPrint_s * fiFps;
@@ -1049,7 +1049,7 @@ void checkInstalledFiles(rpmts ts, uint64_t fileCount, fingerPrintCache fpc)
 		fpLookup(fpc, dirName, baseName, &fpp);
 		fpIx = 0;
 	    } else {
-		fpp = rpmfiFps(otherFi);
+		fpp = rpmfilesFps(otherFi);
 		fpIx = fileNum;
 	    }
 

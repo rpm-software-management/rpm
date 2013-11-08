@@ -599,7 +599,7 @@ const char * rpmfilesFLangs(rpmfiles fi, int ix)
     return flangs;
 }
 
-struct fingerPrint_s *rpmfiFps(rpmfiles fi)
+struct fingerPrint_s *rpmfilesFps(rpmfiles fi)
 {
     return (fi != NULL) ? fi->fps : NULL;
 }
@@ -1407,7 +1407,7 @@ static struct hardlinks_s * freeNLinks(struct hardlinks_s * nlinks)
 	return nlinks;
 }
 
-static void rpmfiBuildNLink(rpmfiles fi, Header h)
+static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 {
 	struct fileid_s f_id;
 	fileidHash files;
@@ -1465,7 +1465,7 @@ static void rpmfiBuildNLink(rpmfiles fi, Header h)
 	files = fileidHashFree(files);
 }
 
-static int rpmfiPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
+static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 {
     headerGetFlags scareFlags = (flags & RPMFI_KEEPHEADER) ? 
 				HEADERGET_MINMEM : HEADERGET_ALLOC;
@@ -1548,7 +1548,7 @@ static int rpmfiPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 	_hgfi(h, RPMTAG_FILERDEVS, &td, scareFlags, fi->frdevs);
     if (!(flags & RPMFI_NOFILEINODES)) {
 	_hgfi(h, RPMTAG_FILEINODES, &td, scareFlags, fi->finodes);
-	rpmfiBuildNLink(fi, h);
+	rpmfilesBuildNLink(fi, h);
     }
     if (!(flags & RPMFI_NOFILEUSER)) 
 	fi->fuser = tag2pool(fi->pool, h, RPMTAG_FILEUSERNAME);
@@ -1590,7 +1590,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 	    dx.data = NULL;
 
 	    /* populate the rest of the stuff */
-	    rpmfiPopulate(fi, h, flags);
+	    rpmfilesPopulate(fi, h, flags);
 
 	    /* freeze the pool to save memory, but only if private pool */
 	    if (fi->pool != pool)
@@ -1676,7 +1676,7 @@ rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix)
     return rsize;
 }
 
-void rpmfiFpLookup(rpmfiles fi, fingerPrintCache fpc)
+void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc)
 {
     /* This can get called twice (eg yum), scratch former results and redo */
     if (fi->fc > 0) {
