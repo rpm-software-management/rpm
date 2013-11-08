@@ -445,17 +445,22 @@ rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix)
     return finode;
 }
 
-rpm_color_t rpmfiColor(rpmfi fi)
+rpm_color_t rpmfilesColor(rpmfiles files)
 {
     rpm_color_t color = 0;
 
-    if (fi != NULL && fi->files->fcolors != NULL) {
-	for (int i = 0; i < fi->files->fc; i++)
-	    color |= fi->files->fcolors[i];
+    if (files != NULL && files->fcolors != NULL) {
+	for (int i = 0; i < files->fc; i++)
+	    color |= files->fcolors[i];
 	/* XXX ignore all but lsnibble for now. */
 	color &= 0xf;
     }
     return color;
+}
+
+rpm_color_t rpmfiColor(rpmfi fi)
+{
+    return (fi != NULL) ? rpmfilesColor(fi->files) : 0;
 }
 
 rpm_color_t rpmfilesFColor(rpmfiles fi, int ix)
