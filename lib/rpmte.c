@@ -604,7 +604,7 @@ rpmfiles rpmteFiles(rpmte te)
 
 static void rpmteColorDS(rpmte te, rpmTag tag)
 {
-    rpmfi fi = rpmteFI(te);
+    rpmfi fi;
     rpmds ds = rpmteDS(te, tag);
     char deptype = 'R';
     char mydt;
@@ -615,7 +615,7 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     unsigned ix;
     int ndx, i;
 
-    if (!(te && (Count = rpmdsCount(ds)) > 0 && rpmfiFC(fi) > 0))
+    if (!(te && (Count = rpmdsCount(ds)) > 0 && rpmfilesFC(te->files) > 0))
 	return;
 
     switch (tag) {
@@ -633,8 +633,7 @@ static void rpmteColorDS(rpmte te, rpmTag tag)
     colors = xcalloc(Count, sizeof(*colors));
 
     /* Calculate dependency color. */
-    fi = rpmfiInit(fi, 0);
-    if (fi != NULL)
+    fi = rpmfilesIter(te->files, RPMFI_ITER_FWD);
     while (rpmfiNext(fi) >= 0) {
 	val = rpmfiFColor(fi);
 	ddict = NULL;
@@ -659,6 +658,7 @@ assert (ix < Count);
 	(void) rpmdsSetColor(ds, val);
     }
     free(colors);
+    rpmfiFree(fi);
 }
 
 static Header rpmteDBHeader(rpmte te)
