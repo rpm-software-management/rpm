@@ -50,7 +50,8 @@ struct rpmte_s {
     rpmds conflicts;		/*!< Conflicts: dependencies. */
     rpmds obsoletes;		/*!< Obsoletes: dependencies. */
     rpmds order;		/*!< Order: dependencies. */
-    rpmfi fi;			/*!< File information. */
+    rpmfiles files;		/*!< File information. */
+    rpmfi fi;			/*!< File iterator (backwards compat) */
     rpmps probs;		/*!< Problems (relocations) */
     rpmts ts;			/*!< Parent transaction */
 
@@ -91,7 +92,7 @@ void rpmteCleanDS(rpmte te)
     te->order = rpmdsFree(te->order);
 }
 
-static rpmfi getFI(rpmte p, Header h)
+static rpmfiles getFiles(rpmte p, Header h)
 {
     rpmfiFlags fiflags;
     fiflags = (p->type == TR_ADDED) ? (RPMFI_NOHEADER | RPMFI_FLAGS_INSTALL) :
@@ -103,7 +104,7 @@ static rpmfi getFI(rpmte p, Header h)
 	    rpmRelocateFileList(p->relocs, p->nrelocs, p->fs, h);
 	}
     }
-    return rpmfiNewPool(rpmtsPool(p->ts), h, RPMTAG_BASENAMES, fiflags);
+    return rpmfilesNew(rpmtsPool(p->ts), h, RPMTAG_BASENAMES, fiflags);
 }
 
 /* stupid bubble sort, but it's probably faster here */
@@ -258,10 +259,10 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->fs = rpmfsNew(rpmtdCount(&bnames), (p->type == TR_ADDED));
     rpmtdFreeData(&bnames);
 
-    p->fi = getFI(p, h);
+    p->files = getFiles(p, h);
 
     /* Packages with no files return an empty file info set, NULL is an error */
-    if (p->fi == NULL)
+    if (p->files == NULL)
 	goto exit;
 
     /* See if we have pre/posttrans scripts. */
@@ -320,6 +321,7 @@ rpmte rpmteFree(rpmte te)
 
 	fdFree(te->fd);
 	rpmfiFree(te->fi);
+	rpmfilesFree(te->files);
 	headerFree(te->h);
 	rpmfsFree(te->fs);
 	rpmpsFree(te->probs);
@@ -575,8 +577,11 @@ rpmfi rpmteSetFI(rpmte te, rpmfi fi)
 {
     if (te != NULL)  {
 	te->fi = rpmfiFree(te->fi);
-	if (fi != NULL)
+	te->files = rpmfilesFree(te->files);
+	if (fi != NULL) {
 	    te->fi = rpmfiLink(fi);
+	    te->files = rpmfilesLink(rpmfiFiles(fi));
+	}
     }
     return NULL;
 }
@@ -586,12 +591,15 @@ rpmfi rpmteFI(rpmte te)
     if (te == NULL)
 	return NULL;
 
+    if (te->fi == NULL)
+	te->fi = rpmfilesIter(te->files, RPMFI_ITER_FWD);
+
     return te->fi; /* XXX take fi reference here? */
 }
 
 rpmfiles rpmteFiles(rpmte te)
 {
-    return rpmfilesLink(rpmfiFiles(rpmteFI(te)));
+    return (te != NULL) ? rpmfilesLink(te->files) : NULL;
 }
 
 static void rpmteColorDS(rpmte te, rpmTag tag)
@@ -712,8 +720,8 @@ static int rpmteOpen(rpmte te, int reload_fi)
     if (h != NULL) {
 	if (reload_fi) {
 	    /* This can fail if we get a different, bad header from callback */
-	    te->fi = getFI(te, h);
-	    rc = (te->fi != NULL);
+	    te->files = getFiles(te, h);
+	    rc = (te->files != NULL);
 	} else {
 	    rc = 1;
 	}
