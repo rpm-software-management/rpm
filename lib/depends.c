@@ -14,6 +14,7 @@
 #include "lib/rpmts_internal.h"
 #include "lib/rpmte_internal.h"
 #include "lib/rpmds_internal.h"
+#include "lib/rpmfi_internal.h" /* rpmfiles stuff for now */
 #include "lib/misc.h"
 
 #include "debug.h"
@@ -780,13 +781,16 @@ int rpmtsCheck(rpmts ts)
 
 	/* Check filenames against installed conflicts */
         if (conflictsCacheNumKeys(confcache)) {
-	    rpmfi fi = rpmfiInit(rpmteFI(p), 0);
+	    rpmfiles files = rpmteFiles(p);
+	    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	    while (rpmfiNext(fi) >= 0) {
 		const char *fn = rpmfiFN(fi);
 		if (!conflictsCacheHasEntry(confcache, fn))
 		    continue;
 		checkInstDeps(ts, dcache, p, RPMTAG_CONFLICTNAME, fn);
 	    }
+	    rpmfiFree(fi);
+	    rpmfilesFree(files);
 	}
     }
     rpmtsiFree(pi);
