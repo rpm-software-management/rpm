@@ -801,7 +801,8 @@ int rpmtsCheck(rpmts ts)
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, TR_REMOVED)) != NULL) {
 	rpmds provides = rpmdsInit(rpmteDS(p, RPMTAG_PROVIDENAME));
-	rpmfi fi = rpmfiInit(rpmteFI(p), 0);
+	rpmfiles files = rpmteFiles(p);
+	rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);;
 
 	rpmlog(RPMLOG_DEBUG, "========== --- %s %s/%s 0x%x\n",
 		rpmteNEVR(p), rpmteA(p), rpmteO(p), rpmteColor(p));
@@ -815,6 +816,8 @@ int rpmtsCheck(rpmts ts)
 	    if (RPMFILE_IS_INSTALLED(rpmfiFState(fi)))
 		checkInstDeps(ts, dcache, p, RPMTAG_REQUIRENAME, rpmfiFN(fi));
 	}
+	rpmfiFree(fi);
+	rpmfilesFree(files);
     }
     rpmtsiFree(pi);
 
