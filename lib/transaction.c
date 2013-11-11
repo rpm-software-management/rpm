@@ -717,10 +717,8 @@ static char ** matchNetsharedpath(const rpmts ts, rpmfi fi)
     return nsp;
 }
 
-static void skipEraseFiles(const rpmts ts, rpmte p)
+static void skipEraseFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 {
-    rpmfi fi = rpmteFI(p);
-    rpmfs fs = rpmteGetFileStates(p);
     int i;
     char ** nsp;
     /*
@@ -729,7 +727,7 @@ static void skipEraseFiles(const rpmts ts, rpmte p)
      * they do need to take package relocations into account).
      */
     if (ts->netsharedPaths) {
-	fi = rpmfiInit(fi, 0);
+	rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	while ((i = rpmfiNext(fi)) >= 0)
 	{
 	    nsp = matchNetsharedpath(ts, fi);
@@ -737,6 +735,7 @@ static void skipEraseFiles(const rpmts ts, rpmte p)
 		rpmfsSetAction(fs, i, FA_SKIPNETSHARED);
 	    }
 	}
+	rpmfiFree(fi);
     }
 }
 
@@ -746,7 +745,7 @@ static void skipEraseFiles(const rpmts ts, rpmte p)
  * @param ts		transaction set
  * @param fi		file info set
  */
-static void skipInstallFiles(const rpmts ts, rpmte p)
+static void skipInstallFiles(const rpmts ts, rpmfiles files, rpmfs fs)
 {
     rpm_color_t tscolor = rpmtsColor(ts);
     rpm_color_t FColor;
@@ -756,9 +755,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
     char * dff;
     int dc;
     int i, j, ix;
-    rpmfi fi = rpmteFI(p);
-    rpmfiles files = rpmfiFiles(fi);
-    rpmfs fs = rpmteGetFileStates(p);
+    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 
     if (!noDocs)
 	noDocs = rpmExpandNumeric("%{_excludedocs}");
@@ -896,6 +893,7 @@ static void skipInstallFiles(const rpmts ts, rpmte p)
 
     free(drc);
     free(dff);
+    rpmfiFree(fi);
 }
 
 #undef HASHTYPE
@@ -1320,13 +1318,16 @@ static int rpmtsPrepare(rpmts ts)
     /* Skip netshared paths, not our i18n files, and excluded docs */
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if (rpmfiFC(rpmteFI(p)) == 0)
-	    continue;
-	if (rpmteType(p) == TR_ADDED) {
-	    skipInstallFiles(ts, p);
-	} else {
-	    skipEraseFiles(ts, p);
+	rpmfiles files = rpmteFiles(p);
+	if (rpmfilesFC(files) > 0) {
+	    rpmfs fs = rpmteGetFileStates(p);
+	    if (rpmteType(p) == TR_ADDED) {
+		skipInstallFiles(ts, files, fs);
+	    } else {
+		skipEraseFiles(ts, files, fs);
+	    }
 	}
+	rpmfilesFree(files);
     }
     rpmtsiFree(pi);
 
