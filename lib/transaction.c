@@ -289,8 +289,12 @@ static uint64_t countFiles(rpmts ts)
     uint64_t fc = 0;
     rpmtsi pi = rpmtsiInit(ts);
     rpmte p;
-    while ((p = rpmtsiNext(pi, 0)) != NULL)
-	fc += rpmfiFC(rpmteFI(p));
+    rpmfiles files;
+    while ((p = rpmtsiNext(pi, 0)) != NULL) {
+	files = rpmteFiles(p);
+	fc += rpmfilesFC(files);
+	rpmfilesFree(files);
+    }
     rpmtsiFree(pi);
     return fc;
 }
