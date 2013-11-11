@@ -832,7 +832,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    /* XXX make sure progress reaches 100% */
-	    rpmpsmNotify(psm, 0, psm->total);
+	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, psm->total);
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_STOP, psm->total);
 
 	    if (fsmrc) {
@@ -866,7 +866,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    }
 
 	    /* XXX make sure progress reaches 100% */
-	    rpmpsmNotify(psm, 0, psm->total);
+	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, psm->total);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_STOP, psm->total);
 	}
 	break;
