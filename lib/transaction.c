@@ -928,6 +928,7 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
     tsMembers tsmem = rpmtsMembers(ts);
     rpmstrPool tspool = rpmtsPool(ts);
     rpmtsi pi;  rpmte p;
+    rpmfiles files;
     rpmfi fi;
     rpmdbMatchIterator mi;
     int oc = 0;
@@ -946,7 +947,8 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 	rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_PROGRESS, oc++, tsmem->orderCount);
 
 	/* Gather all installed headers with matching basename's. */
-	fi = rpmfiInit(rpmteFI(p), 0);
+	files = rpmteFiles(p);
+	fi = rpmfilesIter(files, RPMFI_ITER_FWD);
 	while (rpmfiNext(fi) >= 0) {
 	    size_t keylen;
 
@@ -961,7 +963,9 @@ rpmdbMatchIterator rpmFindBaseNamesInDB(rpmts ts, uint64_t fileCount)
 		keylen++;	/* XXX "/" fixup. */
 	    rpmdbExtendIterator(mi, baseName, keylen);
 	    rpmStringSetAddEntry(baseNames, baseNameId);
-	 }
+	}
+	rpmfiFree(fi);
+	rpmfilesFree(files);
     }
     rpmtsiFree(pi);
     rpmStringSetFree(baseNames);
