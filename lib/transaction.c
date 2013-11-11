@@ -1308,7 +1308,6 @@ static int rpmtsPrepare(rpmts ts)
     tsMembers tsmem = rpmtsMembers(ts);
     rpmtsi pi;
     rpmte p;
-    rpmfi fi;
     int rc = 0;
     uint64_t fileCount = countFiles(ts);
     const char *dbhome = NULL;
@@ -1350,13 +1349,14 @@ static int rpmtsPrepare(rpmts ts)
 
     pi = rpmtsiInit(ts);
     while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	if ((fi = rpmteFI(p)) == NULL)
+	rpmfiles files = rpmteFiles(p);;
+	if (files == NULL)
 	    continue;   /* XXX can't happen */
 
 	(void) rpmswEnter(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
 	/* check files in ts against each other and update disk space
 	   needs on each partition for this package. */
-	handleOverlappedFiles(ts, fpc, p, rpmfiFiles(fi));
+	handleOverlappedFiles(ts, fpc, p, files);
 
 	/* Check added package has sufficient space on each partition used. */
 	if (rpmteType(p) == TR_ADDED) {
@@ -1373,6 +1373,7 @@ static int rpmtsPrepare(rpmts ts)
 	    rpmtsCheckDSIProblems(ts, p);
 	}
 	(void) rpmswExit(rpmtsOp(ts, RPMTS_OP_FINGERPRINT), 0);
+	rpmfilesFree(files);
     }
     rpmtsiFree(pi);
     rpmtsNotify(ts, NULL, RPMCALLBACK_TRANS_STOP, 6, tsmem->orderCount);
