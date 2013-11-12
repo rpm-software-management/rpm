@@ -541,12 +541,11 @@ static int fsmReadLink(const char *path,
 
 /** \ingroup payload
  * Write next item to payload stream.
- * @param path		on-disk path
  * @param fi		file info
  * @param writeData	should data be written?
  * @return		0 on success
  */
-static int writeFile(const char *path, rpmfi fi, int writeData)
+static int writeFile(rpmfi fi, int writeData)
 {
     FD_t rfd = NULL;
     int rc = 0;
@@ -556,7 +555,7 @@ static int writeFile(const char *path, rpmfi fi, int writeData)
     if (rc) goto exit;
 
     if (writeData && S_ISREG(rpmfiFMode(fi))) {
-	rfd = Fopen(path, "r.ufdio");
+	rfd = Fopen(rpmfiFN(fi), "r.ufdio");
 	if (Ferror(rfd)) {
 	    rc = CPIOERR_OPEN_FAILED;
 	    goto exit;
@@ -1221,44 +1220,34 @@ static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
     return rc;
 }
 
-static int writeLinks(FSM_t fsm)
+static int writeLinks(rpmfi fi, char **failedFile)
 {
     int rc = 0;
-    int fc = rpmfiFC(fsm->fi);
-    fsm->ix = 0;
-    for (fsm->ix=0;fsm->ix<fc;fsm->ix++) {
-	fsmReset(fsm);
-        rpmfiSetFX(fsm->fi, fsm->ix);
-        rc = fsmInit(fsm);
+    rpmfi xfi = rpmfilesIter(rpmfiFiles(fi), RPMFI_ITER_FWD);
 
-        /* Exit on error. */
-        if (rc)
-            break;
-
+    while (rpmfiNext(xfi) >= 0) {
         const int * hardlinks;
-        int numHardlinks;
-        numHardlinks = rpmfiFLinks(fsm->fi, &hardlinks);
+        int numHardlinks = rpmfiFLinks(xfi, &hardlinks);
 
-        if (numHardlinks < 2 || hardlinks[0] != fsm->ix)
+        if (numHardlinks < 2 || hardlinks[0] != rpmfiFX(xfi))
             continue;
 
         for (int j=0; j<numHardlinks; j++) {
             /* Copy file into archive. */
-            rc = fsmMapPath(fsm, hardlinks[j]);
-            rpmfiSetFX(fsm->fi, hardlinks[j]);
+            rpmfiSetFX(fi, hardlinks[j]);
 
             /* Write data after last link. */
-            rc = writeFile(fsm->path, fsm->fi, (j == numHardlinks-1));
-            if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
-                *fsm->failedFile = xstrdup(fsm->path);
+            rc = writeFile(fi, (j == numHardlinks-1));
+            if (rc && failedFile) {
+                *failedFile = xstrdup(rpmfiFN(fi));
+		break;
             }
-
-            fsm->path = _free(fsm->path);
         }
         /* Exit on error. */
         if (rc)
             break;
     }
+    rpmfiFree(xfi);
     return rc;
 }
 
@@ -1568,56 +1557,26 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
 int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
               rpm_loff_t * archiveSize, char ** failedFile)
 {
-    FSM_t fsm = fsmNew(FSM_PKGBUILD, NULL, fi, failedFile);;
-
     int rc = rpmfiAttachArchive(fi, cfd, O_WRONLY);
 
-    fsm->mapFlags |= CPIO_MAP_TYPE;
-    if (isSrc) 
-	fsm->mapFlags |= CPIO_FOLLOW_SYMLINKS;
-
-    fsm->ix = -1;
-
-    while (!rc) {
-	fsmReset(fsm);
-
-	/* Identify mapping index. */
-	fsm->ix++;
-	rpmfiSetFX(fi, fsm->ix);
-
-        /* Exit on end-of-payload. */
-        if (fsm->ix >= rpmfiFC(fsm->fi))
-            break;
-
-        rc = fsmInit(fsm);
-
-        /* Exit on error. */
-        if (rc)
-            break;
-
-	if (fsm->fflags & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+    rpmfiInit(fi, 0);
+    while (!rc && rpmfiNext(fi) >= 0) {
+	if (rpmfiFFlags(fi) & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
 	    continue;
 
-	if (S_ISREG(fsm->sb.st_mode) && fsm->sb.st_nlink > 1)
-            continue;
-
-        if (fsm->postpone)
+	if (S_ISREG(rpmfiFMode(fi)) && rpmfiFNlink(fi) > 1)
             continue;
 
         /* Copy file into archive. */
-        rc = writeFile(fsm->path, fsm->fi, 1);
+        rc = writeFile(fi, 1);
 
-        if (rc) {
-            if (!fsm->postpone) {
-                if (fsm->failedFile && *fsm->failedFile == NULL)
-                    *fsm->failedFile = xstrdup(fsm->path);
-            }
-        }
+        if (rc && failedFile)
+	    *failedFile = xstrdup(rpmfiFN(fi));
     }
 
     /* Flush partial sets of hard linked files. */
     if (!rc)
-	rc = writeLinks(fsm);
+	rc = writeLinks(fi, failedFile);
 
     if (archiveSize)
 	*archiveSize = (rc == 0) ? rpmfiArchiveTell(fi) : 0;
@@ -1625,7 +1584,6 @@ int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
     /* Finish the payload stream */
     if (!rc)
 	rc = rpmfiArchiveClose(fi);
-    fsmFree(fsm);
 
     return rc;
 }
