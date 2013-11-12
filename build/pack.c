@@ -19,11 +19,119 @@
 #include "lib/cpio.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
+#include "lib/rpmfi_internal.h"		/* some semi-internal stuff for now */
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
 
 #include "debug.h"
 
+/** \ingroup payload
+ * Write next item to payload stream.
+ * @param fi		file info
+ * @param writeData	should data be written?
+ * @return		0 on success
+ */
+static int writeFile(rpmfi fi, int writeData)
+{
+    FD_t rfd = NULL;
+    int rc = 0;
+
+    rc = rpmfiArchiveWriteHeader(fi);
+
+    if (rc) goto exit;
+
+    if (writeData && S_ISREG(rpmfiFMode(fi))) {
+	rfd = Fopen(rpmfiFN(fi), "r.ufdio");
+	if (Ferror(rfd)) {
+	    rc = CPIOERR_OPEN_FAILED;
+	    goto exit;
+	}
+	
+	rc = rpmfiArchiveWriteFile(fi, rfd);
+
+    } else if (writeData && S_ISLNK(rpmfiFMode(fi))) {
+	const char *lnk = rpmfiFLink(fi);
+	size_t len = strlen(lnk);
+        if (rpmfiArchiveWrite(fi, lnk, len) != len) {
+            rc = CPIOERR_WRITE_FAILED;
+            goto exit;
+        }
+    }
+
+exit:
+    if (rfd) {
+	/* preserve any prior errno across close */
+	int myerrno = errno;
+	Fclose(rfd);
+	errno = myerrno;
+    }
+    return rc;
+}
+
+static int writeLinks(rpmfi fi, char **failedFile)
+{
+    int rc = 0;
+    rpmfi xfi = rpmfilesIter(rpmfiFiles(fi), RPMFI_ITER_FWD);
+
+    while (rpmfiNext(xfi) >= 0) {
+        const int * hardlinks;
+        int numHardlinks = rpmfiFLinks(xfi, &hardlinks);
+
+        if (numHardlinks < 2 || hardlinks[0] != rpmfiFX(xfi))
+            continue;
+
+        for (int j=0; j<numHardlinks; j++) {
+            /* Copy file into archive. */
+            rpmfiSetFX(fi, hardlinks[j]);
+
+            /* Write data after last link. */
+            rc = writeFile(fi, (j == numHardlinks-1));
+            if (rc && failedFile) {
+                *failedFile = xstrdup(rpmfiFN(fi));
+		break;
+            }
+        }
+        /* Exit on error. */
+        if (rc)
+            break;
+    }
+    rpmfiFree(xfi);
+    return rc;
+}
+
+static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
+				rpm_loff_t * archiveSize, char ** failedFile)
+{
+    int rc = rpmfiAttachArchive(fi, cfd, O_WRONLY);
+
+    rpmfiInit(fi, 0);
+    while (!rc && rpmfiNext(fi) >= 0) {
+	if (rpmfiFFlags(fi) & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
+	    continue;
+
+	if (S_ISREG(rpmfiFMode(fi)) && rpmfiFNlink(fi) > 1)
+            continue;
+
+        /* Copy file into archive. */
+        rc = writeFile(fi, 1);
+
+        if (rc && failedFile)
+	    *failedFile = xstrdup(rpmfiFN(fi));
+    }
+
+    /* Flush partial sets of hard linked files. */
+    if (!rc)
+	rc = writeLinks(fi, failedFile);
+
+    if (archiveSize)
+	*archiveSize = (rc == 0) ? rpmfiArchiveTell(fi) : 0;
+
+    /* Finish the payload stream */
+    if (!rc)
+	rc = rpmfiArchiveClose(fi);
+
+    return rc;
+}
 /**
  * @todo Create transaction set *much* earlier.
  */
