@@ -291,6 +291,22 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 
     if (specix >= 0) {
 	const char *bn;
+	struct rpmtd_s td;
+	/* save original file names */
+	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
+
+	headerGet(h, RPMTAG_DIRNAMES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGDIRNAMES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
+
+	headerGet(h, RPMTAG_DIRINDEXES, &td, HEADERGET_MINMEM);
+	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
+	headerPut(h, &td, HEADERPUT_DEFAULT);
+	rpmtdFreeData(&td);
 
 	headerDel(h, RPMTAG_BASENAMES);
 	headerDel(h, RPMTAG_DIRNAMES);
@@ -305,6 +321,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	    if (spec) specFile = xstrdup(fn);
 	    free(fn);
 	}
+	rpmtdFreeData(&filenames);
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
     } else {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
@@ -328,7 +345,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (fi == NULL) {
 	goto exit;
     }
-    rpmfiSetApath(fi, filenames.data); /* Ick */
     rpmteSetFI(te, fi);
     fi = rpmfiFree(fi);
 
@@ -743,16 +759,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (rpmtsFilterFlags(ts) & RPMPROB_FILTER_REPLACEPKG)
 		markReplacedInstance(ts, psm->te);
 
-	    if (rpmfiFC(fi) > 0) {
-		struct rpmtd_s filenames;
-		rpmTag ftag = RPMTAG_FILENAMES;
-	
-		if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
-		    ftag = RPMTAG_ORIGFILENAMES;
-		}
-		headerGet(h, ftag, &filenames, HEADERGET_EXT);
-		rpmfiSetApath(fi, filenames.data); /* Ick.. */
-	    }
 	    headerFree(h);
 	}
 	if (psm->goal == PKG_ERASE) {
@@ -960,7 +966,6 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	psm->failedFile = _free(psm->failedFile);
 
-	rpmfiSetApath(fi, NULL);
 	break;
 
     case PSM_CREATE:

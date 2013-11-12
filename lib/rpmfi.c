@@ -2124,16 +2124,8 @@ int rpmfiArchiveNext(rpmfi fi)
     if (fx == -1) {
 	/* Identify mapping index. */
 	int fc = rpmfiFC(fi);
-	if (fi && fc > 0 && fi->apath) {
-	    char ** p = NULL;
-	    if (fi->apath != NULL)
-		p = bsearch(&path, fi->apath, fc, sizeof(path),
-			    cpioStrCmp);
-	    if (p) {
-		fx = (p - fi->apath);
-	    }
-	} else if (fc > 0) {
-	    fx = rpmfiFindFN(fi, path);
+	if (fc > 0) {
+	    fx = rpmfiFindOFN(fi, path);
 	}
 	free(path);
 	rpmfiSetFX(fi, fx);
