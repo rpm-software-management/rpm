@@ -57,7 +57,6 @@ typedef struct hardLink_s * hardLink_t;
 typedef enum fileStage_e {
     FSM_PKGINSTALL,
     FSM_PKGERASE,
-    FSM_PKGBUILD,
 } fileStage;
 
 /* XXX Failure to remove is not (yet) cause for failure. */
@@ -295,7 +294,7 @@ static int fsmMapPath(FSM_t fsm, int i)
 	fsm->baseName = rpmfilesBN(fi, i);
 
 	/* Never create backup for %ghost files. */
-	if (fsm->goal != FSM_PKGBUILD && !(fsm->fflags & RPMFILE_GHOST)) {
+	if (!(fsm->fflags & RPMFILE_GHOST)) {
 	    switch (fsm->action) {
 	    case FA_ALTNAME:
 		fsm->nsuffix = SUFFIX_RPMNEW;
@@ -393,7 +392,7 @@ static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
     /* common flags for all modes */
     fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
 
-    if (fsm->goal == FSM_PKGINSTALL || fsm->goal == FSM_PKGBUILD) {
+    if (fsm->goal == FSM_PKGINSTALL) {
         fsm->bufsize = 8 * BUFSIZ;
         fsm->buf = xmalloc(fsm->bufsize);
     }
