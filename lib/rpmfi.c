@@ -72,6 +72,7 @@ struct rpmfiles_s {
     rpmstrPool pool;		/*!< String pool of this file info set */
 
     struct rpmfn_s fndata;	/*!< File name data */
+    struct rpmfn_s *ofndata;	/*!< Original file name data */
 
     rpmsid * flinks;		/*!< Index to file link(s) (pool) */
 
@@ -1357,6 +1358,10 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	return rpmfilesUnlink(fi);
 
     if (rpmfilesFC(fi) > 0) {
+	if (fi->ofndata != &fi->fndata) {
+	    rpmfnClear(fi->ofndata);
+	    free(fi->ofndata);
+	}
 	rpmfnClear(&fi->fndata);
 
 	fi->flinks = _free(fi->flinks);
@@ -1685,8 +1690,22 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
 	goto err;
 
     /* populate the rest of the stuff if we have files */
-    if (fc > 0)
+    if (fc > 0) {
+	if (headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
+	    /* For relocated packages, grab the original paths too */
+	    int ofc;
+	    fi->ofndata = xmalloc(sizeof(*fi->ofndata));
+	    ofc = rpmfnInit(fi->ofndata, RPMTAG_ORIGBASENAMES, h, fi->pool);
+	    
+	    if (ofc != 0 && ofc != fc)
+		goto err;
+	} else {
+	    /* In the normal case, orig is the same as actual path data */
+	    fi->ofndata = &fi->fndata;
+	}
+	    
 	rpmfilesPopulate(fi, h, flags);
+    }
 
     /* freeze the pool to save memory, but only if private pool */
     if (fi->pool != pool)
