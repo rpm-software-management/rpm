@@ -264,14 +264,21 @@ char * rpmfilesFN(rpmfiles fi, int ix)
     return fn;
 }
 
+static int cmpPoolFn(rpmfiles files, int ix, const char *fn)
+{
+    rpmsid dnid = rpmfilesDNId(files, rpmfilesDI(files, ix));
+    size_t l = rpmstrPoolStrlen(files->pool, dnid);
+    int cmp = strncmp(rpmstrPoolStr(files->pool, dnid), fn, l);
+    if (cmp == 0)
+	cmp = strcmp(rpmfilesBN(files, ix), fn + l);
+    return cmp;
+}
+
 int rpmfilesFindFN(rpmfiles files, const char * fn)
 {
     if (files == NULL || fn == NULL)
 	return -1;
 
-    const rpmsid * bnid = files->bnid;
-    const rpmsid * dnid = files->dnid;
-    uint32_t * dil = files->dil;
     int fc = rpmfilesFC(files);
 
     if (fn[0] == '.' && fn[1] == '/') {
@@ -283,15 +290,10 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
     int lo = 0;
     int hi = fc;
     int mid, cmp;
-    size_t l;
 
     while (hi > lo) {
 	mid = (hi + lo) / 2 ;
-	l = rpmstrPoolStrlen(files->pool, dnid[dil[mid]]);
-	cmp = strncmp(rpmstrPoolStr(files->pool, dnid[dil[mid]]), fn, l);
-	if (!cmp) {
-	    cmp = strcmp(rpmstrPoolStr(files->pool, bnid[mid]), fn+l);
-	}
+	cmp = cmpPoolFn(files, mid, fn);
 	if (cmp < 0) {
 	    lo = mid+1;
 	} else if (cmp > 0) {
@@ -303,15 +305,8 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
 
     /* not found: try linear search */
     for (int i=0; i < fc; i++) {
-	l = rpmstrPoolStrlen(files->pool, dnid[dil[i]]);
-	cmp = strncmp(rpmstrPoolStr(files->pool, dnid[dil[i]]), fn, l);
-	if (!cmp) {
-	    cmp = strcmp(rpmstrPoolStr(files->pool, bnid[i]), fn+l);
-	}
-
-	if (!cmp) {
+	if (cmpPoolFn(files, i, fn) == 0)
 	    return i;
-	}
     }
     return -1;
 }
