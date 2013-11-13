@@ -12,6 +12,7 @@
 typedef enum rpmFileIter_e {
     RPMFI_ITER_FWD	= 0,
     RPMFI_ITER_BACK	= 1,
+    RPMFI_ITER_READ_ARCHIVE	= 2,
 } rpmFileIter;
 
 #ifdef __cplusplus
@@ -197,6 +198,18 @@ int rpmfilesDigestAlgo(rpmfiles fi);
 rpm_color_t rpmfilesColor(rpmfiles files);
 
 /** \ingroup payload
+ * Get new file iterator for looping over the archive content.
+ * Returned rpmfi visites files in the order they are read from the payload.
+ * Content of the regular files can be retrieved with rpmfiArchiveRead() or
+ * rpmfiArchiveReadToFile() when they are visited with rpmfiNext().
+ * rpmfiSetFX() is not supported for this type of iterator.
+ * @param fd		file
+ * @param fi            file info
+ * @return		new rpmfi
+ */
+rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files);
+
+/** \ingroup payload
  * Add payload archive to the file info
  * @param fi		file info
  * @param fd		file
@@ -242,15 +255,6 @@ size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
  * @return		> 0 on error
  */
 int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
-
-/** \ingroup payload
- * Read next archive header from archive and move fi to the
- * file found in the archive. Sets rpmfiFX!
- * @param fi		file info
- * @return		> 0 on error
- */
-int rpmfiArchiveNext(rpmfi fi);
-
 
 /** \ingroup payload
  * Read content from current file in archive

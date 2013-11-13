@@ -1434,6 +1434,8 @@ err:
     return NULL;
 }
 
+static int iterReadArchiveNext(rpmfi fi);
+
 static rpmfi initIter(rpmfiles files, int itype, int link)
 {
     rpmfi fi = NULL;
@@ -1446,6 +1448,9 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
 	case RPMFI_ITER_BACK:
 	    fi->i = rpmfilesFC(fi->files);
 	    fi->next = iterBack;
+	    break;
+	case RPMFI_ITER_READ_ARCHIVE:
+	    fi->next = iterReadArchiveNext;
 	    break;
 	case RPMFI_ITER_FWD:
 	default:
@@ -1629,6 +1634,21 @@ int rpmfiAttachArchive(rpmfi fi, FD_t fd, char mode)
     return (fi->archive == NULL);
 }
 
+rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files)
+{
+    rpmcpio_t archive = rpmcpioOpen(fd, O_RDONLY);
+    rpmfi fi = NULL;
+    if (archive) {
+	fi = rpmfilesIter(files, RPMFI_ITER_READ_ARCHIVE);
+    }
+    if (fi) {
+	fi->archive = archive;
+    } else {
+	rpmcpioFree(archive);
+    }
+    return fi;
+}
+
 int rpmfiArchiveClose(rpmfi fi)
 {
     if (fi == NULL)
@@ -1742,7 +1762,7 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
     return rc;
 }
 
-int rpmfiArchiveNext(rpmfi fi)
+static int iterReadArchiveNext(rpmfi fi)
 {
     int rc;
     int fx = -1;
@@ -1766,10 +1786,7 @@ int rpmfiArchiveNext(rpmfi fi)
 	    fx = rpmfiFindOFN(fi, path);
 	}
 	free(path);
-	rpmfiSetFX(fi, fx);
     } else {
-	rpmfiSetFX(fi, fx);
-
 	uint32_t numlinks;
 	const int * links;
 	rpm_loff_t fsize = 0;
@@ -1791,7 +1808,7 @@ int rpmfiArchiveNext(rpmfi fi)
     if (fx < 0) {
 	return CPIOERR_UNMAPPED_FILE;
     }
-    return 0;
+    return fx;
 }
 
 size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)

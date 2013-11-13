@@ -1193,7 +1193,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
-    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    rpmfi fi = rpmfiNewArchiveReader(cfd, files);
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, fs, fi, failedFile);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
@@ -1203,8 +1203,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     const int * hardlinks;
     int numHardlinks;
     char * found = xcalloc(fc, sizeof(*found));
-
-    rc = rpmfiAttachArchive(fi, cfd, O_RDONLY);
 
     if (!rpmteIsSource(te))
 	fsm->mapFlags |= CPIO_SBIT_CHECK;
@@ -1223,16 +1221,15 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	fsmReset(fsm);
 
 	/* Read next payload header. */
-	rc = rpmfiArchiveNext(fi);
+	rc = rpmfiNext(fi);
 
-	/* Detect and exit on end-of-payload. */
-	if (rc == CPIOERR_HDR_TRAILER) {
-	    rc = 0;
+	if (rc < 0) {
+	    if (rc == CPIOERR_HDR_TRAILER)
+		rc = 0;
 	    break;
 	}
-	found[rpmfiFX(fi)] = 1;
 
-	if (rc) break;
+	found[rpmfiFX(fi)] = 1;
 
         rc = fsmInit(fsm); /* Sets fsm->postpone for skipped files */
 
