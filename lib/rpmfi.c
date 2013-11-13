@@ -53,6 +53,17 @@ struct rpmfi_s {
     int nrefs;			/*!< Reference count */
 };
 
+struct rpmfn_s {
+    rpm_count_t dc;		/*!< No. of directories. */
+    rpm_count_t fc;		/*!< No. of files. */
+
+    rpmsid * bnid;		/*!< Index to base name(s) (pool) */
+    rpmsid * dnid;		/*!< Index to directory name(s) (pool) */
+    uint32_t * dil;		/*!< Directory indice(s) (from header) */
+};
+
+typedef struct rpmfn_s * rpmfn;
+
 /**
  * A package filename set.
  */
@@ -60,12 +71,10 @@ struct rpmfiles_s {
     Header h;			/*!< Header for file info set (or NULL) */
     rpmstrPool pool;		/*!< String pool of this file info set */
 
-    rpmsid * bnid;		/*!< Index to base name(s) (pool) */
-    rpmsid * dnid;		/*!< Index to directory name(s) (pool) */
+    struct rpmfn_s fndata;	/*!< File name data */
 
     rpmsid * flinks;		/*!< Index to file link(s) (pool) */
 
-    uint32_t * dil;		/*!< Directory indice(s) (from header) */
     rpm_flag_t * fflags;	/*!< File flag(s) (from header) */
     rpm_off_t * fsizes;		/*!< File size(s) (from header) */
     rpm_loff_t * lfsizes;	/*!< File size(s) (from header) */
@@ -93,9 +102,6 @@ struct rpmfiles_s {
     uint32_t * fddictn;		/*!< File depends dictionary count (header) */
     rpm_flag_t * vflags;	/*!< File verify flag(s) (from header) */
 
-    rpm_count_t dc;		/*!< No. of directories. */
-    rpm_count_t fc;		/*!< No. of files. */
-
     rpmfiFlags fiflags;		/*!< file info set control flags */
 
     struct fingerPrint_s * fps;	/*!< File fingerprint(s). */
@@ -109,6 +115,9 @@ struct rpmfiles_s {
     int magic;
     int nrefs;		/*!< Reference count. */
 };
+
+static int indexSane(rpmtd xd, rpmtd yd, rpmtd zd);
+static int cmpPoolFn(rpmstrPool pool, rpmfn files, int ix, const char * fn);
 
 static rpmfiles rpmfilesUnlink(rpmfiles fi)
 {
@@ -138,14 +147,120 @@ rpmfi rpmfiLink(rpmfi fi)
     return fi;
 }
 
+/*
+ * Collect and validate file path data from header.
+ * Return the number of files found (could be none) or -1 on error.
+ */
+static int rpmfnInit(rpmfn fndata, Header h, rpmstrPool pool)
+{
+    struct rpmtd_s bn, dn, dx;
+    int rc = 0;
+
+    /* Grab and validate file triplet data (if there is any) */
+    if (headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_MINMEM)) {
+	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_MINMEM);
+	headerGet(h, RPMTAG_DIRINDEXES, &dx, HEADERGET_ALLOC);
+
+	if (indexSane(&bn, &dn, &dx)) {
+	    /* Init the file triplet data */
+	    fndata->fc = rpmtdCount(&bn);
+	    fndata->dc = rpmtdCount(&dn);
+	    fndata->bnid = rpmtdToPool(&bn, pool);
+	    fndata->dnid = rpmtdToPool(&dn, pool);
+	    /* Steal index data from the td (pooh...) */
+	    fndata->dil = dx.data;
+	    dx.data = NULL;
+	    rc = fndata->fc;
+	} else {
+	    memset(fndata, 0, sizeof(*fndata));
+	    rc = -1;
+	}
+	rpmtdFreeData(&bn);
+	rpmtdFreeData(&dn);
+	rpmtdFreeData(&dx);
+    }
+
+    return rc;
+}
+
+static void rpmfnClear(rpmfn fndata)
+{
+    if (fndata) {
+	free(fndata->bnid);
+	free(fndata->dnid);
+	free(fndata->dil);
+	memset(fndata, 0, sizeof(*fndata));
+    }
+}
+
+static rpm_count_t rpmfnFC(rpmfn fndata)
+{
+    return (fndata != NULL) ? fndata->fc :0;
+}
+
+static rpm_count_t rpmfnDC(rpmfn fndata)
+{
+    return (fndata != NULL) ? fndata->dc : 0;
+}
+
+static int rpmfnDI(rpmfn fndata, int dx)
+{
+    int j = -1;
+    if (dx >= 0 && dx < rpmfnFC(fndata)) {
+	if (fndata->dil != NULL)
+	    j = fndata->dil[dx];
+    }
+    return j;
+}
+
+static rpmsid rpmfnBNId(rpmfn fndata, int ix)
+{
+    rpmsid id = 0;
+    if (ix >= 0 && ix < rpmfnFC(fndata)) {
+	if (fndata->bnid != NULL)
+	    id = fndata->bnid[ix];
+    }
+    return id;
+}
+
+static rpmsid rpmfnDNId(rpmfn fndata, int ix)
+{
+    rpmsid id = 0;
+    if (ix >= 0 && ix < rpmfnDC(fndata)) {
+	if (fndata->dnid != NULL)
+	    id = fndata->dnid[ix];
+    }
+    return id;
+}
+
+static const char * rpmfnBN(rpmstrPool pool, rpmfn fndata, int ix)
+{
+    return rpmstrPoolStr(pool, rpmfnBNId(fndata, ix));
+}
+
+static const char * rpmfnDN(rpmstrPool pool, rpmfn fndata, int ix)
+{
+    return rpmstrPoolStr(pool, rpmfnDNId(fndata, ix));
+}
+
+static char * rpmfnFN(rpmstrPool pool, rpmfn fndata, int ix)
+{
+    char *fn = NULL;
+    if (ix >= 0 && ix < rpmfnFC(fndata)) {
+	fn = rstrscat(NULL, rpmfnDN(pool, fndata, rpmfnDI(fndata, ix)),
+			    rpmfnBN(pool, fndata, ix), NULL);
+    }
+    return fn;
+}
+
 rpm_count_t rpmfilesFC(rpmfiles fi)
 {
-    return (fi != NULL ? fi->fc : 0);
+    return (fi != NULL ? rpmfnFC(&fi->fndata) : 0);
 }
 
 rpm_count_t rpmfilesDC(rpmfiles fi)
 {
-    return (fi != NULL ? fi->dc : 0);
+    return (fi != NULL ? rpmfnDC(&fi->fndata) : 0);
 }
 
 int rpmfilesDigestAlgo(rpmfiles fi)
@@ -204,70 +319,47 @@ int rpmfiSetDX(rpmfi fi, int dx)
 
 int rpmfilesDI(rpmfiles fi, int dx)
 {
-    int j = -1;
-    if (fi != NULL && dx >= 0 && dx < rpmfilesFC(fi)) {
-	if (fi->dil != NULL)
-	    j = fi->dil[dx];
-    }
-    return j;
+    return (fi != NULL) ? rpmfnDI(&fi->fndata, dx) : -1;
 }
 
 rpmsid rpmfilesBNId(rpmfiles fi, int ix)
 {
-    rpmsid id = 0;
-    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
-	if (fi->bnid != NULL)
-	    id = fi->bnid[ix];
-    }
-    return id;
+    return (fi != NULL) ? rpmfnBNId(&fi->fndata, ix) : 0;
 }
 
 rpmsid rpmfilesDNId(rpmfiles fi, int jx)
 {
-    rpmsid id = 0;
-    if (fi != NULL && jx >= 0 && jx < rpmfilesFC(fi)) {
-	if (fi->dnid != NULL)
-	    id = fi->dnid[jx];
-    }
-    return id;
+    return (fi != NULL) ? rpmfnDNId(&fi->fndata, jx) : 0;
 }
 
 const char * rpmfilesBN(rpmfiles fi, int ix)
 {
-    return (fi != NULL) ? rpmstrPoolStr(fi->pool, rpmfilesBNId(fi, ix)) : NULL;
+    return (fi != NULL) ? rpmfnBN(fi->pool, &fi->fndata, ix) : NULL;
 }
 
 const char * rpmfilesDN(rpmfiles fi, int jx)
 {
-    return (fi != NULL) ? rpmstrPoolStr(fi->pool, rpmfilesDNId(fi, jx)) : NULL;
+    return (fi != NULL) ? rpmfnDN(fi->pool, &fi->fndata, jx) : NULL;
 }
 
 char * rpmfilesFN(rpmfiles fi, int ix)
 {
-    char *fn = NULL;
-    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
-	fn = rstrscat(NULL, rpmfilesDN(fi, rpmfilesDI(fi, ix)),
-			    rpmfilesBN(fi, ix), NULL);
-    }
-    return fn;
+    return (fi != NULL) ? rpmfnFN(fi->pool, &fi->fndata, ix) : NULL;
 }
 
-static int cmpPoolFn(rpmfiles files, int ix, const char *fn)
+static int cmpPoolFn(rpmstrPool pool, rpmfn files, int ix, const char * fn)
 {
-    rpmsid dnid = rpmfilesDNId(files, rpmfilesDI(files, ix));
-    size_t l = rpmstrPoolStrlen(files->pool, dnid);
-    int cmp = strncmp(rpmstrPoolStr(files->pool, dnid), fn, l);
+    rpmsid dnid = rpmfnDNId(files, rpmfnDI(files, ix));
+    size_t l = rpmstrPoolStrlen(pool, dnid);
+    int cmp = strncmp(rpmstrPoolStr(pool, dnid), fn, l);
     if (cmp == 0)
-	cmp = strcmp(rpmfilesBN(files, ix), fn + l);
+	cmp = strcmp(rpmfnBN(pool, files, ix), fn + l);
     return cmp;
 }
 
-int rpmfilesFindFN(rpmfiles files, const char * fn)
+static int rpmfnFindFN(rpmstrPool pool, rpmfn files, const char * fn)
 {
-    if (files == NULL || fn == NULL)
-	return -1;
-
-    int fc = rpmfilesFC(files);
+    int fc = rpmfnFC(files);
 
     if (fn[0] == '.' && fn[1] == '/') {
 	fn++;
@@ -281,7 +373,7 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
 
     while (hi > lo) {
 	mid = (hi + lo) / 2 ;
-	cmp = cmpPoolFn(files, mid, fn);
+	cmp = cmpPoolFn(pool, files, mid, fn);
 	if (cmp < 0) {
 	    lo = mid+1;
 	} else if (cmp > 0) {
@@ -293,10 +385,15 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
 
     /* not found: try linear search */
     for (int i=0; i < fc; i++) {
-	if (cmpPoolFn(files, i, fn) == 0)
+	if (cmpPoolFn(pool, files, mid, fn) == 0)
 	    return i;
     }
     return -1;
+}
+
+int rpmfilesFindFN(rpmfiles files, const char * fn)
+{
+    return (files && fn) ? rpmfnFindFN(files->pool, &files->fndata, fn) : -1;
 }
 
 int rpmfiFindFN(rpmfi fi, const char * fn)
@@ -1249,9 +1346,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	return rpmfilesUnlink(fi);
 
     if (rpmfilesFC(fi) > 0) {
-	fi->bnid = _free(fi->bnid);
-	fi->dnid = _free(fi->dnid);
-	fi->dil = _free(fi->dil);
+	rpmfnClear(&fi->fndata);
 
 	fi->flinks = _free(fi->flinks);
 	fi->flangs = _free(fi->flangs);
@@ -1561,51 +1656,38 @@ static int rpmfilesPopulate(rpmfiles fi, Header h, rpmfiFlags flags)
 rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags)
 {
     rpmfiles fi = xcalloc(1, sizeof(*fi)); 
-    struct rpmtd_s bn, dn, dx;
+    int fc;
 
     fi->magic = RPMFIMAGIC;
     fi->fiflags = flags;
+    /* private or shared pool? */
+    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) : rpmstrPoolCreate();
 
     /*
      * Grab and validate file triplet data. Headers with no files simply
      * fall through here and an empty file set is returned.
      */
-    if (headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_MINMEM)) {
-	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_MINMEM);
-	headerGet(h, RPMTAG_DIRINDEXES, &dx, HEADERGET_ALLOC);
+    fc = rpmfnInit(&fi->fndata, h, fi->pool);
 
-	if (indexSane(&bn, &dn, &dx)) {
-	    /* private or shared pool? */
-	    fi->pool = (pool != NULL) ? rpmstrPoolLink(pool) :
-					rpmstrPoolCreate();
+    /* Broken data, bail out */
+    if (fc < 0)
+	goto err;
 
-	    /* init the file triplet data */
-	    fi->fc = rpmtdCount(&bn);
-	    fi->dc = rpmtdCount(&dn);
-	    fi->bnid = rpmtdToPool(&bn, fi->pool);
-	    fi->dnid = rpmtdToPool(&dn, fi->pool);
-	    /* steal index data from the td (pooh...) */
-	    fi->dil = dx.data;
-	    dx.data = NULL;
+    /* populate the rest of the stuff if we have files */
+    if (fc > 0)
+	rpmfilesPopulate(fi, h, flags);
 
-	    /* populate the rest of the stuff */
-	    rpmfilesPopulate(fi, h, flags);
+    /* freeze the pool to save memory, but only if private pool */
+    if (fi->pool != pool)
+	rpmstrPoolFreeze(fi->pool, 0);
 
-	    /* freeze the pool to save memory, but only if private pool */
-	    if (fi->pool != pool)
-		rpmstrPoolFreeze(fi->pool, 0);
-
-	    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
-	} else {
-	    /* broken data, free and return NULL */
-	    fi = _free(fi);
-	}
-	rpmtdFreeData(&bn);
-	rpmtdFreeData(&dn);
-	rpmtdFreeData(&dx);
-    }
+    fi->h = (fi->fiflags & RPMFI_KEEPHEADER) ? headerLink(h) : NULL;
 
     return rpmfilesLink(fi);
+
+err:
+    rpmfilesFree(fi);
+    return NULL;
 }
 
 static rpmfi initIter(rpmfiles files, int itype, int link)
@@ -1691,10 +1773,11 @@ void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc)
 {
     /* This can get called twice (eg yum), scratch former results and redo */
     if (rpmfilesFC(fi) > 0) {
+	rpmfn fn = &fi->fndata;
 	if (fi->fps)
 	    free(fi->fps);
 	fi->fps = fpLookupList(fpc, fi->pool,
-			       fi->dnid, fi->bnid, fi->dil, rpmfilesFC(fi));
+			       fn->dnid, fn->bnid, fn->dil, fn->fc);
     }
 }
 
