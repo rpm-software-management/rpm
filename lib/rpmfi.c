@@ -234,32 +234,20 @@ rpmsid rpmfilesDNId(rpmfiles fi, int jx)
 
 const char * rpmfilesBN(rpmfiles fi, int ix)
 {
-    const char * BN = NULL;
-
-    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
-	if (fi->bnid != NULL)
-	    BN = rpmstrPoolStr(fi->pool, fi->bnid[ix]);
-    }
-    return BN;
+    return (fi != NULL) ? rpmstrPoolStr(fi->pool, rpmfilesBNId(fi, ix)) : NULL;
 }
 
 const char * rpmfilesDN(rpmfiles fi, int jx)
 {
-    const char * DN = NULL;
-
-    if (fi != NULL && jx >= 0 && jx < rpmfilesDC(fi)) {
-	if (fi->dnid != NULL)
-	    DN = rpmstrPoolStr(fi->pool, fi->dnid[jx]);
-    }
-    return DN;
+    return (fi != NULL) ? rpmstrPoolStr(fi->pool, rpmfilesDNId(fi, jx)) : NULL;
 }
 
 char * rpmfilesFN(rpmfiles fi, int ix)
 {
     char *fn = NULL;
     if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
-	fn = rstrscat(NULL, rpmstrPoolStr(fi->pool, fi->dnid[fi->dil[ix]]),
-			    rpmstrPoolStr(fi->pool, fi->bnid[ix]), NULL);
+	fn = rstrscat(NULL, rpmfilesDN(fi, rpmfilesDI(fi, ix)),
+			    rpmfilesBN(fi, ix), NULL);
     }
     return fn;
 }
