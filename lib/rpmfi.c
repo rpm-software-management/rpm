@@ -151,15 +151,26 @@ rpmfi rpmfiLink(rpmfi fi)
  * Collect and validate file path data from header.
  * Return the number of files found (could be none) or -1 on error.
  */
-static int rpmfnInit(rpmfn fndata, Header h, rpmstrPool pool)
+static int rpmfnInit(rpmfn fndata, rpmTagVal bntag, Header h, rpmstrPool pool)
 {
     struct rpmtd_s bn, dn, dx;
+    rpmTagVal dntag, ditag;
     int rc = 0;
 
+    if (bntag == RPMTAG_BASENAMES) {
+	dntag = RPMTAG_DIRNAMES;
+	ditag = RPMTAG_DIRINDEXES;
+    } else if (bntag == RPMTAG_ORIGBASENAMES) {
+	dntag = RPMTAG_ORIGDIRNAMES;
+	ditag = RPMTAG_ORIGDIRINDEXES;
+    } else {
+	return -1;
+    }
+
     /* Grab and validate file triplet data (if there is any) */
-    if (headerGet(h, RPMTAG_BASENAMES, &bn, HEADERGET_MINMEM)) {
-	headerGet(h, RPMTAG_DIRNAMES, &dn, HEADERGET_MINMEM);
-	headerGet(h, RPMTAG_DIRINDEXES, &dx, HEADERGET_ALLOC);
+    if (headerGet(h, bntag, &bn, HEADERGET_MINMEM)) {
+	headerGet(h, dntag, &dn, HEADERGET_MINMEM);
+	headerGet(h, ditag, &dx, HEADERGET_ALLOC);
 
 	if (indexSane(&bn, &dn, &dx)) {
 	    /* Init the file triplet data */
@@ -1667,7 +1678,7 @@ rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags
      * Grab and validate file triplet data. Headers with no files simply
      * fall through here and an empty file set is returned.
      */
-    fc = rpmfnInit(&fi->fndata, h, fi->pool);
+    fc = rpmfnInit(&fi->fndata, RPMTAG_BASENAMES, h, fi->pool);
 
     /* Broken data, bail out */
     if (fc < 0)
