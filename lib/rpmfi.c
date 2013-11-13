@@ -205,7 +205,7 @@ int rpmfiSetDX(rpmfi fi, int dx)
 int rpmfilesDI(rpmfiles fi, int dx)
 {
     int j = -1;
-    if (fi != NULL && dx >= 0 && dx < fi->fc) {
+    if (fi != NULL && dx >= 0 && dx < rpmfilesFC(fi)) {
 	if (fi->dil != NULL)
 	    j = fi->dil[dx];
     }
@@ -215,7 +215,7 @@ int rpmfilesDI(rpmfiles fi, int dx)
 rpmsid rpmfilesBNId(rpmfiles fi, int ix)
 {
     rpmsid id = 0;
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->bnid != NULL)
 	    id = fi->bnid[ix];
     }
@@ -225,7 +225,7 @@ rpmsid rpmfilesBNId(rpmfiles fi, int ix)
 rpmsid rpmfilesDNId(rpmfiles fi, int jx)
 {
     rpmsid id = 0;
-    if (fi != NULL && jx >= 0 && jx < fi->fc) {
+    if (fi != NULL && jx >= 0 && jx < rpmfilesFC(fi)) {
 	if (fi->dnid != NULL)
 	    id = fi->dnid[jx];
     }
@@ -236,7 +236,7 @@ const char * rpmfilesBN(rpmfiles fi, int ix)
 {
     const char * BN = NULL;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->bnid != NULL)
 	    BN = rpmstrPoolStr(fi->pool, fi->bnid[ix]);
     }
@@ -247,7 +247,7 @@ const char * rpmfilesDN(rpmfiles fi, int jx)
 {
     const char * DN = NULL;
 
-    if (fi != NULL && jx >= 0 && jx < fi->dc) {
+    if (fi != NULL && jx >= 0 && jx < rpmfilesDC(fi)) {
 	if (fi->dnid != NULL)
 	    DN = rpmstrPoolStr(fi->pool, fi->dnid[jx]);
     }
@@ -257,7 +257,7 @@ const char * rpmfilesDN(rpmfiles fi, int jx)
 char * rpmfilesFN(rpmfiles fi, int ix)
 {
     char *fn = NULL;
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	fn = rstrscat(NULL, rpmstrPoolStr(fi->pool, fi->dnid[fi->dil[ix]]),
 			    rpmstrPoolStr(fi->pool, fi->bnid[ix]), NULL);
     }
@@ -272,6 +272,7 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
     const rpmsid * bnid = files->bnid;
     const rpmsid * dnid = files->dnid;
     uint32_t * dil = files->dil;
+    int fc = rpmfilesFC(files);
 
     if (fn[0] == '.' && fn[1] == '/') {
 	fn++;
@@ -280,7 +281,7 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
     /* try binary search */
 
     int lo = 0;
-    int hi = files->fc;
+    int hi = fc;
     int mid, cmp;
     size_t l;
 
@@ -301,7 +302,7 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
     }
 
     /* not found: try linear search */
-    for (int i=0; i < files->fc; i++) {
+    for (int i=0; i < fc; i++) {
 	l = rpmstrPoolStrlen(files->pool, dnid[dil[i]]);
 	cmp = strncmp(rpmstrPoolStr(files->pool, dnid[dil[i]]), fn, l);
 	if (!cmp) {
@@ -329,7 +330,7 @@ rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix)
 {
     rpmfileAttrs FFlags = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fflags != NULL)
 	    FFlags = fi->fflags[ix];
     }
@@ -340,7 +341,7 @@ rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix)
 {
     rpmVerifyAttrs VFlags = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->vflags != NULL)
 	    VFlags = fi->vflags[ix];
     }
@@ -351,7 +352,7 @@ rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix)
 {
     rpm_mode_t fmode = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fmodes != NULL)
 	    fmode = fi->fmodes[ix];
     }
@@ -362,7 +363,7 @@ rpmfileState rpmfilesFState(rpmfiles fi, int ix)
 {
     rpmfileState fstate = RPMFILE_STATE_MISSING;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fstates != NULL)
 	    fstate = fi->fstates[ix];
     }
@@ -387,7 +388,7 @@ const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *le
 {
     const unsigned char *digest = NULL;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
     	size_t diglen = rpmDigestLength(fi->digestalgo);
 	if (fi->digests != NULL)
 	    digest = fi->digests + (diglen * ix);
@@ -414,7 +415,7 @@ const char * rpmfilesFLink(rpmfiles fi, int ix)
 {
     const char * flink = NULL;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->flinks != NULL)
 	    flink = rpmstrPoolStr(fi->pool, fi->flinks[ix]);
     }
@@ -425,7 +426,7 @@ rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix)
 {
     rpm_loff_t fsize = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fsizes != NULL)
 	    fsize = fi->fsizes[ix];
 	else if (fi->lfsizes != NULL)
@@ -438,7 +439,7 @@ rpm_rdev_t rpmfilesFRdev(rpmfiles fi, int ix)
 {
     rpm_rdev_t frdev = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->frdevs != NULL)
 	    frdev = fi->frdevs[ix];
     }
@@ -449,7 +450,7 @@ rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix)
 {
     rpm_ino_t finode = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->finodes != NULL)
 	    finode = fi->finodes[ix];
     }
@@ -461,7 +462,8 @@ rpm_color_t rpmfilesColor(rpmfiles files)
     rpm_color_t color = 0;
 
     if (files != NULL && files->fcolors != NULL) {
-	for (int i = 0; i < files->fc; i++)
+	int fc = rpmfilesFC(files);
+	for (int i = 0; i < fc; i++)
 	    color |= files->fcolors[i];
 	/* XXX ignore all but lsnibble for now. */
 	color &= 0xf;
@@ -478,7 +480,7 @@ rpm_color_t rpmfilesFColor(rpmfiles fi, int ix)
 {
     rpm_color_t fcolor = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fcolors != NULL)
 	    /* XXX ignore all but lsnibble for now. */
 	    fcolor = (fi->fcolors[ix] & 0x0f);
@@ -491,7 +493,7 @@ const char * rpmfilesFClass(rpmfiles fi, int ix)
     const char * fclass = NULL;
     int cdictx;
 
-    if (fi != NULL && fi->fcdictx != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && fi->fcdictx != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	cdictx = fi->fcdictx[ix];
 	if (fi->cdict != NULL && cdictx >= 0 && cdictx < fi->ncdict)
 	    fclass = fi->cdict[cdictx];
@@ -505,7 +507,7 @@ uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp)
     int fddictn = 0;
     const uint32_t * fddict = NULL;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fddictn != NULL)
 	    fddictn = fi->fddictn[ix];
 	if (fddictn > 0 && fi->fddictx != NULL)
@@ -522,7 +524,7 @@ uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files)
 {
     uint32_t nlink = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	nlink = 1;
 	if (fi->nlinks) {
 	    struct hardlinks_s ** hardlinks = NULL;
@@ -554,7 +556,7 @@ rpm_time_t rpmfilesFMtime(rpmfiles fi, int ix)
 {
     rpm_time_t fmtime = 0;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fmtimes != NULL)
 	    fmtime = fi->fmtimes[ix];
     }
@@ -565,7 +567,7 @@ const char * rpmfilesFUser(rpmfiles fi, int ix)
 {
     const char * fuser = NULL;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fuser != NULL)
 	    fuser = rpmstrPoolStr(fi->pool, fi->fuser[ix]);
     }
@@ -576,7 +578,7 @@ const char * rpmfilesFGroup(rpmfiles fi, int ix)
 {
     const char * fgroup = NULL;
 
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->fgroup != NULL)
 	    fgroup = rpmstrPoolStr(fi->pool, fi->fgroup[ix]);
     }
@@ -586,7 +588,7 @@ const char * rpmfilesFGroup(rpmfiles fi, int ix)
 const char * rpmfilesFCaps(rpmfiles fi, int ix)
 {
     const char *fcaps = NULL;
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	fcaps = fi->fcaps ? fi->fcaps[ix] : "";
     }
     return fcaps;
@@ -595,7 +597,7 @@ const char * rpmfilesFCaps(rpmfiles fi, int ix)
 const char * rpmfilesFLangs(rpmfiles fi, int ix)
 {
     const char *flangs = NULL;
-    if (fi != NULL && fi->flangs != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && fi->flangs != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	flangs = rpmstrPoolStr(fi->pool, fi->flangs[ix]);
     }
     return flangs;
@@ -1263,7 +1265,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
     if (fi->nrefs > 1)
 	return rpmfilesUnlink(fi);
 
-    if (fi->fc > 0) {
+    if (rpmfilesFC(fi) > 0) {
 	fi->bnid = _free(fi->bnid);
 	fi->dnid = _free(fi->dnid);
 	fi->dil = _free(fi->dil);
@@ -1427,6 +1429,7 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	rpm_dev_t * fdevs = NULL;
 	struct rpmtd_s td;
 	int fc = 0;
+	int totalfc;
 
 	if (!fi->finodes)
 	return;
@@ -1435,9 +1438,9 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	if (!fdevs)
 	return;
 
-
-	files = fileidHashCreate(fi->fc, fidHashFunc, fidCmp, NULL, NULL);
-	for (int i=0; i < fi->fc; i++) {
+	totalfc = rpmfilesFC(fi);
+	files = fileidHashCreate(totalfc, fidHashFunc, fidCmp, NULL, NULL);
+	for (int i=0; i < totalfc; i++) {
 		if (!S_ISREG(rpmfilesFMode(fi, i)) ||
 			(rpmfilesFFlags(fi, i) & RPMFILE_GHOST) ||
 			fi->finodes[i] <= 0) {
@@ -1450,9 +1453,9 @@ static void rpmfilesBuildNLink(rpmfiles fi, Header h)
 	}
 	if (fileidHashNumKeys(files) != fc) {
 	/* Hard links */
-	fi->nlinks = nlinkHashCreate(2*(fi->fc - fileidHashNumKeys(files)),
+	fi->nlinks = nlinkHashCreate(2*(totalfc - fileidHashNumKeys(files)),
 					 intHash, intCmp, NULL, freeNLinks);
-	for (int i=0; i < fi->fc; i++) {
+	for (int i=0; i < totalfc; i++) {
 		int fcnt;
 		int * data;
 		if (!S_ISREG(rpmfilesFMode(fi, i)) ||
@@ -1666,13 +1669,14 @@ rpmfi rpmfiNew(const rpmts ts, Header h, rpmTagVal tagN, rpmfiFlags flags)
 
 void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize)
 {
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	/* Switch over to 64 bit variant */
+	int fc = rpmfilesFC(fi);
 	if (newsize > UINT32_MAX && fi->replacedLSizes == NULL) {
-	    fi->replacedLSizes = xcalloc(fi->fc, sizeof(*fi->replacedLSizes));
+	    fi->replacedLSizes = xcalloc(fc, sizeof(*fi->replacedLSizes));
 	    /* copy 32 bit data */
 	    if (fi->replacedSizes) {
-		for (int i=0; i<fi->fc; i++)
+		for (int i=0; i < fc; i++)
 		    fi->replacedLSizes[i] = fi->replacedSizes[i];
 		fi->replacedSizes = _free(fi->replacedSizes);
 	    }
@@ -1681,7 +1685,7 @@ void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize)
 	    fi->replacedLSizes[ix] = newsize;
 	} else {
 	    if (fi->replacedSizes == NULL)
-		fi->replacedSizes = xcalloc(fi->fc, sizeof(*fi->replacedSizes));
+		fi->replacedSizes = xcalloc(fc, sizeof(*fi->replacedSizes));
 	    fi->replacedSizes[ix] = (rpm_off_t) newsize;
 	}
     }
@@ -1690,7 +1694,7 @@ void rpmfilesSetFReplacedSize(rpmfiles fi, int ix, rpm_loff_t newsize)
 rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix)
 {
     rpm_loff_t rsize = 0;
-    if (fi != NULL && ix >= 0 && ix < fi->fc) {
+    if (fi != NULL && ix >= 0 && ix < rpmfilesFC(fi)) {
 	if (fi->replacedSizes) {
 	    rsize = fi->replacedSizes[ix];
 	} else if (fi->replacedLSizes) {
@@ -1703,11 +1707,11 @@ rpm_loff_t rpmfilesFReplacedSize(rpmfiles fi, int ix)
 void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc)
 {
     /* This can get called twice (eg yum), scratch former results and redo */
-    if (fi->fc > 0) {
+    if (rpmfilesFC(fi) > 0) {
 	if (fi->fps)
 	    free(fi->fps);
 	fi->fps = fpLookupList(fpc, fi->pool,
-			       fi->dnid, fi->bnid, fi->dil, fi->fc);
+			       fi->dnid, fi->bnid, fi->dil, rpmfilesFC(fi));
     }
 }
 
