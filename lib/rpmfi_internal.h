@@ -60,6 +60,40 @@ const char * rpmfilesDN(rpmfiles fi, int jx);
 RPM_GNUC_INTERNAL
 char * rpmfilesFN(rpmfiles fi, int ix);
 
+/** \ingroup rpmfi
+ * Return current original base name pool id from file info set.
+ * @param fi		file info set
+ * @return		current base name id, 0 on invalid
+ */
+RPM_GNUC_INTERNAL
+rpmsid rpmfiOBNId(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current original directory name pool id from file info set.
+ * @param fi		file info set
+ * @return		current base name id, 0 on invalid
+ */
+RPM_GNUC_INTERNAL
+rpmsid rpmfiODNId(rpmfi fi);
+
+RPM_GNUC_INTERNAL
+int rpmfilesODI(rpmfiles fi, int dx);
+
+RPM_GNUC_INTERNAL
+rpmsid rpmfilesOBNId(rpmfiles fi, int ix);
+
+RPM_GNUC_INTERNAL
+rpmsid rpmfilesODNId(rpmfiles fi, int jx);
+
+RPM_GNUC_INTERNAL
+const char * rpmfilesOBN(rpmfiles fi, int ix);
+
+RPM_GNUC_INTERNAL
+const char * rpmfilesODN(rpmfiles fi, int jx);
+
+RPM_GNUC_INTERNAL
+char * rpmfilesOFN(rpmfiles fi, int ix);
+
 RPM_GNUC_INTERNAL
 rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix);
 
@@ -153,6 +187,8 @@ rpm_count_t rpmfilesFC(rpmfiles fi);
 rpm_count_t rpmfilesDC(rpmfiles fi);
 
 int rpmfilesFindFN(rpmfiles files, const char * fn);
+
+int rpmfilesFindOFN(rpmfiles files, const char * fn);
 
 rpmfi rpmfilesIter(rpmfiles files, int itype);
 

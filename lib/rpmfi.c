@@ -46,6 +46,7 @@ struct rpmfi_s {
     int j;			/*!< Current directory index. */
     iterfunc next;		/*!< Iterator function. */
     char * fn;			/*!< File name buffer. */
+    char * ofn;			/*!< Original file name buffer. */
 
     rpmfiles files;		/*!< File info set */
     rpmcpio_t archive;		/*!< Archive with payload */
@@ -334,9 +335,19 @@ int rpmfilesDI(rpmfiles fi, int dx)
     return (fi != NULL) ? rpmfnDI(&fi->fndata, dx) : -1;
 }
 
+int rpmfilesODI(rpmfiles fi, int dx)
+{
+    return (fi != NULL) ? rpmfnDI(fi->ofndata, dx) : -1;
+}
+
 rpmsid rpmfilesBNId(rpmfiles fi, int ix)
 {
     return (fi != NULL) ? rpmfnBNId(&fi->fndata, ix) : 0;
+}
+
+rpmsid rpmfilesOBNId(rpmfiles fi, int ix)
+{
+    return (fi != NULL) ? rpmfnBNId(fi->ofndata, ix) : 0;
 }
 
 rpmsid rpmfilesDNId(rpmfiles fi, int jx)
@@ -344,9 +355,19 @@ rpmsid rpmfilesDNId(rpmfiles fi, int jx)
     return (fi != NULL) ? rpmfnDNId(&fi->fndata, jx) : 0;
 }
 
+rpmsid rpmfilesODNId(rpmfiles fi, int jx)
+{
+    return (fi != NULL) ? rpmfnDNId(fi->ofndata, jx) : 0;
+}
+
 const char * rpmfilesBN(rpmfiles fi, int ix)
 {
     return (fi != NULL) ? rpmfnBN(fi->pool, &fi->fndata, ix) : NULL;
+}
+
+const char * rpmfilesOBN(rpmfiles fi, int ix)
+{
+    return (fi != NULL) ? rpmstrPoolStr(fi->pool, rpmfilesOBNId(fi, ix)) : NULL;
 }
 
 const char * rpmfilesDN(rpmfiles fi, int jx)
@@ -354,9 +375,19 @@ const char * rpmfilesDN(rpmfiles fi, int jx)
     return (fi != NULL) ? rpmfnDN(fi->pool, &fi->fndata, jx) : NULL;
 }
 
+const char * rpmfilesODN(rpmfiles fi, int jx)
+{
+    return (fi != NULL) ? rpmstrPoolStr(fi->pool, rpmfilesODNId(fi, jx)) : NULL;
+}
+
 char * rpmfilesFN(rpmfiles fi, int ix)
 {
     return (fi != NULL) ? rpmfnFN(fi->pool, &fi->fndata, ix) : NULL;
+}
+
+char * rpmfilesOFN(rpmfiles fi, int ix)
+{
+    return (fi != NULL) ? rpmfnFN(fi->pool, fi->ofndata, ix) : NULL;
 }
 
 static int cmpPoolFn(rpmstrPool pool, rpmfn files, int ix, const char * fn)
@@ -408,12 +439,27 @@ int rpmfilesFindFN(rpmfiles files, const char * fn)
     return (files && fn) ? rpmfnFindFN(files->pool, &files->fndata, fn) : -1;
 }
 
+int rpmfilesFindOFN(rpmfiles files, const char * fn)
+{
+    return (files && fn) ? rpmfnFindFN(files->pool, files->ofndata, fn) : -1;
+}
+
 int rpmfiFindFN(rpmfi fi, const char * fn)
 {
     int ix = -1;
 
     if (fi != NULL) {
 	ix = rpmfilesFindFN(fi->files, fn);
+    }
+    return ix;
+}
+
+int rpmfiFindOFN(rpmfi fi, const char * fn)
+{
+    int ix = -1;
+
+    if (fi != NULL) {
+	ix = rpmfilesFindOFN(fi->files, fn);
     }
     return ix;
 }
@@ -1422,6 +1468,7 @@ rpmfi rpmfiFree(rpmfi fi)
 
     fi->files = rpmfilesFree(fi->files);
     fi->fn = _free(fi->fn);
+    fi->ofn = _free(fi->ofn);
     fi->apath = _free(fi->apath);
 
     free(fi);
@@ -1857,6 +1904,18 @@ const char * rpmfiFN(rpmfi fi)
 	fi->fn = rpmfilesFN(fi->files, fi->i);
 	if (fi->fn != NULL)
 	    fn = fi->fn;
+    }
+    return fn;
+}
+
+const char * rpmfiOFN(rpmfi fi)
+{
+    const char *fn = ""; /* preserve behavior on errors */
+    if (fi != NULL) {
+	free(fi->ofn);
+	fi->ofn = rpmfilesOFN(fi->files, fi->i);
+	if (fi->ofn != NULL)
+	    fn = fi->ofn;
     }
     return fn;
 }

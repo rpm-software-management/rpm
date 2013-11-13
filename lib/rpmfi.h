@@ -179,6 +179,36 @@ const char * rpmfiFN(rpmfi fi);
 int rpmfiFindFN(rpmfi fi, const char * fn);
 
 /** \ingroup rpmfi
+ * Return current original base name from file info set.
+ * @param fi		file info set
+ * @return		current base name, NULL on invalid
+ */
+const char * rpmfiOBN(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current original directory name from file info set.
+ * @param fi		file info set
+ * @return		current directory, NULL on invalid
+ */
+const char * rpmfiODN(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return current original file name from file info set.
+ * @param fi		file info set
+ * @return		current file name
+ */
+const char * rpmfiOFN(rpmfi fi);
+
+/** \ingroup rpmfi
+ * Return file index of the given original file name or -1 if file is not
+ * in the rpmfi. The file name may have "." prefixed but is then interpreted
+ * as a global path without the prefixing "."
+ * @param fi            file info set
+ * @return              file index or -1
+ */
+int rpmfiFindOFN(rpmfi fi, const char * fn);
+
+/** \ingroup rpmfi
  * Return current file flags from file info set.
  * @param fi		file info set
  * @return		current file flags, 0 on invalid
