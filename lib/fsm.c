@@ -37,13 +37,6 @@ extern int _fsm_debug;
 /** \ingroup payload
  */
 enum cpioMapFlags_e {
-    CPIO_MAP_PATH	= (1 << 0),
-    CPIO_MAP_MODE	= (1 << 1),
-    CPIO_MAP_UID	= (1 << 2),
-    CPIO_MAP_GID	= (1 << 3),
-    CPIO_MAP_ABSOLUTE	= (1 << 5),
-    CPIO_MAP_ADDDOT	= (1 << 6),
-    CPIO_MAP_TYPE	= (1 << 8),  /*!< only for building. */
     CPIO_SBIT_CHECK	= (1 << 9)
 };
 typedef rpmFlags cpioMapFlags;
@@ -386,8 +379,7 @@ static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
     fsm->fi = fi;
     fsm->fs = fs;
 
-    /* common flags for all modes */
-    fsm->mapFlags = CPIO_MAP_PATH | CPIO_MAP_MODE | CPIO_MAP_UID | CPIO_MAP_GID;
+    fsm->mapFlags = 0;
 
     if (fsm->goal == FSM_PKGINSTALL) {
         fsm->bufsize = 8 * BUFSIZ;
