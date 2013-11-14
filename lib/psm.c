@@ -54,7 +54,7 @@ typedef enum pkgStage_e {
 struct rpmpsm_s {
     rpmts ts;			/*!< transaction set */
     rpmte te;			/*!< current transaction element */
-    rpmfi fi;			/*!< transaction element file info */
+    rpmfiles files;		/*!< transaction element file info */
     const char * goalName;
     char * failedFile;
     rpmTagVal scriptTag;	/*!< Scriptlet data tag. */
@@ -654,7 +654,7 @@ exit:
 static rpmpsm rpmpsmFree(rpmpsm psm)
 {
     if (psm) {
-	rpmfiFree(psm->fi);
+	rpmfilesFree(psm->files);
 	rpmtsFree(psm->ts),
 	/* XXX rpmte not refcounted yet */
 	memset(psm, 0, sizeof(*psm)); /* XXX trash and burn */
@@ -667,7 +667,7 @@ static rpmpsm rpmpsmNew(rpmts ts, rpmte te)
 {
     rpmpsm psm = xcalloc(1, sizeof(*psm));
     psm->ts = rpmtsLink(ts);
-    psm->fi = rpmfiLink(rpmteFI(te));
+    psm->files = rpmteFiles(te);
     psm->te = te; /* XXX rpmte not refcounted yet */
     return psm;
 }
@@ -724,7 +724,7 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
-    int fc = rpmfiFC(psm->fi);
+    int fc = rpmfilesFC(psm->files);
     rpmRC rc = RPMRC_OK;
 
     switch (stage) {
@@ -825,7 +825,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 		    break;
 		}
 
-		fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->fi,
+		fsmrc = rpmPackageFilesInstall(psm->ts, psm->te, psm->files,
 				  payload, psm, &psm->failedFile);
 		saved_errno = errno;
 
@@ -867,7 +867,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 
 	    /* XXX should't we log errors from here? */
 	    if (fc > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
-		rc = rpmPackageFilesRemove(psm->ts, psm->te, psm->fi,
+		rc = rpmPackageFilesRemove(psm->ts, psm->te, psm->files,
 				  psm, &psm->failedFile);
 	    }
 

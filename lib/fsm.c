@@ -1216,10 +1216,11 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
     }
 }
 
-int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
+    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
     FSM_t fsm = fsmNew(FSM_PKGINSTALL, fs, fi, failedFile);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
@@ -1380,15 +1381,17 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
     rpmfiArchiveClose(fi);
     _free(found);
     fsmFree(fsm);
+    rpmfiFree(fi);
 
     return rc;
 }
 
 
-int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
+int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
+    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
     FSM_t fsm = fsmNew(FSM_PKGERASE, fs, fi, failedFile);
     int rc = 0;
 
@@ -1474,6 +1477,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
     }
 
     fsmFree(fsm);
+    rpmfiFree(fi);
 
     return rc;
 }

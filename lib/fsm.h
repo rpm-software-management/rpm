@@ -25,10 +25,10 @@ typedef struct rpmpsm_s * rpmpsm;
  * @return		0 on success
  */
 
-int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfi fi, FD_t cfd,
+int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile);
 
-int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfi fi,
+int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile);
 
 RPM_GNUC_INTERNAL
