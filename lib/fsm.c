@@ -708,12 +708,12 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
  * @param action	file state machine action
  * @return		0 on success
  */
-static int fsmMkdirs(rpmfi fi, rpmfs fs, rpmPlugins plugins, rpmFileAction action)
+static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins, rpmFileAction action)
 {
-    DNLI_t dnli = dnlInitIterator(rpmfiFiles(fi), fs, 0);
+    DNLI_t dnli = dnlInitIterator(files, fs, 0);
     struct stat sb;
     const char *dpath;
-    int dc = rpmfiDC(fi);
+    int dc = rpmfilesDC(files);
     int rc = 0;
     int i;
     int ldnlen = 0;
@@ -1221,7 +1221,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	rc = fsmMkdirs(fi, rpmteGetFileStates(te), fsm->plugins, fsm->action);
+	rc = fsmMkdirs(files, rpmteGetFileStates(te), fsm->plugins, fsm->action);
     }
 
     while (!rc) {
