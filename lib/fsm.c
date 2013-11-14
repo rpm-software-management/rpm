@@ -41,7 +41,6 @@ enum cpioMapFlags_e {
     CPIO_MAP_MODE	= (1 << 1),
     CPIO_MAP_UID	= (1 << 2),
     CPIO_MAP_GID	= (1 << 3),
-    CPIO_FOLLOW_SYMLINKS= (1 << 4), /*!< only for building. */
     CPIO_MAP_ABSOLUTE	= (1 << 5),
     CPIO_MAP_ADDDOT	= (1 << 6),
     CPIO_MAP_TYPE	= (1 << 8),  /*!< only for building. */
@@ -866,8 +865,7 @@ static int fsmInit(FSM_t fsm)
     if (fsm->path != NULL &&
 	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(fsm->sb.st_mode)))
     {
-	int dolstat = !(fsm->mapFlags & CPIO_FOLLOW_SYMLINKS);
-	rc = fsmStat(fsm->path, dolstat, &fsm->osb);
+	rc = fsmStat(fsm->path, 1, &fsm->osb);
 	if (rc == CPIOERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
