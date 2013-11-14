@@ -445,51 +445,51 @@ static int fsmSetFCaps(const char *path, const char *captxt)
  */
 static int fsmMapAttrs(FSM_t fsm)
 {
-	struct stat * st = &fsm->sb;
-	rpmfiles fi = rpmfiFiles(fsm->fi);
-	int i = fsm->ix;
+    struct stat * st = &fsm->sb;
+    rpmfiles fi = rpmfiFiles(fsm->fi);
+    int i = fsm->ix;
 
-	/* this check is pretty moot,  rpmfi accessors check array bounds etc */
-	if (fi && i >= 0 && i < rpmfilesFC(fi)) {
-		mode_t finalMode = rpmfilesFMode(fi, i);
-		const char *user = rpmfilesFUser(fi, i);
-		const char *group = rpmfilesFGroup(fi, i);
-		uid_t uid = 0;
-		gid_t gid = 0;
+    /* this check is pretty moot,  rpmfi accessors check array bounds etc */
+    if (fi && i >= 0 && i < rpmfilesFC(fi)) {
+	mode_t finalMode = rpmfilesFMode(fi, i);
+	const char *user = rpmfilesFUser(fi, i);
+	const char *group = rpmfilesFGroup(fi, i);
+	uid_t uid = 0;
+	gid_t gid = 0;
 
-		if (user && rpmugUid(user, &uid)) {
-			if (fsm->goal == FSM_PKGINSTALL)
-				rpmlog(RPMLOG_WARNING,
-					   _("user %s does not exist - using root\n"), user);
-			finalMode &= ~S_ISUID;	  /* turn off suid bit */
-		}
-
-		if (group && rpmugGid(group, &gid)) {
-			if (fsm->goal == FSM_PKGINSTALL)
-				rpmlog(RPMLOG_WARNING,
-					   _("group %s does not exist - using root\n"), group);
-			finalMode &= ~S_ISGID;	/* turn off sgid bit */
-		}
-
-		if (fsm->mapFlags & CPIO_MAP_UID)
-			st->st_uid = uid;
-		if (fsm->mapFlags & CPIO_MAP_GID)
-			st->st_gid = gid;
-
-		st->st_mode = finalMode;
-		st->st_dev = 0;
-		st->st_ino = rpmfilesFInode(fi, i);
-		st->st_rdev = rpmfilesFRdev(fi, i);
-		st->st_mtime = rpmfilesFMtime(fi, i);
-		st->st_size = rpmfilesFSize(fi, i);
-		st->st_nlink = rpmfilesFNlink(fi, i);
-
-		if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
-			&& st->st_nlink == 0) {
-			st->st_nlink = 1;
-		}
+	if (user && rpmugUid(user, &uid)) {
+	    if (fsm->goal == FSM_PKGINSTALL)
+		rpmlog(RPMLOG_WARNING,
+			_("user %s does not exist - using root\n"), user);
+	    finalMode &= ~S_ISUID;	  /* turn off suid bit */
 	}
-	return 0;
+
+	if (group && rpmugGid(group, &gid)) {
+	    if (fsm->goal == FSM_PKGINSTALL)
+		rpmlog(RPMLOG_WARNING,
+			_("group %s does not exist - using root\n"), group);
+	    finalMode &= ~S_ISGID;	/* turn off sgid bit */
+	}
+
+	if (fsm->mapFlags & CPIO_MAP_UID)
+	    st->st_uid = uid;
+	if (fsm->mapFlags & CPIO_MAP_GID)
+	    st->st_gid = gid;
+
+	st->st_mode = finalMode;
+	st->st_dev = 0;
+	st->st_ino = rpmfilesFInode(fi, i);
+	st->st_rdev = rpmfilesFRdev(fi, i);
+	st->st_mtime = rpmfilesFMtime(fi, i);
+	st->st_size = rpmfilesFSize(fi, i);
+	st->st_nlink = rpmfilesFNlink(fi, i);
+
+	if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
+		&& st->st_nlink == 0) {
+	    st->st_nlink = 1;
+	}
+    }
+    return 0;
 }
 
 /** \ingroup payload
