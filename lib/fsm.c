@@ -347,7 +347,8 @@ static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
         fsm->path = _free(fsm->path);
         li->nlink--;
         fsm->ix = li->filex[li->nlink];
-        return fsmMapPath(fsm, fsm->ix);
+        fsmMapPath(fsm, fsm->ix);
+        return 0;
     }
 
     /* New hard link encountered, add new link to set. */
