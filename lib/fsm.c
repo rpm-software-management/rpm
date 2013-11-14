@@ -469,10 +469,8 @@ static int fsmMapAttrs(FSM_t fsm)
 	finalMode &= ~S_ISGID;	/* turn off sgid bit */
     }
 
-    if (fsm->mapFlags & CPIO_MAP_UID)
-	st->st_uid = uid;
-    if (fsm->mapFlags & CPIO_MAP_GID)
-	st->st_gid = gid;
+    st->st_uid = uid;
+    st->st_gid = gid;
 
     st->st_mode = finalMode;
     st->st_dev = 0;
