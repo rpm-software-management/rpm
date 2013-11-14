@@ -1463,8 +1463,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	if (rc == 0) {
 	    /* Notify on success. */
 	    /* On erase we're iterating backwards, fixup for progress */
-	    rpm_loff_t amount = (fsm->ix >= 0) ?
-				rpmfiFC(fsm->fi) - fsm->ix : 0;
+	    rpm_loff_t amount = rpmfiFC(fsm->fi) - rpmfiFX(fsm->fi);
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, amount);
 	}
     }
