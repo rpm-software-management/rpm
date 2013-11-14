@@ -1095,11 +1095,10 @@ static int fsmBackup(FSM_t fsm)
     return rc;
 }
 
-static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
+static int fsmSetmeta(FSM_t fsm, const struct stat * st)
 {
     int rc = 0;
     char *dest = fsm->path;
-    rpmfiles fi = rpmfiFiles(fsm->fi);
 
     /* Construct final destination path (nsuffix is usually NULL) */
     if (!S_ISDIR(st->st_mode) && (fsm->suffix || fsm->nsuffix))
@@ -1113,10 +1112,10 @@ static int fsmSetmeta(FSM_t fsm, int ix, const struct stat * st)
     }
     /* Set file capabilities (if enabled) */
     if (!rc && S_ISREG(st->st_mode) && !getuid()) {
-	rc = fsmSetFCaps(fsm->path, rpmfilesFCaps(fi, ix));
+	rc = fsmSetFCaps(fsm->path, rpmfiFCaps(fsm->fi));
     }
     if (!rc) {
-	rc = fsmUtime(fsm->path, st->st_mode, rpmfilesFMtime(fi, ix));
+	rc = fsmUtime(fsm->path, st->st_mode, rpmfiFMtime(fsm->fi));
     }
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(fsm->plugins, fsm->path, dest,
@@ -1323,7 +1322,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc) {
-		rc = fsmSetmeta(fsm, rpmfiFX(fi), st);
+		rc = fsmSetmeta(fsm, st);
 	    }
             if (numHardlinks > 1) {
                 rc = fsmMakeLinks(fsm, hardlinks);
