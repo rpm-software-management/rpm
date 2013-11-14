@@ -1391,7 +1391,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
     rpmfs fs = rpmteGetFileStates(te);
-    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_FWD);
+    rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
     FSM_t fsm = fsmNew(FSM_PKGERASE, fs, fi, failedFile);
     int rc = 0;
 
@@ -1400,18 +1400,12 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
     fsm->plugins = rpmtsPlugins(ts);
 
-    fsm->ix = rpmfiFC(fsm->fi);
-
-    while (!rc) {
+    while (!rc && rpmfiNext(fsm->fi) >= 0) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
 
 	/* Identify mapping index. */
-	fsm->ix--;
-
-        /* Exit on end-of-payload. */
-        if (fsm->ix < 0)
-            break;
+	fsm->ix = rpmfiFX(fsm->fi);
 
         rc = fsmInit(fsm);
 
