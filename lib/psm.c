@@ -724,7 +724,7 @@ static rpmRC rpmpsmNext(rpmpsm psm, pkgStage nstage)
 static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 {
     const rpmts ts = psm->ts;
-    rpmfi fi = psm->fi;
+    int fc = rpmfiFC(psm->fi);
     rpmRC rc = RPMRC_OK;
 
     switch (stage) {
@@ -732,7 +732,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_INIT:
 	rpmlog(RPMLOG_DEBUG, "%s: %s has %d files\n",
-		psm->goalName, rpmteNEVR(psm->te), rpmfiFC(fi));
+		psm->goalName, rpmteNEVR(psm->te), fc);
 
 	/*
 	 * When we run scripts, we pass an argument which is the number of
@@ -765,7 +765,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    psm->scriptArg = psm->npkgs_installed - 1;
 
 	    psm->amount = 0;
-	    psm->total = rpmfiFC(fi) ? rpmfiFC(fi) : 100;
+	    psm->total = fc ? fc : 100;
 	}
 	break;
     case PSM_PRE:
@@ -818,7 +818,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    /* make sure first progress call gets made */
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, 0);
 
-	    if (rpmfiFC(fi) > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
+	    if (fc > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
 		FD_t payload = rpmtePayload(psm->te);
 		if (payload == NULL) {
 		    rc = RPMRC_FAIL;
@@ -866,7 +866,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    rpmpsmNotify(psm, RPMCALLBACK_UNINST_PROGRESS, 0);
 
 	    /* XXX should't we log errors from here? */
-	    if (rpmfiFC(fi) > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
+	    if (fc > 0 && !(rpmtsFlags(ts) & RPMTRANS_FLAG_JUSTDB)) {
 		rc = rpmPackageFilesRemove(psm->ts, psm->te, psm->fi,
 				  psm, &psm->failedFile);
 	    }
