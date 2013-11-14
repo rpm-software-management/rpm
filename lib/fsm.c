@@ -13,16 +13,13 @@
 
 #include <rpm/rpmte.h>
 #include <rpm/rpmts.h>
-#include <rpm/rpmsq.h>
 #include <rpm/rpmlog.h>
 
 #include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
 #include "lib/cpio.h"
 #include "lib/fsm.h"
-#define	fsmUNSAFE	fsmStage
-#include "lib/rpmfi_internal.h"	/* XXX fi->apath, ... */
+#include "lib/rpmfi_internal.h"	/* XXX rpmfiles for now ... */
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
-#include "lib/rpmts_internal.h"	/* rpmtsSELabelFoo() only */
 #include "lib/rpmplugins.h"	/* rpm plugins hooks */
 #include "lib/rpmug.h"
 #include "lib/cpio.h"
@@ -32,8 +29,6 @@
 #define	_FSM_DEBUG	0
 int _fsm_debug = _FSM_DEBUG;
 
-extern int _fsm_debug;
-
 /** \ingroup payload
  */
 enum cpioMapFlags_e {
@@ -41,7 +36,6 @@ enum cpioMapFlags_e {
 };
 typedef rpmFlags cpioMapFlags;
 
-typedef struct fsmIterator_s * FSMI_t;
 typedef struct fsm_s * FSM_t;
 
 typedef struct hardLink_s * hardLink_t;
