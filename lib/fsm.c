@@ -1274,7 +1274,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	if (rc) {
 	    fsm->postpone = 1;
 	} else {
-	    setFileState(rpmteGetFileStates(te), fsm->ix, fsm->action);
+	    setFileState(rpmteGetFileStates(te), rpmfiFX(fi), fsm->action);
 	}
 
         numHardlinks = rpmfiFLinks(fi, &hardlinks);
