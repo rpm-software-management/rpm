@@ -866,6 +866,8 @@ static int fsmInit(FSM_t fsm)
 
     /* mode must be known so that dirs don't get suffix. */
     fsm->sb.st_mode = rpmfiFMode(fsm->fi);
+    /* Identify mapping index. */
+    fsm->ix = rpmfiFX(fsm->fi);
 
     /* Generate file path. */
     rc = fsmMapPath(fsm, rpmfiFX(fsm->fi));
@@ -1250,7 +1252,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	/* Read next payload header. */
 	rc = rpmfiArchiveNext(fi);
-	fsm->ix = rpmfiFX(fi);
 
 	/* Detect and exit on end-of-payload. */
 	if (rc == CPIOERR_HDR_TRAILER) {
@@ -1402,9 +1403,6 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
         /* Clean fsm, free'ing memory. */
 	fsmReset(fsm);
-
-	/* Identify mapping index. */
-	fsm->ix = rpmfiFX(fsm->fi);
 
         rc = fsmInit(fsm);
 
