@@ -2084,26 +2084,6 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
     return rc;
 }
 
-
-/** \ingroup payload
- */
-static int cpioStrCmp(const void * a, const void * b)
-{
-    const char * afn = *(const char **)a;
-    const char * bfn = *(const char **)b;
-
-    /* Match rpm-4.0 payloads with ./ prefixes. */
-    if (afn[0] == '.' && afn[1] == '/')	afn += 2;
-    if (bfn[0] == '.' && bfn[1] == '/')	bfn += 2;
-
-    /* If either path is absolute, make it relative. */
-    if (afn[0] == '/')	afn += 1;
-    if (bfn[0] == '/')	bfn += 1;
-
-    return strcmp(afn, bfn);
-}
-
-
 int rpmfiArchiveNext(rpmfi fi)
 {
     int rc;
