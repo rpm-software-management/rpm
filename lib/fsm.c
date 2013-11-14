@@ -1257,7 +1257,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rc = 0;
 	    break;
 	}
-	found[fsm->ix] = 1;
+	found[rpmfiFX(fi)] = 1;
 
 	if (rc) break;
 
