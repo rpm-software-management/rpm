@@ -865,11 +865,10 @@ static int fsmInit(FSM_t fsm)
     int rc = 0;
 
     /* mode must be known so that dirs don't get suffix. */
-    rpmfiles fi = rpmfiFiles(fsm->fi);
-    fsm->sb.st_mode = rpmfilesFMode(fi, fsm->ix);
+    fsm->sb.st_mode = rpmfiFMode(fsm->fi);
 
     /* Generate file path. */
-    rc = fsmMapPath(fsm, fsm->ix);
+    rc = fsmMapPath(fsm, rpmfiFX(fsm->fi));
     if (rc) return rc;
 
     /* Perform lstat/stat for disk file. */
