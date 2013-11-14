@@ -79,7 +79,6 @@ struct fsm_s {
     char * path;		/*!< Current file name. */
     char * buf;			/*!<  read: Buffer. */
     size_t bufsize;		/*!<  read: Buffer allocated size. */
-    int ix;			/*!< Current file iterator index. */
     hardLink_t links;		/*!< Pending hard linked file(s). */
     char ** failedFile;		/*!< First file name that failed. */
     const char * osuffix;	/*!< Old, preserved, file suffix. */
@@ -323,12 +322,13 @@ static int fsmMapPath(FSM_t fsm, int i)
 static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
 {
     hardLink_t *tailp, li;
+    int ix = rpmfiFX(fsm->fi);
 
     /* File containing the content */
-    if (fsm->ix == files[numlinks-1] && !fsm->postpone) {
+    if (ix == files[numlinks-1] && !fsm->postpone) {
         return 0; /* Do not add to the list */
     }
-    if (fsm->ix != files[numlinks-1] && fsm->postpone) {
+    if (ix != files[numlinks-1] && fsm->postpone) {
         return 1; /* skip file */
     }
 
@@ -339,7 +339,7 @@ static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
     }
 
     /* File containing the content */
-    if (fsm->ix == files[numlinks-1]) { /* fsm->postpone is set! */
+    if (ix == files[numlinks-1]) { /* fsm->postpone is set! */
         if (li == NULL) /* all hardlinks are skipped */
             return 1;
 
@@ -347,8 +347,7 @@ static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
         fsm->path = _free(fsm->path);
         li->nlink--;
         rpmfiSetFX(fsm->fi, li->filex[li->nlink]);
-        fsm->ix = rpmfiFX(fsm->fi);
-        fsmMapPath(fsm, fsm->ix);
+        fsmMapPath(fsm, rpmfiFX(fsm->fi));
         return 0;
     }
 
@@ -361,7 +360,7 @@ static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
         li->filex = xcalloc(numlinks, sizeof(li->filex[0]));
         *tailp = li;
     }
-    li->filex[li->nlink] = fsm->ix;
+    li->filex[li->nlink] = rpmfiFX(fsm->fi);
     li->nlink++;
 
     /* skip file for now */
@@ -386,7 +385,6 @@ static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
-    fsm->ix = -1;
     fsm->goal = goal;
     fsm->fi = fi;
     fsm->fs = fs;
@@ -566,7 +564,6 @@ static int fsmMakeLinks(FSM_t fsm, const int * files)
 {
     char * path = fsm->path;
     const char * nsuffix = fsm->nsuffix;
-    int ix = fsm->ix;
     int ec = 0;
     int rc;
     int i;
@@ -609,7 +606,7 @@ static int fsmMakeLinks(FSM_t fsm, const int * files)
     fsm->nsuffix = nsuffix;
     fsm->path = _free(fsm->path);
     fsm->path = path;
-    fsmMapPath(fsm, ix);
+    fsmMapPath(fsm, rpmfiFX(fsm->fi));
     return ec;
 }
 
@@ -862,8 +859,6 @@ static int fsmInit(FSM_t fsm)
 
     /* mode must be known so that dirs don't get suffix. */
     fsm->sb.st_mode = rpmfiFMode(fsm->fi);
-    /* Identify mapping index. */
-    fsm->ix = rpmfiFX(fsm->fi);
 
     /* Generate file path. */
     rc = fsmMapPath(fsm, rpmfiFX(fsm->fi));
@@ -1328,7 +1323,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc) {
-		rc = fsmSetmeta(fsm, fsm->ix, st);
+		rc = fsmSetmeta(fsm, rpmfiFX(fi), st);
 	    }
             if (numHardlinks > 1) {
                 rc = fsmMakeLinks(fsm, hardlinks);
@@ -1354,7 +1349,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!fsm->postpone) {
-                rc = fsmCommit(fsm, fsm->ix, st);
+                rc = fsmCommit(fsm, rpmfiFX(fi), st);
 		if (!rc && numHardlinks > 1)
                     rc = fsmCommitLinks(fsm, hardlinks);
 	    }
