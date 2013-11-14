@@ -446,12 +446,11 @@ static int fsmSetFCaps(const char *path, const char *captxt)
 static int fsmMapAttrs(FSM_t fsm)
 {
     struct stat * st = &fsm->sb;
-    rpmfiles fi = rpmfiFiles(fsm->fi);
-    int i = fsm->ix;
+    rpmfi fi = fsm->fi;
 
-    mode_t finalMode = rpmfilesFMode(fi, i);
-    const char *user = rpmfilesFUser(fi, i);
-    const char *group = rpmfilesFGroup(fi, i);
+    mode_t finalMode = rpmfiFMode(fi);
+    const char *user = rpmfiFUser(fi);
+    const char *group = rpmfiFGroup(fi);
     uid_t uid = 0;
     gid_t gid = 0;
 
@@ -474,11 +473,11 @@ static int fsmMapAttrs(FSM_t fsm)
 
     st->st_mode = finalMode;
     st->st_dev = 0;
-    st->st_ino = rpmfilesFInode(fi, i);
-    st->st_rdev = rpmfilesFRdev(fi, i);
-    st->st_mtime = rpmfilesFMtime(fi, i);
-    st->st_size = rpmfilesFSize(fi, i);
-    st->st_nlink = rpmfilesFNlink(fi, i);
+    st->st_ino = rpmfiFInode(fi);
+    st->st_rdev = rpmfiFRdev(fi);
+    st->st_mtime = rpmfiFMtime(fi);
+    st->st_size = rpmfiFSize(fi);
+    st->st_nlink = rpmfiFNlink(fi);
 
     if ((S_ISCHR(st->st_mode) || S_ISBLK(st->st_mode))
 	    && st->st_nlink == 0) {
