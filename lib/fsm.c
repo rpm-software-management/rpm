@@ -310,11 +310,9 @@ static int fsmMapPath(FSM_t fsm, int i)
 	    }
 	}
 
-	if ((fsm->mapFlags & CPIO_MAP_PATH) || fsm->nsuffix) {
-	    fsm->path = _free(fsm->path);
-	    fsm->path = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode),
+	fsm->path = _free(fsm->path);
+	fsm->path = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode),
 		(fsm->suffix ? fsm->suffix : fsm->nsuffix));
-	}
     }
     return rc;
 }
