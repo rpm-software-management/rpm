@@ -441,13 +441,13 @@ static int fsmSetFCaps(const char *path, const char *captxt)
 
 /**
  * Map file stat(2) info.
- * @param fsm		file state machine
+ * @param fi		file info iterator
+ * @param warn		warn on user/group mapping error
+ * @retval st		mapped stat(2) data
+ * @return		0 on success
  */
-static int fsmMapAttrs(FSM_t fsm)
+static int fsmMapAttrs(rpmfi fi, int warn, struct stat * st)
 {
-    struct stat * st = &fsm->sb;
-    rpmfi fi = fsm->fi;
-
     mode_t finalMode = rpmfiFMode(fi);
     const char *user = rpmfiFUser(fi);
     const char *group = rpmfiFGroup(fi);
@@ -455,14 +455,14 @@ static int fsmMapAttrs(FSM_t fsm)
     gid_t gid = 0;
 
     if (user && rpmugUid(user, &uid)) {
-	if (fsm->goal == FSM_PKGINSTALL)
+	if (warn)
 	    rpmlog(RPMLOG_WARNING,
 		    _("user %s does not exist - using root\n"), user);
 	finalMode &= ~S_ISUID;	  /* turn off suid bit */
     }
 
     if (group && rpmugGid(group, &gid)) {
-	if (fsm->goal == FSM_PKGINSTALL)
+	if (warn)
 	    rpmlog(RPMLOG_WARNING,
 		    _("group %s does not exist - using root\n"), group);
 	finalMode &= ~S_ISGID;	/* turn off sgid bit */
@@ -892,7 +892,7 @@ static int fsmInit(FSM_t fsm)
 	fsm->sb = fsm->osb;			/* structure assignment */
 
     /* Remap file perms, owner, and group. */
-    rc = fsmMapAttrs(fsm);
+    rc = fsmMapAttrs(fsm->fi, (fsm->goal == FSM_PKGINSTALL), &fsm->sb);
     if (rc) return rc;
 
     fsm->postpone = XFA_SKIPPING(fsm->action);
