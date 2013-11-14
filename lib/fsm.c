@@ -346,7 +346,8 @@ static int saveHardLink(FSM_t fsm, int numlinks, const int * files)
         /* use last file to write content to */
         fsm->path = _free(fsm->path);
         li->nlink--;
-        fsm->ix = li->filex[li->nlink];
+        rpmfiSetFX(fsm->fi, li->filex[li->nlink]);
+        fsm->ix = rpmfiFX(fsm->fi);
         fsmMapPath(fsm, fsm->ix);
         return 0;
     }
