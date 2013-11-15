@@ -265,7 +265,7 @@ exit:
 
     /* XXX nuke the added package(s). */
     headerFree(h);
-    rpmtsClean(ts);
+    rpmtsEmpty(ts);
 
     return rpmrc;
 }
