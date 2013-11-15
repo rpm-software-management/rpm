@@ -25,6 +25,7 @@
 #include "lib/rpmdb_internal.h" /* rpmdbAdd/Remove */
 #include "lib/rpmts_internal.h" /* rpmtsPlugins() etc */
 #include "lib/rpmscript.h"
+#include "lib/misc.h"
 
 #include "lib/rpmplugins.h"
 
@@ -75,58 +76,6 @@ struct rpmpsm_s {
 static rpmpsm rpmpsmNew(rpmts ts, rpmte te);
 static rpmpsm rpmpsmFree(rpmpsm psm);
 static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage);
-
-/**
- * Macros to be defined from per-header tag values.
- * @todo Should other macros be added from header when installing a package?
- */
-static struct tagMacro {
-    const char *macroname; 	/*!< Macro name to define. */
-    rpmTag tag;			/*!< Header tag to use for value. */
-} const tagMacros[] = {
-    { "name",		RPMTAG_NAME },
-    { "version",	RPMTAG_VERSION },
-    { "release",	RPMTAG_RELEASE },
-    { "epoch",		RPMTAG_EPOCH },
-    { NULL, 0 }
-};
-
-/**
- * Define or undefine per-header macros.
- * @param h		header
- * @param define	define/undefine?
- * @return		0 always
- */
-static void rpmInstallLoadMacros(Header h, int define)
-{
-    const struct tagMacro * tagm;
-
-    for (tagm = tagMacros; tagm->macroname != NULL; tagm++) {
-	struct rpmtd_s td;
-	char *body;
-	if (!headerGet(h, tagm->tag, &td, HEADERGET_DEFAULT))
-	    continue;
-
-	/*
-	 * Undefine doesn't need the actual data for anything, but
-	 * this way ensures we only undefine what was defined earlier.
-	 */
-	switch (rpmtdType(&td)) {
-	default:
-	    if (define) {
-		body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
-		addMacro(NULL, tagm->macroname, NULL, body, -1);
-		free(body);
-	    } else {
-		delMacro(NULL, tagm->macroname);
-	    }
-	    break;
-	case RPM_NULL_TYPE:
-	    break;
-	}
-	rpmtdFreeData(&td);
-    }
-}
 
 /**
  * Adjust file states in database for files shared with this package:
@@ -233,87 +182,6 @@ static int rpmlibDeps(Header h)
     return rc;
 }
 
-static int findSpec(Header h)
-{
-    struct rpmtd_s filenames;
-    int specix = -1;
-
-    if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_MINMEM)) {
-	struct rpmtd_s td;
-	const char *str;
-	
-	/* Try to find spec by file flags */
-	if (headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
-	    rpmfileAttrs *flags;
-	    while (specix < 0 && (flags = rpmtdNextUint32(&td))) {
-		if (*flags & RPMFILE_SPECFILE)
-		    specix = rpmtdGetIndex(&td);
-	    }
-	    rpmtdFreeData(&td);
-	}
-	/* Still no spec? Look by filename. */
-	while (specix < 0 && (str = rpmtdNextString(&filenames))) {
-	    if (rpmFileHasSuffix(str, ".spec")) 
-		specix = rpmtdGetIndex(&filenames);
-	}
-	rpmtdFreeData(&filenames);
-    }
-    return specix;
-}
-
-/*
- * Source rpms only contain basenames, on install the full paths are
- * constructed with %{_specdir} and %{_sourcedir} macros. Because
- * of that regular relocation wont work, we need to do it the hard
- * way. Return spec file index on success, -1 on errors.
- */
-int rpmRelocateSrpmFileList(Header h, const char *rootDir)
-{
-    int specix = findSpec(h);
-
-    if (specix >= 0) {
-	const char *bn;
-	struct rpmtd_s td, filenames;
-	/* save original file names */
-	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerGet(h, RPMTAG_DIRNAMES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGDIRNAMES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerGet(h, RPMTAG_DIRINDEXES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerDel(h, RPMTAG_BASENAMES);
-	headerDel(h, RPMTAG_DIRNAMES);
-	headerDel(h, RPMTAG_DIRINDEXES);
-
-	/* Macros need to be added before trying to create directories */
-	rpmInstallLoadMacros(h, 1);
-
-	/* ALLOC is needed as we modify the header */
-	headerGet(h, RPMTAG_ORIGBASENAMES, &filenames, HEADERGET_ALLOC);
-	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
-	    int spec = (i == specix);
-	    char *fn = rpmGenPath(rootDir,
-				  spec ? "%{_specdir}" : "%{_sourcedir}", bn);
-	    headerPutString(h, RPMTAG_OLDFILENAMES, fn);
-	    free(fn);
-	}
-	rpmtdFreeData(&filenames);
-	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
-	rpmInstallLoadMacros(h, 0);
-    }
-
-    return specix;
-}
-
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		char ** specFilePtr, char ** cookie)
 {
@@ -347,7 +215,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (!rpmlibDeps(h))
 	goto exit;
 
-    specix = findSpec(h);
+    specix = headerFindSpec(h);
 
     if (specix < 0) {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));

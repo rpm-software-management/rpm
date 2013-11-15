@@ -9,6 +9,7 @@
 #include <string.h>
 #include <rpm/rpmtypes.h>
 #include <rpm/header.h>		/* for headerGetFlags typedef, duh.. */
+#include "lib/rpmfs.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +36,24 @@ headerTagFormatFunction rpmHeaderFormatFuncByName(const char *fmt);
 
 RPM_GNUC_INTERNAL
 headerTagFormatFunction rpmHeaderFormatFuncByValue(rpmtdFormats fmt);
+
+RPM_GNUC_INTERNAL
+int headerFindSpec(Header h);
+
+/**
+ * Relocate files in header.
+ * @todo multilib file dispositions need to be checked.
+ * @param relocations		relocations
+ * @param numRelocations	number of relocations
+ * @param fs			file state set
+ * @param h			package header to relocate
+ */
+RPM_GNUC_INTERNAL
+void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, Header h);
+
+RPM_GNUC_INTERNAL
+int rpmRelocateSrpmFileList(Header h, const char *rootDir);
+
 
 #ifdef __cplusplus
 }

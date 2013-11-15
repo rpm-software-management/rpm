@@ -46,6 +46,7 @@ lib/rpmal.c
 lib/rpmchecksig.c
 lib/rpmchroot.c
 lib/rpmds.c
+lib/relocation.c
 lib/rpmfi.c
 lib/rpmgi.c
 lib/rpminstall.c

@@ -88,21 +88,6 @@ int rpmteHaveTransScript(rpmte te, rpmTagVal tag);
 /* XXX should be internal too but build code needs for now... */
 rpmfs rpmteGetFileStates(rpmte te);
 
-/* XXX here for now... */
-/**
- * Relocate files in header.
- * @todo multilib file dispositions need to be checked.
- * @param relocations		relocations
- * @param numRelocations	number of relocations
- * @param fs			file state set
- * @param h			package header to relocate
- */
-RPM_GNUC_INTERNAL
-void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, Header h);
-
-RPM_GNUC_INTERNAL
-int rpmRelocateSrpmFileList(Header h, const char *rootDir);
-
 /** \ingroup rpmte
  * Retrieve size in bytes of package header.
  * @param te		transaction element

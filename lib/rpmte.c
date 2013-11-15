@@ -13,6 +13,7 @@
 #include <rpm/rpmdb.h>
 #include <rpm/rpmlog.h>
 
+#include "lib/misc.h"
 #include "lib/rpmplugins.h"
 #include "lib/rpmte_internal.h"
 /* strpool-related interfaces */
