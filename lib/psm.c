@@ -377,9 +377,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     {
 	/* set all files to be installed */
 	rpmfs fs = rpmteGetFileStates(te);
-	int i;
-	unsigned int fc = rpmfiFC(fi);
-	for (i=0; i<fc; i++) rpmfsSetAction(fs, i, FA_CREATE);
+	int fc = rpmfsFC(fs);
+	for (int i = 0; i < fc; i++)
+	    rpmfsSetAction(fs, i, FA_CREATE);
     }
 
     psm = rpmpsmNew(ts, te);
