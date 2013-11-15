@@ -98,7 +98,7 @@ static int addPrefixes(Header h, rpmRelocation *relocations, int numRelocations)
     return 1;
 }
 
-static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
+static void saveOrig(Header h)
 {
 	struct rpmtd_s td;
 	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
@@ -115,10 +115,6 @@ static void saveRelocs(Header h, rpmtd bnames, rpmtd dnames, rpmtd dindexes)
 	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
 	headerPut(h, &td, HEADERPUT_DEFAULT);
 	rpmtdFreeData(&td);
-
-	headerMod(h, bnames);
-	headerMod(h, dnames);
-	headerMod(h, dindexes);
 }
 
 void rpmRelocateFileList(rpmRelocation *relocations, int numRelocations, 
@@ -335,7 +331,10 @@ assert(fn != NULL);		/* XXX can't happen */
 
     /* Save original filenames in header and replace (relocated) filenames. */
     if (nrelocated) {
-	saveRelocs(h, &bnames, &dnames, &dindexes);
+	saveOrig(h);
+	headerMod(h, &bnames);
+	headerMod(h, &dnames);
+	headerMod(h, &dindexes);
     }
 
     rpmtdFreeData(&bnames);
