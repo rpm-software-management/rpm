@@ -143,41 +143,45 @@ static char * stripTrailingChar(char * s, char c)
     return s;
 }
 
-static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
+static void buildRelocs(Header h, rpmRelocation *rawrelocs,
+		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs)
 {
     int i;
     struct rpmtd_s validRelocs;
+    rpmRelocation * relocs = NULL;
+    uint8_t *badrelocs = NULL;
+    int nrelocs = 0;
 
-    for (rpmRelocation *r = relocs; r->oldPath || r->newPath; r++)
-	p->nrelocs++;
+    for (rpmRelocation *r = rawrelocs; r->oldPath || r->newPath; r++)
+	nrelocs++;
 
     headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM);
-    p->relocs = xmalloc(sizeof(*p->relocs) * (p->nrelocs+1));
+    relocs = xmalloc(sizeof(*relocs) * (nrelocs+1));
 
     /* Build sorted relocation list from raw relocations. */
-    for (i = 0; i < p->nrelocs; i++) {
+    for (i = 0; i < nrelocs; i++) {
 	char * t;
 
 	/*
 	 * Default relocations (oldPath == NULL) are handled in the UI,
 	 * not rpmlib.
 	 */
-	if (relocs[i].oldPath == NULL) continue; /* XXX can't happen */
+	if (rawrelocs[i].oldPath == NULL) continue; /* XXX can't happen */
 
 	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
 	   too, but those are more trouble to fix up. :-( */
-	t = xstrdup(relocs[i].oldPath);
-	p->relocs[i].oldPath = (t[0] == '/' && t[1] == '\0')
+	t = xstrdup(rawrelocs[i].oldPath);
+	relocs[i].oldPath = (t[0] == '/' && t[1] == '\0')
 	    ? t
 	    : stripTrailingChar(t, '/');
 
 	/* An old path w/o a new path is valid, and indicates exclusion */
-	if (relocs[i].newPath) {
+	if (rawrelocs[i].newPath) {
 	    int valid = 0;
 	    const char *validprefix;
 
-	    t = xstrdup(relocs[i].newPath);
-	    p->relocs[i].newPath = (t[0] == '/' && t[1] == '\0')
+	    t = xstrdup(rawrelocs[i].newPath);
+	    relocs[i].newPath = (t[0] == '/' && t[1] == '\0')
 		? t
 		: stripTrailingChar(t, '/');
 
@@ -185,26 +189,30 @@ static void buildRelocs(rpmte p, Header h, rpmRelocation *relocs)
 	    /* Verify that the relocation's old path is in the header. */
 	    rpmtdInit(&validRelocs);
 	    while ((validprefix = rpmtdNextString(&validRelocs))) {
-		if (rstreq(validprefix, p->relocs[i].oldPath)) {
+		if (rstreq(validprefix, relocs[i].oldPath)) {
 		    valid = 1;
 		    break;
 		}
 	    }
 
 	    if (!valid) {
-		if (p->badrelocs == NULL)
-		    p->badrelocs = xcalloc(p->nrelocs, sizeof(*p->badrelocs));
-		p->badrelocs[i] = 1;
+		if (badrelocs == NULL)
+		    badrelocs = xcalloc(nrelocs, sizeof(*badrelocs));
+		badrelocs[i] = 1;
 	    }
 	} else {
-	    p->relocs[i].newPath = NULL;
+	    relocs[i].newPath = NULL;
 	}
     }
-    p->relocs[i].oldPath = NULL;
-    p->relocs[i].newPath = NULL;
-    sortRelocs(p->relocs, p->nrelocs);
+    relocs[i].oldPath = NULL;
+    relocs[i].newPath = NULL;
+    sortRelocs(relocs, nrelocs);
     
     rpmtdFreeData(&validRelocs);
+
+    *rrelocs = relocs;
+    *rnrelocs = nrelocs;
+    *rbadrelocs = badrelocs;
 }
 
 /**
@@ -246,7 +254,7 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->relocs = NULL;
     p->badrelocs = NULL;
     if (relocs != NULL)
-	buildRelocs(p, h, relocs);
+	buildRelocs(h, relocs, &p->nrelocs, &p->relocs, &p->badrelocs);
 
     p->db_instance = headerGetInstance(h);
     p->key = key;
