@@ -229,7 +229,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 {
     rpmfi fi = NULL;
     char * specFile = NULL;
-    const char *rootdir = rpmtsRootDir(ts);
     Header h = NULL;
     rpmpsm psm = NULL;
     rpmte te = NULL;
@@ -282,9 +281,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		specix = rpmtdGetIndex(&filenames);
 	}
     }
-
-    if (rootdir && rstreq(rootdir, "/"))
-	rootdir = NULL;
 
     /* Macros need to be added before trying to create directories */
     rpmInstallLoadMacros(h);
