@@ -237,7 +237,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		char ** specFilePtr, char ** cookie)
 {
     rpmfi fi = NULL;
-    char * specFile = NULL;
     Header h = NULL;
     rpmpsm psm = NULL;
     rpmte te = NULL;
@@ -273,11 +272,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_ALLOC)) {
 	struct rpmtd_s td;
 	const char *str;
-	const char *_cookie = headerGetString(h, RPMTAG_COOKIE);
-	if (cookie && _cookie) *cookie = xstrdup(_cookie);
 	
 	/* Try to find spec by file flags */
-	if (_cookie && headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
+	if (headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
 	    rpmfileAttrs *flags;
 	    while (specix < 0 && (flags = rpmtdNextUint32(&td))) {
 		if (*flags & RPMFILE_SPECFILE)
@@ -323,7 +320,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	    char *fn = rpmGenPath(rpmtsRootDir(ts),
 				  spec ? "%{_specdir}" : "%{_sourcedir}", bn);
 	    headerPutString(h, RPMTAG_OLDFILENAMES, fn);
-	    if (spec) specFile = xstrdup(fn);
 	    free(fn);
 	}
 	rpmtdFreeData(&filenames);
@@ -352,7 +348,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	goto exit;
     }
     rpmteSetFI(te, fi);
-    fi = rpmfiFree(fi);
 
     {
 	/* set all files to be installed */
@@ -373,10 +368,15 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmpsmFree(psm);
 
 exit:
-    if (specFilePtr && specFile && rpmrc == RPMRC_OK)
-	*specFilePtr = specFile;
-    else
-	free(specFile);
+    if (rpmrc == RPMRC_OK && specix >= 0) {
+	if (cookie)
+	    *cookie = headerGetAsString(h, RPMTAG_COOKIE);
+	if (specFilePtr) {
+	    rpmfiles files = rpmteFiles(te);
+	    *specFilePtr = rpmfilesFN(files, specix);
+	    rpmfilesFree(files);
+	}
+    }
 
     headerFree(h);
     rpmfiFree(fi);
