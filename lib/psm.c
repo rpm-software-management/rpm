@@ -261,42 +261,15 @@ static int findSpec(Header h)
     return specix;
 }
 
-rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
-		char ** specFilePtr, char ** cookie)
+/*
+ * Source rpms only contain basenames, on install the full paths are
+ * constructed with %{_specdir} and %{_sourcedir} macros. Because
+ * of that regular relocation wont work, we need to do it the hard
+ * way. Return spec file index on success, -1 on errors.
+ */
+static int rpmRelocateSrpmFileList(Header h, const char *rootDir)
 {
-    rpmfi fi = NULL;
-    Header h = NULL;
-    rpmpsm psm = NULL;
-    rpmte te = NULL;
-    rpmRC rpmrc;
-    int specix = -1;
-
-    rpmtdReset(&filenames);
-    rpmrc = rpmReadPackageFile(ts, fd, NULL, &h);
-    switch (rpmrc) {
-    case RPMRC_NOTTRUSTED:
-    case RPMRC_NOKEY:
-    case RPMRC_OK:
-	break;
-    default:
-	goto exit;
-	break;
-    }
-    if (h == NULL)
-	goto exit;
-
-    rpmrc = RPMRC_FAIL; /* assume failure */
-
-    if (!headerIsSource(h)) {
-	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
-	goto exit;
-    }
-
-    /* src.rpm install can require specific rpmlib features, check them */
-    if (!rpmlibDeps(h))
-	goto exit;
-
-    specix = findSpec(h);
+    int specix = findSpec(h);
 
     if (specix >= 0) {
 	const char *bn;
@@ -328,7 +301,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	headerGet(h, RPMTAG_ORIGBASENAMES, &filenames, HEADERGET_ALLOC);
 	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
 	    int spec = (i == specix);
-	    char *fn = rpmGenPath(rpmtsRootDir(ts),
+	    char *fn = rpmGenPath(rootDir,
 				  spec ? "%{_specdir}" : "%{_sourcedir}", bn);
 	    headerPutString(h, RPMTAG_OLDFILENAMES, fn);
 	    free(fn);
@@ -336,7 +309,48 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	rpmtdFreeData(&filenames);
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
 	rpmInstallLoadMacros(h, 0);
-    } else {
+    }
+
+    return specix;
+}
+
+rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
+		char ** specFilePtr, char ** cookie)
+{
+    rpmfi fi = NULL;
+    Header h = NULL;
+    rpmpsm psm = NULL;
+    rpmte te = NULL;
+    rpmRC rpmrc;
+    int specix = -1;
+
+    rpmrc = rpmReadPackageFile(ts, fd, NULL, &h);
+    switch (rpmrc) {
+    case RPMRC_NOTTRUSTED:
+    case RPMRC_NOKEY:
+    case RPMRC_OK:
+	break;
+    default:
+	goto exit;
+	break;
+    }
+    if (h == NULL)
+	goto exit;
+
+    rpmrc = RPMRC_FAIL; /* assume failure */
+
+    if (!headerIsSource(h)) {
+	rpmlog(RPMLOG_ERR, _("source package expected, binary found\n"));
+	goto exit;
+    }
+
+    /* src.rpm install can require specific rpmlib features, check them */
+    if (!rpmlibDeps(h))
+	goto exit;
+
+    specix = rpmRelocateSrpmFileList(h, rpmtsRootDir(ts));
+
+    if (specix < 0) {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	goto exit;
     };
