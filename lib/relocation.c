@@ -436,22 +436,9 @@ int rpmRelocateSrpmFileList(Header h, const char *rootDir)
 
     if (specix >= 0) {
 	const char *bn;
-	struct rpmtd_s td, filenames;
+	struct rpmtd_s filenames;
 	/* save original file names */
-	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerGet(h, RPMTAG_DIRNAMES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGDIRNAMES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
-
-	headerGet(h, RPMTAG_DIRINDEXES, &td, HEADERGET_MINMEM);
-	rpmtdSetTag(&td, RPMTAG_ORIGDIRINDEXES);
-	headerPut(h, &td, HEADERPUT_DEFAULT);
-	rpmtdFreeData(&td);
+	saveOrig(h);
 
 	headerDel(h, RPMTAG_BASENAMES);
 	headerDel(h, RPMTAG_DIRNAMES);
