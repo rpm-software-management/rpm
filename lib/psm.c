@@ -267,7 +267,7 @@ static int findSpec(Header h)
  * of that regular relocation wont work, we need to do it the hard
  * way. Return spec file index on success, -1 on errors.
  */
-static int rpmRelocateSrpmFileList(Header h, const char *rootDir)
+int rpmRelocateSrpmFileList(Header h, const char *rootDir)
 {
     int specix = findSpec(h);
 
@@ -317,7 +317,6 @@ static int rpmRelocateSrpmFileList(Header h, const char *rootDir)
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		char ** specFilePtr, char ** cookie)
 {
-    rpmfi fi = NULL;
     Header h = NULL;
     rpmpsm psm = NULL;
     rpmte te = NULL;
@@ -348,7 +347,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (!rpmlibDeps(h))
 	goto exit;
 
-    specix = rpmRelocateSrpmFileList(h, rpmtsRootDir(ts));
+    specix = findSpec(h);
 
     if (specix < 0) {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
@@ -366,13 +365,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmteSetFd(te, fd);
 
     rpmteSetHeader(te, h);
-    fi = rpmfiNew(ts, h, RPMTAG_BASENAMES, RPMFI_KEEPHEADER);
-    h = headerFree(h);
-
-    if (fi == NULL) {
-	goto exit;
-    }
-    rpmteSetFI(te, fi);
 
     {
 	/* set all files to be installed */
@@ -403,10 +395,8 @@ exit:
 	}
     }
 
-    headerFree(h);
-    rpmfiFree(fi);
-
     /* XXX nuke the added package(s). */
+    headerFree(h);
     rpmtsClean(ts);
 
     return rpmrc;

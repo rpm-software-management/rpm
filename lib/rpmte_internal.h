@@ -100,6 +100,9 @@ rpmfs rpmteGetFileStates(rpmte te);
 RPM_GNUC_INTERNAL
 void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, Header h);
 
+RPM_GNUC_INTERNAL
+int rpmRelocateSrpmFileList(Header h, const char *rootDir);
+
 /** \ingroup rpmte
  * Retrieve size in bytes of package header.
  * @param te		transaction element

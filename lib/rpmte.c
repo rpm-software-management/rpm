@@ -100,8 +100,15 @@ static rpmfiles getFiles(rpmte p, Header h)
 
     /* relocate stuff in header if necessary */
     if (rpmteType(p) == TR_ADDED && rpmfsFC(p->fs) > 0) {
-	if (!headerIsSource(h) && !headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
-	    rpmRelocateFileList(p->relocs, p->nrelocs, p->fs, h);
+	if (!headerIsEntry(h, RPMTAG_ORIGBASENAMES)) {
+	    if (rpmteIsSource(p)) {
+		/* Unlike binary packages, source relocation can fail */
+		if (rpmRelocateSrpmFileList(h, rpmtsRootDir(p->ts)) < 0) {
+		    return NULL;
+		}
+	    } else {
+		rpmRelocateFileList(p->relocs, p->nrelocs, p->fs, h);
+	    }
 	}
     }
     return rpmfilesNew(rpmtsPool(p->ts), h, RPMTAG_BASENAMES, fiflags);
