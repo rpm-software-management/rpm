@@ -92,11 +92,12 @@ static struct tagMacro {
 };
 
 /**
- * Define per-header macros.
+ * Define or undefine per-header macros.
  * @param h		header
+ * @param define	define/undefine?
  * @return		0 always
  */
-static void rpmInstallLoadMacros(Header h)
+static void rpmInstallLoadMacros(Header h, int define)
 {
     const struct tagMacro * tagm;
 
@@ -106,11 +107,19 @@ static void rpmInstallLoadMacros(Header h)
 	if (!headerGet(h, tagm->tag, &td, HEADERGET_DEFAULT))
 	    continue;
 
+	/*
+	 * Undefine doesn't need the actual data for anything, but
+	 * this way ensures we only undefine what was defined earlier.
+	 */
 	switch (rpmtdType(&td)) {
 	default:
-	    body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
-	    addMacro(NULL, tagm->macroname, NULL, body, -1);
-	    free(body);
+	    if (define) {
+		body = rpmtdFormat(&td, RPMTD_FORMAT_STRING, NULL);
+		addMacro(NULL, tagm->macroname, NULL, body, -1);
+		free(body);
+	    } else {
+		delMacro(NULL, tagm->macroname);
+	    }
 	    break;
 	case RPM_NULL_TYPE:
 	    break;
@@ -282,9 +291,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
     }
 
-    /* Macros need to be added before trying to create directories */
-    rpmInstallLoadMacros(h);
-
     if (specix >= 0) {
 	const char *bn;
 	struct rpmtd_s td;
@@ -308,6 +314,9 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	headerDel(h, RPMTAG_DIRNAMES);
 	headerDel(h, RPMTAG_DIRINDEXES);
 
+	/* Macros need to be added before trying to create directories */
+	rpmInstallLoadMacros(h, 1);
+
 	rpmtdInit(&filenames);
 	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
 	    int spec = (i == specix);
@@ -319,6 +328,7 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	}
 	rpmtdFreeData(&filenames);
 	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
+	rpmInstallLoadMacros(h, 0);
     } else {
 	rpmlog(RPMLOG_ERR, _("source package contains no .spec file\n"));
 	goto exit;
