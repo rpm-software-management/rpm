@@ -233,6 +233,34 @@ static int rpmlibDeps(Header h)
     return rc;
 }
 
+static int findSpec(Header h)
+{
+    struct rpmtd_s filenames;
+    int specix = -1;
+
+    if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_MINMEM)) {
+	struct rpmtd_s td;
+	const char *str;
+	
+	/* Try to find spec by file flags */
+	if (headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
+	    rpmfileAttrs *flags;
+	    while (specix < 0 && (flags = rpmtdNextUint32(&td))) {
+		if (*flags & RPMFILE_SPECFILE)
+		    specix = rpmtdGetIndex(&td);
+	    }
+	    rpmtdFreeData(&td);
+	}
+	/* Still no spec? Look by filename. */
+	while (specix < 0 && (str = rpmtdNextString(&filenames))) {
+	    if (rpmFileHasSuffix(str, ".spec")) 
+		specix = rpmtdGetIndex(&filenames);
+	}
+	rpmtdFreeData(&filenames);
+    }
+    return specix;
+}
+
 rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 		char ** specFilePtr, char ** cookie)
 {
@@ -242,7 +270,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmte te = NULL;
     rpmRC rpmrc;
     int specix = -1;
-    struct rpmtd_s filenames;
 
     rpmtdReset(&filenames);
     rpmrc = rpmReadPackageFile(ts, fd, NULL, &h);
@@ -269,28 +296,11 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     if (!rpmlibDeps(h))
 	goto exit;
 
-    if (headerGet(h, RPMTAG_BASENAMES, &filenames, HEADERGET_ALLOC)) {
-	struct rpmtd_s td;
-	const char *str;
-	
-	/* Try to find spec by file flags */
-	if (headerGet(h, RPMTAG_FILEFLAGS, &td, HEADERGET_MINMEM)) {
-	    rpmfileAttrs *flags;
-	    while (specix < 0 && (flags = rpmtdNextUint32(&td))) {
-		if (*flags & RPMFILE_SPECFILE)
-		    specix = rpmtdGetIndex(&td);
-	    }
-	}
-	/* Still no spec? Look by filename. */
-	while (specix < 0 && (str = rpmtdNextString(&filenames))) {
-	    if (rpmFileHasSuffix(str, ".spec")) 
-		specix = rpmtdGetIndex(&filenames);
-	}
-    }
+    specix = findSpec(h);
 
     if (specix >= 0) {
 	const char *bn;
-	struct rpmtd_s td;
+	struct rpmtd_s td, filenames;
 	/* save original file names */
 	headerGet(h, RPMTAG_BASENAMES, &td, HEADERGET_MINMEM);
 	rpmtdSetTag(&td, RPMTAG_ORIGBASENAMES);
@@ -314,7 +324,8 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
 	/* Macros need to be added before trying to create directories */
 	rpmInstallLoadMacros(h, 1);
 
-	rpmtdInit(&filenames);
+	/* ALLOC is needed as we modify the header */
+	headerGet(h, RPMTAG_ORIGBASENAMES, &filenames, HEADERGET_ALLOC);
 	for (int i = 0; (bn = rpmtdNextString(&filenames)); i++) {
 	    int spec = (i == specix);
 	    char *fn = rpmGenPath(rpmtsRootDir(ts),
