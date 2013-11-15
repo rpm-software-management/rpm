@@ -54,6 +54,9 @@ void rpmRelocateFileList(rpmRelocation *relocs, int numRelocations, rpmfs fs, He
 RPM_GNUC_INTERNAL
 int rpmRelocateSrpmFileList(Header h, const char *rootDir);
 
+RPM_GNUC_INTERNAL
+void rpmRelocationBuild(Header h, rpmRelocation *rawrelocs,
+		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs);
 
 #ifdef __cplusplus
 }

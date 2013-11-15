@@ -115,106 +115,6 @@ static rpmfiles getFiles(rpmte p, Header h)
     return rpmfilesNew(rpmtsPool(p->ts), h, RPMTAG_BASENAMES, fiflags);
 }
 
-/* stupid bubble sort, but it's probably faster here */
-static void sortRelocs(rpmRelocation *relocations, int numRelocations)
-{
-    for (int i = 0; i < numRelocations; i++) {
-	int madeSwap = 0;
-	for (int j = 1; j < numRelocations; j++) {
-	    rpmRelocation tmpReloc;
-	    if (relocations[j - 1].oldPath == NULL || /* XXX can't happen */
-		relocations[j    ].oldPath == NULL || /* XXX can't happen */
-		strcmp(relocations[j - 1].oldPath, relocations[j].oldPath) <= 0)
-		continue;
-	    tmpReloc = relocations[j - 1];
-	    relocations[j - 1] = relocations[j];
-	    relocations[j] = tmpReloc;
-	    madeSwap = 1;
-	}
-	if (!madeSwap) break;
-    }
-}
-
-static char * stripTrailingChar(char * s, char c)
-{
-    char * t;
-    for (t = s + strlen(s) - 1; *t == c && t >= s; t--)
-	*t = '\0';
-    return s;
-}
-
-static void buildRelocs(Header h, rpmRelocation *rawrelocs,
-		int *rnrelocs, rpmRelocation **rrelocs, uint8_t **rbadrelocs)
-{
-    int i;
-    struct rpmtd_s validRelocs;
-    rpmRelocation * relocs = NULL;
-    uint8_t *badrelocs = NULL;
-    int nrelocs = 0;
-
-    for (rpmRelocation *r = rawrelocs; r->oldPath || r->newPath; r++)
-	nrelocs++;
-
-    headerGet(h, RPMTAG_PREFIXES, &validRelocs, HEADERGET_MINMEM);
-    relocs = xmalloc(sizeof(*relocs) * (nrelocs+1));
-
-    /* Build sorted relocation list from raw relocations. */
-    for (i = 0; i < nrelocs; i++) {
-	char * t;
-
-	/*
-	 * Default relocations (oldPath == NULL) are handled in the UI,
-	 * not rpmlib.
-	 */
-	if (rawrelocs[i].oldPath == NULL) continue; /* XXX can't happen */
-
-	/* FIXME: Trailing /'s will confuse us greatly. Internal ones will 
-	   too, but those are more trouble to fix up. :-( */
-	t = xstrdup(rawrelocs[i].oldPath);
-	relocs[i].oldPath = (t[0] == '/' && t[1] == '\0')
-	    ? t
-	    : stripTrailingChar(t, '/');
-
-	/* An old path w/o a new path is valid, and indicates exclusion */
-	if (rawrelocs[i].newPath) {
-	    int valid = 0;
-	    const char *validprefix;
-
-	    t = xstrdup(rawrelocs[i].newPath);
-	    relocs[i].newPath = (t[0] == '/' && t[1] == '\0')
-		? t
-		: stripTrailingChar(t, '/');
-
-	   	/* FIX:  relocations[i].oldPath == NULL */
-	    /* Verify that the relocation's old path is in the header. */
-	    rpmtdInit(&validRelocs);
-	    while ((validprefix = rpmtdNextString(&validRelocs))) {
-		if (rstreq(validprefix, relocs[i].oldPath)) {
-		    valid = 1;
-		    break;
-		}
-	    }
-
-	    if (!valid) {
-		if (badrelocs == NULL)
-		    badrelocs = xcalloc(nrelocs, sizeof(*badrelocs));
-		badrelocs[i] = 1;
-	    }
-	} else {
-	    relocs[i].newPath = NULL;
-	}
-    }
-    relocs[i].oldPath = NULL;
-    relocs[i].newPath = NULL;
-    sortRelocs(relocs, nrelocs);
-    
-    rpmtdFreeData(&validRelocs);
-
-    *rrelocs = relocs;
-    *rnrelocs = nrelocs;
-    *rbadrelocs = badrelocs;
-}
-
 /**
  * Initialize transaction element data from header.
  * @param p		transaction element
@@ -254,7 +154,7 @@ static int addTE(rpmte p, Header h, fnpyKey key, rpmRelocation * relocs)
     p->relocs = NULL;
     p->badrelocs = NULL;
     if (relocs != NULL)
-	buildRelocs(h, relocs, &p->nrelocs, &p->relocs, &p->badrelocs);
+	rpmRelocationBuild(h, relocs, &p->nrelocs, &p->relocs, &p->badrelocs);
 
     p->db_instance = headerGetInstance(h);
     p->key = key;
