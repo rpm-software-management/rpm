@@ -348,10 +348,6 @@ rpmRC rpmInstallSourcePackage(rpmts ts, FD_t fd,
     rpmteSetFI(te, fi);
     fi = rpmfiFree(fi);
 
-    if (rpmMkdirs(rpmtsRootDir(ts), "%{_topdir}:%{_sourcedir}:%{_specdir}")) {
-	goto exit;
-    }
-
     {
 	/* set all files to be installed */
 	rpmfs fs = rpmteGetFileStates(te);
