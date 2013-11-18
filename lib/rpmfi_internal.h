@@ -13,6 +13,7 @@ typedef enum rpmFileIter_e {
     RPMFI_ITER_FWD	= 0,
     RPMFI_ITER_BACK	= 1,
     RPMFI_ITER_READ_ARCHIVE	= 2,
+    RPMFI_ITER_WRITE_ARCHIVE	= 3,
 } rpmFileIter;
 
 #ifdef __cplusplus
@@ -198,6 +199,19 @@ int rpmfilesDigestAlgo(rpmfiles fi);
 rpm_color_t rpmfilesColor(rpmfiles files);
 
 /** \ingroup payload
+ * Get new file iterator for writing the archive content.
+ * The returned rpmfi will only visit the files needing some content.
+ * You need to provide the content using rpmfiArchiveWrite() or
+ * rpmfiArchiveWriteFile(). Make sure to close the rpmfi with
+ * rpmfiArchiveClose() to get the trailer written.
+ * rpmfiSetFX() is not supported for this type of iterator.
+ * @param fd		file
+ * @param fi            file info
+ * @return		new rpmfi
+ */
+rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
+
+/** \ingroup payload
  * Get new file iterator for looping over the archive content.
  * Returned rpmfi visites files in the order they are read from the payload.
  * Content of the regular files can be retrieved with rpmfiArchiveRead() or
@@ -208,15 +222,6 @@ rpm_color_t rpmfilesColor(rpmfiles files);
  * @return		new rpmfi
  */
 rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files);
-
-/** \ingroup payload
- * Add payload archive to the file info
- * @param fi		file info
- * @param fd		file
- * @param mode		O_RDONLY or O_WRONLY
- * @return		> 0 on error
- */
-int rpmfiAttachArchive(rpmfi fi, FD_t fd, char mode);
 
 /** \ingroup payload
  * Close payload archive
@@ -231,13 +236,6 @@ int rpmfiArchiveClose(rpmfi fi);
  * @return		position
  */
 rpm_loff_t rpmfiArchiveTell(rpmfi fi);
-
-/** \ingroup payload
- * Write archive header for current file
- * @param fi		file info
- * @return		> 0 on error
- */
-int rpmfiArchiveWriteHeader(rpmfi fi);
 
 /** \ingroup payload
  * Write content into current file in archive

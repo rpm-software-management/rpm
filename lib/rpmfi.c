@@ -1435,6 +1435,7 @@ err:
 }
 
 static int iterReadArchiveNext(rpmfi fi);
+static int iterWriteArchiveNext(rpmfi fi);
 
 static rpmfi initIter(rpmfiles files, int itype, int link)
 {
@@ -1451,6 +1452,9 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
 	    break;
 	case RPMFI_ITER_READ_ARCHIVE:
 	    fi->next = iterReadArchiveNext;
+	    break;
+	case RPMFI_ITER_WRITE_ARCHIVE:
+	    fi->next = iterWriteArchiveNext;
 	    break;
 	case RPMFI_ITER_FWD:
 	default:
@@ -1626,20 +1630,27 @@ rpmfiles rpmfiFiles(rpmfi fi)
 /*** Archive handling *********************************/
 /******************************************************/
 
-int rpmfiAttachArchive(rpmfi fi, FD_t fd, char mode)
-{
-    if (fi == NULL || fd == NULL)
-	return -1;
-    fi->archive = rpmcpioOpen(fd, mode);
-    return (fi->archive == NULL);
-}
-
 rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files)
 {
     rpmcpio_t archive = rpmcpioOpen(fd, O_RDONLY);
     rpmfi fi = NULL;
     if (archive) {
 	fi = rpmfilesIter(files, RPMFI_ITER_READ_ARCHIVE);
+    }
+    if (fi) {
+	fi->archive = archive;
+    } else {
+	rpmcpioFree(archive);
+    }
+    return fi;
+}
+
+rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files)
+{
+    rpmcpio_t archive = rpmcpioOpen(fd, O_WRONLY);
+    rpmfi fi = NULL;
+    if (archive) {
+	fi = rpmfilesIter(files, RPMFI_ITER_WRITE_ARCHIVE);
     }
     if (fi) {
 	fi->archive = archive;
@@ -1665,7 +1676,8 @@ rpm_loff_t rpmfiArchiveTell(rpmfi fi)
     return (rpm_loff_t) rpmcpioTell(fi->archive);
 }
 
-int rpmfiArchiveWriteHeader(rpmfi fi)
+
+static int rpmfiArchiveWriteHeader(rpmfi fi)
 {
     int rc;
 
@@ -1725,6 +1737,75 @@ int rpmfiArchiveWriteHeader(rpmfi fi)
     }
 
     return rc;
+}
+
+static int iterWriteArchiveNext(rpmfi fi)
+{
+    rpmfiles files = rpmfiFiles(fi);
+    int fx = rpmfiFX(fi);
+    int fc = rpmfiFC(fi);
+    const int * hardlinks;
+    int numHardlinks = 0;
+
+    /* already processing hard linked files */
+    if (rpmfiFNlink(fi) > 1) {
+	/* search next hard linked file */
+	fi->i = -1;
+	for (int i=fx+1; i<fc; i++) {
+	    /* no ghosts */
+	    if (rpmfilesFFlags(files, i) & RPMFILE_GHOST)
+		continue;
+	    numHardlinks = rpmfilesFLinks(files, i, &hardlinks);
+	    if (numHardlinks > 2 && hardlinks[0] == i) {
+		rpmfiSetFX(fi, i);
+		break;
+	    }
+	}
+    } else {
+	fi->i = -1;
+	/* search next non hardlinked file */
+	for (int i=fx+1; i<fc; i++) {
+	    /* no ghosts */
+	    if (rpmfilesFFlags(files, i) & RPMFILE_GHOST)
+		continue;
+	    if (rpmfilesFNlink(files, i) < 2) {
+		rpmfiSetFX(fi, i);
+		break;
+	    }
+	}
+	if (rpmfiFX(fi) == -1) {
+	    /* continue with first hard linked file */
+	    for (int i=0; i<fc; i++) {
+		/* no ghosts */
+		if (rpmfilesFFlags(files, i) & RPMFILE_GHOST)
+		    continue;
+		numHardlinks = rpmfilesFLinks(files, i, &hardlinks);
+		if (numHardlinks > 2) {
+		    rpmfiSetFX(fi, i);
+		    break;
+		}
+	    }
+	}
+    }
+    if (rpmfiFX(fi) == -1)
+	return -1;
+
+    /* write header(s) */
+    if (numHardlinks>1) {
+	for (int i=0; i<numHardlinks; i++) {
+	    rpmfiSetFX(fi, hardlinks[i]);
+	    int rc = rpmfiArchiveWriteHeader(fi);
+	    if (rc) {
+		return rc;
+	    }
+	}
+    } else {
+	int rc = rpmfiArchiveWriteHeader(fi);
+	if (rc) {
+	    return rc;
+	}
+    }
+    return rpmfiFX(fi);
 }
 
 size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size)

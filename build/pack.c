@@ -28,31 +28,25 @@
 /** \ingroup payload
  * Write next item to payload stream.
  * @param fi		file info
- * @param writeData	should data be written?
  * @retval failedFile	name of failed file on error
  * @return		0 on success
  */
-static int writeFile(rpmfi fi, ARGV_t dpaths, int writeData,
+static int writeFile(rpmfi fi, ARGV_t dpaths,
 		     char **failedFile)
 {
     FD_t rfd = NULL;
     int rc = 0;
     const char *path = dpaths[rpmfiFX(fi)];
 
-    rc = rpmfiArchiveWriteHeader(fi);
-
-    if (rc) goto exit;
-
-    if (writeData && S_ISREG(rpmfiFMode(fi))) {
+    if (S_ISREG(rpmfiFMode(fi))) {
 	rfd = Fopen(path, "r.ufdio");
 	if (Ferror(rfd)) {
 	    rc = CPIOERR_OPEN_FAILED;
 	    goto exit;
 	}
-	
 	rc = rpmfiArchiveWriteFile(fi, rfd);
 
-    } else if (writeData && S_ISLNK(rpmfiFMode(fi))) {
+    } else if (S_ISLNK(rpmfiFMode(fi))) {
 	const char *lnk = rpmfiFLink(fi);
 	size_t len = strlen(lnk);
         if (rpmfiArchiveWrite(fi, lnk, len) != len) {
@@ -73,62 +67,28 @@ exit:
     return rc;
 }
 
-static int writeLinks(rpmfi fi, ARGV_t dpaths, char **failedFile)
-{
-    int rc = 0;
-    rpmfi xfi = rpmfilesIter(rpmfiFiles(fi), RPMFI_ITER_FWD);
-
-    while (rpmfiNext(xfi) >= 0) {
-        const int * hardlinks;
-        int numHardlinks = rpmfiFLinks(xfi, &hardlinks);
-
-        if (numHardlinks < 2 || hardlinks[0] != rpmfiFX(xfi))
-            continue;
-
-        for (int j=0; j<numHardlinks; j++) {
-            /* Copy file into archive. */
-            rpmfiSetFX(fi, hardlinks[j]);
-
-            /* Write data after last link. */
-            rc = writeFile(fi, dpaths, (j == numHardlinks-1), failedFile);
-	    if (rc)
-		break;
-        }
-        /* Exit on error. */
-        if (rc)
-            break;
-    }
-    rpmfiFree(xfi);
-    return rc;
-}
-
 static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd, ARGV_t dpaths,
 				rpm_loff_t * archiveSize, char ** failedFile)
 {
-    int rc = rpmfiAttachArchive(fi, cfd, O_WRONLY);
+    int rc = 0;
+    rpmfi archive = rpmfiNewArchiveWriter(cfd, rpmfiFiles(fi));
 
-    rpmfiInit(fi, 0);
-    while (!rc && rpmfiNext(fi) >= 0) {
-	if (rpmfiFFlags(fi) & RPMFILE_GHOST) /* XXX Don't if %ghost file. */
-	    continue;
-
-	if (S_ISREG(rpmfiFMode(fi)) && rpmfiFNlink(fi) > 1)
-            continue;
-
+    while (!rc && (rc = rpmfiNext(archive)) >= 0) {
         /* Copy file into archive. */
-        rc = writeFile(fi, dpaths, 1, failedFile);
+        rc = writeFile(archive, dpaths, failedFile);
     }
 
-    /* Flush partial sets of hard linked files. */
-    if (!rc)
-	rc = writeLinks(fi, dpaths, failedFile);
+    if (rc == CPIOERR_HDR_TRAILER)
+	rc = 0;
 
     if (archiveSize)
-	*archiveSize = (rc == 0) ? rpmfiArchiveTell(fi) : 0;
+	*archiveSize = (rc == 0) ? rpmfiArchiveTell(archive) : 0;
 
     /* Finish the payload stream */
     if (!rc)
-	rc = rpmfiArchiveClose(fi);
+	rc = rpmfiArchiveClose(archive);
+
+    rpmfiFree(archive);
 
     return rc;
 }
