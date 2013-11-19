@@ -908,13 +908,9 @@ static int seenHardLink(FileRecords files, FileListRec flp, rpm_ino_t *fileid)
  */
 static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 {
-    int _addDotSlash = !(isSrc || rpmExpandNumeric("%{_noPayloadPrefix}"));
-    size_t apathlen = 0;
-    size_t dpathlen = 0;
-    size_t skipLen = 0;
     FileListRec flp;
     char buf[BUFSIZ];
-    int i;
+    int i, npaths = 0;
     uint32_t defaultalgo = PGPHASHALGO_MD5, digestalgo;
     rpm_loff_t totalFileSize = 0;
     Header h = pkg->header; /* just a shortcut */
@@ -940,11 +936,9 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
     qsort(fl->files.recs, fl->files.used,
 	  sizeof(*(fl->files.recs)), compareFileListRecs);
     
-    /* Generate the header. */
-    if (! isSrc) {
-	skipLen = 1;
-    }
+    pkg->dpaths = xmalloc((fl->files.used + 1) * sizeof(*pkg->dpaths));
 
+    /* Generate the header. */
     for (i = 0, flp = fl->files.recs; i < fl->files.used; i++, flp++) {
 	rpm_ino_t fileid = flp - fl->files.recs;
 
@@ -1002,19 +996,10 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	/* Skip files that were marked with %exclude. */
 	if (flp->flags & RPMFILE_EXCLUDE) continue;
 
-	/* Omit '/' and/or URL prefix, leave room for "./" prefix */
-	apathlen += (strlen(flp->cpioPath) - skipLen + (_addDotSlash ? 3 : 1));
+	/* Collect on-disk paths for archive creation */
+	pkg->dpaths[npaths++] = xstrdup(flp->diskPath);
 
-	/* Leave room for both dirname and basename NUL's */
-	dpathlen += (strlen(flp->diskPath) + 2);
-
-	/*
-	 * Make the header. Store the on-disk path to OLDFILENAMES for
-	 * cpio list generation purposes for now, final path temporarily
-	 * to ORIGFILENAMES, to be swapped later into OLDFILENAMES.
-	 */
-	headerPutString(h, RPMTAG_OLDFILENAMES, flp->diskPath);
-	headerPutString(h, RPMTAG_ORIGFILENAMES, flp->cpioPath);
+	headerPutString(h, RPMTAG_OLDFILENAMES, flp->cpioPath);
 	headerPutString(h, RPMTAG_FILEUSERNAME,
 			rpmstrPoolStr(fl->pool, flp->uname));
 	headerPutString(h, RPMTAG_FILEGROUPNAME,
@@ -1115,6 +1100,7 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 
 	headerPutUint32(h, RPMTAG_FILEFLAGS, &(flp->flags) ,1);
     }
+    pkg->dpaths[npaths] = NULL;
 
     if (totalFileSize < UINT32_MAX) {
 	rpm_off_t totalsize = totalFileSize;
@@ -1133,60 +1119,21 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
     }
 
-    if (_addDotSlash)
-	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
-
-  {
-    struct rpmtd_s filenames;
-    rpmfiFlags flags = RPMFI_NOHEADER|RPMFI_NOFILEUSER|RPMFI_NOFILEGROUP;
-    rpmfi fi;
-    int fc;
-    const char *fn;
-    char *a, **apath;
+    (void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
 
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
-    fi = rpmfiNew(NULL, h, RPMTAG_BASENAMES, flags);
+    pkg->cpioList = rpmfiNew(NULL, h, RPMTAG_BASENAMES,
+			    (RPMFI_NOFILEUSER|RPMFI_NOFILEGROUP));
 
-    if (fi == NULL) {
+    if (pkg->cpioList == NULL || rpmfiFC(pkg->cpioList) != npaths) {
 	fl->processingFailed = 1;
-	return;
     }
 
-    /* 
-     * Grab the real filenames from ORIGFILENAMES and put into OLDFILENAMES,
-     * remove temporary cruft and side-effects from filelist compression 
-     * for rpmfiNew().
-     */
-    headerGet(h, RPMTAG_ORIGFILENAMES, &filenames, HEADERGET_ALLOC);
-    headerDel(h, RPMTAG_ORIGFILENAMES);
-    headerDel(h, RPMTAG_BASENAMES);
-    headerDel(h, RPMTAG_DIRNAMES);
-    headerDel(h, RPMTAG_DIRINDEXES);
-    rpmtdSetTag(&filenames, RPMTAG_OLDFILENAMES);
-    headerPut(h, &filenames, HEADERPUT_DEFAULT);
-
-    /* Create hge-style archive path array, normally adding "./" */
-    fc = rpmtdCount(&filenames);
-    apath = xmalloc(fc * sizeof(*apath) + apathlen + 1);
-    a = (char *)(apath + fc);
-    *a = '\0';
-    rpmtdInit(&filenames);
-    for (int i = 0; (fn = rpmtdNextString(&filenames)); i++) {
-	apath[i] = a;
-	if (_addDotSlash)
-	    a = stpcpy(a, "./");
-	a = stpcpy(a, (fn + skipLen));
-	a++;		/* skip apath NUL */
-    }
-    rpmfiSetApath(fi, apath);
-    pkg->cpioList = fi;
-    rpmtdFreeData(&filenames);
-  }
-
-    /* Compress filelist unless legacy format requested */
-    if (!(fl->pkgFlags & RPMBUILD_PKG_NODIRTOKENS)) {
-	headerConvert(h, HEADERCONV_COMPRESSFILELIST);
+    if (fl->pkgFlags & RPMBUILD_PKG_NODIRTOKENS) {
+	/* Uncompress filelist if legacy format requested */
+	headerConvert(h, HEADERCONV_EXPANDFILELIST);
+    } else {
 	/* Binary packages with dirNames cannot be installed by legacy rpm. */
 	(void) rpmlibNeedsFeature(pkg, "CompressedFileNames", "3.0.4-1");
     }

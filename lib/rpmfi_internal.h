@@ -196,9 +196,6 @@ int rpmfilesDigestAlgo(rpmfiles fi);
 
 rpm_color_t rpmfilesColor(rpmfiles files);
 
-/* Temporary ugly kludge to eliminate direct struct rpmfi access... */
-void rpmfiSetApath(rpmfi fi, char **apath);
-
 /** \ingroup payload
  * Add payload archive to the file info
  * @param fi		file info

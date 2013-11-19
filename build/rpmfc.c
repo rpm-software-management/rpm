@@ -1178,6 +1178,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
     /* Create file manifest buffer to deliver to dependency finder. */
     fi = rpmfiInit(fi, 0);
     while (rpmfiNext(fi) >= 0)
+	appendStringBuf(sb_stdin, spec->buildRoot);
 	appendLineStringBuf(sb_stdin, rpmfiFN(fi));
 
     for (DepMsg_t dm = DepMsgs; dm->msg != NULL; dm++) {
@@ -1268,7 +1269,7 @@ rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 	/* Does package have any %config files? */
 	genConfigDeps |= (rpmfiFFlags(fi) & RPMFILE_CONFIG);
 
-	av[idx] = xstrdup(rpmfiFN(fi));
+	av[idx] = rstrscat(NULL, spec->buildRoot, rpmfiFN(fi), NULL);
 	fmode[idx] = rpmfiFMode(fi);
     }
     av[ac] = NULL;

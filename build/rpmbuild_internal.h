@@ -99,6 +99,7 @@ struct Package_s {
     rpmds order;
     rpmfi cpioList;
     rpm_loff_t  cpioArchiveSize;
+    ARGV_t dpaths;
 
     struct Source * icon;
 

@@ -103,6 +103,7 @@ Package newPackage(const char *name, rpmstrPool pool, Package *pkglist)
     p->fileFile = NULL;
     p->policyList = NULL;
     p->pool = rpmstrPoolLink(pool);
+    p->dpaths = NULL;
 
     if (name)
 	p->name = rpmstrPoolId(p->pool, name, 1);
@@ -145,6 +146,7 @@ static Package freePackage(Package pkg)
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
     pkg->cpioList = rpmfiFree(pkg->cpioList);
+    pkg->dpaths = argvFree(pkg->dpaths);
 
     pkg->icon = freeSources(pkg->icon);
     pkg->triggerFiles = freeTriggerFiles(pkg->triggerFiles);

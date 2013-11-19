@@ -50,7 +50,6 @@ struct rpmfi_s {
 
     rpmfiles files;		/*!< File info set */
     rpmcpio_t archive;		/*!< Archive with payload */
-    char ** apath;
     int nrefs;			/*!< Reference count */
 };
 
@@ -1136,7 +1135,6 @@ rpmfi rpmfiFree(rpmfi fi)
     fi->files = rpmfilesFree(fi->files);
     fi->fn = _free(fi->fn);
     fi->ofn = _free(fi->ofn);
-    fi->apath = _free(fi->apath);
 
     free(fi);
     return NULL;
@@ -1525,15 +1523,6 @@ void rpmfilesFpLookup(rpmfiles fi, fingerPrintCache fpc)
     }
 }
 
-void rpmfiSetApath(rpmfi fi, char **apath)
-{
-    if (fi != NULL) {
-	fi->apath = _free(fi->apath);
-	if (apath) 
-	    fi->apath = apath;
-    }
-}
-
 /* 
  * Generate iterator accessors function wrappers, these do nothing but
  * call the corresponding rpmfiFooIndex(fi, fi->[ij])
@@ -1706,15 +1695,11 @@ int rpmfiArchiveWriteHeader(rpmfi fi)
 	st.st_gid = gid;
 	st.st_size = fsize;
 
-	if (fi->apath) {
-	    rc = rpmcpioHeaderWrite(fi->archive, fi->apath[rpmfiFX(fi)], &st);
-	} else {
-	    const char * dn = rpmfiDN(fi);
-	    char * path = rstrscat(NULL, (dn[0] == '/') ? "." : "",
-				   dn, rpmfiBN(fi), NULL);
-	    rc = rpmcpioHeaderWrite(fi->archive, path, &st);
-	    free(path);
-	}
+	const char * dn = rpmfiDN(fi);
+	char * path = rstrscat(NULL, (dn[0] == '/') ? "." : "",
+			       dn, rpmfiBN(fi), NULL);
+	rc = rpmcpioHeaderWrite(fi->archive, path, &st);
+	free(path);
     }
 
     return rc;

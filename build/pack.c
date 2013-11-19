@@ -32,17 +32,19 @@
  * @retval failedFile	name of failed file on error
  * @return		0 on success
  */
-static int writeFile(rpmfi fi, int writeData, char **failedFile)
+static int writeFile(rpmfi fi, ARGV_t dpaths, int writeData,
+		     char **failedFile)
 {
     FD_t rfd = NULL;
     int rc = 0;
+    const char *path = dpaths[rpmfiFX(fi)];
 
     rc = rpmfiArchiveWriteHeader(fi);
 
     if (rc) goto exit;
 
     if (writeData && S_ISREG(rpmfiFMode(fi))) {
-	rfd = Fopen(rpmfiFN(fi), "r.ufdio");
+	rfd = Fopen(path, "r.ufdio");
 	if (Ferror(rfd)) {
 	    rc = CPIOERR_OPEN_FAILED;
 	    goto exit;
@@ -61,7 +63,7 @@ static int writeFile(rpmfi fi, int writeData, char **failedFile)
 
 exit:
     if (rc && failedFile)
-	*failedFile = xstrdup(rpmfiFN(fi));
+	*failedFile = xstrdup(path);
     if (rfd) {
 	/* preserve any prior errno across close */
 	int myerrno = errno;
@@ -71,7 +73,7 @@ exit:
     return rc;
 }
 
-static int writeLinks(rpmfi fi, char **failedFile)
+static int writeLinks(rpmfi fi, ARGV_t dpaths, char **failedFile)
 {
     int rc = 0;
     rpmfi xfi = rpmfilesIter(rpmfiFiles(fi), RPMFI_ITER_FWD);
@@ -88,7 +90,7 @@ static int writeLinks(rpmfi fi, char **failedFile)
             rpmfiSetFX(fi, hardlinks[j]);
 
             /* Write data after last link. */
-            rc = writeFile(fi, (j == numHardlinks-1), failedFile);
+            rc = writeFile(fi, dpaths, (j == numHardlinks-1), failedFile);
 	    if (rc)
 		break;
         }
@@ -100,7 +102,7 @@ static int writeLinks(rpmfi fi, char **failedFile)
     return rc;
 }
 
-static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
+static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd, ARGV_t dpaths,
 				rpm_loff_t * archiveSize, char ** failedFile)
 {
     int rc = rpmfiAttachArchive(fi, cfd, O_WRONLY);
@@ -114,12 +116,12 @@ static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
             continue;
 
         /* Copy file into archive. */
-        rc = writeFile(fi, 1, failedFile);
+        rc = writeFile(fi, dpaths, 1, failedFile);
     }
 
     /* Flush partial sets of hard linked files. */
     if (!rc)
-	rc = writeLinks(fi, failedFile);
+	rc = writeLinks(fi, dpaths, failedFile);
 
     if (archiveSize)
 	*archiveSize = (rc == 0) ? rpmfiArchiveTell(fi) : 0;
@@ -145,7 +147,8 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro)
 	return RPMRC_FAIL;
 
     fsmrc = rpmPackageFilesArchive(pkg->cpioList, headerIsSource(pkg->header),
-				   cfd, &pkg->cpioArchiveSize, &failedFile);
+				   cfd, pkg->dpaths,
+				   &pkg->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {
 	char *emsg = rpmcpioStrerror(fsmrc);
