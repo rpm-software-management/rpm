@@ -498,7 +498,7 @@ char * rpmcpioStrerror(int rc)
     case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
     case CPIOERR_FILE_SIZE:	s = _("File too large for archive");	break;
     case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
-    case CPIOERR_MISSING_HARDLINK: s = _("Missing hard link(s)"); break;
+    case CPIOERR_MISSING_FILE: s = _("Missing file(s)"); break;
     case CPIOERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
     case CPIOERR_INTERNAL:	s = _("Internal error");	break;
     case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
@@ -508,8 +508,9 @@ char * rpmcpioStrerror(int rc)
 
     if (s != NULL) {
 	rasprintf(&msg, "%s: %s", prefix, s);
-	if ((rc & CPIOERR_CHECK_ERRNO) && myerrno)
+	if (myerrno <= CPIOERR_CHECK_ERRNO) {
 	    rstrscat(&msg, _(" failed - "), strerror(myerrno), NULL);
+	}
     } else {
 	rasprintf(&msg, _("%s: (error 0x%x)"), prefix, rc);
     }

@@ -1345,7 +1345,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     if (!rc) {
         for (int i=0; i<fc; i++) {
 	    if (!found[i] && !(rpmfilesFFlags(files, i) & RPMFILE_GHOST))
-		rc = CPIOERR_MISSING_HARDLINK; // XXX other error code
+		rc = CPIOERR_MISSING_FILE;
 	}
     }
     /* No need to bother with close errors on read */
