@@ -29,9 +29,10 @@
  * Write next item to payload stream.
  * @param fi		file info
  * @param writeData	should data be written?
+ * @retval failedFile	name of failed file on error
  * @return		0 on success
  */
-static int writeFile(rpmfi fi, int writeData)
+static int writeFile(rpmfi fi, int writeData, char **failedFile)
 {
     FD_t rfd = NULL;
     int rc = 0;
@@ -59,6 +60,8 @@ static int writeFile(rpmfi fi, int writeData)
     }
 
 exit:
+    if (rc && failedFile)
+	*failedFile = xstrdup(rpmfiFN(fi));
     if (rfd) {
 	/* preserve any prior errno across close */
 	int myerrno = errno;
@@ -85,11 +88,9 @@ static int writeLinks(rpmfi fi, char **failedFile)
             rpmfiSetFX(fi, hardlinks[j]);
 
             /* Write data after last link. */
-            rc = writeFile(fi, (j == numHardlinks-1));
-            if (rc && failedFile) {
-                *failedFile = xstrdup(rpmfiFN(fi));
+            rc = writeFile(fi, (j == numHardlinks-1), failedFile);
+	    if (rc)
 		break;
-            }
         }
         /* Exit on error. */
         if (rc)
@@ -113,10 +114,7 @@ static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd,
             continue;
 
         /* Copy file into archive. */
-        rc = writeFile(fi, 1);
-
-        if (rc && failedFile)
-	    *failedFile = xstrdup(rpmfiFN(fi));
+        rc = writeFile(fi, 1, failedFile);
     }
 
     /* Flush partial sets of hard linked files. */
