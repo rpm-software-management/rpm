@@ -1709,7 +1709,9 @@ int rpmfiArchiveWriteHeader(rpmfi fi)
 	if (fi->apath) {
 	    rc = rpmcpioHeaderWrite(fi->archive, fi->apath[rpmfiFX(fi)], &st);
 	} else {
-	    char * path = rstrscat(NULL, ".", rpmfiDN(fi), rpmfiBN(fi), NULL);
+	    const char * dn = rpmfiDN(fi);
+	    char * path = rstrscat(NULL, (dn[0] == '/') ? "." : "",
+				   dn, rpmfiBN(fi), NULL);
 	    rc = rpmcpioHeaderWrite(fi->archive, path, &st);
 	    free(path);
 	}
