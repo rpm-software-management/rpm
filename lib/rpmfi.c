@@ -757,18 +757,20 @@ static int iterBack(rpmfi fi)
 
 int rpmfiNext(rpmfi fi)
 {
-    int i = -1;
+    int next = -1;
     if (fi != NULL) {
-	int next = fi->next(fi);
+	next = fi->next(fi);
 	if (next >= 0 && next < rpmfilesFC(fi->files)) {
 	    fi->i = next;
 	    fi->j = rpmfilesDI(fi->files, fi->i);
 	} else {
 	    fi->i = -1;
+	    if (next >= 0) {
+		next = -1;
+	    }
 	}
-	i = fi->i;
     }
-    return i;
+    return next;
 }
 
 rpmfi rpmfiInit(rpmfi fi, int fx)
