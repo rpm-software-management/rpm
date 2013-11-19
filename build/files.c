@@ -1119,7 +1119,8 @@ static void genCpioListAndHeader(FileList fl, Package pkg, int isSrc)
 	rpmlibNeedsFeature(pkg, "FileCaps", "4.6.1-1");
     }
 
-    (void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
+    if (!isSrc)
+	(void) rpmlibNeedsFeature(pkg, "PayloadFilesHavePrefix", "4.0-1");
 
     /* rpmfiNew() only groks compressed filelists */
     headerConvert(h, HEADERCONV_COMPRESSFILELIST);
