@@ -38,22 +38,12 @@ static int writeFile(rpmfi fi, ARGV_t dpaths,
     int rc = 0;
     const char *path = dpaths[rpmfiFX(fi)];
 
-    if (S_ISREG(rpmfiFMode(fi))) {
-	rfd = Fopen(path, "r.ufdio");
-	if (Ferror(rfd)) {
-	    rc = CPIOERR_OPEN_FAILED;
-	    goto exit;
-	}
-	rc = rpmfiArchiveWriteFile(fi, rfd);
-
-    } else if (S_ISLNK(rpmfiFMode(fi))) {
-	const char *lnk = rpmfiFLink(fi);
-	size_t len = strlen(lnk);
-        if (rpmfiArchiveWrite(fi, lnk, len) != len) {
-            rc = CPIOERR_WRITE_FAILED;
-            goto exit;
-        }
+    rfd = Fopen(path, "r.ufdio");
+    if (Ferror(rfd)) {
+	rc = CPIOERR_OPEN_FAILED;
+	goto exit;
     }
+    rc = rpmfiArchiveWriteFile(fi, rfd);
 
 exit:
     if (rc && failedFile)

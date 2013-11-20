@@ -1676,7 +1676,6 @@ rpm_loff_t rpmfiArchiveTell(rpmfi fi)
     return (rpm_loff_t) rpmcpioTell(fi->archive);
 }
 
-
 static int rpmfiArchiveWriteHeader(rpmfi fi)
 {
     int rc;
@@ -1739,7 +1738,7 @@ static int rpmfiArchiveWriteHeader(rpmfi fi)
     return rc;
 }
 
-static int iterWriteArchiveNext(rpmfi fi)
+static int iterWriteArchiveNextFile(rpmfi fi)
 {
     rpmfiles files = rpmfiFiles(fi);
     int fx = rpmfiFX(fi);
@@ -1806,6 +1805,28 @@ static int iterWriteArchiveNext(rpmfi fi)
 	}
     }
     return rpmfiFX(fi);
+}
+
+static int iterWriteArchiveNext(rpmfi fi)
+{
+    int fx;
+    /* loop over the files we can handle ourself */
+    do {
+	fx = iterWriteArchiveNextFile(fi);
+	if (S_ISLNK(rpmfiFMode(fi))) {
+	    /* write symlink target */
+	    const char *lnk = rpmfiFLink(fi);
+	    size_t len = strlen(lnk);
+	    if (rpmfiArchiveWrite(fi, lnk, len) != len) {
+		return CPIOERR_WRITE_FAILED;
+	    }
+	} else if (S_ISREG(rpmfiFMode(fi)) && rpmfiFSize(fi)) {
+	    /* this file actually needs some content */
+	    return fx;
+	}
+	/* go on for special files, directories and empty files */
+    } while (fx >= 0);
+    return fx;
 }
 
 size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size)
