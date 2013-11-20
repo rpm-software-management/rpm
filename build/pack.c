@@ -25,38 +25,6 @@
 
 #include "debug.h"
 
-/** \ingroup payload
- * Write next item to payload stream.
- * @param fi		file info
- * @retval failedFile	name of failed file on error
- * @return		0 on success
- */
-static int writeFile(rpmfi fi, ARGV_t dpaths,
-		     char **failedFile)
-{
-    FD_t rfd = NULL;
-    int rc = 0;
-    const char *path = dpaths[rpmfiFX(fi)];
-
-    rfd = Fopen(path, "r.ufdio");
-    if (Ferror(rfd)) {
-	rc = CPIOERR_OPEN_FAILED;
-	goto exit;
-    }
-    rc = rpmfiArchiveWriteFile(fi, rfd);
-
-exit:
-    if (rc && failedFile)
-	*failedFile = xstrdup(path);
-    if (rfd) {
-	/* preserve any prior errno across close */
-	int myerrno = errno;
-	Fclose(rfd);
-	errno = myerrno;
-    }
-    return rc;
-}
-
 static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd, ARGV_t dpaths,
 				rpm_loff_t * archiveSize, char ** failedFile)
 {
@@ -65,7 +33,24 @@ static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd, ARGV_t dpaths,
 
     while (!rc && (rc = rpmfiNext(archive)) >= 0) {
         /* Copy file into archive. */
-        rc = writeFile(archive, dpaths, failedFile);
+	FD_t rfd = NULL;
+	const char *path = dpaths[rpmfiFX(archive)];
+
+	rfd = Fopen(path, "r.ufdio");
+	if (Ferror(rfd)) {
+	    rc = CPIOERR_OPEN_FAILED;
+	} else {
+	    rc = rpmfiArchiveWriteFile(archive, rfd);
+	}
+
+	if (rc && failedFile)
+	    *failedFile = xstrdup(path);
+	if (rfd) {
+	    /* preserve any prior errno across close */
+	    int myerrno = errno;
+	    Fclose(rfd);
+	    errno = myerrno;
+	}
     }
 
     if (rc == CPIOERR_HDR_TRAILER)
