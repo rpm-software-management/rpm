@@ -32,8 +32,6 @@ struct rpmds_s {
     int32_t Count;		/*!< No. of elements */
     unsigned int instance;	/*!< From rpmdb instance? */
     int i;			/*!< Element index. */
-    unsigned l;			/*!< Low element (bsearch). */
-    unsigned u;			/*!< High element (bsearch). */
     int nopromote;		/*!< Don't promote Epoch: in rpmdsCompare()? */
     int nrefs;			/*!< Reference count. */
 };
@@ -525,8 +523,6 @@ static rpmds rpmdsDup(const rpmds ods)
     size_t nb;
     
     ds->i = ods->i;
-    ds->l = ods->l;
-    ds->u = ods->u;
     ds->nopromote = ods->nopromote;
 
     nb = ds->Count * sizeof(*ds->N);
@@ -547,7 +543,7 @@ static rpmds rpmdsDup(const rpmds ods)
 
 }
 
-int rpmdsFind(rpmds ds, const rpmds ods)
+static int doFind(rpmds ds, const rpmds ods, unsigned int *he)
 {
     int comparison;
     const char *N, *ON = rpmdsN(ods);
@@ -584,10 +580,14 @@ int rpmdsFind(rpmds ds, const rpmds ods)
 	    break;
 	}
     }
-    /* rpmdsMerge() relies on ds->u on return */
-    ds->l = l;
-    ds->u = u;
+    if (he)
+	*he = u;
     return rc;
+}
+
+int rpmdsFind(rpmds ds, const rpmds ods)
+{
+    return doFind(ds, ods, NULL);
 }
 
 int rpmdsMerge(rpmds * dsp, rpmds ods)
@@ -629,13 +629,12 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	/*
 	 * If this entry is already present, don't bother.
 	 */
-	if (rpmdsFind(ds, ods) >= 0)
+	if (doFind(ds, ods, &u) >= 0)
 	    continue;
 
 	/*
 	 * Insert new entry. Ensure pool is unfrozen to allow additions.
 	 */
-	u = ds->u;
 	rpmstrPoolUnfreeze(ds->pool);
 	ds->N = xrealloc(ds->N, (ds->Count+1) * sizeof(*ds->N));
 	if (u < ds->Count) {
