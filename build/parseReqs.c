@@ -39,7 +39,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	       int index, rpmsenseFlags tagflags)
 {
     const char *r, *re, *v, *ve;
-    const char *emsg = NULL;
+    char *emsg = NULL;
     char * N = NULL, * EVR = NULL;
     rpmTagVal nametag = RPMTAG_NOT_FOUND;
     rpmsenseFlags Flags;
@@ -106,7 +106,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	 * the spec's encoding so we only check what we can: plain ascii.
 	 */
 	if (isascii(r[0]) && !(risalnum(r[0]) || r[0] == '_' || r[0] == '/')) {
-	    emsg = _("Dependency tokens must begin with alpha-numeric, '_' or '/'");
+	    rasprintf(&emsg, _("Dependency tokens must begin with alpha-numeric, '_' or '/'"));
 	    goto exit;
 	}
 
@@ -131,7 +131,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 		continue;
 
 	    if (r[0] == '/') {
-		emsg = _("Versioned file name not permitted");
+		rasprintf(&emsg, _("Versioned file name not permitted"));
 		goto exit;
 	    }
 
@@ -148,7 +148,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 
 	if (Flags & RPMSENSE_SENSEMASK) {
 	    if (*v == '\0' || ve == v) {
-		emsg = _("Version required");
+		rasprintf(&emsg, _("Version required"));
 		goto exit;
 	    }
 	    EVR = xmalloc((ve-v) + 1);
@@ -159,7 +159,7 @@ rpmRC parseRCPOT(rpmSpec spec, Package pkg, const char *field, rpmTagVal tagN,
 	    EVR = NULL;
 
 	if (addReqProv(pkg, nametag, N, EVR, Flags, index)) {
-	    emsg = _("invalid dependency");
+	    rasprintf(&emsg, _("invalid dependency"));
 	    goto exit;
 	}
 
@@ -178,6 +178,7 @@ exit:
 	    rpmlog(RPMLOG_ERR, _("line %d: %s: %s\n"),
 		   spec->lineNum, emsg, spec->line);
 	}
+	free(emsg);
     }
     free(N);
     free(EVR);
