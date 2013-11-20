@@ -558,10 +558,10 @@ int rpmdsFind(rpmds ds, const rpmds ods)
     if (ds == NULL || ods == NULL)
 	return -1;
 
-    ds->l = 0;
-    ds->u = ds->Count;
-    while (ds->l < ds->u) {
-	ds->i = (ds->l + ds->u) / 2;
+    unsigned int l = 0;
+    unsigned int u = ds->Count;
+    while (l < u) {
+	ds->i = (l + u) / 2;
 
 	N = rpmdsN(ds);
 	EVR = rpmdsEVR(ds);
@@ -576,14 +576,17 @@ int rpmdsFind(rpmds ds, const rpmds ods)
 	    comparison = OFlags - Flags;
 
 	if (comparison < 0)
-	    ds->u = ds->i;
+	    u = ds->i;
 	else if (comparison > 0)
-	    ds->l = ds->i + 1;
+	    l = ds->i + 1;
 	else {
 	    rc = ds->i;
 	    break;
 	}
     }
+    /* rpmdsMerge() relies on ds->u on return */
+    ds->l = l;
+    ds->u = u;
     return rc;
 }
 
@@ -622,6 +625,7 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
     ods = rpmdsInit(ods);
     while (rpmdsNext(ods) >= 0) {
 	const char *OEVR;
+	unsigned int u;
 	/*
 	 * If this entry is already present, don't bother.
 	 */
@@ -631,28 +635,29 @@ int rpmdsMerge(rpmds * dsp, rpmds ods)
 	/*
 	 * Insert new entry. Ensure pool is unfrozen to allow additions.
 	 */
+	u = ds->u;
 	rpmstrPoolUnfreeze(ds->pool);
 	ds->N = xrealloc(ds->N, (ds->Count+1) * sizeof(*ds->N));
-	if (ds->u < ds->Count) {
-	    memmove(ds->N + ds->u + 1, ds->N + ds->u,
-		    (ds->Count - ds->u) * sizeof(*ds->N));
+	if (u < ds->Count) {
+	    memmove(ds->N + u + 1, ds->N + u,
+		    (ds->Count - u) * sizeof(*ds->N));
 	}
-	ds->N[ds->u] = rpmstrPoolId(ds->pool, rpmdsN(ods), 1);
+	ds->N[u] = rpmstrPoolId(ds->pool, rpmdsN(ods), 1);
 
 	ds->EVR = xrealloc(ds->EVR, (ds->Count+1) * sizeof(*ds->EVR));
-	if (ds->u < ds->Count) {
-	    memmove(ds->EVR + ds->u + 1, ds->EVR + ds->u,
-		    (ds->Count - ds->u) * sizeof(*ds->EVR));
+	if (u < ds->Count) {
+	    memmove(ds->EVR + u + 1, ds->EVR + u,
+		    (ds->Count - u) * sizeof(*ds->EVR));
 	}
 	OEVR = rpmdsEVR(ods);
-	ds->EVR[ds->u] = rpmstrPoolId(ds->pool, OEVR ? OEVR : "", 1);
+	ds->EVR[u] = rpmstrPoolId(ds->pool, OEVR ? OEVR : "", 1);
 
 	ds->Flags = xrealloc(ds->Flags, (ds->Count+1) * sizeof(*ds->Flags));
-	if (ds->u < ds->Count) {
-	    memmove(ds->Flags + ds->u + 1, ds->Flags + ds->u,
-		    (ds->Count - ds->u) * sizeof(*ds->Flags));
+	if (u < ds->Count) {
+	    memmove(ds->Flags + u + 1, ds->Flags + u,
+		    (ds->Count - u) * sizeof(*ds->Flags));
 	}
-	ds->Flags[ds->u] = rpmdsFlags(ods);
+	ds->Flags[u] = rpmdsFlags(ods);
 
 	ds->i = ds->Count;
 	ds->Count++;
