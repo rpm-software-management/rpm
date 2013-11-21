@@ -268,7 +268,7 @@ size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
  * @param nodigest	ommit checksum check if > 0
  * @return		> 0 on error
  */
-int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, char nodigest);
+int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest);
 
 #ifdef __cplusplus
 }

@@ -1799,7 +1799,7 @@ size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size)
     return rpmcpioRead(fi->archive, buf, size);
 }
 
-int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, char nodigest)
+int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 {
     if (fi == NULL || fi->archive == NULL || fd == NULL)
 	return -1;
