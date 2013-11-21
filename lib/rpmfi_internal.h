@@ -265,7 +265,7 @@ size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
  * Write content from current file in archive to a file
  * @param fi		file info
  * @param fd		file descriptor of file to write to
- * @param nodigest	ommit checksum check if > 0
+ * @param nodigest	omit checksum check if 1
  * @return		> 0 on error
  */
 int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest);

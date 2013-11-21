@@ -1198,7 +1198,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
     int rc = 0;
-    int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST);
+    int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
     int fc = rpmfiFC(fi);
     const int * hardlinks;
     int numHardlinks;
