@@ -97,7 +97,7 @@ struct Package_s {
     rpmds obsoletes;
     rpmds triggers;
     rpmds order;
-    rpmfi cpioList;
+    rpmfiles cpioList;
     rpm_loff_t  cpioArchiveSize;
     ARGV_t dpaths;
 

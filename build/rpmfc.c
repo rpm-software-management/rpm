@@ -16,6 +16,7 @@
 #include <rpm/rpmfi.h>
 #include <rpm/rpmstrpool.h>
 
+#include "lib/rpmfi_internal.h"		/* rpmfiles stuff for now */
 #include "build/rpmbuild_internal.h"
 
 #include "debug.h"
@@ -1235,7 +1236,7 @@ static rpmRC rpmfcGenerateDependsHelper(const rpmSpec spec, Package pkg, rpmfi f
 
 rpmRC rpmfcGenerateDepends(const rpmSpec spec, Package pkg)
 {
-    rpmfi fi = pkg->cpioList;
+    rpmfi fi = rpmfilesIter(pkg->cpioList, RPMFI_ITER_FWD);
     rpmfc fc = NULL;
     ARGV_t av = NULL;
     rpm_mode_t * fmode = NULL;
@@ -1392,6 +1393,7 @@ exit:
     free(fmode);
     rpmfcFree(fc);
     argvFree(av);
+    rpmfiFree(fi);
 
     return rc;
 }

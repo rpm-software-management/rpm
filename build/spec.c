@@ -13,6 +13,7 @@
 #include <rpm/rpmfileutil.h>
 
 #include "rpmio/rpmlua.h"
+#include "lib/rpmfi_internal.h"		/* rpmfiles stuff */
 #include "build/rpmbuild_internal.h"
 
 #include "debug.h"
@@ -145,7 +146,7 @@ static Package freePackage(Package pkg)
     pkg->fileList = argvFree(pkg->fileList);
     pkg->fileFile = argvFree(pkg->fileFile);
     pkg->policyList = argvFree(pkg->policyList);
-    pkg->cpioList = rpmfiFree(pkg->cpioList);
+    pkg->cpioList = rpmfilesFree(pkg->cpioList);
     pkg->dpaths = argvFree(pkg->dpaths);
 
     pkg->icon = freeSources(pkg->icon);

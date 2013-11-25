@@ -25,11 +25,12 @@
 
 #include "debug.h"
 
-static int rpmPackageFilesArchive(rpmfi fi, int isSrc, FD_t cfd, ARGV_t dpaths,
-				rpm_loff_t * archiveSize, char ** failedFile)
+static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
+				  FD_t cfd, ARGV_t dpaths,
+				  rpm_loff_t * archiveSize, char ** failedFile)
 {
     int rc = 0;
-    rpmfi archive = rpmfiNewArchiveWriter(cfd, rpmfiFiles(fi));
+    rpmfi archive = rpmfiNewArchiveWriter(cfd, fi);
 
     while (!rc && (rc = rpmfiNext(archive)) >= 0) {
         /* Copy file into archive. */
