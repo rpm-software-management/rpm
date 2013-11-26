@@ -11,6 +11,7 @@
 #include <rpm/rpmstring.h>
 #include <rpm/rpmmacro.h>	/* XXX rpmCleanPath */
 #include <rpm/rpmds.h>
+#include <errno.h>
 
 #include "lib/rpmfi_internal.h"
 #include "lib/rpmte_internal.h"	/* relocations */
@@ -1970,4 +1971,61 @@ int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 
 exit:
     return rc;
+}
+
+char * rpmfileStrerror(int rc)
+{
+    char *msg = NULL;
+    const char *s = NULL;
+    const char *prefix = "cpio";
+    int myerrno = errno;
+
+    switch (rc) {
+    default:
+	break;
+    case RPMERR_BAD_MAGIC:	s = _("Bad magic");		break;
+    case RPMERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
+
+    case RPMERR_OPEN_FAILED:	s = "open";	break;
+    case RPMERR_CHMOD_FAILED:	s = "chmod";	break;
+    case RPMERR_CHOWN_FAILED:	s = "chown";	break;
+    case RPMERR_WRITE_FAILED:	s = "write";	break;
+    case RPMERR_UTIME_FAILED:	s = "utime";	break;
+    case RPMERR_UNLINK_FAILED:	s = "unlink";	break;
+    case RPMERR_RENAME_FAILED:	s = "rename";	break;
+    case RPMERR_SYMLINK_FAILED: s = "symlink";	break;
+    case RPMERR_STAT_FAILED:	s = "stat";	break;
+    case RPMERR_LSTAT_FAILED:	s = "lstat";	break;
+    case RPMERR_MKDIR_FAILED:	s = "mkdir";	break;
+    case RPMERR_RMDIR_FAILED:	s = "rmdir";	break;
+    case RPMERR_MKNOD_FAILED:	s = "mknod";	break;
+    case RPMERR_MKFIFO_FAILED:	s = "mkfifo";	break;
+    case RPMERR_LINK_FAILED:	s = "link";	break;
+    case RPMERR_READLINK_FAILED: s = "readlink";	break;
+    case RPMERR_READ_FAILED:	s = "read";	break;
+    case RPMERR_COPY_FAILED:	s = "copy";	break;
+    case RPMERR_LSETFCON_FAILED: s = "lsetfilecon";	break;
+    case RPMERR_SETCAP_FAILED: s = "cap_set_file";	break;
+
+    case RPMERR_HDR_SIZE:	s = _("Header size too big");	break;
+    case RPMERR_FILE_SIZE:	s = _("File too large for archive");	break;
+    case RPMERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
+    case RPMERR_MISSING_FILE: s = _("Missing file(s)"); break;
+    case RPMERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
+    case RPMERR_INTERNAL:	s = _("Internal error");	break;
+    case RPMERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
+    case RPMERR_ENOENT:	s = strerror(ENOENT); break;
+    case RPMERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
+    }
+
+    if (s != NULL) {
+	rasprintf(&msg, "%s: %s", prefix, s);
+	if (myerrno <= RPMERR_CHECK_ERRNO) {
+	    rstrscat(&msg, _(" failed - "), strerror(myerrno), NULL);
+	}
+    } else {
+	rasprintf(&msg, _("%s: (error 0x%x)"), prefix, rc);
+    }
+
+    return msg;
 }

@@ -71,14 +71,6 @@ void rpmcpioSetExpectedFileSize(rpmcpio_t cpio, off_t fsize);
 
 ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size);
 
-/** \ingroup payload
- * Return formatted error message on payload handling failure.
- * @param rc		error code
- * @return		formatted error string (malloced)
- */
-/* XXX should be RPM_GNUC_INTERNAL too but build/pack.c uses */
-char * rpmcpioStrerror(int rc);
-
 #ifdef __cplusplus
 }
 #endif

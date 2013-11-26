@@ -46,4 +46,19 @@ enum rpmfilesErrorCodes {
 	RPMERR_SETCAP_FAILED	= -32787,
 };
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/** \ingroup payload
+ * Return formatted error message on payload handling failure.
+ * @param rc		error code
+ * @return		formatted error string (malloced)
+ */
+char * rpmfileStrerror(int rc);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif	/* H_ARCHIVE */

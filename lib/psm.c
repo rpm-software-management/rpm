@@ -17,7 +17,6 @@
 #include <rpm/rpmstring.h>
 #include <rpm/argv.h>
 
-#include "lib/cpio.h"
 #include "lib/fsm.h"		/* XXX CPIO_FOO/FSM_FOO constants */
 #include "lib/rpmchroot.h"
 #include "lib/rpmfi_internal.h" /* XXX replaced/states... */
@@ -729,7 +728,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	    if (fsmrc) {
 		char *emsg;
 		errno = saved_errno;
-		emsg = rpmcpioStrerror(fsmrc);
+		emsg = rpmfileStrerror(fsmrc);
 		rpmlog(RPMLOG_ERR,
 			_("unpacking of archive failed%s%s: %s\n"),
 			(psm->failedFile != NULL ? _(" on file ") : ""),
@@ -835,7 +834,7 @@ static rpmRC rpmpsmStage(rpmpsm psm, pkgStage stage)
 	break;
     case PSM_FINI:
 	if (rc) {
-	    char *emsg = rpmcpioStrerror(rc);
+	    char *emsg = rpmfileStrerror(rc);
 	    if (psm->failedFile)
 		rpmlog(RPMLOG_ERR,
 			_("%s failed on file %s: %s\n"),

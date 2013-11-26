@@ -86,7 +86,7 @@ static rpmRC cpio_doio(FD_t fdo, Package pkg, const char * fmodeMacro)
 				   &pkg->cpioArchiveSize, &failedFile);
 
     if (fsmrc) {
-	char *emsg = rpmcpioStrerror(fsmrc);
+	char *emsg = rpmfileStrerror(fsmrc);
 	if (failedFile)
 	    rpmlog(RPMLOG_ERR, _("create archive failed on file %s: %s\n"),
 		   failedFile, emsg);
