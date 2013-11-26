@@ -131,7 +131,7 @@ static int rpmcpioWritePad(rpmcpio_t cpio, ssize_t modulo)
         return 0;
     written = Fwrite(&buf, left, 1, cpio->fd);
     if (written != left) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
     cpio->offset += written;
     return 0;
@@ -148,7 +148,7 @@ static int rpmcpioReadPad(rpmcpio_t cpio)
     read = Fread(&buf, left, 1, cpio->fd);
     cpio->offset += read;
     if (read != left) {
-        return CPIOERR_READ_FAILED;
+        return RPMERR_READ_FAILED;
     }
     return 0;
 }
@@ -157,7 +157,7 @@ static int rpmcpioReadPad(rpmcpio_t cpio)
 	\
 	log = strntoul(phys, &end, 16, sizeof(phys)); \
 	\
-	if ( (end - phys) != sizeof(phys) ) return CPIOERR_BAD_HEADER;
+	if ( (end - phys) != sizeof(phys) ) return RPMERR_BAD_HEADER;
 #define SET_NUM_FIELD(phys, val, space) \
 	sprintf(space, "%8.8lx", (unsigned long) (val)); \
 	\
@@ -170,7 +170,7 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
     size_t written;
 
     if (cpio->fileend != cpio->offset) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     rc = rpmcpioWritePad(cpio, 4);
@@ -184,18 +184,18 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
     written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
     cpio->offset += written;
     if (written != 6) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     written = Fwrite(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += written;
     if (written != PHYS_HDR_SIZE) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
     written = Fwrite(&CPIO_TRAILER, sizeof(CPIO_TRAILER), 1, cpio->fd);
     cpio->offset += written;
     if (written != sizeof(CPIO_TRAILER)) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     /*
@@ -218,15 +218,15 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
     int rc = 0;
 
     if ((cpio->mode & O_ACCMODE) != O_WRONLY) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     if (cpio->fileend != cpio->offset) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     if (st->st_size >= CPIO_FILESIZE_MAX) {
-	return CPIOERR_FILE_SIZE;
+	return RPMERR_FILE_SIZE;
     }
 
     rc = rpmcpioWritePad(cpio, 4);
@@ -255,19 +255,19 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
     written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
     cpio->offset += written;
     if (written != 6) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     written = Fwrite(hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += written;
     if (written != PHYS_HDR_SIZE) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     written = Fwrite(path, len, 1, cpio->fd);
     cpio->offset += written;
     if (written != len) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     rc = rpmcpioWritePad(cpio, 4);
@@ -286,11 +286,11 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
     int rc = 0;
 
     if ((cpio->mode & O_ACCMODE) != O_WRONLY) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     if (cpio->fileend != cpio->offset) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     rc = rpmcpioWritePad(cpio, 4);
@@ -303,13 +303,13 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
     written = Fwrite(CPIO_STRIPPED_MAGIC, 6, 1, cpio->fd);
     cpio->offset += written;
     if (written != 6) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     written = Fwrite(hdr, STRIPPED_PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += written;
     if (written != STRIPPED_PHYS_HDR_SIZE) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     rc = rpmcpioWritePad(cpio, 4);
@@ -324,7 +324,7 @@ ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size)
     size_t written, left;
 
     if ((cpio->mode & O_ACCMODE) != O_WRONLY) {
-        return CPIOERR_WRITE_FAILED;
+        return RPMERR_WRITE_FAILED;
     }
 
     // Do not write beyond file length
@@ -347,7 +347,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     rpm_loff_t fsize;
 
     if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
-        return CPIOERR_READ_FAILED;
+        return RPMERR_READ_FAILED;
     }
 
     /* Move to next file */
@@ -357,7 +357,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         while (cpio->fileend != cpio->offset) {
             read = cpio->fileend - cpio->offset > 8*BUFSIZ ? 8*BUFSIZ : cpio->fileend - cpio->offset;
             if (rpmcpioRead(cpio, &buf, read) != read) {
-                return CPIOERR_READ_FAILED;
+                return RPMERR_READ_FAILED;
             }
         }
     }
@@ -368,7 +368,7 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     read = Fread(&magic, 6, 1, cpio->fd);
     cpio->offset += read;
     if (read != 6)
-        return CPIOERR_READ_FAILED;
+        return RPMERR_READ_FAILED;
 
     /* read stripped header */
     if (!strncmp(CPIO_STRIPPED_MAGIC, magic,
@@ -377,25 +377,25 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
         read = Fread(&shdr, STRIPPED_PHYS_HDR_SIZE, 1, cpio->fd);
         cpio->offset += read;
         if (read != STRIPPED_PHYS_HDR_SIZE)
-            return CPIOERR_READ_FAILED;
+            return RPMERR_READ_FAILED;
 
         GET_NUM_FIELD(shdr.fx, *fx);
         rc = rpmcpioReadPad(cpio);
 
         if (!rc && *fx == -1)
-            rc = CPIOERR_HDR_TRAILER;
+            rc = RPMERR_ITER_END;
         return rc;
     }
 
     if (strncmp(CPIO_CRC_MAGIC, magic, sizeof(CPIO_CRC_MAGIC)-1) &&
 	strncmp(CPIO_NEWC_MAGIC, magic, sizeof(CPIO_NEWC_MAGIC)-1)) {
-	return CPIOERR_BAD_MAGIC;
+	return RPMERR_BAD_MAGIC;
     }
 
     read = Fread(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
     cpio->offset += read;
     if (read != PHYS_HDR_SIZE)
-	return CPIOERR_READ_FAILED;
+	return RPMERR_READ_FAILED;
 
     GET_NUM_FIELD(hdr.filesize, fsize);
     GET_NUM_FIELD(hdr.namesize, nameSize);
@@ -405,14 +405,14 @@ int rpmcpioHeaderRead(rpmcpio_t cpio, char ** path, int * fx)
     name[nameSize] = '\0';
     cpio->offset += read;
     if (read != nameSize ) {
-        return CPIOERR_BAD_HEADER;
+        return RPMERR_BAD_HEADER;
     }
 
     rc = rpmcpioReadPad(cpio);
     cpio->fileend = cpio->offset + fsize;
 
     if (!rc && rstreq(name, CPIO_TRAILER))
-	rc = CPIOERR_HDR_TRAILER;
+	rc = RPMERR_ITER_END;
 
     if (!rc && path)
 	*path = xstrdup(name);
@@ -430,7 +430,7 @@ ssize_t rpmcpioRead(rpmcpio_t cpio, void * buf, size_t size)
     size_t read, left;
 
     if ((cpio->mode & O_ACCMODE) != O_RDONLY) {
-        return CPIOERR_READ_FAILED;
+        return RPMERR_READ_FAILED;
     }
 
     left = cpio->fileend - cpio->offset;
@@ -471,44 +471,44 @@ char * rpmcpioStrerror(int rc)
     switch (rc) {
     default:
 	break;
-    case CPIOERR_BAD_MAGIC:	s = _("Bad magic");		break;
-    case CPIOERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
+    case RPMERR_BAD_MAGIC:	s = _("Bad magic");		break;
+    case RPMERR_BAD_HEADER:	s = _("Bad/unreadable  header");break;
 
-    case CPIOERR_OPEN_FAILED:	s = "open";	break;
-    case CPIOERR_CHMOD_FAILED:	s = "chmod";	break;
-    case CPIOERR_CHOWN_FAILED:	s = "chown";	break;
-    case CPIOERR_WRITE_FAILED:	s = "write";	break;
-    case CPIOERR_UTIME_FAILED:	s = "utime";	break;
-    case CPIOERR_UNLINK_FAILED:	s = "unlink";	break;
-    case CPIOERR_RENAME_FAILED:	s = "rename";	break;
-    case CPIOERR_SYMLINK_FAILED: s = "symlink";	break;
-    case CPIOERR_STAT_FAILED:	s = "stat";	break;
-    case CPIOERR_LSTAT_FAILED:	s = "lstat";	break;
-    case CPIOERR_MKDIR_FAILED:	s = "mkdir";	break;
-    case CPIOERR_RMDIR_FAILED:	s = "rmdir";	break;
-    case CPIOERR_MKNOD_FAILED:	s = "mknod";	break;
-    case CPIOERR_MKFIFO_FAILED:	s = "mkfifo";	break;
-    case CPIOERR_LINK_FAILED:	s = "link";	break;
-    case CPIOERR_READLINK_FAILED: s = "readlink";	break;
-    case CPIOERR_READ_FAILED:	s = "read";	break;
-    case CPIOERR_COPY_FAILED:	s = "copy";	break;
-    case CPIOERR_LSETFCON_FAILED: s = "lsetfilecon";	break;
-    case CPIOERR_SETCAP_FAILED: s = "cap_set_file";	break;
+    case RPMERR_OPEN_FAILED:	s = "open";	break;
+    case RPMERR_CHMOD_FAILED:	s = "chmod";	break;
+    case RPMERR_CHOWN_FAILED:	s = "chown";	break;
+    case RPMERR_WRITE_FAILED:	s = "write";	break;
+    case RPMERR_UTIME_FAILED:	s = "utime";	break;
+    case RPMERR_UNLINK_FAILED:	s = "unlink";	break;
+    case RPMERR_RENAME_FAILED:	s = "rename";	break;
+    case RPMERR_SYMLINK_FAILED: s = "symlink";	break;
+    case RPMERR_STAT_FAILED:	s = "stat";	break;
+    case RPMERR_LSTAT_FAILED:	s = "lstat";	break;
+    case RPMERR_MKDIR_FAILED:	s = "mkdir";	break;
+    case RPMERR_RMDIR_FAILED:	s = "rmdir";	break;
+    case RPMERR_MKNOD_FAILED:	s = "mknod";	break;
+    case RPMERR_MKFIFO_FAILED:	s = "mkfifo";	break;
+    case RPMERR_LINK_FAILED:	s = "link";	break;
+    case RPMERR_READLINK_FAILED: s = "readlink";	break;
+    case RPMERR_READ_FAILED:	s = "read";	break;
+    case RPMERR_COPY_FAILED:	s = "copy";	break;
+    case RPMERR_LSETFCON_FAILED: s = "lsetfilecon";	break;
+    case RPMERR_SETCAP_FAILED: s = "cap_set_file";	break;
 
-    case CPIOERR_HDR_SIZE:	s = _("Header size too big");	break;
-    case CPIOERR_FILE_SIZE:	s = _("File too large for archive");	break;
-    case CPIOERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
-    case CPIOERR_MISSING_FILE: s = _("Missing file(s)"); break;
-    case CPIOERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
-    case CPIOERR_INTERNAL:	s = _("Internal error");	break;
-    case CPIOERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
-    case CPIOERR_ENOENT:	s = strerror(ENOENT); break;
-    case CPIOERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
+    case RPMERR_HDR_SIZE:	s = _("Header size too big");	break;
+    case RPMERR_FILE_SIZE:	s = _("File too large for archive");	break;
+    case RPMERR_UNKNOWN_FILETYPE: s = _("Unknown file type");	break;
+    case RPMERR_MISSING_FILE: s = _("Missing file(s)"); break;
+    case RPMERR_DIGEST_MISMATCH: s = _("Digest mismatch");	break;
+    case RPMERR_INTERNAL:	s = _("Internal error");	break;
+    case RPMERR_UNMAPPED_FILE:	s = _("Archive file not in header"); break;
+    case RPMERR_ENOENT:	s = strerror(ENOENT); break;
+    case RPMERR_ENOTEMPTY:	s = strerror(ENOTEMPTY); break;
     }
 
     if (s != NULL) {
 	rasprintf(&msg, "%s: %s", prefix, s);
-	if (myerrno <= CPIOERR_CHECK_ERRNO) {
+	if (myerrno <= RPMERR_CHECK_ERRNO) {
 	    rstrscat(&msg, _(" failed - "), strerror(myerrno), NULL);
 	}
     } else {

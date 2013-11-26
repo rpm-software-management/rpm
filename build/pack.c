@@ -39,7 +39,7 @@ static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
 
 	rfd = Fopen(path, "r.ufdio");
 	if (Ferror(rfd)) {
-	    rc = CPIOERR_OPEN_FAILED;
+	    rc = RPMERR_OPEN_FAILED;
 	} else {
 	    rc = rpmfiArchiveWriteFile(archive, rfd);
 	}
@@ -54,7 +54,7 @@ static int rpmPackageFilesArchive(rpmfiles fi, int isSrc,
 	}
     }
 
-    if (rc == CPIOERR_HDR_TRAILER)
+    if (rc == RPMERR_ITER_END)
 	rc = 0;
 
     if (archiveSize)

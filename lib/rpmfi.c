@@ -1817,7 +1817,7 @@ static int iterWriteArchiveNext(rpmfi fi)
 	    const char *lnk = rpmfiFLink(fi);
 	    size_t len = strlen(lnk);
 	    if (rpmfiArchiveWrite(fi, lnk, len) != len) {
-		return CPIOERR_WRITE_FAILED;
+		return RPMERR_WRITE_FAILED;
 	    }
 	} else if (S_ISREG(rpmfiFMode(fi)) && rpmfiFSize(fi)) {
 	    /* this file actually needs some content */
@@ -1850,12 +1850,12 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
     while (left) {
 	len = (left > sizeof(buf) ? sizeof(buf) : left);
 	if (Fread(buf, sizeof(*buf), len, fd) != len || Ferror(fd)) {
-	    rc = CPIOERR_READ_FAILED;
+	    rc = RPMERR_READ_FAILED;
 	    break;
 	}
 
 	if (rpmcpioWrite(fi->archive, buf, len) != len) {
-	    rc = CPIOERR_WRITE_FAILED;
+	    rc = RPMERR_WRITE_FAILED;
 	    break;
 	}
 	left -= len;
@@ -1907,7 +1907,7 @@ static int iterReadArchiveNext(rpmfi fi)
     }
     /* Mapping error */
     if (fx < 0) {
-	return CPIOERR_UNMAPPED_FILE;
+	return RPMERR_UNMAPPED_FILE;
     }
     return fx;
 }
@@ -1940,11 +1940,11 @@ int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 	size_t len;
 	len = (left > sizeof(buf) ? sizeof(buf) : left);
 	if (rpmcpioRead(fi->archive, buf, len) != len) {
-	    rc = CPIOERR_READ_FAILED;
+	    rc = RPMERR_READ_FAILED;
 	    goto exit;
 	}
 	if ((Fwrite(buf, sizeof(*buf), len, fd) != len) || Ferror(fd)) {
-	    rc = CPIOERR_WRITE_FAILED;
+	    rc = RPMERR_WRITE_FAILED;
 	    goto exit;
 	}
 
@@ -1960,10 +1960,10 @@ int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest)
 	if (digest != NULL && fidigest != NULL) {
 	    size_t diglen = rpmDigestLength(digestalgo);
 	    if (memcmp(digest, fidigest, diglen)) {
-		rc = CPIOERR_DIGEST_MISMATCH;
+		rc = RPMERR_DIGEST_MISMATCH;
 	    }
 	} else {
-	    rc = CPIOERR_DIGEST_MISMATCH;
+	    rc = RPMERR_DIGEST_MISMATCH;
 	}
 	free(digest);
     }

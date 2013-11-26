@@ -415,7 +415,7 @@ static int fsmSetFCaps(const char *path, const char *captxt)
     if (captxt && *captxt != '\0') {
 	cap_t fcaps = cap_from_text(captxt);
 	if (fcaps == NULL || cap_set_file(path, fcaps) != 0) {
-	    rc = CPIOERR_SETCAP_FAILED;
+	    rc = RPMERR_SETCAP_FAILED;
 	}
 	cap_free(fcaps);
     } 
@@ -482,7 +482,7 @@ static int expandRegular(FSM_t fsm, rpmpsm psm, int nodigest)
 
     wfd = Fopen(fsm->path, "w.ufdio");
     if (Ferror(wfd)) {
-	rc = CPIOERR_OPEN_FAILED;
+	rc = RPMERR_OPEN_FAILED;
 	goto exit;
     }
 
@@ -500,7 +500,7 @@ static int fsmReadLink(const char *path,
 		       char *buf, size_t bufsize, size_t *linklen)
 {
     ssize_t llen = readlink(path, buf, bufsize - 1);
-    int rc = CPIOERR_READLINK_FAILED;
+    int rc = RPMERR_READLINK_FAILED;
 
     if (_fsm_debug) {
         rpmlog(RPMLOG_DEBUG, " %8s (%s, buf, %d) %s\n",
@@ -529,7 +529,7 @@ static int fsmStat(const char *path, int dolstat, struct stat *sb)
                __func__,
                path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0) {
-        rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_LSTAT_FAILED);
+        rc = (errno == ENOENT ? RPMERR_ENOENT : RPMERR_LSTAT_FAILED);
 	/* WTH is this, and is it really needed, still? */
         memset(sb, 0, sizeof(*sb));	/* XXX s390x hackery */
     }
@@ -571,14 +571,14 @@ static int fsmMakeLinks(FSM_t fsm, const int * files)
 
 	rc = fsmVerify(fsm);
 	if (!rc) continue;
-	if (!(rc == CPIOERR_ENOENT)) break;
+	if (!(rc == RPMERR_ENOENT)) break;
 
 	rc = link(path, fsm->path);
 	if (_fsm_debug)
 	    rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
 		path, fsm->path, (rc < 0 ? strerror(errno) : ""));
 	if (rc < 0)
-            rc = CPIOERR_LINK_FAILED;
+            rc = RPMERR_LINK_FAILED;
 
 	if (fsm->failedFile && rc != 0 && *fsm->failedFile == NULL) {
 	    ec = rc;
@@ -645,9 +645,9 @@ static int fsmRmdir(const char *path)
 	       path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
 	switch (errno) {
-	case ENOENT:        rc = CPIOERR_ENOENT;    break;
-	case ENOTEMPTY:     rc = CPIOERR_ENOTEMPTY; break;
-	default:            rc = CPIOERR_RMDIR_FAILED; break;
+	case ENOENT:        rc = RPMERR_ENOENT;    break;
+	case ENOTEMPTY:     rc = RPMERR_ENOTEMPTY; break;
+	default:            rc = RPMERR_RMDIR_FAILED; break;
 	}
     return rc;
 }
@@ -659,7 +659,7 @@ static int fsmMkdir(const char *path, mode_t mode)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", __func__,
 	       path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_MKDIR_FAILED;
+    if (rc < 0)	rc = RPMERR_MKDIR_FAILED;
     return rc;
 }
 
@@ -674,7 +674,7 @@ static int fsmMkfifo(const char *path, mode_t mode)
     }
 
     if (rc < 0)
-	rc = CPIOERR_MKFIFO_FAILED;
+	rc = RPMERR_MKFIFO_FAILED;
 
     return rc;
 }
@@ -691,7 +691,7 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
     }
 
     if (rc < 0)
-	rc = CPIOERR_MKNOD_FAILED;
+	rc = RPMERR_MKNOD_FAILED;
 
     return rc;
 }
@@ -759,7 +759,7 @@ static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 	    if (rc == 0 && S_ISDIR(sb.st_mode)) {
 		/* Move pre-existing path marker forward. */
 		dnlx[dc] = (te - dn);
-	    } else if (rc == CPIOERR_ENOENT) {
+	    } else if (rc == RPMERR_ENOENT) {
 		*te = '\0';
 		mode_t mode = S_IFDIR | (_dirPerms & 07777);
 		rpmFsmOp op = (FA_CREATE|FAF_UNOWNED);
@@ -852,7 +852,7 @@ static int fsmInit(FSM_t fsm)
 	!(fsm->goal == FSM_PKGINSTALL && S_ISREG(fsm->sb.st_mode)))
     {
 	rc = fsmStat(fsm->path, 1, &fsm->osb);
-	if (rc == CPIOERR_ENOENT) {
+	if (rc == RPMERR_ENOENT) {
 	    // errno = saveerrno; XXX temporary commented out
 	    rc = 0;
 	    fsm->exists = 0;
@@ -896,7 +896,7 @@ static int fsmSymlink(const char *opath, const char *path)
     }
 
     if (rc < 0)
-	rc = CPIOERR_SYMLINK_FAILED;
+	rc = RPMERR_SYMLINK_FAILED;
     return rc;
 }
 
@@ -910,7 +910,7 @@ static int fsmUnlink(const char *path, cpioMapFlags mapFlags)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s) %s\n", __func__,
 	       path, (rc < 0 ? strerror(errno) : ""));
     if (rc < 0)
-	rc = (errno == ENOENT ? CPIOERR_ENOENT : CPIOERR_UNLINK_FAILED);
+	rc = (errno == ENOENT ? RPMERR_ENOENT : RPMERR_UNLINK_FAILED);
     return rc;
 }
 
@@ -933,7 +933,7 @@ static int fsmRename(const char *opath, const char *path,
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %s) %s\n", __func__,
 	       opath, path, (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_RENAME_FAILED;
+    if (rc < 0)	rc = RPMERR_RENAME_FAILED;
     return rc;
 }
 
@@ -950,7 +950,7 @@ static int fsmChown(const char *path, mode_t mode, uid_t uid, gid_t gid)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, %d, %d) %s\n", __func__,
 	       path, (int)uid, (int)gid,
 	       (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_CHOWN_FAILED;
+    if (rc < 0)	rc = RPMERR_CHOWN_FAILED;
     return rc;
 }
 
@@ -966,7 +966,7 @@ static int fsmChmod(const char *path, mode_t mode)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0%04o) %s\n", __func__,
 	       path, (unsigned)(mode & 07777),
 	       (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_CHMOD_FAILED;
+    if (rc < 0)	rc = RPMERR_CHMOD_FAILED;
     return rc;
 }
 
@@ -988,7 +988,7 @@ static int fsmUtime(const char *path, mode_t mode, time_t mtime)
     if (_fsm_debug)
 	rpmlog(RPMLOG_DEBUG, " %8s (%s, 0x%x) %s\n", __func__,
 	       path, (unsigned)mtime, (rc < 0 ? strerror(errno) : ""));
-    if (rc < 0)	rc = CPIOERR_UTIME_FAILED;
+    if (rc < 0)	rc = RPMERR_UTIME_FAILED;
     /* ...but utime error is not critical for directories */
     if (rc && S_ISDIR(mode))
 	rc = 0;
@@ -1003,7 +1003,7 @@ static int fsmVerify(FSM_t fsm)
     int saveerrno = errno;
 
     if (fsm->diskchecked && !fsm->exists) {
-        return CPIOERR_ENOENT;
+        return RPMERR_ENOENT;
     }
     if (S_ISREG(st->st_mode)) {
 	/* HP-UX (and other os'es) don't permit unlink on busy files. */
@@ -1013,14 +1013,14 @@ static int fsmVerify(FSM_t fsm)
 	if (!rc)
 	    (void) fsmUnlink(rmpath, fsm->mapFlags);
 	else
-	    rc = CPIOERR_UNLINK_FAILED;
+	    rc = RPMERR_UNLINK_FAILED;
 	free(rmpath);
-        return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
+        return (rc ? rc : RPMERR_ENOENT);	/* XXX HACK */
     } else if (S_ISDIR(st->st_mode)) {
         if (S_ISDIR(ost->st_mode)) return 0;
         if (S_ISLNK(ost->st_mode)) {
             rc = fsmStat(fsm->path, 0, &fsm->osb);
-            if (rc == CPIOERR_ENOENT) rc = 0;
+            if (rc == RPMERR_ENOENT) rc = 0;
             if (rc) return rc;
             errno = saveerrno;
             if (S_ISDIR(ost->st_mode)) return 0;
@@ -1045,8 +1045,8 @@ static int fsmVerify(FSM_t fsm)
     }
     /* XXX shouldn't do this with commit/undo. */
     rc = fsmUnlink(fsm->path, fsm->mapFlags);
-    if (rc == 0)	rc = CPIOERR_ENOENT;
-    return (rc ? rc : CPIOERR_ENOENT);	/* XXX HACK */
+    if (rc == 0)	rc = RPMERR_ENOENT;
+    return (rc ? rc : RPMERR_ENOENT);	/* XXX HACK */
 }
 
 #define	IS_DEV_LOG(_x)	\
@@ -1219,7 +1219,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	rc = rpmfiNext(fi);
 
 	if (rc < 0) {
-	    if (rc == CPIOERR_HDR_TRAILER)
+	    if (rc == RPMERR_ITER_END)
 		rc = 0;
 	    break;
 	}
@@ -1248,14 +1248,14 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
-		if (rc == CPIOERR_ENOENT) {
+		if (rc == RPMERR_ENOENT) {
 		    rc = expandRegular(fsm, psm, nodigest);
 		}
             } else if (S_ISDIR(st->st_mode)) {
 		/* Directories replacing something need early backup */
                 rc = fsmBackup(fsm);
                 rc = fsmVerify(fsm);
-                if (rc == CPIOERR_ENOENT) {
+                if (rc == RPMERR_ENOENT) {
                     mode_t mode = st->st_mode;
                     mode &= ~07777;
                     mode |=  00700;
@@ -1263,22 +1263,22 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                 }
             } else if (S_ISLNK(st->st_mode)) {
                 if ((st->st_size + 1) > fsm->bufsize) {
-                    rc = CPIOERR_HDR_SIZE;
+                    rc = RPMERR_HDR_SIZE;
                 } else if (rpmfiArchiveRead(fi, fsm->buf, st->st_size) != st->st_size) {
-                    rc = CPIOERR_READ_FAILED;
+                    rc = RPMERR_READ_FAILED;
                 } else {
 
                     fsm->buf[st->st_size] = '\0';
                     /* fsmVerify() assumes link target in fsm->buf */
                     rc = fsmVerify(fsm);
-                    if (rc == CPIOERR_ENOENT) {
+                    if (rc == RPMERR_ENOENT) {
                         rc = fsmSymlink(fsm->buf, fsm->path);
                     }
                 }
             } else if (S_ISFIFO(st->st_mode)) {
                 /* This mimics cpio S_ISSOCK() behavior but probably isn't right */
                 rc = fsmVerify(fsm);
-                if (rc == CPIOERR_ENOENT) {
+                if (rc == RPMERR_ENOENT) {
                     rc = fsmMkfifo(fsm->path, 0000);
                 }
             } else if (S_ISCHR(st->st_mode) ||
@@ -1286,13 +1286,13 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
                        S_ISSOCK(st->st_mode))
             {
                 rc = fsmVerify(fsm);
-                if (rc == CPIOERR_ENOENT) {
+                if (rc == RPMERR_ENOENT) {
                     rc = fsmMknod(fsm->path, fsm->sb.st_mode, fsm->sb.st_rdev);
                 }
             } else {
                 /* XXX Special case /dev/log, which shouldn't be packaged anyways */
                 if (!IS_DEV_LOG(fsm->path))
-                    rc = CPIOERR_UNKNOWN_FILETYPE;
+                    rc = RPMERR_UNKNOWN_FILETYPE;
             }
 	    /* Set permissions, timestamps etc for non-hardlink entries */
 	    if (!rc) {
@@ -1337,7 +1337,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     if (!rc) {
         for (int i=0; i<fc; i++) {
 	    if (!found[i] && !(rpmfilesFFlags(files, i) & RPMFILE_GHOST)) {
-		rc = CPIOERR_MISSING_FILE;
+		rc = RPMERR_MISSING_FILE;
 	    }
 	}
     }
@@ -1388,7 +1388,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	     * and complaining about job already done seems like kinderkarten
 	     * level "But it was MY turn!" whining...
 	     */
-	    if (rc == CPIOERR_ENOENT && missingok) {
+	    if (rc == RPMERR_ENOENT && missingok) {
 		rc = 0;
 	    }
 
@@ -1397,7 +1397,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	     * to track at least some of the expected failures though,
 	     * such as when we knowingly left config file backups etc behind.
 	     */
-	    if (rc == CPIOERR_ENOTEMPTY) {
+	    if (rc == RPMERR_ENOTEMPTY) {
 		rc = 0;
 	    }
 
