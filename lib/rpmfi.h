@@ -8,6 +8,7 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmfiles.h>
+#include <rpm/rpmarchive.h>
 
 #ifdef __cplusplus
 extern "C" {

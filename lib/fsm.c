@@ -16,13 +16,11 @@
 #include <rpm/rpmlog.h>
 
 #include "rpmio/rpmio_internal.h"	/* fdInit/FiniDigest */
-#include "lib/cpio.h"
 #include "lib/fsm.h"
 #include "lib/rpmfi_internal.h"	/* XXX rpmfiles for now ... */
 #include "lib/rpmte_internal.h"	/* XXX rpmfs */
 #include "lib/rpmplugins.h"	/* rpm plugins hooks */
 #include "lib/rpmug.h"
-#include "lib/cpio.h"
 
 #include "debug.h"
 

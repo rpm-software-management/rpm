@@ -23,7 +23,6 @@
 
 #include "rpmio/rpmio_internal.h"	/* XXX rpmioSlurp */
 #include "misc/fts.h"
-#include "lib/cpio.h"
 #include "lib/rpmfi_internal.h"	/* XXX fi->apath */
 #include "lib/rpmug.h"
 #include "build/rpmbuild_internal.h"

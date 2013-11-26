@@ -16,7 +16,6 @@
 
 #include "rpmio/rpmio_internal.h"	/* fdInitDigest, fdFiniDigest */
 #include "lib/fsm.h"
-#include "lib/cpio.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
 #include "lib/rpmfi_internal.h"		/* some semi-internal stuff for now */
