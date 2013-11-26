@@ -18,7 +18,6 @@
 #include "lib/fsm.h"
 #include "lib/signature.h"
 #include "lib/rpmlead.h"
-#include "lib/rpmfi_internal.h"		/* some semi-internal stuff for now */
 #include "build/rpmbuild_internal.h"
 #include "build/rpmbuild_misc.h"
 
