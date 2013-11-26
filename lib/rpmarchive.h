@@ -57,6 +57,80 @@ extern "C" {
  */
 char * rpmfileStrerror(int rc);
 
+/** \ingroup payload
+ * Get new file iterator for writing the archive content.
+ * The returned rpmfi will only visit the files needing some content.
+ * You need to provide the content using rpmfiArchiveWrite() or
+ * rpmfiArchiveWriteFile(). Make sure to close the rpmfi with
+ * rpmfiArchiveClose() to get the trailer written.
+ * rpmfiSetFX() is not supported for this type of iterator.
+ * @param fd		file
+ * @param fi            file info
+ * @return		new rpmfi
+ */
+rpmfi rpmfiNewArchiveWriter(FD_t fd, rpmfiles files);
+
+/** \ingroup payload
+ * Get new file iterator for looping over the archive content.
+ * Returned rpmfi visites files in the order they are read from the payload.
+ * Content of the regular files can be retrieved with rpmfiArchiveRead() or
+ * rpmfiArchiveReadToFile() when they are visited with rpmfiNext().
+ * rpmfiSetFX() is not supported for this type of iterator.
+ * @param fd		file
+ * @param fi            file info
+ * @return		new rpmfi
+ */
+rpmfi rpmfiNewArchiveReader(FD_t fd, rpmfiles files);
+
+/** \ingroup payload
+ * Close payload archive
+ * @param fi		file info
+ * @return		> 0 on error
+ */
+int rpmfiArchiveClose(rpmfi fi);
+
+/** \ingroup payload
+ * Return current position in payload archive
+ * @param fi		file info
+ * @return		position
+ */
+rpm_loff_t rpmfiArchiveTell(rpmfi fi);
+
+/** \ingroup payload
+ * Write content into current file in archive
+ * @param fi		file info
+ * @param buf		pointer to content
+ * @prama size		number of bytes to write
+ * @return		bytes actually written
+ */
+size_t rpmfiArchiveWrite(rpmfi fi, const void * buf, size_t size);
+
+/** \ingroup payload
+ * Write content from given file into current file in archive
+ * @param fi		file info
+ * @param fd		file descriptor of file to read
+ * @return		> 0 on error
+ */
+int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd);
+
+/** \ingroup payload
+ * Read content from current file in archive
+ * @param fi		file info
+ * @param buf		pointer to buffer
+ * @prama size		number of bytes to read
+ * @return		bytes actually read
+ */
+size_t rpmfiArchiveRead(rpmfi fi, void * buf, size_t size);
+
+/** \ingroup payload
+ * Write content from current file in archive to a file
+ * @param fi		file info
+ * @param fd		file descriptor of file to write to
+ * @param nodigest	omit checksum check if 1
+ * @return		> 0 on error
+ */
+int rpmfiArchiveReadToFile(rpmfi fi, FD_t fd, int nodigest);
+
 #ifdef __cplusplus
 }
 #endif
