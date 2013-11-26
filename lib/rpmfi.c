@@ -1091,8 +1091,6 @@ rpmfiles rpmfilesFree(rpmfiles fi)
 	fi->fstates = _free(fi->fstates);
 	fi->fps = _free(fi->fps);
 
-	fi->pool = rpmstrPoolFree(fi->pool);
-
 	/* these point to header memory if KEEPHEADER is used, dont free */
 	if (!(fi->fiflags & RPMFI_KEEPHEADER) && fi->h == NULL) {
 	    fi->fmtimes = _free(fi->fmtimes);
@@ -1117,6 +1115,7 @@ rpmfiles rpmfilesFree(rpmfiles fi)
     fi->replacedLSizes = _free(fi->replacedLSizes);
 
     fi->h = headerFree(fi->h);
+    fi->pool = rpmstrPoolFree(fi->pool);
 
     fi->nlinks = nlinkHashFree(fi->nlinks);
 
