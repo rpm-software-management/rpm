@@ -1244,12 +1244,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    fsm->postpone = 1;
 	} else {
 	    setFileState(rpmteGetFileStates(te), rpmfiFX(fi), fsm->action);
+	    numHardlinks = rpmfiFLinks(fi, &hardlinks);
+	    if (numHardlinks > 1) {
+		fsm->postpone = saveHardLink(fsm, numHardlinks, hardlinks);
+	    }
 	}
 
-        numHardlinks = rpmfiFLinks(fi, &hardlinks);
-        if (numHardlinks > 1) {
-            fsm->postpone = saveHardLink(fsm, numHardlinks, hardlinks);
-        }
         if (!fsm->postpone) {
             if (S_ISREG(st->st_mode)) {
                 rc = fsmVerify(fsm);
