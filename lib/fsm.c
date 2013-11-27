@@ -1213,7 +1213,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	rc = fsmMkdirs(files, rpmteGetFileStates(te), fsm->plugins, fsm->action);
+	rc = fsmMkdirs(files, fsm->fs, fsm->plugins, fsm->action);
     }
 
     while (!rc) {
@@ -1243,7 +1243,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	if (rc) {
 	    fsm->postpone = 1;
 	} else {
-	    setFileState(rpmteGetFileStates(te), rpmfiFX(fi), fsm->action);
+	    setFileState(fsm->fs, rpmfiFX(fi), fsm->action);
 	    numHardlinks = rpmfiFLinks(fi, &hardlinks);
 	    if (numHardlinks > 1) {
 		fsm->postpone = saveHardLink(fsm, numHardlinks, hardlinks);
