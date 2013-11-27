@@ -1194,10 +1194,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     int saveerrno = errno;
     int rc = 0;
     int nodigest = (rpmtsFlags(ts) & RPMTRANS_FLAG_NOFILEDIGEST) ? 1 : 0;
-    int fc = rpmfiFC(fi);
     const int * hardlinks;
     int numHardlinks;
-    char * found = xcalloc(fc, sizeof(*found));
 
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
@@ -1219,8 +1217,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 		rc = 0;
 	    break;
 	}
-
-	found[rpmfiFX(fi)] = 1;
 
         rc = fsmInit(fsm); /* Sets fsm->postpone for skipped files */
 
@@ -1330,16 +1326,8 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
     }
 
-    if (!rc) {
-        for (int i=0; i<fc; i++) {
-	    if (!found[i] && !(rpmfilesFFlags(files, i) & RPMFILE_GHOST)) {
-		rc = RPMERR_MISSING_FILE;
-	    }
-	}
-    }
     /* No need to bother with close errors on read */
     rpmfiArchiveClose(fi);
-    _free(found);
     fsmFree(fsm);
     rpmfiFree(fi);
 

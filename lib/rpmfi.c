@@ -51,6 +51,7 @@ struct rpmfi_s {
 
     rpmfiles files;		/*!< File info set */
     rpmcpio_t archive;		/*!< Archive with payload */
+    unsigned char * found;	/*!< Bit field of files found in the archive */
     int nrefs;			/*!< Reference count */
 };
 
@@ -1137,6 +1138,7 @@ rpmfi rpmfiFree(rpmfi fi)
     fi->files = rpmfilesFree(fi->files);
     fi->fn = _free(fi->fn);
     fi->ofn = _free(fi->ofn);
+    fi->found = _free(fi->found);
 
     free(fi);
     return NULL;
@@ -1452,6 +1454,7 @@ static rpmfi initIter(rpmfiles files, int itype, int link)
 	    break;
 	case RPMFI_ITER_READ_ARCHIVE:
 	    fi->next = iterReadArchiveNext;
+	    fi->found = xcalloc(1, (rpmfiFC(fi)>>3) + 1);
 	    break;
 	case RPMFI_ITER_WRITE_ARCHIVE:
 	    fi->next = iterWriteArchiveNext;
@@ -1864,6 +1867,11 @@ int rpmfiArchiveWriteFile(rpmfi fi, FD_t fd)
     return rc;
 }
 
+static void rpmfiSetFound(rpmfi fi, int ix)
+{
+    fi->found[ix >> 3] |= (1 << (ix % 8));
+}
+
 static int iterReadArchiveNext(rpmfi fi)
 {
     int rc;
@@ -1876,10 +1884,20 @@ static int iterReadArchiveNext(rpmfi fi)
     /* Read next payload header. */
     rc = rpmcpioHeaderRead(fi->archive, &path, &fx);
 
+    /* if archive ended, check if we found all files */
+    if (rc == RPMERR_ITER_END) {
+	int fc = rpmfiFC(fi);
+	for (int i=0; i<fc; i++) {
+	    if (!(fi->found[i>>3] & (1<<(i % 8))) &&
+			!(rpmfilesFFlags(fi->files, i) & RPMFILE_GHOST)) {
+                rc = RPMERR_MISSING_FILE;
+		break;
+            }
+	}
+    }
     if (rc) {
 	return rc;
     }
-
 
     if (fx == -1) {
 	/* Identify mapping index. */
@@ -1910,6 +1928,7 @@ static int iterReadArchiveNext(rpmfi fi)
     if (fx < 0) {
 	return RPMERR_UNMAPPED_FILE;
     }
+    rpmfiSetFound(fi, fx);
     return fx;
 }
 
