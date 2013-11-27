@@ -861,7 +861,7 @@ static int fsmInit(FSM_t fsm)
 	    fsm->exists = 1;
 	}
     } else {
-	/* Skip %ghost files on build. */
+	/* Regular files are created with tmp suffix, assume they dont exist */
 	fsm->exists = 0;
     }
     fsm->diskchecked = 1;
