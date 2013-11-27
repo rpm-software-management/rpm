@@ -365,15 +365,16 @@ static hardLink_t freeHardLink(hardLink_t li)
     return NULL;
 }
 
-static FSM_t fsmNew(fileStage goal, rpmfs fs, rpmfi fi, char ** failedFile)
+static FSM_t fsmNew(fileStage goal, rpmts ts, rpmte te, rpmfi fi, char ** failedFile)
 {
     FSM_t fsm = xcalloc(1, sizeof(*fsm));
 
     fsm->goal = goal;
     fsm->fi = fi;
-    fsm->fs = fs;
+    fsm->fs = rpmteGetFileStates(te);
+    fsm->plugins = rpmtsPlugins(ts);
 
-    fsm->mapFlags = 0;
+    fsm->mapFlags = rpmteIsSource(te) ? 0 : CPIO_SBIT_CHECK; 
 
     if (fsm->goal == FSM_PKGINSTALL) {
         fsm->bufsize = 8 * BUFSIZ;
@@ -1192,9 +1193,8 @@ static void setFileState(rpmfs fs, int i, rpmFileAction action)
 int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
               rpmpsm psm, char ** failedFile)
 {
-    rpmfs fs = rpmteGetFileStates(te);
     rpmfi fi = rpmfiNewArchiveReader(cfd, files);
-    FSM_t fsm = fsmNew(FSM_PKGINSTALL, fs, fi, failedFile);
+    FSM_t fsm = fsmNew(FSM_PKGINSTALL, ts, te, fi, failedFile);
     struct stat * st = &fsm->sb;
     int saveerrno = errno;
     int rc = 0;
@@ -1204,10 +1204,6 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
     int numHardlinks;
     char * found = xcalloc(fc, sizeof(*found));
 
-    if (!rpmteIsSource(te))
-	fsm->mapFlags |= CPIO_SBIT_CHECK;
-
-    fsm->plugins = rpmtsPlugins(ts);
     /* transaction id used for temporary path suffix while installing */
     rasprintf(&fsm->suffix, ";%08x", (unsigned)rpmtsGetTid(ts));
 
@@ -1359,15 +1355,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
               rpmpsm psm, char ** failedFile)
 {
-    rpmfs fs = rpmteGetFileStates(te);
     rpmfi fi = rpmfilesIter(files, RPMFI_ITER_BACK);
-    FSM_t fsm = fsmNew(FSM_PKGERASE, fs, fi, failedFile);
+    FSM_t fsm = fsmNew(FSM_PKGERASE, ts, te, fi, failedFile);
     int rc = 0;
-
-    if (!rpmteIsSource(te))
-	fsm->mapFlags |= CPIO_SBIT_CHECK;
-
-    fsm->plugins = rpmtsPlugins(ts);
 
     while (!rc && rpmfiNext(fsm->fi) >= 0) {
         /* Clean fsm, free'ing memory. */
