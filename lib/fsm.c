@@ -594,7 +594,7 @@ static int fsmMakeLinks(FSM_t fsm, const int * files)
     return ec;
 }
 
-static int fsmCommit(FSM_t fsm, int ix, const struct stat * st);
+static int fsmCommit(FSM_t fsm, const struct stat * st);
 
 /** \ingroup payload
  * Commit hard linked file set atomically.
@@ -624,7 +624,7 @@ static int fsmCommitLinks(FSM_t fsm, const int * files)
 	if (!XFA_SKIPPING(fsm->action)) {
 	    /* Adjust st_nlink to current number of links on this file */
 	    fsm->sb.st_nlink = link_order;
-	    rc = fsmCommit(fsm, li->filex[i], &fsm->sb);
+	    rc = fsmCommit(fsm, &fsm->sb);
 	    if (!rc)
 		link_order++;
 	}
@@ -700,10 +700,9 @@ static int fsmMknod(const char *path, mode_t mode, dev_t dev)
  * Create (if necessary) directories not explicitly included in package.
  * @param dnli		file state machine data
  * @param plugins	rpm plugins handle
- * @param action	file state machine action
  * @return		0 on success
  */
-static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins, rpmFileAction action)
+static int fsmMkdirs(rpmfiles files, rpmfs fs, rpmPlugins plugins)
 {
     DNLI_t dnli = dnlInitIterator(files, fs, 0);
     struct stat sb;
@@ -1111,7 +1110,7 @@ static int fsmSetmeta(FSM_t fsm, const struct stat * st)
     return rc;
 }
 
-static int fsmCommit(FSM_t fsm, int ix, const struct stat * st)
+static int fsmCommit(FSM_t fsm, const struct stat * st)
 {
     int rc = 0;
 
@@ -1209,7 +1208,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
     /* Detect and create directories not explicitly in package. */
     if (!rc) {
-	rc = fsmMkdirs(files, fsm->fs, fsm->plugins, fsm->action);
+	rc = fsmMkdirs(files, fsm->fs, fsm->plugins);
     }
 
     while (!rc) {
@@ -1323,7 +1322,7 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 	    rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 
 	    if (!fsm->postpone) {
-                rc = fsmCommit(fsm, rpmfiFX(fi), st);
+                rc = fsmCommit(fsm, st);
 		if (!rc && numHardlinks > 1)
                     rc = fsmCommitLinks(fsm, hardlinks);
 	    }
