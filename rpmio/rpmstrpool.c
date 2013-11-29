@@ -219,7 +219,7 @@ static void rpmstrPoolRehash(rpmstrPool pool)
 	pool->hash = poolHashFree(pool->hash);
 
     pool->hash = poolHashCreate(sizehint);
-    for (int i = 1; i < pool->offs_size; i++)
+    for (int i = 1; i <= pool->offs_size; i++)
 	poolHashAddEntry(pool, rpmstrPoolStr(pool, i), i);
 }
 
