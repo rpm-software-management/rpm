@@ -80,11 +80,11 @@ const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid);
 
 /** \ingroup rpmstrpool
  * Return length of a string by its pool id. The result is equal to
- * calling strlen() on a string retrieved through rpmstrPoolStr() but
- * runs in constant time regardless of the length of the string.
+ * calling strlen() on a string retrieved through rpmstrPoolStr(), but
+ * the pool might be able to optimize the calculation.
  * @param pool		string pool
  * @param sid		pool id of a string
- * @return		length of the string
+ * @return		length of the string, 0 for invalid pool or id
  */
 size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid);
 

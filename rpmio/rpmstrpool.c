@@ -299,9 +299,8 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
     size_t chunk_used;
 
     pool->offs_size += 1;
-    /* need one extra for end of string */
-    /* and one extra to mark the end of the chunk */
-    if (pool->offs_alloced <= pool->offs_size + 2) {
+    /* Need one extra for storing the starting point of next string */
+    if (pool->offs_alloced <= pool->offs_size + 1) {
 	pool->offs_alloced += STROFFS_CHUNK;
 	pool->offs = xrealloc(pool->offs,
 			      pool->offs_alloced * sizeof(*pool->offs));
@@ -321,9 +320,6 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 	if (ssize > pool->chunk_allocated) {
 	    pool->chunk_allocated = 2 * ssize;
 	}
-
-	/* Dummy entry for end of last string*/
-	pool->offs_size += 1;
 
 	pool->offs[pool->offs_size] = xcalloc(1, pool->chunk_allocated);
 	pool->chunks[pool->chunks_size] = pool->offs[pool->offs_size];
@@ -406,8 +402,8 @@ const char * rpmstrPoolStr(rpmstrPool pool, rpmsid sid)
 size_t rpmstrPoolStrlen(rpmstrPool pool, rpmsid sid)
 {
     size_t slen = 0;
-    if (pool && sid <= pool->offs_size) {
-	slen = pool->offs[sid+1] - pool->offs[sid] - 1;
+    if (pool && sid > 0 && sid <= pool->offs_size) {
+	slen = strlen(pool->offs[sid]);
     }
     return slen;
 }
