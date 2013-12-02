@@ -307,15 +307,15 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 
     /* Do we need a new chunk to store the string? */
     if (ssize > pool->chunk_allocated - pool->chunk_used) {
-	/* check size of ->chunks */
 	pool->chunks_size += 1;
+	/* Grow chunks array if needed */
 	if (pool->chunks_size >= pool->chunks_allocated) {
 	    pool->chunks_allocated += pool->chunks_allocated;
 	    pool->chunks = xrealloc(pool->chunks,
 				pool->chunks_allocated * sizeof(*pool->chunks));
 	}
 
-	/* Check if string is bigger than chunks */
+	/* Ensure the string fits in the new chunk we're about to allocate */
 	if (ssize > pool->chunk_allocated) {
 	    pool->chunk_allocated = 2 * ssize;
 	}
