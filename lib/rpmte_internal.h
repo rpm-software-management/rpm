@@ -47,7 +47,7 @@ RPM_GNUC_INTERNAL
 rpmte rpmteFree(rpmte te);
 
 RPM_GNUC_INTERNAL
-rpmfi rpmteSetFI(rpmte te, rpmfi fi);
+void rpmteCleanFiles(rpmte te);
 
 RPM_GNUC_INTERNAL
 FD_t rpmteSetFd(rpmte te, FD_t fd);

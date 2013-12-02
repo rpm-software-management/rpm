@@ -1391,7 +1391,7 @@ static int rpmtsPrepare(rpmts ts)
     if (!(rpmtsFlags(ts) & (RPMTRANS_FLAG_TEST|RPMTRANS_FLAG_BUILD_PROBS))) {
 	pi = rpmtsiInit(ts);
 	while ((p = rpmtsiNext(pi, 0)) != NULL) {
-	    rpmteSetFI(p, NULL);
+	    rpmteCleanFiles(p);
 	}
 	rpmtsiFree(pi);
     }

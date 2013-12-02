@@ -489,17 +489,12 @@ rpmds rpmteDS(rpmte te, rpmTagVal tag)
     return NULL;
 }
 
-rpmfi rpmteSetFI(rpmte te, rpmfi fi)
+void rpmteCleanFiles(rpmte te)
 {
     if (te != NULL)  {
 	te->fi = rpmfiFree(te->fi);
 	te->files = rpmfilesFree(te->files);
-	if (fi != NULL) {
-	    te->fi = rpmfiLink(fi);
-	    te->files = rpmfilesLink(rpmfiFiles(fi));
-	}
     }
-    return NULL;
 }
 
 rpmfi rpmteFI(rpmte te)
@@ -668,7 +663,7 @@ static int rpmteClose(rpmte te, int reset_fi)
     }
     rpmteSetHeader(te, NULL);
     if (reset_fi) {
-	rpmteSetFI(te, NULL);
+	rpmteCleanFiles(te);
     }
     return 1;
 }
