@@ -234,8 +234,8 @@ rpmstrPool rpmstrPoolCreate(void)
     pool->chunks = xcalloc(pool->chunks_allocated, sizeof(*pool->chunks));
     pool->chunks_size = 1;
     pool->chunk_allocated = STRDATA_CHUNK;
-    pool->offs[1] = xcalloc(1, pool->chunk_allocated);
-    pool->chunks[pool->chunks_size] = pool->offs[1];
+    pool->chunks[pool->chunks_size] = xcalloc(1, pool->chunk_allocated);
+    pool->offs[1] = pool->chunks[pool->chunks_size];
 
     rpmstrPoolRehash(pool);
     pool->nrefs = 1;
@@ -321,8 +321,8 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 	    pool->chunk_allocated = 2 * ssize;
 	}
 
-	pool->offs[pool->offs_size] = xcalloc(1, pool->chunk_allocated);
-	pool->chunks[pool->chunks_size] = pool->offs[pool->offs_size];
+	pool->chunks[pool->chunks_size] = xcalloc(1, pool->chunk_allocated);
+	pool->offs[pool->offs_size] = pool->chunks[pool->chunks_size];
     }
 
     t = memcpy(pool->offs[pool->offs_size], s, slen);
