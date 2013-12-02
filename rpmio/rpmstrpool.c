@@ -27,7 +27,7 @@ struct poolHash_s {
 };
 
 struct rpmstrPool_s {
-    char ** offs;		/* pointers into data area */
+    const char ** offs;		/* pointers into data area */
     rpmsid offs_size;		/* largest offset index */;
     rpmsid offs_alloced;	/* offsets allocation size */
 
@@ -35,6 +35,7 @@ struct rpmstrPool_s {
     size_t chunks_size;		/* current chunk */
     size_t chunks_allocated;	/* allocated size of the chunks array */
     size_t chunk_allocated;	/* size of the current chunk */
+    size_t chunk_used;		/* usage of the current chunk */
 
     poolHash hash;		/* string -> sid hash table */
     int frozen;			/* are new id additions allowed? */
@@ -296,18 +297,16 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 {
     char *t = NULL;
     size_t ssize = slen + 1;
-    size_t chunk_used;
 
     pool->offs_size += 1;
-    /* Need one extra for storing the starting point of next string */
-    if (pool->offs_alloced <= pool->offs_size + 1) {
+    if (pool->offs_alloced <= pool->offs_size) {
 	pool->offs_alloced += STROFFS_CHUNK;
 	pool->offs = xrealloc(pool->offs,
 			      pool->offs_alloced * sizeof(*pool->offs));
     }
 
-    chunk_used = pool->offs[pool->offs_size] - pool->chunks[pool->chunks_size];
-    if (ssize > pool->chunk_allocated - chunk_used) {
+    /* Do we need a new chunk to store the string? */
+    if (ssize > pool->chunk_allocated - pool->chunk_used) {
 	/* check size of ->chunks */
 	pool->chunks_size += 1;
 	if (pool->chunks_size >= pool->chunks_allocated) {
@@ -322,13 +321,16 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
 	}
 
 	pool->chunks[pool->chunks_size] = xcalloc(1, pool->chunk_allocated);
-	pool->offs[pool->offs_size] = pool->chunks[pool->chunks_size];
+	pool->chunk_used = 0;
     }
 
-    t = memcpy(pool->offs[pool->offs_size], s, slen);
+    /* Copy the string into current chunk, ensure termination */
+    t = memcpy(pool->chunks[pool->chunks_size] + pool->chunk_used, s, slen);
     t[slen] = '\0';
-    pool->offs[pool->offs_size+1] = t + ssize;
+    pool->chunk_used += ssize;
 
+    /* Actually add the string to the pool */
+    pool->offs[pool->offs_size] = t;
     poolHashAddHEntry(pool, t, hash, pool->offs_size);
 
     return pool->offs_size;
