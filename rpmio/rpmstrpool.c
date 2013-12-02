@@ -307,7 +307,7 @@ static rpmsid rpmstrPoolPut(rpmstrPool pool, const char *s, size_t slen, unsigne
     }
 
     chunk_used = pool->offs[pool->offs_size] - pool->chunks[pool->chunks_size];
-    if (ssize + 1 > pool->chunk_allocated - chunk_used) {
+    if (ssize > pool->chunk_allocated - chunk_used) {
 	/* check size of ->chunks */
 	pool->chunks_size += 1;
 	if (pool->chunks_size >= pool->chunks_allocated) {
