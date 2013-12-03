@@ -76,7 +76,6 @@ struct fsm_s {
     const char * baseName;	/*!< File base name. */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
-    unsigned fflags;		/*!< File flags. */
     rpmFileAction action;	/*!< File disposition. */
     fileStage goal;		/*!< Package state machine goal. */
     struct stat sb;		/*!< Current file stat(2) info. */
@@ -270,14 +269,13 @@ static int fsmMapPath(FSM_t fsm, int i)
 	/* XXX these should use rpmfiFFlags() etc */
 	/* Build doesn't have file states */
 	fsm->action = (fsm->fs) ? rpmfsGetAction(fsm->fs, i) : 0;
-	fsm->fflags = rpmfilesFFlags(fi, i);
 
 	/* src rpms have simple base name in payload. */
 	fsm->dirName = rpmfilesDN(fi, rpmfilesDI(fi, i));
 	fsm->baseName = rpmfilesBN(fi, i);
 
 	/* Never create backup for %ghost files. */
-	if (!(fsm->fflags & RPMFILE_GHOST)) {
+	if (!(rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
 	    switch (fsm->action) {
 	    case FA_ALTNAME:
 		fsm->nsuffix = SUFFIX_RPMNEW;
@@ -1371,7 +1369,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
         /* Remove erased files. */
         if (!fsm->postpone && fsm->action == FA_ERASE) {
-	    int missingok = (fsm->fflags & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
+	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
             if (S_ISDIR(fsm->sb.st_mode)) {
                 rc = fsmRmdir(fsm->path);
