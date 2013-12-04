@@ -59,8 +59,6 @@ struct fsm_s {
     int diskchecked;		/*!< Has stat(2) been performed? */
     int exists;			/*!< Does current file exist on disk? */
     cpioMapFlags mapFlags;	/*!< Bit(s) to control mapping. */
-    const char * dirName;	/*!< File directory name. */
-    const char * baseName;	/*!< File base name. */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
     fileStage goal;		/*!< Package state machine goal. */
@@ -95,7 +93,7 @@ static char * fsmFsPath(const FSM_t fsm, int isDir,
 			const char * suffix)
 {
     return rstrscat(NULL,
-		    fsm->dirName, fsm->baseName,
+		    rpmfiDN(fsm->fi), rpmfiBN(fsm->fi),
 		    (!isDir && suffix) ? suffix : "",
 		    NULL);
 }
@@ -252,9 +250,6 @@ static int fsmMapPath(FSM_t fsm, int i)
 
     if (fi && i >= 0 && i < rpmfilesFC(fi)) {
 	/* XXX these should use rpmfiFFlags() etc */
-	/* src rpms have simple base name in payload. */
-	fsm->dirName = rpmfilesDN(fi, rpmfilesDI(fi, i));
-	fsm->baseName = rpmfilesBN(fi, i);
 
 	/* Never create backup for %ghost files. */
 	if (!(rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
