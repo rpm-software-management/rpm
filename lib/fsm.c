@@ -63,7 +63,6 @@ struct fsm_s {
     const char * baseName;	/*!< File base name. */
     rpmPlugins plugins;    	/*!< Rpm plugins handle */
 
-    rpmFileAction action;	/*!< File disposition. */
     fileStage goal;		/*!< Package state machine goal. */
     struct stat sb;		/*!< Current file stat(2) info. */
     struct stat osb;		/*!< Original file stat(2) info. */
@@ -250,20 +249,16 @@ static int fsmMapPath(FSM_t fsm, int i)
 
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
-    fsm->action = FA_UNKNOWN;
 
     if (fi && i >= 0 && i < rpmfilesFC(fi)) {
 	/* XXX these should use rpmfiFFlags() etc */
-	/* Build doesn't have file states */
-	fsm->action = (fsm->fs) ? rpmfsGetAction(fsm->fs, i) : 0;
-
 	/* src rpms have simple base name in payload. */
 	fsm->dirName = rpmfilesDN(fi, rpmfilesDI(fi, i));
 	fsm->baseName = rpmfilesBN(fi, i);
 
 	/* Never create backup for %ghost files. */
 	if (!(rpmfilesFFlags(fi, i) & RPMFILE_GHOST)) {
-	    switch (fsm->action) {
+	    switch (rpmfsGetAction(fsm->fs, i)) {
 	    case FA_ALTNAME:
 		fsm->nsuffix = SUFFIX_RPMNEW;
 		break;
@@ -644,7 +639,6 @@ static void fsmReset(FSM_t fsm)
     fsm->path = _free(fsm->path);
     fsm->postpone = 0;
     fsm->diskchecked = fsm->exists = 0;
-    fsm->action = FA_UNKNOWN;
     fsm->osuffix = NULL;
     fsm->nsuffix = NULL;
     memset(&(fsm->sb), 0, sizeof(fsm->sb));
@@ -689,10 +683,11 @@ static int fsmInit(FSM_t fsm)
     rc = fsmMapAttrs(fsm->fi, (fsm->goal == FSM_PKGINSTALL), &fsm->sb);
     if (rc) return rc;
 
-    fsm->postpone = XFA_SKIPPING(fsm->action);
+    rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
+    fsm->postpone = XFA_SKIPPING(action);
 
     rpmlog(RPMLOG_DEBUG, "%-10s %06o%3d (%4d,%4d)%6d %s\n",
-	   fileActionString(fsm->action), (int)fsm->sb.st_mode,
+	   fileActionString(action), (int)fsm->sb.st_mode,
 	   (int)fsm->sb.st_nlink, (int)fsm->sb.st_uid,
 	   (int)fsm->sb.st_gid, (int)fsm->sb.st_size,
 	    (fsm->path ? fsm->path : ""));
@@ -876,9 +871,9 @@ static int fsmVerify(FSM_t fsm)
 static int fsmBackup(FSM_t fsm)
 {
     int rc = 0;
-
+    rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
     /* FIXME: %ghost can have backup action but no suffix */
-    if ((fsm->action == FA_SAVE || fsm->action == FA_BACKUP) && fsm->osuffix) {
+    if ((action == FA_SAVE || action == FA_BACKUP) && fsm->osuffix) {
         char * opath = fsmFsPath(fsm, S_ISDIR(fsm->sb.st_mode), NULL);
         char * path = fsmFsPath(fsm, 0, fsm->osuffix);
         rc = fsmRename(opath, path, fsm->mapFlags);
@@ -916,7 +911,9 @@ static int fsmSetmeta(FSM_t fsm, const struct stat * st)
     }
     if (!rc) {
 	rc = rpmpluginsCallFsmFilePrepare(fsm->plugins, fsm->path, dest,
-					  st->st_mode, fsm->action);
+					  st->st_mode,
+					  rpmfsGetAction(fsm->fs,
+							 rpmfiFX(fsm->fi)));
     }
 
     if (dest != fsm->path)
@@ -987,9 +984,9 @@ static const char * fileActionString(rpmFileAction a)
 }
 
 /* Remember any non-regular file state for recording in the rpmdb */
-static void setFileState(rpmfs fs, int i, rpmFileAction action)
+static void setFileState(rpmfs fs, int i)
 {
-    switch (action) {
+    switch (rpmfsGetAction(fs, i)) {
     case FA_SKIPNSTATE:
 	rpmfsSetState(fs, i, RPMFILE_STATE_NOTINSTALLED);
 	break;
@@ -1045,11 +1042,12 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path,
-				      fsm->sb.st_mode, fsm->action);
+				      fsm->sb.st_mode,
+				      rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi)));
 	if (rc) {
 	    fsm->postpone = 1;
 	} else {
-	    setFileState(fsm->fs, rpmfiFX(fi), fsm->action);
+	    setFileState(fsm->fs, rpmfiFX(fi));
 	    numHardlinks = rpmfiFLinks(fi, &hardlinks);
 	}
 
@@ -1151,7 +1149,9 @@ int rpmPackageFilesInstall(rpmts ts, rpmte te, rpmfiles files, FD_t cfd,
 
 	/* Run fsm file post hook for all plugins */
 	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path,
-				  fsm->sb.st_mode, fsm->action, rc);
+				  fsm->sb.st_mode,
+				  rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi)),
+				  rc);
 
     }
 
@@ -1176,16 +1176,17 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 	fsmReset(fsm);
 
         rc = fsmInit(fsm);
+	rpmFileAction action = rpmfsGetAction(fsm->fs, rpmfiFX(fsm->fi));
 
 	/* Run fsm file pre hook for all plugins */
 	rc = rpmpluginsCallFsmFilePre(fsm->plugins, fsm->path,
-				      fsm->sb.st_mode, fsm->action);
+				      fsm->sb.st_mode, action);
 
 	if (!fsm->postpone)
 	    rc = fsmBackup(fsm);
 
         /* Remove erased files. */
-        if (!fsm->postpone && fsm->action == FA_ERASE) {
+        if (!fsm->postpone && action == FA_ERASE) {
 	    int missingok = (rpmfiFFlags(fi) & (RPMFILE_MISSINGOK | RPMFILE_GHOST));
 
             if (S_ISDIR(fsm->sb.st_mode)) {
@@ -1224,7 +1225,7 @@ int rpmPackageFilesRemove(rpmts ts, rpmte te, rpmfiles files,
 
 	/* Run fsm file post hook for all plugins */
 	rpmpluginsCallFsmFilePost(fsm->plugins, fsm->path,
-				  fsm->sb.st_mode, fsm->action, rc);
+				  fsm->sb.st_mode, action, rc);
 
         /* XXX Failure to remove is not (yet) cause for failure. */
         if (!strict_erasures) rc = 0;
