@@ -72,6 +72,7 @@ pkginclude_HEADERS += lib/rpmcli.h
 pkginclude_HEADERS += lib/rpmlib.h
 pkginclude_HEADERS += lib/rpmds.h
 pkginclude_HEADERS += lib/rpmfi.h
+pkginclude_HEADERS += lib/rpmfiles.h
 pkginclude_HEADERS += lib/rpmlegacy.h
 pkginclude_HEADERS += lib/rpmpol.h
 pkginclude_HEADERS += lib/rpmps.h
