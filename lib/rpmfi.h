@@ -8,8 +8,6 @@
 
 #include <rpm/rpmtypes.h>
 #include <rpm/rpmfiles.h>
-#include <rpm/rpmvf.h>
-#include <rpm/rpmpgp.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -375,18 +373,22 @@ int rpmfiCompare(const rpmfi afi, const rpmfi bfi);
 
 /** \ingroup rpmfi
  * Return file disposition.
+ * @deprecated
  * @param ofi		old file info
  * @param nfi		new file info
  * @param skipMissing	OK to skip missing files?
  * @return		file disposition
  */
+RPM_GNUC_DEPRECATED
 rpmFileAction rpmfiDecideFate(const rpmfi ofi, rpmfi nfi, int skipMissing);
 
 /** \ingroup rpmfi
  * Return whether file is conflicting config
+ * @deprecated
  * @param fi		file info
  * @return		1 if config file and file on disk conflicts
  */
+RPM_GNUC_DEPRECATED
 int rpmfiConfigConflict(const rpmfi fi);
 
 #ifdef __cplusplus

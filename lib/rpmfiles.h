@@ -6,6 +6,8 @@
  * File info set API.
  */
 #include <rpm/rpmtypes.h>
+#include <rpm/rpmvf.h>
+#include <rpm/rpmpgp.h>
 
 /** \ingroup rpmfi
  * File types.
@@ -129,5 +131,96 @@ typedef rpmFlags rpmfiFlags;
 #define RPMFI_FLAGS_QUERY \
     (RPMFI_NOFILECLASS | RPMFI_NOFILEDEPS | RPMFI_NOFILELANGS | \
      RPMFI_NOFILECOLORS | RPMFI_NOFILEVERIFYFLAGS)
+
+typedef enum rpmFileIter_e {
+    RPMFI_ITER_FWD	= 0,
+    RPMFI_ITER_BACK	= 1,
+    RPMFI_ITER_READ_ARCHIVE	= 2,
+    RPMFI_ITER_WRITE_ARCHIVE	= 3,
+} rpmFileIter;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
+
+rpmfiles rpmfilesLink(rpmfiles fi);
+
+rpmfiles rpmfilesFree(rpmfiles fi);
+
+rpm_count_t rpmfilesFC(rpmfiles fi);
+
+rpm_count_t rpmfilesDC(rpmfiles fi);
+
+int rpmfilesFindFN(rpmfiles files, const char * fn);
+
+int rpmfilesFindOFN(rpmfiles files, const char * fn);
+
+rpmfi rpmfilesIter(rpmfiles files, int itype);
+
+int rpmfilesDigestAlgo(rpmfiles fi);
+
+rpm_color_t rpmfilesColor(rpmfiles files);
+
+int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix);
+
+const char * rpmfilesBN(rpmfiles fi, int ix);
+
+const char * rpmfilesDN(rpmfiles fi, int jx);
+
+int rpmfilesDI(rpmfiles fi, int dx);
+
+char * rpmfilesFN(rpmfiles fi, int ix);
+
+int rpmfilesODI(rpmfiles fi, int dx);
+
+const char * rpmfilesOBN(rpmfiles fi, int ix);
+
+const char * rpmfilesODN(rpmfiles fi, int jx);
+
+char * rpmfilesOFN(rpmfiles fi, int ix);
+
+rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix);
+
+rpmfileState rpmfilesFState(rpmfiles fi, int ix);
+
+const char * rpmfilesFLink(rpmfiles fi, int ix);
+
+rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix);
+
+rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
+
+const char * rpmfilesFClass(rpmfiles fi, int ix);
+
+uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp);
+
+uint32_t rpmfilesFNlink(rpmfiles fi, int ix);
+
+uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files);
+
+const char * rpmfilesFLangs(rpmfiles fi, int ix);
+
+rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix);
+
+rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
+
+const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *len);
+
+rpm_rdev_t rpmfilesFRdev(rpmfiles fi, int ix);
+
+rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix);
+
+rpm_time_t rpmfilesFMtime(rpmfiles fi, int ix);
+
+const char * rpmfilesFUser(rpmfiles fi, int ix);
+
+const char * rpmfilesFGroup(rpmfiles fi, int ix);
+
+const char * rpmfilesFCaps(rpmfiles fi, int ix);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* _RPMFILES_H */
