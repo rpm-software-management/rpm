@@ -1,7 +1,7 @@
 #ifndef _RPMFILES_H
 #define _RPMFILES_H
 
-/** \ingroup rpmfiles
+/** \ingroup rpmfilesles
  * \file lib/rpmfiles.h
  * File info set API.
  */
@@ -9,7 +9,7 @@
 #include <rpm/rpmvf.h>
 #include <rpm/rpmpgp.h>
 
-/** \ingroup rpmfi
+/** \ingroup rpmfiles
  * File types.
  * These are the file types used internally by rpm. The file
  * type is determined by applying stat(2) macros like S_ISDIR to
@@ -62,7 +62,7 @@ typedef rpmFlags rpmfileAttrs;
 
 #define	RPMFILE_ALL	~(RPMFILE_NONE)
 
-/** \ingroup rpmfi
+/** \ingroup rpmfiles
  * File disposition(s) during package install/erase transaction.
  */
 typedef enum rpmFileAction_e {
@@ -143,80 +143,297 @@ typedef enum rpmFileIter_e {
 extern "C" {
 #endif
 
+/** \ingroup rpmfiles
+ * Create and load a file info set.
+ * @param pool		shared string pool (or NULL for private pool)
+ * @param h		header
+ * @param tagN		unused
+ * @param flags		Flags to control what information is loaded.
+ * @return		new file info set
+ */
 rpmfiles rpmfilesNew(rpmstrPool pool, Header h, rpmTagVal tagN, rpmfiFlags flags);
 
+/** \ingroup rpmfiles
+ * Reference a file info set instance.
+ * @param fi		file info set
+ * @return		new file info set reference
+ */
 rpmfiles rpmfilesLink(rpmfiles fi);
 
+/** \ingroup rpmfiles
+ * Destroy a file info set.
+ * @param fi		file info set
+ * @return		NULL always
+ */
 rpmfiles rpmfilesFree(rpmfiles fi);
 
+/** \ingroup rpmfiles
+ * Return file count from file info set.
+ * @param fi		file info set
+ * @return		file count
+ */
 rpm_count_t rpmfilesFC(rpmfiles fi);
 
+/** \ingroup rpmfiles
+ * Return directory count from file info set.
+ * @param fi		file info set
+ * @return		directory count
+ */
 rpm_count_t rpmfilesDC(rpmfiles fi);
 
+/** \ingroup rpmfiles
+ * Return file index of the given file name or -1 if file is not in the rpmfi.
+ * The file name may have "." prefixed but is then interpreted as a global
+ * path without the prefixing "."
+ * @param fi            file info set
+ * @return              file index or -1
+ */
 int rpmfilesFindFN(rpmfiles files, const char * fn);
 
+/** \ingroup rpmfiles
+ * Return file index of the given original file name or -1 if file is not
+ * in the rpmfi. The file name may have "." prefixed but is then interpreted
+ * as a global path without the prefixing "."
+ * @param fi            file info set
+ * @return              file index or -1
+ */
 int rpmfilesFindOFN(rpmfiles files, const char * fn);
 
 rpmfi rpmfilesIter(rpmfiles files, int itype);
 
+/** \ingroup rpmfiles
+ * Return digest algorithm of a file info set.
+ * @param fi		file info set
+ * @return		digest algorithm of file info set, 0 on invalid
+ */
 int rpmfilesDigestAlgo(rpmfiles fi);
 
+/** \ingroup rpmfiles
+ * Return union of all file color bits from file info set.
+ * @param fi		file info set
+ * @return		color
+ */
 rpm_color_t rpmfilesColor(rpmfiles files);
 
+/** \ingroup rpmfiles
+ * Return file info comparison.
+ * @param afi		1st file info
+ * @param aix		index of the 1st file
+ * @param bfi		2nd file info
+ * @param bix		index of the 2nd file
+ * @return		0 if identical
+ */
 int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix);
 
+/** \ingroup rpmfiles
+ * Return base name from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		base name, NULL on invalid
+ */
 const char * rpmfilesBN(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return directory name from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		directory, NULL on invalid
+ */
 const char * rpmfilesDN(rpmfiles fi, int jx);
 
 int rpmfilesDI(rpmfiles fi, int dx);
 
+/** \ingroup rpmfiles
+ * Return file name from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file name (malloced)
+ */
 char * rpmfilesFN(rpmfiles fi, int ix);
 
 int rpmfilesODI(rpmfiles fi, int dx);
 
+/** \ingroup rpmfiles
+ * Return original base name from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		base name, NULL on invalid
+ */
 const char * rpmfilesOBN(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return original directory name from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		directory, NULL on invalid
+ */
 const char * rpmfilesODN(rpmfiles fi, int jx);
 
+/** \ingroup rpmfiles
+ * Return original file name from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file name
+ */
 char * rpmfilesOFN(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file verify flags from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file verify flags, 0 on invalid
+ */
 rpmVerifyAttrs rpmfilesVFlags(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file state from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file state, 0 on invalid
+ */
 rpmfileState rpmfilesFState(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file linkto (i.e. symlink(2) target) from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file linkto, NULL on invalid
+ */
 const char * rpmfilesFLink(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file size from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file size, 0 on invalid
+ */
 rpm_loff_t rpmfilesFSize(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file color bits from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file color
+ */
 rpm_color_t rpmfilesFColor(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file class from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file class, 0 on invalid
+ */
 const char * rpmfilesFClass(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file depends dictionary from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @retval *fddictp	file depends dictionary array (or NULL)
+ * @return		no. of file depends entries, 0 on invalid
+ */
 uint32_t rpmfilesFDepends(rpmfiles fi, int ix, const uint32_t ** fddictp);
 
+/** \ingroup rpmfiles
+ * Return (calculated) file nlink count from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file nlink count, 0 on invalid
+ */
 uint32_t rpmfilesFNlink(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return (calculated) file nlink count from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @param files         returns array of file ids hardlinked including ix,
+			NULL for nlink count == 1
+ * @return		file nlink count, 0 on invalid
+ */
 uint32_t rpmfilesFLinks(rpmfiles fi, int ix, const int ** files);
 
+/** \ingroup rpmfiles
+ * Return file language(s) from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file language(s), NULL on invalid
+ */
 const char * rpmfilesFLangs(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file flags from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file flags, 0 on invalid
+ */
 rpmfileAttrs rpmfilesFFlags(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file mode from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file mode, 0 on invalid
+ */
 rpm_mode_t rpmfilesFMode(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file (binary) digest of file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @retval algo		digest hash algorithm used (pass NULL to ignore)
+ * @retval diglen	digest hash length (pass NULL to ignore)
+ * @return		file digest, NULL on invalid
+ */
 const unsigned char * rpmfilesFDigest(rpmfiles fi, int ix, int *algo, size_t *len);
 
+/** \ingroup rpmfiles
+ * Return file rdev from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file rdev, 0 on invalid
+ */
 rpm_rdev_t rpmfilesFRdev(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file inode from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file inode, 0 on invalid
+ */
 rpm_ino_t rpmfilesFInode(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file modify time from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file modify time, 0 on invalid
+ */
 rpm_time_t rpmfilesFMtime(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file owner from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file owner, NULL on invalid
+ */
 const char * rpmfilesFUser(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return file group from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file group, NULL on invalid
+ */
 const char * rpmfilesFGroup(rpmfiles fi, int ix);
 
+/** \ingroup rpmfiles
+ * Return textual representation of file capabilities 
+ * from file info set. See cap_from_text(3) for details.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		file capability description, "" for no capabilities
+ * 			and NULL on invalid
+ */
 const char * rpmfilesFCaps(rpmfiles fi, int ix);
 
 #ifdef __cplusplus

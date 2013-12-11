@@ -14,7 +14,9 @@
  */
 /** \defgroup	rpmds	Dependency Set API.
  */
-/** \defgroup	rpmfi	File Info API.
+/** \defgroup	rpmfiles	File Info Set API.
+ */
+/** \defgroup	rpmfi	File Info Set Iterator API.
  */
 /** \defgroup	rpmfc	File Classification API.
  */
