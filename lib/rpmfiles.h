@@ -234,14 +234,25 @@ int rpmfilesCompare(rpmfiles afi, int aix, rpmfiles bfi, int bix);
 const char * rpmfilesBN(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
- * Return directory name from file info set.
+ * Return directory name from file info set. Note the index is on
+ * distinct directories within the file set, not a file index. The
+ * directory index associated with a given file index can be retrieved
+ * with rpmfilesDI(). Ie to constuct the full path of file index X
+ * you'd catenate the results of rpmfilesDN(f, rpmfilesDI(f, X)) and
+ * rpmfilesBN(f, X).
  * @param fi		file info set
- * @param ix		file index
+ * @param ix		directory index
  * @return		directory, NULL on invalid
  */
 const char * rpmfilesDN(rpmfiles fi, int jx);
 
-int rpmfilesDI(rpmfiles fi, int dx);
+/** \ingroup rpmfiles
+ * Return directory index from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		directory index, -1 on invalid
+ */
+int rpmfilesDI(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
  * Return file name from file info set.
@@ -251,7 +262,13 @@ int rpmfilesDI(rpmfiles fi, int dx);
  */
 char * rpmfilesFN(rpmfiles fi, int ix);
 
-int rpmfilesODI(rpmfiles fi, int dx);
+/** \ingroup rpmfiles
+ * Return original directory index from file info set.
+ * @param fi		file info set
+ * @param ix		file index
+ * @return		directory index, -1 on invalid
+ */
+int rpmfilesODI(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
  * Return original base name from file info set.
@@ -262,9 +279,14 @@ int rpmfilesODI(rpmfiles fi, int dx);
 const char * rpmfilesOBN(rpmfiles fi, int ix);
 
 /** \ingroup rpmfiles
- * Return original directory name from file info set.
+ * Return original directory name from file info set. Note the index is on
+ * distinct directories within the file set, not a file index. The
+ * directory index associated with a given file index can be retrieved
+ * with rpmfilesODI(). Ie to constuct the full path of file index X
+ * you'd catenate the results of rpmfilesODN(f, rpmfilesODI(f, X)) and
+ * rpmfilesOBN(f, X). 
  * @param fi		file info set
- * @param ix		file index
+ * @param ix		directory index
  * @return		directory, NULL on invalid
  */
 const char * rpmfilesODN(rpmfiles fi, int jx);

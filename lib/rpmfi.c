@@ -215,12 +215,12 @@ static rpm_count_t rpmfnDC(rpmfn fndata)
     return (fndata != NULL) ? fndata->dc : 0;
 }
 
-static int rpmfnDI(rpmfn fndata, int dx)
+static int rpmfnDI(rpmfn fndata, int ix)
 {
     int j = -1;
-    if (dx >= 0 && dx < rpmfnFC(fndata)) {
+    if (ix >= 0 && ix < rpmfnFC(fndata)) {
 	if (fndata->dil != NULL)
-	    j = fndata->dil[dx];
+	    j = fndata->dil[ix];
     }
     return j;
 }
@@ -329,14 +329,14 @@ int rpmfiSetDX(rpmfi fi, int dx)
     return j;
 }
 
-int rpmfilesDI(rpmfiles fi, int dx)
+int rpmfilesDI(rpmfiles fi, int ix)
 {
-    return (fi != NULL) ? rpmfnDI(&fi->fndata, dx) : -1;
+    return (fi != NULL) ? rpmfnDI(&fi->fndata, ix) : -1;
 }
 
-int rpmfilesODI(rpmfiles fi, int dx)
+int rpmfilesODI(rpmfiles fi, int ix)
 {
-    return (fi != NULL) ? rpmfnDI(fi->ofndata, dx) : -1;
+    return (fi != NULL) ? rpmfnDI(fi->ofndata, ix) : -1;
 }
 
 rpmsid rpmfilesBNId(rpmfiles fi, int ix)
