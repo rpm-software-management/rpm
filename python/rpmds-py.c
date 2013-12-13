@@ -6,6 +6,7 @@
 
 #include "header-py.h"
 #include "rpmds-py.h"
+#include "rpmstrpool-py.h"
 
 struct rpmdsObject_s {
     PyObject_HEAD
@@ -169,10 +170,15 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
     return Py_BuildValue("i", rpmdsInstance(s->ds));
 }
 
-static PyObject * rpmds_Rpmlib(rpmdsObject * s)
+static PyObject * rpmds_Rpmlib(rpmdsObject * s, PyObject *args, PyObject *kwds)
 {
-    rpmds ds = NULL;
     rpmstrPool pool = NULL;
+    rpmds ds = NULL;
+    char * kwlist[] = {"pool", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|O&:rpmds_Rpmlib", kwlist, 
+		 &poolFromPyObject, &pool))
+	return NULL;
 
     /* XXX check return code, permit arg (NULL uses system default). */
     rpmdsRpmlibPool(pool, &ds, NULL);
@@ -211,7 +217,7 @@ static struct PyMethodDef rpmds_methods[] = {
 "ds.Search(element) -> matching ds index (-1 on failure)\n\
 - Check that element dependency range overlaps some member of ds.\n\
 The current index in ds is positioned at overlapping member upon success.\n" },
- {"Rpmlib",     (PyCFunction)rpmds_Rpmlib,      METH_NOARGS|METH_STATIC,
+ {"Rpmlib",     (PyCFunction)rpmds_Rpmlib,      METH_VARARGS|METH_KEYWORDS|METH_STATIC,
 	"ds.Rpmlib -> nds       - Return internal rpmlib dependency set.\n"},
  {"Compare",	(PyCFunction)rpmds_Compare,	METH_O,
 	NULL},
@@ -307,10 +313,11 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmds ds = NULL;
     Header h = NULL;
     rpmstrPool pool = NULL;
-    char * kwlist[] = {"obj", "tag", NULL};
+    char * kwlist[] = {"obj", "tag", "pool", NULL};
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&:rpmds_new", kwlist, 
-	    	 &obj, tagNumFromPyObject, &tagN))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&|O&:rpmds_new", kwlist, 
+	    	 &obj, tagNumFromPyObject, &tagN,
+		 &poolFromPyObject, &pool))
 	return NULL;
 
     if (PyTuple_Check(obj)) {
