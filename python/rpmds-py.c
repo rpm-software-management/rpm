@@ -172,9 +172,10 @@ static PyObject *rpmds_Instance(rpmdsObject * s)
 static PyObject * rpmds_Rpmlib(rpmdsObject * s)
 {
     rpmds ds = NULL;
+    rpmstrPool pool = NULL;
 
     /* XXX check return code, permit arg (NULL uses system default). */
-    rpmdsRpmlib(&ds, NULL);
+    rpmdsRpmlibPool(pool, &ds, NULL);
 
     return rpmds_Wrap(&rpmds_Type, ds);
 }
@@ -305,6 +306,7 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmTagVal tagN = RPMTAG_REQUIRENAME;
     rpmds ds = NULL;
     Header h = NULL;
+    rpmstrPool pool = NULL;
     char * kwlist[] = {"obj", "tag", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO&:rpmds_new", kwlist, 
@@ -317,16 +319,16 @@ static PyObject * rpmds_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
 	rpmsenseFlags flags = RPMSENSE_ANY;
 	/* TODO: if flags are specified, evr should be required too */
 	if (PyArg_ParseTuple(obj, "s|O&s", &name, depflags, &flags, &evr)) {
-	    ds = rpmdsSingle(tagN, name, evr, flags);
+	    ds = rpmdsSinglePool(pool, tagN, name, evr, flags);
 	} else {
 	    PyErr_SetString(PyExc_ValueError, "invalid dependency tuple");
 	    return NULL;
 	}
     } else if (hdrFromPyObject(obj, &h)) {
 	if (tagN == RPMTAG_NEVR) {
-	    ds = rpmdsThis(h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
+	    ds = rpmdsThisPool(pool, h, RPMTAG_PROVIDENAME, RPMSENSE_EQUAL);
 	} else {
-	    ds = rpmdsNew(h, tagN, 0);
+	    ds = rpmdsNewPool(pool, h, tagN, 0);
 	}
     } else {
 	PyErr_SetString(PyExc_TypeError, "header or tuple expected");
