@@ -25,6 +25,7 @@ _rpmmodule_la_SOURCES = rpmmodule.c rpmsystem-py.h \
 	rpmii-py.c rpmii-py.h \
 	rpmps-py.c rpmps-py.h \
 	rpmmacro-py.c rpmmacro-py.h \
+	rpmstrpool-py.c rpmstrpool-py.h \
 	rpmtd-py.c rpmtd-py.h \
 	rpmte-py.c rpmte-py.h \
 	rpmts-py.c rpmts-py.h
