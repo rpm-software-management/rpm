@@ -64,7 +64,7 @@ rpmfi_FindFN(rpmfiObject * s, PyObject * args, PyObject * kwds)
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "S:FindFN", kwlist,
                                      &filename))
         return NULL;
-    return Py_BuildValue("i", rpmfiFindFN(s->fi, PyString_AsString(filename)));
+    return Py_BuildValue("i", rpmfiFindFN(s->fi, PyBytes_AsString(filename)));
 }
 
 
