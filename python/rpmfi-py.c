@@ -299,13 +299,14 @@ static PyObject * rpmfi_new(PyTypeObject * subtype, PyObject *args, PyObject *kw
     rpmfi fi = NULL;
     rpmTagVal tagN = RPMTAG_BASENAMES;
     int flags = 0;
+    rpmstrPool pool = NULL;
     char * kwlist[] = {"header", "tag", "flags", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O&|Oi:rpmfi_init", kwlist,
 				hdrFromPyObject, &h, &to, &flags))
 	return NULL;
 
-    fi = rpmfiNew(NULL, h, tagN, flags);
+    fi = rpmfiNewPool(pool, h, tagN, flags);
 
     if (fi == NULL) {
 	PyErr_SetString(PyExc_ValueError, "invalid file data in header");
