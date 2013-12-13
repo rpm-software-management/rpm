@@ -313,3 +313,35 @@ for f in fi:
 ],
 [])
 
+RPMPY_TEST([string pool 1],[
+p = rpm.strpool()
+for s in ['foo', 'bar', 'foo', 'zoo']:
+    p.str2id(s)
+myprint('%s' % len(p))
+for i in range(1, len(p)+1):
+    myprint('%s: %s' % (i, p[i]))
+],
+[3
+1: foo
+2: bar
+3: zoo
+],
+[])
+
+RPMPY_TEST([string pool 2],[
+p = rpm.strpool()
+d1 = rpm.ds(('foo', rpm.RPMSENSE_EQUAL, '2.0'), rpm.RPMTAG_PROVIDES, pool=p)
+d2 = rpm.ds(('bar', rpm.RPMSENSE_EQUAL, '2.0'), rpm.RPMTAG_PROVIDES, pool=p)
+d3 = rpm.ds(('bar', rpm.RPMSENSE_EQUAL, '2.0'), rpm.RPMTAG_PROVIDES, pool=p)
+myprint('%s' % len(p))
+del p
+myprint(d1.DNEVR())
+myprint(d2.DNEVR())
+myprint(d3.DNEVR())
+],
+[3
+P foo = 2.0
+P bar = 2.0
+P bar = 2.0
+],
+[])
