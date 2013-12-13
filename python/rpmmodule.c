@@ -16,6 +16,7 @@
 #include "rpmii-py.h"
 #include "rpmps-py.h"
 #include "rpmmacro-py.h"
+#include "rpmstrpool-py.h"
 #include "rpmtd-py.h"
 #include "rpmte-py.h"
 #include "rpmts-py.h"
@@ -223,6 +224,7 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmii_Type) < 0) return 0;
     if (PyType_Ready(&rpmProblem_Type) < 0) return 0;
     if (PyType_Ready(&rpmPubkey_Type) < 0) return 0;
+    if (PyType_Ready(&rpmstrPool_Type) < 0) return 0;
 #if 0
     if (PyType_Ready(&rpmtd_Type) < 0) return 0;
 #endif
@@ -330,6 +332,9 @@ static int initModule(PyObject *m)
 
     Py_INCREF(&rpmPubkey_Type);
     PyModule_AddObject(m, "pubkey", (PyObject *) &rpmPubkey_Type);
+
+    Py_INCREF(&rpmstrPool_Type);
+    PyModule_AddObject(m, "strpool", (PyObject *) &rpmstrPool_Type);
 
 #if 0
     Py_INCREF(&rpmtd_Type);
