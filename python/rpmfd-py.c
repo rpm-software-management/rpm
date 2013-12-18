@@ -52,6 +52,15 @@ static FD_t openPath(const char *path, const char *mode)
     return fd;
 }
 
+static FD_t openFd(FD_t ofd, const char *mode)
+{
+    FD_t fd;
+    Py_BEGIN_ALLOW_THREADS
+    fd = Fdopen(ofd, mode);
+    Py_END_ALLOW_THREADS;
+    return fd;
+}
+
 static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 {
     char *kwlist[] = { "obj", "mode", "flags", NULL };
@@ -83,7 +92,7 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 	    Py_DECREF(enc);
 	}
     } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
-	fd = fdDup(fdno);
+	fd = openFd(fdDup(fdno), rpmio_mode);
     } else {
 	PyErr_SetString(PyExc_TypeError, "path or file object expected");
     }
