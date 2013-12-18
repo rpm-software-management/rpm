@@ -91,6 +91,9 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 	    fd = openPath(PyBytes_AsString(enc), rpmio_mode);
 	    Py_DECREF(enc);
 	}
+    } else if (rpmfdObject_Check(fo)) {
+	rpmfdObject *fdo = (rpmfdObject *)fo;
+	fd = openFd(fdo->fd, rpmio_mode);
     } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
 	fd = openFd(fdDup(fdno), rpmio_mode);
     } else {
