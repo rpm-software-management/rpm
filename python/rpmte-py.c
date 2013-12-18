@@ -3,6 +3,7 @@
 #include "header-py.h"	/* XXX tagNumFromPyObject */
 #include "rpmds-py.h"
 #include "rpmfi-py.h"
+#include "rpmfiles-py.h"
 #include "rpmte-py.h"
 #include "rpmps-py.h"
 
@@ -35,8 +36,9 @@
  * - te.Key()	Return the associated opaque key, i.e. 2nd arg ts.addInstall().
  * - te.DS(tag)	Return package dependency set.
  * @param tag	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'
- * - te.FI(tag)	Return package file info set.
+ * - te.FI(tag)	Return package file info set iterator (deprecated).
  * @param tag	'Basenames'
+ * - te.Files()	Return package file info set.
  */
 
 struct rpmteObject_s {
@@ -182,6 +184,8 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
 {
     rpmfi fi;
 
+    DEPRECATED_METHOD("use .Files() instead");
+
     fi = rpmteFI(s->te);
     if (fi == NULL) {
 	Py_RETURN_NONE;
@@ -189,6 +193,15 @@ rpmte_FI(rpmteObject * s, PyObject * args, PyObject * kwds)
     return rpmfi_Wrap(&rpmfi_Type, rpmfiLink(fi));
 }
 
+static PyObject *
+rpmte_Files(rpmteObject * s, PyObject * args, PyObject * kwds)
+{
+    rpmfiles files = rpmteFiles(s->te);
+    if (files == NULL) {
+	Py_RETURN_NONE;
+    }
+    return rpmfiles_Wrap(&rpmfiles_Type, files);
+}
 static struct PyMethodDef rpmte_methods[] = {
     {"Type",	(PyCFunction)rpmte_TEType,	METH_NOARGS,
 "te.Type() -> Type\n\
@@ -239,7 +252,10 @@ static struct PyMethodDef rpmte_methods[] = {
 	'Providename', 'Requirename', 'Obsoletename', 'Conflictname'\n" },
     {"FI",	(PyCFunction)rpmte_FI,		METH_VARARGS|METH_KEYWORDS,
 "te.FI(TagN) -> FI\n\
-- Return the TagN dependency set (or None). TagN must be 'Basenames'.\n" },
+- Return file info iterator of element. Deprecated, use .Files() instead.\n" },
+    {"Files",	(PyCFunction)rpmte_Files,	METH_NOARGS,
+"te.Files() -> files\n\
+- Return file info set of element.\n" },
     {NULL,		NULL}		/* sentinel */
 };
 
