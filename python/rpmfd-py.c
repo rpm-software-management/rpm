@@ -43,14 +43,12 @@ static PyObject *err_closed(void)
     return NULL;
 }
 
-static FD_t openPath(const char *path, const char *mode, const char *flags)
+static FD_t openPath(const char *path, const char *mode)
 {
     FD_t fd;
-    char *m = rstrscat(NULL, mode, ".", flags, NULL);
     Py_BEGIN_ALLOW_THREADS
-    fd = Fopen(path, m);
+    fd = Fopen(path, mode);
     Py_END_ALLOW_THREADS;
-    free(m);
     return fd;
 }
 
@@ -59,6 +57,7 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
     char *kwlist[] = { "obj", "mode", "flags", NULL };
     const char *mode = "r";
     const char *flags = "ufdio";
+    char *rpmio_mode = NULL;
     PyObject *fo = NULL;
     FD_t fd = NULL;
     int fdno;
@@ -67,8 +66,10 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 				     &fo, &mode, &flags))
 	return -1;
 
+    rpmio_mode = rstrscat(NULL, mode, ".", flags, NULL);
+
     if (PyBytes_Check(fo)) {
-	fd = openPath(PyBytes_AsString(fo), mode, flags);
+	fd = openPath(PyBytes_AsString(fo), rpmio_mode);
     } else if (PyUnicode_Check(fo)) {
 	PyObject *enc = NULL;
 	int rc;
@@ -78,7 +79,7 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 	rc = utf8FromPyObject(fo, &enc);
 #endif
 	if (rc) {
-	    fd = openPath(PyBytes_AsString(enc), mode, flags);
+	    fd = openPath(PyBytes_AsString(enc), rpmio_mode);
 	    Py_DECREF(enc);
 	}
     } else if ((fdno = PyObject_AsFileDescriptor(fo)) >= 0) {
@@ -95,6 +96,7 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
 	PyErr_SetString(PyExc_IOError, Fstrerror(fd));
     }
 
+    free(rpmio_mode);
     return (fd == NULL) ? -1 : 0;
 }
 
