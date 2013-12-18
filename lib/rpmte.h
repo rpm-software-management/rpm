@@ -233,7 +233,15 @@ int rpmteFailed(rpmte te);
 rpmds rpmteDS(rpmte te, rpmTagVal tag);
 
 /** \ingroup rpmte
- * Retrieve file info tag set from transaction element.
+ * Retrieve file info set from transaction element.
+ * @param te		transaction element
+ * @return		file info set (refcounted)
+ */
+rpmfiles rpmteFiles(rpmte te);
+
+/** \ingroup rpmte
+ * Retrieve file info iterator from transaction element.
+ * @deprecated		use rpmteFiles() instead
  * @param te		transaction element
  * @return		file info tag set
  */
