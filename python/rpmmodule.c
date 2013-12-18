@@ -11,6 +11,7 @@
 #include "rpmds-py.h"
 #include "rpmfd-py.h"
 #include "rpmfi-py.h"
+#include "rpmfiles-py.h"
 #include "rpmkeyring-py.h"
 #include "rpmmi-py.h"
 #include "rpmii-py.h"
@@ -219,6 +220,8 @@ static int prepareInitModule(void)
     if (PyType_Ready(&rpmds_Type) < 0) return 0;
     if (PyType_Ready(&rpmfd_Type) < 0) return 0;
     if (PyType_Ready(&rpmfi_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfile_Type) < 0) return 0;
+    if (PyType_Ready(&rpmfiles_Type) < 0) return 0;
     if (PyType_Ready(&rpmKeyring_Type) < 0) return 0;
     if (PyType_Ready(&rpmmi_Type) < 0) return 0;
     if (PyType_Ready(&rpmii_Type) < 0) return 0;
@@ -317,6 +320,12 @@ static int initModule(PyObject *m)
 
     Py_INCREF(&rpmfi_Type);
     PyModule_AddObject(m, "fi", (PyObject *) &rpmfi_Type);
+
+    Py_INCREF(&rpmfile_Type);
+    PyModule_AddObject(m, "file", (PyObject *) &rpmfile_Type);
+
+    Py_INCREF(&rpmfiles_Type);
+    PyModule_AddObject(m, "files", (PyObject *) &rpmfiles_Type);
 
     Py_INCREF(&rpmKeyring_Type);
     PyModule_AddObject(m, "keyring", (PyObject *) &rpmKeyring_Type);

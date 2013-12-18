@@ -24,7 +24,7 @@ rpmmod = Extension('rpm._rpm',
                    sources = mksources([
                                 'header', 'rpmds', 'rpmfd', 'rpmfi', 'rpmii',
                                 'rpmkeyring', 'rpmmacro', 'rpmmi', 'rpmps',
-                                'rpmstrpool',
+                                'rpmstrpool', 'rpmfiles'
                                 'rpmtd', 'rpmte', 'rpmts', 'rpmmodule',
                              ]),
                    include_dirs = pkgconfig('--cflags'),
