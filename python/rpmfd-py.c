@@ -8,6 +8,8 @@ struct rpmfdObject_s {
     PyObject_HEAD
     PyObject *md_dict;
     FD_t fd;
+    char *mode;
+    char *flags;
 };
 
 FD_t rpmfdGetFd(rpmfdObject *fdo)
@@ -101,9 +103,12 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
     }
 
     if (fd != NULL) {
-	/* TODO: remember our filename, mode & flags */
 	Fclose(s->fd); /* in case __init__ was called again */
+	free(s->mode);
+	free(s->flags);
 	s->fd = fd;
+	s->mode = rstrdup(mode);
+	s->flags = rstrdup(flags);
     } else {
 	PyErr_SetString(PyExc_IOError, Fstrerror(fd));
     }
@@ -133,6 +138,8 @@ static void rpmfd_dealloc(rpmfdObject *s)
 {
     PyObject *res = do_close(s);
     Py_XDECREF(res);
+    free(s->mode);
+    free(s->flags);
     Py_TYPE(s)->tp_free((PyObject *)s);
 }
 
@@ -316,9 +323,21 @@ static PyObject *rpmfd_get_name(rpmfdObject *s)
     return Py_BuildValue("s", Fdescr(s->fd));
 }
 
+static PyObject *rpmfd_get_mode(rpmfdObject *s)
+{
+    return Py_BuildValue("s", s->mode);
+}
+
+static PyObject *rpmfd_get_flags(rpmfdObject *s)
+{
+    return Py_BuildValue("s", s->flags);
+}
+
 static PyGetSetDef rpmfd_getseters[] = {
     { "closed", (getter)rpmfd_get_closed, NULL, NULL },
     { "name", (getter)rpmfd_get_name, NULL, NULL },
+    { "mode", (getter)rpmfd_get_mode, NULL, NULL },
+    { "flags", (getter)rpmfd_get_flags, NULL, NULL },
     { NULL },
 };
 
