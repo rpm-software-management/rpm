@@ -117,6 +117,11 @@ static int rpmfd_init(rpmfdObject *s, PyObject *args, PyObject *kwds)
     return (fd == NULL) ? -1 : 0;
 }
 
+static PyObject *rpmfd_open(PyObject *cls, PyObject *args, PyObject *kwds)
+{
+    return PyObject_Call(cls, args, kwds);
+}
+
 static PyObject *do_close(rpmfdObject *s)
 {
     /* mimic python fileobject: close on closed file is not an error */
@@ -293,6 +298,8 @@ static PyObject *rpmfd_write(rpmfdObject *s, PyObject *args, PyObject *kwds)
 static char rpmfd_doc[] = "";
 
 static struct PyMethodDef rpmfd_methods[] = {
+    { "open",	(PyCFunction) rpmfd_open,	METH_VARARGS|METH_KEYWORDS|METH_CLASS,
+	NULL },
     { "close",	(PyCFunction) rpmfd_close,	METH_NOARGS,
 	NULL },
     { "fileno",	(PyCFunction) rpmfd_fileno,	METH_NOARGS,
