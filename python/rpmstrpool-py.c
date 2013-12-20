@@ -40,7 +40,7 @@ static PyObject *strpool_id2str(rpmstrPoolObject *s, PyObject *item)
     PyObject *ret = NULL;
     rpmsid id = 0;
 
-    if (PyArg_Parse(item, "k", &id)) {
+    if (PyArg_Parse(item, "I", &id)) {
 	const char *str = rpmstrPoolStr(s->pool, id);
 
 	if (str)
