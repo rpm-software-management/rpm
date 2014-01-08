@@ -376,6 +376,16 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	    rpmfiles foundfi = rpmteFiles(recs[i].p);
 	    char const *linktarget = rpmfilesFLink(foundfi, recs[i].fileno);
 	    char *link;
+
+	    /* Ignore already removed (by eg %pretrans) links */
+	    if (linktarget && rpmteType(recs[i].p) == TR_REMOVED) {
+		char *path = rpmfilesFN(foundfi, recs[i].fileno);
+		struct stat sb;
+		if (lstat(path, &sb) == -1)
+		    linktarget = NULL;
+		free(path);
+	    }
+
 	    foundfi = rpmfilesFree(foundfi);
 
 	    if (linktarget && *linktarget != '\0') {
