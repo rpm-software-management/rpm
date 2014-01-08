@@ -377,6 +377,15 @@ static void fpLookupSubdir(rpmFpHash symlinks, fingerPrintCache fpc, rpmte p, in
 	    char const *linktarget = rpmfiFLinkIndex(foundfi, recs[i].fileno);
 	    char *link;
 
+	    /* Ignore already removed (by eg %pretrans) links */
+	    if (linktarget && rpmteType(recs[i].p) == TR_REMOVED) {
+		char *path = rpmfiFNIndex(foundfi, recs[i].fileno);
+		struct stat sb;
+		if (lstat(path, &sb) == -1)
+		    linktarget = NULL;
+		free(path);
+	    }
+
 	    if (linktarget && *linktarget != '\0') {
 		const char *bn;
 		/* this "directory" is a symlink */
