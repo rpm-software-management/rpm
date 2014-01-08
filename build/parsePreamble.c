@@ -22,6 +22,8 @@
 #define SKIPWHITE(_x)	{while(*(_x) && (risspace(*_x) || *(_x) == ',')) (_x)++;}
 #define SKIPNONWHITE(_x){while(*(_x) &&!(risspace(*_x) || *(_x) == ',')) (_x)++;}
 
+#define WHITELIST_NAME ".-_+%{}"
+
 /**
  */
 static const rpmTagVal copyTagsDuringParse[] = {
@@ -667,7 +669,7 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     switch (tag) {
     case RPMTAG_NAME:
 	SINGLE_TOKEN_ONLY;
-	if (rpmCharCheck(spec, field, strlen(field), ".-_+%{}"))
+	if (rpmCharCheck(spec, field, strlen(field), WHITELIST_NAME))
 	   goto exit;
 	headerPutString(pkg->header, tag, field);
 	/* Main pkg name is unknown at the start, populate as soon as we can */
@@ -983,6 +985,9 @@ int parsePreamble(rpmSpec spec, int initialPackage)
 			spec->line);
 	    goto exit;
 	}
+
+	if (rpmCharCheck(spec, name, strlen(name), WHITELIST_NAME))
+	    goto exit;
 	
 	if (!lookupPackage(spec, name, flag, NULL)) {
 	    rpmlog(RPMLOG_ERR, _("Package already exists: %s\n"), spec->line);
