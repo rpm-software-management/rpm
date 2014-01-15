@@ -1002,7 +1002,7 @@ done \
 
 #------------------------------------------------------------------------------
 # arch macro for all supported PowerPC 64 processors
-%power64	ppc64 ppc64p7
+%power64	ppc64 ppc64p7 ppc64le
 
 #------------------------------------------------------------------------
 # Use in %install to generate locale specific file lists. For example,
