@@ -861,6 +861,10 @@ package or when debugging this package.\
 	--infodir=%{_infodir}
 
 #------------------------------------------------------------------------------
+# The "make" analogue, hiding the _smp_mflags magic from specs
+%make_build %{__make} %{?_smp_mflags}
+
+#------------------------------------------------------------------------------
 # The make install analogue of %configure for modern autotools:
 %make_install %{__make} install DESTDIR=%{?buildroot}
 
