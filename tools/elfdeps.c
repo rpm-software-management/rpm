@@ -48,6 +48,19 @@ static int skipPrivate(const char *s)
  */
 static int skipSoname(const char *soname)
 {
+    int sane = 0;
+
+    /* Filter out empty and all-whitespace sonames */
+    for (const char *s = soname; *s != '\0'; s++) {
+	if (!risspace(*s)) {
+	    sane = 1;
+	    break;
+	}
+    }
+
+    if (!sane)
+	return 1;
+
     if (filter_soname) {
 	if (!strstr(soname, ".so"))
 	    return 1;
