@@ -11,6 +11,8 @@ const char * rpmugUname(uid_t uid);
 
 const char * rpmugGname(gid_t gid);
 
+int rpmugInit(void);
+
 void rpmugFree(void);
 
 #endif /* _RPMUG_H */
