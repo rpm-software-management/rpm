@@ -12,7 +12,6 @@
 #if HAVE_SYS_UTSNAME_H
 #include <sys/utsname.h>
 #endif
-#include <netdb.h>
 #include <ctype.h>	/* XXX for /etc/rpm/platform contents */
 
 #if HAVE_SYS_SYSTEMCFG_H
@@ -36,6 +35,7 @@
 #include "rpmio/rpmio_internal.h"	/* XXX for rpmioSlurp */
 #include "lib/misc.h"
 #include "lib/rpmliblua.h"
+#include "lib/rpmug.h"
 
 #include "debug.h"
 
@@ -1520,7 +1520,9 @@ int rpmReadConfigFiles(const char * file, const char * target)
     rpmrcCtx ctx = rpmrcCtxAcquire(1);
 
     /* Force preloading of dlopen()'ed libraries in case we go chrooting */
-    (void) gethostbyname("localhost");
+    if (rpmugInit())
+	goto exit;
+
     if (rpmInitCrypto())
 	goto exit;
 

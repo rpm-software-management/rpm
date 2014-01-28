@@ -1,7 +1,9 @@
 #include "system.h"
 
+#include <pthread.h>
 #include <pwd.h>
 #include <grp.h>
+#include <netdb.h>
 #include <rpm/rpmlog.h>
 #include <rpm/rpmstring.h>
 
@@ -164,6 +166,23 @@ const char * rpmugGname(gid_t gid)
 
 	return lastGname;
     }
+}
+
+static void loadLibs(void)
+{
+    (void) getpwnam("root");
+    endpwent();
+    (void) getgrnam("root");
+    endgrent();
+    (void) gethostbyname("localhost");
+}
+
+int rpmugInit(void)
+{
+    static pthread_once_t libsLoaded = PTHREAD_ONCE_INIT;
+
+    pthread_once(&libsLoaded, loadLibs);
+    return 0;
 }
 
 void rpmugFree(void)
