@@ -232,6 +232,11 @@ int parseChangelog(rpmSpec spec)
 {
     int nextPart, rc, res = PART_ERROR;
     ARGV_t sb = NULL;
+
+    if (headerIsEntry(spec->packages->header, RPMTAG_CHANGELOGTIME)) {
+	rpmlog(RPMLOG_ERR, _("line %d: second %%changelog\n"), spec->lineNum);
+	goto exit;
+    }
     
     /* There are no options to %changelog */
     if ((rc = readLine(spec, STRIP_COMMENTS)) > 0) {
