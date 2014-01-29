@@ -630,6 +630,45 @@ rpmRC rpmCharCheck(rpmSpec spec, const char *field, size_t fsize, const char *wh
     return RPMRC_OK;
 }
 
+static rpm_count_t numEntries(Header h, rpmTagVal tag)
+{
+    struct rpmtd_s entry;
+    rpm_count_t num = 0;
+
+    if (headerGet(h, tag, &entry, (HEADERGET_MINMEM|HEADERGET_RAW))) {
+	num = rpmtdCount(&entry);
+	rpmtdFreeData(&entry);
+    }
+    return num;
+}
+
+static int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
+		      const char *field, const char *lang)
+{
+    rpmTagVal langtag = RPMTAG_HEADERI18NTABLE;
+    rpm_count_t numstr = numEntries(h, tag);
+    rpm_count_t numlang = numEntries(h, langtag);
+    int skip = 0;
+
+    if (!*lang) {
+	headerPutString(h, tag, field);
+    } else {
+    	skip = ((spec->flags & RPMSPEC_NOLANG) &&
+		!rstreq(lang, RPMBUILD_DEFAULT_LANG));
+	if (skip)
+	    return 0;
+	headerAddI18NString(h, tag, field, lang);
+    }
+
+    /* If neither i18n or group entries grew, its a dupe */
+    if (numstr == numEntries(h, tag) && numlang == numEntries(h, langtag)) {
+	rpmlog(RPMLOG_ERR, _("line %d: second %s\n"),
+		spec->lineNum, rpmTagGetName(tag));
+	return 1;
+    }
+    return 0;
+}
+
 static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
 		const char *macro, const char *lang)
 {
@@ -697,11 +736,8 @@ static rpmRC handlePreambleTag(rpmSpec spec, Package pkg, rpmTagVal tag,
     case RPMTAG_VENDOR:
     case RPMTAG_LICENSE:
     case RPMTAG_PACKAGER:
-	if (!*lang) {
-	    headerPutString(pkg->header, tag, field);
-	} else if (!((spec->flags & RPMSPEC_NOLANG) &&
-		   !rstreq(lang, RPMBUILD_DEFAULT_LANG)))
-	    headerAddI18NString(pkg->header, tag, field, lang);
+	if (addLangTag(spec, pkg->header, tag, field, lang))
+	    goto exit;
 	break;
     case RPMTAG_BUILDROOT:
 	/* just silently ignore BuildRoot */
