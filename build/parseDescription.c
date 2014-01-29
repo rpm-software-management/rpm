@@ -67,16 +67,6 @@ int parseDescription(rpmSpec spec)
     }
 
 
-    /******************/
-
-#if 0    
-    if (headerIsEntry(pkg->header, RPMTAG_DESCRIPTION)) {
-	rpmlog(RPMLOG_ERR, _("line %d: Second description\n"),
-		spec->lineNum);
-	goto exit;
-    }
-#endif
-
     sb = newStringBuf();
 
     if ((rc = readLine(spec, STRIP_TRAILINGSPACE | STRIP_COMMENTS)) > 0) {
@@ -99,11 +89,10 @@ int parseDescription(rpmSpec spec)
     }
     
     stripTrailingBlanksStringBuf(sb);
-    if (!((spec->flags & RPMSPEC_NOLANG) && !rstreq(lang, RPMBUILD_DEFAULT_LANG))) {
-	(void) headerAddI18NString(pkg->header, RPMTAG_DESCRIPTION,
-			getStringBuf(sb), lang);
+    if (addLangTag(spec, pkg->header,
+		   RPMTAG_DESCRIPTION, getStringBuf(sb), lang)) {
+	nextPart = PART_ERROR;
     }
-    
      
 exit:
     freeStringBuf(sb);
