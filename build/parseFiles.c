@@ -67,6 +67,11 @@ int parseFiles(rpmSpec spec)
 	goto exit;
     }
 
+    if (pkg->fileList != NULL) {
+	rpmlog(RPMLOG_ERR, _("line %d: second %%files\n"), spec->lineNum);
+	goto exit;
+    }
+
     for (arg=1; arg<argc; arg++) {
 	if (rstreq(argv[arg], "-f") && argv[arg+1]) {
 	    char *file = rpmGetPath(argv[arg+1], NULL);
