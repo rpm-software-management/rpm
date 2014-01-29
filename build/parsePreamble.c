@@ -642,7 +642,7 @@ static rpm_count_t numEntries(Header h, rpmTagVal tag)
     return num;
 }
 
-static int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
+int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
 		      const char *field, const char *lang)
 {
     rpmTagVal langtag = RPMTAG_HEADERI18NTABLE;

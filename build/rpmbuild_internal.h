@@ -406,6 +406,10 @@ rpmRC packageBinaries(rpmSpec spec, const char *cookie, int cheating);
 RPM_GNUC_INTERNAL
 rpmRC packageSources(rpmSpec spec, char **cookie);
 
+RPM_GNUC_INTERNAL
+int addLangTag(rpmSpec spec, Header h, rpmTagVal tag,
+		const char *field, const char *lang);
+
 /** \ingroup rpmbuild
  * Add dependency to package, filtering duplicates.
  * @param pkg		package
