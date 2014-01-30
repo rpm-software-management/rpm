@@ -1066,8 +1066,8 @@ done \
 	--author "%{__scm_author}" -m "%{name}-%{version} base"
 
 %__scm_apply_git(qp:m:)\
-%{__git} apply %{-p:-p%{-p*}} -\
-%{__git} commit %{-q} -a -m %{-m*} --author "%{__scm_author}"
+%{__git} apply --index %{-p:-p%{-p*}} -\
+%{__git} commit %{-q} -m %{-m*} --author "%{__scm_author}"
 
 # Quilt
 %__scm_setup_quilt(q) %{nil}
