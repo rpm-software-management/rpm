@@ -5,6 +5,7 @@
 #include "system.h"
 #include <stdarg.h>
 #include <pthread.h>
+#include <errno.h>
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #else
@@ -111,6 +112,7 @@ static int expandMacro(MacroBuf mb, const char *src, size_t slen);
 static void pushMacro(rpmMacroContext mc,
 	const char * n, const char * o, const char * b, int level);
 static void popMacro(rpmMacroContext mc, const char * n);
+static int loadMacroFile(rpmMacroContext mc, const char * fn);
 
 /* =============================================================== */
 
@@ -1140,6 +1142,20 @@ expandMacro(MacroBuf mb, const char *src, size_t slen)
 		printMacro(mb, s, se);
 
 	/* Expand builtin macros */
+	if (STREQ("load", f, fn)) {
+		if (g && gn > 0) {
+			char arg[gn + 1];
+			strncpy(arg, g, gn);
+			arg[gn] = '\0';
+			/* Print failure iff %{load:...} or %{!?load:...} */
+			if (loadMacroFile(mb->mc, arg) && chkexist == negate) {
+				rpmlog(RPMLOG_ERR,
+				       _("failed to load macro file %s"), arg);
+			}
+		}
+		s = se;
+		continue;
+	}
 	if (STREQ("global", f, fn)) {
 		s = doDefine(mb, se, RMIL_GLOBAL, 1);
 		continue;
