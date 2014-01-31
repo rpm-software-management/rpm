@@ -1872,6 +1872,11 @@ static void rpmfiSetFound(rpmfi fi, int ix)
     fi->found[ix >> 3] |= (1 << (ix % 8));
 }
 
+static int rpmfiFound(rpmfi fi, int ix)
+{
+    return fi->found[ix >> 3] & (1 << (ix % 8));
+}
+
 static int iterReadArchiveNext(rpmfi fi)
 {
     int rc;
@@ -1888,7 +1893,7 @@ static int iterReadArchiveNext(rpmfi fi)
     if (rc == RPMERR_ITER_END) {
 	int fc = rpmfiFC(fi);
 	for (int i=0; i<fc; i++) {
-	    if (!(fi->found[i>>3] & (1<<(i % 8))) &&
+	    if (!rpmfiFound(fi, i) &&
 			!(rpmfilesFFlags(fi->files, i) & RPMFILE_GHOST)) {
                 rc = RPMERR_MISSING_FILE;
 		break;
